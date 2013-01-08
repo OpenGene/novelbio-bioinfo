@@ -23,8 +23,8 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 
 /**
- * ½âÎösamtools²úÉúµÄpile upĞÅÏ¢£¬½«Ã¿Ò»ĞĞÉú³ÉÒ»¸ö±¾Àà£¬×¨ÃÅ´æ´¢¶ÑµşĞÅÏ¢
- * ÓĞÉè¶¨flag¾Íµ±snp£¬Ã»ÓĞÉè¶¨flag¾Íµ±indel
+ * è§£æsamtoolsäº§ç”Ÿçš„pile upä¿¡æ¯ï¼Œå°†æ¯ä¸€è¡Œç”Ÿæˆä¸€ä¸ªæœ¬ç±»ï¼Œä¸“é—¨å­˜å‚¨å †å ä¿¡æ¯
+ * æœ‰è®¾å®šflagå°±å½“snpï¼Œæ²¡æœ‰è®¾å®šflagå°±å½“indel
  * @author zong0jie
  *
  */
@@ -32,24 +32,24 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	private static Logger logger = Logger.getLogger(RefSiteSnpIndel.class);
 	protected static final String SampleDefaultName = "sample";
 	/** 
-	 * <b>ÀïÃæ¶¼ÊÇÕıÏòµÄĞòÁĞ</b>
-	 * ¸ÃÎ»ÖÃ¿ÉÄÜÓĞ²»Ö¹Ò»ÖÖµÄ²åÈëÈ±Ê§»òÊÇ¼î»ùÌæ»»ÀàĞÍ£¬ÄÇÃ´¾ÍÓÃ¸Ãhash±íÀ´´æ´¢ÕâÃ´¶àÖÖĞÅÏ¢<br>
+	 * <b>é‡Œé¢éƒ½æ˜¯æ­£å‘çš„åºåˆ—</b>
+	 * è¯¥ä½ç½®å¯èƒ½æœ‰ä¸æ­¢ä¸€ç§çš„æ’å…¥ç¼ºå¤±æˆ–æ˜¯ç¢±åŸºæ›¿æ¢ç±»å‹ï¼Œé‚£ä¹ˆå°±ç”¨è¯¥hashè¡¨æ¥å­˜å‚¨è¿™ä¹ˆå¤šç§ä¿¡æ¯<br>
 	 *Key: referenceSeq + SepSign.SEP_ID + thisSeq + SepSign.SEP_ID + snpType <br>
-	 * value: SiteSnpIndelInfo Àà  */
+	 * value: SiteSnpIndelInfo ç±»  */
 	Map<String, SiteSnpIndelInfo> mapAllen2Num = new HashMap<String, SiteSnpIndelInfo>();
-	/** Ñù±¾ºÍÕı³£readsÖ®¼äµÄ¹ØÏµ */
+	/** æ ·æœ¬å’Œæ­£å¸¸readsä¹‹é—´çš„å…³ç³» */
 	Map<String, SampleRefReadsInfo> mapSample2NormReadsInfo = new HashMap<String, SampleRefReadsInfo>();
 
 	protected String chrID;
 	String refBase = "";
-	/** snpÔÚ»ùÒòÖĞµÄÎ»ÖÃ£¬0-1Ö®¼ä£¬0.1±íÊ¾snpÔÚ»ùÒò³¤¶È*0.1µÄÎ»ÖÃ´¦  
-	 * -1±íÊ¾Ã»ÓĞ¸ÃÏîÄ¿
+	/** snpåœ¨åŸºå› ä¸­çš„ä½ç½®ï¼Œ0-1ä¹‹é—´ï¼Œ0.1è¡¨ç¤ºsnpåœ¨åŸºå› é•¿åº¦*0.1çš„ä½ç½®å¤„  
+	 * -1è¡¨ç¤ºæ²¡æœ‰è¯¥é¡¹ç›®
 	 * */
 	double prop = -1;
-	/** ±¾snp»òindelËùÔÚµÄÆğµã */
+	/** æœ¬snpæˆ–indelæ‰€åœ¨çš„èµ·ç‚¹ */
 	protected int refSnpIndelStart = 0;
 	/**
-	 * snp»òindelËùÔÚµÄ×ªÂ¼±¾
+	 * snpæˆ–indelæ‰€åœ¨çš„è½¬å½•æœ¬
 	 */
 	GffGeneIsoInfo gffGeneIsoInfo;
 	GffChrAbs gffChrAbs;
@@ -91,8 +91,8 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	}
 
 	/**
-	 * Éè¶¨Ñù±¾Ãû£¬±ØĞëÔÚ×îÔçµÄÊ±ºòÉè¶¨£¬ÕâÑùËùÓĞºóÆÚµÄĞÅÏ¢¶¼»áÌí¼Óµ½¸ÃsampleÖĞ
-	 * @param sampleName null¾Í²»Éè¶¨
+	 * è®¾å®šæ ·æœ¬åï¼Œå¿…é¡»åœ¨æœ€æ—©çš„æ—¶å€™è®¾å®šï¼Œè¿™æ ·æ‰€æœ‰åæœŸçš„ä¿¡æ¯éƒ½ä¼šæ·»åŠ åˆ°è¯¥sampleä¸­
+	 * @param sampleName nullå°±ä¸è®¾å®š
 	 */
 	public void setSampleName(String sampleName) {
 		if (sampleName == null) {
@@ -118,7 +118,7 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	/**
 	 * GQ The Genotype Quality, as a Phred-scaled confidence at the true genotype is the one provided in GT.
 	 *  In diploid case, if GT is 0/1, then GQ is really L(0/1) / (L(0/0) + L(0/1) + L(1/1)), where L is the likelihood 
-	 *  of the NGS sequencing data under the model of that the sample is 0/0, 0/1/, or 1/1. ºÃÏñÊÇ¼î»ùµÄÖÊÁ¿
+	 *  of the NGS sequencing data under the model of that the sample is 0/0, 0/1/, or 1/1. å¥½åƒæ˜¯ç¢±åŸºçš„è´¨é‡
 	 * @return
 	 */
 	public double getGenotype_Quality() {
@@ -151,7 +151,7 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		return sampleRefReadsInfo.getStrand_Bias();
 	}
 	/**
-	 * ÎïÖÖID
+	 * ç‰©ç§ID
 	 * @return
 	 */
 	public int getTaxID() {
@@ -164,30 +164,30 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		this.refBase = refBase;
 	}
 	/**
-	 * snpÔÚ»ùÒò³¤¶ÈµÄ°Ù·Ö±È
-	 * Ô½Ğ¡Ô½¿¿½üÍ·²¿
-	 * -1±íÊ¾Ã»ÓĞ¸ÃÏîÄ¿
+	 * snpåœ¨åŸºå› é•¿åº¦çš„ç™¾åˆ†æ¯”
+	 * è¶Šå°è¶Šé è¿‘å¤´éƒ¨
+	 * -1è¡¨ç¤ºæ²¡æœ‰è¯¥é¡¹ç›®
 	 */
 	public double getProp() {
 		setGffIso();
 		return prop;
 	}
 	/**
-	 * ²Î¿¼ĞòÁĞ
+	 * å‚è€ƒåºåˆ—
 	 * @return
 	 */
 	public String getRefBase() {
 		return refBase;
 	}
 	/**
-	 * »ñµÃsnp»òindelÔÚrefÉÏµÄÆğµã£¬Êµ¼ÊÎ»µã
+	 * è·å¾—snpæˆ–indelåœ¨refä¸Šçš„èµ·ç‚¹ï¼Œå®é™…ä½ç‚¹
 	 * @return
 	 */
 	public int getRefSnpIndelStart() {
 		return refSnpIndelStart;
 	}
 	/**
-	 * »ñµÃËùÔÚµÄ×ªÂ¼±¾
+	 * è·å¾—æ‰€åœ¨çš„è½¬å½•æœ¬
 	 * @return
 	 */
 	public GffGeneIsoInfo getGffIso() {
@@ -195,8 +195,8 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		return gffGeneIsoInfo;
 	}
 	/**
-	 * ÅĞ¶ÏÁíÒ»¸ösnp»òÕßindelÊÇ²»ÊÇÓë±¾mapInfoÔÚÍ¬Ò»¸ö×ªÂ¼±¾ÖĞ
-	 * Á½¸örefSiteSnpIndel¶¼±ØĞëÓĞgffGeneIsoInfoÉèÖÃºÃ
+	 * åˆ¤æ–­å¦ä¸€ä¸ªsnpæˆ–è€…indelæ˜¯ä¸æ˜¯ä¸æœ¬mapInfoåœ¨åŒä¸€ä¸ªè½¬å½•æœ¬ä¸­
+	 * ä¸¤ä¸ªrefSiteSnpIndeléƒ½å¿…é¡»æœ‰gffGeneIsoInfoè®¾ç½®å¥½
 	 * @param refSiteSnpIndel
 	 * @return
 	 */
@@ -209,13 +209,13 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	}
 	
 	/**
-	 * ¸ù¾İÉè¶¨µÄÁĞĞÅÏ¢£¬Ìî³ärefSiteSnpIndelĞÅÏ¢
-	 * ½ö½ö¶ÁÈ¡snpĞÅÏ¢£¬²»¶ÁÈ¡¶àÉÙsnpĞÅÏ¢
+	 * æ ¹æ®è®¾å®šçš„åˆ—ä¿¡æ¯ï¼Œå¡«å……refSiteSnpIndelä¿¡æ¯
+	 * ä»…ä»…è¯»å–snpä¿¡æ¯ï¼Œä¸è¯»å–å¤šå°‘snpä¿¡æ¯
 	 */
 	public void setNBCLines(String sampleName, String novelBioLine) {
 		setSampleName(sampleName);
 		String[] inputLines = novelBioLine.split("\t");
-		//TODO :chrIDÊÇ·ñĞèÒªĞ¡Ğ´
+		//TODO :chrIDæ˜¯å¦éœ€è¦å°å†™
 		chrID = inputLines[0];
 		refSnpIndelStart = Integer.parseInt(inputLines[1]); 
 		getAndAddAllenInfo(inputLines[6], inputLines[7]);
@@ -223,13 +223,13 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	}
 
 	/**
-	 * ¸ù¾İÉè¶¨µÄÁĞĞÅÏ¢£¬Ìî³ärefSiteSnpIndelĞÅÏ¢
+	 * æ ¹æ®è®¾å®šçš„åˆ—ä¿¡æ¯ï¼Œå¡«å……refSiteSnpIndelä¿¡æ¯
 	 */
 	public void setVcfLines(String sampleName, VcfCols vcfCols, String vcfLines) {
 		setSampleName(sampleName);
 		String[] inputLines = vcfLines.split("\t");
 		refSnpIndelStart = Integer.parseInt(inputLines[vcfCols.colSnpStart]); 
-		//TODO :chrIDÊÇ·ñĞèÒªĞ¡Ğ´
+		//TODO :chrIDæ˜¯å¦éœ€è¦å°å†™
 		chrID = inputLines[vcfCols.colChrID];
 		SiteSnpIndelInfo siteSnpIndelInfo = getAndAddAllenInfo(inputLines[vcfCols.colRefsequence], inputLines[vcfCols.colThisSequence]);
 		if (vcfCols.colBaseInfo >= 0)
@@ -249,9 +249,9 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		}
 	}
 	/**
-	 * ¾Í¿´ÕâÈıÏî£ºAF,AN,SB
+	 * å°±çœ‹è¿™ä¸‰é¡¹ï¼šAF,AN,SB
 	 *  AB=0.841;AC=1;AF=0.50;AN=2;BaseQRankSum=0.097;DP=63;Dels=0.00;FS=0.000;HRun=0;HaplotypeScore=0.0000;
-	 *  ¸ø¶¨GATKinfo£¬Éè¶¨ĞÅÏ¢
+	 *  ç»™å®šGATKinfoï¼Œè®¾å®šä¿¡æ¯
 	 * @param GATKInfo
 	 */
 	private void setBaseInfo(String GATKInfo) {
@@ -273,12 +273,12 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		return sampleRefReadsInfo;
 	}
 	
-	/** Éè¶¨vcfÖĞµÄreads depthÄÇ¸öÁĞ£¬Ö÷ÒªÊÇÉè¶¨´ÓvcfÖĞ¶ÁÈ¡µÄreads depthĞÅÏ¢<br>
+	/** è®¾å®švcfä¸­çš„reads depthé‚£ä¸ªåˆ—ï¼Œä¸»è¦æ˜¯è®¾å®šä»vcfä¸­è¯»å–çš„reads depthä¿¡æ¯<br>
 	 * "GT:AD:DP:GQ:PL", <br>
 	 * "0/1:119,100:315:99:3214,0,3784"<br>
 	 *  */
 	private void setDepthAlt(SiteSnpIndelInfo sampleRefReadsInfo, String flagTitle, String flagDetail) {
-		//TODO ÕâÀïÎÒÉ¾³ıÁËÒ»¸öAllelic_depths_AltµÄÏîÄ¿£¬¿¼ÂÇÈçºÎºÜºÃµÄÌí¼Ó½øÈ¥
+		//TODO è¿™é‡Œæˆ‘åˆ é™¤äº†ä¸€ä¸ªAllelic_depths_Altçš„é¡¹ç›®ï¼Œè€ƒè™‘å¦‚ä½•å¾ˆå¥½çš„æ·»åŠ è¿›å»
 		String[] ssFlag = flagTitle.split(":");
 		String[] ssValue = flagDetail.split(":");
 		for (int i = 0; i < ssFlag.length; i++) {
@@ -290,13 +290,13 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	}
 	
 	/**
-	 * ÕâÀïÎÒÉ¾³ıÁËÒ»¸öAllelic_depths_AltµÄÏîÄ¿£¬¿¼ÂÇÈçºÎºÜºÃµÄÌí¼Ó½øÈ¥
-	 * ÉèÖÃ<br>
+	 * è¿™é‡Œæˆ‘åˆ é™¤äº†ä¸€ä¸ªAllelic_depths_Altçš„é¡¹ç›®ï¼Œè€ƒè™‘å¦‚ä½•å¾ˆå¥½çš„æ·»åŠ è¿›å»
+	 * è®¾ç½®<br>
 	 * GT:AD:DP:GQ:PL<br>
 	 * 0/1:53,10:63:99:150,0,673<br>
 	 */
 	private void setFlag(String flagTitle, String flagDetail) {
-		//TODO ÕâÀïÎÒÉ¾³ıÁËÒ»¸öAllelic_depths_AltµÄÏîÄ¿£¬¿¼ÂÇÈçºÎºÜºÃµÄÌí¼Ó½øÈ¥
+		//TODO è¿™é‡Œæˆ‘åˆ é™¤äº†ä¸€ä¸ªAllelic_depths_Altçš„é¡¹ç›®ï¼Œè€ƒè™‘å¦‚ä½•å¾ˆå¥½çš„æ·»åŠ è¿›å»
 		String[] ssFlag = flagTitle.split(":");
 		String[] ssValue = flagDetail.split(":");
 		SampleRefReadsInfo sampleRefReadsInfo = getAndCreateSampleRefReadsInfo();
@@ -317,8 +317,8 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		}
 	}
 	
-	/** ÕâÊÇµ±samPileupÎÄ¼şÌø¹ıÄ³Ò»ĞĞÊ±Éè¶¨µÄ£¬±íÊ¾ÒÑ¾­²é¹ıÕâÒ»ĞĞÁËÖ»²»¹ıÃ»ÕÒµ½¶«Î÷
-	 * È»ºó¸÷ÖÖÖµ»áÉè¶¨Îª0
+	/** è¿™æ˜¯å½“samPileupæ–‡ä»¶è·³è¿‡æŸä¸€è¡Œæ—¶è®¾å®šçš„ï¼Œè¡¨ç¤ºå·²ç»æŸ¥è¿‡è¿™ä¸€è¡Œäº†åªä¸è¿‡æ²¡æ‰¾åˆ°ä¸œè¥¿
+	 * ç„¶åå„ç§å€¼ä¼šè®¾å®šä¸º0
 	 *  */
 	public void setSearchSamPileUpFileTrue() {
 		SampleRefReadsInfo sampleRefReadsInfo = getAndCreateSampleRefReadsInfo();
@@ -326,21 +326,21 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	}
 	
 	/**
-	 *  ÔÚÒÑÓĞrefbaseĞÅÏ¢µÄ»ù´¡ÉÏ£¬²éÕÒ¸ÃrefSnpIndelStartÎ»µãÓĞÄÄĞ©indel»òsnp
-	 *  ÕÒµ½µÄindelËù¶ÔÓ¦µÄrefbase¿ÉÄÜºÍÔ­À´µÄrefbase²»Ò»Ñù
+	 *  åœ¨å·²æœ‰refbaseä¿¡æ¯çš„åŸºç¡€ä¸Šï¼ŒæŸ¥æ‰¾è¯¥refSnpIndelStartä½ç‚¹æœ‰å“ªäº›indelæˆ–snp
+	 *  æ‰¾åˆ°çš„indelæ‰€å¯¹åº”çš„refbaseå¯èƒ½å’ŒåŸæ¥çš„refbaseä¸ä¸€æ ·
 	 * @param samString
 	 */
 	public void setSamToolsPilup(String samString) {
 		String[] ss = samString.split("\t");
 		this.chrID = ss[0];
-		this.refSnpIndelStart = Integer.parseInt(ss[1]);//±¾ĞĞÉá²»Éè¶¨¶¼ÎŞËùÎ½£¬ÒòÎªÊäÈëµÄÊ±ºò¾ÍÊÇÒªÇóÏàÍ¬µÄID
+		this.refSnpIndelStart = Integer.parseInt(ss[1]);//æœ¬è¡Œèˆä¸è®¾å®šéƒ½æ— æ‰€è°“ï¼Œå› ä¸ºè¾“å…¥çš„æ—¶å€™å°±æ˜¯è¦æ±‚ç›¸åŒçš„ID
 		this.refBase = ss[2];
 		setAllenInfo(Integer.parseInt(ss[3]), ss[4]);
 	}
 
 	/**
-	 * snp»òindelËùÔÚµÄ×ªÂ¼±¾
-	 * Í¬Ê±Éè¶¨setProp£¬cis5to3£¬ºÍname£¬¶¼ÓÃgffGeneIsoInfoµÄĞÅÏ¢
+	 * snpæˆ–indelæ‰€åœ¨çš„è½¬å½•æœ¬
+	 * åŒæ—¶è®¾å®šsetPropï¼Œcis5to3ï¼Œå’Œnameï¼Œéƒ½ç”¨gffGeneIsoInfoçš„ä¿¡æ¯
 	 */
 	private void setGffIso() {
 		if (gffChrAbs == null || gffChrAbs.getGffHashGene() == null || (gffGeneIsoInfo != null && prop >= 0)
@@ -360,9 +360,9 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		setProp();
 	}
 	/**
-	 * refBaseÔÚ»ùÒòÖĞµÄÎ»ÖÃ£¬0-1Ö®¼ä£¬0.1±íÊ¾snpÔÚ»ùÒò³¤¶È*0.1µÄÎ»ÖÃ´¦
-	 * Ô½Ğ¡Ô½¿¿½üÍ·²¿
-	 * 0-1Ö®¼ä
+	 * refBaseåœ¨åŸºå› ä¸­çš„ä½ç½®ï¼Œ0-1ä¹‹é—´ï¼Œ0.1è¡¨ç¤ºsnpåœ¨åŸºå› é•¿åº¦*0.1çš„ä½ç½®å¤„
+	 * è¶Šå°è¶Šé è¿‘å¤´éƒ¨
+	 * 0-1ä¹‹é—´
 	 */
 	private void setProp() {
 		if (gffGeneIsoInfo.getCodLoc(getRefSnpIndelStart()) != GffGeneIsoInfo.COD_LOC_EXON) {
@@ -378,20 +378,20 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	}
 	
 	/**
-	 * ÖØĞÂÉè¶¨Allelic_depths_Ref£¬ºÍhashAlleĞÅÏ¢
-	 *  ¸ø¶¨samtools²úÉúµÄpile upÄÇ¸öpileupĞÅÏ¢£¬¼ÆËã¸ÃÎ»µãµÄ¶ÑµşÇé¿ö<br>
-	 * ¸ñÊ½ÈçÏÂ<br> ...........,.............,....,....,.,.,..,..,...,....,.^!.<br>½âÊÍ:<br>
+	 * é‡æ–°è®¾å®šAllelic_depths_Refï¼Œå’ŒhashAlleä¿¡æ¯
+	 *  ç»™å®šsamtoolsäº§ç”Ÿçš„pile upé‚£ä¸ªpileupä¿¡æ¯ï¼Œè®¡ç®—è¯¥ä½ç‚¹çš„å †å æƒ…å†µ<br>
+	 * æ ¼å¼å¦‚ä¸‹<br> ...........,.............,....,....,.,.,..,..,...,....,.^!.<br>è§£é‡Š:<br>
 	 *  <b>.</b> :match to the reference base on the forward strand<br>
 	 *  <b>,</b> :match on the reverse strand, <br>
-	 *  <b>¡¯>¡¯</b> or<b> ¡¯<¡¯ </b> :a reference skip<br>
-	 *  <b>¡®ACGTN¡¯ </b> :mismatch on the forward strand<br> 
-	 *  <b>¡®acgtn¡¯</b> :mismatch on the reverse strand<br>
-	 *  <b> ¡®\+[0-9]+[ACGTNacgtn]+¡¯</b> :insertion between this reference position and the next reference position.
+	 *  <b>â€™>â€™</b> or<b> â€™<â€™ </b> :a reference skip<br>
+	 *  <b>â€˜ACGTNâ€™ </b> :mismatch on the forward strand<br> 
+	 *  <b>â€˜acgtnâ€™</b> :mismatch on the reverse strand<br>
+	 *  <b> â€˜\+[0-9]+[ACGTNacgtn]+â€™</b> :insertion between this reference position and the next reference position.
 	 *  The length of the insertion is given by the integer in the pattern, followed by the inserted sequence.<br>
-	 *  <b>¡®-[0-9]+[ACGTNacgtn]+¡¯</b> represents a deletion from the reference. The deleted bases will be presented as<b> ¡®*¡¯</b> in the following lines. 
-	 *  <b>¡®^¡¯</b>the start of a read. The ASCII of the character following ¡®^¡¯ minus 33 gives the mapping quality. 
-	 *  <b>¡®$¡¯</b> marks the end of a read segment.
-	 * @param pileUpInfo ÊäÈë ...........,.............,....,....,.,.,..,..,...,....,.^!. ÕâÖÖ¶«Î÷
+	 *  <b>â€˜-[0-9]+[ACGTNacgtn]+â€™</b> represents a deletion from the reference. The deleted bases will be presented as<b> â€˜*â€™</b> in the following lines. 
+	 *  <b>â€˜^â€™</b>the start of a read. The ASCII of the character following â€˜^â€™ minus 33 gives the mapping quality. 
+	 *  <b>â€˜$â€™</b> marks the end of a read segment.
+	 * @param pileUpInfo è¾“å…¥ ...........,.............,....,....,.,.,..,..,...,....,.^!. è¿™ç§ä¸œè¥¿
 	 */
 	private void setAllenInfo(int readsDepth, String pileUpInfo) {
 		clearSampleReadsNum();
@@ -404,10 +404,10 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 			char c = pipInfo[i];
 			if (c == '$' || c == '<' || c == '>') continue;
 			if (c == '^' ) {
-				i ++; continue;//^ºóÃæÊÇmappingÖÊÁ¿£¬ËùÒÔÌø¹ı
+				i ++; continue;//^åé¢æ˜¯mappingè´¨é‡ï¼Œæ‰€ä»¥è·³è¿‡
 			}
-			else if (c == 'n' || c== 'N') {//²»È·¶¨µÄ´íÅä²»Àí»á
-				if (isNextSiteIndel(pipInfo, i)) {//ºóÃæÊÇindel²Å½«thisSeqÉè¶¨ÎªN£¬·ñÔòÖ±½ÓÌø¹ı
+			else if (c == 'n' || c== 'N') {//ä¸ç¡®å®šçš„é”™é…ä¸ç†ä¼š
+				if (isNextSiteIndel(pipInfo, i)) {//åé¢æ˜¯indelæ‰å°†thisSeqè®¾å®šä¸ºNï¼Œå¦åˆ™ç›´æ¥è·³è¿‡
 					thisSeq = "N";
 				}
 				continue;
@@ -419,7 +419,7 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 			}
 			else if (c == '+' || c == '-') {
 				i = setIndel(thisSeq, c, pipInfo, i);
-				thisSeq = refBase;//¸´Î»reference
+				thisSeq = refBase;//å¤ä½reference
 			}
 			else if (c == '*') {
 				continue;
@@ -431,7 +431,7 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		}
 	}
 	
-	/** ÓĞĞ©ÒÑ¾­ÔÚvcfÀïÃæ²é¹ıµÄsnp»áÓĞ¸ÃsnpµÄdepthĞÅÏ¢£¬ËùÒÔÕâÀïÏÈÇå¿Õ±¾Ñù±¾ËùÓĞsnpÊıÖµ */
+	/** æœ‰äº›å·²ç»åœ¨vcfé‡Œé¢æŸ¥è¿‡çš„snpä¼šæœ‰è¯¥snpçš„depthä¿¡æ¯ï¼Œæ‰€ä»¥è¿™é‡Œå…ˆæ¸…ç©ºæœ¬æ ·æœ¬æ‰€æœ‰snpæ•°å€¼ */
 	private void clearSampleReadsNum() {
 		for (SiteSnpIndelInfo siteSnpIndelInfo : mapAllen2Num.values()) {
 			siteSnpIndelInfo.setSampleName(sampleName);
@@ -447,8 +447,8 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 			return true;
 		return false;
 	}
-	/** Éè¶¨indelĞÅÏ¢£¬Í¬Ê±·µ»Ø½á¹ûµÄindex
-	 * Ò²¾ÍÊÇÊäÈëµÄpipInfo¶ÁÈ¡µ½µÄÎ»µã
+	/** è®¾å®šindelä¿¡æ¯ï¼ŒåŒæ—¶è¿”å›ç»“æœçš„index
+	 * ä¹Ÿå°±æ˜¯è¾“å…¥çš„pipInfoè¯»å–åˆ°çš„ä½ç‚¹
 	 * @param thisSeq
 	 * @param indelSymbol
 	 * @param pipInfo
@@ -459,19 +459,19 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		String referenceSeq = refBase;
 		int tmpInDelNum = 0;
 		index ++;
-		//Èç¹û¿ªÍ·ÊÇ¡°+¡±ºÅ£¬Ôò»ñµÃ+ºÅºóµÄÊı×Ö£¬Ò²¾ÍÊÇindelµÄ³¤¶È
+		//å¦‚æœå¼€å¤´æ˜¯â€œ+â€å·ï¼Œåˆ™è·å¾—+å·åçš„æ•°å­—ï¼Œä¹Ÿå°±æ˜¯indelçš„é•¿åº¦
 		for (; index < pipInfo.length; index++) {
 			char tmpNum = pipInfo[index];
-			//×ª»»ÎªÊı×Ö×Ö·û
+			//è½¬æ¢ä¸ºæ•°å­—å­—ç¬¦
 			if (tmpNum >= 48 && tmpNum <=57) {
 				tmpInDelNum = tmpInDelNum*10 + tmpNum -  48;
 			}
-			else {//²»ÊÇ×Ö·ûËµÃ÷¶Á¹ıÍ·ÁË£¬¾Í·µ»ØÒ»Î»
+			else {//ä¸æ˜¯å­—ç¬¦è¯´æ˜è¯»è¿‡å¤´äº†ï¼Œå°±è¿”å›ä¸€ä½
 				index--;
 				break;
 			}
 		}
-		//»ñµÃ¾ßÌåµÄ×Ö·û
+		//è·å¾—å…·ä½“çš„å­—ç¬¦
 		char[] tmpSeq = new char[tmpInDelNum];
 		for (int j = 0; j < tmpSeq.length; j++) {
 			index++;
@@ -488,13 +488,13 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		return index;
 	}
 	
-	/** Éè¶¨´íÅäÎ»µã£¬Èç¹û´íÅäÎ»µãºóÃæ»¹¸ú×Å²åÈë»òÈ±Ê§£¬ÔòÖ±½Ó·µ»Ø¡£<br>
-	 * ·ñÔò¾Í½«´íÅä×°ÈësnpInfo
+	/** è®¾å®šé”™é…ä½ç‚¹ï¼Œå¦‚æœé”™é…ä½ç‚¹åé¢è¿˜è·Ÿç€æ’å…¥æˆ–ç¼ºå¤±ï¼Œåˆ™ç›´æ¥è¿”å›ã€‚<br>
+	 * å¦åˆ™å°±å°†é”™é…è£…å…¥snpInfo
 	 * @param referenceSeq
 	 * @param pipInfo
 	 * @param thisIndex
-	 * @return Èç¹ûÊÇIndel£¬·µ»Ø¸ÃÎ»µã´íÅäµÄ¼î»ùĞòÁĞ
-	 * Èç¹û²»ÊÇIndel£¬·µ»Ørefbase
+	 * @return å¦‚æœæ˜¯Indelï¼Œè¿”å›è¯¥ä½ç‚¹é”™é…çš„ç¢±åŸºåºåˆ—
+	 * å¦‚æœä¸æ˜¯Indelï¼Œè¿”å›refbase
 	 */
 	private String setMisMatchAndGetRefBase(char[] pipInfo, int thisIndex) {
 		String thisSeq = pipInfo[thisIndex] + "";
@@ -505,7 +505,7 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		return refBase;
 	}
 	
-	/** ¸ø¶¨snpµÄrefsequenceºÍthisSeq£¬½«´íÅäĞÅÏ¢¼ÓÈëmapAllen2NumÖĞ */
+	/** ç»™å®šsnpçš„refsequenceå’ŒthisSeqï¼Œå°†é”™é…ä¿¡æ¯åŠ å…¥mapAllen2Numä¸­ */
 	private SiteSnpIndelInfo addSnpIndel2Map(String referenceSeq, String thisSeq, int snpNum) {
 		String snpIndelInfo = SiteSnpIndelInfo.getMismatchInfo(chrID, refSnpIndelStart, referenceSeq, thisSeq);
 		SiteSnpIndelInfo siteSnpIndelInfo = null;
@@ -530,21 +530,21 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		return siteSnpIndelInfo;
 	}
 	
-	/** ½«´íÅäÀàĞÍÎ»µã¼ÓÈëmapAllen2Num£¬Í¬Ê±·µ»Ø²úÉúµÄsiteSnpIndelInfo
-	 * <b>Èç¹ûÃ»ÓĞ´íÅä£¬Ôò²»¼ÓÈëmapAllen2Num</b>
+	/** å°†é”™é…ç±»å‹ä½ç‚¹åŠ å…¥mapAllen2Numï¼ŒåŒæ—¶è¿”å›äº§ç”Ÿçš„siteSnpIndelInfo
+	 * <b>å¦‚æœæ²¡æœ‰é”™é…ï¼Œåˆ™ä¸åŠ å…¥mapAllen2Num</b>
 	 *  */
 	public SiteSnpIndelInfo getAndAddAllenInfo(String referenceSeq, String thisSeq) {
 		return addSnpIndel2Map(referenceSeq, thisSeq, 0);
 	}
 	
 	/**
-	 * ¸ø¶¨Ò»ÏµÁĞsiteSnpIndelÎ»µã£¬½«ÆäÉè¶¨µ½±¾RefSiteÖĞ¡£
-	 * <b>±¾¶ÔÏóÖĞµÄmapAllen2Num»áÍêÈ«±»Ìæ»»µô</b>
+	 * ç»™å®šä¸€ç³»åˆ—siteSnpIndelä½ç‚¹ï¼Œå°†å…¶è®¾å®šåˆ°æœ¬RefSiteä¸­ã€‚
+	 * <b>æœ¬å¯¹è±¡ä¸­çš„mapAllen2Numä¼šå®Œå…¨è¢«æ›¿æ¢æ‰</b>
 	 * <br>
 	 * <br>
-	 * ÓÃÍ¾:<br>
-	 * µ±ÓÃsnpFilter¹ıÂËÒ»¸örefSiteSnpIndel¶ÔÏóºó£¬¿ÉÒÔ»ñµÃÒ»ÏµÁĞµÄÎ»µã¡£
-	 * ¿ÉÒÔ½«ÕâĞ©Î»µãÉèÖÃµ½¸ÃrefSiteSnpIndelµÄcloneÖĞÈ¥
+	 * ç”¨é€”:<br>
+	 * å½“ç”¨snpFilterè¿‡æ»¤ä¸€ä¸ªrefSiteSnpIndelå¯¹è±¡åï¼Œå¯ä»¥è·å¾—ä¸€ç³»åˆ—çš„ä½ç‚¹ã€‚
+	 * å¯ä»¥å°†è¿™äº›ä½ç‚¹è®¾ç½®åˆ°è¯¥refSiteSnpIndelçš„cloneä¸­å»
 	 * @param lsSiteSnpIndelInfo
 	 */
 	public void setLsSiteSnpIndelInfo(ArrayList<SiteSnpIndelInfo> lsSiteSnpIndelInfo) {
@@ -556,7 +556,7 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	}
 
 	/**
-	 * ½«ÁíÒ»¸örefSiteSnpIndelµÄËùÓĞsnpIndelĞÅÏ¢×°Èë±¾Àà£¬ÄÇÃ´Èç¹ûÓöµ½ÏàÍ¬µÄsnpIndel¾Í½ö¼ÇÔØ¸ÃÑù±¾Õâ¸ösnpµÄÊıÁ¿ĞÅÏ¢
+	 * å°†å¦ä¸€ä¸ªrefSiteSnpIndelçš„æ‰€æœ‰snpIndelä¿¡æ¯è£…å…¥æœ¬ç±»ï¼Œé‚£ä¹ˆå¦‚æœé‡åˆ°ç›¸åŒçš„snpIndelå°±ä»…è®°è½½è¯¥æ ·æœ¬è¿™ä¸ªsnpçš„æ•°é‡ä¿¡æ¯
 	 * @param refSiteSnpIndel
 	 */
 	public void addAllenInfo(RefSiteSnpIndel refSiteSnpIndel) {
@@ -579,26 +579,26 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	}
 
 	/**
-	 * ¸ø¶¨refSiteSnpIndel£¬¸ù¾İÆä<b>ref</b>,<b>refbase</b>£¬<b>thisbase</b>ºÍ<b>indel</b>µÄtype£¬²éÕÒ±¾Î»ÖÃÄ³ÖÖtype indelµÄÊıÁ¿¡£<br>
-	 * ×¢Òâ£¬ÊäÈëµÄrefSiteSnpIndel±ØĞëÖ»ÄÜÓĞÒ»ÖÖtype¡£Ò²¾ÍÊÇÖ»ÄÜÖ¸¶¨Ò»ÖÖĞÎÊ½µÄ´íÅä£¬<br>
-	 * ´ËÍâÊäÈëµÄindelÔÚ²éÕÒµÄÊ±ºò»á½«µÚÒ»Î»É¾³ı£¬ÒòÎªGATK³öÀ´µÄµÚÒ»Î»ÊÇindelµÄÇ°Ò»Î»<br>
-	 * ·µ»Ø¸ÃÖÖĞÎÊ½´íÅäÒÔ¼°ÏàÓ¦ĞòÁĞËùº¬ÓĞµÄreads¶ÑµşÊı
-	 * ´Óhash±íÖĞ»ñµÃ
-	 * @param refSiteSnpIndelParent Õı³£µÄ±ğµÄÑù±¾µÄĞÅÏ¢
-	 * @return Èç¹ûÊäÈëµÄrefSiteSnpIndelQueryÖĞÃ»ÓĞ´íÅäµÄĞÅÏ¢£¬Ôò·µ»Ønull
+	 * ç»™å®šrefSiteSnpIndelï¼Œæ ¹æ®å…¶<b>ref</b>,<b>refbase</b>ï¼Œ<b>thisbase</b>å’Œ<b>indel</b>çš„typeï¼ŒæŸ¥æ‰¾æœ¬ä½ç½®æŸç§type indelçš„æ•°é‡ã€‚<br>
+	 * æ³¨æ„ï¼Œè¾“å…¥çš„refSiteSnpIndelå¿…é¡»åªèƒ½æœ‰ä¸€ç§typeã€‚ä¹Ÿå°±æ˜¯åªèƒ½æŒ‡å®šä¸€ç§å½¢å¼çš„é”™é…ï¼Œ<br>
+	 * æ­¤å¤–è¾“å…¥çš„indelåœ¨æŸ¥æ‰¾çš„æ—¶å€™ä¼šå°†ç¬¬ä¸€ä½åˆ é™¤ï¼Œå› ä¸ºGATKå‡ºæ¥çš„ç¬¬ä¸€ä½æ˜¯indelçš„å‰ä¸€ä½<br>
+	 * è¿”å›è¯¥ç§å½¢å¼é”™é…ä»¥åŠç›¸åº”åºåˆ—æ‰€å«æœ‰çš„readså †å æ•°
+	 * ä»hashè¡¨ä¸­è·å¾—
+	 * @param refSiteSnpIndelParent æ­£å¸¸çš„åˆ«çš„æ ·æœ¬çš„ä¿¡æ¯
+	 * @return å¦‚æœè¾“å…¥çš„refSiteSnpIndelQueryä¸­æ²¡æœ‰é”™é…çš„ä¿¡æ¯ï¼Œåˆ™è¿”å›null
 	 */
 	public SiteSnpIndelInfo getSnpIndelNum(RefSiteSnpIndel refSiteSnpIndelQuery) {
 		if (refSiteSnpIndelQuery.getRefSnpIndelStart() != getRefSnpIndelStart()) {
-			logger.error("ÊäÈëµÄ²éÕÒÎ»µã²»ÊÇÍ¬Ò»¸ö£¬±¾Î»µã£º" + getRefSnpIndelStart() + "²éÕÒÎ»µã£º" + refSiteSnpIndelQuery.getRefSnpIndelStart());
+			logger.error("è¾“å…¥çš„æŸ¥æ‰¾ä½ç‚¹ä¸æ˜¯åŒä¸€ä¸ªï¼Œæœ¬ä½ç‚¹ï¼š" + getRefSnpIndelStart() + "æŸ¥æ‰¾ä½ç‚¹ï¼š" + refSiteSnpIndelQuery.getRefSnpIndelStart());
 			return null;
 		}
 		SiteSnpIndelInfo siteSnpIndelInfoQuery = refSiteSnpIndelQuery.getSiteSnpInfoBigAllen();
 		return getSnpIndel(siteSnpIndelInfoQuery);
 	}
 	/**
-	 * ¸ø¶¨ĞòÁĞºÍ´íÅä·½Ê½£¬·µ»ØËùº¬ÓĞµÄreads¶ÑµşÊı
-	 * ÒòÎª±¾Î»µã¿ÉÄÜÓĞ¶àÖÖ´íÅä£¬ËùÒÔ¸ø¶¨Ò»¸öÈ»ºó²éÕÒ£¬¿´ÄÜÕÒµ½¼¸¸ö
-	 * ´Óhash±íÖĞ»ñµÃ
+	 * ç»™å®šåºåˆ—å’Œé”™é…æ–¹å¼ï¼Œè¿”å›æ‰€å«æœ‰çš„readså †å æ•°
+	 * å› ä¸ºæœ¬ä½ç‚¹å¯èƒ½æœ‰å¤šç§é”™é…ï¼Œæ‰€ä»¥ç»™å®šä¸€ä¸ªç„¶åæŸ¥æ‰¾ï¼Œçœ‹èƒ½æ‰¾åˆ°å‡ ä¸ª
+	 * ä»hashè¡¨ä¸­è·å¾—
 	 * @param referenceSeq
 	 * @param thisSeq
 	 * @param snpType
@@ -606,16 +606,16 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	 */
 	public SiteSnpIndelInfo getSnpIndel(SiteSnpIndelInfo siteSnpIndelInfo) {
 		if (siteSnpIndelInfo.getSnpIndelType() == SnpIndelType.CORRECT) {
-			logger.error("ÊäÈëµÄ²éÕÒÎ»µãÃ»ÓĞ´íÅäĞÅÏ¢£¬±¾Î»µã£º" + getRefSnpIndelStart());
+			logger.error("è¾“å…¥çš„æŸ¥æ‰¾ä½ç‚¹æ²¡æœ‰é”™é…ä¿¡æ¯ï¼Œæœ¬ä½ç‚¹ï¼š" + getRefSnpIndelStart());
 			return null;
 		}
 		return getSnpIndel(siteSnpIndelInfo.referenceSeq, siteSnpIndelInfo.thisSeq);
 	}
 	
 	/**
-	 * ¸ø¶¨ĞòÁĞºÍ´íÅä·½Ê½£¬·µ»ØËùº¬ÓĞµÄreads¶ÑµşÊı
-	 * ÒòÎª±¾Î»µã¿ÉÄÜÓĞ¶àÖÖ´íÅä£¬ËùÒÔ¸ø¶¨Ò»¸öÈ»ºó²éÕÒ£¬¿´ÄÜÕÒµ½¼¸¸ö
-	 * ´Óhash±íÖĞ»ñµÃ
+	 * ç»™å®šåºåˆ—å’Œé”™é…æ–¹å¼ï¼Œè¿”å›æ‰€å«æœ‰çš„readså †å æ•°
+	 * å› ä¸ºæœ¬ä½ç‚¹å¯èƒ½æœ‰å¤šç§é”™é…ï¼Œæ‰€ä»¥ç»™å®šä¸€ä¸ªç„¶åæŸ¥æ‰¾ï¼Œçœ‹èƒ½æ‰¾åˆ°å‡ ä¸ª
+	 * ä»hashè¡¨ä¸­è·å¾—
 	 * @param referenceSeq
 	 * @param thisSeq
 	 * @return
@@ -634,8 +634,8 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	}
 	
 	/**
-	 * ·µ»ØÊıÁ¿×î´óµÄsnpÎ»µã
-	 * ÒÑ¾­Éè¶¨ÁËsampleName
+	 * è¿”å›æ•°é‡æœ€å¤§çš„snpä½ç‚¹
+	 * å·²ç»è®¾å®šäº†sampleName
 	 */
 	public SiteSnpIndelInfo getSiteSnpInfoBigAllen() {
 		ArrayList<SiteSnpIndelInfo> lsAllenInfo = getLsAllenInfoSortBig2Small();
@@ -648,9 +648,9 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	}
 	
 	/**
-	 * ·µ»ØËùÓĞµÄ·ÇrefµÄ»ùÒòÒÔ¼°¶ÔÓ¦µÄÖÖÀàºÍÊıÁ¿
-	 * Ã¿¸ö¶¼Éè¶¨sampleName
-	 * Èç¹ûÃ»ÓĞSiteSnp£¬Ôò·µ»Ø±¾Ïî
+	 * è¿”å›æ‰€æœ‰çš„érefçš„åŸºå› ä»¥åŠå¯¹åº”çš„ç§ç±»å’Œæ•°é‡
+	 * æ¯ä¸ªéƒ½è®¾å®šsampleName
+	 * å¦‚æœæ²¡æœ‰SiteSnpï¼Œåˆ™è¿”å›æœ¬é¡¹
 	 */
 	public ArrayList<SiteSnpIndelInfo> getLsAllenInfoSortBig2Small() {
 		ArrayList<SiteSnpIndelInfo> lsAllenInfo = ArrayOperate.getArrayListValue(mapAllen2Num);
@@ -663,7 +663,7 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	}
 	
 	//TODO check
-	/** ¸ù¾İÊÇ·ñ²éÕÒ¹ısamPileUpÎÄ¼ş£¬·µ»Ø¿ÕÖµ»òÊÇÉè¶¨Îª0µÄSiteSnpIndelInfo */
+	/** æ ¹æ®æ˜¯å¦æŸ¥æ‰¾è¿‡samPileUpæ–‡ä»¶ï¼Œè¿”å›ç©ºå€¼æˆ–æ˜¯è®¾å®šä¸º0çš„SiteSnpIndelInfo */
 	private SiteSnpIndelInfo getSiteSnpIndelInfoNone(String refSequence, String thisSequence) {
 		SampleRefReadsInfo sampleRefReadsInfo = mapSample2NormReadsInfo.get(sampleName);
 		if (sampleRefReadsInfo == null) {
@@ -681,15 +681,15 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	}
 	
 	/**
-	 * ¸ø¶¨refSiteSnpIndel£¬¸ù¾İÆä<b>ref</b>,<b>refbase</b>£¬<b>thisbase</b>ºÍ<b>indel</b>µÄtype£¬²éÕÒ±¾Î»ÖÃÄ³ÖÖtype indelµÄÊıÁ¿¡£<br>
-	 * ×¢Òâ£¬ÊäÈëµÄrefSiteSnpIndel±ØĞëÖ»ÄÜÓĞÒ»ÖÖtype¡£Ò²¾ÍÊÇÖ»ÄÜÖ¸¶¨Ò»ÖÖĞÎÊ½µÄ´íÅä£¬<br>
-	 * ´ËÍâÊäÈëµÄindelÔÚ²éÕÒµÄÊ±ºò»á½«µÚÒ»Î»É¾³ı£¬ÒòÎªGATK³öÀ´µÄµÚÒ»Î»ÊÇindelµÄÇ°Ò»Î»<br>
-	 * ·µ»Ø¸ÃÖÖĞÎÊ½´íÅäÒÔ¼°ÏàÓ¦ĞòÁĞËùº¬ÓĞµÄreads¶ÑµşÊı
-	 * ´Óhash±íÖĞ»ñµÃ
-	 * @param refSiteSnpIndel Õı³£µÄ±ğµÄÑù±¾µÄĞÅÏ¢
-	 * @return ·µ»ØÃèÊöĞÔµÄ»°:<br>
+	 * ç»™å®šrefSiteSnpIndelï¼Œæ ¹æ®å…¶<b>ref</b>,<b>refbase</b>ï¼Œ<b>thisbase</b>å’Œ<b>indel</b>çš„typeï¼ŒæŸ¥æ‰¾æœ¬ä½ç½®æŸç§type indelçš„æ•°é‡ã€‚<br>
+	 * æ³¨æ„ï¼Œè¾“å…¥çš„refSiteSnpIndelå¿…é¡»åªèƒ½æœ‰ä¸€ç§typeã€‚ä¹Ÿå°±æ˜¯åªèƒ½æŒ‡å®šä¸€ç§å½¢å¼çš„é”™é…ï¼Œ<br>
+	 * æ­¤å¤–è¾“å…¥çš„indelåœ¨æŸ¥æ‰¾çš„æ—¶å€™ä¼šå°†ç¬¬ä¸€ä½åˆ é™¤ï¼Œå› ä¸ºGATKå‡ºæ¥çš„ç¬¬ä¸€ä½æ˜¯indelçš„å‰ä¸€ä½<br>
+	 * è¿”å›è¯¥ç§å½¢å¼é”™é…ä»¥åŠç›¸åº”åºåˆ—æ‰€å«æœ‰çš„readså †å æ•°
+	 * ä»hashè¡¨ä¸­è·å¾—
+	 * @param refSiteSnpIndel æ­£å¸¸çš„åˆ«çš„æ ·æœ¬çš„ä¿¡æ¯
+	 * @return è¿”å›æè¿°æ€§çš„è¯:<br>
 	 * refID \t  refStart \t refBase  \t  depth \t indelBase  \t indelNum   <br>
-	 * ³ö´í·µ»Ø"";
+	 * å‡ºé”™è¿”å›"";
 	 */
 	public String getSeqTypeNumStr(RefSiteSnpIndel refSiteSnpIndel) {
 		SiteSnpIndelInfo siteSnpIndelInfoQuery = refSiteSnpIndel.getSiteSnpInfoBigAllen();
@@ -697,16 +697,16 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	}
 	
 	/**
-	 * ¸ø¶¨refSiteSnpIndel£¬¸ù¾İÆä<b>ref</b>,<b>refbase</b>£¬<b>thisbase</b>ºÍ<b>indel</b>µÄtype£¬²éÕÒ±¾Î»ÖÃÄ³ÖÖtype indelµÄÊıÁ¿¡£<br>
-	 * ×¢Òâ£¬ÊäÈëµÄrefSiteSnpIndel±ØĞëÖ»ÄÜÓĞÒ»ÖÖtype¡£Ò²¾ÍÊÇÖ»ÄÜÖ¸¶¨Ò»ÖÖĞÎÊ½µÄ´íÅä£¬<br>
-	 * ´ËÍâÊäÈëµÄindelÔÚ²éÕÒµÄÊ±ºò»á½«µÚÒ»Î»É¾³ı£¬ÒòÎªGATK³öÀ´µÄµÚÒ»Î»ÊÇindelµÄÇ°Ò»Î»<br>
-	 * ·µ»Ø¸ÃÖÖĞÎÊ½´íÅäÒÔ¼°ÏàÓ¦ĞòÁĞËùº¬ÓĞµÄreads¶ÑµşÊı
-	 * ´Óhash±íÖĞ»ñµÃ
+	 * ç»™å®šrefSiteSnpIndelï¼Œæ ¹æ®å…¶<b>ref</b>,<b>refbase</b>ï¼Œ<b>thisbase</b>å’Œ<b>indel</b>çš„typeï¼ŒæŸ¥æ‰¾æœ¬ä½ç½®æŸç§type indelçš„æ•°é‡ã€‚<br>
+	 * æ³¨æ„ï¼Œè¾“å…¥çš„refSiteSnpIndelå¿…é¡»åªèƒ½æœ‰ä¸€ç§typeã€‚ä¹Ÿå°±æ˜¯åªèƒ½æŒ‡å®šä¸€ç§å½¢å¼çš„é”™é…ï¼Œ<br>
+	 * æ­¤å¤–è¾“å…¥çš„indelåœ¨æŸ¥æ‰¾çš„æ—¶å€™ä¼šå°†ç¬¬ä¸€ä½åˆ é™¤ï¼Œå› ä¸ºGATKå‡ºæ¥çš„ç¬¬ä¸€ä½æ˜¯indelçš„å‰ä¸€ä½<br>
+	 * è¿”å›è¯¥ç§å½¢å¼é”™é…ä»¥åŠç›¸åº”åºåˆ—æ‰€å«æœ‰çš„readså †å æ•°
+	 * ä»hashè¡¨ä¸­è·å¾—
 	 * @param SampleName
-	 * @param SiteSnpIndelInfo Õı³£µÄ±ğµÄÑù±¾µÄĞÅÏ¢
-	 * @return ·µ»ØÃèÊöĞÔµÄ»°:<br>
+	 * @param SiteSnpIndelInfo æ­£å¸¸çš„åˆ«çš„æ ·æœ¬çš„ä¿¡æ¯
+	 * @return è¿”å›æè¿°æ€§çš„è¯:<br>
 	 * refID \t  refStart \t refBase  \t  depth \t indelBase  \t indelNum   <br>
-	 * ³ö´í·µ»Ø"";
+	 * å‡ºé”™è¿”å›"";
 	 */
 	public String getSeqTypeNumStr(SiteSnpIndelInfo siteSnpIndelInfoQuery) {
 		SiteSnpIndelInfo siteSnpIndelInfo = getSnpIndel(siteSnpIndelInfoQuery);
@@ -719,33 +719,33 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	}
 	
 	/**
-	 * ·µ»ØÈ«²¿snpÀàĞÍºÍÑù±¾µÄĞÅÏ¢
+	 * è¿”å›å…¨éƒ¨snpç±»å‹å’Œæ ·æœ¬çš„ä¿¡æ¯
 	 * @return
 	 */
 	public ArrayList<String[]> toStringLsSnp() {
 		return toStringLsSnp(null, false);
 	}
 	/**
-	 * ·µ»ØÌôÑ¡³öµÄsnpÀàĞÍºÍÑù±¾µÄĞÅÏ¢
+	 * è¿”å›æŒ‘é€‰å‡ºçš„snpç±»å‹å’Œæ ·æœ¬çš„ä¿¡æ¯
 	 * @return
 	 */
 	public ArrayList<String[]> toStringLsSnp(ArrayList<SiteSnpIndelInfo> lsMismatchInfo) {
 		return toStringLsSnp(null,false, false, lsMismatchInfo);
 	}
 	/**
-	 * ¸ø¶¨Ñù±¾Ãû£¬·µ»ØÈ«²¿snpÀàĞÍºÍÑù±¾µÄĞÅÏ¢
-	 * @param lsSampleNames Ñù±¾Ãû
-	 * @param getVCFflag ½á¹ûÖĞÊÇ·ñ°üº¬vcfµÄflag
+	 * ç»™å®šæ ·æœ¬åï¼Œè¿”å›å…¨éƒ¨snpç±»å‹å’Œæ ·æœ¬çš„ä¿¡æ¯
+	 * @param lsSampleNames æ ·æœ¬å
+	 * @param getVCFflag ç»“æœä¸­æ˜¯å¦åŒ…å«vcfçš„flag
 	 * @return
 	 */
 	public ArrayList<String[]> toStringLsSnp(Collection<String> lsSampleNames, boolean getVCFflag) {
 		return toStringLsSnp(lsSampleNames, false, getVCFflag, new ArrayList<SiteSnpIndelInfo>());
 	}
 	/**
-	 * ¸ø¶¨Ñù±¾Ãû£¬·µ»ØÈ«²¿snpÀàĞÍºÍÑù±¾µÄĞÅÏ¢
-	 * @param lsSampleNames Ñù±¾Ãû
-	 * @param getGATK ÊÇ·ñ½ö½«GATKÈÏ¶¨µÄsnpÌáÈ¡³öÀ´
-	 * @param getVCFflag ½á¹ûÖĞÊÇ·ñ°üº¬vcfµÄflag
+	 * ç»™å®šæ ·æœ¬åï¼Œè¿”å›å…¨éƒ¨snpç±»å‹å’Œæ ·æœ¬çš„ä¿¡æ¯
+	 * @param lsSampleNames æ ·æœ¬å
+	 * @param getGATK æ˜¯å¦ä»…å°†GATKè®¤å®šçš„snpæå–å‡ºæ¥
+	 * @param getVCFflag ç»“æœä¸­æ˜¯å¦åŒ…å«vcfçš„flag
 	 * @return
 	 */
 	public ArrayList<String[]> toStringLsSnp(Collection<String> lsSampleNames, boolean getGATK, boolean getVCFflag) {
@@ -754,7 +754,7 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	/**
 	 * @param lsSampleNames
 	 * @param getGATK
-	 * @param lsMismatchInfo ½öÑ¡³öÖ¸¶¨µÄsnp sizeÎª0Ôò·µ»Ø±¾Î»µãÈ«ÌåsnpºÍindel£¬Èç¹ûÎª¿Õ±íÊ¾»ñÈ¡È«²¿£¬²»ÄÜÎªnull
+	 * @param lsMismatchInfo ä»…é€‰å‡ºæŒ‡å®šçš„snp sizeä¸º0åˆ™è¿”å›æœ¬ä½ç‚¹å…¨ä½“snpå’Œindelï¼Œå¦‚æœä¸ºç©ºè¡¨ç¤ºè·å–å…¨éƒ¨ï¼Œä¸èƒ½ä¸ºnull
 	 * @return
 	 */
 	public ArrayList<String[]> toStringLsSnp(Collection<String> lsSampleNames, boolean getGATK, boolean getGATKflag, ArrayList<SiteSnpIndelInfo> lsMismatchInfo) {
@@ -765,10 +765,10 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		return getStringLsSnp(lsSampleNames,false, getGATKflag, setSnpSite);
 	}
 	/**
-	 * ¸ø¶¨Ñù±¾Ãû£¬·µ»ØÈ«²¿snpÀàĞÍºÍÑù±¾µÄĞÅÏ¢
-	 * @param lsSampleNames Ñù±¾Ãû, È«²¿¾ÍÑ¡null
-	 * @param getGATK ÊÇ·ñ½ö½«GATKÈÏ¶¨µÄsnpÌáÈ¡³öÀ´ Ã»ÓĞGATK¾ÍÑ¡false
-	 * @param setMismatchInfo ½öÑ¡³öÖ¸¶¨µÄsnp sizeÎª0Ôò·µ»Ø±¾Î»µãÈ«ÌåsnpºÍindel
+	 * ç»™å®šæ ·æœ¬åï¼Œè¿”å›å…¨éƒ¨snpç±»å‹å’Œæ ·æœ¬çš„ä¿¡æ¯
+	 * @param lsSampleNames æ ·æœ¬å, å…¨éƒ¨å°±é€‰null
+	 * @param getGATK æ˜¯å¦ä»…å°†GATKè®¤å®šçš„snpæå–å‡ºæ¥ æ²¡æœ‰GATKå°±é€‰false
+	 * @param setMismatchInfo ä»…é€‰å‡ºæŒ‡å®šçš„snp sizeä¸º0åˆ™è¿”å›æœ¬ä½ç‚¹å…¨ä½“snpå’Œindel
 	 * @return
 	 */
 	private ArrayList<String[]> getStringLsSnp(Collection<String> lsSampleNames, boolean getGATK, boolean getGATKflag, Set<String> setMismatchInfo) {
@@ -793,7 +793,7 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		else
 			lsResultTmp.add("");
 		
-		//¶ÔÓÚÃ¿¸ösnpµÄÑùÊ½
+		//å¯¹äºæ¯ä¸ªsnpçš„æ ·å¼
 		for (Entry<String, SiteSnpIndelInfo> entry : mapAllen2Num.entrySet()) {
 			SiteSnpIndelInfo siteSnpIndelInfo = entry.getValue();
 			if (getGATK && !isGATKfiltered(siteSnpIndelInfo))
@@ -854,7 +854,7 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	}
 	
 	/** 
-	 * ¸ù¾İ¸ø¶¨µÄÑù±¾Ãû£¬²úÉútitle
+	 * æ ¹æ®ç»™å®šçš„æ ·æœ¬åï¼Œäº§ç”Ÿtitle
 	 * @param lsSampleNames
 	 * @return
 	 */
@@ -890,10 +890,10 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		return infpoStrings;
 	}
 	/**
-	 * ÔÚÖ¸¶¨µÄ£¬ÒÑ¾­Í¨¹ı¹ıÂËµÄ¼¯ºÏÖĞ£¬²éÕÒÊÇ·ñ´æÔÚÄ³¸ösnp
-	 * ´æÔÚÁË·µ»Øtrue
-	 * @param setMismatchInfo Ö¸¶¨µÄÍ¨¹ıÉ¸Ñ¡µÄsnp¼¯ºÏ ¿Õ¼¯»òÕßsizeÎª0Ö±½Ó·µ»Øtrue
-	 * @param siteSnpIndelInfo ±¾¸ö´ıfilterµÄsnpĞÅÏ¢
+	 * åœ¨æŒ‡å®šçš„ï¼Œå·²ç»é€šè¿‡è¿‡æ»¤çš„é›†åˆä¸­ï¼ŒæŸ¥æ‰¾æ˜¯å¦å­˜åœ¨æŸä¸ªsnp
+	 * å­˜åœ¨äº†è¿”å›true
+	 * @param setMismatchInfo æŒ‡å®šçš„é€šè¿‡ç­›é€‰çš„snpé›†åˆ ç©ºé›†æˆ–è€…sizeä¸º0ç›´æ¥è¿”å›true
+	 * @param siteSnpIndelInfo æœ¬ä¸ªå¾…filterçš„snpä¿¡æ¯
 	 * @return
 	 */
 	private boolean isFilteredSite(Set<String> setMismatchInfo, SiteSnpIndelInfo siteSnpIndelInfo) {
@@ -926,9 +926,9 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	}
 
 	/**
-	 * ÓÃÓÚ±È½ÏµÄ£¬´ÓĞ¡µ½´ó±È
-	 * ÏÈ±ÈrefID£¬È»ºó±Èstart£¬end£¬»òÕß±Èflag»òÕß±Èscore
-	 * ±ÈscoreµÄÊ±ºò¾Í²»¿¼ÂÇrefIDÁË
+	 * ç”¨äºæ¯”è¾ƒçš„ï¼Œä»å°åˆ°å¤§æ¯”
+	 * å…ˆæ¯”refIDï¼Œç„¶åæ¯”startï¼Œendï¼Œæˆ–è€…æ¯”flagæˆ–è€…æ¯”score
+	 * æ¯”scoreçš„æ—¶å€™å°±ä¸è€ƒè™‘refIDäº†
 	 */
 	public int compareTo(RefSiteSnpIndel mapInfoOther) {
 		int i = chrID.compareTo(mapInfoOther.chrID);
@@ -941,13 +941,13 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	}
 	
 	/**
-	 * Ç³²ãclone <br>
-	 * gffChrAbsºÍgffGeneIsoInfo
-	 * ÕâÁ½¸ö½ö½ö´«µİµØÖ·<br><br>
-	 * mapAllen2NumºÍmapSample2NormReadsInfo
-	 * ÕâÁ½¸öcloneÁË£¬µ«ÊÇÄÚ²¿ÔªËØ¶¼ÊÇÒ»ÑùµÄÒıÓÃ¡£<br>
-	 * Ò²¾ÍÊÇËµ<b>É¾³ı</b>mapAllen2NumÀïÃæµÄÔªËØ£¬ÀÏµÄRefSiteSnpIndel<b>²»±ä</b><br>
-	 * µ«ÊÇ<b>ĞŞ¸Ä</b>mapAllen2NumÀïÃæµÄÔªËØ£¬ÀÏµÄRefSiteSnpIndel<b>»á±ä</b><br>
+	 * æµ…å±‚clone <br>
+	 * gffChrAbså’ŒgffGeneIsoInfo
+	 * è¿™ä¸¤ä¸ªä»…ä»…ä¼ é€’åœ°å€<br><br>
+	 * mapAllen2Numå’ŒmapSample2NormReadsInfo
+	 * è¿™ä¸¤ä¸ªcloneäº†ï¼Œä½†æ˜¯å†…éƒ¨å…ƒç´ éƒ½æ˜¯ä¸€æ ·çš„å¼•ç”¨ã€‚<br>
+	 * ä¹Ÿå°±æ˜¯è¯´<b>åˆ é™¤</b>mapAllen2Numé‡Œé¢çš„å…ƒç´ ï¼Œè€çš„RefSiteSnpIndel<b>ä¸å˜</b><br>
+	 * ä½†æ˜¯<b>ä¿®æ”¹</b>mapAllen2Numé‡Œé¢çš„å…ƒç´ ï¼Œè€çš„RefSiteSnpIndel<b>ä¼šå˜</b><br>
 	 */
 	public RefSiteSnpIndel clone() {
 		RefSiteSnpIndel refSiteSnpIndel;
@@ -978,7 +978,7 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
 		}
-		logger.error("¿ËÂ¡³ö´í");
+		logger.error("å…‹éš†å‡ºé”™");
 		return null;
 	}
 	public void clear() {
@@ -1009,14 +1009,14 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		txtOutput.close();
 	}
 }
-/** Ä³¸öÑù±¾ÔÚ¸ÃÎ»µãµÄreference readsÊıÁ¿ */
+/** æŸä¸ªæ ·æœ¬åœ¨è¯¥ä½ç‚¹çš„reference readsæ•°é‡ */
 class SampleRefReadsInfo {
 	/** AD
-	 * refµÄreadsÊıÁ¿
+	 * refçš„readsæ•°é‡
 	 */
 	int Allelic_depths_Ref = 0;
 	/**  DP
-	 * È«²¿¹ıÂËºóµÄreadsÊıÁ¿£¬only filtered reads used for calling
+	 * å…¨éƒ¨è¿‡æ»¤åçš„readsæ•°é‡ï¼Œonly filtered reads used for calling
 	 */
 	int readDepth = 0;
 	/**
@@ -1024,7 +1024,7 @@ class SampleRefReadsInfo {
 	 * The Genotype Quality, as a Phred-scaled confidence at the true genotype is the one provided in GT. In diploid case, 
 	 * if GT is 0/1, then GQ is really L(0/1) / (L(0/0) + L(0/1) + L(1/1)), where L is the likelihood of the NGS sequencing data
 	 *  under the model of that the sample is 0/0, 0/1/, or 1/1. 
-	 * ºÃÏñÊÇ¼î»ùµÄÖÊÁ¿
+	 * å¥½åƒæ˜¯ç¢±åŸºçš„è´¨é‡
 	 */
 	double Genotype_Quality = 0;
 	/**
@@ -1033,7 +1033,7 @@ class SampleRefReadsInfo {
 	 *  Higher SB values denote more bias (and therefore are more likely to indicate false positive calls).
 	 */
 	double Strand_Bias = 0;
-	/** ÒâË¼¾ÍÊÇÔÚsampileupÎÄ¼şÖĞ²é¹ıÁËÕâÒ»ĞĞ */
+	/** æ„æ€å°±æ˜¯åœ¨sampileupæ–‡ä»¶ä¸­æŸ¥è¿‡äº†è¿™ä¸€è¡Œ */
 	boolean searchSampileupFile = false;
 	
 	public SampleRefReadsInfo() { }
@@ -1054,14 +1054,14 @@ class SampleRefReadsInfo {
 	public void setRefDepth(int allelic_depths_Ref) {
 		this.Allelic_depths_Ref = allelic_depths_Ref;
 	}
-	/** ¼ÓÉÏÓërefÏà·ûµÄreadsÊıÁ¿ */
+	/** åŠ ä¸Šä¸refç›¸ç¬¦çš„readsæ•°é‡ */
 	public void addRefDepth(int num) {
 		this.Allelic_depths_Ref = Allelic_depths_Ref + num;
 	}
 	public void setGenotype_Quality(double genotype_Quality) {
 		Genotype_Quality = genotype_Quality;
 	}
-	/** ÉèÖÃGATKµÄvcfĞÅÏ¢ */
+	/** è®¾ç½®GATKçš„vcfä¿¡æ¯ */
 	public void setStrand_Bias(double strand_Bias) {
 		Strand_Bias = strand_Bias;
 	}
@@ -1079,13 +1079,13 @@ class SampleRefReadsInfo {
 		return Strand_Bias;
 	}
 }
-/** Éè¶¨ĞèÒªÅÅĞòµÄÑù±¾£¬Ò²¾ÍÊÇÊäÈëµÄÃû×Ö£¬È»ºó¸ù¾İ¸ÃÑù±¾µÄĞÅÏ¢½øĞĞÅÅĞò */
+/** è®¾å®šéœ€è¦æ’åºçš„æ ·æœ¬ï¼Œä¹Ÿå°±æ˜¯è¾“å…¥çš„åå­—ï¼Œç„¶åæ ¹æ®è¯¥æ ·æœ¬çš„ä¿¡æ¯è¿›è¡Œæ’åº */
 class compRefSiteSnpIndelBig2Small implements Comparator<SiteSnpIndelInfo> {
 	String sampleName;
 	public compRefSiteSnpIndelBig2Small(String sampleName) {
 		this.sampleName = sampleName;
 	}
-	//µ¹ĞòÅÅÁĞ
+	//å€’åºæ’åˆ—
 	public int compare(SiteSnpIndelInfo o1, SiteSnpIndelInfo o2) {
 		o1.setSampleName(sampleName);
 		o2.setSampleName(sampleName);

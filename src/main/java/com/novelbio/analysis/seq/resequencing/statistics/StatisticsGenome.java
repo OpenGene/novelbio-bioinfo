@@ -22,12 +22,12 @@ public class StatisticsGenome {
 	private static Logger logger = Logger.getLogger(StatisticsGenome.class);
 	
 	GffChrAbs gffChrAbs;
-	/** ×î´ó¶àÉÙgap¾Í²»Í³¼ÆÁË£¬0±íÊ¾²»¹Ü¶àÉÙ¶¼Í³¼Æ */
+	/** æœ€å¤§å¤šå°‘gapå°±ä¸ç»Ÿè®¡äº†ï¼Œ0è¡¨ç¤ºä¸ç®¡å¤šå°‘éƒ½ç»Ÿè®¡ */
 	int gapMaxNum = 0;
 			
-		/** ¼ÇÂ¼ExonÎ»µãĞÅÏ¢µÄlist£¬Start_end; 
-	 * ÍâÏÔ×Ó²âĞòÓÃµ½£¬ÒòÎªÍâÏÔ×Ó²âĞò½öÍ³¼ÆÍâÏÔ×ÓÇøÓòµÄ¸²¸Ç¶È¡£
-	 * chrID Ğ¡Ğ´
+		/** è®°å½•Exonä½ç‚¹ä¿¡æ¯çš„listï¼ŒStart_end; 
+	 * å¤–æ˜¾å­æµ‹åºç”¨åˆ°ï¼Œå› ä¸ºå¤–æ˜¾å­æµ‹åºä»…ç»Ÿè®¡å¤–æ˜¾å­åŒºåŸŸçš„è¦†ç›–åº¦ã€‚
+	 * chrID å°å†™
 	 */
 	HashMap<String, Queue<? extends Alignment>> mapChrID2QueueExonStartAndEnd;
 	ArrayList<StatisticsUnit> lsStatisticsUnits = new ArrayList<StatisticsUnit>();
@@ -36,14 +36,14 @@ public class StatisticsGenome {
 	
 	String pileupFile = "";
 	
-	/** Éè¶¨pileupÎÄ¼ş */
+	/** è®¾å®špileupæ–‡ä»¶ */
 	public void setPileupFile(String pileupFile) {
 		this.pileupFile = pileupFile;
 	}
 	
 	/**
-	 * ´óÓÚ¸Ã¾àÀë¾Í²»½øĞĞÍ³¼Æ
-	 * @param gapMaxNum 0 ±íÊ¾²»¹Ü¶àÉÙ¶¼Í³¼Æ
+	 * å¤§äºè¯¥è·ç¦»å°±ä¸è¿›è¡Œç»Ÿè®¡
+	 * @param gapMaxNum 0 è¡¨ç¤ºä¸ç®¡å¤šå°‘éƒ½ç»Ÿè®¡
 	 */
 	public void setGapMaxNum(int gapMaxNum) {
 		this.gapMaxNum = gapMaxNum;
@@ -54,15 +54,15 @@ public class StatisticsGenome {
 	}
 	
 	/**
-	 * ÉèÖÃµ±Ç°ÎïÖÖExonµÄÎ»ÖÃĞÅÏ¢
+	 * è®¾ç½®å½“å‰ç‰©ç§Exonçš„ä½ç½®ä¿¡æ¯
 	 * @param lsExonStartAndEnd
 	 */
 	public void setMapChrID2QueueExonStartAndEnd(HashMap<String, Queue<? extends Alignment>> mapChrID2QueueExonStartAndEnd) {
 		this.mapChrID2QueueExonStartAndEnd = mapChrID2QueueExonStartAndEnd;
 	}
 	
-	/** ÊÇ·ñÖ»Í³¼ÆexonÇøÓò£¬ÔÚÍâÏÔ×Ó²âĞòÊ±ÓÃµ½
-	 * <b>Îñ±ØÏÈÉè¶¨setGffChrAbs()</b>
+	/** æ˜¯å¦åªç»Ÿè®¡exonåŒºåŸŸï¼Œåœ¨å¤–æ˜¾å­æµ‹åºæ—¶ç”¨åˆ°
+	 * <b>åŠ¡å¿…å…ˆè®¾å®šsetGffChrAbs()</b>
 	 *  */
 	public void setExonOnly(boolean isExonOnly) {
 		if (isExonOnly == false) {
@@ -70,7 +70,7 @@ public class StatisticsGenome {
 			return;
 		}
 		
-		//chrIDĞ¡Ğ´
+		//chrIDå°å†™
 		HashMultimap<String, ExonInfo> mapChrID2SetExonInfo = getMapChrID2SetExonInfo();
 		if (mapChrID2SetExonInfo == null) {
 			mapChrID2QueueExonStartAndEnd = null;
@@ -95,15 +95,15 @@ public class StatisticsGenome {
 	}
 	
 	/**
-	 * »ñµÃ
-	 * key£ºchrID
-	 * value£ºÎŞÖØ¸´µÄexoninfo µÄset
+	 * è·å¾—
+	 * keyï¼šchrID
+	 * valueï¼šæ— é‡å¤çš„exoninfo çš„set
 	 */
 	private HashMultimap<String, ExonInfo> getMapChrID2SetExonInfo() {
 		if (gffChrAbs == null || gffChrAbs.getGffHashGene() == null) {
 			return null;
 		}
-		//chrIDĞ¡Ğ´
+		//chrIDå°å†™
 		HashMultimap<String, ExonInfo> mapChrID2SetExonInfo = HashMultimap.create();
 		ArrayList<GffDetailGene> lsGffDetailGene = gffChrAbs.getGffHashGene().getGffDetailAll();
 		for (GffDetailGene gffDetailGene : lsGffDetailGene) {
@@ -115,17 +115,17 @@ public class StatisticsGenome {
 		return mapChrID2SetExonInfo;
 	}
 	
-	/** Ìí¼ÓÒªÍ³¼ÆµÄÄ£¿é */
+	/** æ·»åŠ è¦ç»Ÿè®¡çš„æ¨¡å— */
 	public void addStatisticUnits(StatisticsUnit statisticsUnit) {
 		lsStatisticsUnits.add(statisticsUnit);
 	}
-	/** Çå¿ÕÍ³¼ÆÄ£¿é */
+	/** æ¸…ç©ºç»Ÿè®¡æ¨¡å— */
 	public void clearStatisticUnits() {
 		lsStatisticsUnits.clear();
 	}
 
 	
-	/** ¶ÁÈ¡ÎÄ¼ş²¢½øĞĞÍ³¼Æ */
+	/** è¯»å–æ–‡ä»¶å¹¶è¿›è¡Œç»Ÿè®¡ */
 	public void readAndRecord() {
 		int recorderNum = 0;
 		TxtReadandWrite txtWrite = new TxtReadandWrite(pileupFile, false);
@@ -149,9 +149,9 @@ public class StatisticsGenome {
 		}
 	}
 	
-	// TODO ¼ì²éÒ»ÏÂ
+	// TODO æ£€æŸ¥ä¸€ä¸‹
 	/**
-	 * ÅĞ¶¨Î»µãÊÇ·ñÂäÔÚqueueExonStartAndEndµÄÇøÓòÄÚ
+	 * åˆ¤å®šä½ç‚¹æ˜¯å¦è½åœ¨queueExonStartAndEndçš„åŒºåŸŸå†…
 	 * @param oneSeqInfo
 	 * @return
 	 */
@@ -175,7 +175,7 @@ public class StatisticsGenome {
 		}
 	}
 	
-	/** Í³¼Æ¸ÃÎ»µãµÄÇé¿ö */
+	/** ç»Ÿè®¡è¯¥ä½ç‚¹çš„æƒ…å†µ */
 	private void countOneSeq(OneSeqInfo oneSeqInfo) {
 		if (oneSeqInfo.isGapWithOneSeqLast() &&
 				( gapMaxNum <= 0 || oneSeqInfo.getGapLengthWithLastSeq() <= gapMaxNum )) 
@@ -199,10 +199,10 @@ public class StatisticsGenome {
 	}
 
 	/**
-	 * ¿¼ÂÇÖĞ¼ä¶Ï¿ªµÄÇé¿ö£¬GapµÄµÚÒ»¸öÎ»ÖÃÆğ£¬Ë³Ğò»ñµÃÏÂÒ»¸öOneSeqInfo£¬È»ºó×ö·ÖÎö
+	 * è€ƒè™‘ä¸­é—´æ–­å¼€çš„æƒ…å†µï¼ŒGapçš„ç¬¬ä¸€ä¸ªä½ç½®èµ·ï¼Œé¡ºåºè·å¾—ä¸‹ä¸€ä¸ªOneSeqInfoï¼Œç„¶ååšåˆ†æ
 	 * @param seqFastaGap
-	 * @param oneSeqInfoGapEdge  gapÉÏ±ßÔµµÄÄÇ¸ösite
-	 * @return ·µ»ØGapµÄ×îºóÒ»Î»site
+	 * @param oneSeqInfoGapEdge  gapä¸Šè¾¹ç¼˜çš„é‚£ä¸ªsite
+	 * @return è¿”å›Gapçš„æœ€åä¸€ä½site
 	 */
 	private void countOneSeqInfoGap(SeqFasta seqFastaGap, OneSeqInfo oneSeqInfo) {
 		if (seqFastaGap == null) {
@@ -210,36 +210,36 @@ public class StatisticsGenome {
 			return;
 		}
 		String seqGap = seqFastaGap.toString();
-		// ¿¼ÂÇÖĞ¼ä¶Ï¿ªµÄÇé¿ö£¬´ÓGapµÄµÚÒ»¸öÎ»ÖÃÆğ£¬Ë³Ğò»ñµÃÏÂÒ»¸öOneSeqInfo£¬È»ºó×ö·ÖÎö
-		// gapÇ°ÃæµÄÄÇ¸öÎ»µã
+		// è€ƒè™‘ä¸­é—´æ–­å¼€çš„æƒ…å†µï¼Œä»Gapçš„ç¬¬ä¸€ä¸ªä½ç½®èµ·ï¼Œé¡ºåºè·å¾—ä¸‹ä¸€ä¸ªOneSeqInfoï¼Œç„¶ååšåˆ†æ
+		// gapå‰é¢çš„é‚£ä¸ªä½ç‚¹
 		OneSeqInfo oneSeqInfoGapEdgeUp = oneSeqInfo.getOneSeqInfoLast();
 		char[] chrGapSeq = seqGap.toCharArray();
 		for (int i = 0; i < chrGapSeq.length; i++) {
 			oneSeqInfoGapEdgeUp = get_And_Statistic_OneSeqGapNext(chrGapSeq[i], oneSeqInfoGapEdgeUp);
 		}
-		// ²âÊÔÒ»ÏÂÌáÈ¡µÄĞòÁĞÓĞÃ»ÓĞÍêÈ«ÌáÈ¡³öÀ´
+		// æµ‹è¯•ä¸€ä¸‹æå–çš„åºåˆ—æœ‰æ²¡æœ‰å®Œå…¨æå–å‡ºæ¥
 		if (oneSeqInfoGapEdgeUp.getRefSnpIndelStart() + 1 != oneSeqInfo.getRefSnpIndelStart() ) {
-			logger.error("Gap ³ö´í");
+			logger.error("Gap å‡ºé”™");
 		}
 	}
 	/**
-	 * ¿¼ÂÇÖĞ¼ä¶Ï¿ªµÄÇé¿ö£¬GapµÄµÚÒ»¸öÎ»ÖÃÆğ£¬Ë³Ğò»ñµÃÏÂÒ»¸öOneSeqInfo£¬È»ºó×ö·ÖÎö
+	 * è€ƒè™‘ä¸­é—´æ–­å¼€çš„æƒ…å†µï¼ŒGapçš„ç¬¬ä¸€ä¸ªä½ç½®èµ·ï¼Œé¡ºåºè·å¾—ä¸‹ä¸€ä¸ªOneSeqInfoï¼Œç„¶ååšåˆ†æ
 	 * @param seqFastaGap
-	 * @param oneSeqInfoGapEdge  gapÉÏ±ßÔµµÄÄÇ¸ösite
-	 * @return ·µ»ØGapµÄ×îºóÒ»Î»site
+	 * @param oneSeqInfoGapEdge  gapä¸Šè¾¹ç¼˜çš„é‚£ä¸ªsite
+	 * @return è¿”å›Gapçš„æœ€åä¸€ä½site
 	 */
 	private void countOneSeqInfoGap(int gapLength, OneSeqInfo oneSeqInfo) {
 		OneSeqInfo oneSeqInfoGapEdgeUp = oneSeqInfo.getOneSeqInfoLast();
 		for (int i = 0; i < gapLength; i++) {
 			oneSeqInfoGapEdgeUp = get_And_Statistic_OneSeqGapNext('N', oneSeqInfoGapEdgeUp);
 		}
-		// ²âÊÔÒ»ÏÂÌáÈ¡µÄĞòÁĞÓĞÃ»ÓĞÍêÈ«ÌáÈ¡³öÀ´
+		// æµ‹è¯•ä¸€ä¸‹æå–çš„åºåˆ—æœ‰æ²¡æœ‰å®Œå…¨æå–å‡ºæ¥
 		if (oneSeqInfoGapEdgeUp.getRefSnpIndelStart() + 1 != oneSeqInfo.getRefSnpIndelStart() ) {
-			logger.error("Gap ³ö´í");
+			logger.error("Gap å‡ºé”™");
 		}
 	}
 	/**
-	 * @param oneSeqNext ÏÂÒ»¸ö¼î»ù
+	 * @param oneSeqNext ä¸‹ä¸€ä¸ªç¢±åŸº
 	 * @param oneSeqInfoGapEdgeUp
 	 * @return
 	 */

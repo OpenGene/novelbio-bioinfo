@@ -6,21 +6,21 @@ import com.novelbio.analysis.seq.genome.mappingOperate.Alignment;
 import com.novelbio.analysis.seq.mapping.Align;
 
 public interface AlignRecord extends Alignment{
-	/** ÊÇ·ñÎªunique mapping£¬²»ÊÇµÄ»°mappingµ½ÁË¼¸¸ö²»Í¬µÄÎ»µãÉÏÈ¥ */
+	/** æ˜¯å¦ä¸ºunique mappingï¼Œä¸æ˜¯çš„è¯mappingåˆ°äº†å‡ ä¸ªä¸åŒçš„ä½ç‚¹ä¸Šå» */
 	public Integer getMappingNum();
 	public Integer getMapQuality();
-	/** ¸ÃbedÎÄ¼şÊÇ·ñ±»¸î³ÉÁËÒ»¶ÎÒ»¶ÎµÄ */
+	/** è¯¥bedæ–‡ä»¶æ˜¯å¦è¢«å‰²æˆäº†ä¸€æ®µä¸€æ®µçš„ */
 	public boolean isJunctionCovered();
 	public boolean isMapped();
-	/** Èç¹ûÊÇmappingµ½junctionÉÏÈ¥£¬Ò»ÌõbedÎÄ¼ş¼ÇÂ¼»á±»ÇĞ³É±»ÇĞ³ÉµÄ¼¸¿éµÄÑù×Ó±£´æÔÚÕâÀï¡£
-	 * Ò²¾ÍÊÇÒ»¶ÎÒ»¶ÎµÄbed£¬ÄÇÃ´·µ»ØÃ¿Ò»¶ÎµÄĞÅÏ¢£¬
-	 * ¶¼ÊÇ¾ø¶Ô×ø±ê£¬´Ó1¿ªÊ¼
+	/** å¦‚æœæ˜¯mappingåˆ°junctionä¸Šå»ï¼Œä¸€æ¡bedæ–‡ä»¶è®°å½•ä¼šè¢«åˆ‡æˆè¢«åˆ‡æˆçš„å‡ å—çš„æ ·å­ä¿å­˜åœ¨è¿™é‡Œã€‚
+	 * ä¹Ÿå°±æ˜¯ä¸€æ®µä¸€æ®µçš„bedï¼Œé‚£ä¹ˆè¿”å›æ¯ä¸€æ®µçš„ä¿¡æ¯ï¼Œ
+	 * éƒ½æ˜¯ç»å¯¹åæ ‡ï¼Œä»1å¼€å§‹
 	 * @return
 	 */
 	public ArrayList<Align> getAlignmentBlocks();
 	
 	public String getRawStringInfo();
-	/** »ñµÃ±êÖ¾µÄÎ»ÖÃ£¬Ò»°ãÊÇÖĞĞÄµã */
+	/** è·å¾—æ ‡å¿—çš„ä½ç½®ï¼Œä¸€èˆ¬æ˜¯ä¸­å¿ƒç‚¹ */
 	public int getFlagSite();
 	
 }

@@ -27,7 +27,7 @@ public class SamWriter {
 		}
 	}
 	
-	/** 默认写入bam文件 */
+	/** 榛樿鍐欏叆bam鏂囦欢 */
 	public SamWriter(SAMFileHeader samFileHeader, String outSamFile, boolean writeToBam) {
 		File samFile = new File(outSamFile);
 		if (writeToBam) {
@@ -39,14 +39,14 @@ public class SamWriter {
 	
 	public void writeToSamFileln(SamRecord samRecord) {
 		if (samRecord == null || samRecord.samRecord == null) {
-			logger.error("samRecord为null");
+			logger.error("samRecord涓簄ull");
 			return;
 		}
 		try {
 			samFileWriter.addAlignment(samRecord.samRecord);
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error("samRecord出错" + samRecord.toString());
+			logger.error("samRecord鍑洪敊" + samRecord.toString());
 		}
 	}
 	

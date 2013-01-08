@@ -14,7 +14,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
 /**
- * ½âÎöÂŞÊÏµÄ¼×»ù»¯Ğ¾Æ¬GffÎÄ¼ş
+ * è§£æç½—æ°çš„ç”²åŸºåŒ–èŠ¯ç‰‡Gffæ–‡ä»¶
  * @author zong0jie
  *
  */
@@ -42,7 +42,7 @@ public class MeDIParrayGFF {
 	
 	
 	/**
-	 * »ñµÃÁ¬ĞøÌ½Õë
+	 * è·å¾—è¿ç»­æ¢é’ˆ
 	 * @param args
 	 */
 	public static void getConstentProb() {
@@ -52,10 +52,10 @@ public class MeDIParrayGFF {
 		} catch (Exception e) {
 						e.printStackTrace();
 		}
-//		formatPath("/media/winE/NBC/Project/Methylation_PH_120110/³¤Õ÷Ò½Ôº-Åíä°/GFF Files£¨³¤Õ÷Ò½ÔºÅíä° QQ52901159£©/Scaled log2-ratio Data");
+//		formatPath("/media/winE/NBC/Project/Methylation_PH_120110/é•¿å¾åŒ»é™¢-å½­æµ’/GFF Filesï¼ˆé•¿å¾åŒ»é™¢å½­æµ’ QQ52901159ï¼‰/Scaled log2-ratio Data");
 	}
 	/**
-	 * ¶ÔÌ½Õë×öt¼ìÑé
+	 * å¯¹æ¢é’ˆåštæ£€éªŒ
 	 */
 	public static void Ttest() {
 		String excelTxtFile = "/media/winF/NBC/Project/Methy_ZGJ_20121112/GFF Files/Scaled log2-ratio Data/ams/amsAll";
@@ -71,7 +71,7 @@ public class MeDIParrayGFF {
 	}
 	
 /**
- * ½«Ò»¸öÎÄ¼ş¼ĞÖĞËùÓĞµÄGffÎÄ¼şÕûÀíÎªMEME¿ÉÊ¶±ğµÄÎÄ¼ş
+ * å°†ä¸€ä¸ªæ–‡ä»¶å¤¹ä¸­æ‰€æœ‰çš„Gffæ–‡ä»¶æ•´ç†ä¸ºMEMEå¯è¯†åˆ«çš„æ–‡ä»¶
  * @param ratiogff
  * @param mirandaResultOut
  * @throws Exception
@@ -91,7 +91,7 @@ public class MeDIParrayGFF {
 	
 	}
 	/**
-	 * ½«GffÎÄ¼şÕûÀíÎªMEME¿ÉÊ¶±ğµÄÎÄ¼ş
+	 * å°†Gffæ–‡ä»¶æ•´ç†ä¸ºMEMEå¯è¯†åˆ«çš„æ–‡ä»¶
 	 * @param ratiogff
 	 * @param outFile
 	 * @throws Exception
@@ -101,7 +101,7 @@ public class MeDIParrayGFF {
 		TxtReadandWrite txtOut = new TxtReadandWrite(outFile, true);
 
 		txtOut.writefileln("chrID\tMATCH_INDEX\tprobID\tstart\tstop\tscore");
-		HashSet<String> hashUniq = new HashSet<String>();//È¥ÈßÓàÓÃ
+		HashSet<String> hashUniq = new HashSet<String>();//å»å†—ä½™ç”¨
 		for (String content : txtGff.readlines()) {
 			if (content.startsWith("#")) {
 				continue;
@@ -116,10 +116,10 @@ public class MeDIParrayGFF {
 		}
 		txtOut.close();
 	}
-	//TODO ¿ÉÄÜ»áÓĞÎÊÌâ£¬¾ÍÊÇÎÄ¼şÊÇÓÃ" "À´·Ö¸î
+	//TODO å¯èƒ½ä¼šæœ‰é—®é¢˜ï¼Œå°±æ˜¯æ–‡ä»¶æ˜¯ç”¨" "æ¥åˆ†å‰²
 	public static void combAMSfile(String filePath, String pathOut) {
 		ArrayList<String[]> lsFileName = FileOperate.getFoldFileName(filePath, "*", "gff");
-		//Ã¿¸öÎÄ¼şÒ»¸öhash±í
+		//æ¯ä¸ªæ–‡ä»¶ä¸€ä¸ªhashè¡¨
 		HashMap<String, String> hashPrix2Txt = new HashMap<String, String>();
 		ArrayList<String> lsPrix = new ArrayList<String>();
 		for (String[] fileName : lsFileName) {
@@ -139,7 +139,7 @@ public class MeDIParrayGFF {
 		for (int i = 0; i < lsPrix.size(); i++) {
 			String string = lsPrix.get(i);
 			String file = hashPrix2Txt.get(string);
-			//µÚÒ»¸öÎÄ¼şĞèÒª½«Ç°¼¸ÁĞ¶¼¶ÁÈë£¬ÆäËûµÄ¾ÍÖ»Òª¶ÁÈë±ÈÖµ¼´¿É
+			//ç¬¬ä¸€ä¸ªæ–‡ä»¶éœ€è¦å°†å‰å‡ åˆ—éƒ½è¯»å…¥ï¼Œå…¶ä»–çš„å°±åªè¦è¯»å…¥æ¯”å€¼å³å¯
 			if (i == 0) {
 				TxtReadandWrite txtRead = new TxtReadandWrite(file, false);
 				for (String info : txtRead.readlines(2)) {
@@ -162,7 +162,7 @@ public class MeDIParrayGFF {
 				int j = 0;
 				for (String info : txtRead.readlines(2)) {
 					String[] strings = info.split(" ");
-					//iÒ»¶¨´óÓÚ1£¬ÕâÊ±ºò´ÓµÚ5ÁĞ¿ªÊ¼Ğ´ÈëÎÄ¼ş
+					//iä¸€å®šå¤§äº1ï¼Œè¿™æ—¶å€™ä»ç¬¬5åˆ—å¼€å§‹å†™å…¥æ–‡ä»¶
 					lsResult.get(j)[i + 4] = strings[5];
 					j++;
 				}
@@ -176,18 +176,18 @@ public class MeDIParrayGFF {
 	}
 	
 	/**
-	 * Á¬ĞøÈı¸ùÌ½ÕëÖµ´óÓÚ2ÔòÈÏÎª¼×»ù»¯
+	 * è¿ç»­ä¸‰æ ¹æ¢é’ˆå€¼å¤§äº2åˆ™è®¤ä¸ºç”²åŸºåŒ–
 	 * @param resultGff
 	 * @param outFile
 	 * @param sep
-	 * @param colStart ÆğµãËùÔÚÁĞ
-	 * @param colEnd ÖÕµãËùÔÚÁĞ
-	 * @param colNum µÚ¼¸ÁĞĞèÒªÅĞ¶Ï£¬Êµ¼ÊÁĞ
-	 * @param fcUp ÉÏµ÷ãĞÖµ
-	 * @param fcDown ÏÂµ÷ãĞÖµ
-	 * @param colPvalue Ğ¡ÓÚ0±íÊ¾²»¿¼ÂÇcolPvalue
+	 * @param colStart èµ·ç‚¹æ‰€åœ¨åˆ—
+	 * @param colEnd ç»ˆç‚¹æ‰€åœ¨åˆ—
+	 * @param colNum ç¬¬å‡ åˆ—éœ€è¦åˆ¤æ–­ï¼Œå®é™…åˆ—
+	 * @param fcUp ä¸Šè°ƒé˜ˆå€¼
+	 * @param fcDown ä¸‹è°ƒé˜ˆå€¼
+	 * @param colPvalue å°äº0è¡¨ç¤ºä¸è€ƒè™‘colPvalue
 	 * @param pvalue
-	 * @param probNum Á¬Ğø¼¸¸ùÌ½Õë
+	 * @param probNum è¿ç»­å‡ æ ¹æ¢é’ˆ
 	 * @throws Exception
 	 */
 	public static void getCombProbe(String resultGff, String outFile,String sep, int colStart, int colEnd, int colNum, double fcUp, double fcDown,int colPvalue, double pvalue, int probNum) throws Exception {
@@ -195,9 +195,9 @@ public class MeDIParrayGFF {
 		TxtReadandWrite txtGff = new TxtReadandWrite(resultGff, false);
 		TxtReadandWrite txtOut = new TxtReadandWrite(outFile, true);
 		BufferedReader reader = txtGff.readfile();
-		String content = "";reader.readLine();//Ìø¹ıµÚÒ»ĞĞ
+		String content = "";reader.readLine();//è·³è¿‡ç¬¬ä¸€è¡Œ
 		txtOut.writefileln("chrID\tMATCH_INDEX\tprobID\tstart\tstop\tscore");
-		ArrayList<String[]> lsTmpResult = new ArrayList<String[]>(); //ÓÃÀ´´æ´¢»ùÒòµÄĞÅÏ¢
+		ArrayList<String[]> lsTmpResult = new ArrayList<String[]>(); //ç”¨æ¥å­˜å‚¨åŸºå› çš„ä¿¡æ¯
 		int lastEnd = 0;
 		while ((content = reader.readLine()) != null) {
 			if (content.startsWith("#")) {
@@ -207,10 +207,10 @@ public class MeDIParrayGFF {
 			
 			if ((Double.parseDouble(ss[colNum]) > fcDown && Double.parseDouble(ss[colNum]) < fcUp &&
 			(colPvalue < 0 || (colPvalue >= 0 && Double.parseDouble(ss[colPvalue]) <= pvalue))
-			)//µ±³öÏÖ²»Âú×ãÌ½ÕëÊ±
+			)//å½“å‡ºç°ä¸æ»¡è¶³æ¢é’ˆæ—¶
 			||
-			(int)Double.parseDouble(ss[colStart]) - lastEnd > 2000//²»Á¬ĞøÌ½Õë
-			||//Á¬ĞøÌ½ÕëµÄÇ¿¶È²»Ò»ÖÂ£¬Ò»»á¶ùÉÏµ÷Ò»»á¶ùÏÂµ÷
+			(int)Double.parseDouble(ss[colStart]) - lastEnd > 2000//ä¸è¿ç»­æ¢é’ˆ
+			||//è¿ç»­æ¢é’ˆçš„å¼ºåº¦ä¸ä¸€è‡´ï¼Œä¸€ä¼šå„¿ä¸Šè°ƒä¸€ä¼šå„¿ä¸‹è°ƒ
 			(lsTmpResult.size() > 0 && Double.parseDouble(ss[colNum]) >= fcUp 
 					&& Double.parseDouble(lsTmpResult.get(lsTmpResult.size()-1)[colNum]) <= fcDown 
 					&& (colPvalue < 0 || (colPvalue >= 0 && Double.parseDouble(ss[colPvalue]) <= pvalue)))
@@ -238,8 +238,8 @@ public class MeDIParrayGFF {
 		txtOut.close();
 	}
 	/**
-	 * ¸ø¶¨ÊäÈëÎÄ¼ş£¬¾ÍÊÇÌôÑ¡³öµÄÈı¸öÌ½ÕëÁ¬ÔÚÒ»ÆğµÄ¼×»ù»¯Ğ¾Æ¬·ÖÎö½á¹û
-	 * È¥³ıÈßÓà£¬½«Èı¸öÌ½ÕëÁ¬ÔÚÒ»ÆğµÄÖ»±£Áô×îÖĞ¼äµÄÒ»ÌõÌ½Õë
+	 * ç»™å®šè¾“å…¥æ–‡ä»¶ï¼Œå°±æ˜¯æŒ‘é€‰å‡ºçš„ä¸‰ä¸ªæ¢é’ˆè¿åœ¨ä¸€èµ·çš„ç”²åŸºåŒ–èŠ¯ç‰‡åˆ†æç»“æœ
+	 * å»é™¤å†—ä½™ï¼Œå°†ä¸‰ä¸ªæ¢é’ˆè¿åœ¨ä¸€èµ·çš„åªä¿ç•™æœ€ä¸­é—´çš„ä¸€æ¡æ¢é’ˆ
 	 * @param inFile
 	 * @param outFile
 	 */
@@ -247,12 +247,12 @@ public class MeDIParrayGFF {
 		colChrID--; colStart--; colEnd--;
 		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(inFile, 1);
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		//¼ÓÉÏtitle
+		//åŠ ä¸Štitle
 		lsResult.add(lsInfo.get(0));
 		ArrayList<String[]> lsTmp = new ArrayList<String[]>();
 		for (int i = 1; i < lsInfo.size(); i++) {
 			String[] tmp = lsInfo.get(i);
-			//Èç¹û±¾Ì½ÕëºÍÉÏÒ»¸öÌ½ÕëÖ»Ïà²î2000bp
+			//å¦‚æœæœ¬æ¢é’ˆå’Œä¸Šä¸€ä¸ªæ¢é’ˆåªç›¸å·®2000bp
 			if (lsTmp.size() == 0) {
 				lsTmp.add(tmp);
 			}
@@ -277,13 +277,13 @@ public class MeDIParrayGFF {
 	}
 	
 	/**
-	 * Î²²¿Ìí¼Ó4ÁĞ£¬1:sample1 median        2:sample2 median              3:sample1/sample2            4:pvalue
-	 * Ö¸¶¨ÁĞÊı£¬»ñµÃt¼ìÑéµÄpvalue
-	 * @param txtFile ÎÄ¼ş
-	 * @param rowStartNum µÚ¼¸ĞĞ¿ªÊ¼
-	 * @param colSample1 Ñù±¾1ÊÇÄÄ¼¸ÁĞ Êµ¼ÊÁĞ
-	 * @param colSample2 Ñù±¾2ÊÇÄÄ¼¸ÁĞ Êµ¼ÊÁĞ
-	 * @param Value 100£º³£¹æË«Î²T¼ìÑé 200£ºbig 300£ºsmall
+	 * å°¾éƒ¨æ·»åŠ 4åˆ—ï¼Œ1:sample1 median        2:sample2 median              3:sample1/sample2            4:pvalue
+	 * æŒ‡å®šåˆ—æ•°ï¼Œè·å¾—tæ£€éªŒçš„pvalue
+	 * @param txtFile æ–‡ä»¶
+	 * @param rowStartNum ç¬¬å‡ è¡Œå¼€å§‹
+	 * @param colSample1 æ ·æœ¬1æ˜¯å“ªå‡ åˆ— å®é™…åˆ—
+	 * @param colSample2 æ ·æœ¬2æ˜¯å“ªå‡ åˆ— å®é™…åˆ—
+	 * @param Value 100ï¼šå¸¸è§„åŒå°¾Tæ£€éªŒ 200ï¼šbig 300ï¼šsmall
 	 */
 	public static void getPvalueT(String txtFile, int rowStartNum, int[] colSample1, int[] colSample2, int Value, String outFile) {
 		TxtReadandWrite txtInfo = new TxtReadandWrite(txtFile, false);

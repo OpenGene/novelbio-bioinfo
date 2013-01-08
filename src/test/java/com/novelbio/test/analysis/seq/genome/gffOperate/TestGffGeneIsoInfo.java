@@ -26,7 +26,7 @@ public class TestGffGeneIsoInfo extends TestCase{
 		super.tearDown();
 	}
 	/**
-	 * ²âÊÔListAbs.getCombSep
+	 * æµ‹è¯•ListAbs.getCombSep
 	 */
 	@Test
 	public void testTransIsoNorm() {
@@ -65,7 +65,7 @@ public class TestGffGeneIsoInfo extends TestCase{
 		System.out.println(num);
 	}
 	/**
-	 * ²âÊÔListAbs.getCombSep
+	 * æµ‹è¯•ListAbs.getCombSep
 	 */
 	@Test
 	public void testTransIsoCasstteDouble() {
@@ -107,7 +107,7 @@ public class TestGffGeneIsoInfo extends TestCase{
 	}
 	
 	/**
-	 * ²âÊÔListAbs.getCombSep
+	 * æµ‹è¯•ListAbs.getCombSep
 	 */
 	@Test
 	public void testCisIsoCasstteDouble() {

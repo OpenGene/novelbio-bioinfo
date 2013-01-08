@@ -19,15 +19,15 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 /**
- * ID×ª»»£¬ÒÑÖªÁ½¸ögffÎÄ¼ş£¬½«Ò»¸ögffÓëÁíÒ»¸ögff½øĞĞ±È¶Ô£¬ÕÒµ½ÏàÍ¬µÄ»ùÒòÈ»ºó×öID×ª»»¡£
+ * IDè½¬æ¢ï¼Œå·²çŸ¥ä¸¤ä¸ªgffæ–‡ä»¶ï¼Œå°†ä¸€ä¸ªgffä¸å¦ä¸€ä¸ªgffè¿›è¡Œæ¯”å¯¹ï¼Œæ‰¾åˆ°ç›¸åŒçš„åŸºå› ç„¶ååšIDè½¬æ¢ã€‚
  * @author zong0jie
  *
  */
 public class IDconvertGFF {
 	int taxID = 0;
-	/** ´ı×ª»¯µÄgff */
+	/** å¾…è½¬åŒ–çš„gff */
 	GffHashGene gffHashGeneQuery = null;
-	/** Ä¿µÄgff */
+	/** ç›®çš„gff */
 	GffHashGene gffHashGeneDestination= null;
 	String DBinfo = "";
 	TxtReadandWrite txtOut = null;
@@ -67,7 +67,7 @@ public class IDconvertGFF {
 	}
 	
 	/**
-	 * ¸ø¶¨queryµÄgeneIsoµÄĞÅÏ¢£¬ºÍ²éÕÒDestinationµÄ½á¹û£¬½«½á¹û½øĞĞÉı¼¶
+	 * ç»™å®šqueryçš„geneIsoçš„ä¿¡æ¯ï¼Œå’ŒæŸ¥æ‰¾Destinationçš„ç»“æœï¼Œå°†ç»“æœè¿›è¡Œå‡çº§
 	 * @param gffGeneIsoInfo
 	 * @param gffCodGeneDU
 	 */

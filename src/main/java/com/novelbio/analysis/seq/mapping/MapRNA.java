@@ -10,8 +10,8 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 public interface MapRNA {
 	public void setGffChrAbs(GffChrAbs gffChrAbs);
 	/**
-	 * Éè¶¨tophatËùÔÚµÄÎÄ¼ş¼ĞÒÔ¼°´ı±È¶ÔµÄÂ·¾¶
-	 * @param exePath Èç¹ûÔÚ¸ùÄ¿Â¼ÏÂÔòÉèÖÃÎª""»ònull
+	 * è®¾å®štophatæ‰€åœ¨çš„æ–‡ä»¶å¤¹ä»¥åŠå¾…æ¯”å¯¹çš„è·¯å¾„
+	 * @param exePath å¦‚æœåœ¨æ ¹ç›®å½•ä¸‹åˆ™è®¾ç½®ä¸º""æˆ–null
 	 * @param exePathBowtie
 	 */
 	public void setExePath(String exePath, String exePathBowtie);
@@ -19,13 +19,13 @@ public interface MapRNA {
 	public void setFileRef(String chrFile);
 	
 	public void setOutPathPrefix(String outPathPrefix);
-	/** Éè¶¨indel */
+	/** è®¾å®šindel */
 	public void setIndelLen(int indelLen);
 
-	/** Ïß³ÌÊıÁ¿£¬Ä¬ÈÏ4Ïß³Ì */
+	/** çº¿ç¨‹æ•°é‡ï¼Œé»˜è®¤4çº¿ç¨‹ */
 	public void setThreadNum(int threadNum);
 	/**
-	 * STRAND_NULLµÈ£¬Ã²ËÆÊÇÉèÖÃRNA-SeqÊÇ·ñÎªÁ´ÌØÒìĞÔ²âĞòµÄ£¬³Ô²»×¼
+	 * STRAND_NULLç­‰ï¼Œè²Œä¼¼æ˜¯è®¾ç½®RNA-Seqæ˜¯å¦ä¸ºé“¾ç‰¹å¼‚æ€§æµ‹åºçš„ï¼Œåƒä¸å‡†
 	 * 
 	 * @param strandSpecifictype
 	 * <br>
@@ -49,7 +49,7 @@ public interface MapRNA {
 	public void setStrandSpecifictype(StrandSpecific strandSpecifictype);
 	
 	/**
-	 * ²åÈë³¤¶È£¬Ä¬ÈÏÊÇillumina£º450
+	 * æ’å…¥é•¿åº¦ï¼Œé»˜è®¤æ˜¯illuminaï¼š450
 	 * @param insert
 	 */
 	public void setInsert(int insert);
@@ -57,15 +57,15 @@ public interface MapRNA {
 	public void setLeftFq(List<FastQ> lsLeftFq);
 	public void setRightFq(List<FastQ> lsRightFq);
 	
-	/** ´íÅä£¬Õâ¸ö×ßÄ¬ÈÏ±È½ÏºÃ£¬Ä¬ÈÏÎª2 */
+	/** é”™é…ï¼Œè¿™ä¸ªèµ°é»˜è®¤æ¯”è¾ƒå¥½ï¼Œé»˜è®¤ä¸º2 */
 	public void setMismatch(int mismatch);
 
-	/** ²ÎÊıÉè¶¨²»ÄÜÓÃÓÚsolid »¹Ã»¼ÓÈëgtfµÄÑ¡Ïî£¬Ò²¾ÍÊÇÄ¬ÈÏÃ»ÓĞgtf */
+	/** å‚æ•°è®¾å®šä¸èƒ½ç”¨äºsolid è¿˜æ²¡åŠ å…¥gtfçš„é€‰é¡¹ï¼Œä¹Ÿå°±æ˜¯é»˜è®¤æ²¡æœ‰gtf */
 	public void mapReads();
 	SoftWare getBowtieVersion();
 	/**
-	 * ½ötophatÊ¹ÓÃ£¬gtfÎÄ¼ş¸¨Öúmapping
-	 * Èç¹ûÉè¶¨Îªnull£¬Ôò±íÊ¾²»Ê¹ÓÃgtfÎÄ¼ş
+	 * ä»…tophatä½¿ç”¨ï¼Œgtfæ–‡ä»¶è¾…åŠ©mapping
+	 * å¦‚æœè®¾å®šä¸ºnullï¼Œåˆ™è¡¨ç¤ºä¸ä½¿ç”¨gtfæ–‡ä»¶
 	 * @param gtfFile
 	 */
 	public void setGtfFile(String gtfFile);

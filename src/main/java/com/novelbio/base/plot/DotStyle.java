@@ -13,16 +13,16 @@ import java.util.HashMap;
 import de.erichseifert.gral.util.GraphicsUtils;
 
 /**
- * ½«Êı¾İµÄµã·Ö³É¼¸¿é£¬Ã¿Ò»¿é¶¼±ê¼Ç²»Í¬µÄÑÕÉ«ºÍµãµÄÑùÊ½
- * ÖØĞ´ÁËequalµ«ÊÇÃ»ÓĞÖØĞ´hash
- * ×îºÃÊÇcloneÁËÊ¹ÓÃ
+ * å°†æ•°æ®çš„ç‚¹åˆ†æˆå‡ å—ï¼Œæ¯ä¸€å—éƒ½æ ‡è®°ä¸åŒçš„é¢œè‰²å’Œç‚¹çš„æ ·å¼
+ * é‡å†™äº†equalä½†æ˜¯æ²¡æœ‰é‡å†™hash
+ * æœ€å¥½æ˜¯cloneäº†ä½¿ç”¨
  * @author zong0jie
  *
  */
 public class DotStyle implements Cloneable {
 	/**
-	 * »­Ãæ»ıÍ¼£¬ÔÚ»ùÒò×éÉÏ²âÊÔ¹ıÁË£¬Ğ§¹û²»´í
-	 * AreaÃ»ÓĞÏß
+	 * ç”»é¢ç§¯å›¾ï¼Œåœ¨åŸºå› ç»„ä¸Šæµ‹è¯•è¿‡äº†ï¼Œæ•ˆæœä¸é”™
+	 * Areaæ²¡æœ‰çº¿
 	 */
 	public static final int STYLE_AREA = 2;
 	public static final int STYLE_CYCLE = 4;
@@ -44,11 +44,11 @@ public class DotStyle implements Cloneable {
 	Rectangle2D.Double line = null;
 	Polygon TRIANGLE = null;
 	/**
-	 * ÑÕÉ«
+	 * é¢œè‰²
 	 */
 	Paint color = Color.BLACK;
 	/**
-	 * ĞÎ×´
+	 * å½¢çŠ¶
 	 */
 	int style = STYLE_CYCLE;
 	int size = SIZE_M;
@@ -74,8 +74,8 @@ public class DotStyle implements Cloneable {
 	}
 	
 	/**
-	 * Éè¶¨´óĞ¡
-	 * SIZE_MµÈ
+	 * è®¾å®šå¤§å°
+	 * SIZE_Mç­‰
 	 * @param size
 	 */
 	public void setSize(int size) {
@@ -105,14 +105,14 @@ public class DotStyle implements Cloneable {
 	 */
 	String dotname = null;
 	/**
-	 * ÉèÖÃ¸ÃµãÏÔÊ¾µÄÎÄ×Ö£¬Èç¹û²»ÉèÖÃ£¬¾ÍÎª¸ÃµãµÄyÖá×ø±ê
+	 * è®¾ç½®è¯¥ç‚¹æ˜¾ç¤ºçš„æ–‡å­—ï¼Œå¦‚æœä¸è®¾ç½®ï¼Œå°±ä¸ºè¯¥ç‚¹çš„yè½´åæ ‡
 	 * @param dotname
 	 */
 	public void setName(String dotname) {
 		this.dotname = dotname;
 	}
 	/**
-	 * ¸ÃµãÏÔÊ¾µÄÎÄ×Ö£¬Èç¹û²»ÉèÖÃ£¬Ôò·µ»Ønull
+	 * è¯¥ç‚¹æ˜¾ç¤ºçš„æ–‡å­—ï¼Œå¦‚æœä¸è®¾ç½®ï¼Œåˆ™è¿”å›null
 	 * @return
 	 */
 	public String getName() {
@@ -122,10 +122,10 @@ public class DotStyle implements Cloneable {
 		return dotname;
 	}
 	/**
-	 * »ñµÃÏëÒªµÄÍ¼ĞÎ£¬Ä¿Ç°½öÖ§³Öline£¬circle£¬rectangle
-	 * @param ĞèÒªÀ©´óµÄ±¶Êı£¬¸ß¾«¶È¾ÍÀ©´ó¸ö3-5±¶
+	 * è·å¾—æƒ³è¦çš„å›¾å½¢ï¼Œç›®å‰ä»…æ”¯æŒlineï¼Œcircleï¼Œrectangle
+	 * @param éœ€è¦æ‰©å¤§çš„å€æ•°ï¼Œé«˜ç²¾åº¦å°±æ‰©å¤§ä¸ª3-5å€
 	 * @return
-	 * Èç¹ûÊÇÏßĞÍ£¬ÔòĞèÒªÔÚÍâÃæĞŞÕıÒ»ÏÂ
+	 * å¦‚æœæ˜¯çº¿å‹ï¼Œåˆ™éœ€è¦åœ¨å¤–é¢ä¿®æ­£ä¸€ä¸‹
 	 */
 	public Shape getShape() {
 		if (style == STYLE_AREA || style == STYLE_BAR) {
@@ -200,10 +200,10 @@ public class DotStyle implements Cloneable {
 		return null;
 	}
 	/**
-	 * »ñµÃÏëÒªµÄÍ¼ĞÎ£¬Ä¿Ç°½öÖ§³Öline£¬circle£¬rectangle
-	 * @param ĞèÒªÀ©´óµÄ±¶Êı£¬¸ß¾«¶È¾ÍÀ©´ó¸ö3-5±¶
+	 * è·å¾—æƒ³è¦çš„å›¾å½¢ï¼Œç›®å‰ä»…æ”¯æŒlineï¼Œcircleï¼Œrectangle
+	 * @param éœ€è¦æ‰©å¤§çš„å€æ•°ï¼Œé«˜ç²¾åº¦å°±æ‰©å¤§ä¸ª3-5å€
 	 * @return
-	 * Èç¹ûÊÇÏßĞÍ£¬ÔòĞèÒªÔÚÍâÃæĞŞÕıÒ»ÏÂ
+	 * å¦‚æœæ˜¯çº¿å‹ï¼Œåˆ™éœ€è¦åœ¨å¤–é¢ä¿®æ­£ä¸€ä¸‹
 	 */
 	public BasicStroke getBasicStroke() {
 		if (style == STYLE_LINE) {
@@ -230,7 +230,7 @@ public class DotStyle implements Cloneable {
 		return null;
 	}
 	/**
-	 * ¸´ÖÆÒ»¸ödotstyle
+	 * å¤åˆ¶ä¸€ä¸ªdotstyle
 	 */
 	@Override
 	public DotStyle clone() {
@@ -253,7 +253,7 @@ public class DotStyle implements Cloneable {
 		return null;
 	}
 	/**
-	 * ÖØĞ´equals
+	 * é‡å†™equals
 	 */
 	public boolean equals(Object obj)
 	{

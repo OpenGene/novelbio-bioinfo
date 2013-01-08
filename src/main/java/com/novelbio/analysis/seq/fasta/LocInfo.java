@@ -1,6 +1,6 @@
 package com.novelbio.analysis.seq.fasta;
 /**
- * ×¨ÃÅ±£´æ×ø±êĞÅÏ¢µÄÒ»¸öĞ¡Àà£¬¿ÉÒÔµ±×÷½á¹¹Ìå
+ * ä¸“é—¨ä¿å­˜åæ ‡ä¿¡æ¯çš„ä¸€ä¸ªå°ç±»ï¼Œå¯ä»¥å½“ä½œç»“æ„ä½“
  * @author zong0jie
  *
  */
@@ -12,8 +12,8 @@ public class LocInfo {
 	private String type = "";
 	/**
 	 * @param chrID
-	 * @param startLoc Êµ¼ÊÆğµã±ÕÇø¼ä
-	 * @param endLoc Êµ¼ÊÖÕµã±ÕÇø¼ä
+	 * @param startLoc å®é™…èµ·ç‚¹é—­åŒºé—´
+	 * @param endLoc å®é™…ç»ˆç‚¹é—­åŒºé—´
 	 */
 	public LocInfo(String chrID, int startLoc, int endLoc) {
 		this.chrID = chrID;

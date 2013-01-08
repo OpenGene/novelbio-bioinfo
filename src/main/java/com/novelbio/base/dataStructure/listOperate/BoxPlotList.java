@@ -9,11 +9,11 @@ import com.novelbio.base.plot.PlotBox;
 import com.novelbio.base.plot.PlotBox.BoxInfo;
 
 public class BoxPlotList {
-	/** key¶¼ÊÇĞ¡Ğ´ */
+	/** keyéƒ½æ˜¯å°å†™ */
 	LinkedHashMap<String, HistList> mapName2HistList = new LinkedHashMap<String, HistList>();
 	
 	PlotBox plotBox;
-	/** ×î³¤µÄboxµÄÉÏÏÂÁ½±ß¾àÀë×ø±êÖáÓĞ¶à³¤£¬ÓÃÓÚÉè¶¨ setAxisY ÓÃ */
+	/** æœ€é•¿çš„boxçš„ä¸Šä¸‹ä¸¤è¾¹è·ç¦»åæ ‡è½´æœ‰å¤šé•¿ï¼Œç”¨äºè®¾å®š setAxisY ç”¨ */
 	double margen = 0.05;
 	public void addHistList(HistList histList) {
 		mapName2HistList.put(histList.getName().toLowerCase(), histList);

@@ -14,8 +14,8 @@ import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 /** 
- * snp annotationµÄÀà£¬Ò»°ãÓÃ²»µ½£¬ÒòÎªÆäËûÒÑ¾­¼¯³ÉÁË¸Ã¹¦ÄÜ<br>
- * ´ıannotationµÄ±ØĞëÊÇtxtÎÄ±¾
+ * snp annotationçš„ç±»ï¼Œä¸€èˆ¬ç”¨ä¸åˆ°ï¼Œå› ä¸ºå…¶ä»–å·²ç»é›†æˆäº†è¯¥åŠŸèƒ½<br>
+ * å¾…annotationçš„å¿…é¡»æ˜¯txtæ–‡æœ¬
  * @author zong0jie
  */
 public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
@@ -44,7 +44,7 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 		this.colRefNr = colRefNr - 1;
 		this.colThisNr = colThisNr - 1;
 	}
-	/**·µ»ØÒÔKÎªµ¥Î»µÄ¹À¼ÆÎÄ¼şµÄ×ÜºÍ£¬gzµÄÎÄ¼ş¾Í»á¼Ó±¶¹À¼Æ
+	/**è¿”å›ä»¥Kä¸ºå•ä½çš„ä¼°è®¡æ–‡ä»¶çš„æ€»å’Œï¼Œgzçš„æ–‡ä»¶å°±ä¼šåŠ å€ä¼°è®¡
 	 * @return
 	 */
 	public double getFileSizeEvaluateK() {
@@ -54,7 +54,7 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 		} 
 		return FileOperate.getFileSizeEvaluateK(lsFileName);
 	}
-	/** Çå¿Õ */
+	/** æ¸…ç©º */
 	public void clearSnpFile() {
 		lsTxtFile.clear();
 		readLines = 0;
@@ -103,7 +103,7 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 			txtWrite.close();
 		}
 	}
-	/** ×¢ÊÍ½á¹û */
+	/** æ³¨é‡Šç»“æœ */
 	private String annoSnp(String input) {
 		input = input.trim();
 		if (input.startsWith("#")) {
@@ -125,7 +125,7 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 		lsInfo.add(geneID.getDescription());
 		lsInfo.add(gffGeneIsoInfo.toStringCodLocStr(refStartSite));
 		
-		//Èç¹ûsnpÂäÔÚÁËintronÀïÃæ£¬±¾ÏîÄ¿¾Í²»¼ÆÊıÁË
+		//å¦‚æœsnpè½åœ¨äº†introné‡Œé¢ï¼Œæœ¬é¡¹ç›®å°±ä¸è®¡æ•°äº†
 		double prop = refSiteSnpIndel.getProp();
 		if (prop >= 0) {
 			lsInfo.add(refSiteSnpIndel.getProp() + "");
@@ -146,7 +146,7 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 	public RefSiteSnpIndel getSnpSite(String chrID, int site) {
 		return new RefSiteSnpIndel(gffChrAbs, chrID, site);
 	}
-	/** tilteºÍannoSnp·½·¨ÖĞÒ»ÖÂ */
+	/** tilteå’ŒannoSnpæ–¹æ³•ä¸­ä¸€è‡´ */
 	public static ArrayList<String> getTitleLs() {
 		ArrayList<String> lsTitle = new ArrayList<String>();
 		lsTitle.add(TitleFormatNBC.Symbol.toString());

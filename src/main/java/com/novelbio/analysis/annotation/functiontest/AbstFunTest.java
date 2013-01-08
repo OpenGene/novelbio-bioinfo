@@ -33,25 +33,25 @@ public abstract class AbstFunTest implements FunTestInt{
 	
 	ArrayList<GeneID> lsCopedIDsTest = null;
 	ArrayList<GeneID> lsCopedIDsBG = null;
-	/** genUniID item,item¸ñÊ½  */
+	/** genUniID item,itemæ ¼å¼  */
 	ArrayList<GeneID2LsItem> lsTest = null;
-	/** genUniID item,item¸ñÊ½ */
+	/** genUniID item,itemæ ¼å¼ */
 	ArrayList<GeneID2LsItem> lsBGGeneID2Items = null;
 	String BGfile = "";
 	int BGnum = 0;
 	/**
-	 * gene2CopedIDµÄ¶ÔÕÕ±í£¬¶à¸öaccID¶ÔÓ¦Í¬Ò»¸ögeneIDµÄÊ±ºò¾ÍÓÃÕâ¸öhashÀ´´¦Àí
-	 * ÓÃÍ¾£¬µ±×öelimFisherµÄÊ±ºò£¬×îºó»áµÃµ½Ò»ÏµÁĞµÄgeneID£¬¶øÃ¿¸ögeneID¿ÉÄÜ¶ÔÓ¦ÁË¶à¸öaccID
-	 * ÕâÊ±ºò¾ÍÓÃgeneID×÷Îªkey£¬½«accID·ÅÈëvalueµÄlistÖĞ¡£
-	 * µ«ÊÇºÜ¿ÉÄÜvalueÀïÃæµÄcopedIDÓĞÏàÍ¬µÄaccID£¬ÕâÊ±ºòÎªÁË±ÜÃâÕâÖÖÇé¿ö£¬ÎÒĞÂ½¨ÁËÒ»¸öhashAcc2CopedID
-	 * ×¨ÃÅÓÃÓÚÈ¥ÈßÓà
+	 * gene2CopedIDçš„å¯¹ç…§è¡¨ï¼Œå¤šä¸ªaccIDå¯¹åº”åŒä¸€ä¸ªgeneIDçš„æ—¶å€™å°±ç”¨è¿™ä¸ªhashæ¥å¤„ç†
+	 * ç”¨é€”ï¼Œå½“åšelimFisherçš„æ—¶å€™ï¼Œæœ€åä¼šå¾—åˆ°ä¸€ç³»åˆ—çš„geneIDï¼Œè€Œæ¯ä¸ªgeneIDå¯èƒ½å¯¹åº”äº†å¤šä¸ªaccID
+	 * è¿™æ—¶å€™å°±ç”¨geneIDä½œä¸ºkeyï¼Œå°†accIDæ”¾å…¥valueçš„listä¸­ã€‚
+	 * ä½†æ˜¯å¾ˆå¯èƒ½valueé‡Œé¢çš„copedIDæœ‰ç›¸åŒçš„accIDï¼Œè¿™æ—¶å€™ä¸ºäº†é¿å…è¿™ç§æƒ…å†µï¼Œæˆ‘æ–°å»ºäº†ä¸€ä¸ªhashAcc2CopedID
+	 * ä¸“é—¨ç”¨äºå»å†—ä½™
 	 */
 	ArrayListMultimap<String, GeneID> mapGeneUniID2LsGeneID = ArrayListMultimap.create();
 	ArrayList<StatisticTestResult> lsTestResult = new ArrayList<StatisticTestResult>();
 	
 	/**
-	 * Gene2GO»òÕßGene2PathµÄĞÅÏ¢
-	 * Ã¿´ÎÉèÖÃĞÂµÄLsCopedTestºó±ØĞëÖØÖÃ
+	 * Gene2GOæˆ–è€…Gene2Pathçš„ä¿¡æ¯
+	 * æ¯æ¬¡è®¾ç½®æ–°çš„LsCopedTeståå¿…é¡»é‡ç½®
 	 */
 	ArrayList<String[]> lsGene2GOPath = null;
 	
@@ -80,14 +80,14 @@ public abstract class AbstFunTest implements FunTestInt{
 	}
 
 	/**
-	 * Éè¶¨ÎïÖÖ
+	 * è®¾å®šç‰©ç§
 	 * @param taxID
 	 */
 	public void setTaxID(int taxID) {
 		this.taxID = taxID;
 	}
 	/**
-	 * »ñµÃµ±Ç°ÎïÖÖ
+	 * è·å¾—å½“å‰ç‰©ç§
 	 * @return
 	 */
 	public int getTaxID() {
@@ -95,12 +95,12 @@ public abstract class AbstFunTest implements FunTestInt{
 	}
 	
 	/**
-	 * ×îºÃÄÜµÚÒ»Ê±¼äÉè¶¨
-	 * ¶ÁÈ¡genUniID item,item¸ñÊ½µÄ±í
+	 * æœ€å¥½èƒ½ç¬¬ä¸€æ—¶é—´è®¾å®š
+	 * è¯»å–genUniID item,itemæ ¼å¼çš„è¡¨
 	 * @param fileName
 	 */
 	public void setLsBGItem(String fileName) {
-		//Çå¿ÕTest
+		//æ¸…ç©ºTest
 		lsTestResult = new ArrayList<StatisticTestResult>();
 		lsBGGeneID2Items = new ArrayList<GeneID2LsItem>();
 		if (!FileOperate.isFileExist(fileName)) {
@@ -112,16 +112,16 @@ public abstract class AbstFunTest implements FunTestInt{
 		BGnum = lsBGGeneID2Items.size();
 	}
 	/**
-	 * ½«ÊäÈëµÄgeneID item,item list
-	 * µ¼Èë
+	 * å°†è¾“å…¥çš„geneID item,item list
+	 * å¯¼å…¥
 	 * @param lsTmpGeneID2LsItem
 	 * @return
 	 */
 	protected abstract ArrayList<GeneID2LsItem> readFromBGfile(ArrayList<String[]> lsTmpGeneID2LsItem);
 	
 	/**
-	 * µÚÒ»Ê±¼äÉè¶¨
-	 * ¶ÁÈ¡±³¾°ÎÄ¼ş£¬Ö¸¶¨¶ÁÈ¡Ä³Ò»ÁĞ
+	 * ç¬¬ä¸€æ—¶é—´è®¾å®š
+	 * è¯»å–èƒŒæ™¯æ–‡ä»¶ï¼ŒæŒ‡å®šè¯»å–æŸä¸€åˆ—
 	 * @param fileName
 	 */
 	public void setLsBGAccID(String fileName, int colNum) {
@@ -151,8 +151,8 @@ public abstract class AbstFunTest implements FunTestInt{
 		BGnum = lsBGGeneID2Items.size();
 	}
 	/**
-	 * µÚÒ»Ê±¼äÉè¶¨
-	 * ¶ÁÈ¡±³¾°ÎÄ¼ş£¬Ö¸¶¨¶ÁÈ¡Ä³Ò»ÁĞ
+	 * ç¬¬ä¸€æ—¶é—´è®¾å®š
+	 * è¯»å–èƒŒæ™¯æ–‡ä»¶ï¼ŒæŒ‡å®šè¯»å–æŸä¸€åˆ—
 	 * @param showMessage
 	 */
 	public void setLsBGCopedID(ArrayList<GeneID> lsBGaccID) {
@@ -165,7 +165,7 @@ public abstract class AbstFunTest implements FunTestInt{
 		BGnum = lsBGGeneID2Items.size();
 	}
 	/**
-	 * ÒªÏÈ¶ÁÈ¡AccIDÎÄ¼ş
+	 * è¦å…ˆè¯»å–AccIDæ–‡ä»¶
 	 * @return
 	 */
 	protected ArrayList<GeneID2LsItem> getLsBG() {
@@ -193,16 +193,16 @@ public abstract class AbstFunTest implements FunTestInt{
 		lsTestResult = new ArrayList<StatisticTestResult>();
 	}
 	/**
-	 * Éè¶¨hashgene2CopedID£¬¾ÍÊÇÒ»¸ögeneID»á¶ÔÓ¦¶à¸öaccIDµÄÕâÖÖ
+	 * è®¾å®šhashgene2CopedIDï¼Œå°±æ˜¯ä¸€ä¸ªgeneIDä¼šå¯¹åº”å¤šä¸ªaccIDçš„è¿™ç§
 	 * @param lsCopedIDs
 	 */
 	private void fillCopedIDInfo(ArrayList<GeneID> lsCopedIDs) {
-		//////////////  ÏÈ Çå ¿Õ  ////////////////////////
+		//////////////  å…ˆ æ¸… ç©º  ////////////////////////
 		HashSet<String> setAccID = new HashSet<String>();
 		mapGeneUniID2LsGeneID.clear();
 		////////////////////////////////////////////
 		for (GeneID geneID : lsCopedIDs) {
-			//È¥ÈßÓà£¬accIDÏàÍ¬È¥µô
+			//å»å†—ä½™ï¼ŒaccIDç›¸åŒå»æ‰
 			if (setAccID.contains(geneID.getAccID())) {
 				continue;
 			}
@@ -211,14 +211,14 @@ public abstract class AbstFunTest implements FunTestInt{
 		}
 	}
 	/**
-	 * ÓÃcopedIDµÄgeneUniIDÏÈ²éÕÒlsBG£¬ÕÒ²»µ½ÔÙ´ÓÍ·²éÕÒ
-	 * Ä¿µÄÊÇÓÅ»¯ĞÔÄÜ
-	 * Èç¹ûlsTestÖĞÓĞÒ»Ğ©ĞÂµÄgene£¬Ò²Ìí¼ÓÈëlsBGGeneID2ItemsÖĞ
+	 * ç”¨copedIDçš„geneUniIDå…ˆæŸ¥æ‰¾lsBGï¼Œæ‰¾ä¸åˆ°å†ä»å¤´æŸ¥æ‰¾
+	 * ç›®çš„æ˜¯ä¼˜åŒ–æ€§èƒ½
+	 * å¦‚æœlsTestä¸­æœ‰ä¸€äº›æ–°çš„geneï¼Œä¹Ÿæ·»åŠ å…¥lsBGGeneID2Itemsä¸­
 	 * @param lsTest
 	 * @return
 	 */
 	private ArrayList<GeneID2LsItem> getLsTestFromLsBG(ArrayList<GeneID> lsTest) {
-		//È¥ÈßÓàÓÃµÄ
+		//å»å†—ä½™ç”¨çš„
 		HashSet<GeneID> setGeneIDs = new HashSet<GeneID>();
 		for (GeneID geneID : lsTest) {
 			if (blast) {
@@ -227,7 +227,7 @@ public abstract class AbstFunTest implements FunTestInt{
 			setGeneIDs.add(geneID);
 		}
 		
-		//Èç¹ûÃ»ÓĞlsBG£¬¾Í²éÕÒÊı¾İ¿â£¬·ñÔò²éÕÒlsBG
+		//å¦‚æœæ²¡æœ‰lsBGï¼Œå°±æŸ¥æ‰¾æ•°æ®åº“ï¼Œå¦åˆ™æŸ¥æ‰¾lsBG
 		if (lsBGGeneID2Items == null || lsBGGeneID2Items.size() < 1) {
 			return convert2Item(setGeneIDs);
 		}
@@ -238,7 +238,7 @@ public abstract class AbstFunTest implements FunTestInt{
 		}
 		ArrayList<GeneID2LsItem> lsout = new ArrayList<GeneID2LsItem>();
 		
-		//ÊäÈëµÄlsTest»ùÒò£¬Èç¹ûÔÚ±³¾°ÖĞÕÒ²»µ½¶ÔÓ¦µÄĞÅÏ¢£¬Ôò±£´æ½øÈë¸Ãlist
+		//è¾“å…¥çš„lsTeståŸºå› ï¼Œå¦‚æœåœ¨èƒŒæ™¯ä¸­æ‰¾ä¸åˆ°å¯¹åº”çš„ä¿¡æ¯ï¼Œåˆ™ä¿å­˜è¿›å…¥è¯¥list
 		ArrayList<GeneID> lsInputNotFindGene = new ArrayList<GeneID>();
 		for (GeneID copedID : setGeneIDs) {
 			GeneID2LsItem tmpresult = mapBGGeneID2Items.get(copedID.getGenUniID());
@@ -257,18 +257,18 @@ public abstract class AbstFunTest implements FunTestInt{
 	}
 	
 	/**
-	 * ½«List-CopedID×ª»¯Îª
-	 * geneID goID,goID,goIDµÄÑùÊ½
-	 * ²¢°´ÕÕgenUniIDÈ¥ÈßÓà
+	 * å°†List-CopedIDè½¬åŒ–ä¸º
+	 * geneID goID,goID,goIDçš„æ ·å¼
+	 * å¹¶æŒ‰ç…§genUniIDå»å†—ä½™
 	 */
 	protected abstract ArrayList<GeneID2LsItem> convert2Item(Collection<GeneID> lsCopedIDs);
 	
 	/**
-	 * ´ıĞŞÕı
-	 * ·µ»ØGene2ItemPvalue
+	 * å¾…ä¿®æ­£
+	 * è¿”å›Gene2ItemPvalue
 	 * @param Type
 	 * @return
-	 * ¸ù¾İ²»Í¬µÄStatisticTestGene2Item×ÓÀàÓĞ²»Í¬µÄÇé¿ö
+	 * æ ¹æ®ä¸åŒçš„StatisticTestGene2Itemå­ç±»æœ‰ä¸åŒçš„æƒ…å†µ
 	 */
 	public ArrayList<StatisticTestGene2Item> getGene2ItemPvalue() {
 		ArrayList<StatisticTestGene2Item> lsTestResult = new ArrayList<StatisticTestGene2Item>();
@@ -285,12 +285,12 @@ public abstract class AbstFunTest implements FunTestInt{
 	protected abstract StatisticTestGene2Item creatStatisticTestGene2Item();
 
 	/**
-	 * °Ñ getTestResult() µÄ½á¹û×°Èëhash±í
+	 * æŠŠ getTestResult() çš„ç»“æœè£…å…¥hashè¡¨
 	 * @return
 	 */
 	private HashMap<String, StatisticTestResult> getMapItemID2StatisticsResult() {
 		ArrayList<StatisticTestResult> lStatisticTestResults = getTestResult();
-		//keyÎªĞ¡Ğ´£¬itemºÍ¼ìÑé½á¹ûµÄmap
+		//keyä¸ºå°å†™ï¼Œitemå’Œæ£€éªŒç»“æœçš„map
 		HashMap<String, StatisticTestResult> mapItem2StatisticsResult = new HashMap<String, StatisticTestResult>();
 		for (StatisticTestResult statisticTestResult : lStatisticTestResults) {
 			mapItem2StatisticsResult.put(statisticTestResult.getItemName().toLowerCase(), statisticTestResult);
@@ -298,10 +298,10 @@ public abstract class AbstFunTest implements FunTestInt{
 		return mapItem2StatisticsResult;
 	}
 	/**
-	 * booRun ĞÂÅÜÒ»´Î ·µ»Ø×îºóµÄ½á¹û£¬ElimGOĞèÒª¸²¸Ç¸Ã·½·¨ ¶Ô½á¹ûÅÅ¸öĞò
-	 * ·µ»Ø×îºóµÄ½á¹û£¬ElimGOĞèÒª¸²¸Ç¸Ã·½·¨
+	 * booRun æ–°è·‘ä¸€æ¬¡ è¿”å›æœ€åçš„ç»“æœï¼ŒElimGOéœ€è¦è¦†ç›–è¯¥æ–¹æ³• å¯¹ç»“æœæ’ä¸ªåº
+	 * è¿”å›æœ€åçš„ç»“æœï¼ŒElimGOéœ€è¦è¦†ç›–è¯¥æ–¹æ³•
 	 * @throws Exception 
-	 * Ã»ÓĞ¾Í·µ»Ønull
+	 * æ²¡æœ‰å°±è¿”å›null
 	 */
 	public ArrayList<StatisticTestResult> getTestResult() {
 		if (statisticsTest == null) {
@@ -334,19 +334,19 @@ public abstract class AbstFunTest implements FunTestInt{
 		return lsTestResult;
 	}
 	/**
-	 * ·µ»ØÖ¸¶¨µÄItemµÄ×¢ÊÍ
-	 * Æ©ÈçGOterm¡£kegg termµÈ
+	 * è¿”å›æŒ‡å®šçš„Itemçš„æ³¨é‡Š
+	 * è­¬å¦‚GOtermã€‚kegg termç­‰
 	 * @param item
 	 * @return
 	 */
 	protected abstract String getItemTerm(String item);
 	/**
-	 * Ä¿Ç°Ö»ÄÜÉè¶¨GOµÄtype
+	 * ç›®å‰åªèƒ½è®¾å®šGOçš„type
 	 */
 	public abstract void setDetailType(String GOtype);
 	
 	/**
-	 * ±£´æ±¾LsBGµÄĞÅÏ¢
+	 * ä¿å­˜æœ¬LsBGçš„ä¿¡æ¯
 	 * @param txtBGItem
 	 */
 	public void saveLsBGItem(String txtBGItem) {
@@ -358,7 +358,7 @@ public abstract class AbstFunTest implements FunTestInt{
 	}
 	
 	/**
-	 * Ö»ÄÜÓÃÓÚGO·ÖÎö
+	 * åªèƒ½ç”¨äºGOåˆ†æ
 	 * @param goType
 	 */
 	public void setGoType(String goType) { }

@@ -15,13 +15,13 @@ import com.novelbio.database.service.servgeneanno.ServUniProtID;
 public class GeneIDUni extends GeneIDabs{
 	private static Logger logger = Logger.getLogger(GeneIDUni.class);
 	/**
-	 * Éè¶¨³õÊ¼Öµ£¬²»ÑéÖ¤ Èç¹ûÔÚÊı¾İ¿âÖĞÃ»ÓĞÕÒµ½ÏàÓ¦µÄgeneUniID£¬Ôò·µ»Ønull Ö»ÄÜ²úÉúÒ»¸öCopedID£¬´ËÊ±accID = ""
+	 * è®¾å®šåˆå§‹å€¼ï¼Œä¸éªŒè¯ å¦‚æœåœ¨æ•°æ®åº“ä¸­æ²¡æœ‰æ‰¾åˆ°ç›¸åº”çš„geneUniIDï¼Œåˆ™è¿”å›null åªèƒ½äº§ç”Ÿä¸€ä¸ªCopedIDï¼Œæ­¤æ—¶accID = ""
 	 * @param accID
 	 * @param idType
-	 *            ±ØĞëÊÇIDTYPEÖĞµÄÒ»ÖÖ
+	 *            å¿…é¡»æ˜¯IDTYPEä¸­çš„ä¸€ç§
 	 * @param genUniID
 	 * @param taxID
-	 *            ÎïÖÖID
+	 *            ç‰©ç§ID
 	 */
 	public GeneIDUni(String accID, String genUniID, int taxID) {
 		this.accID = accID;
@@ -42,7 +42,7 @@ public class GeneIDUni extends GeneIDabs{
 				}
 			}
 			else {
-				logger.error("¿ÉÄÜÃ»ÓĞ¸ÃgenuniID£º"+genUniID);
+				logger.error("å¯èƒ½æ²¡æœ‰è¯¥genuniIDï¼š"+genUniID);
 			}
 			return;
 		}

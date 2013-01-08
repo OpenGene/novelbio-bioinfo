@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 
 import com.novelbio.analysis.seq.mapping.MappingReadsType;
 
-/** ²»Òª×Ô¼º½¨Á¢ */
+/** ä¸è¦è‡ªå·±å»ºç«‹ */
 public class SamFileStatistics {
 	public static void main(String[] args) {
 		SamFile samFile = new SamFile("/home/zong0jie/Desktop/sssFH.sam");
@@ -41,9 +41,9 @@ public class SamFileStatistics {
 		countReadsNum = false;
 	}
 	/**
-	 * ·µ»ØreadsNum
-	 * @param mappingType MAPPING_ALLREADSµÈ
-	 * @return -1±íÊ¾´íÎó
+	 * è¿”å›readsNum
+	 * @param mappingType MAPPING_ALLREADSç­‰
+	 * @return -1è¡¨ç¤ºé”™è¯¯
 	 */
 	public long getReadsNum(MappingReadsType mappingType) {
 		statistics();

@@ -17,7 +17,7 @@ import com.novelbio.database.service.servgeneanno.ServUniProtID;
 
 
 /**
- * KEGGµÄ×¼±¸¹¤×÷£¬ÓÃÕâ¸öÀ´¶ÁÈ¡»ùÒòµÄĞÅÏ¢µÈ
+ * KEGGçš„å‡†å¤‡å·¥ä½œï¼Œç”¨è¿™ä¸ªæ¥è¯»å–åŸºå› çš„ä¿¡æ¯ç­‰
  * @author zong0jie
  *
  */
@@ -25,10 +25,10 @@ public class KGprepare {
 	
 	
 	/**
-	 * ¶ÁÈ¡Ö¸¶¨txtÎÄ±¾£¬»ñµÃgeneIDĞÅÏ¢Êı×é, Èç¹ûÀàËÆXM_002121.1ÀàĞÍ£¬ÄÇÃ´½«.1È¥³ı
-	 * @param accIDFile ÎÄ±¾Ãû
-	 * @param rowStartNum ´ÓµÚ¼¸ĞĞ¿ªÊ¼¶Á
-	 * @param colNum geneIDÔÚµÚ¼¸ÁĞ
+	 * è¯»å–æŒ‡å®štxtæ–‡æœ¬ï¼Œè·å¾—geneIDä¿¡æ¯æ•°ç»„, å¦‚æœç±»ä¼¼XM_002121.1ç±»å‹ï¼Œé‚£ä¹ˆå°†.1å»é™¤
+	 * @param accIDFile æ–‡æœ¬å
+	 * @param rowStartNum ä»ç¬¬å‡ è¡Œå¼€å§‹è¯»
+	 * @param colNum geneIDåœ¨ç¬¬å‡ åˆ—
 	 * @return
 	 * @throws Exception
 	 */
@@ -45,10 +45,10 @@ public class KGprepare {
 	}
 	/**
 	 * 
-	 * ¶ÁÈ¡Ö¸¶¨excel2003ÎÄ±¾£¬»ñµÃgeneIDĞÅÏ¢Êı×é, Èç¹ûÀàËÆXM_002121.1ÀàĞÍ£¬ÄÇÃ´½«.1È¥³ı
-	 * @param rowStartNum ´ÓµÚ¼¸ĞĞ¿ªÊ¼¶Á
-	 * @param colNum geneIDÔÚµÚ¼¸ÁĞ
-	 * @param accIDFile ÎÄ±¾Ãû
+	 * è¯»å–æŒ‡å®šexcel2003æ–‡æœ¬ï¼Œè·å¾—geneIDä¿¡æ¯æ•°ç»„, å¦‚æœç±»ä¼¼XM_002121.1ç±»å‹ï¼Œé‚£ä¹ˆå°†.1å»é™¤
+	 * @param rowStartNum ä»ç¬¬å‡ è¡Œå¼€å§‹è¯»
+	 * @param colNum geneIDåœ¨ç¬¬å‡ åˆ—
+	 * @param accIDFile æ–‡æœ¬å
 	 * @return
 	 * @throws Exception
 	 */
@@ -63,13 +63,13 @@ public class KGprepare {
 		return geneID2;
 	}
 	/**
-	 * ¶ÁÈ¡geneĞÅÏ¢²¢·µ»ØGeneIDĞÅÏ¢£¬ÓĞgeneIDµÄ·µ»ØgeneID£¬Ã»ÓĞµÄ·µ»ØUniProtID, Èç¹ûÀàËÆXM_002121.1ÀàĞÍ£¬ÄÇÃ´½«.1È¥³ı
+	 * è¯»å–geneä¿¡æ¯å¹¶è¿”å›GeneIDä¿¡æ¯ï¼Œæœ‰geneIDçš„è¿”å›geneIDï¼Œæ²¡æœ‰çš„è¿”å›UniProtID, å¦‚æœç±»ä¼¼XM_002121.1ç±»å‹ï¼Œé‚£ä¹ˆå°†.1å»é™¤
 	 * @param accIDFile 
 	 * @param rowStartNum
 	 * @param colNum
 	 * @param taxID
-	 * @param Sep ÊÇ·ñ·Ö¿ªÖ¸ÏòÏàÍ¬»ùÒòµÄÌ½Õë£¬True£º·Ö¿ª £¬False£ººÏ²¢
-	 * @return ·µ»Ø²»ÖØ¸´µÄArrayList-String[2]£ºSep=true: 0:accID -1: GeneID/UniProtID  Sep=false: 0:GeneID/UniProtID -1: GeneID/UniProtID 
+	 * @param Sep æ˜¯å¦åˆ†å¼€æŒ‡å‘ç›¸åŒåŸºå› çš„æ¢é’ˆï¼ŒTrueï¼šåˆ†å¼€ ï¼ŒFalseï¼šåˆå¹¶
+	 * @return è¿”å›ä¸é‡å¤çš„ArrayList-String[2]ï¼šSep=true: 0:accID -1: GeneID/UniProtID  Sep=false: 0:GeneID/UniProtID -1: GeneID/UniProtID 
 	 * @throws Exception
 	 */
 	public ArrayList<String[]> getLsAcc2GenID(String accIDFile,int rowStartNum,int colNum,int taxID,boolean Sep) throws Exception 
@@ -80,13 +80,13 @@ public class KGprepare {
 		String geneID[] =KGprepare.getAccID(accIDFile, rowStartNum, colNum);
  
 		for (int i = 0; i < geneID.length; i++) {
-			///////////////////Èç¹ûÀàËÆXM_002121.1ÀàĞÍ£¬ÄÇÃ´½«.1È¥³ı////////////////////////////////////
+			///////////////////å¦‚æœç±»ä¼¼XM_002121.1ç±»å‹ï¼Œé‚£ä¹ˆå°†.1å»é™¤////////////////////////////////////
 			NCBIID ncbiid=new NCBIID();UniProtID uniProtID=new UniProtID();
 			String accID = GeneID.removeDot(geneID[i]);
 			ncbiid.setAccID(accID);ncbiid.setTaxID(taxID);
 			uniProtID.setAccID(accID);uniProtID.setTaxID(taxID);
 			ArrayList<NCBIID> lsNcbiids=servNCBIID.queryLsNCBIID(ncbiid);
-			//ÏÈ²éÕÒNCBIID±í
+			//å…ˆæŸ¥æ‰¾NCBIIDè¡¨
 			if (lsNcbiids != null && lsNcbiids.size() > 0) 
 			{
 				String tmpGeneID = lsNcbiids.get(0).getGeneId() + "" ;
@@ -98,7 +98,7 @@ public class KGprepare {
 				}
 				continue;
 			}
-			//Ã»ÕÒµ½µÄ»°£¬²éÕÒUniProtID±í
+			//æ²¡æ‰¾åˆ°çš„è¯ï¼ŒæŸ¥æ‰¾UniProtIDè¡¨
 			ArrayList<UniProtID> lsUniProtIDs=servUniProtID.queryLsUniProtID(uniProtID);
 			if (lsUniProtIDs != null && lsUniProtIDs.size() > 0) {
 				String tmpGeneID = lsUniProtIDs.get(0).getUniID();
@@ -114,8 +114,8 @@ public class KGprepare {
 		
 		
 		Enumeration keys=hashAcc2Gen.keys();
-		//Õâ¸öÊÇ½á¹ûÎÄ¼ş£¬±£´æÁËÈçÏÂ½á¹û£º
-		//GOID,GOterm,¸ÃGOIDµÄ²îÒì»ùÒòNum£¬×Ü²îÒì»ùÒòNum£¬¸ÃGOIDµÄ×Ü»ùÒòNum£¬×Ü»ùÒòµÄNum,
+		//è¿™ä¸ªæ˜¯ç»“æœæ–‡ä»¶ï¼Œä¿å­˜äº†å¦‚ä¸‹ç»“æœï¼š
+		//GOID,GOterm,è¯¥GOIDçš„å·®å¼‚åŸºå› Numï¼Œæ€»å·®å¼‚åŸºå› Numï¼Œè¯¥GOIDçš„æ€»åŸºå› Numï¼Œæ€»åŸºå› çš„Num,
 		while(keys.hasMoreElements())
 		{
 		    String[] tmpAcc2GenID=new String[2];

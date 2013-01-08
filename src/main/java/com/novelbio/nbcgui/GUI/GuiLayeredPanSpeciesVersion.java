@@ -11,7 +11,7 @@ import com.novelbio.database.domain.geneanno.SpeciesFile.GFFtype;
 import com.novelbio.database.model.species.Species;
 
 public class GuiLayeredPanSpeciesVersion extends JLayeredPane {
-	/** 外部传入如果选择species之后可能会发生的反应 */
+	/** 澶栭儴浼犲叆濡傛灉閫夋嫨species涔嬪悗鍙兘浼氬彂鐢熺殑鍙嶅簲 */
 	SpeciesSelect speciesSelect;
 	
 	Species species = new Species();
@@ -51,7 +51,7 @@ public class GuiLayeredPanSpeciesVersion extends JLayeredPane {
 		add(cmbVersion);
 		initial();
 	}
-	/** 外部传入如果选择species之后可能会发生的反应 */
+	/** 澶栭儴浼犲叆濡傛灉閫夋嫨species涔嬪悗鍙兘浼氬彂鐢熺殑鍙嶅簲 */
 	public void setSelectSpecies(SpeciesSelect speciesSelect) {
 		this.speciesSelect = speciesSelect;
 	}

@@ -16,14 +16,14 @@ import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 /**
- * ¶ÁÈ¡RfamµÄÎÄ¼ş£¬»ñµÃRfamID¶ÔÓ¦µÄ¾ßÌåĞÅÏ¢
+ * è¯»å–Rfamçš„æ–‡ä»¶ï¼Œè·å¾—RfamIDå¯¹åº”çš„å…·ä½“ä¿¡æ¯
  * @author zong0jie
  */
 public class RfamStatistic {
 	Logger logger = Logger.getLogger(RfamStatistic.class);
-	/** RfamID2InfoµÄĞÅÏ¢
+	/** RfamID2Infoçš„ä¿¡æ¯
 	 * key: RfamID
-	 * value ÓĞ <br>
+	 * value æœ‰ <br>
 	 * 0 rfamType<br>
 	 * 1 rfamAnno<br>
 	 * 2 rfam description<br>
@@ -31,7 +31,7 @@ public class RfamStatistic {
 	 *  
 	 *  */
 	HashMap<String, String[]> mapRfamID2Info = new HashMap<String, String[]>();	
-	/** ¾ßÌå¿´Ã¿¸öRfamIDµÄcounts */
+	/** å…·ä½“çœ‹æ¯ä¸ªRfamIDçš„counts */
 	HashMap<String, Double> mapRfamID2Counts;
 	String outputFile = "";
 	public void setOutputFile(String outputFile) {
@@ -41,9 +41,9 @@ public class RfamStatistic {
 		readRfamFile(rfamFile);
 	}
 	/**
-	 * @param rfamFile rfamµÄÊı¾İ¿â
-	 * @param mapBedFile mappingÖÁRfamĞòÁĞµÄbedÎÄ¼ş
-	 * @param outFile Êä³öÎÄ¼ş
+	 * @param rfamFile rfamçš„æ•°æ®åº“
+	 * @param mapBedFile mappingè‡³Rfamåºåˆ—çš„bedæ–‡ä»¶
+	 * @param outFile è¾“å‡ºæ–‡ä»¶
 	 */
 	public void countRfamInfo(String mapBedFile) {
 		mapRfamID2Counts = new HashMap<String, Double>();
@@ -53,7 +53,7 @@ public class RfamStatistic {
 		txtOut.ExcelWrite(lsResult);
 	}
 	/**
-	 * ÊäÈërfamÎÄ¼ş£¬¶ÁÈ¡RfamµÄĞÅÏ¢½øÈëhash±í
+	 * è¾“å…¥rfamæ–‡ä»¶ï¼Œè¯»å–Rfamçš„ä¿¡æ¯è¿›å…¥hashè¡¨
 	 * @param rfamFile
 	 */
 	private void readRfamFile(String rfamFile) {
@@ -72,12 +72,12 @@ public class RfamStatistic {
 	}
 	
 	/**
-	 * bedÎÄ¼ş¸ñÊ½<br>
+	 * bedæ–‡ä»¶æ ¼å¼<br>
 	 * RF00019//Y_RNA//ABBA01048699.1/58018-58105	1	32	8A23	32M	+	4	2KRM5:42:742<br>
 	 * RF00019//Y_RNA//AF065396.1/1723-1629	0	32	32M	32M	+	4	2KRM5:42:742<br>
 	 * RF00019//Y_RNA//AADD01101414.1/3467-3372	0	32	32M	32M	+	4	2KRM5:42:742<br>
 	 * RF00019//Y_RNA//AADD01134564.1/10390-10295	0	32	32M	32M	+	4	2KRM5:42:742<br>
-	 * mapping ÖÁ rfam µÄ bed ÎÄ¼ş
+	 * mapping è‡³ rfam çš„ bed æ–‡ä»¶
 	 * @param bedFile
 	 */
 	private void readRfamBed(String bedFile) {
@@ -95,8 +95,8 @@ public class RfamStatistic {
 	}
 	
 	/**
-	 * »ñµÃÃ¿¸öRfamID¶ÔÓ¦µÄcountĞÅÏ¢ºÍ¾ßÌåĞÅÏ¢
-	 * µÃµ½µÄĞÅÏ¢¿ÉÒÔÖ±½ÓĞ´ÈëÎÄ±¾ÖĞ
+	 * è·å¾—æ¯ä¸ªRfamIDå¯¹åº”çš„countä¿¡æ¯å’Œå…·ä½“ä¿¡æ¯
+	 * å¾—åˆ°çš„ä¿¡æ¯å¯ä»¥ç›´æ¥å†™å…¥æ–‡æœ¬ä¸­
 	 */
 	private ArrayList<String[]> getInfo() {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
@@ -117,7 +117,7 @@ public class RfamStatistic {
 		return mapRfamID2Counts;
 	}
 	
-	/** ½«¸ø¶¨µÄ¼¸×émiRNAµÄÖµºÏ²¢ÆğÀ´ */
+	/** å°†ç»™å®šçš„å‡ ç»„miRNAçš„å€¼åˆå¹¶èµ·æ¥ */
 	public ArrayList<String[]> combValue(HashMap<String, HashMap<String, Double>> mapPrefix2_RfamID2Value) {
 		CombRfamMap combRfamMap = new CombRfamMap(mapRfamID2Info);
 		return combRfamMap.combValue(mapPrefix2_RfamID2Value);
@@ -126,9 +126,9 @@ public class RfamStatistic {
 }
 
 class CombRfamMap extends MirCombMapGetValueAbs {
-	/** RfamID2InfoµÄĞÅÏ¢
+	/** RfamID2Infoçš„ä¿¡æ¯
 	 * key: RfamID
-	 * value ÓĞ <br>
+	 * value æœ‰ <br>
 	 * 0 rfamType<br>
 	 * 1 rfamAnno<br>
 	 * 2 rfam description<br>

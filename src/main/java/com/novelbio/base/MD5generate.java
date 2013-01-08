@@ -11,7 +11,7 @@ import java.security.NoSuchAlgorithmException;
 import org.apache.log4j.Logger;
 
 /**
- * MD5µÄËã·¨ÔÚRFC1321 ÖĞ¶¨Òå ÔÚRFC 1321ÖĞ£¬¸ø³öÁËTest suiteÓÃÀ´¼ìÑéÄãµÄÊµÏÖÊÇ·ñÕıÈ·£º MD5 ("") =
+ * MD5çš„ç®—æ³•åœ¨RFC1321 ä¸­å®šä¹‰ åœ¨RFC 1321ä¸­ï¼Œç»™å‡ºäº†Test suiteç”¨æ¥æ£€éªŒä½ çš„å®ç°æ˜¯å¦æ­£ç¡®ï¼š MD5 ("") =
  * d41d8cd98f00b204e9800998ecf8427e MD5 ("a") = 0cc175b9c0f1b6a831c399e269772661
  * MD5 ("abc") = 900150983cd24fb0d6963f7d28e17f72 MD5 ("message digest") =
  * f96b697d7cb7938d525a2f31aaf161d0 MD5 ("abcdefghijklmnopqrstuvwxyz") =
@@ -19,7 +19,7 @@ import org.apache.log4j.Logger;
  * 
  * @author haogj
  * 
- *         ´«Èë²ÎÊı£ºÒ»¸ö×Ö½ÚÊı×é ´«³ö²ÎÊı£º×Ö½ÚÊı×éµÄ MD5 ½á¹û×Ö·û´®
+ *         ä¼ å…¥å‚æ•°ï¼šä¸€ä¸ªå­—èŠ‚æ•°ç»„ ä¼ å‡ºå‚æ•°ï¼šå­—èŠ‚æ•°ç»„çš„ MD5 ç»“æœå­—ç¬¦ä¸²
  */
 public class MD5generate {
 	private static Logger logger = Logger.getLogger(MD5generate.class);
@@ -31,12 +31,12 @@ public class MD5generate {
 		try {
 			messageDigest = MessageDigest.getInstance("MD5");  
 		} catch (NoSuchAlgorithmException nsaex) {  
-			logger.error("³õÊ¼»¯Ê§°Ü£¬MessageDigest²»Ö§³ÖMD5!");  
+			logger.error("åˆå§‹åŒ–å¤±è´¥ï¼ŒMessageDigestä¸æ”¯æŒMD5!");  
 			nsaex.printStackTrace();  
 		}
 	}
 	/**
-	 * ·µ»Ø""±íÊ¾³ö´í
+	 * è¿”å›""è¡¨ç¤ºå‡ºé”™
 	 * @param fileName
 	 * @return
 	 */
@@ -118,33 +118,33 @@ public class MD5generate {
 	}  
        
 	/**
-	 * Ö»ÊÇ¿´¿´µÄ£¬ÕâÀïÃæÓĞÒ»Ğ©×¢ÊÍĞ´µÄ±È½ÏÇå³ş£¬¶ÔÓÚÈçºÎ½âÎöMD5µÄ½á¹û
+	 * åªæ˜¯çœ‹çœ‹çš„ï¼Œè¿™é‡Œé¢æœ‰ä¸€äº›æ³¨é‡Šå†™çš„æ¯”è¾ƒæ¸…æ¥šï¼Œå¯¹äºå¦‚ä½•è§£æMD5çš„ç»“æœ
 	 * @param source
 	 * @return
 	 */
 	public static String getMD5(byte[] source) {
 		String s = null;
-		char hexDigits[] = { // ÓÃÀ´½«×Ö½Ú×ª»»³É 16 ½øÖÆ±íÊ¾µÄ×Ö·û
+		char hexDigits[] = { // ç”¨æ¥å°†å­—èŠ‚è½¬æ¢æˆ 16 è¿›åˆ¶è¡¨ç¤ºçš„å­—ç¬¦
 		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd',
 				'e', 'f' };
 		try {
 			java.security.MessageDigest md = java.security.MessageDigest
 					.getInstance("MD5");
 			md.update(source);
-			byte tmp[] = md.digest(); // MD5 µÄ¼ÆËã½á¹ûÊÇÒ»¸ö 128 Î»µÄ³¤ÕûÊı£¬
-										// ÓÃ×Ö½Ú±íÊ¾¾ÍÊÇ 16 ¸ö×Ö½Ú
-			char str[] = new char[16 * 2]; // Ã¿¸ö×Ö½ÚÓÃ 16 ½øÖÆ±íÊ¾µÄ»°£¬Ê¹ÓÃÁ½¸ö×Ö·û£¬
-											// ËùÒÔ±íÊ¾³É 16 ½øÖÆĞèÒª 32 ¸ö×Ö·û
-			int k = 0; // ±íÊ¾×ª»»½á¹ûÖĞ¶ÔÓ¦µÄ×Ö·ûÎ»ÖÃ
-			for (int i = 0; i < 16; i++) { // ´ÓµÚÒ»¸ö×Ö½Ú¿ªÊ¼£¬¶Ô MD5 µÄÃ¿Ò»¸ö×Ö½Ú
-											// ×ª»»³É 16 ½øÖÆ×Ö·ûµÄ×ª»»
-				byte byte0 = tmp[i]; // È¡µÚ i ¸ö×Ö½Ú
-				str[k++] = hexDigits[byte0 >>> 4 & 0xf]; // È¡×Ö½ÚÖĞ¸ß 4 Î»µÄÊı×Ö×ª»»,
+			byte tmp[] = md.digest(); // MD5 çš„è®¡ç®—ç»“æœæ˜¯ä¸€ä¸ª 128 ä½çš„é•¿æ•´æ•°ï¼Œ
+										// ç”¨å­—èŠ‚è¡¨ç¤ºå°±æ˜¯ 16 ä¸ªå­—èŠ‚
+			char str[] = new char[16 * 2]; // æ¯ä¸ªå­—èŠ‚ç”¨ 16 è¿›åˆ¶è¡¨ç¤ºçš„è¯ï¼Œä½¿ç”¨ä¸¤ä¸ªå­—ç¬¦ï¼Œ
+											// æ‰€ä»¥è¡¨ç¤ºæˆ 16 è¿›åˆ¶éœ€è¦ 32 ä¸ªå­—ç¬¦
+			int k = 0; // è¡¨ç¤ºè½¬æ¢ç»“æœä¸­å¯¹åº”çš„å­—ç¬¦ä½ç½®
+			for (int i = 0; i < 16; i++) { // ä»ç¬¬ä¸€ä¸ªå­—èŠ‚å¼€å§‹ï¼Œå¯¹ MD5 çš„æ¯ä¸€ä¸ªå­—èŠ‚
+											// è½¬æ¢æˆ 16 è¿›åˆ¶å­—ç¬¦çš„è½¬æ¢
+				byte byte0 = tmp[i]; // å–ç¬¬ i ä¸ªå­—èŠ‚
+				str[k++] = hexDigits[byte0 >>> 4 & 0xf]; // å–å­—èŠ‚ä¸­é«˜ 4 ä½çš„æ•°å­—è½¬æ¢,
 															// >>>
-															// ÎªÂß¼­ÓÒÒÆ£¬½«·ûºÅÎ»Ò»ÆğÓÒÒÆ
-				str[k++] = hexDigits[byte0 & 0xf]; // È¡×Ö½ÚÖĞµÍ 4 Î»µÄÊı×Ö×ª»»
+															// ä¸ºé€»è¾‘å³ç§»ï¼Œå°†ç¬¦å·ä½ä¸€èµ·å³ç§»
+				str[k++] = hexDigits[byte0 & 0xf]; // å–å­—èŠ‚ä¸­ä½ 4 ä½çš„æ•°å­—è½¬æ¢
 			}
-			s = new String(str); // »»ºóµÄ½á¹û×ª»»Îª×Ö·û´®
+			s = new String(str); // æ¢åçš„ç»“æœè½¬æ¢ä¸ºå­—ç¬¦ä¸²
 
 		} catch (Exception e) {
 			e.printStackTrace();

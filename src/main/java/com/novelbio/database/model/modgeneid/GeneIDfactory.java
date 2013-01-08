@@ -2,10 +2,10 @@ package com.novelbio.database.model.modgeneid;
 
 public class GeneIDfactory implements GeneIDfactoryInt {
 	/**
-	 * Éè¶¨³õÊ¼Öµ£¬²»ÑéÖ¤ Èç¹ûÔÚÊı¾İ¿âÖĞÃ»ÓĞÕÒµ½ÏàÓ¦µÄgeneUniID£¬Ôò·µ»Ønull Ö»ÄÜ²úÉúÒ»¸öCopedID£¬´ËÊ±accID = ""
-	 * @param idType  ±ØĞëÊÇIDTYPEÖĞµÄÒ»ÖÖ
+	 * è®¾å®šåˆå§‹å€¼ï¼Œä¸éªŒè¯ å¦‚æœåœ¨æ•°æ®åº“ä¸­æ²¡æœ‰æ‰¾åˆ°ç›¸åº”çš„geneUniIDï¼Œåˆ™è¿”å›null åªèƒ½äº§ç”Ÿä¸€ä¸ªCopedIDï¼Œæ­¤æ—¶accID = ""
+	 * @param idType  å¿…é¡»æ˜¯IDTYPEä¸­çš„ä¸€ç§
 	 * @param genUniID
-	 * @param taxID ÎïÖÖID
+	 * @param taxID ç‰©ç§ID
 	 */
 	public GeneIDInt createGeneID(String idType, String genUniID, int taxID) {
 		GeneIDabs geneID = null;
@@ -27,13 +27,13 @@ public class GeneIDfactory implements GeneIDfactoryInt {
 	
 	
 	/**
-	 * Éè¶¨³õÊ¼Öµ£¬²»ÑéÖ¤ Èç¹ûÔÚÊı¾İ¿âÖĞÃ»ÓĞÕÒµ½ÏàÓ¦µÄgeneUniID£¬Ôò·µ»Ønull Ö»ÄÜ²úÉúÒ»¸öCopedID£¬´ËÊ±accID = ""
+	 * è®¾å®šåˆå§‹å€¼ï¼Œä¸éªŒè¯ å¦‚æœåœ¨æ•°æ®åº“ä¸­æ²¡æœ‰æ‰¾åˆ°ç›¸åº”çš„geneUniIDï¼Œåˆ™è¿”å›null åªèƒ½äº§ç”Ÿä¸€ä¸ªCopedIDï¼Œæ­¤æ—¶accID = ""
 	 * 
 	 * @param idType
-	 *            ±ØĞëÊÇIDTYPEÖĞµÄÒ»ÖÖ
+	 *            å¿…é¡»æ˜¯IDTYPEä¸­çš„ä¸€ç§
 	 * @param genUniID
 	 * @param taxID
-	 *            ÎïÖÖID
+	 *            ç‰©ç§ID
 	 */
 	public GeneIDInt createGeneID(String accID,String idType, String genUniID, int taxID) {
 		GeneIDabs geneID = null;

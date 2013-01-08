@@ -3,7 +3,7 @@ package com.novelbio.analysis.seq;
 import com.novelbio.analysis.seq.sam.SamFile;
 
 /**
- * ²âĞòÎÄ¼şµÄÃ¶¾Ù
+ * æµ‹åºæ–‡ä»¶çš„æšä¸¾
  * @author zong0jie
  *
  */
@@ -19,7 +19,7 @@ public enum FormatSeq {
 			return formatSeq;
 		 }
 		 else {
-			 //TODO ¿ÉÒÔ¼ÓÈëfastqµÄÅĞ¶Ï
+			 //TODO å¯ä»¥åŠ å…¥fastqçš„åˆ¤æ–­
 			return formatSeq;
 		}
 	 }

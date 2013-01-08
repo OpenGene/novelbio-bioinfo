@@ -18,14 +18,14 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
- * ±¾ÀàĞèÒªÊµÀı»¯²ÅÄÜÊ¹ÓÃ
- * ¶ÁÈ¡excelÎÄ¼ş,×¢Òâ¶ÁÈ¡Ç°×îºÃ½«excelµÄËùÓĞ¸ñÊ½È«²¿Çå³ı£¬²»È»¿ÉÄÜ»áÓĞÎÊÌâ¡£
- * Çå³ı·½·¨£¬½«excel¿½±´ÈëtxtÎÄ¼ş£¬ÔÙ¿½±´»ØÀ´
- * ¿ÉÒÔ¿çÆ½Ì¨Ê¹ÓÃ
- * ¶ÁÈ¡ËÙ¶È¿ÉÒÔ	
- * ¶ÁÈ¡¿é·µ»ØµÄÊÇÒ»¸ö¶şÎ¬Êı×é£¬È»ºóÕâ¸ö¶şÎ¬Êı×éµÄÆğµãÊÇ[0][0]£¬²»Í¬ÓÚC#ÖĞµÄ[1,1]
- * ±¾ÀàËÆºõÎŞ·¨»ñµÃ×î´óÁĞµÄÊıÄ¿,ÕâÀï¿ÉÒÔ¿¼ÂÇ²ÉÓÃÒ»Î¬ÊıÄ¿²»Í¬µÄ¶şÎ¬Êı×é£¬Õâ¸öÊµÏÖ¿ÉÒÔ¿¼ÂÇÓÃforeachÀ´±éÀú
- * ±¾´úÂëÔ­Ê¼×÷Õß caihua £¬Zong JieĞŞ¸Ä
+ * æœ¬ç±»éœ€è¦å®ä¾‹åŒ–æ‰èƒ½ä½¿ç”¨
+ * è¯»å–excelæ–‡ä»¶,æ³¨æ„è¯»å–å‰æœ€å¥½å°†excelçš„æ‰€æœ‰æ ¼å¼å…¨éƒ¨æ¸…é™¤ï¼Œä¸ç„¶å¯èƒ½ä¼šæœ‰é—®é¢˜ã€‚
+ * æ¸…é™¤æ–¹æ³•ï¼Œå°†excelæ‹·è´å…¥txtæ–‡ä»¶ï¼Œå†æ‹·è´å›æ¥
+ * å¯ä»¥è·¨å¹³å°ä½¿ç”¨
+ * è¯»å–é€Ÿåº¦å¯ä»¥	
+ * è¯»å–å—è¿”å›çš„æ˜¯ä¸€ä¸ªäºŒç»´æ•°ç»„ï¼Œç„¶åè¿™ä¸ªäºŒç»´æ•°ç»„çš„èµ·ç‚¹æ˜¯[0][0]ï¼Œä¸åŒäºC#ä¸­çš„[1,1]
+ * æœ¬ç±»ä¼¼ä¹æ— æ³•è·å¾—æœ€å¤§åˆ—çš„æ•°ç›®,è¿™é‡Œå¯ä»¥è€ƒè™‘é‡‡ç”¨ä¸€ç»´æ•°ç›®ä¸åŒçš„äºŒç»´æ•°ç»„ï¼Œè¿™ä¸ªå®ç°å¯ä»¥è€ƒè™‘ç”¨foreachæ¥éå†
+ * æœ¬ä»£ç åŸå§‹ä½œè€… caihua ï¼ŒZong Jieä¿®æ”¹
  */
 public class ExcelOperate {   
 	public static final int EXCEL2003 = 2003;
@@ -35,13 +35,13 @@ public class ExcelOperate {
 
 	 private Workbook wb;
 	 private Sheet sheet;
-	 private int sheetNum = 0; // µÚsheetnum¸ö¹¤×÷±í
+	 private int sheetNum = 0; // ç¬¬sheetnumä¸ªå·¥ä½œè¡¨
      private String filename="";
-     /** excel 2003 »òÕß excel 2007 */
+     /** excel 2003 æˆ–è€… excel 2007 */
 	 int versionXls = 0;
 	 public ExcelOperate() {}
 	 /**
-	  * ´ò¿ªexcel£¬Ã»ÓĞ¾ÍĞÂ½¨excel2003
+	  * æ‰“å¼€excelï¼Œæ²¡æœ‰å°±æ–°å»ºexcel2003
 	  * @param imputfilename
 	  */
 	 public ExcelOperate(String imputfilename) {
@@ -53,16 +53,16 @@ public class ExcelOperate {
 	 }
 	 
 	 /**
-	  * ¶ÁÈ¡excelÎÄ¼ş»ñµÃHSSFWorkbook¶ÔÏó,Ä¬ÈÏĞÂ½¨2003
-	  * Õâ¸öÊ¹ÓÃµÄÊ±ºòÒªÓÃtry¿é°üÎ§
-	  * ÄÜ¶ÁÈ¡·µ»Øtrue£¬²»È»·µ»Øfalse
+	  * è¯»å–excelæ–‡ä»¶è·å¾—HSSFWorkbookå¯¹è±¡,é»˜è®¤æ–°å»º2003
+	  * è¿™ä¸ªä½¿ç”¨çš„æ—¶å€™è¦ç”¨tryå—åŒ…å›´
+	  * èƒ½è¯»å–è¿”å›trueï¼Œä¸ç„¶è¿”å›false
 	  * @param imputfilename
 	  */
 	 public boolean openExcel(String imputfilename) {  
 		 return openExcel(imputfilename,false);
 	 }
 	 /**
-	  * ÅĞ¶ÏÊÇ·ñÎªexcel2003»ò2007
+	  * åˆ¤æ–­æ˜¯å¦ä¸ºexcel2003æˆ–2007
 	  * @return
 	  * EXCEL2003 EXCEL2007 EXCEL_NOT EXCEL_NO_FILE
 	  */
@@ -74,7 +74,7 @@ public class ExcelOperate {
 		return false;
 	 }
 	 /**
-	  * ÅĞ¶ÏÊÇ·ñÎªexcel2003»ò2007
+	  * åˆ¤æ–­æ˜¯å¦ä¸ºexcel2003æˆ–2007
 	  * @return
 	  * EXCEL2003 EXCEL2007 EXCEL_NOT EXCEL_NO_FILE
 	 * @throws FileNotFoundException 
@@ -129,11 +129,11 @@ public class ExcelOperate {
 		return false;
 	 }
 	 /**
-	  * ¶ÁÈ¡excelÎÄ¼ş»ñµÃWorkbook¶ÔÏó,Ä¬ÈÏ¾Û½¹ÔÚµÚÒ»¸ösheetÉÏ
-	  * Õâ¸öÊ¹ÓÃµÄÊ±ºòÒªÓÃtry¿é°üÎ§
-	  * ÄÜ¶ÁÈ¡·µ»Øtrue£¬²»È»·µ»Øfalse
+	  * è¯»å–excelæ–‡ä»¶è·å¾—Workbookå¯¹è±¡,é»˜è®¤èšç„¦åœ¨ç¬¬ä¸€ä¸ªsheetä¸Š
+	  * è¿™ä¸ªä½¿ç”¨çš„æ—¶å€™è¦ç”¨tryå—åŒ…å›´
+	  * èƒ½è¯»å–è¿”å›trueï¼Œä¸ç„¶è¿”å›false
 	  * @param imputfilename
-	  * @param excel2007 ÊÇ·ñÊÇ2007°æexcel£¬true£ºÊÇ
+	  * @param excel2007 æ˜¯å¦æ˜¯2007ç‰ˆexcelï¼Œtrueï¼šæ˜¯
 	 * @throws FileNotFoundException 
 	  */
 	 public boolean openExcel(String imputfilename,boolean excel2007) {
@@ -178,7 +178,7 @@ public class ExcelOperate {
     	  return true;
 	 }
 	 /**
-	  * Ä¬ÈÏĞÂ½¨03°æexcel
+	  * é»˜è®¤æ–°å»º03ç‰ˆexcel
 	  * @param filenameinput
 	  * @return
 	  */
@@ -198,29 +198,29 @@ public class ExcelOperate {
 		return true;
 	}
 
-	// ///////////////////////excelµÄ¸÷¸öÊôĞÔ£¬°üÀ¨sheetÊıÄ¿£¬Ä³sheetÏÂµÄĞĞÊı///////////////////////
+	// ///////////////////////excelçš„å„ä¸ªå±æ€§ï¼ŒåŒ…æ‹¬sheetæ•°ç›®ï¼ŒæŸsheetä¸‹çš„è¡Œæ•°///////////////////////
 	 /**
-	  * ·µ»Øsheet±íÊıÄ¿,ÎªÊµ¼ÊsheetÊıÄ¿
+	  * è¿”å›sheetè¡¨æ•°ç›®,ä¸ºå®é™…sheetæ•°ç›®
 	  * @return int
 	  */
 	 public int getSheetCount() {
 		 int sheetCount = -1;
-		 sheetCount =  wb.getNumberOfSheets();//ÕâÀï»ñµÃµÄÊÇÊµ¼ÊµÄsheetÊı
+		 sheetCount =  wb.getNumberOfSheets();//è¿™é‡Œè·å¾—çš„æ˜¯å®é™…çš„sheetæ•°
 		 return sheetCount;
 	 }
 
 	 /**
-	  * »ñµÃÄ¬ÈÏsheetNumÏÂµÄ¼ÇÂ¼ĞĞÊı,ÎªÊµ¼ÊĞĞÊı
-	  * @return int Êµ¼ÊĞĞÊı£¬Èç¹ûÃ»ÓĞĞĞ£¬Ôò·µ»Ø1
+	  * è·å¾—é»˜è®¤sheetNumä¸‹çš„è®°å½•è¡Œæ•°,ä¸ºå®é™…è¡Œæ•°
+	  * @return int å®é™…è¡Œæ•°ï¼Œå¦‚æœæ²¡æœ‰è¡Œï¼Œåˆ™è¿”å›1
 	  */
 	 public int getRowCount() {
-		 return getRowCount(this.sheetNum+1);//ÕâÀï»ñµÃµÄrowÊı±ÈÊµ¼ÊÉÙÒ»£¬ËùÒÔ²¹ÉÏ
+		 return getRowCount(this.sheetNum+1);//è¿™é‡Œè·å¾—çš„rowæ•°æ¯”å®é™…å°‘ä¸€ï¼Œæ‰€ä»¥è¡¥ä¸Š
 	 }
 
 	 /**
-	  * »ñµÃÖ¸¶¨sheetNumµÄrowCount,ÎªÊµ¼ÊĞĞÊı
-	  * @param sheetNum,sheetÊı£¬ÎªÊµ¼ÊsheetÊı
-	  * @return Êµ¼ÊĞĞÊı£¬Èç¹ûÃ»ÓĞĞĞ£¬Ôò·µ»Ø1
+	  * è·å¾—æŒ‡å®šsheetNumçš„rowCount,ä¸ºå®é™…è¡Œæ•°
+	  * @param sheetNum,sheetæ•°ï¼Œä¸ºå®é™…sheetæ•°
+	  * @return å®é™…è¡Œæ•°ï¼Œå¦‚æœæ²¡æœ‰è¡Œï¼Œåˆ™è¿”å›1
 	  */
 	 public int getRowCount(int sheetNum) {
 		 sheetNum--;
@@ -236,10 +236,10 @@ public class ExcelOperate {
 		 return rowCount;
 	 }
 	 /**
-	  * »ñµÃÄ¬ÈÏsheetNumµÄÇ°20ĞĞ×î³¤µÄÁĞÊı
-	  * @param sheetNum Ö¸¶¨Êµ¼ÊsheetÊı
-	  * @param rowNum Ö¸¶¨Êµ¼ÊĞĞÊı
-	  * @return ·µ»Ø¸ÃĞĞÁĞÊı,Èç¹û¸ÃĞĞ²»´æÔÚ£¬Ôò·µ»Ø0
+	  * è·å¾—é»˜è®¤sheetNumçš„å‰20è¡Œæœ€é•¿çš„åˆ—æ•°
+	  * @param sheetNum æŒ‡å®šå®é™…sheetæ•°
+	  * @param rowNum æŒ‡å®šå®é™…è¡Œæ•°
+	  * @return è¿”å›è¯¥è¡Œåˆ—æ•°,å¦‚æœè¯¥è¡Œä¸å­˜åœ¨ï¼Œåˆ™è¿”å›0
 	  */
 	 public int getColCount() {
 		 int maxColNum = 0;
@@ -252,10 +252,10 @@ public class ExcelOperate {
 	 }
 	 
 	 /**
-	  * »ñµÃÄ¬ÈÏsheetNumµÄÇ°20ĞĞ×î³¤µÄÁĞÊı
-	  * @param sheetNum Ö¸¶¨Êµ¼ÊsheetÊı
-	  * @param rowNum Ö¸¶¨Êµ¼ÊĞĞÊı
-	  * @return ·µ»Ø¸ÃĞĞÁĞÊı,Èç¹û¸ÃĞĞ²»´æÔÚ£¬Ôò·µ»Ø0
+	  * è·å¾—é»˜è®¤sheetNumçš„å‰20è¡Œæœ€é•¿çš„åˆ—æ•°
+	  * @param sheetNum æŒ‡å®šå®é™…sheetæ•°
+	  * @param rowNum æŒ‡å®šå®é™…è¡Œæ•°
+	  * @return è¿”å›è¯¥è¡Œåˆ—æ•°,å¦‚æœè¯¥è¡Œä¸å­˜åœ¨ï¼Œåˆ™è¿”å›0
 	  */
 	 public int getColCountSheet(int sheet) {
 		 int maxColNum = 0;
@@ -267,19 +267,19 @@ public class ExcelOperate {
 		return maxColNum;
 	 }
 	 /**
-	  * »ñµÃµÚÒ»¸ösheetNumµÄµÚrowNumĞĞµÄÁĞÊı
-	  * @param sheetNum Ö¸¶¨Êµ¼ÊsheetÊı
-	  * @param rowNum Ö¸¶¨Êµ¼ÊĞĞÊı
-	  * @return ·µ»Ø¸ÃĞĞÁĞÊı£¬Èç¹û¸ÃĞĞ²»´æÔÚ£¬Ôò·µ»Ø0
+	  * è·å¾—ç¬¬ä¸€ä¸ªsheetNumçš„ç¬¬rowNumè¡Œçš„åˆ—æ•°
+	  * @param sheetNum æŒ‡å®šå®é™…sheetæ•°
+	  * @param rowNum æŒ‡å®šå®é™…è¡Œæ•°
+	  * @return è¿”å›è¯¥è¡Œåˆ—æ•°ï¼Œå¦‚æœè¯¥è¡Œä¸å­˜åœ¨ï¼Œåˆ™è¿”å›0
 	  */
 	 public int getColCount(int rownum) {    
 		 return getColCount(1,rownum);
 	 }
 	 /**
-	  * »ñµÃÖ¸¶¨sheetNumµÄrowNumÏÂµÄÁĞÊı
-	  * @param sheetNum Ö¸¶¨Êµ¼ÊsheetÊı
-	  * @param rowNum Ö¸¶¨Êµ¼ÊĞĞÊı
-	  * @return ·µ»Ø¸ÃĞĞÁĞÊı£¬Èç¹û¸ÃĞĞ²»´æÔÚ£¬Ôò·µ»Ø0
+	  * è·å¾—æŒ‡å®šsheetNumçš„rowNumä¸‹çš„åˆ—æ•°
+	  * @param sheetNum æŒ‡å®šå®é™…sheetæ•°
+	  * @param rowNum æŒ‡å®šå®é™…è¡Œæ•°
+	  * @return è¿”å›è¯¥è¡Œåˆ—æ•°ï¼Œå¦‚æœè¯¥è¡Œä¸å­˜åœ¨ï¼Œåˆ™è¿”å›0
 	  */
 	 public int getColCount(int sheetNum,int rowNum) {
 		 rowNum--; sheetNum--;
@@ -297,14 +297,14 @@ public class ExcelOperate {
 	   return ColCount;
 	 }
 	 /**
-	  * ¶ÁÈ¡Ä¬ÈÏsheetµÄÖ¸¶¨¿éµÄÄÚÈİ,Èç¹ûÖĞ¼äÓĞ¿ÕĞĞ£¬ÔòÒ»²¢¶ÁÈ¡<br/>
-	  *Ö±½ÓÖ¸¶¨±ê×¼µÄĞĞÊıºÍÁĞÊı£¬´Ó1¿ªÊ¼¼ÆÊı£¬²»ÓÃ´Ó0Æğ<br/>
-	  *µ«ÊÇ×îºó»ñµÃµÄÊı×é¼ÆÊıÊÇ´Ó0¿ªÊ¼µÄ£¬²»Í¬ÓÚC#<br/>
-	  * @param rowStartNum£ºÆğµãÊµ¼ÊĞĞÊı<br/> 
-	  * @param columnStartNum£ºÆğµãÊµ¼ÊÁĞÊı<br/> 
-	  * @param rowEndNum£ºÖÕµãÊµ¼ÊĞĞÊı£¬Ğ¡ÓÚµÈÓÚ0Ôò¶ÁÈ¡µ½Î²²¿<br/> 
-	  * @param columnEndNum£ºÖÕµãÊµ¼ÊÁĞÊı£¬Ğ¡ÓÚµÈÓÚ0Ôò¶ÁÈ¡µ½Î²²¿<br/>
-	  * Èç¹ûĞĞÊı³¬¹ıÎÄ¼şÊµ¼ÊĞĞÊı£¬Ôò¶à³öÀ´µÄÊı×éÉèÖÃÎªnull<br/>
+	  * è¯»å–é»˜è®¤sheetçš„æŒ‡å®šå—çš„å†…å®¹,å¦‚æœä¸­é—´æœ‰ç©ºè¡Œï¼Œåˆ™ä¸€å¹¶è¯»å–<br/>
+	  *ç›´æ¥æŒ‡å®šæ ‡å‡†çš„è¡Œæ•°å’Œåˆ—æ•°ï¼Œä»1å¼€å§‹è®¡æ•°ï¼Œä¸ç”¨ä»0èµ·<br/>
+	  *ä½†æ˜¯æœ€åè·å¾—çš„æ•°ç»„è®¡æ•°æ˜¯ä»0å¼€å§‹çš„ï¼Œä¸åŒäºC#<br/>
+	  * @param rowStartNumï¼šèµ·ç‚¹å®é™…è¡Œæ•°<br/> 
+	  * @param columnStartNumï¼šèµ·ç‚¹å®é™…åˆ—æ•°<br/> 
+	  * @param rowEndNumï¼šç»ˆç‚¹å®é™…è¡Œæ•°ï¼Œå°äºç­‰äº0åˆ™è¯»å–åˆ°å°¾éƒ¨<br/> 
+	  * @param columnEndNumï¼šç»ˆç‚¹å®é™…åˆ—æ•°ï¼Œå°äºç­‰äº0åˆ™è¯»å–åˆ°å°¾éƒ¨<br/>
+	  * å¦‚æœè¡Œæ•°è¶…è¿‡æ–‡ä»¶å®é™…è¡Œæ•°ï¼Œåˆ™å¤šå‡ºæ¥çš„æ•°ç»„è®¾ç½®ä¸ºnull<br/>
 	  * @return String[][]<br/>
 	  */
 	 public ArrayList<String[]> ReadLsExcel(int rowStartNum, int rowEndNum, int[] columnNum) {
@@ -314,15 +314,15 @@ public class ExcelOperate {
 		 return ReadLsExcel(this.sheetNum+1, rowStartNum, rowEndNum, columnNum);
 	 }
 	 /**
-	  * ¶ÁÈ¡Ö¸¶¨¿éµÄÄÚÈİ,Í¬Ê±½«½¹µã·Åµ½¸ÃsheetÉÏ,·µ»ØarrayListÈç¹ûÖĞ¼äÓĞ¿ÕĞĞ£¬ÔòÌø¹ı<br/>
-	  *Ö¸¶¨´ı¶ÁÈ¡sheetÃû³Æ£¬±ê×¼µÄĞĞÊıºÍÁĞÊı£¬´Ó1¿ªÊ¼¼ÆÊı£¬²»ÓÃ´Ó0Æğ<br/>
-	  *µ«ÊÇ×îºó»ñµÃµÄÊı×é¼ÆÊıÊÇ´Ó0¿ªÊ¼µÄ£¬²»Í¬ÓÚC#<br/>
-	  * @param sheetName£º´ı¶ÁÈ¡sheetÃû×Ö<br/> 
-	  * @param rowStartNum£ºÆğµãÊµ¼ÊĞĞÊı<br/> 
-	  * @param columnStartNum£ºÆğµãÊµ¼ÊÁĞÊı<br/> 
-	  * @param rowEndNum£ºÖÕµãÊµ¼ÊĞĞÊı£¬Ğ¡ÓÚµÈÓÚ0Ôò¶ÁÈ¡µ½Î²²¿<br/> 
-	  * @param columnEndNum£ºÖÕµãÊµ¼ÊÁĞÊı£¬Ğ¡ÓÚµÈÓÚ0Ôò¶ÁÈ¡µ½Î²²¿<br/>
-	  * Èç¹ûĞĞÊı³¬¹ıÎÄ¼şÊµ¼ÊĞĞÊı£¬Ôò¶à³öÀ´µÄÊı×éÉèÖÃÎªnull<br/>
+	  * è¯»å–æŒ‡å®šå—çš„å†…å®¹,åŒæ—¶å°†ç„¦ç‚¹æ”¾åˆ°è¯¥sheetä¸Š,è¿”å›arrayListå¦‚æœä¸­é—´æœ‰ç©ºè¡Œï¼Œåˆ™è·³è¿‡<br/>
+	  *æŒ‡å®šå¾…è¯»å–sheetåç§°ï¼Œæ ‡å‡†çš„è¡Œæ•°å’Œåˆ—æ•°ï¼Œä»1å¼€å§‹è®¡æ•°ï¼Œä¸ç”¨ä»0èµ·<br/>
+	  *ä½†æ˜¯æœ€åè·å¾—çš„æ•°ç»„è®¡æ•°æ˜¯ä»0å¼€å§‹çš„ï¼Œä¸åŒäºC#<br/>
+	  * @param sheetNameï¼šå¾…è¯»å–sheetåå­—<br/> 
+	  * @param rowStartNumï¼šèµ·ç‚¹å®é™…è¡Œæ•°<br/> 
+	  * @param columnStartNumï¼šèµ·ç‚¹å®é™…åˆ—æ•°<br/> 
+	  * @param rowEndNumï¼šç»ˆç‚¹å®é™…è¡Œæ•°ï¼Œå°äºç­‰äº0åˆ™è¯»å–åˆ°å°¾éƒ¨<br/> 
+	  * @param columnEndNumï¼šç»ˆç‚¹å®é™…åˆ—æ•°ï¼Œå°äºç­‰äº0åˆ™è¯»å–åˆ°å°¾éƒ¨<br/>
+	  * å¦‚æœè¡Œæ•°è¶…è¿‡æ–‡ä»¶å®é™…è¡Œæ•°ï¼Œåˆ™å¤šå‡ºæ¥çš„æ•°ç»„è®¾ç½®ä¸ºnull<br/>
 	  * @return String[][]<br/>
 	  */
 	 public ArrayList<String[]> ReadLsExcel(String sheetName, int rowStartNum, int columnStartNum, int rowEndNum, int columnEndNum) {
@@ -336,21 +336,21 @@ public class ExcelOperate {
 	 
 	 
 	 /**
-	  * ¶ÁÈ¡Ö¸¶¨¿éÄÚÈİ,·µ»ØarrayList,Èç¹ûÖĞ¼äÓĞ¿ÕĞĞ£¬ÔòÒ»²¢¶ÁÈ¡<br/>
-	  * Ö¸¶¨¹¤×÷±í£¬ÆğÊ¼µÄĞĞÊı£¬ÁĞÊı£¬ÖÕÖ¹ĞĞÊı£¬ÁĞÊı<br/>
-	  * Ö±½ÓÖ¸¶¨±ê×¼µÄsheetÊı£¬ĞĞÊıºÍÁĞÊı£¬´Ó1¿ªÊ¼¼ÆÊı£¬²»ÓÃ´Ó0Æğ<br/>
-	  * µ«ÊÇ×îºó»ñµÃµÄÊı×é¼ÆÊıÊÇ´Ó0¿ªÊ¼µÄ£¬²»Í¬ÓÚC#<br/>
-	  * @param sheetNum£ºÊµ¼ÊsheetÊı<br/>
-	  * @param rowStartNum£ºÆğµãÊµ¼ÊĞĞÊı<br/> 
-	  * @param columnStartNum£ºÆğµãÊµ¼ÊÁĞÊı<br/> 
-	  * @param rowEndNum£ºÖÕµãÊµ¼ÊĞĞÊı£¬Ğ¡ÓÚµÈÓÚ0Ôò¶ÁÈ¡µ½Î²²¿<br/> 
-	  * @param columnEndNum£ºÖÕµãÊµ¼ÊÁĞÊı£¬Ğ¡ÓÚµÈÓÚ0Ôò¶ÁÈ¡µ½Î²²¿<br/>
-	  * Èç¹ûĞĞÊı³¬¹ıÎÄ¼şÊµ¼ÊĞĞÊı£¬Ôò¶à³öÀ´µÄÊı×éÉèÖÃÎªnull<br/>
+	  * è¯»å–æŒ‡å®šå—å†…å®¹,è¿”å›arrayList,å¦‚æœä¸­é—´æœ‰ç©ºè¡Œï¼Œåˆ™ä¸€å¹¶è¯»å–<br/>
+	  * æŒ‡å®šå·¥ä½œè¡¨ï¼Œèµ·å§‹çš„è¡Œæ•°ï¼Œåˆ—æ•°ï¼Œç»ˆæ­¢è¡Œæ•°ï¼Œåˆ—æ•°<br/>
+	  * ç›´æ¥æŒ‡å®šæ ‡å‡†çš„sheetæ•°ï¼Œè¡Œæ•°å’Œåˆ—æ•°ï¼Œä»1å¼€å§‹è®¡æ•°ï¼Œä¸ç”¨ä»0èµ·<br/>
+	  * ä½†æ˜¯æœ€åè·å¾—çš„æ•°ç»„è®¡æ•°æ˜¯ä»0å¼€å§‹çš„ï¼Œä¸åŒäºC#<br/>
+	  * @param sheetNumï¼šå®é™…sheetæ•°<br/>
+	  * @param rowStartNumï¼šèµ·ç‚¹å®é™…è¡Œæ•°<br/> 
+	  * @param columnStartNumï¼šèµ·ç‚¹å®é™…åˆ—æ•°<br/> 
+	  * @param rowEndNumï¼šç»ˆç‚¹å®é™…è¡Œæ•°ï¼Œå°äºç­‰äº0åˆ™è¯»å–åˆ°å°¾éƒ¨<br/> 
+	  * @param columnEndNumï¼šç»ˆç‚¹å®é™…åˆ—æ•°ï¼Œå°äºç­‰äº0åˆ™è¯»å–åˆ°å°¾éƒ¨<br/>
+	  * å¦‚æœè¡Œæ•°è¶…è¿‡æ–‡ä»¶å®é™…è¡Œæ•°ï¼Œåˆ™å¤šå‡ºæ¥çš„æ•°ç»„è®¾ç½®ä¸ºnull<br/>
 	  * @return String[]
 	  */
-	//¶ÁÈ¡Ò»¿éexcel£¬Ã¿´Î¶ÁÒ»ĞĞ,Ñ­»·¶Á
+	//è¯»å–ä¸€å—excelï¼Œæ¯æ¬¡è¯»ä¸€è¡Œ,å¾ªç¯è¯»
 	 public ArrayList<String[]> ReadLsExcel(int sheetNum, int rowStartNum, int columnStartNum, int rowEndNum, int columnEndNum) {
-		 //ĞŞÕıÊäÈëµÄĞĞÊıºÍÁĞÊıµÄÎÊÌâ
+		 //ä¿®æ­£è¾“å…¥çš„è¡Œæ•°å’Œåˆ—æ•°çš„é—®é¢˜
 		 if (rowEndNum <= 0)
 			 rowEndNum = getRowCount(sheetNum);
 		 if (columnEndNum <= 0)
@@ -371,14 +371,14 @@ public class ExcelOperate {
 		return ReadLsExcelDetail(sheetNum, rowStartNum, rowEndNum, readColumn);
 	 }
 	 /**
-	  * ¶ÁÈ¡Ö¸¶¨¿éµÄÄÚÈİ,Í¬Ê±½«½¹µã·Åµ½¸ÃsheetÉÏ,·µ»ØarrayListÈç¹ûÖĞ¼äÓĞ¿ÕĞĞ£¬ÔòÌø¹ı<br/>
-	  *Ö¸¶¨´ı¶ÁÈ¡sheetÃû³Æ£¬±ê×¼µÄĞĞÊıºÍÁĞÊı£¬´Ó1¿ªÊ¼¼ÆÊı£¬²»ÓÃ´Ó0Æğ<br/>
-	  *µ«ÊÇ×îºó»ñµÃµÄÊı×é¼ÆÊıÊÇ´Ó0¿ªÊ¼µÄ£¬²»Í¬ÓÚC#<br/>
-	  * @param rowStartNum ÆğµãÊµ¼ÊĞĞÊı<br/> 
-	  * @param columnStartNum ÆğµãÊµ¼ÊÁĞÊı<br/> 
-	  * @param rowEndNum ÖÕµãÊµ¼ÊĞĞÊı£¬Ğ¡ÓÚµÈÓÚ0Ôò¶ÁÈ¡µ½Î²²¿<br/> 
-	  * @param columnEndNum ÖÕµãÊµ¼ÊÁĞÊı£¬Ğ¡ÓÚµÈÓÚ0Ôò¶ÁÈ¡µ½Î²²¿<br/>
-	  * Èç¹ûĞĞÊı³¬¹ıÎÄ¼şÊµ¼ÊĞĞÊı£¬Ôò¶à³öÀ´µÄÊı×éÉèÖÃÎªnull<br/>
+	  * è¯»å–æŒ‡å®šå—çš„å†…å®¹,åŒæ—¶å°†ç„¦ç‚¹æ”¾åˆ°è¯¥sheetä¸Š,è¿”å›arrayListå¦‚æœä¸­é—´æœ‰ç©ºè¡Œï¼Œåˆ™è·³è¿‡<br/>
+	  *æŒ‡å®šå¾…è¯»å–sheetåç§°ï¼Œæ ‡å‡†çš„è¡Œæ•°å’Œåˆ—æ•°ï¼Œä»1å¼€å§‹è®¡æ•°ï¼Œä¸ç”¨ä»0èµ·<br/>
+	  *ä½†æ˜¯æœ€åè·å¾—çš„æ•°ç»„è®¡æ•°æ˜¯ä»0å¼€å§‹çš„ï¼Œä¸åŒäºC#<br/>
+	  * @param rowStartNum èµ·ç‚¹å®é™…è¡Œæ•°<br/> 
+	  * @param columnStartNum èµ·ç‚¹å®é™…åˆ—æ•°<br/> 
+	  * @param rowEndNum ç»ˆç‚¹å®é™…è¡Œæ•°ï¼Œå°äºç­‰äº0åˆ™è¯»å–åˆ°å°¾éƒ¨<br/> 
+	  * @param columnEndNum ç»ˆç‚¹å®é™…åˆ—æ•°ï¼Œå°äºç­‰äº0åˆ™è¯»å–åˆ°å°¾éƒ¨<br/>
+	  * å¦‚æœè¡Œæ•°è¶…è¿‡æ–‡ä»¶å®é™…è¡Œæ•°ï¼Œåˆ™å¤šå‡ºæ¥çš„æ•°ç»„è®¾ç½®ä¸ºnull<br/>
 	  * @return String[][]<br/>
 	  */
 	 public ArrayList<String[]> ReadLsExcel(int rowStartNum, int columnStartNum, int rowEndNum, int columnEndNum) {
@@ -388,21 +388,21 @@ public class ExcelOperate {
 		 return  ReadLsExcel(sheetNum+1,  rowStartNum,  columnStartNum,  rowEndNum,  columnEndNum);
 	 }
 	 /**
-	  * ¶ÁÈ¡Ö¸¶¨¿éÄÚÈİ,·µ»ØarrayList,Èç¹ûÖĞ¼äÓĞ¿ÕĞĞ£¬ÔòÒ»²¢¶ÁÈ¡<br/>
-	  * Ö¸¶¨¹¤×÷±í£¬ÆğÊ¼µÄĞĞÊı£¬ÁĞÊı£¬ÖÕÖ¹ĞĞÊı£¬ÁĞÊı<br/>
-	  * Ö±½ÓÖ¸¶¨±ê×¼µÄsheetÊı£¬ĞĞÊıºÍÁĞÊı£¬´Ó1¿ªÊ¼¼ÆÊı£¬²»ÓÃ´Ó0Æğ<br/>
-	  * µ«ÊÇ×îºó»ñµÃµÄÊı×é¼ÆÊıÊÇ´Ó0¿ªÊ¼µÄ£¬²»Í¬ÓÚC#<br/>
-	  * @param sheetNum£ºÊµ¼ÊsheetÊı<br/>
-	  * @param rowStartNum£ºÆğµãÊµ¼ÊĞĞÊı<br/> 
-	  * @param columnStartNum£ºÆğµãÊµ¼ÊÁĞÊı<br/> 
-	  * @param rowEndNum£ºÖÕµãÊµ¼ÊĞĞÊı£¬Ğ¡ÓÚµÈÓÚ0Ôò¶ÁÈ¡µ½Î²²¿<br/> 
-	  * @param columnEndNum£ºÖÕµãÊµ¼ÊÁĞÊı£¬Ğ¡ÓÚµÈÓÚ0Ôò¶ÁÈ¡µ½Î²²¿<br/>
-	  * Èç¹ûĞĞÊı³¬¹ıÎÄ¼şÊµ¼ÊĞĞÊı£¬Ôò¶à³öÀ´µÄÊı×éÉèÖÃÎªnull<br/>
+	  * è¯»å–æŒ‡å®šå—å†…å®¹,è¿”å›arrayList,å¦‚æœä¸­é—´æœ‰ç©ºè¡Œï¼Œåˆ™ä¸€å¹¶è¯»å–<br/>
+	  * æŒ‡å®šå·¥ä½œè¡¨ï¼Œèµ·å§‹çš„è¡Œæ•°ï¼Œåˆ—æ•°ï¼Œç»ˆæ­¢è¡Œæ•°ï¼Œåˆ—æ•°<br/>
+	  * ç›´æ¥æŒ‡å®šæ ‡å‡†çš„sheetæ•°ï¼Œè¡Œæ•°å’Œåˆ—æ•°ï¼Œä»1å¼€å§‹è®¡æ•°ï¼Œä¸ç”¨ä»0èµ·<br/>
+	  * ä½†æ˜¯æœ€åè·å¾—çš„æ•°ç»„è®¡æ•°æ˜¯ä»0å¼€å§‹çš„ï¼Œä¸åŒäºC#<br/>
+	  * @param sheetNumï¼šå®é™…sheetæ•°<br/>
+	  * @param rowStartNumï¼šèµ·ç‚¹å®é™…è¡Œæ•°<br/> 
+	  * @param columnStartNumï¼šèµ·ç‚¹å®é™…åˆ—æ•°<br/> 
+	  * @param rowEndNumï¼šç»ˆç‚¹å®é™…è¡Œæ•°ï¼Œå°äºç­‰äº0åˆ™è¯»å–åˆ°å°¾éƒ¨<br/> 
+	  * @param columnEndNumï¼šç»ˆç‚¹å®é™…åˆ—æ•°ï¼Œå°äºç­‰äº0åˆ™è¯»å–åˆ°å°¾éƒ¨<br/>
+	  * å¦‚æœè¡Œæ•°è¶…è¿‡æ–‡ä»¶å®é™…è¡Œæ•°ï¼Œåˆ™å¤šå‡ºæ¥çš„æ•°ç»„è®¾ç½®ä¸ºnull<br/>
 	  * @return String[]
 	  */
-	//¶ÁÈ¡Ò»¿éexcel£¬Ã¿´Î¶ÁÒ»ĞĞ,Ñ­»·¶Á
+	//è¯»å–ä¸€å—excelï¼Œæ¯æ¬¡è¯»ä¸€è¡Œ,å¾ªç¯è¯»
 	 public ArrayList<String[]> ReadLsExcel(int sheetNum, int rowStartNum, int rowEndNum, int[] readColNum) {
-		 //ĞŞÕıÊäÈëµÄĞĞÊıºÍÁĞÊıµÄÎÊÌâ
+		 //ä¿®æ­£è¾“å…¥çš„è¡Œæ•°å’Œåˆ—æ•°çš„é—®é¢˜
 		 if (rowEndNum <= 0)
 			 rowEndNum = getRowCount(sheetNum);
 		 
@@ -424,7 +424,7 @@ public class ExcelOperate {
 	  * @param sheetNum
 	  * @param rowStartNum
 	  * @param rowEndNum
-	  * @param readColNum Èç¹û³öÏÖ¸ºÊıµÄcolNum£¬ÔòÌø¹ı
+	  * @param readColNum å¦‚æœå‡ºç°è´Ÿæ•°çš„colNumï¼Œåˆ™è·³è¿‡
 	  * @return
 	  */
 	 private ArrayList<String[]> ReadLsExcelDetail(int sheetNum, int rowStartNum, int rowEndNum, int[] readColNum) {
@@ -453,8 +453,8 @@ public class ExcelOperate {
 		 return LsExcelLine;
 	 }
 	 /**
-	  *  ¶ÁÈ¡µ¥¸öÄÚÈİ£¬Ä¬ÈÏ¹¤×÷±í£¬Ö¸¶¨ĞĞ¡¢ÁĞ¡£
-	  *  ËùÓĞÖ¸¶¨µÄĞĞºÅºÍÁĞºÅ¶¼Ö»ÒªÕæÊµ±àºÅ£¬²»ĞèÒª¼õÈ¥1
+	  *  è¯»å–å•ä¸ªå†…å®¹ï¼Œé»˜è®¤å·¥ä½œè¡¨ï¼ŒæŒ‡å®šè¡Œã€åˆ—ã€‚
+	  *  æ‰€æœ‰æŒ‡å®šçš„è¡Œå·å’Œåˆ—å·éƒ½åªè¦çœŸå®ç¼–å·ï¼Œä¸éœ€è¦å‡å»1
 	  * @param rowNum
 	  * @param cellNum
 	  * @return String
@@ -463,8 +463,8 @@ public class ExcelOperate {
 		 return  ReadExcel(this.sheetNum+1, rowNum, cellNum);
 	 }
 	 /**
-	  * ¶ÁÈ¡µ¥¸öÄÚÈİ£¬Ö¸¶¨¹¤×÷±ísheetNum¡¢ĞĞ¡¢ÁĞ¡£
-	  * ËùÓĞÖ¸¶¨µÄSheet±àºÅ£¬ĞĞºÅºÍÁĞºÅ¶¼Ö»ÒªÕæÊµ±àºÅ£¬²»ĞèÒª¼õÈ¥1
+	  * è¯»å–å•ä¸ªå†…å®¹ï¼ŒæŒ‡å®šå·¥ä½œè¡¨sheetNumã€è¡Œã€åˆ—ã€‚
+	  * æ‰€æœ‰æŒ‡å®šçš„Sheetç¼–å·ï¼Œè¡Œå·å’Œåˆ—å·éƒ½åªè¦çœŸå®ç¼–å·ï¼Œä¸éœ€è¦å‡å»1
 	  * @param sheetNum
 	  * @param rowNum
 	  * @param cellNum
@@ -490,13 +490,13 @@ public class ExcelOperate {
 			 case Cell.CELL_TYPE_FORMULA:
 				 result = getExcelNumeric(cellExcel.getNumericCellValue());
 				 break;
-			 case Cell.CELL_TYPE_NUMERIC:  //Èç¹ûµ¥Ôª¸ñÀïµÄÊı¾İÀàĞÍÎªÊı¾İ  
+			 case Cell.CELL_TYPE_NUMERIC:  //å¦‚æœå•å…ƒæ ¼é‡Œçš„æ•°æ®ç±»å‹ä¸ºæ•°æ®  
 				 result = getExcelNumeric(cellExcel.getNumericCellValue());
 				 break;
 			 case Cell.CELL_TYPE_STRING:
 				 result = cellExcel.getStringCellValue().trim();
 				 break;
-			 case Cell.CELL_TYPE_BOOLEAN://Èç¹ûµ¥Ôª¸ñÀïµÄÊı¾İÀàĞÍÎª Boolean                     
+			 case Cell.CELL_TYPE_BOOLEAN://å¦‚æœå•å…ƒæ ¼é‡Œçš„æ•°æ®ç±»å‹ä¸º Boolean                     
 				 result = String.valueOf(cellExcel.getBooleanCellValue()).trim();
 				 break;
 			 case Cell.CELL_TYPE_BLANK:
@@ -509,7 +509,7 @@ public class ExcelOperate {
 		 }
 		 return result;
 	 }
-	 /** ½«excelÖĞ»ñµÃµÄÊı×Ö×ª»¯Îª×Ö·û´®£¬¸ù¾İÊÇ·ñÓĞĞ¡Êıµã£¬½øĞĞ×ª»¯ */
+	 /** å°†excelä¸­è·å¾—çš„æ•°å­—è½¬åŒ–ä¸ºå­—ç¬¦ä¸²ï¼Œæ ¹æ®æ˜¯å¦æœ‰å°æ•°ç‚¹ï¼Œè¿›è¡Œè½¬åŒ– */
 	 private String getExcelNumeric(double value) {
 		 if (value == Math.ceil(value)) {
 			 Long result = (long) value;
@@ -518,10 +518,10 @@ public class ExcelOperate {
 		 return value + "";
 	 }
 	 /**
-	  * Ä¬ÈÏ±£´æ
-	  * µ¥¸öÊıÖµĞ´Èëµ¥¸öexcelÎÄ¼ş,Ä¬ÈÏĞ´Èësheet1,Ğ´ÈëÆäËûsheet²»¸Ä±äexceloperate½¹µã
-	  * ÉèÖÃĞ´ÈëĞĞÊı£¬ÁĞÊıºÍÄÚÈİ£¬Ğ´ÈëµÄÄÚÈİÄ¬ÈÏÎªString
-	  * ÆäÖĞĞĞÊı£¬ÁĞÊı£¬¶¼ÎªÊµ¼ÊÊıÄ¿£¬²»ÓÃ¼õÈ¥1
+	  * é»˜è®¤ä¿å­˜
+	  * å•ä¸ªæ•°å€¼å†™å…¥å•ä¸ªexcelæ–‡ä»¶,é»˜è®¤å†™å…¥sheet1,å†™å…¥å…¶ä»–sheetä¸æ”¹å˜exceloperateç„¦ç‚¹
+	  * è®¾ç½®å†™å…¥è¡Œæ•°ï¼Œåˆ—æ•°å’Œå†…å®¹ï¼Œå†™å…¥çš„å†…å®¹é»˜è®¤ä¸ºString
+	  * å…¶ä¸­è¡Œæ•°ï¼Œåˆ—æ•°ï¼Œéƒ½ä¸ºå®é™…æ•°ç›®ï¼Œä¸ç”¨å‡å»1
 	  * @param rowNum
 	  * @param cellNum
 	  * @param content
@@ -531,11 +531,11 @@ public class ExcelOperate {
 	 }
  
 	 /**
-	     * ¿éÎÄ¼şĞ´ÈëexcelÎÄ¼ş£¬²¢Éè¶¨sheetName£¬Èç¹ûÃ»ÓĞ¸ÃsheetName£¬ÄÇÃ´¾ÍĞÂ½¨Ò»¸ö
-	     * ÉèÖÃĞ´ÈëµÄsheetÃû×Ö£¬ĞĞÊı£¬ÁĞÊıºÍÄÚÈİ£¬Ğ´ÈëµÄÄÚÈİÄ¬ÈÏÎªString[][]
-	     * String[][]ÖĞµÄnull»á×Ô¶¯Ìø¹ı
-	     * ÆäÖĞsheetÊı£¬ĞĞÊı£¬ÁĞÊı£¬¶¼ÎªÊµ¼ÊÊıÄ¿£¬²»ÓÃ¼õÈ¥1
-	     * µ±sheetNumÉèÖÃ³¬³öÒÑ´æÔÚsheetÊıÄ¿Ê±£¬ÔòÎªĞÂ½¨sheetĞ´Èë
+	     * å—æ–‡ä»¶å†™å…¥excelæ–‡ä»¶ï¼Œå¹¶è®¾å®šsheetNameï¼Œå¦‚æœæ²¡æœ‰è¯¥sheetNameï¼Œé‚£ä¹ˆå°±æ–°å»ºä¸€ä¸ª
+	     * è®¾ç½®å†™å…¥çš„sheetåå­—ï¼Œè¡Œæ•°ï¼Œåˆ—æ•°å’Œå†…å®¹ï¼Œå†™å…¥çš„å†…å®¹é»˜è®¤ä¸ºString[][]
+	     * String[][]ä¸­çš„nullä¼šè‡ªåŠ¨è·³è¿‡
+	     * å…¶ä¸­sheetæ•°ï¼Œè¡Œæ•°ï¼Œåˆ—æ•°ï¼Œéƒ½ä¸ºå®é™…æ•°ç›®ï¼Œä¸ç”¨å‡å»1
+	     * å½“sheetNumè®¾ç½®è¶…å‡ºå·²å­˜åœ¨sheetæ•°ç›®æ—¶ï¼Œåˆ™ä¸ºæ–°å»ºsheetå†™å…¥
 	     * @param sheetName
 	     * @param rowNum
 	     * @param cellNum
@@ -545,24 +545,24 @@ public class ExcelOperate {
 		 return WriteExcel(sheetName, -1, rowNum, cellNum, content);
 	 }
 	 /**
-	  * ¿éÎÄ¼şĞ´ÈëexcelÎÄ¼ş
-	  * ÉèÖÃĞ´ÈëµÄsheetÊı£¬ĞĞÊı£¬ÁĞÊıºÍÄÚÈİ£¬Ğ´ÈëµÄÄÚÈİÄ¬ÈÏÎªList<String[]>,ÆäÖĞString[]ÎªĞĞ£¬list.get(i)ÎªÁĞ
-	  * String[]ÖĞµÄnull»á×Ô¶¯Ìø¹ı
-	  * ÆäÖĞsheetÊı£¬ĞĞÊı£¬ÁĞÊı£¬¶¼ÎªÊµ¼ÊÊıÄ¿£¬²»ÓÃ¼õÈ¥1
-	  * µ±sheetNumÉèÖÃ³¬³öÒÑ´æÔÚsheetÊıÄ¿Ê±£¬ÔòÎªĞÂ½¨sheetĞ´Èë
-	  * @param rowNum Êµ¼ÊĞĞ
-	  * @param cellNum Êµ¼ÊÁĞ
+	  * å—æ–‡ä»¶å†™å…¥excelæ–‡ä»¶
+	  * è®¾ç½®å†™å…¥çš„sheetæ•°ï¼Œè¡Œæ•°ï¼Œåˆ—æ•°å’Œå†…å®¹ï¼Œå†™å…¥çš„å†…å®¹é»˜è®¤ä¸ºList<String[]>,å…¶ä¸­String[]ä¸ºè¡Œï¼Œlist.get(i)ä¸ºåˆ—
+	  * String[]ä¸­çš„nullä¼šè‡ªåŠ¨è·³è¿‡
+	  * å…¶ä¸­sheetæ•°ï¼Œè¡Œæ•°ï¼Œåˆ—æ•°ï¼Œéƒ½ä¸ºå®é™…æ•°ç›®ï¼Œä¸ç”¨å‡å»1
+	  * å½“sheetNumè®¾ç½®è¶…å‡ºå·²å­˜åœ¨sheetæ•°ç›®æ—¶ï¼Œåˆ™ä¸ºæ–°å»ºsheetå†™å…¥
+	  * @param rowNum å®é™…è¡Œ
+	  * @param cellNum å®é™…åˆ—
 	  * @param content
 	  */
 	 public boolean WriteExcel(int rowNum, int cellNum, List<String[]> content) {
 		return WriteExcel(null, 1, rowNum, cellNum, content);
 	}
 	 /**
-	  * ¿éÎÄ¼şĞ´ÈëexcelÎÄ¼ş
-	  * ÉèÖÃĞ´ÈëµÄsheetÊı£¬ĞĞÊı£¬ÁĞÊıºÍÄÚÈİ£¬Ğ´ÈëµÄÄÚÈİÄ¬ÈÏÎªList<String[]>,ÆäÖĞString[]ÎªĞĞ£¬list.get(i)ÎªÁĞ
-	  * String[]ÖĞµÄnull»á×Ô¶¯Ìø¹ı
-	  * ÆäÖĞsheetÊı£¬ĞĞÊı£¬ÁĞÊı£¬¶¼ÎªÊµ¼ÊÊıÄ¿£¬²»ÓÃ¼õÈ¥1
-	  * µ±sheetNumÉèÖÃ³¬³öÒÑ´æÔÚsheetÊıÄ¿Ê±£¬ÔòÎªĞÂ½¨sheetĞ´Èë
+	  * å—æ–‡ä»¶å†™å…¥excelæ–‡ä»¶
+	  * è®¾ç½®å†™å…¥çš„sheetæ•°ï¼Œè¡Œæ•°ï¼Œåˆ—æ•°å’Œå†…å®¹ï¼Œå†™å…¥çš„å†…å®¹é»˜è®¤ä¸ºList<String[]>,å…¶ä¸­String[]ä¸ºè¡Œï¼Œlist.get(i)ä¸ºåˆ—
+	  * String[]ä¸­çš„nullä¼šè‡ªåŠ¨è·³è¿‡
+	  * å…¶ä¸­sheetæ•°ï¼Œè¡Œæ•°ï¼Œåˆ—æ•°ï¼Œéƒ½ä¸ºå®é™…æ•°ç›®ï¼Œä¸ç”¨å‡å»1
+	  * å½“sheetNumè®¾ç½®è¶…å‡ºå·²å­˜åœ¨sheetæ•°ç›®æ—¶ï¼Œåˆ™ä¸ºæ–°å»ºsheetå†™å…¥
 	  * @param sheetNum
 	  * @param rowNum
 	  * @param cellNum
@@ -572,16 +572,16 @@ public class ExcelOperate {
 		return WriteExcel(null, sheetNum, rowNum, cellNum, content);
 	}
 	 /**
-	  * µ¥¸öÔªËØĞ´ÈëexcelÎÄ¼ş
-	  * ÉèÖÃĞ´ÈëµÄsheetÊı»òsheetName£¬Á½¸öÖ»ÒªÉèÖÃÒ»¸ö£¬Ä¬ÈÏÏÈÉè¶¨sheetName
-	  * ĞĞÊı£¬ÁĞÊıºÍÄÚÈİ£¬Ğ´ÈëµÄÄÚÈİÄ¬ÈÏÎªList<String[]>,ÆäÖĞString[]ÎªĞĞ£¬list.get(i)ÎªÁĞ
-	  * String[]ÖĞµÄnull»á×Ô¶¯Ìø¹ı
-	  * ÆäÖĞsheetÊı£¬ĞĞÊı£¬ÁĞÊı£¬¶¼ÎªÊµ¼ÊÊıÄ¿£¬²»ÓÃ¼õÈ¥1
-	  * µ±sheetNumÉèÖÃ³¬³öÒÑ´æÔÚsheetÊıÄ¿Ê±£¬ÔòÎªĞÂ½¨sheetĞ´Èë
+	  * å•ä¸ªå…ƒç´ å†™å…¥excelæ–‡ä»¶
+	  * è®¾ç½®å†™å…¥çš„sheetæ•°æˆ–sheetNameï¼Œä¸¤ä¸ªåªè¦è®¾ç½®ä¸€ä¸ªï¼Œé»˜è®¤å…ˆè®¾å®šsheetName
+	  * è¡Œæ•°ï¼Œåˆ—æ•°å’Œå†…å®¹ï¼Œå†™å…¥çš„å†…å®¹é»˜è®¤ä¸ºList<String[]>,å…¶ä¸­String[]ä¸ºè¡Œï¼Œlist.get(i)ä¸ºåˆ—
+	  * String[]ä¸­çš„nullä¼šè‡ªåŠ¨è·³è¿‡
+	  * å…¶ä¸­sheetæ•°ï¼Œè¡Œæ•°ï¼Œåˆ—æ•°ï¼Œéƒ½ä¸ºå®é™…æ•°ç›®ï¼Œä¸ç”¨å‡å»1
+	  * å½“sheetNumè®¾ç½®è¶…å‡ºå·²å­˜åœ¨sheetæ•°ç›®æ—¶ï¼Œåˆ™ä¸ºæ–°å»ºsheetå†™å…¥
 	  * @param sheetNum
 	  * @param sheetName
-	  * @param rowNum Êµ¼ÊĞĞ
-	  * @param cellNum Êµ¼ÊÁĞ
+	  * @param rowNum å®é™…è¡Œ
+	  * @param cellNum å®é™…åˆ—
 	  * @param content
 	  * @return
 	  */
@@ -597,16 +597,16 @@ public class ExcelOperate {
 		return true;
 	}
 	 /**
-	  * ¿éÎÄ¼şĞ´ÈëexcelÎÄ¼ş
-	  * ÉèÖÃĞ´ÈëµÄsheetÊı»òsheetName£¬Á½¸öÖ»ÒªÉèÖÃÒ»¸ö£¬Ä¬ÈÏÏÈÉè¶¨sheetName
-	  * ĞĞÊı£¬ÁĞÊıºÍÄÚÈİ£¬Ğ´ÈëµÄÄÚÈİÄ¬ÈÏÎªList<String[]>,ÆäÖĞString[]ÎªĞĞ£¬list.get(i)ÎªÁĞ
-	  * String[]ÖĞµÄnull»á×Ô¶¯Ìø¹ı
-	  * ÆäÖĞsheetÊı£¬ĞĞÊı£¬ÁĞÊı£¬¶¼ÎªÊµ¼ÊÊıÄ¿£¬²»ÓÃ¼õÈ¥1
-	  * µ±sheetNumÉèÖÃ³¬³öÒÑ´æÔÚsheetÊıÄ¿Ê±£¬ÔòÎªĞÂ½¨sheetĞ´Èë
+	  * å—æ–‡ä»¶å†™å…¥excelæ–‡ä»¶
+	  * è®¾ç½®å†™å…¥çš„sheetæ•°æˆ–sheetNameï¼Œä¸¤ä¸ªåªè¦è®¾ç½®ä¸€ä¸ªï¼Œé»˜è®¤å…ˆè®¾å®šsheetName
+	  * è¡Œæ•°ï¼Œåˆ—æ•°å’Œå†…å®¹ï¼Œå†™å…¥çš„å†…å®¹é»˜è®¤ä¸ºList<String[]>,å…¶ä¸­String[]ä¸ºè¡Œï¼Œlist.get(i)ä¸ºåˆ—
+	  * String[]ä¸­çš„nullä¼šè‡ªåŠ¨è·³è¿‡
+	  * å…¶ä¸­sheetæ•°ï¼Œè¡Œæ•°ï¼Œåˆ—æ•°ï¼Œéƒ½ä¸ºå®é™…æ•°ç›®ï¼Œä¸ç”¨å‡å»1
+	  * å½“sheetNumè®¾ç½®è¶…å‡ºå·²å­˜åœ¨sheetæ•°ç›®æ—¶ï¼Œåˆ™ä¸ºæ–°å»ºsheetå†™å…¥
 	  * @param sheetNum
 	  * @param sheetName
-	  * @param rowNum Êµ¼ÊĞĞ
-	  * @param cellNum Êµ¼ÊÁĞ
+	  * @param rowNum å®é™…è¡Œ
+	  * @param cellNum å®é™…åˆ—
 	  * @param content
 	  * @return
 	  */
@@ -622,9 +622,9 @@ public class ExcelOperate {
 		return true;
 	}
 	 /**
-	  * ÉèÖÃĞ´ÈëµÄsheetÊı»òsheetName£¬Á½¸öÖ»ÒªÉèÖÃÒ»¸ö£¬Ä¬ÈÏÏÈÉè¶¨sheetName
-	  * @param sheetName Ã»ÓĞÉèÎªnull
-	  * @param sheetNum Ã»ÓĞÉèÎªĞ¡ÓÚ1
+	  * è®¾ç½®å†™å…¥çš„sheetæ•°æˆ–sheetNameï¼Œä¸¤ä¸ªåªè¦è®¾ç½®ä¸€ä¸ªï¼Œé»˜è®¤å…ˆè®¾å®šsheetName
+	  * @param sheetName æ²¡æœ‰è®¾ä¸ºnull
+	  * @param sheetNum æ²¡æœ‰è®¾ä¸ºå°äº1
 	  * @return
 	  */
 	private Sheet getSheet(String sheetName, int sheetNum) {
@@ -643,22 +643,22 @@ public class ExcelOperate {
 				// TODO: handle exception
 			}
 			if (sheet == null) {
-				sheet = wb.createSheet("sheet" + (getSheetCount() + 1));// ĞÂ½¨sheet
+				sheet = wb.createSheet("sheet" + (getSheetCount() + 1));// æ–°å»ºsheet
 			}
 		}
 		return sheet;
 	}
 	/**
-	 * Ğ´Èëµ¥¸öÔªËØ
+	 * å†™å…¥å•ä¸ªå…ƒç´ 
 	 * @param sheet
-	 * @param rowNum Êµ¼ÊĞĞ
-	 * @param cellNum Êµ¼ÊÁĞ
+	 * @param rowNum å®é™…è¡Œ
+	 * @param cellNum å®é™…åˆ—
 	 * @param content
 	 * @return
 	 */
 	private boolean writeExcel(Sheet sheet, int rowNum, int cellNum, String content) {
 		rowNum--;
-		cellNum--;// ½«sheetºÍĞĞÁĞ¶¼»¹Ô­ÎªÁã×´Ì¬
+		cellNum--;// å°†sheetå’Œè¡Œåˆ—éƒ½è¿˜åŸä¸ºé›¶çŠ¶æ€
 		if (rowNum < 0)
 			return false;
 		try {
@@ -684,32 +684,32 @@ public class ExcelOperate {
 		}
 	}
 	 /**
-	  * Ğ´ÈëlistµÈ
+	  * å†™å…¥listç­‰
 	  * @param sheet
-	  * @param rowNum Êµ¼ÊĞĞ
-	  * @param cellNum Êµ¼ÊÁĞ
+	  * @param rowNum å®é™…è¡Œ
+	  * @param cellNum å®é™…åˆ—
 	  * @param content
 	  * @return
 	  */
 	private boolean writeExcel(Sheet sheet, int rowNum, int cellNum, Iterable<String[]> content) {
 		rowNum--;
-		cellNum--;// ½«sheetºÍĞĞÁĞ¶¼»¹Ô­ÎªÁã×´Ì¬
+		cellNum--;// å°†sheetå’Œè¡Œåˆ—éƒ½è¿˜åŸä¸ºé›¶çŠ¶æ€
 		if (rowNum < 0)
 			return false;
 		try {
 			int i = 0;
 			for (String[] rowcontent : content) {
-				int writerow = i + rowNum;// Ğ´ÈëµÄĞĞÊı
+				int writerow = i + rowNum;// å†™å…¥çš„è¡Œæ•°
 				Row row = sheet.getRow(writerow);
 				if (row == null) {
 					row = sheet.createRow(writerow);
 				}
 				if (rowcontent == null)
 					continue;
-				for (int j = 0; j < rowcontent.length; j++) // Ğ´Èë
+				for (int j = 0; j < rowcontent.length; j++) // å†™å…¥
 				{
 					if (rowcontent[j] == null)
-						continue; // Ìø¹ı¿ÕÖµ
+						continue; // è·³è¿‡ç©ºå€¼
 					Cell cell = row.createCell((short) (cellNum + j));
 					try {
 						double tmpValue = Double.parseDouble(rowcontent[j]);
@@ -728,21 +728,21 @@ public class ExcelOperate {
 		}
 	}
 	 /**
-	     * ÌõÎÄ¼şĞ´ÈëexcelÎÄ¼ş£¬
-	     * ÉèÖÃĞ´ÈëµÄsheetÊı£¬ĞĞÊı£¬ÁĞÊıºÍÄÚÈİ£¬Ğ´ÈëµÄÄÚÈİÄ¬ÈÏÎªString[],Éè¶¨Ğ´ÈëĞĞ/ÁĞ
-	     * String[]ÖĞµÄnull»á×Ô¶¯Ìø¹ı
-	     * ÆäÖĞsheetÊı£¬ĞĞÊı£¬ÁĞÊı£¬¶¼ÎªÊµ¼ÊÊıÄ¿£¬²»ÓÃ¼õÈ¥1
-	     * µ±sheetNumÉèÖÃ³¬³öÒÑ´æÔÚsheetÊıÄ¿Ê±£¬ÔòÎªĞÂ½¨sheetĞ´Èë
+	     * æ¡æ–‡ä»¶å†™å…¥excelæ–‡ä»¶ï¼Œ
+	     * è®¾ç½®å†™å…¥çš„sheetæ•°ï¼Œè¡Œæ•°ï¼Œåˆ—æ•°å’Œå†…å®¹ï¼Œå†™å…¥çš„å†…å®¹é»˜è®¤ä¸ºString[],è®¾å®šå†™å…¥è¡Œ/åˆ—
+	     * String[]ä¸­çš„nullä¼šè‡ªåŠ¨è·³è¿‡
+	     * å…¶ä¸­sheetæ•°ï¼Œè¡Œæ•°ï¼Œåˆ—æ•°ï¼Œéƒ½ä¸ºå®é™…æ•°ç›®ï¼Œä¸ç”¨å‡å»1
+	     * å½“sheetNumè®¾ç½®è¶…å‡ºå·²å­˜åœ¨sheetæ•°ç›®æ—¶ï¼Œåˆ™ä¸ºæ–°å»ºsheetå†™å…¥
 	     * @param sheetNum
 	     * @param rowNum
 	     * @param cellNum
 	     * @param content
-	     * @param raw trueÎªĞ´ÈëÄ³Ò»ĞĞ£¬Éè¶¨falseÎªĞ´ÈëÄ³Ò»ÁĞ
+	     * @param raw trueä¸ºå†™å…¥æŸä¸€è¡Œï¼Œè®¾å®šfalseä¸ºå†™å…¥æŸä¸€åˆ—
 		 */
 	 public boolean WriteExcel(boolean save,int sheetNum, int rowNum, int cellNum, String[] content, boolean raw) {
 		 initialExcel();
-		 	sheetNum--;rowNum--;cellNum--;//½«sheetºÍĞĞÁĞ¶¼»¹Ô­ÎªÁã×´Ì¬
-		 	int writeNumber=content.length;//Õâ¸ö¾ÍÊÇÊı×éµÚÒ»Î¬µÄÊıÁ¿
+		 	sheetNum--;rowNum--;cellNum--;//å°†sheetå’Œè¡Œåˆ—éƒ½è¿˜åŸä¸ºé›¶çŠ¶æ€
+		 	int writeNumber=content.length;//è¿™ä¸ªå°±æ˜¯æ•°ç»„ç¬¬ä¸€ç»´çš„æ•°é‡
 	    	 if (sheetNum < -1 || rowNum < 0)
 	    		   return false;
 	    	 try {
@@ -750,10 +750,10 @@ public class ExcelOperate {
 	    			 sheet=wb.getSheetAt(sheetNum);  						 
 	    		 } 
 	    		 catch (Exception e) {
-	    			 sheet=wb.createSheet("sheet"+(getSheetCount()+1));//ĞÂ½¨sheet					 
+	    			 sheet=wb.createSheet("sheet"+(getSheetCount()+1));//æ–°å»ºsheet					 
 	    		 }
 	    		  
-	    		 if(raw==true) {//ºá×ÅĞ´ÈëÒ»ĞĞ
+	    		 if(raw==true) {//æ¨ªç€å†™å…¥ä¸€è¡Œ
 	    			 Row row=sheet.getRow(rowNum);
 	    			 if(row==null) {
 	    				 row=sheet.createRow(rowNum); 
@@ -799,21 +799,21 @@ public class ExcelOperate {
 	 }
 	 
 	 /**
-	     * ÌõÎÄ¼şĞ´ÈëexcelÎÄ¼ş£¬
-	     * ÉèÖÃĞ´ÈëµÄsheetÊı£¬ĞĞÊı£¬ÁĞÊıºÍÄÚÈİ£¬Ğ´ÈëµÄÄÚÈİÄ¬ÈÏÎªList<String>,Éè¶¨Ğ´ÈëĞĞ/ÁĞ
-	     * String[]ÖĞµÄnull»á×Ô¶¯Ìø¹ı
-	     * ÆäÖĞsheetÊı£¬ĞĞÊı£¬ÁĞÊı£¬¶¼ÎªÊµ¼ÊÊıÄ¿£¬²»ÓÃ¼õÈ¥1
-	     * µ±sheetNumÉèÖÃ³¬³öÒÑ´æÔÚsheetÊıÄ¿Ê±£¬ÔòÎªĞÂ½¨sheetĞ´Èë
+	     * æ¡æ–‡ä»¶å†™å…¥excelæ–‡ä»¶ï¼Œ
+	     * è®¾ç½®å†™å…¥çš„sheetæ•°ï¼Œè¡Œæ•°ï¼Œåˆ—æ•°å’Œå†…å®¹ï¼Œå†™å…¥çš„å†…å®¹é»˜è®¤ä¸ºList<String>,è®¾å®šå†™å…¥è¡Œ/åˆ—
+	     * String[]ä¸­çš„nullä¼šè‡ªåŠ¨è·³è¿‡
+	     * å…¶ä¸­sheetæ•°ï¼Œè¡Œæ•°ï¼Œåˆ—æ•°ï¼Œéƒ½ä¸ºå®é™…æ•°ç›®ï¼Œä¸ç”¨å‡å»1
+	     * å½“sheetNumè®¾ç½®è¶…å‡ºå·²å­˜åœ¨sheetæ•°ç›®æ—¶ï¼Œåˆ™ä¸ºæ–°å»ºsheetå†™å…¥
 	     * @param sheetNum
 	     * @param rowNum
 	     * @param cellNum
 	     * @param content
-	     * @param raw trueÎªĞ´ÈëÄ³Ò»ĞĞ£¬Éè¶¨falseÎªĞ´ÈëÄ³Ò»ÁĞ
+	     * @param raw trueä¸ºå†™å…¥æŸä¸€è¡Œï¼Œè®¾å®šfalseä¸ºå†™å…¥æŸä¸€åˆ—
 		 */
 	 public boolean WriteExcel(boolean save,int sheetNum, int rowNum, int cellNum, List<String> content, boolean raw) {
 		 initialExcel();
-		 	sheetNum--;rowNum--;cellNum--;//½«sheetºÍĞĞÁĞ¶¼»¹Ô­ÎªÁã×´Ì¬
-		 	int writeNumber=content.size();//Õâ¸ö¾ÍÊÇÊı×éµÚÒ»Î¬µÄÊıÁ¿
+		 	sheetNum--;rowNum--;cellNum--;//å°†sheetå’Œè¡Œåˆ—éƒ½è¿˜åŸä¸ºé›¶çŠ¶æ€
+		 	int writeNumber=content.size();//è¿™ä¸ªå°±æ˜¯æ•°ç»„ç¬¬ä¸€ç»´çš„æ•°é‡
 		 	boolean flag;
 	    	 if (sheetNum < -1 || rowNum < 0)
 	    		   return false;
@@ -822,10 +822,10 @@ public class ExcelOperate {
 	    			 sheet=wb.getSheetAt(sheetNum);  						 
 	    		 } 
 	    		 catch (Exception e) {
-	    			 sheet=wb.createSheet("sheet"+(getSheetCount()+1));//ĞÂ½¨sheet					 
+	    			 sheet=wb.createSheet("sheet"+(getSheetCount()+1));//æ–°å»ºsheet					 
 	    		 }
 	    		  
-	    		 if(raw==true)//ºá×ÅĞ´ÈëÒ»ĞĞ
+	    		 if(raw==true)//æ¨ªç€å†™å…¥ä¸€è¡Œ
 	    		 {	
 	    			 Row row=sheet.getRow(rowNum);
 	    			 if(row==null) {
@@ -871,9 +871,9 @@ public class ExcelOperate {
 	    	 }
 	 }
 	 
-///////////////////////±£´æÎÄ¼ş·½·¨/////////////////////////////////////	 
+///////////////////////ä¿å­˜æ–‡ä»¶æ–¹æ³•/////////////////////////////////////	 
 	    /**
-	     * ±£´æexcelÎÄ¼ş£¬Ê¹ÓÃÒÔÇ°µÄÎÄ¼şÃû¡£ÓĞÖØÔØ
+	     * ä¿å­˜excelæ–‡ä»¶ï¼Œä½¿ç”¨ä»¥å‰çš„æ–‡ä»¶åã€‚æœ‰é‡è½½
 		 */
 	 public boolean Save() {
 		 if(filename=="") return false;
@@ -889,8 +889,8 @@ public class ExcelOperate {
 		}
 	}
 	     /**
-	      * ÊäÈëÎÄ¼şÃû
-	     * ±£´æexcelÎÄ¼ş£¬Áí´æÎª
+	      * è¾“å…¥æ–‡ä»¶å
+	     * ä¿å­˜excelæ–‡ä»¶ï¼Œå¦å­˜ä¸º
 		 */
 	 public boolean Save(String newfilename) {
 		 try {
@@ -904,11 +904,11 @@ public class ExcelOperate {
 			return false;
 		}
 	}
-///////////////////¹Ø±Õ¶ÔÏó////////////////////////////////
+///////////////////å…³é—­å¯¹è±¡////////////////////////////////
 	 /**
-	  * ÔİÊ±Ã»¹¦ÄÜ
+	  * æš‚æ—¶æ²¡åŠŸèƒ½
 	  */
-	 public void Close() {//ÔİÊ±²»»á
+	 public void Close() {//æš‚æ—¶ä¸ä¼š
 		 wb = null;// book [includes sheet]
 		 sheet = null;
 	 }

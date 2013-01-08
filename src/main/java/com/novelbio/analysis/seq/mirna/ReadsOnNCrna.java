@@ -10,7 +10,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.generalConf.TitleFormatNBC;
 /**
- * ±È¶Ôµ½RefSeqÉÏµÄncRNA£¬¿´Æä¾ßÌåÇé¿ö
+ * æ¯”å¯¹åˆ°RefSeqä¸Šçš„ncRNAï¼Œçœ‹å…¶å…·ä½“æƒ…å†µ
  * @author zong0jie
  *
  */
@@ -42,7 +42,7 @@ public class ReadsOnNCrna {
 		}
 	}
 	/**
-	 * ½«½á¹ûĞ´ÈëÎÄ±¾ÖĞ
+	 * å°†ç»“æœå†™å…¥æ–‡æœ¬ä¸­
 	 * @param outTxt
 	 */
 	public void writeToFile(String outTxt) {
@@ -63,7 +63,7 @@ public class ReadsOnNCrna {
 		return mapNCrnaID_2_nameDescripValue;
 	}
 	
-	/** ½«¸ø¶¨µÄ¼¸×émiRNAµÄÖµºÏ²¢ÆğÀ´ */
+	/** å°†ç»™å®šçš„å‡ ç»„miRNAçš„å€¼åˆå¹¶èµ·æ¥ */
 	public ArrayList<String[]> combValue(HashMap<String, HashMap<String, Double>> mapPrefix2NcRNAValue) {
 		CombMapNcRNA combMapNcRNA = new CombMapNcRNA();
 		return combMapNcRNA.combValue(mapPrefix2NcRNAValue);

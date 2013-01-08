@@ -20,7 +20,7 @@ public class ServNCBIID implements MapNCBIID{
 	public ServNCBIID() {
 		mapNCBIID = (MapNCBIID) SpringFactory.getFactory().getBean("mapNCBIID");
 	}
-	//TODO Õı¹æĞ´·¨
+	//TODO æ­£è§„å†™æ³•
 //	@Inject
 //	protected MapNCBIID mapNCBIID;
 //	private static ServGeneAnno info; 
@@ -49,12 +49,12 @@ public class ServNCBIID implements MapNCBIID{
 		
 	}
 	/**
-	 * Ê×ÏÈÓÃÖ¸¶¨µÄÊı¾İ¿â²éÕÒNCBIID±í
-	 * Èç¹ûÕÒµ½ÁË¾Í·µ»ØÕÒµ½µÄµÚÒ»¸öµÄncbiid¶ÔÏó
-	 * Èç¹ûÃ»ÕÒµ½£¬ÔÙÈ¥³ıdbinfo²éÕÒ£¬Èç¹û»¹Ã»ÕÒµ½£¬¾Í·µ»ØNull
+	 * é¦–å…ˆç”¨æŒ‡å®šçš„æ•°æ®åº“æŸ¥æ‰¾NCBIIDè¡¨
+	 * å¦‚æœæ‰¾åˆ°äº†å°±è¿”å›æ‰¾åˆ°çš„ç¬¬ä¸€ä¸ªçš„ncbiidå¯¹è±¡
+	 * å¦‚æœæ²¡æ‰¾åˆ°ï¼Œå†å»é™¤dbinfoæŸ¥æ‰¾ï¼Œå¦‚æœè¿˜æ²¡æ‰¾åˆ°ï¼Œå°±è¿”å›Null
 	 * @param geneID
 	 * @param taxID
-	 * @param dbInfo Îªnull±íÊ¾²»ÉèÖÃ
+	 * @param dbInfo ä¸ºnullè¡¨ç¤ºä¸è®¾ç½®
 	 * @return
 	 */
 	public NCBIID queryGenUniID(int geneID, int taxID, String dbInfo) {
@@ -69,7 +69,7 @@ public class ServNCBIID implements MapNCBIID{
 			ncbiid.setDBInfo(dbInfo.trim());
 		}
 		ArrayList<NCBIID> lsNcbiids= queryLsNCBIID(ncbiid);
-		//Èç¹û´øÊı¾İ¿âµÄÃ»ÕÒµ½£¬¾ÍÖØÖÃÊı¾İ¿â
+		//å¦‚æœå¸¦æ•°æ®åº“çš„æ²¡æ‰¾åˆ°ï¼Œå°±é‡ç½®æ•°æ®åº“
 		if (!dbInfo.equals("") && (lsNcbiids == null || lsNcbiids.size() < 1) ) {
 			ncbiid.setDBInfo("");
 			lsNcbiids= queryLsNCBIID(ncbiid);
@@ -83,29 +83,29 @@ public class ServNCBIID implements MapNCBIID{
 	}
 	
 	/**
-	 * <b>Ã»ÓĞaccID£¬·ÅÆúÉı¼¶</b>
-	 * Ã»ÓĞ¸ÃID¾Í²åÈë£¬ÓĞ¸ÃIDµÄ»°¿´Èç¹ûĞèÒªoverride£¬Èç¹ûoverrideÇÒÊı¾İ¿â²»Ò»Ñù£¬¾Í¸²¸ÇÉı¼¶
+	 * <b>æ²¡æœ‰accIDï¼Œæ”¾å¼ƒå‡çº§</b>
+	 * æ²¡æœ‰è¯¥IDå°±æ’å…¥ï¼Œæœ‰è¯¥IDçš„è¯çœ‹å¦‚æœéœ€è¦overrideï¼Œå¦‚æœoverrideä¸”æ•°æ®åº“ä¸ä¸€æ ·ï¼Œå°±è¦†ç›–å‡çº§
 	 * @param nCBIID
 	 * @param override
 	 */
 	public boolean updateNCBIID(NCBIID ncbiid, boolean override) {
 		if (ncbiid.getAccID().length() > 30) {
-			logger.error("accIDÌ«³¤£º" + ncbiid.getAccID() + "\t" + ncbiid.getDBInfo());
+			logger.error("accIDå¤ªé•¿ï¼š" + ncbiid.getAccID() + "\t" + ncbiid.getDBInfo());
 			if (ncbiid.getAccID().contains("GO:")) {
 				logger.error("stop");
 			}
 			return false;
 		}
 		String db = ncbiid.getDBInfo();
-		//²éÑ¯µÄÊ±ºòÎªÁË·ÀÖ¹²é²»µ½£¬ÏÈ³ıÈ¥dbinfoµÄĞÅÏ¢
+		//æŸ¥è¯¢çš„æ—¶å€™ä¸ºäº†é˜²æ­¢æŸ¥ä¸åˆ°ï¼Œå…ˆé™¤å»dbinfoçš„ä¿¡æ¯
 		ncbiid.setDBInfo("");
 		if (ncbiid.getAccID() == null) {
-			logger.error("accID²»´æÔÚ£¬²»ÄÜÉı¼¶");
+			logger.error("accIDä¸å­˜åœ¨ï¼Œä¸èƒ½å‡çº§");
 			return false;
 		}
 		ArrayList<NCBIID> lsResult = mapNCBIID.queryLsNCBIID(ncbiid);
 		if (lsResult == null || lsResult.size() == 0) {
-			//²åÈëµÄÊ±ºòÔÙ¼ÓÉÏ
+			//æ’å…¥çš„æ—¶å€™å†åŠ ä¸Š
 			ncbiid.setDBInfo(db);
 			try {
 				mapNCBIID.insertNCBIID(ncbiid);
@@ -134,10 +134,10 @@ public class ServNCBIID implements MapNCBIID{
 		return true;
 	}
 	/**
-	 * Èç¹û´æÔÚÔò·µ»ØµÚÒ»¸öÕÒµ½µÄgeneID
-	 * ²»´æÔÚ¾Í·µ»Ønull
-	 * @param geneID ÊäÈëgeneID
-	 * @param taxID ÎïÖÖID
+	 * å¦‚æœå­˜åœ¨åˆ™è¿”å›ç¬¬ä¸€ä¸ªæ‰¾åˆ°çš„geneID
+	 * ä¸å­˜åœ¨å°±è¿”å›null
+	 * @param geneID è¾“å…¥geneID
+	 * @param taxID ç‰©ç§ID
 	 * @return
 	 */
 	public NCBIID queryNCBIID(int geneID, int taxID) {

@@ -85,7 +85,7 @@ public class GuiMiRNASeq extends JPanel{
 	public GuiMiRNASeq() {
 		setLayout(null);
 
-		//是否将全部的bed文件mapping至基因组上，用于看基因组上的reads分布
+		//鏄惁灏嗗叏閮ㄧ殑bed鏂囦欢mapping鑷冲熀鍥犵粍涓婏紝鐢ㄤ簬鐪嬪熀鍥犵粍涓婄殑reads鍒嗗竷
 		chkMapAllBedFileToGenome = new JCheckBox("mapping all bedFile to Genome");
 		chkMapAllBedFileToGenome.setBounds(23, 310, 245, 22);
 		add(chkMapAllBedFileToGenome);
@@ -348,7 +348,7 @@ public class GuiMiRNASeq extends JPanel{
 			lsBedFile2Prefix = ctrlMiRNAfastq.getLsGenomeBed2Prefix();
 		}
 		if (chkPredictMiRNA.isSelected()) {
-			//如果没有mapping，则取输入的bed文件
+			//濡傛灉娌℃湁mapping锛屽垯鍙栬緭鍏ョ殑bed鏂囦欢
 			if (lsBedFile2Prefix.size() == 0) {
 				lsBedFile2Prefix = sclNovelMiRNAbed.getLsDataInfo();
 			}
@@ -383,7 +383,7 @@ public class GuiMiRNASeq extends JPanel{
 	}
 
 	/**
-	 * 将输出的那个txtprefix分割为outpath和prefix
+	 * 灏嗚緭鍑虹殑閭ｄ釜txtprefix鍒嗗壊涓簅utpath鍜宲refix
 	 * @return
 	 * 1: prefix<br>
 	 * 0: path
@@ -402,8 +402,8 @@ public class GuiMiRNASeq extends JPanel{
 	}
 	
 	/**
-	 * 是否单独运行，就是前面是否有mapping
-	 * @param solo 前面是否有mapping
+	 * 鏄惁鍗曠嫭杩愯锛屽氨鏄墠闈㈡槸鍚︽湁mapping
+	 * @param solo 鍓嶉潰鏄惁鏈塵apping
 	 */
 	private void runExtractSeq() {
 		ExtractSmallRNASeq extractSmallRNASeq = new ExtractSmallRNASeq();

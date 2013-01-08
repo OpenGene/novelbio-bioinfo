@@ -32,11 +32,11 @@ public class GOctrl {
 	
 	
 	@RequestMapping(method = RequestMethod.GET)
-	// ·ÃÎÊµØÖ· http://localhost:8080/Novelbio/test.htm
+	// è®¿é—®åœ°å€ http://localhost:8080/Novelbio/test.htm
 	public ModelAndView getForm() {
-		// 1.Ö¸¶¨ÊÓÍ¼²¢·µ»Ø
+		// 1.æŒ‡å®šè§†å›¾å¹¶è¿”å›
 		ModelAndView mav = new ModelAndView("GeneOntology");
-		// ¿ÉÒÔÍùÀïÃæÖ±½Ó²åÈëÒ»¸ö ĞÂ½¨¶ÔÏó£¬ÕâÑù¶ÔÓ¦µÄ±íÖĞ¾Í»áÌîÉÏÏà¹ØµÄĞÅÏ¢
+		// å¯ä»¥å¾€é‡Œé¢ç›´æ¥æ’å…¥ä¸€ä¸ª æ–°å»ºå¯¹è±¡ï¼Œè¿™æ ·å¯¹åº”çš„è¡¨ä¸­å°±ä¼šå¡«ä¸Šç›¸å…³çš„ä¿¡æ¯
 		GoParam goParam = new GoParam();
 		goParam.setGoType(GOInfoAbs.GO_CC);
 //		goParam.setInputFile("fesefsef");
@@ -44,7 +44,7 @@ public class GOctrl {
 		goParam.setQueryTaxID(9823);
 		mav.addObject("goparam", goParam);
 		mav.addObject("hashGoType",GeneID.getMapGOAbbr2GOID());
-		mav.addObject("summiturl", "goanalysis.htm");//×°Èësession,Í¨¹ısession´«µİ£¬Ò²¿ÉÒÔÍ¨¹ıurl´«µİ
+		mav.addObject("summiturl", "goanalysis.htm");//è£…å…¥session,é€šè¿‡sessionä¼ é€’ï¼Œä¹Ÿå¯ä»¥é€šè¿‡urlä¼ é€’
 		ServNCBIID servNCBIID = new ServNCBIID();
 		NCBIID ncbiid = new NCBIID();
 		ncbiid.setAccID("tp53"); ncbiid.setTaxID(9606);
@@ -55,26 +55,26 @@ public class GOctrl {
 		return mav;
 	}
 	
-//    //redirect: Á¬½Ó´«¸øä¯ÀÀÆ÷£¬ä¯ÀÀÆ÷ÔÙ´Î·ÃÎÊ£¬ÍøÖ·»á·¢Éú±ä»¯£¬²ÎÊıÍ¨¹ısession´«µİ
+//    //redirect: è¿æ¥ä¼ ç»™æµè§ˆå™¨ï¼Œæµè§ˆå™¨å†æ¬¡è®¿é—®ï¼Œç½‘å€ä¼šå‘ç”Ÿå˜åŒ–ï¼Œå‚æ•°é€šè¿‡sessionä¼ é€’
 //    @RequestMapping( method = RequestMethod.POST)  
 //    public String post(GoParam goParam, BindingResult result,Model model) {
-//        model.addAttribute("goParam", goParam);//×°Èësession,Í¨¹ısession´«µİ£¬Ò²¿ÉÒÔÍ¨¹ıurl´«µİ
+//        model.addAttribute("goParam", goParam);//è£…å…¥session,é€šè¿‡sessionä¼ é€’ï¼Œä¹Ÿå¯ä»¥é€šè¿‡urlä¼ é€’
 //        return "redirect:goanalysis/result.htm";
 //    }
-    //redirect: Á¬½Ó´«¸øä¯ÀÀÆ÷£¬ä¯ÀÀÆ÷ÔÙ´Î·ÃÎÊ£¬ÍøÖ·»á·¢Éú±ä»¯£¬²ÎÊıÍ¨¹ısession´«µİ
+    //redirect: è¿æ¥ä¼ ç»™æµè§ˆå™¨ï¼Œæµè§ˆå™¨å†æ¬¡è®¿é—®ï¼Œç½‘å€ä¼šå‘ç”Ÿå˜åŒ–ï¼Œå‚æ•°é€šè¿‡sessionä¼ é€’
     @RequestMapping(method = RequestMethod.POST)  
     public ModelAndView post2(GoParam goParam, BindingResult result,Model model)  {
-        model.addAttribute("message", goParam.getInputFile());//×°Èësession,Í¨¹ısession´«µİ£¬Ò²¿ÉÒÔÍ¨¹ıurl´«µİ
-        model.addAttribute("counter", goParam.getQueryTaxID());//×°Èësession,Í¨¹ısession´«µİ£¬Ò²¿ÉÒÔÍ¨¹ıurl´«µİ
+        model.addAttribute("message", goParam.getInputFile());//è£…å…¥session,é€šè¿‡sessionä¼ é€’ï¼Œä¹Ÿå¯ä»¥é€šè¿‡urlä¼ é€’
+        model.addAttribute("counter", goParam.getQueryTaxID());//è£…å…¥session,é€šè¿‡sessionä¼ é€’ï¼Œä¹Ÿå¯ä»¥é€šè¿‡urlä¼ é€’
         ModelAndView modelAndView = new ModelAndView("test");
         modelAndView.addObject("message", goParam.getInputFile());
         modelAndView.addObject("counter", goParam.getQueryTaxID());
         try {
         	 if (!goParam.getInputFile().isEmpty()) {
                  byte[] bytes = goParam.getInputFile().getBytes();
-                 FileOutputStream fos = new FileOutputStream("/home/zong0jie/×ÀÃæ/testupload"); // ÉÏ´«µ½Ğ´ËÀµÄÉÏ´«Â·¾¶
-                 fos.write(bytes);  //Ğ´ÈëÎÄ¼ş
-                 System.out.println("/home/zong0jie/×ÀÃæ/testupload");
+                 FileOutputStream fos = new FileOutputStream("/home/zong0jie/æ¡Œé¢/testupload"); // ä¸Šä¼ åˆ°å†™æ­»çš„ä¸Šä¼ è·¯å¾„
+                 fos.write(bytes);  //å†™å…¥æ–‡ä»¶
+                 System.out.println("/home/zong0jie/æ¡Œé¢/testupload");
                }
 		} catch (Exception e) {
 			// TODO: handle exception

@@ -1,30 +1,30 @@
 package com.novelbio.analysis.seq.fasta;
-/** ÕÒµ½Ò»¶ÎĞòÁĞÖĞ×î³¤µÄ×ªÂ¼±¾µÈµÈ */
+/** æ‰¾åˆ°ä¸€æ®µåºåˆ—ä¸­æœ€é•¿çš„è½¬å½•æœ¬ç­‰ç­‰ */
 public class SeqfastaStatisticsCDS {
 	
-	/** ×î³¤aaËùÔÚµÄorf */
+	/** æœ€é•¿aaæ‰€åœ¨çš„orf */
 	int orfAllLen;
-	/** ×î³¤ÒÔM¿ªÍ·µÄaaËùÔÚµÄorf */
+	/** æœ€é•¿ä»¥Må¼€å¤´çš„aaæ‰€åœ¨çš„orf */
 	int orfMstartLen;
-	/** ×î³¤aaµÄ·½Ïò */
+	/** æœ€é•¿aaçš„æ–¹å‘ */
 	boolean cis5to3AllLen;
-	/** ×î³¤ÒÔM¿ªÍ·µÄaaµÄ·½Ïò */
+	/** æœ€é•¿ä»¥Må¼€å¤´çš„aaçš„æ–¹å‘ */
 	boolean cis5to3MstartLen;
-	/** ÊÇ·ñÎªÈ«³¤cds£¬Ò²ÊÇÎÒÃÇÏëÒªÖªµÀµÄÖ¸±ê */
+	/** æ˜¯å¦ä¸ºå…¨é•¿cdsï¼Œä¹Ÿæ˜¯æˆ‘ä»¬æƒ³è¦çŸ¥é“çš„æŒ‡æ ‡ */
 	boolean fullCds;
-	/** ´ÓÒ»¸östopµ½ÁíÒ»¸östopµÄ×î³¤aa³¤¶È */
+	/** ä»ä¸€ä¸ªstopåˆ°å¦ä¸€ä¸ªstopçš„æœ€é•¿aaé•¿åº¦ */
 	int AllAAlen;
-	/** ´ÓÒ»¸öMµ½Ò»¸östopµÄ×î³¤aa³¤¶È */
+	/** ä»ä¸€ä¸ªMåˆ°ä¸€ä¸ªstopçš„æœ€é•¿aaé•¿åº¦ */
 	int MstartAAlen;
 	
-	/** AllAAĞòÁĞ´ÓµÚ¼¸¸ö°±»ùËá¿ªÊ¼£¬´Ó0¿ªÊ¼¼ÇÊı */
+	/** AllAAåºåˆ—ä»ç¬¬å‡ ä¸ªæ°¨åŸºé…¸å¼€å§‹ï¼Œä»0å¼€å§‹è®°æ•° */
 	int startIndexAllAA = 0;
-	/** MaaĞòÁĞ´ÓµÚ¼¸¸ö°±»ùËá¿ªÊ¼£¬´Ó0¿ªÊ¼¼ÇÊı */
+	/** Maaåºåˆ—ä»ç¬¬å‡ ä¸ªæ°¨åŸºé…¸å¼€å§‹ï¼Œä»0å¼€å§‹è®°æ•° */
 	int startIndexMAA = 0;
 	
 	SeqFasta seqFasta;
 	
-	/** ±©Â¶³öÀ´½ö¹©µ¥Ôª²âÊÔ */
+	/** æš´éœ²å‡ºæ¥ä»…ä¾›å•å…ƒæµ‹è¯• */
 	public SeqfastaStatisticsCDS(SeqFasta seqFasta) {
 		this.seqFasta = seqFasta;
 		calculateAAseqInfo();
@@ -51,7 +51,7 @@ public class SeqfastaStatisticsCDS {
 	public int getStartIndexAllNR() {
 		return startIndexAllAA * 3 + orfAllLen;
 	}
-	/** MaaĞòÁĞ´ÓµÚ¼¸¸ö°±»ùËá¿ªÊ¼£¬´Ó0¿ªÊ¼¼ÇÊı */
+	/** Maaåºåˆ—ä»ç¬¬å‡ ä¸ªæ°¨åŸºé…¸å¼€å§‹ï¼Œä»0å¼€å§‹è®°æ•° */
 	public int getStartIndexMAA() {
 		return startIndexMAA;
 	}
@@ -94,7 +94,7 @@ public class SeqfastaStatisticsCDS {
 		calculateFullLengthCDS(seqAAtrans1, 1, false);
 		calculateFullLengthCDS(seqAAtrans2, 2, false);
 	}
-	/** ¸øJunit²âÊÔÓÃµÄ */
+	/** ç»™Junitæµ‹è¯•ç”¨çš„ */
 	public void calculateFullLengthCDS(String aaseq, int orf, boolean cis5to3) {
 		int tmpAllAAlen = 0;
 		int tmpMstartAAlen = 0;

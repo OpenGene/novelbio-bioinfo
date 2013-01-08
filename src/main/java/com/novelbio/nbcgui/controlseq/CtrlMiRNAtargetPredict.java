@@ -14,7 +14,7 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
 
 /**
- * Í¬Ê±ÓÃmirandaºÍRNAhybrid·ÖÎö£¬½á¹ûÈ¡²¢¼¯
+ * åŒæ—¶ç”¨mirandaå’ŒRNAhybridåˆ†æï¼Œç»“æœå–å¹¶é›†
  * @author zong0jie
  *
  */
@@ -39,11 +39,11 @@ public class CtrlMiRNAtargetPredict {
 	MiRNAtargetMiranda miranda = new MiRNAtargetMiranda();
 	MiRNAtargetRNAhybrid miRNAtargetRNAhybrid = new MiRNAtargetRNAhybrid();
 	String txtMirTargetOverlap;
-	/** ±¾·½·¨ºÍsetInputUTR3File¶şÑ¡Ò» */
+	/** æœ¬æ–¹æ³•å’ŒsetInputUTR3FileäºŒé€‰ä¸€ */
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		miranda.setGffChrAbs(gffChrAbs);
 	}
-	/** Éè¶¨UTR3µÄĞòÁĞ£¬Ã»ÓĞµÄ»°¾Í´ÓgffChrSeqÖĞÌáÈ¡ */
+	/** è®¾å®šUTR3çš„åºåˆ—ï¼Œæ²¡æœ‰çš„è¯å°±ä»gffChrSeqä¸­æå– */
 	public void setInputUTR3File(String inputUTR3seq) {
 		if (!FileOperate.isFileExistAndBigThanSize(inputUTR3seq, 10)) {
 			return;
@@ -55,7 +55,7 @@ public class CtrlMiRNAtargetPredict {
 		miRNAtargetRNAhybrid.setInputMiRNAseq(inputMiRNAseq);
 	}
 	/**
-	 * ×îºó½á¹û½»¼¯ÎÄ¼ş
+	 * æœ€åç»“æœäº¤é›†æ–‡ä»¶
 	 * @param txtMirTargetOverlap
 	 */
 	public void setMirTargetOverlap(String txtMirTargetOverlap) {
@@ -63,19 +63,19 @@ public class CtrlMiRNAtargetPredict {
 		miranda.setOutFile(FileOperate.changeFilePrefix(txtMirTargetOverlap, "miranda_", null));
 		miRNAtargetRNAhybrid.setOutFile(FileOperate.changeFilePrefix(txtMirTargetOverlap, "miRNAtarget_", null));
 	}
-	/** RNAhybridµÄÎïÖÖÀàĞÍ */
+	/** RNAhybridçš„ç‰©ç§ç±»å‹ */
 	public void setSpeciesType(RNAhybridClass rAhybridClass) {
 		miRNAtargetRNAhybrid.setSpeciesType(rAhybridClass);
 	}
-	/** Ä¬ÈÏ0.01 */
+	/** é»˜è®¤0.01 */
 	public void setTargetPvalue(double targetPvalue) {
 		miRNAtargetRNAhybrid.setTargetPvalue(targetPvalue);
 	}
-	/** Ä¬ÈÏ150 */
+	/** é»˜è®¤150 */
 	public void setTargetScore(int targetScore) {
 		miranda.setTargetScore(targetScore);
 	}
-	/** Ä¬ÈÏ-15£¬ÊäÈëµÄÊı»áÈ¡¾ø¶ÔÖµÔÙ¼Ó¸ººÅ */
+	/** é»˜è®¤-15ï¼Œè¾“å…¥çš„æ•°ä¼šå–ç»å¯¹å€¼å†åŠ è´Ÿå· */
 	public void setTargetEnergy(int targetEnergy) {
 		miranda.setTargetEnergy(targetEnergy);
 		miRNAtargetRNAhybrid.setTargetEnergy(targetEnergy);

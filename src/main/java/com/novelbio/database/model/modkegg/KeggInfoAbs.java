@@ -30,15 +30,15 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 	
 	
 	/**
-	 * geneID»òUniID»òAccID
-	 * Èç¹ûÊÇAccID£¬ÄÇÃ´Ò»¶¨ÊÇÃ»ÓĞGeneIDºÍUniIDµÄ
+	 * geneIDæˆ–UniIDæˆ–AccID
+	 * å¦‚æœæ˜¯AccIDï¼Œé‚£ä¹ˆä¸€å®šæ˜¯æ²¡æœ‰GeneIDå’ŒUniIDçš„
 	 */
 	protected String genUniAccID = "";
 	
 //	static HashMap<Integer, String[]> hashTaxID = CopedID.getSpecies();
 	/**
-	 * geneID»òUniID»òAccID
-	 * Èç¹ûÊÇAccID£¬ÄÇÃ´Ò»¶¨ÊÇÃ»ÓĞGeneIDºÍUniIDµÄ
+	 * geneIDæˆ–UniIDæˆ–AccID
+	 * å¦‚æœæ˜¯AccIDï¼Œé‚£ä¹ˆä¸€å®šæ˜¯æ²¡æœ‰GeneIDå’ŒUniIDçš„
 	 */
 	public String getGenUniID() {
 		return this.genUniAccID;
@@ -46,15 +46,15 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 	
 	protected String keggID = null;
 	/**
-	 * »ñµÃ¸ÃIDËù¶ÔÓ¦µÄkeggID£¬Èç¹ûÃ»ÓĞ£¬Ôò·µ»Ønull
+	 * è·å¾—è¯¥IDæ‰€å¯¹åº”çš„keggIDï¼Œå¦‚æœæ²¡æœ‰ï¼Œåˆ™è¿”å›null
 	 */
 	public String getKegID() {
 		setKeggID();
 		return this.keggID;
 	}
 	/**
-	 * Éè¶¨¸ÃÀàµÄKeggIDµÈ£¬ĞèÒª¸ù¾İaccID£¬geneIDºÍUniIDµÈÑ¡Ôñ²»Í¬µÄ¶ÔÏó<br>
-	 * Æ©ÈçaccID¾ÍÊÇKGNIdKeg
+	 * è®¾å®šè¯¥ç±»çš„KeggIDç­‰ï¼Œéœ€è¦æ ¹æ®accIDï¼ŒgeneIDå’ŒUniIDç­‰é€‰æ‹©ä¸åŒçš„å¯¹è±¡<br>
+	 * è­¬å¦‚accIDå°±æ˜¯KGNIdKeg
 	 */
 	protected abstract void setKeggID();
 	
@@ -63,13 +63,13 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 		return this.taxID;
 	}
 	/**
-	 * ÊÇ·ñÒÑ¾­×°ÔØ¹ılskGentriesÁË
+	 * æ˜¯å¦å·²ç»è£…è½½è¿‡lskGentriesäº†
 	 */
 	boolean boolskGentries = false;
 	private ArrayList<KGentry> lskGentries = null;
 	/**
-	 * ·µ»Ø¸ÃgeneIDËù¶ÔÓ¦µÄKGentry
-	 * ´ËÊ±»áÇå¿ÕblastµÄ½á¹û
+	 * è¿”å›è¯¥geneIDæ‰€å¯¹åº”çš„KGentry
+	 * æ­¤æ—¶ä¼šæ¸…ç©ºblastçš„ç»“æœ
 	 * @return
 	 */
 	public ArrayList<KGentry> getKgGentries() {
@@ -87,8 +87,8 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 	}
 	
 	/**
-	 * ÊäÈëblastµ½µÄCopedIDs
-	 * ·µ»Ø¸ÃgeneIDËù¶ÔÓ¦µÄKGentry
+	 * è¾“å…¥blaståˆ°çš„CopedIDs
+	 * è¿”å›è¯¥geneIDæ‰€å¯¹åº”çš„KGentry
 	 * @return
 	 */
 	public ArrayList<KGentry> getLsKgGentries(ArrayList<? extends KeggInfoInter> ls_keggInfo) {
@@ -105,14 +105,14 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 	/////////////////////////////////////////////////////////////////////////////////////////
 	boolean boolsKgiDkeg2Kos = false;
 	/**
-	 * kegID2KOµÄ¶ÔÕÕ±í
+	 * kegID2KOçš„å¯¹ç…§è¡¨
 	 */
 	ArrayList<KGIDkeg2Ko> lsKgiDkeg2Kos = null;
 	
 	/**
-	 * »ñµÃ¸ÃkeggIDËù¶ÔÓ¦µÄKO<br>
-	 * Èç¹ûÃ»ÓĞ¾Í·µ»Ønull<br>
-	 * accIDĞèÒª½«Æä¸²¸Ç£¬ÒòÎªÀíÂÛÉÏaccIDÖ»ÓĞÏ£Íû¶ÔÓ¦component
+	 * è·å¾—è¯¥keggIDæ‰€å¯¹åº”çš„KO<br>
+	 * å¦‚æœæ²¡æœ‰å°±è¿”å›null<br>
+	 * accIDéœ€è¦å°†å…¶è¦†ç›–ï¼Œå› ä¸ºç†è®ºä¸ŠaccIDåªæœ‰å¸Œæœ›å¯¹åº”component
 	 */
 	public ArrayList<String> getLsKo()
 	{
@@ -142,13 +142,13 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 	
 
 	/**
-	 * Èç¹û±¾ÀàÊÇÈËÀàµÈ×¢ÊÍÈ«ÃæÎïÖÖµÄKG£¬ÄÇÃ´Õâ¸ö´æ´¢±¾ÉíÒÔ¼°blastµÄqueryÎïÖÖĞÅÏ¢£¬Ò²¾ÍÊÇmappingµ½queryÎïÖÖµÄentry
+	 * å¦‚æœæœ¬ç±»æ˜¯äººç±»ç­‰æ³¨é‡Šå…¨é¢ç‰©ç§çš„KGï¼Œé‚£ä¹ˆè¿™ä¸ªå­˜å‚¨æœ¬èº«ä»¥åŠblastçš„queryç‰©ç§ä¿¡æ¯ï¼Œä¹Ÿå°±æ˜¯mappingåˆ°queryç‰©ç§çš„entry
 	 */
 	private HashSet<KGentry> hashKegEntities = new HashSet<KGentry>();
 	/**
-	 * ÊäÈëblastµ½µÄcopedIDs£¬¿ÉÒÔÊÇ¶à¸ö
-	 * ·µ»Ø×îºóµÄKGentry½á¹û£¬°üÀ¨Ã»ÓĞblastµÄ½á¹û
-	 * @param lscopedIDs Èç¹ûÃ»ÓĞblast£¬¾Í²»ÊäÈë¸ÃÏî£¬ÉèÖÃÎªnull¼´¿É
+	 * è¾“å…¥blaståˆ°çš„copedIDsï¼Œå¯ä»¥æ˜¯å¤šä¸ª
+	 * è¿”å›æœ€åçš„KGentryç»“æœï¼ŒåŒ…æ‹¬æ²¡æœ‰blastçš„ç»“æœ
+	 * @param lscopedIDs å¦‚æœæ²¡æœ‰blastï¼Œå°±ä¸è¾“å…¥è¯¥é¡¹ï¼Œè®¾ç½®ä¸ºnullå³å¯
 	 * @return
 	 */
 	public ArrayList<KGpathway> getLsKegPath(ArrayList<? extends KeggInfoInter> ls_keggInfo)
@@ -167,8 +167,8 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 	}
 	
 	/**
-	 * »ñµÃ¸ÃaccID¶ÔÓ¦µÄËùÓĞ²»ÖØ¸´µÄkeggpathway¶ÔÏó
-	 * <b>²»½øĞĞblast</b>
+	 * è·å¾—è¯¥accIDå¯¹åº”çš„æ‰€æœ‰ä¸é‡å¤çš„keggpathwayå¯¹è±¡
+	 * <b>ä¸è¿›è¡Œblast</b>
 	 * @return
 	 */
 	public ArrayList<KGpathway> getLsKegPath() {
@@ -184,7 +184,7 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 		if (lsKGentries == null) {
 			return null;
 		}
-		//ÓÃÀ´È¥ÈßÓà£¬¸ù¾İpathName½øĞĞÈ¥ÈßÓà
+		//ç”¨æ¥å»å†—ä½™ï¼Œæ ¹æ®pathNameè¿›è¡Œå»å†—ä½™
 		HashMap<String, KGpathway> hashPath = new HashMap<String, KGpathway>();
 		for (KGentry kGentry : lsKGentries) {
 			KGpathway kGpathwayQ = new KGpathway(); kGpathwayQ.setPathName(kGentry.getPathName());
@@ -195,10 +195,10 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 	}
 	
 	/**
-	 * ½«Í¨¹ıblast»ñµÃµÄKO list·ÅÈë£¬»ñµÃ±¾ÎïÖÖÏàÓ¦µÄKGentry list
-	 * Êµ¼Ê¾ÍÊÇÓÃÁíÒ»¸öcopedIDµÄKeggInfoµÄlsKO·ÅÈëÆäÖĞ
-	 * Èç¹ûÃ»ÓĞ¾Í·µ»Ønull
-	 * accIDĞèÒª½«Æä¸²¸Ç£¬ÒòÎªÀíÂÛÉÏaccIDÖ»ÓĞÏ£Íû¶ÔÓ¦component
+	 * å°†é€šè¿‡blastè·å¾—çš„KO listæ”¾å…¥ï¼Œè·å¾—æœ¬ç‰©ç§ç›¸åº”çš„KGentry list
+	 * å®é™…å°±æ˜¯ç”¨å¦ä¸€ä¸ªcopedIDçš„KeggInfoçš„lsKOæ”¾å…¥å…¶ä¸­
+	 * å¦‚æœæ²¡æœ‰å°±è¿”å›null
+	 * accIDéœ€è¦å°†å…¶è¦†ç›–ï¼Œå› ä¸ºç†è®ºä¸ŠaccIDåªæœ‰å¸Œæœ›å¯¹åº”component
 	 */
 	private void getBlastQInfo(List<String> lsKO)
 	{
@@ -210,20 +210,20 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 			KGIDkeg2Ko kgiDkeg2Ko = new KGIDkeg2Ko();  kgiDkeg2Ko.setKo(ko); kgiDkeg2Ko.setTaxID(taxID);
 			ArrayList<KGIDkeg2Ko> lsKgiDkeg2Kos = servKIDKeg2Ko.queryLsKGIDkeg2Ko(kgiDkeg2Ko);
 			ArrayList<KGentry> lskGentriesTmp = new ArrayList<KGentry>();
-			////////////////Èç¹ûgeneBlastµ½ÁËÈËÀà£¬²¢ÇÒµÃµ½ÁËÏàÓ¦µÄKO£¬ÄÇÃ´»ñµÃ¸ÃKOËù¶ÔÓ¦±¾ÎïÖÖµÄKeggID£¬²¢ÓÃKeggIDÖ±½Ómapping»Ø±¾»ùÒò////////////////////////////////////////////////////////////////
+			////////////////å¦‚æœgeneBlaståˆ°äº†äººç±»ï¼Œå¹¶ä¸”å¾—åˆ°äº†ç›¸åº”çš„KOï¼Œé‚£ä¹ˆè·å¾—è¯¥KOæ‰€å¯¹åº”æœ¬ç‰©ç§çš„KeggIDï¼Œå¹¶ç”¨KeggIDç›´æ¥mappingå›æœ¬åŸºå› ////////////////////////////////////////////////////////////////
 			if (lsKgiDkeg2Kos != null && lsKgiDkeg2Kos.size()>0) 
 			{
-				//ËäÈ»Ò»¸öko¶ÔÓ¦¶à¸ökeggID£¬µ«ÊÇ¶ÔÓÚpathwayÀ´Ëµ£¬Ò»¸öko¾Í¶ÔÓ¦µ½Ò»¸öpathwayÉÏ£¬ËùÒÔÒ»¸öko¾Í¹»ÁË
-				String keggID = lsKgiDkeg2Kos.get(0).getKeggID();//Õâ¾ÍÊÇ±¾ÎïÖĞµÄKeggID£¬ÓÃÕâ¸öKeggIDÖ±½Ó¿ÉÒÔËÑË÷ÏàÓ¦µÄpathway
+				//è™½ç„¶ä¸€ä¸ªkoå¯¹åº”å¤šä¸ªkeggIDï¼Œä½†æ˜¯å¯¹äºpathwayæ¥è¯´ï¼Œä¸€ä¸ªkoå°±å¯¹åº”åˆ°ä¸€ä¸ªpathwayä¸Šï¼Œæ‰€ä»¥ä¸€ä¸ªkoå°±å¤Ÿäº†
+				String keggID = lsKgiDkeg2Kos.get(0).getKeggID();//è¿™å°±æ˜¯æœ¬ç‰©ä¸­çš„KeggIDï¼Œç”¨è¿™ä¸ªKeggIDç›´æ¥å¯ä»¥æœç´¢ç›¸åº”çš„pathway
 				KGentry kGentry = new KGentry(); kGentry.setEntryName(keggID); kGentry.setTaxID(taxID);
-				//ÔÚ¸ø¶¨koºÍtaxIDµÄÇé¿öÏÂ£¬Ò»¸öko¿ÉÒÔ²ÎÓë¶à¸öpathway£¬ºÍÒ»¸öpathwayÀïµÄ¶à¸öentry
+				//åœ¨ç»™å®škoå’ŒtaxIDçš„æƒ…å†µä¸‹ï¼Œä¸€ä¸ªkoå¯ä»¥å‚ä¸å¤šä¸ªpathwayï¼Œå’Œä¸€ä¸ªpathwayé‡Œçš„å¤šä¸ªentry
 				lskGentriesTmp=KGentry.getLsEntity(kGentry);
 			}
-			/////////////Èç¹ûgeneBlastµ½ÁËÈËÀà£¬²¢ÇÒµÃµ½ÁËÏàÓ¦µÄKO£¬ÄÇÃ´»ñµÃ¸ÃKOËù¶ÔÓ¦±¾ÎïÖÖµÄKeggID£¬Èç¹ûÃ»ÓĞKeggID£¬ÔòÓÃKOmapping»Ø±¾»ùÒò//////////////////////////////////////////////////////////////////
+			/////////////å¦‚æœgeneBlaståˆ°äº†äººç±»ï¼Œå¹¶ä¸”å¾—åˆ°äº†ç›¸åº”çš„KOï¼Œé‚£ä¹ˆè·å¾—è¯¥KOæ‰€å¯¹åº”æœ¬ç‰©ç§çš„KeggIDï¼Œå¦‚æœæ²¡æœ‰KeggIDï¼Œåˆ™ç”¨KOmappingå›æœ¬åŸºå› //////////////////////////////////////////////////////////////////
 			else
 			{
 				KGentry kGentry = new KGentry(); kGentry.setEntryName(ko); kGentry.setTaxID(taxID);
-				//ÔÚ¸ø¶¨koºÍtaxIDµÄÇé¿öÏÂ£¬Ò»¸öko¿ÉÒÔ²ÎÓë¶à¸öpathway£¬ºÍÒ»¸öpathwayÀïµÄ¶à¸öentry
+				//åœ¨ç»™å®škoå’ŒtaxIDçš„æƒ…å†µä¸‹ï¼Œä¸€ä¸ªkoå¯ä»¥å‚ä¸å¤šä¸ªpathwayï¼Œå’Œä¸€ä¸ªpathwayé‡Œçš„å¤šä¸ªentry
 				lskGentriesTmp=KGentry.getLsEntity(kGentry);
 			}
 			if (lskGentriesTmp == null || lskGentriesTmp.size() < 1 ) {
@@ -243,13 +243,13 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 
 	
 	/**
-	 * »¹ÓĞ×öRelation·½ÃæµÄ¹¤×÷
+	 * è¿˜æœ‰åšRelationæ–¹é¢çš„å·¥ä½œ
 	 */
 //	KGrelation
 	
 	
 	/**
-	 * ´æ´¢Go2TermµÄĞÅÏ¢
+	 * å­˜å‚¨Go2Termçš„ä¿¡æ¯
 	 * key:Go
 	 * value:GoInfo
 	 * 0:QueryGoID,1:GoID,2:GoTerm 3:GoFunction
@@ -257,12 +257,12 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 	static HashMap<String, KGpathway> hashKGPath = new HashMap<String, KGpathway>();
 	
 	/**
-	 * ½«ËùÓĞpathwayĞÅÏ¢ÌáÈ¡³öÀ´·ÅÈëhash±íÖĞ£¬·½±ã²éÕÒ
-	 * ´æ´¢pathway2TermµÄĞÅÏ¢
+	 * å°†æ‰€æœ‰pathwayä¿¡æ¯æå–å‡ºæ¥æ”¾å…¥hashè¡¨ä¸­ï¼Œæ–¹ä¾¿æŸ¥æ‰¾
+	 * å­˜å‚¨pathway2Termçš„ä¿¡æ¯
 	 * key:GoID
 	 * value:GoInfo
 	 * 0:QueryGoID,1:GoID,2:GoTerm 3:GoFunction
-	 * Èç¹ûÒÑ¾­²é¹ıÁËÒ»´Î£¬×Ô¶¯·µ»Ø
+	 * å¦‚æœå·²ç»æŸ¥è¿‡äº†ä¸€æ¬¡ï¼Œè‡ªåŠ¨è¿”å›
 	 */
 	public static HashMap<String, KGpathway> getHashKGpath() {
 		ServKPathway servKPathway = new ServKPathway();

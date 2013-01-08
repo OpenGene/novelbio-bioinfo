@@ -9,7 +9,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
 
 /**
- * Îâ×Ú¸£µÄÏîÄ¿£¬ÒÑ¾­ÓĞÁË²âĞòĞòÁĞ£¬½«ĞòÁĞÖĞµÄgapºÍNNNºÍXXXµÈÈ«²¿ÌáÈ¡³öÀ´²¢Ğ´ÈëÎÄ±¾
+ * å´å®—ç¦çš„é¡¹ç›®ï¼Œå·²ç»æœ‰äº†æµ‹åºåºåˆ—ï¼Œå°†åºåˆ—ä¸­çš„gapå’ŒNNNå’ŒXXXç­‰å…¨éƒ¨æå–å‡ºæ¥å¹¶å†™å…¥æ–‡æœ¬
  * @author zong0jie
  *
  */
@@ -19,9 +19,9 @@ public class GetSeqInfo extends SeqFastaHash{
 		super(chrFile);
 	}
 	/**
-	 * »ñµÃĞòÁĞĞÅÏ¢²¢ÌáÈ¡³öÀ´
-	 * @param flankingLen ÅÔÁÙĞòÁĞ³¤¶È
-	 * @param distance Á½¸ögap×î¶ÌÏà½ü¶àÉÙ£¬Ğ¡ÓÚ¸ÃÖµ¾ÍºÏ²¢
+	 * è·å¾—åºåˆ—ä¿¡æ¯å¹¶æå–å‡ºæ¥
+	 * @param flankingLen æ—ä¸´åºåˆ—é•¿åº¦
+	 * @param distance ä¸¤ä¸ªgapæœ€çŸ­ç›¸è¿‘å¤šå°‘ï¼Œå°äºè¯¥å€¼å°±åˆå¹¶
 	 */
 	public void getSeqInfoAll(int flankingLen, int distance,String txtOutFile) {
 		SeqFasta seqFasta = getSeqFastaAll().get(0);
@@ -34,7 +34,7 @@ public class GetSeqInfo extends SeqFastaHash{
 			lsTmp.add(tmploc);
 		}
 		/**
-		 * ºÏ²¢¼ä¸ôÔÚ1000bpÒÔÄÚµÄgap
+		 * åˆå¹¶é—´éš”åœ¨1000bpä»¥å†…çš„gap
 		 */
 		ArrayList<double[]> lsTmpResult = MathComput.combInterval(lsTmp, 1000);
 		ArrayList<LocInfo> lsResult = new ArrayList<LocInfo>();

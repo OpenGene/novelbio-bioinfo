@@ -10,8 +10,8 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 public class InvDataExtract {
 	/**
-	 * Óöµ½CTÎª¸Ãµ¥´ÊµÄ¾Í¼ÇÎªÃ»ÓĞ¼ì³ö£¬Èç¹ûÒ»ÁĞÀïÃæ³¬¹ıfilterProp±ÈÀıµÄµÄCTº¬ÓĞ¸ÃÊı×Ö£¬¾ÍÉ¾³ı¸ÃmiRNA<br>
-	 * ÔİÊ±Éè¶¨Îª Undetermined
+	 * é‡åˆ°CTä¸ºè¯¥å•è¯çš„å°±è®°ä¸ºæ²¡æœ‰æ£€å‡ºï¼Œå¦‚æœä¸€åˆ—é‡Œé¢è¶…è¿‡filterPropæ¯”ä¾‹çš„çš„CTå«æœ‰è¯¥æ•°å­—ï¼Œå°±åˆ é™¤è¯¥miRNA<br>
+	 * æš‚æ—¶è®¾å®šä¸º Undetermined
 	 */
 	static String flagFilter = "Undetermined";
 	/** CT */
@@ -23,13 +23,13 @@ public class InvDataExtract {
 	public static void main(String[] args) {
 		InvDataExtract invDataExtract = new InvDataExtract();
 		String parentPath = "/media/winE/NBC/Project/TaqMan_CXD_111230/";
-		String excelTaqman = parentPath + "Human MicroRNA Array CTÖµÍ³¼Æ±¨¸æ.xls";
+		String excelTaqman = parentPath + "Human MicroRNA Array CTå€¼ç»Ÿè®¡æŠ¥å‘Š.xls";
 		String out = parentPath + "deltaCT.txt";
 		invDataExtract.loadExcelTxt(excelTaqman);
 		invDataExtract.getInfo(out);
 	}
 	
-	/** Èç¹ûÒ»¸ömiRNAÓĞ³¬¹ı0.6µÄÃ»ÓĞ±»¼ì³ö£¬ÄÇÃ´¾ÍÉ¾³ı¸ÃmiRNA */
+	/** å¦‚æœä¸€ä¸ªmiRNAæœ‰è¶…è¿‡0.6çš„æ²¡æœ‰è¢«æ£€å‡ºï¼Œé‚£ä¹ˆå°±åˆ é™¤è¯¥miRNA */
 	double filterProp = 0.6;
 	int titleRow = 1;
 	int startRow = 2;
@@ -39,8 +39,8 @@ public class InvDataExtract {
 		lsInuptData = ExcelTxtRead.readLsExcelTxt(excelTxtFile, 1);
 	}
 	/**
-	 * ¸ø¶¨Ó¢¿¥µÄtaqmanÌ½ÕëÎÄ¼ş£¬½«CTÌáÈ¡³öÀ´
-	 * Óöµ½CTÎª Undeterminedµ¥´ÊµÄ¾Í¼ÇÎªÃ»ÓĞ¼ì³ö£¬Èç¹ûÒ»ÁĞÀïÃæ³¬¹ıfilterProp±ÈÀıµÄµÄCTº¬ÓĞ¸ÃÊı×Ö£¬¾ÍÉ¾³ı¸ÃmiRNA<br>
+	 * ç»™å®šè‹±éªçš„taqmanæ¢é’ˆæ–‡ä»¶ï¼Œå°†CTæå–å‡ºæ¥
+	 * é‡åˆ°CTä¸º Undeterminedå•è¯çš„å°±è®°ä¸ºæ²¡æœ‰æ£€å‡ºï¼Œå¦‚æœä¸€åˆ—é‡Œé¢è¶…è¿‡filterPropæ¯”ä¾‹çš„çš„CTå«æœ‰è¯¥æ•°å­—ï¼Œå°±åˆ é™¤è¯¥miRNA<br>
 	 * @param excelFile
 	 * @param OutData
 	 * @param startRow
@@ -53,17 +53,17 @@ public class InvDataExtract {
 		txtOut.ExcelWrite(lsResult);
 	}
 	/**
-	 * ÊäÈëInvitrogenµÄtapmanÎÄ¼şµÃµ½µÄlist£¬½øĞĞ³õ²½É¸Ñ¡£¬·µ»ØCT¼ì³öµÄ»ùÒò <br>
-	 * @param lsData ¶ÁÈ¡µÃµ½µÄÊı¾İlist
-	 * @param startRow ´ÓµÚ¼¸ĞĞ¿ªÊ¼¶Á£¬Êµ¼ÊĞĞ
-	 * @param lsCTcol ¶ÁÈ¡ÄÄ¼¸ÁĞ£¬Ò²¾ÍÊÇCTÁĞ
+	 * è¾“å…¥Invitrogençš„tapmanæ–‡ä»¶å¾—åˆ°çš„listï¼Œè¿›è¡Œåˆæ­¥ç­›é€‰ï¼Œè¿”å›CTæ£€å‡ºçš„åŸºå›  <br>
+	 * @param lsData è¯»å–å¾—åˆ°çš„æ•°æ®list
+	 * @param startRow ä»ç¬¬å‡ è¡Œå¼€å§‹è¯»ï¼Œå®é™…è¡Œ
+	 * @param lsCTcol è¯»å–å“ªå‡ åˆ—ï¼Œä¹Ÿå°±æ˜¯CTåˆ—
 	 */
 	private ArrayList<String[]> filterData(List<Integer> lsCTcol, List<Integer> lsDeltaCTcol) {
 		int filterNum = (int)(filterProp * lsDeltaCTcol.size()+0.5); 
 		startRow-- ; 
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		/**
-		 * ±êÌâÈ¥ÈßÓàÓÃµÄ£¬Í¬ÑùµÄ±êÌâºóÃæ¼ÓÉÏ_1±ê¼Ç
+		 * æ ‡é¢˜å»å†—ä½™ç”¨çš„ï¼ŒåŒæ ·çš„æ ‡é¢˜åé¢åŠ ä¸Š_1æ ‡è®°
 		 */
 		HashSet<String> mapRowName = new HashSet<String>();
 		
@@ -102,16 +102,16 @@ public class InvDataExtract {
 	}
 	
 	/**
-	 * Ö¸¶¨±êÌâÁĞ£¬·µ»ØËùÓĞÊÇ Ö¸¶¨string  µÄÁĞµÄnum <br>
-	 * ±êÌâÁĞÀàËÆArray Card Name \t Assay \t Task \t Ct \t Avg Delta Ct \t Ct \t Avg Delta Ct \t Ct	Avg Delta Ct \t Ct \t Avg Delta Ct \t Ct \t Avg Delta Ct <br>
-	 * Èç¹ûÒ»¸ö¶¼Ã»ÕÒµ½£¬·µ»Ønull <br>
-	 * @param strTitle ±êÌâÁĞ
-	 * @param flagStr ÓÃequal¸Ã×Ö·ûµÄÁĞÀ´¼ì²âÊÇ·ñ¼ì³ö,¿ÉÒÔÎª Ct »òÕß Avg Delta Ct
+	 * æŒ‡å®šæ ‡é¢˜åˆ—ï¼Œè¿”å›æ‰€æœ‰æ˜¯ æŒ‡å®šstring  çš„åˆ—çš„num <br>
+	 * æ ‡é¢˜åˆ—ç±»ä¼¼Array Card Name \t Assay \t Task \t Ct \t Avg Delta Ct \t Ct \t Avg Delta Ct \t Ct	Avg Delta Ct \t Ct \t Avg Delta Ct \t Ct \t Avg Delta Ct <br>
+	 * å¦‚æœä¸€ä¸ªéƒ½æ²¡æ‰¾åˆ°ï¼Œè¿”å›null <br>
+	 * @param strTitle æ ‡é¢˜åˆ—
+	 * @param flagStr ç”¨equalè¯¥å­—ç¬¦çš„åˆ—æ¥æ£€æµ‹æ˜¯å¦æ£€å‡º,å¯ä»¥ä¸º Ct æˆ–è€… Avg Delta Ct
 	 * @return
 	 */
 	private ArrayList<Integer> getCT_AvgCT_col(String[] strTitle, String flagStr) {
 		/**
-		 * º¬ÓĞCTµÄÁĞ
+		 * å«æœ‰CTçš„åˆ—
 		 */
 		ArrayList<Integer> lsCT = new ArrayList<Integer>();
 		for (int i = 0; i < strTitle.length; i++) {

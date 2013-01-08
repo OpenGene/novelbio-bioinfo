@@ -1,6 +1,6 @@
 package com.novelbio.analysis.annotation.pathway.reactome.normal;
 /**
- * 处理简单reactom的内容，将interaction的数据导入数据库+
+ * 澶勭悊绠�鍗時eactom鐨勫唴瀹癸紝灏唅nteraction鐨勬暟鎹鍏ユ暟鎹簱+
  * @author zong0jie
  *
  */

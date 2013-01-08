@@ -10,10 +10,10 @@ import net.sf.samtools.CigarOperator;
 
 import org.apache.log4j.Logger;
 
-/** ×¨ÃÅÎªpileup×¼±¸µÄsamrecord */
+/** ä¸“é—¨ä¸ºpileupå‡†å¤‡çš„samrecord */
 public class SamRecordPileUp {
 	Logger logger = Logger.getLogger(SamRecordPileUp.class);
-	/** reference ±ØĞë´óĞ´ */
+	/** reference å¿…é¡»å¤§å†™ */
 	private Queue<Character> queueBase;
 	
 	int baseNum;
@@ -21,7 +21,7 @@ public class SamRecordPileUp {
 	SamRecord samRecord;
 	String seqRecord;
 	List<CigarElement> lsCigarElements;
-	/** ±¾ĞòÁĞÄÚ²¿Ìø¹ıµÄÇøÓò£¬Æ©Èçdeletion¡£ÄÇÃ´Óöµ½ÕâĞ©ÇøÓò£¬¾Í²»ÄÜ¿¼ÂÇ¸Ãreads */
+	/** æœ¬åºåˆ—å†…éƒ¨è·³è¿‡çš„åŒºåŸŸï¼Œè­¬å¦‚deletionã€‚é‚£ä¹ˆé‡åˆ°è¿™äº›åŒºåŸŸï¼Œå°±ä¸èƒ½è€ƒè™‘è¯¥reads */
 	ArrayList<int[]> lsNoneRegion; 
 	
 	public SamRecordPileUp() {}
@@ -34,7 +34,7 @@ public class SamRecordPileUp {
 		lsCigarElements = samRecord.getCigar().getCigarElements();
 		seqRecord = samRecord.getSeqFasta().toString().toUpperCase();
 	}
-	/** ²âÊÔÓÃ */
+	/** æµ‹è¯•ç”¨ */
 	public void addBase(String base) {
 		if (queueBase == null) {
 			queueBase = new ArrayBlockingQueue<Character>(500);
@@ -44,28 +44,28 @@ public class SamRecordPileUp {
 			queueBase.add(c);
 		}
 	}
-	/** ²âÊÔÓÃ£¬É¾³ı¶ÓÁĞÖĞµÄµÚÒ»¸ö¼î»ù */
+	/** æµ‹è¯•ç”¨ï¼Œåˆ é™¤é˜Ÿåˆ—ä¸­çš„ç¬¬ä¸€ä¸ªç¢±åŸº */
 	public void pollBase() {
 		queueBase.poll();
 	}
-	/** Éè¶¨¼î»ùÎ»Êı */
+	/** è®¾å®šç¢±åŸºä½æ•° */
 	public void setBaseNum(int baseNum) {
 		this.baseNum = baseNum;
 	}
-	/** ÊÇ·ñÔÚsamRecordÍ·Î²¸²¸ÇµÄÇøÓòÄÚ */
+	/** æ˜¯å¦åœ¨samRecordå¤´å°¾è¦†ç›–çš„åŒºåŸŸå†… */
 	protected boolean isInRecordRange() {
 		if (baseNum<samRecord.getStartAbs() || baseNum > samRecord.getEndAbs()) {
 			return false;
 		}
 		return true;
 	}
-	/** ¸ø¶¨Î»ÖÃ£¬·µ»Ø¸ÃÎ»ÖÃ¶ÔÓ¦µÄĞòÁĞ */
+	/** ç»™å®šä½ç½®ï¼Œè¿”å›è¯¥ä½ç½®å¯¹åº”çš„åºåˆ— */
 	public String getSequence(int position) {
 		int offsetToSeqStartRef = position - samRecord.getStartAbs();
 		int offsetToSeqStartThis = offsetToSeqStartRef;
 		int offsetToCigarStart, offsetToCigarEnd;
-		int numAllRefSeqLen = 0;//¼ÇÂ¼ËùÓĞrefseqµÄ³¤¶È
-		int numAllRefSeqLenLast = 0;//¼ÇÂ¼ËùÓĞrefseqµÄ³¤¶ÈµÄÇ°Ò»Î»
+		int numAllRefSeqLen = 0;//è®°å½•æ‰€æœ‰refseqçš„é•¿åº¦
+		int numAllRefSeqLenLast = 0;//è®°å½•æ‰€æœ‰refseqçš„é•¿åº¦çš„å‰ä¸€ä½
 		for (int i = 0; i < lsCigarElements.size(); i++) {
 			CigarElement cigarElement = lsCigarElements.get(i);
 			if (cigarElement.getOperator() != CigarOperator.I) {
@@ -81,7 +81,7 @@ public class SamRecordPileUp {
 				if (i + 1 < lsCigarElements.size()) {
 					cigarElementNext = lsCigarElements.get(i + 1);
 				}
-				//ÕâÀïºÍÏÂÃæµÄ¼¸ºõÒ»Ñù£¬²»¹ıÔÚÀïÃæ¼õÁËÖ®ºó£¬Ö±½Ó¾Í·µ»Ø½á¹ûÁË
+				//è¿™é‡Œå’Œä¸‹é¢çš„å‡ ä¹ä¸€æ ·ï¼Œä¸è¿‡åœ¨é‡Œé¢å‡äº†ä¹‹åï¼Œç›´æ¥å°±è¿”å›ç»“æœäº†
 				if (cigarElement.getOperator() == CigarOperator.D) {
 					offsetToSeqStartThis = offsetToSeqStartThis - offsetToCigarStart;
 				}
@@ -128,12 +128,12 @@ public class SamRecordPileUp {
 			return "*";
 		}
 		else {
-			logger.error("³öÏÖÎ´Öª CIGAR ²Ù×÷·û" + cigarElement.toString());
+			logger.error("å‡ºç°æœªçŸ¥ CIGAR æ“ä½œç¬¦" + cigarElement.toString());
 			return null;
 		}
 	}
 	/** 
-	 * @param offsetToSeqStart ´Ó0¿ªÊ¼¼ÆËã
+	 * @param offsetToSeqStart ä»0å¼€å§‹è®¡ç®—
 	 * @return
 	 */
 	private String compareMisMatch(int offsetToSeqStart) {
@@ -158,10 +158,10 @@ public class SamRecordPileUp {
 	
 	private String getDeletion(int deletionLen) {
 		char[] deletion = new char[deletionLen];
-		int index = -2;//Ò»½øÈëÑ­»·¾Í»á¼Ó1£¬È»ºó»¹ÒªÌø¹ıÒ»Î»
+		int index = -2;//ä¸€è¿›å…¥å¾ªç¯å°±ä¼šåŠ 1ï¼Œç„¶åè¿˜è¦è·³è¿‡ä¸€ä½
 		for (Character character : queueBase) {
 			index++;
-			if (index == -1) {//µÚ¶şÎ»¿ªÊ¼²ÅÊÇÈ±Ê§¼î»ù£¬ËùÒÔÌø¹ıµÚÒ»Î»
+			if (index == -1) {//ç¬¬äºŒä½å¼€å§‹æ‰æ˜¯ç¼ºå¤±ç¢±åŸºï¼Œæ‰€ä»¥è·³è¿‡ç¬¬ä¸€ä½
 				continue;
 			}
 			if (index >= deletionLen) {

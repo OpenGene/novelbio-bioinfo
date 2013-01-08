@@ -9,22 +9,22 @@ import com.novelbio.analysis.seq.resequencing.SnpFilter;
 import com.novelbio.base.dataStructure.listOperate.HistList;
 
 /**
- * indel ³öÏÖºóµÄ±ÈÀı·Ö²¼£¬Æ©Èç 0.1µÄÕ¼¶àÉÙ£¬0.2µÄÕ¼¶àÉÙÕâÖÖ
+ * indel å‡ºç°åçš„æ¯”ä¾‹åˆ†å¸ƒï¼Œè­¬å¦‚ 0.1çš„å å¤šå°‘ï¼Œ0.2çš„å å¤šå°‘è¿™ç§
  * @author zong0jie
  */
 public class StatisticsIndelProp implements StatisticsUnit {
 	private static Logger logger = Logger.getLogger(StatisticsContinueATorCGdestribution.class);
 	
-	/** 1µÄ¶àÉÙ±¶£¬ÒòÎªhistListÀïÃæÖ»ÄÜ·ÅÈëint£¬ËùÒÔÒª°Ñ1 * foldÔÙÍ³¼Æ */
+	/** 1çš„å¤šå°‘å€ï¼Œå› ä¸ºhistListé‡Œé¢åªèƒ½æ”¾å…¥intï¼Œæ‰€ä»¥è¦æŠŠ1 * foldå†ç»Ÿè®¡ */
 	int fold = 1000;
-	/** »æÖÆ0.1¸öindel£¬0.2¸öindel£¬0.3¸öindel....µÄ·Ö²¼ */
+	/** ç»˜åˆ¶0.1ä¸ªindelï¼Œ0.2ä¸ªindelï¼Œ0.3ä¸ªindel....çš„åˆ†å¸ƒ */
 	HistList histList = HistList.creatHistList("IndelProp", true);
 	SnpFilter snpFilter = new SnpFilter();
 	
 	/**
-	 * <b>±ØĞëÉè¶¨</b>
-	 * »®·Ö¶àÉÙÇøÓò£¬Ã¿¸öÇøÓò¶àÉÙinterval
-	 * @param binNum ½¨ÒéÉèÖÃÎª100
+	 * <b>å¿…é¡»è®¾å®š</b>
+	 * åˆ’åˆ†å¤šå°‘åŒºåŸŸï¼Œæ¯ä¸ªåŒºåŸŸå¤šå°‘interval
+	 * @param binNum å»ºè®®è®¾ç½®ä¸º100
 	 */
 	public void setBinNum(int binNum) {
 		double interval = (double)fold/binNum;
@@ -36,14 +36,14 @@ public class StatisticsIndelProp implements StatisticsUnit {
 	}
 	
 	/**
-	 * Éè¶¨Ñù±¾ÃûºÍÒª¹ıÂËµÄsnpLevel
-	 * @param snpLevel ´ı²éÕÒµÄsnp¼¶±ğ SnpGroupFilterInfo.HetoLess µÈ
+	 * è®¾å®šæ ·æœ¬åå’Œè¦è¿‡æ»¤çš„snpLevel
+	 * @param snpLevel å¾…æŸ¥æ‰¾çš„snpçº§åˆ« SnpGroupFilterInfo.HetoLess ç­‰
 	 */
 	public void setSnpSampleInfo(int snpLevel) {
 		snpFilter.setSampleFilterInfoSingle(snpLevel);
 	}
 	
-	/**  Ç°Ò»¸öÊÇCµ±Ç°Ò»¸öÊÇA£¬¼ÇÂ¼Ç°ÃæÁ¬ĞøCµÄrawsÆ½¾ùÊıµÄÊıÁ¿ ĞÎÊ½ÀıÈçkeyÊÇ4C_10£¬valueÊÇnumÊıÁ¿ÀıÈç3 */
+	/**  å‰ä¸€ä¸ªæ˜¯Cå½“å‰ä¸€ä¸ªæ˜¯Aï¼Œè®°å½•å‰é¢è¿ç»­Cçš„rawså¹³å‡æ•°çš„æ•°é‡ å½¢å¼ä¾‹å¦‚keyæ˜¯4C_10ï¼Œvalueæ˜¯numæ•°é‡ä¾‹å¦‚3 */
 	public void countOneSeqInfo(OneSeqInfo oneSeqInfo) {
 		OneSeqInfo oneSeqInfoLast = oneSeqInfo.getOneSeqInfoLast();
 		if (oneSeqInfoLast == null || oneSeqInfoLast.getReadsNumAll() == 0) {

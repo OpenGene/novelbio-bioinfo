@@ -1,12 +1,12 @@
 package com.novelbio.analysis.seq.resequencing;
 
-/** ¸øGUIÏÔÊ¾µÄ¶«Î÷ */
+/** ç»™GUIæ˜¾ç¤ºçš„ä¸œè¥¿ */
 public class SnpFilterDetailInfo {
-	/** ËùÓĞ¶ÁÈ¡µÄ×Ö½Ú */
+	/** æ‰€æœ‰è¯»å–çš„å­—èŠ‚ */
 	long allByte;
 	long allLines;
 	int findSnp;
-	/** µ±²»ÎªnullÊ±±íÊ¾ĞèÒªÊä³öµÄĞÅÏ¢ */
+	/** å½“ä¸ä¸ºnullæ—¶è¡¨ç¤ºéœ€è¦è¾“å‡ºçš„ä¿¡æ¯ */
 	String showMessage;
 	public long getAllByte() {
 		return allByte;

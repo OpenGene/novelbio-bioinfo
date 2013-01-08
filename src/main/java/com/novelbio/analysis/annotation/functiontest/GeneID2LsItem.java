@@ -56,7 +56,7 @@ public abstract class GeneID2LsItem {
 		return true;
 	}
 	/**
-	 * ·µ»ØÀàËÆ LOCOs01g11110  GO:10001, GO:10002 ÕâÖÖ
+	 * è¿”å›ç±»ä¼¼ LOCOs01g11110  GO:10001, GO:10002 è¿™ç§
 	 */
 	public String toString() {
 		if (setItemID.size() == 0 || geneUniID == null || geneUniID.equals("")) {
@@ -76,13 +76,13 @@ public abstract class GeneID2LsItem {
 	}
 	
 	/**
-	 * Õâ¸öÊÇ×îÍêÉÆµÄ·½·¨£¬ÆäËûµÄ·½·¨¶¼ÊÇËüÄÚ²¿µÄÄ£¿é
-	 * ¸ø¶¨Á½¸öGene2ItemµÄlist£¬¼ÆËãFishertest²¢µÃµ½½á¹û·µ»Ø¡£
-	 * ½á¹ûÅÅ¹ıĞòÁË
-	 * @param lsGene2Item ²îÒì»ùÒòµÄ gene2itemµÄlist
+	 * è¿™ä¸ªæ˜¯æœ€å®Œå–„çš„æ–¹æ³•ï¼Œå…¶ä»–çš„æ–¹æ³•éƒ½æ˜¯å®ƒå†…éƒ¨çš„æ¨¡å—
+	 * ç»™å®šä¸¤ä¸ªGene2Itemçš„listï¼Œè®¡ç®—Fishertestå¹¶å¾—åˆ°ç»“æœè¿”å›ã€‚
+	 * ç»“æœæ’è¿‡åºäº†
+	 * @param lsGene2Item å·®å¼‚åŸºå› çš„ gene2itemçš„list
 	 * @param lsGene2ItemBG
 	 * @param BGnum
-	 * @return ½á¹ûÃ»¼Ó±êÌâ<br>
+	 * @return ç»“æœæ²¡åŠ æ ‡é¢˜<br>
 	 * @throws Exception 
 	 */
 	public static ArrayList<StatisticTestResult> getFisherResult(StatisticsTest statisticsTest, List<GeneID2LsItem> lsGene2Item,List<GeneID2LsItem> lsGene2ItemBG, int bgNum) {
@@ -96,11 +96,11 @@ public abstract class GeneID2LsItem {
 	}
 	
 	/**
-	 * ¸ø¶¨gene2ItemµÄlist£¬½«Æä×ª»¯ÎªÒ»¸öhashMap¡£¸ñÊ½Îª
+	 * ç»™å®šgene2Itemçš„listï¼Œå°†å…¶è½¬åŒ–ä¸ºä¸€ä¸ªhashMapã€‚æ ¼å¼ä¸º
 	 * Item--list-GeneID<br>
-	 * µ±»ñµÃÁËÊÔÑéºÍ±³¾°µÄÁ½¸öhashmapµÄÊ±ºò£¬¾Í¿ÉÒÔµ÷ÓÃcope2HashForPvalueÀ´¼ÆËãpvalue
+	 * å½“è·å¾—äº†è¯•éªŒå’ŒèƒŒæ™¯çš„ä¸¤ä¸ªhashmapçš„æ—¶å€™ï¼Œå°±å¯ä»¥è°ƒç”¨cope2HashForPvalueæ¥è®¡ç®—pvalue
 	 * @param <T>
-	 * @param lsGene2Item string2 0£ºgene  1£ºitem,item,itemµÄĞÎÊ½£¬×¢Òâ 1. gene²»ÄÜÓĞÖØ¸´ 2.Ã¿¸ögeneÄÚµÄitem²»ÄÜÎª¿Õ£¬ÇÒ²»ÄÜÓĞÖØ¸´
+	 * @param lsGene2Item string2 0ï¼šgene  1ï¼šitem,item,itemçš„å½¢å¼ï¼Œæ³¨æ„ 1. geneä¸èƒ½æœ‰é‡å¤ 2.æ¯ä¸ªgeneå†…çš„itemä¸èƒ½ä¸ºç©ºï¼Œä¸”ä¸èƒ½æœ‰é‡å¤
 	 * @return
 	 */
 	private static HashMultimap<String, String> getHashItem2Gen(List<GeneID2LsItem> lsGene2Item) {
@@ -114,16 +114,16 @@ public abstract class GeneID2LsItem {
 	}
 	
 	/**
-	 * ¸ø¶¨Á½¸öHashMap£¬
+	 * ç»™å®šä¸¤ä¸ªHashMapï¼Œ
 	 * Item--list-GeneID[]
-	 * Ò»¸öÎª×ÜItem
+	 * ä¸€ä¸ªä¸ºæ€»Item
 	 * Item---list-GeneID[]
-	 * ×¢Òâ²îÒì»ùÒò±ØĞëÔÚ×Ü»ùÒòÖĞ
-	 * @param hashDif Ò»¸öÎª²îÒìItem
+	 * æ³¨æ„å·®å¼‚åŸºå› å¿…é¡»åœ¨æ€»åŸºå› ä¸­
+	 * @param hashDif ä¸€ä¸ªä¸ºå·®å¼‚Item
 	 * @param NumDif
 	 * @param hashAll
 	 * @param NumAll
-	 * @return ·µ»ØÕûÀíºÃµÄlist
+	 * @return è¿”å›æ•´ç†å¥½çš„list
 	 */
 	private static ArrayList<StatisticTestResult> cope2HashForPvalue(HashMultimap<String, String> mapItemID2SetGeneID, int NumDif, HashMultimap<String, String> mapItemID2SetGeneIDBG ,int NumAll) {
 		ArrayList<StatisticTestResult> lsResult=new ArrayList<StatisticTestResult>();
@@ -143,7 +143,7 @@ public abstract class GeneID2LsItem {
 	}
 	
 	/**
-	 * ¸ø¶¨fisherĞèÒªµÄĞÅÏ¢£¬ ×ö¼ìÑé²¢»ñµÃfdr
+	 * ç»™å®šfisheréœ€è¦çš„ä¿¡æ¯ï¼Œ åšæ£€éªŒå¹¶è·å¾—fdr
 	 */
 	private static void doFisherTest(StatisticsTest statisticsTest, List<StatisticTestResult> lsTestResult) {
 		if (statisticsTest instanceof FisherTest) {
@@ -154,7 +154,7 @@ public abstract class GeneID2LsItem {
 			statisticTestResult.calculatePvalue();
 		}
 		
-		//ÅÅĞò
+		//æ’åº
         Collections.sort(lsTestResult,new Comparator<StatisticTestResult>(){
             public int compare(StatisticTestResult arg0, StatisticTestResult arg1) {
             	Double a = arg0.getPvalue();
@@ -166,7 +166,7 @@ public abstract class GeneID2LsItem {
 	}
 	
 	private static void setFisherTestMaxSize(FisherTest statisticsTest, List<StatisticTestResult> lsGOinfo) {
-		//Fisher¼ìÑéĞèÒªÉè¶¨µÄ³õÊ¼Öµ
+		//Fisheræ£€éªŒéœ€è¦è®¾å®šçš„åˆå§‹å€¼
 		int max = 0;
 		for (StatisticTestResult statisticTestResult : lsGOinfo) {
 			int tmp = statisticTestResult.getAllCountNum();

@@ -10,17 +10,17 @@ public interface MapUniGene2Go extends MapperSql{
  
 	
 	/**
-	 * ÓÃGene2GoInfoÀàÈ¥²éÕÒGene2Go±í
-	 * Ö÷ÒªÊÇÀ´¿´±¾ÁĞÊÇ·ñÒÑ¾­´æÔÚÁË
-	 * ÓÃuniIDºÍgoIDÈ¥²éÕÒÊı¾İ¿â
+	 * ç”¨Gene2GoInfoç±»å»æŸ¥æ‰¾Gene2Goè¡¨
+	 * ä¸»è¦æ˜¯æ¥çœ‹æœ¬åˆ—æ˜¯å¦å·²ç»å­˜åœ¨äº†
+	 * ç”¨uniIDå’ŒgoIDå»æŸ¥æ‰¾æ•°æ®åº“
 	 * @param GeneID
 	 * @return
 	 */
 	public UniGene2Go queryUniGene2Go(UniGene2Go uniGene2Go);
 	/**
-	 * ÓÃGene2GoInfoÀàÈ¥²éÕÒGene2Go±í
-	 * Ö÷ÒªÊÇÀ´¿´±¾ÁĞÊÇ·ñÒÑ¾­´æÔÚÁË
-	 * ÓÃuniIDºÍgoIDÈ¥²éÕÒÊı¾İ¿â
+	 * ç”¨Gene2GoInfoç±»å»æŸ¥æ‰¾Gene2Goè¡¨
+	 * ä¸»è¦æ˜¯æ¥çœ‹æœ¬åˆ—æ˜¯å¦å·²ç»å­˜åœ¨äº†
+	 * ç”¨uniIDå’ŒgoIDå»æŸ¥æ‰¾æ•°æ®åº“
 	 * @param GeneID
 	 * @return
 	 */
@@ -29,7 +29,7 @@ public interface MapUniGene2Go extends MapperSql{
 	public void insertUniGene2Go(UniGene2Go uniGene2Go);
 	
 	/**
-	 * Éı¼¶evidenceºÍreferenceÁ½Ïî
+	 * å‡çº§evidenceå’Œreferenceä¸¤é¡¹
 	 * @param geneInfo
 	 */
 	public void updateUniGene2Go(UniGene2Go uniGene2Go);

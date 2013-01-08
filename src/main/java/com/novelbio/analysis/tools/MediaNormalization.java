@@ -8,14 +8,14 @@ import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
- * ÈÄ¾üµÄ±ê×¼»¯
- * Ã¿Ò»ĞĞ»ñµÃÖĞÎ»Êı£¬È»ºó±ê×¼»¯Îª1£¬ÆäËû¸ú×Å±ä£¬Ò²¾ÍÊÇ³ıÒÔÖĞÎ»Êı¡£È±Ê§ÖµÓÃ×îĞ¡Öµ´úÌæ
+ * é¥¶å†›çš„æ ‡å‡†åŒ–
+ * æ¯ä¸€è¡Œè·å¾—ä¸­ä½æ•°ï¼Œç„¶åæ ‡å‡†åŒ–ä¸º1ï¼Œå…¶ä»–è·Ÿç€å˜ï¼Œä¹Ÿå°±æ˜¯é™¤ä»¥ä¸­ä½æ•°ã€‚ç¼ºå¤±å€¼ç”¨æœ€å°å€¼ä»£æ›¿
  * @author zong0jie
  *
  */
 public class MediaNormalization {
 	public static void main(String[] args) {
-		String excelFile = "/home/zong0jie/×ÀÃæ/×Ú½Ü¹éÒ»»¯2.xlsx";
+		String excelFile = "/home/zong0jie/æ¡Œé¢/å®—æ°å½’ä¸€åŒ–2.xlsx";
 		String out = FileOperate.changeFileSuffix(excelFile, "_normalization", null);
 		MediaNormalization mediaNormalization = new MediaNormalization();
 		mediaNormalization.readFile(excelFile);
@@ -23,8 +23,8 @@ public class MediaNormalization {
 		txtWrite.ExcelWrite(mediaNormalization.copeInfoAndGetResult());
 	}
 	/**
-	 * µÚÒ»ĞĞÊÇtitle
-	 * µÚÒ»ÁĞÊÇitem
+	 * ç¬¬ä¸€è¡Œæ˜¯title
+	 * ç¬¬ä¸€åˆ—æ˜¯item
 	 */
 	ArrayList<String[]> lsInfo;
 	
@@ -43,7 +43,7 @@ public class MediaNormalization {
 			double[] tmpValue = getDouble(2, tmp);
 			ArrayList<Integer> lsNull = getLsNullPosition(tmpValue);
 			
-			//Èç¹û30%µÄ¿ÕÈ±£¬ÔòÌø¹ı
+			//å¦‚æœ30%çš„ç©ºç¼ºï¼Œåˆ™è·³è¿‡
 			if (lsNull.size() > tmpValue.length * 0.4) {
 				lsResult.add(tmp);
 				continue;
@@ -56,8 +56,8 @@ public class MediaNormalization {
 		return lsResult;
 	}
 	/**
-	 * ´ÓµÚ¼¸ÁĞ¿ªÊ¼£¬½«tmp×ª»»Îªdouble
-	 * @param from Æ©ÈçµÚÒ»ÁĞÊÇitemÄÇÃ´¾Í´ÓµÚ¶şÁĞ¿ªÊ¼£¬Êµ¼ÊÁĞ
+	 * ä»ç¬¬å‡ åˆ—å¼€å§‹ï¼Œå°†tmpè½¬æ¢ä¸ºdouble
+	 * @param from è­¬å¦‚ç¬¬ä¸€åˆ—æ˜¯itemé‚£ä¹ˆå°±ä»ç¬¬äºŒåˆ—å¼€å§‹ï¼Œå®é™…åˆ—
 	 * @param tmp
 	 * @return
 	 */
@@ -79,7 +79,7 @@ public class MediaNormalization {
 		}
 		return result;
 	}
-	/** ÈÄ¾üµÄĞèÇó */
+	/** é¥¶å†›çš„éœ€æ±‚ */
 	private double[] normalizeMedian(double[] input) {
 		double[] out;
 		ArrayList<Integer> lsNullCol = getLsNullPosition(input);
@@ -89,7 +89,7 @@ public class MediaNormalization {
 		fillNullWithMin(lsNullCol, out, min);
 		return out;
 	}
-	/** ·µ»ØÃ»ÓĞÖµ£¬»òÕßËµ×îĞ¡ÖµµÄµ¥Ôª */
+	/** è¿”å›æ²¡æœ‰å€¼ï¼Œæˆ–è€…è¯´æœ€å°å€¼çš„å•å…ƒ */
 	private ArrayList<Integer> getLsNullPosition(double[] input) {
 		ArrayList<Integer> lsNullInfo = new ArrayList<Integer>();
 		for (int i = 0; i < input.length; i++) {
@@ -100,7 +100,7 @@ public class MediaNormalization {
 		return lsNullInfo;
 	}
 	
-	/** ÓÃÖĞÎ»Êı½øĞĞ±ê×¼»¯£¬Ò²¾ÍÊÇÃ¿¸öÏî¶¼³ıÒÔÖĞÎ»Êı */
+	/** ç”¨ä¸­ä½æ•°è¿›è¡Œæ ‡å‡†åŒ–ï¼Œä¹Ÿå°±æ˜¯æ¯ä¸ªé¡¹éƒ½é™¤ä»¥ä¸­ä½æ•° */
 	private double[] normalization(double[] input, double median) {
 		double[] result = new double[input.length];
 		for (int i = 0; i < input.length; i++) {
@@ -113,7 +113,7 @@ public class MediaNormalization {
 		return result;
 	}
 	
-	/** »ñµÃ³ınullÖ®ÍâµÄ×îĞ¡Öµ */
+	/** è·å¾—é™¤nullä¹‹å¤–çš„æœ€å°å€¼ */
 	private double getMinValue(double[] input) {
 		double min = Double.MAX_VALUE;
 		for (double d : input) {
@@ -123,13 +123,13 @@ public class MediaNormalization {
 		}
 		return min;
 	}
-	/** ÓÃ×îĞ¡ÖµÌî³änull */
+	/** ç”¨æœ€å°å€¼å¡«å……null */
 	private void fillNullWithMin(ArrayList<Integer> lsNullCol, double[] input, double min) {
 		for (Integer d : lsNullCol) {
 			input[d] = min;
 		}
 	}
-	/** ½«itemºÍvalueºÏ²¢ÆğÀ´ */
+	/** å°†itemå’Œvalueåˆå¹¶èµ·æ¥ */
 	private String[] combResult(String item, double[] value) {
 		String[] result = new String[value.length + 1];
 		result[0] = item;

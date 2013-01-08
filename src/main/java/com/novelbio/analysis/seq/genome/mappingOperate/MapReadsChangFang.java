@@ -8,7 +8,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
 
 /**
- * ¸øÂíºìÄÇ±ß£¬ÑîºìĞÇÉú³ÉµÄ
+ * ç»™é©¬çº¢é‚£è¾¹ï¼Œæ¨çº¢æ˜Ÿç”Ÿæˆçš„
  * @author zong0jie
  *
  */
@@ -33,10 +33,10 @@ public class MapReadsChangFang extends MapReads {
 		GTFyanghongxing = gTFyanghongxing;
 	}
 	private void setTagLength() {
-		tagLength = 1;//ÓÉReadMapFile·½·¨¸³Öµ
+		tagLength = 1;//ç”±ReadMapFileæ–¹æ³•èµ‹å€¼
 	}
 	
-	/** Éè¶¨ÒªÍ³¼ÆµÄCGÀàĞÍ */
+	/** è®¾å®šè¦ç»Ÿè®¡çš„CGç±»å‹ */
 	public void setcGmethyType(CGmethyType cGmethyType) {
 		this.cGmethyType = cGmethyType;
 	}
@@ -45,10 +45,10 @@ public class MapReadsChangFang extends MapReads {
 	protected void ReadMapFileExp() throws Exception {
 		setTagLength();
 		allReadsNum = 0;
-		int[] chrBpReads = null;//±£´æÃ¿¸öbpµÄreadsÀÛ¼ÆÊı
+		int[] chrBpReads = null;//ä¿å­˜æ¯ä¸ªbpçš„readsç´¯è®¡æ•°
 		String lastChr="";
 		ChrMapReadsInfo chrMapReadsInfo = null;
-		boolean flag = true;// µ±Ã»ÓĞ¸ÃÈ¾É«ÌåÊ±±ê¼ÇÎªfalse²¢ÇÒÌø¹ıËùÓĞ¸ÃÈ¾É«ÌåÉÏµÄ×ø±ê
+		boolean flag = true;// å½“æ²¡æœ‰è¯¥æŸ“è‰²ä½“æ—¶æ ‡è®°ä¸ºfalseå¹¶ä¸”è·³è¿‡æ‰€æœ‰è¯¥æŸ“è‰²ä½“ä¸Šçš„åæ ‡
 
 		TxtReadandWrite txtGtfRead = new TxtReadandWrite(GTFyanghongxing, false);
 		for (String gtfLines : txtGtfRead.readlines()) {
@@ -61,26 +61,26 @@ public class MapReadsChangFang extends MapReads {
 			}
 			String tmpChrID = gtfHongXingMethy.getRefID();
 			if (!tmpChrID.equals(lastChr)) {
-				if (!lastChr.equals("") && flag) { // Ç°ÃæÒÑ¾­ÓĞÁËÒ»¸öchrBpReads£¬ÄÇÃ´¿ªÊ¼×Ü½áÕâ¸öchrBpReads
+				if (!lastChr.equals("") && flag) { // å‰é¢å·²ç»æœ‰äº†ä¸€ä¸ªchrBpReadsï¼Œé‚£ä¹ˆå¼€å§‹æ€»ç»“è¿™ä¸ªchrBpReads
 					chrMapReadsInfo.sumChrBp(chrBpReads, fold);
 				}
-				lastChr = tmpChrID;// Êµ¼ÊÕâÊÇĞÂ³öÏÖµÄChrID
+				lastChr = tmpChrID;// å®é™…è¿™æ˜¯æ–°å‡ºç°çš„ChrID
 				logger.debug(lastChr);
 				
 				Long chrLength = mapChrID2Len.get(lastChr.toLowerCase());
 				flag = true;
 				if (chrLength == null) {
-					logger.error("³öÏÖÎ´ÖªchrID "+lastChr);
+					logger.error("å‡ºç°æœªçŸ¥chrID "+lastChr);
 					flag = false; continue;
 				}
 
-				chrBpReads = new int[(int) (chrLength + 1)];// Í¬ÑùÎª·½±ã£¬0Î»¼ÇÂ¼×Ü³¤¶È¡£ÕâÑùÊµ¼Êbp¾ÍÊÇÊµ¼Ê³¤¶È
+				chrBpReads = new int[(int) (chrLength + 1)];// åŒæ ·ä¸ºæ–¹ä¾¿ï¼Œ0ä½è®°å½•æ€»é•¿åº¦ã€‚è¿™æ ·å®é™…bpå°±æ˜¯å®é™…é•¿åº¦
 				chrBpReads[0] = chrLength.intValue();
 				chrMapReadsInfo = new ChrMapReadsInfo(lastChr, this);
 				mapChrID2ReadsInfo.put(lastChr.toLowerCase(), chrMapReadsInfo);
 			}
 			
-			if (flag == false) {//Ã»ÓĞ¸ÃÈ¾É«ÌåÔòÌø¹ı
+			if (flag == false) {//æ²¡æœ‰è¯¥æŸ“è‰²ä½“åˆ™è·³è¿‡
 				continue;
 			}
 			
@@ -98,20 +98,20 @@ public class MapReadsChangFang extends MapReads {
 	}
 	
 	/**
-	 * ½«ÑîºìĞÇÀàÀïÃæµÄĞÅÏ¢Ìí¼Óµ½È¾É«ÌåÉÏÈ¥
+	 * å°†æ¨çº¢æ˜Ÿç±»é‡Œé¢çš„ä¿¡æ¯æ·»åŠ åˆ°æŸ“è‰²ä½“ä¸Šå»
 	 * @param gtfHongXingMethy
-	 * @param chrBpReads ´ıÌí¼ÓµÄÈ¾É«Ìå
+	 * @param chrBpReads å¾…æ·»åŠ çš„æŸ“è‰²ä½“
 	 */
 	protected void addLoc(GtfHongXingMethy gtfHongXingMethy, int[] chrBpReads) {
 		int m = 0;
 		int[] methInfo = gtfHongXingMethy.getMethyInfo();
 		for (int i = gtfHongXingMethy.getStartAbs(); i <= gtfHongXingMethy.getEndAbs(); i++) {
 			if (i >= chrBpReads.length) {
-				logger.info("³¬³ö·¶Î§£º" + i);
+				logger.info("è¶…å‡ºèŒƒå›´ï¼š" + i);
 				break;
 			}
 			if (i < 0) {
-				logger.info("³¬³ö·¶Î§£º" + i);
+				logger.info("è¶…å‡ºèŒƒå›´ï¼š" + i);
 				continue;
 			}
 			chrBpReads[i] = chrBpReads[i] + methInfo[m];
@@ -138,7 +138,7 @@ class GtfHongXingMethy implements Alignment{
 
 	/**
 	 * @param gtfLines
-	 * @param patternOperate Ò»°ãÊÇÉè¶¨Îª
+	 * @param patternOperate ä¸€èˆ¬æ˜¯è®¾å®šä¸º
 	 * patterOperate = new PatternOperate("EviCode \"(.+?)\"", false);
 	 */
 	public GtfHongXingMethy(String gtfLines, PatternOperate patternOperate) {
@@ -156,11 +156,11 @@ class GtfHongXingMethy implements Alignment{
 		} else if (ss[7].equalsIgnoreCase("CHH")) {
 			cgGmethyType = CGmethyType.CHH;
 		} else {
-			logger.error("³öÏÖÎ´ÖªCGÀàĞÍ£º" + ss[7]);
+			logger.error("å‡ºç°æœªçŸ¥CGç±»å‹ï¼š" + ss[7]);
 		}
 	}
 	/**
-	 * Ò»°ãÊÇÉè¶¨Îª
+	 * ä¸€èˆ¬æ˜¯è®¾å®šä¸º
 	 * patterOperate = new PatternOperate("EviCode \"(.+?)\"", false);
 	 * @param patternOperate
 	 */
@@ -168,10 +168,10 @@ class GtfHongXingMethy implements Alignment{
 		this.patternOperate = patternOperate;
 	}
 	/**
-	 * ¸ø¶¨ÕâÖÖ£ºGene "AT1G01040"; GenePosition "-4691"; Site "CNNG(14):9,CNNG(15):7"; EviCode "6:16";
+	 * ç»™å®šè¿™ç§ï¼šGene "AT1G01040"; GenePosition "-4691"; Site "CNNG(14):9,CNNG(15):7"; EviCode "6:16";
 	 * @param evidenceStr
 	 * @return
-	 * 6£º16ÕâÖÖ
+	 * 6ï¼š16è¿™ç§
 	 */
 	private void setEvidenceAndReadsNum(String evidenceStr) {
 		String methyInfo = patternOperate.getPatFirst(evidenceStr, 1);
@@ -230,7 +230,7 @@ class GtfHongXingMethy implements Alignment{
 		return Math.abs(getStartAbs() - getEndAbs()) + 1;
 	}
 	
-	/** Ä¬ÈÏ·µ»ØĞ¡Ğ´ */
+	/** é»˜è®¤è¿”å›å°å†™ */
 	@Override
 	public String getRefID() {
 		return chrID.toLowerCase();

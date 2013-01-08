@@ -3,7 +3,7 @@ package com.novelbio.database.domain.geneanno;
 import com.novelbio.database.model.modgeneid.GeneID;
 
 /**
- * ÖØĞ´ÁËequal£¬Ö»ÒªÁ½¸öUniProtID³õÊ¼»¯£¬²¢ÇÒËûÃÇµÄUniID¶¼²»Îªnull»ò""£¬¾Í±È½ÏUniID£¬Ò»ÑùµÄ¾ÍÈÏÎªÁ½¸öÒ»Ñù
+ * é‡å†™äº†equalï¼Œåªè¦ä¸¤ä¸ªUniProtIDåˆå§‹åŒ–ï¼Œå¹¶ä¸”ä»–ä»¬çš„UniIDéƒ½ä¸ä¸ºnullæˆ–""ï¼Œå°±æ¯”è¾ƒUniIDï¼Œä¸€æ ·çš„å°±è®¤ä¸ºä¸¤ä¸ªä¸€æ ·
  * @author zong0jie
  *
  */
@@ -19,8 +19,8 @@ public class UniProtID extends AgeneUniID{
 		
 		
 		/**
-		 * Ö»ÒªÁ½¸öuniprotIDµÄUniIDÏàÍ¬£¬¾ÍÈÏÎªÕâÁ½¸öuniprotIDÏàÍ¬
-		 * µ«ÊÇÈç¹ûUniIDÎª""»ònull£¬Ò²¾ÍÊÇuniprotID¸ù±¾Ã»ÓĞ³õÊ¼»¯£¬ÄÇÃ´Ö±½Ó·µ»Øfalse
+		 * åªè¦ä¸¤ä¸ªuniprotIDçš„UniIDç›¸åŒï¼Œå°±è®¤ä¸ºè¿™ä¸¤ä¸ªuniprotIDç›¸åŒ
+		 * ä½†æ˜¯å¦‚æœUniIDä¸º""æˆ–nullï¼Œä¹Ÿå°±æ˜¯uniprotIDæ ¹æœ¬æ²¡æœ‰åˆå§‹åŒ–ï¼Œé‚£ä¹ˆç›´æ¥è¿”å›false
 		 * 	@Override
 		 */
 		public boolean equals(Object obj) {
@@ -37,7 +37,7 @@ public class UniProtID extends AgeneUniID{
 			return uniID.equals(otherObj.getUniID());
 		}
 		/**
-		 * ÖØĞ´hashcode£¬Ò²ÊÇ½öÕë¶ÔuniID
+		 * é‡å†™hashcodeï¼Œä¹Ÿæ˜¯ä»…é’ˆå¯¹uniID
 		 */
 		public int hashCode(){ 
 			return uniID.hashCode(); 

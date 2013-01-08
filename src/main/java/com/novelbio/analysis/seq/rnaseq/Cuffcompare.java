@@ -9,19 +9,19 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.species.Species;
 
 public class Cuffcompare {
-	//cuffcompare µÄ²ÎÊı
+	//cuffcompare çš„å‚æ•°
 	String ExePath = "";
 	
 	String seqFasta = "";
 	String refGtfFile = "";
 	ArrayList<String> lsInputGtfFile = new ArrayList<String>();
 	String outPath = "";
-	/** ÊÇ·ñÉ¾³ıÒ»Ğ©Î´ÖªÎÄ¼ş */
+	/** æ˜¯å¦åˆ é™¤ä¸€äº›æœªçŸ¥æ–‡ä»¶ */
 	boolean clearFile = false;
 	
 	/**
-	 * Éè¶¨samtoolsËùÔÚµÄÎÄ¼ş¼ĞÒÔ¼°´ı±È¶ÔµÄÂ·¾¶
-	 * @param exePath Èç¹ûÔÚ¸ùÄ¿Â¼ÏÂÔòÉèÖÃÎª""»ònull
+	 * è®¾å®šsamtoolsæ‰€åœ¨çš„æ–‡ä»¶å¤¹ä»¥åŠå¾…æ¯”å¯¹çš„è·¯å¾„
+	 * @param exePath å¦‚æœåœ¨æ ¹ç›®å½•ä¸‹åˆ™è®¾ç½®ä¸º""æˆ–null
 	 */
 	public void setExePath(String exePath) {
 		if (exePath == null || exePath.trim().equals("")) {
@@ -58,7 +58,7 @@ public class Cuffcompare {
 		return " ";
 	}
 	
-	/** Ö»ÓĞgtfÎÄ¼ş£¬¾ÍÊÇÏëÉú³ÉcuffdiffµÄÊäÈëÎÄ¼ş */
+	/** åªæœ‰gtfæ–‡ä»¶ï¼Œå°±æ˜¯æƒ³ç”Ÿæˆcuffdiffçš„è¾“å…¥æ–‡ä»¶ */
 	private String getRefGtfOnly() {
 		clearFile = true;
 		return " -CG -r " + CmdOperate.addQuot(refGtfFile) + " " + CmdOperate.addQuot(refGtfFile);
@@ -79,7 +79,7 @@ public class Cuffcompare {
 	}
 	
 	/**
-	 * »ñµÃĞŞ¸ÄµÄgtfÎÄ¼şÃû
+	 * è·å¾—ä¿®æ”¹çš„gtfæ–‡ä»¶å
 	 */
 	public String runCompareGtf() {
 		String cmd = ExePath + "cuffcompare " + getSeqFasta() + getOutPath();
@@ -96,7 +96,7 @@ public class Cuffcompare {
 		return changeGtfFileName();
 	}
 	
-	/** É¾³ıÒ»Ğ©Î´ÖªÎÄ¼ş */
+	/** åˆ é™¤ä¸€äº›æœªçŸ¥æ–‡ä»¶ */
 	private void clearUnknownFile() {
 		String prefix = "";
 		if (!outPath.endsWith("/") && !outPath.endsWith("\\")) {
@@ -118,7 +118,7 @@ public class Cuffcompare {
 	}
 	
 	/**
-	 * ĞŞ¸Äcuffcompare²úÉúµÄgtfÎÄ¼şÃû£¬Í¬Ê±·µ»ØĞŞ¸ÄºóµÄÎÄ¼şÃû
+	 * ä¿®æ”¹cuffcompareäº§ç”Ÿçš„gtfæ–‡ä»¶åï¼ŒåŒæ—¶è¿”å›ä¿®æ”¹åçš„æ–‡ä»¶å
 	 * @return
 	 */
 	private String changeGtfFileName() {

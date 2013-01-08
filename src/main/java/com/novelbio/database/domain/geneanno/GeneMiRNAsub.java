@@ -3,16 +3,16 @@ package com.novelbio.database.domain.geneanno;
 public class GeneMiRNAsub {
 	
 	/**
-	 * ¸Ã¾ßÌå³ÉÊìmiRNAµÄaccID
+	 * è¯¥å…·ä½“æˆç†ŸmiRNAçš„accID
 	 * FT                   /accession="MIMAT0000002"
 	 */
 	String accID = "";
 	/**
-	 * ¸ÃmiRNAÔÚÇ°ÌåÖĞµÄÆğµã
+	 * è¯¥miRNAåœ¨å‰ä½“ä¸­çš„èµ·ç‚¹
 	 */
 	int start = 0;
 	/**
-	 * ¸ÃmiRNAÔÚÇ°ÌåÖĞµÄÖÕµã
+	 * è¯¥miRNAåœ¨å‰ä½“ä¸­çš„ç»ˆç‚¹
 	 */
 	int end = 0;
 	/**
@@ -24,8 +24,8 @@ public class GeneMiRNAsub {
 	 */
 	String evidence = "";
 	/**
-	 * ÊµÑéÊÖ¶Î
-	 * ±àºÅµÄ»°Òª»ØÈ¥ÕÒGeneMiRNAµÄÎÄÏ×
+	 * å®éªŒæ‰‹æ®µ
+	 * ç¼–å·çš„è¯è¦å›å»æ‰¾GeneMiRNAçš„æ–‡çŒ®
 	 * FT                   /experiment="cloned [1,3-5], Solexa [6], CLIPseq [7]"
 	 */
 	String experiment = "";

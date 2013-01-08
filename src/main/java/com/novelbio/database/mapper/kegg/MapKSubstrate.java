@@ -10,14 +10,14 @@ import com.novelbio.database.mapper.MapperSql;
 
 public interface MapKSubstrate extends MapperSql{
 	/**
-	 * ÓÃreactionID,pathName,id,nameÖĞÈÎÒâ×éºÏÈ¥²éÕÒsubstrate±í
+	 * ç”¨reactionID,pathName,id,nameä¸­ä»»æ„ç»„åˆå»æŸ¥æ‰¾substrateè¡¨
 	 * @param kGsubstrate
 	 * @return
 	 */
 	public ArrayList<KGsubstrate> queryLskgKGsubstrates(KGsubstrate kGsubstrate);
 	
 	/**
-	 * ÓÃreactionID,pathName,id,nameÖĞÈÎÒâ×éºÏÈ¥²éÕÒsubstrate±í
+	 * ç”¨reactionID,pathName,id,nameä¸­ä»»æ„ç»„åˆå»æŸ¥æ‰¾substrateè¡¨
 	 * @param kGsubstrate
 	 * @return
 	 */
@@ -27,7 +27,7 @@ public interface MapKSubstrate extends MapperSql{
 	public void insertKGsubstrate(KGsubstrate kGsubstrate);
 	
 	/**
-	 * Ä¿Ç°µÄÉı¼¶·½Ê½ÊÇ:<br>
+	 * ç›®å‰çš„å‡çº§æ–¹å¼æ˜¯:<br>
 		update substrate set<br>
 		pathName = #{pathName},<br>
 		reactionID = #{reactionID},<br>

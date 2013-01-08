@@ -8,7 +8,7 @@ import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
- * ÔÚsetÀïÃæÓĞºÜ¶à²ÎÊı¿ÉÒÔÉè¶¨£¬²»Éè¶¨¾ÍÓÃÄ¬ÈÏ
+ * åœ¨seté‡Œé¢æœ‰å¾ˆå¤šå‚æ•°å¯ä»¥è®¾å®šï¼Œä¸è®¾å®šå°±ç”¨é»˜è®¤
  * @author zong0jie
  *
  */
@@ -22,14 +22,14 @@ public class MapBwa extends MapDNA {
 	
 	private static Logger logger = Logger.getLogger(MapBwa.class);
 	/**
-	 * ÔÚ´Ë´óĞ¡ÒÔÏÂµÄgenomeÖ±½Ó¶ÁÈëÄÚ´æÒÔ°ïÖú¿ìËÙmapping
-	 * µ¥Î»£¬KB
-	 * ËÆºõ¸ÃÖµË«¶Ë²ÅÓĞÓÃ
+	 * åœ¨æ­¤å¤§å°ä»¥ä¸‹çš„genomeç›´æ¥è¯»å…¥å†…å­˜ä»¥å¸®åŠ©å¿«é€Ÿmapping
+	 * å•ä½ï¼ŒKB
+	 * ä¼¼ä¹è¯¥å€¼åŒç«¯æ‰æœ‰ç”¨
 	 */
 	private static final int GENOME_SIZE_IN_MEMORY = 500000;
 	
 	CmdOperate cmdOperate = null;
-	/** bwaËùÔÚÂ·¾¶ */
+	/** bwaæ‰€åœ¨è·¯å¾„ */
 	String ExePath = "";
 	String chrFile;
 	String sampleGroup = "";
@@ -39,11 +39,11 @@ public class MapBwa extends MapDNA {
 
 	MapLibrary mapLibrary = MapLibrary.PairEnd;
 	
-	/** º¬ÓĞ¼¸¸ögap */
+	/** å«æœ‰å‡ ä¸ªgap */
 	int gapNum = 1;
-	/** gapµÄ³¤¶È */
+	/** gapçš„é•¿åº¦ */
 	int gapLength = 20;
-	/** Ïß³ÌÊıÁ¿ */
+	/** çº¿ç¨‹æ•°é‡ */
 	int threadNum = 4;
 	/**
 	 * Maximum edit distance if the value is INT, or the fraction of missing alignments given 2% uniform
@@ -52,24 +52,24 @@ public class MapBwa extends MapDNA {
 	 */
 	String mismatch = "0.04";
 
-	/** ÊÇ·ñ½«index¶ÁÈëÄÚ´æ£¬½ö¶ÔË«¶ËÓĞĞ§ */
+	/** æ˜¯å¦å°†indexè¯»å…¥å†…å­˜ï¼Œä»…å¯¹åŒç«¯æœ‰æ•ˆ */
 	boolean readInMemory = true;
 	
 	public MapBwa() {}
 	/**
 	 * @param fastQ
-	 * @param outFileName ½á¹ûÎÄ¼şÃû£¬ºó×º×Ô¶¯¸ÄÎªsam
-	 * @param uniqMapping ÊÇ·ñuniqmapping£¬µ¥¶Ë²ÅÓĞµÄ²ÎÊı
+	 * @param outFileName ç»“æœæ–‡ä»¶åï¼Œåç¼€è‡ªåŠ¨æ”¹ä¸ºsam
+	 * @param uniqMapping æ˜¯å¦uniqmappingï¼Œå•ç«¯æ‰æœ‰çš„å‚æ•°
 	 */
 	public MapBwa(FastQ fastQ, String outFileName) {
 		this.outFileName = outFileName;
 		leftFq = fastQ.getReadFileName();
 	}
 	/**
-	 * Ë«¶ËÖ»×öunique mapping
+	 * åŒç«¯åªåšunique mapping
 	 * @param seqFile1
-	 * @param seqFile2 Ã»ÓĞ¾ÍĞ´null
-	 * @param outFileName ½á¹ûÎÄ¼şÃû£¬ºó×º×Ô¶¯¸ÄÎªsam
+	 * @param seqFile2 æ²¡æœ‰å°±å†™null
+	 * @param outFileName ç»“æœæ–‡ä»¶åï¼Œåç¼€è‡ªåŠ¨æ”¹ä¸ºsam
 	 */
 	public MapBwa(String seqFile1, String seqFile2, String outFileName) {
 		leftFq = seqFile1;
@@ -78,14 +78,14 @@ public class MapBwa extends MapDNA {
 	}
 	/**
 	 * @param seqFile1
-	 * @param outFileName ½á¹ûÎÄ¼şÃû£¬ºó×º×Ô¶¯¸ÄÎªsam
-	 * @param uniqMapping ÊÇ·ñunique mapping
+	 * @param outFileName ç»“æœæ–‡ä»¶åï¼Œåç¼€è‡ªåŠ¨æ”¹ä¸ºsam
+	 * @param uniqMapping æ˜¯å¦unique mapping
 	 */
 	public MapBwa(String seqFile,String outFileName) {
 		leftFq = seqFile;
 		this.outFileName = outFileName;
 	}
-	/** ÊäÈëÒÑ¾­¹ıÂËºÃµÄfastqÎÄ¼ş */
+	/** è¾“å…¥å·²ç»è¿‡æ»¤å¥½çš„fastqæ–‡ä»¶ */
 	public void setFqFile(String leftFq, String rightFq) {
 		if (FileOperate.isFileExistAndBigThanSize(leftFq, 1) && FileOperate.isFileExistAndBigThanSize(rightFq, 1)) {
 			this.leftFq = leftFq;
@@ -98,7 +98,7 @@ public class MapBwa extends MapDNA {
 			this.leftFq = rightFq;
 		}
 	}
-	/** ÊäÈëÒÑ¾­¹ıÂËºÃµÄfastqÎÄ¼ş */
+	/** è¾“å…¥å·²ç»è¿‡æ»¤å¥½çš„fastqæ–‡ä»¶ */
 	public void setFqFile(FastQ leftFq, FastQ rightFq) {
 		String leftFqFile = "", rightFqFile = "";
 		if (leftFq != null) {
@@ -110,13 +110,13 @@ public class MapBwa extends MapDNA {
 		setFqFile(leftFqFile, rightFqFile);
 	}
 	/**
-	 * @param outFileName ½á¹ûÎÄ¼şÃû£¬ºó×º×Ô¶¯¸ÄÎªsam
+	 * @param outFileName ç»“æœæ–‡ä»¶åï¼Œåç¼€è‡ªåŠ¨æ”¹ä¸ºsam
 	 */
 	public void setOutFileName(String outFileName) {
 		this.outFileName = outFileName;
 	}
 	/**
-	 * °Ù·ÖÖ®¶àÉÙµÄmismatch£¬»òÕß¼¸¸ömismatch
+	 * ç™¾åˆ†ä¹‹å¤šå°‘çš„mismatchï¼Œæˆ–è€…å‡ ä¸ªmismatch
 	 * @param mismatch
 	 */
 	public void setMismatch(double mismatch) {
@@ -128,7 +128,7 @@ public class MapBwa extends MapDNA {
 		}
 	}
 	/**
-	 * °Ù·ÖÖ®¶àÉÙµÄmismatch£¬»òÕß¼¸¸ömismatch
+	 * ç™¾åˆ†ä¹‹å¤šå°‘çš„mismatchï¼Œæˆ–è€…å‡ ä¸ªmismatch
 	 * @param mismatchScore
 	 */
 	private String getMismatch() {
@@ -138,8 +138,8 @@ public class MapBwa extends MapDNA {
 		this.chrFile = chrFile;
 	}
 	/**
-	 * Éè¶¨bwaËùÔÚµÄÎÄ¼ş¼ĞÒÔ¼°´ı±È¶ÔµÄÂ·¾¶
-	 * @param exePath Èç¹ûÔÚ¸ùÄ¿Â¼ÏÂÔòÉèÖÃÎª""»ònull
+	 * è®¾å®šbwaæ‰€åœ¨çš„æ–‡ä»¶å¤¹ä»¥åŠå¾…æ¯”å¯¹çš„è·¯å¾„
+	 * @param exePath å¦‚æœåœ¨æ ¹ç›®å½•ä¸‹åˆ™è®¾ç½®ä¸º""æˆ–null
 	 * @param chrFile
 	 */
 	public void setExePath(String exePath) {
@@ -149,7 +149,7 @@ public class MapBwa extends MapDNA {
 			this.ExePath = FileOperate.addSep(exePath);
 		}
 	}
-	/** Ïß³ÌÊıÁ¿£¬Ä¬ÈÏ4Ïß³Ì */
+	/** çº¿ç¨‹æ•°é‡ï¼Œé»˜è®¤4çº¿ç¨‹ */
 	public void setThreadNum(int threadNum) {
 		this.threadNum = threadNum;
 	}
@@ -157,7 +157,7 @@ public class MapBwa extends MapDNA {
 		return "-t " + threadNum + " ";
 	}
 	/**
-	 * ÊÇ·ñ½«index¶ÁÈëÄÚ´æ£¬½ö¶ÔË«¶Ë²âĞòÓĞÓÃ
+	 * æ˜¯å¦å°†indexè¯»å…¥å†…å­˜ï¼Œä»…å¯¹åŒç«¯æµ‹åºæœ‰ç”¨
 	 */
 	public void setReadInMemory(boolean readInMemory) {
 		this.readInMemory = readInMemory;
@@ -167,7 +167,7 @@ public class MapBwa extends MapDNA {
 		this.mapLibrary = mapLibrary;
 	}
 	/**
-	 * ±¾´ÎmappingµÄ×é£¬ËùÓĞ²ÎÊı¶¼²»ÄÜÓĞ¿Õ¸ñ
+	 * æœ¬æ¬¡mappingçš„ç»„ï¼Œæ‰€æœ‰å‚æ•°éƒ½ä¸èƒ½æœ‰ç©ºæ ¼
 	 * @param sampleID 
 	 * @param LibraryName
 	 * @param SampleName
@@ -197,24 +197,24 @@ public class MapBwa extends MapDNA {
 		sampleGroup = " -r " + CmdOperate.addQuot(sampleGroup) + " ";
 	}
 	/**
-	 * Ä¬ÈÏgapÎª4£¬Èç¹ûÊÇindel²éÕÒµÄ»°£¬ÉèÖÃµ½5»òÕß6±È½ÏºÏÊÊ
+	 * é»˜è®¤gapä¸º4ï¼Œå¦‚æœæ˜¯indelæŸ¥æ‰¾çš„è¯ï¼Œè®¾ç½®åˆ°5æˆ–è€…6æ¯”è¾ƒåˆé€‚
 	 * @param gapLength
 	 */
 	public void setGapLength(int gapLength) {
 		this.gapLength = gapLength;
 	}
 	/**
-	 * Ä¬ÈÏgapÎª4£¬Èç¹ûÊÇindel²éÕÒµÄ»°£¬ÉèÖÃµ½5»òÕß6±È½ÏºÏÊÊ
+	 * é»˜è®¤gapä¸º4ï¼Œå¦‚æœæ˜¯indelæŸ¥æ‰¾çš„è¯ï¼Œè®¾ç½®åˆ°5æˆ–è€…6æ¯”è¾ƒåˆé€‚
 	 * @param gapLength
 	 */
 	private String getGapLen() {
 		return "-e "+gapLength + " ";
 	}
-	/** ±È¶ÔµÄÊ±ºòÈİÈÌ×î¶à¼¸¸ögap Ä¬ÈÏÎª1£¬1¸ö¾Í¹»ÁË£¬³ı·Ç³¤¶ÈÌØ±ğ³¤»òÕßÊÇ454*/
+	/** æ¯”å¯¹çš„æ—¶å€™å®¹å¿æœ€å¤šå‡ ä¸ªgap é»˜è®¤ä¸º1ï¼Œ1ä¸ªå°±å¤Ÿäº†ï¼Œé™¤éé•¿åº¦ç‰¹åˆ«é•¿æˆ–è€…æ˜¯454*/
 	public void setGapNum(int gapnum) {
 		this.gapNum = gapnum;
 	}
-	/** ±È¶ÔµÄÊ±ºòÈİÈÌ×î¶à¼¸¸ögap Ä¬ÈÏÎª1£¬1¸ö¾Í¹»ÁË£¬³ı·Ç³¤¶ÈÌØ±ğ³¤»òÕßÊÇ454*/
+	/** æ¯”å¯¹çš„æ—¶å€™å®¹å¿æœ€å¤šå‡ ä¸ªgap é»˜è®¤ä¸º1ï¼Œ1ä¸ªå°±å¤Ÿäº†ï¼Œé™¤éé•¿åº¦ç‰¹åˆ«é•¿æˆ–è€…æ˜¯454*/
 	private String getGapNum() {
 		return "-o " + gapNum + " ";
 	}
@@ -238,19 +238,19 @@ public class MapBwa extends MapDNA {
 		}
 		return true;
 	}
-	/** ÖÖ×Ó³¤¶È */
+	/** ç§å­é•¿åº¦ */
 	private String getSeedSize() {
 		return " -l 25 ";
 	}
 	/**
-	 * gap·£·Ö
+	 * gapç½šåˆ†
 	 * @return
 	 */
 	private String getOpenPanalty() {
 		return " -O 10 ";
 	}
 	/**
-	 * ÊÇillumina32±ê×¼»¹ÊÇ64±ê×¼
+	 * æ˜¯illumina32æ ‡å‡†è¿˜æ˜¯64æ ‡å‡†
 	 * @return
 	 */
 	private String getFastQoffset() {
@@ -262,8 +262,8 @@ public class MapBwa extends MapDNA {
 		return "";
 	}
 	/**
-	 * ·µ»ØsaiµÄĞÅÏ¢, <b>²»¼ÓÒıºÅ</b>
-	 * @param Sai1orSai2 Ë«¶ËµÄ»°£¬sai1¾ÍÊäÈë1£¬sai2¾ÍÊäÈë2¡£µ¥¶ËsaiÒ²ÊäÈë1
+	 * è¿”å›saiçš„ä¿¡æ¯, <b>ä¸åŠ å¼•å·</b>
+	 * @param Sai1orSai2 åŒç«¯çš„è¯ï¼Œsai1å°±è¾“å…¥1ï¼Œsai2å°±è¾“å…¥2ã€‚å•ç«¯saiä¹Ÿè¾“å…¥1
 	 * @return
 	 */
 	private String getSai(int Sai1orSai2) {
@@ -281,7 +281,7 @@ public class MapBwa extends MapDNA {
 	}
 	
 	/**
-	 * ¸ù¾İ»ùÒò×é´óĞ¡£¬¿¼ÂÇ½«»ùÒò×é¶ÁÈëÄÚ´æ
+	 * æ ¹æ®åŸºå› ç»„å¤§å°ï¼Œè€ƒè™‘å°†åŸºå› ç»„è¯»å…¥å†…å­˜
 	 * @return
 	 */
 	private String readInMemory() {
@@ -291,7 +291,7 @@ public class MapBwa extends MapDNA {
 		return "";
 	}
 	/**
-	 * ²ÎÊıÉè¶¨²»ÄÜÓÃÓÚsolid
+	 * å‚æ•°è®¾å®šä¸èƒ½ç”¨äºsolid
 	 */
 	public SamFile mapReads() {
 		outFileName = addSamToFileName(outFileName);
@@ -303,7 +303,7 @@ public class MapBwa extends MapDNA {
 	}
 	
 	/**
-	 * linuxÃüÁîÈçÏÂ<br>
+	 * linuxå‘½ä»¤å¦‚ä¸‹<br>
 	 * bwa aln -n 4 -o 1 -e 5 -t 4 -o 10 -I -l 18 /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna barcod_TGACT.fastq > TGACT.sai<br>
 	 * bwa aln -n 4 -o 1 -e 5 -t 4 -o 10 -I -l 18 /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna barcod_TGACT2.fastq > TGACT2.sai<br>
 	 * bwa sampe -P -n 4 /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna TGACT.sai TGACT2.sai barcod_TGACT.fastq
@@ -324,7 +324,7 @@ public class MapBwa extends MapDNA {
 		}
 	}
 	/**
-	 * ÕâÀïÉè¶¨ÁË½«»ùÒò×é¶ÁÈëÄÚ´æµÄÏŞÖÆ
+	 * è¿™é‡Œè®¾å®šäº†å°†åŸºå› ç»„è¯»å…¥å†…å­˜çš„é™åˆ¶
 	 * bwa sampe -P -n 4 /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna TGACT.sai 
 	 * TGACT2.sai barcod_TGACT.fastq barcod_TGACT2.fastq > TGACT.sam
 	 */
@@ -336,7 +336,7 @@ public class MapBwa extends MapDNA {
 			cmd = cmd + CmdOperate.addQuot(chrFile) + " " + CmdOperate.addQuot(getSai(1)) + " "  + CmdOperate.addQuot(getSai(2)) + " "  + CmdOperate.addQuot(leftFq) + " "  + CmdOperate.addQuot(rightFq);
 			cmd = cmd + " > " + CmdOperate.addQuot(outFileName);
 		}
-		//ÕâÀï¿ÉÄÜ²»ĞèÒª£¬unique mapping²»ÊÇÔÚsamÎÄ¼şÖĞÉè¶¨µÄ
+		//è¿™é‡Œå¯èƒ½ä¸éœ€è¦ï¼Œunique mappingä¸æ˜¯åœ¨samæ–‡ä»¶ä¸­è®¾å®šçš„
 		else {
 			cmd = this.ExePath + "bwa samse " + sampleGroup + "-n 50 ";
 			cmd = cmd + CmdOperate.addQuot(chrFile) + " " + CmdOperate.addQuot(getSai(1)) + " "  + CmdOperate.addQuot(leftFq);
@@ -367,7 +367,7 @@ public class MapBwa extends MapDNA {
 	}
 	
 	/**
-	 * É¾³ısaiÎÄ¼ş
+	 * åˆ é™¤saiæ–‡ä»¶
 	 * @param samFileName
 	 */
 	private void deleteFile(String samFile, String bamFile) {
@@ -382,25 +382,25 @@ public class MapBwa extends MapDNA {
 	}
 	
 	protected void IndexMake() {
-//		linuxÃüÁîÈçÏÂ 
+//		linuxå‘½ä»¤å¦‚ä¸‹ 
 //	 	bwa index -p prefix -a algoType -c  chrFile
-//		-c ÊÇsolidÓÃ
+//		-c æ˜¯solidç”¨
 		if (FileOperate.isFileExist(chrFile + ".bwt") == true) {
 			return;
 		}
 		String cmd = this.ExePath + "bwa index ";
-		cmd = cmd + getChrLen();//ÓÃÄÄÖÖËã·¨
-		//TODO :¿¼ÂÇÊÇ·ñ×Ô¶¯ÅĞ¶ÏÎªsolid
+		cmd = cmd + getChrLen();//ç”¨å“ªç§ç®—æ³•
+		//TODO :è€ƒè™‘æ˜¯å¦è‡ªåŠ¨åˆ¤æ–­ä¸ºsolid
 		cmd = cmd + CmdOperate.addQuot(chrFile);
 		logger.info(cmd);
 		CmdOperate cmdOperate = new CmdOperate(cmd,"bwaMakeIndex");
 		cmdOperate.run();
 	}
 	/**
-	 * ¸ù¾İ»ùÒò×é´óĞ¡ÅĞ¶Ï²ÉÓÃÄÄÖÖ±àÂë·½Ê½
-	 * @return ÒÑ¾­ÔÚÇ°ºóÔ¤Áô¿Õ¸ñ£¬Ö±½ÓÌí¼ÓÉÏidex¾ÍºÃ
-	 * Ğ¡ÓÚ500MBµÄÓÃ -a is
-	 * ´óÓÚ500MBµÄÓÃ -a bwtsw
+	 * æ ¹æ®åŸºå› ç»„å¤§å°åˆ¤æ–­é‡‡ç”¨å“ªç§ç¼–ç æ–¹å¼
+	 * @return å·²ç»åœ¨å‰åé¢„ç•™ç©ºæ ¼ï¼Œç›´æ¥æ·»åŠ ä¸Šidexå°±å¥½
+	 * å°äº500MBçš„ç”¨ -a is
+	 * å¤§äº500MBçš„ç”¨ -a bwtsw
 	 */
 	private String getChrLen() {
 		long size = (long) FileOperate.getFileSize(chrFile);

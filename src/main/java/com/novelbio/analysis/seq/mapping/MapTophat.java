@@ -14,7 +14,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 /**
- * »¹Ã»·µ»Ø½á¹ûµÄbamÎÄ¼ş tophatµÄmapping * tophat -r 120 -a 10 -m 1 -i 20 -I 6000
+ * è¿˜æ²¡è¿”å›ç»“æœçš„bamæ–‡ä»¶ tophatçš„mapping * tophat -r 120 -a 10 -m 1 -i 20 -I 6000
  * --solexa1.3-quals -F 0.15 -p 4 --coverage-search --min-coverage-intron 20
  * --max-coverage-intron 6000 --min-segment-intron 20 --max-segment-intron 6000
  * -G /media/winE/Bioinformatics/GenomeData/Arabidopsis\
@@ -37,38 +37,38 @@ public class MapTophat implements MapRNA{
 	StrandSpecific strandSpecifictype = StrandSpecific.NONE;
 	List<FastQ> lsLeftFq = new ArrayList<FastQ>();
 	List<FastQ> lsRightFq = new ArrayList<FastQ>();
-	/** bowtieËùÔÚÂ·¾¶ */
+	/** bowtieæ‰€åœ¨è·¯å¾„ */
 	String ExePathTophat = "";
-	/** Ä¬ÈÏÓÃbowtie2 ×ömapping */
+	/** é»˜è®¤ç”¨bowtie2 åšmapping */
 	SoftWare bowtieVersion = SoftWare.bowtie2;
 
 	boolean pairend = false;
 	
-	/** ÔÚjunction µÄÒ»Í·ÉÏÖÁÉÙÒª´îµ½¶àÉÙbpµÄ¼î»ù */
+	/** åœ¨junction çš„ä¸€å¤´ä¸Šè‡³å°‘è¦æ­åˆ°å¤šå°‘bpçš„ç¢±åŸº */
 	int anchorLength = 10;
-	/** anchorÉÏµÄmismithch£¬Ä¬ÈÏÎª0 */
+	/** anchorä¸Šçš„mismithchï¼Œé»˜è®¤ä¸º0 */
 	int anchorMismatch = 0;
 	
 	int intronLenMin = 50;
 	int intronLenMax = 500000;
-	/** ĞòÁĞÖĞ°üº¬µÄÈ«²¿indel³¤¶È£¬Ä¬ÈÏÎª3 */
+	/** åºåˆ—ä¸­åŒ…å«çš„å…¨éƒ¨indelé•¿åº¦ï¼Œé»˜è®¤ä¸º3 */
 	int indelLen = 15;
 	int mismatch = 8;
 	
 	int threadNum = 4;
 	
-	/** Ä¬ÈÏÊÇsolexaµÄ×î³¤²åÈë */
+	/** é»˜è®¤æ˜¯solexaçš„æœ€é•¿æ’å…¥ */
 	int maxInsert = 450;
 	
 	
-	/** ¸ø¶¨GTFµÄÎÄ¼ş */
+	/** ç»™å®šGTFçš„æ–‡ä»¶ */
 	String gtfFile = "";
-	/** ÊÇ·ñ×Ô¶¯²úÉúGTF£¬Èç¹û²úÉúÁË£¬×îºóÒªÉ¾³ıµÄ */
+	/** æ˜¯å¦è‡ªåŠ¨äº§ç”ŸGTFï¼Œå¦‚æœäº§ç”Ÿäº†ï¼Œæœ€åè¦åˆ é™¤çš„ */
 	boolean generateGtfFile = false;
 	
-	/** Êä³öÎÄ¼ş */
+	/** è¾“å‡ºæ–‡ä»¶ */
 	String outPathPrefix = "";
-	/** bowtie¾ÍÊÇÓÃÀ´×öË÷ÒıµÄ */
+	/** bowtieå°±æ˜¯ç”¨æ¥åšç´¢å¼•çš„ */
 	MapBowtie mapBowtie = new MapBowtie();
 	GffChrAbs gffChrAbs;
 	boolean booSetIntronMin = false;
@@ -79,10 +79,10 @@ public class MapTophat implements MapRNA{
 		this.gffChrAbs = gffChrAbs;
 	}
 	/**
-	 * Éè¶¨tophatËùÔÚµÄÎÄ¼ş¼ĞÒÔ¼°´ı±È¶ÔµÄÂ·¾¶
+	 * è®¾å®štophatæ‰€åœ¨çš„æ–‡ä»¶å¤¹ä»¥åŠå¾…æ¯”å¯¹çš„è·¯å¾„
 	 * 
 	 * @param exePath
-	 *            Èç¹ûÔÚ¸ùÄ¿Â¼ÏÂÔòÉèÖÃÎª""»ònull
+	 *            å¦‚æœåœ¨æ ¹ç›®å½•ä¸‹åˆ™è®¾ç½®ä¸º""æˆ–null
 	 * @param chrFile
 	 */
 	public void setExePath(String exePathTophat, String exePathBowtie) {
@@ -97,17 +97,17 @@ public class MapTophat implements MapRNA{
 	}
 	
 	/**
-	 * ÒÔ / ½áÎ²±íÊ¾ÊÇÊäÈëµ½ÎÄ¼ş¼Ğ£¬¾Í²»×öĞŞÊÎ
-	 * Èç¹ûÒÔÃû×Ö½áÎ²±íÊ¾ÊäÈëµ½ÎÄ¼ş£¬×îºó°ÑbamÎÄ¼şºÍjunctionÎÄ¼ş¸ÄÃû²¢ÌáÈ¡µ½ÉÏ²ãÎÄ¼ş¼ĞÏÂ
+	 * ä»¥ / ç»“å°¾è¡¨ç¤ºæ˜¯è¾“å…¥åˆ°æ–‡ä»¶å¤¹ï¼Œå°±ä¸åšä¿®é¥°
+	 * å¦‚æœä»¥åå­—ç»“å°¾è¡¨ç¤ºè¾“å…¥åˆ°æ–‡ä»¶ï¼Œæœ€åæŠŠbamæ–‡ä»¶å’Œjunctionæ–‡ä»¶æ”¹åå¹¶æå–åˆ°ä¸Šå±‚æ–‡ä»¶å¤¹ä¸‹
 	 */
 	public void setOutPathPrefix(String outPathPrefix) {
 		this.outPathPrefix = outPathPrefix;
 	}
-	/** ÔÚjunction µÄÒ»Í·ÉÏÖÁÉÙÒª´îµ½¶àÉÙbpµÄ¼î»ù£¬Ä¬ÈÏÎª10 */
+	/** åœ¨junction çš„ä¸€å¤´ä¸Šè‡³å°‘è¦æ­åˆ°å¤šå°‘bpçš„ç¢±åŸºï¼Œé»˜è®¤ä¸º10 */
 	public void setAnchorLength(int anchorLength) {
 		this.anchorLength = anchorLength;
 	}
-	/** Éè¶¨indel */
+	/** è®¾å®šindel */
 	public void setIndelLen(int indelLen) {
 		this.indelLen = indelLen;
 	}
@@ -116,7 +116,7 @@ public class MapTophat implements MapRNA{
 		return bowtieVersion;
 	}
 	/**
-	 * ÄÚº¬×Ó×î³¤¶àÉÙ£¬Ä¬ÈÏ500000£¬Ğè¸ù¾İ²»Í¬ÎïÖÖ½øĞĞÉèÖÃ
+	 * å†…å«å­æœ€é•¿å¤šå°‘ï¼Œé»˜è®¤500000ï¼Œéœ€æ ¹æ®ä¸åŒç‰©ç§è¿›è¡Œè®¾ç½®
 	 * 
 	 * @param intronLenMax
 	 */
@@ -124,16 +124,16 @@ public class MapTophat implements MapRNA{
 		this.intronLenMax = intronLenMax;
 		booSetIntronMax = true;
 	}
-	/** ÄÚº¬×Ó×î¶Ì¶àÉÙ£¬Ä¬ÈÏ50£¬Ğè¸ù¾İ²»Í¬ÎïÖÖ½øĞĞÉèÖÃ */
+	/** å†…å«å­æœ€çŸ­å¤šå°‘ï¼Œé»˜è®¤50ï¼Œéœ€æ ¹æ®ä¸åŒç‰©ç§è¿›è¡Œè®¾ç½® */
 	public void setIntronLenMin(int intronLenMin) {
 		this.intronLenMin = intronLenMin;
 		booSetIntronMin = true;
 	}
-	/** anchorÉÏµÄmismithch£¬Ä¬ÈÏÎª0£¬×î¶àÉèÖÃÎª1 */
+	/** anchorä¸Šçš„mismithchï¼Œé»˜è®¤ä¸º0ï¼Œæœ€å¤šè®¾ç½®ä¸º1 */
 	public void setAnchorMismatch(int anchorMismatch) {
 		this.anchorMismatch = anchorMismatch;
 	}
-	/** Ïß³ÌÊıÁ¿£¬Ä¬ÈÏ4Ïß³Ì */
+	/** çº¿ç¨‹æ•°é‡ï¼Œé»˜è®¤4çº¿ç¨‹ */
 	public void setThreadNum(int threadNum) {
 		if (threadNum <= 0) {
 			threadNum = 1;
@@ -141,7 +141,7 @@ public class MapTophat implements MapRNA{
 		this.threadNum = threadNum;
 	}
 	/**
-	 * STRAND_NULLµÈ£¬Ã²ËÆÊÇÉèÖÃRNA-SeqÊÇ·ñÎªÁ´ÌØÒìĞÔ²âĞòµÄ£¬³Ô²»×¼
+	 * STRAND_NULLç­‰ï¼Œè²Œä¼¼æ˜¯è®¾ç½®RNA-Seqæ˜¯å¦ä¸ºé“¾ç‰¹å¼‚æ€§æµ‹åºçš„ï¼Œåƒä¸å‡†
 	 * 
 	 * @param strandSpecifictype
 	 * <br>
@@ -166,7 +166,7 @@ public class MapTophat implements MapRNA{
 		this.strandSpecifictype = strandSpecifictype;
 	}
 	/**
-	 * ÊÇ·ñÊ¹ÓÃbowtie2½øĞĞ·ÖÎö
+	 * æ˜¯å¦ä½¿ç”¨bowtie2è¿›è¡Œåˆ†æ
 	 * 
 	 * @param bowtie2
 	 */
@@ -178,7 +178,7 @@ public class MapTophat implements MapRNA{
 		return "-o " + CmdOperate.addQuot(outPathPrefix) + " ";
 	}
 	/**
-	 * ²åÈë³¤¶È£¬Ä¬ÈÏÊÇillumina£º450
+	 * æ’å…¥é•¿åº¦ï¼Œé»˜è®¤æ˜¯illuminaï¼š450
 	 * 
 	 * @param insert
 	 */
@@ -186,14 +186,14 @@ public class MapTophat implements MapRNA{
 		maxInsert = insert;
 	}
 	/**
-	 * ÉèÖÃ×ó¶ËµÄĞòÁĞ£¬ÉèÖÃ»á°ÑÒÔÇ°µÄÇå¿Õ
+	 * è®¾ç½®å·¦ç«¯çš„åºåˆ—ï¼Œè®¾ç½®ä¼šæŠŠä»¥å‰çš„æ¸…ç©º
 	 * @param fqFile
 	 */
 	public void setLeftFq(List<FastQ> lsLeftFastQs) {
 		this.lsLeftFq = lsLeftFastQs;
 	}
 	/**
-	 * ÉèÖÃÓÒ¶ËµÄĞòÁĞ£¬ÉèÖÃ»á°ÑÒÔÇ°µÄÇå¿Õ
+	 * è®¾ç½®å³ç«¯çš„åºåˆ—ï¼Œè®¾ç½®ä¼šæŠŠä»¥å‰çš„æ¸…ç©º
 	 * @param fqFile
 	 */
 	public void setRightFq(List<FastQ> lsRightFastQs) {
@@ -215,7 +215,7 @@ public class MapTophat implements MapRNA{
 	}
 	
 	/**
-	 * -r 150µÈ£¬±íÊ¾pairendÖĞ¼äµÄ³¤¶È
+	 * -r 150ç­‰ï¼Œè¡¨ç¤ºpairendä¸­é—´çš„é•¿åº¦
 	 * @return
 	 */
 	private String getInsert() {
@@ -224,7 +224,7 @@ public class MapTophat implements MapRNA{
 		return "-r " + (maxInsert - len * 2) + " ";
 	}
 
-	/** ÔÚjunction µÄÒ»Í·ÉÏÖÁÉÙÒª´îµ½¶àÉÙbpµÄ¼î»ù */
+	/** åœ¨junction çš„ä¸€å¤´ä¸Šè‡³å°‘è¦æ­åˆ°å¤šå°‘bpçš„ç¢±åŸº */
 	private String getAnchoLen() {
 		return "-a " + anchorLength + " ";
 	}
@@ -253,12 +253,12 @@ public class MapTophat implements MapRNA{
 		}
 	}
 	
-	/** ÄÚº¬×Ó×î¶Ì¶àÉÙ£¬Ä¬ÈÏ50£¬Ğè¸ù¾İ²»Í¬ÎïÖÖ½øĞĞÉèÖÃ */
+	/** å†…å«å­æœ€çŸ­å¤šå°‘ï¼Œé»˜è®¤50ï¼Œéœ€æ ¹æ®ä¸åŒç‰©ç§è¿›è¡Œè®¾ç½® */
 	private String getIntronLenMin() {
 		return "-i " + intronLenMin + " ";
 	}
 
-	/** ÄÚº¬×Ó×î³¤¶àÉÙ£¬Ä¬ÈÏ500000£¬Ğè¸ù¾İ²»Í¬ÎïÖÖ½øĞĞÉèÖÃ */
+	/** å†…å«å­æœ€é•¿å¤šå°‘ï¼Œé»˜è®¤500000ï¼Œéœ€æ ¹æ®ä¸åŒç‰©ç§è¿›è¡Œè®¾ç½® */
 	private String getIntronLenMax() {
 		return "-I " + intronLenMax + " ";
 	}
@@ -272,7 +272,7 @@ public class MapTophat implements MapRNA{
 		return "-p " + threadNum + " ";
 	}
 
-	/** ÊÇ·ñÊ¹ÓÃbowtie2½øĞĞ·ÖÎö */
+	/** æ˜¯å¦ä½¿ç”¨bowtie2è¿›è¡Œåˆ†æ */
 	private String getBowtie() {
 		if (bowtieVersion == SoftWare.bowtie) {
 			return " --bowtie1 ";
@@ -290,7 +290,7 @@ public class MapTophat implements MapRNA{
 		return "";
 	}
 
-	/** ´íÅä£¬Õâ¸ö×ßÄ¬ÈÏ±È½ÏºÃ£¬Ä¬ÈÏÎª2 */
+	/** é”™é…ï¼Œè¿™ä¸ªèµ°é»˜è®¤æ¯”è¾ƒå¥½ï¼Œé»˜è®¤ä¸º2 */
 	public void setMismatch(int mismatch) {
 		if (mismatch > 2) {
 			mismatch = 2;
@@ -298,7 +298,7 @@ public class MapTophat implements MapRNA{
 		this.mismatch = mismatch;
 	}
 
-	/** ´íÅä£¬Õâ¸ö×ßÄ¬ÈÏ±È½ÏºÃ£¬Ä¬ÈÏÎª2 */
+	/** é”™é…ï¼Œè¿™ä¸ªèµ°é»˜è®¤æ¯”è¾ƒå¥½ï¼Œé»˜è®¤ä¸º2 */
 	private String getMismatch() {
 		return "--read-mismatches " + mismatch + " ";
 	}
@@ -325,8 +325,8 @@ public class MapTophat implements MapRNA{
 		return "";
 	}
 	/**
-	 * ÓÃgtfÎÄ¼ş¸¨Öúmapping
-	 * Èç¹ûÉè¶¨Îªnull£¬Ôò±íÊ¾²»Ê¹ÓÃgtfÎÄ¼ş
+	 * ç”¨gtfæ–‡ä»¶è¾…åŠ©mapping
+	 * å¦‚æœè®¾å®šä¸ºnullï¼Œåˆ™è¡¨ç¤ºä¸ä½¿ç”¨gtfæ–‡ä»¶
 	 * @param gtfFile
 	 */
 	public void setGtfFile(String gtfFile) {
@@ -334,7 +334,7 @@ public class MapTophat implements MapRNA{
 	}
 
 	/**
-	 * ÏÈ²»Éè¶¨£¬¿¼ÂÇ¼¯³É--transcriptome-indexÄÇ¸öÑ¡Ïî
+	 * å…ˆä¸è®¾å®šï¼Œè€ƒè™‘é›†æˆ--transcriptome-indexé‚£ä¸ªé€‰é¡¹
 	 * @return
 	 */
 	private String getGtfFile() {
@@ -357,7 +357,7 @@ public class MapTophat implements MapRNA{
 		}
 	}
 	/**
-	 * ·µ»ØÁ´µÄ·½Ïò
+	 * è¿”å›é“¾çš„æ–¹å‘
 	 * @return
 	 */
 	private String getStrandSpecifictype() {
@@ -372,7 +372,7 @@ public class MapTophat implements MapRNA{
 	}
 
 	/**
-	 * ²ÎÊıÉè¶¨²»ÄÜÓÃÓÚsolid »¹Ã»¼ÓÈëgtfµÄÑ¡Ïî£¬Ò²¾ÍÊÇÄ¬ÈÏÃ»ÓĞgtf
+	 * å‚æ•°è®¾å®šä¸èƒ½ç”¨äºsolid è¿˜æ²¡åŠ å…¥gtfçš„é€‰é¡¹ï¼Œä¹Ÿå°±æ˜¯é»˜è®¤æ²¡æœ‰gtf
 	 */
 	public void mapReads() {
 		setIntronLen();
@@ -384,7 +384,7 @@ public class MapTophat implements MapRNA{
 		} else {
 			pairend = false;
 		}
-		// linuxÃüÁîÈçÏÂ
+		// linuxå‘½ä»¤å¦‚ä¸‹
 		/**
 		 * tophat -r 120 -a 10 -m 1 -i 20 -I 6000 --solexa1.3-quals -F 0.15 -p 4
 		 * --coverage-search --min-coverage-intron 20 --max-coverage-intron 6000
@@ -404,10 +404,10 @@ public class MapTophat implements MapRNA{
 		String cmd = "";
 		cmd = ExePathTophat + "tophat " + getBowtie();
 		if (pairend) {
-			cmd = cmd + getInsert(); // ²åÈë³¤¶È
+			cmd = cmd + getInsert(); // æ’å…¥é•¿åº¦
 		}
 		cmd = cmd + getAnchoLen() + getAnchorMismatch() + getIntronLenMin() + getIntronLenMax() + getGtfFile();
-//		//±¾²½ºÜÂı£¬Ò»°ã²»Ê¹ÓÃ
+//		//æœ¬æ­¥å¾ˆæ…¢ï¼Œä¸€èˆ¬ä¸ä½¿ç”¨
 //		cmd = cmd + "--coverage-search ";
 		if (bowtieVersion == SoftWare.bowtie2) {
 			cmd = cmd + getMismatch() + getIndelLen();

@@ -16,7 +16,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.listOperate.ListAbs;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.NovelBioConst;
-/** ÖØ½¨×ªÂ¼±¾ */
+/** é‡å»ºè½¬å½•æœ¬ */
 public class GffHashMerge {
 	private static Logger logger = Logger.getLogger(GffHashMerge.class);
 	
@@ -48,7 +48,7 @@ public class GffHashMerge {
 
 		txtOut.ExcelWrite(transcriptomStatistics.getStatisticsResult());
 	}
-	//TODO Õâ¸öÔËĞĞÁË»á³ö´í£¬µÈ´ıĞŞÕı
+	//TODO è¿™ä¸ªè¿è¡Œäº†ä¼šå‡ºé”™ï¼Œç­‰å¾…ä¿®æ­£
 	public static void human() {
 		String gffhashGeneCuf = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/novelbioTranscriptome/transcripts.gtf";
 		String gffFinal = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/novelbioTranscriptome/finalTranscript.gtf";
@@ -102,13 +102,13 @@ public class GffHashMerge {
 	
 	GffHashGene gffHashGeneRef = new GffHashGene();
 	ArrayList<GffHashGene> lsGffHashGenes = new ArrayList<GffHashGene>();
-	/** keyĞ¡Ğ´ */
+	/** keyå°å†™ */
 	HashMap<String, ArrayList<GffGeneCluster>> mapChrID2LsGffCluster = new HashMap<String, ArrayList<GffGeneCluster>>();
 	
 	GffHashGene gffHashGeneResult = new GffHashGene();
-	/**Í³¼Æ×ªÂ¼±¾ĞÅÏ¢Ê±ÓÃµ½ */
+	/**ç»Ÿè®¡è½¬å½•æœ¬ä¿¡æ¯æ—¶ç”¨åˆ° */
 	Species species;
-	/**ĞÂµÄ×ªÂ¼±¾Èç¹û³¤¶ÈĞ¡ÓÚ1000£¬²¢ÇÒÃ»ÓĞÄÚº¬×Ó£¬¾ÍÓĞ¿ÉÄÜÊÇ¼Ù»ùÒò£¬¾ÍÉ¾³ı */
+	/**æ–°çš„è½¬å½•æœ¬å¦‚æœé•¿åº¦å°äº1000ï¼Œå¹¶ä¸”æ²¡æœ‰å†…å«å­ï¼Œå°±æœ‰å¯èƒ½æ˜¯å‡åŸºå› ï¼Œå°±åˆ é™¤ */
 	int minGeneLen = 1000;
 	
 	boolean calculate = false;
@@ -119,7 +119,7 @@ public class GffHashMerge {
 		calculate = false;
 	}
 	/**
-	 * Ìí¼ÓGffĞÅÏ¢
+	 * æ·»åŠ Gffä¿¡æ¯
 	 * @param gffHashGene
 	 */
 	public void addGffHashGene(GffHashGene gffHashGene) {
@@ -129,7 +129,7 @@ public class GffHashMerge {
 	public void setSpecies(Species species) {
 		this.species = species;
 	}
-	/** ÄÚ²¿°üº¬ÓĞÖØ¸´µÄiso */
+	/** å†…éƒ¨åŒ…å«æœ‰é‡å¤çš„iso */
 	public GffHashGene getGffHashGeneModifyResult() {
 		if (!calculate) {
 			fillGffHashGeneResult();
@@ -142,7 +142,7 @@ public class GffHashMerge {
 		return statisticTranscriptome();
 	}
 	/**
-	 * ½«GffĞÅÏ¢×°ÈëmapChrID2LsGffGeneCluster
+	 * å°†Gffä¿¡æ¯è£…å…¥mapChrID2LsGffGeneCluster
 	 */
 	private void fillGffHashGeneResult() {
 		if (calculate) {
@@ -167,7 +167,7 @@ public class GffHashMerge {
 	}
 	
 	/**
-	 * ½«Ä³Ò»ÌõÈ¾É«ÌåµÄËùÓĞgffhashgeneµÄĞÅÏ¢°´ÕÕ»®·ÖµÄÇøÓò×°ÈëmapChrID2LsGffGeneCluster
+	 * å°†æŸä¸€æ¡æŸ“è‰²ä½“çš„æ‰€æœ‰gffhashgeneçš„ä¿¡æ¯æŒ‰ç…§åˆ’åˆ†çš„åŒºåŸŸè£…å…¥mapChrID2LsGffGeneCluster
 	 * @param chrID
 	 * @param lsGeneBount
 	 * @param lsGffHashGenes
@@ -183,7 +183,7 @@ public class GffHashMerge {
 				
 				GffCodGene gffCodGeneEnd = gffHashGene.searchLocation(chrID, geneBound[1]);
 				int endID = getGffGeneIndexNum(false, gffCodGeneEnd);
-				//Æğµã´óÓÚÖÕµãËµÃ÷ÔÚ¸ÃÎ»ÖÃÇø¼äÀïÃæ£¬±¾GffHashGeneÖĞÃ»ÓĞÕÒµ½»ùÒò
+				//èµ·ç‚¹å¤§äºç»ˆç‚¹è¯´æ˜åœ¨è¯¥ä½ç½®åŒºé—´é‡Œé¢ï¼Œæœ¬GffHashGeneä¸­æ²¡æœ‰æ‰¾åˆ°åŸºå› 
 				if (startID > endID || startID < 0 || endID < 0) {
 					if (i == 0) {
 						gffGeneCluster.setIsContainsRef(false);
@@ -197,8 +197,8 @@ public class GffHashMerge {
 		return lsGffGeneClusters;
 	}
 	/**
-	 * 	¿´gffCodGeneÉÏ£¬Í·²¿»ùÒòµÄindexNumºÍÎ²²¿»ùÒòµÄindexNum
-	 * @param start ÊÇ·ñ¿´
+	 * 	çœ‹gffCodGeneä¸Šï¼Œå¤´éƒ¨åŸºå› çš„indexNumå’Œå°¾éƒ¨åŸºå› çš„indexNum
+	 * @param start æ˜¯å¦çœ‹
 	 * @param gffCodGene
 	 * @return
 	 */
@@ -218,11 +218,11 @@ public class GffHashMerge {
 		}
 	}
 	/**
-	 * ½«Ö¸¶¨·¶Î§ÄÚµÄgffGene×°ÈëclusterÖĞ
+	 * å°†æŒ‡å®šèŒƒå›´å†…çš„gffGeneè£…å…¥clusterä¸­
 	 * @param gffHashGeneBed
 	 * @param chrID
-	 * @param startLoc ´Ó0¿ªÊ¼
-	 * @param endLoc ´Ó0¿ªÊ¼
+	 * @param startLoc ä»0å¼€å§‹
+	 * @param endLoc ä»0å¼€å§‹
 	 */
 	private void addGffGene_Into_GffCluster(GffGeneCluster gffGeneCluster, GffHashGene gffHashGene, String chrID, int startID, int endID) {
 		ListGff lsGff = gffHashGene.getMapChrID2LsGff().get(chrID);
@@ -252,7 +252,7 @@ public class GffHashMerge {
 	
 			boolean shortGene = true;
 			for (GffDetailGene gffDetailGene : lsGene) {
-				//³¤¶È´óÓÚÖ¸¶¨³¤¶È£¬»òÕß×î³¤×ªÂ¼±¾º¬ÓĞÄÚº¬×Ó£¬¾Í¿ÉÒÔÈÏÎª²»ÊÇ¼Ù»ùÒò
+				//é•¿åº¦å¤§äºæŒ‡å®šé•¿åº¦ï¼Œæˆ–è€…æœ€é•¿è½¬å½•æœ¬å«æœ‰å†…å«å­ï¼Œå°±å¯ä»¥è®¤ä¸ºä¸æ˜¯å‡åŸºå› 
 				if (gffDetailGene.Length() > minGeneLen || gffDetailGene.getLongestSplitMrna().size() > 1) {
 					shortGene = false;
 					break;

@@ -13,7 +13,7 @@ import com.novelbio.base.dataOperate.WebFetchOld;
 public class DavidFatchID
 {
 	/**
-	 * ÊäÈë david±í£¬·µ»ØÊäÈëIDÓëENZÒ»Ò»¶ÔÓ¦µÄtxtÎÄ±¾
+	 * è¾“å…¥ davidè¡¨ï¼Œè¿”å›è¾“å…¥IDä¸ENZä¸€ä¸€å¯¹åº”çš„txtæ–‡æœ¬
 	 * @param Davidhtml
 	 * @param outPut
 	 * @throws Exception
@@ -46,10 +46,10 @@ public class DavidFatchID
 		while ((content=davidFileReader.readLine())!=null) 
 		{
 			String[]  affIDtoEND=new String[2];
-			Pattern patternID =Pattern.compile("<td>([^<>]+)</td>", Pattern.CASE_INSENSITIVE);  //flags - Æ¥Åä±êÖ¾£¬¿ÉÄÜ°üÀ¨ CASE_INSENSITIVE¡¢MULTILINE¡¢DOTALL¡¢UNICODE_CASE¡¢ CANON_EQ¡¢UNIX_LINES¡¢LITERAL ºÍ COMMENTS µÄÎ»ÑÚÂë  // CASE_INSENSITIVE,´óĞ¡Ğ´²»Ãô¸Ğ£¬MULTILINE ¶àĞĞ
-			Matcher matcherID;//matcher.groupCount() ·µ»Ø´ËÆ¥ÅäÆ÷Ä£Ê½ÖĞµÄ²¶»ñ×éÊı¡£
-			Pattern patternurl =Pattern.compile("geneReportFull\\.jsp\\?rowids=(\\w+)\"", Pattern.CASE_INSENSITIVE);  //flags - Æ¥Åä±êÖ¾£¬¿ÉÄÜ°üÀ¨ CASE_INSENSITIVE¡¢MULTILINE¡¢DOTALL¡¢UNICODE_CASE¡¢ CANON_EQ¡¢UNIX_LINES¡¢LITERAL ºÍ COMMENTS µÄÎ»ÑÚÂë  // CASE_INSENSITIVE,´óĞ¡Ğ´²»Ãô¸Ğ£¬MULTILINE ¶àĞĞ
-			Matcher matcherurl;//matcher.groupCount() ·µ»Ø´ËÆ¥ÅäÆ÷Ä£Ê½ÖĞµÄ²¶»ñ×éÊı¡£
+			Pattern patternID =Pattern.compile("<td>([^<>]+)</td>", Pattern.CASE_INSENSITIVE);  //flags - åŒ¹é…æ ‡å¿—ï¼Œå¯èƒ½åŒ…æ‹¬ CASE_INSENSITIVEã€MULTILINEã€DOTALLã€UNICODE_CASEã€ CANON_EQã€UNIX_LINESã€LITERAL å’Œ COMMENTS çš„ä½æ©ç   // CASE_INSENSITIVE,å¤§å°å†™ä¸æ•æ„Ÿï¼ŒMULTILINE å¤šè¡Œ
+			Matcher matcherID;//matcher.groupCount() è¿”å›æ­¤åŒ¹é…å™¨æ¨¡å¼ä¸­çš„æ•è·ç»„æ•°ã€‚
+			Pattern patternurl =Pattern.compile("geneReportFull\\.jsp\\?rowids=(\\w+)\"", Pattern.CASE_INSENSITIVE);  //flags - åŒ¹é…æ ‡å¿—ï¼Œå¯èƒ½åŒ…æ‹¬ CASE_INSENSITIVEã€MULTILINEã€DOTALLã€UNICODE_CASEã€ CANON_EQã€UNIX_LINESã€LITERAL å’Œ COMMENTS çš„ä½æ©ç   // CASE_INSENSITIVE,å¤§å°å†™ä¸æ•æ„Ÿï¼ŒMULTILINE å¤šè¡Œ
+			Matcher matcherurl;//matcher.groupCount() è¿”å›æ­¤åŒ¹é…å™¨æ¨¡å¼ä¸­çš„æ•è·ç»„æ•°ã€‚
 			matcherID=patternID.matcher(content);
 			if (matcherID.find()) 
 			{
@@ -68,7 +68,7 @@ public class DavidFatchID
 	}
 	
 	/**
-	 * ¸ø¶¨davidurl£¬·µ»ØÁ½¸öÎÄ¼ş£¬Ò»¸öÊÇÉÏ´ÎÃ»´¦ÀíÍêµÄ£¬Ò»¸öÊÇ³É¹¦µÄ
+	 * ç»™å®šdavidurlï¼Œè¿”å›ä¸¤ä¸ªæ–‡ä»¶ï¼Œä¸€ä¸ªæ˜¯ä¸Šæ¬¡æ²¡å¤„ç†å®Œçš„ï¼Œä¸€ä¸ªæ˜¯æˆåŠŸçš„
 	 * @param Davidurl
 	 * @param DavidLost
 	 * @param outPut
@@ -107,15 +107,15 @@ public class DavidFatchID
 	
 	
 	/**
-	 * ¸ø¶¨ david¶ÁÈ¡µÄÒ³Ãæ£¬×¥È¡ENTREZ_GENE_ID£¬Èç¹ûÃ»ÓĞ£¬Ôò·µ»Ønull
+	 * ç»™å®š davidè¯»å–çš„é¡µé¢ï¼ŒæŠ“å–ENTREZ_GENE_IDï¼Œå¦‚æœæ²¡æœ‰ï¼Œåˆ™è¿”å›null
 	 * @param DavidReader
 	 * @return
 	 * @throws IOException
 	 */
 	private static String getInfo(BufferedReader DavidReader) throws IOException
 	{
-		 Pattern pattern =Pattern.compile("target=\"_blank\">(\\d+)</a>", Pattern.CASE_INSENSITIVE);  //flags - Æ¥Åä±êÖ¾£¬¿ÉÄÜ°üÀ¨ CASE_INSENSITIVE¡¢MULTILINE¡¢DOTALL¡¢UNICODE_CASE¡¢ CANON_EQ¡¢UNIX_LINES¡¢LITERAL ºÍ COMMENTS µÄÎ»ÑÚÂë  // CASE_INSENSITIVE,´óĞ¡Ğ´²»Ãô¸Ğ£¬MULTILINE ¶àĞĞ
-		 Matcher matcher;//matcher.groupCount() ·µ»Ø´ËÆ¥ÅäÆ÷Ä£Ê½ÖĞµÄ²¶»ñ×éÊı¡£
+		 Pattern pattern =Pattern.compile("target=\"_blank\">(\\d+)</a>", Pattern.CASE_INSENSITIVE);  //flags - åŒ¹é…æ ‡å¿—ï¼Œå¯èƒ½åŒ…æ‹¬ CASE_INSENSITIVEã€MULTILINEã€DOTALLã€UNICODE_CASEã€ CANON_EQã€UNIX_LINESã€LITERAL å’Œ COMMENTS çš„ä½æ©ç   // CASE_INSENSITIVE,å¤§å°å†™ä¸æ•æ„Ÿï¼ŒMULTILINE å¤šè¡Œ
+		 Matcher matcher;//matcher.groupCount() è¿”å›æ­¤åŒ¹é…å™¨æ¨¡å¼ä¸­çš„æ•è·ç»„æ•°ã€‚
 		String content="";
 		while ((content=DavidReader.readLine())!=null) 
 		{

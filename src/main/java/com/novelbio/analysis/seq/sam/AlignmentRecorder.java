@@ -2,9 +2,9 @@ package com.novelbio.analysis.seq.sam;
 
 import com.novelbio.analysis.seq.AlignRecord;
 
-/** 这是类似监听器的东西
- * 只需要继承该接口，然后添加进 samfile reader中，
- * 读取sam文件后就可以获得结果
+/** 杩欐槸绫讳技鐩戝惉鍣ㄧ殑涓滆タ
+ * 鍙渶瑕佺户鎵胯鎺ュ彛锛岀劧鍚庢坊鍔犺繘 samfile reader涓紝
+ * 璇诲彇sam鏂囦欢鍚庡氨鍙互鑾峰緱缁撴灉
  * @author zong0jie
  *
  */

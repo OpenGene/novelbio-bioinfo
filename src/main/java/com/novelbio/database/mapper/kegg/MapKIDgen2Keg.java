@@ -45,7 +45,7 @@ public interface MapKIDgen2Keg extends MapperSql {
 	public void insertKGIDgen2Keg(KGIDgen2Keg kGIDgen2Keg);
 	
 	/**
-	 * 目前的升级方式是
+	 * 鐩墠鐨勫崌绾ф柟寮忔槸
 		update IDgen2Keg set
 		geneID = #{geneID},
 		keggID = #{keggID},

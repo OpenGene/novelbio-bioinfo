@@ -48,7 +48,7 @@ import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
- * Ê¹ÓÃÇ°ÏÈÓÃsetParameterÉèÖÃ Ê¹ÓÃÍê±Ïºóµ÷ÓÃclose¹Ø±ÕÁ÷
+ * ä½¿ç”¨å‰å…ˆç”¨setParameterè®¾ç½® ä½¿ç”¨å®Œæ¯•åè°ƒç”¨closeå…³é—­æµ
  * 
  * @author zong0jie
  * 
@@ -80,14 +80,14 @@ public class TxtReadandWrite {
 	boolean createNew = false;
 	boolean append = true;
 	/**
-	 * ½ö½öÎªÁË×îºó¹Ø±ÕzipÓÃ
+	 * ä»…ä»…ä¸ºäº†æœ€åå…³é—­zipç”¨
 	 */
 	ArchiveOutputStream zipOutputStream;
 	
-	/** ×¥È¡ÎÄ¼şÖĞÌØÊâµÄĞÅÏ¢ */
+	/** æŠ“å–æ–‡ä»¶ä¸­ç‰¹æ®Šçš„ä¿¡æ¯ */
 	String grepContent = "";
 	/**
-	 * Éè¶¨»º³å³¤¶È£¬Ä¬ÈÏÎª10000
+	 * è®¾å®šç¼“å†²é•¿åº¦ï¼Œé»˜è®¤ä¸º10000
 	 * @param bufferLen
 	 */
 	public static void setBufferLen(int bufferLen) {
@@ -115,8 +115,8 @@ public class TxtReadandWrite {
 			setParameter(filepath, createNew, true);
 	}
 	/**
-	 * ´ı²âÊÔ
-	 * ¶ÁÈ¡Ñ¹ËõÎÄ¼ş£¬ÎÄ¼şÖĞÖ»ÄÜÓĞÒ»¸öÑ¹ËõÎÄ¼ş£¬²¢ÇÒ²»ÄÜÊÇ×ÓÎÄ¼ş¼Ğ
+	 * å¾…æµ‹è¯•
+	 * è¯»å–å‹ç¼©æ–‡ä»¶ï¼Œæ–‡ä»¶ä¸­åªèƒ½æœ‰ä¸€ä¸ªå‹ç¼©æ–‡ä»¶ï¼Œå¹¶ä¸”ä¸èƒ½æ˜¯å­æ–‡ä»¶å¤¹
 	 * @param zip
 	 * @param filePath
 	 */
@@ -128,15 +128,15 @@ public class TxtReadandWrite {
 		this.sep = sep;
 	}
 	/**
-	 * Ä¬ÈÏ²úÉútxtÎÄ±¾
+	 * é»˜è®¤äº§ç”Ÿtxtæ–‡æœ¬
 	 * @param filepath
-	 *            Òª¶ÁÈ¡»òĞ´ÈëµÄÎÄ¼şÃûfilepath
+	 *            è¦è¯»å–æˆ–å†™å…¥çš„æ–‡ä»¶åfilepath
 	 * @param createNew
-	 *            µ±ÎÄ±¾²»´æÔÚÊ±£¬ÊÇ·ñĞèÒªĞÂ½¨ÎÄ±¾
+	 *            å½“æ–‡æœ¬ä¸å­˜åœ¨æ—¶ï¼Œæ˜¯å¦éœ€è¦æ–°å»ºæ–‡æœ¬
 	 * @param append
-	 *            ÊÇ½Ó×ÅĞ´Èë»¹ÊÇĞ´ĞÂµÄ¡£<b>¶ÁÈ¡ÎÄ±¾Ê±±ØĞëÉèÖÃÎªtrue</b>
-	 * @return true£º³É¹¦ÉèÖÃÎÄ±¾²ÎÊı<br>
-	 *         false£ºÃ»ÓĞÉèºÃÎÄ±¾²ÎÊı
+	 *            æ˜¯æ¥ç€å†™å…¥è¿˜æ˜¯å†™æ–°çš„ã€‚<b>è¯»å–æ–‡æœ¬æ—¶å¿…é¡»è®¾ç½®ä¸ºtrue</b>
+	 * @return trueï¼šæˆåŠŸè®¾ç½®æ–‡æœ¬å‚æ•°<br>
+	 *         falseï¼šæ²¡æœ‰è®¾å¥½æ–‡æœ¬å‚æ•°
 	 */
 	public boolean setParameter(String filepath, boolean createNew,
 			boolean append) {
@@ -151,7 +151,7 @@ public class TxtReadandWrite {
 		}
 	}
 	/**
-	 * °´ÕÕ×î³õµÄÉè¶¨£¬ÖØĞÂÉè¶¨¸÷ÀàĞÅÏ¢£¬ÀàËÆsetParameter()
+	 * æŒ‰ç…§æœ€åˆçš„è®¾å®šï¼Œé‡æ–°è®¾å®šå„ç±»ä¿¡æ¯ï¼Œç±»ä¼¼setParameter()
 	 * @return
 	 */
 	public boolean reSetInfo() {
@@ -159,12 +159,12 @@ public class TxtReadandWrite {
 	}
 	
 	/**
-	 * @param fileType Ñ¹Ëõ¸ñÊ½
-	 * @param filepath Òª¶ÁÈ¡»òĞ´ÈëµÄÎÄ¼şÃûfilepath
-	 * @param createNew µ±ÎÄ±¾²»´æÔÚÊ±£¬ÊÇ·ñĞèÒªĞÂ½¨ÎÄ±¾
-	 * @param append ÊÇ½Ó×ÅĞ´Èë»¹ÊÇĞ´ĞÂµÄ¡£<b>¶ÁÈ¡ÎÄ±¾Ê±±ØĞëÉèÖÃÎªtrue</b>
-	 * @return true£º³É¹¦ÉèÖÃÎÄ±¾²ÎÊı<br>
-	 *         false£ºÃ»ÓĞÉèºÃÎÄ±¾²ÎÊı
+	 * @param fileType å‹ç¼©æ ¼å¼
+	 * @param filepath è¦è¯»å–æˆ–å†™å…¥çš„æ–‡ä»¶åfilepath
+	 * @param createNew å½“æ–‡æœ¬ä¸å­˜åœ¨æ—¶ï¼Œæ˜¯å¦éœ€è¦æ–°å»ºæ–‡æœ¬
+	 * @param append æ˜¯æ¥ç€å†™å…¥è¿˜æ˜¯å†™æ–°çš„ã€‚<b>è¯»å–æ–‡æœ¬æ—¶å¿…é¡»è®¾ç½®ä¸ºtrue</b>
+	 * @return trueï¼šæˆåŠŸè®¾ç½®æ–‡æœ¬å‚æ•°<br>
+	 *         falseï¼šæ²¡æœ‰è®¾å¥½æ–‡æœ¬å‚æ•°
 	 */
 	public boolean setParameter(String fileType, String filepath, boolean createNew, boolean append) {
 		close();
@@ -188,7 +188,7 @@ public class TxtReadandWrite {
 		return false;
 	}
 	/**
-	 * ½öÉè¶¨Ñ¹Ëõ¸ñÊ½,Ã»ÓĞ²âÊÔ
+	 * ä»…è®¾å®šå‹ç¼©æ ¼å¼,æ²¡æœ‰æµ‹è¯•
 	 * @param filetype
 	 */
 	public void setFiletype(String filetype) {
@@ -232,7 +232,7 @@ public class TxtReadandWrite {
 	
 	private String getEnterTypeExp() throws Exception {
 		int firstLineNum = readFirstLine().getBytes().length;
-		//»ñµÃµÚÒ»ĞĞµÄbtye³¤¶È
+		//è·å¾—ç¬¬ä¸€è¡Œçš„btyeé•¿åº¦
 		byte[] mybyte = new byte[firstLineNum + 2];
 		initialReading();
 		inputStream.read(mybyte);
@@ -250,10 +250,10 @@ public class TxtReadandWrite {
 		}
 	}
 	/**
-	 * Õâ¸öÄÚ²¿Ê¹ÓÃ£¬Íâ²¿ÓÃ@readlines´úÌæ
-	 * ÓĞÊ±¼ä¸Ä³Éprivate·½·¨
-	 * @param pathÊäÈëÎÄ¼şÃû
-	 * @return ·µ»ØBufferedReader£¬¼ÇµÃ¶ÁÍêºóÒª¹Ø±ÕBufferÁ÷
+	 * è¿™ä¸ªå†…éƒ¨ä½¿ç”¨ï¼Œå¤–éƒ¨ç”¨@readlinesä»£æ›¿
+	 * æœ‰æ—¶é—´æ”¹æˆprivateæ–¹æ³•
+	 * @param pathè¾“å…¥æ–‡ä»¶å
+	 * @return è¿”å›BufferedReaderï¼Œè®°å¾—è¯»å®Œåè¦å…³é—­Bufferæµ
 	 * @throws Exception
 	 */
 	@Deprecated
@@ -263,7 +263,7 @@ public class TxtReadandWrite {
 		return bufread;
 	}
 	/**
-	 * ³õÊ¼»¯¶ÁÈ¡ÎÄ±¾
+	 * åˆå§‹åŒ–è¯»å–æ–‡æœ¬
 	 * @throws Exception
 	 */
 	private void initialReading() throws Exception {
@@ -306,8 +306,8 @@ public class TxtReadandWrite {
 		}
 	}
 	/**
-	 * ´ÓµÚ¼¸ĞĞ¿ªÊ¼¶Á£¬ÊÇÊµ¼ÊĞĞ
-	 * @param lines Èç¹ûlinesĞ¡ÓÚ1£¬Ôò´ÓÍ·¿ªÊ¼¶ÁÈ¡
+	 * ä»ç¬¬å‡ è¡Œå¼€å§‹è¯»ï¼Œæ˜¯å®é™…è¡Œ
+	 * @param lines å¦‚æœlineså°äº1ï¼Œåˆ™ä»å¤´å¼€å§‹è¯»å–
 	 * @return
 	 */
 	public Iterable<String> readlines(int lines) {
@@ -326,7 +326,7 @@ public class TxtReadandWrite {
 		}
 	}
 	/**
-	 * µü´ú¶ÁÈ¡ÎÄ¼ş
+	 * è¿­ä»£è¯»å–æ–‡ä»¶
 	 * @param filename
 	 * @return
 	 * @throws Exception 
@@ -367,8 +367,8 @@ public class TxtReadandWrite {
 	}
 
 	/**
-	 * @param pathÊäÈëÎÄ¼şÃû
-	 * @return ·µ»ØList<String>£¬¶ÁÍê¹Ø±Õ
+	 * @param pathè¾“å…¥æ–‡ä»¶å
+	 * @return è¿”å›List<String>ï¼Œè¯»å®Œå…³é—­
 	 * @throws Exception
 	 */
 	public ArrayList<String> readfileLs() {
@@ -381,7 +381,7 @@ public class TxtReadandWrite {
 	}
 	
 	/**
-	 * È¥³ı¿Õ¸ñºóÎÄ¼şµÄ×Ö·û³¤¶È£¬²»ÊÇÎÄ¼ş´óĞ¡£¬¶øÊÇº¬ÓĞ¶àÉÙÎÄ×Ö
+	 * å»é™¤ç©ºæ ¼åæ–‡ä»¶çš„å­—ç¬¦é•¿åº¦ï¼Œä¸æ˜¯æ–‡ä»¶å¤§å°ï¼Œè€Œæ˜¯å«æœ‰å¤šå°‘æ–‡å­—
 	 * @return
 	 */
 	public long getTxtLen() {
@@ -393,7 +393,7 @@ public class TxtReadandWrite {
 	}
 
 	/**
-	 * @return ·µ»Ø String£¬¶ÁÍê²»ÓÃ¹Ø±ÕBufferÁ÷
+	 * @return è¿”å› Stringï¼Œè¯»å®Œä¸ç”¨å…³é—­Bufferæµ
 	 */
 	public String readFirstLine() {
 		String firstLine = "";
@@ -404,8 +404,8 @@ public class TxtReadandWrite {
 	}
 	
 	/**
-	 * @param Num ¶ÁÈ¡Ç°¼¸ÁĞ£¬Êµ¼ÊÁĞ¡£Èç¹ûÎÄ±¾Ã»ÓĞÄÇÃ´¶àÁĞ£¬ÄÇÃ´Ö»¶ÁÈ¡ËùÓĞÁĞ
-	 * @return ·µ»Ø String£¬¶ÁÍê²»ÓÃ¹Ø±ÕBufferÁ÷
+	 * @param Num è¯»å–å‰å‡ åˆ—ï¼Œå®é™…åˆ—ã€‚å¦‚æœæ–‡æœ¬æ²¡æœ‰é‚£ä¹ˆå¤šåˆ—ï¼Œé‚£ä¹ˆåªè¯»å–æ‰€æœ‰åˆ—
+	 * @return è¿”å› Stringï¼Œè¯»å®Œä¸ç”¨å…³é—­Bufferæµ
 	 * @throws Exception
 	 */
 	public ArrayList<String> readFirstLines(int Num) {
@@ -421,9 +421,9 @@ public class TxtReadandWrite {
 		return lsResult;
 	}
 	/**
-	 * Ğ´Èë²¢»»ĞĞ£¬Ã»ÓĞflush
+	 * å†™å…¥å¹¶æ¢è¡Œï¼Œæ²¡æœ‰flush
 	 * @param content
-	 *            £¬ÒªĞ´ÈëÎÄ¼şÄÚÈİ
+	 *            ï¼Œè¦å†™å…¥æ–‡ä»¶å†…å®¹
 	 * @throws Exception
 	 */
 	public void flash() {
@@ -432,8 +432,8 @@ public class TxtReadandWrite {
 		} catch (Exception e) { }
 	}
 	/**
-	 * Ğ´Íê×Ô¶¯flush
-	 * @param content ÒªĞ´ÈëÎÄ¼şÄÚÈİ
+	 * å†™å®Œè‡ªåŠ¨flush
+	 * @param content è¦å†™å…¥æ–‡ä»¶å†…å®¹
 	 * @throws Exception
 	 */
 	public void writefile(String content) {
@@ -441,7 +441,7 @@ public class TxtReadandWrite {
 	}
 	/**
 	 * @param content
-	 *            £¬ÒªĞ´ÈëÎÄ¼şÄÚÈİ,²¢¿¼ÂÇÊÇ·ñË¢ĞÂ--Ò²¾ÍÊÇÖ±½ÓĞ´ÈëÎÄ¼ş¶ø²»ÊÇ½øÈë»º´æ
+	 *            ï¼Œè¦å†™å…¥æ–‡ä»¶å†…å®¹,å¹¶è€ƒè™‘æ˜¯å¦åˆ·æ–°--ä¹Ÿå°±æ˜¯ç›´æ¥å†™å…¥æ–‡ä»¶è€Œä¸æ˜¯è¿›å…¥ç¼“å­˜
 	 * @throws Exception
 	 */
 	public void writefile(String content, boolean flush) {
@@ -456,9 +456,9 @@ public class TxtReadandWrite {
 		}
 	}
 	/**
-	 * Ğ´Èë²¢»»ĞĞ£¬Ã»ÓĞflush
+	 * å†™å…¥å¹¶æ¢è¡Œï¼Œæ²¡æœ‰flush
 	 * @param content
-	 *            £¬ÒªĞ´ÈëÎÄ¼şÄÚÈİ
+	 *            ï¼Œè¦å†™å…¥æ–‡ä»¶å†…å®¹
 	 * @throws Exception
 	 */
 	public void writefileln(String content) {
@@ -467,9 +467,9 @@ public class TxtReadandWrite {
 		} catch (Exception e) { }
 	}
 	/**
-	 * Ğ´ÈëÒ»ĞĞÊı×é²¢»»ĞĞ£¬ÓÃsep¸ô¿ª
+	 * å†™å…¥ä¸€è¡Œæ•°ç»„å¹¶æ¢è¡Œï¼Œç”¨sepéš”å¼€
 	 * @param content
-	 *            £¬ÒªĞ´ÈëÎÄ¼şÄÚÈİ
+	 *            ï¼Œè¦å†™å…¥æ–‡ä»¶å†…å®¹
 	 * @throws Exception
 	 */
 	public void writefileln(String[] content) {
@@ -484,8 +484,8 @@ public class TxtReadandWrite {
 	}
 	
 	/**
-	 * Ğ´Èë²¢»»ĞĞ
-	 * @param content ÒªĞ´ÈëÎÄ¼şÄÚÈİ
+	 * å†™å…¥å¹¶æ¢è¡Œ
+	 * @param content è¦å†™å…¥æ–‡ä»¶å†…å®¹
 	 * @throws Exception
 	 */
 	public void writefileln() {
@@ -496,9 +496,9 @@ public class TxtReadandWrite {
 		}
 	}
 	/**
-	 * Ğ´Èë²¢½«Ğ´ÈëµÄĞòÁĞ»»ĞĞ£¬Ä¿Ç°Ö»ÄÜĞ´ÈëascIIÎÄ±¾
-	 * @param content ÊäÈëµÄstring£¬ÊÇÃ»ÓĞ»»ĞĞµÄÄÇÖÖ
-	 * @param length Ã¿¶àÉÙĞĞ½øĞĞ»»ĞĞ
+	 * å†™å…¥å¹¶å°†å†™å…¥çš„åºåˆ—æ¢è¡Œï¼Œç›®å‰åªèƒ½å†™å…¥ascIIæ–‡æœ¬
+	 * @param content è¾“å…¥çš„stringï¼Œæ˜¯æ²¡æœ‰æ¢è¡Œçš„é‚£ç§
+	 * @param length æ¯å¤šå°‘è¡Œè¿›è¡Œæ¢è¡Œ
 	 * @throws Exception
 	 */
 	public void writefilePerLine(String content, int length) {
@@ -516,7 +516,7 @@ public class TxtReadandWrite {
 	}
 	
 	/**
-	 * Ö¸¶¨ÕıÔò±í´ïÊ½£¬½«ÎÄ±¾ÖĞº¬ÓĞ¸ÃÕıÔò±í´ïÊ½µÄĞĞÈ«²¿É¾³ı
+	 * æŒ‡å®šæ­£åˆ™è¡¨è¾¾å¼ï¼Œå°†æ–‡æœ¬ä¸­å«æœ‰è¯¥æ­£åˆ™è¡¨è¾¾å¼çš„è¡Œå…¨éƒ¨åˆ é™¤
 	 * @param regx
 	 */
 	public void delLines(String regx, boolean isregx) {
@@ -542,7 +542,7 @@ public class TxtReadandWrite {
 		close();
 	}
 	/**
-	 * ¸ø¶¨ÄÚÈİ£¬Ğ´ÈëÎÄ±¾£¬Õâ¸öĞ´ÈëµÄ¶«Î÷¿ÉÒÔ¸øRÓïÑÔÓÃscan¶ÁÈ¡,Ä¬ÈÏÃ¿ĞĞ20¸öÔªËØ£¬ÓÃ¿Õ¸ñ¸ô¿ª
+	 * ç»™å®šå†…å®¹ï¼Œå†™å…¥æ–‡æœ¬ï¼Œè¿™ä¸ªå†™å…¥çš„ä¸œè¥¿å¯ä»¥ç»™Rè¯­è¨€ç”¨scanè¯»å–,é»˜è®¤æ¯è¡Œ20ä¸ªå…ƒç´ ï¼Œç”¨ç©ºæ ¼éš”å¼€
 	 * 
 	 * @param content
 	 */
@@ -552,7 +552,7 @@ public class TxtReadandWrite {
 		} catch (Exception e) { }
 	}
 	/**
-	 * ¸ø¶¨ÄÚÈİ£¬Ğ´ÈëÎÄ±¾£¬Õâ¸öĞ´ÈëµÄ¶«Î÷¿ÉÒÔ¸øRÓïÑÔÓÃscan¶ÁÈ¡,Ä¬ÈÏÃ¿ĞĞ20¸öÔªËØ£¬ÓÃ¿Õ¸ñ¸ô¿ª
+	 * ç»™å®šå†…å®¹ï¼Œå†™å…¥æ–‡æœ¬ï¼Œè¿™ä¸ªå†™å…¥çš„ä¸œè¥¿å¯ä»¥ç»™Rè¯­è¨€ç”¨scanè¯»å–,é»˜è®¤æ¯è¡Œ20ä¸ªå…ƒç´ ï¼Œç”¨ç©ºæ ¼éš”å¼€
 	 * 
 	 * @param content
 	 */
@@ -560,15 +560,15 @@ public class TxtReadandWrite {
 		Rwritefile(content, 20, " ");
 	}
 	/**
-	 * ¸ø¶¨ÄÚÈİ£¬Ğ´ÈëÎÄ±¾£¬Õâ¸öĞ´ÈëµÄ¶«Î÷¿ÉÒÔ¸øRÓïÑÔÓÃscan¶ÁÈ¡,Ä¬ÈÏÃ¿ĞĞ20¸öÔªËØ£¬ÓÃ¿Õ¸ñ¸ô¿ª
-	 * ÄÚ²¿close
+	 * ç»™å®šå†…å®¹ï¼Œå†™å…¥æ–‡æœ¬ï¼Œè¿™ä¸ªå†™å…¥çš„ä¸œè¥¿å¯ä»¥ç»™Rè¯­è¨€ç”¨scanè¯»å–,é»˜è®¤æ¯è¡Œ20ä¸ªå…ƒç´ ï¼Œç”¨ç©ºæ ¼éš”å¼€
+	 * å†…éƒ¨close
 	 * @param content
 	 */
 	public void Rwritefile(String[] content) {
 		Rwritefile(content, 20, " ");
 	}
 	/**
-	 * ¸ø¶¨ÄÚÈİ£¬Ğ´ÈëÎÄ±¾£¬Õâ¸öĞ´ÈëµÄ¶«Î÷¿ÉÒÔ¸øRÓïÑÔÓÃscan¶ÁÈ¡
+	 * ç»™å®šå†…å®¹ï¼Œå†™å…¥æ–‡æœ¬ï¼Œè¿™ä¸ªå†™å…¥çš„ä¸œè¥¿å¯ä»¥ç»™Rè¯­è¨€ç”¨scanè¯»å–
 	 * @param content
 	 * @param colLen
 	 * @param sep
@@ -589,8 +589,8 @@ public class TxtReadandWrite {
 		close();
 	}
 	/**
-	 * ¸ø¶¨ÄÚÈİ£¬Ğ´ÈëÎÄ±¾£¬Õâ¸öĞ´ÈëµÄ¶«Î÷¿ÉÒÔ¸øRÓïÑÔÓÃscan¶ÁÈ¡
-	 * ÄÚ²¿close
+	 * ç»™å®šå†…å®¹ï¼Œå†™å…¥æ–‡æœ¬ï¼Œè¿™ä¸ªå†™å…¥çš„ä¸œè¥¿å¯ä»¥ç»™Rè¯­è¨€ç”¨scanè¯»å–
+	 * å†…éƒ¨close
 	 * @param content
 	 * @param colLen
 	 * @param sep
@@ -612,10 +612,10 @@ public class TxtReadandWrite {
 		close();
 	}
 	/**
-	 * ¸ø¶¨ÄÚÈİ£¬Ğ´ÈëÎÄ±¾£¬Õâ¸öĞ´ÈëµÄ¶«Î÷¿ÉÒÔ¸øRÓïÑÔÓÃscan¶ÁÈ¡
+	 * ç»™å®šå†…å®¹ï¼Œå†™å…¥æ–‡æœ¬ï¼Œè¿™ä¸ªå†™å…¥çš„ä¸œè¥¿å¯ä»¥ç»™Rè¯­è¨€ç”¨scanè¯»å–
 	 * @param content
-	 * @param colLen Ã¿ĞĞĞ´¼¸¸ö
-	 * @param sep ·Ö¸ô·ûÊÇÊ²Ã´
+	 * @param colLen æ¯è¡Œå†™å‡ ä¸ª
+	 * @param sep åˆ†éš”ç¬¦æ˜¯ä»€ä¹ˆ
 	 * @throws Exception
 	 */
 	private void Rwritefile(double[] content, int colLen, String sep) throws Exception {
@@ -629,9 +629,9 @@ public class TxtReadandWrite {
 		close();
 	}
 	/**
-	 * @param lsContent-T ×¢ÒâTÖ»ÄÜÊÇstring intergeµÈ¼òµ¥µÄÄÜ×ª»¯ÎªstringµÄÀà
-	 *            £¬ÒªĞ´ÈëList--StringÎÄ¼şÄÚÈİ,×Ô¶¯ÔÚÃ¿Ò»ĞĞÌí¼Ó»»ĞĞ·ûhuiche;
-	 *            ÄÚ²¿close Á÷
+	 * @param lsContent-T æ³¨æ„Tåªèƒ½æ˜¯string intergeç­‰ç®€å•çš„èƒ½è½¬åŒ–ä¸ºstringçš„ç±»
+	 *            ï¼Œè¦å†™å…¥List--Stringæ–‡ä»¶å†…å®¹,è‡ªåŠ¨åœ¨æ¯ä¸€è¡Œæ·»åŠ æ¢è¡Œç¬¦huiche;
+	 *            å†…éƒ¨close æµ
 	 * @throws Exception
 	 */
 	public<T> void writefile(List<T> lsContent){
@@ -648,7 +648,7 @@ public class TxtReadandWrite {
 	}
 
 	/**
-	 * °´ÕÕexcel·½·¨¶ÁÈ¡ÎÄ±¾Ê±Ê¹ÓÃ£¬ÓÃÓÚ »ñµÃtxtÎÄ±¾µÄĞĞÊı£¬Èç¹û×îºóÒ»ĞĞÊÇ""£¬ÔòºöÂÔ×îºóÒ»ĞĞ
+	 * æŒ‰ç…§excelæ–¹æ³•è¯»å–æ–‡æœ¬æ—¶ä½¿ç”¨ï¼Œç”¨äº è·å¾—txtæ–‡æœ¬çš„è¡Œæ•°ï¼Œå¦‚æœæœ€åä¸€è¡Œæ˜¯""ï¼Œåˆ™å¿½ç•¥æœ€åä¸€è¡Œ
 	 * 
 	 * @return
 	 * @throws Exception
@@ -680,10 +680,10 @@ public class TxtReadandWrite {
 	}
 
 	/**
-	 * °´ÕÕexcel·½·¨¶ÁÈ¡ÎÄ±¾Ê±Ê¹ÓÃ£¬ÓÃÓÚ »ñµÃÎÄ±¾ÖĞÇ°5000ĞĞÖĞ×î³¤ĞĞµÄÁĞÊı
+	 * æŒ‰ç…§excelæ–¹æ³•è¯»å–æ–‡æœ¬æ—¶ä½¿ç”¨ï¼Œç”¨äº è·å¾—æ–‡æœ¬ä¸­å‰5000è¡Œä¸­æœ€é•¿è¡Œçš„åˆ—æ•°
 	 * @param sep
-	 *            ¸ÃĞĞµÄ·Ö¸ô·û£¬ÎªÕıÔò±í´ïÊ½£¬tabÎª"\t"
-	 * @return ·µ»ØÖ¸¶¨ĞĞµÄÁĞÊı
+	 *            è¯¥è¡Œçš„åˆ†éš”ç¬¦ï¼Œä¸ºæ­£åˆ™è¡¨è¾¾å¼ï¼Œtabä¸º"\t"
+	 * @return è¿”å›æŒ‡å®šè¡Œçš„åˆ—æ•°
 	 * @throws Exception
 	 */
 	public int ExcelColumns(String sep){
@@ -704,13 +704,13 @@ public class TxtReadandWrite {
 	}
 
 	/**
-	 * °´ÕÕexcel·½·¨¶ÁÈ¡ÎÄ±¾Ê±Ê¹ÓÃ£¬ÓÃÓÚ »ñµÃtxtÎÄ±¾Ö¸¶¨ĞĞµÄÁĞÊı
+	 * æŒ‰ç…§excelæ–¹æ³•è¯»å–æ–‡æœ¬æ—¶ä½¿ç”¨ï¼Œç”¨äº è·å¾—txtæ–‡æœ¬æŒ‡å®šè¡Œçš„åˆ—æ•°
 	 * 
 	 * @param setRow
-	 *            Ö¸¶¨ĞĞÊı£¬ÎªÊµ¼ÊĞĞÊı£¬Èç¹ûÖ¸¶¨ĞĞ³¬¹ıÎÄ±¾×î´óĞĞ£¬Ôò½«Ö¸¶¨ĞĞÉèÎª×î´óĞĞ¡£
+	 *            æŒ‡å®šè¡Œæ•°ï¼Œä¸ºå®é™…è¡Œæ•°ï¼Œå¦‚æœæŒ‡å®šè¡Œè¶…è¿‡æ–‡æœ¬æœ€å¤§è¡Œï¼Œåˆ™å°†æŒ‡å®šè¡Œè®¾ä¸ºæœ€å¤§è¡Œã€‚
 	 * @param sep
-	 *            ¸ÃĞĞµÄ·Ö¸ô·û£¬ÎªÕıÔò±í´ïÊ½£¬tabÎª"\t"
-	 * @return ·µ»ØÖ¸¶¨ĞĞµÄÁĞÊı
+	 *            è¯¥è¡Œçš„åˆ†éš”ç¬¦ï¼Œä¸ºæ­£åˆ™è¡¨è¾¾å¼ï¼Œtabä¸º"\t"
+	 * @return è¿”å›æŒ‡å®šè¡Œçš„åˆ—æ•°
 	 * @throws Exception
 	 */
 	public int ExcelColumns(int setRow, String sep) throws Exception {
@@ -728,29 +728,29 @@ public class TxtReadandWrite {
 	}
 
 	/**
-	 * ½«¹æÔòµÄtxtÎÄ±¾°´ÕÕexcelµÄ·½·¨¶ÁÈ¡
+	 * å°†è§„åˆ™çš„txtæ–‡æœ¬æŒ‰ç…§excelçš„æ–¹æ³•è¯»å–
 	 * 
 	 * @param sep
-	 *            txtÎÄ±¾µÄ·Ö¸î·û
+	 *            txtæ–‡æœ¬çš„åˆ†å‰²ç¬¦
 	 * @param rowNum
-	 *            Êµ¼Ê¶ÁÈ¡ĞĞ
+	 *            å®é™…è¯»å–è¡Œ
 	 * @param columnNum
-	 *            Êµ¼Ê¶ÁÈ¡ÁĞ
-	 * @return ·µ»Østring,µ¥¸öÖµ,Èç¹ûÖµÎªnullÔò·µ»Ø""
+	 *            å®é™…è¯»å–åˆ—
+	 * @return è¿”å›string,å•ä¸ªå€¼,å¦‚æœå€¼ä¸ºnullåˆ™è¿”å›""
 	 * @throws Exception
 	 */
 	public String ExcelRead(String sep, int rowNum, int columnNum)
 			throws Exception {
 		BufferedReader readasexcel = readfile();
-		// ÏÈÌø¹ıÇ°ÃæµÄºÃ¶àĞĞ
+		// å…ˆè·³è¿‡å‰é¢çš„å¥½å¤šè¡Œ
 		for (int i = 0; i < rowNum - 1; i++) {
 			if (readasexcel.readLine() == null) {
 				return "";
 			}
 		}
-		// ÕıÊ½¶ÁÈ¡
+		// æ­£å¼è¯»å–
 		String content = "";
-		String[] tmp;// Á½¸öÁÙÊ±±äÁ¿
+		String[] tmp;// ä¸¤ä¸ªä¸´æ—¶å˜é‡
 		content = readasexcel.readLine();
 		tmp = content.split(sep);
 		
@@ -763,19 +763,19 @@ public class TxtReadandWrite {
 	}
 
 	/**
-	 * ½«¹æÔòµÄtxtÎÄ±¾°´ÕÕexcelµÄ·½·¨¶ÁÈ¡
-	 * ×îºóÒ»ĞĞ¼´Ê¹Ã»¶«Î÷Ò²»áÓÃ""±íÊ¾
+	 * å°†è§„åˆ™çš„txtæ–‡æœ¬æŒ‰ç…§excelçš„æ–¹æ³•è¯»å–
+	 * æœ€åä¸€è¡Œå³ä½¿æ²¡ä¸œè¥¿ä¹Ÿä¼šç”¨""è¡¨ç¤º
 	 * @param sep
-	 *            txtÎÄ±¾µÄ·Ö¸î·û,ÎªÕıÔò±í´ïÊ½£¬tabÊÇ"\t"
+	 *            txtæ–‡æœ¬çš„åˆ†å‰²ç¬¦,ä¸ºæ­£åˆ™è¡¨è¾¾å¼ï¼Œtabæ˜¯"\t"
 	 * @param rowStartNum
-	 *            Êµ¼Ê¶ÁÈ¡ÆğÊ¼ĞĞ
+	 *            å®é™…è¯»å–èµ·å§‹è¡Œ
 	 * @param columnStartNum
-	 *            Êµ¼Ê¶ÁÈ¡ÆğÊ¼ÁĞ
+	 *            å®é™…è¯»å–èµ·å§‹åˆ—
 	 * @param rowEndNum
-	 *            Êµ¼Ê¶ÁÈ¡ÖÕÖ¹ĞĞ
+	 *            å®é™…è¯»å–ç»ˆæ­¢è¡Œ
 	 * @param columnEndNum
-	 *            Êµ¼Ê¶ÁÈ¡ÖÕÖ¹ÁĞ
-	 * @return ·µ»Østring[] Êı×é,Êı×éÖĞnullÏîÓÃ""Ìæ»»
+	 *            å®é™…è¯»å–ç»ˆæ­¢åˆ—
+	 * @return è¿”å›string[] æ•°ç»„,æ•°ç»„ä¸­nullé¡¹ç”¨""æ›¿æ¢
 	 * @throws Exception
 	 */
 	public String[][] ExcelRead(String sep, int rowStartNum,
@@ -794,18 +794,18 @@ public class TxtReadandWrite {
 		String[][] result = new String[readlines][readcolumns];
 		BufferedReader readasexcel = readfile();
 
-		// ÏÈÌø¹ıÇ°ÃæµÄºÃ¶àĞĞ
+		// å…ˆè·³è¿‡å‰é¢çš„å¥½å¤šè¡Œ
 		for (int i = 0; i < rowStartNum - 1; i++) {
-			if (readasexcel.readLine() == null)// Èç¹ûÎÄ±¾ÖĞÃ»ÓĞÄÇÃ´¶àĞĞ
+			if (readasexcel.readLine() == null)// å¦‚æœæ–‡æœ¬ä¸­æ²¡æœ‰é‚£ä¹ˆå¤šè¡Œ
 			{
 				return null;
 			}
 		}
-		// ÕıÊ½¶ÁÈ¡
+		// æ­£å¼è¯»å–
 		String content = "";
-		String[] tmp;// Á½¸öÁÙÊ±±äÁ¿
+		String[] tmp;// ä¸¤ä¸ªä¸´æ—¶å˜é‡
 		for (int i = 0; i < readlines; i++) {
-			if ((content = readasexcel.readLine()) == null)// ¶ÁÍêÁË
+			if ((content = readasexcel.readLine()) == null)// è¯»å®Œäº†
 			{
 				break;
 			}
@@ -816,7 +816,7 @@ public class TxtReadandWrite {
 				}
 			}
 		}
-		for (int i = 0; i < result.length; i++)// ½«ËùÓĞÎªnullµÄÏîÍ¨Í¨¸³ÖµÎª""
+		for (int i = 0; i < result.length; i++)// å°†æ‰€æœ‰ä¸ºnullçš„é¡¹é€šé€šèµ‹å€¼ä¸º""
 		{
 			for (int j = 0; j < result[0].length; j++) {
 				if (result[i][j] == null)
@@ -828,23 +828,23 @@ public class TxtReadandWrite {
 	}
 
 	/**
-	 * ÄÚ²¿close
-	 * ½«¹æÔòµÄtxtÎÄ±¾°´ÕÕexcelµÄ·½·¨¶ÁÈ¡,×Ô¶¯Ìø¹ı¿ÕĞĞ
-	 * ×îºóÒ»ĞĞÎª¿ÕĞĞµÄ»°»á±£Áô
+	 * å†…éƒ¨close
+	 * å°†è§„åˆ™çš„txtæ–‡æœ¬æŒ‰ç…§excelçš„æ–¹æ³•è¯»å–,è‡ªåŠ¨è·³è¿‡ç©ºè¡Œ
+	 * æœ€åä¸€è¡Œä¸ºç©ºè¡Œçš„è¯ä¼šä¿ç•™
 	 * @param sep
-	 *            txtÎÄ±¾µÄ·Ö¸î·û,ÎªÕıÔò±í´ïÊ½£¬tabÊÇ"\t"
+	 *            txtæ–‡æœ¬çš„åˆ†å‰²ç¬¦,ä¸ºæ­£åˆ™è¡¨è¾¾å¼ï¼Œtabæ˜¯"\t"
 	 * @param rowStartNum
-	 *            Êµ¼Ê¶ÁÈ¡ÆğÊ¼ĞĞ
+	 *            å®é™…è¯»å–èµ·å§‹è¡Œ
 	 * @param columnStartNum
-	 *            Êµ¼Ê¶ÁÈ¡ÆğÊ¼ÁĞ
+	 *            å®é™…è¯»å–èµ·å§‹åˆ—
 	 * @param rowEndNum 
-	 *            Êµ¼Ê¶ÁÈ¡ÖÕÖ¹ĞĞ ,µ±¸ÃÏî=-1Ê±£¬¶ÁÈ¡ËùÓĞĞĞ
+	 *            å®é™…è¯»å–ç»ˆæ­¢è¡Œ ,å½“è¯¥é¡¹=-1æ—¶ï¼Œè¯»å–æ‰€æœ‰è¡Œ
 	 * @param columnEndNum
-	 *            Êµ¼Ê¶ÁÈ¡ÖÕÖ¹ÁĞ,µ±¸ÃÏî=-1Ê±£¬¶ÁÈ¡ËùÓĞÁĞ£¬·´ÕıÊÇArrayList--String[]Âï<br>
-	 *            Èç¹û¸ÃÏî´óÓÚ×î´óÁĞ£¬ÄÇÃ´¾Í°Ñ±¾ĞĞ¶¼¶ÁÈ¡ÁË
+	 *            å®é™…è¯»å–ç»ˆæ­¢åˆ—,å½“è¯¥é¡¹=-1æ—¶ï¼Œè¯»å–æ‰€æœ‰åˆ—ï¼Œåæ­£æ˜¯ArrayList--String[]å˜›<br>
+	 *            å¦‚æœè¯¥é¡¹å¤§äºæœ€å¤§åˆ—ï¼Œé‚£ä¹ˆå°±æŠŠæœ¬è¡Œéƒ½è¯»å–äº†
 	 * @param colNotNone
-	 *            Ö÷¼üÁĞ£¬¸ÃÁĞ²»ÄÜÎª""£¬·ñÔò°Ñ¸ÃÁĞÎª""µÄĞĞÉ¾³ı£¬Èç¹û±¾Ïî<=0£¬Ôò²»¿¼ÂÇ
-	 * @return ·µ»ØArrayList<String[]> Êı×é,Êı×éÖĞnullÏîÓÃ""Ìæ»»
+	 *            ä¸»é”®åˆ—ï¼Œè¯¥åˆ—ä¸èƒ½ä¸º""ï¼Œå¦åˆ™æŠŠè¯¥åˆ—ä¸º""çš„è¡Œåˆ é™¤ï¼Œå¦‚æœæœ¬é¡¹<=0ï¼Œåˆ™ä¸è€ƒè™‘
+	 * @return è¿”å›ArrayList<String[]> æ•°ç»„,æ•°ç»„ä¸­nullé¡¹ç”¨""æ›¿æ¢
 	 * @throws Exception
 	 */
 	public ArrayList<String[]> ExcelRead(int rowStartNum, int columnStartNum, int rowEndNum, int columnEndNum, int colNotNone) {
@@ -858,15 +858,15 @@ public class TxtReadandWrite {
 		return ExcelRead(rowStartNum, rowEndNum, colRead, colNotNone);
 	}
 	/**
-	 * ÄÚ²¿close
-	 * ½«¹æÔòµÄtxtÎÄ±¾°´ÕÕexcelµÄ·½·¨¶ÁÈ¡,×Ô¶¯Ìø¹ı¿ÕĞĞ
-	 * ×îºóÒ»ĞĞÎª¿ÕĞĞµÄ»°»á±£Áô
-	 * @param sep txtÎÄ±¾µÄ·Ö¸î·û,ÎªÕıÔò±í´ïÊ½£¬tabÊÇ"\t"
-	 * @param rowStartNum Êµ¼Ê¶ÁÈ¡ÆğÊ¼ĞĞ
-	 * @param rowEndNum Êµ¼Ê¶ÁÈ¡ÖÕÖ¹ĞĞ ,µ±¸ÃÏî=-1Ê±£¬¶ÁÈ¡ËùÓĞĞĞ
-	 * @param column Êµ¼Ê¶ÁÈ¡µÄÁĞ
-	 * @param colNotNone Ö÷¼üÁĞ£¬¸ÃÁĞ²»ÄÜÎª""£¬·ñÔò°Ñ¸ÃÁĞÎª""µÄĞĞÉ¾³ı£¬Èç¹û±¾Ïî<=0£¬Ôò²»¿¼ÂÇ
-	 * @return ·µ»ØArrayList<String[]> Êı×é,Êı×éÖĞnullÏîÓÃ""Ìæ»»
+	 * å†…éƒ¨close
+	 * å°†è§„åˆ™çš„txtæ–‡æœ¬æŒ‰ç…§excelçš„æ–¹æ³•è¯»å–,è‡ªåŠ¨è·³è¿‡ç©ºè¡Œ
+	 * æœ€åä¸€è¡Œä¸ºç©ºè¡Œçš„è¯ä¼šä¿ç•™
+	 * @param sep txtæ–‡æœ¬çš„åˆ†å‰²ç¬¦,ä¸ºæ­£åˆ™è¡¨è¾¾å¼ï¼Œtabæ˜¯"\t"
+	 * @param rowStartNum å®é™…è¯»å–èµ·å§‹è¡Œ
+	 * @param rowEndNum å®é™…è¯»å–ç»ˆæ­¢è¡Œ ,å½“è¯¥é¡¹=-1æ—¶ï¼Œè¯»å–æ‰€æœ‰è¡Œ
+	 * @param column å®é™…è¯»å–çš„åˆ—
+	 * @param colNotNone ä¸»é”®åˆ—ï¼Œè¯¥åˆ—ä¸èƒ½ä¸º""ï¼Œå¦åˆ™æŠŠè¯¥åˆ—ä¸º""çš„è¡Œåˆ é™¤ï¼Œå¦‚æœæœ¬é¡¹<=0ï¼Œåˆ™ä¸è€ƒè™‘
+	 * @return è¿”å›ArrayList<String[]> æ•°ç»„,æ•°ç»„ä¸­nullé¡¹ç”¨""æ›¿æ¢
 	 * @throws Exception
 	 */
 	public ArrayList<String[]> ExcelRead(int rowStartNum, int rowEndNum, int[] column, int colNotNone) {
@@ -911,12 +911,12 @@ public class TxtReadandWrite {
 		return result;
 	}
 	/**
-	 * ¸ø¶¨Ò»¸öÁ½ÁĞÎÄ¼ş£¬½«ÆäÖĞµÄ½á¹û°´ÕÕKey-valueµ¼³ö
-	 * Èç¹ûÒ»ÁĞÎª¿Õ£¬ÈçÎªºÜ¶à¿Õ¸ñ£¬ÔòÌø¹ı£¬Èç¹ûÓĞÖØ¸´ÁĞ£¬Ñ¡Ôñºó³öÏÖµÄÁĞ
+	 * ç»™å®šä¸€ä¸ªä¸¤åˆ—æ–‡ä»¶ï¼Œå°†å…¶ä¸­çš„ç»“æœæŒ‰ç…§Key-valueå¯¼å‡º
+	 * å¦‚æœä¸€åˆ—ä¸ºç©ºï¼Œå¦‚ä¸ºå¾ˆå¤šç©ºæ ¼ï¼Œåˆ™è·³è¿‡ï¼Œå¦‚æœæœ‰é‡å¤åˆ—ï¼Œé€‰æ‹©åå‡ºç°çš„åˆ—
 	 * @param chrLenFile
-	 * @param keyCase keyµÄ´óĞ¡Ğ´¡£ null ²»¸Ä±ä´óĞ¡Ğ´£¬false Ğ¡Ğ´£¬true´óĞ´
+	 * @param keyCase keyçš„å¤§å°å†™ã€‚ null ä¸æ”¹å˜å¤§å°å†™ï¼Œfalse å°å†™ï¼Œtrueå¤§å†™
 	 * @return
-	 * Ã»¶«Î÷Ôò·µ»Ønull
+	 * æ²¡ä¸œè¥¿åˆ™è¿”å›null
 	 */
 	public LinkedHashMap<String, String> getKey2Value(String sep, Boolean keyCase) {
 		LinkedHashMap<String, String> lkhashResult = new LinkedHashMap<String, String>();
@@ -942,12 +942,12 @@ public class TxtReadandWrite {
 		return lkhashResult;
 	}
 	/**
-	 * ¸ø¶¨Ò»¸öÁ½ÁĞÎÄ¼ş£¬½«ÆäÖĞµÄ½á¹û°´ÕÕKey-valueµ¼³ö,valueÎªdoubleÀàĞÍ
-	 * Èç¹ûÒ»ÁĞÎª¿Õ£¬ÈçÎªºÜ¶à¿Õ¸ñ£¬ÔòÌø¹ı£¬Èç¹ûÓĞÖØ¸´ÁĞ£¬Ñ¡Ôñºó³öÏÖµÄÁĞ
+	 * ç»™å®šä¸€ä¸ªä¸¤åˆ—æ–‡ä»¶ï¼Œå°†å…¶ä¸­çš„ç»“æœæŒ‰ç…§Key-valueå¯¼å‡º,valueä¸ºdoubleç±»å‹
+	 * å¦‚æœä¸€åˆ—ä¸ºç©ºï¼Œå¦‚ä¸ºå¾ˆå¤šç©ºæ ¼ï¼Œåˆ™è·³è¿‡ï¼Œå¦‚æœæœ‰é‡å¤åˆ—ï¼Œé€‰æ‹©åå‡ºç°çš„åˆ—
 	 * @param chrLenFile
-	 * @param keyCase keyµÄ´óĞ¡Ğ´¡£ null ²»¸Ä±ä´óĞ¡Ğ´£¬false Ğ¡Ğ´£¬true´óĞ´
+	 * @param keyCase keyçš„å¤§å°å†™ã€‚ null ä¸æ”¹å˜å¤§å°å†™ï¼Œfalse å°å†™ï¼Œtrueå¤§å†™
 	 * @return
-	 * Ã»¶«Î÷Ôò·µ»Ønull
+	 * æ²¡ä¸œè¥¿åˆ™è¿”å›null
 	 */
 	public LinkedHashMap<String, Double> getKey2ValueDouble(String sep, Boolean keyCase) {
 		LinkedHashMap<String, Double> lkhashResult = new LinkedHashMap<String, Double>();
@@ -973,10 +973,10 @@ public class TxtReadandWrite {
 		return lkhashResult;
 	}
 	/**
-	 * ½«Êı¾İ°´ÕÕexcelµÄ·½·¨Ğ´Èëstring[][],nullºÍ""¶¼²»Ğ´Èë£¬×îºóĞ´ÈëÒ»¸ö»»ĞĞ
+	 * å°†æ•°æ®æŒ‰ç…§excelçš„æ–¹æ³•å†™å…¥string[][],nullå’Œ""éƒ½ä¸å†™å…¥ï¼Œæœ€åå†™å…¥ä¸€ä¸ªæ¢è¡Œ
 	 * 
 	 * @param sep
-	 *            txtÎÄ±¾µÄ·Ö¸î·û,ÎªÕıÔò±í´ïÊ½£¬tabÊÇ"\t"
+	 *            txtæ–‡æœ¬çš„åˆ†å‰²ç¬¦,ä¸ºæ­£åˆ™è¡¨è¾¾å¼ï¼Œtabæ˜¯"\t"
 	 * @throws Exception
 	 */
 	public<T> void ExcelWrite(T[][] content) throws Exception {
@@ -994,16 +994,16 @@ public class TxtReadandWrite {
 					outputStream.write(tmp.getBytes());
 				}
 			}
-			outputStream.write(ENTER_LINUX.getBytes());// »»ĞĞ
+			outputStream.write(ENTER_LINUX.getBytes());// æ¢è¡Œ
 		}
-		outputStream.flush();// Ğ´ÈëÎÄ±¾
+		outputStream.flush();// å†™å…¥æ–‡æœ¬
 	}
 
 	/**
-	 * ½«Êı¾İ°´ÕÕexcelµÄ·½·¨Ğ´Èëstring[][],nullºÍ""¶¼²»Ğ´Èë£¬×îºóĞ´ÈëÒ»¸ö»»ĞĞ
+	 * å°†æ•°æ®æŒ‰ç…§excelçš„æ–¹æ³•å†™å…¥string[][],nullå’Œ""éƒ½ä¸å†™å…¥ï¼Œæœ€åå†™å…¥ä¸€ä¸ªæ¢è¡Œ
 	 * 
 	 * @param sep
-	 *            txtÎÄ±¾µÄ·Ö¸î·û,ÎªÕıÔò±í´ïÊ½£¬tabÊÇ"\t"
+	 *            txtæ–‡æœ¬çš„åˆ†å‰²ç¬¦,ä¸ºæ­£åˆ™è¡¨è¾¾å¼ï¼Œtabæ˜¯"\t"
 	 * @throws Exception
 	 */
 	public void ExcelWrite(String[][] content, int rowStart, int colStart) throws Exception {
@@ -1018,22 +1018,22 @@ public class TxtReadandWrite {
 					outputStream.write(content[i][j].getBytes());
 				}
 			}
-			outputStream.write(ENTER_LINUX.getBytes());// »»ĞĞ
+			outputStream.write(ENTER_LINUX.getBytes());// æ¢è¡Œ
 		}
-		outputStream.flush();// Ğ´ÈëÎÄ±¾
+		outputStream.flush();// å†™å…¥æ–‡æœ¬
 	}
 
 	/**
-	 * ½«Êı¾İ°´ÕÕexcelµÄ·½·¨Ğ´Èëstring[],nullºÍ""¶¼²»Ğ´Èë,×îºóĞ´ÈëÒ»¸ö»»ĞĞ
+	 * å°†æ•°æ®æŒ‰ç…§excelçš„æ–¹æ³•å†™å…¥string[],nullå’Œ""éƒ½ä¸å†™å…¥,æœ€åå†™å…¥ä¸€ä¸ªæ¢è¡Œ
 	 * 
 	 * @param sep
-	 *            txtÎÄ±¾µÄ·Ö¸î·û,ÎªÕıÔò±í´ïÊ½£¬tabÊÇ"\t"
+	 *            txtæ–‡æœ¬çš„åˆ†å‰²ç¬¦,ä¸ºæ­£åˆ™è¡¨è¾¾å¼ï¼Œtabæ˜¯"\t"
 	 * @param row
-	 *            trueÊ±°´ĞĞĞ´Èë
+	 *            trueæ—¶æŒ‰è¡Œå†™å…¥
 	 * @throws Exception
 	 */
 	public void ExcelWrite(String[] content, boolean row) throws Exception {
-		if (row == true)// ºá×ÅĞ´Èë
+		if (row == true)// æ¨ªç€å†™å…¥
 		{
 			for (int i = 0; i < content.length; i++) {
 				if (content[i] == null)
@@ -1045,39 +1045,39 @@ public class TxtReadandWrite {
 				}
 			}
 			outputStream.write(ENTER_LINUX.getBytes());
-		} else// Êú×ÅĞ´Èë
+		} else// ç«–ç€å†™å…¥
 		{
 			for (int i = 0; i < content.length; i++) {
 				outputStream.write((content[i] + ENTER_LINUX).getBytes());
 			}
 		}
-		outputStream.flush();// Ğ´ÈëÎÄ±¾
+		outputStream.flush();// å†™å…¥æ–‡æœ¬
 	}
 	/**
-	 * Ğ§ÂÊÌ«µÍ£¬´ıĞŞÕı
-	 * ½«Êı¾İ°´ÕÕexcelµÄ·½·¨Ğ´ÈëList<string[]>,nullºÍ""¶¼²»Ğ´Èë£¬×îºóĞ´ÈëÒ»¸ö»»ĞĞ
-	 * ÄÚ²¿close()
+	 * æ•ˆç‡å¤ªä½ï¼Œå¾…ä¿®æ­£
+	 * å°†æ•°æ®æŒ‰ç…§excelçš„æ–¹æ³•å†™å…¥List<string[]>,nullå’Œ""éƒ½ä¸å†™å…¥ï¼Œæœ€åå†™å…¥ä¸€ä¸ªæ¢è¡Œ
+	 * å†…éƒ¨close()
 	 * @param sep
-	 *            txtÎÄ±¾µÄ·Ö¸î·û,ÎªÕıÔò±í´ïÊ½£¬tabÊÇ"\t"
+	 *            txtæ–‡æœ¬çš„åˆ†å‰²ç¬¦,ä¸ºæ­£åˆ™è¡¨è¾¾å¼ï¼Œtabæ˜¯"\t"
 	 * @param rowStartNum
-	 *            Êµ¼ÊĞ´ÈëÆğÊ¼ĞĞ
+	 *            å®é™…å†™å…¥èµ·å§‹è¡Œ
 	 * @param columnStartNum
-	 *            Êµ¼ÊĞ´ÈëÆğÊ¼ÁĞ
+	 *            å®é™…å†™å…¥èµ·å§‹åˆ—
 	 * @throws Exception
 	 */
 	public void ExcelWrite(List<String[]> content) {
 		ExcelWrite(content, 1, 1);
 	}
 	/**
-	 * Ğ§ÂÊÌ«µÍ£¬´ıĞŞÕı
-	 * ½«Êı¾İ°´ÕÕexcelµÄ·½·¨Ğ´ÈëList<string[]>,nullºÍ""¶¼²»Ğ´Èë£¬×îºóĞ´ÈëÒ»¸ö»»ĞĞ
-	 * ÄÚ²¿close()
+	 * æ•ˆç‡å¤ªä½ï¼Œå¾…ä¿®æ­£
+	 * å°†æ•°æ®æŒ‰ç…§excelçš„æ–¹æ³•å†™å…¥List<string[]>,nullå’Œ""éƒ½ä¸å†™å…¥ï¼Œæœ€åå†™å…¥ä¸€ä¸ªæ¢è¡Œ
+	 * å†…éƒ¨close()
 	 * @param sep
-	 *            txtÎÄ±¾µÄ·Ö¸î·û,ÎªÕıÔò±í´ïÊ½£¬tabÊÇ"\t"
+	 *            txtæ–‡æœ¬çš„åˆ†å‰²ç¬¦,ä¸ºæ­£åˆ™è¡¨è¾¾å¼ï¼Œtabæ˜¯"\t"
 	 * @param rowStartNum
-	 *            Êµ¼ÊĞ´ÈëÆğÊ¼ĞĞ
+	 *            å®é™…å†™å…¥èµ·å§‹è¡Œ
 	 * @param columnStartNum
-	 *            Êµ¼ÊĞ´ÈëÆğÊ¼ÁĞ
+	 *            å®é™…å†™å…¥èµ·å§‹åˆ—
 	 * @throws Exception
 	 */
 	public void ExcelWrite(List<String[]> content, int rowStartNum, int columnStartNum) {
@@ -1095,9 +1095,9 @@ public class TxtReadandWrite {
 						outputStream.write(content.get(i)[j].getBytes());
 					}
 				}
-				outputStream.write(ENTER_LINUX.getBytes());// »»ĞĞ
+				outputStream.write(ENTER_LINUX.getBytes());// æ¢è¡Œ
 			}
-			outputStream.flush();// Ğ´ÈëÎÄ±¾
+			outputStream.flush();// å†™å…¥æ–‡æœ¬
 		} catch (Exception e) {
 			logger.error("write list data error:"+getFileName());
 		}
@@ -1105,18 +1105,18 @@ public class TxtReadandWrite {
 	}
 
 	/**
-	 * ½«Êı¾İ°´ÕÕexcelµÄ·½·¨Ğ´ÈëList<string[]>,nullºÍ""¶¼Ğ´Îª""£¬×îºóĞ´ÈëÒ»¸ö»»ĞĞ
+	 * å°†æ•°æ®æŒ‰ç…§excelçš„æ–¹æ³•å†™å…¥List<string[]>,nullå’Œ""éƒ½å†™ä¸º""ï¼Œæœ€åå†™å…¥ä¸€ä¸ªæ¢è¡Œ
 	 * 
 	 * @param sep
-	 *            txtÎÄ±¾µÄ·Ö¸î·û,ÎªÕıÔò±í´ïÊ½£¬tabÊÇ"\t"
+	 *            txtæ–‡æœ¬çš„åˆ†å‰²ç¬¦,ä¸ºæ­£åˆ™è¡¨è¾¾å¼ï¼Œtabæ˜¯"\t"
 	 * @param column
-	 *            ÒªĞ´ÈëcontentµÄÄÄ¼¸ÁĞ£¬´Ó0¿ªÊ¼¼ÇÊı
+	 *            è¦å†™å…¥contentçš„å“ªå‡ åˆ—ï¼Œä»0å¼€å§‹è®°æ•°
 	 * @param include
-	 *            ÉèÖÃcolumn£¬Èç¹ûÎªtrue£¬½ö½öĞ´columnµÄÄÄ¼¸ÁĞ£¬Èç¹ûÎªfalse£¬Ôò½«columnµÄÄÇ¼¸ÁĞÈ¥³ı
+	 *            è®¾ç½®columnï¼Œå¦‚æœä¸ºtrueï¼Œä»…ä»…å†™columnçš„å“ªå‡ åˆ—ï¼Œå¦‚æœä¸ºfalseï¼Œåˆ™å°†columnçš„é‚£å‡ åˆ—å»é™¤
 	 * @param rowStartNum
-	 *            Êµ¼ÊĞ´ÈëÆğÊ¼ĞĞ
+	 *            å®é™…å†™å…¥èµ·å§‹è¡Œ
 	 * @param columnStartNum
-	 *            Êµ¼ÊĞ´ÈëÆğÊ¼ÁĞ
+	 *            å®é™…å†™å…¥èµ·å§‹åˆ—
 	 * @throws Exception
 	 */
 	public void ExcelWrite(List<String[]> content, int[] column, boolean include, int rowStartNum, int columnStartNum)
@@ -1132,9 +1132,9 @@ public class TxtReadandWrite {
 						outputStream.write(content.get(i)[column[j]].getBytes());
 					}
 				}
-				outputStream.write(ENTER_LINUX.getBytes());// »»ĞĞ
+				outputStream.write(ENTER_LINUX.getBytes());// æ¢è¡Œ
 			}
-			outputStream.flush();// Ğ´ÈëÎÄ±¾
+			outputStream.flush();// å†™å…¥æ–‡æœ¬
 		} else {
 			ArrayList<Integer> lscolumn = new ArrayList<Integer>();
 			for (int i = 0; i < column.length; i++) {
@@ -1143,7 +1143,7 @@ public class TxtReadandWrite {
 
 			for (int i = 0; i < content.size(); i++) {
 				for (int j = 0; j < content.get(i).length; j++) {
-					if (lscolumn.contains(j)) // µ±¶ÁÈ¡µ½columnÖĞµÄÄ³Ò»ÁĞÊ±£¬Ìø¹ı
+					if (lscolumn.contains(j)) // å½“è¯»å–åˆ°columnä¸­çš„æŸä¸€åˆ—æ—¶ï¼Œè·³è¿‡
 						continue;
 					if (content.get(i)[j] == null)
 						content.get(i)[j] = "";
@@ -1153,13 +1153,13 @@ public class TxtReadandWrite {
 						outputStream.write(content.get(i)[j].getBytes());
 					}
 				}
-				outputStream.write(ENTER_LINUX.getBytes());// »»ĞĞ
+				outputStream.write(ENTER_LINUX.getBytes());// æ¢è¡Œ
 			}
-			outputStream.flush();// Ğ´ÈëÎÄ±¾
+			outputStream.flush();// å†™å…¥æ–‡æœ¬
 		}
 	}
 	/**
-	 * »ñµÃtxtµÄÎÄ±¾£¬Èç¹ûÃ»Ñ¹Ëõ£¬Ôò½«ÎÄ¼ş¸ÄÃû£¬Èç¹ûÑ¹ËõÁË£¬Ôò·µ»ØOutTxtµÄ½âÑ¹ËõÎÄ¼ş
+	 * è·å¾—txtçš„æ–‡æœ¬ï¼Œå¦‚æœæ²¡å‹ç¼©ï¼Œåˆ™å°†æ–‡ä»¶æ”¹åï¼Œå¦‚æœå‹ç¼©äº†ï¼Œåˆ™è¿”å›OutTxtçš„è§£å‹ç¼©æ–‡ä»¶
 	 * @param OutTxt
 	 */
 	public void unZipFile(String OutTxt)
@@ -1177,7 +1177,7 @@ public class TxtReadandWrite {
 	}
 
 	/**
-	 * Éè¶¨´ı×¥È¡±¾ÎÄ¼şÖĞµÄÌØ¶¨ÎÄ×Ö
+	 * è®¾å®šå¾…æŠ“å–æœ¬æ–‡ä»¶ä¸­çš„ç‰¹å®šæ–‡å­—
 	 * @param grepContent
 	 */
 	public void setGrepContent(String grepContent) {
@@ -1192,31 +1192,31 @@ public class TxtReadandWrite {
 		}
 	}
 	/**
-	 * »ñÈ¡×¥È¡ĞÅÏ¢ÒÔ¼°ÆäÇ°ºó¼¸ĞĞµÄĞÅÏ¢
+	 * è·å–æŠ“å–ä¿¡æ¯ä»¥åŠå…¶å‰åå‡ è¡Œçš„ä¿¡æ¯
 	 * @param txtFile
 	 * @param zipType
-	 * @param grepContent ¿ÉÒÔÊÇÕıÔò±í´ïÊ½
+	 * @param grepContent å¯ä»¥æ˜¯æ­£åˆ™è¡¨è¾¾å¼
 	 * @param range
-	 * @param regx ÊÇ·ñÊÇÕıÔò±í´ïÊ½£¬Èç¹ûÊÇÕıÔò±í´ïÊ½ÄÇÃ´ËÙ¶È»áÂı
+	 * @param regx æ˜¯å¦æ˜¯æ­£åˆ™è¡¨è¾¾å¼ï¼Œå¦‚æœæ˜¯æ­£åˆ™è¡¨è¾¾å¼é‚£ä¹ˆé€Ÿåº¦ä¼šæ…¢
 	 * @return
 	 * @throws Exception 
 	 */
 	private ArrayList<String> grepInfoExp(int range, boolean caseSensitive, boolean regx) throws Exception {
 		PatternOperate patternOperate = new PatternOperate(this.grepContent, caseSensitive);
 		/**
-		 * ´æ´¢»ñµÃstringÉÏÃæµÄstring ±¾À´ÏëÓÃlist´æ´¢µÄ£¬µ«ÊÇ¿¼ÂÇĞ§ÂÊÎÊÌâ£¬ËùÒÔÓÃstringÊı×éÀ´´æ´¢
-		 * ÒÀ´Î±£´æÉÏÃæµÄ¼¸ĞĞĞÅÏ¢£¬Ñ­»·±£´æ
+		 * å­˜å‚¨è·å¾—stringä¸Šé¢çš„string æœ¬æ¥æƒ³ç”¨listå­˜å‚¨çš„ï¼Œä½†æ˜¯è€ƒè™‘æ•ˆç‡é—®é¢˜ï¼Œæ‰€ä»¥ç”¨stringæ•°ç»„æ¥å­˜å‚¨
+		 * ä¾æ¬¡ä¿å­˜ä¸Šé¢çš„å‡ è¡Œä¿¡æ¯ï¼Œå¾ªç¯ä¿å­˜
 		 */
 		String[] tmpContent = new String[range];
 		int i = 0;
-		// ±£´æ×îºóµÄ½á¹û
+		// ä¿å­˜æœ€åçš„ç»“æœ
 		ArrayList<String> lsResult = new ArrayList<String>();
 		String content = "";
 		BufferedReader reader = readfile();
 		while ((content = reader.readLine()) != null) {
 			if (grepInfo(patternOperate, content, caseSensitive, regx)) {
-				int num = 0;// ¼ÆÊıÆ÷£¬½«Ç°ÃæµÄ¼¸ĞĞÈ«²¿¼ÓÈëlist
-				// ¼ÓÈëÇ°Ãæ±£´æµÄÎÄ×Ö
+				int num = 0;// è®¡æ•°å™¨ï¼Œå°†å‰é¢çš„å‡ è¡Œå…¨éƒ¨åŠ å…¥list
+				// åŠ å…¥å‰é¢ä¿å­˜çš„æ–‡å­—
 				while (num < range) {
 					if (i >= range) {
 						i = 0;
@@ -1225,9 +1225,9 @@ public class TxtReadandWrite {
 					num++;
 					i++;
 				}
-				// ¼ÓÈë±¾ĞĞÎÄ×Ö
+				// åŠ å…¥æœ¬è¡Œæ–‡å­—
 				lsResult.add(content);
-				// ½«ºó¼¸ĞĞ¼ÓÈëlist£¬È»ºó½áÊø
+				// å°†åå‡ è¡ŒåŠ å…¥listï¼Œç„¶åç»“æŸ
 				int rest = 0;
 				while ((content = reader.readLine()) != null) {
 					if (rest >= range) {
@@ -1250,7 +1250,7 @@ public class TxtReadandWrite {
 		return null;
 	}
 	/**
-	 * ¸ø¶¨ÎÄ×Ö£¬ÒÔ¼°ÊÇ·ñ´óĞ¡Ğ´£¬È»ºó¿´ÊÇ²»ÊÇº¬ÓĞĞèÒªµÄÎÄ×Ö
+	 * ç»™å®šæ–‡å­—ï¼Œä»¥åŠæ˜¯å¦å¤§å°å†™ï¼Œç„¶åçœ‹æ˜¯ä¸æ˜¯å«æœ‰éœ€è¦çš„æ–‡å­—
 	 * @param content
 	 * @param caseSensitive
 	 * @param regx
@@ -1276,8 +1276,8 @@ public class TxtReadandWrite {
 	}
 
 	/**
-	 * ±ØĞë¹Ø±Õ
-	 * ¹Ø±ÕÁ÷ÎÄ¼ş
+	 * å¿…é¡»å…³é—­
+	 * å…³é—­æµæ–‡ä»¶
 	 */
 	public void close() {
 		try { outputStream.flush(); } catch (Exception e) {}
@@ -1305,12 +1305,12 @@ public class TxtReadandWrite {
        
        
        /**
-        * ¸ù¾İÎÄ¼şµÃµ½¸ÃÎÄ¼şÖĞÎÄ±¾ÄÚÈİµÄ±àÂë
+        * æ ¹æ®æ–‡ä»¶å¾—åˆ°è¯¥æ–‡ä»¶ä¸­æ–‡æœ¬å†…å®¹çš„ç¼–ç 
         * 
-        * @param file Òª·ÖÎöµÄÎÄ¼ş
+        * @param file è¦åˆ†æçš„æ–‡ä»¶
         */
        public static String getCharset(File file) {
-               String charset = "GBK"; // Ä¬ÈÏ±àÂë
+               String charset = "GBK"; // é»˜è®¤ç¼–ç 
                byte[] first3Bytes = new byte[3];
                try {
                    boolean checked = false;
@@ -1340,18 +1340,18 @@ public class TxtReadandWrite {
                            loc++;
                            if (read >= 0xF0)
                                break;
-                           //µ¥¶À³öÏÖBFÒÔÏÂµÄ£¬Ò²ËãÊÇGBK
+                           //å•ç‹¬å‡ºç°BFä»¥ä¸‹çš„ï¼Œä¹Ÿç®—æ˜¯GBK
                            if (0x80 <= read && read <= 0xBF)
                                break;
                            if (0xC0 <= read && read <= 0xDF) {
                                read = bis.read();
-                               if (0x80 <= read && read <= 0xBF)// Ë«×Ö½Ú (0xC0 - 0xDF)
+                               if (0x80 <= read && read <= 0xBF)// åŒå­—èŠ‚ (0xC0 - 0xDF)
                                    // (0x80 -
-                                   // 0xBF),Ò²¿ÉÄÜÔÚGB±àÂëÄÚ
+                                   // 0xBF),ä¹Ÿå¯èƒ½åœ¨GBç¼–ç å†…
                                    continue;
                                else
                                    break;
-                            // Ò²ÓĞ¿ÉÄÜ³ö´í£¬µ«ÊÇ¼¸ÂÊ½ÏĞ¡
+                            // ä¹Ÿæœ‰å¯èƒ½å‡ºé”™ï¼Œä½†æ˜¯å‡ ç‡è¾ƒå°
                            } else if (0xE0 <= read && read <= 0xEF) {
                                read = bis.read();
                                if (0x80 <= read && read <= 0xBF) {
@@ -1374,7 +1374,7 @@ public class TxtReadandWrite {
                return charset;
        }
 }
-////´óÎÄ¼şÅÅ
+////å¤§æ–‡ä»¶æ’
  class TestCountWords {  
        public static void main(String[] args) {  
            File wf = new File("words.txt");  
@@ -1382,29 +1382,29 @@ public class TxtReadandWrite {
            final CountWords cw2 = new CountWords(wf, wf.length()/2, wf.length());  
            final Thread t1 = new Thread(cw1);  
            final Thread t2 = new Thread(cw2);  
-           //¿ª±ÙÁ½¸öÏß³Ì·Ö±ğ´¦ÀíÎÄ¼şµÄ²»Í¬Æ¬¶Î  
+           //å¼€è¾Ÿä¸¤ä¸ªçº¿ç¨‹åˆ†åˆ«å¤„ç†æ–‡ä»¶çš„ä¸åŒç‰‡æ®µ  
            t1.start();  
            t2.start();  
            Thread t = new Thread() {  
                public void run() {  
                    while(true) {  
-                       //Á½¸öÏß³Ì¾ùÔËĞĞ½áÊø  
+                       //ä¸¤ä¸ªçº¿ç¨‹å‡è¿è¡Œç»“æŸ  
                        if(Thread.State.TERMINATED==t1.getState() && Thread.State.TERMINATED==t2.getState()) {  
-                           //»ñÈ¡¸÷×Ô´¦ÀíµÄ½á¹û  
+                           //è·å–å„è‡ªå¤„ç†çš„ç»“æœ  
                            HashMap<String, Integer> hMap1 = cw1.getResult();  
                            HashMap<String, Integer> hMap2 = cw2.getResult();  
-                           //Ê¹ÓÃTreeMap±£Ö¤½á¹ûÓĞĞò  
+                           //ä½¿ç”¨TreeMapä¿è¯ç»“æœæœ‰åº  
                            TreeMap<String, Integer> tMap = new TreeMap<String, Integer>();  
-                           //¶Ô²»Í¬Ïß³Ì´¦ÀíµÄ½á¹û½øĞĞÕûºÏ  
+                           //å¯¹ä¸åŒçº¿ç¨‹å¤„ç†çš„ç»“æœè¿›è¡Œæ•´åˆ  
                            tMap.putAll(hMap1);  
                            tMap.putAll(hMap2);  
-                           //´òÓ¡Êä³ö£¬²é¿´½á¹û  
+                           //æ‰“å°è¾“å‡ºï¼ŒæŸ¥çœ‹ç»“æœ  
                            for(Entry<String, Integer> entry : tMap.entrySet()) {  
                                String key = entry.getKey();    
                                int value = entry.getValue();    
                                System.out.println(key+":\t"+value);    
                            }  
-                           //½«½á¹û±£´æµ½ÎÄ¼şÖĞ  
+                           //å°†ç»“æœä¿å­˜åˆ°æ–‡ä»¶ä¸­  
                            mapToFile(tMap, new File("result.txt"));  
                        }  
                        return;  
@@ -1413,16 +1413,16 @@ public class TxtReadandWrite {
            };  
            t.start();  
        }  
-       //½«½á¹û°´ÕÕ "µ¥´Ê£º´ÎÊı" ¸ñÊ½´æÔÚÎÄ¼şÖĞ  
+       //å°†ç»“æœæŒ‰ç…§ "å•è¯ï¼šæ¬¡æ•°" æ ¼å¼å­˜åœ¨æ–‡ä»¶ä¸­  
        private static void mapToFile(Map<String, Integer> src, File dst) {  
            try {  
-               //¶Ô½«ÒªĞ´ÈëµÄÎÄ¼ş½¨Á¢Í¨µÀ  
+               //å¯¹å°†è¦å†™å…¥çš„æ–‡ä»¶å»ºç«‹é€šé“  
                FileChannel fcout = new FileOutputStream(dst).getChannel();  
-               //Ê¹ÓÃentrySet¶Ô½á¹û¼¯½øĞĞ±éÀú  
+               //ä½¿ç”¨entrySetå¯¹ç»“æœé›†è¿›è¡Œéå†  
                for(Map.Entry<String,Integer> entry : src.entrySet()) {  
                    String key = entry.getKey();  
                    int value = entry.getValue();  
-                   //½«½á¹û°´ÕÕÖ¸¶¨¸ñÊ½·Åµ½»º³åÇøÖĞ  
+                   //å°†ç»“æœæŒ‰ç…§æŒ‡å®šæ ¼å¼æ”¾åˆ°ç¼“å†²åŒºä¸­  
                    ByteBuffer bBuf = ByteBuffer.wrap((key+":\t"+value).getBytes());  
                    fcout.write(bBuf);  
                    bBuf.clear();  
@@ -1444,13 +1444,13 @@ public class TxtReadandWrite {
          
        public CountWords(File src, long start, long end) {  
            try {  
-               //µÃµ½µ±Ç°ÎÄ¼şµÄÍ¨µÀ  
+               //å¾—åˆ°å½“å‰æ–‡ä»¶çš„é€šé“  
                fc = new RandomAccessFile(src, "rw").getChannel();  
-               //Ëø¶¨µ±Ç°ÎÄ¼şµÄ²¿·Ö  
+               //é”å®šå½“å‰æ–‡ä»¶çš„éƒ¨åˆ†  
                fl = fc.lock(start, end, false);  
-               //¶Ôµ±Ç°ÎÄ¼şÆ¬¶Î½¨Á¢ÄÚ´æÓ³Éä£¬Èç¹ûÎÄ¼ş¹ı´óĞèÒªÇĞ¸î³É¶à¸öÆ¬¶Î  
+               //å¯¹å½“å‰æ–‡ä»¶ç‰‡æ®µå»ºç«‹å†…å­˜æ˜ å°„ï¼Œå¦‚æœæ–‡ä»¶è¿‡å¤§éœ€è¦åˆ‡å‰²æˆå¤šä¸ªç‰‡æ®µ  
                mbBuf = fc.map(FileChannel.MapMode.READ_ONLY, start, end);  
-               //´´½¨HashMapÊµÀı´æ·Å´¦Àí½á¹û  
+               //åˆ›å»ºHashMapå®ä¾‹å­˜æ”¾å¤„ç†ç»“æœ  
                hm = new HashMap<String,Integer>();  
            } catch (FileNotFoundException e) {  
                e.printStackTrace();  
@@ -1461,11 +1461,11 @@ public class TxtReadandWrite {
        @Override  
        public void run() {  
            String str = Charset.forName("UTF-8").decode(mbBuf).toString();  
-           //Ê¹ÓÃStringTokenizer·ÖÎöµ¥´Ê  
+           //ä½¿ç”¨StringTokenizeråˆ†æå•è¯  
            StringTokenizer token = new StringTokenizer(str);  
            String word;  
            while(token.hasMoreTokens()) {  
-               //½«´¦Àí½á¹û·Åµ½Ò»¸öHashMapÖĞ£¬¿¼ÂÇµ½´æ´¢ËÙ¶È  
+               //å°†å¤„ç†ç»“æœæ”¾åˆ°ä¸€ä¸ªHashMapä¸­ï¼Œè€ƒè™‘åˆ°å­˜å‚¨é€Ÿåº¦  
                word = token.nextToken();  
                if(null != hm.get(word)) {  
                    hm.put(word, hm.get(word)+1);  
@@ -1474,7 +1474,7 @@ public class TxtReadandWrite {
                }  
            }  
            try {  
-               //ÊÍ·ÅÎÄ¼şËø  
+               //é‡Šæ”¾æ–‡ä»¶é”  
                fl.release();  
            } catch (IOException e) {  
                e.printStackTrace();  
@@ -1482,7 +1482,7 @@ public class TxtReadandWrite {
            return;  
        }  
          
-       //»ñÈ¡µ±Ç°Ïß³ÌµÄÖ´ĞĞ½á¹û  
+       //è·å–å½“å‰çº¿ç¨‹çš„æ‰§è¡Œç»“æœ  
        public HashMap<String, Integer> getResult() {  
            return hm;  
        }

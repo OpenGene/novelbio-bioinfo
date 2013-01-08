@@ -12,7 +12,7 @@ public enum GeneType {
 	 rRNA, ncRNA, miscRNA;
 	 static HashMap<String, GeneType> mapMRNA2GeneType = new HashMap<String, GeneType>();
 	/**
-	 * Éè¶¨mRNAºÍgeneµÄÀàËÆÃû£¬ÔÚgffÎÄ¼şÀïÃæ³öÏÖµÄ
+	 * è®¾å®šmRNAå’Œgeneçš„ç±»ä¼¼åï¼Œåœ¨gffæ–‡ä»¶é‡Œé¢å‡ºç°çš„
 	 */
 	private static void setMapName2GeneType() {
 		if (mapMRNA2GeneType.isEmpty()) {

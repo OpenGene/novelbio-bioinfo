@@ -66,8 +66,8 @@ public class ServUniGene2Go implements MapUniGene2Go{
 		mapUniGene2Go.updateUniGene2Go(uniGene2Go);
 	}
 	/**
-	 * ÊäÈëgeneUniIDÒÔ¼°¾ßÌåµÄÄÚÈİ£¬¿´ÊÇ·ñĞèÒªÉı¼¶
-	 * ÄÜ²åÈë¾Í²åÈë£¬ÒÑ¾­ÓĞÁË¾ÍÅĞ¶ËÓëÊı¾İ¿âÖĞÊÇ·ñÒ»ÖÂ£¬²»Ò»ÖÂ¾ÍÉı¼¶
+	 * è¾“å…¥geneUniIDä»¥åŠå…·ä½“çš„å†…å®¹ï¼Œçœ‹æ˜¯å¦éœ€è¦å‡çº§
+	 * èƒ½æ’å…¥å°±æ’å…¥ï¼Œå·²ç»æœ‰äº†å°±åˆ¤ç«¯ä¸æ•°æ®åº“ä¸­æ˜¯å¦ä¸€è‡´ï¼Œä¸ä¸€è‡´å°±å‡çº§
 	 * @param genUniID
 	 * @param gene2Go
 	 */
@@ -82,13 +82,13 @@ public class ServUniGene2Go implements MapUniGene2Go{
 			UniGene2Go uniGene2GoNew = new UniGene2Go();
 			uniGene2GoNew.copyInfo(gene2Go);
 			if (uniGene2GoNew.getGOID() == null) {
-				logger.error("³öÏÖÎ´ÖªGOID£º" + gene2Go.getGOID());
+				logger.error("å‡ºç°æœªçŸ¥GOIDï¼š" + gene2Go.getGOID());
 				return false;
 			}
 			uniGene2GoNew.setGeneUniID(genUniID);
 			try {
 				insertUniGene2Go(uniGene2GoNew);
-			} catch (Exception e) {//³ö´íÔ­Òò¿ÉÄÜÊÇÓĞÁ½¸öÁ¬ĞøÒ»ÑùµÄgoID£¬È»ºóÁ¬Ğø²åÈëµÄÊ±ºòµÚÒ»¸ögoID»¹Ã»À´µÃ¼°½¨Ë÷Òı£¬µ¼ÖÂµÚ¶ş¸öÖ±½Ó¾Í²åÈëÁËÈ»ºó³ö´í
+			} catch (Exception e) {//å‡ºé”™åŸå› å¯èƒ½æ˜¯æœ‰ä¸¤ä¸ªè¿ç»­ä¸€æ ·çš„goIDï¼Œç„¶åè¿ç»­æ’å…¥çš„æ—¶å€™ç¬¬ä¸€ä¸ªgoIDè¿˜æ²¡æ¥å¾—åŠå»ºç´¢å¼•ï¼Œå¯¼è‡´ç¬¬äºŒä¸ªç›´æ¥å°±æ’å…¥äº†ç„¶åå‡ºé”™
 				System.out.println(gene2Go.getGOID() + " " + uniGene2GoNew.getGeneUniId() + " " + gene2Go.getTaxID());
 				return false;
 			}

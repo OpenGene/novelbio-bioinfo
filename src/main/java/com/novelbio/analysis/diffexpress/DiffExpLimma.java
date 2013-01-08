@@ -14,8 +14,8 @@ import com.novelbio.generalConf.NovelBioConst;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 public class DiffExpLimma extends DiffExpAbs{
-	/** ±È½Ï¾ØÕóÉè¼ÆºÃºóĞèÒª½«Ã¿¸öID¶ÔÓ¦µ½ÊÔÑéÃûÉÏ <br>
-	 * Æ©Èç£º<br>
+	/** æ¯”è¾ƒçŸ©é˜µè®¾è®¡å¥½åéœ€è¦å°†æ¯ä¸ªIDå¯¹åº”åˆ°è¯•éªŒåä¸Š <br>
+	 * è­¬å¦‚ï¼š<br>
 	 * design = model.matrix(~ -1+factor (c(1,1,2,2,3,3))) <br>
 	 * colnames(design) = c("Patient","Treat","Norm")<br>
 	 * 1 = Patient<br>
@@ -26,7 +26,7 @@ public class DiffExpLimma extends DiffExpAbs{
 	
 	public static void main(String[] args) {
 		System.out.println(PathDetail.getProjectPath());
-//		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt("/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/miRNA²¢¼¯Deseq.txt", 1);
+//		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt("/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/miRNAå¹¶é›†Deseq.txt", 1);
 //		DiffExpLimma deSeq = new DiffExpLimma();
 //		ArrayList<String[]> lsSampleColumn2GroupName = new ArrayList<String[]>();
 //		lsSampleColumn2GroupName.add(new String[] {"2","A"});
@@ -87,7 +87,7 @@ public class DiffExpLimma extends DiffExpAbs{
 		txtOutScript.close();
 	}
 	/**
-	 * ¿´ÊÇ·ñĞèÒªlog×ª»»
+	 * çœ‹æ˜¯å¦éœ€è¦logè½¬æ¢
 	 * @param content
 	 * @return
 	 */
@@ -99,10 +99,10 @@ public class DiffExpLimma extends DiffExpAbs{
 		return logScript;
 	}
 	/**
-	 * Éè¼Æ¾ØÕó£¬²¢Ìî³äMapID2Sample<br>
-	 * Ö®Ç° :
+	 * è®¾è®¡çŸ©é˜µï¼Œå¹¶å¡«å……MapID2Sample<br>
+	 * ä¹‹å‰ :
 	 * design = model.matrix(~ -1+factor (c({$design})))<br>
-	 * Ö®ºó£º
+	 * ä¹‹åï¼š
 	 * design = model.matrix(~ -1+factor (c(1,1,2,2,3,3)))
 	 * @param content
 	 * @return
@@ -115,11 +115,11 @@ public class DiffExpLimma extends DiffExpAbs{
 		String[] sample = lsSampleColumn2GroupName.get(0);
 		mapSample2ID.put(sample[1], 1);
 		mapID2Sample.put(1, sample[1]);
-		int designNum = 2;//1ÒÑ¾­¼ÓÈëhashmapÁË
+		int designNum = 2;//1å·²ç»åŠ å…¥hashmapäº†
 		
 		for (int i = 1; i < lsSampleColumn2GroupName.size(); i++) {
 			sample = lsSampleColumn2GroupName.get(i);
-			//·¢ÏÖĞÂµÄÃû×Ö£¬¾Í½«designµÄID¼ÓÒ»
+			//å‘ç°æ–°çš„åå­—ï¼Œå°±å°†designçš„IDåŠ ä¸€
 			if (!mapSample2ID.containsKey(sample[1])) {
 				mapSample2ID.put(sample[1], designNum);
 				mapID2Sample.put(designNum, sample[1]);
@@ -133,10 +133,10 @@ public class DiffExpLimma extends DiffExpAbs{
 		return designScript;
 	}
 	/**
-	 * Ìí¼ÓÑù±¾Ãû×Ö<br>
-	 * Ö®Ç° :
+	 * æ·»åŠ æ ·æœ¬åå­—<br>
+	 * ä¹‹å‰ :
 	 * colnames(design) = c({$SampleName})<br>
-	 * Ö®ºó :
+	 * ä¹‹å :
 	 * colnames(design) = c("Patient","Treat","Norm")<br>
 	 * @param content
 	 * @return
@@ -152,10 +152,10 @@ public class DiffExpLimma extends DiffExpAbs{
 		return SampleScript;
 	}
 	/**
-	 * ±È½Ï¾ØÕó<br>
-	 * Ö®Ç° :<br>
+	 * æ¯”è¾ƒçŸ©é˜µ<br>
+	 * ä¹‹å‰ :<br>
 	 * contrast.matrix = makeContrasts( {$PairedInfo},levels=design)<br>
-	 * Ö®ºó£º<br>
+	 * ä¹‹åï¼š<br>
 	 * contrast.matrix = makeContrasts( PatientvsNorm = Patient - Norm,TreatvsNorm = Treat - Norm,levels=design)<br>
 	 * @param content
 	 * @return
@@ -174,7 +174,7 @@ public class DiffExpLimma extends DiffExpAbs{
 		return CompareScript;
 	}
 	/**
-	 * ²úÉúÒ»¸ö PatientvsNorm = Patient - Norm
+	 * äº§ç”Ÿä¸€ä¸ª PatientvsNorm = Patient - Norm
 	 * @return
 	 */
 	private String getCompare(String[] pair) {
@@ -182,15 +182,15 @@ public class DiffExpLimma extends DiffExpAbs{
 		pair[1] = pair[1].replace(" ", "");
 		return getCoef(pair) + " = " + pair[0] + " - " + pair[1];
 	}
-	/** ¸ø¶¨Ò»¶ÔĞÅÏ¢£¬·µ»Ø¸Ã¶ÔĞÅÏ¢Ëù²úÉúµÄÇ°×º */
+	/** ç»™å®šä¸€å¯¹ä¿¡æ¯ï¼Œè¿”å›è¯¥å¯¹ä¿¡æ¯æ‰€äº§ç”Ÿçš„å‰ç¼€ */
 	private String getCoef(String[] pair) {
 		return pair[0] +"_vs_" +pair[1];
 	}
 	/**
-	 * Ğ´Èë½á¹û<br>
-	 * Ö®Ç° :<br>
+	 * å†™å…¥ç»“æœ<br>
+	 * ä¹‹å‰ :<br>
 	 * write.table(topTable(fit2.eBayes, coef="{$Pair}", adjust="fdr", sort.by="B", number=50000),  file="{$OutFileName}", row.names=F, sep="\t")
-	 * Ö®ºó£º<br>
+	 * ä¹‹åï¼š<br>
 	 * write.table(topTable(fit2.eBayes, coef="AvsB", adjust="fdr", sort.by="B", number=50000),  file="AvsB.xls", row.names=F, sep="\t")
 	 * contrast.matrix = makeContrasts( PatientvsNorm = Patient - Norm,TreatvsNorm = Treat - Norm,levels=design)<br>
 	 * @param content
@@ -224,7 +224,7 @@ public class DiffExpLimma extends DiffExpAbs{
 		lsIndelItem.add(new int[]{1, 2});//"treat" and control
 		lsIndelItem.add(new int[]{2, -1});//"AveExpr"
 		if (lsDifGene.get(0).length == 7) {
-			lsIndelItem.add(new int[]{3, -1});//"t" ÓĞÊ±ºò²»»áÓĞavg³öÏÖ
+			lsIndelItem.add(new int[]{3, -1});//"t" æœ‰æ—¶å€™ä¸ä¼šæœ‰avgå‡ºç°
 		}
 		for (int i = 1; i < lsDifGene.size(); i++) {
 			String[] tmpResult = ArrayOperate.indelElement(lsDifGene.get(i), lsIndelItem, "");
@@ -239,7 +239,7 @@ public class DiffExpLimma extends DiffExpAbs{
 			lsResult.add(tmpResult);
 		}
 		FileOperate.DeleteFileFolder(outFileName);
-		//·ÀÖ¹R»¹Ã»Êä³ö½á¹û¾ÍÈ¥¶ÁÈ¡
+		//é˜²æ­¢Rè¿˜æ²¡è¾“å‡ºç»“æœå°±å»è¯»å–
 		try { Thread.sleep(50); } catch (Exception e) { }
 		
 		TxtReadandWrite txtOutFinal = new TxtReadandWrite(outFileName, true);

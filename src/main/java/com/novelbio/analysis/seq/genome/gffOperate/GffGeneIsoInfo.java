@@ -17,37 +17,37 @@ import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modgeneid.GeneType;
 
 /**
- * 	ÖØĞ´hash£¬²»°üº¬»ùÒòÃûĞÅÏ¢£¬°üº¬»ùÒòtaxID£¬chrID£¬atg£¬uag£¬tss£¬³¤¶È£¬ÒÔ¼°Ã¿Ò»¸öexonµÄĞÅÏ¢<br>
- * ¼ÇÂ¼¸Ã×ªÂ¼±¾µÄ¾ßÌå×ø±êĞÅÏ¢,
- * µÚÒ»Ïî¿ªÊ¼ÊÇexonµÄĞÅÏ¢£¬exon³É¶Ô³öÏÖ£¬Îªint[2] 
- * 0: ¸ÃÍâÏÔ×ÓÆğµã£¬±ÕÇø¼ä£¬´Ó1¿ªÊ¼¼ÇÊı<br>
- * 1: ¸ÃÍâÏÔ×ÓÖÕµã£¬±ÕÇø¼ä£¬´Ó1¿ªÊ¼¼ÇÊı<br>
- * °´ÕÕ»ùÒòµÄ·½Ïò½øĞĞÅÅÁĞ
- * Èç¹ûÕıÏòÔò´ÓĞ¡µ½´óÅÅÁĞ£¬ÇÒint0&lt;int1
- * Èç¹û·´ÏòÔò´Ó´óµ½Ğ¡ÅÅÁĞ£¬ÇÒint0&gt;int1
+ * 	é‡å†™hashï¼Œä¸åŒ…å«åŸºå› åä¿¡æ¯ï¼ŒåŒ…å«åŸºå› taxIDï¼ŒchrIDï¼Œatgï¼Œuagï¼Œtssï¼Œé•¿åº¦ï¼Œä»¥åŠæ¯ä¸€ä¸ªexonçš„ä¿¡æ¯<br>
+ * è®°å½•è¯¥è½¬å½•æœ¬çš„å…·ä½“åæ ‡ä¿¡æ¯,
+ * ç¬¬ä¸€é¡¹å¼€å§‹æ˜¯exonçš„ä¿¡æ¯ï¼Œexonæˆå¯¹å‡ºç°ï¼Œä¸ºint[2] 
+ * 0: è¯¥å¤–æ˜¾å­èµ·ç‚¹ï¼Œé—­åŒºé—´ï¼Œä»1å¼€å§‹è®°æ•°<br>
+ * 1: è¯¥å¤–æ˜¾å­ç»ˆç‚¹ï¼Œé—­åŒºé—´ï¼Œä»1å¼€å§‹è®°æ•°<br>
+ * æŒ‰ç…§åŸºå› çš„æ–¹å‘è¿›è¡Œæ’åˆ—
+ * å¦‚æœæ­£å‘åˆ™ä»å°åˆ°å¤§æ’åˆ—ï¼Œä¸”int0&lt;int1
+ * å¦‚æœåå‘åˆ™ä»å¤§åˆ°å°æ’åˆ—ï¼Œä¸”int0&gt;int1
  * @return
  */
 public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<ExonInfo>, ListCodAbsDu<ExonInfo, ListCodAbs<ExonInfo>>>{
 	private static final Logger logger = Logger.getLogger(GffGeneIsoInfo.class);
 	private static final long serialVersionUID = -6015332335255457620L;
-	/** ±ê¼ÇcodInExon´¦ÔÚÍâÏÔ×ÓÖĞ */
+	/** æ ‡è®°codInExonå¤„åœ¨å¤–æ˜¾å­ä¸­ */
 	public static final int COD_LOC_EXON = 100;
-	/** ±ê¼ÇcodInExon´¦ÔÚÄÚº¬×ÓÖĞ */
+	/** æ ‡è®°codInExonå¤„åœ¨å†…å«å­ä¸­ */
 	public static final int COD_LOC_INTRON = 200;
-	/** ±ê¼ÇcodInExon²»ÔÚ×ªÂ¼±¾ÖĞ  */
+	/** æ ‡è®°codInExonä¸åœ¨è½¬å½•æœ¬ä¸­  */
 	public static final int COD_LOC_OUT = 300;
-	/**  ±ê¼ÇcodInExon´¦ÔÚ5UTRÖĞ  */
+	/**  æ ‡è®°codInExonå¤„åœ¨5UTRä¸­  */
 	public static final int COD_LOCUTR_5UTR = 5000;
-	/**  ±ê¼ÇcodInExon´¦ÔÚ3UTRÖĞ */
+	/**  æ ‡è®°codInExonå¤„åœ¨3UTRä¸­ */
 	public static final int COD_LOCUTR_3UTR = 3000;
-	/** ±ê¼ÇcodInExon²»ÔÚUTRÖĞ */
+	/** æ ‡è®°codInExonä¸åœ¨UTRä¸­ */
 	public static final int COD_LOCUTR_OUT = 0;
-	/** ±ê¼ÇcodInExonÔÚCDSÖĞ */
+	/** æ ‡è®°codInExonåœ¨CDSä¸­ */
 	public static final int COD_LOCUTR_CDS = 7000;
 	
-	/** ²¸Èé¶¯Îï»ùÒò¼äÎªTssÉÏÓÎ5000bp */
+	/** å“ºä¹³åŠ¨ç‰©åŸºå› é—´ä¸ºTssä¸Šæ¸¸5000bp */
 	public static int PROMOTER_INTERGENIC_MAMMUM = 5000;
-	/**  ²¸Èé¶¯ÎïÎªDistal Promoter TssÉÏÓÎ1000bp£¬ÒÔÄÚµÄ¾ÍÎªProximal Promoter */
+	/**  å“ºä¹³åŠ¨ç‰©ä¸ºDistal Promoter Tssä¸Šæ¸¸1000bpï¼Œä»¥å†…çš„å°±ä¸ºProximal Promoter */
 	public static int PROMOTER_DISTAL_MAMMUM = 1000;
 	/** InterGenic_ */
 	public static final String PROMOTER_INTERGENIC_STR = "InterGenic_";
@@ -66,19 +66,19 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	}
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	private GeneType flagTypeGene = GeneType.mRNA;
-	/** Éè¶¨»ùÒòµÄ×ªÂ¼ÆğµãÉÏÓÎ³¤¶È£¬Ä¬ÈÏÎª0 */
+	/** è®¾å®šåŸºå› çš„è½¬å½•èµ·ç‚¹ä¸Šæ¸¸é•¿åº¦ï¼Œé»˜è®¤ä¸º0 */
 	protected int upTss = 0;
-	/** Éè¶¨»ùÒòµÄ×ªÂ¼ÆğµãÏÂÓÎ³¤¶È£¬Ä¬ÈÏÎª0  */
+	/** è®¾å®šåŸºå› çš„è½¬å½•èµ·ç‚¹ä¸‹æ¸¸é•¿åº¦ï¼Œé»˜è®¤ä¸º0  */
 	protected int downTss=0;
-	/**  Éè¶¨»ùÒòµÄ×ªÂ¼ÖÕµãµãÉÏÓÎ³¤¶È£¬Ä¬ÈÏÎª0 */
+	/**  è®¾å®šåŸºå› çš„è½¬å½•ç»ˆç‚¹ç‚¹ä¸Šæ¸¸é•¿åº¦ï¼Œé»˜è®¤ä¸º0 */
 	protected int upTes=0;
-	/** Éè¶¨»ùÒò½áÎ²ÏòÍâÑÓÉìµÄ³¤¶È£¬Ä¬ÈÏÎª0 */
+	/** è®¾å®šåŸºå› ç»“å°¾å‘å¤–å»¶ä¼¸çš„é•¿åº¦ï¼Œé»˜è®¤ä¸º0 */
 	protected int downTes=100;
-	/** ¸Ã×ªÂ¼±¾µÄATGµÄµÚÒ»¸ö×Ö·û×ø±ê£¬´Ó1¿ªÊ¼¼ÆÊı  */
+	/** è¯¥è½¬å½•æœ¬çš„ATGçš„ç¬¬ä¸€ä¸ªå­—ç¬¦åæ ‡ï¼Œä»1å¼€å§‹è®¡æ•°  */
 	protected int ATGsite = ListCodAbs.LOC_ORIGINAL;
-	/** ¸Ã×ªÂ¼±¾µÄCoding region endµÄ×îºóÒ»¸ö×Ö·û×ø±ê£¬´Ó1¿ªÊ¼¼ÆÊı */
+	/** è¯¥è½¬å½•æœ¬çš„Coding region endçš„æœ€åä¸€ä¸ªå­—ç¬¦åæ ‡ï¼Œä»1å¼€å§‹è®¡æ•° */
 	protected int UAGsite = ListCodAbs.LOC_ORIGINAL;
-	/** ¸Ã×ªÂ¼±¾µÄ³¤¶È */
+	/** è¯¥è½¬å½•æœ¬çš„é•¿åº¦ */
 	protected int lengthIso = ListCodAbs.LOC_ORIGINAL;
 
 	GffDetailGene gffDetailGeneParent;
@@ -99,7 +99,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	}
 
 	/**
-	 * ·µ»Ø¸Ã»ùÒòµÄÀàĞÍ
+	 * è¿”å›è¯¥åŸºå› çš„ç±»å‹
 	 * @return
 	 */
 	public GeneType getGeneType() {
@@ -118,8 +118,8 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return gffDetailGeneParent;
 	}
 	/**
-	 * ¸úËægffDetailGeneµÄÉè¶¨
-	 * »®¶¨Tss·¶Î§ÉÏÓÎÎª¸ºÊı£¬ÏÂÓÎÎªÕıÊı
+	 * è·ŸéšgffDetailGeneçš„è®¾å®š
+	 * åˆ’å®šTssèŒƒå›´ä¸Šæ¸¸ä¸ºè´Ÿæ•°ï¼Œä¸‹æ¸¸ä¸ºæ­£æ•°
 	 * @param upTss
 	 * @param downTss
 	 */
@@ -128,7 +128,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		this.downTss = downTss;
 	}
 	/**
-	 * ¸úËægffDetailGeneµÄÉè¶¨
+	 * è·ŸéšgffDetailGeneçš„è®¾å®š
 	 * @param upTes
 	 * @param downTes
 	 */
@@ -137,7 +137,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		this.downTes = downTes;
 	}
 	/**
-	 * coordÊÇ·ñÔÚpromoterÇøÓòµÄ·¶Î§ÄÚ£¬´ÓTssÉÏÓÎUpStreamTSSbpµ½TssÏÂÓÎDownStreamTssbp
+	 * coordæ˜¯å¦åœ¨promoteråŒºåŸŸçš„èŒƒå›´å†…ï¼Œä»Tssä¸Šæ¸¸UpStreamTSSbpåˆ°Tssä¸‹æ¸¸DownStreamTssbp
 	 * @return
 	 */
 	public boolean isCodInIsoTss(int coord) {
@@ -148,7 +148,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return false;
 	}
 	/**
-	 * coordÊÇ·ñÔÚgeneEndÇøÓòµÄ·¶Î§ÄÚ
+	 * coordæ˜¯å¦åœ¨geneEndåŒºåŸŸçš„èŒƒå›´å†…
 	 * @return
 	 */
 	public boolean isCodInIsoGenEnd(int coord) {
@@ -159,7 +159,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return false;
 	}
 	/**
-	 * coordÊÇ·ñÔÚ¸Ã×ªÂ¼±¾°üÀ¨promoterºÍgeneEndÑÓ³¤ÇøÓòµÄ·¶Î§ÄÚ
+	 * coordæ˜¯å¦åœ¨è¯¥è½¬å½•æœ¬åŒ…æ‹¬promoterå’ŒgeneEndå»¶é•¿åŒºåŸŸçš„èŒƒå›´å†…
 	 * @return
 	 */
 	public boolean isCodInIsoExtend(int coord) {
@@ -167,8 +167,8 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return (codLoc != COD_LOC_OUT) || isCodInIsoTss(coord) || isCodInIsoGenEnd(coord);
 	}
 	/**
-	 * codÊÇ·ñÔÚ±àÂëÇø
-	 * Èç¹û±¾×ªÂ¼±¾ÊÇ·Ç±àÂëRNA£¬Ö±½Ó·µ»Øfalse£»
+	 * codæ˜¯å¦åœ¨ç¼–ç åŒº
+	 * å¦‚æœæœ¬è½¬å½•æœ¬æ˜¯éç¼–ç RNAï¼Œç›´æ¥è¿”å›falseï¼›
 	 * @return
 	 */
 	public boolean isCodInAAregion(int coord) {
@@ -187,26 +187,26 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return gffDetailGeneParent.getRefID().toLowerCase();
 	}
 	/**
-	 * ÊÇ·ñÊÇmRNAÓĞatgºÍuag£¬
+	 * æ˜¯å¦æ˜¯mRNAæœ‰atgå’Œuagï¼Œ
 	 * @return
 	 */
 	public boolean ismRNA() {
 		return Math.abs(ATGsite - UAGsite) > 10 ?  true : false;
 	}
 	/**
-	 * Ö»ÄÜÓÃÓÚÅÅĞòºÃµÄË®µ¾ºÍÄâÄÏ½æGFFÎÄ¼şÖĞ
-	 * Õâ¸öÒªÈ·ÈÏ
-	 * ¸ø×ªÂ¼±¾Ìí¼Óexon×ø±ê£¬GFF3µÄexonµÄ¸ñÊ½ÊÇ <br>
-	 * µ±geneÎª·´·½ÏòÊ±£¬exonÊÇ´Ó´óµ½Ğ¡ÅÅÁĞµÄ<br>
-	 * ÔÚÌí¼ÓexonµÄÊ±ºò£¬Èç¹û±¾CDSÓëUTRÖ®¼äÊÇÁ¬×ÅµÄ£¬ÄÇÃ´¾Í½«±¾CDSºÍUTRÁ¬ÔÚÒ»Æğ£¬·ÅÔÚÒ»¸öexonÖĞ
-	 * Èç¹û²»Á¬£¬¾Í°´Ô­À´µÄÀ´
+	 * åªèƒ½ç”¨äºæ’åºå¥½çš„æ°´ç¨»å’Œæ‹Ÿå—èŠ¥GFFæ–‡ä»¶ä¸­
+	 * è¿™ä¸ªè¦ç¡®è®¤
+	 * ç»™è½¬å½•æœ¬æ·»åŠ exonåæ ‡ï¼ŒGFF3çš„exonçš„æ ¼å¼æ˜¯ <br>
+	 * å½“geneä¸ºåæ–¹å‘æ—¶ï¼Œexonæ˜¯ä»å¤§åˆ°å°æ’åˆ—çš„<br>
+	 * åœ¨æ·»åŠ exonçš„æ—¶å€™ï¼Œå¦‚æœæœ¬CDSä¸UTRä¹‹é—´æ˜¯è¿ç€çš„ï¼Œé‚£ä¹ˆå°±å°†æœ¬CDSå’ŒUTRè¿åœ¨ä¸€èµ·ï¼Œæ”¾åœ¨ä¸€ä¸ªexonä¸­
+	 * å¦‚æœä¸è¿ï¼Œå°±æŒ‰åŸæ¥çš„æ¥
 	 */
 	protected void addExonGFFCDSUTR(int locStart, int locEnd) {
 		/**
-		 * Ìí¼ÓÍâÏÔ×Ó£¬Ìí¼ÓÔÚÄ©Î²
-		 * Ìí¼ÓµÄÊ±ºò±ØĞë°´ÕÕ»ùÒò·½ÏòÌí¼Ó£¬
-		 * ÕıÏò´ÓĞ¡µ½´óÌí¼Ó ÇÒ int0<int1
-		 * ·´Ïò´Ó´óµ½Ğ¡Ìí¼Ó ÇÒ int0>int1
+		 * æ·»åŠ å¤–æ˜¾å­ï¼Œæ·»åŠ åœ¨æœ«å°¾
+		 * æ·»åŠ çš„æ—¶å€™å¿…é¡»æŒ‰ç…§åŸºå› æ–¹å‘æ·»åŠ ï¼Œ
+		 * æ­£å‘ä»å°åˆ°å¤§æ·»åŠ  ä¸” int0<int1
+		 * åå‘ä»å¤§åˆ°å°æ·»åŠ  ä¸” int0>int1
 		 */
 		ExonInfo tmpexon = new ExonInfo(this, isCis5to3(), locStart, locEnd);
 		if (size() > 0) {
@@ -219,12 +219,12 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		add(tmpexon);
 	}
 	/**
-	 * ¸ø¸Ã×ªÂ¼±¾Ìí¼ÓATGºÍUAG×ø±ê£¬<br>
-	 * ¼ÓÈëÕâÒ»¶Ô×ø±êµÄÊ±ºò£¬²¢²»ĞèÒª·Ö±ğ´óĞ¡£¬³ÌĞò»á¸ù¾İgene·½Ïò×Ô¶¯ÅĞ¶¨
-	 * »á×Ô¶¯ÅĞ¶¨ÊäÈëµÄÆğµãÊÇ·ñĞ¡ÓÚÒÑÓĞµÄatg£¬ÖÕµãÊÇ·ñ´óÓÚÒÑÓĞµÄuag
-	 * ÊÇµÄ»°£¬²Å»áÉè¶¨£¬·ñÔò¾Í²»Éè¶¨
-	 * @param atg ´Ó1¿ªÊ¼¼ÇÊı
-	 * @param uag ´Ó1¿ªÊ¼¼ÇÊı
+	 * ç»™è¯¥è½¬å½•æœ¬æ·»åŠ ATGå’ŒUAGåæ ‡ï¼Œ<br>
+	 * åŠ å…¥è¿™ä¸€å¯¹åæ ‡çš„æ—¶å€™ï¼Œå¹¶ä¸éœ€è¦åˆ†åˆ«å¤§å°ï¼Œç¨‹åºä¼šæ ¹æ®geneæ–¹å‘è‡ªåŠ¨åˆ¤å®š
+	 * ä¼šè‡ªåŠ¨åˆ¤å®šè¾“å…¥çš„èµ·ç‚¹æ˜¯å¦å°äºå·²æœ‰çš„atgï¼Œç»ˆç‚¹æ˜¯å¦å¤§äºå·²æœ‰çš„uag
+	 * æ˜¯çš„è¯ï¼Œæ‰ä¼šè®¾å®šï¼Œå¦åˆ™å°±ä¸è®¾å®š
+	 * @param atg ä»1å¼€å§‹è®°æ•°
+	 * @param uag ä»1å¼€å§‹è®°æ•°
 	 */
 	public void setATGUAG(int atg, int uag) {
 		if (Math.abs(atg - uag)<=1) {
@@ -248,9 +248,9 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 	}
 	/**
-	 * <b>±ØĞëÏÈÉè¶¨exon</b>
-	 * Èç¹ûATGsite < 0 && UAGsite < 0£¬ÔòÈÏÎªÊÇ·Ç±àÂğRNA
-	 * Ôò½«atgºÍuagÉèÖÃÎª×îºóÒ»Î»
+	 * <b>å¿…é¡»å…ˆè®¾å®šexon</b>
+	 * å¦‚æœATGsite < 0 && UAGsite < 0ï¼Œåˆ™è®¤ä¸ºæ˜¯éç¼–å—RNA
+	 * åˆ™å°†atgå’Œuagè®¾ç½®ä¸ºæœ€åä¸€ä½
 	 */
 	public void setATGUAGncRNA() {
 		if (ATGsite < 0 && UAGsite <0) {
@@ -259,29 +259,29 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 	}
 	/**
-	 * ¸Ã×ªÂ¼±¾µÄATGµÄµÚÒ»¸ö×Ö·û×ø±ê£¬´Ó1¿ªÊ¼¼ÆÊı£¬ÊÇ±ÕÇø¼ä
+	 * è¯¥è½¬å½•æœ¬çš„ATGçš„ç¬¬ä¸€ä¸ªå­—ç¬¦åæ ‡ï¼Œä»1å¼€å§‹è®¡æ•°ï¼Œæ˜¯é—­åŒºé—´
 	 * @return
 	 */
 	public int getATGsite() {
 		return ATGsite;
 	}
 	/**
-	 * ¸Ã×ªÂ¼±¾µÄCoding region endµÄ×îºóÒ»¸ö×Ö·û×ø±ê£¬´Ó1¿ªÊ¼¼ÆÊı£¬ÊÇ±ÕÇø¼ä
+	 * è¯¥è½¬å½•æœ¬çš„Coding region endçš„æœ€åä¸€ä¸ªå­—ç¬¦åæ ‡ï¼Œä»1å¼€å§‹è®¡æ•°ï¼Œæ˜¯é—­åŒºé—´
 	 * @return
 	 */
 	public int getUAGsite() {
 		return UAGsite;
 	}
 	/**
-	 * ¿¼ÂÇÕı·´Ïò
-	 * ¸Ã×ªÂ¼±¾µÄTSSµÄµÚÒ»¸ö×Ö·û×ø±ê£¬´Ó1¿ªÊ¼¼ÆÊı£¬ÊÇ±ÕÇø¼ä
+	 * è€ƒè™‘æ­£åå‘
+	 * è¯¥è½¬å½•æœ¬çš„TSSçš„ç¬¬ä¸€ä¸ªå­—ç¬¦åæ ‡ï¼Œä»1å¼€å§‹è®¡æ•°ï¼Œæ˜¯é—­åŒºé—´
 	 * @return
 	 */
 	public int getTSSsite() {
 		return (int)get(0).getStartCis();
 	}
 	/**
-	 * ¸Ã×ªÂ¼±¾µÄCoding region endµÄ×îºóÒ»¸ö×Ö·û×ø±ê£¬´Ó1¿ªÊ¼¼ÆÊı£¬ÊÇ±ÕÇø¼ä
+	 * è¯¥è½¬å½•æœ¬çš„Coding region endçš„æœ€åä¸€ä¸ªå­—ç¬¦åæ ‡ï¼Œä»1å¼€å§‹è®¡æ•°ï¼Œæ˜¯é—­åŒºé—´
 	 * @return
 	 */
 	public int getTESsite() {
@@ -291,7 +291,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return size();
 	}
 	/**
-	 * »ñµÃ5UTRµÄ³¤¶È
+	 * è·å¾—5UTRçš„é•¿åº¦
 	 * @return
 	 */
 	public int getLenUTR5() {
@@ -299,15 +299,15 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	}
 	
 	/**
-	 * »ñµÃ3UTRµÄ³¤¶È
+	 * è·å¾—3UTRçš„é•¿åº¦
 	 * @return
 	 */
 	public int getLenUTR3() {
 		return Math.abs(super.getLocDistmRNA(this.UAGsite, getTESsite() ) );
 	}
 	 /**
-     * @param num Ö¸¶¨µÚ¼¸¸ö£¬Èç¹û³¬³ö£¬Ôò·µ»Ø-1000000000, 
-     * num ÎªÊµ¼Ê¸öÊı¡£Èç¹ûnum=0Ôò·µ»ØÈ«²¿ExonµÄ³¤¶È¡£
+     * @param num æŒ‡å®šç¬¬å‡ ä¸ªï¼Œå¦‚æœè¶…å‡ºï¼Œåˆ™è¿”å›-1000000000, 
+     * num ä¸ºå®é™…ä¸ªæ•°ã€‚å¦‚æœnum=0åˆ™è¿”å›å…¨éƒ¨Exonçš„é•¿åº¦ã€‚
      * @return 
      */
 	public int getLenExon(int num) {
@@ -328,8 +328,8 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 	}
 	 /**
-     * @param num Ö¸¶¨µÚ¼¸¸ö£¬Èç¹û³¬³ö£¬Ôò·µ»Ø-1000000000, 
-     * num ÎªÊµ¼Ê¸öÊı¡£Èç¹ûnum=0Ôò·µ»ØÈ«²¿IntronµÄ³¤¶È¡£
+     * @param num æŒ‡å®šç¬¬å‡ ä¸ªï¼Œå¦‚æœè¶…å‡ºï¼Œåˆ™è¿”å›-1000000000, 
+     * num ä¸ºå®é™…ä¸ªæ•°ã€‚å¦‚æœnum=0åˆ™è¿”å›å…¨éƒ¨Intronçš„é•¿åº¦ã€‚
      * @return 
      */
 	public int getLenIntron(int num) {
@@ -349,25 +349,25 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return Math.abs(get(num + 1).getStartCis() - get(num).getEndAbs()) - 1;
 	}
 	/**
-	 * ÔÚ×ªÂ¼±¾µÄÄÄ¸öÎ»ÖÃ
-	 * ÓĞCOD_LOC_EXON£¬COD_LOC_INTRON£¬COD_LOC_OUTÈıÖÖ
+	 * åœ¨è½¬å½•æœ¬çš„å“ªä¸ªä½ç½®
+	 * æœ‰COD_LOC_EXONï¼ŒCOD_LOC_INTRONï¼ŒCOD_LOC_OUTä¸‰ç§
 	 * @return
 	 */
 	public int getCodLoc(int coord) {
 		return getCodLocInfo(coord)[0];
 	}
 	/**
-	 * ÔÚ×ªÂ¼±¾µÄÄÄ¸öÎ»ÖÃ
-	 * ÓĞCOD_LOCUTR_5UTR£¬COD_LOCUTR_3UTR£¬COD_LOCUTR_CDSµÈ
+	 * åœ¨è½¬å½•æœ¬çš„å“ªä¸ªä½ç½®
+	 * æœ‰COD_LOCUTR_5UTRï¼ŒCOD_LOCUTR_3UTRï¼ŒCOD_LOCUTR_CDSç­‰
 	 * @return
 	 */
 	public int getCodLocUTRCDS(int coord) {
 		return getCodLocInfo(coord)[1];
 	}
 	/**
-	 * ÔÚ×ªÂ¼±¾µÄÄÄ¸öÎ»ÖÃ
-	 * 0: ÓĞCOD_LOC_EXON£¬COD_LOC_INTRON£¬COD_LOC_OUTÈıÖÖ
-	 * 1: ÓĞCOD_LOCUTR_5UTR£¬COD_LOCUTR_3UTR£¬Á½ÖÖ
+	 * åœ¨è½¬å½•æœ¬çš„å“ªä¸ªä½ç½®
+	 * 0: æœ‰COD_LOC_EXONï¼ŒCOD_LOC_INTRONï¼ŒCOD_LOC_OUTä¸‰ç§
+	 * 1: æœ‰COD_LOCUTR_5UTRï¼ŒCOD_LOCUTR_3UTRï¼Œä¸¤ç§
 	 * @return
 	 */
 	private int[] getCodLocInfo(int coord) {
@@ -378,10 +378,10 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		} 
 		else if (ExIntronnum > 0) {
 			codLoc[0] = COD_LOC_EXON;
-			if((coord < ATGsite && isCis5to3()) || (coord > ATGsite && !isCis5to3())){        //×ø±êĞ¡ÓÚatg£¬ÔÚ5¡®UTRÖĞ,Ò²ÊÇÔÚÍâÏÔ×ÓÖĞ
+			if((coord < ATGsite && isCis5to3()) || (coord > ATGsite && !isCis5to3())){        //åæ ‡å°äºatgï¼Œåœ¨5â€˜UTRä¸­,ä¹Ÿæ˜¯åœ¨å¤–æ˜¾å­ä¸­
 				codLoc[1] = COD_LOCUTR_5UTR;
 			} 
-			else if((coord > UAGsite && isCis5to3()) || (coord < UAGsite && !isCis5to3())){       //´óÓÚcdsÆğÊ¼Çø£¬ÔÚ3¡®UTRÖĞ
+			else if((coord > UAGsite && isCis5to3()) || (coord < UAGsite && !isCis5to3())){       //å¤§äºcdsèµ·å§‹åŒºï¼Œåœ¨3â€˜UTRä¸­
 				codLoc[1] = COD_LOCUTR_3UTR; 
 			} else {
 				codLoc[1] = COD_LOCUTR_CDS; 
@@ -394,8 +394,8 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	}
 
 	/**
-	 * ×ø±êµ½¸Ã×ªÂ¼±¾ÆğµãµÄ¾àÀë£¬¿¼ÂÇÕı·´Ïò
-	 * ×ø±êÔÚÖÕµãÉÏÓÎÎª¸ºÊı£¬ÏÂÓÎÎªÕıÊı
+	 * åæ ‡åˆ°è¯¥è½¬å½•æœ¬èµ·ç‚¹çš„è·ç¦»ï¼Œè€ƒè™‘æ­£åå‘
+	 * åæ ‡åœ¨ç»ˆç‚¹ä¸Šæ¸¸ä¸ºè´Ÿæ•°ï¼Œä¸‹æ¸¸ä¸ºæ­£æ•°
 	 * @return
 	 */
 	public int getCod2Tss(int coord) {
@@ -407,8 +407,8 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 	}
 	/**
-	 * ×ø±êµ½¸Ã×ªÂ¼±¾ÖÕµãµÄ¾àÀë£¬¿¼ÂÇÕı·´Ïò
-	 * ×ø±êÔÚÖÕµãÉÏÓÎÎª¸ºÊı£¬ÏÂÓÎÎªÕıÊı
+	 * åæ ‡åˆ°è¯¥è½¬å½•æœ¬ç»ˆç‚¹çš„è·ç¦»ï¼Œè€ƒè™‘æ­£åå‘
+	 * åæ ‡åœ¨ç»ˆç‚¹ä¸Šæ¸¸ä¸ºè´Ÿæ•°ï¼Œä¸‹æ¸¸ä¸ºæ­£æ•°
 	 * @return
 	 */
 	public int getCod2Tes(int coord) {
@@ -420,8 +420,8 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 	}
 	/**
-	 * ×ø±êµ½ATGµÄ¾àÀë£¬¿¼ÂÇÕı·´Ïò. 
-	 * ÔÚATGÉÏÓÎÎª¸ºÊı£¬ÏÂÓÎÎªÕıÊı
+	 * åæ ‡åˆ°ATGçš„è·ç¦»ï¼Œè€ƒè™‘æ­£åå‘. 
+	 * åœ¨ATGä¸Šæ¸¸ä¸ºè´Ÿæ•°ï¼Œä¸‹æ¸¸ä¸ºæ­£æ•°
 	 * @return
 	 */
 	public int getCod2ATG(int coord) {
@@ -433,8 +433,8 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 	}
 	/**
-	 * ×ø±êµ½UAGµÄ×îºóÒ»¸ö¼î»ùµÄ¾àÀë£¬¿¼ÂÇÕı·´Ïò.
-	 * ÔÚUAGÉÏÓÎÎª¸ºÊı£¬ÏÂÓÎÎªÕıÊı
+	 * åæ ‡åˆ°UAGçš„æœ€åä¸€ä¸ªç¢±åŸºçš„è·ç¦»ï¼Œè€ƒè™‘æ­£åå‘.
+	 * åœ¨UAGä¸Šæ¸¸ä¸ºè´Ÿæ•°ï¼Œä¸‹æ¸¸ä¸ºæ­£æ•°
 	 * @return
 	 */
 	public int getCod2UAG(int coord) {
@@ -446,8 +446,8 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 	}
 	/**
-	 * Ê¹ÓÃÇ°ÏÈÅĞ¶¨ÔÚUTRÖĞ<br>
-	 * Èç¹û×ø±êÔÚUTRÖĞ£¬×ø±ê¾àÀëUTRµÄÆğµã£¬×¢ÒâÕâ¸ö»áÈ¥³ıÄÚº¬×Ó <br>
+	 * ä½¿ç”¨å‰å…ˆåˆ¤å®šåœ¨UTRä¸­<br>
+	 * å¦‚æœåæ ‡åœ¨UTRä¸­ï¼Œåæ ‡è·ç¦»UTRçš„èµ·ç‚¹ï¼Œæ³¨æ„è¿™ä¸ªä¼šå»é™¤å†…å«å­ <br>
 	 */
 	public int getCod2UTRstartmRNA(int coord) {
 		int location = getCodLocUTRCDS(coord);
@@ -457,12 +457,12 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		else if (location == COD_LOCUTR_3UTR) {
 			return getLocDistmRNA(getUAGsite(), coord);
 		}
-		logger.error("²»ÔÚUTRÖĞ");
+		logger.error("ä¸åœ¨UTRä¸­");
 		return 0;
 	}
 	/**
-	 * Ê¹ÓÃÇ°ÏÈÅĞ¶¨ÔÚUTRÖĞ<br>
-	 * Èç¹û×ø±êÔÚUTRÖĞ£¬×ø±ê¾àÀëUTRµÄÖÕµã£¬×¢ÒâÕâ¸ö»áÈ¥³ıÄÚº¬×Ó<br>
+	 * ä½¿ç”¨å‰å…ˆåˆ¤å®šåœ¨UTRä¸­<br>
+	 * å¦‚æœåæ ‡åœ¨UTRä¸­ï¼Œåæ ‡è·ç¦»UTRçš„ç»ˆç‚¹ï¼Œæ³¨æ„è¿™ä¸ªä¼šå»é™¤å†…å«å­<br>
 	 */
 	public int getCod2UTRendmRNA(int coord) {
 		int location = getCodLocUTRCDS(coord);
@@ -472,45 +472,45 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		else if (location == COD_LOCUTR_3UTR) {
 			return getLocDistmRNA(coord, getTESsite());
 		}
-		logger.error("²»ÔÚUTRÖĞ");
+		logger.error("ä¸åœ¨UTRä¸­");
 		return 0;
 	}
 	/**
-	 * Ê¹ÓÃÇ°ÏÈÅĞ¶¨ÔÚExonÖĞ£¬×ø±êµ½¸Ã×ªÂ¼±¾atgµÄ¾àÀë
-	 * ²»È¥³ıÄÚº¬×ÓµÄÖ±½ÓÓÃcod2atg/cod2End
-	 * Èç¹û²»ÔÚÄÚº¬×ÓÖĞ£¬ÔòÎªºÜ´óµÄ¸ºÊı£¬´ó¸Å-10000000
+	 * ä½¿ç”¨å‰å…ˆåˆ¤å®šåœ¨Exonä¸­ï¼Œåæ ‡åˆ°è¯¥è½¬å½•æœ¬atgçš„è·ç¦»
+	 * ä¸å»é™¤å†…å«å­çš„ç›´æ¥ç”¨cod2atg/cod2End
+	 * å¦‚æœä¸åœ¨å†…å«å­ä¸­ï¼Œåˆ™ä¸ºå¾ˆå¤§çš„è´Ÿæ•°ï¼Œå¤§æ¦‚-10000000
 	 */
 	public int getCod2ATGmRNA(int coord) {
 		return getLocDistmRNA(ATGsite, coord);
 	}
 	/**
-	 * Ê¹ÓÃÇ°ÏÈÅĞ¶¨ÔÚExonÖĞ£¬×ø±êµ½UAG×îºóÒ»¸ö×ÖÄ¸µÄ¾àÀë£¬mRNAË®Æ½
-	 * ²»È¥³ıÄÚº¬×ÓµÄÖ±½ÓÓÃgetCod2UAG
-	 * ×ø±êÔÚÖÕµãÉÏÓÎÎª¸ºÊı£¬ÏÂÓÎÎªÕıÊı<br>
-	 * Èç¹û²»ÔÚÄÚº¬×ÓÖĞ£¬ÔòÎªºÜ´óµÄ¸ºÊı£¬´ó¸Å-10000000
+	 * ä½¿ç”¨å‰å…ˆåˆ¤å®šåœ¨Exonä¸­ï¼Œåæ ‡åˆ°UAGæœ€åä¸€ä¸ªå­—æ¯çš„è·ç¦»ï¼ŒmRNAæ°´å¹³
+	 * ä¸å»é™¤å†…å«å­çš„ç›´æ¥ç”¨getCod2UAG
+	 * åæ ‡åœ¨ç»ˆç‚¹ä¸Šæ¸¸ä¸ºè´Ÿæ•°ï¼Œä¸‹æ¸¸ä¸ºæ­£æ•°<br>
+	 * å¦‚æœä¸åœ¨å†…å«å­ä¸­ï¼Œåˆ™ä¸ºå¾ˆå¤§çš„è´Ÿæ•°ï¼Œå¤§æ¦‚-10000000
 	 */
 	public int getCod2UAGmRNA(int coord) {
 		return getLocDistmRNA(UAGsite, coord);
 	}
 	/**
-	 * Ê¹ÓÃÇ°ÏÈÅĞ¶¨ÔÚExonÖĞ£¬×ø±êµ½TSSµÄ¾àÀë£¬mRNAË®Æ½
-	 * ²»È¥³ıÄÚº¬×ÓµÄÖ±½ÓÓÃgetCod2UAG
-	 * Ö»ÓĞµ±×ø±ê´¦ÔÚÍâÏÔ×ÓÖĞ²ÅÓĞ¾àÀë£¬²»°üº¬ÄÚº¬×Ó\
-	 * ÒòÎªcodÔÚÍâÏÔ×ÓÖĞ£¬ËùÒÔ¿Ï¶¨ÔÚtssÏÂÓÎ£¬ËùÒÔ¸ÃÖµÊ¼ÖÕÎªÕıÊı
+	 * ä½¿ç”¨å‰å…ˆåˆ¤å®šåœ¨Exonä¸­ï¼Œåæ ‡åˆ°TSSçš„è·ç¦»ï¼ŒmRNAæ°´å¹³
+	 * ä¸å»é™¤å†…å«å­çš„ç›´æ¥ç”¨getCod2UAG
+	 * åªæœ‰å½“åæ ‡å¤„åœ¨å¤–æ˜¾å­ä¸­æ‰æœ‰è·ç¦»ï¼Œä¸åŒ…å«å†…å«å­\
+	 * å› ä¸ºcodåœ¨å¤–æ˜¾å­ä¸­ï¼Œæ‰€ä»¥è‚¯å®šåœ¨tssä¸‹æ¸¸ï¼Œæ‰€ä»¥è¯¥å€¼å§‹ç»ˆä¸ºæ­£æ•°
 	 */
 	public int getCod2TSSmRNA(int coord) {
 		return getLocDistmRNA(getTSSsite(), coord);
 	}
 	/**
-	 * Ê¹ÓÃÇ°ÏÈÅĞ¶¨ÔÚExonÖĞ£¬×ø±êµ½TESµÄ¾àÀë£¬mRNAË®Æ½
-	 * ²»È¥³ıÄÚº¬×ÓµÄÖ±½ÓÓÃgetCod2UAG
-	 * ÒòÎªcodÔÚÍâÏÔ×ÓÖĞ£¬ËùÒÔ¿Ï¶¨ÔÚtESÉÏÓÎ£¬ËùÒÔ¸ÃÖµÊ¼ÖÕÎª¸ºÊı
+	 * ä½¿ç”¨å‰å…ˆåˆ¤å®šåœ¨Exonä¸­ï¼Œåæ ‡åˆ°TESçš„è·ç¦»ï¼ŒmRNAæ°´å¹³
+	 * ä¸å»é™¤å†…å«å­çš„ç›´æ¥ç”¨getCod2UAG
+	 * å› ä¸ºcodåœ¨å¤–æ˜¾å­ä¸­ï¼Œæ‰€ä»¥è‚¯å®šåœ¨tESä¸Šæ¸¸ï¼Œæ‰€ä»¥è¯¥å€¼å§‹ç»ˆä¸ºè´Ÿæ•°
 	 */
 	public int getCod2TESmRNA(int coord) {
 		return getLocDistmRNA(getTESsite(), coord);
 	}
 	/**
-	 * ·µ»ØÄÜºÍ±¾loc×é³ÉÒ»¸ö°±»ùËáµÄÍ·²¿nrµÄ×ø±ê£¬´Ó1¿ªÊ¼¼ÆËã
+	 * è¿”å›èƒ½å’Œæœ¬locç»„æˆä¸€ä¸ªæ°¨åŸºé…¸çš„å¤´éƒ¨nrçš„åæ ‡ï¼Œä»1å¼€å§‹è®¡ç®—
 	 * @param location
 	 * @return
 	 */
@@ -519,17 +519,17 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return  getLocDistmRNASite(location, -startLen%3);
 	}
 	/**
-	 * ·µ»ØÄÜºÍ±¾loc×é³ÉÒ»¸ö°±»ùËáµÄÍ·²¿nrµÄÆ«ÒÆ£¬Ò²¾ÍÊÇÏòÇ°Æ«ÒÆ¼¸¸ö¼î»ù£¬²»¿¼ÂÇÄÚº¬×Ó
-	 * ºãÎª¸ºÊı£¬ÕıÊı¾ÍËµÃ÷³ö´íÁË
+	 * è¿”å›èƒ½å’Œæœ¬locç»„æˆä¸€ä¸ªæ°¨åŸºé…¸çš„å¤´éƒ¨nrçš„åç§»ï¼Œä¹Ÿå°±æ˜¯å‘å‰åç§»å‡ ä¸ªç¢±åŸºï¼Œä¸è€ƒè™‘å†…å«å­
+	 * æ’ä¸ºè´Ÿæ•°ï¼Œæ­£æ•°å°±è¯´æ˜å‡ºé”™äº†
 	 * @param location
-	 * @return Èç¹û±¾Î»µã¾ÍÊÇÒ»¸ö°±»ùËáµÄµÚÒ»¸öÎ»µã£¬Ôò·µ»Ø0
+	 * @return å¦‚æœæœ¬ä½ç‚¹å°±æ˜¯ä¸€ä¸ªæ°¨åŸºé…¸çš„ç¬¬ä¸€ä¸ªä½ç‚¹ï¼Œåˆ™è¿”å›0
 	 */
 	public int getLocAAbeforeBias(int location) {
 		int startLen = getLocDistmRNA(ATGsite,location);
 		return   -startLen%3;
 	}
 	/**
-	 * ·µ»ØÄÜºÍ±¾loc×é³ÉÒ»¸ö°±»ùËáµÄÎ²²¿nrµÄ×ø±ê£¬´Ó1¿ªÊ¼¼ÆËã
+	 * è¿”å›èƒ½å’Œæœ¬locç»„æˆä¸€ä¸ªæ°¨åŸºé…¸çš„å°¾éƒ¨nrçš„åæ ‡ï¼Œä»1å¼€å§‹è®¡ç®—
 	 * @param location
 	 * @return
 	 */
@@ -538,18 +538,18 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return  getLocDistmRNASite(location, 2 - startLen%3);
 	}
 	/**
-	 * ·µ»ØÄÜºÍ±¾loc×é³ÉÒ»¸ö°±»ùËáµÄÎ²²¿nrµÄÆ«ÒÆ£¬Ò²¾ÍÊÇÏòºóÆ«ÒÆ¼¸¸ö¼î»ù£¬²»¿¼ÂÇÄÚº¬×Ó
-	 * ºãÎªÕıÊı£¬¸ºÊı¾ÍËµÃ÷³ö´íÁË
+	 * è¿”å›èƒ½å’Œæœ¬locç»„æˆä¸€ä¸ªæ°¨åŸºé…¸çš„å°¾éƒ¨nrçš„åç§»ï¼Œä¹Ÿå°±æ˜¯å‘ååç§»å‡ ä¸ªç¢±åŸºï¼Œä¸è€ƒè™‘å†…å«å­
+	 * æ’ä¸ºæ­£æ•°ï¼Œè´Ÿæ•°å°±è¯´æ˜å‡ºé”™äº†
 	 * @param location
-	 * @return Èç¹û±¾Î»µã¾ÍÊÇÒ»¸ö°±»ùËáµÄ×îºóÒ»¸öÎ»µã£¬Ò²¾ÍÊÇµÚÈıÎ»£¬Ôò·µ»Ø0
+	 * @return å¦‚æœæœ¬ä½ç‚¹å°±æ˜¯ä¸€ä¸ªæ°¨åŸºé…¸çš„æœ€åä¸€ä¸ªä½ç‚¹ï¼Œä¹Ÿå°±æ˜¯ç¬¬ä¸‰ä½ï¼Œåˆ™è¿”å›0
 	 */
 	public int getLocAAendBias(int location) {
 		int startLen = getLocDistmRNA(ATGsite,location);
 		return 2 - startLen%3;
 	}
 	/**
-	 * »ñµÃ¾ßÌåµÄ±àÂëĞòÁĞ£¬´ıĞŞÕı£¬¿ÉÒÔµ÷ÓÃgetSeqLocµÄ·½·¨ÌáÈ¡ĞòÁĞ
-	 * Ã»ÓĞ½á¹û¾Í·µ»Ønew list-exonInfo
+	 * è·å¾—å…·ä½“çš„ç¼–ç åºåˆ—ï¼Œå¾…ä¿®æ­£ï¼Œå¯ä»¥è°ƒç”¨getSeqLocçš„æ–¹æ³•æå–åºåˆ—
+	 * æ²¡æœ‰ç»“æœå°±è¿”å›new list-exonInfo
 	 * @return
 	 */
 	public ArrayList<ExonInfo> getIsoInfoCDS() {
@@ -559,7 +559,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return getRangeIso(ATGsite, UAGsite);
 	}
 	/**
-	 * »ñµÃ3UTRµÄĞÅÏ¢
+	 * è·å¾—3UTRçš„ä¿¡æ¯
 	 * @param startLoc
 	 * @param endLoc
 	 * @return
@@ -568,17 +568,17 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return getRangeIso(UAGsite, getTESsite());
 	}
 	/**
-	 * »ñµÃ5UTRµÄĞÅÏ¢
+	 * è·å¾—5UTRçš„ä¿¡æ¯
 	 * @return
 	 */
 	public ArrayList<ExonInfo> getUTR5seq() {
 		return getRangeIso(getTSSsite(), ATGsite);
 	}
 	/**
-	 * Ö¸¶¨Ò»¸öÆğµãºÍÒ»¸öÖÕµã×ø±ê£¬½«ÕâÁ½¸ö×ø±ê¼äµÄÍâÏÔ×ÓÇøÓòÌáÈ¡³öÀ´²¢·µ»Ø
-	 * °´ÕÕ»ùÒòµÄ·½ÏòÅÅĞò
-	 * ´óĞ¡ÎŞËùÎ½£¬×îºó·µ»Ø²»ÒÀÀµ startLocºÍEndLocµÄ´óĞ¡¹ØÏµ
-	 * Èç¹ûÕâÁ½¸ö×ø±ê²»ÔÚÍâÏÔ×ÓÖĞ£¬Ôò·µ»Ø¿ÕµÄlist
+	 * æŒ‡å®šä¸€ä¸ªèµ·ç‚¹å’Œä¸€ä¸ªç»ˆç‚¹åæ ‡ï¼Œå°†è¿™ä¸¤ä¸ªåæ ‡é—´çš„å¤–æ˜¾å­åŒºåŸŸæå–å‡ºæ¥å¹¶è¿”å›
+	 * æŒ‰ç…§åŸºå› çš„æ–¹å‘æ’åº
+	 * å¤§å°æ— æ‰€è°“ï¼Œæœ€åè¿”å›ä¸ä¾èµ– startLocå’ŒEndLocçš„å¤§å°å…³ç³»
+	 * å¦‚æœè¿™ä¸¤ä¸ªåæ ‡ä¸åœ¨å¤–æ˜¾å­ä¸­ï¼Œåˆ™è¿”å›ç©ºçš„list
 	 * @return
 	 */
 	public ArrayList<ExonInfo> getRangeIso(int startLoc, int EndLoc) {
@@ -615,22 +615,22 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return lsresult;
 	}
 	/**
-	 * ÎÄ×ÖĞÎÊ½µÄ¶¨Î»ÃèÊö, <b>Ê×ÏÈÔÚgffDetailGeneÖĞÉè¶¨tss£¬tesÕâÁ½Ïî</b><br>
-	 * null: ²»ÔÚ¸Ã×ªÂ¼±¾ÄÚ
+	 * æ–‡å­—å½¢å¼çš„å®šä½æè¿°, <b>é¦–å…ˆåœ¨gffDetailGeneä¸­è®¾å®štssï¼Œtesè¿™ä¸¤é¡¹</b><br>
+	 * null: ä¸åœ¨è¯¥è½¬å½•æœ¬å†…
 	 * 
-	 * Ö¸¶¨Ìõ¼ş£¬½«·ûºÏÌõ¼şµÄpeak×¥³öÀ´²¢×ö×¢ÊÍ£¬Ö÷ÒªÊÇÉ¸Ñ¡³öºÏÊÊµÄpeakÈ»ºó×öºóĞø±È½Ï¹¤×÷
-	 * ²»·ûºÏµÄ»áÌø¹ı
-	 * @param filterTss ÊÇ·ñ½øĞĞtssÉ¸Ñ¡<b>Ö»ÓĞµ±filterGeneBodyÎªfalseÊ±£¬tssÏÂÓÎ²Å»á·¢»á×÷ÓÃ</b>
-	 * @param filterGenEnd ÊÇ·ñ½øĞĞgeneEndÉ¸Ñ¡<b>Ö»ÓĞµ±filterGeneBodyÎªfalseÊ±£¬geneEndÉÏÓÎ²Å»á·¢»á×÷ÓÃ</b>
-	 * @param filterGeneBody ÊÇ·ñ´¦ÓÚgeneBody£¬true£¬½«´¦ÓÚgeneBodyµÄ»ùÒòÈ«²¿É¸Ñ¡³öÀ´£¬false£¬²»½øĞĞgeneBodyµÄÉ¸Ñ¡<br>
-	 * <b>ÒÔÏÂÌõ¼şÖ»ÓĞµ±filterGeneBodyÎªfalseÊ±²ÅÄÜ·¢»Ó×÷ÓÃ</b>
-	 * @param filter5UTR ÊÇ·ñ´¦ÓÚ5UTRÖĞ
-	 * @param filter3UTR ÊÇ·ñ´¦ÓÚ3UTRÖĞ
-	 * @param filterExon ÊÇ·ñ´¦ÓÚÍâÏÔ×ÓÖĞ
-	 * @param filterIntron ÊÇ·ñ´¦ÓÚÄÚº¬×ÓÖĞ
-	 * 0-n:ÊäÈëµÄlocĞÅÏ¢<br>
-	 * n+1: »ùÒòÃû<br>
-	 * n+2: »ùÒòĞÅÏ¢<br>
+	 * æŒ‡å®šæ¡ä»¶ï¼Œå°†ç¬¦åˆæ¡ä»¶çš„peakæŠ“å‡ºæ¥å¹¶åšæ³¨é‡Šï¼Œä¸»è¦æ˜¯ç­›é€‰å‡ºåˆé€‚çš„peakç„¶ååšåç»­æ¯”è¾ƒå·¥ä½œ
+	 * ä¸ç¬¦åˆçš„ä¼šè·³è¿‡
+	 * @param filterTss æ˜¯å¦è¿›è¡Œtssç­›é€‰<b>åªæœ‰å½“filterGeneBodyä¸ºfalseæ—¶ï¼Œtssä¸‹æ¸¸æ‰ä¼šå‘ä¼šä½œç”¨</b>
+	 * @param filterGenEnd æ˜¯å¦è¿›è¡ŒgeneEndç­›é€‰<b>åªæœ‰å½“filterGeneBodyä¸ºfalseæ—¶ï¼ŒgeneEndä¸Šæ¸¸æ‰ä¼šå‘ä¼šä½œç”¨</b>
+	 * @param filterGeneBody æ˜¯å¦å¤„äºgeneBodyï¼Œtrueï¼Œå°†å¤„äºgeneBodyçš„åŸºå› å…¨éƒ¨ç­›é€‰å‡ºæ¥ï¼Œfalseï¼Œä¸è¿›è¡ŒgeneBodyçš„ç­›é€‰<br>
+	 * <b>ä»¥ä¸‹æ¡ä»¶åªæœ‰å½“filterGeneBodyä¸ºfalseæ—¶æ‰èƒ½å‘æŒ¥ä½œç”¨</b>
+	 * @param filter5UTR æ˜¯å¦å¤„äº5UTRä¸­
+	 * @param filter3UTR æ˜¯å¦å¤„äº3UTRä¸­
+	 * @param filterExon æ˜¯å¦å¤„äºå¤–æ˜¾å­ä¸­
+	 * @param filterIntron æ˜¯å¦å¤„äºå†…å«å­ä¸­
+	 * 0-n:è¾“å…¥çš„locä¿¡æ¯<br>
+	 * n+1: åŸºå› å<br>
+	 * n+2: åŸºå› ä¿¡æ¯<br>
 	 **/
 	public boolean isCodLocFilter(int coord, boolean filterTss, boolean filterGenEnd, 
 			boolean filterGeneBody,boolean filter5UTR, boolean filter3UTR,boolean filterExon, boolean filterIntron) {
@@ -663,12 +663,12 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return filter;
 	}
 	/**
-	 * ¼ÙÉèÊÇ°²Ë³ĞòÌí¼ÓµÄID
-	 * Õâ¸öÒªÈ·ÈÏ
-	 * ¸ø×ªÂ¼±¾Ìí¼Óexon×ø±ê£¬GFF3µÄexonµÄ¸ñÊ½ÊÇ <br>
-	 * µ±geneÎª·´·½ÏòÊ±£¬exonÊÇ´Ó´óµ½Ğ¡ÅÅÁĞµÄ<br>
-	 * Ö»ĞèÒª×¢Òâ°´ÕÕ´ÎĞò×°£¬Ò²¾ÍÊÇËµÈç¹ûÕıÏòÒª´ÓĞ¡µ½´óµÄ¼Ó£¬·´Ïò´Ó´óµ½Ğ¡µÄ¼Ó <br>
-	 * È»¶ø¾ßÌå¼ÓÈëÕâÒ»¶Ô×ø±êµÄÊ±ºò£¬²¢²»ĞèÒª·Ö±ğ´óĞ¡£¬³ÌĞò»á¸ù¾İgene·½Ïò×Ô¶¯ÅĞ¶¨ <br>
+	 * å‡è®¾æ˜¯å®‰é¡ºåºæ·»åŠ çš„ID
+	 * è¿™ä¸ªè¦ç¡®è®¤
+	 * ç»™è½¬å½•æœ¬æ·»åŠ exonåæ ‡ï¼ŒGFF3çš„exonçš„æ ¼å¼æ˜¯ <br>
+	 * å½“geneä¸ºåæ–¹å‘æ—¶ï¼Œexonæ˜¯ä»å¤§åˆ°å°æ’åˆ—çš„<br>
+	 * åªéœ€è¦æ³¨æ„æŒ‰ç…§æ¬¡åºè£…ï¼Œä¹Ÿå°±æ˜¯è¯´å¦‚æœæ­£å‘è¦ä»å°åˆ°å¤§çš„åŠ ï¼Œåå‘ä»å¤§åˆ°å°çš„åŠ  <br>
+	 * ç„¶è€Œå…·ä½“åŠ å…¥è¿™ä¸€å¯¹åæ ‡çš„æ—¶å€™ï¼Œå¹¶ä¸éœ€è¦åˆ†åˆ«å¤§å°ï¼Œç¨‹åºä¼šæ ¹æ®geneæ–¹å‘è‡ªåŠ¨åˆ¤å®š <br>
 	 */
 	protected void addExon(int locStart, int locEnd) {
 		ExonInfo exonInfo = new ExonInfo(this,isCis5to3(), locStart, locEnd);
@@ -689,23 +689,23 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			add(0,exonInfo);
 		}
 		else {
-			logger.error("NCBIµÄGffÎÄ¼şÓĞÎÊÌâ£¬Æäexon»á´ÜÎ»£¬±¾´ÎÌí¼Óexon³ö´í£¬Çëcheck: " + locStart + " " + locEnd);
+			logger.error("NCBIçš„Gffæ–‡ä»¶æœ‰é—®é¢˜ï¼Œå…¶exonä¼šçªœä½ï¼Œæœ¬æ¬¡æ·»åŠ exonå‡ºé”™ï¼Œè¯·check: " + locStart + " " + locEnd);
 		}
 	}
 	/**
-	 * »ñµÃ¸Ã×ªÂ¼±¾µÄÆğµã£¬²»¿¼ÂÇ·½Ïò
+	 * è·å¾—è¯¥è½¬å½•æœ¬çš„èµ·ç‚¹ï¼Œä¸è€ƒè™‘æ–¹å‘
 	 * @return
 	 */
 	public abstract int getStartAbs();
 	/**
-	 * »ñµÃ¸Ã×ªÂ¼±¾µÄÖÕµã£¬²»¿¼ÂÇ·½Ïò
+	 * è·å¾—è¯¥è½¬å½•æœ¬çš„ç»ˆç‚¹ï¼Œä¸è€ƒè™‘æ–¹å‘
 	 * @return
 	 */
 	public abstract int getEndAbs();
 	/**
-	 * ·µ»Ø¸Ã»ùÒòµÄGTF¸ñÊ½ÎÄ¼ş£¬Ä©Î²ÓĞ»»ĞĞ·û
-	 * @param geneID ¸Ã»ùÒòµÄÃû×Ö
-	 * @param title ¸ÃGTFÎÄ¼şµÄÃû³Æ
+	 * è¿”å›è¯¥åŸºå› çš„GTFæ ¼å¼æ–‡ä»¶ï¼Œæœ«å°¾æœ‰æ¢è¡Œç¬¦
+	 * @param geneID è¯¥åŸºå› çš„åå­—
+	 * @param title è¯¥GTFæ–‡ä»¶çš„åç§°
 	 * @return
 	 */
 	protected String getGTFformat(String geneID, String title) {
@@ -717,8 +717,8 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return genetitle;
 	}
 	/**
-	 * ·µ»Ø¸Ã»ùÒòµÄGTF¸ñÊ½ÎÄ¼ş£¬Ä©Î²ÓĞ»»ĞĞ·û
-	 * @param title ¸ÃGTFÎÄ¼şµÄÃû³Æ
+	 * è¿”å›è¯¥åŸºå› çš„GTFæ ¼å¼æ–‡ä»¶ï¼Œæœ«å°¾æœ‰æ¢è¡Œç¬¦
+	 * @param title è¯¥GTFæ–‡ä»¶çš„åç§°
 	 * @return
 	 */
 	protected String getGFFformat(String geneID, String title) {
@@ -733,12 +733,12 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	protected abstract String getGFFformatExonMISO(String geneID, String title, String strand);
 
 	/**
-	 * ¿ÉÄÜ²»ÊÇºÜ¾«È·
-	 * ·µ»Ø¾àÀëTssµÄÒ»ÏµÁĞ×ø±êµÄÊµ¼Ê×ø±ê
-	 * @param is Ïà¶ÔÓÚ TSSµÄ×ø±êĞÅÏ¢£¬Æ©Èç-200µ½-100£¬-100µ½100£¬100µ½200µÈ£¬Ã¿Ò»×é¾ÍÊÇÒ»¸öint[2]£¬×¢Òâint[1]±ØĞëĞ¡ÓÚint[2]
+	 * å¯èƒ½ä¸æ˜¯å¾ˆç²¾ç¡®
+	 * è¿”å›è·ç¦»Tssçš„ä¸€ç³»åˆ—åæ ‡çš„å®é™…åæ ‡
+	 * @param is ç›¸å¯¹äº TSSçš„åæ ‡ä¿¡æ¯ï¼Œè­¬å¦‚-200åˆ°-100ï¼Œ-100åˆ°100ï¼Œ100åˆ°200ç­‰ï¼Œæ¯ä¸€ç»„å°±æ˜¯ä¸€ä¸ªint[2]ï¼Œæ³¨æ„int[1]å¿…é¡»å°äºint[2]
 	 * @return
-	 * ×îºó»ñµÃµÄ½á¹ûÕıÏòint[0] < int[1]
-	 * ·´Ïò int[0] > int[1]
+	 * æœ€åè·å¾—çš„ç»“æœæ­£å‘int[0] < int[1]
+	 * åå‘ int[0] > int[1]
 	 */
 	public ArrayList<int[]> getRegionNearTss(Collection<int[]> isList) {
 		ArrayList<int[]> lsTmp = new ArrayList<int[]>();
@@ -758,8 +758,8 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return lsTmp;
 	}
 	/**
-	 * »ñµÃIntronµÄlistĞÅÏ¢£¬´ÓÇ°µ½ºóÅÅĞò
-	 * Ã»ÓĞ½á¹û¾Í·µ»Ønew list-exonInfo
+	 * è·å¾—Intronçš„listä¿¡æ¯ï¼Œä»å‰åˆ°åæ’åº
+	 * æ²¡æœ‰ç»“æœå°±è¿”å›new list-exonInfo
 	 * @return
 	 */
 	public ArrayList<ExonInfo> getLsIntron() {
@@ -795,8 +795,8 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return lsresult;
 	}
 	/**
-	 * ¸ø¶¨nrÎ»µã£¬»»ËãÎª¾àÀëATG¶àÉÙaaÎ»ÖÃ
-	 * Ö±½Ó¸ø¶¨nrµÄÊµ¼ÊÎ»µã
+	 * ç»™å®šnrä½ç‚¹ï¼Œæ¢ç®—ä¸ºè·ç¦»ATGå¤šå°‘aaä½ç½®
+	 * ç›´æ¥ç»™å®šnrçš„å®é™…ä½ç‚¹
 	 */
 	public int getAAsiteNum(int codSite) {
 		if (Math.abs(ATGsite-UAGsite) < 2) {
@@ -810,7 +810,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return (aaNum+2)/3;
 	}
 	/**
-	 * ·µ»Ø¸ÃGeneIsoNameËù¶ÔÓ¦µÄCopedID£¬ÒòÎªÊÇNMºÅËùÒÔ²»ĞèÒªÖ¸¶¨TaxID
+	 * è¿”å›è¯¥GeneIsoNameæ‰€å¯¹åº”çš„CopedIDï¼Œå› ä¸ºæ˜¯NMå·æ‰€ä»¥ä¸éœ€è¦æŒ‡å®šTaxID
 	 * @return
 	 */
 	public GeneID getGeneID() {
@@ -820,22 +820,22 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return geneID;
 	}
 	/**
-	 * ÎÄ×ÖĞÎÊ½µÄ¶¨Î»ÃèÊö, <b>Ê×ÏÈÔÚgffDetailGeneÖĞÉè¶¨tss£¬tesÕâÁ½Ïî</b><br>
-	 * null: ²»ÔÚ¸Ã×ªÂ¼±¾ÄÚ
+	 * æ–‡å­—å½¢å¼çš„å®šä½æè¿°, <b>é¦–å…ˆåœ¨gffDetailGeneä¸­è®¾å®štssï¼Œtesè¿™ä¸¤é¡¹</b><br>
+	 * null: ä¸åœ¨è¯¥è½¬å½•æœ¬å†…
 	 * 
-	 * Ö¸¶¨Ìõ¼ş£¬½«·ûºÏÌõ¼şµÄpeak×¥³öÀ´²¢×ö×¢ÊÍ£¬Ö÷ÒªÊÇÉ¸Ñ¡³öºÏÊÊµÄpeakÈ»ºó×öºóĞø±È½Ï¹¤×÷
-	 * ²»·ûºÏµÄ»áÌø¹ı
-	 * @param filterTss ÊÇ·ñ½øĞĞtssÉ¸Ñ¡<b>Ö»ÓĞµ±filterGeneBodyÎªfalseÊ±£¬tssÏÂÓÎ²Å»á·¢»á×÷ÓÃ</b>
-	 * @param filterGenEnd ÊÇ·ñ½øĞĞgeneEndÉ¸Ñ¡<b>Ö»ÓĞµ±filterGeneBodyÎªfalseÊ±£¬geneEndÉÏÓÎ²Å»á·¢»á×÷ÓÃ</b>
-	 * @param filterGeneBody ÊÇ·ñ´¦ÓÚgeneBody£¬true£¬½«´¦ÓÚgeneBodyµÄ»ùÒòÈ«²¿É¸Ñ¡³öÀ´£¬false£¬²»½øĞĞgeneBodyµÄÉ¸Ñ¡<br>
-	 * <b>ÒÔÏÂÌõ¼şÖ»ÓĞµ±filterGeneBodyÎªfalseÊ±²ÅÄÜ·¢»Ó×÷ÓÃ</b>
-	 * @param filter5UTR ÊÇ·ñ´¦ÓÚ5UTRÖĞ
-	 * @param filter3UTR ÊÇ·ñ´¦ÓÚ3UTRÖĞ
-	 * @param filterExon ÊÇ·ñ´¦ÓÚÍâÏÔ×ÓÖĞ
-	 * @param filterIntron ÊÇ·ñ´¦ÓÚÄÚº¬×ÓÖĞ
-	 * 0-n:ÊäÈëµÄlocĞÅÏ¢<br>
-	 * n+1: »ùÒòÃû<br>
-	 * n+2: »ùÒòĞÅÏ¢<br>
+	 * æŒ‡å®šæ¡ä»¶ï¼Œå°†ç¬¦åˆæ¡ä»¶çš„peakæŠ“å‡ºæ¥å¹¶åšæ³¨é‡Šï¼Œä¸»è¦æ˜¯ç­›é€‰å‡ºåˆé€‚çš„peakç„¶ååšåç»­æ¯”è¾ƒå·¥ä½œ
+	 * ä¸ç¬¦åˆçš„ä¼šè·³è¿‡
+	 * @param filterTss æ˜¯å¦è¿›è¡Œtssç­›é€‰<b>åªæœ‰å½“filterGeneBodyä¸ºfalseæ—¶ï¼Œtssä¸‹æ¸¸æ‰ä¼šå‘ä¼šä½œç”¨</b>
+	 * @param filterGenEnd æ˜¯å¦è¿›è¡ŒgeneEndç­›é€‰<b>åªæœ‰å½“filterGeneBodyä¸ºfalseæ—¶ï¼ŒgeneEndä¸Šæ¸¸æ‰ä¼šå‘ä¼šä½œç”¨</b>
+	 * @param filterGeneBody æ˜¯å¦å¤„äºgeneBodyï¼Œtrueï¼Œå°†å¤„äºgeneBodyçš„åŸºå› å…¨éƒ¨ç­›é€‰å‡ºæ¥ï¼Œfalseï¼Œä¸è¿›è¡ŒgeneBodyçš„ç­›é€‰<br>
+	 * <b>ä»¥ä¸‹æ¡ä»¶åªæœ‰å½“filterGeneBodyä¸ºfalseæ—¶æ‰èƒ½å‘æŒ¥ä½œç”¨</b>
+	 * @param filter5UTR æ˜¯å¦å¤„äº5UTRä¸­
+	 * @param filter3UTR æ˜¯å¦å¤„äº3UTRä¸­
+	 * @param filterExon æ˜¯å¦å¤„äºå¤–æ˜¾å­ä¸­
+	 * @param filterIntron æ˜¯å¦å¤„äºå†…å«å­ä¸­
+	 * 0-n:è¾“å…¥çš„locä¿¡æ¯<br>
+	 * n+1: åŸºå› å<br>
+	 * n+2: åŸºå› ä¿¡æ¯<br>
 	 **/
 	public String toStringCodLocStrFilter(int coord, boolean filterTss, boolean filterGenEnd, 
 			boolean filterGeneBody,boolean filter5UTR, boolean filter3UTR,boolean filterExon, boolean filterIntron) {
@@ -848,9 +848,9 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 	}
 	/**
-	 * ÎÄ×ÖĞÎÊ½µÄ¶¨Î»ÃèÊö
+	 * æ–‡å­—å½¢å¼çš„å®šä½æè¿°
 	 * @return
-	 * null: ²»ÔÚ¸Ã×ªÂ¼±¾ÄÚ
+	 * null: ä¸åœ¨è¯¥è½¬å½•æœ¬å†…
 	 */
 	public String toStringCodLocStr(int coord) {
 		String result = "gene_position:";
@@ -899,9 +899,9 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return result;
 	}
 	/**
-	 * ÖØĞ´equal
-	 * ±È½ÏÊÇ·ñÎªÍ¬Ò»¸ö×ªÂ¼±¾
-	 * ²»±È½ÏÁ½¸ö×ªÂ¼±¾µÄÃû×Ö£¬Ò²²»±È½Ïcoord
+	 * é‡å†™equal
+	 * æ¯”è¾ƒæ˜¯å¦ä¸ºåŒä¸€ä¸ªè½¬å½•æœ¬
+	 * ä¸æ¯”è¾ƒä¸¤ä¸ªè½¬å½•æœ¬çš„åå­—ï¼Œä¹Ÿä¸æ¯”è¾ƒcoord
 	 */
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
@@ -909,7 +909,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		if (getClass() != obj.getClass()) return false;
 		
 		GffGeneIsoInfo otherObj = (GffGeneIsoInfo)obj;
-		//ÎïÖÖ£¬ÆğµãÖÕµã£¬ATG£¬UAG£¬ÍâÏÔ×Ó³¤¶È µÈ¶¼Ò»ÖÂ
+		//ç‰©ç§ï¼Œèµ·ç‚¹ç»ˆç‚¹ï¼ŒATGï¼ŒUAGï¼Œå¤–æ˜¾å­é•¿åº¦ ç­‰éƒ½ä¸€è‡´
 		boolean flag =  this.getTaxID() == otherObj.getTaxID() && this.getChrID().equals(otherObj.getChrID()) && this.getATGsite() == otherObj.getATGsite()
 		&& this.getUAGsite() == otherObj.getUAGsite() && this.getTSSsite() == otherObj.getTSSsite()
 		&& this.getListLen() == otherObj.getListLen();
@@ -919,7 +919,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return false;
 	}
 	/**
-	 * ÖØĞ´hash£¬²»°üº¬»ùÒòÃûĞÅÏ¢£¬°üº¬»ùÒòtaxID£¬chrID£¬atg£¬uag£¬tss£¬³¤¶È£¬ÒÔ¼°Ã¿Ò»¸öexonµÄĞÅÏ¢
+	 * é‡å†™hashï¼Œä¸åŒ…å«åŸºå› åä¿¡æ¯ï¼ŒåŒ…å«åŸºå› taxIDï¼ŒchrIDï¼Œatgï¼Œuagï¼Œtssï¼Œé•¿åº¦ï¼Œä»¥åŠæ¯ä¸€ä¸ªexonçš„ä¿¡æ¯
 	 * @return
 	 */
 	public int hashCode() {
@@ -930,7 +930,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return   info.hashCode();
 	}
 	/**
-	 * ËüµÄ¸¸¼¶£¬Ò²¾ÍÊÇgffDetailGene£¬²¢²»¸´ÖÆ
+	 * å®ƒçš„çˆ¶çº§ï¼Œä¹Ÿå°±æ˜¯gffDetailGeneï¼Œå¹¶ä¸å¤åˆ¶
 	 */
 	public GffGeneIsoInfo clone() {
 		GffGeneIsoInfo result = null;
@@ -978,8 +978,8 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 		return gffGeneIsoInfo;
 	}
-	/** ·µ»ØÁ½¸öiso±È½ÏµÄĞÅÏ¢
-	 * 	double ratio = ÓĞ¶àÉÙexonµÄ±ß½çÊÇÏàÍ¬µÄ / Math.min(gffGeneIsoInfo1.Size, gffGeneIsoInfo2.Size);
+	/** è¿”å›ä¸¤ä¸ªisoæ¯”è¾ƒçš„ä¿¡æ¯
+	 * 	double ratio = æœ‰å¤šå°‘exonçš„è¾¹ç•Œæ˜¯ç›¸åŒçš„ / Math.min(gffGeneIsoInfo1.Size, gffGeneIsoInfo2.Size);
 	 *  */
 	public static double compareIsoRatio(GffGeneIsoInfo gffGeneIsoInfo1, GffGeneIsoInfo gffGeneIsoInfo2) {
 		int[] compareInfo = compareIso(gffGeneIsoInfo1, gffGeneIsoInfo2);
@@ -987,18 +987,18 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return ratio;
 	}
 	/**
-	 * ·µ»ØÁ½¸öiso±È½ÏµÄĞÅÏ¢
-	 * 0ËµÃ÷ÍêÈ«²»ÏàÍ¬¡£·½Ïò²»Í¬»òÃ»ÓĞ½»¼¯ÔòÖ±½Ó·µ»Ø0
+	 * è¿”å›ä¸¤ä¸ªisoæ¯”è¾ƒçš„ä¿¡æ¯
+	 * 0è¯´æ˜å®Œå…¨ä¸ç›¸åŒã€‚æ–¹å‘ä¸åŒæˆ–æ²¡æœ‰äº¤é›†åˆ™ç›´æ¥è¿”å›0
 	 * @param gffGeneIsoInfo1
 	 * @param gffGeneIsoInfo2
 	 * @return int[2] <br>
-	 * 0:ÓĞ¶àÉÙexonµÄ±ß½çÊÇÏàÍ¬µÄ<br>
-	 * 1:×ÜÌå±ß½çÊı<br>
+	 * 0:æœ‰å¤šå°‘exonçš„è¾¹ç•Œæ˜¯ç›¸åŒçš„<br>
+	 * 1:æ€»ä½“è¾¹ç•Œæ•°<br>
 	 * 2: gffGeneIsoInfo1-Size<br>
 	 * 3: gffGeneIsoInfo2-Size<br>
 	 */
 	public static int[] compareIso(GffGeneIsoInfo gffGeneIsoInfo1, GffGeneIsoInfo gffGeneIsoInfo2) {
-		//ÍêÈ«Ã»ÓĞ½»¼¯
+		//å®Œå…¨æ²¡æœ‰äº¤é›†
 		if (!gffGeneIsoInfo1.isCis5to3().equals(gffGeneIsoInfo2.isCis5to3()) 
 				|| gffGeneIsoInfo1.getEndAbs() <= gffGeneIsoInfo2.getStartAbs() 
 				|| gffGeneIsoInfo1.getStartAbs() >= gffGeneIsoInfo2.getEndAbs()) {
@@ -1007,7 +1007,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfos = new ArrayList<GffGeneIsoInfo>();
 		lsGffGeneIsoInfos.add(gffGeneIsoInfo1); lsGffGeneIsoInfos.add(gffGeneIsoInfo2);
 		ArrayList<ExonCluster> lsExonClusters = getExonCluster(gffGeneIsoInfo1.isCis5to3(), lsGffGeneIsoInfos);
-		//ÏàÍ¬µÄ±ß½çÊıÁ¿£¬Ò»¸öÍâÏÔ×ÓÓĞÁ½¸öÏàÍ¬±ß½ç
+		//ç›¸åŒçš„è¾¹ç•Œæ•°é‡ï¼Œä¸€ä¸ªå¤–æ˜¾å­æœ‰ä¸¤ä¸ªç›¸åŒè¾¹ç•Œ
 		int sameBounds = 0;
 		
 		for (ExonCluster exonCluster : lsExonClusters) {
@@ -1016,8 +1016,8 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return new int[]{sameBounds, lsExonClusters.size()*2, gffGeneIsoInfo1.size()*2, gffGeneIsoInfo2.size()*2};
 	}
 	/**
-	 * µ±exonclusterÖĞµÄexon²»Ò»ÑùÊ±£¬²é¿´¾ßÌåÓĞ¼¸Ìõ±ßÊÇÏàÍ¬µÄ¡£
-	 * ÒòÎªÒ»ÖÂµÄexonÒ²½öÓĞ2ÌõÏàÍ¬±ß£¬ËùÒÔ·µ»ØµÄÖµÎª0£¬1£¬2
+	 * å½“exonclusterä¸­çš„exonä¸ä¸€æ ·æ—¶ï¼ŒæŸ¥çœ‹å…·ä½“æœ‰å‡ æ¡è¾¹æ˜¯ç›¸åŒçš„ã€‚
+	 * å› ä¸ºä¸€è‡´çš„exonä¹Ÿä»…æœ‰2æ¡ç›¸åŒè¾¹ï¼Œæ‰€ä»¥è¿”å›çš„å€¼ä¸º0ï¼Œ1ï¼Œ2
 	 * @param exonCluster
 	 * @return
 	 */
@@ -1046,7 +1046,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 		return 0;
 	}
-	/** °´ÕÕ·Ö×éºÃµÄ±ß½çexon£¬½«Ã¿¸ö×ªÂ¼±¾½øĞĞ»®·Ö£¬»®·ÖºÃµÄExonClusterÀïÃæÃ¿×éµÄlsExon¶¼ÊÇ¿¼ÂÇÁË·½ÏòÈ»ºó°´ÕÕ·½ÏòË³Ğò×°½øÈ¥µÄ */
+	/** æŒ‰ç…§åˆ†ç»„å¥½çš„è¾¹ç•Œexonï¼Œå°†æ¯ä¸ªè½¬å½•æœ¬è¿›è¡Œåˆ’åˆ†ï¼Œåˆ’åˆ†å¥½çš„ExonClusteré‡Œé¢æ¯ç»„çš„lsExonéƒ½æ˜¯è€ƒè™‘äº†æ–¹å‘ç„¶åæŒ‰ç…§æ–¹å‘é¡ºåºè£…è¿›å»çš„ */
 	public static ArrayList<ExonCluster> getExonCluster(Boolean cis5To3,  ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfos) {
 		String chrID = lsGffGeneIsoInfos.get(0).getChrID();
 		ArrayList<ExonCluster> lsResult = new ArrayList<ExonCluster>();
@@ -1069,8 +1069,8 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 				}
 				
 				ArrayList<ExonInfo> lsExonClusterTmp = new ArrayList<ExonInfo>();
-				int beforeExonNum = 0;//Èç¹û±¾isoformÕıºÃÃ»ÓĞÂäÔÚbounder×éÖĞµÄexon£¬ÄÇÃ´¾ÍÒª¼ÇÂ¼¸ÃisoformµÄÇ°ºóÁ½¸öexonµÄÎ»ÖÃ£¬ÓÃÓÚ²éÕÒ¿ç¹ıºÍÃ»ÓĞ¿ç¹ıµÄexon
-				boolean junc = false;//Èç¹û±¾isoformÕıºÃÃ»ÓĞÂäÔÚbounder×éÖĞµÄexon£¬ÄÇÃ´¾ÍĞèÒª¼ÇÂ¼Ìø¹ıµÄexonµÄÎ»ÖÃ£¬¾Í½«Õâ¸öflagÉèÖÃÎªtrue
+				int beforeExonNum = 0;//å¦‚æœæœ¬isoformæ­£å¥½æ²¡æœ‰è½åœ¨bounderç»„ä¸­çš„exonï¼Œé‚£ä¹ˆå°±è¦è®°å½•è¯¥isoformçš„å‰åä¸¤ä¸ªexonçš„ä½ç½®ï¼Œç”¨äºæŸ¥æ‰¾è·¨è¿‡å’Œæ²¡æœ‰è·¨è¿‡çš„exon
+				boolean junc = false;//å¦‚æœæœ¬isoformæ­£å¥½æ²¡æœ‰è½åœ¨bounderç»„ä¸­çš„exonï¼Œé‚£ä¹ˆå°±éœ€è¦è®°å½•è·³è¿‡çš„exonçš„ä½ç½®ï¼Œå°±å°†è¿™ä¸ªflagè®¾ç½®ä¸ºtrue
 				for (int i = 0; i < gffGeneIsoInfo.size(); i++) {
 					ExonInfo exon = gffGeneIsoInfo.get(i);
 					if (cis5To3) {
@@ -1114,17 +1114,17 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return lsResult;
 	}
 	/**
-	 * Éè¶¨DISTAL PromoterÇøÓòÔÚTSSÉÏÓÎµÄ¶àÉÙbpÍâ£¬Ä¬ÈÏ1000
-	 * Ä¿Ç°½öºÍannotationµÄÎÄ×ÖÓĞ¹Ø
-	 * 1000bpÒÔÄÚÎª Proximal Promoter_
+	 * è®¾å®šDISTAL PromoteråŒºåŸŸåœ¨TSSä¸Šæ¸¸çš„å¤šå°‘bpå¤–ï¼Œé»˜è®¤1000
+	 * ç›®å‰ä»…å’Œannotationçš„æ–‡å­—æœ‰å…³
+	 * 1000bpä»¥å†…ä¸º Proximal Promoter_
 	 * @param pROMOTER_DISTAL_MAMMUM
 	 */
 	public static void setPROMOTER_DISTAL_MAMMUM(int pROMOTER_DISTAL_MAMMUM) {
 		PROMOTER_DISTAL_MAMMUM = pROMOTER_DISTAL_MAMMUM;
 	}
 	/**
-	 * Éè¶¨intergeneicÇøÓòÔÚTSSÉÏÓÎµÄ¶àÉÙbpÍâ£¬Ä¬ÈÏ5000
-	 * Ä¿Ç°½öºÍannotationµÄÎÄ×ÖÓĞ¹Ø
+	 * è®¾å®šintergeneicåŒºåŸŸåœ¨TSSä¸Šæ¸¸çš„å¤šå°‘bpå¤–ï¼Œé»˜è®¤5000
+	 * ç›®å‰ä»…å’Œannotationçš„æ–‡å­—æœ‰å…³
 	 * @param pROMOTER_INTERGENIC_MAMMUM
 	 */
 	public static void setPROMOTER_INTERGENIC_MAMMUM(

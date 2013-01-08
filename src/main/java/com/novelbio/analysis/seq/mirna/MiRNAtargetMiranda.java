@@ -7,7 +7,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
- * Ô¤²âmiRNAµÄ°Ğ»ùÒòmiranda
+ * é¢„æµ‹miRNAçš„é¶åŸºå› miranda
  * @author zong0jie
  *
  */
@@ -17,14 +17,14 @@ public class MiRNAtargetMiranda extends MiRNAtargetAbs{
 	int targetScore = 150;
 	int targetEnergy = -15;
 	
-	/** Ä¬ÈÏ150 */
+	/** é»˜è®¤150 */
 	public void setTargetScore(int targetScore) {
 		this.targetScore = targetScore;
 	}
 	private String getTargetScore() {
 		return "-sc " + targetScore + " ";
 	}
-	/** Ä¬ÈÏ-15£¬ÊäÈëµÄÊı»áÈ¡¾ø¶ÔÖµÔÙ¼Ó¸ººÅ */
+	/** é»˜è®¤-15ï¼Œè¾“å…¥çš„æ•°ä¼šå–ç»å¯¹å€¼å†åŠ è´Ÿå· */
 	public void setTargetEnergy(int targetEnergy) {
 		this.targetEnergy = -Math.abs(targetEnergy);
 	}
@@ -36,7 +36,7 @@ public class MiRNAtargetMiranda extends MiRNAtargetAbs{
 		try {
 			mirnaPredictExp();
 		} catch (InterruptedException e) {
-			logger.error("³ö´í");
+			logger.error("å‡ºé”™");
 			e.printStackTrace();
 		}
 	}
@@ -49,7 +49,7 @@ public class MiRNAtargetMiranda extends MiRNAtargetAbs{
 		modifyMirandaResult_To_Mir2Target();
 	}
 	/**
-	 * ¸ø¶¨miRandaµÄÊä³öÎÄ¼ş£¬½«ÆäÕûÀí³ÉĞèÒªµÄ¸ñÊ½
+	 * ç»™å®šmiRandaçš„è¾“å‡ºæ–‡ä»¶ï¼Œå°†å…¶æ•´ç†æˆéœ€è¦çš„æ ¼å¼
 	 * @param miRandaOut
 	 * "mirName","targetGene", "score","Energy"
 	 */
@@ -57,7 +57,7 @@ public class MiRNAtargetMiranda extends MiRNAtargetAbs{
 		TxtReadandWrite txtRead = new TxtReadandWrite(predictResultFile, false);
 		TxtReadandWrite txtOut = new TxtReadandWrite(predictResultFinal, true);
 		txtOut.writefileln(new String[]{"mirName","targetGene", "score","Energy"});
-		boolean start = true;//±ê¼ÇÉ¨ÃèµÄÆğµã
+		boolean start = true;//æ ‡è®°æ‰«æçš„èµ·ç‚¹
 		String[] pair = null;
 		for (String string : txtRead.readlines()) {
 			if (start) {
@@ -69,14 +69,14 @@ public class MiRNAtargetMiranda extends MiRNAtargetAbs{
 				pair[0] = tmp[0].trim(); pair[1] = tmp[1].trim();
 				start = false;
 			}
-			//±ê¼ÇÒ»¸öĞ´Íê
+			//æ ‡è®°ä¸€ä¸ªå†™å®Œ
 			if (string.contains("Complete")) {
 				if (pair[0] != null) {
 					txtOut.writefileln(pair);
 				}
 				start = true;
 			}
-			//Ã»ÕÒµ½¾Í²éÕÒÏÂÒ»Ìõ
+			//æ²¡æ‰¾åˆ°å°±æŸ¥æ‰¾ä¸‹ä¸€æ¡
 			if (string.contains("No Hits Found above Threshold")) {
 				start = true;
 				continue;

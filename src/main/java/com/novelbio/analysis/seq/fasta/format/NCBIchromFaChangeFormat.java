@@ -12,8 +12,8 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.generalConf.NovelBioConst;
 
 /**
- * ĞŞÕı´ÓNCBIÉÏÏÂÔØµÄĞòÁĞ£¬½«fasta¸ñÊ½ÖĞµÄĞòÁĞÃû¸ÄÎªÎÄ¼şÃû
- * È»ºóºÏ²¢ÎªÒ»¸öÎÄ¼ş
+ * ä¿®æ­£ä»NCBIä¸Šä¸‹è½½çš„åºåˆ—ï¼Œå°†fastaæ ¼å¼ä¸­çš„åºåˆ—åæ”¹ä¸ºæ–‡ä»¶å
+ * ç„¶ååˆå¹¶ä¸ºä¸€ä¸ªæ–‡ä»¶
  * @author zong0jie
  */
 public class NCBIchromFaChangeFormat {
@@ -42,8 +42,8 @@ public class NCBIchromFaChangeFormat {
 		txtWrite.close();
 	}
 	
-	/** ³õÊ¼»¯²¢·µ»ØÎÄ¼ş¼ĞÖĞµÄËùÓĞ·ûºÏÕıÔò±í´ïÊ½µÄÎÄ±¾Ãû<br>
-	 * string[2] 1:ÎÄ¼şÃû 2£ººó×º */
+	/** åˆå§‹åŒ–å¹¶è¿”å›æ–‡ä»¶å¤¹ä¸­çš„æ‰€æœ‰ç¬¦åˆæ­£åˆ™è¡¨è¾¾å¼çš„æ–‡æœ¬å<br>
+	 * string[2] 1:æ–‡ä»¶å 2ï¼šåç¼€ */
 	private ArrayList<String> initialAndGetFileList() {
 		chrFile = FileOperate.addSep(chrFile);
 		if (regx.equals("") || regx == null) {
@@ -53,8 +53,8 @@ public class NCBIchromFaChangeFormat {
 		
 		final PatternOperate patNum = new PatternOperate("\\d+", false);
 		ArrayList<String> lsFileName = FileOperate.getFoldFileNameLs(chrFile,regx, "*");
-		//°´ÕÕĞòºÅ½øĞĞÅÅĞò
-		//Õâ¸öÊÇÎªÁËÈÃGATK¿ÉÒÔË³ÀûÔËĞĞ
+		//æŒ‰ç…§åºå·è¿›è¡Œæ’åº
+		//è¿™ä¸ªæ˜¯ä¸ºäº†è®©GATKå¯ä»¥é¡ºåˆ©è¿è¡Œ
 		Collections.sort(lsFileName, new Comparator<String>() {
 			@Override
 			public int compare(String o1, String o2) {
@@ -77,7 +77,7 @@ public class NCBIchromFaChangeFormat {
 	}
 	
 	/**
-	 * ½«chrºÏ²¢ÆğÀ´£¬²¢ÇÒ½«µÚÒ»ĞĞµÄÃû×Ö¸ÄÎªchrID£¬²¢ÇÒĞ¡Ğ´
+	 * å°†chråˆå¹¶èµ·æ¥ï¼Œå¹¶ä¸”å°†ç¬¬ä¸€è¡Œçš„åå­—æ”¹ä¸ºchrIDï¼Œå¹¶ä¸”å°å†™
 	 * @param txtRead
 	 * @param txtWrite
 	 */

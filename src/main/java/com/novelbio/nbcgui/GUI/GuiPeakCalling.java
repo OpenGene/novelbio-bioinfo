@@ -355,7 +355,7 @@ public class GuiPeakCalling extends JPanel {
 	}
 	
 	/**
-	 * 根据不同的sicer类型，显示不同的组件
+	 * 鏍规嵁涓嶅悓鐨剆icer绫诲瀷锛屾樉绀轰笉鍚岀殑缁勪欢
 	 */
 	private void setComponentVisibleSICER(PeakCallingSicerType sicerType) {
 		if (sicerType == PeakCallingSicerType.SICERrb) {

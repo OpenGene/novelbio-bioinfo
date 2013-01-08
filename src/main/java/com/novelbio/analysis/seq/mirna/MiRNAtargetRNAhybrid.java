@@ -11,11 +11,11 @@ public class MiRNAtargetRNAhybrid extends MiRNAtargetAbs{
 	double targetPvalue = 0.01;
 	int targetEnergy = -15;
 	
-	/** Ä¬ÈÏ0.01 */
+	/** é»˜è®¤0.01 */
 	public void setTargetPvalue(double targetPvalue) {
 		this.targetPvalue = targetPvalue;
 	}
-	/** Ä¬ÈÏ-15£¬ÊäÈëµÄÊı»áÈ¡¾ø¶ÔÖµÔÙ¼Ó¸ººÅ */
+	/** é»˜è®¤-15ï¼Œè¾“å…¥çš„æ•°ä¼šå–ç»å¯¹å€¼å†åŠ è´Ÿå· */
 	public void setTargetEnergy(int targetEnergy) {
 		this.targetEnergy = -Math.abs(targetEnergy);
 	}
@@ -23,7 +23,7 @@ public class MiRNAtargetRNAhybrid extends MiRNAtargetAbs{
 		SpeciesType = rnaAhybridClass.getDetailClassName();
 	}
 	/**
-	 * taxID¶ÔÓ¦RNAhybridµÄ¶ÔÕÕ±í£¬Ò»°ãÀ´ËµµÍµÈÉúÎï¶ÔÓ¦Ïß³æ£¬²¸Èé¶¯Îï¶ÔÓ¦ÈËÀà£¬À¥³æ¶ÔÓ¦¹ûÓ¬
+	 * taxIDå¯¹åº”RNAhybridçš„å¯¹ç…§è¡¨ï¼Œä¸€èˆ¬æ¥è¯´ä½ç­‰ç”Ÿç‰©å¯¹åº”çº¿è™«ï¼Œå“ºä¹³åŠ¨ç‰©å¯¹åº”äººç±»ï¼Œæ˜†è™«å¯¹åº”æœè‡
 	 * @param txtTaxID_to_RNAhybrid_s_class
 	 */
 	private String getRNAhybridClass() {
@@ -67,7 +67,7 @@ public class MiRNAtargetRNAhybrid extends MiRNAtargetAbs{
 	
 	}
 	/**
-	 * ¸ø¶¨RNAhybridµÄÒ»¶Î£¬·µ»ØËùĞèµÄĞÅÏ¢
+	 * ç»™å®šRNAhybridçš„ä¸€æ®µï¼Œè¿”å›æ‰€éœ€çš„ä¿¡æ¯
 	 * @param block
 	 * @return string[] 0: miRNA 1:geneID 2:pvalue 3: mef
 	 */

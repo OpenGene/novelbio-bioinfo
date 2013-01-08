@@ -9,7 +9,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
- * illuminaµÄ¼×»ù»¯·ÖÎöÊı¾İÕûÀí
+ * illuminaçš„ç”²åŸºåŒ–åˆ†ææ•°æ®æ•´ç†
  * @author zong0jie
  */
 public class IlluminaMethy {
@@ -24,8 +24,8 @@ public class IlluminaMethy {
 	}
 	/**
 	 * 
-	 * »ñµÃÃ¿¸öÌ½Õë¶ÔÓ¦µÄ»ùÒòºÍÎ»µã
-	 * col¶¼ÊÇÊµ¼ÊÁĞÊı
+	 * è·å¾—æ¯ä¸ªæ¢é’ˆå¯¹åº”çš„åŸºå› å’Œä½ç‚¹
+	 * coléƒ½æ˜¯å®é™…åˆ—æ•°
 	 * @param geneInfoFile
 	 * @param colProbID
 	 * @param colGeneName
@@ -46,7 +46,7 @@ public class IlluminaMethy {
 		}
 	}
 	/**
-	 * ¸ø¶¨R²úÉúµÄ²îÒì¼×»ù»¯ÎÄ¼ş
+	 * ç»™å®šRäº§ç”Ÿçš„å·®å¼‚ç”²åŸºåŒ–æ–‡ä»¶
 	 * @param dmpOutFile
 	 */
 	public void readDmpOut(String dmpOutFile, String finalFile) {
@@ -65,7 +65,7 @@ public class IlluminaMethy {
 	}
 	
 	/**
-	 * ¸ø¶¨É¸Ñ¡ºÃµÄ½á¹ûÎÄ¼ş£¬½«ÎÄ¼şÕûÀí³É¿ÉÒÔ¿´µÄÑùÊ½
+	 * ç»™å®šç­›é€‰å¥½çš„ç»“æœæ–‡ä»¶ï¼Œå°†æ–‡ä»¶æ•´ç†æˆå¯ä»¥çœ‹çš„æ ·å¼
 	 * @param finalFile
 	 */
 	public void modifyMethyResult(String finalFile) {
@@ -73,7 +73,7 @@ public class IlluminaMethy {
 		TxtReadandWrite txtOut = new TxtReadandWrite(FileOperate.changeFileSuffix(finalFile, "_final", null), true);
 		for (String string : txtRead.readlines()) {
 			String[] ss = string.split("\t");
-			//È¥³ıÃ¿Ò»ĞĞµÄ×îºóÁ½ÁĞ
+			//å»é™¤æ¯ä¸€è¡Œçš„æœ€åä¸¤åˆ—
 			String[] tmpResult = new String[ss.length - 2];
 			for (int i = 0; i < tmpResult.length; i++) {
 				tmpResult[i] = ss[i];

@@ -14,29 +14,29 @@ import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 	Logger logger = Logger.getLogger(MapInfo.class);
 	
-	/** ±È½ÏmapinfoµÄÆğµãÖÕµã */
+	/** æ¯”è¾ƒmapinfoçš„èµ·ç‚¹ç»ˆç‚¹ */
 	public static final int COMPARE_LOCSITE = 100;
-	/** ±È½ÏmapinfoµÄflag site */
+	/** æ¯”è¾ƒmapinfoçš„flag site */
 	public static final int COMPARE_LOCFLAG = 200;
-	/** ±È½ÏmapinfoµÄscore */
+	/** æ¯”è¾ƒmapinfoçš„score */
 	public static final int COMPARE_SCORE = 300;
 	
 	static int compareType = COMPARE_SCORE;
-	//´ÓĞ¡µ½´óÅÅĞò
+	//ä»å°åˆ°å¤§æ’åº
 	static boolean min2max = true;
 	
 	protected String refID = "";
 	protected int startLoc = ListCodAbs.LOC_ORIGINAL;
 	protected int endLoc = ListCodAbs.LOC_ORIGINAL;
-	protected Double score = null; // ±È½ÏµÄ±êÇ©£¬¿ÉÒÔÊÇ±í´ïµÈ
+	protected Double score = null; // æ¯”è¾ƒçš„æ ‡ç­¾ï¼Œå¯ä»¥æ˜¯è¡¨è¾¾ç­‰
 
 	
 	protected String name;
 	protected String description = "";
 	protected int flagLoc = ListCodAbs.LOC_ORIGINAL;
-	/** null±íÊ¾Ã»ÓĞ·½Ïò */
+	/** nullè¡¨ç¤ºæ²¡æœ‰æ–¹å‘ */
 	protected Boolean cis5to3 = null;
-	//ºËËáĞòÁĞ
+	//æ ¸é…¸åºåˆ—
 	SeqFasta seqFasta = new SeqFasta();
 	
 	
@@ -49,11 +49,11 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 	}
 	/**
 	 * @param chrID
-	 * @param startLoc ´Ó0¿ªÊ¼£¬Èç¹ûstartLocºÍendLoc¶¼Ğ¡ÓÚµÈÓÚ0£¬ÔòĞèÒª¶Ô·½·µ»ØÈ«³¤ĞÅÏ¢
-	 * @param endLoc ´Ó0¿ªÊ¼
-	 * @param flagLoc ÌØ¶¨µÄÒ»¸öÎ»µã×ø±ê£¬Æ©ÈçATGsite£¬summitSiteµÈ
+	 * @param startLoc ä»0å¼€å§‹ï¼Œå¦‚æœstartLocå’ŒendLocéƒ½å°äºç­‰äº0ï¼Œåˆ™éœ€è¦å¯¹æ–¹è¿”å›å…¨é•¿ä¿¡æ¯
+	 * @param endLoc ä»0å¼€å§‹
+	 * @param flagLoc ç‰¹å®šçš„ä¸€ä¸ªä½ç‚¹åæ ‡ï¼Œè­¬å¦‚ATGsiteï¼ŒsummitSiteç­‰
 	 * @param weight
-	 * @param title ±¾ÌõÄ¿µÄÃû×Ö£¬Æ©Èç»ùÒòÃûµÈ
+	 * @param title æœ¬æ¡ç›®çš„åå­—ï¼Œè­¬å¦‚åŸºå› åç­‰
 	 */
 	public SiteInfo(String chrID, int startLoc, int endLoc, int flagLoc ,double weight, String title) {
 		this.refID = chrID;
@@ -64,10 +64,10 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 		this.flagLoc = flagLoc;
 	}
 	/**
-	 * Èç¹ûstartLoc < endLoc,Ôòcis5to3Éè¶¨Îª·´Ïò
+	 * å¦‚æœstartLoc < endLoc,åˆ™cis5to3è®¾å®šä¸ºåå‘
 	 * @param chrID
-	 * @param startLoc ´Ó0¿ªÊ¼£¬Èç¹ûstartLocºÍendLoc¶¼Ğ¡ÓÚµÈÓÚ0£¬ÔòĞèÒª¶Ô·½·µ»ØÈ«³¤ĞÅÏ¢
-	 * @param endLoc ´Ó0¿ªÊ¼
+	 * @param startLoc ä»0å¼€å§‹ï¼Œå¦‚æœstartLocå’ŒendLocéƒ½å°äºç­‰äº0ï¼Œåˆ™éœ€è¦å¯¹æ–¹è¿”å›å…¨é•¿ä¿¡æ¯
+	 * @param endLoc ä»0å¼€å§‹
 	 */
 	public SiteInfo(String chrID, int startLoc, int endLoc) {
 		if (startLoc < 0)
@@ -84,10 +84,10 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 	}
 	/**
 	 * @param chrID
-	 * @param startLoc ´Ó0¿ªÊ¼£¬Èç¹ûstartLocºÍendLoc¶¼Ğ¡ÓÚµÈÓÚ0£¬ÔòĞèÒª¶Ô·½·µ»ØÈ«³¤ĞÅÏ¢
-	 * @param endLoc ´Ó0¿ªÊ¼
-	 * @param flag ±È½ÏµÄ±êÇ©£¬¿ÉÒÔÊÇ±í´ïÖµµÈ
-	 * @param title ±¾ÌõÄ¿µÄÃû×Ö£¬Æ©Èç»ùÒòÃûµÈ
+	 * @param startLoc ä»0å¼€å§‹ï¼Œå¦‚æœstartLocå’ŒendLocéƒ½å°äºç­‰äº0ï¼Œåˆ™éœ€è¦å¯¹æ–¹è¿”å›å…¨é•¿ä¿¡æ¯
+	 * @param endLoc ä»0å¼€å§‹
+	 * @param flag æ¯”è¾ƒçš„æ ‡ç­¾ï¼Œå¯ä»¥æ˜¯è¡¨è¾¾å€¼ç­‰
+	 * @param title æœ¬æ¡ç›®çš„åå­—ï¼Œè­¬å¦‚åŸºå› åç­‰
 	 */
 	public SiteInfo(String chrID,double weight, String title) {
 		this.refID = chrID;
@@ -95,10 +95,10 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 		this.name = title;
 	}
 	/** 
-	 * Èç¹ûstart ´óÓÚend£¬ÔòÉè¶¨cis5to3Îªfalse
-	 * ½á¹ûstartºãĞ¡ÓÚend
-	 * @param start Ğ¡ÓÚ0×Ô¶¯ÉèÖÃÎª0
-	 * @param endLoc Ğ¡ÓÚ0×Ô¶¯ÉèÖÃÎª0
+	 * å¦‚æœstart å¤§äºendï¼Œåˆ™è®¾å®šcis5to3ä¸ºfalse
+	 * ç»“æœstartæ’å°äºend
+	 * @param start å°äº0è‡ªåŠ¨è®¾ç½®ä¸º0
+	 * @param endLoc å°äº0è‡ªåŠ¨è®¾ç½®ä¸º0
 	 */
 	public void setStartEndLoc(int startLoc, int endLoc) {
 		if (startLoc < 0)
@@ -113,23 +113,23 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 		}
 	}
 	/**
-	 * ±¾×ø±êµÄ·½Ïò£¬ÓÃÓÚ»ùÒòµÄTssºÍTesµÈÔËËã
+	 * æœ¬åæ ‡çš„æ–¹å‘ï¼Œç”¨äºåŸºå› çš„Tsså’ŒTesç­‰è¿ç®—
 	 * @param cis5to3
 	 */
 	public void setCis5to3(Boolean cis5to3) {
 		this.cis5to3 = cis5to3;
 	}
 	/**
-	 * ±¾×ø±êµÄ·½Ïò£¬ÓÃÓÚ»ùÒòµÄTssºÍTesµÈÔËËã
-	 * Èç¹ûÎŞ·½Ïò£¬Ôò·µ»Ønull
+	 * æœ¬åæ ‡çš„æ–¹å‘ï¼Œç”¨äºåŸºå› çš„Tsså’ŒTesç­‰è¿ç®—
+	 * å¦‚æœæ— æ–¹å‘ï¼Œåˆ™è¿”å›null
 	 * @return
 	 */
 	public Boolean isCis5to3() {
 		return cis5to3;
 	}
 	/**
-	 * ºÍ{@link #isCis5to3()} ÀàËÆµÄ¹¦ÄÜ£¬Ö»²»¹ıtrue·µ»Ø"+"£¬false·µ»Ø"-"
-	 * null ·µ»Ø ""
+	 * å’Œ{@link #isCis5to3()} ç±»ä¼¼çš„åŠŸèƒ½ï¼Œåªä¸è¿‡trueè¿”å›"+"ï¼Œfalseè¿”å›"-"
+	 * null è¿”å› ""
 	 * @return
 	 */
 	public String getStrand() {
@@ -142,7 +142,7 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 		return "-";
 	}
 	/**
-	 * ÊÇ·ñ´ÓĞ¡µ½´óÅÅĞò
+	 * æ˜¯å¦ä»å°åˆ°å¤§æ’åº
 	 * @return
 	 */
 	public static boolean isMin2max() {
@@ -150,16 +150,16 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 	}
 
 	/**
-	 * Ñ¡ÔñCOMPARE_LOCSITEµÈ
-	 * Ä¬ÈÏCOMPARE_WEIGHT
+	 * é€‰æ‹©COMPARE_LOCSITEç­‰
+	 * é»˜è®¤COMPARE_WEIGHT
 	 * @param COMPARE_TYPE
 	 */
 	public static void setCompareType(int COMPARE_TYPE) {
 		compareType = COMPARE_TYPE;
 	}
 	/**
-	 * °´ÕÕ·½Ïò½øĞĞÑÓ³¤
-	 * Èç¹ûĞòÁĞ±ÈÉè¶¨µÄ³¤¶ÈÒª³¤£¬ÔòÌø¹ı
+	 * æŒ‰ç…§æ–¹å‘è¿›è¡Œå»¶é•¿
+	 * å¦‚æœåºåˆ—æ¯”è®¾å®šçš„é•¿åº¦è¦é•¿ï¼Œåˆ™è·³è¿‡
 	 * @param length
 	 */
 	public void extend(int length) {
@@ -174,8 +174,8 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 		}
 	}
 	/**
-	 * ×óÓÒÁ½¶Ë¸÷ÑÓ³¤range bp
-	 * Èç¹û×Ü³¤¶È³¬¹ırange * 2£¬Ôò·µ»Ø
+	 * å·¦å³ä¸¤ç«¯å„å»¶é•¿range bp
+	 * å¦‚æœæ€»é•¿åº¦è¶…è¿‡range * 2ï¼Œåˆ™è¿”å›
 	 * @param length
 	 */
 	public void extendCenter(int range) {
@@ -191,14 +191,14 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 	}
 
 	/**
-	 * Éè¶¨Ò»¸öÎ»µã£¬Æ©ÈçATGsite£¬SummitSiteÖ®ÀàµÄ
+	 * è®¾å®šä¸€ä¸ªä½ç‚¹ï¼Œè­¬å¦‚ATGsiteï¼ŒSummitSiteä¹‹ç±»çš„
 	 * @param flagLoc
 	 */
 	public void setFlagLoc(int flagLoc) {
 		this.flagLoc = flagLoc;
 	}
 	/**
-	 * Éè¶¨±êÌâÖ®ÀàµÄ¶«Î÷£¬symbolºÃÁË
+	 * è®¾å®šæ ‡é¢˜ä¹‹ç±»çš„ä¸œè¥¿ï¼Œsymbolå¥½äº†
 	 * @param title
 	 */
 	public void setName(String title) {
@@ -208,32 +208,32 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 		}
 	}
 	/**
-	 * ¶ÔÓÚ¸ÃÎ»µãµÄ¾ßÌåÃèÊö£¬¿ÉÒÔÊÇĞòÁĞ
+	 * å¯¹äºè¯¥ä½ç‚¹çš„å…·ä½“æè¿°ï¼Œå¯ä»¥æ˜¯åºåˆ—
 	 * @param description
 	 */
 	public void setDescription(String description) {
 		this.description = description;
 	}
 	/**
-	 * ¶ÔÓÚ¸ÃÇøÓòµÄ¾ßÌåÃèÊö
+	 * å¯¹äºè¯¥åŒºåŸŸçš„å…·ä½“æè¿°
 	 * @param description
 	 */
 	public String getDescription() {
 		return description;
 	}
 	/**
-	 * ¸ÃÇøÓòµÄºËËáĞòÁĞ£¬Ä¬ÈÏ¸ù¾İcis5to3½øĞĞ·´ÏòĞòÁĞ
-	 * seqfastaµÄname ÓÃmapµÄnameÈ¥Éè¶¨
+	 * è¯¥åŒºåŸŸçš„æ ¸é…¸åºåˆ—ï¼Œé»˜è®¤æ ¹æ®cis5to3è¿›è¡Œåå‘åºåˆ—
+	 * seqfastaçš„name ç”¨mapçš„nameå»è®¾å®š
 	 * @param aaSeq
 	 */
 	public void setSeq(SeqFasta seqFasta) {
 		setSeq(seqFasta, true);
 	}
 	/**
-	 * ¸ÃÇøÓòµÄºËËáĞòÁĞ
-	 * seqfastaµÄname ÓÃmapµÄnameÈ¥Éè¶¨
+	 * è¯¥åŒºåŸŸçš„æ ¸é…¸åºåˆ—
+	 * seqfastaçš„name ç”¨mapçš„nameå»è®¾å®š
 	 * @param seqFasta
-	 * @param reservecom ÊÇ·ñ¸ù¾İcis5to3½øĞĞ·´ÏòĞòÁĞ
+	 * @param reservecom æ˜¯å¦æ ¹æ®cis5to3è¿›è¡Œåå‘åºåˆ—
 	 */
 	public void setSeq(SeqFasta seqFasta, boolean reservecom) {
 		if (seqFasta == null) {
@@ -249,9 +249,9 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 		this.seqFasta = seqFasta;
 	}
 	/**
-	 * ¸ÃÇøÓòµÄºËËáĞòÁĞ
-	 * ×¢ÒâÉè¶¨µÄÊ±ºòÊÇ·ñÒÑ¾­·´Ïò¹ıÁË
-	 * seqfastaµÄname ÓÃmapµÄnameÈ¥Éè¶¨
+	 * è¯¥åŒºåŸŸçš„æ ¸é…¸åºåˆ—
+	 * æ³¨æ„è®¾å®šçš„æ—¶å€™æ˜¯å¦å·²ç»åå‘è¿‡äº†
+	 * seqfastaçš„name ç”¨mapçš„nameå»è®¾å®š
 	 * @param aaSeq
 	 */
 	public SeqFasta getSeqFasta() {
@@ -261,7 +261,7 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 		this.score = score;
 	}
 	/**
-	 * ÊÇ·ñ´ÓĞ¡µ½´óÅÅĞò
+	 * æ˜¯å¦ä»å°åˆ°å¤§æ’åº
 	 */
 	public static void sortPath(boolean min2max) {
 		MapInfo.min2max = min2max;
@@ -273,10 +273,10 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 		this.refID = refID;
 	}
 	/**
-	 * »ñµÃÖ¸¶¨µÄÎ»µã£¬Æ©Èçsummit»òÕßatgsiteµÈµÈ
-	 * Èç¹ûstartLoc <0 »òÕßendLoc <0 ÄÇÃ´ËµÃ÷ÆğµãºÍÖÕµãÃ»ÉèÖÃ£¬Ö±½Ó·µ»ØflagLoc
-	 * Èç¹ûsite <  startLoc 
-	 *  »ò site > endLoc£¬ÄÇÃ´¾ÍÈ¡startºÍendµÄÖĞ¼äÊı(ËÄÉáÎåÈë)
+	 * è·å¾—æŒ‡å®šçš„ä½ç‚¹ï¼Œè­¬å¦‚summitæˆ–è€…atgsiteç­‰ç­‰
+	 * å¦‚æœstartLoc <0 æˆ–è€…endLoc <0 é‚£ä¹ˆè¯´æ˜èµ·ç‚¹å’Œç»ˆç‚¹æ²¡è®¾ç½®ï¼Œç›´æ¥è¿”å›flagLoc
+	 * å¦‚æœsite <  startLoc 
+	 *  æˆ– site > endLocï¼Œé‚£ä¹ˆå°±å–startå’Œendçš„ä¸­é—´æ•°(å››èˆäº”å…¥)
 	 * @return
 	 */
 	public int getFlagSite() {
@@ -307,8 +307,8 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 		}
 	}
 	/**
-	 * »ñµÃÆğµã×ø±ê
-	 * startºãĞ¡ÓÚend
+	 * è·å¾—èµ·ç‚¹åæ ‡
+	 * startæ’å°äºend
 	 * @return
 	 */
 	public int getStartAbs() {
@@ -316,24 +316,24 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 	}
 
 	/**
-	 * »ñµÃÖÕµã×ø±ê£¬startºãĞ¡ÓÚend
+	 * è·å¾—ç»ˆç‚¹åæ ‡ï¼Œstartæ’å°äºend
 	 * @return
 	 */
 	public int getEndAbs() {
 		return endLoc;
 	}
 	/**
-	 * »ñµÃ¸Ã»ùÒòµÄÃû³Æ
-	 * Ó¦¸ÃÊÇÒ»¸öÎ¨Ò»±êÊ¶ÃûÓÃÀ´È·¶¨Ã¿Ò»¸ö»ùÒò£¬ÔİÊ±ÎŞ·¨×öµ½È·¶¨×ªÂ¼±¾
+	 * è·å¾—è¯¥åŸºå› çš„åç§°
+	 * åº”è¯¥æ˜¯ä¸€ä¸ªå”¯ä¸€æ ‡è¯†åç”¨æ¥ç¡®å®šæ¯ä¸€ä¸ªåŸºå› ï¼Œæš‚æ—¶æ— æ³•åšåˆ°ç¡®å®šè½¬å½•æœ¬
 	 * @return
 	 */
 	public String getName() {
 		return name;
 	}
 	/**
-	 * ÓÃÓÚ±È½ÏµÄ£¬´ÓĞ¡µ½´ó±È
-	 * ÏÈ±ÈrefID£¬È»ºó±Èstart£¬end£¬»òÕß±Èflag»òÕß±Èscore
-	 * ±ÈscoreµÄÊ±ºò¾Í²»¿¼ÂÇrefIDÁË
+	 * ç”¨äºæ¯”è¾ƒçš„ï¼Œä»å°åˆ°å¤§æ¯”
+	 * å…ˆæ¯”refIDï¼Œç„¶åæ¯”startï¼Œendï¼Œæˆ–è€…æ¯”flagæˆ–è€…æ¯”score
+	 * æ¯”scoreçš„æ—¶å€™å°±ä¸è€ƒè™‘refIDäº†
 	 */
 	public int compareTo(SiteInfo siteInfo) {
 		if (compareType == COMPARE_LOCFLAG) {
@@ -416,14 +416,14 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		logger.error("¿ËÂ¡³ö´í");
+		logger.error("å…‹éš†å‡ºé”™");
 		return null;
 	}
 	/**
-	 * ¸ø¶¨mapInfoµÄĞòÁĞ£¬ÓÃmapInfoµÄsummitµãÀ´É¸Ñ¡peak£¬½«summitµã¾àÀëÔÚdistanceÒÔÄÚµÄÉ¾³ı£¬Ö»±£ÁôÈ¨ÖØ×î´óµÄÄÇ¸ömapInfo
-	 * @param lsmapinfo ÓÃmapInfoµÄsummitµãÀ´É¸Ñ¡peak
-	 * @param distance ½«summitµã¾àÀëÔÚdistanceÒÔÄÚµÄÉ¾³ı
-	 * @param max true£ºÑ¡ÔñÈ¨ÖØ×î´óµÄ false£ºÑ¡ÔñÈ¨ÖØ×îĞ¡µÄ
+	 * ç»™å®šmapInfoçš„åºåˆ—ï¼Œç”¨mapInfoçš„summitç‚¹æ¥ç­›é€‰peakï¼Œå°†summitç‚¹è·ç¦»åœ¨distanceä»¥å†…çš„åˆ é™¤ï¼Œåªä¿ç•™æƒé‡æœ€å¤§çš„é‚£ä¸ªmapInfo
+	 * @param lsmapinfo ç”¨mapInfoçš„summitç‚¹æ¥ç­›é€‰peak
+	 * @param distance å°†summitç‚¹è·ç¦»åœ¨distanceä»¥å†…çš„åˆ é™¤
+	 * @param max trueï¼šé€‰æ‹©æƒé‡æœ€å¤§çš„ falseï¼šé€‰æ‹©æƒé‡æœ€å°çš„
 	 * @return
 	 */
 	public static<T extends SiteInfo> List<T> sortLsMapInfo(List<T> lsmapinfo, double distance) {
@@ -458,8 +458,8 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 		return lsResult;
 	}
 	/**
-	 * ¸ø¶¨Ò»¸öMapInfo£¬·µ»Ø¸Ã×éÀïÃæµÄ×î³¤UpºÍ×î³¤Down
-	 * ËùÎ½Up¾ÍÊÇ
+	 * ç»™å®šä¸€ä¸ªMapInfoï¼Œè¿”å›è¯¥ç»„é‡Œé¢çš„æœ€é•¿Upå’Œæœ€é•¿Down
+	 * æ‰€è°“Upå°±æ˜¯
 	 * @param lsSiteInfo
 	 * @return
 	 */
@@ -478,7 +478,7 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 		return new int[]{maxUp,maxDown};
 	}
 	/**
-	 * ½ö±È½ÏrefID£¬startLoc,endLoc,score.flagLoc
+	 * ä»…æ¯”è¾ƒrefIDï¼ŒstartLoc,endLoc,score.flagLoc
 	 */
 	@Override
 	public boolean equals(Object obj) {
@@ -501,8 +501,8 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 		return false;
 	}
 	/**
-	 * ½öÅĞ¶Ï×ø±êÊÇ·ñÒ»ÖÂ
-	 * ¾ÍÊÇÅĞ¶ÏstartºÍendÊÇ·ñÒ»ÖÂ
+	 * ä»…åˆ¤æ–­åæ ‡æ˜¯å¦ä¸€è‡´
+	 * å°±æ˜¯åˆ¤æ–­startå’Œendæ˜¯å¦ä¸€è‡´
 	 */
 	public boolean equalsLoc(SiteInfo mapInfo) {
 		if (mapInfo.getStartAbs() == getStartAbs() && mapInfo.getEndAbs() == getEndAbs()) {

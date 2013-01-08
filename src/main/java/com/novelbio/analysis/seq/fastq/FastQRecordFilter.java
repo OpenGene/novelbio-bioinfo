@@ -6,38 +6,38 @@ import java.util.LinkedHashMap;
 import com.novelbio.base.multithread.txtreadcopewrite.MTRecordCope;
 import com.novelbio.base.multithread.txtreadcopewrite.MTrecordCoper;
 
-/** Êµ¼ÊÉÏÊÇ¹ıÂËµÄÀà£¬²»¹ı¿ÉÒÔÓÃÆäÀ´Éè¶¨¹ıÂËµÄ²ÎÊı */
+/** å®é™…ä¸Šæ˜¯è¿‡æ»¤çš„ç±»ï¼Œä¸è¿‡å¯ä»¥ç”¨å…¶æ¥è®¾å®šè¿‡æ»¤çš„å‚æ•° */
 public class FastQRecordFilter {
 	int phredOffset;
 	int readsLenMin = 18;
 	String adaptorLeft, adaptorRight;
-	/** ×î¶à´íÅä¼¸¸ö */
+	/** æœ€å¤šé”™é…å‡ ä¸ª */
 	int adaptermaxMismach = 4;
-	/** ×î¶àÁ¬Ğø´íÅä¼¸¸ö */
+	/** æœ€å¤šè¿ç»­é”™é…å‡ ä¸ª */
 	int adaptermaxConMismatch = 2;
 	int proportionMisMathch = 25;
 	
-	/** ÊÇ·ñĞèÒªÉ¾³ıÕâĞ© */
+	/** æ˜¯å¦éœ€è¦åˆ é™¤è¿™äº› */
 	boolean trimPolyA_right = false, trimPolyT_left = false, trimNNN = true;
-	/** PGMµÄÊı¾İÖĞ£¬Ğ¡Ğ´µÄĞòÁĞÊÇadaptor */
+	/** PGMçš„æ•°æ®ä¸­ï¼Œå°å†™çš„åºåˆ—æ˜¯adaptor */
 	boolean adaptorLowercase = false;
 	
-	/** ´ÓreadsÁ½±ßÇĞµÄbase qualityãĞÖµ£¬Ğ¡ÓÚÕâ¸öÖµ¾Í»á±»ÇĞµô */
+	/** ä»readsä¸¤è¾¹åˆ‡çš„base qualityé˜ˆå€¼ï¼Œå°äºè¿™ä¸ªå€¼å°±ä¼šè¢«åˆ‡æ‰ */
 	int trimEndFilterQuality = 14;
 	
 	int mapNumLeft = -1, mapNumRight = -1;
-	/** fastQÀïÃæasc||ÂëµÄÖ¸±êÓë¸öÊı */
+	/** fastQé‡Œé¢asc||ç çš„æŒ‡æ ‡ä¸ä¸ªæ•° */
 	HashMap<Integer, Integer> mapFastQFilter = new HashMap<Integer, Integer>();
 	
 	/**
-	 * Éè¶¨È«¾Ö¹ıÂËÖ¸±ê
+	 * è®¾å®šå…¨å±€è¿‡æ»¤æŒ‡æ ‡
 	 * @param QUALITY
 	 */
 	public void setQualityFilter(int QUALITY) {
 		mapFastQFilter = FastQ.getMapFastQFilter(QUALITY);
 	}
-	///////////////////////////////////////////  ²ÎÊıÉèÖÃ  ///////////////////////////////////////////////////////////////////////
-	/** ĞòÁĞ×î¶Ì¶àÉÙ */
+	///////////////////////////////////////////  å‚æ•°è®¾ç½®  ///////////////////////////////////////////////////////////////////////
+	/** åºåˆ—æœ€çŸ­å¤šå°‘ */
 	public void setFilterParamReadsLenMin(int readsLenMin) {
 		this.readsLenMin = readsLenMin;
 	}
@@ -47,19 +47,19 @@ public class FastQRecordFilter {
 	public void setFilterParamAdaptorRight(String adaptorRight) {
 		this.adaptorRight = adaptorRight;
 	}
-	/** ×î¶à´íÅä£¬Ä¬ÈÏÎª4 */
+	/** æœ€å¤šé”™é…ï¼Œé»˜è®¤ä¸º4 */
 	public void setFilterParamAdaptermaxMismach(int adaptermaxMismach) {
 		this.adaptermaxMismach = adaptermaxMismach;
 	}
-	/** ×î¶àÁ¬Ğø´íÅä£¬Ä¬ÈÏÎª2 */
+	/** æœ€å¤šè¿ç»­é”™é…ï¼Œé»˜è®¤ä¸º2 */
 	public void setFilterParamAdaptermaxConMismatch(int adaptermaxConMismatch) {
 		this.adaptermaxConMismatch = adaptermaxConMismatch;
 	}
-	/**×î¶à´íÅä±ÈÀı£¬Ä¬ÈÏ25 % */
+	/**æœ€å¤šé”™é…æ¯”ä¾‹ï¼Œé»˜è®¤25 % */
 	public void setFilterParamProportionMisMathch(int proportionMisMathch) {
 		this.proportionMisMathch = proportionMisMathch;
 	}
-	/** Ä¬ÈÏÎªture */
+	/** é»˜è®¤ä¸ºture */
 	public void setFilterParamAdaptorScanLeftStart(boolean adaptorScanLeftStart) {
 		if (adaptorScanLeftStart) {
 			mapNumLeft = 1;
@@ -67,7 +67,7 @@ public class FastQRecordFilter {
 			mapNumLeft = -1;
 		}
 	}
-	/** Ä¬ÈÏÎªture */
+	/** é»˜è®¤ä¸ºture */
 	public void setFilterParamAdaptorScanRightStart(boolean adaptorScanRightStart) {
 		if (adaptorScanRightStart) {
 			mapNumRight = 1;
@@ -75,19 +75,19 @@ public class FastQRecordFilter {
 			mapNumRight = -1;
 		}
 	}
-	/** Ä¬ÈÏÎªfalse */
+	/** é»˜è®¤ä¸ºfalse */
 	public void setFilterParamTrimPolyA_right(boolean trimPolyA_right) {
 		this.trimPolyA_right = trimPolyA_right;
 	}
-	/** Ä¬ÈÏfalse */
+	/** é»˜è®¤false */
 	public void setFilterParamTrimPolyT_left(boolean trimPolyT_left) {
 		this.trimPolyT_left = trimPolyT_left;
 	}
-	/**Ä¬ÈÏtrue */
+	/**é»˜è®¤true */
 	public void setFilterParamTrimNNN(boolean trimNNN) {
 		this.trimNNN = trimNNN;
 	}	
-	/**Ä¬ÈÏfalse */
+	/**é»˜è®¤false */
 	public void setFilterParamAdaptorLowercase(boolean adaptorLowercase) {
 		this.adaptorLowercase = adaptorLowercase;
 	}
@@ -96,7 +96,7 @@ public class FastQRecordFilter {
 		this.phredOffset = phredOffset;
 	}
 	
-	/** Ã»ÓĞÍ¨¹ı¹ıÂË¾Í·µ»Øfalse */
+	/** æ²¡æœ‰é€šè¿‡è¿‡æ»¤å°±è¿”å›false */
 	public boolean filterFastQRecordSE(FastQRecord fastQRecord) {
 		if (fastQRecord == null) return false;
 		
@@ -123,7 +123,7 @@ public class FastQRecordFilter {
 		return true;
 	}
 	
-	/** Ã»ÓĞÍ¨¹ı¹ıÂË¾Í·µ»Øfalse */
+	/** æ²¡æœ‰é€šè¿‡è¿‡æ»¤å°±è¿”å›false */
 	public boolean filterFastQRecordPE(FastQRecord fastQRecord1, FastQRecord fastQRecord2) {
 		if (fastQRecord1 == null && fastQRecord2 == null) return false;
 		

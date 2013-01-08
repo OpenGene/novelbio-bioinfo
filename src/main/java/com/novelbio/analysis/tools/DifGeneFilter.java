@@ -6,26 +6,26 @@ import java.util.HashMap;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
-/** ²îÒì»ùÒò¹ıÂË
- * ¾ÍÊÇ¸ø¶¨Ò»×é²îÒì»ùÒòµÄtxt»òÕßexcel£¬½«·ûºÏÌõ¼şµÄÌôÑ¡³öÀ´
+/** å·®å¼‚åŸºå› è¿‡æ»¤
+ * å°±æ˜¯ç»™å®šä¸€ç»„å·®å¼‚åŸºå› çš„txtæˆ–è€…excelï¼Œå°†ç¬¦åˆæ¡ä»¶çš„æŒ‘é€‰å‡ºæ¥
  */
 public class DifGeneFilter {
 	String excelTxtFile;
 	String outTxtFile;
-	/** ´ÓµÚ¼¸ĞĞ¿ªÊ¼É¸Ñ¡£¬ÒòÎªÇ°Ãæ¿ÉÄÜÊÇtitle */
+	/** ä»ç¬¬å‡ è¡Œå¼€å§‹ç­›é€‰ï¼Œå› ä¸ºå‰é¢å¯èƒ½æ˜¯title */
 	int readFromLines = 1;
 	/**
-	 *  key: ÁĞÊı£¬´Ó0¿ªÊ¼
-	 * value£º¹ıÂËÆ÷
+	 *  key: åˆ—æ•°ï¼Œä»0å¼€å§‹
+	 * valueï¼šè¿‡æ»¤å™¨
 	 */
 	HashMap<Integer, FilterValue> mapColNum2Filter = new HashMap<Integer, FilterValue>();
 	
 	/**
-	 * Éè¶¨¹ıÂËÆ÷
-	 * @param µÚ¼¸ÁĞ£¬´Ó1¿ªÊ¼¼ÆËã£¬Êµ¼ÊÁĞ
-	 * @param small ×îĞ¡Öµ
-	 * @param big ×î´óÖµ
-	 * @param isBetweenSmall2Big ÊÇ·ñÎª½éÓÚÁ½ÕßÖ®¼ä
+	 * è®¾å®šè¿‡æ»¤å™¨
+	 * @param ç¬¬å‡ åˆ—ï¼Œä»1å¼€å§‹è®¡ç®—ï¼Œå®é™…åˆ—
+	 * @param small æœ€å°å€¼
+	 * @param big æœ€å¤§å€¼
+	 * @param isBetweenSmall2Big æ˜¯å¦ä¸ºä»‹äºä¸¤è€…ä¹‹é—´
 	 */
 	public void addFilterInfo(Integer columnNum, double small, double big, boolean isBetweenSmall2Big) {
 		FilterValue filterValue = new FilterValue();
@@ -49,7 +49,7 @@ public class DifGeneFilter {
 		}
 		this.readFromLines = readFromLines;
 	}
-	/** ¿ªÊ¼¹ıÂË£¬²ÉÓÃÖ±½Ó¶ÁÈëÄÚ´æµÄÄ£Ê½ */
+	/** å¼€å§‹è¿‡æ»¤ï¼Œé‡‡ç”¨ç›´æ¥è¯»å…¥å†…å­˜çš„æ¨¡å¼ */
 	public void filtering() {
 		TxtReadandWrite txtFiltered = new TxtReadandWrite(outTxtFile, true);
 		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(excelTxtFile, 1);
@@ -60,11 +60,11 @@ public class DifGeneFilter {
 				txtFiltered.writefileln(ss);
 			}
 			
-			//ÊÇ·ñÍ¨¹ı¹ıÂË
+			//æ˜¯å¦é€šè¿‡è¿‡æ»¤
 			boolean filtered = true;
 			for (Integer colNum : mapColNum2Filter.keySet()) {
 				FilterValue filterValue = mapColNum2Filter.get(colNum);
-				//Èç¹ûÃ»Í¨¹ı¹ıÂË
+				//å¦‚æœæ²¡é€šè¿‡è¿‡æ»¤
 				if (!filterValue.isFiltered(ss[colNum - 1])) {
 					filtered = false;
 					break;
@@ -82,9 +82,9 @@ public class DifGeneFilter {
 class FilterValue {
 	double big= 0;
 	double small = 0;
-	/** ÊÇ·ñ´ıÉ¸Ñ¡µÄÖµÎª½éÓÚsmallºÍbigÖ®¼ä
-	 * true£º±íÊ¾´óÓÚµÈÓÚ big£¬ Ğ¡ÓÚµÈÓÚ small
-	 * false£º±íÊ¾´óÓÚbig£¬Ğ¡ÓÚsmall
+	/** æ˜¯å¦å¾…ç­›é€‰çš„å€¼ä¸ºä»‹äºsmallå’Œbigä¹‹é—´
+	 * trueï¼šè¡¨ç¤ºå¤§äºç­‰äº bigï¼Œ å°äºç­‰äº small
+	 * falseï¼šè¡¨ç¤ºå¤§äºbigï¼Œå°äºsmall
 	 */
 	boolean isBetweenSmall2Big = false;
 	
@@ -95,13 +95,13 @@ class FilterValue {
 		this.small = small;
 	}
 	
-	/**  ÊÇ·ñ´ıÉ¸Ñ¡µÄÖµÎª½éÓÚsmallºÍbigÖ®¼ä */
+	/**  æ˜¯å¦å¾…ç­›é€‰çš„å€¼ä¸ºä»‹äºsmallå’Œbigä¹‹é—´ */
 	public void setIsBetweenSmall2Big(boolean isBetweenSmall2Big) {
 		this.isBetweenSmall2Big = isBetweenSmall2Big;
 	}
 	
-	/** ÊäÈëµÄĞÅÏ¢£¬ËäÈ»ÊÇ×Ö·û´®£¬µ«ÊÇÒªÄÜ¸Ä³Édouble
-	 * Èç¹ûÊäÈë²»ÄÜ×ª»¯ÎªdoubleµÄstring£¬Ò²·µ»Øfalse
+	/** è¾“å…¥çš„ä¿¡æ¯ï¼Œè™½ç„¶æ˜¯å­—ç¬¦ä¸²ï¼Œä½†æ˜¯è¦èƒ½æ”¹æˆdouble
+	 * å¦‚æœè¾“å…¥ä¸èƒ½è½¬åŒ–ä¸ºdoubleçš„stringï¼Œä¹Ÿè¿”å›false
 	 *  */
 	public boolean isFiltered(String valueStr) {
 		double value = 0;

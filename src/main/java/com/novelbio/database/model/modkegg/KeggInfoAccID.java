@@ -14,7 +14,7 @@ public class KeggInfoAccID extends KeggInfoAbs{
 
 	boolean bookgiDgen2Keg = false;
 	/**
-	 * Õâ¸öÊı¾İ¿âÖĞ¾ÍÊÇÒ»Ò»¶ÔÓ¦µÄ¹ØÏµ
+	 * è¿™ä¸ªæ•°æ®åº“ä¸­å°±æ˜¯ä¸€ä¸€å¯¹åº”çš„å…³ç³»
 	 */
 	private KGNIdKeg kgnIdKeg;
 	
@@ -32,8 +32,8 @@ public class KeggInfoAccID extends KeggInfoAbs{
 	}
 	
 	/**
-	 * ÀíÂÛÉÏaccIDÖ»ÓĞÏ£Íû¶ÔÓ¦component
-	 * Ö»·µ»Ønull
+	 * ç†è®ºä¸ŠaccIDåªæœ‰å¸Œæœ›å¯¹åº”component
+	 * åªè¿”å›null
 	 */
 	public ArrayList<String> getLsKo()
 	{

@@ -7,10 +7,10 @@ import java.util.LinkedHashSet;
 
 public abstract class MirCombMapGetValueAbs {
 	
-	/** ½«¸ø¶¨µÄ¼¸×émiRNAµÄÖµºÏ²¢ÆğÀ´ */
+	/** å°†ç»™å®šçš„å‡ ç»„miRNAçš„å€¼åˆå¹¶èµ·æ¥ */
 	public ArrayList<String[]> combValue(HashMap<String, HashMap<String, Double>> mapPrefix_2_ID2Value) {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		//Ç°¼¸ĞĞÊÇĞòÁĞĞÅÏ¢£¬ºóÃæ¿ªÊ¼ÊÇprefix
+		//å‰å‡ è¡Œæ˜¯åºåˆ—ä¿¡æ¯ï¼Œåé¢å¼€å§‹æ˜¯prefix
 		ArrayList<String> lstitle = getTitlePre(mapPrefix_2_ID2Value);
 		lsResult.add(lstitle.toArray(new String[1]));
 		
@@ -34,7 +34,7 @@ public abstract class MirCombMapGetValueAbs {
 		return lsResult;
 	}
 	
-	/** ·µ»ØÉæ¼°µ½µÄËùÓĞmiRNAµÄÃû×Ö */
+	/** è¿”å›æ¶‰åŠåˆ°çš„æ‰€æœ‰miRNAçš„åå­— */
 	private ArrayList<String> getTitlePre(HashMap<String, ? extends Object> mapPrefix2Info) {
 		ArrayList<String> lsTitle = new ArrayList<String>();
 		for (String string : getTitleIDAndInfo()) {
@@ -46,13 +46,13 @@ public abstract class MirCombMapGetValueAbs {
 		}
 		return lsTitle;
 	}
-	/** ·µ»ØÎÄ±¾µÄÇ°¼¸ÁĞµÄtitle£¬Æ©ÈçTitleFormatNBC.RfamID.toString()£¬ sequenceµÈ */
+	/** è¿”å›æ–‡æœ¬çš„å‰å‡ åˆ—çš„titleï¼Œè­¬å¦‚TitleFormatNBC.RfamID.toString()ï¼Œ sequenceç­‰ */
 	protected abstract String[] getTitleIDAndInfo();
 	
-	/** ¸øÊäÈëµÄIDÌí¼ÓÖ¸¶¨µÄÒ»Ğ©ĞÅÏ¢£¬×¢ÒâÎñ±ØºÍtitle¶ÔÓ¦ */
+	/** ç»™è¾“å…¥çš„IDæ·»åŠ æŒ‡å®šçš„ä¸€äº›ä¿¡æ¯ï¼Œæ³¨æ„åŠ¡å¿…å’Œtitleå¯¹åº” */
 	protected abstract void fillMataInfo(String id, ArrayList<String> lsTmpResult);
 	
-	/** ·µ»ØÉæ¼°µ½µÄËùÓĞmiRNAµÄÃû×Ö */
+	/** è¿”å›æ¶‰åŠåˆ°çš„æ‰€æœ‰miRNAçš„åå­— */
 	private HashSet<String> getAllName(HashMap<String, HashMap<String, Double>> mapPrefix2_mapMiRNA2Value) {
 		LinkedHashSet<String> setMirNameAll = new LinkedHashSet<String>();
 		for (HashMap<String, Double> mapMiRNA2Value : mapPrefix2_mapMiRNA2Value.values()) {

@@ -46,7 +46,7 @@ public class FisherTest implements StatisticsTest{
     }
     
     /**
-     * 需要设定maxSize
+     * 闇�瑕佽瀹歮axSize
      */
     public FisherTest() { }
     /**

@@ -19,7 +19,7 @@ public class ServGo2Term implements MapGo2Term{
 	@Inject
 	private MapGoIDconvert mapGoIDconvert;
 	/**
-	 * ´æ´¢Go2TermµÄĞÅÏ¢
+	 * å­˜å‚¨Go2Termçš„ä¿¡æ¯
 	 * key:Go
 	 * value:GoInfo
 	 * 0:QueryGoID,1:GoID,2:GoTerm 3:GoFunction
@@ -31,20 +31,20 @@ public class ServGo2Term implements MapGo2Term{
 		mapGoIDconvert = (MapGoIDconvert) SpringFactory.getFactory().getBean("mapGoIDconvert");
 	}
 	/**
-	 * È«²¿¶ÁÈëÄÚ´æºó£¬hash·ÃÎÊ¡£µÚÒ»´ÎËÙ¶ÈÂı£¬ºóÃæĞ§ÂÊºÜ¸ß
+	 * å…¨éƒ¨è¯»å…¥å†…å­˜åï¼Œhashè®¿é—®ã€‚ç¬¬ä¸€æ¬¡é€Ÿåº¦æ…¢ï¼Œåé¢æ•ˆç‡å¾ˆé«˜
 	 */
 	public Go2Term queryGo2Term(String goID) {
 		return getHashGo2Term().get(goID);
 	}
 	/**
-	 * ÕûºÏÉı¼¶Ä£Ê½£¬½«go2term²ğ³ÉgoconvertºÍgo2term·Ö±ğ½øĞĞÉı¼¶
-	 * Èç¹ûÒÑ¾­ÓĞÁË¾Í²»Éı¼¶£¬Ã»ÓĞ²ÅÉı¼¶
-	 * Éı¼¶·½Ê½ÊÇ¼òµ¥µÄ¸²¸Ç£¬²»ÏñgeneInfoÓĞaddµÈ·½Ê½
-	 * ²»¹ıÈç¹ûgo2termÖĞÆäËû¶¼Ã»ÓĞ£¬Ôò²»Éı¼¶
+	 * æ•´åˆå‡çº§æ¨¡å¼ï¼Œå°†go2termæ‹†æˆgoconvertå’Œgo2termåˆ†åˆ«è¿›è¡Œå‡çº§
+	 * å¦‚æœå·²ç»æœ‰äº†å°±ä¸å‡çº§ï¼Œæ²¡æœ‰æ‰å‡çº§
+	 * å‡çº§æ–¹å¼æ˜¯ç®€å•çš„è¦†ç›–ï¼Œä¸åƒgeneInfoæœ‰addç­‰æ–¹å¼
+	 * ä¸è¿‡å¦‚æœgo2termä¸­å…¶ä»–éƒ½æ²¡æœ‰ï¼Œåˆ™ä¸å‡çº§
 	 * @param go2Term
 	 */
 	public boolean updateGo2TermComb(Go2Term go2Term) {
-		//Èç¹ûÃ»ÓĞGOIDĞÅÏ¢£¬Ôò·µ»Ø
+		//å¦‚æœæ²¡æœ‰GOIDä¿¡æ¯ï¼Œåˆ™è¿”å›
 		if ((go2Term.getGoID() == null || go2Term.getGoID().equals("") )
 				&& (go2Term.getGoIDQuery() == null || go2Term.getGoIDQuery().equals(""))) {
 			return true;
@@ -52,7 +52,7 @@ public class ServGo2Term implements MapGo2Term{
 		if (go2Term.getGoID() != null && !go2Term.getGoID().equals("")) {
 			updateGoIDconvert(go2Term);
 		}
-		//Èç¹ûÖ»ÓĞqueryID£¬ÄÇÃ´²éÕÒConvertÊı¾İ¿â½«GOID²¹ÉÏ
+		//å¦‚æœåªæœ‰queryIDï¼Œé‚£ä¹ˆæŸ¥æ‰¾Convertæ•°æ®åº“å°†GOIDè¡¥ä¸Š
 		if (go2Term.getGoID() == null || go2Term.getGoID().equals("")) {
 			Go2Term go2Term2 = mapGoIDconvert.queryGoIDconvert(go2Term);
 			if (go2Term2 == null) {
@@ -60,7 +60,7 @@ public class ServGo2Term implements MapGo2Term{
 			}
 			go2Term.setGoID(go2Term2.getGoID());
 		}
-		//²éÕÒGo2TermÓĞÃ»ÓĞĞÅÏ¢£¬Ã»ÓĞ¾Í²åÈë
+		//æŸ¥æ‰¾Go2Termæœ‰æ²¡æœ‰ä¿¡æ¯ï¼Œæ²¡æœ‰å°±æ’å…¥
 		Go2Term go2Term2 = mapGo2Term.queryGo2Term(go2Term);
 		if ( (go2Term.getGoFunction() != null && go2Term.getGoTerm() != null)
 				|| go2Term.getParent().size() > 0 || go2Term.getChild().size() > 0
@@ -75,11 +75,11 @@ public class ServGo2Term implements MapGo2Term{
 		return true;
 	}
 	/**
-	 * ÓÃqueryIDËÑË÷QueryID2GOIDÊı¾İ¿â£¬Èç¹û·µ»ØµÄGOIDÓëgo2TermÖĞÒ»ÖÂ£¬ÔòÌø¹ı£¬·ñÔòÉı¼¶Êı¾İ¿âµÄGOIDÏîÄ¿
+	 * ç”¨queryIDæœç´¢QueryID2GOIDæ•°æ®åº“ï¼Œå¦‚æœè¿”å›çš„GOIDä¸go2Termä¸­ä¸€è‡´ï¼Œåˆ™è·³è¿‡ï¼Œå¦åˆ™å‡çº§æ•°æ®åº“çš„GOIDé¡¹ç›®
 	 * @param go2Term
 	 */
 	private void updateGoIDconvert(Go2Term go2Term) {
-		// Èç¹ûÃ»ÓĞQueryID£¬ÄÇÃ´½«QueryIDÓÃGOID²¹ÉÏ
+		// å¦‚æœæ²¡æœ‰QueryIDï¼Œé‚£ä¹ˆå°†QueryIDç”¨GOIDè¡¥ä¸Š
 		if (go2Term.getGoIDQuery() == null || go2Term.getGoIDQuery().equals("")) {
 			go2Term.setGoIDQuery(go2Term.getGoID());
 		}
@@ -91,26 +91,26 @@ public class ServGo2Term implements MapGo2Term{
 			mapGoIDconvert.insertGoIDconvert(go2Term);
 		} 
 		else if (!go2Term2.getGoID().equals(go2Term.getGoID())) {
-			//Éı¼¶Êı¾İ¿âµÄGOIDÏîÄ¿
+			//å‡çº§æ•°æ®åº“çš„GOIDé¡¹ç›®
 			mapGoIDconvert.updateGoIDconvertWhereQueryGOID(go2Term);
 		}
 	}
 	/**
-	 * Í¨¹ı·ÃÎÊÊı¾İ¿â²éÑ¯£¬Ğ§ÂÊÏà¶ÔµÍ
-	 * ×¢Òâ×îºÃÄÜ¸ø¶¨queryGOID
+	 * é€šè¿‡è®¿é—®æ•°æ®åº“æŸ¥è¯¢ï¼Œæ•ˆç‡ç›¸å¯¹ä½
+	 * æ³¨æ„æœ€å¥½èƒ½ç»™å®šqueryGOID
 	 */
 	@Override
 	public Go2Term queryGo2Term(Go2Term queryGo2Term) {
-		//Èç¹ûÃ»ÓĞGOID
+		//å¦‚æœæ²¡æœ‰GOID
 		if ( (queryGo2Term.getGoID() == null || queryGo2Term.getGoID().equals("")) 
 				&& queryGo2Term.getGoIDQuery() != null && !queryGo2Term.getGoIDQuery().equals("")
 				) {
 			Go2Term go2Term2 = mapGoIDconvert.queryGoIDconvert(queryGo2Term);
-			//Èç¹ûqueryIDÃ»ËÑµ½£¬Ôò½«queryIDÖ±½Ó×°¸øGOID
+			//å¦‚æœqueryIDæ²¡æœåˆ°ï¼Œåˆ™å°†queryIDç›´æ¥è£…ç»™GOID
 			if (go2Term2 == null) {
 				queryGo2Term.setGoID(queryGo2Term.getGoIDQuery());
 			}
-			//·ñÔò¾Í¸ø¶¨ĞÂµÄGOID
+			//å¦åˆ™å°±ç»™å®šæ–°çš„GOID
 			else {
 				queryGo2Term.setGoID(go2Term2.getGoID());
 			}
@@ -120,15 +120,15 @@ public class ServGo2Term implements MapGo2Term{
 		return go2Term2;
 	}
 	/**
-	 * ¸ù¾İĞèÒª»ñÈ¡GOĞÅÏ¢
-	 * ÆäÖĞÈç¹ûÃ»ÓĞÉè¶¨goIDºÍgoIDqueryµÄ»°£¬¾Í»á·µ»ØÈ«²¿ĞÅÏ¢£¬<br>
-	 * <b>×¢ÒâÕâĞ©ĞÅÏ¢ÖĞÃ»ÓĞGOIDquery</b>
+	 * æ ¹æ®éœ€è¦è·å–GOä¿¡æ¯
+	 * å…¶ä¸­å¦‚æœæ²¡æœ‰è®¾å®šgoIDå’ŒgoIDqueryçš„è¯ï¼Œå°±ä¼šè¿”å›å…¨éƒ¨ä¿¡æ¯ï¼Œ<br>
+	 * <b>æ³¨æ„è¿™äº›ä¿¡æ¯ä¸­æ²¡æœ‰GOIDquery</b>
 	 * @param queryGo2Term
 	 * @return
 	 */
 	@Override
 	public ArrayList<Go2Term> queryLsGo2Term(Go2Term queryGo2Term) {
-		//Èç¹ûqueryGOIDºÍGOIDÖĞÓĞÒ»Ïî´æÔÚ£¬Ôò·µ»ØÏà¶ÔÓ¦µÄĞÅÏ¢
+		//å¦‚æœqueryGOIDå’ŒGOIDä¸­æœ‰ä¸€é¡¹å­˜åœ¨ï¼Œåˆ™è¿”å›ç›¸å¯¹åº”çš„ä¿¡æ¯
 		if (queryGo2Term.getGoIDQuery() != null && queryGo2Term.getGoIDQuery().equals("")
 			||
 			queryGo2Term.getGoID() != null && queryGo2Term.getGoID().equals("")
@@ -146,13 +146,13 @@ public class ServGo2Term implements MapGo2Term{
 			}
 			return lsGo2Terms;
 		}
-		//Èç¹û¶¼²»´æÔÚ£¬Ôò·µ»ØÈ«²¿ĞÅÏ¢
+		//å¦‚æœéƒ½ä¸å­˜åœ¨ï¼Œåˆ™è¿”å›å…¨éƒ¨ä¿¡æ¯
 		return mapGo2Term.queryLsGo2Term(queryGo2Term);
  	}
 	/**
-	 * ¸ù¾İĞèÒª»ñÈ¡GOĞÅÏ¢
-	 * ÆäÖĞÈç¹ûÃ»ÓĞÉè¶¨goIDºÍgoIDqueryµÄ»°£¬¾Í»á·µ»ØÈ«²¿ĞÅÏ¢£¬<br>
-	 * <b>×¢ÒâÕâĞ©ĞÅÏ¢ÖĞÃ»ÓĞGOIDquery</b>
+	 * æ ¹æ®éœ€è¦è·å–GOä¿¡æ¯
+	 * å…¶ä¸­å¦‚æœæ²¡æœ‰è®¾å®šgoIDå’ŒgoIDqueryçš„è¯ï¼Œå°±ä¼šè¿”å›å…¨éƒ¨ä¿¡æ¯ï¼Œ<br>
+	 * <b>æ³¨æ„è¿™äº›ä¿¡æ¯ä¸­æ²¡æœ‰GOIDquery</b>
 	 * @param queryGo2Term
 	 * @return
 	 */

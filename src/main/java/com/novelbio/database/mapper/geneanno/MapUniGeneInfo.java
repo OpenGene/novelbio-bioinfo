@@ -10,9 +10,9 @@ import com.novelbio.database.mapper.MapperSql;
 public interface MapUniGeneInfo extends MapperSql {
 	
 	/**
-	 * ÓÃGene2GoInfoÀàÈ¥²éÕÒUniGeneInfo±í
-	 * Ö÷ÒªÊÇÀ´¿´±¾ÁĞÊÇ·ñÒÑ¾­´æÔÚÁË
-	 * ÓÃgeneIDÈ¥²éÕÒÊı¾İ¿â
+	 * ç”¨Gene2GoInfoç±»å»æŸ¥æ‰¾UniGeneInfoè¡¨
+	 * ä¸»è¦æ˜¯æ¥çœ‹æœ¬åˆ—æ˜¯å¦å·²ç»å­˜åœ¨äº†
+	 * ç”¨geneIDå»æŸ¥æ‰¾æ•°æ®åº“
 	 * @param GeneID
 	 * @return
 	 */
@@ -22,7 +22,7 @@ public interface MapUniGeneInfo extends MapperSql {
 	public void insertUniGeneInfo(UniGeneInfo uniGeneInfo);
 	
 	/**
-	 * ÓÃgeneID²éÕÒ£¬Éı¼¶È«²¿ÏîÄ¿£¬
+	 * ç”¨geneIDæŸ¥æ‰¾ï¼Œå‡çº§å…¨éƒ¨é¡¹ç›®ï¼Œ
 	 * @param geneInfo
 	 */
 	public void updateUniGeneInfo(UniGeneInfo uniGeneInfo);

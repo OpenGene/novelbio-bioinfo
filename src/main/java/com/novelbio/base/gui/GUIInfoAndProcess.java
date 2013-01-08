@@ -25,7 +25,7 @@ import java.awt.event.WindowEvent;
 import javax.swing.JProgressBar;
 
 /**
- * 显示进度条和读取信息的框
+ * 鏄剧ず杩涘害鏉″拰璇诲彇淇℃伅鐨勬
  * */
 public class GUIInfoAndProcess extends javax.swing.JPanel implements Runnable {
 	private JButton btnClose;

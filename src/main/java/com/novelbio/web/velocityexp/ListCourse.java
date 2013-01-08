@@ -34,9 +34,9 @@ public class ListCourse{
 		User user = new User();
 		user.setName("fsefs");
 		user.setText("zongjie");
-		user.setEmail("fwefe@fewef.com");// ÕâÊ±ºò±íµ¥ÀïÃæ¶ÔÓ¦Ñ¡Ïî¾Í»á³öÏÖ×Ö
+		user.setEmail("fwefe@fewef.com");// è¿™æ—¶å€™è¡¨å•é‡Œé¢å¯¹åº”é€‰é¡¹å°±ä¼šå‡ºç°å­—
 		user.setPassword("fssees");
-		//±¾²½Öè±ØĞëÒªÓĞ£¬ÒâË¼½«¶ÔÏó´«Èë
+		//æœ¬æ­¥éª¤å¿…é¡»è¦æœ‰ï¼Œæ„æ€å°†å¯¹è±¡ä¼ å…¥
 		mav.addObject("user", user);
 	    mav.addObject("courses", courses);
 	    
@@ -46,18 +46,18 @@ public class ListCourse{
 	}  
  
 	  
-    //redirect: Á¬½Ó´«¸øä¯ÀÀÆ÷£¬ä¯ÀÀÆ÷ÔÙ´Î·ÃÎÊ£¬ÍøÖ·»á·¢Éú±ä»¯£¬²ÎÊıÍ¨¹ısession´«µİ
-	//forward£º·şÎñÆ÷¶Ë´«Êä
-//    Á½¸öÖ»ÄÜÓÃÒ»¸ö
+    //redirect: è¿æ¥ä¼ ç»™æµè§ˆå™¨ï¼Œæµè§ˆå™¨å†æ¬¡è®¿é—®ï¼Œç½‘å€ä¼šå‘ç”Ÿå˜åŒ–ï¼Œå‚æ•°é€šè¿‡sessionä¼ é€’
+	//forwardï¼šæœåŠ¡å™¨ç«¯ä¼ è¾“
+//    ä¸¤ä¸ªåªèƒ½ç”¨ä¸€ä¸ª
     @RequestMapping( method = RequestMethod.POST)  
     public String post(User user, BindingResult result,Model model) {
- 	  // Model model ÊÇ½«postµÄÕâ¸öÊÓÍ¼Õû¸öµÄ´«µİÁË½øÀ´£¬¿ÉÒÔ¶ÔÆä½øĞĞÒ»Ğ©´¦Àí£¬²»¹ı²»´¦ÀíÒ²Ã»¹ØÏµ,¸Ã²ÎÊı¿ÉÒÔÊ¡
+ 	  // Model model æ˜¯å°†postçš„è¿™ä¸ªè§†å›¾æ•´ä¸ªçš„ä¼ é€’äº†è¿›æ¥ï¼Œå¯ä»¥å¯¹å…¶è¿›è¡Œä¸€äº›å¤„ç†ï¼Œä¸è¿‡ä¸å¤„ç†ä¹Ÿæ²¡å…³ç³»,è¯¥å‚æ•°å¯ä»¥çœ
     	
 // 	   userValidator.validate(user, result);
 //        if (result.hasErrors()) {
 //        	return "courseList";
 //        }
-        model.addAttribute("message", user.getEmail());//×°Èësession,Í¨¹ısession´«µİ£¬Ò²¿ÉÒÔÍ¨¹ıurl´«µİ
+        model.addAttribute("message", user.getEmail());//è£…å…¥session,é€šè¿‡sessionä¼ é€’ï¼Œä¹Ÿå¯ä»¥é€šè¿‡urlä¼ é€’
         // Use the redirect-after-post pattern to reduce double-submits. 
         return "test";
 //        return "forward:test.htm?method=test2";

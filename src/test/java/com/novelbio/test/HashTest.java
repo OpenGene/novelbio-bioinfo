@@ -7,9 +7,9 @@ import java.util.Map.Entry;
 import com.novelbio.database.model.modgeneid.GeneID;
 
 /**
- * 检测equal不同的类，相同的hashcode，会不会碰撞
- * hash不同查hash
- * hash相同，再查equal
+ * 妫�娴媏qual涓嶅悓鐨勭被锛岀浉鍚岀殑hashcode锛屼細涓嶄細纰版挒
+ * hash涓嶅悓鏌ash
+ * hash鐩稿悓锛屽啀鏌qual
  * @author zong0jie
  *
  */

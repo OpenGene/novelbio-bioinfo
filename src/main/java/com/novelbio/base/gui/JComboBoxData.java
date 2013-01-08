@@ -11,40 +11,40 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 
 /**
- * JComboBoxµÄÀ©Õ¹£¬·½±ã²Ù×÷<br>
- * T: Ñ¡ÔñµÄItemËù¶ÔÓ¦µÄÀà
+ * JComboBoxçš„æ‰©å±•ï¼Œæ–¹ä¾¿æ“ä½œ<br>
+ * T: é€‰æ‹©çš„Itemæ‰€å¯¹åº”çš„ç±»
  * @author zong0jie
  *
  */
 public class JComboBoxData<T> extends JComboBox{
 	private static final long serialVersionUID = -1651148386751801706L;
 	/**
-	 * ±£´ækeyºÍvalueµÄmap
+	 * ä¿å­˜keyå’Œvalueçš„map
 	 */
 	HashMap<String, T> mapString2Value = null;
 	/**
-	 * ±£´ækeyºÍvalueµÄmap
+	 * ä¿å­˜keyå’Œvalueçš„map
 	 */
 	HashMap<T, String> mapValue2String = null;
-	/** °²Ë³ĞòÅÅÁĞµÄkeyÖµ */
+	/** å®‰é¡ºåºæ’åˆ—çš„keyå€¼ */
 	ArrayList<String> lsInfo = new ArrayList<String>();
 	/**
-	 * null²»ÅÅĞò
-	 * true£ºÕıĞò
-	 * false£ºµ¹Ğò
+	 * nullä¸æ’åº
+	 * trueï¼šæ­£åº
+	 * falseï¼šå€’åº
 	 */
 	Boolean resultSort = null;
 	/**
-	 * <b>×¢ÒâÒªÔÚsetMapItem·½·¨Ö®Ç°Éè¶¨</b>
-	 * null²»ÅÅĞò
-	 * true£ºÕıĞò
-	 * false£ºµ¹Ğò
+	 * <b>æ³¨æ„è¦åœ¨setMapItemæ–¹æ³•ä¹‹å‰è®¾å®š</b>
+	 * nullä¸æ’åº
+	 * trueï¼šæ­£åº
+	 * falseï¼šå€’åº
 	 */
 	public void sortValue(Boolean resultSort) {
 		this.resultSort = resultSort;
 	}
 	/**
-	 * ×°ÔØhash±í
+	 * è£…è½½hashè¡¨
 	 * @param hashInfo
 	 */
 	public void setMapItem(HashMap<String, T> mapString2Value) {
@@ -63,7 +63,7 @@ public class JComboBoxData<T> extends JComboBox{
 				lsInfo.add(string);
 			}
 		}
-		//ÅÅĞò///////////////////
+		//æ’åº///////////////////
 		sortList(lsInfo);
 		/////////////////////////////////////////////////////
 		String[] speciesarray = new String[lsInfo.size()];
@@ -75,7 +75,7 @@ public class JComboBoxData<T> extends JComboBox{
 		setModel(jCobTaxSelectModel);
 	}
 	/**
-	 * ÅÅĞò£¬¸ù¾İ¸ø¶¨µÄ·½Ê½£¬×÷ÕıĞòµ¹Ğò»òÕß²»ÅÅĞò
+	 * æ’åºï¼Œæ ¹æ®ç»™å®šçš„æ–¹å¼ï¼Œä½œæ­£åºå€’åºæˆ–è€…ä¸æ’åº
 	 * @param lsInfo
 	 */
 	private void sortList(ArrayList<String> lsInfo) {
@@ -93,12 +93,12 @@ public class JComboBoxData<T> extends JComboBox{
 			}
 		}
 	}
-	/** Éè¶¨Õ¹Ê¾µÄÖµ */
+	/** è®¾å®šå±•ç¤ºçš„å€¼ */
 	public void setSelectVaule(String key) {
 		int index = lsInfo.indexOf(key);
 		setSelectedIndex(index);
 	}
-	/** Éè¶¨Õ¹Ê¾µÄÖµ */
+	/** è®¾å®šå±•ç¤ºçš„å€¼ */
 	public void setSelectVaule(T key) {
 		String keyString = mapValue2String.get(key);
 		setSelectVaule(keyString);

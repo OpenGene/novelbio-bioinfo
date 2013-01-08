@@ -14,7 +14,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
- * ½«ĞòÁĞ°´ÕÕÏà¹ØÎÄ¼ş½øĞĞ¸Ä¶¯
+ * å°†åºåˆ—æŒ‰ç…§ç›¸å…³æ–‡ä»¶è¿›è¡Œæ”¹åŠ¨
  * @author zong0jie
  *
  */
@@ -31,33 +31,33 @@ public class ModifySeq {
 	
 	
 	/**
-	 * ¶ÁÈ¡ĞòÁĞÎÄ¼ş£¬Éè¶¨ĞòÁĞ
+	 * è¯»å–åºåˆ—æ–‡ä»¶ï¼Œè®¾å®šåºåˆ—
 	 * @param SeqFile
 	 */
 	public void setSeqFasta(String SeqFile) {
 		seqFastaHash = new SeqFastaHash(SeqFile);
-		//Ö»»ñÈ¡µÚÒ»ÌõĞòÁĞ£¬ÒòÎªÏ¸¾úÖ»ÓĞÒ»Ìõ
+		//åªè·å–ç¬¬ä¸€æ¡åºåˆ—ï¼Œå› ä¸ºç»†èŒåªæœ‰ä¸€æ¡
 		seqFasta = seqFastaHash.getSeqFastaAll().get(0);
 	}
 	
 	/**
-	 * ¶ÁÈ¡ĞòÁĞÎÄ¼ş£¬Éè¶¨ĞòÁĞ
+	 * è¯»å–åºåˆ—æ–‡ä»¶ï¼Œè®¾å®šåºåˆ—
 	 * @param SeqFile
-	 * @param TOLOWCASE ÊÇ·ñ¸Ä³ÉĞ¡Ğ´£¬true¸Ä³ÉĞ¡Ğ´
-	 * false¸Ä³É´óĞ´
-	 * null²»±ä
+	 * @param TOLOWCASE æ˜¯å¦æ”¹æˆå°å†™ï¼Œtrueæ”¹æˆå°å†™
+	 * falseæ”¹æˆå¤§å†™
+	 * nullä¸å˜
 	 */
 	public void setSeqFasta(String SeqFile, Boolean TOLOWCASE) {
 		seqFastaHash = new SeqFastaHash(SeqFile, "", true,false,TOLOWCASE);
-		//Ö»»ñÈ¡µÚÒ»ÌõĞòÁĞ£¬ÒòÎªÏ¸¾úÖ»ÓĞÒ»Ìõ
+		//åªè·å–ç¬¬ä¸€æ¡åºåˆ—ï¼Œå› ä¸ºç»†èŒåªæœ‰ä¸€æ¡
 		seqFasta = seqFastaHash.getSeqFastaAll().get(0);
 	}
 	
 	/**
-	 * @param modifySeqFile ×°ĞòÁĞµÄÎÄ¼ş£¬ĞòÁĞ·ÅÔÚÒ»Æğ
-	 * @param pathInfo ×°ĞÅÏ¢µÄÎÄ¼ş¼Ğ£¬Ã¿¸öÎÄ¼şµ¥¶ÀÒ»¸ö.infoºó×º£¬²¢ÇÒÇ°×ººÍĞòÁĞÃûÍêÈ«ÏàÍ¬
+	 * @param modifySeqFile è£…åºåˆ—çš„æ–‡ä»¶ï¼Œåºåˆ—æ”¾åœ¨ä¸€èµ·
+	 * @param pathInfo è£…ä¿¡æ¯çš„æ–‡ä»¶å¤¹ï¼Œæ¯ä¸ªæ–‡ä»¶å•ç‹¬ä¸€ä¸ª.infoåç¼€ï¼Œå¹¶ä¸”å‰ç¼€å’Œåºåˆ—åå®Œå…¨ç›¸åŒ
 	 * @param outSeqFile
-	 * @param outNoModifySeqNameFile Ã»ÓĞ½øĞĞmodifyµÄĞòÁĞµÄÃû×Ö£¬Ğ´ÈëÒ»¸öÎÄ±¾
+	 * @param outNoModifySeqNameFile æ²¡æœ‰è¿›è¡Œmodifyçš„åºåˆ—çš„åå­—ï¼Œå†™å…¥ä¸€ä¸ªæ–‡æœ¬
 	 * @param modifySeqInfoFile
 	 */
 	public void readPathLastZ(String modifySeqFile, String pathInfo , String outSeqFile, String outNoModifySeqNameFile, String modifySeqInfoFile,String statictis) 
@@ -66,7 +66,7 @@ public class ModifySeq {
 		
 		SeqFastaHash seqModifyFastaHash = new SeqFastaHash(modifySeqFile);//h(modifySeqFile);
 		ArrayList<String[]> lsFileName = FileOperate.getFoldFileName(pathInfo, "*", "info");
-		//modifyµÄlst_InfoĞÅÏ¢
+		//modifyçš„lst_Infoä¿¡æ¯
 		ArrayList<ModifyInfo> lsModifyInfos = new ArrayList<ModifyInfo>();
 		for (String[] strings : lsFileName) {
 			LastzAlign lastzAlign = new LastzAlign();
@@ -107,16 +107,16 @@ public class ModifySeq {
 	
 	
 	/**
-	 * @param modifySeqFile ×°ĞòÁĞµÄÎÄ¼ş£¬ĞòÁĞ·ÅÔÚÒ»Æğ
-	 * @param lastzFile ×°ĞÅÏ¢µÄlastzÎÄ¼ş
+	 * @param modifySeqFile è£…åºåˆ—çš„æ–‡ä»¶ï¼Œåºåˆ—æ”¾åœ¨ä¸€èµ·
+	 * @param lastzFile è£…ä¿¡æ¯çš„lastzæ–‡ä»¶
 	 * @param outSeqFile
-	 * @param outNoModifySeqNameFile Ã»ÓĞ½øĞĞmodifyµÄĞòÁĞµÄÃû×Ö£¬Ğ´ÈëÒ»¸öÎÄ±¾
+	 * @param outNoModifySeqNameFile æ²¡æœ‰è¿›è¡Œmodifyçš„åºåˆ—çš„åå­—ï¼Œå†™å…¥ä¸€ä¸ªæ–‡æœ¬
 	 * @param modifySeqInfoFile
 	 */
 	public void readFileLastZ(String modifySeqFile, String lastzFile , String outSeqFile, String outNoModifySeqNameFile, String modifySeqInfoFile, String statictis) 
 	{		
 		SeqFastaHash seqModifyFastaHash = new SeqFastaHash(modifySeqFile);
-		//modifyµÄlst_InfoĞÅÏ¢
+		//modifyçš„lst_Infoä¿¡æ¯
 		ArrayList<ModifyInfo> lsModifyInfos = ModifyInfo.getModifyInfo(lastzFile, seqModifyFastaHash);
 		
 		ArrayList<ArrayList<ModifyInfo>> lsResult = ModifyInfo.delOverlap(lsModifyInfos);
@@ -150,14 +150,14 @@ public class ModifySeq {
 	
 	
 	/**
-	 * @param SeqFile ĞòÁĞÎÄ¼ş
-	 * @param modifySeqFile ×°ĞòÁĞµÄÎÄ¼ş£¬ĞòÁĞ·ÅÔÚÒ»Æğ
-	 * @param pathInfo ×°ĞÅÏ¢µÄÎÄ¼ş¼Ğ£¬Ã¿¸öÎÄ¼şµ¥¶ÀÒ»¸ö.infoºó×º£¬²¢ÇÒÇ°×ººÍĞòÁĞÃûÍêÈ«ÏàÍ¬
-	 * @param outNoModifySeqNameFile Ã»ÓĞ½øĞĞmodifyµÄĞòÁĞµÄÃû×Ö£¬Ğ´ÈëÒ»¸öÎÄ±¾
+	 * @param SeqFile åºåˆ—æ–‡ä»¶
+	 * @param modifySeqFile è£…åºåˆ—çš„æ–‡ä»¶ï¼Œåºåˆ—æ”¾åœ¨ä¸€èµ·
+	 * @param pathInfo è£…ä¿¡æ¯çš„æ–‡ä»¶å¤¹ï¼Œæ¯ä¸ªæ–‡ä»¶å•ç‹¬ä¸€ä¸ª.infoåç¼€ï¼Œå¹¶ä¸”å‰ç¼€å’Œåºåˆ—åå®Œå…¨ç›¸åŒ
+	 * @param outNoModifySeqNameFile æ²¡æœ‰è¿›è¡Œmodifyçš„åºåˆ—çš„åå­—ï¼Œå†™å…¥ä¸€ä¸ªæ–‡æœ¬
 	 */
 	public void readPathSoapsnp(String soapsnpFile) 
 	{
-		//modifyµÄlst_InfoĞÅÏ¢
+		//modifyçš„lst_Infoä¿¡æ¯
 		ArrayList<SoapsnpInfo> lsSoapsnpInfos = SoapsnpInfo.readInfo(soapsnpFile);
 		modifySeqSNP(lsSoapsnpInfos);
 	}
@@ -170,8 +170,8 @@ public class ModifySeq {
 	
 	
 	/**
-	 * @param seqName ĞòÁĞÃû
-	 * @param lsModifyInfos ¾­¹ıÅÅĞòµÄÃ»ÓĞoverlapµÄĞŞ¸ÄĞÅÏ¢
+	 * @param seqName åºåˆ—å
+	 * @param lsModifyInfos ç»è¿‡æ’åºçš„æ²¡æœ‰overlapçš„ä¿®æ”¹ä¿¡æ¯
 	 */
 	private void modifySeq( ArrayList<ModifyInfo> lsModifyInfos)
 	{
@@ -194,25 +194,25 @@ public class ModifySeq {
 		}
 	}
 	/**
-	 * @param seqName ĞòÁĞÃû
-	 * @param lsModifyInfos ¾­¹ıÅÅĞòµÄÃ»ÓĞoverlapµÄĞŞ¸ÄĞÅÏ¢
+	 * @param seqName åºåˆ—å
+	 * @param lsModifyInfos ç»è¿‡æ’åºçš„æ²¡æœ‰overlapçš„ä¿®æ”¹ä¿¡æ¯
 	 */
 	private void modifySeqSNP( ArrayList<SoapsnpInfo> lsSoapsnpInfos)
 	{
 		seqFasta.modifySeq(lsSoapsnpInfos);
 	}
 	/**
-	 * @param seqName ĞòÁĞÃû
-	 * @param lsModifyInfos ¾­¹ıÅÅĞòµÄÃ»ÓĞoverlapµÄĞŞ¸ÄĞÅÏ¢
+	 * @param seqName åºåˆ—å
+	 * @param lsModifyInfos ç»è¿‡æ’åºçš„æ²¡æœ‰overlapçš„ä¿®æ”¹ä¿¡æ¯
 	 */
 	private void modifySeqIndel( ArrayList<DindelInfo> lsDindelInfos)
 	{
 		Collections.sort(lsDindelInfos);
-		//´Ó´óµ½Ğ¡½øĞĞĞòÁĞµÄĞŞ¸Ä
+		//ä»å¤§åˆ°å°è¿›è¡Œåºåˆ—çš„ä¿®æ”¹
 		for (int i = lsDindelInfos.size()-1; i >= 0; i--) {
 			DindelInfo dindelInfo = lsDindelInfos.get(i);
 			if (dindelInfo.getAltBase().contains(">") || dindelInfo.getAltBase().contains(",")) {
-				logger.error("³öÏÖÒì³£×Ö·û: "+ dindelInfo.getAltBase());
+				logger.error("å‡ºç°å¼‚å¸¸å­—ç¬¦: "+ dindelInfo.getAltBase());
 				continue;
 			}
 			seqFasta.modifySeq(dindelInfo.getStart(), dindelInfo.getEnd(), dindelInfo.getAltBase(), true, true);

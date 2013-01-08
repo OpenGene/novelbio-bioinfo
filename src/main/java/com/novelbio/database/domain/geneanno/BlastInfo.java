@@ -8,7 +8,7 @@ import com.novelbio.database.model.modgeneid.GeneID;
 /**
  * 
  * @author zong0jie
- * °´ÕÕevalue´ÓĞ¡µ½´óÅÅĞò
+ * æŒ‰ç…§evalueä»å°åˆ°å¤§æ’åº
  */
 public class BlastInfo implements Comparable<BlastInfo>{
 	GeneID copedIDQ = null;
@@ -28,15 +28,15 @@ public class BlastInfo implements Comparable<BlastInfo>{
 	
 	private void setDate() {
 		SimpleDateFormat formatDate= new SimpleDateFormat( "yyyy-MM-dd");
-	     Date currentDate = new Date(); //µÃµ½µ±Ç°ÏµÍ³Ê±¼ä
-	     blastDate = formatDate.format(currentDate); //½«ÈÕÆÚÊ±¼ä¸ñÊ½»¯
+	     Date currentDate = new Date(); //å¾—åˆ°å½“å‰ç³»ç»Ÿæ—¶é—´
+	     blastDate = formatDate.format(currentDate); //å°†æ—¥æœŸæ—¶é—´æ ¼å¼åŒ–
 	}
 	public BlastInfo() {
 		setDate();
 	}
 	/**
-	 * Èç¹ûÊÇÒªµ¼ÈëÊı¾İ¿â£¬±ØĞëÓÃ¸Ã·½Ê½newÒ»¸ö<br>
-	 * »¹ĞèÒªÉè¶¨evalue, identityºÍqueryDB, subjectDB
+	 * å¦‚æœæ˜¯è¦å¯¼å…¥æ•°æ®åº“ï¼Œå¿…é¡»ç”¨è¯¥æ–¹å¼newä¸€ä¸ª<br>
+	 * è¿˜éœ€è¦è®¾å®ševalue, identityå’ŒqueryDB, subjectDB
 	 */
 	public BlastInfo(String AccIDQ, int taxIDQ , String AccIDS, int taxIDS) {
 		setDate();
@@ -59,8 +59,8 @@ public class BlastInfo implements Comparable<BlastInfo>{
 	     }
 	}
 	/**
-	 * Èç¹ûÊÇÒªµ¼ÈëÊı¾İ¿â£¬±ØĞëÓÃ¸Ã·½Ê½newÒ»¸ö<br>
-	 * »¹ĞèÒªÉè¶¨evalue, identityºÍqueryDB, subjectDB
+	 * å¦‚æœæ˜¯è¦å¯¼å…¥æ•°æ®åº“ï¼Œå¿…é¡»ç”¨è¯¥æ–¹å¼newä¸€ä¸ª<br>
+	 * è¿˜éœ€è¦è®¾å®ševalue, identityå’ŒqueryDB, subjectDB
 	 */
 	public BlastInfo(String AccIDQ, int taxIDQ , String genUniIDS, String IDType,int taxIDS) {
 		setDate();
@@ -83,8 +83,8 @@ public class BlastInfo implements Comparable<BlastInfo>{
 	     }
 	}
 	/**
-	 * Èç¹ûÊÇÒªµ¼ÈëÊı¾İ¿â£¬±ØĞëÓÃ¸Ã·½Ê½newÒ»¸ö<br>
-	 * »¹ĞèÒªÉè¶¨evalue, identityºÍqueryDB, subjectDB
+	 * å¦‚æœæ˜¯è¦å¯¼å…¥æ•°æ®åº“ï¼Œå¿…é¡»ç”¨è¯¥æ–¹å¼newä¸€ä¸ª<br>
+	 * è¿˜éœ€è¦è®¾å®ševalue, identityå’ŒqueryDB, subjectDB
 	 */
 	public BlastInfo(int taxIDQ, String genUniQ, int taxIDS, String genUniS) {
 		setDate();
@@ -120,7 +120,7 @@ public class BlastInfo implements Comparable<BlastInfo>{
 	
 	
 	/**
-	 * Á½¸öÒ»ÆğÉè¶¨±È½Ï·½±ã
+	 * ä¸¤ä¸ªä¸€èµ·è®¾å®šæ¯”è¾ƒæ–¹ä¾¿
 	 * @param evalue
 	 * @param identities
 	 */
@@ -129,7 +129,7 @@ public class BlastInfo implements Comparable<BlastInfo>{
 		this.identities = identities;
 	}
 	/**
-	 * Á½¸öÒ»ÆğÉè¶¨±È½Ï·½±ã
+	 * ä¸¤ä¸ªä¸€èµ·è®¾å®šæ¯”è¾ƒæ–¹ä¾¿
 //	 * @param queryDBInfo
 //	 * @param subDBInfo
 	 */
@@ -138,119 +138,119 @@ public class BlastInfo implements Comparable<BlastInfo>{
 		this.subjectDB = subDBInfo;
 	}
 	/**
-	 * ÉèÖÃ²éÕÒµÄĞòÁĞID
+	 * è®¾ç½®æŸ¥æ‰¾çš„åºåˆ—ID
 	 */
 	public void setQueryID(String queryID) {
 		this.queryID=queryID.trim();
 	}
 	/**
-	 * ÉèÖÃËÑµ½µÄĞòÁĞID
+	 * è®¾ç½®æœåˆ°çš„åºåˆ—ID
 	 */
 	public String getQueryID() {
 		return this.queryID.trim();
 	}
 ///////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * ÉèÖÃ²éÕÒĞòÁĞµÄÎïÖÖ
+	 * è®¾ç½®æŸ¥æ‰¾åºåˆ—çš„ç‰©ç§
 	 */
 	public void setQueryTax(int queryTax) {
 		this.queryTax=queryTax;
 	}
 	/**
-	 * ÉèÖÃ²éÕÒĞòÁĞµÄÎïÖÖ
+	 * è®¾ç½®æŸ¥æ‰¾åºåˆ—çš„ç‰©ç§
 	 */
 	public int getQueryTax() {
 		return this.queryTax;
 	}
 ///////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * ÉèÖÃ²éÕÒĞòÁĞµÄÀ´Ô´£¬Æ©ÈçAgilent
+	 * è®¾ç½®æŸ¥æ‰¾åºåˆ—çš„æ¥æºï¼Œè­¬å¦‚Agilent
 	 */
 	public void setQueryDB(String queryDB) {
 		this.queryDB=queryDB;
 	}
 	/**
-	 * »ñµÃ²éÕÒĞòÁĞµÄÀ´Ô´£¬Æ©ÈçAgilent
+	 * è·å¾—æŸ¥æ‰¾åºåˆ—çš„æ¥æºï¼Œè­¬å¦‚Agilent
 	 */
 	public String getQueryDB() {
 		return this.queryDB;
 	}
 ///////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * ÉèÖÃBlastËÑË÷µ½µÄĞòÁĞµÄgenUniID
+	 * è®¾ç½®Blastæœç´¢åˆ°çš„åºåˆ—çš„genUniID
 	 */
 	public void setSubjectID(String subjectID) {
 		this.subjectID=subjectID;
 	}
 
 	/**
-	 * »ñµÃBlastËÑË÷µ½µÄĞòÁĞµÄID
+	 * è·å¾—Blastæœç´¢åˆ°çš„åºåˆ—çš„ID
 	 */
 	public String getSubjectID() {
 		return this.subjectID;
 	}
 ///////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * ÉèÖÃBlastËÑË÷µ½µÄĞòÁĞµÄÎïÖÖ
+	 * è®¾ç½®Blastæœç´¢åˆ°çš„åºåˆ—çš„ç‰©ç§
 	 */
 	public void setSubjectTax(int subjectTax) 
 	{
 		this.subjectTax=subjectTax;
 	}
 	/**
-	 * »ñµÃBlastËÑË÷µ½µÄĞòÁĞµÄÎïÖÖ
+	 * è·å¾—Blastæœç´¢åˆ°çš„åºåˆ—çš„ç‰©ç§
 	 */
 	public int getSubjectTax() {
 		return this.subjectTax;
 	}
 ///////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * ÉèÖÃBlastËÑË÷µ½µÄĞòÁĞµÄÀ´Ô´£¬Èçagilent
+	 * è®¾ç½®Blastæœç´¢åˆ°çš„åºåˆ—çš„æ¥æºï¼Œå¦‚agilent
 	 */
 	public void setSubjectDB(String subjectDB) {
 		this.subjectDB=subjectDB;
 	}
 	/**
-	 * »ñµÃBlastËÑË÷µ½µÄĞòÁĞµÄÀ´Ô´£¬Èçagilent
+	 * è·å¾—Blastæœç´¢åˆ°çš„åºåˆ—çš„æ¥æºï¼Œå¦‚agilent
 	 */
 	public String getSubjecttDB() {
 		return this.subjectDB;
 	}
 ///////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * ÉèÖÃ²éÕÒµÄÏàËÆ¶È,³õÖµÎª0
+	 * è®¾ç½®æŸ¥æ‰¾çš„ç›¸ä¼¼åº¦,åˆå€¼ä¸º0
 	 */
 	public void setIdentities(double identities) {
 		this.identities=identities;
 	}
 	/**
-	 * ÉèÖÃ²éÕÒµÄÏàËÆ¶È,³õÖµÎª0
+	 * è®¾ç½®æŸ¥æ‰¾çš„ç›¸ä¼¼åº¦,åˆå€¼ä¸º0
 	 */
 	public double getIdentities() {
 		return this.identities;
 	}
 ///////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * ÉèÖÃ²éÕÒµÄevalue£¬³õÖµÎª100
+	 * è®¾ç½®æŸ¥æ‰¾çš„evalueï¼Œåˆå€¼ä¸º100
 	 */
 	public void setEvalue(double evalue) {
 		this.evalue=evalue;
 	}
 	/**
-	 * »ñµÃ²éÕÒµÄevalue£¬³õÖµÎª100
+	 * è·å¾—æŸ¥æ‰¾çš„evalueï¼Œåˆå€¼ä¸º100
 	 */
 	public double getEvalue() {
 		return this.evalue;
 	}
 ///////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * ÉèÖÃ²éÕÒµÄÈÕÆÚ
+	 * è®¾ç½®æŸ¥æ‰¾çš„æ—¥æœŸ
 	 */
 	public void setBlastDate(String blastDate) {
 		this.blastDate=blastDate;
 	}
 	/**
-	 * »ñµÃ²éÕÒµÄÈÕÆÚ
+	 * è·å¾—æŸ¥æ‰¾çš„æ—¥æœŸ
 	 */
 	public String getBlastDate() {
 		return this.blastDate;
@@ -258,19 +258,19 @@ public class BlastInfo implements Comparable<BlastInfo>{
 ///////////////////////////////////////////////////////////////////////////////////
 	private String subjectTab;
 	/**
-	 * ÉèÖÃblastµÃµ½µÄÊı¾İÊÇ»ùÓÚÄÄ¸ö±íµÄ£¬ÓĞNCBIIDºÍUniprotIDÁ½¸öÑ¡Ôñ
+	 * è®¾ç½®blastå¾—åˆ°çš„æ•°æ®æ˜¯åŸºäºå“ªä¸ªè¡¨çš„ï¼Œæœ‰NCBIIDå’ŒUniprotIDä¸¤ä¸ªé€‰æ‹©
 	 */
 	public void setSubjectTab(String subjectTab) {
 		this.subjectTab=subjectTab;
 	}
 	/**
-	 * »ñµÃblastµÃµ½µÄÊı¾İÊÇ»ùÓÚÄÄ¸ö±íµÄ£¬ÓĞNCBIIDºÍUniprotIDÁ½¸öÑ¡Ôñ
+	 * è·å¾—blastå¾—åˆ°çš„æ•°æ®æ˜¯åŸºäºå“ªä¸ªè¡¨çš„ï¼Œæœ‰NCBIIDå’ŒUniprotIDä¸¤ä¸ªé€‰æ‹©
 	 */
 	public String getSubjectTab() {
 		return this.subjectTab;
 	}
 	/**
-	 * °´ÕÕevalue´ÓĞ¡µ½´óÅÅĞò
+	 * æŒ‰ç…§evalueä»å°åˆ°å¤§æ’åº
 	 */
 	@Override
 	public int compareTo(BlastInfo o) {

@@ -32,36 +32,36 @@ import com.novelbio.web.validator.UserValidator;
            this.userValidator = userValidator;  
        }
          
-       @RequestMapping(value = "/form2",method = RequestMethod.GET)  //·ÃÎÊµØÖ·Îª   ÓòÃû/servlet/classµÄvalue/±¾value + ºó×º
+       @RequestMapping(value = "/form2",method = RequestMethod.GET)  //è®¿é—®åœ°å€ä¸º   åŸŸå/servlet/classçš„value/æœ¬value + åç¼€
 //       @RequestMapping(method = RequestMethod.GET)  
        public ModelAndView get() {
-    	   //ÒÔÏÂ¼¸ÖÖ¿ÉÒÔµÄÇé¿ö
-    	   //1.Ö¸¶¨ÊÓÍ¼²¢·µ»Ø
+    	   //ä»¥ä¸‹å‡ ç§å¯ä»¥çš„æƒ…å†µ
+    	   //1.æŒ‡å®šè§†å›¾å¹¶è¿”å›
            ModelAndView mav = new ModelAndView("form");
            //mav.setViewName("form");
-           //¿ÉÒÔÍùÀïÃæÖ±½Ó²åÈëÒ»¸ö ĞÂ½¨¶ÔÏó£¬
+           //å¯ä»¥å¾€é‡Œé¢ç›´æ¥æ’å…¥ä¸€ä¸ª æ–°å»ºå¯¹è±¡ï¼Œ
       	   User user = new User();
       	   user.setName("fsefs");
       	   user.setText("zongjie");
-    	   user.setEmail("fwefe@fewef.com");//ÕâÊ±ºò±íµ¥ÀïÃæ¶ÔÓ¦Ñ¡Ïî¾Í»á³öÏÖ×Ö
+    	   user.setEmail("fwefe@fewef.com");//è¿™æ—¶å€™è¡¨å•é‡Œé¢å¯¹åº”é€‰é¡¹å°±ä¼šå‡ºç°å­—
            mav.addObject("user",user);
-           //Ò²¿ÉÒÔÖ¸¶¨¶ÔÏóÃû£¬ÔÙ²åÈë¶ÔÏó
+           //ä¹Ÿå¯ä»¥æŒ‡å®šå¯¹è±¡åï¼Œå†æ’å…¥å¯¹è±¡
            //mav.addObject( new User());
            
-           //2. ·µ»ØÒ»¸öModelMap£¬ModelMapËÆºõ²»ÄÜÖ¸¶¨ÊÓÍ¼£¬
-           //ÄÇÃ´Èç¹ûÇ°ÃæµÄ@RequestMapping ÉèÖÃºÏÀí£¬ÕâÀïspring»áÄ¬ÈÏ½«ÊÓÍ¼¶ÔÓ¦µ½formÉÏÈ¥£¬ËùÒÔÖ±½ÓÔÚModelMapÖĞ²åÈëÒ»¸ö¶ÔÏó¾ÍºÃ¡£
-           //×¢Òâ´ËÊ±µÄreturn¶ÔÏóÊÇModelMap
+           //2. è¿”å›ä¸€ä¸ªModelMapï¼ŒModelMapä¼¼ä¹ä¸èƒ½æŒ‡å®šè§†å›¾ï¼Œ
+           //é‚£ä¹ˆå¦‚æœå‰é¢çš„@RequestMapping è®¾ç½®åˆç†ï¼Œè¿™é‡Œspringä¼šé»˜è®¤å°†è§†å›¾å¯¹åº”åˆ°formä¸Šå»ï¼Œæ‰€ä»¥ç›´æ¥åœ¨ModelMapä¸­æ’å…¥ä¸€ä¸ªå¯¹è±¡å°±å¥½ã€‚
+           //æ³¨æ„æ­¤æ—¶çš„returnå¯¹è±¡æ˜¯ModelMap
            //return new ModelMap("user", new User());  
            return mav;
        }  
       
-//     @RequestMapping(value = "form22",method = RequestMethod.GET)  //·ÃÎÊµØÖ·Îª   ÓòÃû/servlet/classµÄvalue/±¾value + ºó×º
+//     @RequestMapping(value = "form22",method = RequestMethod.GET)  //è®¿é—®åœ°å€ä¸º   åŸŸå/servlet/classçš„value/æœ¬value + åç¼€
        @RequestMapping(method = RequestMethod.GET)  
        public ModelMap get(ModelMap model) {
-//    	   ´ËÊ±modelÖ±½Ó¾ÍÊÇformÊÓÍ¼,¿ÉÒÔÍùÀïÃæÌí¼Óuser¶ÔÏó,¿ÉÒÔÏÈÉè¶¨Ò»Ğ©Öµ
-//    	   µ±È»Ò²¿ÉÒÔModelAndView mav = new ModelAndView("form");,ÔÙÍùÀïÃæÌí¼Óuser
+//    	   æ­¤æ—¶modelç›´æ¥å°±æ˜¯formè§†å›¾,å¯ä»¥å¾€é‡Œé¢æ·»åŠ userå¯¹è±¡,å¯ä»¥å…ˆè®¾å®šä¸€äº›å€¼
+//    	   å½“ç„¶ä¹Ÿå¯ä»¥ModelAndView mav = new ModelAndView("form");,å†å¾€é‡Œé¢æ·»åŠ user
     	   User user = new User();
-    	   user.setEmail("fwefe@fewef");//ÕâÊ±ºò±íµ¥ÀïÃæ¶ÔÓ¦Ñ¡Ïî¾Í»á³öÏÖ×Ö
+    	   user.setEmail("fwefe@fewef");//è¿™æ—¶å€™è¡¨å•é‡Œé¢å¯¹åº”é€‰é¡¹å°±ä¼šå‡ºç°å­—
            model.addAttribute(user);
            return model;
        }
@@ -69,27 +69,27 @@ import com.novelbio.web.validator.UserValidator;
        
        
        
-//     @RequestMapping(value = "form",method = RequestMethod.GET)  //·ÃÎÊµØÖ·Îª   ÓòÃû/servlet/classµÄvalue/±¾value + ºó×º
+//     @RequestMapping(value = "form",method = RequestMethod.GET)  //è®¿é—®åœ°å€ä¸º   åŸŸå/servlet/classçš„value/æœ¬value + åç¼€
        @RequestMapping(value ="/formhuih.htm",method =RequestMethod.GET )  
        public ModelAndView get(@RequestBody String body) {
     	   System.out.println(body);
-    	   //ÒÔÏÂ¼¸ÖÖ¿ÉÒÔµÄÇé¿ö
-    	   //1.Ö¸¶¨ÊÓÍ¼²¢·µ»Ø
+    	   //ä»¥ä¸‹å‡ ç§å¯ä»¥çš„æƒ…å†µ
+    	   //1.æŒ‡å®šè§†å›¾å¹¶è¿”å›
            ModelAndView mav = new ModelAndView("form");
            //mav.setViewName("form");
-           //¿ÉÒÔÍùÀïÃæÖ±½Ó²åÈëÒ»¸ö ĞÂ½¨¶ÔÏó£¬
+           //å¯ä»¥å¾€é‡Œé¢ç›´æ¥æ’å…¥ä¸€ä¸ª æ–°å»ºå¯¹è±¡ï¼Œ
       	   User user = new User();
       	   user.setName("formhuih");
       	   user.setText("zongjie");
-    	   user.setEmail("fwefe@fewef.com");//ÕâÊ±ºò±íµ¥ÀïÃæ¶ÔÓ¦Ñ¡Ïî¾Í»á³öÏÖ×Ö
+    	   user.setEmail("fwefe@fewef.com");//è¿™æ—¶å€™è¡¨å•é‡Œé¢å¯¹åº”é€‰é¡¹å°±ä¼šå‡ºç°å­—
            mav.addObject("user",user);
 //           mav.addObject("user", new User());
-           //Ò²¿ÉÒÔÖ¸¶¨¶ÔÏóÃû£¬ÔÙ²åÈë¶ÔÏó
+           //ä¹Ÿå¯ä»¥æŒ‡å®šå¯¹è±¡åï¼Œå†æ’å…¥å¯¹è±¡
            //mav.addObject( new User());
            
-           //2. ·µ»ØÒ»¸öModelMap£¬ModelMapËÆºõ²»ÄÜÖ¸¶¨ÊÓÍ¼£¬
-           //ÄÇÃ´Èç¹ûÇ°ÃæµÄ@RequestMapping ÉèÖÃºÏÀí£¬ÕâÀïspring»áÄ¬ÈÏ½«ÊÓÍ¼¶ÔÓ¦µ½formÉÏÈ¥£¬ËùÒÔÖ±½ÓÔÚModelMapÖĞ²åÈëÒ»¸ö¶ÔÏó¾ÍºÃ¡£
-           //×¢Òâ´ËÊ±µÄreturn¶ÔÏóÊÇModelMap
+           //2. è¿”å›ä¸€ä¸ªModelMapï¼ŒModelMapä¼¼ä¹ä¸èƒ½æŒ‡å®šè§†å›¾ï¼Œ
+           //é‚£ä¹ˆå¦‚æœå‰é¢çš„@RequestMapping è®¾ç½®åˆç†ï¼Œè¿™é‡Œspringä¼šé»˜è®¤å°†è§†å›¾å¯¹åº”åˆ°formä¸Šå»ï¼Œæ‰€ä»¥ç›´æ¥åœ¨ModelMapä¸­æ’å…¥ä¸€ä¸ªå¯¹è±¡å°±å¥½ã€‚
+           //æ³¨æ„æ­¤æ—¶çš„returnå¯¹è±¡æ˜¯ModelMap
            //return new ModelMap("userMessage", new UserMessage());  
            return mav;
        }
@@ -102,12 +102,12 @@ import com.novelbio.web.validator.UserValidator;
        
        @RequestMapping( method = RequestMethod.POST)  
        public String post( User user, BindingResult result,Model model) {
-    	  // Model model ÊÇ½«postµÄÕâ¸öÊÓÍ¼Õû¸öµÄ´«µİÁË½øÀ´£¬¿ÉÒÔ¶ÔÆä½øĞĞÒ»Ğ©´¦Àí£¬²»¹ı²»´¦ÀíÒ²Ã»¹ØÏµ,¸Ã²ÎÊı¿ÉÒÔÊ¡
+    	  // Model model æ˜¯å°†postçš„è¿™ä¸ªè§†å›¾æ•´ä¸ªçš„ä¼ é€’äº†è¿›æ¥ï¼Œå¯ä»¥å¯¹å…¶è¿›è¡Œä¸€äº›å¤„ç†ï¼Œä¸è¿‡ä¸å¤„ç†ä¹Ÿæ²¡å…³ç³»,è¯¥å‚æ•°å¯ä»¥çœ
     	   userValidator.validate(user, result);  
            if (result.hasErrors()) { return "formhuih"; }  
              
            // Use the redirect-after-post pattern to reduce double-submits. 
-           model.addAttribute("user", user);//×°Èësession
+           model.addAttribute("user", user);//è£…å…¥session
            return "redirect:thanks.htm";  
        }
         static int aa = 1;
@@ -124,12 +124,12 @@ import com.novelbio.web.validator.UserValidator;
 //    	   return "redirect:thanks2.htm";
     	   
        }
-       //½«sessionÖĞµÄuserÌáÈ¡³öÀ´
+       //å°†sessionä¸­çš„useræå–å‡ºæ¥
        @RequestMapping(value ="thanks2", method = RequestMethod.GET)  
        public ModelAndView thanks2(@ModelAttribute("user") User user)
        {
     		ModelAndView mav = new ModelAndView("test");
-    		//ModelAndView mav = new ModelAndView();//Ä¬ÈÏÌí¼Ótest¿ØÖÆÆ÷ÊÓÍ¼
+    		//ModelAndView mav = new ModelAndView();//é»˜è®¤æ·»åŠ testæ§åˆ¶å™¨è§†å›¾
     		mav.addObject("message", user.getEmail());
     		mav.addObject("counter", user.getName());
     		System.out.println(mav.getViewName());

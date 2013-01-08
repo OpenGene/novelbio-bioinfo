@@ -14,7 +14,7 @@ import com.novelbio.database.updatedb.database.MicroArrayBlast;
 import com.novelbio.generalConf.NovelBioConst;
 
 /**
- * ¸ø¶¨excelÖĞµÄµÚÒ»ÁĞID£¬Í¬Ò»¸öcellÖĞµÄIDÓÃ¡°//¡±¸ô¿ª£¬Í¬Ê±ÓÖ¸ø¶¨microarrayÎÄ¼ş£¬½«microarrayµÄÖµ¸½¼ÓÉÏÈ¥£¬²¢ÇÒ¼ÓÉÏ¸Ã»ùÒòµÄtss×ø±ê
+ * ç»™å®šexcelä¸­çš„ç¬¬ä¸€åˆ—IDï¼ŒåŒä¸€ä¸ªcellä¸­çš„IDç”¨â€œ//â€éš”å¼€ï¼ŒåŒæ—¶åˆç»™å®šmicroarrayæ–‡ä»¶ï¼Œå°†microarrayçš„å€¼é™„åŠ ä¸Šå»ï¼Œå¹¶ä¸”åŠ ä¸Šè¯¥åŸºå› çš„tssåæ ‡
  * @author zong0jie
  */
 public class ID2Exp {
@@ -37,9 +37,9 @@ public class ID2Exp {
 	}
 	
 	/**
-	 * ¶ÁÈ¡microarrayÊı¾İ
-	 * @param geneExpInfo ±í´ïÆ×Êı¾İ
-	 * @param colCondition ÄÄ¼¸ÁĞÊı¾İ 1£º geneID Ö®ºó£¬gene±í´ïÁ¿
+	 * è¯»å–microarrayæ•°æ®
+	 * @param geneExpInfo è¡¨è¾¾è°±æ•°æ®
+	 * @param colCondition å“ªå‡ åˆ—æ•°æ® 1ï¼š geneID ä¹‹åï¼Œgeneè¡¨è¾¾é‡
 	 */
 	private void readGeneExpTxt(String geneExpInfo, int[] colCondition) {
 		lsMicroarrayInfo = ExcelTxtRead.readLsExcelTxt(geneExpInfo, colCondition, 1, -1);	
@@ -67,7 +67,7 @@ public class ID2Exp {
 		txtOut.ExcelWrite(lsResult);
 	}
 	/**
-	 * ½«¸ø¶¨µÄĞÅÏ¢mergeÔÚÒ»Æğ
+	 * å°†ç»™å®šçš„ä¿¡æ¯mergeåœ¨ä¸€èµ·
 	 */
 	private ArrayList<String[]> mergeInfo() {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();

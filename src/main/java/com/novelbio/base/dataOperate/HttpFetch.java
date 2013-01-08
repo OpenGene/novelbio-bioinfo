@@ -61,12 +61,12 @@ import org.apache.log4j.Logger;
 import com.sun.xml.internal.xsom.impl.WildcardImpl.Other;
 
 /**
- * Ò»´ÎÖ»ÄÜÑ¡ÔñÒ»Ïî£¬ÒªÃ´post£¬ÒªÃ´get
+ * ä¸€æ¬¡åªèƒ½é€‰æ‹©ä¸€é¡¹ï¼Œè¦ä¹ˆpostï¼Œè¦ä¹ˆget
  * 
- * »¹Ã»ÓĞÉè¶¨»ñµÃÍøÒ³µÄĞÅÏ¢£¬Æ©Èç404»òÕß200µÈ
+ * è¿˜æ²¡æœ‰è®¾å®šè·å¾—ç½‘é¡µçš„ä¿¡æ¯ï¼Œè­¬å¦‚404æˆ–è€…200ç­‰
  * 
- * Ê×ÏÈquery()£¬·µ»ØÒ»¸öÊÇ·ñ³É¹¦µÄ±êÇ©¡£
- * Èç¹ûÍ¨¹ıÁËÔòµ÷ÓÃreadResponse()»òÕßdownload()
+ * é¦–å…ˆquery()ï¼Œè¿”å›ä¸€ä¸ªæ˜¯å¦æˆåŠŸçš„æ ‡ç­¾ã€‚
+ * å¦‚æœé€šè¿‡äº†åˆ™è°ƒç”¨readResponse()æˆ–è€…download()
  * @author zongjie
  *
  */
@@ -77,7 +77,7 @@ public class HttpFetch {
 	public static final int HTTPTYPE_GET = 4;
 	public static final int HTTPTYPE_HEAD = 12;
 	/**
-	 * ÏÂÔØ»º³å
+	 * ä¸‹è½½ç¼“å†²
 	 */
 	private final static int BUFFER = 1024;
 	
@@ -104,7 +104,7 @@ public class HttpFetch {
 	HttpRequestBase httpRequest;
 	UrlEncodedFormEntity postEntity;
 	
-	/** ºÃÏñhttpclient»á×Ô¶¯±£´æcookie */
+	/** å¥½åƒhttpclientä¼šè‡ªåŠ¨ä¿å­˜cookie */
 	CookieStore cookieStore;
 
 	InputStream instream;
@@ -117,8 +117,8 @@ public class HttpFetch {
 	public static HttpFetch getInstance() {
 		return new HttpFetch();
 	}
-	/** ·µ»Ø¹²ÓÃÒ»¸öÁ¬½Ó³ØµÄwebFetch
-	 * @param num Öµ±ØĞë´óÓÚµÈÓÚ1
+	/** è¿”å›å…±ç”¨ä¸€ä¸ªè¿æ¥æ± çš„webFetch
+	 * @param num å€¼å¿…é¡»å¤§äºç­‰äº1
 	 *  */
 	public static ArrayList<HttpFetch> getInstanceLs(int num) {
 		ArrayList<HttpFetch> lsResult = new ArrayList<HttpFetch>();
@@ -130,7 +130,7 @@ public class HttpFetch {
 		}
 		return lsResult;
 	}
-	/** ·µ»ØÓëÊäÈëµÄwebFetch¹²ÓÃÍ¬Ò»¸öÁ¬½Ó³ØµÄwebFetch */
+	/** è¿”å›ä¸è¾“å…¥çš„webFetchå…±ç”¨åŒä¸€ä¸ªè¿æ¥æ± çš„webFetch */
 	public static HttpFetch getInstance(HttpFetch webFetch) {
 		return new HttpFetch(webFetch.httpclient);
 	}
@@ -148,9 +148,9 @@ public class HttpFetch {
 			return;
 		}
 		httpclient = new DefaultHttpClient(cm);
-		//Éè¶¨ÖØÊÔ
+		//è®¾å®šé‡è¯•
 		httpclient.setHttpRequestRetryHandler(new MyRetryHandler());
-		//Éè¶¨http queryµÄ²ÎÊıµÈ
+		//è®¾å®šhttp queryçš„å‚æ•°ç­‰
 		HttpParams httpParams = new BasicHttpParams();
 		HttpProtocolParamBean paramsBean = new HttpProtocolParamBean(httpParams); 
 		paramsBean.setVersion(HttpVersion.HTTP_1_1);
@@ -159,7 +159,7 @@ public class HttpFetch {
 		httpclient.setParams(httpParams);
 		httpclient.getParams().setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY);
 		httpclient.getParams().setBooleanParameter(ClientPNames.HANDLE_REDIRECTS, true);
-		//ÖØ¶¨ÏòµÄ²ßÂÔ£¬Óöµ½301»òÕß302Ò²¼ÌĞøÖØ¶¨Ïò
+		//é‡å®šå‘çš„ç­–ç•¥ï¼Œé‡åˆ°301æˆ–è€…302ä¹Ÿç»§ç»­é‡å®šå‘
 		 httpclient.setRedirectStrategy(new DefaultRedirectStrategy() {                
 			 public boolean isRedirected(HttpRequest request, HttpResponse response, HttpContext context)  {
 				 boolean isRedirect=false;
@@ -189,18 +189,18 @@ public class HttpFetch {
 		lsHeaders.add(new BasicHeader("Accept-Charset", "gb2312,utf-8,ISO-8859-1;q=0.7,*;q=0.7"));
 		lsHeaders.add(new BasicHeader("UA-CPU", "x86"));
 	}
-	/** Ó¦¸Ã²»ĞèÒªÉèÖÃ£¬ÄÚ²¿»á×Ô¶¯ÅĞ¶Ï */
+	/** åº”è¯¥ä¸éœ€è¦è®¾ç½®ï¼Œå†…éƒ¨ä¼šè‡ªåŠ¨åˆ¤æ–­ */
 	public void setHttpType(int httpType) {
 		this.methodType = httpType;
 	}
-	/** ÓĞĞ©ÍøÕ¾Æ©Èçpixiv£¬ÔÚÏÂÔØÍ¼Æ¬Ê±ĞèÒªä¯ÀÀÆ÷Ìá¹©×î½ü·ÃÎÊµÄÁ´½Ó£¬¶øÇÒ±ØĞëÊÇÆäÖ¸¶¨µÄÁ´½Ó²ÅÄÜÏÂÔØ */
+	/** æœ‰äº›ç½‘ç«™è­¬å¦‚pixivï¼Œåœ¨ä¸‹è½½å›¾ç‰‡æ—¶éœ€è¦æµè§ˆå™¨æä¾›æœ€è¿‘è®¿é—®çš„é“¾æ¥ï¼Œè€Œä¸”å¿…é¡»æ˜¯å…¶æŒ‡å®šçš„é“¾æ¥æ‰èƒ½ä¸‹è½½ */
 	public void setRefUrl(String refUrl) {
 		if (refUrl == null) {
 			return;
 		}
 		lsHeaders.add(new BasicHeader("Referer", refUrl));
 	}
-	/** ÊäÈëÍøÖ·£¬¿ªÍ·¿ÉÒÔ²»¼Óhttp:// */
+	/** è¾“å…¥ç½‘å€ï¼Œå¼€å¤´å¯ä»¥ä¸åŠ http:// */
 	public void setUrl(String url) {
 		if (url == null) {
 			return;
@@ -218,7 +218,7 @@ public class HttpFetch {
 		this.url = url;
 		querySucess = false;
 	}
-	/** Éè¶¨postÌá½»µÄ²ÎÊı£¬Éè¶¨ºóÄ¬ÈÏ¸ÄÎªpost method */
+	/** è®¾å®špostæäº¤çš„å‚æ•°ï¼Œè®¾å®šåé»˜è®¤æ”¹ä¸ºpost method */
 	public void setPostParam(List<String[]> lsKey2Value) {
 		Map<String, String> mapKey2Value = new HashMap<String, String>();
 		for (String[] strings : lsKey2Value) {
@@ -226,7 +226,7 @@ public class HttpFetch {
 		}
 		setPostParam(mapKey2Value);
 	}
-	/** Éè¶¨postÌá½»µÄ²ÎÊı£¬Éè¶¨ºóÄ¬ÈÏ¸ÄÎªpost method */
+	/** è®¾å®špostæäº¤çš„å‚æ•°ï¼Œè®¾å®šåé»˜è®¤æ”¹ä¸ºpost method */
 	public void setPostParam(Map<String, String> mapKey2Value) {
 		try {
 			setPostParamExp(mapKey2Value);
@@ -245,15 +245,15 @@ public class HttpFetch {
 	public void setCookies(CookieStore cookieStore) {
 		httpclient.setCookieStore(cookieStore);
 	}
-	/** ÔËĞĞÖ®ºó»ñµÃcookies */
+	/** è¿è¡Œä¹‹åè·å¾—cookies */
 	public CookieStore getCookies() {
 		return cookieStore;
 	}
-	/** ÊÇ·ñ³É¹¦query */
+	/** æ˜¯å¦æˆåŠŸquery */
 	public boolean isQuerySucess() {
 		return querySucess;
 	}
-	/** ¶ÁÈ¡µÄÍøÒ³µÄstring¸ñÊ½£¬¶ÁÈ¡³ö´íÔò·µ»Ønull */
+	/** è¯»å–çš„ç½‘é¡µçš„stringæ ¼å¼ï¼Œè¯»å–å‡ºé”™åˆ™è¿”å›null */
 	public String getResponse() {
 		String result = "";
 		if (!querySucess) {
@@ -265,8 +265,8 @@ public class HttpFetch {
 		closeStream();
 		return result;
 	}
-	/** ×îºÃÄÜÏÈÅĞ¶ÏÒ»ÏÂÊÇ·ñÎªnull
-	 * Èç¹ûÎªnull±íÊ¾Ã»ÓĞ¶ÁÈ¡³É¹¦
+	/** æœ€å¥½èƒ½å…ˆåˆ¤æ–­ä¸€ä¸‹æ˜¯å¦ä¸ºnull
+	 * å¦‚æœä¸ºnullè¡¨ç¤ºæ²¡æœ‰è¯»å–æˆåŠŸ
 	 * @return
 	 */
 	public Iterable<String> readResponse() {
@@ -278,7 +278,7 @@ public class HttpFetch {
 		return null;
 	}
 	/**
-	 * µü´ú¶ÁÈ¡·µ»ØµÄ½á¹û
+	 * è¿­ä»£è¯»å–è¿”å›çš„ç»“æœ
 	 * @param filename
 	 * @return
 	 * @throws Exception 
@@ -317,8 +317,8 @@ public class HttpFetch {
 			}
 		};
 	}
-	/** »ñµÃ·µ»ØµÄbufferReaderÀà
-	 * Ã²ËÆ»á×Ô¶¯ÖØ¶¨Ïò£¬Èç¹û²»»áµÄ»°£¬¿ÉÒÔ½âÎöHttpResponseµÄÍ·ÎÄ¼ş£¬»ñµÃÖØ¶¨ÏòµÄurl£¬È»ºóÔÙ´Îget»òÕßpost
+	/** è·å¾—è¿”å›çš„bufferReaderç±»
+	 * è²Œä¼¼ä¼šè‡ªåŠ¨é‡å®šå‘ï¼Œå¦‚æœä¸ä¼šçš„è¯ï¼Œå¯ä»¥è§£æHttpResponseçš„å¤´æ–‡ä»¶ï¼Œè·å¾—é‡å®šå‘çš„urlï¼Œç„¶åå†æ¬¡getæˆ–è€…post
 	 *  */	
 	private BufferedReader getResponseReader() throws ClientProtocolException, IOException {
 		if (!querySucess) {
@@ -337,7 +337,7 @@ public class HttpFetch {
 		}
 		return false;
 	}
-	/** ÊÇ·ñ³É¹¦ÏÂÔØ 
+	/** æ˜¯å¦æˆåŠŸä¸‹è½½ 
 	 * @throws IOException 
 	 * @throws ClientProtocolException */
 	private boolean downloadExp(String fileName) throws ClientProtocolException, IOException {
@@ -357,17 +357,17 @@ public class HttpFetch {
 		out = null;
 		return true;
 	}
-	/** Ä¬ÈÏÖØÊÔ2´ÎµÄquery */
+	/** é»˜è®¤é‡è¯•2æ¬¡çš„query */
 	public boolean query() {
 		return query(2);
 	}
-	/** ÖØÊÔÈô¸É´Î,ÔÚ0-100Ö®¼ä */
+	/** é‡è¯•è‹¥å¹²æ¬¡,åœ¨0-100ä¹‹é—´ */
 	public boolean query(int retryNum) {
 		if (retryNum <= 0 || retryNum > 100) {
 			retryNum = 2;
 		}
 		try {
-			//ÖØÊÔºÃ¶à´Î
+			//é‡è¯•å¥½å¤šæ¬¡
 			int queryNum = 0;
 			while (!querySucess) {
 				getResponseExp();
@@ -384,7 +384,7 @@ public class HttpFetch {
 		return querySucess;
 	}
 	/**
-	 * ·µ»Ønull ±íÊ¾Ã»ÓĞ³É¹¦
+	 * è¿”å›null è¡¨ç¤ºæ²¡æœ‰æˆåŠŸ
 	 * @return
 	 * @throws ClientProtocolException
 	 * @throws IOException
@@ -397,7 +397,7 @@ public class HttpFetch {
 		try {
 			httpResponse = httpclient.execute(getQuery());
 		} catch (Exception e) {
-			logger.error("query³ö´í£º" + url);
+			logger.error("queryå‡ºé”™ï¼š" + url);
 			return;
 		}
 		int httpStatusCode = httpResponse.getStatusLine().getStatusCode();
@@ -436,7 +436,7 @@ public class HttpFetch {
 		return httpRequest;
 	}
 	
-	/** ³ıÁËhttpclient ÆäËû¶¼¹Øµô */
+	/** é™¤äº†httpclient å…¶ä»–éƒ½å…³æ‰ */
 	private void closeStream() {
 		try { instream.close(); } catch (Exception e) { }
 		try { httpRequest.releaseConnection(); } catch (Exception e) { }
@@ -447,14 +447,14 @@ public class HttpFetch {
 		closeStream();
 		try { httpclient.getConnectionManager().shutdown(); } catch (Exception e) { }
 	}
-	/** html½âÂë»¹ºÜ±¡Èõ */
+	/** htmlè§£ç è¿˜å¾ˆè–„å¼± */
 	public static String decode(String inputUrl) {
 		String result = "";
 		try {
 			result = URLDecoder.decode(inputUrl, "utf-8");
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
-			logger.error("½âÂë³ö´í£º" + inputUrl);
+			logger.error("è§£ç å‡ºé”™ï¼š" + inputUrl);
 		}
 		result = result.replace("&amp;", "&");
 		result = result.replace("&nbsp;", " ");
@@ -462,7 +462,7 @@ public class HttpFetch {
 	}
 }
 /**
- * ÇëÇóÖØÊÔ´¦Àí
+ * è¯·æ±‚é‡è¯•å¤„ç†
  * @author zong0jie
  *
  */
@@ -471,15 +471,15 @@ class MyRetryHandler implements HttpRequestRetryHandler {
 	@Override
 	public boolean retryRequest(IOException exception, int executionCount, HttpContext context) {
 		   if (executionCount >= 5) {
-			      // Èç¹û³¬¹ı×î´óÖØÊÔ´ÎÊı,ÄÇÃ´¾Í²»Òª¼ÌĞøÁË
+			      // å¦‚æœè¶…è¿‡æœ€å¤§é‡è¯•æ¬¡æ•°,é‚£ä¹ˆå°±ä¸è¦ç»§ç»­äº†
 			      return false;
 			   }
 			   if (exception instanceof NoHttpResponseException) {
-			      // Èç¹û·şÎñÆ÷¶ªµôÁËÁ¬½Ó,ÄÇÃ´¾ÍÖØÊÔ
+			      // å¦‚æœæœåŠ¡å™¨ä¸¢æ‰äº†è¿æ¥,é‚£ä¹ˆå°±é‡è¯•
 			      return true;
 			   }
 			   if (exception instanceof SSLHandshakeException) {
-			      // ²»ÒªÖØÊÔSSLÎÕÊÖÒì³£
+			      // ä¸è¦é‡è¯•SSLæ¡æ‰‹å¼‚å¸¸
 			      return false;
 			   }
 			   HttpRequest request = (HttpRequest) context.getAttribute(
@@ -487,7 +487,7 @@ class MyRetryHandler implements HttpRequestRetryHandler {
 			   boolean idempotent = !(request instanceof
 			   HttpEntityEnclosingRequest);
 			   if (idempotent) {
-			      // Èç¹ûÇëÇó±»ÈÏÎªÊÇÃİµÈµÄ,ÄÇÃ´¾ÍÖØÊÔ
+			      // å¦‚æœè¯·æ±‚è¢«è®¤ä¸ºæ˜¯å¹‚ç­‰çš„,é‚£ä¹ˆå°±é‡è¯•
 			      return true;
 			   }
 
@@ -511,14 +511,14 @@ class WebFetchIdleConnectionMonitorThread extends Thread {
 			while (!shutdown) {
 				synchronized (this) {
 					wait(5000);
-					// ¹Ø±Õ¹ıÆÚÁ¬½Ó
+					// å…³é—­è¿‡æœŸè¿æ¥
 					connMgr.closeExpiredConnections();
-					// ¿ÉÑ¡µØ£¬¹Ø±Õ¿ÕÏĞ³¬¹ı30ÃëµÄÁ¬½Ó
+					// å¯é€‰åœ°ï¼Œå…³é—­ç©ºé—²è¶…è¿‡30ç§’çš„è¿æ¥
 					connMgr.closeIdleConnections(300, TimeUnit.SECONDS);
 				}
 			}
 		} catch (InterruptedException ex) {
-			// ÖÕÖ¹
+			// ç»ˆæ­¢
 		}
 	}
 

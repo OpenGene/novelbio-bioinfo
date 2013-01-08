@@ -11,15 +11,15 @@ import com.novelbio.base.dataStructure.MathComput;
 public class Repeatdel {
 	
 	/**
-	 * Ã¿¸öIDÒ»¸ö»ùÒò
+	 * æ¯ä¸ªIDä¸€ä¸ªåŸºå› 
 	 */
 	HashMap<String, ArrayList<String[]>> hashGeneInfo = new HashMap<String, ArrayList<String[]>>();
 
 	/**
-	 * @param filename ÎÄ¼şÃû
-	 * @param colAccID accIDËùÔÚµÄÁĞ£¬Êµ¼ÊÊı×Ö
-	 * @param outFile Êä³öÎÄ¼şÃû
-	 * @param colNum doubleÊı×ÖËùÔÚµÄÁĞ£¬Êµ¼ÊÊı×Ö
+	 * @param filename æ–‡ä»¶å
+	 * @param colAccID accIDæ‰€åœ¨çš„åˆ—ï¼Œå®é™…æ•°å­—
+	 * @param outFile è¾“å‡ºæ–‡ä»¶å
+	 * @param colNum doubleæ•°å­—æ‰€åœ¨çš„åˆ—ï¼Œå®é™…æ•°å­—
 	 */
 	public void getMedian(String filename, int colAccID, String outFile,int... colNum) {
 		hashGeneInfo = new HashMap<String, ArrayList<String[]>>();
@@ -66,9 +66,9 @@ public class Repeatdel {
 	
 	
 	/**
-	 * @param lsInfo Ö¸¶¨¼¸ĞĞĞÅÏ¢
-	 * @param col Ö¸¶¨ËùÔÚµÄÁĞ
-	 * @return ·µ»ØËùÔÚÁĞÖĞÎ»ÊıµÄÁĞ
+	 * @param lsInfo æŒ‡å®šå‡ è¡Œä¿¡æ¯
+	 * @param col æŒ‡å®šæ‰€åœ¨çš„åˆ—
+	 * @return è¿”å›æ‰€åœ¨åˆ—ä¸­ä½æ•°çš„åˆ—
 	 */
 	private String[] getMediaInfo(List<String[]> lsInfo, int[] col) {
 		if (lsInfo.size() == 1) {
@@ -88,10 +88,10 @@ public class Repeatdel {
 	}
 	
 	/**
-	 * @param lsInfo Ö¸¶¨¼¸ĞĞĞÅÏ¢
-	 * @param col Ö¸¶¨ËùÔÚµÄÁĞ
-	 * @param info Òª²éÕÒµÄÊı×Ö
-	 * @return ·µ»ØÕÒµ½µÄÄÇÒ»ĞĞ
+	 * @param lsInfo æŒ‡å®šå‡ è¡Œä¿¡æ¯
+	 * @param col æŒ‡å®šæ‰€åœ¨çš„åˆ—
+	 * @param info è¦æŸ¥æ‰¾çš„æ•°å­—
+	 * @return è¿”å›æ‰¾åˆ°çš„é‚£ä¸€è¡Œ
 	 */
 	private String[] getDetailInfo(ArrayList<String[]> lsInfo, int col, double info) {
 		for (String[] strings : lsInfo) {

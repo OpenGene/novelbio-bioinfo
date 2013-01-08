@@ -16,70 +16,70 @@ import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.plot.java.HeatChartDataInt;
 /**
- * ÄÚ½¨¸ù¾İweightÅÅĞòµÄ·½·¨
+ * å†…å»ºæ ¹æ®weightæ’åºçš„æ–¹æ³•
  * @author zong0jie
  *
  */
 public class MapInfo extends SiteInfo implements HeatChartDataInt, Cloneable{
 	Logger logger = Logger.getLogger(MapInfo.class);
-	/** ±È½ÏmapinfoµÄÆğµãÖÕµã */
+	/** æ¯”è¾ƒmapinfoçš„èµ·ç‚¹ç»ˆç‚¹ */
 	public static final int COMPARE_LOCSITE = 100;
-	/** ±È½ÏmapinfoµÄflag site */
+	/** æ¯”è¾ƒmapinfoçš„flag site */
 	public static final int COMPARE_LOCFLAG = 200;
-	/** ±È½ÏmapinfoµÄscore */
+	/** æ¯”è¾ƒmapinfoçš„score */
 	public static final int COMPARE_SCORE = 300;
 	
 	static int compareInfo = COMPARE_SCORE;
 	
 	private double[] value = null;
 	/**
-	 * ÊÇ·ñÓÃcis5to3µÄĞÅÏ¢À´·­×ªValueµÄdouble[]
-	 * Ä¬ÈÏ·­×ª
+	 * æ˜¯å¦ç”¨cis5to3çš„ä¿¡æ¯æ¥ç¿»è½¬Valueçš„double[]
+	 * é»˜è®¤ç¿»è½¬
 	 */
 	boolean correctUseCis5to3ToConvertValue = true;
 	
 	public MapInfo() { }
 	/**
 	 * @param chrID
-	 * @param startLoc ´Ó0¿ªÊ¼£¬Èç¹ûstartLocºÍendLoc¶¼Ğ¡ÓÚµÈÓÚ0£¬ÔòĞèÒª¶Ô·½·µ»ØÈ«³¤ĞÅÏ¢
-	 * @param endLoc ´Ó0¿ªÊ¼
-	 * @param flagLoc ÌØ¶¨µÄÒ»¸öÎ»µã×ø±ê£¬Æ©ÈçATGsite£¬summitSiteµÈ
+	 * @param startLoc ä»0å¼€å§‹ï¼Œå¦‚æœstartLocå’ŒendLocéƒ½å°äºç­‰äº0ï¼Œåˆ™éœ€è¦å¯¹æ–¹è¿”å›å…¨é•¿ä¿¡æ¯
+	 * @param endLoc ä»0å¼€å§‹
+	 * @param flagLoc ç‰¹å®šçš„ä¸€ä¸ªä½ç‚¹åæ ‡ï¼Œè­¬å¦‚ATGsiteï¼ŒsummitSiteç­‰
 	 * @param weight
-	 * @param title ±¾ÌõÄ¿µÄÃû×Ö£¬Æ©Èç»ùÒòÃûµÈ
+	 * @param title æœ¬æ¡ç›®çš„åå­—ï¼Œè­¬å¦‚åŸºå› åç­‰
 	 */
 	public MapInfo(String chrID, int startLoc, int endLoc, int flagLoc ,double weight, String title) {
 		super(chrID, startLoc, endLoc, flagLoc, weight, title);
 	}
 	
 	/**
-	 * ÊÇ·ñÓÃcis5to3µÄĞÅÏ¢À´·­×ªValueµÄdouble[]
-	 * Ä¬ÈÏ·­×ª
+	 * æ˜¯å¦ç”¨cis5to3çš„ä¿¡æ¯æ¥ç¿»è½¬Valueçš„double[]
+	 * é»˜è®¤ç¿»è½¬
 	 * @param correct
 	 */
 	public void setCorrectUseCis5to3(boolean correctUseCis5to3ToConvertValue) {
 		this.correctUseCis5to3ToConvertValue = correctUseCis5to3ToConvertValue;
 	}
 	/**
-	 * Èç¹ûstartLoc < endLoc,Ôòcis5to3Éè¶¨Îª·´Ïò
+	 * å¦‚æœstartLoc < endLoc,åˆ™cis5to3è®¾å®šä¸ºåå‘
 	 * @param chrID
-	 * @param startLoc ´Ó0¿ªÊ¼£¬Èç¹ûstartLocºÍendLoc¶¼Ğ¡ÓÚµÈÓÚ0£¬ÔòĞèÒª¶Ô·½·µ»ØÈ«³¤ĞÅÏ¢
-	 * @param endLoc ´Ó0¿ªÊ¼
+	 * @param startLoc ä»0å¼€å§‹ï¼Œå¦‚æœstartLocå’ŒendLocéƒ½å°äºç­‰äº0ï¼Œåˆ™éœ€è¦å¯¹æ–¹è¿”å›å…¨é•¿ä¿¡æ¯
+	 * @param endLoc ä»0å¼€å§‹
 	 */
 	public MapInfo(String chrID, int startLoc, int endLoc) {
 		super(chrID, startLoc, endLoc);
 	}
 	/**
 	 * @param chrID
-	 * @param startLoc ´Ó0¿ªÊ¼£¬Èç¹ûstartLocºÍendLoc¶¼Ğ¡ÓÚµÈÓÚ0£¬ÔòĞèÒª¶Ô·½·µ»ØÈ«³¤ĞÅÏ¢
-	 * @param endLoc ´Ó0¿ªÊ¼
-	 * @param flag ±È½ÏµÄ±êÇ©£¬¿ÉÒÔÊÇ±í´ïÖµµÈ
-	 * @param name ±¾ÌõÄ¿µÄÃû×Ö£¬Æ©Èç»ùÒòÃûµÈ
+	 * @param startLoc ä»0å¼€å§‹ï¼Œå¦‚æœstartLocå’ŒendLocéƒ½å°äºç­‰äº0ï¼Œåˆ™éœ€è¦å¯¹æ–¹è¿”å›å…¨é•¿ä¿¡æ¯
+	 * @param endLoc ä»0å¼€å§‹
+	 * @param flag æ¯”è¾ƒçš„æ ‡ç­¾ï¼Œå¯ä»¥æ˜¯è¡¨è¾¾å€¼ç­‰
+	 * @param name æœ¬æ¡ç›®çš„åå­—ï¼Œè­¬å¦‚åŸºå› åç­‰
 	 */
 	public MapInfo(String chrID) {
 		this.refID = chrID;
 	}
 	/**
-	 * ÊÇ·ñ´ÓĞ¡µ½´óÅÅĞò
+	 * æ˜¯å¦ä»å°åˆ°å¤§æ’åº
 	 * @return
 	 */
 	public static boolean isMin2max() {
@@ -87,8 +87,8 @@ public class MapInfo extends SiteInfo implements HeatChartDataInt, Cloneable{
 	}
 
 	/**
-	 * Ñ¡ÔñCOMPARE_LOCSITEµÈ
-	 * Ä¬ÈÏCOMPARE_WEIGHT
+	 * é€‰æ‹©COMPARE_LOCSITEç­‰
+	 * é»˜è®¤COMPARE_WEIGHT
 	 * @param COMPARE_TYPE
 	 */
 	public static void setCompareType(int COMPARE_TYPE) {
@@ -96,24 +96,24 @@ public class MapInfo extends SiteInfo implements HeatChartDataInt, Cloneable{
 	}
 	/**
 	 * @param chrID
-	 * @param startLoc ´Ó0¿ªÊ¼£¬Èç¹ûstartLocºÍendLoc¶¼Ğ¡ÓÚµÈÓÚ0£¬ÔòĞèÒª¶Ô·½·µ»ØÈ«³¤ĞÅÏ¢
-	 * @param endLoc ´Ó0¿ªÊ¼
-	 * @param flag ±È½ÏµÄ±êÇ©£¬¿ÉÒÔÊÇ±í´ïÖµµÈ
-	 * @param title ±¾ÌõÄ¿µÄÃû×Ö£¬Æ©Èç»ùÒòÃûµÈ
+	 * @param startLoc ä»0å¼€å§‹ï¼Œå¦‚æœstartLocå’ŒendLocéƒ½å°äºç­‰äº0ï¼Œåˆ™éœ€è¦å¯¹æ–¹è¿”å›å…¨é•¿ä¿¡æ¯
+	 * @param endLoc ä»0å¼€å§‹
+	 * @param flag æ¯”è¾ƒçš„æ ‡ç­¾ï¼Œå¯ä»¥æ˜¯è¡¨è¾¾å€¼ç­‰
+	 * @param title æœ¬æ¡ç›®çš„åå­—ï¼Œè­¬å¦‚åŸºå› åç­‰
 	 */
 	public MapInfo(String chrID,double weight, String title) {
 		this.refID = chrID;
 		this.score = weight;
 		this.name = title;
 	}
-	/** »ñµÃvalueµÄ¾ùÖµ¡£Èç¹û²»´æÔÚ£¬Ôò·µ»Ønull */
+	/** è·å¾—valueçš„å‡å€¼ã€‚å¦‚æœä¸å­˜åœ¨ï¼Œåˆ™è¿”å›null */
 	public Double getMean() {
 		if (value == null) {
 			return null;
 		}
 		return MathComput.mean(value);
 	}
-	/** »ñµÃvalueµÄÖĞÎ»Êı¡£Èç¹û²»´æÔÚ£¬Ôò·µ»Ønull */
+	/** è·å¾—valueçš„ä¸­ä½æ•°ã€‚å¦‚æœä¸å­˜åœ¨ï¼Œåˆ™è¿”å›null */
 	public Double getMedian() {
 		if (value == null) {
 			return null;
@@ -121,7 +121,7 @@ public class MapInfo extends SiteInfo implements HeatChartDataInt, Cloneable{
 		return MathComput.median(value);
 	}
 	/**
-	 * Õâ¸öÔÚÉè¶¨µÄÊ±ºò£¬²»»á¸ù¾İmapinfoµÄ·½Ïò½øĞĞ£¬¶øÊÇÖ±½Ó¸³Öµ
+	 * è¿™ä¸ªåœ¨è®¾å®šçš„æ—¶å€™ï¼Œä¸ä¼šæ ¹æ®mapinfoçš„æ–¹å‘è¿›è¡Œï¼Œè€Œæ˜¯ç›´æ¥èµ‹å€¼
 	 * @param value
 	 */
 	public void setDouble(double[] value) {
@@ -129,8 +129,8 @@ public class MapInfo extends SiteInfo implements HeatChartDataInt, Cloneable{
 	}
 	
 	/**
-	 * »á¸ù¾İcis5to3ÒÔ¼°correctµÄĞÅÏ¢À´·µ»ØvalueµÄÖµ
-	 * Èç¹û±ê¼ÇÁËĞŞÕı²¢ÇÒÊÇ·´ÏòµÄ£¬Ôò½«valueµßµ¹
+	 * ä¼šæ ¹æ®cis5to3ä»¥åŠcorrectçš„ä¿¡æ¯æ¥è¿”å›valueçš„å€¼
+	 * å¦‚æœæ ‡è®°äº†ä¿®æ­£å¹¶ä¸”æ˜¯åå‘çš„ï¼Œåˆ™å°†valueé¢ å€’
 	 */
 	@Override
 	public double[] getDouble() {
@@ -163,7 +163,7 @@ public class MapInfo extends SiteInfo implements HeatChartDataInt, Cloneable{
 		return mapInfo;
 	}
 	/**
-	 * ½ö±È½ÏrefID£¬startLoc,endLoc,score.flagLoc
+	 * ä»…æ¯”è¾ƒrefIDï¼ŒstartLoc,endLoc,score.flagLoc
 	 */
 	@Override
 	public boolean equals(Object obj) {
@@ -187,14 +187,14 @@ public class MapInfo extends SiteInfo implements HeatChartDataInt, Cloneable{
 	}
 	
 	/**
-	 * ¸ø¶¨mapInfoµÄlist
-	 * ½«ÀïÃæµÄdouble[]ºÏ²¢³ÉÒ»¸ö£¬¼Ù¶¨mapInfoÖĞµÄvalue²»µÈ³¤
-	 * °´ÕÕsummitÎ»µã¶ÔÆë£¬¼Ù¶¨summitµãÎª0µã
-	 * @param lsmapinfo mapInfoµÄĞÅÏ¢
-	 * @param upNum ÉÏÓÎ¸öÊı£¬<=0±íÊ¾×î³¤ÉÏÓÎ
-	 * @param downNum ÏÂÓÎ¸öÊı, <=0±íÊ¾×î³¤ÏÂÓÎ
+	 * ç»™å®šmapInfoçš„list
+	 * å°†é‡Œé¢çš„double[]åˆå¹¶æˆä¸€ä¸ªï¼Œå‡å®šmapInfoä¸­çš„valueä¸ç­‰é•¿
+	 * æŒ‰ç…§summitä½ç‚¹å¯¹é½ï¼Œå‡å®šsummitç‚¹ä¸º0ç‚¹
+	 * @param lsmapinfo mapInfoçš„ä¿¡æ¯
+	 * @param upNum ä¸Šæ¸¸ä¸ªæ•°ï¼Œ<=0è¡¨ç¤ºæœ€é•¿ä¸Šæ¸¸
+	 * @param downNum ä¸‹æ¸¸ä¸ªæ•°, <=0è¡¨ç¤ºæœ€é•¿ä¸‹æ¸¸
 	 * @return
-	 * µÃµ½µÄ½á¹û»á³ıÒÔlsmapinfoµÄ³¤¶È×÷Îª±ê×¼»¯
+	 * å¾—åˆ°çš„ç»“æœä¼šé™¤ä»¥lsmapinfoçš„é•¿åº¦ä½œä¸ºæ ‡å‡†åŒ–
 	 */
 	public static double[] getCutLsMapInfoComb(List<MapInfo> lsmapinfo, int upNum, int downNum) {
 		if (upNum <= 0 || downNum <= 0) {
@@ -217,7 +217,7 @@ public class MapInfo extends SiteInfo implements HeatChartDataInt, Cloneable{
 		return result;
 	}
 	/**
-	 * ÓÃlsmapinfo1 ¼õÈ¥ lsmapinfo2µÄĞÅÏ¢
+	 * ç”¨lsmapinfo1 å‡å» lsmapinfo2çš„ä¿¡æ¯
 	 * @param lsmapinfo1
 	 * @param lsmapinfo2
 	 * @param upNum
@@ -238,13 +238,13 @@ public class MapInfo extends SiteInfo implements HeatChartDataInt, Cloneable{
 	}
 	
 	/**
-	 * ²»ÅÅĞò
-	 * ¸ø¶¨mapInfoµÄlist
-	 * ½«ÀïÃæµÄdouble[]ºÏ²¢³ÉÒ»¸ö£¬¼Ù¶¨mapInfoÖĞµÄvalue²»µÈ³¤
-	 * °´ÕÕsummitÎ»µã¶ÔÆë£¬¼Ù¶¨summitµãÎª0µã
-	 * @param lsmapinfo mapInfoµÄĞÅÏ¢
-	 * @param upNum ÉÏÓÎ¸öÊı£¬<=0±íÊ¾×î³¤ÉÏÓÎ
-	 * @param downNum ÏÂÓÎ¸öÊı, <=0±íÊ¾×î³¤ÏÂÓÎ
+	 * ä¸æ’åº
+	 * ç»™å®šmapInfoçš„list
+	 * å°†é‡Œé¢çš„double[]åˆå¹¶æˆä¸€ä¸ªï¼Œå‡å®šmapInfoä¸­çš„valueä¸ç­‰é•¿
+	 * æŒ‰ç…§summitä½ç‚¹å¯¹é½ï¼Œå‡å®šsummitç‚¹ä¸º0ç‚¹
+	 * @param lsmapinfo mapInfoçš„ä¿¡æ¯
+	 * @param upNum ä¸Šæ¸¸ä¸ªæ•°ï¼Œ<=0è¡¨ç¤ºæœ€é•¿ä¸Šæ¸¸
+	 * @param downNum ä¸‹æ¸¸ä¸ªæ•°, <=0è¡¨ç¤ºæœ€é•¿ä¸‹æ¸¸
 	 * @return
 	 */
 	public static ArrayList<MapInfo> getCutLsMapInfo(List<MapInfo> lsmapinfo, int upNum, int downNum) {
@@ -266,8 +266,8 @@ public class MapInfo extends SiteInfo implements HeatChartDataInt, Cloneable{
 	}
 	
 	/**
-	 * ¸ø¶¨mapInfoµÄlist
-	 * ½«ÀïÃæµÄdouble[]ºÏ²¢³ÉÒ»¸ö£¬¼Ù¶¨mapInfoÖĞµÄvalueµÈ³¤
+	 * ç»™å®šmapInfoçš„list
+	 * å°†é‡Œé¢çš„double[]åˆå¹¶æˆä¸€ä¸ªï¼Œå‡å®šmapInfoä¸­çš„valueç­‰é•¿
 	 */
 	public static double[] getCombLsMapInfo(List<MapInfo> lsmapinfo) {
 		double[] result = new double[lsmapinfo.get(0).getDouble().length];
@@ -287,15 +287,15 @@ public class MapInfo extends SiteInfo implements HeatChartDataInt, Cloneable{
 	}
 	
 	/**
-	 * ½«¿¿µÄÌ«½üµÄmapInfoÉ¾µôÒ»Ğ©Ö»±£ÁôÒ»¸öscore×î´óµÄ
+	 * å°†é çš„å¤ªè¿‘çš„mapInfoåˆ æ‰ä¸€äº›åªä¿ç•™ä¸€ä¸ªscoreæœ€å¤§çš„
 	 * @param lsMapInfo
-	 * @param distance ¾àÀë¶àÉÙËã½ü£¬½¨Òé2000
-	 * @param max ±£Áôscore´óµÄ»¹ÊÇĞ¡µÄ
+	 * @param distance è·ç¦»å¤šå°‘ç®—è¿‘ï¼Œå»ºè®®2000
+	 * @param max ä¿ç•™scoreå¤§çš„è¿˜æ˜¯å°çš„
 	 * @return
 	 */
 	public static ArrayList<MapInfo> getCombLsMapInfoBigScore(ArrayList<MapInfo> lsMapInfo, int distance, boolean max) {
 		ArrayList<MapInfo> lsMapInfoResult = new ArrayList<MapInfo>();
-		//×°Èëhashmap
+		//è£…å…¥hashmap
 		HashMap<Integer, MapInfo> mapSummitSite2MapInfo = new LinkedHashMap<Integer, MapInfo>();
 		for (MapInfo mapInfo : lsMapInfo) {
 			if (mapSummitSite2MapInfo.containsKey(mapInfo.getFlagSite())) {
@@ -306,17 +306,17 @@ public class MapInfo extends SiteInfo implements HeatChartDataInt, Cloneable{
 			}
 			mapSummitSite2MapInfo.put(mapInfo.getFlagSite(), mapInfo);
 		}
-		//ÕûÀí¸ñÊ½
+		//æ•´ç†æ ¼å¼
 		ArrayList<double[]> lsSummitSite2Score = new ArrayList<double[]>();
 		for (int summitsite : mapSummitSite2MapInfo.keySet()) {
 			double[] info = new double[]{summitsite, mapSummitSite2MapInfo.get(summitsite).getScore()};
 			lsSummitSite2Score.add(info);
 		}
 		
-		//µ÷ÓÃ·½·¨¹ıÂËºÏ²¢
+		//è°ƒç”¨æ–¹æ³•è¿‡æ»¤åˆå¹¶
 		ArrayList<double[]> lsCombine = MathComput.combLs(lsSummitSite2Score, distance, max);
 		
-		//Êä³ö
+		//è¾“å‡º
 		for (double[] ds : lsCombine) {
 			MapInfo mapInfo = mapSummitSite2MapInfo.get(ds[0]);
 			lsMapInfoResult.add(mapInfo);

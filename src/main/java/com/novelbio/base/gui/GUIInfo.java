@@ -59,7 +59,7 @@ public class GUIInfo extends javax.swing.JPanel  implements Runnable {
 			}
 		});
 		
-		Image im = Toolkit.getDefaultToolkit().getImage("/media/winE/NBC/advertise/Ğû´«/LOGO/favicon.png");
+		Image im = Toolkit.getDefaultToolkit().getImage("/media/winE/NBC/advertise/å®£ä¼ /LOGO/favicon.png");
 		jDialog.setIconImage(im);
 		jDialog.setResizable(false);
 		jDialog.getContentPane().add(this);
@@ -124,13 +124,13 @@ public class GUIInfo extends javax.swing.JPanel  implements Runnable {
 			return;
 		}
 	}
-	/** ×Ô¶¯ÔÚtextInfoÎ²°Í¼ÓÉÏ ¡°\n¡± */
+	/** è‡ªåŠ¨åœ¨textInfoå°¾å·´åŠ ä¸Š â€œ\nâ€ */
 	public void appendTxtInfo(String textInfo) {
 		synchronized (this) {
 			textArea.append(textInfo + "\n");
 		}
 	}
-	/** ²»¼Ó"\n" */
+	/** ä¸åŠ "\n" */
 	public void addTxtInfo(String textInfo) {
 		synchronized (this) {
 			textArea.append(textInfo);

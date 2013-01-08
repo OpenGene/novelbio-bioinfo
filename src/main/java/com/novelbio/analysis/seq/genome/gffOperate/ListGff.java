@@ -21,13 +21,13 @@ public class ListGff extends ListAbsSearch<GffDetailGene, GffCodGene, GffCodGene
 	}
 	
 	/**
-	 * ºÏ²¢ÖØ¸´µÄGffDetailGene
+	 * åˆå¹¶é‡å¤çš„GffDetailGene
 	 * @return
 	 */
 	public ListGff combineOverlapGene() {
 		ListGff listGffNew = new ListGff();
 		GffDetailGene gffDetailGeneLast = null;
-		//ºÏ²¢Á½¸öÖØµþµÄ»ùÒò
+		//åˆå¹¶ä¸¤ä¸ªé‡å çš„åŸºå› 
 		for (GffDetailGene gffDetailGene : this) {
 			if (gffDetailGeneLast != null && gffDetailGene.getRefID().equals(gffDetailGeneLast.getRefID())) {
 				double[] regionLast = new double[]{gffDetailGeneLast.getStartAbs(), gffDetailGeneLast.getEndAbs()};

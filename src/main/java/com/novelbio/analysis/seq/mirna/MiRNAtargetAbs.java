@@ -14,19 +14,19 @@ public abstract class MiRNAtargetAbs {
 
 	GffChrSeq gffChrSeq = new GffChrSeq();
 	String exePath = "";
-	/** Ô¤²âÈí¼ş²úÉúµÄ³õ²½Ô­Ê¼ÎÄ¼ş */
+	/** é¢„æµ‹è½¯ä»¶äº§ç”Ÿçš„åˆæ­¥åŸå§‹æ–‡ä»¶ */
 	String predictResultFile;
-	/** ½«³õ²½ÎÄ¼ş¾­¹ıÕûÀíºó²úÉúµÄ½á¹ûÎÄ¼ş */
+	/** å°†åˆæ­¥æ–‡ä»¶ç»è¿‡æ•´ç†åäº§ç”Ÿçš„ç»“æœæ–‡ä»¶ */
 	String predictResultFinal;
 	
 	String inputUTR3seq = "";
 	String inputMiRNAseq = "";
 	
-	/** ±¾·½·¨ºÍsetInputUTR3File¶şÑ¡Ò» */
+	/** æœ¬æ–¹æ³•å’ŒsetInputUTR3FileäºŒé€‰ä¸€ */
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrSeq.setGffChrAbs(gffChrAbs);
 	}
-	/** Éè¶¨UTR3µÄĞòÁĞ£¬Ã»ÓĞµÄ»°¾Í´ÓgffChrSeqÖĞÌáÈ¡ */
+	/** è®¾å®šUTR3çš„åºåˆ—ï¼Œæ²¡æœ‰çš„è¯å°±ä»gffChrSeqä¸­æå– */
 	public void setInputUTR3File(String inputUTR3seq) {
 		this.inputUTR3seq = inputUTR3seq;
 	}
@@ -50,7 +50,7 @@ public abstract class MiRNAtargetAbs {
 		return inputMiRNAseq + " ";
 	}
 	/**
-	 * ½«ËùÓĞº¬ÓĞ3UTRµÄ»ùÒòµÄ3UTRĞòÁĞĞ´ÈëÎÄ±¾
+	 * å°†æ‰€æœ‰å«æœ‰3UTRçš„åŸºå› çš„3UTRåºåˆ—å†™å…¥æ–‡æœ¬
 	 * @param mirandaResultOut + " "
 	 */
 	public String getInput3UTRseq() {
@@ -67,7 +67,7 @@ public abstract class MiRNAtargetAbs {
 		gffChrSeq.setGeneStructure(GeneStructure.UTR3);
 		gffChrSeq.setGetAllIso(false);
 		gffChrSeq.setGetSeqIsoGenomWide();
-		//ÌáÈ¡ĞòÁĞ
+		//æå–åºåˆ—
 		gffChrSeq.run();
 		return inputUTR3seq;
 	}

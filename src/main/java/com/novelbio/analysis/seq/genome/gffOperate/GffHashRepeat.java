@@ -14,27 +14,27 @@ public class GffHashRepeat extends ListHashSearch<GffDetailRepeat, ListCodAbs<Gf
 ListCodAbsDu<GffDetailRepeat, ListCodAbs<GffDetailRepeat>>, ListBin<GffDetailRepeat>> {
 
 	/**
-	 * ×îµ×²ã¶ÁÈ¡gffµÄ·½·¨£¬±¾·½·¨Ö»ÄÜ¶ÁÈ¡UCSCRepeatÎÄ¼ş<br>
-	 * ÊäÈëGffÎÄ¼ş£¬×îºó»ñµÃÁ½¸ö¹şÏ£±íºÍÒ»¸ölist±í,¶ÁÈ¡Ê±´ÓµÚ¶şĞĞ¶ÁÆğ<br/>
-	 * ½á¹¹ÈçÏÂ£º<br/>
-     * ÊäÈëGffÎÄ¼ş£¬<b>ÆäÖĞpeak¿ÉÒÔ²»°´ÕÕË³ĞòÅÅÁĞ£¬±¾ÀàÄÚ²¿»á¸øÅÅĞò</b>£¬×îºó»ñµÃÁ½¸ö¹şÏ£±íºÍÒ»¸ölist±í, ½á¹¹ÈçÏÂ£º<br>
+	 * æœ€åº•å±‚è¯»å–gffçš„æ–¹æ³•ï¼Œæœ¬æ–¹æ³•åªèƒ½è¯»å–UCSCRepeatæ–‡ä»¶<br>
+	 * è¾“å…¥Gffæ–‡ä»¶ï¼Œæœ€åè·å¾—ä¸¤ä¸ªå“ˆå¸Œè¡¨å’Œä¸€ä¸ªlistè¡¨,è¯»å–æ—¶ä»ç¬¬äºŒè¡Œè¯»èµ·<br/>
+	 * ç»“æ„å¦‚ä¸‹ï¼š<br/>
+     * è¾“å…¥Gffæ–‡ä»¶ï¼Œ<b>å…¶ä¸­peakå¯ä»¥ä¸æŒ‰ç…§é¡ºåºæ’åˆ—ï¼Œæœ¬ç±»å†…éƒ¨ä¼šç»™æ’åº</b>ï¼Œæœ€åè·å¾—ä¸¤ä¸ªå“ˆå¸Œè¡¨å’Œä¸€ä¸ªlistè¡¨, ç»“æ„å¦‚ä¸‹ï¼š<br>
      * <b>1.Chrhash</b><br>
-     * £¨ChrID£©--ChrList-- GeneInforList(GffDetailÀà)
-     * ÆäÖĞChrIDÎªĞ¡Ğ´£¬´ú±íÈ¾É«ÌåÃû×Ö£¬Òò´ËÓÃgetÀ´»ñÈ¡ÏàÓ¦µÄChrListµÄÊ±ºòÒªÊäÈëĞ¡Ğ´µÄChrID, chr¸ñÊ½£¬È«²¿Ğ¡Ğ´ chr1,chr2,chr11<br>
+     * ï¼ˆChrIDï¼‰--ChrList-- GeneInforList(GffDetailç±»)
+     * å…¶ä¸­ChrIDä¸ºå°å†™ï¼Œä»£è¡¨æŸ“è‰²ä½“åå­—ï¼Œå› æ­¤ç”¨getæ¥è·å–ç›¸åº”çš„ChrListçš„æ—¶å€™è¦è¾“å…¥å°å†™çš„ChrID, chræ ¼å¼ï¼Œå…¨éƒ¨å°å†™ chr1,chr2,chr11<br>
      *  <b>2.locHashtable</b><br>
-    * ÆäÖĞLOCID´ú±í¾ßÌåµÄÌõÄ¿±àºÅ£¬ÔÚUCSCkonwn geneÀïÃæÃ»ÓĞ×ªÂ¼±¾Ò»Ëµ£¬
-	 * Ö»ÓĞÁ½¸öLOCID¹²ÓÃÒ»¸öÇøÓòµÄÇé¿ö£¬ËùÒÔÖ»ÄÜ¹»Á½¸ö²»Í¬µÄLOCIDÖ¸ÏòÍ¬Ò»¸öGffdetailUCSCgene
+    * å…¶ä¸­LOCIDä»£è¡¨å…·ä½“çš„æ¡ç›®ç¼–å·ï¼Œåœ¨UCSCkonwn geneé‡Œé¢æ²¡æœ‰è½¬å½•æœ¬ä¸€è¯´ï¼Œ
+	 * åªæœ‰ä¸¤ä¸ªLOCIDå…±ç”¨ä¸€ä¸ªåŒºåŸŸçš„æƒ…å†µï¼Œæ‰€ä»¥åªèƒ½å¤Ÿä¸¤ä¸ªä¸åŒçš„LOCIDæŒ‡å‘åŒä¸€ä¸ªGffdetailUCSCgene
      *  <b>3.LOCIDList</b><br>
-     * £¨LOCID£©--LOCIDList£¬°´Ë³Ğò±£´æLOCID,ÕâÀï²»¿¼ÂÇ¶à¸ö×ªÂ¼±¾£¬Ã¿Ò»¸ö×ªÂ¼±¾¾ÍÊÇÒ»¸öµ¥¶ÀµÄLOCID <br>
+     * ï¼ˆLOCIDï¼‰--LOCIDListï¼ŒæŒ‰é¡ºåºä¿å­˜LOCID,è¿™é‡Œä¸è€ƒè™‘å¤šä¸ªè½¬å½•æœ¬ï¼Œæ¯ä¸€ä¸ªè½¬å½•æœ¬å°±æ˜¯ä¸€ä¸ªå•ç‹¬çš„LOCID <br>
      * <b>LOCChrHashIDList </b><br>
-     *   LOCChrHashIDListÖĞ±£´æLOCID´ú±í¾ßÌåµÄÌõÄ¿±àºÅ,ÓëChrhashÀïµÄÃû×ÖÒ»ÖÂ<br>
+     *   LOCChrHashIDListä¸­ä¿å­˜LOCIDä»£è¡¨å…·ä½“çš„æ¡ç›®ç¼–å·,ä¸Chrhashé‡Œçš„åå­—ä¸€è‡´<br>
 	 * @throws Exception 
 	 */
 	@Override
 	protected void ReadGffarrayExcep(String gfffilename) throws Exception {
-		   mapChrID2ListGff=new LinkedHashMap<String, ListBin<GffDetailRepeat>>();//Ò»¸ö¹şÏ£±íÀ´´æ´¢Ã¿ÌõÈ¾É«Ìå
+		   mapChrID2ListGff=new LinkedHashMap<String, ListBin<GffDetailRepeat>>();//ä¸€ä¸ªå“ˆå¸Œè¡¨æ¥å­˜å‚¨æ¯æ¡æŸ“è‰²ä½“
 		   TxtReadandWrite txtgff=new TxtReadandWrite(gfffilename,false);
-		   ListBin<GffDetailRepeat> LOCList=null ;//Ë³Ğò´æ´¢Ã¿¸ölocµÄ¾ßÌåĞÅÏ¢£¬Ò»ÌõÈ¾É«ÌåÒ»¸öLOCList£¬×îºó×°ÈëChrhash±íÖĞ
+		   ListBin<GffDetailRepeat> LOCList=null ;//é¡ºåºå­˜å‚¨æ¯ä¸ªlocçš„å…·ä½“ä¿¡æ¯ï¼Œä¸€æ¡æŸ“è‰²ä½“ä¸€ä¸ªLOCListï¼Œæœ€åè£…å…¥Chrhashè¡¨ä¸­
 		   
 		  for( String content : txtgff.readlines()) {
 			  if (content.startsWith("#"))
@@ -42,15 +42,15 @@ ListCodAbsDu<GffDetailRepeat, ListCodAbs<GffDetailRepeat>>, ListBin<GffDetailRep
 			
 			  String[] ss=content.split("\t");
 			  String chrID=ss[5];
-			  //ĞÂµÄÈ¾É«Ìå
+			  //æ–°çš„æŸ“è‰²ä½“
 			   if (!mapChrID2ListGff.containsKey(chrID.toLowerCase()))  {
-				   if(LOCList!=null)//Èç¹ûÒÑ¾­´æÔÚÁËLOCList£¬Ò²¾ÍÊÇÇ°Ò»¸öLOCList£¬ÄÇÃ´ÏÈ½Ø¶Ì£¬È»ºó½«Ëü°´ÕÕgffGCtmpDetail.numberstartÅÅĞò
+				   if(LOCList!=null)//å¦‚æœå·²ç»å­˜åœ¨äº†LOCListï¼Œä¹Ÿå°±æ˜¯å‰ä¸€ä¸ªLOCListï¼Œé‚£ä¹ˆå…ˆæˆªçŸ­ï¼Œç„¶åå°†å®ƒæŒ‰ç…§gffGCtmpDetail.numberstartæ’åº
 					   LOCList.trimToSize();
 				   
-				   LOCList=new ListBin<GffDetailRepeat>();//ĞÂ½¨Ò»¸öLOCList²¢·ÅÈëChrhash
+				   LOCList=new ListBin<GffDetailRepeat>();//æ–°å»ºä¸€ä¸ªLOCListå¹¶æ”¾å…¥Chrhash
 				   mapChrID2ListGff.put(chrID.toLowerCase(), LOCList);
 			   }
-			   //Ã¿Ò»ĞĞ¾ÍÊÇÒ»¸örepeat
+			   //æ¯ä¸€è¡Œå°±æ˜¯ä¸€ä¸ªrepeat
 			   GffDetailRepeat gffRepeatmpDetail=new GffDetailRepeat(chrID, ss[5]+"_"+ss[6]+"_"+ss[9], ss[9].equals("+"));
 			   gffRepeatmpDetail.setStartAbs(Integer.parseInt(ss[6]));
 			   gffRepeatmpDetail.setEndAbs(Integer.parseInt(ss[7]));			   
@@ -65,7 +65,7 @@ ListCodAbsDu<GffDetailRepeat, ListCodAbs<GffDetailRepeat>>, ListBin<GffDetailRep
 	}
 	
 	/**
-	 * ·µ»Ø¸÷¸örepeatµÄÖÖÀàÒÔ¼°ÏàÓ¦µÄ±ÈÀı£¬ÒÔhash±íĞÎÊ½·µ»Ø
+	 * è¿”å›å„ä¸ªrepeatçš„ç§ç±»ä»¥åŠç›¸åº”çš„æ¯”ä¾‹ï¼Œä»¥hashè¡¨å½¢å¼è¿”å›
 	 * @return
 	 */
 	public Hashtable<String, Integer> getLength() 
@@ -78,12 +78,12 @@ ListCodAbsDu<GffDetailRepeat, ListCodAbs<GffDetailRepeat>>, ListBin<GffDetailRep
 			GffDetailRepeat gffDetailRepeat=mapName2DetailAbs.get(lsNameNoRedundent.get(i));
 			int tmpLength=gffDetailRepeat.Length();
 			String tmprepeatClass=gffDetailRepeat.repeatClass+"/"+gffDetailRepeat.repeatFamily;
-			if (hashRepeatLength.containsKey(tmprepeatClass)) //º¬ÓĞÒÑÖªµÄrepeat£¬Ôò°ÑrepeatµÄ³¤¶ÈÀÛ¼ÓÉÏÈ¥
+			if (hashRepeatLength.containsKey(tmprepeatClass)) //å«æœ‰å·²çŸ¥çš„repeatï¼Œåˆ™æŠŠrepeatçš„é•¿åº¦ç´¯åŠ ä¸Šå»
 			{
 				tmpLength=tmpLength+hashRepeatLength.get(tmprepeatClass);
 				hashRepeatLength.put(tmprepeatClass, tmpLength);
 			}
-			else//²»º¬ÓĞÔò°ÑĞÂµÄrepeat¼Ó½øÈ¥ 
+			else//ä¸å«æœ‰åˆ™æŠŠæ–°çš„repeatåŠ è¿›å» 
 			{
 				hashRepeatLength.put(tmprepeatClass,tmpLength);
 			}

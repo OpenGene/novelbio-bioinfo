@@ -18,7 +18,7 @@ import com.sun.tools.doclets.formats.html.resources.standard;
 public class CtrlGO extends CtrlGOPath{
 	private static final Logger logger = Logger.getLogger(CtrlGO.class);
 	
-	/** ÓÃµ¥ÀıÄ£Ê½ */
+	/** ç”¨å•ä¾‹æ¨¡å¼ */
 	private static CtrlGO ctrlGO = null;
 
 	String GOClass = Go2Term.GO_BP;
@@ -39,7 +39,7 @@ public class CtrlGO extends CtrlGOPath{
 		return ctrlGO;
 	}
 	/**
-	 * ·µ»ØÒÑÓĞµÄGtrlGO
+	 * è¿”å›å·²æœ‰çš„GtrlGO
 	 * @return
 	 */
 	public static CtrlGO getInstance() {
@@ -118,7 +118,7 @@ public class CtrlGO extends CtrlGOPath{
 		String suffix = "_GO_Item";
 		if (blast) {
 			suffix = suffix + "_blast";
-			MathComput.sort(staxID, true);//ÅÅ¸öĞò
+			MathComput.sort(staxID, true);//æ’ä¸ªåº
 			for (int i : staxID) {
 				suffix = suffix + "_" + i;
 			}

@@ -2,7 +2,7 @@ package com.novelbio.analysis.seq.fasta;
 
 import java.util.HashMap;
 
-/** ÈıÁªÃÜÂë×Ó¶ÔÕÕ±í */
+/** ä¸‰è”å¯†ç å­å¯¹ç…§è¡¨ */
 class CodeInfo {
 	public static final String AA3_Ala = "Ala";
 	public static final String AA3_Arg = "Arg";
@@ -24,7 +24,7 @@ class CodeInfo {
 	public static final String AA3_Trp = "Trp";
 	public static final String AA3_Tyr = "Tyr";
 	public static final String AA3_Val = "Val";
-	/** ÓÃX±íÊ¾ */
+	/** ç”¨Xè¡¨ç¤º */
 	public static final String AA3_STOP = "***";
 	
 	public static final String AA1_Ala = "A";
@@ -48,33 +48,33 @@ class CodeInfo {
 	public static final String AA1_Tyr = "Y";
 	public static final String AA1_Val = "V";
 	
-	/** ÓÃX±íÊ¾ */
+	/** ç”¨Xè¡¨ç¤º */
 	public static final String AA1_STOP = "*";
-	/** ·´Ïò»¥²¹¹şÏ£±í */
-	private static HashMap<Character, Character> compmap = null;// ¼î»ù·­Òë¹şÏ£±í
-	/** µ°°×Ò»Î»ºÍÈıÎ»±àºÅ×ª»» */
+	/** åå‘äº’è¡¥å“ˆå¸Œè¡¨ */
+	private static HashMap<Character, Character> compmap = null;// ç¢±åŸºç¿»è¯‘å“ˆå¸Œè¡¨
+	/** è›‹ç™½ä¸€ä½å’Œä¸‰ä½ç¼–å·è½¬æ¢ */
 	static HashMap<String, String> mapAA1toAA3 = null;
-	/**  µ°°×ĞÔÖÊ±í  */
+	/**  è›‹ç™½æ€§è´¨è¡¨  */
 	static HashMap<String, String[]> mapAA2ChamicalQuality = null;
-	/** ÈıÁªÃÜÂë×ÓµÄÅä¶ÔÇé¿ö±í */
+	/** ä¸‰è”å¯†ç å­çš„é…å¯¹æƒ…å†µè¡¨ */
 	static HashMap<String, String> mapDNACodToAA3 = null;
-	/** ÈıÁªÃÜÂë×ÓµÄÅä¶ÔÇé¿ö±í */
+	/** ä¸‰è”å¯†ç å­çš„é…å¯¹æƒ…å†µè¡¨ */
 	static HashMap<String, String> mapDNAcodToAA1 = null;
 
 	/**
-	 * »ñµÃ»¥²¹Åä¶Ôhash±í<br>
-		 * ÉúÎïĞÅÏ¢Ñ§ÖĞ³£ÓÃµÄ 18 ¸ö¼î»ù×ÖÄ¸ ×ÖÄ¸ ¼î»ù µ¥¼î»ù A A C C G G I I T T U U<br>
-		 *  ¶ş¼î»ù K G/T M A/C R A/G S G/C W A/T Y C/T <br>
-		 *  Èı¼î»ù B C/G/T D A/G/T H A/C/T V A/C/G<br>
-		 *   ËÄ¼î»ù  N A/C/G/T X A/C/G/T <br>
-		 *   È«³Æ Adenine Cytosine Guanine Isosine Thymine Uracil Keto aMino puRine Strong pair Weak pair pYrimidine Not A Not C Not G Not U (or T) Any Unknown <br>
-		 *   ËµÃ÷ ÏÙàÑßÊ °ûà×à¤ ÄñàÑßÊ ´Î»ÆàÑßÊ ĞØÏÙà×à¤ Äòà×à¤ º¬Íª»ù º¬°±»ù àÑßÊ Ç¿Åä¶Ô ÈõÅä¶Ô à×à¤ ·ÇA ·ÇC ·ÇG ·Ç U(T) ÈÎÒ»¼î»ù Î´Öª¼î»ù <br>
+	 * è·å¾—äº’è¡¥é…å¯¹hashè¡¨<br>
+		 * ç”Ÿç‰©ä¿¡æ¯å­¦ä¸­å¸¸ç”¨çš„ 18 ä¸ªç¢±åŸºå­—æ¯ å­—æ¯ ç¢±åŸº å•ç¢±åŸº A A C C G G I I T T U U<br>
+		 *  äºŒç¢±åŸº K G/T M A/C R A/G S G/C W A/T Y C/T <br>
+		 *  ä¸‰ç¢±åŸº B C/G/T D A/G/T H A/C/T V A/C/G<br>
+		 *   å››ç¢±åŸº  N A/C/G/T X A/C/G/T <br>
+		 *   å…¨ç§° Adenine Cytosine Guanine Isosine Thymine Uracil Keto aMino puRine Strong pair Weak pair pYrimidine Not A Not C Not G Not U (or T) Any Unknown <br>
+		 *   è¯´æ˜ è…ºå˜Œå‘¤ èƒå˜§å•¶ é¸Ÿå˜Œå‘¤ æ¬¡é»„å˜Œå‘¤ èƒ¸è…ºå˜§å•¶ å°¿å˜§å•¶ å«é…®åŸº å«æ°¨åŸº å˜Œå‘¤ å¼ºé…å¯¹ å¼±é…å¯¹ å˜§å•¶ éA éC éG é U(T) ä»»ä¸€ç¢±åŸº æœªçŸ¥ç¢±åŸº <br>
 	 */
 	public static HashMap<Character, Character> getCompMap() {
 		if (compmap != null) {
 			return compmap;
 		}
-		compmap = new HashMap<Character, Character>();// ¼î»ù·­Òë¹şÏ£±í
+		compmap = new HashMap<Character, Character>();// ç¢±åŸºç¿»è¯‘å“ˆå¸Œè¡¨
 		compmap.put(Character.valueOf('A'), Character.valueOf('T'));
 		compmap.put(Character.valueOf('a'), Character.valueOf('t'));
 		
@@ -216,7 +216,7 @@ class CodeInfo {
 		return mapDNAcodToAA1;
 	}
 	/**
-	 * µ°°×ĞÔÖÊ±í
+	 * è›‹ç™½æ€§è´¨è¡¨
 	 */
 	static HashMap<String, String[]> getHashAAquality()
 	{
@@ -256,7 +256,7 @@ class CodeInfo {
 		return mapAA2ChamicalQuality;
 	}
 
-	/** µ°°×Ò»Î»ºÍÈıÎ»±àºÅ×ª»» */
+	/** è›‹ç™½ä¸€ä½å’Œä¸‰ä½ç¼–å·è½¬æ¢ */
 	static HashMap<String, String> setMapAA1toAA3() {
 		if (mapAA1toAA3 != null) {
 			return mapAA1toAA3;
@@ -289,8 +289,8 @@ class CodeInfo {
 	/**
 	 * @param sequence
 	 * @return
-	 * 0£ºseq ³ö´íÔò·µ»Ønull
-	 * 1£ºÈç¹û³ö´í£¬¼ÇÂ¼³ö´íÎ»ÖÃ
+	 * 0ï¼šseq å‡ºé”™åˆ™è¿”å›null
+	 * 1ï¼šå¦‚æœå‡ºé”™ï¼Œè®°å½•å‡ºé”™ä½ç½®
 	 */
 	static String[] reservecomInfo(String sequence) {
 		String[] result = new String[2];
@@ -311,7 +311,7 @@ class CodeInfo {
 	}
 	
 	/**
-	 * ÊäÈëĞòÁĞ£¬»¥²¹¶ÔÕÕ±í »ñµÃ·´Ïò»¥²¹ĞòÁĞ
+	 * è¾“å…¥åºåˆ—ï¼Œäº’è¡¥å¯¹ç…§è¡¨ è·å¾—åå‘äº’è¡¥åºåˆ—
 	 */
 	public static String reservecom(String sequence) {
 		String[] revSeq = reservecomInfo(sequence);
@@ -319,11 +319,11 @@ class CodeInfo {
 	}
 	
 	/**
-	 * Ö¸¶¨ÈıÁªÃÜÂë×Ó£¬½«Æä×ª»»Îªµ°°×±àÂë
+	 * æŒ‡å®šä¸‰è”å¯†ç å­ï¼Œå°†å…¶è½¬æ¢ä¸ºè›‹ç™½ç¼–ç 
 	 * @param DNAcode
-	 * @param AA1 ÊÇ·ñ×ª»¯Îªµ¥×ÖÄ¸AA£¬false×ª»¯Îª3×ÖÄ¸AA
+	 * @param AA1 æ˜¯å¦è½¬åŒ–ä¸ºå•å­—æ¯AAï¼Œfalseè½¬åŒ–ä¸º3å­—æ¯AA
 	 * @return
-	 * null ±íÊ¾Ã»ÓĞÕÒµ½£¬ËµÃ÷ÊäÈëµÄĞòÁĞÓĞÎó
+	 * null è¡¨ç¤ºæ²¡æœ‰æ‰¾åˆ°ï¼Œè¯´æ˜è¾“å…¥çš„åºåˆ—æœ‰è¯¯
 	 */
 	 public static String convertDNACode2AA(String DNAcode, boolean AA1) {
 		 DNAcode = DNAcode.trim().toUpperCase();
@@ -346,11 +346,11 @@ class CodeInfo {
 		 return aa;
 	}
 	 /**
-	  * ÊäÈëµÄÊÇ°±»ùËá£¬ÎŞËùÎ½Èı×Ö·û»¹ÊÇµ¥×Ö·û
-	  * ±È½ÏÁ½¸ö°±»ùËáµÄ»¯Ñ§ĞÔÖÊ£¬·µ»Ø²îÒìµã£¬·µ»Ø×î´ó²îÒì
-	  * Æ©ÈçÈç¹û¼«ĞÔ²»Í¬¾Í·µ»Ø¼«ĞÔ
-	  * ¸ñÊ½ polar --> nonpolarµÈ
-	  * ¶¼Ò»ÑùÔò·µ»Ø"";
+	  * è¾“å…¥çš„æ˜¯æ°¨åŸºé…¸ï¼Œæ— æ‰€è°“ä¸‰å­—ç¬¦è¿˜æ˜¯å•å­—ç¬¦
+	  * æ¯”è¾ƒä¸¤ä¸ªæ°¨åŸºé…¸çš„åŒ–å­¦æ€§è´¨ï¼Œè¿”å›å·®å¼‚ç‚¹ï¼Œè¿”å›æœ€å¤§å·®å¼‚
+	  * è­¬å¦‚å¦‚æœææ€§ä¸åŒå°±è¿”å›ææ€§
+	  * æ ¼å¼ polar --> nonpolarç­‰
+	  * éƒ½ä¸€æ ·åˆ™è¿”å›"";
 	  */
 	public static String cmpAAquality(String AA1, String AA2) {
 		AA1 = getAAformate(AA1);
@@ -359,8 +359,8 @@ class CodeInfo {
 	}
 
 	/**
-	 * »ñµÃ°±»ùËáµÄÌØĞÔ£¬¼«ĞÔ£¬µçºÉµÈ£¬°´ÕÕgenedocµÄ·ÖÀà±ê×¼
-	 * @return string[3]: 0£º¼«ĞÔ--´øµçºÉ--¸ºµç 1£º
+	 * è·å¾—æ°¨åŸºé…¸çš„ç‰¹æ€§ï¼Œææ€§ï¼Œç”µè·ç­‰ï¼ŒæŒ‰ç…§genedocçš„åˆ†ç±»æ ‡å‡†
+	 * @return string[3]: 0ï¼šææ€§--å¸¦ç”µè·--è´Ÿç”µ 1ï¼š
 	 */
 	public static String[] getAAquality(String AA) {
 		AA = getAAformate(AA);
@@ -368,13 +368,13 @@ class CodeInfo {
 	}
 	/**
 	 * 
-	 * ÊäÈëµÄÊÇDNAÈıÁªÃÜÂë×Ö
-	 * ±È½ÏÁ½¸ö°±»ùËáµÄ»¯Ñ§ĞÔÖÊ£¬·µ»Ø²îÒìµã£¬·µ»Ø×î´ó²îÒì
-	 * Æ©ÈçÈç¹û¼«ĞÔ²»Í¬¾Í·µ»Ø¼«ĞÔ
-	 * ¸ñÊ½ polar --> nonpolarµÈ
-	 * ¶¼Ò»ÑùÔò·µ»Ø"";
-	 * @param DNAcode1 µÚÒ»¸öDNA±àÂë
-	 * @param DNAcode2 µÚ¶ş¸öDNA±àÂë
+	 * è¾“å…¥çš„æ˜¯DNAä¸‰è”å¯†ç å­—
+	 * æ¯”è¾ƒä¸¤ä¸ªæ°¨åŸºé…¸çš„åŒ–å­¦æ€§è´¨ï¼Œè¿”å›å·®å¼‚ç‚¹ï¼Œè¿”å›æœ€å¤§å·®å¼‚
+	 * è­¬å¦‚å¦‚æœææ€§ä¸åŒå°±è¿”å›ææ€§
+	 * æ ¼å¼ polar --> nonpolarç­‰
+	 * éƒ½ä¸€æ ·åˆ™è¿”å›"";
+	 * @param DNAcode1 ç¬¬ä¸€ä¸ªDNAç¼–ç 
+	 * @param DNAcode2 ç¬¬äºŒä¸ªDNAç¼–ç 
 	 * @return
 	 */
 	public static String cmpAAqualityDNA(String DNAcode1, String DNAcode2) {
@@ -383,14 +383,14 @@ class CodeInfo {
 		return compareAAquality(AA1, AA2);
 	}
 	/**
-	 * ½«°±»ùËáÔÚµ¥×ÖÄ¸ºÍÈı×ÖÄ¸Ö®¼ä×ª»»
+	 * å°†æ°¨åŸºé…¸åœ¨å•å­—æ¯å’Œä¸‰å­—æ¯ä¹‹é—´è½¬æ¢
 	 */
 	public static String convertAA(String AA) {
 		AA = getAAformate(AA);
 		return setMapAA1toAA3().get(AA);
 	}
 	/**
-	 * ÊäÈë¸ñÊ½²»±ê×¼µÄAA£¬½«Æä¸Ä³É±ê×¼¸ñÊ½AA
+	 * è¾“å…¥æ ¼å¼ä¸æ ‡å‡†çš„AAï¼Œå°†å…¶æ”¹æˆæ ‡å‡†æ ¼å¼AA
 	 * @param AA
 	 * @return
 	 */
@@ -414,8 +414,8 @@ class CodeInfo {
 	 }
 	 
 	/**
-	 * ÊäÈëµÄÊÇ°±»ùËá£¬±ØĞëÊÇ±ê×¼¸ñÊ½ ±È½ÏÁ½¸ö°±»ùËáµÄ»¯Ñ§ĞÔÖÊ£¬·µ»Ø²îÒìµã£¬·µ»Ø×î´ó²îÒì Æ©ÈçÈç¹û¼«ĞÔ²»Í¬¾Í·µ»Ø¼«ĞÔ<br>
-	 * ¸ñÊ½ polar --> nonpolarµÈ ¶¼Ò»ÑùÔò·µ»Ø"";
+	 * è¾“å…¥çš„æ˜¯æ°¨åŸºé…¸ï¼Œå¿…é¡»æ˜¯æ ‡å‡†æ ¼å¼ æ¯”è¾ƒä¸¤ä¸ªæ°¨åŸºé…¸çš„åŒ–å­¦æ€§è´¨ï¼Œè¿”å›å·®å¼‚ç‚¹ï¼Œè¿”å›æœ€å¤§å·®å¼‚ è­¬å¦‚å¦‚æœææ€§ä¸åŒå°±è¿”å›ææ€§<br>
+	 * æ ¼å¼ polar --> nonpolarç­‰ éƒ½ä¸€æ ·åˆ™è¿”å›"";
 	 */
 	private static String compareAAquality(String AA1, String AA2) {
 		if (AA1 == null || AA2 == null) {

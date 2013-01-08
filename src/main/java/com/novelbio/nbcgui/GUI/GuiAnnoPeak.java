@@ -23,7 +23,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JComboBox;
 import javax.swing.JLayeredPane;
 /**
- * ÅúÁ¿×¢ÊÍ£¬¸÷ÖÖ×¢ÊÍ
+ * æ‰¹é‡æ³¨é‡Šï¼Œå„ç§æ³¨é‡Š
  * @author zong0jie
  *
  */

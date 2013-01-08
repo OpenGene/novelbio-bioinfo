@@ -10,7 +10,7 @@ import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modgeneid.GeneID;
 
 /**
- * ¹¦ÄÜ·ÖÎöµÄÀà
+ * åŠŸèƒ½åˆ†æçš„ç±»
  * @author zong0jie
  */
 public class FunctionTest implements FunTestInt {
@@ -21,8 +21,8 @@ public class FunctionTest implements FunTestInt {
 	AbstFunTest funTest = null;
 	
 	/**
-	 * Ñ¡ÔñÒ»ÖÖ¼ìÑé·½Ê½FUNCTION_GO_NOVELBIOµÈ
-	 * ÊÇ·ñblast£¬Èç¹ûblastÄÇÃ´blastµ½ÄÄ¼¸¸öÎïÖÖ
+	 * é€‰æ‹©ä¸€ç§æ£€éªŒæ–¹å¼FUNCTION_GO_NOVELBIOç­‰
+	 * æ˜¯å¦blastï¼Œå¦‚æœblasté‚£ä¹ˆblaståˆ°å“ªå‡ ä¸ªç‰©ç§
 	 * @param functionType
 	 */
 	public FunctionTest(String functionType, int taxID, boolean blast, double blastevalue, int... blasttaxID) {
@@ -42,13 +42,13 @@ public class FunctionTest implements FunTestInt {
 		funTest.setTaxID(taxID);
 	}
 	/**
-	 * Ö»ÄÜÓÃÓÚGO·ÖÎöÖĞ
+	 * åªèƒ½ç”¨äºGOåˆ†æä¸­
 	 */
 	public void setGOtype(String goType) {
 		funTest.setGoType(goType);
 	}
 	/**
-	 * Ö»ÄÜÓÃÓÚGO·ÖÎöÖĞ
+	 * åªèƒ½ç”¨äºGOåˆ†æä¸­
 	 */
 	public void setGOAlgorithm(GoAlgorithm goAlgorithm) {
 		try {
@@ -78,7 +78,7 @@ public class FunctionTest implements FunTestInt {
 		funTest.setLsBGAccID(fileName, colNum);
 	}
 	/**
-	 * ¶ÁÈ¡AccIDÎÄ¼ş£¬È»ºó½«Item±£´æÖÁÏàÓ¦µÄÎÄ¼ş¼ĞÖĞ
+	 * è¯»å–AccIDæ–‡ä»¶ï¼Œç„¶åå°†Itemä¿å­˜è‡³ç›¸åº”çš„æ–‡ä»¶å¤¹ä¸­
 	 * @param fileName
 	 * @param colNum
 	 * @param outLsItem

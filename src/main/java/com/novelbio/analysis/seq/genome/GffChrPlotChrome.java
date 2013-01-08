@@ -27,7 +27,7 @@ import com.novelbio.database.model.species.Species;
 
 import de.erichseifert.gral.util.GraphicsUtils;
 /**
- * »æÖÆÈ¾É«Ìå·Ö²¼µÄÍ¼
+ * ç»˜åˆ¶æŸ“è‰²ä½“åˆ†å¸ƒçš„å›¾
  * @author zong0jie
  *
  */
@@ -49,7 +49,7 @@ public class GffChrPlotChrome {
 		this.gffChrAbs = gffChrAbs;
 	}
 	/**
-	 * ½«GffChrAbsµ¼Èë
+	 * å°†GffChrAbså¯¼å…¥
 	 * @param gffChrAbs
 	 */
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
@@ -65,14 +65,14 @@ public class GffChrPlotChrome {
 		this.mapReads = mapReads;
 	}
 	/**
-	 * Ã¿¸ô¶àÉÙÎ»È¡Ñù,Èç¹ûÉè¶¨Îª1£¬ÔòËã·¨»á±ä»¯£¬È»ºó»áºÜ¾«È·
+	 * æ¯éš”å¤šå°‘ä½å–æ ·,å¦‚æœè®¾å®šä¸º1ï¼Œåˆ™ç®—æ³•ä¼šå˜åŒ–ï¼Œç„¶åä¼šå¾ˆç²¾ç¡®
 	 * @return
 	 */
 	public int getThisInv() {
 		return mapReads.getBinNum();
 	}
 	/**
-	 * °´ÕÕÈ¾É«ÌåÊı£¬Í³¼ÆÃ¿¸öÈ¾É«ÌåÉÏ×ÜÎ»µãÊı£¬Ã¿¸öÎ»µãÊı£¬ string[4] 0: chrID 1: readsNum 2: readsPipNum
+	 * æŒ‰ç…§æŸ“è‰²ä½“æ•°ï¼Œç»Ÿè®¡æ¯ä¸ªæŸ“è‰²ä½“ä¸Šæ€»ä½ç‚¹æ•°ï¼Œæ¯ä¸ªä½ç‚¹æ•°ï¼Œ string[4] 0: chrID 1: readsNum 2: readsPipNum
 	 * 3: readsPipMean
 	 * @return
 	 */
@@ -90,20 +90,20 @@ public class GffChrPlotChrome {
 		return lsResult;
 	}
 	/**
-	 * @param uniqReads µ±reads mappingÖÁÍ¬Ò»¸öÎ»ÖÃÊ±£¬ÊÇ·ñ½ö±£ÁôÒ»¸öreads
-	 * @param startCod ´ÓÆğµã¿ªÊ¼¶ÁÈ¡¸ÃreadsµÄ¼¸¸öbp£¬º«ÑàÓÃµ½ Ğ¡ÓÚ0±íÊ¾È«²¿¶ÁÈ¡ ´óÓÚreads³¤¶ÈµÄÔòºöÂÔ¸Ã²ÎÊı
-	 * @param booUniqueMapping ÖØ¸´µÄreadsÊÇ·ñÖ»Ñ¡ÔñÒ»Ìõ
-	 * @param cis5to3 ÊÇ·ñ½öÑ¡È¡Ä³Ò»·½ÏòµÄreads£¬null²»¿¼ÂÇ
+	 * @param uniqReads å½“reads mappingè‡³åŒä¸€ä¸ªä½ç½®æ—¶ï¼Œæ˜¯å¦ä»…ä¿ç•™ä¸€ä¸ªreads
+	 * @param startCod ä»èµ·ç‚¹å¼€å§‹è¯»å–è¯¥readsçš„å‡ ä¸ªbpï¼ŒéŸ©ç‡•ç”¨åˆ° å°äº0è¡¨ç¤ºå…¨éƒ¨è¯»å– å¤§äºreadsé•¿åº¦çš„åˆ™å¿½ç•¥è¯¥å‚æ•°
+	 * @param booUniqueMapping é‡å¤çš„readsæ˜¯å¦åªé€‰æ‹©ä¸€æ¡
+	 * @param cis5to3 æ˜¯å¦ä»…é€‰å–æŸä¸€æ–¹å‘çš„readsï¼Œnullä¸è€ƒè™‘
 	 */
 	public void setFilter(boolean uniqReads, int startCod, boolean booUniqueMapping, Boolean cis5to3) {
 		mapReads.setFilter(uniqReads, startCod, booUniqueMapping, cis5to3);
 	}
 	
 	/**
-	 * Ö÷ÒªÓÃÓÚÈ«»ùÒò×é×öÍ¼µÄ£¬ËùÒÔ½á¹û²»°´ÕÕ»ùÒò·½Ïò½øĞĞµßµ¹
+	 * ä¸»è¦ç”¨äºå…¨åŸºå› ç»„åšå›¾çš„ï¼Œæ‰€ä»¥ç»“æœä¸æŒ‰ç…§åŸºå› æ–¹å‘è¿›è¡Œé¢ å€’
 	 * @param geneStructure
 	 * @param gffDetailGene
-	 * @param num ¾ßÌåµÚ¼¸¸ö£¬Æ©ÈçÂíºì¾ÍÏë¿´µÚÒ»¸öÄÚº¬×Ó»òÕßµÚÒ»¸öÍâÏÔ×Ó Ğ¡ÓÚµÈÓÚ0±íÊ¾¿´È«Ìå
+	 * @param num å…·ä½“ç¬¬å‡ ä¸ªï¼Œè­¬å¦‚é©¬çº¢å°±æƒ³çœ‹ç¬¬ä¸€ä¸ªå†…å«å­æˆ–è€…ç¬¬ä¸€ä¸ªå¤–æ˜¾å­ å°äºç­‰äº0è¡¨ç¤ºçœ‹å…¨ä½“
 	 * @return
 	 */
 	public void setFilterChrDistInfo(GeneStructure geneStructure, int num) {
@@ -127,10 +127,10 @@ public class GffChrPlotChrome {
 		mapReads.setMapChrID2LsAlignments(mapChrID2LsAlignment);
 	}
 	/**
-	 * Ö÷ÒªÓÃÓÚÈ«»ùÒò×é×öÍ¼µÄ£¬ËùÒÔ½á¹û²»°´ÕÕ»ùÒò·½Ïò½øĞĞµßµ¹
+	 * ä¸»è¦ç”¨äºå…¨åŸºå› ç»„åšå›¾çš„ï¼Œæ‰€ä»¥ç»“æœä¸æŒ‰ç…§åŸºå› æ–¹å‘è¿›è¡Œé¢ å€’
 	 * @param geneStructure
 	 * @param gffDetailGene
-	 * @param num ¾ßÌåµÚ¼¸¸ö£¬Æ©ÈçÂíºì¾ÍÏë¿´µÚÒ»¸öÄÚº¬×Ó»òÕßµÚÒ»¸öÍâÏÔ×Ó Ğ¡ÓÚµÈÓÚ0±íÊ¾¿´È«Ìå
+	 * @param num å…·ä½“ç¬¬å‡ ä¸ªï¼Œè­¬å¦‚é©¬çº¢å°±æƒ³çœ‹ç¬¬ä¸€ä¸ªå†…å«å­æˆ–è€…ç¬¬ä¸€ä¸ªå¤–æ˜¾å­ å°äºç­‰äº0è¡¨ç¤ºçœ‹å…¨ä½“
 	 * @return
 	 */
 	private ArrayList<SiteInfo> getGeneStructureRangeForChrPlot(GeneStructure geneStructure, GffDetailGene gffDetailGene, int num) {
@@ -206,9 +206,9 @@ public class GffChrPlotChrome {
 	}
  
 	/**
-	 * »­³öËùÓĞÈ¾É«ÌåÉÏÃÜ¶ÈÍ¼
-	 * ÓÃjava»­
-	 * @param outPathPrefix Êä³öÎÄ¼ş¼Ğ+Ç°×º
+	 * ç”»å‡ºæ‰€æœ‰æŸ“è‰²ä½“ä¸Šå¯†åº¦å›¾
+	 * ç”¨javaç”»
+	 * @param outPathPrefix è¾“å‡ºæ–‡ä»¶å¤¹+å‰ç¼€
 	 * @throws Exception
 	 */
 	public void plotAllChrDist(String outPathPrefix) {
@@ -225,14 +225,14 @@ public class GffChrPlotChrome {
 		}
 	}
 	/**
-	 * ¸ø¶¨È¾É«Ìå£¬·µ»Ø¸ÃÈ¾É«ÌåÉÏreads·Ö²¼
+	 * ç»™å®šæŸ“è‰²ä½“ï¼Œè¿”å›è¯¥æŸ“è‰²ä½“ä¸Šreadsåˆ†å¸ƒ
 	 * 
 	 * @param chrID
-	 *            µÚ¼¸¸öÈíÉ«Ìå
+	 *            ç¬¬å‡ ä¸ªè½¯è‰²ä½“
 	 * @param maxresolution
-	 *            ×î³¤·Ö±æÂÊ
-	 * @param axisY yÖá±ß½ç
-	 * @param outFileName Êä³öÎÄ¼şÃû£¬´øºó×º"_chrID"
+	 *            æœ€é•¿åˆ†è¾¨ç‡
+	 * @param axisY yè½´è¾¹ç•Œ
+	 * @param outFileName è¾“å‡ºæ–‡ä»¶åï¼Œå¸¦åç¼€"_chrID"
 	 * @throws Exception
 	 */
 	private void plotChrDist(String chrID, int maxresolution, double axisY, String outFileName) throws Exception {
@@ -251,7 +251,7 @@ public class GffChrPlotChrome {
 		try {
 			chrReads = getChrDensity(chrID.toLowerCase(), resolution.length);
 		} catch (Exception e) {
-			logger.error("³öÏÖÎ´ÖªchrID£º" + chrID);
+			logger.error("å‡ºç°æœªçŸ¥chrIDï¼š" + chrID);
 			return;
 		}
 		if (chrReads == null) {
@@ -269,7 +269,7 @@ public class GffChrPlotChrome {
 		dotStyle.setStyle(DotStyle.STYLE_AREA);
 		plotScatter.addXY(resolutionDoub, chrReads, dotStyle);
 		
-		//////////////////Ìí¼Ó±ß¿ò///////////////////////////////
+		//////////////////æ·»åŠ è¾¹æ¡†///////////////////////////////
 		DotStyle dotStyleBroad = new DotStyle();
 		dotStyleBroad.setStyle(DotStyle.STYLE_LINE);
 		dotStyleBroad.setColor(Color.RED);
@@ -282,7 +282,7 @@ public class GffChrPlotChrome {
 		
 		plotScatter.setBg(Color.WHITE);
 		plotScatter.setAlpha(false);
-		//×ø±êÖámapping
+		//åæ ‡è½´mapping
 //		plotScatter.setMapNum2ChangeY(0, 0, axisY, 500, 100);
 		plotScatter.setTitle(chrID + " Reads Density", null);
 		plotScatter.setTitleX("Chromosome Length", null, 0);
@@ -294,13 +294,13 @@ public class GffChrPlotChrome {
 	}
 
 	/**
-	 * ·µ»ØÄ³ÌõÈ¾É«ÌåÉÏµÄreadsÇé¿ö£¬ÊÇÃÜ¶ÈÍ¼ Ö÷ÒªÓÃÓÚ»ùÒò×éÉÏ£¬Ò»ÌõÈ¾É«ÌåÉÏµÄreadsÇé¿ö
+	 * è¿”å›æŸæ¡æŸ“è‰²ä½“ä¸Šçš„readsæƒ…å†µï¼Œæ˜¯å¯†åº¦å›¾ ä¸»è¦ç”¨äºåŸºå› ç»„ä¸Šï¼Œä¸€æ¡æŸ“è‰²ä½“ä¸Šçš„readsæƒ…å†µ
 	 * 
 	 * @param chrID
 	 * @param binNum
-	 *            ·Ö³É¼¸¸öÇø¼ä
-	 * @parm type È¡Ñù·½·¨ 0£º¼ÓÈ¨Æ½¾ù 1£ºÈ¡×î¸ßÖµ£¬2£º¼ÓÈ¨µ«²»Æ½¾ù--Ò²¾ÍÊÇ¼ÓºÍ
-	 * @return Ã»ÓĞµÄ»°¾Í·µ»Ønull
+	 *            åˆ†æˆå‡ ä¸ªåŒºé—´
+	 * @parm type å–æ ·æ–¹æ³• 0ï¼šåŠ æƒå¹³å‡ 1ï¼šå–æœ€é«˜å€¼ï¼Œ2ï¼šåŠ æƒä½†ä¸å¹³å‡--ä¹Ÿå°±æ˜¯åŠ å’Œ
+	 * @return æ²¡æœ‰çš„è¯å°±è¿”å›null
 	 */
 	private double[] getChrDensity(String chrID, int binNum) {
 		double[] tmpResult = mapReads.getReadsDensity(chrID, 0, 0, binNum);

@@ -9,9 +9,9 @@ import org.apache.log4j.Logger;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
 /**
- * Ê×ÏÈÉè¶¨Ò»ÏµÁĞµÄArrayList<double[]> lsXY
- * È»ºó°´ÕÕxÅÅĞò
- * È»ºó¶ş·Ö²éÕÒx£¬»ñµÃy
+ * é¦–å…ˆè®¾å®šä¸€ç³»åˆ—çš„ArrayList<double[]> lsXY
+ * ç„¶åæŒ‰ç…§xæ’åº
+ * ç„¶åäºŒåˆ†æŸ¥æ‰¾xï¼Œè·å¾—y
  * @author zong0jie
  */
 public class Equations {
@@ -27,11 +27,11 @@ public class Equations {
 	}
 
 	/**
-	 * ¸ø¶¨Ò»ÏµÁĞµÄÊı¾İ£¬·ÖÎªÁ½ÁĞ£¬»ñµÃÒ»¸öxyµÄÇúÏß
-	 * @param file Ã»ÓĞÎÄ¼şÔòÖ±½Ó·µ»Ø
-	 * @param colX xÁĞ
-	 * @param colY yÁĞ
-	 * @param rowNum ´ÓµÚ¼¸ÁĞ¿ªÊ¼¶ÁÈ¥
+	 * ç»™å®šä¸€ç³»åˆ—çš„æ•°æ®ï¼Œåˆ†ä¸ºä¸¤åˆ—ï¼Œè·å¾—ä¸€ä¸ªxyçš„æ›²çº¿
+	 * @param file æ²¡æœ‰æ–‡ä»¶åˆ™ç›´æ¥è¿”å›
+	 * @param colX xåˆ—
+	 * @param colY yåˆ—
+	 * @param rowNum ä»ç¬¬å‡ åˆ—å¼€å§‹è¯»å»
 	 */
 	public void setXYFile(String file, int colX, int colY, int rowStart)
 	{
@@ -51,19 +51,19 @@ public class Equations {
 			}
 			addXY(x, y);
 		}
-		//ÅÅĞò
+		//æ’åº
 		Collections.sort(lsXY, new CompLsXY());
 	}
 	/**
-	 * ¸ø¶¨Ò»ÏµÁĞµÄÊı¾İ£¬·ÖÎªÁ½ÁĞ£¬»ñµÃÒ»¸öxyµÄÇúÏß
-	 * @param file  Ã»ÓĞÎÄ¼şÔòÖ±½Ó·µ»Ø  xµÚÒ»ÁĞ£¬yµÚ¶ş£»ÁĞ£¬´ÓµÚÒ»ĞĞ¿ªÊ¼¶ÁÈ¡
+	 * ç»™å®šä¸€ç³»åˆ—çš„æ•°æ®ï¼Œåˆ†ä¸ºä¸¤åˆ—ï¼Œè·å¾—ä¸€ä¸ªxyçš„æ›²çº¿
+	 * @param file  æ²¡æœ‰æ–‡ä»¶åˆ™ç›´æ¥è¿”å›  xç¬¬ä¸€åˆ—ï¼Œyç¬¬äºŒï¼›åˆ—ï¼Œä»ç¬¬ä¸€è¡Œå¼€å§‹è¯»å–
 	 */
 	public void setXYFile(String file)
 	{
 		setXYFile(file, 1, 2, 1);
 	}
 	/**
-	 * Éè¶¨x£¬yµÄÖµ
+	 * è®¾å®šxï¼Œyçš„å€¼
 	 * @param x
 	 * @param y
 	 */
@@ -76,7 +76,7 @@ public class Equations {
 		this.lsXY = lsXY;
 	}
 	/**
-	 * ·µ»ØĞŞÕı½á¹û
+	 * è¿”å›ä¿®æ­£ç»“æœ
 	 * @param x
 	 * @return
 	 */
@@ -98,7 +98,7 @@ public class Equations {
 	}
 
 	/**
-	 * ¸ø¶¨x£¬»ñµÃ¶ÔÓ¦µÄy
+	 * ç»™å®šxï¼Œè·å¾—å¯¹åº”çš„y
 	 * @param X
 	 * @return
 	 */
@@ -109,15 +109,15 @@ public class Equations {
 			return lsXY.get(num)[1];
 		}
 		else {
-			//Èç¹ûxÔÚ×îÇ°Ãæ
+			//å¦‚æœxåœ¨æœ€å‰é¢
 			if (num == -1) {
 				return getYinside(lsXY.get(0), lsXY.get(1), X);
 			}
-			//Èç¹ûxÔÚ×îºóÃæ
+			//å¦‚æœxåœ¨æœ€åé¢
 			else if (num == -lsXY.size() - 1) {
 				return getYinside(lsXY.get(-num - 3), lsXY.get(-num - 2), X);
 			}
-			//Èç¹ûxÔÚÖĞ¼ä
+			//å¦‚æœxåœ¨ä¸­é—´
 			else {
 				return getYinside(lsXY.get(-num - 2), lsXY.get( -num - 1), X);
 			}
@@ -125,7 +125,7 @@ public class Equations {
 	}
 	
 	/**
-	 * Ö¸¶¨ÉÏÒ»¸öµãºÍÏÂÒ»¸öµãµÄ×ø±ê£¬¸ø¶¨Á½µãÖ®¼äµÄxÖµ£¬¼ÆËã¸ÃµãµÄYÖµ
+	 * æŒ‡å®šä¸Šä¸€ä¸ªç‚¹å’Œä¸‹ä¸€ä¸ªç‚¹çš„åæ ‡ï¼Œç»™å®šä¸¤ç‚¹ä¹‹é—´çš„xå€¼ï¼Œè®¡ç®—è¯¥ç‚¹çš„Yå€¼
 	 * @param upXY
 	 * @param downXY
 	 * @param X
@@ -136,10 +136,10 @@ public class Equations {
 		double x1 = upXY[0]; double  y1 = upXY[1];
 		double x2 = downXY[0]; double y2 = downXY[1];
 		if (x1 == x2) {
-			logger.error("×ø±ê´íÎó, x1: " + x1 + " y1: " + y1 + " x2: " + x2 + " y2: " + y2 + " x: " + x);
+			logger.error("åæ ‡é”™è¯¯, x1: " + x1 + " y1: " + y1 + " x2: " + x2 + " y2: " + y2 + " x: " + x);
 		}
 //		if (x > Math.max(x1, x2) || x < Math.min(x1, x2)) {
-//			logger.error("×ø±ê´íÎó, x1: " + x1 + " y1: " + y1 + " x2: " + x2 + " y2: " + y2 + " x: " + x);
+//			logger.error("åæ ‡é”™è¯¯, x1: " + x1 + " y1: " + y1 + " x2: " + x2 + " y2: " + y2 + " x: " + x);
 //		}
 		double y = (y2*x1 - y2*x - y1*x2 + y1*x)/(x1 - x2);
 		if (y < min) {

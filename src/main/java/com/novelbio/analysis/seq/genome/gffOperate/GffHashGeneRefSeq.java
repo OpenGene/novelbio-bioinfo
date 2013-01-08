@@ -12,7 +12,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
 
-/**¸ø¶¨»ùÒòµÄmRNAĞòÁĞºÍproteinĞòÁĞ£¬Éú³ÉÒ»¸öGffHashGene£¬ÆäÖĞÃ¿¸ö»ùÒò¾ÍÊÇÒ»¸ö¶ÀÁ¢µÄListGff */
+/**ç»™å®šåŸºå› çš„mRNAåºåˆ—å’Œproteinåºåˆ—ï¼Œç”Ÿæˆä¸€ä¸ªGffHashGeneï¼Œå…¶ä¸­æ¯ä¸ªåŸºå› å°±æ˜¯ä¸€ä¸ªç‹¬ç«‹çš„ListGff */
 public class GffHashGeneRefSeq extends GffHashGeneAbs{
 	public static void main(String[] args) {
 		String proteinSeq = "/media/winE/Bioinformatics/GenomeData/CriGri/protein_Cope.fa";
@@ -40,7 +40,7 @@ public class GffHashGeneRefSeq extends GffHashGeneAbs{
 	public void setProteinSeq(String proteinSeq) {
 		this.proteinSeq = proteinSeq;
 	}
-	/** ÕâÀïµÄGffFfileName¾ÍÊÇmRNAĞòÁĞ */
+	/** è¿™é‡Œçš„GffFfileNameå°±æ˜¯mRNAåºåˆ— */
 	@Override
 	protected void ReadGffarrayExcepTmp(String gfffilename) throws Exception {
 		SeqFastaHash seqHashMRNA = new SeqFastaHash(gfffilename, null, false);
@@ -113,7 +113,7 @@ public class GffHashGeneRefSeq extends GffHashGeneAbs{
 		for (String seqName : seqHashProtein.getLsSeqName()) {
 			GeneID geneID = new GeneID(seqName, taxID);
 			String symbol = geneID.getSymbol();
-			//Èç¹ûÖØ¸´µÄsymobl£¬ÔòÑ¡Ôñ³¤µÄÄÇÌõĞòÁĞµÄÃû×Ö×°Èëhash±í
+			//å¦‚æœé‡å¤çš„symoblï¼Œåˆ™é€‰æ‹©é•¿çš„é‚£æ¡åºåˆ—çš„åå­—è£…å…¥hashè¡¨
 			if (mapGeneID2ProteinID.containsKey(symbol.toLowerCase())) {
 				String seqNameOld = mapGeneID2ProteinID.get(symbol.toLowerCase());
 				SeqFasta seqFastaOld = seqHashProtein.getSeqFasta(seqNameOld);

@@ -35,7 +35,7 @@ public abstract  class PlotNBC{
 	boolean painted = false;
 	
 	/**
-	 *	×îºóÉú³ÉµÄbufferedImage
+	 *	æœ€åç”Ÿæˆçš„bufferedImage
 	 */
 	protected BufferedImage bufferedImage;
 	public BufferedImage getBufferedImage() {
@@ -64,18 +64,18 @@ public abstract  class PlotNBC{
 	}
 
     /**
-     * »­Í¼£¬±ØĞëµ÷ÓÃÁË¸Ã·½·¨ºó²ÅÄÜ±£´æÍ¼Æ¬
+     * ç”»å›¾ï¼Œå¿…é¡»è°ƒç”¨äº†è¯¥æ–¹æ³•åæ‰èƒ½ä¿å­˜å›¾ç‰‡
      */
     public void drawData(int width, int heigh) {
     	painted = true;
     	draw(width,heigh);
     }
 	/**
-	 * Í¸Ã÷¶È
+	 * é€æ˜åº¦
 	 */
 	protected boolean alpha = true;
 	/**
-	 * Éè¶¨ÊÇ·ñÍ¸Ã÷£¬Ä¬ÈÏÍ¸Ã÷
+	 * è®¾å®šæ˜¯å¦é€æ˜ï¼Œé»˜è®¤é€æ˜
 	 * @param alpha
 	 */
 	public void setAlpha(boolean alpha) {
@@ -83,13 +83,13 @@ public abstract  class PlotNBC{
 		painted = false;
 	}
 	/**
-	 * ½«bufferedImageÌî³äÍê±Ï
+	 * å°†bufferedImageå¡«å……å®Œæ¯•
 	 */
     protected abstract void draw( int width, int heigh);
     
 
     /**
-     * Ä¬ÈÏ±£´æÎªjpg¸ñÊ½
+     * é»˜è®¤ä¿å­˜ä¸ºjpgæ ¼å¼
 	 * Generates a new chart <code>Image</code> based upon the currently held 
 	 * settings and then attempts to save that image to disk, to the location 
 	 * provided as a File parameter. The image type of the saved file will 
@@ -108,7 +108,7 @@ public abstract  class PlotNBC{
 	 * of a valid image format (as supported by <code>ImageIO</code>).
      * @param Width
      * @param Height
-     * @param transpreat ÊÇ·ñÍ¸Ã÷
+     * @param transpreat æ˜¯å¦é€æ˜
      * @throws IOException if the output file's filename has no extension or 
 	 * if there the file is unable to written to. Reasons for this include a 
 	 * non-existant file location (check with the File exists() method on the 
@@ -177,8 +177,8 @@ public abstract  class PlotNBC{
 		writer.dispose();
 	}
     /**
-     * ×îºó±£´æÔÚGraphics gÖĞËù¶ÔÓ¦µÄÁíÒ»¸öBufferedImageÖĞ
-     * Èç¹û±£´æµÄÍ¼°¸µÄ´óĞ¡ºÍÏÔÊ¾Í¼°¸´óĞ¡Ò»ÖÂ£¬Ôò¸³Öµ£ºbufferedImageResult = bufferedImage;
+     * æœ€åä¿å­˜åœ¨Graphics gä¸­æ‰€å¯¹åº”çš„å¦ä¸€ä¸ªBufferedImageä¸­
+     * å¦‚æœä¿å­˜çš„å›¾æ¡ˆçš„å¤§å°å’Œæ˜¾ç¤ºå›¾æ¡ˆå¤§å°ä¸€è‡´ï¼Œåˆ™èµ‹å€¼ï¼šbufferedImageResult = bufferedImage;
      * @param bufferedImage
      * @param g
      * @param width
@@ -191,7 +191,7 @@ public abstract  class PlotNBC{
 		}
     	BufferedImage bufferedImageResult = GraphicCope.resizeImage(bufferedImage, Width, Height);
     	Graphics2D graphics2d = (Graphics2D) bufferedImageResult.createGraphics();
-    	// ----------   Ôö¼ÓÏÂÃæµÄ´úÂëÊ¹µÃ±³¾°Í¸Ã÷   -----------------  
+    	// ----------   å¢åŠ ä¸‹é¢çš„ä»£ç ä½¿å¾—èƒŒæ™¯é€æ˜   -----------------  
     	if (alpha) {
 //    		bufferedImageResult = graphics2d.getDeviceConfiguration().createCompatibleImage(bufferedImageResult.getWidth(), bufferedImageResult.getHeight(), Transparency.TRANSLUCENT);  
 //    		graphics2d.dispose();

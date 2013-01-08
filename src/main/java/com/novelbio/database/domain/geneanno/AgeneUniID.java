@@ -1,8 +1,8 @@
 package com.novelbio.database.domain.geneanno;
 /**
- * ÖØĞ´ÁËequalºÍhash
- * Ö»ÒªÁ½¸öncbiidµÄgeneIDÏàÍ¬£¬¾ÍÈÏÎªÕâÁ½¸öNCBIIDÏàÍ¬
- * µ«ÊÇÈç¹ûgeneIDÎª0£¬Ò²¾ÍÊÇNCBIID¸ù±¾Ã»ÓĞ³õÊ¼»¯£¬ÄÇÃ´Ö±½Ó·µ»Øfalse
+ * é‡å†™äº†equalå’Œhash
+ * åªè¦ä¸¤ä¸ªncbiidçš„geneIDç›¸åŒï¼Œå°±è®¤ä¸ºè¿™ä¸¤ä¸ªNCBIIDç›¸åŒ
+ * ä½†æ˜¯å¦‚æœgeneIDä¸º0ï¼Œä¹Ÿå°±æ˜¯NCBIIDæ ¹æœ¬æ²¡æœ‰åˆå§‹åŒ–ï¼Œé‚£ä¹ˆç›´æ¥è¿”å›false
  */
 public abstract class AgeneUniID {
     private int taxID;
@@ -15,12 +15,12 @@ public abstract class AgeneUniID {
 	public void setTaxID(int taxID) {
 		this.taxID = taxID;
 	}
-	/** ·µ»ØGeneID.NCBIIDµÈ */
+	/** è¿”å›GeneID.NCBIIDç­‰ */
 	public abstract String getGeneIDtype();
 	public abstract String getGenUniID();
 	public abstract void setGenUniID(String genUniID);
 	/**
-	 * Èç¹ûÊÇ¡°¡±£¬Ôò·µ»Ønull
+	 * å¦‚æœæ˜¯â€œâ€ï¼Œåˆ™è¿”å›null
 	 * @return
 	 */
 	public String getAccID() {
@@ -45,8 +45,8 @@ public abstract class AgeneUniID {
 	}
 	
 	/**
-	 * Ö»ÒªÁ½¸öncbiidµÄgeneIDÏàÍ¬£¬¾ÍÈÏÎªÕâÁ½¸öNCBIIDÏàÍ¬
-	 * µ«ÊÇÈç¹ûgeneIDÎª0£¬Ò²¾ÍÊÇNCBIID¸ù±¾Ã»ÓĞ³õÊ¼»¯£¬ÄÇÃ´Ö±½Ó·µ»Øfalse
+	 * åªè¦ä¸¤ä¸ªncbiidçš„geneIDç›¸åŒï¼Œå°±è®¤ä¸ºè¿™ä¸¤ä¸ªNCBIIDç›¸åŒ
+	 * ä½†æ˜¯å¦‚æœgeneIDä¸º0ï¼Œä¹Ÿå°±æ˜¯NCBIIDæ ¹æœ¬æ²¡æœ‰åˆå§‹åŒ–ï¼Œé‚£ä¹ˆç›´æ¥è¿”å›false
 	 * 	@Override
 	 */
 	public boolean equals(Object obj) {
@@ -64,7 +64,7 @@ public abstract class AgeneUniID {
 		return getGenUniID().equals(otherObj.getGenUniID());
 	}
 	/**
-	 * ÖØĞ´hashcode£¬Ò²ÊÇ½öÕë¶ÔgeneID
+	 * é‡å†™hashcodeï¼Œä¹Ÿæ˜¯ä»…é’ˆå¯¹geneID
 	 */
 	public int hashCode(){ 
 		return getGenUniID().hashCode(); 

@@ -5,7 +5,7 @@ import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
- * ÓÃpicardÀ´È¥³ıpcr duplicate
+ * ç”¨picardæ¥å»é™¤pcr duplicate
  * @author zong0jie
  */
 public class BamRemoveDuplicatePicard {
@@ -23,8 +23,8 @@ public class BamRemoveDuplicatePicard {
 	String ExePath = "";
 	String bamSortedFile;
 	/**
-	 * Éè¶¨samtoolsËùÔÚµÄÎÄ¼ş¼ĞÒÔ¼°´ı±È¶ÔµÄÂ·¾¶
-	 * @param exePath Èç¹ûÔÚ¸ùÄ¿Â¼ÏÂÔòÉèÖÃÎª""»ònull
+	 * è®¾å®šsamtoolsæ‰€åœ¨çš„æ–‡ä»¶å¤¹ä»¥åŠå¾…æ¯”å¯¹çš„è·¯å¾„
+	 * @param exePath å¦‚æœåœ¨æ ¹ç›®å½•ä¸‹åˆ™è®¾ç½®ä¸º""æˆ–null
 	 */
 	public void setExePath(String exePath) {
 		if (exePath == null || exePath.trim().equals(""))
@@ -57,7 +57,7 @@ public class BamRemoveDuplicatePicard {
 	private String getTmpPath() {
 		return "-Djava.io.tmpdir=" + "\""+PathDetail.getTmpPath() +"\" ";
 	}
-	/** duplicateµÄ¾ØÕó */
+	/** duplicateçš„çŸ©é˜µ */
 	private String getMETRICS() {
 		return "METRICS_FILE=" + "\"" + FileOperate.changeFileSuffix(bamSortedFile, "_duplicate", "txt") + "\" ";
 	}

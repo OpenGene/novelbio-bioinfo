@@ -3,69 +3,69 @@ package com.novelbio.base.dataStructure.listOperate;
 
 
 /**
- * peak¶¨Î»²éÕÒĞÅÏ¢µÄ»ù±¾Àà,²¢ÇÒÖ±½Ó¿ÉÒÔÓÃÓÚCGÓëPeak<br>
- * ×ÓÀàÓĞGffCodInfoGene 
+ * peakå®šä½æŸ¥æ‰¾ä¿¡æ¯çš„åŸºæœ¬ç±»,å¹¶ä¸”ç›´æ¥å¯ä»¥ç”¨äºCGä¸Peak<br>
+ * å­ç±»æœ‰GffCodInfoGene 
  * @author zong0jie
  */
 public class ListCodAbs<T extends ListDetailAbs> {
 
-	/** ËùÓĞ×ø±êµÄÆğÊ¼ĞÅÏ¢  */
+	/** æ‰€æœ‰åæ ‡çš„èµ·å§‹ä¿¡æ¯  */
 	public static final int LOC_ORIGINAL = -1000000000;
 	String chrID = "";
 	int Coordinate = -1;
-	/**  ×ø±êÊÇ·ñ²éµ½ ²éÕÒµ½/Ã»ÕÒµ½  */
+	/**  åæ ‡æ˜¯å¦æŸ¥åˆ° æŸ¥æ‰¾åˆ°/æ²¡æ‰¾åˆ°  */
 	protected boolean booFindCod = false;
-	/** ÉÏ¸öÌõÄ¿ÔÚChrHash-listÖĞµÄ±àºÅ£¬´Ó0¿ªÊ¼£¬<b>Èç¹ûÉÏ¸öÌõÄ¿²»´æÔÚ£¬ÔòÎª-1*/
+	/** ä¸Šä¸ªæ¡ç›®åœ¨ChrHash-listä¸­çš„ç¼–å·ï¼Œä»0å¼€å§‹ï¼Œ<b>å¦‚æœä¸Šä¸ªæ¡ç›®ä¸å­˜åœ¨ï¼Œåˆ™ä¸º-1*/
 	protected int ChrHashListNumUp = -1;
-	/** Îª±¾ÌõÄ¿ÔÚChrHash-listÖĞµÄ±àºÅ£¬´Ó0¿ªÊ¼<br> Èç¹û±¾ÌõÄ¿²»´æÔÚ£¬ÔòÎª-1 */
+	/** ä¸ºæœ¬æ¡ç›®åœ¨ChrHash-listä¸­çš„ç¼–å·ï¼Œä»0å¼€å§‹<br> å¦‚æœæœ¬æ¡ç›®ä¸å­˜åœ¨ï¼Œåˆ™ä¸º-1 */
 	protected int ChrHashListNumThis = -1;
-	/** ÎªÏÂ¸öÌõÄ¿ÔÚChrHash-listÖĞµÄ±àºÅ£¬´Ó0¿ªÊ¼£¬<b>Èç¹ûÏÂ¸öÌõÄ¿²»´æÔÚ£¬ÔòÎª-1 */
+	/** ä¸ºä¸‹ä¸ªæ¡ç›®åœ¨ChrHash-listä¸­çš„ç¼–å·ï¼Œä»0å¼€å§‹ï¼Œ<b>å¦‚æœä¸‹ä¸ªæ¡ç›®ä¸å­˜åœ¨ï¼Œåˆ™ä¸º-1 */
 	protected int ChrHashListNumDown = -1;
 	/**
-	 * ÎªÉÏ¸öÌõÄ¿µÄ¾ßÌåĞÅÏ¢£¬Èç¹ûÃ»ÓĞÔòÎªnull(Æ©Èç¶¨Î»ÔÚ×îÇ°¶Ë)<br>
-	 * 1: Èç¹ûÔÚÌõÄ¿ÄÚ£¬ÎªÏÂ¸öÌõÄ¿µÄ¾ßÌåĞÅÏ¢<br>
-	 * Èç¹ûÔÚÌõÄ¿¼ä£¬ÎªÏÂ¸öÌõÄ¿µÄ¾ßÌåĞÅÏ¢£¬Èç¹ûÃ»ÓĞÔòÎªnull(Æ©Èç¶¨Î»ÔÚ×îÇ°¶Ë)
+	 * ä¸ºä¸Šä¸ªæ¡ç›®çš„å…·ä½“ä¿¡æ¯ï¼Œå¦‚æœæ²¡æœ‰åˆ™ä¸ºnull(è­¬å¦‚å®šä½åœ¨æœ€å‰ç«¯)<br>
+	 * 1: å¦‚æœåœ¨æ¡ç›®å†…ï¼Œä¸ºä¸‹ä¸ªæ¡ç›®çš„å…·ä½“ä¿¡æ¯<br>
+	 * å¦‚æœåœ¨æ¡ç›®é—´ï¼Œä¸ºä¸‹ä¸ªæ¡ç›®çš„å…·ä½“ä¿¡æ¯ï¼Œå¦‚æœæ²¡æœ‰åˆ™ä¸ºnull(è­¬å¦‚å®šä½åœ¨æœ€å‰ç«¯)
 	 */
 	protected T gffDetailUp = null;
 	
-	/**  ¹¹Ôìº¯Êı¸³³õÖµ */
+	/**  æ„é€ å‡½æ•°èµ‹åˆå€¼ */
 	public  ListCodAbs(String chrID, int Coordinate) {
 		this.chrID = chrID;
 		this.Coordinate = Coordinate;
 	}
 	/**
-	 * ·µ»ØÈ¾É«Ìå
+	 * è¿”å›æŸ“è‰²ä½“
 	 * @return
 	 */
 	public String getChrID() {
 		return chrID;
 	}
 	/**
-	 * ·µ»Ø¾ßÌå×ø±ê
+	 * è¿”å›å…·ä½“åæ ‡
 	 * @return
 	 */
 	public int getCoord() {
 		return Coordinate;
 	}
 	/**
-	 * ÊÇ·ñ³É¹¦ÕÒµ½cod
+	 * æ˜¯å¦æˆåŠŸæ‰¾åˆ°cod
 	 * @return
 	 */
 	public boolean findCod() {
 		return booFindCod;
 	}
 	/**
-	 * ¶¨Î»Çé¿ö ÌõÄ¿ÄÚ/ÌõÄ¿Íâ
+	 * å®šä½æƒ…å†µ æ¡ç›®å†…/æ¡ç›®å¤–
 	 */
 	protected boolean insideLOC = false;
 	/**
-	 * ¶¨Î»Çé¿ö ÌõÄ¿ÄÚ/ÌõÄ¿Íâ£¬²»¿¼ÂÇTssÉÏÓÎºÍgeneEndÏÂÓÎÖ®ÀàµÄĞÅÏ¢
+	 * å®šä½æƒ…å†µ æ¡ç›®å†…/æ¡ç›®å¤–ï¼Œä¸è€ƒè™‘Tssä¸Šæ¸¸å’ŒgeneEndä¸‹æ¸¸ä¹‹ç±»çš„ä¿¡æ¯
 	 */
 	public boolean isInsideLoc() {
 		return insideLOC;
 	}
 	/**
-	 * ÊÇ·ñÔÚÉÏÒ»¸öÌõÄ¿ÄÚ
+	 * æ˜¯å¦åœ¨ä¸Šä¸€ä¸ªæ¡ç›®å†…
 	 * @return
 	 */
 	public boolean isInsideUp() {
@@ -75,7 +75,7 @@ public class ListCodAbs<T extends ListDetailAbs> {
 		return gffDetailUp.isCodInGene(Coordinate);
 	}
 	/**
-	 * ÊÇ·ñÔÚÏÂÒ»¸öÌõÄ¿ÄÚ
+	 * æ˜¯å¦åœ¨ä¸‹ä¸€ä¸ªæ¡ç›®å†…
 	 * @return
 	 */
 	public boolean isInsideDown() {
@@ -86,10 +86,10 @@ public class ListCodAbs<T extends ListDetailAbs> {
 	}
 	/**
 	 * 
-	 * ÊÇ·ñÔÚÉÏÒ»¸öÌõÄ¿ÄÚ
-	 * À©Õ¹tssºÍtes£¬ÓĞÕı¸ººÅ
-	 * @param upTss ¸ºÊıÎªÉÏÓÎ
-	 * @param downTes ÕıÊıÎªÏÂÓÎ
+	 * æ˜¯å¦åœ¨ä¸Šä¸€ä¸ªæ¡ç›®å†…
+	 * æ‰©å±•tsså’Œtesï¼Œæœ‰æ­£è´Ÿå·
+	 * @param upTss è´Ÿæ•°ä¸ºä¸Šæ¸¸
+	 * @param downTes æ­£æ•°ä¸ºä¸‹æ¸¸
 	 * @return
 	 */
 	public boolean isInsideUpExtend(int upTss, int downTes) {
@@ -101,8 +101,8 @@ public class ListCodAbs<T extends ListDetailAbs> {
 		return gffDetailUp.isCodInGeneExtend(Coordinate);
 	}
 	/**
-	 * ÊÇ·ñÔÚÏÂÒ»¸öÌõÄ¿ÄÚ
-	 * À©Õ¹tssºÍtes£¬ÎŞÊÓÕı¸ººÅ
+	 * æ˜¯å¦åœ¨ä¸‹ä¸€ä¸ªæ¡ç›®å†…
+	 * æ‰©å±•tsså’Œtesï¼Œæ— è§†æ­£è´Ÿå·
 	 * @return
 	 */
 	public boolean isInsideDownExtend(int upTss, int downTes) {
@@ -115,8 +115,8 @@ public class ListCodAbs<T extends ListDetailAbs> {
 	}
 
 	/**
-	 * Ö»ÓĞgeneDetailÓÃµ½
-	 * »ñµÃÉÏ¸öÌõÄ¿µÄ¾ßÌåĞÅÏ¢
+	 * åªæœ‰geneDetailç”¨åˆ°
+	 * è·å¾—ä¸Šä¸ªæ¡ç›®çš„å…·ä½“ä¿¡æ¯
 	 * @return
 	 */
 	public T getGffDetailUp() {
@@ -126,13 +126,13 @@ public class ListCodAbs<T extends ListDetailAbs> {
 		this.gffDetailUp = gffDetailUp;
 	}
 	/**
-	 *  Èç¹ûÔÚÌõÄ¿ÄÚ£¬Îª±¾ÌõÄ¿µÄ¾ßÌåĞÅÏ¢£¬Ã»ÓĞ¶¨Î»ÔÚ»ùÒòÄÚÔòÎªnull<br>
+	 *  å¦‚æœåœ¨æ¡ç›®å†…ï¼Œä¸ºæœ¬æ¡ç›®çš„å…·ä½“ä¿¡æ¯ï¼Œæ²¡æœ‰å®šä½åœ¨åŸºå› å†…åˆ™ä¸ºnull<br>
 	 */
 	protected T gffDetailThis = null;
 	/**
-	 * Ö»ÓĞgeneDetailÓÃµ½
-	 * »ñµÃ±¾ÌõÄ¿µÄ¾ßÌåĞÅÏ¢£¬
-	 * Èç¹û±¾ÌõÄ¿Îªnull£¬ËµÃ÷²»ÔÚÌõÄ¿ÄÚ
+	 * åªæœ‰geneDetailç”¨åˆ°
+	 * è·å¾—æœ¬æ¡ç›®çš„å…·ä½“ä¿¡æ¯ï¼Œ
+	 * å¦‚æœæœ¬æ¡ç›®ä¸ºnullï¼Œè¯´æ˜ä¸åœ¨æ¡ç›®å†…
 	 * @return
 	 */
 	public T getGffDetailThis() {
@@ -142,13 +142,13 @@ public class ListCodAbs<T extends ListDetailAbs> {
 		this.gffDetailThis = gffDetailThis;
 	}
 	/**
-	 * Ö»ÓĞgeneDetailÓÃµ½
-	 * ÎªÏÂ¸öÌõÄ¿µÄ¾ßÌåĞÅÏ¢£¬Èç¹ûÃ»ÓĞÔòÎªnull(Æ©Èç¶¨Î»ÔÚ×îºó¶Ë)
+	 * åªæœ‰geneDetailç”¨åˆ°
+	 * ä¸ºä¸‹ä¸ªæ¡ç›®çš„å…·ä½“ä¿¡æ¯ï¼Œå¦‚æœæ²¡æœ‰åˆ™ä¸ºnull(è­¬å¦‚å®šä½åœ¨æœ€åç«¯)
 	 */
 	protected T gffDetailDown = null;
 	/**
-	 * Ö»ÓĞgeneDetailÓÃµ½
-	 * »ñµÃÏÂÒ»¸öÌõÄ¿µÄ¾ßÌåĞÅÏ¢
+	 * åªæœ‰geneDetailç”¨åˆ°
+	 * è·å¾—ä¸‹ä¸€ä¸ªæ¡ç›®çš„å…·ä½“ä¿¡æ¯
 	 * @return
 	 */
 	public T getGffDetailDown() {
@@ -158,36 +158,36 @@ public class ListCodAbs<T extends ListDetailAbs> {
 		this.gffDetailDown = gffDetailDown;
 	}
 
-	/** ÉÏ¸öÌõÄ¿ÔÚChrHash-listÖĞµÄ±àºÅ£¬´Ó0¿ªÊ¼£¬<b>Èç¹ûÉÏ¸öÌõÄ¿²»´æÔÚ£¬ÔòÎª-1*/
+	/** ä¸Šä¸ªæ¡ç›®åœ¨ChrHash-listä¸­çš„ç¼–å·ï¼Œä»0å¼€å§‹ï¼Œ<b>å¦‚æœä¸Šä¸ªæ¡ç›®ä¸å­˜åœ¨ï¼Œåˆ™ä¸º-1*/
 	public void setChrHashListNumUp(int chrHashListNumUp) {
 		ChrHashListNumUp = chrHashListNumUp;
 	}
 	/**
-	 * ÉÏ¸öÌõÄ¿ÔÚChrHash-listÖĞµÄ±àºÅ£¬´Ó0¿ªÊ¼£¬<b>Èç¹ûÉÏ¸öÌõÄ¿²»´æÔÚ£¬ÔòÎª-1</b><br>
+	 * ä¸Šä¸ªæ¡ç›®åœ¨ChrHash-listä¸­çš„ç¼–å·ï¼Œä»0å¼€å§‹ï¼Œ<b>å¦‚æœä¸Šä¸ªæ¡ç›®ä¸å­˜åœ¨ï¼Œåˆ™ä¸º-1</b><br>
 	 */
 	public int getItemNumUp() {
 		return ChrHashListNumUp;
 	}
 	/**
-	 * Îª±¾ÌõÄ¿ÔÚChrHash-listÖĞµÄ±àºÅ£¬´Ó0¿ªÊ¼<br>
-	 * Èç¹û±¾ÌõÄ¿²»´æÔÚ£¬ÔòÎª-1<br>
+	 * ä¸ºæœ¬æ¡ç›®åœ¨ChrHash-listä¸­çš„ç¼–å·ï¼Œä»0å¼€å§‹<br>
+	 * å¦‚æœæœ¬æ¡ç›®ä¸å­˜åœ¨ï¼Œåˆ™ä¸º-1<br>
 	 */
 	public void setChrHashListNumThis(int chrHashListNumThis) {
 		ChrHashListNumThis = chrHashListNumThis;
 	}
 	/**
-	 * Îª±¾ÌõÄ¿ÔÚChrHash-listÖĞµÄ±àºÅ£¬´Ó0¿ªÊ¼<br>
-	 * Èç¹û±¾ÌõÄ¿²»´æÔÚ£¬ÔòÎª-1<br>
+	 * ä¸ºæœ¬æ¡ç›®åœ¨ChrHash-listä¸­çš„ç¼–å·ï¼Œä»0å¼€å§‹<br>
+	 * å¦‚æœæœ¬æ¡ç›®ä¸å­˜åœ¨ï¼Œåˆ™ä¸º-1<br>
 	 */
 	public int getItemNumThis() {
 		return ChrHashListNumThis;
 	}
-	/** ÎªÏÂ¸öÌõÄ¿ÔÚChrHash-listÖĞµÄ±àºÅ£¬´Ó0¿ªÊ¼£¬<b>Èç¹ûÏÂ¸öÌõÄ¿²»´æÔÚ£¬ÔòÎª-1 */
+	/** ä¸ºä¸‹ä¸ªæ¡ç›®åœ¨ChrHash-listä¸­çš„ç¼–å·ï¼Œä»0å¼€å§‹ï¼Œ<b>å¦‚æœä¸‹ä¸ªæ¡ç›®ä¸å­˜åœ¨ï¼Œåˆ™ä¸º-1 */
 	public void setChrHashListNumDown(int chrHashListNumDown) {
 		ChrHashListNumDown = chrHashListNumDown;
 	}
 	/**
-	 * ÎªÏÂ¸öÌõÄ¿ÔÚChrHash-listÖĞµÄ±àºÅ£¬´Ó0¿ªÊ¼£¬<b>Èç¹ûÏÂ¸öÌõÄ¿²»´æÔÚ£¬ÔòÎª-1</b>
+	 * ä¸ºä¸‹ä¸ªæ¡ç›®åœ¨ChrHash-listä¸­çš„ç¼–å·ï¼Œä»0å¼€å§‹ï¼Œ<b>å¦‚æœä¸‹ä¸ªæ¡ç›®ä¸å­˜åœ¨ï¼Œåˆ™ä¸º-1</b>
 	 */
 	public int getItemNumDown() {
 		return ChrHashListNumDown;

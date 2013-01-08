@@ -16,8 +16,8 @@ public class CtrlDGEgetvalue {
 	public void setSpecies(Species species) {
 		align2dgEvalue.setSpecies(species);
 	}
-	/** Éè¶¨sam£¬bam£¬»òÕßbedÎÄ¼ş
-	 * ÕâĞ©ÎÄ¼ş±ØĞëÊÇÅÅ¹ıĞòµÄ
+	/** è®¾å®šsamï¼Œbamï¼Œæˆ–è€…bedæ–‡ä»¶
+	 * è¿™äº›æ–‡ä»¶å¿…é¡»æ˜¯æ’è¿‡åºçš„
 	 * */
 	public void setLsAlignSeq(ArrayList<String[]> lsFile2Prefix, FormatSeq formatSeq, String outFile) {
 		ArrayList<AlignSeq> lsAlignSeqs = new ArrayList<AlignSeq>();
@@ -36,22 +36,22 @@ public class CtrlDGEgetvalue {
 		}
 		align2dgEvalue.setLsAlignSeq(lsAlignSeqs, lsTitles, outFile);
 	}
-	/** ½«ÊäÈëµÄÎÄ¼şÅÅĞò */
+	/** å°†è¾“å…¥çš„æ–‡ä»¶æ’åº */
 	public void sort() {
 		align2dgEvalue.sort();
 	}
 	/**
-	 * Ò»¸ö»ùÒò»áÓĞ¶à¸öÎ»µãÓĞreads¸²¸Ç£¬¾ÍÊÇËµDGEµÄÊÔÑé»áÔì³ÉÔÚÒ»¸ö»ùÒòµÄ¶à¸öÎ»ÖÃÓĞreads¸»¼¯
-	 * ÊÇÑ¡ÔñÈ«²¿reads»¹ÊÇÑ¡Ôñ×î¸ßµãµÄreads
+	 * ä¸€ä¸ªåŸºå› ä¼šæœ‰å¤šä¸ªä½ç‚¹æœ‰readsè¦†ç›–ï¼Œå°±æ˜¯è¯´DGEçš„è¯•éªŒä¼šé€ æˆåœ¨ä¸€ä¸ªåŸºå› çš„å¤šä¸ªä½ç½®æœ‰readså¯Œé›†
+	 * æ˜¯é€‰æ‹©å…¨éƒ¨readsè¿˜æ˜¯é€‰æ‹©æœ€é«˜ç‚¹çš„reads
 	 * @param allTags
 	 */
 	public void setAllTags(boolean allTags) {
 		align2dgEvalue.setAllTags(allTags);
 	}
 	/**
-	 * ÎŞ·¨Éè¶¨compressType
-	 * ½«bedÎÄ¼ş×ª»¯³ÉDGEËùĞèµÄĞÅÏ¢£¬Ö±½Ó¿ÉÒÔÓÃDEseq·ÖÎöµÄ
-	 * ·µ»Ø»ñµÃµÄ½á¹ûÎÄ¼şÃû
+	 * æ— æ³•è®¾å®šcompressType
+	 * å°†bedæ–‡ä»¶è½¬åŒ–æˆDGEæ‰€éœ€çš„ä¿¡æ¯ï¼Œç›´æ¥å¯ä»¥ç”¨DEseqåˆ†æçš„
+	 * è¿”å›è·å¾—çš„ç»“æœæ–‡ä»¶å
 	 */
 	public String dgeCal() {
 		return align2dgEvalue.dgeCal();

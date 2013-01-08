@@ -17,12 +17,12 @@ import javax.imageio.ImageIO;
 public class GraphicCope {
 	/** */
 	/**
-	 * Ğı×ªÍ¼Æ¬ÎªÖ¸¶¨½Ç¶È
+	 * æ—‹è½¬å›¾ç‰‡ä¸ºæŒ‡å®šè§’åº¦
 	 * 
 	 * @param bufferedimage
-	 *            Ä¿±êÍ¼Ïñ
+	 *            ç›®æ ‡å›¾åƒ
 	 * @param degree
-	 *            Ğı×ª½Ç¶È Ë³Ê±ÕëĞı×ª
+	 *            æ—‹è½¬è§’åº¦ é¡ºæ—¶é’ˆæ—‹è½¬
 	 * @return
 	 */
 	public static BufferedImage rotateImage(final BufferedImage bufferedimage,
@@ -41,10 +41,10 @@ public class GraphicCope {
 		return img;
 	}
 	/**
-	 * ±ä¸üÍ¼ÏñÎªÖ¸¶¨´óĞ¡
-	 * @param bufferedimage  Ä¿±êÍ¼Ïñ
-	 * @param w  ¿í
-	 * @param h ¸ß
+	 * å˜æ›´å›¾åƒä¸ºæŒ‡å®šå¤§å°
+	 * @param bufferedimage  ç›®æ ‡å›¾åƒ
+	 * @param w  å®½
+	 * @param h é«˜
 	 * @return
 	 */
 	public static BufferedImage resizeImage(final BufferedImage bufferedimage,
@@ -52,11 +52,11 @@ public class GraphicCope {
 		return resizeImage(true,bufferedimage, w, h);
 	}
 	/**
-	 * ±ä¸üÍ¼ÏñÎªÖ¸¶¨´óĞ¡
-	 * @param liner ÊÇ·ñÏßĞÔËõ·ÅÍ¼Æ¬
-	 * @param bufferedimage  Ä¿±êÍ¼Ïñ
-	 * @param w  ¿í
-	 * @param h ¸ß
+	 * å˜æ›´å›¾åƒä¸ºæŒ‡å®šå¤§å°
+	 * @param liner æ˜¯å¦çº¿æ€§ç¼©æ”¾å›¾ç‰‡
+	 * @param bufferedimage  ç›®æ ‡å›¾åƒ
+	 * @param w  å®½
+	 * @param h é«˜
 	 * @return
 	 */
 	public static BufferedImage resizeImage(boolean liner, BufferedImage bufferedimage,final int w, final int h) {
@@ -78,10 +78,10 @@ public class GraphicCope {
 	}
 	/** */
 	/**
-	 * Ë®Æ½·­×ªÍ¼Ïñ
+	 * æ°´å¹³ç¿»è½¬å›¾åƒ
 	 * 
 	 * @param bufferedimage
-	 *            Ä¿±êÍ¼Ïñ
+	 *            ç›®æ ‡å›¾åƒ
 	 * @return
 	 */
 	public static BufferedImage flipImage(final BufferedImage bufferedimage) {
@@ -97,18 +97,18 @@ public class GraphicCope {
 	}
 
 	/**
-	 * Í¼Æ¬Ë®Ó¡
+	 * å›¾ç‰‡æ°´å°
 	 * 
 	 * @param pressImg
-	 *            Ë®Ó¡Í¼Æ¬
+	 *            æ°´å°å›¾ç‰‡
 	 * @param targetImg
-	 *            Ä¿±êÍ¼Æ¬
+	 *            ç›®æ ‡å›¾ç‰‡
 	 * @param x
-	 *            ĞŞÕıÖµ Ä¬ÈÏÔÚÖĞ¼ä
+	 *            ä¿®æ­£å€¼ é»˜è®¤åœ¨ä¸­é—´
 	 * @param y
-	 *            ĞŞÕıÖµ Ä¬ÈÏÔÚÖĞ¼ä
+	 *            ä¿®æ­£å€¼ é»˜è®¤åœ¨ä¸­é—´
 	 * @param alpha
-	 *            Í¸Ã÷¶È
+	 *            é€æ˜åº¦
 	 */
 	public final static void pressImage(String pressImg, String targetImg, float alpha, String out) {
 //			int x, int y, float alpha) {
@@ -120,11 +120,11 @@ public class GraphicCope {
 			BufferedImage image = new BufferedImage(wideth, height,
 					BufferedImage.TYPE_INT_RGB);
 			Graphics2D g = image.createGraphics();
-			//µÚÒ»¸öÒ²Í¸Ã÷»¯
+			//ç¬¬ä¸€ä¸ªä¹Ÿé€æ˜åŒ–
 //			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, alpha));
 			//
 			g.drawImage(src, 0, 0, wideth, height, null);
-			// Ë®Ó¡ÎÄ¼ş
+			// æ°´å°æ–‡ä»¶
 			Image src_biao = ImageIO.read(new File(pressImg));
 			int wideth_biao = src_biao.getWidth(null);
 			int height_biao = src_biao.getHeight(null);
@@ -132,7 +132,7 @@ public class GraphicCope {
 					alpha));
 			g.drawImage(src_biao, (wideth - wideth_biao) / 2,
 					(height - height_biao) / 2, wideth_biao, height_biao, null);
-			// Ë®Ó¡ÎÄ¼ş½áÊø
+			// æ°´å°æ–‡ä»¶ç»“æŸ
 			g.dispose();
 			
 			File fileOut = new File(out);
@@ -144,26 +144,26 @@ public class GraphicCope {
 	}
 
 	/**
-	 * ÎÄ×ÖË®Ó¡
+	 * æ–‡å­—æ°´å°
 	 * 
 	 * @param pressText
-	 *            Ë®Ó¡ÎÄ×Ö
+	 *            æ°´å°æ–‡å­—
 	 * @param targetImg
-	 *            Ä¿±êÍ¼Æ¬
+	 *            ç›®æ ‡å›¾ç‰‡
 	 * @param fontName
-	 *            ×ÖÌåÃû³Æ
+	 *            å­—ä½“åç§°
 	 * @param fontStyle
-	 *            ×ÖÌåÑùÊ½
+	 *            å­—ä½“æ ·å¼
 	 * @param color
-	 *            ×ÖÌåÑÕÉ«
+	 *            å­—ä½“é¢œè‰²
 	 * @param fontSize
-	 *            ×ÖÌå´óĞ¡
+	 *            å­—ä½“å¤§å°
 	 * @param x
-	 *            ĞŞÕıÖµ
+	 *            ä¿®æ­£å€¼
 	 * @param y
-	 *            ĞŞÕıÖµ
+	 *            ä¿®æ­£å€¼
 	 * @param alpha
-	 *            Í¸Ã÷¶È
+	 *            é€æ˜åº¦
 	 */
 	public static void pressText(String pressText, String targetImg,
 			String fontName, int fontStyle, Color color, int fontSize, int x,
@@ -191,24 +191,24 @@ public class GraphicCope {
 	}
 
 	/**
-	 * Ëõ·Å
+	 * ç¼©æ”¾
 	 * 
 	 * @param filePath
-	 *            Í¼Æ¬Â·¾¶
+	 *            å›¾ç‰‡è·¯å¾„
 	 * @param height
-	 *            ¸ß¶È
+	 *            é«˜åº¦
 	 * @param width
-	 *            ¿í¶È
+	 *            å®½åº¦
 	 * @param bb
-	 *            ±ÈÀı²»¶ÔÊ±ÊÇ·ñĞèÒª²¹°×
+	 *            æ¯”ä¾‹ä¸å¯¹æ—¶æ˜¯å¦éœ€è¦è¡¥ç™½
 	 */
 	public static void resize(String filePath, int height, int width, boolean bb) {
 		try {
-			double ratio = 0.0; // Ëõ·Å±ÈÀı
+			double ratio = 0.0; // ç¼©æ”¾æ¯”ä¾‹
 			File f = new File(filePath);
 			BufferedImage bi = ImageIO.read(f);
 			Image itemp = bi.getScaledInstance(width, height, bi.SCALE_SMOOTH);
-			// ¼ÆËã±ÈÀı
+			// è®¡ç®—æ¯”ä¾‹
 			if ((bi.getHeight() > height) || (bi.getWidth() > width)) {
 				if (bi.getHeight() > bi.getWidth()) {
 					ratio = (new Integer(height)).doubleValue()
@@ -259,8 +259,8 @@ public class GraphicCope {
 
 class ImageScale {
     /**
-     * Í¼Æ¬ÎŞËğËõ·Å try { File fi = new File("c:/image2.jpg"); // ´óÍ¼ÎÄ¼ş File fo = new
-     * File("c:/imgTest.jpg"); // ½«Òª×ª»»³öµÄĞ¡Í¼ÎÄ¼ş BufferedImage bis =
+     * å›¾ç‰‡æ— æŸç¼©æ”¾ try { File fi = new File("c:/image2.jpg"); // å¤§å›¾æ–‡ä»¶ File fo = new
+     * File("c:/imgTest.jpg"); // å°†è¦è½¬æ¢å‡ºçš„å°å›¾æ–‡ä»¶ BufferedImage bis =
      * ImageIO.read(fi); BufferedImage bid = null; bid = new
      * ImageScale().imageZoomOut(bis, 228, 96); ImageIO.write(bid, "jpeg", fo);
      * } catch (Exception e) { e.printStackTrace(); }

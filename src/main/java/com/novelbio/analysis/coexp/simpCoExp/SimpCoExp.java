@@ -21,8 +21,8 @@ public class SimpCoExp {
 	private static Logger logger = Logger.getLogger(SimpCoExp.class);
 	/**
 	 * 
-	 * @param inFile ¶ÁÈ¡excelÎÄ¼ş
-	 * @param columnID ¶ÁÈ¡ÄÄ¼¸ÁĞ
+	 * @param inFile è¯»å–excelæ–‡ä»¶
+	 * @param columnID è¯»å–å“ªå‡ åˆ—
 	 * @param taxID
 	 * @param pearsonCutOff
 	 * @param pvalueCutOff
@@ -39,13 +39,13 @@ public class SimpCoExp {
 	
 	/**
 	 * 
-	 * @param inFile ¶ÁÈ¡excelÎÄ¼ş£¬µÚÒ»ĞĞÎª±êÌâĞĞÄ¬ÈÏÎÄ¼ş¸ñÊ½Îª
+	 * @param inFile è¯»å–excelæ–‡ä»¶ï¼Œç¬¬ä¸€è¡Œä¸ºæ ‡é¢˜è¡Œé»˜è®¤æ–‡ä»¶æ ¼å¼ä¸º
 	 * 0: geneID<br>
 	 * 1: geneID<br>
 	 * 2: pearson<br>
 	 * 3: pvalue<br>
 	 * 4: fdr<br>
-	 * ½á¹û²úÉúÒ»¸öĞÂµÄexcleÎÄ¼ş
+	 * ç»“æœäº§ç”Ÿä¸€ä¸ªæ–°çš„excleæ–‡ä»¶
 	 * @param columnID
 	 * @param taxID
 	 * @param outFile
@@ -78,10 +78,10 @@ public class SimpCoExp {
 	
 	/**
 	 * 
-	 * @param inFile ¶ÁÈ¡excelÎÄ¼ş£¬µÚÒ»ĞĞÎª±êÌâĞĞÄ¬ÈÏÎÄ¼ş¸ñÊ½Îª
+	 * @param inFile è¯»å–excelæ–‡ä»¶ï¼Œç¬¬ä¸€è¡Œä¸ºæ ‡é¢˜è¡Œé»˜è®¤æ–‡ä»¶æ ¼å¼ä¸º
 	 * 0: geneID<br>
 	 * 1: geneID<br>
-	 * ½á¹û²úÉúÒ»¸öĞÂµÄexcleÎÄ¼ş
+	 * ç»“æœäº§ç”Ÿä¸€ä¸ªæ–°çš„excleæ–‡ä»¶
 	 * @param columnID
 	 * @param taxID
 	 * @param outFile
@@ -114,21 +114,21 @@ public class SimpCoExp {
 	
 	/**
 	 * 
-	 * ¸ø¶¨Ô­Ê¼Êı¾İ£¬½«ĞèÒªµÄÁĞÌôÑ¡³öÀ´£¬²¢µ÷ÓÃR»ñµÃ¼òµ¥¹²±í´ï½á¹û
-	 * @param rawData µÚÒ»ÁĞÎªgeneID,×îºó¿ÉÍ¨¹ıÆä²éÕÒ¾ßÌåĞÅÏ¢¡£ºó¼¸ÁĞÎªgene±í´ïÖµ£¬µÚÒ»ĞĞÓĞĞÅÏ¢£¬ÊÇtitle
+	 * ç»™å®šåŸå§‹æ•°æ®ï¼Œå°†éœ€è¦çš„åˆ—æŒ‘é€‰å‡ºæ¥ï¼Œå¹¶è°ƒç”¨Rè·å¾—ç®€å•å…±è¡¨è¾¾ç»“æœ
+	 * @param rawData ç¬¬ä¸€åˆ—ä¸ºgeneID,æœ€åå¯é€šè¿‡å…¶æŸ¥æ‰¾å…·ä½“ä¿¡æ¯ã€‚åå‡ åˆ—ä¸ºgeneè¡¨è¾¾å€¼ï¼Œç¬¬ä¸€è¡Œæœ‰ä¿¡æ¯ï¼Œæ˜¯title
 	 * @param taxID
 	 * @param pearsonCutOff
 	 * @param pvalueCutOff
 	 * @param outFile
-	 * @param filterNoDB ÊÇ·ñ½«Ã»ÓĞdbµÄ¹ıÂËµô
+	 * @param filterNoDB æ˜¯å¦å°†æ²¡æœ‰dbçš„è¿‡æ»¤æ‰
 	 * @throws Exception
 	 */
 	private static void getData(ArrayList<String[]> rawData,int taxID,double pvalueCutOff,String outFile, boolean filterNoDB) throws Exception 
 	{
 		ArrayList<CoexpGenInfo> lsCoexpInfo = new ArrayList<CoexpGenInfo>();
-		//½«rawData×¢ÊÍÉÏ£¬Ã»ÓĞsymbolºÍdescriptionµÄÍ¨Í¨È¥³ı£¬½á¹û±£´æÔÚlsRawDataÖĞ
+		//å°†rawDataæ³¨é‡Šä¸Šï¼Œæ²¡æœ‰symbolå’Œdescriptionçš„é€šé€šå»é™¤ï¼Œç»“æœä¿å­˜åœ¨lsRawDataä¸­
 		for (int i = 1; i < rawData.size(); i++) {
-			double[] dou = new double[rawData.get(0).length - 1]; //»ñµÃÃ¿Ò»ĞĞµÄ±í´ïÖµ
+			double[] dou = new double[rawData.get(0).length - 1]; //è·å¾—æ¯ä¸€è¡Œçš„è¡¨è¾¾å€¼
 			for (int j = 0; j < dou.length; j++) {
 				dou[j] = Double.parseDouble(rawData.get(i)[j+1]);
 			}
@@ -136,13 +136,13 @@ public class SimpCoExp {
 			if (filterNoDB && coexpGenInfo.getCopedID().getAccID().equals(GeneID.IDTYPE_ACCID)) {
 				continue;
 			}
-			lsCoexpInfo.add(coexpGenInfo); //Èç¹ûÓĞ×¢ÊÍĞÅÏ¢£¬Ôò×°Èëlist
+			lsCoexpInfo.add(coexpGenInfo); //å¦‚æœæœ‰æ³¨é‡Šä¿¡æ¯ï¼Œåˆ™è£…å…¥list
 		}
 		
 		
-		//»ñµÃpearsonËãºÃµÄÄÚÈİ£¬µÚÒ»ÁĞÎª»ùÒò£¬µÚ¶şÁĞÎª»ùÒò£¬µÚÈıÁĞ£ºpearsonÖµ£¬µÚËÄÁĞ pvalue£¬µÚÎåÁĞ fdr£¬×¢ÒâºóĞø´¦ÀíÒªÈ¥³ıÆäÖĞµÄÒıºÅ
+		//è·å¾—pearsonç®—å¥½çš„å†…å®¹ï¼Œç¬¬ä¸€åˆ—ä¸ºåŸºå› ï¼Œç¬¬äºŒåˆ—ä¸ºåŸºå› ï¼Œç¬¬ä¸‰åˆ—ï¼špearsonå€¼ï¼Œç¬¬å››åˆ— pvalueï¼Œç¬¬äº”åˆ— fdrï¼Œæ³¨æ„åç»­å¤„ç†è¦å»é™¤å…¶ä¸­çš„å¼•å·
 		ArrayList<String[]> lsCoExpValue = calCoExp(lsCoexpInfo, pvalueCutOff,filterNoDB);
-		//°²pvalueÅÅĞò
+		//å®‰pvalueæ’åº
         Collections.sort(lsCoExpValue,new Comparator<String[]>(){
 			public int compare(String[] arg0, String[] arg1) {
 				if (Double.parseDouble(arg0[3])<Double.parseDouble(arg1[3]) ) {
@@ -164,7 +164,7 @@ public class SimpCoExp {
         	 lsCoExpResult = lsCoExpValue;
 		}
         
-		//¼Ó±êÌâ
+		//åŠ æ ‡é¢˜
 		String[] coExpTitle = new String[5];
 		coExpTitle[0] = "GeneID";coExpTitle[1] = "GeneID";coExpTitle[2] = "pearson";coExpTitle[3] = "pvalue";coExpTitle[4] = "fdr";
 		lsCoExpResult.add(0,coExpTitle);
@@ -181,7 +181,7 @@ public class SimpCoExp {
 		txtOut.close();
 	}
 	/**
-	 * »ñµÃpearsonËãºÃµÄÄÚÈİ£¬µÚÒ»ÁĞÎª»ùÒò£¬µÚ¶şÁĞÎª»ùÒò£¬µÚÈıÁĞ£ºpearsonÖµ£¬µÚËÄÁĞ pvalue£¬µÚÎåÁĞ fdr£¬×¢ÒâºóĞø´¦ÀíÒªÈ¥³ıÆäÖĞµÄÒıºÅ
+	 * è·å¾—pearsonç®—å¥½çš„å†…å®¹ï¼Œç¬¬ä¸€åˆ—ä¸ºåŸºå› ï¼Œç¬¬äºŒåˆ—ä¸ºåŸºå› ï¼Œç¬¬ä¸‰åˆ—ï¼špearsonå€¼ï¼Œç¬¬å››åˆ— pvalueï¼Œç¬¬äº”åˆ— fdrï¼Œæ³¨æ„åç»­å¤„ç†è¦å»é™¤å…¶ä¸­çš„å¼•å·
 	 * @param lsCoexpGenInfos
 	 */
 	private static ArrayList<String[]> calCoExp(List<CoexpGenInfo> lsCoexpGenInfos , double pvalueFilter,boolean filterNoDB) {
@@ -216,9 +216,9 @@ public class SimpCoExp {
 	}
 	
 	/**
-	 * Ö¸¶¨Ä³Ò»ÁĞ£¬¼ÆËã¸ÃÁĞpvalueËù¶ÔÓ¦µÄfdr²¢×°Èëlist
-	 * @param lsInfo ÊäÈëÊı¾İ£¬Ä³Ò»ÁĞÓ¦¸ÃÊÇpvalue
-	 * @param colNum Êµ¼ÊÁĞ
+	 * æŒ‡å®šæŸä¸€åˆ—ï¼Œè®¡ç®—è¯¥åˆ—pvalueæ‰€å¯¹åº”çš„fdrå¹¶è£…å…¥list
+	 * @param lsInfo è¾“å…¥æ•°æ®ï¼ŒæŸä¸€åˆ—åº”è¯¥æ˜¯pvalue
+	 * @param colNum å®é™…åˆ—
 	 * @return
 	 */
 	private static ArrayList<String[]> addFdr(ArrayList<String[]> lsInfo, int colNum)
@@ -242,7 +242,7 @@ public class SimpCoExp {
 	}
 	
 	/**
-	 * ¸ø¶¨src2target£¬½øĞĞ×¢ÊÍ£¬²»¹ÜscrºÍtrgÊÇ·ñÔÚÊı¾İ¿â´æÔÚ£¬¶¼½øĞĞ¼ÆÊı
+	 * ç»™å®šsrc2targetï¼Œè¿›è¡Œæ³¨é‡Šï¼Œä¸ç®¡scrå’Œtrgæ˜¯å¦åœ¨æ•°æ®åº“å­˜åœ¨ï¼Œéƒ½è¿›è¡Œè®¡æ•°
 	 * @param result
 	 * 0: geneID
 	 * 1: geneID
@@ -250,7 +250,7 @@ public class SimpCoExp {
 	 * 3: pvalue
 	 * 4: fdr
 	 * @return 
-	 * ·µ»Ø object[2]<br>
+	 * è¿”å› object[2]<br>
 	 * <b>0:ArrayListString[n]</b><br>
 	 * 0:scr<br>
 	 * 1:scrSymbol<br>
@@ -277,7 +277,7 @@ public class SimpCoExp {
 		 */
 		Hashtable<String,String[]> hashAccID = new Hashtable<String, String[]>();
 		for (int i = 0; i < result.size(); i++) {
-			//½«geneID1×°Èëhash£¬²¢¼ÆËãdegree
+			//å°†geneID1è£…å…¥hashï¼Œå¹¶è®¡ç®—degree
 			if (hashAccID.containsKey(result.get(i)[0])) {
 				String[] tmpResult = hashAccID.get(result.get(i)[0]);
 				tmpResult[4] = Integer.parseInt(tmpResult[4]) +1 +"";
@@ -287,15 +287,15 @@ public class SimpCoExp {
 				GeneID copedID = new GeneID(result.get(i)[0], taxID);
 				String[] tmpResult = new String[6];
 				///////////////////////////////////////////////////////////////////////////////////
-				//ÕâÒ»¶Î·ÅifÀï£ºÖ»ÓĞµ±Êı¾İ¿âÖĞÓĞÊ±²Å¼ÆÊı
-				//·ÅÔÚifÍâ£º²»¹ÜÊı¾İ¿âÖĞÊÇ·ñº¬ÓĞ¶¼¼ÆÊı
+				//è¿™ä¸€æ®µæ”¾ifé‡Œï¼šåªæœ‰å½“æ•°æ®åº“ä¸­æœ‰æ—¶æ‰è®¡æ•°
+				//æ”¾åœ¨ifå¤–ï¼šä¸ç®¡æ•°æ®åº“ä¸­æ˜¯å¦å«æœ‰éƒ½è®¡æ•°
 				tmpResult[0] = result.get(i)[0];tmpResult[1] = copedID.getSymbol(); tmpResult[2] = copedID.getDescription();
 				tmpResult[3] = 0+"";tmpResult[4] = 1+"";tmpResult[5] = 1+"";
-				hashAccID.put(result.get(i)[0], tmpResult);//ÕâÒ»¶Î·ÅifÀï£ºÖ»ÓĞµ±Êı¾İ¿âÖĞÓĞÊ±²Å¼ÆÊı
+				hashAccID.put(result.get(i)[0], tmpResult);//è¿™ä¸€æ®µæ”¾ifé‡Œï¼šåªæœ‰å½“æ•°æ®åº“ä¸­æœ‰æ—¶æ‰è®¡æ•°
 				////////////////////////////////////////////////////////////////////////////////
 			}
 			
-			//½«geneID2×°Èëhash£¬²¢¼ÆËãdegree
+			//å°†geneID2è£…å…¥hashï¼Œå¹¶è®¡ç®—degree
 			if (hashAccID.containsKey(result.get(i)[1])) {
 				String[] tmpResult = hashAccID.get(result.get(i)[1]);
 				tmpResult[3] = Integer.parseInt(tmpResult[3]) +1 +"";
@@ -304,8 +304,8 @@ public class SimpCoExp {
 			else {
 				GeneID copedID = new GeneID(result.get(i)[1], taxID, false);
 				///////////////////////////////////////////////////////////////////////////////////
-				//ÕâÒ»¶Î·ÅifÀï£ºÖ»ÓĞµ±Êı¾İ¿âÖĞÓĞÊ±²Å¼ÆÊı
-				//·ÅÔÚifÍâ£º²»¹ÜÊı¾İ¿âÖĞÊÇ·ñº¬ÓĞ¶¼¼ÆÊı
+				//è¿™ä¸€æ®µæ”¾ifé‡Œï¼šåªæœ‰å½“æ•°æ®åº“ä¸­æœ‰æ—¶æ‰è®¡æ•°
+				//æ”¾åœ¨ifå¤–ï¼šä¸ç®¡æ•°æ®åº“ä¸­æ˜¯å¦å«æœ‰éƒ½è®¡æ•°
 				String[] tmpResult = new String[6];
 				tmpResult[0] = result.get(i)[1];tmpResult[1] = copedID.getSymbol(); tmpResult[2] = copedID.getDescription();
 				tmpResult[3] = 1+"";tmpResult[4] = 0+"";tmpResult[5] = 1+"";
@@ -345,7 +345,7 @@ public class SimpCoExp {
 }
 
 /**
- * ½ö±È½ÏÁ½¸ö¶ÔÏóµÄaccIDÊÇ·ñÒ»ÖÂ
+ * ä»…æ¯”è¾ƒä¸¤ä¸ªå¯¹è±¡çš„accIDæ˜¯å¦ä¸€è‡´
  */
 class CoexpGenInfo
 {
@@ -365,7 +365,7 @@ class CoexpGenInfo
 		return copedID.getSymbol();
 	}
 	/**
-	 * »ñµÃ±í´ïÖµ
+	 * è·å¾—è¡¨è¾¾å€¼
 	 * @return
 	 */
 	public double[] getExpValue() {
@@ -373,7 +373,7 @@ class CoexpGenInfo
 	}
 	
 	/**
-	 * ½ö±È½ÏÁ½¸ö¶ÔÏóµÄaccIDÊÇ·ñÒ»ÖÂ
+	 * ä»…æ¯”è¾ƒä¸¤ä¸ªå¯¹è±¡çš„accIDæ˜¯å¦ä¸€è‡´
 	 */
 	@Override
 	public boolean equals(Object obj) {
@@ -389,7 +389,7 @@ class CoexpGenInfo
 	}
 }
 /**
- * Ê×ÏÈÓÃsetFirst()Éè¶¨coexpµÄÇé¿öºÍÊı¾İ¾ØÕó
+ * é¦–å…ˆç”¨setFirst()è®¾å®šcoexpçš„æƒ…å†µå’Œæ•°æ®çŸ©é˜µ
  * @author zong0jie
  *
  */
@@ -412,7 +412,7 @@ class CoexPair {
 		return Pvalue;
 	}
 	/**
-	 * Ê×ÏÈÓÃsetFirst()Éè¶¨coexpµÄÇé¿öºÍÊı¾İ¾ØÕó
+	 * é¦–å…ˆç”¨setFirst()è®¾å®šcoexpçš„æƒ…å†µå’Œæ•°æ®çŸ©é˜µ
 	 * @param coexpGenInfo1
 	 * @param coexpGenInfo2
 	 */
@@ -437,7 +437,7 @@ class CoexPair {
 		try {
 			corPvalue = pearson.getCorrelationPValues().getData();
 		} catch (MathException e) {
-			logger.error("pearson ÏµÊı¼ÆËã´íÎó" + e.toString());
+			logger.error("pearson ç³»æ•°è®¡ç®—é”™è¯¯" + e.toString());
 			e.printStackTrace();
 		}
 	}

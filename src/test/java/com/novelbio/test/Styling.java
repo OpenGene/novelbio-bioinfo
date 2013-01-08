@@ -115,8 +115,8 @@ public class Styling extends JFrame {
 //		graphics.fillRect(insetsLeft, 2000-insetsBottom, 2000-insetsLeft, insetsBottom); //fill the bottom region
 //		graphics.fillRect(2000-insetsRight, insetsTop, insetsRight, 2000 - insetsTop - insetsBottom); //fill the right region
 		
-		File file = new File("/home/zong0jie/×ÀÃæ/sfsefe.png");
-		File file2 = new File("/home/zong0jie/×ÀÃæ/sfsefe2.png");
+		File file = new File("/home/zong0jie/æ¡Œé¢/sfsefe.png");
+		File file2 = new File("/home/zong0jie/æ¡Œé¢/sfsefe2.png");
 		
 		
 		DrawingContext context = new DrawingContext(graphics);
@@ -150,10 +150,10 @@ public class Styling extends JFrame {
     }
 
     public static void main(String[] args) throws Exception {
-    	long start=System.currentTimeMillis(); //»ñÈ¡×î³õÊ±¼ä
+    	long start=System.currentTimeMillis(); //è·å–æœ€åˆæ—¶é—´
         Styling df = new Styling();
         df.setVisible(true);
-        long end=System.currentTimeMillis(); //»ñÈ¡ÔËĞĞ½áÊøÊ±¼ä
-        System.out.println("³ÌĞòÔËĞĞÊ±¼ä£º "+(end-start)+"ms"); 
+        long end=System.currentTimeMillis(); //è·å–è¿è¡Œç»“æŸæ—¶é—´
+        System.out.println("ç¨‹åºè¿è¡Œæ—¶é—´ï¼š "+(end-start)+"ms"); 
     }
 }

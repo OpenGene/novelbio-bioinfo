@@ -25,7 +25,7 @@ public abstract class DownloadOperate {
 //		PixivOperate pixivOperate = new PixivOperate();
 //		pixivOperate.getcookies();
 //		Set<String> setUrl = new LinkedHashSet<String>();
-//		TxtReadandWrite txtReadUrl = new TxtReadandWrite("/home/zong0jie/Í¼Æ¬/My Pictures/picture/pixivurl.txt", false);
+//		TxtReadandWrite txtReadUrl = new TxtReadandWrite("/home/zong0jie/å›¾ç‰‡/My Pictures/picture/pixivurl.txt", false);
 //		for (String urlID : txtReadUrl.readlines()) {
 //			urlID = urlID.trim();
 //			if (urlID.equals("")) {
@@ -35,7 +35,7 @@ public abstract class DownloadOperate {
 //		}
 //		for (String urlID : setUrl) {			
 //			pixivOperate.setUrlAuther(urlID);
-//			pixivOperate.setSavePath("/home/zong0jie/Í¼Æ¬/My Pictures/picture/pixivTest");
+//			pixivOperate.setSavePath("/home/zong0jie/å›¾ç‰‡/My Pictures/picture/pixivTest");
 //			pixivOperate.running();
 //			Thread.sleep(100);
 //			logger.error("finished url:" + urlID);
@@ -46,7 +46,7 @@ public abstract class DownloadOperate {
 //		pixivOperate.getcookies();
 //		pixivOperate.setUrlAuther("27517");
 //		pixivOperate.setDownloadFast(true);
-//		pixivOperate.setSavePath("/home/zong0jie/Í¼Æ¬/My Pictures/picture/pixivTest");
+//		pixivOperate.setSavePath("/home/zong0jie/å›¾ç‰‡/My Pictures/picture/pixivTest");
 //		pixivOperate.run();
 		
 		
@@ -54,7 +54,7 @@ public abstract class DownloadOperate {
 		donmaiOperate.getcookies();
 		donmaiOperate.setUrlAuther("gangbang");
 		donmaiOperate.setDownloadFast(true);
-		donmaiOperate.setSavePath("/home/zong0jie/Í¼Æ¬/My Pictures/picture/donmai");
+		donmaiOperate.setSavePath("/home/zong0jie/å›¾ç‰‡/My Pictures/picture/donmai");
 		donmaiOperate.run();
 		
 	}
@@ -67,14 +67,14 @@ public abstract class DownloadOperate {
 	protected String savePath;
 	protected int retryGetPageNum = 10;
 	
-	/** ±¾×÷ÕßÓĞ¶àÉÙÍ¼Æ¬ */
+	/** æœ¬ä½œè€…æœ‰å¤šå°‘å›¾ç‰‡ */
 	protected int allPictureNum = 0;
-	/** ×Ü¹²¼¸Ò³ */
+	/** æ€»å…±å‡ é¡µ */
 	protected int allPages = 0;
 	
 	protected PixivGetPathExistPic pixivGetPathExistPic;
 	
-	/** »ñµÃÄ³¸öÍøÕ¾µÄcookies */
+	/** è·å¾—æŸä¸ªç½‘ç«™çš„cookies */
     protected abstract void getcookies();
     
 	DownloadPictureFile downloadFile = new DownloadPictureFile();
@@ -85,15 +85,15 @@ public abstract class DownloadOperate {
     public HttpFetch getWebFetchPixiv() {
 		return webFetch;
 	}
-    /** @param urlAuther µÄid 
+    /** @param urlAuther çš„id 
      * @return */
 	public abstract void setUrlAuther(String urlAutherid);
 	
 	public void setSavePath(String savePath) {
 		this.savePath = savePath.trim();
 	}
-    /** »ñµÃÁ¬½ÓºóÊÇ·ñÁ¢¼´ÏÂÔØ
-     * »¹ÊÇµÈÈ«²¿Á¬½Ó¶¼»ñµÃÁË²ÅÏÂÔØ
+    /** è·å¾—è¿æ¥åæ˜¯å¦ç«‹å³ä¸‹è½½
+     * è¿˜æ˜¯ç­‰å…¨éƒ¨è¿æ¥éƒ½è·å¾—äº†æ‰ä¸‹è½½
      *  */
 	public void setDownloadFast(boolean downloadFast) {
 		downloadFile.setDownloadFast(downloadFast);
@@ -124,15 +124,15 @@ public abstract class DownloadOperate {
 		webFetch.close();
 	}
 	protected abstract boolean setPictureNum_And_PageNum_Auther_And_PixivGetPath();
-	/** ·µ»ØÒ»ÏµÁĞ¿ÉÒÔ»ñµÃ×îÖÕÏÂÔØÁ¬½ÓµÄ¶ÔÏó¡¢
-	 * Êµ¼ÊÉÏÒòÎª²»¿ÉÄÜÖ±½Ó»ñµÃ×îºóÏÂÔØµÄurl£¬ËùÒÔ¶¼Òª¾­¹ı¼¸´ÎÌø×ª£¬ÄÇÃ´Õâ¸öÖĞ¼äÌø×ª¹ı³Ì¶¼¿ÉÒÔĞ´ÔÚ¸Ã·½·¨ÀïÃæ
+	/** è¿”å›ä¸€ç³»åˆ—å¯ä»¥è·å¾—æœ€ç»ˆä¸‹è½½è¿æ¥çš„å¯¹è±¡ã€
+	 * å®é™…ä¸Šå› ä¸ºä¸å¯èƒ½ç›´æ¥è·å¾—æœ€åä¸‹è½½çš„urlï¼Œæ‰€ä»¥éƒ½è¦ç»è¿‡å‡ æ¬¡è·³è½¬ï¼Œé‚£ä¹ˆè¿™ä¸ªä¸­é—´è·³è½¬è¿‡ç¨‹éƒ½å¯ä»¥å†™åœ¨è¯¥æ–¹æ³•é‡Œé¢
 	 */
 	protected abstract ArrayList<? extends GetPictureUrl> getLsPrepareDownload();
 	
 }
 
 /**
- * µÃµ½ÏÂÔØµÄurlµÄÀàÖ®ºó¿ªÊ¼¾ßÌåÏÂÔØÍ¼Æ¬
+ * å¾—åˆ°ä¸‹è½½çš„urlçš„ç±»ä¹‹åå¼€å§‹å…·ä½“ä¸‹è½½å›¾ç‰‡
  * @author zong0jie
  *
  */
@@ -140,16 +140,16 @@ class DownloadPictureFile {
 	boolean downloadFast = false;
 	
 	ArrayList<UrlPictureDownLoad> lsDownLoads = new ArrayList<UrlPictureDownLoad>();
-	//µÈ´ıÒª»ñµÃÏÂÔØurlµÄĞòÁĞ
+	//ç­‰å¾…è¦è·å¾—ä¸‹è½½urlçš„åºåˆ—
 	ThreadPoolExecutor executorGetUrlPrepToDownload = new ThreadPoolExecutor(3, 4, 5000, TimeUnit.MICROSECONDS, new ArrayBlockingQueue<Runnable>(1000));
-	//µÈ´ıÏÂÔØµÄÀà
+	//ç­‰å¾…ä¸‹è½½çš„ç±»
 	ThreadPoolExecutor executorDownload = new ThreadPoolExecutor(3, 4, 5000, TimeUnit.MICROSECONDS, new ArrayBlockingQueue<Runnable>(1000));
 	
 	LinkedList<Future<GetPictureUrl>> lsUrlPrepToDownLoad = new LinkedList<Future<GetPictureUrl>>();
 	LinkedList<Future<UrlPictureDownLoad>> lsFutureDownLoad = new LinkedList<Future<UrlPictureDownLoad>>();
 	
 	/**
-	 * ÏÂÔØÍ¼Æ¬urlµÄÀà
+	 * ä¸‹è½½å›¾ç‰‡urlçš„ç±»
 	 * @param lsPrepareDownloads
 	 */
 	public void setLsPrepareDownloads(ArrayList<? extends GetPictureUrl> lsPrepareDownloads) {
@@ -159,20 +159,20 @@ class DownloadPictureFile {
 		}
 	}
 	
-    /** »ñµÃÁ¬½ÓºóÊÇ·ñÁ¢¼´ÏÂÔØ
-     * »¹ÊÇµÈÈ«²¿Á¬½Ó¶¼»ñµÃÁË²ÅÏÂÔØ
+    /** è·å¾—è¿æ¥åæ˜¯å¦ç«‹å³ä¸‹è½½
+     * è¿˜æ˜¯ç­‰å…¨éƒ¨è¿æ¥éƒ½è·å¾—äº†æ‰ä¸‹è½½
      *  */
 	public void setDownloadFast(boolean downloadFast) {
 		this.downloadFast = downloadFast;
 	}
 	
 	public void running() throws InterruptedException, ExecutionException {
-		//½«executorGetUrlPrepToDownloadÖĞ¼äµÄÄÚÈİÔËĞĞÖ±µ½Íê±Ï
+		//å°†executorGetUrlPrepToDownloadä¸­é—´çš„å†…å®¹è¿è¡Œç›´åˆ°å®Œæ¯•
 		while (executorGetUrlPrepToDownload.getActiveCount() > 0 || lsUrlPrepToDownLoad.size() > 0) {
 			Future<GetPictureUrl> futureToDownload = lsUrlPrepToDownLoad.poll();
 			if (futureToDownload.isDone() ) {
 				doneGetPicUrl(futureToDownload);
-			} else {//Ã»Ö´ĞĞ³É¹¦¾Í½Ó×ÅÖ´ĞĞ
+			} else {//æ²¡æ‰§è¡ŒæˆåŠŸå°±æ¥ç€æ‰§è¡Œ
 				lsUrlPrepToDownLoad.add(futureToDownload);
 			}
 			Thread.sleep(100);
@@ -182,8 +182,8 @@ class DownloadPictureFile {
 		closeThreadPool();
 	}
 	/**
-	 * Èç¹û»ñÈ¡ĞòÁĞÒÑ¾­ÅÜÍêÁË£¬ÔòÅĞ¶ÏÊÇ·ñ³É¹¦£¬³É¹¦ÁË½øĞĞÏÂÒ»²½£¬×°Èëlist»òÕßpool
-	 * Ê§°ÜÁËÖØÅÜ
+	 * å¦‚æœè·å–åºåˆ—å·²ç»è·‘å®Œäº†ï¼Œåˆ™åˆ¤æ–­æ˜¯å¦æˆåŠŸï¼ŒæˆåŠŸäº†è¿›è¡Œä¸‹ä¸€æ­¥ï¼Œè£…å…¥listæˆ–è€…pool
+	 * å¤±è´¥äº†é‡è·‘
 	 * @param futureToDownload
 	 * @throws ExecutionException 
 	 * @throws InterruptedException 
@@ -193,16 +193,16 @@ class DownloadPictureFile {
 		if (pictureUrlToDownload.isSuccess()) {
 			sucessGetUrl(pictureUrlToDownload);
 		} else {
-			//Ê§°ÜÁË¾Í·Å»ØÈ¥¼ÌĞøÖ´ĞĞ
+			//å¤±è´¥äº†å°±æ”¾å›å»ç»§ç»­æ‰§è¡Œ
 			Future<GetPictureUrl> result = executorGetUrlPrepToDownload.submit(pictureUrlToDownload);
 			lsUrlPrepToDownLoad.add(result);
 		}
 	}
 	
 	/**
-	 * ³É¹¦ÏÂÔØ£¬È»ºó¿ªÊ¼½øĞĞÏÂÒ»²½¡£
-	 * Èç¹ûÊÇÂıËÙÄ£Ê½£¬Ôò×°ÈëlsDownLoads
-	 * Èç¹ûÊÇ¿ìËÙÄ£Ê½£¬Ôò×°ÈëexecutorDownload
+	 * æˆåŠŸä¸‹è½½ï¼Œç„¶åå¼€å§‹è¿›è¡Œä¸‹ä¸€æ­¥ã€‚
+	 * å¦‚æœæ˜¯æ…¢é€Ÿæ¨¡å¼ï¼Œåˆ™è£…å…¥lsDownLoads
+	 * å¦‚æœæ˜¯å¿«é€Ÿæ¨¡å¼ï¼Œåˆ™è£…å…¥executorDownload
 	 * @param pictureUrlToDownload
 	 */
 	private void sucessGetUrl(GetPictureUrl pictureUrlToDownload) {
@@ -217,7 +217,7 @@ class DownloadPictureFile {
 	}
 	
 	/**
-	 * Ö»ÓĞÂıËÙÄ£Ê½²Å»áÖ´ĞĞ
+	 * åªæœ‰æ…¢é€Ÿæ¨¡å¼æ‰ä¼šæ‰§è¡Œ
 	 */
 	private void addToPoolWhileSlowMode() {
 		if (!downloadFast) {
@@ -229,22 +229,22 @@ class DownloadPictureFile {
 	}
 	
 	/**
-	 * ÕıÊ½ÏÂÔØÍ¼Æ¬ 
+	 * æ­£å¼ä¸‹è½½å›¾ç‰‡ 
 	 * @throws ExecutionException 
 	 * @throws InterruptedException 
 	 */
 	private void executDownLoadPicture() throws InterruptedException, ExecutionException {
-		//½«executorDownloadÖĞ¼äµÄÄÚÈİÔËĞĞÖ±µ½Íê±Ï
+		//å°†executorDownloadä¸­é—´çš„å†…å®¹è¿è¡Œç›´åˆ°å®Œæ¯•
 		while (executorDownload.getActiveCount() > 0 || lsFutureDownLoad.size() > 0) {
 			Future<UrlPictureDownLoad> futureDownload = lsFutureDownLoad.poll();
 			if (futureDownload.isDone()) {
 				UrlPictureDownLoad pixivUrlDownLoad = futureDownload.get();
-				//Ê§°ÜÁË¾Í·Å»ØÈ¥¼ÌĞøÖ´ĞĞ
+				//å¤±è´¥äº†å°±æ”¾å›å»ç»§ç»­æ‰§è¡Œ
 				if (!pixivUrlDownLoad.isSaveSucess()) {
 					Future<UrlPictureDownLoad> result = executorDownload.submit(pixivUrlDownLoad);
 					lsFutureDownLoad.add(result);
 				}
-			} else {//Ã»Ö´ĞĞ³É¹¦¾Í½Ó×ÅÖ´ĞĞ
+			} else {//æ²¡æ‰§è¡ŒæˆåŠŸå°±æ¥ç€æ‰§è¡Œ
 				lsFutureDownLoad.add(futureDownload);
 			}
 			Thread.sleep(100);

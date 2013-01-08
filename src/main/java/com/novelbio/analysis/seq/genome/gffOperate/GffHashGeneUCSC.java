@@ -9,10 +9,10 @@ import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modgeneid.GeneType;
 
 /**
- * ±¾¿ª±ÕÇø¼äÒÑ¾­Éè¶¨
- * UCSCµÄÄ¬ÈÏÎÄ¼şµÄÆğµãÊÇ¿ªÇø¼ä£¬ÖÕµãÎª±ÕÇø¼ä¡£Ë®µ¾ÄâÄÏ½æµÄ»¹Ã»ÓĞÉè¶¨¿ª±ÕÇø¼ä
- * ×¨ÃÅ¶ÁÈ¡UCSCµÄgene×ø±êÎÄ¼ş,¶ÁÈ¡Ê±´ÓµÚ¶şĞĞ¶ÁÆğ
- * ¶ÁÈ¡Íê±Ïºó¿ÉÍ³¼ÆÄÚº¬×ÓÍâÏÔ×ÓµÄÊıÄ¿
+ * æœ¬å¼€é—­åŒºé—´å·²ç»è®¾å®š
+ * UCSCçš„é»˜è®¤æ–‡ä»¶çš„èµ·ç‚¹æ˜¯å¼€åŒºé—´ï¼Œç»ˆç‚¹ä¸ºé—­åŒºé—´ã€‚æ°´ç¨»æ‹Ÿå—èŠ¥çš„è¿˜æ²¡æœ‰è®¾å®šå¼€é—­åŒºé—´
+ * ä¸“é—¨è¯»å–UCSCçš„geneåæ ‡æ–‡ä»¶,è¯»å–æ—¶ä»ç¬¬äºŒè¡Œè¯»èµ·
+ * è¯»å–å®Œæ¯•åå¯ç»Ÿè®¡å†…å«å­å¤–æ˜¾å­çš„æ•°ç›®
  * group:Genes and Gene Prediction Tracks
  * track:UCSC Genes
  * table:knownGene
@@ -23,53 +23,53 @@ import com.novelbio.database.model.modgeneid.GeneType;
 public class GffHashGeneUCSC extends GffHashGeneAbs{
 	/**
 	 * @Override
-	 * ×îµ×²ã¶ÁÈ¡gffµÄ·½·¨£¬±¾·½·¨Ö»ÄÜ¶ÁÈ¡UCSCknown gene<br>
-	 * ÊäÈëGffÎÄ¼ş£¬×îºó»ñµÃÁ½¸ö¹şÏ£±íºÍÒ»¸ölist±í,¶ÁÈ¡Ê±´ÓµÚ¶şĞĞ¶ÁÆğ<br/>
-	 * ½á¹¹ÈçÏÂ£º<br/>
-     * ÊäÈëGffÎÄ¼ş£¬×îºó»ñµÃÁ½¸ö¹şÏ£±íºÍÒ»¸ölist±í, ½á¹¹ÈçÏÂ£º<br>
+	 * æœ€åº•å±‚è¯»å–gffçš„æ–¹æ³•ï¼Œæœ¬æ–¹æ³•åªèƒ½è¯»å–UCSCknown gene<br>
+	 * è¾“å…¥Gffæ–‡ä»¶ï¼Œæœ€åè·å¾—ä¸¤ä¸ªå“ˆå¸Œè¡¨å’Œä¸€ä¸ªlistè¡¨,è¯»å–æ—¶ä»ç¬¬äºŒè¡Œè¯»èµ·<br/>
+	 * ç»“æ„å¦‚ä¸‹ï¼š<br/>
+     * è¾“å…¥Gffæ–‡ä»¶ï¼Œæœ€åè·å¾—ä¸¤ä¸ªå“ˆå¸Œè¡¨å’Œä¸€ä¸ªlistè¡¨, ç»“æ„å¦‚ä¸‹ï¼š<br>
      * <b>1.Chrhash</b><br>
-     * £¨ChrID£©--ChrList-- GeneInforList(GffDetailÀà)
-     * ÆäÖĞChrIDÎªĞ¡Ğ´£¬´ú±íÈ¾É«ÌåÃû×Ö£¬Òò´ËÓÃgetÀ´»ñÈ¡ÏàÓ¦µÄChrListµÄÊ±ºòÒªÊäÈëĞ¡Ğ´µÄChrID, chr¸ñÊ½£¬È«²¿Ğ¡Ğ´ chr1,chr2,chr11<br>
+     * ï¼ˆChrIDï¼‰--ChrList-- GeneInforList(GffDetailç±»)
+     * å…¶ä¸­ChrIDä¸ºå°å†™ï¼Œä»£è¡¨æŸ“è‰²ä½“åå­—ï¼Œå› æ­¤ç”¨getæ¥è·å–ç›¸åº”çš„ChrListçš„æ—¶å€™è¦è¾“å…¥å°å†™çš„ChrID, chræ ¼å¼ï¼Œå…¨éƒ¨å°å†™ chr1,chr2,chr11<br>
      *  <b>2.locHashtable</b><br>
-     * ÆäÖĞLOCID´ú±í¾ßÌåµÄÌõÄ¿±àºÅ£¬ÔÚUCSCkonwn geneÀïÃæÃ»ÓĞ×ªÂ¼±¾Ò»Ëµ£¬
-	 * »áÓĞÓĞ¶à¸öLOCID¹²ÓÃÒ»¸öÇøÓòµÄÇé¿ö£¬ËùÒÔÓĞ¶à¸ö²»Í¬µÄLOCIDÖ¸ÏòÍ¬Ò»¸öGffdetailUCSCgene
+     * å…¶ä¸­LOCIDä»£è¡¨å…·ä½“çš„æ¡ç›®ç¼–å·ï¼Œåœ¨UCSCkonwn geneé‡Œé¢æ²¡æœ‰è½¬å½•æœ¬ä¸€è¯´ï¼Œ
+	 * ä¼šæœ‰æœ‰å¤šä¸ªLOCIDå…±ç”¨ä¸€ä¸ªåŒºåŸŸçš„æƒ…å†µï¼Œæ‰€ä»¥æœ‰å¤šä¸ªä¸åŒçš„LOCIDæŒ‡å‘åŒä¸€ä¸ªGffdetailUCSCgene
      *  <b>3.LOCIDList</b><br>
-     * £¨LOCID£©Õâ¸öListË³Ğò´æ´¢Ã¿¸ö»ùÒòºÅ»òÌõÄ¿ºÅ£¬Õâ¸ö´òËãÓÃÓÚÌáÈ¡Ëæ»ú»ùÒòºÅ£¬Êµ¼ÊÉÏÊÇËùÓĞÌõÄ¿°´Ë³Ğò·ÅÈë£¬µ«ÊÇ²»¿¼ÂÇ×ªÂ¼±¾(UCSC)»òÊÇÖØ¸´(Peak) Õâ¸öIDÓëlocHashÒ»Ò»¶ÔÓ¦£¬µ«ÊÇ²»ÄÜÓÃËüÀ´È·¶¨Ä³ÌõÄ¿µÄÇ°Ò»¸ö»òºóÒ»¸öÌõÄ¿ <br>
+     * ï¼ˆLOCIDï¼‰è¿™ä¸ªListé¡ºåºå­˜å‚¨æ¯ä¸ªåŸºå› å·æˆ–æ¡ç›®å·ï¼Œè¿™ä¸ªæ‰“ç®—ç”¨äºæå–éšæœºåŸºå› å·ï¼Œå®é™…ä¸Šæ˜¯æ‰€æœ‰æ¡ç›®æŒ‰é¡ºåºæ”¾å…¥ï¼Œä½†æ˜¯ä¸è€ƒè™‘è½¬å½•æœ¬(UCSC)æˆ–æ˜¯é‡å¤(Peak) è¿™ä¸ªIDä¸locHashä¸€ä¸€å¯¹åº”ï¼Œä½†æ˜¯ä¸èƒ½ç”¨å®ƒæ¥ç¡®å®šæŸæ¡ç›®çš„å‰ä¸€ä¸ªæˆ–åä¸€ä¸ªæ¡ç›® <br>
      * <b>4.LOCChrHashIDList </b><br>
-     *   LOCChrHashIDListÖĞ±£´æLOCID´ú±í¾ßÌåµÄÌõÄ¿±àºÅ,ÓëChrhashÀïµÄÃû×ÖÒ»ÖÂ£¬½«Í¬Ò»»ùÒòµÄ¶à¸ö×ªÂ¼±¾·ÅÔÚÒ»Æğ£¬ÓÃĞ±Ïß·Ö¸î"/"£º NM_XXXX/NM_XXXX...<br>
+     *   LOCChrHashIDListä¸­ä¿å­˜LOCIDä»£è¡¨å…·ä½“çš„æ¡ç›®ç¼–å·,ä¸Chrhashé‡Œçš„åå­—ä¸€è‡´ï¼Œå°†åŒä¸€åŸºå› çš„å¤šä¸ªè½¬å½•æœ¬æ”¾åœ¨ä¸€èµ·ï¼Œç”¨æ–œçº¿åˆ†å‰²"/"ï¼š NM_XXXX/NM_XXXX...<br>
 	 * @throws Exception 
 	 */
 	protected void ReadGffarrayExcepTmp(String gfffilename) throws Exception {
 		setTaxID(gfffilename);
-		// ÊµÀı»¯ËÄ¸ö±í
-		mapChrID2ListGff = new LinkedHashMap<String, ListGff>();// Ò»¸ö¹şÏ£±íÀ´´æ´¢Ã¿ÌõÈ¾É«Ìå
+		// å®ä¾‹åŒ–å››ä¸ªè¡¨
+		mapChrID2ListGff = new LinkedHashMap<String, ListGff>();// ä¸€ä¸ªå“ˆå¸Œè¡¨æ¥å­˜å‚¨æ¯æ¡æŸ“è‰²ä½“
 		
 		TxtReadandWrite txtGffRead = new TxtReadandWrite(gfffilename, false);
-		ListGff lsChromGene = null;// Ë³Ğò´æ´¢Ã¿¸ölocµÄ¾ßÌåĞÅÏ¢£¬Ò»ÌõÈ¾É«ÌåÒ»¸öLOCList£¬×îºó×°ÈëChrhash±íÖĞ
+		ListGff lsChromGene = null;// é¡ºåºå­˜å‚¨æ¯ä¸ªlocçš„å…·ä½“ä¿¡æ¯ï¼Œä¸€æ¡æŸ“è‰²ä½“ä¸€ä¸ªLOCListï¼Œæœ€åè£…å…¥Chrhashè¡¨ä¸­
 		String chrIDtmp = "";
-		// int mm=0;//¼ÆÊıµÄ¶«Î÷
+		// int mm=0;//è®¡æ•°çš„ä¸œè¥¿
 		for (String content : txtGffRead.readlines(2)) {
 			content = content.replace("\"", "");
 			String[] geneInfo = content.split("\t");
 			String[] exonStarts = geneInfo[8].split(",");
 			String[] exonEnds = geneInfo[9].split(",");
-			chrIDtmp = geneInfo[1];// Ğ¡Ğ´µÄchrID
+			chrIDtmp = geneInfo[1];// å°å†™çš„chrID
 			String chrIDtmpLowCase = chrIDtmp.toLowerCase();
 			// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			// ĞÂµÄÈ¾É«Ìå
-			if (!mapChrID2ListGff.containsKey(chrIDtmpLowCase)) // ĞÂµÄÈ¾É«Ìå
+			// æ–°çš„æŸ“è‰²ä½“
+			if (!mapChrID2ListGff.containsKey(chrIDtmpLowCase)) // æ–°çš„æŸ“è‰²ä½“
 			{
-				if (lsChromGene != null)// Èç¹ûÒÑ¾­´æÔÚÁËLOCList£¬Ò²¾ÍÊÇÇ°Ò»¸öLOCList£¬ÄÇÃ´ÏÈ½Ø¶Ì£¬È»ºó½«Ëü°´ÕÕgffGCtmpDetail.numberstartÅÅĞò
+				if (lsChromGene != null)// å¦‚æœå·²ç»å­˜åœ¨äº†LOCListï¼Œä¹Ÿå°±æ˜¯å‰ä¸€ä¸ªLOCListï¼Œé‚£ä¹ˆå…ˆæˆªçŸ­ï¼Œç„¶åå°†å®ƒæŒ‰ç…§gffGCtmpDetail.numberstartæ’åº
 				{
 					lsChromGene.trimToSize();
 				}
-				lsChromGene = new ListGff();// ĞÂ½¨Ò»¸öLOCList²¢·ÅÈëChrhash
+				lsChromGene = new ListGff();// æ–°å»ºä¸€ä¸ªLOCListå¹¶æ”¾å…¥Chrhash
 				lsChromGene.setName(chrIDtmp);
 				mapChrID2ListGff.put(chrIDtmpLowCase, lsChromGene);
 			}
 			// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			// Ìí¼Ó×ªÂ¼±¾
-			// ¿´±¾»ùÒòµÄ×ªÂ¼ÆğµãÊÇ·ñĞ¡ÓÚÉÏ¸ö»ùÒòµÄ×ªÂ¼ÖÕµã£¬Èç¹ûĞ¡ÓÚ£¬ÔòËµÃ÷±¾»ùÒòÊÇÉÏ¸ö»ùÒòµÄÒ»¸ö×ªÂ¼±¾
+			// æ·»åŠ è½¬å½•æœ¬
+			// çœ‹æœ¬åŸºå› çš„è½¬å½•èµ·ç‚¹æ˜¯å¦å°äºä¸Šä¸ªåŸºå› çš„è½¬å½•ç»ˆç‚¹ï¼Œå¦‚æœå°äºï¼Œåˆ™è¯´æ˜æœ¬åŸºå› æ˜¯ä¸Šä¸ªåŸºå› çš„ä¸€ä¸ªè½¬å½•æœ¬
 			GffDetailGene lastGffdetailUCSCgene = null; double[] overlapInfo = null;
 			if (lsChromGene.size() > 0 ) {
 				lastGffdetailUCSCgene = (GffDetailGene) lsChromGene.get(lsChromGene.size() - 1);
@@ -79,24 +79,24 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 			}
 			
 			if (lsChromGene.size() > 0 
-//					&& // Èç¹û×ªÂ¼±¾·½Ïò²»Í¬£¬ÄÇ¾ÍĞÂ¿ªÒ»¸ö×ªÂ¼±¾
+//					&& // å¦‚æœè½¬å½•æœ¬æ–¹å‘ä¸åŒï¼Œé‚£å°±æ–°å¼€ä¸€ä¸ªè½¬å½•æœ¬
 //					geneInfo[2].equals("+") == lastGffdetailUCSCgene.isCis5to3()
 					&&
-					//½«Æä¸ÄÎªÖØµş1/3ÒÔÉÏ²ÅÈÏÎªÊÇÍ¬Ò»¸ö»ùÒò
+					//å°†å…¶æ”¹ä¸ºé‡å 1/3ä»¥ä¸Šæ‰è®¤ä¸ºæ˜¯åŒä¸€ä¸ªåŸºå› 
 					(overlapInfo[2] > 0.3 || overlapInfo[3] > 0.3)
 					)
 			{
-				// ĞŞ¸Ä»ùÒòÆğµãºÍÖÕµã
+				// ä¿®æ”¹åŸºå› èµ·ç‚¹å’Œç»ˆç‚¹
 				if (Integer.parseInt(geneInfo[3]) + getStartRegion() < lastGffdetailUCSCgene.getStartAbs())
 					lastGffdetailUCSCgene.setStartAbs( Integer.parseInt(geneInfo[3]) + getStartRegion() );
 				if (Integer.parseInt(geneInfo[4]) + getEndRegion() > lastGffdetailUCSCgene.getEndAbs())
 					lastGffdetailUCSCgene.setEndAbs( Integer.parseInt(geneInfo[4]) + getEndRegion() );
-				//Èç¹û±¾×ªÂ¼±¾·½Ïò³öÏÖ²»Ò»ÖÂµÄ£¬Ôò½«geneDetailµÄ×ªÂ¼·½ÏòÉèÖÃÎªnull
+				//å¦‚æœæœ¬è½¬å½•æœ¬æ–¹å‘å‡ºç°ä¸ä¸€è‡´çš„ï¼Œåˆ™å°†geneDetailçš„è½¬å½•æ–¹å‘è®¾ç½®ä¸ºnull
 				if (geneInfo[2].equals("+") != lastGffdetailUCSCgene.isCis5to3()) {
 					lastGffdetailUCSCgene.setCis5to3( null );
 				}
 				
-				// ½«±¾»ùÒò(×ªÂ¼±¾)µÄID×°ÈëlocStringÖĞ
+				// å°†æœ¬åŸºå› (è½¬å½•æœ¬)çš„IDè£…å…¥locStringä¸­
 				lastGffdetailUCSCgene.addItemName(geneInfo[0]);
 				if (Math.abs(Integer.parseInt(geneInfo[5]) - Integer.parseInt(geneInfo[6])) <= 2) {
 					lastGffdetailUCSCgene.addsplitlist(geneInfo[0], GeneType.miRNA, geneInfo[2].equals("+"));
@@ -104,9 +104,9 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 				else {
 					lastGffdetailUCSCgene.addsplitlist(geneInfo[0], GeneType.mRNA, geneInfo[2].equals("+"));
 				}
-				// Ìí¼ÓÒ»¸ö×ªÂ¼±¾£¬È»ºó½«ÏàÓ¦ĞÅÏ¢:
-				// µÚÒ»ÏîÊÇ¸Ã×ªÂ¼±¾µÄCoding region start£¬µÚ¶şÏîÊÇ¸Ã×ªÂ¼±¾µÄCoding region
-				// end,´ÓµÚÈıÏî¿ªÊ¼ÊÇ¸Ã×ªÂ¼±¾µÄExon×ø±êĞÅÏ¢
+				// æ·»åŠ ä¸€ä¸ªè½¬å½•æœ¬ï¼Œç„¶åå°†ç›¸åº”ä¿¡æ¯:
+				// ç¬¬ä¸€é¡¹æ˜¯è¯¥è½¬å½•æœ¬çš„Coding region startï¼Œç¬¬äºŒé¡¹æ˜¯è¯¥è½¬å½•æœ¬çš„Coding region
+				// end,ä»ç¬¬ä¸‰é¡¹å¼€å§‹æ˜¯è¯¥è½¬å½•æœ¬çš„Exonåæ ‡ä¿¡æ¯
 				lastGffdetailUCSCgene.setATGUAG(Integer.parseInt(geneInfo[5]) + getStartRegion(), Integer.parseInt(geneInfo[6]) + getEndRegion());
 				
 				int exonCount = Integer.parseInt(geneInfo[7]);
@@ -116,7 +116,7 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 				continue;
 			}
 			// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			// Ìí¼ÓĞÂ»ùÒò
+			// æ·»åŠ æ–°åŸºå› 
 			GffDetailGene gffDetailUCSCgene = new GffDetailGene(lsChromGene, geneInfo[0], geneInfo[2].equals("+"));
 			gffDetailUCSCgene.setTaxID(taxID);
 			gffDetailUCSCgene.setStartAbs(  Integer.parseInt(geneInfo[3]) + getStartRegion() );
@@ -127,9 +127,9 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 			else {
 				gffDetailUCSCgene.addsplitlist(geneInfo[0], GeneType.mRNA);
 			}
-			// Ìí¼ÓÒ»¸ö×ªÂ¼±¾£¬È»ºó½«ÏàÓ¦ĞÅÏ¢:
-			// µÚÒ»ÏîÊÇ¸Ã×ªÂ¼±¾µÄCoding region start£¬µÚ¶şÏîÊÇ¸Ã×ªÂ¼±¾µÄCoding region
-			// end,´ÓµÚÈıÏî¿ªÊ¼ÊÇ¸Ã×ªÂ¼±¾µÄExon×ø±êĞÅÏ¢
+			// æ·»åŠ ä¸€ä¸ªè½¬å½•æœ¬ï¼Œç„¶åå°†ç›¸åº”ä¿¡æ¯:
+			// ç¬¬ä¸€é¡¹æ˜¯è¯¥è½¬å½•æœ¬çš„Coding region startï¼Œç¬¬äºŒé¡¹æ˜¯è¯¥è½¬å½•æœ¬çš„Coding region
+			// end,ä»ç¬¬ä¸‰é¡¹å¼€å§‹æ˜¯è¯¥è½¬å½•æœ¬çš„Exonåæ ‡ä¿¡æ¯
 			gffDetailUCSCgene.setATGUAG(Integer.parseInt(geneInfo[5]) + getStartRegion(), Integer.parseInt(geneInfo[6]) + getEndRegion());
 			int exonCount = Integer.parseInt(geneInfo[7]);
 			for (int i = 0; i < exonCount; i++) {

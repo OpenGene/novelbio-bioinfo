@@ -41,8 +41,8 @@ public class CtrlFastQMapping {
 	String adaptorRight = "";
 	boolean adaptorLowercase =false;
 	
-	/** ÅÅÁĞË³ĞòÓëlsFastQfileLeftºÍlsFastQfileRightÏàÍ¬ 
-	 * ±íÊ¾·Ö×é
+	/** æ’åˆ—é¡ºåºä¸lsFastQfileLeftå’ŒlsFastQfileRightç›¸åŒ 
+	 * è¡¨ç¤ºåˆ†ç»„
 	 * */
 	ArrayList<String> lsCondition = new ArrayList<String>();
 	ArrayList<String> lsFastQfileLeft = new ArrayList<String>();
@@ -91,7 +91,7 @@ public class CtrlFastQMapping {
 	}
 	/** 
 	 * @param species
-	 * @param map2Index mappingµ½Ê²Ã´ÉÏÃæÈ¥£¬ÓĞchrom£¬refseqºÍrefseqLongestIsoÈıÖÖ
+	 * @param map2Index mappingåˆ°ä»€ä¹ˆä¸Šé¢å»ï¼Œæœ‰chromï¼Œrefseqå’ŒrefseqLongestIsoä¸‰ç§
 	 */
 	public void setSpecies(Species species, int map2Index) {
 		this.species = species;
@@ -138,7 +138,7 @@ public class CtrlFastQMapping {
 	public void setLsFastQfileRight(ArrayList<String> lsFastQfileRight) {
 		this.lsFastQfileRight = lsFastQfileRight;
 	}
-	/**±ØĞë¶ÔÃ¿¸öÎÄ¼ş¶¼ÓĞÒ»¸öÇ°×º */
+	/**å¿…é¡»å¯¹æ¯ä¸ªæ–‡ä»¶éƒ½æœ‰ä¸€ä¸ªå‰ç¼€ */
 	public void setLsPrefix(ArrayList<String> lsPrefix) {
 		this.lsCondition = lsPrefix;
 	}
@@ -161,9 +161,9 @@ public class CtrlFastQMapping {
 		}
 		txtReport.close();
 	}
-	/** ½«ÊäÈëÎÄ¼şÕûÀí³É
+	/** å°†è¾“å…¥æ–‡ä»¶æ•´ç†æˆ
 	 * map Prefix--leftList  rightList
-	 * µÄĞÎÊ½
+	 * çš„å½¢å¼
 	 */
 	private void setMapCondition2LsFastQLR() {
 		for (int i = 0; i < lsCondition.size(); i++) {
@@ -183,7 +183,7 @@ public class CtrlFastQMapping {
 		}
 	}
 	/**
-	 * Ö÷ÒªÊÇÅÂlsFastqRight¿ÉÄÜÃ»¶«Î÷
+	 * ä¸»è¦æ˜¯æ€•lsFastqRightå¯èƒ½æ²¡ä¸œè¥¿
 	 * @param lsFastq
 	 * @param num
 	 * @return
@@ -198,7 +198,7 @@ public class CtrlFastQMapping {
 	 * @param tmpFastQLR
 	 * @param lsFastqL
 	 * @param lsFastqR
-	 * @param num lsConditionµÄ±àºÅ
+	 * @param num lsConditionçš„ç¼–å·
 	 */
 	private void setFastqLR(FastQ[] tmpFastQLR, String fastqL, String fastqR) {
 		String compressType = getCompressType(fastqL, fastqR);

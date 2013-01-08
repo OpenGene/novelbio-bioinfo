@@ -21,8 +21,8 @@ import com.novelbio.base.dataStructure.listOperate.ListHashSearch;
 
 
 /**
- * Ò²¿ÉÒÔ×Ô¼ºÊäÈëÎÄ¼ş
- * ¶ÁÈ¡ÄÇÖÖpeak×ø±êµÄÎÄ¼ş£¬Ö»ÊäÈëpeakµÄÈ¾É«ÌåÎ»ÖÃ£¬Æğµã×ø±ê£¬ÖÕµã×ø±ê
+ * ä¹Ÿå¯ä»¥è‡ªå·±è¾“å…¥æ–‡ä»¶
+ * è¯»å–é‚£ç§peakåæ ‡çš„æ–‡ä»¶ï¼Œåªè¾“å…¥peakçš„æŸ“è‰²ä½“ä½ç½®ï¼Œèµ·ç‚¹åæ ‡ï¼Œç»ˆç‚¹åæ ‡
  * @author zong0jie
  *
  */
@@ -33,28 +33,28 @@ public class ListHashBin extends ListHashSearch<ListDetailBin, ListCodAbs<ListDe
 	int colPeakstart = 2;
 	int colPeakend = 3;
 	int rowNum = -1;
-	/**Ä¬ÈÏ²»ÉèÖÃscore */
+	/**é»˜è®¤ä¸è®¾ç½®score */
 	int colScore = -1;
 	
 	/**
-     * ×îµ×²ã¶ÁÈ¡peak×ø±êÎÄ¼şµÄ·½·¨£¬¶ÁÈ¡Éú³ÉµÄpeakĞÅÏ¢£¬Ö»¶ÁÈ¡peakËùÔÚChrÁĞ£¬peakÕı·´Ïò(×îºÃ¶¼ÎªÕı)£¬peakÆğµãÁĞ£¬peakÖÕµãÁĞ£¬²¢ÇÒÖ¸¶¨´ÓµÚ¼¸ĞĞ¶ÁÆğ£¬ËùÓĞĞĞºÍÁĞ¶¼ÊÇÊµ¼ÊĞĞºÍÁĞ<br>
-     * <b>peak</b> Õı·´Ïò×îºÃ¶¼ÎªÕı£¬·½±ãºóĞø´¦Àí<br>
-     * ÊäÈëGffÎÄ¼ş£¬<b>ÆäÖĞpeak¿ÉÒÔ²»°´ÕÕË³ĞòÅÅÁĞ£¬±¾ÀàÄÚ²¿»á¸øÅÅĞò</b>£¬×îºó»ñµÃÁ½¸ö¹şÏ£±íºÍÒ»¸ölist±í, ½á¹¹ÈçÏÂ£º<br>
+     * æœ€åº•å±‚è¯»å–peakåæ ‡æ–‡ä»¶çš„æ–¹æ³•ï¼Œè¯»å–ç”Ÿæˆçš„peakä¿¡æ¯ï¼Œåªè¯»å–peakæ‰€åœ¨Chråˆ—ï¼Œpeakæ­£åå‘(æœ€å¥½éƒ½ä¸ºæ­£)ï¼Œpeakèµ·ç‚¹åˆ—ï¼Œpeakç»ˆç‚¹åˆ—ï¼Œå¹¶ä¸”æŒ‡å®šä»ç¬¬å‡ è¡Œè¯»èµ·ï¼Œæ‰€æœ‰è¡Œå’Œåˆ—éƒ½æ˜¯å®é™…è¡Œå’Œåˆ—<br>
+     * <b>peak</b> æ­£åå‘æœ€å¥½éƒ½ä¸ºæ­£ï¼Œæ–¹ä¾¿åç»­å¤„ç†<br>
+     * è¾“å…¥Gffæ–‡ä»¶ï¼Œ<b>å…¶ä¸­peakå¯ä»¥ä¸æŒ‰ç…§é¡ºåºæ’åˆ—ï¼Œæœ¬ç±»å†…éƒ¨ä¼šç»™æ’åº</b>ï¼Œæœ€åè·å¾—ä¸¤ä¸ªå“ˆå¸Œè¡¨å’Œä¸€ä¸ªlistè¡¨, ç»“æ„å¦‚ä¸‹ï¼š<br>
      * <b>1.Chrhash</b><br>
-     * £¨ChrID£©--ChrList-- GeneInforList(GffDetailÀà)
-     * ÆäÖĞChrIDÎªĞ¡Ğ´£¬´ú±íÈ¾É«ÌåÃû×Ö£¬Òò´ËÓÃgetÀ´»ñÈ¡ÏàÓ¦µÄChrListµÄÊ±ºòÒªÊäÈëĞ¡Ğ´µÄChrID, chr¸ñÊ½£¬È«²¿Ğ¡Ğ´ chr1,chr2,chr11<br>
+     * ï¼ˆChrIDï¼‰--ChrList-- GeneInforList(GffDetailç±»)
+     * å…¶ä¸­ChrIDä¸ºå°å†™ï¼Œä»£è¡¨æŸ“è‰²ä½“åå­—ï¼Œå› æ­¤ç”¨getæ¥è·å–ç›¸åº”çš„ChrListçš„æ—¶å€™è¦è¾“å…¥å°å†™çš„ChrID, chræ ¼å¼ï¼Œå…¨éƒ¨å°å†™ chr1,chr2,chr11<br>
      *  <b>2.locHashtable</b><br>
-     * £¨LOCID£©--GeneInforlist£¬ÆäÖĞLOCID´ú±í¾ßÌåµÄÌõÄ¿±àºÅ,ÕâÀï²»¿¼ÂÇ¶à¸öÖØµşµÄpeak£º peakÆğµã_peakÖÕµã.<br>
+     * ï¼ˆLOCIDï¼‰--GeneInforlistï¼Œå…¶ä¸­LOCIDä»£è¡¨å…·ä½“çš„æ¡ç›®ç¼–å·,è¿™é‡Œä¸è€ƒè™‘å¤šä¸ªé‡å çš„peakï¼š peakèµ·ç‚¹_peakç»ˆç‚¹.<br>
      *  <b>3.LOCIDList</b><br>
-     * £¨LOCID£©--LOCIDList£¬°´Ë³Ğò±£´æPeak,ÕâÀï²»¿¼ÂÇ¶à¸öÖØµşµÄpeak£¬²»½¨ÒéÍ¨¹ıÆä»ñµÃÄ³»ùÒòµÄĞòºÅ,¾ßÌåÇé¿ö :peakÆğµã_peakÖÕµã<br>
+     * ï¼ˆLOCIDï¼‰--LOCIDListï¼ŒæŒ‰é¡ºåºä¿å­˜Peak,è¿™é‡Œä¸è€ƒè™‘å¤šä¸ªé‡å çš„peakï¼Œä¸å»ºè®®é€šè¿‡å…¶è·å¾—æŸåŸºå› çš„åºå·,å…·ä½“æƒ…å†µ :peakèµ·ç‚¹_peakç»ˆç‚¹<br>
      * <b>LOCChrHashIDList </b><br>
-     *   LOCChrHashIDListÖĞ±£´æLOCID´ú±í¾ßÌåµÄÌõÄ¿±àºÅ,ÓëChrhashÀïµÄÃû×ÖÒ»ÖÂ£¬½«¶à¸öÖØµşµÄpeak·ÅÔÚÒ»Æğ£º peakÆğµã_peakÖÕµã/peakÆğµã_peakÖÕµã_...<br>
+     *   LOCChrHashIDListä¸­ä¿å­˜LOCIDä»£è¡¨å…·ä½“çš„æ¡ç›®ç¼–å·,ä¸Chrhashé‡Œçš„åå­—ä¸€è‡´ï¼Œå°†å¤šä¸ªé‡å çš„peakæ”¾åœ¨ä¸€èµ·ï¼š peakèµ·ç‚¹_peakç»ˆç‚¹/peakèµ·ç‚¹_peakç»ˆç‚¹_...<br>
      * @param gfffilename
-     * @param peakcis peakÊÇÔÚÕıÁ´»¹ÊÇ¸ºÁ´ÉÏ£¬²»¹ıÃ»Ê²Ã´ÓÃ£¬²»ÓÃÉèÖÃ£¬Ä¬ÈÏÎªtrue¾ÍºÃ
-     * @param colChrID Êµ¼ÊÊı×Ö£¬Ä¬ÈÏÎª1
-     * @param colPeakstart Êµ¼ÊÊı×Ö£¬Ä¬ÈÏÎª2
-     * @param colPeakend Êµ¼ÊÊı×Ö£¬Ä¬ÈÏÎª3
-     * @param rowNum Æğµã£¬´ÓµÚ¼¸ĞĞ¿ªÊ¼¶Á
+     * @param peakcis peakæ˜¯åœ¨æ­£é“¾è¿˜æ˜¯è´Ÿé“¾ä¸Šï¼Œä¸è¿‡æ²¡ä»€ä¹ˆç”¨ï¼Œä¸ç”¨è®¾ç½®ï¼Œé»˜è®¤ä¸ºtrueå°±å¥½
+     * @param colChrID å®é™…æ•°å­—ï¼Œé»˜è®¤ä¸º1
+     * @param colPeakstart å®é™…æ•°å­—ï¼Œé»˜è®¤ä¸º2
+     * @param colPeakend å®é™…æ•°å­—ï¼Œé»˜è®¤ä¸º3
+     * @param rowNum èµ·ç‚¹ï¼Œä»ç¬¬å‡ è¡Œå¼€å§‹è¯»
 	 */
 	public ListHashBin(boolean peakcis ,int colChrID,int colPeakstart,int colPeakend,int rowNum) {
 		this.peakcis = peakcis;
@@ -69,30 +69,30 @@ public class ListHashBin extends ListHashSearch<ListDetailBin, ListCodAbs<ListDe
 		this.rowNum = rowNum;
 	}
 	/**
-	 * Éè¶¨scoreËùÔÚµÄÁĞ
+	 * è®¾å®šscoreæ‰€åœ¨çš„åˆ—
 	 * @param colScore
 	 */
 	public void setColScore(int colScore) {
 		this.colScore = colScore;
 	}
 	/**
-	 * ¿ÉÒÔ¸²¸Ç
-     * ×îµ×²ã¶ÁÈ¡peak×ø±êÎÄ¼şµÄ·½·¨£¬¶ÁÈ¡Éú³ÉµÄpeakĞÅÏ¢£¬Ö»¶ÁÈ¡peakËùÔÚChrÁĞ£¬peakÕı·´Ïò(×îºÃ¶¼ÎªÕı)£¬peakÆğµãÁĞ£¬peakÖÕµãÁĞ£¬²¢ÇÒÖ¸¶¨´ÓµÚ¼¸ĞĞ¶ÁÆğ£¬ËùÓĞĞĞºÍÁĞ¶¼ÊÇÊµ¼ÊĞĞºÍÁĞ<br>
-     * <b>peak</b> Õı·´Ïò×îºÃ¶¼ÎªÕı£¬·½±ãºóĞø´¦Àí<br>
-     * ÊäÈëGffÎÄ¼ş£¬<b>ÆäÖĞpeak¿ÉÒÔ²»°´ÕÕË³ĞòÅÅÁĞ£¬±¾ÀàÄÚ²¿»á¸øÅÅĞò</b>£¬×îºó»ñµÃÁ½¸ö¹şÏ£±íºÍÒ»¸ölist±í, ½á¹¹ÈçÏÂ£º<br>
+	 * å¯ä»¥è¦†ç›–
+     * æœ€åº•å±‚è¯»å–peakåæ ‡æ–‡ä»¶çš„æ–¹æ³•ï¼Œè¯»å–ç”Ÿæˆçš„peakä¿¡æ¯ï¼Œåªè¯»å–peakæ‰€åœ¨Chråˆ—ï¼Œpeakæ­£åå‘(æœ€å¥½éƒ½ä¸ºæ­£)ï¼Œpeakèµ·ç‚¹åˆ—ï¼Œpeakç»ˆç‚¹åˆ—ï¼Œå¹¶ä¸”æŒ‡å®šä»ç¬¬å‡ è¡Œè¯»èµ·ï¼Œæ‰€æœ‰è¡Œå’Œåˆ—éƒ½æ˜¯å®é™…è¡Œå’Œåˆ—<br>
+     * <b>peak</b> æ­£åå‘æœ€å¥½éƒ½ä¸ºæ­£ï¼Œæ–¹ä¾¿åç»­å¤„ç†<br>
+     * è¾“å…¥Gffæ–‡ä»¶ï¼Œ<b>å…¶ä¸­peakå¯ä»¥ä¸æŒ‰ç…§é¡ºåºæ’åˆ—ï¼Œæœ¬ç±»å†…éƒ¨ä¼šç»™æ’åº</b>ï¼Œæœ€åè·å¾—ä¸¤ä¸ªå“ˆå¸Œè¡¨å’Œä¸€ä¸ªlistè¡¨, ç»“æ„å¦‚ä¸‹ï¼š<br>
      * <b>1.Chrhash</b><br>
-     * £¨ChrID£©--ChrList-- GeneInforList(GffDetailÀà)
-     * ÆäÖĞChrIDÎªĞ¡Ğ´£¬´ú±íÈ¾É«ÌåÃû×Ö£¬Òò´ËÓÃgetÀ´»ñÈ¡ÏàÓ¦µÄChrListµÄÊ±ºòÒªÊäÈëĞ¡Ğ´µÄChrID, chr¸ñÊ½£¬È«²¿Ğ¡Ğ´ chr1,chr2,chr11<br>
+     * ï¼ˆChrIDï¼‰--ChrList-- GeneInforList(GffDetailç±»)
+     * å…¶ä¸­ChrIDä¸ºå°å†™ï¼Œä»£è¡¨æŸ“è‰²ä½“åå­—ï¼Œå› æ­¤ç”¨getæ¥è·å–ç›¸åº”çš„ChrListçš„æ—¶å€™è¦è¾“å…¥å°å†™çš„ChrID, chræ ¼å¼ï¼Œå…¨éƒ¨å°å†™ chr1,chr2,chr11<br>
      *  <b>2.locHashtable</b><br>
-     * £¨LOCID£©--GeneInforlist£¬ÆäÖĞLOCID´ú±í¾ßÌåµÄÌõÄ¿±àºÅ,ÕâÀï²»¿¼ÂÇ¶à¸öÖØµşµÄpeak£º peakÆğµã_peakÖÕµã.<br>
+     * ï¼ˆLOCIDï¼‰--GeneInforlistï¼Œå…¶ä¸­LOCIDä»£è¡¨å…·ä½“çš„æ¡ç›®ç¼–å·,è¿™é‡Œä¸è€ƒè™‘å¤šä¸ªé‡å çš„peakï¼š peakèµ·ç‚¹_peakç»ˆç‚¹.<br>
      *  <b>3.LOCIDList</b><br>
-     * £¨LOCID£©--LOCIDList£¬°´Ë³Ğò±£´æPeak,ÕâÀï²»¿¼ÂÇ¶à¸öÖØµşµÄpeak£¬²»½¨ÒéÍ¨¹ıÆä»ñµÃÄ³»ùÒòµÄĞòºÅ,¾ßÌåÇé¿ö :peakÆğµã_peakÖÕµã<br>
+     * ï¼ˆLOCIDï¼‰--LOCIDListï¼ŒæŒ‰é¡ºåºä¿å­˜Peak,è¿™é‡Œä¸è€ƒè™‘å¤šä¸ªé‡å çš„peakï¼Œä¸å»ºè®®é€šè¿‡å…¶è·å¾—æŸåŸºå› çš„åºå·,å…·ä½“æƒ…å†µ :peakèµ·ç‚¹_peakç»ˆç‚¹<br>
      * <b>LOCChrHashIDList </b><br>
-     *   LOCChrHashIDListÖĞ±£´æLOCID´ú±í¾ßÌåµÄÌõÄ¿±àºÅ,ÓëChrhashÀïµÄÃû×ÖÒ»ÖÂ£¬½«¶à¸öÖØµşµÄpeak·ÅÔÚÒ»Æğ£º peakÆğµã_peakÖÕµã/peakÆğµã_peakÖÕµã_...<br>
+     *   LOCChrHashIDListä¸­ä¿å­˜LOCIDä»£è¡¨å…·ä½“çš„æ¡ç›®ç¼–å·,ä¸Chrhashé‡Œçš„åå­—ä¸€è‡´ï¼Œå°†å¤šä¸ªé‡å çš„peakæ”¾åœ¨ä¸€èµ·ï¼š peakèµ·ç‚¹_peakç»ˆç‚¹/peakèµ·ç‚¹_peakç»ˆç‚¹_...<br>
 	 */
 	protected void ReadGffarrayExcep(String gfffilename) throws Exception {
 		TxtReadandWrite txtPeakInfo=new TxtReadandWrite(gfffilename,false);
-		//ÏÈ°ÑtxtÎÄ±¾ÖĞµÄpeakĞÅÏ¢¶ÁÈ¡
+		//å…ˆæŠŠtxtæ–‡æœ¬ä¸­çš„peakä¿¡æ¯è¯»å–
 		int[] colNum=new int[4];
 		colNum[0]=colChrID;colNum[1]=colPeakstart;colNum[2]=colPeakend; colNum[3] = colScore; 
 		ArrayList<String[]> lstmpPeakinfo =ExcelTxtRead.readLsExcelTxt(gfffilename, colNum, rowNum, -1);//(gfffilename, "\t", colNum, rowNum,  txtPeakInfo.ExcelRows());
@@ -100,8 +100,8 @@ public class ListHashBin extends ListHashSearch<ListDetailBin, ListCodAbs<ListDe
 		txtPeakInfo.close();
 	}
 	/**
-	 * ±¾·½·¨ºÍsetIntÈ¡Ò»¸ö
-	 * @param lsInterval Õâ¸öÊÇ²åÈëµÄÇø¼ä
+	 * æœ¬æ–¹æ³•å’ŒsetIntå–ä¸€ä¸ª
+	 * @param lsInterval è¿™ä¸ªæ˜¯æ’å…¥çš„åŒºé—´
 	 */
 	public void setInterval(String name, ArrayList<int[]> lsInterval) {
 		ArrayList<String[]> lsTmpInfo = new ArrayList<String[]>();
@@ -115,8 +115,8 @@ public class ListHashBin extends ListHashSearch<ListDetailBin, ListCodAbs<ListDe
 		ReadGff(lsTmpInfo);
 	}
 	/**
-	 * ±¾·½·¨ºÍsetIntervalÈ¡Ò»¸ö
-	 * @param lsInterval Õâ¸öÊÇ²åÈëµÄµ¥¸öÊıÖµ£¬ÓÃÓÚÍ³¼Æ²âĞòÃ¿¸ö¼î»ùµÄÊıÁ¿µÈ
+	 * æœ¬æ–¹æ³•å’ŒsetIntervalå–ä¸€ä¸ª
+	 * @param lsInterval è¿™ä¸ªæ˜¯æ’å…¥çš„å•ä¸ªæ•°å€¼ï¼Œç”¨äºç»Ÿè®¡æµ‹åºæ¯ä¸ªç¢±åŸºçš„æ•°é‡ç­‰
 	 */
 	public void setInt(String name, ArrayList<Integer> lsInterval) {
 		ArrayList<String[]> lsTmpInfo = new ArrayList<String[]>();
@@ -131,20 +131,20 @@ public class ListHashBin extends ListHashSearch<ListDetailBin, ListCodAbs<ListDe
 	}
 
 	/**
-	 * ¿ÉÒÔ¸²¸ÇËü
-	 * ÄÚ²¿ÓĞÅÅĞò
-	 * ÓÃlistÀ´±íÊ¾peakµÄĞÅÏ¢£¬±ØĞë
-	 * 0£ºchrID Í¬Ò»¸öchrID ±íÊ¾ÎªÍ¬Ò»ÀàĞÍÖĞµÄÏ¸·Ö
-	 * 1£ºstart
-	 * 2£ºend
+	 * å¯ä»¥è¦†ç›–å®ƒ
+	 * å†…éƒ¨æœ‰æ’åº
+	 * ç”¨listæ¥è¡¨ç¤ºpeakçš„ä¿¡æ¯ï¼Œå¿…é¡»
+	 * 0ï¼šchrID åŒä¸€ä¸ªchrID è¡¨ç¤ºä¸ºåŒä¸€ç±»å‹ä¸­çš„ç»†åˆ†
+	 * 1ï¼šstart
+	 * 2ï¼šend
 	 * 3: score
 	 * @param lsInfo
 	 */
 	public void ReadGff(List<String[]> lstmpPeakinfo) {
 		sortLsPeak(lstmpPeakinfo);
-		//////////////////////////ÕıÊ½¶ÁÈ¡£¬ÀàËÆGffUCSCµÄ¶ÁÈ¡·½·¨///////////////////////
+		//////////////////////////æ­£å¼è¯»å–ï¼Œç±»ä¼¼GffUCSCçš„è¯»å–æ–¹æ³•///////////////////////
 	     mapChrID2ListGff=new LinkedHashMap<String, ListBin<ListDetailBin>>();
-	     ListBin<ListDetailBin> LOCList=null ;//Ë³Ğò´æ´¢Ã¿¸ölocµÄ¾ßÌåĞÅÏ¢£¬Ò»ÌõÈ¾É«ÌåÒ»¸öLOCList£¬×îºó×°ÈëChrhash±íÖĞ
+	     ListBin<ListDetailBin> LOCList=null ;//é¡ºåºå­˜å‚¨æ¯ä¸ªlocçš„å…·ä½“ä¿¡æ¯ï¼Œä¸€æ¡æŸ“è‰²ä½“ä¸€ä¸ªLOCListï¼Œæœ€åè£…å…¥Chrhashè¡¨ä¸­
 	     
 	     String tmpChrName = "";
 	     int tmppeakstart=-1; int tmppeakend=-1; double score = -1;
@@ -158,7 +158,7 @@ public class ListHashBin extends ListHashSearch<ListDetailBin, ListCodAbs<ListDe
 	    	 if (strings.length > 3) {
 	    		 score = Double.parseDouble(strings[3]);
 			}
-	    	 //³öÏÖĞÂµÄÈ¾É«Ìå
+	    	 //å‡ºç°æ–°çš„æŸ“è‰²ä½“
 	    	 if (!mapChrID2ListGff.containsKey(tmpChrName)) {
 	    		 if(LOCList!=null) {
 	    			 LOCList.trimToSize();
@@ -166,16 +166,16 @@ public class ListHashBin extends ListHashSearch<ListDetailBin, ListCodAbs<ListDe
 	    		 LOCList=new ListBin<ListDetailBin>();
 	    		 mapChrID2ListGff.put(tmpChrName, LOCList);
 	    	 }				
-	    	 //Ìí¼ÓÖØµşpeak£¬¿´±¾peakµÄÆğµãÊÇ·ñĞ¡ÓÚÉÏ¸öpeakµÄÖÕµã£¬Èç¹ûĞ¡ÓÚ£¬ÔòËµÃ÷±¾peakºÍÉÏ¸öpeakÁ¬Ğø
+	    	 //æ·»åŠ é‡å peakï¼Œçœ‹æœ¬peakçš„èµ·ç‚¹æ˜¯å¦å°äºä¸Šä¸ªpeakçš„ç»ˆç‚¹ï¼Œå¦‚æœå°äºï¼Œåˆ™è¯´æ˜æœ¬peakå’Œä¸Šä¸ªpeakè¿ç»­
 	    	 ListDetailBin lastGffdetailpeak;
 	    	 if(LOCList.size()>0 && tmppeakstart < (lastGffdetailpeak = LOCList.get(LOCList.size()-1)).getEndAbs() ) {   
-	    		 //ĞŞ¸Ä»ùÒòÆğµãºÍÖÕµã
+	    		 //ä¿®æ”¹åŸºå› èµ·ç‚¹å’Œç»ˆç‚¹
 	    		 if(tmppeakstart < lastGffdetailpeak.getStartAbs())
 	    			 lastGffdetailpeak.setStartAbs(tmppeakstart);
 	    		 if(tmppeakend>lastGffdetailpeak.getEndAbs())
 	    			 lastGffdetailpeak.setEndAbs(tmppeakend);
-	    		 //½«»ùÒò(×ªÂ¼±¾ID)×°ÈëLOCList					
-	    		 //½«±¾»ùÒò(×ªÂ¼±¾)µÄID×°ÈëlocStringÖĞ
+	    		 //å°†åŸºå› (è½¬å½•æœ¬ID)è£…å…¥LOCList					
+	    		 //å°†æœ¬åŸºå› (è½¬å½•æœ¬)çš„IDè£…å…¥locStringä¸­
 	    		 lastGffdetailpeak.addItemName(tmppeakstart+"_"+tmppeakend);
 	    		 if (colScore > 0) {
 	    			 lastGffdetailpeak.setScore((lastGffdetailpeak.getScore() + score)/2);
@@ -183,9 +183,9 @@ public class ListHashBin extends ListHashSearch<ListDetailBin, ListCodAbs<ListDe
 	    		 continue;
 	    	 }
 	    	 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	    	 //Ìí¼ÓĞÂpeak 
+	    	 //æ·»åŠ æ–°peak 
 	    	 ListDetailBin gffdetailpeak=new ListDetailBin(tmpChrName, tmppeakstart+"_"+tmppeakend, peakcis);
-	    	 //Õı·´Ïò,ËùÓĞpeak¶¼Ò»¸ö·½ÏòµÄ
+	    	 //æ­£åå‘,æ‰€æœ‰peakéƒ½ä¸€ä¸ªæ–¹å‘çš„
 	    	 gffdetailpeak.setStartAbs(tmppeakstart);
 	    	 gffdetailpeak.setEndAbs(tmppeakend);
 	    	 gffdetailpeak.setScore(score);
@@ -195,7 +195,7 @@ public class ListHashBin extends ListHashSearch<ListDetailBin, ListCodAbs<ListDe
 	}
 	
 	private void sortLsPeak(List<String[]> lstmpPeakinfo) {
-		////¶ÔÁÙÊ±list½øĞĞÅÅĞò,Ê×ÏÈ°´ÕÕChrÅÅĞò£¬È»ºó°´ÕÕ¾ßÌå×ø±êÅÅĞò
+		////å¯¹ä¸´æ—¶listè¿›è¡Œæ’åº,é¦–å…ˆæŒ‰ç…§Chræ’åºï¼Œç„¶åæŒ‰ç…§å…·ä½“åæ ‡æ’åº
 		Collections.sort(lstmpPeakinfo,new Comparator<String[]>(){
 			public int compare(String[] arg0, String[] arg1) {
 				int i=arg0[0].compareTo(arg1[0]);

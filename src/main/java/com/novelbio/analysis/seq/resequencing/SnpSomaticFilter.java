@@ -16,47 +16,47 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.SepSign;
 
 /**
- * ¶ÁÈ¡¼¸¸öGATKµÄvcf½á¹ûÎÄ¼ş£¬È»ºó»ñµÃ²¢¼¯snp£¬²¢±ê¼ÇÃ¿¸ösnpµÄĞÅÏ¢£¬ËùÔÚ»ùÒòµÈµÈ
+ * è¯»å–å‡ ä¸ªGATKçš„vcfç»“æœæ–‡ä»¶ï¼Œç„¶åè·å¾—å¹¶é›†snpï¼Œå¹¶æ ‡è®°æ¯ä¸ªsnpçš„ä¿¡æ¯ï¼Œæ‰€åœ¨åŸºå› ç­‰ç­‰
  * @author zong0jie
  */
 public class SnpSomaticFilter {
 	private static final Logger logger = Logger.getLogger(SnpSomaticFilter.class);
 	GffChrAbs gffChrAbs;
 
-	/** vcfµÄÁĞ */
+	/** vcfçš„åˆ— */
 	VcfCols vcfCols = new VcfCols();
-	/** ÒÔÏÂÈı¸ö£¬¶¼ÊÇ´ÓÕâĞ©ÎÄ±¾ÖĞ»ñÈ¡snpµÄĞÅÏ¢ */
+	/** ä»¥ä¸‹ä¸‰ä¸ªï¼Œéƒ½æ˜¯ä»è¿™äº›æ–‡æœ¬ä¸­è·å–snpçš„ä¿¡æ¯ */
 	ArrayList<String[]> lsSample2VcfFiles = new ArrayList<String[]>();
 	ArrayList<String[]> lsSample2NBCfiles = new ArrayList<String[]>();
 	ArrayList<SnpCalling> lsSample2PileUpFiles = new ArrayList<SnpCalling>();
 
-	/** 0£ºsampleName<br>
-	 * 1£ºSampleFile  */
+	/** 0ï¼šsampleName<br>
+	 * 1ï¼šSampleFile  */
 	ArrayList<String[]> lsSample2SamPileupFile = new ArrayList<String[]>();
 
-	/** ÓÃÓÚ¶à¸öÑù±¾µÄsnpÈ¥ÈßÓàµÄ£¬ÆäÖĞkey±íÊ¾¸ÃsnpËùÔÚµÄÆğµãĞÅÏ¢£¬value¾ÍÊÇ¸ÃÎ»µã¾ßÌåµÄsnpÇé¿ö */
+	/** ç”¨äºå¤šä¸ªæ ·æœ¬çš„snpå»å†—ä½™çš„ï¼Œå…¶ä¸­keyè¡¨ç¤ºè¯¥snpæ‰€åœ¨çš„èµ·ç‚¹ä¿¡æ¯ï¼Œvalueå°±æ˜¯è¯¥ä½ç‚¹å…·ä½“çš„snpæƒ…å†µ */
 	Map<String, RefSiteSnpIndel> mapSiteInfo2RefSiteSnpIndel = new TreeMap<String, RefSiteSnpIndel>();
 	
-	/** ¹ıÂËºóµÄsnpSite£¬°üº¬Ä³¸öÎ»µãµÄËùÓĞĞÅÏ¢ */
+	/** è¿‡æ»¤åçš„snpSiteï¼ŒåŒ…å«æŸä¸ªä½ç‚¹çš„æ‰€æœ‰ä¿¡æ¯ */
 	ArrayList<RefSiteSnpIndel> lsFilteredRefSite = new ArrayList<RefSiteSnpIndel>();
-	/**Ã¿¸öÎ»µã¶ÔÓ¦µÄcausal snp
-	 * Ä³¸öÎ»µã½ö°üº¬Í¨¹ı¹ıÂËµÄsnpÎ»µã  */
+	/**æ¯ä¸ªä½ç‚¹å¯¹åº”çš„causal snp
+	 * æŸä¸ªä½ç‚¹ä»…åŒ…å«é€šè¿‡è¿‡æ»¤çš„snpä½ç‚¹  */
 	ArrayList<RefSiteSnpIndel> lsFilteredRefSnp = new ArrayList<RefSiteSnpIndel>();
 	
-	/** ÓÃÀ´¹ıÂËÑù±¾µÄ */
+	/** ç”¨æ¥è¿‡æ»¤æ ·æœ¬çš„ */
 	SnpFilter snpFilterSamples = new SnpFilter();
 
-	/** ¶à×éÑù±¾Ö®¼ä±È½ÏµÄĞÅÏ¢ */
+	/** å¤šç»„æ ·æœ¬ä¹‹é—´æ¯”è¾ƒçš„ä¿¡æ¯ */
 	ArrayList<SnpGroupFilterInfo> lsSampleDetailCompare = new ArrayList<SnpGroupFilterInfo>();
 	
 	boolean getVCFflag = false;
 	
-	/** ÅĞ¶¨Îªsnp HetoËùº¬ÓĞµÄsnp±ÈÀı²»µÃĞ¡ÓÚ¸ÃÊıÖµ */
+	/** åˆ¤å®šä¸ºsnp Hetoæ‰€å«æœ‰çš„snpæ¯”ä¾‹ä¸å¾—å°äºè¯¥æ•°å€¼ */
 	public void setSnp_Hete_Contain_SnpProp_Min(double snp_Hete_Contain_SnpProp_Min) {
 		snpFilterSamples.setSnp_Hete_Contain_SnpProp_Min(snp_Hete_Contain_SnpProp_Min);
 	}
 	
-	/** ÅĞ¶¨Îªsnp HetoËùº¬ÓĞµÄsnp±ÈÀı²»µÃĞ¡ÓÚ¸ÃÊıÖµ */
+	/** åˆ¤å®šä¸ºsnp Hetoæ‰€å«æœ‰çš„snpæ¯”ä¾‹ä¸å¾—å°äºè¯¥æ•°å€¼ */
 	public void setSnp_HetoMore_Contain_SnpProp_Min(double snp_HetoMore_Contain_SnpProp_Min) {
 		snpFilterSamples.setSnp_HetoMore_Contain_SnpProp_Min(snp_HetoMore_Contain_SnpProp_Min);
 	}
@@ -78,12 +78,12 @@ public class SnpSomaticFilter {
 		lsSample2PileUpFiles.add(snpCalling);
 	}
 	
-	/** ÔÚÕâĞ©pileUpµÄÎÄ¼şÖĞÕÒÒÑÓĞµÄsnpµÄ¾ßÌåÏ¸½Ú */
+	/** åœ¨è¿™äº›pileUpçš„æ–‡ä»¶ä¸­æ‰¾å·²æœ‰çš„snpçš„å…·ä½“ç»†èŠ‚ */
 	public void addSampileupFile(String sampleName, String sampileupFile) {
 		lsSample2SamPileupFile.add(new String[]{sampleName, sampileupFile});
 	}
 	
-	/** ¹ıÂËÑù±¾µÄ¾ßÌåĞÅÏ¢ */
+	/** è¿‡æ»¤æ ·æœ¬çš„å…·ä½“ä¿¡æ¯ */
 	public void addFilterSample(SnpGroupFilterInfo snpGroupFilterInfo) {
 		lsSampleDetailCompare.add(snpGroupFilterInfo);
 	}
@@ -92,8 +92,8 @@ public class SnpSomaticFilter {
 		this.gffChrAbs = gffChrAbs;
 	}
 	
-	/** ÔÚÉè¶¨snpÎÄ¼şµÄÇé¿öÏÂ£¬´ÓpileupÎÄ¼şÖĞ»ñÈ¡snpĞÅÏ¢
-	 * Ö»ÒªÉè¶¨ºÃsnpÎÄ¼ş¼´¿É£¬ÄÚ²¿×Ô¶¯×ösnp calling
+	/** åœ¨è®¾å®šsnpæ–‡ä»¶çš„æƒ…å†µä¸‹ï¼Œä»pileupæ–‡ä»¶ä¸­è·å–snpä¿¡æ¯
+	 * åªè¦è®¾å®šå¥½snpæ–‡ä»¶å³å¯ï¼Œå†…éƒ¨è‡ªåŠ¨åšsnp calling
 	 *  */
 	public void readSnpDetailFromFile() {
 		readSnpFromFile_To_MapSiteInfo2RefSiteSnpIndel();
@@ -101,7 +101,7 @@ public class SnpSomaticFilter {
 		lsFilteredRefSite = ArrayOperate.getArrayListValue(mapSiteInfo2RefSiteSnpIndel);
 	}
 	
-	/** ¿´Ò»ÏÂÕâ¸öÓĞÃ»ÓĞÉè¶¨vcfµÄflag */
+	/** çœ‹ä¸€ä¸‹è¿™ä¸ªæœ‰æ²¡æœ‰è®¾å®švcfçš„flag */
 	public boolean getVCFflag() {
 		return getVCFflag;
 	}
@@ -119,14 +119,14 @@ public class SnpSomaticFilter {
 			addNBC_To_MapSiteInfo2RefSiteSnpIndel(sample2NBCfile[0], sample2NBCfile[1]);
 		}
 		for (SnpCalling snpCalling : lsSample2PileUpFiles) {
-			//´ÓpileUpÖĞ»ñÈ¡snpµÄ·½·¨
-			//½«pileUpµÄsnpĞÅÏ¢¼ÓÈëmapSiteInfo2RefSiteSnpIndelÖĞ
+			//ä»pileUpä¸­è·å–snpçš„æ–¹æ³•
+			//å°†pileUpçš„snpä¿¡æ¯åŠ å…¥mapSiteInfo2RefSiteSnpIndelä¸­
 			snpCalling.run();
 		}
 	}
 	
 	/**
-	 * ½«gatkÀïÃævcfÎÄ¼şÖĞµÄsnpĞÅÏ¢¼ÓÈëmapSiteInfo2RefSiteSnpIndelÖĞ
+	 * å°†gatké‡Œé¢vcfæ–‡ä»¶ä¸­çš„snpä¿¡æ¯åŠ å…¥mapSiteInfo2RefSiteSnpIndelä¸­
 	 */
 	private void addVcf_To_MapSiteInfo2RefSiteSnpIndel(String sampleName, String vcfFile) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(vcfFile, false);
@@ -144,7 +144,7 @@ public class SnpSomaticFilter {
 	}
 	
 	/**
-	 * ½«gatkÀïÃævcfÎÄ¼şÖĞµÄsnpĞÅÏ¢¼ÓÈëmapSiteInfo2RefSiteSnpIndelÖĞ
+	 * å°†gatké‡Œé¢vcfæ–‡ä»¶ä¸­çš„snpä¿¡æ¯åŠ å…¥mapSiteInfo2RefSiteSnpIndelä¸­
 	 */
 	private void addNBC_To_MapSiteInfo2RefSiteSnpIndel(String sampleName, String novelbioFile) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(novelbioFile, false);
@@ -183,7 +183,7 @@ public class SnpSomaticFilter {
 	}
 	
 	
-	/** ±ØĞëÔÚreadSnpDetailFromPileUpÖ®ºóÖ´ĞĞ */
+	/** å¿…é¡»åœ¨readSnpDetailFromPileUpä¹‹åæ‰§è¡Œ */
 	public void filterSnp() {
 		snpFilterSamples.clearSampleFilterInfo();
 		for (SnpGroupFilterInfo snpGroupInfoFilter : lsSampleDetailCompare) {
@@ -204,25 +204,25 @@ public class SnpSomaticFilter {
 	}
 	
 	/**
-	 * ·µ»ØÉ¸Ñ¡¹ıµÄsiteÎ»µã
-	 * Ã»ÓĞÓÃfiterSnp·½·¨£¬·µ»ØÈ«Ìåcall³öÀ´µÄÎ»µã
-	 * ÓÃfiterSnp·½·¨£¬·µ»ØÍ¨¹ıÖÊ¼ìµÄÎ»µã£¬Î»µãÖĞº¬ÓĞÈ«²¿snpÇé¿ö
+	 * è¿”å›ç­›é€‰è¿‡çš„siteä½ç‚¹
+	 * æ²¡æœ‰ç”¨fiterSnpæ–¹æ³•ï¼Œè¿”å›å…¨ä½“callå‡ºæ¥çš„ä½ç‚¹
+	 * ç”¨fiterSnpæ–¹æ³•ï¼Œè¿”å›é€šè¿‡è´¨æ£€çš„ä½ç‚¹ï¼Œä½ç‚¹ä¸­å«æœ‰å…¨éƒ¨snpæƒ…å†µ
 	 * @return
 	 */
 	public ArrayList<RefSiteSnpIndel> getLsFilteredSite() {
 		return lsFilteredRefSite;
 	}
 	/**
-	 * ·µ»ØÉ¸Ñ¡¹ıµÄsnpÎ»µã
-	 * Ã»ÓĞÓÃfiterSnp·½·¨£¬Îª¿Õ
-	 * ÓÃfiterSnp·½·¨£¬·µ»ØÍ¨¹ıÖÊ¼ìµÄÎ»µã£¬Î»µãÖĞ½öº¬ÓĞcausal snpÇé¿ö
+	 * è¿”å›ç­›é€‰è¿‡çš„snpä½ç‚¹
+	 * æ²¡æœ‰ç”¨fiterSnpæ–¹æ³•ï¼Œä¸ºç©º
+	 * ç”¨fiterSnpæ–¹æ³•ï¼Œè¿”å›é€šè¿‡è´¨æ£€çš„ä½ç‚¹ï¼Œä½ç‚¹ä¸­ä»…å«æœ‰causal snpæƒ…å†µ
 	 * @return
 	 */
 	public ArrayList<RefSiteSnpIndel> getLsFilteredSnp() {
 		return lsFilteredRefSnp;
 	}
 	/**
-	 * ·µ»Ø±¾´ÎÉ¸Ñ¡ÖĞÉæ¼°µ½µÄÑù±¾Ãû
+	 * è¿”å›æœ¬æ¬¡ç­›é€‰ä¸­æ¶‰åŠåˆ°çš„æ ·æœ¬å
 	 * @return
 	 */
 	public LinkedHashSet<String> getSetSampleName() {
@@ -240,8 +240,8 @@ public class SnpSomaticFilter {
 	}
 	
 	/**
-	 * ½²¹ıÂËºóµÄ½á¹ûĞ´ÈëÎÄ±¾¡£
-	 * Èç¹ûÃ»ÓĞ¹ıÂËÖ»ÔËĞĞÁËreadSnpDetailFromFile£¬ÄÇ¾Í½«¶ÁÈ¡µÄdetailĞ´ÈëÎÄ±¾
+	 * è®²è¿‡æ»¤åçš„ç»“æœå†™å…¥æ–‡æœ¬ã€‚
+	 * å¦‚æœæ²¡æœ‰è¿‡æ»¤åªè¿è¡Œäº†readSnpDetailFromFileï¼Œé‚£å°±å°†è¯»å–çš„detailå†™å…¥æ–‡æœ¬
 	 * @param txtFile
 	 */
 	public void writeToFile(String txtFile) {
@@ -249,7 +249,7 @@ public class SnpSomaticFilter {
 		
 		TxtReadandWrite txtOut = new TxtReadandWrite(txtFile, true);
 		txtOut.writefileln(RefSiteSnpIndel.getTitleFromSampleName(setSample, getVCFflag));
-		//ÓÅÏÈĞ´Èë¹ıÂËºóµÄsnpÎ»µã
+		//ä¼˜å…ˆå†™å…¥è¿‡æ»¤åçš„snpä½ç‚¹
 		ArrayList<RefSiteSnpIndel> lsWriteIn = lsFilteredRefSnp;
 		if (lsFilteredRefSnp == null || lsFilteredRefSnp.size() == 0) {
 			lsWriteIn = lsFilteredRefSite;
@@ -264,13 +264,13 @@ public class SnpSomaticFilter {
 		txtOut.close();
 	}
 	
-	/** ÖØÖÃ¹ıÂËµÄÑù±¾ĞÅÏ¢ */
+	/** é‡ç½®è¿‡æ»¤çš„æ ·æœ¬ä¿¡æ¯ */
 	public void clearSampleFilterInfo() {
 		lsSampleDetailCompare.clear();
 	}
 	
 	/**
-	 * ¸ø¶¨ÎÄ±¾£¬ºÍdomainĞÅÏ¢£¬»ñµÃ¾ßÌådomainµÄĞÅÏ¢
+	 * ç»™å®šæ–‡æœ¬ï¼Œå’Œdomainä¿¡æ¯ï¼Œè·å¾—å…·ä½“domainçš„ä¿¡æ¯
 	 * @param txtExcelSNP
 	 * @param domainFile
 	 * @param outFile

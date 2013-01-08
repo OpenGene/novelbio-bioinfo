@@ -32,26 +32,26 @@ public abstract class GeneIDabs implements GeneIDInt {
 	private static Logger logger = Logger.getLogger(GeneIDabs.class);
 	static HashMap<Integer, String> hashDBtype = new HashMap<Integer, String>();
 	
-	/**  ÎïÖÖid  */
+	/**  ç‰©ç§id  */
 	int taxID = 0;
-	/**  idType£¬±ØĞëÊÇIDTYPEÖĞµÄÒ»ÖÖ */
+	/**  idTypeï¼Œå¿…é¡»æ˜¯IDTYPEä¸­çš„ä¸€ç§ */
 	String idType = GeneID.IDTYPE_ACCID;
-	/** ¾ßÌåµÄaccID */
+	/** å…·ä½“çš„accID */
 	String accID = null;
 	String genUniID = "";
 	String symbol = null;
-	/** Æ©·½ºÍ¶à¸öÎïÖÖ½øĞĞblast£¬È»ºó½áºÏÕâĞ©ÎïÖÖµÄĞÅÏ¢£¬È¡²¢¼¯ */
+	/** è­¬æ–¹å’Œå¤šä¸ªç‰©ç§è¿›è¡Œblastï¼Œç„¶åç»“åˆè¿™äº›ç‰©ç§çš„ä¿¡æ¯ï¼Œå–å¹¶é›† */
 	ArrayList<BlastInfo> lsBlastInfos = null;
 	double evalue = 10;
 	AGeneInfo geneInfo = null;
 	KeggInfo keggInfo;
 	GOInfoAbs goInfoAbs = null;
-	/** Éè¶¨ÊÇ·ñ½«blastµÄ½á¹û½øĞĞÁË²éÕÒ */
+	/** è®¾å®šæ˜¯å¦å°†blastçš„ç»“æœè¿›è¡Œäº†æŸ¥æ‰¾ */
 	boolean isBlastedFlag = false;
 	ArrayList<GeneID> lsBlastGeneID = new ArrayList<GeneID>();
 	boolean overrideUpdateDBinfo = false;
 	String geneIDDBinfo;
-	// //////////////////// service ²ã
+	// //////////////////// service å±‚
 	ServBlastInfo servBlastInfo = new ServBlastInfo();
 	ServNCBIID servNCBIID = new ServNCBIID();
 	ServUniProtID servUniProtID = new ServUniProtID();
@@ -61,8 +61,8 @@ public abstract class GeneIDabs implements GeneIDInt {
 	ServUniGene2Go servUniGene2Go = new ServUniGene2Go();
 	// ///////////////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * Èç¹ûÊäÈëµÄÊÇaccID£¬ÄÇÃ´·µ»Ø¸ÃaccID¶ÔÓ¦µÄÊı¾İ¿â
-	 * Èç¹ûÃ»ÓĞÔò·µ»Ønull
+	 * å¦‚æœè¾“å…¥çš„æ˜¯accIDï¼Œé‚£ä¹ˆè¿”å›è¯¥accIDå¯¹åº”çš„æ•°æ®åº“
+	 * å¦‚æœæ²¡æœ‰åˆ™è¿”å›null
 	 * @return
 	 */
 	@Override
@@ -70,7 +70,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 		return this.geneIDDBinfo;
 	}
 	/**
-	 * ¸ÃÎïÖÖµÄsymbolÓ¦¸ÃÊÇÊôÓÚÄÄ¸öÊı¾İ¿â
+	 * è¯¥ç‰©ç§çš„symbolåº”è¯¥æ˜¯å±äºå“ªä¸ªæ•°æ®åº“
 	 * @return
 	 */
 	private String getDatabaseTyep() {
@@ -88,7 +88,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 		return result;
 	}
 	/**
-	 * Éè¶¨¶à¸öÎïÖÖ½øĞĞblast Ã¿´ÎÉè¶¨ºó¶¼»áË¢ĞÂ
+	 * è®¾å®šå¤šä¸ªç‰©ç§è¿›è¡Œblast æ¯æ¬¡è®¾å®šåéƒ½ä¼šåˆ·æ–°
 	 * @param evalue
 	 * @param StaxID
 	 */
@@ -100,7 +100,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 			lsBlastInfos.add(blastInfo);
 	}
 	/**
-	 * µ¥¸öÎïÖÖµÄblast »ñµÃ±¾copedID blastµ½¶ÔÓ¦ÎïÖÖµÄµÚÒ»¸öcopedID£¬Ã»ÓĞ¾Í·µ»Ønull
+	 * å•ä¸ªç‰©ç§çš„blast è·å¾—æœ¬copedID blaståˆ°å¯¹åº”ç‰©ç§çš„ç¬¬ä¸€ä¸ªcopedIDï¼Œæ²¡æœ‰å°±è¿”å›null
 	 * @param StaxID
 	 * @param evalue
 	 * @return
@@ -115,7 +115,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 	}
 
 	/**
-	 * »ñµÃÉè¶¨µÄµÚÒ»¸öblastµÄ¶ÔÏó£¬Ê×ÏÈÒªÉè¶¨blastµÄÄ¿±ê
+	 * è·å¾—è®¾å®šçš„ç¬¬ä¸€ä¸ªblastçš„å¯¹è±¡ï¼Œé¦–å…ˆè¦è®¾å®šblastçš„ç›®æ ‡
 	 * @param blastInfo
 	 * @return
 	 */
@@ -127,8 +127,8 @@ public abstract class GeneIDabs implements GeneIDInt {
 		return copedID;
 	}
 	/**
-	 * blast¶à¸öÎïÖÖ Ê×ÏÈÒªÉè¶¨blastµÄÄ¿±ê ÓÃ·½·¨£º setBlastInfo(double evalue, int... StaxID)
-	 * ¸ø¶¨Ò»ÏµÁĞµÄÄ¿±êÎïÖÖµÄtaxID£¬»ñµÃCopedIDlist Èç¹ûÃ»ÓĞ½á¹û£¬·µ»ØÒ»¸ö¿ÕµÄlsResult
+	 * blastå¤šä¸ªç‰©ç§ é¦–å…ˆè¦è®¾å®šblastçš„ç›®æ ‡ ç”¨æ–¹æ³•ï¼š setBlastInfo(double evalue, int... StaxID)
+	 * ç»™å®šä¸€ç³»åˆ—çš„ç›®æ ‡ç‰©ç§çš„taxIDï¼Œè·å¾—CopedIDlist å¦‚æœæ²¡æœ‰ç»“æœï¼Œè¿”å›ä¸€ä¸ªç©ºçš„lsResult
 	 * @param evalue
 	 * @param StaxID
 	 * @return
@@ -152,16 +152,16 @@ public abstract class GeneIDabs implements GeneIDInt {
 	}
 
 	/**
-	 * blast¶à¸öÎïÖÖ Ê×ÏÈÒªÉè¶¨blastµÄÄ¿±ê ÓÃ·½·¨£º setBlastInfo(double evalue, int... StaxID)
-	 * @return ·µ»ØblastµÄĞÅÏ¢£¬°üÀ¨evalueµÈ£¬¸ÃlistºÍgetCopedIDLsBlast()µÃµ½µÄlistÊÇÒ»Ò»¶ÔÓ¦µÄ
+	 * blastå¤šä¸ªç‰©ç§ é¦–å…ˆè¦è®¾å®šblastçš„ç›®æ ‡ ç”¨æ–¹æ³•ï¼š setBlastInfo(double evalue, int... StaxID)
+	 * @return è¿”å›blastçš„ä¿¡æ¯ï¼ŒåŒ…æ‹¬evalueç­‰ï¼Œè¯¥listå’ŒgetCopedIDLsBlast()å¾—åˆ°çš„listæ˜¯ä¸€ä¸€å¯¹åº”çš„
 	 */
 	public ArrayList<BlastInfo> getLsBlastInfos() {
 		return lsBlastInfos;
 	}
 	// ////////////////// normal setting
 	/**
-	 * idType£¬±ØĞëÊÇIDTYPEÖĞµÄÒ»ÖÖ
-	 * ²»¹ıÔÚÉè¶¨ÁËlsRefAccIDºó£¬¿ÉÒÔ¸ù¾İ¾ßÌåµÄlsRefAccIDÈ¥²éÕÒÊı¾İ¿â²¢È·¶¨idtype
+	 * idTypeï¼Œå¿…é¡»æ˜¯IDTYPEä¸­çš„ä¸€ç§
+	 * ä¸è¿‡åœ¨è®¾å®šäº†lsRefAccIDåï¼Œå¯ä»¥æ ¹æ®å…·ä½“çš„lsRefAccIDå»æŸ¥æ‰¾æ•°æ®åº“å¹¶ç¡®å®šidtype
 	 */
 	public String getIDtype() {
 		if (lsRefAccID == null || lsRefAccID.size() == 0) {
@@ -174,7 +174,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 		return ageneUniID.getGeneIDtype();
 	}
 	/**
-	 * ¾ßÌåµÄaccID£¬Èç¹ûÃ»ÓĞÔò¸ù¾İÎïÖÖËæ»ú×¥Ò»¸ö³öÀ´
+	 * å…·ä½“çš„accIDï¼Œå¦‚æœæ²¡æœ‰åˆ™æ ¹æ®ç‰©ç§éšæœºæŠ“ä¸€ä¸ªå‡ºæ¥
 	 */
 	public String getAccID() {
 		if (accID == null) {
@@ -184,7 +184,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 	}
 	
 	/**
-	 * ¾ßÌåµÄaccID£¬¸ù¾İÊı¾İ¿âÇé¿ö×¥Ò»¸ö³öÀ´
+	 * å…·ä½“çš„accIDï¼Œæ ¹æ®æ•°æ®åº“æƒ…å†µæŠ“ä¸€ä¸ªå‡ºæ¥
 	 */
 	public String getAccIDDBinfo() {
 		 String accID = getAccIDDBinfo(getDatabaseTyep());
@@ -195,8 +195,8 @@ public abstract class GeneIDabs implements GeneIDInt {
 	}
 	
 	/**
-	 * * Ö¸¶¨Ò»¸ödbInfo£¬·µ»Ø¸ÃdbInfoËù¶ÔÓ¦µÄaccID£¬Ã»ÓĞÔò·µ»Ønull
-	 * @param dbInfo Îªnull±íÊ¾²»Ö¸¶¨dbinfo
+	 * * æŒ‡å®šä¸€ä¸ªdbInfoï¼Œè¿”å›è¯¥dbInfoæ‰€å¯¹åº”çš„accIDï¼Œæ²¡æœ‰åˆ™è¿”å›null
+	 * @param dbInfo ä¸ºnullè¡¨ç¤ºä¸æŒ‡å®šdbinfo
 	 * @return
 	 */
 	public String getAccIDDBinfo(String dbInfo) {
@@ -214,7 +214,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 		return taxID;
 	}
 	/**
-	 * »ñµÃ¸Ã»ùÒòµÄdescription
+	 * è·å¾—è¯¥åŸºå› çš„description
 	 * @return
 	 */
 	public String getDescription() {
@@ -225,7 +225,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 		return geneInfo.getDescrp().replaceAll("\"", "");
 	}
 	/**
-	 * »ñµÃ¸Ã»ùÒòµÄsymbol
+	 * è·å¾—è¯¥åŸºå› çš„symbol
 	 * @return
 	 */
 	public String getSymbol() {
@@ -234,7 +234,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 	}
 
 	/**
-	 * Éè¶¨geneInfoĞÅÏ¢
+	 * è®¾å®šgeneInfoä¿¡æ¯
 	 */
 	protected abstract void setGenInfo();
 	protected void setSymbolDescrip() {
@@ -255,8 +255,8 @@ public abstract class GeneIDabs implements GeneIDInt {
 	}
 
 	/**
-	 * ¸ø¶¨»ùÒòµÄNCBIgeneID£¬ºÍdatabaseType£¬»ñµÃ accID. Èç¹ûdatabaseType == null »ò ¡°¡±
-	 * ÄÇ¾ÍËæ±ãÑ¡Ò»¸öaccID Èç¹ûgeneIDÊÇ0£¬·µ»Ø""
+	 * ç»™å®šåŸºå› çš„NCBIgeneIDï¼Œå’ŒdatabaseTypeï¼Œè·å¾— accID. å¦‚æœdatabaseType == null æˆ– â€œâ€
+	 * é‚£å°±éšä¾¿é€‰ä¸€ä¸ªaccID å¦‚æœgeneIDæ˜¯0ï¼Œè¿”å›""
 	 * 
 	 * @return
 	 */
@@ -270,16 +270,16 @@ public abstract class GeneIDabs implements GeneIDInt {
 	}
 
 	/**
-	 * * Ö¸¶¨Ò»¸ödbInfo£¬·µ»Ø¸ÃdbInfoËù¶ÔÓ¦µÄAgeneUniID£¬²¢ÇÒ¸ÃAgeneUniIDÒ²½ö¶ÔÓ¦Ò»¸ögeneUniID¡£
-	 * Èç¹û¸ÃdbinfoÃ»ÓĞ£¬ÔòËæ±ã·µ»ØÒ»¸ö¡£
+	 * * æŒ‡å®šä¸€ä¸ªdbInfoï¼Œè¿”å›è¯¥dbInfoæ‰€å¯¹åº”çš„AgeneUniIDï¼Œå¹¶ä¸”è¯¥AgeneUniIDä¹Ÿä»…å¯¹åº”ä¸€ä¸ªgeneUniIDã€‚
+	 * å¦‚æœè¯¥dbinfoæ²¡æœ‰ï¼Œåˆ™éšä¾¿è¿”å›ä¸€ä¸ªã€‚
 	 * @param dbInfo
 	 * @return
 	 */
 	protected abstract AgeneUniID getGenUniID(String genUniID, String dbInfo);
 	
 	/**
-	 * ÏÈÉè¶¨blastµÄÇé¿ö Èç¹ûblast * 0:symbol 1:description  2:subjectSpecies 3:evalue
-	 * 4:symbol 5:description Èç¹û²»blast 0:symbol 1:description
+	 * å…ˆè®¾å®šblastçš„æƒ…å†µ å¦‚æœblast * 0:symbol 1:description  2:subjectSpecies 3:evalue
+	 * 4:symbol 5:description å¦‚æœä¸blast 0:symbol 1:description
 	 * @return
 	 */
 	public String[] getAnno(boolean blast) {
@@ -319,11 +319,11 @@ public abstract class GeneIDabs implements GeneIDInt {
 	}
 	// ////////////////////////////////GOInfo
 	/**
-	 * Éè¶¨ goInfoAbsµÄĞÅÏ¢
+	 * è®¾å®š goInfoAbsçš„ä¿¡æ¯
 	 */
 	protected abstract void setGoInfo();
 	/**
-	 * ·µ»ØgeneinfoĞÅÏ¢
+	 * è¿”å›geneinfoä¿¡æ¯
 	 * @return
 	 */
 	public AGeneInfo getGeneInfo() {
@@ -331,7 +331,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 		return geneInfo;
 	}
 	/**
-	 * ·µ»Ø¸Ã»ùÒòËù¶ÔÓ¦µÄGOInfoĞÅÏ¢£¬²»°üº¬Blast
+	 * è¿”å›è¯¥åŸºå› æ‰€å¯¹åº”çš„GOInfoä¿¡æ¯ï¼Œä¸åŒ…å«Blast
 	 * @return
 	 */
 	public GOInfoAbs getGOInfo() {
@@ -341,7 +341,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 		return goInfoAbs;
 	}
 	/**
-	 * ·µ»Ø¸ÃCopedIDËù¶ÔÓ¦µÄGene2GOInfo <br>
+	 * è¿”å›è¯¥CopedIDæ‰€å¯¹åº”çš„Gene2GOInfo <br>
 	 * GO_BP<br>
 	 * GO_CC<br>
 	 * GO_MF<br>
@@ -353,8 +353,8 @@ public abstract class GeneIDabs implements GeneIDInt {
 		return getGOInfo().getLsGene2Go(GOType);
 	}
 	/**
-	 * blast¶à¸öÎïÖÖ Ê×ÏÈÉè¶¨blastµÄÎïÖÖ ÓÃ·½·¨£º setBlastInfo(double evalue, int... StaxID)
-	 * »ñµÃ¾­¹ıblastµÄGoInfo
+	 * blastå¤šä¸ªç‰©ç§ é¦–å…ˆè®¾å®šblastçš„ç‰©ç§ ç”¨æ–¹æ³•ï¼š setBlastInfo(double evalue, int... StaxID)
+	 * è·å¾—ç»è¿‡blastçš„GoInfo
 	 */
 	public ArrayList<AGene2Go> getGene2GOBlast(String GOType) {
 		setGoInfo();
@@ -369,13 +369,13 @@ public abstract class GeneIDabs implements GeneIDInt {
 	ArrayList<KGentry> lsKGentries = null;
 	// ////////////////KEGG //////////////////////////////////////////////
 	/**
-	 * »ñµÃ¸ÃCopeIDµÄList-KGentry,Èç¹ûÃ»ÓĞ»òÎª¿Õ£¬Ôò·µ»Ønull
+	 * è·å¾—è¯¥CopeIDçš„List-KGentry,å¦‚æœæ²¡æœ‰æˆ–ä¸ºç©ºï¼Œåˆ™è¿”å›null
 	 * 
 	 * @param blast
-	 *            ÊÇ·ñblastµ½ÏàÓ¦ÎïÖÖ²é¿´
+	 *            æ˜¯å¦blaståˆ°ç›¸åº”ç‰©ç§æŸ¥çœ‹
 	 * @param StaxID
-	 *            Èç¹ûblastÎªtrue£¬ÄÇÃ´Éè¶¨StaxID
-	 * @return Èç¹ûÃ»ÓĞ¾Í·µ»ØÒ»¸ö¿ÕµÄlist
+	 *            å¦‚æœblastä¸ºtrueï¼Œé‚£ä¹ˆè®¾å®šStaxID
+	 * @return å¦‚æœæ²¡æœ‰å°±è¿”å›ä¸€ä¸ªç©ºçš„list
 	 */
 	public ArrayList<KGentry> getKegEntity(boolean blast) {
 		getKeggInfo();
@@ -391,7 +391,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 		}
 	}
 	/**
-	 * »ñµÃÏà¹ØµÄKeggĞÅÏ¢
+	 * è·å¾—ç›¸å…³çš„Keggä¿¡æ¯
 	 * @return
 	 */
 	public KeggInfo getKeggInfo() {
@@ -402,9 +402,9 @@ public abstract class GeneIDabs implements GeneIDInt {
 		return keggInfo;
 	}
 	/**
-	 * blast¶à¸öÎïÖÖ Ê×ÏÈÉè¶¨blastµÄÎïÖÖ ÓÃ·½·¨£º setBlastInfo(double evalue, int... StaxID)
-	 * »ñµÃ¾­¹ıblastµÄKegPath
-	 * Ã»ÓĞ¾Í·µ»Ø¿ÕµÄlist
+	 * blastå¤šä¸ªç‰©ç§ é¦–å…ˆè®¾å®šblastçš„ç‰©ç§ ç”¨æ–¹æ³•ï¼š setBlastInfo(double evalue, int... StaxID)
+	 * è·å¾—ç»è¿‡blastçš„KegPath
+	 * æ²¡æœ‰å°±è¿”å›ç©ºçš„list
 	 */
 	@Override
 	public ArrayList<KGpathway> getKegPath(boolean blast) {
@@ -422,24 +422,24 @@ public abstract class GeneIDabs implements GeneIDInt {
 	}
 	// ///////////////// update method
 	/**
-	 * ¼ÇÂ¼¿ÉÄÜÓÃÓÚÉı¼¶Êı¾İ¿âµÄID Æ©Èç»ñµÃÒ»¸öIDÓëNCBIµÄ±ğµÄIDÓĞ¹ØÁª£¬¾ÍÓÃ±ğµÄIDÀ´²éÕÒÊı¾İ¿â£¬ÒÔ±ã»ñµÃ¸ÃaccIDËù¶ÔÓ¦µÄgenUniID
+	 * è®°å½•å¯èƒ½ç”¨äºå‡çº§æ•°æ®åº“çš„ID è­¬å¦‚è·å¾—ä¸€ä¸ªIDä¸NCBIçš„åˆ«çš„IDæœ‰å…³è”ï¼Œå°±ç”¨åˆ«çš„IDæ¥æŸ¥æ‰¾æ•°æ®åº“ï¼Œä»¥ä¾¿è·å¾—è¯¥accIDæ‰€å¯¹åº”çš„genUniID
 	 */
 	ArrayList<String> lsRefAccID = new ArrayList<String>();
 	Boolean uniqID = null;
 	/**
-	 * ÔÚ²ÉÓÃrefaccID×÷Îª²ÎÕÕ½øĞĞÉı¼¶IDµÄÊ±ºò£¬ÊÇ·ñ±ØĞëÊÇuniqID
-	 * @param uniqID	ÓÃ¸ø¶¨µÄ²Î¿¼IDÄÜÕÒµ½Êı¾İ¿âÖĞµÄÎ¨Ò»»ùÒò
-	 * true£ºÖ»ÓĞµ±uniqIDÊ±²ÅÉı¼¶
-	 * null£ºÄ¬ÈÏ²ÎÊı--·ÇuniqIDÒ²Éı¼¶£¬²»¹ıÖ»Éı¼¶µÚÒ»¸ö»ùÒò
-	 * false£º·ÇuniqIDÒ²Éı¼¶£¬Éı¼¶ËÑË÷µ½µÄÈ«²¿ID£¬¸Ã¹¦ÄÜÉĞÎ´ÊµÏÖ
+	 * åœ¨é‡‡ç”¨refaccIDä½œä¸ºå‚ç…§è¿›è¡Œå‡çº§IDçš„æ—¶å€™ï¼Œæ˜¯å¦å¿…é¡»æ˜¯uniqID
+	 * @param uniqID	ç”¨ç»™å®šçš„å‚è€ƒIDèƒ½æ‰¾åˆ°æ•°æ®åº“ä¸­çš„å”¯ä¸€åŸºå› 
+	 * trueï¼šåªæœ‰å½“uniqIDæ—¶æ‰å‡çº§
+	 * nullï¼šé»˜è®¤å‚æ•°--éuniqIDä¹Ÿå‡çº§ï¼Œä¸è¿‡åªå‡çº§ç¬¬ä¸€ä¸ªåŸºå› 
+	 * falseï¼šéuniqIDä¹Ÿå‡çº§ï¼Œå‡çº§æœç´¢åˆ°çš„å…¨éƒ¨IDï¼Œè¯¥åŠŸèƒ½å°šæœªå®ç°
 	 */
 	@Override
 	public void setUpdateRefAccIDClear(Boolean uniqID) {
 		this.uniqID = uniqID;
 	}
 	/**
-	 * Ìí¼Ó¿ÉÄÜÓÃÓÚÉı¼¶Êı¾İ¿âµÄID 
-	 * Æ©Èç»ñµÃÒ»¸öIDÓëNCBIµÄ±ğµÄIDÓĞ¹ØÁª£¬¾ÍÓÃ±ğµÄIDÀ´²éÕÒÊı¾İ¿â£¬ÒÔ±ã»ñµÃ¸ÃaccIDËù¶ÔÓ¦µÄgenUniID
+	 * æ·»åŠ å¯èƒ½ç”¨äºå‡çº§æ•°æ®åº“çš„ID 
+	 * è­¬å¦‚è·å¾—ä¸€ä¸ªIDä¸NCBIçš„åˆ«çš„IDæœ‰å…³è”ï¼Œå°±ç”¨åˆ«çš„IDæ¥æŸ¥æ‰¾æ•°æ®åº“ï¼Œä»¥ä¾¿è·å¾—è¯¥accIDæ‰€å¯¹åº”çš„genUniID
 	 */
 	@Override
 	public void addUpdateRefAccID(String... refAccID) {
@@ -452,8 +452,8 @@ public abstract class GeneIDabs implements GeneIDInt {
 		}
 	}
 	/**
-	 * ÉèÖÃ¿ÉÄÜÓÃÓÚÉı¼¶Êı¾İ¿âµÄID 
-	 * Æ©Èç»ñµÃÒ»¸öIDÓëNCBIµÄ±ğµÄIDÓĞ¹ØÁª£¬¾ÍÓÃ±ğµÄIDÀ´²éÕÒÊı¾İ¿â£¬ÒÔ±ã»ñµÃ¸ÃaccIDËù¶ÔÓ¦µÄgenUniID
+	 * è®¾ç½®å¯èƒ½ç”¨äºå‡çº§æ•°æ®åº“çš„ID 
+	 * è­¬å¦‚è·å¾—ä¸€ä¸ªIDä¸NCBIçš„åˆ«çš„IDæœ‰å…³è”ï¼Œå°±ç”¨åˆ«çš„IDæ¥æŸ¥æ‰¾æ•°æ®åº“ï¼Œä»¥ä¾¿è·å¾—è¯¥accIDæ‰€å¯¹åº”çš„genUniID
 	 */
 	@Override
 	public void setUpdateRefAccID(String... refAccID) {
@@ -461,7 +461,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 		addUpdateRefAccID(refAccID);
 	}
 	/**
-	 * ¼ÇÂ¼¿ÉÄÜÓÃÓÚÉı¼¶Êı¾İ¿âµÄID Æ©Èç»ñµÃÒ»¸öIDÓëNCBIµÄ±ğµÄIDÓĞ¹ØÁª£¬¾ÍÓÃ±ğµÄIDÀ´²éÕÒÊı¾İ¿â£¬ÒÔ±ã»ñµÃ¸ÃaccIDËù¶ÔÓ¦µÄgenUniID
+	 * è®°å½•å¯èƒ½ç”¨äºå‡çº§æ•°æ®åº“çš„ID è­¬å¦‚è·å¾—ä¸€ä¸ªIDä¸NCBIçš„åˆ«çš„IDæœ‰å…³è”ï¼Œå°±ç”¨åˆ«çš„IDæ¥æŸ¥æ‰¾æ•°æ®åº“ï¼Œä»¥ä¾¿è·å¾—è¯¥accIDæ‰€å¯¹åº”çš„genUniID
 	 */
 	@Override
 	public void setUpdateRefAccID(ArrayList<String> lsRefAccID) {
@@ -477,12 +477,12 @@ public abstract class GeneIDabs implements GeneIDInt {
 
 
 	/**
-	 * ¼ÇÂ¼¸ÃIDµÄÎïÖÖIDºÍÊı¾İ¿âĞÅÏ¢£¬ÓÃÓÚĞŞÕıÒÔÇ°µÄÊı¾İ¿â
+	 * è®°å½•è¯¥IDçš„ç‰©ç§IDå’Œæ•°æ®åº“ä¿¡æ¯ï¼Œç”¨äºä¿®æ­£ä»¥å‰çš„æ•°æ®åº“
 	 * 
 	 * @param taxID
 	 * @param DBInfo
-	 * @param ÊÇ·ñÓÃ±¾DBInfoĞŞÕıÒÔÇ°µÄDBInfo
-	 * ²»¹ÜÊÇtrue»¹ÊÇfalse£¬geneinfo¶¼»áÓÃÆä½øĞĞĞŞÕı
+	 * @param æ˜¯å¦ç”¨æœ¬DBInfoä¿®æ­£ä»¥å‰çš„DBInfo
+	 * ä¸ç®¡æ˜¯trueè¿˜æ˜¯falseï¼Œgeneinfoéƒ½ä¼šç”¨å…¶è¿›è¡Œä¿®æ­£
 	 */
 	@Override
 	public void setUpdateDBinfo(String DBInfo, boolean overlapDBinfo) {
@@ -492,11 +492,11 @@ public abstract class GeneIDabs implements GeneIDInt {
 		this.overrideUpdateDBinfo = overlapDBinfo;
 	}
 	/**
-	 * ÊäÈëÒÑÖªµÄgeneUniIDºÍIDtype
+	 * è¾“å…¥å·²çŸ¥çš„geneUniIDå’ŒIDtype
 	 * 
 	 * @param geneUniID
 	 * @param idType
-	 *            ±ØĞëÊÇCopedID.IDTYPE_GENEIDµÈ£¬¿ÉÒÔ²»ÊäÈë
+	 *            å¿…é¡»æ˜¯CopedID.IDTYPE_GENEIDç­‰ï¼Œå¯ä»¥ä¸è¾“å…¥
 	 */
 	@Override
 	public void setUpdateGeneID(String geneUniID, String idType) {
@@ -510,31 +510,31 @@ public abstract class GeneIDabs implements GeneIDInt {
 		this.idType = idType;
 	}
 	/**
-	 * Éè¶¨¸ÃIDµÄaccID
+	 * è®¾å®šè¯¥IDçš„accID
 	 */
 	@Override
 	public void setUpdateAccID(String accID) {
 		this.accID = GeneID.removeDot(accID);
 	}
 	/**
-	 * Éè¶¨¸ÃIDµÄaccID£¬²»¾­¹ı´¦ÀíµÄID
+	 * è®¾å®šè¯¥IDçš„accIDï¼Œä¸ç»è¿‡å¤„ç†çš„ID
 	 */
 	@Override
 	public void setUpdateAccIDNoCoped(String accID) {
 		this.accID = accID;
 	}
 	
-	/** ¼ÇÂ¼Éı¼¶µÄGOĞÅÏ¢µÄ£¬Ã¿´ÎÉı¼¶Íê±Ïºó¶¼Çå¿Õ */
+	/** è®°å½•å‡çº§çš„GOä¿¡æ¯çš„ï¼Œæ¯æ¬¡å‡çº§å®Œæ¯•åéƒ½æ¸…ç©º */
 	ArrayList<Gene2Go> lsGOInfoUpdate = new ArrayList<Gene2Go>();
 
 	/**
-	 * ÒÀ´ÎÊäÈëĞèÒªÉı¼¶µÄGOĞÅÏ¢£¬×îºóÉı¼¶ ÕâÀïÖ»ÊÇÏÈ»ñÈ¡GOµÄĞÅÏ¢£¬×îºóµ÷ÓÃÉı¼¶methodµÄÊ±ºòÔÙÉı¼¶
-	 * ¿ÉÒÔÁ¬Ğø²»¶ÏµÄÌí¼Ó
-	 * @param GOID ±ØÌî
-	 * @param GOdatabase Ã»ÓĞ¾ÍÉèÖÃÎª null 
-	 * @param GOevidence Ã»ÓĞ¾ÍÉèÖÃÎª null 
-	 * @param GORef Ã»ÓĞ¾ÍÉèÖÃÎª null 
-	 * @param gOQualifiy Ã»ÓĞ¾ÍÉèÖÃÎª null 
+	 * ä¾æ¬¡è¾“å…¥éœ€è¦å‡çº§çš„GOä¿¡æ¯ï¼Œæœ€åå‡çº§ è¿™é‡Œåªæ˜¯å…ˆè·å–GOçš„ä¿¡æ¯ï¼Œæœ€åè°ƒç”¨å‡çº§methodçš„æ—¶å€™å†å‡çº§
+	 * å¯ä»¥è¿ç»­ä¸æ–­çš„æ·»åŠ 
+	 * @param GOID å¿…å¡«
+	 * @param GOdatabase æ²¡æœ‰å°±è®¾ç½®ä¸º null 
+	 * @param GOevidence æ²¡æœ‰å°±è®¾ç½®ä¸º null 
+	 * @param GORef æ²¡æœ‰å°±è®¾ç½®ä¸º null 
+	 * @param gOQualifiy æ²¡æœ‰å°±è®¾ç½®ä¸º null 
 	 */
 	@Override
 	public void setUpdateGO(String GOID, String GOdatabase, String GOevidence,
@@ -557,8 +557,8 @@ public abstract class GeneIDabs implements GeneIDInt {
 	}
 
 	/**
-	 * ÊäÈëĞèÒªupdateµÄgeneInfo£¬×¢Òâ²»ĞèÒªÉè¶¨geneUniID
-	 * µ«ÊÇĞèÒªÉè¶¨
+	 * è¾“å…¥éœ€è¦updateçš„geneInfoï¼Œæ³¨æ„ä¸éœ€è¦è®¾å®šgeneUniID
+	 * ä½†æ˜¯éœ€è¦è®¾å®š
 	 * @param geneInfo
 	 */
 	@Override
@@ -566,13 +566,13 @@ public abstract class GeneIDabs implements GeneIDInt {
 		this.geneInfo = geneInfo;
 	}
 
-	// ×¨ÃÅÓÃÓÚÉı¼¶
+	// ä¸“é—¨ç”¨äºå‡çº§
 	ArrayList<BlastInfo> lsBlastInfosUpdate = null;
 	
 	/**
 	 * 
-	 * Èç¹ûÃ»ÓĞQueryID, SubjectID, taxIDÖĞµÄÈÎºÎÒ»Ïî£¬¾Í²»Éı¼¶ Èç¹ûevalue>50 »ò evalue<0£¬¾Í²»Éı¼¶
-	 * ¿ÉÒÔÁ¬Ğø²»¶ÏµÄÌí¼Ó
+	 * å¦‚æœæ²¡æœ‰QueryID, SubjectID, taxIDä¸­çš„ä»»ä½•ä¸€é¡¹ï¼Œå°±ä¸å‡çº§ å¦‚æœevalue>50 æˆ– evalue<0ï¼Œå°±ä¸å‡çº§
+	 * å¯ä»¥è¿ç»­ä¸æ–­çš„æ·»åŠ 
 	 * @param blastInfo
 	 */
 	@Override
@@ -582,7 +582,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 		}
 		BlastInfo blastInfo = new BlastInfo(null, 0, SubAccID, SubTaxID);
 		if (blastInfo.getSubjectTab().equals(GeneID.IDTYPE_ACCID)) {
-			logger.error("Ã»ÓĞ¸ÃblastµÄaccID£º"+SubAccID);
+			logger.error("æ²¡æœ‰è¯¥blastçš„accIDï¼š"+SubAccID);
 			return;
 		}
 		blastInfo.setQueryID(genUniID);
@@ -596,8 +596,8 @@ public abstract class GeneIDabs implements GeneIDInt {
 	}
 	/**
 	 * 
-	 * Èç¹ûÃ»ÓĞQueryID, SubjectID, taxIDÖĞµÄÈÎºÎÒ»Ïî£¬¾Í²»Éı¼¶ Èç¹ûevalue>50 »ò evalue<0£¬¾Í²»Éı¼¶
-	 * ¿ÉÒÔÁ¬Ğø²»¶ÏµÄÌí¼Ó
+	 * å¦‚æœæ²¡æœ‰QueryID, SubjectID, taxIDä¸­çš„ä»»ä½•ä¸€é¡¹ï¼Œå°±ä¸å‡çº§ å¦‚æœevalue>50 æˆ– evalue<0ï¼Œå°±ä¸å‡çº§
+	 * å¯ä»¥è¿ç»­ä¸æ–­çš„æ·»åŠ 
 	 * @param blastInfo
 	 */
 	@Override
@@ -607,7 +607,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 		}
 		BlastInfo blastInfo = new BlastInfo(null, 0, SubGenUniID, subIDtype, SubTaxID);
 		if (blastInfo.getSubjectTab().equals(GeneID.IDTYPE_ACCID)) {
-			logger.error("Ã»ÓĞ¸ÃblastµÄgeneUniID£º"+SubGenUniID);
+			logger.error("æ²¡æœ‰è¯¥blastçš„geneUniIDï¼š"+SubGenUniID);
 		}
 		blastInfo.setQueryID(genUniID);
 		blastInfo.setQueryTax(getTaxID());
@@ -619,7 +619,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 		lsBlastInfosUpdate.add(blastInfo);
 	}
 	/**
-	 * Èç¹ûĞÂµÄID²»¼ÓÈëUniID£¬ÄÇÃ´¾ÍĞ´ÈëÖ¸¶¨µÄÎÄ¼şÖĞ ÎÄ¼şĞèÒª×î¿ªÊ¼ÓÃsetÖ¸¶¨
+	 * å¦‚æœæ–°çš„IDä¸åŠ å…¥UniIDï¼Œé‚£ä¹ˆå°±å†™å…¥æŒ‡å®šçš„æ–‡ä»¶ä¸­ æ–‡ä»¶éœ€è¦æœ€å¼€å§‹ç”¨setæŒ‡å®š
 	 * 
 	 * @param updateUniID
 	 */
@@ -630,7 +630,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 			return false;
 		}
 		if (geneUniID.getGeneIDtype().equals(GeneID.IDTYPE_GENEID) && geneUniID.getGenUniID().equals("0")) {
-			logger.error("geneIDÎª0£¬Çëcheck");
+			logger.error("geneIDä¸º0ï¼Œè¯·check");
 			return false;
 		}
 		boolean flag1 = false;
@@ -653,7 +653,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 		return flag1&&flag2&&flag3&&flag4;
 	}
 
-	/** Éı¼¶GOÊı¾İ¿â */
+	/** å‡çº§GOæ•°æ®åº“ */
 	private boolean updateGene2Go() {
 		boolean flag = true;
 		if (genUniID == null || genUniID.equals("")) {
@@ -676,34 +676,34 @@ public abstract class GeneIDabs implements GeneIDInt {
 	}
 
 	/**
-	 * Éı¼¶Ê§°ÜµÄIDĞ´Èë±¾±í
+	 * å‡çº§å¤±è´¥çš„IDå†™å…¥æœ¬è¡¨
 	 */
 	static String txtUpdateFailFile = "";
 
 	/**
-	 * Éı¼¶geneIDÊı¾İ¿â£¬²¢ÇÒ½«geneUniID°´ÕÕÊı¾İ¿â½øĞĞÖØÖÃ <b>Ö»Éı¼¶µÚÒ»¸ö»ñµÃµÄgeneID</b>
-	 * Èç¹ûaccIDÃ»ÓĞ£¬Ôò²»Éı¼¶
-	 * @param Èç¹ûÔÚÊı¾İ¿âÖĞÃ»ÓĞÕÒµ½¶ÔÓ¦µÄID
-	 *            £¬ÊÇ·ñ½«IDµ¼ÈëUniID¿â
-	 *            true,µ¼ÈëuniID¿â£¬²¢ÇÒÖØÖÃidtype
+	 * å‡çº§geneIDæ•°æ®åº“ï¼Œå¹¶ä¸”å°†geneUniIDæŒ‰ç…§æ•°æ®åº“è¿›è¡Œé‡ç½® <b>åªå‡çº§ç¬¬ä¸€ä¸ªè·å¾—çš„geneID</b>
+	 * å¦‚æœaccIDæ²¡æœ‰ï¼Œåˆ™ä¸å‡çº§
+	 * @param å¦‚æœåœ¨æ•°æ®åº“ä¸­æ²¡æœ‰æ‰¾åˆ°å¯¹åº”çš„ID
+	 *            ï¼Œæ˜¯å¦å°†IDå¯¼å…¥UniIDåº“
+	 *            true,å¯¼å…¥uniIDåº“ï¼Œå¹¶ä¸”é‡ç½®idtype
 	 * @throws EOFException
 	 */
 	private boolean updateGeneID(AgeneUniID geneUniID, boolean updateUniID) {
 		if (genUniID == null && accID == null) {
 			return false;
 		}
-		//ËµÃ÷²»ĞèÒªÉı¼¶accID
+		//è¯´æ˜ä¸éœ€è¦å‡çº§accID
 		if (accID == null || accID.equals("")) {
 			return true;
 		}
 		if (geneIDDBinfo == null || geneIDDBinfo.equals("")) {
-			logger.error("Éı¼¶geneIDÊ±Ã»ÓĞÉèÖÃ¸ÃgeneµÄÊı¾İ¿âÀ´Ô´£¬×Ô¶¯ÉèÖÃÎªNCBIID");
+			logger.error("å‡çº§geneIDæ—¶æ²¡æœ‰è®¾ç½®è¯¥geneçš„æ•°æ®åº“æ¥æºï¼Œè‡ªåŠ¨è®¾ç½®ä¸ºNCBIID");
 			geneIDDBinfo = NovelBioConst.DBINFO_NCBI_ACC_GENEAC;
 		}
-		// Ö»Éı¼¶µÚÒ»¸ö»ñµÃµÄgeneID
+		// åªå‡çº§ç¬¬ä¸€ä¸ªè·å¾—çš„geneID
 		if (geneUniID != null && !geneUniID.getGeneIDtype().equals(GeneID.IDTYPE_ACCID)) {
 			this.idType = geneUniID.getGeneIDtype();
-			//refAccID¿ÉÄÜ»á²éµ½³¬¹ı²»Ö¹Ò»¸öID£¬²»Í¬µÄÇé¿ö£¬ÓÃ²»Í¬µÄ·½·¨´¦Àí
+			//refAccIDå¯èƒ½ä¼šæŸ¥åˆ°è¶…è¿‡ä¸æ­¢ä¸€ä¸ªIDï¼Œä¸åŒçš„æƒ…å†µï¼Œç”¨ä¸åŒçš„æ–¹æ³•å¤„ç†
 			if (uniqID == null) {
 				
 			}
@@ -730,10 +730,10 @@ public abstract class GeneIDabs implements GeneIDInt {
 			uniProtID.setGenUniID(genUniID);
 			uniProtID.setTaxID(taxID);
 			servUniProtID.updateUniProtID(uniProtID, overrideUpdateDBinfo);
-			// ÖØÖÃgeneUniID
+			// é‡ç½®geneUniID
 			idType = GeneID.IDTYPE_UNIID;
 			genUniID = accID;
-			//·ÀÖ¹ÏÂÒ»¸öµ¼ÈëµÄÊ±ºò³ö´í
+			//é˜²æ­¢ä¸‹ä¸€ä¸ªå¯¼å…¥çš„æ—¶å€™å‡ºé”™
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
@@ -746,10 +746,10 @@ public abstract class GeneIDabs implements GeneIDInt {
 		return true;
 	}
 	/**
-	 * ¸ù¾İgeneIDºÍidTypeÉı¼¶Ïà¹ØµÄgeneInfo
-	 * ×¢Òâ£¬geneInfoÖ»ÄÜÊÇµ¥¸ö£¬²»ÄÜÊÇºÏ²¢¹ıµÄgeneInfo
-	 * Èç¹ûÃ»ÓĞgenUniID£¬»òÕßÃ»ÓĞËÑË÷µ½¶ÔÓ¦µÄgenID£¬Ôò·µ»Øfalse£»
-	 * Èç¹ûÃ»ÓĞgeneInfoĞÅÏ¢£¬ÔòÈÏÎª²»ĞèÒªÉı¼¶£¬·µ»Øtrue
+	 * æ ¹æ®geneIDå’ŒidTypeå‡çº§ç›¸å…³çš„geneInfo
+	 * æ³¨æ„ï¼ŒgeneInfoåªèƒ½æ˜¯å•ä¸ªï¼Œä¸èƒ½æ˜¯åˆå¹¶è¿‡çš„geneInfo
+	 * å¦‚æœæ²¡æœ‰genUniIDï¼Œæˆ–è€…æ²¡æœ‰æœç´¢åˆ°å¯¹åº”çš„genIDï¼Œåˆ™è¿”å›falseï¼›
+	 * å¦‚æœæ²¡æœ‰geneInfoä¿¡æ¯ï¼Œåˆ™è®¤ä¸ºä¸éœ€è¦å‡çº§ï¼Œè¿”å›true
 	 */
 	private boolean updateGeneInfo() {
 		if (genUniID == null || genUniID.equals("")) {
@@ -867,7 +867,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 			}
 		}
 	}
-	// /////////////////////// Éı¼¶ Blast µÄĞÅÏ¢
+	// /////////////////////// å‡çº§ Blast çš„ä¿¡æ¯
 	// /////////////////////////////////////////////////////
 
 	private boolean updateBlastInfo() {
@@ -888,13 +888,13 @@ public abstract class GeneIDabs implements GeneIDInt {
 		return blastCorrect;
 	}
 
-	// /////////////////////// Éı¼¶ uniGene µÄĞÅÏ¢
+	// /////////////////////// å‡çº§ uniGene çš„ä¿¡æ¯
 	// /////////////////////////////////////////////////////
 	/**
-	 * ¸ù¾İlsRefAccIDµÄĞÅÏ¢Éè¶¨geneUniIDºÍIDtype »ñµÃËù¶ÔÓ¦µÄgeneUniID
+	 * æ ¹æ®lsRefAccIDçš„ä¿¡æ¯è®¾å®šgeneUniIDå’ŒIDtype è·å¾—æ‰€å¯¹åº”çš„geneUniID
 	 */
 	private AgeneUniID getUpdateGenUniID() {
-		// /// Èç¹ûÒÑ¾­ÓĞÁËIDtype£¬¾ÍÖ±½Ó·µ»Ø ////////////////////////////////////////
+		// /// å¦‚æœå·²ç»æœ‰äº†IDtypeï¼Œå°±ç›´æ¥è¿”å› ////////////////////////////////////////
 		if (!idType.equals(GeneID.IDTYPE_ACCID)) {
 			AgeneUniID geneUniID = null;
 			if (idType.equals(GeneID.IDTYPE_GENEID)) {
@@ -909,7 +909,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 			return geneUniID;
 		}
 		
-		// ±£´æËùÓĞrefID--Ò²¾ÍÊÇÓÃÓÚ²éÕÒÊı¾İ¿âµÄrefxDBµÄĞÅÏ¢ID£¬ËûÃÇËù¶ÔÓ¦µÄgeneUniID
+		// ä¿å­˜æ‰€æœ‰refID--ä¹Ÿå°±æ˜¯ç”¨äºæŸ¥æ‰¾æ•°æ®åº“çš„refxDBçš„ä¿¡æ¯IDï¼Œä»–ä»¬æ‰€å¯¹åº”çš„geneUniID
 		ArrayList<ArrayList<AgeneUniID>> lsgeneID = new ArrayList<ArrayList<AgeneUniID>>();
 		for (String string : lsRefAccID) {
 			ArrayList<AgeneUniID> lsTmpGenUniID = getNCBIUniTax(string, taxID);
@@ -922,7 +922,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 			}
 			lsgeneID.add(lsTmpGenUniID);
 		}
-		// ÌôÑ¡³öº¬ÓĞgeneUniIDµÄgeneID
+		// æŒ‘é€‰å‡ºå«æœ‰geneUniIDçš„geneID
 		Collections.sort(lsgeneID, new Comparator<ArrayList<AgeneUniID>>() {
 			public int compare(ArrayList<AgeneUniID> o1, ArrayList<AgeneUniID> o2) {
 				Integer o1Info = GeneIDabs.getHashAccIDtype2Int().get(o1.get(0).getGeneIDtype());
@@ -968,12 +968,12 @@ public abstract class GeneIDabs implements GeneIDInt {
 
 	// ///////////////// static method
 	/**
-	 * ¸ø¶¨Ò»¸öaccessID£¬ËÑË÷Êı¾İ¿â
-	 * ·µ»Ølist-string[] 0: IDtype 1: geneUniID 2: taxID
-	 * Èç¹ûÍ¬Ò»¸öÎïÖÖµÃµ½ÁËÁ½¸öÒÔÉÏµÄaccID£¬ÄÇÃ´Ìø¹ıÊı¾İ¿âÎªDBINFO_SYNONYMSµÄÏîÄ¿
-	 * Èç¹ûÃ»ËÑµ½£¬Ôò·µ»Ø¿ÕµÄlist
-	 * @param accID  ÊäÈëµÄaccID,Ã»ÓĞÄÚÖÃÈ¥¿Õ¸ñÈ¥µã
-	 * @param taxID ÎïÖÖID£¬Èç¹û²»ÖªµÀ¾ÍÉèÖÃÎª0£¬Ö»Òª²»ÊÇsymbol¶¼¿ÉÒÔÎª0
+	 * ç»™å®šä¸€ä¸ªaccessIDï¼Œæœç´¢æ•°æ®åº“
+	 * è¿”å›list-string[] 0: IDtype 1: geneUniID 2: taxID
+	 * å¦‚æœåŒä¸€ä¸ªç‰©ç§å¾—åˆ°äº†ä¸¤ä¸ªä»¥ä¸Šçš„accIDï¼Œé‚£ä¹ˆè·³è¿‡æ•°æ®åº“ä¸ºDBINFO_SYNONYMSçš„é¡¹ç›®
+	 * å¦‚æœæ²¡æœåˆ°ï¼Œåˆ™è¿”å›ç©ºçš„list
+	 * @param accID  è¾“å…¥çš„accID,æ²¡æœ‰å†…ç½®å»ç©ºæ ¼å»ç‚¹
+	 * @param taxID ç‰©ç§IDï¼Œå¦‚æœä¸çŸ¥é“å°±è®¾ç½®ä¸º0ï¼Œåªè¦ä¸æ˜¯symboléƒ½å¯ä»¥ä¸º0
 	 * @return list-string[] 0: IDtype 1: geneUniID 2: taxID
 	 */
 	protected static ArrayList<AgeneUniID> getNCBIUniTax(String accID, int taxID) {
@@ -990,11 +990,11 @@ public abstract class GeneIDabs implements GeneIDInt {
 		ncbiid.setTaxID(taxID);
 		ArrayList<NCBIID> lsNcbiids = servGeneAnno.queryLsNCBIID(ncbiid);
 		ArrayList<UniProtID> lsUniProtIDs = null;
-		// ÏÈ²éncbiid
+		// å…ˆæŸ¥ncbiid
 		if (lsNcbiids != null && lsNcbiids.size() > 0) {
 			return getLsGeneIDinfo(lsNcbiids);
 		}
-		// ²é²»µ½²éuniprotID
+		// æŸ¥ä¸åˆ°æŸ¥uniprotID
 		else {
 			UniProtID uniProtID = new UniProtID();
 			uniProtID.setAccID(accID);
@@ -1003,9 +1003,9 @@ public abstract class GeneIDabs implements GeneIDInt {
 			return getLsGeneIDinfo(lsUniProtIDs);
 		}
 	}
-	/** Ö¸¶¨Ò»ÏµÁĞµÄNCBIID»òÕßUniID£¬½øĞĞ¹ıÂË£¬
-	 * Ö÷ÒªÊÇ¹ıÂË
-	 * Èç¹ûÍ¬Ò»¸öÎïÖÖµÃµ½ÁËÁ½¸öÒÔÉÏµÄaccID£¬ÄÇÃ´Ìø¹ıÊı¾İ¿âÎªDBINFO_SYNONYMSµÄÏîÄ¿ */
+	/** æŒ‡å®šä¸€ç³»åˆ—çš„NCBIIDæˆ–è€…UniIDï¼Œè¿›è¡Œè¿‡æ»¤ï¼Œ
+	 * ä¸»è¦æ˜¯è¿‡æ»¤
+	 * å¦‚æœåŒä¸€ä¸ªç‰©ç§å¾—åˆ°äº†ä¸¤ä¸ªä»¥ä¸Šçš„accIDï¼Œé‚£ä¹ˆè·³è¿‡æ•°æ®åº“ä¸ºDBINFO_SYNONYMSçš„é¡¹ç›® */
 	private static ArrayList<AgeneUniID> getLsGeneIDinfo(ArrayList<? extends AgeneUniID> lsNcbiids) {
 		ArrayList<AgeneUniID> lsGeneIDinfo = new ArrayList<AgeneUniID>();
 		for (AgeneUniID geneUniID : lsNcbiids) {
@@ -1019,10 +1019,10 @@ public abstract class GeneIDabs implements GeneIDInt {
 		}
 		return lsGeneIDinfo;
 	}
-	// /////////////////////////// ÖØĞ´equalsµÈ
+	// /////////////////////////// é‡å†™equalsç­‰
 	/**
-	 * Ö»ÒªÁ½¸öncbiidµÄgeneIDÏàÍ¬£¬¾ÍÈÏÎªÕâÁ½¸öNCBIIDÏàÍ¬
-	 * µ«ÊÇÈç¹ûgeneIDÎª0£¬Ò²¾ÍÊÇNCBIID¸ù±¾Ã»ÓĞ³õÊ¼»¯£¬ÄÇÃ´Ö±½Ó·µ»Øfalse
+	 * åªè¦ä¸¤ä¸ªncbiidçš„geneIDç›¸åŒï¼Œå°±è®¤ä¸ºè¿™ä¸¤ä¸ªNCBIIDç›¸åŒ
+	 * ä½†æ˜¯å¦‚æœgeneIDä¸º0ï¼Œä¹Ÿå°±æ˜¯NCBIIDæ ¹æœ¬æ²¡æœ‰åˆå§‹åŒ–ï¼Œé‚£ä¹ˆç›´æ¥è¿”å›false
 	 * 
 	 * @Override
 	 */
@@ -1038,13 +1038,13 @@ public abstract class GeneIDabs implements GeneIDInt {
 		GeneID otherObj = (GeneID) obj;
 
 		if (
-		// geneIDÏàÍ¬ÇÒ¶¼²»Îª¡°¡±£¬¿ÉÒÔÈÏÎªÁ½¸ö»ùÒòÏàÍ¬
+		// geneIDç›¸åŒä¸”éƒ½ä¸ä¸ºâ€œâ€ï¼Œå¯ä»¥è®¤ä¸ºä¸¤ä¸ªåŸºå› ç›¸åŒ
 		(!genUniID.trim().equals("")
 				&& !otherObj.getGenUniID().trim().equals("")
 				&& genUniID.trim().equals(otherObj.getGenUniID().trim())
 				&& idType.equals(otherObj.getIDtype()) && taxID == otherObj
 				.getTaxID())
-				|| // geneID¶¼Îª""£¬ÄÇÃ´Èç¹ûÁ½¸öaccIDÏàÍ¬ÇÒ²»Îª""£¬Ò²¿ÉÈÏÎªÁ½¸ö»ùÒòÏàÍ¬
+				|| // geneIDéƒ½ä¸º""ï¼Œé‚£ä¹ˆå¦‚æœä¸¤ä¸ªaccIDç›¸åŒä¸”ä¸ä¸º""ï¼Œä¹Ÿå¯è®¤ä¸ºä¸¤ä¸ªåŸºå› ç›¸åŒ
 				(genUniID.trim().equals("")
 						&& otherObj.getGenUniID().trim().equals("")
 						&& (!accID.equals("") && !otherObj.getAccID()
@@ -1061,7 +1061,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 	}
 
 	/**
-	 * ÖØĞ´hashcode
+	 * é‡å†™hashcode
 	 */
 	public int hashCode() {
 		String hash = "";

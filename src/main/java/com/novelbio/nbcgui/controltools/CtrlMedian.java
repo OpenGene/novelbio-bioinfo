@@ -8,15 +8,15 @@ import com.novelbio.base.dataStructure.MathComput;
 
 public class CtrlMedian {
 	/**
-	 * ÎÄ¼şÃû
+	 * æ–‡ä»¶å
 	 */
 	String file = "";
 	/**
-	 * °´ÕÕµÚ¼¸ÁĞ×÷ÎªÈ¡ÖĞÎ»ÊıµÄID
+	 * æŒ‰ç…§ç¬¬å‡ åˆ—ä½œä¸ºå–ä¸­ä½æ•°çš„ID
 	 */
 	int accID = 0;
 	/**
-	 * ´ÓÎÄ¼şÖĞÌáÈ¡µÄĞÅÏ¢
+	 * ä»æ–‡ä»¶ä¸­æå–çš„ä¿¡æ¯
 	 */
 	ArrayList<String[]> lsFileInfo = new ArrayList<String[]>();
 	ArrayList<String[]> lsResult = new ArrayList<String[]>();
@@ -25,7 +25,7 @@ public class CtrlMedian {
 		this.file = file;
 	}
 	/**
-	 * ·µ»Ø¶ÁÈ¡µÄ´ıÈ¡ÖĞÎ»ÊıµÄÎÄ¼ş
+	 * è¿”å›è¯»å–çš„å¾…å–ä¸­ä½æ•°çš„æ–‡ä»¶
 	 * @return
 	 */
 	public ArrayList<String[]> readFile()
@@ -34,7 +34,7 @@ public class CtrlMedian {
 		return lsFileInfo;
 	}
 	/**
-	 * Éè¶¨Î¨Ò»ID
+	 * è®¾å®šå”¯ä¸€ID
 	 * @param accID
 	 */
 	public void setAccID(int accID)
@@ -42,15 +42,15 @@ public class CtrlMedian {
 		this.accID = accID;
 	}
 	/**
-	 * Éè¶¨Òª¶ÔÄÄ¼¸ÁĞÈ¡ÖĞÎ»Êı£¬²»È¡µÄÁĞ¶¼»áÓÃµÚÒ»´Î³öÏÖµÄĞÅÏ¢Ìî³ä
-	 * Æ©ÈçÎÒ±È½ÏaccID£¬È¡ÁË3-6ÁĞµÄÖĞÎ»Êı¡£µ«ÊÇ»¹»á³öÏÖsymbolºÍdescriptionÁĞµÈ£¬ÄÇÃ´¾ÍÓÃµÚÒ»¸ö³öÏÖµÄsymbolºÍdescriptionÌî³ä
+	 * è®¾å®šè¦å¯¹å“ªå‡ åˆ—å–ä¸­ä½æ•°ï¼Œä¸å–çš„åˆ—éƒ½ä¼šç”¨ç¬¬ä¸€æ¬¡å‡ºç°çš„ä¿¡æ¯å¡«å……
+	 * è­¬å¦‚æˆ‘æ¯”è¾ƒaccIDï¼Œå–äº†3-6åˆ—çš„ä¸­ä½æ•°ã€‚ä½†æ˜¯è¿˜ä¼šå‡ºç°symbolå’Œdescriptionåˆ—ç­‰ï¼Œé‚£ä¹ˆå°±ç”¨ç¬¬ä¸€ä¸ªå‡ºç°çš„symbolå’Œdescriptionå¡«å……
 	 */
 	public void setMedianID(ArrayList<Integer> lsCol)
 	{
 		this.lsCol = lsCol;
 	}
 	/**
-	 * ÔÚ´ËÖ®Ç°ÏÈÒªreadFile()
+	 * åœ¨æ­¤ä¹‹å‰å…ˆè¦readFile()
 	 * @return
 	 */
 	public ArrayList<String[]> getResult() {

@@ -8,8 +8,8 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.domain.geneanno.TaxInfo;
 /**
- * ½«´ıÉı¼¶µÄÎÄ¼ş°´ÕÕĞĞ¶ÁÈ¡µÄabstractÀà£¬ÒòÎªºÜ¶àÎÄ¼ş¶¼ÊÇÒ»ĞĞÒ»¸öĞÅÏ¢£¬
- * ÄÇÃ´¾Í¿ÉÒÔ°´ÕÕĞĞ½«ÎÄ¼şĞÅÏ¢µ¼ÈëÊı¾İ¿â
+ * å°†å¾…å‡çº§çš„æ–‡ä»¶æŒ‰ç…§è¡Œè¯»å–çš„abstractç±»ï¼Œå› ä¸ºå¾ˆå¤šæ–‡ä»¶éƒ½æ˜¯ä¸€è¡Œä¸€ä¸ªä¿¡æ¯ï¼Œ
+ * é‚£ä¹ˆå°±å¯ä»¥æŒ‰ç…§è¡Œå°†æ–‡ä»¶ä¿¡æ¯å¯¼å…¥æ•°æ®åº“
  * @author zong0jie
  *
  */
@@ -19,35 +19,35 @@ abstract class ImportPerLine
 	static HashSet<Integer> hashTaxID = null;
 	static String taxIDfile = "";
 	int readFromLine = 1;
-	//¶à´ËÒ»¾ÙµÄÉè¶¨£¬»ØÍ·ÂıÂıĞŞÕı
+	//å¤šæ­¤ä¸€ä¸¾çš„è®¾å®šï¼Œå›å¤´æ…¢æ…¢ä¿®æ­£
 	int num = 2;
 	/**
-	 * ½«ÎŞ·¨Éı¼¶µÄĞĞĞ´Èë¸ÃÎÄ±¾
+	 * å°†æ— æ³•å‡çº§çš„è¡Œå†™å…¥è¯¥æ–‡æœ¬
 	 */
 	TxtReadandWrite txtWriteExcep = null;
 	/**
-	 * ½«ÎŞ·¨Éı¼¶µÄĞĞĞ´Èë¸ÃÎÄ±¾
+	 * å°†æ— æ³•å‡çº§çš„è¡Œå†™å…¥è¯¥æ–‡æœ¬
 	 */
 	public void setTxtWriteExcep(String txtWriteExcepFile) {
 		txtWriteExcep = new TxtReadandWrite(txtWriteExcepFile, true);
 	}
 	/**
-	 * ¶à´ËÒ»¾ÙµÄÉè¶¨
-	 * ¸²¸Ç¸Ã·½·¨À´Éè¶¨´ÓµÚ¼¸ĞĞ¿ªÊ¼¶ÁÈ¡
+	 * å¤šæ­¤ä¸€ä¸¾çš„è®¾å®š
+	 * è¦†ç›–è¯¥æ–¹æ³•æ¥è®¾å®šä»ç¬¬å‡ è¡Œå¼€å§‹è¯»å–
 	 */
 	protected void setReadFromLine() {
 		this.readFromLine = num;
 	}
 	/**
-	 * Éè¶¨´ÓµÚ¼¸ĞĞ¿ªÊ¼¶ÁÈ¡
+	 * è®¾å®šä»ç¬¬å‡ è¡Œå¼€å§‹è¯»å–
 	 */
 	protected void setReadFromLine(int num) {
 		this.num = num;
 	}
 	int taxID = 0;
 	/**
-	 * ½«Ö¸¶¨µÄÎÄ¼şµ¼ÈëÊı¾İ¿â£¬±ØĞëÊÇÃ¿Ò»ĞĞ¶¼ÄÜµ¥¶Àµ¼ÈëµÄ±í
-	 * Èç¹ûĞèÒªµ¼Èë¶àĞĞ£¬Æ©ÈçamiGOµÄĞÅÏ¢£¬Çë¸²¸Ç¸Ã·½·¨
+	 * å°†æŒ‡å®šçš„æ–‡ä»¶å¯¼å…¥æ•°æ®åº“ï¼Œå¿…é¡»æ˜¯æ¯ä¸€è¡Œéƒ½èƒ½å•ç‹¬å¯¼å…¥çš„è¡¨
+	 * å¦‚æœéœ€è¦å¯¼å…¥å¤šè¡Œï¼Œè­¬å¦‚amiGOçš„ä¿¡æ¯ï¼Œè¯·è¦†ç›–è¯¥æ–¹æ³•
 	 */
 	public void updateFile(String gene2AccFile, boolean gzip) {
 		setReadFromLine();
@@ -58,7 +58,7 @@ abstract class ImportPerLine
 			txtGene2Acc = new TxtReadandWrite(gene2AccFile, false);
 		}
 		
-		//´ÓµÚ¶şĞĞ¿ªÊ¼¶ÁÈ¡
+		//ä»ç¬¬äºŒè¡Œå¼€å§‹è¯»å–
 		int num = 0;
 		for (String content : txtGene2Acc.readlines(readFromLine)) {
 			try {
@@ -87,9 +87,9 @@ abstract class ImportPerLine
 	}
 	
 	/**
-	 * ¶ÁÈ¡taxIDÎÄ¼ş£¬ÆäÖĞtaxIDÔÚµÚÒ»ÁĞ£¬È»ºó½«taxID¶ÁÈ¡½øÈëhash±í£¬·½±ãºóĞø´¦Àí
-	 * ºóĞøµ¼ÈëÎÄ¼ş¾Í½öµ¼ÈëÕâĞ©ÎïÖÖµÄĞÅÏ¢
-	 * ½ö¶ÁÈ¡Ò»´Î
+	 * è¯»å–taxIDæ–‡ä»¶ï¼Œå…¶ä¸­taxIDåœ¨ç¬¬ä¸€åˆ—ï¼Œç„¶åå°†taxIDè¯»å–è¿›å…¥hashè¡¨ï¼Œæ–¹ä¾¿åç»­å¤„ç†
+	 * åç»­å¯¼å…¥æ–‡ä»¶å°±ä»…å¯¼å…¥è¿™äº›ç‰©ç§çš„ä¿¡æ¯
+	 * ä»…è¯»å–ä¸€æ¬¡
 	 * @param taxIDfile
 	 */
 	public static void setTaxIDFile(String taxIDfile) {
@@ -118,7 +118,7 @@ abstract class ImportPerLine
 		}
 	}
 	/**
-	 * µ¼Èëµ¥¸öÎÄ¼şÊ±£¬Éè¶¨taxID
+	 * å¯¼å…¥å•ä¸ªæ–‡ä»¶æ—¶ï¼Œè®¾å®štaxID
 	 * @param taxID
 	 */
 	public void setTaxID(int taxID)
@@ -126,12 +126,12 @@ abstract class ImportPerLine
 		this.taxID = taxID;
 	}
 	/**
-	 * °´ĞĞ´¦Àí¾ßÌåĞÅÏ¢
+	 * æŒ‰è¡Œå¤„ç†å…·ä½“ä¿¡æ¯
 	 * @param lineContent
 	 */
 	abstract boolean impPerLine(String lineContent);
 	/**
-	 * ½áÎ²µÄÊ±ºò×öµÄ¹¤×÷£¬Æ©Èç×îºó»¹ĞèÒªµ¼ÈëÒ»´ÎÊ²Ã´¶«Î÷£¬¾ÍÖØĞ´¸Ãº¯Êı
+	 * ç»“å°¾çš„æ—¶å€™åšçš„å·¥ä½œï¼Œè­¬å¦‚æœ€åè¿˜éœ€è¦å¯¼å…¥ä¸€æ¬¡ä»€ä¹ˆä¸œè¥¿ï¼Œå°±é‡å†™è¯¥å‡½æ•°
 	 */
 	void impEnd()
 	{}

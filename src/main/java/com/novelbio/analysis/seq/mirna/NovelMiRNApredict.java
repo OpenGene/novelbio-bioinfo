@@ -14,25 +14,25 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public abstract class NovelMiRNApredict {
-	/** ²éÕÒ¶¨Î»ÔÚ·´ÏòexonºÍintronÉÏµÄĞòÁĞ */
+	/** æŸ¥æ‰¾å®šä½åœ¨åå‘exonå’Œintronä¸Šçš„åºåˆ— */
 	GffChrAbs gffChrAbs = null;
-	/** ÊäÈëµÄÒ»¸öbedseqÎÄ¼ş */
+	/** è¾“å…¥çš„ä¸€ä¸ªbedseqæ–‡ä»¶ */
 	BedSeq bedSeqInput = null;
-	/** ÊäÈëµÄ¶à¸öbedÎÄ¼ş£¬×îºóÒªÓÃÕâ¸öÀ´¼ÆËã±í´ïµÄ */
+	/** è¾“å…¥çš„å¤šä¸ªbedæ–‡ä»¶ï¼Œæœ€åè¦ç”¨è¿™ä¸ªæ¥è®¡ç®—è¡¨è¾¾çš„ */
 	ArrayList<String> lsBedSeqInputFile;
 	
 	public abstract void setOutPath(String outPath);
 	
 	/**
-	 * @param gffChrAbs Éè¶¨gff¼´¿É
+	 * @param gffChrAbs è®¾å®šgffå³å¯
 	 */
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 	}
 	/**
-	 * ÓësetBedSeq(String bedFile) ¶şÑ¡Ò»
-	 * ½«¶à¸öÑù±¾µÃµ½µÄmapping ÖÁ genomeÉÏµÄbedÎÄ¼şºÏ²¢£¬²¢×÷ÎªÊäÈëmireapµÄÎÄ¼ş
-	 * @param outFile ºÏ²¢µÄbedÎÄ¼şÃû
+	 * ä¸setBedSeq(String bedFile) äºŒé€‰ä¸€
+	 * å°†å¤šä¸ªæ ·æœ¬å¾—åˆ°çš„mapping è‡³ genomeä¸Šçš„bedæ–‡ä»¶åˆå¹¶ï¼Œå¹¶ä½œä¸ºè¾“å…¥mireapçš„æ–‡ä»¶
+	 * @param outFile åˆå¹¶çš„bedæ–‡ä»¶å
 	 * @param bedSeqFile
 	 */
 	public void setBedSeq(String outFile, String... bedSeqFile) {
@@ -45,10 +45,10 @@ public abstract class NovelMiRNApredict {
 		setBedSeqInput(bedSeq.getFileName());
 	}
 	/**
-	 * ÓësetBedSeq(String bedFile) ¶şÑ¡Ò»
-	 * ½«¶à¸öÑù±¾µÃµ½µÄmapping ÖÁ genomeÉÏµÄbedÎÄ¼şºÏ²¢£¬²¢×÷ÎªÊäÈëmireapµÄÎÄ¼ş
-	 * @param outFile »ñµÃºÏ²¢µÄbedÎÄ¼şÃû
-	 * @param lsBedSeqFile Ò»ÏµÁĞµÄbedÎÄ¼ş
+	 * ä¸setBedSeq(String bedFile) äºŒé€‰ä¸€
+	 * å°†å¤šä¸ªæ ·æœ¬å¾—åˆ°çš„mapping è‡³ genomeä¸Šçš„bedæ–‡ä»¶åˆå¹¶ï¼Œå¹¶ä½œä¸ºè¾“å…¥mireapçš„æ–‡ä»¶
+	 * @param outFile è·å¾—åˆå¹¶çš„bedæ–‡ä»¶å
+	 * @param lsBedSeqFile ä¸€ç³»åˆ—çš„bedæ–‡ä»¶
 	 */
 	public void setBedSeqInput(String outFile, ArrayList<String> lsBedSeqFile) {
 		if (lsBedSeqFile.size() == 1) {
@@ -61,16 +61,16 @@ public abstract class NovelMiRNApredict {
 		setBedSeqInput(bedSeq.getFileName());
 	}
 	/**
-	 * ÓësetBedSeq(String outFile, String... bedSeqFile) ¶şÑ¡Ò»
-	 * Ñù±¾µÃµ½µÄbedÎÄ¼ş
+	 * ä¸setBedSeq(String outFile, String... bedSeqFile) äºŒé€‰ä¸€
+	 * æ ·æœ¬å¾—åˆ°çš„bedæ–‡ä»¶
 	 * @param bedFile
 	 */
 	public void setBedSeqInput(String bedFile) {
 		bedSeqInput = new BedSeq(bedFile);
 	}
 	/**
-	 * ±éÀúbedÎÄ¼ş£¬»ñµÃreads²»ÔÚ»ùÒòÉÏµÄĞòÁĞ
-	 * @param outBed reads²»ÔÚ»ùÒò×éÉÏµÄĞòÁĞ
+	 * éå†bedæ–‡ä»¶ï¼Œè·å¾—readsä¸åœ¨åŸºå› ä¸Šçš„åºåˆ—
+	 * @param outBed readsä¸åœ¨åŸºå› ç»„ä¸Šçš„åºåˆ—
 	 */
 	protected BedSeq getBedReadsNotOnCDS(String outBed) {
 		BedSeq bedResult = new BedSeq(outBed, true);
@@ -86,7 +86,7 @@ public abstract class NovelMiRNApredict {
 		return bedResult;
 	}
 	/**
-	 * ÅĞ¶¨ÊäÈëµÄreadsÊÇ·ñÎ»ÓÚintron»ògeneÍâ»ò·´ÏòexonÉÏ
+	 * åˆ¤å®šè¾“å…¥çš„readsæ˜¯å¦ä½äºintronæˆ–geneå¤–æˆ–åå‘exonä¸Š
 	 * @param gffCodGene
 	 * @param bedCis
 	 * @return

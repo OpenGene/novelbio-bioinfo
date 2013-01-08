@@ -12,7 +12,7 @@ import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.GUI.GuiSnpCalling;
 
-/** 查找snp */
+/** 鏌ユ壘snp */
 public class CtrlSnpCalling implements RunGetInfo<SnpFilterDetailInfo> {
 	SnpCalling snpCalling = new SnpCalling();	
 	
@@ -34,7 +34,7 @@ public class CtrlSnpCalling implements RunGetInfo<SnpFilterDetailInfo> {
 		snpCalling.setGffChrAbs(gffChrAbs);
 	}
 	
-	/** snp过滤等级 */
+	/** snp杩囨护绛夌骇 */
 	public void setSnpFilterLevel(int snpLevel) {
 		snpCalling.setSnpLevel(snpLevel);
 	}

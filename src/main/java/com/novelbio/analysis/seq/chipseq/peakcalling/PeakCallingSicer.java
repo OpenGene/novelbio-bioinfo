@@ -35,7 +35,7 @@ public class PeakCallingSicer {
 
 	String exePath = "";
 	/**
-	 * Éè¶¨SICERµÄÖ´ĞĞÂ·¾¶
+	 * è®¾å®šSICERçš„æ‰§è¡Œè·¯å¾„
 	 * @param exePath
 	 */
 	public void setExePath(String exePath) {
@@ -67,8 +67,8 @@ public class PeakCallingSicer {
 		this.fragmentSize = fragmentSize;
 	}
 	/**
-	 * ÊäÈëÏîÄ¿ÔÚ1-100Ö®¼ä
-	 * ÊäÈëÖ®ºó»á³ıÒÔ100»ñµÃeffective genome sizeµÄ°Ù·Ö±È
+	 * è¾“å…¥é¡¹ç›®åœ¨1-100ä¹‹é—´
+	 * è¾“å…¥ä¹‹åä¼šé™¤ä»¥100è·å¾—effective genome sizeçš„ç™¾åˆ†æ¯”
 	 * @param effectiveGenomeFraction
 	 */
 	public void setEffectiveGenomeSize(int effectiveGenomeFraction) {
@@ -230,7 +230,7 @@ public class PeakCallingSicer {
 		return strsicerCmd;
 	}
 	/**
-	 * peakCalling£¬È»ºó·µ»Ø½á¹ûÎÄ¼ş
+	 * peakCallingï¼Œç„¶åè¿”å›ç»“æœæ–‡ä»¶
 	 * @param sicerType
 	 * @return
 	 */

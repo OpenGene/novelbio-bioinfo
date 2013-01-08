@@ -11,7 +11,7 @@ import com.novelbio.database.model.modgeneid.GeneType;
 
 import junit.framework.TestCase;
 /**
- * ²âÊÔ
+ * æµ‹è¯•
  * @author zong0jie
  *
  */

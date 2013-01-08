@@ -2,7 +2,7 @@ package com.novelbio.database.domain.geneanno;
 
 import java.util.ArrayList;
 /**
- * ÓÃaccID²éÕÒNCBIID¡¢refSeqĞÅÏ¢¡¢GoInfo¡¢geneInfoËÄ¸ö±í
+ * ç”¨accIDæŸ¥æ‰¾NCBIIDã€refSeqä¿¡æ¯ã€GoInfoã€geneInfoå››ä¸ªè¡¨
  * @author zong0jie
  *
  */

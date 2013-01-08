@@ -25,17 +25,17 @@ public class CtrlSnpGetInfo implements RunGetInfo<SnpFilterDetailInfo>{
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		snpDetailGet.setGffChrAbs(gffChrAbs);
 	}
-	/** 读取文件
+	/** 璇诲彇鏂囦欢
 	 * @param lsReadFile
-	 * @param colChrID 实际列数
-	 * @param colSiteStart 实际列数
+	 * @param colChrID 瀹為檯鍒楁暟
+	 * @param colSiteStart 瀹為檯鍒楁暟
 	 */
 	public void setLsReadFile(ArrayList<String> lsReadFile, int colChrID, int colSiteStart) {
 		for (String string : lsReadFile) {
 			snpDetailGet.readSnpSiteInfo(string, colChrID, colSiteStart);
 		}
 	}
-	/** 输出文件 */
+	/** 杈撳嚭鏂囦欢 */
 	public void setOutfile(String outFile) {
 		snpDetailGet.setOutFile(outFile);
 	}

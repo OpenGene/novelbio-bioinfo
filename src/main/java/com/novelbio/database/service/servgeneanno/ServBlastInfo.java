@@ -37,10 +37,10 @@ public class ServBlastInfo implements MapBlastInfo {
 		mapBlastInfo.updateBlastInfo(blastInfo);
 	}
 	/**
-	 * ²éÕÒ·ûºÏÌõ¼şµÄµÚÒ»¸öBlastInfo
-	 * @param queryID ´ı²éÕÒID£¬Ò»°ãÊÇgenUniID
-	 * @param taxID ÎïÖÖID
-	 * @param evalue Èç¹ûevalue <= -1»òevalue >=5£¬Ôò²»Æğ×÷ÓÃ
+	 * æŸ¥æ‰¾ç¬¦åˆæ¡ä»¶çš„ç¬¬ä¸€ä¸ªBlastInfo
+	 * @param queryID å¾…æŸ¥æ‰¾IDï¼Œä¸€èˆ¬æ˜¯genUniID
+	 * @param taxID ç‰©ç§ID
+	 * @param evalue å¦‚æœevalue <= -1æˆ–evalue >=5ï¼Œåˆ™ä¸èµ·ä½œç”¨
 	 * @return
 	 */
 	public BlastInfo queryBlastInfo(String queryID, int taxIDQ, int taxIDS, double evalue) {
@@ -56,7 +56,7 @@ public class ServBlastInfo implements MapBlastInfo {
 		ArrayList<BlastInfo> lsBlastInfosTmp = queryLsBlastInfo(blastInfoTmp);
 		if (lsBlastInfosTmp != null && lsBlastInfosTmp.size() > 0) 
 		{
-			Collections.sort(lsBlastInfosTmp);//ÅÅĞòÑ¡Ôñ×îĞ¡µÄÒ»Ïî
+			Collections.sort(lsBlastInfosTmp);//æ’åºé€‰æ‹©æœ€å°çš„ä¸€é¡¹
 			BlastInfo blastInfo = lsBlastInfosTmp.get(0);
 			if (evalue < 5 && evalue > -1 && blastInfo.getEvalue() <= evalue) {
 				return blastInfo;
@@ -65,8 +65,8 @@ public class ServBlastInfo implements MapBlastInfo {
 		return null;
 	}
 	/**
-	 * ¸ø¶¨blastInfoµÄĞÅÏ¢£¬Èç¹ûÊı¾İ¿âÖĞµÄ±¾ÎïÖÖÒÑ¾­ÓĞÁË¸Ã½á¹û£¬Ôò±È½Ïevalue£¬ÓÃµÍevalueµÄ¸²¸Ç¸ßevalueµÄ
-	 * Èç¹ûÃ»ÓĞ£¬Ôò²åÈë
+	 * ç»™å®šblastInfoçš„ä¿¡æ¯ï¼Œå¦‚æœæ•°æ®åº“ä¸­çš„æœ¬ç‰©ç§å·²ç»æœ‰äº†è¯¥ç»“æœï¼Œåˆ™æ¯”è¾ƒevalueï¼Œç”¨ä½evalueçš„è¦†ç›–é«˜evalueçš„
+	 * å¦‚æœæ²¡æœ‰ï¼Œåˆ™æ’å…¥
 	 * @param blastInfo
 	 */
 	public void updateBlast(BlastInfo blastInfo) {
@@ -74,7 +74,7 @@ public class ServBlastInfo implements MapBlastInfo {
 		if (blastInfo2 == null) {
 			mapBlastInfo.insertBlastInfo(blastInfo);
 		}
-		//evalueĞ¡ÓÚµÈÓÚblastinfo »òÕßevalueÏàÍ¬µ«ÊÇidentity¸ü´ó
+		//evalueå°äºç­‰äºblastinfo æˆ–è€…evalueç›¸åŒä½†æ˜¯identityæ›´å¤§
 		else if (blastInfo.getEvalue() < blastInfo2.getEvalue()
 				|| (blastInfo.getEvalue() == blastInfo2.getEvalue()
 				    && blastInfo.getIdentities() > blastInfo2.getIdentities()  )) {

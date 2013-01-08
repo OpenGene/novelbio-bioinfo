@@ -50,7 +50,7 @@ public class PeakCallingMacs {
 	public void setGenomeLength(long genomeLength) {
 		this.genomeLength = genomeLength;
 	}
-	/** 获得结果文件，如果结果文件不存在，就进行peakcalling*/
+	/** 鑾峰緱缁撴灉鏂囦欢锛屽鏋滅粨鏋滄枃浠朵笉瀛樺湪锛屽氨杩涜peakcalling*/
 	public String getResultPeakFile() {
 		String resultFile = FileOperate.changeFileSuffix(outFileName, "_peaks", "xls");
 		if (!FileOperate.isFileExist(resultFile)) {
@@ -59,7 +59,7 @@ public class PeakCallingMacs {
 		return resultFile;
 	}
 	/**
-	 * 判定输入文件
+	 * 鍒ゅ畾杈撳叆鏂囦欢
 	 */
 	private String getFileType() {
 		String result = "";

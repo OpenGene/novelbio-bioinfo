@@ -21,7 +21,7 @@ import com.novelbio.nbcgui.GUI.GuiGoJPanel;
 public class CtrlPath extends CtrlGOPath {
 
 	private static final Logger logger = Logger.getLogger(CtrlPath.class);
-	/** ÓÃµ¥ÀıÄ£Ê½  */
+	/** ç”¨å•ä¾‹æ¨¡å¼  */
 	private static CtrlPath ctrlPath = null;
 
 	/**
@@ -38,7 +38,7 @@ public class CtrlPath extends CtrlGOPath {
 		return ctrlPath;
 	}
 	/**
-	 * ·µ»ØÒÑÓĞµÄGtrlGO
+	 * è¿”å›å·²æœ‰çš„GtrlGO
 	 * @return
 	 */
 	public static CtrlPath getInstance() {

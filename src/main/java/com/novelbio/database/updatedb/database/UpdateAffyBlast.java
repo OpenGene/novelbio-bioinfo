@@ -5,8 +5,8 @@ import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 
 /**
- * 将affyID与本物种序列blast之后的结果导入数据库
- * 注意导入前需要将表按照evalue从小到大排序
+ * 灏哸ffyID涓庢湰鐗╃搴忓垪blast涔嬪悗鐨勭粨鏋滃鍏ユ暟鎹簱
+ * 娉ㄦ剰瀵煎叆鍓嶉渶瑕佸皢琛ㄦ寜鐓value浠庡皬鍒板ぇ鎺掑簭
  * @author zong0jie
  *
  */

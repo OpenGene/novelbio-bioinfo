@@ -41,13 +41,13 @@ private JButton tan;
    {
     tan = new JButton();
     getContentPane().add(tan, BorderLayout.CENTER);
-    tan.setText("ĞÂ´°¿Ú");
+    tan.setText("æ–°çª—å£");
     tan.addActionListener(this);
    }
    {
-    //µÚÈı¸ö²ÎÊıÖ÷ÒªÊÇÉèÖÃÄ£Ì¬µÄ£¬trueÎªÄ£Ì¬£¬falseÎª·ÇÄ£Ì¬¡£
-    dialog=new JDialog(new Frame(),"ĞÂ´°¿Ú",true);
-    JLabel label=new JLabel("ÎÒ¾ÍÊÇĞÂ´°¿Ú");
+    //ç¬¬ä¸‰ä¸ªå‚æ•°ä¸»è¦æ˜¯è®¾ç½®æ¨¡æ€çš„ï¼Œtrueä¸ºæ¨¡æ€ï¼Œfalseä¸ºéæ¨¡æ€ã€‚
+    dialog=new JDialog(new Frame(),"æ–°çª—å£",true);
+    JLabel label=new JLabel("æˆ‘å°±æ˜¯æ–°çª—å£");
     dialog.getContentPane().add(label);
     dialog.setDefaultCloseOperation(dialog.DO_NOTHING_ON_CLOSE);
     dialog.addWindowListener(new WindowAdapter(){

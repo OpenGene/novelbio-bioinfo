@@ -29,77 +29,77 @@ public class Go2Term {
 	private String Definition;
 
 	/**
-	 * ´æ´¢±¾GOIDÓë±ğµÄGOIDÖ®¼äµÄ¹ØÏµ
-	 * Æ©ÈçRELATION_IS£¬RELATION_PARTOFµÈ
-	 * ±ØĞëÊÇÁ½¸öGOÖ®¼ä²Å»áÓĞ¸ÃĞÅÏ¢
+	 * å­˜å‚¨æœ¬GOIDä¸åˆ«çš„GOIDä¹‹é—´çš„å…³ç³»
+	 * è­¬å¦‚RELATION_ISï¼ŒRELATION_PARTOFç­‰
+	 * å¿…é¡»æ˜¯ä¸¤ä¸ªGOä¹‹é—´æ‰ä¼šæœ‰è¯¥ä¿¡æ¯
 	 */
 	private String flag;
 	/**
-	 * ´æ´¢±¾GOIDÓë±ğµÄGOIDÖ®¼äµÄ¹ØÏµ
-	 * Æ©ÈçRELATION_IS£¬RELATION_PARTOFµÈ
-	 * ±ØĞëÊÇÁ½¸öGOÖ®¼ä²Å»áÓĞ¸ÃĞÅÏ¢
+	 * å­˜å‚¨æœ¬GOIDä¸åˆ«çš„GOIDä¹‹é—´çš„å…³ç³»
+	 * è­¬å¦‚RELATION_ISï¼ŒRELATION_PARTOFç­‰
+	 * å¿…é¡»æ˜¯ä¸¤ä¸ªGOä¹‹é—´æ‰ä¼šæœ‰è¯¥ä¿¡æ¯
 	 */
 	private void setFlag(String flag) {
 		this.flag = flag;
 	}
 	/**
-	 * goĞÅÏ¢µÄ¾ßÌå¶¨Òå
+	 * goä¿¡æ¯çš„å…·ä½“å®šä¹‰
 	 * @param definition
 	 */
 	public void setDefinition(String definition) {
 		Definition = definition.replace("\"", "");
 	}
 	/**
-	 * goĞÅÏ¢µÄ¾ßÌå¶¨Òå
+	 * goä¿¡æ¯çš„å…·ä½“å®šä¹‰
 	 * @param definition
 	 */
 	public String getDefinition() {
 		return Definition;
 	}
 	/**
-	 * ´æ´¢±¾GOIDÓë±ğµÄGOIDÖ®¼äµÄ¹ØÏµ
-	 * Æ©ÈçRELATION_IS£¬RELATION_PARTOFµÈ
-	 * ±ØĞëÊÇÁ½¸öGOÖ®¼ä²Å»áÓĞ¸ÃĞÅÏ¢
+	 * å­˜å‚¨æœ¬GOIDä¸åˆ«çš„GOIDä¹‹é—´çš„å…³ç³»
+	 * è­¬å¦‚RELATION_ISï¼ŒRELATION_PARTOFç­‰
+	 * å¿…é¡»æ˜¯ä¸¤ä¸ªGOä¹‹é—´æ‰ä¼šæœ‰è¯¥ä¿¡æ¯
 	 */
 	public String getFlag() {
 		return flag;
 	}
 	/**
-	 * Éè¶¨ÆäÉÏÓÎ¸¸ÀàGOµÄĞÅÏ¢
+	 * è®¾å®šå…¶ä¸Šæ¸¸çˆ¶ç±»GOçš„ä¿¡æ¯
 	 * @param go2Term
-	 * @param relation ±ØĞëÊÇRELATIONÖĞµÄÒ»Àà
+	 * @param relation å¿…é¡»æ˜¯RELATIONä¸­çš„ä¸€ç±»
 	 */
 	public void addParent(Go2Term go2Term, String relation ) {
 		Parent = getUpdateParentChild(Parent, go2Term.getGoID(), relation);
 	}
 	/**
-	 * Éè¶¨ÆäÉÏÓÎ¸¸ÀàGOµÄĞÅÏ¢£¬¿ÉÒÔÁ¬ĞøÉè¶¨£¬ĞÂÉè¶¨µÄ»á×·¼Ó¶ø²»ÊÇ¸²¸Ç
+	 * è®¾å®šå…¶ä¸Šæ¸¸çˆ¶ç±»GOçš„ä¿¡æ¯ï¼Œå¯ä»¥è¿ç»­è®¾å®šï¼Œæ–°è®¾å®šçš„ä¼šè¿½åŠ è€Œä¸æ˜¯è¦†ç›–
 	 * @param go2Term
-	 * @param relation ±ØĞëÊÇRELATIONÖĞµÄÒ»Àà
+	 * @param relation å¿…é¡»æ˜¯RELATIONä¸­çš„ä¸€ç±»
 	 */
 	public void addParent(String goid, String relation ) {
 		Parent = getUpdateParentChild(Parent, goid, relation);
 	}
 	/**
-	 * Éè¶¨ÆäÏÂÓÎ×ÓÀàGOµÄĞÅÏ¢£¬¿ÉÒÔÁ¬ĞøÉè¶¨£¬ĞÂÉè¶¨µÄ»á×·¼Ó¶ø²»ÊÇ¸²¸Ç
+	 * è®¾å®šå…¶ä¸‹æ¸¸å­ç±»GOçš„ä¿¡æ¯ï¼Œå¯ä»¥è¿ç»­è®¾å®šï¼Œæ–°è®¾å®šçš„ä¼šè¿½åŠ è€Œä¸æ˜¯è¦†ç›–
 	 * @param go2Term
-	 * @param relation ±ØĞëÊÇRELATIONÖĞµÄÒ»Àà
+	 * @param relation å¿…é¡»æ˜¯RELATIONä¸­çš„ä¸€ç±»
 	 */
 	public void addChild(Go2Term go2Term, String relation ) {
 		Child = getUpdateParentChild(Child, go2Term.getGoID(), relation);
 	}
 	/**
-	 * Éè¶¨ÆäÏÂÓÎ×ÓÀàGOµÄĞÅÏ¢
-	 * ºóÉè¶¨µÄ»á¸²¸ÇÇ°Éè¶¨µÄ
+	 * è®¾å®šå…¶ä¸‹æ¸¸å­ç±»GOçš„ä¿¡æ¯
+	 * åè®¾å®šçš„ä¼šè¦†ç›–å‰è®¾å®šçš„
 	 * @param go2Term
-	 * @param relation ±ØĞëÊÇRELATIONÖĞµÄÒ»Àà
+	 * @param relation å¿…é¡»æ˜¯RELATIONä¸­çš„ä¸€ç±»
 	 */
 	public void addChild(String goid, String relation ) {
 		Child = getUpdateParentChild(Child, goid, relation);
 	}
 	/**
-	 * ½ö¹©²âÊÔÊ¹ÓÃ
-	 * ¸ø¶¨goIDºÍrelation£¬È»ºóÔÚparentchildÖĞÕÒ£¬ÕÒµ½ÖØ¸´µÄ¾Í·µ»Ø£¬²»ÖØ¸´µÄ¾ÍÉı¼¶
+	 * ä»…ä¾›æµ‹è¯•ä½¿ç”¨
+	 * ç»™å®šgoIDå’Œrelationï¼Œç„¶ååœ¨parentchildä¸­æ‰¾ï¼Œæ‰¾åˆ°é‡å¤çš„å°±è¿”å›ï¼Œä¸é‡å¤çš„å°±å‡çº§
 	 * @param parentChile
 	 * @param goID
 	 * @param relation
@@ -133,16 +133,16 @@ public class Go2Term {
 	public HashSet<Go2Term> getChild() {
 		return getParentChild(Child);
 	}
-	/** ½ö¹©test */
+	/** ä»…ä¾›test */
 	public String getParentTest() {
 		return Parent;
 	}
-	/** ½ö¹©test */
+	/** ä»…ä¾›test */
 	public String getChildTest() {
 		return Child;
 	}
 	/**
-	 * ·µ»Ø¸¸Àà
+	 * è¿”å›çˆ¶ç±»
 	 * @return
 	 */
 	private HashSet<Go2Term> getParentChild(String ParentChild) {
@@ -172,7 +172,7 @@ public class Go2Term {
 		return GoID;
 	}
 	/**
-	 * ³£¹æÉè¶¨
+	 * å¸¸è§„è®¾å®š
 	 * @param GoID
 	 */
 	public void setGoID(String GoID) {
@@ -183,7 +183,7 @@ public class Go2Term {
 		return GoTerm;
 	}
 	/**
-	 * È«²¿¶ÁÈëÄÚ´æºó£¬hash·ÃÎÊ¡£µÚÒ»´ÎËÙ¶ÈÂı£¬ºóÃæĞ§ÂÊºÜ¸ß
+	 * å…¨éƒ¨è¯»å…¥å†…å­˜åï¼Œhashè®¿é—®ã€‚ç¬¬ä¸€æ¬¡é€Ÿåº¦æ…¢ï¼Œåé¢æ•ˆç‡å¾ˆé«˜
 	 * @param GOID
 	 * @return
 	 */
@@ -192,7 +192,7 @@ public class Go2Term {
 		return servGo2Term.queryGo2Term(GOID);
 	}
 	/**
-	 * Í¨¹ı·ÃÎÊÊı¾İ¿â²éÑ¯£¬Ğ§ÂÊÏà¶ÔµÍ
+	 * é€šè¿‡è®¿é—®æ•°æ®åº“æŸ¥è¯¢ï¼Œæ•ˆç‡ç›¸å¯¹ä½
 	 * @param GOID
 	 * @return
 	 */
@@ -203,7 +203,7 @@ public class Go2Term {
 		return servGo2Term.queryGo2Term(go2Term);
 	}
 	/**
-	 * Í¨¹ı·ÃÎÊÊı¾İ¿â²éÑ¯£¬Ğ§ÂÊÏà¶ÔµÍ
+	 * é€šè¿‡è®¿é—®æ•°æ®åº“æŸ¥è¯¢ï¼Œæ•ˆç‡ç›¸å¯¹ä½
 	 * @param go2Term
 	 * @return
 	 */
@@ -227,8 +227,8 @@ public class Go2Term {
 		this.GoFunction = GoFunction;
 	}
 	/**
-	 * ½ö±È½ÏGOID
-	 * Èç¹ûÁ½¸ö¶¼ÊÇnull£¬Ôò·µ»Øfalse
+	 * ä»…æ¯”è¾ƒGOID
+	 * å¦‚æœä¸¤ä¸ªéƒ½æ˜¯nullï¼Œåˆ™è¿”å›false
 	 * @param other
 	 * @return
 	 */
@@ -252,8 +252,8 @@ public class Go2Term {
 		return false;
 	}
 	/**
-	 * ³ıÁËqueryGOIDºÍflagÍâ£¬È«²¿±È½Ï
-	 * Èç¹ûÁ½¸ö¶¼ÊÇnull£¬Ôò·µ»Øfalse
+	 * é™¤äº†queryGOIDå’Œflagå¤–ï¼Œå…¨éƒ¨æ¯”è¾ƒ
+	 * å¦‚æœä¸¤ä¸ªéƒ½æ˜¯nullï¼Œåˆ™è¿”å›false
 	 * @param other
 	 * @return
 	 */
@@ -294,7 +294,7 @@ public class Go2Term {
 	}
 	
 	/**
-	 * 	½ö±È½ÏGOID
+	 * 	ä»…æ¯”è¾ƒGOID
 	 */
 	@Override
 	public int hashCode()
@@ -303,9 +303,9 @@ public class Go2Term {
 		return result.hashCode();
 	}
 	/**
-	 * ÕûºÏÉı¼¶Ä£Ê½£¬½«go2term²ğ³ÉgoconvertºÍgo2term·Ö±ğ½øĞĞÉı¼¶ Èç¹ûÒÑ¾­ÓĞÁË¾Í²»Éı¼¶£¬
-	 * Ã»ÓĞ²ÅÉı¼¶ Éı¼¶·½Ê½ÊÇ¼òµ¥µÄ¸²¸Ç£¬
-	 * ²»ÏñgeneInfoÓĞaddµÈ·½Ê½ ²»¹ıÈç¹ûgo2termÖĞÆäËû¶¼Ã»ÓĞ£¬Ôò²»Éı¼¶
+	 * æ•´åˆå‡çº§æ¨¡å¼ï¼Œå°†go2termæ‹†æˆgoconvertå’Œgo2termåˆ†åˆ«è¿›è¡Œå‡çº§ å¦‚æœå·²ç»æœ‰äº†å°±ä¸å‡çº§ï¼Œ
+	 * æ²¡æœ‰æ‰å‡çº§ å‡çº§æ–¹å¼æ˜¯ç®€å•çš„è¦†ç›–ï¼Œ
+	 * ä¸åƒgeneInfoæœ‰addç­‰æ–¹å¼ ä¸è¿‡å¦‚æœgo2termä¸­å…¶ä»–éƒ½æ²¡æœ‰ï¼Œåˆ™ä¸å‡çº§
 	 * @return
 	 */
 	public boolean update() {

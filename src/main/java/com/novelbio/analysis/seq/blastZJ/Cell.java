@@ -5,9 +5,9 @@ package com.novelbio.analysis.seq.blastZJ;
  *
  */
 public class Cell {
-	/** ´ÓÖĞ¼ä¿ªÊ¼ÏòÁ½±ßµİÔöµÄÈ¨ÖØ */
+	/** ä»ä¸­é—´å¼€å§‹å‘ä¸¤è¾¹é€’å¢çš„æƒé‡ */
 	private double gradientMid = -1;
-	/** ´ÓÍ·¿ªÊ¼ÏòÎ²µİÔöµÄÈ¨ÖØ */
+	/** ä»å¤´å¼€å§‹å‘å°¾é€’å¢çš„æƒé‡ */
 	private double gradientAll = -1;
 
 	private Cell prevCell;
@@ -15,7 +15,7 @@ public class Cell {
 	private int row;
 	private int col;
 	
-	/** µÚ¼¸¸öÁ¬Ğøgap£¬Ä¿Ç°½öÔÚSmithWatermanËã·¨ÖĞÓÃµ½ ÓÃÓÚÁ¬Ğøgap¼õÉÙ·£·Ö */
+	/** ç¬¬å‡ ä¸ªè¿ç»­gapï¼Œç›®å‰ä»…åœ¨SmithWatermanç®—æ³•ä¸­ç”¨åˆ° ç”¨äºè¿ç»­gapå‡å°‘ç½šåˆ† */
 	private int gapNum = 0;
 
 	public Cell(int row, int col) {
@@ -51,23 +51,23 @@ public class Cell {
 		return prevCell;
 	}
 
-	/** Ìí¼ÓÒ»¸ögap */
+	/** æ·»åŠ ä¸€ä¸ªgap */
 	public void setGapNum(int gapNum) {
 		this.gapNum = gapNum;
 	}
 
 	/**
-	 * »ñµÃÖ®Ç°¼¸¸ögap
+	 * è·å¾—ä¹‹å‰å‡ ä¸ªgap
 	 * @return
 	 */
 	public int getGapNum() {
 		return gapNum;
 	}
 	/**
-	 * ¾­¹ıĞ£ÕıµÄ·ÖÊı£¬ÓÃÓÚÆ´½Ó
-	 * @param length1 sequence1µÄ³¤¶È
-	 * @param length2 sequence2µÄ³¤¶È
-	 * @param gradientStart ÖĞ¼äÎ»ÖÃµÄ±ÈÀıÊÇ¶àÉÙ
+	 * ç»è¿‡æ ¡æ­£çš„åˆ†æ•°ï¼Œç”¨äºæ‹¼æ¥
+	 * @param length1 sequence1çš„é•¿åº¦
+	 * @param length2 sequence2çš„é•¿åº¦
+	 * @param gradientStart ä¸­é—´ä½ç½®çš„æ¯”ä¾‹æ˜¯å¤šå°‘
 	 * @return
 	 */
 	public double getGradMidScore(int length1, int length2, double gradientMidStart) {
@@ -91,8 +91,8 @@ public class Cell {
 
 	/**
 	 * @param cellPrev
-	 * @param space µÚÒ»¸ö¿ÕÎ»µÄ·£·Ö
-	 * @param gapDegrade gap·£·Öµİ¼õµÄÈ¨ÖØ£¬Ô½´ó±íÊ¾µİ¼õÔ½À÷º¦
+	 * @param space ç¬¬ä¸€ä¸ªç©ºä½çš„ç½šåˆ†
+	 * @param gapDegrade gapç½šåˆ†é€’å‡çš„æƒé‡ï¼Œè¶Šå¤§è¡¨ç¤ºé€’å‡è¶Šå‰å®³
 	 * @return
 	 */
 	public double getGapScore(Cell cellPrev, int space, double gapDegrade) {
@@ -103,11 +103,11 @@ public class Cell {
 	}
 
 	/**
-	 * ¾­¹ıĞ£ÕıµÄ·ÖÊı£¬ÓÃÓÚÆ´½Ó
+	 * ç»è¿‡æ ¡æ­£çš„åˆ†æ•°ï¼Œç”¨äºæ‹¼æ¥
 	 * 
-	 * @param length1 sequence1µÄ³¤¶È
-	 * @param length2 sequence2µÄ³¤¶È
-	 * @param gradientAllStart Í·²¿ÆğµãµÄÈ¨ÖØ
+	 * @param length1 sequence1çš„é•¿åº¦
+	 * @param length2 sequence2çš„é•¿åº¦
+	 * @param gradientAllStart å¤´éƒ¨èµ·ç‚¹çš„æƒé‡
 	 * @return
 	 */
 	public double getGradAllScore(int length1, int length2, double gradientAllStart) {
@@ -123,14 +123,14 @@ public class Cell {
 	}
 
 	/**
-	 * ¾­¹ıĞ£ÕıµÄ·ÖÊı£¬ÓÃÓÚÆ´½Ó
+	 * ç»è¿‡æ ¡æ­£çš„åˆ†æ•°ï¼Œç”¨äºæ‹¼æ¥
 	 * 
 	 * @param length1
-	 *            sequence1µÄ³¤¶È
+	 *            sequence1çš„é•¿åº¦
 	 * @param length2
-	 *            sequence2µÄ³¤¶È
+	 *            sequence2çš„é•¿åº¦
 	 * @param gradientStart
-	 *            ÖĞ¼äÎ»ÖÃµÄ±ÈÀıÊÇ¶àÉÙ
+	 *            ä¸­é—´ä½ç½®çš„æ¯”ä¾‹æ˜¯å¤šå°‘
 	 * @return
 	 */
 	public static double getTestScore(int length1, int length2, int RowNum,

@@ -19,20 +19,20 @@ import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.generalConf.NovelBioConst;
 import com.novelbio.nbcgui.GUI.GuiGoJPanel;
 /**
- * ¿¼ÂÇÌí¼Ó½ø¶ÈÌõ
+ * è€ƒè™‘æ·»åŠ è¿›åº¦æ¡
  * @author zong0jie
  *
  */
 public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 	private static final Logger logger = Logger.getLogger(CtrlGO.class);
 	FunctionTest functionTest = null;
-	/**  ÊÇ·ñĞèÒªblast */
+	/**  æ˜¯å¦éœ€è¦blast */
 	boolean blast = false;
-	/** ²éÕÒÎïÖÖ */
+	/** æŸ¥æ‰¾ç‰©ç§ */
 	int QtaxID = 0;
-	/**  blastÎïÖÖ */
+	/**  blastç‰©ç§ */
 	int[] StaxID = null;
-	/** blastµÄevalue */
+	/** blastçš„evalue */
 	double evalue = 1e-10;
 	int[] colID = new int[2];
 	String resultExcel = "";
@@ -41,10 +41,10 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 	boolean cluster = false;
 	String bgFile = "";
 	/**
-	 * ½á¹û,key£º Ê±ÆÚµÈ
-	 * value£º¾ßÌåµÄ½á¹û
-	 * key: gene2Go, resultTableµÈ
-	 * value£ºÏàÓ¦µÄ½á¹û
+	 * ç»“æœ,keyï¼š æ—¶æœŸç­‰
+	 * valueï¼šå…·ä½“çš„ç»“æœ
+	 * key: gene2Go, resultTableç­‰
+	 * valueï¼šç›¸åº”çš„ç»“æœ
 	 */
 	LinkedHashMap<String, LinkedHashMap<String,ArrayList<String[]>>> hashResultGene = new LinkedHashMap<String, LinkedHashMap<String,ArrayList<String[]>>>();
 	
@@ -53,10 +53,10 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 	ArrayList<String[]> lsAccID2Value;
 	
 	/**
-	 * ½á¹û,key£º Ê±ÆÚµÈ<br>
-	 * value£º¾ßÌåµÄ½á¹û<br>
-	 * key: gene2Go, resultTableµÈ<br>
-	 * value£ºÏàÓ¦µÄ½á¹û
+	 * ç»“æœ,keyï¼š æ—¶æœŸç­‰<br>
+	 * valueï¼šå…·ä½“çš„ç»“æœ<br>
+	 * key: gene2Go, resultTableç­‰<br>
+	 * valueï¼šç›¸åº”çš„ç»“æœ
 	 */
 	public HashMap<String, LinkedHashMap<String,ArrayList<String[]>>> getHashResult() {
 		return hashResultGene;
@@ -79,8 +79,8 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 			doInBackgroundNorm();
 		}
 	}
-	/** lsAccID2Value  arraylist-string[] Èç¹û string[2],ÔòµÚ¶ş¸öÎªÉÏÏÂµ÷¹ØÏµ£¬ÅĞ¶ÏÉÏÏÂµ÷
-	 * ·ñÔò¾Í×öµ¥¸ö
+	/** lsAccID2Value  arraylist-string[] å¦‚æœ string[2],åˆ™ç¬¬äºŒä¸ªä¸ºä¸Šä¸‹è°ƒå…³ç³»ï¼Œåˆ¤æ–­ä¸Šä¸‹è°ƒ
+	 * å¦åˆ™å°±åšå•ä¸ª
 	 *  */
 	public void setLsAccID2Value(ArrayList<String[]> lsAccID2Value) {
 		this.lsAccID2Value = lsAccID2Value;
@@ -90,8 +90,8 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 		this.down = down;
 	}
 	/**
-	 * ×îºÃµÚÒ»Ê±¼äÊäÈë
-	 * ¼òµ¥µÄÅĞ¶ÏÏÂÊäÈëµÄÊÇgeneID»¹ÊÇgeneID2Item±í
+	 * æœ€å¥½ç¬¬ä¸€æ—¶é—´è¾“å…¥
+	 * ç®€å•çš„åˆ¤æ–­ä¸‹è¾“å…¥çš„æ˜¯geneIDè¿˜æ˜¯geneID2Itemè¡¨
 	 * @param fileName
 	 */
 	public void setLsBG(String fileName) {
@@ -110,13 +110,13 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 		}
 	}
 	/**
-	 * ÎÄ¼şÃûºó¼ÓÉÏgo_item»òÕßpath_itemµÈ
+	 * æ–‡ä»¶åååŠ ä¸Šgo_itemæˆ–è€…path_itemç­‰
 	 * @param fileName
 	 * @return
 	 */
 	abstract String getGene2ItemFileName(String  fileName);
 	/**
-	 * ²âÊÔÎÄ¼şÊÇ·ñÎªgene item,itemµÄ¸ñÊ½
+	 * æµ‹è¯•æ–‡ä»¶æ˜¯å¦ä¸ºgene item,itemçš„æ ¼å¼
 	 * @param fileName
 	 * @return
 	 */
@@ -136,9 +136,9 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 		this.isCluster = isCluster;
 	}
 	/**
-	 * ¸ø¶¨ÎÄ¼ş£¬ºÍÎÄ¼ş·Ö¸î·û£¬ÒÔ¼°µÚ¼¸ÁĞ£¬»ñµÃ¸ÃÁĞµÄ»ùÒòID
-	 * @param lsAccID2Value  arraylist-string[] Èç¹û string[2],ÔòµÚ¶ş¸öÎªÉÏÏÂµ÷¹ØÏµ£¬ÅĞ¶ÏÉÏÏÂµ÷
-	 * Èç¹ûstring[1]Ôò²»ÅĞ¶ÏÉÏÏÂµ÷
+	 * ç»™å®šæ–‡ä»¶ï¼Œå’Œæ–‡ä»¶åˆ†å‰²ç¬¦ï¼Œä»¥åŠç¬¬å‡ åˆ—ï¼Œè·å¾—è¯¥åˆ—çš„åŸºå› ID
+	 * @param lsAccID2Value  arraylist-string[] å¦‚æœ string[2],åˆ™ç¬¬äºŒä¸ªä¸ºä¸Šä¸‹è°ƒå…³ç³»ï¼Œåˆ¤æ–­ä¸Šä¸‹è°ƒ
+	 * å¦‚æœstring[1]åˆ™ä¸åˆ¤æ–­ä¸Šä¸‹è°ƒ
 	 * @param up
 	 * @param down
 	 */
@@ -146,7 +146,7 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 		isCluster = false;
 		hashResultGene.clear();
 		HashMap<String, ArrayList<GeneID>> hashCluster = new LinkedHashMap<String, ArrayList<GeneID>>();
-		//·ÖÉÏÏÂµ÷
+		//åˆ†ä¸Šä¸‹è°ƒ
 		if (lsAccID2Value.get(0).length == 1) {
 			HashSet<String> setGene = new HashSet<String>();
 			ArrayList<GeneID> lsAll = new ArrayList<GeneID>();
@@ -161,7 +161,7 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 			hashCluster.put("All", lsAll);
 		}
 		else {
-			//hashsetÓÃÀ´È¥ÖØ¸´µÄ
+			//hashsetç”¨æ¥å»é‡å¤çš„
 			HashSet<String> setUp = new HashSet<String>();
 			HashSet<String> setDown = new HashSet<String>();
  			ArrayList<GeneID> lsUp = new ArrayList<GeneID>();
@@ -192,7 +192,7 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 	}
 	
 	/**
-	 * ¸ø¶¨ÎÄ¼ş£¬ºÍÎÄ¼ş·Ö¸î·û£¬ÒÔ¼°µÚ¼¸ÁĞ£¬»ñµÃ¸ÃÁĞµÄ»ùÒòID
+	 * ç»™å®šæ–‡ä»¶ï¼Œå’Œæ–‡ä»¶åˆ†å‰²ç¬¦ï¼Œä»¥åŠç¬¬å‡ åˆ—ï¼Œè·å¾—è¯¥åˆ—çš„åŸºå› ID
 	 * 
 	 * @param showMessage
 	 * @return
@@ -233,12 +233,12 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 	}
 	
 	/**
-	 * ÓÃÕâ¸ö¼ÆËã£¬ËãÍêºó²ÅÄÜsaveµÈ
+	 * ç”¨è¿™ä¸ªè®¡ç®—ï¼Œç®—å®Œåæ‰èƒ½saveç­‰
 	 * @param functionTest
 	 * @param prix
 	 * @param lsCopedIDs
 	 * @return
-	 * Ã»ÓĞ¾Í·µ»Ønull
+	 * æ²¡æœ‰å°±è¿”å›null
 	 */
 	private void getResult(String prix,ArrayList<GeneID>lsCopedIDs) {
 		functionTest.setLsTestGeneID(lsCopedIDs);
@@ -250,8 +250,8 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 		hashResultGene.put(prix, hashResult);
 	}
 	/**
-	 * ·µ»Ø¸Ã¼ìÑéËù¶ÔÓ¦·µ»ØµÄ¼¸¸öÊ±ÆÚµÄĞÅÏ¢£¬Ò²¾ÍÊÇ¼¸¸ösheet
-	 * @param lsResultTest ½«¼ìÑé½á¹û×°Èëhash±í
+	 * è¿”å›è¯¥æ£€éªŒæ‰€å¯¹åº”è¿”å›çš„å‡ ä¸ªæ—¶æœŸçš„ä¿¡æ¯ï¼Œä¹Ÿå°±æ˜¯å‡ ä¸ªsheet
+	 * @param lsResultTest å°†æ£€éªŒç»“æœè£…å…¥hashè¡¨
 	 * @return
 	 */
 	protected abstract LinkedHashMap<String, ArrayList<String[]>> calItem2GenePvalue(String prix, ArrayList<StatisticTestResult> lsResultTest);
@@ -292,8 +292,8 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 		}
 	}
 	/**
-	 * ÊÇ·ñĞèÒª¶îÍâµÄ´¦ÀíÎÄ¼ş£¬²»ĞèÒª¾ÍÁô¿Õ
-	 * Æ©ÈçelimGOĞèÒªÒÆ¶¯GOMAPµÈ
+	 * æ˜¯å¦éœ€è¦é¢å¤–çš„å¤„ç†æ–‡ä»¶ï¼Œä¸éœ€è¦å°±ç•™ç©º
+	 * è­¬å¦‚elimGOéœ€è¦ç§»åŠ¨GOMAPç­‰
 	 */
 	protected abstract void copeFile(String prix, String excelPath);
 

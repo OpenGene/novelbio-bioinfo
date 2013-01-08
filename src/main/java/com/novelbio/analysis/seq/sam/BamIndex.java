@@ -29,7 +29,7 @@ public class BamIndex {
 		this.bamFile = bamFile;
 	}
 	/**
-	 * ·µ»Ø½¨ºÃµÄË÷ÒıÃû×Ö
+	 * è¿”å›å»ºå¥½çš„ç´¢å¼•åå­—
 	 * @return
 	 */
 	public String index() {

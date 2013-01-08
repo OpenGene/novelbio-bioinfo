@@ -4,17 +4,17 @@ import java.util.ArrayList;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 /**
- * ±£´æDindelÈí¼şµÃµ½µÄĞÅÏ¢£¬Ã¿Ò»ĞĞÒ»¸öDindelInfo Àà
+ * ä¿å­˜Dindelè½¯ä»¶å¾—åˆ°çš„ä¿¡æ¯ï¼Œæ¯ä¸€è¡Œä¸€ä¸ªDindelInfo ç±»
  * @author zong0jie
  *
  */
 public class DindelInfo implements Comparable<DindelInfo>{
 	/**
-	 * Ä¿±êÁ´µÄÃû×Ö
+	 * ç›®æ ‡é“¾çš„åå­—
 	 */
 	String seqName = "";
 	/**
-	 * ×îºóÔÚÄ¿±êĞòÁĞµÄÆğµã£¬Êµ¼ÊÆğµã
+	 * æœ€ååœ¨ç›®æ ‡åºåˆ—çš„èµ·ç‚¹ï¼Œå®é™…èµ·ç‚¹
 	 */
 	int startSeq = 0;
 	
@@ -42,13 +42,13 @@ public class DindelInfo implements Comparable<DindelInfo>{
 	}
 	
 	/**
-	 * Ö¸¶¨alignÎÄ±¾£¬¶ÁÈ¡ĞÅÏ¢
+	 * æŒ‡å®šalignæ–‡æœ¬ï¼Œè¯»å–ä¿¡æ¯
 	 */
 	public static  ArrayList<DindelInfo> readInfo(String dindelInfoFile) {
 		ArrayList<DindelInfo> lsdDindelInfos = new ArrayList<DindelInfo>();
 		
 		TxtReadandWrite txtIndel = new TxtReadandWrite(dindelInfoFile, false);
-		//ºÜÓĞ¿ÉÄÜÃ»¶«Î÷£¬Ò²¾ÍÊÇlsInfo.size == 0
+		//å¾ˆæœ‰å¯èƒ½æ²¡ä¸œè¥¿ï¼Œä¹Ÿå°±æ˜¯lsInfo.size == 0
 		ArrayList<String> lsInfo = txtIndel.readfileLs();
 		for (String string : lsInfo) {
 			if (string.startsWith("#")) {

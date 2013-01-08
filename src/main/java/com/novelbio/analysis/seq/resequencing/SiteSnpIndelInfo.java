@@ -20,8 +20,8 @@ import com.novelbio.database.service.servgeneanno.ServSnpIndelRs;
 
 
 /**
- * ¶ÔÓÚµ¥¸öÎ»µãµÄsnpÓëindelµÄÇé¿ö£¬¿ÉÒÔ±£´æ¶à¸ö²»Í¬µÄÑù±¾¡£
- * ÔÚsetSampleName()·½·¨ÖĞ¿ÉÉè¶¨Ñù±¾Ãû£¬²¢»ñµÃ¸ÃÑù±¾µÄĞÅÏ¢¡£
+ * å¯¹äºå•ä¸ªä½ç‚¹çš„snpä¸indelçš„æƒ…å†µï¼Œå¯ä»¥ä¿å­˜å¤šä¸ªä¸åŒçš„æ ·æœ¬ã€‚
+ * åœ¨setSampleName()æ–¹æ³•ä¸­å¯è®¾å®šæ ·æœ¬åï¼Œå¹¶è·å¾—è¯¥æ ·æœ¬çš„ä¿¡æ¯ã€‚
  * @author zong0jie
  */
 public abstract class SiteSnpIndelInfo {
@@ -30,27 +30,27 @@ public abstract class SiteSnpIndelInfo {
 	String sampleName;
 	
 	RefSiteSnpIndel refSiteSnpIndelParent;
-	/** snpËùÔÚrefnrÉÏµÄÎ»ÖÃ */
+	/** snpæ‰€åœ¨refnrä¸Šçš„ä½ç½® */
 	int snpOnReplaceLocStart = 0;
 	int snpOnReplaceLocEnd = 0;
 
 	String referenceSeq;
-	/** Èç¹ûsnpÂäÔÚÁËexonÉÏ£¬Ôò¸ÃÀàÀ´±£´ærefËùÓ°Ïìµ½µÄ°±»ùËáµÄĞòÁĞ */
+	/** å¦‚æœsnpè½åœ¨äº†exonä¸Šï¼Œåˆ™è¯¥ç±»æ¥ä¿å­˜refæ‰€å½±å“åˆ°çš„æ°¨åŸºé…¸çš„åºåˆ— */
 	SiteInfo refSeqIntactAA = new SiteInfo();
 	
 	String thisSeq;
 	
-	/** Î»µã´¦ÔÚÄÚº¬×Ó»¹ÊÇÍâÏÔ×Ó»¹ÊÇ»ùÒòÍâ£¬Èç¹ûÊÇdeletion£¬ÄÇÃ´ÓÅÏÈ¿´ÊÇ·ñ¸²¸ÇÁËexon */
+	/** ä½ç‚¹å¤„åœ¨å†…å«å­è¿˜æ˜¯å¤–æ˜¾å­è¿˜æ˜¯åŸºå› å¤–ï¼Œå¦‚æœæ˜¯deletionï¼Œé‚£ä¹ˆä¼˜å…ˆçœ‹æ˜¯å¦è¦†ç›–äº†exon */
 	int codLocInfo = 0;
 	boolean isInCDS = false;
 
 	SplitType splitType = SplitType.NONE;
 	SnpIndelRs snpIndelRs;
 	ServSnpIndelRs servSnpIndelRs = new ServSnpIndelRs();
-	/** Ñù±¾Ãû¶ÔÓ¦¸ÃÑù±¾ÕâÀàĞÍsnpµÄreadsÊıÁ¿*/
+	/** æ ·æœ¬åå¯¹åº”è¯¥æ ·æœ¬è¿™ç±»å‹snpçš„readsæ•°é‡*/
 	Map<String, SampleSnpReadsQuality> mapSample2thisBaseNum = new HashMap<String, SampleSnpReadsQuality>();
 	/**
-	 * @param refSiteSnpIndel ±ØĞëº¬ÓĞ GffIso ĞÅÏ¢
+	 * @param refSiteSnpIndel å¿…é¡»å«æœ‰ GffIso ä¿¡æ¯
 	 * @param gffChrAbs
 	 * @param refBase
 	 * @param thisBase
@@ -62,7 +62,7 @@ public abstract class SiteSnpIndelInfo {
 		this.referenceSeq = refBase;
 	}
 	
-	/** ¸ù¾İparent£¬Éè¶¨GffChrAbs */
+	/** æ ¹æ®parentï¼Œè®¾å®šGffChrAbs */
 	protected void setSitGffChrAbs() {
 		if (refSiteSnpIndelParent == null || refSiteSnpIndelParent.gffChrAbs == null)
 			return;
@@ -72,11 +72,11 @@ public abstract class SiteSnpIndelInfo {
 
 		setMapInfoRefSeqAAabs(refSiteSnpIndelParent.gffChrAbs);
 	}
-	/** Èç¹ûIso²»´æÔÚ£¬¸Ã·½·¨²»»á±»µ÷ÓÃ¡£
-	 * Èç¹ûIso´æÔÚ£¬²¢ÇÒsnpÎ»µãÔÚexonÉÏ£¬ÄÇÃ´¾ÍÉèÖÃrefĞòÁĞµÄ°±»ùËáµÄĞÅÏ¢ */
+	/** å¦‚æœIsoä¸å­˜åœ¨ï¼Œè¯¥æ–¹æ³•ä¸ä¼šè¢«è°ƒç”¨ã€‚
+	 * å¦‚æœIsoå­˜åœ¨ï¼Œå¹¶ä¸”snpä½ç‚¹åœ¨exonä¸Šï¼Œé‚£ä¹ˆå°±è®¾ç½®refåºåˆ—çš„æ°¨åŸºé…¸çš„ä¿¡æ¯ */
 	protected abstract void setMapInfoRefSeqAAabs(GffChrAbs gffChrAbs);
 	/**
-	 * Éè¶¨Ñù±¾Ãû£¬ÄÇÃ´ºóÃæ»ñÈ¡µÄ¶¼ÊÇ¸ÃÑù±¾µÄĞÅÏ¢
+	 * è®¾å®šæ ·æœ¬åï¼Œé‚£ä¹ˆåé¢è·å–çš„éƒ½æ˜¯è¯¥æ ·æœ¬çš„ä¿¡æ¯
 	 * @param sampleName
 	 */
 	public void setSampleName(String sampleName) {
@@ -86,13 +86,13 @@ public abstract class SiteSnpIndelInfo {
 		this.sampleName = sampleName;
 	}
 	
-	/** Ñù±¾Ãû¶ÔÓ¦¸ÃÑù±¾ÕâÀàĞÍsnpµÄreadsÊıÁ¿*/
+	/** æ ·æœ¬åå¯¹åº”è¯¥æ ·æœ¬è¿™ç±»å‹snpçš„readsæ•°é‡*/
 	public Map<String, SampleSnpReadsQuality> getMapSample2thisBaseNum() {
 		return mapSample2thisBaseNum;
 	}
 	
-	/** »ñµÃÆä¸¸½Úµã
-	 * ¸¸½ÚµãµÄSampleName»á±»ÉèÖÃ³ÉÓë¸ÃsiteÒ»ÑùµÄÃû×Ö
+	/** è·å¾—å…¶çˆ¶èŠ‚ç‚¹
+	 * çˆ¶èŠ‚ç‚¹çš„SampleNameä¼šè¢«è®¾ç½®æˆä¸è¯¥siteä¸€æ ·çš„åå­—
 	 *  
 	 *  */
 	public RefSiteSnpIndel getRefSiteSnpIndelParent() {
@@ -107,7 +107,7 @@ public abstract class SiteSnpIndelInfo {
 	}
 	
 	/**
-	 * ÒÆÂëÍ»±ä
+	 * ç§»ç çªå˜
 	 * @param orfShift
 	 */
 	public abstract int getOrfShift();
@@ -118,7 +118,7 @@ public abstract class SiteSnpIndelInfo {
 	public String getSplitTypeEffected() {
 		return splitType.toString();
 	}
-	/** ÔÚ¸Ãsnp»òindelÇé¿öÏÂ£¬Ïà¶ÔµÄrefµÄĞòÁĞ */
+	/** åœ¨è¯¥snpæˆ–indelæƒ…å†µä¸‹ï¼Œç›¸å¯¹çš„refçš„åºåˆ— */
 	public String getReferenceSeq() {
 		return referenceSeq;
 	}
@@ -167,7 +167,7 @@ public abstract class SiteSnpIndelInfo {
 		}
 		return sampleSnpReadsQuality.vcfFilterInfo;
 	}
-	/** snp¼ÆÊıÌí¼ÓaddNum */
+	/** snpè®¡æ•°æ·»åŠ addNum */
 	protected void addThisBaseNum(int addNum) {
 		SampleSnpReadsQuality sampleSnpReadsQuality = mapSample2thisBaseNum.get(sampleName);
 		sampleSnpReadsQuality.addThisReadsNum(addNum);
@@ -178,12 +178,12 @@ public abstract class SiteSnpIndelInfo {
 		}
 		this.sampleName = sampleName;
 	}
-	/** ±¾snpÕ¼×ÜreadsµÄ±ÈÀı */
+	/** æœ¬snpå æ€»readsçš„æ¯”ä¾‹ */
 	public double getThisBasePropss() {
 		return (double)getReadsNum()/refSiteSnpIndelParent.getReadsNumAll();
 	}
 	/**
-	 * ·µ»Ø±ä»¯µÄAAµÄ»¯Ñ§ĞÔÖÊ¸Ä±äĞÎÊ½£¬²»ÔÚcdsÖĞÔò·µ»Ø""£»
+	 * è¿”å›å˜åŒ–çš„AAçš„åŒ–å­¦æ€§è´¨æ”¹å˜å½¢å¼ï¼Œä¸åœ¨cdsä¸­åˆ™è¿”å›""ï¼›
 	 * @return
 	 */
 	public String getAAattrConvert() {
@@ -193,18 +193,18 @@ public abstract class SiteSnpIndelInfo {
 			try {
 				return SeqFasta.cmpAAquality(refAA, thisAA);
 			} catch (Exception e) {
-				logger.error("±ä»¯µÄAAµÄ»¯Ñ§ĞÔÖÊ³ö´í");
+				logger.error("å˜åŒ–çš„AAçš„åŒ–å­¦æ€§è´¨å‡ºé”™");
 				return "";
 			}
 		}
 		return "";
 	}
 	/**
-	 * Èç¹ûÒ»¸öÎ»µãÓĞÁ½¸öÒÔÉÏµÄsnp£¬¾Í¿ÉÄÜ»á³ö´í
-	 * »ñµÃ±¾snpÎ»ÖÃ×î¶à±äÒìµÄAAĞòÁĞ
-	 * ×¢ÒâÒªÍ¨¹ı{@link #setCis5to3(Boolean)}À´Éè¶¨ ²åÈëĞòÁĞÔÚ»ùÒò×éÉÏÊÇÕıÏò»¹ÊÇ·´Ïò
-	 * »¹ÒªÍ¨¹ı{@link #setReplaceLoc(int)}À´Éè¶¨²åÈëÔÚrefnrÉÏµÄÎ»ÖÃ
-	 * @return Ã»ÓĞµÄ»°¾Í·µ»ØÒ»¸ö¿ÕµÄseqfasta
+	 * å¦‚æœä¸€ä¸ªä½ç‚¹æœ‰ä¸¤ä¸ªä»¥ä¸Šçš„snpï¼Œå°±å¯èƒ½ä¼šå‡ºé”™
+	 * è·å¾—æœ¬snpä½ç½®æœ€å¤šå˜å¼‚çš„AAåºåˆ—
+	 * æ³¨æ„è¦é€šè¿‡{@link #setCis5to3(Boolean)}æ¥è®¾å®š æ’å…¥åºåˆ—åœ¨åŸºå› ç»„ä¸Šæ˜¯æ­£å‘è¿˜æ˜¯åå‘
+	 * è¿˜è¦é€šè¿‡{@link #setReplaceLoc(int)}æ¥è®¾å®šæ’å…¥åœ¨refnrä¸Šçš„ä½ç½®
+	 * @return æ²¡æœ‰çš„è¯å°±è¿”å›ä¸€ä¸ªç©ºçš„seqfasta
 	 */
 	public SeqFasta getThisAAnr() {
 		String seq = thisSeq;
@@ -226,13 +226,13 @@ public abstract class SiteSnpIndelInfo {
 		return SeqFasta.cmpAAquality(refaa, thisaa);
 	}
 	/**
-	 * ¸ú·½ÏòÏà¹Ø
-	 * ¸ø¶¨ĞòÁĞºÍÆğÊ¼Î»µã£¬ÓÃsnpÎ»µãÈ¥Ìæ»»ĞòÁĞ£¬Í¬Ê±½«±¾´ÎÌæ»»ÊÇ·ñÔì³ÉÒÆÂëĞ´Èëorfshift
-	 * @param thisSeq ¸ø¶¨ĞòÁĞ--¸ÃĞòÁĞ±ØĞëÊÇÕıÏò£¬È»ºó
-	 * @param cis5to3 ¸ø¶¨ĞòÁĞµÄÕı·´Ïò
-	 * @param startLoc  Êµ¼ÊÎ»µã ÔÚĞòÁĞµÄÄÄÒ»¸öµã¿ªÊ¼Ìæ»»£¬Ìæ»»°üÀ¨¸ÃÎ»µã 0±íÊ¾²åµ½×îÇ°Ãæ¡£1±íÊ¾´ÓµÚÒ»¸ö¿ªÊ¼Ìæ»»
-	 * Èç¹ûrefÎª""£¬Ôò½«ĞòÁĞ²åÈëÔÚstartBiasÄÇ¸ö¼î»ùµÄºóÃæ
-	 * @param endLoc Êµ¼ÊÎ»µã ÔÚĞòÁĞµÄÄÄÒ»¸öµã½áÊøÌæ»»£¬Ìæ»»°üÀ¨¸ÃÎ»µã
+	 * è·Ÿæ–¹å‘ç›¸å…³
+	 * ç»™å®šåºåˆ—å’Œèµ·å§‹ä½ç‚¹ï¼Œç”¨snpä½ç‚¹å»æ›¿æ¢åºåˆ—ï¼ŒåŒæ—¶å°†æœ¬æ¬¡æ›¿æ¢æ˜¯å¦é€ æˆç§»ç å†™å…¥orfshift
+	 * @param thisSeq ç»™å®šåºåˆ—--è¯¥åºåˆ—å¿…é¡»æ˜¯æ­£å‘ï¼Œç„¶å
+	 * @param cis5to3 ç»™å®šåºåˆ—çš„æ­£åå‘
+	 * @param startLoc  å®é™…ä½ç‚¹ åœ¨åºåˆ—çš„å“ªä¸€ä¸ªç‚¹å¼€å§‹æ›¿æ¢ï¼Œæ›¿æ¢åŒ…æ‹¬è¯¥ä½ç‚¹ 0è¡¨ç¤ºæ’åˆ°æœ€å‰é¢ã€‚1è¡¨ç¤ºä»ç¬¬ä¸€ä¸ªå¼€å§‹æ›¿æ¢
+	 * å¦‚æœrefä¸º""ï¼Œåˆ™å°†åºåˆ—æ’å…¥åœ¨startBiasé‚£ä¸ªç¢±åŸºçš„åé¢
+	 * @param endLoc å®é™…ä½ç‚¹ åœ¨åºåˆ—çš„å“ªä¸€ä¸ªç‚¹ç»“æŸæ›¿æ¢ï¼Œæ›¿æ¢åŒ…æ‹¬è¯¥ä½ç‚¹
 	 * @return
 	 */
 	private SeqFasta replaceSnpIndel(String replace, int startLoc, int endLoc) {
@@ -241,26 +241,26 @@ public abstract class SiteSnpIndelInfo {
 			return new SeqFasta();
 		}
 		seqFasta.modifySeq(startLoc, endLoc, replace, false, false);
-		//ĞŞ¸ÄÒÆÂë
+		//ä¿®æ”¹ç§»ç 
 		return seqFasta;
 	}
 	/**
-	 * Éè¶¨snpID£¬×Ô¶¯»ñµÃ¶ÔÓ¦µÄDBsnpĞÅÏ¢
+	 * è®¾å®šsnpIDï¼Œè‡ªåŠ¨è·å¾—å¯¹åº”çš„DBsnpä¿¡æ¯
 	 * @param snpRsID
 	 */
 	public void setDBSnpID(String snpRsID) {
 		if (snpRsID != null && !snpRsID.trim().equals("")) {
 			SnpIndelRs snpIndelRs = new SnpIndelRs();
 			snpIndelRs.setSnpRsID(snpRsID);
-			//TODO snpĞÅÏ¢È¥²éÕÒÊı¾İ¿â
+			//TODO snpä¿¡æ¯å»æŸ¥æ‰¾æ•°æ®åº“
 //			this.snpIndelRs = servSnpIndelRs.querySnpIndelRs(snpIndelRs);
 			
-			//ÁÙÊ±·½°¸
+			//ä¸´æ—¶æ–¹æ¡ˆ
 			this.snpIndelRs = snpIndelRs;
 		}
 	}
 	/**
-	 * Éè¶¨DBsnpµÄĞÅÏ¢£¬ÓĞÉè¶¨flag¾Íµ±snp£¬Ã»ÓĞÉè¶¨flag¾Íµ±indel
+	 * è®¾å®šDBsnpçš„ä¿¡æ¯ï¼Œæœ‰è®¾å®šflagå°±å½“snpï¼Œæ²¡æœ‰è®¾å®šflagå°±å½“indel
 	 * @param snpIndelRs
 	 */
 	private void setSnpIndelRs() {
@@ -268,11 +268,11 @@ public abstract class SiteSnpIndelInfo {
 		snpIndelRs.setChrID(refSeqIntactAA.getRefID());
 		snpIndelRs.setTaxID(refSiteSnpIndelParent.getTaxID());
 		snpIndelRs.setLocStart(refSiteSnpIndelParent.getRefSnpIndelStart());
-		//TODO ÊäÈë´ı²éÑ¯µÄĞòÁĞ
+		//TODO è¾“å…¥å¾…æŸ¥è¯¢çš„åºåˆ—
 //		snpIndelRs.setObserved(observed);
 //		this.snpIndelRs = servSnpIndelRs.querySnpIndelRs(snpIndelRs);
 		
-		//ÁÙÊ±·½°¸
+		//ä¸´æ—¶æ–¹æ¡ˆ
 		this.snpIndelRs = snpIndelRs;
 	}
 	public boolean isExon() {
@@ -286,7 +286,7 @@ public abstract class SiteSnpIndelInfo {
 	}
 	
 	/**
-	 * Èç¹ûÔÚSNPDBÖĞÓĞ¼ÇÔØ£¬»ñµÃ¼ÇÔØµÄĞÅÏ¢
+	 * å¦‚æœåœ¨SNPDBä¸­æœ‰è®°è½½ï¼Œè·å¾—è®°è½½çš„ä¿¡æ¯
 	 * @return
 	 */
 	public SnpIndelRs getSnpIndelRs() {
@@ -297,14 +297,14 @@ public abstract class SiteSnpIndelInfo {
 		return snpIndelRs;
 	}
 	/**
-	 * ½ö¿¼ÂÇÎ»µãĞÅÏ¢
+	 * ä»…è€ƒè™‘ä½ç‚¹ä¿¡æ¯
 	 */
 	@Override
 	public int hashCode() {
 		return getMismatchInfo().hashCode();
 	}
 	/**
-	 * ½ö±È½ÏÎ»µã£¬²»±È½ÏÀïÃæµÄsample
+	 * ä»…æ¯”è¾ƒä½ç‚¹ï¼Œä¸æ¯”è¾ƒé‡Œé¢çš„sample
 	 */
 	@Override
 	public boolean equals(Object obj) {
@@ -325,7 +325,7 @@ public abstract class SiteSnpIndelInfo {
 		return false;
 	}
 	public String toString() {
-		//TODO ¸Ä×°ÎªlistµÄ·½Ê½À´·µ»ØstringÊı×é
+		//TODO æ”¹è£…ä¸ºlistçš„æ–¹å¼æ¥è¿”å›stringæ•°ç»„
 		String refnr =  refSeqIntactAA.getSeqFasta().toString();
 		String refaa =  refSeqIntactAA.getSeqFasta().toStringAA(false);
 		String thisnr =  getThisAAnr().toString();
@@ -352,8 +352,8 @@ public abstract class SiteSnpIndelInfo {
 		return result;
 	}
 	/**
-	 * ±ØĞëÓë	public static String getMismatchInfo(String referenceSeq, String thisSeq)Ò»ÖÂ
-	 * ·µ»ØÒ»¸östring£¬¼ÇÂ¼snpµÄÎ»ÖÃĞÅÏ¢
+	 * å¿…é¡»ä¸	public static String getMismatchInfo(String referenceSeq, String thisSeq)ä¸€è‡´
+	 * è¿”å›ä¸€ä¸ªstringï¼Œè®°å½•snpçš„ä½ç½®ä¿¡æ¯
 	 * chrid + SepSign.SEP_ID+ locstart + SepSign.SEP_ID + referenceSeq + SepSign.SEP_ID + thisSeq
 	 * @return
 	 */
@@ -362,8 +362,8 @@ public abstract class SiteSnpIndelInfo {
 				+ SepSign.SEP_ID + referenceSeq + SepSign.SEP_ID + thisSeq).toLowerCase();
 	}
 	/**
-	 * ½«ÁíÒ»¸ösiteSnpIndelInfoÖĞSnpµÄÊıÁ¿¼Óµ½±¾ÀàÖĞÀ´£¬Ïàµ±ÓÚºÏ²¢Ñù±¾ĞÅÏ¢¡£
-	 * µ«ÊÇÈç¹û±¾SnpInfoÒÑ¾­ÓĞÁËÄ³¸öÑù±¾ĞÅÏ¢£¬ÔòÌø¹ıÊäÈëÏîÄ¿µÄÑù±¾ĞÅÏ¢
+	 * å°†å¦ä¸€ä¸ªsiteSnpIndelInfoä¸­Snpçš„æ•°é‡åŠ åˆ°æœ¬ç±»ä¸­æ¥ï¼Œç›¸å½“äºåˆå¹¶æ ·æœ¬ä¿¡æ¯ã€‚
+	 * ä½†æ˜¯å¦‚æœæœ¬SnpInfoå·²ç»æœ‰äº†æŸä¸ªæ ·æœ¬ä¿¡æ¯ï¼Œåˆ™è·³è¿‡è¾“å…¥é¡¹ç›®çš„æ ·æœ¬ä¿¡æ¯
 	 * @param siteSnpIndelInfo
 	 */
 	public void addSiteSnpIndelInfo(SiteSnpIndelInfo siteSnpIndelInfo) {
@@ -378,15 +378,15 @@ public abstract class SiteSnpIndelInfo {
 			mapSample2thisBaseNum.put(entry.getKey(), entry.getValue());
 		}
 	}
-	/////////////////////////////////////// ¾²Ì¬·½·¨£¬»ñµÃËùÓĞÖ¸¶¨ÇøÓòµÄÎ»µãµÄĞÅÏ¢ ///////////////////////////////
+	/////////////////////////////////////// é™æ€æ–¹æ³•ï¼Œè·å¾—æ‰€æœ‰æŒ‡å®šåŒºåŸŸçš„ä½ç‚¹çš„ä¿¡æ¯ ///////////////////////////////
 	public static String getMyTitle() {
 		String result = "ChrID\tSnpLoc\tRefBase\tAllelic_depths_Ref\tThisBase\tAllelic_depths_Alt \tQuality\tFilter\tAllele_Balance_Hets()\tIsInExon\tDistance_To_Start\t" + 
 		"RefAAnr\tRefAAseq\tThisAAnr\tThisAASeq\tAA_chemical_property\tOrfShift\tSnpDB_ID\tGeneAccID\tGeneSymbol\tGeneDescription";
 		return result;
 	}
 	/**
-	 * ±ØĞëÓë public String getMismatchInfo() Ò»ÖÂ
-	 * ·µ»ØÒ»¸östring£¬¼ÇÂ¼snpµÄÎ»ÖÃĞÅÏ¢
+	 * å¿…é¡»ä¸ public String getMismatchInfo() ä¸€è‡´
+	 * è¿”å›ä¸€ä¸ªstringï¼Œè®°å½•snpçš„ä½ç½®ä¿¡æ¯
 	 * chrid + SepSign.SEP_ID+ locstart + SepSign.SEP_ID + referenceSeq + SepSign.SEP_ID + thisSeq
 	 * @return
 	 */
@@ -404,7 +404,7 @@ public abstract class SiteSnpIndelInfo {
 
 }
 /**
- * Ã²ËÆÓëSiteSnpIndelInfoSnpÒ»Ä£Ò»Ñù
+ * è²Œä¼¼ä¸SiteSnpIndelInfoSnpä¸€æ¨¡ä¸€æ ·
  * @author zong0jie
  *
  */
@@ -414,7 +414,7 @@ class SiteSnpIndelInfoInsert extends SiteSnpIndelInfo{
 	public SiteSnpIndelInfoInsert(RefSiteSnpIndel mapInfoSnpIndel, String refBase, String thisBase) {
 		super(mapInfoSnpIndel, refBase, thisBase);
 		if (refBase.length() > 1) {
-			logger.error("refBase ´óÓÚ1£¬¿ÉÄÜ²»ÊÇ²åÈë£¬ÇëºË¶Ô£º" + mapInfoSnpIndel.getRefID() + "\t" + mapInfoSnpIndel.getRefSnpIndelStart());
+			logger.error("refBase å¤§äº1ï¼Œå¯èƒ½ä¸æ˜¯æ’å…¥ï¼Œè¯·æ ¸å¯¹ï¼š" + mapInfoSnpIndel.getRefID() + "\t" + mapInfoSnpIndel.getRefSnpIndelStart());
 		}
 	}
 	@Override
@@ -424,17 +424,17 @@ class SiteSnpIndelInfoInsert extends SiteSnpIndelInfo{
 		if (codLocInfo != GffGeneIsoInfo.COD_LOC_OUT) {
 			setEffectSplitType(gffGeneIsoInfo, refSiteSnpIndelParent.getRefSnpIndelStart());
 		}
-		//mRNA²ãÃæ
-		//¾ÍËãÔÚÍâÏÔ×ÓÖĞ£¬µ«ÊÇÈç¹ûÊÇ·Ç±àÂërna£¬»òÕßÔÚUTRÇøÓòÖĞ£¬Ò²·µ»Ø
+		//mRNAå±‚é¢
+		//å°±ç®—åœ¨å¤–æ˜¾å­ä¸­ï¼Œä½†æ˜¯å¦‚æœæ˜¯éç¼–ç rnaï¼Œæˆ–è€…åœ¨UTRåŒºåŸŸä¸­ï¼Œä¹Ÿè¿”å›
 		if (!gffGeneIsoInfo.isCodInAAregion(refSiteSnpIndelParent.getRefSnpIndelStart())) {
 			isInCDS = false;
 			return;
 		}
 		
 		isInCDS = true;
-		int LocStart = gffGeneIsoInfo.getLocAAbefore(refSiteSnpIndelParent.getRefSnpIndelStart());//¸ÃÎ»µãËùÔÚAAµÄµÚÒ»¸öloc
+		int LocStart = gffGeneIsoInfo.getLocAAbefore(refSiteSnpIndelParent.getRefSnpIndelStart());//è¯¥ä½ç‚¹æ‰€åœ¨AAçš„ç¬¬ä¸€ä¸ªloc
 		int LocEnd = gffGeneIsoInfo.getLocAAend(refSiteSnpIndelParent.getRefSnpIndelStart());
-		if (LocEnd <0) {//Èç¹û²»ÔÚ×ªÂ¼±¾ÖĞ
+		if (LocEnd <0) {//å¦‚æœä¸åœ¨è½¬å½•æœ¬ä¸­
 			if (gffGeneIsoInfo.isCis5to3()) {
 				LocEnd = LocStart + 2;
 			} else {
@@ -483,7 +483,7 @@ class SiteSnpIndelInfoInsert extends SiteSnpIndelInfo{
 		}
 	}
 	public int getOrfShift() {
-		return (3 - (thisSeq.length() - referenceSeq.length())%3) % 3;//´ı¼ì²é
+		return (3 - (thisSeq.length() - referenceSeq.length())%3) % 3;//å¾…æ£€æŸ¥
 	}
 	@Override
 	public SnpIndelType getSnpIndelType() {
@@ -505,7 +505,7 @@ class SiteSnpIndelInfoSnp extends SiteSnpIndelInfoInsert {
 	}
 }
 /**
- * Ã»ÓĞsnpµÄÎ»µã£¬¾ÍÊÇÖ»·µ»ØrefÁË
+ * æ²¡æœ‰snpçš„ä½ç‚¹ï¼Œå°±æ˜¯åªè¿”å›refäº†
  * @author zongjie
  *
  */
@@ -522,7 +522,7 @@ class SiteSnpIndelInfoNoSnp extends SiteSnpIndelInfoInsert {
 	}
 }
 /**
- * ±ØĞëºÜ¶ÌµÄdeletion£¬Æ©ÈçÔÚ20bpÒÔÄÚµÄdeletion
+ * å¿…é¡»å¾ˆçŸ­çš„deletionï¼Œè­¬å¦‚åœ¨20bpä»¥å†…çš„deletion
  * @author zong0jie
  *
  */
@@ -532,7 +532,7 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 	public SiteSnpIndelInfoDeletion(RefSiteSnpIndel refSiteSnpIndel, String refBase, String thisBase) {
 		super(refSiteSnpIndel, refBase, thisBase);
 		if (refBase.length() <= 1 || thisBase.length() > 1) {
-			logger.error("±¾Î»µã¿ÉÄÜ²»ÊÇÈ±Ê§£¬ÇëºË¶Ô£º" + refSiteSnpIndel.getRefID() + "\t" + refSiteSnpIndel.getRefSnpIndelStart());
+			logger.error("æœ¬ä½ç‚¹å¯èƒ½ä¸æ˜¯ç¼ºå¤±ï¼Œè¯·æ ¸å¯¹ï¼š" + refSiteSnpIndel.getRefID() + "\t" + refSiteSnpIndel.getRefSnpIndelStart());
 		}
 	}
 
@@ -573,16 +573,16 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 			refSeqIntactAA.setStartEndLoc(LocStart, LocEnd);
 			ArrayList<ExonInfo> lsTmp = gffGeneIsoInfo.getRangeIso(LocStart, LocEnd);
 			if (lsTmp == null) {
-				logger.error("¼ì²éÒ»ÏÂ£º" + refSiteSnpIndelParent.getRefID() + "\t" + refSiteSnpIndelParent.getRefSnpIndelStart());
+				logger.error("æ£€æŸ¥ä¸€ä¸‹ï¼š" + refSiteSnpIndelParent.getRefID() + "\t" + refSiteSnpIndelParent.getRefSnpIndelStart());
 				return;
 			}
 			setOrfShiftAndReplaceSite(gffGeneIsoInfo, refStartCis, refEndCis);
 			SeqFasta NR = gffChrAbs.getSeqHash().getSeq(refSeqIntactAA.getRefID(), lsTmp, false);
-			refSeqIntactAA.setSeq(NR,false);//ÒòÎªÉÏÃæÒÑ¾­·´Ïò¹ıÁË
+			refSeqIntactAA.setSeq(NR,false);//å› ä¸ºä¸Šé¢å·²ç»åå‘è¿‡äº†
 		}
 		
 		else if (!isInCDS && gffGeneIsoInfo.getNumCodInEle(refStartCis) != gffGeneIsoInfo.getNumCodInEle(refEndCis)) {
-			logger.error("È±Ê§ÍâÏÔ×Ó£º"  + refSiteSnpIndelParent.getRefID() + "\t" + refSiteSnpIndelParent.getRefSnpIndelStart());
+			logger.error("ç¼ºå¤±å¤–æ˜¾å­ï¼š"  + refSiteSnpIndelParent.getRefID() + "\t" + refSiteSnpIndelParent.getRefSnpIndelStart());
 			isInCDS = true;
 			return;
 		}
@@ -592,9 +592,9 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 		}
 	}
 	/**
-	 * Èç¹ûdeletion¸²¸ÇÁËexon--Õâ¸öÔÚÇ°Ãæ±ØĞëÊ×ÏÈÅĞ¶¨
-	 * È»ºóÈç¹ûdeletionµÄÎ»µãÂäµ½ÁËexonÍâ£¬Ôò½«¸ÃÎ»µã¶¨Î»µ½Ëù°üº¬µÄ×î½üµÄexonµÄ±ß½çÉÏ£¬ÈçÏÂÍ¼<br>
-	 * 0--1----------------2---3---------cod1-------------4---5----------------6---7---------------cod2---------------8----9, ĞŞÕıÎª<br>
+	 * å¦‚æœdeletionè¦†ç›–äº†exon--è¿™ä¸ªåœ¨å‰é¢å¿…é¡»é¦–å…ˆåˆ¤å®š
+	 * ç„¶åå¦‚æœdeletionçš„ä½ç‚¹è½åˆ°äº†exonå¤–ï¼Œåˆ™å°†è¯¥ä½ç‚¹å®šä½åˆ°æ‰€åŒ…å«çš„æœ€è¿‘çš„exonçš„è¾¹ç•Œä¸Šï¼Œå¦‚ä¸‹å›¾<br>
+	 * 0--1----------------2---3---------cod1-------------4---5----------------6---7---------------cod2---------------8----9, ä¿®æ­£ä¸º<br>
 	 * 0--1----------------2---3---------------------cod1(4)---5---------------6---(7)cod2----------------------------8----9<br>
 	 * @param gffGeneIsoInfo
 	 * @param refStartCis
@@ -603,7 +603,7 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 	 */
 	private static int[] getLocOutOfExonToNearistExonBounder(GffGeneIsoInfo gffGeneIsoInfo, int refStartCis, int refEndCis) {
 		int[] bounder = new int[]{refStartCis, refEndCis};
-		//½«ÆğµãºÍÖÕµã×ª»»µ½¾àÀë×î½üµÄexonÉÏÈ¥
+		//å°†èµ·ç‚¹å’Œç»ˆç‚¹è½¬æ¢åˆ°è·ç¦»æœ€è¿‘çš„exonä¸Šå»
 		if (gffGeneIsoInfo.getCodLoc(refStartCis) != GffGeneIsoInfo.COD_LOC_EXON) {
 			int startExonNum = Math.abs(gffGeneIsoInfo.getNumCodInEle(refStartCis));
 			//TODO check
@@ -622,10 +622,10 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 		return bounder;
 	}
 	/**
-	 * ±ØĞëÔÚ{@link#setLocationInfo}½áÊøºóµ÷ÓÃ
+	 * å¿…é¡»åœ¨{@link#setLocationInfo}ç»“æŸåè°ƒç”¨
 	 * @param gffGeneIsoInfo
-	 * @param refStartCis ±ØĞëÔÚexonÖĞ
-	 * @param refEndCis ±ØĞëÔÚexonÖĞ
+	 * @param refStartCis å¿…é¡»åœ¨exonä¸­
+	 * @param refEndCis å¿…é¡»åœ¨exonä¸­
 	 */
 	private static SplitType setEffectSplitType(GffGeneIsoInfo gffGeneIsoInfo, int refStartCis, int refEndCis) {
 		SplitType splitType = SplitType.NONE;
@@ -634,7 +634,7 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 		int codStart2UAGmRNA = gffGeneIsoInfo.getCod2UAGmRNA(refStartCis);
 		int codEnd2UAGmRNA = gffGeneIsoInfo.getCod2UAGmRNA(refEndCis);
 		
-		if (codStart2ATGmRNA <=0 && codEnd2ATGmRNA >= 0 //ºá¿çatg
+		if (codStart2ATGmRNA <=0 && codEnd2ATGmRNA >= 0 //æ¨ªè·¨atg
 			|| 	codStart2ATGmRNA >= 0 && codStart2ATGmRNA <= 2
 		  ) {
 			splitType = SplitType.ATG;
@@ -664,7 +664,7 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 		return splitType;
 	}
 	/**
-	 * Éè¶¨¸Ãdeletion´¦ÔÚÄÄ¸öÎ»ÖÃ £¬»òÕßËµÊÇ·ñ¸²¸ÇÁËexon
+	 * è®¾å®šè¯¥deletionå¤„åœ¨å“ªä¸ªä½ç½® ï¼Œæˆ–è€…è¯´æ˜¯å¦è¦†ç›–äº†exon
 	 * @param gffGeneIsoInfo
 	 * @param startCis
 	 * @param endCis
@@ -676,7 +676,7 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 				) {
 			codLocInfo = GffGeneIsoInfo.COD_LOC_EXON;
 		}
-		//TODO ÕâÀïÃ»ÓĞ¿¼ÂÇÒ»Í·ÔÚ»ùÒòÇ°Ò»Í·ÔÚ»ùÒòÎ²µÄÇé¿ö
+		//TODO è¿™é‡Œæ²¡æœ‰è€ƒè™‘ä¸€å¤´åœ¨åŸºå› å‰ä¸€å¤´åœ¨åŸºå› å°¾çš„æƒ…å†µ
 		else if (gffGeneIsoInfo.getCodLoc(startCis) == GffGeneIsoInfo.COD_LOC_OUT && gffGeneIsoInfo.getCodLoc(endCis) == GffGeneIsoInfo.COD_LOC_OUT) {
 			codLocInfo = GffGeneIsoInfo.COD_LOC_OUT;
 		}
@@ -687,17 +687,17 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 		}
 		return codLocInfo;
 	}
-	/** ĞèÒª²âÊÔ
-	 * Õâ¶Î´úÂëµÄÇ°Ìá¼ÙÉèÊÇrefºÜ³¤£¬È»ºóthisSeqÒ»¶¨Îª1
-	 * Õâ¸öĞÎÊ½ÊÇdeletionµÄÒ»°ãĞÎÊ½¡£
-	 * ÄÇÃ´Õâ¾ÍÅÅ³ıÁËÄ³¶ÎĞòÁĞ±»ÍêÈ«²»Í¬µÄĞòÁĞÌæ»»µÄÇé¿ö
-	 *  Æ©Èç  refÎª ATCG TC GT    thisÎª ATCG AACTG GT ÕâÖÖÇé¿ö»á±»²ğ·Ö³ÉÁ½¸ö´íÅäºÍÒ»¸ö²åÈë
-	 *  ÄÇÃ´Õâ¶Î´úÂë¾Í´¦Àí²»ÁË
+	/** éœ€è¦æµ‹è¯•
+	 * è¿™æ®µä»£ç çš„å‰æå‡è®¾æ˜¯refå¾ˆé•¿ï¼Œç„¶åthisSeqä¸€å®šä¸º1
+	 * è¿™ä¸ªå½¢å¼æ˜¯deletionçš„ä¸€èˆ¬å½¢å¼ã€‚
+	 * é‚£ä¹ˆè¿™å°±æ’é™¤äº†æŸæ®µåºåˆ—è¢«å®Œå…¨ä¸åŒçš„åºåˆ—æ›¿æ¢çš„æƒ…å†µ
+	 *  è­¬å¦‚  refä¸º ATCG TC GT    thisä¸º ATCG AACTG GT è¿™ç§æƒ…å†µä¼šè¢«æ‹†åˆ†æˆä¸¤ä¸ªé”™é…å’Œä¸€ä¸ªæ’å…¥
+	 *  é‚£ä¹ˆè¿™æ®µä»£ç å°±å¤„ç†ä¸äº†
 	 *  */
 	protected void setOrfShiftAndReplaceSite(GffGeneIsoInfo gffGeneIsoInfo, int refStartCis, int refEndCis) {
 		int deletionLen = gffGeneIsoInfo.getLocDistmRNA(refStartCis, refEndCis) + 1 - thisSeq.length();
 		orfShift = deletionLen%3;
-		//TODO ÕâÀïÓĞÎÊÌâ£¬Èç¹ûÒ»¸ödeletionºá¿çÁËÒ»Õû¸öintron£¬ÄÇÃ´¾Í»áÓĞ´íÎó
+		//TODO è¿™é‡Œæœ‰é—®é¢˜ï¼Œå¦‚æœä¸€ä¸ªdeletionæ¨ªè·¨äº†ä¸€æ•´ä¸ªintronï¼Œé‚£ä¹ˆå°±ä¼šæœ‰é”™è¯¯
 		snpOnReplaceLocStart = -gffGeneIsoInfo.getLocAAbeforeBias(refStartCis) + 1;
 		snpOnReplaceLocEnd = snpOnReplaceLocStart + deletionLen;
 	}
@@ -713,9 +713,9 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 }
 
 class SampleSnpReadsQuality {
-	/** ¸ÃsnpµÄÖÊÁ¿ */
+	/** è¯¥snpçš„è´¨é‡ */
 	String quality = "";
-	/** ÊÇ·ñ·ûºÏ±ê×¼ */
+	/** æ˜¯å¦ç¬¦åˆæ ‡å‡† */
 	String vcfFilterInfo = "";
 	int thisReadsNum;
 	public SampleSnpReadsQuality() {}
@@ -723,7 +723,7 @@ class SampleSnpReadsQuality {
 		this.thisReadsNum = thisReadsNum;
 	}
 	/**
-	 * Ìí¼ÓsnpÎ»µãµÄÊıÁ¿
+	 * æ·»åŠ snpä½ç‚¹çš„æ•°é‡
 	 * @param addNum
 	 */
 	public void addThisReadsNum(int addNum) {
@@ -733,7 +733,7 @@ class SampleSnpReadsQuality {
 
 enum SplitType {
 	ATG("atg"), UAG("uag"), EXON_START("exon start"), EXON_END("exon end"),
-	/** deletion ¿ç¹ıÒ»¸öintron£¬Õâ¾ÍÓ°ÏìÁËÒ»¸östartºÍÒ»¸öend */
+	/** deletion è·¨è¿‡ä¸€ä¸ªintronï¼Œè¿™å°±å½±å“äº†ä¸€ä¸ªstartå’Œä¸€ä¸ªend */
 	EXON_START_END("exon start and end"), NONE("none");
 	String name;
 	SplitType(String name) {

@@ -9,7 +9,7 @@ import com.novelbio.base.dataStructure.StatisticsTest.StatisticsPvalueType;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 /**
- * ¼ìÑéµÄ½á¹û
+ * æ£€éªŒçš„ç»“æœ
  */
 public class StatisticTestResult {
 	static int logBaseNum = 2;
@@ -51,12 +51,12 @@ public class StatisticTestResult {
 		this.AllGeneNum = AllGeneNum;
 	}
 	
-	/** Ö»ÓĞelimGo²ÅÓÃ */
+	/** åªæœ‰elimGoæ‰ç”¨ */
 	protected void setPvalue(double pvalue) {
 		this.pvalue = pvalue;
 	}
 	
-	/** Ö»ÓĞelimGo²ÅÓÃ */
+	/** åªæœ‰elimGoæ‰ç”¨ */
 	protected void setFdr(double fdr) {
 		this.fdr = fdr;
 	}
@@ -79,8 +79,8 @@ public class StatisticTestResult {
 				((double)GeneInItemIDNum/AllGeneNum);
 	}
 	/**
-	 * ·µ»Ø¸ºlogp
-	 * @param num µ×ÊıÆ©Èç-log2P£¬»òÕß-log10P
+	 * è¿”å›è´Ÿlogp
+	 * @param num åº•æ•°è­¬å¦‚-log2Pï¼Œæˆ–è€…-log10P
 	 * @return
 	 */
 	public double getLog2Pnegative() {
@@ -90,7 +90,7 @@ public class StatisticTestResult {
 		this.fdr = fdr;
 	}
 	/**
-	 * ·µ»ØËÄ¸öÊı×ÖµÄ¼ÓºÍ
+	 * è¿”å›å››ä¸ªæ•°å­—çš„åŠ å’Œ
 	 * @return
 	 */
 	protected int getAllCountNum() {
@@ -123,7 +123,7 @@ public class StatisticTestResult {
 	}
 	
 	/**
-	 * ¸ù¾İpvalue£¬½«ÊäÈëµÄcolTestResultÌí¼ÓÉÏfdr
+	 * æ ¹æ®pvalueï¼Œå°†è¾“å…¥çš„colTestResultæ·»åŠ ä¸Šfdr
 	 * @param colTestResult
 	 */
 	public static void setFDR(Collection<StatisticTestResult> colTestResult) {

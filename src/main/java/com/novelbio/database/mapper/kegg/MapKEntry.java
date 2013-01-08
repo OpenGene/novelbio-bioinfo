@@ -64,7 +64,7 @@ public interface MapKEntry extends MapperSql {
 	public void insertKGentry(KGentry kGentry);
 	
 	/**
-	 * 目前的升级方式是
+	 * 鐩墠鐨勫崌绾ф柟寮忔槸
 	    update entry set <br>
 		name = #{name},<br>
 		pathName = #{pathName},<br>

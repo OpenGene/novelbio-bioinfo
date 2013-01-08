@@ -16,12 +16,12 @@ import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.service.servinformation.ServSoftWareInfo;
 
 /**
- * ÉúÎïĞÅÏ¢µÄÈí¼şÒÔ¼°Ö´ĞĞÂ·¾¶
+ * ç”Ÿç‰©ä¿¡æ¯çš„è½¯ä»¶ä»¥åŠæ‰§è¡Œè·¯å¾„
  * @author zong0jie
  */
 public class SoftWareInfo {
 	public static void main(String[] args) {
-//		SoftWareInfo.updateInfo("/home/zong0jie/×ÀÃæ/SoftwareInfo_english.txt");
+//		SoftWareInfo.updateInfo("/home/zong0jie/æ¡Œé¢/SoftwareInfo_english.txt");
 		SoftWareInfo softWareInfo = new SoftWareInfo();
 		softWareInfo.setName("picard");
 		System.out.println(softWareInfo.getDescription());
@@ -29,17 +29,17 @@ public class SoftWareInfo {
 	private String softName;
 	private String descrip;
 	private String web = "";
-	/** ÔËĞĞÂ·¾¶£¬Èç¹ûÊÇÏµÍ³Â·¾¶µÄ»°¾ÍÎª "" */
+	/** è¿è¡Œè·¯å¾„ï¼Œå¦‚æœæ˜¯ç³»ç»Ÿè·¯å¾„çš„è¯å°±ä¸º "" */
 	private String installPath;
-	/** ËùÔÚÎÄ¼ş¼Ğ */
+	/** æ‰€åœ¨æ–‡ä»¶å¤¹ */
 	private String locationPath;
 	private String use;
 	private String ver;
-	/** ÊÇ·ñ´¦ÓÚ»·¾³±äÁ¿ÖĞ:1±íÊ¾true */
+	/** æ˜¯å¦å¤„äºç¯å¢ƒå˜é‡ä¸­:1è¡¨ç¤ºtrue */
 	int isPath = 1;
-	/** ÊÇ·ñÒÑ¾­²éÕÒ¹ı */
+	/** æ˜¯å¦å·²ç»æŸ¥æ‰¾è¿‡ */
 	boolean searched = false;
-	/** ²éÕÒÓÃµÄ */
+	/** æŸ¥æ‰¾ç”¨çš„ */
 	ServSoftWareInfo servSoftWareInfo = new ServSoftWareInfo();
 
 	public SoftWareInfo() { }
@@ -82,7 +82,7 @@ public class SoftWareInfo {
 		return ver;
 	}
 	/**
-	 * Ê¹ÓÃÀà±ğ£¬Èçmapping£¬miRNAÔ¤²âµÈµÈ
+	 * ä½¿ç”¨ç±»åˆ«ï¼Œå¦‚mappingï¼ŒmiRNAé¢„æµ‹ç­‰ç­‰
 	 * @param usage
 	 */
 	public void setUsage(String usage) {
@@ -93,20 +93,20 @@ public class SoftWareInfo {
 		querySoftWareInfo();
 		return use;
 	}
-	/** ÔËĞĞÂ·¾¶£¬Èç¹ûÊÇÏµÍ³Â·¾¶µÄ»°¾ÍÎª "" */
+	/** è¿è¡Œè·¯å¾„ï¼Œå¦‚æœæ˜¯ç³»ç»Ÿè·¯å¾„çš„è¯å°±ä¸º "" */
 	public void setInstallPath(String installPath) {
 		this.installPath = installPath;
 	}
-	/** ËùÔÚÎÄ¼ş¼Ğ */
+	/** æ‰€åœ¨æ–‡ä»¶å¤¹ */
 	public void setPath(String path) {
 		this.locationPath = path;
 	}
-	/** ËùÔÚÎÄ¼ş¼Ğ */
+	/** æ‰€åœ¨æ–‡ä»¶å¤¹ */
 	public String getPath() {
 		querySoftWareInfo();
 		return locationPath;
 	}
-	/** ÊÇ·ñ´¦ÓÚ»·¾³±äÁ¿ÖĞ */
+	/** æ˜¯å¦å¤„äºç¯å¢ƒå˜é‡ä¸­ */
 	public void setInPath(boolean isPath) {
 		if (isPath) {
 			this.isPath = 1;
@@ -123,7 +123,7 @@ public class SoftWareInfo {
 			return false;
 	}
 	/**
-	 * ¸ù¾İÊÇ·ñÔÚÏµÍ³Â·¾¶£¬·µ»Ø""»òÕßlocationPath£¬×îºó¼ÓÉÏ/
+	 * æ ¹æ®æ˜¯å¦åœ¨ç³»ç»Ÿè·¯å¾„ï¼Œè¿”å›""æˆ–è€…locationPathï¼Œæœ€ååŠ ä¸Š/
 	 * @return
 	 */
 	public String getExePath() {
@@ -137,9 +137,9 @@ public class SoftWareInfo {
 		querySoftWareInfo();
 		return installPath;
 	}
-	////////////////////////////////////////////////////³äÑªÄ£ĞÍ ///////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////å……è¡€æ¨¡å‹ ///////////////////////////////////////////////////////////
 	/**
-	 * Éı¼¶±¾ĞÅÏ¢£¬Ã»ÓĞ¾Í²åÈë£¬ÓĞ¾ÍÉı¼¶
+	 * å‡çº§æœ¬ä¿¡æ¯ï¼Œæ²¡æœ‰å°±æ’å…¥ï¼Œæœ‰å°±å‡çº§
 	 */
 	public void update() {
 		servSoftWareInfo.update(this);
@@ -149,7 +149,7 @@ public class SoftWareInfo {
 		return lsSoftWareInfos;
 	}
 	/**
-	 * ±ØĞëÒªÓĞÈí¼şÃû£¬×îºÃÓĞ°æ±¾ºÅ
+	 * å¿…é¡»è¦æœ‰è½¯ä»¶åï¼Œæœ€å¥½æœ‰ç‰ˆæœ¬å·
 	 */
 	private void querySoftWareInfo() {
 		if (searched) {
@@ -163,7 +163,7 @@ public class SoftWareInfo {
 			return;
 		}
 		if (lsSoftWareInfos.size() > 1) {
-			//¸ù¾İ°æ±¾ºÅ½øĞĞÅÅĞò
+			//æ ¹æ®ç‰ˆæœ¬å·è¿›è¡Œæ’åº
 			Collections.sort(lsSoftWareInfos, new Comparator<SoftWareInfo>() {
 				@Override
 				public int compare(SoftWareInfo o1, SoftWareInfo o2) {
@@ -175,7 +175,7 @@ public class SoftWareInfo {
 		searched = true;
 	}
 	
-	/** ½«Êı¾İ¿âËÑË÷µ½µÄĞÅÏ¢È«²¿¿½±´ÖÁ±¾Àà */
+	/** å°†æ•°æ®åº“æœç´¢åˆ°çš„ä¿¡æ¯å…¨éƒ¨æ‹·è´è‡³æœ¬ç±» */
 	private void copyInfo(SoftWareInfo softWareInfo) {
 		this.softName = softWareInfo.softName;
 		this.descrip = softWareInfo.descrip;
@@ -187,7 +187,7 @@ public class SoftWareInfo {
 		this.isPath = softWareInfo.isPath;
 	}
 	/**
-	 * Éî¶È±È½ÏÏàËÆ
+	 * æ·±åº¦æ¯”è¾ƒç›¸ä¼¼
 	 * @param obj
 	 */
 	public boolean equalsDeep(Object obj) {
@@ -214,8 +214,8 @@ public class SoftWareInfo {
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * ½«ÅäÖÃĞÅÏ¢µ¼ÈëÊı¾İ¿â
-	 * @param txtFile 	 ÅäÖÃĞÅÏ¢£ºµÚÒ»ĞĞ£¬itemÃû³Æ
+	 * å°†é…ç½®ä¿¡æ¯å¯¼å…¥æ•°æ®åº“
+	 * @param txtFile 	 é…ç½®ä¿¡æ¯ï¼šç¬¬ä¸€è¡Œï¼Œitemåç§°
 	 */
 	public static void updateInfo(String txtFile) {
 		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(txtFile, 0);
@@ -251,7 +251,7 @@ public class SoftWareInfo {
 			
 			m = hashName2ColNum.get("ispath");
 			softWareInfo.setInPath(info[m].trim().toLowerCase().equals("true"));
-			//Éı¼¶
+			//å‡çº§
 			softWareInfo.update();
 		}
 	}

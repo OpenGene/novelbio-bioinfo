@@ -192,7 +192,7 @@ public class KGML {
    }
 
    /**
-    * ¸ø¶¨id£¬·µ»Ø¸ÃidËù¶ÔÓ¦µÄentryĞÅÏ¢
+    * ç»™å®šidï¼Œè¿”å›è¯¥idæ‰€å¯¹åº”çš„entryä¿¡æ¯
     * @param id
     * @return
     */
@@ -208,14 +208,14 @@ class Entry
 {	
 	/**
 	 * the ID of this entry in the pathway map <br>
-	 *  the identification number of this entry£¬´Ó1¿ªÊ¼¼ÇÊı
+	 *  the identification number of this entryï¼Œä»1å¼€å§‹è®°æ•°
 	 */
 	@Attribute(name="id")
 	private int id=-1;
 	
 	/**
-	 * the KEGGID of this entry£¬ÓÃ¿Õ¸ñ·Ö¸ô
-	 * example£º name="sma:SAV_2461 sma:SAV_3026 sma:SAV_3027"<br>
+	 * the KEGGID of this entryï¼Œç”¨ç©ºæ ¼åˆ†éš”
+	 * exampleï¼š name="sma:SAV_2461 sma:SAV_3026 sma:SAV_3027"<br>
 	 * detail:<br>
 	 * <b>path:(accession)</b>  	pathway map
 	 * ex) name="path:map00040"
@@ -239,8 +239,8 @@ class Entry
 	private String name;
 	
 	/**
-	 * µ±typeÎªmapÇÒ²»Îª±¾pathwayÊ±£¬½«±¾pathwayºÍ¸Ãmap×é³Ésource--target²¢ÇÒ·ÅÈëKGRelationÀàÖĞ
-	 * µ±typeÎªgroupÊ±£¬½«componentÖĞÉæ¼°µ½µÄËùÓĞentryÁ½Á½±éÀú×é³Ésource--target²¢ÇÒ·ÅÈëKGReactionÀàÖĞ
+	 * å½“typeä¸ºmapä¸”ä¸ä¸ºæœ¬pathwayæ—¶ï¼Œå°†æœ¬pathwayå’Œè¯¥mapç»„æˆsource--targetå¹¶ä¸”æ”¾å…¥KGRelationç±»ä¸­
+	 * å½“typeä¸ºgroupæ—¶ï¼Œå°†componentä¸­æ¶‰åŠåˆ°çš„æ‰€æœ‰entryä¸¤ä¸¤éå†ç»„æˆsource--targetå¹¶ä¸”æ”¾å…¥KGReactionç±»ä¸­
 	 * the type of this entry. detail:<br>
 	 * <b>ortholog</b> 	the node is a KO (ortholog group)<br>
 	 * <b>enzyme</b> 	the node is an enzyme<br>
@@ -275,7 +275,7 @@ class Entry
 	private ArrayList<Graphics> lsGraphics;
 
 	/**
-	 * Èç¹û³öÏÖcomponent£¬Ò²¾ÍÊÇtypeÎªgroupÊ±£¬Ôò½«¸ÃÏî·ÅÈëKGRelationÖĞ,²¢ÇÒ½«typeÉèÖÃÎªpathway2pathway£¬componentÓĞ¼¸Ïî¾Í²ğ·ÖÎª¼¸¸ösorce-targetÏîÄ¿
+	 * å¦‚æœå‡ºç°componentï¼Œä¹Ÿå°±æ˜¯typeä¸ºgroupæ—¶ï¼Œåˆ™å°†è¯¥é¡¹æ”¾å…¥KGRelationä¸­,å¹¶ä¸”å°†typeè®¾ç½®ä¸ºpathway2pathwayï¼Œcomponentæœ‰å‡ é¡¹å°±æ‹†åˆ†ä¸ºå‡ ä¸ªsorce-targeté¡¹ç›®
 	 * The component element is a subelement of the entry element, 
 	 * and is used when the entry element is a complex node; 
 	 * namely, when the type attribute value of the entry element is "group". 
@@ -287,7 +287,7 @@ class Entry
 	private ArrayList<Component> lsComponents;
 	/**
 	 * the ID of this entry in the pathway map <br>
-	 *  the identification number of this entry£¬´Ó1¿ªÊ¼¼ÇÊı
+	 *  the identification number of this entryï¼Œä»1å¼€å§‹è®°æ•°
 	 */
 	public int getID()
 	{
@@ -307,8 +307,8 @@ class Entry
 	}
 	
 	/**
-	 * the KEGGID of this entry£¬ÓÃ¿Õ¸ñ·Ö¸ô£¬ËùÒÔÔÚ×°ÈëKGentryÀàÊ±Òª½«IDÈ«²¿·Ö¿ª
-	 * example£º name="sma:SAV_2461 sma:SAV_3026 sma:SAV_3027"<br>
+	 * the KEGGID of this entryï¼Œç”¨ç©ºæ ¼åˆ†éš”ï¼Œæ‰€ä»¥åœ¨è£…å…¥KGentryç±»æ—¶è¦å°†IDå…¨éƒ¨åˆ†å¼€
+	 * exampleï¼š name="sma:SAV_2461 sma:SAV_3026 sma:SAV_3027"<br>
 	 * detail:<br>
 	 * <b>path:(accession)</b>  	pathway map
 	 * ex) name="path:map00040"
@@ -364,7 +364,7 @@ class Entry
 	}
 	
 	/**
-	 * Èç¹û³öÏÖcomponent£¬Ò²¾ÍÊÇtypeÎªgroupÊ±£¬Ôò½«¸ÃÏî·ÅÈëKGReactionÖĞ£¬componentÓĞ¼¸Ïî¾Í²ğ·ÖÎª¼¸¸ösorce-targetÏîÄ¿£¬Ò²¾ÍÊÇentry1--entry2µÄ¹ØÏµ
+	 * å¦‚æœå‡ºç°componentï¼Œä¹Ÿå°±æ˜¯typeä¸ºgroupæ—¶ï¼Œåˆ™å°†è¯¥é¡¹æ”¾å…¥KGReactionä¸­ï¼Œcomponentæœ‰å‡ é¡¹å°±æ‹†åˆ†ä¸ºå‡ ä¸ªsorce-targeté¡¹ç›®ï¼Œä¹Ÿå°±æ˜¯entry1--entry2çš„å…³ç³»
 	 * The component element is a subelement of the entry element, and is used when the entry element is a complex node; 
 	 * namely, when the type attribute value of the entry element is "group". The nodes that constitute the complex are specified by recurrent calls.
 	 * For example, when the complex is composed of two nodes, two component elements are specified.
@@ -378,7 +378,7 @@ class Entry
 }
 
 /**
- * ÔİÊ±²»»áÈ¥Ê¹ÓÃµÄ¶«Î÷
+ * æš‚æ—¶ä¸ä¼šå»ä½¿ç”¨çš„ä¸œè¥¿
  * @author zong0jie
  *
  */
@@ -405,7 +405,7 @@ class Graphics
 	private String bgcolor;
 }
 /**
- * Èç¹û³öÏÖcomponent£¬Ò²¾ÍÊÇtypeÎªgroupÊ±£¬Ôò½«¸ÃÏî·ÅÈëKGReactionÖĞ£¬componentÓĞ¼¸Ïî¾Í²ğ·ÖÎª¼¸¸ösorce-targetÏîÄ¿£¬Ò²¾ÍÊÇentry1--entry2µÄ¹ØÏµ
+ * å¦‚æœå‡ºç°componentï¼Œä¹Ÿå°±æ˜¯typeä¸ºgroupæ—¶ï¼Œåˆ™å°†è¯¥é¡¹æ”¾å…¥KGReactionä¸­ï¼Œcomponentæœ‰å‡ é¡¹å°±æ‹†åˆ†ä¸ºå‡ ä¸ªsorce-targeté¡¹ç›®ï¼Œä¹Ÿå°±æ˜¯entry1--entry2çš„å…³ç³»
  * The component element is a subelement of the entry element, and is used when the entry element is a complex node; 
  * namely, when the type attribute value of the entry element is "group". The nodes that constitute the complex are specified by recurrent calls.
  * For example, when the complex is composed of two nodes, two component elements are specified.
@@ -561,7 +561,7 @@ class Subtype
 	
 
 	/**
-	 * »ñµÃÁ½¸öentryÏà»¥×÷ÓÃµÄÀàĞÍ£¬¾ßÌå¼ûÏÂ±í£ººÚÌåÎªname£¬µÚ¶şĞĞÎªvalue<br>
+	 * è·å¾—ä¸¤ä¸ªentryç›¸äº’ä½œç”¨çš„ç±»å‹ï¼Œå…·ä½“è§ä¸‹è¡¨ï¼šé»‘ä½“ä¸ºnameï¼Œç¬¬äºŒè¡Œä¸ºvalue<br>
 	 * Interaction/relation information <br>
 	 *      <b>name</b>  	value  	ECrel  	PPrel  	GErel  	Explanation <br>
 *      <b>compound</b> 	Entry element id attribute value for compound. 	ECrel 	PPrel 		shared with two successive reactions (ECrel) or intermediate of two interacting proteins (PPrel) <br>
@@ -588,7 +588,7 @@ class Subtype
 		return this.name.trim();
 	}
 	/**
-	 * »ñµÃÁ½¸öentryÏà»¥×÷ÓÃµÄÀàĞÍ£¬¾ßÌå¼ûÏÂ±í£ººÚÌåÎªname£¬µÚ¶şĞĞÎªvalue£¬ÆäÖĞvalueÖ»ÓĞÔÚnameÎªcompoundºÍhidden compoundÊ±²ÅÓĞ×÷ÓÃ<br>
+	 * è·å¾—ä¸¤ä¸ªentryç›¸äº’ä½œç”¨çš„ç±»å‹ï¼Œå…·ä½“è§ä¸‹è¡¨ï¼šé»‘ä½“ä¸ºnameï¼Œç¬¬äºŒè¡Œä¸ºvalueï¼Œå…¶ä¸­valueåªæœ‰åœ¨nameä¸ºcompoundå’Œhidden compoundæ—¶æ‰æœ‰ä½œç”¨<br>
 	 * Interaction/relation information <br>
 	 *      <b>name</b>  	value  	ECrel  	PPrel  	GErel  	Explanation <br>
 *      <b>compound</b> 	Entry element id attribute value for compound. 	ECrel 	PPrel 		shared with two successive reactions (ECrel) or intermediate of two interacting proteins (PPrel) <br>
@@ -624,7 +624,7 @@ class Subtype
 class Reaction
 {
 	/**
-	 * the ID of this reaction,ºÍEntryµÄIDÊÇÍ¬Ò»¸ö
+	 * the ID of this reaction,å’ŒEntryçš„IDæ˜¯åŒä¸€ä¸ª
 	 */
 	@Attribute(name="id")
 	private int id=-1;
@@ -663,7 +663,7 @@ class Reaction
 	private Alt alt;
 	
 	/**
-	 * the ID of this reaction,ºÍEntryµÄIDÊÇÍ¬Ò»¸ö
+	 * the ID of this reaction,å’ŒEntryçš„IDæ˜¯åŒä¸€ä¸ª
 	 */
 	public int getID() {
 		return this.id;

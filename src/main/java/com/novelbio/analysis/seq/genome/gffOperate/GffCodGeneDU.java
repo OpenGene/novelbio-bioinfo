@@ -12,7 +12,7 @@ import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 import com.novelbio.database.model.modgeneid.GeneID;
 
 /**
- * ´ı¼ì²é£¬Ä¬ÈÏ×ßÈ«²¿¸²¸Ç¸Ã»ùÒò£¬Ã»ÓĞ5UTRºÍ3UTR
+ * å¾…æ£€æŸ¥ï¼Œé»˜è®¤èµ°å…¨éƒ¨è¦†ç›–è¯¥åŸºå› ï¼Œæ²¡æœ‰5UTRå’Œ3UTR
  * 
  * @author zong0jie
  * 
@@ -20,48 +20,48 @@ import com.novelbio.database.model.modgeneid.GeneID;
 public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 	private static Logger logger = Logger.getLogger(GffCodGeneDU.class);
 	
-	/** ÊÇ·ñĞèÒª²éÑ¯Iso */
+	/** æ˜¯å¦éœ€è¦æŸ¥è¯¢Iso */
 	private boolean flagSearchAnno = false;
-	/** ÊÇ·ñĞèÒª²éÑ¯Hash */
+	/** æ˜¯å¦éœ€è¦æŸ¥è¯¢Hash */
 	private boolean flagSearchHash = false;
-	/** ÊÇ·ñĞèÒªÖØĞÂ²éÑ¯ */
+	/** æ˜¯å¦éœ€è¦é‡æ–°æŸ¥è¯¢ */
 	private boolean flagSearch = false;
 	int[] tss = null;
 	int[] tes = null;
 	boolean geneBody = true;
-	/** Èç¹ûÎ»µãÔÚTssÇ°£¬ÄÇÃ´¼´Ê¹±¾»ùÒòÃ»ÓĞ5UTR£¬Ò²»á±»Ñ¡Ôñµ½ */
+	/** å¦‚æœä½ç‚¹åœ¨Tsså‰ï¼Œé‚£ä¹ˆå³ä½¿æœ¬åŸºå› æ²¡æœ‰5UTRï¼Œä¹Ÿä¼šè¢«é€‰æ‹©åˆ° */
 	boolean utr5 = false;
 	boolean utr3 = false;
 	boolean exon = false;
 	boolean intron = false;
-	/** ±£´æ×îºóµÄ×¢ÊÍĞÅÏ¢ */
+	/** ä¿å­˜æœ€åçš„æ³¨é‡Šä¿¡æ¯ */
 	ArrayList<String[]> lsAnno;
 	
-	/** ±£´æ×îºóÑ¡Ôñµ½µÄgene key: geneName + sep +chrID */
+	/** ä¿å­˜æœ€åé€‰æ‹©åˆ°çš„gene key: geneName + sep +chrID */
 	HashSet<GffDetailGene> hashGffDetailGene;
 	
-	/** ×ó²à×ø±ê±£´æµÄ»ùÒòĞÅÏ¢£¬UpºÍDownÖ®¼äÃ»ÓĞ½»¼¯
-	 * ÀïÃæ±£´æµÄGffDetailGene¶¼ÊÇcloneµÄ
+	/** å·¦ä¾§åæ ‡ä¿å­˜çš„åŸºå› ä¿¡æ¯ï¼ŒUpå’ŒDownä¹‹é—´æ²¡æœ‰äº¤é›†
+	 * é‡Œé¢ä¿å­˜çš„GffDetailGeneéƒ½æ˜¯cloneçš„
 	 */
 	LinkedHashSet<GffDetailGene> setGffDetailGenesLeft = null;
-	/** ÓÒ²à×ø±ê±£´æµÄ»ùÒòĞÅÏ¢£¬UpºÍDownÖ®¼äÃ»ÓĞ½»¼¯
-	 * ÀïÃæ±£´æµÄGffDetailGene¶¼ÊÇcloneµÄ
+	/** å³ä¾§åæ ‡ä¿å­˜çš„åŸºå› ä¿¡æ¯ï¼ŒUpå’ŒDownä¹‹é—´æ²¡æœ‰äº¤é›†
+	 * é‡Œé¢ä¿å­˜çš„GffDetailGeneéƒ½æ˜¯cloneçš„
 	 */
 	LinkedHashSet<GffDetailGene> setGffDetailGenesRight = null;
 	
-	/** ½«¹ıÂË±êÇ©Çå¿Õ */
+	/** å°†è¿‡æ»¤æ ‡ç­¾æ¸…ç©º */
 	public void cleanFilter() {
 		tss = null;
 		tes = null;
 		geneBody = false;
-		/** Èç¹ûÎ»µãÔÚTssÇ°£¬ÄÇÃ´¼´Ê¹±¾»ùÒòÃ»ÓĞ5UTR£¬Ò²»á±»Ñ¡Ôñµ½ */
+		/** å¦‚æœä½ç‚¹åœ¨Tsså‰ï¼Œé‚£ä¹ˆå³ä½¿æœ¬åŸºå› æ²¡æœ‰5UTRï¼Œä¹Ÿä¼šè¢«é€‰æ‹©åˆ° */
 		utr5 = false;
 		utr3 = false;
 		exon = false;
 		intron = false;
 	}
 	/**
-	 * Éè¶¨tssµÄ·¶Î§£¬Ä¬ÈÏÎªnull
+	 * è®¾å®štssçš„èŒƒå›´ï¼Œé»˜è®¤ä¸ºnull
 	 * @param tss
 	 */
 	public void setTss(int[] tss) {
@@ -75,12 +75,12 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 	}
 
 	/**
-	 * Éè¶¨tesµÄ·¶Î§£¬Ä¬ÈÏÎªnull
+	 * è®¾å®štesçš„èŒƒå›´ï¼Œé»˜è®¤ä¸ºnull
 	 * 
 	 * @param tes
 	 */
 	public void setTes(int[] tes) {
-		// Ò»Ä£Ò»Ñù¾Í·µ»Ø
+		// ä¸€æ¨¡ä¸€æ ·å°±è¿”å›
 		if (this.tes != null && tes != null) {
 			if (this.tes[0] == tes[0] && this.tes[1] == tes[1]) {
 				return;
@@ -91,7 +91,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 	}
 
 	/**
-	 * Éè¶¨genebodyµÄ·¶Î§£¬Ä¬ÈÏÎªtrue£¬Ò²¾ÍÊÇ»ñµÃgenebodyµÄĞÅÏ¢
+	 * è®¾å®šgenebodyçš„èŒƒå›´ï¼Œé»˜è®¤ä¸ºtrueï¼Œä¹Ÿå°±æ˜¯è·å¾—genebodyçš„ä¿¡æ¯
 	 * 
 	 * @param geneBody
 	 */
@@ -104,7 +104,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 	}
 
 	/**
-	 * Éè¶¨ÊÇ·ñ×¥È¡¸²¸Ç5UTRµÄgene£¬Ä¬ÈÏÎªfalse£¬ÒòÎªgenebodyÒÑ¾­ÊÇtrue£¬Ö»ÓĞgenebodyÎªfalseÊ±²Å»áÆğ×÷ÓÃ
+	 * è®¾å®šæ˜¯å¦æŠ“å–è¦†ç›–5UTRçš„geneï¼Œé»˜è®¤ä¸ºfalseï¼Œå› ä¸ºgenebodyå·²ç»æ˜¯trueï¼Œåªæœ‰genebodyä¸ºfalseæ—¶æ‰ä¼šèµ·ä½œç”¨
 	 * @param utr5
 	 */
 	public void setUTR5(boolean utr5) {
@@ -116,7 +116,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 	}
 
 	/**
-	 * Éè¶¨ÊÇ·ñ×¥È¡¸²¸Ç3UTRµÄgene£¬Ä¬ÈÏÎªfalse£¬ÒòÎªgenebodyÒÑ¾­ÊÇtrue£¬Ö»ÓĞgenebodyÎªfalseÊ±²Å»áÆğ×÷ÓÃ
+	 * è®¾å®šæ˜¯å¦æŠ“å–è¦†ç›–3UTRçš„geneï¼Œé»˜è®¤ä¸ºfalseï¼Œå› ä¸ºgenebodyå·²ç»æ˜¯trueï¼Œåªæœ‰genebodyä¸ºfalseæ—¶æ‰ä¼šèµ·ä½œç”¨
 	 * @param utr3
 	 */
 	public void setUTR3(boolean utr3) {
@@ -127,7 +127,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 		resetFlag();
 	}
 	/**
-	 * Éè¶¨¸²¸ÇexonµÄgene£¬Ä¬ÈÏÎªfalse£¬ÒòÎªgenebodyÒÑ¾­ÊÇtrue£¬Ö»ÓĞgenebodyÎªfalseÊ±²Å»áÆğ×÷ÓÃ
+	 * è®¾å®šè¦†ç›–exonçš„geneï¼Œé»˜è®¤ä¸ºfalseï¼Œå› ä¸ºgenebodyå·²ç»æ˜¯trueï¼Œåªæœ‰genebodyä¸ºfalseæ—¶æ‰ä¼šèµ·ä½œç”¨
 	 * @param exon
 	 */
 	public void setExon(boolean exon) {
@@ -139,7 +139,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 	}
 
 	/**
-	 * Éè¶¨¸²¸ÇintronµÄgene£¬Ä¬ÈÏÎªfalse£¬ÒòÎªgenebodyÒÑ¾­ÊÇtrue£¬Ö»ÓĞgenebodyÎªfalseÊ±²Å»áÆğ×÷ÓÃ
+	 * è®¾å®šè¦†ç›–intronçš„geneï¼Œé»˜è®¤ä¸ºfalseï¼Œå› ä¸ºgenebodyå·²ç»æ˜¯trueï¼Œåªæœ‰genebodyä¸ºfalseæ—¶æ‰ä¼šèµ·ä½œç”¨
 	 * 
 	 * @param intron
 	 */
@@ -162,11 +162,11 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 	}
 
 	/**
-	 * »ñµÃgffDetailGeneµÄ¾ßÌåĞÅÏ¢£¬Èç¹û¸ÃgffDetailGene°üº¬¶à¸öcopedID£¬ÔòÓÃ¡°///¡±·Ö¸î
-	 * @return 0£ºaccID <br>
-	 *         1£ºsymbol<br>
-	 *         2£ºdescription<br>
-	 *         3£ºÁ½¶ËÊÇ¾ßÌåĞÅÏ¢£¬ÖĞ¼äÊÇcovered
+	 * è·å¾—gffDetailGeneçš„å…·ä½“ä¿¡æ¯ï¼Œå¦‚æœè¯¥gffDetailGeneåŒ…å«å¤šä¸ªcopedIDï¼Œåˆ™ç”¨â€œ///â€åˆ†å‰²
+	 * @return 0ï¼šaccID <br>
+	 *         1ï¼šsymbol<br>
+	 *         2ï¼šdescription<br>
+	 *         3ï¼šä¸¤ç«¯æ˜¯å…·ä½“ä¿¡æ¯ï¼Œä¸­é—´æ˜¯covered
 	 */
 	public ArrayList<String[]> getAnno() {
 		if (flagSearchAnno) {
@@ -199,13 +199,13 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 
 	
 	/**
-	 * »ñµÃgffDetailGeneµÄ¾ßÌåĞÅÏ¢£¬Èç¹û¸ÃgffDetailGene°üº¬¶à¸öcopedID£¬ÔòÓÃ¡°///¡±·Ö¸î
+	 * è·å¾—gffDetailGeneçš„å…·ä½“ä¿¡æ¯ï¼Œå¦‚æœè¯¥gffDetailGeneåŒ…å«å¤šä¸ªcopedIDï¼Œåˆ™ç”¨â€œ///â€åˆ†å‰²
 	 * 
 	 * @param gffDetailGene
-	 * @return 0£ºaccID<br>
-	 *         1£ºsymbol<br>
-	 *         2£ºdescription<br>
-	 *         3£ºÎÄ×ÖĞÎÊ½µÄ¶¨Î»ÃèÊö
+	 * @return 0ï¼šaccID<br>
+	 *         1ï¼šsymbol<br>
+	 *         2ï¼šdescription<br>
+	 *         3ï¼šæ–‡å­—å½¢å¼çš„å®šä½æè¿°
 	 */
 	private String[] getAnnoCod(int coord, GffDetailGene gffDetailGene, String peakPointInfo) {
 		HashSet<GeneID> hashCopedID = new HashSet<GeneID>();
@@ -231,13 +231,13 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 	}
 
 	/**
-	 * »ñµÃgffDetailGeneµÄ¾ßÌåĞÅÏ¢£¬Èç¹û¸ÃgffDetailGene°üº¬¶à¸öcopedID£¬ÔòÓÃ¡°///¡±·Ö¸î
+	 * è·å¾—gffDetailGeneçš„å…·ä½“ä¿¡æ¯ï¼Œå¦‚æœè¯¥gffDetailGeneåŒ…å«å¤šä¸ªcopedIDï¼Œåˆ™ç”¨â€œ///â€åˆ†å‰²
 	 * 
 	 * @param gffDetailGene
-	 * @return 0£ºaccID<br>
-	 *         1£ºsymbol<br>
-	 *         2£ºdescription<br>
-	 *         3£ºCovered
+	 * @return 0ï¼šaccID<br>
+	 *         1ï¼šsymbol<br>
+	 *         2ï¼šdescription<br>
+	 *         3ï¼šCovered
 	 */
 	private String[] getAnnoMid(GffDetailGene gffDetailGene) {
 		HashSet<GeneID> hashCopedID = new HashSet<GeneID>();
@@ -269,12 +269,12 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 		return hashGffDetailGene;
 	}
 	/**
-	 * ÓÉÇ°ÃæµÄÉè¶¨£¬½«ËùÓĞ·ûºÏÒªÇóµÄgeneµÄÈ«²¿ÌáÈ¡³öÀ´
+	 * ç”±å‰é¢çš„è®¾å®šï¼Œå°†æ‰€æœ‰ç¬¦åˆè¦æ±‚çš„geneçš„å…¨éƒ¨æå–å‡ºæ¥
 	 * @return
 	 */
 	public ArrayList<GeneID> getCoveredGene() {
 		setHashCoveredGenInfo();
-		// ÓÃÀ´È¥ÈßÓàµÄ
+		// ç”¨æ¥å»å†—ä½™çš„
 		HashSet<GeneID> hashCopedID = new HashSet<GeneID>();
 		ArrayList<GeneID> lsCopedIDs = new ArrayList<GeneID>();
 	
@@ -292,14 +292,14 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 		}
 		return lsCopedIDs;
 	}
-	/** ½«Á½¸öÎ»µã¼ä¸²¸Çµ½µÄ»ùÒòÌáÈ¡³öÀ´£¬±£´æÖÁhashGffDetailGene */
+	/** å°†ä¸¤ä¸ªä½ç‚¹é—´è¦†ç›–åˆ°çš„åŸºå› æå–å‡ºæ¥ï¼Œä¿å­˜è‡³hashGffDetailGene */
 	private void setHashCoveredGenInfo() {
 		if (flagSearchHash && hashGffDetailGene != null) {
 			return;
 		}
 		flagSearchHash = true;
 		hashGffDetailGene = new LinkedHashSet<GffDetailGene>();
-		//TODO: ÕâÀïĞŞ¸ÄtssºÍtesºó£¬gffDetailgeneÒªĞŞ¸ÄtssºÍtes£¬gffisoÒ²ÒªĞŞ¸ÄtssºÍtes
+		//TODO: è¿™é‡Œä¿®æ”¹tsså’Œtesåï¼ŒgffDetailgeneè¦ä¿®æ”¹tsså’Œtesï¼Œgffisoä¹Ÿè¦ä¿®æ”¹tsså’Œtes
 		setStructureGene_And_Remove_IsoNotBeFiltered();
 		for (GffDetailGene gffDetailGene : setGffDetailGenesLeft) {
 			hashGffDetailGene.add(gffDetailGene);
@@ -307,7 +307,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 		if (lsgffDetailsMid != null) {
 			for (GffDetailGene gffDetailGene : lsgffDetailsMid) {
 				if (hashGffDetailGene.contains(gffDetailGene)) {
-//					logger.error("lsmid³öÏÖÓëµÚÒ»¸öµãÒ»ÑùµÄiso£¬½¨Òé¸´²é");
+//					logger.error("lsmidå‡ºç°ä¸ç¬¬ä¸€ä¸ªç‚¹ä¸€æ ·çš„isoï¼Œå»ºè®®å¤æŸ¥");
 					continue;
 				}
 				hashGffDetailGene.add(gffDetailGene);
@@ -320,19 +320,19 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 		}
 	}
 	/**
-	 * ½«¸²¸Çµ½Ö¸¶¨ÇøÓòµÄ»ùÒòÈ«²¿ÌáÈ¡³öÀ´²¢±£´æÖÁsetGffDetailGenesLeftºÍsetGffDetailGenesRight
+	 * å°†è¦†ç›–åˆ°æŒ‡å®šåŒºåŸŸçš„åŸºå› å…¨éƒ¨æå–å‡ºæ¥å¹¶ä¿å­˜è‡³setGffDetailGenesLeftå’ŒsetGffDetailGenesRight
 	 * 
 	 * @param Tss
-	 *            TssÉÏÏÂÓÎ¶àÉÙbp£¬ÉÏÓÎÎª¸ºÊıÏÂÓÎÎªÕıÊı£¬ Á½¸ö¶¼ÎªÕıÊı±íÊ¾Ö»Ñ¡È¡TssÏÂÓÎ£¬Á½¸ö¶¼Îª¸ºÊı±íÊ¾Ö»Ñ¡È¡TssÉÏÓÎ
+	 *            Tssä¸Šä¸‹æ¸¸å¤šå°‘bpï¼Œä¸Šæ¸¸ä¸ºè´Ÿæ•°ä¸‹æ¸¸ä¸ºæ­£æ•°ï¼Œ ä¸¤ä¸ªéƒ½ä¸ºæ­£æ•°è¡¨ç¤ºåªé€‰å–Tssä¸‹æ¸¸ï¼Œä¸¤ä¸ªéƒ½ä¸ºè´Ÿæ•°è¡¨ç¤ºåªé€‰å–Tssä¸Šæ¸¸
 	 * @param Tes
-	 *            Í¬Tss
+	 *            åŒTss
 	 * @param geneBody
-	 *            ÊÇ·ñÔÚgenebody
+	 *            æ˜¯å¦åœ¨genebody
 	 * @param Exon
-	 *            µ±genebodyÎªfalseÊ±£¬ÊÇ·ñ¸²¸Çexon
+	 *            å½“genebodyä¸ºfalseæ—¶ï¼Œæ˜¯å¦è¦†ç›–exon
 	 * @param Intron
-	 *            µ±genebodyÎªfalseÊ±£¬ÊÇ·ñ¸²¸Çexon
-	 * @return Ã»ÓĞÔò·µ»ØÒ»¸ösizeÎª0µÄset
+	 *            å½“genebodyä¸ºfalseæ—¶ï¼Œæ˜¯å¦è¦†ç›–exon
+	 * @return æ²¡æœ‰åˆ™è¿”å›ä¸€ä¸ªsizeä¸º0çš„set
 	 */
 	private void setStructureGene_And_Remove_IsoNotBeFiltered() {
 		if (flagSearch) {
@@ -350,7 +350,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 		set_SetGffDetailGenes_Clone(tssUp, tesDown);
 		ArrayList<GffDetailGene> lsRemove = new ArrayList<GffDetailGene>();
 		for (GffDetailGene gffDetailGene : setGffDetailGenesLeft) {
-			//Ê×ÏÈÅĞ¶Ï¸ÃgffdetailgeneÊÇ·ñÂú×ãÌõ¼ş£¬Èç¹ûÂú×ãÁËµ«ÊÇÀïÃæÒÑ¾­Ã»ÓĞgffisoÁË£¬Ò²ÒªÉ¾³ı
+			//é¦–å…ˆåˆ¤æ–­è¯¥gffdetailgeneæ˜¯å¦æ»¡è¶³æ¡ä»¶ï¼Œå¦‚æœæ»¡è¶³äº†ä½†æ˜¯é‡Œé¢å·²ç»æ²¡æœ‰gffisoäº†ï¼Œä¹Ÿè¦åˆ é™¤
 			if (!isInRegion2Cod_And_Remove_IsoNotBeFiltered(gffDetailGene) || gffDetailGene.getLsCodSplit().size() == 0) {
 				lsRemove.add(gffDetailGene);
 			}
@@ -370,9 +370,9 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 	}
 
 	/**
-	 * ÓÃcloneµÄ·½·¨»ñµÃ¶ËµãËùÇ£Éæµ½µÄ»ùÒò
+	 * ç”¨cloneçš„æ–¹æ³•è·å¾—ç«¯ç‚¹æ‰€ç‰µæ¶‰åˆ°çš„åŸºå› 
 	 * @param tssUp
-	 * @param tesDown ÏòÏÂÀ©Õ¹¶àÉÙbp
+	 * @param tesDown å‘ä¸‹æ‰©å±•å¤šå°‘bp
 	 */
 	private void set_SetGffDetailGenes_Clone(int tssUp, int tesDown) {
 		setGffDetailGenesLeft = new LinkedHashSet<GffDetailGene>();
@@ -389,7 +389,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 			setGffDetailGenesLeft.add(gffCod1.getGffDetailDown().clone());
 		}
 		// //////////////////////////// cod2
-		//ËµÃ÷ÉÏÒ»¸öµãÓë±¾µã²»ÔÚÍ¬Ò»¸ö»ùÒòÄÚ
+		//è¯´æ˜ä¸Šä¸€ä¸ªç‚¹ä¸æœ¬ç‚¹ä¸åœ¨åŒä¸€ä¸ªåŸºå› å†…
 		if (this.gffCod2.isInsideUpExtend(tssUp, tesDown) && !setGffDetailGenesLeft.contains(gffCod2.getGffDetailUp())) {
 			setGffDetailGenesRight.add(gffCod2.getGffDetailUp().clone());
 		}
@@ -401,8 +401,8 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 		}
 	}
 	/**
-	 * <b>ÄÚ²¿»áÉ¾³ıisoĞÅÏ¢£¬ËùÒÔÊäÈëµÄgffDetail±ØĞëÊÇcloneµÄ</b> Ê¹ÓÃÇ°ÏÈÅĞ¶¨codÊÇ·ñÔÚÁ½¸öÏàÍ¬µÄgffDetailGeneÄÚ
-	 * ½ö¿¼ÂÇÁ½¸öµãÔÚÍ¬Ò»¸ö»ùÒòÄÚ²¿µÄÇé¿öÊ± Ğ§ÂÊÉÔµÍµ«ÊÇºÜÈ«Ãæ£¬Ã¿¸öisoform¶¼»áÅĞ¶Ï
+	 * <b>å†…éƒ¨ä¼šåˆ é™¤isoä¿¡æ¯ï¼Œæ‰€ä»¥è¾“å…¥çš„gffDetailå¿…é¡»æ˜¯cloneçš„</b> ä½¿ç”¨å‰å…ˆåˆ¤å®šcodæ˜¯å¦åœ¨ä¸¤ä¸ªç›¸åŒçš„gffDetailGeneå†…
+	 * ä»…è€ƒè™‘ä¸¤ä¸ªç‚¹åœ¨åŒä¸€ä¸ªåŸºå› å†…éƒ¨çš„æƒ…å†µæ—¶ æ•ˆç‡ç¨ä½ä½†æ˜¯å¾ˆå…¨é¢ï¼Œæ¯ä¸ªisoforméƒ½ä¼šåˆ¤æ–­
 	 * 
 	 * @param gffDetailGene
 	 *            
@@ -413,7 +413,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 			return false;
 		}
 		/**
-		 * ±ê¼Ç£¬0±íÊ¾ĞèÒªÈ¥³ı£¬1±íÊ¾±£Áô
+		 * æ ‡è®°ï¼Œ0è¡¨ç¤ºéœ€è¦å»é™¤ï¼Œ1è¡¨ç¤ºä¿ç•™
 		 */
 		int[] flag = null;
 		flag = getInRegion2Cod(getGffCod1().getCoord(), getGffCod2().getCoord(), gffDetailGene);
@@ -433,7 +433,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 		return flagResult;
 	}
 	/**
-	 * Á½¸öcoord¶¼ÔÚÍ¬Ò»¸ögffDetailGeneÖĞÊ±½øĞĞÅĞ¶¨
+	 * ä¸¤ä¸ªcoordéƒ½åœ¨åŒä¸€ä¸ªgffDetailGeneä¸­æ—¶è¿›è¡Œåˆ¤å®š
 	 * 
 	 * @param gffDetailGene1
 	 * @param gffDetailGene2
@@ -447,16 +447,16 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 	 * @return
 	 */
 	private int[] getInRegion2Cod(int coord1, int coord2, GffDetailGene gffDetailGene) {
-		// Ò»¸öÊÇÆğµã£¬Ò»¸öÊÇÖÕµã
+		// ä¸€ä¸ªæ˜¯èµ·ç‚¹ï¼Œä¸€ä¸ªæ˜¯ç»ˆç‚¹
 		int coordStart = 0;
 		int coordEnd = 0;
-		/** ±ê¼Ç£¬0±íÊ¾ĞèÒªÈ¥³ı£¬1±íÊ¾±£Áô */
+		/** æ ‡è®°ï¼Œ0è¡¨ç¤ºéœ€è¦å»é™¤ï¼Œ1è¡¨ç¤ºä¿ç•™ */
 		int[] flag = new int[gffDetailGene.getLsCodSplit().size()];
 		for (int i = 0; i < gffDetailGene.getLsCodSplit().size(); i++) {
 			GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLsCodSplit().get(i);
-			// ÊäÈëµÄÊÇÍ¬Ò»¸öGffGeneDetail¡£²»¹ıÃ¿Ò»¸ögffGeneDetailº¬ÓĞÒ»¸öcod£¬²¢ÇÒ cod1 ¾ø¶ÔÖµ< cod2
-			// ¾ø¶ÔÖµ
-			// ÄÇÃ´ÒÔÏÂĞèÒª½«cod1ÔÚ»ùÒòÖĞµÄÎ»ÖÃĞ¡ÓÚcod2£¬ËùÒÔµ±gene·´ÏòµÄÊ±ºòĞèÒª½«cod·´Ïò
+			// è¾“å…¥çš„æ˜¯åŒä¸€ä¸ªGffGeneDetailã€‚ä¸è¿‡æ¯ä¸€ä¸ªgffGeneDetailå«æœ‰ä¸€ä¸ªcodï¼Œå¹¶ä¸” cod1 ç»å¯¹å€¼< cod2
+			// ç»å¯¹å€¼
+			// é‚£ä¹ˆä»¥ä¸‹éœ€è¦å°†cod1åœ¨åŸºå› ä¸­çš„ä½ç½®å°äºcod2ï¼Œæ‰€ä»¥å½“geneåå‘çš„æ—¶å€™éœ€è¦å°†codåå‘
 			if (gffDetailGene.getLsCodSplit().get(i).isCis5to3()) {
 				coordStart = Math.min(coord1, coord2);
 				coordEnd = Math.max(coord1, coord2);
@@ -478,7 +478,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 				}
 			}
 			if (geneBody) {
-				// ÔÚ»ùÒòÏÂÓÎ¿Ï¶¨ÊÇÔÚ»ùÒòÍâÁË
+				// åœ¨åŸºå› ä¸‹æ¸¸è‚¯å®šæ˜¯åœ¨åŸºå› å¤–äº†
 				if (flag[i] == 0 && gffGeneIsoInfo.getCod2Tes(coordStart) <= 0
 						&& gffGeneIsoInfo.getCod2Tss(coordEnd) >= 0) {
 					flag[i] = 1;
@@ -512,7 +512,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 					flag[i] = 1;
 				}
 			}
-			//Î»µãÔÚÁ½¶Ë¿Ï¶¨ÊÇ°üÀ¨ÁË
+			//ä½ç‚¹åœ¨ä¸¤ç«¯è‚¯å®šæ˜¯åŒ…æ‹¬äº†
 			if (flag[i] == 0 && (exon || intron)) {
 				if (gffGeneIsoInfo.getCod2Tss(coordStart) <= 0 && gffGeneIsoInfo.getCod2Tes(coordEnd) > 0) {
 					flag[i] = 1;

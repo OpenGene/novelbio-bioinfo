@@ -18,7 +18,7 @@ public class repeatRun {
 
 	
 	
-	//Êä³öÎÄ¼ş
+	//è¾“å‡ºæ–‡ä»¶
 	
 	static String filePeakRegionStatsticBp="/media/winE/NBC/Project/ChIPSeq_WJK100909/result/Repeat/WJKRegionStasticBp";
 	//static String filePeakSummitStatstic="/media/winG/NBC/Project/ChIP-SeqCDG20100911/result/repeat/FrepeatSummitStastic";
@@ -38,18 +38,18 @@ public class repeatRun {
 	}
 	
 	/**
-	 * ¶ÁÈ¡repeatFile£¬:×îºóÍ³¼Æ¶àÉÙpeak regionÂäÔÚÁËrepeatÖĞ
-	 * @param Bp true:¼ÆËãÓëRepeaÏà½»µÄ¾ßÌåBpÊı
-	 * false:Ö»ÓĞµ±peakºÍregionµÄ½»¼¯²¿·Ö´óÓÚ50%Ê±£¬²ÅËãÒ»¸ö ÊäÈëµÄÊı¾İ.
+	 * è¯»å–repeatFileï¼Œ:æœ€åç»Ÿè®¡å¤šå°‘peak regionè½åœ¨äº†repeatä¸­
+	 * @param Bp true:è®¡ç®—ä¸Repeaç›¸äº¤çš„å…·ä½“Bpæ•°
+	 * false:åªæœ‰å½“peakå’Œregionçš„äº¤é›†éƒ¨åˆ†å¤§äº50%æ—¶ï¼Œæ‰ç®—ä¸€ä¸ª è¾“å…¥çš„æ•°æ®.
 	 */
 	public static void PeakRegionStatsticBp() 
 	{
 		try { 
-			 int readRow=2;//´ÓµÚ¶şĞĞ¿ªÊ¼¶Á
-			 int colChr=1;//µÚÒ»ÁĞÊÇchr
-			 int colLOC1=2;//µÚ¶şÁĞÊÇµÚÒ»¸ö×ø±ê
-			 int colLOC2=3;//µÚÈıÁĞÊÇµÚ¶ş¸ö×ø±ê
-			 int colLOC=9;//µÚÆßÁĞÊÇÖĞ¼ä×ø±ê
+			 int readRow=2;//ä»ç¬¬äºŒè¡Œå¼€å§‹è¯»
+			 int colChr=1;//ç¬¬ä¸€åˆ—æ˜¯chr
+			 int colLOC1=2;//ç¬¬äºŒåˆ—æ˜¯ç¬¬ä¸€ä¸ªåæ ‡
+			 int colLOC2=3;//ç¬¬ä¸‰åˆ—æ˜¯ç¬¬äºŒä¸ªåæ ‡
+			 int colLOC=9;//ç¬¬ä¸ƒåˆ—æ˜¯ä¸­é—´åæ ‡
 			String FlocationFile="/media/winE/NBC/Project/ChIPSeq_CDG1011101/result/annotation/mT3/RPeak Information.xls";
 			RepeatMask.locatstatistic(true,FlocationFile,repeakBackGround, filePeakRegionStatsticBp, readRow, colChr, colLOC1,colLOC2);
 			} catch (Exception e) { e.printStackTrace(); }
@@ -57,17 +57,17 @@ public class repeatRun {
 	}
 	
 	/**
-	 * ¶ÁÈ¡repeatFile£¬:×îºóÍ³¼Æ¶àÉÙpeak regionÂäÔÚÁËrepeatÖĞ
-	 * @param Bp true:¼ÆËãÓëRepeaÏà½»µÄ¾ßÌåBpÊı
-	 * false:Ö»ÓĞµ±peakºÍregionµÄ½»¼¯²¿·Ö´óÓÚ50%Ê±£¬²ÅËãÒ»¸ö ÊäÈëµÄÊı¾İ.
+	 * è¯»å–repeatFileï¼Œ:æœ€åç»Ÿè®¡å¤šå°‘peak regionè½åœ¨äº†repeatä¸­
+	 * @param Bp true:è®¡ç®—ä¸Repeaç›¸äº¤çš„å…·ä½“Bpæ•°
+	 * false:åªæœ‰å½“peakå’Œregionçš„äº¤é›†éƒ¨åˆ†å¤§äº50%æ—¶ï¼Œæ‰ç®—ä¸€ä¸ª è¾“å…¥çš„æ•°æ®.
 	 */
 	public static void PeakRegionStatstic50() 
 	{
 		try { 
-			 int readRow=2;//´ÓµÚ¶şĞĞ¿ªÊ¼¶Á
-			 int colChr=1;//µÚÒ»ÁĞÊÇchr
-			 int colLOC1=2;//µÚ¶şÁĞÊÇµÚÒ»¸ö×ø±ê
-			 int colLOC2=3;//µÚÈıÁĞÊÇµÚ¶ş¸ö×ø±ê
+			 int readRow=2;//ä»ç¬¬äºŒè¡Œå¼€å§‹è¯»
+			 int colChr=1;//ç¬¬ä¸€åˆ—æ˜¯chr
+			 int colLOC1=2;//ç¬¬äºŒåˆ—æ˜¯ç¬¬ä¸€ä¸ªåæ ‡
+			 int colLOC2=3;//ç¬¬ä¸‰åˆ—æ˜¯ç¬¬äºŒä¸ªåæ ‡
 			String FlocationFile="/media/winE/NBC/Project/ChIPSeq_WJK100909/result/PeakCalling/Peak Information.xls";
 			String filePeakRegionStatstic50="/media/winE/NBC/Project/ChIPSeq_WJK100909/result/Repeat/WJK_RegionStastic50";
 			RepeatMask.locatstatistic(false,FlocationFile, repeakBackGround,filePeakRegionStatstic50, readRow, colChr, colLOC1,colLOC2);
@@ -78,7 +78,7 @@ public class repeatRun {
 	
 	
 	/**
-	 * ¶ÁÈ¡repeatFile£¬×îºóÍ³¼Æ¶àÉÙpeak summitÂäÔÚÁËrepeatÖĞ
+	 * è¯»å–repeatFileï¼Œæœ€åç»Ÿè®¡å¤šå°‘peak summitè½åœ¨äº†repeatä¸­
 	
 	public static void PeakSummitStatstic() 
 	{
@@ -88,16 +88,16 @@ public class repeatRun {
 	 */
 	
 	/**
-	 * ¶ÁÈ¡repeatFile£¬×îºó¸ø³öÎÄ¼şÖĞÃ¿¸öpeak regionËù¸²¸ÇµÄrepeatÇøÓò²¢Ğ´ÈëFresultFile
+	 * è¯»å–repeatFileï¼Œæœ€åç»™å‡ºæ–‡ä»¶ä¸­æ¯ä¸ªpeak regionæ‰€è¦†ç›–çš„repeatåŒºåŸŸå¹¶å†™å…¥FresultFile
 	 */
 	public static void  PeakRegionDetail() 
 	{
 		try 
 		{ 
-			 int readRow=2;//´ÓµÚ¶şĞĞ¿ªÊ¼¶Á
-			 int colChr=1;//µÚÒ»ÁĞÊÇchr
-			 int colLOC1=2;//µÚ¶şÁĞÊÇµÚÒ»¸ö×ø±ê
-			 int colLOC2=3;//µÚÈıÁĞÊÇµÚ¶ş¸ö×ø±ê
+			 int readRow=2;//ä»ç¬¬äºŒè¡Œå¼€å§‹è¯»
+			 int colChr=1;//ç¬¬ä¸€åˆ—æ˜¯chr
+			 int colLOC1=2;//ç¬¬äºŒåˆ—æ˜¯ç¬¬ä¸€ä¸ªåæ ‡
+			 int colLOC2=3;//ç¬¬ä¸‰åˆ—æ˜¯ç¬¬äºŒä¸ªåæ ‡
 			 String FlocationFile="/media/winE/NBC/Project/ChIPSeq_WJK100909/result/PeakCalling/Peak Information20100926_all.xls";
 			 String filePeakRegionDetail="/media/winE/NBC/Project/ChIPSeq_WJK100909/result/Repeat/WJK_RegionDetail";
 				
@@ -106,7 +106,7 @@ public class repeatRun {
 	}
 	
 	/**
-	 * »ñµÃrepeat±³¾°ĞÅÏ¢
+	 * è·å¾—repeatèƒŒæ™¯ä¿¡æ¯
 	 */
 	public static void RepeatBackground()
 	{

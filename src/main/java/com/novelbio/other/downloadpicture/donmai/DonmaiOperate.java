@@ -23,7 +23,7 @@ public class DonmaiOperate extends DownloadOperate {
 	public DonmaiOperate() {
 		pixivGetPathExistPic = new PixivGetPathExistPic(PixivGetPathExistPic.SITE_DONMAI);
 	}
-	/** 不需要获得cookies */
+	/** 涓嶉渶瑕佽幏寰梒ookies */
 	@Override
 	public void getcookies() {
 		if (webFetch == null) {

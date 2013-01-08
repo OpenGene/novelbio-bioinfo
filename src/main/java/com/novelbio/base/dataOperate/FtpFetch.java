@@ -25,21 +25,21 @@ public class FtpFetch {
 	FTPClient ftp;
 	int port = 21;
 
-	/** ftp·şÎñÆ÷ÍøÖ· */
+	/** ftpæœåŠ¡å™¨ç½‘å€ */
 	String url;
-	/** FTP·şÎñÆ÷ÉÏµÄÏà¶ÔÂ·¾¶ */
+	/** FTPæœåŠ¡å™¨ä¸Šçš„ç›¸å¯¹è·¯å¾„ */
 	String remotePath;
 	
 	String username = "anonymous";
 	String password = "a@a.com";
 	
-	/** ¾ßÌåµÄÎÄ¼şÃû */
+	/** å…·ä½“çš„æ–‡ä»¶å */
 	String ftpFileName;
-	/** ±£´æµ½µÄ±¾µØÂ·¾¶ */
+	/** ä¿å­˜åˆ°çš„æœ¬åœ°è·¯å¾„ */
 	String savePath;
 
 	/**
-	 * Éè¶¨ftp·şÎñÆ÷
+	 * è®¾å®šftpæœåŠ¡å™¨
 	 * @param url
 	 */
 	public void setUrl(String url, String username, String password) {
@@ -52,7 +52,7 @@ public class FtpFetch {
 		initial(urlThis.getHost(), username, password);
 	}
 	/**
-	 * Éè¶¨ĞèÒªÏÂÔØµÄÏà¶ÔÂ·¾¶
+	 * è®¾å®šéœ€è¦ä¸‹è½½çš„ç›¸å¯¹è·¯å¾„
 	 * @param ftpFileName
 	 */
 	public void setRemotePath(String remotePath) {
@@ -65,14 +65,14 @@ public class FtpFetch {
 		this.savePath = FileOperate.addSep(savePath);
 	}
 	/**
-	 * Éè¶¨ĞèÒªÏÂÔØµÄÎÄ¼şÃû
+	 * è®¾å®šéœ€è¦ä¸‹è½½çš„æ–‡ä»¶å
 	 * @param ftpFileName
 	 */
 	public void setFtpFileName(String ftpFileName) {
 		this.ftpFileName = ftpFileName;
 	}
 	
-	/** ÊäÈëµÄÊÇ¾ßÌåµÄÎÄ¼şurl */
+	/** è¾“å…¥çš„æ˜¯å…·ä½“çš„æ–‡ä»¶url */
 	public void setDownLoadUrl(String urlAll) {
 		try {
 			String urlPath = FileOperate.getParentPathName(urlAll).replace(":/", "://");
@@ -85,9 +85,9 @@ public class FtpFetch {
 			// TODO: handle exception
 		}
 	}
-	/** ÊÇ·ñ³õÊ¼»¯³É¹¦ */
+	/** æ˜¯å¦åˆå§‹åŒ–æˆåŠŸ */
 	private boolean initial(String url, String username, String password) {
-		//²»ĞèÒª³õÊ¼»¯
+		//ä¸éœ€è¦åˆå§‹åŒ–
 		if (ftp != null && this.url.equals(url)
 				&&
 				(username == null || this.username.equals(username)) 
@@ -101,8 +101,8 @@ public class FtpFetch {
         boolean reply;
 		try {
 			ftp.connect(url, port);
-			// Èç¹û²ÉÓÃÄ¬ÈÏ¶Ë¿Ú£¬¿ÉÒÔÊ¹ÓÃ ftp.connect(url)µÄ·½Ê½Ö±½ÓÁ¬½ÓFTP·şÎñÆ÷
-			ftp.login(username, password);// µÇÂ¼
+			// å¦‚æœé‡‡ç”¨é»˜è®¤ç«¯å£ï¼Œå¯ä»¥ä½¿ç”¨ ftp.connect(url)çš„æ–¹å¼ç›´æ¥è¿æ¥FTPæœåŠ¡å™¨
+			ftp.login(username, password);// ç™»å½•
 			reply = ftp.isAuthenticated();
 			if (!reply) {
 				ftp.logout();
@@ -120,8 +120,8 @@ public class FtpFetch {
 	}
 	
 	/**
-	 * ·µ»Ø¸ÃÎÄ¼ş¼ĞÏÂµÄÈ«ÌåÎÄ¼şÃû£¬²»°üÀ¨×ÓÎÄ¼ş¼Ğ
-	 * @return ³ö´íÔò·µ»Ønull
+	 * è¿”å›è¯¥æ–‡ä»¶å¤¹ä¸‹çš„å…¨ä½“æ–‡ä»¶åï¼Œä¸åŒ…æ‹¬å­æ–‡ä»¶å¤¹
+	 * @return å‡ºé”™åˆ™è¿”å›null
 	 */
 	public List<FTPFile> getLsFiles() {
         try {
@@ -135,10 +135,10 @@ public class FtpFetch {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}//×ªÒÆµ½FTP·şÎñÆ÷Ä¿Â¼  
+		}//è½¬ç§»åˆ°FTPæœåŠ¡å™¨ç›®å½•  
         return null;
 	}
-	/** ÏÂÔØÎÄ¼ş */
+	/** ä¸‹è½½æ–‡ä»¶ */
 	public boolean downloadFile() {
 		List<FTPFile> lsAllFiles = getLsFiles();
 		if (lsAllFiles == null) {

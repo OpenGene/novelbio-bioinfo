@@ -10,9 +10,9 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /** 
- * denovo的RNAseq，用trinity跑完后会出来 result.gene 
- * 可以从这个文件中获得iso2gene的对照表
- * 方便后续blast使用
+ * denovo鐨凴NAseq锛岀敤trinity璺戝畬鍚庝細鍑烘潵 result.gene 
+ * 鍙互浠庤繖涓枃浠朵腑鑾峰緱iso2gene鐨勫鐓ц〃
+ * 鏂逛究鍚庣画blast浣跨敤
  * @author zong0jie
  *
  */
@@ -45,7 +45,7 @@ public class RsemGetGene2Iso {
 		writeMapToFile();
 	}
 	
-	/** 把生成的iso2gene表导入数据库 */
+	/** 鎶婄敓鎴愮殑iso2gene琛ㄥ鍏ユ暟鎹簱 */
 	private void writeMapToFile() {
 		if (result == null) {
 			return;

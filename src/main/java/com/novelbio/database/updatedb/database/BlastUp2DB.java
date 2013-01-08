@@ -14,20 +14,20 @@ public class BlastUp2DB extends ImportPerLine{
 		setReadFromLine(1);
 	}
 	/**
-	 * ref|NP_002932| ÕâÖÖÀàĞÍµÄ£¬¾Í»áÓÃÕıÔò±í´ïÊ½È¥×¥ÀïÃæµÄID
+	 * ref|NP_002932| è¿™ç§ç±»å‹çš„ï¼Œå°±ä¼šç”¨æ­£åˆ™è¡¨è¾¾å¼å»æŠ“é‡Œé¢çš„ID
 	 */
 	boolean idtypeBlast = false;
 	/**
-	 *  ref|NP_002932| ÕâÖÖÀàĞÍµÄ£¬¾Í»áÓÃÕıÔò±í´ïÊ½È¥×¥ÀïÃæµÄID
-	 *  id±ØĞëÔÚµÚÒ»¸ö ¡°|¡± ºÍµÚ¶ş¸ö ¡°|¡± ÖĞ¼ä
-	 *  ÕâÊ±ºò¾ÍÒª½«ÆäÉè¶¨Îªtrue¡£·ñÔòµÄ»°»á½«blastµÄµÚ¶şÁĞÈ«²¿µ¼Èë
-	 * @param idtypeBlast Ä¬ÈÏÊÇfalse
+	 *  ref|NP_002932| è¿™ç§ç±»å‹çš„ï¼Œå°±ä¼šç”¨æ­£åˆ™è¡¨è¾¾å¼å»æŠ“é‡Œé¢çš„ID
+	 *  idå¿…é¡»åœ¨ç¬¬ä¸€ä¸ª â€œ|â€ å’Œç¬¬äºŒä¸ª â€œ|â€ ä¸­é—´
+	 *  è¿™æ—¶å€™å°±è¦å°†å…¶è®¾å®šä¸ºtrueã€‚å¦åˆ™çš„è¯ä¼šå°†blastçš„ç¬¬äºŒåˆ—å…¨éƒ¨å¯¼å…¥
+	 * @param idtypeBlast é»˜è®¤æ˜¯false
 	 */
 	public void setIDisBlastType(boolean idtypeBlast) {
 		this.idtypeBlast = idtypeBlast;
 	}
 	/**
-	 * blastµ½µÄÎïÖÖID
+	 * blaståˆ°çš„ç‰©ç§ID
 	 * @param subTaxID
 	 */
 	public void setSubTaxID(int subTaxID) {
@@ -35,7 +35,7 @@ public class BlastUp2DB extends ImportPerLine{
 	}
 	String blastDBinfo= null;
 	/**
-	 * Éè¶¨blastµ½µÄIDµÄÊı¾İ¿â
+	 * è®¾å®šblaståˆ°çš„IDçš„æ•°æ®åº“
 	 * @param blastDBinfo
 	 */
 	public void setBlastDBinfo(String blastDBinfo) {
@@ -45,16 +45,16 @@ public class BlastUp2DB extends ImportPerLine{
 	String queryIDType = GeneID.IDTYPE_ACCID;
 	String blastIDType = GeneID.IDTYPE_ACCID;
 	/**
-	 * µÚÒ»ÁĞ£¬ÊÇaccID»¹ÊÇgeneID»¹ÊÇUniID
-	 * @param IDtype Ä¬ÈÏÊÇCopedID.IDTYPE_ACCID
+	 * ç¬¬ä¸€åˆ—ï¼Œæ˜¯accIDè¿˜æ˜¯geneIDè¿˜æ˜¯UniID
+	 * @param IDtype é»˜è®¤æ˜¯CopedID.IDTYPE_ACCID
 	 * @return
 	 */
 	public void setQueryID(String IDtype) {
 		this.queryIDType = IDtype;
 	}
 	/**
-	 * blastµ½µÄIDÊÇaccID»¹ÊÇgeneID»¹ÊÇUniID
-	 * @param blastID Ä¬ÈÏÊÇCopedID.IDTYPE_ACCID
+	 * blaståˆ°çš„IDæ˜¯accIDè¿˜æ˜¯geneIDè¿˜æ˜¯UniID
+	 * @param blastID é»˜è®¤æ˜¯CopedID.IDTYPE_ACCID
 	 */
 	public void setBlastID(String blastID) {
 		this.blastIDType = blastID;
@@ -81,7 +81,7 @@ public class BlastUp2DB extends ImportPerLine{
 			} else {
 				accID = GeneID.removeDot(accID); 
 			}
-			//Èç¹ûÃ»ÓĞblastDBinfo£¬¾ÍÓÃÒÑÓĞµÄaccIDÈ¥»ñµÃ¸ÃblastDBinfo
+			//å¦‚æœæ²¡æœ‰blastDBinfoï¼Œå°±ç”¨å·²æœ‰çš„accIDå»è·å¾—è¯¥blastDBinfo
 			if (blastDBinfo == null || blastDBinfo.equals("")) {
 				GeneID copedIDBlast = new GeneID(accID, subTaxID);
 				blastDBinfo = copedIDBlast.getDBinfo();

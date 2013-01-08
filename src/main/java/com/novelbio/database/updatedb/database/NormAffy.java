@@ -13,13 +13,13 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 /**
- * ³£¹æaffyµÄ×¢ÊÍÎÄ¼ş£¬½öµ¼ÈëaffyÌ½Õë£¬ÆäËû×¢ÊÍÍ¨Í¨²»µ¼Èë<br>
- * <b>Èç¹ûµ¼Èë²»½øÈ¥£¬¿¼ÂÇ½«ss[8]·ÅÈëÉ¸Ñ¡Ìõ¼ş</b><br>
- * ·½·¨£ºÈ¡ÏûÄÇÒ»ĞĞµÄ×¢ÊÍ
- * <b>µ¼ÈëÖ®Ç°µÄ×¼±¸¹¤×÷</b><br>
- * 1. ½«¸ñÊ½µ÷ÕûÎªtab¸ô¿ª£¬È¥³ıËùÓĞÒıºÅ<br>
- * 2. ½«ËùÓĞÎŞ¹ØID£¬ÒÔ¼°controlÌ½ÕëÈ«²¿È¥³ı
- * 3. Éè¶¨´ÓµÚ¶şÁĞ¿ªÊ¼µ¼Èë
+ * å¸¸è§„affyçš„æ³¨é‡Šæ–‡ä»¶ï¼Œä»…å¯¼å…¥affyæ¢é’ˆï¼Œå…¶ä»–æ³¨é‡Šé€šé€šä¸å¯¼å…¥<br>
+ * <b>å¦‚æœå¯¼å…¥ä¸è¿›å»ï¼Œè€ƒè™‘å°†ss[8]æ”¾å…¥ç­›é€‰æ¡ä»¶</b><br>
+ * æ–¹æ³•ï¼šå–æ¶ˆé‚£ä¸€è¡Œçš„æ³¨é‡Š
+ * <b>å¯¼å…¥ä¹‹å‰çš„å‡†å¤‡å·¥ä½œ</b><br>
+ * 1. å°†æ ¼å¼è°ƒæ•´ä¸ºtabéš”å¼€ï¼Œå»é™¤æ‰€æœ‰å¼•å·<br>
+ * 2. å°†æ‰€æœ‰æ— å…³IDï¼Œä»¥åŠcontrolæ¢é’ˆå…¨éƒ¨å»é™¤
+ * 3. è®¾å®šä»ç¬¬äºŒåˆ—å¼€å§‹å¯¼å…¥
  * @author zong0jie
  *
  */
@@ -27,8 +27,8 @@ public class NormAffy extends ImportPerLine {
 
 	String dbInfo = "";
 	/**
-	 * Éè¶¨Ğ¾Æ¬À´Ô´£¬
-	 * ÈçNovelBioConst.DBINFO_ATH_TAIRµÈ
+	 * è®¾å®šèŠ¯ç‰‡æ¥æºï¼Œ
+	 * å¦‚NovelBioConst.DBINFO_ATH_TAIRç­‰
 	 * @param dbInfo
 	 */
 	public void setDbInfo(String dbInfo) {
@@ -71,7 +71,7 @@ public class NormAffy extends ImportPerLine {
 	}
 	
 	/**
-	 * ¸ø¶¨targetµÄfastaÎÄ¼ş£¬ÕûÀí³É³£¹æfastaÎÄ¼ş£¬È»ºóÈ¥ºÍÖ¸¶¨ÎïÖÖµÄĞòÁĞ×öblast
+	 * ç»™å®štargetçš„fastaæ–‡ä»¶ï¼Œæ•´ç†æˆå¸¸è§„fastaæ–‡ä»¶ï¼Œç„¶åå»å’ŒæŒ‡å®šç‰©ç§çš„åºåˆ—åšblast
 	 * @param fastaFile
 	 */
 	public void toTargetFastaFile(String fastaFile) {

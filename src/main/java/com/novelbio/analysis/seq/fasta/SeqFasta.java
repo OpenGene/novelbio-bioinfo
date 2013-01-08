@@ -9,8 +9,8 @@ import com.novelbio.analysis.seq.reseq.SoapsnpInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 /**
- * ±¾Àà×¨ÃÅÓÃÀ´×°fastaÎÄ¼şµÄ¾ßÌåĞÅÏ¢£¬µÄ³¬Àà
- * ±¾ÀàÓëSeqÃ»ÓĞ¹ØÏµ
+ * æœ¬ç±»ä¸“é—¨ç”¨æ¥è£…fastaæ–‡ä»¶çš„å…·ä½“ä¿¡æ¯ï¼Œçš„è¶…ç±»
+ * æœ¬ç±»ä¸Seqæ²¡æœ‰å…³ç³»
  */
 public class SeqFasta implements Cloneable {
 	private static Logger logger = Logger.getLogger(SeqFasta.class);
@@ -21,19 +21,19 @@ public class SeqFasta implements Cloneable {
 	public static final int SEQ_RNA = 1024;
 
 	/**
-	 * µ±ÓÃÖ¸¶¨ĞòÁĞÀ´²åÈë»òÌæ»»±¾ĞòÁĞÖĞµÄÎ»ÖÃÊ±£¬Èç¹û²åÈëµÄÎ»ÖÃ²¢²»ÊÇºÜÈ·¶¨
-	 * Æ©Èç²åÈëÒ»¶ÎĞòÁĞµ½ 10-20ÉÏÈ¥£¬µ«ÊÇÊÇ·ñ¾«È·²åÈëµ½10²¢²»Çå³ş£¬ÄÇÃ´¸ÃÇøÓòÔÙ¼ÓÉÏÒ»¶ÎXXXÓÃÒÔ±ê¼Ç
+	 * å½“ç”¨æŒ‡å®šåºåˆ—æ¥æ’å…¥æˆ–æ›¿æ¢æœ¬åºåˆ—ä¸­çš„ä½ç½®æ—¶ï¼Œå¦‚æœæ’å…¥çš„ä½ç½®å¹¶ä¸æ˜¯å¾ˆç¡®å®š
+	 * è­¬å¦‚æ’å…¥ä¸€æ®µåºåˆ—åˆ° 10-20ä¸Šå»ï¼Œä½†æ˜¯æ˜¯å¦ç²¾ç¡®æ’å…¥åˆ°10å¹¶ä¸æ¸…æ¥šï¼Œé‚£ä¹ˆè¯¥åŒºåŸŸå†åŠ ä¸Šä¸€æ®µXXXç”¨ä»¥æ ‡è®°
 	 */
 	private static final String SEP_SEQ = "XXXXXXX";
 	
 	protected String SeqName;
 	protected String SeqSequence = "";
 	/**
-	 * ½á¹ûµÄÎÄ¼şÊÇ·ñ×ª»¯Îª´óĞ¡Ğ´ True£ºĞ¡Ğ´ False£º´óĞ´ null£º²»±ä
+	 * ç»“æœçš„æ–‡ä»¶æ˜¯å¦è½¬åŒ–ä¸ºå¤§å°å†™ Trueï¼šå°å†™ Falseï¼šå¤§å†™ nullï¼šä¸å˜
 	 * @return
 	 */
 	protected Boolean TOLOWCASE = null;
-	/** Ä¬ÈÏ·µ»ØÈı×ÖÄ¸³¤¶ÈµÄ°±»ùËá */
+	/** é»˜è®¤è¿”å›ä¸‰å­—æ¯é•¿åº¦çš„æ°¨åŸºé…¸ */
 	boolean AA3Len = true;
 	
 	public SeqFasta() { }
@@ -48,7 +48,7 @@ public class SeqFasta implements Cloneable {
 	/**
 	 * @param seqName
 	 * @param SeqSequence
-	 * @param cis5to3 ½ö½ö±ê¼ÇÒ»ÏÂ£¬²¢²»»á·´ÏòĞòÁĞ
+	 * @param cis5to3 ä»…ä»…æ ‡è®°ä¸€ä¸‹ï¼Œå¹¶ä¸ä¼šåå‘åºåˆ—
 	 */
 	public SeqFasta(String seqName, String SeqSequence, boolean cis5to3) {
 		this.SeqName = seqName;
@@ -61,7 +61,7 @@ public class SeqFasta implements Cloneable {
 	}
 	
 	/**
-	 * Ä¬ÈÏ·µ»ØÈı×ÖÄ¸³¤¶ÈµÄ°±»ùËá
+	 * é»˜è®¤è¿”å›ä¸‰å­—æ¯é•¿åº¦çš„æ°¨åŸºé…¸
 	 */
 	public void setAA3Len(boolean aA3Len) {
 		AA3Len = aA3Len;
@@ -70,27 +70,27 @@ public class SeqFasta implements Cloneable {
 		this.TOLOWCASE = TOLOWCASE;
 	}
 	/**
-	 * ½«RNAĞòÁĞ×ª»¯ÎªDNA£¬Ò²¾ÍÊÇ½«UÌæ»»ÎªT
+	 * å°†RNAåºåˆ—è½¬åŒ–ä¸ºDNAï¼Œä¹Ÿå°±æ˜¯å°†Uæ›¿æ¢ä¸ºT
 	 */
 	public void setDNA(boolean isDNAseq) {
 		if (isDNAseq) {
 			SeqSequence = SeqSequence.replace('u', 't').replace('U', 'T');
 		}
 	}
-	/** Éè¶¨ĞòÁĞÃû */
+	/** è®¾å®šåºåˆ—å */
 	public void setName(String SeqName) {
 		 this.SeqName = SeqName;
 	}
-	/** »ñµÃĞòÁĞÃû */
+	/** è·å¾—åºåˆ—å */
 	public String getSeqName() {
 		return SeqName;
 	}
-	/** Éè¶¨ĞòÁĞ */
+	/** è®¾å®šåºåˆ— */
 	public void setSeq(String Seq) {
 		 this.SeqSequence = Seq;
 	}
 	/**
-	 * nrĞòÁĞµÄ³¤¶È
+	 * nråºåˆ—çš„é•¿åº¦
 	 * @return
 	 */
 	public int Length() {
@@ -100,10 +100,10 @@ public class SeqFasta implements Cloneable {
 		return SeqSequence.length();
 	}
 	/**
-	 * ¸ø¶¨×óÓÒµÄ×ø±ê£¬È»ºó½«seqfasta½Ø¶Ì
-	 * @param start ºÍsubstringÒ»ÑùµÄÓÃ·¨
-	 * @param end ºÍsubstringÒ»ÑùµÄÓÃ·¨
-	 * @return ·µ»Ø½Ø¶ÌºóµÄstring
+	 * ç»™å®šå·¦å³çš„åæ ‡ï¼Œç„¶åå°†seqfastaæˆªçŸ­
+	 * @param start å’Œsubstringä¸€æ ·çš„ç”¨æ³•
+	 * @param end å’Œsubstringä¸€æ ·çš„ç”¨æ³•
+	 * @return è¿”å›æˆªçŸ­åçš„string
 	 */
 	public SeqFasta trimSeq(int start, int end) {
 		SeqFasta seqFasta = new SeqFasta();
@@ -118,10 +118,10 @@ public class SeqFasta implements Cloneable {
 		return seqFasta;
 	}
 	/**
-	 * ÊäÈëĞòÁĞ×ø±êĞÅÏ¢£ºĞòÁĞÃû-ĞòÁĞÆğµãºÍÖÕµã ·µ»ØĞòÁĞ
-	 * @param startlocation ĞòÁĞÆğµã
-	 * @param endlocation ĞòÁĞÖÕµã
-	 * @param cisseqĞòÁĞÕı·´Ïò£¬µ°°×ĞòÁĞ¾ÍÊätrue
+	 * è¾“å…¥åºåˆ—åæ ‡ä¿¡æ¯ï¼šåºåˆ—å-åºåˆ—èµ·ç‚¹å’Œç»ˆç‚¹ è¿”å›åºåˆ—
+	 * @param startlocation åºåˆ—èµ·ç‚¹
+	 * @param endlocation åºåˆ—ç»ˆç‚¹
+	 * @param cisseqåºåˆ—æ­£åå‘ï¼Œè›‹ç™½åºåˆ—å°±è¾“true
 	 */
 	public SeqFasta getSubSeq(int startlocation, int endlocation, boolean cisseq) {
 		String sequence = getsequence(startlocation, endlocation);
@@ -132,47 +132,47 @@ public class SeqFasta implements Cloneable {
 	}
 
 	/**
-	 * ÊäÈëĞòÁĞ×ø±ê£¬ÆğµãºÍÖÕµã ·µ»ØĞòÁĞ
-	 * Èç¹ûÎ»µã³¬¹ıÁË·¶Î§£¬ÄÇÃ´ĞŞÕıÎ»µã
+	 * è¾“å…¥åºåˆ—åæ ‡ï¼Œèµ·ç‚¹å’Œç»ˆç‚¹ è¿”å›åºåˆ—
+	 * å¦‚æœä½ç‚¹è¶…è¿‡äº†èŒƒå›´ï¼Œé‚£ä¹ˆä¿®æ­£ä½ç‚¹
 	 */
 	private String getsequence(int startlocation, int endlocation) {
 		int length = SeqSequence.length();
 		if (startlocation < 1 || startlocation > length || endlocation < 1
 				|| endlocation > length) {
-			logger.error("ĞòÁĞ×ø±ê´íÎó "+SeqName+" "+startlocation+" "+endlocation);
-			return "ĞòÁĞ×ø±ê´íÎó "+SeqName+" "+startlocation+" "+endlocation;
+			logger.error("åºåˆ—åæ ‡é”™è¯¯ "+SeqName+" "+startlocation+" "+endlocation);
+			return "åºåˆ—åæ ‡é”™è¯¯ "+SeqName+" "+startlocation+" "+endlocation;
 		}
 
 		if (endlocation < startlocation) {
-			logger.error("ĞòÁĞ×ø±ê´íÎó "+SeqName+" "+startlocation+" "+endlocation);
-			return "ĞòÁĞ×ø±ê´íÎó "+SeqName+" "+startlocation+" "+endlocation;
+			logger.error("åºåˆ—åæ ‡é”™è¯¯ "+SeqName+" "+startlocation+" "+endlocation);
+			return "åºåˆ—åæ ‡é”™è¯¯ "+SeqName+" "+startlocation+" "+endlocation;
 		}
 		
 		if (endlocation - startlocation > 20000) {
-			logger.error("×î¶àÌáÈ¡20000bp "+SeqName+" "+startlocation+" "+endlocation);
-			return "×î¶àÌáÈ¡20000bp"+SeqName+" "+startlocation+" "+endlocation;
+			logger.error("æœ€å¤šæå–20000bp "+SeqName+" "+startlocation+" "+endlocation);
+			return "æœ€å¤šæå–20000bp"+SeqName+" "+startlocation+" "+endlocation;
 		}
-		return SeqSequence.substring(startlocation - 1, endlocation);// substring·½·¨·µ»ØÕÒµ½µÄĞòÁĞ
+		return SeqSequence.substring(startlocation - 1, endlocation);// substringæ–¹æ³•è¿”å›æ‰¾åˆ°çš„åºåˆ—
 	}
 
 	/**
-	 * ÊäÈëĞòÁĞ£¬»¥²¹¶ÔÕÕ±í »ñµÃ·´Ïò»¥²¹ĞòÁĞ
-	 * ³ö´íÔò·µ»Ønull;
+	 * è¾“å…¥åºåˆ—ï¼Œäº’è¡¥å¯¹ç…§è¡¨ è·å¾—åå‘äº’è¡¥åºåˆ—
+	 * å‡ºé”™åˆ™è¿”å›null;
 	 */
 	private String reservecomplement(String sequence) {
 		String[] revSeq = CodeInfo.reservecomInfo(sequence);
 		if (revSeq[1] != null) {
-			logger.error(SeqName + " º¬ÓĞÎ´Öª¼î»ù " + revSeq[1]);
+			logger.error(SeqName + " å«æœ‰æœªçŸ¥ç¢±åŸº " + revSeq[1]);
 		}
 		return revSeq[0];
 	}
-	/** ÊäÈëĞòÁĞ£¬»¥²¹¶ÔÕÕ±í »ñµÃ·´Ïò»¥²¹ĞòÁĞ */
+	/** è¾“å…¥åºåˆ—ï¼Œäº’è¡¥å¯¹ç…§è¡¨ è·å¾—åå‘äº’è¡¥åºåˆ— */
 	public static String reservecom(String sequence) {
 		return CodeInfo.reservecom(sequence);
 	}
 	/**
-	 * ÊäÈëĞòÁĞ£¬»¥²¹¶ÔÕÕ±í »ñµÃ·´Ïò»¥²¹ĞòÁĞ
-	 * ÆäÖĞSeqName²»±ä£¬cis5to3·´Ïò£¬ĞòÁĞ·´Ïò»¥²¹
+	 * è¾“å…¥åºåˆ—ï¼Œäº’è¡¥å¯¹ç…§è¡¨ è·å¾—åå‘äº’è¡¥åºåˆ—
+	 * å…¶ä¸­SeqNameä¸å˜ï¼Œcis5to3åå‘ï¼Œåºåˆ—åå‘äº’è¡¥
 	 */
 	public SeqFasta reservecom() {
 		SeqFasta seqFasta = new SeqFasta();
@@ -183,16 +183,16 @@ public class SeqFasta implements Cloneable {
 		return seqFasta;
 	}
 	/**
-	 * ´ı²âÊÔ
-	 * Ö¸¶¨·¶Î§£¬È»ºóÓÃÖ¸¶¨µÄĞòÁĞÈ¥Ìæ»»Ô­À´µÄĞòÁĞ
-	 * @param start ÒªÌæ»»ĞòÁĞµÄÆğµã£¬Êµ¼ÊÎ»µã,²¢ÇÒ°üº¬¸ÃÎ»µã Èç¹ûstart<= 0£¬Ôò²»¿¼ÂÇend£¬Ö±½Ó½«ĞòÁĞ²åµ½×îÇ°Ãæ
-	 * Èç¹ûstart±ÈĞòÁĞ³¤£¬Ôò²»¿¼ÂÇend£¬Ö±½Ó½«ĞòÁĞ²åµ½×îºóÃæ
-	 * @param end ÒªÌæ»»ĞòÁĞµÄÖÕµã£¬Êµ¼ÊÎ»µã,²¢ÇÒ°üº¬¸ÃÎ»µã£¬<br>
-	 * Èç¹û start == end ÄÇÃ´¾ÍÊÇ½«¸ÃµãÌæ»»³ÉÖ¸¶¨ĞòÁĞ<br>
-	 * Èç¹û start > end ËµÃ÷ÊÇ²åÈë½ô°¤×ÅstartÎ»µãÖ®ºó<br>
-	 * @param seq ÒªÌæ»»µÄĞòÁĞ
-	 * @param boostart Ìæ»»ĞòÁĞµÄÇ°²¿ÊÇ·ñ²åÈëXXX true£º²åÈë
-	 * @param booend Ìæ»»ĞòÁĞµÄºó²¿ÊÇ·ñ²åÈëXXX true£º²åÈë
+	 * å¾…æµ‹è¯•
+	 * æŒ‡å®šèŒƒå›´ï¼Œç„¶åç”¨æŒ‡å®šçš„åºåˆ—å»æ›¿æ¢åŸæ¥çš„åºåˆ—
+	 * @param start è¦æ›¿æ¢åºåˆ—çš„èµ·ç‚¹ï¼Œå®é™…ä½ç‚¹,å¹¶ä¸”åŒ…å«è¯¥ä½ç‚¹ å¦‚æœstart<= 0ï¼Œåˆ™ä¸è€ƒè™‘endï¼Œç›´æ¥å°†åºåˆ—æ’åˆ°æœ€å‰é¢
+	 * å¦‚æœstartæ¯”åºåˆ—é•¿ï¼Œåˆ™ä¸è€ƒè™‘endï¼Œç›´æ¥å°†åºåˆ—æ’åˆ°æœ€åé¢
+	 * @param end è¦æ›¿æ¢åºåˆ—çš„ç»ˆç‚¹ï¼Œå®é™…ä½ç‚¹,å¹¶ä¸”åŒ…å«è¯¥ä½ç‚¹ï¼Œ<br>
+	 * å¦‚æœ start == end é‚£ä¹ˆå°±æ˜¯å°†è¯¥ç‚¹æ›¿æ¢æˆæŒ‡å®šåºåˆ—<br>
+	 * å¦‚æœ start > end è¯´æ˜æ˜¯æ’å…¥ç´§æŒ¨ç€startä½ç‚¹ä¹‹å<br>
+	 * @param seq è¦æ›¿æ¢çš„åºåˆ—
+	 * @param boostart æ›¿æ¢åºåˆ—çš„å‰éƒ¨æ˜¯å¦æ’å…¥XXX trueï¼šæ’å…¥
+	 * @param booend æ›¿æ¢åºåˆ—çš„åéƒ¨æ˜¯å¦æ’å…¥XXX trueï¼šæ’å…¥
 	 */
 	public void modifySeq(int start, int end, String seq, boolean boostart, boolean booend) {
 		String startSeq = "";
@@ -228,7 +228,7 @@ public class SeqFasta implements Cloneable {
 		FinalSeq = SeqSequence.substring(0, start) + startSeq + seq.toUpperCase() + endSeq + SeqSequence.substring(end);
 		SeqSequence = FinalSeq;
 	}
-	/** Ö¸¶¨snpÎ»µã£¬Êµ¼ÊÎ»ÖÃ£¬´Ó1¿ªÊ¼£¬È»ºóÓÃÖ¸¶¨µÄĞòÁĞÈ¥Ìæ»»Ô­À´µÄĞòÁĞ */
+	/** æŒ‡å®šsnpä½ç‚¹ï¼Œå®é™…ä½ç½®ï¼Œä»1å¼€å§‹ï¼Œç„¶åç”¨æŒ‡å®šçš„åºåˆ—å»æ›¿æ¢åŸæ¥çš„åºåˆ— */
 	public void modifySeq(int snpSite, char replace) {
 		snpSite--;
 		char[] chrSeq = SeqSequence.toCharArray();
@@ -238,7 +238,7 @@ public class SeqFasta implements Cloneable {
 	}
 	
 	/**
-	 * Ö¸¶¨snpÎ»µã£¬Êµ¼ÊÎ»ÖÃ£¬´Ó1¿ªÊ¼£¬È»ºóÓÃÖ¸¶¨µÄĞòÁĞÈ¥Ìæ»»Ô­À´µÄĞòÁĞ
+	 * æŒ‡å®šsnpä½ç‚¹ï¼Œå®é™…ä½ç½®ï¼Œä»1å¼€å§‹ï¼Œç„¶åç”¨æŒ‡å®šçš„åºåˆ—å»æ›¿æ¢åŸæ¥çš„åºåˆ—
 	 */
 	public void modifySeq(ArrayList<SoapsnpInfo> lsSoapsnpInfos) {
 		char[] chrSeq = SeqSequence.toCharArray();
@@ -249,39 +249,39 @@ public class SeqFasta implements Cloneable {
 		SeqSequence = FinalSeq;
 	}
 	
-	/** Í³¼ÆĞòÁĞÖĞĞ¡Ğ´ĞòÁĞ£¬NµÄÊıÁ¿ÒÔ¼°XµÄÊıÁ¿µÈ */
+	/** ç»Ÿè®¡åºåˆ—ä¸­å°å†™åºåˆ—ï¼ŒNçš„æ•°é‡ä»¥åŠXçš„æ•°é‡ç­‰ */
 	public StatisticSeqInfo getSeqAssemblyInfo() {
 		return new StatisticSeqInfo(this);
 	}
-	/**@return ½«nrĞòÁĞ×ª±äÎªµ¥×ÖÄ¸aaĞòÁĞ£¬Ê×ÏÈÕı·´ÏòÖ®ºó£¬È»ºó°´ÕÕ¸ÃË³Ğò½øĞĞorfÑ¡Ôñ */
+	/**@return å°†nråºåˆ—è½¬å˜ä¸ºå•å­—æ¯aaåºåˆ—ï¼Œé¦–å…ˆæ­£åå‘ä¹‹åï¼Œç„¶åæŒ‰ç…§è¯¥é¡ºåºè¿›è¡Œorfé€‰æ‹© */
 	public String toStringAA1() {
 		return toStringAA(true, 0, true);
 	}
-	/**@return ½«nrĞòÁĞ×ª±äÎªÈı×ÖÄ¸aaĞòÁĞ£¬Ê×ÏÈÕı·´ÏòÖ®ºó£¬È»ºó°´ÕÕ¸ÃË³Ğò½øĞĞorfÑ¡Ôñ */
+	/**@return å°†nråºåˆ—è½¬å˜ä¸ºä¸‰å­—æ¯aaåºåˆ—ï¼Œé¦–å…ˆæ­£åå‘ä¹‹åï¼Œç„¶åæŒ‰ç…§è¯¥é¡ºåºè¿›è¡Œorfé€‰æ‹© */
 	public String toStringAA3() {
 		return toStringAA(true, 0, false);
 	}
 	/**
-	 * @param AAnum true µ¥×ÖÄ¸AA£¬false Èı×ÖÄ¸AA
-	 * @return ½«nrĞòÁĞ×ª±äÎªaaĞòÁĞ£¬Ê×ÏÈÕı·´ÏòÖ®ºó£¬È»ºó°´ÕÕ¸ÃË³Ğò½øĞĞorfÑ¡Ôñ 
+	 * @param AAnum true å•å­—æ¯AAï¼Œfalse ä¸‰å­—æ¯AA
+	 * @return å°†nråºåˆ—è½¬å˜ä¸ºaaåºåˆ—ï¼Œé¦–å…ˆæ­£åå‘ä¹‹åï¼Œç„¶åæŒ‰ç…§è¯¥é¡ºåºè¿›è¡Œorfé€‰æ‹© 
 	 */
 	public String toStringAA(boolean AAnum) {
 		return toStringAA(true, 0, AAnum);
 	}
 	/**
-	 * ½«nrĞòÁĞ×ª±äÎªµ¥×ÖÄ¸aaĞòÁĞ£¬Ê×ÏÈÕı·´ÏòÖ®ºó£¬È»ºó°´ÕÕ¸ÃË³Ğò½øĞĞorfÑ¡Ôñ
-	 * @param cis ÊÇÕıÏò false£º·´Ïò»¥²¹
-	 * @param orf µÚ¼¸¸öorf£¬0£¬1£¬2
+	 * å°†nråºåˆ—è½¬å˜ä¸ºå•å­—æ¯aaåºåˆ—ï¼Œé¦–å…ˆæ­£åå‘ä¹‹åï¼Œç„¶åæŒ‰ç…§è¯¥é¡ºåºè¿›è¡Œorfé€‰æ‹©
+	 * @param cis æ˜¯æ­£å‘ falseï¼šåå‘äº’è¡¥
+	 * @param orf ç¬¬å‡ ä¸ªorfï¼Œ0ï¼Œ1ï¼Œ2
 	 * @return
 	 */
 	public String toStringAA(boolean cis,int orf) {
 		return toStringAA(cis, orf, true);
 	}
 	/**
-	 * ½«nrĞòÁĞ×ª±äÎªaaĞòÁĞ£¬Ê×ÏÈÕı·´ÏòÖ®ºó£¬È»ºó°´ÕÕ¸ÃË³Ğò½øĞĞorfÑ¡Ôñ
-	 * @param cis ÊÇÕıÏò false£º·´Ïò»¥²¹
-	 * @param orf µÚ¼¸¸öorf£¬0£¬1£¬2
-	 * @param AAnum true µ¥×ÖÄ¸AA£¬false Èı×ÖÄ¸AA
+	 * å°†nråºåˆ—è½¬å˜ä¸ºaaåºåˆ—ï¼Œé¦–å…ˆæ­£åå‘ä¹‹åï¼Œç„¶åæŒ‰ç…§è¯¥é¡ºåºè¿›è¡Œorfé€‰æ‹©
+	 * @param cis æ˜¯æ­£å‘ falseï¼šåå‘äº’è¡¥
+	 * @param orf ç¬¬å‡ ä¸ªorfï¼Œ0ï¼Œ1ï¼Œ2
+	 * @param AAnum true å•å­—æ¯AAï¼Œfalse ä¸‰å­—æ¯AA
 	 * @return
 	 */
 	public String toStringAA(boolean cis,int orf, boolean AAnum) {
@@ -303,7 +303,7 @@ public class SeqFasta implements Cloneable {
 		return resultAA.toString();
 	}
 	/**
-	 * ½øĞĞmoti²éÕÒ
+	 * è¿›è¡ŒmotiæŸ¥æ‰¾
 	 * @return
 	 */
 	public SeqFastaMotifSearch getMotifScan() {
@@ -311,9 +311,9 @@ public class SeqFasta implements Cloneable {
 	}
 
 	/**
-	 * ÅĞ¶Ï¸ÃĞòÁĞÊÇDNA£¬RNA£¬»¹ÊÇµ°°×£¬»òÕßÒ²²»ÖªµÀÊÇÊ²Ã´
+	 * åˆ¤æ–­è¯¥åºåˆ—æ˜¯DNAï¼ŒRNAï¼Œè¿˜æ˜¯è›‹ç™½ï¼Œæˆ–è€…ä¹Ÿä¸çŸ¥é“æ˜¯ä»€ä¹ˆ
 	 * @return
-	 * SeqFasta.SEQ_DNAµÈ
+	 * SeqFasta.SEQ_DNAç­‰
 	 */
 	public int getSeqType() {
 		int len = 2000;
@@ -348,7 +348,7 @@ public class SeqFasta implements Cloneable {
 	public FastaGetCDSFromProtein getCDSfromProtein(String proteinSeq) {
 		return new FastaGetCDSFromProtein(this, proteinSeq);
 	}
-	/** ¸ù¾İTOLOWCASE·µ»ØĞòÁĞ */
+	/** æ ¹æ®TOLOWCASEè¿”å›åºåˆ— */
 	public String toString() {
 		if (SeqSequence == null) {
 			return "";
@@ -360,34 +360,34 @@ public class SeqFasta implements Cloneable {
 			return TOLOWCASE.equals(true) ?  SeqSequence.toLowerCase() :  SeqSequence.toUpperCase();
 		}
 	}
-	/** ·µ»ØAAµÄfastaĞòÁĞ
-	 *  Ã¿ĞĞ60¸öAA
+	/** è¿”å›AAçš„fastaåºåˆ—
+	 *  æ¯è¡Œ60ä¸ªAA
 	 *  */
 	public String toStringAAfasta() {
 		return toStringAAfasta(60);
 	}
-	/** ·µ»ØAAµÄfastaĞòÁĞ
-	 * @param basePerLine Ã¿¶àÉÙ¸öAA»»ĞĞ
+	/** è¿”å›AAçš„fastaåºåˆ—
+	 * @param basePerLine æ¯å¤šå°‘ä¸ªAAæ¢è¡Œ
 	 *  */
 	public String toStringAAfasta(int basePerLine) {
 		return getMultiLineSeq(SeqName, toStringAA(true, 0), basePerLine);
 	}
-	/** ·µ»ØNrµÄfastaĞòÁĞ
-	 * Ã¿¸ô60¸ö¼î»ù»»ĞĞ
+	/** è¿”å›Nrçš„fastaåºåˆ—
+	 * æ¯éš”60ä¸ªç¢±åŸºæ¢è¡Œ
 	 */
 	public String toStringNRfasta() {
 		return toStringNRfasta(60);
 	}
-	/** ·µ»ØNrµÄfastaĞòÁĞ
-	 * @param basePerLine Ã¿¶àÉÙ¸öbp»»ĞĞ
+	/** è¿”å›Nrçš„fastaåºåˆ—
+	 * @param basePerLine æ¯å¤šå°‘ä¸ªbpæ¢è¡Œ
 	 *  */
 	public String toStringNRfasta(int basePerLine) {
 		return getMultiLineSeq(SeqName, toString(), basePerLine);
 	}
-	/** ·µ»ØNrµÄfastaĞòÁĞ
-	 * @param seqName ĞòÁĞÃû
-	 * @param seq ¾ßÌåµÄĞòÁĞ
-	 * @param basePerLine Ã¿¶àÉÙ¸öbp»»ĞĞ
+	/** è¿”å›Nrçš„fastaåºåˆ—
+	 * @param seqName åºåˆ—å
+	 * @param seq å…·ä½“çš„åºåˆ—
+	 * @param basePerLine æ¯å¤šå°‘ä¸ªbpæ¢è¡Œ
 	 *  */
 	private String getMultiLineSeq(String seqName, String seq, int basePerLine) {
 		String result = ">" + seqName;
@@ -404,8 +404,8 @@ public class SeqFasta implements Cloneable {
 			tmpLines[m] = tmpAll[i];
 			m++;
 		}
-		/** ×îºóÒ»¸ötmpLinesÒ²ÊÇÒ»¸ö³¤¶ÈÎªbasePerLineµÄÊı×é£¬
-		 * µ«ÊÇÆäÊµ¼ÊĞòÁĞ³¤¶È¿ÉÄÜ²¢Ã»ÓĞbasePerLine³¤£¬ËùÒÔ¶à³öÀ´µÄµØ·½¾Í»áÓÃnullÌî³ä£¬ÄÇÃ´ÎÒÃÇÒª°ÑÕâĞ©nullÉ¾µô£¬·ñÔò»á³ö´í
+		/** æœ€åä¸€ä¸ªtmpLinesä¹Ÿæ˜¯ä¸€ä¸ªé•¿åº¦ä¸ºbasePerLineçš„æ•°ç»„ï¼Œ
+		 * ä½†æ˜¯å…¶å®é™…åºåˆ—é•¿åº¦å¯èƒ½å¹¶æ²¡æœ‰basePerLineé•¿ï¼Œæ‰€ä»¥å¤šå‡ºæ¥çš„åœ°æ–¹å°±ä¼šç”¨nullå¡«å……ï¼Œé‚£ä¹ˆæˆ‘ä»¬è¦æŠŠè¿™äº›nullåˆ æ‰ï¼Œå¦åˆ™ä¼šå‡ºé”™
 		 */
 		char[] tmpFinal = new char[m];
 		for (int i = 0; i < tmpFinal.length; i++) {
@@ -416,7 +416,7 @@ public class SeqFasta implements Cloneable {
 		return result;
 	}
 	
-	/** ¿ËÂ¡ĞòÁĞ */
+	/** å…‹éš†åºåˆ— */
 	public SeqFasta clone() {
 		SeqFasta seqFasta = null;
 		try {
@@ -431,14 +431,14 @@ public class SeqFasta implements Cloneable {
 		}
 		return seqFasta;
 	}
-	/** ÕÒµ½Ò»¶ÎĞòÁĞÖĞ×î³¤µÄ×ªÂ¼±¾µÈµÈ */
+	/** æ‰¾åˆ°ä¸€æ®µåºåˆ—ä¸­æœ€é•¿çš„è½¬å½•æœ¬ç­‰ç­‰ */
 	public SeqfastaStatisticsCDS statisticsCDS() {
 		SeqfastaStatisticsCDS seqfastaStatisticsCDS = new SeqfastaStatisticsCDS(this);
 		return seqfastaStatisticsCDS;
 	}
-	////////////////////// static ·½·¨ //////////////////////////////////////
+	////////////////////// static æ–¹æ³• //////////////////////////////////////
 	/**
-	 * µ±²éÕÒÍêmotifºó£¬»ñµÃmotifµÄtitile
+	 * å½“æŸ¥æ‰¾å®Œmotifåï¼Œè·å¾—motifçš„titile
 	 * @return
 	 */
 	public static String[] getMotifScanTitle() {
@@ -446,8 +446,8 @@ public class SeqFasta implements Cloneable {
 		return title;
 	}
 	/**
-	 * ±È½ÏÁ½¸öĞòÁĞÊÇ·ñÒ»ÖÂ£¬¼ÆÊı²»Ò»ÖÂµÄ¼î»ùÊı
-	 * ´ÓÍ·¿ªÊ¼±È½Ï£¬Í·Î²¿ÉÒÔÓĞ¿Õ¸ñ£¬ÖĞ¼ä²»ÄÜÓĞ¡£²»ÊÇblastÄ£Ê½µÄ±È½Ï
+	 * æ¯”è¾ƒä¸¤ä¸ªåºåˆ—æ˜¯å¦ä¸€è‡´ï¼Œè®¡æ•°ä¸ä¸€è‡´çš„ç¢±åŸºæ•°
+	 * ä»å¤´å¼€å§‹æ¯”è¾ƒï¼Œå¤´å°¾å¯ä»¥æœ‰ç©ºæ ¼ï¼Œä¸­é—´ä¸èƒ½æœ‰ã€‚ä¸æ˜¯blastæ¨¡å¼çš„æ¯”è¾ƒ
 	 */
 	public static int compare2Seq(String seq1, String seq2) {
 		char[] chrSeq1 = seq1.trim().toLowerCase().toCharArray();
@@ -464,29 +464,29 @@ public class SeqFasta implements Cloneable {
 	}
 
 	/**
-	 * »ñµÃ°±»ùËáµÄÌØĞÔ£¬¼«ĞÔ£¬µçºÉµÈ£¬°´ÕÕgenedocµÄ·ÖÀà±ê×¼
+	 * è·å¾—æ°¨åŸºé…¸çš„ç‰¹æ€§ï¼Œææ€§ï¼Œç”µè·ç­‰ï¼ŒæŒ‰ç…§genedocçš„åˆ†ç±»æ ‡å‡†
 	 * @return
-	 * string[3]: 0£º¼«ĞÔ--´øµçºÉ--¸ºµç
-	 * 1£º
+	 * string[3]: 0ï¼šææ€§--å¸¦ç”µè·--è´Ÿç”µ
+	 * 1ï¼š
 	 */
 	public static String[] getAAquality(String AA) {
 		return CodeInfo.getAAquality(AA);
 	}
 	/**
-	 * ½«°±»ùËáÔÚµ¥×ÖÄ¸ºÍÈı×ÖÄ¸Ö®¼ä×ª»»
+	 * å°†æ°¨åŸºé…¸åœ¨å•å­—æ¯å’Œä¸‰å­—æ¯ä¹‹é—´è½¬æ¢
 	 */
 	public static String convertAA(String AA) {
 		return CodeInfo.convertAA(AA);
 	}
 	
 	/**
-	 * ÊäÈëµÄÊÇDNAÈıÁªÃÜÂë×Ö
-	 * ±È½ÏÁ½¸ö°±»ùËáµÄ»¯Ñ§ĞÔÖÊ£¬·µ»Ø²îÒìµã£¬·µ»Ø×î´ó²îÒì
-	 * Æ©ÈçÈç¹û¼«ĞÔ²»Í¬¾Í·µ»Ø¼«ĞÔ
-	 * ¸ñÊ½ polar --> nonpolarµÈ
-	 * ¶¼Ò»ÑùÔò·µ»Ø"";
-	 * @param DNAcode1 µÚÒ»¸öDNA±àÂë
-	 * @param DNAcode2 µÚ¶ş¸öDNA±àÂë
+	 * è¾“å…¥çš„æ˜¯DNAä¸‰è”å¯†ç å­—
+	 * æ¯”è¾ƒä¸¤ä¸ªæ°¨åŸºé…¸çš„åŒ–å­¦æ€§è´¨ï¼Œè¿”å›å·®å¼‚ç‚¹ï¼Œè¿”å›æœ€å¤§å·®å¼‚
+	 * è­¬å¦‚å¦‚æœææ€§ä¸åŒå°±è¿”å›ææ€§
+	 * æ ¼å¼ polar --> nonpolarç­‰
+	 * éƒ½ä¸€æ ·åˆ™è¿”å›"";
+	 * @param DNAcode1 ç¬¬ä¸€ä¸ªDNAç¼–ç 
+	 * @param DNAcode2 ç¬¬äºŒä¸ªDNAç¼–ç 
 	 * @return
 	 */
 	public static String cmpAAqualityDNA(String DNAcode1, String DNAcode2) {
@@ -494,17 +494,17 @@ public class SeqFasta implements Cloneable {
 	}
 	
 	/**
-	 * ÊäÈëµÄÊÇ°±»ùËá£¬ÎŞËùÎ½Èı×Ö·û»¹ÊÇµ¥×Ö·û
-	 * ±È½ÏÁ½¸ö°±»ùËáµÄ»¯Ñ§ĞÔÖÊ£¬·µ»Ø²îÒìµã£¬·µ»Ø×î´ó²îÒì
-	 * Æ©ÈçÈç¹û¼«ĞÔ²»Í¬¾Í·µ»Ø¼«ĞÔ
-	 * ¸ñÊ½ polar --> nonpolarµÈ
-	 * ¶¼Ò»ÑùÔò·µ»Ø"";
+	 * è¾“å…¥çš„æ˜¯æ°¨åŸºé…¸ï¼Œæ— æ‰€è°“ä¸‰å­—ç¬¦è¿˜æ˜¯å•å­—ç¬¦
+	 * æ¯”è¾ƒä¸¤ä¸ªæ°¨åŸºé…¸çš„åŒ–å­¦æ€§è´¨ï¼Œè¿”å›å·®å¼‚ç‚¹ï¼Œè¿”å›æœ€å¤§å·®å¼‚
+	 * è­¬å¦‚å¦‚æœææ€§ä¸åŒå°±è¿”å›ææ€§
+	 * æ ¼å¼ polar --> nonpolarç­‰
+	 * éƒ½ä¸€æ ·åˆ™è¿”å›"";
 	 */
 	public static String cmpAAquality(String AA1, String AA2) {
 		return CodeInfo.cmpAAquality(AA1, AA2);
 	}
 	
-	/** ÒÀ´Î¶ÁÈ¡¼î»ù */
+	/** ä¾æ¬¡è¯»å–ç¢±åŸº */
 	public Iterable<Character> readBase() {
 		final char[] seq = toString().toCharArray();
 		return new Iterable<Character>() {

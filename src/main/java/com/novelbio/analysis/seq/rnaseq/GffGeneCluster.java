@@ -16,54 +16,54 @@ import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
 
 public class GffGeneCluster {
 	private static Logger logger = Logger.getLogger(GffGeneCluster.class);
-	/** ÊÇ·ñº¬ÓĞreferenceµÄGffDetailGene */
+	/** æ˜¯å¦å«æœ‰referenceçš„GffDetailGene */
 	boolean isContainsRef = true;
 	Boolean sameExon = null;
 	String chrID;
 	int startLoc = 0;
 	int endLoc = 0;
 	/**
-	 * µ±refºÍthisµÄexon¶¼ÔÚ±ß½çÊ±£¬Èç¹ûÁ½¸öÍâÏÔ×ÓµÄ±ß½ç²î¾àÔÚÖ¸¶¨bpÒÔÄÚ(Æ©Èç10bpÒÔÄÚ)£¬¾ÍĞŞÕıÎª¿¿½üÄÚ²àµÄ
-	 * ÈçÏÂ<br>
+	 * å½“refå’Œthisçš„exonéƒ½åœ¨è¾¹ç•Œæ—¶ï¼Œå¦‚æœä¸¤ä¸ªå¤–æ˜¾å­çš„è¾¹ç•Œå·®è·åœ¨æŒ‡å®šbpä»¥å†…(è­¬å¦‚10bpä»¥å†…)ï¼Œå°±ä¿®æ­£ä¸ºé è¿‘å†…ä¾§çš„
+	 * å¦‚ä¸‹<br>
 	 * //--------10-------20-------------30-----40----------------50---------60----------------<br>
 		//-------10----(18)--------------30-----40-------------------(52)----60-------------<br>
 		//-------10------(20)-------------30----40----------------(50)-------60-------------<br>
-		 * ×¢ÒâÖ»ĞŞÕıÒ»¸ö¶Ëµã£¬Ò²¾ÍÊÇ¿¿½üÄÚ²àµÄ£¬ÈçÀ¨»¡Ëù±ê×¢
-		 *²î¾àÊÇĞ¡ÓÚµ«²»µÈÓÚ ËùÒÔÉè¶¨Îª10±íÊ¾10ÒÔÏÂµÄ²î¾à²Å»áĞŞÕı£¬µ«ÊÇ²»»áĞŞÕı10
+		 * æ³¨æ„åªä¿®æ­£ä¸€ä¸ªç«¯ç‚¹ï¼Œä¹Ÿå°±æ˜¯é è¿‘å†…ä¾§çš„ï¼Œå¦‚æ‹¬å¼§æ‰€æ ‡æ³¨
+		 *å·®è·æ˜¯å°äºä½†ä¸ç­‰äº æ‰€ä»¥è®¾å®šä¸º10è¡¨ç¤º10ä»¥ä¸‹çš„å·®è·æ‰ä¼šä¿®æ­£ï¼Œä½†æ˜¯ä¸ä¼šä¿®æ­£10
 	 */
 	int boundMaxFalseGapBp = 9;
-	/** ÊÇ·ñÒÑ¾­½«refgff·ÅÖÃÔÚisContainsRefÖĞ 
-	 * ÕâÀïµÄËã·¨ÊÇÊ×ÏÈ½«refGffGene·ÅÖÃÔÚlsGeneClusterµÄ×îÇ°Ãæ¡£
-	 * È»ºóÈç¹û´æÔÚRef£¬Ôò½«µÚÒ»Î»µÄlsGeneCluster·ÅÖÃÔÚlsGenesRef
-	 * Èç¹û²»´æÔÚRef£¬Ôò½«×î³¤µÄLsGene·ÅÖÃÔÚLsGenesRef
-	 * ÄÇÃ´Õâ¸ö±êÇ©¾ÍÊÇÀ´È·¶¨¸Ã²½ÖèÊÇ·ñÒÑ¾­Íê³É
+	/** æ˜¯å¦å·²ç»å°†refgffæ”¾ç½®åœ¨isContainsRefä¸­ 
+	 * è¿™é‡Œçš„ç®—æ³•æ˜¯é¦–å…ˆå°†refGffGeneæ”¾ç½®åœ¨lsGeneClusterçš„æœ€å‰é¢ã€‚
+	 * ç„¶åå¦‚æœå­˜åœ¨Refï¼Œåˆ™å°†ç¬¬ä¸€ä½çš„lsGeneClusteræ”¾ç½®åœ¨lsGenesRef
+	 * å¦‚æœä¸å­˜åœ¨Refï¼Œåˆ™å°†æœ€é•¿çš„LsGeneæ”¾ç½®åœ¨LsGenesRef
+	 * é‚£ä¹ˆè¿™ä¸ªæ ‡ç­¾å°±æ˜¯æ¥ç¡®å®šè¯¥æ­¥éª¤æ˜¯å¦å·²ç»å®Œæˆ
 	 * */
 	boolean setRefLsGene = false;
-	/** ×îºó±ÈÍêµÄ½á¹û·ÅÔÚÕâÀï */
+	/** æœ€åæ¯”å®Œçš„ç»“æœæ”¾åœ¨è¿™é‡Œ */
 	ArrayList<GffDetailGene> lsCombGenesResult;
 	/**
-	 * ÌôÑ¡³öĞèÒª½øĞĞĞŞÕıµÄGffDetailGeneList£¬Ê×ÏÈÑ¡ÔñRefGffGene
-	 * Éè¶¨µÄÊ±ºò»á½«lsGeneClusterÀïÃæµÄ¶ÔÓ¦ÏîÄ¿É¾³ı
+	 * æŒ‘é€‰å‡ºéœ€è¦è¿›è¡Œä¿®æ­£çš„GffDetailGeneListï¼Œé¦–å…ˆé€‰æ‹©RefGffGene
+	 * è®¾å®šçš„æ—¶å€™ä¼šå°†lsGeneClusteré‡Œé¢çš„å¯¹åº”é¡¹ç›®åˆ é™¤
 	 */
 	ArrayList<GffDetailGene> lsGenesRef;
 	/**
-	 * list--ËùÓĞ²»Í¬À´Ô´µÄGffhash<br>
-	 * list--Ã¿¸öGffHashµÄGffDetail<br>
+	 * list--æ‰€æœ‰ä¸åŒæ¥æºçš„Gffhash<br>
+	 * list--æ¯ä¸ªGffHashçš„GffDetail<br>
 	 * <br>
-	 * Èç¹û±¾×éÖĞÓĞRefGffGene£¬Ôò·ÅÔÚµÚÒ»¸öÎ»ÖÃ¡£ÄÇÃ´¾ÍÓÃµÚÒ»¸öÎ»ÖÃµÄGffDetailGene½øĞĞ±È½Ï
-	 * Èç¹û±¾×éÃ»ÓĞRefGffGene£¬ÔòÑ¡Ôñ±¾×éÖĞ×î³¤µÄÒ»¸öGffDetailGene½øĞĞ±È½Ï<br>
+	 * å¦‚æœæœ¬ç»„ä¸­æœ‰RefGffGeneï¼Œåˆ™æ”¾åœ¨ç¬¬ä¸€ä¸ªä½ç½®ã€‚é‚£ä¹ˆå°±ç”¨ç¬¬ä¸€ä¸ªä½ç½®çš„GffDetailGeneè¿›è¡Œæ¯”è¾ƒ
+	 * å¦‚æœæœ¬ç»„æ²¡æœ‰RefGffGeneï¼Œåˆ™é€‰æ‹©æœ¬ç»„ä¸­æœ€é•¿çš„ä¸€ä¸ªGffDetailGeneè¿›è¡Œæ¯”è¾ƒ<br>
 	 * <br>
-	 * Èç¹û´æÔÚreference<b>ÆäÖĞµÚÒ»¸öÒ»¶¨ÊÇReferenceµÄGffGene</b>
+	 * å¦‚æœå­˜åœ¨reference<b>å…¶ä¸­ç¬¬ä¸€ä¸ªä¸€å®šæ˜¯Referenceçš„GffGene</b>
 	 */
 	ArrayList<ArrayList<GffDetailGene>> lsGeneCluster = new ArrayList<ArrayList<GffDetailGene>>();
-	/**ÒÀ´ÎÌí¼ÓµÄGffHashµÄÃû×Ö */
+	/**ä¾æ¬¡æ·»åŠ çš„GffHashçš„åå­— */
 	ArrayList<String> lsListGffName = new ArrayList<String>();
 	
 	double likelyhood = 0.7;
 	
 	ArrayList<ArrayList<ExonClusterBoundInfo>> lsIso2ExonBoundInfoStatistics = new ArrayList<ArrayList<ExonClusterBoundInfo>>();
 	/**
-	 * ÊÇ·ñº¬ÓĞrefGffDetailGene£¬Ã»ÓĞËµÃ÷RefÌø¹ıÁËÕâ¸öloc
+	 * æ˜¯å¦å«æœ‰refGffDetailGeneï¼Œæ²¡æœ‰è¯´æ˜Refè·³è¿‡äº†è¿™ä¸ªloc
 	 * @param isContainsRef
 	 */
 	public void setIsContainsRef(boolean isContainsRef) {
@@ -73,7 +73,7 @@ public class GffGeneCluster {
 		lsGeneCluster.add(lsGffDetailGenes);
 		lsListGffName.add(isoName);
 	}
-	/** µ±ÊäÈëÁËRefºÍThisÁ½¸öGffHashµÄÊ±ºò²ÅÄÜÓÃ */
+	/** å½“è¾“å…¥äº†Refå’ŒThisä¸¤ä¸ªGffHashçš„æ—¶å€™æ‰èƒ½ç”¨ */
 	public ArrayList<GffDetailGene> getThisGffGene() {
 		setRefGffGene();
 		if (isContainsRef) {
@@ -99,14 +99,14 @@ public class GffGeneCluster {
 	}
 	
 	/**
-	 * µ±refºÍthisµÄexon¶¼ÔÚ±ß½çÊ±£¬Èç¹ûÁ½¸öÍâÏÔ×ÓµÄ±ß½ç²î¾àÔÚÖ¸¶¨bpÒÔÄÚ(Æ©Èç10bpÒÔÄÚ)£¬¾ÍĞŞÕıÎª¿¿½üÄÚ²àµÄ
-	 * ÈçÏÂ<br>
+	 * å½“refå’Œthisçš„exonéƒ½åœ¨è¾¹ç•Œæ—¶ï¼Œå¦‚æœä¸¤ä¸ªå¤–æ˜¾å­çš„è¾¹ç•Œå·®è·åœ¨æŒ‡å®šbpä»¥å†…(è­¬å¦‚10bpä»¥å†…)ï¼Œå°±ä¿®æ­£ä¸ºé è¿‘å†…ä¾§çš„
+	 * å¦‚ä¸‹<br>
 	 * //--------10-------20-------------30-----40----------------50---------60----------------<br>
 		//-------10----(18)--------------30-----40-------------------(52)----60-------------<br>
 		//-------10------(20)-------------30----40----------------(50)-------60-------------<br>
-		 * ×¢ÒâÖ»ĞŞÕıÒ»¸ö¶Ëµã£¬Ò²¾ÍÊÇ¿¿½üÄÚ²àµÄ£¬ÈçÀ¨»¡Ëù±ê×¢
-		 *²î¾àÊÇĞ¡ÓÚµ«²»µÈÓÚ ËùÒÔÉè¶¨Îª10±íÊ¾10ÒÔÏÂµÄ²î¾à²Å»áĞŞÕı£¬µ«ÊÇ²»»áĞŞÕı10
-		 *Éè¶¨µÄÖµ×Ô¶¯È¡¾ø¶ÔÖµ£¬²»µÃ´óÓÚ20
+		 * æ³¨æ„åªä¿®æ­£ä¸€ä¸ªç«¯ç‚¹ï¼Œä¹Ÿå°±æ˜¯é è¿‘å†…ä¾§çš„ï¼Œå¦‚æ‹¬å¼§æ‰€æ ‡æ³¨
+		 *å·®è·æ˜¯å°äºä½†ä¸ç­‰äº æ‰€ä»¥è®¾å®šä¸º10è¡¨ç¤º10ä»¥ä¸‹çš„å·®è·æ‰ä¼šä¿®æ­£ï¼Œä½†æ˜¯ä¸ä¼šä¿®æ­£10
+		 *è®¾å®šçš„å€¼è‡ªåŠ¨å–ç»å¯¹å€¼ï¼Œä¸å¾—å¤§äº20
 	 */
 	public void setBoundMaxFalseGapBp(int boundMaxFalseGapBp) {
 		boundMaxFalseGapBp = Math.abs(boundMaxFalseGapBp);
@@ -115,7 +115,7 @@ public class GffGeneCluster {
 		}
 		this.boundMaxFalseGapBp = boundMaxFalseGapBp;
 	}
-	/** »ñµÃĞŞÊÎºÃµÄGffDetailGene
+	/** è·å¾—ä¿®é¥°å¥½çš„GffDetailGene
 	 * @return
 	 */
 	public ArrayList<GffDetailGene> getCombinedGffGene() {
@@ -125,8 +125,8 @@ public class GffGeneCluster {
 		}
 		return lsCombGenesResult;
 	}
-	/** Éè¶¨lsGenesRef£¬Í¬Ê±½«lsGeneClusterÖĞ¶ÔÓ¦ÏîÄ¿É¾³ı
-	 * ÎªºÏ²¢×öºÃ×¼±¸
+	/** è®¾å®šlsGenesRefï¼ŒåŒæ—¶å°†lsGeneClusterä¸­å¯¹åº”é¡¹ç›®åˆ é™¤
+	 * ä¸ºåˆå¹¶åšå¥½å‡†å¤‡
 	 */
 	private void setRefGffGene() {
 		if (setRefLsGene) {
@@ -163,7 +163,7 @@ public class GffGeneCluster {
 
 	private ArrayList<GffDetailGene> compareAndModify_GffGene() {
 		ListGff lsGffDetailGenes = new ListGff();
-		for (GffDetailGene gffDetailGeneRefRaw : lsGenesRef) {//±éÀúÃ¿¸öGffDetail
+		for (GffDetailGene gffDetailGeneRefRaw : lsGenesRef) {//éå†æ¯ä¸ªGffDetail
 			if (gffDetailGeneRefRaw.getName().contains("NM_001044603")) {
 				logger.error("stop");
 			}
@@ -171,11 +171,11 @@ public class GffGeneCluster {
 			GffDetailGene gffDetailGeneResult = gffDetailGeneRefRaw.clone();
 			gffDetailGeneResult.clearIso();
 			
-			HashSet<String> setGffIsoRefSelectName = new HashSet<String>();//ËùÓĞÑ¡ÖĞµÄIsoµÄÃû×Ö£¬Ò²¾ÍÊÇÓëcufflinkÔ¤²âµÄ×ªÂ¼±¾ÏàËÆµÄ×ªÂ¼±¾
+			HashSet<String> setGffIsoRefSelectName = new HashSet<String>();//æ‰€æœ‰é€‰ä¸­çš„Isoçš„åå­—ï¼Œä¹Ÿå°±æ˜¯ä¸cufflinké¢„æµ‹çš„è½¬å½•æœ¬ç›¸ä¼¼çš„è½¬å½•æœ¬
 
-			for (ArrayList<GffDetailGene> lsgffArrayList : lsGeneCluster) {//»ñµÃGffClusterÀïÃæÃ¿¸öGffHashµÄlist£¬Õâ¸öÒ»°ãÖ»ÓĞÒ»¸öGffHash
-				for (GffDetailGene gffDetailGeneCalculate : lsgffArrayList) {//»ñµÃÁíÒ»¸öGffHashÀïÃæµÄGffDetailGene
-					for (GffGeneIsoInfo gffIsoThis : gffDetailGeneCalculate.getLsCodSplit()) {//±éÀú¸ÃGffDetailGeneµÄ×ªÂ¼±¾£¬²¢ÌôÑ¡³ö×î½Ó½üµÄ½øĞĞ±È½Ï	
+			for (ArrayList<GffDetailGene> lsgffArrayList : lsGeneCluster) {//è·å¾—GffClusteré‡Œé¢æ¯ä¸ªGffHashçš„listï¼Œè¿™ä¸ªä¸€èˆ¬åªæœ‰ä¸€ä¸ªGffHash
+				for (GffDetailGene gffDetailGeneCalculate : lsgffArrayList) {//è·å¾—å¦ä¸€ä¸ªGffHashé‡Œé¢çš„GffDetailGene
+					for (GffGeneIsoInfo gffIsoThis : gffDetailGeneCalculate.getLsCodSplit()) {//éå†è¯¥GffDetailGeneçš„è½¬å½•æœ¬ï¼Œå¹¶æŒ‘é€‰å‡ºæœ€æ¥è¿‘çš„è¿›è¡Œæ¯”è¾ƒ	
 						GffGeneIsoInfo gffIsoRef = gffDetailGeneRef.getSimilarIso(gffIsoThis, likelyhood);
 						
 						if (gffIsoRef == null) 
@@ -198,11 +198,11 @@ public class GffGeneCluster {
 		return lsGffDetailGenes;
 	}
 	/**
-	 * public³öÀ´½ö½öÊÇÌá¹©¸øJunit²âÊÔÊ¹ÓÃ
-	 * ±È½ÏÁ½¸ö·½ÏòÏàÍ¬£¬ÓĞ½»¼¯µÄGffGeneIsoµÄĞÅÏ¢£¬ĞŞÕıgffGeneIsoInfoRef
+	 * publicå‡ºæ¥ä»…ä»…æ˜¯æä¾›ç»™Junitæµ‹è¯•ä½¿ç”¨
+	 * æ¯”è¾ƒä¸¤ä¸ªæ–¹å‘ç›¸åŒï¼Œæœ‰äº¤é›†çš„GffGeneIsoçš„ä¿¡æ¯ï¼Œä¿®æ­£gffGeneIsoInfoRef
 	 * @param gffGeneIsoInfoRef
 	 * @param gffGeneIsoInfoThis
-	 * @return ·µ»ØÈ«ĞÂµÄGffGeneIsoInfo
+	 * @return è¿”å›å…¨æ–°çš„GffGeneIsoInfo
 	 */
 	public GffGeneIsoInfo compareIso(GffGeneIsoInfo gffGeneIsoInfoRef, GffGeneIsoInfo gffGeneIsoInfoThis) {		
 		GffGeneIsoInfo gffGeneIsoInfoResult = gffGeneIsoInfoRef.clone();
@@ -217,7 +217,7 @@ public class GffGeneCluster {
 		ArrayList<ExonCluster> lsExonClusters = GffGeneIsoInfo.getExonCluster(gffGeneIsoInfoRef.isCis5to3(), lsGffGeneIsoInfos);
 
 		int[] tailBoundInfo = getBothStartNumEndNum(lsExonClusters);
-		ArrayList<ExonClusterBoundInfo> lsExonBoundInfoStatistics = new ArrayList<ExonClusterBoundInfo>();//ÓÃÓÚÍ³¼ÆexonĞŞÕıÊıÁ¿µÄ
+		ArrayList<ExonClusterBoundInfo> lsExonBoundInfoStatistics = new ArrayList<ExonClusterBoundInfo>();//ç”¨äºç»Ÿè®¡exonä¿®æ­£æ•°é‡çš„
 		
 		ExonClusterBoundInfo lastExonClusterBoundInfo = new ExonClusterBoundInfo(gffGeneIsoInfoRef, gffGeneIsoInfoThis, boundMaxFalseGapBp);
 		lastExonClusterBoundInfo.booStartUnify = true;
@@ -240,12 +240,12 @@ public class GffGeneCluster {
 		return gffGeneIsoInfoResult;
 	}
 	/**
-	 * lsExonClustersÊÇÁ½¸ö×ªÂ¼±¾±È½ÏµÄ½á¹û£¬ÈçÏÂÍ¼<br>
+	 * lsExonClustersæ˜¯ä¸¤ä¸ªè½¬å½•æœ¬æ¯”è¾ƒçš„ç»“æœï¼Œå¦‚ä¸‹å›¾<br>
 	 * 0----1-----2-----3-----4<br>
-	 * A----B-----C-----D----E µÚÒ»¸ö×ªÂ¼±¾<br>
-	 * *----*-----a-----b µÚ¶ş¸ö×ªÂ¼±¾<br>
-	 * ·µ»ØÆäÖĞ½ÏÍí³öÏÖµÄÆğµãºÍ½ÏÔç³öÏÖµÄÖÕµã×ø±ê£¬Ò²¾ÍÊÇaºÍbµÄ×ø±ê£¬´Ó0¿ªÊ¼
-	 * ÄÇÃ´¾ÍÊÇ·µ»Ø2ºÍ3
+	 * A----B-----C-----D----E ç¬¬ä¸€ä¸ªè½¬å½•æœ¬<br>
+	 * *----*-----a-----b ç¬¬äºŒä¸ªè½¬å½•æœ¬<br>
+	 * è¿”å›å…¶ä¸­è¾ƒæ™šå‡ºç°çš„èµ·ç‚¹å’Œè¾ƒæ—©å‡ºç°çš„ç»ˆç‚¹åæ ‡ï¼Œä¹Ÿå°±æ˜¯aå’Œbçš„åæ ‡ï¼Œä»0å¼€å§‹
+	 * é‚£ä¹ˆå°±æ˜¯è¿”å›2å’Œ3
 	 * @param lsExonClusters
 	 * @return
 	 */
@@ -289,57 +289,57 @@ public class GffGeneCluster {
 	}
 }
 /**
- * ´æ´¢Ä³¸öexonclusterÖĞrefºÍthisµÄexonµÄÆğµãºÍÖÕµãÊÇ·ñÒ»ÖÂ
+ * å­˜å‚¨æŸä¸ªexonclusterä¸­refå’Œthisçš„exonçš„èµ·ç‚¹å’Œç»ˆç‚¹æ˜¯å¦ä¸€è‡´
  * @author zong0jie
  */
 class ExonClusterBoundInfo {
 	GffGeneIsoInfo gffGeneIsoInfoRef;
 	GffGeneIsoInfo gffGeneIsoInfoThis;
-	/** ÉÏÒ»¸öÎ»µãµÄ×´Ì¬ĞÅÏ¢ */
+	/** ä¸Šä¸€ä¸ªä½ç‚¹çš„çŠ¶æ€ä¿¡æ¯ */
 	ExonClusterBoundInfo lastExonClusterBoundInfo;
-	/** startÎ»µãÊÇÒ»ÖÂµÄ */
+	/** startä½ç‚¹æ˜¯ä¸€è‡´çš„ */
 	boolean booStartUnify = true;
-	/** endÎ»µãÊÇÒ»ÖÂµÄ */
+	/** endä½ç‚¹æ˜¯ä¸€è‡´çš„ */
 	boolean booEndUnify = true;
-	/** ÆğµãÑ¡ÔñRef */
+	/** èµ·ç‚¹é€‰æ‹©Ref */
 	boolean selectRefStart = true;
-	/** ÖÕµãÑ¡ÔñRef */
+	/** ç»ˆç‚¹é€‰æ‹©Ref */
 	boolean selectRefEnd = true;
 	
-	/** ±¾´ÎËù±È½ÏµÄExonClusterĞÅÏ¢ */
+	/** æœ¬æ¬¡æ‰€æ¯”è¾ƒçš„ExonClusterä¿¡æ¯ */
 	ArrayList<ExonCluster> lsExonClusters;
-	/** ±¾´ÎexonclusterµÄÎ»ÖÃ£¬´Ó0¿ªÊ¼¼ÆËã */
+	/** æœ¬æ¬¡exonclusterçš„ä½ç½®ï¼Œä»0å¼€å§‹è®¡ç®— */
 	int thisExonClusterNum;
 	
 	/**
-	 * lsExonClustersÊÇÁ½¸ö×ªÂ¼±¾±È½ÏµÄ½á¹û£¬ÈçÏÂÍ¼<br>
+	 * lsExonClustersæ˜¯ä¸¤ä¸ªè½¬å½•æœ¬æ¯”è¾ƒçš„ç»“æœï¼Œå¦‚ä¸‹å›¾<br>
 	 * 0----1-----2-----3-----4<br>
-	 * A----B-----C-----D----E µÚÒ»¸ö×ªÂ¼±¾<br>
-	 * *----*-----a-----b µÚ¶ş¸ö×ªÂ¼±¾<br>
-	 * ·µ»ØÆäÖĞ½ÏÍí³öÏÖµÄÆğµãºÍ½ÏÔç³öÏÖµÄÖÕµã×ø±ê£¬Ò²¾ÍÊÇaºÍbµÄ×ø±ê£¬´Ó0¿ªÊ¼
-	 * ÄÇÃ´¾ÍÊÇ·µ»Ø2ºÍ3
+	 * A----B-----C-----D----E ç¬¬ä¸€ä¸ªè½¬å½•æœ¬<br>
+	 * *----*-----a-----b ç¬¬äºŒä¸ªè½¬å½•æœ¬<br>
+	 * è¿”å›å…¶ä¸­è¾ƒæ™šå‡ºç°çš„èµ·ç‚¹å’Œè¾ƒæ—©å‡ºç°çš„ç»ˆç‚¹åæ ‡ï¼Œä¹Ÿå°±æ˜¯aå’Œbçš„åæ ‡ï¼Œä»0å¼€å§‹
+	 * é‚£ä¹ˆå°±æ˜¯è¿”å›2å’Œ3
 	 */
 	int[] tailBoundInfo;
 	
 	/**
-	 * µ±refºÍthisµÄexon¶¼ÔÚ±ß½çÊ±£¬Èç¹ûÁ½¸öÍâÏÔ×ÓµÄ±ß½ç²î¾àÔÚÖ¸¶¨bpÒÔÄÚ(Æ©Èç10bpÒÔÄÚ)£¬¾ÍĞŞÕıÎª¿¿½üÄÚ²àµÄ
-	 * ÈçÏÂ<br>
+	 * å½“refå’Œthisçš„exonéƒ½åœ¨è¾¹ç•Œæ—¶ï¼Œå¦‚æœä¸¤ä¸ªå¤–æ˜¾å­çš„è¾¹ç•Œå·®è·åœ¨æŒ‡å®šbpä»¥å†…(è­¬å¦‚10bpä»¥å†…)ï¼Œå°±ä¿®æ­£ä¸ºé è¿‘å†…ä¾§çš„
+	 * å¦‚ä¸‹<br>
 	 * //--------10-------20-------------30-----40----------------50---------60----------------<br>
 		//-------10----(18)--------------30-----40-------------------(52)----60-------------<br>
 		//-------10------(20)-------------30----40----------------(50)-------60-------------<br>
-		 * ×¢ÒâÖ»ĞŞÕıÒ»¸ö¶Ëµã£¬Ò²¾ÍÊÇ¿¿½üÄÚ²àµÄ£¬ÈçÀ¨»¡Ëù±ê×¢
-		 *²î¾àÊÇĞ¡ÓÚµ«²»µÈÓÚ ËùÒÔÉè¶¨Îª10±íÊ¾10ÒÔÏÂµÄ²î¾à²Å»áĞŞÕı£¬µ«ÊÇ²»»áĞŞÕı10
+		 * æ³¨æ„åªä¿®æ­£ä¸€ä¸ªç«¯ç‚¹ï¼Œä¹Ÿå°±æ˜¯é è¿‘å†…ä¾§çš„ï¼Œå¦‚æ‹¬å¼§æ‰€æ ‡æ³¨
+		 *å·®è·æ˜¯å°äºä½†ä¸ç­‰äº æ‰€ä»¥è®¾å®šä¸º10è¡¨ç¤º10ä»¥ä¸‹çš„å·®è·æ‰ä¼šä¿®æ­£ï¼Œä½†æ˜¯ä¸ä¼šä¿®æ­£10
 	 */
 	int boundMaxFalseGapBp = 1;
 	
 	/**
-	 * µ±refºÍthisµÄexon¶¼ÔÚÁ½¶ËÊ±£¬Èç¹ûÁ½¸öÍâÏÔ×ÓµÄ±ß½ç²î¾àÔÚÖ¸¶¨bpÒÔÄÚ(Æ©Èç50bpÒÔÄÚ)£¬¾Í²»ĞŞÕı
-	 * ÈçÏÂ<br>
+	 * å½“refå’Œthisçš„exonéƒ½åœ¨ä¸¤ç«¯æ—¶ï¼Œå¦‚æœä¸¤ä¸ªå¤–æ˜¾å­çš„è¾¹ç•Œå·®è·åœ¨æŒ‡å®šbpä»¥å†…(è­¬å¦‚50bpä»¥å†…)ï¼Œå°±ä¸ä¿®æ­£
+	 * å¦‚ä¸‹<br>
 	 * //--------(10)-----20-------------30-----40----------------50---------(60)----------------<br>
 		//-----5-----------20--------------30-----40---------------50-------------70-------------<br>
 		//-------(10)-----20--------------30----40----------------50----------(60)-------------<br>
-		 * ×¢ÒâÖ»ĞŞÕıÒ»¸ö¶Ëµã£¬Ò²¾ÍÊÇ¿¿½üÄÚ²àµÄ£¬ÈçÀ¨»¡Ëù±ê×¢
-		 *²î¾àÊÇĞ¡ÓÚµ«²»µÈÓÚ ËùÒÔÉè¶¨Îª10±íÊ¾10ÒÔÏÂµÄ²î¾à²Å»áĞŞÕı£¬µ«ÊÇ²»»áĞŞÕı10
+		 * æ³¨æ„åªä¿®æ­£ä¸€ä¸ªç«¯ç‚¹ï¼Œä¹Ÿå°±æ˜¯é è¿‘å†…ä¾§çš„ï¼Œå¦‚æ‹¬å¼§æ‰€æ ‡æ³¨
+		 *å·®è·æ˜¯å°äºä½†ä¸ç­‰äº æ‰€ä»¥è®¾å®šä¸º10è¡¨ç¤º10ä»¥ä¸‹çš„å·®è·æ‰ä¼šä¿®æ­£ï¼Œä½†æ˜¯ä¸ä¼šä¿®æ­£10
 	 */
 	int boundMaxFalseGapBpTail = 150;
 	
@@ -356,7 +356,7 @@ class ExonClusterBoundInfo {
 	}
 	/**
 	 * @param lsExonClusters
-	 * @param exonClusterNum ±¾´Î¼ÆËãµÚ¼¸¸öexoncluster£¬´Ó0¿ªÊ¼¼ÆËã
+	 * @param exonClusterNum æœ¬æ¬¡è®¡ç®—ç¬¬å‡ ä¸ªexonclusterï¼Œä»0å¼€å§‹è®¡ç®—
 	 * @return
 	 */
 	public void setLsExonClustersAndNum(ArrayList<ExonCluster> lsExonClusters, int thisExonClusterNum) {
@@ -364,23 +364,23 @@ class ExonClusterBoundInfo {
 		this.thisExonClusterNum = thisExonClusterNum;
 	}
 	
-	/** startÎ»µãÊÇ·ñÒ»ÖÂ */
+	/** startä½ç‚¹æ˜¯å¦ä¸€è‡´ */
 	public boolean isStartUnify() {
 		return booStartUnify;
 	}
-	/** endÎ»µãÊÇ·ñÒ»ÖÂ */
+	/** endä½ç‚¹æ˜¯å¦ä¸€è‡´ */
 	public boolean isEndUnify() {
 		return booEndUnify;
 	}
-	/** ÆğµãÊÇ·ñÑ¡ÔñRef */
+	/** èµ·ç‚¹æ˜¯å¦é€‰æ‹©Ref */
 	public boolean isSelectRefStart() {
 		return selectRefStart;
 	}
-	/** ÖÕµãÊÇ·ñÑ¡ÔñRef */
+	/** ç»ˆç‚¹æ˜¯å¦é€‰æ‹©Ref */
 	public boolean isSelectRefEnd() {
 		return selectRefEnd;
 	}
-	/** »ñµÃ×îºóÑ¡¶¨µÄexon */
+	/** è·å¾—æœ€åé€‰å®šçš„exon */
 	public ArrayList<ExonInfo> calculate() {
 		ExonCluster exonCluster = lsExonClusters.get(thisExonClusterNum);
 		ArrayList<ExonInfo> lsExonInfosRef = exonCluster.getMapIso2LsExon().get(gffGeneIsoInfoRef);
@@ -398,7 +398,7 @@ class ExonClusterBoundInfo {
 		setExonInfoBound();
 		return getLsExonInfo(lsExonInfosRef, lsExonInfosThis);
 	}
-	/** ¼ÆËãËùĞèÑ¡ÔñµÄ±ß½ç */
+	/** è®¡ç®—æ‰€éœ€é€‰æ‹©çš„è¾¹ç•Œ */
 	private void calSelectBounds(ExonCluster exonCluster, ArrayList<ExonInfo> lsExonInfosRef, ArrayList<ExonInfo> lsExonInfosThis) {
 		if (tailBoundInfo[0] > thisExonClusterNum || tailBoundInfo[1] < thisExonClusterNum) {
 			if (lsExonInfosRef.size() == 1) {
@@ -419,21 +419,21 @@ class ExonClusterBoundInfo {
 		}
 	}
 	/**
-	 * µ±Á½¸öÑù±¾½øĞĞ±È½ÏÊ±£¬Ö±½Ó·µ»ØlsExonInfosThis
-	 * Ò²¾ÍÊÇÓÃĞÂµÄ×ªÂ¼±¾Ìæ´ú¾ÉµÄ
-	 * µ«ÊÇÈç¹ûlsExonInfosThisÎª¿Õ£¬ÄÇ¾Í·µ»ØlsExonInfosRef
+	 * å½“ä¸¤ä¸ªæ ·æœ¬è¿›è¡Œæ¯”è¾ƒæ—¶ï¼Œç›´æ¥è¿”å›lsExonInfosThis
+	 * ä¹Ÿå°±æ˜¯ç”¨æ–°çš„è½¬å½•æœ¬æ›¿ä»£æ—§çš„
+	 * ä½†æ˜¯å¦‚æœlsExonInfosThisä¸ºç©ºï¼Œé‚£å°±è¿”å›lsExonInfosRef
 	 * @param lastBound
 	 * @param lastSelect
 	 * @param lsExonInfosRef
 	 * @param lsExonInfosThis
 	 * @return int[2]
-	 * 0£º0 refÆğµã±ß½ç 1 thisÆğµã±ß½ç
-	 * 1£º0 refÖÕµã±ß½ç 1 thisÖÕµã±ß½ç
+	 * 0ï¼š0 refèµ·ç‚¹è¾¹ç•Œ 1 thisèµ·ç‚¹è¾¹ç•Œ
+	 * 1ï¼š0 refç»ˆç‚¹è¾¹ç•Œ 1 thisç»ˆç‚¹è¾¹ç•Œ
 	 * @return
 	 */
 	private void compExonMidSelect(ArrayList<ExonInfo> lsExonInfosRef, ArrayList<ExonInfo> lsExonInfosThis) {
 		selectRefStart = false; selectRefEnd = false;
-		//*±íÊ¾ÉÏ´ÎÑ¡Ôñ£¬À¨»¡±íÊ¾±¾´ÎÑ¡Ôñ
+		//*è¡¨ç¤ºä¸Šæ¬¡é€‰æ‹©ï¼Œæ‹¬å¼§è¡¨ç¤ºæœ¬æ¬¡é€‰æ‹©
 		//--------10-----20*-------------(30)-----40
 		//--------10--------25-------------35----40
 		//--------10-----20*-------------(30)----40
@@ -469,33 +469,33 @@ class ExonClusterBoundInfo {
 		}
 	}
 	/**
-	 * ·µ»Ø×ó¶Ë
+	 * è¿”å›å·¦ç«¯
 	 * @param gffGeneIsoInfoRef
-	 * @param lsExonInfosRef ±ØĞë²»Îª0
+	 * @param lsExonInfosRef å¿…é¡»ä¸ä¸º0
 	 * @param gffGeneIsoInfoThis
-	 * @param lsExonInfosThis ±ØĞë²»Îª0
+	 * @param lsExonInfosThis å¿…é¡»ä¸ä¸º0
 	 * @return 
-	 * 0£º0 refÆğµã±ß½ç 1 thisÆğµã±ß½ç
-	 * 1£º0 refÖÕµã±ß½ç 1 thisÖÕµã±ß½ç
+	 * 0ï¼š0 refèµ·ç‚¹è¾¹ç•Œ 1 thisèµ·ç‚¹è¾¹ç•Œ
+	 * 1ï¼š0 refç»ˆç‚¹è¾¹ç•Œ 1 thisç»ˆç‚¹è¾¹ç•Œ
 	 */
 	private void compareExonStart(ArrayList<ExonInfo> lsExonInfosRef, ArrayList<ExonInfo> lsExonInfosThis) {
 		selectRefStart = false; selectRefEnd = false;
 		if (lsExonInfosRef.size() == 0 || lsExonInfosThis.size() == 0) {
 			return;
 		}
-		//Èç¹û¶¼º¬ÓĞÆğµãexon
+		//å¦‚æœéƒ½å«æœ‰èµ·ç‚¹exon
 		if (gffGeneIsoInfoRef.indexOf(lsExonInfosRef.get(0)) == 0 && gffGeneIsoInfoThis.indexOf(lsExonInfosThis.get(0)) == 0) {
 			setMarginBoundOutSide(gffGeneIsoInfoRef.isCis5to3(), true, lsExonInfosRef, lsExonInfosThis);
 			setMarginBoundInSide(gffGeneIsoInfoRef.isCis5to3(), true, lsExonInfosRef, lsExonInfosThis);
 		}
 		else {
 			 //--------10-----20-------------(30)-----40-------------------------
-			//------------------------------25*---35*--40----------------------- *±íÊ¾ÈÎÒâÕâÁ½¸ö±ß½ç
+			//------------------------------25*---35*--40----------------------- *è¡¨ç¤ºä»»æ„è¿™ä¸¤ä¸ªè¾¹ç•Œ
 			//----------------------------------(30)----40------------------------
 			if (gffGeneIsoInfoRef.indexOf(lsExonInfosRef.get(0)) != 0) {
 				selectRefStart = true;
 			}
-			//------------------------------25*---35*--40----------------------- *±íÊ¾ÈÎÒâÕâÁ½¸ö±ß½ç
+			//------------------------------25*---35*--40----------------------- *è¡¨ç¤ºä»»æ„è¿™ä¸¤ä¸ªè¾¹ç•Œ
 			 //--------10-----20-------------(30)-----40-------------------------
 			//----------------------------------(30)----40------------------------
 			else {
@@ -504,21 +504,21 @@ class ExonClusterBoundInfo {
 		}
 	}
 	/**
-	 * ·µ»ØÄ©¶Ë
+	 * è¿”å›æœ«ç«¯
 	 * @param lastBound
 	 * @param lastSelectInfo
 	 * @param gffGeneIsoInfoRef
-	 * @param lsExonInfosRef ±ØĞë²»Îª0
-	 * @param gffGeneIsoInfoThis ±ØĞë²»Îª0
+	 * @param lsExonInfosRef å¿…é¡»ä¸ä¸º0
+	 * @param gffGeneIsoInfoThis å¿…é¡»ä¸ä¸º0
 	 * @param lsExonInfosThis
 	 * @return
-	 * 0£º0 refÆğµã±ß½ç 1 thisÆğµã±ß½ç<br>
-	 * 1£º0 refÖÕµã±ß½ç 1 thisÖÕµã±ß½ç<br>
+	 * 0ï¼š0 refèµ·ç‚¹è¾¹ç•Œ 1 thisèµ·ç‚¹è¾¹ç•Œ<br>
+	 * 1ï¼š0 refç»ˆç‚¹è¾¹ç•Œ 1 thisç»ˆç‚¹è¾¹ç•Œ<br>
 	 * @return
 	 */
 	private void compareExonEnd(ArrayList<ExonInfo> lsExonInfosRef, ArrayList<ExonInfo> lsExonInfosThis) {
 		selectRefStart = false; selectRefEnd = false;
-		//*±íÊ¾ÉÏ´ÎÑ¡Ôñ£¬À¨»¡±íÊ¾±¾´ÎÑ¡Ôñ
+		//*è¡¨ç¤ºä¸Šæ¬¡é€‰æ‹©ï¼Œæ‹¬å¼§è¡¨ç¤ºæœ¬æ¬¡é€‰æ‹©
 		//--------10-----20*-------------(30)-----40
 		//--------10--------25-------------35----40
 		//--------10-----20*-------------(30)----40
@@ -556,7 +556,7 @@ class ExonClusterBoundInfo {
 				selectRefStart = false;
 		}
 		
-		//Èç¹û¶¼ÊÇÖÕµã
+		//å¦‚æœéƒ½æ˜¯ç»ˆç‚¹
 		if (gffGeneIsoInfoRef.indexOf(lsExonInfosRef.get(lsExonInfosRef.size() - 1)) == gffGeneIsoInfoRef.size() - 1 
 				&& gffGeneIsoInfoThis.indexOf(lsExonInfosThis.get(lsExonInfosThis.size() - 1)) == gffGeneIsoInfoThis.size() - 1 ) {
 			setMarginBoundOutSide(gffGeneIsoInfoRef.isCis5to3(), false, lsExonInfosRef, lsExonInfosThis);
@@ -581,15 +581,15 @@ class ExonClusterBoundInfo {
 		}
 	}
 	/**
-	 * µ±refºÍthisµÄexon¶¼ÔÚ±ß½çÊ±£¬Ñ¡ÔñexonÎ²²¿³¤µÄ±ß½ç
-	 * ÈçÏÂ<br>
+	 * å½“refå’Œthisçš„exonéƒ½åœ¨è¾¹ç•Œæ—¶ï¼Œé€‰æ‹©exonå°¾éƒ¨é•¿çš„è¾¹ç•Œ
+	 * å¦‚ä¸‹<br>
 	 * //--------10-----20-------------30-----40----------------50-----60----------------<br>
 		//-----(5)---------20-------------30----40----------------50--------(70)-------------<br>
 		//-----(5)---------20-------------30----40----------------50--------(70)-------------<br>
-		 * ×¢ÒâÖ»ĞŞÕıÒ»¸ö¶Ëµã£¬Ò²¾ÍÊÇ¿¿½üÍâ²àµÄ£¬ÈçÀ¨»¡Ëù±ê×¢
-	 * @param selectInfo ÊäÈëÑ¡ÔñµÄÎ»µã£¬½øĞĞĞŞÕı
-	 * 0£º0 refÆğµã±ß½ç 1 thisÆğµã±ß½ç<br>
-	 * 1£º0 refÖÕµã±ß½ç 1 thisÖÕµã±ß½ç<br>
+		 * æ³¨æ„åªä¿®æ­£ä¸€ä¸ªç«¯ç‚¹ï¼Œä¹Ÿå°±æ˜¯é è¿‘å¤–ä¾§çš„ï¼Œå¦‚æ‹¬å¼§æ‰€æ ‡æ³¨
+	 * @param selectInfo è¾“å…¥é€‰æ‹©çš„ä½ç‚¹ï¼Œè¿›è¡Œä¿®æ­£
+	 * 0ï¼š0 refèµ·ç‚¹è¾¹ç•Œ 1 thisèµ·ç‚¹è¾¹ç•Œ<br>
+	 * 1ï¼š0 refç»ˆç‚¹è¾¹ç•Œ 1 thisç»ˆç‚¹è¾¹ç•Œ<br>
 	 * @param cis
 	 * @param start
 	 * @param lsExonInfosRef
@@ -611,21 +611,21 @@ class ExonClusterBoundInfo {
 			selectRefEnd = (refBound <= thisBound + boundMaxFalseGapBpTail ? true:false);
 	}
 	
-	//TODO ÒÔÏÂ£¬¿¼ÂÇÊÇ·ñ½ö½öÑ¡Ôñref¿¿½üÄÚ²àµÄ
-	//ÏÖÔÚµÄ´úÂëÑ¡ÔñrefºÍthis¸ü¿¿½üÄÚ²àµÄ
-	//¿¼ÂÇÌí¼ÓjunctionÉ¸Ñ¡
+	//TODO ä»¥ä¸‹ï¼Œè€ƒè™‘æ˜¯å¦ä»…ä»…é€‰æ‹©refé è¿‘å†…ä¾§çš„
+	//ç°åœ¨çš„ä»£ç é€‰æ‹©refå’Œthisæ›´é è¿‘å†…ä¾§çš„
+	//è€ƒè™‘æ·»åŠ junctionç­›é€‰
 	/**
-	 * µ±refºÍthisµÄexon¶¼ÔÚ±ß½çÊ±£¬Èç¹ûÁ½¸öÍâÏÔ×ÓµÄ±ß½ç²î¾àÔÚÖ¸¶¨bpÒÔÄÚ(Æ©Èç10bpÒÔÄÚ)£¬¾ÍĞŞÕıÎª¿¿½üÄÚ²àµÄ
-	 * ÈçÏÂ<br>
+	 * å½“refå’Œthisçš„exonéƒ½åœ¨è¾¹ç•Œæ—¶ï¼Œå¦‚æœä¸¤ä¸ªå¤–æ˜¾å­çš„è¾¹ç•Œå·®è·åœ¨æŒ‡å®šbpä»¥å†…(è­¬å¦‚10bpä»¥å†…)ï¼Œå°±ä¿®æ­£ä¸ºé è¿‘å†…ä¾§çš„
+	 * å¦‚ä¸‹<br>
 	 * //--------10-------20-------------30-----40----------------50---------60----------------<br>
 		//-------10----(18)--------------30-----40-------------------(52)----60-------------<br>
 		//-------10------(20)-------------30----40----------------(50)-------60-------------<br>
-		 * ×¢ÒâÖ»ĞŞÕıÒ»¸ö¶Ëµã£¬Ò²¾ÍÊÇ¿¿½üÄÚ²àµÄ£¬ÈçÀ¨»¡Ëù±ê×¢
-	 * @param selectInfo ÊäÈëÑ¡ÔñµÄÎ»µã£¬½øĞĞĞŞÕı
-	 * 0£º0 refÆğµã±ß½ç 1 thisÆğµã±ß½ç<br>
-	 * 1£º0 refÖÕµã±ß½ç 1 thisÖÕµã±ß½ç<br>
-	 * @param cis ÕıÏò»¹ÊÇ·´Ïò
-	 * @param start Ñ¡ÔñµÄÊÇ·ñÎª¿¿Ç°µÄexon
+		 * æ³¨æ„åªä¿®æ­£ä¸€ä¸ªç«¯ç‚¹ï¼Œä¹Ÿå°±æ˜¯é è¿‘å†…ä¾§çš„ï¼Œå¦‚æ‹¬å¼§æ‰€æ ‡æ³¨
+	 * @param selectInfo è¾“å…¥é€‰æ‹©çš„ä½ç‚¹ï¼Œè¿›è¡Œä¿®æ­£
+	 * 0ï¼š0 refèµ·ç‚¹è¾¹ç•Œ 1 thisèµ·ç‚¹è¾¹ç•Œ<br>
+	 * 1ï¼š0 refç»ˆç‚¹è¾¹ç•Œ 1 thisç»ˆç‚¹è¾¹ç•Œ<br>
+	 * @param cis æ­£å‘è¿˜æ˜¯åå‘
+	 * @param start é€‰æ‹©çš„æ˜¯å¦ä¸ºé å‰çš„exon
 	 * @param lsExonInfosRef
 	 * @param lsExonInfosThis
 	 * @return 	
@@ -645,12 +645,12 @@ class ExonClusterBoundInfo {
 			selectRefStart = (refBound >= thisBound - boundMaxFalseGapBp ? true:false);
 	}
 	/**
-	 * @param lsExonInfosRef size±ØĞë´óÓÚ0
-	 * @param lsExonInfosThis size±ØĞë´óÓÚ0
-	 * @param start ÊÇ·ñÑ¡ÔñµÄÊÇÆğµãÎ»µã
+	 * @param lsExonInfosRef sizeå¿…é¡»å¤§äº0
+	 * @param lsExonInfosThis sizeå¿…é¡»å¤§äº0
+	 * @param start æ˜¯å¦é€‰æ‹©çš„æ˜¯èµ·ç‚¹ä½ç‚¹
 	 * @return
-	 * 0£ºrefBound
-	 * 1£ºthisBound
+	 * 0ï¼šrefBound
+	 * 1ï¼šthisBound
 	 */
 	private int[] getExonBound(boolean start, ArrayList<ExonInfo> lsExonInfosRef, ArrayList<ExonInfo> lsExonInfosThis) {
 		boolean cis = lsExonInfosRef.get(0).isCis5to3();
@@ -678,10 +678,10 @@ class ExonClusterBoundInfo {
 		return result;
 	}
 	/**
-	 * ±È½Ï±¾×éexonµÄ±ß½ç
-	 * @return int[2] 0Ò»ÖÂ 1²»Ò»ÖÂ<br>
-	 * 0: 0×ó¶ËÒ»ÖÂ 1×ó¶Ë²»Ò»ÖÂ<br>
-	 * 1: 0ÓÒ¶ËÒ»ÖÂ 1ÓÒ¶Ë²»Ò»ÖÂ<br>
+	 * æ¯”è¾ƒæœ¬ç»„exonçš„è¾¹ç•Œ
+	 * @return int[2] 0ä¸€è‡´ 1ä¸ä¸€è‡´<br>
+	 * 0: 0å·¦ç«¯ä¸€è‡´ 1å·¦ç«¯ä¸ä¸€è‡´<br>
+	 * 1: 0å³ç«¯ä¸€è‡´ 1å³ç«¯ä¸ä¸€è‡´<br>
 	 */
 	private void setExonInfoBound() {
 		booStartUnify = false; booEndUnify = false;
@@ -706,7 +706,7 @@ class ExonClusterBoundInfo {
 	}
 	
 	/**
-	 * ¸ù¾İselectµÄĞÅÏ¢Ìí¼ÓÍâÏÔ×Ó
+	 * æ ¹æ®selectçš„ä¿¡æ¯æ·»åŠ å¤–æ˜¾å­
 	 * @param lsExonInfosRef
 	 * @param lsExonInfosThis
 	 * @return

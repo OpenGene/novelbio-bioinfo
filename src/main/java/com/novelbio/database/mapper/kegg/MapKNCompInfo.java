@@ -6,7 +6,7 @@ import com.novelbio.database.domain.kegg.noGene.KGNCompInfo;
 import com.novelbio.database.domain.kegg.noGene.KGNIdKeg;
 import com.novelbio.database.mapper.MapperSql;
 /**
- * keggµÄ»¯ºÏÎï±í
+ * keggçš„åŒ–åˆç‰©è¡¨
  * @author zong0jie
  *
  */
@@ -34,7 +34,7 @@ public interface MapKNCompInfo extends MapperSql {
 	public void insertKGNCompInfo(KGNCompInfo kgnCompInfo);
 	
 	/**
-	 * Ä¿Ç°µÄÉı¼¶·½Ê½ÊÇ<br>
+	 * ç›®å‰çš„å‡çº§æ–¹å¼æ˜¯<br>
 	update kgComp set<br>
 		set<br>
 			if test="kegID !=null"<br>

@@ -4,13 +4,13 @@ public class KGpathRelation {
 
 	
 	/**
-	 * ±¾Ïà»¥×÷ÓÃµÄ¹ØÏµÊÇÔÚÖ¸¶¨pathwayÏÂµÄ
+	 * æœ¬ç›¸äº’ä½œç”¨çš„å…³ç³»æ˜¯åœ¨æŒ‡å®špathwayä¸‹çš„
 	 */
 	private String pathName;
 	
 	
 	/**
-	 * ±¾pathway£¬Ãû×Ö¾ÍÊÇpathName
+	 * æœ¬pathwayï¼Œåå­—å°±æ˜¯pathName
 	 * the first (from) entry that defines this relation. detail:<br>
 	 * the ID of node which takes part in this relation
 	 */
@@ -23,7 +23,7 @@ public class KGpathRelation {
 	private String trgPath;
 	
 	/**
-	 * ¿¼ÂÇÊÇ·ñ½«KGMLÖÐµÄmaplinkÌí¼Ó½øÀ´£¬»¹ÊÇËµ´Ù½ø»òÕßÊÇÒÖÖÆÄØ£¿
+	 * è€ƒè™‘æ˜¯å¦å°†KGMLä¸­çš„maplinkæ·»åŠ è¿›æ¥ï¼Œè¿˜æ˜¯è¯´ä¿ƒè¿›æˆ–è€…æ˜¯æŠ‘åˆ¶å‘¢ï¼Ÿ
 	 * <b>maplink</b> 	link to another map													     <br> 
 	 */
 	private String type;
@@ -70,7 +70,7 @@ public class KGpathRelation {
 	}
 	
 	/**
-	 * ¿¼ÂÇÊÇ·ñ½«KGMLÖÐµÄmaplinkÌí¼Ó½øÀ´£¬»¹ÊÇËµ´Ù½ø»òÕßÊÇÒÖÖÆÄØ£¿
+	 * è€ƒè™‘æ˜¯å¦å°†KGMLä¸­çš„maplinkæ·»åŠ è¿›æ¥ï¼Œè¿˜æ˜¯è¯´ä¿ƒè¿›æˆ–è€…æ˜¯æŠ‘åˆ¶å‘¢ï¼Ÿ
 	 * <b>maplink</b> 	link to another map			
 	 */
 	public String getType() 
@@ -79,7 +79,7 @@ public class KGpathRelation {
 	}
 	/**
 	 * already trim()
-	 * ¿¼ÂÇÊÇ·ñ½«KGMLÖÐµÄmaplinkÌí¼Ó½øÀ´£¬»¹ÊÇËµ´Ù½ø»òÕßÊÇÒÖÖÆÄØ£¿
+	 * è€ƒè™‘æ˜¯å¦å°†KGMLä¸­çš„maplinkæ·»åŠ è¿›æ¥ï¼Œè¿˜æ˜¯è¯´ä¿ƒè¿›æˆ–è€…æ˜¯æŠ‘åˆ¶å‘¢ï¼Ÿ
 	 * <b>maplink</b> 	link to another map			
 	 */
 	public void setType(String type)
@@ -88,7 +88,7 @@ public class KGpathRelation {
 	}
 	
 	/**
-	 * ±¾Ïà»¥×÷ÓÃµÄ¹ØÏµ±ØÐëÔÚÖ¸¶¨µÄpathwayÏÂ²ÅÄÜÓÐ×÷ÓÃ
+	 * æœ¬ç›¸äº’ä½œç”¨çš„å…³ç³»å¿…é¡»åœ¨æŒ‡å®šçš„pathwayä¸‹æ‰èƒ½æœ‰ä½œç”¨
 	 */
 	public String getPathName() 
 	{
@@ -96,7 +96,7 @@ public class KGpathRelation {
 	}
 	/**
 	 * already trim()
-	 * ±¾Ïà»¥×÷ÓÃµÄ¹ØÏµ±ØÐëÔÚÖ¸¶¨µÄpathwayÏÂ²ÅÄÜÓÐ×÷ÓÃ
+	 * æœ¬ç›¸äº’ä½œç”¨çš„å…³ç³»å¿…é¡»åœ¨æŒ‡å®šçš„pathwayä¸‹æ‰èƒ½æœ‰ä½œç”¨
 	 */
 	public void setPathName(String pathName) 
 	{

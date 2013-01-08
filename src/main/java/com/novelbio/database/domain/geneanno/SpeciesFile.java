@@ -23,59 +23,59 @@ import com.novelbio.database.model.species.Species;
 import com.novelbio.database.service.servgeneanno.ServSpeciesFile;
 
 /**
- * ±£´æÄ³¸öÎïÖÖµÄ¸÷ÖÖÎÄ¼şĞÅÏ¢£¬Æ©ÈçmappingÎ»ÖÃµÈµÈ
- * ¸Ğ¾õ¿ÉÒÔÓÃnosql½øĞĞ´æ´¢£¬ÍêÈ«²»ÄÜÊÇÒ»¸ö½á¹¹»¯ÎÄ¼ş°¡
+ * ä¿å­˜æŸä¸ªç‰©ç§çš„å„ç§æ–‡ä»¶ä¿¡æ¯ï¼Œè­¬å¦‚mappingä½ç½®ç­‰ç­‰
+ * æ„Ÿè§‰å¯ä»¥ç”¨nosqlè¿›è¡Œå­˜å‚¨ï¼Œå®Œå…¨ä¸èƒ½æ˜¯ä¸€ä¸ªç»“æ„åŒ–æ–‡ä»¶å•Š
  * @author zong0jie
  *
  */
 public class SpeciesFile {
 	private static Logger logger = Logger.getLogger(SpeciesFile.class);
 	int taxID = 0;
-	/** ÎÄ¼ş°æ±¾ */
+	/** æ–‡ä»¶ç‰ˆæœ¬ */
 	String version = "";
-	/** ¸Ã°æ±¾µÄÄê´ú£¬´ó¸ÅÄê´ú¾ÍĞĞ */
+	/** è¯¥ç‰ˆæœ¬çš„å¹´ä»£ï¼Œå¤§æ¦‚å¹´ä»£å°±è¡Œ */
 	int publishYear = 0;
-	/** È¾É«ÌåËùÔÚÎÄ¼ş¼Ğ
-	 * ¸ñÊ½ regex SepSign.SEP_ID chromPath
+	/** æŸ“è‰²ä½“æ‰€åœ¨æ–‡ä»¶å¤¹
+	 * æ ¼å¼ regex SepSign.SEP_ID chromPath
 	 *  */
 	String chromPath = "";
-	/** È¾É«ÌåµÄµ¥ÎÄ¼şĞòÁĞ */
+	/** æŸ“è‰²ä½“çš„å•æ–‡ä»¶åºåˆ— */
 	String chromSeq = "";
-	/** ±£´æ²»Í¬mappingÈí¼şËù¶ÔÓ¦µÄË÷Òı£¬¸ñÊ½<br>
+	/** ä¿å­˜ä¸åŒmappingè½¯ä»¶æ‰€å¯¹åº”çš„ç´¢å¼•ï¼Œæ ¼å¼<br>
 	 *  mappingSoftware SepSign.SEP_INFO  indexPath SepSign.SEP_ID mappingSoftware SepSign.SEP_INFO  indexPath
 	 *  */
 	String indexChr;
-	/** ¸÷ÖÖgffgeneÎÄ¼ş·ÅÔÚÒ»Æğ£¬ÓĞucsc£¬ncbi£¬tigr£¬tairµÈµÈ
+	/** å„ç§gffgeneæ–‡ä»¶æ”¾åœ¨ä¸€èµ·ï¼Œæœ‰ucscï¼Œncbiï¼Œtigrï¼Œtairç­‰ç­‰
 	 * GffType SepSign.SEP_INFO Gfffile SepSign.SEP_ID GffType SepSign.SEP_INFO Gfffile
 	 *  */
 	String gffGeneFile;
-	/** gffµÄrepeatÎÄ¼ş£¬´ÓucscÏÂÔØ */
+	/** gffçš„repeatæ–‡ä»¶ï¼Œä»ucscä¸‹è½½ */
 	String gffRepeatFile = "";
-	/** refseqÎÄ¼ş */
+	/** refseqæ–‡ä»¶ */
 	String refseqFile = "";
-	/** ±£´æ²»Í¬mappingÈí¼şËù¶ÔÓ¦µÄË÷Òı£¬¸ñÊ½<br>
+	/** ä¿å­˜ä¸åŒmappingè½¯ä»¶æ‰€å¯¹åº”çš„ç´¢å¼•ï¼Œæ ¼å¼<br>
 	 *  mappingSoftware SepSign.SEP_INFO  indexPath SepSign.SEP_ID mappingSoftware SepSign.SEP_INFO  indexPath
 	 *  */
 	String indexRefseq;
-	/** refseqÖĞµÄNCRNAÎÄ¼ş */
+	/** refseqä¸­çš„NCRNAæ–‡ä»¶ */
 	String refseqNCfile = "";
 	
-	/** È¾É«Ìå³¤¶ÈĞÅÏ¢£¬°üÀ¨×Ü³¤¶ÈºÍÃ¿ÌõÈ¾É«Ìå³¤¶È£¬¸ñÊ½<br>
+	/** æŸ“è‰²ä½“é•¿åº¦ä¿¡æ¯ï¼ŒåŒ…æ‹¬æ€»é•¿åº¦å’Œæ¯æ¡æŸ“è‰²ä½“é•¿åº¦ï¼Œæ ¼å¼<br>
 	 * chrID SepSign.SEP_INFO  chrLen SepSign.SEP_ID chrID SepSign.SEP_INFO  chrLen
 	 */
 	private String chromInfo;
-	/** ´Óchrominfo×ª»¯¶øÀ´ key: chrID£¬ÎªĞ¡Ğ´    value: chrLen */
+	/** ä»chrominfoè½¬åŒ–è€Œæ¥ key: chrIDï¼Œä¸ºå°å†™    value: chrLen */
 	private HashMap<String, Integer> hashChrID2ChrLen = new LinkedHashMap<String, Integer>();
-	/** ´ÓindexSeq×ª»¯¶øÀ´, key: Èí¼şÃû£¬ÎªĞ¡Ğ´ value£ºÂ·¾¶ */
+	/** ä»indexSeqè½¬åŒ–è€Œæ¥, key: è½¯ä»¶åï¼Œä¸ºå°å†™ valueï¼šè·¯å¾„ */
 	HashMap<String, String> mapSoftware2ChrIndexPath = new LinkedHashMap<String, String>();
-	/** ´ÓindexRefseq×ª»¯¶øÀ´, key: Èí¼şÃû£¬ÎªĞ¡Ğ´ value£ºÂ·¾¶ */
+	/** ä»indexRefseqè½¬åŒ–è€Œæ¥, key: è½¯ä»¶åï¼Œä¸ºå°å†™ valueï¼šè·¯å¾„ */
 	HashMap<String, String> mapSoftware2RefseqIndexPath = new LinkedHashMap<String, String>();
-	/** ´ÓgffGeneFileÀ´£¬key£ºgffType  value£ºgffFile */
+	/** ä»gffGeneFileæ¥ï¼Œkeyï¼šgffType  valueï¼šgffFile */
 	HashMap<String, String> hashGffType2GffFile = new LinkedHashMap<String, String>();
 	
-	/** ÊÇ·ñÒÑ¾­²éÕÒ¹ı */
+	/** æ˜¯å¦å·²ç»æŸ¥æ‰¾è¿‡ */
 	boolean searched = false;
-	/** ²éÕÒµÄservice²ã */
+	/** æŸ¥æ‰¾çš„serviceå±‚ */
 	ServSpeciesFile servSpeciesFile = new ServSpeciesFile();
 	
 	public void setTaxID(int taxID) {
@@ -92,8 +92,8 @@ public class SpeciesFile {
 	}
 	/**
 	 * @return
-	 * key: chrID Ğ¡Ğ´
-	 * value£º length
+	 * key: chrID å°å†™
+	 * valueï¼š length
 	 */
 	public HashMap<String, Long> getMapChromInfo() {
 		HashMap<String, Long> mapChrID2Len = new HashMap<String, Long>(); 
@@ -107,12 +107,12 @@ public class SpeciesFile {
 	public void setChromPath(String chromPath) {
 		this.chromPath = chromPath;
 	}
-	/** »ñµÃchromeFaµÄÂ·¾¶ */
+	/** è·å¾—chromeFaçš„è·¯å¾„ */
 	public String getChromFaPath() {
 		String[] ss = chromPath.split(SepSign.SEP_ID);
 		return ss[1];
 	}
-	/** »ñµÃchromeFaµÄÕıÔò */
+	/** è·å¾—chromeFaçš„æ­£åˆ™ */
 	public String getChromFaRegx() {
 		String[] ss = chromPath.split(SepSign.SEP_ID);
 		return ss[0];
@@ -132,7 +132,7 @@ public class SpeciesFile {
 	}
 
 	/**
-	 * °´ÕÕÓÅÏÈ¼¶·µ»ØgffÎÄ¼ş£¬ÓÅÏÈ¼¶ÓÉGFFtypeÀ´¾ö¶¨
+	 * æŒ‰ç…§ä¼˜å…ˆçº§è¿”å›gffæ–‡ä»¶ï¼Œä¼˜å…ˆçº§ç”±GFFtypeæ¥å†³å®š
 	 * @return GffFile
 	 */
 	public HashMap<String, GFFtype> getMapGffType() {
@@ -150,8 +150,8 @@ public class SpeciesFile {
 		this.gffGeneFile = gffGeneFile;
 	}
 	/**
-	 * »ñµÃÄ³¸öTypeµÄGffÎÄ¼ş£¬Èç¹ûÃ»ÓĞÔò·µ»Ønull
-	 * @param GFFtype Ö¸¶¨gfftype Èç¹ûÎªnull£¬±íÊ¾²»Ö¸¶¨
+	 * è·å¾—æŸä¸ªTypeçš„Gffæ–‡ä»¶ï¼Œå¦‚æœæ²¡æœ‰åˆ™è¿”å›null
+	 * @param GFFtype æŒ‡å®šgfftype å¦‚æœä¸ºnullï¼Œè¡¨ç¤ºä¸æŒ‡å®š
 	 * @return
 	 */
 	public String getGffFile(GFFtype gfFtype) {
@@ -162,7 +162,7 @@ public class SpeciesFile {
 		return hashGffType2GffFile.get(gfFtype.toString().toLowerCase());
 	}
 	/**
-	 * °´ÕÕÓÅÏÈ¼¶·µ»ØgffÎÄ¼ş£¬ÓÅÏÈ¼¶ÓÉGFFtypeÀ´¾ö¶¨
+	 * æŒ‰ç…§ä¼˜å…ˆçº§è¿”å›gffæ–‡ä»¶ï¼Œä¼˜å…ˆçº§ç”±GFFtypeæ¥å†³å®š
 	 * @return 0: GffType<br>
 	 * 1: GffFile
 	 */
@@ -171,7 +171,7 @@ public class SpeciesFile {
 		return gffInfo[1];
 	}
 	/**
-	 * °´ÕÕÓÅÏÈ¼¶·µ»ØgffÎÄ¼ş£¬ÓÅÏÈ¼¶ÓÉGFFtypeÀ´¾ö¶¨
+	 * æŒ‰ç…§ä¼˜å…ˆçº§è¿”å›gffæ–‡ä»¶ï¼Œä¼˜å…ˆçº§ç”±GFFtypeæ¥å†³å®š
 	 * @return  GffType<br>
 	 */
 	public String getGffFileType() {
@@ -179,7 +179,7 @@ public class SpeciesFile {
 		return gffInfo[0];
 	}
 	/**
-	 * °´ÕÕÓÅÏÈ¼¶·µ»ØgffÎÄ¼ş£¬ÓÅÏÈ¼¶ÓÉGFFtypeÀ´¾ö¶¨
+	 * æŒ‰ç…§ä¼˜å…ˆçº§è¿”å›gffæ–‡ä»¶ï¼Œä¼˜å…ˆçº§ç”±GFFtypeæ¥å†³å®š
 	 * @return GffFile
 	 */
 	private String[] getGffFileAndType() {
@@ -203,9 +203,9 @@ public class SpeciesFile {
 	public void setIndexSeq(String indexSeq) {
 		this.indexChr = indexSeq;
 	}
-	/** ·µ»Ø¸ÃmappingÈí¼şËù¶ÔÓ¦µÄindexµÄÎÄ¼ş
-	 * Ã»ÓĞ¾ÍĞÂ½¨Ò»¸ö
-	 * ¸ñÊ½ÈçÏÂ£º
+	/** è¿”å›è¯¥mappingè½¯ä»¶æ‰€å¯¹åº”çš„indexçš„æ–‡ä»¶
+	 * æ²¡æœ‰å°±æ–°å»ºä¸€ä¸ª
+	 * æ ¼å¼å¦‚ä¸‹ï¼š
 	 * softMapping.toString() + "_Chr_Index/"
 	 */
 	public String getIndexChromFa(SoftWare softMapping) {
@@ -226,9 +226,9 @@ public class SpeciesFile {
 	public void setIndexRefseq(String indexRefseq) {
 		this.indexRefseq = indexRefseq;
 	}
-	/** ·µ»Ø¸ÃmappingÈí¼şËù¶ÔÓ¦µÄindexµÄÎÄ¼ş
-	 * Ã»ÓĞ¾ÍĞÂ½¨Ò»¸ö
-	 * ¸ñÊ½ÈçÏÂ£ºsoftMapping.toString() + "_Ref_Index/"
+	/** è¿”å›è¯¥mappingè½¯ä»¶æ‰€å¯¹åº”çš„indexçš„æ–‡ä»¶
+	 * æ²¡æœ‰å°±æ–°å»ºä¸€ä¸ª
+	 * æ ¼å¼å¦‚ä¸‹ï¼šsoftMapping.toString() + "_Ref_Index/"
 	 */
 	public String getIndexRefseq(SoftWare softMapping) {
 		filledHashIndexPath(indexRefseq, mapSoftware2RefseqIndexPath);
@@ -254,13 +254,13 @@ public class SpeciesFile {
 		return indexOld;
 	}
 	/**
-	 * Èç¹û²»´æÔÚ¸Ãindex£¬ÄÇÃ´¾ÍĞÂ´´½¨Ò»¸öindex²¢ÇÒ±£´æÈëÊı¾İ¿â 
-	 * @param refseq ÊÇ·ñÎªrefseq
-	 * @param softMapping mappingµÄÈí¼ş
-	 * @param seqIndex ¸ÃindexËù¶ÔÓ¦µÄ±£´æÔÚÊı¾İ¿âÖĞµÄÖµ£¬Æ©ÈçindexChr
-	 * @param seqFile ¸ÃindexËù¶ÔÓ¦µÄĞòÁĞ£¬ÓÃgetChromSeq()»ñµÃ
-	 * @param mapSoftware2ChrIndexPath ¸ÃindexËù¶ÔÓ¦µÄhash±í£¬Èç mapSoftware2ChrIndexPath
-	 * @return softMapping.toString() + "_Ref_Index/" »ò softMapping.toString() + "_Chr_Index/"
+	 * å¦‚æœä¸å­˜åœ¨è¯¥indexï¼Œé‚£ä¹ˆå°±æ–°åˆ›å»ºä¸€ä¸ªindexå¹¶ä¸”ä¿å­˜å…¥æ•°æ®åº“ 
+	 * @param refseq æ˜¯å¦ä¸ºrefseq
+	 * @param softMapping mappingçš„è½¯ä»¶
+	 * @param seqIndex è¯¥indexæ‰€å¯¹åº”çš„ä¿å­˜åœ¨æ•°æ®åº“ä¸­çš„å€¼ï¼Œè­¬å¦‚indexChr
+	 * @param seqFile è¯¥indexæ‰€å¯¹åº”çš„åºåˆ—ï¼Œç”¨getChromSeq()è·å¾—
+	 * @param mapSoftware2ChrIndexPath è¯¥indexæ‰€å¯¹åº”çš„hashè¡¨ï¼Œå¦‚ mapSoftware2ChrIndexPath
+	 * @return softMapping.toString() + "_Ref_Index/" æˆ– softMapping.toString() + "_Chr_Index/"
 	 */
 	private String creatAndGetSeqIndex(Boolean refseq, SoftWare softMapping, String seqFile, HashMap<String, String> mapSoftware2ChrIndexPath) {
 		String indexChromFinal = null;
@@ -286,7 +286,7 @@ public class SpeciesFile {
 		
 		indexChromFinal = indexFinalPath + seqName;
 		if (!FileOperate.linkFile(seqFile, indexChromFinal, true)) {
-			logger.error("´´½¨Á´½Ó³ö´í£º" + seqFile + " " + indexChromFinal);
+			logger.error("åˆ›å»ºé“¾æ¥å‡ºé”™ï¼š" + seqFile + " " + indexChromFinal);
 			return null;
 		}
 		mapSoftware2ChrIndexPath.put(softMapping.toString(), indexChromFinal);
@@ -323,7 +323,7 @@ public class SpeciesFile {
 	public void setPublishYear(int publishYear) {
 		this.publishYear = publishYear;
 	}
-	/** »ñµÃÄê´ú */
+	/** è·å¾—å¹´ä»£ */
 	public int getPublishYear() {
 		return publishYear;
 	}
@@ -339,7 +339,7 @@ public class SpeciesFile {
 	public String getRefseqNCfile() {
 		return refseqNCfile;
 	}
-	/** »ñÈ¡½öº¬ÓĞ×î³¤×ªÂ¼±¾µÄrefseqÎÄ¼ş£¬ÊÇºËËáĞòÁĞ£¬Ã»ÓĞ¾Í·µ»Ønull */
+	/** è·å–ä»…å«æœ‰æœ€é•¿è½¬å½•æœ¬çš„refseqæ–‡ä»¶ï¼Œæ˜¯æ ¸é…¸åºåˆ—ï¼Œæ²¡æœ‰å°±è¿”å›null */
 	public String getRefseqLongestIsoNrFile() {
 		String chromFaPath = getChromFaPath();
 		String refseqLongestIsoFile = FileOperate.getParentPathName(chromFaPath) + "refseqLongestIso/refseqLongestIsoNr.fa";
@@ -376,7 +376,7 @@ public class SpeciesFile {
 		}
 		return rfamFile;
 	}
-	/** ÓÃchromInfoÌî³äÈ¾É«Ìå³¤¶Èhash±í */
+	/** ç”¨chromInfoå¡«å……æŸ“è‰²ä½“é•¿åº¦hashè¡¨ */
 	private void filledHashChrLen() {
 		if (chromInfo == null) return;
 		if (hashChrID2ChrLen.size() > 0) {
@@ -389,9 +389,9 @@ public class SpeciesFile {
 		}
 	}
 	
-	/** ÓÃindexSeqÌî³ämappingËùĞèÂ·¾¶hash±í 
-	 * @param indexSeq ÊäÈëµÄindexSeqÎÄ±¾
-	 * @param mapSoftware2ChrIndexPath ´ıÌî³äµÄhashSoft2Index key£ºÈí¼şÃû  value£ºÂ·¾¶
+	/** ç”¨indexSeqå¡«å……mappingæ‰€éœ€è·¯å¾„hashè¡¨ 
+	 * @param indexSeq è¾“å…¥çš„indexSeqæ–‡æœ¬
+	 * @param mapSoftware2ChrIndexPath å¾…å¡«å……çš„hashSoft2Index keyï¼šè½¯ä»¶å  valueï¼šè·¯å¾„
 	 * */
 	private void filledHashIndexPath(String indexSeq, HashMap<String, String> hashSoft2index) {
 		if (indexSeq == null || indexSeq.trim().equals("")) return;
@@ -401,13 +401,13 @@ public class SpeciesFile {
 		String[] indexInfo = indexSeq.split(SepSign.SEP_ID);
 		for (String string : indexInfo) {
 			String[] indexDetail = string.split(SepSign.SEP_INFO);
-			//¼òµ¥µÄ´íÎóÅĞ¶Ï£¬¾ÍÅÂindexDetailÊÇ¿ÕµÄ
+			//ç®€å•çš„é”™è¯¯åˆ¤æ–­ï¼Œå°±æ€•indexDetailæ˜¯ç©ºçš„
 			if (indexDetail.length < 2) continue;
 			
 			hashSoft2index.put(indexDetail[0].toLowerCase(), indexDetail[1]);
 		}
 	}
-	/** ÓÃgffGeneFileÌî³äGffType2GffFileËùĞèÂ·¾¶hash±í */
+	/** ç”¨gffGeneFileå¡«å……GffType2GffFileæ‰€éœ€è·¯å¾„hashè¡¨ */
 	private void filledHashGffType2GffFile() {
 		if (gffGeneFile == null) return;
 		if (hashGffType2GffFile.size() > 0) {
@@ -429,7 +429,7 @@ public class SpeciesFile {
 		return hashChrID2ChrLen;
 	}
 	/**
-	 * Éè¶¨³¤¶È
+	 * è®¾å®šé•¿åº¦
 	 */
 	private void setChromLenInfo() {
 		if (chromInfo != null && !chromInfo.equals("")) {
@@ -445,7 +445,7 @@ public class SpeciesFile {
 		}
 	}
 	/**
-	 * ×Ğ×ĞÏ¸Ï¸µÄÈ«²¿±È½ÏÒ»±é£¬·½±ãÓÃÓÚÊı¾İ¿âÉı¼¶
+	 * ä»”ä»”ç»†ç»†çš„å…¨éƒ¨æ¯”è¾ƒä¸€éï¼Œæ–¹ä¾¿ç”¨äºæ•°æ®åº“å‡çº§
 	 * @param obj
 	 * @return
 	 */
@@ -479,7 +479,7 @@ public class SpeciesFile {
 		GFF_NCBI , GFF_UCSC,GFF_PLANT,GFF_TIGR,GFF_CUFFLINKS;
 		static HashMap<String, GFFtype> mapString2GffType = new HashMap<String, SpeciesFile.GFFtype>();
 		/**
-		 * keyÎª´óĞ´
+		 * keyä¸ºå¤§å†™
 		 * @return
 		 */
 		public static HashMap<String, GFFtype> getMapString2GffType() {
@@ -497,7 +497,7 @@ public class SpeciesFile {
 		
 	}
 	
-	/** ÌáÈ¡Ğ¡RNAµÄÒ»ÏµÁĞĞòÁĞ */
+	/** æå–å°RNAçš„ä¸€ç³»åˆ—åºåˆ— */
 	static public class ExtractSmallRNASeq {
 		public static void main(String[] args) {
 			ExtractSmallRNASeq extractSmallRNASeq = new ExtractSmallRNASeq();
@@ -508,33 +508,33 @@ public class SpeciesFile {
 		}
 		
 		String RNAdataFile = "";
-		/** ÀàËÆ hsa */
+		/** ç±»ä¼¼ hsa */
 		String RNAdataRegx = "";
 		
-		/** ÌáÈ¡ncRNAµÄÕıÔò±í´ïÊ½ */
+		/** æå–ncRNAçš„æ­£åˆ™è¡¨è¾¾å¼ */
 		String regxNCrna  = "NR_\\d+|XR_\\d+";
-		/** refseqµÄĞòÁĞÎÄ¼ş£¬ÒªÇóÊÇNCBIÏÂÔØµÄÎÄ¼ş */
+		/** refseqçš„åºåˆ—æ–‡ä»¶ï¼Œè¦æ±‚æ˜¯NCBIä¸‹è½½çš„æ–‡ä»¶ */
 		String refseqFile = "";
 
 
-		/** RfamµÄÕıÔò */
+		/** Rfamçš„æ­£åˆ™ */
 		int taxIDfram = 0;
-		/** RfamµÄÃû×Öregx */
+		/** Rfamçš„åå­—regx */
 		String regxRfamWrite = "(?<=\\>)\\S+";
-		/** rfamµÄÎÄ¼ş */
+		/** rfamçš„æ–‡ä»¶ */
 		String rfamFile = "";
 		
-		/** ÌáÈ¡µÄrfamµÄÎÄ¼ş */
+		/** æå–çš„rfamçš„æ–‡ä»¶ */
 		String outRfamFile;
-		/** ÌáÈ¡µ½µÄÄ¿±êÎÄ¼ş¼ĞºÍÇ°×º */
+		/** æå–åˆ°çš„ç›®æ ‡æ–‡ä»¶å¤¹å’Œå‰ç¼€ */
 		String outPathPrefix = "";
 		String outHairpinRNA;
 		String outMatureRNA;
-		/** ´ÓRefSeqÖĞÌáÈ¡µÄncRNAĞòÁĞ */
+		/** ä»RefSeqä¸­æå–çš„ncRNAåºåˆ— */
 		String outNcRNA;
 		
 		/**
-		 * Éè¶¨Êä³öÎÄ¼ş¼ĞºÍÇ°×º£¬Õâ¸öÉè¶¨ÁË¾Í²»ÓÃÉè¶¨±ğµÄÁË
+		 * è®¾å®šè¾“å‡ºæ–‡ä»¶å¤¹å’Œå‰ç¼€ï¼Œè¿™ä¸ªè®¾å®šäº†å°±ä¸ç”¨è®¾å®šåˆ«çš„äº†
 		 * @param outPathPrefix
 		 */
 		public void setOutPathPrefix(String outPathPrefix) {
@@ -555,30 +555,30 @@ public class SpeciesFile {
 		}
 		/**
 		 * @param rnaDataFile
-		 * @param rnaDataRegx ×Ô¶¯×ª»»ÎªĞ¡Ğ´
+		 * @param rnaDataRegx è‡ªåŠ¨è½¬æ¢ä¸ºå°å†™
 		 */
 		public void setRNAdata(String rnaDataFile, String rnaDataRegx) {
 			this.RNAdataFile = rnaDataFile;
 			this.RNAdataRegx = rnaDataRegx.toLowerCase();
 		}
 		/**
-		 * ´ıÌáÈ¡µÄNCBIÉÏÏÂÔØµÄrefseqÎÄ¼ş
+		 * å¾…æå–çš„NCBIä¸Šä¸‹è½½çš„refseqæ–‡ä»¶
 		 * @param refseqFile
 		 */
 		public void setRefseqFile(String refseqFile) {
 			this.refseqFile = refseqFile;
 		}
 		/**
-		 * ´ıÌáÈ¡Ä³ÎïÖĞµÄrfamÎÄ¼ş
+		 * å¾…æå–æŸç‰©ä¸­çš„rfamæ–‡ä»¶
 		 * @param rfamFile
-		 * @param regx rfamµÄÎïÖÖÃû
+		 * @param regx rfamçš„ç‰©ç§å
 		 */
 		public void setRfamFile(String rfamFile, int taxIDrfam) {
 			this.rfamFile = rfamFile;
-			this.taxIDfram = taxIDrfam;//TODO ¿´ÕâÀïÊÇÎïÖÖµÄÊ²Ã´Ãû×Ö
+			this.taxIDfram = taxIDrfam;//TODO çœ‹è¿™é‡Œæ˜¯ç‰©ç§çš„ä»€ä¹ˆåå­—
 		}
 		/**
-		 * ÌáÈ¡ĞòÁĞ
+		 * æå–åºåˆ—
 		 */
 		public void getSeq() {
 			if (FileOperate.isFileExist(refseqFile)) {
@@ -602,20 +602,20 @@ public class SpeciesFile {
 			}
 		}
 		/**
-		 * ´ÓNCBIµÄrefseq.faÎÄ¼şÖĞÌáÈ¡NCRNA
+		 * ä»NCBIçš„refseq.faæ–‡ä»¶ä¸­æå–NCRNA
 		 * @param refseqFile
 		 * @param outNCRNA
-		 * @param regx ÀàËÆ "NR_\\d+|XR_\\d+";
+		 * @param regx ç±»ä¼¼ "NR_\\d+|XR_\\d+";
 		 */
 		private void extractNCRNA(String refseqFile, String outNCRNA, String regx) {
 			 SeqFastaHash seqFastaHash = new SeqFastaHash(refseqFile,regx,false);
 			 seqFastaHash.writeToFile( regx ,outNCRNA );
 		}
 		/**
-		 * ´ÓmiRBaseµÄRNAdataÎÄ¼şÖĞÌáÈ¡miRNAĞòÁĞ
+		 * ä»miRBaseçš„RNAdataæ–‡ä»¶ä¸­æå–miRNAåºåˆ—
 		 * @param hairpinFile
 		 * @param outNCRNA
-		 * @param regx ÎïÖÖµÄÓ¢ÎÄ£¬ÈËÀà¾ÍÊÇhsa
+		 * @param regx ç‰©ç§çš„è‹±æ–‡ï¼Œäººç±»å°±æ˜¯hsa
 		 */
 		private void extractMiRNASeqFromRNAdata(String rnaDataFile, String rnaDataRegx, String rnaHairpinOut, String rnaMatureOut) {
 			TxtReadandWrite txtRead = new TxtReadandWrite(rnaDataFile, false);
@@ -645,10 +645,10 @@ public class SpeciesFile {
 			txtMature.close();
 		}
 		/**
-		 * ¸ø¶¨RNAdataÎÄ¼şµÄÒ»¸öblock£¬½«ÆäÖĞµÄĞòÁĞÌáÈ¡³öÀ´
+		 * ç»™å®šRNAdataæ–‡ä»¶çš„ä¸€ä¸ªblockï¼Œå°†å…¶ä¸­çš„åºåˆ—æå–å‡ºæ¥
 		 * @param rnaDataBlock
-		 * @return regex Ğ¡Ğ´µÄkeggËõĞ´£¬Èçhsa
-		 * ºóÃæÎª³ÉÊìÌåĞòÁĞ
+		 * @return regex å°å†™çš„keggç¼©å†™ï¼Œå¦‚hsa
+		 * åé¢ä¸ºæˆç†Ÿä½“åºåˆ—
 		 */
 		private ArrayList<SeqFasta> getSeqFromRNAdata(String rnaDataBlock, String regex) {
 			ArrayList<SeqFasta> lSeqFastas = new ArrayList<SeqFasta>();
@@ -713,10 +713,10 @@ public class SpeciesFile {
 			return finalSeq;
 		}
 		/**
-		 * ´ÓmiRBaseµÄhairpinFileÎÄ¼şÖĞÌáÈ¡miRNAĞòÁĞ
+		 * ä»miRBaseçš„hairpinFileæ–‡ä»¶ä¸­æå–miRNAåºåˆ—
 		 * @param hairpinFile
 		 * @param outNCRNA
-		 * @param regx ÎïÖÖµÄÓ¢ÎÄ£¬ÈËÀà¾ÍÊÇHomo sapiens
+		 * @param regx ç‰©ç§çš„è‹±æ–‡ï¼Œäººç±»å°±æ˜¯Homo sapiens
 		 */
 		private void extractRfam(String rfamFile, String outRfam, int taxIDquery) {
 			TxtReadandWrite txtOut = new TxtReadandWrite(outRfam, true);
@@ -728,7 +728,7 @@ public class SpeciesFile {
 				 try {
 					 taxID = Integer.parseInt(seqFasta.getSeqName().trim().split(" +")[1].split(":")[0]);
 				 } catch (Exception e) {
-					 logger.error("±¾ĞòÁĞÖĞÕÒ²»µ½taxID£º" + seqFasta.getSeqName());
+					 logger.error("æœ¬åºåˆ—ä¸­æ‰¾ä¸åˆ°taxIDï¼š" + seqFasta.getSeqName());
 				 }
 				 
 				 if (taxID == taxIDquery) {

@@ -17,19 +17,19 @@ public class SeqHash implements SeqHashInt{
 	
 	SeqHashAbs seqHashAbs = null;
 	/**
-	 * ╫А╧Ш╣днд╪Чйг╥Яв╙╩╞н╙п║п╢
-	 * Trueё╨п║п╢ Falseё╨╢Сп╢
-	 * nullё╨╡╩╠Д
+	 * Г╩⌠Ф·°Г └Ф√┤Д╩╤Ф≤╞Е░╕Х╫╛Е▄√Д╦╨Е╟▐Е├≥
+	 * TrueО╪ Е╟▐Е├≥ FalseО╪ Е╓╖Е├≥
+	 * nullО╪ Д╦█Е▐≤
 	 */
 	Boolean TOLOWCASE = null;
 	
 	/**
-	 * жьцШнд╪Ч╬м╥╣╩ьё╛хон╙р╩яЫ╣д╤╚нВ
-	 * @param chrFile пРапнд╪Ч╩РпРапнд╪Ч╪п
-	 * @param regx хГ╧ШйгпРапнд╪Чё╛тРсц╦цуЩтР╠М╢Ой╫лАх║ц©╦ЖпРап╣дцШвжё╛хГ╧ШйгпРапнд╪Ч╪пё╛тРсц╦цуЩтР╠М╢Ой╫лАх║╨╛сп╦цнд╪ЧцШ╣днд╪Ч
-	 * ╣╔нд╪Чд╛хон╙"";нд╪Ч╪пд╛хон╙"\\bchr\\w*"ё╩
-	 * @param TOLOWCASE йг╥Я╫╚вН╨С╫А╧Ш╣дпРапв╙╩╞н╙п║п╢ Trueё╨п║п╢ё╛Falseё╨╢Сп╢ё╛null╡╩╠Д д╛хон╙null
-	 * д╛хон╙false
+	 * И┤█Е░█Ф√┤Д╩╤Е╟╠Х©■Е⌡·О╪▄Х╝╓Д╦╨Д╦─Ф═╥Г └Д╦°Х╔©
+	 * @param chrFile Е╨▐Е┬≈Ф√┤Д╩╤Ф┬√Е╨▐Е┬≈Ф√┤Д╩╤Е╓╧
+	 * @param regx Е╕┌Ф·°Ф≤╞Е╨▐Е┬≈Ф√┤Д╩╤О╪▄Е┬≥Г■╗Х╞╔Ф╜ёЕ┬≥Х║╗Х╬╬Е╪▐Ф▐░Е▐√Ф╞▐Д╦╙Е╨▐Е┬≈Г └Е░█Е╜≈О╪▄Е╕┌Ф·°Ф≤╞Е╨▐Е┬≈Ф√┤Д╩╤Е╓╧О╪▄Е┬≥Г■╗Х╞╔Ф╜ёЕ┬≥Х║╗Х╬╬Е╪▐Ф▐░Е▐√Е░╚Ф°┴Х╞╔Ф√┤Д╩╤Е░█Г └Ф√┤Д╩╤
+	 * Е█∙Ф√┤Д╩╤И╩≤Х╝╓Д╦╨"";Ф√┤Д╩╤Е╓╧И╩≤Х╝╓Д╦╨"\\bchr\\w*"О╪⌡
+	 * @param TOLOWCASE Ф≤╞Е░╕Е╟├Ф°─Е░▌Г╩⌠Ф·°Г └Е╨▐Е┬≈Х╫╛Е▄√Д╦╨Е╟▐Е├≥ TrueО╪ Е╟▐Е├≥О╪▄FalseО╪ Е╓╖Е├≥О╪▄nullД╦█Е▐≤ И╩≤Х╝╓Д╦╨null
+	 * И╩≤Х╝╓Д╦╨false
 	 */
 	public SeqHash(String chrFile) {
 		if (FileOperate.isFileExistAndBigThanSize(chrFile,0.001)) {
@@ -40,16 +40,16 @@ public class SeqHash implements SeqHashInt{
 		}
 	}
 	/**
-	 * ╥╣╩ьнд╪ЧцШ 
+	 * Х©■Е⌡·Ф√┤Д╩╤Е░█ 
 	 * @return
 	 */
 	public String getChrFile() {
 		return seqHashAbs.getChrFile();
 	}
 	/**
-	 * @param chrFile пРапнд╪Ч╩РпРапнд╪Ч╪п
-	 * @param regx хГ╧ШйгпРапнд╪Чё╛тРсц╦цуЩтР╠М╢Ой╫лАх║ц©╦ЖпРап╣дцШвжё╛хГ╧ШйгпРапнд╪Ч╪пё╛тРсц╦цуЩтР╠М╢Ой╫лАх║╨╛сп╦цнд╪ЧцШ╣днд╪Ч
-	 * ╣╔нд╪Чд╛хон╙"";нд╪Ч╪пд╛хон╙"\\bchr\\w*"ё╩
+	 * @param chrFile Е╨▐Е┬≈Ф√┤Д╩╤Ф┬√Е╨▐Е┬≈Ф√┤Д╩╤Е╓╧
+	 * @param regx Е╕┌Ф·°Ф≤╞Е╨▐Е┬≈Ф√┤Д╩╤О╪▄Е┬≥Г■╗Х╞╔Ф╜ёЕ┬≥Х║╗Х╬╬Е╪▐Ф▐░Е▐√Ф╞▐Д╦╙Е╨▐Е┬≈Г └Е░█Е╜≈О╪▄Е╕┌Ф·°Ф≤╞Е╨▐Е┬≈Ф√┤Д╩╤Е╓╧О╪▄Е┬≥Г■╗Х╞╔Ф╜ёЕ┬≥Х║╗Х╬╬Е╪▐Ф▐░Е▐√Е░╚Ф°┴Х╞╔Ф√┤Д╩╤Е░█Г └Ф√┤Д╩╤
+	 * Е█∙Ф√┤Д╩╤И╩≤Х╝╓Д╦╨"";Ф√┤Д╩╤Е╓╧И╩≤Х╝╓Д╦╨"\\bchr\\w*"О╪⌡
 	 */
 	public SeqHash(String chrFile, String regx) {
 		if (FileOperate.isFileExistAndBigThanSize(chrFile,1)) {
@@ -61,11 +61,11 @@ public class SeqHash implements SeqHashInt{
 	}
 	
 	/**
-	 * @param chrFile пРапнд╪Ч╩РпРапнд╪Ч╪п
-	 * @param regx хГ╧ШйгпРапнд╪Чё╛тРсц╦цуЩтР╠М╢Ой╫лАх║ц©╦ЖпРап╣дцШвжё╛хГ╧ШйгпРапнд╪Ч╪пё╛тРсц╦цуЩтР╠М╢Ой╫лАх║╨╛сп╦цнд╪ЧцШ╣днд╪Ч
-	 * ╣╔нд╪Чд╛хон╙"";нд╪Ч╪пд╛хон╙"\\bchr\\w*"ё╩
-	 * @param TOLOWCASE йг╥Я╫╚вН╨С╫А╧Ш╣дпРапв╙╩╞н╙п║п╢ Trueё╨п║п╢ё╛Falseё╨╢Сп╢ё╛null╡╩╠Д д╛хон╙null
-	 * д╛хон╙false
+	 * @param chrFile Е╨▐Е┬≈Ф√┤Д╩╤Ф┬√Е╨▐Е┬≈Ф√┤Д╩╤Е╓╧
+	 * @param regx Е╕┌Ф·°Ф≤╞Е╨▐Е┬≈Ф√┤Д╩╤О╪▄Е┬≥Г■╗Х╞╔Ф╜ёЕ┬≥Х║╗Х╬╬Е╪▐Ф▐░Е▐√Ф╞▐Д╦╙Е╨▐Е┬≈Г └Е░█Е╜≈О╪▄Е╕┌Ф·°Ф≤╞Е╨▐Е┬≈Ф√┤Д╩╤Е╓╧О╪▄Е┬≥Г■╗Х╞╔Ф╜ёЕ┬≥Х║╗Х╬╬Е╪▐Ф▐░Е▐√Е░╚Ф°┴Х╞╔Ф√┤Д╩╤Е░█Г └Ф√┤Д╩╤
+	 * Е█∙Ф√┤Д╩╤И╩≤Х╝╓Д╦╨"";Ф√┤Д╩╤Е╓╧И╩≤Х╝╓Д╦╨"\\bchr\\w*"О╪⌡
+	 * @param TOLOWCASE Ф≤╞Е░╕Е╟├Ф°─Е░▌Г╩⌠Ф·°Г └Е╨▐Е┬≈Х╫╛Е▄√Д╦╨Е╟▐Е├≥ TrueО╪ Е╟▐Е├≥О╪▄FalseО╪ Е╓╖Е├≥О╪▄nullД╦█Е▐≤ И╩≤Х╝╓Д╦╨null
+	 * И╩≤Х╝╓Д╦╨false
 	 */
 	public SeqHash(String chrFile, String regx,Boolean TOLOWCASE) {
 		if (FileOperate.isFileExistAndBigThanSize(chrFile,1)) {
@@ -78,14 +78,14 @@ public class SeqHash implements SeqHashInt{
 	}
 	
 	/**
-	 * @param chrFile пРапнд╪Ч╩РпРапнд╪Ч╪п
-	 * @param regx хГ╧ШйгпРапнд╪Чё╛тРсц╦цуЩтР╠М╢Ой╫лАх║ц©╦ЖпРап╣дцШвжё╛хГ╧ШйгпРапнд╪Ч╪пё╛тРсц╦цуЩтР╠М╢Ой╫лАх║╨╛сп╦цнд╪ЧцШ╣днд╪Ч
-	 * ╣╔нд╪Чд╛хон╙"";нд╪Ч╪пд╛хон╙"\\bchr\\w*"ё╩
-	 * @param CaseChange йг╥Я╫╚пРапцШп║п╢ д╛хоп║п╢
-	 * @param TOLOWCASE йг╥Я╫╚вН╨С╫А╧Ш╣дпРапв╙╩╞н╙п║п╢ Trueё╨п║п╢ё╛Falseё╨╢Сп╢ё╛null╡╩╠Д д╛хон╙null
-	 * @param append <b>╫ЖуК╤т╣╔╦Жнд╠╬╣дпРап</b>╤тсзоЮм╛цШЁфпРап╣д╢╕юМё╛
-	 * trueё╨хГ╧ШЁЖожжьцШпРапё╛тРтз╣з╤ЧлУцШвж╨С╪сио"<"вВн╙╠Й╪г falseё╨хГ╧ШЁЖожжьцШпРапё╛тРсцЁ╓╣дпРапх╔лФ╩╩╤л╣дпРап
-	 * д╛хон╙false
+	 * @param chrFile Е╨▐Е┬≈Ф√┤Д╩╤Ф┬√Е╨▐Е┬≈Ф√┤Д╩╤Е╓╧
+	 * @param regx Е╕┌Ф·°Ф≤╞Е╨▐Е┬≈Ф√┤Д╩╤О╪▄Е┬≥Г■╗Х╞╔Ф╜ёЕ┬≥Х║╗Х╬╬Е╪▐Ф▐░Е▐√Ф╞▐Д╦╙Е╨▐Е┬≈Г └Е░█Е╜≈О╪▄Е╕┌Ф·°Ф≤╞Е╨▐Е┬≈Ф√┤Д╩╤Е╓╧О╪▄Е┬≥Г■╗Х╞╔Ф╜ёЕ┬≥Х║╗Х╬╬Е╪▐Ф▐░Е▐√Е░╚Ф°┴Х╞╔Ф√┤Д╩╤Е░█Г └Ф√┤Д╩╤
+	 * Е█∙Ф√┤Д╩╤И╩≤Х╝╓Д╦╨"";Ф√┤Д╩╤Е╓╧И╩≤Х╝╓Д╦╨"\\bchr\\w*"О╪⌡
+	 * @param CaseChange Ф≤╞Е░╕Е╟├Е╨▐Е┬≈Е░█Е╟▐Е├≥ И╩≤Х╝╓Е╟▐Е├≥
+	 * @param TOLOWCASE Ф≤╞Е░╕Е╟├Ф°─Е░▌Г╩⌠Ф·°Г └Е╨▐Е┬≈Х╫╛Е▄√Д╦╨Е╟▐Е├≥ TrueО╪ Е╟▐Е├≥О╪▄FalseО╪ Е╓╖Е├≥О╪▄nullД╦█Е▐≤ И╩≤Х╝╓Д╦╨null
+	 * @param append <b>Д╩┘И▓┬Е╞╧Е█∙Д╦╙Ф√┤Ф°╛Г └Е╨▐Е┬≈</b>Е╞╧Д╨▌Г⌡╦Е░▄Е░█Г╖╟Е╨▐Е┬≈Г └Е╓└Г░├О╪▄
+	 * trueО╪ Е╕┌Ф·°Е┤╨Г▌╟И┤█Е░█Е╨▐Е┬≈О╪▄Е┬≥Е°╗Г╛╛Д╨▄Ф²║Е░█Е╜≈Е░▌Е┼═Д╦┼"<"Д╫°Д╦╨Ф═┤Х╝╟ falseО╪ Е╕┌Ф·°Е┤╨Г▌╟И┤█Е░█Е╨▐Е┬≈О╪▄Е┬≥Г■╗И∙©Г └Е╨▐Е┬≈Е▌╩Ф⌡©Ф█╒Г÷╜Г └Е╨▐Е┬≈
+	 * И╩≤Х╝╓Д╦╨false
 	 */
 	public SeqHash(String chrFile, String regx,Boolean TOLOWCASE, boolean append) {
 		if (FileOperate.isFileExistAndBigThanSize(chrFile,1)) {
@@ -136,7 +136,7 @@ public class SeqHash implements SeqHashInt{
 	public ArrayList<String> getLsSeqName() {
 		return seqHashAbs.getLsSeqName();
 	}
-	/////////////////////  лА х║ пР ап  /////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////  Ф▐░ Е▐√ Е╨▐ Е┬≈  /////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	public SeqFasta getSeq(String seqName) {
 		return seqHashAbs.getSeq(seqName, 0 , 0);
@@ -169,8 +169,8 @@ public class SeqHash implements SeqHashInt{
 		return seqFasta;
 	}
 	/**
-	 * ╦Ы╬щ╦Ь╤╗╣дmapInfoё╛╩Я╣цпРапё╛в╒рБпРап╩А╦Ы╬щcis5to3╫Ьпп╥╢оР
-	 * вт╤╞╦ЬseqfastaлМ╪сцШвж
+	 * Ф═╧Ф█╝Г╩≥Е╝ Г └mapInfoО╪▄Х▌╥Е╬≈Е╨▐Е┬≈О╪▄ФЁ╗Ф└▐Е╨▐Е┬≈Д╪ Ф═╧Ф█╝cis5to3Х©⌡Х║▄Е▐█Е░▒
+	 * Х┤╙Е┼╗Г╩≥seqfastaФ╥╩Е┼═Е░█Е╜≈
 	 * @param mapInfo
 	 */
 	@Override
@@ -178,7 +178,7 @@ public class SeqHash implements SeqHashInt{
 		seqHashAbs.getSeq(mapInfo);
 	}
 	/**
-	 * ╦Ы╬щ╦Ь╤╗╣дmapInfoё╛╩Я╣цпРапё╛в╒рБпРап╩А╦Ы╬щcis5to3╫Ьпп╥╢оР
+	 * Ф═╧Ф█╝Г╩≥Е╝ Г └mapInfoО╪▄Х▌╥Е╬≈Е╨▐Е┬≈О╪▄ФЁ╗Ф└▐Е╨▐Е┬≈Д╪ Ф═╧Ф█╝cis5to3Х©⌡Х║▄Е▐█Е░▒
 	 * @param mapinfoRefSeqIntactAA
 	 */
 	public void getSeq(ArrayList<? extends SiteInfo> lsMapInfos) {
@@ -222,36 +222,36 @@ public class SeqHash implements SeqHashInt{
 	//////////////////////  static method  ////////////////////////////////////////////////////////////////////////////////}
 
 	/**
-	 * еп╤ойДхК╣дЁ╓╤хйг╥Ятзд©╣дгЬ╪Ддзё╛╠угЬ╪Д
-	 * @param seqlen йДхКпРап╣дЁ╓╤х
+	 * Е┬╓Ф√╜Х╬⌠Е┘╔Г └И∙©Е╨╕Ф≤╞Е░╕Е°╗Г⌡╝Г └Е▄╨И≈╢Е├┘О╪▄И≈╜Е▄╨И≈╢
+	 * @param seqlen Х╬⌠Е┘╔Е╨▐Е┬≈Г └И∙©Е╨╕
 	 * @param len
-	 * 	int[2] :0ё╨обочё╛п║сз0╠Мй╬ц╩спобоч
-	 * 1ё╨иоочё╛п║сз0╠Мй╬ц╩спиооч
-	 * иооч╠ьпК╢Ссз╣хсзобочё╛хГ╧Шиоочп║сзобочё╛тР╠╗╢М
+	 * 	int[2] :0О╪ Д╦▀И≥░О╪▄Е╟▐Д╨▌0Х║╗Г╓╨Ф╡║Ф°┴Д╦▀И≥░
+	 * 1О╪ Д╦┼И≥░О╪▄Е╟▐Д╨▌0Х║╗Г╓╨Ф╡║Ф°┴Д╦┼И≥░
+	 * Д╦┼И≥░Е©┘И║╩Е╓╖Д╨▌Г╜┴Д╨▌Д╦▀И≥░О╪▄Е╕┌Ф·°Д╦┼И≥░Е╟▐Д╨▌Д╦▀И≥░О╪▄Е┬≥Ф┼╔И■≥
 	 * @return
 	 */
 	public static boolean testSeqLen(int seqlen, int[] len) {
 		if (len[1] > 0 && len[1] < len[0]) {
-			logger.error("р╙гСйДЁЖпРап╣дЁ╓╤хиооч╡╩дэп║сзобоч");
+			logger.error("Х╕│Ф╠┌Х╬⌠Е┤╨Е╨▐Е┬≈Г └И∙©Е╨╕Д╦┼И≥░Д╦█Х┐╫Е╟▐Д╨▌Д╦▀И≥░");
 		}
 		
-		if (len[0] <= 0) { //нчобоч
-			if (len[1] <= 0)  //нчиооч
+		if (len[0] <= 0) { //Ф≈═Д╦▀И≥░
+			if (len[1] <= 0)  //Ф≈═Д╦┼И≥░
 				return true;
-			else { //спиооч
-				if (seqlen <= len[1])  //Ё╓╤хп║сз╣хсзиооч
+			else { //Ф°┴Д╦┼И≥░
+				if (seqlen <= len[1])  //И∙©Е╨╕Е╟▐Д╨▌Г╜┴Д╨▌Д╦┼И≥░
 					return true;
 				else
-					// Ё╓╤х╢Ссзиооч
+					// И∙©Е╨╕Е╓╖Д╨▌Д╦┼И≥░
 					return false;
 			}
 		}
-		else {// спобоч
-			if (seqlen < len[0]) //Ё╓╤хп║сзобоч
+		else {// Ф°┴Д╦▀И≥░
+			if (seqlen < len[0]) //И∙©Е╨╕Е╟▐Д╨▌Д╦▀И≥░
 				return false;
-			else {  //Ё╓╤х╢Ссзобоч
-				if (len[1] > 0) { //спиооч
-					if (seqlen <= len[1]) //Ё╓╤хп║сзиооч
+			else {  //И∙©Е╨╕Е╓╖Д╨▌Д╦▀И≥░
+				if (len[1] > 0) { //Ф°┴Д╦┼И≥░
+					if (seqlen <= len[1]) //И∙©Е╨╕Е╟▐Д╨▌Д╦┼И≥░
 						return true;
 					else
 						return false;
@@ -263,12 +263,12 @@ public class SeqHash implements SeqHashInt{
 		}
 	}
 	/**
-	 * ╦Ь╤╗fastaнд╪Чё╛╪ыиХ╦цfastaнд╪ЧюОцФж╩спр╩жжпРапё╛╣╟╟в╩Р╨ккАё╛еп╤о╦цfastaнд╪Чйг╣╟╟вё╛╩╧йгDNAё╛╩╧йгRNA
+	 * Г╩≥Е╝ fastaФ√┤Д╩╤О╪▄Е│┤Х╝╬Х╞╔fastaФ√┤Д╩╤И┤▄И²╒Е▐╙Ф°┴Д╦─Г╖█Е╨▐Е┬≈О╪▄Х⌡▀Г≥╫Ф┬√Ф═╦И┘╦О╪▄Е┬╓Ф√╜Х╞╔fastaФ√┤Д╩╤Ф≤╞Х⌡▀Г≥╫О╪▄Х©≤Ф≤╞DNAО╪▄Х©≤Ф≤╞RNA
 	 * @return
-	 * SeqFasta.SEQ_DNA╣х
+	 * SeqFasta.SEQ_DNAГ╜┴
 	 */
 	public static int getSeqType(String fastaFile) {
-		int readBp = 1000;//╤ах║г╟1000╦Ж╪Н╩Ыю╢еп╤о
+		int readBp = 1000;//Х╞╩Е▐√Е┴█1000Д╦╙Г╒╠Е÷╨Ф²╔Е┬╓Ф√╜
 		TxtReadandWrite txtRead = new TxtReadandWrite(fastaFile, false);
 		StringBuilder stringBuilder = new StringBuilder();
 		for (String string : txtRead.readlines()) {

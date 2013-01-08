@@ -83,8 +83,8 @@ public class GuiPathJpanel extends JPanel{
 	private JLabel jLabPathQtaxID;
 	private JScrollPaneData jScrollPaneInputPath;
 	////////////
-	static int QtaxID = 0;//²éÑ¯ÎïÖÖID
-	static int StaxID = 9606;//blastÎïÖÖID
+	static int QtaxID = 0;//æŸ¥è¯¢ç‰©ç§ID
+	static int StaxID = 9606;//blastç‰©ç§ID
 	
 	
 	public GuiPathJpanel() 
@@ -431,7 +431,7 @@ public class GuiPathJpanel extends JPanel{
 	}
 	
 	/**
-	 * ²é¿´ÎÄ¼şµÄÊó±ê»ò¼üÅÌÊÂ¼şÏìÓ¦Ê±µ÷ÓÃ
+	 * æŸ¥çœ‹æ–‡ä»¶çš„é¼ æ ‡æˆ–é”®ç›˜äº‹ä»¶å“åº”æ—¶è°ƒç”¨
 	 */
 	private void setPathProview(String filePath)
 	{
@@ -447,16 +447,16 @@ public class GuiPathJpanel extends JPanel{
 		
 	}
 	/**
-	 * analysis°´ÏÂÈ¥ºóµÃµ½½á¹û
+	 * analysisæŒ‰ä¸‹å»åå¾—åˆ°ç»“æœ
 	 */
 	private void getResult()
 	{
-		//jScrollPaneInputPath ×îÍâ²ãµÄ·½¿ò
-		//jTabbedPanePathTest ÀïÃæµÄ±êÇ©¿ò
-		//jPanPathTest ¾ßÌåµÄ±êÇ©
-		//jScrollPanePathtest ±êÇ©ÀïÃæµÄ·½¿ò
-		//jTabFInputPath ·½¿òÀïÃæµÄÊı¾İ¿ò
-		//jTabInputPath ¾ßÌåÊı¾İ
+		//jScrollPaneInputPath æœ€å¤–å±‚çš„æ–¹æ¡†
+		//jTabbedPanePathTest é‡Œé¢çš„æ ‡ç­¾æ¡†
+		//jPanPathTest å…·ä½“çš„æ ‡ç­¾
+		//jScrollPanePathtest æ ‡ç­¾é‡Œé¢çš„æ–¹æ¡†
+		//jTabFInputPath æ–¹æ¡†é‡Œé¢çš„æ•°æ®æ¡†
+		//jTabInputPath å…·ä½“æ•°æ®
 		String geneFileXls = jTxtFilePathPath.getText();
 		int colAccID = Integer.parseInt(jTxtAccColPath.getText());
 		int colFC = Integer.parseInt(jTxtValColPath.getText());
@@ -494,12 +494,12 @@ public class GuiPathJpanel extends JPanel{
 	}
 	
 	private void setNormalGo(CtrlPath ctrlPath) {
-		//jScrollPaneInputGo ×îÍâ²ãµÄ·½¿ò
-		//jTabbedPaneGOTest ÀïÃæµÄ±êÇ©¿ò
-		//jPanGoTest ¾ßÌåµÄ±êÇ©
-		// jScrollPaneGOtest ±êÇ©ÀïÃæµÄ·½¿ò
-		// jTabFInputGo ·½¿òÀïÃæµÄÊı¾İ¿ò
-		// jTabInputGo ¾ßÌåÊı¾İ
+		//jScrollPaneInputGo æœ€å¤–å±‚çš„æ–¹æ¡†
+		//jTabbedPaneGOTest é‡Œé¢çš„æ ‡ç­¾æ¡†
+		//jPanGoTest å…·ä½“çš„æ ‡ç­¾
+		// jScrollPaneGOtest æ ‡ç­¾é‡Œé¢çš„æ–¹æ¡†
+		// jTabFInputGo æ–¹æ¡†é‡Œé¢çš„æ•°æ®æ¡†
+		// jTabInputGo å…·ä½“æ•°æ®
 		HashMap<String, LinkedHashMap<String, ArrayList<String[]>>> hashResult = ctrlPath.getHashResult();
 		jTabbedPanePathResult.removeAll();
 		int i = 0;
@@ -515,16 +515,16 @@ public class GuiPathJpanel extends JPanel{
 	}
 	
 	private void settab(JTabbedPane jTabbedPaneGoResult, String tabName , ArrayList<String[]> lsResult) {
-		//Àï²ã
+		//é‡Œå±‚
 		String[][] tableValue = null;
 		DefaultTableModel jTabResult = new DefaultTableModel(tableValue,lsResult.get(0));
-		//ÖĞ²ã
+		//ä¸­å±‚
 		JTable jTabFResult = new JTable();
 		jTabFResult.setModel(jTabResult);
-		//Íâ²ã
+		//å¤–å±‚
 		JScrollPane jScrollPanelResult = new JScrollPane();
 		jScrollPanelResult.setViewportView(jTabFResult);
-		//×îÍâ²ã
+		//æœ€å¤–å±‚
 		jTabbedPaneGoResult.addTab(tabName, null, jScrollPanelResult, null);
 		for (int i = 1; i < lsResult.size(); i++) {
 			jTabResult.addRow(lsResult.get(i));

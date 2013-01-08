@@ -19,7 +19,7 @@ public class CpG
 	static boolean flag=false;
 
 	/**
-	 * ¶ÁÈ¡repeatÎÄ¼ş£¬
+	 * è¯»å–repeatæ–‡ä»¶ï¼Œ
 	 * @param repeatFile
 	 * @throws Exception
 	 */
@@ -34,24 +34,24 @@ public class CpG
 	}
 	
 	/**
-	 * ¶ÁÈ¡repeatFile£¬×îºóÍ³¼Æ¶àÉÙbpµÄCG±»peak¸²¸Ç.
-	 * @param locationFile peak·¶Î§ÎÄ¼ş£¬ÎªtxtÎÄ±¾
-	 * @param resultFile Ğ´ÈëµÄÎÄ¼ş£¬°üº¬Â·¾¶
-	 * @param readRow ´ÓµÚ¼¸ĞĞ¶ÁÈ¡£¬Êµ¼ÊĞĞ(´Ó1¿ªÊ¼¼ÆÊı)
-	 * @param colChr ChrIDÔÚµÚ¼¸ÁĞ£¬Êµ¼ÊÁĞ
-	 * @param colLOC1 ×ø±ê1ÔÚµÚ¼¸ÁĞ£¬Êµ¼ÊÁĞ£¬ChrIDºÍ×ø±êÓ¦¸ÃÒ»Ò»¶ÔÓ¦
-	 * @param colLOC2 ×ø±ê2ÔÚµÚ¼¸ÁĞ£¬Êµ¼ÊÁĞ£¬ChrIDºÍ×ø±êÓ¦¸ÃÒ»Ò»¶ÔÓ¦
+	 * è¯»å–repeatFileï¼Œæœ€åç»Ÿè®¡å¤šå°‘bpçš„CGè¢«peakè¦†ç›–.
+	 * @param locationFile peakèŒƒå›´æ–‡ä»¶ï¼Œä¸ºtxtæ–‡æœ¬
+	 * @param resultFile å†™å…¥çš„æ–‡ä»¶ï¼ŒåŒ…å«è·¯å¾„
+	 * @param readRow ä»ç¬¬å‡ è¡Œè¯»å–ï¼Œå®é™…è¡Œ(ä»1å¼€å§‹è®¡æ•°)
+	 * @param colChr ChrIDåœ¨ç¬¬å‡ åˆ—ï¼Œå®é™…åˆ—
+	 * @param colLOC1 åæ ‡1åœ¨ç¬¬å‡ åˆ—ï¼Œå®é™…åˆ—ï¼ŒChrIDå’Œåæ ‡åº”è¯¥ä¸€ä¸€å¯¹åº”
+	 * @param colLOC2 åæ ‡2åœ¨ç¬¬å‡ åˆ—ï¼Œå®é™…åˆ—ï¼ŒChrIDå’Œåæ ‡åº”è¯¥ä¸€ä¸€å¯¹åº”
 	 * @throws Exception
 	 */
 	public static void locatstatistic(String locationFile,String resultFile,int readRow,int colChr, int colLOC1,int colLOC2) throws Exception 
 	{
-		//¶Ápeak×ø±êÎÄ¼ş
+		//è¯»peakåæ ‡æ–‡ä»¶
 		TxtReadandWrite txtlocate=new TxtReadandWrite();
 		txtlocate.setParameter(locationFile,false, true);
 		String[][] ChrID=txtlocate.ExcelRead("\t", readRow, colChr, txtlocate.ExcelRows(), colChr);
 		String[][] LOCIDcod1=txtlocate.ExcelRead("\t", readRow, colLOC1, txtlocate.ExcelRows(), colLOC1);
 		String[][] LOCIDcod2=txtlocate.ExcelRead("\t", readRow, colLOC2, txtlocate.ExcelRows(), colLOC2);
-		//ºÏ²¢ĞÅÏ¢
+		//åˆå¹¶ä¿¡æ¯
 		String [][] LOCIDinfo=new String[ChrID.length][3];
 		for (int i = 0; i < ChrID.length; i++) {
 			LOCIDinfo[i][0]=ChrID[i][0];
@@ -68,25 +68,25 @@ public class CpG
 
 	
 	/**
-	 * ¶ÁÈ¡CGFile£¬×îºó¸ø³öÃ¿¸öpeak regionËù¸²¸ÇµÄCG
-	 * @param locationFile peak·¶Î§ÎÄ¼ş£¬ÎªtxtÎÄ±¾
-	 * @param resultFile Ğ´ÈëµÄÎÄ¼ş£¬°üº¬Â·¾¶
-	 * @param readRow ´ÓµÚ¼¸ĞĞ¶ÁÈ¡£¬Êµ¼ÊĞĞ(´Ó1¿ªÊ¼¼ÆÊı)
-	 * @param colChr ChrIDÔÚµÚ¼¸ÁĞ£¬Êµ¼ÊÁĞ
-	 * @param colLOC1 ×ø±ê1ÔÚµÚ¼¸ÁĞ£¬Êµ¼ÊÁĞ£¬ChrIDºÍ×ø±êÓ¦¸ÃÒ»Ò»¶ÔÓ¦
-	 * @param colLOC2 ×ø±ê2ÔÚµÚ¼¸ÁĞ£¬Êµ¼ÊÁĞ£¬ChrIDºÍ×ø±êÓ¦¸ÃÒ»Ò»¶ÔÓ¦
+	 * è¯»å–CGFileï¼Œæœ€åç»™å‡ºæ¯ä¸ªpeak regionæ‰€è¦†ç›–çš„CG
+	 * @param locationFile peakèŒƒå›´æ–‡ä»¶ï¼Œä¸ºtxtæ–‡æœ¬
+	 * @param resultFile å†™å…¥çš„æ–‡ä»¶ï¼ŒåŒ…å«è·¯å¾„
+	 * @param readRow ä»ç¬¬å‡ è¡Œè¯»å–ï¼Œå®é™…è¡Œ(ä»1å¼€å§‹è®¡æ•°)
+	 * @param colChr ChrIDåœ¨ç¬¬å‡ åˆ—ï¼Œå®é™…åˆ—
+	 * @param colLOC1 åæ ‡1åœ¨ç¬¬å‡ åˆ—ï¼Œå®é™…åˆ—ï¼ŒChrIDå’Œåæ ‡åº”è¯¥ä¸€ä¸€å¯¹åº”
+	 * @param colLOC2 åæ ‡2åœ¨ç¬¬å‡ åˆ—ï¼Œå®é™…åˆ—ï¼ŒChrIDå’Œåæ ‡åº”è¯¥ä¸€ä¸€å¯¹åº”
 	 * @throws Exception
 	 */
 	public static void peakCGDetail(String locationFile,String resultFile,int readRow,int colChr, int colLOC1,int colLOC2) throws Exception 
 	{
-		//¶Ápeak×ø±êÎÄ¼ş
+		//è¯»peakåæ ‡æ–‡ä»¶
 		TxtReadandWrite txtlocate=new TxtReadandWrite();
 		txtlocate.setParameter(locationFile,false, true);
 		
 		String[][] ChrID=txtlocate.ExcelRead("\t", readRow, colChr, txtlocate.ExcelRows(), colChr);
 		String[][] LOCIDcod1=txtlocate.ExcelRead("\t", readRow, colLOC1, txtlocate.ExcelRows(), colLOC1);
 		String[][] LOCIDcod2=txtlocate.ExcelRead("\t", readRow, colLOC2, txtlocate.ExcelRows(), colLOC2);
-		//ºÏ²¢ĞÅÏ¢
+		//åˆå¹¶ä¿¡æ¯
 		String [][] LOCIDinfo=new String[ChrID.length][3];
 		for (int i = 0; i < ChrID.length; i++) {
 			LOCIDinfo[i][0]=ChrID[i][0];
@@ -101,25 +101,25 @@ public class CpG
 	}
 	
 	/**
-	 * ¶ÁÈ¡CGFile£¬×îºó¸ø³öÃ¿¸öpeak regionËù¸²¸ÇµÄCG
-	 * @param locationFile peak·¶Î§ÎÄ¼ş£¬ÎªtxtÎÄ±¾
-	 * @param resultFile Ğ´ÈëµÄÎÄ¼ş£¬°üº¬Â·¾¶
-	 * @param readRow ´ÓµÚ¼¸ĞĞ¶ÁÈ¡£¬Êµ¼ÊĞĞ(´Ó1¿ªÊ¼¼ÆÊı)
-	 * @param colChr ChrIDÔÚµÚ¼¸ÁĞ£¬Êµ¼ÊÁĞ
-	 * @param colLOC1 ×ø±ê1ÔÚµÚ¼¸ÁĞ£¬Êµ¼ÊÁĞ£¬ChrIDºÍ×ø±êÓ¦¸ÃÒ»Ò»¶ÔÓ¦
-	 * @param colLOC2 ×ø±ê2ÔÚµÚ¼¸ÁĞ£¬Êµ¼ÊÁĞ£¬ChrIDºÍ×ø±êÓ¦¸ÃÒ»Ò»¶ÔÓ¦
+	 * è¯»å–CGFileï¼Œæœ€åç»™å‡ºæ¯ä¸ªpeak regionæ‰€è¦†ç›–çš„CG
+	 * @param locationFile peakèŒƒå›´æ–‡ä»¶ï¼Œä¸ºtxtæ–‡æœ¬
+	 * @param resultFile å†™å…¥çš„æ–‡ä»¶ï¼ŒåŒ…å«è·¯å¾„
+	 * @param readRow ä»ç¬¬å‡ è¡Œè¯»å–ï¼Œå®é™…è¡Œ(ä»1å¼€å§‹è®¡æ•°)
+	 * @param colChr ChrIDåœ¨ç¬¬å‡ åˆ—ï¼Œå®é™…åˆ—
+	 * @param colLOC1 åæ ‡1åœ¨ç¬¬å‡ åˆ—ï¼Œå®é™…åˆ—ï¼ŒChrIDå’Œåæ ‡åº”è¯¥ä¸€ä¸€å¯¹åº”
+	 * @param colLOC2 åæ ‡2åœ¨ç¬¬å‡ åˆ—ï¼Œå®é™…åˆ—ï¼ŒChrIDå’Œåæ ‡åº”è¯¥ä¸€ä¸€å¯¹åº”
 	 * @throws Exception
 	 */
 	public static String[][] peakCGDetailArray(String locationFile,int readRow,int colChr, int colLOC1,int colLOC2) throws Exception 
 	{
-		//¶Ápeak×ø±êÎÄ¼ş
+		//è¯»peakåæ ‡æ–‡ä»¶
 		TxtReadandWrite txtlocate=new TxtReadandWrite();
 		txtlocate.setParameter(locationFile, false,true);
 		
 		String[][] ChrID=txtlocate.ExcelRead("\t", readRow, colChr, txtlocate.ExcelRows(), colChr);
 		String[][] LOCIDcod1=txtlocate.ExcelRead("\t", readRow, colLOC1, txtlocate.ExcelRows(), colLOC1);
 		String[][] LOCIDcod2=txtlocate.ExcelRead("\t", readRow, colLOC2, txtlocate.ExcelRows(), colLOC2);
-		//ºÏ²¢ĞÅÏ¢
+		//åˆå¹¶ä¿¡æ¯
 		String [][] LOCIDinfo=new String[ChrID.length][3];
 		for (int i = 0; i < ChrID.length; i++) {
 			LOCIDinfo[i][0]=ChrID[i][0];
@@ -138,7 +138,7 @@ public class CpG
 	
 	
 	/**
-	 * »ñµÃCG±³¾°µÈĞÅÏ¢
+	 * è·å¾—CGèƒŒæ™¯ç­‰ä¿¡æ¯
 	 * @return
 	 * @throws Exception 
 	 */

@@ -25,7 +25,7 @@ public class MaizeGDB {
 		this.maizeGeneInfoFile = maizeGeneInfo;
 	}
 	/**
-	 * ½«TigrµÄGffÎÄ¼şµ¼Èëgene2GOÊı¾İ¿â£¬µ¹ÈëNCBIGOºÍUniGOÁ½¸ö±í
+	 * å°†Tigrçš„Gffæ–‡ä»¶å¯¼å…¥gene2GOæ•°æ®åº“ï¼Œå€’å…¥NCBIGOå’ŒUniGOä¸¤ä¸ªè¡¨
 	 * @param gffRapDB
 	 * @param outFIle
 	 * @throws Exception
@@ -41,7 +41,7 @@ public class MaizeGDB {
 		
 		maizeAccID = new MaizeAccID();
 		maizeAccID.setTaxID(taxID);
-		//µÚ¶ş´Î¶Á¾Í´ÓµÚÒ»ĞĞ¿ªÊ¼¶ÁÈ¡ÁË
+		//ç¬¬äºŒæ¬¡è¯»å°±ä»ç¬¬ä¸€è¡Œå¼€å§‹è¯»å–äº†
 		maizeAccID.setReadFromLine(1);
 		maizeAccID.setTxtWriteExcep(FileOperate.changeFileSuffix(outfile, "_out2", null));
 		maizeAccID.setUniProtID(true);
@@ -62,14 +62,14 @@ public class MaizeGDB {
 /**
  * www.maizeseq
  * uence.org
- * ÉÏµÄZmB73_5a_xref.txt
- * ´ÓµÚ¶şĞĞ¿ªÊ¼¶Á
+ * ä¸Šçš„ZmB73_5a_xref.txt
+ * ä»ç¬¬äºŒè¡Œå¼€å§‹è¯»
  */
 class MaizeAccID extends ImportPerLine {
 	private static Logger logger = Logger.getLogger(MaizeAccID.class);
 	boolean uniProtID = false;
 	/**
-	 * ÊÇ·ñ½«Ã»ÓĞ²éµ½µÄIDµ¼ÈëuniProtID
+	 * æ˜¯å¦å°†æ²¡æœ‰æŸ¥åˆ°çš„IDå¯¼å…¥uniProtID
 	 * @param uniProtID
 	 */
 	public void setUniProtID(boolean uniProtID) {
@@ -89,7 +89,7 @@ class MaizeAccID extends ImportPerLine {
 		}
 		
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_MAIZE_MGDB, true);
-		//ÊÇ·ñ³É¹¦Éı¼¶µÄ±êÖ¾¡£ÒòÎªºóÃæÒªÉı¼¶Á½´Î
+		//æ˜¯å¦æˆåŠŸå‡çº§çš„æ ‡å¿—ã€‚å› ä¸ºåé¢è¦å‡çº§ä¸¤æ¬¡
 		boolean flag = false;
 		if (ss[1].equals("EntrezGene")) {
 			copedID.setUpdateGeneID(ss[2], GeneID.IDTYPE_GENEID);
@@ -99,12 +99,12 @@ class MaizeAccID extends ImportPerLine {
 				geneInfo.setDescrp(ss[3]);
 				copedID.setUpdateGeneInfo(geneInfo);
 			}
-			//geneIDµÄ»°¾Í²»ÊÇÆäËûµÄÊı¾İ¿âID£¬¾Í²»ĞèÒªÔÙµ¼ÈëÒ»´ÎÁË
+			//geneIDçš„è¯å°±ä¸æ˜¯å…¶ä»–çš„æ•°æ®åº“IDï¼Œå°±ä¸éœ€è¦å†å¯¼å…¥ä¸€æ¬¡äº†
 			flag = copedID.update(uniProtID);
 			updateMaizeACID(ss, copedID);
 			return flag;
 		}
-		//·ñÔòµÄ»°¾Í³£¹æµ¼Èë
+		//å¦åˆ™çš„è¯å°±å¸¸è§„å¯¼å…¥
 		else if (!ss[1].equalsIgnoreCase("GO")) {
 			copedID.setUpdateRefAccID(ss[2]);
 			if (ss.length >= 4) {
@@ -125,11 +125,11 @@ class MaizeAccID extends ImportPerLine {
 		 return flag;
 	}
 	
-	/** ÓñÃ×µÄACIDºÜÆæ¹Ö£¬Æ©Èç
-	 * AC148152.3_FGT005¿ÉÒÔÎª
+	/** ç‰ç±³çš„ACIDå¾ˆå¥‡æ€ªï¼Œè­¬å¦‚
+	 * AC148152.3_FGT005å¯ä»¥ä¸º
 	 * AC148152.3_FG005
 	 * AC148152.3_FGP005
-	 * ÈıÖÖ
+	 * ä¸‰ç§
 	 */
 	private void updateMaizeACID(String[] ss, GeneID geneID) {
 		 if (ss[0].startsWith("AC")) {
@@ -144,7 +144,7 @@ class MaizeAccID extends ImportPerLine {
 		if (ss[1].equalsIgnoreCase("GO")) {
 			return;
 		}
-		//³£¹æµ¼Èëºó»¹ĞèÒª½«±¾IDÔÙµ¼ÈëÒ»´Î
+		//å¸¸è§„å¯¼å…¥åè¿˜éœ€è¦å°†æœ¬IDå†å¯¼å…¥ä¸€æ¬¡
 		geneID.setUpdateAccID(ss[2]);
 		String dbInfo = null;
 		 if (ss[1].equals("RefSeq_dna")) {
@@ -164,7 +164,7 @@ class MaizeAccID extends ImportPerLine {
 
 /**
  * /media/winE/Bioinformatics/GenomeData/maize/ZmB73_5a_gene_descriptors.txt
- * ´ÓµÚ¶şĞĞ¿ªÊ¼¶ÁÈ¡
+ * ä»ç¬¬äºŒè¡Œå¼€å§‹è¯»å–
  * @author zong0jie
  *
  */
@@ -190,8 +190,8 @@ class MaizeGeneInfo extends ImportPerLine
 /**
  * www.maizeseq
  * uence.org
- * ÉÏµÄZmB73_5a_xref.txt
- * ´ÓµÚ¶şĞĞ¿ªÊ¼¶Á
+ * ä¸Šçš„ZmB73_5a_xref.txt
+ * ä»ç¬¬äºŒè¡Œå¼€å§‹è¯»
  */
 class MaizeGO extends ImportPerLine
 {

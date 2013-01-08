@@ -5,17 +5,17 @@ import javax.swing.JProgressBar;
 
 import com.novelbio.base.gui.JScrollPaneData;
 
-/** ÓĞ½ø¶ÈÌõ£¬ÏÔÊ¾ÎÄ±¾¿òµÄ½Ó¿Ú */
+/** æœ‰è¿›åº¦æ¡ï¼Œæ˜¾ç¤ºæ–‡æœ¬æ¡†çš„æ¥å£ */
 public interface GuiRunningBarAbs {
 	
 	public JProgressBar getProcessBar();
 	
 	public JScrollPaneData getScrollPaneData();
-	/** µ¼ÈëÎÄ¼ş */
+	/** å¯¼å…¥æ–‡ä»¶ */
 	public JButton getBtnOpen();
-	/** Æô¶¯ */
+	/** å¯åŠ¨ */
 	public JButton getBtnRun();
-	/** ±£´æ */
+	/** ä¿å­˜ */
 	public JButton getBtnSave();
 
 }

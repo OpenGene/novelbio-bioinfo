@@ -19,7 +19,7 @@ class FastQwrite {
 	
 	public FastQwrite() {}
 	/**
-	 * ×Ô¶¯ÅĞ¶Ï FastQµÄ¸ñÊ½
+	 * è‡ªåŠ¨åˆ¤æ–­ FastQçš„æ ¼å¼
 	 * @param seqFile
 	 * @param QUALITY
 	 */
@@ -40,9 +40,9 @@ class FastQwrite {
 		return txtFileName;
 	}
 	/**
-	 * Éè¶¨ÎÄ¼şÑ¹Ëõ¸ñÊ½
-	 * ´ÓTxtReadandWrite.TXTÀ´
-	 * @param cmpInType Ğ´ÈëµÄÑ¹Ëõ¸ñÊ½ null»ò""±íÊ¾²»±ä
+	 * è®¾å®šæ–‡ä»¶å‹ç¼©æ ¼å¼
+	 * ä»TxtReadandWrite.TXTæ¥
+	 * @param cmpInType å†™å…¥çš„å‹ç¼©æ ¼å¼ nullæˆ–""è¡¨ç¤ºä¸å˜
 	 */
 	public void setCompressType(String cmpOutType) {
 		if (cmpOutType != null && !cmpOutType.equals("")) {
@@ -54,9 +54,9 @@ class FastQwrite {
 	}
 	
 	/**
-	 * Ğ´ÈëÎÄ±¾
-	 * <b>Ğ´ÍêºóÎñ±ØÓÃ {@link #closeWrite} ·½·¨¹Ø±Õ</b>
-	 * ´´½¨µÄÊ±ºòÒªÉè¶¨ÎªcreatÄ£Ê½
+	 * å†™å…¥æ–‡æœ¬
+	 * <b>å†™å®ŒååŠ¡å¿…ç”¨ {@link #closeWrite} æ–¹æ³•å…³é—­</b>
+	 * åˆ›å»ºçš„æ—¶å€™è¦è®¾å®šä¸ºcreatæ¨¡å¼
 	 * @param bedRecord
 	 */
 	protected void writeFastQRecordString(String fastQRecord1, String fastQRecord2) {
@@ -67,9 +67,9 @@ class FastQwrite {
 		}
 	}
 	/**
-	 * Ğ´ÈëÎÄ±¾
-	 * <b>Ğ´ÍêºóÎñ±ØÓÃ {@link #closeWrite} ·½·¨¹Ø±Õ</b>
-	 * ´´½¨µÄÊ±ºòÒªÉè¶¨ÎªcreatÄ£Ê½
+	 * å†™å…¥æ–‡æœ¬
+	 * <b>å†™å®ŒååŠ¡å¿…ç”¨ {@link #closeWrite} æ–¹æ³•å…³é—­</b>
+	 * åˆ›å»ºçš„æ—¶å€™è¦è®¾å®šä¸ºcreatæ¨¡å¼
 	 * @param bedRecord
 	 */
 	public void writeFastQRecordString(String fastQRecord) {
@@ -78,8 +78,8 @@ class FastQwrite {
 	}
 	
 	/**
-	 * <b>Ğ´ÍêºóÎñ±ØÓÃ {@link #closeWrite} ·½·¨¹Ø±Õ</b>
-	 * ´´½¨µÄÊ±ºòÒªÉè¶¨ÎªcreatÄ£Ê½
+	 * <b>å†™å®ŒååŠ¡å¿…ç”¨ {@link #closeWrite} æ–¹æ³•å…³é—­</b>
+	 * åˆ›å»ºçš„æ—¶å€™è¦è®¾å®šä¸ºcreatæ¨¡å¼
 	 * @param bedRecord
 	 */
 	public void writeFastQRecord(FastQRecord fastQRecord) {
@@ -87,7 +87,7 @@ class FastQwrite {
 		txtSeqFile.writefileln(fastQRecord.toString());
 	}
 	/**
-	 * ²»¹Ø±Õ
+	 * ä¸å…³é—­
 	 * @param lsBedRecord
 	 */
 	public void wirteFastqRecord(List<FastQRecord> lsFastQRecords) {
@@ -104,8 +104,8 @@ class FastQwrite {
 		txtSeqFile = new TxtReadandWrite(cmpOutType, txtFileName, true);
 	}
 	/**
-	 * Ğ´ÍêºóÎñ±ØÓÃ´Ë·½·¨¹Ø±Õ
-	 * ¹Ø±ÕÊäÈëÁ÷£¬²¢½«fastQĞ´Èë×ª»¯ÎªfastQ¶ÁÈ¡
+	 * å†™å®ŒååŠ¡å¿…ç”¨æ­¤æ–¹æ³•å…³é—­
+	 * å…³é—­è¾“å…¥æµï¼Œå¹¶å°†fastQå†™å…¥è½¬åŒ–ä¸ºfastQè¯»å–
 	 */
 	public void close() {
 		try { txtSeqFile.close(); } catch (Exception e) { }

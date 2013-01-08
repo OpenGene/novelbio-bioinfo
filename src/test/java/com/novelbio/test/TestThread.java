@@ -8,7 +8,7 @@ package com.novelbio.test;
      {    
            
          n++;    
-         System.out.println("µ±Ç°»î¶¯Ïß³ÌºÍN·Ö±ğÎª:"+Thread.currentThread().getName()+"_"+n);  
+         System.out.println("å½“å‰æ´»åŠ¨çº¿ç¨‹å’ŒNåˆ†åˆ«ä¸º:"+Thread.currentThread().getName()+"_"+n);  
      }    
      public void run()    
      {    
@@ -16,7 +16,7 @@ package com.novelbio.test;
              try   
              {    
                  inc();   
-                 sleep(3);  // ÎªÁËÊ¹ÔËĞĞ½á¹û¸üËæ»ú£¬ÑÓ³Ù3ºÁÃë    
+                 sleep(3);  // ä¸ºäº†ä½¿è¿è¡Œç»“æœæ›´éšæœºï¼Œå»¶è¿Ÿ3æ¯«ç§’    
                      
              }    
              catch (Exception e)    
@@ -27,12 +27,12 @@ package com.novelbio.test;
      {    
         
          Thread threads[] = new Thread[100];    
-         for (int i = 0; i < threads.length; i++)  // ½¨Á¢100¸öÏß³Ì    
+         for (int i = 0; i < threads.length; i++)  // å»ºç«‹100ä¸ªçº¿ç¨‹    
              threads[i] = new TestThread();    
-         for (int i = 0; i < threads.length; i++){// ÔËĞĞ¸Õ²Å½¨Á¢µÄ100¸öÏß³Ì    
+         for (int i = 0; i < threads.length; i++){// è¿è¡Œåˆšæ‰å»ºç«‹çš„100ä¸ªçº¿ç¨‹    
              threads[i].start();  
-             System.out.println("Ïß³Ì"+i+"startÁË");  
-             threads[i].join();//¹Ø¼üµã  
+             System.out.println("çº¿ç¨‹"+i+"startäº†");  
+             threads[i].join();//å…³é”®ç‚¹  
          }  
                
          System.out.println("n=" + TestThread.n);    

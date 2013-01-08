@@ -70,7 +70,7 @@ public class GuiAffyCelNormJpanel extends JPanel {
 		JLabel lblAlgrethm = new JLabel("algrethm");
 		lblAlgrethm.setBounds(12, 187, 66, 14);
 		add(lblAlgrethm);
-		//³õÊ¼»¯cmbSpeciesVersion
+		//åˆå§‹åŒ–cmbSpeciesVersion
 		try {} catch (Exception e) { }
 		
 		JLabel lblExtendto = new JLabel("ExtendTo");

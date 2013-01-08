@@ -11,21 +11,21 @@ import com.novelbio.base.dataStructure.listOperate.HistList.HistBinType;
 public class StatisticsCoverage implements StatisticsUnit {
 	private static Logger logger = Logger.getLogger(StatisticsCoverage.class);
 
-	/** reads ¸²¸ÇµÄÊıÁ¿Í³¼Æ */
+	/** reads è¦†ç›–çš„æ•°é‡ç»Ÿè®¡ */
 	HistList histListCoverNum = HistList.creatHistList("Coverage", true);;
 	
 	/**
-	 * <b>±ØĞëÉè¶¨</b>
-	 * »®·Ö¶àÉÙÇøÓò£¬Ã¿¸öÇøÓò¶àÉÙinterval
+	 * <b>å¿…é¡»è®¾å®š</b>
+	 * åˆ’åˆ†å¤šå°‘åŒºåŸŸï¼Œæ¯ä¸ªåŒºåŸŸå¤šå°‘interval
 	 * @param binNum
-	 * @param interval µÈÓÚ2µÄ»°£¬¾ÍÊÇÃ¿¸ô2¸öcoverageÍ³¼ÆÒ»ÏÂ£¬ÒâË¼¾ÍÊÇ2reads¸²¸Ç£¬4reads¸²¸ÇµÄÊıÁ¿
-	 * @param maxCoverageNum  ×î´óÖµ£¬Èç¹û×îºóÒ»Î»bin¶¼Ã»µ½×î´óÖµ£¬½ÓÏÂÀ´Ò»¸öbin¾ÍºÍ×î´óÖµºÏ²¢£¬ËùÒÔ¿ÉÒÔÍù¸ßÀïÉè¶¨
+	 * @param interval ç­‰äº2çš„è¯ï¼Œå°±æ˜¯æ¯éš”2ä¸ªcoverageç»Ÿè®¡ä¸€ä¸‹ï¼Œæ„æ€å°±æ˜¯2readsè¦†ç›–ï¼Œ4readsè¦†ç›–çš„æ•°é‡
+	 * @param maxCoverageNum  æœ€å¤§å€¼ï¼Œå¦‚æœæœ€åä¸€ä½binéƒ½æ²¡åˆ°æœ€å¤§å€¼ï¼Œæ¥ä¸‹æ¥ä¸€ä¸ªbinå°±å’Œæœ€å¤§å€¼åˆå¹¶ï¼Œæ‰€ä»¥å¯ä»¥å¾€é«˜é‡Œè®¾å®š
 	 */
 	public void setBinNum(int binNum, int interval, int maxCoverageNum) {
 		histListCoverNum.setBinAndInterval(binNum, interval, maxCoverageNum);
 	}
 	
-	/** ¼ÇÂ¼¸²¸Ç¶È£¬ÓĞgap  */
+	/** è®°å½•è¦†ç›–åº¦ï¼Œæœ‰gap  */
 	public void countOneSeqInfo(OneSeqInfo oneSeqInfo) {
 		histListCoverNum.addNum(oneSeqInfo.getReadsNumAll());
 	}

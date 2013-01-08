@@ -15,15 +15,15 @@ public class GeneIDNcbi extends GeneIDabs {
 	private static Logger logger = Logger.getLogger(GeneIDNcbi.class);
 
 	/**
-	 * Éè¶¨³õÊ¼Öµ£¬²»ÑéÖ¤ Èç¹ûÔÚÊı¾İ¿âÖĞÃ»ÓĞÕÒµ½ÏàÓ¦µÄgeneUniID£¬Ôò·µ»Ønull Ö»ÄÜ²úÉúÒ»¸öCopedID£¬´ËÊ±accID = ""
+	 * è®¾å®šåˆå§‹å€¼ï¼Œä¸éªŒè¯ å¦‚æœåœ¨æ•°æ®åº“ä¸­æ²¡æœ‰æ‰¾åˆ°ç›¸åº”çš„geneUniIDï¼Œåˆ™è¿”å›null åªèƒ½äº§ç”Ÿä¸€ä¸ªCopedIDï¼Œæ­¤æ—¶accID = ""
 	 * 
 	 * @param accID
-	 *            ÊäÈëµÄaccID²»¿ÉÄÜÎª""
+	 *            è¾“å…¥çš„accIDä¸å¯èƒ½ä¸º""
 	 * @param idType
-	 *            ±ØĞëÊÇIDTYPEÖĞµÄÒ»ÖÖ
+	 *            å¿…é¡»æ˜¯IDTYPEä¸­çš„ä¸€ç§
 	 * @param genUniID
 	 * @param taxID
-	 *            ÎïÖÖID
+	 *            ç‰©ç§ID
 	 */
 	public GeneIDNcbi(String accID, String genUniID, int taxID) {
 		super.accID = accID;
@@ -43,7 +43,7 @@ public class GeneIDNcbi extends GeneIDabs {
 					this.geneIDDBinfo = lsTmp.get(0).getDBInfo();
 				}
 			} else {
-				logger.error("¿ÉÄÜÃ»ÓĞ¸ÃgenuniID£º" + genUniID);
+				logger.error("å¯èƒ½æ²¡æœ‰è¯¥genuniIDï¼š" + genUniID);
 			}
 			return;
 		}

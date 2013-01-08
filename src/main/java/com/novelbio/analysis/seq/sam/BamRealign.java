@@ -24,8 +24,8 @@ public class BamRealign {
 	String refSequenceFile;
 	String bamSortedFile;
 	/**
-	 * Éè¶¨samtoolsËùÔÚµÄÎÄ¼ş¼ĞÒÔ¼°´ı±È¶ÔµÄÂ·¾¶
-	 * @param exePath Èç¹ûÔÚ¸ùÄ¿Â¼ÏÂÔòÉèÖÃÎª""»ònull
+	 * è®¾å®šsamtoolsæ‰€åœ¨çš„æ–‡ä»¶å¤¹ä»¥åŠå¾…æ¯”å¯¹çš„è·¯å¾„
+	 * @param exePath å¦‚æœåœ¨æ ¹ç›®å½•ä¸‹åˆ™è®¾ç½®ä¸º""æˆ–null
 	 */
 	public void setExePath(String exePath) {
 		if (exePath == null || exePath.trim().equals(""))

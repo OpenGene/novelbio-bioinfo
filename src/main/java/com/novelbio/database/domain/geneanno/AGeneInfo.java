@@ -11,11 +11,11 @@ import org.apache.velocity.app.event.ReferenceInsertionEventHandler.referenceIns
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.generalConf.NovelBioConst;
 /**
- * ibatisÔÚ²Ù×÷Êı¾İ¿âÊ±»á×Ô¶¯Ê¹ÓÃÀàÖĞµÄsetterºÍgetter¸øÊôĞÔ¸³Öµ
- * Èç¹û²»ÏëÓÃÀàÖĞµÄÕâĞ©·½·¨£¬ÄÇÃ´setterºÍgetterµÄÃû×Ö²»ÒªºÍÊôĞÔÒ»Ñù¾ÍºÃ
- * Èç£ºÊôĞÔ£ºsymbol£¬·½·¨ÔòÎª£ºgetSymb
- * µ±ÓĞĞÂµÄÎïÖÖ¼ÓÈëÊ±£¬ĞèÒªÌí¼ÓĞÂµÄdbinfoĞÅÏ¢
- * ·ñÔòÄ¬ÈÏÊÇ×ßNCBIID
+ * ibatisåœ¨æ“ä½œæ•°æ®åº“æ—¶ä¼šè‡ªåŠ¨ä½¿ç”¨ç±»ä¸­çš„setterå’Œgetterç»™å±æ€§èµ‹å€¼
+ * å¦‚æœä¸æƒ³ç”¨ç±»ä¸­çš„è¿™äº›æ–¹æ³•ï¼Œé‚£ä¹ˆsetterå’Œgetterçš„åå­—ä¸è¦å’Œå±æ€§ä¸€æ ·å°±å¥½
+ * å¦‚ï¼šå±æ€§ï¼šsymbolï¼Œæ–¹æ³•åˆ™ä¸ºï¼šgetSymb
+ * å½“æœ‰æ–°çš„ç‰©ç§åŠ å…¥æ—¶ï¼Œéœ€è¦æ·»åŠ æ–°çš„dbinfoä¿¡æ¯
+ * å¦åˆ™é»˜è®¤æ˜¯èµ°NCBIID
  * @author zong0jie
  *
  */
@@ -33,7 +33,7 @@ public abstract class AGeneInfo {
 		lsDBinfo.add(NovelBioConst.DBINFO_UNIPROT_GenralID);
 	}
 	/**
-	 * ÌØ¶¨µÄÎïÖÖ¶ÔÓ¦ÌØ¶¨µÄÊı¾İ¿â
+	 * ç‰¹å®šçš„ç‰©ç§å¯¹åº”ç‰¹å®šçš„æ•°æ®åº“
 	 */
 	static HashMap<Integer, String> hashDBtype = new HashMap<Integer, String>();
 	
@@ -63,9 +63,9 @@ public abstract class AGeneInfo {
 	private String sep = null;
 	
 	/**
-	 * ÌØ¶¨µÄÎïÖÖÊ¹ÓÃÌØ¶¨Êı¾İ¿âµÄĞÅÏ¢
-	 * Æ©ÈçË®µ¾¾ÍÓÃTIGR
-	 * ÄâÄÏ½æ¾ÍÓÃTAIR
+	 * ç‰¹å®šçš„ç‰©ç§ä½¿ç”¨ç‰¹å®šæ•°æ®åº“çš„ä¿¡æ¯
+	 * è­¬å¦‚æ°´ç¨»å°±ç”¨TIGR
+	 * æ‹Ÿå—èŠ¥å°±ç”¨TAIR
 	 * @return
 	 */
 	private String getDatabaseType() {
@@ -78,8 +78,8 @@ public abstract class AGeneInfo {
 		return hashDBtype.get(taxID);
 	}
 	/**
-	 * Éè¶¨synonamsµÈ¿ÉÄÜ´æÔÚµÄ·Ö¸î·û£¬Æ©Èç´ÓNCBIÏÂÔØµÄIDµ¼ÈëÊı¾İ¿âµÄÊ±ºò¿ÉÄÜ´æÔÚÓĞ | ×÷Îª¶à¸ösynonamsµÄ·Ö¸î·û
-	 * Éè¶¨ºó£¬ÌáÈ¡synonamsºÍsymbolµÈ¶¼ÊÇÓÃsynonams½øĞĞ
+	 * è®¾å®šsynonamsç­‰å¯èƒ½å­˜åœ¨çš„åˆ†å‰²ç¬¦ï¼Œè­¬å¦‚ä»NCBIä¸‹è½½çš„IDå¯¼å…¥æ•°æ®åº“çš„æ—¶å€™å¯èƒ½å­˜åœ¨æœ‰ | ä½œä¸ºå¤šä¸ªsynonamsçš„åˆ†å‰²ç¬¦
+	 * è®¾å®šåï¼Œæå–synonamså’Œsymbolç­‰éƒ½æ˜¯ç”¨synonamsè¿›è¡Œ
 	 * @param sep
 	 */
 	public void setSep(String sep) {
@@ -89,7 +89,7 @@ public abstract class AGeneInfo {
 		return sep;
 	}
 	/**
-	 * Õâ¸ö²»ÓÃÉè¶¨¡£copedID»áÈ¥Éè¶¨
+	 * è¿™ä¸ªä¸ç”¨è®¾å®šã€‚copedIDä¼šå»è®¾å®š
 	 * @param taxID
 	 */
 	public void setTaxID(int taxID) {
@@ -102,7 +102,7 @@ public abstract class AGeneInfo {
 		return dbInfo;
 	}
 	/**
-	 * ±ØĞëµÚÒ»Ê±¼äÉè¶¨
+	 * å¿…é¡»ç¬¬ä¸€æ—¶é—´è®¾å®š
 			39947, NovelBioConst.DBINFO_RICE_TIGR<br>
 			3702, NovelBioConst.DBINFO_ATH_TAIR<br>
 			3847, NovelBioConst.DBINFO_GLYMAX_SOYBASE<br>
@@ -149,8 +149,8 @@ public abstract class AGeneInfo {
 	}
 	
 	/**
-	 * ¿ÉÒÔÁ¬Ğø²»¶ÏµÄÉè¶¨ºÃ¼¸´Î
-	 * ÓĞ¼¸ÆªÎÄÏ×¾ÍÉè¶¨¼¸´Î
+	 * å¯ä»¥è¿ç»­ä¸æ–­çš„è®¾å®šå¥½å‡ æ¬¡
+	 * æœ‰å‡ ç¯‡æ–‡çŒ®å°±è®¾å®šå‡ æ¬¡
 	 * @param pubmedID
 	 */
 	public void setPubID(String pubmedID) {
@@ -167,7 +167,7 @@ public abstract class AGeneInfo {
 		}
 	}
 	/**
-	 * ÎÄÏ×Ò»´ÎÉè¶¨µ½Î»£¬µ±È»Ò²¿ÉÒÔÁ¬ĞøÉè¶¨
+	 * æ–‡çŒ®ä¸€æ¬¡è®¾å®šåˆ°ä½ï¼Œå½“ç„¶ä¹Ÿå¯ä»¥è¿ç»­è®¾å®š
 	 * @param pubmedID
 	 */
 	public void setPubIDs(List<String> lsPubmedID) {
@@ -176,7 +176,7 @@ public abstract class AGeneInfo {
 		}
 	}
 	/**
-	 * Èç¹ûÃ»ÓĞpubmedID£¬Ôò·µ»ØÒ»¸ö¿ÕµÄarraylist£¬·½±ãÓÃforeachÓï¾ä
+	 * å¦‚æœæ²¡æœ‰pubmedIDï¼Œåˆ™è¿”å›ä¸€ä¸ªç©ºçš„arraylistï¼Œæ–¹ä¾¿ç”¨foreachè¯­å¥
 	 * @return
 	 */
 	public ArrayList<String> getPubmedIDs() {
@@ -198,7 +198,7 @@ public abstract class AGeneInfo {
 		return idType;
 	}
 	/**
-	 * CopedIDµÄidTpye
+	 * CopedIDçš„idTpye
 	 * @param idType
 	 */
 	public void setIDType(String idType) {
@@ -218,7 +218,7 @@ public abstract class AGeneInfo {
 		return getInfoSep(symbol);
 	}
 	/**
-	 * ¹ÊÒâÃû×ÖÆğµÄºÍsymbol²»Ò»Ñù£¬ÕâÑù¿ÉÒÔ·ÀÖ¹×Ô¶¯×¢Èë
+	 * æ•…æ„åå­—èµ·çš„å’Œsymbolä¸ä¸€æ ·ï¼Œè¿™æ ·å¯ä»¥é˜²æ­¢è‡ªåŠ¨æ³¨å…¥
 	 * @param symbol
 	 */
 	public void setSymb(String symbol) {
@@ -232,7 +232,7 @@ public abstract class AGeneInfo {
 		return getInfoSep(locusTag);
 	}
 	/**
-	 * ¹ÊÒâÃû×ÖÆğµÄºÍsymbol²»Ò»Ñù£¬ÕâÑù¿ÉÒÔ·ÀÖ¹×Ô¶¯×¢Èë
+	 * æ•…æ„åå­—èµ·çš„å’Œsymbolä¸ä¸€æ ·ï¼Œè¿™æ ·å¯ä»¥é˜²æ­¢è‡ªåŠ¨æ³¨å…¥
 	 * @param locusTag
 	 */
 	public void setLocTag(String locusTag) {
@@ -303,7 +303,7 @@ public abstract class AGeneInfo {
 	}
 
 	/**
-	 * Ã»ÓĞÔòÎª"-"»òÕßnull»òÕß""
+	 * æ²¡æœ‰åˆ™ä¸º"-"æˆ–è€…nullæˆ–è€…""
 	 * @return
 	 */
 	public String getSymNom() {
@@ -314,7 +314,7 @@ public abstract class AGeneInfo {
 	}
 
 	/**
-	 * Ã»ÓĞÔòÎª"-"»òÕßnull»òÕß""
+	 * æ²¡æœ‰åˆ™ä¸º"-"æˆ–è€…nullæˆ–è€…""
 	 * @return
 	 */
 	public String getFullName() {
@@ -355,14 +355,14 @@ public abstract class AGeneInfo {
 	
 	/**
 	 * 
-	 * ÑéÖ¤ÊäÈëÏî£¬½«ÊäÈëÏî°´ÕÕĞèÇóĞŞÕı£¬²¢·µ»ØĞŞÕıºóµÄ½á¹û
-	 * Èç¹ûÊäÈëÏîÎª"-", ""µÈ£¬Ö±½Ó·µ»ØthisField
-	 * Èç¹ûÊäÈëÔÚÒÑÓĞµÄÊı¾İÖĞÕÒ²»µ½£¬ÔòÌí¼ÓÉÏ ÀàËÆNCBI@@ffwefsef@//@NEW_DB@@NEW_DESCRIP
-	 * Èç¹ûÊäÈëµÄÊı¾İ¿âºÍÒÑÓĞµÄ¼ÇÔØÖØµş£¬Ôò¸²¸Ç
+	 * éªŒè¯è¾“å…¥é¡¹ï¼Œå°†è¾“å…¥é¡¹æŒ‰ç…§éœ€æ±‚ä¿®æ­£ï¼Œå¹¶è¿”å›ä¿®æ­£åçš„ç»“æœ
+	 * å¦‚æœè¾“å…¥é¡¹ä¸º"-", ""ç­‰ï¼Œç›´æ¥è¿”å›thisField
+	 * å¦‚æœè¾“å…¥åœ¨å·²æœ‰çš„æ•°æ®ä¸­æ‰¾ä¸åˆ°ï¼Œåˆ™æ·»åŠ ä¸Š ç±»ä¼¼NCBI@@ffwefsef@//@NEW_DB@@NEW_DESCRIP
+	 * å¦‚æœè¾“å…¥çš„æ•°æ®åº“å’Œå·²æœ‰çš„è®°è½½é‡å ï¼Œåˆ™è¦†ç›–
 	 * @param dbInfo
-	 * @param thisField ÒÑÓĞµÄÏî
-	 * @param inputField ´ıÊäÈëÏî
-	 * @param sepWithDBinfo ÊÇ·ñĞèÒªÔÚinputĞÅÏ¢Ç°ÃæÌí¼ÓÊı¾İ¿âĞÅÏ¢£¬¼´Îª dbinfo@@inputField
+	 * @param thisField å·²æœ‰çš„é¡¹
+	 * @param inputField å¾…è¾“å…¥é¡¹
+	 * @param sepWithDBinfo æ˜¯å¦éœ€è¦åœ¨inputä¿¡æ¯å‰é¢æ·»åŠ æ•°æ®åº“ä¿¡æ¯ï¼Œå³ä¸º dbinfo@@inputField
 	 * @return
 	 */
 	private String validateField(String dbInfo, String thisField, String inputField, boolean sepWithDBinfo) {
@@ -386,11 +386,11 @@ public abstract class AGeneInfo {
 			return inputFieldFinal;
 		}
 		
-		// Êı¾İ¿âÖĞÒÑ¾­ÓĞÁË¸ÃÊı¾İ
+		// æ•°æ®åº“ä¸­å·²ç»æœ‰äº†è¯¥æ•°æ®
 		if (inputFieldFinal.equals("")) {
 			return thisField;
 		}
-		// ÓĞÁË¸ÃÊı¾İ¿â
+		// æœ‰äº†è¯¥æ•°æ®åº“
 		else if (thisField.toLowerCase().contains(dbInfo.toLowerCase())) {
 			if (sepWithDBinfo) {
 				String[] dbInfoDetail = thisField.split(SepSign.SEP_ID);
@@ -406,7 +406,7 @@ public abstract class AGeneInfo {
 					}
 				}
 				String result = ArrayOperate.cmbString(dbInfoDetail, SepSign.SEP_ID);
-				logger.error("³öÏÖÏàÍ¬Êı¾İ¿âµ«ÊÇ²»Í¬µÄ×¢ÊÍ£º" + result);
+				logger.error("å‡ºç°ç›¸åŒæ•°æ®åº“ä½†æ˜¯ä¸åŒçš„æ³¨é‡Šï¼š" + result);
 				return result;
 			} else {
 				return thisField + SepSign.SEP_ID + inputFieldFinal;
@@ -418,7 +418,7 @@ public abstract class AGeneInfo {
 	}
 	
 	/**
-	 * ¿½±´ĞÅÏ¢£¬½«ĞÅÏ¢È«²¿¸´ÖÆ¹ıÀ´
+	 * æ‹·è´ä¿¡æ¯ï¼Œå°†ä¿¡æ¯å…¨éƒ¨å¤åˆ¶è¿‡æ¥
 	 * @param geneInfo
 	 */
 	public void copeyInfo(AGeneInfo geneInfo) {
@@ -442,12 +442,12 @@ public abstract class AGeneInfo {
 		setGeneUniID(geneInfo.getGeneUniID());
 	}
 	/**
-	 * <b>Ö»ÄÜÌí¼Óµ¥¸ögeneinfo£¬²»ÄÜÌí¼ÓÒ»¸ö°üº¬¶à¸öÊı¾İ¿âĞÅÏ¢µÄgeneInfo</b><br>
-	 * Ôö¼ÓĞÅÏ¢£¬½«ĞÅÏ¢È«²¿¸´ÖÆ¹ıÀ´£¬²¢ÇÒ¼ÓÉÏÀ´×ÔÄÄ¸öÊı¾İ¿â£¬Èç¹û±¾ÀàÖĞÒÑÓĞµÄĞÅÏ¢Ò²»á¸½¼ÓÉÏÈ¥<br>
-	 * ²»°üÀ¨geneIDµÄÌí¼Ó<br>
-	 * Èç¹ûĞÅÏ¢ÖØ¸´£¬¾Í²»ĞèÒªÉı¼¶£¬Ôò·µ»Øfalse<br>
+	 * <b>åªèƒ½æ·»åŠ å•ä¸ªgeneinfoï¼Œä¸èƒ½æ·»åŠ ä¸€ä¸ªåŒ…å«å¤šä¸ªæ•°æ®åº“ä¿¡æ¯çš„geneInfo</b><br>
+	 * å¢åŠ ä¿¡æ¯ï¼Œå°†ä¿¡æ¯å…¨éƒ¨å¤åˆ¶è¿‡æ¥ï¼Œå¹¶ä¸”åŠ ä¸Šæ¥è‡ªå“ªä¸ªæ•°æ®åº“ï¼Œå¦‚æœæœ¬ç±»ä¸­å·²æœ‰çš„ä¿¡æ¯ä¹Ÿä¼šé™„åŠ ä¸Šå»<br>
+	 * ä¸åŒ…æ‹¬geneIDçš„æ·»åŠ <br>
+	 * å¦‚æœä¿¡æ¯é‡å¤ï¼Œå°±ä¸éœ€è¦å‡çº§ï¼Œåˆ™è¿”å›false<br>
 	 * @param geneInfo
-	 * @param infoDBfrom AGeneInfo.FROMDB_NCBIµÈ
+	 * @param infoDBfrom AGeneInfo.FROMDB_NCBIç­‰
 	 */
 	public boolean addInfo(AGeneInfo geneInfo) {
 		if (!validateUpdate(chromosome, geneInfo.chromosome)
@@ -516,7 +516,7 @@ public abstract class AGeneInfo {
 			return;
 		}
 		if (this.taxID != taxID) {
-			logger.error("´ı¿½±´µÄÁ½¸ögeneInfoÖĞµÄtaxID²»Ò»ÖÂ£¬Ô­taxID£º"+this.taxID + " ĞÂtaxID£º" + taxID );
+			logger.error("å¾…æ‹·è´çš„ä¸¤ä¸ªgeneInfoä¸­çš„taxIDä¸ä¸€è‡´ï¼ŒåŸtaxIDï¼š"+this.taxID + " æ–°taxIDï¼š" + taxID );
 		}
 	}
 	private void addOtherDesign(String dbInfo, String otherDesign) {
@@ -561,12 +561,12 @@ public abstract class AGeneInfo {
 	}
 	///////////////////////////////////////////////////////////////////
 	/**
-	 * ÊÇ·ñĞèÒªÉı¼¶
+	 * æ˜¯å¦éœ€è¦å‡çº§
 	 * @param thisField
 	 * @param inputField
 	 * @return
-	 * false²»ĞèÒªÉı¼¶
-	 * true ĞèÒªÉı¼¶
+	 * falseä¸éœ€è¦å‡çº§
+	 * true éœ€è¦å‡çº§
 	 */
 	private boolean validateUpdate(String thisField, String inputField) {
 		if (thisField == null) {
@@ -592,7 +592,7 @@ public abstract class AGeneInfo {
 		return true;
 	}
 	/**
-	 * ¸ø¶¨Êä³öµÄsymbolµÈ£¬½«Æä°´ÕÕÖ¸¶¨µÄÊı¾İ¿â½«ĞÅÏ¢ÌáÈ¡³öÀ´
+	 * ç»™å®šè¾“å‡ºçš„symbolç­‰ï¼Œå°†å…¶æŒ‰ç…§æŒ‡å®šçš„æ•°æ®åº“å°†ä¿¡æ¯æå–å‡ºæ¥
 	 * @param info
 	 * @return
 	 */
@@ -604,7 +604,7 @@ public abstract class AGeneInfo {
 		if (ss.length == 1) {
 			return ss[0].split(SepSign.SEP_INFO)[1];
 		}
-		/** ÓÃÀ´±£´æ¾ßÌåµÄĞÅÏ¢ */
+		/** ç”¨æ¥ä¿å­˜å…·ä½“çš„ä¿¡æ¯ */
 		HashMap<String, String> hashInfo = new HashMap<String, String>();
 		for (String string : ss) {
 			String[] ss2 = string.split(SepSign.SEP_INFO);

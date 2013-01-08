@@ -23,13 +23,13 @@ import com.novelbio.database.service.servgeneanno.ServNCBIID;
 import com.novelbio.database.service.servgeneanno.ServUniProtID;
 
 /**
- * <b>×¢ÒâblastInfoÖĞµÄSubjectTabºÍQueryTabÓĞÎÊÌâ£¬ĞèÒªÖØĞ´</b><br>
+ * <b>æ³¨æ„blastInfoä¸­çš„SubjectTabå’ŒQueryTabæœ‰é—®é¢˜ï¼Œéœ€è¦é‡å†™</b><br>
  * 
- * ÕâÖ»ÊÇÒ»¸ö´úÀíÀà ×¨ÃÅ¶Ô»ùÒòµÄID×öÒ»Ğ©´¦ÀíµÄÀà<br>
- * <b>Èç¹û»ùÒòµÄIDtypeÊÇaccID£¬ÄÇÃ´¸Ã»ùÒòºÜ¿ÉÄÜ²»´æÔÚ£¬ÄÇÃ´¿´ÏÂblastµÄÏà¹ØĞÅÏ¢£¬Èç¹ûblastÒ²Ã»ÓĞ£¬ÄÇÃ´¾Í²»´æÔÚÁË</b><br>
- * ¿ÉÒÔ½«ÊäÈëµÄIDºÏ²¢ÆğÀ´£¬²¢ÇÒ½«·ÖÉ¢µÄID´æ´¢ÔÚÒ»¸öHashmapÖĞ
- * µ±genUniID´æÔÚÊ±£¬ÀàÊÇ·ñÏëµÈÖ»±È½ÏgenUniID¡¢taxID£¬idTypeÊÇ·ñÏàµÈ
- * µ±genUniID²»´æÔÚ£¬accID´æÔÚÊ±£¬±È½ÏaccID¡¢taxID£¬idTypeÊÇ·ñÏàµÈ µ±¶¼²»´æÔÚÊ±£¬ÈÏÎªÏàÍ¬ HashCodeµÄÉè¶¨ºÍÕâ¸öÀàËÆ
+ * è¿™åªæ˜¯ä¸€ä¸ªä»£ç†ç±» ä¸“é—¨å¯¹åŸºå› çš„IDåšä¸€äº›å¤„ç†çš„ç±»<br>
+ * <b>å¦‚æœåŸºå› çš„IDtypeæ˜¯accIDï¼Œé‚£ä¹ˆè¯¥åŸºå› å¾ˆå¯èƒ½ä¸å­˜åœ¨ï¼Œé‚£ä¹ˆçœ‹ä¸‹blastçš„ç›¸å…³ä¿¡æ¯ï¼Œå¦‚æœblastä¹Ÿæ²¡æœ‰ï¼Œé‚£ä¹ˆå°±ä¸å­˜åœ¨äº†</b><br>
+ * å¯ä»¥å°†è¾“å…¥çš„IDåˆå¹¶èµ·æ¥ï¼Œå¹¶ä¸”å°†åˆ†æ•£çš„IDå­˜å‚¨åœ¨ä¸€ä¸ªHashmapä¸­
+ * å½“genUniIDå­˜åœ¨æ—¶ï¼Œç±»æ˜¯å¦æƒ³ç­‰åªæ¯”è¾ƒgenUniIDã€taxIDï¼ŒidTypeæ˜¯å¦ç›¸ç­‰
+ * å½“genUniIDä¸å­˜åœ¨ï¼ŒaccIDå­˜åœ¨æ—¶ï¼Œæ¯”è¾ƒaccIDã€taxIDï¼ŒidTypeæ˜¯å¦ç›¸ç­‰ å½“éƒ½ä¸å­˜åœ¨æ—¶ï¼Œè®¤ä¸ºç›¸åŒ HashCodeçš„è®¾å®šå’Œè¿™ä¸ªç±»ä¼¼
  * 
  * @author zong0jie
  */
@@ -47,23 +47,23 @@ public class GeneID implements GeneIDInt{
 	}
 	
 	/**
-	 * Éè¶¨³õÊ¼Öµ£¬²»ÑéÖ¤ Èç¹ûÔÚÊı¾İ¿âÖĞÃ»ÓĞÕÒµ½ÏàÓ¦µÄgeneUniID£¬Ôò·µ»Ønull Ö»ÄÜ²úÉúÒ»¸öCopedID£¬´ËÊ±accID = ""
-	 * @param idType  ±ØĞëÊÇIDTYPEÖĞµÄÒ»ÖÖ
+	 * è®¾å®šåˆå§‹å€¼ï¼Œä¸éªŒè¯ å¦‚æœåœ¨æ•°æ®åº“ä¸­æ²¡æœ‰æ‰¾åˆ°ç›¸åº”çš„geneUniIDï¼Œåˆ™è¿”å›null åªèƒ½äº§ç”Ÿä¸€ä¸ªCopedIDï¼Œæ­¤æ—¶accID = ""
+	 * @param idType  å¿…é¡»æ˜¯IDTYPEä¸­çš„ä¸€ç§
 	 * @param genUniID
-	 * @param taxID ÎïÖÖID
+	 * @param taxID ç‰©ç§ID
 	 */
 	public GeneID(String idType, String genUniID, int taxID) {
 		geneID = geneIDfactoryInt.createGeneID(idType, genUniID, taxID);
 	}
 
 	/**
-	 * Éè¶¨³õÊ¼Öµ£¬²»ÑéÖ¤ Èç¹ûÔÚÊı¾İ¿âÖĞÃ»ÓĞÕÒµ½ÏàÓ¦µÄgeneUniID£¬Ôò·µ»Ønull Ö»ÄÜ²úÉúÒ»¸öCopedID£¬´ËÊ±accID = ""
+	 * è®¾å®šåˆå§‹å€¼ï¼Œä¸éªŒè¯ å¦‚æœåœ¨æ•°æ®åº“ä¸­æ²¡æœ‰æ‰¾åˆ°ç›¸åº”çš„geneUniIDï¼Œåˆ™è¿”å›null åªèƒ½äº§ç”Ÿä¸€ä¸ªCopedIDï¼Œæ­¤æ—¶accID = ""
 	 * 
 	 * @param idType
-	 *            ±ØĞëÊÇIDTYPEÖĞµÄÒ»ÖÖ
+	 *            å¿…é¡»æ˜¯IDTYPEä¸­çš„ä¸€ç§
 	 * @param genUniID
 	 * @param taxID
-	 *            ÎïÖÖID
+	 *            ç‰©ç§ID
 	 */
 	public GeneID(String accID,String idType, String genUniID, int taxID) {
 		geneID = geneIDfactoryInt.createGeneID(accID, idType, genUniID, taxID);
@@ -71,22 +71,22 @@ public class GeneID implements GeneIDInt{
 	
 	
 	/**
-	 * Éè¶¨³õÊ¼Öµ£¬»á×Ô¶¯È¥Êı¾İ¿â²éÕÒaccID²¢£¬Íê³ÉÌî³ä±¾Àà¡£
-	 * <b>Èç¹û»ùÒòµÄIDtypeÊÇaccID£¬ÄÇÃ´¸Ã»ùÒòºÜ¿ÉÄÜ²»´æÔÚ£¬ÄÇÃ´¿´ÏÂblastµÄÏà¹ØĞÅÏ¢£¬Èç¹ûblastÒ²Ã»ÓĞ£¬ÄÇÃ´¾Í²»´æÔÚÁË</b>
-	 * ²»¹ıÖ»ÄÜ²úÉúÒ»¸öCopedID£¬Èç¹û¾õµÃÒ»¸öaccIDÒª²úÉú¶à¸ögeneID£¬ÄÇÃ´¿ÉÒÔÑ¡ÔñgetLsCopedID·½·¨
-	 * @param accID ³ıÈ¥ÒıºÅ£¬È»ºóÈç¹ûÀàËÆXM_002121.1ÀàĞÍ£¬ÄÇÃ´½«.1È¥³ı
+	 * è®¾å®šåˆå§‹å€¼ï¼Œä¼šè‡ªåŠ¨å»æ•°æ®åº“æŸ¥æ‰¾accIDå¹¶ï¼Œå®Œæˆå¡«å……æœ¬ç±»ã€‚
+	 * <b>å¦‚æœåŸºå› çš„IDtypeæ˜¯accIDï¼Œé‚£ä¹ˆè¯¥åŸºå› å¾ˆå¯èƒ½ä¸å­˜åœ¨ï¼Œé‚£ä¹ˆçœ‹ä¸‹blastçš„ç›¸å…³ä¿¡æ¯ï¼Œå¦‚æœblastä¹Ÿæ²¡æœ‰ï¼Œé‚£ä¹ˆå°±ä¸å­˜åœ¨äº†</b>
+	 * ä¸è¿‡åªèƒ½äº§ç”Ÿä¸€ä¸ªCopedIDï¼Œå¦‚æœè§‰å¾—ä¸€ä¸ªaccIDè¦äº§ç”Ÿå¤šä¸ªgeneIDï¼Œé‚£ä¹ˆå¯ä»¥é€‰æ‹©getLsCopedIDæ–¹æ³•
+	 * @param accID é™¤å»å¼•å·ï¼Œç„¶åå¦‚æœç±»ä¼¼XM_002121.1ç±»å‹ï¼Œé‚£ä¹ˆå°†.1å»é™¤
 	 * @param taxID
 	 */
 	public GeneID(String accID,int taxID) {
 		this(accID,taxID, false);
 	}
 	/**
-	 * Éè¶¨³õÊ¼Öµ£¬»á×Ô¶¯È¥Êı¾İ¿â²éÕÒaccID²¢£¬Íê³ÉÌî³ä±¾Àà¡£
-	 * <b>Èç¹û»ùÒòµÄIDtypeÊÇaccID£¬ÄÇÃ´¸Ã»ùÒòºÜ¿ÉÄÜ²»´æÔÚ£¬ÄÇÃ´¿´ÏÂblastµÄÏà¹ØĞÅÏ¢£¬Èç¹ûblastÒ²Ã»ÓĞ£¬ÄÇÃ´¾Í²»´æÔÚÁË</b>
-	 * ²»¹ıÖ»ÄÜ²úÉúÒ»¸öCopedID£¬Èç¹û¾õµÃÒ»¸öaccIDÒª²úÉú¶à¸ögeneID£¬ÄÇÃ´¿ÉÒÔÑ¡ÔñgetLsCopedID·½·¨
-	 * @param accID ³ıÈ¥ÒıºÅ£¬È»ºóÈç¹ûÀàËÆXM_002121.1ÀàĞÍ£¬ÄÇÃ´½«.1È¥³ı
+	 * è®¾å®šåˆå§‹å€¼ï¼Œä¼šè‡ªåŠ¨å»æ•°æ®åº“æŸ¥æ‰¾accIDå¹¶ï¼Œå®Œæˆå¡«å……æœ¬ç±»ã€‚
+	 * <b>å¦‚æœåŸºå› çš„IDtypeæ˜¯accIDï¼Œé‚£ä¹ˆè¯¥åŸºå› å¾ˆå¯èƒ½ä¸å­˜åœ¨ï¼Œé‚£ä¹ˆçœ‹ä¸‹blastçš„ç›¸å…³ä¿¡æ¯ï¼Œå¦‚æœblastä¹Ÿæ²¡æœ‰ï¼Œé‚£ä¹ˆå°±ä¸å­˜åœ¨äº†</b>
+	 * ä¸è¿‡åªèƒ½äº§ç”Ÿä¸€ä¸ªCopedIDï¼Œå¦‚æœè§‰å¾—ä¸€ä¸ªaccIDè¦äº§ç”Ÿå¤šä¸ªgeneIDï¼Œé‚£ä¹ˆå¯ä»¥é€‰æ‹©getLsCopedIDæ–¹æ³•
+	 * @param accID é™¤å»å¼•å·ï¼Œç„¶åå¦‚æœç±»ä¼¼XM_002121.1ç±»å‹ï¼Œé‚£ä¹ˆå°†.1å»é™¤
 	 * @param taxID
-	 * @param blastType ¾ßÌåµÄaccIDÊÇ·ñÀàËÆ blastµÄ½á¹û£¬Èç£ºdbj|AK240418.1|£¬ÄÇÃ´»ñµÃAK240418£¬Ò»°ã¶¼ÊÇfalse
+	 * @param blastType å…·ä½“çš„accIDæ˜¯å¦ç±»ä¼¼ blastçš„ç»“æœï¼Œå¦‚ï¼šdbj|AK240418.1|ï¼Œé‚£ä¹ˆè·å¾—AK240418ï¼Œä¸€èˆ¬éƒ½æ˜¯false
 	 */
 	public GeneID(String accID,int taxID,boolean blastType) {
 		if (blastType) {
@@ -110,18 +110,18 @@ public class GeneID implements GeneIDInt{
 		}
 	}
 	/**
-	 * Éè¶¨³õÊ¼Öµ£¬»á×Ô¶¯È¥Êı¾İ¿â²éÕÒaccID²¢Íê³ÉÌî³ä±¾Àà¡£
-	 * @param accID Èç¹ûÀàËÆXM_002121.1ÀàĞÍ£¬ÄÇÃ´½«.1È¥³ı
+	 * è®¾å®šåˆå§‹å€¼ï¼Œä¼šè‡ªåŠ¨å»æ•°æ®åº“æŸ¥æ‰¾accIDå¹¶å®Œæˆå¡«å……æœ¬ç±»ã€‚
+	 * @param accID å¦‚æœç±»ä¼¼XM_002121.1ç±»å‹ï¼Œé‚£ä¹ˆå°†.1å»é™¤
 	 * @param taxID
 	 */
 	public static ArrayList<GeneID> createLsCopedID(String accID,int taxID) {
 		return createLsCopedID(accID, taxID, false);
 	}
 	/**
-	 * Éè¶¨³õÊ¼Öµ£¬»á×Ô¶¯È¥Êı¾İ¿â²éÕÒaccID²¢Íê³ÉÌî³ä±¾Àà¡£
-	 * @param accID Èç¹ûÀàËÆXM_002121.1ÀàĞÍ£¬ÄÇÃ´½«.1È¥³ı
+	 * è®¾å®šåˆå§‹å€¼ï¼Œä¼šè‡ªåŠ¨å»æ•°æ®åº“æŸ¥æ‰¾accIDå¹¶å®Œæˆå¡«å……æœ¬ç±»ã€‚
+	 * @param accID å¦‚æœç±»ä¼¼XM_002121.1ç±»å‹ï¼Œé‚£ä¹ˆå°†.1å»é™¤
 	 * @param taxID
-	 * @param blastType ¾ßÌåµÄaccIDÊÇ·ñÀàËÆ blastµÄ½á¹û£¬Èç£ºdbj|AK240418.1|£¬ÄÇÃ´»ñµÃAK240418£¬Ò»°ã¶¼ÊÇfalse
+	 * @param blastType å…·ä½“çš„accIDæ˜¯å¦ç±»ä¼¼ blastçš„ç»“æœï¼Œå¦‚ï¼šdbj|AK240418.1|ï¼Œé‚£ä¹ˆè·å¾—AK240418ï¼Œä¸€èˆ¬éƒ½æ˜¯false
 	 */
 	public static ArrayList<GeneID> createLsCopedID(String accID,int taxID,boolean blastType) {
 		ArrayList<GeneID> lsCopedIDs = new ArrayList<GeneID>();
@@ -139,12 +139,12 @@ public class GeneID implements GeneIDInt{
 	
 	
 	/**
-	 * Éè¶¨³õÊ¼Öµ£¬»á×Ô¶¯È¥Êı¾İ¿âÑéÖ¤geneUniID²¢Íê³ÉÌî³ä±¾Àà¡£
-	 * Èç¹ûÔÚÊı¾İ¿âÖĞÃ»ÓĞÕÒµ½ÏàÓ¦µÄgeneUniID£¬Ôò·µ»Ønull
-	 * Ö»ÄÜ²úÉúÒ»¸öCopedID£¬´ËÊ±accID = ""
-	 * @param idType ±ØĞëÊÇIDTYPEÖĞµÄÒ»ÖÖ
+	 * è®¾å®šåˆå§‹å€¼ï¼Œä¼šè‡ªåŠ¨å»æ•°æ®åº“éªŒè¯geneUniIDå¹¶å®Œæˆå¡«å……æœ¬ç±»ã€‚
+	 * å¦‚æœåœ¨æ•°æ®åº“ä¸­æ²¡æœ‰æ‰¾åˆ°ç›¸åº”çš„geneUniIDï¼Œåˆ™è¿”å›null
+	 * åªèƒ½äº§ç”Ÿä¸€ä¸ªCopedIDï¼Œæ­¤æ—¶accID = ""
+	 * @param idType å¿…é¡»æ˜¯IDTYPEä¸­çš„ä¸€ç§
 	 * @param genUniID
-	 * @param taxID ÎïÖÖID
+	 * @param taxID ç‰©ç§ID
 	 */
 	@Deprecated
 	public static GeneID validCopedID(String idType, String genUniID,int taxID) {
@@ -183,7 +183,7 @@ public class GeneID implements GeneIDInt{
 	public ArrayList<BlastInfo> getLsBlastInfos() {
 		return geneID.getLsBlastInfos();
 	}
-///////////////////////   »ñµÃblast  copedID  ///////////////////////////////////////////////////////////////////
+///////////////////////   è·å¾—blast  copedID  ///////////////////////////////////////////////////////////////////
 	@Override
 	public ArrayList<GeneID> getLsBlastGeneID() {
 		return geneID.getLsBlastGeneID();
@@ -192,7 +192,7 @@ public class GeneID implements GeneIDInt{
 	public GeneID getGeneIDBlast() {
 		return geneID.getGeneIDBlast();
 	}
-/////////////////////////  ³£¹æĞÅÏ¢  //////////////////////////////////////////////////////////////
+/////////////////////////  å¸¸è§„ä¿¡æ¯  //////////////////////////////////////////////////////////////
 	@Override
 	public String getIDtype() {
 		return geneID.getIDtype();
@@ -229,7 +229,7 @@ public class GeneID implements GeneIDInt{
 		return geneID.getAccIDDBinfo(dbInfo);
 	}
 	/**
-	 * ·µ»ØgeneinfoĞÅÏ¢
+	 * è¿”å›geneinfoä¿¡æ¯
 	 * @return
 	 */
 	@Override
@@ -237,13 +237,13 @@ public class GeneID implements GeneIDInt{
 		return geneID.getGeneInfo();
 	}
 	/**
-	 * »ñµÃ¸ÃcopedIDµÄannotationĞÅÏ¢
+	 * è·å¾—è¯¥copedIDçš„annotationä¿¡æ¯
 	 * @param geneID
 	 * @param blast
 	 * @return
-	 * 	 * blast£º<br>
+	 * 	 * blastï¼š<br>
 	 * 			blast * 0:symbol 1:description 2:subjectSpecies 3:evalue 4:symbol 5:description <br>
-			²»blast£º<br>
+			ä¸blastï¼š<br>
 						0:symbol 1:description<br>
 	 */
 	@Override
@@ -283,7 +283,7 @@ public class GeneID implements GeneIDInt{
 	public ArrayList<KGentry> getKegEntity(boolean blast) {
 		return geneID.getKegEntity(blast);
 	}
-	//////////////  GO ·½·¨  ///////////////////////
+	//////////////  GO æ–¹æ³•  ///////////////////////
 	@Override
 	public ArrayList<AGene2Go> getGene2GO(String GOType) {
 		return geneID.getGene2GO(GOType);
@@ -295,10 +295,10 @@ public class GeneID implements GeneIDInt{
 	public ArrayList<AGene2Go> getGene2GOBlast(String GOType) {
 		return geneID.getGene2GOBlast(GOType);
 	}
-	/////////////////////////////  static ·½·¨  ////////////////////////////////////
+	/////////////////////////////  static æ–¹æ³•  ////////////////////////////////////
 	/**
-	 * blastµÄ½á¹û¿ÉÄÜÀàËÆdbj|AK240418.1|
-	 * ½«ÀïÃæµÄAK240418×¥³öÀ´²¢·µ»Ø
+	 * blastçš„ç»“æœå¯èƒ½ç±»ä¼¼dbj|AK240418.1|
+	 * å°†é‡Œé¢çš„AK240418æŠ“å‡ºæ¥å¹¶è¿”å›
 	 * @return
 	 */
 	public static String getBlastAccID(String blastGenID) {
@@ -309,9 +309,9 @@ public class GeneID implements GeneIDInt{
 		return removeDot(ss[1]);
 	}
 	/**
-	 *  Ê×ÏÈ³ıÈ¥¿Õ¸ñ£¬Èç¹ûÎª""»ò¡°-¡±
-	 *  Ôò·µ»Ønull
-	 * Èç¹ûÀàËÆXM_002121.1ÀàĞÍ£¬ÄÇÃ´½«.1È¥³ı
+	 *  é¦–å…ˆé™¤å»ç©ºæ ¼ï¼Œå¦‚æœä¸º""æˆ–â€œ-â€
+	 *  åˆ™è¿”å›null
+	 * å¦‚æœç±»ä¼¼XM_002121.1ç±»å‹ï¼Œé‚£ä¹ˆå°†.1å»é™¤
 	 * @param accID
 	 * @return accID without .1
 	 */
@@ -324,7 +324,7 @@ public class GeneID implements GeneIDInt{
 			return null;
 		}
 		int dotIndex = tmpGeneID.lastIndexOf(".");
-		//Èç¹ûÀàËÆXM_002121.1ÀàĞÍ
+		//å¦‚æœç±»ä¼¼XM_002121.1ç±»å‹
 		if (dotIndex>0 && tmpGeneID.length() - dotIndex <= 3) {
 			String subIndex = tmpGeneID.substring(dotIndex + 1, tmpGeneID.length());
 			try {
@@ -335,7 +335,7 @@ public class GeneID implements GeneIDInt{
 		return tmpGeneID;
 	}
 	/**
-	 * @param collectionAccID ³£¹æµÄaccIDlist£¬¿ÉÒÔÏÈ¶ÔaccIDÈ¥Ò»´ÎÖØ¸´
+	 * @param collectionAccID å¸¸è§„çš„accIDlistï¼Œå¯ä»¥å…ˆå¯¹accIDå»ä¸€æ¬¡é‡å¤
 	 * @param taxID
 	 * @param combineID
 	 * @return
@@ -358,13 +358,13 @@ public class GeneID implements GeneIDInt{
 	}
 	
 	/**
-	 * ·µ»ØÒ»¸ögeneID¶ÔÓ¦¶à¸öaccIDµÄ±í
-	 * @param collectionAccID ³£¹æµÄaccIDlist£¬¿ÉÒÔÏÈ¶ÔaccIDÈ¥Ò»´ÎÖØ¸´
+	 * è¿”å›ä¸€ä¸ªgeneIDå¯¹åº”å¤šä¸ªaccIDçš„è¡¨
+	 * @param collectionAccID å¸¸è§„çš„accIDlistï¼Œå¯ä»¥å…ˆå¯¹accIDå»ä¸€æ¬¡é‡å¤
 	 * @param taxID
 	 * @return
 	 * HashMap-geneID, ArrayList-String
 	 * key geneID
-	 * value ÏàÍ¬copedID¶ÔÓ¦µÄ²»Í¬accIDµÄlist
+	 * value ç›¸åŒcopedIDå¯¹åº”çš„ä¸åŒaccIDçš„list
 	 */
 	public static HashMap<GeneID, ArrayList<String>> getMapGeneID2LsAccID(Collection<String> collectionAccID, int taxID) {
 		HashMap<GeneID, ArrayList<String>> hashResult = new HashMap<GeneID, ArrayList<String>>();
@@ -382,14 +382,14 @@ public class GeneID implements GeneIDInt{
 		return hashResult;
 	}
 	
-////////   ¹«ÓĞ GO µÄ´¦Àí   /////////////////////////////////////
+////////   å…¬æœ‰ GO çš„å¤„ç†   /////////////////////////////////////
 	/**
-	 * ½«Ò»ÏµÁĞCopedIDÖĞµÄGOÕûÀí³É genUniID goID,goID,goID.....µÄÑùÊ½
-	 * ÄÚ²¿¸ù¾İgenUniIDÈ¥ÖØ¸´
-	 * @param lsGeneID Ò»ÏµÁĞµÄcopedID
-	 * @param GOType GOInfoAbsÖĞµÄĞÅÏ¢
-	 * @param blast ×¢ÒâlsCopedIDÀïÃæµÄcopedID±ØĞëÒªÏÈÉè¶¨¹ısetBlast²ÅÓĞÓÃ
-	 * @reture Ã»ÓĞÔò·µ»Ønull
+	 * å°†ä¸€ç³»åˆ—CopedIDä¸­çš„GOæ•´ç†æˆ genUniID goID,goID,goID.....çš„æ ·å¼
+	 * å†…éƒ¨æ ¹æ®genUniIDå»é‡å¤
+	 * @param lsGeneID ä¸€ç³»åˆ—çš„copedID
+	 * @param GOType GOInfoAbsä¸­çš„ä¿¡æ¯
+	 * @param blast æ³¨æ„lsCopedIDé‡Œé¢çš„copedIDå¿…é¡»è¦å…ˆè®¾å®šè¿‡setBlastæ‰æœ‰ç”¨
+	 * @reture æ²¡æœ‰åˆ™è¿”å›null
 	 */
 	public static ArrayList<String[]> getLsGoInfo(ArrayList<GeneID> lsGeneID, String GOType, boolean blast) {
 		if (validateListIsEmpty(lsGeneID)) return null;
@@ -422,14 +422,14 @@ public class GeneID implements GeneIDInt{
 		}
 		return lsResult;
 	}
-////////¹«ÓĞ KEGG µÄ´¦Àí   /////////////////////////////////////
+////////å…¬æœ‰ KEGG çš„å¤„ç†   /////////////////////////////////////
 	/**
-	 * ½«Ò»ÏµÁĞCopedIDÖĞµÄKEGGÕûÀí³É genUniID PathID,pathID,pathID.....µÄÑùÊ½
-	 * ÄÚ²¿¸ù¾İgenUniIDÈ¥ÖØ¸´
-	 * @param lsGeneID Ò»ÏµÁĞµÄcopedID
-	 * @param GoType GOInfoAbsÖĞµÄĞÅÏ¢
-	 * @param blast ×¢ÒâlsCopedIDÀïÃæµÄcopedID±ØĞëÒªÏÈÉè¶¨¹ısetBlast²ÅÓĞÓÃ
-	 * @reture Ã»ÓĞÔò·µ»Ønull
+	 * å°†ä¸€ç³»åˆ—CopedIDä¸­çš„KEGGæ•´ç†æˆ genUniID PathID,pathID,pathID.....çš„æ ·å¼
+	 * å†…éƒ¨æ ¹æ®genUniIDå»é‡å¤
+	 * @param lsGeneID ä¸€ç³»åˆ—çš„copedID
+	 * @param GoType GOInfoAbsä¸­çš„ä¿¡æ¯
+	 * @param blast æ³¨æ„lsCopedIDé‡Œé¢çš„copedIDå¿…é¡»è¦å…ˆè®¾å®šè¿‡setBlastæ‰æœ‰ç”¨
+	 * @reture æ²¡æœ‰åˆ™è¿”å›null
 	 */
 	public static ArrayList<String[]> getLsPathInfo(ArrayList<GeneID> lsGeneID, boolean blast) {
 		if (validateListIsEmpty(lsGeneID)) return null;
@@ -450,10 +450,10 @@ public class GeneID implements GeneIDInt{
 		return lsResult;
 	}
 	/**
-	 * GO¶ÔÓ¦GeneOntologyµÄhash±í
+	 * GOå¯¹åº”GeneOntologyçš„hashè¡¨
 	 * @return
-	 * HashMap - key:GOËõĞ´ 
-	 * value: 0: GOÈ«Ãû
+	 * HashMap - key:GOç¼©å†™ 
+	 * value: 0: GOå…¨å
 	 */
 	public static HashMap<String, String> getMapGOAbbr2GOID() {
 		HashMap<String, String> hashGOInfo = new HashMap<String, String>();
@@ -462,18 +462,18 @@ public class GeneID implements GeneIDInt{
 		hashGOInfo.put(Go2Term.GO_MF, Go2Term.GO_MF);
 		return hashGOInfo;
 	}
-/////////////////////// Ë½ÓĞ static ·½·¨ /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////// ç§æœ‰ static æ–¹æ³• /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	/** ²é¿´¸ÃlistÊÇ·ñÓĞÄÚÈİ */
+	/** æŸ¥çœ‹è¯¥listæ˜¯å¦æœ‰å†…å®¹ */
 	private static boolean validateListIsEmpty(Collection col) {
 		if (col == null || col.size() == 0)
 			return true;
 		return false;
 	}
-	/////////////////////////////  ÖØĞ´equalsµÈ  ////////////////////////////////////
+	/////////////////////////////  é‡å†™equalsç­‰  ////////////////////////////////////
 	/**
-	 * Ö»ÒªÁ½¸öncbiidµÄgeneIDÏàÍ¬£¬¾ÍÈÏÎªÕâÁ½¸öNCBIIDÏàÍ¬
-	 * µ«ÊÇÈç¹ûgeneIDÎª0£¬Ò²¾ÍÊÇNCBIID¸ù±¾Ã»ÓĞ³õÊ¼»¯£¬ÄÇÃ´Ö±½Ó·µ»Øfalse
+	 * åªè¦ä¸¤ä¸ªncbiidçš„geneIDç›¸åŒï¼Œå°±è®¤ä¸ºè¿™ä¸¤ä¸ªNCBIIDç›¸åŒ
+	 * ä½†æ˜¯å¦‚æœgeneIDä¸º0ï¼Œä¹Ÿå°±æ˜¯NCBIIDæ ¹æœ¬æ²¡æœ‰åˆå§‹åŒ–ï¼Œé‚£ä¹ˆç›´æ¥è¿”å›false
 	 * 	@Override
 	 */
 	public boolean equals(Object obj) {
@@ -483,13 +483,13 @@ public class GeneID implements GeneIDInt{
 		if (getClass() != obj.getClass()) return false;
 		GeneID otherObj = (GeneID)obj;
 		if (
-				//geneIDÏàÍ¬ÇÒ¶¼²»Îª¡°¡±£¬¿ÉÒÔÈÏÎªÁ½¸ö»ùÒòÏàÍ¬
+				//geneIDç›¸åŒä¸”éƒ½ä¸ä¸ºâ€œâ€ï¼Œå¯ä»¥è®¤ä¸ºä¸¤ä¸ªåŸºå› ç›¸åŒ
 				(!getIDtype().equals(GeneID.IDTYPE_ACCID) && !otherObj.getIDtype().equals(GeneID.IDTYPE_ACCID)
 				&& getGenUniID().trim().equals(otherObj.getGenUniID().trim())	
 				&& getIDtype().equals(otherObj.getIDtype())
 				&& getTaxID() == otherObj.getTaxID()
 				)
-				||//geneID¶¼Îª""£¬ÄÇÃ´Èç¹ûÁ½¸öaccIDÏàÍ¬ÇÒ²»Îª""£¬Ò²¿ÉÈÏÎªÁ½¸ö»ùÒòÏàÍ¬
+				||//geneIDéƒ½ä¸º""ï¼Œé‚£ä¹ˆå¦‚æœä¸¤ä¸ªaccIDç›¸åŒä¸”ä¸ä¸º""ï¼Œä¹Ÿå¯è®¤ä¸ºä¸¤ä¸ªåŸºå› ç›¸åŒ
 				(getIDtype().equals(GeneID.IDTYPE_ACCID) && otherObj.getIDtype().equals(GeneID.IDTYPE_ACCID)
 				&&
 				   ( !getAccID().equals("") && !otherObj.getAccID().equals("")
@@ -505,7 +505,7 @@ public class GeneID implements GeneIDInt{
 		return false;
 	}
 	/**
-	 * ÖØĞ´hashcode
+	 * é‡å†™hashcode
 	 */
 	public int hashCode(){
 		String hash = "";

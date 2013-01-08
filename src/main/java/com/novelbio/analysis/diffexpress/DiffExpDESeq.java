@@ -20,24 +20,24 @@ import com.novelbio.generalConf.NovelBioConst;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 /**
- * 1. ÊäÈëÒ»¸öÎÄ±¾£¬²¢Éè¶¨geneIDÁĞ£¬¸ÃÁĞÃ»ÓĞÖØ¸´
- * 2. ±ê¼ÇÓĞ¼¸ÁĞÊÇA×é£¬ÓĞ¼¸ÁĞÊÇB×é£¬ÓĞ¼¸ÁĞÊÇC×é
- * 3. Éè¶¨±È½Ï×é A±ÈB£¬B±ÈCÖ®Àà
- * 4. ½«geneIDÁĞºÍËùÓĞ×éÌáÈ¡³öÀ´£¬³ÉÎªÒ»¸öµ¥¶ÀÎÄ±¾
- * 5. ×Ô¶¯Éú³ÉDEseq½Å±¾£¬È»ºóËÍDEseq·ÖÎö
- * µ÷ÓÃDEseqËã·¨£¬ÊÊÓÃÓÚÊıreadsµÄÊÔÑé£¬Æ©ÈçmiRNAseq»òDGE
+ * 1. è¾“å…¥ä¸€ä¸ªæ–‡æœ¬ï¼Œå¹¶è®¾å®šgeneIDåˆ—ï¼Œè¯¥åˆ—æ²¡æœ‰é‡å¤
+ * 2. æ ‡è®°æœ‰å‡ åˆ—æ˜¯Aç»„ï¼Œæœ‰å‡ åˆ—æ˜¯Bç»„ï¼Œæœ‰å‡ åˆ—æ˜¯Cç»„
+ * 3. è®¾å®šæ¯”è¾ƒç»„ Aæ¯”Bï¼ŒBæ¯”Cä¹‹ç±»
+ * 4. å°†geneIDåˆ—å’Œæ‰€æœ‰ç»„æå–å‡ºæ¥ï¼Œæˆä¸ºä¸€ä¸ªå•ç‹¬æ–‡æœ¬
+ * 5. è‡ªåŠ¨ç”ŸæˆDEseqè„šæœ¬ï¼Œç„¶åé€DEseqåˆ†æ
+ * è°ƒç”¨DEseqç®—æ³•ï¼Œé€‚ç”¨äºæ•°readsçš„è¯•éªŒï¼Œè­¬å¦‚miRNAseqæˆ–DGE
  * @author zong0jie
  *
  */
 public class DiffExpDESeq extends DiffExpAbs {
-	/** ÊµÑéÊÇ·ñÓĞÖØ¸´£¬Ã²ËÆÓĞÒ»´ÎÖØ¸´¾ÍËãÓĞÖØ¸´ÁË */
+	/** å®éªŒæ˜¯å¦æœ‰é‡å¤ï¼Œè²Œä¼¼æœ‰ä¸€æ¬¡é‡å¤å°±ç®—æœ‰é‡å¤äº† */
 	boolean isRepeatExp = false;
 	
 	public DiffExpDESeq() {
 		rawScript = PathDetail.getRworkspace() + "DESeqJava.txt";
 	}
 	
-	/** ½ö¹©²âÊÔ */
+	/** ä»…ä¾›æµ‹è¯• */
 	public boolean isRepeatExp() {
 		return isRepeatExp;
 	}
@@ -81,8 +81,8 @@ public class DiffExpDESeq extends DiffExpAbs {
 		return Group;
 	}
 	/**
-	 * ·µ»ØÕâÖÖ¶«Î÷factor( c("A", "A", "B", "B", "C", "C") )
-	 * Í¬Ê±Éè¶¨ÊÇ·ñÓĞÖØ¸´Ïî
+	 * è¿”å›è¿™ç§ä¸œè¥¿factor( c("A", "A", "B", "B", "C", "C") )
+	 * åŒæ—¶è®¾å®šæ˜¯å¦æœ‰é‡å¤é¡¹
 	 * @return
 	 */
 	private String getGroupFactorAndSetRepeatExp() {
@@ -103,7 +103,7 @@ public class DiffExpDESeq extends DiffExpAbs {
 	}
 	
 	/**
-	 * ¸ù¾İÊÇ·ñÖØ¸´£¬Ñ¡Ôñ²»Í¬µÄ´úÂë
+	 * æ ¹æ®æ˜¯å¦é‡å¤ï¼Œé€‰æ‹©ä¸åŒçš„ä»£ç 
 	 * @param content
 	 * @return
 	 */
@@ -118,18 +118,18 @@ public class DiffExpDESeq extends DiffExpAbs {
 	
 	private String[] getCompareAndWriteToFile(String content, String[] compareGroup, String outFileName) {
 		String[] writeFinal = new String[2];
-		String compareGroupWrite = "\"" + compareGroup[1] + "\", \"" + compareGroup[0] + "\"";//ÏÈÊäÈëcontrolÔÙÊäÈëtreatment
+		String compareGroupWrite = "\"" + compareGroup[1] + "\", \"" + compareGroup[0] + "\"";//å…ˆè¾“å…¥controlå†è¾“å…¥treatment
 		String[] write = content.split(SepSign.SEP_ID);
 		writeFinal[0] = write[1].replace("{$CompareGroup}", compareGroupWrite);
 		writeFinal[1] = write[2].replace("{$OutFileName}", outFileName.replace("\\", "/"));
 		return writeFinal;
 	}
 	/**
-	 * »ñµÃÑ¡¶¨µÄ»ùÒòIDºÍ¾ßÌåÖµ
-	 * ÅÅĞò·½Ê½°´ÕÕÊäÈëµÄlsSampleColumn2GroupName½øĞĞÅÅĞò£¬²»×öµ÷Õû
+	 * è·å¾—é€‰å®šçš„åŸºå› IDå’Œå…·ä½“å€¼
+	 * æ’åºæ–¹å¼æŒ‰ç…§è¾“å…¥çš„lsSampleColumn2GroupNameè¿›è¡Œæ’åºï¼Œä¸åšè°ƒæ•´
 	 * @return
-	 * 0£º geneID
-	 * 1-n£ºvalue value¶¼ÎªÕûÊı
+	 * 0ï¼š geneID
+	 * 1-nï¼švalue valueéƒ½ä¸ºæ•´æ•°
 	 */
 	protected  ArrayList<String[]> getAnalysisGeneInfo() {
 		ArrayList<String[]> lsResultGeneInfo = new ArrayList<String[]>();
@@ -178,14 +178,14 @@ public class DiffExpDESeq extends DiffExpAbs {
 			for (int j = 0; j < tmpResult.length; j++) {
 				tmpResult[j] = tmpResult[j].replace("\"", "");
 			}
-			//½»»»treatmentºÍcontrol
+			//äº¤æ¢treatmentå’Œcontrol
 			String tmp = tmpResult[1];
 			tmpResult[1] = tmpResult[2];
 			tmpResult[2] = tmp;
 			//
 			lsResult.add(tmpResult);
 		}
-		//·ÀÖ¹R»¹Ã»Êä³ö½á¹û¾ÍÈ¥¶ÁÈ¡
+		//é˜²æ­¢Rè¿˜æ²¡è¾“å‡ºç»“æœå°±å»è¯»å–
 		try { Thread.sleep(50); } catch (Exception e) { }
 		
 		TxtReadandWrite txtOutFinal = new TxtReadandWrite(outFileName, true);

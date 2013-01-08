@@ -16,16 +16,16 @@ public class AffyNormalization {
 	public static final int NORM_GCRMA = 20;
 	public static final int NORM_MAS5 =30;
 	
-	/** ³£¹æĞ¾Æ¬Æ©Èç±í´ïÆ×Ğ¾Æ¬ */
+	/** å¸¸è§„èŠ¯ç‰‡è­¬å¦‚è¡¨è¾¾è°±èŠ¯ç‰‡ */
 	public static final String arrayType_normAffy = "normaffy";
-	/** ÍâÏÔ×ÓĞ¾Æ¬µÈ */
+	/** å¤–æ˜¾å­èŠ¯ç‰‡ç­‰ */
 	public static final String arrayType_exonAffy = "exonaffy";
 	
 	
 	String workSpace;
 	String rawScript = "";
 	String outScript = "";
-	/** ±ê×¼»¯ºóµÄÊı¾İ */
+	/** æ ‡å‡†åŒ–åçš„æ•°æ® */
 	String outFileName = "";
 	int normalizedType = NORM_RMA;
 	String arrayType = arrayType_normAffy;
@@ -33,7 +33,7 @@ public class AffyNormalization {
 	ArrayList<String> lsRawCelFile = new ArrayList<String>();
 	
 	public AffyNormalization() {
-		rawScript = PathDetail.getRworkspace() + "AffymetirxĞ¾Æ¬·ÖÎöJava.txt";
+		rawScript = PathDetail.getRworkspace() + "AffymetirxèŠ¯ç‰‡åˆ†æJava.txt";
 		setWorkSpace();
 		setOutScriptPath();
 	}
@@ -50,15 +50,15 @@ public class AffyNormalization {
 	public void setOutFileName(String outFileName) {
 		this.outFileName = outFileName;
 	}
-	/** NORM_RMA µÈ */
+	/** NORM_RMA ç­‰ */
 	public void setNormalizedType(int normalizedType) {
 		this.normalizedType = normalizedType;
 	}
-	/** arrayType_exonAffy µÈ */
+	/** arrayType_exonAffy ç­‰ */
 	public void setArrayType(String arrayType) {
 		this.arrayType = arrayType;
 	}
-	/** ½ö¹©²âÊÔ */
+	/** ä»…ä¾›æµ‹è¯• */
 	public String getOutScript() {
 		generateScript();
 		return outScript;
@@ -118,8 +118,8 @@ public class AffyNormalization {
 		return mapMethodID2Script.get(normalizedType);
 	}
 	/**
-	 * µ÷ÓÃRrunning²¢Ğ´ÈëCmdµÄÃû×Ö,
-	 * ÀıÈç£º
+	 * è°ƒç”¨Rrunningå¹¶å†™å…¥Cmdçš„åå­—,
+	 * ä¾‹å¦‚ï¼š
 	 * Rrunning("DEseq")
 	 */
 	public void run() {
@@ -146,7 +146,7 @@ public class AffyNormalization {
 		mapArrayType.put("Exon Array", arrayType_normAffy);
 		return mapArrayType;
 	}
-	/** É¾³ıÖĞ¼äÎÄ¼ş */
+	/** åˆ é™¤ä¸­é—´æ–‡ä»¶ */
 	private void clean() {
 		FileOperate.DeleteFileFolder(outScript);
 	}

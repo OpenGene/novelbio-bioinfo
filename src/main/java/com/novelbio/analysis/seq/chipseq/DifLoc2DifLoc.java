@@ -24,12 +24,12 @@ import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.NovelBioConst;
 
 /**
- * ¼°ÆäÏûºÄÄÚ´æ
- * ÑĞ¾¿Î»µã²îÒìºÍÎ»µã²îÒìµÄ
- * Æ©Èç¶ÁÈ¡Ò»¸ö²îÒìµÄmiRNAºÍÒ»¸ö²îÒìµÄ¼×»ù»¯£¬È»ºóÑĞ¾¿Á½×éµÄÏà¹ØĞÔ
- * Ò²¿É¶Á»ùÒò±í´ïÓë¼×»ù»¯±í´ï
- * xÖá£º²îÒì±í´ïµÄratio
- * yÖá£º²îÒì±í´ïµÄ¼×»ù»¯£¬ÓÃsicer-dif»ñµÃ
+ * åŠå…¶æ¶ˆè€—å†…å­˜
+ * ç ”ç©¶ä½ç‚¹å·®å¼‚å’Œä½ç‚¹å·®å¼‚çš„
+ * è­¬å¦‚è¯»å–ä¸€ä¸ªå·®å¼‚çš„miRNAå’Œä¸€ä¸ªå·®å¼‚çš„ç”²åŸºåŒ–ï¼Œç„¶åç ”ç©¶ä¸¤ç»„çš„ç›¸å…³æ€§
+ * ä¹Ÿå¯è¯»åŸºå› è¡¨è¾¾ä¸ç”²åŸºåŒ–è¡¨è¾¾
+ * xè½´ï¼šå·®å¼‚è¡¨è¾¾çš„ratio
+ * yè½´ï¼šå·®å¼‚è¡¨è¾¾çš„ç”²åŸºåŒ–ï¼Œç”¨sicer-difè·å¾—
  * @author zong0jie
  *
  */
@@ -42,19 +42,19 @@ public class DifLoc2DifLoc {
 		String bedMethy1 = "/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/RawData_and_AlignmentResult/mappingFile/2Nextend_sort.bed";
 		String bedMethy2 = "/media/winE/NBC/Project/Project_ZHY_Lab/MeDIP-Seq_20110506/RawData_and_AlignmentResult/mappingFile/3Nextend_sort.bed";
 		
-		String miRNAtxt = "/media/winE/NBC/Project/Project_ZHY_Lab/ÕÅºêÓî2012/miRNA/miRNAexp/ZHY2Nvs3N_Target.xls";
+		String miRNAtxt = "/media/winE/NBC/Project/Project_ZHY_Lab/å¼ å®å®‡2012/miRNA/miRNAexp/ZHY2Nvs3N_Target.xls";
 		
-		String outFile = "/media/winE/NBC/Project/Project_ZHY_Lab/ÕÅºêÓî2012/miRNA/miRNAexp/2N-3N.txt";
+		String outFile = "/media/winE/NBC/Project/Project_ZHY_Lab/å¼ å®å®‡2012/miRNA/miRNAexp/2N-3N.txt";
 		
 		difLoc2DifLoc.addMapInfo("mthy", bedMethy1, bedMethy2);
 		difLoc2DifLoc.readAndCalExpGeneTxt2DifInfo(typeTss, miRNAtxt, 8, 5, 1, outFile, "mthy");
 	}
 	
-	/** Õı¸º2K */
+	/** æ­£è´Ÿ2K */
 	int[] tssRegion = new int[]{-2000,2000};
-	/** ×îĞ¡Öµ£¬ÓÃÀ´´úÌæ0 */
+	/** æœ€å°å€¼ï¼Œç”¨æ¥ä»£æ›¿0 */
 	double min = 0.1;
-	/**ÕÒ²»µ½µÄĞÅºÅÖµÓÃÊ²Ã´À´È¡´ú */
+	/**æ‰¾ä¸åˆ°çš„ä¿¡å·å€¼ç”¨ä»€ä¹ˆæ¥å–ä»£ */
 	double nullValue = 0;
 	GffChrAbs gffChrAbs;
 
@@ -63,15 +63,15 @@ public class DifLoc2DifLoc {
 	public static final int typeGeneBody = 8;
 	
 	int binNum = 20;
-	/** ±£´æBedÎÄ¼şµÄĞÅÏ¢ */
+	/** ä¿å­˜Bedæ–‡ä»¶çš„ä¿¡æ¯ */
 	LinkedHashMap<String, ArrayList<MapReads>> mapPrefix2MapReads = new LinkedHashMap<String, ArrayList<MapReads>>();
-	/** ±£´æsicerdifµÄĞÅÏ¢ */
+	/** ä¿å­˜sicerdifçš„ä¿¡æ¯ */
 	HashMap<String, ListHashBin> mapPrefix2listHashBin = new HashMap<String, ListHashBin>();
-	/**	±£´æ±í´ïÆ×µÄĞÅÏ¢ */
+	/**	ä¿å­˜è¡¨è¾¾è°±çš„ä¿¡æ¯ */
 	HashMap<String, HashMap<String, Double>> mapPrefix2_MapGeneID2Exp = new HashMap<String, HashMap<String,Double>>();
 	Species species;
 
-	/** Ä¬ÈÏ¶ÁÈ¡bedÎÄ¼şµÄ½á¹û, falseÔò¶ÁÈ¡peakÎÄ¼şµÄ½á¹û */
+	/** é»˜è®¤è¯»å–bedæ–‡ä»¶çš„ç»“æœ, falseåˆ™è¯»å–peakæ–‡ä»¶çš„ç»“æœ */
 	boolean readPeak = false;
 	
 	ArrayList<String> lsGeneID;
@@ -87,7 +87,7 @@ public class DifLoc2DifLoc {
 		this.gffChrAbs = gffChrAbs;
 	}
 	/**
-	 * ¶ÁÈ¡µÄÊ±ºòÃ¿¸öbin¶àÉÙ³¤¶È
+	 * è¯»å–çš„æ—¶å€™æ¯ä¸ªbinå¤šå°‘é•¿åº¦
 	 * @param binNum
 	 */
 	public void setBinNum(int binNum) {
@@ -100,7 +100,7 @@ public class DifLoc2DifLoc {
 		this.tssRegion = tssRegion;
 	}
 	/**
-	 * Èç¹û´ı±È½ÏµÄÊÇpeak»òÕß mapping ½á¹û£¬ÄÇÃ´¾Í±È½Ï¸ÃÎ»ÖÃµÄ·ÖÊı
+	 * å¦‚æœå¾…æ¯”è¾ƒçš„æ˜¯peakæˆ–è€… mapping ç»“æœï¼Œé‚£ä¹ˆå°±æ¯”è¾ƒè¯¥ä½ç½®çš„åˆ†æ•°
 	 * @param compareType
 	 */
 	public void setCompare1(int compareType1, String comparePrefx1) {
@@ -108,7 +108,7 @@ public class DifLoc2DifLoc {
 		this.comparePrefix1 = comparePrefx1;
 	}
 	/**
-	 * Èç¹û´ı±È½ÏµÄÊÇpeak»òÕß mapping ½á¹û£¬ÄÇÃ´¾Í±È½Ï¸ÃÎ»ÖÃµÄ·ÖÊı
+	 * å¦‚æœå¾…æ¯”è¾ƒçš„æ˜¯peakæˆ–è€… mapping ç»“æœï¼Œé‚£ä¹ˆå°±æ¯”è¾ƒè¯¥ä½ç½®çš„åˆ†æ•°
 	 * @param compareType
 	 */
 	public void setCompare2(int compareType2, String comparePrefx2) {
@@ -119,19 +119,19 @@ public class DifLoc2DifLoc {
 		this.min = min;
 		this.nullValue = nullValue;
 	}
-	/**Éè¶¨ĞèÒª±È½ÏµÄ»ùÒò */
+	/**è®¾å®šéœ€è¦æ¯”è¾ƒçš„åŸºå›  */
 	public void setLsGeneID(ArrayList<String> lsGeneID) {
 		this.lsGeneID = lsGeneID;
 	}
-	/** Ä¬ÈÏ¾ÍÊÇÕâ¸ö£¬È«»ùÒò×éµÄ±È½Ï */
+	/** é»˜è®¤å°±æ˜¯è¿™ä¸ªï¼Œå…¨åŸºå› ç»„çš„æ¯”è¾ƒ */
 	public void setGenomeWide() {
 		this.lsGeneID = gffChrAbs.getGffHashGene().getLsNameNoRedundent();
 	}
 	/**
-	 * È«Ìå»ùÒò×÷·ÖÎö, prefix1µÄratio Óë prefix2µÄratio
-	 * @param type ÀàĞÍ£¬ÊÇtss»¹ÊÇgeneEnd
-	 * @param prefix1 µÚÒ»¸öÀàĞÍ£¬ÈçsRNA
-	 * @param prefix2 µÚ¶ş¸öÀàĞÍ£¬Èçmethylation
+	 * å…¨ä½“åŸºå› ä½œåˆ†æ, prefix1çš„ratio ä¸ prefix2çš„ratio
+	 * @param type ç±»å‹ï¼Œæ˜¯tssè¿˜æ˜¯geneEnd
+	 * @param prefix1 ç¬¬ä¸€ä¸ªç±»å‹ï¼Œå¦‚sRNA
+	 * @param prefix2 ç¬¬äºŒä¸ªç±»å‹ï¼Œå¦‚methylation
 	 * @param lsAccID 
 	 * @param txtOutInfo
 	 */
@@ -141,9 +141,9 @@ public class DifLoc2DifLoc {
 		compareDifInfoGene(type, prefix1, prefix2, lsGeneID, txtOutInfo);
 	}
 	/**
-	 * @param type ÀàĞÍ£¬ÊÇtss»¹ÊÇgeneEnd
-	 * @param prefix1 µÚÒ»¸öÀàĞÍ£¬ÈçsRNA
-	 * @param prefix2 µÚ¶ş¸öÀàĞÍ£¬Èçmethylation
+	 * @param type ç±»å‹ï¼Œæ˜¯tssè¿˜æ˜¯geneEnd
+	 * @param prefix1 ç¬¬ä¸€ä¸ªç±»å‹ï¼Œå¦‚sRNA
+	 * @param prefix2 ç¬¬äºŒä¸ªç±»å‹ï¼Œå¦‚methylation
 	 * @param lsGeneID 
 	 * @param txtOutInfo
 	 */
@@ -175,7 +175,7 @@ public class DifLoc2DifLoc {
 	}
 	
 	/**
-	 * Ö´ĞĞ±È½Ï
+	 * æ‰§è¡Œæ¯”è¾ƒ
 	 * @param outFile
 	 * @param prefix1
 	 * @param prefix2
@@ -262,11 +262,11 @@ public class DifLoc2DifLoc {
 		return result;
 	}
 	/**
-	 * °´ÕÕË³Ğò¼ÓÈëbedÎÄ¼ş
-	 * ×îºóÊÇmapFile1³ıÒÔmapFile2
+	 * æŒ‰ç…§é¡ºåºåŠ å…¥bedæ–‡ä»¶
+	 * æœ€åæ˜¯mapFile1é™¤ä»¥mapFile2
 	 * @param prefix
 	 * @param mapFile1
-	 * @param mapFile2 Áô¿Õ±íÊ¾Ö»¶ÁÈ¡mapFile1
+	 * @param mapFile2 ç•™ç©ºè¡¨ç¤ºåªè¯»å–mapFile1
 	 */
 	public void addMapInfo(String prefix, String mapFile1, String mapFile2) {
 		ArrayList<MapReads> lsMapReads = new ArrayList<MapReads>();
@@ -294,9 +294,9 @@ public class DifLoc2DifLoc {
 		mapPrefix2MapReads.put(prefix, lsMapReads);
 	}
 	/**
-	 * ¶ÁÈ¡sicerÎÄ¼şµÄscore·ÖÊı£¬Èç¹û²»ÊÇÓÃsicerµÄscoreÈ¥×ö·ÖÎö£¬ÄÇÃ´¾Í²»ÓÃ¸Ã·½·¨
+	 * è¯»å–siceræ–‡ä»¶çš„scoreåˆ†æ•°ï¼Œå¦‚æœä¸æ˜¯ç”¨sicerçš„scoreå»åšåˆ†æï¼Œé‚£ä¹ˆå°±ä¸ç”¨è¯¥æ–¹æ³•
 	 * @param sicerFile
-	 * @param colScore ±ÈÖµ»ò±í´ïµÈĞÅÏ¢
+	 * @param colScore æ¯”å€¼æˆ–è¡¨è¾¾ç­‰ä¿¡æ¯
 	 */
 	public void addSicerScore(String prefix, String sicerFile, int colScore) {
 		ListHashBin listHashBin = new ListHashBin(true, 1, 2, 3, 2);
@@ -306,12 +306,12 @@ public class DifLoc2DifLoc {
 	}
 	
 	/**
-	 * »ñµÃexcelTxtFile1³ıÒÔexcelTxtFile2µÄ±ÈÖµ£¬Ä³¸ö»ùÒòÖ»ÓĞÒ»¸öÓĞ£¬ÔòÌîĞ´1¡£
-	 * Èç¹ûÖ»ÓĞÒ»¸öexcelTxtFile£¬ÔòÌîĞ´¸ÃexcelTxtFileµÄÖµ
-	 * @param excelTxtFile1 µÚÒ»¸ö»ùÒòÎÄ±¾
-	 * @param excelTxtFile2 µÚ¶ş¸ö»ùÒòÎÄ±¾£¬ÌîĞ´ÁË±íÊ¾»ñµÃ1³ıÒÔ2µÄratio¡£²»ÌîĞ´±íÊ¾»ñµÃÖµ
-	 * @param colGeneID µÚ¼¸ÁĞ£¬Êµ¼ÊÁĞ
-	 * @param colValue ÊıÖµËùÔÚµÄĞĞ
+	 * è·å¾—excelTxtFile1é™¤ä»¥excelTxtFile2çš„æ¯”å€¼ï¼ŒæŸä¸ªåŸºå› åªæœ‰ä¸€ä¸ªæœ‰ï¼Œåˆ™å¡«å†™1ã€‚
+	 * å¦‚æœåªæœ‰ä¸€ä¸ªexcelTxtFileï¼Œåˆ™å¡«å†™è¯¥excelTxtFileçš„å€¼
+	 * @param excelTxtFile1 ç¬¬ä¸€ä¸ªåŸºå› æ–‡æœ¬
+	 * @param excelTxtFile2 ç¬¬äºŒä¸ªåŸºå› æ–‡æœ¬ï¼Œå¡«å†™äº†è¡¨ç¤ºè·å¾—1é™¤ä»¥2çš„ratioã€‚ä¸å¡«å†™è¡¨ç¤ºè·å¾—å€¼
+	 * @param colGeneID ç¬¬å‡ åˆ—ï¼Œå®é™…åˆ—
+	 * @param colValue æ•°å€¼æ‰€åœ¨çš„è¡Œ
 	 */
 	public void addGeneExp(String prefix, String excelTxtFile1, String excelTxtFile2, int colGeneID, int colValue) {
 		ArrayList<String[]> lsGene2Exp1 = null;
@@ -325,12 +325,12 @@ public class DifLoc2DifLoc {
 		setGeneExp(prefix, lsGene2Exp1, lsGene2Exp2);
 	}
 	/**
-	 * »ñµÃexcelTxtFile1³ıÒÔexcelTxtFile2µÄ±ÈÖµ£¬Ä³¸ö»ùÒòÖ»ÓĞÒ»¸öÓĞ£¬ÔòÌîĞ´1¡£
+	 * è·å¾—excelTxtFile1é™¤ä»¥excelTxtFile2çš„æ¯”å€¼ï¼ŒæŸä¸ªåŸºå› åªæœ‰ä¸€ä¸ªæœ‰ï¼Œåˆ™å¡«å†™1ã€‚
 	 * @param prefix
 	 * @param excelTxtFile
 	 * @param colGeneID
 	 * @param colValue1
-	 * @param colValue2 Èç¹ûĞ¡ÓÚ0Ôò¸Ã½ö»ñµÃ1µÄÖµ
+	 * @param colValue2 å¦‚æœå°äº0åˆ™è¯¥ä»…è·å¾—1çš„å€¼
 	 */
 	public void addGeneExp(String prefix, String excelTxtFile, int colGeneID, int colValue1, int colValue2) {
 		ArrayList<String[]> lsGene2Exp1 = null;
@@ -367,8 +367,8 @@ public class DifLoc2DifLoc {
 		}
 	}
 	/**
-	 * Éè¶¨ÊäÈëµÄmapGeneID2Exp
-	 * @param lsGene2Exp 0£º geneID  1£ºgeneExp
+	 * è®¾å®šè¾“å…¥çš„mapGeneID2Exp
+	 * @param lsGene2Exp 0ï¼š geneID  1ï¼šgeneExp
 	 * @param mapGeneID2Exp
 	 */
 	private HashMap<String, Double> getMapGene2Exp(ArrayList<String[]> lsGene2Exp) {
@@ -405,8 +405,8 @@ public class DifLoc2DifLoc {
 	/**
 	 * 
 	 * @param excelTxtFile
-	 * @param colGeneID geneIDÁĞ
-	 * @param colExp scoreÁĞ
+	 * @param colGeneID geneIDåˆ—
+	 * @param colExp scoreåˆ—
 	 * @param rowStart
 	 * @param txtOutTss
 	 * @param txtOutGeneBody
@@ -418,7 +418,7 @@ public class DifLoc2DifLoc {
 	}
 	
 //	/**
-//	 * @param lsGene2Ratio 0: geneID 1£ºratio/exp
+//	 * @param lsGene2Ratio 0: geneID 1ï¼šratio/exp
 //	 * @param rowStart
 //	 * @param txtOutTss
 //	 * @param txtOutGeneBody
@@ -459,10 +459,10 @@ public class DifLoc2DifLoc {
 //	}
 
 	/**
-	 * ¸ø¶¨»ùÒò£¬»ñµÃ¸Ã»ùÒòÈ«²¿ÇøÓòµÄ·ÖÊı
+	 * ç»™å®šåŸºå› ï¼Œè·å¾—è¯¥åŸºå› å…¨éƒ¨åŒºåŸŸçš„åˆ†æ•°
 	 * @param prefix
 	 * @param geneID
-	 * @return ËùÓĞ°üº¬¸Ã»ùÒòtssÇøÓò¼×»ù»¯¾ùÖµ
+	 * @return æ‰€æœ‰åŒ…å«è¯¥åŸºå› tssåŒºåŸŸç”²åŸºåŒ–å‡å€¼
 	 */
 	private Double getGeneFullLengthPeakSicerDifScore(String prefix, String geneID) {
 		GffGeneIsoInfo gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO(geneID);
@@ -493,9 +493,9 @@ public class DifLoc2DifLoc {
 	
 	
 	/**
-	 * ¸ø¶¨»ùÒò£¬»ñµÃ¸Ã»ùÒòtss¸½½üsicer-difµÄ·ÖÊı
+	 * ç»™å®šåŸºå› ï¼Œè·å¾—è¯¥åŸºå› tssé™„è¿‘sicer-difçš„åˆ†æ•°
 	 * @param geneID
-	 * @return ËùÓĞ°üº¬¸Ã»ùÒòtssÇøÓò¼×»ù»¯¾ùÖµ
+	 * @return æ‰€æœ‰åŒ…å«è¯¥åŸºå› tssåŒºåŸŸç”²åŸºåŒ–å‡å€¼
 	 */
 	private Double getGeneBodyPeakSicerDifScore(String prefix, String geneID) {
 		GffGeneIsoInfo gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO(geneID);
@@ -523,9 +523,9 @@ public class DifLoc2DifLoc {
 		return score/lsBin.size();
 	}
 	/**
-	 * ¸ø¶¨»ùÒò£¬»ñµÃ¸Ã»ùÒòtss¸½½üsicer-difµÄ·ÖÊı
+	 * ç»™å®šåŸºå› ï¼Œè·å¾—è¯¥åŸºå› tssé™„è¿‘sicer-difçš„åˆ†æ•°
 	 * @param geneID
-	 * @return ËùÓĞ°üº¬¸Ã»ùÒòtssÇøÓò¼×»ù»¯¾ùÖµ
+	 * @return æ‰€æœ‰åŒ…å«è¯¥åŸºå› tssåŒºåŸŸç”²åŸºåŒ–å‡å€¼
 	 */
 	private Double getGeneTssPeakSicerDifScore(String prefix, String geneID) {
 		GffGeneIsoInfo gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO(geneID);
@@ -553,9 +553,9 @@ public class DifLoc2DifLoc {
 		return score/lsBin.size();
 	}
 	/**
-	 * ¸ø¶¨»ùÒò£¬»ñµÃ¸Ã»ùÒòtss¸½½üsicer-difµÄ·ÖÊı
+	 * ç»™å®šåŸºå› ï¼Œè·å¾—è¯¥åŸºå› tssé™„è¿‘sicer-difçš„åˆ†æ•°
 	 * @param geneID
-	 * @return ËùÓĞ°üº¬¸Ã»ùÒòtssÇøÓò¼×»ù»¯¾ùÖµ
+	 * @return æ‰€æœ‰åŒ…å«è¯¥åŸºå› tssåŒºåŸŸç”²åŸºåŒ–å‡å€¼
 	 */
 	private Double getGeneBodyMapRatio(String prefix, String geneID) {
 		GffGeneIsoInfo gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO(geneID);
@@ -577,9 +577,9 @@ public class DifLoc2DifLoc {
 	}
 	
 	/**
-	 * ¸ø¶¨»ùÒò£¬»ñµÃ¸Ã»ùÒòtss¸½½üsicer-difµÄ·ÖÊı
+	 * ç»™å®šåŸºå› ï¼Œè·å¾—è¯¥åŸºå› tssé™„è¿‘sicer-difçš„åˆ†æ•°
 	 * @param geneID
-	 * @return ËùÓĞ°üº¬¸Ã»ùÒòtssÇøÓò¼×»ù»¯¾ùÖµ
+	 * @return æ‰€æœ‰åŒ…å«è¯¥åŸºå› tssåŒºåŸŸç”²åŸºåŒ–å‡å€¼
 	 */
 	private Double getGeneTssMapRatio(String prefix, String geneID) {
 		GffGeneIsoInfo gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO(geneID);
@@ -601,9 +601,9 @@ public class DifLoc2DifLoc {
 	}
 	
 	/**
-	 * ¸ø¶¨»ùÒò£¬»ñµÃ¸Ã»ùÒòÈ«²¿ÇøÓòµÄ·ÖÊı
+	 * ç»™å®šåŸºå› ï¼Œè·å¾—è¯¥åŸºå› å…¨éƒ¨åŒºåŸŸçš„åˆ†æ•°
 	 * @param geneID
-	 * @return ËùÓĞ°üº¬¸Ã»ùÒòtssÇøÓò¼×»ù»¯¾ùÖµ
+	 * @return æ‰€æœ‰åŒ…å«è¯¥åŸºå› tssåŒºåŸŸç”²åŸºåŒ–å‡å€¼
 	 */
 	private Double getGeneFullLengthMapRatio(String prefix, String geneID) {
 		GffGeneIsoInfo gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO(geneID);
@@ -620,8 +620,8 @@ public class DifLoc2DifLoc {
 		ArrayList<MapReads> lsMapReads = mapPrefix2MapReads.get(prefix);
 		return getRatio(mapInfo, lsMapReads);
 	}
-	/** Èç¹ûÊäÈëµÄÊÇÒ»¶ÔMapReads ·µ»ØÏà³ıµÄ½á¹û¡£
-	 * Èç¹ûÊäÈëµ¥¸öMapReads ·µ»Øµ¥¸öÊıÖµµÄ½á¹û
+	/** å¦‚æœè¾“å…¥çš„æ˜¯ä¸€å¯¹MapReads è¿”å›ç›¸é™¤çš„ç»“æœã€‚
+	 * å¦‚æœè¾“å…¥å•ä¸ªMapReads è¿”å›å•ä¸ªæ•°å€¼çš„ç»“æœ
 	 * @param mapInfo
 	 * @param lsMapReads
 	 * @return
@@ -629,7 +629,7 @@ public class DifLoc2DifLoc {
 	private Double getRatio(MapInfo mapInfo, ArrayList<MapReads> lsMapReads) {
 		lsMapReads.get(0).getRange(mapInfo, 20, 0);
 		if (mapInfo.getDouble() == null) {
-			logger.error("·¢ÏÖÁËÎ´ÖªID£º" + mapInfo.getRefID() + " " + mapInfo.getStartAbs() + " " + mapInfo.getEndAbs());
+			logger.error("å‘ç°äº†æœªçŸ¥IDï¼š" + mapInfo.getRefID() + " " + mapInfo.getStartAbs() + " " + mapInfo.getEndAbs());
 			return null;
 		}
 		Double score1 = mapInfo.getMean();

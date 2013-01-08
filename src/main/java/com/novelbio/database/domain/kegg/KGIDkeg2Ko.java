@@ -44,14 +44,14 @@ public class KGIDkeg2Ko {
 	 */
 	private int taxID;
 	/**
-	 * NCBIID表中的geneID
+	 * NCBIID琛ㄤ腑鐨刧eneID
 	 */
 	public void setTaxID(int taxID)
 	{
 		this.taxID=taxID;
 	}
 	/**
-	 * NCBIID表中的geneID
+	 * NCBIID琛ㄤ腑鐨刧eneID
 	 */
 	public int getTaxID()
 	{

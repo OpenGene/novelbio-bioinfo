@@ -5,9 +5,9 @@ import java.util.concurrent.Callable;
 
 import com.novelbio.base.dataOperate.HttpFetch;
 
-/** 给定某个url，用该类来获得该mid url下属所有big picture的url */
+/** 缁欏畾鏌愪釜url锛岀敤璇ョ被鏉ヨ幏寰楄mid url涓嬪睘鎵�鏈塨ig picture鐨剈rl */
 public abstract class GetPictureUrl implements Callable<GetPictureUrl> {
-	/** null说明失败 */
+	/** null璇存槑澶辫触 */
 	public abstract ArrayList<UrlPictureDownLoad> getLsResult();
 	
 	public boolean isSuccess() {

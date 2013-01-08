@@ -10,8 +10,8 @@ public class BamMerge {
 	ArrayList<String> lsBamFile = new ArrayList<String>();
 	String outFileName;
 	/**
-	 * Éè¶¨samtoolsËùÔÚµÄÎÄ¼ş¼ĞÒÔ¼°´ı±È¶ÔµÄÂ·¾¶
-	 * @param exePath Èç¹ûÔÚ¸ùÄ¿Â¼ÏÂÔòÉèÖÃÎª""»ònull
+	 * è®¾å®šsamtoolsæ‰€åœ¨çš„æ–‡ä»¶å¤¹ä»¥åŠå¾…æ¯”å¯¹çš„è·¯å¾„
+	 * @param exePath å¦‚æœåœ¨æ ¹ç›®å½•ä¸‹åˆ™è®¾ç½®ä¸º""æˆ–null
 	 */
 	public void setExePath(String exePath) {
 		if (exePath == null || exePath.trim().equals(""))
@@ -25,7 +25,7 @@ public class BamMerge {
 	public void setLsBamFile(ArrayList<String> lsBamFile) {
 		this.lsBamFile = lsBamFile;
 	}
-	/** Èç¹ûºó×º²»Îªbam£¬ÔòÎÄ¼şºó×º×Ô¶¯Ìí¼Ó.bam */
+	/** å¦‚æœåç¼€ä¸ä¸ºbamï¼Œåˆ™æ–‡ä»¶åç¼€è‡ªåŠ¨æ·»åŠ .bam */
 	public void setOutFileName(String outFileName) {
 		outFileName = outFileName.trim();
 		if (!outFileName.endsWith(".bam")) {
@@ -36,11 +36,11 @@ public class BamMerge {
 		}
 		this.outFileName = outFileName;
 	}
-	/** Çå¿ÕËùÓĞÒÑ¾­Éè¶¨µÄbamÎÄ¼ş */
+	/** æ¸…ç©ºæ‰€æœ‰å·²ç»è®¾å®šçš„bamæ–‡ä»¶ */
 	public void clear() {
 		lsBamFile.clear();
 	}
-	/** ·µ»ØmergeºóµÄÃû×Ö£¬"" ±íÊ¾Ã»ÓĞ³É¹¦ */
+	/** è¿”å›mergeåçš„åå­—ï¼Œ"" è¡¨ç¤ºæ²¡æœ‰æˆåŠŸ */
 	public String merge() {
 		if (lsBamFile.size() == 0) {
 			return "";

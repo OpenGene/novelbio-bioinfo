@@ -13,7 +13,7 @@ import javax.swing.table.TableColumnModel;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
 /**
- * JScrollPaneµÄÀ©Õ¹£¬·½±ãÌí¼ÓºÍÉ¾³ıĞĞ
+ * JScrollPaneçš„æ‰©å±•ï¼Œæ–¹ä¾¿æ·»åŠ å’Œåˆ é™¤è¡Œ
  * @author zong0jie
  *
  */
@@ -24,7 +24,7 @@ public class JScrollPaneData extends JScrollPane{
 	JTable jTabFInputGo = null;
 	String[] title;
 	/**
-	 * ÍùjScrollPaneÖĞÌí¼Ó±í¸ñ£¬µÚÒ»ĞĞÎªtitle
+	 * å¾€jScrollPaneä¸­æ·»åŠ è¡¨æ ¼ï¼Œç¬¬ä¸€è¡Œä¸ºtitle
 	 */
 	public void setItemLs( List<String[]> lsInfo) {
 		String[][] tableValue = null;
@@ -37,7 +37,7 @@ public class JScrollPaneData extends JScrollPane{
 			defaultTableModel.addRow(lsInfo.get(i));
 		}
 	}
-	//²»ÄÜÓÃ
+	//ä¸èƒ½ç”¨
 //	public void setColumn(int... width) {
 //		TableColumnModel tableColumnModel = new DefaultTableColumnModel();
 //		for (int i = 0; i < width.length; i++) {
@@ -47,7 +47,7 @@ public class JScrollPaneData extends JScrollPane{
 //		jTabFInputGo.setColumnModel(tableColumnModel);
 //	}
 	/**
-	 * ÍùjScrollPaneÖĞÌí¼Ó±í¸ñ£¬µÚÒ»ÁĞÎª±íÍ·
+	 * å¾€jScrollPaneä¸­æ·»åŠ è¡¨æ ¼ï¼Œç¬¬ä¸€åˆ—ä¸ºè¡¨å¤´
 	 */
 	public void setTitle( String[] title) {
 		String[][] tableValue = null;
@@ -59,7 +59,7 @@ public class JScrollPaneData extends JScrollPane{
 
 	}
 	/**
-	 * ÍùjScrollPaneÖĞÌí¼Ó±í¸ñ£¬Èç¹ûÃ»ÓĞtitle£¬ÔòµÚÒ»ĞĞÎªtitle
+	 * å¾€jScrollPaneä¸­æ·»åŠ è¡¨æ ¼ï¼Œå¦‚æœæ²¡æœ‰titleï¼Œåˆ™ç¬¬ä¸€è¡Œä¸ºtitle
 	 */
 	public void addItemLs( List<String[]> lsInfo) {
 		if (defaultTableModel == null) {
@@ -71,7 +71,7 @@ public class JScrollPaneData extends JScrollPane{
 		}
 	}
 	/**
-	 * ÍùjScrollPaneÖĞÌí¼Ó±í¸ñ£¬Èç¹ûÃ»ÓĞtitle£¬ÔòµÚÒ»ĞĞÎªtitle
+	 * å¾€jScrollPaneä¸­æ·»åŠ è¡¨æ ¼ï¼Œå¦‚æœæ²¡æœ‰titleï¼Œåˆ™ç¬¬ä¸€è¡Œä¸ºtitle
 	 */
 	public void addItemLsSingle( List<String> lsInfo) {
 		int colNum = 1;
@@ -87,7 +87,7 @@ public class JScrollPaneData extends JScrollPane{
 		addItemLs(lsResult);
 	}
 	/**
-	 * ÍùjScrollPaneÖĞÌí¼Ó±í¸ñ
+	 * å¾€jScrollPaneä¸­æ·»åŠ è¡¨æ ¼
 	 */
 	public void addItem(String[] info) {
 		if (defaultTableModel == null) {
@@ -102,7 +102,7 @@ public class JScrollPaneData extends JScrollPane{
 		defaultTableModel.addRow(info);
 	}
 	/**
-	 * Ã»ÓĞ¾Í·µ»Ø¿ÕµÄlist
+	 * æ²¡æœ‰å°±è¿”å›ç©ºçš„list
 	 * @return
 	 */
 	public ArrayList<String[]> getLsDataInfo() {
@@ -122,7 +122,7 @@ public class JScrollPaneData extends JScrollPane{
 		return lsResult;
 	}
 	/**
-	 * É¾³ıÊµ¼ÊĞĞ
+	 * åˆ é™¤å®é™…è¡Œ
 	 * @param rowNum
 	 */
 	public void removeRow(int... rowNum) {
@@ -132,24 +132,24 @@ public class JScrollPaneData extends JScrollPane{
 				continue;
 			}
 			defaultTableModel.removeRow(i - 1);
-//			defaultTableModel.setRowCount(i);// É¾³ıĞĞ±È½Ï¼òµ¥£¬Ö»ÒªÓÃDefaultTableModelµÄremoveRow()·½·¨¼´¿É¡£É¾³ı
-//			// ĞĞÍê±Ïºó±ØĞëÖØĞÂÉèÖÃÁĞÊı£¬Ò²¾ÍÊÇÊ¹ÓÃDefaultTableModelµÄsetRowCount()·½·¨À´ÉèÖÃ¡£
+//			defaultTableModel.setRowCount(i);// åˆ é™¤è¡Œæ¯”è¾ƒç®€å•ï¼Œåªè¦ç”¨DefaultTableModelçš„removeRow()æ–¹æ³•å³å¯ã€‚åˆ é™¤
+//			// è¡Œå®Œæ¯•åå¿…é¡»é‡æ–°è®¾ç½®åˆ—æ•°ï¼Œä¹Ÿå°±æ˜¯ä½¿ç”¨DefaultTableModelçš„setRowCount()æ–¹æ³•æ¥è®¾ç½®ã€‚
 		}
 	}
 	/**
-	 * »ñµÃ¾ø¶ÔĞĞÊı
+	 * è·å¾—ç»å¯¹è¡Œæ•°
 	 * @return
 	 */
 	public int[] getSelectRows() {
-		int selectRows=jTabFInputGo.getSelectedRows().length;// È¡µÃÓÃ»§ËùÑ¡ĞĞµÄĞĞÊı
-		//µ¥ĞĞ
+		int selectRows=jTabFInputGo.getSelectedRows().length;// å–å¾—ç”¨æˆ·æ‰€é€‰è¡Œçš„è¡Œæ•°
+		//å•è¡Œ
 		if(selectRows==1) {
-			int selectedRowIndex = jTabFInputGo.getSelectedRow(); // È¡µÃÓÃ»§ËùÑ¡µ¥ĞĞ
+			int selectedRowIndex = jTabFInputGo.getSelectedRow(); // å–å¾—ç”¨æˆ·æ‰€é€‰å•è¡Œ
 			return new int[]{selectedRowIndex + 1};
 		}
 		int[] selRowIndexs = null;
 		if(selectRows>1) {
-			selRowIndexs =jTabFInputGo.getSelectedRows();// ÓÃ»§ËùÑ¡ĞĞµÄĞòÁĞ
+			selRowIndexs =jTabFInputGo.getSelectedRows();// ç”¨æˆ·æ‰€é€‰è¡Œçš„åºåˆ—
 			for (int i = 0; i < selRowIndexs.length; i++) {
 				selRowIndexs[i] = selRowIndexs[i] + 1;
 			}
@@ -158,12 +158,12 @@ public class JScrollPaneData extends JScrollPane{
 		return null;
 	}
 	/**
-	 * É¾³ıÓÃ»§Ñ¡¶¨µÄĞĞ
+	 * åˆ é™¤ç”¨æˆ·é€‰å®šçš„è¡Œ
 	 */
 	public void deleteSelRows() {
 		removeRow(getSelectRows());
 	}
-	/** ²»ÎÈ¶¨ */
+	/** ä¸ç¨³å®š */
 	public void clean() {
 		String[][] tableValue = null;
 		defaultTableModel = new DefaultTableModel(tableValue, title);
@@ -172,7 +172,7 @@ public class JScrollPaneData extends JScrollPane{
 		jTabFInputGo.setModel(defaultTableModel);
 	}
 	/**
-	 * ´ÓÎÄ¼şÃû»ñµÃÎÄ¼şµÄprefix²¢·µ»Ø
+	 * ä»æ–‡ä»¶åè·å¾—æ–‡ä»¶çš„prefixå¹¶è¿”å›
 	 * @param lsFileName
 	 * @return
 	 */
@@ -186,7 +186,7 @@ public class JScrollPaneData extends JScrollPane{
 	}
 	
 	/**
-	 * ½«ÊäÈëµÄÃ¿¸öÎÄ¼şÃûºóÃæ¶¼¼ÓÉÏÒ»¸ösuffix£¬È»ºó·µ»Ø
+	 * å°†è¾“å…¥çš„æ¯ä¸ªæ–‡ä»¶ååé¢éƒ½åŠ ä¸Šä¸€ä¸ªsuffixï¼Œç„¶åè¿”å›
 	 * @param lsFileName
 	 * @return
 	 */

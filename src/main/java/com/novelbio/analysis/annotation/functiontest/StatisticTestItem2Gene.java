@@ -8,7 +8,7 @@ import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 /**
- * ElimGo 特有的GO2Gene
+ * ElimGo 鐗规湁鐨凣O2Gene
  * @author zong0jie
  *
  */
@@ -23,7 +23,7 @@ public class StatisticTestItem2Gene {
 	}
 	
 	/**
-	 * 同一个geneUniID对应的多个不同accID的geneID
+	 * 鍚屼竴涓猤eneUniID瀵瑰簲鐨勫涓笉鍚宎ccID鐨刧eneID
 	 * @param lsGeneIDs
 	 */
 	public void setLsGeneIDs(List<GeneID> lsGeneIDs) {

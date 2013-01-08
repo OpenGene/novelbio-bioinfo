@@ -45,12 +45,12 @@ public class KEGGPathwayFunTest extends AbstFunTest{
 	}
 	
 	/**
-	 * ÔİÊ±Ã»ÓÃ
+	 * æš‚æ—¶æ²¡ç”¨
 	 */
 	@Override
 	public void setDetailType(String GOtype) {}
 	/**
-	 * ²»·µ»Ø
+	 * ä¸è¿”å›
 	 */
 	@Override
 	public ArrayList<StatisticTestItem2Gene> getItem2GenePvalue() {

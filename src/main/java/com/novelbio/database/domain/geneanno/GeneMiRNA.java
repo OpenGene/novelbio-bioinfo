@@ -7,7 +7,7 @@ import org.apache.ibatis.migration.commands.NewCommand;
 import com.novelbio.database.model.modgeneid.GeneID;
 
 /**
- * ±¾±íÒªµ¼Èë×¨ÃÅµÄmiRDBÊı¾İ¿âÖĞ
+ * æœ¬è¡¨è¦å¯¼å…¥ä¸“é—¨çš„miRDBæ•°æ®åº“ä¸­
  * @author zong0jie
  *
  */
@@ -18,7 +18,7 @@ public class GeneMiRNA {
 	}
 	/**
 	 * 
-	 * miRNA.datÔÚsangerµÄmiRBaseÏÂÔØ£¬ÀàĞÍÈçÏÂ
+	 * miRNA.datåœ¨sangerçš„miRBaseä¸‹è½½ï¼Œç±»å‹å¦‚ä¸‹
 	 * 
 ID   cel-let-7         standard; RNA; CEL; 99 BP.
 XX
@@ -67,43 +67,43 @@ SQ   Sequence 99 BP; 26 A; 19 C; 24 G; 0 T; 30 other;
 	 */
 	
 	/**
-	 * ÎïÖÖID£¬Õâ¸öÔÚ±íÀïÃæÃ»ÓĞ
+	 * ç‰©ç§IDï¼Œè¿™ä¸ªåœ¨è¡¨é‡Œé¢æ²¡æœ‰
 	 * ID   cel-let-7         standard; RNA; CEL; 99 BP.
 	 */
 	int taxID = 0;
 	/**
-	 * miRBaseÀïÃæµÄID£¬±àºÅAC
+	 * miRBaseé‡Œé¢çš„IDï¼Œç¼–å·AC
 	 * AC   MI0000001;
 	 */
 	String miRBaseID = "";
 	/**
-	 * ¹Ù·½Ãû£¬Èçcel-let-7
+	 * å®˜æ–¹åï¼Œå¦‚cel-let-7
 	 * ID   cel-let-7         standard; RNA; CEL; 99 BP.
 	 */
 	String officalName = "";
 	/**
-	 * NCBIµÄGeneID»òUniProtµÄGeneID
+	 * NCBIçš„GeneIDæˆ–UniProtçš„GeneID
 	 */
 	String genUniID = "";
 	/**
-	 * Êµ¼Ê³¤¶È£¬´Ó1¿ªÊ¼¼ÇÊı£¬ÔÚIDÀïÃæµÄ
+	 * å®é™…é•¿åº¦ï¼Œä»1å¼€å§‹è®°æ•°ï¼Œåœ¨IDé‡Œé¢çš„
 	 * ID   cel-let-7         standard; RNA; CEL; 99 BP.
 	 */
 	int length = 0;
 	/**
-	 * pubmedID£¬±àºÅRX
+	 * pubmedIDï¼Œç¼–å·RX
 	 * RX   PUBMED; 19460142.
 	 */
 	ArrayList<Integer> lsPubmedID = new ArrayList<Integer>();
 	String description = "";
 	/**
-	 * ±àºÅÊÇCC£¬ÃèÊöÀàĞÍµÄ»°
+	 * ç¼–å·æ˜¯CCï¼Œæè¿°ç±»å‹çš„è¯
 	 * CC   The excised miRNA sequence was initially predicted [1], and confirmed
 	 * CC   later by sequencing [3].
 	 */
 	String comment = "";
 	/**
-	 * ¾ßÌåĞòÁĞ
+	 * å…·ä½“åºåˆ—
 	 * SQ   Sequence 94 BP; 17 A; 25 C; 26 G; 0 T; 26 other;
      	augcuuccgg ccuguucccu gagaccucaa gugugagugu acuauugaug cuucacaccu        60
      	gggcucuccg gguaccagga cgguuugagc agau                                    94

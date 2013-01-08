@@ -6,8 +6,8 @@ import java.util.Collection;
 import com.novelbio.base.multithread.RunProcess;
 
 /**
- * ÊäÈëÒ»ÏµÁĞµÄAlignmentRecorder£¬È»ºó¶ÁÈ¡Ö¸¶¨µÄsambamÎÄ¼ş
- * ÕâÑùÒ»´Î¶ÁÈ¡Íê±Ï¾Í¿ÉÒÔ×öºÜ¶àÊÂÇé
+ * è¾“å…¥ä¸€ç³»åˆ—çš„AlignmentRecorderï¼Œç„¶åè¯»å–æŒ‡å®šçš„sambamæ–‡ä»¶
+ * è¿™æ ·ä¸€æ¬¡è¯»å–å®Œæ¯•å°±å¯ä»¥åšå¾ˆå¤šäº‹æƒ…
  * @author zong0jie
  *
  */

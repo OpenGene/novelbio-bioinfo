@@ -11,8 +11,8 @@ import com.novelbio.base.multithread.RunProcess;
 
 class FastQfilter extends RunProcess<FastQrecordFilterRun> {
 	public static void main(String[] args) {
-		FastQ fastQ1 = new FastQ("/media/winF/NBC/Project/Project_HXW/20121018/ÖĞÉ½Ò½Ôº ½¯¼ÒºÃ/10A 10B/test/10B_1.fq");
-		FastQ fastQ2 = new FastQ("/media/winF/NBC/Project/Project_HXW/20121018/ÖĞÉ½Ò½Ôº ½¯¼ÒºÃ/10A 10B/test/10B_2.fq");
+		FastQ fastQ1 = new FastQ("/media/winF/NBC/Project/Project_HXW/20121018/ä¸­å±±åŒ»é™¢ è’‹å®¶å¥½/10A 10B/test/10B_1.fq");
+		FastQ fastQ2 = new FastQ("/media/winF/NBC/Project/Project_HXW/20121018/ä¸­å±±åŒ»é™¢ è’‹å®¶å¥½/10A 10B/test/10B_2.fq");
 		FastQRecordFilter fastQfilterRecord = new FastQRecordFilter();
 		fastQfilterRecord.setFilterParamTrimNNN(true);
 		fastQfilterRecord.setFilterParamReadsLenMin(50);
@@ -26,10 +26,10 @@ class FastQfilter extends RunProcess<FastQrecordFilterRun> {
 	
 	int allFilteredReadsNum;
 	
-	/** ÓÃ×÷²ÎÊıÉè¶¨µÄ */
+	/** ç”¨ä½œå‚æ•°è®¾å®šçš„ */
 	FastQRecordFilter fastQRecordFilter;
 	
-	/** ¶ÓÁĞ×î´óÊıÁ¿ */
+	/** é˜Ÿåˆ—æœ€å¤§æ•°é‡ */
 	int maxNumReadInLs = 5000;
 	ThreadPoolExecutor executorPool;
 	ArrayBlockingQueue<Future<FastQrecordFilterRun>> queueResult;
@@ -119,7 +119,7 @@ class FastQfilter extends RunProcess<FastQrecordFilterRun> {
 		}
 	}
 	
-	/** µÈ´ı´¦ÀíÏß³Ì½«AbsQueue¶ÓÁĞÖĞµÄ¼ÇÂ¼´¦Àíµô */
+	/** ç­‰å¾…å¤„ç†çº¿ç¨‹å°†AbsQueueé˜Ÿåˆ—ä¸­çš„è®°å½•å¤„ç†æ‰ */
 	protected void wait_To_Cope_AbsQueue() {
 		suspendCheck();
 		while (executorPool.getQueue().size() == maxNumReadInLs || queueResult.size() == maxNumReadInLs) {

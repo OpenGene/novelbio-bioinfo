@@ -8,11 +8,11 @@ public enum BlastType {
 
 	tblastn, tblastx, blastn, blastx, blastp;
 	/**
-	 * @param QfastaType ÊäÈëµÄfastaÀàĞÍ£¬ÊÇºËËá»¹ÊÇµ°°×
-	 * @param SfastaType Êä³öµÄfastaÀàĞÍ£¬ÊÇºËËá»¹ÊÇµ°°×
-	 * @return blastÀàĞÍµÄ¹şÏ£±í
-	 * key£ºËµÃ÷
-	 * value£º¾ßÌåµÄblastÀàĞÍ£¬ÈçBLAST_TBLASTN_AA2NR_WITH_AAµÈ£¬¿ÉÖ±½ÓÓÃÓÚÉèÖÃ±¾ÀàµÄ²ÎÊı
+	 * @param QfastaType è¾“å…¥çš„fastaç±»å‹ï¼Œæ˜¯æ ¸é…¸è¿˜æ˜¯è›‹ç™½
+	 * @param SfastaType è¾“å‡ºçš„fastaç±»å‹ï¼Œæ˜¯æ ¸é…¸è¿˜æ˜¯è›‹ç™½
+	 * @return blastç±»å‹çš„å“ˆå¸Œè¡¨
+	 * keyï¼šè¯´æ˜
+	 * valueï¼šå…·ä½“çš„blastç±»å‹ï¼Œå¦‚BLAST_TBLASTN_AA2NR_WITH_AAç­‰ï¼Œå¯ç›´æ¥ç”¨äºè®¾ç½®æœ¬ç±»çš„å‚æ•°
 	 */
 	public static HashMap<String, BlastType> getMapBlastType(int QfastaType, int SfastaType) {
 		HashMap<String, BlastType> hashBlastType = new HashMap<String, BlastType>();

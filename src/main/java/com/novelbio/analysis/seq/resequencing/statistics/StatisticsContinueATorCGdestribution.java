@@ -5,25 +5,25 @@ import org.apache.log4j.Logger;
 import com.novelbio.base.dataStructure.listOperate.HistList;
 
 /**
- * Á¬ĞøAT»òCGµÄ·Ö²¼
+ * è¿ç»­ATæˆ–CGçš„åˆ†å¸ƒ
  * @author zong0jie
  */
 public class StatisticsContinueATorCGdestribution implements StatisticsUnit {
 	private static Logger logger = Logger.getLogger(StatisticsContinueATorCGdestribution.class);
 	
-	/** »æÖÆ1CG£¬2CG£¬3CG....µÄ·Ö²¼ */
+	/** ç»˜åˆ¶1CGï¼Œ2CGï¼Œ3CG....çš„åˆ†å¸ƒ */
 	HistList histList;
-	/** ×î³¤Á¬ĞøAT»òCGµÄÊıÁ¿ */
+	/** æœ€é•¿è¿ç»­ATæˆ–CGçš„æ•°é‡ */
 	int maxContinueATorCG = 80;
 	
 	SeqType seqType = SeqType.AT;
 	
-	/** Ã¿¸ô2¸öcgÍ³¼ÆÒ»ÏÂ£¬ÒâË¼¾ÍÊÇ2CG£¬4CGµÄreads¸²¸Ç¶È */
+	/** æ¯éš”2ä¸ªcgç»Ÿè®¡ä¸€ä¸‹ï¼Œæ„æ€å°±æ˜¯2CGï¼Œ4CGçš„readsè¦†ç›–åº¦ */
 	int cgInterval = 2;
 	
 	/**
-	 * @param statisticAT true: Í³¼ÆAT 
-	 * false: Í³¼ÆCG
+	 * @param statisticAT true: ç»Ÿè®¡AT 
+	 * false: ç»Ÿè®¡CG
 	 */
 	public StatisticsContinueATorCGdestribution(boolean statisticAT) {
 		if (statisticAT) {
@@ -36,24 +36,24 @@ public class StatisticsContinueATorCGdestribution implements StatisticsUnit {
 	}
 	
 	/**
-	 * Ã¿¸ô2¸öcgÍ³¼ÆÒ»ÏÂ£¬ÒâË¼¾ÍÊÇÍ³¼Æ2CG£¬4CGµÄreads·Ö²¼
+	 * æ¯éš”2ä¸ªcgç»Ÿè®¡ä¸€ä¸‹ï¼Œæ„æ€å°±æ˜¯ç»Ÿè®¡2CGï¼Œ4CGçš„readsåˆ†å¸ƒ
 	 * @param cgInterval
 	 */
 	public void setCgInterval(int cgInterval) {
 		this.cgInterval = cgInterval;
 	}
 
-	/** Éè¶¨×î³¤Á¬ĞøCGµÄÊıÁ¿£¬³¬¹ıÕâ¸ö¾Í²»Í³¼ÆÁË */
+	/** è®¾å®šæœ€é•¿è¿ç»­CGçš„æ•°é‡ï¼Œè¶…è¿‡è¿™ä¸ªå°±ä¸ç»Ÿè®¡äº† */
 	public void setMaxContinueATorCG(int maxContinueCG) {
 		this.maxContinueATorCG = maxContinueCG;
 	}
 	
 	/**
-	 * <b>±ØĞëÉè¶¨</b>
-	 * »®·Ö¶àÉÙÇøÓò£¬Ã¿¸öÇøÓò¶àÉÙinterval
+	 * <b>å¿…é¡»è®¾å®š</b>
+	 * åˆ’åˆ†å¤šå°‘åŒºåŸŸï¼Œæ¯ä¸ªåŒºåŸŸå¤šå°‘interval
 	 * @param binNum
-	 * @param interval µÈÓÚ2µÄ»°£¬¾ÍÊÇÃ¿¸ô2¸öCGÍ³¼ÆÒ»ÏÂ£¬ÒâË¼¾ÍÊÇ2CGµÄÊıÁ¿£¬4CGµÄÊıÁ¿
-	 * @param maxCoverageNum  ×î´óÖµ£¬Èç¹û×îºóÒ»Î»bin¶¼Ã»µ½×î´óÖµ£¬½ÓÏÂÀ´Ò»¸öbin¾ÍºÍ×î´óÖµºÏ²¢£¬ËùÒÔ¿ÉÒÔÍù¸ßÀïÉè¶¨
+	 * @param interval ç­‰äº2çš„è¯ï¼Œå°±æ˜¯æ¯éš”2ä¸ªCGç»Ÿè®¡ä¸€ä¸‹ï¼Œæ„æ€å°±æ˜¯2CGçš„æ•°é‡ï¼Œ4CGçš„æ•°é‡
+	 * @param maxCoverageNum  æœ€å¤§å€¼ï¼Œå¦‚æœæœ€åä¸€ä½binéƒ½æ²¡åˆ°æœ€å¤§å€¼ï¼Œæ¥ä¸‹æ¥ä¸€ä¸ªbinå°±å’Œæœ€å¤§å€¼åˆå¹¶ï¼Œæ‰€ä»¥å¯ä»¥å¾€é«˜é‡Œè®¾å®š
 	 */
 	public void setBinNum(int binNum, int interval, int maxCoverageNum) {
 		histList.setBinAndInterval(binNum, interval, maxCoverageNum);
@@ -64,7 +64,7 @@ public class StatisticsContinueATorCGdestribution implements StatisticsUnit {
 	}
 	
 	/** 
-	 * Ç°Ò»¸öÊÇCµ±Ç°Ò»¸öÊÇA£¬¼ÇÂ¼Ç°ÃæÁ¬ĞøCµÄrawsÆ½¾ùÊıµÄÊıÁ¿ ĞÎÊ½ÀıÈçkeyÊÇ4C_10£¬valueÊÇnumÊıÁ¿ÀıÈç3
+	 * å‰ä¸€ä¸ªæ˜¯Cå½“å‰ä¸€ä¸ªæ˜¯Aï¼Œè®°å½•å‰é¢è¿ç»­Cçš„rawså¹³å‡æ•°çš„æ•°é‡ å½¢å¼ä¾‹å¦‚keyæ˜¯4C_10ï¼Œvalueæ˜¯numæ•°é‡ä¾‹å¦‚3
 	 */
 	public void countOneSeqInfo(OneSeqInfo oneSeqInfo) {
 		OneSeqInfo oneSeqInfoLast = oneSeqInfo.getOneSeqInfoLast();

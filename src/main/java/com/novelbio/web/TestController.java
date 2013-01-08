@@ -19,21 +19,21 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 * Adds a greeting message to the model and increases a counter by one every
 * time this controller is invoked.
 */
- //@Controller¡¢@Service ÒÔ¼° @Repository ºÍ @Component ×¢½âµÄ×÷ÓÃÊÇµÈ¼ÛµÄ£º½«Ò»¸öÀà³ÉÎª Spring ÈİÆ÷µÄ Bean¡£
-//ÓÉÓÚ Spring MVC µÄ Controller ±ØĞëÊÂÏÈÊÇÒ»¸ö Bean£¬
-//ËùÒÔ @Controller ×¢½âÊÇ²»¿ÉÈ±ÉÙµÄ¡£
-//Ò²¿ÉÒÔÊÇ@Component£¬Èç¹û²ÉÓÃ<bean class = "org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping"/>
-//ÄÇÃ´±ØĞëÊÇ@Component
+ //@Controllerã€@Service ä»¥åŠ @Repository å’Œ @Component æ³¨è§£çš„ä½œç”¨æ˜¯ç­‰ä»·çš„ï¼šå°†ä¸€ä¸ªç±»æˆä¸º Spring å®¹å™¨çš„ Beanã€‚
+//ç”±äº Spring MVC çš„ Controller å¿…é¡»äº‹å…ˆæ˜¯ä¸€ä¸ª Beanï¼Œ
+//æ‰€ä»¥ @Controller æ³¨è§£æ˜¯ä¸å¯ç¼ºå°‘çš„ã€‚
+//ä¹Ÿå¯ä»¥æ˜¯@Componentï¼Œå¦‚æœé‡‡ç”¨<bean class = "org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping"/>
+//é‚£ä¹ˆå¿…é¡»æ˜¯@Component
 @Component
 
-//ÕæÕıÈÃ BbtForumController ¾ß±¸ Spring MVC Controller ¹¦ÄÜµÄÊÇ @RequestMapping Õâ¸ö×¢½â¡£
-//@RequestMapping ¿ÉÒÔ±ê×¢ÔÚÀà¶¨Òå´¦£¬½« Controller ºÍÌØ¶¨ÇëÇó¹ØÁªÆğÀ´£»
-//»¹¿ÉÒÔ±ê×¢ÔÚ·½·¨Ç©Ãû´¦£¬ÒÔ±ã½øÒ»²½¶ÔÇëÇó½øĞĞ·ÖÁ÷¡£
-//ÔÚ±¾´¦£¬ÎÒÃÇÈÃ TestController ¹ØÁª¡°/test.htm¡±µÄÇëÇó£¬±ØĞëÌí¼Ó("/test.htm")
+//çœŸæ­£è®© BbtForumController å…·å¤‡ Spring MVC Controller åŠŸèƒ½çš„æ˜¯ @RequestMapping è¿™ä¸ªæ³¨è§£ã€‚
+//@RequestMapping å¯ä»¥æ ‡æ³¨åœ¨ç±»å®šä¹‰å¤„ï¼Œå°† Controller å’Œç‰¹å®šè¯·æ±‚å…³è”èµ·æ¥ï¼›
+//è¿˜å¯ä»¥æ ‡æ³¨åœ¨æ–¹æ³•ç­¾åå¤„ï¼Œä»¥ä¾¿è¿›ä¸€æ­¥å¯¹è¯·æ±‚è¿›è¡Œåˆ†æµã€‚
+//åœ¨æœ¬å¤„ï¼Œæˆ‘ä»¬è®© TestController å…³è”â€œ/test.htmâ€çš„è¯·æ±‚ï¼Œå¿…é¡»æ·»åŠ ("/test.htm")
 //@RequestMapping("/test.htm")
-//Èç¹û²ÉÓÃ@RequestMapping("/test.htm")£¬spring.xmlÖĞÅäÖÃ£º<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
-//Èç¹û²»ÓÃ£¬spring.xmlÖĞÅäÖÃ£º<bean class = "org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping"/>
-//ÎÒ¾õµÃÓÃ@RequestMappingºÃ£¬·½±ãºóÆÚĞŞ¸ÄcontrollerµÄÊ±ºò²»ĞèÒªĞŞ¸ÄÇëÇóÃû
+//å¦‚æœé‡‡ç”¨@RequestMapping("/test.htm")ï¼Œspring.xmlä¸­é…ç½®ï¼š<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
+//å¦‚æœä¸ç”¨ï¼Œspring.xmlä¸­é…ç½®ï¼š<bean class = "org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping"/>
+//æˆ‘è§‰å¾—ç”¨@RequestMappingå¥½ï¼Œæ–¹ä¾¿åæœŸä¿®æ”¹controllerçš„æ—¶å€™ä¸éœ€è¦ä¿®æ”¹è¯·æ±‚å
 public class TestController extends AbstractWizardFormController {
 	/**
 	* Stores the counter value. This will only work when the controller is a
@@ -45,12 +45,12 @@ public class TestController extends AbstractWizardFormController {
 	* The parameter string that is used to retrieve the greeting message from
 	* the request.
 	*/
-	private static final String PARAM_MSG = "aaa";//²éÑ¯µÄ²ÎÊı£¬Æ©Èçtest.htm?aaa=string
+	private static final String PARAM_MSG = "aaa";//æŸ¥è¯¢çš„å‚æ•°ï¼Œè­¬å¦‚test.htm?aaa=string
     
-	//ÎÒÃÇ¾ßÌåµØÖ¸¶¨ handleRequestInternal() ·½·¨À´´¦ÀíÇëÇó
-	//@RequestMapping Ïàµ±ÓÚÈÃ POJO ÊµÏÖÁË Controller ½Ó¿Ú£¬
-	//¶øÔÚ·½·¨¶¨Òå´¦µÄ @RequestMapping Ïàµ±ÓÚÈÃ POJO À©Õ¹ Spring Ô¤¶¨ÒåµÄ Controller£¨Èç SimpleFormController µÈ£©¡£
-	//Õâ¸ö±ØĞë´æÔÚ£¬ÈÃspirngÖªµÀ¸ÃÓÃÄÄ¸ö·½·¨À´½ÓÊÜÇëÇó
+	//æˆ‘ä»¬å…·ä½“åœ°æŒ‡å®š handleRequestInternal() æ–¹æ³•æ¥å¤„ç†è¯·æ±‚
+	//@RequestMapping ç›¸å½“äºè®© POJO å®ç°äº† Controller æ¥å£ï¼Œ
+	//è€Œåœ¨æ–¹æ³•å®šä¹‰å¤„çš„ @RequestMapping ç›¸å½“äºè®© POJO æ‰©å±• Spring é¢„å®šä¹‰çš„ Controllerï¼ˆå¦‚ SimpleFormController ç­‰ï¼‰ã€‚
+	//è¿™ä¸ªå¿…é¡»å­˜åœ¨ï¼Œè®©spirngçŸ¥é“è¯¥ç”¨å“ªä¸ªæ–¹æ³•æ¥æ¥å—è¯·æ±‚
 	@RequestMapping
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse resp) throws Exception 
@@ -65,7 +65,7 @@ public class TestController extends AbstractWizardFormController {
 		String message = ServletRequestUtils.getRequiredStringParameter(req, PARAM_MSG);
 		increaseCounter();
 		ModelAndView mav = new ModelAndView("test");
-		//ModelAndView mav = new ModelAndView();//Ä¬ÈÏÌí¼Ótest¿ØÖÆÆ÷ÊÓÍ¼
+		//ModelAndView mav = new ModelAndView();//é»˜è®¤æ·»åŠ testæ§åˆ¶å™¨è§†å›¾
 		mav.addObject("message", message);
 		mav.addObject("counter", counter);
 		System.out.println(mav.getViewName());

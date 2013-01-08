@@ -3,7 +3,7 @@ package com.novelbio.database.domain.geneanno;
 import com.novelbio.analysis.tools.Mas3.getProbID;
 
 /**
- * UCSCµÄSNPĞÅÏ¢
+ * UCSCçš„SNPä¿¡æ¯
  * @author zong0jie
  *
  */
@@ -11,11 +11,11 @@ public class SnpIndelRs {
 	int taxID = 0;
 	String chrID;
 	/**
-	 * snp»òÕßindelµÄÆğµã
+	 * snpæˆ–è€…indelçš„èµ·ç‚¹
 	 */
 	int locStart;
 	/**
-	 * snp»òÕßindelµÄÖÕµã
+	 * snpæˆ–è€…indelçš„ç»ˆç‚¹
 	 */
 	int locEnd;
 	/**
@@ -23,7 +23,7 @@ public class SnpIndelRs {
 	 */
 	String snpRsID;
 	/**
-	 * ÔİÊ±²»ÓÃ
+	 * æš‚æ—¶ä¸ç”¨
 	 */
 	int score = 0;
 	/**
@@ -31,12 +31,12 @@ public class SnpIndelRs {
 	 */
 	String strand = "";
 	/**
-	 * Ö»ÓĞµ±refUCSCºÍrefNCBI²»Ò»ÑùµÄÊ±ºò²Å»áÓĞÄÚÈİ
+	 * åªæœ‰å½“refUCSCå’ŒrefNCBIä¸ä¸€æ ·çš„æ—¶å€™æ‰ä¼šæœ‰å†…å®¹
 	 */
 	String refNCBI;;
 //	String refUCSC = "";
 	/**
-	 * Êµ¼Ê¹Û²ìµ½µÄsnp»òÕßindel
+	 * å®é™…è§‚å¯Ÿåˆ°çš„snpæˆ–è€…indel
 	 * The sequences of the observed alleles from rs-fasta files
 	 */
 	String observed;
@@ -48,9 +48,9 @@ public class SnpIndelRs {
 	/**
 	 * Class of variant (single, in-del, named, mixed, etc.)
 	 * enum('unknown', 'single', 'in-del', 'het', 'microsatellite', 'named', 'mixed', 'mnp', 'insertion', 'deletion')
-	 * ¾ßÌåÊÇÊ²Ã´ÀàĞÍ
-	 * indel»¹ÊÇsnp»¹ÊÇÆäËû
-	 * Í¬UCSCµÄclass
+	 * å…·ä½“æ˜¯ä»€ä¹ˆç±»å‹
+	 * indelè¿˜æ˜¯snpè¿˜æ˜¯å…¶ä»–
+	 * åŒUCSCçš„class
 	 */
 	String type;
 	/**
@@ -60,12 +60,12 @@ public class SnpIndelRs {
 	String valid;
 	/**
 	 *  Average heterozygosity from all observations. Note: may be computed on small number of samples.
-	 * Æ½¾ùÔÓºÏÂÊ
+	 * å¹³å‡æ‚åˆç‡
 	 */
 	double avHet = -1;
 	/**
 	 * Standard Error for the average heterozygosity
-	 * Æ½¾ùÔÓºÏÂÊ±ê×¼Îó
+	 * å¹³å‡æ‚åˆç‡æ ‡å‡†è¯¯
 	 */
 	double avHetSE = -1;
 	/**
@@ -99,8 +99,8 @@ public class SnpIndelRs {
 	 */
 	int submitterCount = 0;
 	/**
-	 * Ìá½»ÕßList of submitter handles
-	 * ¶ººÅ¸ô¿ª£¬×îºóÓĞÒ»¸ö¶ººÅ
+	 * æäº¤è€…List of submitter handles
+	 * é€—å·éš”å¼€ï¼Œæœ€åæœ‰ä¸€ä¸ªé€—å·
 	 */
 	String submitters = "";
 	/**
@@ -114,12 +114,12 @@ public class SnpIndelRs {
 	/**
 	 * Count of chromosomes (2N) on which each allele was observed.
 	 * Note: this is extrapolated by dbSNP from submitted frequencies and total sample 2N, and is not always an integer.
-	 * ÀàËÆ1.000000,1.000000,µÈ£¬ÓÃ¶ººÅ¸ô¿ªµÄdouble
+	 * ç±»ä¼¼1.000000,1.000000,ç­‰ï¼Œç”¨é€—å·éš”å¼€çš„double
 	 */
 	String alleleNs;
 	/**
 	* Allele frequencies
-	* ÀàËÆ0.5000000,0.5000000,µÈ£¬ÓÃ¶ººÅ¸ô¿ªµÄdouble
+	* ç±»ä¼¼0.5000000,0.5000000,ç­‰ï¼Œç”¨é€—å·éš”å¼€çš„double
 	*/
 	String alleleFreqs;
 	/**
@@ -149,14 +149,14 @@ public class SnpIndelRs {
 	
 	/**
 	* Allele frequencies
-	* ÀàËÆ0.5000000,0.5000000,µÈ£¬ÓÃ¶ººÅ¸ô¿ªµÄdouble
+	* ç±»ä¼¼0.5000000,0.5000000,ç­‰ï¼Œç”¨é€—å·éš”å¼€çš„double
 	*/
 	public void setAlleleFreqs(String alleleFreqs) {
 		this.alleleFreqs = alleleFreqs;
 	}
 	/**
 	* Allele frequencies
-	* ÀàËÆ0.5000000,0.5000000,µÈ£¬ÓÃ¶ººÅ¸ô¿ªµÄdouble
+	* ç±»ä¼¼0.5000000,0.5000000,ç­‰ï¼Œç”¨é€—å·éš”å¼€çš„double
 	*/
 	public String getAlleleFreqs() {
 		return alleleFreqs;
@@ -164,7 +164,7 @@ public class SnpIndelRs {
 	/**
 	 * Count of chromosomes (2N) on which each allele was observed.
 	 * Note: this is extrapolated by dbSNP from submitted frequencies and total sample 2N, and is not always an integer.
-	 * ÀàËÆ1.000000,1.000000,µÈ£¬ÓÃ¶ººÅ¸ô¿ªµÄdouble
+	 * ç±»ä¼¼1.000000,1.000000,ç­‰ï¼Œç”¨é€—å·éš”å¼€çš„double
 	 */
 	public void setAlleleNs(String alleleNs) {
 		this.alleleNs = alleleNs;
@@ -172,7 +172,7 @@ public class SnpIndelRs {
 	/**
 	 * Count of chromosomes (2N) on which each allele was observed.
 	 * Note: this is extrapolated by dbSNP from submitted frequencies and total sample 2N, and is not always an integer.
-	 * ÀàËÆ1.000000,1.000000,µÈ£¬ÓÃ¶ººÅ¸ô¿ªµÄdouble
+	 * ç±»ä¼¼1.000000,1.000000,ç­‰ï¼Œç”¨é€—å·éš”å¼€çš„double
 	 */
 	public String getAlleleNs() {
 		return alleleNs;
@@ -191,16 +191,16 @@ public class SnpIndelRs {
 	}
 	/**
 	 *  Average heterozygosity from all observations. Note: may be computed on small number of samples.
-	 * Æ½¾ùÔÓºÏÂÊ
-	 * Ğ¡ÓÚ0±íÊ¾Ã»ÓĞ
+	 * å¹³å‡æ‚åˆç‡
+	 * å°äº0è¡¨ç¤ºæ²¡æœ‰
 	 */
 	public void setAvHet(double avHet) {
 		this.avHet = avHet;
 	}
 	/**
 	 *  Average heterozygosity from all observations. Note: may be computed on small number of samples.
-	 * Æ½¾ùÔÓºÏÂÊ
-	 * -1±íÊ¾Ã»ÓĞ
+	 * å¹³å‡æ‚åˆç‡
+	 * -1è¡¨ç¤ºæ²¡æœ‰
 	 */
 	public double getAvHet() {
 		if (avHet < 0) {
@@ -210,16 +210,16 @@ public class SnpIndelRs {
 	}
 	/**
 	 * Standard Error for the average heterozygosity
-	 * Æ½¾ùÔÓºÏÂÊ±ê×¼Îó
-	 * Ğ¡ÓÚ0±íÊ¾Ã»ÓĞ
+	 * å¹³å‡æ‚åˆç‡æ ‡å‡†è¯¯
+	 * å°äº0è¡¨ç¤ºæ²¡æœ‰
 	 */
 	public void setAvHetSE(double avHetSE) {
 		this.avHetSE = avHetSE;
 	}
 	/**
 	 * Standard Error for the average heterozygosity
-	 * Æ½¾ùÔÓºÏÂÊ±ê×¼Îó
-	 * -1±íÊ¾Ã»ÓĞ
+	 * å¹³å‡æ‚åˆç‡æ ‡å‡†è¯¯
+	 * -1è¡¨ç¤ºæ²¡æœ‰
 	 */
 	public double getAvHetSE() {
 		if (avHetSE < 0) {
@@ -242,14 +242,14 @@ public class SnpIndelRs {
 		return bitfields;
 	}
 	/**
-	 * snpÔÚÄÄÌõÈ¾É«ÌåÉÏ
+	 * snpåœ¨å“ªæ¡æŸ“è‰²ä½“ä¸Š
 	 * @param chrID
 	 */
 	public void setChrID(String chrID) {
 		this.chrID = chrID;
 	}
 	/**
-	 * snpÔÚÄÄÌõÈ¾É«ÌåÉÏ
+	 * snpåœ¨å“ªæ¡æŸ“è‰²ä½“ä¸Š
 	 * @param refID
 	 */
 	public String getChrID() {
@@ -298,26 +298,26 @@ public class SnpIndelRs {
 		return function;
 	}
 	/**
-	 * snp»òÕßindelµÄÖÕµã
+	 * snpæˆ–è€…indelçš„ç»ˆç‚¹
 	 */
 	public void setLocEnd(int locEnd) {
 		this.locEnd = locEnd;
 	}
 	/**
-	 * snp»òÕßindelµÄÖÕµã
+	 * snpæˆ–è€…indelçš„ç»ˆç‚¹
 	 */
 	public int getLocEnd() {
 		return locEnd;
 	}
 	
 	/**
-	 * snp»òÕßindelµÄÆğµã
+	 * snpæˆ–è€…indelçš„èµ·ç‚¹
 	 */
 	public void setLocStart(int locStart) {
 		this.locStart = locStart;
 	}
 	/**
-	 * snp»òÕßindelµÄÆğµã
+	 * snpæˆ–è€…indelçš„èµ·ç‚¹
 	 */
 	public int getLocStart() {
 		return locStart;
@@ -353,39 +353,39 @@ public class SnpIndelRs {
 	}
 	
 	/**
-	 * Êµ¼Ê¹Û²ìµ½µÄsnp»òÕßindel
+	 * å®é™…è§‚å¯Ÿåˆ°çš„snpæˆ–è€…indel
 	 * The sequences of the observed alleles from rs-fasta files
 	 */
 	public void setObserved(String observed) {
 		this.observed = observed;
 	}
 	/**
-	 * Êµ¼Ê¹Û²ìµ½µÄsnp»òÕßindel
+	 * å®é™…è§‚å¯Ÿåˆ°çš„snpæˆ–è€…indel
 	 * The sequences of the observed alleles from rs-fasta files
 	 */
 	public String getObserved() {
 		return observed;
 	}
 	/**
-	 * Ö»ÓĞµ±refUCSCºÍrefNCBI²»Ò»ÑùµÄÊ±ºò²Å»áÓĞÄÚÈİ
+	 * åªæœ‰å½“refUCSCå’ŒrefNCBIä¸ä¸€æ ·çš„æ—¶å€™æ‰ä¼šæœ‰å†…å®¹
 	 */
 	public void setRefNCBI(String refNCBI) {
 		this.refNCBI = refNCBI;
 	}
 	/**
-	 * Ö»ÓĞµ±refUCSCºÍrefNCBI²»Ò»ÑùµÄÊ±ºò²Å»áÓĞÄÚÈİ
+	 * åªæœ‰å½“refUCSCå’ŒrefNCBIä¸ä¸€æ ·çš„æ—¶å€™æ‰ä¼šæœ‰å†…å®¹
 	 */
 	public String getRefNCBI() {
 		return refNCBI;
 	}
 	/**
-	 * ÔİÊ±²»ÓÃ
+	 * æš‚æ—¶ä¸ç”¨
 	 */
 	public void setScore(int score) {
 		this.score = score;
 	}
 	/**
-	 * ÔİÊ±²»ÓÃ
+	 * æš‚æ—¶ä¸ç”¨
 	 */
 	public int getScore() {
 		return score;
@@ -409,7 +409,7 @@ public class SnpIndelRs {
 
 	/**
 	 * Which DNA strand contains the observed alleles
-	 * + , - ºÍ""
+	 * + , - å’Œ""
 	 */
 	public void setStrand(String strand) {
 		this.strand = strand;
@@ -435,15 +435,15 @@ public class SnpIndelRs {
 	}
 
 	/**
-	 * Ìá½»ÕßList of submitter handles
-	 * ¶ººÅ¸ô¿ª£¬×îºóÓĞÒ»¸ö¶ººÅ
+	 * æäº¤è€…List of submitter handles
+	 * é€—å·éš”å¼€ï¼Œæœ€åæœ‰ä¸€ä¸ªé€—å·
 	 */
 	public void setSubmitters(String submitters) {
 		this.submitters = submitters;
 	}
 	/**
-	 * Ìá½»ÕßList of submitter handles
-	 * ¶ººÅ¸ô¿ª£¬×îºóÓĞÒ»¸ö¶ººÅ
+	 * æäº¤è€…List of submitter handles
+	 * é€—å·éš”å¼€ï¼Œæœ€åæœ‰ä¸€ä¸ªé€—å·
 	 */
 	public String getSubmitters() {
 		return submitters;
@@ -452,9 +452,9 @@ public class SnpIndelRs {
 	/**
 	 * Class of variant (single, in-del, named, mixed, etc.)
 	 * enum('unknown', 'single', 'in-del', 'het', 'microsatellite', 'named', 'mixed', 'mnp', 'insertion', 'deletion')
-	 * ¾ßÌåÊÇÊ²Ã´ÀàĞÍ
-	 * indel»¹ÊÇsnp»¹ÊÇÆäËû
-	 * Í¬UCSCµÄclass
+	 * å…·ä½“æ˜¯ä»€ä¹ˆç±»å‹
+	 * indelè¿˜æ˜¯snpè¿˜æ˜¯å…¶ä»–
+	 * åŒUCSCçš„class
 	 */
 	public void setType(String type) {
 		this.type = type;
@@ -462,9 +462,9 @@ public class SnpIndelRs {
 	/**
 	 * Class of variant (single, in-del, named, mixed, etc.)
 	 * enum('unknown', 'single', 'in-del', 'het', 'microsatellite', 'named', 'mixed', 'mnp', 'insertion', 'deletion')
-	 * ¾ßÌåÊÇÊ²Ã´ÀàĞÍ
-	 * indel»¹ÊÇsnp»¹ÊÇÆäËû
-	 * Í¬UCSCµÄclass
+	 * å…·ä½“æ˜¯ä»€ä¹ˆç±»å‹
+	 * indelè¿˜æ˜¯snpè¿˜æ˜¯å…¶ä»–
+	 * åŒUCSCçš„class
 	 */
 	public String getType() {
 		return type;

@@ -49,14 +49,14 @@ public class KGCKo2Gen {
 	 */
 	private int taxID;
 	/**
-	 * NCBIID±íÖÐµÄgeneID
+	 * NCBIIDè¡¨ä¸­çš„geneID
 	 */
 	public void setTaxID(int taxID)
 	{
 		this.taxID=taxID;
 	}
 	/**
-	 * NCBIID±íÖÐµÄgeneID
+	 * NCBIIDè¡¨ä¸­çš„geneID
 	 */
 	public int getTaxID()
 	{
@@ -64,18 +64,18 @@ public class KGCKo2Gen {
 	}
 
 	/**
-	 * koºÍkegIDÊÇ¶à¶Ô¶àµÄ¹ØÏµ
+	 * koå’ŒkegIDæ˜¯å¤šå¯¹å¤šçš„å…³ç³»
 	 */
 	public ArrayList<KGIDgen2Keg> lsKgIDgen2Keg;
 	/**
-	 * kegIDºÍgenIDÊÇÒ»¶ÔÒ»µÄ¹ØÏµ
+	 * kegIDå’ŒgenIDæ˜¯ä¸€å¯¹ä¸€çš„å…³ç³»
 	 */
 	public void setLsKGIDgen2Keg(ArrayList<KGIDgen2Keg> lsKgIDgen2Keg)
 	{
 		this.lsKgIDgen2Keg=lsKgIDgen2Keg;
 	}
 	/**
-	 * kegIDºÍgenIDÊÇÒ»¶ÔÒ»µÄ¹ØÏµ
+	 * kegIDå’ŒgenIDæ˜¯ä¸€å¯¹ä¸€çš„å…³ç³»
 	 */
 	public ArrayList<KGIDgen2Keg> getLsKGIDgen2Keg()
 	{

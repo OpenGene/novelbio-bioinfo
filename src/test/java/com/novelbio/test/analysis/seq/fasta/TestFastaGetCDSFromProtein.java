@@ -43,24 +43,24 @@ public class TestFastaGetCDSFromProtein extends TestCase{
 		assertEquals(21, gffGeneIsoInfo.getATGsite());
 		assertEquals(113, gffGeneIsoInfo.getUAGsite());
 	}
-	/** protein Ã»ÓĞ¶Ëµã²¢ÇÒÓĞ´íÅäµÄ²âÊÔ */
+	/** protein æ²¡æœ‰ç«¯ç‚¹å¹¶ä¸”æœ‰é”™é…çš„æµ‹è¯• */
 	private void assertStartEndNoStartEnd() {
 		SeqFasta seqFasta = new SeqFasta("testaaa", "TCCTCCGCTGCCGAGGCATCATGGCCGCTAAGTCAGACGGGAGGCTGAAGATGAA" +
 				"GAAGAGCAGCGACGTGGCGTTCACCCCGCTGCAGAACTCGGACAATTCGGGCTCTTAGCAAGGACTGGCTCCAGGCTTGCC");
-		String proteinSeq = "XKSDGRLKMK_KSSDVAFTPLQNXDNS"; //µ°°×Ã»ÓĞÆğµãºÍÖÕµã£¬ÏÂ»®Ïß±íÊ¾gap£¬X±íÊ¾´íÅä
+		String proteinSeq = "XKSDGRLKMK_KSSDVAFTPLQNXDNS"; //è›‹ç™½æ²¡æœ‰èµ·ç‚¹å’Œç»ˆç‚¹ï¼Œä¸‹åˆ’çº¿è¡¨ç¤ºgapï¼ŒXè¡¨ç¤ºé”™é…
 		fastaGetCDSFromProtein = new FastaGetCDSFromProtein(seqFasta, proteinSeq);
 		GffGeneIsoInfo gffGeneIsoInfo = fastaGetCDSFromProtein.getGffGeneIsoInfo();
 		assertEquals(21, gffGeneIsoInfo.getATGsite());
 		assertEquals(113, gffGeneIsoInfo.getUAGsite());
 	}
 	
-	/** protein Ã»ÓĞ¶Ëµã²¢ÇÒÓĞ´íÅä
-	 * ĞòÁĞÃ»ÓĞATGºÍUAG
+	/** protein æ²¡æœ‰ç«¯ç‚¹å¹¶ä¸”æœ‰é”™é…
+	 * åºåˆ—æ²¡æœ‰ATGå’ŒUAG
 	 */
 	private void assertStartEndNoStartEndAndNoATGUAG() {
 		SeqFasta seqFasta = new SeqFasta("testaaa", "TCCTCCGCTGCCGAGGCATCCTGGCCGCTAAGTCAGACGGGAGGCTGAAGATGAA" +
 				"GAAGAGCAGCGACGTGGCGTTCACCCCGCTGCAGAACTCGGACAATTCGGGCTCTAAGCAAGGACTGGCTCCAGGCTTGCC");
-		String proteinSeq = "XKSDGRLKMK_KSSDVAFTPLQNXDNS"; //µ°°×Ã»ÓĞÆğµãºÍÖÕµã£¬ÏÂ»®Ïß±íÊ¾gap£¬X±íÊ¾´íÅä
+		String proteinSeq = "XKSDGRLKMK_KSSDVAFTPLQNXDNS"; //è›‹ç™½æ²¡æœ‰èµ·ç‚¹å’Œç»ˆç‚¹ï¼Œä¸‹åˆ’çº¿è¡¨ç¤ºgapï¼ŒXè¡¨ç¤ºé”™é…
 		
 		fastaGetCDSFromProtein = new FastaGetCDSFromProtein(seqFasta, proteinSeq);
 		fastaGetCDSFromProtein.setGetBlastIso(true);
@@ -69,14 +69,14 @@ public class TestFastaGetCDSFromProtein extends TestCase{
 		assertEquals(134, gffGeneIsoInfo.getUAGsite());
 	}
 	
-	/** protein Ã»ÓĞ¶Ëµã²¢ÇÒÓĞ´íÅä
-	 * ĞòÁĞÃ»ÓĞATGºÍUAG
-	 * µ«ÊÇµ°°×µÄ×îÇ°ÃæÓĞ¸öUAG£¬ÄÇÃ´Éè¶¨ATGÎ»µãÓ¦¸ÃÔÚUAGÇ°Ãæ
+	/** protein æ²¡æœ‰ç«¯ç‚¹å¹¶ä¸”æœ‰é”™é…
+	 * åºåˆ—æ²¡æœ‰ATGå’ŒUAG
+	 * ä½†æ˜¯è›‹ç™½çš„æœ€å‰é¢æœ‰ä¸ªUAGï¼Œé‚£ä¹ˆè®¾å®šATGä½ç‚¹åº”è¯¥åœ¨UAGå‰é¢
 	 */
 	private void assertStartEndNoStartEndAndNoATGUAG2() {
 		SeqFasta seqFasta = new SeqFasta("testaaa", "TCCTCCGCTGCTAAGGCATCCTGGCCGCTAAGTCAGACGGGAGGCTGAAGATGAA" +
 				"GAAGAGCAGCGACGTGGCGTTCACCCCGCTGCAGAACTCGGACAATTCGGGCTCTAAGCAAGGACTGGCTCCAGGCTTGCC");
-		String proteinSeq = "XKSDGRLKMK_KSSDVAFTPLQNXDNS"; //µ°°×Ã»ÓĞÆğµãºÍÖÕµã£¬ÏÂ»®Ïß±íÊ¾gap£¬X±íÊ¾´íÅä
+		String proteinSeq = "XKSDGRLKMK_KSSDVAFTPLQNXDNS"; //è›‹ç™½æ²¡æœ‰èµ·ç‚¹å’Œç»ˆç‚¹ï¼Œä¸‹åˆ’çº¿è¡¨ç¤ºgapï¼ŒXè¡¨ç¤ºé”™é…
 		fastaGetCDSFromProtein = new FastaGetCDSFromProtein(seqFasta, proteinSeq);
 		GffGeneIsoInfo gffGeneIsoInfo = fastaGetCDSFromProtein.getGffGeneIsoInfo();
 		assertEquals(15, gffGeneIsoInfo.getATGsite());

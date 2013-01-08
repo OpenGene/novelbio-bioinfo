@@ -31,7 +31,7 @@ import com.novelbio.other.downloadpicture.DownloadOperate;
 import com.novelbio.other.downloadpicture.GetPictureUrl;
 import com.novelbio.other.downloadpicture.UrlPictureDownLoad;
 
-/** ²¢·¢ÏÂÔØpixivµÄÍ¼Æ¬ */
+/** å¹¶å‘ä¸‹è½½pixivçš„å›¾ç‰‡ */
 public class PixivOperate extends DownloadOperate{
 	private static Logger logger = Logger.getLogger(PixivOperate.class);
 
@@ -43,7 +43,7 @@ public class PixivOperate extends DownloadOperate{
 		getcookies();
 	}
 	/**
-	 * »ñµÃpixivµÄcookies
+	 * è·å¾—pixivçš„cookies
 	 */
     public void getcookies() {
     	if (webFetch == null) {
@@ -63,7 +63,7 @@ public class PixivOperate extends DownloadOperate{
 		}
    }
     /**
-     * @param urlAuther µÄid
+     * @param urlAuther çš„id
      */
 	public void setUrlAuther(String urlAutherid) {
 		this.urlAuther = "http://www.pixiv.net/member_illust.php?id=" + urlAutherid;
@@ -72,8 +72,8 @@ public class PixivOperate extends DownloadOperate{
 	}
 	
 	/**
-	 * »ñµÃ×Ü¹²¼¸Ò³
-	 * @return ·µ»ØÊÇ·ñÉèÖÃ³É¹¦
+	 * è·å¾—æ€»å…±å‡ é¡µ
+	 * @return è¿”å›æ˜¯å¦è®¾ç½®æˆåŠŸ
 	 */
 	protected boolean setPictureNum_And_PageNum_Auther_And_PixivGetPath() {
 		try {
@@ -113,7 +113,7 @@ public class PixivOperate extends DownloadOperate{
         	nodeNumBefore = iteratorPages.nextNode();
 		}
         String pageRaw = nodeNumBefore.toPlainTextString();
-        String pageNum = pageRaw.replace("¼ş", "").trim();
+        String pageNum = pageRaw.replace("ä»¶", "").trim();
         return Integer.parseInt(pageNum);
 	}
 	/**
@@ -155,8 +155,8 @@ public class PixivOperate extends DownloadOperate{
 				lsPixivGetPictureUrlToDownloads = pixivGetPageMidUrl.getLsToDownloadUrl();
 			}
 			lsResult.addAll(lsPixivGetPictureUrlToDownloads);
-			logger.error("×Ü¹²" + allPages + "Ò³£¬ÒÑ¾­¶ÁÈ¡ÍêµÚ" + i + "Ò³" );
-			//Èç¹ûÎÄ¼ş¼ĞÀïÃæÒÑ¾­ÓĞ¸ÃÍ¼Æ¬ÁË£¬ÄÇÃ´¾Í·µ»Ø£¬Êµ¼ÊÉÏÓĞµÚÒ»ÕÅÍ¼Æ¬£¬»ù±¾ÉÏºóÃæµÄÍ¼¶¼»áÓĞÁË£¬ËùÒÔÅĞ¶ÏµÚÒ»ÕÅÍ¼Æ¬¾ÍĞĞÁË
+			logger.error("æ€»å…±" + allPages + "é¡µï¼Œå·²ç»è¯»å–å®Œç¬¬" + i + "é¡µ" );
+			//å¦‚æœæ–‡ä»¶å¤¹é‡Œé¢å·²ç»æœ‰è¯¥å›¾ç‰‡äº†ï¼Œé‚£ä¹ˆå°±è¿”å›ï¼Œå®é™…ä¸Šæœ‰ç¬¬ä¸€å¼ å›¾ç‰‡ï¼ŒåŸºæœ¬ä¸Šåé¢çš„å›¾éƒ½ä¼šæœ‰äº†ï¼Œæ‰€ä»¥åˆ¤æ–­ç¬¬ä¸€å¼ å›¾ç‰‡å°±è¡Œäº†
 //			if (pixivGetPageMidUrl.isAlreadyHaveFile()) {
 //				break;
 //			}

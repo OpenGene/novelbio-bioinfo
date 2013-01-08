@@ -7,8 +7,8 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
 
 /**
- * ¸ù¾İreadsÊÇ·ñÓë»ùÒòµÄ·½ÏòÏàÒ»ÖÂ¶ø½øĞĞ¹ıÂË¹¤×÷£¬Õâ¸öÊÇ×¨ÃÅÕë¶Ôº«ÑàµÄÏîÄ¿×öµÄ·ÖÎö£¬
- * ²»¿¼ÂÇÄÚ´æÏŞÖÆµÄ±à
+ * æ ¹æ®readsæ˜¯å¦ä¸åŸºå› çš„æ–¹å‘ç›¸ä¸€è‡´è€Œè¿›è¡Œè¿‡æ»¤å·¥ä½œï¼Œè¿™ä¸ªæ˜¯ä¸“é—¨é’ˆå¯¹éŸ©ç‡•çš„é¡¹ç›®åšçš„åˆ†æï¼Œ
+ * ä¸è€ƒè™‘å†…å­˜é™åˆ¶çš„ç¼–
  * @author zong0jie
  *
  */
@@ -20,16 +20,16 @@ public class MapReadsHanyanChrom extends MapReads{
 	}
 	
 	/**
-	 * ×¼±¸Ìí¼ÓreadsĞÅÏ¢¡£Ö÷ÒªÊÇ³õÊ¼»¯mapReadsAddAlignRecord
-	 * ´ËÍâ¾ÍÊÇÅĞ¶¨Ò»ÏÂstartCodÊÇ·ñÄÜÓÃ
+	 * å‡†å¤‡æ·»åŠ readsä¿¡æ¯ã€‚ä¸»è¦æ˜¯åˆå§‹åŒ–mapReadsAddAlignRecord
+	 * æ­¤å¤–å°±æ˜¯åˆ¤å®šä¸€ä¸‹startCodæ˜¯å¦èƒ½ç”¨
 	 * @param alignRecordFirst
-	 * @return Èç¹ûÉèsetFilterÖĞ¶¨ÁË startCod > 0 ²¢ÇÒreadsÃ»ÓĞ·½Ïò
-	 * Ôò·µ»Øfalse
+	 * @return å¦‚æœè®¾setFilterä¸­å®šäº† startCod > 0 å¹¶ä¸”readsæ²¡æœ‰æ–¹å‘
+	 * åˆ™è¿”å›false
 	 */
 	public boolean prepareAlignRecord(AlignRecord alignRecordFirst) {
 		mapReadsAddAlignRecord = new MapReadsAddAlignRecordHanyan(this, gffHashGene);
 		if (startCod > 0 && alignRecordFirst.isCis5to3() == null) {
-			logger.error("²»ÄÜÉè¶¨startCod£¬ÒòÎªÃ»ÓĞÉè¶¨·½ÏòÁĞ");
+			logger.error("ä¸èƒ½è®¾å®šstartCodï¼Œå› ä¸ºæ²¡æœ‰è®¾å®šæ–¹å‘åˆ—");
 			return false;
 		}
 		return true;
@@ -48,30 +48,30 @@ class MapReadsAddAlignRecordHanyan extends MapReadsAddAlignRecord {
 	}
 	
 	/**
-	 * ¸ù¾İreadsÊÇ·ñÓë»ùÒòµÄ·½ÏòÏàÒ»ÖÂ¶ø½øĞĞ¹ıÂË¹¤×÷£¬Õâ¸öÊÇ×¨ÃÅÕë¶Ôº«ÑàµÄÏîÄ¿×öµÄ·ÖÎö£¬
-	 * ÓÃÓÚµ±reads mappingÖÁgenomeÉÏÊ±£¬½ö±£ÁôreadsÓë»ùÒò·½ÏòÏàÍ¬µÄreads
-	 * ¸ø¶¨Ò»ĞĞĞÅÏ¢£¬½«¾ßÌåÄÚÈİ¼Óµ½¶ÔÓ¦µÄ×ø±êÉÏ
-	 * @param tmp ±¾ĞĞ·Ö¸îºóµÄĞÅÏ¢
-	 * @param uniqReads Í¬Ò»Î»µãµş¼ÓºóÊÇ·ñ¶ÁÈ¡
-	 * @param tmpOld ÉÏÒ»×éµÄÆğµãÖÕµã£¬ÓÃÓÚÅĞ¶ÏÊÇ·ñÊÇÔÚÍ¬Ò»Î»µãµş¼Ó
-	 * @param startCod Ö»½ØÈ¡Ç°ÃæÒ»¶ÎµÄ³¤¶È
-	 * @param cis5to3 ÊÇ·ñÖ»Ñ¡È¡Ä³Ò»¸ö·½ÏòµÄĞòÁĞ£¬Ò²¾ÍÊÇÆäËû·½ÏòµÄĞòÁĞ»á±»¹ıÂË£¬×¢Òâ¸Ã·½ÏòÎªÓëgeneµÄ·½Ïò¶ø²»ÊÇÓërefgenomeµÄ·½Ïò
-	 * @param chrBpReads ¾ßÌåĞèÒªµş¼ÓµÄÈ¾É«ÌåĞÅÏ¢
-	 * @param readsNum ¼ÇÂ¼×Ü¹²mappingµÄreadsÊıÁ¿£¬ÎªÁËÄÜ¹»´«µİÏÂÈ¥£¬²ÉÓÃÊı×é·½Ê½
+	 * æ ¹æ®readsæ˜¯å¦ä¸åŸºå› çš„æ–¹å‘ç›¸ä¸€è‡´è€Œè¿›è¡Œè¿‡æ»¤å·¥ä½œï¼Œè¿™ä¸ªæ˜¯ä¸“é—¨é’ˆå¯¹éŸ©ç‡•çš„é¡¹ç›®åšçš„åˆ†æï¼Œ
+	 * ç”¨äºå½“reads mappingè‡³genomeä¸Šæ—¶ï¼Œä»…ä¿ç•™readsä¸åŸºå› æ–¹å‘ç›¸åŒçš„reads
+	 * ç»™å®šä¸€è¡Œä¿¡æ¯ï¼Œå°†å…·ä½“å†…å®¹åŠ åˆ°å¯¹åº”çš„åæ ‡ä¸Š
+	 * @param tmp æœ¬è¡Œåˆ†å‰²åçš„ä¿¡æ¯
+	 * @param uniqReads åŒä¸€ä½ç‚¹å åŠ åæ˜¯å¦è¯»å–
+	 * @param tmpOld ä¸Šä¸€ç»„çš„èµ·ç‚¹ç»ˆç‚¹ï¼Œç”¨äºåˆ¤æ–­æ˜¯å¦æ˜¯åœ¨åŒä¸€ä½ç‚¹å åŠ 
+	 * @param startCod åªæˆªå–å‰é¢ä¸€æ®µçš„é•¿åº¦
+	 * @param cis5to3 æ˜¯å¦åªé€‰å–æŸä¸€ä¸ªæ–¹å‘çš„åºåˆ—ï¼Œä¹Ÿå°±æ˜¯å…¶ä»–æ–¹å‘çš„åºåˆ—ä¼šè¢«è¿‡æ»¤ï¼Œæ³¨æ„è¯¥æ–¹å‘ä¸ºä¸geneçš„æ–¹å‘è€Œä¸æ˜¯ä¸refgenomeçš„æ–¹å‘
+	 * @param chrBpReads å…·ä½“éœ€è¦å åŠ çš„æŸ“è‰²ä½“ä¿¡æ¯
+	 * @param readsNum è®°å½•æ€»å…±mappingçš„readsæ•°é‡ï¼Œä¸ºäº†èƒ½å¤Ÿä¼ é€’ä¸‹å»ï¼Œé‡‡ç”¨æ•°ç»„æ–¹å¼
 	 * @return
-	 * ±¾Î»µãµÄĞÅÏ¢£¬ÓÃÓÚÏÂÒ»´ÎÅĞ¶ÏÊÇ·ñÊÇÍ¬Ò»Î»µã
+	 * æœ¬ä½ç‚¹çš„ä¿¡æ¯ï¼Œç”¨äºä¸‹ä¸€æ¬¡åˆ¤æ–­æ˜¯å¦æ˜¯åŒä¸€ä½ç‚¹
 	 */
 	protected int[] addLoc(AlignRecord alignRecord ,int[] tmpOld, int[] chrBpReads, ChrMapReadsInfo chrMapReadsInfo) {
-		//ĞèÒª¸ù¾İ·½ÏòÀ´É¸Ñ¡reads
+		//éœ€è¦æ ¹æ®æ–¹å‘æ¥ç­›é€‰reads
 		if (mapReads.FilteredStrand != null) {
 			GffCodGene gffCodGene = gffHashGene.searchLocation(alignRecord.getRefID(), alignRecord.getStartAbs());
-			//Èç¹ûÎ»µãÒ»ÔÚ»ùÒòÄÚ£¬²¢ÇÒreads·½ÏòÏà¶ÔÓÚ»ùÒòµÄ·½ÏòÓëÄ¿µÄÏàÍ¬£¬Ôò½øĞĞ¼ÓºÍ·ÖÎö
+			//å¦‚æœä½ç‚¹ä¸€åœ¨åŸºå› å†…ï¼Œå¹¶ä¸”readsæ–¹å‘ç›¸å¯¹äºåŸºå› çš„æ–¹å‘ä¸ç›®çš„ç›¸åŒï¼Œåˆ™è¿›è¡ŒåŠ å’Œåˆ†æ
 			if (gffCodGene.isInsideLoc() 
 					&& mapReads.FilteredStrand == (gffCodGene.getGffDetailThis().isCis5to3() == alignRecord.isCis5to3() ) ) {
 				return super.addLoc(alignRecord, tmpOld, chrBpReads, chrMapReadsInfo);
 			}
 			GffCodGene gffCodGene2 = gffHashGene.searchLocation(alignRecord.getRefID(), alignRecord.getEndAbs());
-			//Èç¹ûÎ»µã¶şÔÚ»ùÒòÄÚ£¬²¢ÇÒreads·½ÏòÏà¶ÔÓÚ»ùÒòµÄ·½ÏòÓëÄ¿µÄÏàÍ¬£¬Ôò½øĞĞ¼ÓºÍ·ÖÎö
+			//å¦‚æœä½ç‚¹äºŒåœ¨åŸºå› å†…ï¼Œå¹¶ä¸”readsæ–¹å‘ç›¸å¯¹äºåŸºå› çš„æ–¹å‘ä¸ç›®çš„ç›¸åŒï¼Œåˆ™è¿›è¡ŒåŠ å’Œåˆ†æ
 			if (gffCodGene2.isInsideLoc() 
 					&& mapReads.FilteredStrand == (gffCodGene2.getGffDetailThis().isCis5to3() == alignRecord.isCis5to3() ) ) {
 				return super.addLoc(alignRecord, tmpOld, chrBpReads, chrMapReadsInfo);

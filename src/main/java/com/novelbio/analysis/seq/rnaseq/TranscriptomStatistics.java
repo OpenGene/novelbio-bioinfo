@@ -14,33 +14,33 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.database.model.species.Species;
 
 /**
- * ÖØ½¨×ªÂ¼±¾µÄÍ³¼Æ
+ * é‡å»ºè½¬å½•æœ¬çš„ç»Ÿè®¡
  * @author zong0jie
  *
  */
 public class TranscriptomStatistics {
 	private static Logger logger = Logger.getLogger(TranscriptomStatistics.class);
 	
-	/** È«³¤aaÖÁÉÙ³¤ÓÚ50¸ö°±»ùËá */
+	/** å…¨é•¿aaè‡³å°‘é•¿äº50ä¸ªæ°¨åŸºé…¸ */
 	static int minAAlen = 50;
 	
-	/** ĞÂ»ùÒòµÄÊıÁ¿ */
+	/** æ–°åŸºå› çš„æ•°é‡ */
 	int allGeneNewNum = 0;
-	/** ĞÂ×ªÂ¼±¾µÄÊıÁ¿ */
+	/** æ–°è½¬å½•æœ¬çš„æ•°é‡ */
 	int allIsoNewNum = 0;
-	/** ĞŞÊÎµÄexonµÄÊıÁ¿ */
+	/** ä¿®é¥°çš„exonçš„æ•°é‡ */
 	int allExonModifiedNum = 0;
-	/** ĞÂµÄ·Ç±àÂë»ùÒòµÄÊıÁ¿ */
+	/** æ–°çš„éç¼–ç åŸºå› çš„æ•°é‡ */
 	int allNewNunCodingGeneNum = 0;
 
-	/** ĞÂµÄÓĞCDSµÄ»ùÒòÊıÁ¿ */
+	/** æ–°çš„æœ‰CDSçš„åŸºå› æ•°é‡ */
 	int allNewCDSGeneNum = 0;
-	/** ĞÂµÄÓĞÈ«³¤CDSµÄ»ùÒòÊıÁ¿ */
+	/** æ–°çš„æœ‰å…¨é•¿CDSçš„åŸºå› æ•°é‡ */
 	int allNewCompleteCDSGeneNum = 0;
 	
-	/** ĞŞÊÎ¹ıµÄIsoµÄÊıÁ¿ */
+	/** ä¿®é¥°è¿‡çš„Isoçš„æ•°é‡ */
 	int allModifiedIso = 0;
-	/** ĞŞÊÎ¹ıµÄGeneµÄÊıÁ¿ */
+	/** ä¿®é¥°è¿‡çš„Geneçš„æ•°é‡ */
 	int allModifiedGene = 0;
 	
 	int allNoModifiedGene = 0;
@@ -74,7 +74,7 @@ public class TranscriptomStatistics {
 
 	
 	public void addGeneCluster(GffGeneCluster gffGeneCluster) {
-		//È«ĞÂµÄ×ªÂ¼±¾
+		//å…¨æ–°çš„è½¬å½•æœ¬
 		if (!gffGeneCluster.isContainsRef) {
 			ArrayList<GffDetailGene> lsGene = gffGeneCluster.getThisGffGene();
 			allGeneNewNum = allGeneNewNum + lsGene.size();
@@ -85,7 +85,7 @@ public class TranscriptomStatistics {
 			}
 			addCodingGeneNum(gffGeneCluster);
 		}
-		//ÒÑÓĞµÄ½øĞĞĞŞÕı
+		//å·²æœ‰çš„è¿›è¡Œä¿®æ­£
 		else {
 			addNewIsoNum(gffGeneCluster);
 			noModifiedGene(gffGeneCluster);
@@ -117,7 +117,7 @@ public class TranscriptomStatistics {
 		}
 	}
 	
-	/** ĞÂ×ªÂ¼±¾ÊıÁ¿ */
+	/** æ–°è½¬å½•æœ¬æ•°é‡ */
 	private void addNewIsoNum(GffGeneCluster gffGeneCluster) {
 		ArrayList<GffDetailGene> lsGeneThis = gffGeneCluster.getThisGffGene();
 		ArrayList<GffDetailGene> lsGeneRef = gffGeneCluster.getRefGffGene();
@@ -133,7 +133,7 @@ public class TranscriptomStatistics {
 		}
 		allIsoNewNum = allIsoNewNum + (thisIsoNum - refIsoNum);
 	}
-	/** Ã»ÓĞĞŞÊÎµÄ»ùÒòÊıÁ¿ */
+	/** æ²¡æœ‰ä¿®é¥°çš„åŸºå› æ•°é‡ */
 	private void noModifiedGene(GffGeneCluster gffGeneCluster) {
 		ArrayList<GffDetailGene> lsGeneThis = gffGeneCluster.getThisGffGene();
 		ArrayList<GffDetailGene> lsGeneRef = gffGeneCluster.getRefGffGene();
@@ -157,14 +157,14 @@ public class TranscriptomStatistics {
 			totalGenes++;
 		}
 	}
-	/** ĞŞÊÎµÄ×ªÂ¼±¾ºÍĞŞÊÎµÄexon */
+	/** ä¿®é¥°çš„è½¬å½•æœ¬å’Œä¿®é¥°çš„exon */
 	private void addModifiedIsoAndExon(GffGeneCluster gffGeneCluster) {
-		for (GffDetailGene gffDetailGeneRefRaw : gffGeneCluster.getRefGffGene()) {//±éÀúÃ¿¸öGffDetail
+		for (GffDetailGene gffDetailGeneRefRaw : gffGeneCluster.getRefGffGene()) {//éå†æ¯ä¸ªGffDetail
 			GffDetailGene gffDetailGeneRef = gffDetailGeneRefRaw.clone();
-			HashSet<GffGeneIsoInfo> setGffIsoRefSelect = new HashSet<GffGeneIsoInfo>();//ËùÓĞÑ¡ÖĞµÄIsoµÄÃû×Ö£¬Ò²¾ÍÊÇÓëcufflinkÔ¤²âµÄ×ªÂ¼±¾ÏàËÆµÄ×ªÂ¼±¾
+			HashSet<GffGeneIsoInfo> setGffIsoRefSelect = new HashSet<GffGeneIsoInfo>();//æ‰€æœ‰é€‰ä¸­çš„Isoçš„åå­—ï¼Œä¹Ÿå°±æ˜¯ä¸cufflinké¢„æµ‹çš„è½¬å½•æœ¬ç›¸ä¼¼çš„è½¬å½•æœ¬
 
-			for (GffDetailGene gffDetailGeneThis : gffGeneCluster.getThisGffGene()) {//»ñµÃÁíÒ»¸öGffHashÀïÃæµÄGffDetailGene
-				for (GffGeneIsoInfo gffIsoThis : gffDetailGeneThis.getLsCodSplit()) {//±éÀú¸ÃGffDetailGeneµÄ×ªÂ¼±¾£¬²¢ÌôÑ¡³ö×î½Ó½üµÄ½øĞĞ±È½Ï	
+			for (GffDetailGene gffDetailGeneThis : gffGeneCluster.getThisGffGene()) {//è·å¾—å¦ä¸€ä¸ªGffHashé‡Œé¢çš„GffDetailGene
+				for (GffGeneIsoInfo gffIsoThis : gffDetailGeneThis.getLsCodSplit()) {//éå†è¯¥GffDetailGeneçš„è½¬å½•æœ¬ï¼Œå¹¶æŒ‘é€‰å‡ºæœ€æ¥è¿‘çš„è¿›è¡Œæ¯”è¾ƒ	
 					GffGeneIsoInfo gffIsoRef = gffDetailGeneRef.getSimilarIso(gffIsoThis, gffGeneCluster.likelyhood);
 					
 					if (gffIsoRef == null || gffIsoRef.equalsIso(gffIsoThis) ) {
@@ -187,7 +187,7 @@ public class TranscriptomStatistics {
 	}
 	
 	/**
-	 * Ìí¼ÓÒ»¸öexon×éµÄ±È½Ï×é
+	 * æ·»åŠ ä¸€ä¸ªexonç»„çš„æ¯”è¾ƒç»„
 	 * @param lsSelectExonStatistics
 	 */
 	private boolean addTranscriptomStatistics(ArrayList<ExonClusterBoundInfo> lsSelectExonStatistics) {

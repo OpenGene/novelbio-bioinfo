@@ -3,21 +3,21 @@ package com.novelbio.analysis.seq.genome.gffOperate;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 
 /**
- * UCSC konwn geneµÄ»ùÒò×ø±êĞÅÏ¢
+ * UCSC konwn geneçš„åŸºå› åæ ‡ä¿¡æ¯
  * @author zong0jie
  *
  */
 public class GffCodGene extends ListCodAbs<GffDetailGene> {
 	/**
-	 * ´ÓÔ­Ê¼µÄListCodAbsÉú³É±¾Àà
+	 * ä»åŸå§‹çš„ListCodAbsç”Ÿæˆæœ¬ç±»
 	 * @param lsSuper
 	 */
 	public GffCodGene(String chrID, int Coordinate) {
 		super(chrID, Coordinate);
 	}
 	/**
-	 * »ñµÃcodÔÚexonÀïÃæµÄisoĞÅÏ¢£¬Ã»ÓĞÔò·µ»Ønull£¬Ê×ÏÈ²éÕÒ×î³¤×ªÂ¼±¾µÄĞÅÏ¢
-	 * ·µ»ØµÚÒ»¸öÕÒµ½µÄisoĞÅÏ¢
+	 * è·å¾—codåœ¨exoné‡Œé¢çš„isoä¿¡æ¯ï¼Œæ²¡æœ‰åˆ™è¿”å›nullï¼Œé¦–å…ˆæŸ¥æ‰¾æœ€é•¿è½¬å½•æœ¬çš„ä¿¡æ¯
+	 * è¿”å›ç¬¬ä¸€ä¸ªæ‰¾åˆ°çš„isoä¿¡æ¯
 	 */
 	public GffGeneIsoInfo getCodInCDSIso() {
 		GffGeneIsoInfo gffGeneIsoInfoTmp = null;
@@ -57,19 +57,19 @@ public class GffCodGene extends ListCodAbs<GffDetailGene> {
 	}
 	
 	/**
-	 * ·µ»ØcodÔÚÍâÏÔ×ÓÖĞµÄ×ªÂ¼±¾
-	 * ×¢Òâ²»Ò»¶¨ÔÚexonÖĞ£¬ËùÒÔÍâÃæĞèÒª½øĞĞÅĞ¶¨
+	 * è¿”å›codåœ¨å¤–æ˜¾å­ä¸­çš„è½¬å½•æœ¬
+	 * æ³¨æ„ä¸ä¸€å®šåœ¨exonä¸­ï¼Œæ‰€ä»¥å¤–é¢éœ€è¦è¿›è¡Œåˆ¤å®š
 	 * @param gffDetailGene
 	 * @return
 	 */
 	private GffGeneIsoInfo getCodInCDS(GffDetailGene gffDetailGene, int coord) {
-		//ÏÈÕÒ×î³¤×ªÂ¼±¾£¬¿´snpÊÇ·ñÔÚ¸Ã×ªÂ¼±¾µÄexonÖĞ£¬²»ÔÚµÄ»°£¬ÕÒÆäËûËùÓĞ×ªÂ¼±¾,¿´ÊÇ·ñÔÚ»ùÒòµÄ±í´ïÇøÖĞ
+		//å…ˆæ‰¾æœ€é•¿è½¬å½•æœ¬ï¼Œçœ‹snpæ˜¯å¦åœ¨è¯¥è½¬å½•æœ¬çš„exonä¸­ï¼Œä¸åœ¨çš„è¯ï¼Œæ‰¾å…¶ä»–æ‰€æœ‰è½¬å½•æœ¬,çœ‹æ˜¯å¦åœ¨åŸºå› çš„è¡¨è¾¾åŒºä¸­
 		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplitMrna();
-		//Èç¹û×î³¤×ªÂ¼±¾ÊÇÔÚCDSÇø£¬Ö±½Ó·µ»Ø
+		//å¦‚æœæœ€é•¿è½¬å½•æœ¬æ˜¯åœ¨CDSåŒºï¼Œç›´æ¥è¿”å›
 		if (gffGeneIsoInfo.getCodLocUTRCDS(coord) == GffGeneIsoInfo.COD_LOCUTR_CDS) {
 			return gffGeneIsoInfo;
 		}
-		//Èç¹û×î³¤×ªÂ¼±¾ÔÚexonÖĞ£¬µ«²»ÔÚCDSÇø£¬±éÀúËùÓĞ×ªÂ¼±¾£¬ÕÒµ½ÔÚCDSÖĞ¼äµÄ
+		//å¦‚æœæœ€é•¿è½¬å½•æœ¬åœ¨exonä¸­ï¼Œä½†ä¸åœ¨CDSåŒºï¼Œéå†æ‰€æœ‰è½¬å½•æœ¬ï¼Œæ‰¾åˆ°åœ¨CDSä¸­é—´çš„
 		else if (gffGeneIsoInfo.getCodLoc(coord) == GffGeneIsoInfo.COD_LOC_EXON) {
 			for (GffGeneIsoInfo gffGeneIsoInfo2 : gffDetailGene.getLsCodSplit()) {
 				if (gffGeneIsoInfo2.ismRNA() && gffGeneIsoInfo2.getCodLocUTRCDS(coord) == GffGeneIsoInfo.COD_LOCUTR_CDS)  {
@@ -78,7 +78,7 @@ public class GffCodGene extends ListCodAbs<GffDetailGene> {
 				}
 			}
 		}
-		//Èç¹û×î³¤×ªÂ¼±¾²»ÔÚexonÖĞ£¬±éÀúËùÓĞ×ªÂ¼±¾£¬Èç¹ûÔÚCDSÖĞ¾ÍÖ±½Ó·µ»Ø£¬Èç¹û²»ÔÚCDSÖĞ£¬¾Í·µ»ØÔÚExonÖĞµÄ
+		//å¦‚æœæœ€é•¿è½¬å½•æœ¬ä¸åœ¨exonä¸­ï¼Œéå†æ‰€æœ‰è½¬å½•æœ¬ï¼Œå¦‚æœåœ¨CDSä¸­å°±ç›´æ¥è¿”å›ï¼Œå¦‚æœä¸åœ¨CDSä¸­ï¼Œå°±è¿”å›åœ¨Exonä¸­çš„
 		else {
 			for (GffGeneIsoInfo gffGeneIsoInfo2 : gffDetailGene.getLsCodSplit()) {
 				if (gffGeneIsoInfo2.ismRNA() && gffGeneIsoInfo2.getCodLocUTRCDS(coord) == GffGeneIsoInfo.COD_LOCUTR_CDS)  {
@@ -89,7 +89,7 @@ public class GffCodGene extends ListCodAbs<GffDetailGene> {
 				}
 			}
 		}
-		//ÕÒµ½ÁË
+		//æ‰¾åˆ°äº†
 		if (gffGeneIsoInfo.getCodLoc(coord) == GffGeneIsoInfo.COD_LOC_EXON) {
 			return gffGeneIsoInfo;
 		}

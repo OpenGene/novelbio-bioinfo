@@ -11,7 +11,7 @@ import com.novelbio.base.fileOperate.FileOperate;
  * written to the output file. The output file includes the name of any 
  * matching sequence found, the start position in the sequence of the 
  * match and the percentage of the maximum possible score.<br><br>
- * <b>Ä¬ÈÏ½«ĞòÁĞ×ª»»ÎªĞ¡Ğ´È»ºóÉ¨Ãè<b>
+ * <b>é»˜è®¤å°†åºåˆ—è½¬æ¢ä¸ºå°å†™ç„¶åæ‰«æ<b>
  * @author zong0jie
  *
  */
@@ -26,16 +26,16 @@ public class Profit {
 	boolean isNr;
 	
 	/**
-	 * @param isNR true ºËËáĞòÁĞ£¬ºËËáĞòÁĞÄ¬ÈÏÍ¬Ê±É¨ÃèÕı¸ºÁ´
-	 * false µ°°×ĞòÁĞ
+	 * @param isNR true æ ¸é…¸åºåˆ—ï¼Œæ ¸é…¸åºåˆ—é»˜è®¤åŒæ—¶æ‰«ææ­£è´Ÿé“¾
+	 * false è›‹ç™½åºåˆ—
 	 */
 	public Profit(boolean isNR) {
 		this.isNr = isNR;
 	}
 	
 	/**
-	 * Éè¶¨samtoolsËùÔÚµÄÎÄ¼ş¼ĞÒÔ¼°´ı±È¶ÔµÄÂ·¾¶
-	 * @param exePath Èç¹ûÔÚ¸ùÄ¿Â¼ÏÂÔòÉèÖÃÎª""»ònull
+	 * è®¾å®šsamtoolsæ‰€åœ¨çš„æ–‡ä»¶å¤¹ä»¥åŠå¾…æ¯”å¯¹çš„è·¯å¾„
+	 * @param exePath å¦‚æœåœ¨æ ¹ç›®å½•ä¸‹åˆ™è®¾ç½®ä¸º""æˆ–null
 	 */
 	public void setExePath(String exePath) {
 		if (exePath == null || exePath.trim().equals("")) {
@@ -45,7 +45,7 @@ public class Profit {
 		}
 	}
 	
-	/** ÊäÈëµÄ´ò·Ö¾ØÕó */
+	/** è¾“å…¥çš„æ‰“åˆ†çŸ©é˜µ */
 	public void setInProfit(String inProfit) {
 		this.inProfit = inProfit;
 	}
@@ -54,17 +54,17 @@ public class Profit {
 		this.seqFile = seqFile;
 	}
 	
-	/** »ñµÃ´ò·Ö¾ØÕóµÄÂ·¾¶ */
+	/** è·å¾—æ‰“åˆ†çŸ©é˜µçš„è·¯å¾„ */
 	private String getInProfit() {
 		return " -infile " + CmdOperate.addQuot(inProfit) + " ";
 	}
 	
-	/** »ñµÃÒªÉ¨ÃèµÄĞòÁĞĞÅÏ¢ */
+	/** è·å¾—è¦æ‰«æçš„åºåˆ—ä¿¡æ¯ */
 	private String getSeqFile() {
 		return " -sequence " + CmdOperate.addQuot(seqFile) + " ";
 	}
 	
-	/** ÊÇºËËá»¹ÊÇµ°°× */
+	/** æ˜¯æ ¸é…¸è¿˜æ˜¯è›‹ç™½ */
 	private String getSeqType() {
 		if (isNr) {
 			return " -snucleotide2 ";

@@ -35,25 +35,25 @@ public class CtrlMapReads implements RunGetInfo<MapReadsAbs.MapReadsProcessInfo>
 		mapReads.setMapChrID2Len(species.getMapChromInfo());
 	}
 	/**
-	 * @param uniqReads µ±reads mappingÖÁÍ¬Ò»¸öÎ»ÖÃÊ±£¬ÊÇ·ñ½ö±£ÁôÒ»¸öreads
-	 * @param startCod ´ÓÆğµã¿ªÊ¼¶ÁÈ¡¸ÃreadsµÄ¼¸¸öbp£¬º«ÑàÓÃµ½ Ğ¡ÓÚµÈÓÚ0±íÊ¾È«²¿¶ÁÈ¡ ´óÓÚreads³¤¶ÈµÄÔòºöÂÔ¸Ã²ÎÊı
-	 * @param colUnique  UniqueµÄreadsÔÚÄÄÒ»ÁĞ novelbioµÄ±ê¼ÇÔÚµÚÆßÁĞ£¬´Ó1¿ªÊ¼¼ÆËã
-	 * @param booUniqueMapping ÖØ¸´µÄreadsÊÇ·ñÖ»Ñ¡ÔñÒ»Ìõ
-	 * @param cis5to3 ÊÇ·ñ½öÑ¡È¡Ä³Ò»·½ÏòµÄreads£¬null²»¿¼ÂÇ
+	 * @param uniqReads å½“reads mappingè‡³åŒä¸€ä¸ªä½ç½®æ—¶ï¼Œæ˜¯å¦ä»…ä¿ç•™ä¸€ä¸ªreads
+	 * @param startCod ä»èµ·ç‚¹å¼€å§‹è¯»å–è¯¥readsçš„å‡ ä¸ªbpï¼ŒéŸ©ç‡•ç”¨åˆ° å°äºç­‰äº0è¡¨ç¤ºå…¨éƒ¨è¯»å– å¤§äºreadsé•¿åº¦çš„åˆ™å¿½ç•¥è¯¥å‚æ•°
+	 * @param colUnique  Uniqueçš„readsåœ¨å“ªä¸€åˆ— novelbioçš„æ ‡è®°åœ¨ç¬¬ä¸ƒåˆ—ï¼Œä»1å¼€å§‹è®¡ç®—
+	 * @param booUniqueMapping é‡å¤çš„readsæ˜¯å¦åªé€‰æ‹©ä¸€æ¡
+	 * @param cis5to3 æ˜¯å¦ä»…é€‰å–æŸä¸€æ–¹å‘çš„readsï¼Œnullä¸è€ƒè™‘
 	 */
 	public void setFilter(boolean uniqReads, int startCod, boolean booUniqueMapping, Boolean FilteredStrand) {
 		mapReads.setFilter(uniqReads, startCod, booUniqueMapping, FilteredStrand);
 	}
 	/**
-	 * ÓÃÓÚĞ£ÕıreadsÊıµÄ·½³Ì£¬Ä¬ÈÏÉè¶¨»ùÒò×éÉÏreadsµÄ×îĞ¡ÖµÎª0£¬·²ÊÇĞ£ÕıĞ¡ÓÚ0µÄ¶¼¸ÄÎª0
+	 * ç”¨äºæ ¡æ­£readsæ•°çš„æ–¹ç¨‹ï¼Œé»˜è®¤è®¾å®šåŸºå› ç»„ä¸Šreadsçš„æœ€å°å€¼ä¸º0ï¼Œå‡¡æ˜¯æ ¡æ­£å°äº0çš„éƒ½æ”¹ä¸º0
 	 * @param FormulatToCorrectReads
 	 */
 	public void setFormulatToCorrectReads(Equations FormulatToCorrectReads) {
 		mapReads.setFormulatToCorrectReads(FormulatToCorrectReads);
 	}
 	 /**
-	  * Éè¶¨±ê×¼»¯·½·¨£¬¿ÉÒÔËæÊ±Éè¶¨£¬²»Ò»¶¨ÒªÔÚ¶ÁÈ¡ÎÄ¼şÇ°
-	  * Ä¬ÈÏÊÇNORMALIZATION_ALL_READS
+	  * è®¾å®šæ ‡å‡†åŒ–æ–¹æ³•ï¼Œå¯ä»¥éšæ—¶è®¾å®šï¼Œä¸ä¸€å®šè¦åœ¨è¯»å–æ–‡ä»¶å‰
+	  * é»˜è®¤æ˜¯NORMALIZATION_ALL_READS
 	  * @param normalType
 	  */
 	public void setNormalType(int normalType) {

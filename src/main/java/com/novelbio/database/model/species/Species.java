@@ -21,7 +21,7 @@ import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.service.servgeneanno.ServSpeciesFile;
 import com.novelbio.database.service.servgeneanno.ServTaxID;
 /**
- * ÎïÖÖĞÅÏ¢£¬°üÀ¨Ãû×Ö£¬ÒÔ¼°¸÷¸öÎÄ¼şËùÔÚÂ·¾¶
+ * ç‰©ç§ä¿¡æ¯ï¼ŒåŒ…æ‹¬åå­—ï¼Œä»¥åŠå„ä¸ªæ–‡ä»¶æ‰€åœ¨è·¯å¾„
  * @author zong0jie
  */
 public class Species {
@@ -30,21 +30,21 @@ public class Species {
 		species.getMapGffTypeAll();
 	}
 	private static Logger logger = Logger.getLogger(Species.class);
-	/** È«²¿ÎïÖÖ */
+	/** å…¨éƒ¨ç‰©ç§ */
 	public static final int ALL_SPECIES = 10;
-	/** ÓĞKeggËõĞ´ÃûµÄÎïÖÖ */
+	/** æœ‰Keggç¼©å†™åçš„ç‰©ç§ */
 	public static final int KEGGNAME_SPECIES = 20;
-	/** ÓĞÊı¾İ¿âĞòÁĞµÈĞÅÏ¢µÄÎïÖÖ */
+	/** æœ‰æ•°æ®åº“åºåˆ—ç­‰ä¿¡æ¯çš„ç‰©ç§ */
 	public static final int SEQINFO_SPECIES = 30;
 	
 	int taxID = 0;
 	TaxInfo taxInfo = new TaxInfo();
 	String version = "";
-	/** ÓĞÄÄĞ©°æ±¾,0£ºversion 1£ºyear<br>
-	 * °´ÕÕÄê´ú´Ó´óµ½Ğ¡ÅÅĞò
+	/** æœ‰å“ªäº›ç‰ˆæœ¬,0ï¼šversion 1ï¼šyear<br>
+	 * æŒ‰ç…§å¹´ä»£ä»å¤§åˆ°å°æ’åº
 	 */
 	ArrayList<String[]> lsVersion = new ArrayList<String[]>();
-	/** key£º°æ±¾ID,Í¨Í¨Ğ¡Ğ´  value£º¾ßÌåµÄĞÅÏ¢ */
+	/** keyï¼šç‰ˆæœ¬ID,é€šé€šå°å†™  valueï¼šå…·ä½“çš„ä¿¡æ¯ */
 	HashMap<String, SpeciesFile> hashVersion2Species = new HashMap<String, SpeciesFile>();
 	ServSpeciesFile servSpeciesFile = new ServSpeciesFile();
 	ServTaxID servTaxID = new ServTaxID();
@@ -53,7 +53,7 @@ public class Species {
 	String updateSpeciesFile = "";
 	String sepVersionAndYear = "_year_";
 	
-	/** ĞèÒª»ñµÃÄÄÒ»ÖÖgffType */
+	/** éœ€è¦è·å¾—å“ªä¸€ç§gffType */
 	GFFtype gfftype;
 	
 	public Species() {}
@@ -73,7 +73,7 @@ public class Species {
 		return taxID;
 	}
 	/**
-	 * Éè¶¨taxID£¬Èç¹ûÉè¶¨µÄÊÇÈ«ĞÂµÄtaxID£¬ÄÇÃ´»áÖØĞÂÉè¶¨version
+	 * è®¾å®štaxIDï¼Œå¦‚æœè®¾å®šçš„æ˜¯å…¨æ–°çš„taxIDï¼Œé‚£ä¹ˆä¼šé‡æ–°è®¾å®šversion
 	 * @param taxID
 	 */
 	public void setTaxID(int taxID) {
@@ -87,7 +87,7 @@ public class Species {
 		}
 	}
 	/**
-	 * Éè¶¨°æ±¾ºÅ£¬Éè¶¨Ö®Ç°Îñ±ØÏÈÉè¶¨taxID¡£Èç¹û²»´æÔÚ¸Ã°æ±¾ºÅ£¬ÔòÖ±½Ó·µ»Ø
+	 * è®¾å®šç‰ˆæœ¬å·ï¼Œè®¾å®šä¹‹å‰åŠ¡å¿…å…ˆè®¾å®štaxIDã€‚å¦‚æœä¸å­˜åœ¨è¯¥ç‰ˆæœ¬å·ï¼Œåˆ™ç›´æ¥è¿”å›
 	 * @param version
 	 */
 	public void setVersion(String version) {
@@ -101,16 +101,16 @@ public class Species {
 		this.version = version;
 	}
 	/**
-	 * »ñµÃÊı¾İ¿âÖĞ¸ÃÎïÖÖµÄËùÓĞ°æ±¾
-	 * µ¹ĞòÅÅÁĞ
+	 * è·å¾—æ•°æ®åº“ä¸­è¯¥ç‰©ç§çš„æ‰€æœ‰ç‰ˆæœ¬
+	 * å€’åºæ’åˆ—
 	 * @return
 	 */
 	public String getVersion() {
 		return this.version;
 	}
 	/**
-	 * »ñµÃÊı¾İ¿âÖĞ¸ÃÎïÖÖµÄËùÓĞ°æ±¾
-	 * µ¹ĞòÅÅÁĞ
+	 * è·å¾—æ•°æ®åº“ä¸­è¯¥ç‰©ç§çš„æ‰€æœ‰ç‰ˆæœ¬
+	 * å€’åºæ’åˆ—
 	 * @return
 	 */
 	public ArrayList<String> getVersionAll() {
@@ -121,8 +121,8 @@ public class Species {
 		return lsVersionOut;
 	}
 	/**
-	 * »ñµÃÊı¾İ¿âÖĞ¸ÃÎïÖÖµÄËùÓĞ°æ±¾
-	 * µ¹ĞòÅÅÁĞ£¬Ö÷ÒªÓÃÓÚguiÖĞµÄÑ¡¿ò
+	 * è·å¾—æ•°æ®åº“ä¸­è¯¥ç‰©ç§çš„æ‰€æœ‰ç‰ˆæœ¬
+	 * å€’åºæ’åˆ—ï¼Œä¸»è¦ç”¨äºguiä¸­çš„é€‰æ¡†
 	 * @return
 	 */
 	public HashMap<String, String> getMapVersion() {
@@ -133,13 +133,13 @@ public class Species {
 		return mapVersion;
 	}
 	/**
-	 * »ñµÃ¸ÃÎïÖÖµÄĞÅÏ¢
+	 * è·å¾—è¯¥ç‰©ç§çš„ä¿¡æ¯
 	 */
 	private void querySpecies() {
 		try {
 			taxInfo = servTaxID.queryTaxInfo(taxID);
 		} catch (Exception e) {
-			logger.error("Êı¾İ¿âÃ»Á¬ÉÏ");
+			logger.error("æ•°æ®åº“æ²¡è¿ä¸Š");
 			e.printStackTrace();
 			return;
 		}
@@ -148,7 +148,7 @@ public class Species {
 			lsVersion.add(new String[]{speciesFile.getVersion(), speciesFile.getPublishYear() + ""});
 			hashVersion2Species.put(speciesFile.getVersion().toLowerCase(), speciesFile);
 		}
-		//Äê´ú´Ó´óµ½Ğ¡ÅÅĞò
+		//å¹´ä»£ä»å¤§åˆ°å°æ’åº
 		Collections.sort(lsVersion, new Comparator<String[]>() {
 			public int compare(String[] o1, String[] o2) {
 				Integer o1int = Integer.parseInt(o1[1]);
@@ -157,24 +157,24 @@ public class Species {
 			}
 		});
 	}
-	/** ³£ÓÃÃû */
+	/** å¸¸ç”¨å */
 	public String getCommonName() {
 		return taxInfo.getComName();
 	}
-	/** ³£ÓÃÃû */
+	/** å¸¸ç”¨å */
 	public String getAbbrName() {
 		return taxInfo.getAbbr();
 	}
 	/**
 	 * @return
-	 * key: chrID Ğ¡Ğ´
-	 * value£º length
+	 * key: chrID å°å†™
+	 * valueï¼š length
 	 */
 	public HashMap<String, Long> getMapChromInfo() {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
 		return speciesFile.getMapChromInfo();
 	}
-	/** È¾É«ÌåÈ«³¤ĞòÁĞ */
+	/** æŸ“è‰²ä½“å…¨é•¿åºåˆ— */
 	public long getChromLenAll() {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
 		HashMap<String, Long> hashChrID2Len = speciesFile.getMapChromInfo();
@@ -185,12 +185,12 @@ public class Species {
 		}
 		return len;
 	}
-	/** »ñµÃchrÎÄ¼şµÄpath */
+	/** è·å¾—chræ–‡ä»¶çš„path */
 	public String getChromFaPath() {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
 		return speciesFile.getChromFaPath();
 	}
-	/** »ñµÃchrÎÄ¼şµÄregex */
+	/** è·å¾—chræ–‡ä»¶çš„regex */
 	public String getChromFaRegex() {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
 		return speciesFile.getChromFaRegx();
@@ -199,26 +199,26 @@ public class Species {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
 		return speciesFile.getChromSeqFile();
 	}
-	/** »ñµÃÕâ¸öspeciesÔÚ±¾versionÏÂµÄÈ«ÌåGffType */
+	/** è·å¾—è¿™ä¸ªspeciesåœ¨æœ¬versionä¸‹çš„å…¨ä½“GffType */
 	public HashMap<String, GFFtype> getMapGffTypeAll() {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
 		return speciesFile.getMapGffType();
 	}
-	/** Éè¶¨ĞèÒª»ñÈ¡ÄÄÒ»ÖÖgffÎÄ¼şµÄ×¢ÊÍ */
+	/** è®¾å®šéœ€è¦è·å–å“ªä¸€ç§gffæ–‡ä»¶çš„æ³¨é‡Š */
 	public void setGfftype(GFFtype gfftype) {
 		this.gfftype = gfftype;
 	}
 	/**
-	 * Ö¸¶¨version£¬ºÍtype£¬·µ»Ø¶ÔÓ¦µÄgffÎÄ¼ş£¬Ã»ÓĞÔò·µ»Ønull£¬
-	 * ¸ù¾İÉè¶¨µÄgfftypeÑ¡Ôñ£¬Èç¹ûÃ»ÓĞÉè¶¨gfftype£¬ÔòÑ¡Ôñ×îÓÅÏÈµÄgfftype¡£
-	 * ÓÅÏÈ¼¶ÓÉGFFtypeÀ´¾ö¶¨
+	 * æŒ‡å®šversionï¼Œå’Œtypeï¼Œè¿”å›å¯¹åº”çš„gffæ–‡ä»¶ï¼Œæ²¡æœ‰åˆ™è¿”å›nullï¼Œ
+	 * æ ¹æ®è®¾å®šçš„gfftypeé€‰æ‹©ï¼Œå¦‚æœæ²¡æœ‰è®¾å®šgfftypeï¼Œåˆ™é€‰æ‹©æœ€ä¼˜å…ˆçš„gfftypeã€‚
+	 * ä¼˜å…ˆçº§ç”±GFFtypeæ¥å†³å®š
 	 * @return gffFilePath
 	 */
 	public String getGffFile() {
 		return getGffFile(gfftype);
 	}
 	/**
-	 * Ö¸¶¨version£¬ºÍtype£¬·µ»Ø¶ÔÓ¦µÄgffÎÄ¼ş£¬Ã»ÓĞÔò·µ»Ønull
+	 * æŒ‡å®šversionï¼Œå’Œtypeï¼Œè¿”å›å¯¹åº”çš„gffæ–‡ä»¶ï¼Œæ²¡æœ‰åˆ™è¿”å›null
 	 * @param Type
 	 */
 	public String getGffFile(GFFtype gffType) {
@@ -227,9 +227,9 @@ public class Species {
 	}
 
 	/**
-	 * Ö¸¶¨version£¬ºÍtype£¬·µ»Ø¶ÔÓ¦µÄgffÎÄ¼ş£¬Ã»ÓĞÔò·µ»Ønull£¬
-	 * ×Ô¶¯Ñ¡Ôñ×îÓÅÏÈµÄgfftype¡£
-	 * ÓÅÏÈ¼¶ÓÉGFFtypeÀ´¾ö¶¨
+	 * æŒ‡å®šversionï¼Œå’Œtypeï¼Œè¿”å›å¯¹åº”çš„gffæ–‡ä»¶ï¼Œæ²¡æœ‰åˆ™è¿”å›nullï¼Œ
+	 * è‡ªåŠ¨é€‰æ‹©æœ€ä¼˜å…ˆçš„gfftypeã€‚
+	 * ä¼˜å…ˆçº§ç”±GFFtypeæ¥å†³å®š
 	 * @return gffType
 	 */
 	public String getGffFileType() {
@@ -240,7 +240,7 @@ public class Species {
 		return gfftype.toString();
 	}
 	/**
-	 * ·µ»ØUCSCµÄgffRepeat
+	 * è¿”å›UCSCçš„gffRepeat
 	 * @param version
 	 * @return
 	 */
@@ -248,61 +248,61 @@ public class Species {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
 		return speciesFile.getGffRepeatFile();
 	}
-	/** »ñµÃ±¾ÎïÖÖÖ¸¶¨versionµÄmiRNAÇ°ÌåĞòÁĞ */
+	/** è·å¾—æœ¬ç‰©ç§æŒ‡å®šversionçš„miRNAå‰ä½“åºåˆ— */
 	public String getMiRNAhairpinFile() {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
 		return speciesFile.getMiRNAhairpinFile();
 	}
-	/** »ñµÃ±¾ÎïÖÖÖ¸¶¨versionµÄmiRNAĞòÁĞ */
+	/** è·å¾—æœ¬ç‰©ç§æŒ‡å®šversionçš„miRNAåºåˆ— */
 	public String getMiRNAmatureFile() {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
 		return speciesFile.getMiRNAmatureFile();
 	}
-	/** »ñµÃ±¾ÎïÖĞÖ¸¶¨versionµÄrfamĞòÁĞ */
+	/** è·å¾—æœ¬ç‰©ä¸­æŒ‡å®šversionçš„rfamåºåˆ— */
 	public String getRfamFile() {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
 		return speciesFile.getRfamFile();
 	}
-	/** »ñµÃ±¾ÎïÖĞÖ¸¶¨versionµÄrefseqµÄncRNAĞòÁĞ */
+	/** è·å¾—æœ¬ç‰©ä¸­æŒ‡å®šversionçš„refseqçš„ncRNAåºåˆ— */
 	public String getRefseqNCfile() {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
 		return speciesFile.getRefseqNCfile();
 	}
-	/** »ñµÃ±¾ÎïÖĞÖ¸¶¨versionµÄrefseqµÄĞòÁĞ */
+	/** è·å¾—æœ¬ç‰©ä¸­æŒ‡å®šversionçš„refseqçš„åºåˆ— */
 	public String getRefseqFile() {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
 		return speciesFile.getRefseqFile();
 	}
-	/** »ñÈ¡½öº¬ÓĞ×î³¤×ªÂ¼±¾µÄrefseqÎÄ¼ş£¬ÊÇºËËáĞòÁĞ£¬Ã»ÓĞ¾Í·µ»Ønull */
+	/** è·å–ä»…å«æœ‰æœ€é•¿è½¬å½•æœ¬çš„refseqæ–‡ä»¶ï¼Œæ˜¯æ ¸é…¸åºåˆ—ï¼Œæ²¡æœ‰å°±è¿”å›null */
 	public String getRefseqLongestIsoNrFile() {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
 		return speciesFile.getRefseqLongestIsoNrFile();
 	}
-	/** Ö¸¶¨mappingµÄÈí¼ş£¬»ñµÃ¸ÃÈí¼şËù¶ÔÓ¦µÄË÷ÒıÎÄ¼ş
-	 * Ã»ÓĞ¾ÍĞÂ½¨Ò»¸ö£¬¸ñÊ½<br>
+	/** æŒ‡å®šmappingçš„è½¯ä»¶ï¼Œè·å¾—è¯¥è½¯ä»¶æ‰€å¯¹åº”çš„ç´¢å¼•æ–‡ä»¶
+	 * æ²¡æœ‰å°±æ–°å»ºä¸€ä¸ªï¼Œæ ¼å¼<br>
 	 * softMapping.toString() + "_Chr_Index/"
 	 *  */
 	public String getIndexChr(SoftWare softMapping) {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
 		return speciesFile.getIndexChromFa(softMapping);
 	}
-	/** Ö¸¶¨mappingµÄÈí¼ş£¬»ñµÃ¸ÃÈí¼şËù¶ÔÓ¦µÄË÷ÒıÎÄ¼ş
-	 * Ã»ÓĞ¾ÍĞÂ½¨Ò»¸ö£¬¸ñÊ½<br>
+	/** æŒ‡å®šmappingçš„è½¯ä»¶ï¼Œè·å¾—è¯¥è½¯ä»¶æ‰€å¯¹åº”çš„ç´¢å¼•æ–‡ä»¶
+	 * æ²¡æœ‰å°±æ–°å»ºä¸€ä¸ªï¼Œæ ¼å¼<br>
 	 * softMapping.toString() + "_Ref_Index/" 
 	 *  */
 	public String getIndexRef(SoftWare softMapping) {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
 		return speciesFile.getIndexRefseq(softMapping);
 	}
-	////////////////////////    Éı¼¶   //////////////////////////////////////////////////////////////////////////////////////
-	/** ÊäÈëtaxinfoµÄÎÄ±¾ */
+	////////////////////////    å‡çº§   //////////////////////////////////////////////////////////////////////////////////////
+	/** è¾“å…¥taxinfoçš„æ–‡æœ¬ */
 	public void setUpdateTaxInfo(String taxInfoFile) {
 		this.updateTaxInfoFile = taxInfoFile;
 	}
 	public void setUpdateSpeciesFile(String speciesFile) {
 		this.updateSpeciesFile = speciesFile;
 	}
-	/** ×Ô¶¯»¯Éı¼¶ */
+	/** è‡ªåŠ¨åŒ–å‡çº§ */
 	public void update() {
 		if (FileOperate.isFileExistAndBigThanSize(updateTaxInfoFile, 0.05))
 			updateTaxInfo(updateTaxInfoFile);
@@ -311,8 +311,8 @@ public class Species {
 			updateSpeciesFile(updateSpeciesFile);
 	}
 	/**
-	 * ½«ÅäÖÃĞÅÏ¢µ¼ÈëÊı¾İ¿â
-	 * @param txtFile 	 ÅäÖÃĞÅÏ¢£ºµÚÒ»ĞĞ£¬itemÃû³Æ
+	 * å°†é…ç½®ä¿¡æ¯å¯¼å…¥æ•°æ®åº“
+	 * @param txtFile 	 é…ç½®ä¿¡æ¯ï¼šç¬¬ä¸€è¡Œï¼Œitemåç§°
 	 */
 	private void updateTaxInfo(String txtFile) {
 		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(txtFile, 0);
@@ -339,13 +339,13 @@ public class Species {
 			
 			m = hashName2ColNum.get("abbreviation");
 			taxInfo.setAbbr(info[m]);
-			//Éı¼¶
+			//å‡çº§
 			taxInfo.update();
 		}
 	}
 	/**
-	 * ½«ÅäÖÃĞÅÏ¢µ¼ÈëÊı¾İ¿â
-	 * @param txtFile 	 ÅäÖÃĞÅÏ¢£ºµÚÒ»ĞĞ£¬itemÃû³Æ
+	 * å°†é…ç½®ä¿¡æ¯å¯¼å…¥æ•°æ®åº“
+	 * @param txtFile 	 é…ç½®ä¿¡æ¯ï¼šç¬¬ä¸€è¡Œï¼Œitemåç§°
 	 */
 	private void updateSpeciesFile(String speciesFileInput) {
 		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(speciesFileInput, 0);
@@ -391,14 +391,14 @@ public class Species {
 			try {
 				speciesFile.getHashChrID2ChrLen();
 			} catch (Exception e) {
-				logger.error("ÌõÄ¿³ö´í£º" + ArrayOperate.cmbString(info, "\t"));
+				logger.error("æ¡ç›®å‡ºé”™ï¼š" + ArrayOperate.cmbString(info, "\t"));
 			}
 		
-			//Éı¼¶
+			//å‡çº§
 			speciesFile.update();
 		}
 	}
-	/** ÓÃÊı¾İ¿â²éÕÒµÄ·½Ê½£¬±éÀúrefseqÎÄ¼ş£¬È»ºó»ñµÃgene2isoµÄ±í */
+	/** ç”¨æ•°æ®åº“æŸ¥æ‰¾çš„æ–¹å¼ï¼Œéå†refseqæ–‡ä»¶ï¼Œç„¶åè·å¾—gene2isoçš„è¡¨ */
 	public String getGene2IsoFileFromDB() {
 		String gene2IsoFile = FileOperate.changeFileSuffix(getRefseqFile(), "_Gene2Iso", "txt");
 		if (!FileOperate.isFileExist(gene2IsoFile)) {
@@ -418,8 +418,8 @@ public class Species {
 	}
 	
 	/**
-	 * ·µ»Ø³£ÓÃÃû¶ÔtaxID
-	 * @param allID true·µ»ØÈ«²¿ID£¬ false·µ»Ø³£ÓÃID--Ò²¾ÍÊÇÓĞËõĞ´µÄID
+	 * è¿”å›å¸¸ç”¨åå¯¹taxID
+	 * @param allID trueè¿”å›å…¨éƒ¨IDï¼Œ falseè¿”å›å¸¸ç”¨ID--ä¹Ÿå°±æ˜¯æœ‰ç¼©å†™çš„ID
 	 * @return
 	 */
 	@Deprecated
@@ -428,8 +428,8 @@ public class Species {
 		return servTaxID.getSpeciesNameTaxID(allID);
 	}
 	/**
-	 * ·µ»Ø³£ÓÃÃû¶ÔtaxID
-	 * @param speciesType ¸ù¾İ²»Í¬µÄ
+	 * è¿”å›å¸¸ç”¨åå¯¹taxID
+	 * @param speciesType æ ¹æ®ä¸åŒçš„
 	 * @return
 	 */
 	public static HashMap<String, Species> getSpeciesName2Species(int speciesType) {
@@ -458,9 +458,9 @@ public class Species {
 		return mapSpeciesName2Species;
 	}
 	/**
-	 * ·µ»ØÎïÖÖµÄ³£ÓÃÃû£¬²¢ÇÒ°´ÕÕ×ÖÄ¸ÅÅĞò£¨ºöÂÔ´óĞ¡Ğ´£©
-	 * ¿ÉÒÔÅäºÏgetSpeciesNameTaxID·½·¨À´»ñµÃtaxID
-	 * @param allID true·µ»ØÈ«²¿ID£¬ false·µ»Ø³£ÓÃID--Ò²¾ÍÊÇÓĞËõĞ´µÄID
+	 * è¿”å›ç‰©ç§çš„å¸¸ç”¨åï¼Œå¹¶ä¸”æŒ‰ç…§å­—æ¯æ’åºï¼ˆå¿½ç•¥å¤§å°å†™ï¼‰
+	 * å¯ä»¥é…åˆgetSpeciesNameTaxIDæ–¹æ³•æ¥è·å¾—taxID
+	 * @param allID trueè¿”å›å…¨éƒ¨IDï¼Œ falseè¿”å›å¸¸ç”¨ID--ä¹Ÿå°±æ˜¯æœ‰ç¼©å†™çš„ID
 	 * @return
 	 */
 	@Deprecated
@@ -482,7 +482,7 @@ public class Species {
 		return lsResult;
 	}
 	/**
-	 * ·µ»ØtaxID¶Ô³£ÓÃÃû
+	 * è¿”å›taxIDå¯¹å¸¸ç”¨å
 	 * @return
 	 */
 	@Deprecated

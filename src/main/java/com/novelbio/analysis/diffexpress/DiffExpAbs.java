@@ -29,25 +29,25 @@ public abstract class DiffExpAbs {
 	
 	ArrayList<String[]> lsGeneInfo = new ArrayList<String[]>();
 	/**
-	 * Ò»ÏµÁĞµÄ±íÊ¾»ùÒò·Ö×éµÄÁĞ£¬ÊäÈëµÄÊ±ºò¾Í°´ÕÕcol½øĞĞÁËÅÅĞò<br>
-	 * 0: colNum, Êµ¼Ênumber<br>
+	 * ä¸€ç³»åˆ—çš„è¡¨ç¤ºåŸºå› åˆ†ç»„çš„åˆ—ï¼Œè¾“å…¥çš„æ—¶å€™å°±æŒ‰ç…§colè¿›è¡Œäº†æ’åº<br>
+	 * 0: colNum, å®é™…number<br>
 	 * 1: SampleGroupName
 	 */
 	ArrayList<String[]> lsSampleColumn2GroupName;
-	/** »ùÒòÃû
-	 * ¶ÔÓ¦Ñù±¾Ãû
-	 * ¶ÔÓ¦Æ½¾ù±í´ïÖµ
+	/** åŸºå› å
+	 * å¯¹åº”æ ·æœ¬å
+	 * å¯¹åº”å¹³å‡è¡¨è¾¾å€¼
 	 */
 	HashMap<String, HashMap<String, Double>> mapGeneID_2_Sample2MeanValue;
-	/**»ùÒòÎ¨Ò»ID£¬±ØĞëÃ»ÓĞÖØ¸´ */
+	/**åŸºå› å”¯ä¸€IDï¼Œå¿…é¡»æ²¡æœ‰é‡å¤ */
 	int colAccID = 0;
 	/**
-	 * ±È½Ï×éÓëÏàÓ¦µÄÊä³öÎÄ¼şÃû£¬¿ÉÒÔÊäÈëÒ»ÏµÁĞ×é
+	 * æ¯”è¾ƒç»„ä¸ç›¸åº”çš„è¾“å‡ºæ–‡ä»¶åï¼Œå¯ä»¥è¾“å…¥ä¸€ç³»åˆ—ç»„
 	 * map: condition to compare group <br>
 	 * FileName <br>
 	 * To<br>
-	 * 0£ºtreatment<br>
-	 * 1£ºcontrol
+	 * 0ï¼štreatment<br>
+	 * 1ï¼šcontrol
 	 */
 	HashMap<String, String[]> mapOutFileName2Compare = new LinkedHashMap<String, String[]>();
 	
@@ -64,13 +64,13 @@ public abstract class DiffExpAbs {
 		this.rawScript = rawScript;
 	}
 	/**
-	 * Ò»ÏµÁĞµÄ±íÊ¾»ùÒò·Ö×éµÄÁĞ<br>
-	 * 0: colNum, Êµ¼Ênumber<br>
+	 * ä¸€ç³»åˆ—çš„è¡¨ç¤ºåŸºå› åˆ†ç»„çš„åˆ—<br>
+	 * 0: colNum, å®é™…number<br>
 	 * 1: SampleGroupName
 	 */
 	public void setCol2Sample(ArrayList<String[]> lsSampleColumn2GroupName) {
 		this.lsSampleColumn2GroupName = lsSampleColumn2GroupName;
-		//°´ÁĞ½øĞĞÅÅĞò
+		//æŒ‰åˆ—è¿›è¡Œæ’åº
 		Collections.sort(lsSampleColumn2GroupName, new Comparator<String[]>() {
 			public int compare(String[] o1, String[] o2) {
 				Integer col1 = Integer.parseInt(o1[0]);
@@ -81,7 +81,7 @@ public abstract class DiffExpAbs {
 		calculate = false;
 	}
 	/**
-	 * Éè¶¨Êä³öÎÄ¼ş¼ĞºÍ±È½Ï×é
+	 * è®¾å®šè¾“å‡ºæ–‡ä»¶å¤¹å’Œæ¯”è¾ƒç»„
 	 * @param fileName
 	 * @param comparePair <br>
 	 * 0: treatment<br>
@@ -95,30 +95,30 @@ public abstract class DiffExpAbs {
 		this.lsGeneInfo = lsGeneInfo;
 		calculate = false;
 	}
-	/** »ùÒò±ê¼ÇÁĞ£¬Êµ¼ÊÁĞ */
+	/** åŸºå› æ ‡è®°åˆ—ï¼Œå®é™…åˆ— */
 	public void setColID(int colID) {
 		this.colAccID = colID - 1;
 		calculate = false;
 	}
 	protected abstract void setOutScriptPath();
-	/** Éè¶¨Ô­Ê¼Êı¾İµÄÎÄ¼şÃû */
+	/** è®¾å®šåŸå§‹æ•°æ®çš„æ–‡ä»¶å */
 	protected abstract void setFileNameRawdata();
 	
 	protected void setRworkspace() {
 		workSpace = PathDetail.getRworkspaceTmp();
 	}
-	/** ½ö¹©²âÊÔ */
+	/** ä»…ä¾›æµ‹è¯• */
 	public String getOutScript() {
 		generateScript();
 		return outScript;
 	}
-	/** ½ö¹©²âÊÔ */
+	/** ä»…ä¾›æµ‹è¯• */
 	public String getFileNameRawdata() {
 		return fileNameRawdata;
 	}
 	
-	/** ·µ»ØÊÇ·ñÎªlog¹ıµÄÖµ
-	 * Ö÷ÒªÓÃÓÚlimma£¬ÆäÊµ¾ÍÊÇÅĞ¶Ï×î´óµÄ±í´ïÖµÊÇ·ñ´óÓÚ40
+	/** è¿”å›æ˜¯å¦ä¸ºlogè¿‡çš„å€¼
+	 * ä¸»è¦ç”¨äºlimmaï¼Œå…¶å®å°±æ˜¯åˆ¤æ–­æœ€å¤§çš„è¡¨è¾¾å€¼æ˜¯å¦å¤§äº40
 	 *  */
 	public boolean isLogValue() {
 		ArrayList<Double> lsValue = new ArrayList<Double>();
@@ -145,7 +145,7 @@ public abstract class DiffExpAbs {
 		calculateResult();
 		return ArrayOperate.getArrayListKey(mapOutFileName2Compare);
 	}
-	/** ¼ÆËã²îÒì */
+	/** è®¡ç®—å·®å¼‚ */
 	protected void calculateResult() {
 		if (calculate) {
 			return;
@@ -159,18 +159,18 @@ public abstract class DiffExpAbs {
 		clean();
 	}
 	/**
-	 * ½«ÊäÈëµÄÎÄ¼şÖØÕûÀí³ÉËùĞèÒªµÄtxt¸ñÊ½Ğ´ÈëÎÄ±¾
+	 * å°†è¾“å…¥çš„æ–‡ä»¶é‡æ•´ç†æˆæ‰€éœ€è¦çš„txtæ ¼å¼å†™å…¥æ–‡æœ¬
 	 */
 	protected void writeToGeneFile() {
 		TxtReadandWrite txtWrite = new TxtReadandWrite(fileNameRawdata, true);
 		txtWrite.ExcelWrite(getAnalysisGeneInfo());
 	}
 	/**
-	 * »ñµÃÑ¡¶¨µÄ»ùÒòIDºÍ¾ßÌåÖµ
-	 * ÅÅĞò·½Ê½°´ÕÕÊäÈëµÄlsSampleColumn2GroupName½øĞĞÅÅĞò£¬²»×öµ÷Õû
+	 * è·å¾—é€‰å®šçš„åŸºå› IDå’Œå…·ä½“å€¼
+	 * æ’åºæ–¹å¼æŒ‰ç…§è¾“å…¥çš„lsSampleColumn2GroupNameè¿›è¡Œæ’åºï¼Œä¸åšè°ƒæ•´
 	 * @return
-	 * 0£º geneID
-	 * 1-n£ºvalue
+	 * 0ï¼š geneID
+	 * 1-nï¼švalue
 	 */
 	protected  ArrayList<String[]> getAnalysisGeneInfo() {
 		ArrayList<String[]> lsResultGeneInfo = new ArrayList<String[]>();
@@ -199,9 +199,9 @@ public abstract class DiffExpAbs {
 	}
 
 	/**
-	 * »ñµÃ 
-	 * Ñù±¾Ê±ÆÚ--¸ÃÊ±ÆÚÄÚÆ½¾ùÖµ
-	 * µÄmap
+	 * è·å¾— 
+	 * æ ·æœ¬æ—¶æœŸ--è¯¥æ—¶æœŸå†…å¹³å‡å€¼
+	 * çš„map
 	 * @param info
 	 * @return
 	 */
@@ -211,7 +211,7 @@ public abstract class DiffExpAbs {
 		for (int i = 0; i < lsSampleColumn2GroupName.size(); i++) {
 			int colNum = Integer.parseInt(lsSampleColumn2GroupName.get(i)[0]) - 1;
 			double value = Double.parseDouble(info[colNum]);
-			String timeInfo = lsSampleColumn2GroupName.get(i)[1];//Ê±ÆÚ
+			String timeInfo = lsSampleColumn2GroupName.get(i)[1];//æ—¶æœŸ
 			ArrayList<Double> lsValue = add_and_get_LsValue(timeInfo, mapTime2LsValue);
 			lsValue.add(value);
 		}
@@ -223,8 +223,8 @@ public abstract class DiffExpAbs {
 		return mapTime2AvgValue;
 	}
 	/** 
-	 * Éè¶¨Ñù±¾Ê±ÆÚµ½¾ßÌåÖµµÄĞÅÏ¢¡£
-	 * Ã»ÓĞ¸ÃtimeInfo¾Í²úÉú¸öĞÂµÄlist£¬ÓĞµÄ»°¾Í»ñµÃÔ­À´µÄlist 
+	 * è®¾å®šæ ·æœ¬æ—¶æœŸåˆ°å…·ä½“å€¼çš„ä¿¡æ¯ã€‚
+	 * æ²¡æœ‰è¯¥timeInfoå°±äº§ç”Ÿä¸ªæ–°çš„listï¼Œæœ‰çš„è¯å°±è·å¾—åŸæ¥çš„list 
 	 */
 	protected ArrayList<Double> add_and_get_LsValue(String timeInfo, HashMap<String, ArrayList<Double>> mapTime2value) {
 		ArrayList<Double> lsValue = mapTime2value.get(timeInfo);
@@ -248,8 +248,8 @@ public abstract class DiffExpAbs {
 		return fileRawdata;
 	}
 	/**
-	 * µ÷ÓÃRrunning²¢Ğ´ÈëCmdµÄÃû×Ö,
-	 * ÀıÈç£º
+	 * è°ƒç”¨Rrunningå¹¶å†™å…¥Cmdçš„åå­—,
+	 * ä¾‹å¦‚ï¼š
 	 * Rrunning("DEseq")
 	 */
 	protected abstract void run();
@@ -268,14 +268,14 @@ public abstract class DiffExpAbs {
 	}
 	protected abstract void modifySingleResultFile(String outFileName, String treatName, String controlName);
 	
-	/** É¾³ıÖĞ¼äÎÄ¼ş */
+	/** åˆ é™¤ä¸­é—´æ–‡ä»¶ */
 	public void clean() {
 		FileOperate.DeleteFileFolder(outScript);
 		FileOperate.DeleteFileFolder(fileNameRawdata);
 	}
 	/**
-	 * ·µ»ØmethodµÄÎÄ×ÖÓëÆäID¶ÔÕÕ±í
-	 * ID¾ÍÊÇ±¾ÀàµÄ³£Á¿
+	 * è¿”å›methodçš„æ–‡å­—ä¸å…¶IDå¯¹ç…§è¡¨
+	 * IDå°±æ˜¯æœ¬ç±»çš„å¸¸é‡
 	 */
 	public static HashMap<String, Integer> getMapMethod2ID() {
 		HashMap<String, Integer> mapMethod2ID = new LinkedHashMap<String, Integer>();

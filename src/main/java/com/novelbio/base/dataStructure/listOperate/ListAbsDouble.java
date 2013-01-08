@@ -14,23 +14,23 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
 	 */
 	private static final long serialVersionUID = 4583552188474447935L;
 	/**
-	 * ºÃÏñÊÇ·Ö¸îÍ¬Ò»¸öelementµÄ¶à¸önameµÄ·ûºÅ£¬´ıÈ·ÈÏ
+	 * å¥½åƒæ˜¯åˆ†å‰²åŒä¸€ä¸ªelementçš„å¤šä¸ªnameçš„ç¬¦å·ï¼Œå¾…ç¡®è®¤
 	 */
 	public static final String SEP = "/";
 
 	/**
-	 * ±£´æÄ³¸ö×ø±êºÍËùÔÚµÄelementÊıÄ¿,
-	 * value: ÕıÊı£¬elementÖĞ£¬
-	 * ¸ºÊı£¬Á½¸öelementÖ®¼ä
+	 * ä¿å­˜æŸä¸ªåæ ‡å’Œæ‰€åœ¨çš„elementæ•°ç›®,
+	 * value: æ­£æ•°ï¼Œelementä¸­ï¼Œ
+	 * è´Ÿæ•°ï¼Œä¸¤ä¸ªelementä¹‹é—´
 	 */
 	HashMap<Integer, Double> hashCodInEleNum;
 	/**
-	 * ±£´æÄ³¸ö×ø±êµ½ËùÔÚµÄÄÚº¬×Ó/ÍâÏÔ×ÓÆğµãµÄ¾àÀë
+	 * ä¿å­˜æŸä¸ªåæ ‡åˆ°æ‰€åœ¨çš„å†…å«å­/å¤–æ˜¾å­èµ·ç‚¹çš„è·ç¦»
 	 */
 	HashMap<Double, Double> hashLocExInStart;
 
 	/**
-	 * ±£´æÄ³¸ö×ø±êµ½ËùÔÚµÄÄÚº¬×Ó/ÍâÏÔ×ÓÖÕµãµÄ¾àÀë
+	 * ä¿å­˜æŸä¸ªåæ ‡åˆ°æ‰€åœ¨çš„å†…å«å­/å¤–æ˜¾å­ç»ˆç‚¹çš„è·ç¦»
 	 */
 	HashMap<Double, Double> hashLocExInEnd;
 	
@@ -43,7 +43,7 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
 		return listName;
 	}
 	/**
-	 * Ã»ÓĞ·½ÏòÔò·µ»Ønull
+	 * æ²¡æœ‰æ–¹å‘åˆ™è¿”å›null
 	 * @return
 	 */
 	public Boolean isCis5to3() {
@@ -55,8 +55,8 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
  	}
 	
 	/**
-	 * ½«listÖĞµÄÔªËØ½øĞĞÅÅĞò£¬Èç¹ûelementÀïÃæ start > end£¬ÄÇÃ´¾Í´Ó´óµ½Ğ¡ÅÅĞò
-	 * Èç¹ûelementÀïÃæstart < end£¬ÄÇÃ´¾Í´ÓĞ¡µ½´óÅÅĞò
+	 * å°†listä¸­çš„å…ƒç´ è¿›è¡Œæ’åºï¼Œå¦‚æœelementé‡Œé¢ start > endï¼Œé‚£ä¹ˆå°±ä»å¤§åˆ°å°æ’åº
+	 * å¦‚æœelementé‡Œé¢start < endï¼Œé‚£ä¹ˆå°±ä»å°åˆ°å¤§æ’åº
 	 */
 	public void sort()
 	{
@@ -72,8 +72,8 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
 	}
 	
 	/**
-	 * ·µ»ØÊµ¼ÊµÚnum¸öelement¼äÇøµÄ³¤¶È
-	 * @param num Êµ¼ÊÊıÄ¿
+	 * è¿”å›å®é™…ç¬¬numä¸ªelementé—´åŒºçš„é•¿åº¦
+	 * @param num å®é™…æ•°ç›®
 	 * @return
 	 */
 	public double getInterGenic(int num)
@@ -86,8 +86,8 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
 		}
 	}
 	/**
-	 * ·µ»ØÊµ¼ÊµÚnum¸öelementµÄ³¤¶È
-	 * @param num Êµ¼ÊÊıÄ¿
+	 * è¿”å›å®é™…ç¬¬numä¸ªelementçš„é•¿åº¦
+	 * @param num å®é™…æ•°ç›®
 	 * @return
 	 */
 	public double getEleLen(int num)
@@ -95,7 +95,7 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
 		return get(num-1).Length();
 	}
 	/**
-	 * ÓÃÊ±Ğè½÷É÷
+	 * ç”¨æ—¶éœ€è°¨æ…
 	 * @return
 	 */
 	public double getLen()
@@ -119,7 +119,7 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
 	}
 	
 	/**
-	 * ÔÚÏÂÓÎ·µ»ØÕıÊı£¬ÉÏÓÎ·µ»Ø¸ºÊı
+	 * åœ¨ä¸‹æ¸¸è¿”å›æ­£æ•°ï¼Œä¸Šæ¸¸è¿”å›è´Ÿæ•°
 	 * @param loc
 	 * @return
 	 */
@@ -133,7 +133,7 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
 	}
 	
 	/**
-	 * ÔÚÏÂÓÎ·µ»ØÕıÊı£¬ÉÏÓÎ·µ»Ø¸ºÊı
+	 * åœ¨ä¸‹æ¸¸è¿”å›æ­£æ•°ï¼Œä¸Šæ¸¸è¿”å›è´Ÿæ•°
 	 * @param loc
 	 * @return
 	 */
@@ -147,7 +147,7 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
 	}
 	
 	/**
-	 * ÊäÈëµÄlocÊÇ·ñÔÚ±¾listµÄ·¶Î§Íâ
+	 * è¾“å…¥çš„locæ˜¯å¦åœ¨æœ¬listçš„èŒƒå›´å¤–
 	 * @return
 	 */
 	protected boolean isLocInside(int loc) {
@@ -157,7 +157,7 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
 		return true;
 	}
 	/**
-	 * ÊäÈëµÄlocÊÇ·ñÔÚStartµÄÏÂÓÎ
+	 * è¾“å…¥çš„locæ˜¯å¦åœ¨Startçš„ä¸‹æ¸¸
 	 * @return
 	 */
 	protected boolean isLocDownStart(int loc) {
@@ -170,7 +170,7 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
 		return false;
 	}
 	/**
-	 * ÊäÈëµÄlocÊÇ·ñÔÚStartµÄÏÂÓÎ
+	 * è¾“å…¥çš„locæ˜¯å¦åœ¨Startçš„ä¸‹æ¸¸
 	 * @return
 	 */
 	protected boolean isLocDownEnd(int loc) {
@@ -200,12 +200,12 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
 	}
 	
 	/**
-	 * Á½¸ö×ø±êÖ®¼äµÄ¾àÀë£¬½ö½ö¼ÆËãËûÃÇÔÚmRNA²ãÃæµÄ¾àÀë£¬Ò²¾ÍÊÇÖ»¼ÆËãeleÉÏµÄ¾àÀë¡£
-	 * µ±Á½ÕßÖØµşÊ±£¬·µ»Ø0
-	 * µ±loc1ÔÚloc2ÉÏÓÎÊ±£¬·µ»ØÕıÊı£¬µ±loc1ÔÚloc2ÏÂÓÎÊ±£¬·µ»Ø¸ºÊı
-	 * ÒªÇóÕâÁ½¸ö×ø±ê¶¼ÔÚexonÉÏ.Èç¹û²»·ûºÏ£¬Ôò·µ»ØGffCodAbs.LOC_ORIGINAL
-	 * @param loc1 µÚÒ»¸ö×ø±ê
-	 * @param loc2 µÚ¶ş¸ö×ø±ê
+	 * ä¸¤ä¸ªåæ ‡ä¹‹é—´çš„è·ç¦»ï¼Œä»…ä»…è®¡ç®—ä»–ä»¬åœ¨mRNAå±‚é¢çš„è·ç¦»ï¼Œä¹Ÿå°±æ˜¯åªè®¡ç®—eleä¸Šçš„è·ç¦»ã€‚
+	 * å½“ä¸¤è€…é‡å æ—¶ï¼Œè¿”å›0
+	 * å½“loc1åœ¨loc2ä¸Šæ¸¸æ—¶ï¼Œè¿”å›æ­£æ•°ï¼Œå½“loc1åœ¨loc2ä¸‹æ¸¸æ—¶ï¼Œè¿”å›è´Ÿæ•°
+	 * è¦æ±‚è¿™ä¸¤ä¸ªåæ ‡éƒ½åœ¨exonä¸Š.å¦‚æœä¸ç¬¦åˆï¼Œåˆ™è¿”å›GffCodAbs.LOC_ORIGINAL
+	 * @param loc1 ç¬¬ä¸€ä¸ªåæ ‡
+	 * @param loc2 ç¬¬äºŒä¸ªåæ ‡
 	 */
 	public double getLocDistmRNA(int loc1, int loc2)
 	{
@@ -229,7 +229,7 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
 			distance = locBig - locSmall;
 		}
 		else {
-			//doubleÕâÀï²»ĞèÒª¼ÓÒ»
+			//doubleè¿™é‡Œä¸éœ€è¦åŠ ä¸€
 			distance = getLoc2EleEnd(locSmall) + getLoc2EleStart(locBig);
 			for (int i = locSmallExInNum + 1; i <= locBigExInNum - 1; i++) {
 				distance = distance + get(i).Length();
@@ -244,12 +244,12 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
 	
 //	/**
 //	 * TO BE CHECKED
-//	 * Ö»ÓĞÔÚcis´æÔÚµÄÊ±ºò²ÅÄÜÊ¹ÓÃ
-//	 * ·µ»Ø¾àÀëlocÓĞnum BpµÄ×ø±ê£¬ÔÚmRNA²ãÃæ£¬ÔÚlocÉÏÓÎÊ±num Îª¸ºÊı
-//	 * ÔÚlocÏÂÓÎÊ±numÎªÕıÊı
-//	 * Èç¹ûnum BpÍâ¾ÍÃ»ÓĞ»ùÒòÁË£¬Ôò·µ»Ø-1£»
+//	 * åªæœ‰åœ¨ciså­˜åœ¨çš„æ—¶å€™æ‰èƒ½ä½¿ç”¨
+//	 * è¿”å›è·ç¦»locæœ‰num Bpçš„åæ ‡ï¼Œåœ¨mRNAå±‚é¢ï¼Œåœ¨locä¸Šæ¸¸æ—¶num ä¸ºè´Ÿæ•°
+//	 * åœ¨locä¸‹æ¸¸æ—¶numä¸ºæ­£æ•°
+//	 * å¦‚æœnum Bpå¤–å°±æ²¡æœ‰åŸºå› äº†ï¼Œåˆ™è¿”å›-1ï¼›
 //	 * @param mRNAnum
-//	 * NnnnLoc Îª-4Î»£¬µ±NÓëLocÖØºÏÊ±Îª0
+//	 * NnnnLoc ä¸º-4ä½ï¼Œå½“Nä¸Locé‡åˆæ—¶ä¸º0
 //	 */
 //	public int getLocDistmRNASite(int location, int mRNAnum) {
 //		if (getLocInEleNum(location) <= 0) {
@@ -264,7 +264,7 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
 //				int remain = Math.abs(mRNAnum) - getLoc2EleStart(location);
 //				for (int i = exonNum - 1; i >= 0; i--) {
 //					ElementAbs tmpExon = get(i);
-//					// Ò»¸öÒ»¸öÍâÏÔ×ÓµÄÏòÇ°±éÀú
+//					// ä¸€ä¸ªä¸€ä¸ªå¤–æ˜¾å­çš„å‘å‰éå†
 //					if (remain - tmpExon.getLen() > 0) {
 //						remain = remain - tmpExon.getLen();
 //						continue;
@@ -285,7 +285,7 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
 //				int remain = mRNAnum - getLoc2EleEnd(location);
 //				for (int i = exonNum + 1; i < size(); i++) {
 //					ElementAbs tmpExon = get(i);
-//					// Ò»¸öÒ»¸öÍâÏÔ×ÓµÄÏòÇ°±éÀú
+//					// ä¸€ä¸ªä¸€ä¸ªå¤–æ˜¾å­çš„å‘å‰éå†
 //					if (remain - tmpExon.getLen() > 0) {
 //						remain = remain - tmpExon.getLen();
 //						continue;
@@ -300,12 +300,12 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
 //	}
 	/**
 	 * TO BE CHECKED
-	 * ·µ»Ø¾àÀëlocÓĞnum BpµÄ×ø±ê£¬ÔÚmRNA²ãÃæ£¬ÔÚlocÉÏÓÎÊ±num Îª¸ºÊı
-	 * ÔÚlocÏÂÓÎÊ±numÎªÕıÊı
-	 * Èç¹ûnum BpÍâ¾ÍÃ»ÓĞ»ùÒòÁË£¬Ôò·µ»Ø-1£»
+	 * è¿”å›è·ç¦»locæœ‰num Bpçš„åæ ‡ï¼Œåœ¨mRNAå±‚é¢ï¼Œåœ¨locä¸Šæ¸¸æ—¶num ä¸ºè´Ÿæ•°
+	 * åœ¨locä¸‹æ¸¸æ—¶numä¸ºæ­£æ•°
+	 * å¦‚æœnum Bpå¤–å°±æ²¡æœ‰åŸºå› äº†ï¼Œåˆ™è¿”å›-1ï¼›
 	 * @param mRNAnum
-	 * NnnnLoc Îª-4Î»£¬µ±NÓëLocÖØºÏÊ±Îª0
-	 * LnnnnNÎª5Î»
+	 * NnnnLoc ä¸º-4ä½ï¼Œå½“Nä¸Locé‡åˆæ—¶ä¸º0
+	 * LnnnnNä¸º5ä½
 	 */
 	public double getLocDistmRNASite(int location, int mRNAnum) {
 		if (searchLocInEleNum(location) <= 0) {
@@ -324,13 +324,13 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
 				double remain = Math.abs(mRNAnum) - getLoc2EleStart(location);
 				for (int i = exonNum - 1; i >= 0; i--) {
 					E tmpExon = get(i);
-					// Ò»¸öÒ»¸öÍâÏÔ×ÓµÄÏòÇ°±éÀú
+					// ä¸€ä¸ªä¸€ä¸ªå¤–æ˜¾å­çš„å‘å‰éå†
 					if (remain - tmpExon.Length() > 0) {
 						remain = remain - tmpExon.Length();
 						continue;
 					}
 					else {
-						//²»ĞèÒª¼ÓÒ»»ò¼õÒ»
+						//ä¸éœ€è¦åŠ ä¸€æˆ–å‡ä¸€
 						if (isCis5to3()) {
 							return tmpExon.getEndCis() - remain;
 						}
@@ -356,13 +356,13 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
 				double remain = mRNAnum - getLoc2EleEnd(location);
 				for (int i = exonNum + 1; i < size(); i++) {
 					E tmpExon = get(i);
-					// Ò»¸öÒ»¸öÍâÏÔ×ÓµÄÏòÇ°±éÀú
+					// ä¸€ä¸ªä¸€ä¸ªå¤–æ˜¾å­çš„å‘å‰éå†
 					if (remain - tmpExon.Length() > 0) {
 						remain = remain - tmpExon.Length();
 						continue;
 					}
 					else {
-						//²»ĞèÒª¼ÓÒ»»ò¼õÒ»
+						//ä¸éœ€è¦åŠ ä¸€æˆ–å‡ä¸€
 						if (isCis5to3()) {
 							return tmpExon.getStartCis() + remain;
 						}
@@ -377,10 +377,10 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
 	}
 	
 	/**
-	 * ±ØĞëÊ×ÏÈÉè¶¨ListAbsµÄ·½Ïò£¬²¢ÇÒ¸Ã·½ÏòºÍÆäÄÚ²¿µÄelementµÄ·½ÏòÒªÒ»ÖÂ
-	 * ×ø±êµ½element Æğµã¾àÀë
-	 * @param location ×ø±ê
-	 *  * ¸ÃµãÔÚÍâÏÔ×ÓÖĞÎªÕıÊı£¬ÔÚÄÚº¬×ÓÖĞÎª¸ºÊı£¬ÎªÊµ¼ÊÊıÄ¿
+	 * å¿…é¡»é¦–å…ˆè®¾å®šListAbsçš„æ–¹å‘ï¼Œå¹¶ä¸”è¯¥æ–¹å‘å’Œå…¶å†…éƒ¨çš„elementçš„æ–¹å‘è¦ä¸€è‡´
+	 * åæ ‡åˆ°element èµ·ç‚¹è·ç¦»
+	 * @param location åæ ‡
+	 *  * è¯¥ç‚¹åœ¨å¤–æ˜¾å­ä¸­ä¸ºæ­£æ•°ï¼Œåœ¨å†…å«å­ä¸­ä¸ºè´Ÿæ•°ï¼Œä¸ºå®é™…æ•°ç›®
 	 */
 	protected double getLoc2EleStart(double location) {
 		if (hashLocExInStart == null) {
@@ -391,29 +391,29 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
 		}
 		double loc2ExInStart = -1000000000;
 		int exIntronNum = searchLocInEleNum(location);
-		int NumExon = Math.abs(exIntronNum) - 1; //Êµ¼ÊÊıÁ¿¼õÈ¥1£¬·½·¨ÄÚÓÃ¸Ã±äÁ¿ÔËËã
+		int NumExon = Math.abs(exIntronNum) - 1; //å®é™…æ•°é‡å‡å»1ï¼Œæ–¹æ³•å†…ç”¨è¯¥å˜é‡è¿ç®—
 		if (exIntronNum > 0) {
 			if (cis5to3 != null)
-				loc2ExInStart = Math.abs(location - get(NumExon).getStartCis());//¾àÀë±¾ÍâÏÔ×ÓÆğÊ¼ nnnnnnnnC
+				loc2ExInStart = Math.abs(location - get(NumExon).getStartCis());//è·ç¦»æœ¬å¤–æ˜¾å­èµ·å§‹ nnnnnnnnC
 			else
-				loc2ExInStart = Math.abs(location - get(NumExon).getStartAbs());//¾àÀë±¾ÍâÏÔ×ÓÆğÊ¼ nnnnnnnnC
+				loc2ExInStart = Math.abs(location - get(NumExon).getStartAbs());//è·ç¦»æœ¬å¤–æ˜¾å­èµ·å§‹ nnnnnnnnC
 		}
 		else if(exIntronNum < 0) 
 		{   //0-0 0-1        1-0 1-1          2-0 2-1            3-0  3-1   cood     4-0      4-1               5
-			//²»ĞèÒª¼ÓÒ»»ò¼õÒ»
+			//ä¸éœ€è¦åŠ ä¸€æˆ–å‡ä¸€
 			if (cis5to3 != null) 
-				loc2ExInStart = Math.abs(location - get(NumExon).getEndCis());// ¾àÇ°Ò»¸öÍâÏÔ×Ó NnnnCnnnn
+				loc2ExInStart = Math.abs(location - get(NumExon).getEndCis());// è·å‰ä¸€ä¸ªå¤–æ˜¾å­ NnnnCnnnn
 			else
-				loc2ExInStart = Math.abs(location - get(NumExon).getEndAbs());// ¾àÇ°Ò»¸öÍâÏÔ×Ó NnnnCnnnn
+				loc2ExInStart = Math.abs(location - get(NumExon).getEndAbs());// è·å‰ä¸€ä¸ªå¤–æ˜¾å­ NnnnCnnnn
 		}
 		hashLocExInStart.put(location, loc2ExInStart);
 		return loc2ExInStart;
 	}
 
 	/**
-	 * ×ø±êµ½element ÖÕµã¾àÀë
-	 * @param location ×ø±ê
-	 *  * ¸ÃµãÔÚÍâÏÔ×ÓÖĞÎªÕıÊı£¬ÔÚÄÚº¬×ÓÖĞÎª¸ºÊı£¬ÎªÊµ¼ÊÊıÄ¿
+	 * åæ ‡åˆ°element ç»ˆç‚¹è·ç¦»
+	 * @param location åæ ‡
+	 *  * è¯¥ç‚¹åœ¨å¤–æ˜¾å­ä¸­ä¸ºæ­£æ•°ï¼Œåœ¨å†…å«å­ä¸­ä¸ºè´Ÿæ•°ï¼Œä¸ºå®é™…æ•°ç›®
 	 */
 	protected double getLoc2EleEnd(double location) {
 		if (hashLocExInEnd == null) {
@@ -424,19 +424,19 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
 		}
 		double loc2ExInEnd = -1000000000;
 		int exIntronNum = searchLocInEleNum(location);
-		int NumExon = Math.abs(exIntronNum) - 1; //Êµ¼ÊÊıÁ¿¼õÈ¥1£¬·½·¨ÄÚÓÃ¸Ã±äÁ¿ÔËËã
+		int NumExon = Math.abs(exIntronNum) - 1; //å®é™…æ•°é‡å‡å»1ï¼Œæ–¹æ³•å†…ç”¨è¯¥å˜é‡è¿ç®—
 		if (exIntronNum > 0) {
 			if (cis5to3 != null)
-				 loc2ExInEnd = Math.abs(get(NumExon).getEndCis()- location);//¾àÀë±¾ÍâÏÔ×ÓÖÕÖ¹  Cnnnnnnn
+				 loc2ExInEnd = Math.abs(get(NumExon).getEndCis()- location);//è·ç¦»æœ¬å¤–æ˜¾å­ç»ˆæ­¢  Cnnnnnnn
 			else
-				 loc2ExInEnd = Math.abs(get(NumExon).getEndAbs()- location);//¾àÀë±¾ÍâÏÔ×ÓÖÕÖ¹  Cnnnnnnn
+				 loc2ExInEnd = Math.abs(get(NumExon).getEndAbs()- location);//è·ç¦»æœ¬å¤–æ˜¾å­ç»ˆæ­¢  Cnnnnnnn
 		}
 		else if(exIntronNum < 0) 
 		{   //0-0 0-1        1-0 1-1          2-0 2-1            3-0  3-1   cood     4-0      4-1               5
 			if (cis5to3 != null) 
-				 loc2ExInEnd = Math.abs(get(NumExon+1).getStartCis() - location);// ¾àºóÒ»¸öÍâÏÔ×Ó nnCnnnnN
+				 loc2ExInEnd = Math.abs(get(NumExon+1).getStartCis() - location);// è·åä¸€ä¸ªå¤–æ˜¾å­ nnCnnnnN
 			else
-				 loc2ExInEnd = Math.abs(get(NumExon+1).getStartAbs() - location);// ¾àºóÒ»¸öÍâÏÔ×Ó nnCnnnnN
+				 loc2ExInEnd = Math.abs(get(NumExon+1).getStartAbs() - location);// è·åä¸€ä¸ªå¤–æ˜¾å­ nnCnnnnN
 			
 		}
 		hashLocExInEnd.put(location, loc2ExInEnd);
@@ -446,7 +446,7 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
 
 	
 	/**
-	 * »ñµÃËùÓĞelementµÄ³¤¶ÈÖ®ºÍ
+	 * è·å¾—æ‰€æœ‰elementçš„é•¿åº¦ä¹‹å’Œ
 	 */
 	public double getListLen() {
 		double isoLen = 0;
@@ -457,10 +457,10 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
 	}
 	
 	/**
-	 * ÒÀ´Î±È½ÏÁ½¸ölistÖĞµÄÔªËØÊÇ·ñÒ»ÖÂ¡£ÄÚ²¿µ÷ÓÃÃ¿¸öÔªËØµÄequals·½·¨
-	 * ²»±È½Ïname£¬Èç¹ûĞèÒª±È½Ïname£¬ÄÇÃ´¾ÍÓÃequal
-	 * ÔİÊ±»¹Ã»ÖØĞ´equal
-	 * ÍâÏÔ×Ó±È½ÏÈç¹ûÒ»Ä£Ò»ÑùÔò·µ»Øtrue£»
+	 * ä¾æ¬¡æ¯”è¾ƒä¸¤ä¸ªlistä¸­çš„å…ƒç´ æ˜¯å¦ä¸€è‡´ã€‚å†…éƒ¨è°ƒç”¨æ¯ä¸ªå…ƒç´ çš„equalsæ–¹æ³•
+	 * ä¸æ¯”è¾ƒnameï¼Œå¦‚æœéœ€è¦æ¯”è¾ƒnameï¼Œé‚£ä¹ˆå°±ç”¨equal
+	 * æš‚æ—¶è¿˜æ²¡é‡å†™equal
+	 * å¤–æ˜¾å­æ¯”è¾ƒå¦‚æœä¸€æ¨¡ä¸€æ ·åˆ™è¿”å›trueï¼›
 	 * @param lsOtherExon
 	 * @return
 	 */
@@ -479,7 +479,7 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
 		return true;
 	}
 	/**
-	 * ·µ»ØÃ¿¸öID¶ÔÓ¦µÄ¾ßÌåelement
+	 * è¿”å›æ¯ä¸ªIDå¯¹åº”çš„å…·ä½“element
 	 * @return
 	 */
 	public void getLocHashtable(HashMap<String,E> hashLocMap)
@@ -492,7 +492,7 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
 		}
 	}
 	/**
-	 * ·µ»ØÃ¿¸öID¶ÔÓ¦µÄNum
+	 * è¿”å›æ¯ä¸ªIDå¯¹åº”çš„Num
 	 * @return
 	 */
 	public void getHashLocNum(HashMap<String,Integer> hashLocNum)
@@ -507,7 +507,7 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
 	}
 	
 	/**
-	 * ·µ»ØÃ¿¸öID¶ÔÓ¦µÄ¾ßÌåelement
+	 * è¿”å›æ¯ä¸ªIDå¯¹åº”çš„å…·ä½“element
 	 * @return
 	 */
 	public HashMap<String,Integer> getHash2Num()
@@ -523,8 +523,8 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
 		return hashID2Num;
 	}
 	/**
-	 * ·µ»Ø±¾ListAbsÖĞµÄËùÓĞstringÃû×Ö\
-	 * Èç¹ûÁ½¸öItemÊÇÖØµşµÄ£¬¾ÍÓÃListAbs.SEP¸ô¿ª£¬
+	 * è¿”å›æœ¬ListAbsä¸­çš„æ‰€æœ‰stringåå­—\
+	 * å¦‚æœä¸¤ä¸ªItemæ˜¯é‡å çš„ï¼Œå°±ç”¨ListAbs.SEPéš”å¼€ï¼Œ
 	 * @return
 	 */
 	public ArrayList<String> getLOCIDList()
@@ -536,14 +536,14 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
 		return lsLocID;
 	}
 	/**
-	 * ¶ş·Ö·¨²éÕÒlocationËùÔÚµÄÎ»µã,Ò²ÊÇstaticµÄ¡£ÒÑ¾­¿¼ÂÇÁËÔÚµÚÒ»¸öItemÖ®Ç°µÄÇé¿ö£¬»¹Ã»¿¼ÂÇÔÚ×îºóÒ»¸öItemºóµÄÇé¿ö<br>
-	 * ·µ»ØÒ»¸öint[3]Êı×é£¬<br>
-	 * 0: 1-»ùÒòÄÚ 2-»ùÒòÍâ<br>
-	 * 1£º±¾»ùÒòĞòºÅ£¨¶¨Î»ÔÚ»ùÒòÄÚ£© / ÉÏ¸ö»ùÒòµÄĞòºÅ(¶¨Î»ÔÚ»ùÒòÍâ) -1±íÊ¾Ç°ÃæÃ»ÓĞ»ùÒò<br>
-	 * 2£ºÏÂ¸ö»ùÒòµÄĞòºÅ -1±íÊ¾ºóÃæÃ»ÓĞ»ùÒò<br>
-	 * 3£º¸ÃµãÔÚÍâÏÔ×ÓÖĞÎªÕıÊı£¬ÔÚÄÚº¬×ÓÖĞÎª¸ºÊı
-	 * ²»ÔÚÎª0
-	 * ÎªÊµ¼ÊÊıÄ¿
+	 * äºŒåˆ†æ³•æŸ¥æ‰¾locationæ‰€åœ¨çš„ä½ç‚¹,ä¹Ÿæ˜¯staticçš„ã€‚å·²ç»è€ƒè™‘äº†åœ¨ç¬¬ä¸€ä¸ªItemä¹‹å‰çš„æƒ…å†µï¼Œè¿˜æ²¡è€ƒè™‘åœ¨æœ€åä¸€ä¸ªItemåçš„æƒ…å†µ<br>
+	 * è¿”å›ä¸€ä¸ªint[3]æ•°ç»„ï¼Œ<br>
+	 * 0: 1-åŸºå› å†… 2-åŸºå› å¤–<br>
+	 * 1ï¼šæœ¬åŸºå› åºå·ï¼ˆå®šä½åœ¨åŸºå› å†…ï¼‰ / ä¸Šä¸ªåŸºå› çš„åºå·(å®šä½åœ¨åŸºå› å¤–) -1è¡¨ç¤ºå‰é¢æ²¡æœ‰åŸºå› <br>
+	 * 2ï¼šä¸‹ä¸ªåŸºå› çš„åºå· -1è¡¨ç¤ºåé¢æ²¡æœ‰åŸºå› <br>
+	 * 3ï¼šè¯¥ç‚¹åœ¨å¤–æ˜¾å­ä¸­ä¸ºæ­£æ•°ï¼Œåœ¨å†…å«å­ä¸­ä¸ºè´Ÿæ•°
+	 * ä¸åœ¨ä¸º0
+	 * ä¸ºå®é™…æ•°ç›®
 	 */
 	public int[] LocPosition( double Coordinate) {
 		if (cis5to3 == null) {
@@ -558,9 +558,9 @@ public class ListAbsDouble <E extends ElementAbsDouble> extends ArrayList<E>{
 	}
 	
 	/**
-	 * ¸ÃµãÔÚÍâÏÔ×ÓÖĞÎªÕıÊı£¬ÔÚÄÚº¬×ÓÖĞÎª¸ºÊı
-	 * ²»ÔÚÎª0
-	 * ÎªÊµ¼ÊÊıÄ¿
+	 * è¯¥ç‚¹åœ¨å¤–æ˜¾å­ä¸­ä¸ºæ­£æ•°ï¼Œåœ¨å†…å«å­ä¸­ä¸ºè´Ÿæ•°
+	 * ä¸åœ¨ä¸º0
+	 * ä¸ºå®é™…æ•°ç›®
 	 * @return
 	 */
 	public int searchLocInEleNum(double location) {
@@ -579,16 +579,16 @@ class BinarySearchDouble
 	
 
 	/**
-	 * ´ıÑéÖ¤
-	 * Ç°±Õºó¿ªÇø¼ä
-	 * ¶ş·Ö·¨²éÕÒlocationËùÔÚµÄÎ»µã,Ò²ÊÇstaticµÄ¡£ÒÑ¾­¿¼ÂÇÁËÔÚµÚÒ»¸öItemÖ®Ç°µÄÇé¿ö£¬»¹Ã»¿¼ÂÇÔÚ×îºóÒ»¸öItemºóµÄÇé¿ö<br>
-	 * ·µ»ØÒ»¸öint[3]Êı×é£¬<br>
-	 * 0: 1-»ùÒòÄÚ 2-»ùÒòÍâ<br>
-	 * 1£º±¾»ùÒòĞòºÅ£¨¶¨Î»ÔÚ»ùÒòÄÚ£© / ÉÏ¸ö»ùÒòµÄĞòºÅ(¶¨Î»ÔÚ»ùÒòÍâ) -1±íÊ¾Ç°ÃæÃ»ÓĞ»ùÒò<br>
-	 * 2£ºÏÂ¸ö»ùÒòµÄĞòºÅ -1±íÊ¾ºóÃæÃ»ÓĞ»ùÒò
-	 * 3£ºµ¥¶ÀµÄÒ»¸ö±êÇ©£¬¸ÃµãÔÚÍâÏÔ×ÓÖĞÎªÕıÊı£¬ÔÚÄÚº¬×ÓÖĞÎª¸ºÊı
-	 * ²»ÔÚÎª0
-	 * ÎªÊµ¼ÊÊıÄ¿
+	 * å¾…éªŒè¯
+	 * å‰é—­åå¼€åŒºé—´
+	 * äºŒåˆ†æ³•æŸ¥æ‰¾locationæ‰€åœ¨çš„ä½ç‚¹,ä¹Ÿæ˜¯staticçš„ã€‚å·²ç»è€ƒè™‘äº†åœ¨ç¬¬ä¸€ä¸ªItemä¹‹å‰çš„æƒ…å†µï¼Œè¿˜æ²¡è€ƒè™‘åœ¨æœ€åä¸€ä¸ªItemåçš„æƒ…å†µ<br>
+	 * è¿”å›ä¸€ä¸ªint[3]æ•°ç»„ï¼Œ<br>
+	 * 0: 1-åŸºå› å†… 2-åŸºå› å¤–<br>
+	 * 1ï¼šæœ¬åŸºå› åºå·ï¼ˆå®šä½åœ¨åŸºå› å†…ï¼‰ / ä¸Šä¸ªåŸºå› çš„åºå·(å®šä½åœ¨åŸºå› å¤–) -1è¡¨ç¤ºå‰é¢æ²¡æœ‰åŸºå› <br>
+	 * 2ï¼šä¸‹ä¸ªåŸºå› çš„åºå· -1è¡¨ç¤ºåé¢æ²¡æœ‰åŸºå› 
+	 * 3ï¼šå•ç‹¬çš„ä¸€ä¸ªæ ‡ç­¾ï¼Œè¯¥ç‚¹åœ¨å¤–æ˜¾å­ä¸­ä¸ºæ­£æ•°ï¼Œåœ¨å†…å«å­ä¸­ä¸ºè´Ÿæ•°
+	 * ä¸åœ¨ä¸º0
+	 * ä¸ºå®é™…æ•°ç›®
 	 */
 	protected static int[] LocPositionCis(ArrayList<? extends ElementAbsDouble> lsElement, double Coordinate) {
 		if (lsElement == null) {
@@ -599,7 +599,7 @@ class BinarySearchDouble
 		endnum = lsElement.size() - 1;
 		int beginnum = 0;
 		int number = 0;
-		// ÔÚµÚÒ»¸öItemÖ®Ç°
+		// åœ¨ç¬¬ä¸€ä¸ªItemä¹‹å‰
 		if (Coordinate < lsElement.get(beginnum).getStartCis()){
 			LocInfo[0] = 2;
 			LocInfo[1] = -1;
@@ -607,7 +607,7 @@ class BinarySearchDouble
 			LocInfo[3] = 0;
 			return LocInfo;
 		}
-		// ÔÚ×îºóÒ»¸öItemÖ®ºó
+		// åœ¨æœ€åä¸€ä¸ªItemä¹‹å
 		else if (Coordinate >= lsElement.get(endnum).getStartCis()) {
 			if (Coordinate > lsElement.get(endnum).getEndCis()) {
 				LocInfo[0] = 2;
@@ -637,35 +637,35 @@ class BinarySearchDouble
 		} while ((endnum - beginnum) > 1);
 		LocInfo[1] = beginnum;
 		LocInfo[2] = endnum;
-		if (Coordinate <= lsElement.get(beginnum).getEndCis())// ²»ÖªµÀ»á²»»á³öÏÖPeakNumber±ÈbiginnumĞ¡µÄÇé¿ö
-		{ // locationÔÚ»ùÒòÄÚ²¿
+		if (Coordinate <= lsElement.get(beginnum).getEndCis())// ä¸çŸ¥é“ä¼šä¸ä¼šå‡ºç°PeakNumberæ¯”biginnumå°çš„æƒ…å†µ
+		{ // locationåœ¨åŸºå› å†…éƒ¨
 			LocInfo[0] = 1;
 			LocInfo[3] = LocInfo[1] + 1;
 			return LocInfo;
 		}
-		else if (Coordinate >= lsElement.get(endnum).getStartCis())// ²»ÖªµÀ»á²»»á³öÏÖPeakNumber±ÈbiginnumĞ¡µÄÇé¿ö
-		{ // locationÔÚ»ùÒòÄÚ²¿
+		else if (Coordinate >= lsElement.get(endnum).getStartCis())// ä¸çŸ¥é“ä¼šä¸ä¼šå‡ºç°PeakNumberæ¯”biginnumå°çš„æƒ…å†µ
+		{ // locationåœ¨åŸºå› å†…éƒ¨
 			LocInfo[0] = 1;
 			LocInfo[1] = endnum;
 			LocInfo[2] = endnum + 1;
 			LocInfo[3] = LocInfo[1] + 1;
 			return LocInfo;
 		}
-		// locationÔÚ»ùÒòÍâ²¿
+		// locationåœ¨åŸºå› å¤–éƒ¨
 		LocInfo[0] = 2;
 		LocInfo[3] = -LocInfo[1] - 1;
 		return LocInfo;
 	}
 
 	/**
-	 * ¶ş·Ö·¨²éÕÒlocationËùÔÚµÄÎ»µã,Ò²ÊÇstaticµÄ¡£ÒÑ¾­¿¼ÂÇÁËÔÚµÚÒ»¸öItemÖ®Ç°µÄÇé¿ö£¬»¹Ã»¿¼ÂÇÔÚ×îºóÒ»¸öItemºóµÄÇé¿ö<br>
-	 * ·µ»ØÒ»¸öint[3]Êı×é£¬<br>
-	 * 0: 1-»ùÒòÄÚ 2-»ùÒòÍâ<br>
-	 * 1£º±¾»ùÒòĞòºÅ£¨¶¨Î»ÔÚ»ùÒòÄÚ£© / ÉÏ¸ö»ùÒòµÄĞòºÅ(¶¨Î»ÔÚ»ùÒòÍâ) -1±íÊ¾Ç°ÃæÃ»ÓĞ»ùÒò<br>
-	 * 2£ºÏÂ¸ö»ùÒòµÄĞòºÅ -1±íÊ¾ºóÃæÃ»ÓĞ»ùÒò
-	 * 3£ºµ¥¶ÀµÄÒ»¸ö±êÇ©£¬¸ÃµãÔÚÍâÏÔ×ÓÖĞÎªÕıÊı£¬ÔÚÄÚº¬×ÓÖĞÎª¸ºÊı
-	 * ²»ÔÚÎª0
-	 * ÎªÊµ¼ÊÊıÄ¿
+	 * äºŒåˆ†æ³•æŸ¥æ‰¾locationæ‰€åœ¨çš„ä½ç‚¹,ä¹Ÿæ˜¯staticçš„ã€‚å·²ç»è€ƒè™‘äº†åœ¨ç¬¬ä¸€ä¸ªItemä¹‹å‰çš„æƒ…å†µï¼Œè¿˜æ²¡è€ƒè™‘åœ¨æœ€åä¸€ä¸ªItemåçš„æƒ…å†µ<br>
+	 * è¿”å›ä¸€ä¸ªint[3]æ•°ç»„ï¼Œ<br>
+	 * 0: 1-åŸºå› å†… 2-åŸºå› å¤–<br>
+	 * 1ï¼šæœ¬åŸºå› åºå·ï¼ˆå®šä½åœ¨åŸºå› å†…ï¼‰ / ä¸Šä¸ªåŸºå› çš„åºå·(å®šä½åœ¨åŸºå› å¤–) -1è¡¨ç¤ºå‰é¢æ²¡æœ‰åŸºå› <br>
+	 * 2ï¼šä¸‹ä¸ªåŸºå› çš„åºå· -1è¡¨ç¤ºåé¢æ²¡æœ‰åŸºå› 
+	 * 3ï¼šå•ç‹¬çš„ä¸€ä¸ªæ ‡ç­¾ï¼Œè¯¥ç‚¹åœ¨å¤–æ˜¾å­ä¸­ä¸ºæ­£æ•°ï¼Œåœ¨å†…å«å­ä¸­ä¸ºè´Ÿæ•°
+	 * ä¸åœ¨ä¸º0
+	 * ä¸ºå®é™…æ•°ç›®
 	 */
 	protected static int[] LocPositionTran(ArrayList<? extends ElementAbsDouble> lsElement, double Coordinate) {
 		if (lsElement == null) {
@@ -676,7 +676,7 @@ class BinarySearchDouble
 		endnum = lsElement.size() - 1;
 		int beginnum = 0;
 		int number = 0;
-		// ÔÚµÚÒ»¸öItemÖ®Ç°
+		// åœ¨ç¬¬ä¸€ä¸ªItemä¹‹å‰
 		if (Coordinate > lsElement.get(beginnum).getStartCis()){
 			LocInfo[0] = 2;
 			LocInfo[1] = -1;
@@ -684,7 +684,7 @@ class BinarySearchDouble
 			LocInfo[3] = 0;
 			return LocInfo;
 		}
-		// ÔÚ×îºóÒ»¸öItemÖ®ºó
+		// åœ¨æœ€åä¸€ä¸ªItemä¹‹å
 		else if (Coordinate <= lsElement.get(endnum).getStartCis()) {
 			if (Coordinate < lsElement.get(endnum).getEndCis()) {
 				LocInfo[0] = 2;
@@ -715,33 +715,33 @@ class BinarySearchDouble
 		LocInfo[1] = beginnum;
 		LocInfo[2] = endnum;
 		if (Coordinate >= lsElement.get(beginnum).getEndCis())
-		{ // locationÔÚ»ùÒòÄÚ²¿
+		{ // locationåœ¨åŸºå› å†…éƒ¨
 			LocInfo[0] = 1;
 			LocInfo[3] = LocInfo[1] + 1;
 			return LocInfo;
 		}
 		else if (Coordinate <= lsElement.get(endnum).getStartCis()) 
-		{// locationÔÚ»ùÒòÄÚ²¿
+		{// locationåœ¨åŸºå› å†…éƒ¨
 			LocInfo[0] = 1;
 			LocInfo[1] = endnum;
 			LocInfo[2] = endnum + 1;
 			LocInfo[3] = LocInfo[1] + 1;
 			return LocInfo;
 		}
-		// locationÔÚ»ùÒòÍâ²¿
+		// locationåœ¨åŸºå› å¤–éƒ¨
 		LocInfo[0] = 2;
 		LocInfo[3] = -LocInfo[1] - 1;
 		return LocInfo;
 	}
 	/**
-	 * ¶ş·Ö·¨²éÕÒlocationËùÔÚµÄÎ»µã,Ò²ÊÇstaticµÄ¡£ÒÑ¾­¿¼ÂÇÁËÔÚµÚÒ»¸öItemÖ®Ç°µÄÇé¿ö£¬»¹Ã»¿¼ÂÇÔÚ×îºóÒ»¸öItemºóµÄÇé¿ö<br>
-	 * ·µ»ØÒ»¸öint[3]Êı×é£¬<br>
-	 * 0: 1-»ùÒòÄÚ 2-»ùÒòÍâ<br>
-	 * 1£º±¾»ùÒòĞòºÅ£¨¶¨Î»ÔÚ»ùÒòÄÚ£© / ÉÏ¸ö»ùÒòµÄĞòºÅ(¶¨Î»ÔÚ»ùÒòÍâ) -1±íÊ¾Ç°ÃæÃ»ÓĞ»ùÒò<br>
-	 * 2£ºÏÂ¸ö»ùÒòµÄĞòºÅ -1±íÊ¾ºóÃæÃ»ÓĞ»ùÒò
-	 * 3£ºµ¥¶ÀµÄÒ»¸ö±êÇ©£¬¸ÃµãÔÚÍâÏÔ×ÓÖĞÎªÕıÊı£¬ÔÚÄÚº¬×ÓÖĞÎª¸ºÊı
-	 * ²»ÔÚÎª0
-	 * ÎªÊµ¼ÊÊıÄ¿
+	 * äºŒåˆ†æ³•æŸ¥æ‰¾locationæ‰€åœ¨çš„ä½ç‚¹,ä¹Ÿæ˜¯staticçš„ã€‚å·²ç»è€ƒè™‘äº†åœ¨ç¬¬ä¸€ä¸ªItemä¹‹å‰çš„æƒ…å†µï¼Œè¿˜æ²¡è€ƒè™‘åœ¨æœ€åä¸€ä¸ªItemåçš„æƒ…å†µ<br>
+	 * è¿”å›ä¸€ä¸ªint[3]æ•°ç»„ï¼Œ<br>
+	 * 0: 1-åŸºå› å†… 2-åŸºå› å¤–<br>
+	 * 1ï¼šæœ¬åŸºå› åºå·ï¼ˆå®šä½åœ¨åŸºå› å†…ï¼‰ / ä¸Šä¸ªåŸºå› çš„åºå·(å®šä½åœ¨åŸºå› å¤–) -1è¡¨ç¤ºå‰é¢æ²¡æœ‰åŸºå› <br>
+	 * 2ï¼šä¸‹ä¸ªåŸºå› çš„åºå· -1è¡¨ç¤ºåé¢æ²¡æœ‰åŸºå› 
+	 * 3ï¼šå•ç‹¬çš„ä¸€ä¸ªæ ‡ç­¾ï¼Œè¯¥ç‚¹åœ¨å¤–æ˜¾å­ä¸­ä¸ºæ­£æ•°ï¼Œåœ¨å†…å«å­ä¸­ä¸ºè´Ÿæ•°
+	 * ä¸åœ¨ä¸º0
+	 * ä¸ºå®é™…æ•°ç›®
 	 */
 	protected static int[] LocPositionAbs(ArrayList<? extends ElementAbsDouble> lsElement, double Coordinate) {
 		if (lsElement == null) {
@@ -752,7 +752,7 @@ class BinarySearchDouble
 		endnum = lsElement.size() - 1;
 		int beginnum = 0;
 		int number = 0;
-		// ÔÚµÚÒ»¸öItemÖ®Ç°
+		// åœ¨ç¬¬ä¸€ä¸ªItemä¹‹å‰
 		if (Coordinate < lsElement.get(beginnum).getStartAbs()){
 			LocInfo[0] = 2;
 			LocInfo[1] = -1;
@@ -760,7 +760,7 @@ class BinarySearchDouble
 			LocInfo[3] = 0;
 			return LocInfo;
 		}
-		// ÔÚ×îºóÒ»¸öItemÖ®ºó
+		// åœ¨æœ€åä¸€ä¸ªItemä¹‹å
 		else if (Coordinate >= lsElement.get(endnum).getStartAbs()) {
 			if (Coordinate > lsElement.get(endnum).getEndAbs()) {
 				LocInfo[0] = 2;
@@ -790,13 +790,13 @@ class BinarySearchDouble
 		} while ((endnum - beginnum) > 1);
 		LocInfo[1] = beginnum;
 		LocInfo[2] = endnum;
-		if (Coordinate <= lsElement.get(beginnum).getEndAbs())// ²»ÖªµÀ»á²»»á³öÏÖPeakNumber±ÈbiginnumĞ¡µÄÇé¿ö
-		{ // locationÔÚ»ùÒòÄÚ²¿
+		if (Coordinate <= lsElement.get(beginnum).getEndAbs())// ä¸çŸ¥é“ä¼šä¸ä¼šå‡ºç°PeakNumberæ¯”biginnumå°çš„æƒ…å†µ
+		{ // locationåœ¨åŸºå› å†…éƒ¨
 			LocInfo[0] = 1;
 			LocInfo[3] = LocInfo[1] + 1;
 			return LocInfo;
 		}
-		// locationÔÚ»ùÒòÍâ²¿
+		// locationåœ¨åŸºå› å¤–éƒ¨
 		LocInfo[0] = 2;
 		LocInfo[3] = -LocInfo[1] - 1;
 		return LocInfo;
@@ -804,7 +804,7 @@ class BinarySearchDouble
 	
 }
 /**
- * ´ÓĞ¡µ½´óÅÅĞò
+ * ä»å°åˆ°å¤§æ’åº
  * @author zong0jie
  */
 class CompS2MDouble implements Comparator<ElementAbsDouble>
@@ -824,7 +824,7 @@ class CompS2MDouble implements Comparator<ElementAbsDouble>
 }
 
 /**
- * ´ÓĞ¡µ½´óÅÅĞò£¬ÓÃ¾ø¶Ô×ø±êÖµÅÅĞò
+ * ä»å°åˆ°å¤§æ’åºï¼Œç”¨ç»å¯¹åæ ‡å€¼æ’åº
  * @author zong0jie
  */
 class CompS2MAbsDouble implements Comparator<ElementAbsDouble>
@@ -844,7 +844,7 @@ class CompS2MAbsDouble implements Comparator<ElementAbsDouble>
 }
 
 /**
- * ´Ó´óµ½Ğ¡ÅÅĞò
+ * ä»å¤§åˆ°å°æ’åº
  * @author zong0jie
  */
 class CompM2SDouble implements Comparator<ElementAbsDouble>

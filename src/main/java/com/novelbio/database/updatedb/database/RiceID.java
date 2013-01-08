@@ -13,10 +13,10 @@ import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 
 public class RiceID{
-	/** ÏÂÔØµÄ¶«Î÷±£´æÔÚÄÄÀï */
+	/** ä¸‹è½½çš„ä¸œè¥¿ä¿å­˜åœ¨å“ªé‡Œ */
 	String downLoadPath = "";
 	
-	/** ¾ßÌåÏÂÔØµÄÎÄ¼şÃû */
+	/** å…·ä½“ä¸‹è½½çš„æ–‡ä»¶å */
 	String gffRapDB = "";
 	String gffTIGR = "";
 	String rapDBoutID = "";
@@ -47,7 +47,7 @@ public class RiceID{
 		this.tigrGoSlim = tigrGoSlim;
 	}
 	/**
-	 * ½«TigrµÄGffÎÄ¼şµ¼Èëgene2GOÊı¾İ¿â£¬µ¹ÈëNCBIGOºÍUniGOÁ½¸ö±í
+	 * å°†Tigrçš„Gffæ–‡ä»¶å¯¼å…¥gene2GOæ•°æ®åº“ï¼Œå€’å…¥NCBIGOå’ŒUniGOä¸¤ä¸ªè¡¨
 	 * @param gffRapDB
 	 * @param outFIle
 	 * @throws Exception
@@ -92,7 +92,7 @@ public class RiceID{
 	
 }
 /**
- * µ¼ÈërepdbµÄĞÅÏ¢£¬ĞèÒªÉè¶¨outtxt£¬Ò²¾ÍÊÇ²é²»µ½µÄĞ´ÈëÁíÒ»¸öÎÄ±¾
+ * å¯¼å…¥repdbçš„ä¿¡æ¯ï¼Œéœ€è¦è®¾å®šouttxtï¼Œä¹Ÿå°±æ˜¯æŸ¥ä¸åˆ°çš„å†™å…¥å¦ä¸€ä¸ªæ–‡æœ¬
  * @author zong0jie
  *
  */
@@ -103,8 +103,8 @@ class RiceRapDBID extends ImportPerLine {
 	}
 	boolean insertAccID = false;
 	/**
-	 * Ã»ÓĞµÄIDÊÇ·ñµ¼ÈëuniID
-	 * µÚÒ»´Î²»ÓÃµÚ¶ş´Îµ¼Èë
+	 * æ²¡æœ‰çš„IDæ˜¯å¦å¯¼å…¥uniID
+	 * ç¬¬ä¸€æ¬¡ä¸ç”¨ç¬¬äºŒæ¬¡å¯¼å…¥
 	 * @param insertAccID
 	 */
 	public void setInsertAccID(boolean insertAccID) {
@@ -118,7 +118,7 @@ class RiceRapDBID extends ImportPerLine {
 			txtGene2Acc = new TxtReadandWrite(TxtReadandWrite.GZIP, rapdbGFF);
 		else 
 			txtGene2Acc = new TxtReadandWrite(rapdbGFF, false);
-		//´ÓµÚ¶şĞĞ¿ªÊ¼¶ÁÈ¡
+		//ä»ç¬¬äºŒè¡Œå¼€å§‹è¯»å–
 		int num = 0;
 		for (String content : txtGene2Acc.readlines(readFromLine)) {
 			if (content.contains("ID=")||content.contains("Name=")||content.contains("Alias=")||content.contains("Gene_symbols=")||content.contains("GO=")||content.contains("Locus_id=")) {
@@ -137,23 +137,23 @@ class RiceRapDBID extends ImportPerLine {
 		}
 	}
 	/**
-	 * ´¦ÀíµÄÊ±ºò¼ÇµÃ½«upDateNCBIUniIDÖĞµÄuniProtID´úÂëµÄ×¢ÊÍÈ¥µô£¬ÕâÀï¾ÍÊÇËµÈç¹ûµ¼ÈëNCBIID£¬ÄÇÃ´¾Í²»½«uniIDµ¼ÈëNCBIID±íÁË
-	 * ½«RapDBµÄGffÎÄ¼şµ¼ÈëNCBIIDÊı¾İ¿â£¬½ö½öµ¼ÈëID£¬Ã»ÓĞµÄµ¹ÈëUniProt¿â
-	 * 20110302¸üĞÂ³ÌĞò
+	 * å¤„ç†çš„æ—¶å€™è®°å¾—å°†upDateNCBIUniIDä¸­çš„uniProtIDä»£ç çš„æ³¨é‡Šå»æ‰ï¼Œè¿™é‡Œå°±æ˜¯è¯´å¦‚æœå¯¼å…¥NCBIIDï¼Œé‚£ä¹ˆå°±ä¸å°†uniIDå¯¼å…¥NCBIIDè¡¨äº†
+	 * å°†RapDBçš„Gffæ–‡ä»¶å¯¼å…¥NCBIIDæ•°æ®åº“ï¼Œä»…ä»…å¯¼å…¥IDï¼Œæ²¡æœ‰çš„å€’å…¥UniProtåº“
+	 * 20110302æ›´æ–°ç¨‹åº
 	 * @param gffRapDB  RAP_genes.gff3
-	 * @param outFile Ã»ÓĞGeneIDµÄLOC»ùÒò£¬Õâ¸ö¿¼ÂÇµ¼ÈëUniProt±í
-	 * @param insertUniID true: ½«Ã»ÓĞËÑµ½µÄÏîÄ¿²åÈëUniProtID±í£¬False£º½«Ã»ÓĞËÑµ½µÄÏîÄ¿Êä³öµ½outFile
-	 * ±¾ÏîÄ¿µÚÒ»´Î²åÈëÊ±ÏÈ²»ÓÃ£¬ÏÈÒª½«±í¶¼²éÕÒNCBIIDºÍUniProtID,ÕÒ²»µ½µÄÊä³öÎªoutfile
-	 * µÈµÚÒ»´Î¸÷ÖÖ²éÕÒ¶¼½áÊøÁË£¬µÚ¶ş´ÎÔÙ½«outfileµ¼ÈëÊ±£¬Ã»ÓĞËÑµ½µÄ¾Í¿ÉÒÔµ¼ÈëUniProt±íÁË
+	 * @param outFile æ²¡æœ‰GeneIDçš„LOCåŸºå› ï¼Œè¿™ä¸ªè€ƒè™‘å¯¼å…¥UniProtè¡¨
+	 * @param insertUniID true: å°†æ²¡æœ‰æœåˆ°çš„é¡¹ç›®æ’å…¥UniProtIDè¡¨ï¼ŒFalseï¼šå°†æ²¡æœ‰æœåˆ°çš„é¡¹ç›®è¾“å‡ºåˆ°outFile
+	 * æœ¬é¡¹ç›®ç¬¬ä¸€æ¬¡æ’å…¥æ—¶å…ˆä¸ç”¨ï¼Œå…ˆè¦å°†è¡¨éƒ½æŸ¥æ‰¾NCBIIDå’ŒUniProtID,æ‰¾ä¸åˆ°çš„è¾“å‡ºä¸ºoutfile
+	 * ç­‰ç¬¬ä¸€æ¬¡å„ç§æŸ¥æ‰¾éƒ½ç»“æŸäº†ï¼Œç¬¬äºŒæ¬¡å†å°†outfileå¯¼å…¥æ—¶ï¼Œæ²¡æœ‰æœåˆ°çš„å°±å¯ä»¥å¯¼å…¥UniProtè¡¨äº†
 	 * @throws Exception  
 	 */
 	@Override
 	public boolean impPerLine(String lineContent) {
 		String tmpInfo = lineContent.split("\t")[8];
 		String[] tmpID = tmpInfo.split(";");
-		//×°ÔØaccIDÓëÏàÓ¦Êı¾İ¿âµÄlist
-		ArrayList<String[]> lsAccIDInfo = new ArrayList<String[]>(); //±£´æÈ«²¿µÄÒªµ¼ÈëÊı¾İ¿âµÄĞÅÏ¢,×Ô¶¯È¥ÖØ¸´
-		ArrayList<String> lsRefID = new ArrayList<String>(); //±£´æ²éÕÒµÄĞÅÏ¢£¬¾ÍÊÇËµÆ©ÈçDBINFO_NIAS_FLCDNAµÈ²»ÓÃÀ´²éÕÒ
+		//è£…è½½accIDä¸ç›¸åº”æ•°æ®åº“çš„list
+		ArrayList<String[]> lsAccIDInfo = new ArrayList<String[]>(); //ä¿å­˜å…¨éƒ¨çš„è¦å¯¼å…¥æ•°æ®åº“çš„ä¿¡æ¯,è‡ªåŠ¨å»é‡å¤
+		ArrayList<String> lsRefID = new ArrayList<String>(); //ä¿å­˜æŸ¥æ‰¾çš„ä¿¡æ¯ï¼Œå°±æ˜¯è¯´è­¬å¦‚DBINFO_NIAS_FLCDNAç­‰ä¸ç”¨æ¥æŸ¥æ‰¾
 		for (int i = 0; i < tmpID.length; i++) 
 		{
 		
@@ -201,7 +201,7 @@ class RiceRapDBID extends ImportPerLine {
 					lsAccIDInfo.add(tmpRapID);
 				}
 			}
-			//Õâ¸ö·Åµ½µÚÒ»Î»£¬ÕâÑù²éÑ¯ÆğÀ´»á±È½ÏºÃ£¬Ò²¾ÍÊÇ½«OsID·Åµ½µÚÒ»Î»
+			//è¿™ä¸ªæ”¾åˆ°ç¬¬ä¸€ä½ï¼Œè¿™æ ·æŸ¥è¯¢èµ·æ¥ä¼šæ¯”è¾ƒå¥½ï¼Œä¹Ÿå°±æ˜¯å°†OsIDæ”¾åˆ°ç¬¬ä¸€ä½
 			else if (tmpID[i].contains("ID_converter=")) {
 				String tmp = tmpID[i].split("=")[1];
 				String[] tmpAcc = tmp.split(",");
@@ -231,7 +231,7 @@ class RiceRapDBID extends ImportPerLine {
 		}
 		GeneID copedID = new GeneID("", 39947);
 		copedID.setUpdateRefAccID(lsRefID);
-		//Èç¹ûĞèÒª²åÈëÁË£¬¾Í²»¹ÜÊÇ²»ÊÇncbiID¶¼²åÈë½øÈ¥
+		//å¦‚æœéœ€è¦æ’å…¥äº†ï¼Œå°±ä¸ç®¡æ˜¯ä¸æ˜¯ncbiIDéƒ½æ’å…¥è¿›å»
 		if (insertAccID) {
 			for (String[] strings : lsAccIDInfo) 
 			{
@@ -243,7 +243,7 @@ class RiceRapDBID extends ImportPerLine {
 			}
 			return true;
 		}
-		//·ñÔòÖ»²åÈëncbi±íÖĞ
+		//å¦åˆ™åªæ’å…¥ncbiè¡¨ä¸­
 		else {
 			if (copedID.getIDtype().equals(GeneID.IDTYPE_GENEID)) {
 				for (String[] strings : lsAccIDInfo) 
@@ -264,12 +264,12 @@ class RiceRapDBID extends ImportPerLine {
 	
 }
 /**
- * ½«Rap2MSUµÄĞÅÏ¢--Ò²¾ÍÊÇOs2LOCµÄ¶ÔÕÕ±í--µ¼ÈëÊı¾İ¿â,
- * 1. µ¼ÈëRapDBµÄgff3ÎÄ¼ş ²úÉúÒ»¸öÃ»ÓĞµ¹ÈëµÄÎÄ¼ş
- * 2. µ¼ÈëTigrµÄgffÎÄ¼ş£¬²úÉúÒ»¸öÃ»ÓĞµ¹ÈëµÄÎÄ¼ş
- * 3. µ¼ÈëRap2MSU£¬È«²¿µ¼Èë
- * 4. µ¼ÈëRapDBµÄgff3ÎÄ¼ş ²úÉúÒ»¸öÃ»ÓĞµ¹ÈëµÄÎÄ¼ş
- * 5. µ¼ÈëTigrµÄgffÎÄ¼ş£¬²úÉúÒ»¸öÃ»ÓĞµ¹ÈëµÄÎÄ¼ş
+ * å°†Rap2MSUçš„ä¿¡æ¯--ä¹Ÿå°±æ˜¯Os2LOCçš„å¯¹ç…§è¡¨--å¯¼å…¥æ•°æ®åº“,
+ * 1. å¯¼å…¥RapDBçš„gff3æ–‡ä»¶ äº§ç”Ÿä¸€ä¸ªæ²¡æœ‰å€’å…¥çš„æ–‡ä»¶
+ * 2. å¯¼å…¥Tigrçš„gffæ–‡ä»¶ï¼Œäº§ç”Ÿä¸€ä¸ªæ²¡æœ‰å€’å…¥çš„æ–‡ä»¶
+ * 3. å¯¼å…¥Rap2MSUï¼Œå…¨éƒ¨å¯¼å…¥
+ * 4. å¯¼å…¥RapDBçš„gff3æ–‡ä»¶ äº§ç”Ÿä¸€ä¸ªæ²¡æœ‰å€’å…¥çš„æ–‡ä»¶
+ * 5. å¯¼å…¥Tigrçš„gffæ–‡ä»¶ï¼Œäº§ç”Ÿä¸€ä¸ªæ²¡æœ‰å€’å…¥çš„æ–‡ä»¶
  * @throws Exception 
  */
 class RiceRap2MSU extends ImportPerLine
@@ -281,11 +281,11 @@ class RiceRap2MSU extends ImportPerLine
 	@Override
 	boolean impPerLine(String lineContent) {
 		String[] tmpID = lineContent.split("\t");
-		if (tmpID.length<2) //ËµÃ÷¸ÃIRGSPIDÃ»ÓĞLOCIDÓëÖ®¶ÔÓ¦£¬ÄÇÃ´¿ÉÒÔÌø¹ı
+		if (tmpID.length<2) //è¯´æ˜è¯¥IRGSPIDæ²¡æœ‰LOCIDä¸ä¹‹å¯¹åº”ï¼Œé‚£ä¹ˆå¯ä»¥è·³è¿‡
 			return true;
 		
 		String[] tmpLOC = tmpID[1].split(",");
-		/////////×°Èëlist///////////
+		/////////è£…å…¥list///////////
 		ArrayList<String[]> lstmpLOC = new ArrayList<String[]>();
 		ArrayList<String> lsRef = new ArrayList<String>();
 		String[] tmpLOC2Info1 = new String[2];
@@ -317,9 +317,9 @@ class RapDBGO extends ImportPerLine
 	{
 		this.readFromLine = 1;
 	}
-	String enc="utf8";//ÎÄ¼şÖĞº¬ÓĞ%20CµÈ·ûºÅ£¬ÓÃurl½âÂë
-	Pattern pattern =Pattern.compile("\\((GO:\\d+)\\)", Pattern.CASE_INSENSITIVE);  //flags - Æ¥Åä±êÖ¾£¬¿ÉÄÜ°üÀ¨ CASE_INSENSITIVE¡¢MULTILINE¡¢DOTALL¡¢UNICODE_CASE¡¢ CANON_EQ¡¢UNIX_LINES¡¢LITERAL ºÍ COMMENTS µÄÎ»ÑÚÂë  // CASE_INSENSITIVE,´óĞ¡Ğ´²»Ãô¸Ğ£¬MULTILINE ¶àĞĞ
-	Matcher matcher;//matcher.groupCount() ·µ»Ø´ËÆ¥ÅäÆ÷Ä£Ê½ÖĞµÄ²¶»ñ×éÊı¡£
+	String enc="utf8";//æ–‡ä»¶ä¸­å«æœ‰%20Cç­‰ç¬¦å·ï¼Œç”¨urlè§£ç 
+	Pattern pattern =Pattern.compile("\\((GO:\\d+)\\)", Pattern.CASE_INSENSITIVE);  //flags - åŒ¹é…æ ‡å¿—ï¼Œå¯èƒ½åŒ…æ‹¬ CASE_INSENSITIVEã€MULTILINEã€DOTALLã€UNICODE_CASEã€ CANON_EQã€UNIX_LINESã€LITERAL å’Œ COMMENTS çš„ä½æ©ç   // CASE_INSENSITIVE,å¤§å°å†™ä¸æ•æ„Ÿï¼ŒMULTILINE å¤šè¡Œ
+	Matcher matcher;//matcher.groupCount() è¿”å›æ­¤åŒ¹é…å™¨æ¨¡å¼ä¸­çš„æ•è·ç»„æ•°ã€‚
 
 	@Override
 	public boolean impPerLine(String lineContent) {
@@ -329,9 +329,9 @@ class RapDBGO extends ImportPerLine
 		}
 			String tmpInfo = lineContent.split("\t")[8];
 			String[] tmpID = tmpInfo.split(";");
-			//×°ÔØaccIDÓëÏàÓ¦Êı¾İ¿âµÄlist
+			//è£…è½½accIDä¸ç›¸åº”æ•°æ®åº“çš„list
 			ArrayList<String> lsRefID = new ArrayList<String>();
- 			//ÏÈËÑNCBIID¿´ÓĞÃ»ÓĞ
+ 			//å…ˆæœNCBIIDçœ‹æœ‰æ²¡æœ‰
 			for (int i = 0; i < tmpID.length; i++) {
 				tmpID[i] = HttpFetch.decode(tmpID[i]);
 				if (tmpID[i].contains("ID=")||tmpID[i].contains("Name=")||tmpID[i].contains("Alias=")||tmpID[i].contains("Gene_symbols=")||tmpID[i].contains("Locus_id="))
@@ -356,12 +356,12 @@ class RapDBGO extends ImportPerLine
 	}
 }
 /**
- * ½«TIGRµÄGffÎÄ¼şµ¼ÈëNCBIIDÊı¾İ¿â»òUniProt¿â£¬²»µ¼ÈëgeneInfo±í
- * @param gffTigrRice  tigrRiceµÄgffÎÄ¼ş
- * @param outFile Ã»ÓĞGeneIDµÄLOC»ùÒò£¬Õâ¸ö¿¼ÂÇµ¼ÈëUniProt±í
- * @param insertUniID true: ½«Ã»ÓĞËÑµ½µÄÏîÄ¿²åÈëUniProtID±í£¬False£º½«Ã»ÓĞËÑµ½µÄÏîÄ¿Êä³öµ½outFile
- * ±¾ÏîÄ¿µÚÒ»´Î²åÈëÊ±ÏÈ²»ÓÃ£¬ÏÈÒª½«±í¶¼²éÕÒNCBIIDºÍUniProtID,ÕÒ²»µ½µÄÊä³öÎªoutfile
- * µÈµÚÒ»´Î¸÷ÖÖ²éÕÒ¶¼½áÊøÁË£¬µÚ¶ş´ÎÔÙ½«outfileµ¼ÈëÊ±£¬Ã»ÓĞËÑµ½µÄ¾Í¿ÉÒÔµ¼ÈëUniProt±íÁË
+ * å°†TIGRçš„Gffæ–‡ä»¶å¯¼å…¥NCBIIDæ•°æ®åº“æˆ–UniProtåº“ï¼Œä¸å¯¼å…¥geneInfoè¡¨
+ * @param gffTigrRice  tigrRiceçš„gffæ–‡ä»¶
+ * @param outFile æ²¡æœ‰GeneIDçš„LOCåŸºå› ï¼Œè¿™ä¸ªè€ƒè™‘å¯¼å…¥UniProtè¡¨
+ * @param insertUniID true: å°†æ²¡æœ‰æœåˆ°çš„é¡¹ç›®æ’å…¥UniProtIDè¡¨ï¼ŒFalseï¼šå°†æ²¡æœ‰æœåˆ°çš„é¡¹ç›®è¾“å‡ºåˆ°outFile
+ * æœ¬é¡¹ç›®ç¬¬ä¸€æ¬¡æ’å…¥æ—¶å…ˆä¸ç”¨ï¼Œå…ˆè¦å°†è¡¨éƒ½æŸ¥æ‰¾NCBIIDå’ŒUniProtID,æ‰¾ä¸åˆ°çš„è¾“å‡ºä¸ºoutfile
+ * ç­‰ç¬¬ä¸€æ¬¡å„ç§æŸ¥æ‰¾éƒ½ç»“æŸäº†ï¼Œç¬¬äºŒæ¬¡å†å°†outfileå¯¼å…¥æ—¶ï¼Œæ²¡æœ‰æœåˆ°çš„å°±å¯ä»¥å¯¼å…¥UniProtè¡¨äº†
  * @throws Exception  
  */
 class RiceTIGRGFFID extends ImportPerLine
@@ -372,8 +372,8 @@ class RiceTIGRGFFID extends ImportPerLine
 	}
 	boolean insertAccID = false;
 	/**
-	 * Ã»ÓĞµÄIDÊÇ·ñµ¼ÈëuniID
-	 * µÚÒ»´Î²»ÓÃµÚ¶ş´Îµ¼Èë
+	 * æ²¡æœ‰çš„IDæ˜¯å¦å¯¼å…¥uniID
+	 * ç¬¬ä¸€æ¬¡ä¸ç”¨ç¬¬äºŒæ¬¡å¯¼å…¥
 	 * @param insertAccID
 	 */
 	public void setInsertAccID(boolean insertAccID) {
@@ -398,8 +398,8 @@ class RiceTIGRGFFID extends ImportPerLine
 	}
 }
 /**
- * ½«RapDBÖĞGff3ÎÄ¼şÖĞµÄSymbolÓëDescriptionÓëGOµ¼ÈëÊı¾İ¿â
- * ÎÄ¼şÖĞº¬ÓĞ%20CµÈ·ûºÅ£¬ĞèÒªÓÃurl½âÂë
+ * å°†RapDBä¸­Gff3æ–‡ä»¶ä¸­çš„Symbolä¸Descriptionä¸GOå¯¼å…¥æ•°æ®åº“
+ * æ–‡ä»¶ä¸­å«æœ‰%20Cç­‰ç¬¦å·ï¼Œéœ€è¦ç”¨urlè§£ç 
  * @param fileName
  * @throws Exception
  */
@@ -414,7 +414,7 @@ class RiceRapDBInfo extends ImportPerLine
 		String symbol = "";
 		String description = "";
 
-		// Èç¹ûÊÇ±êÌâĞĞ
+		// å¦‚æœæ˜¯æ ‡é¢˜è¡Œ
 		if (!(lineContent.contains("ID=") || lineContent.contains("Name=")
 				|| lineContent.contains("Alias=")
 				|| lineContent.contains("Gene_symbols=")
@@ -423,11 +423,11 @@ class RiceRapDBInfo extends ImportPerLine
 			return true;
 		}
 		String tmpInfo = lineContent.split("\t")[8];
-		// ÎÄ¼şÖĞº¬ÓĞ%20CµÈ·ûºÅ£¬ÓÃurl½âÂë
+		// æ–‡ä»¶ä¸­å«æœ‰%20Cç­‰ç¬¦å·ï¼Œç”¨urlè§£ç 
 		tmpInfo = HttpFetch.decode(tmpInfo); 
 		
 		String[] tmpID = tmpInfo.split(";");
-		// ×°ÔØaccIDÓëÏàÓ¦Êı¾İ¿âµÄlist
+		// è£…è½½accIDä¸ç›¸åº”æ•°æ®åº“çš„list
 		ArrayList<String> lsRefID = new ArrayList<String>();
 		ArrayList<String> lsPubmeds = new ArrayList<String>();
 		ArrayList<String> lsGOs = new ArrayList<String>();
@@ -466,7 +466,7 @@ class RiceRapDBInfo extends ImportPerLine
 						symbol = symbol + "//" + tmpRapID;
 				}
 			}
-			// OsID·ÅÔÚµÚÒ»Î»
+			// OsIDæ”¾åœ¨ç¬¬ä¸€ä½
 			else if (tmpID[i].contains("ID_converter=")) {
 				String tmp = tmpID[i].split("=")[1];
 				String[] tmpAcc = tmp.split(",");
@@ -523,8 +523,8 @@ class RiceRapDBInfo extends ImportPerLine
 	
 }
 /**
- * ½«TIGRµÄGffÎÄ¼şµ¼ÈëgeneInfo±í
- * @param gffTigrRice  tigrRiceµÄgffÎÄ¼ş
+ * å°†TIGRçš„Gffæ–‡ä»¶å¯¼å…¥geneInfoè¡¨
+ * @param gffTigrRice  tigrRiceçš„gffæ–‡ä»¶
  * @throws Exception  
  */
 class RiceTIGRInfo extends ImportPerLine
@@ -558,7 +558,7 @@ class RiceTIGRInfo extends ImportPerLine
 }
 
 /**
- * ½«TigrµÄall.GOSlim_assignmentÎÄ¼şµ¼Èëgene2GOÊı¾İ¿â£¬µ¹ÈëNCBIGOºÍUniGOÁ½¸ö±í
+ * å°†Tigrçš„all.GOSlim_assignmentæ–‡ä»¶å¯¼å…¥gene2GOæ•°æ®åº“ï¼Œå€’å…¥NCBIGOå’ŒUniGOä¸¤ä¸ªè¡¨
  */
 class RiceTIGRGO extends ImportPerLine
 {
@@ -569,7 +569,7 @@ class RiceTIGRGO extends ImportPerLine
 		String LocID = ss[0].trim();
 		GeneID copedID = new GeneID(LocID, 39947);
 		for (int j = 1; j < ss.length; j++) 
-		{//Ã¿¸öGOID¶¼×°Èë
+		{//æ¯ä¸ªGOIDéƒ½è£…å…¥
 			copedID.setUpdateGO(ss[j].trim(), NovelBioConst.DBINFO_RICE_TIGR, null, null, null);
 		}
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_RICE_TIGR, false);

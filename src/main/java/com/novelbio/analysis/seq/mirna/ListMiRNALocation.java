@@ -16,7 +16,7 @@ import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.species.Species;
 /**
- * ¶ÁÈ¡miRNA.datµÄĞÅÏ¢£¬¹¹½¨listabs±í£¬·½±ã¸ø¶¨mirIDºÍloc£¬´Ó¶ø²éÕÒµ½µ×ÊÇ5p»¹ÊÇ3p
+ * è¯»å–miRNA.datçš„ä¿¡æ¯ï¼Œæ„å»ºlistabsè¡¨ï¼Œæ–¹ä¾¿ç»™å®šmirIDå’Œlocï¼Œä»è€ŒæŸ¥æ‰¾åˆ°åº•æ˜¯5pè¿˜æ˜¯3p
  * @author zong0jie
  *
  */
@@ -27,14 +27,14 @@ public class ListMiRNALocation extends ListHashBin{
 	public static int TYPE_MIREAP = 15;
 	public static int TYPE_MIRDEEP = 25;
 
-	/** taxID¶ÔÓ¦RNA.dataÖĞµÄString */
+	/** taxIDå¯¹åº”RNA.dataä¸­çš„String */
 	HashMap<Integer, String> hashSpecies = new HashMap<Integer, String>();
 	String species2 = "HSA";
 	Species species;
 	/**
-	 * ÎªmiRNA.datÖĞµÄÎïÖÖÃû
-	 * Éè¶¨ÎïÖÖ£¬Ä¬ÈÏÎªÈËÀà£ºHSA
-	 * ¾ßÌåÒª¼ì²éRNA.dataÎÄ¼ş
+	 * ä¸ºmiRNA.datä¸­çš„ç‰©ç§å
+	 * è®¾å®šç‰©ç§ï¼Œé»˜è®¤ä¸ºäººç±»ï¼šHSA
+	 * å…·ä½“è¦æ£€æŸ¥RNA.dataæ–‡ä»¶
 	 * @param species
 	 */
 	public void setSpecies(Species species) {
@@ -42,14 +42,14 @@ public class ListMiRNALocation extends ListHashBin{
 	}
 	int fileType = TYPE_RNA_DATA;
 	/**
-	 * ÎÄ¼ş¸ñÊ½£¬¿ÉÒÔÊÇRNA.dat£¬Ò²¿ÉÒÔÊÇmiReapµÄ½á¹û
-	 * @param type TYPE_RNA_DATA »ò TYPE_MIREAP
+	 * æ–‡ä»¶æ ¼å¼ï¼Œå¯ä»¥æ˜¯RNA.datï¼Œä¹Ÿå¯ä»¥æ˜¯miReapçš„ç»“æœ
+	 * @param type TYPE_RNA_DATA æˆ– TYPE_MIREAP
 	 */
 	public void setReadFileType(int type) {
 		this.fileType = type;
 	}
 	/**
-	 * ¶ÁÈ¡miRNA.dataÎÄ¼ş£¬Í¬Ê±¶ÁÈ¡ºÍËüÒ»ÆğµÄÕûÀíºÃµÄtaxID2speciesÎÄ¼ş
+	 * è¯»å–miRNA.dataæ–‡ä»¶ï¼ŒåŒæ—¶è¯»å–å’Œå®ƒä¸€èµ·çš„æ•´ç†å¥½çš„taxID2speciesæ–‡ä»¶
 	 */
 	protected void ReadGffarrayExcep(String rnadataFile) {
 		if (fileType == TYPE_RNA_DATA) {
@@ -63,7 +63,7 @@ public class ListMiRNALocation extends ListHashBin{
 		}
 	}
 	/**
-	 * ¶ÁÈ¡RNA.dat£¬»ñµÃÃ¿¸öĞ¡RNAµÄĞòÁĞĞÅÏ¢
+	 * è¯»å–RNA.datï¼Œè·å¾—æ¯ä¸ªå°RNAçš„åºåˆ—ä¿¡æ¯
 	 * ID   hsa-mir-1539      standard; RNA; HSA; 50 BP.
 XX
 AC   MI0007260;
@@ -97,8 +97,8 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 		ListBin<ListDetailBin> lsMiRNA = null; ListDetailBin listDetailBin = null;
 		super.mapName2DetailAbs = new LinkedHashMap<String, ListDetailBin>();
 		super.lsNameNoRedundent = new ArrayList<String>();
-		boolean flagSpecies = false;//±ê¼ÇÊÇ·ñÎªÎÒÃÇÏëÒªµÄÎïÖÖ
-		boolean flagSQ = false;//±ê¼ÇÊÇ·ñÌáÈ¡ĞòÁĞ
+		boolean flagSpecies = false;//æ ‡è®°æ˜¯å¦ä¸ºæˆ‘ä»¬æƒ³è¦çš„ç‰©ç§
+		boolean flagSQ = false;//æ ‡è®°æ˜¯å¦æå–åºåˆ—
 		for (String string : txtRead.readlines()) {
 			if (string.startsWith("//")) {
 				flagSpecies = false;
@@ -110,7 +110,7 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 				lsMiRNA = new ListBin<ListDetailBin>();
 				lsMiRNA.setName(sepInfo[1].toLowerCase());
 				lsMiRNA.setCis5to3(true);
-				//×°ÈëchrHash
+				//è£…å…¥chrHash
 				getMapChrID2LsGff().put(lsMiRNA.getName(), lsMiRNA);
 			}
 			if (flagSpecies && sepInfo[0].equals("FT")) {
@@ -135,7 +135,7 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 				flagSQ = true;
 			}
 			if (flagSQ) {
-				//TODO ÌáÈ¡ĞòÁĞ
+				//TODO æå–åºåˆ—
 			}
 		}
 	}
@@ -163,7 +163,7 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 					start = Integer.parseInt(ss[4]);
 					end = Integer.parseInt(ss[3]);
 				}
-				//×°ÈëchrHash
+				//è£…å…¥chrHash
 				getMapChrID2LsGff().put(lsMiRNA.getName(), lsMiRNA);
 			}
 			if (ss[2].startsWith("mature")) {
@@ -186,7 +186,7 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 		}
 	}
 	/**
-	 * ¶ÁÈ¡mirdeepÎÄ¼ş¼ĞÏÂµÄrun_26_06_2012_t_12_25_36/output.mrd
+	 * è¯»å–mirdeepæ–‡ä»¶å¤¹ä¸‹çš„run_26_06_2012_t_12_25_36/output.mrd
 	 * @param rnadataFile
 	 */
 	protected void ReadGffarrayExcepMirDeep(String rnadataFile) {
@@ -199,7 +199,7 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 				lsMiRNA = new ListBin<ListDetailBin>();
 				lsMiRNA.setName(string.substring(1).trim());
 				lsMiRNA.setCis5to3(true);
-				//×°ÈëchrHash
+				//è£…å…¥chrHash
 				getMapChrID2LsGff().put(lsMiRNA.getName(), lsMiRNA);
 			}
 			if (string.startsWith("exp")) {
@@ -253,16 +253,16 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 		}
 	}
 	/**
-	 * Èç¹ûÃ»ÓĞÕÒµ½£¬Ôò·µ»Ønull
-	 * @param mirName mirµÄÃû×Ö
-	 * @param start ¾ßÌåµÄ
+	 * å¦‚æœæ²¡æœ‰æ‰¾åˆ°ï¼Œåˆ™è¿”å›null
+	 * @param mirName mirçš„åå­—
+	 * @param start å…·ä½“çš„
 	 * @param end
 	 * @return
 	 */
 	public String searchMirName(String mirName, int start, int end) {
 		ListCodAbsDu<ListDetailBin,ListCodAbs<ListDetailBin>> lsDu = searchLocation(mirName, start, end);
 		if (lsDu == null) {
-			logger.error("³öÏÖÎ´ÖªmiRNAÃû×Ö£º" + mirName);
+			logger.error("å‡ºç°æœªçŸ¥miRNAåå­—ï¼š" + mirName);
 			return null;
 		}
 		ArrayList<ListDetailBin> lsResult = lsDu.getAllGffDetail();

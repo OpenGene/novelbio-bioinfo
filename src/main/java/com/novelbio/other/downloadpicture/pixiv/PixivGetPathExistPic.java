@@ -5,8 +5,8 @@ import java.util.HashSet;
 
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-/** »ñµÃ±¾ÎÄ¼ş¼ĞÖĞÒÑ¾­´æÔÚµÄÍ¼Æ¬µÄID
- * ·½±ãÒÔºóÈç¹û¿´µ½¸ÃID¾Í¿ÉÒÔ²»ÏÂÔØ¸ÃÍ¼Æ¬ÁË
+/** è·å¾—æœ¬æ–‡ä»¶å¤¹ä¸­å·²ç»å­˜åœ¨çš„å›¾ç‰‡çš„ID
+ * æ–¹ä¾¿ä»¥åå¦‚æœçœ‹åˆ°è¯¥IDå°±å¯ä»¥ä¸ä¸‹è½½è¯¥å›¾ç‰‡äº†
  *  */
 public class PixivGetPathExistPic {
 	public final static int SITE_PIXIV = 2;
@@ -17,7 +17,7 @@ public class PixivGetPathExistPic {
 	HashSet<String> setExistPictureID = new HashSet<String>();
 	String savePath = "";
 	/**
-	 * SITE_PIXIVµÈ
+	 * SITE_PIXIVç­‰
 	 * @param siteType
 	 */
 	public PixivGetPathExistPic(int siteType) {
@@ -58,7 +58,7 @@ public class PixivGetPathExistPic {
 		}
 		return false;
 	}
-	/** »ñµÃÎ²²¿±È½Ï³¤µÄID */
+	/** è·å¾—å°¾éƒ¨æ¯”è¾ƒé•¿çš„ID */
 	private String getLongID(ArrayList<String> lsID) {
 		String result = null;
 		if (lsID.size() > 1) {

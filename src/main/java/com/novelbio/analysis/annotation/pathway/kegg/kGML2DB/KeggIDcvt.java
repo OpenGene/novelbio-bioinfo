@@ -19,13 +19,13 @@ import com.novelbio.database.service.servkegg.ServKNIdKeg;
 import com.novelbio.generalConf.NovelBioConst;
 
 /**
- * ½«KEGGIDÓëgeneIDºÍKEGGIDÓëKOµÄ¹ØÏµµÈµ¼ÈëÊı¾İ¿â
+ * å°†KEGGIDä¸geneIDå’ŒKEGGIDä¸KOçš„å…³ç³»ç­‰å¯¼å…¥æ•°æ®åº“
  * @author zong0jie
  *
  */
 public class KeggIDcvt {
 	/**
-	 * Ê×ÏÈÓÃgeneIDÔÚNCBIID±íÖĞ»ñµÃtaxID£¬È»ºóµ¼Èëgen2Keg±í
+	 * é¦–å…ˆç”¨geneIDåœ¨NCBIIDè¡¨ä¸­è·å¾—taxIDï¼Œç„¶åå¯¼å…¥gen2Kegè¡¨
 	 * @param gen2KegFile
 	 * @throws Exception 
 	 */
@@ -35,7 +35,7 @@ public class KeggIDcvt {
 		TxtReadandWrite txtgene2Keg=new TxtReadandWrite();
 		txtgene2Keg.setParameter(gen2KegFile, false, true);
 		int TaxID=0;
-		////////////////»ñµÃtaxID////////////////////////////////////////////////////////
+		////////////////è·å¾—taxID////////////////////////////////////////////////////////
 		BufferedReader reader=txtgene2Keg.readfile();
 		String content="";
 		while ((content=reader.readLine())!=null) 
@@ -60,7 +60,7 @@ public class KeggIDcvt {
 //		}
 		///////////////////////////////////////////////////////////////////////////////////////
 		if (TaxID==0) {
-			System.err.println("ÔÚNCBIID±íÖĞÃ»ÓĞÕÒµ½¸ÃÎïÖÖµÄtaxID");
+			System.err.println("åœ¨NCBIIDè¡¨ä¸­æ²¡æœ‰æ‰¾åˆ°è¯¥ç‰©ç§çš„taxID");
 			return;
 		}
 		BufferedReader reader2=txtgene2Keg.readfile();
@@ -79,8 +79,8 @@ public class KeggIDcvt {
 	
 	
 	/**
-	 * Ê×ÏÈÓÃkegIDÔÚgen2Keg±íÖĞÕÒtaxID
-	 * È»ºóµ¹Èëkeg2Ko±í
+	 * é¦–å…ˆç”¨kegIDåœ¨gen2Kegè¡¨ä¸­æ‰¾taxID
+	 * ç„¶åå€’å…¥keg2Koè¡¨
 	 * @param keg2KoFile
 	 * @throws Exception 
 	 */
@@ -91,7 +91,7 @@ public class KeggIDcvt {
 		TxtReadandWrite txtKeg2Ko=new TxtReadandWrite();
 		txtKeg2Ko.setParameter(keg2KoFile, false, true);
 		int TaxID=0;
-		////////////////»ñµÃtaxID////////////////////////////////////////////////////////
+		////////////////è·å¾—taxID////////////////////////////////////////////////////////
 		BufferedReader reader=txtKeg2Ko.readfile();
 		String content="";
 		while ((content=reader.readLine())!=null) 
@@ -108,7 +108,7 @@ public class KeggIDcvt {
 		}
 		///////////////////////////////////////////////////////////////////////////////////////
 		if (TaxID==0) {
-			System.err.println("ÔÚgene2Keg±íÖĞÃ»ÓĞÕÒµ½¸ÃÎïÖÖµÄtaxID");
+			System.err.println("åœ¨gene2Kegè¡¨ä¸­æ²¡æœ‰æ‰¾åˆ°è¯¥ç‰©ç§çš„taxID");
 			return;
 		}
 		BufferedReader reader2=txtKeg2Ko.readfile();
@@ -126,7 +126,7 @@ public class KeggIDcvt {
 	}
 	
 	/**
-	 * ½«´ÓkeggÉÏÏÂÔØµÄ»¯ºÏÎïÎÄ¼şµ¼ÈëÊı¾İ¿â
+	 * å°†ä»keggä¸Šä¸‹è½½çš„åŒ–åˆç‰©æ–‡ä»¶å¯¼å…¥æ•°æ®åº“
 	 * @param compFile
 	 * @throws Exception 
 	 */
@@ -146,14 +146,14 @@ public class KeggIDcvt {
 				KGNCompInfo kgnCompInfo = new KGNCompInfo();
 				String kegID = ss[1];
 				kgnCompInfo.setKegID(kegID);
-				//½«keggID×°Èë
+				//å°†keggIDè£…å…¥
 				KGNIdKeg kgnIdKeg = new KGNIdKeg();
 				kgnIdKeg.setAttribute("Compound");
 				kgnIdKeg.setKegID(kegID);
 				kgnIdKeg.setUsualName(kegID);
 				servKNIdKeg.insertKGNIdKeg(kgnIdKeg);
 				
-				//¶ÁÈ¡NameÄÇÒ»ÁĞ
+				//è¯»å–Nameé‚£ä¸€åˆ—
 				content = readerComp.readLine();
 				String name = content.replace("NAME", "").trim();
 				String nameAll = "";

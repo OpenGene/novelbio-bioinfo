@@ -28,28 +28,28 @@ import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.generalConf.TitleFormatNBC;
 
-/** ¿É±ä¼ô½ÓµÄ¼ìÑé */
+/** å¯å˜å‰ªæ¥çš„æ£€éªŒ */
 public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	private static Logger logger = Logger.getLogger(ExonSplicingTest.class);
-	/** ÊµÑé×éºÍ¶ÔÕÕ×éµÄjunction readsÊıÁ¿¼ÓÆğÀ´Ğ¡ÓÚÕâ¸öÊı£¬¾Í·µ»Ø1 */
+	/** å®éªŒç»„å’Œå¯¹ç…§ç»„çš„junction readsæ•°é‡åŠ èµ·æ¥å°äºè¿™ä¸ªæ•°ï¼Œå°±è¿”å›1 */
 	static int junctionReadsMinNum = 10;
 	
 	ExonCluster exonCluster;
 	TophatJunction tophatJunction;
 	
-	/** Ã¿¸öexonCluster×éÖĞconditionÒÔ¼°Æä¶ÔÓ¦µÄexonµÄjunction reads counts */
+	/** æ¯ä¸ªexonClusterç»„ä¸­conditionä»¥åŠå…¶å¯¹åº”çš„exonçš„junction reads counts */
 	LinkedHashMap<String, int[]> mapCondition2Counts = new LinkedHashMap<String, int[]>();
 	
-	//TODO ±í´ï¿ÉÒÔ·ÅÔÚÕâ¸öhash±íÖĞ
-	/** Ã¿¸öexonCluster×éÖĞconditionÒÔ¼°Æä¶ÔÓ¦µÄexonµÄexpression reads counts
-	 * TODO ¿ÉÒÔ×÷³ÉLinkedHashMap<String, ArrayList<int[]>> 
-	 * listÀïÃæ¾ÍÊÇÃ¿¸öchrID
+	//TODO è¡¨è¾¾å¯ä»¥æ”¾åœ¨è¿™ä¸ªhashè¡¨ä¸­
+	/** æ¯ä¸ªexonClusterç»„ä¸­conditionä»¥åŠå…¶å¯¹åº”çš„exonçš„expression reads counts
+	 * TODO å¯ä»¥ä½œæˆLinkedHashMap<String, ArrayList<int[]>> 
+	 * listé‡Œé¢å°±æ˜¯æ¯ä¸ªchrID
 	 *  */
 	LinkedHashMap<String, int[]> mapCondition2Exp = new LinkedHashMap<String, int[]>();
 	
 	String condition1;
 	String condition2;
-	/** ÉèÖÃÒ»¸ö¸ºÊıµÄ³õÊ¼Öµ */
+	/** è®¾ç½®ä¸€ä¸ªè´Ÿæ•°çš„åˆå§‹å€¼ */
 	Double pvalue= -1.0;
 	double fdr = 1.0;
 	int readsLength = 100;
@@ -65,20 +65,20 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	}
 	
 	public void setConditionsetAndJunction(LinkedHashSet<String> setCondition, TophatJunction tophatJunction) {
-		//³õÊ¼»¯
+		//åˆå§‹åŒ–
 		for (String string : setCondition) {
 			mapCondition2Counts.put(string, new int[0]);
 		}
 		this.tophatJunction = tophatJunction;
 	}
 	
-	/** ±ØĞëÉè¶¨ */
+	/** å¿…é¡»è®¾å®š */
 	public void setCompareCondition(String condition1, String condition2) {
 		this.condition1 = condition1;
 		this.condition2 = condition2;
 	}
 	
-	/** ²âĞò³¤¶È£¬¸ù¾İÕâ¸ö³¤¶ÈÀ´ÅĞ¶¨pvalueµÄ±ÈÀı */
+	/** æµ‹åºé•¿åº¦ï¼Œæ ¹æ®è¿™ä¸ªé•¿åº¦æ¥åˆ¤å®špvalueçš„æ¯”ä¾‹ */
 	public void setReadsLength(int readsLength) {
 		this.readsLength = readsLength;
 	}
@@ -88,8 +88,8 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	}
 	
 	/** 
-	 * Ìí¼ÓÃ¿¸öconditionÒÔ¼°Æä¶ÔÓ¦µÄreads¶Ñ»ı
-	 * Èç¹ûÊÇÏàÍ¬µÄcondition£¬ÔòÀÛ¼ÓÉÏÈ¥
+	 * æ·»åŠ æ¯ä¸ªconditionä»¥åŠå…¶å¯¹åº”çš„readså †ç§¯
+	 * å¦‚æœæ˜¯ç›¸åŒçš„conditionï¼Œåˆ™ç´¯åŠ ä¸Šå»
 	 */
 	public void addMapCondition2MapReads(String condition, MapReadsAbs mapReads) {
 		SiteInfo siteInfo = exonCluster.getDifSite();
@@ -101,7 +101,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		double[] info2 = mapReads.getRangeInfo(siteInfo.getRefID(), exonCluster.getParentGene().getLongestSplitMrna());
 		tmpExpCond[1] = getMean(info2) + 1;
 		
-		//²»¿ÉÄÜ»á³öÏÖÕâÖÖÇé¿ö
+		//ä¸å¯èƒ½ä¼šå‡ºç°è¿™ç§æƒ…å†µ
 		if (tmpExpCond[0] <= 0 || tmpExpCond[1] <=0) {
 			return;
 		}
@@ -123,7 +123,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	}
 
 	/**
-	 * @param junc ¿ç¹ı¸ÃexonµÄisoÊÇ·ñ´æÔÚ£¬0²»´æÔÚ£¬1´æÔÚ
+	 * @param junc è·¨è¿‡è¯¥exonçš„isoæ˜¯å¦å­˜åœ¨ï¼Œ0ä¸å­˜åœ¨ï¼Œ1å­˜åœ¨
 	 * @param gffDetailGene
 	 * @param chrID
 	 * @param condition
@@ -132,7 +132,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	private int[] getAlt5Reads(int junc, GffDetailGene gffDetailGene, String chrID, String condition) {
 		ArrayList<ExonInfo> lsExon = exonCluster.getExonInfoSingleLs();
 		int[] counts = new int[lsExon.size() + junc];
-		//µÚÒ»Î»ÊÇÌø¹ı¸ÃexonµÄreads
+		//ç¬¬ä¸€ä½æ˜¯è·³è¿‡è¯¥exonçš„reads
 		if (junc == 1)
 			counts[0] = getJunReadsNum(gffDetailGene, condition);
 		
@@ -145,7 +145,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	}
 	
 	/**
-	 * @param junc ¿ç¹ı¸ÃexonµÄisoÊÇ·ñ´æÔÚ£¬0²»´æÔÚ£¬1´æÔÚ
+	 * @param junc è·¨è¿‡è¯¥exonçš„isoæ˜¯å¦å­˜åœ¨ï¼Œ0ä¸å­˜åœ¨ï¼Œ1å­˜åœ¨
 	 * @param gffDetailGene
 	 * @param chrID
 	 * @param condition
@@ -166,7 +166,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	}
 	
 	/**
-	 * @param junc ¿ç¹ı¸ÃexonµÄisoÊÇ·ñ´æÔÚ£¬0²»´æÔÚ£¬1´æÔÚ
+	 * @param junc è·¨è¿‡è¯¥exonçš„isoæ˜¯å¦å­˜åœ¨ï¼Œ0ä¸å­˜åœ¨ï¼Œ1å­˜åœ¨
 	 * @param gffDetailGene
 	 * @param chrID
 	 * @param condition
@@ -188,7 +188,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		return counts;
 	}
 	/**
-	 * »ñµÃÌø¹ı¸ÃexonCluster×éµÄreadsNum
+	 * è·å¾—è·³è¿‡è¯¥exonClusterç»„çš„readsNum
 	 * @param gffDetailGene
 	 * @param exonCluster
 	 * @param condition
@@ -208,8 +208,8 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		
 		return result;
 	}
-	/** ²éÕÒº¬ÓĞ¸ÃexonµÄ×ªÂ¼±¾£¬
-	 * »ñµÃ¿ç¹ı¸ÃÍâÏÔ×ÓµÄ×ø±ê */
+	/** æŸ¥æ‰¾å«æœ‰è¯¥exonçš„è½¬å½•æœ¬ï¼Œ
+	 * è·å¾—è·¨è¿‡è¯¥å¤–æ˜¾å­çš„åæ ‡ */
 	private HashSet<String> getSkipExonLoc_From_IsoHaveExon() {
 		HashSet<String> setLocation = new HashSet<String>();
 		for (ArrayList<ExonInfo> lsExonInfos : exonCluster.getLsIsoExon()) {
@@ -229,8 +229,8 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		return setLocation;
 	}
 	
-	/**²éÕÒ²»º¬¸ÃexonµÄ×ªÂ¼±¾£¬ 
-	 * »ñµÃ¿ç¹ı¸ÃÍâÏÔ×ÓµÄ×ø±ê */
+	/**æŸ¥æ‰¾ä¸å«è¯¥exonçš„è½¬å½•æœ¬ï¼Œ 
+	 * è·å¾—è·¨è¿‡è¯¥å¤–æ˜¾å­çš„åæ ‡ */
 	private HashSet<String> getSkipExonLoc_From_IsoWithoutExon(GffDetailGene gffDetailGene) {
 		HashSet<String> setLocation = new HashSet<String>();
 		
@@ -249,8 +249,12 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	private void setFdr(double fdr) {
 		this.fdr = fdr;
 	}
-	/** ¼ÆËã²¢»ñµÃpvalue */
+	/** è®¡ç®—å¹¶è·å¾—pvalue */
 	public Double getAndCalculatePvalue() {
+		if (mapCondition2Counts.size() == 0) {
+			fillJunctionReadsData();
+		}
+		
 		if (pvalue > 0) {
 			return pvalue;
 		}
@@ -258,7 +262,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			pvalue = 1.0;
 			return pvalue;
 		}
-		fillJunctionReadsData();
+	
 		double pvalueExp = getPvalueReads();
 		double pvalueCounts = getPvalueJunctionCounts();
 //		if (exonCluster.getExonSplicingType() == ExonSplicingType.retain_intron) {
@@ -270,8 +274,8 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		return pvalue;
 	}
 	
-	/** readsµÄÌõÄ¿ÊÇ·ñÎª 0
-	 * Îª0ÔòÎŞ·¨¼ÆËãpvalue £¬ÄÇÃ´¾ÍĞèÒªÖ±½ÓÉè¶¨Îª1
+	/** readsçš„æ¡ç›®æ˜¯å¦ä¸º 0
+	 * ä¸º0åˆ™æ— æ³•è®¡ç®—pvalue ï¼Œé‚£ä¹ˆå°±éœ€è¦ç›´æ¥è®¾å®šä¸º1
 	 */
 	private boolean isZeroCounts() {
 		int[] cond1 = mapCondition2Counts.get(condition1);
@@ -291,14 +295,14 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	}
 	
 	private void fillJunctionReadsData() {
-		//¿ç¹ı¸ÃexonµÄisoÊÇ·ñ´æÔÚ£¬0²»´æÔÚ£¬1´æÔÚ
+		//è·¨è¿‡è¯¥exonçš„isoæ˜¯å¦å­˜åœ¨ï¼Œ0ä¸å­˜åœ¨ï¼Œ1å­˜åœ¨
 		int junc = 0;
 		if (exonCluster.getMapIso2ExonIndexSkipTheCluster().size() > 0)
 			junc = 1;
  
 		GffDetailGene gffDetailGene = exonCluster.getParentGene();
 		String chrID = gffDetailGene.getRefID();
-		//Ò»°ã setCondition ÀïÃæÖ»ÓĞÁ½Ïî£¬Ò²¾ÍÊÇ½ö±È½ÏÁ½¸öÊ±ÆÚµÄ¿É±ä¼ô½Ó
+		//ä¸€èˆ¬ setCondition é‡Œé¢åªæœ‰ä¸¤é¡¹ï¼Œä¹Ÿå°±æ˜¯ä»…æ¯”è¾ƒä¸¤ä¸ªæ—¶æœŸçš„å¯å˜å‰ªæ¥
 		ArrayList<String> lsCondition = ArrayOperate.getArrayListKey(mapCondition2Counts);
 
 		Set<ExonSplicingType> setexExonSplicingTypes = exonCluster.getExonSplicingTypeSet();
@@ -319,7 +323,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	}
 
 	
-	/** ³ö´í¾Í·µ»Ø-1 */
+	/** å‡ºé”™å°±è¿”å›-1 */
 	protected Double getPvalueReads() {
 		try {
 			return getPvalueReadsExp();
@@ -328,11 +332,11 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		}
 	}
 
-	/** ±È½Ïexon ±í´ïÁ¿
-	 * ÔÚÕâÖ®Ç°Îñ±ØÉè¶¨condition
+	/** æ¯”è¾ƒexon è¡¨è¾¾é‡
+	 * åœ¨è¿™ä¹‹å‰åŠ¡å¿…è®¾å®šcondition
 	 */
 	private Double getPvalueReadsExp() {
-		//±í´ïË®Æ½³¬¹ı¸ÃÖµ¾Í±ê×¼»¯
+		//è¡¨è¾¾æ°´å¹³è¶…è¿‡è¯¥å€¼å°±æ ‡å‡†åŒ–
 		int normalizedValue = 50;
 		
 		if (!mapCondition2Exp.containsKey(condition1) || !mapCondition2Exp.containsKey(condition2)) {
@@ -351,11 +355,11 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		double pvalue = fisherTest.getTwoTailedP(tmpExpCond1[0], tmpExpCond1[1], tmpExpCond2[0], tmpExpCond2[1]);
 		return pvalue;
 	}
-	/** ±È½Ïjunction reads
-	 * ÔÚÕâÖ®Ç°Îñ±ØÉè¶¨condition
+	/** æ¯”è¾ƒjunction reads
+	 * åœ¨è¿™ä¹‹å‰åŠ¡å¿…è®¾å®šcondition
 	 */
 	protected Double getPvalueJunctionCounts() {
-		//Èç¹ûcountÊı³¬¹ı¸ÃÖµ£¬¾Í±ê×¼»¯
+		//å¦‚æœcountæ•°è¶…è¿‡è¯¥å€¼ï¼Œå°±æ ‡å‡†åŒ–
 		int normalizedNum = 200;
 		if (pvalue > 0) {
 			return pvalue;
@@ -396,7 +400,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 
 
 	
-	/** Retain_IntronµÄpvalue±È½ÏÆæ¹Ö£¬±ØĞëÒªexon²ÅÄÜ¼ÆËãµÄ */
+	/** Retain_Intronçš„pvalueæ¯”è¾ƒå¥‡æ€ªï¼Œå¿…é¡»è¦exonæ‰èƒ½è®¡ç®—çš„ */
 	private void getPvalueRetain_Intron(double pvalueExp, double pvalueCounts) {
 		if (pvalueExp > 0)
 			pvalue = pvalueExp;
@@ -411,8 +415,8 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	}
 	
 	/** 
-	 * Retain_IntronµÄpvalue±È½ÏÆæ¹Ö£¬±ØĞëÒªexon²ÅÄÜ¼ÆËãµÄ
-	 *  ¹«Ê½£º2^((log2(0.8)*0.5 + log2(0.1)*0.5))
+	 * Retain_Intronçš„pvalueæ¯”è¾ƒå¥‡æ€ªï¼Œå¿…é¡»è¦exonæ‰èƒ½è®¡ç®—çš„
+	 *  å…¬å¼ï¼š2^((log2(0.8)*0.5 + log2(0.1)*0.5))
 	 *  */
 	private void getPvalueCombine(double pvalueExp, double pvalueCounts) {
 		if (pvalueExp < 0) {
@@ -424,7 +428,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		double pvalueLog = Math.log10(pvalueExp) * expPro +  Math.log10(pvalueCounts) * (1 - expPro);
 		pvalue = Math.pow(10, pvalueLog);
 				
-//		¶ÔÓÚcassetteµÄpvalueËõĞ¡
+//		å¯¹äºcassetteçš„pvalueç¼©å°
 //		if (exonCluster.getExonSplicingType() == ExonSplicingType.cassette) {
 //			pvalue = pvalue * pvalue * 2;
 //		}
@@ -434,8 +438,8 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		return;
 	}
 	
-	/** »ñµÃ±í´ïËùÕ¼ÓĞµÄpvalueµÄ±ÈÀı
-	 * exonÔ½³¤±ÈÀıÔ½¸ß£¬Ô½¶Ì±ÈÀıÔ½µÍ
+	/** è·å¾—è¡¨è¾¾æ‰€å æœ‰çš„pvalueçš„æ¯”ä¾‹
+	 * exonè¶Šé•¿æ¯”ä¾‹è¶Šé«˜ï¼Œè¶ŠçŸ­æ¯”ä¾‹è¶Šä½
 	 *  */
 	private double getPvaluePropExp() {
 		double prop = 0.5;
@@ -457,8 +461,8 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 
 	
 	/** 
-	 * µ±¿É±ä¼ô½ÓµÄĞÎÊ½ÎªcassetteÊ±£¬ĞŞÕıÊäÈëµÄÖµ
-	 * ¾ÍÊÇ½«Öµ¼ÓÉÏËûÃÇµÄÆ½¾ùÊı
+	 * å½“å¯å˜å‰ªæ¥çš„å½¢å¼ä¸ºcassetteæ—¶ï¼Œä¿®æ­£è¾“å…¥çš„å€¼
+	 * å°±æ˜¯å°†å€¼åŠ ä¸Šä»–ä»¬çš„å¹³å‡æ•°
 	 */
 	private int[] modifyInputValue(int[] conditionInfo) {
 		int mean = (int) MathComput.mean(conditionInfo);
@@ -470,8 +474,8 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	}
 	
 	/** 
-	 * Èç¹ûcountÊıÁ¿Ì«´ó£¬¾Í½«Æä±ê×¼»¯ÖÁÒ»¸ö±È½ÏµÍµÄÖµ
-	 * @param normalizedValue ´óÓÚ¸ÃÖµ¾Í¿ªÊ¼ĞŞÕı
+	 * å¦‚æœcountæ•°é‡å¤ªå¤§ï¼Œå°±å°†å…¶æ ‡å‡†åŒ–è‡³ä¸€ä¸ªæ¯”è¾ƒä½çš„å€¼
+	 * @param normalizedValue å¤§äºè¯¥å€¼å°±å¼€å§‹ä¿®æ­£
 	 */
 	private void normalizeToLowValue(int[] condition, int normalizedValue) {
 		int meanValue = (int) MathComput.mean(condition);
@@ -484,10 +488,10 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	}
 	
 	/** 
-	 * »ñµÃÒ»ÏµÁĞĞòÁĞ£º
-	 * 1.Ç°Ò»¸öºÍºóÒ»¸öexonºÍintronµÄĞòÁĞ
-	 * 2. µ±Ç°exon
-	 * 3. µ±Ç°exon×óÓÒÀ©Õ¹300bp
+	 * è·å¾—ä¸€ç³»åˆ—åºåˆ—ï¼š
+	 * 1.å‰ä¸€ä¸ªå’Œåä¸€ä¸ªexonå’Œintronçš„åºåˆ—
+	 * 2. å½“å‰exon
+	 * 3. å½“å‰exonå·¦å³æ‰©å±•300bp
 	 */
 	protected ArrayList<SeqFasta> getSeq(SeqHash seqHash) {
 		ArrayList<SeqFasta> lsSeqFastas = new ArrayList<SeqFasta>();
@@ -583,7 +587,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		}
 		return condition;
 	}
-	/** »ñµÃ±êÌâ */
+	/** è·å¾—æ ‡é¢˜ */
 	public static String[] getTitle(String condition1, String condition2, boolean isGetSeq) {
 		ArrayList<String> lsTitle = new ArrayList<String>();
 		lsTitle.add(TitleFormatNBC.AccID.toString());

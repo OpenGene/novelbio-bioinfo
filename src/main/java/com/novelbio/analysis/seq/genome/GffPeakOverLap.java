@@ -13,40 +13,40 @@ import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 public class GffPeakOverLap 
 {
 	/**
-	 * ¼¸¸ö´ıÓÃÀà
+	 * å‡ ä¸ªå¾…ç”¨ç±»
 	 */
 	ListHashBin gffHashPeakMinus;
 	ListHashBin gffHashPeakPlus;
 	
-	ArrayList<String> lspeakMinusID;//¸ºÁ´ÉÏµÄpeakID
-	ArrayList<String> lspeakPlusID;//ÕıÁ´ÉÏµÄpeakID
+	ArrayList<String> lspeakMinusID;//è´Ÿé“¾ä¸Šçš„peakID
+	ArrayList<String> lspeakPlusID;//æ­£é“¾ä¸Šçš„peakID
 	/**
-	 * ½«ÖØ¸´peakºÏ²¢ºó¸ºÁ´ÉÏµÄPeak
+	 * å°†é‡å¤peakåˆå¹¶åè´Ÿé“¾ä¸Šçš„Peak
 	 */
 	ArrayList<String> lspeakMinusCope;
 	/**
-	 * ½«ÖØ¸´peakºÏ²¢ºóÕıÁ´ÉÏµÄPeak
+	 * å°†é‡å¤peakåˆå¹¶åæ­£é“¾ä¸Šçš„Peak
 	 */
 	ArrayList<String> lspeakPlusCope;
 	
 	/**
-	 * ¸ºÁ´ÉÏµÄPeakHash
+	 * è´Ÿé“¾ä¸Šçš„PeakHash
 	 */
 	HashMap<String, ListDetailBin> gffMinusLocHash;
 	/**
-	 * ÕıÁ´ÉÏµÄPeakHash
+	 * æ­£é“¾ä¸Šçš„PeakHash
 	 */
 	HashMap<String, ListDetailBin> gffPlusLocHash;
 	/**
-	 * ÓÃÖ®Ç°Á½¸öpeakÎÄ¼ş¶¼Òª°´ÕÕchr½øĞĞÅÅĞò£¬²»¹ıchrÄÚ²¿²»ÓÃÅÅĞò£¬Ò²¾ÍÊÇchrÄÚ²¿×ø±ê²»ÒªÇóÒ»ÖÂ
-	 * ¶ÁÈ¡Á½¸öpeakÎÄ¼ş£¬ÊäÈëÁ½¸öÎÄ¼şÃû£¬Ä¬ÈÏÁ½¸öÎÄ¼şÖĞpeakĞÅÏ¢ËùÔÚµÄÁĞÒ»Ñù<br>
-	 * ËùÓĞ¼ÆÊı¶¼´Ó1¿ªÊ¼¼ÆÊı
-	 * @param filePlus ÕıÏòpeak txtÎÄ¼ş
-	 * @param fileMinus ·´Ïòpeak txtÎÄ¼ş
-	 * @param colChr ChrIDËùÔÚµÄÁĞ
-	 * @param peakStart peakÆğµãËùÔÚµÄÁĞ
-	 * @param peakEnd peakÖÕµãËùÔÚµÄÁĞ
-	 * @param rowNum ´ÓµÚ¼¸ĞĞ¶ÁÆğ
+	 * ç”¨ä¹‹å‰ä¸¤ä¸ªpeakæ–‡ä»¶éƒ½è¦æŒ‰ç…§chrè¿›è¡Œæ’åºï¼Œä¸è¿‡chrå†…éƒ¨ä¸ç”¨æ’åºï¼Œä¹Ÿå°±æ˜¯chrå†…éƒ¨åæ ‡ä¸è¦æ±‚ä¸€è‡´
+	 * è¯»å–ä¸¤ä¸ªpeakæ–‡ä»¶ï¼Œè¾“å…¥ä¸¤ä¸ªæ–‡ä»¶åï¼Œé»˜è®¤ä¸¤ä¸ªæ–‡ä»¶ä¸­peakä¿¡æ¯æ‰€åœ¨çš„åˆ—ä¸€æ ·<br>
+	 * æ‰€æœ‰è®¡æ•°éƒ½ä»1å¼€å§‹è®¡æ•°
+	 * @param filePlus æ­£å‘peak txtæ–‡ä»¶
+	 * @param fileMinus åå‘peak txtæ–‡ä»¶
+	 * @param colChr ChrIDæ‰€åœ¨çš„åˆ—
+	 * @param peakStart peakèµ·ç‚¹æ‰€åœ¨çš„åˆ—
+	 * @param peakEnd peakç»ˆç‚¹æ‰€åœ¨çš„åˆ—
+	 * @param rowNum ä»ç¬¬å‡ è¡Œè¯»èµ·
 	 * @throws Exception 
 	 */
 	public void readPeakFile(String filePlus,String fileMinus,int colChr,int peakStart,int peakEnd,int rowNum) {
@@ -68,7 +68,7 @@ public class GffPeakOverLap
 	}
 	
 	/**
-	 * »ñµÃPlusËùÓĞpeakµÄ³¤¶È
+	 * è·å¾—Plusæ‰€æœ‰peakçš„é•¿åº¦
 	 * @return
 	 */
 	public int getPlusallLength() 
@@ -85,7 +85,7 @@ public class GffPeakOverLap
 		return plusAllLength;
 	}
 	/**
-	 * »ñµÃPlusºÏ²¢ºóËùÓĞpeakµÄ¸öÊı
+	 * è·å¾—Plusåˆå¹¶åæ‰€æœ‰peakçš„ä¸ªæ•°
 	 * @return
 	 */
 	public int getPlusNum() {
@@ -93,7 +93,7 @@ public class GffPeakOverLap
 	}
 	
 	/**
-	 * »ñµÃMinusºÏ²¢ºóËùÓĞpeakµÄ¸öÊı
+	 * è·å¾—Minusåˆå¹¶åæ‰€æœ‰peakçš„ä¸ªæ•°
 	 * @return
 	 */
 	public int getMinusNum() {
@@ -101,7 +101,7 @@ public class GffPeakOverLap
 	}
 	
 	/**
-	 * »ñµÃMinusËùÓĞpeakµÄ³¤¶È
+	 * è·å¾—Minusæ‰€æœ‰peakçš„é•¿åº¦
 	 * @return
 	 */
 	public int getMinusallLength() {
@@ -117,19 +117,19 @@ public class GffPeakOverLap
 	}
 
 	/**
-	 * »ñµÃOverlapµÄ³¤¶È
-	 * ÊÇÓÃminusµÄÆğµãºÍÖÕµãÔÚplusÖĞÕÒ
+	 * è·å¾—Overlapçš„é•¿åº¦
+	 * æ˜¯ç”¨minusçš„èµ·ç‚¹å’Œç»ˆç‚¹åœ¨plusä¸­æ‰¾
 	 * @return int[2]
-	 * 0: ¸º½»ÕıÁ½¸öÖ®¼ä½»¼¯bp<br>
-	 * 1: ¸º½»ÕıµÄpeakÊı<br>
-	 * 2: Õı½»¸ºÁ½¸öÖ®¼ä½»¼¯bp<br>
-	 * 3: Õı½»¸ºµÄpeakÊı
+	 * 0: è´Ÿäº¤æ­£ä¸¤ä¸ªä¹‹é—´äº¤é›†bp<br>
+	 * 1: è´Ÿäº¤æ­£çš„peakæ•°<br>
+	 * 2: æ­£äº¤è´Ÿä¸¤ä¸ªä¹‹é—´äº¤é›†bp<br>
+	 * 3: æ­£äº¤è´Ÿçš„peakæ•°
 	 */
 	public int[] getOverlapInfo() {
 		int overlapNumM2P = 0;
 		int overlapLengthM2P=0;
 		ArrayList<String[]> lsOverlap=new ArrayList<String[]>();
-		lsOverlap=compareMinus2Plus(true);//½«peakOverlap¶¼¿¼ÂÇ½øÈ¥¼ÆËã½»¼¯
+		lsOverlap=compareMinus2Plus(true);//å°†peakOverlapéƒ½è€ƒè™‘è¿›å»è®¡ç®—äº¤é›†
 		for (int i = 0; i < lsOverlap.size(); i++) {
 			int tmpOverlap = Integer.parseInt(lsOverlap.get(i)[2]);
 			overlapLengthM2P=overlapLengthM2P+tmpOverlap;
@@ -141,7 +141,7 @@ public class GffPeakOverLap
 		int overlapNumP2M = 0;
 		int overlapLengthP2M =0;
 		ArrayList<String[]> lsOverlap2=new ArrayList<String[]>();
-		lsOverlap2=comparePlus2Minus(true);//½«peakOverlap¶¼¿¼ÂÇ½øÈ¥¼ÆËã½»¼¯
+		lsOverlap2=comparePlus2Minus(true);//å°†peakOverlapéƒ½è€ƒè™‘è¿›å»è®¡ç®—äº¤é›†
 		for (int i = 0; i < lsOverlap2.size(); i++) {
 			int tmpOverlap = Integer.parseInt(lsOverlap2.get(i)[2]);
 			overlapLengthP2M = overlapLengthP2M+tmpOverlap;
@@ -158,16 +158,16 @@ public class GffPeakOverLap
 		return result;
 	}
 	/**
-	 * ÊÇÓÃminusµÄÆğµãºÍÖÕµãÔÚplusÖĞ²éÕÒµÄ
-	 * ·µ»ØArrayList-String[]£¬ÀïÃæÒÀ´Î±£´æÃ¿¸öminus peakµÄÁ½¶ËÓëplus peak µÄoverlapÇé¿ö
+	 * æ˜¯ç”¨minusçš„èµ·ç‚¹å’Œç»ˆç‚¹åœ¨plusä¸­æŸ¥æ‰¾çš„
+	 * è¿”å›ArrayList-String[]ï¼Œé‡Œé¢ä¾æ¬¡ä¿å­˜æ¯ä¸ªminus peakçš„ä¸¤ç«¯ä¸plus peak çš„overlapæƒ…å†µ
 	 * 0:ChrID <br>
 	 * 1:PeakID <br>
 	 * 2:overlapLength <br>
-	 * @param peakOverlap trueÊ±½«ÖØµşpeakºÏ²¢À´¼ÆËãÁ½ÌõÁ´ÉÏµÄpeak½»¼¯
-	 *  false£ºAÁ´ÉÏµÄpeak²»¿¼ÂÇÖØµş£¬ÓëBÁ´ÉÏÒÑ¾­ºÍ²¢ÖØµşµÄpeak¼ÆËãÁ½ÌõÁ´ÉÏµÄpeak½»¼¯
+	 * @param peakOverlap trueæ—¶å°†é‡å peakåˆå¹¶æ¥è®¡ç®—ä¸¤æ¡é“¾ä¸Šçš„peakäº¤é›†
+	 *  falseï¼šAé“¾ä¸Šçš„peakä¸è€ƒè™‘é‡å ï¼Œä¸Bé“¾ä¸Šå·²ç»å’Œå¹¶é‡å çš„peakè®¡ç®—ä¸¤æ¡é“¾ä¸Šçš„peakäº¤é›†
 	 */
 	public ArrayList<String[]> compareMinus2Plus(boolean peakOverlap) {
-		ArrayList<String[]> result=new ArrayList<String[]>();//´æ´¢×îºó½á¹û
+		ArrayList<String[]> result=new ArrayList<String[]>();//å­˜å‚¨æœ€åç»“æœ
 		
 		if (peakOverlap) {
 			int peakMinusNum=lspeakMinusCope.size();
@@ -206,16 +206,16 @@ public class GffPeakOverLap
 	
 	
 	/**
-	 * ÊÇÓÃplusµÄÆğµãºÍÖÕµãÔÚminusÖĞ²éÕÒµÄ
-	 * ·µ»ØArrayList-String[]£¬ÀïÃæÒÀ´Î±£´æÃ¿¸öplus peakµÄÁ½¶ËÓëminus peak µÄoverlapÇé¿ö
+	 * æ˜¯ç”¨plusçš„èµ·ç‚¹å’Œç»ˆç‚¹åœ¨minusä¸­æŸ¥æ‰¾çš„
+	 * è¿”å›ArrayList-String[]ï¼Œé‡Œé¢ä¾æ¬¡ä¿å­˜æ¯ä¸ªplus peakçš„ä¸¤ç«¯ä¸minus peak çš„overlapæƒ…å†µ
 	 * 0:ChrID <br>
 	 * 1:PeakID <br>
 	 * 2:overlapLength <br>
-	 * @param peakOverlap trueÊ±½«ÖØµşpeakºÏ²¢À´¼ÆËãÁ½ÌõÁ´ÉÏµÄpeak½»¼¯
-	 *  false£ºAÁ´ÉÏµÄpeak²»¿¼ÂÇÖØµş£¬ÓëBÁ´ÉÏÒÑ¾­ºÍ²¢ÖØµşµÄpeak¼ÆËãÁ½ÌõÁ´ÉÏµÄpeak½»¼¯
+	 * @param peakOverlap trueæ—¶å°†é‡å peakåˆå¹¶æ¥è®¡ç®—ä¸¤æ¡é“¾ä¸Šçš„peakäº¤é›†
+	 *  falseï¼šAé“¾ä¸Šçš„peakä¸è€ƒè™‘é‡å ï¼Œä¸Bé“¾ä¸Šå·²ç»å’Œå¹¶é‡å çš„peakè®¡ç®—ä¸¤æ¡é“¾ä¸Šçš„peakäº¤é›†
 	 */
 	public ArrayList<String[]> comparePlus2Minus(boolean peakOverlap) {
-		ArrayList<String[]> result=new ArrayList<String[]>();//´æ´¢×îºó½á¹û
+		ArrayList<String[]> result=new ArrayList<String[]>();//å­˜å‚¨æœ€åç»“æœ
 		
 		if (peakOverlap) {
 			int peakPlusNum=lspeakPlusCope.size();
@@ -254,8 +254,8 @@ public class GffPeakOverLap
 	
 	
 	/**
-	 * ²éÕÒpeak OverLapµÄÇé¿ö£¬·µ»ØInteger<br>
-	 * ÎªgffMPeakDetial²éÕÒgffHashplusPeakºó»ñµÃµÄ½»¼¯Çé¿ö<br>
+	 * æŸ¥æ‰¾peak OverLapçš„æƒ…å†µï¼Œè¿”å›Integer<br>
+	 * ä¸ºgffMPeakDetialæŸ¥æ‰¾gffHashplusPeakåè·å¾—çš„äº¤é›†æƒ…å†µ<br>
 	 * @param parentName
 	 * @param start
 	 * @param endLoc
@@ -281,7 +281,7 @@ public class GffPeakOverLap
 			}
 		}
 		if (tmpOverlapLength < 0) {
-			System.out.println("Á½¸öpeakµÄ½»¼¯Îª¸ºÊı");
+			System.out.println("ä¸¤ä¸ªpeakçš„äº¤é›†ä¸ºè´Ÿæ•°");
 			tmpOverlapLength = 0;
 		}
 		return tmpOverlapLength;

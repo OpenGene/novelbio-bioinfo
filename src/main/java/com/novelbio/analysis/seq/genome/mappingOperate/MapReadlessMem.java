@@ -8,7 +8,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 
 /**
- * ÏûºÄÄÚ´æ±È½ÏÉÙµÄ°æ±¾£¬±àÆğÀ´ºÜÀÛ
+ * æ¶ˆè€—å†…å­˜æ¯”è¾ƒå°‘çš„ç‰ˆæœ¬ï¼Œç¼–èµ·æ¥å¾ˆç´¯
  * @author zong0jie
  *
  */
@@ -16,53 +16,53 @@ public class MapReadlessMem {
 	
 	
 	/**
-	 * ¶ÁÈ¡MappingÎÄ¼ş£¬Éú³ÉÏàÓ¦µÄÒ»Î¬×ø±êÊı×é£¬×îºó±£´æÔÚÒ»¸ö¹şÏ£±íÖĞ¡£
-	 * @param mapFile mappingµÄ½á¹ûÎÄ¼ş£¬Ò»°ãÎªbed¸ñÊ½
-	 * @param chrLengthFile ÀïÃæ±£´æÃ¿¸öchrÓĞ¶à³¤£¬¸æËß³ÌĞò¸ÃÉú³É¶à³¤µÄshortÊı×é
-	 * @param colChrID ChrIDÔÚµÚ¼¸ÁĞ£¬´Ó0¿ªÊ¼
-	 * @param colStartNum mappingÆğµãÔÚµÚ¼¸ÁĞ£¬´Ó0¿ªÊ¼
-	 * @param colEndNum mappingÖÕµãÔÚµÚ¼¸ÁĞ£¬´Ó0¿ªÊ¼
-	 * @param invNum Ã¿¸ô¶àÉÙÎ»¼ÆÊı
+	 * è¯»å–Mappingæ–‡ä»¶ï¼Œç”Ÿæˆç›¸åº”çš„ä¸€ç»´åæ ‡æ•°ç»„ï¼Œæœ€åä¿å­˜åœ¨ä¸€ä¸ªå“ˆå¸Œè¡¨ä¸­ã€‚
+	 * @param mapFile mappingçš„ç»“æœæ–‡ä»¶ï¼Œä¸€èˆ¬ä¸ºbedæ ¼å¼
+	 * @param chrLengthFile é‡Œé¢ä¿å­˜æ¯ä¸ªchræœ‰å¤šé•¿ï¼Œå‘Šè¯‰ç¨‹åºè¯¥ç”Ÿæˆå¤šé•¿çš„shortæ•°ç»„
+	 * @param colChrID ChrIDåœ¨ç¬¬å‡ åˆ—ï¼Œä»0å¼€å§‹
+	 * @param colStartNum mappingèµ·ç‚¹åœ¨ç¬¬å‡ åˆ—ï¼Œä»0å¼€å§‹
+	 * @param colEndNum mappingç»ˆç‚¹åœ¨ç¬¬å‡ åˆ—ï¼Œä»0å¼€å§‹
+	 * @param invNum æ¯éš”å¤šå°‘ä½è®¡æ•°
 	 * @throws Exception 
 	 */
 	public void  ReadMapFile(String mapFile,String chrLengthFile,String sep,int colChrID,int colStartNum,int colEndNum,int invNum) throws Exception 
 	{
-		//ËùÎ½½áËã¾ÍÊÇËµÃ¿¸ôinvNumµÄbp¾Í°ÑÕâinvNumbpÄÚÃ¿¸öbpµÄReadsµş¼ÓÊıÈ¡Æ½¾ù»òÖĞÎ»Êı£¬±£´æ½øchrBpReadsÖĞ
+		//æ‰€è°“ç»“ç®—å°±æ˜¯è¯´æ¯éš”invNumçš„bpå°±æŠŠè¿™invNumbpå†…æ¯ä¸ªbpçš„Readså åŠ æ•°å–å¹³å‡æˆ–ä¸­ä½æ•°ï¼Œä¿å­˜è¿›chrBpReadsä¸­
 		int m=100000000;
 		short[] chrBpReads=new short[m];
 		TxtReadandWrite txtmap=new TxtReadandWrite();
 		txtmap.setParameter(mapFile,false, true);
 		BufferedReader bufmap=txtmap.readfile();
 		String content="";
-		//¶şÎ»Êı×é£¬µÚÒ»Î¬¼ÇÂ¼µÚ¼¸¸öbp£¬µÚ¶şÎ¬¼ÇÂ¼¸ÃbpÉÏÓĞ¶àÉÙ¸öreadsµş¼Ó
+		//äºŒä½æ•°ç»„ï¼Œç¬¬ä¸€ç»´è®°å½•ç¬¬å‡ ä¸ªbpï¼Œç¬¬äºŒç»´è®°å½•è¯¥bpä¸Šæœ‰å¤šå°‘ä¸ªreadså åŠ 
 		LinkedList<int[]> lstmpBpNum=new LinkedList<int[]>();
 		
-		//ÏÈ¼ÙÉèmapping½á¹ûÒÑ¾­ÅÅĞòºÃ£¬²¢ÇÒÈ¾É«ÌåÒÑ¾­·Ö¿ªºÃ¡£
+		//å…ˆå‡è®¾mappingç»“æœå·²ç»æ’åºå¥½ï¼Œå¹¶ä¸”æŸ“è‰²ä½“å·²ç»åˆ†å¼€å¥½ã€‚
 		while ((content=bufmap.readLine())!=null) 
 		{
 			String[] tmp=content.split(sep);
-			if (colChrID>0) //µ±Ã¿ÁĞÀïÃæº¬ÓĞchrIDµÄÊ±ºò
+			if (colChrID>0) //å½“æ¯åˆ—é‡Œé¢å«æœ‰chrIDçš„æ—¶å€™
 			{
 				//tmp[colChrID];
 			}
-			int tmpStart=Short.parseShort(tmp[colStartNum]);//±¾reads µÄÆğµã
-			int tmpEnd=Short.parseShort(tmp[colEndNum]);//±¾readsµÄÖÕµã
+			int tmpStart=Short.parseShort(tmp[colStartNum]);//æœ¬reads çš„èµ·ç‚¹
+			int tmpEnd=Short.parseShort(tmp[colEndNum]);//æœ¬readsçš„ç»ˆç‚¹
 			
-			int lengthLsTmp= lstmpBpNum.size();//ÁÙÊ±listµÄ³¤¶È
-			int lastlsBpNum=lstmpBpNum.get(lengthLsTmp-1)[0];//ÁÙÊ±listÖĞ¼ÇÂ¼µÄ×îºóÒ»Î»bpµÄ×ø±ê
+			int lengthLsTmp= lstmpBpNum.size();//ä¸´æ—¶listçš„é•¿åº¦
+			int lastlsBpNum=lstmpBpNum.get(lengthLsTmp-1)[0];//ä¸´æ—¶listä¸­è®°å½•çš„æœ€åä¸€ä½bpçš„åæ ‡
 			
-			//Èç¹ûĞÂµÄreads±ÈlstmpµÄ×îºóÒ»Î»+invNumĞ¡£¬ÄÇÃ´½«readsµş¼ÓÉÏÈ¥£¬Í¬Ê±¿´ÊÇ·ñÇåËãÇ°ÃæµÄbp
-			int restNum=invNum-lastlsBpNum%invNum;//¿´×îºóÒ»Î»¾àÀë½áËãbp»¹ÓĞ¼¸Î»
-			if (restNum==invNum) //Èç¹û×îºóÒ»Î»¾Í¿ÉÒÔ½áËãÁË£¬Ôò¾àÀë½áËãbpÎª0Î»
+			//å¦‚æœæ–°çš„readsæ¯”lstmpçš„æœ€åä¸€ä½+invNumå°ï¼Œé‚£ä¹ˆå°†readså åŠ ä¸Šå»ï¼ŒåŒæ—¶çœ‹æ˜¯å¦æ¸…ç®—å‰é¢çš„bp
+			int restNum=invNum-lastlsBpNum%invNum;//çœ‹æœ€åä¸€ä½è·ç¦»ç»“ç®—bpè¿˜æœ‰å‡ ä½
+			if (restNum==invNum) //å¦‚æœæœ€åä¸€ä½å°±å¯ä»¥ç»“ç®—äº†ï¼Œåˆ™è·ç¦»ç»“ç®—bpä¸º0ä½
 				restNum=0;
 			
-			if (tmpStart<=lastlsBpNum+restNum)//ÏÂÒ»¸öreadsÆğµãÔÚlstmp×îºóÒ»¸öbpµÄ½áËã·¶Î§ÄÚ
+			if (tmpStart<=lastlsBpNum+restNum)//ä¸‹ä¸€ä¸ªreadsèµ·ç‚¹åœ¨lstmpæœ€åä¸€ä¸ªbpçš„ç»“ç®—èŒƒå›´å†…
 			{
-				int coverStartBpNum=lengthLsTmp-(lastlsBpNum-tmpStart)-1;//´ÓlsµÄµÚ¼¸¸öbpÉÏ¿ªÊ¼Ë³Ğò¼ÓÒ»£¬×¢ÒâÕâÀïÊÇ´Ó0¿ªÊ¼¼ÆÊı¡£
-				if(coverStartBpNum>lengthLsTmp-1)//ÏÂÒ»¸öreadsµÄÆğµã³¬³öÁËlsµÄ·¶Î§
+				int coverStartBpNum=lengthLsTmp-(lastlsBpNum-tmpStart)-1;//ä»lsçš„ç¬¬å‡ ä¸ªbpä¸Šå¼€å§‹é¡ºåºåŠ ä¸€ï¼Œæ³¨æ„è¿™é‡Œæ˜¯ä»0å¼€å§‹è®¡æ•°ã€‚
+				if(coverStartBpNum>lengthLsTmp-1)//ä¸‹ä¸€ä¸ªreadsçš„èµ·ç‚¹è¶…å‡ºäº†lsçš„èŒƒå›´
 				{
-					int tmpBpLoc=lastlsBpNum+1;//bp×ø±ê£¬´Ó×îºóÒ»¸ö+1¿ªÊ¼¼ÆËã
-					while (tmpBpLoc<tmpStart) //½«¿ÕÈ±µÄµØ·½²¹ÉÏ0
+					int tmpBpLoc=lastlsBpNum+1;//bpåæ ‡ï¼Œä»æœ€åä¸€ä¸ª+1å¼€å§‹è®¡ç®—
+					while (tmpBpLoc<tmpStart) //å°†ç©ºç¼ºçš„åœ°æ–¹è¡¥ä¸Š0
 					{
 						int[] tmpAddBp=new int[2];
 						tmpAddBp[0]=tmpBpLoc;
@@ -70,7 +70,7 @@ public class MapReadlessMem {
 						lstmpBpNum.add(tmpAddBp);
 						tmpBpLoc++;
 					}
-					//ÉÏÃæµÄÑ­»·³öÀ´ºó£¬tmpBpLoc==tmpStart
+					//ä¸Šé¢çš„å¾ªç¯å‡ºæ¥åï¼ŒtmpBpLoc==tmpStart
 					while (tmpBpLoc<=tmpEnd) 
 					{
 						int[] tmpAddBp=new int[2];
@@ -80,10 +80,10 @@ public class MapReadlessMem {
 						tmpBpLoc++;
 					}
 				}
-				else//ÏÂÒ»¸öreadsµÄÆğµãÔÚlsµÄ·¶Î§ÄÚ
+				else//ä¸‹ä¸€ä¸ªreadsçš„èµ·ç‚¹åœ¨lsçš„èŒƒå›´å†…
 				{
-					int tmpBpLoc=lstmpBpNum.get(coverStartBpNum)[0];//Ö±½Ó´ÓÕâÀï¿ªÊ¼
-					while (tmpBpLoc<=lastlsBpNum&&tmpBpLoc<=tmpEnd) //µ±»¹ÔÚlsÄÚ²¿Ê±
+					int tmpBpLoc=lstmpBpNum.get(coverStartBpNum)[0];//ç›´æ¥ä»è¿™é‡Œå¼€å§‹
+					while (tmpBpLoc<=lastlsBpNum&&tmpBpLoc<=tmpEnd) //å½“è¿˜åœ¨lså†…éƒ¨æ—¶
 					{
 						int[] tmpCod=lstmpBpNum.get(coverStartBpNum);
 						tmpCod[1]++;
@@ -93,7 +93,7 @@ public class MapReadlessMem {
 					if (coverStartBpNum!=lengthLsTmp) {
 						System.out.println("error");
 					}
-					while (tmpBpLoc<=tmpEnd) //µ±³öÁËls·¶Î§Ê±
+					while (tmpBpLoc<=tmpEnd) //å½“å‡ºäº†lsèŒƒå›´æ—¶
 					{
 						int[] tmpAddBp=new int[2];
 						tmpAddBp[0]=tmpBpLoc;
@@ -103,7 +103,7 @@ public class MapReadlessMem {
 					}	
 				}				
 			}
-			else //ÏÂÒ»¸öreadsÆğµã³¬¹ıÁËlstmp×îºóÒ»¸öbpµÄ½áËã·¶Î§
+			else //ä¸‹ä¸€ä¸ªreadsèµ·ç‚¹è¶…è¿‡äº†lstmpæœ€åä¸€ä¸ªbpçš„ç»“ç®—èŒƒå›´
 			{
 				
 				

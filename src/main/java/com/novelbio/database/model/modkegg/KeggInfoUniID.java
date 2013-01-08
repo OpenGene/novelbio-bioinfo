@@ -14,11 +14,11 @@ public class KeggInfoUniID extends KeggInfoAbs{
 	}
 	boolean bookgiDgen2Keg = false;
 	/**
-	 * Õâ¸öÊı¾İ¿âÖĞ¾ÍÊÇÒ»Ò»¶ÔÓ¦µÄ¹ØÏµ
+	 * è¿™ä¸ªæ•°æ®åº“ä¸­å°±æ˜¯ä¸€ä¸€å¯¹åº”çš„å…³ç³»
 	 */
 	private KGIDgen2Keg kgiDgen2Keg;
 	/**
-	 * ÔİÊ±UniIDÃ»ÓĞ¶ÔÓ¦µ½KEGGÉÏ£¬ËùÒÔÓöµ½UniID¾ÍÂÔ¹ı
+	 * æš‚æ—¶UniIDæ²¡æœ‰å¯¹åº”åˆ°KEGGä¸Šï¼Œæ‰€ä»¥é‡åˆ°UniIDå°±ç•¥è¿‡
 	 */
 	@Override
 	protected void setKeggID() {

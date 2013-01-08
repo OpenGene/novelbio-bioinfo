@@ -3,7 +3,7 @@ package com.novelbio.base.plot;
 import java.awt.BasicStroke;
 import java.awt.Paint;
 /**
- * ×îºÃÊÇcloneÁËÊ¹ÓÃ
+ * æœ€å¥½æ˜¯cloneäº†ä½¿ç”¨
  * @author zong0jie
  *
  */
@@ -25,7 +25,7 @@ public class BarStyle extends DotStyle {
 	}
 	
 	/**
-	 * Á¬ÁË±ß¿òÒ»ÆðÉè¶¨¿í¶È
+	 * è¿žäº†è¾¹æ¡†ä¸€èµ·è®¾å®šå®½åº¦
 	 */
 	public void setBarAndStrokeWidth(double barWidth) {
 		this.barWidth = barWidth;

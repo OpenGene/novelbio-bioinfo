@@ -8,13 +8,13 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 public interface AlignSeq {
 	/**
-	 * ¶ÁÈ¡Ç°¼¸ĞĞ£¬²»Ó°Ïì{@link #readLines()}
+	 * è¯»å–å‰å‡ è¡Œï¼Œä¸å½±å“{@link #readLines()}
 	 * @param num
 	 * @return
 	 */
 	public ArrayList<? extends AlignRecord> readHeadLines(int num);
 	/**
-	 * ¶ÁÈ¡Ç°¼¸ĞĞ£¬²»Ó°Ïì{@link #readLines()}
+	 * è¯»å–å‰å‡ è¡Œï¼Œä¸å½±å“{@link #readLines()}
 	 * @param num
 	 * @return
 	 */
@@ -22,8 +22,8 @@ public interface AlignSeq {
 
 	public Iterable<? extends AlignRecord> readLines();
 	/**
-	 * ´ÓµÚ¼¸ĞĞ¿ªÊ¼¶Á£¬ÊÇÊµ¼ÊĞĞ
-	 * @param lines Èç¹ûlinesĞ¡ÓÚ1£¬Ôò´ÓÍ·¿ªÊ¼¶ÁÈ¡
+	 * ä»ç¬¬å‡ è¡Œå¼€å§‹è¯»ï¼Œæ˜¯å®é™…è¡Œ
+	 * @param lines å¦‚æœlineså°äº1ï¼Œåˆ™ä»å¤´å¼€å§‹è¯»å–
 	 * @return
 	 */
 	public Iterable<? extends AlignRecord> readLines(int lines);

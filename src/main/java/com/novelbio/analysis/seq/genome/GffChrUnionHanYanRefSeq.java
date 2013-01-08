@@ -20,7 +20,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
- * ÆäÖĞµÄChrFa¶ÁÈ¡Ê±ºò£¬±ØĞë½«Ã¿ĞĞµÄ»»ĞĞ·ûÏŞ¶¨Îª"\n",ÓĞĞ¡¹¤¾ßÄÜÓÃ
+ * å…¶ä¸­çš„ChrFaè¯»å–æ—¶å€™ï¼Œå¿…é¡»å°†æ¯è¡Œçš„æ¢è¡Œç¬¦é™å®šä¸º"\n",æœ‰å°å·¥å…·èƒ½ç”¨
  * 
  * @author zong0jie
  * 
@@ -34,12 +34,12 @@ public class GffChrUnionHanYanRefSeq extends GffChrHanYan{
 		seqFastaHash = new SeqFastaHash(seqfasta);
 	}
 	/**
-	 *	¸ø¶¨×ªÂ¼±¾£¬·µ»Ø¸Ã×ªÂ¼±¾µÄmRNAË®Æ½×ø±ê
+	 *	ç»™å®šè½¬å½•æœ¬ï¼Œè¿”å›è¯¥è½¬å½•æœ¬çš„mRNAæ°´å¹³åæ ‡
 	 *@param geneID
-	 * @param gffGeneIsoSearch ¸Ã×ªÂ¼±¾µÄĞÅÏ¢Àà
-	 * @param normalizeType ¿´MapReads.Normalize_Type
+	 * @param gffGeneIsoSearch è¯¥è½¬å½•æœ¬çš„ä¿¡æ¯ç±»
+	 * @param normalizeType çœ‹MapReads.Normalize_Type
 	 * @return
-	 * double[] 0: atgÎ»µã,¾ø¶ÔÎ»µã£¬1-½áÊø ´Ótssµ½tesµÄÃ¿¸öÎ»µãµÄreadsÊıÄ¿
+	 * double[] 0: atgä½ç‚¹,ç»å¯¹ä½ç‚¹ï¼Œ1-ç»“æŸ ä»tssåˆ°tesçš„æ¯ä¸ªä½ç‚¹çš„readsæ•°ç›®
 	 */
 	protected double[] getReadsInfo(String geneID, GffGeneIsoInfo gffGeneIsoSearch) {		
 		double[] iso = mapReads.getRangeInfo(1, geneID.toLowerCase(), 0, 0, 0);
@@ -53,7 +53,7 @@ public class GffChrUnionHanYanRefSeq extends GffChrHanYan{
 		}
 		return isoResult;
 	}
-	/////////////////////////////////////   º«ÑàµÄÏîÄ¿   //////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////   éŸ©ç‡•çš„é¡¹ç›®   //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	public void loadMap(String mapFile, int tagLength, boolean uniqReads, int startCod, Boolean cis5To3, boolean uniqMapping) {
 		mapReads = new MapReads();

@@ -14,8 +14,8 @@ public class BamPileup {
 	boolean realign = false;
 	
 	/**
-	 * Éè¶¨samtoolsËùÔÚµÄÎÄ¼ş¼ĞÒÔ¼°´ı±È¶ÔµÄÂ·¾¶
-	 * @param exePath Èç¹ûÔÚ¸ùÄ¿Â¼ÏÂÔòÉèÖÃÎª""»ònull
+	 * è®¾å®šsamtoolsæ‰€åœ¨çš„æ–‡ä»¶å¤¹ä»¥åŠå¾…æ¯”å¯¹çš„è·¯å¾„
+	 * @param exePath å¦‚æœåœ¨æ ¹ç›®å½•ä¸‹åˆ™è®¾ç½®ä¸º""æˆ–null
 	 */
 	public void setExePath(String exePath) {
 		if (exePath == null || exePath.trim().equals(""))
@@ -32,8 +32,8 @@ public class BamPileup {
 	public void setRealign(boolean realign) {
 		this.realign = realign;
 	}
-	/** ×îµÍ¿ÉÒÔÉèÖÃÎª0£¬ÕâÊ±ºò¾ÍÊÇ¿´¸²¸Ç¶ÈµÄ¡£
-	 * ×î¸ß²»ÄÜ¸ßÓÚ35*/
+	/** æœ€ä½å¯ä»¥è®¾ç½®ä¸º0ï¼Œè¿™æ—¶å€™å°±æ˜¯çœ‹è¦†ç›–åº¦çš„ã€‚
+	 * æœ€é«˜ä¸èƒ½é«˜äº35*/
 	public void setMapQuality(int mapQuality) {
 		if (mapQuality < 0 || mapQuality > 35) {
 			return;
@@ -44,7 +44,7 @@ public class BamPileup {
 		String pileupFile = FileOperate.changeFileSuffix(bamFile, "_pileup", "gz");
 		return pileup(pileupFile);
 	}
-	/** Ö±½ÓÑ¹Ëõ */
+	/** ç›´æ¥å‹ç¼© */
 	public String pileup(String outFile) {
 		String cmd = "";
 		if (outFile.toLowerCase().endsWith("gz")) {

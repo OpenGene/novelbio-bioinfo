@@ -22,42 +22,42 @@ import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
 import com.novelbio.base.dataStructure.MathComput;
 
-/** »ùÒòÓë½á¹¹ÌáÈ¡£¬Ö÷ÒªÓÃÓÚ»­tssÍ¼µÈ */
+/** åŸºå› ä¸ç»“æ„æå–ï¼Œä¸»è¦ç”¨äºç”»tsså›¾ç­‰ */
 public class Gene2Value {
 	private static final Logger logger = Logger.getLogger(Gene2Value.class);
 		
 	GffGeneIsoInfo gffGeneIsoInfo;
 	double value;
 	
-	/** tss»òtesµÄÀ©Õ¹ÇøÓò£¬Ò»°ã²¸Èé¶¯ÎïÎª -5000µ½5000 */
+	/** tssæˆ–tesçš„æ‰©å±•åŒºåŸŸï¼Œä¸€èˆ¬å“ºä¹³åŠ¨ç‰©ä¸º -5000åˆ°5000 */
 	int[] plotTssTesRegion = new int[]{-5000, 5000};
 	
 	int splitNum = 1000;
 	
-	/** ÌáÈ¡µÄexonºÍintron£¬ÊÇµşÔÚÒ»Æğ³ÉÎªÒ»ÌåÄØ£¬»¹ÊÇÍ·Î²ÏàÁ¬³ÉÎªÒ»Ìå */
+	/** æå–çš„exonå’Œintronï¼Œæ˜¯å åœ¨ä¸€èµ·æˆä¸ºä¸€ä½“å‘¢ï¼Œè¿˜æ˜¯å¤´å°¾ç›¸è¿æˆä¸ºä¸€ä½“ */
 	boolean pileupExonIntron = false;
 	
 	
-	/** Éè¶¨ĞèÒªÌáÈ¡£¬»ò²»ÌáÈ¡µÄexon»òintronµÄ¸öÊı£¬Æ©ÈçÑîºìĞÇÒªÇó½ö·ÖÎöµÚÒ»Î»µÄintron
-	 * null ¾Í²»·ÖÎö
-	 * ÎªÊµ¼ÊÊıÁ¿
-	 * -1Îªµ¹ÊıµÚÒ»¸ö
-	 * -2Îªµ¹ÊıµÚ¶ş¸ö
+	/** è®¾å®šéœ€è¦æå–ï¼Œæˆ–ä¸æå–çš„exonæˆ–intronçš„ä¸ªæ•°ï¼Œè­¬å¦‚æ¨çº¢æ˜Ÿè¦æ±‚ä»…åˆ†æç¬¬ä¸€ä½çš„intron
+	 * null å°±ä¸åˆ†æ
+	 * ä¸ºå®é™…æ•°é‡
+	 * -1ä¸ºå€’æ•°ç¬¬ä¸€ä¸ª
+	 * -2ä¸ºå€’æ•°ç¬¬äºŒä¸ª
 	 */
 	ArrayList<Integer> lsExonIntronNumGetOrExclude;
-	/** ¶ÔÓÚlsExonIntronNumGetOrExcludeÑ¡Ôñget»¹ÊÇexclude£¬trueÎªget£¬falseÎªexclude */
+	/** å¯¹äºlsExonIntronNumGetOrExcludeé€‰æ‹©getè¿˜æ˜¯excludeï¼Œtrueä¸ºgetï¼Œfalseä¸ºexclude */
 	boolean getOrExclude = true;
 	
 	/**
-	 * @param plotTssTesRegion tss»òtesµÄÀ©Õ¹ÇøÓò£¬Ò»°ã²¸Èé¶¯ÎïÎª -5000µ½5000
+	 * @param plotTssTesRegion tssæˆ–tesçš„æ‰©å±•åŒºåŸŸï¼Œä¸€èˆ¬å“ºä¹³åŠ¨ç‰©ä¸º -5000åˆ°5000
 	 */
 	public void setPlotTssTesRegion(int[] plotTssTesRegion) {
 		this.plotTssTesRegion = plotTssTesRegion;
 	}
 	/**
-	 * Èç¹ûÌáÈ¡µÄÊÇexon»òÕßintronµÄÇøÓò£¬ÒòÎªexonºÍintronÃ¿¸ö»ùÒò¶¼²»ÊÇµÈ³¤µÄ£¬ËùÒÔÒªÉè¶¨»®·ÖµÄ·ÖÊı.
-	 * Èç¹ûÊÇtssºÍtesÇøÓò£¬Ò²ĞèÒª»®·Ö³ÉÖ¸¶¨µÄ·İÊı
-	 * @param splitNumExonIntron Ä¬ÈÏÎª500·İ
+	 * å¦‚æœæå–çš„æ˜¯exonæˆ–è€…intronçš„åŒºåŸŸï¼Œå› ä¸ºexonå’Œintronæ¯ä¸ªåŸºå› éƒ½ä¸æ˜¯ç­‰é•¿çš„ï¼Œæ‰€ä»¥è¦è®¾å®šåˆ’åˆ†çš„åˆ†æ•°.
+	 * å¦‚æœæ˜¯tsså’ŒtesåŒºåŸŸï¼Œä¹Ÿéœ€è¦åˆ’åˆ†æˆæŒ‡å®šçš„ä»½æ•°
+	 * @param splitNumExonIntron é»˜è®¤ä¸º500ä»½
 	 */
 	public void setSplitNum(int splitNum) {
 		this.splitNum = splitNum;
@@ -71,27 +71,27 @@ public class Gene2Value {
 		this.value = value;
 	}
 	
-	/** ÌáÈ¡µÄexonºÍintron£¬ÊÇµşÔÚÒ»Æğ³ÉÎªÒ»ÌåÄØ£¬»¹ÊÇÍ·Î²ÏàÁ¬³ÉÎªÒ»Ìå */
+	/** æå–çš„exonå’Œintronï¼Œæ˜¯å åœ¨ä¸€èµ·æˆä¸ºä¸€ä½“å‘¢ï¼Œè¿˜æ˜¯å¤´å°¾ç›¸è¿æˆä¸ºä¸€ä½“ */
 	public void setExonIntronPileUp(boolean pileupExonIntron) {
 		this.pileupExonIntron = pileupExonIntron;
 	}
-	/** Éè¶¨ĞèÒªÌáÈ¡µÄexon»òintronµÄ¸öÊı£¬Æ©ÈçÑîºìĞÇÒªÇó½ö·ÖÎöµÚÒ»Î»µÄintron 
-	 * ÊäÈëµÄÊÇÊµ¼ÊÊıÁ¿£¬Æ©Èç1±íÊ¾µÚÒ»¸öexon»òintron
-	 * @param lsExonIntronNumGetOrExclude ÊÇÌáÈ¡ÏëÒªµÄexon£¬intron»¹ÊÇ²»ÌáÈ¥ÏëÒªµÄexon£¬intron
-	 * 1µÚÒ»¸ö£¬ 2 µÚ¶ş¸ö
-	 * -1µ¹ÊıµÚÒ»¸ö£¬-2µ¹ÊıµÚ¶ş¸ö
-	 * @param getOrExclude true£ºÌáÈ¡£¬ false ²»ÌáÈ¡
+	/** è®¾å®šéœ€è¦æå–çš„exonæˆ–intronçš„ä¸ªæ•°ï¼Œè­¬å¦‚æ¨çº¢æ˜Ÿè¦æ±‚ä»…åˆ†æç¬¬ä¸€ä½çš„intron 
+	 * è¾“å…¥çš„æ˜¯å®é™…æ•°é‡ï¼Œè­¬å¦‚1è¡¨ç¤ºç¬¬ä¸€ä¸ªexonæˆ–intron
+	 * @param lsExonIntronNumGetOrExclude æ˜¯æå–æƒ³è¦çš„exonï¼Œintronè¿˜æ˜¯ä¸æå»æƒ³è¦çš„exonï¼Œintron
+	 * 1ç¬¬ä¸€ä¸ªï¼Œ 2 ç¬¬äºŒä¸ª
+	 * -1å€’æ•°ç¬¬ä¸€ä¸ªï¼Œ-2å€’æ•°ç¬¬äºŒä¸ª
+	 * @param getOrExclude trueï¼šæå–ï¼Œ false ä¸æå–
 	 * */
 	public void setGetNum(ArrayList<Integer> lsExonIntronNumGetOrExclude, boolean getOrExclude) {
 		this.lsExonIntronNumGetOrExclude = lsExonIntronNumGetOrExclude;
 		if (lsExonIntronNumGetOrExclude != null) {
-			//ÅÅ¸öĞò 1£¬2£¬3£¬4........-4£¬-3£¬-2£¬-1
+			//æ’ä¸ªåº 1ï¼Œ2ï¼Œ3ï¼Œ4........-4ï¼Œ-3ï¼Œ-2ï¼Œ-1
 			Collections.sort(lsExonIntronNumGetOrExclude, new Comparator<Integer>() {
 				@Override
 				public int compare(Integer o1, Integer o2) {
-					if (o1 * o2 > 0) { // ·ûºÅÏàÍ¬
+					if (o1 * o2 > 0) { // ç¬¦å·ç›¸åŒ
 						return o1.compareTo(o2);
-					} else if (o1 * o2 < 0) { // ·ûºÅÏà·´
+					} else if (o1 * o2 < 0) { // ç¬¦å·ç›¸å
 						return -o1.compareTo(o2);
 					} else {
 						return 0;
@@ -103,8 +103,8 @@ public class Gene2Value {
 	}
 
 	/**
-	 * Èç¹ûÃ»ÓĞ£¬Æ©ÈçÃ»ÓĞintron£¬ÄÇÃ´¾Í·µ»ØÒ»¸önull
-	 * Èç¹ûÊÇtss£¬tesÕâÖÖ´ø0µãµÄ£¬splitNum»á¼ÓÉÏ1
+	 * å¦‚æœæ²¡æœ‰ï¼Œè­¬å¦‚æ²¡æœ‰intronï¼Œé‚£ä¹ˆå°±è¿”å›ä¸€ä¸ªnull
+	 * å¦‚æœæ˜¯tssï¼Œtesè¿™ç§å¸¦0ç‚¹çš„ï¼ŒsplitNumä¼šåŠ ä¸Š1
 	 * @param mapReads
 	 * @param geneStructure
 	 * @return
@@ -196,18 +196,18 @@ public class Gene2Value {
 		mapInfo.setDouble(result);
 		return true;
 	}
-	/** ¸ù¾İÉè¶¨µÄlsExonIntronNumGetOrExcludeºÍgetOrExclude£¬·µ»ØÑ¡ÔñµÄexoninfo
-	 * <b>±©Â¶³öÀ´½ö¹©²âÊÔ</b>
+	/** æ ¹æ®è®¾å®šçš„lsExonIntronNumGetOrExcludeå’ŒgetOrExcludeï¼Œè¿”å›é€‰æ‹©çš„exoninfo
+	 * <b>æš´éœ²å‡ºæ¥ä»…ä¾›æµ‹è¯•</b>
 	 */
 	public List<ExonInfo> getSelectLsExonInfo(ArrayList<ExonInfo> lsExonInfos) {
-		HashSet<ExonInfo> setLocation = new HashSet<ExonInfo>();//È¥ÖØ¸´ÓÃµÄ£¬·ÀÖ¹lsSelectÀïÃæÓĞÖØ¸´µÄexoninfo
+		HashSet<ExonInfo> setLocation = new HashSet<ExonInfo>();//å»é‡å¤ç”¨çš„ï¼Œé˜²æ­¢lsSelecté‡Œé¢æœ‰é‡å¤çš„exoninfo
 		List<ExonInfo> lsSelect = new ArrayList<ExonInfo>();
 		if (lsExonIntronNumGetOrExclude == null || lsExonIntronNumGetOrExclude.size() == 0) {
 			lsSelect = lsExonInfos;
 			return lsSelect;
 		}
 		for (Integer i : lsExonIntronNumGetOrExclude) {
-			//ÕıÏòÌáÈ¡
+			//æ­£å‘æå–
 			if (i > 0) {
 				i = i - 1;
 				if (i < lsExonInfos.size()) {
@@ -219,7 +219,7 @@ public class Gene2Value {
 					lsSelect.add(exonInfo);
 				}
 			}
-			//·´ÏòÌáÈ¡
+			//åå‘æå–
 			else {
 				if (Math.abs(i) <= lsExonInfos.size()) {
 					ExonInfo exonInfo = lsExonInfos.get(lsExonInfos.size() - Math.abs(i));
@@ -246,8 +246,8 @@ public class Gene2Value {
 	}
 	
 	/**
-	 * ¸ù¾İÊäÈëµÄ×ø±êºÍÈ¨ÖØ£¬·µ»ØGene2ValueµÄlist
-	 * »á¸ù¾İMapInfo.isMin2max()µÄ±êÇ©À´È·¶¨Óöµ½ÖØ¸´ÏîÑ¡Ôñ´óµÄ»¹ÊÇĞ¡µÄ
+	 * æ ¹æ®è¾“å…¥çš„åæ ‡å’Œæƒé‡ï¼Œè¿”å›Gene2Valueçš„list
+	 * ä¼šæ ¹æ®MapInfo.isMin2max()çš„æ ‡ç­¾æ¥ç¡®å®šé‡åˆ°é‡å¤é¡¹é€‰æ‹©å¤§çš„è¿˜æ˜¯å°çš„
 	 * @param tssTesRange
 	 * @param gffChrAbs
 	 * @param colSiteInfo
@@ -255,7 +255,7 @@ public class Gene2Value {
 	 * @return
 	 */
 	public static ArrayList<Gene2Value> getLsGene2Vale(int[] tssTesRange, GffChrAbs gffChrAbs, Collection<MapInfo> colSiteInfo, GeneStructure geneStructure) {
-		//´æ´¢×îºóµÄ»ùÒòºÍÈ¨ÖØ
+		//å­˜å‚¨æœ€åçš„åŸºå› å’Œæƒé‡
 		HashMap<GffDetailGene,Double> hashGffDetailGenes = new HashMap<GffDetailGene,Double>();
 		for (MapInfo mapInfo : colSiteInfo) {
 			Set<GffDetailGene> setGffDetailGene = getPeakStructureGene(tssTesRange, gffChrAbs, mapInfo, geneStructure );
@@ -286,12 +286,12 @@ public class Gene2Value {
 	}
 	
 	/**
-	 * ¸ø¶¨×ø±êÇøÓò£¬·µ»Ø¸ÃpeakËù¸²¸ÇµÄGffDetailGene
-	 * @param tsstesRange ¸²¸Ç¶È£¬tss»òtesµÄ·¶Î§
+	 * ç»™å®šåæ ‡åŒºåŸŸï¼Œè¿”å›è¯¥peakæ‰€è¦†ç›–çš„GffDetailGene
+	 * @param tsstesRange è¦†ç›–åº¦ï¼Œtssæˆ–tesçš„èŒƒå›´
 	 * @param chrID
 	 * @param startLoc
 	 * @param endLoc
-	 * @param structure GffDetailGene.TSSµÈ¡£Èç¹ûÊÇgene bodyÇøÓò£¬¾Í·µ»ØÕû¸ö»ùÒò
+	 * @param structure GffDetailGene.TSSç­‰ã€‚å¦‚æœæ˜¯gene bodyåŒºåŸŸï¼Œå°±è¿”å›æ•´ä¸ªåŸºå› 
 	 * @return
 	 */
 	private static Set<GffDetailGene> getPeakStructureGene(int[] tssTesRange, GffChrAbs gffChrAbs, SiteInfo siteInfo, GeneStructure structure) {
@@ -313,7 +313,7 @@ public class Gene2Value {
 		}
 	}
 	/**
-	 * ¶ÁÈ¡È«»ùÒò×é
+	 * è¯»å–å…¨åŸºå› ç»„
 	 * @param gffChrAbs
 	 * @return
 	 */

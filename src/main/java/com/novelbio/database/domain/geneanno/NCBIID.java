@@ -3,7 +3,7 @@ package com.novelbio.database.domain.geneanno;
 import com.novelbio.database.model.modgeneid.GeneID;
 
 /**
- * ÖØĞ´ÁËequal£¬Ö»ÒªÁ½¸öNCBIID³õÊ¼»¯£¬²¢ÇÒËûÃÇµÄgeneID¶¼²»Îª0£¬¾Í±È½ÏgeneID£¬Ò»ÑùµÄ¾ÍÈÏÎªÁ½¸öÒ»Ñù
+ * é‡å†™äº†equalï¼Œåªè¦ä¸¤ä¸ªNCBIIDåˆå§‹åŒ–ï¼Œå¹¶ä¸”ä»–ä»¬çš„geneIDéƒ½ä¸ä¸º0ï¼Œå°±æ¯”è¾ƒgeneIDï¼Œä¸€æ ·çš„å°±è®¤ä¸ºä¸¤ä¸ªä¸€æ ·
  * @author zong0jie
  *
  */
@@ -19,8 +19,8 @@ public class NCBIID extends AgeneUniID{
 	
 	
 	/**
-	 * Ö»ÒªÁ½¸öncbiidµÄgeneIDÏàÍ¬£¬¾ÍÈÏÎªÕâÁ½¸öNCBIIDÏàÍ¬
-	 * µ«ÊÇÈç¹ûgeneIDÎª0£¬Ò²¾ÍÊÇNCBIID¸ù±¾Ã»ÓĞ³õÊ¼»¯£¬ÄÇÃ´Ö±½Ó·µ»Øfalse
+	 * åªè¦ä¸¤ä¸ªncbiidçš„geneIDç›¸åŒï¼Œå°±è®¤ä¸ºè¿™ä¸¤ä¸ªNCBIIDç›¸åŒ
+	 * ä½†æ˜¯å¦‚æœgeneIDä¸º0ï¼Œä¹Ÿå°±æ˜¯NCBIIDæ ¹æœ¬æ²¡æœ‰åˆå§‹åŒ–ï¼Œé‚£ä¹ˆç›´æ¥è¿”å›false
 	 * 	@Override
 	 */
 	public boolean equals(Object obj) {
@@ -37,7 +37,7 @@ public class NCBIID extends AgeneUniID{
 		return geneID == otherObj.getGeneId();
 	}
 	/**
-	 * ÖØĞ´hashcode£¬Ò²ÊÇ½öÕë¶ÔgeneID
+	 * é‡å†™hashcodeï¼Œä¹Ÿæ˜¯ä»…é’ˆå¯¹geneID
 	 */
 	public int hashCode(){ 
 		return Long.valueOf(geneID).hashCode(); 

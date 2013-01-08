@@ -17,7 +17,7 @@ import com.novelbio.other.downloadpicture.GetPictureUrl;
 import com.novelbio.other.downloadpicture.UrlPictureDownLoad;
 import com.novelbio.other.downloadpicture.pixiv.PixivGetPathExistPic;
 
-/** ¸ø¶¨Ò»¸öÍ¼Æ¬Á´½Ó£¬·µ»Ø¸ÃÍ¼Æ¬µÄ´óÍ¼Á´½Ó */
+/** ç»™å®šä¸€ä¸ªå›¾ç‰‡é“¾æŽ¥ï¼Œè¿”å›žè¯¥å›¾ç‰‡çš„å¤§å›¾é“¾æŽ¥ */
 public class DonmaiGetPictureUrl extends GetPictureUrl {
 	private static Logger logger = Logger.getLogger(DonmaiGetPictureUrl.class);
 	protected HttpFetch webFetch;
@@ -63,7 +63,7 @@ public class DonmaiGetPictureUrl extends GetPictureUrl {
 		}
 		String info = webFetch.getResponse();
 		if (info == null) {
-			logger.error("Ã»×¥µ½¶«Î÷£º" + urlpage);
+			logger.error("æ²¡æŠ“åˆ°ä¸œè¥¿ï¼š" + urlpage);
 			lsResult = new ArrayList<UrlPictureDownLoad>();
 			return this;
 		}
@@ -98,7 +98,7 @@ public class DonmaiGetPictureUrl extends GetPictureUrl {
 			}
 	    	i ++;
         }
-	    logger.info("²éÕÒÍê±Ï£º" + urlpage);
+	    logger.info("æŸ¥æ‰¾å®Œæ¯•ï¼š" + urlpage);
 	    return lsResult;
 	}
 	@Override

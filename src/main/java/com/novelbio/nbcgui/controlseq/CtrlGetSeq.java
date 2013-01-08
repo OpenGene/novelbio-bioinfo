@@ -36,16 +36,16 @@ public class CtrlGetSeq implements RunGetInfo<GffChrSeq.GffChrSeqProcessInfo>{
 	public void setUpAndDownStream(int[] upAndDownStream) {
 		this.upAndDownStream = upAndDownStream;
 	}
-	/** Ä¬ÈÏÊÇ true */
+	/** é»˜è®¤æ˜¯ true */
 	public void setSaveToFile(boolean saveToFile) {
 		gffChrSeq.setSaveToFile(saveToFile);
 	}
-	/** ÌáÈ¡È«»ùÒò×éĞòÁĞµÄÊ±ºò£¬ÊÇÃ¿¸öLOCÌáÈ¡Ò»ÌõĞòÁĞ»¹ÊÇÌáÈ¡È«²¿ */
+	/** æå–å…¨åŸºå› ç»„åºåˆ—çš„æ—¶å€™ï¼Œæ˜¯æ¯ä¸ªLOCæå–ä¸€æ¡åºåˆ—è¿˜æ˜¯æå–å…¨éƒ¨ */
 	public void setGetAllIso(boolean getAllIso) {
 		gffChrSeq.setGetAllIso(getAllIso);
 	}
 	/**
-	 * ÌáÈ¡»ùÒòµÄÊ±ºòÓöµ½ÄÚº¬×Ó£¬ÊÇÌáÈ¡³öÀ´»¹ÊÇÌø¹ıÈ¥
+	 * æå–åŸºå› çš„æ—¶å€™é‡åˆ°å†…å«å­ï¼Œæ˜¯æå–å‡ºæ¥è¿˜æ˜¯è·³è¿‡å»
 	 * @param getIntron
 	 */
 	public void setGetIntron(boolean getIntron) {
@@ -58,32 +58,32 @@ public class CtrlGetSeq implements RunGetInfo<GffChrSeq.GffChrSeqProcessInfo>{
 	public void setOutPutFile(String outPutFile) {
 		gffChrSeq.setOutPutFile(outPutFile);
 	}
-	/** ´ıÌáÈ¡»ùÒòµÄÄÄÒ»¸ö²¿·Ö */
+	/** å¾…æå–åŸºå› çš„å“ªä¸€ä¸ªéƒ¨åˆ† */
 	public void setGeneStructure(GeneStructure geneStructure) {
 		gffChrSeq.setGeneStructure(geneStructure);
 	}
 	/**
-	 * ÊäÈëÃû×ÖÌáÈ¡ĞòÁĞ£¬ÄÚ²¿»áÈ¥³ıÖØ¸´»ùÒò
+	 * è¾“å…¥åå­—æå–åºåˆ—ï¼Œå†…éƒ¨ä¼šå»é™¤é‡å¤åŸºå› 
 	 * @param lsIsoName
 	 */
 	public void setGetSeqIso(ArrayList<String> lsIsoName) {
 		gffChrSeq.setGetSeqIso(lsIsoName);
 	}
 	/**
-	 * ÊäÈëÃû×ÖÌáÈ¡ĞòÁĞ£¬ÄÚ²¿»áÈ¥³ıÖØ¸´»ùÒò
+	 * è¾“å…¥åå­—æå–åºåˆ—ï¼Œå†…éƒ¨ä¼šå»é™¤é‡å¤åŸºå› 
 	 * @param lsListGffName
 	 */
 	public void setGetSeqIsoGenomWide() {
 		gffChrSeq.setGetSeqIsoGenomWide();
 	}
 	/**
-	 * ÊäÈëÎ»µãÌáÈ¡ĞòÁĞ
+	 * è¾“å…¥ä½ç‚¹æå–åºåˆ—
 	 * @param lsIsoName
 	 */
 	public void setGetSeqSite(ArrayList<SiteInfo> lsIsoName) {
 		gffChrSeq.setGetSeqSite(lsIsoName);
 	}
-	/** Èç¹û²»ÊÇ±£´æÔÚÎÄ¼şÖĞ£¬¾Í¿ÉÒÔÍ¨¹ıÕâ¸öÀ´»ñµÃ½á¹û */
+	/** å¦‚æœä¸æ˜¯ä¿å­˜åœ¨æ–‡ä»¶ä¸­ï¼Œå°±å¯ä»¥é€šè¿‡è¿™ä¸ªæ¥è·å¾—ç»“æœ */
 	public ArrayList<SeqFasta> getLsResult() {
 		return gffChrSeq.getLsResult();
 	}

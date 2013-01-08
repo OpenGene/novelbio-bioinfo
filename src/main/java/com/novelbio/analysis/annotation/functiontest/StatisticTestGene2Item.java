@@ -16,13 +16,13 @@ public abstract class StatisticTestGene2Item {
 	
 	boolean blast;
 	/**
-	 * key Ğ¡Ğ´
+	 * key å°å†™
 	 */
 	Map<String, StatisticTestResult> mapItem2StatisticTestResult;
 	GeneID geneID;
 	
 	/**
-	 * blastÊ²Ã´ÊôĞÔ¶¼ÒªÉè¶¨ºÃÔÙ´«µİ½øÀ´
+	 * blastä»€ä¹ˆå±æ€§éƒ½è¦è®¾å®šå¥½å†ä¼ é€’è¿›æ¥
 	 * @param geneID
 	 */
 	public void setGeneID(GeneID geneID, boolean blast) {
@@ -30,8 +30,8 @@ public abstract class StatisticTestGene2Item {
 		this.blast = blast;
 	}
 	/**
-	 * ÊäÈëÈ«ÌåÓĞpvalueµÄitemĞÅÏ¢
-	 * keyÎªĞ¡Ğ´
+	 * è¾“å…¥å…¨ä½“æœ‰pvalueçš„itemä¿¡æ¯
+	 * keyä¸ºå°å†™
 	 * @param mapItem2StatisticTestResult
 	 */
 	public void setStatisticTestResult(Map<String, StatisticTestResult> mapItem2StatisticTestResult) {
@@ -64,7 +64,7 @@ class StatisticTestGene2GO extends StatisticTestGene2Item {
 		ArrayList<ArrayList<String>> lsFinal = new ArrayList<ArrayList<String>>();
 		ArrayList<String> lsTmpFinal = new ArrayList<String>();
 
-		// GOÇ°ÃæµÄ³£¹æĞÅÏ¢µÄÌî³ä,SymbolºÍdescriptionµÈ
+		// GOå‰é¢çš„å¸¸è§„ä¿¡æ¯çš„å¡«å……,Symbolå’Œdescriptionç­‰
 		lsTmpFinal.add(geneID.getAccID());
 		lsTmpFinal.add(geneID.getSymbol());
 		lsTmpFinal.add(geneID.getDescription());
@@ -149,7 +149,7 @@ class StatisticTestGene2Path extends StatisticTestGene2Item {
 		ArrayList<ArrayList<String>> lsFinal = new ArrayList<ArrayList<String>>();
 		ArrayList<String> lsTmpFinal = new ArrayList<String>();
 
-		// GOÇ°ÃæµÄ³£¹æĞÅÏ¢µÄÌî³ä,SymbolºÍdescriptionµÈ
+		// GOå‰é¢çš„å¸¸è§„ä¿¡æ¯çš„å¡«å……,Symbolå’Œdescriptionç­‰
 		lsTmpFinal.add(geneID.getAccID());
 		lsTmpFinal.add(geneID.getSymbol());
 		lsTmpFinal.add(geneID.getDescription());

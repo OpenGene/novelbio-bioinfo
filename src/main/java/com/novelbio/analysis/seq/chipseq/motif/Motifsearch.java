@@ -20,7 +20,7 @@ import com.novelbio.generalConf.NovelBioConst;
 public class Motifsearch {
 	int maxChrLength=10000;
 	/**
-	 * »ñµÃmotifÔÚÈ«»ùÒò×éÉÏµÄÃÜ¶È
+	 * è·å¾—motifåœ¨å…¨åŸºå› ç»„ä¸Šçš„å¯†åº¦
 	 * @param chrFilePath
 	 * @param Rworkspace
 	 * @param motifRex
@@ -53,7 +53,7 @@ public class Motifsearch {
 			txtReadandWrite.Rwritefile(tmpMotifInfo.get(1));
 			
 			txtReadandWrite.setParameter(Rworkspace+"MotifDensity/parameter", true,false);
-			txtReadandWrite.writefile("Item"+"\t"+"Info"+"\r\n");//±ØĞëÒª¼ÓÉÏµÄ£¬·ñÔòR¶ÁÈ¡»áÓĞÎÊÌâ
+			txtReadandWrite.writefile("Item"+"\t"+"Info"+"\r\n");//å¿…é¡»è¦åŠ ä¸Šçš„ï¼Œå¦åˆ™Rè¯»å–ä¼šæœ‰é—®é¢˜
 			ArrayList<String[]>  lschrInfo=gffChrUnion.getChrLengthInfo();
 			int maxChrLen=Integer.parseInt(lschrInfo.get(lschrInfo.size()-1)[1]);
 			txtReadandWrite.writefile("maxresolution"+"\t"+maxChrLen+"\r\n");
@@ -70,7 +70,7 @@ public class Motifsearch {
 	}
 	
 	/**
-	 * Ö´ĞĞR³ÌĞò£¬Ö±µ½R³ÌĞò½áÊøÔÙ·µ»Ø
+	 * æ‰§è¡ŒRç¨‹åºï¼Œç›´åˆ°Rç¨‹åºç»“æŸå†è¿”å›
 	 * @return
 	 * @throws IOException 
 	 * @throws IOException 
@@ -79,7 +79,7 @@ public class Motifsearch {
 	 */
 	private int Rprogram(String bin) throws IOException, InterruptedException  
 	{
-		//Õâ¸ö¾ÍÊÇÏà¶ÔÂ·¾¶£¬±ØĞëÔÚµ±Ç°ÎÄ¼ş¼ĞÏÂÔËĞĞ
+		//è¿™ä¸ªå°±æ˜¯ç›¸å¯¹è·¯å¾„ï¼Œå¿…é¡»åœ¨å½“å‰æ–‡ä»¶å¤¹ä¸‹è¿è¡Œ
 		String command="Rscript "+bin+ "MyMotifDensity.R";
 		Runtime   r=Runtime.getRuntime();
 		Process p = r.exec(command);
@@ -90,22 +90,22 @@ public class Motifsearch {
 	
 	
 	/**
-	 * @Gffclass ´ı¶ÁÈ¡µÄgffhashµÄÀà£¬Ä¿Ç°Ö»ÄÜÓĞ "TIGR","CG","UCSC","Peak","Repeat"Õâ¼¸ÖÖ
-	 * @param gfffilename gffÎÄ¼ş
-	 * @param chrPah chrÎÄ¼ş¼Ğ
-	 * @param peaklength peak×óÓÒÁ½¶Ë³¤¶È
+	 * @Gffclass å¾…è¯»å–çš„gffhashçš„ç±»ï¼Œç›®å‰åªèƒ½æœ‰ "TIGR","CG","UCSC","Peak","Repeat"è¿™å‡ ç§
+	 * @param gfffilename gffæ–‡ä»¶
+	 * @param chrPah chræ–‡ä»¶å¤¹
+	 * @param peaklength peakå·¦å³ä¸¤ç«¯é•¿åº¦
 	 * @param condition 
-	 * 0:°´ÕÕpeakÔÚgffÀïµÄÇé¿öÌáÈ¡£¬Ò²¾ÍÊÇ»ùÒòÄÚ°´»ùÒò·½Ïò£¬»ùÒòÍâÕıÏò
-	 * 1: Í¨Í¨ÌáÈ¡ÕıÏò
-	 * 2: Í¨Í¨ÌáÈ¡·´Ïò
-	 * @param txtFilepeakFile peakĞÅÏ¢£¬ÒÔÎÄ±¾ĞÎÊ½±£´æ
-	 * @param sep ÎÄ±¾ÀïÃæµÄ·Ö¸î·û£¬Ò»°ãÎª"\t"
-	 * @param columnID ¶ÁÈ¡ÄÄ¼¸ÁĞ£¬ÓÃint[]±£´æ£¬ÁĞ¿ÉÒÔÓĞ¼ä¸ô£¬ÏÖÔÚ¶ÁÈ¡ÕâÁ½ÁĞ£¬0£ºchrID£¬1:peakSummit
-	 * @param rowStart ´ÓµÚ¼¸ÁĞ¶ÁÈ¡
-	 * @param rowEnd ¶Áµ½µÚ¼¸ÁĞ Èç¹ûrowEnd=-1£¬ÔòÒ»Ö±¶Áµ½ÎÄ¼ş½áÎ²
-	 * @param motifReg motifµÄÕıÔò±í´ïÊ½
+	 * 0:æŒ‰ç…§peakåœ¨gffé‡Œçš„æƒ…å†µæå–ï¼Œä¹Ÿå°±æ˜¯åŸºå› å†…æŒ‰åŸºå› æ–¹å‘ï¼ŒåŸºå› å¤–æ­£å‘
+	 * 1: é€šé€šæå–æ­£å‘
+	 * 2: é€šé€šæå–åå‘
+	 * @param txtFilepeakFile peakä¿¡æ¯ï¼Œä»¥æ–‡æœ¬å½¢å¼ä¿å­˜
+	 * @param sep æ–‡æœ¬é‡Œé¢çš„åˆ†å‰²ç¬¦ï¼Œä¸€èˆ¬ä¸º"\t"
+	 * @param columnID è¯»å–å“ªå‡ åˆ—ï¼Œç”¨int[]ä¿å­˜ï¼Œåˆ—å¯ä»¥æœ‰é—´éš”ï¼Œç°åœ¨è¯»å–è¿™ä¸¤åˆ—ï¼Œ0ï¼šchrIDï¼Œ1:peakSummit
+	 * @param rowStart ä»ç¬¬å‡ åˆ—è¯»å–
+	 * @param rowEnd è¯»åˆ°ç¬¬å‡ åˆ— å¦‚æœrowEnd=-1ï¼Œåˆ™ä¸€ç›´è¯»åˆ°æ–‡ä»¶ç»“å°¾
+	 * @param motifReg motifçš„æ­£åˆ™è¡¨è¾¾å¼
 	 * @throws Exception
-	 * @return  ArrayList-String Ã¿¸öpeakµÄĞòÁĞ
+	 * @return  ArrayList-String æ¯ä¸ªpeakçš„åºåˆ—
 	 */
 	private ArrayList<Integer> getMotifLocation(String Gffclass, String gfffilename,String chrPah,int peaklength,int condition,String txtFilepeakFile,String sep
 			,int[] columnID,int rowStart,int rowEnd,
@@ -127,24 +127,24 @@ public class Motifsearch {
 	}
 	
 	/**
-	 * @Gffclass ´ı¶ÁÈ¡µÄgffhashµÄÀà£¬Ä¿Ç°Ö»ÄÜÓĞ "TIGR","CG","UCSC","Peak","Repeat"Õâ¼¸ÖÖ
-	 * @param gfffilename gffÎÄ¼ş
-	 * @param chrPah chrÎÄ¼ş¼Ğ
-	 * @param peaklength peak×óÓÒÁ½¶Ë³¤¶È
+	 * @Gffclass å¾…è¯»å–çš„gffhashçš„ç±»ï¼Œç›®å‰åªèƒ½æœ‰ "TIGR","CG","UCSC","Peak","Repeat"è¿™å‡ ç§
+	 * @param gfffilename gffæ–‡ä»¶
+	 * @param chrPah chræ–‡ä»¶å¤¹
+	 * @param peaklength peakå·¦å³ä¸¤ç«¯é•¿åº¦
 	 * @param condition 
-	 * 0:°´ÕÕpeakÔÚgffÀïµÄÇé¿öÌáÈ¡£¬Ò²¾ÍÊÇ»ùÒòÄÚ°´»ùÒò·½Ïò£¬»ùÒòÍâÕıÏò
-	 * 1: Í¨Í¨ÌáÈ¡ÕıÏò
-	 * 2: Í¨Í¨ÌáÈ¡·´Ïò
-	 * @param txtFilepeakFile peakĞÅÏ¢£¬ÒÔÎÄ±¾ĞÎÊ½±£´æ
-	 * @param sep ÎÄ±¾ÀïÃæµÄ·Ö¸î·û£¬Ò»°ãÎª"\t"
-	 * @param columnID ¶ÁÈ¡ÄÄ¼¸ÁĞ£¬ÓÃint[]±£´æ£¬ÁĞ¿ÉÒÔÓĞ¼ä¸ô£¬ÏÖÔÚ¶ÁÈ¡ÕâÁ½ÁĞ£¬0£ºchrID£¬1:peakSummit
-	 * @param rowStart ´ÓµÚ¼¸ÁĞ¶ÁÈ¡
-	 * @param rowEnd ¶Áµ½µÚ¼¸ÁĞ Èç¹ûrowEnd=-1£¬ÔòÒ»Ö±¶Áµ½sheet1ÎÄ¼ş½áÎ²
-	 * @param motifReg motifµÄÕıÔò±í´ïÊ½
-	 * @param resultPath ÎÄ¼ş±£´æÂ·¾¶
-	 * @param resultPrix ÎÄ¼ş±£´æµÄÇ°×º
+	 * 0:æŒ‰ç…§peakåœ¨gffé‡Œçš„æƒ…å†µæå–ï¼Œä¹Ÿå°±æ˜¯åŸºå› å†…æŒ‰åŸºå› æ–¹å‘ï¼ŒåŸºå› å¤–æ­£å‘
+	 * 1: é€šé€šæå–æ­£å‘
+	 * 2: é€šé€šæå–åå‘
+	 * @param txtFilepeakFile peakä¿¡æ¯ï¼Œä»¥æ–‡æœ¬å½¢å¼ä¿å­˜
+	 * @param sep æ–‡æœ¬é‡Œé¢çš„åˆ†å‰²ç¬¦ï¼Œä¸€èˆ¬ä¸º"\t"
+	 * @param columnID è¯»å–å“ªå‡ åˆ—ï¼Œç”¨int[]ä¿å­˜ï¼Œåˆ—å¯ä»¥æœ‰é—´éš”ï¼Œç°åœ¨è¯»å–è¿™ä¸¤åˆ—ï¼Œ0ï¼šchrIDï¼Œ1:peakSummit
+	 * @param rowStart ä»ç¬¬å‡ åˆ—è¯»å–
+	 * @param rowEnd è¯»åˆ°ç¬¬å‡ åˆ— å¦‚æœrowEnd=-1ï¼Œåˆ™ä¸€ç›´è¯»åˆ°sheet1æ–‡ä»¶ç»“å°¾
+	 * @param motifReg motifçš„æ­£åˆ™è¡¨è¾¾å¼
+	 * @param resultPath æ–‡ä»¶ä¿å­˜è·¯å¾„
+	 * @param resultPrix æ–‡ä»¶ä¿å­˜çš„å‰ç¼€
 	 * @throws Exception
-	 * @return  ArrayList-String Ã¿¸öpeakµÄĞòÁĞ
+	 * @return  ArrayList-String æ¯ä¸ªpeakçš„åºåˆ—
 	 */
 	public void getMotifSummitDensity(String Gffclass, String gfffilename,String chrPah,int peaklength,int condition,String txtFilepeakFile,String sep
 			,int[] columnID,int rowStart,int rowEnd,
@@ -157,7 +157,7 @@ public class Motifsearch {
 		TxtReadandWrite txtMotifDensityParam = new TxtReadandWrite();
 		txtMotifDensityParam.setParameter(NovelBioConst.R_WORKSPACE_DENSITY_PARAM, true, false);
 		txtMotifDensity.writefile(lsMotifLocation);
-		//²ÎÊıÊäÈë£¬µÚÒ»ĞĞmaintitle£¬µÚ¶şĞĞºá×ø±ê£¬µÚ¶şĞĞ×İ×ø±ê
+		//å‚æ•°è¾“å…¥ï¼Œç¬¬ä¸€è¡Œmaintitleï¼Œç¬¬äºŒè¡Œæ¨ªåæ ‡ï¼Œç¬¬äºŒè¡Œçºµåæ ‡
 		txtMotifDensityParam.writefile("Motif Near Peak Summit"+"\n");
 		txtMotifDensityParam.writefile("Peak Summit"+"\n");
 		txtMotifDensityParam.writefile("Motif Density"+"\n");
@@ -166,16 +166,16 @@ public class Motifsearch {
 	}
 	
 	/**
-	 * @param Gffclass ´ı¶ÁÈ¡µÄgffhashµÄÀà£¬Ä¿Ç°Ö»ÄÜÓĞ "TIGR","CG","UCSC","Peak","Repeat"Õâ¼¸ÖÖ
-	 * @param gfffilename gffÎÄ¼ş
-	 * @param chrPah chrÎÄ¼ş¼Ğ
-	 * @param length tssÏòÉÏÑÓÉú³¤¶È
-	 * @param excelLoc º¬ÓĞLOCµÄexcelÎÄ¼ş
-	 * @param columnID ¶ÁÈ¡ÄÄ¼¸ÁĞ£¬ÓÃint[]±£´æ£¬ÁĞ¿ÉÒÔÓĞ¼ä¸ô£¬ÏÖÔÚ¶ÁÈ¡Ò»ÁĞ£¬0£ºLOCID
-	 * @param writeCol Ğ´ÈëµÚ¼¸ÁĞ
-	 * @param rowStart ´ÓµÚ¼¸ÁĞ¶ÁÈ¡
-	 * @param rowEnd ¶Áµ½µÚ¼¸ÁĞ Èç¹ûrowEnd=-1£¬ÔòÒ»Ö±¶Áµ½sheet1ÎÄ¼ş½áÎ²
-	 * @param motifReg motifµÄÕıÔò±í´ïÊ½
+	 * @param Gffclass å¾…è¯»å–çš„gffhashçš„ç±»ï¼Œç›®å‰åªèƒ½æœ‰ "TIGR","CG","UCSC","Peak","Repeat"è¿™å‡ ç§
+	 * @param gfffilename gffæ–‡ä»¶
+	 * @param chrPah chræ–‡ä»¶å¤¹
+	 * @param length tsså‘ä¸Šå»¶ç”Ÿé•¿åº¦
+	 * @param excelLoc å«æœ‰LOCçš„excelæ–‡ä»¶
+	 * @param columnID è¯»å–å“ªå‡ åˆ—ï¼Œç”¨int[]ä¿å­˜ï¼Œåˆ—å¯ä»¥æœ‰é—´éš”ï¼Œç°åœ¨è¯»å–ä¸€åˆ—ï¼Œ0ï¼šLOCID
+	 * @param writeCol å†™å…¥ç¬¬å‡ åˆ—
+	 * @param rowStart ä»ç¬¬å‡ åˆ—è¯»å–
+	 * @param rowEnd è¯»åˆ°ç¬¬å‡ åˆ— å¦‚æœrowEnd=-1ï¼Œåˆ™ä¸€ç›´è¯»åˆ°sheet1æ–‡ä»¶ç»“å°¾
+	 * @param motifReg motifçš„æ­£åˆ™è¡¨è¾¾å¼
 	 * @throws Exception
 	 */
 	public void getMotifDetail(String Gffclass, String gfffilename,String chrPah,int length,String excelLoc
@@ -205,7 +205,7 @@ public class Motifsearch {
 	}
 	
 	/**
-	 * Ö´ĞĞR³ÌĞò£¬Ö±µ½R³ÌĞò½áÊøÔÙ·µ»Ø
+	 * æ‰§è¡ŒRç¨‹åºï¼Œç›´åˆ°Rç¨‹åºç»“æŸå†è¿”å›
 	 * @return
 	 * @throws IOException 
 	 * @throws IOException 
@@ -214,7 +214,7 @@ public class Motifsearch {
 	 */
 	private int RDensity() throws IOException, InterruptedException  
 	{
-		//Õâ¸ö¾ÍÊÇÏà¶ÔÂ·¾¶£¬±ØĞëÔÚµ±Ç°ÎÄ¼ş¼ĞÏÂÔËĞĞ
+		//è¿™ä¸ªå°±æ˜¯ç›¸å¯¹è·¯å¾„ï¼Œå¿…é¡»åœ¨å½“å‰æ–‡ä»¶å¤¹ä¸‹è¿è¡Œ
 		String command="Rscript "+NovelBioConst.R_WORKSPACE_DENSITY_RSCRIPT;
 		Runtime   r=Runtime.getRuntime();
 		Process p = r.exec(command);

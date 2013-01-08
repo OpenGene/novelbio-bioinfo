@@ -179,7 +179,7 @@ public class GuiRNAautoSplice extends JPanel {
 		Species species = combSpecies.getSelectedValue();
 		combVersion.setMapItem(species.getMapVersion());
 	}
-	/** 如果txt存在，优先获得txt对应的gtf文件*/
+	/** 濡傛灉txt瀛樺湪锛屼紭鍏堣幏寰梩xt瀵瑰簲鐨刧tf鏂囦欢*/
 	private GffHashGene getGffhashGene() {
 		GffHashGene gffHashGeneResult = null;
 		Species species = combSpecies.getSelectedValue();

@@ -13,8 +13,8 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.sun.tools.javah.resources.l10n;
 
 /**
- * ½«gffÎÄ¼şÕûÀí³ÉÎªSequinÊ¶±ğµÄ¸ñÊ½
- * ÈçÏÂ£º
+ * å°†gffæ–‡ä»¶æ•´ç†æˆä¸ºSequinè¯†åˆ«çš„æ ¼å¼
+ * å¦‚ä¸‹ï¼š
  * 1830	2966	gene
 			gene	dnaN
 			locus_tag     OBB_0002
@@ -105,7 +105,7 @@ public class GenerateSequinGeneInfo {
 		txtOut.close();
 	}
 }
-/** ½«µ¥¸ö»ùÒòÕûÀí³ÉÖ¸¶¨¸ñÊ½
+/** å°†å•ä¸ªåŸºå› æ•´ç†æˆæŒ‡å®šæ ¼å¼
  * 
  * 1830	2966	gene
 			gene	dnaN
@@ -123,11 +123,11 @@ class SequinGene {
 	int start;
 	int end;
 
-	/** geneÃû */
+	/** geneå */
 	String geneName;
-	/** locusÃû */
+	/** locuså */
 	String locus_tag;
-	/** CDS£¬rrnaµÈµÈ */
+	/** CDSï¼Œrrnaç­‰ç­‰ */
 	String type;
 	
 	String product;
@@ -165,9 +165,9 @@ class SequinGene {
 		this.isPseudo = pseudo;
 	}
 	/**
-	 * Ä¬ÈÏ²¹Æëµ½4Î»
-	 * ÊäÈë10£¬100µÈ
-	 * ·µ»Ø 0010,0100µÈ
+	 * é»˜è®¤è¡¥é½åˆ°4ä½
+	 * è¾“å…¥10ï¼Œ100ç­‰
+	 * è¿”å› 0010,0100ç­‰
 	 * @param num
 	 * @return
 	 */
@@ -207,7 +207,7 @@ class SequinGene {
 		this.locus_tag = locus_tag;
 	}
 	
-	/** Ğ´ÈëÎÄ±¾£¬²»°üº¬»»ĞĞ */
+	/** å†™å…¥æ–‡æœ¬ï¼Œä¸åŒ…å«æ¢è¡Œ */
 	public String toString() {
 		String locationLine = start + "\t" + end + "\t" + "gene";
 		if (geneName != null && !geneName.equals("")) {
@@ -240,7 +240,7 @@ class SequinGene {
 		return locationLine;
 	}
 	
-	/** Ğ´ÈëÎÄ±¾£¬²»°üº¬»»ĞĞ */
+	/** å†™å…¥æ–‡æœ¬ï¼Œä¸åŒ…å«æ¢è¡Œ */
 	public String toTitle() {
 		String locationLine = locus_tag + " " +  product;
 		return locationLine;

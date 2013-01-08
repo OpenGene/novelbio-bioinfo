@@ -31,7 +31,7 @@ public class NovelGOFunTest extends AbstFunTest{
 	public NovelGOFunTest() {}
 	
 	/**
-	 * GOabsÖĞµÄGOtype
+	 * GOabsä¸­çš„GOtype
 	 * @param goType
 	 */
 	@Override
@@ -64,7 +64,7 @@ public class NovelGOFunTest extends AbstFunTest{
 		this.GoType = GOtype;
 	}
 	/**
-	 * ²»·µ»Ø
+	 * ä¸è¿”å›
 	 */
 	@Override
 	public ArrayList<StatisticTestItem2Gene> getItem2GenePvalue() {
@@ -77,7 +77,7 @@ public class NovelGOFunTest extends AbstFunTest{
 			List<GeneID> lsTmpGeneUniID = hashGo2LsGene.get(statisticTestResult.getItemName());
 			ArrayList<GeneID> lsFinalGeneIDs = new ArrayList<GeneID>();
 			for (GeneID geneID : lsTmpGeneUniID) {
-				//Í¬Ò»¸ögeneUniID¶ÔÓ¦µÄ²»Í¬accID
+				//åŒä¸€ä¸ªgeneUniIDå¯¹åº”çš„ä¸åŒaccID
 				List<GeneID> lscopedIDs = mapGeneUniID2LsGeneID.get(geneID.getGenUniID());
 				lsFinalGeneIDs.addAll(lscopedIDs);
 			}

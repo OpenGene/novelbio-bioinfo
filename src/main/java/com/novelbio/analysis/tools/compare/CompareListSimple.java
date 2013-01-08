@@ -14,7 +14,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 
 public class CompareListSimple {
 	/**
-	 * ´ÓÎÄ¼şµÄµÚ¼¸ĞĞ¿ªÊ¼¶ÁÈ¡
+	 * ä»æ–‡ä»¶çš„ç¬¬å‡ è¡Œå¼€å§‹è¯»å–
 	 */
 	static int firstlinels1=1;
 	static int firstlinels2=1;
@@ -22,14 +22,14 @@ public class CompareListSimple {
 
 	
 	/**
-	 * ¸ø¶¨Á½¸ölst£¬±È½ÏÁ½¸ölstÖ®¼äÓĞÄÄĞ©ÏàÍ¬£¬ÄÄĞ©ls1ÌØÓĞ£¬ÄÄĞ©ls2ÌØÓĞ
-	 * lstÖĞº¬ÓĞÖØ¸´ÏîµÄÖ»¼ÇÂ¼×îºóÒ»¸öÏî¡£µÚÒ»ÁĞ×Ô¶¯È¥Á½±ß¿Õ¸ñ¡£
+	 * ç»™å®šä¸¤ä¸ªlstï¼Œæ¯”è¾ƒä¸¤ä¸ªlstä¹‹é—´æœ‰å“ªäº›ç›¸åŒï¼Œå“ªäº›ls1ç‰¹æœ‰ï¼Œå“ªäº›ls2ç‰¹æœ‰
+	 * lstä¸­å«æœ‰é‡å¤é¡¹çš„åªè®°å½•æœ€åä¸€ä¸ªé¡¹ã€‚ç¬¬ä¸€åˆ—è‡ªåŠ¨å»ä¸¤è¾¹ç©ºæ ¼ã€‚
 	 * 6: ls2mult
 	 * @param ls1
 	 * @param ls2
 	 * @return
-	 * ×îºó·µ»ØÒ»¸öarraylist--arraylist--string[] <br>
-	 * °üº¬5¸öarraylist <br>
+	 * æœ€åè¿”å›ä¸€ä¸ªarraylist--arraylist--string[] <br>
+	 * åŒ…å«5ä¸ªarraylist <br>
 	 * 1: ls1only<br>
 	 * 2: ls2only<br>
 	 * 3: intersection<br>
@@ -40,16 +40,16 @@ public class CompareListSimple {
 	{
 		Hashtable<String, String[]> hs1=new Hashtable<String, String[]>();
 		Hashtable<String, String[]> hs2=new Hashtable<String, String[]>();
-		////////·µ»Ø½á¹û/////////////////////////////////
+		////////è¿”å›ç»“æœ/////////////////////////////////
 		ArrayList<String[]> ls1only=new ArrayList<String[]>();
 		ArrayList<String[]> ls2only=new ArrayList<String[]>();
 		ArrayList<String[]> lsBoth=new ArrayList<String[]>();
 		ArrayList<String[]> ls1Mult=new ArrayList<String[]>();
 		ArrayList<String[]> ls2Mult=new ArrayList<String[]>();
 		
-		/////////ÖĞ¼ä½á¹û///////////////////////////////////
-		ArrayList<String> ls1NoDup=new ArrayList<String>();//ls1ÎŞÖØ¸´key
-		ArrayList<String> ls2NoDup=new ArrayList<String>();//ls2ÎŞÖØ¸´key
+		/////////ä¸­é—´ç»“æœ///////////////////////////////////
+		ArrayList<String> ls1NoDup=new ArrayList<String>();//ls1æ— é‡å¤key
+		ArrayList<String> ls2NoDup=new ArrayList<String>();//ls2æ— é‡å¤key
 		ArrayList<String> ls1MultKey=new ArrayList<String>();
 		ArrayList<String> ls2MultKey=new ArrayList<String>();
 
@@ -99,7 +99,7 @@ public class CompareListSimple {
 		{ 
 			String[] tmpValue2;
 			String[] tmpValue1;
-			//¹²ÓĞ
+			//å…±æœ‰
 			String tmpls1key=ls1NoDup.get(i);
 			if ((tmpValue2=hs2.get(tmpls1key))!=null) 
 			{
@@ -114,7 +114,7 @@ public class CompareListSimple {
 				}
 				lsBoth.add(tmpValue);
 			}
-			else //½öls1º¬ÓĞ
+			else //ä»…ls1å«æœ‰
 			{
 				ls1only.add(hs1.get(tmpls1key));
 			}
@@ -122,7 +122,7 @@ public class CompareListSimple {
 		
 		for (int i = 0; i < ls2NoDup.size(); i++)
 		{
-			//¹²ÓĞ
+			//å…±æœ‰
 			String tmpls2key=ls2NoDup.get(i);
 			if (hs1.get(tmpls2key)==null) 
 			{
@@ -149,12 +149,12 @@ public class CompareListSimple {
 	
 	
 	/**
-	 * ½«Á½¸öÎÄ±¾×ª»¯ÎªArrayList·½±ãºóÃæ²Ù×÷
-	 * @param filePathÎÄ±¾ËùÔÚÂ·¾¶
-	 * @param resultFold ½á¹ûÎÄ¼ş
-	 * @param FileA µÚÒ»¸öÎÄ±¾Ãû£¬±ØĞëtab¸ô¿ª£¬µÚÒ»ÁĞÓĞ¶«Î÷
-	 * @param FIleB µÚ¶ş¸öÎÄ±¾Ãû£¬±ØĞëtab¸ô¿ª£¬µÚÒ»ÁĞÓĞ¶«Î÷
-	 * @param caseSen ÊÇ·ñ´óĞ¡Ğ´Ãô¸Ğ
+	 * å°†ä¸¤ä¸ªæ–‡æœ¬è½¬åŒ–ä¸ºArrayListæ–¹ä¾¿åé¢æ“ä½œ
+	 * @param filePathæ–‡æœ¬æ‰€åœ¨è·¯å¾„
+	 * @param resultFold ç»“æœæ–‡ä»¶
+	 * @param FileA ç¬¬ä¸€ä¸ªæ–‡æœ¬åï¼Œå¿…é¡»tabéš”å¼€ï¼Œç¬¬ä¸€åˆ—æœ‰ä¸œè¥¿
+	 * @param FIleB ç¬¬äºŒä¸ªæ–‡æœ¬åï¼Œå¿…é¡»tabéš”å¼€ï¼Œç¬¬ä¸€åˆ—æœ‰ä¸œè¥¿
+	 * @param caseSen æ˜¯å¦å¤§å°å†™æ•æ„Ÿ
 	 * @throws Exception
 	 */
 	public static void getFileToList(String filePath,String resultFold,String FileA,String FileB,boolean caseSen,String FileIntersection,String FileAonly,String FileBonly) throws Exception 
@@ -179,7 +179,7 @@ public class CompareListSimple {
 		
 		if (ls1 == null || ls1.size()<1) {
 			txt.setParameter(filePath+FileA, false,true);
-			ls1=txt.ExcelRead(firstlinels1, 1, txt.ExcelRows(), -1, 1);//´ÓÄ¿±êĞĞ¶ÁÈ¡
+			ls1=txt.ExcelRead(firstlinels1, 1, txt.ExcelRows(), -1, 1);//ä»ç›®æ ‡è¡Œè¯»å–
 		}
 			
 		try {

@@ -1,6 +1,6 @@
 package com.novelbio.base.dataStructure.listOperate;
 /**
- * Ò»°ãµÄĞòÁĞ²éÕÒ¾ÍÓÃÕâ¸ö¾ÍĞĞ
+ * ä¸€èˆ¬çš„åºåˆ—æŸ¥æ‰¾å°±ç”¨è¿™ä¸ªå°±è¡Œ
  * @author zong0jie
  *
  */
@@ -8,14 +8,14 @@ public class ListBin<T extends ListDetailAbs> extends ListAbsSearch<T, ListCodAb
 	private static final long serialVersionUID = 8632727637919902406L;
 	String description = "";
 	/**
-	 * ¸ù¾İĞèÒªÉè¶¨ÃèÊö
+	 * æ ¹æ®éœ€è¦è®¾å®šæè¿°
 	 * @param description
 	 */
 	public void setDescription(String description) {
 		this.description = description;
 	}
 	/**
-	 * »ñµÃÉè¶¨µÄÃèÊö
+	 * è·å¾—è®¾å®šçš„æè¿°
 	 * @param description
 	 */
 	public String getDescription() {

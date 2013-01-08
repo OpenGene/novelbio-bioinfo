@@ -8,7 +8,7 @@ import de.erichseifert.gral.data.DataTable;
 import de.erichseifert.gral.plots.BoxPlot;
 import de.erichseifert.gral.plots.BoxPlot.BoxWhiskerRenderer;
 /**
- * boxplotµÄÍ³¼ÆÍ¼
+ * boxplotçš„ç»Ÿè®¡å›¾
  * @author zong0jie
  *
  */
@@ -20,7 +20,7 @@ public class PlotBox extends PlotScatter {
 		super(PlotScatter.PLOT_TYPE_BOXPLOT);
 	}
 	   /**
-     * using data to plot the Bar figure, Ö±½Ó¼ÓÈëplot£¬²»½øÈëhash±í
+     * using data to plot the Bar figure, ç›´æ¥åŠ å…¥plotï¼Œä¸è¿›å…¥hashè¡¨
      * @param lsNum data 
      * @param breakNum Number of subdivisions for analysis.
      * @param dotStyle
@@ -47,7 +47,7 @@ public class PlotBox extends PlotScatter {
 		setRender(stats, boxStyle);
     }
     /**
-     * ²âÊÔÓÃ
+     * æµ‹è¯•ç”¨
      * @param lsBoxInfo
      * @return
      */
@@ -130,14 +130,14 @@ public class PlotBox extends PlotScatter {
 			return info5;
 		}
     	/**
-    	 * BoxplotÉè¶¨µÄmin£¬Êµ¼Ê¿ÉÒÔÎªinfo1»òinfo5
+    	 * Boxplotè®¾å®šçš„minï¼Œå®é™…å¯ä»¥ä¸ºinfo1æˆ–info5
     	 * @return
     	 */
     	public double getInfoBoxDefMin() {
 			return info1;
 		}
     	/**
-    	 * BoxplotÉè¶¨µÄmax£¬Êµ¼Ê¿ÉÒÔÎªinfo95»òinfo99
+    	 * Boxplotè®¾å®šçš„maxï¼Œå®é™…å¯ä»¥ä¸ºinfo95æˆ–info99
     	 * @return
     	 */
     	public double getInfoBoxDefMax() {

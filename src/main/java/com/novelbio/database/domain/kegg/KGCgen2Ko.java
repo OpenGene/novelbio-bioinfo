@@ -29,17 +29,17 @@ public class KGCgen2Ko {
 		this.taxID=taxID;
 	}
 	/**
-	 * keggID��KO�Ƕ�Զ�Ĺ�ϵ
+	 * keggID到KO是多对多的关系
 	 */
 	private ArrayList<KGIDkeg2Ko> lsKgiDkeg2Kos;
 	/**
-	 * keggID��KO�Ƕ�Զ�Ĺ�ϵ
+	 * keggID到KO是多对多的关系
 	 */
 	public ArrayList<KGIDkeg2Ko> getLsKgiDkeg2Kos() {
 		return this.lsKgiDkeg2Kos;
 	}
 	/**
-	 * keggID��KO�Ƕ�Զ�Ĺ�ϵ
+	 * keggID到KO是多对多的关系
 	 */
 	public void setLsKgiDkeg2Kos(ArrayList<KGIDkeg2Ko> lsKgiDkeg2Kos) {
 		this.lsKgiDkeg2Kos=lsKgiDkeg2Kos;

@@ -16,7 +16,7 @@ import com.novelbio.base.dataOperate.HttpFetch;
 
 public class PixivGetPageMidUrl {
 	HttpFetch webFetch;
-	/** ÅĞ¶Ï¸ÃÎÄ¼şÊÇ·ñÒÑ¾­´æÔÚÁË£¬´æÔÚÁË¾Í²»ÏÂÔØÁË */
+	/** åˆ¤æ–­è¯¥æ–‡ä»¶æ˜¯å¦å·²ç»å­˜åœ¨äº†ï¼Œå­˜åœ¨äº†å°±ä¸ä¸‹è½½äº† */
 	PixivGetPathExistPic pixivGetPathExistPic;
 	
 	String pixivUrl = "http://www.pixiv.net/";
@@ -24,7 +24,7 @@ public class PixivGetPageMidUrl {
 	int allPictureNum;
 	int allPageNum;
 	int thisPageNum;
-	/** ±¾Ò³ÓĞ¶àÉÙÍ¼Æ¬ */
+	/** æœ¬é¡µæœ‰å¤šå°‘å›¾ç‰‡ */
 	int thisPagePictureNum;
 	int retryNum = 100;
 	
@@ -59,7 +59,7 @@ public class PixivGetPageMidUrl {
 	public boolean isAlreadyHaveFile() {
 		return isAlreadyHaveFile;
 	}
-	/** ·µ»Ønull ±íÊ¾Ã»ÓĞ³É¹¦ */
+	/** è¿”å›null è¡¨ç¤ºæ²¡æœ‰æˆåŠŸ */
 	public ArrayList<PixivGetPictureUrlToDownload> getLsToDownloadUrl() {
 		try {
 			if(!getPictures()) {
@@ -71,8 +71,8 @@ public class PixivGetPageMidUrl {
 		return getLsPixivGetPictureUrlToDownloads();
 	}
 	/**
-	 * »ñµÃ´ıÏÂÔØµÄĞÅÏ¢
-	 * Ã»ÓĞ³É¹¦Ôò·µ»Ønull
+	 * è·å¾—å¾…ä¸‹è½½çš„ä¿¡æ¯
+	 * æ²¡æœ‰æˆåŠŸåˆ™è¿”å›null
 	 * @return
 	 * @throws ParserException 
 	 */
@@ -87,17 +87,17 @@ public class PixivGetPageMidUrl {
 		lsNameAndUrl = getPictureMidUrl(nodeListPicture);
 		return true;
 	}
-	/** »ñµÃÖĞµÈÍ¼Æ¬µÄurl */
+	/** è·å¾—ä¸­ç­‰å›¾ç‰‡çš„url */
 	private ArrayList<String[]> getPictureMidUrl(NodeList nodeListPicture) {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		NodeFilter filterPicture = new TagNameFilter("a");
-		//°üº¬ÓĞÈ«²¿Í¼Æ¬µÄnodelist
+		//åŒ…å«æœ‰å…¨éƒ¨å›¾ç‰‡çš„nodelist
 		NodeList nodeLsPicture = nodeListPicture.extractAllNodesThatMatch(filterPicture, true);
 		thisPagePictureNum = nodeListPicture.size();
 		
 		SimpleNodeIterator iterator = nodeLsPicture.elements();
         while (iterator.hasMoreNodes()) {
-        	//Ã¿¸öÍ¼Æ¬µÄnode
+        	//æ¯ä¸ªå›¾ç‰‡çš„node
             Node nodePicture = iterator.nextNode();
             String name = getPictureName(nodePicture);
             String url = getPictureUrl(nodePicture);
@@ -109,18 +109,18 @@ public class PixivGetPageMidUrl {
         }
         return lsResult;
 	}
-	/** »ñµÃÃ¿¸öÍ¼Æ¬µÄurl */
+	/** è·å¾—æ¯ä¸ªå›¾ç‰‡çš„url */
 	private String getPictureUrl(Node nodePicture) {
 		String urlAll = nodePicture.getText();
 		 urlAll = urlAll.replace("a", "").replace("href=", "").replace("\"", "").trim();
 		 urlAll = HttpFetch.decode(urlAll);
 		return urlAll;
 	}
-	/** »ñµÃÃ¿¸öÍ¼Æ¬µÄÃû×Ö */
+	/** è·å¾—æ¯ä¸ªå›¾ç‰‡çš„åå­— */
 	private String getPictureName(Node nodePicture) {
 		String name = "";
 		NodeFilter filterUrl = new TagNameFilter("img");
-		//Ö»¿ÉÄÜÓĞÒ»¸öurl
+		//åªå¯èƒ½æœ‰ä¸€ä¸ªurl
 		NodeList nodelsUrl = nodePicture.getChildren().extractAllNodesThatMatch(filterUrl);
 		String allName = nodelsUrl.elementAt(0).getText();
 		String[] ss = allName.split(" ");
@@ -135,7 +135,7 @@ public class PixivGetPageMidUrl {
 	}
 	
 	/**
-	 * ·µ»ØÉè¶¨ºÃmidurlµÄÀà£¬µÈ´ıÃ¿¸öÉîÈëÏÂÈ¥²éÕÒ¾ßÌåµÄbigurl
+	 * è¿”å›è®¾å®šå¥½midurlçš„ç±»ï¼Œç­‰å¾…æ¯ä¸ªæ·±å…¥ä¸‹å»æŸ¥æ‰¾å…·ä½“çš„bigurl
 	 * @return
 	 */
 	private ArrayList<PixivGetPictureUrlToDownload> getLsPixivGetPictureUrlToDownloads() {
@@ -145,7 +145,7 @@ public class PixivGetPageMidUrl {
 			PixivGetPictureUrlToDownload pictureUrlToDownload = new PixivGetPictureUrlToDownload();
 			pictureUrlToDownload.setMidUrl(pixivUrl + nameAndUrl[1]);
 			pictureUrlToDownload.setName(nameAndUrl[0]);
-			//Ã¿Ò³20ÕÅÍ¼
+			//æ¯é¡µ20å¼ å›¾
 			int pictureNum = allPictureNum - (thisPageNum - 1) * 20 - i;
 			pictureUrlToDownload.setPictureNum(pictureNum);
 			pictureUrlToDownload.setWebFetch(HttpFetch.getInstance(webFetch));

@@ -42,9 +42,9 @@ public class ServUniProtID implements MapUniProtID{
 	}
 	
 	/**
-	 * Ê×ÏÈÓÃÖ¸¶¨µÄÊı¾İ¿â²éÕÒUniProtID±í
-	 * Èç¹ûÕÒµ½ÁË¾Í·µ»ØÕÒµ½µÄµÚÒ»¸öµÄuniprotID¶ÔÏó
-	 * Èç¹ûÃ»ÕÒµ½£¬ÔÙÈ¥³ıdbinfo²éÕÒ£¬Èç¹û»¹Ã»ÕÒµ½£¬¾Í·µ»ØNull
+	 * é¦–å…ˆç”¨æŒ‡å®šçš„æ•°æ®åº“æŸ¥æ‰¾UniProtIDè¡¨
+	 * å¦‚æœæ‰¾åˆ°äº†å°±è¿”å›æ‰¾åˆ°çš„ç¬¬ä¸€ä¸ªçš„uniprotIDå¯¹è±¡
+	 * å¦‚æœæ²¡æ‰¾åˆ°ï¼Œå†å»é™¤dbinfoæŸ¥æ‰¾ï¼Œå¦‚æœè¿˜æ²¡æ‰¾åˆ°ï¼Œå°±è¿”å›Null
 	 * @param geneID
 	 * @param taxID
 	 * @param dbInfo
@@ -62,7 +62,7 @@ public class ServUniProtID implements MapUniProtID{
 			uniProtID.setDBInfo(dbInfo.trim());
 		}
 		ArrayList<UniProtID> lsUniProtIDs= queryLsUniProtID(uniProtID);
-		//Èç¹û´øÊı¾İ¿âµÄÃ»ÕÒµ½£¬¾ÍÖØÖÃÊı¾İ¿â
+		//å¦‚æœå¸¦æ•°æ®åº“çš„æ²¡æ‰¾åˆ°ï¼Œå°±é‡ç½®æ•°æ®åº“
 		if (!dbInfo.equals("") && (lsUniProtIDs == null || lsUniProtIDs.size() < 1) ) {
 			uniProtID.setDBInfo("");
 			lsUniProtIDs = queryLsUniProtID(uniProtID);
@@ -76,14 +76,14 @@ public class ServUniProtID implements MapUniProtID{
 	}
 	
 	/**
-	 * Ã»ÓĞ¸ÃID¾Í²åÈë£¬ÓĞ¸ÃIDµÄ»°¿´Èç¹ûĞèÒªoverride£¬Èç¹ûoverrideÇÒÊı¾İ¿â²»Ò»Ñù£¬¾Í¸²¸ÇÉı¼¶<br>
-	 * ×¢ÒâÕâÀïÖ»±È½ÏµÚÒ»¸ödbInfo
+	 * æ²¡æœ‰è¯¥IDå°±æ’å…¥ï¼Œæœ‰è¯¥IDçš„è¯çœ‹å¦‚æœéœ€è¦overrideï¼Œå¦‚æœoverrideä¸”æ•°æ®åº“ä¸ä¸€æ ·ï¼Œå°±è¦†ç›–å‡çº§<br>
+	 * æ³¨æ„è¿™é‡Œåªæ¯”è¾ƒç¬¬ä¸€ä¸ªdbInfo
 	 * @param nCBIID
 	 * @param override
 	 */
 	public boolean updateUniProtID(UniProtID uniProtID, boolean override) {
 		if (uniProtID.getAccID().length() > 30) {
-			logger.error("accIDÌ«³¤£º" + uniProtID.getAccID() + "\t" + uniProtID.getDBInfo());
+			logger.error("accIDå¤ªé•¿ï¼š" + uniProtID.getAccID() + "\t" + uniProtID.getDBInfo());
 			if (uniProtID.getAccID().contains("GO:")) {
 				logger.error("stop");
 			}
@@ -91,10 +91,10 @@ public class ServUniProtID implements MapUniProtID{
 		}
 		
 		String db = uniProtID.getDBInfo();
-		//²éÑ¯µÄÊ±ºòÎªÁË·ÀÖ¹²é²»µ½£¬ÏÈ³ıÈ¥dbinfoµÄĞÅÏ¢
+		//æŸ¥è¯¢çš„æ—¶å€™ä¸ºäº†é˜²æ­¢æŸ¥ä¸åˆ°ï¼Œå…ˆé™¤å»dbinfoçš„ä¿¡æ¯
 		uniProtID.setDBInfo("");
 		if (uniProtID.getAccID() == null) {
-			logger.error("accID²»´æÔÚ£¬²»ÄÜÉı¼¶");
+			logger.error("accIDä¸å­˜åœ¨ï¼Œä¸èƒ½å‡çº§");
 			return false;
 		}
 		ArrayList<UniProtID> lsResult = mapUniProtID.queryLsUniProtID(uniProtID);
@@ -123,10 +123,10 @@ public class ServUniProtID implements MapUniProtID{
 		return true;
 	}
 	/**
-	 * Èç¹û´æÔÚÔò·µ»ØµÚÒ»¸öÕÒµ½µÄgeneID
-	 * ²»´æÔÚ¾Í·µ»Ønull
-	 * @param geneID ÊäÈëgeneID
-	 * @param taxID ÎïÖÖID
+	 * å¦‚æœå­˜åœ¨åˆ™è¿”å›ç¬¬ä¸€ä¸ªæ‰¾åˆ°çš„geneID
+	 * ä¸å­˜åœ¨å°±è¿”å›null
+	 * @param geneID è¾“å…¥geneID
+	 * @param taxID ç‰©ç§ID
 	 * @return
 	 */
 	public UniProtID getUniProtID(String genUniID, int taxID) {

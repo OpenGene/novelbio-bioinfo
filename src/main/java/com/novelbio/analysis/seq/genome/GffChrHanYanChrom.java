@@ -11,7 +11,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 
 
 /**
- * ÆäÖĞµÄChrFa¶ÁÈ¡Ê±ºò£¬±ØĞë½«Ã¿ĞĞµÄ»»ĞĞ·ûÏŞ¶¨Îª"\n",ÓĞĞ¡¹¤¾ßÄÜÓÃ
+ * å…¶ä¸­çš„ChrFaè¯»å–æ—¶å€™ï¼Œå¿…é¡»å°†æ¯è¡Œçš„æ¢è¡Œç¬¦é™å®šä¸º"\n",æœ‰å°å·¥å…·èƒ½ç”¨
  * @author zong0jie
  *
  */
@@ -28,13 +28,13 @@ public class GffChrHanYanChrom extends GffChrHanYan{
 	private static Logger logger = Logger.getLogger(GffChrHanYanChrom.class);
 	
 	/**
-	 * ¶ÁÈ¡MappingÎÄ¼ş£¬Éú³ÉÏàÓ¦µÄÒ»Î¬×ø±êÊı×é£¬×îºó±£´æÔÚÒ»¸ö¹şÏ£±íÖĞ¡£
-	 * @param mapFile mappingµÄ½á¹ûÎÄ¼ş£¬Ò»°ãÎªbed¸ñÊ½
-	 * @param invNum Ã¿¸ô¶àÉÙÎ»¼ÆÊı
-	 * @param tagLength Éè¶¨Ë«¶ËreadsTagÆ´ÆğÀ´ºó³¤¶ÈµÄ¹ÀËãÖµ£¬´óÓÚ20²Å»á½øĞĞÉèÖÃ¡£Ä¿Ç°solexaË«¶ËËÍÑù³¤¶È´ó¸ÅÊÇ200-400bp£¬²»ÓÃÌ«¾«È· ,Ä¬ÈÏÊÇ400
-	 * @param uniqReads Í¬Ò»Î»µãµÄÖØ¸´ÊÇ·ñ½ö±£ÁôÒ»¸ö
-	 * @param cis5To3 ÊÇ·ñÌôÑ¡Ä³Ò»¸ö·½ÏòµÄreads
-	 * @param uniqMapping ÊÇ·ñÌôÑ¡Î¨Ò»±È¶ÔµÄ 
+	 * è¯»å–Mappingæ–‡ä»¶ï¼Œç”Ÿæˆç›¸åº”çš„ä¸€ç»´åæ ‡æ•°ç»„ï¼Œæœ€åä¿å­˜åœ¨ä¸€ä¸ªå“ˆå¸Œè¡¨ä¸­ã€‚
+	 * @param mapFile mappingçš„ç»“æœæ–‡ä»¶ï¼Œä¸€èˆ¬ä¸ºbedæ ¼å¼
+	 * @param invNum æ¯éš”å¤šå°‘ä½è®¡æ•°
+	 * @param tagLength è®¾å®šåŒç«¯readsTagæ‹¼èµ·æ¥åé•¿åº¦çš„ä¼°ç®—å€¼ï¼Œå¤§äº20æ‰ä¼šè¿›è¡Œè®¾ç½®ã€‚ç›®å‰solexaåŒç«¯é€æ ·é•¿åº¦å¤§æ¦‚æ˜¯200-400bpï¼Œä¸ç”¨å¤ªç²¾ç¡® ,é»˜è®¤æ˜¯400
+	 * @param uniqReads åŒä¸€ä½ç‚¹çš„é‡å¤æ˜¯å¦ä»…ä¿ç•™ä¸€ä¸ª
+	 * @param cis5To3 æ˜¯å¦æŒ‘é€‰æŸä¸€ä¸ªæ–¹å‘çš„reads
+	 * @param uniqMapping æ˜¯å¦æŒ‘é€‰å”¯ä¸€æ¯”å¯¹çš„ 
 	 */
 	public void loadMap(String mapFile,int tagLength, boolean uniqReads, int startCod, Boolean cis5To3, boolean uniqMapping) {
 		mapReads=new MapReadsHanyanChrom();
@@ -48,7 +48,7 @@ public class GffChrHanYanChrom extends GffChrHanYan{
 		mapReads.run();
 	}
 
-//////////////////////////////////////////////////²ÎÊıÉè¶¨/////////////////////////////////////////////////////////
+//////////////////////////////////////////////////å‚æ•°è®¾å®š/////////////////////////////////////////////////////////
 	protected double[] getReadsInfo(String geneID, GffGeneIsoInfo gffGeneIsoInfo) {
 		double[] iso = mapReads.getRangeInfo(gffGeneIsoInfo.getParentGffDetailGene().getRefID(), gffGeneIsoInfo);
 		if (iso == null) {
@@ -70,6 +70,6 @@ public class GffChrHanYanChrom extends GffChrHanYan{
 		return gffChrAbs.getGffHashGene().getLsNameAll();
 	}
 	
-	/////////////////////////////////////   º«ÑàµÄÏîÄ¿   //////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////   éŸ©ç‡•çš„é¡¹ç›®   //////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 }

@@ -1,28 +1,28 @@
 package com.novelbio.database.domain.geneanno;
 /**
- * ·Ö¸î·û£¬³£ÓÃ·Ö¸î·ûºÅ
- * ¿ÉÒÔ¶¼ÓÃÕâ¸ö·Ö¸î·û½øĞĞ·Ö¸îÎÄ¼ş
+ * åˆ†å‰²ç¬¦ï¼Œå¸¸ç”¨åˆ†å‰²ç¬¦å·
+ * å¯ä»¥éƒ½ç”¨è¿™ä¸ªåˆ†å‰²ç¬¦è¿›è¡Œåˆ†å‰²æ–‡ä»¶
  * @author zong0jie
  */
 public class SepSign {
 	/**
-	 * ×î¸ßµÈ¼¶
-	 * ·Ö¸îÁ½¸öÀ´Ô´µÄID»òÁ½¸öDescription
+	 * æœ€é«˜ç­‰çº§
+	 * åˆ†å‰²ä¸¤ä¸ªæ¥æºçš„IDæˆ–ä¸¤ä¸ªDescription
 	 * "@//@"
 	 */
 	public static final String SEP_ID = "@//@";
 
 	/**
-	 * ÖĞ¼äµÈ¼¶
-	 * ·Ö¸î NCBIIDµÄtitleºÍÄÚÈİ
-	 * ÈçNCBI@@protein coding
+	 * ä¸­é—´ç­‰çº§
+	 * åˆ†å‰² NCBIIDçš„titleå’Œå†…å®¹
+	 * å¦‚NCBI@@protein coding
 	 * "@@"
 	 */
 	public static final String SEP_INFO = "@@";
 	
 	/**
-	 * ×îµÍµÈ¼¶
-	 * ·Ö¸îÍ¬Ò»¸öÊı¾İ¿âµÄÁ½¸ö²»Í¬µÄ×¢ÊÍĞÅÏ¢
+	 * æœ€ä½ç­‰çº§
+	 * åˆ†å‰²åŒä¸€ä¸ªæ•°æ®åº“çš„ä¸¤ä¸ªä¸åŒçš„æ³¨é‡Šä¿¡æ¯
 	 * "{/}"
 	 */
 	public static final String SEP_INFO_SAMEDB = "#/#";

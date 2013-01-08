@@ -13,48 +13,48 @@ public class NovelBioConst {
 	public final static String DBINFO_NCBI_ACC_REFSEQ = "RefSeq";
 	public  final static String DBINFO_KEGG = "KEGG";
 	/**
-	 * RefSeqµÄµ°°×ID
+	 * RefSeqçš„è›‹ç™½ID
 	 */
 	public final static String DBINFO_NCBI_ACC_REFSEQ_PROTEIN = "RefSeq_protein";
 	/**
-	 * RefSeqµÄRNAID
+	 * RefSeqçš„RNAID
 	 */
 	public final static String DBINFO_NCBI_ACC_REFSEQ_RNA = "RefSeq_RNA";
 	/**
-	 * RefSeqµÄDNAID
+	 * RefSeqçš„DNAID
 	 */
 	public final static String DBINFO_NCBI_ACC_REFSEQ_DNA = "RefSeq_DNA";
 	/**
-	 * ÔÚUCSCµÄGFFÎÄ¼şÖĞ³öÏÖµÄRefSeqID
+	 * åœ¨UCSCçš„GFFæ–‡ä»¶ä¸­å‡ºç°çš„RefSeqID
 	 */
 	public final static String DBINFO_NCBI_ACC_REFSEQ_UCSC_GFF = "RefSeq_UCSC_GFF";
 	/**
-	 * NCBIIDÖĞ×îÆÕÍ¨µÄDBINFO ID
+	 * NCBIIDä¸­æœ€æ™®é€šçš„DBINFO ID
 	 */
 	public final static String DBINFO_NCBI_ACC_PROGI = "proteinGI";
 	/**
-	 * NCBIIDÖĞ×îÆÕÍ¨µÄDBINFO ID
+	 * NCBIIDä¸­æœ€æ™®é€šçš„DBINFO ID
 	 */
 	public final static String DBINFO_NCBI_ACC_PROAC = "proteinAC";
 	/**
-	 * NCBIIDÖĞ×îÆÕÍ¨µÄDBINFO ID
+	 * NCBIIDä¸­æœ€æ™®é€šçš„DBINFO ID
 	 */
 	public final static String DBINFO_NCBI_ACC_RNAAC = "rnaAC";
 	/**
-	 * NCBIIDÖĞ×îÆÕÍ¨µÄDBINFO ID
+	 * NCBIIDä¸­æœ€æ™®é€šçš„DBINFO ID
 	 */
 	public final static String DBINFO_NCBI_ACC_GENEAC = "geneAC";
 	/**
-	 * PlantGDBÖĞ×îÆÕÍ¨µÄDBINFO ID
+	 * PlantGDBä¸­æœ€æ™®é€šçš„DBINFO ID
 	 */
 	public final static String DBINFO_PLANTGDB_ACC = "PlantGDB";
 	
 	/**
-	 * NemblgenÖĞ×îÆÕÍ¨µÄDBINFO ID
+	 * Nemblgenä¸­æœ€æ™®é€šçš„DBINFO ID
 	 */
 	public final static String DBINFO_ROCHE = "Roche";
 	/**
-	 * UniProtDBÖĞµÄuniIDkey±í
+	 * UniProtDBä¸­çš„uniIDkeyè¡¨
 	 */
 	public final static String DBINFO_UNIPROT_UNIID = "UniProt";
 	public final static String DBINFO_UNIPROT_UNIPROTKB_ID = "UniProtKB_ID";
@@ -66,43 +66,43 @@ public class NovelBioConst {
 	public  final static String DBINFO_EMBL_CDS = "EMBL_CDS";
 	public  final static String DBINFO_PPA_ID = "Pichia_ID";
 	/**
-	 * Õâ¸öÊÇ×î³£ÓÃµÄ±Ï³à½ÍÄ¸µÄID
+	 * è¿™ä¸ªæ˜¯æœ€å¸¸ç”¨çš„æ¯•èµ¤é…µæ¯çš„ID
 	 */
 	public  final static String DBINFO_PPA_NCBI_ID = "Pichia_NCBI_ID";
 	public  final static String DBINFO_AFFY_GLMAX = "affy_glymax";
 	public  final static String DBINFO_AFFY_ZEBRAFISH = "affy_zebrafish";
 	/**
-	 * Õâ¸öÊÇ×î³£ÓÃµÄÄğ¾Æ½ÍÄ¸µÄID
+	 * è¿™ä¸ªæ˜¯æœ€å¸¸ç”¨çš„é…¿é…’é…µæ¯çš„ID
 	 */
 	public  final static String DBINFO_SSC_ID = "ScerID";
 	/**
-	 * TAIRµÄAT±àºÅ
+	 * TAIRçš„ATç¼–å·
 	 */
 	public final static String DBINFO_ATH_TAIR = "TAIRath";
 	/**
-	 * ZFINµÄ°ßÂíÓã
+	 * ZFINçš„æ–‘é©¬é±¼
 	 */
 	public final static String DBINFO_DRE_ZFIN = "ZFINdre";
 	/**
-	 * 7Î»OsºÅ
+	 * 7ä½Oså·
 	 */
 	public final static String DBINFO_RICE_TIGR = "TIGRrice";
 	/**
-	 * 7Î»OsºÅ
+	 * 7ä½Oså·
 	 */
 	public final static String DBINFO_GLYMAX_SOYBASE = "SoyBase";
 	/**
-	 * ÓñÃ×
+	 * ç‰ç±³
 	 */
 	public final static String DBINFO_MAIZE_MGDB = "MaizeGDB";
 	
 	
 	/**
-	 * Ïà¶ÔÂ·¾¶ÎÄ¼ş¼Ğ
+	 * ç›¸å¯¹è·¯å¾„æ–‡ä»¶å¤¹
 	 */
 	public final static String PATH_POSITION_RELATE = PathDetail.getProjectPath() + "ConfFold/";
 	/**
-	 * 9Î»OsºÅ
+	 * 9ä½Oså·
 	 */
 	public final static String DBINFO_RICE_RAPDB = "RapDB";
 	public final static String DBINFO_RICE_IRGSP = "IRGSP";
@@ -125,26 +125,26 @@ public class NovelBioConst {
 	public final static String DBINFO_IPI = "IPI";	
 	public final static String FASTQ_SANGER = "sanger";
 	public final static String FASTQ_ILLUMINA = "Illumina";
-	/////////////////////////////////////»ùÒò×éĞÅÏ¢///////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////åŸºå› ç»„ä¿¡æ¯///////////////////////////////////////////////////////////////////////////////////////////////
 	/**
-	 *  »ùÒòµÄGffµÄÀàĞÍ£¬ÓĞUCSCºÍTIGRµÈ£¬TIGR»¹Ã»¼ÓÈë
+	 *  åŸºå› çš„Gffçš„ç±»å‹ï¼Œæœ‰UCSCå’ŒTIGRç­‰ï¼ŒTIGRè¿˜æ²¡åŠ å…¥
 	 */
 	public final static String GENOME_GFF_TYPE_UCSC = "GFF_UCSC";
 	public final static String GENOME_GFF_TYPE_TIGR = "GFF_TIGR";
 	public final static String GENOME_GFF_TYPE_PLANT = "GFF_PLANT";
 	public final static String GENOME_GFF_TYPE_CUFFLINK_GTF = "GFF_CUFFLINK_GTF";
-	/** Óë DBINFO_NCBI Ò»Ä£Ò»Ñù */
+	/** ä¸ DBINFO_NCBI ä¸€æ¨¡ä¸€æ · */
 	public static final String GENOME_GFF_TYPE_NCBI = "GFF_NCBI";
-	/** ´Ófasta¸ñÊ½²úÉúgffĞÅÏ¢ */
+	/** ä»fastaæ ¼å¼äº§ç”Ÿgffä¿¡æ¯ */
 	public static final String GENOME_GFF_TYPE_FASTA = "GFF_GASTA";
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////   ¸÷ÖÖÂ·¾¶   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////   å„ç§è·¯å¾„   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////   Èí¼ş    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////   è½¯ä»¶    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * SICERÀïÃæÓĞºÃ¼¸¸ö½Å±¾£¬×¢ÒâËùÓĞ½Å±¾ÀïÃæ¶¼ÒªÍ³Ò»
+	 * SICERé‡Œé¢æœ‰å¥½å‡ ä¸ªè„šæœ¬ï¼Œæ³¨æ„æ‰€æœ‰è„šæœ¬é‡Œé¢éƒ½è¦ç»Ÿä¸€
 	 */
 	public final static String PEAKCALLING_SICER_PATH = "/media/winE/bioinformaticsTools/ChIP/SICER";
 	
@@ -154,7 +154,7 @@ public class NovelBioConst {
 	
 	
 	/**
-	 *  »ùÒò×éÂ·¾¶
+	 *  åŸºå› ç»„è·¯å¾„
 	 */
 	public final static String GENOME_PATH = "/media/winE/Bioinformatics/GenomeData/";
 	/**
@@ -162,23 +162,23 @@ public class NovelBioConst {
 	 */
 	public final static String GENOME_PATH_UCSC_HG19 = GENOME_PATH+"human/ucsc_hg19/";
 	/**
-	 *  UCSC_hg19µÄÈ¾É«ÌåÎÄ¼şÂ·¾¶
+	 *  UCSC_hg19çš„æŸ“è‰²ä½“æ–‡ä»¶è·¯å¾„
 	 */
 	public final static String GENOME_PATH_UCSC_HG19_CHROM = GENOME_PATH_UCSC_HG19+"ChromFa/";
 	/**
-	 *  UCSC_hg19µÄÍ³¼ÆĞÅÏ¢
+	 *  UCSC_hg19çš„ç»Ÿè®¡ä¿¡æ¯
 	 */
 	public final static String GENOME_PATH_UCSC_HG19_STATISTIC = GENOME_PATH_UCSC_HG19+"statisticInfo";
 	/**
-	 *  UCSC_hg19µÄRefSeqµÄGffÎÄ¼ş£¬ÒÑ¾­ÅÅ¹ıĞò£¬²»°üº¬ÏßÁ£Ìå
+	 *  UCSC_hg19çš„RefSeqçš„Gffæ–‡ä»¶ï¼Œå·²ç»æ’è¿‡åºï¼Œä¸åŒ…å«çº¿ç²’ä½“
 	 */
 	public final static String GENOME_PATH_UCSC_HG19_GFF_REFSEQ = GENOME_PATH_UCSC_HG19+"hg19_refSeqSortUsingNoChrM.txt";
 	/**
-	 *  UCSC_hg19µÄRefSeqµÄGffÎÄ¼ş£¬ÒÑ¾­ÅÅ¹ıĞò£¬²»°üº¬ÏßÁ£Ìå
+	 *  UCSC_hg19çš„RefSeqçš„Gffæ–‡ä»¶ï¼Œå·²ç»æ’è¿‡åºï¼Œä¸åŒ…å«çº¿ç²’ä½“
 	 */
 	public final static String GENOME_PATH_UCSC_HG18_GFF_REFSEQ = GENOME_PATH+"/human/hg18refseqUCSCsortUsing.txt";
 	/**
-	 *  UCSC_hg19µÄrepeakµÄGffÎÄ¼ş£¬ÒÑ¾­ÅÅ¹ıĞò
+	 *  UCSC_hg19çš„repeakçš„Gffæ–‡ä»¶ï¼Œå·²ç»æ’è¿‡åº
 	 */
 	public final static String GENOME_PATH_UCSC_HG19_GFF_REPEAT = GENOME_PATH_UCSC_HG19+"rmsk.txt";
 	/**
@@ -186,56 +186,56 @@ public class NovelBioConst {
 	 */
 	public final static String GENOME_PATH_UCSC_MM9 = GENOME_PATH+"mouse/ucsc_mm9/";
 	/**
-	 *  UCSC_mm9µÄÈ¾É«ÌåÎÄ¼şÂ·¾¶
+	 *  UCSC_mm9çš„æŸ“è‰²ä½“æ–‡ä»¶è·¯å¾„
 	 */
 	public final static String GENOME_PATH_UCSC_MM9_CHROM = GENOME_PATH_UCSC_MM9+"ChromFa/";
 	/**
-	 *  UCSC_mm9µÄÍ³¼ÆĞÅÏ¢
+	 *  UCSC_mm9çš„ç»Ÿè®¡ä¿¡æ¯
 	 */
 	public final static String GENOME_PATH_UCSC_MM9_STATISTIC = GENOME_PATH_UCSC_MM9+"statisticInfo/";
 	/**
-	 *  UCSC_mm9µÄRefSeqµÄGffÎÄ¼ş£¬ÒÑ¾­ÅÅ¹ıĞò£¬²»°üº¬ÏßÁ£Ìå
+	 *  UCSC_mm9çš„RefSeqçš„Gffæ–‡ä»¶ï¼Œå·²ç»æ’è¿‡åºï¼Œä¸åŒ…å«çº¿ç²’ä½“
 	 */
 	public final static String GENOME_PATH_UCSC_MM9_GFF_REFSEQ = GENOME_PATH_UCSC_MM9+"refseqSortUsing.txt";
 	/**
-	 *  UCSC_mm9µÄrepeakµÄGffÎÄ¼ş£¬ÒÑ¾­ÅÅ¹ıĞò
+	 *  UCSC_mm9çš„repeakçš„Gffæ–‡ä»¶ï¼Œå·²ç»æ’è¿‡åº
 	 */
 	public final static String GENOME_PATH_UCSC_MM9_GFF_REPEAT = GENOME_PATH_UCSC_MM9+"repeatmasker";
 	/**
-	 *  UCSC_mm9µÄrepeakµÄGffÎÄ¼ş£¬ÒÑ¾­ÅÅ¹ıĞò
+	 *  UCSC_mm9çš„repeakçš„Gffæ–‡ä»¶ï¼Œå·²ç»æ’è¿‡åº
 	 */
 	public final static String GENOME_PATH_UCSC_MM19_STATISTIC_REPEAT = GENOME_PATH_UCSC_MM9_STATISTIC+"repeatregionBackGround.txt";
-	/////////////////Ë®µ¾///////////////////////////////////////////////////////////////////
+	/////////////////æ°´ç¨»///////////////////////////////////////////////////////////////////
 	/**
-	 *  Ë®µ¾Êı¾İ¿âÂ·¾¶
+	 *  æ°´ç¨»æ•°æ®åº“è·¯å¾„
 	 */
 	public final static String GENOME_PATH_RICE = GENOME_PATH+"Rice/";
 	/**
-	 *  RapDBÂ·¾¶
+	 *  RapDBè·¯å¾„
 	 */
 	public final static String GENOME_PATH_RICE_RAPDB = GENOME_PATH_RICE+"RapDB/";
 	/**
-	 *  RapDBµÄË®µ¾»ùÒògff3ÎÄ¼ş
+	 *  RapDBçš„æ°´ç¨»åŸºå› gff3æ–‡ä»¶
 	 */
 	public final static String GENOME_PATH_RICE_RAPDB_GFF_GENE = GENOME_PATH_RICE_RAPDB+"RAP_genes.gff3";
 	/**
-	 *  TIGRriceµÄÂ·¾¶
+	 *  TIGRriceçš„è·¯å¾„
 	 */
 	public final static String GENOME_PATH_RICE_TIGR = GENOME_PATH_RICE+"TIGRRice/";
 	/**
-	 *  TIGRriceµÄË®µ¾»ùÒògff3ÎÄ¼ş
+	 *  TIGRriceçš„æ°´ç¨»åŸºå› gff3æ–‡ä»¶
 	 */
 	public final static String GENOME_PATH_RICE_TIGR_GFF_GENE = GENOME_PATH_RICE_TIGR+"all.gff3Cope";
 	/**
-	 *  TIGRriceµÄË®µ¾»ùÒòĞòÁĞÎÄ¼ş¼Ğ
+	 *  TIGRriceçš„æ°´ç¨»åŸºå› åºåˆ—æ–‡ä»¶å¤¹
 	 */
 	public final static String GENOME_PATH_RICE_TIGR_CHROM = GENOME_PATH_RICE_TIGR+"ChromFa/";
 	/**
-	 *  TIGRriceµÄË®µ¾Í³¼ÆĞÅÏ¢
+	 *  TIGRriceçš„æ°´ç¨»ç»Ÿè®¡ä¿¡æ¯
 	 */
 	public final static String GENOME_PATH_RICE_TIGR_STATISTIC = GENOME_PATH_RICE_TIGR+"statisticInof/";
 
-	//////////////////////////////////RÏµÁĞ//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////Rç³»åˆ—//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //	public final static String R_SCRIPT = "Rscript ";
 	public final static String R_SCRIPT = "D:/tools/R2_14/bin/Rscript ";
 
@@ -245,196 +245,196 @@ public class NovelBioConst {
 //	public final static String R_WORKSPACE = "D:/Library/R/";
 //	public final static String R_SCRIPT = "D:/tools/R2_14/bin/Rscript ";
 	
-	/////////////////////////////³£¹æFisher/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////å¸¸è§„Fisher/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * ³£¹æFisherµÄÊäÈëÎÄ¼ş
+	 * å¸¸è§„Fisherçš„è¾“å…¥æ–‡ä»¶
 	 */
 	public final static String R_WORKSPACE_FISHER = R_WORKSPACE + "Fisher/";
 	/**
-	 * ³£¹æFisherµÄÊäÈëÎÄ¼ş
+	 * å¸¸è§„Fisherçš„è¾“å…¥æ–‡ä»¶
 	 */
 	public final static String R_WORKSPACE_FISHER_INFO = R_WORKSPACE_FISHER + "Info.txt";
 	/**
-	 * ³£¹æFisherµÄ¼ÆËã½Å±¾
+	 * å¸¸è§„Fisherçš„è®¡ç®—è„šæœ¬
 	 */
 	public final static String R_WORKSPACE_FISHER_SCRIPT= R_WORKSPACE + "FisherBHfdr.R";
 	/**
-	 * ³£¹æFisherµÄ½á¹ûÎÄ¼ş
+	 * å¸¸è§„Fisherçš„ç»“æœæ–‡ä»¶
 	 */
 	public final static String R_WORKSPACE_FISHER_RESULT = R_WORKSPACE_FISHER + "Analysis.txt";
-	///////////////////////////TopGoµÄElimFisher/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////TopGoçš„ElimFisher/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * topGoµÄÎÄ¼ş¼Ğ
+	 * topGoçš„æ–‡ä»¶å¤¹
 	 */
 	public final static String R_WORKSPACE_TOPGO = R_WORKSPACE + "topGO/";
 	/**
-	 * topGoµÄR½Å±¾ÎÄ¼ş
+	 * topGoçš„Rè„šæœ¬æ–‡ä»¶
 	 */
 	public final static String R_WORKSPACE_TOPGO_RSCRIPT = R_WORKSPACE + "topGO.R";
 	/**
-	 * topGoµÄ²ÎÊı
-	 * ²ÎÊıÎÄ±¾£¬µÚÒ»¸ö¼ÇÂ¼Ñ¡ÔñBP¡¢MF¡¢CC£¬µÚ¶ş¸ö¼ÇÂ¼Ğ´ÎÄ¼ş£¬Ä¬ÈÏÊÇGoResult.txt
-	 * µÚÈı¸öÊÇÊı×Ö£¬±íÊ¾ÏÔÊ¾¶àÉÙ¸öGOTerm ,µÚËÄ¸ö¼ÇÂ¼GOInfo£¬¾ÍÊÇÃ¿¸öGO¶ÔÓ¦µÄ»ùÒòÎÄ¼şÃû
+	 * topGoçš„å‚æ•°
+	 * å‚æ•°æ–‡æœ¬ï¼Œç¬¬ä¸€ä¸ªè®°å½•é€‰æ‹©BPã€MFã€CCï¼Œç¬¬äºŒä¸ªè®°å½•å†™æ–‡ä»¶ï¼Œé»˜è®¤æ˜¯GoResult.txt
+	 * ç¬¬ä¸‰ä¸ªæ˜¯æ•°å­—ï¼Œè¡¨ç¤ºæ˜¾ç¤ºå¤šå°‘ä¸ªGOTerm ,ç¬¬å››ä¸ªè®°å½•GOInfoï¼Œå°±æ˜¯æ¯ä¸ªGOå¯¹åº”çš„åŸºå› æ–‡ä»¶å
 	 */
 	public final static String R_WORKSPACE_TOPGO_PARAM = R_WORKSPACE_TOPGO + "parameter.txt";
 	/**
-	 * topGoµÄgene Go InfoµÄ½á¹ûÎÄ¼ş£¬×îºóÕûºÏ½øÈëexcel
+	 * topGoçš„gene Go Infoçš„ç»“æœæ–‡ä»¶ï¼Œæœ€åæ•´åˆè¿›å…¥excel
 	 */
 	public final static String R_WORKSPACE_TOPGO_GENEGOINFO = R_WORKSPACE_TOPGO + "GeneGOInfo.txt";
 	/**
-	 * topGoµÄgene go,go,goµÄ½á¹ûÎÄ¼ş
+	 * topGoçš„gene go,go,goçš„ç»“æœæ–‡ä»¶
 	 */
 	public final static String R_WORKSPACE_TOPGO_BGGeneGo = R_WORKSPACE_TOPGO + "BG2Go.txt";
 	/**
-	 * topGoµÄ°üº¬elimFisherµÄ½á¹ûtableÎÄ¼ş
+	 * topGoçš„åŒ…å«elimFisherçš„ç»“æœtableæ–‡ä»¶
 	 */
 	public final static String R_WORKSPACE_TOPGO_GORESULT = R_WORKSPACE_TOPGO + "GoResult.txt";
 	/**
-	 * topGoµÄ°üº¬elimFisherµÄÍ¼Æ¬
+	 * topGoçš„åŒ…å«elimFisherçš„å›¾ç‰‡
 	 */
 	public final static String R_WORKSPACE_TOPGO_GOMAP = R_WORKSPACE_TOPGO + "tGOall_elim_10_def.pdf";
 	/**
-	 * topGoµÄ°üº¬elimFisherµÄ½á¹ûtableÎÄ¼ş
-	 * Ã¿¸öGOÀïÃæËùº¬ÓĞµÄ±³¾°»ùÒò
-	 * ¸ñÊ½Îª<br>
+	 * topGoçš„åŒ…å«elimFisherçš„ç»“æœtableæ–‡ä»¶
+	 * æ¯ä¸ªGOé‡Œé¢æ‰€å«æœ‰çš„èƒŒæ™¯åŸºå› 
+	 * æ ¼å¼ä¸º<br>
 	 * #GO:010101<br>
 	 * NM_0110101
 	 */
 	public final static String R_WORKSPACE_TOPGO_GOINFO = R_WORKSPACE_TOPGO + "GOInfo.txt";
 	/**
-	 * topGo¼ÆËãĞèÒªµÄGeneID
+	 * topGoè®¡ç®—éœ€è¦çš„GeneID
 	 */
 	public final static String R_WORKSPACE_TOPGO_GENEID = R_WORKSPACE_TOPGO + "GeneID.txt";
-	/////////////////////////    limma microarray µÄ½Å±¾    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////    limma microarray çš„è„šæœ¬    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * microarrayµÄÎÄ¼ş¼Ğ
+	 * microarrayçš„æ–‡ä»¶å¤¹
 	 */
 	public final static String R_WORKSPACE_MICROARRAY = R_WORKSPACE + "microarray/";
 	/**
-	 * ±ê×¼»¯µÄ½Å±¾Â·¾¶
+	 * æ ‡å‡†åŒ–çš„è„šæœ¬è·¯å¾„
 	 */
 	public final static String R_WORKSPACE_MICROARRAY_NORMLIZATION = R_WORKSPACE_MICROARRAY + "norm.R";
 	/**
-	 * limmaÉ¸Ñ¡²îÒì»ùÒòµÄ½Å±¾
+	 * limmaç­›é€‰å·®å¼‚åŸºå› çš„è„šæœ¬
 	 */
 	public final static String R_WORKSPACE_MICROARRAY_COMPARE = R_WORKSPACE_MICROARRAY + "limma.txt";
 	/**
-	 * limmaÁÙÊ±µÄ±ê×¼»¯»ùÒòÎÄ¼ş
+	 * limmaä¸´æ—¶çš„æ ‡å‡†åŒ–åŸºå› æ–‡ä»¶
 	 */
 	public final static String R_WORKSPACE_MICROARRAY_NORMDATA_TMP = R_WORKSPACE_MICROARRAY + "tmpNormGene.txt";
 	/**
-	 * limmaµÄ±ê×¼»¯»ùÒòÎÄ¼ş
+	 * limmaçš„æ ‡å‡†åŒ–åŸºå› æ–‡ä»¶
 	 */
 	public final static String R_WORKSPACE_MICROARRAY_NORMDATA = R_WORKSPACE_MICROARRAY + "NormGene.txt";
-	/////////////////////////»ùÒò½á¹¹µÄ·ÖÎö////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////åŸºå› ç»“æ„çš„åˆ†æ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * ±£´æ»ùÒò½á¹¹ÎÄ¼şµÄÂ·¾¶£¬ÓÃÓÚ±£´æChIP-SeqµÄPeakÔÚ»ùÒò×éÉÏ·Ö²¼µÄÍ³¼Æ·ÖÎö
+	 * ä¿å­˜åŸºå› ç»“æ„æ–‡ä»¶çš„è·¯å¾„ï¼Œç”¨äºä¿å­˜ChIP-Seqçš„Peakåœ¨åŸºå› ç»„ä¸Šåˆ†å¸ƒçš„ç»Ÿè®¡åˆ†æ
 	 */
 	public final static String R_WORKSPACE_CHIP_GENESTRUCTURE = R_WORKSPACE + "GeneStructure/";
 	/**
-	 * ±£´æ»ùÒò½á¹¹ÎÄ¼şµÄÂ·¾¶£¬ÓÃÓÚ±£´æChIP-SeqµÄPeakÔÚ»ùÒò×éÉÏ·Ö²¼µÄÍ³¼Æ·ÖÎö
+	 * ä¿å­˜åŸºå› ç»“æ„æ–‡ä»¶çš„è·¯å¾„ï¼Œç”¨äºä¿å­˜ChIP-Seqçš„Peakåœ¨åŸºå› ç»„ä¸Šåˆ†å¸ƒçš„ç»Ÿè®¡åˆ†æ
 	 */
 	public final static String R_WORKSPACE_CHIP_GENESTRUCTURE_FILE = R_WORKSPACE_CHIP_GENESTRUCTURE + "GeneStructureStatistics.txt";
 	/**
-	 * ±£´æ»ùÒò½á¹¹ÎÄ¼şµÄÂ·¾¶£¬ÓÃÓÚ±£´æChIP-SeqµÄPeakÔÚ»ùÒò×éÉÏ·Ö²¼µÄÍ³¼Æ·ÖÎö
+	 * ä¿å­˜åŸºå› ç»“æ„æ–‡ä»¶çš„è·¯å¾„ï¼Œç”¨äºä¿å­˜ChIP-Seqçš„Peakåœ¨åŸºå› ç»„ä¸Šåˆ†å¸ƒçš„ç»Ÿè®¡åˆ†æ
 	 */
 	public final static String R_WORKSPACE_CHIP_GENESTRUCTURE_RSCRIPT = R_WORKSPACE + "MyBarPlotGeneStructure.R";
 	/**
-	 * ±£´æ»ùÒò½á¹¹ÎÄ¼ş½á¹ûÍ¼
+	 * ä¿å­˜åŸºå› ç»“æ„æ–‡ä»¶ç»“æœå›¾
 	 */
 	public final static String R_WORKSPACE_CHIP_GENESTRUCTURE_RESULT_PIC = R_WORKSPACE_CHIP_GENESTRUCTURE + "batPlot.jpg";
-	/////////////////////////ReadsÔÚgenomeÉÏµÄ·Ö²¼///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////Readsåœ¨genomeä¸Šçš„åˆ†å¸ƒ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * readsÔÚgenomeÉÏ·Ö²¼µÄĞÅÏ¢ÎÄ¼ş¼Ğ
+	 * readsåœ¨genomeä¸Šåˆ†å¸ƒçš„ä¿¡æ¯æ–‡ä»¶å¤¹
 	 */
 	public final static String R_WORKSPACE_CHIP_CHRREADS = R_WORKSPACE + "chrReads/";
 	/**
-	 * readsÔÚgenomeÉÏ·Ö²¼µÄĞÅÏ¢£¬Ìá¹©¸øR»­Í¼µÄ²ÎÊıÎÄ¼ş
+	 * readsåœ¨genomeä¸Šåˆ†å¸ƒçš„ä¿¡æ¯ï¼Œæä¾›ç»™Rç”»å›¾çš„å‚æ•°æ–‡ä»¶
 	 */
 	public final static String R_WORKSPACE_CHIP_CHRREADS_PARAM = R_WORKSPACE_CHIP_CHRREADS + "parameter";
 	/**
-	 * readsÔÚgenomeÉÏ·Ö²¼µÄÊäÈëÊı¾İ£¬XÖá
+	 * readsåœ¨genomeä¸Šåˆ†å¸ƒçš„è¾“å…¥æ•°æ®ï¼ŒXè½´
 	 */
 	public final static String R_WORKSPACE_CHIP_CHRREADS_X = R_WORKSPACE_CHIP_CHRREADS + "readsx";
 	/**
-	 * readsÔÚgenomeÉÏ·Ö²¼µÄÊäÈëÊı¾İ£¬YÖá,Ò²¾ÍÊÇÊµ¼ÊreadsµÄ·Ö²¼
+	 * readsåœ¨genomeä¸Šåˆ†å¸ƒçš„è¾“å…¥æ•°æ®ï¼ŒYè½´,ä¹Ÿå°±æ˜¯å®é™…readsçš„åˆ†å¸ƒ
 	 */
 	public final static String R_WORKSPACE_CHIP_CHRREADS_Y = R_WORKSPACE_CHIP_CHRREADS + "readsy";
 	/**
-	 * readsÔÚgenomeÉÏ·Ö²¼µÄÊäÈëÊı¾İ£¬Èç¹û·Ö¿ªÕı¸ºÁ´£¬Ò²¾ÍÊÇÓĞµÚ¶ş¸ömappingÎÄ¼ş£¬ÕâÊÇµÚ¶ş¸öÎÄ¼şµÄYÖá,Ò²¾ÍÊÇÊµ¼ÊµÚ¶ş¸öÎÄ¼şµÄreads·Ö²¼
+	 * readsåœ¨genomeä¸Šåˆ†å¸ƒçš„è¾“å…¥æ•°æ®ï¼Œå¦‚æœåˆ†å¼€æ­£è´Ÿé“¾ï¼Œä¹Ÿå°±æ˜¯æœ‰ç¬¬äºŒä¸ªmappingæ–‡ä»¶ï¼Œè¿™æ˜¯ç¬¬äºŒä¸ªæ–‡ä»¶çš„Yè½´,ä¹Ÿå°±æ˜¯å®é™…ç¬¬äºŒä¸ªæ–‡ä»¶çš„readsåˆ†å¸ƒ
 	 */
 	public final static String R_WORKSPACE_CHIP_CHRREADS_2Y = R_WORKSPACE_CHIP_CHRREADS + "reads2y";
 	/**
-	 * readsÔÚgenomeÉÏ·Ö²¼µÄÊäÈëÊı¾İ£¬Èç¹û·Ö¿ªÕı¸ºÁ´£¬Ò²¾ÍÊÇÓĞµÚ¶ş¸ömappingÎÄ¼ş£¬ÕâÊÇµÚ¶ş¸öÎÄ¼şµÄYÖá,Ò²¾ÍÊÇÊµ¼ÊµÚ¶ş¸öÎÄ¼şµÄreads·Ö²¼
+	 * readsåœ¨genomeä¸Šåˆ†å¸ƒçš„è¾“å…¥æ•°æ®ï¼Œå¦‚æœåˆ†å¼€æ­£è´Ÿé“¾ï¼Œä¹Ÿå°±æ˜¯æœ‰ç¬¬äºŒä¸ªmappingæ–‡ä»¶ï¼Œè¿™æ˜¯ç¬¬äºŒä¸ªæ–‡ä»¶çš„Yè½´,ä¹Ÿå°±æ˜¯å®é™…ç¬¬äºŒä¸ªæ–‡ä»¶çš„readsåˆ†å¸ƒ
 	 */
 	public final static String R_WORKSPACE_CHIP_CHRREADS_RSCRIPT = R_WORKSPACE + "MyChrReads.R";
-	/////////////////////////ReadsÔÚÌØ¶¨RegionÈçTssºÍGeneEndÉÏµÄ·Ö²¼///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////Readsåœ¨ç‰¹å®šRegionå¦‚Tsså’ŒGeneEndä¸Šçš„åˆ†å¸ƒ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * readsÔÚÌØ¶¨RegionÈçTssºÍGeneEndÉÏµÄ·Ö²¼µÄÎÄ¼ş¼Ğ
+	 * readsåœ¨ç‰¹å®šRegionå¦‚Tsså’ŒGeneEndä¸Šçš„åˆ†å¸ƒçš„æ–‡ä»¶å¤¹
 	 */
 	public final static String R_WORKSPACE_CHIP_READS_REGION = R_WORKSPACE + "regionReads/";
 	/**
-	 * readsÔÚTssÉÏµÄ·Ö²¼ĞÅÏ¢ÎÄ¼ş£¬20¸öÒ»ĞĞ£¬ÓÃÓÚR¶ÁÈ¡
+	 * readsåœ¨Tssä¸Šçš„åˆ†å¸ƒä¿¡æ¯æ–‡ä»¶ï¼Œ20ä¸ªä¸€è¡Œï¼Œç”¨äºRè¯»å–
 	 */
 	public final static String R_WORKSPACE_CHIP_READS_REGION_TSS_R = R_WORKSPACE_CHIP_READS_REGION + "tss.txt";
 	/**
-	 * readsÔÚgeneEndÉÏµÄ·Ö²¼ĞÅÏ¢ÎÄ¼ş
+	 * readsåœ¨geneEndä¸Šçš„åˆ†å¸ƒä¿¡æ¯æ–‡ä»¶
 	 */
 	public final static String R_WORKSPACE_CHIP_READS_REGION_GENEEND_R = R_WORKSPACE_CHIP_READS_REGION + "geneEnd.txt";
 	/**
-	 * readsÔÚÌØ¶¨RegionÈçTssºÍGeneEndÉÏµÄ·Ö²¼£¬»­Í¼²ÎÊı
+	 * readsåœ¨ç‰¹å®šRegionå¦‚Tsså’ŒGeneEndä¸Šçš„åˆ†å¸ƒï¼Œç”»å›¾å‚æ•°
 	 */
 	public final static String R_WORKSPACE_CHIP_READS_REGION_PARAM = R_WORKSPACE_CHIP_READS_REGION + "parameter.txt";
 	/**
-	 * readsÔÚTSSÉÏµÄÍ¼
+	 * readsåœ¨TSSä¸Šçš„å›¾
 	 */
 	public final static String R_WORKSPACE_CHIP_READS_REGION_TSS_PIC = R_WORKSPACE_CHIP_READS_REGION + "TSSReads.jpg";	
 	/**
-	 * readsÔÚGeneEndÉÏµÄÍ¼
+	 * readsåœ¨GeneEndä¸Šçš„å›¾
 	 */
 	public final static String R_WORKSPACE_CHIP_READS_REGION_GENEEND_PIC = R_WORKSPACE_CHIP_READS_REGION + "GeneEndReads.jpg";	
 	/**
-	 * readsÔÚTSSÉÏµÄ·Ö²¼ĞÅÏ¢ÎÄ¼ş£¬Ò»ÁĞ£¬ÓÃÓÚexcelÊ¹ÓÃ
+	 * readsåœ¨TSSä¸Šçš„åˆ†å¸ƒä¿¡æ¯æ–‡ä»¶ï¼Œä¸€åˆ—ï¼Œç”¨äºexcelä½¿ç”¨
 	 */
 	public final static String R_WORKSPACE_CHIP_READS_REGION_TSS_EXCEL = R_WORKSPACE_CHIP_READS_REGION + "tss2.txt";	
 	/**
-	 * readsÔÚGeneEndÉÏµÄ·Ö²¼ĞÅÏ¢ÎÄ¼ş£¬Ò»ÁĞ£¬ÓÃÓÚexcelÊ¹ÓÃ
+	 * readsåœ¨GeneEndä¸Šçš„åˆ†å¸ƒä¿¡æ¯æ–‡ä»¶ï¼Œä¸€åˆ—ï¼Œç”¨äºexcelä½¿ç”¨
 	 */
 	public final static String R_WORKSPACE_CHIP_READS_REGION_GENEEND_EXCEL = R_WORKSPACE_CHIP_READS_REGION + "geneEnd2.txt";	
 	/**
-	 * readsÔÚTSSÉÏµÄ·Ö²¼ĞÅÏ¢ÎÄ¼ş£¬Ò»ÁĞ£¬ÓÃÓÚexcelÊ¹ÓÃ
+	 * readsåœ¨TSSä¸Šçš„åˆ†å¸ƒä¿¡æ¯æ–‡ä»¶ï¼Œä¸€åˆ—ï¼Œç”¨äºexcelä½¿ç”¨
 	 */
 	public final static String R_WORKSPACE_CHIP_READS_REGION_TSS_RSCRIPT = R_WORKSPACE + "MyTSSReads.R";	
 	/**
-	 * readsÔÚGeneEndÉÏµÄ·Ö²¼ĞÅÏ¢ÎÄ¼ş£¬Ò»ÁĞ£¬ÓÃÓÚexcelÊ¹ÓÃ
+	 * readsåœ¨GeneEndä¸Šçš„åˆ†å¸ƒä¿¡æ¯æ–‡ä»¶ï¼Œä¸€åˆ—ï¼Œç”¨äºexcelä½¿ç”¨
 	 */
 	public final static String R_WORKSPACE_CHIP_READS_REGION_GENEEND_RSCRIPT = R_WORKSPACE + "MyGeneEndReads.R";	
-	/////////////////////////RµÄdensity¼ÆËã£¬¿ÉÓÃÓÚ¼ÆËãmotifÔÚÖ¸¶¨ĞòÁĞÉÏµÄ·Ö²¼///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////Rçš„densityè®¡ç®—ï¼Œå¯ç”¨äºè®¡ç®—motifåœ¨æŒ‡å®šåºåˆ—ä¸Šçš„åˆ†å¸ƒ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * RµÄdensity¼ÆËãµÄÎÄ¼ş¼Ğ£¬¿ÉÓÃÓÚ¼ÆËãmotifÔÚÖ¸¶¨ĞòÁĞÉÏµÄ·Ö²¼
+	 * Rçš„densityè®¡ç®—çš„æ–‡ä»¶å¤¹ï¼Œå¯ç”¨äºè®¡ç®—motifåœ¨æŒ‡å®šåºåˆ—ä¸Šçš„åˆ†å¸ƒ
 	 */
 	public final static String R_WORKSPACE_DENSITY = R_WORKSPACE + "NormalDensity/";
 	/**
-	 * RµÄdensity¼ÆËãµÄ²ÎÊıÎÄ¼ş£¬±£´æ±¾´Î¼ÆËãµÄÊı¾İÀ´Ô´ºÍÊıÁ¿£¬¿ÉÓÃÓÚ¼ÆËãmotifÔÚÖ¸¶¨ĞòÁĞÉÏµÄ·Ö²¼ºÍPeakÔÚTSS·Ö²¼<br>
-	 * µÚÒ»ĞĞ´ó±êÌâµÚ¶şĞĞxtitle£¬µÚÈıĞĞytitle
+	 * Rçš„densityè®¡ç®—çš„å‚æ•°æ–‡ä»¶ï¼Œä¿å­˜æœ¬æ¬¡è®¡ç®—çš„æ•°æ®æ¥æºå’Œæ•°é‡ï¼Œå¯ç”¨äºè®¡ç®—motifåœ¨æŒ‡å®šåºåˆ—ä¸Šçš„åˆ†å¸ƒå’ŒPeakåœ¨TSSåˆ†å¸ƒ<br>
+	 * ç¬¬ä¸€è¡Œå¤§æ ‡é¢˜ç¬¬äºŒè¡Œxtitleï¼Œç¬¬ä¸‰è¡Œytitle
 	 */
 	public final static String R_WORKSPACE_DENSITY_PARAM = R_WORKSPACE_DENSITY + "param.txt";
 	/**
-	 * RµÄdensity¼ÆËãµÄ¼ÆËãÎÄ¼ş£¬±£´æ±¾´Î¼ÆËãµÄÊı¾İ£¬¿ÉÓÃÓÚ¼ÆËãmotifÔÚÖ¸¶¨ĞòÁĞÉÏµÄ·Ö²¼<br>
-	 * Êı¾İÃ¿ĞĞÒ»¸ö£¬Ğ´³ÉÒ»ÁĞ£¬Ã»ÓĞ±êÌâ
+	 * Rçš„densityè®¡ç®—çš„è®¡ç®—æ–‡ä»¶ï¼Œä¿å­˜æœ¬æ¬¡è®¡ç®—çš„æ•°æ®ï¼Œå¯ç”¨äºè®¡ç®—motifåœ¨æŒ‡å®šåºåˆ—ä¸Šçš„åˆ†å¸ƒ<br>
+	 * æ•°æ®æ¯è¡Œä¸€ä¸ªï¼Œå†™æˆä¸€åˆ—ï¼Œæ²¡æœ‰æ ‡é¢˜
 	 */
 	public final static String R_WORKSPACE_DENSITY_DATA = R_WORKSPACE_DENSITY + "data.txt";
 	/**
-	 * RµÄdensity¼ÆËãµÄ½Å±¾
+	 * Rçš„densityè®¡ç®—çš„è„šæœ¬
 	 */
 	public final static String R_WORKSPACE_DENSITY_RSCRIPT = R_WORKSPACE + "NormalDensity.R";
 	/**
-	 * RµÄdensity¼ÆËãµÄ½á¹ûÍ¼Æ¬£¬±£´æ±¾´Î¼ÆËãµÄÊı¾İ£¬¿ÉÓÃÓÚ¼ÆËãmotifÔÚÖ¸¶¨ĞòÁĞÉÏµÄ·Ö²¼
+	 * Rçš„densityè®¡ç®—çš„ç»“æœå›¾ç‰‡ï¼Œä¿å­˜æœ¬æ¬¡è®¡ç®—çš„æ•°æ®ï¼Œå¯ç”¨äºè®¡ç®—motifåœ¨æŒ‡å®šåºåˆ—ä¸Šçš„åˆ†å¸ƒ
 	 */
 	public final static String R_WORKSPACE_DENSITY_PIC = R_WORKSPACE_DENSITY + "density.jpeg";
 	/////////////////////////////////////  Blast   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * blastÓÃµÄ½Å±¾£¬NCBIµÄ½Å±¾
+	 * blastç”¨çš„è„šæœ¬ï¼ŒNCBIçš„è„šæœ¬
 	 */
 	public final static String BLAST_NCBI_SCRIPT = "/usr/local/blast/legacy_blast.pl ";
 	/**

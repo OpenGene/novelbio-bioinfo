@@ -16,7 +16,7 @@ import com.novelbio.database.model.modgeneid.GeneID;
 public class ElimGOFunTest extends NovelGOFunTest{
 	private static final Logger logger = Logger.getLogger(ElimGOFunTest.class);
 
-	/** ºÍstrGeneIDÒ»ÑùµÄ¶«Î÷ */
+	/** å’ŒstrGeneIDä¸€æ ·çš„ä¸œè¥¿ */
 	Set<String> setTestGeneUniID = null;
 	
 	TopGO topGO = new TopGO();
@@ -32,13 +32,13 @@ public class ElimGOFunTest extends NovelGOFunTest{
 	public void setAlgorithm(GoAlgorithm goAlgorithm) {
 		topGO.setGoAlgrithm(goAlgorithm);
 	}
-	/** Éè¶¨Õ¹Ê¾¶àÉÙ¸öGO */
+	/** è®¾å®šå±•ç¤ºå¤šå°‘ä¸ªGO */
 	public void setDisplayGoNum(int NumGOID) {
 		topGO.setDisplayGoNum(NumGOID);
 	}
 	
 	/**
-	 * Ã»ÓĞ¾Í·µ»Ønull
+	 * æ²¡æœ‰å°±è¿”å›null
 	 */
 	public ArrayList<StatisticTestResult> getTestResult() {
 		if (lsTestResult != null && lsTestResult.size() > 0)
@@ -59,11 +59,11 @@ public class ElimGOFunTest extends NovelGOFunTest{
 		return lsTestResult;
 	}
 	/**
-	 * Ìî³ästrGeneID£º´ıĞ´ÈëÎÄ±¾µÄgeneID£¬¿ÉÒÔ±»topGOÊ¶±ğ²¢¼ÆËã
+	 * å¡«å……strGeneIDï¼šå¾…å†™å…¥æ–‡æœ¬çš„geneIDï¼Œå¯ä»¥è¢«topGOè¯†åˆ«å¹¶è®¡ç®—
 	 * @return
 	 */
 	private boolean setStrGeneID() {
-		setTestGeneUniID = new HashSet<String>();//ºÍstrGeneIDÒ»ÑùµÄ¶«Î÷
+		setTestGeneUniID = new HashSet<String>();//å’ŒstrGeneIDä¸€æ ·çš„ä¸œè¥¿
 		for (GeneID2LsItem geneID2LsItem : lsTest) {
 			if (!geneID2LsItem.isValidate()) {
 				continue;
@@ -90,10 +90,10 @@ public class ElimGOFunTest extends NovelGOFunTest{
 	}
 
 	/**
-	 * ²»°üº¬±êÌâ
-	 * ½«elimµÄGO2Gene¸Ä³ÉÕı¹æµÄGo2Gene µÄList²¢·µ»Ø
+	 * ä¸åŒ…å«æ ‡é¢˜
+	 * å°†elimçš„GO2Geneæ”¹æˆæ­£è§„çš„Go2Gene çš„Listå¹¶è¿”å›
 	 * @return
-	 * Go¸»¼¯·ÖÎöµÄGo2Gene±í¸ñ<br>
+	 * Goå¯Œé›†åˆ†æçš„Go2Geneè¡¨æ ¼<br>
 	 */
 	public ArrayList<StatisticTestItem2Gene> getItem2GenePvalue() {
 		ArrayList<StatisticTestResult> lsTestResult = getTestResult();
@@ -107,7 +107,7 @@ public class ElimGOFunTest extends NovelGOFunTest{
 				if (!setTestGeneUniID.contains(geneUniID)) {
 					continue;
 				}
-				//Í¬Ò»¸ögeneUniID¶ÔÓ¦µÄ²»Í¬accID
+				//åŒä¸€ä¸ªgeneUniIDå¯¹åº”çš„ä¸åŒaccID
 				List<GeneID> lscopedIDs = mapGeneUniID2LsGeneID.get(geneUniID);
 				StatisticTestItem2Gene statisticTestItem2GeneElimGo = new StatisticTestItem2Gene();
 				statisticTestItem2GeneElimGo.setStatisticTestResult(statisticTestResult);

@@ -57,9 +57,9 @@ public class NumberOfSdAndNd {
 		return b;
 	}
 	/**
-	 * ÓÃatgcµÄÈÎÒâÒ»¸öÈ¥Ìæ»»ÊäÈëµÄcodon£¬²¢¼ÆÊıÎªcount¡£
-	 * Èç¹û·¢ÉúÁË°±»ùËá±ä»¯£¬Ôòs_temp+1
-	 * ×îºósnÎª s_temp / countºÍ 3-s_temp / count
+	 * ç”¨atgcçš„ä»»æ„ä¸€ä¸ªå»æ›¿æ¢è¾“å…¥çš„codonï¼Œå¹¶è®¡æ•°ä¸ºcountã€‚
+	 * å¦‚æœå‘ç”Ÿäº†æ°¨åŸºé…¸å˜åŒ–ï¼Œåˆ™s_temp+1
+	 * æœ€åsnä¸º s_temp / countå’Œ 3-s_temp / count
 	 * @param codon
 	 * @param aacodon
 	 * @return
@@ -72,9 +72,9 @@ public class NumberOfSdAndNd {
 		for (int p = 0; p < inputCodon.length; p++) {
 			double count = 0.0d;
 			double s_temp = 0.0d;
-			//ÓÃatgcµÄÈÎÒâÒ»¸öÈ¥Ìæ»»ÊäÈëµÄcodon£¬²¢¼ÆÊıÎªcount¡£
-			//Èç¹û·¢ÉúÁË°±»ùËá±ä»¯£¬Ôòs_temp+1
-			//×îºósnÎª s_temp / countºÍ 3-s_temp / count
+			//ç”¨atgcçš„ä»»æ„ä¸€ä¸ªå»æ›¿æ¢è¾“å…¥çš„codonï¼Œå¹¶è®¡æ•°ä¸ºcountã€‚
+			//å¦‚æœå‘ç”Ÿäº†æ°¨åŸºé…¸å˜åŒ–ï¼Œåˆ™s_temp+1
+			//æœ€åsnä¸º s_temp / countå’Œ 3-s_temp / count
 			for (char nr : atcg) {
 				if (inputCodon[p] != nr) {
 					StringBuffer sb = new StringBuffer();
@@ -122,7 +122,7 @@ public class NumberOfSdAndNd {
 		String obvAAseq = args[2];
 		double[] sAndN_plus = new double[2];
 		double[] sAndN_minus = new double[2];
-		//±éÀúÃ¿¸öÈıÁªÃÜÂë×Ó
+		//éå†æ¯ä¸ªä¸‰è”å¯†ç å­
 		for (int i = 0; i < refAAseq.length(); i = i + 3) {
 			double[] sdnd = new double[2];// sdnd[0]0:Sd sdnd[1]:Nd
 			double[] sAndN_1 = NumberOfSdAndNd.getNumberOfSandNperCodon( refAAseq.substring(i, i + 3), aacodon);
@@ -132,19 +132,19 @@ public class NumberOfSdAndNd {
 			sAndN_minus[0] = sAndN_minus[0] + sAndN_2[0];
 			sAndN_minus[1] = sAndN_minus[1] + sAndN_2[1];
 			if (!(refAAseq.substring(i, i + 3)).equals(obvAAseq.substring(i, i + 3))) {
-				//Èç¹ûÃÜÂë×Ó²»Í¬£¬Ôò»ñµÃÃ¿¸öÈıÁªÃÜÂë×Ó
+				//å¦‚æœå¯†ç å­ä¸åŒï¼Œåˆ™è·å¾—æ¯ä¸ªä¸‰è”å¯†ç å­
 				char[] ref_codon_char = refAAseq.substring(i, i + 3).toCharArray();
 				char[] obv_codon_char = obvAAseq.substring(i, i + 3).toCharArray();
 				int dif_num = 0;
 				
-				//¼ÆËãÓĞ¼¸¸önrÊÇ²»Í¬µÄ
+				//è®¡ç®—æœ‰å‡ ä¸ªnræ˜¯ä¸åŒçš„
 				for (int m = 0; m < ref_codon_char.length; m++) {
 					if (ref_codon_char[m] != obv_codon_char[m]) {
 						dif_num++;
 					}
 				}
 				
-				//²îÁËÒ»¸ö¼î»ù
+				//å·®äº†ä¸€ä¸ªç¢±åŸº
 				if (dif_num == 1) {
 					if (NumberOfSdAndNd.isSynonymous(refAAseq.substring(i, i + 3), obvAAseq.substring(i, i + 3), aacodon)) {
 						sdnd[0] = 1.0d;
@@ -154,9 +154,9 @@ public class NumberOfSdAndNd {
 						sdnd[1] = 1.0d;
 					}
 				} 
-				//²îÁËÁ½¸ö¼î»ù
+				//å·®äº†ä¸¤ä¸ªç¢±åŸº
 				else if (dif_num == 2) {
-					//Ç°Á½¸ö¼î»ù²»Ò»Ñù£¬ÄÇÃ´½«ÕâÁ½¸ö¼î»ù·Ö±ğÓÃrefºÍobvÌæ»»µô
+					//å‰ä¸¤ä¸ªç¢±åŸºä¸ä¸€æ ·ï¼Œé‚£ä¹ˆå°†è¿™ä¸¤ä¸ªç¢±åŸºåˆ†åˆ«ç”¨refå’Œobvæ›¿æ¢æ‰
 					if (obv_codon_char[0] != ref_codon_char[0]
 							&& obv_codon_char[1] != ref_codon_char[1]) {// 0,1
 						StringBuffer transition_codon_1 = new StringBuffer();

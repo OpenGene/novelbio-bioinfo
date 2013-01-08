@@ -13,36 +13,36 @@ import com.novelbio.database.model.modgeneid.GeneType;
 import com.novelbio.generalConf.NovelBioConst;
 
 /**
- * »ñµÃGffµÄ»ùÒòÊı×éĞÅÏ¢,±¾Àà±ØĞëÊµÀı»¯²ÅÄÜÊ¹ÓÃ<br/>
- * ÊäÈëGffÎÄ¼ş£¬×îºó»ñµÃÁ½¸ö¹şÏ£±íºÍÒ»¸ölist±í,
- * ½á¹¹ÈçÏÂ£º<br/>
- * 1.hash£¨ChrID£©--ChrList--GffDetail(GffDetailÀà,Êµ¼ÊÊÇGffDetailUCSCgene×ÓÀà)<br/>
- *   ÆäÖĞChrIDÎªĞ¡Ğ´£¬´ú±íÈ¾É«ÌåÃû×Ö£¬Òò´ËÓÃgetÀ´»ñÈ¡ÏàÓ¦µÄChrListµÄÊ±ºòÒªÊäÈëĞ¡Ğ´µÄChrID
- * chr¸ñÊ½£¬È«²¿Ğ¡Ğ´ chr1,chr2,chr11<br/>
+ * è·å¾—Gffçš„åŸºå› æ•°ç»„ä¿¡æ¯,æœ¬ç±»å¿…é¡»å®ä¾‹åŒ–æ‰èƒ½ä½¿ç”¨<br/>
+ * è¾“å…¥Gffæ–‡ä»¶ï¼Œæœ€åè·å¾—ä¸¤ä¸ªå“ˆå¸Œè¡¨å’Œä¸€ä¸ªlistè¡¨,
+ * ç»“æ„å¦‚ä¸‹ï¼š<br/>
+ * 1.hashï¼ˆChrIDï¼‰--ChrList--GffDetail(GffDetailç±»,å®é™…æ˜¯GffDetailUCSCgeneå­ç±»)<br/>
+ *   å…¶ä¸­ChrIDä¸ºå°å†™ï¼Œä»£è¡¨æŸ“è‰²ä½“åå­—ï¼Œå› æ­¤ç”¨getæ¥è·å–ç›¸åº”çš„ChrListçš„æ—¶å€™è¦è¾“å…¥å°å†™çš„ChrID
+ * chræ ¼å¼ï¼Œå…¨éƒ¨å°å†™ chr1,chr2,chr11<br/>
  * 
- * 2.hash£¨LOCID£©--GffDetail£¬ÆäÖĞLOCID´ú±í¾ßÌåµÄ»ùÒò±àºÅ <br/>
+ * 2.hashï¼ˆLOCIDï¼‰--GffDetailï¼Œå…¶ä¸­LOCIDä»£è¡¨å…·ä½“çš„åŸºå› ç¼–å· <br/>
  * 
- * 3.list£¨LOCID£©--LOCList£¬°´Ë³Ğò±£´æLOCID<br/>
+ * 3.listï¼ˆLOCIDï¼‰--LOCListï¼ŒæŒ‰é¡ºåºä¿å­˜LOCID<br/>
  * 
- * Ã¿¸ö»ùÒòµÄÆğµãÖÕµãºÍCDSµÄÆğµãÖÕµã±£´æÔÚGffDetailListÀàÖĞ<br/>
+ * æ¯ä¸ªåŸºå› çš„èµ·ç‚¹ç»ˆç‚¹å’ŒCDSçš„èµ·ç‚¹ç»ˆç‚¹ä¿å­˜åœ¨GffDetailListç±»ä¸­<br/>
  */
 public class GffHashGenePlant extends GffHashGeneAbs{
 	private static Logger logger = Logger.getLogger(GffHashGenePlant.class);
 
-	/** »ùÒòÃû×ÖµÄÕıÔò */
+	/** åŸºå› åå­—çš„æ­£åˆ™ */
 	protected String GeneName="";
-	/** ¿É±ä¼ô½ÓmRNAµÄÕıÔò */
+	/** å¯å˜å‰ªæ¥mRNAçš„æ­£åˆ™ */
 	protected String splitmRNA="";
 	
-	/** mRNAÀàËÆÃû */
+	/** mRNAç±»ä¼¼å */
 	private static HashMap<String, GeneType> mapMRNA2GeneType = new HashMap<String, GeneType>();
-	/** geneÀàËÆÃû */
+	/** geneç±»ä¼¼å */
 	private static HashSet<String> hashgene = new HashSet<String>();
 	
 	/**
 	 * @param gfffilename
-	 * @param Species Ë®µ¾»¹ÊÇÄâÄÏ½æ£¬Ö»ÓĞÕâÁ½¸öÑ¡Ôñ ÔÚSpeciesÀàÖĞµÄ³£Á¿
-	 * Species.ARABIDOPSISºÍDB.equals(Species.RICE
+	 * @param Species æ°´ç¨»è¿˜æ˜¯æ‹Ÿå—èŠ¥ï¼Œåªæœ‰è¿™ä¸¤ä¸ªé€‰æ‹© åœ¨Speciesç±»ä¸­çš„å¸¸é‡
+	 * Species.ARABIDOPSISå’ŒDB.equals(Species.RICE
 	 * @throws Exception
 	 */
 	public GffHashGenePlant(String DB) {
@@ -59,7 +59,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 			splitmRNA = "(?<=Alias\\=)[\\w\\.]+";
 		}
 	}
-	/** Éè¶¨mRNAºÍgeneµÄÀàËÆÃû£¬ÔÚgffÎÄ¼şÀïÃæ³öÏÖµÄ */
+	/** è®¾å®šmRNAå’Œgeneçš„ç±»ä¼¼åï¼Œåœ¨gffæ–‡ä»¶é‡Œé¢å‡ºç°çš„ */
 	private void setHashName() {
 		if (mapMRNA2GeneType.isEmpty()) {
 			mapMRNA2GeneType.put("mRNA_TE_gene",GeneType.mRNA_TE);
@@ -83,43 +83,43 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 	}
 	
 	/**
-	 * ×îµ×²ã¶ÁÈ¡gffµÄ·½·¨£¬±¾·½·¨Ö»ÄÜ¶ÁÈ¡UCSCknown gene<br>
-	 * ÊäÈëGffÎÄ¼ş£¬×îºó»ñµÃÁ½¸ö¹şÏ£±íºÍÒ»¸ölist±í<br/>
-	 * ½á¹¹ÈçÏÂ£º<br/>
-     * ÊäÈëGffÎÄ¼ş£¬×îºó»ñµÃÁ½¸ö¹şÏ£±íºÍÒ»¸ölist±í, ½á¹¹ÈçÏÂ£º<br>
+	 * æœ€åº•å±‚è¯»å–gffçš„æ–¹æ³•ï¼Œæœ¬æ–¹æ³•åªèƒ½è¯»å–UCSCknown gene<br>
+	 * è¾“å…¥Gffæ–‡ä»¶ï¼Œæœ€åè·å¾—ä¸¤ä¸ªå“ˆå¸Œè¡¨å’Œä¸€ä¸ªlistè¡¨<br/>
+	 * ç»“æ„å¦‚ä¸‹ï¼š<br/>
+     * è¾“å…¥Gffæ–‡ä»¶ï¼Œæœ€åè·å¾—ä¸¤ä¸ªå“ˆå¸Œè¡¨å’Œä¸€ä¸ªlistè¡¨, ç»“æ„å¦‚ä¸‹ï¼š<br>
      * <b>1.Chrhash</b><br>
-     * £¨ChrID£©--ChrList-- GeneInforList(GffDetailÀà)
-     * ÆäÖĞChrIDÎªĞ¡Ğ´£¬´ú±íÈ¾É«ÌåÃû×Ö£¬Òò´ËÓÃgetÀ´»ñÈ¡ÏàÓ¦µÄChrListµÄÊ±ºòÒªÊäÈëĞ¡Ğ´µÄChrID, chr¸ñÊ½£¬È«²¿Ğ¡Ğ´ chr1,chr2,chr11<br>
+     * ï¼ˆChrIDï¼‰--ChrList-- GeneInforList(GffDetailç±»)
+     * å…¶ä¸­ChrIDä¸ºå°å†™ï¼Œä»£è¡¨æŸ“è‰²ä½“åå­—ï¼Œå› æ­¤ç”¨getæ¥è·å–ç›¸åº”çš„ChrListçš„æ—¶å€™è¦è¾“å…¥å°å†™çš„ChrID, chræ ¼å¼ï¼Œå…¨éƒ¨å°å†™ chr1,chr2,chr11<br>
      *  <b>2.locHashtable</b><br>
-    * ÆäÖĞLOCID´ú±í¾ßÌåµÄÌõÄ¿±àºÅ£¬ÔÚUCSCkonwn geneÀïÃæÃ»ÓĞ×ªÂ¼±¾Ò»Ëµ£¬
-	 * Ö»ÓĞÁ½¸öLOCID¹²ÓÃÒ»¸öÇøÓòµÄÇé¿ö£¬ËùÒÔÖ»ÄÜ¹»Á½¸ö²»Í¬µÄLOCIDÖ¸ÏòÍ¬Ò»¸öGffdetailUCSCgene
+    * å…¶ä¸­LOCIDä»£è¡¨å…·ä½“çš„æ¡ç›®ç¼–å·ï¼Œåœ¨UCSCkonwn geneé‡Œé¢æ²¡æœ‰è½¬å½•æœ¬ä¸€è¯´ï¼Œ
+	 * åªæœ‰ä¸¤ä¸ªLOCIDå…±ç”¨ä¸€ä¸ªåŒºåŸŸçš„æƒ…å†µï¼Œæ‰€ä»¥åªèƒ½å¤Ÿä¸¤ä¸ªä¸åŒçš„LOCIDæŒ‡å‘åŒä¸€ä¸ªGffdetailUCSCgene
      *  <b>3.LOCIDList</b><br>
-     * £¨LOCID£©--LOCIDList£¬°´Ë³Ğò±£´æLOCID,ÕâÀï²»¿¼ÂÇ¶à¸ö×ªÂ¼±¾£¬Ã¿Ò»¸ö×ªÂ¼±¾¾ÍÊÇÒ»¸öµ¥¶ÀµÄLOCID <br>
+     * ï¼ˆLOCIDï¼‰--LOCIDListï¼ŒæŒ‰é¡ºåºä¿å­˜LOCID,è¿™é‡Œä¸è€ƒè™‘å¤šä¸ªè½¬å½•æœ¬ï¼Œæ¯ä¸€ä¸ªè½¬å½•æœ¬å°±æ˜¯ä¸€ä¸ªå•ç‹¬çš„LOCID <br>
      * <b>4. LOCChrHashIDList </b><br>
-     *   LOCChrHashIDListÖĞ±£´æLOCID´ú±í¾ßÌåµÄÌõÄ¿±àºÅ,ÓëChrhashÀïµÄÃû×ÖÒ»ÖÂ£¬½«Í¬Ò»»ùÒòµÄ¶à¸ö×ªÂ¼±¾·ÅÔÚÒ»Æğ£º NM_XXXX/NM_XXXX...<br>
+     *   LOCChrHashIDListä¸­ä¿å­˜LOCIDä»£è¡¨å…·ä½“çš„æ¡ç›®ç¼–å·,ä¸Chrhashé‡Œçš„åå­—ä¸€è‡´ï¼Œå°†åŒä¸€åŸºå› çš„å¤šä¸ªè½¬å½•æœ¬æ”¾åœ¨ä¸€èµ·ï¼š NM_XXXX/NM_XXXX...<br>
 	 * @throws Exception 
 	 */
    protected void ReadGffarrayExcepTmp(String gfffilename) throws Exception {
 	   setHashName();
-		// ÊµÀı»¯ËÄ¸ö±í
-		mapChrID2ListGff = new LinkedHashMap<String, ListGff>();// Ò»¸ö¹şÏ£±íÀ´´æ´¢Ã¿ÌõÈ¾É«Ìå
+		// å®ä¾‹åŒ–å››ä¸ªè¡¨
+		mapChrID2ListGff = new LinkedHashMap<String, ListGff>();// ä¸€ä¸ªå“ˆå¸Œè¡¨æ¥å­˜å‚¨æ¯æ¡æŸ“è‰²ä½“
 		
 	   TxtReadandWrite txtgff=new TxtReadandWrite(gfffilename, false);
 	   
-	   ListGff LOCList = null;//Ë³Ğò´æ´¢Ã¿¸ölocµÄ¾ßÌåĞÅÏ¢£¬Ò»ÌõÈ¾É«ÌåÒ»¸öLOCList£¬×îºó×°ÈëChrhash±íÖĞ
-	   //»ùÒòÃû×Ö
+	   ListGff LOCList = null;//é¡ºåºå­˜å‚¨æ¯ä¸ªlocçš„å…·ä½“ä¿¡æ¯ï¼Œä¸€æ¡æŸ“è‰²ä½“ä¸€ä¸ªLOCListï¼Œæœ€åè£…å…¥Chrhashè¡¨ä¸­
+	   //åŸºå› åå­—
 	   Pattern genepattern =Pattern.compile(GeneName, Pattern.CASE_INSENSITIVE);//to catch the LOC
 	   Matcher genematcher;
       
-	   //mRNA¿É±ä¼ô½ÓµÄĞòºÅ
+	   //mRNAå¯å˜å‰ªæ¥çš„åºå·
 	   Pattern mRNApattern =Pattern.compile(splitmRNA, Pattern.CASE_INSENSITIVE);//to catch the LOC
 	   Matcher mRNAmatcher;
-	   String chrIDtmp=""; //È¾É«ÌåµÄÁÙÊ±Ãû×Ö
+	   String chrIDtmp=""; //æŸ“è‰²ä½“çš„ä¸´æ—¶åå­—
 	   boolean UTR5start = false; boolean UTR3start = false; boolean UTR5end = false; boolean UTR3end = false;
-	   boolean CDSstart = false; boolean CDSend = false; boolean mRNAsplit = false;//ÊÇ·ñ½áÊøÁËÒ»¸ömRNA
+	   boolean CDSstart = false; boolean CDSend = false; boolean mRNAsplit = false;//æ˜¯å¦ç»“æŸäº†ä¸€ä¸ªmRNA
 	   int cdsStart = -100; int cdsEnd = -100; int mRNAstart = -100;  int mRNAend = -100; 
 	   boolean ncRNA = false;
-	   boolean TEgene = false;//ÊÇ·ñÎªtransposon element
+	   boolean TEgene = false;//æ˜¯å¦ä¸ºtransposon element
 	   GffDetailGene gffDetailLOC= null;
 	   for (String content : txtgff.readlines()) {
 		   if(content.length() == 0 || content.charAt(0)=='#')
@@ -127,22 +127,22 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 		   if (content.contains("AT1G02228")) {
 			logger.error("stop");
 		}
-		   ////////////////// ĞèÒª½øĞĞÌæ»»µÄµØ·½ /////////////////////////////////////////////////////////////
+		   ////////////////// éœ€è¦è¿›è¡Œæ›¿æ¢çš„åœ°æ–¹ /////////////////////////////////////////////////////////////
 		   if (ncRNA) {
 			   content = content.replace("pseudogenic_exon", "CDS");
 			   content = content.replace("exon", "CDS");
 		   }
-		   String[] ss = content.split("\t");//°´ÕÕtab·Ö¿ª
-		   chrIDtmp=ss[0];//Ğ¡Ğ´µÄchrID
+		   String[] ss = content.split("\t");//æŒ‰ç…§tabåˆ†å¼€
+		   chrIDtmp=ss[0];//å°å†™çš„chrID
 		   String chrIDtmpLowCase = chrIDtmp.toLowerCase();
-		   //ĞÂµÄÈ¾É«Ìå
+		   //æ–°çš„æŸ“è‰²ä½“
 		   if (!mapChrID2ListGff.containsKey(chrIDtmpLowCase)) {
-			   LOCList=new ListGff();//ĞÂ½¨Ò»¸öLOCList²¢·ÅÈëChrhash
+			   LOCList=new ListGff();//æ–°å»ºä¸€ä¸ªLOCListå¹¶æ”¾å…¥Chrhash
 			   LOCList.setName(chrIDtmp);
 			   mapChrID2ListGff.put(chrIDtmpLowCase, LOCList);
 		   }
 		   /**
-		    * µ±¶ÁÈ¡µ½geneÊ±£¬¾ÍÊÇ¶Áµ½ÁËÒ»¸öĞÂµÄ»ùÒò£¬ÄÇÃ´½«Õâ¸ö»ùÒòµÄÆğµã£¬ÖÕµãºÍÃ¿¸öCDSµÄ³¤¶È¶¼·ÅÈëlistÊı×éÖĞ
+		    * å½“è¯»å–åˆ°geneæ—¶ï¼Œå°±æ˜¯è¯»åˆ°äº†ä¸€ä¸ªæ–°çš„åŸºå› ï¼Œé‚£ä¹ˆå°†è¿™ä¸ªåŸºå› çš„èµ·ç‚¹ï¼Œç»ˆç‚¹å’Œæ¯ä¸ªCDSçš„é•¿åº¦éƒ½æ”¾å…¥listæ•°ç»„ä¸­
 		    */
 		   if (hashgene.contains(ss[2])) {//when read the # and the line contains gene, it means the new LOC
 			   if (ss[2].equals("transposable_element_gene")) {
@@ -152,39 +152,39 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 			   }
 			   
 			   if (mRNAsplit) {
-					// ½«ÉÏÒ»×émRNAµÄĞÅÏ¢×°Èë
-					// Èç¹ûÉÏÒ»×émRNAÃ»ÓĞCDS£¬ÄÇÃ´CDSµÄ³¤¶ÈÊµ¼ÊÉÏ¾ÍÊÇ0£¬ÄÇÃ´CDSµÄÆğµãºÍÖÕµã¾ÍÊÇÒ»ÑùµÄ£¬¶¼ÊÇmRNAµÄendÎ»µã
+					// å°†ä¸Šä¸€ç»„mRNAçš„ä¿¡æ¯è£…å…¥
+					// å¦‚æœä¸Šä¸€ç»„mRNAæ²¡æœ‰CDSï¼Œé‚£ä¹ˆCDSçš„é•¿åº¦å®é™…ä¸Šå°±æ˜¯0ï¼Œé‚£ä¹ˆCDSçš„èµ·ç‚¹å’Œç»ˆç‚¹å°±æ˜¯ä¸€æ ·çš„ï¼Œéƒ½æ˜¯mRNAçš„endä½ç‚¹
 					if (cdsStart < 0 && cdsEnd < 0) {
 						cdsStart = mRNAend;
 						cdsEnd = mRNAend;
 					}
 					gffDetailLOC.setATGUAG(cdsStart, cdsEnd);
 					if (cdsStart < 0 || cdsEnd < 0 || cdsStart > cdsEnd) {
-						logger.error("GffHashPlantGeneError: ÎÄ¼ş  " + gfffilename + "  ±¾×é»òÉÏ×é»ùÒòÓĞÎÊÌâ£¬cdsStart»òcdsEnd³ö´í  " + gffDetailLOC.getName());
+						logger.error("GffHashPlantGeneError: æ–‡ä»¶  " + gfffilename + "  æœ¬ç»„æˆ–ä¸Šç»„åŸºå› æœ‰é—®é¢˜ï¼ŒcdsStartæˆ–cdsEndå‡ºé”™  " + gffDetailLOC.getName());
 					}
-					mRNAsplit = false;// È«ĞÂµÄ»ùÒò£¬½«Æä¹éÎ»false\
+					mRNAsplit = false;// å…¨æ–°çš„åŸºå› ï¼Œå°†å…¶å½’ä½false\
 					if (!ss[2].equals("gene")) {
 						ncRNA = true;
 					} else {
 						ncRNA = false;
 					}
 				}
-				gffDetailLOC = null;//Çå¿Õ
+				gffDetailLOC = null;//æ¸…ç©º
 			   /**
-			    * Ã¿µ±³öÏÖÒ»¸öĞÂµÄChr£¬ÄÇÃ´¾Í½«Õâ¸öChr¼ÓÈë¹şÏ£±í
-			    * chr¸ñÊ½£¬È«²¿Ğ¡Ğ´ chr1,chr2,chr11
+			    * æ¯å½“å‡ºç°ä¸€ä¸ªæ–°çš„Chrï¼Œé‚£ä¹ˆå°±å°†è¿™ä¸ªChråŠ å…¥å“ˆå¸Œè¡¨
+			    * chræ ¼å¼ï¼Œå…¨éƒ¨å°å†™ chr1,chr2,chr11
 			    */
-			   genematcher = genepattern.matcher(content);//²éÕÒ»ùÒòÃû×Ö
+			   genematcher = genepattern.matcher(content);//æŸ¥æ‰¾åŸºå› åå­—
       		   if(genematcher.find()) {
-      			   gffDetailLOC=new GffDetailGene(LOCList, genematcher.group(), ss[6].equals("+"));//ĞÂ½¨Ò»¸ö»ùÒòÀà
+      			   gffDetailLOC=new GffDetailGene(LOCList, genematcher.group(), ss[6].equals("+"));//æ–°å»ºä¸€ä¸ªåŸºå› ç±»
       			   gffDetailLOC.setTaxID(taxID);
-      			   gffDetailLOC.setStartAbs(  Integer.parseInt(ss[3].toLowerCase()) ); gffDetailLOC.setEndAbs( Integer.parseInt(ss[4]));//»ùÒòÆğÖ¹      		
-      			   LOCList.add(gffDetailLOC);//Ìí¼Ó½øÈëLOClist
+      			   gffDetailLOC.setStartAbs(  Integer.parseInt(ss[3].toLowerCase()) ); gffDetailLOC.setEndAbs( Integer.parseInt(ss[4]));//åŸºå› èµ·æ­¢      		
+      			   LOCList.add(gffDetailLOC);//æ·»åŠ è¿›å…¥LOClist
       		   }
       		   else {
-      			   logger.error("GffHashPlantGeneError: ÎÄ¼ş  "+gfffilename+"  ÔÚ±¾ĞĞ¿ÉÄÜÃ»ÓĞÖ¸¶¨µÄ»ùÒòID  "+ splitmRNA + " " +content);
+      			   logger.error("GffHashPlantGeneError: æ–‡ä»¶  "+gfffilename+"  åœ¨æœ¬è¡Œå¯èƒ½æ²¡æœ‰æŒ‡å®šçš„åŸºå› ID  "+ splitmRNA + " " +content);
       		   }
-      		   //ÖØÖÃ±êÇ©£¬±íÊ¾ÔÚ5UTRºÍCDSµÄÇ°ÃæÁË£¬ÄÇÃ´ÔÚºóÃæ if Óöµ½µÄµÄ¾ÍÊÇµÚÒ»¸öUTR»òµÚÒ»¸öCDS
+      		   //é‡ç½®æ ‡ç­¾ï¼Œè¡¨ç¤ºåœ¨5UTRå’ŒCDSçš„å‰é¢äº†ï¼Œé‚£ä¹ˆåœ¨åé¢ if é‡åˆ°çš„çš„å°±æ˜¯ç¬¬ä¸€ä¸ªUTRæˆ–ç¬¬ä¸€ä¸ªCDS
       		   UTR5start = true; 
       		   CDSstart = true;
       	   }
@@ -192,56 +192,56 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 			continue;
 		   }
 		   /**
-      	    * µ±¶ÁÈ¡µ½mRNAÊ±£¬¾ÍÊÇËµÊÇ¿É±ä¼ô½ÓÊ±£¬Ìí¼ÓÒ»¸öĞÂµÄ¿É±ä¼ô½Ólist
-      	    * ²»¹ÜÔõÃ´¼Ó¶¼ÊÇ´ÓµÚÒ»¸öcds¿ªÊ¼¼Óµ½×îºóÒ»¸öcds£¬ÕıÏòµÄ»°¾ÍÊÇ´ÓĞ¡¼Óµ½´ó£¬·´Ïò¾ÍÊÇ´Ó´ó¼Óµ½Ğ¡¡£
-      	    * Ò»µ©³öÏÖÁËmRNA£¬¾ÍÒª¿ªÊ¼Ö¸¶¨5UTR£¬3UTR£¬CDSµÄÆğµãºÍÖÕÖ¹
+      	    * å½“è¯»å–åˆ°mRNAæ—¶ï¼Œå°±æ˜¯è¯´æ˜¯å¯å˜å‰ªæ¥æ—¶ï¼Œæ·»åŠ ä¸€ä¸ªæ–°çš„å¯å˜å‰ªæ¥list
+      	    * ä¸ç®¡æ€ä¹ˆåŠ éƒ½æ˜¯ä»ç¬¬ä¸€ä¸ªcdså¼€å§‹åŠ åˆ°æœ€åä¸€ä¸ªcdsï¼Œæ­£å‘çš„è¯å°±æ˜¯ä»å°åŠ åˆ°å¤§ï¼Œåå‘å°±æ˜¯ä»å¤§åŠ åˆ°å°ã€‚
+      	    * ä¸€æ—¦å‡ºç°äº†mRNAï¼Œå°±è¦å¼€å§‹æŒ‡å®š5UTRï¼Œ3UTRï¼ŒCDSçš„èµ·ç‚¹å’Œç»ˆæ­¢
       	    */
 		   else if (mapMRNA2GeneType.containsKey(ss[2])) {
 			   
 			   if (!ss[2].equals("mRNA")) {
 				   ncRNA = true;
 			   }
-			   //Èç¹û¸Õ¸Õ¶ÁÈ¡µÄÊÇÒ»¸ömRNAµÄ»°
+			   //å¦‚æœåˆšåˆšè¯»å–çš„æ˜¯ä¸€ä¸ªmRNAçš„è¯
 			   if (mRNAsplit) {
-				   //½«ÉÏÒ»×émRNAµÄĞÅÏ¢×°Èë
+				   //å°†ä¸Šä¸€ç»„mRNAçš„ä¿¡æ¯è£…å…¥
 				   if (cdsStart < 0 && cdsEnd <0) {
 					   cdsStart = mRNAend;
 					   cdsEnd = mRNAend;
 				   }
 				   gffDetailLOC.setATGUAG(cdsStart, cdsEnd);
 				   if (cdsStart <0 || cdsEnd<0 || cdsStart >= cdsEnd) {
-					   logger.error("GffHashPlantGeneError: ÎÄ¼ş  "+gfffilename+"  ±¾×é»òÉÏ×é»ùÒòÓĞÎÊÌâ£¬cdsStart»òcdsEnd³ö´í  " +gffDetailLOC.getName());
+					   logger.error("GffHashPlantGeneError: æ–‡ä»¶  "+gfffilename+"  æœ¬ç»„æˆ–ä¸Šç»„åŸºå› æœ‰é—®é¢˜ï¼ŒcdsStartæˆ–cdsEndå‡ºé”™  " +gffDetailLOC.getName());
 				   }
 				   mRNAsplit =false;
 			   }
 			   mRNAmatcher = mRNApattern.matcher(content);
 			   if(mRNAmatcher.find()) {
-				   //Ã¿Óöµ½Ò»¸ömRNA¾ÍÌí¼ÓÒ»¸ö¿É±ä¼ô½Ó,ÏÈÒªÀàĞÍ×ª»»Îª×ÓÀà
+				   //æ¯é‡åˆ°ä¸€ä¸ªmRNAå°±æ·»åŠ ä¸€ä¸ªå¯å˜å‰ªæ¥,å…ˆè¦ç±»å‹è½¬æ¢ä¸ºå­ç±»
 				   if (TEgene) {
 					   gffDetailLOC.addsplitlist(mRNAmatcher.group(), GeneType.mRNA_TE);
 				   } else {
 					   gffDetailLOC.addsplitlist(mRNAmatcher.group(), mapMRNA2GeneType.get(ss[2]));
 				   }
 				 
-				   //·ÂÕÕUCSCµÄ×ö·¨£¬Èç¹ûÊÇÒ»¸ö·Ç±àÂëµÄmRNA£¬ÄÇÃ´cdsStart = cdsEnd = mRNAend
+				   //ä»¿ç…§UCSCçš„åšæ³•ï¼Œå¦‚æœæ˜¯ä¸€ä¸ªéç¼–ç çš„mRNAï¼Œé‚£ä¹ˆcdsStart = cdsEnd = mRNAend
 				   mRNAstart = Integer.parseInt(ss[3]); mRNAend = Integer.parseInt(ss[4]); 
 				   cdsStart = -100; cdsEnd = -100;
 			   }
 			   else {
-				   logger.error("GffHashPlantGeneError: ÎÄ¼ş  "+gfffilename+"  ÔÚ±¾ĞĞ¿ÉÄÜÃ»ÓĞÖ¸¶¨µÄ»ùÒòID  " +content);
+				   logger.error("GffHashPlantGeneError: æ–‡ä»¶  "+gfffilename+"  åœ¨æœ¬è¡Œå¯èƒ½æ²¡æœ‰æŒ‡å®šçš„åŸºå› ID  " +content);
 			   }
-			   //ÖØÖÃ±êÇ©£¬±íÊ¾ÔÚ5UTRºÍCDSµÄÇ°ÃæÁË£¬ÄÇÃ´ÔÚºóÃæ if Óöµ½µÄ¾ÍÊÇµÚÒ»¸öUTR»òµÚÒ»¸öCDS
+			   //é‡ç½®æ ‡ç­¾ï¼Œè¡¨ç¤ºåœ¨5UTRå’ŒCDSçš„å‰é¢äº†ï¼Œé‚£ä¹ˆåœ¨åé¢ if é‡åˆ°çš„å°±æ˜¯ç¬¬ä¸€ä¸ªUTRæˆ–ç¬¬ä¸€ä¸ªCDS
       		   UTR5start = true; 
       		   CDSstart = true;
 		   }
 		   
-		   //Óöµ½5UTR
+		   //é‡åˆ°5UTR
 		   else if (ss[2].equals("five_prime_UTR")) {
 			   gffDetailLOC.addExon(Integer.parseInt(ss[3]),Integer.parseInt(ss[4]));
-			   //5UTR¹ıÈ¥ÁË
+			   //5UTRè¿‡å»äº†
 			   UTR5start = false;
-			   UTR5end = true;//5UTR»áÓĞ½áÊø
-			   mRNAsplit = true;//¸Ã×ªÂ¼±¾×îºóĞèÒª×Ü½á
+			   UTR5end = true;//5UTRä¼šæœ‰ç»“æŸ
+			   mRNAsplit = true;//è¯¥è½¬å½•æœ¬æœ€åéœ€è¦æ€»ç»“
 			   CDSstart = true; 
 			   ncRNA = false;
 		   }
@@ -250,7 +250,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 			   {
 				   if (UTR5end) 
 				   {
-					   gffDetailLOC.addExonGFFCDSUTR(Integer.parseInt(ss[3]),Integer.parseInt(ss[4]));//Ìí¼Ó×Ó×ø±ê,´ÓĞ¡¼Óµ½´ó
+					   gffDetailLOC.addExonGFFCDSUTR(Integer.parseInt(ss[3]),Integer.parseInt(ss[4]));//æ·»åŠ å­åæ ‡,ä»å°åŠ åˆ°å¤§
 					   UTR5start = false;
 					   UTR5end = false;
 				   }
@@ -266,25 +266,25 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 				   gffDetailLOC.addExon(Integer.parseInt(ss[3]),Integer.parseInt(ss[4]));
 				   if (gffDetailLOC.isCis5to3()) 
 					   cdsEnd = Integer.parseInt(ss[4]);
-				   else //·´×Å×°
+				   else //åç€è£…
 					   cdsStart = Integer.parseInt(ss[3]);
 				   CDSend = true;
 			   }
-			   mRNAsplit = true;//¸Ã×ªÂ¼±¾×îºóĞèÒª×Ü½á
+			   mRNAsplit = true;//è¯¥è½¬å½•æœ¬æœ€åéœ€è¦æ€»ç»“
 		   }
 		   else if (ss[2].equals("three_prime_UTR")) {
-			   if (UTR5end || CDSend) {//½ô¸ú×Å×îºóÒ»¸öCDSÁË
+			   if (UTR5end || CDSend) {//ç´§è·Ÿç€æœ€åä¸€ä¸ªCDSäº†
 				   gffDetailLOC.addExonGFFCDSUTR(Integer.parseInt(ss[3]),Integer.parseInt(ss[4]));
 				   UTR5end = false; 
-				   CDSend = false; //ÒÑ¾­²»ÊÇ½ô¸ú×Å×îºóÒ»¸öCDSÁË
+				   CDSend = false; //å·²ç»ä¸æ˜¯ç´§è·Ÿç€æœ€åä¸€ä¸ªCDSäº†
 			   }
 			   else {
 				   gffDetailLOC.addExon(Integer.parseInt(ss[3]),Integer.parseInt(ss[4]));
 			   }
-			   //5UTR¹ıÈ¥ÁË
+			   //5UTRè¿‡å»äº†
 			   UTR3start = false;
-			   UTR3end = true;//5UTR»áÓĞ½áÊø
-			   mRNAsplit = true;//È«ĞÂµÄ»ùÒò£¬½«Æä¹éÎ»false
+			   UTR3end = true;//5UTRä¼šæœ‰ç»“æŸ
+			   mRNAsplit = true;//å…¨æ–°çš„åŸºå› ï¼Œå°†å…¶å½’ä½false
 			   ncRNA = false;
 		   }
 		   else if (!ss[2].equals("protein") && !ss[2].equals("exon") && !ss[2].equals("intron")) {
@@ -292,16 +292,16 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 		   }
 	   }
 	   if (mRNAsplit) {
-		   //½«ÉÏÒ»×émRNAµÄĞÅÏ¢×°Èë
+		   //å°†ä¸Šä¸€ç»„mRNAçš„ä¿¡æ¯è£…å…¥
 		   if (cdsStart < 0 && cdsEnd <0) {
 			   cdsStart = mRNAend;
 			   cdsEnd = mRNAend;
 		   }
 		   gffDetailLOC.setATGUAG(cdsStart,cdsEnd);
 		   if (cdsStart <0 || cdsEnd<0 || cdsStart > cdsEnd) {
-			   System.out.println("GffHashPlantGeneError: ÎÄ¼ş  "+gfffilename+"  ±¾×é»òÉÏ×é»ùÒòÓĞÎÊÌâ£¬cdsStart»òcdsEnd³ö´í  " +gffDetailLOC.getName());
+			   System.out.println("GffHashPlantGeneError: æ–‡ä»¶  "+gfffilename+"  æœ¬ç»„æˆ–ä¸Šç»„åŸºå› æœ‰é—®é¢˜ï¼ŒcdsStartæˆ–cdsEndå‡ºé”™  " +gffDetailLOC.getName());
 		   }
-		   mRNAsplit = false;//È«ĞÂµÄ»ùÒò£¬½«Æä¹éÎ»false
+		   mRNAsplit = false;//å…¨æ–°çš„åŸºå› ï¼Œå°†å…¶å½’ä½false
 	   }
 	   LOCList.trimToSize();
 	   txtgff.close();

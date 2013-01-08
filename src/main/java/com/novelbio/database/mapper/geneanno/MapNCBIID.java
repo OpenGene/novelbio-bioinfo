@@ -11,8 +11,8 @@ public interface MapNCBIID extends MapperSql{
 	
 
 	/**
-	 * ÓÃgeneID,accessID,TaxIDÈı¸öÖĞµÄÈÎÒâ×éºÏÈ¥²éÕÒNCBIID±í
-	 * Ö÷ÒªÊÇÀ´¿´±¾ÁĞÊÇ·ñÒÑ¾­´æÔÚÁË£¬·µ»Øµ¥¸öNCBIID<br>
+	 * ç”¨geneID,accessID,TaxIDä¸‰ä¸ªä¸­çš„ä»»æ„ç»„åˆå»æŸ¥æ‰¾NCBIIDè¡¨
+	 * ä¸»è¦æ˜¯æ¥çœ‹æœ¬åˆ—æ˜¯å¦å·²ç»å­˜åœ¨äº†ï¼Œè¿”å›å•ä¸ªNCBIID<br>
 	 * if test="geneID !=0 and geneID !=null" <br>
 				GeneID = #{geneID} <br>
 			/if<br>
@@ -28,8 +28,8 @@ public interface MapNCBIID extends MapperSql{
 	public NCBIID queryNCBIID(NCBIID QueryNCBIID);
 	
 	/**
-	 * ÓÃgeneID,accessID,TaxIDÈı¸öÖĞµÄÈÎÒâ×éºÏÈ¥²éÕÒNCBIID±í
-	 * Ö÷ÒªÊÇÀ´¿´±¾ÁĞÊÇ·ñÒÑ¾­´æÔÚÁË£¬·µ»ØListNCBIID
+	 * ç”¨geneID,accessID,TaxIDä¸‰ä¸ªä¸­çš„ä»»æ„ç»„åˆå»æŸ¥æ‰¾NCBIIDè¡¨
+	 * ä¸»è¦æ˜¯æ¥çœ‹æœ¬åˆ—æ˜¯å¦å·²ç»å­˜åœ¨äº†ï¼Œè¿”å›ListNCBIID
 	 * if test="geneID !=0 and geneID !=null" <br>
 				GeneID = #{geneID} <br>
 			/if<br>
@@ -47,7 +47,7 @@ public interface MapNCBIID extends MapperSql{
 	public void insertNCBIID(NCBIID nCBIID);
 	
 	/**
-	 * Ä¿Ç°µÄÉı¼¶·½Ê½ÊÇ<br>
+	 * ç›®å‰çš„å‡çº§æ–¹å¼æ˜¯<br>
 		update NCBIID<br>
 		set<br>
 			if test="taxID !=null and taxID !=0"<br>

@@ -11,9 +11,9 @@ import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 
 /**
- * Éı¼¶UniProtÏÂÔØµÄËùÓĞÎÄ¼şµÄÀà
+ * å‡çº§UniProtä¸‹è½½çš„æ‰€æœ‰æ–‡ä»¶çš„ç±»
  * @author zong0jie
- *UniProtÎÄ¼şµÄÍøÖ·
+ *UniProtæ–‡ä»¶çš„ç½‘å€
  *ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/idmapping
  */
 public class UniProt {
@@ -52,8 +52,8 @@ public class UniProt {
 }
 
 /**
- * ½«idmapping_selected.tabµ¼ÈëÊı¾İ¿â£¬½öµ¼ÈëÖ¸¶¨µÄÎïÖÖ
- * ÎÄ¼ş¸ñÊ½ÈçÏÂ<br>
+ * å°†idmapping_selected.tabå¯¼å…¥æ•°æ®åº“ï¼Œä»…å¯¼å…¥æŒ‡å®šçš„ç‰©ç§
+ * æ–‡ä»¶æ ¼å¼å¦‚ä¸‹<br>
  1. UniProtKB-AC
 2. UniProtKB-ID
 3. GeneID (EntrezGene)
@@ -80,19 +80,19 @@ public class UniProt {
 */
 class IdmappingSelected extends ImportPerLine {
 	/**
-	 * ËÑË÷²»µ½µÄIDÊÇ·ñµ¼ÈëuniID±íÖĞ
+	 * æœç´¢ä¸åˆ°çš„IDæ˜¯å¦å¯¼å…¥uniIDè¡¨ä¸­
 	 */
 	boolean updateUniprotID = false;
 	/**
-	 * ËÑË÷²»µ½µÄIDÊÇ·ñµ¼ÈëuniID±íÖĞ£¬Ä¬ÈÏfalse
+	 * æœç´¢ä¸åˆ°çš„IDæ˜¯å¦å¯¼å…¥uniIDè¡¨ä¸­ï¼Œé»˜è®¤false
 	 */
 	public void setUpdateUniprotID(boolean updateUniprotID) {
 		this.updateUniprotID = updateUniprotID;
 	}
 
 	/**
-	 * ½«idmapping_selected.tabµ¼ÈëÊı¾İ¿â£¬½öµ¼ÈëÖ¸¶¨µÄÎïÖÖ
-	 * ÎÄ¼ş¸ñÊ½ÈçÏÂ<br>
+	 * å°†idmapping_selected.tabå¯¼å…¥æ•°æ®åº“ï¼Œä»…å¯¼å…¥æŒ‡å®šçš„ç‰©ç§
+	 * æ–‡ä»¶æ ¼å¼å¦‚ä¸‹<br>
 	 1. UniProtKB-AC
 	2. UniProtKB-ID
 	3. GeneID (EntrezGene)
@@ -126,7 +126,7 @@ class IdmappingSelected extends ImportPerLine {
 			return true;
 		}
 		GeneID copedID = null;
-		//Èç¹ûgeneID´æÔÚ£¬ÄÇÃ´¾ÍĞÂ½¨Ò»¸ögeneUniIDµÄÀà
+		//å¦‚æœgeneIDå­˜åœ¨ï¼Œé‚£ä¹ˆå°±æ–°å»ºä¸€ä¸ªgeneUniIDçš„ç±»
 		ArrayList<String> lsRefAccID = new ArrayList<String>();
 		if (!ss[2].equals("")) {
 			if (!ss[2].contains(";")) {
@@ -157,7 +157,7 @@ class IdmappingSelected extends ImportPerLine {
 			}
 		}
 		else {
-			//¾ÍÊÇÒª¸øÒ»¸öÍêÈ«Ã»ÓĞµÄID
+			//å°±æ˜¯è¦ç»™ä¸€ä¸ªå®Œå…¨æ²¡æœ‰çš„ID
 			copedID = new GeneID("", taxID);
 			lsRefAccID = new ArrayList<String>();
 			addListAccID(ss[3], lsRefAccID);
@@ -188,7 +188,7 @@ class IdmappingSelected extends ImportPerLine {
 		return true;
 	}
 	/**
-	 * ½«tmpAccID×°ÈëlsRefAccIDÖĞ
+	 * å°†tmpAccIDè£…å…¥lsRefAccIDä¸­
 	 * @param tmpAccID
 	 * @param lsRefAccID
 	 */
@@ -204,11 +204,11 @@ class IdmappingSelected extends ImportPerLine {
 		}
 	}
 	/**
-	 * Éı¼¶ssIDµ½geneIDÖĞ
+	 * å‡çº§ssIDåˆ°geneIDä¸­
 	 * @param ssID
 	 * @param copedID
 	 * @param dbInfo
-	 * @param updateUniprotID ËÑË÷²»µ½µÄIDÊÇ·ñµ¼ÈëuniID±íÖĞ
+	 * @param updateUniprotID æœç´¢ä¸åˆ°çš„IDæ˜¯å¦å¯¼å…¥uniIDè¡¨ä¸­
 	 * @return
 	 */
 	private boolean updateInfo(String ssID, GeneID copedID, String dbInfo) {
@@ -228,8 +228,8 @@ class IdmappingSelected extends ImportPerLine {
  }
 
 /**
- * ½«idmapping_selected.tabÖĞµÄGOºÍpubmedĞÅÏ¢µ¼ÈëÊı¾İ¿â£¬½öµ¼ÈëÖ¸¶¨µÄÎïÖÖ
- * ÎÄ¼ş¸ñÊ½ÈçÏÂ<br>
+ * å°†idmapping_selected.tabä¸­çš„GOå’Œpubmedä¿¡æ¯å¯¼å…¥æ•°æ®åº“ï¼Œä»…å¯¼å…¥æŒ‡å®šçš„ç‰©ç§
+ * æ–‡ä»¶æ ¼å¼å¦‚ä¸‹<br>
  1. UniProtKB-AC
 2. UniProtKB-ID
 3. GeneID (EntrezGene)
@@ -257,8 +257,8 @@ class IdmappingSelected extends ImportPerLine {
 class IdmappingSelectedGOPubmed extends IdmappingSelected
 {
 	/**
-	 * ½«idmapping_selected.tabµ¼ÈëÊı¾İ¿â£¬½öµ¼ÈëÖ¸¶¨µÄÎïÖÖ
-	 * ÎÄ¼ş¸ñÊ½ÈçÏÂ<br>
+	 * å°†idmapping_selected.tabå¯¼å…¥æ•°æ®åº“ï¼Œä»…å¯¼å…¥æŒ‡å®šçš„ç‰©ç§
+	 * æ–‡ä»¶æ ¼å¼å¦‚ä¸‹<br>
 	 1. UniProtKB-AC
 	2. UniProtKB-ID
 	3. GeneID (EntrezGene)
@@ -292,7 +292,7 @@ class IdmappingSelectedGOPubmed extends IdmappingSelected
 			return true;
 		}
 		GeneID copedID = null;
-		//Èç¹ûgeneID´æÔÚ£¬ÄÇÃ´¾ÍĞÂ½¨Ò»¸ögeneUniIDµÄÀà
+		//å¦‚æœgeneIDå­˜åœ¨ï¼Œé‚£ä¹ˆå°±æ–°å»ºä¸€ä¸ªgeneUniIDçš„ç±»
 		ArrayList<String> lsRefAccID = new ArrayList<String>();
 		if (!ss[2].equals("")) {
 			if (!ss[2].contains(";")) {
@@ -312,7 +312,7 @@ class IdmappingSelectedGOPubmed extends IdmappingSelected
 			}
 		}
 		else {
-			//¾ÍÊÇÒª¸øÒ»¸öÍêÈ«Ã»ÓĞµÄID
+			//å°±æ˜¯è¦ç»™ä¸€ä¸ªå®Œå…¨æ²¡æœ‰çš„ID
 			copedID = new GeneID("", taxID);
 			lsRefAccID = new ArrayList<String>();
 			addListAccID(ss[3], lsRefAccID);

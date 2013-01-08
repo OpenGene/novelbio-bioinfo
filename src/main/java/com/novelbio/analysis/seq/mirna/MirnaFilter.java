@@ -3,19 +3,19 @@ package com.novelbio.analysis.seq.mirna;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 /**
- * ¹ýÂË»ª´óµÄmiRNA£¬²»ÊÇÎÒÃÇÁ÷Ë®ÏßµÄÒ»²¿·Ö
+ * è¿‡æ»¤åŽå¤§çš„miRNAï¼Œä¸æ˜¯æˆ‘ä»¬æµæ°´çº¿çš„ä¸€éƒ¨åˆ†
  * @author zong0jie
  *
  */
 public class MirnaFilter {
 	public static void main(String[] args) {
 		MirnaFilter mirnaFilter = new MirnaFilter();
-		mirnaFilter.Filter("/home/zong0jie/×ÀÃæ/ZHY/clean_fas_N/clean-miRNA.fas", "/home/zong0jie/×ÀÃæ/ZHY/clean_fas_N/clean-miRNA.fasResult.txt");
+		mirnaFilter.Filter("/home/zong0jie/æ¡Œé¢/ZHY/clean_fas_N/clean-miRNA.fas", "/home/zong0jie/æ¡Œé¢/ZHY/clean_fas_N/clean-miRNA.fasResult.txt");
 	}
 	/**
-	 * @param miRNAFile ÊäÈëµÄmiRNAÎÄ¼þ
-	 * ¹ýÂË»ª´óµÄmiRNA½á¹û
-	 * ¸ñÊ½ÈçÏÂ
+	 * @param miRNAFile è¾“å…¥çš„miRNAæ–‡ä»¶
+	 * è¿‡æ»¤åŽå¤§çš„miRNAç»“æžœ
+	 * æ ¼å¼å¦‚ä¸‹
 	 * >t0000001_1  655863
 	TCGCTTGGTGCAGATCGGGAC
 	>t0000001_2  655863
@@ -28,7 +28,7 @@ public class MirnaFilter {
 		TxtReadandWrite txtOut = new TxtReadandWrite(outFile, true);
 		
 		TxtReadandWrite txtIn = new TxtReadandWrite(miRNAFile, false);
-		String tmpMiRNA = ""; String tmpInfo = ""; boolean flag = false;//ÊÇ·ñÐ´ÈëÐòÁÐµÄ±êÇ©
+		String tmpMiRNA = ""; String tmpInfo = ""; boolean flag = false;//æ˜¯å¦å†™å…¥åºåˆ—çš„æ ‡ç­¾
 		for (String string : txtIn.readlines()) {
 			if (string.startsWith(">") && !string.split(" ")[0].split("_")[0].substring(1).equals(tmpMiRNA)) {
 				String[] ss = string.split(" ");

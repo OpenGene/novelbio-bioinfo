@@ -14,7 +14,7 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
 
 /** 
- * ¸ø¶¨Ò»ÏµÁĞfastqÎÄ¼ş£¬»ñµÃmiRNAµÄbedÎÄ¼ş
+ * ç»™å®šä¸€ç³»åˆ—fastqæ–‡ä»¶ï¼Œè·å¾—miRNAçš„bedæ–‡ä»¶
  * @author zong0jie
  */
 public class CtrlMiRNAfastq {
@@ -34,10 +34,10 @@ public class CtrlMiRNAfastq {
 	private static Logger logger = Logger.getLogger(CtrlMiRNAfastq.class);
 	
 	Species species;
-	/** Éè¶¨gffºÍchrome */
+	/** è®¾å®šgffå’Œchrome */
 	GffChrAbs gffChrAbs = new GffChrAbs();
 	
-	/** mapping ĞòÁĞ */
+	/** mapping åºåˆ— */
 	MiRNAmapPipline miRNAmappingPipline = new MiRNAmapPipline();
 	
 	MiRNACount miRNACount = new MiRNACount();
@@ -48,11 +48,11 @@ public class CtrlMiRNAfastq {
 	/** fastqFile--prefix */
 	ArrayList<String[]> lsFastqFile2Prefix;
 	
-	///////Êä³öÎÄ¼ş¼Ğ //////////
+	///////è¾“å‡ºæ–‡ä»¶å¤¹ //////////
 	String outPath;
 	String outPathTmpMapping;
 	String outPathTmpBed;
-	///////Êä³öÊıÁ¿ ///////////
+	///////è¾“å‡ºæ•°é‡ ///////////
 	HashMap<String, HashMap<String, Double>> mapPrefix2MiRNAPre = new HashMap<String, HashMap<String,Double>>();
 	HashMap<String, HashMap<String, Double>> mapPrefix2MiRNAmature = new HashMap<String, HashMap<String,Double>>();
 	
@@ -63,14 +63,14 @@ public class CtrlMiRNAfastq {
 	HashMap<String, HashMap<String, Double>> mapPrefix2RepeatFamily = new HashMap<String, HashMap<String,Double>>();
 	HashMap<String, HashMap<String, Double>> mapPrefix2GeneInfo = new HashMap<String, HashMap<String,Double>>();
 	
-	////// Ã»ÓĞmappingµ½µÄbedÎÄ¼ş£¬ÓÃÓÚÔ¤²âĞÂmiRNAµÄ */
+	////// æ²¡æœ‰mappingåˆ°çš„bedæ–‡ä»¶ï¼Œç”¨äºé¢„æµ‹æ–°miRNAçš„ */
 	ArrayList<String[]> lsNovelMiRNAbedfile2Prefix = new ArrayList<String[]>();
 	
-	/** Îñ±ØÊ×ÏÈÉè¶¨ */
+	/** åŠ¡å¿…é¦–å…ˆè®¾å®š */
 	public void setSpecies(Species species) {
 		this.species = species;
 	}
-	/** Ê×ÏÈ»áÅĞ¶ÏÁ½¸ögffChrAbsµÄspeciesÊÇ·ñÒ»ÖÂ */
+	/** é¦–å…ˆä¼šåˆ¤æ–­ä¸¤ä¸ªgffChrAbsçš„speciesæ˜¯å¦ä¸€è‡´ */
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		if (this.gffChrAbs.getSpecies().equals(gffChrAbs.getSpecies())) {
 			return;
@@ -82,7 +82,7 @@ public class CtrlMiRNAfastq {
 		this.lsFastqFile2Prefix = lsFastqFile2Prefix;
 	}
 	
-	/** Éè¶¨Êä³öÎÄ¼ş¼Ğ */
+	/** è®¾å®šè¾“å‡ºæ–‡ä»¶å¤¹ */
 	public void setOutPath(String outPath) {
 		this.outPath = FileOperate.addSep(outPath);
 		FileOperate.createFolders(this.outPath);
@@ -90,24 +90,24 @@ public class CtrlMiRNAfastq {
 		this.outPathTmpBed = this.outPath + "tmpBed";
 	}
 	
-	/** rfamµÄĞÅÏ¢±È½ÏÎÄ¼ş£¬ÀàËÆÒ»¸ö¼üÖµ±í */
+	/** rfamçš„ä¿¡æ¯æ¯”è¾ƒæ–‡ä»¶ï¼Œç±»ä¼¼ä¸€ä¸ªé”®å€¼è¡¨ */
 	public void setRfamFile(String rfamFile) {
 		rfamStatistic.readRfamTab(rfamFile);
 	}
-	/** ÊÇ·ñÈ«²¿mappingÖÁgenomeÉÏ£¬Ä¬ÈÏÎªtrue */
+	/** æ˜¯å¦å…¨éƒ¨mappingè‡³genomeä¸Šï¼Œé»˜è®¤ä¸ºtrue */
 	public void setMappingAll2Genome(boolean mappingAll2Genome) {
 		miRNAmappingPipline.setMappingAll2Genome(mappingAll2Genome);
 	}
 	/**
-	 * miRNA¼ÆËã±í´ïÊ¹ÓÃ
-	 * @param rnadatFile miRNA.datÎÄ¼ş
+	 * miRNAè®¡ç®—è¡¨è¾¾ä½¿ç”¨
+	 * @param rnadatFile miRNA.datæ–‡ä»¶
 	 */
 	public void setMiRNAinfo(String rnadatFile) {
-		logger.error("¶ÁÈ¡µÄÎÄ¼şÎª£º" + rnadatFile);
+		logger.error("è¯»å–çš„æ–‡ä»¶ä¸ºï¼š" + rnadatFile);
 		miRNACount.setMiRNAinfo(ListMiRNALocation.TYPE_RNA_DATA, species, rnadatFile);
 	}
 	
-	/** ±È¶ÔºÍ¼ÆÊı£¬Ã¿±È¶ÔÒ»´Î¾Í¼ÆÊı¡£Ö÷ÒªÊÇÎªÁË·ÀÖ¹³ö´í */
+	/** æ¯”å¯¹å’Œè®¡æ•°ï¼Œæ¯æ¯”å¯¹ä¸€æ¬¡å°±è®¡æ•°ã€‚ä¸»è¦æ˜¯ä¸ºäº†é˜²æ­¢å‡ºé”™ */
 	public void mappingAndCounting() {
 		mapPrefix2MiRNAPre.clear();
 		mapPrefix2MiRNAmature.clear();
@@ -118,7 +118,7 @@ public class CtrlMiRNAfastq {
 		FileOperate.createFolders(outPathTmpBed);
 		setConfigFile();
 		for (String[] fastq2Prefix : lsFastqFile2Prefix) {
-			//ÎÄ¼şÃûÎªÊä³öÎÄ¼ş¼Ğ+ÎÄ¼şÇ°×º
+			//æ–‡ä»¶åä¸ºè¾“å‡ºæ–‡ä»¶å¤¹+æ–‡ä»¶å‰ç¼€
 			miRNAmappingPipline.setSample(fastq2Prefix[1], fastq2Prefix[0]);
 			miRNAmappingPipline.setOutPathTmp(outPathTmpMapping, outPathTmpBed);
 			miRNAmappingPipline.mappingPipeline();
@@ -127,7 +127,7 @@ public class CtrlMiRNAfastq {
 		}
 	}
 	
-	/** Éè¶¨´ı±È¶ÔµÄĞòÁĞ */
+	/** è®¾å®šå¾…æ¯”å¯¹çš„åºåˆ— */
 	private void setConfigFile() {
 		SoftWareInfo softWareInfo = new SoftWareInfo();
 		softWareInfo.setName(SoftWare.bwa.toString());
@@ -136,12 +136,12 @@ public class CtrlMiRNAfastq {
 		miRNAmappingPipline.setMiRNApreSeq(species.getMiRNAhairpinFile());
 		miRNAmappingPipline.setNcRNAseq(species.getRefseqNCfile());
 		miRNAmappingPipline.setRfamSeq(species.getRfamFile());
-		miRNAmappingPipline.setGenome(species.getIndexChr(SoftWare.bwa));//Ä¬ÈÏbwa×ömapping
+		miRNAmappingPipline.setGenome(species.getIndexChr(SoftWare.bwa));//é»˜è®¤bwaåšmapping
 	}
 	
 	
-	/** ¼ÆËãmiRNA±í´ï
-	 * @param solo Ç°ÃæÊÇ·ñÓĞmapping
+	/** è®¡ç®—miRNAè¡¨è¾¾
+	 * @param solo å‰é¢æ˜¯å¦æœ‰mapping
 	 */
 	private void countSmallRNA(String outPath, String prefix, MiRNAmapPipline miRNAmappingPipline) {
 		outPath = outPath + prefix + FileOperate.getSepPath();
@@ -153,7 +153,7 @@ public class CtrlMiRNAfastq {
 	}
 
 	/**
-	* ¼ÆËãmiRNA±í´ï
+	* è®¡ç®—miRNAè¡¨è¾¾
 	* @param outPath
 	* @param prefix
 	* @param miRNAmappingPipline
@@ -177,8 +177,8 @@ public class CtrlMiRNAfastq {
 		readsOnRepeatGene.readGffRepeat(species.getGffRepeat());
 	}
 
-	/** ¶ÁÈ¡rfamĞÅÏ¢²¢¼ÆÊı
-	 * @param solo µ¥¶À¼ÆÊı
+	/** è¯»å–rfamä¿¡æ¯å¹¶è®¡æ•°
+	 * @param solo å•ç‹¬è®¡æ•°
 	 *  */
 	private void countRfam(String outPath, String prefix, MiRNAmapPipline miRNAmappingPipline) {
 		rfamStatistic.setOutputFile(outPath + "RfamStatistics.txt");
@@ -187,8 +187,8 @@ public class CtrlMiRNAfastq {
 			mapPrefix2MiRNArfam.put(prefix, rfamStatistic.getMapRfam2Counts());
 		}
 	}
-	/** ¶ÁÈ¡ncRNAµÄĞÅÏ¢²¢¼ÆÊı
-	 * @param solo µ¥¶À¼ÆÊı
+	/** è¯»å–ncRNAçš„ä¿¡æ¯å¹¶è®¡æ•°
+	 * @param solo å•ç‹¬è®¡æ•°
 	 *  */
 	private void countNCrna(String outPath, String prefix, MiRNAmapPipline miRNAmappingPipline) {
 		if (FileOperate.isFileExistAndBigThanSize(miRNAmappingPipline.getOutNCRNAbed(), 10)) {
@@ -199,8 +199,8 @@ public class CtrlMiRNAfastq {
 		}
 	}
 	
-	/** ¶ÁÈ¡repeatºÍgeneĞÅÏ¢²¢¼ÆÊı
-	 * @param solo µ¥¶À¼ÆÊı
+	/** è¯»å–repeatå’Œgeneä¿¡æ¯å¹¶è®¡æ•°
+	 * @param solo å•ç‹¬è®¡æ•°
 	 *  */
 	private void countRepeatGene(String outPath, String prefix, MiRNAmapPipline miRNAmappingPipline) {
 		if (FileOperate.isFileExistAndBigThanSize(miRNAmappingPipline.getOutGenomebed(), 10) ) {
@@ -215,7 +215,7 @@ public class CtrlMiRNAfastq {
 			mapPrefix2GeneInfo.put(prefix, readsOnRepeatGene.getMapGeneStructure2Value());
 		}
 	}
-	/** ½«»ã×Ü½á¹ûĞ´ÈëÎÄ±¾ */
+	/** å°†æ±‡æ€»ç»“æœå†™å…¥æ–‡æœ¬ */
 	public void writeToFile() {
 		ArrayList<String[]> lsMirPre = miRNACount.combMapMir2Value(mapPrefix2MiRNAPre);
 		writeFile(outPath + "mirPreAll.txt", lsMirPre);
@@ -248,14 +248,14 @@ public class CtrlMiRNAfastq {
 	}
 	
 	/**
-	 * ·µ»ØmappingÖÁ»ùÒò×éÉÏµÄbedÎÄ¼ş
-	 * ±ØĞëÒªµÈmappingÍêºó²ÅÄÜ»ñÈ¡
+	 * è¿”å›mappingè‡³åŸºå› ç»„ä¸Šçš„bedæ–‡ä»¶
+	 * å¿…é¡»è¦ç­‰mappingå®Œåæ‰èƒ½è·å–
 	 */
 	public ArrayList<String[]> getLsGenomeBed2Prefix() {
 		return lsNovelMiRNAbedfile2Prefix;
 	}
 	
-	/** Çå¿Õ´æ´¢µÄĞÅÏ¢ */
+	/** æ¸…ç©ºå­˜å‚¨çš„ä¿¡æ¯ */
 	public void clear() {
 		 mapPrefix2MiRNAPre.clear();
 		 mapPrefix2MiRNAmature.clear();

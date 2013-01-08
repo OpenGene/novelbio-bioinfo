@@ -11,40 +11,40 @@ import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
 
 public interface SeqHashInt {
 	/**
-	 * ·µ»ØchrIDºÍchrLengthµÄ¶ÔÓ¦¹ØÏµ
-	 * chrIDÍ¨Í¨Ğ¡Ğ´
+	 * è¿”å›chrIDå’ŒchrLengthçš„å¯¹åº”å…³ç³»
+	 * chrIDé€šé€šå°å†™
 	 * @return
 	 */
 	public HashMap<String, Long> getMapChrLength();
 	/**
-	 * ÔÚ¶ÁÈ¡chr³¤¶ÈÎÄ¼şºó£¬¿ÉÒÔÍ¨¹ı´Ë»ñµÃËùÓĞchrµÄ³¤¶ÈĞÅÏ¢
+	 * åœ¨è¯»å–chré•¿åº¦æ–‡ä»¶åï¼Œå¯ä»¥é€šè¿‡æ­¤è·å¾—æ‰€æœ‰chrçš„é•¿åº¦ä¿¡æ¯
 	 * 
 	 * @param chrID
-	 * @return ArrayList<String[]> 0: chrID 1: chr³¤¶È ²¢ÇÒ°´ÕÕchr³¤¶È´ÓĞ¡µ½´óÅÅĞò
+	 * @return ArrayList<String[]> 0: chrID 1: chré•¿åº¦ å¹¶ä¸”æŒ‰ç…§chré•¿åº¦ä»å°åˆ°å¤§æ’åº
 	 */
 	public ArrayList<String[]> getChrLengthInfo();
 	
 	/**
-	 * ÔÚ¶ÁÈ¡chr³¤¶ÈÎÄ¼şºó£¬¿ÉÒÔÍ¨¹ı´Ë»ñµÃÃ¿ÌõchrµÄ³¤¶È
-	 * @param chrID ÄÚ²¿×Ô¶¯×ª»»ÎªĞ¡Ğ´
+	 * åœ¨è¯»å–chré•¿åº¦æ–‡ä»¶åï¼Œå¯ä»¥é€šè¿‡æ­¤è·å¾—æ¯æ¡chrçš„é•¿åº¦
+	 * @param chrID å†…éƒ¨è‡ªåŠ¨è½¬æ¢ä¸ºå°å†™
 	 * @return
 	 */
 	public long getChrLength(String chrID) ;
 	/**
-	 * ÔÚ¶ÁÈ¡chr³¤¶ÈÎÄ¼şºó£¬¿ÉÒÔÍ¨¹ı´Ë»ñµÃÃ¿ÌõchrµÄ³¤¶È
-	 * @param chrID ÄÚ²¿×Ô¶¯×ª»»ÎªĞ¡Ğ´
+	 * åœ¨è¯»å–chré•¿åº¦æ–‡ä»¶åï¼Œå¯ä»¥é€šè¿‡æ­¤è·å¾—æ¯æ¡chrçš„é•¿åº¦
+	 * @param chrID å†…éƒ¨è‡ªåŠ¨è½¬æ¢ä¸ºå°å†™
 	 * @return
 	 */
 	public long getChrLenMin() ;
 	/**
-	 * ÔÚ¶ÁÈ¡chr³¤¶ÈÎÄ¼şºó£¬¿ÉÒÔÍ¨¹ı´Ë»ñµÃÃ¿ÌõchrµÄ³¤¶È
-	 * @param chrID ÄÚ²¿×Ô¶¯×ª»»ÎªĞ¡Ğ´
+	 * åœ¨è¯»å–chré•¿åº¦æ–‡ä»¶åï¼Œå¯ä»¥é€šè¿‡æ­¤è·å¾—æ¯æ¡chrçš„é•¿åº¦
+	 * @param chrID å†…éƒ¨è‡ªåŠ¨è½¬æ¢ä¸ºå°å†™
 	 * @return
 	 */
 	public long getChrLenMax() ;
 	/**
-	 * Ö¸¶¨×î³¤È¾É«ÌåµÄÖµ£¬·µ»Ø°´±ÈÀıÃ¿ÌõÈ¾É«ÌåÏàÓ¦ÖµÏÂÈ¾É«ÌåµÄ×ø±êÊı×é,resolutionºÍint[resolution]£¬¿ÉÓÃÓÚ»­Í¼
-	 * ÄÇÃ´resolution¾ÍÊÇ·µ»ØµÄint[]µÄ³¤¶È
+	 * æŒ‡å®šæœ€é•¿æŸ“è‰²ä½“çš„å€¼ï¼Œè¿”å›æŒ‰æ¯”ä¾‹æ¯æ¡æŸ“è‰²ä½“ç›¸åº”å€¼ä¸‹æŸ“è‰²ä½“çš„åæ ‡æ•°ç»„,resolutionå’Œint[resolution]ï¼Œå¯ç”¨äºç”»å›¾
+	 * é‚£ä¹ˆresolutionå°±æ˜¯è¿”å›çš„int[]çš„é•¿åº¦
 	 * 
 	 * @param chrID
 	 * @param maxresolution
@@ -52,82 +52,82 @@ public interface SeqHashInt {
 	public int[] getChrRes(String chrID, int maxresolution) throws Exception ;
 	
 	/**
-	 * µ±Éè¶¨ChrÎÄ¼şºó£¬¿ÉÒÔ½«ĞòÁĞ³¤¶ÈÊä³öµ½ÎÄ¼ş Êä³öÎÄ¼şÎª chrID(Ğ¡Ğ´)+¡°\t¡±+chrLength+»»ĞĞ ²»ÊÇË³ĞòÊä³ö
+	 * å½“è®¾å®šChræ–‡ä»¶åï¼Œå¯ä»¥å°†åºåˆ—é•¿åº¦è¾“å‡ºåˆ°æ–‡ä»¶ è¾“å‡ºæ–‡ä»¶ä¸º chrID(å°å†™)+â€œ\tâ€+chrLength+æ¢è¡Œ ä¸æ˜¯é¡ºåºè¾“å‡º
 	 * 
 	 * @param outFile
-	 *            ´ıÊä³öµÄÎÄ¼şÃû£¬´øÉÏÈ«²¿Â·¾¶
+	 *            å¾…è¾“å‡ºçš„æ–‡ä»¶åï¼Œå¸¦ä¸Šå…¨éƒ¨è·¯å¾„
 	 * @throws IOException
 	 */
 	public void saveChrLengthToFile(String outFile) ;
 	/**
-	 * »ñµÃËùÓĞĞòÁĞµÄÃû×Ö
+	 * è·å¾—æ‰€æœ‰åºåˆ—çš„åå­—
 	 * @return
 	 */
 	public ArrayList<String> getLsSeqName();
 	
 	public SeqFasta getSeq(String chrID, long startlocation, long endlocation);
 	/**
-	 * * ÊäÈëÈ¾É«ÌålistĞÅÏ¢ ÊäÈëĞòÁĞ×ø±êÒÔ¼°ÊÇ·ñÎª·´Ïò»¥²¹,ÆäÖĞChrIDÎª chr1£¬chr2£¬chr10ÀàĞÍ ·µ»ØĞòÁĞ
-	 * ÌáÈ¡ĞòÁĞÎª±ÕÇø¼ä£¬¼´Èç¹ûÌáÈ¡30-40bpÄÇÃ´Êµ¼ÊÌáÈ¡µÄÊÇ´Ó30¿ªÊ¼µ½40½áÊøµÄ11¸ö¼î»ù
-	 * @param cisseq Õı·´Ïò
-	 * @param chrID Ä¿µÄÈ¾É«ÌåÃû³Æ£¬ÓÃÀ´ÔÚ¹şÏ£±íÖĞ²éÕÒ¾ßÌåÄ³ÌõÈ¾É«Ìå
-	 * @param startlocation ĞòÁĞÆğµã
-	 * @param endlocation ĞòÁĞÖÕµã
+	 * * è¾“å…¥æŸ“è‰²ä½“listä¿¡æ¯ è¾“å…¥åºåˆ—åæ ‡ä»¥åŠæ˜¯å¦ä¸ºåå‘äº’è¡¥,å…¶ä¸­ChrIDä¸º chr1ï¼Œchr2ï¼Œchr10ç±»å‹ è¿”å›åºåˆ—
+	 * æå–åºåˆ—ä¸ºé—­åŒºé—´ï¼Œå³å¦‚æœæå–30-40bpé‚£ä¹ˆå®é™…æå–çš„æ˜¯ä»30å¼€å§‹åˆ°40ç»“æŸçš„11ä¸ªç¢±åŸº
+	 * @param cisseq æ­£åå‘
+	 * @param chrID ç›®çš„æŸ“è‰²ä½“åç§°ï¼Œç”¨æ¥åœ¨å“ˆå¸Œè¡¨ä¸­æŸ¥æ‰¾å…·ä½“æŸæ¡æŸ“è‰²ä½“
+	 * @param startlocation åºåˆ—èµ·ç‚¹
+	 * @param endlocation åºåˆ—ç»ˆç‚¹
 	 * @return
-	 * Ã»ÓĞ¾Í·µ»Ønull
+	 * æ²¡æœ‰å°±è¿”å›null
 	 */
 	public SeqFasta getSeq(Boolean cisseq, String chrID, long startlocation, long endlocation);
 	/**
-	 * ¸ø³öpeakÎ»µã£¬²éÕÒÖ¸¶¨·¶Î§µÄsequence£¬¸ù¾İCaseChange¸Ä±ä´óĞ¡Ğ´
+	 * ç»™å‡ºpeakä½ç‚¹ï¼ŒæŸ¥æ‰¾æŒ‡å®šèŒƒå›´çš„sequenceï¼Œæ ¹æ®CaseChangeæ”¹å˜å¤§å°å†™
 	 * <br>
-	 * ÌáÈ¡ĞòÁĞÎª±ÕÇø¼ä£¬¼´Èç¹ûÌáÈ¡30-40bpÄÇÃ´Êµ¼ÊÌáÈ¡µÄÊÇ´Ó30¿ªÊ¼µ½40½áÊøµÄ11¸ö¼î»ù
+	 * æå–åºåˆ—ä¸ºé—­åŒºé—´ï¼Œå³å¦‚æœæå–30-40bpé‚£ä¹ˆå®é™…æå–çš„æ˜¯ä»30å¼€å§‹åˆ°40ç»“æŸçš„11ä¸ªç¢±åŸº
 	 * @param chr
 	 *            ,
-	 * @param peaklocation peak summitµã×ø±ê
-	 * @param region peak×óÓÒµÄ·¶Î§
-	 * @param cisseq true:ÕıÏòÁ´ false£º·´Ïò»¥²¹Á´
+	 * @param peaklocation peak summitç‚¹åæ ‡
+	 * @param region peakå·¦å³çš„èŒƒå›´
+	 * @param cisseq true:æ­£å‘é“¾ falseï¼šåå‘äº’è¡¥é“¾
 	 */
 	public SeqFasta getSeq(String chr, int peaklocation, int region, boolean cisseq);
 
 	/**
-	 * ÌáÈ¡ĞòÁĞÎª±ÕÇø¼ä£¬¼´Èç¹ûÌáÈ¡30-40bpÄÇÃ´Êµ¼ÊÌáÈ¡µÄÊÇ´Ó30¿ªÊ¼µ½40½áÊøµÄ11¸ö¼î»ù<br>
-	 * °´ÕÕGffGeneIsoInfo×ªÂ¼±¾¸ø¶¨µÄÇé¿ö£¬×Ô¶¯ÌáÈ¡Ïà¶ÔÓÚ»ùÒò×ªÂ¼·½ÏòµÄĞòÁĞ
-	 * @param lsInfo ArrayList-int[] ¸ø¶¨µÄ×ªÂ¼±¾£¬Ã¿Ò»¶ÔÊÇÒ»¸öÍâÏÔ×Ó
-	 * @param getIntron ÊÇ·ñÌáÈ¡ÄÚº¬×ÓÇøÓò£¬True£¬ÄÚº¬×ÓĞ¡Ğ´£¬ÍâÏÔ×Ó´óĞ´¡£False£¬Ö»ÌáÈ¡ÍâÏÔ×Ó
-	 * Ã»ÓĞÈ¾É«Ìå»òĞòÁĞ³¬³ö·¶Î§Ôò·µ»Ønull
+	 * æå–åºåˆ—ä¸ºé—­åŒºé—´ï¼Œå³å¦‚æœæå–30-40bpé‚£ä¹ˆå®é™…æå–çš„æ˜¯ä»30å¼€å§‹åˆ°40ç»“æŸçš„11ä¸ªç¢±åŸº<br>
+	 * æŒ‰ç…§GffGeneIsoInfoè½¬å½•æœ¬ç»™å®šçš„æƒ…å†µï¼Œè‡ªåŠ¨æå–ç›¸å¯¹äºåŸºå› è½¬å½•æ–¹å‘çš„åºåˆ—
+	 * @param lsInfo ArrayList-int[] ç»™å®šçš„è½¬å½•æœ¬ï¼Œæ¯ä¸€å¯¹æ˜¯ä¸€ä¸ªå¤–æ˜¾å­
+	 * @param getIntron æ˜¯å¦æå–å†…å«å­åŒºåŸŸï¼ŒTrueï¼Œå†…å«å­å°å†™ï¼Œå¤–æ˜¾å­å¤§å†™ã€‚Falseï¼Œåªæå–å¤–æ˜¾å­
+	 * æ²¡æœ‰æŸ“è‰²ä½“æˆ–åºåˆ—è¶…å‡ºèŒƒå›´åˆ™è¿”å›null
 	 */
 	public SeqFasta getSeq(String chrID, List<ExonInfo> lsInfo, boolean getIntron);
 	/**
-	 * ÌáÈ¡ĞòÁĞÎª±ÕÇø¼ä£¬¼´Èç¹ûÌáÈ¡30-40bpÄÇÃ´Êµ¼ÊÌáÈ¡µÄÊÇ´Ó30¿ªÊ¼µ½40½áÊøµÄ11¸ö¼î»ù<br>
-	 * °´ÕÕGffGeneIsoInfo×ªÂ¼±¾¸ø¶¨µÄÇé¿ö£¬×Ô¶¯ÌáÈ¡Ïà¶ÔÓÚ»ùÒò×ªÂ¼·½ÏòµÄĞòÁĞ
-	 * @param cisseq Õı·´Ïò£¬ÔÚÌá³öµÄÕıÏò×ªÂ¼±¾µÄ»ù´¡ÉÏ£¬ÊÇ·ñĞèÒª·´Ïò»¥²¹¡£
-	 * @param lsInfo ArrayList-int[] ¸ø¶¨µÄ×ªÂ¼±¾£¬Ã¿Ò»¶ÔÊÇÒ»¸öÍâÏÔ×Ó
-	 * @param getIntron ÊÇ·ñÌáÈ¡ÄÚº¬×ÓÇøÓò£¬True£¬ÄÚº¬×ÓĞ¡Ğ´£¬ÍâÏÔ×Ó´óĞ´¡£False£¬Ö»ÌáÈ¡ÍâÏÔ×Ó
+	 * æå–åºåˆ—ä¸ºé—­åŒºé—´ï¼Œå³å¦‚æœæå–30-40bpé‚£ä¹ˆå®é™…æå–çš„æ˜¯ä»30å¼€å§‹åˆ°40ç»“æŸçš„11ä¸ªç¢±åŸº<br>
+	 * æŒ‰ç…§GffGeneIsoInfoè½¬å½•æœ¬ç»™å®šçš„æƒ…å†µï¼Œè‡ªåŠ¨æå–ç›¸å¯¹äºåŸºå› è½¬å½•æ–¹å‘çš„åºåˆ—
+	 * @param cisseq æ­£åå‘ï¼Œåœ¨æå‡ºçš„æ­£å‘è½¬å½•æœ¬çš„åŸºç¡€ä¸Šï¼Œæ˜¯å¦éœ€è¦åå‘äº’è¡¥ã€‚
+	 * @param lsInfo ArrayList-int[] ç»™å®šçš„è½¬å½•æœ¬ï¼Œæ¯ä¸€å¯¹æ˜¯ä¸€ä¸ªå¤–æ˜¾å­
+	 * @param getIntron æ˜¯å¦æå–å†…å«å­åŒºåŸŸï¼ŒTrueï¼Œå†…å«å­å°å†™ï¼Œå¤–æ˜¾å­å¤§å†™ã€‚Falseï¼Œåªæå–å¤–æ˜¾å­
 	 * @param chrID
-	 * @param cisseq Õı·´Ïò
-	 * @param start Êµ¼ÊµÚ¼¸¸öexon
-	 * @param end Êµ¼ÊµÚ¼¸¸öexon
+	 * @param cisseq æ­£åå‘
+	 * @param start å®é™…ç¬¬å‡ ä¸ªexon
+	 * @param end å®é™…ç¬¬å‡ ä¸ªexon
 	 * @param lsInfo
-	 * @param getIntron ÊÇ·ñ»ñÈ¡ÄÚº¬×Ó£¬ÄÚº¬×Ó×Ô¶¯Ğ¡Ğ´
+	 * @param getIntron æ˜¯å¦è·å–å†…å«å­ï¼Œå†…å«å­è‡ªåŠ¨å°å†™
 	 * @return
 	 */
 	SeqFasta getSeq(String chrID, int start, int end, List<ExonInfo> lsInfo, boolean getIntron);
 	/**
-	 * ÍâÏÔ×ÓÖ®¼äÓÃÊ²Ã´·Ö¸î
+	 * å¤–æ˜¾å­ä¹‹é—´ç”¨ä»€ä¹ˆåˆ†å‰²
 	 * @param sep
 	 */
 	void setSep(String sep);
 	/**
-	 * ÊÇ·ñÒªÉè¶¨ÎªDNA£¬Ò²¾ÍÊÇ½«ĞòÁĞÖĞµÄUÈ«²¿×ª»¯ÎªT
+	 * æ˜¯å¦è¦è®¾å®šä¸ºDNAï¼Œä¹Ÿå°±æ˜¯å°†åºåˆ—ä¸­çš„Uå…¨éƒ¨è½¬åŒ–ä¸ºT
 	 */
 	public void setDNAseq(boolean isDNAseq);
 	/**
-	 * ¸ù¾İ¸ø¶¨µÄmapInfo£¬»ñµÃĞòÁĞ£¬×¢ÒâĞòÁĞ²¢Ã»ÓĞ¸ù¾İcis5to3½øĞĞ·´Ïò
-	 * »áÓÃmapInfoµÄÃû×ÖÌæ»»seqfastaµÄÃû×Ö
+	 * æ ¹æ®ç»™å®šçš„mapInfoï¼Œè·å¾—åºåˆ—ï¼Œæ³¨æ„åºåˆ—å¹¶æ²¡æœ‰æ ¹æ®cis5to3è¿›è¡Œåå‘
+	 * ä¼šç”¨mapInfoçš„åå­—æ›¿æ¢seqfastaçš„åå­—
 	 * @param mapInfo
 	 */
 	void getSeq(SiteInfo mapInfo);
-	/** ´ÓÍ·µ½Î²±éÀúÄ³ÌõĞòÁĞÉÏµÄ¼î»ù */
+	/** ä»å¤´åˆ°å°¾éå†æŸæ¡åºåˆ—ä¸Šçš„ç¢±åŸº */
 	Iterable<Character> readBase(String refID);
 	
 }

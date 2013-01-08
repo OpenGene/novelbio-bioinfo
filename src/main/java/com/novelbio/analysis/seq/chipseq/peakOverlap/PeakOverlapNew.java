@@ -21,10 +21,10 @@ public class PeakOverlapNew {
 	}
 	
 	/**
-	 * ¼ÆËãÁ½ÌõÁ´ÉÏpeakµÄoverlapÇé¿ö£¬×¢ÒâÃ»ÓĞ½«ÖØµşpeakºÏ²¢
-	 * @param fileMinus ¸ºÁ´
-	 * @param filePlus ÕıÁ´
-	 * @param txtPeakOverlapFile Êä³öµÄÃ¿¸öpeakOverlapµÄÏ¸½Ú
+	 * è®¡ç®—ä¸¤æ¡é“¾ä¸Špeakçš„overlapæƒ…å†µï¼Œæ³¨æ„æ²¡æœ‰å°†é‡å peakåˆå¹¶
+	 * @param fileMinus è´Ÿé“¾
+	 * @param filePlus æ­£é“¾
+	 * @param txtPeakOverlapFile è¾“å‡ºçš„æ¯ä¸ªpeakOverlapçš„ç»†èŠ‚
 	 */
 	public static void PeakOverLap(String fileMinus, String filePlus, String txtPeakOverlapFile) {
 		int colChr=1;
@@ -50,7 +50,7 @@ public class PeakOverlapNew {
 	}
 	
 	/**
-	 * ¼ÆËãPeakOverlapµÄÍ³¼Æ½á¹û,½øĞĞÁËpeakµÄºÏ²¢´¦Àí
+	 * è®¡ç®—PeakOverlapçš„ç»Ÿè®¡ç»“æœ,è¿›è¡Œäº†peakçš„åˆå¹¶å¤„ç†
 	 */
 	public static void PeakStatistic(String MinNam, String PlusName,String fileMinus, String filePlus,String txtPeakOverlapStatisticFile) {
 	

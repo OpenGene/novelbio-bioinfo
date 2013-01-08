@@ -22,7 +22,7 @@ public class runMotifSearch {
 	}
 	
 	/**
-	 * Ñ¡¶¨peakÎÄ¼ş£¬Ö¸¶¨chrIDºÍsummitµã£¬»ñµÃpeakĞÅÏ¢
+	 * é€‰å®špeakæ–‡ä»¶ï¼ŒæŒ‡å®šchrIDå’Œsummitç‚¹ï¼Œè·å¾—peakä¿¡æ¯
 	 */
 	public static void getMotifDensity() {
 		Motifsearch cdg=new Motifsearch();
@@ -38,7 +38,7 @@ public class runMotifSearch {
 		try { 
 			String gfffilename = "";//NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ;
 			String chrPah = NovelBioConst.GENOME_PATH_RICE_TIGR_CHROM;
-			int condition = 1;//0:°´ÕÕpeakÔÚgffÀïµÄÇé¿öÌáÈ¡£¬Ò²¾ÍÊÇ»ùÒòÄÚ°´»ùÒò·½Ïò£¬»ùÒòÍâÕıÏò 1: Í¨Í¨ÌáÈ¡ÕıÏò 2: Í¨Í¨ÌáÈ¡·´Ïò
+			int condition = 1;//0:æŒ‰ç…§peakåœ¨gffé‡Œçš„æƒ…å†µæå–ï¼Œä¹Ÿå°±æ˜¯åŸºå› å†…æŒ‰åŸºå› æ–¹å‘ï¼ŒåŸºå› å¤–æ­£å‘ 1: é€šé€šæå–æ­£å‘ 2: é€šé€šæå–åå‘
 			String sep = "\t";
 			
 			cdg.getMotifSummitDensity(NovelBioConst.GENOME_GFF_TYPE_TIGR, gfffilename, chrPah, peakLength/2, condition, txtpeakFile, sep, columnID, rowStart, rowEnd, motifRex, resultPath, resultPrix);
@@ -46,7 +46,7 @@ public class runMotifSearch {
 	}
 	
 	/**
-	 * Ñ¡¶¨OCÎÄ¼ş£¬Ö¸¶¨TssÉÏÓÎ³¤¶È£¬»ñµÃmotifĞÅÏ¢
+	 * é€‰å®šOCæ–‡ä»¶ï¼ŒæŒ‡å®šTssä¸Šæ¸¸é•¿åº¦ï¼Œè·å¾—motifä¿¡æ¯
 	 */
 	public static void getMotifDetail() {
 		Motifsearch cdg=new Motifsearch();

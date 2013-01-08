@@ -75,7 +75,7 @@ public class Yeast {
  * dbxref.tab
  * read from first line
  * Need To Be Checked 
- * Òªµ¼ÈëÁ½´Î£¬µÚÒ»´Îµ¼Èë²úÉúÒ»¸öÎŞ·¨µ¼ÈëµÄÎÄ¼ş£¬È»ºóÔÙµ¼ÈëÒ»´Î
+ * è¦å¯¼å…¥ä¸¤æ¬¡ï¼Œç¬¬ä¸€æ¬¡å¯¼å…¥äº§ç”Ÿä¸€ä¸ªæ— æ³•å¯¼å…¥çš„æ–‡ä»¶ï¼Œç„¶åå†å¯¼å…¥ä¸€æ¬¡
  * @author zong0jie
  *
  */
@@ -92,7 +92,7 @@ class YeastDBxref extends ImportPerLine
 		this.updateIntoUniID = updateIntoUniID;
 	}
 	/**
-	 * ¸²¸Ç¸Ã·½·¨À´Éè¶¨´ÓµÚ¼¸ĞĞ¿ªÊ¼¶ÁÈ¡
+	 * è¦†ç›–è¯¥æ–¹æ³•æ¥è®¾å®šä»ç¬¬å‡ è¡Œå¼€å§‹è¯»å–
 	 */
 	protected void setReadFromLine() {
 		this.readFromLine = 1;
@@ -170,7 +170,7 @@ class YeastDBxref extends ImportPerLine
 class SGD_features extends ImportPerLine
 {
 	/**
-	 * ¸²¸Ç¸Ã·½·¨À´Éè¶¨´ÓµÚ¼¸ĞĞ¿ªÊ¼¶ÁÈ¡
+	 * è¦†ç›–è¯¥æ–¹æ³•æ¥è®¾å®šä»ç¬¬å‡ è¡Œå¼€å§‹è¯»å–
 	 */
 	protected void setReadFromLine() {
 		this.readFromLine = 1;
@@ -238,7 +238,7 @@ class SGD_features extends ImportPerLine
 class Gene_Association extends ImportPerLine
 {
 	/**
-	 * ¸²¸Ç¸Ã·½·¨À´Éè¶¨´ÓµÚ¼¸ĞĞ¿ªÊ¼¶ÁÈ¡
+	 * è¦†ç›–è¯¥æ–¹æ³•æ¥è®¾å®šä»ç¬¬å‡ è¡Œå¼€å§‹è¯»å–
 	 */
 	protected void setReadFromLine() {
 		this.readFromLine = 1;
@@ -267,7 +267,7 @@ class Gene_Association extends ImportPerLine
 class Ppa_ncbi_geneid extends ImportPerLine
 {
 	/**
-	 * ¸²¸Ç¸Ã·½·¨À´Éè¶¨´ÓµÚ¼¸ĞĞ¿ªÊ¼¶ÁÈ¡
+	 * è¦†ç›–è¯¥æ–¹æ³•æ¥è®¾å®šä»ç¬¬å‡ è¡Œå¼€å§‹è¯»å–
 	 */
 	protected void setReadFromLine() {
 		this.readFromLine = 1;
@@ -295,7 +295,7 @@ class Ppa_ncbi_geneid extends ImportPerLine
 class Pipas_Fun extends ImportPerLine
 {
 	/**
-	 * ¸²¸Ç¸Ã·½·¨À´Éè¶¨´ÓµÚ¼¸ĞĞ¿ªÊ¼¶ÁÈ¡
+	 * è¦†ç›–è¯¥æ–¹æ³•æ¥è®¾å®šä»ç¬¬å‡ è¡Œå¼€å§‹è¯»å–
 	 */
 	protected void setReadFromLine() {
 		this.readFromLine = 2;
@@ -339,7 +339,7 @@ class Pipas_Fun extends ImportPerLine
 class Pipas_GO_Slim extends ImportPerLine
 {
 	/**
-	 * ¸²¸Ç¸Ã·½·¨À´Éè¶¨´ÓµÚ¼¸ĞĞ¿ªÊ¼¶ÁÈ¡
+	 * è¦†ç›–è¯¥æ–¹æ³•æ¥è®¾å®šä»ç¬¬å‡ è¡Œå¼€å§‹è¯»å–
 	 */
 	protected void setReadFromLine() {
 		this.readFromLine = 1;

@@ -27,7 +27,7 @@ import com.novelbio.web.validator.UserValidator;
 @SessionAttributes("currUser")
 @Controller
 @RequestMapping("/test")
-// ·ÃÎÊµØÖ· http://localhost:8080/Novelbio/test.htm
+// è®¿é—®åœ°å€ http://localhost:8080/Novelbio/test.htm
 public final class CntCtrl2 {
 
 	@Autowired
@@ -39,84 +39,84 @@ public final class CntCtrl2 {
 
 
 	@RequestMapping(method = RequestMethod.GET)
-	// ·ÃÎÊµØÖ· http://localhost:8080/Novelbio/test.htm
+	// è®¿é—®åœ°å€ http://localhost:8080/Novelbio/test.htm
 	public ModelAndView getFormNoparam() {
-		// 1.Ö¸¶¨ÊÓÍ¼²¢·µ»Ø
+		// 1.æŒ‡å®šè§†å›¾å¹¶è¿”å›
 		ModelAndView mav = new ModelAndView("form");
-		// ¿ÉÒÔÍùÀïÃæÖ±½Ó²åÈëÒ»¸ö ĞÂ½¨¶ÔÏó£¬ÕâÑù¶ÔÓ¦µÄ±íÖĞ¾Í»áÌîÉÏÏà¹ØµÄĞÅÏ¢
+		// å¯ä»¥å¾€é‡Œé¢ç›´æ¥æ’å…¥ä¸€ä¸ª æ–°å»ºå¯¹è±¡ï¼Œè¿™æ ·å¯¹åº”çš„è¡¨ä¸­å°±ä¼šå¡«ä¸Šç›¸å…³çš„ä¿¡æ¯
 		User user = new User();
 		user.setName("fsefs");
 		user.setText("zongjie");
-		user.setEmail("fwefe@fewef.com");// ÕâÊ±ºò±íµ¥ÀïÃæ¶ÔÓ¦Ñ¡Ïî¾Í»á³öÏÖ×Ö
+		user.setEmail("fwefe@fewef.com");// è¿™æ—¶å€™è¡¨å•é‡Œé¢å¯¹åº”é€‰é¡¹å°±ä¼šå‡ºç°å­—
 		mav.addObject("user", user);
 		return mav;
 	}
-	// <Èç¹ûURLÇëÇóÖĞ°üÀ¨"method=tnaknsses"µÄ²ÎÊı£¬ÓÉ±¾·½·¨½øĞĞ´¦Àí
-    @RequestMapping(params = "method=thanksses",method = RequestMethod.GET )//Ö»ÓĞµ±ÇëÇóÒÔget·½·¨Ìá½»Ê±²ÅÓĞ½á¹û
+	// <å¦‚æœURLè¯·æ±‚ä¸­åŒ…æ‹¬"method=tnaknsses"çš„å‚æ•°ï¼Œç”±æœ¬æ–¹æ³•è¿›è¡Œå¤„ç†
+    @RequestMapping(params = "method=thanksses",method = RequestMethod.GET )//åªæœ‰å½“è¯·æ±‚ä»¥getæ–¹æ³•æäº¤æ—¶æ‰æœ‰ç»“æœ
     public ModelAndView getThanksPost(Integer topicId) {
     	ModelAndView mav = new ModelAndView("test");
-		//ModelAndView mav = new ModelAndView();//Ä¬ÈÏÌí¼Ótest¿ØÖÆÆ÷ÊÓÍ¼
+		//ModelAndView mav = new ModelAndView();//é»˜è®¤æ·»åŠ testæ§åˆ¶å™¨è§†å›¾
 		System.out.println(mav.getViewName());
 		return mav;
     }
 
-    @ModelAttribute("myuser")//ÏòÄ£ĞÍ¶ÔÏóÖĞÌí¼ÓÒ»¸öÃûÎªitemsµÄÊôĞÔ
+    @ModelAttribute("myuser")//å‘æ¨¡å‹å¯¹è±¡ä¸­æ·»åŠ ä¸€ä¸ªåä¸ºitemsçš„å±æ€§
     public User propUser() {
     	User user = new User();
 		user.setName("fsefs");
 		user.setText("zongjie");
-		user.setEmail("fwefe@fewef.com");// ÕâÊ±ºò±íµ¥ÀïÃæ¶ÔÓ¦Ñ¡Ïî¾Í»á³öÏÖ×Ö
+		user.setEmail("fwefe@fewef.com");// è¿™æ—¶å€™è¡¨å•é‡Œé¢å¯¹åº”é€‰é¡¹å°±ä¼šå‡ºç°å­—
         return user;
     }
   
     
     
     
-    //ÓÃpropUser()ÖĞ×¼±¸ºÃµÄÔªËØÀ´Ìî³ä±í¸ñ
+    //ç”¨propUser()ä¸­å‡†å¤‡å¥½çš„å…ƒç´ æ¥å¡«å……è¡¨æ ¼
 	@RequestMapping("/listAllBoard.htm")
-	// ·ÃÎÊµØÖ· http://localhost:8080/Novelbio/test/listAllBoard.htm
+	// è®¿é—®åœ°å€ http://localhost:8080/Novelbio/test/listAllBoard.htm
 	public ModelAndView getFormUrl(ModelMap model) {
-		// ÒÔÏÂ¼¸ÖÖ¿ÉÒÔµÄÇé¿ö
-		// 1.Ö¸¶¨ÊÓÍ¼²¢·µ»Ø
+		// ä»¥ä¸‹å‡ ç§å¯ä»¥çš„æƒ…å†µ
+		// 1.æŒ‡å®šè§†å›¾å¹¶è¿”å›
 		ModelAndView mav = new ModelAndView();
 		mav.setViewName("form");
-		// ¿ÉÒÔÍùÀïÃæÖ±½Ó²åÈëÒ»¸ö ĞÂ½¨¶ÔÏó£¬
-		// Ò²¿ÉÒÔÖ¸¶¨¶ÔÏóÃû£¬ÔÙ²åÈë¶ÔÏó
-		mav.addObject(model.get("myuser"));// ·µ»ØÒ»¸ö¿Õ±í
+		// å¯ä»¥å¾€é‡Œé¢ç›´æ¥æ’å…¥ä¸€ä¸ª æ–°å»ºå¯¹è±¡ï¼Œ
+		// ä¹Ÿå¯ä»¥æŒ‡å®šå¯¹è±¡åï¼Œå†æ’å…¥å¯¹è±¡
+		mav.addObject(model.get("myuser"));// è¿”å›ä¸€ä¸ªç©ºè¡¨
 		return mav;
 	}
     
     
-    //redirect: Á¬½Ó´«¸øä¯ÀÀÆ÷£¬ä¯ÀÀÆ÷ÔÙ´Î·ÃÎÊ£¬ÍøÖ·»á·¢Éú±ä»¯£¬²ÎÊıÍ¨¹ısession´«µİ
-	//forward£º·şÎñÆ÷¶Ë´«Êä
-//    Á½¸öÖ»ÄÜÓÃÒ»¸ö
+    //redirect: è¿æ¥ä¼ ç»™æµè§ˆå™¨ï¼Œæµè§ˆå™¨å†æ¬¡è®¿é—®ï¼Œç½‘å€ä¼šå‘ç”Ÿå˜åŒ–ï¼Œå‚æ•°é€šè¿‡sessionä¼ é€’
+	//forwardï¼šæœåŠ¡å™¨ç«¯ä¼ è¾“
+//    ä¸¤ä¸ªåªèƒ½ç”¨ä¸€ä¸ª
     @RequestMapping( method = RequestMethod.POST)  
     public String post(User user, BindingResult result,Model model) {
- 	  // Model model ÊÇ½«postµÄÕâ¸öÊÓÍ¼Õû¸öµÄ´«µİÁË½øÀ´£¬¿ÉÒÔ¶ÔÆä½øĞĞÒ»Ğ©´¦Àí£¬²»¹ı²»´¦ÀíÒ²Ã»¹ØÏµ,¸Ã²ÎÊı¿ÉÒÔÊ¡
+ 	  // Model model æ˜¯å°†postçš„è¿™ä¸ªè§†å›¾æ•´ä¸ªçš„ä¼ é€’äº†è¿›æ¥ï¼Œå¯ä»¥å¯¹å…¶è¿›è¡Œä¸€äº›å¤„ç†ï¼Œä¸è¿‡ä¸å¤„ç†ä¹Ÿæ²¡å…³ç³»,è¯¥å‚æ•°å¯ä»¥çœ
  	   userValidator.validate(user, result);
         if (result.hasErrors()) {
         	return "form";
         }
-        model.addAttribute("currUser", user);//×°Èësession,Í¨¹ısession´«µİ£¬Ò²¿ÉÒÔÍ¨¹ıurl´«µİ
+        model.addAttribute("currUser", user);//è£…å…¥session,é€šè¿‡sessionä¼ é€’ï¼Œä¹Ÿå¯ä»¥é€šè¿‡urlä¼ é€’
         // Use the redirect-after-post pattern to reduce double-submits. 
         return "redirect:test.htm?method=test2";
 //        return "forward:test.htm?method=test2";
     }
 //    
-//    Á½¸öÖ»ÄÜÓÃÒ»¸ö
+//    ä¸¤ä¸ªåªèƒ½ç”¨ä¸€ä¸ª
 //    @RequestMapping( method = RequestMethod.POST)  
 //    public ModelAndView post2(User user, BindingResult result,Model model) {
-// 	  // Model model ÊÇ½«postµÄÕâ¸öÊÓÍ¼Õû¸öµÄ´«µİÁË½øÀ´£¬¿ÉÒÔ¶ÔÆä½øĞĞÒ»Ğ©´¦Àí£¬²»¹ı²»´¦ÀíÒ²Ã»¹ØÏµ,¸Ã²ÎÊı¿ÉÒÔÊ¡
+// 	  // Model model æ˜¯å°†postçš„è¿™ä¸ªè§†å›¾æ•´ä¸ªçš„ä¼ é€’äº†è¿›æ¥ï¼Œå¯ä»¥å¯¹å…¶è¿›è¡Œä¸€äº›å¤„ç†ï¼Œä¸è¿‡ä¸å¤„ç†ä¹Ÿæ²¡å…³ç³»,è¯¥å‚æ•°å¯ä»¥çœ
 // 	   userValidator.validate(user, result);
 //        if (result.hasErrors()) {
 //        	ModelAndView mav = new ModelAndView("form");
 //        	user.setName("fsefs");
 //        	user.setText("zongjie");
-//        	user.setEmail("fwefe@fewef.com");// ÕâÊ±ºò±íµ¥ÀïÃæ¶ÔÓ¦Ñ¡Ïî¾Í»á³öÏÖ×Ö
-//        	mav.addObject("user",user);//ÕâÀïºÜÖÇÄÜ£¬³ö´íµÄµØ·½²»±äµÄ
+//        	user.setEmail("fwefe@fewef.com");// è¿™æ—¶å€™è¡¨å•é‡Œé¢å¯¹åº”é€‰é¡¹å°±ä¼šå‡ºç°å­—
+//        	mav.addObject("user",user);//è¿™é‡Œå¾ˆæ™ºèƒ½ï¼Œå‡ºé”™çš„åœ°æ–¹ä¸å˜çš„
 //        	return mav;
 //        }
-//        model.addAttribute("user", user);//×°Èësession
+//        model.addAttribute("user", user);//è£…å…¥session
 //
 //        Map<String, String> map = new HashMap<String, String>();
 //        map.put("message", "sfefsefefee");
@@ -129,9 +129,9 @@ public final class CntCtrl2 {
 
 
     @RequestMapping(params = "method=test")
-    // ·ÃÎÊµØÖ·£ºÎŞ²ÎÊı£ºhttp://localhost:8080/Novelbio/test.htm
-    //ÓĞ²ÎÊı  http://localhost:8080/Novelbio/test.htm?method=test&topicId=10&message=aaa
-    //²ÎÊı¿ÉÒÔÊÇÒ»¸ö»ò¶à¸ö
+    // è®¿é—®åœ°å€ï¼šæ— å‚æ•°ï¼šhttp://localhost:8080/Novelbio/test.htm
+    //æœ‰å‚æ•°  http://localhost:8080/Novelbio/test.htm?method=test&topicId=10&message=aaa
+    //å‚æ•°å¯ä»¥æ˜¯ä¸€ä¸ªæˆ–å¤šä¸ª
     public ModelAndView getThanks(Integer topicId,String message) 
     { 
     	ModelAndView mav = new ModelAndView("test");
@@ -147,8 +147,8 @@ public final class CntCtrl2 {
     }
 
     @RequestMapping(params = "method=userTest")
-       //ÓĞ²ÎÊı  http://localhost:8080/Novelbio/test.htm?method=userTest&topicId=10&name=zongjie
-    //»òÕß  http://localhost:8080/Novelbio/test.htm?method=userTest&topicId=10&Name=zongjie
+       //æœ‰å‚æ•°  http://localhost:8080/Novelbio/test.htm?method=userTest&topicId=10&name=zongjie
+    //æˆ–è€…  http://localhost:8080/Novelbio/test.htm?method=userTest&topicId=10&Name=zongjie
     public ModelAndView getThanks(int topicId,User user) {
     	ModelAndView mav = new ModelAndView("test");
     	HashMap<String, Object> hashMap = new HashMap<String, Object>();
@@ -160,10 +160,10 @@ public final class CntCtrl2 {
 	}
 
 	@RequestMapping(params = "method=userTestID")
-	// ½« id °ó¶¨µ½ topicId£¬Í¬Ê±¼ÓÈësession
-	// ÓĞ²ÎÊı
+	// å°† id ç»‘å®šåˆ° topicIdï¼ŒåŒæ—¶åŠ å…¥session
+	// æœ‰å‚æ•°
 	// http://localhost:8080/Novelbio/test.htm?method=userTestID&id=10&name=zongjie
-	// »òÕß
+	// æˆ–è€…
 	// http://localhost:8080/Novelbio/test.htm?method=userTestID&id=10&Name=zongjie
 	public ModelAndView getThanks2(@RequestParam("id") int topicId, User user,
 			Model model) {
@@ -178,8 +178,8 @@ public final class CntCtrl2 {
 	}
 	
 
-	 // <-- Èç¹ûURLÇëÇóÖĞ°üÀ¨"method=listAllBoard"µÄ²ÎÊı£¬ÓÉ±¾·½·¨½øĞĞ´¦Àí
-    @RequestMapping(params = "method=test3") //·ÃÎÊµØÖ· http://localhost:8080/Novelbio/test.htm?method=test2
+	 // <-- å¦‚æœURLè¯·æ±‚ä¸­åŒ…æ‹¬"method=listAllBoard"çš„å‚æ•°ï¼Œç”±æœ¬æ–¹æ³•è¿›è¡Œå¤„ç†
+    @RequestMapping(params = "method=test3") //è®¿é—®åœ°å€ http://localhost:8080/Novelbio/test.htm?method=test2
     public ModelAndView getThanks(Map map) {
     	ModelAndView mav = new ModelAndView("test");
     	mav.addObject("message", map.get("name"));
@@ -189,10 +189,10 @@ public final class CntCtrl2 {
     }
 	
 	
-	  //ÏÈµ÷ÓÃº¬ÓĞsessionµÄ·½·¨getThanks2 µØÖ· http://localhost:8080/Novelbio/test.htm?method=userTestID&id=10&Name=zongjie
-	//È»ºó·ÃÎÊ  http://localhost:8080/Novelbio/test.htm?method=test2
-	 // <-- Èç¹ûURLÇëÇóÖĞ°üÀ¨"method=listAllBoard"µÄ²ÎÊı£¬ÓÉ±¾·½·¨½øĞĞ´¦Àí
-    @RequestMapping(params = "method=test2") //·ÃÎÊµØÖ· http://localhost:8080/Novelbio/test.htm?method=test2
+	  //å…ˆè°ƒç”¨å«æœ‰sessionçš„æ–¹æ³•getThanks2 åœ°å€ http://localhost:8080/Novelbio/test.htm?method=userTestID&id=10&Name=zongjie
+	//ç„¶åè®¿é—®  http://localhost:8080/Novelbio/test.htm?method=test2
+	 // <-- å¦‚æœURLè¯·æ±‚ä¸­åŒ…æ‹¬"method=listAllBoard"çš„å‚æ•°ï¼Œç”±æœ¬æ–¹æ³•è¿›è¡Œå¤„ç†
+    @RequestMapping(params = "method=test2") //è®¿é—®åœ°å€ http://localhost:8080/Novelbio/test.htm?method=test2
     public ModelAndView getThanks(@ModelAttribute("currUser") User sessionValue) {
     	ModelAndView mav = new ModelAndView("test");
     	if (sessionValue !=null) {
@@ -203,15 +203,15 @@ public final class CntCtrl2 {
 		return mav;
     }
 
-	  //ÏÈµ÷ÓÃº¬ÓĞsessionµÄ·½·¨getThanks2 µØÖ· http://localhost:8080/Novelbio/test.htm?method=userTestID&id=10&Name=zongjie
-	//È»ºó·ÃÎÊ  http://localhost:8080/Novelbio/test.htm?method=test3
-	 // <-- Èç¹ûURLÇëÇóÖĞ°üÀ¨"method=listAllBoard"µÄ²ÎÊı£¬ÓÉ±¾·½·¨½øĞĞ´¦Àí
-    @RequestMapping(params = "method=test3") //·ÃÎÊµØÖ· http://localhost:8080/Novelbio/test.htm?method=test3
+	  //å…ˆè°ƒç”¨å«æœ‰sessionçš„æ–¹æ³•getThanks2 åœ°å€ http://localhost:8080/Novelbio/test.htm?method=userTestID&id=10&Name=zongjie
+	//ç„¶åè®¿é—®  http://localhost:8080/Novelbio/test.htm?method=test3
+	 // <-- å¦‚æœURLè¯·æ±‚ä¸­åŒ…æ‹¬"method=listAllBoard"çš„å‚æ•°ï¼Œç”±æœ¬æ–¹æ³•è¿›è¡Œå¤„ç†
+    @RequestMapping(params = "method=test3") //è®¿é—®åœ°å€ http://localhost:8080/Novelbio/test.htm?method=test3
     public ModelAndView getThanks(@ModelAttribute("currUser") User sessionValue, SessionStatus status) {
     	ModelAndView mav = new ModelAndView("test");
     	if (sessionValue.getName().equals("test")) {
-			status.setComplete(); // Çå¿Õsession ÖĞ·ÅÔÚ session ¼¶±ğµÄÄ£ĞÍÊôĞÔÊı¾İ
-			//µ«ÊÇsessionValueÒÑ¾­±»¸³Öµ£¬ËùÒÔÒÀÈ»´æÔÚ
+			status.setComplete(); // æ¸…ç©ºsession ä¸­æ”¾åœ¨ session çº§åˆ«çš„æ¨¡å‹å±æ€§æ•°æ®
+			//ä½†æ˜¯sessionValueå·²ç»è¢«èµ‹å€¼ï¼Œæ‰€ä»¥ä¾ç„¶å­˜åœ¨
 		}
      	mav.addObject("message", sessionValue.getName());
 		System.out.println(sessionValue.getName());

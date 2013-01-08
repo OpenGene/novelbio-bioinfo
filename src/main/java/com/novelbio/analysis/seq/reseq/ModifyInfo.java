@@ -14,9 +14,9 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 public class ModifyInfo implements Comparable<ModifyInfo>
 {
 	/**
-	 * @param seqName ĞòÁĞÃû
-	 * @param modifyName ±¾´ÎĞŞ¸ÄµÄÃû×Ö£¬Æğ¸öÃû×Ö£¬×îºÃÄÜºÍĞŞ¸ÄµÄÏà¶ÔÓ¦
-	 * @param ¾ßÌåĞòÁĞ
+	 * @param seqName åºåˆ—å
+	 * @param modifyName æœ¬æ¬¡ä¿®æ”¹çš„åå­—ï¼Œèµ·ä¸ªåå­—ï¼Œæœ€å¥½èƒ½å’Œä¿®æ”¹çš„ç›¸å¯¹åº”
+	 * @param å…·ä½“åºåˆ—
 	 */
 	protected ModifyInfo(String seqName, String modifyName, String seq) {
 		this.seqName = seqName;
@@ -24,14 +24,14 @@ public class ModifyInfo implements Comparable<ModifyInfo>
 		this.modifySeq = seq;
 	}
 	/**
-	 * lastz½á¹ûÎÄ¼ş£¬Ò»¸ö½á¹û¶àÌõalign
-	 * ¶ÁÈ¡lastzµÄÎÄ¼şºó£¬½«½á¹û·ÅÔÚ¸Ãhash±íÖĞ
+	 * lastzç»“æœæ–‡ä»¶ï¼Œä¸€ä¸ªç»“æœå¤šæ¡align
+	 * è¯»å–lastzçš„æ–‡ä»¶åï¼Œå°†ç»“æœæ”¾åœ¨è¯¥hashè¡¨ä¸­
 	 */
 	static HashMap<String, ModifyInfo> hashModifyInfo = new HashMap<String, ModifyInfo>();
 	/**
-	 * »ñµÃ¸ÃlastzµÃµ½µÄĞòÁĞĞÅÏ¢
-	 * @param lastzFile lastzÎÄ¼şÂ·¾¶£¬lastz½á¹ûÎÄ¼ş£¬Ò»¸ö½á¹û¶àÌõalign
-	 * @param seqModifySeq ´ı×é×°µÄfastaĞòÁĞ
+	 * è·å¾—è¯¥lastzå¾—åˆ°çš„åºåˆ—ä¿¡æ¯
+	 * @param lastzFile lastzæ–‡ä»¶è·¯å¾„ï¼Œlastzç»“æœæ–‡ä»¶ï¼Œä¸€ä¸ªç»“æœå¤šæ¡align
+	 * @param seqModifySeq å¾…ç»„è£…çš„fastaåºåˆ—
 	 * @return
 	 */
 	public static ArrayList<ModifyInfo> getModifyInfo(String lastzFile, SeqFastaHash seqModifySeq) {
@@ -73,8 +73,8 @@ public class ModifyInfo implements Comparable<ModifyInfo>
 	
 	
 	/**
-	 * ¸ø¶¨±êÌâÁĞºÍÖµ£¬Ìî³ä±¾Àà
-	 * ÓÃÖ®Ç°ÏÈÓÃsetTitleÉè¶¨±êÌâ
+	 * ç»™å®šæ ‡é¢˜åˆ—å’Œå€¼ï¼Œå¡«å……æœ¬ç±»
+	 * ç”¨ä¹‹å‰å…ˆç”¨setTitleè®¾å®šæ ‡é¢˜
 	 */
 	private ModifyInfo(String title, String value) {
 		String[] Info = title.replace("#", "").split("\t");
@@ -116,11 +116,11 @@ public class ModifyInfo implements Comparable<ModifyInfo>
 		
 	}
 	/**
-	 * ½öÔÚlastzÎÄ¼ş¶ÁÈ¡ÖĞÊ¹ÓÃ£¬ÅĞ¶Ï¸Ãalign½ö³öÏÖ¹ıÒ»´Î
+	 * ä»…åœ¨lastzæ–‡ä»¶è¯»å–ä¸­ä½¿ç”¨ï¼Œåˆ¤æ–­è¯¥alignä»…å‡ºç°è¿‡ä¸€æ¬¡
 	 */
 	boolean boosingle = true;
 	/**
-	 * ĞòÁĞµÄ·ÖÊı
+	 * åºåˆ—çš„åˆ†æ•°
 	 */
 	int score = 0;
 
@@ -128,26 +128,26 @@ public class ModifyInfo implements Comparable<ModifyInfo>
 	{}
 	
 	/**
-	 * ´ıĞŞ¸ÄĞòÁĞµÄÃû×Ö
+	 * å¾…ä¿®æ”¹åºåˆ—çš„åå­—
 	 */
 	String seqName = "";
 	/**
-	 * ±¾´ÎĞŞ¸ÄµÄÃû×Ö£¬Æğ¸öÃû×Ö£¬×îºÃÄÜºÍĞŞ¸ÄµÄÏà¶ÔÓ¦
+	 * æœ¬æ¬¡ä¿®æ”¹çš„åå­—ï¼Œèµ·ä¸ªåå­—ï¼Œæœ€å¥½èƒ½å’Œä¿®æ”¹çš„ç›¸å¯¹åº”
 	 */
 	String modifyName = "";
 	/**
-	 * ÔÚµÚ¼¸Î»¿ªÊ¼Ìæ»»£¬±ÕÇø¼ä
+	 * åœ¨ç¬¬å‡ ä½å¼€å§‹æ›¿æ¢ï¼Œé—­åŒºé—´
 	 */
 	int start = -1;
 	/**
-	 * ÔÚµÚ¼¸Î»½áÊøÌæ»»£¬±ÕÇø¼ä
-	 * Èç¹ûend<start£¬Ôò²åÈëµ½startÖ®ºó
-	 * Èç¹ûend == start£¬ÔòÎªsnp
+	 * åœ¨ç¬¬å‡ ä½ç»“æŸæ›¿æ¢ï¼Œé—­åŒºé—´
+	 * å¦‚æœend<startï¼Œåˆ™æ’å…¥åˆ°startä¹‹å
+	 * å¦‚æœend == startï¼Œåˆ™ä¸ºsnp
 	 */
 	int end = -1;
 	int lengthSeq2 = 0;
 	/**
-	 * alignµÄ³¤¶È
+	 * alignçš„é•¿åº¦
 	 * @return
 	 */
 	public int getLengthSeq2() {
@@ -157,11 +157,11 @@ public class ModifyInfo implements Comparable<ModifyInfo>
 		this.lengthSeq2 = lengthSeq2;
 	}
 	/**
-	 * ĞŞ¸ÄĞòÁĞ´ÓÔ­Ê¼ĞòÁĞµÄµÚ¼¸Î»¿ªÊ¼£¬Êµ¼ÊÎ»£¬´Ó1¿ªÊ¼
+	 * ä¿®æ”¹åºåˆ—ä»åŸå§‹åºåˆ—çš„ç¬¬å‡ ä½å¼€å§‹ï¼Œå®é™…ä½ï¼Œä»1å¼€å§‹
 	 */
 	int startModify = -1;
 	/**
-	 * ĞŞ¸ÄĞòÁĞµ½Ô­Ê¼ĞòÁĞµÄµÚ¼¸Î»½áÊø£¬Êµ¼ÊÎ»£¬´Ó1¿ªÊ¼
+	 * ä¿®æ”¹åºåˆ—åˆ°åŸå§‹åºåˆ—çš„ç¬¬å‡ ä½ç»“æŸï¼Œå®é™…ä½ï¼Œä»1å¼€å§‹
 	 */
 	int endModify = -1;
 	int crossStartSiteSeq2End = -1;
@@ -169,42 +169,42 @@ public class ModifyInfo implements Comparable<ModifyInfo>
 	int crossStartSiteSeq1Start = -1;
 	int crossStartSiteSeq1End = -1;
 	/**
-	 * ·¢ÉúÁËºá¿çÆğµãÊÂ¼ş
+	 * å‘ç”Ÿäº†æ¨ªè·¨èµ·ç‚¹äº‹ä»¶
 	 */
 	boolean crossStartSite = false;
 	/**
-	 * ·¢ÉúÁËºá¿çÆğµãÊÂ¼ş
+	 * å‘ç”Ÿäº†æ¨ªè·¨èµ·ç‚¹äº‹ä»¶
 	 */
 	public boolean isCrossStartSite() {
 		return crossStartSite;
 	}
 	/**
-	 * µ±crossStartSiteÎªtrueÊ±Ê¹ÓÃ
-	 * ºá¿çÆğµãµÄseq2ĞòÁĞµÄ×îÎ²¶Ë£¬¼´ĞÇºÅÎ»ÖÃ£¬±ÕÇø¼ä      --------------------*          --------------
+	 * å½“crossStartSiteä¸ºtrueæ—¶ä½¿ç”¨
+	 * æ¨ªè·¨èµ·ç‚¹çš„seq2åºåˆ—çš„æœ€å°¾ç«¯ï¼Œå³æ˜Ÿå·ä½ç½®ï¼Œé—­åŒºé—´      --------------------*          --------------
 	 * @return
 	 */
 	public int getCrossStartSiteSeq2End() {
 		return crossStartSiteSeq2End;
 	}
 	/**
-	 * µ±crossStartSiteÎªtrueÊ±Ê¹ÓÃ
-	 * ºá¿çÆğµãµÄseq2ĞòÁĞµÄ×îÇ°¶Ë£¬¼´ĞÇºÅÎ»ÖÃ£¬±ÕÇø¼ä      --------------------          *-------------
+	 * å½“crossStartSiteä¸ºtrueæ—¶ä½¿ç”¨
+	 * æ¨ªè·¨èµ·ç‚¹çš„seq2åºåˆ—çš„æœ€å‰ç«¯ï¼Œå³æ˜Ÿå·ä½ç½®ï¼Œé—­åŒºé—´      --------------------          *-------------
 	 * @return
 	 */
 	public int getCrossStartSiteSeq2Start() {
 		return crossStartSiteSeq2Start;
 	}
 	/**
-	 * µ±crossStartSiteÎªtrueÊ±Ê¹ÓÃ
-	 * ºá¿çÆğµãµÄseq1ĞòÁĞµÄ×îÎ²¶Ë£¬¼´ĞÇºÅÎ»ÖÃ£¬±ÕÇø¼ä      --------------------          --------------*\ 
+	 * å½“crossStartSiteä¸ºtrueæ—¶ä½¿ç”¨
+	 * æ¨ªè·¨èµ·ç‚¹çš„seq1åºåˆ—çš„æœ€å°¾ç«¯ï¼Œå³æ˜Ÿå·ä½ç½®ï¼Œé—­åŒºé—´      --------------------          --------------*\ 
 	 * @return
 	 */
 	public int getCrossStartSiteSeq1End() {
 		return crossStartSiteSeq1End;
 	}
 	/**
-	 * µ±crossStartSiteÎªtrueÊ±Ê¹ÓÃ
-	 * ºá¿çÆğµãµÄseq1ĞòÁĞµÄ×îÇ°¶Ë£¬¼´ĞÇºÅÎ»ÖÃ£¬±ÕÇø¼ä      *--------------------          --------------
+	 * å½“crossStartSiteä¸ºtrueæ—¶ä½¿ç”¨
+	 * æ¨ªè·¨èµ·ç‚¹çš„seq1åºåˆ—çš„æœ€å‰ç«¯ï¼Œå³æ˜Ÿå·ä½ç½®ï¼Œé—­åŒºé—´      *--------------------          --------------
 	 * @return
 	 */
 	public int getCrossStartSiteSeq1Start() {
@@ -240,9 +240,9 @@ public class ModifyInfo implements Comparable<ModifyInfo>
 	}
 	
 	/**
-	 *  Ìæ»»ĞòÁĞµÄÇ°²¿ÊÇ·ñÃ»ÎÊÌâ
-	 *  true£ºÃ»ÎÊÌâ
-	 *  false£ºÓĞÎÊÌâ
+	 *  æ›¿æ¢åºåˆ—çš„å‰éƒ¨æ˜¯å¦æ²¡é—®é¢˜
+	 *  trueï¼šæ²¡é—®é¢˜
+	 *  falseï¼šæœ‰é—®é¢˜
 	 */
 	boolean booStart = true;
 	Boolean cis5to3 = true;
@@ -254,9 +254,9 @@ public class ModifyInfo implements Comparable<ModifyInfo>
 	}
 	
 	/**
-	 * Ìæ»»ĞòÁĞµÄºó²¿ÊÇ·ñÃ»ÎÊÌâ
-	 *  true£ºÃ»ÎÊÌâ
-	 *  false£ºÓĞÎÊÌâ
+	 * æ›¿æ¢åºåˆ—çš„åéƒ¨æ˜¯å¦æ²¡é—®é¢˜
+	 *  trueï¼šæ²¡é—®é¢˜
+	 *  falseï¼šæœ‰é—®é¢˜
 	 */
 	boolean booEnd = true;
 	boolean assemle = true;
@@ -275,40 +275,40 @@ public class ModifyInfo implements Comparable<ModifyInfo>
 		this.end = end;
 	}
 	/**
-	 *  Ìæ»»ĞòÁĞµÄÇ°²¿ÊÇ·ñÓĞÎÊÌâ
+	 *  æ›¿æ¢åºåˆ—çš„å‰éƒ¨æ˜¯å¦æœ‰é—®é¢˜
 	 */
 	public void setBooStart(boolean booStart) {
 		this.booStart = booStart;
 	}
 	/**
-	 * Ìæ»»ĞòÁĞµÄºó²¿ÊÇ·ñÓĞÎÊÌâ
+	 * æ›¿æ¢åºåˆ—çš„åéƒ¨æ˜¯å¦æœ‰é—®é¢˜
 	 */
 	public void setBooEnd(boolean booEnd) {
 		this.booEnd = booEnd;
 	}
 	/**
-	 * ´ıĞŞ¸ÄµÄĞòÁĞ
+	 * å¾…ä¿®æ”¹çš„åºåˆ—
 	 * @return
 	 */
 	public String getModifySeq() {
 		return modifySeq;
 	}
 	/**
-	 * ÔÚµÚ¼¸Î»¿ªÊ¼Ìæ»»£¬±ÕÇø¼ä
+	 * åœ¨ç¬¬å‡ ä½å¼€å§‹æ›¿æ¢ï¼Œé—­åŒºé—´
 	 */
 	public int getStart() {
 		return start;
 	}
 	/**
-	 * ÔÚµÚ¼¸Î»½áÊøÌæ»»£¬±ÕÇø¼ä
-	 * Èç¹ûend<start£¬Ôò²åÈëµ½startÖ®ºó
-	 * Èç¹ûend == start£¬ÔòÎªsnp
+	 * åœ¨ç¬¬å‡ ä½ç»“æŸæ›¿æ¢ï¼Œé—­åŒºé—´
+	 * å¦‚æœend<startï¼Œåˆ™æ’å…¥åˆ°startä¹‹å
+	 * å¦‚æœend == startï¼Œåˆ™ä¸ºsnp
 	 */
 	public int getEnd() {
 		return end;
 	}
 	/**
-	 * ±¾´ÎĞŞ¸ÄµÄÃû×Ö£¬Æğ¸öÃû×Ö£¬×îºÃÄÜºÍĞŞ¸ÄµÄÏà¶ÔÓ¦
+	 * æœ¬æ¬¡ä¿®æ”¹çš„åå­—ï¼Œèµ·ä¸ªåå­—ï¼Œæœ€å¥½èƒ½å’Œä¿®æ”¹çš„ç›¸å¯¹åº”
 	 */
 	public String getModifyName() {
 		return modifyName;
@@ -317,17 +317,17 @@ public class ModifyInfo implements Comparable<ModifyInfo>
 		return seqName;
 	}
 	/**
-	 * Ìæ»»ĞòÁĞµÄºó²¿ÊÇ·ñÃ»ÎÊÌâ
-	 *  true£ºÃ»ÎÊÌâ
-	 *  false£ºÓĞÎÊÌâ
+	 * æ›¿æ¢åºåˆ—çš„åéƒ¨æ˜¯å¦æ²¡é—®é¢˜
+	 *  trueï¼šæ²¡é—®é¢˜
+	 *  falseï¼šæœ‰é—®é¢˜
 	 */
 	public boolean isBooEnd() {
 		return booEnd;
 	}
 	/**
-	 *  Ìæ»»ĞòÁĞµÄÇ°²¿ÊÇ·ñÃ»ÎÊÌâ
-	 *  true£ºÃ»ÎÊÌâ
-	 *  false£ºÓĞÎÊÌâ
+	 *  æ›¿æ¢åºåˆ—çš„å‰éƒ¨æ˜¯å¦æ²¡é—®é¢˜
+	 *  trueï¼šæ²¡é—®é¢˜
+	 *  falseï¼šæœ‰é—®é¢˜
 	 */
 	public boolean isBooStart() {
 		return booStart;
@@ -335,17 +335,17 @@ public class ModifyInfo implements Comparable<ModifyInfo>
 
 	
 	/**
-	 * ´ıĞŞ¸ÄÇøÓòµÄ³¤¶È
+	 * å¾…ä¿®æ”¹åŒºåŸŸçš„é•¿åº¦
 	 * @return
 	 */
 	public Integer getLenModify() {
-		if (end < start) {//²åÈëĞŞ¸Ä
+		if (end < start) {//æ’å…¥ä¿®æ”¹
 			return 0;
 		}
 		return end - start;
 	}
 	/**
-	 * ´ÓĞ¡µ½´óÅÅĞò£¬Ö»ÅÅÁĞstartÎ»µã
+	 * ä»å°åˆ°å¤§æ’åºï¼Œåªæ’åˆ—startä½ç‚¹
 	 */
 	@Override
 	public int compareTo(ModifyInfo o) {
@@ -379,11 +379,11 @@ public class ModifyInfo implements Comparable<ModifyInfo>
 	}
 	
 	/**
-	 * ±¾º¯ÊıĞèÒªÑéÖ¤
-	 * ½«ĞèÒªÌôÑ¡µÄ»ùÒòÖĞ£¬overlapµÄÉ¾³ı
+	 * æœ¬å‡½æ•°éœ€è¦éªŒè¯
+	 * å°†éœ€è¦æŒ‘é€‰çš„åŸºå› ä¸­ï¼Œoverlapçš„åˆ é™¤
 	 * @param lsModifyInfos
-	 * @return ·µ»ØÒ»¸ölist list0£º²»ÖØµşµÄModifyInfo£¬°´ÕÕstart´ÓĞ¡µ½´óÅÅĞò
-	 * list1£ºËùÓĞÆäËûModifyInfo£¬×¼±¸ÏÂ´Î¼ÌĞø·ÖÎö
+	 * @return è¿”å›ä¸€ä¸ªlist list0ï¼šä¸é‡å çš„ModifyInfoï¼ŒæŒ‰ç…§startä»å°åˆ°å¤§æ’åº
+	 * list1ï¼šæ‰€æœ‰å…¶ä»–ModifyInfoï¼Œå‡†å¤‡ä¸‹æ¬¡ç»§ç»­åˆ†æ
 	 */
 	public static ArrayList<ArrayList<ModifyInfo>> delOverlap(ArrayList<ModifyInfo> lsModifyInfos)
 	{
@@ -397,15 +397,15 @@ public class ModifyInfo implements Comparable<ModifyInfo>
 //		}
 		
 		Collections.sort(lsModifyInfos, new Comparator<ModifyInfo>() {
-			//½«´ıÌæ»»Æ¬¶Î³¤¶È°´ÕÕ´Ó´óµ½Ğ¡ÅÅĞò
+			//å°†å¾…æ›¿æ¢ç‰‡æ®µé•¿åº¦æŒ‰ç…§ä»å¤§åˆ°å°æ’åº
 			@Override
 			public int compare(ModifyInfo o1, ModifyInfo o2) {
 				return -o1.getLenModify().compareTo(o2.getLenModify());
 			}
 		});
-		//×îºóÒª·ÅÈë·ÖÎöµÄµÄlist
+		//æœ€åè¦æ”¾å…¥åˆ†æçš„çš„list
 		ArrayList<ModifyInfo> lsFinal = new ArrayList<ModifyInfo>();
-		//ÏÈ²»½øĞĞ·ÖÎöµÄlist
+		//å…ˆä¸è¿›è¡Œåˆ†æçš„list
 		ArrayList<ModifyInfo> lsNot = new ArrayList<ModifyInfo>();
 		for (ModifyInfo modifyInfo : lsModifyInfos) {
 			if (!modifyInfo.isAssemle()) {
@@ -424,7 +424,7 @@ public class ModifyInfo implements Comparable<ModifyInfo>
 				}
 			}
 			else {
-				//²åÈëµÄmodifyInfoÓëÇ°ºó¶¼Ã»ÓĞÖØµş¡£-index-2<0±íÊ¾ÔÚµÚÒ»¸ö
+				//æ’å…¥çš„modifyInfoä¸å‰åéƒ½æ²¡æœ‰é‡å ã€‚-index-2<0è¡¨ç¤ºåœ¨ç¬¬ä¸€ä¸ª
 				if (lsFinal.size() == 0) {
 					lsFinal.add(modifyInfo);
 					continue;

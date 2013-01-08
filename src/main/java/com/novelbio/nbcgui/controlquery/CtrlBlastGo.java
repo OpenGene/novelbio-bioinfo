@@ -15,18 +15,18 @@ import com.novelbio.nbcgui.GUI.GuiBlastJpanel;
 
 
 public class CtrlBlastGo extends SwingWorker<ArrayList<String[]>, ProgressDataGo> {
-	/** ÊÇ·ñĞèÒªblast */
+	/** æ˜¯å¦éœ€è¦blast */
 	boolean blast = false;
-	/** ²éÕÒÎïÖÖ */
+	/** æŸ¥æ‰¾ç‰©ç§ */
 	int taxID = 0;
-	/** blastÎïÖÖ */
+	/** blastç‰©ç§ */
 	int StaxID = 0;
-	/** blastµÄevalue */
+	/** blastçš„evalue */
 	double evalue = 100;
 	
-	/** GoµÄÀàĞÍ */
+	/** Goçš„ç±»å‹ */
 	String GoClass = Go2Term.GO_BP;
-	/** ½çÃæ¶ÔÏó */
+	/** ç•Œé¢å¯¹è±¡ */
 	GuiBlastJpanel guiBlast;
 	
 	List<String> lsGeneID = null;
@@ -48,7 +48,7 @@ public class CtrlBlastGo extends SwingWorker<ArrayList<String[]>, ProgressDataGo
 	}
 
 	/**
-	 * ×¼±¸¹¤×÷£¬½«geneID¶ÁÈëÄÚ´æÍ¬Ê±×¼±¸²éÕÒ£¬Í¬Ê±·µ»Ø×Ü¹²²éÕÒµÄÊıÁ¿£¬¸ø½ø¶ÈÌõ¼ÆÊı
+	 * å‡†å¤‡å·¥ä½œï¼Œå°†geneIDè¯»å…¥å†…å­˜åŒæ—¶å‡†å¤‡æŸ¥æ‰¾ï¼ŒåŒæ—¶è¿”å›æ€»å…±æŸ¥æ‰¾çš„æ•°é‡ï¼Œç»™è¿›åº¦æ¡è®¡æ•°
 	 * @return
 	 * @throws Exception
 	 */
@@ -58,7 +58,7 @@ public class CtrlBlastGo extends SwingWorker<ArrayList<String[]>, ProgressDataGo
 	}
 	
 	/**
-	 * ¸ø¶¨ÎÄ¼ş£¬ºÍÎÄ¼ş·Ö¸î·û£¬ÒÔ¼°µÚ¼¸ÁĞ£¬»ñµÃ¸ÃÁĞµÄ»ùÒòID
+	 * ç»™å®šæ–‡ä»¶ï¼Œå’Œæ–‡ä»¶åˆ†å‰²ç¬¦ï¼Œä»¥åŠç¬¬å‡ åˆ—ï¼Œè·å¾—è¯¥åˆ—çš„åŸºå› ID
 	 * @param fileName
 	 * @return
 	 * @throws Exception 
@@ -93,9 +93,9 @@ public class CtrlBlastGo extends SwingWorker<ArrayList<String[]>, ProgressDataGo
 					
 				// (String[] strings : lstmpAnno) 
 				
-					//½á¹ûÖĞ°üº¬ÁËµÚ2ÁĞºÍµÚ9ÁĞµÄgeneIDĞÅÏ¢
-					//Ã»ÓĞblastÎªstirng[5]
-					//blastÎªstring[13]
+					//ç»“æœä¸­åŒ…å«äº†ç¬¬2åˆ—å’Œç¬¬9åˆ—çš„geneIDä¿¡æ¯
+					//æ²¡æœ‰blastä¸ºstirng[5]
+					//blastä¸ºstring[13]
 					String[] strings2 =null;
 					
 					if(blast)
@@ -144,26 +144,26 @@ public class CtrlBlastGo extends SwingWorker<ArrayList<String[]>, ProgressDataGo
 	 * @param evalue
 	 * @param StaxID
 	 * @return
-	 * <b>µ±blastÎªfalseÊ±</b><br>
+	 * <b>å½“blastä¸ºfalseæ—¶</b><br>
 	 * ArrayList-String[7] <br>
-ÆäÖĞ£º0: queryID<br>
+å…¶ä¸­ï¼š0: queryID<br>
 1: uniID<br>
 2: symbol<br>
 3: description<br>
 4: GOID<br>
 5: GOTerm<br>
 6: Evidence<br>
-	 * <b>Èç¹ûÃ»ÕÒµ½£¬Ôò·µ»Ønull£¬²»»á·µ»ØÒ»¸ö¿ÕµÄlist</b><br>
-	 * 	 * <b>µ±blastÎªtrueÊ±</b><br>
+	 * <b>å¦‚æœæ²¡æ‰¾åˆ°ï¼Œåˆ™è¿”å›nullï¼Œä¸ä¼šè¿”å›ä¸€ä¸ªç©ºçš„list</b><br>
+	 * 	 * <b>å½“blastä¸ºtrueæ—¶</b><br>
 	 * ArrayList-String[15]
-	 * ÆäÖĞ£º<br>
+	 * å…¶ä¸­ï¼š<br>
 	 * 0: queryID<br>
 	 * 1: queryGeneID<br>
 	 * 2: querySymbol<br>
 	 * 3: Description<br>
 	 * 4: GOID<br>
 	 * 5: GOTerm<br>
-	 * 6: GO¿ÉĞÅ¶È<br>
+	 * 6: GOå¯ä¿¡åº¦<br>
 	 * 7: blastEvalue<br>
 	 * 8: taxID<br>
 	 * 9: subjectGeneID<br>
@@ -171,8 +171,8 @@ public class CtrlBlastGo extends SwingWorker<ArrayList<String[]>, ProgressDataGo
 	 * 11: Description<br>
 	 * 12: GOID<br>
 	 * 13: GOTerm<br>
-	 * 14: GO¿ÉĞÅ¶È<br>
-	 * <b>Èç¹ûÃ»ÕÒµ½GOĞÅÏ¢£¬Ôò·µ»Ønull£¬²»»á·µ»ØÒ»¸ö¿ÕµÄlist</b>
+	 * 14: GOå¯ä¿¡åº¦<br>
+	 * <b>å¦‚æœæ²¡æ‰¾åˆ°GOä¿¡æ¯ï¼Œåˆ™è¿”å›nullï¼Œä¸ä¼šè¿”å›ä¸€ä¸ªç©ºçš„list</b>
 	 */
 	private ArrayList<String[]> getLsGeneGo(String accID, int taxID,String GoClass, boolean blast, double evalue, int StaxID)
 	{
@@ -185,7 +185,7 @@ public class CtrlBlastGo extends SwingWorker<ArrayList<String[]>, ProgressDataGo
 		tmpAccIDInfo[1] = copedID.getGenUniID();
 		tmpAccIDInfo[2] = copedID.getSymbol();tmpAccIDInfo[3] = copedID.getDescription();
 		copedID.setBlastInfo(evalue, StaxID);
-		//±¾»ùÒòµÄGOĞÅÏ¢
+		//æœ¬åŸºå› çš„GOä¿¡æ¯
 		ArrayList<AGene2Go> lsGOthis = copedID.getGene2GO(GoClass);
 		for (AGene2Go aGene2Go : lsGOthis) {
 			String[] tmpResult = ArrayOperate.copyArray(tmpAccIDInfo, 7);
@@ -198,7 +198,7 @@ public class CtrlBlastGo extends SwingWorker<ArrayList<String[]>, ProgressDataGo
 			}
 			return lsResult;
 		}
-		//blast»ùÒòµÄGOĞÅÏ¢
+		//blaståŸºå› çš„GOä¿¡æ¯
 		ArrayList<String[]> lsResultBlast = new ArrayList<String[]>();
 		
 		GeneID copedIDblast = copedID.getGeneIDBlast();
@@ -214,7 +214,7 @@ public class CtrlBlastGo extends SwingWorker<ArrayList<String[]>, ProgressDataGo
 			if (lsResult == null)
 				lsResult = new ArrayList<String[]>();
 			String[] tmpResultBlast = new String[15];
-			//³õÊ¼»¯
+			//åˆå§‹åŒ–
 			for (int j = 0; j < tmpResultBlast.length; j++) {
 				tmpResultBlast[j] = "";
 			}

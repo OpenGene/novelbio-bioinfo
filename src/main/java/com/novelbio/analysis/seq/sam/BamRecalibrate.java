@@ -3,9 +3,9 @@ package com.novelbio.analysis.seq.sam;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
-/** ¶ÔÓÚÃ¿¸ö¼î»ùÖÊÁ¿µÄÖØ¹À¼Æ */
+/** å¯¹äºæ¯ä¸ªç¢±åŸºè´¨é‡çš„é‡ä¼°è®¡ */
 public class BamRecalibrate {
-//#ÖØĞÂ¼ÆËãÃ¿¸ö¼î»ùµÄÖÊÁ¿  µÚÒ»²½£¬¼ÆËã±äÒì
+//#é‡æ–°è®¡ç®—æ¯ä¸ªç¢±åŸºçš„è´¨é‡  ç¬¬ä¸€æ­¥ï¼Œè®¡ç®—å˜å¼‚
 //java -Xmx4g -jar $GATK \
 //     -T CountCovariates \
 //	 -I "$SAMPrix"_RealnDeDup.bam \
@@ -19,7 +19,7 @@ public class BamRecalibrate {
 //      -cov DinucCovariate \
 //      -recalFile "$SAMPrix"_recal_data.csv
 //
-//#ÖØĞÂ¼ÆËãÃ¿¸ö¼î»ùµÄÖÊÁ¿  µÚ¶ş²½£¬½«±äÒìµÄ¾ØÕó±íÓÃÓÚĞŞÕıbamÎÄ¼ş
+//#é‡æ–°è®¡ç®—æ¯ä¸ªç¢±åŸºçš„è´¨é‡  ç¬¬äºŒæ­¥ï¼Œå°†å˜å¼‚çš„çŸ©é˜µè¡¨ç”¨äºä¿®æ­£bamæ–‡ä»¶
 //java -Xmx4g -jar $GATK \
 //  -T TableRecalibration \
 //  -I "$SAMPrix"_RealnDeDup.bam \
@@ -34,8 +34,8 @@ public class BamRecalibrate {
 	String bamSortedFile;
 	int threadNum = 4;
 	/**
-	 * Éè¶¨samtoolsËùÔÚµÄÎÄ¼ş¼ĞÒÔ¼°´ı±È¶ÔµÄÂ·¾¶
-	 * @param exePath Èç¹ûÔÚ¸ùÄ¿Â¼ÏÂÔòÉèÖÃÎª""»ònull
+	 * è®¾å®šsamtoolsæ‰€åœ¨çš„æ–‡ä»¶å¤¹ä»¥åŠå¾…æ¯”å¯¹çš„è·¯å¾„
+	 * @param exePath å¦‚æœåœ¨æ ¹ç›®å½•ä¸‹åˆ™è®¾ç½®ä¸º""æˆ–null
 	 */
 	public void setExePath(String exePath) {
 		if (exePath == null || exePath.trim().equals(""))

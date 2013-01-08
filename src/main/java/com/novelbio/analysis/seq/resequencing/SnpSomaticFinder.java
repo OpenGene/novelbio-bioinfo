@@ -6,8 +6,8 @@ import java.util.Collection;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
-/** ÓÃÓÚ²éÕÒ¶àÑù±¾SnpSomaticµÄserviceÀà
- * Ê×ÏÈÒª°ÑSNPGATKcope¶ÔÏóÉè¶¨²¢ÔËĞĞºÃ£¬È»ºóÔÙÖ´ĞĞÕâ¸ö
+/** ç”¨äºæŸ¥æ‰¾å¤šæ ·æœ¬SnpSomaticçš„serviceç±»
+ * é¦–å…ˆè¦æŠŠSNPGATKcopeå¯¹è±¡è®¾å®šå¹¶è¿è¡Œå¥½ï¼Œç„¶åå†æ‰§è¡Œè¿™ä¸ª
  *  
  *  */
 public class SnpSomaticFinder {
@@ -93,13 +93,13 @@ public class SnpSomaticFinder {
 		geneFilter.setGffChrAbs(gffChrAbs);
 	}
 	/**
-	 * Ìí¼ÓÒª¼ìÑéµÄÑù±¾Ãû
+	 * æ·»åŠ è¦æ£€éªŒçš„æ ·æœ¬å
 	 * @param colTreatName
 	 */
 	public void addTreatName(Collection<String> colTreatName) {
 		geneFilter.addTreatName(colTreatName);
 	}
-	/** ÆäÖĞÓĞ¼¸¸öÑù±¾³öÏÖÕâÖÖÇé¿ö¾ÍËãÍ¨¹ı */
+	/** å…¶ä¸­æœ‰å‡ ä¸ªæ ·æœ¬å‡ºç°è¿™ç§æƒ…å†µå°±ç®—é€šè¿‡ */
 	public void setTreatFilteredNum(int treatFilteredNum) {
 		geneFilter.setTreatFilteredNum(treatFilteredNum);
 	}

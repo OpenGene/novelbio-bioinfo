@@ -41,7 +41,7 @@ public interface MapKPathRelation extends MapperSql{
 	public void insertKGpathRelation(KGpathRelation kGpathRelation);
 	
 	/**
-	 * 目前的升级方式是
+	 * 鐩墠鐨勫崌绾ф柟寮忔槸
 		update substrate <br>
 		set<br>
 			if test="pathName !=null"<br>

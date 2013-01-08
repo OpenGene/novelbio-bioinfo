@@ -13,8 +13,8 @@ import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
 import com.novelbio.database.model.modgeneid.GeneType;
 
 /**
- * ²»¶ÔÍâ
- * ¼ÙÉèDNAĞòÁĞÎªmRNAĞòÁĞ£¬ÏÖÔÚ¸ø¶¨µ°°×ĞòÁĞ£¬»ñµÃ¸ÃFastaµÄÆğÊ¼Î»µãºÍÖÕÖ¹Î»µã
+ * ä¸å¯¹å¤–
+ * å‡è®¾DNAåºåˆ—ä¸ºmRNAåºåˆ—ï¼Œç°åœ¨ç»™å®šè›‹ç™½åºåˆ—ï¼Œè·å¾—è¯¥Fastaçš„èµ·å§‹ä½ç‚¹å’Œç»ˆæ­¢ä½ç‚¹
  * @author zong0jie
  *
  */
@@ -52,15 +52,15 @@ public class FastaGetCDSFromProtein {
 		this.seqFasta = seqFasta;
 		setProtein(protein);
 	}
-	/** ÊÇ·ñ²ÉÓÃblastµÄ·½·¨À´±È¶ÔĞòÁĞ²¢»ñµÃatgºÍuagĞÅÏ¢ */
+	/** æ˜¯å¦é‡‡ç”¨blastçš„æ–¹æ³•æ¥æ¯”å¯¹åºåˆ—å¹¶è·å¾—atgå’Œuagä¿¡æ¯ */
 	public void setGetBlastIso(boolean getBlastIso) {
 		this.getBlastIso = getBlastIso;
 	}
-	/** ÊÇ·ñÍ¨¹ıblastµÄ·½·¨À´»ñÈ¡ĞòÁĞ
+	/** æ˜¯å¦é€šè¿‡blastçš„æ–¹æ³•æ¥è·å–åºåˆ—
 	public void setGetBlastIso(boolean getBlastIso) {
 		this.getBlastIso = getBlastIso;
 	}
-	/** ÊäÈëµ°°×ĞòÁĞ */
+	/** è¾“å…¥è›‹ç™½åºåˆ— */
 	private void setProtein(String proteinSeq) {
 		if (proteinSeq == null) {
 			return;
@@ -71,7 +71,7 @@ public class FastaGetCDSFromProtein {
 		}
 		this.proteinSeq = proteinSeq;
 	}
-	/** ·µ»Ø½ö°üº¬¸Ã»ùÒòµÄlistGff */
+	/** è¿”å›ä»…åŒ…å«è¯¥åŸºå› çš„listGff */
 	public ListGff getGffDetailGene() {
 		GffGeneIsoInfo gffGeneIsoInfo = getGffGeneIsoInfo();
 
@@ -84,7 +84,7 @@ public class FastaGetCDSFromProtein {
 		
 		return listGff;
 	}
-	/** ÓÃblastµÄ·½·¨À´ÕÒÎ»µã */
+	/** ç”¨blastçš„æ–¹æ³•æ¥æ‰¾ä½ç‚¹ */
 	public GffGeneIsoInfo getGffGeneIsoInfo() {
 		if (proteinSeq != null && !proteinSeq.trim().equals("")) {
 			if (getBlastIso) {
@@ -104,7 +104,7 @@ public class FastaGetCDSFromProtein {
 		gffGeneIsoInfo.setATGUAGncRNA();
 		return gffGeneIsoInfo;
 	}
-	/** ·µ»Ø¸ÃseqfastqºÍproteinËù¶ÔÓ¦µÄgffgeneiso */
+	/** è¿”å›è¯¥seqfastqå’Œproteinæ‰€å¯¹åº”çš„gffgeneiso */
 	private GffGeneIsoInfo getGffGeneIsoInfoWtihProteinBlast() {
 		SeqfastaStatisticsCDS seqfastaStatisticsCDS = seqFasta.statisticsCDS();
 		int orf = seqfastaStatisticsCDS.getOrfAllLen();
@@ -116,8 +116,8 @@ public class FastaGetCDSFromProtein {
 		BlastSeqFastaCompare blastSeqFasta = lsAllBlastSeqFasta.get(0);
 		return getGffGeneIsoInfo(blastSeqFasta);
 	}
-	/** Ö¸¶¨µ°°×ĞòÁĞ½øĞĞ±È½Ï£¬¿´ÏàËÆ¶ÈÓĞ¶à¸ß
-	 * @param proteinSeqFastq µ°°×ĞòÁĞ
+	/** æŒ‡å®šè›‹ç™½åºåˆ—è¿›è¡Œæ¯”è¾ƒï¼Œçœ‹ç›¸ä¼¼åº¦æœ‰å¤šé«˜
+	 * @param proteinSeqFastq è›‹ç™½åºåˆ—
 	 * */
 	private BlastSeqFastaCompare proteinBlast(boolean cis5to3, int orf, String proteinSeqFastq) {
 		BlastSeqFastaCompare blastSeqFasta = new BlastSeqFastaCompare(proteinSeqFastq, proteinSeq);
@@ -127,7 +127,7 @@ public class FastaGetCDSFromProtein {
 		blastSeqFasta.blast();
 		return blastSeqFasta;
 	}
-	/** °´ÕÕblastµÄscore½øĞĞÅÅĞò£¬´Ó´óµ½Ğ¡ÅÅĞò£¬×îÉÏÃæµÄ×î´ó */
+	/** æŒ‰ç…§blastçš„scoreè¿›è¡Œæ’åºï¼Œä»å¤§åˆ°å°æ’åºï¼Œæœ€ä¸Šé¢çš„æœ€å¤§ */
 	private void sortLsBlastSeqFasta(ArrayList<BlastSeqFastaCompare> lsBlastSeqFastas) {
 		Collections.sort(lsBlastSeqFastas, new Comparator<BlastSeqFastaCompare>() {
 			@Override
@@ -138,7 +138,7 @@ public class FastaGetCDSFromProtein {
 			}
 		});
 	}
-	/** ¸ù¾İ±È¶ÔµÄ½á¹û£¬»ñµÃ¸ÃĞòÁĞ²úÉúµÄGffGeneIsoInfo£¬±¾GffGeneIsoÊÇÃ»ÓĞÄÚº¬×ÓµÄ£¬Ö»ÓĞAtgºÍUagÎ»µã */
+	/** æ ¹æ®æ¯”å¯¹çš„ç»“æœï¼Œè·å¾—è¯¥åºåˆ—äº§ç”Ÿçš„GffGeneIsoInfoï¼Œæœ¬GffGeneIsoæ˜¯æ²¡æœ‰å†…å«å­çš„ï¼Œåªæœ‰Atgå’ŒUagä½ç‚¹ */
 	private GffGeneIsoInfo getGffGeneIsoInfo(BlastSeqFastaCompare blastSeqFasta) {
 		int atgSite, uagSite;
 		boolean startWithM = isStartWithM(blastSeqFasta);
@@ -147,7 +147,7 @@ public class FastaGetCDSFromProtein {
 		if (!startWithM) {
 			atgSite = scanAtgSite(blastSeqFasta.orf, atgSite);
 		}
-		atgSite = atgSite + 1;//ĞŞ¸ÄÎª´Ó1¿ªÊ¼£¬ÒòÎªGffGeneIsoÀïÃæ¶¼ÊÇ´Ó1¿ªÊ¼¼ÇÊıµÄ
+		atgSite = atgSite + 1;//ä¿®æ”¹ä¸ºä»1å¼€å§‹ï¼Œå› ä¸ºGffGeneIsoé‡Œé¢éƒ½æ˜¯ä»1å¼€å§‹è®°æ•°çš„
 		uagSite = scanUagSite(blastSeqFasta.orf, uagSite);
 		
 		GffGeneIsoInfo gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso(seqFasta.SeqName, GeneType.mRNA, blastSeqFasta.cis5to3);
@@ -161,15 +161,15 @@ public class FastaGetCDSFromProtein {
 		}
 		return false;
 	}
-	/** ´Ó±È¶ÔµÄ×î½üµÄÎ»µãÏòÇ°É¨Ãè£¬Ö±µ½É¨Ãèµ½×îÔ¶µÄUAGÎ»µã£¬Í¬Ê±½«UAGºóÃæÒ»Î»±ê¼ÇÎªATG */
+	/** ä»æ¯”å¯¹çš„æœ€è¿‘çš„ä½ç‚¹å‘å‰æ‰«æï¼Œç›´åˆ°æ‰«æåˆ°æœ€è¿œçš„UAGä½ç‚¹ï¼ŒåŒæ—¶å°†UAGåé¢ä¸€ä½æ ‡è®°ä¸ºATG */
 	private int scanAtgSite(int orf, int alignAtgSite) {
 		char[] seq = seqFasta.SeqSequence.toUpperCase().toCharArray();
 		for (int i = alignAtgSite - 1; i >= 0; i = i - 3) {
-			//ÕÒµ½ÁËatg
+			//æ‰¾åˆ°äº†atg
 			if (isATG(new char[]{seq[i], seq[i + 1], seq[i + 2]})) {
 				return i + 1;
 			}
-			//ÕÒµ½ÁËÖÕÖ¹Î»µã
+			//æ‰¾åˆ°äº†ç»ˆæ­¢ä½ç‚¹
 			else if (isUAG(new char[]{seq[i], seq[i + 1], seq[i + 2]})) {
 				return i + 3;
 			}
@@ -180,7 +180,7 @@ public class FastaGetCDSFromProtein {
 		char[] seq = seqFasta.SeqSequence.toUpperCase().toCharArray();
 		int finishSite = 0;
 		for (int i = alignUagSite - 3; i <= seq.length - 3; i = i + 3) {
-			//ÕÒµ½ÁËatg
+			//æ‰¾åˆ°äº†atg
 			if (isUAG(new char[]{seq[i], seq[i + 1], seq[i+2]})) {
 				return i + 3;
 			}
@@ -205,7 +205,7 @@ public class FastaGetCDSFromProtein {
 	}
 	
 	
-	/** ·µ»Ø¸ÃseqfastqºÍproteinËù¶ÔÓ¦µÄgffgeneiso */
+	/** è¿”å›è¯¥seqfastqå’Œproteinæ‰€å¯¹åº”çš„gffgeneiso */
 	private GffGeneIsoInfo getGffGeneIsoInfoWtihProteinNoBlast() {
 		CompareInfo compareInfo = getStartEndSite();
 		if (compareInfo == null) {
@@ -226,7 +226,7 @@ public class FastaGetCDSFromProtein {
 	}
 	
 	/**
-	 * »ñµÃĞòÁĞµÄÇ°30¸ö°±»ùËáÈ¥É¨ÃèĞòÁĞ
+	 * è·å¾—åºåˆ—çš„å‰30ä¸ªæ°¨åŸºé…¸å»æ‰«æåºåˆ—
 	 * @return
 	 */
 	private CompareInfo getStartEndSite () {
@@ -269,7 +269,7 @@ public class FastaGetCDSFromProtein {
 		return null;
 	}
 	
-	/** ¸ù¾İ±È¶ÔµÄ½á¹û£¬»ñµÃ¸ÃĞòÁĞ²úÉúµÄGffGeneIsoInfo£¬±¾GffGeneIsoÊÇÃ»ÓĞÄÚº¬×ÓµÄ£¬Ö»ÓĞAtgºÍUagÎ»µã */
+	/** æ ¹æ®æ¯”å¯¹çš„ç»“æœï¼Œè·å¾—è¯¥åºåˆ—äº§ç”Ÿçš„GffGeneIsoInfoï¼Œæœ¬GffGeneIsoæ˜¯æ²¡æœ‰å†…å«å­çš„ï¼Œåªæœ‰Atgå’ŒUagä½ç‚¹ */
 	private GffGeneIsoInfo getGffGeneIsoInfo(CompareInfo compareInfo, String proteinSeq) {
 		int atgSite, uagSite;
 		atgSite = compareInfo.atgAASite * 3 + compareInfo.orf - 2;
@@ -309,14 +309,14 @@ class BlastSeqFastaCompare extends BlastSeqFasta {
 }
 
 /**
- * ±È½ÏµÄ½á¹û£¬°üº¬atgÎ»µã£¬uagÎ»µãµÈ
+ * æ¯”è¾ƒçš„ç»“æœï¼ŒåŒ…å«atgä½ç‚¹ï¼Œuagä½ç‚¹ç­‰
  * @author zong0jie
  *
  */
 class CompareInfo {
-	/** ´Ó1¿ªÊ¼¼ÇÊı */
+	/** ä»1å¼€å§‹è®°æ•° */
 	int atgAASite;
-	/** ´Ó1¿ªÊ¼¼ÇÊı */
+	/** ä»1å¼€å§‹è®°æ•° */
 	int uagAASite;
 	boolean cis5to3;
 	int orf;

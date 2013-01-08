@@ -132,7 +132,7 @@ public class JpanelPlot extends JPanel{
 		repaint();
 	}
 	/**
-	 * Éè¶¨´ı»­µÄÍ¼ĞÎ
+	 * è®¾å®šå¾…ç”»çš„å›¾å½¢
 	 * @param plotNBC
 	 */
 	public void setPlotNBC(PlotNBC plotNBC) {
@@ -157,7 +157,7 @@ public class JpanelPlot extends JPanel{
     
     
     /**
-     * Ä¬ÈÏ±£´æÎªjpg¸ñÊ½
+     * é»˜è®¤ä¿å­˜ä¸ºjpgæ ¼å¼
 	 * Generates a new chart <code>Image</code> based upon the currently held 
 	 * settings and then attempts to save that image to disk, to the location 
 	 * provided as a File parameter. The image type of the saved file will 
@@ -176,7 +176,7 @@ public class JpanelPlot extends JPanel{
 	 * of a valid image format (as supported by <code>ImageIO</code>).
      * @param Width
      * @param Height
-     * @param transpreat ÊÇ·ñÍ¸Ã÷
+     * @param transpreat æ˜¯å¦é€æ˜
      * @throws IOException if the output file's filename has no extension or 
 	 * if there the file is unable to written to. Reasons for this include a 
 	 * non-existant file location (check with the File exists() method on the 

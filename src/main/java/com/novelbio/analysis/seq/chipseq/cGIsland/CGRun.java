@@ -9,17 +9,17 @@ public class CGRun {
 	static String CGFile="/media/winE/Bioinformatics/GenomeData/ucsc_mm9/D__mm9_cpg_all";
 	
 	//static String CGFile="/media/winG/bioinformation/GenomeData/HumanUCSChg19/rmsk.txt";
-	//ÊäÈëpeakÎÄ¼ş
+	//è¾“å…¥peakæ–‡ä»¶
 	static String FlocationFile="/media/winE/NBC/Project/ChIPSeq_CDG101101/result/CpG/mT3RPeak Information.xls";
-	//¶ÁÈ¡µÄÄÚÈİ
-	static int readRow=2;//´ÓµÚ¶şĞĞ¿ªÊ¼¶Á
-	static int colChr=1;//µÚÒ»ÁĞÊÇchr
-	static int colLOC1=2;//µÚ¶şÁĞÊÇµÚÒ»¸ö×ø±ê
-	static int colLOC2=3;//µÚÈıÁĞÊÇµÚ¶ş¸ö×ø±ê
-	static int colLOC=9;//µÚÆßÁĞÊÇÖĞ¼ä×ø±ê
+	//è¯»å–çš„å†…å®¹
+	static int readRow=2;//ä»ç¬¬äºŒè¡Œå¼€å§‹è¯»
+	static int colChr=1;//ç¬¬ä¸€åˆ—æ˜¯chr
+	static int colLOC1=2;//ç¬¬äºŒåˆ—æ˜¯ç¬¬ä¸€ä¸ªåæ ‡
+	static int colLOC2=3;//ç¬¬ä¸‰åˆ—æ˜¯ç¬¬äºŒä¸ªåæ ‡
+	static int colLOC=9;//ç¬¬ä¸ƒåˆ—æ˜¯ä¸­é—´åæ ‡
 	
 	
-	//Êä³öÎÄ¼ş
+	//è¾“å‡ºæ–‡ä»¶
 	static String CGBackGround="/media/winE/Bioinformatics/GenomeData/ucsc_mm9/statistic/CGBackGround.txt";
 	static String filePeakRegionStatstic="/media/winE/NBC/Project/ChIPSeq_CDG101101/result/CpG/mT3RCpGInfo.txt";
 	static String filePeakRegionDetail="/media/winE/NBC/Project/ChIPSeq_CDG101101/result/CpG/mT3RCpG.xls";
@@ -39,7 +39,7 @@ public class CGRun {
 	}
 	
 	/**
-	 * ¶ÁÈ¡CGFile£¬×îºóÍ³¼Æ¶àÉÙpeak regionÂäÔÚÁËCGÖĞ
+	 * è¯»å–CGFileï¼Œæœ€åç»Ÿè®¡å¤šå°‘peak regionè½åœ¨äº†CGä¸­
 	 */
 	public static void PeakRegionStatstic() 
 	{
@@ -49,7 +49,7 @@ public class CGRun {
 	}
 
 	/**
-	 * ¶ÁÈ¡CGFile£¬×îºó¸ø³öÎÄ¼şÖĞÃ¿¸öpeak regionËù¸²¸ÇµÄCGÇøÓò²¢Ğ´ÈëFresultFile
+	 * è¯»å–CGFileï¼Œæœ€åç»™å‡ºæ–‡ä»¶ä¸­æ¯ä¸ªpeak regionæ‰€è¦†ç›–çš„CGåŒºåŸŸå¹¶å†™å…¥FresultFile
 	 */
 	public static void  PeakRegionDetail() 
 	{
@@ -60,7 +60,7 @@ public class CGRun {
 	}
 	
 	/**
-	 * »ñµÃCG±³¾°ĞÅÏ¢
+	 * è·å¾—CGèƒŒæ™¯ä¿¡æ¯
 	 */
 	public static void CGBackground()
 	{

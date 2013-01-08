@@ -47,7 +47,7 @@ public class DonmaiGetDownloadUrl  extends GetPictureUrl {
 		}
 		String info = webFetch.getResponse();
 		if (info == null) {
-			logger.error("Ã»×¥µ½¶«Î÷£º" + url);
+			logger.error("æ²¡æŠ“åˆ°ä¸œè¥¿ï¼š" + url);
 			lsResult = new ArrayList<UrlPictureDownLoad>();
 			return this;
 		}
@@ -75,7 +75,7 @@ public class DonmaiGetDownloadUrl  extends GetPictureUrl {
 				break;
 			}
     	}
-	    logger.info("×¥È¡ÏÂÔØÁ´½ÓÍê±Ï£º" + url);
+	    logger.info("æŠ“å–ä¸‹è½½é“¾æ¥å®Œæ¯•ï¼š" + url);
 	    return lsResult;
 	}
 	@Override

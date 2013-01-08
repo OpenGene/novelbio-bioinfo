@@ -42,14 +42,14 @@ public class ServGeneInfo implements MapGeneInfo {
 		mapGeneInfo.updateGeneInfo(geneInfo);
 	}
 	/**
-	 * ÊäÈëgeneUniIDÒÔ¼°¾ßÌåµÄÄÚÈİ£¬¿´ÊÇ·ñĞèÒªÉı¼¶
-	 * ÄÜ²åÈë¾Í²åÈë£¬ÒÑ¾­ÓĞÁË¾ÍÅĞ¶ËÓëÊı¾İ¿âÖĞÊÇ·ñÒ»ÖÂ£¬²»Ò»ÖÂ¾ÍÉı¼¶
+	 * è¾“å…¥geneUniIDä»¥åŠå…·ä½“çš„å†…å®¹ï¼Œçœ‹æ˜¯å¦éœ€è¦å‡çº§
+	 * èƒ½æ’å…¥å°±æ’å…¥ï¼Œå·²ç»æœ‰äº†å°±åˆ¤ç«¯ä¸æ•°æ®åº“ä¸­æ˜¯å¦ä¸€è‡´ï¼Œä¸ä¸€è‡´å°±å‡çº§
 	 * @param genUniID
 	 * @param gene2Go
 	 */
 	public void updateGenInfo(String genUniID, int taxID, AGeneInfo geneInfo) {
 		if (taxID != 0 && geneInfo.getTaxID() != 0 && taxID != geneInfo.getTaxID()) {
-			logger.error("ÊäÈëtaxIDºÍ×Ô´øtaxID²»Ò»ÖÂ,ÊäÈëtaxID£º"+taxID + " ×Ô´øtaxID£º" + geneInfo.getTaxID());
+			logger.error("è¾“å…¥taxIDå’Œè‡ªå¸¦taxIDä¸ä¸€è‡´,è¾“å…¥taxIDï¼š"+taxID + " è‡ªå¸¦taxIDï¼š" + geneInfo.getTaxID());
 		}
 		GeneInfo geneInfoOld = queryGeneInfo(genUniID, taxID);
 		if (geneInfoOld != null) {

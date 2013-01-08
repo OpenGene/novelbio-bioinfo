@@ -12,35 +12,35 @@ public class SeqFastaMotifSearch {
 		this.seqFasta = seqFasta;
 	}
 	/**
-	 * ¿ÉÄÜ²»ÄÜ¾«È·µ½µ¥¼î»ù<b>Í¬Ê±ËÑË÷Õı·´Ïò</b>
-	 * ¸ø¶¨motif£¬ÔÚĞòÁĞÉÏ²éÕÒÏàÓ¦µÄÕıÔò±í´ïÊ½<br>
-	 * ·µ»ØÕıÏòĞòÁĞºÍ·´ÏòĞòÁĞ²éÕÒµÄ½á¹û<br>
+	 * å¯èƒ½ä¸èƒ½ç²¾ç¡®åˆ°å•ç¢±åŸº<b>åŒæ—¶æœç´¢æ­£åå‘</b>
+	 * ç»™å®šmotifï¼Œåœ¨åºåˆ—ä¸ŠæŸ¥æ‰¾ç›¸åº”çš„æ­£åˆ™è¡¨è¾¾å¼<br>
+	 * è¿”å›æ­£å‘åºåˆ—å’Œåå‘åºåˆ—æŸ¥æ‰¾çš„ç»“æœ<br>
 	 * List-string [4] <br>
 	 * 0: seqName<br>
 	 * 1: strand : + / -<br>
-	 * 2: ¾ßÌåµÄmotifĞòÁĞ<br>
-	 * 3: motif×îºóÒ»¸ö¼î»ùÓë±¾ĞòÁĞsiteµãµÄ¾àÀë
+	 * 2: å…·ä½“çš„motifåºåˆ—<br>
+	 * 3: motifæœ€åä¸€ä¸ªç¢±åŸºä¸æœ¬åºåˆ—siteç‚¹çš„è·ç¦»
 	 * @param regex
-	 * @param site Éè¶¨siteÎª0
-	 * ×îºó·µ»Ømotifµ½siteµã£¬ÄÇÃ´<b>¸ºÊı</b>±íÊ¾motifÔÚsiteµÄÉÏÓÎ£¬<b>ÕıÊı</b>±íÊ¾motifÔÚsiteµÄÏÂÓÎ
+	 * @param site è®¾å®šsiteä¸º0
+	 * æœ€åè¿”å›motifåˆ°siteç‚¹ï¼Œé‚£ä¹ˆ<b>è´Ÿæ•°</b>è¡¨ç¤ºmotifåœ¨siteçš„ä¸Šæ¸¸ï¼Œ<b>æ­£æ•°</b>è¡¨ç¤ºmotifåœ¨siteçš„ä¸‹æ¸¸
 	 * @return
 	 */
 	public ArrayList<String[]> getMotifScanResult(String regex) {
 		return getMotifScanResult(regex, 0);
 	}
 	/**
-	 * ¿ÉÄÜ²»ÄÜ¾«È·µ½µ¥¼î»ù<b>Í¬Ê±ËÑË÷Õı·´Ïò</b>
-	 * ¸ø¶¨motif£¬ÔÚĞòÁĞÉÏ²éÕÒÏàÓ¦µÄÕıÔò±í´ïÊ½<br>
-	 * ·µ»ØÕıÏòĞòÁĞºÍ·´ÏòĞòÁĞ²éÕÒµÄ½á¹û<br>
+	 * å¯èƒ½ä¸èƒ½ç²¾ç¡®åˆ°å•ç¢±åŸº<b>åŒæ—¶æœç´¢æ­£åå‘</b>
+	 * ç»™å®šmotifï¼Œåœ¨åºåˆ—ä¸ŠæŸ¥æ‰¾ç›¸åº”çš„æ­£åˆ™è¡¨è¾¾å¼<br>
+	 * è¿”å›æ­£å‘åºåˆ—å’Œåå‘åºåˆ—æŸ¥æ‰¾çš„ç»“æœ<br>
 	 * List-string [4] <br>
 	 * 0: seqName<br>
 	 * 1: strand : + / -<br>
-	 * 2: ¾ßÌåµÄmotifĞòÁĞ<br>
-	 * 3: motif×îºóÒ»¸ö¼î»ùÓë±¾ĞòÁĞsiteµãµÄ¾àÀë
+	 * 2: å…·ä½“çš„motifåºåˆ—<br>
+	 * 3: motifæœ€åä¸€ä¸ªç¢±åŸºä¸æœ¬åºåˆ—siteç‚¹çš„è·ç¦»
 	 * @param regex
-	 * @param site ¾àÀë¸ÃĞòÁĞÖÕµãµÄÎ»ÖÃ£¬ÉÏÓÎÎª¸ºÊı£¬ÏÂÓÎÎªÕıÊı¡£Æ©Èç¸ÃÎ»µãÎªtss£¬²¢ÇÒtss¾àÀëseqÖÕµã500bp£¬ÔòsiteÎª-500¡£
-	 * Ò²¾ÍÊÇĞòÁĞÈ¡µ½tssÏÂÓÎ500bp¡£
-	 * ×îºó·µ»Ømotifµ½siteµã£¬ÄÇÃ´<b>¸ºÊı</b>±íÊ¾motifÔÚsiteµÄÉÏÓÎ£¬<b>ÕıÊı</b>±íÊ¾motifÔÚsiteµÄÏÂÓÎ
+	 * @param site è·ç¦»è¯¥åºåˆ—ç»ˆç‚¹çš„ä½ç½®ï¼Œä¸Šæ¸¸ä¸ºè´Ÿæ•°ï¼Œä¸‹æ¸¸ä¸ºæ­£æ•°ã€‚è­¬å¦‚è¯¥ä½ç‚¹ä¸ºtssï¼Œå¹¶ä¸”tssè·ç¦»seqç»ˆç‚¹500bpï¼Œåˆ™siteä¸º-500ã€‚
+	 * ä¹Ÿå°±æ˜¯åºåˆ—å–åˆ°tssä¸‹æ¸¸500bpã€‚
+	 * æœ€åè¿”å›motifåˆ°siteç‚¹ï¼Œé‚£ä¹ˆ<b>è´Ÿæ•°</b>è¡¨ç¤ºmotifåœ¨siteçš„ä¸Šæ¸¸ï¼Œ<b>æ­£æ•°</b>è¡¨ç¤ºmotifåœ¨siteçš„ä¸‹æ¸¸
 	 * @return
 	 */
 	public ArrayList<String[]> getMotifScanResult(String regex, int site) {
@@ -55,12 +55,12 @@ public class SeqFastaMotifSearch {
 	}
 	
 	/**
-	 * @param strand ĞòÁĞ·½Ïò
-	 * @param lsTmpResult ÕÒµ½µÄmotifĞÅÏ¢£¬À´×ÔPatternOperate.getPatLoc()·½·¨
-	 * ×îºó·µ»Ømotifµ½siteµã£¬ÄÇÃ´<b>¸ºÊı</b>±íÊ¾motifÔÚsiteµÄÉÏÓÎ£¬<b>ÕıÊı</b>±íÊ¾motifÔÚsiteµÄÏÂÓÎ
-	 * @param site ¾àÀë¸ÃĞòÁĞÖÕµãµÄÎ»ÖÃ£¬ÉÏÓÎÎª¸ºÊı£¬ÏÂÓÎÎªÕıÊı¡£Æ©Èçtss¾àÀëseqÖÕµã500bp£¬ÔòsiteÎª-500¡£
-	 * Ò²¾ÍÊÇĞòÁĞÈ¡µ½tssÏÂÓÎ500bp¡£
-	 * @param lsResult ·µ»ØµÄlist
+	 * @param strand åºåˆ—æ–¹å‘
+	 * @param lsTmpResult æ‰¾åˆ°çš„motifä¿¡æ¯ï¼Œæ¥è‡ªPatternOperate.getPatLoc()æ–¹æ³•
+	 * æœ€åè¿”å›motifåˆ°siteç‚¹ï¼Œé‚£ä¹ˆ<b>è´Ÿæ•°</b>è¡¨ç¤ºmotifåœ¨siteçš„ä¸Šæ¸¸ï¼Œ<b>æ­£æ•°</b>è¡¨ç¤ºmotifåœ¨siteçš„ä¸‹æ¸¸
+	 * @param site è·ç¦»è¯¥åºåˆ—ç»ˆç‚¹çš„ä½ç½®ï¼Œä¸Šæ¸¸ä¸ºè´Ÿæ•°ï¼Œä¸‹æ¸¸ä¸ºæ­£æ•°ã€‚è­¬å¦‚tssè·ç¦»seqç»ˆç‚¹500bpï¼Œåˆ™siteä¸º-500ã€‚
+	 * ä¹Ÿå°±æ˜¯åºåˆ—å–åˆ°tssä¸‹æ¸¸500bpã€‚
+	 * @param lsResult è¿”å›çš„list
 	 */
 	private void copeMotifResultToList(boolean strand, ArrayList<String[]> lsTmpResultRev, int site, ArrayList<String[]> lsResult) {
 		if (lsTmpResultRev != null && lsTmpResultRev.size() > 0) {
@@ -73,7 +73,7 @@ public class SeqFastaMotifSearch {
 					tmpResult[1] = "-";
 				}
 				
-				tmpResult[2] = strings[0];//¾ßÌåµÄmotifĞòÁĞ
+				tmpResult[2] = strings[0];//å…·ä½“çš„motifåºåˆ—
 				
 				String toEndSite = strings[2];
 				if (!strand) {

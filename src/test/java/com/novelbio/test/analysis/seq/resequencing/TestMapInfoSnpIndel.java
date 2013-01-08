@@ -76,7 +76,7 @@ public class TestMapInfoSnpIndel extends TestCase {
 		assertEquals("c", siteSnpIndelInfoC.getThisSeq().toLowerCase());
 		assertEquals(176, siteSnpIndelInfoC.getReadsNum());
 	}
-	/** ÓÐÈý¸ö»ùÒòÐÍµÄÎ»µã */
+	/** æœ‰ä¸‰ä¸ªåŸºå› åž‹çš„ä½ç‚¹ */
 	private void assertReadsSiteWith3GeneType() {
 		mapInfoSnpIndel = new RefSiteSnpIndel();
 		mapInfoSnpIndel.setGffChrAbs(gffChrAbs);
@@ -116,8 +116,8 @@ public class TestMapInfoSnpIndel extends TestCase {
 		System.out.println(result.get(0).getMismatchInfo());
 		assertEquals(6, result.get(0).getReadsNum());
 	}
-	//TODO ÔÙ²âÊÔÒÇ¸ö
-	/** ÓÐÈý¸ö»ùÒòÐÍµÄÎ»µã */
+	//TODO å†æµ‹è¯•ä»ªä¸ª
+	/** æœ‰ä¸‰ä¸ªåŸºå› åž‹çš„ä½ç‚¹ */
 	private void assertReadsSiteWith3GeneType2() {
 		mapInfoSnpIndel = new RefSiteSnpIndel();
 		mapInfoSnpIndel.setGffChrAbs(gffChrAbs);
@@ -162,7 +162,7 @@ public class TestMapInfoSnpIndel extends TestCase {
 		assertEquals(0, result.size());
 	}
 	
-	/** ÓÐÁ½¸ö»ùÒòÐÍµÄÎ»µã */
+	/** æœ‰ä¸¤ä¸ªåŸºå› åž‹çš„ä½ç‚¹ */
 	private void assertReadsSiteWith2GeneType3() {
 		mapInfoSnpIndel = new RefSiteSnpIndel();
 		mapInfoSnpIndel.setGffChrAbs(gffChrAbs);
@@ -206,7 +206,7 @@ public class TestMapInfoSnpIndel extends TestCase {
 		assertEquals(0, result.size());
 	}
 	
-	/** ÓÐÈý¸ö»ùÒòÐÍµÄÎ»µã */
+	/** æœ‰ä¸‰ä¸ªåŸºå› åž‹çš„ä½ç‚¹ */
 	private void assertReadsSiteWith2GeneType4Write() {
 		mapInfoSnpIndel = new RefSiteSnpIndel();
 		mapInfoSnpIndel.setGffChrAbs(gffChrAbs);
@@ -261,7 +261,7 @@ public class TestMapInfoSnpIndel extends TestCase {
 	}
 	
 	
-	/** ¶à¸öÑù±¾ */
+	/** å¤šä¸ªæ ·æœ¬ */
 	private void assertReadsSiteMultiSample() {
 		mapInfoSnpIndel = new RefSiteSnpIndel();
 		mapInfoSnpIndel.setGffChrAbs(gffChrAbs);
@@ -279,7 +279,7 @@ public class TestMapInfoSnpIndel extends TestCase {
 		String samPileUpLine2A = "chr1	100671866	t	93	.$,$a,A.A,..,aa.,a.A,+1aaaaa,,,-1aa,aa,.aAA,,,a,,,,.,,.,a,,a,aAa.AAA,,,.a..a.-1A....aA,,aA..AAa.,,,,,,Aa	;>!@!D!DDDJEIDIGA!;FJHGGG2FD!DBJD!!DDBDD=BGJDBJ@D@D!E6!!J!JJC?DHDJI:HGHHH!3DD!!EE!!!4>>*989!'";
 		String samPileUpLine2B = "chr1	100671866	t	138	.$.$AA,a.A..,,,A,,A,A,.A,a,aa.,,,a,,,,aa.,A,..+1AaA..a,-1aA,,A.a,,aaA,,AaaAA,.a,,,,aa.+1A,..A,,aa.A,,A.A.-2AAAA,A.aA..,,aa.AaaaaaaaAA,,,,,,,,a,aAaa.,,,a,	>;!!C!B!BDFFF!HH4JBFB!GEGEADD=DECHFC@4HHIHJJDEJJ!G=CCJJB'BDD,BD!DBIJ;J!AD(B<9IDJJ!BBB5JJB2HHHGHH@$D93FF))96F!!(!(!!!!!985(;<>!!>!!!!>=2>!>";
 		
-		//CD¶¼ÊÇ´¿ºÏ
+		//CDéƒ½æ˜¯çº¯åˆ
 		String samPileUpLine2C = "chr1	100671866	t	4	.$.$..	>;!!";
 		String samPileUpLine2D = "chr1	100671866	t	4	.$.$..	>;!!";
 		
@@ -318,7 +318,7 @@ public class TestMapInfoSnpIndel extends TestCase {
 		assertEquals(4, mapInfoSnpIndel.getLsAllenInfoSortBig2Small().size());
 	}
 	
-	/** ¶à¸öÑù±¾2 */
+	/** å¤šä¸ªæ ·æœ¬2 */
 	private void assertReadsSiteMultiSample2() {
 		mapInfoSnpIndel = new RefSiteSnpIndel();
 		mapInfoSnpIndel.setGffChrAbs(gffChrAbs);
@@ -336,7 +336,7 @@ public class TestMapInfoSnpIndel extends TestCase {
 		String samPileUpLine2A = "chr1	100671866	t	93	.$,$a,A.A,..,aa.,a.A,+1aaaaa,,,-1aa,aa,.aAA,,,a,,,,.,,.,a,,a,aAa.AAA,,,.a..a.-1A....aA,,aA..AAa.,,,,,,Aa	;>!@!D!DDDJEIDIGA!;FJHGGG2FD!DBJD!!DDBDD=BGJDBJ@D@D!E6!!J!JJC?DHDJI:HGHHH!3DD!!EE!!!4>>*989!'";
 		String samPileUpLine2B = "chr1	100671866	t	138	.$.$AA,a.A..,,,A,,A,A,.A,a,aa.,,,a,,,,aa.,A,..+1AaA..a,-1aA,,A.a,,aaA,,AaaAA,.a,,,,aa.+1A,..A,,aa.A,,A.A.-2AAAA,A.aA..,,aa.AaaaaaaaAA,,,,,,,,a,aAaa.,,,a,	>;!!C!B!BDFFF!HH4JBFB!GEGEADD=DECHFC@4HHIHJJDEJJ!G=CCJJB'BDD,BD!DBIJ;J!AD(B<9IDJJ!BBB5JJB2HHHGHH@$D93FF))96F!!(!(!!!!!985(;<>!!>!!!!>=2>!>";
 		
-		//CÓÐÒ»¸ösnp£¬DÃ»ÓÐ
+		//Cæœ‰ä¸€ä¸ªsnpï¼ŒDæ²¡æœ‰
 		String samPileUpLine2C = "chr1	100671866	t	4	.$.$A.	>;!!";
 		String samPileUpLine2D = "chr1	100671866	t	4	.$.$..	>;!!";
 		

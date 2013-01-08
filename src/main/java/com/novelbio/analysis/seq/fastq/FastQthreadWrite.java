@@ -6,7 +6,7 @@ import java.util.concurrent.Future;
 import com.novelbio.base.multithread.RunProcess;
 
 /**
- * 将blockqueen中的东西写入文本
+ * 灏哹lockqueen涓殑涓滆タ鍐欏叆鏂囨湰
  * @author zong0jie
  */
 public class FastQthreadWrite extends RunProcess<Integer>{
@@ -21,11 +21,11 @@ public class FastQthreadWrite extends RunProcess<Integer>{
 		this.fastQwrite = fastQwrite;
 	}
 	
-	/** 输入处理好的队列 */
+	/** 杈撳叆澶勭悊濂界殑闃熷垪 */
 	public void setQueue(Queue<Future<FastQrecordFilterRun>> queue) {
 		this.queue = queue;
 	}
-	/** 等读取结束后设定 */
+	/** 绛夎鍙栫粨鏉熷悗璁惧畾 */
 	public void setFinishedRead(boolean finishedRead) {
 		this.finishedRead = finishedRead;
 	}

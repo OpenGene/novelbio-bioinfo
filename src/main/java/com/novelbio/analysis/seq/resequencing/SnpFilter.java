@@ -8,73 +8,73 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo.SnpIndelType;
 
 
-/** ²»Í¬µÄÑù±¾µÄSnp¹ıÂË¹æÔò£¬·ûºÏ¸Ã¹æÔòµÄsnp»á±»ÌôÑ¡³öÀ´ */
+/** ä¸åŒçš„æ ·æœ¬çš„Snpè¿‡æ»¤è§„åˆ™ï¼Œç¬¦åˆè¯¥è§„åˆ™çš„snpä¼šè¢«æŒ‘é€‰å‡ºæ¥ */
 public class SnpFilter {
 	private static Logger logger = Logger.getLogger(SnpFilter.class);
 	
-	/** ÅĞ¶¨Îª´¿ºÏsnpµÄ×îÉÙreadsÊı */
+	/** åˆ¤å®šä¸ºçº¯åˆsnpçš„æœ€å°‘readsæ•° */
 	int Snp_Homo_ReadsAllNumMin = 3;
-	/** ÅĞ¶¨ÎªSnpËùº¬ÓĞµÄrefÊıÁ¿²»µÃ´óÓÚ¸ÃÊıÖµ */
+	/** åˆ¤å®šä¸ºSnpæ‰€å«æœ‰çš„refæ•°é‡ä¸å¾—å¤§äºè¯¥æ•°å€¼ */
 	int Snp_Homo_Contain_RefNumMax = 2;
-	/**ÅĞ¶¨Îª´¿ºÏsnpËùº¬ÓĞµÄref±ÈÀı²»µÃ´óÓÚ¸ÃÊıÖµ */
+	/**åˆ¤å®šä¸ºçº¯åˆsnpæ‰€å«æœ‰çš„refæ¯”ä¾‹ä¸å¾—å¤§äºè¯¥æ•°å€¼ */
 	double Snp_Homo_Contain_RefProp_Max = 0.04;
 	
-	/** ÅĞ¶¨ÎªÔÓºÏsnp HetoMoreµÄ×îÉÙreadsÊı */
+	/** åˆ¤å®šä¸ºæ‚åˆsnp HetoMoreçš„æœ€å°‘readsæ•° */
 	int Snp_HetoMore_ReadsAllNumMin = 3;
-	/** ÅĞ¶¨ÎªSnpËùº¬ÓĞµÄsnpÊıÁ¿²»µÃĞ¡ÓÚ¸ÃÊıÖµ */
+	/** åˆ¤å®šä¸ºSnpæ‰€å«æœ‰çš„snpæ•°é‡ä¸å¾—å°äºè¯¥æ•°å€¼ */
 	int Snp_HetoMore_Contain_SnpNumMin = 2;
-	/**ÅĞ¶¨Îª´¿ºÏsnpËùº¬ÓĞµÄsnp±ÈÀı²»µÃĞ¡ÓÚÓÚ¸ÃÊıÖµ */
+	/**åˆ¤å®šä¸ºçº¯åˆsnpæ‰€å«æœ‰çš„snpæ¯”ä¾‹ä¸å¾—å°äºäºè¯¥æ•°å€¼ */
 	double Snp_HetoMore_Contain_SnpProp_Min = 0.2;
 	
-	/** ÅĞ¶¨ÎªSnp HetoµÄ×îÉÙreadsÊı */
+	/** åˆ¤å®šä¸ºSnp Hetoçš„æœ€å°‘readsæ•° */
 	int Snp_Heto_ReadsAllNumMin = 3;
-	/** ÅĞ¶¨Îª Snp HetoµÄ×îÉÙ ref readsÊı£¬±ØĞë´óÓÚÕâ¸öÖµ */
+	/** åˆ¤å®šä¸º Snp Hetoçš„æœ€å°‘ ref readsæ•°ï¼Œå¿…é¡»å¤§äºè¿™ä¸ªå€¼ */
 	int Snp_Hete_Contain_RefNumMin = 1;
-	/** ÅĞ¶¨Îªsnp HetoËùº¬ÓĞµÄsnp±ÈÀı²»µÃĞ¡ÓÚ¸ÃÊıÖµ */
+	/** åˆ¤å®šä¸ºsnp Hetoæ‰€å«æœ‰çš„snpæ¯”ä¾‹ä¸å¾—å°äºè¯¥æ•°å€¼ */
 	double Snp_Hete_Contain_SnpProp_Min = 0.1;
-	/** ÅĞ¶¨Îªsnp HetoËùº¬ÓĞµÄref±ÈÀı²»µÃĞ¡ÓÚ¸ÃÊıÖµ */
+	/** åˆ¤å®šä¸ºsnp Hetoæ‰€å«æœ‰çš„refæ¯”ä¾‹ä¸å¾—å°äºè¯¥æ•°å€¼ */
 	double Snp_Hete_Contain_RefProp_Min = 0.1;
 	
 	
-	/** ÅĞ¶¨ÎªrefµÄ×îÉÙreadsÊı */
+	/** åˆ¤å®šä¸ºrefçš„æœ€å°‘readsæ•° */
 	int Ref_ReadsAllNumMin = 10;
-	/** ÅĞ¶¨ÎªrefËùº¬ÓĞµÄsnpÊıÁ¿²»µÃ´óÓÚ¸ÃÊıÖµ */
+	/** åˆ¤å®šä¸ºrefæ‰€å«æœ‰çš„snpæ•°é‡ä¸å¾—å¤§äºè¯¥æ•°å€¼ */
 	int Ref_Contain_SnpNumMin = 2;
-	/**ÅĞ¶¨ÎªrefËùº¬ÓĞµÄsnp±ÈÀı²»µÃ´óÓÚ¸ÃÊıÖµ */
+	/**åˆ¤å®šä¸ºrefæ‰€å«æœ‰çš„snpæ¯”ä¾‹ä¸å¾—å¤§äºè¯¥æ•°å€¼ */
 	double Ref_Contain_SnpProp_Max = 0.04;
 	
-	/** ÅĞ¶¨ÎªSnp HetoLessµÄ×îÉÙreadsÊı */
+	/** åˆ¤å®šä¸ºSnp HetoLessçš„æœ€å°‘readsæ•° */
 	int Snp_HetoLess_ReadsAllNumMin = 3;
-	/** ÅĞ¶¨Îª Snp HetoLessµÄ×îÉÙ ref readsÊı£¬±ØĞë´óÓÚÕâ¸öÖµ */
+	/** åˆ¤å®šä¸º Snp HetoLessçš„æœ€å°‘ ref readsæ•°ï¼Œå¿…é¡»å¤§äºè¿™ä¸ªå€¼ */
 	int Snp_HetoLess_Contain_RefNumMin = 2;
 	
-	//¸ÃÊıÖµÍ¬Snp_Hete_Contain_SnpProp_Min
-	/**ÅĞ¶¨Îªsnp HetoLessËùº¬ÓĞµÄref±ÈÀı²»µÃ´óÓÚ¸ÃÊıÖµ */
+	//è¯¥æ•°å€¼åŒSnp_Hete_Contain_SnpProp_Min
+	/**åˆ¤å®šä¸ºsnp HetoLessæ‰€å«æœ‰çš„refæ¯”ä¾‹ä¸å¾—å¤§äºè¯¥æ•°å€¼ */
 //	static double Snp_HetoLess_Contain_SnpProp_Max = 0.1;
 	
 	HashSet<SnpGroupFilterInfo> setSampleFilterInfo = new HashSet<SnpGroupFilterInfo>();
 	
-	/** ÅĞ¶¨Îªsnp HetoËùº¬ÓĞµÄsnp±ÈÀı²»µÃĞ¡ÓÚ¸ÃÊıÖµ */
+	/** åˆ¤å®šä¸ºsnp Hetoæ‰€å«æœ‰çš„snpæ¯”ä¾‹ä¸å¾—å°äºè¯¥æ•°å€¼ */
 	public void setSnp_HetoMore_Contain_SnpProp_Min(double snp_HetoMore_Contain_SnpProp_Min) {
 		Snp_HetoMore_Contain_SnpProp_Min = snp_HetoMore_Contain_SnpProp_Min;
 	}
 	
-	/** ÅĞ¶¨Îªsnp HetoËùº¬ÓĞµÄsnp±ÈÀı²»µÃĞ¡ÓÚ¸ÃÊıÖµ */
+	/** åˆ¤å®šä¸ºsnp Hetoæ‰€å«æœ‰çš„snpæ¯”ä¾‹ä¸å¾—å°äºè¯¥æ•°å€¼ */
 	public void setSnp_Hete_Contain_SnpProp_Min(double snp_Hete_Contain_SnpProp_Min) {
 		Snp_Hete_Contain_SnpProp_Min = snp_Hete_Contain_SnpProp_Min;
 	}
 	
-	/** ÅĞ¶¨ÎªreferenceµÄ×îÉÙreads¸²¸Ç
-	 * Ò²¾ÍÊÇËµÈÏÎª¸ÃÎ»µã²»´æÔÚsnp£¬±ØĞëÓĞ10ÌõreadsÖ§³Ö¡£
-	 * Èç¹ûÖ»ÓĞ4ÌõÃ»ÓĞsnpµÄreads¸²¸Ç£¬ÔòÈÏÎª²»Í¨¹ı
+	/** åˆ¤å®šä¸ºreferenceçš„æœ€å°‘readsè¦†ç›–
+	 * ä¹Ÿå°±æ˜¯è¯´è®¤ä¸ºè¯¥ä½ç‚¹ä¸å­˜åœ¨snpï¼Œå¿…é¡»æœ‰10æ¡readsæ”¯æŒã€‚
+	 * å¦‚æœåªæœ‰4æ¡æ²¡æœ‰snpçš„readsè¦†ç›–ï¼Œåˆ™è®¤ä¸ºä¸é€šè¿‡
 	 * 
-	 * Ä¬ÈÏÎª10 */
+	 * é»˜è®¤ä¸º10 */
 	public void setRef_ReadsAllNumMin(int ref_ReadsAllNumMin) {
 		Ref_ReadsAllNumMin = ref_ReadsAllNumMin;
 	}
 	
 	/**
-	 * Ìí¼ÓÑù±¾¹ıÂËĞÅÏ¢£¬×¢Òâ´óĞ¡Ğ´£¬ÓÃÓÚ¹ıÂË¶à¸öÑù±¾Ê±²ÉÓÃ
+	 * æ·»åŠ æ ·æœ¬è¿‡æ»¤ä¿¡æ¯ï¼Œæ³¨æ„å¤§å°å†™ï¼Œç”¨äºè¿‡æ»¤å¤šä¸ªæ ·æœ¬æ—¶é‡‡ç”¨
 	 * @param sampleDetail
 	 */
 	public void addSampleFilterInfo(SnpGroupFilterInfo sampleDetail) {
@@ -82,18 +82,18 @@ public class SnpFilter {
 	}
 	
 	/**
-	 *  µ¥¸öÑù±¾¹ıÂË£¬½ö¹ıÂËrefSiteSnpIndelÉè¶¨µÄÑù±¾Ãû
-	 * @param sampleName Ñù±¾Ãû£¬null±íÊ¾×ßÄ¬ÈÏ
-	 * @param snpLevel SnpGroupFilterInfo.HetoLess µÈ
+	 *  å•ä¸ªæ ·æœ¬è¿‡æ»¤ï¼Œä»…è¿‡æ»¤refSiteSnpIndelè®¾å®šçš„æ ·æœ¬å
+	 * @param sampleName æ ·æœ¬åï¼Œnullè¡¨ç¤ºèµ°é»˜è®¤
+	 * @param snpLevel SnpGroupFilterInfo.HetoLess ç­‰
 	 */
 	public void setSampleFilterInfoSingle(int snpLevel) {
 		setSampleFilterInfoSingle(null, snpLevel);
 	}
 	
 	/**
-	 *  µ¥¸öÑù±¾¹ıÂË£¬½ö¹ıÂËÊäÈëµÄÑù±¾Ãû
-	 * @param sampleName Ñù±¾Ãû£¬null±íÊ¾×ßÄ¬ÈÏ£¬Ò²¾ÍÊÇ½ö¹ıÂËrefSiteSnpIndelÉè¶¨µÄÑù±¾Ãû
-	 * @param snpLevel SnpGroupFilterInfo.HetoLess µÈ
+	 *  å•ä¸ªæ ·æœ¬è¿‡æ»¤ï¼Œä»…è¿‡æ»¤è¾“å…¥çš„æ ·æœ¬å
+	 * @param sampleName æ ·æœ¬åï¼Œnullè¡¨ç¤ºèµ°é»˜è®¤ï¼Œä¹Ÿå°±æ˜¯ä»…è¿‡æ»¤refSiteSnpIndelè®¾å®šçš„æ ·æœ¬å
+	 * @param snpLevel SnpGroupFilterInfo.HetoLess ç­‰
 	 */
 	public void setSampleFilterInfoSingle(String sampleName, int snpLevel) {
 		this.setSampleFilterInfo.clear();
@@ -104,7 +104,7 @@ public class SnpFilter {
 		this.setSampleFilterInfo.add(snpGroupFilterInfo);
 	}
 	
-	/** ÖØÖÃÑù±¾ĞÅÏ¢ */
+	/** é‡ç½®æ ·æœ¬ä¿¡æ¯ */
 	public void clearSampleFilterInfo() {
 		setSampleFilterInfo.clear();
 	}
@@ -117,9 +117,9 @@ public class SnpFilter {
 	}
 
 	/** 
-	 * ¸ÃÎ»µãÊÇ·ñÍ¨¹ıÖÊ¼ì£¬Î»µãÖĞ°üº¬ÁË¶à¸öÑù±¾
-	 * Èç¹ûÍ¨¹ıÖÊ¼ìÁË£¬¾Í·µ»ØÍ¨¹ıÖÊ¼ìµÄÄÇ¸ösnpÀàĞÍ
-	 * ·ñÔò·µ»Ø¿ÕµÄlist
+	 * è¯¥ä½ç‚¹æ˜¯å¦é€šè¿‡è´¨æ£€ï¼Œä½ç‚¹ä¸­åŒ…å«äº†å¤šä¸ªæ ·æœ¬
+	 * å¦‚æœé€šè¿‡è´¨æ£€äº†ï¼Œå°±è¿”å›é€šè¿‡è´¨æ£€çš„é‚£ä¸ªsnpç±»å‹
+	 * å¦åˆ™è¿”å›ç©ºçš„list
 	 * */
 	public ArrayList<SiteSnpIndelInfo> getFilterdSnp(RefSiteSnpIndel refSiteSnpIndel) {
 		ArrayList<SiteSnpIndelInfo> lsSnpFiltered = new ArrayList<SiteSnpIndelInfo>();
@@ -133,14 +133,14 @@ public class SnpFilter {
 	}
 	
 	/**
-	 * ÊäÈëµÄsnpÎ»µãÊÇ·ñÍ¨¹ı¼ìÑé
-	 * ²ÉÓÃ¸ø¶¨µÄSnpGroupFilterInfoÀ´¶Ô½á¹û½øĞĞ¼ìÑé¡£ÊäÈë¼¸×éSnpGroupFilterInfo¾Í×ö¼¸¸ö¼ìÑé¡£
-	 * ¼ìÑé½á¹ûÈ¡and£¬Ò²¾ÍÊÇËµÖ»ÒªÓĞÒ»¸öSnpGroupFilterInfoÃ»ÓĞÍ¨¹ı£¬¾Í·µ»Øfalse¡£
+	 * è¾“å…¥çš„snpä½ç‚¹æ˜¯å¦é€šè¿‡æ£€éªŒ
+	 * é‡‡ç”¨ç»™å®šçš„SnpGroupFilterInfoæ¥å¯¹ç»“æœè¿›è¡Œæ£€éªŒã€‚è¾“å…¥å‡ ç»„SnpGroupFilterInfoå°±åšå‡ ä¸ªæ£€éªŒã€‚
+	 * æ£€éªŒç»“æœå–andï¼Œä¹Ÿå°±æ˜¯è¯´åªè¦æœ‰ä¸€ä¸ªSnpGroupFilterInfoæ²¡æœ‰é€šè¿‡ï¼Œå°±è¿”å›falseã€‚
 	 * @param siteSnpIndelInfo
 	 * @return
 	 */
 	public boolean isFilterdSnp(SiteSnpIndelInfo siteSnpIndelInfo) {
-		//TODO ¿¼ÂÇ¸ù¾İÇé¿ö·µ»Ø²¢¼¯»òÕßÆäËû
+		//TODO è€ƒè™‘æ ¹æ®æƒ…å†µè¿”å›å¹¶é›†æˆ–è€…å…¶ä»–
 		boolean isQualified = true;
 		for (SnpGroupFilterInfo snpGroupFilterInfo : setSampleFilterInfo) {
 			snpGroupFilterInfo.clearData();
@@ -148,7 +148,7 @@ public class SnpFilter {
 				siteSnpIndelInfo.setSampleName(sampleName);
 				snpGroupFilterInfo.addSnpIndelHomoHetoType(getSnpIndelType(siteSnpIndelInfo));
 			}
-			//Ö»ÒªÓĞÒ»×éÑù±¾Ã»ÓĞÍ¨¹ı¼ìÑé£¬¾ÍÌø³ö
+			//åªè¦æœ‰ä¸€ç»„æ ·æœ¬æ²¡æœ‰é€šè¿‡æ£€éªŒï¼Œå°±è·³å‡º
 			isQualified = snpGroupFilterInfo.isQualified();
 			if (!isQualified) 
 				break;
@@ -157,21 +157,21 @@ public class SnpFilter {
 		
 	}
 	
-	/** ÊäÈëÖ®Ç°ÒªÖ¸¶¨Ñù±¾Ãû£¬
-	 * ·µ»ØÖ¸¶¨µÄsnpindelµÄĞÅÏ¢ */
+	/** è¾“å…¥ä¹‹å‰è¦æŒ‡å®šæ ·æœ¬åï¼Œ
+	 * è¿”å›æŒ‡å®šçš„snpindelçš„ä¿¡æ¯ */
 	private SnpIndelHomoHetoType getSnpIndelType(SiteSnpIndelInfo siteSnpIndelInfo) {
 		int numSnpIndel = siteSnpIndelInfo.getReadsNum();
 		int numAll = siteSnpIndelInfo.getRefSiteSnpIndelParent().getReadsNumAll();
 		
-		//TODO ÕâÖÖºÏÊÊÂğ£¿
-		//ÒòÎª¿ÉÄÜÓĞ±ğµÄ»ùÒòĞÍ£¬ËùÒÔÓÃÕâÖÖ·½Ê½£¬½«ËùÓĞ·Ç±¾snpµÄÎ»µã¶¼ºöÂÔÎªrefÎ»µã¡£
+		//TODO è¿™ç§åˆé€‚å—ï¼Ÿ
+		//å› ä¸ºå¯èƒ½æœ‰åˆ«çš„åŸºå› å‹ï¼Œæ‰€ä»¥ç”¨è¿™ç§æ–¹å¼ï¼Œå°†æ‰€æœ‰éæœ¬snpçš„ä½ç‚¹éƒ½å¿½ç•¥ä¸ºrefä½ç‚¹ã€‚
 		int numRef = numAll - numSnpIndel;//refSiteSnpIndel.getReadsNumRef();
 		return getSnpIndelType(siteSnpIndelInfo.getSnpIndelType(), numSnpIndel, numRef, numAll);
 	}
 	/**
-	 * public ½ö¹©Junit²âÊÔ 
-	 * ÊäÈëÖ®Ç°ÒªÖ¸¶¨Ñù±¾Ãû£¬
-	 * ·µ»ØÖ¸¶¨µÄsnpindelµÄĞÅÏ¢ */
+	 * public ä»…ä¾›Junitæµ‹è¯• 
+	 * è¾“å…¥ä¹‹å‰è¦æŒ‡å®šæ ·æœ¬åï¼Œ
+	 * è¿”å›æŒ‡å®šçš„snpindelçš„ä¿¡æ¯ */
 	public SnpIndelHomoHetoType getSnpIndelType(SnpIndelType siteSnpIndelInfo, int numSnpIndel, int numRef, int numAll) {
 		if (numAll >= Snp_Homo_ReadsAllNumMin && numRef <= Snp_Homo_Contain_RefNumMax
 			&& (double)numRef/numAll <= Snp_Homo_Contain_RefProp_Max ) 
@@ -184,7 +184,7 @@ public class SnpFilter {
 			}
 		}
 		else if (numSnpIndel >= Snp_HetoMore_Contain_SnpNumMin && numAll >= Snp_HetoMore_ReadsAllNumMin 
-				&& ((double)numSnpIndel/numAll >= Snp_HetoMore_Contain_SnpProp_Min || numRef == 1) )//Ö»ÓĞ1ÌõrefºÜÄÑËµÃ÷ÎÊÌâ 
+				&& ((double)numSnpIndel/numAll >= Snp_HetoMore_Contain_SnpProp_Min || numRef == 1) )//åªæœ‰1æ¡refå¾ˆéš¾è¯´æ˜é—®é¢˜ 
 		{
 			if (siteSnpIndelInfo == SnpIndelType.INSERT || siteSnpIndelInfo == SnpIndelType.DELETION) {
 				return SnpIndelHomoHetoType.IndelHetoMore;
@@ -193,14 +193,14 @@ public class SnpFilter {
 				return SnpIndelHomoHetoType.SnpHetoMore;
 			}
 		}
-		//ÏÈÅĞ¶¨´¿ºÏÔÙÅĞ¶¨ÔÓºÏĞ¡
+		//å…ˆåˆ¤å®šçº¯åˆå†åˆ¤å®šæ‚åˆå°
 		else if (numSnpIndel <= Ref_Contain_SnpNumMin && numAll >= Ref_ReadsAllNumMin 
 				&& (double)numSnpIndel/numAll <= Ref_Contain_SnpProp_Max  )
 		{
 			return SnpIndelHomoHetoType.RefHomo;
 		}
 		else if (numRef >= Snp_HetoLess_Contain_RefNumMin && numAll >= Snp_HetoLess_ReadsAllNumMin
-				&& ((double)numSnpIndel/numAll < Snp_Hete_Contain_SnpProp_Min && numSnpIndel >= 1 )//Ö»ÓĞ1ÌõsnpºÜÄÑËµÃ÷ÎÊÌâ 
+				&& ((double)numSnpIndel/numAll < Snp_Hete_Contain_SnpProp_Min && numSnpIndel >= 1 )//åªæœ‰1æ¡snpå¾ˆéš¾è¯´æ˜é—®é¢˜ 
 				) {
 			if (siteSnpIndelInfo == SnpIndelType.INSERT || siteSnpIndelInfo == SnpIndelType.DELETION) {
 				return SnpIndelHomoHetoType.IndelHetoLess;
@@ -225,9 +225,9 @@ public class SnpFilter {
 }
 
 /**
- * ËùÓĞÌõ¼ş£¬¸ºÊı¶¼±íÊ¾²»²Î¿¼£¬ºöÂÔ¸ÃÏî
- * ËùÓĞÌõ¼ş£¬Èç¹ûÊÇÏÂ½ç£¬ÔòÎª´óÓÚµÈÓÚ
- * Èç¹ûÊÇÉÏ½ç£¬ÔòÎªĞ¡ÓÚ
+ * æ‰€æœ‰æ¡ä»¶ï¼Œè´Ÿæ•°éƒ½è¡¨ç¤ºä¸å‚è€ƒï¼Œå¿½ç•¥è¯¥é¡¹
+ * æ‰€æœ‰æ¡ä»¶ï¼Œå¦‚æœæ˜¯ä¸‹ç•Œï¼Œåˆ™ä¸ºå¤§äºç­‰äº
+ * å¦‚æœæ˜¯ä¸Šç•Œï¼Œåˆ™ä¸ºå°äº
  * @author zong0jie
  *
  */
@@ -236,64 +236,64 @@ class FilterUnit {
 	String UnitName;
 	
 	/**
-	 * Éè¶¨±È½ÏµÄÇø¼ä
+	 * è®¾å®šæ¯”è¾ƒçš„åŒºé—´
 	 * @param filterSmallRegion
 	 */
 	public void addRegionInfo(FilterSmallRegion filterSmallRegion) {
 		lsCompareInfo.add(filterSmallRegion);
 	}
 	
-	/** ÅĞ¶¨ÊÇ·ñÂäÔÚ¸ÃÇø¼äÄÚ */
+	/** åˆ¤å®šæ˜¯å¦è½åœ¨è¯¥åŒºé—´å†… */
 	public boolean isInThisUnit(int numSnpIndel, int numRef, int numAll) {
 		
 		return false;
 	}
 	
 }
-/** ±È½ÏµÄ×îĞ¡µ¥Ôª */
+/** æ¯”è¾ƒçš„æœ€å°å•å…ƒ */
 class FilterSmallRegion {
 	String info;
 	/**
-	 * ÏÂ±ß½ç<br>
-	 *  true: ±íÊ¾Óöµ½×îĞ¡ÖµÊÇ>=<br>
-	 * false: ±íÊ¾Óöµ½×îĞ¡ÖµÊÇ >
+	 * ä¸‹è¾¹ç•Œ<br>
+	 *  true: è¡¨ç¤ºé‡åˆ°æœ€å°å€¼æ˜¯>=<br>
+	 * false: è¡¨ç¤ºé‡åˆ°æœ€å°å€¼æ˜¯ >
 	 *  */
 	boolean minBound = true;
 	/**
-	 * ÉÏ±ß½ç<br>
-	 *  true: ±íÊ¾Óöµ½×î´óÖµÊÇ< = <br>
-	 * false: ±íÊ¾Óöµ½×î´óÖµÊÇ <
+	 * ä¸Šè¾¹ç•Œ<br>
+	 *  true: è¡¨ç¤ºé‡åˆ°æœ€å¤§å€¼æ˜¯< = <br>
+	 * false: è¡¨ç¤ºé‡åˆ°æœ€å¤§å€¼æ˜¯ <
 	 *  */
 	boolean maxBound = false;
-	/**Ğ¡ÓÚ0±íÊ¾²»¿¼ÂÇ */
+	/**å°äº0è¡¨ç¤ºä¸è€ƒè™‘ */
 	double min = -1;
-	/**Ğ¡ÓÚ0±íÊ¾²»¿¼ÂÇ */
+	/**å°äº0è¡¨ç¤ºä¸è€ƒè™‘ */
 	double max = -1;
 	
 	/**
-	 * Éè¶¨Çø¼ä
-	 * @param min -1±íÊ¾²»¿¼ÂÇ¸Ã·½Ïò
-	 * @param max -1±íÊ¾²»¿¼ÂÇ¸Ã·½Ïò
+	 * è®¾å®šåŒºé—´
+	 * @param min -1è¡¨ç¤ºä¸è€ƒè™‘è¯¥æ–¹å‘
+	 * @param max -1è¡¨ç¤ºä¸è€ƒè™‘è¯¥æ–¹å‘
 	 */
 	public FilterSmallRegion(double min, double max) {
 		this.min = min;
 		this.max = max;
 	}
 	
-	/** Éè¶¨±È½ÏµÄÄÚÈİ£¬Æ©Èçheto_moreÖ®ÀàµÄ */
+	/** è®¾å®šæ¯”è¾ƒçš„å†…å®¹ï¼Œè­¬å¦‚heto_moreä¹‹ç±»çš„ */
 	public void setInfo(String info) {
 		this.info = info;
 	}
 	
 	/**
-	 * Éè¶¨ÉÏÏÂ±ß½ç<br>
-	 * ¶ÔÓÚÏÂ±ß½ç£º<br>
-	 *  true: ±íÊ¾Óöµ½×îĞ¡ÖµÊÇ>=<br>
-	 * false: ±íÊ¾Óöµ½×îĞ¡ÖµÊÇ ><br>
+	 * è®¾å®šä¸Šä¸‹è¾¹ç•Œ<br>
+	 * å¯¹äºä¸‹è¾¹ç•Œï¼š<br>
+	 *  true: è¡¨ç¤ºé‡åˆ°æœ€å°å€¼æ˜¯>=<br>
+	 * false: è¡¨ç¤ºé‡åˆ°æœ€å°å€¼æ˜¯ ><br>
 	 * <br>
-	 * ¶ÔÓÚÉÏ±ß½ç<br>
-	 * true: ±íÊ¾Óöµ½×î´óÖµÊÇ<= <br>
-	 * false: ±íÊ¾Óöµ½×î´óÖµÊÇ <
+	 * å¯¹äºä¸Šè¾¹ç•Œ<br>
+	 * true: è¡¨ç¤ºé‡åˆ°æœ€å¤§å€¼æ˜¯<= <br>
+	 * false: è¡¨ç¤ºé‡åˆ°æœ€å¤§å€¼æ˜¯ <
 	 *  */
 	public void setBound(boolean minBound, boolean maxBound) {
 		this.minBound = minBound;

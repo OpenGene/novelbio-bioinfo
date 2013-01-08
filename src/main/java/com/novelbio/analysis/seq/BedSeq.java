@@ -20,8 +20,8 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
- * bed¸ñÊ½µÄÎÄ¼ş£¬Í³Í³ÓÃÀ´´¦ÀíbedÎÄ¼ş
- * novelbioµÄbedfile¸ñÊ½£º
+ * bedæ ¼å¼çš„æ–‡ä»¶ï¼Œç»Ÿç»Ÿç”¨æ¥å¤„ç†bedæ–‡ä»¶
+ * novelbioçš„bedfileæ ¼å¼ï¼š
  * 0: chrID <br>
  * 1: startLoc <br>
  * 2: endLoc <br>
@@ -35,12 +35,12 @@ public class BedSeq extends SeqComb implements AlignSeq{
 	private static Logger logger = Logger.getLogger(BedSeq.class);  
 	/**
 	 * mappingNum. 1 means unique mapping
-	 * Ò»°ãÔÚµÚÁùÁĞ
+	 * ä¸€èˆ¬åœ¨ç¬¬å…­åˆ—
 	 */
 	public static final int MAPPING_NUM_COLUMN = 6;
 	/**
 	 * mappingNum. 1 means unique mapping
-	 * Ò»°ãÔÚµÚÁùÁĞ
+	 * ä¸€èˆ¬åœ¨ç¬¬å…­åˆ—
 	 */
 	public static final int MAPPING_NUM_STRAND = 5;
 	
@@ -48,8 +48,8 @@ public class BedSeq extends SeqComb implements AlignSeq{
 		super(bedFile, 1);
 	}
 	/**
-	 * ĞÂ½¨Ò»¸öbed£¬¿ÉÒÔÍùÀïÃæĞ´¶«Î÷µÄÄÇÖÖ
-	 * ×¢ÒâĞ´ÍêºóÎñ±Øµ÷ÓÃ{@link #closeWrite()}·½·¨¹Ø±ÕĞ´ÈëÁ÷²¢½«bedĞ´Èë×ª»¯Îªbed¶ÁÈ¡
+	 * æ–°å»ºä¸€ä¸ªbedï¼Œå¯ä»¥å¾€é‡Œé¢å†™ä¸œè¥¿çš„é‚£ç§
+	 * æ³¨æ„å†™å®ŒååŠ¡å¿…è°ƒç”¨{@link #closeWrite()}æ–¹æ³•å…³é—­å†™å…¥æµå¹¶å°†bedå†™å…¥è½¬åŒ–ä¸ºbedè¯»å–
 	 * @param bedFile
 	 * @param creatBed
 	 */
@@ -59,8 +59,8 @@ public class BedSeq extends SeqComb implements AlignSeq{
 	public static void main(String[] args) {
 	}
 	/**
-	 * <b>Ğ´ÍêºóÎñ±ØÓÃ {@link #closeWrite} ·½·¨¹Ø±Õ</b>
-	 * ´´½¨µÄÊ±ºòÒªÉè¶¨ÎªcreatÄ£Ê½
+	 * <b>å†™å®ŒååŠ¡å¿…ç”¨ {@link #closeWrite} æ–¹æ³•å…³é—­</b>
+	 * åˆ›å»ºçš„æ—¶å€™è¦è®¾å®šä¸ºcreatæ¨¡å¼
 	 * @param bedRecord
 	 */
 	public void writeBedRecord(BedRecord bedRecord) {
@@ -70,7 +70,7 @@ public class BedSeq extends SeqComb implements AlignSeq{
 		txtSeqFile.writefileln(bedRecord.toString());
 	}
 	/**
-	 * ÄÚ²¿¹Ø±Õ
+	 * å†…éƒ¨å…³é—­
 	 * @param lsBedRecord
 	 */
 	public void wirteBedRecord(List<BedRecord> lsBedRecord) {
@@ -80,7 +80,7 @@ public class BedSeq extends SeqComb implements AlignSeq{
 		closeWrite();
 	}
 	/**
-	 * ¶ÁÈ¡Ç°¼¸ĞĞ£¬²»Ó°Ïì{@link #readLines()}
+	 * è¯»å–å‰å‡ è¡Œï¼Œä¸å½±å“{@link #readLines()}
 	 * @param num
 	 * @return
 	 */
@@ -96,7 +96,7 @@ public class BedSeq extends SeqComb implements AlignSeq{
 		return lsResult;
 	}
 	/**
-	 * ¶ÁÈ¡Ç°¼¸ĞĞ£¬²»Ó°Ïì{@link #readLines()}
+	 * è¯»å–å‰å‡ è¡Œï¼Œä¸å½±å“{@link #readLines()}
 	 * @param num
 	 * @return
 	 */
@@ -107,8 +107,8 @@ public class BedSeq extends SeqComb implements AlignSeq{
 		txtSeqFile.close();
 	}
 	/**
-	 * Ğ´ÍêºóÎñ±ØÓÃ´Ë·½·¨¹Ø±Õ
-	 * ¹Ø±ÕÊäÈëÁ÷£¬²¢½«bedseqĞ´Èë×ª»¯Îªbedseq¶ÁÈ¡
+	 * å†™å®ŒååŠ¡å¿…ç”¨æ­¤æ–¹æ³•å…³é—­
+	 * å…³é—­è¾“å…¥æµï¼Œå¹¶å°†bedseqå†™å…¥è½¬åŒ–ä¸ºbedseqè¯»å–
 	 */
 	public void closeWrite() {
 		txtSeqFile.close();
@@ -123,8 +123,8 @@ public class BedSeq extends SeqComb implements AlignSeq{
 		}
 	}
 	/**
-	 * ´ÓµÚ¼¸ĞĞ¿ªÊ¼¶Á£¬ÊÇÊµ¼ÊĞĞ
-	 * @param lines Èç¹ûlinesĞ¡ÓÚ1£¬Ôò´ÓÍ·¿ªÊ¼¶ÁÈ¡
+	 * ä»ç¬¬å‡ è¡Œå¼€å§‹è¯»ï¼Œæ˜¯å®é™…è¡Œ
+	 * @param lines å¦‚æœlineså°äº1ï¼Œåˆ™ä»å¤´å¼€å§‹è¯»å–
 	 * @return
 	 */
 	public Iterable<BedRecord> readLines(int lines) {
@@ -142,7 +142,7 @@ public class BedSeq extends SeqComb implements AlignSeq{
 		}
 	}
 	/**
-	 * µü´ú¶ÁÈ¡ÎÄ¼ş
+	 * è¿­ä»£è¯»å–æ–‡ä»¶
 	 * @param filename
 	 * @return
 	 * @throws Exception 
@@ -185,15 +185,15 @@ public class BedSeq extends SeqComb implements AlignSeq{
 	}
 
 	/**
-	 * Ö¸¶¨bedÎÄ¼ş£¬ÒÔ¼°ĞèÒªÅÅĞòµÄÁĞÊı£¬²úÉúÅÅĞò½á¹û
-	 * @param chrID ChrIDËùÔÚµÄÁĞ£¬´Ó1¿ªÊ¼¼ÇÊı£¬°´ÕÕ×ÖÄ¸Êı×ÖÅÅĞò
-	 * @param sortBedFile ÅÅĞòºóµÄÎÄ¼şÈ«Ãû
-	 * @param arg ³ıChrIDÍâ£¬ÆäËûĞèÒªÅÅĞòµÄÁĞ£¬°´ÕÕÊı×ÖÅÅĞò£¬Êµ¼ÊÁĞ
+	 * æŒ‡å®šbedæ–‡ä»¶ï¼Œä»¥åŠéœ€è¦æ’åºçš„åˆ—æ•°ï¼Œäº§ç”Ÿæ’åºç»“æœ
+	 * @param chrID ChrIDæ‰€åœ¨çš„åˆ—ï¼Œä»1å¼€å§‹è®°æ•°ï¼ŒæŒ‰ç…§å­—æ¯æ•°å­—æ’åº
+	 * @param sortBedFile æ’åºåçš„æ–‡ä»¶å…¨å
+	 * @param arg é™¤ChrIDå¤–ï¼Œå…¶ä»–éœ€è¦æ’åºçš„åˆ—ï¼ŒæŒ‰ç…§æ•°å­—æ’åºï¼Œå®é™…åˆ—
 	 * @throws Exception
 	 */
 	public BedSeq sortBedFile(int chrID, String sortBedFile,int...arg)  {
-		//sort -k1,1 -k2,2n -k3,3n FT5.bed > FT5sort.bed #µÚÒ»ÁĞÆğµÚÒ»ÁĞÖÕÖ¹ÅÅĞò£¬
-		//µÚ¶şÁĞÆğµÚ¶şÁĞÖÕÖ¹°´Êı×ÖÅÅĞò,µÚÈıÁĞÆğµÚÈıÁĞÖÕÖ¹°´Êı×ÖÅÅĞò
+		//sort -k1,1 -k2,2n -k3,3n FT5.bed > FT5sort.bed #ç¬¬ä¸€åˆ—èµ·ç¬¬ä¸€åˆ—ç»ˆæ­¢æ’åºï¼Œ
+		//ç¬¬äºŒåˆ—èµ·ç¬¬äºŒåˆ—ç»ˆæ­¢æŒ‰æ•°å­—æ’åº,ç¬¬ä¸‰åˆ—èµ·ç¬¬ä¸‰åˆ—ç»ˆæ­¢æŒ‰æ•°å­—æ’åº
 		String tmpTxt = "";
 		if (!compressInType.equals(TxtReadandWrite.TXT))
 		{
@@ -235,17 +235,17 @@ public class BedSeq extends SeqComb implements AlignSeq{
 	}
 	
 	/**
-	 * Ö¸¶¨bedÎÄ¼ş£¬°´ÕÕchrIDºÍ×ø±ê½øĞĞÅÅĞò
-	 * @param sortBedFile ÅÅĞòºóµÄÎÄ¼şÈ«Ãû
+	 * æŒ‡å®šbedæ–‡ä»¶ï¼ŒæŒ‰ç…§chrIDå’Œåæ ‡è¿›è¡Œæ’åº
+	 * @param sortBedFile æ’åºåçš„æ–‡ä»¶å…¨å
 	 */
 	public BedSeq sort(String sortBedFile)  {
-		//sort -k1,1 -k2,2n -k3,3n FT5.bed > FT5sort.bed #µÚÒ»ÁĞÆğµÚÒ»ÁĞÖÕÖ¹ÅÅĞò£¬µÚ¶şÁĞÆğµÚ¶şÁĞÖÕÖ¹°´Êı×ÖÅÅĞò,µÚÈıÁĞÆğµÚÈıÁĞÖÕÖ¹°´Êı×ÖÅÅĞò
+		//sort -k1,1 -k2,2n -k3,3n FT5.bed > FT5sort.bed #ç¬¬ä¸€åˆ—èµ·ç¬¬ä¸€åˆ—ç»ˆæ­¢æ’åºï¼Œç¬¬äºŒåˆ—èµ·ç¬¬äºŒåˆ—ç»ˆæ­¢æŒ‰æ•°å­—æ’åº,ç¬¬ä¸‰åˆ—èµ·ç¬¬ä¸‰åˆ—ç»ˆæ­¢æŒ‰æ•°å­—æ’åº
 		return sortBedFile(1, sortBedFile, 2,3);
 	}
 	/**
-	 * Ö¸¶¨bedÎÄ¼ş£¬°´ÕÕchrIDºÍ×ø±ê½øĞĞÅÅĞò<br>
-	 * @param sortBedFile ÅÅĞòºóµÄÎÄ¼şÈ«Ãû<br>
-	 * ·µ»ØÃû×ÖÎªFileOperate.changeFileSuffix(getFileName(), "_sorted", null);
+	 * æŒ‡å®šbedæ–‡ä»¶ï¼ŒæŒ‰ç…§chrIDå’Œåæ ‡è¿›è¡Œæ’åº<br>
+	 * @param sortBedFile æ’åºåçš„æ–‡ä»¶å…¨å<br>
+	 * è¿”å›åå­—ä¸ºFileOperate.changeFileSuffix(getFileName(), "_sorted", null);
 	 */
 	public BedSeq sort()  {
 		String outFile = null;
@@ -258,13 +258,13 @@ public class BedSeq extends SeqComb implements AlignSeq{
 		else {
 			outFile = FileOperate.changeFileSuffix(getFileName(), "_sorted", null);
 		}
-		//sort -k1,1 -k2,2n -k3,3n FT5.bed > FT5sort.bed #µÚÒ»ÁĞÆğµÚÒ»ÁĞÖÕÖ¹ÅÅĞò£¬µÚ¶şÁĞÆğµÚ¶şÁĞÖÕÖ¹°´Êı×ÖÅÅĞò,µÚÈıÁĞÆğµÚÈıÁĞÖÕÖ¹°´Êı×ÖÅÅĞò
+		//sort -k1,1 -k2,2n -k3,3n FT5.bed > FT5sort.bed #ç¬¬ä¸€åˆ—èµ·ç¬¬ä¸€åˆ—ç»ˆæ­¢æ’åºï¼Œç¬¬äºŒåˆ—èµ·ç¬¬äºŒåˆ—ç»ˆæ­¢æŒ‰æ•°å­—æ’åº,ç¬¬ä¸‰åˆ—èµ·ç¬¬ä¸‰åˆ—ç»ˆæ­¢æŒ‰æ•°å­—æ’åº
 		return sort(outFile);
 	}
 	/**
-	 * ×¨ÃÅ¸øĞìÁúÓÂµÄGSM307618¹ıÂËµÄÎÄ¼ş£¬
+	 * ä¸“é—¨ç»™å¾é¾™å‹‡çš„GSM307618è¿‡æ»¤çš„æ–‡ä»¶ï¼Œ
 	 * chr11   79993182        79993208        -       2119.5.3904     0       CTTGGGGCAGAAGAGCCCTTGCAGCC
-	 µÚÁùÁĞ ±ØĞë <= 2
+	 ç¬¬å…­åˆ— å¿…é¡» <= 2
 	 * @throws Exception 
 	 */
 	public BedSeq filterXLY(String filterOut) throws Exception {
@@ -289,7 +289,7 @@ public class BedSeq extends SeqComb implements AlignSeq{
 	
 	
 	/**
-	 * ×¨ÃÅ¸øÍõÑåÈåµÄGSM531964_PHF8.bed¹ıÂËµÄÎÄ¼ş£¬
+	 * ä¸“é—¨ç»™ç‹å½¦å„’çš„GSM531964_PHF8.bedè¿‡æ»¤çš„æ–‡ä»¶ï¼Œ
 	 * @throws Exception 
 	 */
 	public BedSeq filterWYR(String filterOut) throws Exception {
@@ -319,7 +319,7 @@ public class BedSeq extends SeqComb implements AlignSeq{
 		return bedSeq;
 	}
 	/**
-	 * ×¨ÃÅ¸øÍõÑåÈåµÄGSM531964_PHF8.bed¹ıÂËµÄÎÄ¼ş£¬
+	 * ä¸“é—¨ç»™ç‹å½¦å„’çš„GSM531964_PHF8.bedè¿‡æ»¤çš„æ–‡ä»¶ï¼Œ
 	 * @throws Exception 
 	 */
 	private boolean filterBigNum(String str,int filter)
@@ -340,9 +340,9 @@ public class BedSeq extends SeqComb implements AlignSeq{
 	}
 	
 	/**
-	 * Èç¹ûbedÎÄ¼şµÄ×ø±êÌ«¶Ì£¬¸ù¾İÕı¸ºÁ´ÑÓ³¤×ø±êÖÁÖ¸¶¨Î»ÖÃ<br>
-	 * ±ê×¼bedÎÄ¼ş¸ñÊ½Îª£ºchr1  \t  7345  \t  7370  \t  25  \t  52  \t  - <br>
-	 * ±ØĞëÓĞµÚÁùÁĞ
+	 * å¦‚æœbedæ–‡ä»¶çš„åæ ‡å¤ªçŸ­ï¼Œæ ¹æ®æ­£è´Ÿé“¾å»¶é•¿åæ ‡è‡³æŒ‡å®šä½ç½®<br>
+	 * æ ‡å‡†bedæ–‡ä»¶æ ¼å¼ä¸ºï¼šchr1  \t  7345  \t  7370  \t  25  \t  52  \t  - <br>
+	 * å¿…é¡»æœ‰ç¬¬å…­åˆ—
 	 * @throws Exception 
 	 * @throws Exception 
 	 */
@@ -360,9 +360,9 @@ public class BedSeq extends SeqComb implements AlignSeq{
 		return extend(extendTo, outFile);
 	}
 	/**
-	 * Èç¹ûbedÎÄ¼şµÄ×ø±êÌ«¶Ì£¬¸ù¾İÕı¸ºÁ´ÑÓ³¤×ø±êÖÁÖ¸¶¨Î»ÖÃ<br>
-	 * ±ê×¼bedÎÄ¼ş¸ñÊ½Îª£ºchr1  \t  7345  \t  7370  \t  25  \t  52  \t  - <br>
-	 * ±ØĞëÓĞµÚÁùÁĞ
+	 * å¦‚æœbedæ–‡ä»¶çš„åæ ‡å¤ªçŸ­ï¼Œæ ¹æ®æ­£è´Ÿé“¾å»¶é•¿åæ ‡è‡³æŒ‡å®šä½ç½®<br>
+	 * æ ‡å‡†bedæ–‡ä»¶æ ¼å¼ä¸ºï¼šchr1  \t  7345  \t  7370  \t  25  \t  52  \t  - <br>
+	 * å¿…é¡»æœ‰ç¬¬å…­åˆ—
 	 * @throws Exception 
 	 * @throws Exception 
 	 */
@@ -383,8 +383,8 @@ public class BedSeq extends SeqComb implements AlignSeq{
 	}
 	
 	/**
-	 * ´Óº¬ÓĞĞòÁĞµÄbedÎÄ¼ş»ñµÃfastQÎÄ¼ş
-	 * @param outFileName fastQÎÄ¼şÈ«Ãû£¨°üÀ¨Â·¾¶£©
+	 * ä»å«æœ‰åºåˆ—çš„bedæ–‡ä»¶è·å¾—fastQæ–‡ä»¶
+	 * @param outFileName fastQæ–‡ä»¶å…¨åï¼ˆåŒ…æ‹¬è·¯å¾„ï¼‰
 	 * @throws Exception
 	 */
 	public FastQ getFastQ() {
@@ -392,8 +392,8 @@ public class BedSeq extends SeqComb implements AlignSeq{
 		return getFastQ(outFileName);
 	}
 	/**
-	 * ´Óº¬ÓĞĞòÁĞµÄbedÎÄ¼ş»ñµÃfastQÎÄ¼ş
-	 * @param outFileName fastQÎÄ¼şÈ«Ãû£¨°üÀ¨Â·¾¶£©
+	 * ä»å«æœ‰åºåˆ—çš„bedæ–‡ä»¶è·å¾—fastQæ–‡ä»¶
+	 * @param outFileName fastQæ–‡ä»¶å…¨åï¼ˆåŒ…æ‹¬è·¯å¾„ï¼‰
 	 * @throws Exception
 	 */
 	public FastQ getFastQ(String outFileName) {
@@ -418,7 +418,7 @@ public class BedSeq extends SeqComb implements AlignSeq{
 		}
 		return String.copyValueOf(qualityChar);
 	}
-	/** ¹ıÂËreads */
+	/** è¿‡æ»¤reads */
 	public BedSeq filterSeq(int mappingNumSmall, int mappingNumBig, Boolean strand) {
 		if (mappingNumSmall < 1) {
 			mappingNumSmall = 1;
@@ -442,19 +442,19 @@ public class BedSeq extends SeqComb implements AlignSeq{
 		return bedSeqFiltered;
 	}
 	/**
-	 * calDestribution·½·¨ºÍcalCoverage·½·¨ÀïÃæÓÃµ½
+	 * calDestributionæ–¹æ³•å’ŒcalCoverageæ–¹æ³•é‡Œé¢ç”¨åˆ°
 	 */
 	public static final String ALLMAPPEDREADS = "All Mapped Reads";
 	/**
 	 * 
-	 * ÅÅĞòºóÔÙ½øĞĞ¼ÆËã£¬·ñÔòËÙ¶È»áÂı<br>
-	 * ¼ÆËãreadsÔÚÈ¾É«ÌåÉÏµÄ×ÜµÄmappingÊıÁ¿ºÍµ¥¸öÈ¾É«ÌåµÄmappingÊıÁ¿
+	 * æ’åºåå†è¿›è¡Œè®¡ç®—ï¼Œå¦åˆ™é€Ÿåº¦ä¼šæ…¢<br>
+	 * è®¡ç®—readsåœ¨æŸ“è‰²ä½“ä¸Šçš„æ€»çš„mappingæ•°é‡å’Œå•ä¸ªæŸ“è‰²ä½“çš„mappingæ•°é‡
 	 * @param calFragLen
-	 * @param FragmentFile Ğ´ÈëµÄÎÄ¼ş£¬Ğ´ÈëÈ»ºóµ÷ÓÃR
+	 * @param FragmentFile å†™å…¥çš„æ–‡ä»¶ï¼Œå†™å…¥ç„¶åè°ƒç”¨R
 	 * @return linkedHashMap
-	 * µÚÒ»¸ökey ºÍ value£º allMappingReads    allMappingReads/allReads<br>
-	 * ÆäËû: <br>
-	 * key: ChrID£¬Ğ¡Ğ´<br> 
+	 * ç¬¬ä¸€ä¸ªkey å’Œ valueï¼š allMappingReads    allMappingReads/allReads<br>
+	 * å…¶ä»–: <br>
+	 * key: ChrIDï¼Œå°å†™<br> 
 	 * value double[2] 0: chrReads 1: chrReads/allMappingReads
 	 */
 	public LinkedHashMap<String, double[]> calDestribution(boolean calFragLen, String FragmentFile)
@@ -464,7 +464,7 @@ public class BedSeq extends SeqComb implements AlignSeq{
 		if (calFragLen) {
 			txtFragmentFile =new TxtReadandWrite(compressOutType, FragmentFile, false);
 		}
-		//chrIDÓë¸ÃchrIDËùmappingµ½µÄreadsÊıÁ¿
+		//chrIDä¸è¯¥chrIDæ‰€mappingåˆ°çš„readsæ•°é‡
 		LinkedHashMap<String, double[]> hashChrReadsNum = new LinkedHashMap<String, double[]>();
 		double[] chrMappedReads = null;
 		double[] allMappedReads = new double[2];
@@ -480,13 +480,13 @@ public class BedSeq extends SeqComb implements AlignSeq{
 				if (!ss[0].trim().equals(chrID)) {
 					chrID = ss[0].trim();
 					chrMappedReads = new double[2];
-					if (!chrID.equals("")) {//Ìø¹ı×î¿ªÊ¼µÄchrID
+					if (!chrID.equals("")) {//è·³è¿‡æœ€å¼€å§‹çš„chrID
 						hashChrReadsNum.put(chrID.toLowerCase(), chrMappedReads);
 					}
 				}
 				allMappedReads[0] ++; chrMappedReads[0]++;
-				////////////////// fragment µÄ³¤¶È·Ö²¼ÎÄ¼ş   ////////////////////////////////////////////////////////////////
-				if (calFragLen) //Èç¹ûÒª¼ÆËãfragmentµÄ·Ö²¼£¬ÄÇÃ´¾Í½«fragmentµÄ³¤¶È¼ÇÂ¼ÔÚtxtÎÄ±¾ÖĞ£¬×îºóµ÷ÓÃRÀ´¼ÆËã³¤¶È·Ö²¼
+				////////////////// fragment çš„é•¿åº¦åˆ†å¸ƒæ–‡ä»¶   ////////////////////////////////////////////////////////////////
+				if (calFragLen) //å¦‚æœè¦è®¡ç®—fragmentçš„åˆ†å¸ƒï¼Œé‚£ä¹ˆå°±å°†fragmentçš„é•¿åº¦è®°å½•åœ¨txtæ–‡æœ¬ä¸­ï¼Œæœ€åè°ƒç”¨Ræ¥è®¡ç®—é•¿åº¦åˆ†å¸ƒ
 				{
 					txtFragmentFile.writefile(Locend - Locstart+""+"\n");
 				}
@@ -494,7 +494,7 @@ public class BedSeq extends SeqComb implements AlignSeq{
 		} catch (Exception e) {
 			logger.error("calculate mapping rates error: "+ seqFile);
 		}
-		//¼ÆËã±ÈÖµ²¢¼ÓÈëarraylist
+		//è®¡ç®—æ¯”å€¼å¹¶åŠ å…¥arraylist
 		double readsMappedAll = hashChrReadsNum.get(ALLMAPPEDREADS)[0];
 		hashChrReadsNum.get(ALLMAPPEDREADS)[1] = readsMappedAll/getSeqNum();
 		for (Entry<String, double[]> entry : hashChrReadsNum.entrySet()) {
@@ -511,42 +511,42 @@ public class BedSeq extends SeqComb implements AlignSeq{
 	}
 	
 	/**
-	 * ²âÊÔÒ»ÏÂ
-	 * @param ÊäÈëµÄÈ¾É«Ìå³¤¶ÈÎÄ¼ş£¬¿Ï¶¨ÊÇtxt
-	 * ¼ÆËã²âĞò½á¹ûµÄcoverageÇé¿ö£¬ÒÔ¼°readsÔÚÃ¿ÌõÈ¾É«ÌåÉÏµÄcoverageÇé¿ö£¬½á¹û±ØĞëÊÇÅÅ¹ıĞòµÄ.
+	 * æµ‹è¯•ä¸€ä¸‹
+	 * @param è¾“å…¥çš„æŸ“è‰²ä½“é•¿åº¦æ–‡ä»¶ï¼Œè‚¯å®šæ˜¯txt
+	 * è®¡ç®—æµ‹åºç»“æœçš„coverageæƒ…å†µï¼Œä»¥åŠreadsåœ¨æ¯æ¡æŸ“è‰²ä½“ä¸Šçš„coverageæƒ…å†µï¼Œç»“æœå¿…é¡»æ˜¯æ’è¿‡åºçš„.
 	 * @return linkedHashMap
-	 * µÚÒ»¸ökey ºÍ value£º allMappingReadsCoverage    allMappingReadsCoverage/allChrLen<br>
-	 * ÆäËû: <br>
-	 * key: ChrID£¬Ğ¡Ğ´<br> 
+	 * ç¬¬ä¸€ä¸ªkey å’Œ valueï¼š allMappingReadsCoverage    allMappingReadsCoverage/allChrLen<br>
+	 * å…¶ä»–: <br>
+	 * key: ChrIDï¼Œå°å†™<br> 
 	 * value double[2] 0: Coverage 1: Coverage/ChrLen
 	 */
 	public LinkedHashMap<String, double[]> getCoverage(String chrLenFile) throws Exception
 	{
 		TxtReadandWrite txtChrID = new TxtReadandWrite(chrLenFile, false);
-		//ChrIDºÍ³¤¶ÈµÄ¶ÔÕÕ±í
+		//ChrIDå’Œé•¿åº¦çš„å¯¹ç…§è¡¨
 		LinkedHashMap<String, Double> lkHashChrLen = txtChrID.getKey2ValueDouble("\t", false);
 		return getCoverage(lkHashChrLen);
 	}
 	
 	/**
-	 * ²âÊÔÒ»ÏÂ
-	 * @param ÊäÈëµÄÈ¾É«Ìå³¤¶ÈÎÄ¼ş£¬¿Ï¶¨ÊÇtxt
-	 * ¼ÆËã²âĞò½á¹ûµÄcoverageÇé¿ö£¬ÒÔ¼°readsÔÚÃ¿ÌõÈ¾É«ÌåÉÏµÄcoverageÇé¿ö£¬½á¹û±ØĞëÊÇÅÅ¹ıĞòµÄ.
+	 * æµ‹è¯•ä¸€ä¸‹
+	 * @param è¾“å…¥çš„æŸ“è‰²ä½“é•¿åº¦æ–‡ä»¶ï¼Œè‚¯å®šæ˜¯txt
+	 * è®¡ç®—æµ‹åºç»“æœçš„coverageæƒ…å†µï¼Œä»¥åŠreadsåœ¨æ¯æ¡æŸ“è‰²ä½“ä¸Šçš„coverageæƒ…å†µï¼Œç»“æœå¿…é¡»æ˜¯æ’è¿‡åºçš„.
 	 * @return linkedHashMap
-	 * µÚÒ»¸ökey ºÍ value£º allMappingReadsCoverage    allMappingReadsCoverage/allChrLen<br>
-	 * ÆäËû: <br>
-	 * key: ChrID£¬Ğ¡Ğ´<br> 
+	 * ç¬¬ä¸€ä¸ªkey å’Œ valueï¼š allMappingReadsCoverage    allMappingReadsCoverage/allChrLen<br>
+	 * å…¶ä»–: <br>
+	 * key: ChrIDï¼Œå°å†™<br> 
 	 * value double[2] 0: Coverage 1: Coverage/ChrLen
 	 */
 	public LinkedHashMap<String, double[]> getCoverage(HashMap<String, Double> hashChr2Len)
 	{
-		//ChrIDºÍ³¤¶ÈµÄ¶ÔÕÕ±í
+		//ChrIDå’Œé•¿åº¦çš„å¯¹ç…§è¡¨
 		LinkedHashMap<String, double[]> hashChrReadsNum = new LinkedHashMap<String, double[]>();
 		TxtReadandWrite txtbed = new TxtReadandWrite(compressInType, seqFile, false);
 		
-		double[] chrMappedReads = new double[2];//½ö½öÎªÁËÖµ´«µİ£¬Êı¾İ±£´æÔÚ[0]ÖĞ
-		int tmpLocStart = 0; int tmpLocEnd = 0;//ÓÃÀ´¼ÆËãcoverage
-		//È«³¤»ùÒò
+		double[] chrMappedReads = new double[2];//ä»…ä»…ä¸ºäº†å€¼ä¼ é€’ï¼Œæ•°æ®ä¿å­˜åœ¨[0]ä¸­
+		int tmpLocStart = 0; int tmpLocEnd = 0;//ç”¨æ¥è®¡ç®—coverage
+		//å…¨é•¿åŸºå› 
 		double[] allMappedReads = new double[2];
 		hashChrReadsNum.put(ALLMAPPEDREADS, allMappedReads);
 		String chrID = "";
@@ -556,12 +556,12 @@ public class BedSeq extends SeqComb implements AlignSeq{
 			if (!ss[0].trim().equals(chrID)) {
 				chrID = ss[0].trim();
 				chrMappedReads = new double[2];
-				if (!chrID.equals("")) {//Ìø¹ı×î¿ªÊ¼µÄchrID
+				if (!chrID.equals("")) {//è·³è¿‡æœ€å¼€å§‹çš„chrID
 					hashChrReadsNum.put(chrID.toLowerCase(), chrMappedReads);
 				}
-				tmpLocStart = 0; tmpLocEnd = 0;//ÓÃÀ´¼ÆËãcoverage
+				tmpLocStart = 0; tmpLocEnd = 0;//ç”¨æ¥è®¡ç®—coverage
 			}
-			////////////////// fragment µÄ³¤¶È·Ö²¼ÎÄ¼ş   ////////////////////////////////////////////////////////////////			
+			////////////////// fragment çš„é•¿åº¦åˆ†å¸ƒæ–‡ä»¶   ////////////////////////////////////////////////////////////////			
 			if (Locend <= tmpLocEnd) {
 				continue;
 			}
@@ -576,7 +576,7 @@ public class BedSeq extends SeqComb implements AlignSeq{
 				tmpLocEnd = Locend;
 			}
 		}
-		//¼ÆËã±ÈÖµ²¢¼ÓÈëarraylist
+		//è®¡ç®—æ¯”å€¼å¹¶åŠ å…¥arraylist
 		long chrLenAll = 0L;
 		for (String key: hashChrReadsNum.keySet()) {
 			chrLenAll = chrLenAll + hashChr2Len.get(key).longValue();
@@ -595,9 +595,9 @@ public class BedSeq extends SeqComb implements AlignSeq{
 	}
 	
 	/**
-	 * ÓÃdgeµÄ·½·¨À´»ñµÃ»ùÒò±í´ïÁ¿
-	 * @param sort ÊÇ·ñĞèÒªÅÅĞò
-	 * ³ö´í·µ»Ønull
+	 * ç”¨dgeçš„æ–¹æ³•æ¥è·å¾—åŸºå› è¡¨è¾¾é‡
+	 * @param sort æ˜¯å¦éœ€è¦æ’åº
+	 * å‡ºé”™è¿”å›null
 	 */
 	public HashMap<String, Integer> getDGEnum(boolean sort, boolean allTags) {
 		BedSeq bedseq = null;
@@ -616,10 +616,10 @@ public class BedSeq extends SeqComb implements AlignSeq{
 	}
 	
 	/**
-	 * @param Alltags true: Ñ¡ÔñÈ«²¿tag£¬false£¬Ö»Ñ¡Ôñ×î¶àµÄtag
+	 * @param Alltags true: é€‰æ‹©å…¨éƒ¨tagï¼Œfalseï¼Œåªé€‰æ‹©æœ€å¤šçš„tag
 	 * @return
-	 * ·µ»ØÃ¿¸ö»ùÒòËù¶ÔÓ¦µÄ±í´ïÁ¿£¬°üÀ¨¶à¸ötagÖ®ºÍ--³ıÁË·´Ïòtag£¬ ÓÃ int[1]Ö»ÊÇÎªÁËµØÖ·ÒıÓÃ¡£
-	 * bedÎÄ¼ş±ØĞëÅÅĞò
+	 * è¿”å›æ¯ä¸ªåŸºå› æ‰€å¯¹åº”çš„è¡¨è¾¾é‡ï¼ŒåŒ…æ‹¬å¤šä¸ªtagä¹‹å’Œ--é™¤äº†åå‘tagï¼Œ ç”¨ int[1]åªæ˜¯ä¸ºäº†åœ°å€å¼•ç”¨ã€‚
+	 * bedæ–‡ä»¶å¿…é¡»æ’åº
 	 * @throws Exception
 	 */
 	private HashMap<String, Integer> getGeneExpress(boolean Alltags) throws Exception {
@@ -631,7 +631,7 @@ public class BedSeq extends SeqComb implements AlignSeq{
 		int[] tmpCount = new int[]{0}; int tmpLocEnd = -1;
 		while ((content = reader.readLine()) != null) {
 			String[] ss = content.split("\t");
-			//mappingµ½»¥²¹Á´ÉÏµÄ£¬ÊÇ¼ÙµÄĞÅºÅ
+			//mappingåˆ°äº’è¡¥é“¾ä¸Šçš„ï¼Œæ˜¯å‡çš„ä¿¡å·
 			if (ss[5].equals("-")) {
 				continue;
 			}
@@ -657,7 +657,7 @@ public class BedSeq extends SeqComb implements AlignSeq{
 		return hashResult;
 	}
 	/**
-	 * ÊäÈëint[0] Ö»ÓĞ0Î»ÓĞĞÅÏ¢
+	 * è¾“å…¥int[0] åªæœ‰0ä½æœ‰ä¿¡æ¯
 	 * @param lsReads
 	 * @return
 	 */
@@ -672,7 +672,7 @@ public class BedSeq extends SeqComb implements AlignSeq{
 		return max;
 	}
 	/**
-	 * ÊäÈëint[0] Ö»ÓĞ0Î»ÓĞĞÅÏ¢
+	 * è¾“å…¥int[0] åªæœ‰0ä½æœ‰ä¿¡æ¯
 	 * @param lsReads
 	 * @return
 	 */
@@ -686,11 +686,11 @@ public class BedSeq extends SeqComb implements AlignSeq{
 	}
 	/**
 	 * 
-	 * ÎŞ·¨Éè¶¨compressType
-	 * ½«bedÎÄ¼ş×ª»¯³ÉDGEËùĞèµÄĞÅÏ¢£¬Ö±½Ó¿ÉÒÔÓÃDEseq·ÖÎöµÄ
+	 * æ— æ³•è®¾å®šcompressType
+	 * å°†bedæ–‡ä»¶è½¬åŒ–æˆDGEæ‰€éœ€çš„ä¿¡æ¯ï¼Œç›´æ¥å¯ä»¥ç”¨DEseqåˆ†æçš„
 	 * @param result
 	 * @param sort 
-	 * @param allTags ÊÇ·ñ»ñµÃÈ«²¿µÄÕıÏòtag£¬falseµÄ»°£¬Ö»Ñ¡Ôñ×î¶àµÄÕıÏòtagµÄÊıÁ¿
+	 * @param allTags æ˜¯å¦è·å¾—å…¨éƒ¨çš„æ­£å‘tagï¼Œfalseçš„è¯ï¼Œåªé€‰æ‹©æœ€å¤šçš„æ­£å‘tagçš„æ•°é‡
 	 * @param bedFile
 	 */
 	public static void dgeCal(String result, boolean sort, boolean allTags, String... bedFile)
@@ -716,8 +716,8 @@ public class BedSeq extends SeqComb implements AlignSeq{
 		}
 	}
 	/**
-	 * ¸ø¶¨Ò»×éhash±í£¬key£ºlocID   value£ºexpressValue
-	 * ½«ËûÃÇºÏ²¢³ÉÒ»¸öhash±í
+	 * ç»™å®šä¸€ç»„hashè¡¨ï¼Œkeyï¼šlocID   valueï¼šexpressValue
+	 * å°†ä»–ä»¬åˆå¹¶æˆä¸€ä¸ªhashè¡¨
 	 * @param lsDGEvalue
 	 * @return
 	 */
@@ -744,16 +744,16 @@ public class BedSeq extends SeqComb implements AlignSeq{
 		return hashValue;
 	}
 	/**
-	 * ÊäÈë¾­¹ıÅÅĞòµÄpeakfile,»òÕßËµbedfile£¬½«ÖØµşµÄpeak½øĞĞºÏ²¢ ×¢Òâ£¬½á¹ûÖĞ½ö±£Áôpeak£¬Ã»ÓĞ±£ÁôÆäËû¶àµÄĞÅÏ¢
-	 * ´ÓµÚÒ»ĞĞ¿ªÊ¼ºÏ²¢
+	 * è¾“å…¥ç»è¿‡æ’åºçš„peakfile,æˆ–è€…è¯´bedfileï¼Œå°†é‡å çš„peakè¿›è¡Œåˆå¹¶ æ³¨æ„ï¼Œç»“æœä¸­ä»…ä¿ç•™peakï¼Œæ²¡æœ‰ä¿ç•™å…¶ä»–å¤šçš„ä¿¡æ¯
+	 * ä»ç¬¬ä¸€è¡Œå¼€å§‹åˆå¹¶
 	 * @return
 	 */
 	public BedSeq combBedOverlap() {
 		return combBedOverlap(false);
 	}
 	/**
-	 * ÊäÈë¾­¹ıÅÅĞòµÄpeakfile,»òÕßËµbedfile£¬½«ÖØµşµÄpeak½øĞĞºÏ²¢ ×¢Òâ£¬½á¹ûÖĞ³ı±£Áôpeak£¬»¹¿ÉÑ¡ÔñÊÇ·ñ¸ù¾İ·½Ïò½øĞĞºÏ²¢£¬Í¬Ê±±£Áô·½ÏòĞÅÏ¢
-	 * ´ÓµÚÒ»ĞĞ¿ªÊ¼ºÏ²¢
+	 * è¾“å…¥ç»è¿‡æ’åºçš„peakfile,æˆ–è€…è¯´bedfileï¼Œå°†é‡å çš„peakè¿›è¡Œåˆå¹¶ æ³¨æ„ï¼Œç»“æœä¸­é™¤ä¿ç•™peakï¼Œè¿˜å¯é€‰æ‹©æ˜¯å¦æ ¹æ®æ–¹å‘è¿›è¡Œåˆå¹¶ï¼ŒåŒæ—¶ä¿ç•™æ–¹å‘ä¿¡æ¯
+	 * ä»ç¬¬ä¸€è¡Œå¼€å§‹åˆå¹¶
 	 * @return
 	 */
 	public BedSeq combBedOverlap(boolean cis5to3) {
@@ -761,13 +761,13 @@ public class BedSeq extends SeqComb implements AlignSeq{
 		return combBedOverlap(cis5to3, 0, outFile);
 	}
 	/**
-	 * ÊäÈë¾­¹ıÅÅĞòµÄpeakfile,»òÕßËµbedfile£¬½«ÖØµşµÄpeak½øĞĞºÏ²¢ ×¢Òâ£¬½á¹ûÖĞ½ö±£Áôpeak£¬Ã»ÓĞ±£ÁôÆäËû¶àµÄĞÅÏ¢
+	 * è¾“å…¥ç»è¿‡æ’åºçš„peakfile,æˆ–è€…è¯´bedfileï¼Œå°†é‡å çš„peakè¿›è¡Œåˆå¹¶ æ³¨æ„ï¼Œç»“æœä¸­ä»…ä¿ç•™peakï¼Œæ²¡æœ‰ä¿ç•™å…¶ä»–å¤šçš„ä¿¡æ¯
 	*/
 	public BedSeq combBedOverlap(String outFile, boolean cis5to3) {
 		return combBedOverlap(cis5to3, 0, outFile);
 	}
 	/**
-	 * ÊäÈë¾­¹ıÅÅĞòµÄpeakfile,»òÕßËµbedfile£¬½«ÖØµşµÄpeak½øĞĞºÏ²¢ ×¢Òâ£¬½á¹ûÖĞ½ö±£Áôpeak£¬Ã»ÓĞ±£ÁôÆäËû¶àµÄĞÅÏ¢
+	 * è¾“å…¥ç»è¿‡æ’åºçš„peakfile,æˆ–è€…è¯´bedfileï¼Œå°†é‡å çš„peakè¿›è¡Œåˆå¹¶ æ³¨æ„ï¼Œç»“æœä¸­ä»…ä¿ç•™peakï¼Œæ²¡æœ‰ä¿ç•™å…¶ä»–å¤šçš„ä¿¡æ¯
 	*/
 	@Deprecated
 	public BedSeq combBedOverlap(int readLines) {
@@ -775,11 +775,11 @@ public class BedSeq extends SeqComb implements AlignSeq{
 		return combBedOverlap(false, 0, out);
 	}
 	/**
-	 * ÊäÈë¾­¹ıÅÅĞòµÄpeakfile,»òÕßËµbedfile£¬½«ÖØµşµÄpeak½øĞĞºÏ²¢
-	 * ×¢Òâ£¬½á¹ûÖĞ½ö±£Áôpeak£¬Ã»ÓĞ±£ÁôÆäËû¶àµÄĞÅÏ¢
-	 * @param cis5to3 ÊÇ·ñ¸ù¾İ·½Ïò½øĞĞºÏ²¢
+	 * è¾“å…¥ç»è¿‡æ’åºçš„peakfile,æˆ–è€…è¯´bedfileï¼Œå°†é‡å çš„peakè¿›è¡Œåˆå¹¶
+	 * æ³¨æ„ï¼Œç»“æœä¸­ä»…ä¿ç•™peakï¼Œæ²¡æœ‰ä¿ç•™å…¶ä»–å¤šçš„ä¿¡æ¯
+	 * @param cis5to3 æ˜¯å¦æ ¹æ®æ–¹å‘è¿›è¡Œåˆå¹¶
 	 * @param peakFile
-	 * @param readLines ´ÓµÚ¼¸ĞĞ¿ªÊ¼¶Á
+	 * @param readLines ä»ç¬¬å‡ è¡Œå¼€å§‹è¯»
 	 */
 	public BedSeq combBedOverlap(boolean cis5to3, int readLines, String outFile) {
 		if (cis5to3) {
@@ -791,10 +791,10 @@ public class BedSeq extends SeqComb implements AlignSeq{
 	}
 	
 	/**
-	 * ÊäÈë¾­¹ıÅÅĞòµÄpeakfile,»òÕßËµbedfile£¬½«ÖØµşµÄpeak½øĞĞºÏ²¢
-	 * ×¢Òâ£¬½á¹ûÖĞ½ö±£Áôpeak£¬Ã»ÓĞ±£ÁôÆäËû¶àµÄĞÅÏ¢
+	 * è¾“å…¥ç»è¿‡æ’åºçš„peakfile,æˆ–è€…è¯´bedfileï¼Œå°†é‡å çš„peakè¿›è¡Œåˆå¹¶
+	 * æ³¨æ„ï¼Œç»“æœä¸­ä»…ä¿ç•™peakï¼Œæ²¡æœ‰ä¿ç•™å…¶ä»–å¤šçš„ä¿¡æ¯
 	 * @param peakFile
-	 * @param readLines ´ÓµÚ¼¸ĞĞ¿ªÊ¼¶Á
+	 * @param readLines ä»ç¬¬å‡ è¡Œå¼€å§‹è¯»
 	 */
 	private BedSeq combBedOverlap(int readLines, String outFile) {
 		BedSeq bedSeqResult = new BedSeq(outFile, true);
@@ -813,14 +813,14 @@ public class BedSeq extends SeqComb implements AlignSeq{
 				bedRecordLast = new BedRecord();
 				bedRecordLast.setRefID(bedRecord.getRefID());
 				bedRecordLast.setStartEndLoc(bedRecord.getStartAbs(), bedRecord.getEndAbs());
-				//ÒòÎªbedRecordÄÚ²¿Ä¬ÈÏReadsNumÎªnull£¬¶øÈç¹ûÎªnull£¬ÌáÈ¡Ê±ÏÔÊ¾Îª1£¬ËùÒÔËùÓĞÎª1µÄ¶¼ÒªÊÖ¹¤Éè¶¨Ò»ÏÂ
+				//å› ä¸ºbedRecordå†…éƒ¨é»˜è®¤ReadsNumä¸ºnullï¼Œè€Œå¦‚æœä¸ºnullï¼Œæå–æ—¶æ˜¾ç¤ºä¸º1ï¼Œæ‰€ä»¥æ‰€æœ‰ä¸º1çš„éƒ½è¦æ‰‹å·¥è®¾å®šä¸€ä¸‹
 				if (bedRecordLast.getReadsNum() == 1) {
 					bedRecordLast.setReadsNum(1);
 				}
 				continue;
 			}
 			else if (bedRecord.getStartAbs() < bedRecordLast.getEndAbs()) {
-				//·¢ÏÖÒ»¸öoverlap¾Í¼ÓÉÏ1£¬±íÊ¾¸ÃÇøÓòÓĞ¶àÌõreads
+				//å‘ç°ä¸€ä¸ªoverlapå°±åŠ ä¸Š1ï¼Œè¡¨ç¤ºè¯¥åŒºåŸŸæœ‰å¤šæ¡reads
 				bedRecordLast.setReadsNum(bedRecordLast.getReadsNum() + 1);
 				if (bedRecordLast.getEndAbs() < bedRecord.getEndAbs()) {
 					bedRecordLast.setStartEndLoc(bedRecordLast.getStartAbs(), bedRecord.getEndAbs());
@@ -832,10 +832,10 @@ public class BedSeq extends SeqComb implements AlignSeq{
 		return bedSeqResult;
 	}
 	/**
-	 * ÊäÈë¾­¹ıÅÅĞòµÄpeakfile,»òÕßËµbedfile£¬½«ÖØµşµÄpeak½øĞĞºÏ²¢
-	 * ×¢Òâ£¬½á¹ûÖĞ½ö±£Áôpeak£¬Ã»ÓĞ±£ÁôÆäËû¶àµÄĞÅÏ¢
+	 * è¾“å…¥ç»è¿‡æ’åºçš„peakfile,æˆ–è€…è¯´bedfileï¼Œå°†é‡å çš„peakè¿›è¡Œåˆå¹¶
+	 * æ³¨æ„ï¼Œç»“æœä¸­ä»…ä¿ç•™peakï¼Œæ²¡æœ‰ä¿ç•™å…¶ä»–å¤šçš„ä¿¡æ¯
 	 * @param peakFile
-	 * @param readLines ´ÓµÚ¼¸ĞĞ¿ªÊ¼¶Á
+	 * @param readLines ä»ç¬¬å‡ è¡Œå¼€å§‹è¯»
 	 */
 	private BedSeq combBedOverlapCis5to3(int readLines, String outFile) {
 			BedSeq bedSeqResult = new BedSeq(outFile, true);
@@ -856,14 +856,14 @@ public class BedSeq extends SeqComb implements AlignSeq{
 					bedRecordLast.setRefID(bedRecord.getRefID());
 					bedRecordLast.setStartEndLoc(bedRecord.getStartAbs(), bedRecord.getEndAbs());
 					bedRecordLast.setCis5to3(bedRecord.isCis5to3());
-					//ÒòÎªbedRecordÄÚ²¿Ä¬ÈÏReadsNumÎªnull£¬¶øÈç¹ûÎªnull£¬ÌáÈ¡Ê±ÏÔÊ¾Îª1£¬ËùÒÔËùÓĞÎª1µÄ¶¼ÒªÊÖ¹¤Éè¶¨Ò»ÏÂ
+					//å› ä¸ºbedRecordå†…éƒ¨é»˜è®¤ReadsNumä¸ºnullï¼Œè€Œå¦‚æœä¸ºnullï¼Œæå–æ—¶æ˜¾ç¤ºä¸º1ï¼Œæ‰€ä»¥æ‰€æœ‰ä¸º1çš„éƒ½è¦æ‰‹å·¥è®¾å®šä¸€ä¸‹
 					if (bedRecordLast.getReadsNum() == 1) {
 						bedRecordLast.setReadsNum(1);
 					}
 					continue;
 				}
 				else if (bedRecord.getStartAbs() < bedRecordLast.getEndAbs()) {
-					//·¢ÏÖÒ»¸öoverlap¾Í¼ÓÉÏ1£¬±íÊ¾¸ÃÇøÓòÓĞ¶àÌõreads
+					//å‘ç°ä¸€ä¸ªoverlapå°±åŠ ä¸Š1ï¼Œè¡¨ç¤ºè¯¥åŒºåŸŸæœ‰å¤šæ¡reads
 					bedRecordLast.setReadsNum(bedRecordLast.getReadsNum() + 1);
 					if (bedRecordLast.getEndAbs() < bedRecord.getEndAbs()) {
 						bedRecordLast.setStartEndLoc(bedRecordLast.getStartAbs(), bedRecord.getEndAbs());
@@ -880,7 +880,7 @@ public class BedSeq extends SeqComb implements AlignSeq{
 	}
 	
 	/**
-	 * ÊäÈë¾­¹ıÅÅĞòµÄbedfile£¬½«ÖØ¸´µÄbedrecord½øĞĞºÏ²¢£¬ºÏ²¢µÄĞÅÏ¢È¡µÚÒ»Ìõ
+	 * è¾“å…¥ç»è¿‡æ’åºçš„bedfileï¼Œå°†é‡å¤çš„bedrecordè¿›è¡Œåˆå¹¶ï¼Œåˆå¹¶çš„ä¿¡æ¯å–ç¬¬ä¸€æ¡
 	 * @param peakFile 
 	 */
 	public BedSeq removeDuplicat(String outFile) {
@@ -898,13 +898,13 @@ public class BedSeq extends SeqComb implements AlignSeq{
 				bedSeqResult.writeBedRecord(bedRecordLast);
 				bedRecordLast = new BedRecord();
 				bedRecordLast = bedRecord;
-				// ÒòÎªbedRecordÄÚ²¿Ä¬ÈÏReadsNumÎªnull£¬¶øÈç¹ûÎªnull£¬ÌáÈ¡Ê±ÏÔÊ¾Îª1£¬ËùÒÔËùÓĞÎª1µÄ¶¼ÒªÊÖ¹¤Éè¶¨Ò»ÏÂ
+				// å› ä¸ºbedRecordå†…éƒ¨é»˜è®¤ReadsNumä¸ºnullï¼Œè€Œå¦‚æœä¸ºnullï¼Œæå–æ—¶æ˜¾ç¤ºä¸º1ï¼Œæ‰€ä»¥æ‰€æœ‰ä¸º1çš„éƒ½è¦æ‰‹å·¥è®¾å®šä¸€ä¸‹
 				if (bedRecordLast.getReadsNum() == 1) {
 					bedRecordLast.setReadsNum(1);
 				}
 				continue;
 			} else {
-				// ·¢ÏÖÒ»¸öoverlap¾Í¼ÓÉÏ1£¬±íÊ¾¸ÃÇøÓòÓĞ¶àÌõreads
+				// å‘ç°ä¸€ä¸ªoverlapå°±åŠ ä¸Š1ï¼Œè¡¨ç¤ºè¯¥åŒºåŸŸæœ‰å¤šæ¡reads
 				bedRecordLast.setReadsNum(bedRecordLast.getReadsNum() + 1);
 			}
 		}
@@ -935,9 +935,9 @@ public class BedSeq extends SeqComb implements AlignSeq{
 	
 	
 	/**
-	 * ½«ËùÓĞmappingÖÁgenomicÉÏµÄbedÎÄ¼şºÏ²¢£¬Õâ¸öÊÇÔ¤²ânovel miRNAµÄ
-	 * @param outFile Êä³öÎÄ¼ş
-	 * @param bedSeqFile ÊäÈëÎÄ¼ş
+	 * å°†æ‰€æœ‰mappingè‡³genomicä¸Šçš„bedæ–‡ä»¶åˆå¹¶ï¼Œè¿™ä¸ªæ˜¯é¢„æµ‹novel miRNAçš„
+	 * @param outFile è¾“å‡ºæ–‡ä»¶
+	 * @param bedSeqFile è¾“å…¥æ–‡ä»¶
 	 */
 	public static BedSeq combBedFile(String outFile, String... bedSeqFile) {
 		BedSeq bedSeq = new BedSeq(outFile, true);
@@ -952,9 +952,9 @@ public class BedSeq extends SeqComb implements AlignSeq{
 		return bedSeq;
 	}
 	/**
-	 * ½«ËùÓĞmappingÖÁgenomicÉÏµÄbedÎÄ¼şºÏ²¢£¬Õâ¸öÊÇÔ¤²ânovel miRNAµÄ
-	 * @param outFile Êä³öÎÄ¼ş
-	 * @param bedSeqFile ÊäÈëÎÄ¼ş
+	 * å°†æ‰€æœ‰mappingè‡³genomicä¸Šçš„bedæ–‡ä»¶åˆå¹¶ï¼Œè¿™ä¸ªæ˜¯é¢„æµ‹novel miRNAçš„
+	 * @param outFile è¾“å‡ºæ–‡ä»¶
+	 * @param bedSeqFile è¾“å…¥æ–‡ä»¶
 	 */
 	public static BedSeq combBedFile(String outFile, ArrayList<String> lsbedSeqFile) {
 		BedSeq bedSeq = new BedSeq(outFile, true);
@@ -969,7 +969,7 @@ public class BedSeq extends SeqComb implements AlignSeq{
 		return bedSeq;
 	}
 	
-	/** ¼ÙÉèÎÄ¼ş´æÔÚ£¬ÅĞ¶ÏÆäÊÇ·ñÎªnovelbioËù¶¨ÒåµÄbedÎÄ¼ş */
+	/** å‡è®¾æ–‡ä»¶å­˜åœ¨ï¼Œåˆ¤æ–­å…¶æ˜¯å¦ä¸ºnovelbioæ‰€å®šä¹‰çš„bedæ–‡ä»¶ */
 	public static boolean isBedFile(String bedFile) {
 		final int allReadLines = 100;
 		final int maxBedLines = 50;

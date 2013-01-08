@@ -5,7 +5,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 
 /**
- * ½«dbsnpµÄÊı¾İĞŞÕı£¬È»ºóÓÃtxxtµÄ·½·¨ shujuku 
+ * å°†dbsnpçš„æ•°æ®ä¿®æ­£ï¼Œç„¶åç”¨txxtçš„æ–¹æ³• shujuku 
  * @author zong0jie
  *
  */

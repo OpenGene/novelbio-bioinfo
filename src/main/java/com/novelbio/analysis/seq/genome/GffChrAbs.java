@@ -11,8 +11,8 @@ import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.species.Species;
 /**
- * GffHashGeneºÍSeqHash¶¼ÊÇstatic£¬Ò²¾ÍÊÇÒ»´ÎÖ»ÄÜ¶ÔÒ»¸öÎïÖÖ½øĞĞ·ÖÎö
- * MapReads²»ÊÇstatic£¬Ò²¾ÍÊÇ¿ÉÒÔÍ¬Ê±´¦Àí¶à¸ömappingÎÄ¼ş
+ * GffHashGeneå’ŒSeqHashéƒ½æ˜¯staticï¼Œä¹Ÿå°±æ˜¯ä¸€æ¬¡åªèƒ½å¯¹ä¸€ä¸ªç‰©ç§è¿›è¡Œåˆ†æ
+ * MapReadsä¸æ˜¯staticï¼Œä¹Ÿå°±æ˜¯å¯ä»¥åŒæ—¶å¤„ç†å¤šä¸ªmappingæ–‡ä»¶
  * @author zong0jie
  *
  */
@@ -64,7 +64,7 @@ public class GffChrAbs {
 		this.seqHash = seqHash;
 	}
 
-	/** Èç¹ûÃ»ÓĞÉè¶¨species£¬¾Í·µ»ØÒ»¸öÈ«ĞÂµÄspecies£¬²¢ÇÒÆätaxID == 0 */
+	/** å¦‚æœæ²¡æœ‰è®¾å®šspeciesï¼Œå°±è¿”å›ä¸€ä¸ªå…¨æ–°çš„speciesï¼Œå¹¶ä¸”å…¶taxID == 0 */
 	public Species getSpecies() {
 		if (species == null) {
 			return new Species();
@@ -95,11 +95,11 @@ public class GffChrAbs {
 	}
 
 	/**
-	 * chrFile ĞòÁĞÎÄ¼ş»òĞòÁĞÎÄ¼ş¼Ğ regx Èç¹ûÊÇĞòÁĞÎÄ¼ş£¬ÔòÓÃ¸ÃÕıÔò±í´ïÊ½ÌáÈ¡Ã¿¸öĞòÁĞµÄÃû×Ö£¬Èç¹ûÊÇĞòÁĞÎÄ¼ş¼Ğ£¬
-	 * ÔòÓÃ¸ÃÕıÔò±í´ïÊ½ÌáÈ¡º¬ÓĞ¸ÃÎÄ¼şÃûµÄÎÄ¼ş µ¥ÎÄ¼şÄ¬ÈÏÎª"";ÎÄ¼ş¼ĞÄ¬ÈÏÎª"\\bchr\\w*"£»
+	 * chrFile åºåˆ—æ–‡ä»¶æˆ–åºåˆ—æ–‡ä»¶å¤¹ regx å¦‚æœæ˜¯åºåˆ—æ–‡ä»¶ï¼Œåˆ™ç”¨è¯¥æ­£åˆ™è¡¨è¾¾å¼æå–æ¯ä¸ªåºåˆ—çš„åå­—ï¼Œå¦‚æœæ˜¯åºåˆ—æ–‡ä»¶å¤¹ï¼Œ
+	 * åˆ™ç”¨è¯¥æ­£åˆ™è¡¨è¾¾å¼æå–å«æœ‰è¯¥æ–‡ä»¶åçš„æ–‡ä»¶ å•æ–‡ä»¶é»˜è®¤ä¸º"";æ–‡ä»¶å¤¹é»˜è®¤ä¸º"\\bchr\\w*"ï¼›
 	 * 
 	 * @param chrFile
-	 * @param regx nullºÍ""¶¼×ßÄ¬ÈÏ
+	 * @param regx nullå’Œ""éƒ½èµ°é»˜è®¤
 	 */
 	public void setChrFile(String chrFile, String regx) {
 		if (FileOperate.isFileExist(chrFile)
@@ -109,14 +109,14 @@ public class GffChrAbs {
 	}
 
 	/**
-	 * »ñµÃÖ¸¶¨ÎÄ¼şÄÚµÄ×ø±êĞÅÏ¢ Èç¹ûÁ½¸öÎ»µãÖÕµãµÄ¼ä¾àÔÚdistanceMapInfoÒÔÄÚ£¬¾Í»áÉ¾³ıÄÇ¸öÈ¨ÖØµÍµÄ
+	 * è·å¾—æŒ‡å®šæ–‡ä»¶å†…çš„åæ ‡ä¿¡æ¯ å¦‚æœä¸¤ä¸ªä½ç‚¹ç»ˆç‚¹çš„é—´è·åœ¨distanceMapInfoä»¥å†…ï¼Œå°±ä¼šåˆ é™¤é‚£ä¸ªæƒé‡ä½çš„
 	 * 
 	 * @param txtExcel
 	 * @param colChrID
 	 * @param colStartLoc
 	 * @param colEndLoc
 	 * @param colScore
-	 *            ´ò·Ö£¬Ò²¾ÍÊÇÈ¨ÖØ£¬Ã»ÓĞ¸ÃÁĞµÄ»°£¬¾ÍÉèÖÃÎª <= 0
+	 *            æ‰“åˆ†ï¼Œä¹Ÿå°±æ˜¯æƒé‡ï¼Œæ²¡æœ‰è¯¥åˆ—çš„è¯ï¼Œå°±è®¾ç½®ä¸º <= 0
 	 * @param rowStart
 	 */
 	public ArrayList<MapInfo> readFileRegionMapInfo(String txtExcel,
@@ -137,7 +137,7 @@ public class GffChrAbs {
 				mapInfo.setStartEndLoc(Integer.parseInt(strings[1]),
 						Integer.parseInt(strings[2]));
 			} catch (Exception e) {
-				logger.error("¸Ã×ø±êÓĞÎÊÌâ£º" + mapInfo.getRefID());
+				logger.error("è¯¥åæ ‡æœ‰é—®é¢˜ï¼š" + mapInfo.getRefID());
 				continue;
 			}
 			if (colScore > 0) {
@@ -150,8 +150,8 @@ public class GffChrAbs {
 	}
 
 	/**
-	 * ²»ÓÃreadsÌî³äMapInfo »ñµÃsummitÁ½¶Ë¸÷regionµÄÇøÓò£¬×Ü¹²¾ÍÊÇregion*2+1µÄÇøÓò
-	 * Èç¹ûÁ½¸öÎ»µãÖÕµãµÄ¼ä¾àÔÚdistanceMapInfoÒÔÄÚ£¬¾Í»áÉ¾³ıÄÇ¸öÈ¨ÖØµÍµÄ
+	 * ä¸ç”¨readså¡«å……MapInfo è·å¾—summitä¸¤ç«¯å„regionçš„åŒºåŸŸï¼Œæ€»å…±å°±æ˜¯region*2+1çš„åŒºåŸŸ
+	 * å¦‚æœä¸¤ä¸ªä½ç‚¹ç»ˆç‚¹çš„é—´è·åœ¨distanceMapInfoä»¥å†…ï¼Œå°±ä¼šåˆ é™¤é‚£ä¸ªæƒé‡ä½çš„
 	 * 
 	 * @param txtExcel
 	 * @param region
@@ -175,7 +175,7 @@ public class GffChrAbs {
 			try {
 				mapInfo.setFlagLoc(Integer.parseInt(strings[1]));
 			} catch (Exception e) {
-				logger.error("¸Ã×ø±êÓĞÎÊÌâ£º" + mapInfo.getRefID());
+				logger.error("è¯¥åæ ‡æœ‰é—®é¢˜ï¼š" + mapInfo.getRefID());
 				continue;
 			}
 			mapInfo.setStartEndLoc(mapInfo.getFlagSite() - region,

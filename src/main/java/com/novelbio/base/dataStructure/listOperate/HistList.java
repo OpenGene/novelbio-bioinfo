@@ -15,14 +15,14 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 	private static final Logger logger = Logger.getLogger(HistList.class);
 	private static final long serialVersionUID = 1481673037539688125L;
 	
-	/** ×Ü¹²¶àÉÙÊý×Ö */
+	/** æ€»å…±å¤šå°‘æ•°å­— */
 	long allNum = 0;
 	HistBinType histBinType = HistBinType.LopenRclose;
 	
 	PlotScatter plotScatter;
 	
 	/**
-	 * Ä¬ÈÏÊÇ×ó¿ªÓÒ±Õ
+	 * é»˜è®¤æ˜¯å·¦å¼€å³é—­
 	 * @param histBinType
 	 */
 	public void setHistBinType(HistBinType histBinType) {
@@ -43,10 +43,10 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 	}
 	
 	/**
-	 * »ñµÃµÄÃ¿Ò»¸öÐÅÏ¢¶¼ÊÇÊµ¼ÊµÄ¶øÃ»ÓÐclone
-	 * ÊäÈëPeakNum£¬ºÍµ¥ÌõChrµÄlistÐÅÏ¢ ·µ»Ø¸ÃPeakNumµÄËùÔÚLOCID£¬ºÍ¾ßÌåÎ»ÖÃ
-	 * ²ÉÓÃcloneµÄ·½·¨»ñµÃÐÅÏ¢
-	 * Ã»ÕÒµ½¾Í·µ»Ønull
+	 * èŽ·å¾—çš„æ¯ä¸€ä¸ªä¿¡æ¯éƒ½æ˜¯å®žé™…çš„è€Œæ²¡æœ‰clone
+	 * è¾“å…¥PeakNumï¼Œå’Œå•æ¡Chrçš„listä¿¡æ¯ è¿”å›žè¯¥PeakNumçš„æ‰€åœ¨LOCIDï¼Œå’Œå…·ä½“ä½ç½®
+	 * é‡‡ç”¨cloneçš„æ–¹æ³•èŽ·å¾—ä¿¡æ¯
+	 * æ²¡æ‰¾åˆ°å°±è¿”å›žnull
 	 */
 	@Deprecated
 	public ListCodAbs<HistBin> searchLocation(int Coordinate) {
@@ -58,11 +58,11 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 		return super.add(e);
 	}
 	/**
-	 * ·µ»ØË«×ø±ê²éÑ¯µÄ½á¹û£¬ÄÚ²¿×Ô¶¯ÅÐ¶Ï cod1 ºÍ cod2µÄ´óÐ¡
-	 * Èç¹ûcod1 ºÍcod2 ÓÐÒ»¸öÐ¡ÓÚ0£¬ÄÇÃ´×ø±ê²»´æÔÚ£¬Ôò·µ»Ønull
-	 * @param chrID ÄÚ²¿×Ô¶¯Ð¡Ð´
-	 * @param cod1 ±ØÐë´óÓÚ0
-	 * @param cod2 ±ØÐë´óÓÚ0
+	 * è¿”å›žåŒåæ ‡æŸ¥è¯¢çš„ç»“æžœï¼Œå†…éƒ¨è‡ªåŠ¨åˆ¤æ–­ cod1 å’Œ cod2çš„å¤§å°
+	 * å¦‚æžœcod1 å’Œcod2 æœ‰ä¸€ä¸ªå°äºŽ0ï¼Œé‚£ä¹ˆåæ ‡ä¸å­˜åœ¨ï¼Œåˆ™è¿”å›žnull
+	 * @param chrID å†…éƒ¨è‡ªåŠ¨å°å†™
+	 * @param cod1 å¿…é¡»å¤§äºŽ0
+	 * @param cod2 å¿…é¡»å¤§äºŽ0
 	 * @return
 	 */
 	@Deprecated
@@ -75,11 +75,11 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 	}
 	
 	/**
-	 * ×Ô¶¯ÉèÖÃhistlistµÄbin£¬Ã¿¸ôintervalÉèÖÃÒ»Î»£¬Ãû×Ö¾ÍÆðinterval
+	 * è‡ªåŠ¨è®¾ç½®histlistçš„binï¼Œæ¯éš”intervalè®¾ç½®ä¸€ä½ï¼Œåå­—å°±èµ·interval
 	 * @param histList
-	 * @param binNum binµÄ¸öÊý
-	 * @param interval ¼ä¸ô
-	 * @param maxSize ×î´óÖµ£¬Èç¹û×îºóÒ»Î»bin¶¼Ã»µ½×î´óÖµ£¬½ÓÏÂÀ´Ò»¸öbin¾ÍºÍ×î´óÖµºÏ²¢
+	 * @param binNum binçš„ä¸ªæ•°
+	 * @param interval é—´éš”
+	 * @param maxSize æœ€å¤§å€¼ï¼Œå¦‚æžœæœ€åŽä¸€ä½binéƒ½æ²¡åˆ°æœ€å¤§å€¼ï¼ŒæŽ¥ä¸‹æ¥ä¸€ä¸ªbinå°±å’Œæœ€å¤§å€¼åˆå¹¶
 	 */
 	public void setBinAndInterval(int binNum, int interval,int maxSize) {
 		clear();
@@ -95,8 +95,8 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 	}
 	
 	/**
-	 * ÉèÖÃÆðµã
-	 * @param number ±¾binËù´ú±íµÄÊýÖµ£¬null¾ÍÓÃÖÕµãºÍÆðµãµÄÆ½¾ùÖµ
+	 * è®¾ç½®èµ·ç‚¹
+	 * @param number æœ¬binæ‰€ä»£è¡¨çš„æ•°å€¼ï¼Œnullå°±ç”¨ç»ˆç‚¹å’Œèµ·ç‚¹çš„å¹³å‡å€¼
 	 * @param name
 	 * @param start
 	 * @param end
@@ -105,8 +105,8 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 		setStartBin(number.doubleValue(), name, start, end);
 	}
 	/**
-	 * ÉèÖÃÆðµã
-	 * @param number ±¾binËù´ú±íµÄÊýÖµ£¬null¾ÍÓÃÖÕµãºÍÆðµãµÄÆ½¾ùÖµ
+	 * è®¾ç½®èµ·ç‚¹
+	 * @param number æœ¬binæ‰€ä»£è¡¨çš„æ•°å€¼ï¼Œnullå°±ç”¨ç»ˆç‚¹å’Œèµ·ç‚¹çš„å¹³å‡å€¼
 	 * @param name
 	 * @param start
 	 * @param end
@@ -120,21 +120,21 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 	}
 
 	/**
-	 * ÔÚ´ËÖ®Ç°±ØÐëÏÈÉè¶¨Æðµã{@link #setStartBin}
-	 * Ìí¼ÓhistÇø¼ä£¬±ØÐëÊÇ½ô°¤×ÅÉè¶¨£¬
-	 * ÒâË¼±¾Çø¼äÎªÉÏÒ»¸önumºÍ±¾numÖ®¼ä
-	 * @param number ±¾binËù´ú±íµÄÊýÖµ£¬null¾ÍÓÃÖÕµãºÍÆðµãµÄÆ½¾ùÖµ
-	 * @param name ÌîÐ´µÄ»°£¬¾ÍÓÃ¸ÃÃû×Ö×ö×ø±êÃû×Ö
+	 * åœ¨æ­¤ä¹‹å‰å¿…é¡»å…ˆè®¾å®šèµ·ç‚¹{@link #setStartBin}
+	 * æ·»åŠ histåŒºé—´ï¼Œå¿…é¡»æ˜¯ç´§æŒ¨ç€è®¾å®šï¼Œ
+	 * æ„æ€æœ¬åŒºé—´ä¸ºä¸Šä¸€ä¸ªnumå’Œæœ¬numä¹‹é—´
+	 * @param number æœ¬binæ‰€ä»£è¡¨çš„æ•°å€¼ï¼Œnullå°±ç”¨ç»ˆç‚¹å’Œèµ·ç‚¹çš„å¹³å‡å€¼
+	 * @param name å¡«å†™çš„è¯ï¼Œå°±ç”¨è¯¥åå­—åšåæ ‡åå­—
 	 * @param thisNum
 	 */
 	public void addHistBin(Integer number, String name, int thisNum) {
 		addHistBin(number.doubleValue(), name, thisNum);
 	}
 	/**
-	 * ÔÚ´ËÖ®Ç°±ØÐëÏÈÉè¶¨Æðµã{@link #setStartBin}
-	 * Ìí¼ÓhistÇø¼ä£¬±ØÐëÊÇ½ô°¤×ÅÉè¶¨£¬
-	 * ÒâË¼±¾Çø¼äÎªÉÏÒ»¸önumºÍ±¾numÖ®¼ä
-	 * @param number ±¾binËù´ú±íµÄÊýÖµ£¬null¾ÍÓÃÖÕµãºÍÆðµãµÄÆ½¾ùÖµ
+	 * åœ¨æ­¤ä¹‹å‰å¿…é¡»å…ˆè®¾å®šèµ·ç‚¹{@link #setStartBin}
+	 * æ·»åŠ histåŒºé—´ï¼Œå¿…é¡»æ˜¯ç´§æŒ¨ç€è®¾å®šï¼Œ
+	 * æ„æ€æœ¬åŒºé—´ä¸ºä¸Šä¸€ä¸ªnumå’Œæœ¬numä¹‹é—´
+	 * @param number æœ¬binæ‰€ä»£è¡¨çš„æ•°å€¼ï¼Œnullå°±ç”¨ç»ˆç‚¹å’Œèµ·ç‚¹çš„å¹³å‡å€¼
 	 * @param name
 	 * @param thisNum
 	 */
@@ -149,20 +149,20 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 	}
 	
 	/**
-	 * ²éÕÒ coordinate£¬¸ù¾Ý HistBinType ·µ»ØÏàÓ¦µÄhistbin
+	 * æŸ¥æ‰¾ coordinateï¼Œæ ¹æ® HistBinType è¿”å›žç›¸åº”çš„histbin
 	 * @param coordinate
 	 * @return
 	 */
 	public abstract HistBin searchHistBin(int coordinate);
 	/**
-	 * ¸ø¶¨number£¬°ÑÏàÓ¦µÄhist¼ÓÉÏ1
+	 * ç»™å®šnumberï¼ŒæŠŠç›¸åº”çš„histåŠ ä¸Š1
 	 * @param coordinate
 	 */
 	public void addNum(int coordinate) {
 		addNum(coordinate, 1);
 	}
 	/**
-	 * ¸ø¶¨number£¬°ÑÏàÓ¦µÄhist¼ÓÉÏaddNumberµÄÊýÁ¿
+	 * ç»™å®šnumberï¼ŒæŠŠç›¸åº”çš„histåŠ ä¸ŠaddNumberçš„æ•°é‡
 	 * @param coordinate
 	 */
 	public void addNum(int coordinate, int addNumber) {
@@ -172,7 +172,7 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 	}
 	
 	/**
-	 * ·µ»ØBoxInfo<br>
+	 * è¿”å›žBoxInfo<br>
 	 * @return
 	 */
 	public BoxInfo getBoxInfo() {
@@ -183,8 +183,8 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 		boxInfo.setInfo5And95(getPercentInfo(5).getThisNumber(), getPercentInfo(95).getThisNumber());
 		return boxInfo;
 	}
-	/** Ö¸¶¨percentage³ËÒÔ100
-	 * ·µ»Ø¸Ã±ÈÀýËù¶ÔÓ¦µÄÖµ
+	/** æŒ‡å®špercentageä¹˜ä»¥100
+	 * è¿”å›žè¯¥æ¯”ä¾‹æ‰€å¯¹åº”çš„å€¼
 	 */
 	private HistBin getPercentInfo(int percentage) {
 		long thisNumThreshold = (long) ((double)percentage/100 * allNum);
@@ -196,14 +196,14 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 				return histBin;
 			}
 		}
-		//È«ÕÒÁËÒ»±éÃ»ÕÒµ½Ã´ËµÃ÷Êý×ÖÌ«´óÁËÄÇ¾Í·µ»Ø×îºóÒ»Î»µÄHistBin°É
+		//å…¨æ‰¾äº†ä¸€éæ²¡æ‰¾åˆ°ä¹ˆè¯´æ˜Žæ•°å­—å¤ªå¤§äº†é‚£å°±è¿”å›žæœ€åŽä¸€ä½çš„HistBinå§
 		return get(size() - 1);		
 	}
 	
 	/**
-	 * ¸ù¾ÝÍ³¼Æ»­Ö±·½Í¼
+	 * æ ¹æ®ç»Ÿè®¡ç”»ç›´æ–¹å›¾
 	 * @param dotStyle
-	 * @param fontSize ×ÖÌå´óÐ¡
+	 * @param fontSize å­—ä½“å¤§å°
 	 * @return
 	 */
 	public PlotScatter getPlotHistBar(BarStyle dotStyle) {
@@ -236,7 +236,7 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 		return plotScatter;
 	}
 	/**
-	 * ·µ»ØxµÄÊýÖµ£¬´Ó0¿ªÊ¼
+	 * è¿”å›žxçš„æ•°å€¼ï¼Œä»Ž0å¼€å§‹
 	 * @return
 	 */
 	private double[] getX() {
@@ -247,8 +247,8 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 		return lengthX;
 	}
 	/**
-	 * ·µ»ØyµÄÊýÖµ£¬×¢Òâ³õÊ¼µÄHistBin±ØÐëÎªµÈ·Ö£¬·ñÔò»á³ö´í
-	 * @binNum ·Ö¸îµÄ·ÝÊý£¬Ð¡ÓÚµÈÓÚ0±íÊ¾·Ö¸îÎªhistlistµÄ·ÝÊý
+	 * è¿”å›žyçš„æ•°å€¼ï¼Œæ³¨æ„åˆå§‹çš„HistBinå¿…é¡»ä¸ºç­‰åˆ†ï¼Œå¦åˆ™ä¼šå‡ºé”™
+	 * @binNum åˆ†å‰²çš„ä»½æ•°ï¼Œå°äºŽç­‰äºŽ0è¡¨ç¤ºåˆ†å‰²ä¸ºhistlistçš„ä»½æ•°
 	 * @return
 	 */
 	private double[] getYnumber(int binNum) {
@@ -270,7 +270,7 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 		return numberY;
 	}
 	/**
-	 * ·µ»ØxµÄÇø¼äµÄÃû×Ö
+	 * è¿”å›žxçš„åŒºé—´çš„åå­—
 	 * @return
 	 */
 	private String[] getRangeX() {
@@ -299,9 +299,9 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 	}
 	
 	/**
-	 * »ý·ÖÍ¼
-	 * @param cis true£º´ÓÇ°Íùºó£¬¾ÍÊÇ×îÇ°ÃæÊÇ10%£¬Ô½ÍùºóÔ½¸ß
-	 * false£º´ÓºóÍùÇ°£¬¾ÍÊÇ×îÇ°ÃæÊÇ100%£¬Ô½ÍùºóÔ½µÍ
+	 * ç§¯åˆ†å›¾
+	 * @param cis trueï¼šä»Žå‰å¾€åŽï¼Œå°±æ˜¯æœ€å‰é¢æ˜¯10%ï¼Œè¶Šå¾€åŽè¶Šé«˜
+	 * falseï¼šä»ŽåŽå¾€å‰ï¼Œå°±æ˜¯æœ€å‰é¢æ˜¯100%ï¼Œè¶Šå¾€åŽè¶Šä½Ž
 	 */
 	public ArrayList<double[]> getIntegral(boolean cis) {
 		ArrayList<double[]> lsXY = new ArrayList<double[]>();
@@ -333,8 +333,8 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 	}
 
 	/**
-	 * @param name histµÄÃû×Ö£¬Îñ±Ø²»ÄÜÖØ¸´£¬·ñÔòhash±í»áÓÐ³åÍ»
-	 * @param cisList true ´ÓÐ¡µ½´óÅÅÐòµÄlist¡£ false ´Ó´óµ½Ð¡ÅÅÐòµÄlist
+	 * @param name histçš„åå­—ï¼ŒåŠ¡å¿…ä¸èƒ½é‡å¤ï¼Œå¦åˆ™hashè¡¨ä¼šæœ‰å†²çª
+	 * @param cisList true ä»Žå°åˆ°å¤§æŽ’åºçš„listã€‚ false ä»Žå¤§åˆ°å°æŽ’åºçš„list
 	 * @return
 	 */
 	public static HistList creatHistList(String name, boolean cisList){
@@ -360,7 +360,7 @@ class HistListCis extends HistList {
 	}
 	
 	/**
-	 * ²éÕÒ coordinate£¬¸ù¾Ý HistBinType ·µ»ØÏàÓ¦µÄhistbin
+	 * æŸ¥æ‰¾ coordinateï¼Œæ ¹æ® HistBinType è¿”å›žç›¸åº”çš„histbin
 	 * @param coordinate
 	 * @return
 	 */
@@ -422,7 +422,7 @@ class HistListTrans extends HistList {
 		setName(name);
 	}
 	/**
-	 * ²éÕÒ coordinate£¬¸ù¾Ý HistBinType ·µ»ØÏàÓ¦µÄhistbin
+	 * æŸ¥æ‰¾ coordinateï¼Œæ ¹æ® HistBinType è¿”å›žç›¸åº”çš„histbin
 	 * @param coordinate
 	 * @return
 	 */

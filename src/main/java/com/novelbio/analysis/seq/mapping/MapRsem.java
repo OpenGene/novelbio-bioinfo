@@ -20,7 +20,7 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
 /**
- * »¹Ã»·µ»Ø½á¹ûµÄbamÎÄ¼ş
+ * è¿˜æ²¡è¿”å›ç»“æœçš„bamæ–‡ä»¶
  * @author zong0jie
  *
  */
@@ -38,33 +38,33 @@ public class MapRsem implements MapRNA{
 	Species species;
 	GffChrSeq gffChrSeq = null;
 	GffChrAbs gffChrAbs = null;
-	/** ÓÉGffFile×Ô¶¯Éú³É */
+	/** ç”±GffFileè‡ªåŠ¨ç”Ÿæˆ */
 	String gene2isoFile = "";
 	String refFile = "";
-	/** ×Ô¶¯Éú³É */
+	/** è‡ªåŠ¨ç”Ÿæˆ */
 	String rsemIndex = "";
 	
-	/** rsemµÄÂ·¾¶ */
+	/** rsemçš„è·¯å¾„ */
 	String exePathRsem = "";
-	/** bowtieµÄÂ·¾¶ */
+	/** bowtieçš„è·¯å¾„ */
 	String exePathBowtie = "";
 	
-	/** Ïß³ÌÊı */
+	/** çº¿ç¨‹æ•° */
 	int threadNum = 4;
 	
 	List<FastQ> lsLeftFq;
 	List<FastQ> lsRightFq;
 	
 	boolean pairend = false;
-	/** Êä³öÎÄ¼ş¼ĞÒÔ¼°Ç°×º */
+	/** è¾“å‡ºæ–‡ä»¶å¤¹ä»¥åŠå‰ç¼€ */
 	String outPathPrefix = "";
 	
-	/**ÅÜÍêÖ®ºóµÄgene±í´ïÖµ±£´æÔÚÕâ¸öÀïÃæ */
+	/**è·‘å®Œä¹‹åçš„geneè¡¨è¾¾å€¼ä¿å­˜åœ¨è¿™ä¸ªé‡Œé¢ */
 	ArrayListMultimap<String, Double> mapGeneID2LsExp;
-	/**ÅÜÍêÖ®ºóµÄgene±í´ïÖµ±£´æÔÚÕâ¸öÀïÃæ */
+	/**è·‘å®Œä¹‹åçš„geneè¡¨è¾¾å€¼ä¿å­˜åœ¨è¿™ä¸ªé‡Œé¢ */
 	ArrayListMultimap<String, Integer> mapGeneID2LsCounts; 
 	
-	/** rsem µ½ rpkmÊÇÔö¼ÓÁË10^6 ±¶ */
+	/** rsem åˆ° rpkmæ˜¯å¢åŠ äº†10^6 å€ */
 	int foldRsem2RPKM = 1000000;
 	
 	public MapRsem() {
@@ -76,7 +76,7 @@ public class MapRsem implements MapRNA{
 	}
 
 	/**
-	 * Éè¶¨GffÎÄ¼şºÍchrFile
+	 * è®¾å®šGffæ–‡ä»¶å’ŒchrFile
 	 * @param gffFile
 	 */
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
@@ -86,9 +86,9 @@ public class MapRsem implements MapRNA{
 		setFileRef(species.getRefseqFile());
 	}
 	/**
-	 * Éè¶¨bwaËùÔÚµÄÎÄ¼ş¼ĞÒÔ¼°´ı±È¶ÔµÄÂ·¾¶
-	 * @param exePathRsem rsemµÄÂ·¾¶ Èç¹ûÔÚ¸ùÄ¿Â¼ÏÂÔòÉèÖÃÎª""»ònull
-	 * @param exePathBowtie bowtieµÄÂ·¾¶£¬Ê²Ã´Ê±ºòrsemÖ§³Öbowtie2ÁË£¬ÄÇÃ´ÔÙĞŞÕı
+	 * è®¾å®šbwaæ‰€åœ¨çš„æ–‡ä»¶å¤¹ä»¥åŠå¾…æ¯”å¯¹çš„è·¯å¾„
+	 * @param exePathRsem rsemçš„è·¯å¾„ å¦‚æœåœ¨æ ¹ç›®å½•ä¸‹åˆ™è®¾ç½®ä¸º""æˆ–null
+	 * @param exePathBowtie bowtieçš„è·¯å¾„ï¼Œä»€ä¹ˆæ—¶å€™rsemæ”¯æŒbowtie2äº†ï¼Œé‚£ä¹ˆå†ä¿®æ­£
 	 */
 	public void setExePath(String exePathRsem, String exePathBowtie) {
 		if (exePathRsem == null || exePathRsem.trim().equals(""))
@@ -102,7 +102,7 @@ public class MapRsem implements MapRNA{
 			this.exePathBowtie = FileOperate.addSep(exePathBowtie);
 	}
 	/**
-	 * Éè¶¨GffÎÄ¼şºÍrefFile
+	 * è®¾å®šGffæ–‡ä»¶å’ŒrefFile
 	 * @param gffFile
 	 */
 	public void setFileRef(String refFile) {
@@ -113,32 +113,32 @@ public class MapRsem implements MapRNA{
 			this.threadNum = threadNum;
 		}
 	}
-	/** Ã»ÓÃ */
+	/** æ²¡ç”¨ */
 	public void setIndelLen(int indelLen) {}
-	/** Ã»ÓÃ */
+	/** æ²¡ç”¨ */
 	public void setStrandSpecifictype(StrandSpecific strandSpecifictype) {}
 
-	/** Ã»ÓÃ */
+	/** æ²¡ç”¨ */
 	public void setInsert(int insert) {}
-	/** Ã»ÓÃ */
+	/** æ²¡ç”¨ */
 	public void setMismatch(int mismatch) {}
 	
 	public SoftWare getBowtieVersion() {
 		return SoftWare.bowtie;
 	}
-	/** mappingÍêºó»ñµÃ½á¹û£¬ÎªRPKM
-	 * Îª·ÀÖ¹Ò»¸ögeneID¶ÔÓ¦¶à¸öexpµÄvalue£¬ËùÒÔÓÃlistÀ´±¨´ævalue
+	/** mappingå®Œåè·å¾—ç»“æœï¼Œä¸ºRPKM
+	 * ä¸ºé˜²æ­¢ä¸€ä¸ªgeneIDå¯¹åº”å¤šä¸ªexpçš„valueï¼Œæ‰€ä»¥ç”¨listæ¥æŠ¥å­˜value
 	 *  */
 	public ArrayListMultimap<String, Double> getMapGeneID2LsExp() {
 		return mapGeneID2LsExp;
 	}
-	/** mappingÍêºó»ñµÃ½á¹û£¬ÎªCounts
-	 * Îª·ÀÖ¹Ò»¸ögeneID¶ÔÓ¦¶à¸öexpµÄvalue£¬ËùÒÔÓÃlistÀ´±¨´ævalue
+	/** mappingå®Œåè·å¾—ç»“æœï¼Œä¸ºCounts
+	 * ä¸ºé˜²æ­¢ä¸€ä¸ªgeneIDå¯¹åº”å¤šä¸ªexpçš„valueï¼Œæ‰€ä»¥ç”¨listæ¥æŠ¥å­˜value
 	 *  */
 	public ArrayListMultimap<String, Integer> getMapGeneID2LsCounts() {
 		return mapGeneID2LsCounts;
 	}
-	/** ²úÉúÈ«ĞÂµÄreference */
+	/** äº§ç”Ÿå…¨æ–°çš„reference */
 	private void createGene2IsoAndRefSeq() {
 		String pathRsemIndex = FileOperate.getParentPathName(gffChrAbs.getSeqHash().getChrFile()) + "index/rsemRef_Index_" + species.getVersion().replace(" ", "") + FileOperate.getSepPath();
 		String refFileRsem = pathRsemIndex +  "RefGene.fa";
@@ -153,12 +153,12 @@ public class MapRsem implements MapRNA{
 				FileOperate.copyFile(refFile, refFileRsem, true);
 			}
 		}
-		refFile = refFileRsem;//½«rsemµÄreffileÌæ»»¸øreffile£¬ÒòÎªºóÃæ¶¼ÊÇÓÃreffileÀ´×öË÷Òı
+		refFile = refFileRsem;//å°†rsemçš„reffileæ›¿æ¢ç»™reffileï¼Œå› ä¸ºåé¢éƒ½æ˜¯ç”¨reffileæ¥åšç´¢å¼•
 		
 		if (!FileOperate.isFileExist(gene2isoFile)) {
 			TxtReadandWrite txtGene2Iso = new TxtReadandWrite(gene2isoFile, true);
 			SeqFastaHash seqFastaHash = new SeqFastaHash(refFile, null, false);
-			//ÏÈÕÒgffÎÄ¼şÀïÃæÓĞÃ»ÓĞ¶ÔÓ¦µÄgeneName£¬Ã»ÓĞÔÙÕÒÊı¾İ¿â£¬ÔÙÃ»ÓĞ¾ÍÖ±½ÓÌùÉÏ»ùÒòÃû
+			//å…ˆæ‰¾gffæ–‡ä»¶é‡Œé¢æœ‰æ²¡æœ‰å¯¹åº”çš„geneNameï¼Œæ²¡æœ‰å†æ‰¾æ•°æ®åº“ï¼Œå†æ²¡æœ‰å°±ç›´æ¥è´´ä¸ŠåŸºå› å
 			for (String geneIDstr : seqFastaHash.getLsSeqName()) {
 				if (geneIDstr.contains("16860")) {
 					logger.error("stop");
@@ -183,14 +183,14 @@ public class MapRsem implements MapRNA{
 		return "-p " + threadNum + " ";
 	}
 	/**
-	 * ÉèÖÃ×ó¶ËµÄĞòÁĞ£¬ÉèÖÃ»á°ÑÒÔÇ°µÄÇå¿Õ
+	 * è®¾ç½®å·¦ç«¯çš„åºåˆ—ï¼Œè®¾ç½®ä¼šæŠŠä»¥å‰çš„æ¸…ç©º
 	 * @param fqFile
 	 */
 	public void setLeftFq(List<FastQ> lsLeftFastQs) {
 		this.lsLeftFq = lsLeftFastQs;
 	}
 	/**
-	 * ÉèÖÃÓÒ¶ËµÄĞòÁĞ£¬ÉèÖÃ»á°ÑÒÔÇ°µÄÇå¿Õ
+	 * è®¾ç½®å³ç«¯çš„åºåˆ—ï¼Œè®¾ç½®ä¼šæŠŠä»¥å‰çš„æ¸…ç©º
 	 * @param fqFile
 	 */
 	public void setRightFq(List<FastQ> lsRightFastQs) {
@@ -201,7 +201,7 @@ public class MapRsem implements MapRNA{
 		this.outPathPrefix = outPathPrefix;
 	}
 	/**
-	 * ÖÆ×÷Ë÷Òı£¬ÊäÈëÊÇÓÃbowtie1»¹ÊÇbowtie2×öË÷Òı
+	 * åˆ¶ä½œç´¢å¼•ï¼Œè¾“å…¥æ˜¯ç”¨bowtie1è¿˜æ˜¯bowtie2åšç´¢å¼•
 	 * @param bowtie2
 	 */
 	private void IndexMakeBowtie() {
@@ -210,7 +210,7 @@ public class MapRsem implements MapRNA{
 		if (FileOperate.isFileExist(rsemIndex + ".3.ebwt") == true)
 			return;
 		String cmd = exePathRsem + "rsem-prepare-reference  --transcript-to-gene-map ";
-		//TODO :¿¼ÂÇÊÇ·ñ×Ô¶¯ÅĞ¶ÏÎªsolid
+		//TODO :è€ƒè™‘æ˜¯å¦è‡ªåŠ¨åˆ¤æ–­ä¸ºsolid
 		cmd = cmd + gene2isoFile + " " + refFile + " " + rsemIndex;
 		CmdOperate cmdOperate = new CmdOperate(cmd,"RsemMakeIndex");
 		cmdOperate.run();
@@ -239,7 +239,7 @@ public class MapRsem implements MapRNA{
 		return "";
 	}
 	/**
-	 * ±È¶ÔĞòÁĞ²¢¼ÆËã±í´ï
+	 * æ¯”å¯¹åºåˆ—å¹¶è®¡ç®—è¡¨è¾¾
 	 * @return
 	 */
 	public void mapReads() {
@@ -264,7 +264,7 @@ public class MapRsem implements MapRNA{
 		copeResult();
 	}
 	
-	/** ÕûÀí½á¹ûÎÄ¼ş£¬Ö÷ÒªÊÇÕûÀígene.result,ÕûÀí³Égene list */
+	/** æ•´ç†ç»“æœæ–‡ä»¶ï¼Œä¸»è¦æ˜¯æ•´ç†gene.result,æ•´ç†æˆgene list */
 	private void copeResult() {
 		mapGeneID2LsExp = ArrayListMultimap.create();
 		mapGeneID2LsCounts = ArrayListMultimap.create();
@@ -284,7 +284,7 @@ public class MapRsem implements MapRNA{
 		}
 	}
 	
-	/** Ã»ÓÃ£¬¸øtophatÓÃµÄ */
+	/** æ²¡ç”¨ï¼Œç»™tophatç”¨çš„ */
 	@Override
 	public void setGtfFile(String gtfFile) { }
 	

@@ -8,13 +8,13 @@ import com.novelbio.generalConf.NovelBioConst;
 
 /**
  * 
- * ½«Êı¾İ¿â
+ * å°†æ•°æ®åº“
  * @author zong0jie
  *
  */
 public class ImportDB {
 	static String databasePath = "/media/winE/Bioinformatics/DataBaseUpdate/";
-	static String taxIDFile = databasePath + "³£¼ûÎïÖÖIDKEGGAll.txt";
+	static String taxIDFile = databasePath + "å¸¸è§ç‰©ç§IDKEGGAll.txt";
 	static String GOPath = databasePath;
 	
 	public static void main(String[] args) {
@@ -24,7 +24,7 @@ public class ImportDB {
 //		updateNCBIID();
 //		updateUniprotID();
 		
-//		updateRiceID();//Ö»µ¼ÁËÇ°Á½¸ö
+//		updateRiceID();//åªå¯¼äº†å‰ä¸¤ä¸ª
 //		updateTAIR();
 //		updateZB();
 //		updateEnsembl();
@@ -37,7 +37,7 @@ public class ImportDB {
 //		updateAffy();
 	}
 	/**
-	 * Éı¼¶´ÓNCBIÏÂÔØµÄĞÅÏ¢
+	 * å‡çº§ä»NCBIä¸‹è½½çš„ä¿¡æ¯
 	 */
 	private static void updateNCBIID() {
 	
@@ -63,7 +63,7 @@ public class ImportDB {
 		ncbi.importFile();
 	}
 	/**
-	 * Éı¼¶´ÓUniProtÏÂÔØµÄĞÅÏ¢
+	 * å‡çº§ä»UniProtä¸‹è½½çš„ä¿¡æ¯
 	 */
 	private static void updateUniprotID() {
 		String idmappingSelectedFile = databasePath + "idmapping_selected.tab.gz";
@@ -386,7 +386,7 @@ public class ImportDB {
 		String zerbfishFile2 = "/media/winE/Bioinformatics/BLAST/result/zebrafish/affy2zerbfish_coped.xls";
 		MicroArrayBlast microArrayBlast = null;
 		int taxID = 0;
-		////////////////////  °ßÂíÓã  /////////////////////////////
+		////////////////////  æ–‘é©¬é±¼  /////////////////////////////
 		zerbfishFile = "/media/winE/Bioinformatics/BLAST/result/zebrafish/affy2zerbfishRefSeq.xls";
 		zerbfishFile2 = "/media/winE/Bioinformatics/BLAST/result/zebrafish/affy2zerbfish_coped.xls";
 		microArrayBlast = new MicroArrayBlast();
@@ -394,13 +394,13 @@ public class ImportDB {
 		microArrayBlast.setGeneID(GeneID.IDTYPE_ACCID);
 //		microArrayBlast.updateFile(zerbfishFile, false);
 //		microArrayBlast.updateFile(zerbfishFile2, false);
-		////////////////////  Ë®µ¾  /////////////////////////////
+		////////////////////  æ°´ç¨»  /////////////////////////////
 		zerbfishFile = "/media/winE/Bioinformatics/Affymetrix/rice/Affy2Loc.txt";
 		microArrayBlast = new MicroArrayBlast();
 		microArrayBlast.setDbInfo(NovelBioConst.DBINFO_AFFY_RICE_31);
 //		microArrayBlast.setGeneID(CopedID.IDTYPE_ACCID);
 //		microArrayBlast.updateFile(zerbfishFile, false);
-		////////////////////  ´ó¶¹  /////////////////////////////
+		////////////////////  å¤§è±†  /////////////////////////////
 		zerbfishFile = "/media/winE/Bioinformatics/Affymetrix/soybean/affy2Gly_nr.txt";
 		microArrayBlast = new MicroArrayBlast();
 		microArrayBlast.setDbInfo(NovelBioConst.DBINFO_AFFY_GLMAX);

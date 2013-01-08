@@ -20,17 +20,17 @@ public abstract class SequenceAlignment extends DynamicProgramming {
 		super(sequence1, sequence2);
 	}
 	/**
-	 * ´óÓÚ0£¬Ä¬ÈÏÎª1
+	 * å¤§äº0ï¼Œé»˜è®¤ä¸º1
 	 * @param matchScore
 	 */
 	public void setMatchScore(int matchScore) {
 		this.matchScore = matchScore;
 	}
-	/** Ğ¡ÓÚ0£¬Ä¬ÈÏ-1 */
+	/** å°äº0ï¼Œé»˜è®¤-1 */
 	public void setMismatchScore(int mismatchScore) {
 		this.mismatchScore = mismatchScore;
 	}
-	/** Ğ¡ÓÚ0£¬Ä¬ÈÏ-1 */
+	/** å°äº0ï¼Œé»˜è®¤-1 */
 	public void setSpaceScore(int spaceScore) {
 		this.spaceScore = spaceScore;
 	}
@@ -92,7 +92,7 @@ public abstract class SequenceAlignment extends DynamicProgramming {
 		return alignments;
 	}
 	public abstract Cell getTracebackStartingCell();
-	/** ÔËĞĞÍêblastÖ®ºó²ÅÄÜ»ñµÃ */
+	/** è¿è¡Œå®Œblastä¹‹åæ‰èƒ½è·å¾— */
 	public Cell getTracebackEndingCell() {
 		return lastCell;
 	}

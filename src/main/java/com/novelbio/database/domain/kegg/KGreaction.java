@@ -2,7 +2,7 @@ package com.novelbio.database.domain.kegg;
  
 public class KGreaction {
 	/**
-	 * the ID of this reaction,ºÍEntryµÄIDÊÇÍ¬Ò»¸ö
+	 * the ID of this reaction,å’ŒEntryçš„IDæ˜¯åŒä¸€ä¸ª
 	 */
 	private int id;
 	 
@@ -13,7 +13,7 @@ public class KGreaction {
 	private String name;
 	
 	/**
-	 * Õâ¸ö·´Ó¦µÄIDÊÇÔÚÌØ¶¨µÄpathwayÏÂµÄ
+	 * è¿™ä¸ªååº”çš„IDæ˜¯åœ¨ç‰¹å®šçš„pathwayä¸‹çš„
 	 */
 	private String pathName;
 	
@@ -31,15 +31,15 @@ public class KGreaction {
 	private String alt;
 	
 	/**
-	 * the ID of this reaction,ºÍEntryµÄIDÊÇÍ¬Ò»¸ö
-	 * Õâ¸ö·´Ó¦µÄIDÊÇÔÚÌØ¶¨µÄpathwayÏÂµÄ
+	 * the ID of this reaction,å’ŒEntryçš„IDæ˜¯åŒä¸€ä¸ª
+	 * è¿™ä¸ªååº”çš„IDæ˜¯åœ¨ç‰¹å®šçš„pathwayä¸‹çš„
 	 */
 	public int getID() {
 		return this.id;
 	}
 	/**
-	 * the ID of this reaction,ºÍEntryµÄIDÊÇÍ¬Ò»¸ö
-	 * Õâ¸ö·´Ó¦µÄIDÊÇÔÚÌØ¶¨µÄpathwayÏÂµÄ
+	 * the ID of this reaction,å’ŒEntryçš„IDæ˜¯åŒä¸€ä¸ª
+	 * è¿™ä¸ªååº”çš„IDæ˜¯åœ¨ç‰¹å®šçš„pathwayä¸‹çš„
 	 */
 	public void setID(int id) {
 		 this.id=id;
@@ -93,14 +93,14 @@ public class KGreaction {
 		this.alt=alt.trim();
 	}
 	/**
-	 * Õâ¸ö·´Ó¦ÊÇÔÚÌØ¶¨µÄpathwayÏÂµÄ
+	 * è¿™ä¸ªååº”æ˜¯åœ¨ç‰¹å®šçš„pathwayä¸‹çš„
 	 */
 	public String getPathName() {
 		return this.pathName;
 	}
 	/**
 	 * already trim()
-	 * Õâ¸ö·´Ó¦ÊÇÔÚÌØ¶¨µÄpathwayÏÂµÄ
+	 * è¿™ä¸ªååº”æ˜¯åœ¨ç‰¹å®šçš„pathwayä¸‹çš„
 	 */
 	public void setPathName(String pathName) {
 		this.pathName=pathName.trim();

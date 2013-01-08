@@ -8,21 +8,21 @@ import com.novelbio.base.multithread.RunProcess;
 public abstract class MTmulitCopeInfo<T extends MTrecordCoper<K>, K extends MTRecordCope> implements RunGetInfo<K> {
 	int threadStopNum = 0;
 	Boolean isFinished = false;
-	/** Ò»¸öÏß³Ì¶ÁÈ¡ */
+	/** ä¸€ä¸ªçº¿ç¨‹è¯»å– */
 	MTRecoreReader mtOneThreadReader;
 	protected ArrayList<T> lsCopeRecorders = new ArrayList<T>();
 	
-	/** ½«read¶ÔÏó±£´æÆğÀ´ */
+	/** å°†readå¯¹è±¡ä¿å­˜èµ·æ¥ */
 	public void setReader(MTRecoreReader mtOneThreadReadFile) {
 		this.mtOneThreadReader = mtOneThreadReadFile;
 	}
-	/**Ìí¼ÓÏß³Ì£¬µ±È»Ò²¿ÉÒÔÔÚÍâÃæ°ü×°Ò»¸ö ·½·¨ĞÂ½¨Ïß³Ì */
+	/**æ·»åŠ çº¿ç¨‹ï¼Œå½“ç„¶ä¹Ÿå¯ä»¥åœ¨å¤–é¢åŒ…è£…ä¸€ä¸ª æ–¹æ³•æ–°å»ºçº¿ç¨‹ */
 	public void addMTcopedRecord(T mTcopeRecorder) {
 		lsCopeRecorders.add(mTcopeRecorder);
 	}
-	/**³ÖĞøµÈµ½±¾¹¤×÷½áÊø
-	 * @param time ºÁÃëµÄÊ±¼ä£¬Ã¿¸ôÕâ¶ÎÊ±¼ä¼ì²éÊÇ·ñ½áÊø
-	 * @return false ³ÌĞòÖÕ¶Ë£¬Ã»ÓĞÍê³É£¬true£º³ÌĞò³É¹¦½áÊø
+	/**æŒç»­ç­‰åˆ°æœ¬å·¥ä½œç»“æŸ
+	 * @param time æ¯«ç§’çš„æ—¶é—´ï¼Œæ¯éš”è¿™æ®µæ—¶é—´æ£€æŸ¥æ˜¯å¦ç»“æŸ
+	 * @return false ç¨‹åºç»ˆç«¯ï¼Œæ²¡æœ‰å®Œæˆï¼Œtrueï¼šç¨‹åºæˆåŠŸç»“æŸ
 	 */
 	public boolean isFinished(int time) {
 		while (true) {
@@ -60,8 +60,8 @@ public abstract class MTmulitCopeInfo<T extends MTrecordCoper<K>, K extends MTRe
 			copeReadInfo(info);
 		}
 	}
-	/** Éè¶¨ÏëÒª×öµÄ¹¤×÷£¬²»ĞèÒª¼ÓËø 
-	 * ÏëĞ´ÈëµÄÎÄ±¾¿ÉÒÔÔÚÕâÀïĞ´Èë
+	/** è®¾å®šæƒ³è¦åšçš„å·¥ä½œï¼Œä¸éœ€è¦åŠ é” 
+	 * æƒ³å†™å…¥çš„æ–‡æœ¬å¯ä»¥åœ¨è¿™é‡Œå†™å…¥
 	 * */
 	protected abstract void copeReadInfo(K info);
 	
@@ -96,7 +96,7 @@ public abstract class MTmulitCopeInfo<T extends MTrecordCoper<K>, K extends MTRe
 	@Override
 	public void threadStop(RunProcess<K> runProcess) {}
 	
-	/** ÔÚÆô¶¯Ç°×öµÄ×¼±¸¹¤×÷ */
+	/** åœ¨å¯åŠ¨å‰åšçš„å‡†å¤‡å·¥ä½œ */
 	protected abstract void beforeExecute();		
 	
 	protected void startThread() {
@@ -111,10 +111,10 @@ public abstract class MTmulitCopeInfo<T extends MTrecordCoper<K>, K extends MTRe
 		}
 	}
 	
-	/** Ä³¸öÏß³ÌÍê³ÉÊ±µÄ¹¤×÷£¬²»ĞèÒªsynchronized */
+	/** æŸä¸ªçº¿ç¨‹å®Œæˆæ—¶çš„å·¥ä½œï¼Œä¸éœ€è¦synchronized */
 	protected abstract void doneOneThread(RunProcess<K> runProcess);
 	
-	/** È«²¿Ïß³ÌÍê³ÉÊ±µÄ¹¤×÷£¬²»ĞèÒªsynchronized, ²»ĞèÒª¹Ø±Õreader */
+	/** å…¨éƒ¨çº¿ç¨‹å®Œæˆæ—¶çš„å·¥ä½œï¼Œä¸éœ€è¦synchronized, ä¸éœ€è¦å…³é—­reader */
 	protected abstract void doneAllThread();
 	
 }

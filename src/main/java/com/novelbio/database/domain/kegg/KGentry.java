@@ -12,13 +12,13 @@ public class KGentry {
 	ServKPathway servKPathway = new ServKPathway();
 	/**
 	 * the ID of this entry in the pathway map <br>
-	 *  the identification number of this entry£¬´Ó1¿ªÊ¼¼ÇÊı
+	 *  the identification number of this entryï¼Œä»1å¼€å§‹è®°æ•°
 	 */
 	private int id;
 	
 	/**
-	 * the KEGGID of this entry£¬ÊäÈëÊ±ÏÈÒª½«nameÒÔ¿Õ¸ñ·Ö¸î³ÉÒ»¸öÒ»¸öµ¥¶ÀµÄÃû×Ö
-	 * example£º name="sma:SAV_2461 sma:SAV_3026 sma:SAV_3027"<br>
+	 * the KEGGID of this entryï¼Œè¾“å…¥æ—¶å…ˆè¦å°†nameä»¥ç©ºæ ¼åˆ†å‰²æˆä¸€ä¸ªä¸€ä¸ªå•ç‹¬çš„åå­—
+	 * exampleï¼š name="sma:SAV_2461 sma:SAV_3026 sma:SAV_3027"<br>
 	 * detail:<br>
 	 * <b>path:(accession)</b>  	pathway map
 	 * ex) name="path:map00040"
@@ -41,24 +41,24 @@ public class KGentry {
 	private String name;
 	
 	/**
-	 * ¸ÃentryËùÔÚµÄpathwayID
+	 * è¯¥entryæ‰€åœ¨çš„pathwayID
 	 */
 	private String pathName;
 	
 	/**
-	 * component×ÜÊı
+	 * componentæ€»æ•°
 	 */
 	private int compNum;
 	
 	/**
-	 * componentµÄ×ÜÊı
+	 * componentçš„æ€»æ•°
 	 */
 	public void setCompNum(int compNum)
 	{
 		this.compNum=compNum;
 	}
 	/**
-	 * componentµÄ×ÜÊı
+	 * componentçš„æ€»æ•°
 	 */
 	public int getCompNum()
 	{
@@ -66,18 +66,18 @@ public class KGentry {
 	}
 	
 	/**
-	 * componentµÄ ID£¬Ã»É¶ÓÃ
+	 * componentçš„ IDï¼Œæ²¡å•¥ç”¨
 	 */
 	private int compID;
 	/**
-	 * componentµÄentry ID£¬Ã»É¶ÓÃ
+	 * componentçš„entry IDï¼Œæ²¡å•¥ç”¨
 	 */
 	public void setCompID(int compID)
 	{
 		this.compID=compID;
 	}
 	/**
-	 * componentµÄentry ID
+	 * componentçš„entry ID
 	 */
 	public int getCompID()
 	{
@@ -85,18 +85,18 @@ public class KGentry {
 	}
 	
 	/**
-	 * component¸´ºÏÎïµÄentryID£¬ÔÚrelactionÖĞ¾Í¿ÉÄÜÒÔÕâ¸öentryIDÀ´±íÊ¾¹ØÏµ
+	 * componentå¤åˆç‰©çš„entryIDï¼Œåœ¨relactionä¸­å°±å¯èƒ½ä»¥è¿™ä¸ªentryIDæ¥è¡¨ç¤ºå…³ç³»
 	 */
 	private int parentID;
 	/**
-	 * component¸´ºÏÎïµÄentryID£¬ÔÚrelactionÖĞ¾Í¿ÉÄÜÒÔÕâ¸öentryIDÀ´±íÊ¾¹ØÏµ
+	 * componentå¤åˆç‰©çš„entryIDï¼Œåœ¨relactionä¸­å°±å¯èƒ½ä»¥è¿™ä¸ªentryIDæ¥è¡¨ç¤ºå…³ç³»
 	 */
 	public void setParentID(int parentID)
 	{
 		this.parentID=parentID;
 	}
 	/**
-	 * component¸´ºÏÎïµÄentryID£¬ÔÚrelactionÖĞ¾Í¿ÉÄÜÒÔÕâ¸öentryIDÀ´±íÊ¾¹ØÏµ
+	 * componentå¤åˆç‰©çš„entryIDï¼Œåœ¨relactionä¸­å°±å¯èƒ½ä»¥è¿™ä¸ªentryIDæ¥è¡¨ç¤ºå…³ç³»
 	 */
 	public int getParentID()
 	{
@@ -104,8 +104,8 @@ public class KGentry {
 	}
 	
 	/**
-	 * µ±typeÎªmapÇÒ²»Îª±¾pathwayÊ±£¬½«±¾pathwayºÍ¸Ãmap×é³Ésource--target²¢ÇÒ·ÅÈëKGRelationÀàÖĞ
-	 * µ±typeÎªgroupÊ±£¬½«componentÖĞÉæ¼°µ½µÄËùÓĞentryÁ½Á½±éÀú×é³Ésource--target²¢ÇÒ·ÅÈëKGReactionÀàÖĞ
+	 * å½“typeä¸ºmapä¸”ä¸ä¸ºæœ¬pathwayæ—¶ï¼Œå°†æœ¬pathwayå’Œè¯¥mapç»„æˆsource--targetå¹¶ä¸”æ”¾å…¥KGRelationç±»ä¸­
+	 * å½“typeä¸ºgroupæ—¶ï¼Œå°†componentä¸­æ¶‰åŠåˆ°çš„æ‰€æœ‰entryä¸¤ä¸¤éå†ç»„æˆsource--targetå¹¶ä¸”æ”¾å…¥KGReactionç±»ä¸­
 	 * the type of this entry. detail:<br>
 	 * <b>ortholog</b> 	the node is a KO (ortholog group)<br>
 	 * <b>enzyme</b> 	the node is an enzyme<br>
@@ -132,7 +132,7 @@ public class KGentry {
 	
 	/**
 	 * the ID of this entry in the pathway map <br>
-	 *  the identification number of this entry£¬´Ó1¿ªÊ¼¼ÇÊı
+	 *  the identification number of this entryï¼Œä»1å¼€å§‹è®°æ•°
 	 */
 	public int getID()
 	{
@@ -140,7 +140,7 @@ public class KGentry {
 	}
 	/**
 	 * the ID of this entry in the pathway map <br>
-	 *  the identification number of this entry£¬´Ó1¿ªÊ¼¼ÇÊı
+	 *  the identification number of this entryï¼Œä»1å¼€å§‹è®°æ•°
 	 */
 	public void setID(int id)
 	{
@@ -148,8 +148,8 @@ public class KGentry {
 	}
 	
 	/**
-	 * the KEGGID of this entry£¬Ö»ÓĞµ¥¶ÀÒ»¸ö 
-	 * example£º name="sma:SAV_2461"<br>
+	 * the KEGGID of this entryï¼Œåªæœ‰å•ç‹¬ä¸€ä¸ª 
+	 * exampleï¼š name="sma:SAV_2461"<br>
 	 * detail:<br>
 	 * <b>path:(accession)</b>  	pathway map
 	 * ex) name="path:map00040"
@@ -173,8 +173,8 @@ public class KGentry {
 		return this.name;
 	}
 	/**
-	 * the KEGGID of this entry£¬ÊäÈëÊ±ÏÈÒª½«nameÒÔ¿Õ¸ñ·Ö¸î³ÉÒ»¸öÒ»¸öµ¥¶ÀµÄÃû×Ö
-	 * example£º name="sma:SAV_2461 sma:SAV_3026 sma:SAV_3027"<br>
+	 * the KEGGID of this entryï¼Œè¾“å…¥æ—¶å…ˆè¦å°†nameä»¥ç©ºæ ¼åˆ†å‰²æˆä¸€ä¸ªä¸€ä¸ªå•ç‹¬çš„åå­—
+	 * exampleï¼š name="sma:SAV_2461 sma:SAV_3026 sma:SAV_3027"<br>
 	 * detail:<br>
 	 * <b>path:(accession)</b>  	pathway map
 	 * ex) name="path:map00040"
@@ -201,21 +201,21 @@ public class KGentry {
 	
 	/**
 	 * already trim()
-	 * ¸ÃentryËùÔÚµÄpathway
+	 * è¯¥entryæ‰€åœ¨çš„pathway
 	 */
 	public void setPathName(String pathName) {
 		this.pathName=pathName.trim();
 	}
 	/**
-	 * ¸ÃentryËùÔÚµÄpathway
+	 * è¯¥entryæ‰€åœ¨çš„pathway
 	 */
 	public String getPathName() {
 		return this.pathName;
 	}
 	
 	/**
-	 * µ±typeÎªmapÇÒ²»Îª±¾pathwayÊ±£¬½«±¾pathwayºÍ¸Ãmap×é³Ésource--target²¢ÇÒ·ÅÈëKGRelationÀàÖĞ
-	 * µ±typeÎªgroupÊ±£¬½«componentÖĞÉæ¼°µ½µÄËùÓĞentryÁ½Á½±éÀú×é³Ésource--target²¢ÇÒ·ÅÈëKGReactionÀàÖĞ
+	 * å½“typeä¸ºmapä¸”ä¸ä¸ºæœ¬pathwayæ—¶ï¼Œå°†æœ¬pathwayå’Œè¯¥mapç»„æˆsource--targetå¹¶ä¸”æ”¾å…¥KGRelationç±»ä¸­
+	 * å½“typeä¸ºgroupæ—¶ï¼Œå°†componentä¸­æ¶‰åŠåˆ°çš„æ‰€æœ‰entryä¸¤ä¸¤éå†ç»„æˆsource--targetå¹¶ä¸”æ”¾å…¥KGReactionç±»ä¸­
 	 * the type of this entry. detail:<br>
 	 * <b>ortholog</b> 	the node is a KO (ortholog group)<br>
 	 * <b>enzyme</b> 	the node is an enzyme<br>
@@ -230,8 +230,8 @@ public class KGentry {
 	}
 	/**
 	 * already trim()
-	 * µ±typeÎªmapÇÒ²»Îª±¾pathwayÊ±£¬½«±¾pathwayºÍ¸Ãmap×é³Ésource--target²¢ÇÒ·ÅÈëKGRelationÀàÖĞ
-	 * µ±typeÎªgroupÊ±£¬½«componentÖĞÉæ¼°µ½µÄËùÓĞentryÁ½Á½±éÀú×é³Ésource--target²¢ÇÒ·ÅÈëKGReactionÀàÖĞ
+	 * å½“typeä¸ºmapä¸”ä¸ä¸ºæœ¬pathwayæ—¶ï¼Œå°†æœ¬pathwayå’Œè¯¥mapç»„æˆsource--targetå¹¶ä¸”æ”¾å…¥KGRelationç±»ä¸­
+	 * å½“typeä¸ºgroupæ—¶ï¼Œå°†componentä¸­æ¶‰åŠåˆ°çš„æ‰€æœ‰entryä¸¤ä¸¤éå†ç»„æˆsource--targetå¹¶ä¸”æ”¾å…¥KGReactionç±»ä¸­
 	 * the type of this entry. detail:<br>
 	 * <b>ortholog</b> 	the node is a KO (ortholog group)<br>
 	 * <b>enzyme</b> 	the node is an enzyme<br>
@@ -286,28 +286,28 @@ public class KGentry {
 	}
 	////////////////////////////////
 	/**
-	 * ÒÔÏÂÊÇ¹¦ÄÜĞÔµÄ·½·¨
+	 * ä»¥ä¸‹æ˜¯åŠŸèƒ½æ€§çš„æ–¹æ³•
 	 */
 	////////////////////////////////
 	/**
-	 * »ñµÃÓë±¾Entity×é³É¸´ºÏÌåµÄÆäËûKegEntity£¬×¢ÒâListÖĞ²»°üº¬±¾KegEntity
+	 * è·å¾—ä¸æœ¬Entityç»„æˆå¤åˆä½“çš„å…¶ä»–KegEntityï¼Œæ³¨æ„Listä¸­ä¸åŒ…å«æœ¬KegEntity
 	 * @return
 	 */
 	public ArrayList<KGentry> getCompEntity()
 	{
 		ArrayList<KGentry> lsKGentries = new ArrayList<KGentry>();
 		/**
-		 * ±£´æ×îºó»ñµÃÓëÖ®Ïà¹ØµÄentryĞÅÏ¢
+		 * ä¿å­˜æœ€åè·å¾—ä¸ä¹‹ç›¸å…³çš„entryä¿¡æ¯
 		 */
-		//Èç¹ûÕâ¸öentryÊÇÓĞparentIDµÄ£¬Ò²¾ÍÊÇÒ»¸öcomponent
+		//å¦‚æœè¿™ä¸ªentryæ˜¯æœ‰parentIDçš„ï¼Œä¹Ÿå°±æ˜¯ä¸€ä¸ªcomponent
 		if (parentID == 0) {
 			return null;
 		}
-		////////Èç¹ûÓĞ¸´ºÏÎï£¬ÏÈ²éÕÒentryÖĞµÄ¸´ºÏÎï£¬½«¸Ã¸´ºÏÎïµÄÆäÓà¸´ºÏÎï¶¼ÕÒµ½//////////////////////////////////////////////////////////////////////////////////////////////////////////
-		KGentry tmpqkGentry = new KGentry();//²éÑ¯ÓÃµÄKGentry
+		////////å¦‚æœæœ‰å¤åˆç‰©ï¼Œå…ˆæŸ¥æ‰¾entryä¸­çš„å¤åˆç‰©ï¼Œå°†è¯¥å¤åˆç‰©çš„å…¶ä½™å¤åˆç‰©éƒ½æ‰¾åˆ°//////////////////////////////////////////////////////////////////////////////////////////////////////////
+		KGentry tmpqkGentry = new KGentry();//æŸ¥è¯¢ç”¨çš„KGentry
 		tmpqkGentry.setPathName(pathName);
 		tmpqkGentry.setParentID(parentID);
-		//ÕâÀï¶¼ÊÇÓëqueryEntryÊÇcomponentµÄentry,
+		//è¿™é‡Œéƒ½æ˜¯ä¸queryEntryæ˜¯componentçš„entry,
 		ArrayList<KGentry> lsSubKGentries = getLsEntity(tmpqkGentry);
 		for (KGentry kGentry : lsSubKGentries) {
 			if (kGentry.getID() == id) {
@@ -320,7 +320,7 @@ public class KGentry {
 	
 	
 	/**
-	 * »ñµÃÓĞ±¾Entity²ÎÓëµÄrelation¹ØÏµ£¬ÀïÃæ¿ÉÄÜ»áÓĞÖØ¸´Ïî´æÔÚ
+	 * è·å¾—æœ‰æœ¬Entityå‚ä¸çš„relationå…³ç³»ï¼Œé‡Œé¢å¯èƒ½ä¼šæœ‰é‡å¤é¡¹å­˜åœ¨
 	 * @return
 	 */
 	public ArrayList<KGrelation> getRelatEntity()
@@ -332,7 +332,7 @@ public class KGentry {
 		
 		tmpQkGrelation.setEntry2ID(id); tmpQkGrelation.setPathName(pathName);
 		ArrayList<KGrelation> lsKGrelations2 = servKRelation.queryLsKGrelations(tmpQkGrelation);
-		/////////Éè¶¨À´×ÔÄÄ¸ö
+		/////////è®¾å®šæ¥è‡ªå“ªä¸ª
 		for (KGrelation kGrelation : lsKGrelations1) {
 			kGrelation.setFlag(KGrelation.FLAG_ENTRYID1);
 		}
@@ -344,7 +344,7 @@ public class KGentry {
 		return lsKGrelations1;
 	}
 	/**
-	 * »ñµÃ±¾entryËùÔÚpathwayµÄÃû×Ö
+	 * è·å¾—æœ¬entryæ‰€åœ¨pathwayçš„åå­—
 	 * @return
 	 */
 	public String getPathTitle() {
@@ -356,11 +356,11 @@ public class KGentry {
 	}
 	
 		/**
-		 * ¸ø¶¨entryIDºÍpathName£¬²éÕÒ¸ÃpathwayÖĞµÄ¾ßÌåKGentry£¬Ã»ÓĞ¾Í·µ»Ønull<br>
-		 * ÒòÎªÒ»¸öentryID¿ÉÄÜ»á¶ÔÓ¦¶à¸ökeggID£¬ÄÇÃ´Ò²¾Í»á·µ»Ø¶à¸öKGentry¶ÔÏó<br>
-		 * Ê×ÏÈ²éÕÒentryµÄID£¬Ã»ÕÒµ½µÄ»°£¬²éÕÒparentID<br>
-		 * Èç¹ûÊÇparentID£¬²»ĞèÒª½«½á¹û--Ò²¾ÍÊÇcomponent Ö®¼äÁ¬ÆğÀ´£¬ÒòÎªÔÚÊäÈë£¨ËùÓĞÏî£©²éÕÒµÄÊ±ºò ÒÑ¾­¿¼ÂÇÁËÖ®¼äµÄÁªÏµ£¬
-		 * ÕâĞ©¹ØÏµÔÚ½«£¨ËùÓĞ£©ÏîÄ¿mapping»ØÈ¥µÄÊ±ºò»á±»¼ÆËãµ½
+		 * ç»™å®šentryIDå’ŒpathNameï¼ŒæŸ¥æ‰¾è¯¥pathwayä¸­çš„å…·ä½“KGentryï¼Œæ²¡æœ‰å°±è¿”å›null<br>
+		 * å› ä¸ºä¸€ä¸ªentryIDå¯èƒ½ä¼šå¯¹åº”å¤šä¸ªkeggIDï¼Œé‚£ä¹ˆä¹Ÿå°±ä¼šè¿”å›å¤šä¸ªKGentryå¯¹è±¡<br>
+		 * é¦–å…ˆæŸ¥æ‰¾entryçš„IDï¼Œæ²¡æ‰¾åˆ°çš„è¯ï¼ŒæŸ¥æ‰¾parentID<br>
+		 * å¦‚æœæ˜¯parentIDï¼Œä¸éœ€è¦å°†ç»“æœ--ä¹Ÿå°±æ˜¯component ä¹‹é—´è¿èµ·æ¥ï¼Œå› ä¸ºåœ¨è¾“å…¥ï¼ˆæ‰€æœ‰é¡¹ï¼‰æŸ¥æ‰¾çš„æ—¶å€™ å·²ç»è€ƒè™‘äº†ä¹‹é—´çš„è”ç³»ï¼Œ
+		 * è¿™äº›å…³ç³»åœ¨å°†ï¼ˆæ‰€æœ‰ï¼‰é¡¹ç›®mappingå›å»çš„æ—¶å€™ä¼šè¢«è®¡ç®—åˆ°
 		 * @param entryID
 		 * @param pathName
 		 * @return
@@ -384,7 +384,7 @@ public class KGentry {
 	
 
 		/**
-		 * ¸ø¶¨kGentry£¬ÓÃÀïÃæµÄĞÅÏ¢ËÑÊı¾İ¿â²¢·µ»Ø£¬Èç¹ûÃ»ËÑµ½µÄ»°¾Í·µ»Ønull<br>
+		 * ç»™å®škGentryï¼Œç”¨é‡Œé¢çš„ä¿¡æ¯æœæ•°æ®åº“å¹¶è¿”å›ï¼Œå¦‚æœæ²¡æœåˆ°çš„è¯å°±è¿”å›null<br>
 		 		where<br>
 				if test="name !=null"<br>
 					 name=#{name}<br>
@@ -418,7 +418,7 @@ public class KGentry {
 		}
 
 		/**
-		 * ¸ø¶¨kGentry£¬ÓÃÀïÃæµÄĞÅÏ¢ËÑÊı¾İ¿â²¢·µ»Ø£¬Èç¹ûÃ»ËÑµ½µÄ»°¾Í·µ»Ønew arraylist<br>
+		 * ç»™å®škGentryï¼Œç”¨é‡Œé¢çš„ä¿¡æ¯æœæ•°æ®åº“å¹¶è¿”å›ï¼Œå¦‚æœæ²¡æœåˆ°çš„è¯å°±è¿”å›new arraylist<br>
 		 		where<br>
 				if test="name !=null"<br>
 					 name=#{name}<br>
@@ -457,7 +457,7 @@ public class KGentry {
 		}
 		
 		/**
-		 * ±È½ÏentryName, PathName, ¸ÃpathwayÖĞµÄentryIDÈıÏî
+		 * æ¯”è¾ƒentryName, PathName, è¯¥pathwayä¸­çš„entryIDä¸‰é¡¹
 		 */
 		public boolean equals(Object obj)
 		{
@@ -474,8 +474,8 @@ public class KGentry {
 		}
 		
 		/**
-		 * ÖØĞ´hashcode
-		 * ÓÃid + name + pathNameÀ´×öhashcode
+		 * é‡å†™hashcode
+		 * ç”¨id + name + pathNameæ¥åšhashcode
 		 */
 		public int hashCode(){
 			String hash = id + name + pathName;

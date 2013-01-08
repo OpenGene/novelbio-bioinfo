@@ -12,16 +12,16 @@ public class VcfCols {
 		setColDBsnp(3);
 	}
 	/**
-	 * @param colDBsnp vcfÊÇ3
+	 * @param colDBsnp vcfæ˜¯3
 	 */
 	public void setColDBsnp(int colDBsnp) {
 		this.colSnpDBID = colDBsnp - 1;
 	}
 	/**
-	 * @param colChrID vcfÊÇ1
-	 * @param colSnpStart vcfÊÇ2
-	 * @param colRefsequence vcfÊÇ4
-	 * @param colThisSequence vcfÊÇ5
+	 * @param colChrID vcfæ˜¯1
+	 * @param colSnpStart vcfæ˜¯2
+	 * @param colRefsequence vcfæ˜¯4
+	 * @param colThisSequence vcfæ˜¯5
 	 */
 	public void setColInfo(int colChrID, int colSnpStart, int colRefsequence, int colThisSequence) {
 		this.colChrID = colChrID - 1;
@@ -30,11 +30,11 @@ public class VcfCols {
 		this.colThisSequence = colThisSequence - 1;
 	}
 	/**
-	 * @param colBaseInfo vcfÊÇ8
-	 * @param colQuality vcfÊÇ6
-	 * @param colFiltered vcfÊÇ7
-	 * @param colFlagTitle vcfÊÇ9
-	 * @param colFlagDetail vcfÊÇ10
+	 * @param colBaseInfo vcfæ˜¯8
+	 * @param colQuality vcfæ˜¯6
+	 * @param colFiltered vcfæ˜¯7
+	 * @param colFlagTitle vcfæ˜¯9
+	 * @param colFlagDetail vcfæ˜¯10
 	 */
 	public void setColAttr(int colBaseInfo, int colQuality, int colFiltered, int colFlagTitle, int colFlagDetail) {
 		this.colBaseInfo = colBaseInfo - 1;

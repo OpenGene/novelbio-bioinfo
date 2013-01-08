@@ -9,69 +9,69 @@ import com.novelbio.analysis.seq.genome.mappingOperate.Alignment;
 import com.novelbio.database.domain.geneanno.SepSign;
 
 /**
- * compareµÄ±È½ÏÈ¡¾öÓÚ¸¸½ÚµãµÄ·½Ïò£¬Èç¹û¸¸½ÚµãµÄ·½ÏòÎªnull£¬Ôò°´ÕÕ¾ø¶ÔÖµÅÅĞò£¬Èç¹ûÊÇcis£¬ÄÇÃ´¾Í°´cisµÄÅÅĞò£¬Èç¹ûÎªtrans¾Í°´ÕÕtransµÄ·½Ê½ÅÅĞò
- * ±¾ÀàÖØĞ´ÁËequal´úÂë£¬ÓÃÓÚ±È½ÏÁ½¸ölocÊÇ·ñÒ»ÖÂ
- * ÖØĞ´ÁËhashcode ½ö±È½ÏChrID + "//" + locString + "//" + numberstart + "//" + numberstart;
- * ´æ´¢GffÎÄ¼şÖĞÃ¿¸öÌõÄ¿µÄ¾ßÌåĞÅÏ¢£¬Ö±½ÓÓÃÓÚGffPeakÎÄ¼ş
- * °üÀ¨<br>
- * ÌõÄ¿Ãû locString<br>
- * ÌõÄ¿Æğµã numberstart<br>
- * ÌõÄ¿ÖÕµã numberend<br>
- * ÌõÄ¿ËùÔÚÈ¾É«Ìå±àºÅ ChrID<br>
- * ÌõÄ¿·½Ïò cis5to3
+ * compareçš„æ¯”è¾ƒå–å†³äºçˆ¶èŠ‚ç‚¹çš„æ–¹å‘ï¼Œå¦‚æœçˆ¶èŠ‚ç‚¹çš„æ–¹å‘ä¸ºnullï¼Œåˆ™æŒ‰ç…§ç»å¯¹å€¼æ’åºï¼Œå¦‚æœæ˜¯cisï¼Œé‚£ä¹ˆå°±æŒ‰cisçš„æ’åºï¼Œå¦‚æœä¸ºtranså°±æŒ‰ç…§transçš„æ–¹å¼æ’åº
+ * æœ¬ç±»é‡å†™äº†equalä»£ç ï¼Œç”¨äºæ¯”è¾ƒä¸¤ä¸ªlocæ˜¯å¦ä¸€è‡´
+ * é‡å†™äº†hashcode ä»…æ¯”è¾ƒChrID + "//" + locString + "//" + numberstart + "//" + numberstart;
+ * å­˜å‚¨Gffæ–‡ä»¶ä¸­æ¯ä¸ªæ¡ç›®çš„å…·ä½“ä¿¡æ¯ï¼Œç›´æ¥ç”¨äºGffPeakæ–‡ä»¶
+ * åŒ…æ‹¬<br>
+ * æ¡ç›®å locString<br>
+ * æ¡ç›®èµ·ç‚¹ numberstart<br>
+ * æ¡ç›®ç»ˆç‚¹ numberend<br>
+ * æ¡ç›®æ‰€åœ¨æŸ“è‰²ä½“ç¼–å· ChrID<br>
+ * æ¡ç›®æ–¹å‘ cis5to3
  * @author zong0jie
  *
  */
 public class ListDetailAbs implements Alignment, Cloneable, Comparable<ListDetailAbs> {
-	/** ¸¸Ê÷ */
+	/** çˆ¶æ ‘ */
 	protected ListAbs<? extends ListDetailAbs> listAbs;
 	
-	/** ¸ù¾İcisÔÚÆğµãµÄÉÏÓÎ¶àÉÙbp£¬ÔÚ´Ë·¶Î§ÄÚÔòÈÏÎªÔÚtssÇøÓò  */
+	/** æ ¹æ®cisåœ¨èµ·ç‚¹çš„ä¸Šæ¸¸å¤šå°‘bpï¼Œåœ¨æ­¤èŒƒå›´å†…åˆ™è®¤ä¸ºåœ¨tssåŒºåŸŸ  */
 	protected int upTss = 0;
-	/** ¸ù¾İcisÔÚÆğµãµÄÏÂÓÎ¶àÉÙbp£¬ÔÚ´Ë·¶Î§ÄÚÔòÈÏÎªÔÚtssÇøÓò */
+	/** æ ¹æ®cisåœ¨èµ·ç‚¹çš„ä¸‹æ¸¸å¤šå°‘bpï¼Œåœ¨æ­¤èŒƒå›´å†…åˆ™è®¤ä¸ºåœ¨tssåŒºåŸŸ */
 	protected int downTss = 0;
-	/** ¸ù¾İcisÔÚÖÕµãµÄÉÏÓÎ¶àÉÙbp£¬ÔÚ´Ë·¶Î§ÄÚÔòÈÏÎªÔÚtesÇøÓò */
+	/** æ ¹æ®cisåœ¨ç»ˆç‚¹çš„ä¸Šæ¸¸å¤šå°‘bpï¼Œåœ¨æ­¤èŒƒå›´å†…åˆ™è®¤ä¸ºåœ¨tesåŒºåŸŸ */
 	protected int upGeneEnd3UTR = 0;
-	/** ¸ù¾İcisÔÚÖÕµãµÄÏÂÓÎ¶àÉÙbp£¬ÔÚ´Ë·¶Î§ÄÚÔòÈÏÎªÔÚtesÇøÓò */
+	/** æ ¹æ®cisåœ¨ç»ˆç‚¹çš„ä¸‹æ¸¸å¤šå°‘bpï¼Œåœ¨æ­¤èŒƒå›´å†…åˆ™è®¤ä¸ºåœ¨tesåŒºåŸŸ */
 	protected int downGeneEnd3UTR = 0;
 	/**
-	 * LOCID£¬<br>
-	 * Ë®µ¾£ºLOC_Os01g01110<br>
-	 * ÄâÄÏ½æ£ºAT1G01110<br>
+	 * LOCIDï¼Œ<br>
+	 * æ°´ç¨»ï¼šLOC_Os01g01110<br>
+	 * æ‹Ÿå—èŠ¥ï¼šAT1G01110<br>
 	 * UCSC:XM_0101010/XM_032020<br>
-	 * CpG£º107_chr1_CpG_36568608: 27 ÆäÖĞ107ÊÇCpG gffÎÄ¼şÖĞµÄË÷Òı,36568608ÊÇ¸ÃCpGÔÚÈ¾É«ÌåÉÏµÄÆğµã
-	 * peak: peakÆğµã_peakÖÕµã
+	 * CpGï¼š107_chr1_CpG_36568608: 27 å…¶ä¸­107æ˜¯CpG gffæ–‡ä»¶ä¸­çš„ç´¢å¼•,36568608æ˜¯è¯¥CpGåœ¨æŸ“è‰²ä½“ä¸Šçš„èµ·ç‚¹
+	 * peak: peakèµ·ç‚¹_peakç»ˆç‚¹
 	 */
 	protected ArrayList<String> lsItemName = new ArrayList<String>(); //loc name
-	/**  È¾É«Ìå±àºÅ£¬¶¼Ğ¡Ğ´ */
+	/**  æŸ“è‰²ä½“ç¼–å·ï¼Œéƒ½å°å†™ */
 	protected String parentName="";
-	/** ×ªÂ¼·½Ïò£¬¼ÙÉèÍ¬Ò»»ùÒò²»¹Ü¶àÉÙ×ªÂ¼±¾¶¼Í¬Ò»×ªÂ¼·½Ïò */
+	/** è½¬å½•æ–¹å‘ï¼Œå‡è®¾åŒä¸€åŸºå› ä¸ç®¡å¤šå°‘è½¬å½•æœ¬éƒ½åŒä¸€è½¬å½•æ–¹å‘ */
 	protected Boolean cis5to3 = null;
-	/** ±¾ÇøÓòÄÚÓĞ¶àÉÙÌõreads */
+	/** æœ¬åŒºåŸŸå†…æœ‰å¤šå°‘æ¡reads */
 	int readsInElementNumber = 0;
 	
-	/** ±¾ÌõÄ¿Æğµã,ÆğµãÎ»ÖÃ×ÜÊÇĞ¡ÓÚÖÕµã£¬ÎŞÊÓ»ùÒò·½Ïò */
+	/** æœ¬æ¡ç›®èµ·ç‚¹,èµ·ç‚¹ä½ç½®æ€»æ˜¯å°äºç»ˆç‚¹ï¼Œæ— è§†åŸºå› æ–¹å‘ */
 	protected int numberstart = ListCodAbs.LOC_ORIGINAL; // loc start number 
-	/** ±¾ÌõÄ¿ÖÕµã£¬ÖÕµãÎ»ÖÃ×ÜÊÇ´óÓÚÆğµã£¬ÎŞÊÓ»ùÒò·½Ïò */
+	/** æœ¬æ¡ç›®ç»ˆç‚¹ï¼Œç»ˆç‚¹ä½ç½®æ€»æ˜¯å¤§äºèµ·ç‚¹ï¼Œæ— è§†åŸºå› æ–¹å‘ */
 	protected int numberend = ListCodAbs.LOC_ORIGINAL; //loc end number
-	/** ±¾»ùÒòÆğµãµ½ÉÏÒ»¸ö»ùÒò±ß½çµÄ¾àÀë */
+	/** æœ¬åŸºå› èµ·ç‚¹åˆ°ä¸Šä¸€ä¸ªåŸºå› è¾¹ç•Œçš„è·ç¦» */
 	protected int tss2UpGene = ListCodAbs.LOC_ORIGINAL;
-	/** ±¾»ùÒòÖÕµãµ½ÏÂÒ»¸ö»ùÒò±ß½çµÄ¾àÀë */
+	/** æœ¬åŸºå› ç»ˆç‚¹åˆ°ä¸‹ä¸€ä¸ªåŸºå› è¾¹ç•Œçš„è·ç¦» */
 	protected int tes2DownGene = ListCodAbs.LOC_ORIGINAL;
-	/** ¸ÃÌõÄ¿ÔÚList-GffDetailÖĞµÄ¾ßÌåÎ»ÖÃ */
+	/** è¯¥æ¡ç›®åœ¨List-GffDetailä¸­çš„å…·ä½“ä½ç½® */
 	protected int itemNum = ListCodAbs.LOC_ORIGINAL;
 	
 	public ListDetailAbs() {}
 	/**
-	 * Ã»ÓĞ¾ÍÉè¶¨Îª""»ònull
-	 * @param chrID È¾É«Ìå±àºÅ£¬×Ô¶¯±ä³ÉĞ¡Ğ´
-	 * @param locString 	 * LOCID£¬<br>
-	 * Ë®µ¾£ºLOC_Os01g01110<br>
-	 * ÄâÄÏ½æ£ºAT1G01110<br>
+	 * æ²¡æœ‰å°±è®¾å®šä¸º""æˆ–null
+	 * @param chrID æŸ“è‰²ä½“ç¼–å·ï¼Œè‡ªåŠ¨å˜æˆå°å†™
+	 * @param locString 	 * LOCIDï¼Œ<br>
+	 * æ°´ç¨»ï¼šLOC_Os01g01110<br>
+	 * æ‹Ÿå—èŠ¥ï¼šAT1G01110<br>
 	 * UCSC:XM_0101010/XM_032020<br>
-	 * CpG£º107_chr1_CpG_36568608: 27 ÆäÖĞ107ÊÇCpG gffÎÄ¼şÖĞµÄË÷Òı,36568608ÊÇ¸ÃCpGÔÚÈ¾É«ÌåÉÏµÄÆğµã
-	 * peak: peakÆğµã_peakÖÕµã
-	 * @param cis5to3 ²»È·¶¨¾ÍÊäÈënull
+	 * CpGï¼š107_chr1_CpG_36568608: 27 å…¶ä¸­107æ˜¯CpG gffæ–‡ä»¶ä¸­çš„ç´¢å¼•,36568608æ˜¯è¯¥CpGåœ¨æŸ“è‰²ä½“ä¸Šçš„èµ·ç‚¹
+	 * peak: peakèµ·ç‚¹_peakç»ˆç‚¹
+	 * @param cis5to3 ä¸ç¡®å®šå°±è¾“å…¥null
 	 */
 	public ListDetailAbs(String chrID, String ItemName, Boolean cis5to3) {
 		if (chrID != null) {
@@ -81,10 +81,10 @@ public class ListDetailAbs implements Alignment, Cloneable, Comparable<ListDetai
 		this.cis5to3 = cis5to3;
 	}
 	/**
-	 * Ã»ÓĞ¾ÍÉè¶¨Îª""»ònull
-	 * @param listAbs ¸¸½ÚµãµÄĞÅÏ¢
-	 * @param ItemName ±¾½ÚµãµÄÃû×Ö
-	 * @param cis5to3 Õı·´Ïò ²»È·¶¨¾ÍÊäÈënull
+	 * æ²¡æœ‰å°±è®¾å®šä¸º""æˆ–null
+	 * @param listAbs çˆ¶èŠ‚ç‚¹çš„ä¿¡æ¯
+	 * @param ItemName æœ¬èŠ‚ç‚¹çš„åå­—
+	 * @param cis5to3 æ­£åå‘ ä¸ç¡®å®šå°±è¾“å…¥null
 	 */
 	public ListDetailAbs(ListAbs<? extends ListDetailAbs> listAbs, String ItemName, Boolean cis5to3) {
 		this.listAbs = listAbs;
@@ -99,7 +99,7 @@ public class ListDetailAbs implements Alignment, Cloneable, Comparable<ListDetai
 		return listAbs;
 	}
 	/**
-	 * »®¶¨Tss·¶Î§ÉÏÓÎÎª¸ºÊı£¬ÏÂÓÎÎªÕıÊı
+	 * åˆ’å®šTssèŒƒå›´ä¸Šæ¸¸ä¸ºè´Ÿæ•°ï¼Œä¸‹æ¸¸ä¸ºæ­£æ•°
 	 * @param upTss
 	 * @param downTss
 	 */
@@ -108,7 +108,7 @@ public class ListDetailAbs implements Alignment, Cloneable, Comparable<ListDetai
 		this.downTss = downTss;
 	}
 	/**
-	 * »®¶¨Tss·¶Î§ÉÏÓÎÎª¸ºÊı£¬ÏÂÓÎÎªÕıÊı
+	 * åˆ’å®šTssèŒƒå›´ä¸Šæ¸¸ä¸ºè´Ÿæ•°ï¼Œä¸‹æ¸¸ä¸ºæ­£æ•°
 	 * @param upTss
 	 * @param downTss
 	 */
@@ -118,7 +118,7 @@ public class ListDetailAbs implements Alignment, Cloneable, Comparable<ListDetai
 	}
 	
 	/**
-	 * »®¶¨Tes·¶Î§ÉÏÓÎÎª¸ºÊı£¬ÏÂÓÎÎªÕıÊı
+	 * åˆ’å®šTesèŒƒå›´ä¸Šæ¸¸ä¸ºè´Ÿæ•°ï¼Œä¸‹æ¸¸ä¸ºæ­£æ•°
 	 * @param upTes
 	 * @param downTes
 	 */
@@ -127,7 +127,7 @@ public class ListDetailAbs implements Alignment, Cloneable, Comparable<ListDetai
 		this.downGeneEnd3UTR = downTes;
 	}
 	/**
-	 * »®¶¨Tss·¶Î§ÉÏÓÎÎª¸ºÊı£¬ÏÂÓÎÎªÕıÊı
+	 * åˆ’å®šTssèŒƒå›´ä¸Šæ¸¸ä¸ºè´Ÿæ•°ï¼Œä¸‹æ¸¸ä¸ºæ­£æ•°
 	 * @param upTss
 	 * @param downTss
 	 */
@@ -136,16 +136,16 @@ public class ListDetailAbs implements Alignment, Cloneable, Comparable<ListDetai
 			setTesRegion(Tes[0], Tes[1]);
 	}
 	/**
-	 * 0£ºuptss
-	 * 1£ºdowntss
+	 * 0ï¼šuptss
+	 * 1ï¼šdowntss
 	 * @return
 	 */
 	public int[] getTssRegion() {
 		return new int[]{upTss, downTss};
 	}
 	/**
-	 * 0£ºuptes
-	 * 1£ºdowntes
+	 * 0ï¼šuptes
+	 * 1ï¼šdowntes
 	 * @return
 	 */
 	public int[] getTesRegion() {
@@ -153,38 +153,38 @@ public class ListDetailAbs implements Alignment, Cloneable, Comparable<ListDetai
 	}
 	private static Logger logger = Logger.getLogger(ListDetailAbs.class);
 	
-	/** ¼ÆÊı¼ÓÒ» */
+	/** è®¡æ•°åŠ ä¸€ */
 	public void addReadsInElementNum() {
 		readsInElementNumber++;
 	}
 	/**
-	 * ±¾ÇøÓòÄÚ³öÏÖ¶àÉÙµÄÔªËØ£¬±ØĞëÇ°Ãæµ÷ÓÃaddNumberÌí¼Ó
+	 * æœ¬åŒºåŸŸå†…å‡ºç°å¤šå°‘çš„å…ƒç´ ï¼Œå¿…é¡»å‰é¢è°ƒç”¨addNumberæ·»åŠ 
 	 * @return
 	 */
 	public int getReadsInElementNum() {
 		return readsInElementNumber;
 	}
 	/**
-	 * ´Ó0¿ªÊ¼£¬Î»ÓÚlistµÄµÚ¼¸¸öÎ»ÖÃ
+	 * ä»0å¼€å§‹ï¼Œä½äºlistçš„ç¬¬å‡ ä¸ªä½ç½®
 	 * @param itemNum
 	 */
 	public void setItemNum(int itemNum) {
 		this.itemNum = itemNum;
 	}
 	/** 
-	 * <b>´Ó0¿ªÊ¼¼ÆËã</b>
-	 * ¸ÃÌõÄ¿ÔÚList-GffDetailÖĞµÄ¾ßÌåÎ»ÖÃ */
+	 * <b>ä»0å¼€å§‹è®¡ç®—</b>
+	 * è¯¥æ¡ç›®åœ¨List-GffDetailä¸­çš„å…·ä½“ä½ç½® */
 	public int getItemNum() {
 		return getParent().indexOf(this);
 	}
     /**
-     * ItemµÄÃû×Ö£¬·µ»ØµÚÒ»¸ö
- 	 * LOCID£¬<br>
-	 * Ë®µ¾£ºLOC_Os01g01110<br>
-	 * ÄâÄÏ½æ£ºAT1G01110<br>
+     * Itemçš„åå­—ï¼Œè¿”å›ç¬¬ä¸€ä¸ª
+ 	 * LOCIDï¼Œ<br>
+	 * æ°´ç¨»ï¼šLOC_Os01g01110<br>
+	 * æ‹Ÿå—èŠ¥ï¼šAT1G01110<br>
 	 * UCSC:XM_0101010<br>
-	 * CpG£º107_chr1_CpG_36568608: 27 ÆäÖĞ107ÊÇCpG gffÎÄ¼şÖĞµÄË÷Òı,36568608ÊÇ¸ÃCpGÔÚÈ¾É«ÌåÉÏµÄÆğµã
-	 * peak: peakÆğµã_peakÖÕµã
+	 * CpGï¼š107_chr1_CpG_36568608: 27 å…¶ä¸­107æ˜¯CpG gffæ–‡ä»¶ä¸­çš„ç´¢å¼•,36568608æ˜¯è¯¥CpGåœ¨æŸ“è‰²ä½“ä¸Šçš„èµ·ç‚¹
+	 * peak: peakèµ·ç‚¹_peakç»ˆç‚¹
      */
 	public String getNameSingle() {
 		if (lsItemName.size() == 0) {
@@ -192,76 +192,76 @@ public class ListDetailAbs implements Alignment, Cloneable, Comparable<ListDetai
 		}
 		return this.lsItemName.get(0);
 	}
-	/** È«ÌåitemµÄÃû×Ö */
+	/** å…¨ä½“itemçš„åå­— */
 	public ArrayList<String > getName() {
 		return this.lsItemName;
 	}
     /**
- 	 * LOCID£¬<br>
-	 * Ë®µ¾£ºLOC_Os01g01110<br>
-	 * ÄâÄÏ½æ£ºAT1G01110<br>
+ 	 * LOCIDï¼Œ<br>
+	 * æ°´ç¨»ï¼šLOC_Os01g01110<br>
+	 * æ‹Ÿå—èŠ¥ï¼šAT1G01110<br>
 	 * UCSC:XM_0101010/XM_032020<br>
-	 * CpG£º107_chr1_CpG_36568608: 27 ÆäÖĞ107ÊÇCpG gffÎÄ¼şÖĞµÄË÷Òı,36568608ÊÇ¸ÃCpGÔÚÈ¾É«ÌåÉÏµÄÆğµã
-	 * peak: peakÆğµã_peakÖÕµã
+	 * CpGï¼š107_chr1_CpG_36568608: 27 å…¶ä¸­107æ˜¯CpG gffæ–‡ä»¶ä¸­çš„ç´¢å¼•,36568608æ˜¯è¯¥CpGåœ¨æŸ“è‰²ä½“ä¸Šçš„èµ·ç‚¹
+	 * peak: peakèµ·ç‚¹_peakç»ˆç‚¹
      */
 	public void addItemName(String itemName) {
 		this.lsItemName.add(itemName);
 	}
 	/**
-	 * È¾É«Ìå±àºÅµÈĞÅÏ¢£¬¸¸ID
+	 * æŸ“è‰²ä½“ç¼–å·ç­‰ä¿¡æ¯ï¼Œçˆ¶ID
 	 * @param parentName
 	 */
 	public void setParentName(String parentName) {
 		this.parentName = parentName;
 	}
-	/** ±¾»ùÒòÆğµãµ½ÉÏÒ»¸ö»ùÒò±ß½çµÄ¾àÀë  */
+	/** æœ¬åŸºå› èµ·ç‚¹åˆ°ä¸Šä¸€ä¸ªåŸºå› è¾¹ç•Œçš„è·ç¦»  */
 	public void setTss2UpGene(int tss2UpGene) {
 		this.tss2UpGene = tss2UpGene;
 	}
-	/** ±¾»ùÒòÖÕµãµ½ÏÂÒ»¸ö»ùÒò±ß½çµÄ¾àÀë */
+	/** æœ¬åŸºå› ç»ˆç‚¹åˆ°ä¸‹ä¸€ä¸ªåŸºå› è¾¹ç•Œçš„è·ç¦» */
 	public void setTes2DownGene(int tes2DownGene) {
 		this.tes2DownGene = tes2DownGene;
 	}
-	/** ±¾»ùÒòÖÕµãµ½ÏÂÒ»¸ö»ùÒò±ß½çµÄ¾àÀë */
+	/** æœ¬åŸºå› ç»ˆç‚¹åˆ°ä¸‹ä¸€ä¸ªåŸºå› è¾¹ç•Œçš„è·ç¦» */
 	public int getTes2DownGene() {
 		return tes2DownGene;
 	}
-	/** ±¾»ùÒòÆğµãµ½ÉÏÒ»¸ö»ùÒò±ß½çµÄ¾àÀë */
+	/** æœ¬åŸºå› èµ·ç‚¹åˆ°ä¸Šä¸€ä¸ªåŸºå› è¾¹ç•Œçš„è·ç¦» */
 	public int getTss2UpGene() {
 		return tss2UpGene;
 	}
 	/**
 	 * @GffHashGene
-	 * ±¾»ùÒòÖÕµã£¬ÖÕµãÎ»ÖÃ×ÜÊÇ´óÓÚÆğµã£¬ÎŞÊÓ»ùÒò·½Ïò
+	 * æœ¬åŸºå› ç»ˆç‚¹ï¼Œç»ˆç‚¹ä½ç½®æ€»æ˜¯å¤§äºèµ·ç‚¹ï¼Œæ— è§†åŸºå› æ–¹å‘
 	 * @GffHashItem
-	 * ÌõÄ¿ÖÕµã£¬ÖÕµãÎ»ÖÃ×ÜÊÇ´óÓÚÆğµã£¬ÎŞÊÓÌõÄ¿·½Ïò
+	 * æ¡ç›®ç»ˆç‚¹ï¼Œç»ˆç‚¹ä½ç½®æ€»æ˜¯å¤§äºèµ·ç‚¹ï¼Œæ— è§†æ¡ç›®æ–¹å‘
 	 */
 	public int getEndAbs() {
 		return numberend;
 	}
 	/**
 	 * @GffHashGene
-	 * ±¾»ùÒòÆğµã,ÆğµãÎ»ÖÃ×ÜÊÇĞ¡ÓÚÖÕµã£¬ÎŞÊÓ»ùÒò·½Ïò
+	 * æœ¬åŸºå› èµ·ç‚¹,èµ·ç‚¹ä½ç½®æ€»æ˜¯å°äºç»ˆç‚¹ï¼Œæ— è§†åŸºå› æ–¹å‘
 	 * @GffHashItem
-	 * ÌõÄ¿Æğµã,ÆğµãÎ»ÖÃ×ÜÊÇĞ¡ÓÚÖÕµã£¬ÎŞÊÓÌõÄ¿·½Ïò
+	 * æ¡ç›®èµ·ç‚¹,èµ·ç‚¹ä½ç½®æ€»æ˜¯å°äºç»ˆç‚¹ï¼Œæ— è§†æ¡ç›®æ–¹å‘
 	 */
 	public int getStartAbs() {
 		return numberstart;
 	}
 	/**
-	 * @param numberend ÌõÄ¿ÖÕµã,ÖÕµãÎ»ÖÃ×ÜÊÇ´óÓÚÆğµã£¬ÎŞÊÓ»ùÒò·½Ïò
+	 * @param numberend æ¡ç›®ç»ˆç‚¹,ç»ˆç‚¹ä½ç½®æ€»æ˜¯å¤§äºèµ·ç‚¹ï¼Œæ— è§†åŸºå› æ–¹å‘
 	 */
 	public void setEndAbs(int numberend) {
 		this.numberend = numberend;
 	}
 	/**
-	 * @param numberstart ÌõÄ¿Æğµã,ÆğµãÎ»ÖÃ×ÜÊÇĞ¡ÓÚÖÕµã£¬ÎŞÊÓÌõÄ¿·½Ïò
+	 * @param numberstart æ¡ç›®èµ·ç‚¹,èµ·ç‚¹ä½ç½®æ€»æ˜¯å°äºç»ˆç‚¹ï¼Œæ— è§†æ¡ç›®æ–¹å‘
 	 */
 	public void setStartAbs(int numberstart) {
 		this.numberstart = numberstart;
 	}
 	/**
-	 * @param numberend ÌõÄ¿ÖÕµã,¸ù¾İ»ùÒò·½ÏòÈ·¶¨,´Ó1¿ªÊ¼¼ÇÊı
+	 * @param numberend æ¡ç›®ç»ˆç‚¹,æ ¹æ®åŸºå› æ–¹å‘ç¡®å®š,ä»1å¼€å§‹è®°æ•°
 	 */
 	public void setEndCis(int numberend) {
 		if (isCis5to3() == null || isCis5to3()) {
@@ -272,7 +272,7 @@ public class ListDetailAbs implements Alignment, Cloneable, Comparable<ListDetai
 		}
 	}
 	/**
-	 * @param numberstart ÌõÄ¿Æğµã,¸ù¾İ»ùÒò·½ÏòÈ·¶¨,´Ó1¿ªÊ¼¼ÇÊı
+	 * @param numberstart æ¡ç›®èµ·ç‚¹,æ ¹æ®åŸºå› æ–¹å‘ç¡®å®š,ä»1å¼€å§‹è®°æ•°
 	 */
 	public void setStartCis(int numberstart) {
 		if (isCis5to3() == null || isCis5to3()) {
@@ -283,15 +283,15 @@ public class ListDetailAbs implements Alignment, Cloneable, Comparable<ListDetai
 		}
 	}
 	/**
-	 * ×ø±êÊÇ·ñÔÚ»ùÒòµÄÄÚ²¿£¬°üÀ¨TssºÍGeneEndµÄÍØÕ¹ÇøÓò
+	 * åæ ‡æ˜¯å¦åœ¨åŸºå› çš„å†…éƒ¨ï¼ŒåŒ…æ‹¬Tsså’ŒGeneEndçš„æ‹“å±•åŒºåŸŸ
 	 */
 	public boolean isCodInGeneExtend(int coord) {
 		return isCodInGene(coord) || isCodInPromoter(coord) || isCodInGenEnd(coord);
 	}
 	
 	/**
-	 * ÊÇ·ñÔÚËùÎ½µÄTssÄÚ,¼È¿ÉÒÔÔÚÄÚÒ²¿ÉÒÔÔÚ
-	 * ËùÒÔÈç¹ûĞèÒªÖ»ÔÚ»ùÒòÍâµÄtss£¬ĞèÒªÍ¬Ê±¼ÓÉÏisCodInside==falseÅĞ¶Ï
+	 * æ˜¯å¦åœ¨æ‰€è°“çš„Tsså†…,æ—¢å¯ä»¥åœ¨å†…ä¹Ÿå¯ä»¥åœ¨
+	 * æ‰€ä»¥å¦‚æœéœ€è¦åªåœ¨åŸºå› å¤–çš„tssï¼Œéœ€è¦åŒæ—¶åŠ ä¸ŠisCodInside==falseåˆ¤æ–­
 	 * @return
 	 */
 	public boolean isCodInPromoter(int coord) {
@@ -306,9 +306,9 @@ public class ListDetailAbs implements Alignment, Cloneable, Comparable<ListDetai
 	}
 	
 	/**
-	 * ÊÇ·ñÔÚËùÎ½µÄGeneEndÄÚ,¼È¿ÉÒÔÔÚÄÚÒ²¿ÉÒÔÔÚÍâ
-	 * ËùÒÔÈç¹ûĞèÒªÖ»ÔÚ»ùÒòÍâµÄgeneEnd£¬ĞèÒªÍ¬Ê±¼ÓÉÏisCodInside==falseÅĞ¶Ï
-	 * Ò²¾ÍÊÇÎ²²¿µã£¬×óÓÒÀ©Õ¹geneEnd3UTR³¤¶ÈµÄbp
+	 * æ˜¯å¦åœ¨æ‰€è°“çš„GeneEndå†…,æ—¢å¯ä»¥åœ¨å†…ä¹Ÿå¯ä»¥åœ¨å¤–
+	 * æ‰€ä»¥å¦‚æœéœ€è¦åªåœ¨åŸºå› å¤–çš„geneEndï¼Œéœ€è¦åŒæ—¶åŠ ä¸ŠisCodInside==falseåˆ¤æ–­
+	 * ä¹Ÿå°±æ˜¯å°¾éƒ¨ç‚¹ï¼Œå·¦å³æ‰©å±•geneEnd3UTRé•¿åº¦çš„bp
 	 * @return
 	 */
 	public boolean isCodInGenEnd(int coord) {
@@ -322,7 +322,7 @@ public class ListDetailAbs implements Alignment, Cloneable, Comparable<ListDetai
 		return false;
 	}
 	/**
-	 * ÊÇ·ñÔÚ»ùÒòÄÚ£¬²»ÍØÕ¹
+	 * æ˜¯å¦åœ¨åŸºå› å†…ï¼Œä¸æ‹“å±•
 	 * @return
 	 */
 	public boolean isCodInGene(int coord) {
@@ -332,15 +332,15 @@ public class ListDetailAbs implements Alignment, Cloneable, Comparable<ListDetai
 		return false;
 	}
 	/**
-	 * ËùÊôlistAbs±àºÅ£¬¶¼Ğ¡Ğ´
+	 * æ‰€å±listAbsç¼–å·ï¼Œéƒ½å°å†™
 	 */
 	public String getRefID() {
 		return this.parentName;
 	}
 
 	/**
-	 * ×ªÂ¼·½Ïò£¬¼ÙÉèÍ¬Ò»»ùÒò²»¹Ü¶àÉÙ×ªÂ¼±¾¶¼Í¬Ò»×ªÂ¼·½Ïò
-	 * Ò»¸ö×ªÂ¼±¾ÀïÃæ¼ÈÓĞÕıÏòÒ²ÓĞ·´Ïò£¬Ñ¡Ôñ·½Ïò×î¶àµÄÄÇ¸ö
+	 * è½¬å½•æ–¹å‘ï¼Œå‡è®¾åŒä¸€åŸºå› ä¸ç®¡å¤šå°‘è½¬å½•æœ¬éƒ½åŒä¸€è½¬å½•æ–¹å‘
+	 * ä¸€ä¸ªè½¬å½•æœ¬é‡Œé¢æ—¢æœ‰æ­£å‘ä¹Ÿæœ‰åå‘ï¼Œé€‰æ‹©æ–¹å‘æœ€å¤šçš„é‚£ä¸ª
 	 */
 	public Boolean isCis5to3() {
 		return this.cis5to3;
@@ -349,18 +349,18 @@ public class ListDetailAbs implements Alignment, Cloneable, Comparable<ListDetai
 		this.cis5to3 = cis5to3;
 	}
 	/**
-	 * »ñµÃ×ø±êµ½¸ÃItemEndµÄ¾àÀë
-	 * ÓÃÖ®Ç°ÏÈÉè¶¨coord
-	 * ¿¼ÂÇitemµÄÕı·´
-	 * ×ø±êµ½ÌõÄ¿ÖÕµãµÄÎ»ÖÃ£¬¿¼ÂÇÕı·´Ïò<br/>
-	 * ½«¸Ã»ùÒò°´ÕÕ >--------5start>--------->3end------->·½Ïò×ß
-	 * Èç¹û×ø±êÔÚendµÄ5·½Ïò£¬ÔòÎª¸ºÊı
-	 * Èç¹û×ø±êÔÚendµÄ3·½Ïò£¬ÔòÎªÕıÊı
+	 * è·å¾—åæ ‡åˆ°è¯¥ItemEndçš„è·ç¦»
+	 * ç”¨ä¹‹å‰å…ˆè®¾å®šcoord
+	 * è€ƒè™‘itemçš„æ­£å
+	 * åæ ‡åˆ°æ¡ç›®ç»ˆç‚¹çš„ä½ç½®ï¼Œè€ƒè™‘æ­£åå‘<br/>
+	 * å°†è¯¥åŸºå› æŒ‰ç…§ >--------5start>--------->3end------->æ–¹å‘èµ°
+	 * å¦‚æœåæ ‡åœ¨endçš„5æ–¹å‘ï¼Œåˆ™ä¸ºè´Ÿæ•°
+	 * å¦‚æœåæ ‡åœ¨endçš„3æ–¹å‘ï¼Œåˆ™ä¸ºæ­£æ•°
 	 * @return
 	 */
 	public Integer getCod2End(int coord) {
 		if (cis5to3 == null) {
-			logger.error("²»ÄÜÈ·¶¨¸ÃItemµÄ·½Ïò");
+			logger.error("ä¸èƒ½ç¡®å®šè¯¥Itemçš„æ–¹å‘");
 			return null;
 		}
 		if (cis5to3) {
@@ -371,18 +371,18 @@ public class ListDetailAbs implements Alignment, Cloneable, Comparable<ListDetai
 		}
 	}
 	/**
-	 * »ñµÃ×ø±êµ½¸ÃItemStartµÄ¾àÀë,Èç¹ûcoordĞ¡ÓÚ0ËµÃ÷ÓĞÎÊÌâ£¬Ôò·µ»Ønull
-	 * ÓÃÖ®Ç°ÏÈÉè¶¨coord
-	 * ¿¼ÂÇitemµÄÕı·´
-	 * ×ø±êµ½ÌõÄ¿ÖÕµãµÄÎ»ÖÃ£¬¿¼ÂÇÕı·´Ïò<br/>
-	 * ½«¸Ã»ùÒò°´ÕÕ >--------5start>--------->3end------->·½Ïò×ß
-	 * Èç¹û×ø±êÔÚstartµÄ5·½Ïò£¬ÔòÎª¸ºÊı
-	 * Èç¹û×ø±êÔÚstartµÄ3·½Ïò£¬ÔòÎªÕıÊı
+	 * è·å¾—åæ ‡åˆ°è¯¥ItemStartçš„è·ç¦»,å¦‚æœcoordå°äº0è¯´æ˜æœ‰é—®é¢˜ï¼Œåˆ™è¿”å›null
+	 * ç”¨ä¹‹å‰å…ˆè®¾å®šcoord
+	 * è€ƒè™‘itemçš„æ­£å
+	 * åæ ‡åˆ°æ¡ç›®ç»ˆç‚¹çš„ä½ç½®ï¼Œè€ƒè™‘æ­£åå‘<br/>
+	 * å°†è¯¥åŸºå› æŒ‰ç…§ >--------5start>--------->3end------->æ–¹å‘èµ°
+	 * å¦‚æœåæ ‡åœ¨startçš„5æ–¹å‘ï¼Œåˆ™ä¸ºè´Ÿæ•°
+	 * å¦‚æœåæ ‡åœ¨startçš„3æ–¹å‘ï¼Œåˆ™ä¸ºæ­£æ•°
 	 * @return
 	 */
 	public Integer getCod2Start(int coord) {
 		if (cis5to3 == null) {
-			logger.error("²»ÄÜÈ·¶¨¸ÃItemµÄ·½Ïò");
+			logger.error("ä¸èƒ½ç¡®å®šè¯¥Itemçš„æ–¹å‘");
 			return null;
 		}
 		if (cis5to3) {
@@ -392,7 +392,7 @@ public class ListDetailAbs implements Alignment, Cloneable, Comparable<ListDetai
 			return numberend - coord;
 		}
 	}
-	/** ×ø±êÊÇ·ñÔÚ»ùÒòÄÚ
+	/** åæ ‡æ˜¯å¦åœ¨åŸºå› å†…
 	 */
 	public boolean isCodInSide(int coord) {
 		if (coord >= numberstart && coord <=  numberend) {
@@ -401,10 +401,10 @@ public class ListDetailAbs implements Alignment, Cloneable, Comparable<ListDetai
 		return false;
 	}
 	
-/////////////////////////////  ÖØĞ´equalsµÈ  ////////////////////////////////////
+/////////////////////////////  é‡å†™equalsç­‰  ////////////////////////////////////
 	/**
-	 * Ö»±È½Ïnumberstart¡¢numberend¡¢ChrID¡¢cis5to3
-	 * ²»±È½Ïcoord
+	 * åªæ¯”è¾ƒnumberstartã€numberendã€ChrIDã€cis5to3
+	 * ä¸æ¯”è¾ƒcoord
 	 * 	@Override
 	 */
 	public boolean equals(Object obj) {
@@ -423,20 +423,20 @@ public class ListDetailAbs implements Alignment, Cloneable, Comparable<ListDetai
 //		getItemNum() == otherObj.getItemNum() &&
 		cis5to3 == otherObj.cis5to3;
 	}
-	/** ÖØĞ´hashcode */
+	/** é‡å†™hashcode */
 	public int hashCode(){
 		String hash = "";
 		hash = parentName + SepSign.SEP_ID + numberstart + SepSign.SEP_ID + numberstart;
 		return hash.hashCode();
 	}
-	/** Ã»ÓĞ·½ÏòÔò·µ»ØstartAbs */
+	/** æ²¡æœ‰æ–¹å‘åˆ™è¿”å›startAbs */
 	public int getStartCis() {
 		if (isCis5to3() == null || isCis5to3()) {
 			return numberstart;
 		}
 		return numberend;
 	}
-	/** Ã»ÓĞ·½ÏòÔò·µ»ØendAbs */
+	/** æ²¡æœ‰æ–¹å‘åˆ™è¿”å›endAbs */
 	public int getEndCis() {
 		if (isCis5to3() == null || isCis5to3()) {
 			return numberend;

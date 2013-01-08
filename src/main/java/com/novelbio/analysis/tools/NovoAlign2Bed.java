@@ -9,7 +9,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 public class NovoAlign2Bed {
 	/**
-	 * 将novoalign获得的mapping结果转化为标准bed文件和延长bed文件
+	 * 灏唍ovoalign鑾峰緱鐨刴apping缁撴灉杞寲涓烘爣鍑哹ed鏂囦欢鍜屽欢闀縝ed鏂囦欢
 	 * @throws Exception 
 	 */
 	public static void copeNovoAlign2Bed(String novoAlignFile, String bedNorm, String bedLen) throws Exception {

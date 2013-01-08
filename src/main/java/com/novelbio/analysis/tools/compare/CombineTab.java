@@ -18,9 +18,9 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.SepSign;
 
 /**
- * Ñ¡¶¨¶à¸ö±í£¬
- * Ã¿¸ö±íÖĞÑ¡¶¨¼¸ÁĞĞèÒªÑ¡ÔñµÄÁĞ
- * ×îºó½«ÕâĞ©±íÖĞµÄ¼¸ÁĞºÏ²¢µ½Ò»¸ötableÖĞ£¬ºÏ²¢µÄIDÎªÑ¡ÖĞµÄIDÁĞ
+ * é€‰å®šå¤šä¸ªè¡¨ï¼Œ
+ * æ¯ä¸ªè¡¨ä¸­é€‰å®šå‡ åˆ—éœ€è¦é€‰æ‹©çš„åˆ—
+ * æœ€åå°†è¿™äº›è¡¨ä¸­çš„å‡ åˆ—åˆå¹¶åˆ°ä¸€ä¸ªtableä¸­ï¼Œåˆå¹¶çš„IDä¸ºé€‰ä¸­çš„IDåˆ—
  * @author zong0jie
  */
 public class CombineTab {
@@ -41,34 +41,34 @@ public class CombineTab {
 	private static Logger logger = Logger.getLogger(CombineTab.class);
 	
 	LinkedHashMap<String, String> mapFileName2ConditionAbbr = new LinkedHashMap<String, String>();
-	/** ColCompareComb£º½«´ı²éÕÒµÄÁĞºÏ²¢ÆğÀ´£¬ÓÃ"_"Á¬½Ó<br>
-	 * ColCompareSep£º·Ö¿ªµÄ´ı²éÕÒµÄÁĞ
+	/** ColCompareCombï¼šå°†å¾…æŸ¥æ‰¾çš„åˆ—åˆå¹¶èµ·æ¥ï¼Œç”¨"_"è¿æ¥<br>
+	 * ColCompareSepï¼šåˆ†å¼€çš„å¾…æŸ¥æ‰¾çš„åˆ—
 	 * */
 	LinkedHashMap<String, String[]> mapColCompareComb_To_ColCompareSep = new LinkedHashMap<String,String[]>();
 	
 	HashMap<String, LinkedHashMap<String, String[]>> mapFileName_To_ColCompareComb2ExtractCol = new LinkedHashMap<String, LinkedHashMap<String,String[]>>();
 	/**
-	 * ÎÄ¼şÃû---¾ßÌåÒª°üº¬ÄÄ¼¸ÁĞ£¬²»º¬±È½ÏÁĞ
+	 * æ–‡ä»¶å---å…·ä½“è¦åŒ…å«å“ªå‡ åˆ—ï¼Œä¸å«æ¯”è¾ƒåˆ—
 	 */
 	LinkedHashMap<String, int[]> mapFileName2ExtractColNum = new LinkedHashMap<String, int[]>();
 
-	/** ĞèÒª±È½ÏÄÇ¼¸ÁĞ */
+	/** éœ€è¦æ¯”è¾ƒé‚£å‡ åˆ— */
 	int[] colCompareOverlapID;
-	/** ²¢¼¯ÀïÃæµÄ¿Õ¸ñÌî³äÊ²Ã´ */
+	/** å¹¶é›†é‡Œé¢çš„ç©ºæ ¼å¡«å……ä»€ä¹ˆ */
 	String strNull = "";
 	
 	ArrayList<String[]> lsResultUnion = new ArrayList<String[]>();
 	ArrayList<String[]> lsResultIntersection = new ArrayList<String[]>();
 	boolean runningFlag = true;
 	/**
-	 * ¿Õ¸ñÓÃÊ²Ã´×Ö·û´®Ìî³ä£¬Ä¬ÈÏÎª"";
+	 * ç©ºæ ¼ç”¨ä»€ä¹ˆå­—ç¬¦ä¸²å¡«å……ï¼Œé»˜è®¤ä¸º"";
 	 * @param strNull
 	 */
 	public void setStrNull(String strNull) {
 		this.strNull = strNull;
 	}
 	/**
-	 * ´ıÈ¡½»¼¯µÄIDÁĞ
+	 * å¾…å–äº¤é›†çš„IDåˆ—
 	 * @param colID
 	 */
 	public void setColCompareOverlapID(int... colID) {
@@ -80,7 +80,7 @@ public class CombineTab {
 	}
 	
 	public void setColCompareOverlapID(ArrayList<Integer> lsColID) {
-		//ÏÈÅÅ¸öĞò
+		//å…ˆæ’ä¸ªåº
 		Collections.sort(lsColID);
 		colCompareOverlapID = new int[lsColID.size()];
 		for (int i = 0; i < colCompareOverlapID.length; i++) {
@@ -90,10 +90,10 @@ public class CombineTab {
 	}
 
 	/**
-	 * »ñµÃÃ¿¸öÎÄ¼şÃû, ¶ÔÓÚÃ¿¸öÎÄ¼ş£¬Éè¶¨ËüµÄIDÁĞ
-	 * @param condTxt ÎÄ±¾Ãû
-	 * @param codName ¸ÃÎÄ±¾µÄ¼ò³Æ
-	 * @param colDetail ¸ÃÎÄ±¾¾ßÌå»ñÈ¡ÄÄ¼¸ÁĞ
+	 * è·å¾—æ¯ä¸ªæ–‡ä»¶å, å¯¹äºæ¯ä¸ªæ–‡ä»¶ï¼Œè®¾å®šå®ƒçš„IDåˆ—
+	 * @param condTxt æ–‡æœ¬å
+	 * @param codName è¯¥æ–‡æœ¬çš„ç®€ç§°
+	 * @param colDetail è¯¥æ–‡æœ¬å…·ä½“è·å–å“ªå‡ åˆ—
 	 */
 	public void setColExtractDetai(String condTxt, String codName, int... colDetail) {
 		for (int i = 0; i < colDetail.length; i++) {
@@ -105,10 +105,10 @@ public class CombineTab {
 	}
 	/**
 	 * 
-	 *  »ñµÃÃ¿¸öÎÄ¼şÃû, ¶ÔÓÚÃ¿¸öÎÄ¼ş£¬Éè¶¨ËüµÄIDÁĞ
-	 *  ÄÇÃ´ÎÄ¼şµÄ¼ò³ÆÓÉÎÄ±¾ÃûÉú³É
-	 * @param condTxt ÎÄ±¾Ãû
-	 * @param colDetai ¸ÃÎÄ±¾¾ßÌå»ñÈ¡ÄÄ¼¸ÁĞ
+	 *  è·å¾—æ¯ä¸ªæ–‡ä»¶å, å¯¹äºæ¯ä¸ªæ–‡ä»¶ï¼Œè®¾å®šå®ƒçš„IDåˆ—
+	 *  é‚£ä¹ˆæ–‡ä»¶çš„ç®€ç§°ç”±æ–‡æœ¬åç”Ÿæˆ
+	 * @param condTxt æ–‡æœ¬å
+	 * @param colDetai è¯¥æ–‡æœ¬å…·ä½“è·å–å“ªå‡ åˆ—
 	 */
 	@Deprecated
 	public void setColDetai(String condTxt,int... colDetai) {
@@ -121,7 +121,7 @@ public class CombineTab {
 	}
  
 	/**
-	 * È¡²¢¼¯
+	 * å–å¹¶é›†
 	 * @return
 	 */
 	private void exeToFile() {
@@ -154,16 +154,16 @@ public class CombineTab {
 	
 	
 	/**
-	 * ¶ÁÈ¡Ö¸¶¨ÎÄ±¾µÄĞÅÏ¢
-	 * °üº¬±êÌâÁĞ
+	 * è¯»å–æŒ‡å®šæ–‡æœ¬çš„ä¿¡æ¯
+	 * åŒ…å«æ ‡é¢˜åˆ—
 	 * @param cond
 	 * @return
-	 * »ñµÃµÄ½á¹ûÒÑ¾­°´ÕÕÊäÈëµÄcolIDË³Ğò¾­¹ıÅÅĞòÁË
+	 * è·å¾—çš„ç»“æœå·²ç»æŒ‰ç…§è¾“å…¥çš„colIDé¡ºåºç»è¿‡æ’åºäº†
 	 */
 	private ArrayList<String[]> getFileInfoAllCols(String readFile) {
 		int[] colExtract = mapFileName2ExtractColNum.get(readFile);
 		int[] colReadFromFile = new int[colCompareOverlapID.length + colExtract.length];
-		//ºÏ²¢ÁĞ
+		//åˆå¹¶åˆ—
 		for (int i = 0; i < colCompareOverlapID.length; i++) {
 			colReadFromFile[i] = colCompareOverlapID[i] + 1;
 		}
@@ -176,41 +176,41 @@ public class CombineTab {
 	}
 	
 	/**
-	 * Éè¶¨Î¨Ò»ÁĞµÄĞÅÏ¢£¬È»ºó½«¾ßÌåµÄĞÅÏ¢×°Èë¾ßÌåµÄhash±íÖĞ
-	 * @param lsTmpInfo ¾ßÌåµÄlistĞÅÏ¢£¬°üÀ¨flagÁĞ
-	 * @param colIDLen Í·¼¸ĞĞÊÇcolID
-	 * ×Ô¶¯È¥ÈßÓà£¬±£ÁôµÚÒ»´Î³öÏÖµÄID
+	 * è®¾å®šå”¯ä¸€åˆ—çš„ä¿¡æ¯ï¼Œç„¶åå°†å…·ä½“çš„ä¿¡æ¯è£…å…¥å…·ä½“çš„hashè¡¨ä¸­
+	 * @param lsTmpInfo å…·ä½“çš„listä¿¡æ¯ï¼ŒåŒ…æ‹¬flagåˆ—
+	 * @param colIDLen å¤´å‡ è¡Œæ˜¯colID
+	 * è‡ªåŠ¨å»å†—ä½™ï¼Œä¿ç•™ç¬¬ä¸€æ¬¡å‡ºç°çš„ID
 	 */
 	private void set_MapCompareComb_And_MapFileNamel(String fileName, List<String[]> lsTmpInfo) {
-		//±¾±íµÄcolID2colDetailĞÅÏ¢
+		//æœ¬è¡¨çš„colID2colDetailä¿¡æ¯
 		LinkedHashMap<String, String[]> mapColCompareID2ExtractInfo = new LinkedHashMap<String, String[]>();
 		mapFileName_To_ColCompareComb2ExtractCol.put(fileName, mapColCompareID2ExtractInfo);
 		if (colCompareOverlapID.length > lsTmpInfo.get(0).length) {
-			logger.error("ÊäÈëÁĞÃû³¤¶ÈÓĞÎÊÌâ");
+			logger.error("è¾“å…¥åˆ—åé•¿åº¦æœ‰é—®é¢˜");
 		}
 		for (String[] strings : lsTmpInfo) {
 			String colIDcombineStr = ""; String[] colIDarray = new String[colCompareOverlapID.length];
-			//flagÁĞµÄĞÅÏ¢
+			//flagåˆ—çš„ä¿¡æ¯
 			for (int i = 0; i < colCompareOverlapID.length; i++) {
 				colIDcombineStr = colIDcombineStr + SepSign.SEP_ID + strings[i];
 				colIDarray[i] = strings[i];
 			}
-			//É¾³ıflagÁĞµÄĞÅÏ¢
+			//åˆ é™¤flagåˆ—çš„ä¿¡æ¯
 			String[] tmpExtractColInfo = new String[strings.length - colCompareOverlapID.length];
 			for (int i = colCompareOverlapID.length; i < strings.length; i++) {
 				tmpExtractColInfo[i - colCompareOverlapID.length] = strings[i];
 			}
-			//ÒÑ¾­ÓĞÁË¾ÍÌø¹ı
+			//å·²ç»æœ‰äº†å°±è·³è¿‡
 			if (mapColCompareID2ExtractInfo.containsKey(colIDcombineStr)) {
 				continue;
 			}
 			mapColCompareID2ExtractInfo.put(colIDcombineStr, tmpExtractColInfo);
-			//²»ÖØ¸´µÄËùÓĞID£¬ÎªÈ¡²¢¼¯×ö×¼±¸
+			//ä¸é‡å¤çš„æ‰€æœ‰IDï¼Œä¸ºå–å¹¶é›†åšå‡†å¤‡
 			mapColCompareComb_To_ColCompareSep.put(colIDcombineStr,colIDarray);
 		}
 	}
 	/**
-	 * »ñµÃÈ¡²¢¼¯µÄ½á¹û
+	 * è·å¾—å–å¹¶é›†çš„ç»“æœ
 	 * @return
 	 */
 	private void combInfo() {
@@ -220,11 +220,11 @@ public class CombineTab {
 		for (String colCompareComb : mapColCompareComb_To_ColCompareSep.keySet()) {
 			String[] colCompareSep = mapColCompareComb_To_ColCompareSep.get(colCompareComb);
 			boolean flagInterSection = true;
-			//Ã¿¸öIDÔÚËùÓĞ¶à¸ö±íÖĞÈ«²¿²éÕÒÒ»±é
+			//æ¯ä¸ªIDåœ¨æ‰€æœ‰å¤šä¸ªè¡¨ä¸­å…¨éƒ¨æŸ¥æ‰¾ä¸€é
 			for (String fileName : mapFileName2ConditionAbbr.keySet()) {
 				LinkedHashMap<String, String[]> mapColCompareComb2ExtractCol = mapFileName_To_ColCompareComb2ExtractCol.get(fileName);
 				String[] extractCol = mapColCompareComb2ExtractCol.get(colCompareComb);
-				//Ã»ÕÒµ½£¬¾ÍÓÃ¿Õ¸ñÌæ»»
+				//æ²¡æ‰¾åˆ°ï¼Œå°±ç”¨ç©ºæ ¼æ›¿æ¢
 				if (extractCol == null) {
 					flagInterSection = false;
 					extractCol = new String[mapFileName2ExtractColNum.get(fileName).length];
@@ -232,7 +232,7 @@ public class CombineTab {
 						extractCol[i] = strNull;
 					}
 				}
-				//ºÏ²¢ÁĞ
+				//åˆå¹¶åˆ—
 				colCompareSep = ArrayOperate.combArray(colCompareSep, extractCol, 0);
 			}
 			lsResultUnion.add(colCompareSep);

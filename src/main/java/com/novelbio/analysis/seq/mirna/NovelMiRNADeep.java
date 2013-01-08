@@ -24,8 +24,8 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
 
 /**
- * ĞÂµÄmiRNAµÄÔ¤²â£¬»ùÓÚmirDeepµÄËã·¨
- * ×¢Òâbowtie±ØĞëÔÚÏµÍ³±äÁ¿ÏÂ¡£¿ÉÒÔÍ¨¹ıĞŞ¸Ämapper.plÎÄ¼şÀ´ÉèÖÃbowtieµÄÎÄ¼ş¼ĞÂ·¾¶
+ * æ–°çš„miRNAçš„é¢„æµ‹ï¼ŒåŸºäºmirDeepçš„ç®—æ³•
+ * æ³¨æ„bowtieå¿…é¡»åœ¨ç³»ç»Ÿå˜é‡ä¸‹ã€‚å¯ä»¥é€šè¿‡ä¿®æ”¹mapper.plæ–‡ä»¶æ¥è®¾ç½®bowtieçš„æ–‡ä»¶å¤¹è·¯å¾„
  * @author zong0jie
  */
 public class NovelMiRNADeep extends NovelMiRNApredict {
@@ -50,19 +50,19 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 	MapBowtie mapBowtie = new MapBowtie(SoftWare.bowtie);
 	int miRNAminLen = 18;
 	String mirDeepPath = "";
-	/** ÊäÈëµÄfasta¸ñÊ½£¬´ÓbedÎÄ¼ş×ª±ä¶øÀ´£¬Ò²¿ÉÖ±½ÓÉè¶¨ */
+	/** è¾“å…¥çš„fastaæ ¼å¼ï¼Œä»bedæ–‡ä»¶è½¬å˜è€Œæ¥ï¼Œä¹Ÿå¯ç›´æ¥è®¾å®š */
 	String fastaInput = "";
 	String matureMiRNA = "";
-	/** ³ÉÊìµÄ½üËÆÎïÖÖmiRNAĞòÁĞ£¬×îºÃ·Ö³É¶¯ÎïÖ²Îï£¬Ïß³æµÈµÈ */
+	/** æˆç†Ÿçš„è¿‘ä¼¼ç‰©ç§miRNAåºåˆ—ï¼Œæœ€å¥½åˆ†æˆåŠ¨ç‰©æ¤ç‰©ï¼Œçº¿è™«ç­‰ç­‰ */
 	String matureRelateMiRNA;
-	/** ±¾ÎïÖÖmiRNAÇ°Ìå */
+	/** æœ¬ç‰©ç§miRNAå‰ä½“ */
 	String hairpinMiRNA = "";
 	String species = "";
 	String chromFaIndexBowtie;
-	/** Êä³ö±¨¸æÎÄ¼ş£¬Í¨¹ıÉú³ÉËæ»úµÄ¸ÃÎÄ¼şÃû£¬À´ÕÒµ½±¾´ÎmirDeepËùÔÚµÄÂ·¾¶ */
+	/** è¾“å‡ºæŠ¥å‘Šæ–‡ä»¶ï¼Œé€šè¿‡ç”Ÿæˆéšæœºçš„è¯¥æ–‡ä»¶åï¼Œæ¥æ‰¾åˆ°æœ¬æ¬¡mirDeepæ‰€åœ¨çš„è·¯å¾„ */
 	String reportFile;
 	boolean createReportFile = true;
-	/** ÒÑ¾­¼Ó¹ı/ÁË */
+	/** å·²ç»åŠ è¿‡/äº† */
 	String outPath = null;
 	String outPrefix = "";
 	
@@ -80,20 +80,20 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 		}
 	}
 	/**
-	 * ´ÓbedÎÄ¼ş×ª±äÎªfasta¸ñÊ½£¬»òÖ±½ÓÉè¶¨fastaÎÄ¼ş
-	 * Éè¶¨´ı±È¶ÔµÄ¶ÌĞòÁĞfastaÎÄ¼şÃû×Ö£¬¿ÉÒÔËæ±ãÉè¶¨¡£Èç¹û²»Éá¶¨£¬ÔòÄ¬ÈÏÎªÊäÈëbedÎÄ¼ş+_Potential_DenoveMirna.fasta;
-	 * ÍÆ¼ö²»Éè¶¨
+	 * ä»bedæ–‡ä»¶è½¬å˜ä¸ºfastaæ ¼å¼ï¼Œæˆ–ç›´æ¥è®¾å®šfastaæ–‡ä»¶
+	 * è®¾å®šå¾…æ¯”å¯¹çš„çŸ­åºåˆ—fastaæ–‡ä»¶åå­—ï¼Œå¯ä»¥éšä¾¿è®¾å®šã€‚å¦‚æœä¸èˆå®šï¼Œåˆ™é»˜è®¤ä¸ºè¾“å…¥bedæ–‡ä»¶+_Potential_DenoveMirna.fasta;
+	 * æ¨èä¸è®¾å®š
 	 * @param fastaOut
 	 * */
 	public void setFastaOut(String fastaIn) {
 		this.fastaInput = fastaIn;
 	}
-	/** Éè¶¨ÎïÖÖ */
+	/** è®¾å®šç‰©ç§ */
 	public void setSpecies(String species) {
 		this.species = species.replace(" ", "_");
 	}
 	/**
-	 * Éè¶¨Ò»¸öËæ»úµÄreportµÄÀàĞÍ£¬²ÉÓÃÈÕÆÚÊ±¼ä+Ëæ»úÊıµÄ·½Ê½
+	 * è®¾å®šä¸€ä¸ªéšæœºçš„reportçš„ç±»å‹ï¼Œé‡‡ç”¨æ—¥æœŸæ—¶é—´+éšæœºæ•°çš„æ–¹å¼
 	 * @return 
 	 */
 	private String getReportFileRandom() {
@@ -105,10 +105,10 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 		return reportFile;
 	}
 	/**
-	 * Éè¶¨ĞòÁĞ
-	 * @param matureMiRNA ³ÉÊìµÄ±¾ÎïÖĞmiRNA
-	 * @param matureRelateMiRNA ³ÉÊìµÄ½üËÆÎïÖÖmiRNA
-	 * @param hairpinMiRNA ±¾ÎïÖĞmiRNAÇ°Ìå
+	 * è®¾å®šåºåˆ—
+	 * @param matureMiRNA æˆç†Ÿçš„æœ¬ç‰©ä¸­miRNA
+	 * @param matureRelateMiRNA æˆç†Ÿçš„è¿‘ä¼¼ç‰©ç§miRNA
+	 * @param hairpinMiRNA æœ¬ç‰©ä¸­miRNAå‰ä½“
 	 */
 	public void setMiRNASeq(String matureMiRNA, String matureRelateMiRNA, String hairpinMiRNA) {
 		this.matureMiRNA = matureMiRNA;
@@ -141,9 +141,9 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 		return hairpinMiRNA + " ";
 	}
 	/**
-	 * Éè¶¨bowtieËùÔÚµÄÎÄ¼ş¼ĞÒÔ¼°´ı±È¶ÔµÄÂ·¾¶
-	 * @param exePath Èç¹ûÔÚ¸ùÄ¿Â¼ÏÂÔòÉèÖÃÎª""»ònull
-	 * @param chromFaIndexBowtie Ä³ÎïÖÖĞòÁĞµÄbowtieË÷Òı
+	 * è®¾å®šbowtieæ‰€åœ¨çš„æ–‡ä»¶å¤¹ä»¥åŠå¾…æ¯”å¯¹çš„è·¯å¾„
+	 * @param exePath å¦‚æœåœ¨æ ¹ç›®å½•ä¸‹åˆ™è®¾ç½®ä¸º""æˆ–null
+	 * @param chromFaIndexBowtie æŸç‰©ç§åºåˆ—çš„bowtieç´¢å¼•
 	 */
 	public void setExePath(String exePath, String chromFaIndexBowtie) {
 		if (exePath != null && !exePath.trim().equals("")) {
@@ -156,8 +156,8 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 	private String getChromFaSeq() {
 		return chromFaIndexBowtie + " ";
 	}
-	/** ²úÉúÊäÈëµÄreadsÎÄ¼ş
-	 * »á½«ÊäÈëµÄbedÎÄ¼ş±È¶Ô»ùÒò×é£¬»ñµÃÃ»ÓĞmappingÖÁÕıÏòexonµÄĞòÁĞ£¬È»ºóĞ´ÈëÎÄ±¾²¢×ª»¯ÎªfastqÎÄ¼ş
+	/** äº§ç”Ÿè¾“å…¥çš„readsæ–‡ä»¶
+	 * ä¼šå°†è¾“å…¥çš„bedæ–‡ä»¶æ¯”å¯¹åŸºå› ç»„ï¼Œè·å¾—æ²¡æœ‰mappingè‡³æ­£å‘exonçš„åºåˆ—ï¼Œç„¶åå†™å…¥æ–‡æœ¬å¹¶è½¬åŒ–ä¸ºfastqæ–‡ä»¶
 	 *  */
 	private String creatFastaMappingFile() {
 		if (fastaInput == null || fastaInput.trim().equals("")) {
@@ -170,8 +170,8 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 		return fastaInput + " ";
 	}
 	/**
-	 * ½«ÊäÈëµÄbedÎÄ¼ş±È¶Ô»ùÒò×é£¬»ñµÃÃ»ÓĞmappingÖÁÕıÏòexonµÄĞòÁĞ£¬È»ºóĞ´ÈëÎÄ±¾²¢×ª»¯ÎªfastqÎÄ¼ş
-	 * È»ºó×ª»¯ÎªfastqÎÄ¼şÒÔ±ã½øĞĞºóĞø·ÖÎö
+	 * å°†è¾“å…¥çš„bedæ–‡ä»¶æ¯”å¯¹åŸºå› ç»„ï¼Œè·å¾—æ²¡æœ‰mappingè‡³æ­£å‘exonçš„åºåˆ—ï¼Œç„¶åå†™å…¥æ–‡æœ¬å¹¶è½¬åŒ–ä¸ºfastqæ–‡ä»¶
+	 * ç„¶åè½¬åŒ–ä¸ºfastqæ–‡ä»¶ä»¥ä¾¿è¿›è¡Œåç»­åˆ†æ
 	 * @param fastaOut
 	 */
 	private void convertNoCDSbed2Fasta(String fastaOut) {
@@ -184,13 +184,13 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 		}
 		txtOut.close();
 	}
-	/** ºÃÏñÊÇÊä³öµÄÑ¹ËõµÄreadsĞÅÏ¢ */
+	/** å¥½åƒæ˜¯è¾“å‡ºçš„å‹ç¼©çš„readsä¿¡æ¯ */
 	private String getCollapseReadsFa() {
 		String fileName = FileOperate.changeFileSuffix(fastaInput, "_collapsed", "fasta");
 		String resultName = outPath + FileOperate.getFileName(fileName);
 		return resultName + " ";
 	}
-	/** ºÃÏñÊÇÊä³öµÄÑ¹ËõµÄreadsĞÅÏ¢ */
+	/** å¥½åƒæ˜¯è¾“å‡ºçš„å‹ç¼©çš„readsä¿¡æ¯ */
 	private String getMappingArf() {
 		String fileName = FileOperate.changeFileSuffix(fastaInput, "_collapsed_mapping", "arf");
 		String resultName = outPath + FileOperate.getFileName(fileName);
@@ -201,8 +201,8 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 		return "-l " + miRNAminLen + " ";
 	}
 	/**
-	 * Éè¶¨miRNAµÄ×î¶Ì³¤¶È
-	 * @param miRNAminLen ×î¶Ì18bp
+	 * è®¾å®šmiRNAçš„æœ€çŸ­é•¿åº¦
+	 * @param miRNAminLen æœ€çŸ­18bp
 	 */
 	public void setMiRNAminLen(int miRNAminLen) {
 		this.miRNAminLen = miRNAminLen;
@@ -231,8 +231,8 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 	}
 
 	/**
-	 * ½«½á¹ûÎÄ¼şÒÆ¶¯µ½Ö¸¶¨Î»ÖÃ
-	 * Í¬Ê±´¦Àí½á¹ûÎÄ¼şÎªÖ¸¶¨¸ñÊ½
+	 * å°†ç»“æœæ–‡ä»¶ç§»åŠ¨åˆ°æŒ‡å®šä½ç½®
+	 * åŒæ—¶å¤„ç†ç»“æœæ–‡ä»¶ä¸ºæŒ‡å®šæ ¼å¼
 	 */
 	private void moveAndCopeFile() {
 		ArrayList<String> lsFileName = new ArrayList<String>();
@@ -272,7 +272,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 		extractHairpinSeqMatureSeq(setMirPredictName, novelMiRNAdeepMrdFile, novelMiRNAmature, novelMiRNAhairpin);
 	}
 	
-	/** ²é¿´reportlog£¬·µ»Ø½á¹ûµÄºó×º */
+	/** æŸ¥çœ‹reportlogï¼Œè¿”å›ç»“æœçš„åç¼€ */
 	private String getResultFileSuffixFromReportLog() {
 		String suffix = null;
 		TxtReadandWrite txtReport = new TxtReadandWrite(getReportFileRandom(), false);
@@ -285,12 +285,12 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 		}
 		txtReport.close();
 		if (suffix == null) {
-			logger.error("Ã»ÓĞÕÒµ½reportÀïÃæµÄÎÄ¼şÃû:" + getReportFileRandom());
+			logger.error("æ²¡æœ‰æ‰¾åˆ°reporté‡Œé¢çš„æ–‡ä»¶å:" + getReportFileRandom());
 		}
 		return suffix;		
 	}
 	/**
-	 * ´ÓmirDeepµÄ½á¹ûÎÄ¼şÖĞ»ñµÃĞÂmiRNAµÄÃû×Ö
+	 * ä»mirDeepçš„ç»“æœæ–‡ä»¶ä¸­è·å¾—æ–°miRNAçš„åå­—
 	 * @param mirDeepResultCvs
 	 * @return
 	 */
@@ -315,10 +315,10 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 	}
 	
 	/**
-	 * @param setMirPredictName ĞÂmiRNAµÄÃû×Ö
-	 * @param run_output_mrd ´ıÌáÈ¡µÄÎÄ¼ş
-	 * @param outMatureSeq Êä³ö
-	 * @param outPreSeq Êä³ö
+	 * @param setMirPredictName æ–°miRNAçš„åå­—
+	 * @param run_output_mrd å¾…æå–çš„æ–‡ä»¶
+	 * @param outMatureSeq è¾“å‡º
+	 * @param outPreSeq è¾“å‡º
 	 */
 	private void extractHairpinSeqMatureSeq(Set<String> setMirPredictName, String run_output_mrd, String outMatureSeq, String outPreSeq) {
 		FileOperate.createFolders(FileOperate.getParentPathName(outMatureSeq));
@@ -355,7 +355,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 	}
 
 	/**
-	 * ¸ø¶¨RNAdeepµÄ½á¹ûÎÄ¼ş£¬´ÓÀïÃæÌáÈ¡ĞòÁĞ
+	 * ç»™å®šRNAdeepçš„ç»“æœæ–‡ä»¶ï¼Œä»é‡Œé¢æå–åºåˆ—
 	 * @param seqName
 	 * @param mirModel
 	 * @param mirSeq
@@ -390,12 +390,12 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 	public String getNovelMiRNAmature() {
 		return novelMiRNAmature;
 	}
-	/** mrdÎÄ¼şÊÇmirDeepµÄĞÂmiRNAĞòÁĞĞÅÏ¢ */
+	/** mrdæ–‡ä»¶æ˜¯mirDeepçš„æ–°miRNAåºåˆ—ä¿¡æ¯ */
 	public String getNovelMiRNAdeepMrdFile() {
 		return novelMiRNAdeepMrdFile;
 	}
 	/**
-	 * ²âÊÔÓÃ
+	 * æµ‹è¯•ç”¨
 	 * @param novelMiRNAhairpin
 	 * @param novelMiRNAmature
 	 * @param novelMiRNAdeepMrdFile

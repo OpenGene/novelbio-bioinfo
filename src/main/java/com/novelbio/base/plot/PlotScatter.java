@@ -64,26 +64,26 @@ public class PlotScatter extends PlotNBCInteractive{
     /** custom axis Y's ticks */
     Map<Double, String> mapAxisY = null;
     Font fontTicksY = null;
-    /** ×ø±êÖá±ß½ç */
+    /** åæ ‡è½´è¾¹ç•Œ */
     Axis axisX = null, axisY = null;
-    /**ÄÚ²¿×ø±êÖá±ß½ç£¬Èç¹ûÍâ²¿Ã»ÓĞÉè¶¨×ø±êÖá±ß½ç£¬¾ÍÓÃÄÚ²¿µÄ */
+    /**å†…éƒ¨åæ ‡è½´è¾¹ç•Œï¼Œå¦‚æœå¤–éƒ¨æ²¡æœ‰è®¾å®šåæ ‡è½´è¾¹ç•Œï¼Œå°±ç”¨å†…éƒ¨çš„ */
     Axis axisXMy = new Axis(Double.MAX_VALUE, Double.MIN_VALUE), axisYMy = new Axis(Double.MAX_VALUE, Double.MIN_VALUE);
     
     /**
-     * Í¼Æ¬×ø±êÖáµ½Í¼Æ¬±ßÔµµÄ¾àÀë
+     * å›¾ç‰‡åæ ‡è½´åˆ°å›¾ç‰‡è¾¹ç¼˜çš„è·ç¦»
      */
     double insetsTop = 30, insetsLeft = 90, insetsBottom = 70, insetsRight = 40;
-    /** ×ø±êÖáµÄtitleµ½×ø±êÖáµÄ¾àÀë */
+    /** åæ ‡è½´çš„titleåˆ°åæ ‡è½´çš„è·ç¦» */
     double insetsX = 5, insetsY = 5;
     
     DataTable dataTable;
-    //±³¾°ÊÇ·ñ»­³É¸ñ×ÓµÄ
+    //èƒŒæ™¯æ˜¯å¦ç”»æˆæ ¼å­çš„
     boolean isBGgrid = true;
     Color colorBGgridMajor;
     Color colorBGgridMinor;
     
     /** 
-     * ÄÄÒ»ÖÖÍ¼£¬ÊÇscatter»¹ÊÇºĞÍ¼»¹ÊÇbarÍ¼
+     * å“ªä¸€ç§å›¾ï¼Œæ˜¯scatterè¿˜æ˜¯ç›’å›¾è¿˜æ˜¯barå›¾
      */
     public PlotScatter(int PLOT_TYPE) {
     	if (PLOT_TYPE == PLOT_TYPE_BARPLOT) {
@@ -97,7 +97,7 @@ public class PlotScatter extends PlotNBCInteractive{
     }
     
     /**
-     * Éè¶¨±³¾°µÄ¸ñ×ÓÑÕÉ«£¬Ä¬ÈÏÎŞÉ«
+     * è®¾å®šèƒŒæ™¯çš„æ ¼å­é¢œè‰²ï¼Œé»˜è®¤æ— è‰²
      * @param BGgridColorMajor
      * @param BGgridColorMinor
      */
@@ -109,7 +109,7 @@ public class PlotScatter extends PlotNBCInteractive{
      * add point
      * @param x
      * @param y
-     * @param dotStyle Èç¹ûÊÇ²»Í¬Ãû×ÖµÄµã£¬ĞèÒª´´½¨ĞÂµÄdotStyle£¬dotStyle½ö°´µØÖ·±£´æ
+     * @param dotStyle å¦‚æœæ˜¯ä¸åŒåå­—çš„ç‚¹ï¼Œéœ€è¦åˆ›å»ºæ–°çš„dotStyleï¼ŒdotStyleä»…æŒ‰åœ°å€ä¿å­˜
      */
     public void addXY(double x, double y, DotStyle dotStyle) {
     	dataTable = new DataTable(Double.class, Double.class, String.class);
@@ -125,7 +125,7 @@ public class PlotScatter extends PlotNBCInteractive{
      * add point array, x.length must equals y.length
      * @param x
      * @param y
-     * @param dotStyle Èç¹ûÊÇ²»Í¬Ãû×ÖµÄµã£¬ĞèÒª´´½¨ĞÂµÄdotStyle£¬dotStyle½ö°´µØÖ·±£´æ
+     * @param dotStyle å¦‚æœæ˜¯ä¸åŒåå­—çš„ç‚¹ï¼Œéœ€è¦åˆ›å»ºæ–°çš„dotStyleï¼ŒdotStyleä»…æŒ‰åœ°å€ä¿å­˜
      */
     public void addXY(double[] x, double[] y, DotStyle dotStyle) {
     	if (x.length != y.length) {
@@ -187,7 +187,7 @@ public class PlotScatter extends PlotNBCInteractive{
     	}
     }
     /**
-     * ³ıÈ¥¼ÓÈëµÄĞÅÏ¢
+     * é™¤å»åŠ å…¥çš„ä¿¡æ¯
      * @param dotStyle
      */
     public void removeData(DotStyle dotStyle) {
@@ -202,8 +202,8 @@ public class PlotScatter extends PlotNBCInteractive{
     }
     //////////////////////////////////////////
     /**
-     * ¸ø¶¨Ò»¸ödotstyle£¬·µ»Ø¸ÃdotstyleËù¶ÔÓ¦µÄdatatable
-     * Í¬Ê±½«¸ÃdatatableËù¶ÔÓ¦µÄdataseries×°Èëplot
+     * ç»™å®šä¸€ä¸ªdotstyleï¼Œè¿”å›è¯¥dotstyleæ‰€å¯¹åº”çš„datatable
+     * åŒæ—¶å°†è¯¥datatableæ‰€å¯¹åº”çš„dataseriesè£…å…¥plot
      * @param dotStyle
      * @return
      */
@@ -237,8 +237,8 @@ public class PlotScatter extends PlotNBCInteractive{
     }
     ////////////////////////////////////////////////////////////////
     /**
-     * ÒÔÇ°ÓÃÄ³¸ödotStyleÉè¶¨µÄÊäÈëÖµ(Æ©ÈçÒ»ÌõÇúÏß)£¬
-     * Èç¹ûÏëÒª»»ÏÔÊ¾·½Ê½£¬Æ©ÈçÑÕÉ«µÈ£¬Ö»ĞèÒª½«dotStyleµÄÉèÖÃ»»Ò»ÏÂ£¬È»ºóÊäÈë½øÀ´¼´¿É
+     * ä»¥å‰ç”¨æŸä¸ªdotStyleè®¾å®šçš„è¾“å…¥å€¼(è­¬å¦‚ä¸€æ¡æ›²çº¿)ï¼Œ
+     * å¦‚æœæƒ³è¦æ¢æ˜¾ç¤ºæ–¹å¼ï¼Œè­¬å¦‚é¢œè‰²ç­‰ï¼Œåªéœ€è¦å°†dotStyleçš„è®¾ç½®æ¢ä¸€ä¸‹ï¼Œç„¶åè¾“å…¥è¿›æ¥å³å¯
      * @param dotStyle
      */
     public void changeDotStyle(DotStyle dotStyle) {
@@ -246,7 +246,7 @@ public class PlotScatter extends PlotNBCInteractive{
 		setPointStyle(dataTable, dotStyle);
 	}
     /**
-     * ´ıĞŞÕı£¬½«dataTable×°Èëhash±íÖĞ
+     * å¾…ä¿®æ­£ï¼Œå°†dataTableè£…å…¥hashè¡¨ä¸­
      * using data to plot the histogram
      * @param lsNum data 
      * @param breakNum Number of subdivisions for analysis.
@@ -341,7 +341,7 @@ public class PlotScatter extends PlotNBCInteractive{
 
     
     /**
-     *  Éè¶¨×ø±êÖá±ß½ç
+     *  è®¾å®šåæ ‡è½´è¾¹ç•Œ
      * @param x1
      * @param x2
      */
@@ -350,7 +350,7 @@ public class PlotScatter extends PlotNBCInteractive{
     	painted = false;
     }
     /**
-     * ÉèÖÃ±êÌâ
+     * è®¾ç½®æ ‡é¢˜
      * @param title main title
      * @param fontTitle font of the title
      * @param title
@@ -366,10 +366,10 @@ public class PlotScatter extends PlotNBCInteractive{
     
     /**
      * 
-     * ÉèÖÃ±êÌâ
+     * è®¾ç½®æ ‡é¢˜
      * @param titleX tile on axis x
-     * @param fontX font of the title ¿ÉÒÔÉè¶¨Îªnull
-     * @param spaceX ticks interval, 0 means not set the space ¿ÉÒÔÉè¶¨Îª0
+     * @param fontX font of the title å¯ä»¥è®¾å®šä¸ºnull
+     * @param spaceX ticks interval, 0 means not set the space å¯ä»¥è®¾å®šä¸º0
      */
     public void setTitleX(String titleX, Font fontX, double spaceX)  {
     	if (titleX != null)
@@ -383,7 +383,7 @@ public class PlotScatter extends PlotNBCInteractive{
     }
     
     /**
-     * ÉèÖÃ±êÌâ
+     * è®¾ç½®æ ‡é¢˜
      * @param titleY tile on axis y
      * @param fontY font of the title
      * @param spaceY ticks interval, 0 means not set the space
@@ -423,7 +423,7 @@ public class PlotScatter extends PlotNBCInteractive{
 		painted = false;
 	}
     /**
-     * Éè¶¨×ø±êÖá±ß½ç
+     * è®¾å®šåæ ‡è½´è¾¹ç•Œ
      * @param y1
      * @param y2
      */
@@ -433,7 +433,7 @@ public class PlotScatter extends PlotNBCInteractive{
     }
     
     /**
-     * Éè¶¨Í¼Æ¬×ø±êÖáµ½Í¼Æ¬±ßÔµµÄ¾àÀë,Õâ¸öÒ»°ã×ßÄ¬ÈÏ¾ÍºÃ
+     * è®¾å®šå›¾ç‰‡åæ ‡è½´åˆ°å›¾ç‰‡è¾¹ç¼˜çš„è·ç¦»,è¿™ä¸ªä¸€èˆ¬èµ°é»˜è®¤å°±å¥½
      * @param left
      * @param top
      * @param right
@@ -446,7 +446,7 @@ public class PlotScatter extends PlotNBCInteractive{
     }
     /**
      * set the marge size of a figure, the bigger the marge be, the font of the tile will also bigger
-     * Éè¶¨¸÷¸öµØ·½µÄ×ÖÌå£¬°üÀ¨x£¬yÖáµÄ×ÖÌåºÍ¿Ì¶È×ÖÌå
+     * è®¾å®šå„ä¸ªåœ°æ–¹çš„å­—ä½“ï¼ŒåŒ…æ‹¬xï¼Œyè½´çš„å­—ä½“å’Œåˆ»åº¦å­—ä½“
      * @param int size 
      */
     public void setInsets(int size) {
@@ -501,7 +501,7 @@ public class PlotScatter extends PlotNBCInteractive{
 		plot = null;
 	}
 //	public void changeSetting() {
-//		//TODO ĞŞ¸ÄÅäÖÃÎÄ¼ş»ñµÃÍ¼Æ¬µÄ¸Ä±ä£¬³õ²½¿¼ÂÇĞŞ¸ÄhashDataTableÀïÃæµÄdotstyle
+//		//TODO ä¿®æ”¹é…ç½®æ–‡ä»¶è·å¾—å›¾ç‰‡çš„æ”¹å˜ï¼Œåˆæ­¥è€ƒè™‘ä¿®æ”¹hashDataTableé‡Œé¢çš„dotstyle
 //	}
 	/**
 	 * @param width
@@ -515,18 +515,18 @@ public class PlotScatter extends PlotNBCInteractive{
 		if (axisY != null)
 			axisythis = axisY;
 		
-        plot.getAxis(XYPlot.AXIS_X).setRange(axisxthis.getMin() ,axisxthis.getMax());//ÉèÖÃ×ø±êÖá
-        plot.getAxis(XYPlot.AXIS_Y).setRange(axisythis.getMin() ,axisythis.getMax());//ÉèÖÃ×ø±êÖá
+        plot.getAxis(XYPlot.AXIS_X).setRange(axisxthis.getMin() ,axisxthis.getMax());//è®¾ç½®åæ ‡è½´
+        plot.getAxis(XYPlot.AXIS_Y).setRange(axisythis.getMin() ,axisythis.getMax());//è®¾ç½®åæ ‡è½´
         
         setAxisAndTitle();
-        //×ø±êÖáÔÚfigure×îÏÂ·½
+        //åæ ‡è½´åœ¨figureæœ€ä¸‹æ–¹
         plot.getAxisRenderer(XYPlot.AXIS_X).setSetting(AxisRenderer.INTERSECTION, -Double.MAX_VALUE);
         plot.getAxisRenderer(XYPlot.AXIS_Y).setSetting(AxisRenderer.INTERSECTION, -Double.MAX_VALUE);
 	}
 	
 	protected void toImage(int width, int heigh) {
 		int imageType = (alpha ? BufferedImage.TYPE_4BYTE_ABGR : BufferedImage.TYPE_3BYTE_BGR);
-		//TODO Ò»Ö±¶¼ÊÇ ²»Í¸Ã÷
+		//TODO ä¸€ç›´éƒ½æ˜¯ ä¸é€æ˜
     	bufferedImage = new BufferedImage(width, heigh, BufferedImage.TYPE_3BYTE_BGR);
     	if (bg != null && !bg.equals(new Color(0,0,0,0))) {
 			setBG(width, heigh);
@@ -536,7 +536,7 @@ public class PlotScatter extends PlotNBCInteractive{
 		plot.draw(context);
 	}
 	/**
-	 * Éè¶¨Ä³¸öÒÑ¾­Ìí¼ÓÈëplotÖĞµÄdataseriesµÄ¸ñÊ½ÀàĞÍ
+	 * è®¾å®šæŸä¸ªå·²ç»æ·»åŠ å…¥plotä¸­çš„dataseriesçš„æ ¼å¼ç±»å‹
 	 * @param dataSeries
 	 * @param dotStyle
 	 */
@@ -559,7 +559,7 @@ public class PlotScatter extends PlotNBCInteractive{
 			 plot.setLineRenderer(dataSeries, line);
 			 plot.setPointRenderer(dataSeries, null);
 			 
-			//TODO ÉèÖÃ³É³£¹æµÄline
+			//TODO è®¾ç½®æˆå¸¸è§„çš„line
 //			plot.setSetting(BarPlot.BAR_WIDTH, 0.04);
 //		    plot.getPointRenderer(dataSeries).setSetting(PointRenderer.COLOR, dotStyle.getColor());
 		}
@@ -573,7 +573,7 @@ public class PlotScatter extends PlotNBCInteractive{
 			pointRenderer.setSetting(BarPlot.BarRenderer.STROKE, barStyle.getBasicStroke());
 			pointRenderer.setSetting(BarPlot.BarRenderer.STROKE_COLOR, barStyle.getEdgeColor());		
 			
-			//¹æ¶¨£¬dotnameÔÚµÚ3ÁĞ£¬dotvalueÒ²¾ÍÊÇ³£¹ævalueÔÚµÚ¶şÁĞ
+			//è§„å®šï¼Œdotnameåœ¨ç¬¬3åˆ—ï¼Œdotvalueä¹Ÿå°±æ˜¯å¸¸è§„valueåœ¨ç¬¬äºŒåˆ—
 			//the third column is the name column
 			pointRenderer.setSetting(PointRenderer.VALUE_COLUMN, 2);
 			pointRenderer.setSetting(PointRenderer.VALUE_DISPLAYED, barStyle.isValueVisible());
@@ -585,10 +585,10 @@ public class PlotScatter extends PlotNBCInteractive{
 	        points.setSetting(PointRenderer.COLOR, dotStyle.getColor());
 	        plot.setPointRenderer(dataSeries, points);
 		}
-		//Èç¹ûÃ¿¸öµãµÄÊıÖµ¿É¼û
+		//å¦‚æœæ¯ä¸ªç‚¹çš„æ•°å€¼å¯è§
 		if ( dotStyle.isValueVisible()) {
 			PointRenderer pointRenderer = plot.getPointRenderer(dataSeries);
-			//Èç¹ûÃ»ÓĞµãµÄäÖÈ¾£¬Æ©ÈçshapeÊÇÃ»ÓĞµãµÄ£¬ÄÇÃ´¾ÍĞÂ½¨Í¸Ã÷µã
+			//å¦‚æœæ²¡æœ‰ç‚¹çš„æ¸²æŸ“ï¼Œè­¬å¦‚shapeæ˜¯æ²¡æœ‰ç‚¹çš„ï¼Œé‚£ä¹ˆå°±æ–°å»ºé€æ˜ç‚¹
 			if (pointRenderer == null) {
 				pointRenderer = new DefaultPointRenderer2D();
 				pointRenderer.setSetting(PointRenderer.SHAPE,  new Ellipse2D.Double(1, 1, 1, 1));
@@ -597,10 +597,10 @@ public class PlotScatter extends PlotNBCInteractive{
 			}
 			pointRenderer.setSetting(PointRenderer.VALUE_DISPLAYED, dotStyle.isValueVisible());
 		}
-		//¹æ¶¨£¬dotnameÔÚµÚ3ÁĞ£¬dotvalueÒ²¾ÍÊÇ³£¹ævalueÔÚµÚ¶şÁĞ
+		//è§„å®šï¼Œdotnameåœ¨ç¬¬3åˆ—ï¼Œdotvalueä¹Ÿå°±æ˜¯å¸¸è§„valueåœ¨ç¬¬äºŒåˆ—
 		if (!dotStyle.getName().equals("")) {
 			PointRenderer pointRenderer = plot.getPointRenderer(dataSeries);
-			//the third column is the name column£¬´Ó0¿ªÊ¼¼ÆÊıµÄ
+			//the third column is the name columnï¼Œä»0å¼€å§‹è®¡æ•°çš„
 			pointRenderer.setSetting(PointRenderer.VALUE_COLUMN, 2);
 		}
 	}
@@ -620,26 +620,26 @@ public class PlotScatter extends PlotNBCInteractive{
 		}
 		
 		if (spaceX != null) {
-			plot.getAxisRenderer(XYPlot.AXIS_X).setSetting(AxisRenderer.TICKS_SPACING, spaceX);//×ø±êÖá¿Ì¶È
+			plot.getAxisRenderer(XYPlot.AXIS_X).setSetting(AxisRenderer.TICKS_SPACING, spaceX);//åæ ‡è½´åˆ»åº¦
 		}
 		if (spaceY != null) {
-			plot.getAxisRenderer(XYPlot.AXIS_Y).setSetting(AxisRenderer.TICKS_SPACING, spaceY);//×ø±êÖá¿Ì¶È
+			plot.getAxisRenderer(XYPlot.AXIS_Y).setSetting(AxisRenderer.TICKS_SPACING, spaceY);//åæ ‡è½´åˆ»åº¦
 		}
 		if (mapAxisX != null) {
-			plot.getAxisRenderer(XYPlot.AXIS_X).setSetting(AxisRenderer.TICKS_CUSTOM, mapAxisX);//×ø±êÖá¿Ì¶È
-			plot.getAxisRenderer(XYPlot.AXIS_X).setSetting(AxisRenderer.TICKS_SPACING, (axisX.getMax().doubleValue() - axisX.getMin().doubleValue())*2);//×ø±êÖá¿Ì¶È
+			plot.getAxisRenderer(XYPlot.AXIS_X).setSetting(AxisRenderer.TICKS_CUSTOM, mapAxisX);//åæ ‡è½´åˆ»åº¦
+			plot.getAxisRenderer(XYPlot.AXIS_X).setSetting(AxisRenderer.TICKS_SPACING, (axisX.getMax().doubleValue() - axisX.getMin().doubleValue())*2);//åæ ‡è½´åˆ»åº¦
 		}
 		if (mapAxisY != null) {
-			plot.getAxisRenderer(XYPlot.AXIS_Y).setSetting(AxisRenderer.TICKS_CUSTOM, mapAxisY);//×ø±êÖá¿Ì¶È
-			plot.getAxisRenderer(XYPlot.AXIS_Y).setSetting(AxisRenderer.TICKS_SPACING, (axisY.getMax().doubleValue() - axisY.getMin().doubleValue())*2);//×ø±êÖá¿Ì¶È
+			plot.getAxisRenderer(XYPlot.AXIS_Y).setSetting(AxisRenderer.TICKS_CUSTOM, mapAxisY);//åæ ‡è½´åˆ»åº¦
+			plot.getAxisRenderer(XYPlot.AXIS_Y).setSetting(AxisRenderer.TICKS_SPACING, (axisY.getMax().doubleValue() - axisY.getMin().doubleValue())*2);//åæ ‡è½´åˆ»åº¦
 
 		}
 		
 		if (fontTicksX != null) {
-			plot.getAxisRenderer(XYPlot.AXIS_X).setSetting(AxisRenderer.TICKS_FONT, fontTicksX);//×ø±êÖá¿Ì¶È
+			plot.getAxisRenderer(XYPlot.AXIS_X).setSetting(AxisRenderer.TICKS_FONT, fontTicksX);//åæ ‡è½´åˆ»åº¦
 		}
 		if (fontTicksY != null) {
-			plot.getAxisRenderer(XYPlot.AXIS_Y).setSetting(AxisRenderer.TICKS_FONT, fontTicksY);//×ø±êÖá¿Ì¶È
+			plot.getAxisRenderer(XYPlot.AXIS_Y).setSetting(AxisRenderer.TICKS_FONT, fontTicksY);//åæ ‡è½´åˆ»åº¦
 		}
 		
 		if (fontX != null) {
@@ -659,8 +659,8 @@ public class PlotScatter extends PlotNBCInteractive{
 		else {
 			 plot.getPlotArea().setSetting(PlotArea.BACKGROUND, new Color(0, 0, 0, 0));
 		}
-		///////////////Ëû×Ô¼ºÌá¹©µÄ·½·¨£¬ÏŞ¶¨Ò»¸ö·½ÏòµÄ·Å´ó»òÕßËõĞ¡//////////////////////
-		///////////////ÒÔÏÂÃ»Ğ´ÍêÈ«
+		///////////////ä»–è‡ªå·±æä¾›çš„æ–¹æ³•ï¼Œé™å®šä¸€ä¸ªæ–¹å‘çš„æ”¾å¤§æˆ–è€…ç¼©å°//////////////////////
+		///////////////ä»¥ä¸‹æ²¡å†™å®Œå…¨
 		if (Xnavigator && Ynavigator) {
 			plot.getNavigator().setDirection(XYNavigationDirection.ARBITRARY);
 		} else if (Xnavigator && !Ynavigator) {
@@ -681,7 +681,7 @@ public class PlotScatter extends PlotNBCInteractive{
 			graphics.setColor(bg);
 			graphics.fillRect(0, 0, width, heigh);
 		}
-		//TODO ÉèÖÃ¸ñ×ÓÑÕÉ«
+		//TODO è®¾ç½®æ ¼å­é¢œè‰²
 //		if (isBGgrid) {
 //			 plot.getPlotArea().setSetting(XYPlot.XYPlotArea2D.BORDER, null);        // Remove border of plot area
 //			 plot.getPlotArea().setSetting(XYPlot.XYPlotArea2D.GRID_MAJOR_X, false); // Disable vertical grid
@@ -699,7 +699,7 @@ public class PlotScatter extends PlotNBCInteractive{
 //		}
 	}
 	/**
-	 * Ó³ÉäÊı×Ö£¬¾ÍÊÇ½«1-100Ó³Éä³É1000-1000000ÕâÖÖ
+	 * æ˜ å°„æ•°å­—ï¼Œå°±æ˜¯å°†1-100æ˜ å°„æˆ1000-1000000è¿™ç§
 	 * map the ticks number to actual axis, using the linear transformation 
 	 * @return
 	 */

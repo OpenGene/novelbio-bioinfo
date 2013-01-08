@@ -9,26 +9,26 @@ import com.novelbio.base.dataStructure.listOperate.HistList;
 import com.novelbio.base.dataStructure.listOperate.HistList.HistBinType;
 
 /**
- * Á¬ĞøAT»òCGµÄ¸²¸Ç¶È
+ * è¿ç»­ATæˆ–CGçš„è¦†ç›–åº¦
  * @author zong0jie
  */
 public class StatisticsContinueATorCGCoverge implements StatisticsUnit {
 	private static Logger logger = Logger.getLogger(StatisticsContinueATorCGCoverge.class);
 	
-	/** »æÖÆ1CG£¬2CG£¬3CG....µÄreads¸²¸Ç¶È */
+	/** ç»˜åˆ¶1CGï¼Œ2CGï¼Œ3CG....çš„readsè¦†ç›–åº¦ */
 	BoxPlotList boxPlotList = new BoxPlotList();
-	/** ×î³¤Á¬ĞøAT»òCGµÄÊıÁ¿ */
+	/** æœ€é•¿è¿ç»­ATæˆ–CGçš„æ•°é‡ */
 	int maxContinueATorCG = 80;
 	
 	SeqType seqType = SeqType.AT;
 	
-	/** Ã¿¸ô2¸öcgÍ³¼ÆÒ»ÏÂ£¬ÒâË¼¾ÍÊÇ2CG£¬4CGµÄreads¸²¸Ç¶È */
+	/** æ¯éš”2ä¸ªcgç»Ÿè®¡ä¸€ä¸‹ï¼Œæ„æ€å°±æ˜¯2CGï¼Œ4CGçš„readsè¦†ç›–åº¦ */
 	int cgInterval = 2;
 	
 	
 	/**
-	 * @param statisticAT true: Í³¼ÆAT 
-	 * false: Í³¼ÆCG
+	 * @param statisticAT true: ç»Ÿè®¡AT 
+	 * false: ç»Ÿè®¡CG
 	 */
 	public StatisticsContinueATorCGCoverge(boolean statisticAT) {
 		if (statisticAT) {
@@ -37,20 +37,20 @@ public class StatisticsContinueATorCGCoverge implements StatisticsUnit {
 			seqType = SeqType.CG;
 		}
 	}
-	/** Çå¿Õ»­Í¼ÔªËØ */
+	/** æ¸…ç©ºç”»å›¾å…ƒç´  */
 	public void clean() {
 		boxPlotList.clean();
 	}
 	
 	/**
-	 * Ã¿¸ô2¸öcgÍ³¼ÆÒ»ÏÂ£¬ÒâË¼¾ÍÊÇÍ³¼Æ2CG£¬4CGµÄreads¸²¸Ç¶È
+	 * æ¯éš”2ä¸ªcgç»Ÿè®¡ä¸€ä¸‹ï¼Œæ„æ€å°±æ˜¯ç»Ÿè®¡2CGï¼Œ4CGçš„readsè¦†ç›–åº¦
 	 * @param cgInterval
 	 */
 	public void setCgInterval(int cgInterval) {
 		this.cgInterval = cgInterval;
 	}
 
-	/** Éè¶¨×î³¤Á¬ĞøCGµÄÊıÁ¿£¬³¬¹ıÕâ¸ö¾Í²»Í³¼ÆÁË */
+	/** è®¾å®šæœ€é•¿è¿ç»­CGçš„æ•°é‡ï¼Œè¶…è¿‡è¿™ä¸ªå°±ä¸ç»Ÿè®¡äº† */
 	public void setMaxContinueATorCG(int maxContinueCG) {
 		this.maxContinueATorCG = maxContinueCG;
 	}
@@ -60,8 +60,8 @@ public class StatisticsContinueATorCGCoverge implements StatisticsUnit {
 	}
 	
 	/**
-	 * ±ØĞëÏÈÉè¶¨setCgInterval ºÍ setMaxContinueATorCG
-	 * Éè¶¨CGBoxPlotList ¾ßÌåÍ³¼Æ£º 1¸öAÉÏreads¸²¸ÇÉî¶È ... n¸öATÉÏreads¸²¸ÇÉî¶È
+	 * å¿…é¡»å…ˆè®¾å®šsetCgInterval å’Œ setMaxContinueATorCG
+	 * è®¾å®šCGBoxPlotList å…·ä½“ç»Ÿè®¡ï¼š 1ä¸ªAä¸Šreadsè¦†ç›–æ·±åº¦ ... nä¸ªATä¸Šreadsè¦†ç›–æ·±åº¦
 	 * @return
 	 */
 	public void setBoxPlotList() {
@@ -92,7 +92,7 @@ public class StatisticsContinueATorCGCoverge implements StatisticsUnit {
 	}
 	
 	/**
-	 * ¸ù¾İÊäÈëµÄÁ¬ĞøCGµÄÊıÁ¿£¬»ñµÃÔÚboxplotÖĞ²éÕÒµÄkey
+	 * æ ¹æ®è¾“å…¥çš„è¿ç»­CGçš„æ•°é‡ï¼Œè·å¾—åœ¨boxplotä¸­æŸ¥æ‰¾çš„key
 	 * @return
 	 */
 	private String getKeyCGnum(int cgNum) {
@@ -104,7 +104,7 @@ public class StatisticsContinueATorCGCoverge implements StatisticsUnit {
 		return num*cgInterval + "";
 	}
 	/**
-	 * ËÄÉáÎåÈë
+	 * å››èˆäº”å…¥
 	 * @param num
 	 * @return
 	 */

@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.multithread.RunProcess;
 /**
- * µ±ÓÃ<b>KegArray</b>»ñµÃ½á¹ûurlÖ®ºó£¬ÓÃ¸ÃÀàÀ´½«ËùÓĞ±ê×¢ºÃµÄpathwayÍ¼Æ¬ÏÂÔØÏÂÀ´¡£
+ * å½“ç”¨<b>KegArray</b>è·å¾—ç»“æœurlä¹‹åï¼Œç”¨è¯¥ç±»æ¥å°†æ‰€æœ‰æ ‡æ³¨å¥½çš„pathwayå›¾ç‰‡ä¸‹è½½ä¸‹æ¥ã€‚
  * @author ywd
  *
  */
@@ -30,8 +30,8 @@ public class DownKeggPng extends RunProcess<Integer> {
 	ArrayList<String> lsPngWebUrl = new ArrayList<String>();
 	
 	/**
-	 * Éè¶¨µÄÊ²Ã´
-	 * @param urlFromKegArray Í¨¹ıÊ²Ã´²úÉúµÄurl
+	 * è®¾å®šçš„ä»€ä¹ˆ
+	 * @param urlFromKegArray é€šè¿‡ä»€ä¹ˆäº§ç”Ÿçš„url
 	 * @param outPath
 	 */
 	public void setDownLoadPng(String urlFromKegArray,String outPath) {
@@ -41,14 +41,14 @@ public class DownKeggPng extends RunProcess<Integer> {
 	}
 	
 	/**
-	 * ±ØĞëÔÚ{@link #querKegArrayUrl}·½·¨Ö®ºóµ÷ÓÃ
+	 * å¿…é¡»åœ¨{@link #querKegArrayUrl}æ–¹æ³•ä¹‹åè°ƒç”¨
 	 * @return
 	 */
 	public int getDownloadPicNum() {
 		return lsPngWebUrl.size();
 	}
 	/**
-	 * ·ÃÎÊkegarrayµÄurl£¬»ñµÃËùÓĞ´ıÏÂÔØµÄÁ´½Ó
+	 * è®¿é—®kegarrayçš„urlï¼Œè·å¾—æ‰€æœ‰å¾…ä¸‹è½½çš„é“¾æ¥
 	 */
 	public void querKegArrayUrl() {
 		lsPngWebUrl = findWebHref(url);
@@ -70,9 +70,9 @@ public class DownKeggPng extends RunProcess<Integer> {
 		}
 	}
 	/**
-	 * ¸ù¾İ¸ø¶¨ÍøÒ³£¬ÕÒµ½´æ·ÅÍ¼Æ¬µÄÍøÒ³µÄÁ´½Ó£»
-	 * @param URL ¸ø¶¨ÍøÒ³µÄÁ´½Ó
-	 * @return ´æ·ÅPNGÍøÒ³µÄÁ´½ÓµÄlist
+	 * æ ¹æ®ç»™å®šç½‘é¡µï¼Œæ‰¾åˆ°å­˜æ”¾å›¾ç‰‡çš„ç½‘é¡µçš„é“¾æ¥ï¼›
+	 * @param URL ç»™å®šç½‘é¡µçš„é“¾æ¥
+	 * @return å­˜æ”¾PNGç½‘é¡µçš„é“¾æ¥çš„list
 	 */
 	private ArrayList<String> findWebHref(String URL) {
 		ArrayList<String> lsUrl = new ArrayList<String>();
@@ -94,9 +94,9 @@ public class DownKeggPng extends RunProcess<Integer> {
 		return lsUrl;
 	}
 	/**
-	 * ¸ù¾İ¸ø¶¨µÄpngÍøÒ³£¬²éÕÒÍ¼Æ¬µÄÁ´½Ó
-	 * @param pngURL pngÍøÒ³µÄÁ´½Ó
-	 * @return ·µ»ØÍ¼Æ¬µÄÁ´½Ó
+	 * æ ¹æ®ç»™å®šçš„pngç½‘é¡µï¼ŒæŸ¥æ‰¾å›¾ç‰‡çš„é“¾æ¥
+	 * @param pngURL pngç½‘é¡µçš„é“¾æ¥
+	 * @return è¿”å›å›¾ç‰‡çš„é“¾æ¥
 	 */
 	private String findPngHref(String pngURL) {
 		HttpFetch httpFetch = HttpFetch.getInstance();
@@ -122,9 +122,9 @@ public class DownKeggPng extends RunProcess<Integer> {
 	}
 	
 	/**
-	 *  ¸ù¾İÍ¼Æ¬µÄÁ´½Ó£¬ÏÂÔØ¸ÃÍ¼Æ¬
-	 * @param pngHrefString Í¼Æ¬µÄÁ´½Ó
-	 * @param outFile Êä³öÍ¼Æ¬µÄÎÄ¼ş
+	 *  æ ¹æ®å›¾ç‰‡çš„é“¾æ¥ï¼Œä¸‹è½½è¯¥å›¾ç‰‡
+	 * @param pngHrefString å›¾ç‰‡çš„é“¾æ¥
+	 * @param outFile è¾“å‡ºå›¾ç‰‡çš„æ–‡ä»¶
 	 */
 	private void downPng(String pngHrefString) {
 		HttpFetch httpFetch = HttpFetch.getInstance();

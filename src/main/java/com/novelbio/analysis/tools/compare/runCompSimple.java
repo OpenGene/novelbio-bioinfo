@@ -16,12 +16,12 @@ public class runCompSimple {
 			thisFilePath = getProjectPath();
 			//thisFilePath = runCompSimple.class.getResource("/").toURI().getPath();
 			System.out.println(thisFilePath);
-			//thisFilePath= "/home/zong0jie/×ÀÃæ/CDG/Compare/XYLCompare/eee/";
+			//thisFilePath= "/home/zong0jie/æ¡Œé¢/CDG/Compare/XYLCompare/eee/";
 			//thisFilePath=thisFilePath.substring(1);
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		}//Õâ¸ö²»ÂÒÂë;
+		}//è¿™ä¸ªä¸ä¹±ç ;
 
 		ArrayList<String[]> lsFileName=FileOperate.getFoldFileName(thisFilePath, "*", "xls|txt");
 		String FileA=lsFileName.get(0)[0]+"."+lsFileName.get(0)[1];

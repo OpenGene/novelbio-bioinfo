@@ -9,10 +9,10 @@ import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.dataStructure.MathComput;
 
 /**
- * »ùÓÚbamÎÄ¼şµÄMapReads£¬ÊÊºÏĞ¡·¶Î§µÄÌáÈ¡ĞòÁĞĞòÁĞ
- * Æ©ÈçÌáÈ¡tss£¬genebodyµÈ£¬
- * ²»ÊÊºÏÌáÈ¡È«»ùÒò×éµÄĞÅÏ¢
- * ²»ÊÊºÏÌáÈ¡RNA-SeqµÄÈ«»ùÒòĞÅÏ¢
+ * åŸºäºbamæ–‡ä»¶çš„MapReadsï¼Œé€‚åˆå°èŒƒå›´çš„æå–åºåˆ—åºåˆ—
+ * è­¬å¦‚æå–tssï¼Œgenebodyç­‰ï¼Œ
+ * ä¸é€‚åˆæå–å…¨åŸºå› ç»„çš„ä¿¡æ¯
+ * ä¸é€‚åˆæå–RNA-Seqçš„å…¨åŸºå› ä¿¡æ¯
  * @author zong0jie
  *
  */
@@ -33,14 +33,14 @@ public class SamMapReads extends MapReadsAbs {
 	
 	SamFile samFile;
 	
-	/** ÊäÈëµÄsamFile±ØĞëÊÇÅÅĞò²¢ÇÒÓĞË÷ÒıµÄ */
+	/** è¾“å…¥çš„samFileå¿…é¡»æ˜¯æ’åºå¹¶ä¸”æœ‰ç´¢å¼•çš„ */
 	public SamMapReads(SamFile samFile) {
 		this.samFile = samFile;
 		mapChrIDlowcase2Length = samFile.getChrID2LengthMap();
 	}
 	
 	/**
-	 * Éè¶¨È¾É«ÌåÃû³ÆÓë³¤¶ÈµÄ¶ÔÕÕ±í£¬×¢ÒâkeyÎªĞ¡Ğ´
+	 * è®¾å®šæŸ“è‰²ä½“åç§°ä¸é•¿åº¦çš„å¯¹ç…§è¡¨ï¼Œæ³¨æ„keyä¸ºå°å†™
 	 * @param mapChrIDlowcase2Length
 	 */
 	public void setMapChrIDlowcase2Length(
@@ -55,7 +55,7 @@ public class SamMapReads extends MapReadsAbs {
 
 	@Override
 	protected void ReadMapFileExp() throws Exception {
-		//TODO ¿ÉÒÔ¿¼ÂÇÍ¨¹ıÕâ¸öÀ´»ñµÃbamÎÄ¼şµÄreadsÊıÁ¿
+		//TODO å¯ä»¥è€ƒè™‘é€šè¿‡è¿™ä¸ªæ¥è·å¾—bamæ–‡ä»¶çš„readsæ•°é‡
 	}
 
 	@Override
@@ -111,7 +111,7 @@ public class SamMapReads extends MapReadsAbs {
 		
 		return result;
 	}
-	/** ½«samRecordµÄĞÅÏ¢Ìí¼ÓÖÁ resultÉÏ */
+	/** å°†samRecordçš„ä¿¡æ¯æ·»åŠ è‡³ resultä¸Š */
 	private void addReadsInfo(SamRecord samRecord, int[] startEnd, double[] result) {
 		if (booUniqueMapping && samRecord.getMappingNum() > 1) {
 			return;
@@ -131,8 +131,8 @@ public class SamMapReads extends MapReadsAbs {
 	}
 	
 	/**
-	 * ¿´alignÊÇ·ñÔÚregionÖĞ
-	 * @param region Çø¼ä£¬±ØĞë  region[0] < region[1]
+	 * çœ‹alignæ˜¯å¦åœ¨regionä¸­
+	 * @param region åŒºé—´ï¼Œå¿…é¡»  region[0] < region[1]
 	 * @param align
 	 * @return 0 inside
 	 * 1 align before region
@@ -149,13 +149,13 @@ public class SamMapReads extends MapReadsAbs {
 	}
 	
 	/**
-	 * <b>alignÖ»¿´getStartAbsºÍgetEndAbs</b><br>
-	 * ¸ø¶¨Ò»¸öalignment£¬È·¶¨ÆäÏà¶ÔÓÚ startEnd Õâ¸ö·¶Î§µÄÏà¶Ô×ø±ê
-	 * ´Ó0¿ªÊ¼¼ÆËã
+	 * <b>alignåªçœ‹getStartAbså’ŒgetEndAbs</b><br>
+	 * ç»™å®šä¸€ä¸ªalignmentï¼Œç¡®å®šå…¶ç›¸å¯¹äº startEnd è¿™ä¸ªèŒƒå›´çš„ç›¸å¯¹åæ ‡
+	 * ä»0å¼€å§‹è®¡ç®—
 	 * @param startEnd
-	 * @param alignment Èç¹ûalignmen³¬³öÁËstarendµÄ·¶Î§£¬Ôò´ÓÍ·/Î²¿ªÊ¼¼ÆËã¡£Æ©ÈçĞ¡ÓÚ0¾ÍÉèÖÃÎª0
-	 * @return ·µ»Ø´Ó0¿ªÊ¼¼ÆËãµÄÏà¶ÔstartLocºÍendLoc×ø±ê
-	 * ¿ÉÒÔÖ±½Óµ±×÷ÏÂ±êÊ¹ÓÃ
+	 * @param alignment å¦‚æœalignmenè¶…å‡ºäº†starendçš„èŒƒå›´ï¼Œåˆ™ä»å¤´/å°¾å¼€å§‹è®¡ç®—ã€‚è­¬å¦‚å°äº0å°±è®¾ç½®ä¸º0
+	 * @return è¿”å›ä»0å¼€å§‹è®¡ç®—çš„ç›¸å¯¹startLocå’ŒendLocåæ ‡
+	 * å¯ä»¥ç›´æ¥å½“ä½œä¸‹æ ‡ä½¿ç”¨
 	 */
 	private static int[] getStartEndLoc(int[] startEnd, Alignment align) {
 		int startLoc = align.getStartAbs() - startEnd[0];
@@ -171,14 +171,14 @@ public class SamMapReads extends MapReadsAbs {
 	}
 	
 	/** 
-	 * <b>alignÖ»¿´getStartAbsºÍgetEndAbs</b><br>
-	 * ¸ø¶¨Ò»¸öalignment£¬È·¶¨ÆäÏà¶ÔÓÚ startEnd Õâ¸ö·¶Î§£¬ËùÄÜÊ¹ÓÃµÄÆğµãºÍÖÕµã
-	 * ´Ó0¿ªÊ¼¼ÆËã¡£
-	 * Èç¹ûalignmentÓëstartEndÊÇoverlapµÄ£¬ÄÇÃ´´ÓalignmentµÄµÚ¼¸Î»¿ªÊ¼ËãÆğ£¬µ½µÚ¼¸Î»½áÊø
+	 * <b>alignåªçœ‹getStartAbså’ŒgetEndAbs</b><br>
+	 * ç»™å®šä¸€ä¸ªalignmentï¼Œç¡®å®šå…¶ç›¸å¯¹äº startEnd è¿™ä¸ªèŒƒå›´ï¼Œæ‰€èƒ½ä½¿ç”¨çš„èµ·ç‚¹å’Œç»ˆç‚¹
+	 * ä»0å¼€å§‹è®¡ç®—ã€‚
+	 * å¦‚æœalignmentä¸startEndæ˜¯overlapçš„ï¼Œé‚£ä¹ˆä»alignmentçš„ç¬¬å‡ ä½å¼€å§‹ç®—èµ·ï¼Œåˆ°ç¬¬å‡ ä½ç»“æŸ
 	 * @param startEnd
 	 * @param alignment
-	 * @return ·µ»Ø´Ó0¿ªÊ¼¼ÆËãµÄÏà¶ÔalignµÄÆğµãºÍÖÕµã×ø±ê
-	 * ¿ÉÒÔÖ±½Óµ±×÷ÏÂ±êÊ¹ÓÃ
+	 * @return è¿”å›ä»0å¼€å§‹è®¡ç®—çš„ç›¸å¯¹alignçš„èµ·ç‚¹å’Œç»ˆç‚¹åæ ‡
+	 * å¯ä»¥ç›´æ¥å½“ä½œä¸‹æ ‡ä½¿ç”¨
 	 */
 	private static int[] getStartEndAlign(int[] startEnd, Alignment align) {
 		int alignStart = 0;

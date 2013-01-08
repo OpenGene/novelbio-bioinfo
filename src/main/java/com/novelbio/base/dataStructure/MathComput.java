@@ -25,8 +25,8 @@ public class MathComput {
 	
 	
 	/**
-	 * ÊäÈëÊı¾İ£¬»ñµÃÆ½¾ùÊı
-	 * ÓÃÓÚ»ñµÃÃ¿10¸öbpµÄtag¶Ñ»ıÊıµÄÖĞÎ»Êı
+	 * è¾“å…¥æ•°æ®ï¼Œè·å¾—å¹³å‡æ•°
+	 * ç”¨äºè·å¾—æ¯10ä¸ªbpçš„tagå †ç§¯æ•°çš„ä¸­ä½æ•°
 	 * @return
 	 */
 	public static double mean(int[] unsortNum)
@@ -42,8 +42,8 @@ public class MathComput {
 	}
 	
 	/**
-	 * ÊäÈëÊı¾İ£¬»ñµÃÆ½¾ùÊı
-	 * ÓÃÓÚ»ñµÃÃ¿10¸öbpµÄtag¶Ñ»ıÊıµÄÖĞÎ»Êı
+	 * è¾“å…¥æ•°æ®ï¼Œè·å¾—å¹³å‡æ•°
+	 * ç”¨äºè·å¾—æ¯10ä¸ªbpçš„tagå †ç§¯æ•°çš„ä¸­ä½æ•°
 	 * @return
 	 */
 	public static double mean(int[]... unsortNum)
@@ -60,8 +60,8 @@ public class MathComput {
 		return avg;
 	}
 	/**
-	 * ÊäÈëÊı¾İ£¬»ñµÃÆ½¾ùÊı
-	 * ÓÃÓÚ»ñµÃÃ¿10¸öbpµÄtag¶Ñ»ıÊıµÄÖĞÎ»Êı
+	 * è¾“å…¥æ•°æ®ï¼Œè·å¾—å¹³å‡æ•°
+	 * ç”¨äºè·å¾—æ¯10ä¸ªbpçš„tagå †ç§¯æ•°çš„ä¸­ä½æ•°
 	 * @return
 	 */
 	public static double mean(Iterable<int[]> unsortNum)
@@ -78,8 +78,8 @@ public class MathComput {
 		return avg;
 	}
 	/**
-	 * ÊäÈëÊı¾İ£¬»ñµÃÆ½¾ùÊı
-	 * ÓÃÓÚ»ñµÃÃ¿10¸öbpµÄtag¶Ñ»ıÊıµÄÖĞÎ»Êı
+	 * è¾“å…¥æ•°æ®ï¼Œè·å¾—å¹³å‡æ•°
+	 * ç”¨äºè·å¾—æ¯10ä¸ªbpçš„tagå †ç§¯æ•°çš„ä¸­ä½æ•°
 	 * @return
 	 */
 	public static long mean(long[] unsortNum)
@@ -107,9 +107,9 @@ public class MathComput {
 	
 	
 	/**
-	 * ÊäÈëÊı¾İ£¬»ñµÃÆ½¾ùÊı
-	 * ²ÉÓÃ²åÈëÅÅĞò·¨£¬¾İËµ¶ÔÓÚĞ¡¹æÄ£Êı¾İĞ§ÂÊ»¹²»´í
-	 * ÓÃÓÚ»ñµÃÃ¿10¸öbpµÄtag¶Ñ»ıÊıµÄÖĞÎ»Êı
+	 * è¾“å…¥æ•°æ®ï¼Œè·å¾—å¹³å‡æ•°
+	 * é‡‡ç”¨æ’å…¥æ’åºæ³•ï¼Œæ®è¯´å¯¹äºå°è§„æ¨¡æ•°æ®æ•ˆç‡è¿˜ä¸é”™
+	 * ç”¨äºè·å¾—æ¯10ä¸ªbpçš„tagå †ç§¯æ•°çš„ä¸­ä½æ•°
 	 * @return
 	 */
 	public static double mean(double[] unsortNum)
@@ -123,9 +123,9 @@ public class MathComput {
 		return avg;
 	}
 	/**
-	 * °´ÕÕID£¬»ñÈ¡Ò»¸ö¾ØÕóµÄÖĞÎ»Êı
-	 * Ã¿ÁĞ±íÊ¾²»Í¬µÄĞÅÏ¢£¬Ã¿ĞĞ±íÊ¾Ò»¸ö»ùÒò
-	 * ¿ÉÄÜ´æÔÚÖØ¸´»ùÒò£¬ËùÒÔÒª¶ÔÖØ¸´ĞĞ(Ò²¾ÍÊÇÖØ¸´»ùÒò)£¬È¡ÖĞÎ»Êı
+	 * æŒ‰ç…§IDï¼Œè·å–ä¸€ä¸ªçŸ©é˜µçš„ä¸­ä½æ•°
+	 * æ¯åˆ—è¡¨ç¤ºä¸åŒçš„ä¿¡æ¯ï¼Œæ¯è¡Œè¡¨ç¤ºä¸€ä¸ªåŸºå› 
+	 * å¯èƒ½å­˜åœ¨é‡å¤åŸºå› ï¼Œæ‰€ä»¥è¦å¯¹é‡å¤è¡Œ(ä¹Ÿå°±æ˜¯é‡å¤åŸºå› )ï¼Œå–ä¸­ä½æ•°
 	 * @param lsIn
 	 * @param colAccID
 	 * @param colNum
@@ -133,7 +133,7 @@ public class MathComput {
 	 */
 	public static ArrayList<String[]> getMedian(List<String[]> lsIn, int colAccID, List<Integer> colNum) {
 		/**
-		 * Ã¿¸öIDÒ»¸ö»ùÒò
+		 * æ¯ä¸ªIDä¸€ä¸ªåŸºå› 
 		 */
 		HashMap<String, ArrayList<String[]>> hashGeneInfo = new HashMap<String, ArrayList<String[]>>();
 		
@@ -168,10 +168,10 @@ public class MathComput {
 		return lsResult;
 	}
 	/**
-	 * @param lsInfo Ö¸¶¨¼¸ĞĞĞÅÏ¢
-	 * @param col Ö¸¶¨ËùÔÚµÄÁĞ
-	 * @return ·µ»ØËùÔÚÁĞµÄÖĞÎ»Êı
-	 * ÁĞÃû²ÉÓÃµÚÒ»ĞĞlistµÄÃû×Ö
+	 * @param lsInfo æŒ‡å®šå‡ è¡Œä¿¡æ¯
+	 * @param col æŒ‡å®šæ‰€åœ¨çš„åˆ—
+	 * @return è¿”å›æ‰€åœ¨åˆ—çš„ä¸­ä½æ•°
+	 * åˆ—åé‡‡ç”¨ç¬¬ä¸€è¡Œlistçš„åå­—
 	 */
 	public static String[] getMediaInfo(List<String[]> lsInfo, List<Integer> col) {
 		
@@ -191,7 +191,7 @@ public class MathComput {
 		return result;
 	}
 	/**
-	 * ÊäÈëÊı¾İ£¬»ñµÃºÍ
+	 * è¾“å…¥æ•°æ®ï¼Œè·å¾—å’Œ
 	 * @param Num
 	 * @return
 	 */
@@ -203,7 +203,7 @@ public class MathComput {
 		return sum;
 	}
 	/**
-	 * ÊäÈëÊı¾İ£¬»ñµÃºÍ
+	 * è¾“å…¥æ•°æ®ï¼Œè·å¾—å’Œ
 	 * @param Num
 	 * @return
 	 */
@@ -215,7 +215,7 @@ public class MathComput {
 		return sum;
 	}
 	/**
-	 * ÊäÈëÊı¾İ£¬»ñµÃºÍ
+	 * è¾“å…¥æ•°æ®ï¼Œè·å¾—å’Œ
 	 * @param Num
 	 * @return
 	 */
@@ -227,9 +227,9 @@ public class MathComput {
 		return sum;
 	}
 	/**
-	 * ÊäÈëÊı¾İ£¬»ñµÃÖĞÎ»Êı, ÓÃÓÚ10
-	 * ²ÉÓÃ²åÈëÅÅĞò·¨£¬¾İËµ¶ÔÓÚĞ¡¹æÄ£Êı¾İĞ§ÂÊ»¹²»´í
-	 * ÓÃÓÚ»ñµÃÃ¿10¸öbpµÄtag¶Ñ»ıÊıµÄÖĞÎ»Êı
+	 * è¾“å…¥æ•°æ®ï¼Œè·å¾—ä¸­ä½æ•°, ç”¨äº10
+	 * é‡‡ç”¨æ’å…¥æ’åºæ³•ï¼Œæ®è¯´å¯¹äºå°è§„æ¨¡æ•°æ®æ•ˆç‡è¿˜ä¸é”™
+	 * ç”¨äºè·å¾—æ¯10ä¸ªbpçš„tagå †ç§¯æ•°çš„ä¸­ä½æ•°
 	 * @return
 	 */
 	public static int median(int[] unsortNum) {
@@ -245,8 +245,8 @@ public class MathComput {
 		return med;
 	}
 	/**
-	 * ÊäÈëÊı¾İ£¬»ñµÃÖĞÎ»Êı, ÓÃÓÚ10
-	 * ²ÉÓÃ²åÈëÅÅĞò·¨£¬¾İËµ¶ÔÓÚĞ¡¹æÄ£Êı¾İĞ§ÂÊ»¹²»´í
+	 * è¾“å…¥æ•°æ®ï¼Œè·å¾—ä¸­ä½æ•°, ç”¨äº10
+	 * é‡‡ç”¨æ’å…¥æ’åºæ³•ï¼Œæ®è¯´å¯¹äºå°è§„æ¨¡æ•°æ®æ•ˆç‡è¿˜ä¸é”™
 	 * @return
 	 */
 	public static double median(List<? extends Number> lsNumbers) {
@@ -257,10 +257,10 @@ public class MathComput {
 		return median(mydouble);
 	}
 	/**
-	 * ÊäÈëÊı¾İ£¬»ñµÃÖĞÎ»Êı, ÓÃÓÚ10
-	 * ²ÉÓÃ²åÈëÅÅĞò·¨£¬¾İËµ¶ÔÓÚĞ¡¹æÄ£Êı¾İĞ§ÂÊ»¹²»´í
+	 * è¾“å…¥æ•°æ®ï¼Œè·å¾—ä¸­ä½æ•°, ç”¨äº10
+	 * é‡‡ç”¨æ’å…¥æ’åºæ³•ï¼Œæ®è¯´å¯¹äºå°è§„æ¨¡æ•°æ®æ•ˆç‡è¿˜ä¸é”™
 	 * @param lsNumbers
-	 * @param percentage ³ËÒÔ100µÄÖµ
+	 * @param percentage ä¹˜ä»¥100çš„å€¼
 	 * @return
 	 */
 	public static double median(List<? extends Number> lsNumbers, int percentage) {
@@ -272,9 +272,9 @@ public class MathComput {
 	}
 	
 	/**
-	 * ÊäÈëÊı¾İ£¬»ñµÃÖĞÎ»Êı, ÓÃÓÚ10
-	 * ²ÉÓÃ²åÈëÅÅĞò·¨£¬¾İËµ¶ÔÓÚĞ¡¹æÄ£Êı¾İĞ§ÂÊ»¹²»´í
-	 * ²»»á¶ÔÊäÈëÊı¾İÅÅĞò
+	 * è¾“å…¥æ•°æ®ï¼Œè·å¾—ä¸­ä½æ•°, ç”¨äº10
+	 * é‡‡ç”¨æ’å…¥æ’åºæ³•ï¼Œæ®è¯´å¯¹äºå°è§„æ¨¡æ•°æ®æ•ˆç‡è¿˜ä¸é”™
+	 * ä¸ä¼šå¯¹è¾“å…¥æ•°æ®æ’åº
 	 * @return
 	 */
 	public static double median(double[] unsortNum) {
@@ -282,10 +282,10 @@ public class MathComput {
 	}
 	/**
 	 * 
-	 * ÊäÈëÊı¾İ£¬»ñµÃÖĞÎ»Êı, ÓÃÓÚ10
-	 * ²ÉÓÃ²åÈëÅÅĞò·¨£¬¾İËµ¶ÔÓÚĞ¡¹æÄ£Êı¾İĞ§ÂÊ»¹²»´í
-	 * @param unsortNum ÊäÈëÊı¾İ£¬²»»á¶ÔÆäÅÅĞò
-	 * @param percentage ³ËÒÔ100µÄÖµ
+	 * è¾“å…¥æ•°æ®ï¼Œè·å¾—ä¸­ä½æ•°, ç”¨äº10
+	 * é‡‡ç”¨æ’å…¥æ’åºæ³•ï¼Œæ®è¯´å¯¹äºå°è§„æ¨¡æ•°æ®æ•ˆç‡è¿˜ä¸é”™
+	 * @param unsortNum è¾“å…¥æ•°æ®ï¼Œä¸ä¼šå¯¹å…¶æ’åº
+	 * @param percentage ä¹˜ä»¥100çš„å€¼
 	 * @return
 	 */
 	public static double median(double[] unsortNum, int percentage)
@@ -327,8 +327,8 @@ public class MathComput {
 		return arrayResult;
 	}
 	/**
-	 * ÊäÈëÊı¾İ£¬»ñµÃ×î½Ó½üÖĞÎ»ÊıµÄÄÇ¸öÊı, ÓÃÓÚ10
-	 * ²ÉÓÃ²åÈëÅÅĞò·¨£¬¾İËµ¶ÔÓÚĞ¡¹æÄ£Êı¾İĞ§ÂÊ»¹²»´í
+	 * è¾“å…¥æ•°æ®ï¼Œè·å¾—æœ€æ¥è¿‘ä¸­ä½æ•°çš„é‚£ä¸ªæ•°, ç”¨äº10
+	 * é‡‡ç”¨æ’å…¥æ’åºæ³•ï¼Œæ®è¯´å¯¹äºå°è§„æ¨¡æ•°æ®æ•ˆç‡è¿˜ä¸é”™
 	 * @return
 	 */
 	public static double medianLike(double[] unsortNum)
@@ -352,9 +352,9 @@ public class MathComput {
 	}
 	
 	/**
-	 * ÊäÈëÊı¾İ£¬»ñµÃÆ½¾ùÊı
-	 * ²ÉÓÃ²åÈëÅÅĞò·¨£¬¾İËµ¶ÔÓÚĞ¡¹æÄ£Êı¾İĞ§ÂÊ»¹²»´í
-	 * ÓÃÓÚ»ñµÃÃ¿10¸öbpµÄtag¶Ñ»ıÊıµÄÖĞÎ»Êı
+	 * è¾“å…¥æ•°æ®ï¼Œè·å¾—å¹³å‡æ•°
+	 * é‡‡ç”¨æ’å…¥æ’åºæ³•ï¼Œæ®è¯´å¯¹äºå°è§„æ¨¡æ•°æ®æ•ˆç‡è¿˜ä¸é”™
+	 * ç”¨äºè·å¾—æ¯10ä¸ªbpçš„tagå †ç§¯æ•°çš„ä¸­ä½æ•°
 	 * @return
 	 */
 	public static double max(ArrayList<? extends Number> lsNum) {
@@ -368,9 +368,9 @@ public class MathComput {
 		return max;
 	}
 	/**
-	 * ÊäÈëÊı¾İ£¬»ñµÃÆ½¾ùÊı
-	 * ²ÉÓÃ²åÈëÅÅĞò·¨£¬¾İËµ¶ÔÓÚĞ¡¹æÄ£Êı¾İĞ§ÂÊ»¹²»´í
-	 * ÓÃÓÚ»ñµÃÃ¿10¸öbpµÄtag¶Ñ»ıÊıµÄÖĞÎ»Êı
+	 * è¾“å…¥æ•°æ®ï¼Œè·å¾—å¹³å‡æ•°
+	 * é‡‡ç”¨æ’å…¥æ’åºæ³•ï¼Œæ®è¯´å¯¹äºå°è§„æ¨¡æ•°æ®æ•ˆç‡è¿˜ä¸é”™
+	 * ç”¨äºè·å¾—æ¯10ä¸ªbpçš„tagå †ç§¯æ•°çš„ä¸­ä½æ•°
 	 * @return
 	 */
 	public static double max(double[] num) {
@@ -384,9 +384,9 @@ public class MathComput {
 		return max;
 	}
 	/**
-	 * ÊäÈëÊı¾İ£¬»ñµÃÆ½¾ùÊı
-	 * ²ÉÓÃ²åÈëÅÅĞò·¨£¬¾İËµ¶ÔÓÚĞ¡¹æÄ£Êı¾İĞ§ÂÊ»¹²»´í
-	 * ÓÃÓÚ»ñµÃÃ¿10¸öbpµÄtag¶Ñ»ıÊıµÄÖĞÎ»Êı
+	 * è¾“å…¥æ•°æ®ï¼Œè·å¾—å¹³å‡æ•°
+	 * é‡‡ç”¨æ’å…¥æ’åºæ³•ï¼Œæ®è¯´å¯¹äºå°è§„æ¨¡æ•°æ®æ•ˆç‡è¿˜ä¸é”™
+	 * ç”¨äºè·å¾—æ¯10ä¸ªbpçš„tagå †ç§¯æ•°çš„ä¸­ä½æ•°
 	 * @return
 	 */
 	public static int max(int[] num) {
@@ -405,9 +405,9 @@ public class MathComput {
 	
 	
 	/**
-	 * ÊäÈëÊı¾İ£¬»ñµÃÆ½¾ùÊı
-	 * ²ÉÓÃ²åÈëÅÅĞò·¨£¬¾İËµ¶ÔÓÚĞ¡¹æÄ£Êı¾İĞ§ÂÊ»¹²»´í
-	 * ÓÃÓÚ»ñµÃÃ¿10¸öbpµÄtag¶Ñ»ıÊıµÄÖĞÎ»Êı
+	 * è¾“å…¥æ•°æ®ï¼Œè·å¾—å¹³å‡æ•°
+	 * é‡‡ç”¨æ’å…¥æ’åºæ³•ï¼Œæ®è¯´å¯¹äºå°è§„æ¨¡æ•°æ®æ•ˆç‡è¿˜ä¸é”™
+	 * ç”¨äºè·å¾—æ¯10ä¸ªbpçš„tagå †ç§¯æ•°çš„ä¸­ä½æ•°
 	 * @return
 	 */
 	public static double min(ArrayList<? extends Number> lsNum) {
@@ -421,9 +421,9 @@ public class MathComput {
 		return min;
 	}
 	/**
-	 * ÊäÈëÊı¾İ£¬»ñµÃÆ½¾ùÊı
-	 * ²ÉÓÃ²åÈëÅÅĞò·¨£¬¾İËµ¶ÔÓÚĞ¡¹æÄ£Êı¾İĞ§ÂÊ»¹²»´í
-	 * ÓÃÓÚ»ñµÃÃ¿10¸öbpµÄtag¶Ñ»ıÊıµÄÖĞÎ»Êı
+	 * è¾“å…¥æ•°æ®ï¼Œè·å¾—å¹³å‡æ•°
+	 * é‡‡ç”¨æ’å…¥æ’åºæ³•ï¼Œæ®è¯´å¯¹äºå°è§„æ¨¡æ•°æ®æ•ˆç‡è¿˜ä¸é”™
+	 * ç”¨äºè·å¾—æ¯10ä¸ªbpçš„tagå †ç§¯æ•°çš„ä¸­ä½æ•°
 	 * @return
 	 */
 	public static double min(double[] num) {
@@ -437,9 +437,9 @@ public class MathComput {
 		return min;
 	}
 	/**
-	 * ÊäÈëÊı¾İ£¬»ñµÃÆ½¾ùÊı
-	 * ²ÉÓÃ²åÈëÅÅĞò·¨£¬¾İËµ¶ÔÓÚĞ¡¹æÄ£Êı¾İĞ§ÂÊ»¹²»´í
-	 * ÓÃÓÚ»ñµÃÃ¿10¸öbpµÄtag¶Ñ»ıÊıµÄÖĞÎ»Êı
+	 * è¾“å…¥æ•°æ®ï¼Œè·å¾—å¹³å‡æ•°
+	 * é‡‡ç”¨æ’å…¥æ’åºæ³•ï¼Œæ®è¯´å¯¹äºå°è§„æ¨¡æ•°æ®æ•ˆç‡è¿˜ä¸é”™
+	 * ç”¨äºè·å¾—æ¯10ä¸ªbpçš„tagå †ç§¯æ•°çš„ä¸­ä½æ•°
 	 * @return
 	 */
 	public static int min(int[] num) {
@@ -454,9 +454,9 @@ public class MathComput {
 	}
 	
 	/**
-	 * ÊäÈëÊı¾İ½øĞĞÅÅĞò£¬
-	 * @param unsortNum ´ıÅÅĞòµÄÊı×é
-	 * @param smallToBig ÊÇ·ñ´ÓĞ¡µ½´óÅÅĞò
+	 * è¾“å…¥æ•°æ®è¿›è¡Œæ’åºï¼Œ
+	 * @param unsortNum å¾…æ’åºçš„æ•°ç»„
+	 * @param smallToBig æ˜¯å¦ä»å°åˆ°å¤§æ’åº
 	 * @return
 	 */
 	public static void sort(int[] unsortNum, boolean smallToBig)
@@ -492,7 +492,7 @@ public class MathComput {
 	}
 	
 	/**
-	 * ¸ø¶¨Êı×é£¬Ö±½ÓÅÅĞò
+	 * ç»™å®šæ•°ç»„ï¼Œç›´æ¥æ’åº
 	 * @param unsortNum
 	 */
 	private static void sort(double[] unsortNum, boolean smallToBig)
@@ -529,47 +529,47 @@ public class MathComput {
 	
 	
 	/**
-	 * ¸ø¶¨Ò»×éÊı(ÓĞË³ĞòµÄÅÅÁĞ)£¬¸ù¾İ¸ø¶¨µÄ·Ö¸îÊı£¬Ö¸¶¨»ñµÃ¼ÓÈ¨Æ½¾ù£¬×îºó»ñµÃÖ¸¶¨·Ö¸îÊıÁ¿µÄÊı×é
-	 * Æ©ÈçÏÖÔÚÓĞint[20]µÄÒ»×éÊı£¬ÎÒÏëÒª°ÑÕâ×éÊıËõĞ¡µ½int[10]ÀïÃæ²¢ÇÒ±£³ÖÆä±ÈÀı´óÌåÎÇºÏ£¬ÕâÊ±ºòÎÒ²ÉÓÃ¼ÓÈ¨Æ½¾ùµÄ·½·¨
-	 * ¼ì²éÁËÒ»±é£¬¸Ğ¾õ¿ÉÒÔ
-	 * ÓÃÓÚ½«500»ò¸ü¶à·İµÄÊıËõĞ¡µ½100·İÄÚ
-	 * @param treatNum invNumÀïÃæµÄbp¾ßÌåÖµ
-	 * @param binNum ºóÃæÒªÉú³ÉµÄ·Ö¸îµÄ¿éÊı
-	 * @param startBias ´ÓÆğµãµÄ¶àÉÙ¿ªÊ¼ Îª 0,1Ö®¼äµÄĞ¡Êı£¬±íÊ¾´ÓµÚÒ»¸öÖµµÄ¼¸·ÖÖ®¼¸¿ªÊ¼
-	 * @param endBias µ½ÖÕµãµÄ¶àÉÙ½áÊø  Îª 0,1Ö®¼äµÄĞ¡Êı£¬±íÊ¾µ½ (½áÊøÎ»µãµ½ÖÕµãµÄ¾àÀë/Ã¿¸öµ¥ÔªµÄ³¤¶È)
+	 * ç»™å®šä¸€ç»„æ•°(æœ‰é¡ºåºçš„æ’åˆ—)ï¼Œæ ¹æ®ç»™å®šçš„åˆ†å‰²æ•°ï¼ŒæŒ‡å®šè·å¾—åŠ æƒå¹³å‡ï¼Œæœ€åè·å¾—æŒ‡å®šåˆ†å‰²æ•°é‡çš„æ•°ç»„
+	 * è­¬å¦‚ç°åœ¨æœ‰int[20]çš„ä¸€ç»„æ•°ï¼Œæˆ‘æƒ³è¦æŠŠè¿™ç»„æ•°ç¼©å°åˆ°int[10]é‡Œé¢å¹¶ä¸”ä¿æŒå…¶æ¯”ä¾‹å¤§ä½“å»åˆï¼Œè¿™æ—¶å€™æˆ‘é‡‡ç”¨åŠ æƒå¹³å‡çš„æ–¹æ³•
+	 * æ£€æŸ¥äº†ä¸€éï¼Œæ„Ÿè§‰å¯ä»¥
+	 * ç”¨äºå°†500æˆ–æ›´å¤šä»½çš„æ•°ç¼©å°åˆ°100ä»½å†…
+	 * @param treatNum invNumé‡Œé¢çš„bpå…·ä½“å€¼
+	 * @param binNum åé¢è¦ç”Ÿæˆçš„åˆ†å‰²çš„å—æ•°
+	 * @param startBias ä»èµ·ç‚¹çš„å¤šå°‘å¼€å§‹ ä¸º 0,1ä¹‹é—´çš„å°æ•°ï¼Œè¡¨ç¤ºä»ç¬¬ä¸€ä¸ªå€¼çš„å‡ åˆ†ä¹‹å‡ å¼€å§‹
+	 * @param endBias åˆ°ç»ˆç‚¹çš„å¤šå°‘ç»“æŸ  ä¸º 0,1ä¹‹é—´çš„å°æ•°ï¼Œè¡¨ç¤ºåˆ° (ç»“æŸä½ç‚¹åˆ°ç»ˆç‚¹çš„è·ç¦»/æ¯ä¸ªå•å…ƒçš„é•¿åº¦)
 	 * 0-*--|---1---------2--------3----------4----------5---------6----|--*-7
-	 * ĞÇºÅ±ê¼ÇµÄµØ·½
-	 * @param type 0£º¼ÓÈ¨Æ½¾ù 1£ºÈ¡×î¸ßÖµ£¬2£º¼ÓÈ¨µ«²»Æ½¾ù--Ò²¾ÍÊÇ¼ÓºÍ
+	 * æ˜Ÿå·æ ‡è®°çš„åœ°æ–¹
+	 * @param type 0ï¼šåŠ æƒå¹³å‡ 1ï¼šå–æœ€é«˜å€¼ï¼Œ2ï¼šåŠ æƒä½†ä¸å¹³å‡--ä¹Ÿå°±æ˜¯åŠ å’Œ
 	 * @return
 	 */
 	public static double[] mySpline(int[] treatNum, int binNum,double startBias,double endBias,int type)
 	{
 		double rawlength=treatNum.length-startBias-endBias;
-		double binlength=rawlength/binNum; //½«Ã¿Ò»¸ö·Ö¸ôµÄ³¤¶È±ê×¼»¯ÎªÒ»¸ö±ÈÖµ£¬»ù×¼ÎªinvNumÎª1 
+		double binlength=rawlength/binNum; //å°†æ¯ä¸€ä¸ªåˆ†éš”çš„é•¿åº¦æ ‡å‡†åŒ–ä¸ºä¸€ä¸ªæ¯”å€¼ï¼ŒåŸºå‡†ä¸ºinvNumä¸º1 
 		double[] resultBinValue=new double[binNum];
 		for (int i = 1; i <= binNum; i++) 
 		{
-			//Ä³ÇøÓòÄÚtreatNum×î¿¿×ó±ßµÄÒ»¸öÖµ(°üº¬±ß½ç)µÄÏÂ±ê+1£¬ÒòÎªÊı×é¶¼ÊÇ´Ó0¿ªÊ¼µÄ
+			//æŸåŒºåŸŸå†…treatNumæœ€é å·¦è¾¹çš„ä¸€ä¸ªå€¼(åŒ…å«è¾¹ç•Œ)çš„ä¸‹æ ‡+1ï¼Œå› ä¸ºæ•°ç»„éƒ½æ˜¯ä»0å¼€å§‹çš„
 			int leftTreatNum=(int) Math.ceil(binlength*(i-1)+startBias);
-			//×î×ó±ßÖµµÄÈ¨ÖØ
+			//æœ€å·¦è¾¹å€¼çš„æƒé‡
 			double leftweight=leftTreatNum-binlength*(i-1)-startBias;
-			////Ä³ÇøÓòÄÚtreatNum×îÓÒ±ßµÄÒ»¸öÖµ(²»°üº¬±ß½ç)µÄÏÂ±ê+1£¬ÒòÎªÊı×é¶¼ÊÇ´Ó0¿ªÊ¼µÄ
+			////æŸåŒºåŸŸå†…treatNumæœ€å³è¾¹çš„ä¸€ä¸ªå€¼(ä¸åŒ…å«è¾¹ç•Œ)çš„ä¸‹æ ‡+1ï¼Œå› ä¸ºæ•°ç»„éƒ½æ˜¯ä»0å¼€å§‹çš„
 			int rightTreatNum=(int) Math.ceil(binlength*i+startBias);
-			//×îÓÒ±ßÖµµÄÈ¨ÖØ
+			//æœ€å³è¾¹å€¼çš„æƒé‡
 			int rightfloorNum=(int)Math.floor(binlength*i+startBias);
 			double rightweight=binlength*(i)+startBias-rightfloorNum;
 			
-			//////////////////////Èç¹û×óÓÒ¶Ëµã¶¼ÔÚÒ»¸öÇøÓòÄÚ£¬ÄÇÃ´¼ÓÈ¨Æ½¾ù£¬×î´óÖµ£¬¼ÓºÍ¶¼µÈÓÚ¸ÃÇøÓòµÄÖµ/////////////////////////////////////////
+			//////////////////////å¦‚æœå·¦å³ç«¯ç‚¹éƒ½åœ¨ä¸€ä¸ªåŒºåŸŸå†…ï¼Œé‚£ä¹ˆåŠ æƒå¹³å‡ï¼Œæœ€å¤§å€¼ï¼ŒåŠ å’Œéƒ½ç­‰äºè¯¥åŒºåŸŸçš„å€¼/////////////////////////////////////////
 			if (leftTreatNum>rightfloorNum) {
 				resultBinValue[i-1]=treatNum[rightfloorNum];
-				//////////¿´ÊÇ·ñ»á´í£¬¿ÉÉ¾//////////////////////
+				//////////çœ‹æ˜¯å¦ä¼šé”™ï¼Œå¯åˆ //////////////////////
 				if(leftTreatNum-rightfloorNum!=1)
 					System.out.print("mySpline error");
 				////////////////////////////////////////////////////////////
 				continue;
 			}
 			////////////////////////////////////////////////////////////////////////////////////////////////////////
-			//ÖĞ¼äÓĞ¼¸¸öÖµ
+			//ä¸­é—´æœ‰å‡ ä¸ªå€¼
 			int middleNum=rightfloorNum-leftTreatNum;
 			
 			double leftBinlength=-100000;
@@ -592,15 +592,15 @@ public class MathComput {
 				treatNumInbinAll=treatNumInbinAll+treatNum[j];
 				max=Math.max(max,treatNum[j]);
 			}
-			//////////////////¸ù¾İÌõ¼şÑ¡Ôñ¼ÓÈ¨Æ½¾ù»ò×î´óÖµ»ò¼ÓºÍ////////////////////////////////////////////////////////////////
+			//////////////////æ ¹æ®æ¡ä»¶é€‰æ‹©åŠ æƒå¹³å‡æˆ–æœ€å¤§å€¼æˆ–åŠ å’Œ////////////////////////////////////////////////////////////////
 			double tmpValue;
-			if (type==0)//¼ÓÈ¨Æ½¾ù
+			if (type==0)//åŠ æƒå¹³å‡
 				tmpValue=treatNumInbinAll/(leftweight+rightweight+middleNum);
-			else if (type==1) //×î´óÖµ
+			else if (type==1) //æœ€å¤§å€¼
 				tmpValue=max;
 			else if (type==2)
 				tmpValue=treatNumInbinAll;
-			else //Ä¬ÈÏ¼ÓÈ¨Æ½¾ù
+			else //é»˜è®¤åŠ æƒå¹³å‡
 				tmpValue=treatNumInbinAll/(leftweight+rightweight+middleNum);
 			//////////////////////////////////////////////////////////////////////////////////
 			resultBinValue[i-1]=tmpValue;
@@ -609,44 +609,44 @@ public class MathComput {
 	}
 	
 	/**
-	 * ¸ø¶¨Ò»×éÊı(ÓĞË³ĞòµÄÅÅÁĞ)£¬¸ù¾İ¸ø¶¨µÄ·Ö¸îÊı£¬Ö¸¶¨»ñµÃ¼ÓÈ¨Æ½¾ù£¬×îºó»ñµÃÖ¸¶¨·Ö¸îÊıÁ¿µÄÊı×é
-	 * Æ©ÈçÏÖÔÚÓĞint[20]µÄÒ»×éÊı£¬ÎÒÏëÒª°ÑÕâ×éÊıËõĞ¡µ½int[10]ÀïÃæ²¢ÇÒ±£³ÖÆä±ÈÀı´óÌåÎÇºÏ£¬ÕâÊ±ºòÎÒ²ÉÓÃ¼ÓÈ¨Æ½¾ùµÄ·½·¨
-	 * ¼ì²éÁËÒ»±é£¬¸Ğ¾õ¿ÉÒÔ
-	 * ÓÃÓÚ½«500»ò¸ü¶à·İµÄ»ùÒòÖĞtagÀÛ¼ÆÊıËõĞ¡µ½100·İÄÚ
-	 * @param treatNum invNumÀïÃæµÄbp¾ßÌåÖµ
-	 * @param binNum ºóÃæÒªÉú³ÉµÄ·Ö¸îµÄ¿éÊı
-	 * @param startBias ´ÓÆğµãµÄ¶àÉÙ¿ªÊ¼ ×î×ó±ß·Ö¸ôµ½ÆğµãµÄ¾àÀë±ÈÖµ
-	 * @param endBias µ½ÖÕµãµÄ¶àÉÙ½áÊø ×îÓÒ±ß·Ö¸ôµ½ÖÕµãµÄ¾àÀë±ÈÖµ
-	 * @param type 0£º¼ÓÈ¨Æ½¾ù 1£ºÈ¡×î¸ßÖµ£¬2£º¼ÓºÍ
+	 * ç»™å®šä¸€ç»„æ•°(æœ‰é¡ºåºçš„æ’åˆ—)ï¼Œæ ¹æ®ç»™å®šçš„åˆ†å‰²æ•°ï¼ŒæŒ‡å®šè·å¾—åŠ æƒå¹³å‡ï¼Œæœ€åè·å¾—æŒ‡å®šåˆ†å‰²æ•°é‡çš„æ•°ç»„
+	 * è­¬å¦‚ç°åœ¨æœ‰int[20]çš„ä¸€ç»„æ•°ï¼Œæˆ‘æƒ³è¦æŠŠè¿™ç»„æ•°ç¼©å°åˆ°int[10]é‡Œé¢å¹¶ä¸”ä¿æŒå…¶æ¯”ä¾‹å¤§ä½“å»åˆï¼Œè¿™æ—¶å€™æˆ‘é‡‡ç”¨åŠ æƒå¹³å‡çš„æ–¹æ³•
+	 * æ£€æŸ¥äº†ä¸€éï¼Œæ„Ÿè§‰å¯ä»¥
+	 * ç”¨äºå°†500æˆ–æ›´å¤šä»½çš„åŸºå› ä¸­tagç´¯è®¡æ•°ç¼©å°åˆ°100ä»½å†…
+	 * @param treatNum invNumé‡Œé¢çš„bpå…·ä½“å€¼
+	 * @param binNum åé¢è¦ç”Ÿæˆçš„åˆ†å‰²çš„å—æ•°
+	 * @param startBias ä»èµ·ç‚¹çš„å¤šå°‘å¼€å§‹ æœ€å·¦è¾¹åˆ†éš”åˆ°èµ·ç‚¹çš„è·ç¦»æ¯”å€¼
+	 * @param endBias åˆ°ç»ˆç‚¹çš„å¤šå°‘ç»“æŸ æœ€å³è¾¹åˆ†éš”åˆ°ç»ˆç‚¹çš„è·ç¦»æ¯”å€¼
+	 * @param type 0ï¼šåŠ æƒå¹³å‡ 1ï¼šå–æœ€é«˜å€¼ï¼Œ2ï¼šåŠ å’Œ
 	 * @return
 	 */
 	public static double[] mySpline(double[] treatNum, int binNum,double startBias,double endBias,int type) {
 		double rawlength=treatNum.length - startBias - endBias;
-		double binlength=rawlength/binNum; //½«Ã¿Ò»¸ö·Ö¸ôµÄ³¤¶È±ê×¼»¯ÎªÒ»¸ö±ÈÖµ£¬»ù×¼ÎªinvNumÎª1 
+		double binlength=rawlength/binNum; //å°†æ¯ä¸€ä¸ªåˆ†éš”çš„é•¿åº¦æ ‡å‡†åŒ–ä¸ºä¸€ä¸ªæ¯”å€¼ï¼ŒåŸºå‡†ä¸ºinvNumä¸º1 
 		double[] resultBinValue=new double[binNum];
 		for (int i = 1; i <= binNum; i++) 
 		{
-			//Ä³ÇøÓòÄÚtreatNum×î¿¿×ó±ßµÄÒ»¸öÖµ(°üº¬±ß½ç)µÄÏÂ±ê+1£¬ÒòÎªÊı×é¶¼ÊÇ´Ó0¿ªÊ¼µÄ
+			//æŸåŒºåŸŸå†…treatNumæœ€é å·¦è¾¹çš„ä¸€ä¸ªå€¼(åŒ…å«è¾¹ç•Œ)çš„ä¸‹æ ‡+1ï¼Œå› ä¸ºæ•°ç»„éƒ½æ˜¯ä»0å¼€å§‹çš„
 			int leftTreatNum=(int) Math.ceil(binlength*(i-1)+startBias);
-			//×î×ó±ßÖµµÄÈ¨ÖØ
+			//æœ€å·¦è¾¹å€¼çš„æƒé‡
 			double leftweight=leftTreatNum-binlength*(i-1)-startBias;
-			////Ä³ÇøÓòÄÚtreatNum×îÓÒ±ßµÄÒ»¸öÖµ(²»°üº¬±ß½ç)µÄÏÂ±ê+1£¬ÒòÎªÊı×é¶¼ÊÇ´Ó0¿ªÊ¼µÄ
+			////æŸåŒºåŸŸå†…treatNumæœ€å³è¾¹çš„ä¸€ä¸ªå€¼(ä¸åŒ…å«è¾¹ç•Œ)çš„ä¸‹æ ‡+1ï¼Œå› ä¸ºæ•°ç»„éƒ½æ˜¯ä»0å¼€å§‹çš„
 			int rightTreatNum=(int) Math.ceil(binlength*i+startBias);
-			//×îÓÒ±ßÖµµÄÈ¨ÖØ
+			//æœ€å³è¾¹å€¼çš„æƒé‡
 			int rightfloorNum=(int)Math.floor(binlength*i+startBias);
 			double rightweight=binlength*(i)+startBias-rightfloorNum;
 			
-			//////////////////////Èç¹û×óÓÒ¶Ëµã¶¼ÔÚÒ»¸öÇøÓòÄÚ£¬ÄÇÃ´¼ÓÈ¨Æ½¾ù£¬×î´óÖµ£¬¼ÓºÍ¶¼µÈÓÚ¸ÃÇøÓòµÄÖµ/////////////////////////////////////////
+			//////////////////////å¦‚æœå·¦å³ç«¯ç‚¹éƒ½åœ¨ä¸€ä¸ªåŒºåŸŸå†…ï¼Œé‚£ä¹ˆåŠ æƒå¹³å‡ï¼Œæœ€å¤§å€¼ï¼ŒåŠ å’Œéƒ½ç­‰äºè¯¥åŒºåŸŸçš„å€¼/////////////////////////////////////////
 			if (leftTreatNum>rightfloorNum) {
 				resultBinValue[i-1]=treatNum[rightfloorNum];
-				//////////¿´ÊÇ·ñ»á´í£¬¿ÉÉ¾//////////////////////
+				//////////çœ‹æ˜¯å¦ä¼šé”™ï¼Œå¯åˆ //////////////////////
 				if(leftTreatNum-rightfloorNum!=1)
 					System.out.print("mySpline error");
 				////////////////////////////////////////////////////////////
 				continue;
 			}
 			////////////////////////////////////////////////////////////////////////////////////////////////////////
-			//ÖĞ¼äÓĞ¼¸¸öÖµ
+			//ä¸­é—´æœ‰å‡ ä¸ªå€¼
 			int middleNum=rightfloorNum-leftTreatNum;
 			
 			double leftBinlength=-100000;
@@ -669,15 +669,15 @@ public class MathComput {
 				treatNumInbinAll=treatNumInbinAll+treatNum[j];
 				max=Math.max(max,treatNum[j]);
 			}
-			//////////////////¸ù¾İÌõ¼şÑ¡Ôñ¼ÓÈ¨Æ½¾ù»ò×î´óÖµ»ò¼ÓºÍ////////////////////////////////////////////////////////////////
+			//////////////////æ ¹æ®æ¡ä»¶é€‰æ‹©åŠ æƒå¹³å‡æˆ–æœ€å¤§å€¼æˆ–åŠ å’Œ////////////////////////////////////////////////////////////////
 			double tmpValue;
-			if (type==0)//¼ÓÈ¨Æ½¾ù
+			if (type==0)//åŠ æƒå¹³å‡
 				tmpValue=treatNumInbinAll/(leftweight+rightweight+middleNum);
-			else if (type==1) //×î´óÖµ
+			else if (type==1) //æœ€å¤§å€¼
 				tmpValue=max;
 			else if (type==2)
 				tmpValue=treatNumInbinAll;
-			else //Ä¬ÈÏ¼ÓÈ¨Æ½¾ù
+			else //é»˜è®¤åŠ æƒå¹³å‡
 				tmpValue=treatNumInbinAll/(leftweight+rightweight+middleNum);
 			//////////////////////////////////////////////////////////////////////////////////
 			resultBinValue[i-1]=tmpValue;
@@ -687,23 +687,23 @@ public class MathComput {
 
 	
 	/**
-	 * Õâ¸öÔİÊ±ÊÇÎªº«Ñà×öµÄ
-	 * ¸ø¶¨Ò»×éÊı(ÓĞË³ĞòµÄÅÅÁĞ)£¬¸ù¾İ¸ø¶¨µÄ·Ö¸îÊı£¬Ö¸¶¨½øĞĞºÏ²¢£¬×îºó»ñµÃÖ¸¶¨·Ö¸îÊıÁ¿µÄÊı×é
-	 * ÓÃÓÚ½«500»ò¸ü¶à·İµÄ»ùÒòÖĞtagÀÛ¼ÆÊıËõĞ¡µ½100·İÄÚ
-	 * @param treatNum invNumÀïÃæµÄbp¾ßÌåÖµ
-	 * @param invBpNum Ã¿Ò»¿éÀïÃæµÄbpÊı£¬±È·½º«ÑàµÄÒªÇóÊÇ3¸öbpÒ»¸öcodingÕâÃ´»®·Ö
-	 * @param startBp ´ÓÆğµãµÄµÚ¼¸¸öBp¿ªÊ¼£¬Êµ¼ÊÆğµã£¬´Ó1¿ªÊ¼¼ÇÊı¡£ÒòÎªĞòÁĞ²»Ò»¶¨ÊÇ3µÄ±¶Êı£¬ÄÇÃ´ÎÒÃÇÖ¸¶¨´ÓÆğµãµÄµÚ¼¸¸öbp¿ªÊ¼£¬´Ó¸ÃBp(<b>°üÀ¨¸ÃBp</b>)½øĞĞ»®·Ö
-	 * £¬Õâ¸öÖµ×îºÃĞ¡ÓÚinvBpNum
-	 * @param Num Ñ¡Ôñ¸ÃinvBpÖĞ£¬Ò²¾ÍÊÇ3¸öbpÖĞµÚ¼¸¸ö×÷Îª×îºóµÄ½á¹û£¬´Ó1¿ªÊ¼¼ÆÊı¡£ÄÇÃ´º«ÑàµÄ»°£¬Ó¦¸ÃÑ¡Ôñ×îºóÒ»¸ö--Ò²¾ÍÊÇµÚÈı¸öbpµÄ½á¹û×÷Îª»®·ÖµÄ½á¹û
-	 * Ò²¾ÍÊÇËµº«ÑàµÄÉèÖÃÓ¦¸ÃÎª3
+	 * è¿™ä¸ªæš‚æ—¶æ˜¯ä¸ºéŸ©ç‡•åšçš„
+	 * ç»™å®šä¸€ç»„æ•°(æœ‰é¡ºåºçš„æ’åˆ—)ï¼Œæ ¹æ®ç»™å®šçš„åˆ†å‰²æ•°ï¼ŒæŒ‡å®šè¿›è¡Œåˆå¹¶ï¼Œæœ€åè·å¾—æŒ‡å®šåˆ†å‰²æ•°é‡çš„æ•°ç»„
+	 * ç”¨äºå°†500æˆ–æ›´å¤šä»½çš„åŸºå› ä¸­tagç´¯è®¡æ•°ç¼©å°åˆ°100ä»½å†…
+	 * @param treatNum invNumé‡Œé¢çš„bpå…·ä½“å€¼
+	 * @param invBpNum æ¯ä¸€å—é‡Œé¢çš„bpæ•°ï¼Œæ¯”æ–¹éŸ©ç‡•çš„è¦æ±‚æ˜¯3ä¸ªbpä¸€ä¸ªcodingè¿™ä¹ˆåˆ’åˆ†
+	 * @param startBp ä»èµ·ç‚¹çš„ç¬¬å‡ ä¸ªBpå¼€å§‹ï¼Œå®é™…èµ·ç‚¹ï¼Œä»1å¼€å§‹è®°æ•°ã€‚å› ä¸ºåºåˆ—ä¸ä¸€å®šæ˜¯3çš„å€æ•°ï¼Œé‚£ä¹ˆæˆ‘ä»¬æŒ‡å®šä»èµ·ç‚¹çš„ç¬¬å‡ ä¸ªbpå¼€å§‹ï¼Œä»è¯¥Bp(<b>åŒ…æ‹¬è¯¥Bp</b>)è¿›è¡Œåˆ’åˆ†
+	 * ï¼Œè¿™ä¸ªå€¼æœ€å¥½å°äºinvBpNum
+	 * @param Num é€‰æ‹©è¯¥invBpä¸­ï¼Œä¹Ÿå°±æ˜¯3ä¸ªbpä¸­ç¬¬å‡ ä¸ªä½œä¸ºæœ€åçš„ç»“æœï¼Œä»1å¼€å§‹è®¡æ•°ã€‚é‚£ä¹ˆéŸ©ç‡•çš„è¯ï¼Œåº”è¯¥é€‰æ‹©æœ€åä¸€ä¸ª--ä¹Ÿå°±æ˜¯ç¬¬ä¸‰ä¸ªbpçš„ç»“æœä½œä¸ºåˆ’åˆ†çš„ç»“æœ
+	 * ä¹Ÿå°±æ˜¯è¯´éŸ©ç‡•çš„è®¾ç½®åº”è¯¥ä¸º3
 	 * @return
 	 */
 	public static double[] mySpline(double[] treatNum, int invBpNum,int startBp,int Num)
 	{
-		//ËÄÉáÎåÈë»ñµÃ³¤¶È
+		//å››èˆäº”å…¥è·å¾—é•¿åº¦
 		int length = (int)((double)(treatNum.length - startBp + 1)/invBpNum + 0.5);
 		double[] result = new double[length]; int k = 0; int m = 0;
-		//startBp - 2 startbpÊÇÊµ¼ÊÎ»ÖÃ£¬ÏòÇ°ÍËÒ»Î»ÊÇ´Ó0¿ªÊ¼µÄ±¾Î»µã£¬ÔÚÏòÇ°ÍËÒ»Î»ÊÇÇ°Ò»Î»µã£¬È»ºó¼ÓÉÏNumÆ«ÒÆ
+		//startBp - 2 startbpæ˜¯å®é™…ä½ç½®ï¼Œå‘å‰é€€ä¸€ä½æ˜¯ä»0å¼€å§‹çš„æœ¬ä½ç‚¹ï¼Œåœ¨å‘å‰é€€ä¸€ä½æ˜¯å‰ä¸€ä½ç‚¹ï¼Œç„¶ååŠ ä¸ŠNumåç§»
 		for (int i = startBp - 2 + Num; i < treatNum.length; i++) {
 			if (m%invBpNum == 0) {
 				result[k] = treatNum[i];
@@ -715,31 +715,31 @@ public class MathComput {
 	}
 	
 	/**
-	 * Õâ¸öÊÇÎªº«Ñà×öµÄ
-	 * ¸ø¶¨Ò»¸öÊı×é£¬Ö¸¶¨ATGËùÔÚµÄÎ»ÖÃ(Êµ¼ÊÎ»ÖÃ)£¬È»ºó´Ó¸ÃÎ»ÖÃÏòÇ°(¿ªÇø¼ä)£¬Ïòºó(±ÕÇø¼ä)£¬¸ù¾İ¸ø¶¨µÄ·Ö¸îÊı£¬Ö¸¶¨½øĞĞºÏ²¢£¬×îºó»ñµÃÖ¸¶¨·Ö¸îÊıÁ¿µÄÊı×é
-	 * ÓÃÓÚ½«500»ò¸ü¶à·İµÄ»ùÒòÖĞtagÀÛ¼ÆÊıËõĞ¡µ½100·İÄÚ
-	 * @param treatNum invNumÀïÃæµÄbp¾ßÌåÖµ
-	 * @param invBpNum Ã¿Ò»¿éÀïÃæµÄbpÊı£¬±È·½º«ÑàµÄÒªÇóÊÇ3¸öbpÒ»¸öcodingÕâÃ´»®·Ö
-	 * @param ATGsite ´ÓÆğµãµÄµÚ¼¸¸öBp¿ªÊ¼(Êµ¼ÊÎ»µã)£¬ÒòÎªĞòÁĞ²»Ò»¶¨ÊÇ3µÄ±¶Êı£¬ÄÇÃ´ÎÒÃÇÖ¸¶¨´ÓÆğµãµÄµÚ¼¸¸öbp¿ªÊ¼£¬´Ó¸ÃBp(<b>Ò²¾ÍÊÇATGµÄÊµ¼ÊÎ»µã£¬°üÀ¨¸ÃBp</b>)½øĞĞ»®·Ö
-	 * £¬Õâ¸öÖµ×îºÃĞ¡ÓÚinvBpNum
-	 * @param Num Ñ¡Ôñ¸ÃinvBpÖĞ£¬Ò²¾ÍÊÇ3¸öbpÖĞµÚ¼¸¸ö×÷Îª×îºóµÄ½á¹û£¬´Ó1¿ªÊ¼¼ÆÊı¡£ÄÇÃ´º«ÑàµÄ»°£¬Ó¦¸ÃÑ¡Ôñ×îºóÒ»¸ö--Ò²¾ÍÊÇµÚÈı¸öbpµÄ½á¹û×÷Îª»®·ÖµÄ½á¹û
-	 * Ò²¾ÍÊÇËµº«ÑàµÄÉèÖÃÓ¦¸ÃÎª3
+	 * è¿™ä¸ªæ˜¯ä¸ºéŸ©ç‡•åšçš„
+	 * ç»™å®šä¸€ä¸ªæ•°ç»„ï¼ŒæŒ‡å®šATGæ‰€åœ¨çš„ä½ç½®(å®é™…ä½ç½®)ï¼Œç„¶åä»è¯¥ä½ç½®å‘å‰(å¼€åŒºé—´)ï¼Œå‘å(é—­åŒºé—´)ï¼Œæ ¹æ®ç»™å®šçš„åˆ†å‰²æ•°ï¼ŒæŒ‡å®šè¿›è¡Œåˆå¹¶ï¼Œæœ€åè·å¾—æŒ‡å®šåˆ†å‰²æ•°é‡çš„æ•°ç»„
+	 * ç”¨äºå°†500æˆ–æ›´å¤šä»½çš„åŸºå› ä¸­tagç´¯è®¡æ•°ç¼©å°åˆ°100ä»½å†…
+	 * @param treatNum invNumé‡Œé¢çš„bpå…·ä½“å€¼
+	 * @param invBpNum æ¯ä¸€å—é‡Œé¢çš„bpæ•°ï¼Œæ¯”æ–¹éŸ©ç‡•çš„è¦æ±‚æ˜¯3ä¸ªbpä¸€ä¸ªcodingè¿™ä¹ˆåˆ’åˆ†
+	 * @param ATGsite ä»èµ·ç‚¹çš„ç¬¬å‡ ä¸ªBpå¼€å§‹(å®é™…ä½ç‚¹)ï¼Œå› ä¸ºåºåˆ—ä¸ä¸€å®šæ˜¯3çš„å€æ•°ï¼Œé‚£ä¹ˆæˆ‘ä»¬æŒ‡å®šä»èµ·ç‚¹çš„ç¬¬å‡ ä¸ªbpå¼€å§‹ï¼Œä»è¯¥Bp(<b>ä¹Ÿå°±æ˜¯ATGçš„å®é™…ä½ç‚¹ï¼ŒåŒ…æ‹¬è¯¥Bp</b>)è¿›è¡Œåˆ’åˆ†
+	 * ï¼Œè¿™ä¸ªå€¼æœ€å¥½å°äºinvBpNum
+	 * @param Num é€‰æ‹©è¯¥invBpä¸­ï¼Œä¹Ÿå°±æ˜¯3ä¸ªbpä¸­ç¬¬å‡ ä¸ªä½œä¸ºæœ€åçš„ç»“æœï¼Œä»1å¼€å§‹è®¡æ•°ã€‚é‚£ä¹ˆéŸ©ç‡•çš„è¯ï¼Œåº”è¯¥é€‰æ‹©æœ€åä¸€ä¸ª--ä¹Ÿå°±æ˜¯ç¬¬ä¸‰ä¸ªbpçš„ç»“æœä½œä¸ºåˆ’åˆ†çš„ç»“æœ
+	 * ä¹Ÿå°±æ˜¯è¯´éŸ©ç‡•çš„è®¾ç½®åº”è¯¥ä¸º3
 	 * @return
 	 */
 	public static double[] mySplineHY(double[] treatNum, int invBpNum,int ATGsite,int Num)
 	{
-		//ËÄÉáÎåÈë»ñµÃ³¤¶È
+		//å››èˆäº”å…¥è·å¾—é•¿åº¦
 		int lengthDown = (int)Math.ceil((double)(treatNum.length - ATGsite + 1)/invBpNum);
 		int lengthUp = (int)Math.ceil((double)(ATGsite -  1)/invBpNum);
 		double[] result = new double[lengthDown + lengthUp];
 		
 		int k = lengthUp;
-		//ºó°ë²¿·Ö
+		//ååŠéƒ¨åˆ†
 		for (int i = ATGsite - 1; i < treatNum.length + 1 - Num;  i = i + invBpNum) {
 			result[k] = treatNum[i + Num - 1];
 			k++;
 		}
-		//Ç°°ë²¿·Ö
+		//å‰åŠéƒ¨åˆ†
 		k = lengthUp - 1;
 		for (int i = ATGsite - 1 - invBpNum; i >= 1-Num; i = i - invBpNum) {
 			result[k] = treatNum[i + Num - 1];
@@ -750,8 +750,8 @@ public class MathComput {
 	
 	
 	/**
-	 * ½« aArrayÓëbArrayÏà¼Ó£¬×îºó½á¹û±£´æÔÚaArrayÖĞ
-	 * Èç¹ûbArray==null£¬ÔòÖ±½Ó·µ»ØaArray£¬µ«ÊÇ»ásystem.out.println±¨´í
+	 * å°† aArrayä¸bArrayç›¸åŠ ï¼Œæœ€åç»“æœä¿å­˜åœ¨aArrayä¸­
+	 * å¦‚æœbArray==nullï¼Œåˆ™ç›´æ¥è¿”å›aArrayï¼Œä½†æ˜¯ä¼šsystem.out.printlnæŠ¥é”™
 	 * @param aArray
 	 * @param bArray
 	 * @return
@@ -772,9 +772,9 @@ public class MathComput {
 	
 	
 	/**
-	 * ½« aArrayÓëbArrayÕûºÏÔÚÒ»Æğ²¢¼ÆËãaºÍbÃ¿¸ö²¿·Ö·Ö±ğµÄ±ÈÀı¡£aArrayºÍbArrayµÄ³¤¶È±ØĞëÒ»ÖÂ
-	 * @param aArray ÊµÑé×éÊı¾İ
-	 * @param bArray ¶ÔÕÕ×éÊı¾İ£¬Ò²¾ÍÊÇ±³¾°
+	 * å°† aArrayä¸bArrayæ•´åˆåœ¨ä¸€èµ·å¹¶è®¡ç®—aå’Œbæ¯ä¸ªéƒ¨åˆ†åˆ†åˆ«çš„æ¯”ä¾‹ã€‚aArrayå’ŒbArrayçš„é•¿åº¦å¿…é¡»ä¸€è‡´
+	 * @param aArray å®éªŒç»„æ•°æ®
+	 * @param bArray å¯¹ç…§ç»„æ•°æ®ï¼Œä¹Ÿå°±æ˜¯èƒŒæ™¯
 	 * @return
 	 */
 	public static String[][] batStatistic(long[] aArray,long[] bArray,String[] item,String aName,String bName) 
@@ -806,8 +806,8 @@ public class MathComput {
 	
 
 	/**
-	 * ¸ø¶¨pvaule£¬»ñµÃÏàÓ¦µÄfdr£¬ÓÃRÀ´¼ÆËãµÄ<br>
-	 * Ê¹ÓÃRµÄworkspaceÄ¿Ç°ÔÚ  /media/winE/Bioinformatics/R/practice_script/platform/pvalue2fdr/  ÖĞ
+	 * ç»™å®špvauleï¼Œè·å¾—ç›¸åº”çš„fdrï¼Œç”¨Ræ¥è®¡ç®—çš„<br>
+	 * ä½¿ç”¨Rçš„workspaceç›®å‰åœ¨  /media/winE/Bioinformatics/R/practice_script/platform/pvalue2fdr/  ä¸­
 	 * @param lsPvalue
 	 * @return
 	 * @throws Exception 
@@ -831,7 +831,7 @@ public class MathComput {
 	}
 	
 	private static void getPvalue(String RworkSpace) throws Exception{
-		//Õâ¸ö¾ÍÊÇÏà¶ÔÂ·¾¶£¬±ØĞëÔÚµ±Ç°ÎÄ¼ş¼ĞÏÂÔËĞĞ
+		//è¿™ä¸ªå°±æ˜¯ç›¸å¯¹è·¯å¾„ï¼Œå¿…é¡»åœ¨å½“å‰æ–‡ä»¶å¤¹ä¸‹è¿è¡Œ
 		String command="Rscript "+RworkSpace+ "pvalue2Fdr.R";
 		Runtime   r=Runtime.getRuntime();
 		Process p = r.exec(command);
@@ -843,9 +843,9 @@ public class MathComput {
 	
 	
 	/**
-	 * ½«ListÖĞµÄÊı×Ö°´ÕÕĞĞÈ¡ÖĞÎ»Êı£¬Ò²¾ÍÊÇÃ¿Ò»¸öNumber[]È¡Ò»¸öÖĞÎ»Êı
-	 * ËùÒÔ²»ÒªÇóNumbers[]µÄ³¤¶ÈÏàµÈ¡£
-	 * ÅÅĞòÊıÁ¿²»ÒªÌ«´ó£¬±ğ³¬¹ıÁËÄÚ´æÏŞÖÆ
+	 * å°†Listä¸­çš„æ•°å­—æŒ‰ç…§è¡Œå–ä¸­ä½æ•°ï¼Œä¹Ÿå°±æ˜¯æ¯ä¸€ä¸ªNumber[]å–ä¸€ä¸ªä¸­ä½æ•°
+	 * æ‰€ä»¥ä¸è¦æ±‚Numbers[]çš„é•¿åº¦ç›¸ç­‰ã€‚
+	 * æ’åºæ•°é‡ä¸è¦å¤ªå¤§ï¼Œåˆ«è¶…è¿‡äº†å†…å­˜é™åˆ¶
 	 * @return
 	 */
 	public static double[] getMediaByRow(List<? extends Number []> lsNum) {
@@ -862,9 +862,9 @@ public class MathComput {
 	
 	
 	/**
-	 * ½«ListÖĞµÄÊı×Ö°´ÕÕĞĞÈ¡ÖĞÎ»Êı£¬Ò²¾ÍÊÇÃ¿Ò»¸ödouble[]È¡Ò»¸öÖĞÎ»Êı
-	 * ËùÒÔ²»ÒªÇódoubles[]µÄ³¤¶ÈÏàµÈ¡£
-	 * ÅÅĞòÊıÁ¿²»ÒªÌ«´ó£¬±ğ³¬¹ıÁËÄÚ´æÏŞÖÆ
+	 * å°†Listä¸­çš„æ•°å­—æŒ‰ç…§è¡Œå–ä¸­ä½æ•°ï¼Œä¹Ÿå°±æ˜¯æ¯ä¸€ä¸ªdouble[]å–ä¸€ä¸ªä¸­ä½æ•°
+	 * æ‰€ä»¥ä¸è¦æ±‚doubles[]çš„é•¿åº¦ç›¸ç­‰ã€‚
+	 * æ’åºæ•°é‡ä¸è¦å¤ªå¤§ï¼Œåˆ«è¶…è¿‡äº†å†…å­˜é™åˆ¶
 	 * @return
 	 */
 	public static double[] getMediaByRowdou(List<double[]> lsNum) {
@@ -877,9 +877,9 @@ public class MathComput {
 	}
 	
 	/**
-	 * ½«ListÖĞµÄÊı×Ö°´ÕÕÁĞ£¬Ò²¾ÍÊÇÒÀ´ÎÃ¿Ò»ĞĞµÄNumberÈ¡Ò»¸öÖµ£¬Ëã¸ÃÁĞµÄÆ½¾ùÊı
-	 * ËùÒÔÒªÇóNumbers[]µÄ³¤¶ÈÏàµÈ¡£
-	 * ÅÅĞòÊıÁ¿²»ÒªÌ«´ó£¬±ğ³¬¹ıÁËÄÚ´æÏŞÖÆ
+	 * å°†Listä¸­çš„æ•°å­—æŒ‰ç…§åˆ—ï¼Œä¹Ÿå°±æ˜¯ä¾æ¬¡æ¯ä¸€è¡Œçš„Numberå–ä¸€ä¸ªå€¼ï¼Œç®—è¯¥åˆ—çš„å¹³å‡æ•°
+	 * æ‰€ä»¥è¦æ±‚Numbers[]çš„é•¿åº¦ç›¸ç­‰ã€‚
+	 * æ’åºæ•°é‡ä¸è¦å¤ªå¤§ï¼Œåˆ«è¶…è¿‡äº†å†…å­˜é™åˆ¶
 	 * @return
 	 */
 	public static double[] getMediaByCol(List<? extends Number []> lsNum) {
@@ -898,9 +898,9 @@ public class MathComput {
 	
 	
 	/**
-	 * ½«ListÖĞµÄÊı×Ö°´ÕÕÁĞ£¬Ò²¾ÍÊÇÒÀ´ÎÃ¿Ò»ĞĞµÄNumberÈ¡Ò»¸öÖµ£¬Ëã¸ÃÁĞµÄÆ½¾ùÊı
-	 * ËùÒÔÒªÇódoubles[]µÄ³¤¶ÈÏàµÈ¡£
-	 * ÅÅĞòÊıÁ¿²»ÒªÌ«´ó£¬±ğ³¬¹ıÁËÄÚ´æÏŞÖÆ
+	 * å°†Listä¸­çš„æ•°å­—æŒ‰ç…§åˆ—ï¼Œä¹Ÿå°±æ˜¯ä¾æ¬¡æ¯ä¸€è¡Œçš„Numberå–ä¸€ä¸ªå€¼ï¼Œç®—è¯¥åˆ—çš„å¹³å‡æ•°
+	 * æ‰€ä»¥è¦æ±‚doubles[]çš„é•¿åº¦ç›¸ç­‰ã€‚
+	 * æ’åºæ•°é‡ä¸è¦å¤ªå¤§ï¼Œåˆ«è¶…è¿‡äº†å†…å­˜é™åˆ¶
 	 * @return
 	 */
 	public static double[] getMediaByColdou(List<double[]> lsNum) 
@@ -919,9 +919,9 @@ public class MathComput {
 	}
 	
 	/**
-	 * ½«ListÖĞµÄÊı×Ö°´ÕÕÁĞ£¬Ò²¾ÍÊÇÒÀ´ÎÃ¿Ò»ĞĞµÄNumberÈ¡Ò»¸öÖµ£¬Ëã¸ÃÁĞµÄÆ½¾ùÊı
-	 * ËùÒÔÒªÇódoubles[]µÄ³¤¶ÈÏàµÈ¡£
-	 * ÅÅĞòÊıÁ¿²»ÒªÌ«´ó£¬±ğ³¬¹ıÁËÄÚ´æÏŞÖÆ
+	 * å°†Listä¸­çš„æ•°å­—æŒ‰ç…§åˆ—ï¼Œä¹Ÿå°±æ˜¯ä¾æ¬¡æ¯ä¸€è¡Œçš„Numberå–ä¸€ä¸ªå€¼ï¼Œç®—è¯¥åˆ—çš„å¹³å‡æ•°
+	 * æ‰€ä»¥è¦æ±‚doubles[]çš„é•¿åº¦ç›¸ç­‰ã€‚
+	 * æ’åºæ•°é‡ä¸è¦å¤ªå¤§ï¼Œåˆ«è¶…è¿‡äº†å†…å­˜é™åˆ¶
 	 * @return
 	 */
 	public static double[] getMeanByColdou(List<double[]> lsNum) 
@@ -940,16 +940,16 @@ public class MathComput {
 	}
 	
 	/**
-	 * ¸ø¶¨Ò»×éÇøÓò£¬Ê×ÏÈÅÅĞò£¬È»ºó½«ÇøÓò°¤µÄºÜ½ü--Ğ¡ÓÚdistance--µÄÇøÓòºÏ²¢ÎªÒ»¸ö£¬×îºó·µ»ØºÏ²¢ºóµÄÇøÓòlist
-	 * ÅÅĞòÖ»°´ÕÕµÚÒ»¸öÇø¼ä½øĞĞÅÅĞò£¬´ÓĞ¡µ½´óÅÅÁĞ
-	 * @param lsNum ÇøÓòlist£¬Ã¿¸öÎªdouble[0]Æğµã×ø±ê¡£double[1] ÖÕµã×ø±ê ±ØĞëÆğµãĞ¡ÓÚÖÕµã
-	 * @param distance£¬Ğ¡ÓÚ0¾ÍÄ¬ÈÏÎª0£¬¼´Ö»ºÏ²¢ÖØµşµÄÇøÓò
+	 * ç»™å®šä¸€ç»„åŒºåŸŸï¼Œé¦–å…ˆæ’åºï¼Œç„¶åå°†åŒºåŸŸæŒ¨çš„å¾ˆè¿‘--å°äºdistance--çš„åŒºåŸŸåˆå¹¶ä¸ºä¸€ä¸ªï¼Œæœ€åè¿”å›åˆå¹¶åçš„åŒºåŸŸlist
+	 * æ’åºåªæŒ‰ç…§ç¬¬ä¸€ä¸ªåŒºé—´è¿›è¡Œæ’åºï¼Œä»å°åˆ°å¤§æ’åˆ—
+	 * @param lsNum åŒºåŸŸlistï¼Œæ¯ä¸ªä¸ºdouble[0]èµ·ç‚¹åæ ‡ã€‚double[1] ç»ˆç‚¹åæ ‡ å¿…é¡»èµ·ç‚¹å°äºç»ˆç‚¹
+	 * @param distanceï¼Œå°äº0å°±é»˜è®¤ä¸º0ï¼Œå³åªåˆå¹¶é‡å çš„åŒºåŸŸ
 	 * @return
 	 */
 	public static ArrayList<double[]>  combInterval(List<double[]> lsNum, double distance) 
 	{
 		Collections.sort(lsNum, new Comparator<double[]>() {
-			//´ÓĞ¡µ½´óÅÅĞò
+			//ä»å°åˆ°å¤§æ’åº
 			@Override
 			public int compare(double[] o1, double[] o2) {
 				if (o1[0] < o2 [0]) 
@@ -987,23 +987,23 @@ public class MathComput {
 	
 	/**
 	 * 
-	 * ¸ø¶¨Ò»×éÊı£¬½«Á½¸ö½Ó½ü¾àÀëĞ¡ÓÚdistanceµÄÊıºÏ²¢£¬±£ÁôÈ¨ÖØ´óµÄÄÇÒ»¸ö
-	 * ×îºó·µ»Ø°´ÕÕÎ»ÖÃ½øĞĞÅÅĞòµÄ½á¹û
-	 * @param lsNum double[2] 0:Êı×Ö 1:È¨ÖØ
-	 * @param distance Êı×ÖµÄ¾àÀë£¬²»ÄÜĞ¡ÓÚ¸ÃÖµ
-	 * @param max true Ñ¡ÔñÈ¨ÖØ×î´óµÄ£¬minÑ¡ÔñÈ¨ÖØ×îĞ¡µÄ
+	 * ç»™å®šä¸€ç»„æ•°ï¼Œå°†ä¸¤ä¸ªæ¥è¿‘è·ç¦»å°äºdistanceçš„æ•°åˆå¹¶ï¼Œä¿ç•™æƒé‡å¤§çš„é‚£ä¸€ä¸ª
+	 * æœ€åè¿”å›æŒ‰ç…§ä½ç½®è¿›è¡Œæ’åºçš„ç»“æœ
+	 * @param lsNum double[2] 0:æ•°å­— 1:æƒé‡
+	 * @param distance æ•°å­—çš„è·ç¦»ï¼Œä¸èƒ½å°äºè¯¥å€¼
+	 * @param max true é€‰æ‹©æƒé‡æœ€å¤§çš„ï¼Œminé€‰æ‹©æƒé‡æœ€å°çš„
 	 * @return
 	 */
 	public static ArrayList<double[]>  combLs(List<double[]> lsNum, double distance, boolean max) {
 		Collections.sort(lsNum, new Comparator<double[]>() {
-			//´ÓĞ¡µ½´óÅÅĞò
+			//ä»å°åˆ°å¤§æ’åº
 			public int compare(double[] o1, double[] o2) {
 				if (o1[0] == o2 [0]) return 0;
 				return o1[0] < o2[0] ? -1:1;
 			}});
-		//×î´óµÄÒ»¸öÊı
+		//æœ€å¤§çš„ä¸€ä¸ªæ•°
 		double bigNum = lsNum.get(lsNum.size() -1)[0];
-		double binNum =  (bigNum - lsNum.get(0)[0])/distance;//×îºóÄÜÇĞ¸î³É¶àÉÙ·İ
+		double binNum =  (bigNum - lsNum.get(0)[0])/distance;//æœ€åèƒ½åˆ‡å‰²æˆå¤šå°‘ä»½
 		
 		int lastInsertNum = 0;
 		int insertNum = 0;
@@ -1016,7 +1016,7 @@ public class MathComput {
 					if (o1[0] == o2 [0]) return 0;
 					return o1[0] < o2[0] ? -1:1;
 				} });
-			//½ØÈ¡ÏàÓ¦µÄÇøÓò
+			//æˆªå–ç›¸åº”çš„åŒºåŸŸ
 			List<double[]> lsTmp = null;
 			if (insertNum >= 0) {
 				insertNum ++;
@@ -1037,9 +1037,9 @@ public class MathComput {
 	
 	
 	/**
-	 * ÕÒµ½Õâ¸öĞòÁĞÖĞÈ¨ÖØ×î´óµÄÒ»Ïî£¬Ã»ÓĞÔò·µ»Ønull
-	 * @param lsNum 0:Êı×Ö 1:È¨ÖØ
-	 * @param max true Ñ¡ÔñÈ¨ÖØ×î´óµÄ£¬minÑ¡ÔñÈ¨ÖØ×îĞ¡µÄ
+	 * æ‰¾åˆ°è¿™ä¸ªåºåˆ—ä¸­æƒé‡æœ€å¤§çš„ä¸€é¡¹ï¼Œæ²¡æœ‰åˆ™è¿”å›null
+	 * @param lsNum 0:æ•°å­— 1:æƒé‡
+	 * @param max true é€‰æ‹©æƒé‡æœ€å¤§çš„ï¼Œminé€‰æ‹©æƒé‡æœ€å°çš„
 	 * @return
 	 */
 	private static double[] getBigestWeight(List<double[]> lsNum, boolean max)
@@ -1066,11 +1066,11 @@ public class MathComput {
 		return result;
 	}
 	
-//////////////////////////// java °æµÄ fdr ¼ÆËã£¬ BH ·½·¨ //////////////////////////////////////////////////////////////////////////////////
+//////////////////////////// java ç‰ˆçš„ fdr è®¡ç®—ï¼Œ BH æ–¹æ³• //////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * ¸ø¶¨pvaule£¬»ñµÃÏàÓ¦µÄfdr£¬ÓÃjavaÀ´¼ÆËãµÄ<br>
+	 * ç»™å®špvauleï¼Œè·å¾—ç›¸åº”çš„fdrï¼Œç”¨javaæ¥è®¡ç®—çš„<br>
 	 * @param lsPvalue
-	 * @return ·µ»Ø¸úÊäÈëÒ»ÖÂË³ĞòµÄfdrlist
+	 * @return è¿”å›è·Ÿè¾“å…¥ä¸€è‡´é¡ºåºçš„fdrlist
 	 * @throws Exception 
 	 */
 	public static ArrayList<Double> pvalue2Fdr(Collection<Double> lsPvalue) {

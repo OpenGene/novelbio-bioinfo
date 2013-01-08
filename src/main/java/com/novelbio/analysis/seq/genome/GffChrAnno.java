@@ -28,7 +28,7 @@ import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.NovelBioConst;
 
 /**
- * Ö÷Òª×ö»ùÒò¶¨Î»µÄ¹¤×÷
+ * ä¸»è¦åšåŸºå› å®šä½çš„å·¥ä½œ
  * @author zong0jie
  *
  */
@@ -46,8 +46,8 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 	
 	
 	GffChrAbs gffChrAbs;
-	/** true²éÕÒpeakµÄ×î¸ßµã£¬Ò²¾ÍÊÇÕÒµ¥¸öµã£¬
-	 * false²éÕÒpeakÁ½¶Ë£¬¿´¼Ğ×¡ÁËÊ²Ã´»ùÒò
+	/** trueæŸ¥æ‰¾peakçš„æœ€é«˜ç‚¹ï¼Œä¹Ÿå°±æ˜¯æ‰¾å•ä¸ªç‚¹ï¼Œ
+	 * falseæŸ¥æ‰¾peakä¸¤ç«¯ï¼Œçœ‹å¤¹ä½äº†ä»€ä¹ˆåŸºå› 
 	 *  */
 	boolean searchSummit = false;
 	
@@ -102,9 +102,9 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 		this.colSummit = colSummit - 1;
 		searchSummit = true;
 	}
-	/** true²éÕÒpeakµÄ×î¸ßµã£¬Ò²¾ÍÊÇÕÒµ¥¸öµã£¬
-	 * false²éÕÒpeakÁ½¶Ë£¬¿´¼Ğ×¡ÁËÊ²Ã´»ùÒò
-	 * Ä¬ÈÏfalse
+	/** trueæŸ¥æ‰¾peakçš„æœ€é«˜ç‚¹ï¼Œä¹Ÿå°±æ˜¯æ‰¾å•ä¸ªç‚¹ï¼Œ
+	 * falseæŸ¥æ‰¾peakä¸¤ç«¯ï¼Œçœ‹å¤¹ä½äº†ä»€ä¹ˆåŸºå› 
+	 * é»˜è®¤false
 	 *  */
 	public void setSearchSummit(boolean searchSummit) {
 		this.searchSummit = searchSummit;
@@ -137,8 +137,8 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 	}
 	
 	/**
-	 * Ê×ÏÈÉè¶¨ĞèÒª×¢ÊÍµÄÇøÓò£¬Èçtss£¬tes£¬genebodyµÈ
-	 * ¸ø¶¨txtµÄÎÄ¼ş£¬ºÍÈ¾É«Ìå±àºÅ£¬È¾É«ÌåÆğµãÖÕµã£¬ºÍÊä³öÎÄ¼ş£¬½«peak¸²¸Çµ½µÄÇøÓò×¢ÊÍ³öÀ´
+	 * é¦–å…ˆè®¾å®šéœ€è¦æ³¨é‡Šçš„åŒºåŸŸï¼Œå¦‚tssï¼Œtesï¼Œgenebodyç­‰
+	 * ç»™å®štxtçš„æ–‡ä»¶ï¼Œå’ŒæŸ“è‰²ä½“ç¼–å·ï¼ŒæŸ“è‰²ä½“èµ·ç‚¹ç»ˆç‚¹ï¼Œå’Œè¾“å‡ºæ–‡ä»¶ï¼Œå°†peakè¦†ç›–åˆ°çš„åŒºåŸŸæ³¨é‡Šå‡ºæ¥
 	 * @param txtFile
 	 * @param colChrID
 	 * @param colStart
@@ -160,11 +160,11 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 		return lsResult;
 	}
 	/**
-	 * ¸ø¶¨list£¬·µ»Ø×¢ÊÍºÃĞÅÏ¢µÄlist£¬°üº¬title
-	 * @param lsInfo µÚÒ»ĞĞÊÇ±êÌâĞĞ
-	 * @param colChrID Êµ¼ÊÁĞ
-	 * @param colStart Êµ¼ÊÁĞ
-	 * @param colEnd Êµ¼ÊÁĞ
+	 * ç»™å®šlistï¼Œè¿”å›æ³¨é‡Šå¥½ä¿¡æ¯çš„listï¼ŒåŒ…å«title
+	 * @param lsInfo ç¬¬ä¸€è¡Œæ˜¯æ ‡é¢˜è¡Œ
+	 * @param colChrID å®é™…åˆ—
+	 * @param colStart å®é™…åˆ—
+	 * @param colEnd å®é™…åˆ—
 	 */
 	public ArrayList<String[]> getAnno() {
 		List<String[]> lsGeneInfoTmp = lsGeneInfo.subList(1, lsGeneInfo.size());
@@ -191,7 +191,7 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 	
 
 	/**
-	 * ¸ø¶¨Ò»¸ö»ùÒò¶¨Î»ÎÄ¼şµÄÒ»ĞĞ£¬·µ»Ø×¢ÊÍĞÅÏ¢
+	 * ç»™å®šä¸€ä¸ªåŸºå› å®šä½æ–‡ä»¶çš„ä¸€è¡Œï¼Œè¿”å›æ³¨é‡Šä¿¡æ¯
 	 * @param geneLocInfo
 	 * @return
 	 */
@@ -233,21 +233,21 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 	
 	public String[] getTitleGeneInfoFilterAnno() {
 		String[] titleOld = lsGeneInfo.get(0);
-		//Ìí¼Ótitle
+		//æ·»åŠ title
 		String[] title = ArrayOperate.copyArray(titleOld, titleOld.length + 4);
 		title[title.length - 1] = "Location"; title[title.length - 2] = "Description"; title[title.length - 3] = "Symbol"; title[title.length - 4] = "AccID";
 		return title;
 	}
 	/**
-	 * peak×¢ÊÍ
+	 * peakæ³¨é‡Š
 	 * @param chrID
 	 * @param startCod
 	 * @param endCod
 	 * @return
-	 * 0£ºaccID<br>
-	 * 1£ºsymbol<br>
-	 * 2£ºdescription<br>
-	 * 3£ºÁ½¶ËÊÇ¾ßÌåĞÅÏ¢£¬ÖĞ¼äÊÇcovered
+	 * 0ï¼šaccID<br>
+	 * 1ï¼šsymbol<br>
+	 * 2ï¼šdescription<br>
+	 * 3ï¼šä¸¤ç«¯æ˜¯å…·ä½“ä¿¡æ¯ï¼Œä¸­é—´æ˜¯covered
 	 */
 	private ArrayList<String[]> getGenInfoFilterPeakSingle(String chrID, int startCod, int endCod) {
 		if (startCod == 5943970) {
@@ -275,8 +275,8 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 		return lsAnno;
 	}
 	/**
-	 * µ¥¸ö×ø±êµÄÖĞ¼äÎ»µã¶¨Î»
-	 * ¸ø¶¨È¾É«ÌåÎ»ÖÃºÍ×ø±ê£¬·µ»Ø×¢ÊÍĞÅÏ¢
+	 * å•ä¸ªåæ ‡çš„ä¸­é—´ä½ç‚¹å®šä½
+	 * ç»™å®šæŸ“è‰²ä½“ä½ç½®å’Œåæ ‡ï¼Œè¿”å›æ³¨é‡Šä¿¡æ¯
 	 * @param chrID
 	 * @param summit
 	 * @return
@@ -287,7 +287,7 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 		if (gffCodGene == null) {
 			return lsResultAnno;
 		}
-		//ÔÚÉÏÒ»¸ögeneÄÚ
+		//åœ¨ä¸Šä¸€ä¸ªgeneå†…
 		if (gffCodGene.getGffDetailUp() != null) {
 			getAnnoLocSumit(lsResultAnno, gffCodGene.getGffDetailUp(), summit);
 		}
@@ -300,12 +300,12 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 		return lsResultAnno;
 	}
 	/**
-	 * ×¢ÊÍ
+	 * æ³¨é‡Š
 	 * @param gffGeneIsoInfoCis
 	 * @param coord
-	 * @return 0£ºsymbol
-	 * 1£ºdescription
-	 * blast £º2 evalue 3 symol 4 description
+	 * @return 0ï¼šsymbol
+	 * 1ï¼šdescription
+	 * blast ï¼š2 evalue 3 symol 4 description
 	 * location
 	 */
 	private void getAnnoLocSumit(ArrayList<String[]> lsAnno, GffDetailGene gffDetailGene, int coord) {
@@ -331,26 +331,26 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 }
 
 /**
- * »ùÒò¶¨Î»Çé¿ö
+ * åŸºå› å®šä½æƒ…å†µ
  * @author zong0jie
  *
  */
 class siteLocInfo {
-	/** ÊÇ·ñÔÚ²»°üº¬promoterµÄÍâÏÔ×ÓÖĞ */
+	/** æ˜¯å¦åœ¨ä¸åŒ…å«promoterçš„å¤–æ˜¾å­ä¸­ */
 	int ExonWithOutPromoter = 0;
-	/** ÊÇ·ñÔÚ²»°üº¬promoterµÄÄÚº¬×ÓÖĞ */
+	/** æ˜¯å¦åœ¨ä¸åŒ…å«promoterçš„å†…å«å­ä¸­ */
 	int IntronWithOutPromoter = 0;
-	/** ÊÇ·ñÔÚgenebodyÖĞ */
+	/** æ˜¯å¦åœ¨genebodyä¸­ */
 	int geneBody = 0;
-	/** ÊÇ·ñÔÚ»ùÒòÍâµÄPromoterÖĞ */
+	/** æ˜¯å¦åœ¨åŸºå› å¤–çš„Promoterä¸­ */
 	int PromoterOutGene = 0;
-	/** ÊÇ·ñÔÚ»ùÒòÄÚµÄPromoterÖĞ */
+	/** æ˜¯å¦åœ¨åŸºå› å†…çš„Promoterä¸­ */
 	int PromoterInGene = 0;
-	/** ÊÇ·ñÔÚ²»°üº¬promoterµÄÍâÏÔ×ÓÖĞ */
+	/** æ˜¯å¦åœ¨ä¸åŒ…å«promoterçš„å¤–æ˜¾å­ä¸­ */
 	int InterGenic = 0;
-	/** ÊÇ·ñÔÚ5¡®UTRÖĞ */
+	/** æ˜¯å¦åœ¨5â€˜UTRä¸­ */
 	int UTR5 = 0;
-	/** ÊÇ·ñÔÚ3¡®UTRÖĞ */
+	/** æ˜¯å¦åœ¨3â€˜UTRä¸­ */
 	int UTR3 = 0;
 }
 

@@ -4,7 +4,7 @@ import com.novelbio.analysis.seq.genome.mappingOperate.Alignment;
 
 
 /**
- * ×î¼òµ¥µÄalign
+ * æœ€ç®€å•çš„align
  * @author zong0jie
  *
  */

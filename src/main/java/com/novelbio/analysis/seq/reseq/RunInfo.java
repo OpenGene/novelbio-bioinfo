@@ -43,7 +43,7 @@ public class RunInfo {
 	}
 	
 	/**
-	 * ½«´óÓÚ10000bpµÄĞòÁĞ·Ö¿ªĞ´ÈëÎÄ±¾
+	 * å°†å¤§äº10000bpçš„åºåˆ—åˆ†å¼€å†™å…¥æ–‡æœ¬
 	 */
 	public static void writeAssemblySeqSep() {
 		String assemblySeqFile = "/media/winE/NBC/Project/Project_WZF_Lab/Denovo_WZF110622/s_3_fastq.txt/TGACT2/lastz/Soapkmer67.contig";
@@ -54,7 +54,7 @@ public class RunInfo {
 		seqFastaHash.writeFileSep(resultFilePath, "Soapmer67", len, true, 100);
 	}
 	/**
-	 * ½«Ğ¡ÓÚ10000bpµÄĞòÁĞºÏÆğÀ´Ğ´ÈëÎÄ±¾
+	 * å°†å°äº10000bpçš„åºåˆ—åˆèµ·æ¥å†™å…¥æ–‡æœ¬
 	 */
 	public static void writeAssemblySeqAll() {
 		String assemblySeqFile = "/media/winE/NBC/Project/Project_WZF_Lab/Denovo_WZF110622/s_3_fastq.txt/TGACT2/lastz/Soapkmer60.scafSeq";

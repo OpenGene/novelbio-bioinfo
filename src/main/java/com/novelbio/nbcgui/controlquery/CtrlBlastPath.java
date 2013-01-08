@@ -18,28 +18,28 @@ public class CtrlBlastPath extends SwingWorker<ArrayList<String[]>, ProgressData
 
 
 	/**
-	 * ÊÇ·ñĞèÒªblast
+	 * æ˜¯å¦éœ€è¦blast
 	 */
 	boolean blast = false;
 	/**
-	 * ²éÕÒÎïÖÖ
+	 * æŸ¥æ‰¾ç‰©ç§
 	 */
 	int taxID = 0;
 	/**
-	 * blastÎïÖÖ
+	 * blastç‰©ç§
 	 */
 	int StaxID = 0;
 	/**
-	 * blastµÄevalue
+	 * blastçš„evalue
 	 */
 	double evalue = 100;
 	
 	/**
-	 * GoµÄÀàĞÍ
+	 * Goçš„ç±»å‹
 	 */
 	String GoClass = "P";
 	/**
-	 * ½çÃæ¶ÔÏó
+	 * ç•Œé¢å¯¹è±¡
 	 */
 //	GUIBlast guiBlast;
 	GuiBlastJpanel guiBlast;
@@ -65,7 +65,7 @@ public class CtrlBlastPath extends SwingWorker<ArrayList<String[]>, ProgressData
  
 	
 	/**
-	 * ×¼±¸¹¤×÷£¬½«geneID¶ÁÈëÄÚ´æÍ¬Ê±×¼±¸²éÕÒ£¬Í¬Ê±·µ»Ø×Ü¹²²éÕÒµÄÊıÁ¿£¬¸ø½ø¶ÈÌõ¼ÆÊı
+	 * å‡†å¤‡å·¥ä½œï¼Œå°†geneIDè¯»å…¥å†…å­˜åŒæ—¶å‡†å¤‡æŸ¥æ‰¾ï¼ŒåŒæ—¶è¿”å›æ€»å…±æŸ¥æ‰¾çš„æ•°é‡ï¼Œç»™è¿›åº¦æ¡è®¡æ•°
 	 * @return
 	 * @throws Exception
 	 */
@@ -75,7 +75,7 @@ public class CtrlBlastPath extends SwingWorker<ArrayList<String[]>, ProgressData
 	}
 	
 	/**
-	 * ¸ø¶¨ÎÄ¼ş£¬ºÍÎÄ¼ş·Ö¸î·û£¬ÒÔ¼°µÚ¼¸ÁĞ£¬»ñµÃ¸ÃÁĞµÄ»ùÒòID
+	 * ç»™å®šæ–‡ä»¶ï¼Œå’Œæ–‡ä»¶åˆ†å‰²ç¬¦ï¼Œä»¥åŠç¬¬å‡ åˆ—ï¼Œè·å¾—è¯¥åˆ—çš„åŸºå› ID
 	 * @param fileName
 	 * @return
 	 * @throws Exception 
@@ -121,15 +121,15 @@ public class CtrlBlastPath extends SwingWorker<ArrayList<String[]>, ProgressData
 	
 	
 	/**
-	 * ¸ø¶¨accID£¬²éÑ¯¸ÃaccIDËù¶ÔÓ¦µÄpathway
-	 * Ä¿Ç°Ö»ÄÜÔÚNCBIIDÖĞ²éÑ¯£¬²»ÄÜÔÚUniProtÖĞ²éÑ¯
-	 * @param accID accID ĞèÒªÈ¥¿Õ¸ñ´¦ÀíÒÔ¼°ÅĞ¶ÏaccIDÊÇ·ñÎª¿Õ
+	 * ç»™å®šaccIDï¼ŒæŸ¥è¯¢è¯¥accIDæ‰€å¯¹åº”çš„pathway
+	 * ç›®å‰åªèƒ½åœ¨NCBIIDä¸­æŸ¥è¯¢ï¼Œä¸èƒ½åœ¨UniProtä¸­æŸ¥è¯¢
+	 * @param accID accID éœ€è¦å»ç©ºæ ¼å¤„ç†ä»¥åŠåˆ¤æ–­accIDæ˜¯å¦ä¸ºç©º
 	 * @param taxID
 	 * @param blast
 	 * @param subTaxID
 	 * @param evalue
-	 * @return Èç¹ûÃ»²éµ½Ôò·µ»Ønull
-	 * Èç¹ûblast£º
+	 * @return å¦‚æœæ²¡æŸ¥åˆ°åˆ™è¿”å›null
+	 * å¦‚æœblastï¼š
 	 * 0:accID
 	 * 1:Symbol/AccID
 	 * 2:PathID
@@ -138,7 +138,7 @@ public class CtrlBlastPath extends SwingWorker<ArrayList<String[]>, ProgressData
 	 * 5:SubjectSymbol
 	 * 6:PathID
 	 * 7:PathName
-	 * Èç¹ûÃ»ÓĞblast
+	 * å¦‚æœæ²¡æœ‰blast
 	 * 0:accID
 	 * 1:Symbol/AccID
 	 * 2:PathID
@@ -154,7 +154,7 @@ public class CtrlBlastPath extends SwingWorker<ArrayList<String[]>, ProgressData
 		}
 		tmpAccIDInfo[1] = copedID.getSymbol();
 		copedID.setBlastInfo(evalue, subTaxID);
-		// ±¾»ùÒòµÄGOĞÅÏ¢
+		// æœ¬åŸºå› çš„GOä¿¡æ¯
 		ArrayList<KGentry> lsKGentrythis = copedID.getKegEntity(false);
 		HashSet<String> hashPathID = new HashSet<String>();
 		for (KGentry kGentry : lsKGentrythis) {
@@ -172,7 +172,7 @@ public class CtrlBlastPath extends SwingWorker<ArrayList<String[]>, ProgressData
 			}
 			return lsResult;
 		}
-		// blast»ùÒòµÄGOĞÅÏ¢
+		// blaståŸºå› çš„GOä¿¡æ¯
 		ArrayList<String[]> lsResultBlast = new ArrayList<String[]>();
 
 		GeneID copedIDblast = copedID.getGeneIDBlast();
@@ -193,7 +193,7 @@ public class CtrlBlastPath extends SwingWorker<ArrayList<String[]>, ProgressData
 			if (lsResult == null)
 				lsResult = new ArrayList<String[]>();
 			String[] tmpResultBlast = new String[8];
-			// ³õÊ¼»¯
+			// åˆå§‹åŒ–
 			for (int j = 0; j < tmpResultBlast.length; j++) {
 				tmpResultBlast[j] = "";
 			}

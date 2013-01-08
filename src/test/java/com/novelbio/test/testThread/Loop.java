@@ -3,7 +3,7 @@ package com.novelbio.test.testThread;
 import com.novelbio.base.multithread.RunProcess;
 
 public class Loop  extends RunProcess {
-//	private boolean suspendFlag = false;// ¿ØÖÆÏß³ÌµÄÖ´ÐÐ
+//	private boolean suspendFlag = false;// æŽ§åˆ¶çº¿ç¨‹çš„æ‰§è¡Œ
 	
 	public static void main(String[] args) throws InterruptedException {
 		

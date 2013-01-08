@@ -14,53 +14,53 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
- * ĞÂµÄmiRNAµÄÔ¤²â£¬»ùÓÚmiReapµÄËã·¨
+ * æ–°çš„miRNAçš„é¢„æµ‹ï¼ŒåŸºäºmiReapçš„ç®—æ³•
  * @author zong0jie
  */
 public class NovelMiRNAReap extends NovelMiRNApredict{
-	/** ¶ÁÈ¡mireapµÄgffºÍalnÎÄ¼ş£¬½«Æä×°Èëlistmirna£¬·½±ãºóÃæËã±í´ï */
+	/** è¯»å–mireapçš„gffå’Œalnæ–‡ä»¶ï¼Œå°†å…¶è£…å…¥listmirnaï¼Œæ–¹ä¾¿åé¢ç®—è¡¨è¾¾ */
 	ListMiRNALocation listMiRNALocation = new ListMiRNALocation();
-	/** ¸ømireap×¼±¸µÄÎÄ¼ş */
+	/** ç»™mireapå‡†å¤‡çš„æ–‡ä»¶ */
 	String outMapFile = "";
-	/** ¸ømireap×¼±¸µÄÎÄ¼ş */
+	/** ç»™mireapå‡†å¤‡çš„æ–‡ä»¶ */
 	String outSeqFile = "";
-	/** mireapµÄ½á¹ûÎÄ¼ş */
+	/** mireapçš„ç»“æœæ–‡ä»¶ */
 	String mireapAln = "";
-	/** mireapµÄ½á¹ûÎÄ¼ş */
+	/** mireapçš„ç»“æœæ–‡ä»¶ */
 	String mireapGff = "";
-	/** ´ı±È¶ÔµÄĞòÁĞ£¬±ØĞëÊÇÒ»¸öÍêÕûµÄfastaÎÄ¼ş */
+	/** å¾…æ¯”å¯¹çš„åºåˆ—ï¼Œå¿…é¡»æ˜¯ä¸€ä¸ªå®Œæ•´çš„fastaæ–‡ä»¶ */
 	String chromfaSeq = "";
 	
 	public void setOutPath(String outPath) {
 		//TODO
 	}
 	/**
-	 * Éè¶¨´ı±È¶ÔµÄĞòÁĞ£¬±ØĞëÊÇÒ»¸öÍêÕûµÄfastaÎÄ¼ş
+	 * è®¾å®šå¾…æ¯”å¯¹çš„åºåˆ—ï¼Œå¿…é¡»æ˜¯ä¸€ä¸ªå®Œæ•´çš„fastaæ–‡ä»¶
 	 * @param chromfaSeq
 	 */
 	public void setChromfaSeq(String chromfaSeq) {
 		this.chromfaSeq = chromfaSeq;
 	}
 	/**
-	 * Éè¶¨ÊäÈëmiReap³ÌĞòµÄÎÄ¼ş
-	 * @param outSeqFile mireapËùĞèµÄĞòÁĞÎÄ¼ş
-	 * @param outMapFile mireapËùĞèµÄ×ø±ê¶¨Î»ÎÄ¼ş
+	 * è®¾å®šè¾“å…¥miReapç¨‹åºçš„æ–‡ä»¶
+	 * @param outSeqFile mireapæ‰€éœ€çš„åºåˆ—æ–‡ä»¶
+	 * @param outMapFile mireapæ‰€éœ€çš„åæ ‡å®šä½æ–‡ä»¶
 	 */
 	public void setNovelMiRNAMiReapInputFile(String outSeqFile, String outMapFile) {
 		this.outSeqFile = outSeqFile;
 		this.outMapFile = outMapFile;
 	}
 	/**
-	 * ½«ÊäÈëµÄbedÎÄ¼şÅÅĞò£¬ºÏ²¢ÖØ¸´£¬È»ºómappingÖÁgenomeÉÏ£¬»ñµÃËùÓĞÔÚ·´ÏòÍâÏÔ×ÓºÍÄÚº¬×ÓµÄĞòÁĞ£¬
-	 * È»ºó½«ĞòÁĞÕûÀí³ÉmireapÄÜÊ¶±ğµÄ¸ñÊ½
+	 * å°†è¾“å…¥çš„bedæ–‡ä»¶æ’åºï¼Œåˆå¹¶é‡å¤ï¼Œç„¶åmappingè‡³genomeä¸Šï¼Œè·å¾—æ‰€æœ‰åœ¨åå‘å¤–æ˜¾å­å’Œå†…å«å­çš„åºåˆ—ï¼Œ
+	 * ç„¶åå°†åºåˆ—æ•´ç†æˆmireapèƒ½è¯†åˆ«çš„æ ¼å¼
 	 */
 	public void runBedFile() {
 		getNovelMiRNASeq(outMapFile, outSeqFile);
 	}
 	/**
-	 * ½«Ã»ÓĞmappingÖÁÍâÏÔ×Ó»òÕßmappingÖÁÄÚº¬×ÓµÄĞòÁĞÕûÀí³ÉmireapÊ¶±ğµÄ¸ñÊ½
-	 * @param mapFile ÀàËÆbedÎÄ¼ş£¬t0000035	nscaf1690	4798998	4799024	+
-	 * @param seqFile fasta¸ñÊ½£¬ÈçÏÂ£º<br>
+	 * å°†æ²¡æœ‰mappingè‡³å¤–æ˜¾å­æˆ–è€…mappingè‡³å†…å«å­çš„åºåˆ—æ•´ç†æˆmireapè¯†åˆ«çš„æ ¼å¼
+	 * @param mapFile ç±»ä¼¼bedæ–‡ä»¶ï¼Œt0000035	nscaf1690	4798998	4799024	+
+	 * @param seqFile fastaæ ¼å¼ï¼Œå¦‚ä¸‹ï¼š<br>
 	 * >t0000035 3234<br>
 	GAATGGATAAGGATTAGCGATGATACA<br>
 	 */
@@ -71,15 +71,15 @@ public class NovelMiRNAReap extends NovelMiRNApredict{
 		writeMireapFormat(bedSeq, mapFile, seqFile);
 	}
 	/**
-	 * ½«ÎÄ¼şÕûÀí³ÉmireapÊ¶±ğµÄ¸ñÊ½
-	 * @param bedSeq ÊäÈëµÄbedseq£¬±ØĞëÊÇÅÅ¹ıĞòµÄ£¬±ØĞëÀïÃæ°üº¬ÓĞĞòÁĞ
-	 * @param mapFile ÀàËÆbedÎÄ¼ş£¬t0000035	nscaf1690	4798998	4799024	+
-	 * @param seqFile fasta¸ñÊ½£¬ÈçÏÂ£º<br>
+	 * å°†æ–‡ä»¶æ•´ç†æˆmireapè¯†åˆ«çš„æ ¼å¼
+	 * @param bedSeq è¾“å…¥çš„bedseqï¼Œå¿…é¡»æ˜¯æ’è¿‡åºçš„ï¼Œå¿…é¡»é‡Œé¢åŒ…å«æœ‰åºåˆ—
+	 * @param mapFile ç±»ä¼¼bedæ–‡ä»¶ï¼Œt0000035	nscaf1690	4798998	4799024	+
+	 * @param seqFile fastaæ ¼å¼ï¼Œå¦‚ä¸‹ï¼š<br>
 	 * >t0000035 3234<br>
 	 * GAATGGATAAGGATTAGCGATGATACA<br>
 	 */
 	private void writeMireapFormat(BedSeq bedSeq, String mapFile, String seqFile) {
-		int readsName_TNum = 1;//Ãû×Ö£¬Ğ´³Ét00001ÕâÖÖÀàĞÍ
+		int readsName_TNum = 1;//åå­—ï¼Œå†™æˆt00001è¿™ç§ç±»å‹
 		TxtReadandWrite txtOutMapInfo = new TxtReadandWrite(mapFile, true);
 		TxtReadandWrite txtOutSeq = new TxtReadandWrite(seqFile, true);
 		BedRecord bedRecordLast = bedSeq.readFirstLine();
@@ -99,11 +99,11 @@ public class NovelMiRNAReap extends NovelMiRNApredict{
 		txtOutSeq.close();
 	}
 	/**
-	 * ½«bedÎÄ¼şĞ´ÈëtxtÎÄ±¾ÖĞ
+	 * å°†bedæ–‡ä»¶å†™å…¥txtæ–‡æœ¬ä¸­
 	 * @param txtOutMapInfo
 	 * @param txtOutSeq
 	 * @param bedRecord
-	 * @param readsName_TNum ÀàËÆt0000035ÕâÖÖ¸ñÊ½µÄnum
+	 * @param readsName_TNum ç±»ä¼¼t0000035è¿™ç§æ ¼å¼çš„num
 	 */
 	private void writeMiReapMapInfoAndSeq(TxtReadandWrite txtOutMapInfo, TxtReadandWrite txtOutSeq, BedRecord bedRecord, int readsName_TNum) {
 		txtOutMapInfo.writefileln(getID(readsName_TNum) + "\t" + bedRecord.getRefID() + "\t" + bedRecord.getStartAbs() + "\t" + bedRecord.getEndAbs() + "\t" + bedRecord.getStrand());
@@ -112,7 +112,7 @@ public class NovelMiRNAReap extends NovelMiRNApredict{
 		txtOutSeq.writefileln(seqFasta.toStringNRfasta());
 	}
 	/**
-	 * ¸ø¶¨Ò»¸öint£¬·µ»ØID
+	 * ç»™å®šä¸€ä¸ªintï¼Œè¿”å›ID
 	 * @param i
 	 * @return
 	 */
@@ -121,13 +121,13 @@ public class NovelMiRNAReap extends NovelMiRNApredict{
 		String result = max + "";
 		return "t"+result.substring(1);
 	}
-	//////////////////// miReap Ô¤²âÍêÖ®ºóµÄ´¦Àí ////////////////////////////////////////////////////////////////////////////////////
+	//////////////////// miReap é¢„æµ‹å®Œä¹‹åçš„å¤„ç† ////////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * miReap Ô¤²âÍêÖ®ºóµÄ´¦Àí
-	 * ½«Ô¤²âµ½µÄĞÂmiRNAĞ´ÈëÒ»¸öÎÄ±¾
-	 * @param alnFile miReapµÄaln½á¹û
-	 * @param outFilePre Êä³öµÄÇ°ÌåĞòÁĞ
-	 * @param outFileMature Êä³öµÄ³ÉÊìÌåĞòÁĞ
+	 * miReap é¢„æµ‹å®Œä¹‹åçš„å¤„ç†
+	 * å°†é¢„æµ‹åˆ°çš„æ–°miRNAå†™å…¥ä¸€ä¸ªæ–‡æœ¬
+	 * @param alnFile miReapçš„alnç»“æœ
+	 * @param outFilePre è¾“å‡ºçš„å‰ä½“åºåˆ—
+	 * @param outFileMature è¾“å‡ºçš„æˆç†Ÿä½“åºåˆ—
 	 */
 	public void writeNovelMiRNASeq(String outFilePre, String outFileMature) {
 		ArrayList<SeqFasta> lsSeqFastas = readReapResultPre();
@@ -144,10 +144,10 @@ public class NovelMiRNAReap extends NovelMiRNApredict{
 		txtWrite.close();
 	}
 	/**
-	 * ¸ø¶¨miReapÎÄ¼ş£¬ÌáÈ¡ÆäÖĞµÄĞòÁĞ
-	 * @param alnFile mirReap²úÉúµÄ½á¹ûĞòÁĞÎÄ¼ş
-	 * @param outSeq ÌáÈ¡³öÀ´µÄĞòÁĞ£¬·½±ãºóĞø×ö²îÒì¼ÆËã
-	 * @return ·µ»ØĞòÁĞÎÄ¼ş
+	 * ç»™å®šmiReapæ–‡ä»¶ï¼Œæå–å…¶ä¸­çš„åºåˆ—
+	 * @param alnFile mirReapäº§ç”Ÿçš„ç»“æœåºåˆ—æ–‡ä»¶
+	 * @param outSeq æå–å‡ºæ¥çš„åºåˆ—ï¼Œæ–¹ä¾¿åç»­åšå·®å¼‚è®¡ç®—
+	 * @return è¿”å›åºåˆ—æ–‡ä»¶
 	 */
 	private ArrayList<SeqFasta> readReapResultPre() {
 		ArrayList<SeqFasta> lsSeqFastas = new ArrayList<SeqFasta>();
@@ -172,10 +172,10 @@ public class NovelMiRNAReap extends NovelMiRNApredict{
 		return lsSeqFastas;
 	}
 	/**
-	 * ¸ø¶¨miReapÎÄ¼ş£¬ÌáÈ¡ÆäÖĞµÄĞòÁĞ
-	 * @param alnFile mirReap²úÉúµÄ½á¹ûĞòÁĞÎÄ¼ş
-	 * @param outSeq ÌáÈ¡³öÀ´µÄĞòÁĞ£¬·½±ãºóĞø×ö²îÒì¼ÆËã
-	 * @return ·µ»ØĞòÁĞÎÄ¼ş
+	 * ç»™å®šmiReapæ–‡ä»¶ï¼Œæå–å…¶ä¸­çš„åºåˆ—
+	 * @param alnFile mirReapäº§ç”Ÿçš„ç»“æœåºåˆ—æ–‡ä»¶
+	 * @param outSeq æå–å‡ºæ¥çš„åºåˆ—ï¼Œæ–¹ä¾¿åç»­åšå·®å¼‚è®¡ç®—
+	 * @return è¿”å›åºåˆ—æ–‡ä»¶
 	 */
 	private ArrayList<SeqFasta> readReapResultMature() {
 		ArrayList<SeqFasta> lsSeqFastas = new ArrayList<SeqFasta>();
@@ -198,11 +198,11 @@ public class NovelMiRNAReap extends NovelMiRNApredict{
 		return lsSeqFastas;
 	}
 	/**
-	 * miReap Ô¤²âÍêÖ®ºóµÄ´¦Àí
-	 * ½«mireapµÄgffÀïÃæ¼ÇÔØµÄ£¬alnÀïÃæµÄrnafold¸ñÊ½µÄÎÄ±¾ÌáÈ¡³öÀ´
+	 * miReap é¢„æµ‹å®Œä¹‹åçš„å¤„ç†
+	 * å°†mireapçš„gffé‡Œé¢è®°è½½çš„ï¼Œalné‡Œé¢çš„rnafoldæ ¼å¼çš„æ–‡æœ¬æå–å‡ºæ¥
 	 * @param mireapAln
 	 * @param mireapGff
-	 * @param out Êä³öÎÄ¼ş£¬ÓÃÓÚ»­Í¼µÄ¶«Î÷
+	 * @param out è¾“å‡ºæ–‡ä»¶ï¼Œç”¨äºç”»å›¾çš„ä¸œè¥¿
 	 */
 	public void getRNAfoldInfo(String outPlot) {
 		TxtReadandWrite txtReadGff = new TxtReadandWrite(mireapGff, false);

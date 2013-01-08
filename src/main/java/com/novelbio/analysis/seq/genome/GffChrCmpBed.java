@@ -12,8 +12,8 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
- * ±È½ÏÁ½¸öbedÎÄ¼şÖ®¼äµÄÇø±ğ
- * ÔÚcom.novelbio.analysis.project.cdg.CmpTssMethyÖĞÊ¹ÓÃ
+ * æ¯”è¾ƒä¸¤ä¸ªbedæ–‡ä»¶ä¹‹é—´çš„åŒºåˆ«
+ * åœ¨com.novelbio.analysis.project.cdg.CmpTssMethyä¸­ä½¿ç”¨
  * @author zong0jie
  * 
  */
@@ -27,9 +27,9 @@ public class GffChrCmpBed extends GffChrAbs {
 
 	/**
 	 * @param readsFile
-	 *            mappingµÄ½á¹ûÎÄ¼ş£¬±ØĞëÅÅ¹ıĞò£¬Ò»°ãÎªbed¸ñÊ½
+	 *            mappingçš„ç»“æœæ–‡ä»¶ï¼Œå¿…é¡»æ’è¿‡åºï¼Œä¸€èˆ¬ä¸ºbedæ ¼å¼
 	 * @param binNum
-	 *            Ã¿¸ô¶àÉÙÎ»¼ÆÊı£¬Èç¹ûÉè¶¨Îª1£¬ÔòËã·¨»á±ä»¯£¬È»ºó»áºÜ¾«È·
+	 *            æ¯éš”å¤šå°‘ä½è®¡æ•°ï¼Œå¦‚æœè®¾å®šä¸º1ï¼Œåˆ™ç®—æ³•ä¼šå˜åŒ–ï¼Œç„¶åä¼šå¾ˆç²¾ç¡®
 	 */
 	public void setMapReadsCmp(String readsFile2, int binNum) {
 		if (FileOperate.isFileExist(readsFile2)) {
@@ -43,12 +43,12 @@ public class GffChrCmpBed extends GffChrAbs {
 	}
 
 	/**
-	 * ±È½ÏÁ½¸öÊµÑéÖĞÄ³¸ö»ùÒòµÄTSSÇøÓòreadsÊıÁ¿±ä»¯Çé¿ö
+	 * æ¯”è¾ƒä¸¤ä¸ªå®éªŒä¸­æŸä¸ªåŸºå› çš„TSSåŒºåŸŸreadsæ•°é‡å˜åŒ–æƒ…å†µ
 	 * @param txtExcelFile
 	 * @param colAccID
-	 * @param region ÀàËÆ int[]{-2000, 2000}
+	 * @param region ç±»ä¼¼ int[]{-2000, 2000}
 	 * @param filterValue
-	 * @param bigThan ´óÓÚãĞÖµ»¹ÊÇĞ¡ÓÚãĞÖµ
+	 * @param bigThan å¤§äºé˜ˆå€¼è¿˜æ˜¯å°äºé˜ˆå€¼
 	 * @param txtOutFile
 	 */
 	public void readGeneList(String txtExcelFile, int colAccID,
@@ -56,7 +56,7 @@ public class GffChrCmpBed extends GffChrAbs {
 		colAccID--;
 		TxtReadandWrite txtOut = new TxtReadandWrite(txtOutFile, true);
 		ArrayList<String[]> lsResult = ExcelTxtRead.readLsExcelTxt(txtExcelFile, 1);
-		//Ã»ÓĞ¶ÁÈ¥title
+		//æ²¡æœ‰è¯»å»title
 		List<String[]> lsTmp = lsResult.subList(1, lsResult.size());
 		for (String[] strings : lsTmp) {
 			String geneID = strings[colAccID].split("/")[0];
@@ -76,9 +76,9 @@ public class GffChrCmpBed extends GffChrAbs {
 	}
 
 	/**
-	 * Ö±½ÓTssÇøÓò½øĞĞ±È½Ï£¬Éè¶¨TSSÇ°ºó·¶Î§ Ìá¹©±ÈÖµ
+	 * ç›´æ¥TssåŒºåŸŸè¿›è¡Œæ¯”è¾ƒï¼Œè®¾å®šTSSå‰åèŒƒå›´ æä¾›æ¯”å€¼
 	 * @param geneID
-	 * @param region ±È½ÏÇøÓò
+	 * @param region æ¯”è¾ƒåŒºåŸŸ
 	 * @return
 	 */
 	private double compRegionTssXLY(String geneID, int[] region) {
@@ -90,15 +90,15 @@ public class GffChrCmpBed extends GffChrAbs {
 	}
 
 	/**
-	 * ±È½ÏÖ¸¶¨ÇøÓòµÄreadsµÄ¾ùÖµ
+	 * æ¯”è¾ƒæŒ‡å®šåŒºåŸŸçš„readsçš„å‡å€¼
 	 * 
 	 * @param arrayList
-	 *            -int[2]£¬ÓĞ¼¸¸öint[2]£¬¾Í±È½Ï¼¸¸öÇøÓò
+	 *            -int[2]ï¼Œæœ‰å‡ ä¸ªint[2]ï¼Œå°±æ¯”è¾ƒå‡ ä¸ªåŒºåŸŸ
 	 * @param filterRegion
-	 *            ãĞÖµ£¬±È½ÏµÄÇøÓòÄÚÖÁÉÙÓĞ¶àÉÙÇøÓò³¬¹ıãĞÖµ²ÅÈÏÎªÍ¨¹ı
+	 *            é˜ˆå€¼ï¼Œæ¯”è¾ƒçš„åŒºåŸŸå†…è‡³å°‘æœ‰å¤šå°‘åŒºåŸŸè¶…è¿‡é˜ˆå€¼æ‰è®¤ä¸ºé€šè¿‡
 	 * @param filterValue
-	 *            ãĞÖµ£¬Ã¿¸öÇøÓòµÄmean readsÖÁÉÙ³¬¹ı¸ÃÖµ²ÅÈÏÎªÍ¨¹ı
-	 * @return ·µ»Ø±È½ÏÇøÓòµÄ½á¹û£¬Ã¿¸öÇøÓòÒ»¸ö±ÈÖµ
+	 *            é˜ˆå€¼ï¼Œæ¯ä¸ªåŒºåŸŸçš„mean readsè‡³å°‘è¶…è¿‡è¯¥å€¼æ‰è®¤ä¸ºé€šè¿‡
+	 * @return è¿”å›æ¯”è¾ƒåŒºåŸŸçš„ç»“æœï¼Œæ¯ä¸ªåŒºåŸŸä¸€ä¸ªæ¯”å€¼
 	 */
 	private double[] compRegion(String chrID, List<int[]> lsCmpRegion) {
 		double[] result = new double[lsCmpRegion.size()];

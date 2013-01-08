@@ -15,12 +15,12 @@ import com.novelbio.base.multithread.txtreadcopewrite.MTRecordRead;
 import com.novelbio.base.multithread.txtreadcopewrite.MTRecoreReader;
 
 /**
- * FastQµÄ¸÷¸öÖ¸±ê<br>
+ * FastQçš„å„ä¸ªæŒ‡æ ‡<br>
  * Q10: 0.1 <br>
  * Q13: 0.05 <br>
  * Q20: 0.01 <br>
  * Q30: 0.001 <br>
- * 2010Äê Illumina HiSeq2000²âĞòÒÇ£¬Ë«¶Ë50bp Q30>90% Ë«¶Ë100bp Q30>85%
+ * 2010å¹´ Illumina HiSeq2000æµ‹åºä»ªï¼ŒåŒç«¯50bp Q30>90% åŒç«¯100bp Q30>85%
  * 
  * @author zong0jie
  */
@@ -37,12 +37,12 @@ class FastQReader {
 	protected TxtReadandWrite txtSeqFile;
 	protected String compressInType = TxtReadandWrite.TXT;
 	
-	/** ÁíÒ»¶ËµÄ¶ÁÈ¡ÎÄ¼ş£¬Ë«¶Ë¶ÁÈ¡µÄÊ±ºò²ÅÓĞÓÃ£¬Á½¶ËÊÇ¶ÔÓ¦µÄ¶Á */
+	/** å¦ä¸€ç«¯çš„è¯»å–æ–‡ä»¶ï¼ŒåŒç«¯è¯»å–çš„æ—¶å€™æ‰æœ‰ç”¨ï¼Œä¸¤ç«¯æ˜¯å¯¹åº”çš„è¯» */
 	FastQReader fastQReadMate;
 	
 	int readsLenAvg = 0;
 	
-	/** ±ê×¼ÎÄ¼şÃûµÄ»°£¬×Ô¶¯ÅĞ¶ÏÊÇ·ñÎªgzÑ¹Ëõ */
+	/** æ ‡å‡†æ–‡ä»¶åçš„è¯ï¼Œè‡ªåŠ¨åˆ¤æ–­æ˜¯å¦ä¸ºgzå‹ç¼© */
 	public void setFastqFile(String seqFile) {
 		String houzhui = FileOperate.getFileNameSep(seqFile)[1];
 		if (houzhui.equals("gz")) {
@@ -55,7 +55,7 @@ class FastQReader {
 		txtSeqFile = new TxtReadandWrite(compressInType, seqFile, false);
 		readsNum = 0;
 	}
-	/** ²»Éè¶¨¾Í»á×Ô¶¯ÅĞ¶¨ */
+	/** ä¸è®¾å®šå°±ä¼šè‡ªåŠ¨åˆ¤å®š */
 	public void setOffset(int offset) {
 		this.offset = offset;
 	}
@@ -64,26 +64,26 @@ class FastQReader {
 		return offset;
 	}
 	/**
-	 * Éè¶¨ÎÄ¼şÑ¹Ëõ¸ñÊ½
-	 * ´ÓTxtReadandWrite.TXTÀ´
-	 * @param cmpInType ¶ÁÈ¡µÄÑ¹Ëõ¸ñÊ½ null»ò""±íÊ¾²»±ä
-	 * @param cmpOutType Ğ´ÈëµÄÑ¹Ëõ¸ñÊ½ null»ò""±íÊ¾²»±ä
+	 * è®¾å®šæ–‡ä»¶å‹ç¼©æ ¼å¼
+	 * ä»TxtReadandWrite.TXTæ¥
+	 * @param cmpInType è¯»å–çš„å‹ç¼©æ ¼å¼ nullæˆ–""è¡¨ç¤ºä¸å˜
+	 * @param cmpOutType å†™å…¥çš„å‹ç¼©æ ¼å¼ nullæˆ–""è¡¨ç¤ºä¸å˜
 	 */
 	public void setCompressType(String cmpInType) {
 		if (cmpInType != null && !cmpInType.equals("")) {
 			this.compressInType = cmpInType;
 		}
 	}
-	/** ÊäÈëµÄÑ¹Ëõ¸ñÊ½ */
+	/** è¾“å…¥çš„å‹ç¼©æ ¼å¼ */
 	public String getCompressInType() {
 		return compressInType;
 	}
-	/** ·µ»ØÎÄ¼şÃû */
+	/** è¿”å›æ–‡ä»¶å */
 	public String getFileName() {
 		return seqFile;
 	}
 	
-	/** Éè¶¨ÁíÒ»¸öFastqRead£¬Ò²¾ÍÊÇË«¶ËµÄÁíÒ»¶Ë */
+	/** è®¾å®šå¦ä¸€ä¸ªFastqReadï¼Œä¹Ÿå°±æ˜¯åŒç«¯çš„å¦ä¸€ç«¯ */
 	protected void setFastQReadMate(FastQReader fastQReadMate) {
 		this.fastQReadMate = fastQReadMate;
 	}
@@ -95,7 +95,7 @@ class FastQReader {
 		return false;
 	}
 	/**
-	 * ¶ÁÈ¡Ç°¼¸ĞĞ£¬²»Ó°Ïì{@link #readlines()}
+	 * è¯»å–å‰å‡ è¡Œï¼Œä¸å½±å“{@link #readlines()}
 	 * @param num
 	 * @return
 	 */
@@ -111,8 +111,8 @@ class FastQReader {
 		return lsResult;
 	}
 	/**
-	 * ´ÓµÚ¼¸ĞĞ¿ªÊ¼¶Á£¬ÊÇÊµ¼ÊĞĞ
-	 * @param lines Èç¹ûlinesĞ¡ÓÚ1£¬Ôò´ÓÍ·¿ªÊ¼¶ÁÈ¡
+	 * ä»ç¬¬å‡ è¡Œå¼€å§‹è¯»ï¼Œæ˜¯å®é™…è¡Œ
+	 * @param lines å¦‚æœlineså°äº1ï¼Œåˆ™ä»å¤´å¼€å§‹è¯»å–
 	 * @return
 	 */
 	public Iterable<FastQRecord> readlines(int lines) {
@@ -131,8 +131,8 @@ class FastQReader {
 	}
 	
 	/**
-	 * ´ÓµÚ¼¸ĞĞ¿ªÊ¼¶Á£¬ÊÇÊµ¼ÊĞĞ
-	 * @param lines Èç¹ûlinesĞ¡ÓÚ1£¬Ôò´ÓÍ·¿ªÊ¼¶ÁÈ¡
+	 * ä»ç¬¬å‡ è¡Œå¼€å§‹è¯»ï¼Œæ˜¯å®é™…è¡Œ
+	 * @param lines å¦‚æœlineså°äº1ï¼Œåˆ™ä»å¤´å¼€å§‹è¯»å–
 	 * @return
 	 */
 	public Iterable<FastQRecord> readlines(boolean initial) {
@@ -145,8 +145,8 @@ class FastQReader {
 	}
 	
 	/**
-	 * µü´ú¶ÁÈ¡ÎÄ¼ş
-	 * @param initial ÊÇ·ñ½øĞĞ³õÊ¼»¯£¬Ö÷ÒªÓÃÔÚ¶àÏß³Ì¹ıÂËreadsµÄÊ±ºò¿ÉÒÔÏÈ²»³õÊ¼»¯£¬ÔÚ¶àÏß³ÌÊ±ºò²Å³õÊ¼»¯
+	 * è¿­ä»£è¯»å–æ–‡ä»¶
+	 * @param initial æ˜¯å¦è¿›è¡Œåˆå§‹åŒ–ï¼Œä¸»è¦ç”¨åœ¨å¤šçº¿ç¨‹è¿‡æ»¤readsçš„æ—¶å€™å¯ä»¥å…ˆä¸åˆå§‹åŒ–ï¼Œåœ¨å¤šçº¿ç¨‹æ—¶å€™æ‰åˆå§‹åŒ–
 	 * @return
 	 * @throws Exception 
 	 * @throws IOException
@@ -193,8 +193,8 @@ class FastQReader {
 	}
 	
 	/**
-	 * ´ÓµÚ¼¸ĞĞ¿ªÊ¼¶Á£¬ÊÇÊµ¼ÊĞĞ
-	 * @param lines Èç¹ûlinesĞ¡ÓÚ1£¬Ôò´ÓÍ·¿ªÊ¼¶ÁÈ¡
+	 * ä»ç¬¬å‡ è¡Œå¼€å§‹è¯»ï¼Œæ˜¯å®é™…è¡Œ
+	 * @param lines å¦‚æœlineså°äº1ï¼Œåˆ™ä»å¤´å¼€å§‹è¯»å–
 	 * @return
 	 */
 	public Iterable<FastQRecord[]> readlinesPE(int lines) {
@@ -213,8 +213,8 @@ class FastQReader {
 	}
 	
 	/**
-	 * ´ÓµÚ¼¸ĞĞ¿ªÊ¼¶Á£¬ÊÇÊµ¼ÊĞĞ
-	 * @param initial ÊÇ·ñ½øĞĞ³õÊ¼»¯£¬Ö÷ÒªÓÃÔÚ¶àÏß³Ì¹ıÂËreadsµÄÊ±ºò£¬ÔÚ×°Èë¶ÓÁĞÊ±¿ÉÒÔÏÈ²»³õÊ¼»¯£¬ÔÚ¶àÏß³ÌÊ±ºò²Å³õÊ¼»¯
+	 * ä»ç¬¬å‡ è¡Œå¼€å§‹è¯»ï¼Œæ˜¯å®é™…è¡Œ
+	 * @param initial æ˜¯å¦è¿›è¡Œåˆå§‹åŒ–ï¼Œä¸»è¦ç”¨åœ¨å¤šçº¿ç¨‹è¿‡æ»¤readsçš„æ—¶å€™ï¼Œåœ¨è£…å…¥é˜Ÿåˆ—æ—¶å¯ä»¥å…ˆä¸åˆå§‹åŒ–ï¼Œåœ¨å¤šçº¿ç¨‹æ—¶å€™æ‰åˆå§‹åŒ–
 	 * @return
 	 */
 	public Iterable<FastQRecord[]> readlinesPE(boolean initial) {
@@ -226,8 +226,8 @@ class FastQReader {
 		}
 	}
 	/**
-	 * µü´ú¶ÁÈ¡ÎÄ¼ş
-	 * @param initial ÊÇ·ñ½øĞĞ³õÊ¼»¯£¬Ö÷ÒªÓÃÔÚ¶àÏß³Ì¹ıÂËreadsµÄÊ±ºò¿ÉÒÔÏÈ²»³õÊ¼»¯£¬ÔÚ¶àÏß³ÌÊ±ºò²Å³õÊ¼»¯
+	 * è¿­ä»£è¯»å–æ–‡ä»¶
+	 * @param initial æ˜¯å¦è¿›è¡Œåˆå§‹åŒ–ï¼Œä¸»è¦ç”¨åœ¨å¤šçº¿ç¨‹è¿‡æ»¤readsçš„æ—¶å€™å¯ä»¥å…ˆä¸åˆå§‹åŒ–ï¼Œåœ¨å¤šçº¿ç¨‹æ—¶å€™æ‰åˆå§‹åŒ–
 	 * @return
 	 * @throws Exception 
 	 * @throws IOException
@@ -279,7 +279,7 @@ class FastQReader {
 	}
 	
 	/**
-	 * »ñµÃµÚÒ»ÌõreadsµÄ³¤¶È£¬·µ»Ø¸ºÊıËµÃ÷³ö´í
+	 * è·å¾—ç¬¬ä¸€æ¡readsçš„é•¿åº¦ï¼Œè¿”å›è´Ÿæ•°è¯´æ˜å‡ºé”™
 	 * @return
 	 */
 	public int getReadsLenAvg() {
@@ -290,7 +290,7 @@ class FastQReader {
 		return readsLenAvg;
 	}
 	/**
-	 * Èç¹ûFastQ¸ñÊ½Ã»ÓĞÉè¶¨ºÃ£¬Í¨¹ı¸Ã·½·¨Éè¶¨FastQ¸ñÊ½
+	 * å¦‚æœFastQæ ¼å¼æ²¡æœ‰è®¾å®šå¥½ï¼Œé€šè¿‡è¯¥æ–¹æ³•è®¾å®šFastQæ ¼å¼
 	 */
 	private void setFastQFormatLen() {
 		if (offset != 0) {
@@ -310,10 +310,10 @@ class FastQReader {
 	}
 	
 	/**
-	 * ÌáÈ¡FastQÎÄ¼şÖĞµÄÖÊ¿ØĞòÁĞ£¬ÌáÈ¡¸ö5000ĞĞ¾Í²î²»¶àÁË ÒòÎªfastQÎÄ¼şÖĞÖÊÁ¿¶¼ÔÚµÚÈıĞĞ£¬ËùÒÔÖ»ÌáÈ¡µÚÈıĞĞµÄĞÅÏ¢
+	 * æå–FastQæ–‡ä»¶ä¸­çš„è´¨æ§åºåˆ—ï¼Œæå–ä¸ª5000è¡Œå°±å·®ä¸å¤šäº† å› ä¸ºfastQæ–‡ä»¶ä¸­è´¨é‡éƒ½åœ¨ç¬¬ä¸‰è¡Œï¼Œæ‰€ä»¥åªæå–ç¬¬ä¸‰è¡Œçš„ä¿¡æ¯
 	 * @param Num
-	 *            ÌáÈ¡¶àÉÙĞĞ£¬Ö¸×îºóÌáÈ¡µÄĞĞÊı
-	 * @return fastQÖÊ¿ØĞòÁĞµÄlist ³ö´í·µ»Ønull
+	 *            æå–å¤šå°‘è¡Œï¼ŒæŒ‡æœ€åæå–çš„è¡Œæ•°
+	 * @return fastQè´¨æ§åºåˆ—çš„list å‡ºé”™è¿”å›null
 	 */
 	private ArrayList<FastQRecord> getLsFastQSeq(int Num) {
 		ArrayList<FastQRecord> lsFastqRecord = new ArrayList<FastQRecord>();
@@ -329,9 +329,9 @@ class FastQReader {
 		return lsFastqRecord;
 	}
 	/**
-	 * ¸ø¶¨Ò»ÏµÁĞµÄfastQ¸ñÊ½£¬²Â²â¸ÃfastQÊÇÊôÓÚsanger»¹ÊÇsolexa
-	 * @param lsFastQ Ã¿Ò»¸östring ¾ÍÊÇÒ»¸öfastQ
-	 * @return FASTQ_ILLUMINA»òÕßFASTQ_SANGER
+	 * ç»™å®šä¸€ç³»åˆ—çš„fastQæ ¼å¼ï¼ŒçŒœæµ‹è¯¥fastQæ˜¯å±äºsangerè¿˜æ˜¯solexa
+	 * @param lsFastQ æ¯ä¸€ä¸ªstring å°±æ˜¯ä¸€ä¸ªfastQ
+	 * @return FASTQ_ILLUMINAæˆ–è€…FASTQ_SANGER
 	 */
 	private int guessFastOFormat(ArrayList<FastQRecord> lsFastqRecord) {
 		ArrayList<Double> lsQuality = new ArrayList<Double>();
@@ -350,7 +350,7 @@ class FastQReader {
 		if (max95 > 95) {
 			return FASTQ_ILLUMINA_OFFSET;
 		}
-		// Èç¹ûÇ°Á½¸ö¶¼Ã»¸ã¶¨£¬ºóÃæ»¹ÄÜÅĞ¶¨
+		// å¦‚æœå‰ä¸¤ä¸ªéƒ½æ²¡æå®šï¼Œåé¢è¿˜èƒ½åˆ¤å®š
 		if (lsQuality.get(0) < 59) {
 			return FASTQ_SANGER_OFFSET;
 		}
@@ -358,15 +358,15 @@ class FastQReader {
 			return FASTQ_ILLUMINA_OFFSET;
 		}
 		logger.error(txtSeqFile.getFileName() + " has a problem, FastQ can not gess the fastQ format, set the format as FASTQ_ILLUMINA_OFFSET");
-		// ¶¼Ã»ÅĞ¶Ï³öÀ´£¬²Â²âÎªillumina¸ñÊ½
+		// éƒ½æ²¡åˆ¤æ–­å‡ºæ¥ï¼ŒçŒœæµ‹ä¸ºilluminaæ ¼å¼
 		return FASTQ_ILLUMINA_OFFSET;
 	}
 	
 	/**
-	 * ¸ø¶¨Ò»ÏµÁĞµÄfastQ¸ñÊ½£¬»ñµÃÆ½¾ùreads³¤¶È
+	 * ç»™å®šä¸€ç³»åˆ—çš„fastQæ ¼å¼ï¼Œè·å¾—å¹³å‡readsé•¿åº¦
 	 * @param lsFastQ
-	 *            :Ã¿Ò»¸östring ¾ÍÊÇÒ»¸öfastQ
-	 * @return Æ½¾ùreads³¤¶È
+	 *            :æ¯ä¸€ä¸ªstring å°±æ˜¯ä¸€ä¸ªfastQ
+	 * @return å¹³å‡readsé•¿åº¦
 	 */
 	private int getReadsLenAvg(ArrayList<FastQRecord> lsFastqRecord) {
 		if (lsFastqRecord.size() == 0) {

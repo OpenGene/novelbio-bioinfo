@@ -10,13 +10,13 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.generalConf.TitleFormatNBC;
 
-/** ³£¹æt¼ìÑé
+/** å¸¸è§„tæ£€éªŒ
  * 
  * @author zong0jie
  */
 public class DiffExpTtest extends DiffExpAbs {
-	/** ±È½Ï¾ØÕóÉè¼ÆºÃºóĞèÒª½«Ã¿¸öID¶ÔÓ¦µ½ÊÔÑéÃûÉÏ <br>
-	 * Æ©Èç£º<br>
+	/** æ¯”è¾ƒçŸ©é˜µè®¾è®¡å¥½åéœ€è¦å°†æ¯ä¸ªIDå¯¹åº”åˆ°è¯•éªŒåä¸Š <br>
+	 * è­¬å¦‚ï¼š<br>
 	 * design = model.matrix(~ -1+factor (c(1,1,2,2,3,3))) <br>
 	 * colnames(design) = c("Patient","Treat","Norm")<br>
 	 * 1 = Patient<br>
@@ -42,7 +42,7 @@ public class DiffExpTtest extends DiffExpAbs {
 	public void clean(){};
 	@Override
 	protected void run() {
-		/** colÊÇÊµ¼Êcol */
+		/** colæ˜¯å®é™…col */
 		HashMap<String, ArrayList<Integer>> mapSample2ColNum = new HashMap<String, ArrayList<Integer>>();
 		for (String[] col2Sample : lsSampleColumn2GroupName) {
 			ArrayList<Integer> lsColumn = new ArrayList<Integer>();
@@ -55,7 +55,7 @@ public class DiffExpTtest extends DiffExpAbs {
 		}
 		
 		ArrayList<String[]> lsValues = getAnalysisGeneInfo();
-		//±éÀúÃ¿¸ö±È½Ï
+		//éå†æ¯ä¸ªæ¯”è¾ƒ
 		for (Entry<String, String[]> entry : mapOutFileName2Compare.entrySet()) {
 			String fileName = entry.getKey();
 			String[] treat2col = entry.getValue();

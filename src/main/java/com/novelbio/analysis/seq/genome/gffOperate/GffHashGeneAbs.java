@@ -40,19 +40,19 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		mapGeneID2AccID = new HashMap<String, String>();
 	}
 	/**
-	 * ÔÚ¶ÁÈ¡ÎÄ¼şºóÈç¹ûÓĞÊ²Ã´ĞèÒªÉèÖÃµÄ£¬¿ÉÒÔĞ´ÔÚsetOther();·½·¨ÀïÃæ
-	 * 	 * ²ßÂÔ£º1.¶ÁÈ¡gffÎÄ¼ş
-	 * 2. ½«gffÎÄ¼şÖĞÖØµşµÄ»ùÒòºÏ²¢Îª1¸ö£¨ReadGffarrayExcep·½·¨ÊµÏÖ£©£¬
-	 * ÓÉÓÚÓĞĞ©Ãû×Ö²»Í¬µÄ»ùÒòÊµ¼ÊÉÏÒ»Ä£Ò»Ñù£¬ÎªÁË·ÀÖ¹ºóĞøËÑË÷²»µ½£¬ÔÚ±¾²½ÖèÖĞ²»É¾³ıÃû×Ö²»Í¬Êµ¼ÊÏàÍ¬µÄiso
-	 * 3.µ÷ÓÃsuper.ReadGffarray£¬Ìî³ämapName2DetailNumºÍ mapName2Detail
-	 * 4. É¾³ı²»Í¬µÄiso
+	 * åœ¨è¯»å–æ–‡ä»¶åå¦‚æœæœ‰ä»€ä¹ˆéœ€è¦è®¾ç½®çš„ï¼Œå¯ä»¥å†™åœ¨setOther();æ–¹æ³•é‡Œé¢
+	 * 	 * ç­–ç•¥ï¼š1.è¯»å–gffæ–‡ä»¶
+	 * 2. å°†gffæ–‡ä»¶ä¸­é‡å çš„åŸºå› åˆå¹¶ä¸º1ä¸ªï¼ˆReadGffarrayExcepæ–¹æ³•å®ç°ï¼‰ï¼Œ
+	 * ç”±äºæœ‰äº›åå­—ä¸åŒçš„åŸºå› å®é™…ä¸Šä¸€æ¨¡ä¸€æ ·ï¼Œä¸ºäº†é˜²æ­¢åç»­æœç´¢ä¸åˆ°ï¼Œåœ¨æœ¬æ­¥éª¤ä¸­ä¸åˆ é™¤åå­—ä¸åŒå®é™…ç›¸åŒçš„iso
+	 * 3.è°ƒç”¨super.ReadGffarrayï¼Œå¡«å……mapName2DetailNumå’Œ mapName2Detail
+	 * 4. åˆ é™¤ä¸åŒçš„iso
 	 * @param gfffilename
 	 */
 	public void ReadGffarray(String gfffilename) {
 		this.acc2GeneIDfile = FileOperate.changeFileSuffix(gfffilename, "_accID2geneID", "list");
 		super.ReadGffarray(gfffilename);
 		
-		//É¾³ıÖØ¸´µÄiso
+		//åˆ é™¤é‡å¤çš„iso
 		for (ListGff listGff : mapChrID2ListGff.values()) {
 			listGff.sort();
 			for (int i = 0; i < listGff.size(); i++) {
@@ -70,7 +70,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		}
 	}
 	/**
-	 * ÔÚ¶ÁÈ¡ÎÄ¼şºóÈç¹ûÓĞÊ²Ã´ĞèÒªÉèÖÃµÄ£¬¿ÉÒÔĞ´ÔÚsetOther();·½·¨ÀïÃæ
+	 * åœ¨è¯»å–æ–‡ä»¶åå¦‚æœæœ‰ä»€ä¹ˆéœ€è¦è®¾ç½®çš„ï¼Œå¯ä»¥å†™åœ¨setOther();æ–¹æ³•é‡Œé¢
 	 * @param gfffilename
 	 */
 	public void ReadGffarrayExcep(String gfffilename) {
@@ -80,7 +80,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 				String chrID = entry.getKey();
 				ListGff listGff = entry.getValue();
 				ListGff listGffNew = listGff.combineOverlapGene();
-				//×°Èëhash±í
+				//è£…å…¥hashè¡¨
 				for (GffDetailGene gffDetailGene : listGff) {
 					for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 						mapName2Iso.put(GeneID.removeDot(gffGeneIsoInfo.getName().toLowerCase()), gffGeneIsoInfo);
@@ -102,8 +102,8 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		this.taxID = taxID;
 	}
 	/**
-	 * ÊäÈë»ùÒòÃû£¬·µ»Ø»ùÒòµÄ×ø±êĞÅÏ¢µÈ
-	 * ¿ÉÒÔÊäÈëaccID
+	 * è¾“å…¥åŸºå› åï¼Œè¿”å›åŸºå› çš„åæ ‡ä¿¡æ¯ç­‰
+	 * å¯ä»¥è¾“å…¥accID
 	 * @param accID
 	 * @return
 	 */
@@ -118,7 +118,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 			try {
 				locID = getMapGeneID2Acc(acc2GeneIDfile).get(copedID.getGenUniID()).split("//")[0];
 			} catch (Exception e) {
-				logger.error("Ã»ÓĞ¸ÃaccID£º"+accID);
+				logger.error("æ²¡æœ‰è¯¥accIDï¼š"+accID);
 				return null;
 			}
 			gffDetailGene = super.searchLOC(locID);
@@ -128,9 +128,9 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 
 	
 	/**
-	 * ÊäÈë»ùÒòÃû£¬·µ»Ø»ùÒòµÄ¾ßÌå×ªÂ¼±¾£¬Ö÷ÒªÓÃÔÚUCSCÉÏ
-	 * Ã»ÕÒµ½¾ßÌåµÄ×ªÂ¼±¾Ãû×Ö£¬ÄÇÃ´¾Í·µ»Ø×î³¤×ªÂ¼±¾
-	 * ¿ÉÒÔÊäÈëaccID
+	 * è¾“å…¥åŸºå› åï¼Œè¿”å›åŸºå› çš„å…·ä½“è½¬å½•æœ¬ï¼Œä¸»è¦ç”¨åœ¨UCSCä¸Š
+	 * æ²¡æ‰¾åˆ°å…·ä½“çš„è½¬å½•æœ¬åå­—ï¼Œé‚£ä¹ˆå°±è¿”å›æœ€é•¿è½¬å½•æœ¬
+	 * å¯ä»¥è¾“å…¥accID
 	 * @param accID
 	 * @return
 	 */
@@ -152,7 +152,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		return gffGeneIsoInfoOut;
 	}
 	/**
-	 * ·µ»ØÈ«ÌåÄÚº¬×Ó£¬³¤¶È´ÓĞ¡µ½´óÅÅĞò
+	 * è¿”å›å…¨ä½“å†…å«å­ï¼Œé•¿åº¦ä»å°åˆ°å¤§æ’åº
 	 * @return
 	 */
 	public ArrayList<Integer> getLsIntronSortedS2M() {
@@ -161,7 +161,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 			String key = entry.getKey();
 			ListGff value = entry.getValue();
 			int chrLOCNum=value.size();
-		    //Ò»ÌõÒ»ÌõÈ¾É«ÌåµÄÈ¥¼ì²éÄÚº¬×ÓºÍÍâÏÔ×ÓµÄ³¤¶È
+		    //ä¸€æ¡ä¸€æ¡æŸ“è‰²ä½“çš„å»æ£€æŸ¥å†…å«å­å’Œå¤–æ˜¾å­çš„é•¿åº¦
 		    for (int i = 0; i < chrLOCNum; i++) {
 				GffDetailGene tmpUCSCgene=value.get(i);
 				GffGeneIsoInfo gffGeneIsoInfoLong = tmpUCSCgene.getLongestSplitMrna();
@@ -175,10 +175,10 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		return lsIntronLen;
 	}
 	/**
-	 * ÊäÈëCopedID£¬·µ»Ø»ùÒòµÄ×ø±êĞÅÏ¢µÈ
+	 * è¾“å…¥CopedIDï¼Œè¿”å›åŸºå› çš„åæ ‡ä¿¡æ¯ç­‰
 	 * @param copedID 
 	 * @return
-	 * Ã»ÓĞ¾Í·µ»Ønull
+	 * æ²¡æœ‰å°±è¿”å›null
 	 */
 	public GffDetailGene searchLOC(GeneID copedID) {
 		GffDetailGene gffDetailGene = super.searchLOC(copedID.getAccID());
@@ -196,10 +196,10 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	}
 	
 	/**
-	 * ÊäÈë
+	 * è¾“å…¥
 	 * @param txtaccID2GeneID
 	 * @return
-	 * hashGeneID2Acc£¬Ò»¸ögeneID¶ÔÓ¦¶à¸öaccIDµÄÊ±ºò£¬accIDÓÃ¡°//¡±¸ô¿ª
+	 * hashGeneID2Accï¼Œä¸€ä¸ªgeneIDå¯¹åº”å¤šä¸ªaccIDçš„æ—¶å€™ï¼ŒaccIDç”¨â€œ//â€éš”å¼€
 	 */
 	private HashMap<String, String> getMapGeneID2Acc(String txtaccID2GeneID) {
 		if (mapGeneID2AccID != null && mapGeneID2AccID.size() > 0) {
@@ -226,8 +226,8 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		return mapGeneID2AccID;
 	}
 	/**
-	 * Ò»¸öGffÎÄ¼şÖ»ÅÜÒ»´Î¾ÍºÃ
-	 * ½«¶ÁÈ¡µÄGffÎÄ¼şÖĞµÄAccID×ª»¯ÎªGeneID²¢ÇÒ±£´æÔÚÎÄ±¾ÖĞ£¬ÏÂ´ÎÖ±½Ó¶ÁÈ¡¸ÃÎÄ±¾¼´¿É»ñµÃAccIDÓëGeneIDµÄ¶ÔÕÕ±í£¬¿ìËÙ²éÕÒ
+	 * ä¸€ä¸ªGffæ–‡ä»¶åªè·‘ä¸€æ¬¡å°±å¥½
+	 * å°†è¯»å–çš„Gffæ–‡ä»¶ä¸­çš„AccIDè½¬åŒ–ä¸ºGeneIDå¹¶ä¸”ä¿å­˜åœ¨æ–‡æœ¬ä¸­ï¼Œä¸‹æ¬¡ç›´æ¥è¯»å–è¯¥æ–‡æœ¬å³å¯è·å¾—AccIDä¸GeneIDçš„å¯¹ç…§è¡¨ï¼Œå¿«é€ŸæŸ¥æ‰¾
 	 * @param txtAccID2GeneID
 	 */
 	private void writeAccID2GeneID(String txtaccID2GeneID) {
@@ -235,7 +235,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		txtAccID2GeneID.ExcelWrite(getGene2ID());
 	}
 	/**
-	 * »ñµÃGene2GeneIDÔÚÊı¾İ¿âÖĞµÄĞÅÏ¢£¬²¢ÇÒĞ´ÈëÎÄ±¾£¬Ò»°ã²»ÓÃ
+	 * è·å¾—Gene2GeneIDåœ¨æ•°æ®åº“ä¸­çš„ä¿¡æ¯ï¼Œå¹¶ä¸”å†™å…¥æ–‡æœ¬ï¼Œä¸€èˆ¬ä¸ç”¨
 	 */
 	private ArrayList<String[]> getGene2ID() {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
@@ -252,7 +252,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	}
 	
 	/**
-	 * ½«»ùÒò×°ÈëGffHashÖĞ
+	 * å°†åŸºå› è£…å…¥GffHashä¸­
 	 * @param chrID
 	 * @param gffDetailGene
 	 */
@@ -267,21 +267,21 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	}
 	/**
 	 * 
-	 * ½«ÎÄ¼şĞ´ÈëGTFÖĞ
+	 * å°†æ–‡ä»¶å†™å…¥GTFä¸­
 	 * @param GTFfile
-	 * @param title ¸ø¸ÃGTFÆğ¸öÃû×Ö
+	 * @param title ç»™è¯¥GTFèµ·ä¸ªåå­—
 	 */
 	@Override
 	public void writeToGTF(String GTFfile,String title) {
 		TxtReadandWrite txtGtf = new TxtReadandWrite(GTFfile, true);
 		ArrayList<String> lsChrID = ArrayOperate.getArrayListKey(mapChrID2ListGff);
-		//°ÑµÃµ½µÄChrIDÅÅ¸öĞò
+		//æŠŠå¾—åˆ°çš„ChrIDæ’ä¸ªåº
 		TreeSet<String> treeSet = new TreeSet<String>();
 		for (String string : lsChrID) {
 			treeSet.add(string);
 		}
-		//»ùÒòÃû×ÖÈ¥ÖØ¸´£¬ÒòÎªÒ»¸ö»ùÒòÖ»ÄÜÓĞÒ»¸öÃû×Ö
-		//ËùÒÔÈç¹û·¢ÏÖÒ»ÑùµÄ»ùÒòÃû£¬¾ÍÔÚÆäºóÃæ¼ÓÉÏ.1£¬.2µÈ
+		//åŸºå› åå­—å»é‡å¤ï¼Œå› ä¸ºä¸€ä¸ªåŸºå› åªèƒ½æœ‰ä¸€ä¸ªåå­—
+		//æ‰€ä»¥å¦‚æœå‘ç°ä¸€æ ·çš„åŸºå› åï¼Œå°±åœ¨å…¶åé¢åŠ ä¸Š.1ï¼Œ.2ç­‰
 		HashSet<String> setGeneName = new HashSet<String>();
 		HashSet<String> setTranscriptName = new HashSet<String>();
 		for (String string : treeSet) {
@@ -314,8 +314,8 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		return geneIDinput;
 	}
 	/**
-	 * ½«Ò»¸öÈ¾É«ÌåÖĞµÄ º¬ÓĞ²»Ö¹Ò»¸ö×ªÂ¼±¾µÄ »ùÒòĞÅÏ¢Ğ´ÈëÎÄ±¾£¬°´ÕÕGTF¸ñÊ½
-	 * Ò²¾ÍÊÇËµ£¬½öº¬ÓĞÒ»¸ö×ªÂ¼±¾µÄ»ùÒò¾Í²»Ğ´ÈëÎÄ±¾ÁË
+	 * å°†ä¸€ä¸ªæŸ“è‰²ä½“ä¸­çš„ å«æœ‰ä¸æ­¢ä¸€ä¸ªè½¬å½•æœ¬çš„ åŸºå› ä¿¡æ¯å†™å…¥æ–‡æœ¬ï¼ŒæŒ‰ç…§GTFæ ¼å¼
+	 * ä¹Ÿå°±æ˜¯è¯´ï¼Œä»…å«æœ‰ä¸€ä¸ªè½¬å½•æœ¬çš„åŸºå› å°±ä¸å†™å…¥æ–‡æœ¬äº†
 	 * @param txtWrite
 	 * @param lsGffDetailGenes
 	 * @param title
@@ -324,7 +324,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	public void writeToGFFIsoMoreThanOne(String GFFfile, String title) {
 		TxtReadandWrite txtGtf = new TxtReadandWrite(GFFfile, true);
 		ArrayList<String> lsChrID = ArrayOperate.getArrayListKey(mapChrID2ListGff);
-		//°ÑµÃµ½µÄChrIDÅÅ¸öĞò
+		//æŠŠå¾—åˆ°çš„ChrIDæ’ä¸ªåº
 		TreeSet<String> treeSet = new TreeSet<String>();
 		for (String string : lsChrID) {
 			treeSet.add(string);
@@ -337,8 +337,8 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	}
 	
 	/**
-	 * ½«Ò»¸öÈ¾É«ÌåÖĞµÄ º¬ÓĞ²»Ö¹Ò»¸ö×ªÂ¼±¾µÄ »ùÒòĞÅÏ¢Ğ´ÈëÎÄ±¾£¬°´ÕÕGTF¸ñÊ½
-	 * Ò²¾ÍÊÇËµ£¬½öº¬ÓĞÒ»¸ö×ªÂ¼±¾µÄ»ùÒò¾Í²»Ğ´ÈëÎÄ±¾ÁË
+	 * å°†ä¸€ä¸ªæŸ“è‰²ä½“ä¸­çš„ å«æœ‰ä¸æ­¢ä¸€ä¸ªè½¬å½•æœ¬çš„ åŸºå› ä¿¡æ¯å†™å…¥æ–‡æœ¬ï¼ŒæŒ‰ç…§GTFæ ¼å¼
+	 * ä¹Ÿå°±æ˜¯è¯´ï¼Œä»…å«æœ‰ä¸€ä¸ªè½¬å½•æœ¬çš„åŸºå› å°±ä¸å†™å…¥æ–‡æœ¬äº†
 	 * @param txtWrite
 	 * @param lsGffDetailGenes
 	 * @param title

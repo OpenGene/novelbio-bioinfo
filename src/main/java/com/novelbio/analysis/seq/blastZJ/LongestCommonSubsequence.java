@@ -2,7 +2,7 @@ package com.novelbio.analysis.seq.blastZJ;
 
 
 /**
- * LCSËã·¨
+ * LCSç®—æ³•
  * @author Paul Reiners
  * 
  */
@@ -29,7 +29,7 @@ public class LongestCommonSubsequence extends DynamicProgramming {
       double aboveScore = cellAbove.getScore();
       double leftScore = cellToLeft.getScore();
       double matchScore;
-      //Èç¹ûÇ°Ò»ĞĞºÍÇ°Ò»ÁĞµÄ
+      //å¦‚æœå‰ä¸€è¡Œå’Œå‰ä¸€åˆ—çš„
       if (sequence1.charAt(currentCell.getCol() - 1) == sequence2.charAt(currentCell.getRow() - 1)) {
          matchScore = cellAboveLeft.getScore() + 1;
       } else {
@@ -101,7 +101,7 @@ public class LongestCommonSubsequence extends DynamicProgramming {
          else {
         	  lCSBuf.insert(0, "-");
 		}
-         //ÕâÀï¿ÉÒÔÔÚelseÀïÃæ²åÈëÒ»¸öºá¸Ü
+         //è¿™é‡Œå¯ä»¥åœ¨elseé‡Œé¢æ’å…¥ä¸€ä¸ªæ¨ªæ 
          currentCell = prevCell;
       }
 

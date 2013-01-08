@@ -38,7 +38,7 @@ public class CtrlMiRNApredict {
 	public void setSpecies(Species species) {
 		this.species = species;
 	}
-	/** Êä³öÎÄ¼þ¼Ð */
+	/** è¾“å‡ºæ–‡ä»¶å¤¹ */
 	public void setOutPath(String outPath) {
 		this.outPath = FileOperate.addSep(outPath);
 	}

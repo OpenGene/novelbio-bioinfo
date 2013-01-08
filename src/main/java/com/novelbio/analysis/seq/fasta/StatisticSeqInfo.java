@@ -3,8 +3,8 @@ package com.novelbio.analysis.seq.fasta;
 import java.util.ArrayList;
 
 /**
- * Í³¼ÆĞòÁĞÖĞÓĞ¶àÉÙÊÇNN£¬ÓĞ¶àÉÙÊÇ¿ÉÄÜµÄgap£¬ÓĞ¶àÉÙÊÇ±ß½ç²»Çå³ş
- * ÓĞ¶àÉÙ´óĞ´£¬¶àÉÙĞ¡Ğ´
+ * ç»Ÿè®¡åºåˆ—ä¸­æœ‰å¤šå°‘æ˜¯NNï¼Œæœ‰å¤šå°‘æ˜¯å¯èƒ½çš„gapï¼Œæœ‰å¤šå°‘æ˜¯è¾¹ç•Œä¸æ¸…æ¥š
+ * æœ‰å¤šå°‘å¤§å†™ï¼Œå¤šå°‘å°å†™
  * @author zong0jie
  *
  */
@@ -12,9 +12,9 @@ public class StatisticSeqInfo {
 	//string0: flag string1: location string2:endLoc
 	ArrayList<LocInfo> lsResult = new ArrayList<LocInfo>();
 	char[] seq;
-	boolean flagBound = false; //±ß½çÄ£ºı±ê¼Ç£¬XX
-	boolean flagGap = false; //gap±ê¼Ç£¬Ğ¡Ğ´
-	boolean flagAmbitious = false; //²»È·¶¨¼î»ù±ê¼Ç£¬NNN
+	boolean flagBound = false; //è¾¹ç•Œæ¨¡ç³Šæ ‡è®°ï¼ŒXX
+	boolean flagGap = false; //gapæ ‡è®°ï¼Œå°å†™
+	boolean flagAmbitious = false; //ä¸ç¡®å®šç¢±åŸºæ ‡è®°ï¼ŒNNN
 	int bound = 0; int gap = 0; int ambitious = 0;
 	int startBound = 0; int startGap = 0; int startAmbitious = 0;
 	
@@ -23,8 +23,8 @@ public class StatisticSeqInfo {
 		statistics();
 	}
 	/**
-	 * Í³¼ÆĞòÁĞÖĞĞ¡Ğ´ĞòÁĞ£¬NµÄÊıÁ¿ÒÔ¼°XµÄÊıÁ¿µÈ
-	 * »ñµÃ½á¹û
+	 * ç»Ÿè®¡åºåˆ—ä¸­å°å†™åºåˆ—ï¼ŒNçš„æ•°é‡ä»¥åŠXçš„æ•°é‡ç­‰
+	 * è·å¾—ç»“æœ
 	 * @return
 	 */
 	public ArrayList<LocInfo> getLsSeqInfo() {
@@ -35,25 +35,25 @@ public class StatisticSeqInfo {
 			if (seq[i] < 'a' && seq[i] != 'X' && seq[i] != 'N') {
 				if (flagAmbitious) {
 					addList(lsResult, "ambitious", startAmbitious, ambitious);
-					flagAmbitious = false; //²»È·¶¨¼î»ù±ê¼Ç£¬NNN
+					flagAmbitious = false; //ä¸ç¡®å®šç¢±åŸºæ ‡è®°ï¼ŒNNN
 				}
 				if (flagGap) {
 					addList(lsResult, "gap", startGap, gap);
-					flagGap = false; //gap±ê¼Ç£¬Ğ¡Ğ´
+					flagGap = false; //gapæ ‡è®°ï¼Œå°å†™
 				}
 				if (flagBound) {
 					addList(lsResult, "bound", startBound, bound);
-					flagBound = false; //±ß½çÄ£ºı±ê¼Ç£¬XX
+					flagBound = false; //è¾¹ç•Œæ¨¡ç³Šæ ‡è®°ï¼ŒXX
 				}
 			}
 			else if (seq[i] == 'X' ) {
 				if (flagAmbitious) {
 					addList(lsResult, "ambitious", startAmbitious, ambitious);
-					flagAmbitious = false; //²»È·¶¨¼î»ù±ê¼Ç£¬NNN
+					flagAmbitious = false; //ä¸ç¡®å®šç¢±åŸºæ ‡è®°ï¼ŒNNN
 				}
 				if (flagGap) {
 					addList(lsResult, "gap", startGap, gap);
-					flagGap = false; //gap±ê¼Ç£¬Ğ¡Ğ´
+					flagGap = false; //gapæ ‡è®°ï¼Œå°å†™
 				}
 				if (flagBound) {
 					bound ++;
@@ -75,18 +75,18 @@ public class StatisticSeqInfo {
 				}
 				if (flagGap) {
 					addList(lsResult, "gap", startGap, gap);
-					flagGap = false; // gap±ê¼Ç£¬Ğ¡Ğ´
+					flagGap = false; // gapæ ‡è®°ï¼Œå°å†™
 				}
 				if (flagBound) {
 					addList(lsResult, "bound",startBound, bound);
-					flagBound = false; // ±ß½çÄ£ºı±ê¼Ç£¬XX
+					flagBound = false; // è¾¹ç•Œæ¨¡ç³Šæ ‡è®°ï¼ŒXX
 				}
 			}
 			else if (seq[i] >= 'a') {
 				System.out.println("i");
 				if (flagAmbitious) {
 					addList(lsResult, "ambitious", startAmbitious, ambitious);
-					flagAmbitious = false; //²»È·¶¨¼î»ù±ê¼Ç£¬NNN
+					flagAmbitious = false; //ä¸ç¡®å®šç¢±åŸºæ ‡è®°ï¼ŒNNN
 				}
 				if (flagGap) {
 					gap ++;
@@ -98,7 +98,7 @@ public class StatisticSeqInfo {
 				}
 				if (flagBound) {
 					addList(lsResult, "bound", startBound, bound);
-					flagBound = false; //±ß½çÄ£ºı±ê¼Ç£¬XX
+					flagBound = false; //è¾¹ç•Œæ¨¡ç³Šæ ‡è®°ï¼ŒXX
 				}
 			}
 		}
@@ -106,7 +106,7 @@ public class StatisticSeqInfo {
 	/**
 	 * @param lsInfo
 	 * @param info
-	 * @param start ÄÚ²¿»á¼ÓÉÏ1
+	 * @param start å†…éƒ¨ä¼šåŠ ä¸Š1
 	 * @param length
 	 */
 	private void addList(ArrayList<LocInfo> lsInfo, String info, int start, int length) {

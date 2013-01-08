@@ -37,7 +37,7 @@ public class TestGffUCSCInfo extends TestCase{
 		lsAllLoc = gffHashUCSC.getLsNameNoRedundent();
 		hashGffDetail = gffHashUCSC.getLocHashtable();
 	}
-	//HG19µÄ°¸Àý
+	//HG19çš„æ¡ˆä¾‹
 	//@Test
 	public void testchr1_1385068()
 	{
@@ -181,7 +181,7 @@ public class TestGffUCSCInfo extends TestCase{
 		assertEquals(gffGeneIsoSearchCod.getLocDistmRNA(tsssite, coord), gffGeneIsoSearchCod.getCod2TSSmRNA(coord));
 		assertEquals(gffGeneIsoSearchCod.getLocDistmRNA(tessite, coord), gffGeneIsoSearchCod.getCod2TESmRNA(coord));		
 	}
-	//MM9µÄ°¸Àý
+	//MM9çš„æ¡ˆä¾‹
 	@Test
 	public void testCodDu() {
 		int[] tss = new int[]{-2000,2000};

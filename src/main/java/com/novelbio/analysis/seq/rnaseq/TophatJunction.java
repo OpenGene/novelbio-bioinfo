@@ -15,25 +15,25 @@ import com.novelbio.database.domain.geneanno.SepSign;
 public class TophatJunction implements AlignmentRecorder {
 	/**
 	 * key condition
-	 * value: Ä³¸öjunctionÓë±ğµÄjunctionÖ®¼äµÄ¶ÔÓ¦¹ØÏµ
+	 * value: æŸä¸ªjunctionä¸åˆ«çš„junctionä¹‹é—´çš„å¯¹åº”å…³ç³»
 	 */
 	HashMap<String, HashMultimap<String, String>> mapCond_To_mapJun1ToSetJun2 = new LinkedHashMap<String, HashMultimap<String,String>>();
 	HashMultimap<String, String> mapJun1ToSetJun2;
 	/**
 	 * key condition--
-	 * key£ºjunction
-	 * value£º¸ÃjunctionËù¶ÔÓ¦µÄ×ÜreadsÊı
+	 * keyï¼šjunction
+	 * valueï¼šè¯¥junctionæ‰€å¯¹åº”çš„æ€»readsæ•°
 	 */
 	HashMap<String, LinkedHashMap<String, Integer>> mapCond_To_JuncOne2AllNum = new LinkedHashMap<String, LinkedHashMap<String,Integer>>();
 	LinkedHashMap<String, Integer> mapJuncOne2AllNum;
 	/**
 	 * key condition
-	 * value: Ä³Ò»¶ÔjunctionÓëÆä¶ÔÓ¦µÄreads×ÜÊı
+	 * value: æŸä¸€å¯¹junctionä¸å…¶å¯¹åº”çš„readsæ€»æ•°
 	 */
 	HashMap<String, LinkedHashMap<String,Integer>>  mapCond_To_JuncPair2ReadsNum = new LinkedHashMap<String, LinkedHashMap<String,Integer>>();
 	LinkedHashMap<String, Integer> mapJuncPair2ReadsNum;	
 	
-	/** Éè¶¨µ±Ç°Ê±ÆÚ */
+	/** è®¾å®šå½“å‰æ—¶æœŸ */
 	public void setCondition(String condition) {
 		mapJun1ToSetJun2 = getMapJunc1ToJunc2(condition);
 		mapJuncOne2AllNum = getMapJuncOneToAllNum(condition);
@@ -41,12 +41,12 @@ public class TophatJunction implements AlignmentRecorder {
 	}
 	
 	/**
-	 * »ñµÃ¼ô½ÓÎ»µã1¶ÔÓ¦µÄËùÓĞ¼ô½ÓÎ»µã2µÄmap
+	 * è·å¾—å‰ªæ¥ä½ç‚¹1å¯¹åº”çš„æ‰€æœ‰å‰ªæ¥ä½ç‚¹2çš„map
 	 * @param condition
 	 * @return
 	 */
 	private HashMultimap<String, String> getMapJunc1ToJunc2(String condition) {
-		//»ñµÃ¶ÔÓ¦µÄhash±í
+		//è·å¾—å¯¹åº”çš„hashè¡¨
 		HashMultimap<String, String> tmpMapJunc1ToJunc2 = null;
 		if (mapCond_To_mapJun1ToSetJun2.containsKey(condition)) {
 			tmpMapJunc1ToJunc2 = mapCond_To_mapJun1ToSetJun2.get(condition);
@@ -59,12 +59,12 @@ public class TophatJunction implements AlignmentRecorder {
 	
 	/**	 * @param locEndSite
 
-	 * »ñµÃ¼ô½ÓÎ»µã1¶ÔÓ¦µÄÈ«²¿readsnum
+	 * è·å¾—å‰ªæ¥ä½ç‚¹1å¯¹åº”çš„å…¨éƒ¨readsnum
 	 * @param condition
 	 * @return
 	 */
 	private LinkedHashMap<String, Integer> getMapJuncOneToAllNum(String condition) {
-		//»ñµÃ¶ÔÓ¦µÄhash±í
+		//è·å¾—å¯¹åº”çš„hashè¡¨
 		LinkedHashMap<String, Integer> tmpMapJuncOne2AllNum = null;
 		if (mapCond_To_JuncOne2AllNum.containsKey(condition)) {
 			tmpMapJuncOne2AllNum = mapCond_To_JuncOne2AllNum.get(condition);
@@ -76,12 +76,12 @@ public class TophatJunction implements AlignmentRecorder {
 	}
 	
 	/**
-	 * »ñµÃÒ»¶Ô¼ô½ÓÎ»µãËù¶ÔÓ¦µÄÈ«²¿readsnum
+	 * è·å¾—ä¸€å¯¹å‰ªæ¥ä½ç‚¹æ‰€å¯¹åº”çš„å…¨éƒ¨readsnum
 	 * @param condition
 	 * @return
 	 */
 	private LinkedHashMap<String, Integer> getMapJuncPair2ReadsNum(String condition) {
-		//»ñµÃ¶ÔÓ¦µÄhash±í
+		//è·å¾—å¯¹åº”çš„hashè¡¨
 		LinkedHashMap<String, Integer> tmpMapJuncPair2ReadsNum = null;
 		if (mapCond_To_JuncPair2ReadsNum.containsKey(condition)) {
 			tmpMapJuncPair2ReadsNum = mapCond_To_JuncPair2ReadsNum.get(condition);
@@ -92,7 +92,7 @@ public class TophatJunction implements AlignmentRecorder {
 		return tmpMapJuncPair2ReadsNum;
 	}
 	
-	/**Ìí¼ÓsamBamµÄÎÄ¼şÓÃÀ´»ñµÃĞÅÏ¢ */
+	/**æ·»åŠ samBamçš„æ–‡ä»¶ç”¨æ¥è·å¾—ä¿¡æ¯ */
 	public void addAlignRecord(AlignRecord alignRecord) {
 		ArrayList<Align> lsAlign = alignRecord.getAlignmentBlocks();
 		if (lsAlign.size() <= 1) {
@@ -110,7 +110,7 @@ public class TophatJunction implements AlignmentRecorder {
 	}
 
 	/**
-	 * ¶ÁÈ¡junctionÎÄ¼ş£¬ÎÄ¼şÖĞÃ¿¸ö¼ô½ÓÎ»µãÖ»ÄÜ³öÏÖÒ»´Î\
+	 * è¯»å–junctionæ–‡ä»¶ï¼Œæ–‡ä»¶ä¸­æ¯ä¸ªå‰ªæ¥ä½ç‚¹åªèƒ½å‡ºç°ä¸€æ¬¡\
 	 * @param condition
 	 * @param junctionFile
 	 */
@@ -124,7 +124,7 @@ public class TophatJunction implements AlignmentRecorder {
 			String[] ss = string.split("\t");
 			String chrID = ss[0];
 			
-			//junctionÎ»µã¶¼Éè¶¨ÔÚexonÉÏ
+			//junctionä½ç‚¹éƒ½è®¾å®šåœ¨exonä¸Š
 			int junct1 = Integer.parseInt(ss[1]) + Integer.parseInt(ss[10].split(",")[0]);
 			int junct2 = Integer.parseInt(ss[2]) - Integer.parseInt(ss[10].split(",")[1]) + 1;
 			int junctionNum = Integer.parseInt(ss[4]);
@@ -132,11 +132,11 @@ public class TophatJunction implements AlignmentRecorder {
 		}
 	}
 	/** 
-	 * Ìí¼Óµ¥¸ö¼ô½ÓÎ»µãreads
-	 * @param chrID È¾É«Ìå
-	 * @param junctionStart ¼ô½ÓÆğµã
-	 * @param junctionEnd ¼ô½ÓÖÕµã
-	 * @param junctionNum ¼ô½ÓreadsµÄÊıÁ¿
+	 * æ·»åŠ å•ä¸ªå‰ªæ¥ä½ç‚¹reads
+	 * @param chrID æŸ“è‰²ä½“
+	 * @param junctionStart å‰ªæ¥èµ·ç‚¹
+	 * @param junctionEnd å‰ªæ¥ç»ˆç‚¹
+	 * @param junctionNum å‰ªæ¥readsçš„æ•°é‡
 	 */
 	private void addJunctionInfo(String chrID, int junctionStart, int junctionEnd, int junctionNum) {
 		chrID = chrID.toLowerCase();
@@ -152,7 +152,7 @@ public class TophatJunction implements AlignmentRecorder {
 		addJunctionNum(mapJuncPair2ReadsNum, strJunBoth, junctionNum);
 	}
 	
-	/** ÏòÖ¸¶¨µÄmapÖĞÌí¼Ójunction reads */
+	/** å‘æŒ‡å®šçš„mapä¸­æ·»åŠ junction reads */
 	private void addJunctionNum(HashMap<String, Integer> mapJunc2Num, String junc, int junctionNum) {
 		if (mapJunc2Num.containsKey(junc)) {
 			int juncAllNum = mapJunc2Num.get(junc);
@@ -163,8 +163,8 @@ public class TophatJunction implements AlignmentRecorder {
 		}
 	}
 	/**
-	 * ¸ø¶¨×ø±êºÍÎ»µã£¬ÕÒ³ölocsite,ÒÔ¼°×Ü¹²ÓĞ¶àÉÙreadsÖ§³Ö
-	 * 0±íÊ¾Ã»ÓĞjunction
+	 * ç»™å®šåæ ‡å’Œä½ç‚¹ï¼Œæ‰¾å‡ºlocsite,ä»¥åŠæ€»å…±æœ‰å¤šå°‘readsæ”¯æŒ
+	 * 0è¡¨ç¤ºæ²¡æœ‰junction
 	 * @param chrID
 	 * @param locSite
 	 * @return
@@ -179,9 +179,9 @@ public class TophatJunction implements AlignmentRecorder {
 		return num;
 	}
 	/**
-	 * ¸ø¶¨×ø±êºÍÎ»µã£¬ÕÒ³ölocsite
+	 * ç»™å®šåæ ‡å’Œä½ç‚¹ï¼Œæ‰¾å‡ºlocsite
 	 * @param chrID
-	 * @param locStartSite ÎŞËùÎ½Ç°ºó£¬ÄÚ²¿×Ô¶¯ÅĞ¶Ï
+	 * @param locStartSite æ— æ‰€è°“å‰åï¼Œå†…éƒ¨è‡ªåŠ¨åˆ¤æ–­
 	 * @param locEndSite
 	 * @return
 	 */
@@ -199,9 +199,9 @@ public class TophatJunction implements AlignmentRecorder {
 	}
 	
 	/**
-	 * ¸ø¶¨×ø±êºÍÎ»µã£¬ÕÒ³ölocsite
+	 * ç»™å®šåæ ‡å’Œä½ç‚¹ï¼Œæ‰¾å‡ºlocsite
 	 * @param chrID
-	 * @param locStartSite ÎŞËùÎ½Ç°ºó£¬ÄÚ²¿×Ô¶¯ÅĞ¶Ï
+	 * @param locStartSite æ— æ‰€è°“å‰åï¼Œå†…éƒ¨è‡ªåŠ¨åˆ¤æ–­
 	 * @param locEndSite
 	 * @return
 	 */

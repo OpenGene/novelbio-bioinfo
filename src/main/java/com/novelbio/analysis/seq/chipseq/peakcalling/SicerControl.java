@@ -58,7 +58,7 @@ public class SicerControl {
 	public void setSicerType( PeakCallingSicerType peakCallingSicerType) {
 		this.peakCallingSicerType = peakCallingSicerType;
 	}
-	/** 设定甲基化信息，根据这个来判定window size 和gap size */
+	/** 璁惧��插���俊����规�杩�釜�ュ�瀹�indow size ��ap size */
 	public void setMethylationType(int methylationType) {
 		if (methylationType == METHY_H3K4) {
 			peakCallingSicer.setWindowSize(200);
@@ -115,9 +115,7 @@ public class SicerControl {
 	}
 	
 	/**
-	 * 根据这个来设定indir，如果其他bed文件和这个bed文件不在同一个文件夹下，就会将它们拷贝过来
-	 * 必须第一步设定
-	 * @param koBedPathAndFile
+	 * �规�杩�釜�ヨ�瀹�ndir锛�����浠�ed��欢���涓�ed��欢涓�����涓��浠跺す涓��灏变�灏��浠��璐����	 * 蹇�』绗��姝ヨ�瀹�	 * @param koBedPathAndFile
 	 */
 	public void setKoBedFile(String koBedPathAndFile, String prefix) {
 		this.prefixKO = getPrefix(koBedPathAndFile, prefix);
@@ -135,7 +133,7 @@ public class SicerControl {
 		linkBed(wtBedPathAndFile);
 		peakCallingSicer.setWtBedFile(FileOperate.getFileName(wtBedPathAndFile));
 	}
-	/** 根据文件名和输入的前缀 自动返回前缀 */
+	/** �规���欢���杈�����缂����杩����� */
 	private String getPrefix(String fileName, String prefix) {
 		if (prefix != null && !prefix.trim().equals("")) {
 			return prefix.trim();
@@ -157,8 +155,7 @@ public class SicerControl {
 		peakCallingSicer.setInputDir(indir);
 	}
 	/**
-	 * 根据输入的bed文件获得一系列的参数譬如effective genomsize和fragmentsize等
-	 */
+	 * �规�杈����ed��欢�峰�涓�郴������璀��effective genomsize��ragmentsize绛�	 */
 	private void setParamFromBedFile(String inputBed) {
 		BedSeq bedSeq = new BedSeq(inputBed);
 		int i = 1;
@@ -176,7 +173,7 @@ public class SicerControl {
 	}
 	
 	/**
-	 * 如果输入的bed文件和indir不在一起，则拷贝过去
+	 * 濡��杈����ed��欢��ndir涓��涓�捣锛���疯�杩��
 	 * @param inputBed
 	 */
 	private void linkBed(String inputBed) {
@@ -184,13 +181,13 @@ public class SicerControl {
 		String bedfile = FileOperate.getFileName(inputBed);
 		if (!this.dir.equals(indir)) {
 			if (!FileOperate.linkFile(inputBed, this.dir + bedfile, true)) {
-				logger.error("移动文件出错：" + inputBed + "   " + this.dir + bedfile);
+				logger.error("绉诲���欢�洪�锛� + inputBed + "   " + this.dir + bedfile);
 			}
 		}
 	}
 	
 	/**
-	 * @param fdr 默认0.01
+	 * @param fdr 榛��0.01
 	 */
 	public void setFDR(double fdr) {
 		peakCallingSicer.setFDR(fdr);
@@ -199,7 +196,7 @@ public class SicerControl {
 	 * E-value is not p-value. Suggestion for first try on histone modification data: 
 	 * E-value=100. If you find ~10000 islands using this evalue, an empirical estimate of FDR
 	 * is 1E-2.
-	 * @param evalue 默认100
+	 * @param evalue 榛��100
 	 */
 	public void setEvalue(int evalue) {
 		peakCallingSicer.setEvalue(evalue);
@@ -208,7 +205,7 @@ public class SicerControl {
 	public void peakCalling() {
 		modifyGenomePy();
 		
-		//修正完毕后稍微等一会儿，防止后面SICER读取Genome.py文件出错 
+		//淇��瀹�����寰��涓���匡��叉����SICER璇诲�Genome.py��欢�洪� 
 		try {Thread.sleep(1000);} catch (InterruptedException e) {}
 		
 		ArrayList<String> lsOutFile = peakCallingSicer.peakCallingAndGetResultFile(peakCallingSicerType);
@@ -237,9 +234,8 @@ public class SicerControl {
 		return resultDir;
 	}
 	/**
-	 * 处理没有KO的sicer结果
-	 * 包括sicer和sicer-rb的结果
-	 * @param resultDir
+	 * 澶��娌℃�KO��icer缁��
+	 * ���sicer��icer-rb�����	 * @param resultDir
 	 * @param resultFile
 	 */
 	private static void modiyResultSicer(PeakCallingSicerType peakCallingSicerType, String resultDir, String resultFile) {
@@ -258,8 +254,7 @@ public class SicerControl {
 		txtRead.close();
 	}
 	/**
-	 * @param lsSicerDifResultFile 用sicerdif跑完之后出来的三个结果文件
-	 */
+	 * @param lsSicerDifResultFile ��icerdif璺��涔���烘����涓�����浠�	 */
 	private static void modiyResultSicer_DIF(ArrayList<String> lsSicerDifResultFile, String resultDir, String prefixKO, String prefixWT) {
 		for (String sicerResultFileName : lsSicerDifResultFile) {
 			modifyResult(sicerResultFileName, resultDir, prefixKO, prefixWT);
@@ -295,7 +290,7 @@ public class SicerControl {
 	
 	/**
 	 * @param peakCallingSicerType
-	 * @param prefixKO 如果不是
+	 * @param prefixKO 濡��涓��
 	 * @param prefixWT
 	 * @return
 	 */
@@ -321,7 +316,7 @@ public class SicerControl {
 	
 	/**
 	 * @param peakCallingSicerType
-	 * @param prefixKO 如果不是
+	 * @param prefixKO 濡��涓��
 	 * @param prefixWT
 	 * @return
 	 */
@@ -346,8 +341,7 @@ public class SicerControl {
 		return tiltes;
 	}
 	/**
-	 * 返回 _A_vs_B的形式
-	 * @param A
+	 * 杩�� _A_vs_B��舰寮�	 * @param A
 	 * @param B
 	 * @return
 	 */
@@ -371,7 +365,7 @@ public class SicerControl {
 }
 
 /**
- * 根据输入的物种，修正SICER的Genome.py
+ * �规�杈�����绉��淇��SICER��enome.py
  * @author zong0jie
  *
  */
@@ -383,8 +377,7 @@ class ModifyGenomeData {
 	static ArrayList<String> lsFirstLine =new ArrayList<String>();
 	public static void readGenomeData( String GenomeDataFile) {
 		/**
-		 * 一对多的关系，对应GenomeData的4种关系
-		 * mapSpeciesName_chroms
+		 * 涓��澶���崇郴锛��搴�enomeData��绉��绯�		 * mapSpeciesName_chroms
 		 * mapSpeciesName_chromLengths
 		 * mapSpecies_chroms
 		 * mapSpecies_chromLengths
@@ -394,7 +387,7 @@ class ModifyGenomeData {
 		lsFirstLine = txtReadandWrite.readFirstLines(41);
 		for (String string : txtReadandWrite.readlines()) {
 			/*
-			 * 获取一个关系mapSpeciesName_chroms
+			 * �峰�涓�釜�崇郴mapSpeciesName_chroms
 			 */
 			if (string.contains("_chroms = ['")) {
 				String[] strings= string.split("=");
@@ -404,7 +397,7 @@ class ModifyGenomeData {
 				}
 			}
 			/*
-			 * 获取第二个关系mapSpeciesName_chromLengths
+			 * �峰�绗��涓��绯�apSpeciesName_chromLengths
 			 */
 			if (string.contains("_chrom_lengths = {'")) {
 				String[] strings= string.split("=");
@@ -419,7 +412,7 @@ class ModifyGenomeData {
 				}
 			}
 			/*
-			 * 获取第三关系mapSpecies_chroms
+			 * �峰�绗���崇郴mapSpecies_chroms
 			 */
 			if (string.contains("_chroms = {'")) {
 				String[] strings= string.split("=");
@@ -434,7 +427,7 @@ class ModifyGenomeData {
 				
  			}
 			/*
-			 * 获取第四个关系mapSpecies_chromLengths
+			 * �峰�绗��涓��绯�apSpecies_chromLengths
 			 */
 			if (string.contains("_chrom_lengths={'")) {
 				String[] strings= string.split("=");
@@ -465,8 +458,7 @@ class ModifyGenomeData {
 		if (!(mapSpeciesName_chroms.containsKey(strVersion + "_chroms"))) {
 			for (String string : species.getMapChromInfo().keySet()) {
 				/*
-				 * chrY和chry都兼容
-				 */
+				 * chrY��hry�藉�瀹�				 */
 				if (string.equals("chry") || string.equals("chrx") || string.equals("chrm")) {
 					String string1 = string.substring(0, 3) + string.substring(3).toUpperCase();
 					mapSpeciesName_chroms.put(strVersion + "_chroms", "'" + string1 + "'");
@@ -481,7 +473,7 @@ class ModifyGenomeData {
 			FileOperate.changeFileSuffixReal(GenomeDataFile,dataAndTime, null);
 			TxtReadandWrite txtWrite = new TxtReadandWrite(GenomeDataFile, true);
 			/*
-			 * 写41行以前的配置
+			 * ��1琛�互�����疆
 			 */
 			for (String string : lsFirstLine) {
 				txtWrite.writefileln(string);
@@ -489,8 +481,7 @@ class ModifyGenomeData {
 			txtWrite.writefileln();
 			txtWrite.writefileln();
 			/*
-			 * 写SpeciesName_chroms 像
-			 * hg19_chroms = ['chr1','chr2','chr3','chr4']
+			 * ��peciesName_chroms ��			 * hg19_chroms = ['chr1','chr2','chr3','chr4']
 			 */
 			for (String string : mapSpeciesName_chroms.keySet()) {
 				List<String> lsChroms = mapSpeciesName_chroms.get(string);
@@ -506,8 +497,8 @@ class ModifyGenomeData {
 			txtWrite.writefileln();
 			/*
 			 * 
-			 * 写 SpeciesName_chromLengths
-			 * 像pombe_chrom_lengths = {'chr1':5580032,'chr2':4541604,'chr3':2453783,'mat':41249}
+			 * ��SpeciesName_chromLengths
+			 * ��ombe_chrom_lengths = {'chr1':5580032,'chr2':4541604,'chr3':2453783,'mat':41249}
 			 */
 			for (String string : mapSpeciesName_chromLengths.keySet()) {
 				List<String> lschromLengths = mapSpeciesName_chromLengths.get(string);
@@ -523,8 +514,8 @@ class ModifyGenomeData {
 			txtWrite.writefileln();
 			
 			/*
-			 * 写Species_chroms
-			 * 像species_chroms = {'mm9':mm9_chroms, 'hg19':hg19_chroms,"dm2":dm2_chroms}
+			 * ��pecies_chroms
+			 * ��pecies_chroms = {'mm9':mm9_chroms, 'hg19':hg19_chroms,"dm2":dm2_chroms}
 			 */
 			for (String string : mapSpecies_chroms.keySet()) {
 				List<String> lschroms = mapSpecies_chroms.get(string);
@@ -540,8 +531,8 @@ class ModifyGenomeData {
 			txtWrite.writefileln();
 			
 			/*
-			 * 写species_chrom_lengths
-			 * 像species_chrom_lengths={'mm8':mm8_chrom_lengths, 'mm9':mm9_chrom_lengths, 'hg19':hg19_chrom_lengths}
+			 * ��pecies_chrom_lengths
+			 * ��pecies_chrom_lengths={'mm8':mm8_chrom_lengths, 'mm9':mm9_chrom_lengths, 'hg19':hg19_chrom_lengths}
 			 */
 			for (String string : mapSpecies_chromLengths.keySet()) {
 				List<String> lschromLengths = mapSpecies_chromLengths.get(string);

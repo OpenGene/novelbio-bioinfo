@@ -4,9 +4,9 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
-/** �Ƚ�UCSC��gff��NCBI��gff�Ƿ�һ�£�
- * һ�µĻ���ʾ������Ҳ��һ�µģ���ô��
- * ������UCSC��repeatȥ����NCBI */
+/** 比较UCSC的gff和NCBI的gff是否一致，
+ * 一致的话表示基因组也是一致的，那么就
+ * 可以用UCSC的repeat去代替NCBI */
 public class GffCompareUCSCandNCBI {
 	Logger logger = Logger.getLogger(GffCompareUCSCandNCBI.class);
 	String gffUCSC = "";
@@ -26,7 +26,7 @@ public class GffCompareUCSCandNCBI {
 	/**
 	 * @param gffNCBI
 	 * @param gffUCSC
-	 * @param out ͳ�ƽ��
+	 * @param out 统计结果
 	 */
 	public void setGff(String gffNCBI, String gffUCSC, String out) {
 		this.gffNCBI = gffNCBI;
@@ -54,8 +54,8 @@ public class GffCompareUCSCandNCBI {
 				continue;
 			}
 			else {
-				txtOut.writefileln("���ֲ�һ�µ�Iso\t" +gffGeneIsoInfoNCBI.getParentGffDetailGene().getRefID() + "\t" + gffGeneIsoInfoNCBI.getName());
-				logger.error("���ֲ�һ�µ�Iso " + gffGeneIsoInfoNCBI.getName());
+				txtOut.writefileln("出现不一致的Iso\t" +gffGeneIsoInfoNCBI.getParentGffDetailGene().getRefID() + "\t" + gffGeneIsoInfoNCBI.getName());
+				logger.error("出现不一致的Iso " + gffGeneIsoInfoNCBI.getName());
 			}
 		}
 	}

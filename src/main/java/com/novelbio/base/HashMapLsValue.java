@@ -7,7 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import java.util.Set;
 /**
- * 包装了一个hashmap < K, arraylist < V > >
+ * 鍖呰浜嗕竴涓猦ashmap < K, arraylist < V > >
  * @author zong0jie
  *
  * @param <K>
@@ -17,7 +17,7 @@ public class HashMapLsValue<K, V> {
 	LinkedHashMap<K, ArrayList<V>> mapK2V = new LinkedHashMap<K, ArrayList<V>>();
 	private static final long serialVersionUID = -6427548618773494477L;
 	/**
-	 * 如果含有该Key，就在list后面添加，如果不含有该key，就新建一个list然后加入
+	 * 濡傛灉鍚湁璇ey锛屽氨鍦╨ist鍚庨潰娣诲姞锛屽鏋滀笉鍚湁璇ey锛屽氨鏂板缓涓�涓猯ist鐒跺悗鍔犲叆
 	 * @param key
 	 * @param value
 	 */

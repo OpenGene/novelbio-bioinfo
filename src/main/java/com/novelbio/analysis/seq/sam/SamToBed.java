@@ -8,7 +8,7 @@ public class SamToBed extends RunProcess<Long>{
 	public void setSamFile(SamFile samFile) {
 		this.samFile = samFile;
 	}
-	/**ÊÇ·ñ°´ÕÕË«¶ËµÄ½á¹û½øĞĞ·ÖÎö */
+	/**æ˜¯å¦æŒ‰ç…§åŒç«¯çš„ç»“æœè¿›è¡Œåˆ†æ */
 	public void setIsPairEndConvert(boolean isPairEndConvert) {
 		if (!samFile.isPairend()) {
 			this.isPairEndConvert = false;

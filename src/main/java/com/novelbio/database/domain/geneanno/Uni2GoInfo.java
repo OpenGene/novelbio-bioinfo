@@ -3,7 +3,7 @@ package com.novelbio.database.domain.geneanno;
 import java.util.ArrayList;
 
 /**
- * 联合查询结果，保存查询到的UniID全表，UniGeneInfo全表，UniGene2Go全表
+ * 鑱斿悎鏌ヨ缁撴灉锛屼繚瀛樻煡璇㈠埌鐨刄niID鍏ㄨ〃锛孶niGeneInfo鍏ㄨ〃锛孶niGene2Go鍏ㄨ〃
  * @author zong0jie
  *
  */

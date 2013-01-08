@@ -10,35 +10,35 @@ public class GffDetailRepeat extends ListDetailAbs
 	}
 
 	/**
-	 * ÖØ¸´ĞòÁĞµÄÃû×Ö
+	 * é‡å¤åºåˆ—çš„åå­—
 	 */
 	protected String repeatName="";
 
 	/**
-	 * ÖØ¸´ĞòÁĞµÄÀàĞÍ
+	 * é‡å¤åºåˆ—çš„ç±»å‹
 	 */
 	protected String repeatClass="";
 	
 	/**
-	 * ÖØ¸´ĞòÁĞµÄ¼Ò×å
+	 * é‡å¤åºåˆ—çš„å®¶æ—
 	 */
 	protected String repeatFamily="";
 	/**
-	 * ÖØ¸´ĞòÁĞµÄÃû×Ö
+	 * é‡å¤åºåˆ—çš„åå­—
 	 */
 	public String getRepName()
 	{
 		return repeatName;
 	}
 	/**
-	 * ÖØ¸´ĞòÁĞµÄÀàĞÍ
+	 * é‡å¤åºåˆ—çš„ç±»å‹
 	 */
 	public String getRepClass()
 	{
 		return repeatClass;
 	}
 	/**
-	 * ÖØ¸´ĞòÁĞµÄ¼Ò×å
+	 * é‡å¤åºåˆ—çš„å®¶æ—
 	 */
 	public String getRepFamily()
 	{

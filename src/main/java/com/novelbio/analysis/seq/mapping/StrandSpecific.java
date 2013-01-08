@@ -4,11 +4,11 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public enum StrandSpecific {
-	/** ¿ÉÄÜÊÇ±íÊ¾ÓĞ·½ÏòµÄ²âĞò£¬ÎŞ·½Ïò */
+	/** å¯èƒ½æ˜¯è¡¨ç¤ºæœ‰æ–¹å‘çš„æµ‹åºï¼Œæ— æ–¹å‘ */
 	NONE,
-	/** ¿ÉÄÜÊÇ±íÊ¾ÓĞ·½ÏòµÄ²âĞò£¬µÚÒ»ÌõÁ´µÄ·½Ïò */
+	/** å¯èƒ½æ˜¯è¡¨ç¤ºæœ‰æ–¹å‘çš„æµ‹åºï¼Œç¬¬ä¸€æ¡é“¾çš„æ–¹å‘ */
 	FIRST_READ_TRANSCRIPTION_STRAND,
-	/** ¿ÉÄÜÊÇ±íÊ¾ÓĞ·½ÏòµÄ²âĞò£¬µÚ¶şÌõÁ´µÄ·½Ïò */
+	/** å¯èƒ½æ˜¯è¡¨ç¤ºæœ‰æ–¹å‘çš„æµ‹åºï¼Œç¬¬äºŒæ¡é“¾çš„æ–¹å‘ */
 	SECOND_READ_TRANSCRIPTION_STRAND;
 	
 	public static HashMap<String, StrandSpecific> getMapStrandLibrary() {

@@ -9,7 +9,7 @@ import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
- *  ×Ô¶¯»¯ÏÂÔØ£¬¾ÍÊÇ×Ô¶¯´ÓNCBIÏÂÔØÏëÒªµÄÎÄ¼ş£¬×îºóÉú³É
+ *  è‡ªåŠ¨åŒ–ä¸‹è½½ï¼Œå°±æ˜¯è‡ªåŠ¨ä»NCBIä¸‹è½½æƒ³è¦çš„æ–‡ä»¶ï¼Œæœ€åç”Ÿæˆ
  * @author zong0jie
  *
  */

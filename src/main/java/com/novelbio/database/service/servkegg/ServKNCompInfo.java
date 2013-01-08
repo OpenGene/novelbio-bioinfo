@@ -12,7 +12,7 @@ import com.novelbio.database.mapper.kegg.MapKNCompInfo;
 import com.novelbio.database.service.SpringFactory;
 
 /**
- * keggID化合物的具体信息
+ * keggID鍖栧悎鐗╃殑鍏蜂綋淇℃伅
  * @author zong0jie
  *
  */

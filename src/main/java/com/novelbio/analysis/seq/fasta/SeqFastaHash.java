@@ -17,29 +17,29 @@ import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
- * ±¾ÀàÓÃÀ´½«¶ÁÈ¡fastaÎÄ±¾£¬·µ»ØHash±í¡£key-ĞòÁĞÃû-Ğ¡Ğ´£¬value-ĞòÁĞĞÅÏ¢
- * ½«ĞòÁĞÃûÖĞµÄ¿Õ¸ñÈ«²¿»»ÎªÏÂ»®Ïß
- * Ò»¸öÀà¾ÍÊÇÒ»¸öfastaÎÄ¼ş
- * ×÷Õß£º×Ú½Ü 20090617
+ * æœ¬ç±»ç”¨æ¥å°†è¯»å–fastaæ–‡æœ¬ï¼Œè¿”å›Hashè¡¨ã€‚key-åºåˆ—å-å°å†™ï¼Œvalue-åºåˆ—ä¿¡æ¯
+ * å°†åºåˆ—åä¸­çš„ç©ºæ ¼å…¨éƒ¨æ¢ä¸ºä¸‹åˆ’çº¿
+ * ä¸€ä¸ªç±»å°±æ˜¯ä¸€ä¸ªfastaæ–‡ä»¶
+ * ä½œè€…ï¼šå®—æ° 20090617
  */
 
 public class SeqFastaHash extends SeqHashAbs {
 	private static Logger logger = Logger.getLogger(SeqFastaHash.class);  
 	Boolean TOLOWCASE = null;
 	/**
-	 * ½«ĞòÁĞĞÅÏ¢¶ÁÈë¹şÏ£±í²¢·µ»Ø<br>
-	 * ¹şÏ£±íµÄ¼üÊÇĞòÁĞÃû£¬Ğ¡Ğ´
-	 * ¹şÏ£±íµÄÖµÊÇĞòÁĞ£¬ÆäÖĞÎŞ¿Õ¸ñ<br>
+	 * å°†åºåˆ—ä¿¡æ¯è¯»å…¥å“ˆå¸Œè¡¨å¹¶è¿”å›<br>
+	 * å“ˆå¸Œè¡¨çš„é”®æ˜¯åºåˆ—åï¼Œå°å†™
+	 * å“ˆå¸Œè¡¨çš„å€¼æ˜¯åºåˆ—ï¼Œå…¶ä¸­æ— ç©ºæ ¼<br>
 	 */
 	public HashMap<String,SeqFasta> hashSeq;
 	
 	boolean append = false;
 	/**
 	 * @param chrFile
-	 * @param regx ĞòÁĞÃûµÄÕıÔò±í´ïÊ½£¬null²»Éè¶¨
-	 * @param CaseChange ÊÇ·ñ½«ĞòÁĞÃû¸ÄÎªĞ¡Ğ´£¬Ä¬ÈÏÎªtrue
-	 * @param append ¶ÔÓÚÏàÍ¬Ãû³ÆĞòÁĞµÄ´¦Àí£¬true£ºÈç¹û³öÏÖÖØÃûĞòÁĞ£¬ÔòÔÚµÚ¶şÌõÃû×Öºó¼ÓÉÏ"<"×÷Îª±ê¼Ç
-	 * false£ºÈç¹û³öÏÖÖØÃûĞòÁĞ£¬ÔòÓÃ³¤µÄĞòÁĞÈ¥Ìæ»»¶ÌµÄĞòÁĞ£¬Ä¬ÈÏÎªfalse
+	 * @param regx åºåˆ—åçš„æ­£åˆ™è¡¨è¾¾å¼ï¼Œnullä¸è®¾å®š
+	 * @param CaseChange æ˜¯å¦å°†åºåˆ—åæ”¹ä¸ºå°å†™ï¼Œé»˜è®¤ä¸ºtrue
+	 * @param append å¯¹äºç›¸åŒåç§°åºåˆ—çš„å¤„ç†ï¼Œtrueï¼šå¦‚æœå‡ºç°é‡ååºåˆ—ï¼Œåˆ™åœ¨ç¬¬äºŒæ¡åå­—ååŠ ä¸Š"<"ä½œä¸ºæ ‡è®°
+	 * falseï¼šå¦‚æœå‡ºç°é‡ååºåˆ—ï¼Œåˆ™ç”¨é•¿çš„åºåˆ—å»æ›¿æ¢çŸ­çš„åºåˆ—ï¼Œé»˜è®¤ä¸ºfalse
 	 */
 	public SeqFastaHash(String chrFile) {
 		super(chrFile, "");
@@ -47,9 +47,9 @@ public class SeqFastaHash extends SeqHashAbs {
 	}
 	/**
 	 * @param chrFile
-	 * @param regx ĞòÁĞÃûµÄÕıÔò±í´ïÊ½£¬null²»Éè¶¨
-	 * @param append ¶ÔÓÚÏàÍ¬Ãû³ÆĞòÁĞµÄ´¦Àí£¬true£ºÈç¹û³öÏÖÖØÃûĞòÁĞ£¬ÔòÔÚµÚ¶şÌõÃû×Öºó¼ÓÉÏ"<"×÷Îª±ê¼Ç
-	 * false£ºÈç¹û³öÏÖÖØÃûĞòÁĞ£¬ÔòÓÃ³¤µÄĞòÁĞÈ¥Ìæ»»¶ÌµÄĞòÁĞ£¬Ä¬ÈÏÎªfalse
+	 * @param regx åºåˆ—åçš„æ­£åˆ™è¡¨è¾¾å¼ï¼Œnullä¸è®¾å®š
+	 * @param append å¯¹äºç›¸åŒåç§°åºåˆ—çš„å¤„ç†ï¼Œtrueï¼šå¦‚æœå‡ºç°é‡ååºåˆ—ï¼Œåˆ™åœ¨ç¬¬äºŒæ¡åå­—ååŠ ä¸Š"<"ä½œä¸ºæ ‡è®°
+	 * falseï¼šå¦‚æœå‡ºç°é‡ååºåˆ—ï¼Œåˆ™ç”¨é•¿çš„åºåˆ—å»æ›¿æ¢çŸ­çš„åºåˆ—ï¼Œé»˜è®¤ä¸ºfalse
 	 */
 	public SeqFastaHash(String chrFile, String regx, boolean append) {
 		super(chrFile, regx);
@@ -58,11 +58,11 @@ public class SeqFastaHash extends SeqHashAbs {
 	}
 	/**
 	 * @param chrFile
-	 * @param regx ĞòÁĞÃûµÄÕıÔò±í´ïÊ½£¬null²»Éè¶¨
-	 * @param CaseChange ÊÇ·ñ½«ĞòÁĞÃû¸ÄÎªĞ¡Ğ´£¬Ä¬ÈÏÎªtrue
-	 * @param append ¶ÔÓÚÏàÍ¬Ãû³ÆĞòÁĞµÄ´¦Àí£¬true£ºÈç¹û³öÏÖÖØÃûĞòÁĞ£¬ÔòÔÚµÚ¶şÌõÃû×Öºó¼ÓÉÏ"<"×÷Îª±ê¼Ç
-	 * @param TOLOWCASE  ÊÇ·ñ½«ĞòÁĞ×ª»¯ÎªĞ¡Ğ´ True£ºĞ¡Ğ´£¬False£º´óĞ´£¬null²»±ä Ä¬ÈÏÎªnull
-	 * false£ºÈç¹û³öÏÖÖØÃûĞòÁĞ£¬ÔòÓÃ³¤µÄĞòÁĞÈ¥Ìæ»»¶ÌµÄĞòÁĞ£¬Ä¬ÈÏÎªfalse
+	 * @param regx åºåˆ—åçš„æ­£åˆ™è¡¨è¾¾å¼ï¼Œnullä¸è®¾å®š
+	 * @param CaseChange æ˜¯å¦å°†åºåˆ—åæ”¹ä¸ºå°å†™ï¼Œé»˜è®¤ä¸ºtrue
+	 * @param append å¯¹äºç›¸åŒåç§°åºåˆ—çš„å¤„ç†ï¼Œtrueï¼šå¦‚æœå‡ºç°é‡ååºåˆ—ï¼Œåˆ™åœ¨ç¬¬äºŒæ¡åå­—ååŠ ä¸Š"<"ä½œä¸ºæ ‡è®°
+	 * @param TOLOWCASE  æ˜¯å¦å°†åºåˆ—è½¬åŒ–ä¸ºå°å†™ Trueï¼šå°å†™ï¼ŒFalseï¼šå¤§å†™ï¼Œnullä¸å˜ é»˜è®¤ä¸ºnull
+	 * falseï¼šå¦‚æœå‡ºç°é‡ååºåˆ—ï¼Œåˆ™ç”¨é•¿çš„åºåˆ—å»æ›¿æ¢çŸ­çš„åºåˆ—ï¼Œé»˜è®¤ä¸ºfalse
 	 */
 	public SeqFastaHash(String chrFile, String regx, boolean CaseChange,
 			boolean append,Boolean TOLOWCASE) {
@@ -72,16 +72,16 @@ public class SeqFastaHash extends SeqHashAbs {
 		setFile();
 	}
 	/**
-	 * ¶ÁÈ¡ĞòÁĞÎÄ¼ş£¬½«ĞòÁĞ±£´æÈëSeqhash¹şÏ£±í<br/>
-	 * ¶ÁÈ¡Íê±Ïºó£¬Éú³É<br/>
-	 * Ò»¸ölistSeqNameÊÇĞòÁĞÃû×ÖList<br/>
-	 * Ò»¸öSeqhashÊÇĞòÁĞÃû--ĞòÁĞHashTable<br/>
-	 * Í¬Ê±±¾º¯Êı·µ»ØÒ»¸öÍ¬ÑùµÄ¹şÏ£±í
+	 * è¯»å–åºåˆ—æ–‡ä»¶ï¼Œå°†åºåˆ—ä¿å­˜å…¥Seqhashå“ˆå¸Œè¡¨<br/>
+	 * è¯»å–å®Œæ¯•åï¼Œç”Ÿæˆ<br/>
+	 * ä¸€ä¸ªlistSeqNameæ˜¯åºåˆ—åå­—List<br/>
+	 * ä¸€ä¸ªSeqhashæ˜¯åºåˆ—å--åºåˆ—HashTable<br/>
+	 * åŒæ—¶æœ¬å‡½æ•°è¿”å›ä¸€ä¸ªåŒæ ·çš„å“ˆå¸Œè¡¨
 	 * @param chrFile
-	 * @param CaseChange ĞòÁĞÃûÊÇ·ñÒª¸Ä±ä´óĞ¡Ğ´,true¶¼¸ÄÎªĞ¡Ğ´£¬false²»¸Ä´óĞ¡Ğ´
-	 * @param regx ĞèÒªÌáÈ¡µÄfasta¸ñÊ½ĞòÁĞÃûµÄÕıÔò±í´ïÊ½£¬""ÎªÈ«²¿Ãû×Ö¡£Èç¹ûÃ»×¥µ½£¬Ôò½«È«²¿Ãû³Æ×÷ÎªĞòÁĞÃû
-	 * @param append ¶ÔÓÚÏàÍ¬Ãû³ÆĞòÁĞµÄ´¦Àí£¬true£ºÈç¹û³öÏÖÖØÃûĞòÁĞ£¬ÔòÔÚµÚ¶şÌõÃû×Öºó¼ÓÉÏ"<"×÷Îª±ê¼Ç
-	 * false£ºÈç¹û³öÏÖÖØÃûĞòÁĞ£¬ÔòÓÃ³¤µÄĞòÁĞÈ¥Ìæ»»¶ÌµÄĞòÁĞ
+	 * @param CaseChange åºåˆ—åæ˜¯å¦è¦æ”¹å˜å¤§å°å†™,trueéƒ½æ”¹ä¸ºå°å†™ï¼Œfalseä¸æ”¹å¤§å°å†™
+	 * @param regx éœ€è¦æå–çš„fastaæ ¼å¼åºåˆ—åçš„æ­£åˆ™è¡¨è¾¾å¼ï¼Œ""ä¸ºå…¨éƒ¨åå­—ã€‚å¦‚æœæ²¡æŠ“åˆ°ï¼Œåˆ™å°†å…¨éƒ¨åç§°ä½œä¸ºåºåˆ—å
+	 * @param append å¯¹äºç›¸åŒåç§°åºåˆ—çš„å¤„ç†ï¼Œtrueï¼šå¦‚æœå‡ºç°é‡ååºåˆ—ï¼Œåˆ™åœ¨ç¬¬äºŒæ¡åå­—ååŠ ä¸Š"<"ä½œä¸ºæ ‡è®°
+	 * falseï¼šå¦‚æœå‡ºç°é‡ååºåˆ—ï¼Œåˆ™ç”¨é•¿çš„åºåˆ—å»æ›¿æ¢çŸ­çš„åºåˆ—
 	 * @return
 	 * @throws Exception 
 	 */
@@ -93,22 +93,22 @@ public class SeqFastaHash extends SeqHashAbs {
 			pattern = Pattern.compile(regx, Pattern.CASE_INSENSITIVE); // flags
 		}
 		
-		Matcher matcher;// matcher.groupCount() ·µ»Ø´ËÆ¥ÅäÆ÷Ä£Ê½ÖĞµÄ²¶»ñ×éÊı¡£
-		hashSeq = new HashMap<String, SeqFasta>();// ±¾listÓÃÀ´´æ´¢È¾É«Ìå
+		Matcher matcher;// matcher.groupCount() è¿”å›æ­¤åŒ¹é…å™¨æ¨¡å¼ä¸­çš„æ•è·ç»„æ•°ã€‚
+		hashSeq = new HashMap<String, SeqFasta>();// æœ¬listç”¨æ¥å­˜å‚¨æŸ“è‰²ä½“
 		TxtReadandWrite txtSeqFile = new TxtReadandWrite(chrFile,false);
 		StringBuilder SeqStringBuilder = new StringBuilder();
 		SeqFasta Seq = null;
 		lsSeqName = new ArrayList<String>();
 		for (String content : txtSeqFile.readlines()) {
-			// µ±¶Áµ½Ò»ÌõĞòÁĞÊ±£¬¸øĞòÁĞÆğÃû×Ö
+			// å½“è¯»åˆ°ä¸€æ¡åºåˆ—æ—¶ï¼Œç»™åºåˆ—èµ·åå­—
 			if (content.trim().startsWith(">")) {
 				if (Seq != null) {
 					putSeqFastaInHash(Seq, SeqStringBuilder.toString(), append);
-					SeqStringBuilder = new StringBuilder();// Çå¿Õ
+					SeqStringBuilder = new StringBuilder();// æ¸…ç©º
 				}
 				Seq = new SeqFasta();
 				String tmpSeqName = content.trim().substring(1).trim();
-				// ///////////////ÓÃÕıÔò±í´ïÊ½×¥È¡ĞòÁĞÃûÖĞµÄÌØ¶¨×Ö·û////////////////////////////////////////////////
+				// ///////////////ç”¨æ­£åˆ™è¡¨è¾¾å¼æŠ“å–åºåˆ—åä¸­çš„ç‰¹å®šå­—ç¬¦////////////////////////////////////////////////
 				if (regx == null || regx.trim().equals("")) {
 					Seq.setName(tmpSeqName);
 				} else {
@@ -116,13 +116,13 @@ public class SeqFastaHash extends SeqHashAbs {
 					if (matcher.find()) {
 						Seq.setName(matcher.group());
 					} else {
-						System.out.println("Ã»ÕÒµ½¸ÃĞòÁĞµÄÌØ¶¨Ãû³Æ£¬ÓÃÈ«³Æ´úÌæ " + tmpSeqName);
+						System.out.println("æ²¡æ‰¾åˆ°è¯¥åºåˆ—çš„ç‰¹å®šåç§°ï¼Œç”¨å…¨ç§°ä»£æ›¿ " + tmpSeqName);
 						Seq.setName(tmpSeqName);
 					}
 				}
 				continue;
 			}
-			//É¾³ıËùÓĞ·Ç×ÖÄ¸µÄ·ûºÅ
+			//åˆ é™¤æ‰€æœ‰éå­—æ¯çš„ç¬¦å·
 			String tmpSeq = content.replace(" ", "");
 			for (char c : tmpSeq.toCharArray()) {
 				if ((c >= 65 && c <= 90) || (c >= 97 && c <= 122) ) {
@@ -130,14 +130,14 @@ public class SeqFastaHash extends SeqHashAbs {
 				}
 			}
 		}
-		// /////////Àë¿ªÑ­»·ºó£¬ÔÙ×öÒ»´Î×Ü½á/////////////////////
+		// /////////ç¦»å¼€å¾ªç¯åï¼Œå†åšä¸€æ¬¡æ€»ç»“/////////////////////
 		putSeqFastaInHash(Seq, SeqStringBuilder.toString(), append);
 		txtSeqFile.close();
 	}
 	/**
-	 *  Èç¹ûÃ»ÓĞÍ¬ÃûĞòÁĞ£¬Ö±½Ó×°Èëhash±í
-	 *  ¶ÔÓÚÏàÍ¬Ãû³ÆĞòÁĞµÄ´¦Àí£¬true£ºÈç¹û³öÏÖÖØÃûĞòÁĞ£¬ÔòÔÚµÚ¶şÌõÃû×Öºó¼ÓÉÏ"<"×÷Îª±ê¼Ç
-	 *  Á¬ĞøÏòºó¼ÓÉÏ"<"Ö±µ½hashÖĞÃ»ÓĞÕâÌõÃû×ÖÎªÖ¹£¬È»ºó×°Èëhash±í
+	 *  å¦‚æœæ²¡æœ‰åŒååºåˆ—ï¼Œç›´æ¥è£…å…¥hashè¡¨
+	 *  å¯¹äºç›¸åŒåç§°åºåˆ—çš„å¤„ç†ï¼Œtrueï¼šå¦‚æœå‡ºç°é‡ååºåˆ—ï¼Œåˆ™åœ¨ç¬¬äºŒæ¡åå­—ååŠ ä¸Š"<"ä½œä¸ºæ ‡è®°
+	 *  è¿ç»­å‘ååŠ ä¸Š"<"ç›´åˆ°hashä¸­æ²¡æœ‰è¿™æ¡åå­—ä¸ºæ­¢ï¼Œç„¶åè£…å…¥hashè¡¨
 	 * @param seqFasta
 	 * @param seq
 	 * @param append
@@ -148,14 +148,14 @@ public class SeqFastaHash extends SeqHashAbs {
 			seq = (TOLOWCASE == true ? seq.toLowerCase() : seq.toUpperCase());
 		}
 		seqFasta.setSeq(seq);
-		SeqFasta tmpSeq = hashSeq.get(seqNameLow);// ¿´ÊÇ·ñÓĞÍ¬ÃûµÄĞòÁĞ³öÏÖ
-		// Èç¹ûÃ»ÓĞÍ¬ÃûĞòÁĞ£¬Ö±½Ó×°Èëhash±í
+		SeqFasta tmpSeq = hashSeq.get(seqNameLow);// çœ‹æ˜¯å¦æœ‰åŒåçš„åºåˆ—å‡ºç°
+		// å¦‚æœæ²¡æœ‰åŒååºåˆ—ï¼Œç›´æ¥è£…å…¥hashè¡¨
 		if (tmpSeq == null) {
 			hashSeq.put(seqNameLow, seqFasta);
 			lsSeqName.add(seqFasta.getSeqName());
 			hashChrLength.put(seqNameLow, (long) seq.length());
-		} else {// ¶ÔÓÚÏàÍ¬Ãû³ÆĞòÁĞµÄ´¦Àí£¬true£ºÈç¹û³öÏÖÖØÃûĞòÁĞ£¬ÔòÔÚµÚ¶şÌõÃû×Öºó¼ÓÉÏ"<"×÷Îª±ê¼Ç
-			//Á¬ĞøÏòºó¼ÓÉÏ"<"Ö±µ½hashÖĞÃ»ÓĞÕâÌõÃû×ÖÎªÖ¹£¬È»ºó×°Èëhash±í
+		} else {// å¯¹äºç›¸åŒåç§°åºåˆ—çš„å¤„ç†ï¼Œtrueï¼šå¦‚æœå‡ºç°é‡ååºåˆ—ï¼Œåˆ™åœ¨ç¬¬äºŒæ¡åå­—ååŠ ä¸Š"<"ä½œä¸ºæ ‡è®°
+			//è¿ç»­å‘ååŠ ä¸Š"<"ç›´åˆ°hashä¸­æ²¡æœ‰è¿™æ¡åå­—ä¸ºæ­¢ï¼Œç„¶åè£…å…¥hashè¡¨
 			if (append) {
 				 while (hashSeq.containsKey(seqFasta.getSeqName().toLowerCase())) {
 					 seqFasta.setName(seqFasta.getSeqName()+"<");
@@ -168,18 +168,18 @@ public class SeqFastaHash extends SeqHashAbs {
 				if (tmpSeq.Length()<seqFasta.Length()) {
 					hashSeq.put(seqNameLow, seqFasta);
 					hashChrLength.put(seqNameLow, (long) seq.length());
-					//ÒòÎªÒÑ¾­ÓĞÁËÍ¬ÃûµÄĞòÁĞ£¬ËùÒÔ lsSeqName ÖĞ²»ĞèÒªÌí¼ÓĞÂµÄÃû×Ö
+					//å› ä¸ºå·²ç»æœ‰äº†åŒåçš„åºåˆ—ï¼Œæ‰€ä»¥ lsSeqName ä¸­ä¸éœ€è¦æ·»åŠ æ–°çš„åå­—
 				}
 			}
 		 }
 	}
 	/**
-	 * ÊäÈëĞòÁĞĞÅÏ¢£ºĞòÁĞÃû,Õı·´Ïò
-	 * ·µ»ØĞòÁĞ
-	 * @param SeqID ĞòÁĞÃû³Æ
-	 * @param chr ĞòÁĞ²ÎÊıÖ®ĞòÁĞÃû£¬ÓÃÀ´ÔÚ¹şÏ£±íÖĞ²éÕÒ¾ßÌåÄ³ÌõĞòÁĞ
-	 * @param cisseqĞòÁĞÕı·´Ïò£¬µ°°×ĞòÁĞ¾ÍÊätrue
-	 * Èç¹ûÃ»ÓĞĞòÁĞÔò·µ»Ønull
+	 * è¾“å…¥åºåˆ—ä¿¡æ¯ï¼šåºåˆ—å,æ­£åå‘
+	 * è¿”å›åºåˆ—
+	 * @param SeqID åºåˆ—åç§°
+	 * @param chr åºåˆ—å‚æ•°ä¹‹åºåˆ—åï¼Œç”¨æ¥åœ¨å“ˆå¸Œè¡¨ä¸­æŸ¥æ‰¾å…·ä½“æŸæ¡åºåˆ—
+	 * @param cisseqåºåˆ—æ­£åå‘ï¼Œè›‹ç™½åºåˆ—å°±è¾“true
+	 * å¦‚æœæ²¡æœ‰åºåˆ—åˆ™è¿”å›null
 	 */
 	public String getSeqAll(String SeqID,boolean cisseq) {
 		SeqID.toLowerCase();
@@ -193,9 +193,9 @@ public class SeqFastaHash extends SeqHashAbs {
 	   return null;
 	}
 	/**
-	 * ÊäÈëĞòÁĞÃû
-	 * ÊäÈëĞòÁĞ×ø±ê£¬ÆğµãºÍÖÕµã
-	 * ·µ»ØĞòÁĞ
+	 * è¾“å…¥åºåˆ—å
+	 * è¾“å…¥åºåˆ—åæ ‡ï¼Œèµ·ç‚¹å’Œç»ˆç‚¹
+	 * è¿”å›åºåˆ—
 	 */
 	protected SeqFasta getSeqInfo(String seqID, long startlocation, long endlocation) {
 		seqID = seqID.toLowerCase();
@@ -210,28 +210,28 @@ public class SeqFastaHash extends SeqHashAbs {
 			return seqfasta;
 		}
 		if (seqfasta == null) {
-			logger.error("Ã»ÓĞ¸ÃĞòÁĞ " +seqID);
+			logger.error("æ²¡æœ‰è¯¥åºåˆ— " +seqID);
 			return null;
 		}
 		return seqfasta.getSubSeq((int)startlocation, (int)endlocation, true);
 	}
 	/**
-	 * ÊäÈëĞòÁĞÃû£¬×Ô¶¯×ª±äÎªĞ¡Ğ´
-	 * ÊäÈëĞòÁĞ×ø±ê£¬ÆğµãºÍÖÕµã
-	 * ·µ»ØĞòÁĞ
+	 * è¾“å…¥åºåˆ—åï¼Œè‡ªåŠ¨è½¬å˜ä¸ºå°å†™
+	 * è¾“å…¥åºåˆ—åæ ‡ï¼Œèµ·ç‚¹å’Œç»ˆç‚¹
+	 * è¿”å›åºåˆ—
 	 */
 	public SeqFasta getSeqFasta(String seqID) {
 		seqID = seqID.toLowerCase();
 		SeqFasta seqFasta = hashSeq.get(seqID);
 		if (seqFasta == null) {
-			logger.error("Ã»ÓĞ¸ÃID£º" + seqID);
+			logger.error("æ²¡æœ‰è¯¥IDï¼š" + seqID);
 			return null;
 		}
 		seqFasta.setDNA(isDNAseq);
 		return seqFasta;
 	}
 	/**
-	 * ·µ»ØÈ«²¿ĞòÁĞ
+	 * è¿”å›å…¨éƒ¨åºåˆ—
 	 */
 	public ArrayList<SeqFasta>  getSeqFastaAll() {
 		ArrayList<SeqFasta> lsresult = new ArrayList<SeqFasta>();
@@ -242,14 +242,14 @@ public class SeqFastaHash extends SeqHashAbs {
 		return lsresult;
 	}
 	/**
-	 * ½«Ö¸¶¨³¤¶ÈµÄĞòÁĞĞ´ÈëÎÄ±¾£¬Ö÷ÒªÓÃÓÚ×ölastz·ÖÎö,ºó×ºÃûÍ¨Í¨¸ÄÎª.fasta
-	 * @param filePath Ğ´ÈëÎÄ¼şÂ·¾¶
-	 * @param prix ÎÄ¼şÇ°×º
-	 * @param len seqµÄ³¤¶ÈÇø¼ä
-	 * int[2] :0£ºÏÂÏŞ£¬Ğ¡ÓÚ0±íÊ¾Ã»ÓĞÏÂÏŞ
-	 * 1£ºÉÏÏŞ£¬Ğ¡ÓÚ0±íÊ¾Ã»ÓĞÉÏÏŞ
-	 * ÉÏÏŞ±ØĞë´óÓÚµÈÓÚÏÂÏŞ£¬Èç¹ûÉÏÏŞĞ¡ÓÚÏÂÏŞ£¬Ôò±¨´í
-	 * @param sepFile ÊÇ·ñ·ÖÎª²»Í¬ÎÄ¼ş±£´æ
+	 * å°†æŒ‡å®šé•¿åº¦çš„åºåˆ—å†™å…¥æ–‡æœ¬ï¼Œä¸»è¦ç”¨äºåšlastzåˆ†æ,åç¼€åé€šé€šæ”¹ä¸º.fasta
+	 * @param filePath å†™å…¥æ–‡ä»¶è·¯å¾„
+	 * @param prix æ–‡ä»¶å‰ç¼€
+	 * @param len seqçš„é•¿åº¦åŒºé—´
+	 * int[2] :0ï¼šä¸‹é™ï¼Œå°äº0è¡¨ç¤ºæ²¡æœ‰ä¸‹é™
+	 * 1ï¼šä¸Šé™ï¼Œå°äº0è¡¨ç¤ºæ²¡æœ‰ä¸Šé™
+	 * ä¸Šé™å¿…é¡»å¤§äºç­‰äºä¸‹é™ï¼Œå¦‚æœä¸Šé™å°äºä¸‹é™ï¼Œåˆ™æŠ¥é”™
+	 * @param sepFile æ˜¯å¦åˆ†ä¸ºä¸åŒæ–‡ä»¶ä¿å­˜
 	 * @param writelen
 	 */
 	public void writeFileSep(String filePath, String prix, int[] len, boolean sepFile, int writelen) {
@@ -262,7 +262,7 @@ public class SeqFastaHash extends SeqHashAbs {
 		}
 		for (Entry<String, SeqFasta> entry : hashSeq.entrySet()) {
 			SeqFasta seqFasta = entry.getValue();
-			if (SeqHash.testSeqLen(seqFasta.toString().length(), len)) {//³¤¶ÈÔÚÄ¿±ê·¶Î§ÄÚ
+			if (SeqHash.testSeqLen(seqFasta.toString().length(), len)) {//é•¿åº¦åœ¨ç›®æ ‡èŒƒå›´å†…
 				if (sepFile) {
 					TxtReadandWrite txtReadandWrite2 = new TxtReadandWrite(filePath + prix + seqFasta.getSeqName().replace(" ", "_")+".fasta", true);
 					txtReadandWrite2.writefileln(">"+seqFasta.getSeqName().trim().replace(" ", "_"));
@@ -292,8 +292,8 @@ public class SeqFastaHash extends SeqHashAbs {
 		txtOut.close();
 	}
 	/**
-	 * ½«<b>ĞòÁĞÃû</b>º¬ÓĞ¸ÃÕıÔò±í´ïÊ½µÄĞòÁĞĞ´ÈëÎÄ¼ş<br>
-	 * ±ØĞëĞ´ÉÏÕıÔò±í´ïÊ½
+	 * å°†<b>åºåˆ—å</b>å«æœ‰è¯¥æ­£åˆ™è¡¨è¾¾å¼çš„åºåˆ—å†™å…¥æ–‡ä»¶<br>
+	 * å¿…é¡»å†™ä¸Šæ­£åˆ™è¡¨è¾¾å¼
 	 * @param regx
 	 * @param seqOut
 	 */
@@ -310,14 +310,14 @@ public class SeqFastaHash extends SeqHashAbs {
 		txtOut.close();
 	}
 	/**
-	 * ½«<b>ĞòÁĞÃû</b>º¬ÓĞ¸ÃÕıÔò±í´ïÊ½µÄĞòÁĞĞ´ÈëÎÄ¼ş<br>
-	 * ±ØĞëĞ´ÉÏÕıÔò±í´ïÊ½
-	 * ÀıÈçĞòÁĞÃûÎª£ºhsa-mir-101-1 MI0000103 Homo sapiens miR-101-1 stem-loop <br>
+	 * å°†<b>åºåˆ—å</b>å«æœ‰è¯¥æ­£åˆ™è¡¨è¾¾å¼çš„åºåˆ—å†™å…¥æ–‡ä»¶<br>
+	 * å¿…é¡»å†™ä¸Šæ­£åˆ™è¡¨è¾¾å¼
+	 * ä¾‹å¦‚åºåˆ—åä¸ºï¼šhsa-mir-101-1 MI0000103 Homo sapiens miR-101-1 stem-loop <br>
 	 * regSearch = Homo sapiens<br>
 	 * regWrite = hsa-mir-101-1<br>
-	 * ×îºó¾Í»á»ñµÃhsa-mir-101-1<br>
-	 * @param regxSearch ÓÃ¸ÃÕıÔò±í´ïÊ½²éÕÒĞòÁĞÃû
-	 * @param regxWrite ÕÒµ½ºó½«ĞòÁĞÃû×ÖÉèÖÃÎª¸ÃÕıÔò±í´ïÊ½×¥µ½µÄĞÅÏ¢
+	 * æœ€åå°±ä¼šè·å¾—hsa-mir-101-1<br>
+	 * @param regxSearch ç”¨è¯¥æ­£åˆ™è¡¨è¾¾å¼æŸ¥æ‰¾åºåˆ—å
+	 * @param regxWrite æ‰¾åˆ°åå°†åºåˆ—åå­—è®¾ç½®ä¸ºè¯¥æ­£åˆ™è¡¨è¾¾å¼æŠ“åˆ°çš„ä¿¡æ¯
 	 * @param seqOut
 	 */
 	public void writeToFile(String regxSearch, String regxWrite, String seqOut) {
@@ -340,10 +340,10 @@ public class SeqFastaHash extends SeqHashAbs {
 		txtOut.close();
 	}
 	/**
-	 * ½«<b>ĞòÁĞÃûÓÃsep·Ö¸î</b>È»ºó½«µÚ¼¸Î»µÄÃû×ÖĞ´ÈëÎÄ¼ş<br>
-	 * ±ØĞëĞ´ÉÏÕıÔò±í´ïÊ½
-	 * @param sep ·Ö¸ô·û 
-	 * @param num µÚ¼¸Î»µÄÎÄ±¾
+	 * å°†<b>åºåˆ—åç”¨sepåˆ†å‰²</b>ç„¶åå°†ç¬¬å‡ ä½çš„åå­—å†™å…¥æ–‡ä»¶<br>
+	 * å¿…é¡»å†™ä¸Šæ­£åˆ™è¡¨è¾¾å¼
+	 * @param sep åˆ†éš”ç¬¦ 
+	 * @param num ç¬¬å‡ ä½çš„æ–‡æœ¬
 	 */
 	public void writeToFile(String sep, int num, String seqOut) {
 		num--;

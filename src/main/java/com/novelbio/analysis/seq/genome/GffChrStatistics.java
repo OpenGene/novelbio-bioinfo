@@ -24,9 +24,9 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.species.Species;
 /**
- * Ö±½ÓÔÚÕâ¸öÀïÃæÉè¶¨tssºÍtes
- * gffChrAbsÀïÃæµÄ¾Í²»¹ÜËûÁË
- * ÖĞ¼äÊä³öµÄÊıÁ¿£¬Ò²¾ÍÊÇ¿Éµ±×÷½ø¶ÈÌõµÄÊıÖµ£¬ÊÇÃ¿Ò»ĞĞµÄ×Ö½ÚÊı
+ * ç›´æ¥åœ¨è¿™ä¸ªé‡Œé¢è®¾å®štsså’Œtes
+ * gffChrAbsé‡Œé¢çš„å°±ä¸ç®¡ä»–äº†
+ * ä¸­é—´è¾“å‡ºçš„æ•°é‡ï¼Œä¹Ÿå°±æ˜¯å¯å½“ä½œè¿›åº¦æ¡çš„æ•°å€¼ï¼Œæ˜¯æ¯ä¸€è¡Œçš„å­—èŠ‚æ•°
  * @author zong0jie
  *
  */
@@ -50,12 +50,12 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 
 	int colChrID = 0;
 	int colSummit = -1;
-	/** ÊÇ·ñÎªbedÎÄ¼ş */
+	/** æ˜¯å¦ä¸ºbedæ–‡ä»¶ */
 	boolean isAlignFile = true;
 	
 	int firstLine = 1;
 	String fileName = "";
-	/** ¶ÁÈ¡ÁË¶àÉÙÎÄ¼ş£¬¸ø½ø¶ÈÌõÊ¹ÓÃ */
+	/** è¯»å–äº†å¤šå°‘æ–‡ä»¶ï¼Œç»™è¿›åº¦æ¡ä½¿ç”¨ */
 	long allnumber = 0;
 	
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
@@ -64,18 +64,18 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	public void setSpecies(Species species) {
 		this.gffChrAbs = new GffChrAbs(species);
 	}
-	/** tssµÄÇø¼ä£¬ÉÏÓÎ¸ºÊıÏÂÓÎÕıÊı£¬¿ÉÒÔÉèÖÃÎª-2000£¬-1000 */
+	/** tssçš„åŒºé—´ï¼Œä¸Šæ¸¸è´Ÿæ•°ä¸‹æ¸¸æ­£æ•°ï¼Œå¯ä»¥è®¾ç½®ä¸º-2000ï¼Œ-1000 */
 	public void setTssRegion(int[] tssRegion) {
 		this.tssRegion = tssRegion;
 	}
-	/** tesµÄÇø¼ä£¬ÉÏÓÎ¸ºÊıÏÂÓÎÕıÊı£¬¿ÉÒÔÉèÖÃÎª100£¬200 */
+	/** tesçš„åŒºé—´ï¼Œä¸Šæ¸¸è´Ÿæ•°ä¸‹æ¸¸æ­£æ•°ï¼Œå¯ä»¥è®¾ç½®ä¸º100ï¼Œ200 */
 	public void setTesRegion(int[] tesRegion) {
 		this.tesRegion = tesRegion;
 	}
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
 	}
-	/** ¿ÉÒÔÖ±½ÓÊäÈëbedÎÄ¼ş */
+	/** å¯ä»¥ç›´æ¥è¾“å…¥bedæ–‡ä»¶ */
 	public void setBedFile(BedSeq bedSeq) {
 		this.fileName = bedSeq.getFileName();
 	}
@@ -88,7 +88,7 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 		isAlignFile = false;
 	}
 	/**
-	 * ´ÓµÚ¼¸ĞĞ¿ªÊ¼¶ÁÈ¡£¬Ä¬ÈÏÎª1
+	 * ä»ç¬¬å‡ è¡Œå¼€å§‹è¯»å–ï¼Œé»˜è®¤ä¸º1
 	 * @param firstLine
 	 */
 	public void setFirstLine(int firstLine) {
@@ -110,7 +110,7 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 		intraGenic = 0;
 	}
 	/**
-	 * ¸ø¶¨txtµÄÎÄ¼ş£¬ºÍÈ¾É«Ìå±àºÅ£¬È¾É«ÌåÆğµãÖÕµã£¬ºÍÊä³öÎÄ¼ş£¬½«peak¸²¸Çµ½µÄÇøÓò×¢ÊÍ³öÀ´
+	 * ç»™å®štxtçš„æ–‡ä»¶ï¼Œå’ŒæŸ“è‰²ä½“ç¼–å·ï¼ŒæŸ“è‰²ä½“èµ·ç‚¹ç»ˆç‚¹ï¼Œå’Œè¾“å‡ºæ–‡ä»¶ï¼Œå°†peakè¦†ç›–åˆ°çš„åŒºåŸŸæ³¨é‡Šå‡ºæ¥
 	 * @param txtFile
 	 * @param colChrID
 	 * @param colStart
@@ -125,7 +125,7 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 			readNormFile(fileName);
 		}
 	}
-	/** ¿ÉÒÔ¶ÁÈ¡sam/bamÎÄ¼şºÍbedÎÄ¼ş */
+	/** å¯ä»¥è¯»å–sam/bamæ–‡ä»¶å’Œbedæ–‡ä»¶ */
 	private void readAlignFile(String alignFile) {
 		FormatSeq formatSeq = FormatSeq.getFileType(alignFile);
 		AlignSeq seqFile = null;
@@ -184,9 +184,9 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 		}
 	}
 	/**
-	 * ¸ø¶¨×ø±êĞÅÏ¢list£¬·µ»Ø¸Ã×ø±êËù¶ÔÓ¦µÄmapinfo
-	 * @param lsIn  string[2] Ôò·µ»Ø chrID summit
-	 * string[3] Ôò·µ»ØchrID start end
+	 * ç»™å®šåæ ‡ä¿¡æ¯listï¼Œè¿”å›è¯¥åæ ‡æ‰€å¯¹åº”çš„mapinfo
+	 * @param lsIn  string[2] åˆ™è¿”å› chrID summit
+	 * string[3] åˆ™è¿”å›chrID start end
 	 * @return
 	 */
 	private SiteInfo readInfo(String[] readLine) {
@@ -200,18 +200,18 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 
 	}
 	/**
-	 * ÊäÈëµ¥¸ö×ø±êÎ»µã£¬·µ»Ø¶¨Î»ĞÅÏ¢£¬ÓÃÓÚÍ³¼ÆÎ»µãµÄ¶¨Î»Çé¿ö
-	 * Ö»ÅĞ¶Ï×î³¤×ªÂ¼±¾
+	 * è¾“å…¥å•ä¸ªåæ ‡ä½ç‚¹ï¼Œè¿”å›å®šä½ä¿¡æ¯ï¼Œç”¨äºç»Ÿè®¡ä½ç‚¹çš„å®šä½æƒ…å†µ
+	 * åªåˆ¤æ–­æœ€é•¿è½¬å½•æœ¬
 	 * @param mapInfo
 	 * @return int[8]
-	 * 0: UpNbp,NÓÉsetStatistic()·½·¨µÄTSS¶¨Òå
+	 * 0: UpNbp,Nç”±setStatistic()æ–¹æ³•çš„TSSå®šä¹‰
 	 * 1: Exon<br>
 	 * 2: Intron<br>
-	 * 3: InterGenic--»ùÒò¼ä<br>
+	 * 3: InterGenic--åŸºå› é—´<br>
 	 * 4: 5UTR
 	 * 5: 3UTR
-	 * 6: GeneEnd£¬ÔÚ»ùÒòÍâµÄÎ²²¿ ÓÉsetStatistic()·½·¨µÄGeneEnd¶¨Òå
-	 * 7: Tss °üÀ¨TssÉÏºÍTssÏÂ£¬ÓÉfilterTss¶¨Òå
+	 * 6: GeneEndï¼Œåœ¨åŸºå› å¤–çš„å°¾éƒ¨ ç”±setStatistic()æ–¹æ³•çš„GeneEndå®šä¹‰
+	 * 7: Tss åŒ…æ‹¬Tssä¸Šå’ŒTssä¸‹ï¼Œç”±filterTsså®šä¹‰
 	 */
 	private void searchSite(SiteInfo siteInfo) {
 		suspendCheck();
@@ -219,7 +219,7 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 		if (siteInfo == null) {
 			return;
 		}
-		boolean flagIntraGenic = false;//ÔÚgeneÄÚµÄ±ê¼Ç
+		boolean flagIntraGenic = false;//åœ¨geneå†…çš„æ ‡è®°
 		GffCodGene gffCodGene = gffChrAbs.getGffHashGene().searchLocation(siteInfo.getRefID(), siteInfo.getFlagSite());
 		if (gffCodGene == null) {
 			return;
@@ -236,7 +236,7 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 			interGenic++;
 	}
 	/**
-	 * Éè¶¨Í³¼ÆÖµ£¬²¢·µ»ØÊÇ·ñÔÚIntraGenicÖĞ£¬Ò²¾ÍÊÇ»ùÒòÄÚ²¿
+	 * è®¾å®šç»Ÿè®¡å€¼ï¼Œå¹¶è¿”å›æ˜¯å¦åœ¨IntraGenicä¸­ï¼Œä¹Ÿå°±æ˜¯åŸºå› å†…éƒ¨
 	 * @param gffDetailGene
 	 * @param coord
 	 * @return
@@ -258,7 +258,7 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 		ArrayList<GffGeneIsoInfo> lsIso = gffDetailGene.getLsCodSplit();
 		
 		//Exon Intron
-		// Ã¿¸ö×ªÂ¼±¾¶¼²éÒ»±é
+		// æ¯ä¸ªè½¬å½•æœ¬éƒ½æŸ¥ä¸€é
 		for (GffGeneIsoInfo gffGeneIsoInfo2 : lsIso) {
 			if (gffGeneIsoInfo2.getCodLoc(coord) == GffGeneIsoInfo.COD_LOC_EXON) {
 				exonNum++;
@@ -334,17 +334,17 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 		GffChrStatistics gffChrStatistics = new GffChrStatistics();
 		
 		GffHashGene gffHashGene = gffChrAbs.getGffHashGene();
-		int errorNum = 0;// ¿´UCSCÖĞÓĞ¶àÉÙ»ùÒòµÄTSS²»ÊÇ×î³¤×ªÂ¼±¾µÄÆğµã
+		int errorNum = 0;// çœ‹UCSCä¸­æœ‰å¤šå°‘åŸºå› çš„TSSä¸æ˜¯æœ€é•¿è½¬å½•æœ¬çš„èµ·ç‚¹
 
 		for (Entry<String, ListGff> entry : gffHashGene.getMapChrID2LsGff().entrySet()) {
 			ListGff listGff = entry.getValue();
 			int chrLOCNum = listGff.size();
-			// Ò»ÌõÒ»ÌõÈ¾É«ÌåµÄÈ¥¼ì²éÄÚº¬×ÓºÍÍâÏÔ×ÓµÄ³¤¶È
+			// ä¸€æ¡ä¸€æ¡æŸ“è‰²ä½“çš„å»æ£€æŸ¥å†…å«å­å’Œå¤–æ˜¾å­çš„é•¿åº¦
 			for (int i = 0; i < chrLOCNum; i++) {
 				GffDetailGene tmpUCSCgene = listGff.get(i);
 				GffGeneIsoInfo gffGeneIsoInfoLong = tmpUCSCgene.getLongestSplitMrna();
 				gffChrStatistics.intraGenic = gffChrStatistics.intraGenic + gffGeneIsoInfoLong.getLen();
-				// /////////////////////¿´UCSCÖĞÓĞ¶àÉÙ»ùÒòµÄTSS²»ÊÇ×î³¤×ªÂ¼±¾µÄÆğµã//////////////////////////
+				// /////////////////////çœ‹UCSCä¸­æœ‰å¤šå°‘åŸºå› çš„TSSä¸æ˜¯æœ€é•¿è½¬å½•æœ¬çš„èµ·ç‚¹//////////////////////////
 				if ((tmpUCSCgene.isCis5to3() && gffGeneIsoInfoLong.getTSSsite() > tmpUCSCgene.getStartAbs())
 						|| (!tmpUCSCgene.isCis5to3() && gffGeneIsoInfoLong.getTSSsite() < tmpUCSCgene.getEndAbs())) {
 					errorNum++;
@@ -361,7 +361,7 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 				gffChrStatistics.tesNum = gffChrStatistics.tesNum + tesRegion[1] - tesRegion[0];
 			}
 		}
-		System.out.println("getGeneStructureLength: ¿´UCSCÖĞÓĞ¶àÉÙ»ùÒòµÄTSS²»ÊÇ×î³¤×ªÂ¼±¾µÄÆğµã" + errorNum);
+		System.out.println("getGeneStructureLength: çœ‹UCSCä¸­æœ‰å¤šå°‘åŸºå› çš„TSSä¸æ˜¯æœ€é•¿è½¬å½•æœ¬çš„èµ·ç‚¹" + errorNum);
 		return gffChrStatistics;
 	}
 	

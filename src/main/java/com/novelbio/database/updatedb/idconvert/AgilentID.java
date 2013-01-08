@@ -9,9 +9,9 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 public class AgilentID {
 	/**
 	 * convert cvs download from Agilent to the database format 
-	 * ¸ñÊ½ÈçÏÂ
+	 * æ ¼å¼å¦‚ä¸‹
 	 *taxID \t  NCBIGeneID \t  accessID \t  DataBaseInfo \n
-	 * @param taxID ÎïÖÖ±àºÅncbiµÄtaxID
+	 * @param taxID ç‰©ç§ç¼–å·ncbiçš„taxID
 	 * @param rowstart count from 1
 	 * @param agilentDBID agilent microarray ID
 	 * @author zong0jie
@@ -29,7 +29,7 @@ public class AgilentID {
 		
 		Pattern patgbTransMambrance =Pattern.compile("([A-Z_]+?\\d+)(\\.\\d){0,1}", Pattern.CASE_INSENSITIVE);  
 	    //Pattern patgbIRP =Pattern.compile("([A-Za-z_]|\\d)+", Pattern.CASE_INSENSITIVE);  
-	    Matcher matID;//matcher.groupCount() ·µ»Ø´ËÆ¥ÅäÆ÷Ä£Ê½ÖĞµÄ²¶»ñ×éÊı¡£
+	    Matcher matID;//matcher.groupCount() è¿”å›æ­¤åŒ¹é…å™¨æ¨¡å¼ä¸­çš„æ•è·ç»„æ•°ã€‚
 		
 		for (int i = 0; i < agilentInfo.length; i++) {
 			if (agilentInfo[i][5]==null||agilentInfo[i][5].contains("-")||agilentInfo[i][5].trim().equals("")) {

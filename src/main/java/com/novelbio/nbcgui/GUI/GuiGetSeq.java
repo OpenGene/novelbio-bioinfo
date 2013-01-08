@@ -36,7 +36,7 @@ import javax.swing.JRadioButton;
 import org.omg.CosNaming._BindingIteratorImplBase;
 
 /**
- * ÅúÁ¿×¢ÊÍ£¬¸÷ÖÖ×¢ÊÍ
+ * æ‰¹é‡æ³¨é‡Šï¼Œå„ç§æ³¨é‡Š
  * @author zong0jie
  *
  */
@@ -416,8 +416,8 @@ public class GuiGetSeq extends JPanel {
 	 * @param lsInfo
 	 * @param colChrID
 	 * @param colSummit
-	 * @param upstream ÉÏÓÎÎª¸ºÊı
-	 * @param dowstream ÏÂÓÎÎªÕıÊı
+	 * @param upstream ä¸Šæ¸¸ä¸ºè´Ÿæ•°
+	 * @param dowstream ä¸‹æ¸¸ä¸ºæ­£æ•°
 	 */
 	private void runGetSeqSite(ArrayList<String[]> lsInfo, int colChrID, int colSummit, int upstream, int dowstream) {
 		Species species = cmbSpecies.getSelectedValue();
@@ -452,8 +452,8 @@ public class GuiGetSeq extends JPanel {
 	 * @param lsInfo
 	 * @param colChrID
 	 * @param colSummit
-	 * @param upstream ÉÏÓÎÎª¸ºÊı
-	 * @param dowstream ÏÂÓÎÎªÕıÊı
+	 * @param upstream ä¸Šæ¸¸ä¸ºè´Ÿæ•°
+	 * @param dowstream ä¸‹æ¸¸ä¸ºæ­£æ•°
 	 */
 	private void runGetSeqGene(ArrayList<String[]> lsInfo, int colGeneID, int upstream, int dowstream) {
 		Species species = cmbSpecies.getSelectedValue();
@@ -478,8 +478,8 @@ public class GuiGetSeq extends JPanel {
 	 * @param lsInfo
 	 * @param colChrID
 	 * @param colSummit
-	 * @param upstream ÉÏÓÎÎª¸ºÊı
-	 * @param dowstream ÏÂÓÎÎªÕıÊı
+	 * @param upstream ä¸Šæ¸¸ä¸ºè´Ÿæ•°
+	 * @param dowstream ä¸‹æ¸¸ä¸ºæ­£æ•°
 	 */
 	private void runGetSeqGeneGenomeWide(int upstream, int dowstream) {
  		Species species = cmbSpecies.getSelectedValue();

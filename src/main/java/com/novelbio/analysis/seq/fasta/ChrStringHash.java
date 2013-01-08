@@ -17,32 +17,32 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
- * ±¾ÀàÓÃÀ´½«È¾É«ÌåµÄÃû×Ö£¬ĞòÁĞ×°ÈëÈ¾É«ÌåÀà£¬²¢ÇÒÊÇÒÔHash±íĞÎÊ½·µ»Ø Ä¿Ç°±¾ÀàÖĞ½ö½öº¬ÓĞ¾²Ì¬·½·¨ Í¬Ê±ÓÃÀ´ÌáÈ¡Ä³¶ÎÎ»ÖÃµÄĞòÁĞ ºÍÌáÈ¡·´ÏòÖØ¸´ĞòÁĞ
- * ×÷Õß£º×Ú½Ü 20090617
+ * æœ¬ç±»ç”¨æ¥å°†æŸ“è‰²ä½“çš„åå­—ï¼Œåºåˆ—è£…å…¥æŸ“è‰²ä½“ç±»ï¼Œå¹¶ä¸”æ˜¯ä»¥Hashè¡¨å½¢å¼è¿”å› ç›®å‰æœ¬ç±»ä¸­ä»…ä»…å«æœ‰é™æ€æ–¹æ³• åŒæ—¶ç”¨æ¥æå–æŸæ®µä½ç½®çš„åºåˆ— å’Œæå–åå‘é‡å¤åºåˆ—
+ * ä½œè€…ï¼šå®—æ° 20090617
  */
 public class ChrStringHash extends SeqHashAbs{
 	private static Logger logger = Logger.getLogger(ChrStringHash.class);
 	
-	/** ÒÔÏÂ¹şÏ£±íµÄ¼üÊÇÈ¾É«ÌåÃû³Æ£¬¶¼ÊÇĞ¡Ğ´£¬¸ñÊ½Èç£ºchr1£¬chr2£¬chr10 */
+	/** ä»¥ä¸‹å“ˆå¸Œè¡¨çš„é”®æ˜¯æŸ“è‰²ä½“åç§°ï¼Œéƒ½æ˜¯å°å†™ï¼Œæ ¼å¼å¦‚ï¼šchr1ï¼Œchr2ï¼Œchr10 */
 	HashMap<String, RandomAccessFile> mapChrID2RandomFile;
 	HashMap<String, BufferedReader> mapChrID2BufReader;
 	HashMap<String, TxtReadandWrite> mapChrID2Txt;
 	HashMap<String, Integer> mapChrID2EnterType;
 	/**
-	 * SeqÎÄ¼şµÚ¶şĞĞµÄ³¤¶È£¬Ò²¾ÍÊÇÃ¿ĞĞĞòÁĞµÄ³¤¶È+1£¬1ÊÇ»Ø³µ ÏÖÔÚÊÇ¼ÙÉèSeqÎÄ¼şµÚÒ»ĞĞ¶¼ÊÇ>ChrID,µÚ¶şĞĞ¿ªÊ¼¶¼ÊÇSeqĞòÁĞĞÅÏ¢
-	 * ²¢ÇÒÃ¿Ò»ĞĞµÄĞòÁĞ¶¼µÈ³¤
+	 * Seqæ–‡ä»¶ç¬¬äºŒè¡Œçš„é•¿åº¦ï¼Œä¹Ÿå°±æ˜¯æ¯è¡Œåºåˆ—çš„é•¿åº¦+1ï¼Œ1æ˜¯å›è½¦ ç°åœ¨æ˜¯å‡è®¾Seqæ–‡ä»¶ç¬¬ä¸€è¡Œéƒ½æ˜¯>ChrID,ç¬¬äºŒè¡Œå¼€å§‹éƒ½æ˜¯Seqåºåˆ—ä¿¡æ¯
+	 * å¹¶ä¸”æ¯ä¸€è¡Œçš„åºåˆ—éƒ½ç­‰é•¿
 	 */
 	int lengthRow = 0;
 	
 	int maxExtractSeqLength = 2000000;
 	/**
-	 * Ëæ»úÓ²ÅÌ¶ÁÈ¡È¾É«ÌåÎÄ¼şµÄ·½·¨£¬Ã²ËÆºÜÉËÓ²ÅÌ£¬¿¼ÂÇÓÃ¹ÌÌ¬Ó²ÅÌ ×¢Òâ
-	 * ¸ø¶¨Ò»¸öÎÄ¼ş¼Ğ£¬Õâ¸öÎÄ¼ş¼ĞÀïÃæ±£´æÁËÄ³¸öÎïÖÖµÄËùÓĞÈ¾É«ÌåĞòÁĞĞÅÏ¢£¬<b>ÎÄ¼ş¼Ğ×îºóÎŞËùÎ½¼Ó²»¼Ó"/"»ò"\\"</b>
-	 * Ò»¸öÎÄ±¾±£´æÒ»ÌõÈ¾É«Ìå£¬ÒÔfasta¸ñÊ½±£´æ£¬Ã¿¸öÎÄ±¾ÒÔ">"¿ªÍ·£¬È»ºó½ÓÏÂÀ´Ã¿ĞĞ¹Ì¶¨µÄ¼î»ùÊı(ÈçUCSCÎª50¸ö£¬TIGRRiceÎª60¸ö)
-	 * ÎÄ±¾ÎÄ¼şÃû(²»¿¼ÂÇºó×ºÃû£¬µ±È»Ã»ÓĞºó×ºÃûÒ²ĞĞ)Ó¦¸ÃÊÇ´ı²éÕÒµÄchrID
+	 * éšæœºç¡¬ç›˜è¯»å–æŸ“è‰²ä½“æ–‡ä»¶çš„æ–¹æ³•ï¼Œè²Œä¼¼å¾ˆä¼¤ç¡¬ç›˜ï¼Œè€ƒè™‘ç”¨å›ºæ€ç¡¬ç›˜ æ³¨æ„
+	 * ç»™å®šä¸€ä¸ªæ–‡ä»¶å¤¹ï¼Œè¿™ä¸ªæ–‡ä»¶å¤¹é‡Œé¢ä¿å­˜äº†æŸä¸ªç‰©ç§çš„æ‰€æœ‰æŸ“è‰²ä½“åºåˆ—ä¿¡æ¯ï¼Œ<b>æ–‡ä»¶å¤¹æœ€åæ— æ‰€è°“åŠ ä¸åŠ "/"æˆ–"\\"</b>
+	 * ä¸€ä¸ªæ–‡æœ¬ä¿å­˜ä¸€æ¡æŸ“è‰²ä½“ï¼Œä»¥fastaæ ¼å¼ä¿å­˜ï¼Œæ¯ä¸ªæ–‡æœ¬ä»¥">"å¼€å¤´ï¼Œç„¶åæ¥ä¸‹æ¥æ¯è¡Œå›ºå®šçš„ç¢±åŸºæ•°(å¦‚UCSCä¸º50ä¸ªï¼ŒTIGRRiceä¸º60ä¸ª)
+	 * æ–‡æœ¬æ–‡ä»¶å(ä¸è€ƒè™‘åç¼€åï¼Œå½“ç„¶æ²¡æœ‰åç¼€åä¹Ÿè¡Œ)åº”è¯¥æ˜¯å¾…æŸ¥æ‰¾çš„chrID
 	 * @param chrFilePath
-	 * @param regx null×ßÄ¬ÈÏ£¬Ä¬ÈÏÎª"\\bchr\\w*"£¬ ÓÃ¸ÃÕıÔò±í´ïÊ½È¥²éÕÒÎÄ¼şÃûÖĞº¬ÓĞChrµÄÎÄ¼ş£¬Ã¿Ò»¸öÎÄ¼ş¾ÍÈÏÎªÊÇÒ»¸öÈ¾É«Ìå
-	 * @param CaseChange ÊÇ·ñ½«ĞòÁĞÃû×ª»¯ÎªĞ¡Ğ´£¬Ò»°ã×ªÎªĞ¡Ğ´
+	 * @param regx nullèµ°é»˜è®¤ï¼Œé»˜è®¤ä¸º"\\bchr\\w*"ï¼Œ ç”¨è¯¥æ­£åˆ™è¡¨è¾¾å¼å»æŸ¥æ‰¾æ–‡ä»¶åä¸­å«æœ‰Chrçš„æ–‡ä»¶ï¼Œæ¯ä¸€ä¸ªæ–‡ä»¶å°±è®¤ä¸ºæ˜¯ä¸€ä¸ªæŸ“è‰²ä½“
+	 * @param CaseChange æ˜¯å¦å°†åºåˆ—åè½¬åŒ–ä¸ºå°å†™ï¼Œä¸€èˆ¬è½¬ä¸ºå°å†™
 	 */
 	public ChrStringHash(String chrFilePath,String regx) {
 		super(chrFilePath, regx);
@@ -50,7 +50,7 @@ public class ChrStringHash extends SeqHashAbs{
 	}
 
 	/**
-	 * Éè¶¨ĞòÁĞÎÄ¼ş¼Ğ
+	 * è®¾å®šåºåˆ—æ–‡ä»¶å¤¹
 	 * @throws FileNotFoundException 
 	 */
 	protected void setChrFile() throws Exception {
@@ -68,10 +68,10 @@ public class ChrStringHash extends SeqHashAbs{
 			txtChrTmp = new TxtReadandWrite(fileNam, false);
 			String enterType = txtChrTmp.getEnterType();
 			bufChrSeq = txtChrTmp.readfile();
-			// ¼ÙÉèÃ¿Ò»¸öÎÄ¼şµÄÃ¿Ò»ĞĞSeq¶¼ÏàµÈ
+			// å‡è®¾æ¯ä¸€ä¸ªæ–‡ä»¶çš„æ¯ä¸€è¡ŒSeqéƒ½ç›¸ç­‰
 			if (i == 0) {
 				String seqRow = txtChrTmp.readFirstLines(3).get(2);
-				lengthRow = seqRow.length();// Ã¿ĞĞ¼¸¸ö¼î»ù
+				lengthRow = seqRow.length();// æ¯è¡Œå‡ ä¸ªç¢±åŸº
 			}
 			String chrID = chrFileName[0].toLowerCase();
 			mapChrID2RandomFile.put(chrID, chrRAseq);
@@ -87,7 +87,7 @@ public class ChrStringHash extends SeqHashAbs{
 		setChrLength();
 	}
 	
-	/** ³õÊ¼»¯²¢·µ»ØÎÄ¼ş¼ĞÖĞµÄËùÓĞ·ûºÏÕıÔò±í´ïÊ½µÄÎÄ±¾Ãû */
+	/** åˆå§‹åŒ–å¹¶è¿”å›æ–‡ä»¶å¤¹ä¸­çš„æ‰€æœ‰ç¬¦åˆæ­£åˆ™è¡¨è¾¾å¼çš„æ–‡æœ¬å */
 	private ArrayList<String> initialAndGetFileList() {
 		chrFile = FileOperate.addSep(chrFile);
 		if (regx == null)
@@ -100,18 +100,18 @@ public class ChrStringHash extends SeqHashAbs{
 		lsSeqName = new ArrayList<String>();
 		return FileOperate.getFoldFileNameLs(chrFile,regx, "*");
 	}
-	/** Éè¶¨È¾É«Ìå³¤¶È */
+	/** è®¾å®šæŸ“è‰²ä½“é•¿åº¦ */
 	private void setChrLength() throws IOException {
 		for (Entry<String, RandomAccessFile> entry : mapChrID2RandomFile.entrySet()) {
 			String chrID = entry.getKey();
 			RandomAccessFile chrRAfile = entry.getValue();
-			// Éè¶¨µ½0Î»
+			// è®¾å®šåˆ°0ä½
 			chrRAfile.seek(0);
-			// »ñµÃÃ¿ÌõÈ¾É«ÌåµÄ³¤¶È£¬ÎÄ¼ş³¤¶È-µÚÒ»ĞĞµÄ
+			// è·å¾—æ¯æ¡æŸ“è‰²ä½“çš„é•¿åº¦ï¼Œæ–‡ä»¶é•¿åº¦-ç¬¬ä¸€è¡Œçš„
 			String fastaID = chrRAfile.readLine();
 			int lengthChrID = -1;
 			if (fastaID.contains(">"))
-				lengthChrID = fastaID.length();// µÚÒ»ĞĞ£¬ÓĞ>ºÅµÄ³¤¶È
+				lengthChrID = fastaID.length();// ç¬¬ä¸€è¡Œï¼Œæœ‰>å·çš„é•¿åº¦
 
 			long lengthChrSeq = chrRAfile.length();
 			long tmpChrLength = (lengthChrSeq - lengthChrID - 1) / (lengthRow + 1) * lengthRow + (lengthChrSeq - lengthChrID - 1) % (lengthRow + 1);
@@ -126,12 +126,12 @@ public class ChrStringHash extends SeqHashAbs{
 		}
 	}
 	/**
-	 * ¸ø¶¨chrID,chrID»á×Ô¶¯×ª»»ÎªĞ¡Ğ´£¬ºÍ¶ÁÈ¡µÄÆğµãÒÔ¼°ÖÕµã£¬·µ»Ø¶ÁÈ¡µÄĞòÁĞ
+	 * ç»™å®šchrID,chrIDä¼šè‡ªåŠ¨è½¬æ¢ä¸ºå°å†™ï¼Œå’Œè¯»å–çš„èµ·ç‚¹ä»¥åŠç»ˆç‚¹ï¼Œè¿”å›è¯»å–çš„åºåˆ—
 	 * @param chrID
-	 * @param startlocation ´ÓµÚ¼¸¸ö¼î»ù¿ªÊ¼¶ÁÈ¡£¬´Ó1¿ªÊ¼¼ÇÊı£¬×¢Òâ234µÄ»°£¬Êµ¼ÊÎª´Ó234¿ªÊ¼¶ÁÈ¡£¬ÀàËÆsubstring·½·¨ long
-	 * Ğ¡ÓÚ0±íÊ¾´ÓÍ·¿ªÊ¼¶ÁÈ¡
-	 * @param endlocation ¶Áµ½µÚ¼¸¸ö¼î»ù£¬´Ó1¿ªÊ¼¼ÇÊı£¬Êµ¼Ê¶Áµ½µÚendNum¸ö¼î»ù¡£ ¿ìËÙÌáÈ¡ĞòÁĞ
-	 * Ğ¡ÓÚ0±íÊ¾¶Áµ½Ä©Î²
+	 * @param startlocation ä»ç¬¬å‡ ä¸ªç¢±åŸºå¼€å§‹è¯»å–ï¼Œä»1å¼€å§‹è®°æ•°ï¼Œæ³¨æ„234çš„è¯ï¼Œå®é™…ä¸ºä»234å¼€å§‹è¯»å–ï¼Œç±»ä¼¼substringæ–¹æ³• long
+	 * å°äº0è¡¨ç¤ºä»å¤´å¼€å§‹è¯»å–
+	 * @param endlocation è¯»åˆ°ç¬¬å‡ ä¸ªç¢±åŸºï¼Œä»1å¼€å§‹è®°æ•°ï¼Œå®é™…è¯»åˆ°ç¬¬endNumä¸ªç¢±åŸºã€‚ å¿«é€Ÿæå–åºåˆ—
+	 * å°äº0è¡¨ç¤ºè¯»åˆ°æœ«å°¾
 	 * @return
 	 * @throws IOException
 	 */
@@ -145,21 +145,21 @@ public class ChrStringHash extends SeqHashAbs{
 		
 		startlocation--;
 		chrID = chrID.toLowerCase();
-		RandomAccessFile chrRASeqFile = mapChrID2RandomFile.get(chrID);// ÅĞ¶ÏÎÄ¼şÊÇ·ñ´æÔÚ
+		RandomAccessFile chrRASeqFile = mapChrID2RandomFile.get(chrID);// åˆ¤æ–­æ–‡ä»¶æ˜¯å¦å­˜åœ¨
 		int entryNum = mapChrID2EnterType.get(chrID);
 		if (chrRASeqFile == null) {
-			logger.error( "ÎŞ¸ÃÈ¾É«Ìå: "+ chrID);
+			logger.error( "æ— è¯¥æŸ“è‰²ä½“: "+ chrID);
 			return null;
 		}
 		int startrowBias = 0, endrowBias = 0;
-		// Éè¶¨µ½0Î»
+		// è®¾å®šåˆ°0ä½
 		chrRASeqFile.seek(0);
 		String fastaID = chrRASeqFile.readLine();
 		int lengthChrID = -1;
 		if (fastaID.contains(">"))
-			lengthChrID = fastaID.length();// µÚÒ»ĞĞ£¬ÓĞ>ºÅµÄ³¤¶È
+			lengthChrID = fastaID.length();// ç¬¬ä¸€è¡Œï¼Œæœ‰>å·çš„é•¿åº¦
 		else
-			logger.error("²»ÊÇÕı¹æµÄfasta¸ñÊ½£º" + chrID);
+			logger.error("ä¸æ˜¯æ­£è§„çš„fastaæ ¼å¼ï¼š" + chrID);
 
 		long lengthChrSeq = chrRASeqFile.length();
 		long rowstartNum = startlocation / lengthRow;
@@ -167,22 +167,22 @@ public class ChrStringHash extends SeqHashAbs{
 
 		startrowBias = (int) (startlocation % lengthRow);
 		endrowBias = (int) (endlocation % lengthRow);
-		// Êµ¼ÊĞòÁĞÔÚÎÄ¼şÖĞµÄÆğµã
+		// å®é™…åºåˆ—åœ¨æ–‡ä»¶ä¸­çš„èµ·ç‚¹
 		long startRealCod = (lengthChrID + entryNum) + (lengthRow + entryNum) * rowstartNum + startrowBias;
 		long endRealCod = (lengthChrID + entryNum) + (lengthRow + entryNum) * rowendNum + endrowBias;
-		//Èç¹ûÎ»µã³¬¹ıÁË·¶Î§£¬ÄÇÃ´ĞŞÕıÎ»µã
+		//å¦‚æœä½ç‚¹è¶…è¿‡äº†èŒƒå›´ï¼Œé‚£ä¹ˆä¿®æ­£ä½ç‚¹
 		if (startlocation < 0 || startRealCod >= lengthChrSeq || endlocation < 1 || endRealCod >= lengthChrSeq || endlocation < startlocation) {
-			logger.error(chrID + " " + startlocation + " " + endlocation + " È¾É«Ìå×ø±ê´íÎó");
+			logger.error(chrID + " " + startlocation + " " + endlocation + " æŸ“è‰²ä½“åæ ‡é”™è¯¯");
 			return null;
 		}
 		if (endlocation - startlocation > maxExtractSeqLength) {
-			logger.error(chrID + " " + startlocation + " " + endlocation + " ×î¶àÌáÈ¡" + maxExtractSeqLength + "bp");
+			logger.error(chrID + " " + startlocation + " " + endlocation + " æœ€å¤šæå–" + maxExtractSeqLength + "bp");
 			return null;
 		}
 
 		SeqFasta seqFasta = new SeqFasta();
 		seqFasta.setName(chrID + "_" + startlocation + "_" + endlocation);
-		// ¶¨µ½Ä¿±ê×ø±ê
+		// å®šåˆ°ç›®æ ‡åæ ‡
 		StringBuilder sequence = new StringBuilder();
 		chrRASeqFile.seek(startRealCod);
 		
@@ -202,7 +202,7 @@ public class ChrStringHash extends SeqHashAbs{
 		return seqFasta;
 	}
 	/**
-	 * »ñµÃÃ¿ÌõÈ¾É«Ìå¶ÔÓ¦µÄbufferedreaderÀà£¬·½±ã´ÓÍ·¶ÁÈ¡
+	 * è·å¾—æ¯æ¡æŸ“è‰²ä½“å¯¹åº”çš„bufferedreaderç±»ï¼Œæ–¹ä¾¿ä»å¤´è¯»å–
 	 * @param chrID
 	 * @return
 	 */
@@ -210,7 +210,7 @@ public class ChrStringHash extends SeqHashAbs{
 		return mapChrID2BufReader.get(chrID.toLowerCase());
 	}
 	/**
-	 * »ñµÃÃ¿ÌõÈ¾É«Ìå¶ÔÓ¦µÄbufferedreaderÀà£¬·½±ã´ÓÍ·¶ÁÈ¡
+	 * è·å¾—æ¯æ¡æŸ“è‰²ä½“å¯¹åº”çš„bufferedreaderç±»ï¼Œæ–¹ä¾¿ä»å¤´è¯»å–
 	 * @param refID
 	 * @return
 	 */
@@ -218,7 +218,7 @@ public class ChrStringHash extends SeqHashAbs{
 		return mapChrID2BufReader;
 	}
 	/**
-	 * ·µ»ØÓĞÒâÒåµÄ¼î»ùÊıÁ¿
+	 * è¿”å›æœ‰æ„ä¹‰çš„ç¢±åŸºæ•°é‡
 	 * @return
 	 * @throws IOException
 	 */

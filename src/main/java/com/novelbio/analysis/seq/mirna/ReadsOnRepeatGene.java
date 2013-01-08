@@ -25,7 +25,7 @@ import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.NovelBioConst;
 import com.novelbio.generalConf.TitleFormatNBC;
 /**
- * bedÎÄ¼şÔÚrepeatºÍgeneÉÏµÄ·Ö²¼Çé¿ö£¬¿ÉÒÔµ¥¶ÀÉè¶¨repeat»òÕßÊÇgene
+ * bedæ–‡ä»¶åœ¨repeatå’Œgeneä¸Šçš„åˆ†å¸ƒæƒ…å†µï¼Œå¯ä»¥å•ç‹¬è®¾å®šrepeatæˆ–è€…æ˜¯gene
  * @author zong0jie
  *
  */
@@ -36,14 +36,14 @@ public class ReadsOnRepeatGene {
 	HashMap<String, Double> mapRepeatFamily2Value;
 	HashMap<String, Double> mapGeneStructure2Value;
 	/**
-	 * ¶ÁÈ¡repeatÎÄ¼ş
+	 * è¯»å–repeatæ–‡ä»¶
 	 * @param repeatGffFile
 	 */
 	public void setGffGene(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 	}
 	/**
-	 * ¶ÁÈ¡repeatÎÄ¼ş£¬Èç¹ûÃ»ÓĞrepeatÔò²»¶ÁÈ¡
+	 * è¯»å–repeatæ–‡ä»¶ï¼Œå¦‚æœæ²¡æœ‰repeatåˆ™ä¸è¯»å–
 	 * @param repeatGffFile
 	 */
 	public void readGffRepeat(String repeatGffFile) {
@@ -61,7 +61,7 @@ public class ReadsOnRepeatGene {
 		BedSeq bedSeq = new BedSeq(bedFile);
 		for (BedRecord bedRecord : bedSeq.readLines()) {
 			String repeatInfo = null;
-			if (gffHashRepeat != null) {//Èç¹ûÃ»ÓĞ¶ÁÈ¡repeatÎÄ¼ş£¬Ôò·µ»Ø
+			if (gffHashRepeat != null) {//å¦‚æœæ²¡æœ‰è¯»å–repeatæ–‡ä»¶ï¼Œåˆ™è¿”å›
 				repeatInfo = searchReadsRepeat(bedRecord.getRefID(), bedRecord.getStartAbs(), bedRecord.getEndAbs());
 				if (repeatInfo != null) {
 					addHashRepeat(repeatInfo, bedRecord.getMappingNum());
@@ -121,7 +121,7 @@ public class ReadsOnRepeatGene {
 		txtOut.ExcelWrite(lsResult);
 	}
 	/**
-	 * ½«searchReadsRepeat»ñµÃµÄ½á¹ûµ¼ÈëhashRepeatNameºÍhashRepeatFamily±íÖĞ
+	 * å°†searchReadsRepeatè·å¾—çš„ç»“æœå¯¼å…¥hashRepeatNameå’ŒhashRepeatFamilyè¡¨ä¸­
 	 */
 	private void addHashRepeat(String repeatInfo, int mapNum) {
 		//RepeatName\\\RepeatFamily,
@@ -143,10 +143,10 @@ public class ReadsOnRepeatGene {
 		
 	}
 	/**
-	 * ½«²éÕÒµÄ½á¹û·ÅÈëhashgeneĞÅÏ¢
-	 * @param geneLocType ×ø±êÔÚ»ùÒòÖĞµÄÎ»ÖÃ£¬ÓÃgffsearchµÃµ½
-	 * @param cis ÊÇ·ñÓë¸Ã»ùÒòÍ¬·½Ïò
-	 * @param mapNum ·Çuniq mappingµÄ»°£¬mappingµ½ÁË¶àÉÙ²»Í¬µÄrefÉÏ
+	 * å°†æŸ¥æ‰¾çš„ç»“æœæ”¾å…¥hashgeneä¿¡æ¯
+	 * @param geneLocType åæ ‡åœ¨åŸºå› ä¸­çš„ä½ç½®ï¼Œç”¨gffsearchå¾—åˆ°
+	 * @param cis æ˜¯å¦ä¸è¯¥åŸºå› åŒæ–¹å‘
+	 * @param mapNum éuniq mappingçš„è¯ï¼Œmappingåˆ°äº†å¤šå°‘ä¸åŒçš„refä¸Š
 	 */
 	private void addHashGene(int geneLocType, boolean cis,int mapNum) {
 		if (mapNum == 0) {
@@ -175,12 +175,12 @@ public class ReadsOnRepeatGene {
 		}
 	}
 	/**
-	 * ·µ»Ø¸ÃreadsËùÔÚµÄrepeatµÄÎ»ÖÃ
+	 * è¿”å›è¯¥readsæ‰€åœ¨çš„repeatçš„ä½ç½®
 	 * @param chrID
 	 * @param start
 	 * @param end
 	 * @return
-	 * RepeatName///RepeatFamily, ¸ù¾İ½á¹û¼ÆËãrepeatµÄÇé¿ö
+	 * RepeatName///RepeatFamily, æ ¹æ®ç»“æœè®¡ç®—repeatçš„æƒ…å†µ
 	 */
 	private String searchReadsRepeat(String chrID, int start, int end) {
 		ListCodAbs<GffDetailRepeat> cod = gffHashRepeat.searchLocation(chrID, (start+ end)/2);
@@ -194,9 +194,9 @@ public class ReadsOnRepeatGene {
 	 * @param start
 	 * @param end
 	 * @return
-	 * ·µ»Ø 0: ÊÇ´¦ÓÚexon£¬intron»¹ÊÇoutgene
-	 * 1: 0: Óë»ùÒò·´·½Ïò»ò²»ÓÃ¿¼ÂÇ 1£ºÓë»ùÒò×éÍ¬·½Ïò
-	 * Êµ¼ÊÉÏ¶ÔÓÚmiRNA¶øÑÔ£¬Ö»ÓĞ´¦ÓÚÍâÏÔ×ÓÖĞ¿¼ÂÇ·½Ïò²ÅÓĞÒâÒå
+	 * è¿”å› 0: æ˜¯å¤„äºexonï¼Œintronè¿˜æ˜¯outgene
+	 * 1: 0: ä¸åŸºå› åæ–¹å‘æˆ–ä¸ç”¨è€ƒè™‘ 1ï¼šä¸åŸºå› ç»„åŒæ–¹å‘
+	 * å®é™…ä¸Šå¯¹äºmiRNAè€Œè¨€ï¼Œåªæœ‰å¤„äºå¤–æ˜¾å­ä¸­è€ƒè™‘æ–¹å‘æ‰æœ‰æ„ä¹‰
 	 */
 	private int[] searchGene(boolean cis5to3, String chrID, int start, int end) {
 		GffCodGene gffCodGene = gffChrAbs.getGffHashGene().searchLocation(chrID, (start+ end)/2);
@@ -209,7 +209,7 @@ public class ReadsOnRepeatGene {
 		}
 		int locationInfo = gffCodGene.getGffDetailThis().getLongestSplitMrna().getCodLoc(gffCodGene.getCoord());
 		boolean cisFinal = (gffCodGene.getGffDetailThis().getLongestSplitMrna().isCis5to3() == cis5to3);
-		int ori = 0;//·½Ïò
+		int ori = 0;//æ–¹å‘
 		if (cisFinal) {
 			ori = 1;
 		}
@@ -226,17 +226,17 @@ public class ReadsOnRepeatGene {
 		return mapRepeatName2Value;
 	}
 	
-	/** ½«¸ø¶¨µÄ¼¸×éMapGeneStructure2ValueµÄÖµºÏ²¢ÆğÀ´ */
+	/** å°†ç»™å®šçš„å‡ ç»„MapGeneStructure2Valueçš„å€¼åˆå¹¶èµ·æ¥ */
 	public ArrayList<String[]> combMapGeneStructure2Value(HashMap<String, HashMap<String, Double>> mapPrefix2_mapMiRNA2Value) {
 		CombMapGeneInfo combMapGeneInfo = new CombMapGeneInfo();
 		return combMapGeneInfo.combValue(mapPrefix2_mapMiRNA2Value);
 	}
-	/** ½«¸ø¶¨µÄ¼¸×éMapRepatNameµÄÖµºÏ²¢ÆğÀ´ */
+	/** å°†ç»™å®šçš„å‡ ç»„MapRepatNameçš„å€¼åˆå¹¶èµ·æ¥ */
 	public ArrayList<String[]> combMapRepatName(HashMap<String, HashMap<String, Double>> mapPrefix2_mapMiRNAMature2Value) {
 		CombMapRepeatName combMapRepeatName = new CombMapRepeatName();
 		return combMapRepeatName.combValue(mapPrefix2_mapMiRNAMature2Value);
 	}
-	/** ½«¸ø¶¨µÄ¼¸×éMapRepatFamilyµÄÖµºÏ²¢ÆğÀ´ */
+	/** å°†ç»™å®šçš„å‡ ç»„MapRepatFamilyçš„å€¼åˆå¹¶èµ·æ¥ */
 	public ArrayList<String[]> combMapRepatFamily(HashMap<String, HashMap<String, Double>> mapPrefix2_mapMiRNAMature2Value) {
 		CombMapRepeatFamily combMapRepeatFamily = new CombMapRepeatFamily();
 		return combMapRepeatFamily.combValue(mapPrefix2_mapMiRNAMature2Value);
@@ -247,7 +247,7 @@ public class ReadsOnRepeatGene {
 class CombMapGeneInfo extends MirCombMapGetValueAbs {
 	
 	@Override
-	protected String[] getTitleIDAndInfo() {	/** ·µ»ØÉæ¼°µ½µÄËùÓĞmiRNAµÄÃû×Ö */
+	protected String[] getTitleIDAndInfo() {	/** è¿”å›æ¶‰åŠåˆ°çš„æ‰€æœ‰miRNAçš„åå­— */
 		String[] titleStart = new String[1];
 		titleStart[0] = TitleFormatNBC.GeneStructure.toString();
 		return titleStart;
@@ -262,7 +262,7 @@ class CombMapGeneInfo extends MirCombMapGetValueAbs {
 class CombMapRepeatName extends MirCombMapGetValueAbs {
 	
 	@Override
-	protected String[] getTitleIDAndInfo() {	/** ·µ»ØÉæ¼°µ½µÄËùÓĞmiRNAµÄÃû×Ö */
+	protected String[] getTitleIDAndInfo() {	/** è¿”å›æ¶‰åŠåˆ°çš„æ‰€æœ‰miRNAçš„åå­— */
 		String[] titleStart = new String[1];
 		titleStart[0] = TitleFormatNBC.RepeatName.toString();
 		return titleStart;
@@ -277,7 +277,7 @@ class CombMapRepeatName extends MirCombMapGetValueAbs {
 class CombMapRepeatFamily extends MirCombMapGetValueAbs {
 	
 	@Override
-	protected String[] getTitleIDAndInfo() {	/** ·µ»ØÉæ¼°µ½µÄËùÓĞmiRNAµÄÃû×Ö */
+	protected String[] getTitleIDAndInfo() {	/** è¿”å›æ¶‰åŠåˆ°çš„æ‰€æœ‰miRNAçš„åå­— */
 		String[] titleStart = new String[1];
 		titleStart[0] = TitleFormatNBC.RepeatFamily.toString();
 		return titleStart;

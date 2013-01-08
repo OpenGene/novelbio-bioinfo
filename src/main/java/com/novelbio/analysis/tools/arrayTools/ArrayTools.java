@@ -15,14 +15,14 @@ public class ArrayTools {
 		
 		ArrayList<Integer> lsSepNum=new ArrayList<Integer>();
 		lsSepNum.add(0);
-		//»ñµÃ·Ö¸îµÄÁĞ£¬Ò²¾ÍÊÇËµÒÔ¸ÃÁĞÎª·Ö¸îÁĞ£¬½«Ç°ºóµÄ·Ö¿ª,±¾ÁĞµÚÒ»¸öÎª0£¬×îºóÒ»¸öÎªÁĞÊı
+		//è·å¾—åˆ†å‰²çš„åˆ—ï¼Œä¹Ÿå°±æ˜¯è¯´ä»¥è¯¥åˆ—ä¸ºåˆ†å‰²åˆ—ï¼Œå°†å‰åçš„åˆ†å¼€,æœ¬åˆ—ç¬¬ä¸€ä¸ªä¸º0ï¼Œæœ€åä¸€ä¸ªä¸ºåˆ—æ•°
 		for (int i = 0; i < lsarrayInfo.get(0).length; i++) {
 			if (lsarrayInfo.get(0)[i]==null||lsarrayInfo.get(0)[i].trim().equals("")) {
 				lsSepNum.add(i);
 			}
 		}
 		lsSepNum.add(excelArray.getColCount());
-		//×îºó²úÉúµÄÎÄ¼şÃû£¬ÎªA1.txtµÈÒÔ´ËÀàËÆ
+		//æœ€åäº§ç”Ÿçš„æ–‡ä»¶åï¼Œä¸ºA1.txtç­‰ä»¥æ­¤ç±»ä¼¼
 		ArrayList<String> lsName=new ArrayList<String>();
 		lsName.add("A");lsName.add("B");lsName.add("C");lsName.add("D");lsName.add("E");lsName.add("F");lsName.add("G");lsName.add("H");
 		
@@ -30,8 +30,8 @@ public class ArrayTools {
 		String resultFilePath=filePath+"/"+outFileName;
 		FileOperate.createFolders(resultFilePath);
 		
-		int k=0;//¼ÆÊı·Ö¸îµÄÁĞÊı
-		//ÕıÊ½·Ö¸î
+		int k=0;//è®¡æ•°åˆ†å‰²çš„åˆ—æ•°
+		//æ­£å¼åˆ†å‰²
 		for (int ss = 0; ss <lsSepNum.size()-1; ss++) {
 			int kk=1;
 			for (int i =lsSepNum.get(ss)+1; i < lsSepNum.get(ss+1); i=i+2)

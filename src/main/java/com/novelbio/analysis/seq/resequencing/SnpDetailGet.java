@@ -17,23 +17,23 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.domain.geneanno.SepSign;
 
-/** Ö¸¶¨Ò»ÏµÁĞµÄsnpÎ»µã£¬ÒÔ¼°¶à¸öpileupÎÄ¼ş£¬»ñµÃÕâĞ©Î»µãµÄÊµ¼ÊreadsÊıÁ¿ */
+/** æŒ‡å®šä¸€ç³»åˆ—çš„snpä½ç‚¹ï¼Œä»¥åŠå¤šä¸ªpileupæ–‡ä»¶ï¼Œè·å¾—è¿™äº›ä½ç‚¹çš„å®é™…readsæ•°é‡ */
 public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 	private static Logger logger = Logger.getLogger(SnpDetailGet.class);
 	
 	GffChrAbs gffChrAbs;
 
-	/** keyÎªĞ¡Ğ´ */
+	/** keyä¸ºå°å†™ */
 	Map<String, ArrayList<RefSiteSnpIndel>> mapChrID2LsSnpSite = new HashMap<String, ArrayList<RefSiteSnpIndel>>();
-	/** Ñù±¾ĞÅÏ¢ */
+	/** æ ·æœ¬ä¿¡æ¯ */
 	LinkedHashMap<String, String> mapSample2PileupFile = new LinkedHashMap<String, String>();
-	/** ¶ÁÈ¡ÎÄ¼şÊ±È¥³ıÖØ¸´snpÎ»µã */
+	/** è¯»å–æ–‡ä»¶æ—¶å»é™¤é‡å¤snpä½ç‚¹ */
 	HashSet<String> setSnpSiteRemoveFromReading = new HashSet<String>();
 	String outFile;
-	/** ÊÇ·ñ»ñµÃvcfµÄ±êÇ© */
+	/** æ˜¯å¦è·å¾—vcfçš„æ ‡ç­¾ */
 	boolean getVCFflag;
 	
-	/** Í³¼ÆÊı×Ö */
+	/** ç»Ÿè®¡æ•°å­— */
 	long readLines;
 	long readByte;
 	int findSnp;
@@ -42,7 +42,7 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 	}
-	/** ÊÇ·ñĞèÒª»ñÈ¡vcfµÄflag */
+	/** æ˜¯å¦éœ€è¦è·å–vcfçš„flag */
 	public void setGetVCFflag(boolean getVCFflag) {
 		this.getVCFflag = getVCFflag;
 	}
@@ -50,18 +50,18 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 	public void addSample2PileupFile(String sampleName, String pileupFileName) {
 		mapSample2PileupFile.put(sampleName, pileupFileName);
 	}
-	/** Êä³öÎÄ¼ş */
+	/** è¾“å‡ºæ–‡ä»¶ */
 	public void setOutFile(String outFile) {
 		this.outFile = outFile;
 	}
-	/**·µ»ØÒÔKÎªµ¥Î»µÄ¹À¼ÆÎÄ¼şµÄ×ÜºÍ£¬gzµÄÎÄ¼ş¾Í»á¼Ó±¶¹À¼Æ
+	/**è¿”å›ä»¥Kä¸ºå•ä½çš„ä¼°è®¡æ–‡ä»¶çš„æ€»å’Œï¼Œgzçš„æ–‡ä»¶å°±ä¼šåŠ å€ä¼°è®¡
 	 * @return
 	 */
 	public double getFileSizeEvaluateK() {
 		double allFileSize = 0;
 		for (String pileUpFile : mapSample2PileupFile.values()) {
 			double size = FileOperate.getFileSize(pileUpFile);
-			//Èç¹ûÊÇÑ¹ËõÎÄ¼ş¾Í¼ÙÉèÔ´ÎÄ¼şÎª6±¶´ó */
+			//å¦‚æœæ˜¯å‹ç¼©æ–‡ä»¶å°±å‡è®¾æºæ–‡ä»¶ä¸º6å€å¤§ */
 			if (FileOperate.getFileNameSep(pileUpFile)[1].toLowerCase().equals("gz"))
 				size = size * 6;
 			else
@@ -71,10 +71,10 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 		} 
 		return allFileSize;
 	}
-	/** ½«ÎÄ¼ş¶ÁÈëlsSnpSite
+	/** å°†æ–‡ä»¶è¯»å…¥lsSnpSite
 	 * @param snpFile
-	 * @param colChrID Êµ¼ÊÁĞÊı
-	 * @param colSiteStart Êµ¼ÊÁĞÊı
+	 * @param colChrID å®é™…åˆ—æ•°
+	 * @param colSiteStart å®é™…åˆ—æ•°
 	 */
 	public void readSnpSiteInfo(String snpFile, int colChrID, int colSiteStart) {
 		colChrID--; colSiteStart--;
@@ -100,7 +100,7 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 		}
 	}
 	
-	/** ÊÇ·ñÎªÖØ¸´snp */
+	/** æ˜¯å¦ä¸ºé‡å¤snp */
 	private boolean isReplicateSnpSite(String chrID, int snpSite) {
 		String siteInfo = chrID.toLowerCase() + SepSign.SEP_ID + snpSite;
 		if (setSnpSiteRemoveFromReading.contains(siteInfo)) {
@@ -110,15 +110,15 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 		return false;
 		
 	}
-	/** ½«ÊäÈëÎÄ¼şÕûÀíÎª<br>
+	/** å°†è¾“å…¥æ–‡ä»¶æ•´ç†ä¸º<br>
 	 * chrID----List--MapInfo<br>
-	 * µÄ¸ñÊ½<br>
+	 * çš„æ ¼å¼<br>
 	 * @param lsSite
 	 * @return
 	 */
 	public void setMapChrID2InfoSnpIndel(Collection<RefSiteSnpIndel> lsSite) {
-		/** Ã¿¸öchrID¶ÔÓ¦Ò»×émapinfo£¬Ò²¾ÍÊÇÒ»¸ölist */
-		// °´ÕÕchrÎ»ÖÃ×°Èëhash±í
+		/** æ¯ä¸ªchrIDå¯¹åº”ä¸€ç»„mapinfoï¼Œä¹Ÿå°±æ˜¯ä¸€ä¸ªlist */
+		// æŒ‰ç…§chrä½ç½®è£…å…¥hashè¡¨
 		for (RefSiteSnpIndel refSiteSnpIndel : lsSite) {
 			ArrayList<RefSiteSnpIndel> lsMap = mapChrID2LsSnpSite.get(refSiteSnpIndel.getRefID().toLowerCase());
 			if (lsMap == null) {
@@ -135,7 +135,7 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 			String sampleName = entry.getKey();
 			String pileupFile = entry.getValue();
 			
-			////±íÊ¾¶ÁÈ¡ÍêÒ»¸öÎÄ¼ş/////
+			////è¡¨ç¤ºè¯»å–å®Œä¸€ä¸ªæ–‡ä»¶/////
 			setThreadInfo(readLines, readByte, "reading file " + FileOperate.getFileName(pileupFile));
 			//////////////////////////////////////
 			getSiteInfo_FromPileUp(sampleName, pileupFile);
@@ -145,10 +145,10 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 		}
 	}
 	/**
-	 * Êä³öµÄÖĞ¼ä½á¹û
+	 * è¾“å‡ºçš„ä¸­é—´ç»“æœ
 	 * @param alllines
 	 * @param allByte
-	 * @param message ²»ĞèÒªÏÔÊ¾message¾ÍÊäÈënull
+	 * @param message ä¸éœ€è¦æ˜¾ç¤ºmessageå°±è¾“å…¥null
 	 */
 	private void setThreadInfo(long alllines, double allByte, String message) {
 		SnpFilterDetailInfo snpFilterDetailInfo = new SnpFilterDetailInfo();
@@ -158,12 +158,12 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 		setRunInfo(snpFilterDetailInfo);
 	}
 	
-	/** ½«¶ÁÈëµÄsnpÅÅĞò */
+	/** å°†è¯»å…¥çš„snpæ’åº */
 	private void sortSnp() {
 		setThreadInfo(0, 0, "sorting snps");
 		
 		for (ArrayList<RefSiteSnpIndel> lsSnpSiteSimples : mapChrID2LsSnpSite.values()) {
-			///////////////¶àÏß³ÌÊ¹ÓÃ ///////////////////////
+			///////////////å¤šçº¿ç¨‹ä½¿ç”¨ ///////////////////////
 			suspendCheck();
 			if (flagStop) {
 				break;
@@ -174,20 +174,20 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 	}
 	
 	/**
-	 * ¸ø¶¨Ñ¡ÖĞµÄmapInfo£¬¶ÁÈ¡samtools²úÉúµÄpileup file»ñµÃÃ¿¸öÎ»µãµÄ¾ßÌåĞÅÏ¢
-	 * @param sampleName Ñù±¾Ãû×Ö¡£Èç¹ûÊäÈëµÄmapSortedChrID2LsMapInfoÒÑ¾­ÓĞ¸ÃÑù±¾ĞÅÏ¢£¬ÄÇÃ´¾ÍÌø¹ı
-	 * @param mapChrID2SortedLsMapInfo LsMapInfoÅÅ¹ıĞòµÄlist
+	 * ç»™å®šé€‰ä¸­çš„mapInfoï¼Œè¯»å–samtoolsäº§ç”Ÿçš„pileup fileè·å¾—æ¯ä¸ªä½ç‚¹çš„å…·ä½“ä¿¡æ¯
+	 * @param sampleName æ ·æœ¬åå­—ã€‚å¦‚æœè¾“å…¥çš„mapSortedChrID2LsMapInfoå·²ç»æœ‰è¯¥æ ·æœ¬ä¿¡æ¯ï¼Œé‚£ä¹ˆå°±è·³è¿‡
+	 * @param mapChrID2SortedLsMapInfo LsMapInfoæ’è¿‡åºçš„list
 	 * @param samToolsPleUpFile
 	 * @param gffChrAbs
-	 * @return ĞÂ½¨Ò»¸öhash±íÈ»ºó·µ»Ø£¬Õâ¸öhash±íÓëÊäÈëµÄ±íÊÇdeep copy¹ØÏµ
+	 * @return æ–°å»ºä¸€ä¸ªhashè¡¨ç„¶åè¿”å›ï¼Œè¿™ä¸ªhashè¡¨ä¸è¾“å…¥çš„è¡¨æ˜¯deep copyå…³ç³»
 	 */
 	private void getSiteInfo_FromPileUp(String sampleName, String samToolsPleUpFile) {
-		/** Ã¿¸öchrID¶ÔÓ¦Ò»×émapinfo£¬Ò²¾ÍÊÇÒ»¸ölist */
+		/** æ¯ä¸ªchrIDå¯¹åº”ä¸€ç»„mapinfoï¼Œä¹Ÿå°±æ˜¯ä¸€ä¸ªlist */
 		TxtReadandWrite txtReadSam = new TxtReadandWrite(samToolsPleUpFile, false);
 		String tmpChrID = ""; ArrayList<RefSiteSnpIndel> lsMapInfos = null;
-		int mapInfoIndex = 0;// ÒÀ´Î½øĞĞÏÂÈ¥
+		int mapInfoIndex = 0;// ä¾æ¬¡è¿›è¡Œä¸‹å»
 		for (String samtoolsLine : txtReadSam.readlines()) {
-			/////////////////////¶àÏß³ÌÊ¹ÓÃ /////////////////////////////////////////
+			/////////////////////å¤šçº¿ç¨‹ä½¿ç”¨ /////////////////////////////////////////
 			suspendCheck();
 			if (flagStop) {
 				break;
@@ -212,14 +212,14 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 				lsMapInfos = mapChrID2LsSnpSite.get(tmpChrID);
 				mapInfoIndex = 0;
 				if (lsMapInfos == null) {
-//					logger.info("³öÏÖÎ´Öª chrID£º" + tmpChrID);
+//					logger.info("å‡ºç°æœªçŸ¥ chrIDï¼š" + tmpChrID);
 					continue;
 				}
 			}
-			//ËùÓĞlsMapInfosÖĞµÄĞÅÏ¢¶¼²éÕÒÍê±ÏÁË
+			//æ‰€æœ‰lsMapInfosä¸­çš„ä¿¡æ¯éƒ½æŸ¥æ‰¾å®Œæ¯•äº†
 			if (lsMapInfos == null || mapInfoIndex >= lsMapInfos.size()) continue;
 
-			//Ò»ĞĞÒ»ĞĞÕÒÏÂÈ¥£¬Ö±µ½ÕÒµ½ËùĞèÒªµÄÎ»µã
+			//ä¸€è¡Œä¸€è¡Œæ‰¾ä¸‹å»ï¼Œç›´åˆ°æ‰¾åˆ°æ‰€éœ€è¦çš„ä½ç‚¹
 			if (loc < lsMapInfos.get(mapInfoIndex).getRefSnpIndelStart()) {
 				continue;
 			} else {
@@ -248,10 +248,10 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 		
 		TxtReadandWrite txtWrite = new TxtReadandWrite(outFile, true);
 		txtWrite.writefileln(RefSiteSnpIndel.getTitleFromSampleName(mapSample2PileupFile.keySet(), getVCFflag));
-		for (ArrayList<RefSiteSnpIndel> lsRefSiteSnpIndel : mapChrID2LsSnpSite.values()) {//Ã¿ÌõÈ¾É«Ìå
-			for (RefSiteSnpIndel refSiteSnpIndel : lsRefSiteSnpIndel) {//Ã¿¸öÎ»µã
+		for (ArrayList<RefSiteSnpIndel> lsRefSiteSnpIndel : mapChrID2LsSnpSite.values()) {//æ¯æ¡æŸ“è‰²ä½“
+			for (RefSiteSnpIndel refSiteSnpIndel : lsRefSiteSnpIndel) {//æ¯ä¸ªä½ç‚¹
 				ArrayList<String[]> lsResult = refSiteSnpIndel.toStringLsSnp(mapSample2PileupFile.keySet(), false, getVCFflag);
-				for (String[] strings : lsResult) {//Ã¿¸öÎ»µãËù´æÔÚµÄsnp
+				for (String[] strings : lsResult) {//æ¯ä¸ªä½ç‚¹æ‰€å­˜åœ¨çš„snp
 					txtWrite.writefileln(strings);
 				}
 			}
@@ -259,13 +259,13 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 		txtWrite.close();
 	}
 	
-	/** É¨ÃèÁËµ«ÊÇÃ»ÓĞreadsµÄpileupline */
+	/** æ‰«æäº†ä½†æ˜¯æ²¡æœ‰readsçš„pileupline */
 	private void setPassedSnp(String sampleName, ArrayList<RefSiteSnpIndel> lsMapInfos, int mapInfoIndex) {
 		RefSiteSnpIndel refSiteSnpIndel = lsMapInfos.get(mapInfoIndex);
 		refSiteSnpIndel.setSampleName(sampleName);
 		refSiteSnpIndel.setSearchSamPileUpFileTrue();
 	}
-	/** »áÊ×ÏÈÅĞ¶Ï locÊÇ·ñÓëµ±Ç°µÄrefSiteSnpIndelÎ»µãÒ»ÖÂ */
+	/** ä¼šé¦–å…ˆåˆ¤æ–­ locæ˜¯å¦ä¸å½“å‰çš„refSiteSnpIndelä½ç‚¹ä¸€è‡´ */
 	private boolean addMapSiteInfo(int loc, ArrayList<RefSiteSnpIndel> lsMapInfos, int mapInfoIndex, String sampleName, String samtoolsLine) {
 		if (loc != lsMapInfos.get(mapInfoIndex).getRefSnpIndelStart())
 			return false;
@@ -277,7 +277,7 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 	}
 	
 	
-	/** Çå¿ÕËùÓĞsnpºÍÊäÈëÎÄ¼ş */
+	/** æ¸…ç©ºæ‰€æœ‰snpå’Œè¾“å…¥æ–‡ä»¶ */
 	public void clear() {
 		mapChrID2LsSnpSite.clear();
 		mapSample2PileupFile.clear();

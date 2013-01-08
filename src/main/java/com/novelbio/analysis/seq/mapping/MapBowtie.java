@@ -11,11 +11,11 @@ import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 public class MapBowtie extends MapDNA {
-	/** Ä¬ÈÏbowtie2 */
+	/** é»˜è®¤bowtie2 */
 	SoftWare bowtieVersion = SoftWare.bowtie2;
-	/** ´ı±È¶ÔµÄÈ¾É«Ìå */
+	/** å¾…æ¯”å¯¹çš„æŸ“è‰²ä½“ */
 	String chrFile = "";
-	/** bowtieËùÔÚÂ·¾¶ */
+	/** bowtieæ‰€åœ¨è·¯å¾„ */
 	String ExePathBowtie = "";
 	
 	List<FastQ> lsLeftFq = new ArrayList<FastQ>();
@@ -23,10 +23,10 @@ public class MapBowtie extends MapDNA {
 	
 	String outFileName = "";
 	String sampleGroup = "";
-	/** ·Çunique mappingµÄ»°£¬È¡¼¸¸ö */
+	/** éunique mappingçš„è¯ï¼Œå–å‡ ä¸ª */
 	int mappingNum = 0;
 	
-	/** ²åÈëÆ¬¶Î pairendÊÇ500£¬ mate pair¾ÍÒªºÜ´óÁË */
+	/** æ’å…¥ç‰‡æ®µ pairendæ˜¯500ï¼Œ mate pairå°±è¦å¾ˆå¤§äº† */
 	int insertMax = 500;
 	
 	int threadNum = 4;
@@ -39,13 +39,13 @@ public class MapBowtie extends MapDNA {
 	public MapBowtie() {
 		// TODO Auto-generated constructor stub
 	}
-	/** mapping¹¦ÄÜÖ»ÄÜÓÉbowtie2ÊµÏÖ */
+	/** mappingåŠŸèƒ½åªèƒ½ç”±bowtie2å®ç° */
 	public MapBowtie(SoftWare bowtieVersion) {
 		setBowtieVersion(bowtieVersion);
 	}
 	/**
-	 * Éè¶¨tophatËùÔÚµÄÎÄ¼ş¼ĞÒÔ¼°´ı±È¶ÔµÄÂ·¾¶
-	 * @param exePath Èç¹ûÔÚ¸ùÄ¿Â¼ÏÂÔòÉèÖÃÎª""»ònull
+	 * è®¾å®štophatæ‰€åœ¨çš„æ–‡ä»¶å¤¹ä»¥åŠå¾…æ¯”å¯¹çš„è·¯å¾„
+	 * @param exePath å¦‚æœåœ¨æ ¹ç›®å½•ä¸‹åˆ™è®¾ç½®ä¸º""æˆ–null
 	 * @param chrFile
 	 */
 	public void setExePath(String exePathBowtie) {
@@ -60,7 +60,7 @@ public class MapBowtie extends MapDNA {
 	public void setChrFile(String chrFile) {
 		this.chrFile = chrFile;
 	}
-	/** Éè¶¨ÊÇbowtie»¹ÊÇbowtie2 */
+	/** è®¾å®šæ˜¯bowtieè¿˜æ˜¯bowtie2 */
 	public void setBowtieVersion(SoftWare bowtieVersion) {
 		this.bowtieVersion = bowtieVersion;
 	}
@@ -70,7 +70,7 @@ public class MapBowtie extends MapDNA {
 	private String getChrFile() {
 		return chrFile;
 	}
-	/** »ñµÃÃ»ÓĞºó×ºÃûµÄĞòÁĞ */
+	/** è·å¾—æ²¡æœ‰åç¼€åçš„åºåˆ— */
 	protected String getChrNameWithoutSuffix() {
 		String chrFileName = FileOperate.getParentPathName(chrFile) + FileOperate.getFileNameSep(chrFile)[0];
 		return chrFileName;
@@ -93,14 +93,14 @@ public class MapBowtie extends MapDNA {
 		}
 	}
 	/**
-	 * ÉèÖÃ×ó¶ËµÄĞòÁĞ£¬ÉèÖÃ»á°ÑÒÔÇ°µÄÇå¿Õ
+	 * è®¾ç½®å·¦ç«¯çš„åºåˆ—ï¼Œè®¾ç½®ä¼šæŠŠä»¥å‰çš„æ¸…ç©º
 	 * @param fqFile
 	 */
 	public void setLeftFq(List<FastQ> lsLeftFastQs) {
 		this.lsLeftFq = lsLeftFastQs;
 	}
 	/**
-	 * ÉèÖÃÓÒ¶ËµÄĞòÁĞ£¬ÉèÖÃ»á°ÑÒÔÇ°µÄÇå¿Õ
+	 * è®¾ç½®å³ç«¯çš„åºåˆ—ï¼Œè®¾ç½®ä¼šæŠŠä»¥å‰çš„æ¸…ç©º
 	 * @param fqFile
 	 */
 	public void setRightFq(List<FastQ> lsRightFastQs) {
@@ -108,7 +108,7 @@ public class MapBowtie extends MapDNA {
 	}
 	
 	/**
-	 * ·µ»ØÊäÈëµÄÎÄ¼ş£¬¸ù¾İÊÇ·ñÎªpairend£¬µ÷Õû·µ»ØµÄ½á¹û
+	 * è¿”å›è¾“å…¥çš„æ–‡ä»¶ï¼Œæ ¹æ®æ˜¯å¦ä¸ºpairendï¼Œè°ƒæ•´è¿”å›çš„ç»“æœ
 	 * @return
 	 */
 	private String getLsFqFile() {
@@ -142,7 +142,7 @@ public class MapBowtie extends MapDNA {
 		}
 		return " --phred33 ";
 	}
-	/** ·Çunique mapping£¬×î¶à¿ÉÒÔ±È¶Ôµ½¶àÉÙµØ·½ÉÏÈ¥£¬Éè¶¨Îª10±È½ÏºÏÊÊ°Ñ */
+	/** éunique mappingï¼Œæœ€å¤šå¯ä»¥æ¯”å¯¹åˆ°å¤šå°‘åœ°æ–¹ä¸Šå»ï¼Œè®¾å®šä¸º10æ¯”è¾ƒåˆé€‚æŠŠ */
 	private String getMappingNum() {
 		if (mappingNum <= 0) {
 			return "";
@@ -176,7 +176,7 @@ public class MapBowtie extends MapDNA {
 	}
 	
 	/**
-	 * ±¾´ÎmappingµÄ×é£¬ËùÓĞ²ÎÊı¶¼²»ÄÜÓĞ¿Õ¸ñ
+	 * æœ¬æ¬¡mappingçš„ç»„ï¼Œæ‰€æœ‰å‚æ•°éƒ½ä¸èƒ½æœ‰ç©ºæ ¼
 	 * @param sampleID 
 	 * @param LibraryName
 	 * @param SampleName
@@ -239,14 +239,14 @@ public class MapBowtie extends MapDNA {
 	}
 	
 	/**
-	 * ÖÆ×÷Ë÷Òı
-	 * Õâ¸ö±©Â¶³öÀ´ÊÇ¸øMirDeepÓÃµÄ
+	 * åˆ¶ä½œç´¢å¼•
+	 * è¿™ä¸ªæš´éœ²å‡ºæ¥æ˜¯ç»™MirDeepç”¨çš„
 	 */
 	public void IndexMakeBowtie() {
 		SoftWareInfo softWareInfo = new SoftWareInfo();
-//		linuxÃüÁîÈçÏÂ 
+//		linuxå‘½ä»¤å¦‚ä¸‹ 
 //	 	bwa index -p prefix -a algoType -c  chrFile
-//		-c ÊÇsolidÓÃ
+//		-c æ˜¯solidç”¨
 		if (bowtieVersion == SoftWare.bowtie) {
 			if (FileOperate.isFileExist(getChrNameWithoutSuffix() + ".3.ebwt") == true)
 				return;
@@ -283,9 +283,9 @@ public class MapBowtie extends MapDNA {
 		return samFile;
 	}
 	
-	/** Ã»ÓÃ */
+	/** æ²¡ç”¨ */
 	public void setMismatch(double mismatch) { }
 
-	/** Ã»ÓÃ */
+	/** æ²¡ç”¨ */
 	public void setGapLength(int gapLength) {}
 }

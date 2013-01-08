@@ -18,68 +18,68 @@ import com.novelbio.base.dataStructure.listOperate.ListHashSearch;
 
 
 /**
- * »ñµÃUCSCÖĞCpGµÈGffµÄÌõÄ¿ĞÅÏ¢,±¾Àà±ØĞëÊµÀı»¯²ÅÄÜÊ¹ÓÃ<br/>
- * ÊäÈëGffÎÄ¼ş£¬×îºó»ñµÃÁ½¸ö¹şÏ£±íºÍÒ»¸ölist±í,
- * ½á¹¹ÈçÏÂ£º<br/>
- * 1.hash£¨ChrID£©--ChrList--GeneInforList(GffDetailÀà)<br/>
- *   ÆäÖĞChrIDÎªĞ¡Ğ´£¬´ú±íÈ¾É«ÌåÃû×Ö£¬Òò´ËÓÃgetÀ´»ñÈ¡ÏàÓ¦µÄChrListµÄÊ±ºòÒªÊäÈëĞ¡Ğ´µÄChrID
- * chr¸ñÊ½£¬È«²¿Ğ¡Ğ´ chr1,chr2,chr11<br/>
+ * è·å¾—UCSCä¸­CpGç­‰Gffçš„æ¡ç›®ä¿¡æ¯,æœ¬ç±»å¿…é¡»å®ä¾‹åŒ–æ‰èƒ½ä½¿ç”¨<br/>
+ * è¾“å…¥Gffæ–‡ä»¶ï¼Œæœ€åè·å¾—ä¸¤ä¸ªå“ˆå¸Œè¡¨å’Œä¸€ä¸ªlistè¡¨,
+ * ç»“æ„å¦‚ä¸‹ï¼š<br/>
+ * 1.hashï¼ˆChrIDï¼‰--ChrList--GeneInforList(GffDetailç±»)<br/>
+ *   å…¶ä¸­ChrIDä¸ºå°å†™ï¼Œä»£è¡¨æŸ“è‰²ä½“åå­—ï¼Œå› æ­¤ç”¨getæ¥è·å–ç›¸åº”çš„ChrListçš„æ—¶å€™è¦è¾“å…¥å°å†™çš„ChrID
+ * chræ ¼å¼ï¼Œå…¨éƒ¨å°å†™ chr1,chr2,chr11<br/>
  * 
- * 2.hash£¨LOCID£©--GeneInforlist£¬ÆäÖĞLOCID´ú±í¾ßÌåµÄ»ùÒò±àºÅ,±¾ÀàÖĞ¶¨ÒåÎª£º107_chr1_CpG: 128_36568608 <br/>
-	 * ¾ßÌåÎª£º#bin_chrom_name_chromStart
+ * 2.hashï¼ˆLOCIDï¼‰--GeneInforlistï¼Œå…¶ä¸­LOCIDä»£è¡¨å…·ä½“çš„åŸºå› ç¼–å·,æœ¬ç±»ä¸­å®šä¹‰ä¸ºï¼š107_chr1_CpG: 128_36568608 <br/>
+	 * å…·ä½“ä¸ºï¼š#bin_chrom_name_chromStart
  * 
- * 3.list£¨LOCID£©--LOCList£¬°´Ë³Ğò±£´æLOCID<br/>
+ * 3.listï¼ˆLOCIDï¼‰--LOCListï¼ŒæŒ‰é¡ºåºä¿å­˜LOCID<br/>
  * 
- * Ã¿¸ö»ùÒòµÄÆğµãÖÕµãºÍCDSµÄÆğµãÖÕµã±£´æÔÚGffDetailListÀàÖĞ<br/>
+ * æ¯ä¸ªåŸºå› çš„èµ·ç‚¹ç»ˆç‚¹å’ŒCDSçš„èµ·ç‚¹ç»ˆç‚¹ä¿å­˜åœ¨GffDetailListç±»ä¸­<br/>
  */
 public class GffHashCG extends ListHashSearch<ListDetailAbs, ListCodAbs<T>, ListCodAbsDu<T,E>, ListAbsSearch<T,E,K>> {
 
 	/**
-	 * ×îµ×²ã¶ÁÈ¡gffµÄ·½·¨<br>
-	 * ÊäÈëGffÎÄ¼ş£¬×îºó»ñµÃÁ½¸ö¹şÏ£±íºÍÒ»¸ölist±í,
-	 * ½á¹¹ÈçÏÂ£º<br/>
+	 * æœ€åº•å±‚è¯»å–gffçš„æ–¹æ³•<br>
+	 * è¾“å…¥Gffæ–‡ä»¶ï¼Œæœ€åè·å¾—ä¸¤ä¸ªå“ˆå¸Œè¡¨å’Œä¸€ä¸ªlistè¡¨,
+	 * ç»“æ„å¦‚ä¸‹ï¼š<br/>
 	 * @3.LOCIDList
-	 * £¨LOCID£©--LOCIDList£¬°´Ë³Ğò±£´æLOCID<br/>
+	 * ï¼ˆLOCIDï¼‰--LOCIDListï¼ŒæŒ‰é¡ºåºä¿å­˜LOCID<br/>
 	 ** <b>1.Chrhash</b><br>
-     * £¨ChrID£©--ChrList-- GeneInforList(GffDetailÀà,,Êµ¼ÊÊÇGffDetailCG×ÓÀà)
-     * ÆäÖĞChrIDÎªĞ¡Ğ´£¬´ú±íÈ¾É«ÌåÃû×Ö£¬Òò´ËÓÃgetÀ´»ñÈ¡ÏàÓ¦µÄChrListµÄÊ±ºòÒªÊäÈëĞ¡Ğ´µÄChrID, chr¸ñÊ½£¬È«²¿Ğ¡Ğ´ chr1,chr2,chr11<br>
+     * ï¼ˆChrIDï¼‰--ChrList-- GeneInforList(GffDetailç±»,,å®é™…æ˜¯GffDetailCGå­ç±»)
+     * å…¶ä¸­ChrIDä¸ºå°å†™ï¼Œä»£è¡¨æŸ“è‰²ä½“åå­—ï¼Œå› æ­¤ç”¨getæ¥è·å–ç›¸åº”çš„ChrListçš„æ—¶å€™è¦è¾“å…¥å°å†™çš„ChrID, chræ ¼å¼ï¼Œå…¨éƒ¨å°å†™ chr1,chr2,chr11<br>
      *  <b>2.locHashtable</b><br>
-     * £¨LOCID£©--GffDetail£¬ÆäÖĞLOCID´ú±í¾ßÌåµÄÌõÄ¿±àºÅ,,±¾ÀàÖĞ¶¨ÒåÎª£º107_chr1_CpG: 128_36568608 <br/>
-     *  * ¾ßÌåÎª£º#bin_chrom_name_chromStart<br>
+     * ï¼ˆLOCIDï¼‰--GffDetailï¼Œå…¶ä¸­LOCIDä»£è¡¨å…·ä½“çš„æ¡ç›®ç¼–å·,,æœ¬ç±»ä¸­å®šä¹‰ä¸ºï¼š107_chr1_CpG: 128_36568608 <br/>
+     *  * å…·ä½“ä¸ºï¼š#bin_chrom_name_chromStart<br>
      *  <b>3.LOCIDList</b><br>
-     * £¨LOCID£©--LOCIDList£¬°´Ë³Ğò±£´æLOCID<br>
+     * ï¼ˆLOCIDï¼‰--LOCIDListï¼ŒæŒ‰é¡ºåºä¿å­˜LOCID<br>
      * <b>LOCChrHashIDList </b><br>
-     *  LOCChrHashIDListÖĞ±£´æLOCID´ú±í¾ßÌåµÄÌõÄ¿±àºÅ,ÓëChrhashÀïµÄÃû×ÖÒ»ÖÂ<br>
+     *  LOCChrHashIDListä¸­ä¿å­˜LOCIDä»£è¡¨å…·ä½“çš„æ¡ç›®ç¼–å·,ä¸Chrhashé‡Œçš„åå­—ä¸€è‡´<br>
      *
 	 * @throws Exception 
 	 */
 	public void ReadGffarrayExcep(String gfffilename) throws Exception 
  {
 		GffHashCG gffHashCG = new GffHashCG();
-		// ÊµÀı»¯Èı¸ö±í
-		Chrhash = new LinkedHashMap<String, ListAbsSearch<GffDetailCG>>();// Ò»¸ö¹şÏ£±íÀ´´æ´¢Ã¿ÌõÈ¾É«Ìå
-		// Îª¶ÁÎÄ¼ş×ö×¼±¸
+		// å®ä¾‹åŒ–ä¸‰ä¸ªè¡¨
+		Chrhash = new LinkedHashMap<String, ListAbsSearch<GffDetailCG>>();// ä¸€ä¸ªå“ˆå¸Œè¡¨æ¥å­˜å‚¨æ¯æ¡æŸ“è‰²ä½“
+		// ä¸ºè¯»æ–‡ä»¶åšå‡†å¤‡
 		TxtReadandWrite txtgff = new TxtReadandWrite(gfffilename, false);
 		BufferedReader reader = txtgff.readfile();// open gff file
 
-		String[] ss = null;// ´æ´¢·Ö¸îÊı×éµÄÁÙÊ±±äÁ¿
+		String[] ss = null;// å­˜å‚¨åˆ†å‰²æ•°ç»„çš„ä¸´æ—¶å˜é‡
 		String content = "";
-		// ÁÙÊ±±äÁ¿
-		ListAbsSearch<GffDetailCG> LOCList = null;// Ë³Ğò´æ´¢Ã¿¸ölocµÄ¾ßÌåĞÅÏ¢£¬Ò»ÌõÈ¾É«ÌåÒ»¸öLOCList£¬×îºó×°ÈëChrhash±íÖĞ
-		String chrnametmpString = ""; // È¾É«ÌåµÄÁÙÊ±Ãû×Ö
+		// ä¸´æ—¶å˜é‡
+		ListAbsSearch<GffDetailCG> LOCList = null;// é¡ºåºå­˜å‚¨æ¯ä¸ªlocçš„å…·ä½“ä¿¡æ¯ï¼Œä¸€æ¡æŸ“è‰²ä½“ä¸€ä¸ªLOCListï¼Œæœ€åè£…å…¥Chrhashè¡¨ä¸­
+		String chrnametmpString = ""; // æŸ“è‰²ä½“çš„ä¸´æ—¶åå­—
 
-		reader.readLine();// Ìø¹ıµÚÒ»ĞĞ
-		while ((content = reader.readLine()) != null)// ¶Áµ½½áÎ²
+		reader.readLine();// è·³è¿‡ç¬¬ä¸€è¡Œ
+		while ((content = reader.readLine()) != null)// è¯»åˆ°ç»“å°¾
 		{
 			ss = content.split("\t");
-			chrnametmpString = ss[1].toLowerCase();// Ğ¡Ğ´
+			chrnametmpString = ss[1].toLowerCase();// å°å†™
 			// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			// ĞÂµÄÈ¾É«Ìå
-			if (!Chrhash.containsKey(chrnametmpString)) // ĞÂµÄÈ¾É«Ìå
+			// æ–°çš„æŸ“è‰²ä½“
+			if (!Chrhash.containsKey(chrnametmpString)) // æ–°çš„æŸ“è‰²ä½“
 			{
-				if (LOCList != null)// Èç¹ûÒÑ¾­´æÔÚÁËLOCList£¬Ò²¾ÍÊÇÇ°Ò»¸öLOCList£¬ÄÇÃ´ÏÈ½Ø¶Ì£¬È»ºó½«Ëü°´ÕÕgffGCtmpDetail.numberstartÅÅĞò
+				if (LOCList != null)// å¦‚æœå·²ç»å­˜åœ¨äº†LOCListï¼Œä¹Ÿå°±æ˜¯å‰ä¸€ä¸ªLOCListï¼Œé‚£ä¹ˆå…ˆæˆªçŸ­ï¼Œç„¶åå°†å®ƒæŒ‰ç…§gffGCtmpDetail.numberstartæ’åº
 				{
-					// ÎÒÊÕ¼¯µÄÒ»¸ölist/arrayÅÅĞòµÄ·½·¨£¬ºÜ¼òµ¥Ò×ÓÃ
+					// æˆ‘æ”¶é›†çš„ä¸€ä¸ªlist/arrayæ’åºçš„æ–¹æ³•ï¼Œå¾ˆç®€å•æ˜“ç”¨
 					Collections.sort(LOCList, new Comparator<ListDetailAbs>() {
 						public int compare(ListDetailAbs arg0,
 								ListDetailAbs arg1) {
@@ -93,16 +93,16 @@ public class GffHashCG extends ListHashSearch<ListDetailAbs, ListCodAbs<T>, List
 							return Compareresult;
 						}
 					});
-					// ÅÅĞòÍêºó°ÑCGºÅ×°ÈëLOCIDList
+					// æ’åºå®ŒåæŠŠCGå·è£…å…¥LOCIDList
 					for (GffDetailCG gffDetail : LOCList) {
 						LOCIDList.add(gffDetail.getName());
 					}
 				}
-				LOCList = new ListAbsSearch<GffDetailCG>();// ĞÂ½¨Ò»¸öLOCList²¢·ÅÈëChrhash
+				LOCList = new ListAbsSearch<GffDetailCG>();// æ–°å»ºä¸€ä¸ªLOCListå¹¶æ”¾å…¥Chrhash
 				Chrhash.put(chrnametmpString, LOCList);
 			}
 			// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			// Ã¿Ò»ĞĞ¾ÍÊÇÒ»¸öCG
+			// æ¯ä¸€è¡Œå°±æ˜¯ä¸€ä¸ªCG
 			GffDetailCG gffGCtmpDetail = new GffDetailCG(chrnametmpString, ss[0] + "_" + ss[1] + "_" + ss[4] + "_" + ss[2], true);
 			gffGCtmpDetail.setStartAbs(Integer.parseInt(ss[2]));
 			gffGCtmpDetail.setEndAbs(Integer.parseInt(ss[3]));
@@ -112,13 +112,13 @@ public class GffHashCG extends ListHashSearch<ListDetailAbs, ListCodAbs<T>, List
 			gffGCtmpDetail.perCpG = Double.parseDouble(ss[8]);
 			gffGCtmpDetail.perGC = Double.parseDouble(ss[9]);
 			gffGCtmpDetail.obsExp = Double.parseDouble(ss[10]);
-			// ×°ÈëLOCListºÍlocHashtable
+			// è£…å…¥LOCListå’ŒlocHashtable
 			LOCList.add(gffGCtmpDetail);
 			locHashtable.put(gffGCtmpDetail.getName(), gffGCtmpDetail);
 		}
 		// ///////////////////////////////////////////////////////////////////////////////////////////
 		LOCList.trimToSize();
-		// ×îºó½áÊøºóÔÙÅÅ¸öĞò¡£
+		// æœ€åç»“æŸåå†æ’ä¸ªåºã€‚
 		Collections.sort(LOCList, new Comparator<GffDetailCG>() {
 			public int compare(GffDetailCG arg0, GffDetailCG arg1) {
 				int Compareresult;
@@ -131,7 +131,7 @@ public class GffHashCG extends ListHashSearch<ListDetailAbs, ListCodAbs<T>, List
 				return Compareresult;
 			}
 		});
-		// ÅÅĞòÍêºó×°ÈëLOCIDList
+		// æ’åºå®Œåè£…å…¥LOCIDList
 		for (ListDetailAbs gffDetail : LOCList) {
 			LOCIDList.add(gffDetail.getName());
 		}
@@ -140,7 +140,7 @@ public class GffHashCG extends ListHashSearch<ListDetailAbs, ListCodAbs<T>, List
 	}
 
 	/**
-	 * ·µ»ØCG±ÈÀı£¬ÒÔhash±íĞÎÊ½·µ»Ø
+	 * è¿”å›CGæ¯”ä¾‹ï¼Œä»¥hashè¡¨å½¢å¼è¿”å›
 	 * @return
 	 */
 	public Hashtable<String, Integer> getLength() 
@@ -152,13 +152,13 @@ public class GffHashCG extends ListHashSearch<ListDetailAbs, ListCodAbs<T>, List
 		{
 			GffDetailCG gffDetailCG= locHashtable.get(LOCIDList.get(i));
 			int tmpLength=gffDetailCG.getEndAbs() - gffDetailCG.getStartAbs();
-			String tmpCGClass="CpG";//¾ÍÖ»ÓĞÒ»ÖÖCpG
-			if (hashCGLength.containsKey(tmpCGClass)) //º¬ÓĞÒÑÖªµÄrepeat£¬Ôò°ÑrepeatµÄ³¤¶ÈÀÛ¼ÓÉÏÈ¥
+			String tmpCGClass="CpG";//å°±åªæœ‰ä¸€ç§CpG
+			if (hashCGLength.containsKey(tmpCGClass)) //å«æœ‰å·²çŸ¥çš„repeatï¼Œåˆ™æŠŠrepeatçš„é•¿åº¦ç´¯åŠ ä¸Šå»
 			{
 				tmpLength=tmpLength+hashCGLength.get(tmpCGClass);
 				hashCGLength.put(tmpCGClass, tmpLength);
 			}
-			else//²»º¬ÓĞÔò°ÑĞÂµÄrepeat¼Ó½øÈ¥ 
+			else//ä¸å«æœ‰åˆ™æŠŠæ–°çš„repeatåŠ è¿›å» 
 			{
 				hashCGLength.put(tmpCGClass,tmpLength);
 			}

@@ -1,5 +1,5 @@
 package com.novelbio.base.multithread.txtreadcopewrite;
-/** 处理好的每条记录，包装到这里 */
+/** 澶勭悊濂界殑姣忔潯璁板綍锛屽寘瑁呭埌杩欓噷 */
 public interface MTRecordCope {
 
 }

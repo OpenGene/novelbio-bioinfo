@@ -7,50 +7,50 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
- * Ğ¡RNA±È¶ÔÁ÷Ë®Ïß
+ * å°RNAæ¯”å¯¹æµæ°´çº¿
  * @author zong0jie
  *
  */
 public class MiRNAmapPipline {
-	/** ĞòÁĞÎÄ¼ş */
+	/** åºåˆ—æ–‡ä»¶ */
 	String seqFile = "";
-	/** Êä³öµÄÁÙÊ±ÎÄ¼ş¼Ğ£¬Ö÷Òª±£´æmappingµÄÖĞ¼äÎÄ¼ş */
+	/** è¾“å‡ºçš„ä¸´æ—¶æ–‡ä»¶å¤¹ï¼Œä¸»è¦ä¿å­˜mappingçš„ä¸­é—´æ–‡ä»¶ */
 	String outPathTmpMapping;
-	/** Êä³öµÄÁÙÊ±ÎÄ¼ş¼Ğ£¬Ö÷Òª±£´æmappingµÄÖĞ¼äÎÄ¼ş */
+	/** è¾“å‡ºçš„ä¸´æ—¶æ–‡ä»¶å¤¹ï¼Œä¸»è¦ä¿å­˜mappingçš„ä¸­é—´æ–‡ä»¶ */
 	String outPathTmpBed;
 	String outputPrefix = "";
 
-	/** rfamÊı¾İ¿âÖĞµÄĞòÁĞ */
+	/** rfamæ•°æ®åº“ä¸­çš„åºåˆ— */
 	String rfamSeq = "";
-	/** miRNAĞòÁĞ */
+	/** miRNAåºåˆ— */
 	String miRNApreSeq = "";
-	/** ncRNAĞòÁĞ */
+	/** ncRNAåºåˆ— */
 	String ncRNAseq = "";
-	/** »ùÒò×éĞòÁĞ */
+	/** åŸºå› ç»„åºåˆ— */
 	String genome = "";
-	/** bwaËùÔÚµÄÂ·¾¶ */
+	/** bwaæ‰€åœ¨çš„è·¯å¾„ */
 	String exePath = "";
 	
-	////////////////////// Êä³öÎÄ¼şÃû /////////////////////////////
+	////////////////////// è¾“å‡ºæ–‡ä»¶å /////////////////////////////
 	String bedFileMiRNA = null;
 	String bedFileRfam = null;
 	String bedFileNCRNA = null;
 	String bedFileGenome = null;
 	
-	/** ÊÇ·ñÈ«²¿mappingÖÁgenomeÉÏ£¬Ä¬ÈÏÎªtrue */
+	/** æ˜¯å¦å…¨éƒ¨mappingè‡³genomeä¸Šï¼Œé»˜è®¤ä¸ºtrue */
 	boolean mappingAll2Genome = true;
-	/** È«²¿reads mappingÖÁÈ«»ùÒò×éÉÏºó²úÉúµÄbedÎÄ¼ş */
+	/** å…¨éƒ¨reads mappingè‡³å…¨åŸºå› ç»„ä¸Šåäº§ç”Ÿçš„bedæ–‡ä»¶ */
 	String bedFileGenomeAll = null;
 
 	
-	/** ÊÇ·ñÈ«²¿mappingÖÁgenomeÉÏ£¬Ä¬ÈÏÎªtrue */
+	/** æ˜¯å¦å…¨éƒ¨mappingè‡³genomeä¸Šï¼Œé»˜è®¤ä¸ºtrue */
 	public void setMappingAll2Genome(boolean mappingAll2Genome) {
 		this.mappingAll2Genome = mappingAll2Genome;
 	}
 	public void setRfamSeq(String rfamSeq) {
 		this.rfamSeq = rfamSeq;
 	}
-	/** Éè¶¨Ç°ÌåĞòÁĞ */
+	/** è®¾å®šå‰ä½“åºåˆ— */
 	public void setMiRNApreSeq(String miRNAseq) {
 		this.miRNApreSeq = miRNAseq;
 	}
@@ -60,13 +60,13 @@ public class MiRNAmapPipline {
 	public void setGenome(String genome) {
 		this.genome = genome;
 	}
-	/** bwaËùÔÚµÄÂ·¾¶£¬Ä¬ÈÏÎª""£¬Ò²¾ÍÊÇÔÚÏµÍ³Â·¾¶ÏÂ */
+	/** bwaæ‰€åœ¨çš„è·¯å¾„ï¼Œé»˜è®¤ä¸º""ï¼Œä¹Ÿå°±æ˜¯åœ¨ç³»ç»Ÿè·¯å¾„ä¸‹ */
 	public void setExePath(String exePath) {
 		this.exePath = exePath;
 	}
 	/**
-	 * @param outputPrefix Êä³öÇ°×º
-	 * @param seqFile ÊäÈëµÄfastqÎÄ¼ş
+	 * @param outputPrefix è¾“å‡ºå‰ç¼€
+	 * @param seqFile è¾“å…¥çš„fastqæ–‡ä»¶
 	 */
 	public void setSample(String outputPrefix, String fastqFile) {
 		if (outputPrefix != null && !outputPrefix.trim().equals("")) {
@@ -76,39 +76,39 @@ public class MiRNAmapPipline {
 		}
 		this.seqFile = fastqFile;
 	}
-	/** Éè¶¨Êä³öÁÙÊ±ÎÄ¼ş¼Ğ£¬±ØĞëÊÇÎÄ¼ş¼Ğ */
+	/** è®¾å®šè¾“å‡ºä¸´æ—¶æ–‡ä»¶å¤¹ï¼Œå¿…é¡»æ˜¯æ–‡ä»¶å¤¹ */
 	public void setOutPathTmp(String outPathTmpMapping, String outPathTmpBed) {
 		this.outPathTmpMapping = FileOperate.addSep(outPathTmpMapping);
 		this.outPathTmpBed = FileOperate.addSep(outPathTmpBed);
 	}
-	/** ±È¶ÔmiRNAµÄbedÎÄ¼ş½á¹û */
+	/** æ¯”å¯¹miRNAçš„bedæ–‡ä»¶ç»“æœ */
 	public String getOutMiRNAbed() {
 		return bedFileMiRNA;
 	}
-	/** ±È¶ÔrfamµÄbedÎÄ¼ş½á¹û */
+	/** æ¯”å¯¹rfamçš„bedæ–‡ä»¶ç»“æœ */
 	public String getOutRfambed() {
 		return bedFileRfam;
 	}
-	/** ±È¶ÔrefseqÖĞµÄncRNAµÄbedÎÄ¼ş½á¹û */
+	/** æ¯”å¯¹refseqä¸­çš„ncRNAçš„bedæ–‡ä»¶ç»“æœ */
 	public String getOutNCRNAbed() {
 		return bedFileNCRNA;
 	}
-	/** ±È¶Ô»ùÒò×éµÄbedÎÄ¼ş½á¹û */
+	/** æ¯”å¯¹åŸºå› ç»„çš„bedæ–‡ä»¶ç»“æœ */
 	public String getOutGenomebed() {
 		return bedFileGenome;
 	}
-	/** ±È¶ÔmiRNAµÄbedÎÄ¼ş½á¹û */
+	/** æ¯”å¯¹miRNAçš„bedæ–‡ä»¶ç»“æœ */
 	public String getOutGenomeAllbed() {
 		return bedFileGenomeAll;
 	}
-	/** mappingµÄÁ÷Ë®Ïß */
+	/** mappingçš„æµæ°´çº¿ */
 	public void mappingPipeline() {
 		String outputBed = outPathTmpBed + outputPrefix;
 		bedFileMiRNA = outputBed +  "miRNA.bed";
 		bedFileRfam = outputBed + "rfam.bed";
 		bedFileNCRNA = outputBed + "ncRna.bed";
 		bedFileGenome = outputBed + "Genome.bed";
-		/** È«²¿reads mappingÖÁÈ«»ùÒò×éÉÏ */
+		/** å…¨éƒ¨reads mappingè‡³å…¨åŸºå› ç»„ä¸Š */
 		bedFileGenomeAll = outputBed + "GenomeAll.bed";
 		
 		String outputTmpFinal = outPathTmpMapping + outputPrefix;
@@ -149,14 +149,14 @@ public class MiRNAmapPipline {
 			mapping(fqFile, genome, samFile, bedFileGenomeAll, true, true, unMappedFq);
 		}
 	}
-	/** ½ömappingÖÁMiRNAÉÏ */
+	/** ä»…mappingè‡³MiRNAä¸Š */
 	public void mappingMiRNA() {
 		FileOperate.createFolders(outPathTmpBed);
 		FileOperate.createFolders(outPathTmpMapping);
 		
 		String outputBed = outPathTmpBed + outputPrefix;
 		bedFileMiRNA = outputBed +  "miRNA.bed";
-		/** È«²¿reads mappingÖÁÈ«»ùÒò×éÉÏ */
+		/** å…¨éƒ¨reads mappingè‡³å…¨åŸºå› ç»„ä¸Š */
 		bedFileGenomeAll = outputBed + "GenomeAll.bed";
 		
 		String outputTmpFinal = outPathTmpMapping + outputPrefix;
@@ -173,11 +173,11 @@ public class MiRNAmapPipline {
 	/**
 	 * @param fqFile
 	 * @param chrFile
-	 * @param samFileName Êä³ösamÎÄ¼şÃû
-	 * @param bedFile Êä³öbedÎÄ¼şÃû
-	 * @param uniqueMapping ÊÇ·ñÎªuniqueMapping
-	 * @param uniqueMappedReadsRandomSelectOne ·Çunique mappingµÄĞòÁĞÊÇ·ñÖ»Ëæ»ú³éÈ¡Ò»Ìõ
-	 * @param unMappedFq Ã»ÓĞmappingÉÏµÄÎÄ¼şÊä³öÎªfq
+	 * @param samFileName è¾“å‡ºsamæ–‡ä»¶å
+	 * @param bedFile è¾“å‡ºbedæ–‡ä»¶å
+	 * @param uniqueMapping æ˜¯å¦ä¸ºuniqueMapping
+	 * @param uniqueMappedReadsRandomSelectOne éunique mappingçš„åºåˆ—æ˜¯å¦åªéšæœºæŠ½å–ä¸€æ¡
+	 * @param unMappedFq æ²¡æœ‰mappingä¸Šçš„æ–‡ä»¶è¾“å‡ºä¸ºfq
 	 */
 	private void mapping(String fqFile, String chrFile, String samFileName, String bedFile, boolean uniqueMapping, boolean uniqueMappedReadsRandomSelectOne,String unMappedFq) {
 		MapBwa mapBwa = new MapBwa(fqFile, samFileName);

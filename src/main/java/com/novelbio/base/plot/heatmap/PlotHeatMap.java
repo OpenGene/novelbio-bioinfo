@@ -23,7 +23,7 @@ import com.novelbio.base.plot.PlotNBC;
 import com.novelbio.base.plot.java.HeatChartDataInt;
 
 /**
- *´ıĞŞÕı£¬Ö÷Òª¾ÍÊÇheatmapµÄ·½ÏòÎÊÌâ
+ *å¾…ä¿®æ­£ï¼Œä¸»è¦å°±æ˜¯heatmapçš„æ–¹å‘é—®é¢˜
  * <p><strong>Title:</strong> HeatMap</p>
  *
  * <p>Description: HeatMap is a JPanel that displays a 2-dimensional array of
@@ -110,13 +110,13 @@ public class PlotHeatMap extends PlotNBC {
     private Color[] colors2;
             
     /**
-     * µ±»­¹ıÒ»´ÎºóÉèÖÃÎªtrue
+     * å½“ç”»è¿‡ä¸€æ¬¡åè®¾ç½®ä¸ºtrue
      */
     boolean painted = false;
 	/**
-	 * ¸ø¶¨ÊµÏÖHeatChart½Ó¿ÚµÄÊı¾İ¼¯£¬È»ºó»­Í¼
-	 * ×Ô¶¯½«HeatChartDataIntsÖĞµÄtitleÉèÖÃ¸øxvalue
-	 * ×¢ÒâlistÖĞËùÓĞÊı¾İµÄÎ¬¶ÈÓ¦¸ÃÒ»ÖÂ
+	 * ç»™å®šå®ç°HeatChartæ¥å£çš„æ•°æ®é›†ï¼Œç„¶åç”»å›¾
+	 * è‡ªåŠ¨å°†HeatChartDataIntsä¸­çš„titleè®¾ç½®ç»™xvalue
+	 * æ³¨æ„listä¸­æ‰€æœ‰æ•°æ®çš„ç»´åº¦åº”è¯¥ä¸€è‡´
 	 * @param lsHeatChartDataInts data
 	 * @param useGraphicsYAxis If true, the data will be displayed with the y=0 row at the top of the screen. If false, the data will be displayed with the y=0 row at the bottom of the screen.
 	 */
@@ -131,9 +131,9 @@ public class PlotHeatMap extends PlotNBC {
 //        drawData();
 	}
 	/**
-	 * ¸ø¶¨ÊµÏÖHeatChart½Ó¿ÚµÄÊı¾İ¼¯£¬È»ºó»­Í¼
-	 * ×Ô¶¯½«HeatChartDataIntsÖĞµÄtitleÉèÖÃ¸øxvalue
-	 * ×¢ÒâlistÖĞËùÓĞÊı¾İµÄÎ¬¶ÈÓ¦¸ÃÒ»ÖÂ
+	 * ç»™å®šå®ç°HeatChartæ¥å£çš„æ•°æ®é›†ï¼Œç„¶åç”»å›¾
+	 * è‡ªåŠ¨å°†HeatChartDataIntsä¸­çš„titleè®¾ç½®ç»™xvalue
+	 * æ³¨æ„listä¸­æ‰€æœ‰æ•°æ®çš„ç»´åº¦åº”è¯¥ä¸€è‡´
 	 * @param lsHeatChartDataInts data
 
 	 */
@@ -146,9 +146,9 @@ public class PlotHeatMap extends PlotNBC {
 //        drawData();
 	}
 	/**
-	 * ¸ø¶¨ÊµÏÖHeatChart½Ó¿ÚµÄÊı¾İ¼¯£¬È»ºó»­Í¼
-	 * ×Ô¶¯½«HeatChartDataIntsÖĞµÄtitleÉèÖÃ¸øxvalue
-	 * ×¢ÒâlistÖĞËùÓĞÊı¾İµÄÎ¬¶ÈÓ¦¸ÃÒ»ÖÂ
+	 * ç»™å®šå®ç°HeatChartæ¥å£çš„æ•°æ®é›†ï¼Œç„¶åç”»å›¾
+	 * è‡ªåŠ¨å°†HeatChartDataIntsä¸­çš„titleè®¾ç½®ç»™xvalue
+	 * æ³¨æ„listä¸­æ‰€æœ‰æ•°æ®çš„ç»´åº¦åº”è¯¥ä¸€è‡´
 	 * @param lsHeatChartDataInts
 	 */
 	public PlotHeatMap(java.util.List<? extends HeatChartDataInt> lsHeatChartDataInts,java.util.List<? extends HeatChartDataInt> lsHeatChartDataInts2,
@@ -413,7 +413,7 @@ public class PlotHeatMap extends PlotNBC {
     }
     
     /**
-     * µÚ¶ş×éÊı¾İ
+     * ç¬¬äºŒç»„æ•°æ®
      * Updates the gradient used to display the data. Calls drawData() and 
      * repaint() when finished.
      * @param colors A variable of type Color[]
@@ -434,7 +434,7 @@ public class PlotHeatMap extends PlotNBC {
     }
     
     /**
-     * ¸ø¶¨Êı¾İ¼¯£¬Éú³ÉÊı¾İÌİ¶È
+     * ç»™å®šæ•°æ®é›†ï¼Œç”Ÿæˆæ•°æ®æ¢¯åº¦
      * This uses the current array of colors that make up the gradient, and 
      * assigns a color index to each data point, stored in the dataColorIndices
      * array, which is used by the drawData() method to plot the points.
@@ -494,7 +494,7 @@ public class PlotHeatMap extends PlotNBC {
 		}
     }
     /**
-     * Éè¶¨»­Í¼µÄÊı¾İ·¶Î§
+     * è®¾å®šç”»å›¾çš„æ•°æ®èŒƒå›´
      * @param mindata1
      * @param maxdata1
      */
@@ -506,8 +506,8 @@ public class PlotHeatMap extends PlotNBC {
 
     }
     /**
-     * Éè¶¨×îĞ¡ÖµºÍ×î´óÖµ£¬Èç¹û×îĞ¡ÖµÎªDouble.MIN_VALUE£¬ÔòÉè¶¨Îª¾ØÕóÖĞµÄ×îĞ¡Öµ
-     * Èç¹û×î´óÖµÎªDouble.MAX_VALUE£¬ÔòÉè¶¨Îª¾ØÕóÖĞµÄ×î´óÖµ
+     * è®¾å®šæœ€å°å€¼å’Œæœ€å¤§å€¼ï¼Œå¦‚æœæœ€å°å€¼ä¸ºDouble.MIN_VALUEï¼Œåˆ™è®¾å®šä¸ºçŸ©é˜µä¸­çš„æœ€å°å€¼
+     * å¦‚æœæœ€å¤§å€¼ä¸ºDouble.MAX_VALUEï¼Œåˆ™è®¾å®šä¸ºçŸ©é˜µä¸­çš„æœ€å¤§å€¼
      * @param mindata
      * @param maxdata
      * @return
@@ -538,7 +538,7 @@ public class PlotHeatMap extends PlotNBC {
     
     
     /**
-     * ²úÉú²âÊÔÊı¾İ
+     * äº§ç”Ÿæµ‹è¯•æ•°æ®
      * This function generates data that is not vertically-symmetric, which
      * makes it very useful for testing which type of vertical axis is being
      * used to plot the data. If the graphics Y-axis is used, then the lowest
@@ -561,7 +561,7 @@ public class PlotHeatMap extends PlotNBC {
     }
     
     /**
-     * ²úÉú²âÊÔÊı¾İ
+     * äº§ç”Ÿæµ‹è¯•æ•°æ®
      * This function generates an appropriate data array for display. It uses
      * the function: z = sin(x)*cos(y). The parameter specifies the number
      * of data points in each direction, producing a square matrix.
@@ -591,7 +591,7 @@ public class PlotHeatMap extends PlotNBC {
     }
 
     /**
-     * ²úÉú²âÊÔÊı¾İ
+     * äº§ç”Ÿæµ‹è¯•æ•°æ®
      * This function generates an appropriate data array for display. It uses
      * the function: z = Math.cos(Math.abs(sX) + Math.abs(sY)). The parameter 
      * specifies the number of data points in each direction, producing a 
@@ -625,7 +625,7 @@ public class PlotHeatMap extends PlotNBC {
     }
    
     /**
-     * µßµ¹Êı¾İ£¬´ıĞŞÕı
+     * é¢ å€’æ•°æ®ï¼Œå¾…ä¿®æ­£
      * Updates the data display, calls drawData() to do the expensive re-drawing
      * of the data plot, and then calls repaint().
      * @param data The data to display, must be a complete array (non-ragged)
@@ -654,7 +654,7 @@ public class PlotHeatMap extends PlotNBC {
     
     
     /**
-     * »­Í¼£¬±ØĞëµ÷ÓÃÁË¸Ã·½·¨ºó²ÅÄÜ±£´æÍ¼Æ¬
+     * ç”»å›¾ï¼Œå¿…é¡»è°ƒç”¨äº†è¯¥æ–¹æ³•åæ‰èƒ½ä¿å­˜å›¾ç‰‡
      * Creates a BufferedImage of the actual data plot.
      *
      * After doing some profiling, it was discovered that 90% of the drawing
@@ -691,7 +691,7 @@ public class PlotHeatMap extends PlotNBC {
 	
     private void drawData(BufferedImage bufferedImage,Dimension cellSize) {
        Graphics2D bufferedGraphics = bufferedImage.createGraphics();
-       //¿ÉÄÜÊÇÍ¸Ã÷Ğ§¹û
+       //å¯èƒ½æ˜¯é€æ˜æ•ˆæœ
 //       bufferedImage = bufferedGraphics.getDeviceConfiguration().createCompatibleImage(bufferedImage.getWidth(), bufferedImage.getHeight(), Transparency.TRANSLUCENT);  
 //       bufferedGraphics.dispose();  
 //       bufferedGraphics = bufferedImage.createGraphics();
@@ -699,7 +699,7 @@ public class PlotHeatMap extends PlotNBC {
             for (int y = 0; y < data[0].length; y++) {
                 bufferedGraphics.setColor(colors[dataColorIndices[x][y]]);
                 bufferedGraphics.fillRect(x, y, 1, 1);
-                //ÎÒµÄĞŞ¸Ä
+                //æˆ‘çš„ä¿®æ”¹
 //                int cellX = x*cellSize.width;
 //				int cellY = y*cellSize.height;
 //                bufferedGraphics.setColor(colors[dataColorIndices[x][y]]);
@@ -740,14 +740,14 @@ public class PlotHeatMap extends PlotNBC {
         if (aF > 255) {
 			aF = 255;
 		}
-       //TODO ÕâÀïÉè¼ÆµÄ²»ºÃ£¬ÒòÎªÈç¹û4¸ö¶¼ÊÇ255¾Í±ä³É°×É«ÁË
+       //TODO è¿™é‡Œè®¾è®¡çš„ä¸å¥½ï¼Œå› ä¸ºå¦‚æœ4ä¸ªéƒ½æ˜¯255å°±å˜æˆç™½è‰²äº†
         Color color= new Color(rF, gF, bF, aF);
         return color;
     }
 
     /**
-     * ½«ÒÑ¾­Éú³ÉµÄBufferedImage µÄ heatmapÉÏÌíÉÏ±êÌâ£¬¿¨³ßµÈµÈÔªËØ
-     * £¬×îºó±£´æÔÚGraphics gÖĞËù¶ÔÓ¦µÄÁíÒ»¸öBufferedImageÖĞ
+     * å°†å·²ç»ç”Ÿæˆçš„BufferedImage çš„ heatmapä¸Šæ·»ä¸Šæ ‡é¢˜ï¼Œå¡å°ºç­‰ç­‰å…ƒç´ 
+     * ï¼Œæœ€åä¿å­˜åœ¨Graphics gä¸­æ‰€å¯¹åº”çš„å¦ä¸€ä¸ªBufferedImageä¸­
      * @param bufferedImage
      * @param g
      * @param width
@@ -846,7 +846,7 @@ public class PlotHeatMap extends PlotNBC {
                  g2d.fillRect(width - 19, yStart, 9, 1);
              }
          }
-         //½«»­ÍêµÄÍ¼¸³Öµ¸øÏµÍ³
+         //å°†ç”»å®Œçš„å›¾èµ‹å€¼ç»™ç³»ç»Ÿ
          bufferedImage = buf;
     }
  

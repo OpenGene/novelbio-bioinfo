@@ -24,37 +24,37 @@ import com.novelbio.database.service.servkegg.ServKRelation;
 
 
 /**
- * ¸ù¾İĞèÒªÑ¡ÔñBlast»ò²»Blast£¬À´»ñµÃpathwayĞÅÏ¢¡£
+ * æ ¹æ®éœ€è¦é€‰æ‹©Blastæˆ–ä¸Blastï¼Œæ¥è·å¾—pathwayä¿¡æ¯ã€‚
  * @author zong0jie
  *
  */
 public class QKegPath {
 	/**
-	 *¾­¹ıĞ£Õı<br>
-	 * ÊäÈëstring[3]µÄgeneIDĞÅÏ¢ºÍblastµÄĞÅÏ¢
+	 *ç»è¿‡æ ¡æ­£<br>
+	 * è¾“å…¥string[3]çš„geneIDä¿¡æ¯å’Œblastçš„ä¿¡æ¯
 	 * 0:queryID
 	 * 1:geneID 	
-	 * 2:UniProtID :Èç¹û1Ã»ÓĞÕâ¸ö²ÅÓĞ
-	 * Èç¹ûĞèÒªblast£¬ÔòblastË³ĞòÎªgeneID¡¢queryID£¬uniProtIDÔİÊ±²»²ÎÓëblast£¬µÈ´ıºóÆÚÍêÉÆ
-	 * »ñµÃgeneID¶ÔÓ¦µÄkeggID
-	 * Èç¹ûÓĞblast£¬²¢ÇÒ±¾ÎïÖÖ¸ÃgeneIDÃ»ÓĞKeggID£¬ÄÇÃ´Ñ¡ÔñblastÎïÖÖµÄKeggID
-	 * Èç¹ûÓĞblast£¬²¢ÇÒ±¾ÎïÖĞ¸ÃgeneIDÓĞkeggID£¬ÄÇÃ´Ìø¹ı
-	 * Èç¹û±¾»ùÒòÓĞtaxID£¬ÄÇÃ´
-	 * @param geneIDType Èç¹ûÎªÊı×Ö£¬ËµÃ÷ÊÇncbiID£¬Èç¹ûÎª×ÖÄ¸£¬ËµÃ÷ÊÇuniprotID
+	 * 2:UniProtID :å¦‚æœ1æ²¡æœ‰è¿™ä¸ªæ‰æœ‰
+	 * å¦‚æœéœ€è¦blastï¼Œåˆ™blasté¡ºåºä¸ºgeneIDã€queryIDï¼ŒuniProtIDæš‚æ—¶ä¸å‚ä¸blastï¼Œç­‰å¾…åæœŸå®Œå–„
+	 * è·å¾—geneIDå¯¹åº”çš„keggID
+	 * å¦‚æœæœ‰blastï¼Œå¹¶ä¸”æœ¬ç‰©ç§è¯¥geneIDæ²¡æœ‰KeggIDï¼Œé‚£ä¹ˆé€‰æ‹©blastç‰©ç§çš„KeggID
+	 * å¦‚æœæœ‰blastï¼Œå¹¶ä¸”æœ¬ç‰©ä¸­è¯¥geneIDæœ‰keggIDï¼Œé‚£ä¹ˆè·³è¿‡
+	 * å¦‚æœæœ¬åŸºå› æœ‰taxIDï¼Œé‚£ä¹ˆ
+	 * @param geneIDType å¦‚æœä¸ºæ•°å­—ï¼Œè¯´æ˜æ˜¯ncbiIDï¼Œå¦‚æœä¸ºå­—æ¯ï¼Œè¯´æ˜æ˜¯uniprotID
 	 * @param blast
 	 * @param subTaxID
 	 * @param evalue
 	 * @return
-	 * ·µ»Ø string[8]:<br>
+	 * è¿”å› string[8]:<br>
 	 * 0: queryID <br>
 	 * 1: geneID<br>
 	 * 2: UniProtID<br>
 	 * 3: KeggID <br>
-	 * Èç¹ûÉÏÃæÃ»ÓĞkeggIDÊ±£¬ºóÃæblast¾Í¿ÉÄÜÓĞĞÅÏ¢<br>
+	 * å¦‚æœä¸Šé¢æ²¡æœ‰keggIDæ—¶ï¼Œåé¢blastå°±å¯èƒ½æœ‰ä¿¡æ¯<br>
 	 * 4. blast evalue<br>
-	 * 5: subTax Ä¿±êÎïÖÖ<br>
-	 * 6: subGeneID Ä¿±êÎïÖÖµÄgeneID<br>
-	 * 7: subKO Ä¿±êÎïÖÖµÄKO£¬×¢Òâ²»ÊÇkeggID£¬KO¿ÉÖ±½ÓÓÃÓÚ±È¶Ôµ½±¾ÎïÖÖÉÏÈ¥,Èç¹ûÓĞ¶à¸öKO£¬ÔòÓÃ"//"¸ô¿ª
+	 * 5: subTax ç›®æ ‡ç‰©ç§<br>
+	 * 6: subGeneID ç›®æ ‡ç‰©ç§çš„geneID<br>
+	 * 7: subKO ç›®æ ‡ç‰©ç§çš„KOï¼Œæ³¨æ„ä¸æ˜¯keggIDï¼ŒKOå¯ç›´æ¥ç”¨äºæ¯”å¯¹åˆ°æœ¬ç‰©ç§ä¸Šå»,å¦‚æœæœ‰å¤šä¸ªKOï¼Œåˆ™ç”¨"//"éš”å¼€
 	 * 
 	 */
 	public static String[] getKeggID(int taxID, String[] geneIDInfo,boolean blast,int subTaxID,double evalue ) 
@@ -97,23 +97,23 @@ public class QKegPath {
 	}
 	/**
 	 *
-	 * ÊäÈëĞòÁĞĞÅÏ¢Êı×é£¬½«IDĞÅÏ¢×ª»¯ÎªString[3],Í¬Ê±È¥ÈßÓà£¬Ò²¾ÍÊÇ½«ÏàÍ¬µÄgeneIDÖ»±£ÁôÒ»¸ö£¬ÏàÍ¬µÄUniProtIDÒ²Ö»±£ÁôÒ»¸ö
+	 * è¾“å…¥åºåˆ—ä¿¡æ¯æ•°ç»„ï¼Œå°†IDä¿¡æ¯è½¬åŒ–ä¸ºString[3],åŒæ—¶å»å†—ä½™ï¼Œä¹Ÿå°±æ˜¯å°†ç›¸åŒçš„geneIDåªä¿ç•™ä¸€ä¸ªï¼Œç›¸åŒçš„UniProtIDä¹Ÿåªä¿ç•™ä¸€ä¸ª
 	 * 0:queryID
 	 * 1:geneID
-	 * 2:UniProtID :Èç¹û1Ã»ÓĞÕâ¸ö²ÅÓĞ
-	 * @param accID ÊäÈëµÄaccID
-	 * @param taxID£ºÈç¹ûÊÇsymbolĞèÒªÖ¸¶¨£¬·ñÔòÖ¸¶¨Îª0
+	 * 2:UniProtID :å¦‚æœ1æ²¡æœ‰è¿™ä¸ªæ‰æœ‰
+	 * @param accID è¾“å…¥çš„accID
+	 * @param taxIDï¼šå¦‚æœæ˜¯symboléœ€è¦æŒ‡å®šï¼Œå¦åˆ™æŒ‡å®šä¸º0
 	 * @param subTaxID
 	 * @param evalue
 	 */
 	public static ArrayList<String[]> getGeneID(List<String> accID, int taxID) 
 	{
 		/**
-		 * ÓÃÀ´È¥ÖØ¸´µÄ±í£¬keyÎªgeneID/UniProtID/accID£¬value
-		 * ÎªString[3]
+		 * ç”¨æ¥å»é‡å¤çš„è¡¨ï¼Œkeyä¸ºgeneID/UniProtID/accIDï¼Œvalue
+		 * ä¸ºString[3]
 		 * 0:queryID
 		 * 1:geneID 	
-		 * 2:UniProtID :Èç¹û1Ã»ÓĞÕâ¸ö²ÅÓĞ
+		 * 2:UniProtID :å¦‚æœ1æ²¡æœ‰è¿™ä¸ªæ‰æœ‰
 		 */
 		HashSet<GeneID> hashCopedID = new HashSet<GeneID>();
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
@@ -144,33 +144,33 @@ public class QKegPath {
 	}
 	
 	/**
-	 * ÊäÈëKGentry¶ÔÏó£¬½«ÓëÆäÓĞrelationµÄentry¶¼×¥³öÀ´¡£
-	 * ×¢ÒâKGentry¶ÔÏóµÄÃû×ÖºÍÎïÖÖ¶¼Ó¦¸ÃÊÇ±¾ÎïÖÖ£¬Èç¹ûÊÇblastµÄÆäËûÎïÖÖ(ÈçÈËÀà)£¬Ê×ÏÈÒª×ª»»³ÉKOºÍ±¾ÎïÖÖ
-	 * @param kGentry£¬Õâ¸ö¿ÉÒÔÍ¨¹ıÓÃkoºÍtaxID²éÕÒentry±íµÃµ½
-	 * @return Hashtable-String-KGpathRelation: stringÊÇ  keggID»òko
-	 * Èç¹ûÒ»¸ö¹ØÏµ£¬Ò²¾ÍÊÇÒ»¸öÄ¿µÄentryÔÚÁ½¸ö²»Í¬µÄpathwayÖĞ³öÏÖ£¬ÄÇÃ´ÏàÓ¦µÄÖµÈç¹û²»ÖØ¸´£¬¾ÍÍ¨Í¨¼ÓÉÏ£¬ÓÃ"//"¸ô¿ª
+	 * è¾“å…¥KGentryå¯¹è±¡ï¼Œå°†ä¸å…¶æœ‰relationçš„entryéƒ½æŠ“å‡ºæ¥ã€‚
+	 * æ³¨æ„KGentryå¯¹è±¡çš„åå­—å’Œç‰©ç§éƒ½åº”è¯¥æ˜¯æœ¬ç‰©ç§ï¼Œå¦‚æœæ˜¯blastçš„å…¶ä»–ç‰©ç§(å¦‚äººç±»)ï¼Œé¦–å…ˆè¦è½¬æ¢æˆKOå’Œæœ¬ç‰©ç§
+	 * @param kGentryï¼Œè¿™ä¸ªå¯ä»¥é€šè¿‡ç”¨koå’ŒtaxIDæŸ¥æ‰¾entryè¡¨å¾—åˆ°
+	 * @return Hashtable-String-KGpathRelation: stringæ˜¯  keggIDæˆ–ko
+	 * å¦‚æœä¸€ä¸ªå…³ç³»ï¼Œä¹Ÿå°±æ˜¯ä¸€ä¸ªç›®çš„entryåœ¨ä¸¤ä¸ªä¸åŒçš„pathwayä¸­å‡ºç°ï¼Œé‚£ä¹ˆç›¸åº”çš„å€¼å¦‚æœä¸é‡å¤ï¼Œå°±é€šé€šåŠ ä¸Šï¼Œç”¨"//"éš”å¼€
 	 */
 	public static Hashtable<String, KGpathScr2Trg>  getHashKGpathRelation(KGentry kGentry)
 	{
 		ServKEntry servKEntry = new ServKEntry();
 		ServKRelation servKRelation = new ServKRelation();
 		/**
-		 * ±£´æ×îºó»ñµÃÓëÖ®Ïà¹ØµÄentryĞÅÏ¢
+		 * ä¿å­˜æœ€åè·å¾—ä¸ä¹‹ç›¸å…³çš„entryä¿¡æ¯
 		 */
 		Hashtable<String, KGpathScr2Trg> hashKGpathRelations = new Hashtable<String, KGpathScr2Trg>();
-		//Èç¹ûÕâ¸öentryÊÇÓĞparentIDµÄ£¬Ò²¾ÍÊÇÒ»¸öcomponent
+		//å¦‚æœè¿™ä¸ªentryæ˜¯æœ‰parentIDçš„ï¼Œä¹Ÿå°±æ˜¯ä¸€ä¸ªcomponent
 		if (kGentry.getParentID()>0)
 		{
-			////////Èç¹ûÓĞ¸´ºÏÎï£¬ÏÈ²éÕÒentryÖĞµÄ¸´ºÏÎï£¬½«¸Ã¸´ºÏÎïµÄÆäÓà¸´ºÏÎï¶¼ÕÒµ½//////////////////////////////////////////////////////////////////////////////////////////////////////////
-			KGentry tmpqkGentry = new KGentry();//²éÑ¯ÓÃµÄKGentry
+			////////å¦‚æœæœ‰å¤åˆç‰©ï¼Œå…ˆæŸ¥æ‰¾entryä¸­çš„å¤åˆç‰©ï¼Œå°†è¯¥å¤åˆç‰©çš„å…¶ä½™å¤åˆç‰©éƒ½æ‰¾åˆ°//////////////////////////////////////////////////////////////////////////////////////////////////////////
+			KGentry tmpqkGentry = new KGentry();//æŸ¥è¯¢ç”¨çš„KGentry
 			tmpqkGentry.setPathName(kGentry.getPathName());
 			tmpqkGentry.setParentID(kGentry.getParentID());
-			//ÕâÀï¶¼ÊÇÓëqueryEntryÊÇcomponentµÄentry,
+			//è¿™é‡Œéƒ½æ˜¯ä¸queryEntryæ˜¯componentçš„entry,
 			ArrayList<KGentry> lsSubKGentries=servKEntry.queryLsKGentries(tmpqkGentry);
 			for (int i = 0; i < lsSubKGentries.size(); i++) 
 			{
 				KGentry tmpkgGentrySub=lsSubKGentries.get(i);
-				//Ò»¸öpathwayÉÏµÄentry»áÓĞ¶à¸ökeggID¶ÔÓ¦ÉÏÈ¥£¬ÄÇÃ´ÕâÊ±ºòÏàÍ¬entryµÄkeggID--Ò²¾ÍÊÇÍ¬Ò»¸öentryµÄ²»Í¬µÄ»ùÒò£¬Ö®¼ä²»ÒªÓĞÁªÏµ£¬ËùÒÔÌø¹ı
+				//ä¸€ä¸ªpathwayä¸Šçš„entryä¼šæœ‰å¤šä¸ªkeggIDå¯¹åº”ä¸Šå»ï¼Œé‚£ä¹ˆè¿™æ—¶å€™ç›¸åŒentryçš„keggID--ä¹Ÿå°±æ˜¯åŒä¸€ä¸ªentryçš„ä¸åŒçš„åŸºå› ï¼Œä¹‹é—´ä¸è¦æœ‰è”ç³»ï¼Œæ‰€ä»¥è·³è¿‡
 				if (tmpkgGentrySub.getID() == kGentry.getID())
 				{
 					continue;
@@ -182,12 +182,12 @@ public class QKegPath {
 				kGpathRelation.setPathName(tmpkgGentrySub.getPathName());
 				addHashKGpathRelation(hashKGpathRelations,kGpathRelation);
 			}
-			////////////////½ÓÏÂÀ´·Ö±ğÓÃentryIDºÍparentIDÈ¥²éÕÒrelation±í£¬»ñµÃ½á¹ûµÄentryID////////////////////////////////////////////////////////////////////////////////////////////////////
-			////////////////////////////////////////////////Ê×ÏÈÓÃentryIDÈ¥²éÕÒ//////////////////////////////////////////////////////////////
+			////////////////æ¥ä¸‹æ¥åˆ†åˆ«ç”¨entryIDå’ŒparentIDå»æŸ¥æ‰¾relationè¡¨ï¼Œè·å¾—ç»“æœçš„entryID////////////////////////////////////////////////////////////////////////////////////////////////////
+			////////////////////////////////////////////////é¦–å…ˆç”¨entryIDå»æŸ¥æ‰¾//////////////////////////////////////////////////////////////
 			KGrelation tmpQkGrelation=new KGrelation();
 			tmpQkGrelation.setEntry1ID(kGentry.getID()); tmpQkGrelation.setPathName(kGentry.getPathName());
 			ArrayList<KGrelation> lsKGrelations = servKRelation.queryLsKGrelations(tmpQkGrelation);
-			/////////////////////////////////////////ÒòÎªÓĞĞ©relationÖĞÓĞÕâÖÖÇé¿ö£ºentry1¡¢entry2ÍêÈ«Ò»ÖÂ£¬¾ÍÊÇsubtype²»Ò»ÖÂ£¬Õâ¸ö¾ÍÊÇ½«Ò»ÖÂµÄentry1¡¢entry2È¥ÈßÓàµÄ////////////////////////////////////////////////////////////////
+			/////////////////////////////////////////å› ä¸ºæœ‰äº›relationä¸­æœ‰è¿™ç§æƒ…å†µï¼šentry1ã€entry2å®Œå…¨ä¸€è‡´ï¼Œå°±æ˜¯subtypeä¸ä¸€è‡´ï¼Œè¿™ä¸ªå°±æ˜¯å°†ä¸€è‡´çš„entry1ã€entry2å»å†—ä½™çš„////////////////////////////////////////////////////////////////
 			Hashtable<String, KGrelation> hashPathID2KGRelation = removeRep(lsKGrelations);
 			
 			Enumeration keys=hashPathID2KGRelation.keys();
@@ -196,11 +196,11 @@ public class QKegPath {
 				String key=(String)keys.nextElement();
 				KGrelation kGrelation = hashPathID2KGRelation.get(key);
 			
-				//ËÑË÷¸Ãentry¶ÔÓ¦µÄËùÓĞÊµ¼Êentry--Ò²¾ÍÊÇ²»Í¬µÄkeggID-entry
+				//æœç´¢è¯¥entryå¯¹åº”çš„æ‰€æœ‰å®é™…entry--ä¹Ÿå°±æ˜¯ä¸åŒçš„keggID-entry
 				ArrayList<KGentry> lskGentriesSub = getRelateEntry(kGrelation.getEntry2ID(), kGrelation.getPathName());
 				if ( lskGentriesSub == null || lskGentriesSub.size() == 0) 
 				{
-					System.out.println("ÓÃentryID"+kGrelation.getEntry2ID()+"ÔÚpathway"+ kGrelation.getPathName()+"ÖĞÃ»ÕÒµ½¶ÔÓ¦µÄentry");
+					System.out.println("ç”¨entryID"+kGrelation.getEntry2ID()+"åœ¨pathway"+ kGrelation.getPathName()+"ä¸­æ²¡æ‰¾åˆ°å¯¹åº”çš„entry");
 				}
 				for (int j = 0; j < lskGentriesSub.size(); j++)
 				{
@@ -217,11 +217,11 @@ public class QKegPath {
 					
 				}	
 			}
-			//////////////////////È»ºóÓÃparentIDÈ¥²é///////////////////////////////////////////////////////////////////////////////////////
+			//////////////////////ç„¶åç”¨parentIDå»æŸ¥///////////////////////////////////////////////////////////////////////////////////////
 			KGrelation tmpQkGrelation2=new KGrelation();
 			tmpQkGrelation2.setEntry1ID(kGentry.getParentID()); tmpQkGrelation2.setPathName(kGentry.getPathName());
 			ArrayList<KGrelation> lsKGrelations2 = servKRelation.queryLsKGrelations(tmpQkGrelation2);
-			/////////////////////////////////////////ÒòÎªÓĞĞ©relationÖĞÓĞÕâÖÖÇé¿ö£ºentry1¡¢entry2ÍêÈ«Ò»ÖÂ£¬¾ÍÊÇsubtype²»Ò»ÖÂ£¬Õâ¸ö¾ÍÊÇ½«Ò»ÖÂµÄentry1¡¢entry2È¥ÈßÓàµÄ////////////////////////////////////////////////////////////////
+			/////////////////////////////////////////å› ä¸ºæœ‰äº›relationä¸­æœ‰è¿™ç§æƒ…å†µï¼šentry1ã€entry2å®Œå…¨ä¸€è‡´ï¼Œå°±æ˜¯subtypeä¸ä¸€è‡´ï¼Œè¿™ä¸ªå°±æ˜¯å°†ä¸€è‡´çš„entry1ã€entry2å»å†—ä½™çš„////////////////////////////////////////////////////////////////
 			Hashtable<String, KGrelation> hashPathID2KGRelation2 = removeRep(lsKGrelations2);
 			
 			Enumeration keys2=hashPathID2KGRelation2.keys();
@@ -230,11 +230,11 @@ public class QKegPath {
 				String key2=(String)keys2.nextElement();
 				KGrelation kGrelation2 = hashPathID2KGRelation.get(key2);
 			
-				//ËÑË÷¸Ãentry¶ÔÓ¦µÄËùÓĞÊµ¼Êentry--Ò²¾ÍÊÇ²»Í¬µÄkeggID-entry
+				//æœç´¢è¯¥entryå¯¹åº”çš„æ‰€æœ‰å®é™…entry--ä¹Ÿå°±æ˜¯ä¸åŒçš„keggID-entry
 				ArrayList<KGentry> lskGentriesSub = getRelateEntry(kGrelation2.getEntry2ID(), kGrelation2.getPathName());
 				if ( lskGentriesSub == null || lskGentriesSub.size() == 0)
 				{
-					System.out.println("ÓÃentryID"+kGrelation2.getEntry2ID()+"ÔÚpathway"+ kGrelation2.getPathName()+"ÖĞÃ»ÕÒµ½¶ÔÓ¦µÄentry");
+					System.out.println("ç”¨entryID"+kGrelation2.getEntry2ID()+"åœ¨pathway"+ kGrelation2.getPathName()+"ä¸­æ²¡æ‰¾åˆ°å¯¹åº”çš„entry");
 				}
 				for (int j = 0; j < lskGentriesSub.size(); j++)
 				{
@@ -253,11 +253,11 @@ public class QKegPath {
 		}
 		else
 		{
-			////////////////////////////////////////////////Ö±½ÓÓÃentryIDÈ¥²éÕÒ//////////////////////////////////////////////////////////////
+			////////////////////////////////////////////////ç›´æ¥ç”¨entryIDå»æŸ¥æ‰¾//////////////////////////////////////////////////////////////
 			KGrelation tmpQkGrelation=new KGrelation();
 			tmpQkGrelation.setEntry1ID(kGentry.getID()); tmpQkGrelation.setPathName(kGentry.getPathName());
 			ArrayList<KGrelation> lsKGrelations = servKRelation.queryLsKGrelations(tmpQkGrelation);
-			/////////////////////////////////////////ÒòÎªÓĞĞ©relationÖĞÓĞÕâÖÖÇé¿ö£ºentry1¡¢entry2ÍêÈ«Ò»ÖÂ£¬¾ÍÊÇsubtype²»Ò»ÖÂ(Ò²¾ÍÊÇÒ»¶Ôentry1-entry2º¬ÓĞ¶à¸ö²»Í¬µÄsubtype)£¬Õâ¸ö¾ÍÊÇ½«Ò»ÖÂµÄentry1¡¢entry2È¥ÈßÓàµÄ////////////////////////////////////////////////////////////////
+			/////////////////////////////////////////å› ä¸ºæœ‰äº›relationä¸­æœ‰è¿™ç§æƒ…å†µï¼šentry1ã€entry2å®Œå…¨ä¸€è‡´ï¼Œå°±æ˜¯subtypeä¸ä¸€è‡´(ä¹Ÿå°±æ˜¯ä¸€å¯¹entry1-entry2å«æœ‰å¤šä¸ªä¸åŒçš„subtype)ï¼Œè¿™ä¸ªå°±æ˜¯å°†ä¸€è‡´çš„entry1ã€entry2å»å†—ä½™çš„////////////////////////////////////////////////////////////////
 			Hashtable<String, KGrelation> hashPathID2KGRelation = removeRep(lsKGrelations);
 			Enumeration keys=hashPathID2KGRelation.keys();
 			while(keys.hasMoreElements())
@@ -265,11 +265,11 @@ public class QKegPath {
 				String key=(String)keys.nextElement();
 				KGrelation kGrelation = hashPathID2KGRelation.get(key);
 			
-				//ËÑË÷¸Ãentry¶ÔÓ¦µÄËùÓĞÊµ¼Êentry--Ò²¾ÍÊÇ²»Í¬µÄkeggID-entry
+				//æœç´¢è¯¥entryå¯¹åº”çš„æ‰€æœ‰å®é™…entry--ä¹Ÿå°±æ˜¯ä¸åŒçš„keggID-entry
 				ArrayList<KGentry> lskGentriesSub = getRelateEntry(kGrelation.getEntry2ID(), kGrelation.getPathName());
 				if ( lskGentriesSub == null || lskGentriesSub.size() == 0)
 				{
-					System.out.println("ÓÃentryID"+kGrelation.getEntry2ID()+"ÔÚpathway"+ kGrelation.getPathName()+"ÖĞÃ»ÕÒµ½¶ÔÓ¦µÄentry");
+					System.out.println("ç”¨entryID"+kGrelation.getEntry2ID()+"åœ¨pathway"+ kGrelation.getPathName()+"ä¸­æ²¡æ‰¾åˆ°å¯¹åº”çš„entry");
 				}
 				for (int j = 0; j < lskGentriesSub.size(); j++)
 				{
@@ -290,16 +290,16 @@ public class QKegPath {
 	}
 	
 	/**
-	 * ½«kGpathRelation×°Èëhash±íÖĞ£¬keyÎªkeggID/KO£¬valueÎªKGpathRelation
+	 * å°†kGpathRelationè£…å…¥hashè¡¨ä¸­ï¼Œkeyä¸ºkeggID/KOï¼Œvalueä¸ºKGpathRelation
 	 * key: entryName
 	 * value:KGpathRelation
-	 * ÆäÖĞ KGpathRelationÖĞÃ¿¸ö¹ØÏµÈç¹ûÓĞ¶à¸öTypeºÍSubtypeInfoºÍtmpPathName£¬ÄÇÃ´ËüÃÇ¸÷×Ô¶¼ÓÃ//¸ô¿ª
+	 * å…¶ä¸­ KGpathRelationä¸­æ¯ä¸ªå…³ç³»å¦‚æœæœ‰å¤šä¸ªTypeå’ŒSubtypeInfoå’ŒtmpPathNameï¼Œé‚£ä¹ˆå®ƒä»¬å„è‡ªéƒ½ç”¨//éš”å¼€
 	 * @param hashKGpathRelations
 	 * @param kGpathRelation
 	 */
 	public static void addHashKGpathRelation(Hashtable<String, KGpathScr2Trg> hashKGpathRelations, KGpathScr2Trg kGpathRelation)
 	{
-		//Èç¹û¸ÃentryÔÚhashÖĞÒÑ¾­³öÏÖ£¬ÄÇÃ´¼ì²é¸ÃrelationµÄ¹ØÏµ
+		//å¦‚æœè¯¥entryåœ¨hashä¸­å·²ç»å‡ºç°ï¼Œé‚£ä¹ˆæ£€æŸ¥è¯¥relationçš„å…³ç³»
 		KGentry tmpkgGentrySub=kGpathRelation.getSKGentry();
 		if (hashKGpathRelations.containsKey(tmpkgGentrySub.getEntryName() ) )
 		{
@@ -307,7 +307,7 @@ public class QKegPath {
 			String[] tmpSubtypeInfo = tmpkGpathRelation.getSubtypeInfo();
 			String tmpType = tmpkGpathRelation.getType();
 			String tmpPathName = tmpkGpathRelation.getPathName();
-			///////////////////////////////////////////////²»Í¬µÄtype///////////////////////////////////////
+			///////////////////////////////////////////////ä¸åŒçš„type///////////////////////////////////////
 			if (tmpType == null) {
 				tmpType = kGpathRelation.getType();
 				tmpkGpathRelation.setType(tmpType);
@@ -316,28 +316,28 @@ public class QKegPath {
 			{
 				tmpType = tmpType + "//" + kGpathRelation.getType();
 				tmpkGpathRelation.setType(tmpType);
-				//System.out.println("¸Ãentry¹ØÏµÓĞÁ½¸öÒÔÉÏ£¬¶øÇÒËûÃÇÓĞ²»Í¬µÄtype");
+				//System.out.println("è¯¥entryå…³ç³»æœ‰ä¸¤ä¸ªä»¥ä¸Šï¼Œè€Œä¸”ä»–ä»¬æœ‰ä¸åŒçš„type");
 			}
 			
-			////////////////////////////////////////²»Í¬µÄsubtype///////////////////////////////////////////////////////////////////////
+			////////////////////////////////////////ä¸åŒçš„subtype///////////////////////////////////////////////////////////////////////
 			if (tmpSubtypeInfo[0] == null) {
-				//ÒıÓÃ´«µİ£¬²»ĞèÒªÔÙ×°Èëhash±í
+				//å¼•ç”¨ä¼ é€’ï¼Œä¸éœ€è¦å†è£…å…¥hashè¡¨
 				tmpSubtypeInfo[0]=kGpathRelation.getSubtypeInfo()[0];
 				tmpSubtypeInfo[1]=kGpathRelation.getSubtypeInfo()[1];
 			}
 			if (tmpSubtypeInfo[0] != null && kGpathRelation.getSubtypeInfo()[0]!=null
 					&& !tmpSubtypeInfo[0].contains(kGpathRelation.getSubtypeInfo()[0]))
 			{
-				//ÒıÓÃ´«µİ£¬²»ĞèÒªÔÙ×°Èëhash±í
+				//å¼•ç”¨ä¼ é€’ï¼Œä¸éœ€è¦å†è£…å…¥hashè¡¨
 				tmpSubtypeInfo[0]=tmpSubtypeInfo[0]+"//"+kGpathRelation.getSubtypeInfo()[0];
 				tmpSubtypeInfo[1]=tmpSubtypeInfo[1]+"//"+kGpathRelation.getSubtypeInfo()[1];
 			}
-			//²»Í¬µÄpathName
+			//ä¸åŒçš„pathName
 			if (!tmpPathName.contains( kGpathRelation.getPathName() ) )
 			{
 				tmpPathName = tmpPathName + "//" + kGpathRelation.getPathName();
 				tmpkGpathRelation.setPathName(tmpPathName);
-			//	System.out.println("¸Ãentry¹ØÏµÓĞÁ½¸öÒÔÉÏ£¬¶øÇÒËûÃÇÓĞ²»Í¬µÄpathName");
+			//	System.out.println("è¯¥entryå…³ç³»æœ‰ä¸¤ä¸ªä»¥ä¸Šï¼Œè€Œä¸”ä»–ä»¬æœ‰ä¸åŒçš„pathName");
 			}
 			return;
 		}
@@ -347,23 +347,23 @@ public class QKegPath {
 	
 	
 	/**
-	 * ÒòÎªÓĞĞ©relationÖĞÓĞÕâÖÖÇé¿ö£ºentry1¡¢entry2ÍêÈ«Ò»ÖÂ£¬¾ÍÊÇsubtype²»Ò»ÖÂ£¬Õâ¸ö¾ÍÊÇ½«Ò»ÖÂµÄentry1¡¢entry2È¥ÈßÓàµÄ
-	 * È¥³ıÈßÓàºó£¬½«subtypeÓÃ//·Ö¸î¿ª
+	 * å› ä¸ºæœ‰äº›relationä¸­æœ‰è¿™ç§æƒ…å†µï¼šentry1ã€entry2å®Œå…¨ä¸€è‡´ï¼Œå°±æ˜¯subtypeä¸ä¸€è‡´ï¼Œè¿™ä¸ªå°±æ˜¯å°†ä¸€è‡´çš„entry1ã€entry2å»å†—ä½™çš„
+	 * å»é™¤å†—ä½™åï¼Œå°†subtypeç”¨//åˆ†å‰²å¼€
 	 * @param lsKGrelations
 	 * @return
 	 */
 	private static Hashtable<String, KGrelation> removeRep(ArrayList<KGrelation> lsKGrelations ) 
 	{
-		/////////////////////////////////////////ÒòÎªÓĞĞ©relationÖĞÓĞÕâÖÖÇé¿ö£ºentry1¡¢entry2ÍêÈ«Ò»ÖÂ£¬¾ÍÊÇsubtype²»Ò»ÖÂ£¬Õâ¸ö¾ÍÊÇ½«Ò»ÖÂµÄentry1¡¢entry2È¥ÈßÓàµÄ////////////////////////////////////////////////////////////////
+		/////////////////////////////////////////å› ä¸ºæœ‰äº›relationä¸­æœ‰è¿™ç§æƒ…å†µï¼šentry1ã€entry2å®Œå…¨ä¸€è‡´ï¼Œå°±æ˜¯subtypeä¸ä¸€è‡´ï¼Œè¿™ä¸ªå°±æ˜¯å°†ä¸€è‡´çš„entry1ã€entry2å»å†—ä½™çš„////////////////////////////////////////////////////////////////
 		Hashtable<String, KGrelation> hashPathID2KGRelation = new Hashtable<String, KGrelation>();
 		for (int i = 0; i < lsKGrelations.size(); i++) 
 		{
 			KGrelation tmpKGrelation = lsKGrelations.get(i);
-			//ÒòÎªentryID1¶¼ÊÇÒ»ÑùµÄ£¬ËùÒÔ²»¿¼ÂÇentryID1
-			String key = tmpKGrelation.getPathName() + tmpKGrelation.getEntry2ID(); //pathNameºÍentryID2Á½¸öÔÚÒ»ÆğÊÇ¶ÀÒ»ÎŞ¶şµÄÁË£¬ÓÃÕâ¸öÁ¬³Çstring×÷Îªkey£¬ÒÔ´ËÀ´È¥ÖØ¸´£¬·ñÔòµÄ»°ÒªÔÚKGrelationÀàÖĞÖØĞ´hashÂë
+			//å› ä¸ºentryID1éƒ½æ˜¯ä¸€æ ·çš„ï¼Œæ‰€ä»¥ä¸è€ƒè™‘entryID1
+			String key = tmpKGrelation.getPathName() + tmpKGrelation.getEntry2ID(); //pathNameå’ŒentryID2ä¸¤ä¸ªåœ¨ä¸€èµ·æ˜¯ç‹¬ä¸€æ— äºŒçš„äº†ï¼Œç”¨è¿™ä¸ªè¿åŸstringä½œä¸ºkeyï¼Œä»¥æ­¤æ¥å»é‡å¤ï¼Œå¦åˆ™çš„è¯è¦åœ¨KGrelationç±»ä¸­é‡å†™hashç 
 			if (hashPathID2KGRelation.containsKey(key)) 
 			{
-				//Èç¹û³öÏÖÖØ¸´µÄentry1ºÍentry2¶Ô£¬ ÄÇÃ´½«subtypeNameºÍsubtypeValue¸½¼ÓÔÚºóÃæ
+				//å¦‚æœå‡ºç°é‡å¤çš„entry1å’Œentry2å¯¹ï¼Œ é‚£ä¹ˆå°†subtypeNameå’ŒsubtypeValueé™„åŠ åœ¨åé¢
 				KGrelation kGrelationtmp = hashPathID2KGRelation.get(key);
 				if ( kGrelationtmp.getSubtypeName().equals( tmpKGrelation.getSubtypeName() )  ) {
 					continue;
@@ -382,10 +382,10 @@ public class QKegPath {
 	
 	
 	/**
-	 * ¸ø¶¨entryIDºÍpathName£¬²éÕÒ¾ßÌåµÄentry<br>
-	 * ÒòÎªÒ»¸öentryID¿ÉÄÜ»á¶ÔÓ¦¶à¸ökeggID£¬ÄÇÃ´Ò²¾Í»á·µ»Ø¶à¸öKGentry¶ÔÏó<br>
-	 * Ê×ÏÈ²éÕÒentryµÄID£¬Ã»ÕÒµ½µÄ»°£¬²éÕÒparentID<br>
-	 * Èç¹ûÊÇparentID£¬²»ĞèÒª½«½á¹û--Ò²¾ÍÊÇcomponent Ö®¼äÁ¬ÆğÀ´£¬ÒòÎªÔÚÊäÈë£¨ËùÓĞÏî£©²éÕÒµÄÊ±ºò ÒÑ¾­¿¼ÂÇÁËÖ®¼äµÄÁªÏµ£¬ÕâĞ©¹ØÏµÔÚ½«£¨ËùÓĞ£©ÏîÄ¿mapping»ØÈ¥µÄÊ±ºò»á±»¼ÆËãµ½
+	 * ç»™å®šentryIDå’ŒpathNameï¼ŒæŸ¥æ‰¾å…·ä½“çš„entry<br>
+	 * å› ä¸ºä¸€ä¸ªentryIDå¯èƒ½ä¼šå¯¹åº”å¤šä¸ªkeggIDï¼Œé‚£ä¹ˆä¹Ÿå°±ä¼šè¿”å›å¤šä¸ªKGentryå¯¹è±¡<br>
+	 * é¦–å…ˆæŸ¥æ‰¾entryçš„IDï¼Œæ²¡æ‰¾åˆ°çš„è¯ï¼ŒæŸ¥æ‰¾parentID<br>
+	 * å¦‚æœæ˜¯parentIDï¼Œä¸éœ€è¦å°†ç»“æœ--ä¹Ÿå°±æ˜¯component ä¹‹é—´è¿èµ·æ¥ï¼Œå› ä¸ºåœ¨è¾“å…¥ï¼ˆæ‰€æœ‰é¡¹ï¼‰æŸ¥æ‰¾çš„æ—¶å€™ å·²ç»è€ƒè™‘äº†ä¹‹é—´çš„è”ç³»ï¼Œè¿™äº›å…³ç³»åœ¨å°†ï¼ˆæ‰€æœ‰ï¼‰é¡¹ç›®mappingå›å»çš„æ—¶å€™ä¼šè¢«è®¡ç®—åˆ°
 	 * @param entryID
 	 * @param pathName
 	 * @return
@@ -400,7 +400,7 @@ public class QKegPath {
 		{
 			return lskGentries;
 		}
-		//Èç¹ûÃ»ÓĞÔÚentryIDÏîÄ¿ËÑË÷µ½»ùÒò£¬ÔòÓÃparentIDÏîËÑË÷
+		//å¦‚æœæ²¡æœ‰åœ¨entryIDé¡¹ç›®æœç´¢åˆ°åŸºå› ï¼Œåˆ™ç”¨parentIDé¡¹æœç´¢
 		else 
 		{
 			qKGentry = new KGentry();
@@ -412,11 +412,11 @@ public class QKegPath {
 	
 	
 	/**
-	 * ¸ø¶¨pathName£¬²éÕÒ¸ÃpathwayĞÅÏ¢ÒÔ¼°ÓëÖ®ÓĞ¹ØÏµµÄPathwayName<br>
+	 * ç»™å®špathNameï¼ŒæŸ¥æ‰¾è¯¥pathwayä¿¡æ¯ä»¥åŠä¸ä¹‹æœ‰å…³ç³»çš„PathwayName<br>
 	 * @param pathName
 	 * @return object[]
-	 * 0: ±¾PathID¶ÔÓ¦µÄKGpathway
-	 * 1£º±¾pathIDµÄtrg¶ÔÓ¦µÄlsPathName
+	 * 0: æœ¬PathIDå¯¹åº”çš„KGpathway
+	 * 1ï¼šæœ¬pathIDçš„trgå¯¹åº”çš„lsPathName
 	 */
 	private static ArrayList<String> getRelatePath(String pathName) {
 		ServKPathRelation servKPathRelation = new ServKPathRelation();
@@ -431,10 +431,10 @@ public class QKegPath {
 		return lsTrgPathName;
 	}
 	/**
-	 * ¸ø¶¨Ò»×épathID£¬·µ»ØÕâĞ©pathID¶ÔÓ¦µÄkGpathway
-	 * ÄÚ²¿È¥¿Õ¸ñ
+	 * ç»™å®šä¸€ç»„pathIDï¼Œè¿”å›è¿™äº›pathIDå¯¹åº”çš„kGpathway
+	 * å†…éƒ¨å»ç©ºæ ¼
 	 * Hashtable-String-KGpathway<br>
-	 * key£ºpathID value£ºKGpathway
+	 * keyï¼špathID valueï¼šKGpathway
 	 * @param PathID
 	 * @return
 	 */
@@ -452,9 +452,9 @@ public class QKegPath {
 		return hashPath;
 	}
 	/**
-	 * ¸ø¶¨Ò»ÏµÁĞµÄpathID£¬·µ»ØpathIDµÄhash±í
-	 * pathID»á×Ô¶¯È¥¿Õ¸ñ
-	 * key£ºscr pathID value£ºArrayList-KGpathway
+	 * ç»™å®šä¸€ç³»åˆ—çš„pathIDï¼Œè¿”å›pathIDçš„hashè¡¨
+	 * pathIDä¼šè‡ªåŠ¨å»ç©ºæ ¼
+	 * keyï¼šscr pathID valueï¼šArrayList-KGpathway
 	 */
 	private static Hashtable<String,ArrayList<String>> getHashPathID(String[] PathID) {
 		Hashtable<String,ArrayList<String>> hashlsKgPath = new Hashtable<String, ArrayList<String>>();
@@ -466,12 +466,12 @@ public class QKegPath {
 	}
 	
 	/**
-	 * ¸ø¶¨Ò»ÏµÁĞpathID,
-	 * pathID×Ô¶¯È¥Ç°ºó¿Õ¸ñ£¬ÒÔ¼°Ã¿¸öpathIDËù¶ÔÓ¦µÄtarget£¬»ñµÃËüÓëtargetµÄ¹ØÏµ±íÒÔ¼°ÊôĞÔ±í<br>
-	 * Õâ¸öÊÇ½«ÊäÈëµÄpathID×°Èëhashset£¬È»ºó±éÀúpathIDµÄtargetÔÚÀïÃæ²éÕÒ£¬ÕâÑù±éÀúÉÙµÄ²éÕÒ¶àµÄ£¬¸Ğ¾õÄÜÌá¸ßĞ§ÂÊ
+	 * ç»™å®šä¸€ç³»åˆ—pathID,
+	 * pathIDè‡ªåŠ¨å»å‰åç©ºæ ¼ï¼Œä»¥åŠæ¯ä¸ªpathIDæ‰€å¯¹åº”çš„targetï¼Œè·å¾—å®ƒä¸targetçš„å…³ç³»è¡¨ä»¥åŠå±æ€§è¡¨<br>
+	 * è¿™ä¸ªæ˜¯å°†è¾“å…¥çš„pathIDè£…å…¥hashsetï¼Œç„¶åéå†pathIDçš„targetåœ¨é‡Œé¢æŸ¥æ‰¾ï¼Œè¿™æ ·éå†å°‘çš„æŸ¥æ‰¾å¤šçš„ï¼Œæ„Ÿè§‰èƒ½æé«˜æ•ˆç‡
 	 * @param PathID
-	 * @return Object[] ÊÇÒ»¸öÊı×é
-	 * 0£ºlsscr2trg string[]
+	 * @return Object[] æ˜¯ä¸€ä¸ªæ•°ç»„
+	 * 0ï¼šlsscr2trg string[]
 	 * 0:srcPathName
 	 * 1:srcPathTitle
 	 * 2:trgpathName
@@ -479,30 +479,30 @@ public class QKegPath {
 	 * 1: attribute string[]
 	 */
 	private static Object[] getSrc2Trg(String[] PathID) {
-		//½«ÊäÈëµÄPathID±à³ÉÒ»¸öhashset£¬·½±ãËÑË÷
+		//å°†è¾“å…¥çš„PathIDç¼–æˆä¸€ä¸ªhashsetï¼Œæ–¹ä¾¿æœç´¢
 		HashSet<String> hashPathID = new HashSet<String>();
 		
 		for (String string : PathID) {
 			hashPathID.add(string.trim());
 		}
-		//½á¹û1£¬Ã¿¸öscr¶ÔÓ¦µÄtrgĞÅÏ¢
+		//ç»“æœ1ï¼Œæ¯ä¸ªscrå¯¹åº”çš„trgä¿¡æ¯
 		ArrayList<String[]> lsscr2trg = new ArrayList<String[]>();
-		//½á¹û2£¬Ã¿¸öscrµÄattribute
+		//ç»“æœ2ï¼Œæ¯ä¸ªscrçš„attribute
 		Hashtable<String,String[]> hashAttribute = new Hashtable<String,String[]>();
 		
-		//Ã¿¸öpathËù¶ÔÓ¦µÄtrgPathIDµÄhahs±í
+		//æ¯ä¸ªpathæ‰€å¯¹åº”çš„trgPathIDçš„hahsè¡¨
 		Hashtable<String,ArrayList<String>> hashLsScr2HashTrg = getHashPathID(PathID);
-		//Ã¿¸öpathwayµÄ¾ßÌåĞÅÏ¢
+		//æ¯ä¸ªpathwayçš„å…·ä½“ä¿¡æ¯
 		Hashtable<String, KGpathway> hashPath2KGpathway = getHashKGpathway(PathID);
 		
 		ArrayList<String> lstmpTrgPathName = new ArrayList<String>();
-		//ÓÃËùÓĞpathIDÈ¥²éÕÒ
+		//ç”¨æ‰€æœ‰pathIDå»æŸ¥æ‰¾
 		for (String scrPathName : PathID) {
-			//Èç¹ûÕâ¸öpathIDÓĞtarget
+			//å¦‚æœè¿™ä¸ªpathIDæœ‰target
 			if ((lstmpTrgPathName = hashLsScr2HashTrg.get(scrPathName.trim())) != null) {
-				//ÓÃÕâĞ©targetÔÚpathIDÖĞÕÒ
+				//ç”¨è¿™äº›targetåœ¨pathIDä¸­æ‰¾
 				for (String trgPathName : lstmpTrgPathName) {
-					//Èç¹ûÕÒµ½ÁËËµÃ÷³öÏÖÁËÒ»×ésrc2trg
+					//å¦‚æœæ‰¾åˆ°äº†è¯´æ˜å‡ºç°äº†ä¸€ç»„src2trg
 					if (hashPathID.contains(trgPathName)) {
 						KGpathway scrKGpathway = hashPath2KGpathway.get(scrPathName);
 						KGpathway trgKGpathway = hashPath2KGpathway.get(trgPathName);
@@ -538,7 +538,7 @@ public class QKegPath {
 	}
 	
 //	/**
-//	 * ÊäÈë»ùÒò£¬·µ»Ø¸Ã»ùÒòµÄKeggID
+//	 * è¾“å…¥åŸºå› ï¼Œè¿”å›è¯¥åŸºå› çš„KeggID
 //	 * @param geneID
 //	 * @return
 //	 */
@@ -556,7 +556,7 @@ public class QKegPath {
 //	
 //	
 //	/**
-//	 * ¸ø¶¨geneID£¬·µ»Ø¸Ã»ùÒòµÄKO,Ä¿Ç°Ö»Ö§³ÖNCBIIDÖĞº¬ÓĞµÄ»ùÒò
+//	 * ç»™å®šgeneIDï¼Œè¿”å›è¯¥åŸºå› çš„KO,ç›®å‰åªæ”¯æŒNCBIIDä¸­å«æœ‰çš„åŸºå› 
 //	 * @param genID
 //	 */
 //	private static String getKeggID2(String genID,int taxID) {

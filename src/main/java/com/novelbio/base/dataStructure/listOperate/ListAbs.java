@@ -15,7 +15,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.database.model.modgeneid.GeneID;
 /**
- * ¿¼ÂÇ½«Æä²ğ·Ö³ÉÎªÈı¸ö²»Í¬µÄlist£¬Ò»¸öcis£¬Ò»¸ötrans£¬Ò»¸önull
+ * è€ƒè™‘å°†å…¶æ‹†åˆ†æˆä¸ºä¸‰ä¸ªä¸åŒçš„listï¼Œä¸€ä¸ªcisï¼Œä¸€ä¸ªtransï¼Œä¸€ä¸ªnull
  * @author zong0jie
  *
  * @param <E>
@@ -23,13 +23,13 @@ import com.novelbio.database.model.modgeneid.GeneID;
 public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements Cloneable {
 	private static final long serialVersionUID = -3356076601369239937L;
 	private static Logger logger = Logger.getLogger(ListAbs.class);
-	/**±£´æÄ³¸ö×ø±êµ½ËùÔÚµÄÄÚº¬×Ó/ÍâÏÔ×ÓÆğµãµÄ¾àÀë */
+	/**ä¿å­˜æŸä¸ªåæ ‡åˆ°æ‰€åœ¨çš„å†…å«å­/å¤–æ˜¾å­èµ·ç‚¹çš„è·ç¦» */
 	HashMap<Integer, Integer> hashLocExInStart;
-	/** ±£´æÄ³¸ö×ø±êµ½ËùÔÚµÄÄÚº¬×Ó/ÍâÏÔ×ÓÖÕµãµÄ¾àÀë */
+	/** ä¿å­˜æŸä¸ªåæ ‡åˆ°æ‰€åœ¨çš„å†…å«å­/å¤–æ˜¾å­ç»ˆç‚¹çš„è·ç¦» */
 	HashMap<Integer, Integer> hashLocExInEnd;
-	/** ±¾ÌõÄ¿µÄÃû×Ö */
+	/** æœ¬æ¡ç›®çš„åå­— */
 	protected String listName;
-	/** ·½Ïò */
+	/** æ–¹å‘ */
 	Boolean cis5to3 = null;
 	
 	public void setName(String listName) {
@@ -47,7 +47,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		return listName;
 	}
 	/**
-	 * Ã»ÓĞ·½ÏòÔò·µ»Ønull
+	 * æ²¡æœ‰æ–¹å‘åˆ™è¿”å›null
 	 * @return
 	 */
 	public Boolean isCis5to3() {
@@ -57,8 +57,8 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		this.cis5to3 = cis5to3;
  	}
 	/**
-	 * ·µ»ØÊµ¼ÊµÚnum¸öelement¼äÇøµÄ³¤¶È
-	 * @param num Êµ¼ÊÊıÄ¿
+	 * è¿”å›å®é™…ç¬¬numä¸ªelementé—´åŒºçš„é•¿åº¦
+	 * @param num å®é™…æ•°ç›®
 	 * @return
 	 */
 	public int getInterGenic(int num) {
@@ -70,8 +70,8 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		}
 	}
 	/**
-	 * ·µ»ØÊµ¼ÊµÚnum¸öelementµÄ³¤¶È
-	 * @param num Êµ¼ÊÊıÄ¿
+	 * è¿”å›å®é™…ç¬¬numä¸ªelementçš„é•¿åº¦
+	 * @param num å®é™…æ•°ç›®
 	 * @return
 	 */
 	public int getEleLen(int num) {
@@ -96,7 +96,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		}
 	}
 	/**
-	 * ÔÚÏÂÓÎ·µ»ØÕıÊı£¬ÉÏÓÎ·µ»Ø¸ºÊı
+	 * åœ¨ä¸‹æ¸¸è¿”å›æ­£æ•°ï¼Œä¸Šæ¸¸è¿”å›è´Ÿæ•°
 	 * @param loc
 	 * @return
 	 */
@@ -108,7 +108,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		}
 	}
 	/**
-	 * ÔÚÏÂÓÎ·µ»ØÕıÊı£¬ÉÏÓÎ·µ»Ø¸ºÊı
+	 * åœ¨ä¸‹æ¸¸è¿”å›æ­£æ•°ï¼Œä¸Šæ¸¸è¿”å›è´Ÿæ•°
 	 * @param loc
 	 * @return
 	 */
@@ -120,7 +120,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		}
 	}
 	/**
-	 * ÊäÈëµÄlocÊÇ·ñÔÚ±¾listµÄ·¶Î§Íâ
+	 * è¾“å…¥çš„locæ˜¯å¦åœ¨æœ¬listçš„èŒƒå›´å¤–
 	 * @return
 	 */
 	protected boolean isLocInside(int loc) {
@@ -130,7 +130,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		return true;
 	}
 	/**
-	 * ÊäÈëµÄlocÊÇ·ñÔÚStartµÄÏÂÓÎ
+	 * è¾“å…¥çš„locæ˜¯å¦åœ¨Startçš„ä¸‹æ¸¸
 	 * @return
 	 */
 	protected boolean isLocDownStart(int loc) {
@@ -143,7 +143,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		return false;
 	}
 	/**
-	 * ÊäÈëµÄlocÊÇ·ñÔÚStartµÄÏÂÓÎ
+	 * è¾“å…¥çš„locæ˜¯å¦åœ¨Startçš„ä¸‹æ¸¸
 	 * @return
 	 */
 	protected boolean isLocDownEnd(int loc) {
@@ -155,14 +155,14 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		}
 		return false;
 	}
-	/** ¸ù¾İ·½Ïò·µ»Ø */
+	/** æ ¹æ®æ–¹å‘è¿”å› */
 	public int getStart() {
 		if (cis5to3 != null) {
 			return get(0).getStartCis();
 		}
 		return get(0).getStartAbs();
 	}
-	/** ¸ù¾İ·½Ïò·µ»Ø */
+	/** æ ¹æ®æ–¹å‘è¿”å› */
 	public int getEnd() {
 		if (cis5to3 != null) {
 			return get(size() - 1).getEndCis();
@@ -171,12 +171,12 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	}
 	
 	/**
-	 * Á½¸ö×ø±êÖ®¼äµÄ¾àÀë£¬½ö½ö¼ÆËãËûÃÇÔÚmRNA²ãÃæµÄ¾àÀë£¬Ò²¾ÍÊÇÖ»¼ÆËãeleÉÏµÄ¾àÀë¡£
-	 * µ±Á½ÕßÖØµşÊ±£¬·µ»Ø0
-	 * µ±loc1ÔÚloc2ÉÏÓÎÊ±£¬·µ»ØÕıÊı£¬µ±loc1ÔÚloc2ÏÂÓÎÊ±£¬·µ»Ø¸ºÊı
-	 * ÒªÇóÕâÁ½¸ö×ø±ê¶¼ÔÚexonÉÏ.Èç¹û²»·ûºÏ£¬Ôò·µ»ØGffCodAbs.LOC_ORIGINAL
-	 * @param loc1 µÚÒ»¸ö×ø±ê
-	 * @param loc2 µÚ¶ş¸ö×ø±ê
+	 * ä¸¤ä¸ªåæ ‡ä¹‹é—´çš„è·ç¦»ï¼Œä»…ä»…è®¡ç®—ä»–ä»¬åœ¨mRNAå±‚é¢çš„è·ç¦»ï¼Œä¹Ÿå°±æ˜¯åªè®¡ç®—eleä¸Šçš„è·ç¦»ã€‚
+	 * å½“ä¸¤è€…é‡å æ—¶ï¼Œè¿”å›0
+	 * å½“loc1åœ¨loc2ä¸Šæ¸¸æ—¶ï¼Œè¿”å›æ­£æ•°ï¼Œå½“loc1åœ¨loc2ä¸‹æ¸¸æ—¶ï¼Œè¿”å›è´Ÿæ•°
+	 * è¦æ±‚è¿™ä¸¤ä¸ªåæ ‡éƒ½åœ¨exonä¸Š.å¦‚æœä¸ç¬¦åˆï¼Œåˆ™è¿”å›GffCodAbs.LOC_ORIGINAL
+	 * @param loc1 ç¬¬ä¸€ä¸ªåæ ‡
+	 * @param loc2 ç¬¬äºŒä¸ªåæ ‡
 	 */
 	public int getLocDistmRNA(int loc1, int loc2) {
 		int locSmall = 0; int locBig = 0;
@@ -210,9 +210,9 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		return -Math.abs(distance);
 	}
 	/**
-	 * ±ØĞëÊ×ÏÈÉè¶¨ListAbsµÄ·½Ïò£¬²¢ÇÒ¸Ã·½ÏòºÍÆäÄÚ²¿µÄelementµÄ·½ÏòÒªÒ»ÖÂ
-	 * ×ø±êµ½element Æğµã¾àÀë£¬Èç¹ûÖØµşÔòÎª0
-	 * @param location ×ø±ê
+	 * å¿…é¡»é¦–å…ˆè®¾å®šListAbsçš„æ–¹å‘ï¼Œå¹¶ä¸”è¯¥æ–¹å‘å’Œå…¶å†…éƒ¨çš„elementçš„æ–¹å‘è¦ä¸€è‡´
+	 * åæ ‡åˆ°element èµ·ç‚¹è·ç¦»ï¼Œå¦‚æœé‡å åˆ™ä¸º0
+	 * @param location åæ ‡
 	 */
 	public int getCod2ExInStart(int location) {
 		if (hashLocExInStart == null) {
@@ -223,27 +223,27 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		}
 		int loc2ExInStart = -1000000000;
 		int exIntronNum = getNumCodInEle(location);
-		int NumExon = Math.abs(exIntronNum) - 1; //Êµ¼ÊÊıÁ¿¼õÈ¥1£¬·½·¨ÄÚÓÃ¸Ã±äÁ¿ÔËËã
+		int NumExon = Math.abs(exIntronNum) - 1; //å®é™…æ•°é‡å‡å»1ï¼Œæ–¹æ³•å†…ç”¨è¯¥å˜é‡è¿ç®—
 		if (exIntronNum > 0) {
 			if (cis5to3 != null)
-				loc2ExInStart = Math.abs(location - get(NumExon).getStartCis());//¾àÀë±¾ÍâÏÔ×ÓÆğÊ¼ nnnnnnnnC
+				loc2ExInStart = Math.abs(location - get(NumExon).getStartCis());//è·ç¦»æœ¬å¤–æ˜¾å­èµ·å§‹ nnnnnnnnC
 			else
-				loc2ExInStart = Math.abs(location - get(NumExon).getStartAbs());//¾àÀë±¾ÍâÏÔ×ÓÆğÊ¼ nnnnnnnnC
+				loc2ExInStart = Math.abs(location - get(NumExon).getStartAbs());//è·ç¦»æœ¬å¤–æ˜¾å­èµ·å§‹ nnnnnnnnC
 		}
 		else if(exIntronNum < 0) 
 		{   //0-0 0-1        1-0 1-1          2-0 2-1            3-0  3-1   cood     4-0      4-1               5
 			if (cis5to3 != null) 
-				loc2ExInStart = Math.abs(location - get(NumExon).getEndCis()) -1;// ¾àÇ°Ò»¸öÍâÏÔ×Ó NnnnCnnnn
+				loc2ExInStart = Math.abs(location - get(NumExon).getEndCis()) -1;// è·å‰ä¸€ä¸ªå¤–æ˜¾å­ NnnnCnnnn
 			else
-				loc2ExInStart = Math.abs(location - get(NumExon).getEndAbs()) -1;// ¾àÇ°Ò»¸öÍâÏÔ×Ó NnnnCnnnn
+				loc2ExInStart = Math.abs(location - get(NumExon).getEndAbs()) -1;// è·å‰ä¸€ä¸ªå¤–æ˜¾å­ NnnnCnnnn
 		}
 		hashLocExInStart.put(location, loc2ExInStart);
 		return loc2ExInStart;
 	}
 
 	/**
-	 * ×ø±êµ½element ÖÕµã¾àÀë£¬µ±ÖØµşÊ±£¬Îª0
-	 * @param location ×ø±ê
+	 * åæ ‡åˆ°element ç»ˆç‚¹è·ç¦»ï¼Œå½“é‡å æ—¶ï¼Œä¸º0
+	 * @param location åæ ‡
 	 */
 	public int getCod2ExInEnd(int location) {
 		if (hashLocExInEnd == null) {
@@ -254,27 +254,27 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		}
 		int loc2ExInEnd = -1000000000;
 		int exIntronNum = getNumCodInEle(location);
-		int NumExon = Math.abs(exIntronNum) - 1; //Êµ¼ÊÊıÁ¿¼õÈ¥1£¬·½·¨ÄÚÓÃ¸Ã±äÁ¿ÔËËã
+		int NumExon = Math.abs(exIntronNum) - 1; //å®é™…æ•°é‡å‡å»1ï¼Œæ–¹æ³•å†…ç”¨è¯¥å˜é‡è¿ç®—
 		if (exIntronNum > 0) {
 			if (cis5to3 != null) {
-				loc2ExInEnd = Math.abs(get(NumExon).getEndCis() - location);//¾àÀë±¾ÍâÏÔ×ÓÖÕÖ¹  Cnnnnnnn
+				loc2ExInEnd = Math.abs(get(NumExon).getEndCis() - location);//è·ç¦»æœ¬å¤–æ˜¾å­ç»ˆæ­¢  Cnnnnnnn
 			} else {
-				loc2ExInEnd = Math.abs(get(NumExon).getEndAbs() - location);//¾àÀë±¾ÍâÏÔ×ÓÖÕÖ¹  Cnnnnnnn
+				loc2ExInEnd = Math.abs(get(NumExon).getEndAbs() - location);//è·ç¦»æœ¬å¤–æ˜¾å­ç»ˆæ­¢  Cnnnnnnn
 			}
 		}
 		//0-0 0-1        1-0 1-1          2-0 2-1            3-0  3-1   cood     4-0      4-1               5
 		else if(exIntronNum < 0) {
 			if (cis5to3 != null) {
-				 loc2ExInEnd = Math.abs(get(NumExon+1).getStartCis() - location) - 1;// ¾àºóÒ»¸öÍâÏÔ×Ó nnCnnnnN
+				 loc2ExInEnd = Math.abs(get(NumExon+1).getStartCis() - location) - 1;// è·åä¸€ä¸ªå¤–æ˜¾å­ nnCnnnnN
 			} else {
-				 loc2ExInEnd = Math.abs(get(NumExon+1).getStartAbs() - location) - 1;// ¾àºóÒ»¸öÍâÏÔ×Ó nnCnnnnN
+				 loc2ExInEnd = Math.abs(get(NumExon+1).getStartAbs() - location) - 1;// è·åä¸€ä¸ªå¤–æ˜¾å­ nnCnnnnN
 			}
 		}
 		hashLocExInEnd.put(location, loc2ExInEnd);
 		return loc2ExInEnd;
 	}
 	/**
-	 * »ñµÃËùÓĞelementµÄ³¤¶ÈÖ®ºÍ
+	 * è·å¾—æ‰€æœ‰elementçš„é•¿åº¦ä¹‹å’Œ
 	 */
 	public int getListLen() {
 		int isoLen = 0;
@@ -284,8 +284,8 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		return isoLen;
 	}
 	/**
-	 * ·µ»ØÃ¿¸öID¶ÔÓ¦µÄ¾ßÌåelementµÄ±àºÅ
-	 * key¶¼ÊÇĞ¡Ğ´
+	 * è¿”å›æ¯ä¸ªIDå¯¹åº”çš„å…·ä½“elementçš„ç¼–å·
+	 * keyéƒ½æ˜¯å°å†™
 	 * @return
 	 */
 	public HashMap<String,Integer> getMapName2DetailAbsNum() {
@@ -300,9 +300,9 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		return hashID2Num;
 	}
 	/**
-	 * ·µ»ØÃ¿¸öID¶ÔÓ¦µÄ¾ßÌåelement
-	 * ÊäÈëÒ»¸öhashmap£¬ÔÚÀïÃæÌî³äĞÅÏ¢
-	 * key¶¼ÊÇĞ¡Ğ´
+	 * è¿”å›æ¯ä¸ªIDå¯¹åº”çš„å…·ä½“element
+	 * è¾“å…¥ä¸€ä¸ªhashmapï¼Œåœ¨é‡Œé¢å¡«å……ä¿¡æ¯
+	 * keyéƒ½æ˜¯å°å†™
 	 * @return
 	 */
 	public HashMap<String, E> getMapName2DetailAbs() {
@@ -320,8 +320,8 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		return mapName2DetailAbs;
 	}
 	/**
-	 * ·µ»Ø±¾ListAbsÖĞµÄËùÓĞstringÃû×Ö
-	 * Èç¹ûÁ½¸öItemÊÇÖØµşµÄ£¬È¡È«²¿ID
+	 * è¿”å›æœ¬ListAbsä¸­çš„æ‰€æœ‰stringåå­—
+	 * å¦‚æœä¸¤ä¸ªItemæ˜¯é‡å çš„ï¼Œå–å…¨éƒ¨ID
 	 * @return
 	 */
 	public ArrayList<String> getLsNameAll() {
@@ -332,14 +332,14 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		return lsLocID;
 	}
 	/**
-	 * ¶ş·Ö·¨²éÕÒlocationËùÔÚµÄÎ»µã,Ò²ÊÇstaticµÄ¡£ÒÑ¾­¿¼ÂÇÁËÔÚµÚÒ»¸öItemÖ®Ç°µÄÇé¿ö£¬»¹Ã»¿¼ÂÇÔÚ×îºóÒ»¸öItemºóµÄÇé¿ö<br>
-	 * ·µ»ØÒ»¸öint[3]Êı×é£¬<br>
-	 * 0: 1-»ùÒòÄÚ 2-»ùÒòÍâ<br>
-	 * 1£º±¾»ùÒòĞòºÅ£¨¶¨Î»ÔÚ»ùÒòÄÚ£© / ÉÏ¸ö»ùÒòµÄĞòºÅ(¶¨Î»ÔÚ»ùÒòÍâ) -1±íÊ¾Ç°ÃæÃ»ÓĞ»ùÒò<br>
-	 * 2£ºÏÂ¸ö»ùÒòµÄĞòºÅ -1±íÊ¾ºóÃæÃ»ÓĞ»ùÒò<br>
-	 * 3£º¸ÃµãÔÚÍâÏÔ×ÓÖĞÎªÕıÊı£¬ÔÚÄÚº¬×ÓÖĞÎª¸ºÊı
-	 * ²»ÔÚÎª0
-	 * ÎªÊµ¼ÊÊıÄ¿
+	 * äºŒåˆ†æ³•æŸ¥æ‰¾locationæ‰€åœ¨çš„ä½ç‚¹,ä¹Ÿæ˜¯staticçš„ã€‚å·²ç»è€ƒè™‘äº†åœ¨ç¬¬ä¸€ä¸ªItemä¹‹å‰çš„æƒ…å†µï¼Œè¿˜æ²¡è€ƒè™‘åœ¨æœ€åä¸€ä¸ªItemåçš„æƒ…å†µ<br>
+	 * è¿”å›ä¸€ä¸ªint[3]æ•°ç»„ï¼Œ<br>
+	 * 0: 1-åŸºå› å†… 2-åŸºå› å¤–<br>
+	 * 1ï¼šæœ¬åŸºå› åºå·ï¼ˆå®šä½åœ¨åŸºå› å†…ï¼‰ / ä¸Šä¸ªåŸºå› çš„åºå·(å®šä½åœ¨åŸºå› å¤–) -1è¡¨ç¤ºå‰é¢æ²¡æœ‰åŸºå› <br>
+	 * 2ï¼šä¸‹ä¸ªåŸºå› çš„åºå· -1è¡¨ç¤ºåé¢æ²¡æœ‰åŸºå› <br>
+	 * 3ï¼šè¯¥ç‚¹åœ¨å¤–æ˜¾å­ä¸­ä¸ºæ­£æ•°ï¼Œåœ¨å†…å«å­ä¸­ä¸ºè´Ÿæ•°
+	 * ä¸åœ¨ä¸º0
+	 * ä¸ºå®é™…æ•°ç›®
 	 */
 	protected CoordLocationInfo LocPosition( int Coordinate) {
 		if (cis5to3 == null) {
@@ -354,9 +354,9 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	}
 	
 	/**
-	 * ¸ÃµãÔÚÍâÏÔ×ÓÖĞÎªÕıÊı£¬ÔÚÄÚº¬×ÓÖĞÎª¸ºÊı
-	 * ²»ÔÚÎª0
-	 * ÎªÊµ¼ÊÊıÄ¿£¬´Ó1¿ªÊ¼¼ÆÊı
+	 * è¯¥ç‚¹åœ¨å¤–æ˜¾å­ä¸­ä¸ºæ­£æ•°ï¼Œåœ¨å†…å«å­ä¸­ä¸ºè´Ÿæ•°
+	 * ä¸åœ¨ä¸º0
+	 * ä¸ºå®é™…æ•°ç›®ï¼Œä»1å¼€å§‹è®¡æ•°
 	 * @return
 	 */
 	public int getNumCodInEle(int location) {
@@ -365,12 +365,12 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 
 	/**
 	 * TO BE CHECKED
-	 * ·µ»Ø¾àÀëlocÓĞnum BpµÄ×ø±ê£¬ÔÚmRNA²ãÃæ£¬ÔÚlocÉÏÓÎÊ±num Îª¸ºÊı
-	 * ÔÚlocÏÂÓÎÊ±numÎªÕıÊı
-	 * Èç¹ûnum BpÍâ¾ÍÃ»ÓĞ»ùÒòÁË£¬Ôò·µ»Ø-1£»
+	 * è¿”å›è·ç¦»locæœ‰num Bpçš„åæ ‡ï¼Œåœ¨mRNAå±‚é¢ï¼Œåœ¨locä¸Šæ¸¸æ—¶num ä¸ºè´Ÿæ•°
+	 * åœ¨locä¸‹æ¸¸æ—¶numä¸ºæ­£æ•°
+	 * å¦‚æœnum Bpå¤–å°±æ²¡æœ‰åŸºå› äº†ï¼Œåˆ™è¿”å›-1ï¼›
 	 * @param mRNAnum
-	 * NnnnLoc Îª-4Î»£¬µ±NÓëLocÖØºÏÊ±Îª0
-	 * LnnnnNÎª5Î»
+	 * NnnnLoc ä¸º-4ä½ï¼Œå½“Nä¸Locé‡åˆæ—¶ä¸º0
+	 * LnnnnNä¸º5ä½
 	 */
 	public int getLocDistmRNASite(int location, int mRNAnum) {
 		if (getNumCodInEle(location) <= 0) {
@@ -389,7 +389,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 				int remain = Math.abs(mRNAnum) - getCod2ExInStart(location);
 				for (int i = exonNum - 1; i >= 0; i--) {
 					E tmpExon = get(i);
-					// Ò»¸öÒ»¸öÍâÏÔ×ÓµÄÏòÇ°±éÀú
+					// ä¸€ä¸ªä¸€ä¸ªå¤–æ˜¾å­çš„å‘å‰éå†
 					if (remain - tmpExon.Length() > 0) {
 						remain = remain - tmpExon.Length();
 						continue;
@@ -420,7 +420,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 				int remain = mRNAnum - getCod2ExInEnd(location);
 				for (int i = exonNum + 1; i < size(); i++) {
 					E tmpExon = get(i);
-					// Ò»¸öÒ»¸öÍâÏÔ×ÓµÄÏòÇ°±éÀú
+					// ä¸€ä¸ªä¸€ä¸ªå¤–æ˜¾å­çš„å‘å‰éå†
 					if (remain - tmpExon.Length() > 0) {
 						remain = remain - tmpExon.Length();
 						continue;
@@ -439,10 +439,10 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		}
 	}
 	/**
-	 * ÒÀ´Î±È½ÏÁ½¸ölistÖĞµÄÔªËØÊÇ·ñÒ»ÖÂ¡£ÄÚ²¿µ÷ÓÃÃ¿¸öÔªËØµÄequals·½·¨
-	 * ²»±È½Ïname£¬Èç¹ûĞèÒª±È½Ïname£¬ÄÇÃ´¾ÍÓÃequal
-	 * ÔİÊ±»¹Ã»ÖØĞ´equal
-	 * ÍâÏÔ×Ó±È½ÏÈç¹ûÒ»Ä£Ò»ÑùÔò·µ»Øtrue£»
+	 * ä¾æ¬¡æ¯”è¾ƒä¸¤ä¸ªlistä¸­çš„å…ƒç´ æ˜¯å¦ä¸€è‡´ã€‚å†…éƒ¨è°ƒç”¨æ¯ä¸ªå…ƒç´ çš„equalsæ–¹æ³•
+	 * ä¸æ¯”è¾ƒnameï¼Œå¦‚æœéœ€è¦æ¯”è¾ƒnameï¼Œé‚£ä¹ˆå°±ç”¨equal
+	 * æš‚æ—¶è¿˜æ²¡é‡å†™equal
+	 * å¤–æ˜¾å­æ¯”è¾ƒå¦‚æœä¸€æ¨¡ä¸€æ ·åˆ™è¿”å›trueï¼›
 	 * @param lsOtherExon
 	 * @return
 	 */
@@ -460,9 +460,9 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		return true;
 	}
 	/**
-	 * ½«listÖĞµÄÔªËØ½øĞĞÅÅĞò£¬Èç¹û·´Ïò£¬ÄÇÃ´¾Í´Ó´óµ½Ğ¡ÅÅĞò
-	 * Èç¹ûÕıÏò£¬ÄÇÃ´¾Í´ÓĞ¡µ½´óÅÅĞò
-	 * ÄÚ²¿ÓĞflag£¬ÅÅÍêºó¾Í²»»áÔÙÅÅµÚ¶ş´ÎÁË
+	 * å°†listä¸­çš„å…ƒç´ è¿›è¡Œæ’åºï¼Œå¦‚æœåå‘ï¼Œé‚£ä¹ˆå°±ä»å¤§åˆ°å°æ’åº
+	 * å¦‚æœæ­£å‘ï¼Œé‚£ä¹ˆå°±ä»å°åˆ°å¤§æ’åº
+	 * å†…éƒ¨æœ‰flagï¼Œæ’å®Œåå°±ä¸ä¼šå†æ’ç¬¬äºŒæ¬¡äº†
 	 */
 	public void sort() {
 		if (cis5to3 == null) {
@@ -476,7 +476,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		}
 	}
 	/**
-	 * ÒÑ²âÊÔ£¬ÄÜÓÃ
+	 * å·²æµ‹è¯•ï¼Œèƒ½ç”¨
 	 */
 	@SuppressWarnings("unchecked")
 	public ListAbs<E> clone() {
@@ -493,19 +493,19 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		return result;
 	}
 	/**
-	 * ¸ø¶¨Ò»ÏµÁĞListElement£¬ÒÔ¼°Ò»¸ö·½Ïò¡£
-	 * ½«ÏàÍ¬·½ÏòµÄListElementÌáÈ¡³öÀ´£¬È»ºóºÏ²¢£¬È»ºóÕÒ³öÕâĞ©elementµÄ¹²Í¬±ß½ç
-	 * @param cis5to3 null,²»¿¼ÂÇ·½Ïò
+	 * ç»™å®šä¸€ç³»åˆ—ListElementï¼Œä»¥åŠä¸€ä¸ªæ–¹å‘ã€‚
+	 * å°†ç›¸åŒæ–¹å‘çš„ListElementæå–å‡ºæ¥ï¼Œç„¶ååˆå¹¶ï¼Œç„¶åæ‰¾å‡ºè¿™äº›elementçš„å…±åŒè¾¹ç•Œ
+	 * @param cis5to3 null,ä¸è€ƒè™‘æ–¹å‘
 	 * @param lsIso
-	 * @param sepSingle Óöµ½ÕâÖÖÇé¿öÔõÃ´·Ö¸î£º<br>
+	 * @param sepSingle é‡åˆ°è¿™ç§æƒ…å†µæ€ä¹ˆåˆ†å‰²ï¼š<br>
 	 * 	 * ---m-m-------------a--a---------b--b------------n-n----<br>
 	 *    ---m-m---------------------------------------------n-n----<br>
-	 *    true aa ºÍ bb ·Ö¿ª
-	 *    false aa ºÍ bbºÏÔÚÒ»Æğ
+	 *    true aa å’Œ bb åˆ†å¼€
+	 *    false aa å’Œ bbåˆåœ¨ä¸€èµ·
 	 * @return
-	 * ·µ»ØÒ»¸ölist£¬°´ÕÕcis5to3ÅÅĞò£¬Èç¹ûcis5to3Îªtrue£¬´ÓĞ¡µ½´óÅÅÁĞ
-	 * Èç¹ûcis5to3Îªfalse£¬´Ó´óµ½Ğ¡ÅÅÁĞ
-	 * ÄÚ²¿µÄint[] 0: startAbs 1: endAbs
+	 * è¿”å›ä¸€ä¸ªlistï¼ŒæŒ‰ç…§cis5to3æ’åºï¼Œå¦‚æœcis5to3ä¸ºtrueï¼Œä»å°åˆ°å¤§æ’åˆ—
+	 * å¦‚æœcis5to3ä¸ºfalseï¼Œä»å¤§åˆ°å°æ’åˆ—
+	 * å†…éƒ¨çš„int[] 0: startAbs 1: endAbs
 	 */
 	public static ArrayList<int[]> getCombSep(Boolean cis5to3, ArrayList<? extends ListAbs<? extends ListDetailAbs>> lsIso, boolean sepSingle) {
 		ArrayList<? extends ListDetailAbs> lsAllelement = combListAbs(cis5to3, lsIso);
@@ -519,14 +519,14 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	}
 	/**
 	 * 
-	 * ½«Ò»¸öListÖĞµÄIsoÈ«²¿ºÏ²¢ÆğÀ´¡£
-	 * @param cis5to3 null,²»¿¼ÂÇ·½Ïò
+	 * å°†ä¸€ä¸ªListä¸­çš„Isoå…¨éƒ¨åˆå¹¶èµ·æ¥ã€‚
+	 * @param cis5to3 null,ä¸è€ƒè™‘æ–¹å‘
 	 * @param lsIso
 	 * @return
 	 */
 	private static ArrayList<? extends ListDetailAbs> combListAbs(Boolean cis5to3, ArrayList<? extends ListAbs<? extends ListDetailAbs>> lsIso) {
 		ArrayList<ListDetailAbs> lsAll = new ArrayList<ListDetailAbs>();
-		//½«È«²¿µÄexon·ÅÔÚÒ»¸ölistÀïÃæ²¢ÇÒÅÅĞò
+		//å°†å…¨éƒ¨çš„exonæ”¾åœ¨ä¸€ä¸ªlisté‡Œé¢å¹¶ä¸”æ’åº
 		for (ListAbs<? extends ListDetailAbs> listAbs : lsIso) {
 			if (cis5to3 != null && listAbs.isCis5to3() != cis5to3) {
 				continue;
@@ -536,8 +536,8 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		Collections.sort(lsAll);
 		return lsAll;
 	}
-	/** ½«¾­¹ıÅÅĞòµÄexonlistºÏ²¢£¬»ñµÃ¼¸¸öÁ¬ĞøµÄexon£¬ÓÃÓÚ·Ö¶Î
-	 * ·µ»ØµÄint[] 0: startAbs    1: endAbs
+	/** å°†ç»è¿‡æ’åºçš„exonliståˆå¹¶ï¼Œè·å¾—å‡ ä¸ªè¿ç»­çš„exonï¼Œç”¨äºåˆ†æ®µ
+	 * è¿”å›çš„int[] 0: startAbs    1: endAbs
 	 *  
 	 *  */
 	private static ArrayList<int[]> getLsElementSep(Boolean cis5to3, ArrayList<? extends ListDetailAbs> lsAll) {
@@ -569,23 +569,23 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 		return lsExonBounder;
 	}
 	
-	/** ½«¾­¹ıÅÅĞòµÄexonlistºÏ²¢£¬»ñµÃ¼¸¸öÁ¬ĞøµÄexon£¬ÓÃÓÚ·Ö¶Î<br>
-	 * Èç¹ûÓĞÁ½¸öexonÁ¬Ğø²¢ÇÒµ¥¶À³öÏÖ£¬ÀàËÆ<br>
+	/** å°†ç»è¿‡æ’åºçš„exonliståˆå¹¶ï¼Œè·å¾—å‡ ä¸ªè¿ç»­çš„exonï¼Œç”¨äºåˆ†æ®µ<br>
+	 * å¦‚æœæœ‰ä¸¤ä¸ªexonè¿ç»­å¹¶ä¸”å•ç‹¬å‡ºç°ï¼Œç±»ä¼¼<br>
 	 * ---m-m-------------a--a---------b--b------------n-n----<br>
 	 * ---m-m---------------------------------------------n-n----<br>
 	 * <br>
-	 * ÄÇÃ´a-aºÍb-b·ÅÔÚÒ»Æğ<br>
+	 * é‚£ä¹ˆa-aå’Œb-bæ”¾åœ¨ä¸€èµ·<br>
 	 *  */
 	private static ArrayList<int[]> getLsElementSepComb(Boolean cis5to3, ArrayList<? extends ListDetailAbs> lsAll) {
 		ArrayList<int[]> lsExonBounder = new ArrayList<int[]>();
 		int[] exonOld = new int[]{lsAll.get(0).getStartAbs(), lsAll.get(0).getEndAbs()};
 		lsExonBounder.add(exonOld);
-		//Ò»¶Ñflag±êÇ©
+		//ä¸€å †flagæ ‡ç­¾
 		
-		// ÉÏÒ»¸öexonµÄ¸¸Àà£¬ÅĞ¶ÏÊÇ·ñÎªÍ¬Ò»¸ö¸¸Àà»ùÒò
+		// ä¸Šä¸€ä¸ªexonçš„çˆ¶ç±»ï¼Œåˆ¤æ–­æ˜¯å¦ä¸ºåŒä¸€ä¸ªçˆ¶ç±»åŸºå› 
 		ListAbs lastExonParent = lsAll.get(0).getParent(); 
 		
-		//ÉÏÒ»¸öexonÊÇ·ñÀ´×ÔÓÚµ¥Ò»¸¸Àà£¬¾ÍÊÇËµÃ»ÓĞ¸úÀ´×ÔÁíÒ»¸ö¸¸ÀàµÄexon»ìºÏ£¬ÒÔÏÂmmºÍkkÊÇ»ìºÏµÄ£¬aaÊÇµ¥¶ÀµÄ
+		//ä¸Šä¸€ä¸ªexonæ˜¯å¦æ¥è‡ªäºå•ä¸€çˆ¶ç±»ï¼Œå°±æ˜¯è¯´æ²¡æœ‰è·Ÿæ¥è‡ªå¦ä¸€ä¸ªçˆ¶ç±»çš„exonæ··åˆï¼Œä»¥ä¸‹mmå’Œkkæ˜¯æ··åˆçš„ï¼Œaaæ˜¯å•ç‹¬çš„
 		//* -------m-----------m-------------a--a---------b--b------------n-n----<br>
 		 //* ---k---------k--------------------------------------n-n----<br>
 		boolean lastParentIsSingle = true; 
@@ -605,7 +605,7 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 						exonOld[1] = exon[1];
 					}
 				} else {
-					//Èç¹ûÊÇÕâÖÖÇé¿ö£º
+					//å¦‚æœæ˜¯è¿™ç§æƒ…å†µï¼š
 					//* ---m-m-------------a--a---------b--b------------n-n----<br>
 					//* ---m-m---------------------------------------------n-n----<br>
 					if (lastParentIsSingle == true && lastExonParent == listDetailAbs.getParent() 
@@ -646,20 +646,20 @@ public class ListAbs <E extends ListDetailAbs> extends ArrayList<E>  implements 
 	
 }
 /**
- * ÄÚ½¨µÄ¶ş·Ö·¨²éÕÒÀà£¬×¨ÃÅÓÃÓÚListAbs²éÕÒ
+ * å†…å»ºçš„äºŒåˆ†æ³•æŸ¥æ‰¾ç±»ï¼Œä¸“é—¨ç”¨äºListAbsæŸ¥æ‰¾
  * @author zong0jie
  *
  */
 class BinarySearch {
 	/**
-	 * ¶ş·Ö·¨²éÕÒlocationËùÔÚµÄÎ»µã,Ò²ÊÇstaticµÄ¡£ÒÑ¾­¿¼ÂÇÁËÔÚµÚÒ»¸öItemÖ®Ç°µÄÇé¿ö£¬»¹Ã»¿¼ÂÇÔÚ×îºóÒ»¸öItemºóµÄÇé¿ö<br>
-	 * ·µ»ØÒ»¸öint[3]Êı×é£¬<br>
-	 * 0: 1-»ùÒòÄÚ 2-»ùÒòÍâ<br>
-	 * 1£º±¾»ùÒòĞòºÅ£¨¶¨Î»ÔÚ»ùÒòÄÚ£© / ÉÏ¸ö»ùÒòµÄĞòºÅ(¶¨Î»ÔÚ»ùÒòÍâ) -1±íÊ¾Ç°ÃæÃ»ÓĞ»ùÒò<br>
-	 * 2£ºÏÂ¸ö»ùÒòµÄĞòºÅ -1±íÊ¾ºóÃæÃ»ÓĞ»ùÒò
-	 * 3£ºµ¥¶ÀµÄÒ»¸ö±êÇ©£¬¸ÃµãÔÚÍâÏÔ×ÓÖĞÎªÕıÊı£¬ÔÚÄÚº¬×ÓÖĞÎª¸ºÊı
-	 * ²»ÔÚÎª0
-	 * ÎªÊµ¼ÊÊıÄ¿
+	 * äºŒåˆ†æ³•æŸ¥æ‰¾locationæ‰€åœ¨çš„ä½ç‚¹,ä¹Ÿæ˜¯staticçš„ã€‚å·²ç»è€ƒè™‘äº†åœ¨ç¬¬ä¸€ä¸ªItemä¹‹å‰çš„æƒ…å†µï¼Œè¿˜æ²¡è€ƒè™‘åœ¨æœ€åä¸€ä¸ªItemåçš„æƒ…å†µ<br>
+	 * è¿”å›ä¸€ä¸ªint[3]æ•°ç»„ï¼Œ<br>
+	 * 0: 1-åŸºå› å†… 2-åŸºå› å¤–<br>
+	 * 1ï¼šæœ¬åŸºå› åºå·ï¼ˆå®šä½åœ¨åŸºå› å†…ï¼‰ / ä¸Šä¸ªåŸºå› çš„åºå·(å®šä½åœ¨åŸºå› å¤–) -1è¡¨ç¤ºå‰é¢æ²¡æœ‰åŸºå› <br>
+	 * 2ï¼šä¸‹ä¸ªåŸºå› çš„åºå· -1è¡¨ç¤ºåé¢æ²¡æœ‰åŸºå› 
+	 * 3ï¼šå•ç‹¬çš„ä¸€ä¸ªæ ‡ç­¾ï¼Œè¯¥ç‚¹åœ¨å¤–æ˜¾å­ä¸­ä¸ºæ­£æ•°ï¼Œåœ¨å†…å«å­ä¸­ä¸ºè´Ÿæ•°
+	 * ä¸åœ¨ä¸º0
+	 * ä¸ºå®é™…æ•°ç›®
 	 */
 	protected static CoordLocationInfo LocPositionCis(ArrayList<? extends ListDetailAbs> lsElement, int Coordinate) {
 		if (lsElement == null) {
@@ -670,12 +670,12 @@ class BinarySearch {
 		endnum = lsElement.size() - 1;
 		int beginnum = 0;
 		int number = 0;
-		// ÔÚµÚÒ»¸öItemÖ®Ç°
+		// åœ¨ç¬¬ä¸€ä¸ªItemä¹‹å‰
 		if (Coordinate < lsElement.get(beginnum).getStartCis()){
 			coordLocationInfo.setElementInsideOutSideNum(0);
 			return coordLocationInfo;
 		}
-		// ÔÚ×îºóÒ»¸öItemÖ®ºó
+		// åœ¨æœ€åä¸€ä¸ªItemä¹‹å
 		else if (Coordinate >= lsElement.get(endnum).getStartCis()) {
 			if (Coordinate > lsElement.get(endnum).getEndCis()) {
 				coordLocationInfo.setElementInsideOutSideNum(-lsElement.size());
@@ -699,30 +699,30 @@ class BinarySearch {
 				beginnum = number;
 			}
 		} while ((endnum - beginnum) > 1);
-		if (Coordinate <= lsElement.get(beginnum).getEndCis())// ²»ÖªµÀ»á²»»á³öÏÖPeakNumber±ÈbiginnumĞ¡µÄÇé¿ö
-		{ // locationÔÚ»ùÒòÄÚ²¿
+		if (Coordinate <= lsElement.get(beginnum).getEndCis())// ä¸çŸ¥é“ä¼šä¸ä¼šå‡ºç°PeakNumberæ¯”biginnumå°çš„æƒ…å†µ
+		{ // locationåœ¨åŸºå› å†…éƒ¨
 			coordLocationInfo.setElementInsideOutSideNum(beginnum + 1);
 			return coordLocationInfo;
 		}
-		else if (Coordinate >= lsElement.get(endnum).getStartCis())// ²»ÖªµÀ»á²»»á³öÏÖPeakNumber±ÈbiginnumĞ¡µÄÇé¿ö
-		{ // locationÔÚ»ùÒòÄÚ²¿
+		else if (Coordinate >= lsElement.get(endnum).getStartCis())// ä¸çŸ¥é“ä¼šä¸ä¼šå‡ºç°PeakNumberæ¯”biginnumå°çš„æƒ…å†µ
+		{ // locationåœ¨åŸºå› å†…éƒ¨
 			coordLocationInfo.setElementInsideOutSideNum(endnum + 1);
 			return coordLocationInfo;
 		}
-		// locationÔÚ»ùÒòÍâ²¿
+		// locationåœ¨åŸºå› å¤–éƒ¨
 		coordLocationInfo.setElementInsideOutSideNum(-beginnum - 1);
 		return coordLocationInfo;
 	}
 
 	/**
-	 * ¶ş·Ö·¨²éÕÒlocationËùÔÚµÄÎ»µã,Ò²ÊÇstaticµÄ¡£ÒÑ¾­¿¼ÂÇÁËÔÚµÚÒ»¸öItemÖ®Ç°µÄÇé¿ö£¬»¹Ã»¿¼ÂÇÔÚ×îºóÒ»¸öItemºóµÄÇé¿ö<br>
-	 * ·µ»ØÒ»¸öint[3]Êı×é£¬<br>
-	 * 0: 1-»ùÒòÄÚ 2-»ùÒòÍâ<br>
-	 * 1£º±¾»ùÒòĞòºÅ£¨¶¨Î»ÔÚ»ùÒòÄÚ£© / ÉÏ¸ö»ùÒòµÄĞòºÅ(¶¨Î»ÔÚ»ùÒòÍâ) -1±íÊ¾Ç°ÃæÃ»ÓĞ»ùÒò<br>
-	 * 2£ºÏÂ¸ö»ùÒòµÄĞòºÅ -1±íÊ¾ºóÃæÃ»ÓĞ»ùÒò
-	 * 3£ºµ¥¶ÀµÄÒ»¸ö±êÇ©£¬¸ÃµãÔÚÍâÏÔ×ÓÖĞÎªÕıÊı£¬ÔÚÄÚº¬×ÓÖĞÎª¸ºÊı
-	 * ²»ÔÚÎª0
-	 * ÎªÊµ¼ÊÊıÄ¿
+	 * äºŒåˆ†æ³•æŸ¥æ‰¾locationæ‰€åœ¨çš„ä½ç‚¹,ä¹Ÿæ˜¯staticçš„ã€‚å·²ç»è€ƒè™‘äº†åœ¨ç¬¬ä¸€ä¸ªItemä¹‹å‰çš„æƒ…å†µï¼Œè¿˜æ²¡è€ƒè™‘åœ¨æœ€åä¸€ä¸ªItemåçš„æƒ…å†µ<br>
+	 * è¿”å›ä¸€ä¸ªint[3]æ•°ç»„ï¼Œ<br>
+	 * 0: 1-åŸºå› å†… 2-åŸºå› å¤–<br>
+	 * 1ï¼šæœ¬åŸºå› åºå·ï¼ˆå®šä½åœ¨åŸºå› å†…ï¼‰ / ä¸Šä¸ªåŸºå› çš„åºå·(å®šä½åœ¨åŸºå› å¤–) -1è¡¨ç¤ºå‰é¢æ²¡æœ‰åŸºå› <br>
+	 * 2ï¼šä¸‹ä¸ªåŸºå› çš„åºå· -1è¡¨ç¤ºåé¢æ²¡æœ‰åŸºå› 
+	 * 3ï¼šå•ç‹¬çš„ä¸€ä¸ªæ ‡ç­¾ï¼Œè¯¥ç‚¹åœ¨å¤–æ˜¾å­ä¸­ä¸ºæ­£æ•°ï¼Œåœ¨å†…å«å­ä¸­ä¸ºè´Ÿæ•°
+	 * ä¸åœ¨ä¸º0
+	 * ä¸ºå®é™…æ•°ç›®
 	 */
 	protected static CoordLocationInfo LocPositionTran(ArrayList<? extends ListDetailAbs> lsElement, int Coordinate) {
 		if (lsElement == null) {
@@ -733,12 +733,12 @@ class BinarySearch {
 		endnum = lsElement.size() - 1;
 		int beginnum = 0;
 		int number = 0;
-		// ÔÚµÚÒ»¸öItemÖ®Ç°
+		// åœ¨ç¬¬ä¸€ä¸ªItemä¹‹å‰
 		if (Coordinate > lsElement.get(beginnum).getStartCis()){
 			coordLocationInfo.setElementInsideOutSideNum(0);
 			return coordLocationInfo;
 		}
-		// ÔÚ×îºóÒ»¸öItemÖ®ºó
+		// åœ¨æœ€åä¸€ä¸ªItemä¹‹å
 		else if (Coordinate <= lsElement.get(endnum).getStartCis()) {
 			if (Coordinate < lsElement.get(endnum).getEndCis()) {
 				coordLocationInfo.setElementInsideOutSideNum(-lsElement.size());
@@ -762,28 +762,28 @@ class BinarySearch {
 				beginnum = number;
 			}
 		} while ((endnum - beginnum) > 1);
-		if (Coordinate >= lsElement.get(beginnum).getEndCis()) { // locationÔÚ»ùÒòÄÚ²¿
+		if (Coordinate >= lsElement.get(beginnum).getEndCis()) { // locationåœ¨åŸºå› å†…éƒ¨
 			coordLocationInfo.setElementInsideOutSideNum(beginnum + 1);
 			return coordLocationInfo;
 		}
 		else if (Coordinate <= lsElement.get(endnum).getStartCis()) 
-		{// locationÔÚ»ùÒòÄÚ²¿
+		{// locationåœ¨åŸºå› å†…éƒ¨
 			coordLocationInfo.setElementInsideOutSideNum(endnum + 1);
 			return coordLocationInfo;
 		}
-		// locationÔÚ»ùÒòÍâ²¿
+		// locationåœ¨åŸºå› å¤–éƒ¨
 		coordLocationInfo.setElementInsideOutSideNum(-beginnum - 1);
 		return coordLocationInfo;
 	}
 	/**
-	 * ¶ş·Ö·¨²éÕÒlocationËùÔÚµÄÎ»µã,Ò²ÊÇstaticµÄ¡£ÒÑ¾­¿¼ÂÇÁËÔÚµÚÒ»¸öItemÖ®Ç°µÄÇé¿ö£¬»¹Ã»¿¼ÂÇÔÚ×îºóÒ»¸öItemºóµÄÇé¿ö<br>
-	 * ·µ»ØÒ»¸öint[3]Êı×é£¬<br>
-	 * 0: 1-»ùÒòÄÚ 2-»ùÒòÍâ<br>
-	 * 1£º±¾»ùÒòĞòºÅ£¨¶¨Î»ÔÚ»ùÒòÄÚ£© / ÉÏ¸ö»ùÒòµÄĞòºÅ(¶¨Î»ÔÚ»ùÒòÍâ) -1±íÊ¾Ç°ÃæÃ»ÓĞ»ùÒò<br>
-	 * 2£ºÏÂ¸ö»ùÒòµÄĞòºÅ -1±íÊ¾ºóÃæÃ»ÓĞ»ùÒò
-	 * 3£ºµ¥¶ÀµÄÒ»¸ö±êÇ©£¬¸ÃµãÔÚÍâÏÔ×ÓÖĞÎªÕıÊı£¬ÔÚÄÚº¬×ÓÖĞÎª¸ºÊı
-	 * ²»ÔÚÎª0
-	 * ÎªÊµ¼ÊÊıÄ¿
+	 * äºŒåˆ†æ³•æŸ¥æ‰¾locationæ‰€åœ¨çš„ä½ç‚¹,ä¹Ÿæ˜¯staticçš„ã€‚å·²ç»è€ƒè™‘äº†åœ¨ç¬¬ä¸€ä¸ªItemä¹‹å‰çš„æƒ…å†µï¼Œè¿˜æ²¡è€ƒè™‘åœ¨æœ€åä¸€ä¸ªItemåçš„æƒ…å†µ<br>
+	 * è¿”å›ä¸€ä¸ªint[3]æ•°ç»„ï¼Œ<br>
+	 * 0: 1-åŸºå› å†… 2-åŸºå› å¤–<br>
+	 * 1ï¼šæœ¬åŸºå› åºå·ï¼ˆå®šä½åœ¨åŸºå› å†…ï¼‰ / ä¸Šä¸ªåŸºå› çš„åºå·(å®šä½åœ¨åŸºå› å¤–) -1è¡¨ç¤ºå‰é¢æ²¡æœ‰åŸºå› <br>
+	 * 2ï¼šä¸‹ä¸ªåŸºå› çš„åºå· -1è¡¨ç¤ºåé¢æ²¡æœ‰åŸºå› 
+	 * 3ï¼šå•ç‹¬çš„ä¸€ä¸ªæ ‡ç­¾ï¼Œè¯¥ç‚¹åœ¨å¤–æ˜¾å­ä¸­ä¸ºæ­£æ•°ï¼Œåœ¨å†…å«å­ä¸­ä¸ºè´Ÿæ•°
+	 * ä¸åœ¨ä¸º0
+	 * ä¸ºå®é™…æ•°ç›®
 	 */
 	protected static CoordLocationInfo LocPositionAbs(ArrayList<? extends ListDetailAbs> lsElement, int Coordinate) {
 		if (lsElement == null) {
@@ -794,12 +794,12 @@ class BinarySearch {
 		endnum = lsElement.size() - 1;
 		int beginnum = 0;
 		int number = 0;
-		// ÔÚµÚÒ»¸öItemÖ®Ç°
+		// åœ¨ç¬¬ä¸€ä¸ªItemä¹‹å‰
 		if (Coordinate < lsElement.get(beginnum).getStartAbs()){
 			coordLocationInfo.setElementInsideOutSideNum(0);
 			return coordLocationInfo;
 		}
-		// ÔÚ×îºóÒ»¸öItemÖ®ºó
+		// åœ¨æœ€åä¸€ä¸ªItemä¹‹å
 		else if (Coordinate >= lsElement.get(endnum).getStartAbs()) {
 			if (Coordinate > lsElement.get(endnum).getEndAbs()) {
 				coordLocationInfo.setElementInsideOutSideNum(-lsElement.size());
@@ -834,7 +834,7 @@ class BinarySearch {
 }
 
 /**
- * ´ÓĞ¡µ½´óÅÅĞò
+ * ä»å°åˆ°å¤§æ’åº
  * @author zong0jie
  */
 class CompS2M implements Comparator<ListDetailAbs> {
@@ -853,7 +853,7 @@ class CompS2M implements Comparator<ListDetailAbs> {
 }
 
 /**
- * ´ÓĞ¡µ½´óÅÅĞò£¬ÓÃ¾ø¶Ô×ø±êÖµÅÅĞò
+ * ä»å°åˆ°å¤§æ’åºï¼Œç”¨ç»å¯¹åæ ‡å€¼æ’åº
  * @author zong0jie
  */
 class CompS2MAbs implements Comparator<ListDetailAbs> {
@@ -872,7 +872,7 @@ class CompS2MAbs implements Comparator<ListDetailAbs> {
 }
 
 /**
- * ´Ó´óµ½Ğ¡ÅÅĞò
+ * ä»å¤§åˆ°å°æ’åº
  * @author zong0jie
  */
 class CompM2S implements Comparator<ListDetailAbs> {
@@ -890,36 +890,36 @@ class CompM2S implements Comparator<ListDetailAbs> {
 	}
 }
 /**
- * Ç°Ìá£¬µÚÒ»¸öelementµÄÆğµã¾ÍÊÇlistµÄÆğµã£¬×îºóÒ»¸öelementµÄÖÕµã¾ÍÊÇlistµÄÖÕµã
- * ·ñÔò¾ÍÒª<b>ÖØĞ´getElementNumThisAbs() ·½·¨</b>
+ * å‰æï¼Œç¬¬ä¸€ä¸ªelementçš„èµ·ç‚¹å°±æ˜¯listçš„èµ·ç‚¹ï¼Œæœ€åä¸€ä¸ªelementçš„ç»ˆç‚¹å°±æ˜¯listçš„ç»ˆç‚¹
+ * å¦åˆ™å°±è¦<b>é‡å†™getElementNumThisAbs() æ–¹æ³•</b>
  * 
- * ¶ş·Ö·¨²éÕÒlocationËùÔÚµÄÎ»µãËù±£´æµÄĞÅÏ¢
- * ·µ»ØÒ»¸öint[3]Êı×é£¬<br>
- * 0: 1-»ùÒòÄÚ 2-»ùÒòÍâ<br>
- * 1£º±¾»ùÒòĞòºÅ£¨¶¨Î»ÔÚ»ùÒòÄÚ£© / ÉÏ¸ö»ùÒòµÄĞòºÅ(¶¨Î»ÔÚ»ùÒòÍâ) -1±íÊ¾Ç°ÃæÃ»ÓĞ»ùÒò<br>
- * 2£ºÏÂ¸ö»ùÒòµÄĞòºÅ -1±íÊ¾ºóÃæÃ»ÓĞ»ùÒò
- * 3£ºµ¥¶ÀµÄÒ»¸ö±êÇ©£¬¸ÃµãÔÚÍâÏÔ×ÓÖĞÎªÕıÊı£¬ÔÚÄÚº¬×ÓÖĞÎª¸ºÊı
- * ²»ÔÚÎª0
- * ´Ó0¿ªÊ¼µÄÊıÄ¿£¬¿ÉÒÔÖ±½ÓÓÃget(i)ÌáÈ¡
+ * äºŒåˆ†æ³•æŸ¥æ‰¾locationæ‰€åœ¨çš„ä½ç‚¹æ‰€ä¿å­˜çš„ä¿¡æ¯
+ * è¿”å›ä¸€ä¸ªint[3]æ•°ç»„ï¼Œ<br>
+ * 0: 1-åŸºå› å†… 2-åŸºå› å¤–<br>
+ * 1ï¼šæœ¬åŸºå› åºå·ï¼ˆå®šä½åœ¨åŸºå› å†…ï¼‰ / ä¸Šä¸ªåŸºå› çš„åºå·(å®šä½åœ¨åŸºå› å¤–) -1è¡¨ç¤ºå‰é¢æ²¡æœ‰åŸºå› <br>
+ * 2ï¼šä¸‹ä¸ªåŸºå› çš„åºå· -1è¡¨ç¤ºåé¢æ²¡æœ‰åŸºå› 
+ * 3ï¼šå•ç‹¬çš„ä¸€ä¸ªæ ‡ç­¾ï¼Œè¯¥ç‚¹åœ¨å¤–æ˜¾å­ä¸­ä¸ºæ­£æ•°ï¼Œåœ¨å†…å«å­ä¸­ä¸ºè´Ÿæ•°
+ * ä¸åœ¨ä¸º0
+ * ä»0å¼€å§‹çš„æ•°ç›®ï¼Œå¯ä»¥ç›´æ¥ç”¨get(i)æå–
  */
 
 class CoordLocationInfo {
-	/**´ı²éÕÒµÄlistµÄÔªËØ¸öÊı */
+	/**å¾…æŸ¥æ‰¾çš„listçš„å…ƒç´ ä¸ªæ•° */
 	int listSize;
-	/** ±íÊ¾¸ÃµãÔÚµÚ¼¸¸öÔªËØÖĞ<br>
-	 * ÕıÊı±íÊ¾ÔÚµÚ¼¸¸öÔªËØÖĞ£¬Æ©ÈçÔÚµÚ¼¸¸öexonÖĞ»òµÚ¼¸¸ö»ùÒòÖĞ£¬Êµ¼ÊÊıÄ¿<br>
-	 * ¸ºÊı±íÊ¾ÔÚµÚ¼¸¸öintronÖĞ»òµÚ¼¸¸ö¼ä¸ôÖĞ£¬Êµ¼ÊÊıÄ¿¡£
-	 * Èç¹ûÔÚlist×îÇ°Ãæ£¬ÔòÎª0¡£Èç¹ûÔÚlist×îºóÃæ£¬ÔòÎª¸ºÊıµÄlist.size()
+	/** è¡¨ç¤ºè¯¥ç‚¹åœ¨ç¬¬å‡ ä¸ªå…ƒç´ ä¸­<br>
+	 * æ­£æ•°è¡¨ç¤ºåœ¨ç¬¬å‡ ä¸ªå…ƒç´ ä¸­ï¼Œè­¬å¦‚åœ¨ç¬¬å‡ ä¸ªexonä¸­æˆ–ç¬¬å‡ ä¸ªåŸºå› ä¸­ï¼Œå®é™…æ•°ç›®<br>
+	 * è´Ÿæ•°è¡¨ç¤ºåœ¨ç¬¬å‡ ä¸ªintronä¸­æˆ–ç¬¬å‡ ä¸ªé—´éš”ä¸­ï¼Œå®é™…æ•°ç›®ã€‚
+	 * å¦‚æœåœ¨listæœ€å‰é¢ï¼Œåˆ™ä¸º0ã€‚å¦‚æœåœ¨listæœ€åé¢ï¼Œåˆ™ä¸ºè´Ÿæ•°çš„list.size()
 	 */
 	int elementInsideOutSideNumAbs = 0;
 	
 	public CoordLocationInfo(int listSize) {
 		this.listSize = listSize;
 	}
-	/** ±íÊ¾¸ÃµãÔÚµÚ¼¸¸öÔªËØÖĞ£¬<b>Êµ¼ÊÊıÄ¿</b><br>
-	 * ÕıÊı±íÊ¾ÔÚµÚ¼¸¸öÔªËØÖĞ£¬Æ©ÈçÔÚµÚ¼¸¸öexonÖĞ»òµÚ¼¸¸ö»ùÒòÖĞ£¬Êµ¼ÊÊıÄ¿<br>
-	 * ¸ºÊı±íÊ¾ÔÚµÚ¼¸¸öintronÖĞ»òµÚ¼¸¸ö¼ä¸ôÖĞ¡£
-	 * Èç¹ûÔÚlist×îÇ°Ãæ£¬ÔòÎª0¡£Èç¹ûÔÚlist×îºóÃæ£¬ÔòÎª¸ºÊıµÄlist.size()
+	/** è¡¨ç¤ºè¯¥ç‚¹åœ¨ç¬¬å‡ ä¸ªå…ƒç´ ä¸­ï¼Œ<b>å®é™…æ•°ç›®</b><br>
+	 * æ­£æ•°è¡¨ç¤ºåœ¨ç¬¬å‡ ä¸ªå…ƒç´ ä¸­ï¼Œè­¬å¦‚åœ¨ç¬¬å‡ ä¸ªexonä¸­æˆ–ç¬¬å‡ ä¸ªåŸºå› ä¸­ï¼Œå®é™…æ•°ç›®<br>
+	 * è´Ÿæ•°è¡¨ç¤ºåœ¨ç¬¬å‡ ä¸ªintronä¸­æˆ–ç¬¬å‡ ä¸ªé—´éš”ä¸­ã€‚
+	 * å¦‚æœåœ¨listæœ€å‰é¢ï¼Œåˆ™ä¸º0ã€‚å¦‚æœåœ¨listæœ€åé¢ï¼Œåˆ™ä¸ºè´Ÿæ•°çš„list.size()
 	 */
 	public void setElementInsideOutSideNum(int elementInsideOutSideNumAbs) {
 		this.elementInsideOutSideNumAbs = elementInsideOutSideNumAbs;
@@ -932,9 +932,9 @@ class CoordLocationInfo {
 		return false;
 	}
 	/**
-	 * ·µ»Ø¸ÃµãËùÔÚµÄÔªËØ£¬Ò»Ö±·µ»ØÕıÊı¡£Èç¹ûÔÚlistÍâ£¬·µ»Ø-1<br>
-	 * ¼ÆÊı´Ó0¿ªÊ¼<br>
-	 * <b>-1±íÊ¾Ç°ÃæÃ»ÓĞ»ùÒò</b>
+	 * è¿”å›è¯¥ç‚¹æ‰€åœ¨çš„å…ƒç´ ï¼Œä¸€ç›´è¿”å›æ­£æ•°ã€‚å¦‚æœåœ¨listå¤–ï¼Œè¿”å›-1<br>
+	 * è®¡æ•°ä»0å¼€å§‹<br>
+	 * <b>-1è¡¨ç¤ºå‰é¢æ²¡æœ‰åŸºå› </b>
 	 * @return
 	 */
 	public int getElementNumLastElementFrom0() {
@@ -949,8 +949,8 @@ class CoordLocationInfo {
 		}
 	}
 	/**
-	 * ·µ»Ø¸ÃµãËùÔÚµÄElement£¬Ò»Ö±·µ»ØÕıÊı¡£Èç¹ûÔÚelementÖ®Íâ£¬·µ»Ø-1
-	 * ¼ÆÊı´Ó0¿ªÊ¼
+	 * è¿”å›è¯¥ç‚¹æ‰€åœ¨çš„Elementï¼Œä¸€ç›´è¿”å›æ­£æ•°ã€‚å¦‚æœåœ¨elementä¹‹å¤–ï¼Œè¿”å›-1
+	 * è®¡æ•°ä»0å¼€å§‹
 	 * @return
 	 */
 	public int getElementNumThisElementFrom0() {
@@ -962,9 +962,9 @@ class CoordLocationInfo {
 		}
 	}
 	/**
-	 * ·µ»Ø¸ÃµãËùÔÚµÄÔªËØ£¬Ò»Ö±·µ»ØÕıÊı¡£Èç¹ûÔÚlistÍâ£¬·µ»Ø-1<br>
-	 * ¼ÆÊı´Ó0¿ªÊ¼<br>
-	 * <b>-1±íÊ¾ºóÃæÃ»ÓĞ»ùÒò</b>
+	 * è¿”å›è¯¥ç‚¹æ‰€åœ¨çš„å…ƒç´ ï¼Œä¸€ç›´è¿”å›æ­£æ•°ã€‚å¦‚æœåœ¨listå¤–ï¼Œè¿”å›-1<br>
+	 * è®¡æ•°ä»0å¼€å§‹<br>
+	 * <b>-1è¡¨ç¤ºåé¢æ²¡æœ‰åŸºå› </b>
 	 * @return
 	 */
 	public int getElementNumNextElementFrom0() {
@@ -979,11 +979,11 @@ class CoordLocationInfo {
 		}
 	}
 	/**
-	 * Ç°Ìá£¬µÚÒ»¸öelementµÄÆğµã¾ÍÊÇlistµÄÆğµã£¬×îºóÒ»¸öelementµÄÖÕµã¾ÍÊÇlistµÄÖÕµã<br>
-	 * ·µ»Ø¸ÃµãËùÔÚµÄÔªËØ£¬´Ó1¿ªÊ¼£¬<br>
-	 * ÕıÊı±íÊ¾ÔÚµÚ¼¸¸öÔªËØÖĞ£¬Æ©ÈçÔÚµÚ¼¸¸öexonÖĞ»òµÚ¼¸¸ö»ùÒòÖĞ£¬Êµ¼ÊÊıÄ¿<br>
-	 * ¸ºÊı±íÊ¾ÔÚµÚ¼¸¸öintronÖĞ»òµÚ¼¸¸ö¼ä¸ôÖĞ¡£<br>
-	 * Èç¹û<b>ÔÚlist×îÇ°Ãæ»ò×îºóÃæ£¬ÔòÎª0</b>¡£
+	 * å‰æï¼Œç¬¬ä¸€ä¸ªelementçš„èµ·ç‚¹å°±æ˜¯listçš„èµ·ç‚¹ï¼Œæœ€åä¸€ä¸ªelementçš„ç»ˆç‚¹å°±æ˜¯listçš„ç»ˆç‚¹<br>
+	 * è¿”å›è¯¥ç‚¹æ‰€åœ¨çš„å…ƒç´ ï¼Œä»1å¼€å§‹ï¼Œ<br>
+	 * æ­£æ•°è¡¨ç¤ºåœ¨ç¬¬å‡ ä¸ªå…ƒç´ ä¸­ï¼Œè­¬å¦‚åœ¨ç¬¬å‡ ä¸ªexonä¸­æˆ–ç¬¬å‡ ä¸ªåŸºå› ä¸­ï¼Œå®é™…æ•°ç›®<br>
+	 * è´Ÿæ•°è¡¨ç¤ºåœ¨ç¬¬å‡ ä¸ªintronä¸­æˆ–ç¬¬å‡ ä¸ªé—´éš”ä¸­ã€‚<br>
+	 * å¦‚æœ<b>åœ¨listæœ€å‰é¢æˆ–æœ€åé¢ï¼Œåˆ™ä¸º0</b>ã€‚
 	 */
 	public int getElementNumThisAbs() {
 		if (elementInsideOutSideNumAbs == -listSize) {

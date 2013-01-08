@@ -34,7 +34,7 @@ public class SoyBean {
 		this.SoyGeneInfo = SoyGeneInfo;
 	}
 	/**
-	 * ½«TigrµÄGffÎÄ¼şµ¼Èëgene2GOÊı¾İ¿â£¬µ¹ÈëNCBIGOºÍUniGOÁ½¸ö±í
+	 * å°†Tigrçš„Gffæ–‡ä»¶å¯¼å…¥gene2GOæ•°æ®åº“ï¼Œå€’å…¥NCBIGOå’ŒUniGOä¸¤ä¸ªè¡¨
 	 * @param gffRapDB
 	 * @param outFIle
 	 * @throws Exception
@@ -60,18 +60,18 @@ public class SoyBean {
 	}
 }
 /**
- * ½«ncbiÓësoybeanµÄ¶ÔÕÕ±íµ¼ÈëÊı¾İ¿âµÄID×ª»»±í
+ * å°†ncbiä¸soybeançš„å¯¹ç…§è¡¨å¯¼å…¥æ•°æ®åº“çš„IDè½¬æ¢è¡¨
  * @param dbxref
  */
 class SoyDbXref extends ImportPerLine
 {
 	/**
-	 * ½«ncbiÓësoybeanµÄ¶ÔÕÕ±íµ¼ÈëÊı¾İ¿âµÄID×ª»»±í
+	 * å°†ncbiä¸soybeançš„å¯¹ç…§è¡¨å¯¼å…¥æ•°æ®åº“çš„IDè½¬æ¢è¡¨
 	 * @param dbxref
 	 */
 	@Override
 	boolean impPerLine(String lineContent) {
-		//µÚÒ»¸öglmaxID£¬µÚ¶ş¸ö ncbiID£¬µÚÈı¸ögeneID
+		//ç¬¬ä¸€ä¸ªglmaxIDï¼Œç¬¬äºŒä¸ª ncbiIDï¼Œç¬¬ä¸‰ä¸ªgeneID
 		String[] ss = lineContent.split("\t");
 		GeneID copedID = new GeneID(ss[0], taxID);
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_GLYMAX_SOYBASE, true);
@@ -85,13 +85,13 @@ class SoyDbXref extends ImportPerLine
 }
 /**
  * /media/winE/Bioinformatics/GenomeData/soybean/Gmax_109_annotation_info.txt
- * ½«geneInfo±íµ¼ÈëÊı¾İ¿â
+ * å°†geneInfoè¡¨å¯¼å…¥æ•°æ®åº“
  * @param dbxref
  */
 class SoyGeneInfo extends ImportPerLine
 {
 	/**
-	 * ½«soybeanµÄannotationµ¼ÈëÊı¾İ¿â
+	 * å°†soybeançš„annotationå¯¼å…¥æ•°æ®åº“
 	 * @param dbxref
 	 */
 	@Override

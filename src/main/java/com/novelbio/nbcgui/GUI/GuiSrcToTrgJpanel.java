@@ -69,8 +69,8 @@ public class GuiSrcToTrgJpanel extends JPanel{
 	private JLabel jLabPathQtaxID;
 	private JScrollPaneData jScrollPaneInputPath;
 	////////////
-	static int QtaxID = 0;//²éÑ¯ÎïÖÖID
-	static int StaxID = 9606;//blastÎïÖÖID
+	static int QtaxID = 0;//æŸ¥è¯¢ç‰©ç§ID
+	static int StaxID = 9606;//blastç‰©ç§ID
 	
 	
 	public GuiSrcToTrgJpanel() 
@@ -333,7 +333,7 @@ public class GuiSrcToTrgJpanel extends JPanel{
 			.addGap(0, 6, Short.MAX_VALUE));
 	}
 	/**
-	 * ²é¿´ÎÄ¼şµÄÊó±ê»ò¼üÅÌÊÂ¼şÏìÓ¦Ê±µ÷ÓÃ
+	 * æŸ¥çœ‹æ–‡ä»¶çš„é¼ æ ‡æˆ–é”®ç›˜äº‹ä»¶å“åº”æ—¶è°ƒç”¨
 	 */
 	private void setPathProview(String filePath) {
 		ExcelOperate excelOperate = new ExcelOperate();

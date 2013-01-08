@@ -14,9 +14,9 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 
 
 /**
- * ±¾ÀàÎªÊµÏÖÒ»¸öĞ¡¹¦ÄÜ<br>
- * °²ÁĞ¶ÁÈ¡exce»òtxtÎÄ¼ş£¬ÈçÖ¸¶¨ĞèÒªµÄÄ³²»Á¬Ğø¼¸ÁĞ<br>
- * È»ºó½«Õâ¼¸ÁĞºÏ²¢ºóÒÔString[][]µÄĞÎÊ½·µ»Ø
+ * æœ¬ç±»ä¸ºå®ç°ä¸€ä¸ªå°åŠŸèƒ½<br>
+ * å®‰åˆ—è¯»å–exceæˆ–txtæ–‡ä»¶ï¼Œå¦‚æŒ‡å®šéœ€è¦çš„æŸä¸è¿ç»­å‡ åˆ—<br>
+ * ç„¶åå°†è¿™å‡ åˆ—åˆå¹¶åä»¥String[][]çš„å½¢å¼è¿”å›
  * @author zong0jie
  *
  */
@@ -24,12 +24,12 @@ public class ExcelTxtRead {
 	private static final Logger logger = Logger.getLogger(ExcelTxtRead.class);
 	
 	/**
-	 * Ö¸¶¨excel/txtÎÄ¼ş£¬ÒÔ¼°ĞèÒª¶ÁÈ¡µÄÁĞºÍĞĞ
-	 *  ²»½«µÚÒ»ÁĞ¿ÕÎ»»òÕßnullµÄĞĞÉ¾³ı
-	 * @param excelFile ´ı¶ÁÈ¡µÄexcelÎÄ¼ş
-	 * @param columnID ´ı¶ÁÈ¡µÄÁĞ£¬int[]ÖĞ¼äÊÇ¶ÁÈ¡µÄµÚ¼¸ÁĞ£¬¶ÁÈ¡½á¹û»á°´ÕÕÖ¸¶¨µÄÁĞµÄË³Ğò¸ø³ö
+	 * æŒ‡å®šexcel/txtæ–‡ä»¶ï¼Œä»¥åŠéœ€è¦è¯»å–çš„åˆ—å’Œè¡Œ
+	 *  ä¸å°†ç¬¬ä¸€åˆ—ç©ºä½æˆ–è€…nullçš„è¡Œåˆ é™¤
+	 * @param excelFile å¾…è¯»å–çš„excelæ–‡ä»¶
+	 * @param columnID å¾…è¯»å–çš„åˆ—ï¼Œint[]ä¸­é—´æ˜¯è¯»å–çš„ç¬¬å‡ åˆ—ï¼Œè¯»å–ç»“æœä¼šæŒ‰ç…§æŒ‡å®šçš„åˆ—çš„é¡ºåºç»™å‡º
 	 * @param rowStart
-	 * @param rowEnd Èç¹ûrowEnd<1£¬ÔòÒ»Ö±¶Áµ½sheet1ÎÄ¼ş½áÎ²
+	 * @param rowEnd å¦‚æœrowEnd<1ï¼Œåˆ™ä¸€ç›´è¯»åˆ°sheet1æ–‡ä»¶ç»“å°¾
 	 * @return 
 	 */
 	public static ArrayList<String[]> readLsExcelTxt(String excelFile,int[] columnID,int rowStart,int rowEnd) {
@@ -37,12 +37,12 @@ public class ExcelTxtRead {
 	}
 	/**
 	 * 
-	 * Ö¸¶¨excel/txtÎÄ¼ş£¬ÒÔ¼°ĞèÒª¶ÁÈ¡µÄÁĞºÍĞĞ
-	 * @param excelFile ´ı¶ÁÈ¡µÄexcelÎÄ¼ş
-	 * @param columnID ´ı¶ÁÈ¡µÄÁĞ£¬int[]ÖĞ¼äÊÇ¶ÁÈ¡µÄµÚ¼¸ÁĞ£¬¶ÁÈ¡½á¹û»á°´ÕÕÖ¸¶¨µÄÁĞµÄË³Ğò¸ø³ö
+	 * æŒ‡å®šexcel/txtæ–‡ä»¶ï¼Œä»¥åŠéœ€è¦è¯»å–çš„åˆ—å’Œè¡Œ
+	 * @param excelFile å¾…è¯»å–çš„excelæ–‡ä»¶
+	 * @param columnID å¾…è¯»å–çš„åˆ—ï¼Œint[]ä¸­é—´æ˜¯è¯»å–çš„ç¬¬å‡ åˆ—ï¼Œè¯»å–ç»“æœä¼šæŒ‰ç…§æŒ‡å®šçš„åˆ—çš„é¡ºåºç»™å‡º
 	 * @param rowStart
-	 * @param rowEnd Èç¹ûrowEnd<1£¬ÔòÒ»Ö±¶Áµ½sheet1ÎÄ¼ş½áÎ²
-	 * @param DelFirst ÊÇ·ñ½«µÚÒ»ÁĞ¿ÕÎ»»òÕßnullµÄĞĞÉ¾³ı
+	 * @param rowEnd å¦‚æœrowEnd<1ï¼Œåˆ™ä¸€ç›´è¯»åˆ°sheet1æ–‡ä»¶ç»“å°¾
+	 * @param DelFirst æ˜¯å¦å°†ç¬¬ä¸€åˆ—ç©ºä½æˆ–è€…nullçš„è¡Œåˆ é™¤
 	 * @return
 	 */
 	public static ArrayList<String[]> readLsExcelTxt(String excelFile,int[] columnID,int rowStart,int rowEnd, boolean DelFirst) {
@@ -67,11 +67,11 @@ public class ExcelTxtRead {
 	}
 	
 	/**
-	 * ÄÚ²¿close
-	 * ¸ø¶¨ÎÄ¼ş£¬xls2003/2007/txt£¬»ñµÃËüÃÇµÄĞÅÏ¢£¬ÓÃarraylist-string[]±£´æ
-	 * @param File ÎÄ¼şÃû
-	 * @param firstlinels1 ´ÓµÚ¼¸ĞĞ¿ªÊ¼¶ÁÈ¥£¬Êµ¼ÊĞĞÊı
-	 * @param sep Èç¹ûÊÇtxtµÄ»°£¬¼ä¸ôÊÇÊ²Ã´
+	 * å†…éƒ¨close
+	 * ç»™å®šæ–‡ä»¶ï¼Œxls2003/2007/txtï¼Œè·å¾—å®ƒä»¬çš„ä¿¡æ¯ï¼Œç”¨arraylist-string[]ä¿å­˜
+	 * @param File æ–‡ä»¶å
+	 * @param firstlinels1 ä»ç¬¬å‡ è¡Œå¼€å§‹è¯»å»ï¼Œå®é™…è¡Œæ•°
+	 * @param sep å¦‚æœæ˜¯txtçš„è¯ï¼Œé—´éš”æ˜¯ä»€ä¹ˆ
 	 * @return
 	 * @throws Exception
 	 */
@@ -85,18 +85,18 @@ public class ExcelTxtRead {
 		}
 		TxtReadandWrite txt = new TxtReadandWrite(excelFile, false);
 		int txtRowNum = txt.ExcelRows();
-		ls1 = txt.ExcelRead(firstlinels1, 1, txtRowNum , -1, 0);//´ÓÄ¿±êĞĞ¶ÁÈ¡
+		ls1 = txt.ExcelRead(firstlinels1, 1, txtRowNum , -1, 0);//ä»ç›®æ ‡è¡Œè¯»å–
 		return ls1;
 	}
 	
 	/**
-	 * ÓÃreadLsExcelTxtFile´úÌæ
-	 * ¸ø¶¨ÎÄ¼ş£¬xls2003/2007/txt£¬»ñµÃËüÃÇµÄĞÅÏ¢£¬ÓÃarraylist-string[]±£´æ
+	 * ç”¨readLsExcelTxtFileä»£æ›¿
+	 * ç»™å®šæ–‡ä»¶ï¼Œxls2003/2007/txtï¼Œè·å¾—å®ƒä»¬çš„ä¿¡æ¯ï¼Œç”¨arraylist-string[]ä¿å­˜
 	 * @param excelFile
 	 * @param rowStart 
-	 * @param rowEnd ÖµĞ¡ÓÚµÈÓÚ0Ê±£¬¶ÁÈ¡È«²¿ĞĞ
+	 * @param rowEnd å€¼å°äºç­‰äº0æ—¶ï¼Œè¯»å–å…¨éƒ¨è¡Œ
 	 * @param colStart 
-	 * @param colEnd ÖµĞ¡ÓÚµÈÓÚ0Ê±£¬¶ÁÈ¡È«²¿ÁĞ
+	 * @param colEnd å€¼å°äºç­‰äº0æ—¶ï¼Œè¯»å–å…¨éƒ¨åˆ—
 	 * @return
 	 * @throws Exception
 	 */
@@ -110,17 +110,17 @@ public class ExcelTxtRead {
 			return ls1;
 		}
 		TxtReadandWrite txt = new TxtReadandWrite(excelFile, false);
-		ls1=txt.ExcelRead(rowStart, colStart,rowEnd , colEnd, 0);//´ÓÄ¿±êĞĞ¶ÁÈ¡
+		ls1=txt.ExcelRead(rowStart, colStart,rowEnd , colEnd, 0);//ä»ç›®æ ‡è¡Œè¯»å–
 		txt.close();
 		return ls1;
 	}
 	/**
-	 * ¸ø¶¨ÎÄ¼ş£¬xls2003/2007/txt£¬»ñµÃËüÃÇµÄĞÅÏ¢£¬ÓÃarraylist-string[]±£´æ
+	 * ç»™å®šæ–‡ä»¶ï¼Œxls2003/2007/txtï¼Œè·å¾—å®ƒä»¬çš„ä¿¡æ¯ï¼Œç”¨arraylist-string[]ä¿å­˜
 	 * @param excelFile
 	 * @param rowStart
 	 * @param colStart
-	 * @param rowEnd ÖµĞ¡ÓÚµÈÓÚ0Ê±£¬¶ÁÈ¡È«²¿ĞĞ
-	 * @param colEnd ÖµĞ¡ÓÚµÈÓÚ0Ê±£¬¶ÁÈ¡È«²¿ÁĞ
+	 * @param rowEnd å€¼å°äºç­‰äº0æ—¶ï¼Œè¯»å–å…¨éƒ¨è¡Œ
+	 * @param colEnd å€¼å°äºç­‰äº0æ—¶ï¼Œè¯»å–å…¨éƒ¨åˆ—
 	 * @return
 	 */
 	public static ArrayList<String[]> readLsExcelTxtFile(String excelFile,int rowStart, int colStart, int rowEnd, int colEnd) {
@@ -132,18 +132,18 @@ public class ExcelTxtRead {
 			return ls1;
 		}
 		TxtReadandWrite txt = new TxtReadandWrite(excelFile, false);
-		ls1=txt.ExcelRead(rowStart, colStart,rowEnd , colEnd, 0);//´ÓÄ¿±êĞĞ¶ÁÈ¡
+		ls1=txt.ExcelRead(rowStart, colStart,rowEnd , colEnd, 0);//ä»ç›®æ ‡è¡Œè¯»å–
 		txt.close();
 		return ls1;
 	}
 	/**
 	 * 
-	 * ¸ø¶¨ÎÄ¼ş£¬xls2003/2007/txt£¬»ñµÃËüÃÇµÄĞÅÏ¢£¬ÓÃarraylist-string[]±£´æ
-	 * @param excelFile Ğ´ÈëÒÑÖªÎÄµµ£¬²»¹ı»á½«Ğ´ÈëµÄsheet¸²¸Çµô£¬txtµÄ»°»áĞÂ½¨Ò»¸öÎÄµµ
+	 * ç»™å®šæ–‡ä»¶ï¼Œxls2003/2007/txtï¼Œè·å¾—å®ƒä»¬çš„ä¿¡æ¯ï¼Œç”¨arraylist-string[]ä¿å­˜
+	 * @param excelFile å†™å…¥å·²çŸ¥æ–‡æ¡£ï¼Œä¸è¿‡ä¼šå°†å†™å…¥çš„sheetè¦†ç›–æ‰ï¼Œtxtçš„è¯ä¼šæ–°å»ºä¸€ä¸ªæ–‡æ¡£
 	 * @param rowStart 
-	 * @param rowEnd ÖµĞ¡ÓÚµÈÓÚ0Ê±£¬¶ÁÈ¡È«²¿ĞĞ
+	 * @param rowEnd å€¼å°äºç­‰äº0æ—¶ï¼Œè¯»å–å…¨éƒ¨è¡Œ
 	 * @param colStart 
-	 * @param colEnd ÖµĞ¡ÓÚµÈÓÚ0Ê±£¬¶ÁÈ¡È«²¿ÁĞ
+	 * @param colEnd å€¼å°äºç­‰äº0æ—¶ï¼Œè¯»å–å…¨éƒ¨åˆ—
 	 * @return
 	 * @throws Exception
 	 */
@@ -161,12 +161,12 @@ public class ExcelTxtRead {
 		return ls1;
 	}
 	/**
-	 * ¸ø¶¨Ò»¸öÎÄ±¾£¬Ö¸¶¨Ä³¼¸ÁĞ£¬È»ºó½«Õâ¼¸ÁĞËùÓĞÏàÁÚÇÒÖØ¸´µÄĞĞÈ«²¿É¾³ı£¬Ö»±£ÁôÖØ¸´µÄµÚÒ»ĞĞ
-	 * Õâ¸öÆäÊµÊÇshellÃüÁîuniqµÄÒ»¸ö²¹³ä
-	 * @param inputFIle ÊäÈëÎÄ¼ş
-	 * @param sep ·Ö¸ô·ûÒ»°ãÎª\t
-	 * @param column µÚ¼¸ÁĞ£¬Êµ¼ÊÁĞ
-	 * @param outPut Êä³öÎÄ¼ş
+	 * ç»™å®šä¸€ä¸ªæ–‡æœ¬ï¼ŒæŒ‡å®šæŸå‡ åˆ—ï¼Œç„¶åå°†è¿™å‡ åˆ—æ‰€æœ‰ç›¸é‚»ä¸”é‡å¤çš„è¡Œå…¨éƒ¨åˆ é™¤ï¼Œåªä¿ç•™é‡å¤çš„ç¬¬ä¸€è¡Œ
+	 * è¿™ä¸ªå…¶å®æ˜¯shellå‘½ä»¤uniqçš„ä¸€ä¸ªè¡¥å……
+	 * @param inputFIle è¾“å…¥æ–‡ä»¶
+	 * @param sep åˆ†éš”ç¬¦ä¸€èˆ¬ä¸º\t
+	 * @param column ç¬¬å‡ åˆ—ï¼Œå®é™…åˆ—
+	 * @param outPut è¾“å‡ºæ–‡ä»¶
 	 * @throws Exception 
 	 */
     public static void uniq(String inputFIle,String sep, int column, String outPut) throws Exception {

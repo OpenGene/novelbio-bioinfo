@@ -9,7 +9,7 @@ import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 
 /**
- * ½«tair10µÄÊı¾İµ¼ÈëÊı¾İ¿â
+ * å°†tair10çš„æ•°æ®å¯¼å…¥æ•°æ®åº“
  * @author zong0jie
  *
  */
@@ -23,7 +23,7 @@ public class Arabidopsis {
 	String AthGO = "";
 	/**
 	 * 7: ftp://ftp.arabidopsis.org/home/tair/Ontologies/Gene_Ontology/ 
-	 * ATH_GO_GOSLIM.txt.gz Õâ¸öÊÇgzÑ¹ËõµÄ 
+	 * ATH_GO_GOSLIM.txt.gz è¿™ä¸ªæ˜¯gzå‹ç¼©çš„ 
 	 * @param athGO
 	 */
 	public void setAthGO(String athGO) {
@@ -39,7 +39,7 @@ public class Arabidopsis {
 		TAIRFunctionalDescriptions = tAIR_functional_descriptions;
 	}
 	/**
-	 * 4£º ftp://ftp.arabidopsis.org/home/tair/Genes/TAIR10_genome_release/TAIR10_gene_transcript_associations/ 
+	 * 4ï¼š ftp://ftp.arabidopsis.org/home/tair/Genes/TAIR10_genome_release/TAIR10_gene_transcript_associations/ 
 	 * TAIR10_Model_cDNA_associations
 	 * @param tAIRModelcDNAAssociations
 	 */
@@ -47,7 +47,7 @@ public class Arabidopsis {
 		TAIRModelcDNAAssociations = tAIRModelcDNAAssociations;
 	}
 	/**
-	 * 1£º ftp://ftp.arabidopsis.org/home/tair/Genes/TAIR10_genome_release/TAIR10_NCBI_mapping_files/ 
+	 * 1ï¼š ftp://ftp.arabidopsis.org/home/tair/Genes/TAIR10_genome_release/TAIR10_NCBI_mapping_files/ 
 	 * TAIR10_NCBI_GENEID_mapping
 	 * @param tAIRNCBIGeneIDmapping
 	 */
@@ -55,7 +55,7 @@ public class Arabidopsis {
 		TAIRNCBIGeneIDmapping = tAIRNCBIGeneIDmapping;
 	}
 	/**
-	 * 2£º ftp://ftp.arabidopsis.org/home/tair/Genes/TAIR10_genome_release/TAIR10_NCBI_mapping_files/ 
+	 * 2ï¼š ftp://ftp.arabidopsis.org/home/tair/Genes/TAIR10_genome_release/TAIR10_NCBI_mapping_files/ 
 	 * TAIR10_NCBI_REFSEQ_mapping_PROT
 	 * @param tAIRNCBIRefSeqMappingPROT
 	 */
@@ -63,7 +63,7 @@ public class Arabidopsis {
 		TAIRNCBIRefSeqMappingPROT = tAIRNCBIRefSeqMappingPROT;
 	}
 	/**
-	 * 3£º ftp://ftp.arabidopsis.org/home/tair/Genes/TAIR10_genome_release/TAIR10_NCBI_mapping_files/ 
+	 * 3ï¼š ftp://ftp.arabidopsis.org/home/tair/Genes/TAIR10_genome_release/TAIR10_NCBI_mapping_files/ 
 	 * TAIR_NCBI_REFSEQ_mapping_RNA
 	 * @param tAIRNCBIRefSeqMappingRNA
 	 */
@@ -110,14 +110,14 @@ public class Arabidopsis {
 	}
 }
 /**
- * 1£º
+ * 1ï¼š
  * ftp://ftp.arabidopsis.org/home/tair/Genes/TAIR10_genome_release/TAIR10_NCBI_mapping_files/
  * TAIR10_NCBI_GENEID_mapping
  */
 class TAIR_NCBI_GENEID_mapping extends ImportPerLine
 {
 	/**
-	 * ¸²¸Ç¸Ã·½·¨À´Éè¶¨´ÓµÚ¼¸ĞĞ¿ªÊ¼¶ÁÈ¡
+	 * è¦†ç›–è¯¥æ–¹æ³•æ¥è®¾å®šä»ç¬¬å‡ è¡Œå¼€å§‹è¯»å–
 	 */
 	protected void setReadFromLine() {
 		this.readFromLine = 1;
@@ -133,21 +133,21 @@ class TAIR_NCBI_GENEID_mapping extends ImportPerLine
 	}
 }
 /**
- * 2-3£º
+ * 2-3ï¼š
  * ftp://ftp.arabidopsis.org/home/tair/Genes/TAIR10_genome_release/TAIR10_NCBI_mapping_files/
  * TAIR10_NCBI_REFSEQ_mapping_PROT/TAIR_NCBI_REFSEQ_mapping_RNA
  */
 class TAIR_NCBI_REFSEQ_mapping_PROT_RNA extends ImportPerLine
 {
 	/**
-	 * ¸²¸Ç¸Ã·½·¨À´Éè¶¨´ÓµÚ¼¸ĞĞ¿ªÊ¼¶ÁÈ¡
+	 * è¦†ç›–è¯¥æ–¹æ³•æ¥è®¾å®šä»ç¬¬å‡ è¡Œå¼€å§‹è¯»å–
 	 */
 	protected void setReadFromLine() {
 		this.readFromLine = 1;
 	}
 	boolean Protein = false;
 	/**
-	 * µ¼ÈëµÄÊÇprotein»¹ÊÇRNA
+	 * å¯¼å…¥çš„æ˜¯proteinè¿˜æ˜¯RNA
 	 * @param protein
 	 */
 	public void setProtein(boolean protein) {
@@ -174,14 +174,14 @@ class TAIR_NCBI_REFSEQ_mapping_PROT_RNA extends ImportPerLine
 
 
 /**
- * 4£º
+ * 4ï¼š
  *ftp://ftp.arabidopsis.org/home/tair/Genes/TAIR10_genome_release/TAIR10_gene_transcript_associations/
  * TAIR10_Model_cDNA_associations
  */
 class TAIR_Model_cDNA_associations extends ImportPerLine
 {
 	/**
-	 * ¸²¸Ç¸Ã·½·¨À´Éè¶¨´ÓµÚ¼¸ĞĞ¿ªÊ¼¶ÁÈ¡
+	 * è¦†ç›–è¯¥æ–¹æ³•æ¥è®¾å®šä»ç¬¬å‡ è¡Œå¼€å§‹è¯»å–
 	 */
 	protected void setReadFromLine() {
 		this.readFromLine = 1;
@@ -219,7 +219,7 @@ class TAIR_Model_cDNA_associations extends ImportPerLine
 class Uniprot2AGI extends ImportPerLine
 {
 	/**
-	 * ¸²¸Ç¸Ã·½·¨À´Éè¶¨´ÓµÚ¼¸ĞĞ¿ªÊ¼¶ÁÈ¡
+	 * è¦†ç›–è¯¥æ–¹æ³•æ¥è®¾å®šä»ç¬¬å‡ è¡Œå¼€å§‹è¯»å–
 	 */
 	protected void setReadFromLine() {
 		this.readFromLine = 1;
@@ -229,7 +229,7 @@ class Uniprot2AGI extends ImportPerLine
 	boolean impPerLine(String lineContent) {
 		String[] ss = lineContent.split("\t");
 		String[] ssAtID = ss[1].split(";");
-		//Èç¹ûÒ»¸öuniprotID¶ÔÓ¦¶à¸öatID£¬ÄÇÃ´¾Íµ¼Èë¶à´Î
+		//å¦‚æœä¸€ä¸ªuniprotIDå¯¹åº”å¤šä¸ªatIDï¼Œé‚£ä¹ˆå°±å¯¼å…¥å¤šæ¬¡
 		for (String string : ssAtID) {
 			GeneID copedID = new GeneID(ss[0], taxID);
 			copedID.setUpdateRefAccID(string);
@@ -263,7 +263,7 @@ class TAIR_functional_descriptions extends ImportPerLine
 			return false;
 		}
 		geneInfo.setFullName(ss[2]);
-		//Èç¹ûÃ»ÓĞdescription£¬ÄÇÃ´¾ÍÓÃfullnameÈ¥´úÌæ
+		//å¦‚æœæ²¡æœ‰descriptionï¼Œé‚£ä¹ˆå°±ç”¨fullnameå»ä»£æ›¿
 		String description = "";
 		if (ss.length < 4 || ss[3] == null || ss[3].trim().equals("")) {
 			description = ss[2];
@@ -284,7 +284,7 @@ class TAIR_functional_descriptions extends ImportPerLine
  * 7: 
  * ftp://ftp.arabidopsis.org/home/tair/Ontologies/Gene_Ontology/
  * ATH_GO_GOSLIM.txt.gz
- * Õâ¸öÊÇgzÑ¹ËõµÄ
+ * è¿™ä¸ªæ˜¯gzå‹ç¼©çš„
  * Column headers :explanation
 1. locus name: standard AGI convention name
 2. TAIR accession:the unique identifier for an object in the TAIR database- 
@@ -305,7 +305,7 @@ the object type is the prefix, followed by a unique accession number(e.g. gene:1
  */
 class ATH_GO_GOSLIM extends ImportPerLine
 {	/**
-	 * ¸²¸Ç¸Ã·½·¨À´Éè¶¨´ÓµÚ¼¸ĞĞ¿ªÊ¼¶ÁÈ¡
+	 * è¦†ç›–è¯¥æ–¹æ³•æ¥è®¾å®šä»ç¬¬å‡ è¡Œå¼€å§‹è¯»å–
 	 */
 	protected void setReadFromLine() {
 		this.readFromLine = 1;

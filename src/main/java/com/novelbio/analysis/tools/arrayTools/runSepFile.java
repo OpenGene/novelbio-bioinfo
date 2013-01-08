@@ -10,7 +10,7 @@ public class runSepFile {
 
 	/**
 	 * @param args
-	 * ½«excel·Ö¸î³ÉÖ¸¶¨µÄ¸ñÊ½£¬·½±ãµ¼Èëarraytools
+	 * å°†excelåˆ†å‰²æˆæŒ‡å®šçš„æ ¼å¼ï¼Œæ–¹ä¾¿å¯¼å…¥arraytools
 	 */
 	public static void main(String[] args) {
 //		String thisFilePath=null;
@@ -20,15 +20,15 @@ public class runSepFile {
 //		} catch (URISyntaxException e1) {
 //			// TODO Auto-generated catch block
 //			e1.printStackTrace();/
-//		}//Õâ¸ö²»ÂÒÂë;
+//		}//è¿™ä¸ªä¸ä¹±ç ;
 //		System.out.println(thisFilePath);
 //		System.out.println("test");
 //		ArrayList<String[]> lsFileName=FileOperate.getFoldFileName(thisFilePath, "*", "xls");
 //		String excelFile=lsFileName.get(0)[0]+"."+lsFileName.get(0)[1];
 //		System.out.println(lsFileName.get(0)[0]+"."+lsFileName.get(0)[1]);
 		
-		String thisFilePath = "/home/zong0jie/×ÀÃæ/";
-		String excelFile = "ĞÅºÅÖµ.xls";
+		String thisFilePath = "/home/zong0jie/æ¡Œé¢/";
+		String excelFile = "ä¿¡å·å€¼.xls";
 		try {
 			ArrayTools.seperateFile(thisFilePath,excelFile,"ArrayToolsInput");
 		} catch (Exception e) {

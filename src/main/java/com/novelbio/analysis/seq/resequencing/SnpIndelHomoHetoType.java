@@ -1,6 +1,6 @@
 package com.novelbio.analysis.seq.resequencing;
 
-/** ¸ÃÑù±¾ÖĞSnpIndelµÄÔÓºÏÇé¿ö£¬Î´Öª£¬snpÔÓºÏ£¬snp´¿ºÏ£¬indelÔÓºÏ£¬indel´¿ºÏ Õâ¼¸ÖÖ*/
+/** è¯¥æ ·æœ¬ä¸­SnpIndelçš„æ‚åˆæƒ…å†µï¼ŒæœªçŸ¥ï¼Œsnpæ‚åˆï¼Œsnpçº¯åˆï¼Œindelæ‚åˆï¼Œindelçº¯åˆ è¿™å‡ ç§*/
 public enum SnpIndelHomoHetoType {
 		SnpHomo, SnpHetoMore, SnpHeto, SnpHetoLess, IndelHomo, IndelHetoMore, IndelHeto, IndelHetoLess, RefHomo, UnKnown;
 	}

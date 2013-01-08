@@ -9,7 +9,7 @@ import com.novelbio.database.mapper.kegg.MapKNIdKeg;
 import com.novelbio.database.service.SpringFactory;
 
 /**
- * 将不是基因的ID--也就是一些化合物等转换为KeggID
+ * 灏嗕笉鏄熀鍥犵殑ID--涔熷氨鏄竴浜涘寲鍚堢墿绛夎浆鎹负KeggID
  * @author zong0jie
  *
  */

@@ -9,14 +9,14 @@ public interface MapKReaction extends MapperSql {
 
 	
 	/**
-	 * ÓÃname,pathNam,IDÖĞÈÎÒâ×éºÏÈ¥²éÕÒreaction±í
+	 * ç”¨name,pathNam,IDä¸­ä»»æ„ç»„åˆå»æŸ¥æ‰¾reactionè¡¨
 	 * @param kGreaction
 	 * @return
 	 */
 	public ArrayList<KGreaction> queryLsKGreactions(KGreaction kGreaction);
 	
 	/**
-	 * ÓÃname,pathNam,IDÖĞÈÎÒâ×éºÏÈ¥²éÕÒreaction±í
+	 * ç”¨name,pathNam,IDä¸­ä»»æ„ç»„åˆå»æŸ¥æ‰¾reactionè¡¨
 	 * @param kGreaction
 	 * @return
 	 */
@@ -26,7 +26,7 @@ public interface MapKReaction extends MapperSql {
 	public void insertKGreaction(KGreaction kGreaction);
 	
 	/**
-	 * Ä¿Ç°µÄÉı¼¶·½Ê½ÊÇ:<br>
+	 * ç›®å‰çš„å‡çº§æ–¹å¼æ˜¯:<br>
 		update reaction set<br>
 		pathName = #{pathName},<br>
 		ID = #{id},<br>

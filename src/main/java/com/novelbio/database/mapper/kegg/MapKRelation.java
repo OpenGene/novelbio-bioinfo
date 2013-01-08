@@ -12,14 +12,14 @@ public interface MapKRelation extends MapperSql {
 
 	
 	/**
-	 * ÓÃpathname,entry1,entry2,type,sybtypeNameÖĞÈÎÒâ×éºÏÈ¥²éÕÒrelation±í
+	 * ç”¨pathname,entry1,entry2,type,sybtypeNameä¸­ä»»æ„ç»„åˆå»æŸ¥æ‰¾relationè¡¨
 	 * @param kGrelation
 	 * @return
 	 */
 	public ArrayList<KGrelation> queryLsKGrelations(KGrelation kGrelation);
 	
 	/**
-	 * ÓÃpathname,entry1,entry2,type,sybtypeNameÖĞÈÎÒâ×éºÏÈ¥²éÕÒrelation±í
+	 * ç”¨pathname,entry1,entry2,type,sybtypeNameä¸­ä»»æ„ç»„åˆå»æŸ¥æ‰¾relationè¡¨
 	 * @param kGrelation
 	 * @return
 	 */
@@ -29,7 +29,7 @@ public interface MapKRelation extends MapperSql {
 	public void insertKGrelation(KGrelation kGrelation);
 	
 	/**
-	 * Ä¿Ç°µÄÉı¼¶·½Ê½ÊÇ:<br>
+	 * ç›®å‰çš„å‡çº§æ–¹å¼æ˜¯:<br>
 		update geneInfo set<br>
 		pathname = #{pathname},<br>
 		entry1ID = #{entry1},<br>

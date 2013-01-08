@@ -10,7 +10,7 @@ import com.novelbio.base.plot.DotStyle;
 import com.novelbio.base.plot.PlotBox;
 import com.novelbio.base.plot.PlotScatter;
 
-//TODO Ã»ÓĞ×öÇå¿ÕStatisticUnitµÄ¹¤×÷
+//TODO æ²¡æœ‰åšæ¸…ç©ºStatisticUnitçš„å·¥ä½œ
 public class CtrlPileupStatistics {
 	public static void main(String[] args) {
 //		CtrlPileupStatistics ctrlPileupStatistics = new CtrlPileupStatistics();
@@ -75,15 +75,15 @@ public class CtrlPileupStatistics {
 	}
 
 	StatisticsGenome statisticsGenome = new StatisticsGenome();
-	//Á¬ĞøATÍ³¼Æ
+	//è¿ç»­ATç»Ÿè®¡
 	StatisticsContinueATorCGCoverge statisticsContinueATcoverge = new StatisticsContinueATorCGCoverge(true);
 	StatisticsContinueATorCGdestribution statisticsContinueATdestribution = new StatisticsContinueATorCGdestribution(true);
-	//Á¬ĞøCGÍ³¼Æ
+	//è¿ç»­CGç»Ÿè®¡
 	StatisticsContinueATorCGCoverge statisticsContinueCGcoverge = new StatisticsContinueATorCGCoverge(false);
 	StatisticsContinueATorCGdestribution statisticsContinueCGdestribution = new StatisticsContinueATorCGdestribution(false);
-	//¸²¸Ç¶ÈÍ³¼Æ
+	//è¦†ç›–åº¦ç»Ÿè®¡
 	StatisticsCoverage statisticsCoverage = new StatisticsCoverage();
-	//indelµÄÊıÁ¿ºÍ±ÈÂÊµÄÍ³¼Æ
+	//indelçš„æ•°é‡å’Œæ¯”ç‡çš„ç»Ÿè®¡
 	StatisticsIndelProp statisticsIndelProp = new StatisticsIndelProp();
 	
 	public void setMaxGapSize(int gapMaxNum) {
@@ -98,17 +98,17 @@ public class CtrlPileupStatistics {
 		statisticsGenome.setGffChrAbs(gffChrAbs);
 	}
 	
-	/** ÊÇ·ñ½öÍ³¼Æexon capureµÄÊı¾İ */
+	/** æ˜¯å¦ä»…ç»Ÿè®¡exon capureçš„æ•°æ® */
 	public void setExonOnly(boolean isExonOnly) {
 		statisticsGenome.setExonOnly(isExonOnly);
 	}
 	
 	/**
-	 * <b>±ØĞëÉè¶¨</b>
-	 * »®·Ö¶àÉÙÇøÓò£¬Ã¿¸öÇøÓò¶àÉÙinterval
+	 * <b>å¿…é¡»è®¾å®š</b>
+	 * åˆ’åˆ†å¤šå°‘åŒºåŸŸï¼Œæ¯ä¸ªåŒºåŸŸå¤šå°‘interval
 	 * @param binNum
-	 * @param interval µÈÓÚ2µÄ»°£¬¾ÍÊÇÃ¿¸ô2¸öcoverageÍ³¼ÆÒ»ÏÂ£¬ÒâË¼¾ÍÊÇ2reads¸²¸Ç£¬4reads¸²¸ÇµÄÊıÁ¿
-	 * @param maxCoverage  ×î´óÖµ£¬Èç¹û×îºóÒ»Î»bin¶¼Ã»µ½×î´óÖµ£¬½ÓÏÂÀ´Ò»¸öbin¾ÍºÍ×î´óÖµºÏ²¢£¬ËùÒÔ¿ÉÒÔÍù¸ßÀïÉè¶¨
+	 * @param interval ç­‰äº2çš„è¯ï¼Œå°±æ˜¯æ¯éš”2ä¸ªcoverageç»Ÿè®¡ä¸€ä¸‹ï¼Œæ„æ€å°±æ˜¯2readsè¦†ç›–ï¼Œ4readsè¦†ç›–çš„æ•°é‡
+	 * @param maxCoverage  æœ€å¤§å€¼ï¼Œå¦‚æœæœ€åä¸€ä½binéƒ½æ²¡åˆ°æœ€å¤§å€¼ï¼Œæ¥ä¸‹æ¥ä¸€ä¸ªbinå°±å’Œæœ€å¤§å€¼åˆå¹¶ï¼Œæ‰€ä»¥å¯ä»¥å¾€é«˜é‡Œè®¾å®š
 	 */
 	public void setCoverageBin(int binNum, int interval, int maxCoverage) {
 		statisticsCoverage.setBinNum(binNum, interval, maxCoverage);
@@ -125,7 +125,7 @@ public class CtrlPileupStatistics {
 		int ATorCGInterval = 2;
 		int ATorCGcontinueMax = 50;
 		
-		//Çå¿Õ
+		//æ¸…ç©º
 //		statisticsContinueATcoverge = new StatisticsContinueATorCGCoverge(true);
 //		statisticsContinueATdestribution = new StatisticsContinueATorCGdestribution(true);
 //		statisticsContinueCGcoverge = new StatisticsContinueATorCGCoverge(false);
@@ -133,7 +133,7 @@ public class CtrlPileupStatistics {
 //		statisticsCoverage = new StatisticsCoverage();
 //		statisticsIndelProp = new StatisticsIndelProp();
 		
-		//ÉèÖÃ
+		//è®¾ç½®
 		statisticsContinueATcoverge.setCgInterval(ATorCGInterval);
 		statisticsContinueATcoverge.setMaxContinueATorCG(ATorCGcontinueMax);
 		statisticsContinueATcoverge.setBoxPlotList();
@@ -232,7 +232,7 @@ public class CtrlPileupStatistics {
 		Thread.sleep(100);
 		System.out.println(6);
 		
-		//TODO boxplotÓĞÎÊÌâ
+		//TODO boxplotæœ‰é—®é¢˜
 		try {
 			PlotBox plotBoxAT = statisticsContinueATcoverge.getBoxPlotList().getPlotBox(boxStyle.clone());
 			plotBoxAT.setBg(Color.white);

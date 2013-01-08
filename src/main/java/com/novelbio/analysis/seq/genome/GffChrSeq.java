@@ -17,8 +17,8 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.species.Species;
 /**
- * ÔÚGffChrAbsÖĞÉè¶¨TssºÍTesµÄ·¶Î§
- * setGetSeqIso ºÍ setGetSeqSite£¬Ë­ºóÉè¶¨¾ÍÌáÈ¡Ë­
+ * åœ¨GffChrAbsä¸­è®¾å®šTsså’ŒTesçš„èŒƒå›´
+ * setGetSeqIso å’Œ setGetSeqSiteï¼Œè°åè®¾å®šå°±æå–è°
  * @author zong0jie
  *
  */
@@ -27,23 +27,23 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	GffChrAbs gffChrAbs = new GffChrAbs();
 	
 	GeneStructure geneStructure = GeneStructure.ALLLENGTH;
-	/** ÊÇ·ñÌáÈ¡ÄÚº¬×Ó */
+	/** æ˜¯å¦æå–å†…å«å­ */
 	boolean getIntron;
-	/** ÌáÈ¡È«»ùÒò×éĞòÁĞµÄÊ±ºò£¬ÊÇÃ¿¸öLOCÌáÈ¡Ò»ÌõĞòÁĞ»¹ÊÇÌáÈ¡È«²¿ */
+	/** æå–å…¨åŸºå› ç»„åºåˆ—çš„æ—¶å€™ï¼Œæ˜¯æ¯ä¸ªLOCæå–ä¸€æ¡åºåˆ—è¿˜æ˜¯æå–å…¨éƒ¨ */
 	boolean getAllIso;
-	/** ÊÇ·ñÌáÈ¡°±»ùËá */
+	/** æ˜¯å¦æå–æ°¨åŸºé…¸ */
 	boolean getAAseq = false;
-	/** ÊÇ·ñ½öÌáÈ¡mRNAĞòÁĞ */
+	/** æ˜¯å¦ä»…æå–mRNAåºåˆ— */
 	boolean getOnlyMRNA = false;
 	
 	boolean getGenomWide = false;
 	
-	/** ÊÇÌáÈ¡Î»µã»¹ÊÇÌáÈ¡»ùÒò */
+	/** æ˜¯æå–ä½ç‚¹è¿˜æ˜¯æå–åŸºå›  */
 	boolean booGetIsoSeq = false;
 	LinkedHashSet<GffGeneIsoInfo> setIsoToGetSeq = new LinkedHashSet<GffGeneIsoInfo>();
 	ArrayList<SiteInfo> lsSiteInfos = new ArrayList<SiteInfo>();
 	
-	/** Ä¬ÈÏ´æÈëÎÄ¼ş£¬·ñÔò·µ»ØÒ»¸ölistSeqFasta */
+	/** é»˜è®¤å­˜å…¥æ–‡ä»¶ï¼Œå¦åˆ™è¿”å›ä¸€ä¸ªlistSeqFasta */
 	boolean saveToFile = true;
 	ArrayList<SeqFasta> lsResult = new ArrayList<SeqFasta>();
 	TxtReadandWrite txtOutFile;
@@ -66,25 +66,25 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	public void setSpecies(Species species) {
 		gffChrAbs.setSpecies(species);
 	}
-	/** Ä¬ÈÏÊÇture£¬±íÊ¾´æÈëoutputÎÄ¼ş
-	 * ·ñÔò½á¹û±£´æÔÚlsResultÖĞ
+	/** é»˜è®¤æ˜¯tureï¼Œè¡¨ç¤ºå­˜å…¥outputæ–‡ä»¶
+	 * å¦åˆ™ç»“æœä¿å­˜åœ¨lsResultä¸­
 	 */
 	public void setSaveToFile(boolean saveToFile) {
 		this.saveToFile = saveToFile;
 	}
-	/** ÌáÈ¡È«»ùÒò×éĞòÁĞµÄÊ±ºò£¬ÊÇÃ¿¸öGeneÌáÈ¡Ò»ÌõIso»¹ÊÇÌáÈ¡È«²¿Iso <br>
-	 * true£ºÌáÈ¡¸Ã»ùÒò¶ÔÓ¦µÄ×ªÂ¼±¾<br>
-	 * false ÌáÈ¡¸Ã»ùÒòËùÔÚ»ùÒòµÄ×î³¤×ªÂ¼±¾<br>
+	/** æå–å…¨åŸºå› ç»„åºåˆ—çš„æ—¶å€™ï¼Œæ˜¯æ¯ä¸ªGeneæå–ä¸€æ¡Isoè¿˜æ˜¯æå–å…¨éƒ¨Iso <br>
+	 * trueï¼šæå–è¯¥åŸºå› å¯¹åº”çš„è½¬å½•æœ¬<br>
+	 * false æå–è¯¥åŸºå› æ‰€åœ¨åŸºå› çš„æœ€é•¿è½¬å½•æœ¬<br>
 	 */
 	public void setGetAllIso(boolean getAllIso) {
 		this.getAllIso = getAllIso;
 	}
-	/** ÊÇ·ñ½öÌáÈ¡mRNA£¬Ò²¾ÍÊÇÓĞ±àÂëµÄRNA */
+	/** æ˜¯å¦ä»…æå–mRNAï¼Œä¹Ÿå°±æ˜¯æœ‰ç¼–ç çš„RNA */
 	public void setIsGetOnlyMRNA(boolean getOnlyMRNA) {
 		this.getOnlyMRNA = getOnlyMRNA;
 	}
 	/**
-	 * ÌáÈ¡»ùÒòµÄÊ±ºòÓöµ½ÄÚº¬×Ó£¬ÊÇÌáÈ¡³öÀ´»¹ÊÇÌø¹ıÈ¥
+	 * æå–åŸºå› çš„æ—¶å€™é‡åˆ°å†…å«å­ï¼Œæ˜¯æå–å‡ºæ¥è¿˜æ˜¯è·³è¿‡å»
 	 * @param getIntron
 	 */
 	public void setGetIntron(boolean getIntron) {
@@ -94,7 +94,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		this.getAAseq = getAAseq;
 	}
 	/**
-	 * ½«GffChrAbsµ¼Èë£¬ÆäÖĞgffChrAbsÎñ±Ø³õÊ¼»¯chrSeqºÍgffhashgeneÕâÁ½Ïî
+	 * å°†GffChrAbså¯¼å…¥ï¼Œå…¶ä¸­gffChrAbsåŠ¡å¿…åˆå§‹åŒ–chrSeqå’Œgffhashgeneè¿™ä¸¤é¡¹
 	 * @param gffChrAbs
 	 */
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
@@ -103,12 +103,12 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	public void setOutPutFile(String outPutFile) {
 		this.outFile = outPutFile;
 	}
-	/** ´ıÌáÈ¡»ùÒòµÄÄÄÒ»¸ö²¿·Ö */
+	/** å¾…æå–åŸºå› çš„å“ªä¸€ä¸ªéƒ¨åˆ† */
 	public void setGeneStructure(GeneStructure geneStructure) {
 		this.geneStructure = geneStructure;
 	}
 	/**
-	 * ÊäÈëÃû×ÖÌáÈ¡ĞòÁĞ£¬ÄÚ²¿»áÈ¥³ıÖØ¸´»ùÒò
+	 * è¾“å…¥åå­—æå–åºåˆ—ï¼Œå†…éƒ¨ä¼šå»é™¤é‡å¤åŸºå› 
 	 * @param lsIsoName
 	 */
 	public void setGetSeqIso(ArrayList<String> lsIsoName) {
@@ -128,7 +128,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		getGenomWide = true;
 	}
 	/**
-	 * ÊäÈëÃû×ÖÌáÈ¡ĞòÁĞ£¬ÄÚ²¿»áÈ¥³ıÖØ¸´»ùÒò
+	 * è¾“å…¥åå­—æå–åºåˆ—ï¼Œå†…éƒ¨ä¼šå»é™¤é‡å¤åŸºå› 
 	 * @param lsListGffName
 	 */
 	private void getSeqIsoGenomWide() {
@@ -169,28 +169,28 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		return lsResult;
 	}
 	/**
-	 * ÊäÈëÎ»µãÌáÈ¡ĞòÁĞ
+	 * è¾“å…¥ä½ç‚¹æå–åºåˆ—
 	 * @param lsListGffName
 	 */
 	public void setGetSeqSite(ArrayList<SiteInfo> lsSiteName) {
 		lsSiteInfos = lsSiteName;
 		booGetIsoSeq = false;
 	}
-	/** Èç¹û²»ÊÇ±£´æÔÚÎÄ¼şÖĞ£¬¾Í¿ÉÒÔÍ¨¹ıÕâ¸öÀ´»ñµÃ½á¹û */
+	/** å¦‚æœä¸æ˜¯ä¿å­˜åœ¨æ–‡ä»¶ä¸­ï¼Œå°±å¯ä»¥é€šè¿‡è¿™ä¸ªæ¥è·å¾—ç»“æœ */
 	public ArrayList<SeqFasta> getLsResult() {
 		return lsResult;
 	}
 	/**
-	 * ÓÃÖ¸¶¨motifËÑË÷Ö¸¶¨»ùÒòµÄÖ¸¶¨ÇøÓò£¬·µ»ØµÃµ½µÄmotif
-	 * ²¢Ğ´ÈëÎÄ±¾
+	 * ç”¨æŒ‡å®šmotifæœç´¢æŒ‡å®šåŸºå› çš„æŒ‡å®šåŒºåŸŸï¼Œè¿”å›å¾—åˆ°çš„motif
+	 * å¹¶å†™å…¥æ–‡æœ¬
 	 * @param regex
-	 * 	¸ø¶¨motif£¬ÔÚÈ«»ùÒò×éµÄÖ¸¶¨ĞòÁĞÉÏ²éÕÒÏàÓ¦µÄÕıÔò±í´ïÊ½<br>
-	 * ·µ»ØÕıÏòĞòÁĞºÍ·´ÏòĞòÁĞ²éÕÒµÄ½á¹û<br>
+	 * 	ç»™å®šmotifï¼Œåœ¨å…¨åŸºå› ç»„çš„æŒ‡å®šåºåˆ—ä¸ŠæŸ¥æ‰¾ç›¸åº”çš„æ­£åˆ™è¡¨è¾¾å¼<br>
+	 * è¿”å›æ­£å‘åºåˆ—å’Œåå‘åºåˆ—æŸ¥æ‰¾çš„ç»“æœ<br>
 	 * List-string [4] <br>
 	 * 0: seqName<br>
 	 * 1: strand : + / -<br>
-	 * 2: ¾ßÌåµÄmotifĞòÁĞ<br>
-	 * 3: motif×îºóÒ»¸ö¼î»ùÓë±¾ĞòÁĞÖÕµãµÄ¾àÀë
+	 * 2: å…·ä½“çš„motifåºåˆ—<br>
+	 * 3: motifæœ€åä¸€ä¸ªç¢±åŸºä¸æœ¬åºåˆ—ç»ˆç‚¹çš„è·ç¦»
 	 */
 	public ArrayList<String[]> motifPromoterScan(String regex) {
 		ArrayList<String[]> lsMotifResult = new ArrayList<String[]>();
@@ -211,7 +211,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		getSeq();
 	}
 	/**
-	 * ÏÈÉè¶¨¶ÁÈ¡µÄĞòÁĞ£¬È»ºóÅúÁ¿¶ÁÈ¡²¢Ğ´ÈëÎÄ±¾
+	 * å…ˆè®¾å®šè¯»å–çš„åºåˆ—ï¼Œç„¶åæ‰¹é‡è¯»å–å¹¶å†™å…¥æ–‡æœ¬
 	 * @return
 	 */
 	public void getSeq() {
@@ -254,7 +254,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		if (saveToFile)
 			txtOutFile.close();
 	}
-	/** Éè¶¨ÖĞ¼ä²ÎÊı */
+	/** è®¾å®šä¸­é—´å‚æ•° */
 	private void setTmpInfo(boolean isGetSeq, SeqFasta seqFasta, int number) {
 		if (!isGetSeq) {
 			return;
@@ -277,7 +277,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	}
 	
 	
-	/** ÅĞ¶¨ĞòÁĞÊÇ·ñ´æÔÚ²¢ÇÒ¹»³¤£¬Í¬Ê±¸ù¾İĞèÒªĞ´Èëoutput */
+	/** åˆ¤å®šåºåˆ—æ˜¯å¦å­˜åœ¨å¹¶ä¸”å¤Ÿé•¿ï¼ŒåŒæ—¶æ ¹æ®éœ€è¦å†™å…¥output */
 	private boolean isSeqFastaAndWriteToFile(SeqFasta seqFasta) {
 		if (seqFasta == null || seqFasta.Length() < 3) {
 			return false;
@@ -296,14 +296,14 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		return true;
 	}
 	/**
-	 * ¸ø¶¨×ø±ê£¬»ñµÃ¸Ã×ø±êËù¶ÔÓ¦µÄĞòÁĞ,»á¸ù¾İÊäÈëµÄ·½Ïò½øĞĞ·´Ïò
+	 * ç»™å®šåæ ‡ï¼Œè·å¾—è¯¥åæ ‡æ‰€å¯¹åº”çš„åºåˆ—,ä¼šæ ¹æ®è¾“å…¥çš„æ–¹å‘è¿›è¡Œåå‘
 	 * @return
 	 */
 	public void getSeq(SiteInfo siteInfo) {
 		gffChrAbs.getSeqHash().getSeq(siteInfo);
 	}
 	/**
-	 * ¸ø¶¨×ø±ê£¬ÌáÈ¡ĞòÁĞ
+	 * ç»™å®šåæ ‡ï¼Œæå–åºåˆ—
 	 * @param IsoName
 	 * @param absIso
 	 * @param getIntron
@@ -313,12 +313,12 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		return gffChrAbs.getSeqHash().getSeq(chrID, (long)startLoc, (long)endLoc);
 	}
 	/**
-	 * Éè¶¨ÍâÏÔ×Ó·¶Î§£¬»ñµÃ¾ßÌåĞòÁĞ
-	 * °´ÕÕGffGeneIsoInfo×ªÂ¼±¾¸ø¶¨µÄÇé¿ö£¬×Ô¶¯ÌáÈ¡Ïà¶ÔÓÚ»ùÒò×ªÂ¼·½ÏòµÄĞòÁĞ
-	 * @param IsoName ×ªÂ¼±¾µÄÃû×Ö
-	 * @param startExon ¾ßÌåÄ³¸öexon Æğµã
-	 * @param endExon ¾ßÌåÄ³¸öIntron ÖÕµã
-	 * @param absIso ÊÇ·ñÊÇ¸Ã×ªÂ¼±¾£¬falseÔòÑ¡Ôñ¸Ã»ùÒòÃûÏÂµÄ×î³¤×ªÂ¼±¾
+	 * è®¾å®šå¤–æ˜¾å­èŒƒå›´ï¼Œè·å¾—å…·ä½“åºåˆ—
+	 * æŒ‰ç…§GffGeneIsoInfoè½¬å½•æœ¬ç»™å®šçš„æƒ…å†µï¼Œè‡ªåŠ¨æå–ç›¸å¯¹äºåŸºå› è½¬å½•æ–¹å‘çš„åºåˆ—
+	 * @param IsoName è½¬å½•æœ¬çš„åå­—
+	 * @param startExon å…·ä½“æŸä¸ªexon èµ·ç‚¹
+	 * @param endExon å…·ä½“æŸä¸ªIntron ç»ˆç‚¹
+	 * @param absIso æ˜¯å¦æ˜¯è¯¥è½¬å½•æœ¬ï¼Œfalseåˆ™é€‰æ‹©è¯¥åŸºå› åä¸‹çš„æœ€é•¿è½¬å½•æœ¬
 	 * @param getIntron
 	 * @return
 	 */
@@ -336,10 +336,10 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		return getSeq(gffGeneIsoInfo);
 	}
 	/**
-	 * ¸ù¾İgenestructureÖĞ¶¨ÒåµÄ½á¹¹ÌáÈ¡ĞòÁĞ
-	 * Èç¹ûgenestructureÉè¶¨µÄÊÇtss£¬Ôò°´ÕÕgffchrabsÖĞÉè¶¨µÄtssÌáÈ¡ĞòÁĞ
+	 * æ ¹æ®genestructureä¸­å®šä¹‰çš„ç»“æ„æå–åºåˆ—
+	 * å¦‚æœgenestructureè®¾å®šçš„æ˜¯tssï¼Œåˆ™æŒ‰ç…§gffchrabsä¸­è®¾å®šçš„tssæå–åºåˆ—
 	 * @param IsoName
-	 * @param absIso true,ÌáÈ¡¸Ã×ªÂ¼±¾£¬false£¬ÌáÈ¡¸ÃgeneÏÂµÄ×î³¤×ªÂ¼±¾
+	 * @param absIso true,æå–è¯¥è½¬å½•æœ¬ï¼Œfalseï¼Œæå–è¯¥geneä¸‹çš„æœ€é•¿è½¬å½•æœ¬
 	 * @return
 	 */
 	public SeqFasta getSeq(GffGeneIsoInfo gffGeneIsoInfo) {
@@ -379,12 +379,12 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		return seqFastaResult;
 	}
 	/**
-	 * ÌáÈ¡Ä³¸öÎ»µãµÄÖÜ±ßĞòÁĞ£¬¸ù¾İ·½Ïò·µ»ØºÏÊÊµÄĞòÁĞ
-	 * ÓÃÀ´ÌáÈ¡TssºÍTesÖÜ±ßĞòÁĞµÄ
-	 * @param cis5to3 ·½Ïò
-	 * @param site Î»µã
-	 * @param upBp ¸ÃÎ»µãÉÏÓÎ£¬¿¼ÂÇÕı·´Ïò
-	 * @param downBp ¸ÃÎ»µãÏÂÓÎ£¬¿¼ÂÇÕı·´Ïò
+	 * æå–æŸä¸ªä½ç‚¹çš„å‘¨è¾¹åºåˆ—ï¼Œæ ¹æ®æ–¹å‘è¿”å›åˆé€‚çš„åºåˆ—
+	 * ç”¨æ¥æå–Tsså’ŒTeså‘¨è¾¹åºåˆ—çš„
+	 * @param cis5to3 æ–¹å‘
+	 * @param site ä½ç‚¹
+	 * @param upBp è¯¥ä½ç‚¹ä¸Šæ¸¸ï¼Œè€ƒè™‘æ­£åå‘
+	 * @param downBp è¯¥ä½ç‚¹ä¸‹æ¸¸ï¼Œè€ƒè™‘æ­£åå‘
 	 * @return
 	 */
 	private SeqFasta getSiteRange(GffGeneIsoInfo gffGeneIsoInfo, int site, int upBp, int downBp) {
@@ -401,15 +401,15 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		int end = Math.max(startlocation, endlocation);
 		SeqFasta seq = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.isCis5to3(), gffGeneIsoInfo.getChrID(), start, end);
 		if (seq == null) {
-			logger.error("Ã»ÓĞÌáÈ¡µ½ĞòÁĞ£º" + " "+ gffGeneIsoInfo.getChrID() + " " + start + " " + end);
+			logger.error("æ²¡æœ‰æå–åˆ°åºåˆ—ï¼š" + " "+ gffGeneIsoInfo.getChrID() + " " + start + " " + end);
 			return null;
 		}
 		seq.setName(gffGeneIsoInfo.getName());
 		return seq;
 	}
 	/**
-	 * ¿ÉÒÔ¸ørsemÊ¹ÓÃ
-	 * ÄÚ²¿×Ô¶¯close
+	 * å¯ä»¥ç»™rsemä½¿ç”¨
+	 * å†…éƒ¨è‡ªåŠ¨close
 	 * @param seqFastaTxt
 	 * @return
 	 */

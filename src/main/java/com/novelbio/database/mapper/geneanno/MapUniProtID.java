@@ -20,7 +20,7 @@ public interface MapUniProtID extends MapperSql{
 			if test="taxID !=null and taxID !=0"<br>
 				and TaxID = #{taxID} <br>
 			/if<br>
-	 * 主要是来看本列是否已经存在了<br>
+	 * 涓昏鏄潵鐪嬫湰鍒楁槸鍚﹀凡缁忓瓨鍦ㄤ簡<br>
 	 * @param QueryUniProtID
 	 * @return
 	 */
@@ -36,7 +36,7 @@ public interface MapUniProtID extends MapperSql{
 			if test="taxID !=null and taxID !=0"<br>
 				and TaxID = #{taxID} <br>
 			/if<br>
-	 * 主要是来看本列是否已经存在了<br>
+	 * 涓昏鏄潵鐪嬫湰鍒楁槸鍚﹀凡缁忓瓨鍦ㄤ簡<br>
 	 * @param QueryUniProtID
 	 * @return
 	 */
@@ -45,7 +45,7 @@ public interface MapUniProtID extends MapperSql{
 	public void insertUniProtID(UniProtID UniProtID);
 	
 	/**
-	 * 目前的升级方式是<br>
+	 * 鐩墠鐨勫崌绾ф柟寮忔槸<br>
 		update UniProtID <br>
 		set<br>
 			if test="taxID !=null and taxID !=0"<br>

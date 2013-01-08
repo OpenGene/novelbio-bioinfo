@@ -5,23 +5,23 @@ import java.util.HashMap;
 import com.novelbio.database.service.servgeneanno.ServTaxID;
 
 /**
- * ÓĞ¹ØtaxIDµÄ±í¸ñ
+ * æœ‰å…³taxIDçš„è¡¨æ ¼
  * @author zong0jie
  */
 public class TaxInfo {
 	ServTaxID servTaxID = new ServTaxID();
-	/** NCBIµÄÎïÖÖID */	
+	/** NCBIçš„ç‰©ç§ID */	
 	private int taxID;
-	/** KEGGÉÏµÄËõĞ´ */
-	private String abbr;//ËõĞ´
-	/** À­¶¡Ãû */
-	private String latin;//³£ÓÃÃû
-	/** ³£ÓÃÃû */
-	private String comName;//³£ÓÃÃû
-	/** ÖĞÎÄÃû */
-	private String chnName;//ÖĞÎÄÃû
+	/** KEGGä¸Šçš„ç¼©å†™ */
+	private String abbr;//ç¼©å†™
+	/** æ‹‰ä¸å */
+	private String latin;//å¸¸ç”¨å
+	/** å¸¸ç”¨å */
+	private String comName;//å¸¸ç”¨å
+	/** ä¸­æ–‡å */
+	private String chnName;//ä¸­æ–‡å
 	/**
-	 * NCBIµÄÎïÖÖID
+	 * NCBIçš„ç‰©ç§ID
 	 * @param taxID
 	 */
 	public void setTaxID(int taxID) {
@@ -30,60 +30,60 @@ public class TaxInfo {
 		}
 		this.taxID=taxID;
 	}
-	/** NCBIµÄÎïÖÖID */
+	/** NCBIçš„ç‰©ç§ID */
 	public int getTaxID() {
 		return this.taxID;
 	}
-	/** KEGGÉÏµÄËõĞ´ */
+	/** KEGGä¸Šçš„ç¼©å†™ */
 	public void setAbbr(String abbr) {
 		if (abbr == null) {
 			return;
 		}
 		this.abbr=abbr.trim();
 	}
-	/** KEGGÉÏµÄËõĞ´ */
+	/** KEGGä¸Šçš„ç¼©å†™ */
 	public String getAbbr() {
 		if (abbr == null) {
 			return "";
 		}
 		return this.abbr;
 	}
-	/** À­¶¡Ãû */
+	/** æ‹‰ä¸å */
 	public void setLatin(String latin) {
 		if (latin == null) {
 			return;
 		}
 		this.latin=latin.trim();
 	}
-	/** À­¶¡Ãû */
+	/** æ‹‰ä¸å */
 	public String getLatin() {
 		if (latin == null) {
 			return "";
 		}
 		return this.latin;
 	}
-	/** ³£ÓÃÃû */
+	/** å¸¸ç”¨å */
 	public void setComName(String comName) {
 		if (comName == null) {
 			return;
 		}
 		this.comName=comName.trim();
 	}
-	/** ³£ÓÃÃû */
+	/** å¸¸ç”¨å */
 	public String getComName() {
 		if (comName == null) {
 			return "";
 		}
 		return this.comName;
 	}
-	/** ÖĞÎÄÃû */
+	/** ä¸­æ–‡å */
 	public void setChnName(String chnName) {
 		if (chnName == null) {
 			return;
 		}
 		this.chnName=chnName.trim();
 	}
-	/** ÖĞÎÄÃû */
+	/** ä¸­æ–‡å */
 	public String getChnName() {
 		if (chnName == null) {
 			return "";
@@ -91,7 +91,7 @@ public class TaxInfo {
 		return this.chnName;
 	}
 	/**
-	 * ·µ»Ø³£ÓÃÃû¶ÔtaxID
+	 * è¿”å›å¸¸ç”¨åå¯¹taxID
 	 * @return
 	 */
 	public static HashMap<String, Integer> getHashNameTaxID(boolean allID) {
@@ -99,7 +99,7 @@ public class TaxInfo {
 		return servTaxID.getSpeciesNameTaxID(allID);
 	}
 	/**
-	 * ·µ»ØtaxID¶Ô³£ÓÃÃû
+	 * è¿”å›taxIDå¯¹å¸¸ç”¨å
 	 * @return
 	 */
 	public static HashMap<Integer,String> getHashTaxIDName() {
@@ -110,8 +110,8 @@ public class TaxInfo {
 		servTaxID.update(this);
 	}
 	/**
-	 * ²»½ö½ö±È½ÏtaxID£¬È«²¿±È½ÏÒ»±é
-	 * ÇÒ±È½ÏÈ¾É«Ìå³¤¶È
+	 * ä¸ä»…ä»…æ¯”è¾ƒtaxIDï¼Œå…¨éƒ¨æ¯”è¾ƒä¸€é
+	 * ä¸”æ¯”è¾ƒæŸ“è‰²ä½“é•¿åº¦
 	 */
 	public boolean equals(Object obj) {
 		if (this == obj) return true;

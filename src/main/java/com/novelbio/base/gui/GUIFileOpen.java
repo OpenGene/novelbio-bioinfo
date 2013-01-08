@@ -18,9 +18,9 @@ public class GUIFileOpen  extends JFrame {
 	private static final long serialVersionUID = 7901662414647284213L;
 	File currendDir = null;
 	/**
-	 * ´ò¿ªÎÄ±¾Ñ¡ÔñÆ÷
-	 * @param description Èç"txt/excel 2003"
-	 * @param extensions Èç "txt","xls" Èç¹û²»Éè¶¨--Æ©Èçnull£¬""£¬"*"£¬¾ÍÏÔÊ¾È«²¿ÎÄ¼ş
+	 * æ‰“å¼€æ–‡æœ¬é€‰æ‹©å™¨
+	 * @param description å¦‚"txt/excel 2003"
+	 * @param extensions å¦‚ "txt","xls" å¦‚æœä¸è®¾å®š--è­¬å¦‚nullï¼Œ""ï¼Œ"*"ï¼Œå°±æ˜¾ç¤ºå…¨éƒ¨æ–‡ä»¶
 	 * @return
 	 */
 	public String openFileName(String  description, String... extensions) {
@@ -42,9 +42,9 @@ public class GUIFileOpen  extends JFrame {
 		return null;
 	}
 	/**
-	 * ´ò¿ªÎÄ±¾Ñ¡ÔñÆ÷
-	 * @param description Èç"txt/excel 2003"
-	 * @param extensions Èç "txt","xls" Èç¹û²»Éè¶¨--Æ©Èçnull£¬""£¬"*"£¬¾ÍÏÔÊ¾È«²¿ÎÄ¼ş
+	 * æ‰“å¼€æ–‡æœ¬é€‰æ‹©å™¨
+	 * @param description å¦‚"txt/excel 2003"
+	 * @param extensions å¦‚ "txt","xls" å¦‚æœä¸è®¾å®š--è­¬å¦‚nullï¼Œ""ï¼Œ"*"ï¼Œå°±æ˜¾ç¤ºå…¨éƒ¨æ–‡ä»¶
 	 * @return
 	 */
 	public String openFilePathName(String  description, String... extensions) {
@@ -67,9 +67,9 @@ public class GUIFileOpen  extends JFrame {
 		return null;
 	}
 	/**
-	 * ´ò¿ªÎÄ±¾Ñ¡ÔñÆ÷
-	 * @param description Èç"txt/excel 2003"
-	 * @param extensions Èç "txt","xls" Èç¹û²»Éè¶¨--Æ©Èçnull£¬""£¬"*"£¬¾ÍÏÔÊ¾È«²¿ÎÄ¼ş
+	 * æ‰“å¼€æ–‡æœ¬é€‰æ‹©å™¨
+	 * @param description å¦‚"txt/excel 2003"
+	 * @param extensions å¦‚ "txt","xls" å¦‚æœä¸è®¾å®š--è­¬å¦‚nullï¼Œ""ï¼Œ"*"ï¼Œå°±æ˜¾ç¤ºå…¨éƒ¨æ–‡ä»¶
 	 * @return
 	 */
 	public ArrayList<String> openLsFileName(String  description, String... extensions) {
@@ -98,9 +98,9 @@ public class GUIFileOpen  extends JFrame {
 		return null;
 	}
 	/**
-	 * ´ò¿ªÎÄ±¾Ñ¡ÔñÆ÷
-	 * @param description Èç"txt/excel 2003"
-	 * @param extensions Èç "txt","xls" Èç¹û²»Éè¶¨--Æ©Èçnull£¬""£¬"*"£¬¾ÍÏÔÊ¾È«²¿ÎÄ¼ş
+	 * æ‰“å¼€æ–‡æœ¬é€‰æ‹©å™¨
+	 * @param description å¦‚"txt/excel 2003"
+	 * @param extensions å¦‚ "txt","xls" å¦‚æœä¸è®¾å®š--è­¬å¦‚nullï¼Œ""ï¼Œ"*"ï¼Œå°±æ˜¾ç¤ºå…¨éƒ¨æ–‡ä»¶
 	 * @return
 	 */
 	public String saveFileName(String  description, String... extensions) {
@@ -121,9 +121,9 @@ public class GUIFileOpen  extends JFrame {
 		return null;
 	}
 	/**
-	 * ´ò¿ªÎÄ±¾Ñ¡ÔñÆ÷
-	 * @param description Èç"txt/excel 2003"
-	 * @param extensions Èç "txt","xls" Èç¹û²»Éè¶¨--Æ©Èçnull£¬""£¬"*"£¬¾ÍÏÔÊ¾È«²¿ÎÄ¼ş
+	 * æ‰“å¼€æ–‡æœ¬é€‰æ‹©å™¨
+	 * @param description å¦‚"txt/excel 2003"
+	 * @param extensions å¦‚ "txt","xls" å¦‚æœä¸è®¾å®š--è­¬å¦‚nullï¼Œ""ï¼Œ"*"ï¼Œå°±æ˜¾ç¤ºå…¨éƒ¨æ–‡ä»¶
 	 * @return
 	 */
 	public String saveFileNameAndPath(String description, String... extensions) {
@@ -150,7 +150,7 @@ public class GUIFileOpen  extends JFrame {
 	}
 	private String[] filterExtension(String... extensions) {
 		ArrayList<String> lsExtension = new ArrayList<String>();
-		// //////////////½«ÎÄ¼şÃûÖĞÎª¿Õ¸ñºÍ*µÄÈ¥³ı£¬È»ºó¹ıÂËºó×ºÃû
+		// //////////////å°†æ–‡ä»¶åä¸­ä¸ºç©ºæ ¼å’Œ*çš„å»é™¤ï¼Œç„¶åè¿‡æ»¤åç¼€å
 		for (String string : extensions) {
 			if (string != null && (!string.equals("") && !string.equals("*"))) {
 				lsExtension.add(string);

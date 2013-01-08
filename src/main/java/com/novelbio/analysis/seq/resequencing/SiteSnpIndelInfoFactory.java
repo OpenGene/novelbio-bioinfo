@@ -11,7 +11,7 @@ public class SiteSnpIndelInfoFactory {
 		 referenceSeq = referenceSeq.toUpperCase(); thisSeq = thisSeq.toUpperCase();
 		 
 		 if (referenceSeq.length() > 1 && thisSeq.length() > 1) {
-			logger.error("³öÏÖÆæ¹ÖµÄÎ»ÖÃ£¬ÇëÈ·ÈÏ£º" + refSiteSnpIndel.getRefID() + "\t" + refSiteSnpIndel.getRefSnpIndelStart());
+			logger.error("å‡ºç°å¥‡æ€ªçš„ä½ç½®ï¼Œè¯·ç¡®è®¤ï¼š" + refSiteSnpIndel.getRefID() + "\t" + refSiteSnpIndel.getRefSnpIndelStart());
 			return null;
 		}
 		 else if (referenceSeq.equals(thisSeq)) {
@@ -30,7 +30,7 @@ public class SiteSnpIndelInfoFactory {
 			SiteSnpIndelInfo siteSnpIndelInfo = new SiteSnpIndelInfoDeletion(refSiteSnpIndel, referenceSeq, thisSeq);
 			return siteSnpIndelInfo;
 		}
-		logger.error("³öÏÖÆæ¹ÖµÄÎ»ÖÃ£¬ÇëÈ·ÈÏ£º" + refSiteSnpIndel.getRefID() + "\t" + refSiteSnpIndel.getRefSnpIndelStart());
+		logger.error("å‡ºç°å¥‡æ€ªçš„ä½ç½®ï¼Œè¯·ç¡®è®¤ï¼š" + refSiteSnpIndel.getRefID() + "\t" + refSiteSnpIndel.getRefSnpIndelStart());
 		return null;
 	}
 }

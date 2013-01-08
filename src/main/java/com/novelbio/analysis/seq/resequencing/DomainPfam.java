@@ -9,7 +9,7 @@ import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
 
 /**
- * pfam domainµÄÊı¾İ¿â£¬Ö¸¶¨Ã¿¸öµ°°×¶¼ÓĞÄÄĞ©domain
+ * pfam domainçš„æ•°æ®åº“ï¼ŒæŒ‡å®šæ¯ä¸ªè›‹ç™½éƒ½æœ‰å“ªäº›domain
  * @author zong0jie
  *
  */
@@ -17,7 +17,7 @@ public class DomainPfam extends ListAbsSearch<DomainDetail, ListCodAbs<DomainDet
 	private static final long serialVersionUID = -4658442601484192818L;
 	static HashMap<String, DomainPfam> hashDomain = new HashMap<String, DomainPfam>();
 	String accID = "";
-	/** ¸Ãµ°°×ÉÏÄ³¸öÎ»µãµÄ×ø±ê£¬µÚÒ»Î»ÊÇ1 */
+	/** è¯¥è›‹ç™½ä¸ŠæŸä¸ªä½ç‚¹çš„åæ ‡ï¼Œç¬¬ä¸€ä½æ˜¯1 */
 	int aaLoc = 0;
 	
 	public DomainPfam(String accID) {
@@ -107,7 +107,7 @@ class DomainDetail extends ListDetailAbs {
 	String Description = "";
 	
 	/**
-	 * ÊäÈëpfamÅúÁ¿½á¹ûÖĞµÄÄ³Ò»ĞĞ£¬»ñµÃ¸ÃdomainµÄ¾ßÌåĞÅÏ¢
+	 * è¾“å…¥pfamæ‰¹é‡ç»“æœä¸­çš„æŸä¸€è¡Œï¼Œè·å¾—è¯¥domainçš„å…·ä½“ä¿¡æ¯
 	 * @param domainPfamLine
 	 */
 	public DomainDetail(String domainPfamLine) {

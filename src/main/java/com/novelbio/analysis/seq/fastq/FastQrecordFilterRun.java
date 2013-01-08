@@ -16,16 +16,16 @@ public class FastQrecordFilterRun implements Callable<FastQrecordFilterRun> {
 	public void setFastQRecordFilter(FastQRecordFilter fastQRecordFilter) {
 		this.fastQRecordFilter = fastQRecordFilter;
 	}
-	/** ÕâÀï×îºÃµ¼ÈëÃ»ÓĞ¾­¹ı³õÊ¼»¯µÄfastqRecord */
+	/** è¿™é‡Œæœ€å¥½å¯¼å…¥æ²¡æœ‰ç»è¿‡åˆå§‹åŒ–çš„fastqRecord */
 	public void setFastQRecordSE(FastQRecord fastQRecord1) {
 		this.fastQRecord1 = fastQRecord1;
 	}
-	/** ÕâÀï×îºÃµ¼ÈëÃ»ÓĞ¾­¹ı³õÊ¼»¯µÄfastqRecord */
+	/** è¿™é‡Œæœ€å¥½å¯¼å…¥æ²¡æœ‰ç»è¿‡åˆå§‹åŒ–çš„fastqRecord */
 	public void setFastQRecordPE(FastQRecord fastQRecord1, FastQRecord fastQRecord2) {
 		this.fastQRecord1 = fastQRecord1;
 		this.fastQRecord2 = fastQRecord2;
 	}
-	/** ÄÚ²¿»á¶ÔfastqRecord½øĞĞ³õÊ¼»¯ */
+	/** å†…éƒ¨ä¼šå¯¹fastqRecordè¿›è¡Œåˆå§‹åŒ– */
 	@Override
 	public FastQrecordFilterRun call() throws Exception {
 		try {
@@ -55,7 +55,7 @@ public class FastQrecordFilterRun implements Callable<FastQrecordFilterRun> {
 		}
 		return true;
 	}
-	/** ÊÇ·ñ¹ıÂË³É¹¦ */
+	/** æ˜¯å¦è¿‡æ»¤æˆåŠŸ */
 	public boolean isFilterSucess() {
 		return filterSucess;
 	}

@@ -10,7 +10,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataOperate.WebFetchOld;
 
 /**
- * ±È½ÏÕâÁ½¸öÍøÕ¾£¬ÄÄ¸öÍ¼¶àÑ¡ÔñÄÄ¸öÍøÕ¾
+ * æ¯”è¾ƒè¿™ä¸¤ä¸ªç½‘ç«™ï¼Œå“ªä¸ªå›¾å¤šé€‰æ‹©å“ªä¸ªç½‘ç«™
  * @author zong0jie
  *
  */
@@ -87,8 +87,8 @@ public class compDon2Chan {
 	
 	
 	public static int getDonNum(String name) throws Exception {
-		Pattern pattern =Pattern.compile("post-count\">(\\d+)</span></li>", Pattern.CASE_INSENSITIVE);  //flags - Æ¥Åä±êÖ¾£¬¿ÉÄÜ°üÀ¨ CASE_INSENSITIVE¡¢MULTILINE¡¢DOTALL¡¢UNICODE_CASE¡¢ CANON_EQ¡¢UNIX_LINES¡¢LITERAL ºÍ COMMENTS µÄÎ»ÑÚÂë  // CASE_INSENSITIVE,´óĞ¡Ğ´²»Ãô¸Ğ£¬MULTILINE ¶àĞĞ
-	    Matcher matcher;//matcher.groupCount() ·µ»Ø´ËÆ¥ÅäÆ÷Ä£Ê½ÖĞµÄ²¶»ñ×éÊı¡£
+		Pattern pattern =Pattern.compile("post-count\">(\\d+)</span></li>", Pattern.CASE_INSENSITIVE);  //flags - åŒ¹é…æ ‡å¿—ï¼Œå¯èƒ½åŒ…æ‹¬ CASE_INSENSITIVEã€MULTILINEã€DOTALLã€UNICODE_CASEã€ CANON_EQã€UNIX_LINESã€LITERAL å’Œ COMMENTS çš„ä½æ©ç   // CASE_INSENSITIVE,å¤§å°å†™ä¸æ•æ„Ÿï¼ŒMULTILINE å¤šè¡Œ
+	    Matcher matcher;//matcher.groupCount() è¿”å›æ­¤åŒ¹é…å™¨æ¨¡å¼ä¸­çš„æ•è·ç»„æ•°ã€‚
 
 		String url = nameDon+name;
 		BufferedReader reader = webDon.GetFetch(url, true);
@@ -111,8 +111,8 @@ public class compDon2Chan {
 	}
 	
 	public static int getChanNum(String name) throws Exception {
-		Pattern pattern =Pattern.compile("post-count\">(\\d+)</span>", Pattern.CASE_INSENSITIVE);  //flags - Æ¥Åä±êÖ¾£¬¿ÉÄÜ°üÀ¨ CASE_INSENSITIVE¡¢MULTILINE¡¢DOTALL¡¢UNICODE_CASE¡¢ CANON_EQ¡¢UNIX_LINES¡¢LITERAL ºÍ COMMENTS µÄÎ»ÑÚÂë  // CASE_INSENSITIVE,´óĞ¡Ğ´²»Ãô¸Ğ£¬MULTILINE ¶àĞĞ
-	    Matcher matcher;//matcher.groupCount() ·µ»Ø´ËÆ¥ÅäÆ÷Ä£Ê½ÖĞµÄ²¶»ñ×éÊı¡£
+		Pattern pattern =Pattern.compile("post-count\">(\\d+)</span>", Pattern.CASE_INSENSITIVE);  //flags - åŒ¹é…æ ‡å¿—ï¼Œå¯èƒ½åŒ…æ‹¬ CASE_INSENSITIVEã€MULTILINEã€DOTALLã€UNICODE_CASEã€ CANON_EQã€UNIX_LINESã€LITERAL å’Œ COMMENTS çš„ä½æ©ç   // CASE_INSENSITIVE,å¤§å°å†™ä¸æ•æ„Ÿï¼ŒMULTILINE å¤šè¡Œ
+	    Matcher matcher;//matcher.groupCount() è¿”å›æ­¤åŒ¹é…å™¨æ¨¡å¼ä¸­çš„æ•è·ç»„æ•°ã€‚
 		String url = nameChan+name;
 		BufferedReader reader = webChan.GetFetch(url, true);
 		String content = "";

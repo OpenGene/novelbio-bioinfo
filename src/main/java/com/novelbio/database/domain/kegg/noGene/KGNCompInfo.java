@@ -3,32 +3,32 @@ package com.novelbio.database.domain.kegg.noGene;
 public class KGNCompInfo {
 	private String kegID;
 	/**
-	 * Éè¶¨CompoundµÈµÄKeggID
+	 * è®¾å®šCompoundç­‰çš„KeggID
 	 * @param kegID
 	 */
 	public void setKegID(String kegID) {
 		this.kegID = kegID;
 	}
 	/**
-	 * »ñµÃCompoundµÈµÄKeggID
+	 * è·å¾—Compoundç­‰çš„KeggID
 	 * @return
 	 */
 	public String getKegID() {
 		return this.kegID;
 	}
 	/**
-	 * ³£ÓÃÃû£¬Ò²¾ÍÊÇ´ı×ª»»µÄID
+	 * å¸¸ç”¨åï¼Œä¹Ÿå°±æ˜¯å¾…è½¬æ¢çš„ID
 	 */
 	private String usualName;
 	/**
-	 * ³£ÓÃÃû£¬Ò²¾ÍÊÇ´ı×ª»»µÄID
+	 * å¸¸ç”¨åï¼Œä¹Ÿå°±æ˜¯å¾…è½¬æ¢çš„ID
 	 * @param usualName
 	 */
 	public void setUsualName(String usualName) {
 		this.usualName = usualName;
 	}
 	/**
-	 * ³£ÓÃÃû£¬Ò²¾ÍÊÇ´ı×ª»»µÄID
+	 * å¸¸ç”¨åï¼Œä¹Ÿå°±æ˜¯å¾…è½¬æ¢çš„ID
 	 * @return
 	 */
 	public String getUsualName() {
@@ -37,14 +37,14 @@ public class KGNCompInfo {
 	
 	String formula;
 	/**
-	 * »¯ºÏÎïµÄ»¯Ñ§Ê½
+	 * åŒ–åˆç‰©çš„åŒ–å­¦å¼
 	 * @param formula
 	 */
 	public void setFormula(String formula) {
 		this.formula = formula;
 	}
 	/**
-	 * »¯ºÏÎïµÄ»¯Ñ§Ê½
+	 * åŒ–åˆç‰©çš„åŒ–å­¦å¼
 	 * @return
 	 */
 	public String getFormula() {
@@ -53,14 +53,14 @@ public class KGNCompInfo {
 	
 	double mass = 0;
 	/**
-	 * ËÆºõÊÇ»¯ºÏÎïµÄ·Ö×ÓÁ¿
+	 * ä¼¼ä¹æ˜¯åŒ–åˆç‰©çš„åˆ†å­é‡
 	 * @param mass
 	 */
 	public void setMass(double mass) {
 		this.mass = mass;
 	}
 	/**
-	 * ËÆºõÊÇ»¯ºÏÎïµÄ·Ö×ÓÁ¿
+	 * ä¼¼ä¹æ˜¯åŒ–åˆç‰©çš„åˆ†å­é‡
 	 * @return
 	 */
 	public double getMass() {
@@ -69,14 +69,14 @@ public class KGNCompInfo {
 	
 	String remark;
 	/**
-	 * ±ğÃû
+	 * åˆ«å
 	 * @param remark
 	 */
 	public void setRemark(String remark) {
 		this.remark = remark;
 	}
 	/**
-	 * ±ğÃû
+	 * åˆ«å
 	 * @return
 	 */
 	public String getRemark() {
@@ -85,14 +85,14 @@ public class KGNCompInfo {
 	
 	String comment;
 	/**
-	 * ±ğÃû
+	 * åˆ«å
 	 * @param comment
 	 */
 	public void setComment(String comment) {
 		this.remark = comment;
 	}
 	/**
-	 * ±ğÃû
+	 * åˆ«å
 	 * @return
 	 */
 	public String getComment() {

@@ -13,7 +13,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.generalConf.NovelBioConst;
 
 /**
- * ÓÃid¶ÔÓ¦µÄ·½·¨£¬½«gmµÄID¶ÔÓ¦µ½NCBIÉÏÈ¥
+ * ç”¨idå¯¹åº”çš„æ–¹æ³•ï¼Œå°†gmçš„IDå¯¹åº”åˆ°NCBIä¸Šå»
  * @author zong0jie
  */
 public class GlyMaxIDNCBI {
@@ -28,7 +28,7 @@ public class GlyMaxIDNCBI {
 		gmidncbi.readGFFFile(gffFile, txtOut);
 	}
 	/**
-	 * ¸ø¶¨´ó¶¹µÄGBSÎÄ¼şÃû£¬
+	 * ç»™å®šå¤§è±†çš„GBSæ–‡ä»¶åï¼Œ
 	 * @param gbsFilePath
 	 */
 	private void readNCBI(String gbsFilePath) {
@@ -82,7 +82,7 @@ public class GlyMaxIDNCBI {
 			else if (string.trim().startsWith("/db_xref")) {
 				locString = locString + sep + string.trim().split("=")[1].replace("\"", "").replace("GeneID:", "");
 				if (!string.contains("GeneID")) {
-					System.out.println("³öÏÖÎ´ÖªID£º"+string);
+					System.out.println("å‡ºç°æœªçŸ¥IDï¼š"+string);
 				}
 			}
 		}

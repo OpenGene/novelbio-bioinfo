@@ -7,14 +7,14 @@ import com.novelbio.database.mapper.MapperSql;
 
 public interface MapKPathway extends MapperSql{
 	/**
-	 * ÓÃnumber,pathNam,orgÖĞÈÎÒâ×éºÏÈ¥²éÕÒentry±í
+	 * ç”¨number,pathNam,orgä¸­ä»»æ„ç»„åˆå»æŸ¥æ‰¾entryè¡¨
 	 * @param KGpathway
 	 * @return
 	 */
 	public ArrayList<KGpathway> queryLsKGpathways(KGpathway kGpathway);
 	
 	/**
-	 * ÓÃnumber,pathNam,orgÖĞÈÎÒâ×éºÏÈ¥²éÕÒentry±í
+	 * ç”¨number,pathNam,orgä¸­ä»»æ„ç»„åˆå»æŸ¥æ‰¾entryè¡¨
 	 * 
 	 * @param KGpathway
 	 * @return
@@ -24,7 +24,7 @@ public interface MapKPathway extends MapperSql{
 	public void insertKGpathway(KGpathway kGpathway);
 	
 	/**
-	 * Ä¿Ç°µÄÉı¼¶·½Ê½ÊÇ
+	 * ç›®å‰çš„å‡çº§æ–¹å¼æ˜¯
 		update pathway set
 		pathName = #{pathName},
 		org = #{org},

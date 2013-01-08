@@ -1,11 +1,11 @@
 package com.novelbio.base.multithread;
 /**
- * <b>ĞèÒªÅäºÏ RunGetInfo</b><br>
- * T: ±¾´Îrunning´òËãÊä³öµÄÖĞ¼äĞÅÏ¢
- * ½ø¶ÈÌõ¶àÏß³Ì£¬ĞèÒªÒÔÏÂ²Ù×÷ <br>
- * 1. ÔÚÑ­»·ÖĞÌí¼Ó suspendCheck()  À´¹ÒÆğÏß³Ì<br>
- * 2. ÔÚÑ­»·ÖĞ¼ì²é flagRun À´ÖÕÖ¹Ñ­»·<br>
- * 3: ÔÚÑ­»·ÖĞÌí¼Ó setRunInfo() ·½·¨À´»ñÈ¡ÔËĞĞÊ±³öÏÖµÄĞÅÏ¢
+ * <b>éœ€è¦é…åˆ RunGetInfo</b><br>
+ * T: æœ¬æ¬¡runningæ‰“ç®—è¾“å‡ºçš„ä¸­é—´ä¿¡æ¯
+ * è¿›åº¦æ¡å¤šçº¿ç¨‹ï¼Œéœ€è¦ä»¥ä¸‹æ“ä½œ <br>
+ * 1. åœ¨å¾ªç¯ä¸­æ·»åŠ  suspendCheck()  æ¥æŒ‚èµ·çº¿ç¨‹<br>
+ * 2. åœ¨å¾ªç¯ä¸­æ£€æŸ¥ flagRun æ¥ç»ˆæ­¢å¾ªç¯<br>
+ * 3: åœ¨å¾ªç¯ä¸­æ·»åŠ  setRunInfo() æ–¹æ³•æ¥è·å–è¿è¡Œæ—¶å‡ºç°çš„ä¿¡æ¯
  * @author zong0jie
  *
  */
@@ -14,18 +14,18 @@ public abstract class RunProcess<T> implements Runnable {
 	
 	protected boolean flagStop = false;
 	protected boolean suspendFlag = false;
-	/** ÊÇ·ñ½áÊø */
+	/** æ˜¯å¦ç»“æŸ */
 	boolean flagFinish = false;
 	
-	/** ¸ø¶¨ÔËĞĞÖĞĞèÒªĞŞ¸ÄµÄĞÅÏ¢ */
+	/** ç»™å®šè¿è¡Œä¸­éœ€è¦ä¿®æ”¹çš„ä¿¡æ¯ */
 	public void setRunGetInfo(RunGetInfo runGetInfo) {
 		this.runGetInfo = runGetInfo;
 	}
-	/** ³ÌĞòÔİÍ£ */
+	/** ç¨‹åºæš‚åœ */
 	public void threadSuspend() {
 		this.suspendFlag = true;
 	}
-	/** ½ø³Ì»Ö¸´ */
+	/** è¿›ç¨‹æ¢å¤ */
 	public void threadResume() {
 		if (suspendFlag == false) {
 			return;
@@ -36,7 +36,7 @@ public abstract class RunProcess<T> implements Runnable {
 		}
 		notify();
 	}
-	/** ÖÕÖ¹Ïß³Ì£¬ÔÚÑ­»·ÖĞÌí¼Ó<br>
+	/** ç»ˆæ­¢çº¿ç¨‹ï¼Œåœ¨å¾ªç¯ä¸­æ·»åŠ <br>
 	 * if (!flagRun)<br>
 	*			break; */
 	public void threadStop() {
@@ -47,7 +47,7 @@ public abstract class RunProcess<T> implements Runnable {
 		}
 	}
 	/**
-	 * ·ÅÔÚÑ­»·ÖĞ£¬¼ì²éÊÇ·ñÖÕÖ¹Ïß³Ì
+	 * æ”¾åœ¨å¾ªç¯ä¸­ï¼Œæ£€æŸ¥æ˜¯å¦ç»ˆæ­¢çº¿ç¨‹
 	 */
 	protected void suspendCheck() {
 		byte[] lock = new byte[0];
@@ -68,10 +68,10 @@ public abstract class RunProcess<T> implements Runnable {
 			runGetInfo.done(this);
 		}
 	}
-	/** ¸ørun·½·¨µ÷ÓÃ¡£ÔËĞĞÄ£¿éĞ´ÔÚÕâ¸öÀïÃæ£¬ÕâÑù½áÊøºó×Ô¶¯»á½«flagFinishÉè¶¨Îªtrue */
+	/** ç»™runæ–¹æ³•è°ƒç”¨ã€‚è¿è¡Œæ¨¡å—å†™åœ¨è¿™ä¸ªé‡Œé¢ï¼Œè¿™æ ·ç»“æŸåè‡ªåŠ¨ä¼šå°†flagFinishè®¾å®šä¸ºtrue */
 	protected abstract void running();
 	/**
-	 * Éè¶¨ÊäÈëµÄĞÅÏ¢£¬ÄÚ²¿»Øµ÷
+	 * è®¾å®šè¾“å…¥çš„ä¿¡æ¯ï¼Œå†…éƒ¨å›è°ƒ
 	 * @param runInfo
 	 */
 	protected void setRunInfo(T runInfo) {

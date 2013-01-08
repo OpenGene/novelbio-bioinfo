@@ -18,7 +18,7 @@ public class RepeatMask {
 	static boolean flag=false;
 
 	/**
-	 * ¶ÁÈ¡repeatÎÄ¼ş£¬
+	 * è¯»å–repeatæ–‡ä»¶ï¼Œ
 	 * @param repeatFile
 	 * @throws Exception
 	 */
@@ -33,26 +33,26 @@ public class RepeatMask {
 	}
 	
 	/**
-	 * ¶ÁÈ¡repeatFile£¬×îºóÍ³¼Æ¶àÉÙpeak summitÂäÔÚÁËrepeatÖĞ
-	 * @param repeatFile repeatÎÄ¼ş£¬ÎªUCSCtxtÎÄ±¾
-	 * @param locationFile peak·¶Î§ÎÄ¼ş£¬ÎªtxtÎÄ±¾
-	 * @param resultFile Ğ´ÈëµÄÎÄ¼ş£¬°üº¬Â·¾¶
-	 * @param readRow ´ÓµÚ¼¸ĞĞ¶ÁÈ¡£¬Êµ¼ÊĞĞ(´Ó1¿ªÊ¼¼ÆÊı)
-	 * @param colChr ChrIDÔÚµÚ¼¸ÁĞ£¬Êµ¼ÊÁĞ
-	 * @param colLOC ×ø±êÔÚµÚ¼¸ÁĞ£¬Êµ¼ÊÁĞ£¬ChrIDºÍ×ø±êÓ¦¸ÃÒ»Ò»¶ÔÓ¦
+	 * è¯»å–repeatFileï¼Œæœ€åç»Ÿè®¡å¤šå°‘peak summitè½åœ¨äº†repeatä¸­
+	 * @param repeatFile repeatæ–‡ä»¶ï¼Œä¸ºUCSCtxtæ–‡æœ¬
+	 * @param locationFile peakèŒƒå›´æ–‡ä»¶ï¼Œä¸ºtxtæ–‡æœ¬
+	 * @param resultFile å†™å…¥çš„æ–‡ä»¶ï¼ŒåŒ…å«è·¯å¾„
+	 * @param readRow ä»ç¬¬å‡ è¡Œè¯»å–ï¼Œå®é™…è¡Œ(ä»1å¼€å§‹è®¡æ•°)
+	 * @param colChr ChrIDåœ¨ç¬¬å‡ åˆ—ï¼Œå®é™…åˆ—
+	 * @param colLOC åæ ‡åœ¨ç¬¬å‡ åˆ—ï¼Œå®é™…åˆ—ï¼ŒChrIDå’Œåæ ‡åº”è¯¥ä¸€ä¸€å¯¹åº”
 	 * @throws Exception
 	 */
 	public static void locatstatistic(String locationFile,String resultFile,int readRow,int colChr, int colLOC) throws Exception 
 	{
-		//¶ÁrepeatÎÄ¼ş
+		//è¯»repeatæ–‡ä»¶
 		System.out.print("ok");
-		//¶Ápeak×ø±êÎÄ¼ş
+		//è¯»peakåæ ‡æ–‡ä»¶
 		TxtReadandWrite txtlocate=new TxtReadandWrite();
 		txtlocate.setParameter(locationFile,false,true);
 		
 		String[][] ChrID=txtlocate.ExcelRead("\t", readRow, colChr, txtlocate.ExcelRows(), colChr);
 		String[][] LOCIDcod=txtlocate.ExcelRead("\t", readRow, colLOC, txtlocate.ExcelRows(), colLOC);
-		//ºÏ²¢ĞÅÏ¢
+		//åˆå¹¶ä¿¡æ¯
 		String [][] LOCIDinfo=new String[ChrID.length][2];
 		for (int i = 0; i < ChrID.length; i++) {
 			LOCIDinfo[i][0]=ChrID[i][0];
@@ -67,27 +67,27 @@ public class RepeatMask {
 	}
 
 	/**
-	 * ¶ÁÈ¡repeatFile£¬×îºóÍ³¼Æ¶àÉÙpeak regionÂäÔÚÁËrepeatÖĞ,
-	 * @param Bp true:¼ÆËãÓëRepeaÏà½»µÄ¾ßÌåBpÊı<br>     
-	 *  false:Ö»ÓĞµ±peakºÍregionµÄ½»¼¯²¿·Ö´óÓÚ50%Ê±£¬²ÅËãÒ»¸ö ÊäÈëµÄÊı¾İ.
-	 * @param locationFile peak·¶Î§ÎÄ¼ş£¬ÎªtxtÎÄ±¾
-	 * @param repeatBackGround repeatÎÄ¼ş£¬ÎªUCSCtxtÎÄ±¾
-	 * @param resultFile Ğ´ÈëµÄÎÄ¼ş£¬°üº¬Â·¾¶
-	 * @param readRow ´ÓµÚ¼¸ĞĞ¶ÁÈ¡£¬Êµ¼ÊĞĞ(´Ó1¿ªÊ¼¼ÆÊı)
-	 * @param colChr ChrIDÔÚµÚ¼¸ÁĞ£¬Êµ¼ÊÁĞ
-	 * @param colLOC1 ×ø±ê1ÔÚµÚ¼¸ÁĞ£¬Êµ¼ÊÁĞ£¬ChrIDºÍ×ø±êÓ¦¸ÃÒ»Ò»¶ÔÓ¦
-	 * @param colLOC2 ×ø±ê2ÔÚµÚ¼¸ÁĞ£¬Êµ¼ÊÁĞ£¬ChrIDºÍ×ø±êÓ¦¸ÃÒ»Ò»¶ÔÓ¦
+	 * è¯»å–repeatFileï¼Œæœ€åç»Ÿè®¡å¤šå°‘peak regionè½åœ¨äº†repeatä¸­,
+	 * @param Bp true:è®¡ç®—ä¸Repeaç›¸äº¤çš„å…·ä½“Bpæ•°<br>     
+	 *  false:åªæœ‰å½“peakå’Œregionçš„äº¤é›†éƒ¨åˆ†å¤§äº50%æ—¶ï¼Œæ‰ç®—ä¸€ä¸ª è¾“å…¥çš„æ•°æ®.
+	 * @param locationFile peakèŒƒå›´æ–‡ä»¶ï¼Œä¸ºtxtæ–‡æœ¬
+	 * @param repeatBackGround repeatæ–‡ä»¶ï¼Œä¸ºUCSCtxtæ–‡æœ¬
+	 * @param resultFile å†™å…¥çš„æ–‡ä»¶ï¼ŒåŒ…å«è·¯å¾„
+	 * @param readRow ä»ç¬¬å‡ è¡Œè¯»å–ï¼Œå®é™…è¡Œ(ä»1å¼€å§‹è®¡æ•°)
+	 * @param colChr ChrIDåœ¨ç¬¬å‡ åˆ—ï¼Œå®é™…åˆ—
+	 * @param colLOC1 åæ ‡1åœ¨ç¬¬å‡ åˆ—ï¼Œå®é™…åˆ—ï¼ŒChrIDå’Œåæ ‡åº”è¯¥ä¸€ä¸€å¯¹åº”
+	 * @param colLOC2 åæ ‡2åœ¨ç¬¬å‡ åˆ—ï¼Œå®é™…åˆ—ï¼ŒChrIDå’Œåæ ‡åº”è¯¥ä¸€ä¸€å¯¹åº”
 	 * @throws Exception
 	 */
 	public static void locatstatistic(boolean Bp,String locationFile,String repeatBackGround,String resultFile,int readRow,int colChr, int colLOC1,int colLOC2) throws Exception 
 	{
-		//¶Ápeak×ø±êÎÄ¼ş
+		//è¯»peakåæ ‡æ–‡ä»¶
 		TxtReadandWrite txtlocate=new TxtReadandWrite();
 		txtlocate.setParameter(locationFile, false,true);
 		String[][] ChrID=txtlocate.ExcelRead("\t", readRow, colChr, txtlocate.ExcelRows(), colChr);
 		String[][] LOCIDcod1=txtlocate.ExcelRead("\t", readRow, colLOC1, txtlocate.ExcelRows(), colLOC1);
 		String[][] LOCIDcod2=txtlocate.ExcelRead("\t", readRow, colLOC2, txtlocate.ExcelRows(), colLOC2);
-		//ºÏ²¢ĞÅÏ¢
+		//åˆå¹¶ä¿¡æ¯
 		String [][] LOCIDinfo=new String[ChrID.length][3];
 		for (int i = 0; i < ChrID.length; i++) {
 			LOCIDinfo[i][0]=ChrID[i][0];
@@ -99,18 +99,18 @@ public class RepeatMask {
 		TxtReadandWrite txtRepeatBackGround = new TxtReadandWrite();
 		txtRepeatBackGround.setParameter(repeatBackGround, false, true);
 		String[][] repeatBG = txtRepeatBackGround.ExcelRead("\t", 1, 1, txtRepeatBackGround.ExcelRows(), txtRepeatBackGround.ExcelColumns("\t"));
-		//»ñµÃbackGroundµÄrepeatµÄ×Ü³¤¶È
+		//è·å¾—backGroundçš„repeatçš„æ€»é•¿åº¦
 		long repeatAllBG = 0;
 		for (int i = 0; i < repeatBG.length; i++) {
 			repeatAllBG = repeatAllBG + Long.parseLong(repeatBG[i][1]);
 		}
-		////////////////////////////////////»ñµÃÃ¿¸örepeatµÄ±ÈÀı²¢×°Èëhash±í//////////////////////////////////
+		////////////////////////////////////è·å¾—æ¯ä¸ªrepeatçš„æ¯”ä¾‹å¹¶è£…å…¥hashè¡¨//////////////////////////////////
 		Hashtable<String, String> hashRepeatBG = new Hashtable<String, String>();
 		for (int i = 0; i < repeatBG.length; i++) {
 			repeatBG[i][1] = Double.parseDouble(repeatBG[i][1])/repeatAllBG +"";
 			hashRepeatBG.put(repeatBG[i][0], repeatBG[i][1]);
 		}
-		////////////////////////////////////»ñµÃÑù±¾µÄrepeatµÄ×ÜÊı/×Ü³¤¶È//////////////////////////////////
+		////////////////////////////////////è·å¾—æ ·æœ¬çš„repeatçš„æ€»æ•°/æ€»é•¿åº¦//////////////////////////////////
 		long repeatAll = 0;
 		for (String[] strings : resultRepeatInfo) {
 			repeatAll = repeatAll + Long.parseLong(strings[1]);
@@ -119,7 +119,7 @@ public class RepeatMask {
 			strings[1] =  Double.parseDouble(strings[1])/repeatAll +"";
 		}
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		//ÓÃÊÔÑéÈ¥²éÕÒ±³¾°,½á¹û×°ÈëĞÂµÄÎÄ±¾
+		//ç”¨è¯•éªŒå»æŸ¥æ‰¾èƒŒæ™¯,ç»“æœè£…å…¥æ–°çš„æ–‡æœ¬
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		for (String[] strings : resultRepeatInfo) {
 			String[] tmpResult = new String[3];
@@ -142,26 +142,26 @@ public class RepeatMask {
 
 	
 	/**
-	 * ¶ÁÈ¡repeatFile£¬×îºó¸ø³öÃ¿¸öpeak regionËù¸²¸ÇµÄrepeat
-	 * @param repeatFile repeatÎÄ¼ş£¬ÎªUCSCtxtÎÄ±¾
-	 * @param locationFile peak·¶Î§ÎÄ¼ş£¬ÎªtxtÎÄ±¾
-	 * @param resultFile Ğ´ÈëµÄÎÄ¼ş£¬°üº¬Â·¾¶
-	 * @param readRow ´ÓµÚ¼¸ĞĞ¶ÁÈ¡£¬Êµ¼ÊĞĞ(´Ó1¿ªÊ¼¼ÆÊı)
-	 * @param colChr ChrIDÔÚµÚ¼¸ÁĞ£¬Êµ¼ÊÁĞ
-	 * @param colLOC1 ×ø±ê1ÔÚµÚ¼¸ÁĞ£¬Êµ¼ÊÁĞ£¬ChrIDºÍ×ø±êÓ¦¸ÃÒ»Ò»¶ÔÓ¦
-	 * @param colLOC2 ×ø±ê2ÔÚµÚ¼¸ÁĞ£¬Êµ¼ÊÁĞ£¬ChrIDºÍ×ø±êÓ¦¸ÃÒ»Ò»¶ÔÓ¦
+	 * è¯»å–repeatFileï¼Œæœ€åç»™å‡ºæ¯ä¸ªpeak regionæ‰€è¦†ç›–çš„repeat
+	 * @param repeatFile repeatæ–‡ä»¶ï¼Œä¸ºUCSCtxtæ–‡æœ¬
+	 * @param locationFile peakèŒƒå›´æ–‡ä»¶ï¼Œä¸ºtxtæ–‡æœ¬
+	 * @param resultFile å†™å…¥çš„æ–‡ä»¶ï¼ŒåŒ…å«è·¯å¾„
+	 * @param readRow ä»ç¬¬å‡ è¡Œè¯»å–ï¼Œå®é™…è¡Œ(ä»1å¼€å§‹è®¡æ•°)
+	 * @param colChr ChrIDåœ¨ç¬¬å‡ åˆ—ï¼Œå®é™…åˆ—
+	 * @param colLOC1 åæ ‡1åœ¨ç¬¬å‡ åˆ—ï¼Œå®é™…åˆ—ï¼ŒChrIDå’Œåæ ‡åº”è¯¥ä¸€ä¸€å¯¹åº”
+	 * @param colLOC2 åæ ‡2åœ¨ç¬¬å‡ åˆ—ï¼Œå®é™…åˆ—ï¼ŒChrIDå’Œåæ ‡åº”è¯¥ä¸€ä¸€å¯¹åº”
 	 * @throws Exception
 	 */
 	public static void peakRepeatDetail(String locationFile,String resultFile,int readRow,int colChr, int colLOC1,int colLOC2) throws Exception 
 	{	
-		//¶Ápeak×ø±êÎÄ¼ş
+		//è¯»peakåæ ‡æ–‡ä»¶
 		TxtReadandWrite txtlocate=new TxtReadandWrite();
 		txtlocate.setParameter(locationFile, false,true);
 		
 		String[][] ChrID=txtlocate.ExcelRead("\t", readRow, colChr, txtlocate.ExcelRows(), colChr);
 		String[][] LOCIDcod1=txtlocate.ExcelRead("\t", readRow, colLOC1, txtlocate.ExcelRows(), colLOC1);
 		String[][] LOCIDcod2=txtlocate.ExcelRead("\t", readRow, colLOC2, txtlocate.ExcelRows(), colLOC2);
-		//ºÏ²¢ĞÅÏ¢
+		//åˆå¹¶ä¿¡æ¯
 		String [][] LOCIDinfo=new String[ChrID.length][3];
 		for (int i = 0; i < ChrID.length; i++) {
 			LOCIDinfo[i][0]=ChrID[i][0];
@@ -176,7 +176,7 @@ public class RepeatMask {
 	}
 	
 	/**
-	 * »ñµÃrepeat±³¾°µÈĞÅÏ¢
+	 * è·å¾—repeatèƒŒæ™¯ç­‰ä¿¡æ¯
 	 * @return
 	 * @throws Exception 
 	 */

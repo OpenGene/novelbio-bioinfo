@@ -4,8 +4,8 @@ import java.util.HashMap;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
-/** Ï¸¾úÓÃglimmÔ¤²âµÄgff»ùÒò£¬½«ÆäÖĞµÄnullÌæ»»³ÉÓĞ×¢ÊÍµÄĞÅÏ¢
- * ÔÚÕâÖ®Ç°ÒÑ¾­ÓÃ»ùÒò¶Ô½üËÆÎïÖÖ×öÁËblast£¬ËùÒÔ¿ÉÒÔºÜ·½±ãµÄÌæ»»
+/** ç»†èŒç”¨glimmé¢„æµ‹çš„gffåŸºå› ï¼Œå°†å…¶ä¸­çš„nullæ›¿æ¢æˆæœ‰æ³¨é‡Šçš„ä¿¡æ¯
+ * åœ¨è¿™ä¹‹å‰å·²ç»ç”¨åŸºå› å¯¹è¿‘ä¼¼ç‰©ç§åšäº†blastï¼Œæ‰€ä»¥å¯ä»¥å¾ˆæ–¹ä¾¿çš„æ›¿æ¢
  * @author zong0jie
  *
  */
@@ -22,11 +22,11 @@ public class GffAddAnno {
 		gffAddAnno.generateGffOutFile("/media/winF/NBC/Project/Project_WZF/annotation/finalBacterium.Gene.Prediction.anno_out_All.gff");
 	}
 	String gffFile;
-	/** blastÎÄ¼şÀïÃæµÄĞÅÏ¢£¬Ö÷Òª¾ÍÊÇ±¾ÎïÖĞID ¶Ô·½ÎïÖÖIDºÍ×¢ÊÍ */
+	/** blastæ–‡ä»¶é‡Œé¢çš„ä¿¡æ¯ï¼Œä¸»è¦å°±æ˜¯æœ¬ç‰©ä¸­ID å¯¹æ–¹ç‰©ç§IDå’Œæ³¨é‡Š */
 	HashMap<String, String[]> mapGeneID_2_subjectIdProductNote = new HashMap<String, String[]>();
 	boolean replaceAll = true;
 	
-	/** ÊÇ·ñÌæ»»ËùÓĞ£¬false£º½öÌæ»»nullµÄ */
+	/** æ˜¯å¦æ›¿æ¢æ‰€æœ‰ï¼Œfalseï¼šä»…æ›¿æ¢nullçš„ */
 	public void setReplaceAll(boolean replaceAll) {
 		this.replaceAll = replaceAll;
 	}
@@ -81,8 +81,8 @@ public class GffAddAnno {
 		}
 		txtWrite.close();
 	}
-	/** ÊäÈëµÚ°Ë¸öÎÄ¼ş£¬»ñµÃblastÌî³äºóµÄĞÅÏ¢
-	 * Ö»ÒªblastÓĞ½á¹û¾ÍÌæ»»
+	/** è¾“å…¥ç¬¬å…«ä¸ªæ–‡ä»¶ï¼Œè·å¾—blastå¡«å……åçš„ä¿¡æ¯
+	 * åªè¦blastæœ‰ç»“æœå°±æ›¿æ¢
 	 *  */
 	private String replaceGeneDescripAll(String ss8) {
 		String geneID = ss8.split(";")[0].replace("ID=", "");
@@ -97,8 +97,8 @@ public class GffAddAnno {
 		return result;
 	}
 	
-	/** ÊäÈëµÚ°Ë¸öÎÄ¼ş£¬»ñµÃblastÌî³äºóµÄĞÅÏ¢
-	 * Ö»ÓĞnull²ÅÌæ»»
+	/** è¾“å…¥ç¬¬å…«ä¸ªæ–‡ä»¶ï¼Œè·å¾—blastå¡«å……åçš„ä¿¡æ¯
+	 * åªæœ‰nullæ‰æ›¿æ¢
 	 *  */
 	private String replaceGeneDescripNull(String ss8) {
 		String geneID = ss8.split(";")[0].replace("ID=", "");

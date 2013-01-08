@@ -10,9 +10,9 @@ import com.novelbio.base.fileOperate.FileOperate;
 public class ChromFaConvert {
 
 	/**
-	 * ��ChrFa�ļ���ÿ�еĻ��з�ת��Ϊ"\n",
-	 * ��Ϊ��ЩchromFa���ļ�����\r\n��β�ģ�Ʃ��ˮ����chromFa����ô�ڲ������������ȡ���ļ�ʱ������Ĭ�ϻ��з�ֻ��1λ��
-	 * ���Ի���ɶ�ȡ��λ������ÿ�����µ�chromFa����Ҫ�øó����ȶ�����д�����
+	 * 将ChrFa文件中每行的换行符转换为"\n",
+	 * 因为有些chromFa的文件是以\r\n结尾的，譬如水稻的chromFa，那么在采用随机方法读取该文件时，程序默认换行符只有1位，
+	 * 所以会造成读取错位，所以每次有新的chromFa，都要用该程序先对其进行处理。
 	 * @param args
 	 */
 	public static void main(String[] args) {
@@ -25,7 +25,7 @@ public class ChromFaConvert {
 		}
 	}
 	/**
-	 * ��ChrFa�ļ���ÿ�еĻ��з�ת��Ϊ"\n",
+	 * 将ChrFa文件中每行的换行符转换为"\n",
 	 * @param chrFilePath
 	 * @throws Exception
 	 */

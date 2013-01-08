@@ -18,7 +18,7 @@ import com.novelbio.base.plot.PlotScatter;
 import com.novelbio.base.plot.heatmap.Gradient;
 import com.novelbio.base.plot.heatmap.PlotHeatMap;
 /**
- * setTsstesRange ºÍ setPlotTssTesRangeÕâÁ½¸ö·½·¨ÒªµÚÒ»Ê±¼äÉè¶¨
+ * setTsstesRange å’Œ setPlotTssTesRangeè¿™ä¸¤ä¸ªæ–¹æ³•è¦ç¬¬ä¸€æ—¶é—´è®¾å®š
  * @author zong0jie
  *
  */
@@ -33,34 +33,34 @@ public class GffChrPlotTss {
 	MapReads mapReads;
 	int mapNormType = MapReads.NORMALIZATION_ALL_READS;
 
-	/** »æÖÆÍ¼Æ¬µÄÇøÓò */
+	/** ç»˜åˆ¶å›¾ç‰‡çš„åŒºåŸŸ */
 	ArrayList<MapInfo> lsMapInfos;
-	/** »æÖÆÍ¼Æ¬µÄgene */
+	/** ç»˜åˆ¶å›¾ç‰‡çš„gene */
 	ArrayList<Gene2Value> lsGeneID2Value;
 	
-	/** ½á¹ûÍ¼Æ¬·Ö¸îÎª1000·İ */
+	/** ç»“æœå›¾ç‰‡åˆ†å‰²ä¸º1000ä»½ */
 	int splitNum = 1001;
-	/**  tss»òtesµÄÀ©Õ¹»æÍ¼ÇøÓò£¬Ä¬ÈÏ²¸Èé¶¯ÎïÎª -5000µ½5000 */
+	/**  tssæˆ–tesçš„æ‰©å±•ç»˜å›¾åŒºåŸŸï¼Œé»˜è®¤å“ºä¹³åŠ¨ç‰©ä¸º -5000åˆ°5000 */
 	int[] plotTssTesRange = new int[]{-5000, 5000};
-	/** heatmap×îÇ³ÑÕÉ«µÄÖµ */
+	/** heatmapæœ€æµ…é¢œè‰²çš„å€¼ */
 	double heatmapMin = 0;
-	/** heatmap×îÉîÑÕÉ«µÄÖµ */
+	/** heatmapæœ€æ·±é¢œè‰²çš„å€¼ */
 	double heatmapMax = 20;
 	Color heatmapColorMin = Color.white;
 	Color heatmapColorMax = Color.blue;
 	boolean heatmapSortS2M = true;
 	
-	/** ÌáÈ¡µÄexonºÍintron£¬ÊÇµşÔÚÒ»Æğ³ÉÎªÒ»ÌåÄØ£¬»¹ÊÇÍ·Î²ÏàÁ¬³ÉÎªÒ»Ìå */
+	/** æå–çš„exonå’Œintronï¼Œæ˜¯å åœ¨ä¸€èµ·æˆä¸ºä¸€ä½“å‘¢ï¼Œè¿˜æ˜¯å¤´å°¾ç›¸è¿æˆä¸ºä¸€ä½“ */
 	boolean pileupExonIntron = false;
 	
-	/** Éè¶¨ĞèÒªÌáÈ¡£¬»ò²»ÌáÈ¡µÄexon»òintronµÄ¸öÊı£¬Æ©ÈçÑîºìĞÇÒªÇó½ö·ÖÎöµÚÒ»Î»µÄintron
-	 * null ¾Í²»·ÖÎö
-	 * ÎªÊµ¼ÊÊıÁ¿
-	 * -1Îªµ¹ÊıµÚÒ»¸ö
-	 * -2Îªµ¹ÊıµÚ¶ş¸ö
+	/** è®¾å®šéœ€è¦æå–ï¼Œæˆ–ä¸æå–çš„exonæˆ–intronçš„ä¸ªæ•°ï¼Œè­¬å¦‚æ¨çº¢æ˜Ÿè¦æ±‚ä»…åˆ†æç¬¬ä¸€ä½çš„intron
+	 * null å°±ä¸åˆ†æ
+	 * ä¸ºå®é™…æ•°é‡
+	 * -1ä¸ºå€’æ•°ç¬¬ä¸€ä¸ª
+	 * -2ä¸ºå€’æ•°ç¬¬äºŒä¸ª
 	 */
 	ArrayList<Integer> lsExonIntronNumGetOrExclude;
-	/** ¶ÔÓÚlsExonIntronNumGetOrExcludeÑ¡Ôñget»¹ÊÇexclude£¬trueÎªget£¬falseÎªexclude */
+	/** å¯¹äºlsExonIntronNumGetOrExcludeé€‰æ‹©getè¿˜æ˜¯excludeï¼Œtrueä¸ºgetï¼Œfalseä¸ºexclude */
 	boolean getOrExclude = true;
 	
 	
@@ -71,7 +71,7 @@ public class GffChrPlotTss {
 	}
 	
 	/**
-	 * ½«GffChrAbsµ¼Èë
+	 * å°†GffChrAbså¯¼å…¥
 	 * @param gffChrAbs
 	 */
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
@@ -83,40 +83,40 @@ public class GffChrPlotTss {
 		}
 		this.gffChrAbs = gffChrAbs;
 	}
-	/** Éè¶¨ĞèÒªÌáÈ¡£¬»ò²»ÌáÈ¡µÄexon»òintronµÄ¸öÊı£¬Æ©ÈçÑîºìĞÇÒªÇó½ö·ÖÎöµÚÒ»Î»µÄintron
-	 * null ¾Í²»·ÖÎö
-	 * ÎªÊµ¼ÊÊıÁ¿
-	 * -1Îªµ¹ÊıµÚÒ»¸ö
-	 * -2Îªµ¹ÊıµÚ¶ş¸ö
+	/** è®¾å®šéœ€è¦æå–ï¼Œæˆ–ä¸æå–çš„exonæˆ–intronçš„ä¸ªæ•°ï¼Œè­¬å¦‚æ¨çº¢æ˜Ÿè¦æ±‚ä»…åˆ†æç¬¬ä¸€ä½çš„intron
+	 * null å°±ä¸åˆ†æ
+	 * ä¸ºå®é™…æ•°é‡
+	 * -1ä¸ºå€’æ•°ç¬¬ä¸€ä¸ª
+	 * -2ä¸ºå€’æ•°ç¬¬äºŒä¸ª
 	 */
 	public void setLsExonIntronNumGetOrExclude(
 			ArrayList<Integer> lsExonIntronNumGetOrExclude) {
 		this.lsExonIntronNumGetOrExclude = lsExonIntronNumGetOrExclude;
 	}
-	/** ÌáÈ¡µÄexonºÍintron£¬ÊÇµşÔÚÒ»Æğ³ÉÎªÒ»ÌåÄØ£¬»¹ÊÇÍ·Î²ÏàÁ¬³ÉÎªÒ»Ìå */
+	/** æå–çš„exonå’Œintronï¼Œæ˜¯å åœ¨ä¸€èµ·æˆä¸ºä¸€ä½“å‘¢ï¼Œè¿˜æ˜¯å¤´å°¾ç›¸è¿æˆä¸ºä¸€ä½“ */
 	public void setPileupExonIntron(boolean pileupExonIntron) {
 		this.pileupExonIntron = pileupExonIntron;
 	}
-	/** ¶ÔÓÚlsExonIntronNumGetOrExcludeÑ¡Ôñget»¹ÊÇexclude£¬trueÎªget£¬falseÎªexclude */
+	/** å¯¹äºlsExonIntronNumGetOrExcludeé€‰æ‹©getè¿˜æ˜¯excludeï¼Œtrueä¸ºgetï¼Œfalseä¸ºexclude */
 	public void setGetOrExclude(boolean getOrExclude) {
 		this.getOrExclude = getOrExclude;
 	}
 	
-	/** Éè¶¨ÇĞ¸î·ÖÊı£¬Ä¬ÈÏÎª1000 */
+	/** è®¾å®šåˆ‡å‰²åˆ†æ•°ï¼Œé»˜è®¤ä¸º1000 */
 	public void setSplitNum(int splitNum) {
-		//ÒòÎªÊÇ´Ó0¿ªÊ¼¼ÆÊı£¬ËùÒÔÒª+1
+		//å› ä¸ºæ˜¯ä»0å¼€å§‹è®¡æ•°ï¼Œæ‰€ä»¥è¦+1
 		this.splitNum = splitNum + 1;
 	}
 	/**
-	 * Îñ±Ø×îÔçÉè¶¨£¬ÔÚ²é¿´peakÊÇ·ñ¸²¸ÇÄ³¸ö»ùÒòµÄtssÊ±Ê¹ÓÃ
-	 * Ä¬ÈÏ -2000 2000
+	 * åŠ¡å¿…æœ€æ—©è®¾å®šï¼Œåœ¨æŸ¥çœ‹peakæ˜¯å¦è¦†ç›–æŸä¸ªåŸºå› çš„tssæ—¶ä½¿ç”¨
+	 * é»˜è®¤ -2000 2000
 	 * @param tsstesRange
 	 */
 	public void setTsstesRange(int[] tsstesRange) {
 		this.tsstesRange = tsstesRange;
 	}
 	/**
-	 * @param plotTssTesRange tss»òtesµÄÀ©Õ¹ÇøÓò£¬Ä¬ÈÏÊÇ²¸Èé¶¯ÎïÎª -5000µ½5000
+	 * @param plotTssTesRange tssæˆ–tesçš„æ‰©å±•åŒºåŸŸï¼Œé»˜è®¤æ˜¯å“ºä¹³åŠ¨ç‰©ä¸º -5000åˆ°5000
 	 */
 	public void setPlotTssTesRange(int[] plotTssTesRange) {
 		this.plotTssTesRange = plotTssTesRange;
@@ -131,70 +131,70 @@ public class GffChrPlotTss {
 	}
 	
 	/**
-	 * @param uniqReads µ±reads mappingÖÁÍ¬Ò»¸öÎ»ÖÃÊ±£¬ÊÇ·ñ½ö±£ÁôÒ»¸öreads
-	 * @param startCod ´ÓÆğµã¿ªÊ¼¶ÁÈ¡¸ÃreadsµÄ¼¸¸öbp£¬º«ÑàÓÃµ½ Ğ¡ÓÚ0±íÊ¾È«²¿¶ÁÈ¡ ´óÓÚreads³¤¶ÈµÄÔòºöÂÔ¸Ã²ÎÊı
-	 * @param booUniqueMapping ÖØ¸´µÄreadsÊÇ·ñÖ»Ñ¡ÔñÒ»Ìõ
-	 * @param cis5to3 ÊÇ·ñ½öÑ¡È¡Ä³Ò»·½ÏòµÄreads£¬null²»¿¼ÂÇ
+	 * @param uniqReads å½“reads mappingè‡³åŒä¸€ä¸ªä½ç½®æ—¶ï¼Œæ˜¯å¦ä»…ä¿ç•™ä¸€ä¸ªreads
+	 * @param startCod ä»èµ·ç‚¹å¼€å§‹è¯»å–è¯¥readsçš„å‡ ä¸ªbpï¼ŒéŸ©ç‡•ç”¨åˆ° å°äº0è¡¨ç¤ºå…¨éƒ¨è¯»å– å¤§äºreadsé•¿åº¦çš„åˆ™å¿½ç•¥è¯¥å‚æ•°
+	 * @param booUniqueMapping é‡å¤çš„readsæ˜¯å¦åªé€‰æ‹©ä¸€æ¡
+	 * @param cis5to3 æ˜¯å¦ä»…é€‰å–æŸä¸€æ–¹å‘çš„readsï¼Œnullä¸è€ƒè™‘
 	 */
 	public void setFilter(boolean uniqReads, int startCod, boolean booUniqueMapping, Boolean cis5to3) {
 		mapReads.setFilter(uniqReads, startCod, booUniqueMapping, cis5to3);
 	}
 	
-	/** Éè¶¨heatmap×îÇ³ÑÕÉ«ÒÔ¼°×îÉîÑÕÉ«Ëù¶ÔÓ¦µÄÖµ */
+	/** è®¾å®šheatmapæœ€æµ…é¢œè‰²ä»¥åŠæœ€æ·±é¢œè‰²æ‰€å¯¹åº”çš„å€¼ */
 	public void setHeatmapBoundValue(double heatmapMin, double heatmapMax) {
 		this.heatmapMin = heatmapMin;
 		this.heatmapMax = heatmapMax;
 	}
 	
-	/** Éè¶¨heatmap×îÇ³ÑÕÉ«ÒÔ¼°×îÉîÑÕÉ« */
+	/** è®¾å®šheatmapæœ€æµ…é¢œè‰²ä»¥åŠæœ€æ·±é¢œè‰² */
 	public void setHeatmapColor(Color heatmapColorMin, Color heatmapColorMax) {
 		this.heatmapColorMin = heatmapColorMin;
 		this.heatmapColorMax = heatmapColorMax;
 	}
 	/**
-	 * heatmapÊÇ·ñ°´ÕÕmapinfoµÄscore´ÓĞ¡µ½´óÅÅĞò
-	 * @param heatmapSortS2M false ´Ó´óµ½Ğ¡ÅÅĞò
+	 * heatmapæ˜¯å¦æŒ‰ç…§mapinfoçš„scoreä»å°åˆ°å¤§æ’åº
+	 * @param heatmapSortS2M false ä»å¤§åˆ°å°æ’åº
 	 */
 	public void setHeatmapSortS2M(boolean heatmapSortS2M) {
 		this.heatmapSortS2M = heatmapSortS2M;
 	}
 	
 	/**
-	 * Ã¿¸ô¶àÉÙÎ»È¡Ñù,Èç¹ûÉè¶¨Îª1£¬ÔòËã·¨»á±ä»¯£¬È»ºó»áºÜ¾«È·
+	 * æ¯éš”å¤šå°‘ä½å–æ ·,å¦‚æœè®¾å®šä¸º1ï¼Œåˆ™ç®—æ³•ä¼šå˜åŒ–ï¼Œç„¶åä¼šå¾ˆç²¾ç¡®
 	 * @return
 	 */
 	public MapReads getMapReads() {
 		return mapReads;
 	}
 	
-	/** ÓÃÀ´×ö¸ø¶¨ÇøÓòµÄÍ¼¡£mapinfoÖĞÉè¶¨×ø±êÎ»µãºÍvalue
-	 * Õâ¸öºÍÊäÈëgene£¬2Ñ¡1¡£Ë­ÏÈÉè¶¨Ñ¡Ë­
+	/** ç”¨æ¥åšç»™å®šåŒºåŸŸçš„å›¾ã€‚mapinfoä¸­è®¾å®šåæ ‡ä½ç‚¹å’Œvalue
+	 * è¿™ä¸ªå’Œè¾“å…¥geneï¼Œ2é€‰1ã€‚è°å…ˆè®¾å®šé€‰è°
 	 *  */
 	public void setSiteRegion(ArrayList<MapInfo> lsMapInfos) {
 		this.lsMapInfos = MapInfo.getCombLsMapInfoBigScore(lsMapInfos, 1000, true);
 	}
 	
-	/** Éè¶¨ÎªÈ«»ùÒò×é */
+	/** è®¾å®šä¸ºå…¨åŸºå› ç»„ */
 	public void setGeneIDGenome() {
 		lsGeneID2Value = Gene2Value.readGeneMapInfoAll(gffChrAbs);
 	}
 	
 	/**
-	 * ¸ø¶¨Òª»­tssÍ¼µÄ»ùÒòlist
-	 * ÄÚ²¿È¥ÖØ¸´
-	 * »á¸ù¾İMapInfo.isMin2max()±êÇ©È·¶¨Óöµ½ÖØ¸´ÏîÊÇÈ¡value´óµÄ»¹ÊÇĞ¡µÄ
-	 * »ñµÃgeneIDÒÔ¼°ÏàÓ¦È¨ÖØ£¬ÄÚ²¿×Ô¶¯È¥ÈßÓà£¬±£ÁôÈ¨ÖØ¸ßµÄÄÇ¸ö£¬²¢ÇÒÌî³äÏàÓ¦µÄreads
-	 * Ò»°ãÓÃÓÚ¸ù¾İgene express »­heapmapÍ¼
+	 * ç»™å®šè¦ç”»tsså›¾çš„åŸºå› list
+	 * å†…éƒ¨å»é‡å¤
+	 * ä¼šæ ¹æ®MapInfo.isMin2max()æ ‡ç­¾ç¡®å®šé‡åˆ°é‡å¤é¡¹æ˜¯å–valueå¤§çš„è¿˜æ˜¯å°çš„
+	 * è·å¾—geneIDä»¥åŠç›¸åº”æƒé‡ï¼Œå†…éƒ¨è‡ªåŠ¨å»å†—ä½™ï¼Œä¿ç•™æƒé‡é«˜çš„é‚£ä¸ªï¼Œå¹¶ä¸”å¡«å……ç›¸åº”çš„reads
+	 * ä¸€èˆ¬ç”¨äºæ ¹æ®gene express ç”»heapmapå›¾
 	 * @param lsGeneValue string[2] 
 	 * 0:geneID 
-	 * 1:value ÆäÖĞ1 ¿ÉÒÔÃ»ÓĞ£¬ÄÇÃ´¾ÍÊÇstring[1] 0:geneID
+	 * 1:value å…¶ä¸­1 å¯ä»¥æ²¡æœ‰ï¼Œé‚£ä¹ˆå°±æ˜¯string[1] 0:geneID
 	 * @return
 	 */
 	public void setGeneID2ValueLs(ArrayList<String[]> lsGeneValue) {
-		//Çå¿Õ
+		//æ¸…ç©º
 		lsMapInfos = new ArrayList<MapInfo>();
 		
-		//ÓĞÈ¨ÖØµÄ¾ÍÊ¹ÓÃÕâ¸öhash
+		//æœ‰æƒé‡çš„å°±ä½¿ç”¨è¿™ä¸ªhash
  		HashMap<GffDetailGene, Double> hashGene2Value = new HashMap<GffDetailGene, Double>();
 
 		for (String[] strings : lsGeneValue) {
@@ -234,8 +234,8 @@ public class GffChrPlotTss {
 		}
 	}
 
-	/** <b>Èç¹ûgenestructureÉè¶¨Îªtss»òtes£¬ÄÇÃ´Îñ±ØÊ×ÏÈÉè¶¨tsstesRange</b><br>
-	 * ¸ø¶¨ÇøÓò£¬»ñµÃ±»¸ÃÇøÓò¸²¸ÇµÄ»ùÒòÈ»ºóÔÙ×öÍ¼¡£mapinfoÖĞÉè¶¨×ø±êÎ»µãºÍvalue */
+	/** <b>å¦‚æœgenestructureè®¾å®šä¸ºtssæˆ–tesï¼Œé‚£ä¹ˆåŠ¡å¿…é¦–å…ˆè®¾å®štsstesRange</b><br>
+	 * ç»™å®šåŒºåŸŸï¼Œè·å¾—è¢«è¯¥åŒºåŸŸè¦†ç›–çš„åŸºå› ç„¶åå†åšå›¾ã€‚mapinfoä¸­è®¾å®šåæ ‡ä½ç‚¹å’Œvalue */
 	public void setSiteCoveredGene(ArrayList<MapInfo> lsMapInfos, GeneStructure geneStructure) {
 		this.lsGeneID2Value = Gene2Value.getLsGene2Vale(tsstesRange, gffChrAbs, lsMapInfos, geneStructure);
 	}
@@ -272,7 +272,7 @@ public class GffChrPlotTss {
 		double[] yvalue = MapInfo.getCombLsMapInfo(lsMapInfos);
 		double[] xvalue = getXvalue();
 		if (xvalue.length != yvalue.length) {
-			logger.error("xvalue ºÍ yvalue µÄ³¤¶È²»Ò»ÖÂ£¬Çë¼ì²é");
+			logger.error("xvalue å’Œ yvalue çš„é•¿åº¦ä¸ä¸€è‡´ï¼Œè¯·æ£€æŸ¥");
 		}
 		for (int i = 0; i < xvalue.length; i++) {
 			double[] tmpResult= new double[2];
@@ -284,13 +284,13 @@ public class GffChrPlotTss {
 	}
 	
 	/**
-	 * ¸ù¾İÉè¶¨µÄyvalueÖµºÍ»­³öÁ½±ßµÄ±ß½ç£¬Éè¶¨xµÄvalueÖµ
+	 * æ ¹æ®è®¾å®šçš„yvalueå€¼å’Œç”»å‡ºä¸¤è¾¹çš„è¾¹ç•Œï¼Œè®¾å®šxçš„valueå€¼
 	 * @return
 	 */
 	private double[] getXvalue() {
 		double[] xResult = null;
 		xResult = new double[splitNum];
-		//Gene2ValueÀïÃæ¶ÔÓÚtssºÍtes»á¼ÓÉÏ1£¬ÒòÎªÓĞ0µã
+		//Gene2Valueé‡Œé¢å¯¹äºtsså’Œtesä¼šåŠ ä¸Š1ï¼Œå› ä¸ºæœ‰0ç‚¹
 		if (geneStructure == GeneStructure.TSS || geneStructure == GeneStructure.TES) {
 			xResult[0] = plotTssTesRange[0];
 			double intervalNum = (double)(plotTssTesRange[1] - plotTssTesRange[0] )/(splitNum - 1);
@@ -308,7 +308,7 @@ public class GffChrPlotTss {
 		return xResult;
 	}
 	
-	/** Ê×ÏÈÒªÉè¶¨ºÃlsMapInfos */
+	/** é¦–å…ˆè¦è®¾å®šå¥½lsMapInfos */
 	public PlotHeatMap plotHeatMap() {
 		setLsMapInfos();
 		if (heatmapMax <= heatmapMin) {
@@ -325,9 +325,9 @@ public class GffChrPlotTss {
 		return heatMap;
 	}
 	
-	/** ½«lsGeneID2ValueÖĞµÄĞÅÏ¢Ìî³äµ½lsMapInfosÖĞÈ¥ */
+	/** å°†lsGeneID2Valueä¸­çš„ä¿¡æ¯å¡«å……åˆ°lsMapInfosä¸­å» */
 	private void setLsMapInfos() {
-		//TODO Ó¦¸Ã¸Ä³É Ã¿´ÎÉè¶¨ĞÂµÄlsMapInfo£¬GeneID£¬ºÍGeneStructure¾ÍÖØĞÂÅÜ
+		//TODO åº”è¯¥æ”¹æˆ æ¯æ¬¡è®¾å®šæ–°çš„lsMapInfoï¼ŒGeneIDï¼Œå’ŒGeneStructureå°±é‡æ–°è·‘
 		if (lsMapInfos != null && lsMapInfos.size() > 0 && (lsGeneID2Value == null || lsGeneID2Value.size() == 0)) {
 			mapReads.getRangeLs(this.splitNum, lsMapInfos, 0);
 			return;
@@ -347,9 +347,9 @@ public class GffChrPlotTss {
 	}
 	
 	/**
-	 * ¸ù¾İÊäÈëµÄ lsMapInfos£¬»ñµÃÖ¸¶¨·ÖÎ»µãµÄÖµ
+	 * æ ¹æ®è¾“å…¥çš„ lsMapInfosï¼Œè·å¾—æŒ‡å®šåˆ†ä½ç‚¹çš„å€¼
 	 * @param lsMapInfos
-	 * @param percentage ·ÖÎªµã£¬Æ©Èç99±íÊ¾×î´óµÄ99%·ÖÎ»µã
+	 * @param percentage åˆ†ä¸ºç‚¹ï¼Œè­¬å¦‚99è¡¨ç¤ºæœ€å¤§çš„99%åˆ†ä½ç‚¹
 	 * @return
 	 */
 	private double getMaxData(List<MapInfo> lsMapInfos, int percentage) {
@@ -364,14 +364,14 @@ public class GffChrPlotTss {
 	}
 	
 	/**
-	 * Çå¿ÕÄÇÖÖlistµÄĞÅÏ¢£¬Ö÷ÒªÊÇ
-	 * »æÖÆÍ¼Æ¬µÄÇøÓò<br>
+	 * æ¸…ç©ºé‚£ç§listçš„ä¿¡æ¯ï¼Œä¸»è¦æ˜¯
+	 * ç»˜åˆ¶å›¾ç‰‡çš„åŒºåŸŸ<br>
 	   ArrayList< MapInfo > lsMapInfos;<br>
-	»æÖÆÍ¼Æ¬µÄgene<br>
+	ç»˜åˆ¶å›¾ç‰‡çš„gene<br>
 	  ArrayList< Gene2Value > lsGeneID2Value;<br>
-	 Éè¶¨ĞèÒªÌáÈ¡£¬»ò²»ÌáÈ¡µÄexon»òintronµÄ¸öÊı£¬Æ©ÈçÑîºìĞÇÒªÇó½ö·ÖÎöµÚÒ»Î»µÄintron<br>
+	 è®¾å®šéœ€è¦æå–ï¼Œæˆ–ä¸æå–çš„exonæˆ–intronçš„ä¸ªæ•°ï¼Œè­¬å¦‚æ¨çº¢æ˜Ÿè¦æ±‚ä»…åˆ†æç¬¬ä¸€ä½çš„intron<br>
 		ArrayList<Integer> lsExonIntronNumGetOrExclude<br><br>
-		<b>ËùÒÔĞèÒªÖØĞÂÉè¶¨ {@link  #setGeneIDGenome()} µÈ·½·¨</b>
+		<b>æ‰€ä»¥éœ€è¦é‡æ–°è®¾å®š {@link  #setGeneIDGenome()} ç­‰æ–¹æ³•</b>
 	 */
 	public void clearCollectionInfo() {
 		try { lsMapInfos.clear(); } catch (Exception e) { }
@@ -382,8 +382,8 @@ public class GffChrPlotTss {
 	 * @param lsMapInfo1
 	 * @param lsMapInfo2
 	 * @param outFile
-	 * @param mindata1 ÈÈÍ¼ÉÏµÄËùÄÜÏÔÊ¾×îÉîÑÕÉ«µÄ×îĞ¡Öµ
-	 * @param maxdata1 ÈÈÍ¼ÉÏµÄËùÄÜÏÔÊ¾×îÉîÑÕÉ«µÄ×î´óÖµ
+	 * @param mindata1 çƒ­å›¾ä¸Šçš„æ‰€èƒ½æ˜¾ç¤ºæœ€æ·±é¢œè‰²çš„æœ€å°å€¼
+	 * @param maxdata1 çƒ­å›¾ä¸Šçš„æ‰€èƒ½æ˜¾ç¤ºæœ€æ·±é¢œè‰²çš„æœ€å¤§å€¼
 	 */
 	public static void plotHeatMapMinus(ArrayList<MapInfo> lsMapInfo1,
 			ArrayList<MapInfo> lsMapInfo2, String outFile, double mindata1,
@@ -403,12 +403,12 @@ public class GffChrPlotTss {
 	}
 	
 	/**
-	 * @param lsMapInfo  »ùÒòĞÅÏ¢
-	 * @param structure »ùÒò½á¹¹£¬Ä¿Ç°Ö»ÓĞ GffDetailGene.TSS ºÍ GffDetailGene.TES
+	 * @param lsMapInfo  åŸºå› ä¿¡æ¯
+	 * @param structure åŸºå› ç»“æ„ï¼Œç›®å‰åªæœ‰ GffDetailGene.TSS å’Œ GffDetailGene.TES
 	 * @param color
-	 * @param small ×îĞ¡
-	 * @param big ×î´ó
-	 * @param scale scale´Î·½£¬´óÓÚ1ÔòÏ¡Êè¸ß±í´ï£¬Ğ¡ÓÚ1ÔòÏ¡ÊèµÍ±í´ï
+	 * @param small æœ€å°
+	 * @param big æœ€å¤§
+	 * @param scale scaleæ¬¡æ–¹ï¼Œå¤§äº1åˆ™ç¨€ç–é«˜è¡¨è¾¾ï¼Œå°äº1åˆ™ç¨€ç–ä½è¡¨è¾¾
 	 * @param outFile
 	 */
 	public static void plotHeatMap2(ArrayList<MapInfo> lsMapInfo,

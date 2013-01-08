@@ -10,7 +10,7 @@ import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 /**
- * ¶ÁÈ¡´ó¶¹µÄGFFÎÄ¼şÓĞÎÊÌâ£¬Ö÷ÒªÊÇ5UTRºÍ3UTRÒ»¿é£¬ĞèÒªĞŞÕı
+ * è¯»å–å¤§è±†çš„GFFæ–‡ä»¶æœ‰é—®é¢˜ï¼Œä¸»è¦æ˜¯5UTRå’Œ3UTRä¸€å—ï¼Œéœ€è¦ä¿®æ­£
  * @author zong0jie
  *
  */
@@ -45,7 +45,7 @@ public class GffHashGene implements GffHashGeneInf{
 		gffHashGene.ReadGffarray(gffFile);
 	}
 	
-	/** Èç¹ûÊÇ´ÓFastaĞòÁĞ¶øÀ´µÄgff£¬¾ÍÓÃÕâ¸ö°ü×° */
+	/** å¦‚æœæ˜¯ä»Fastaåºåˆ—è€Œæ¥çš„gffï¼Œå°±ç”¨è¿™ä¸ªåŒ…è£… */
 	public void setGffHashGeneFromFasta(String seqFasta, String proteinSeq) {
 		GffHashGeneRefSeq gffHashGeneRefSeq = new GffHashGeneRefSeq();
 		gffHashGeneRefSeq.setProteinSeq(proteinSeq);
@@ -53,7 +53,7 @@ public class GffHashGene implements GffHashGeneInf{
 		this.gffHashGene = gffHashGeneRefSeq;
 	}
 	/**
-	 * Ö»Éè¶¨²ÎÊı£¬²»¶ÁÈ¡
+	 * åªè®¾å®šå‚æ•°ï¼Œä¸è¯»å–
 	 * @param GffType
 	 * @param gffFile
 	 */
@@ -77,14 +77,14 @@ public class GffHashGene implements GffHashGeneInf{
 		}
 	}
 	/**
-	 * ¶ÁÈ¡ĞÅÏ¢
+	 * è¯»å–ä¿¡æ¯
 	 * @param gffFile
 	 */
 	public void readGffFile(String gffFile) {
 		gffHashGene.ReadGffarray(gffFile);
 	}
 	/**
-	 * ×¨ÃÅ¸ø·ëÓ¢µÄÏîÄ¿ÓÃµÄ£¬Éè¶¨refµÄGffinfo
+	 * ä¸“é—¨ç»™å†¯è‹±çš„é¡¹ç›®ç”¨çš„ï¼Œè®¾å®šrefçš„Gffinfo
 	 */
 	public void setGffHash(GffHashGene gffHashRef) {
 		GffHashCufflinkGTF gff = (GffHashCufflinkGTF)gffHashGene;
@@ -103,7 +103,7 @@ public class GffHashGene implements GffHashGeneInf{
 	public void setEndRegion(boolean region) {
 		gffHashGene.setEndRegion(region);
 	}
-	/** Ë³Ğò´æ´¢ChrHashÖĞµÄID£¬Õâ¸ö¾ÍÊÇChrHashÖĞÊµ¼Ê´æ´¢µÄID£¬Èç¹ûÁ½¸öItemÊÇÖØµşµÄ£¬¾ÍÈ«¼ÓÈë */
+	/** é¡ºåºå­˜å‚¨ChrHashä¸­çš„IDï¼Œè¿™ä¸ªå°±æ˜¯ChrHashä¸­å®é™…å­˜å‚¨çš„IDï¼Œå¦‚æœä¸¤ä¸ªItemæ˜¯é‡å çš„ï¼Œå°±å…¨åŠ å…¥ */
 	public ArrayList<String> getLsNameAll() {
 		return gffHashGene.getLsNameAll();
 	}
@@ -163,16 +163,16 @@ public class GffHashGene implements GffHashGeneInf{
 	public  HashMap<String, ListGff> getMapChrID2LsGff() {
 		return gffHashGene.getMapChrID2LsGff();
 	}
-	/** ·µ»ØËùÓĞ²»ÖØ¸´GffDetailGene */
+	/** è¿”å›æ‰€æœ‰ä¸é‡å¤GffDetailGene */
 	public ArrayList<GffDetailGene> getGffDetailAll() {
 		return gffHashGene.getGffDetailAll();
 	}
-	/** ·µ»ØËùÓĞ²»ÖØ¸´GffDetailGene */
+	/** è¿”å›æ‰€æœ‰ä¸é‡å¤GffDetailGene */
 	public ArrayList<Integer> getLsIntronSortedS2M() {
 		return gffHashGene.getLsIntronSortedS2M();
 	}
 	/**
-	 * ½«»ùÒò×°ÈëGffHashÖĞ
+	 * å°†åŸºå› è£…å…¥GffHashä¸­
 	 * @param chrID
 	 * @param gffDetailGene
 	 */
@@ -195,14 +195,14 @@ public class GffHashGene implements GffHashGeneInf{
 	public void writeGene2Iso(String Gene2IsoFile) {
 		gffHashGene.writeGene2Iso(Gene2IsoFile);
 	}	
-	/** ×Ô¶¯ÅĞ¶ÏÈ¾É«Ìå */
+	/** è‡ªåŠ¨åˆ¤æ–­æŸ“è‰²ä½“ */
 	public void addListGff(ListGff listGff) {
 		String chrID = listGff.getName();
 		gffHashGene.getMapChrID2LsGff().put(chrID.toLowerCase(), listGff);
 	}
 	
 	/**
-	 * ·µ»ØÈ«ÌåisoµÄset£¬ÓÃÓÚ×ö±³¾°£¬Õâ¸öÊÇ±È½ÏÈ«ÃæµÄ±³¾°
+	 * è¿”å›å…¨ä½“isoçš„setï¼Œç”¨äºåšèƒŒæ™¯ï¼Œè¿™ä¸ªæ˜¯æ¯”è¾ƒå…¨é¢çš„èƒŒæ™¯
 	 * @return
 	 */
 	public HashSet<String> getSetIsoID() {
@@ -218,7 +218,7 @@ public class GffHashGene implements GffHashGeneInf{
 		return setGeneID;
 	}
 	
-	/** ´ÓGFFÖĞ»ñµÃµÄÈ¾É«Ìå³¤¶ÈĞÅÏ¢£¬²»×¼£¬Ö÷ÒªÓÃÔÚRNAseqµÄÊ±ºò */
+	/** ä»GFFä¸­è·å¾—çš„æŸ“è‰²ä½“é•¿åº¦ä¿¡æ¯ï¼Œä¸å‡†ï¼Œä¸»è¦ç”¨åœ¨RNAseqçš„æ—¶å€™ */
 	public HashMap<String, Long> getChrID2LengthForRNAseq() {
 		HashMap<String, Long> mapChrID2Length = new HashMap<String, Long>();
 		

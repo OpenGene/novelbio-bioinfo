@@ -31,12 +31,12 @@ public class AmiGO {
 class ImpGOExtObo extends ImportPerLine {
 	private static Logger logger = Logger.getLogger(ImpGOExtObo.class);
 	
-	/** queryIDºÍÊµ¼ÊID */
+	/** queryIDå’Œå®é™…ID */
 	HashMap<String, String> mapGOquery2GOID = new HashMap<String, String>();
 	
 	/**
-	 * ÒòÎªĞèÒª¶àĞĞµÄµ¼Èë
-	 * ËùÒÔ¸²¸Ç·½·¨
+	 * å› ä¸ºéœ€è¦å¤šè¡Œçš„å¯¼å…¥
+	 * æ‰€ä»¥è¦†ç›–æ–¹æ³•
 	 */
 	@Override
 	public void updateFile(String gene2AccFile, boolean gzip) {
@@ -47,7 +47,7 @@ class ImpGOExtObo extends ImportPerLine {
 			txtGene2Acc = new TxtReadandWrite(gene2AccFile, false);
 		}
 		
-		//´ÓµÚ¶şĞĞ¿ªÊ¼¶ÁÈ¡£¬µÚÒ»´Îµ¼Èë
+		//ä»ç¬¬äºŒè¡Œå¼€å§‹è¯»å–ï¼Œç¬¬ä¸€æ¬¡å¯¼å…¥
 		String tmpContent = null;
 		for (String content : txtGene2Acc.readlines(2)) {
 			if (content.contains("GO:0030530")) {
@@ -66,7 +66,7 @@ class ImpGOExtObo extends ImportPerLine {
 				tmpContent = tmpContent + "\r\n" + content;
 			}
 		}
-		//´ÓµÚ¶şĞĞ¿ªÊ¼¶ÁÈ¡£¬µÚ¶ş´Îµ¼Èë
+		//ä»ç¬¬äºŒè¡Œå¼€å§‹è¯»å–ï¼Œç¬¬äºŒæ¬¡å¯¼å…¥
 		for (String content : txtGene2Acc.readlines(2)) {
 			if (content.startsWith("[Term]")) {
 				tmpContent = content;
@@ -82,7 +82,7 @@ class ImpGOExtObo extends ImportPerLine {
 		}
 		copeMapGOquery2GOID();
 		updateConvertID();
-		//´ÓµÚ¶şĞĞ¿ªÊ¼¶ÁÈ¡£¬µÚÈı´Îµ¼Èë
+		//ä»ç¬¬äºŒè¡Œå¼€å§‹è¯»å–ï¼Œç¬¬ä¸‰æ¬¡å¯¼å…¥
 		for (String content : txtGene2Acc.readlines(2)) {
 			if (content.startsWith("[Term]")) {
 				tmpContent = content;
@@ -103,7 +103,7 @@ class ImpGOExtObo extends ImportPerLine {
 	}
 	
 	/**
-	 * µÚÒ»´Îµ¹ÈëÒÑÓĞµÄĞÅÏ¢¡£
+	 * ç¬¬ä¸€æ¬¡å€’å…¥å·²æœ‰çš„ä¿¡æ¯ã€‚
 	 */
 	@Override
 	public boolean impPerLine(String lineContent) {
@@ -145,7 +145,7 @@ class ImpGOExtObo extends ImportPerLine {
 			if (string.startsWith("is_a:")) {
 				String parentGOID = extractGOID(string);
 				if (parentGOID == null) {
-					logger.error("is_a ÖĞÃ»ÓĞ¶ÔÓ¦µÄGOID£º" + string);
+					logger.error("is_a ä¸­æ²¡æœ‰å¯¹åº”çš„GOIDï¼š" + string);
 				}
 				else {
 					go2Term.addParent(parentGOID, Go2Term.RELATION_IS);
@@ -154,7 +154,7 @@ class ImpGOExtObo extends ImportPerLine {
 			if (string.startsWith("is_a:")) {
 				String parentGOID = extractGOID(string);
 				if (parentGOID == null) {
-					logger.error("is_a ÖĞÃ»ÓĞ¶ÔÓ¦µÄGOID£º" + string);
+					logger.error("is_a ä¸­æ²¡æœ‰å¯¹åº”çš„GOIDï¼š" + string);
 				}
 				else {
 					go2Term.addParent(parentGOID, Go2Term.RELATION_IS);
@@ -163,7 +163,7 @@ class ImpGOExtObo extends ImportPerLine {
 			if (string.startsWith("relationship:")) {
 				String parentGOID = extractGOID(string);
 				if (parentGOID == null) {
-					logger.error("is_a ÖĞÃ»ÓĞ¶ÔÓ¦µÄGOID£º" + string);
+					logger.error("is_a ä¸­æ²¡æœ‰å¯¹åº”çš„GOIDï¼š" + string);
 					return false;
 				}
 				if (string.contains("part_of")) {
@@ -193,7 +193,7 @@ class ImpGOExtObo extends ImportPerLine {
 	}
 	
 	/**
-	 * µÚ¶ş´Î²Åµ¼Èë ¹ıÊ±GO ĞÅÏ¢
+	 * ç¬¬äºŒæ¬¡æ‰å¯¼å…¥ è¿‡æ—¶GO ä¿¡æ¯
 	 */
 	void impPerLineObsolete(String lineContent) {
 		if (lineContent == null) {
@@ -232,8 +232,8 @@ class ImpGOExtObo extends ImportPerLine {
 		}
 	}
 	/**
-	 * Ê×ÏÈµ¼ÈëÊÇBPµÄĞÅÏ¢£¬Èç¹ûÃ»ÓĞBPĞÅÏ¢£¬²Åµ¼Èë³£¹æĞÅÏ¢
-	 * ´ÓºóÏòÇ°µ¼Èë£¬ÒòÎªÔ½ºóÃæµÄ·ÖÀàÔ½Ï¸
+	 * é¦–å…ˆå¯¼å…¥æ˜¯BPçš„ä¿¡æ¯ï¼Œå¦‚æœæ²¡æœ‰BPä¿¡æ¯ï¼Œæ‰å¯¼å…¥å¸¸è§„ä¿¡æ¯
+	 * ä»åå‘å‰å¯¼å…¥ï¼Œå› ä¸ºè¶Šåé¢çš„åˆ†ç±»è¶Šç»†
 	 * @param lsReplaceAndConsider
 	 * @param GOID
 	 */
@@ -253,8 +253,8 @@ class ImpGOExtObo extends ImportPerLine {
 	}
 	
 	/**
-	 * ÕûÀí mapGOquery2GOID
-	 * ÒòÎªÓĞĞ©queryID--GOID£¬ÆäÖĞGOIDÒ²¹ıÊ±ÁË£¬ËùÒÔÒª¼ÌĞø²éÕÒqueryID²ÅĞĞ
+	 * æ•´ç† mapGOquery2GOID
+	 * å› ä¸ºæœ‰äº›queryID--GOIDï¼Œå…¶ä¸­GOIDä¹Ÿè¿‡æ—¶äº†ï¼Œæ‰€ä»¥è¦ç»§ç»­æŸ¥æ‰¾queryIDæ‰è¡Œ
 	 */
 	private void copeMapGOquery2GOID() {
 		HashMap<String, String> mapGOquery2GOIDFinal = new HashMap<String, String>();
@@ -279,7 +279,7 @@ class ImpGOExtObo extends ImportPerLine {
 	}
 	
 	/**
-	 * µÚÈı´Î²Åµ¼Èë  ×ÓÀàĞÅÏ¢
+	 * ç¬¬ä¸‰æ¬¡æ‰å¯¼å…¥  å­ç±»ä¿¡æ¯
 	 */
 	void impPerLineChild(String lineContent) {
 		if (lineContent == null) {
@@ -300,7 +300,7 @@ class ImpGOExtObo extends ImportPerLine {
 			if (string.startsWith("is_a:")) {
 				String GOID = extractGOID(string);
 				if (GOID == null) {
-					logger.error("is_a ÖĞÃ»ÓĞ¶ÔÓ¦µÄGOID£º" + string);
+					logger.error("is_a ä¸­æ²¡æœ‰å¯¹åº”çš„GOIDï¼š" + string);
 				}
 				else {
 					Go2Term go2Term = Go2Term.queryGo2TermDB(GOID);
@@ -311,7 +311,7 @@ class ImpGOExtObo extends ImportPerLine {
 			if (string.startsWith("relationship:")) {
 				String GOID = extractGOID(string);
 				if (GOID == null) {
-					logger.error("is_a ÖĞÃ»ÓĞ¶ÔÓ¦µÄGOID£º" + string);
+					logger.error("is_a ä¸­æ²¡æœ‰å¯¹åº”çš„GOIDï¼š" + string);
 					return;
 				}
 				if (string.contains("part_of")) {
@@ -349,22 +349,22 @@ class ImpGOExtObo extends ImportPerLine {
 
 
 /**
- * ÏÈ°ÑÆäËûµÄÈ«µ¹ÈëÒ»±éºó£¬ÔÙµ¼ÈëÕâ¸ö£¬µ¼Íêºó½«±ğµÄÃ»ÓĞÕÒµ½NCBIIDµÄµ¼ÈëuniprotID±í¡£
- * µ¼ÈëÎÄ¼şgene_association.goa_uniprot.gz
- * ÍøÖ·£ºhttp://www.geneontology.org/gene-associations
+ * å…ˆæŠŠå…¶ä»–çš„å…¨å€’å…¥ä¸€éåï¼Œå†å¯¼å…¥è¿™ä¸ªï¼Œå¯¼å®Œåå°†åˆ«çš„æ²¡æœ‰æ‰¾åˆ°NCBIIDçš„å¯¼å…¥uniprotIDè¡¨ã€‚
+ * å¯¼å…¥æ–‡ä»¶gene_association.goa_uniprot.gz
+ * ç½‘å€ï¼šhttp://www.geneontology.org/gene-associations
  * @author zong0jie
  *
  */
 class Impgene_associationgoa_uniprot extends ImportPerLine {
 	private static Logger logger = Logger.getLogger(Impgene_associationgoa_uniprot.class);
 	/**
-	 * ´ÓµÚ5ĞĞ¿ªÊ¼¶ÁÈ¡
+	 * ä»ç¬¬5è¡Œå¼€å§‹è¯»å–
 	 */
 	protected void setReadFromLine() {
 		this.readFromLine = 5;
 	}
 	/**
-	 * ÎÄ¼ş¸ñÊ½
+	 * æ–‡ä»¶æ ¼å¼
 	 * Since we deal with proteins rather than genes, the semantics of some
 fields in our files may be slightly different to other gene association files.
 
@@ -503,18 +503,18 @@ Example:O43526-2
 		try {
 			taxID = Integer.parseInt(ss[12].replace("taxon:", ""));
 		} catch (Exception e) {
-			logger.error("taxID³ö´í£º" + lineContent);
+			logger.error("taxIDå‡ºé”™ï¼š" + lineContent);
 		}
 		
 		if (!hashTaxID.contains(taxID)) {
 			return true;
 		}
 		GeneID copedID = new GeneID(ss[1], taxID);
-		//ÕÒµ½ºÏÊÊµÄ±í£¬NCBI»òUniProt£¬²¢µ¼ÈëUniID
+		//æ‰¾åˆ°åˆé€‚çš„è¡¨ï¼ŒNCBIæˆ–UniProtï¼Œå¹¶å¯¼å…¥UniID
 		copedID.setUpdateRefAccID(ss[1],ss[2]);
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_UNIPROT_UNIID, false);
 		copedID.update(true);
-		//µ¼ÈësymbolºÍdescription
+		//å¯¼å…¥symbolå’Œdescription
 //		copedID.setUpdateAccID(ss[2]);
 //		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_SYMBOL, false);
 		GeneInfo geneInfo = new GeneInfo();

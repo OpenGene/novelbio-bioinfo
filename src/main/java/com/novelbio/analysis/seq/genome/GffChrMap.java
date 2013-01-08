@@ -51,7 +51,7 @@ import com.novelbio.generalConf.NovelBioConst;
 import de.erichseifert.gral.util.GraphicsUtils;
 
 /**
- * ¸ø¶¨»ùÒòµÄÇøÓò£¬»­³ö¸÷ÖÖÍ³¼ÆÍ¼
+ * ç»™å®šåŸºå› çš„åŒºåŸŸï¼Œç”»å‡ºå„ç§ç»Ÿè®¡å›¾
  * 
  * @author zong0jie
  * 
@@ -76,7 +76,7 @@ public class GffChrMap {
 	Logger logger = Logger.getLogger(GffChrMap.class);
 	String fileName = "";
 	int maxresolution = 10000;
-	/** »æÍ¼ÇøÓò£¬Ò²ÓÃÓÚtssºÍtesµÄ·¶Î§ */
+	/** ç»˜å›¾åŒºåŸŸï¼Œä¹Ÿç”¨äºtsså’Œtesçš„èŒƒå›´ */
 	int[] plotRange;
 	MapReads mapReads;
 	int mapNormType = MapReads.NORMALIZATION_ALL_READS;
@@ -89,7 +89,7 @@ public class GffChrMap {
 		this.gffChrAbs = gffChrAbs;
 	}
 	/**
-	 * ½«GffChrAbsµ¼Èë
+	 * å°†GffChrAbså¯¼å…¥
 	 * @param gffChrAbs
 	 */
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
@@ -106,14 +106,14 @@ public class GffChrMap {
 		this.mapReads = mapReads;
 	}
 	/**
-	 * Ã¿¸ô¶àÉÙÎ»È¡Ñù,Èç¹ûÉè¶¨Îª1£¬ÔòËã·¨»á±ä»¯£¬È»ºó»áºÜ¾«È·
+	 * æ¯éš”å¤šå°‘ä½å–æ ·,å¦‚æœè®¾å®šä¸º1ï¼Œåˆ™ç®—æ³•ä¼šå˜åŒ–ï¼Œç„¶åä¼šå¾ˆç²¾ç¡®
 	 * @return
 	 */
 	public int getThisInv() {
 		return mapReads.getBinNum();
 	}
 	/**
-	 * °´ÕÕÈ¾É«ÌåÊı£¬Í³¼ÆÃ¿¸öÈ¾É«ÌåÉÏ×ÜÎ»µãÊı£¬Ã¿¸öÎ»µãÊı£¬ string[4] 0: chrID 1: readsNum 2: readsPipNum
+	 * æŒ‰ç…§æŸ“è‰²ä½“æ•°ï¼Œç»Ÿè®¡æ¯ä¸ªæŸ“è‰²ä½“ä¸Šæ€»ä½ç‚¹æ•°ï¼Œæ¯ä¸ªä½ç‚¹æ•°ï¼Œ string[4] 0: chrID 1: readsNum 2: readsPipNum
 	 * 3: readsPipMean
 	 * @return
 	 */
@@ -131,20 +131,20 @@ public class GffChrMap {
 		return lsResult;
 	}
 	/**
-	 * @param uniqReads µ±reads mappingÖÁÍ¬Ò»¸öÎ»ÖÃÊ±£¬ÊÇ·ñ½ö±£ÁôÒ»¸öreads
-	 * @param startCod ´ÓÆğµã¿ªÊ¼¶ÁÈ¡¸ÃreadsµÄ¼¸¸öbp£¬º«ÑàÓÃµ½ Ğ¡ÓÚ0±íÊ¾È«²¿¶ÁÈ¡ ´óÓÚreads³¤¶ÈµÄÔòºöÂÔ¸Ã²ÎÊı
-	 * @param booUniqueMapping ÖØ¸´µÄreadsÊÇ·ñÖ»Ñ¡ÔñÒ»Ìõ
-	 * @param cis5to3 ÊÇ·ñ½öÑ¡È¡Ä³Ò»·½ÏòµÄreads£¬null²»¿¼ÂÇ
+	 * @param uniqReads å½“reads mappingè‡³åŒä¸€ä¸ªä½ç½®æ—¶ï¼Œæ˜¯å¦ä»…ä¿ç•™ä¸€ä¸ªreads
+	 * @param startCod ä»èµ·ç‚¹å¼€å§‹è¯»å–è¯¥readsçš„å‡ ä¸ªbpï¼ŒéŸ©ç‡•ç”¨åˆ° å°äº0è¡¨ç¤ºå…¨éƒ¨è¯»å– å¤§äºreadsé•¿åº¦çš„åˆ™å¿½ç•¥è¯¥å‚æ•°
+	 * @param booUniqueMapping é‡å¤çš„readsæ˜¯å¦åªé€‰æ‹©ä¸€æ¡
+	 * @param cis5to3 æ˜¯å¦ä»…é€‰å–æŸä¸€æ–¹å‘çš„readsï¼Œnullä¸è€ƒè™‘
 	 */
 	public void setFilter(boolean uniqReads, int startCod, boolean booUniqueMapping, Boolean cis5to3) {
 		mapReads.setFilter(uniqReads, startCod, booUniqueMapping, cis5to3);
 	}
 	
 	/**
-	 * Ö÷ÒªÓÃÓÚÈ«»ùÒò×é×öÍ¼µÄ£¬ËùÒÔ½á¹û²»°´ÕÕ»ùÒò·½Ïò½øĞĞµßµ¹
+	 * ä¸»è¦ç”¨äºå…¨åŸºå› ç»„åšå›¾çš„ï¼Œæ‰€ä»¥ç»“æœä¸æŒ‰ç…§åŸºå› æ–¹å‘è¿›è¡Œé¢ å€’
 	 * @param geneStructure
 	 * @param gffDetailGene
-	 * @param num ¾ßÌåµÚ¼¸¸ö£¬Æ©ÈçÂíºì¾ÍÏë¿´µÚÒ»¸öÄÚº¬×Ó»òÕßµÚÒ»¸öÍâÏÔ×Ó Ğ¡ÓÚµÈÓÚ0±íÊ¾¿´È«Ìå
+	 * @param num å…·ä½“ç¬¬å‡ ä¸ªï¼Œè­¬å¦‚é©¬çº¢å°±æƒ³çœ‹ç¬¬ä¸€ä¸ªå†…å«å­æˆ–è€…ç¬¬ä¸€ä¸ªå¤–æ˜¾å­ å°äºç­‰äº0è¡¨ç¤ºçœ‹å…¨ä½“
 	 * @return
 	 */
 	public void setFilterChrDistInfo(GeneStructure geneStructure, int num) {
@@ -168,10 +168,10 @@ public class GffChrMap {
 		mapReads.setMapChrID2LsAlignments(mapChrID2LsAlignment);
 	}
 	/**
-	 * Ö÷ÒªÓÃÓÚÈ«»ùÒò×é×öÍ¼µÄ£¬ËùÒÔ½á¹û²»°´ÕÕ»ùÒò·½Ïò½øĞĞµßµ¹
+	 * ä¸»è¦ç”¨äºå…¨åŸºå› ç»„åšå›¾çš„ï¼Œæ‰€ä»¥ç»“æœä¸æŒ‰ç…§åŸºå› æ–¹å‘è¿›è¡Œé¢ å€’
 	 * @param geneStructure
 	 * @param gffDetailGene
-	 * @param num ¾ßÌåµÚ¼¸¸ö£¬Æ©ÈçÂíºì¾ÍÏë¿´µÚÒ»¸öÄÚº¬×Ó»òÕßµÚÒ»¸öÍâÏÔ×Ó Ğ¡ÓÚµÈÓÚ0±íÊ¾¿´È«Ìå
+	 * @param num å…·ä½“ç¬¬å‡ ä¸ªï¼Œè­¬å¦‚é©¬çº¢å°±æƒ³çœ‹ç¬¬ä¸€ä¸ªå†…å«å­æˆ–è€…ç¬¬ä¸€ä¸ªå¤–æ˜¾å­ å°äºç­‰äº0è¡¨ç¤ºçœ‹å…¨ä½“
 	 * @return
 	 */
 	private ArrayList<SiteInfo> getGeneStructureRangeForChrPlot(GeneStructure geneStructure, GffDetailGene gffDetailGene, int num) {
@@ -247,20 +247,20 @@ public class GffChrMap {
 	}
 	
 	/**
-	 * ·µ»ØÄ³ÌõÈ¾É«ÌåÉÏµÄreadsÇé¿ö£¬²»ÊÇÃÜ¶ÈÍ¼£¬Ö»ÊÇ¼òµ¥µÄ¼ÆËãreadsÔÚÒ»¸öÈ¾É«ÌåÉÏµÄÇé¿ö Ö÷ÒªÓÃÓÚRefSeqÊ±£¬Ò»¸ö»ùÒòÉÏµÄreadsÇé¿ö
+	 * è¿”å›æŸæ¡æŸ“è‰²ä½“ä¸Šçš„readsæƒ…å†µï¼Œä¸æ˜¯å¯†åº¦å›¾ï¼Œåªæ˜¯ç®€å•çš„è®¡ç®—readsåœ¨ä¸€ä¸ªæŸ“è‰²ä½“ä¸Šçš„æƒ…å†µ ä¸»è¦ç”¨äºRefSeqæ—¶ï¼Œä¸€ä¸ªåŸºå› ä¸Šçš„readsæƒ…å†µ
 	 * @param chrID
-	 * @param thisInvNum Ã¿¸öÇø¼ä¼¸bp
-	 * @parm type È¡Ñù·½·¨ 0£º¼ÓÈ¨Æ½¾ù 1£ºÈ¡×î¸ßÖµ£¬2£º¼ÓÈ¨µ«²»Æ½¾ù--Ò²¾ÍÊÇ¼ÓºÍ
-	 * @return Ã»ÓĞµÄ»°¾Í·µ»Ønull
+	 * @param thisInvNum æ¯ä¸ªåŒºé—´å‡ bp
+	 * @parm type å–æ ·æ–¹æ³• 0ï¼šåŠ æƒå¹³å‡ 1ï¼šå–æœ€é«˜å€¼ï¼Œ2ï¼šåŠ æƒä½†ä¸å¹³å‡--ä¹Ÿå°±æ˜¯åŠ å’Œ
+	 * @return æ²¡æœ‰çš„è¯å°±è¿”å›null
 	 */
 	public double[] getChrInfo(String chrID, int thisInvNum, int type) {
 		double[] tmpResult = mapReads.getRangeInfo(thisInvNum, chrID, 0, 0, type);
 		return tmpResult;
 	}
 	/**
-	 * »­³öËùÓĞÈ¾É«ÌåÉÏÃÜ¶ÈÍ¼
-	 * ÓÃjava»­
-	 * @param outPathPrefix Êä³öÎÄ¼ş¼Ğ+Ç°×º
+	 * ç”»å‡ºæ‰€æœ‰æŸ“è‰²ä½“ä¸Šå¯†åº¦å›¾
+	 * ç”¨javaç”»
+	 * @param outPathPrefix è¾“å‡ºæ–‡ä»¶å¤¹+å‰ç¼€
 	 * @throws Exception
 	 */
 	public void plotAllChrDist(String outPathPrefix) {
@@ -277,14 +277,14 @@ public class GffChrMap {
 		}
 	}
 	/**
-	 * ¸ø¶¨È¾É«Ìå£¬·µ»Ø¸ÃÈ¾É«ÌåÉÏreads·Ö²¼
+	 * ç»™å®šæŸ“è‰²ä½“ï¼Œè¿”å›è¯¥æŸ“è‰²ä½“ä¸Šreadsåˆ†å¸ƒ
 	 * 
 	 * @param chrID
-	 *            µÚ¼¸¸öÈíÉ«Ìå
+	 *            ç¬¬å‡ ä¸ªè½¯è‰²ä½“
 	 * @param maxresolution
-	 *            ×î³¤·Ö±æÂÊ
-	 * @param axisY yÖá±ß½ç
-	 * @param outFileName Êä³öÎÄ¼şÃû£¬´øºó×º"_chrID"
+	 *            æœ€é•¿åˆ†è¾¨ç‡
+	 * @param axisY yè½´è¾¹ç•Œ
+	 * @param outFileName è¾“å‡ºæ–‡ä»¶åï¼Œå¸¦åç¼€"_chrID"
 	 * @throws Exception
 	 */
 	private void plotChrDist(String chrID, int maxresolution, double axisY, String outFileName) throws Exception {
@@ -303,7 +303,7 @@ public class GffChrMap {
 		try {
 			chrReads = getChrDensity(chrID.toLowerCase(), resolution.length);
 		} catch (Exception e) {
-			logger.error("³öÏÖÎ´ÖªchrID£º" + chrID);
+			logger.error("å‡ºç°æœªçŸ¥chrIDï¼š" + chrID);
 			return;
 		}
 		if (chrReads == null) {
@@ -321,7 +321,7 @@ public class GffChrMap {
 		dotStyle.setStyle(DotStyle.STYLE_AREA);
 		plotScatter.addXY(resolutionDoub, chrReads, dotStyle);
 		
-		//////////////////Ìí¼Ó±ß¿ò///////////////////////////////
+		//////////////////æ·»åŠ è¾¹æ¡†///////////////////////////////
 		DotStyle dotStyleBroad = new DotStyle();
 		dotStyleBroad.setStyle(DotStyle.STYLE_LINE);
 		dotStyleBroad.setColor(Color.RED);
@@ -334,7 +334,7 @@ public class GffChrMap {
 		
 		plotScatter.setBg(Color.WHITE);
 		plotScatter.setAlpha(false);
-		//×ø±êÖámapping
+		//åæ ‡è½´mapping
 //		plotScatter.setMapNum2ChangeY(0, 0, axisY, 500, 100);
 		plotScatter.setTitle(chrID + " Reads Density", null);
 		plotScatter.setTitleX("Chromosome Length", null, 0);
@@ -346,13 +346,13 @@ public class GffChrMap {
 	}
 
 	/**
-	 * ·µ»ØÄ³ÌõÈ¾É«ÌåÉÏµÄreadsÇé¿ö£¬ÊÇÃÜ¶ÈÍ¼ Ö÷ÒªÓÃÓÚ»ùÒò×éÉÏ£¬Ò»ÌõÈ¾É«ÌåÉÏµÄreadsÇé¿ö
+	 * è¿”å›æŸæ¡æŸ“è‰²ä½“ä¸Šçš„readsæƒ…å†µï¼Œæ˜¯å¯†åº¦å›¾ ä¸»è¦ç”¨äºåŸºå› ç»„ä¸Šï¼Œä¸€æ¡æŸ“è‰²ä½“ä¸Šçš„readsæƒ…å†µ
 	 * 
 	 * @param chrID
 	 * @param binNum
-	 *            ·Ö³É¼¸¸öÇø¼ä
-	 * @parm type È¡Ñù·½·¨ 0£º¼ÓÈ¨Æ½¾ù 1£ºÈ¡×î¸ßÖµ£¬2£º¼ÓÈ¨µ«²»Æ½¾ù--Ò²¾ÍÊÇ¼ÓºÍ
-	 * @return Ã»ÓĞµÄ»°¾Í·µ»Ønull
+	 *            åˆ†æˆå‡ ä¸ªåŒºé—´
+	 * @parm type å–æ ·æ–¹æ³• 0ï¼šåŠ æƒå¹³å‡ 1ï¼šå–æœ€é«˜å€¼ï¼Œ2ï¼šåŠ æƒä½†ä¸å¹³å‡--ä¹Ÿå°±æ˜¯åŠ å’Œ
+	 * @return æ²¡æœ‰çš„è¯å°±è¿”å›null
 	 */
 	private double[] getChrDensity(String chrID, int binNum) {
 		double[] tmpResult = mapReads.getReadsDensity(chrID, 0, 0, binNum);
@@ -361,20 +361,20 @@ public class GffChrMap {
 	/**
 	 * @param color
 	 * @param SortS2M
-	 *            ÊÇ·ñ´ÓĞ¡µ½´óÅÅĞò
+	 *            æ˜¯å¦ä»å°åˆ°å¤§æ’åº
 	 * @param txtExcel
 	 * @param colGeneID
-	 * @param colScore Èç¹ûĞ¡ÓÚ0»òµÈÓÚcolGeneID£¬ÄÇÃ´¾ÍÓÃÖ¸¶¨ÇøÓòµÄreadsµ±×÷score
+	 * @param colScore å¦‚æœå°äº0æˆ–ç­‰äºcolGeneIDï¼Œé‚£ä¹ˆå°±ç”¨æŒ‡å®šåŒºåŸŸçš„readså½“ä½œscore
 	 * @param rowStart
 	 * @param heapMapSmall
 	 * @param heapMapBig
 	 * @param scale
 	 * @param structure
-	 *            »ùÒò½á¹¹£¬Ä¿Ç°Ö»ÓĞ GffDetailGene.TSS ºÍ GffDetailGene.TES
+	 *            åŸºå› ç»“æ„ï¼Œç›®å‰åªæœ‰ GffDetailGene.TSS å’Œ GffDetailGene.TES
 	 * @param binNum
-	 *            ×îºó·Ö³É¼¸¿é
+	 *            æœ€ååˆ†æˆå‡ å—
 	 * @param outFile
-	 * @return ·µ»Ø×î´óÖµºÍ×îĞ¡ÖµµÄÉè¶¨
+	 * @return è¿”å›æœ€å¤§å€¼å’Œæœ€å°å€¼çš„è®¾å®š
 	 */
 	public double[] plotTssHeatMap(Color color, boolean SortS2M, String txtExcel, int colGeneID, 
 			int colScore, int rowStart, double heapMapSmall, double heapMapBig,
@@ -393,9 +393,9 @@ public class GffChrMap {
 	}
 
 	/**
-	 * »ñµÃsummitÎ»µã£¬»­summitÎ»µã¸½½üµÄreadsÍ¼
+	 * è·å¾—summitä½ç‚¹ï¼Œç”»summitä½ç‚¹é™„è¿‘çš„readså›¾
 	 * @param SortS2M
-	 *            ÊÇ·ñ´ÓĞ¡µ½´óÅÅĞò
+	 *            æ˜¯å¦ä»å°åˆ°å¤§æ’åº
 	 * @param txtExcel
 	 * @param colChrID
 	 * @param colSummit
@@ -407,7 +407,7 @@ public class GffChrMap {
 	 * @param scale
 	 * @param binNum
 	 * @param outFile
-	 * @return ·µ»Ø×î´óÖµºÍ×îĞ¡ÖµµÄÉè¶¨
+	 * @return è¿”å›æœ€å¤§å€¼å’Œæœ€å°å€¼çš„è®¾å®š
 	 */
 	public double[] plotSummitHeatMap(boolean SortS2M, String txtExcel,
 			int colChrID, int colSummit, int colRegion, int colScore,
@@ -423,16 +423,16 @@ public class GffChrMap {
 	}
 	/**
 	 * @param lsMapInfo
-	 *            »ùÒòĞÅÏ¢
+	 *            åŸºå› ä¿¡æ¯
 	 * @param color
 	 * @param small
-	 *            ×îĞ¡
+	 *            æœ€å°
 	 * @param big 
-	 *            ×î´ó Èç¹û×î´óĞ¡ÓÚ×îĞ¡£¬ÔòÑ¡ÔñÉÏ95·ÖÎ»µãÎª×î¸ßµã
+	 *            æœ€å¤§ å¦‚æœæœ€å¤§å°äºæœ€å°ï¼Œåˆ™é€‰æ‹©ä¸Š95åˆ†ä½ç‚¹ä¸ºæœ€é«˜ç‚¹
 	 * @param scale
-	 *            scale´Î·½£¬´óÓÚ1ÔòÏ¡Êè¸ß±í´ï£¬Ğ¡ÓÚ1ÔòÏ¡ÊèµÍ±í´ï
+	 *            scaleæ¬¡æ–¹ï¼Œå¤§äº1åˆ™ç¨€ç–é«˜è¡¨è¾¾ï¼Œå°äº1åˆ™ç¨€ç–ä½è¡¨è¾¾
 	 * @param outFile
-	 * @return ·µ»Ø×î´óÖµºÍ×îĞ¡ÖµµÄÉè¶¨
+	 * @return è¿”å›æœ€å¤§å€¼å’Œæœ€å°å€¼çš„è®¾å®š
 	 */
 	private static double[] plotHeatMap(ArrayList<MapInfo> lsMapInfo, Color color,double mindata, double maxdata, String outFile) {
 		if (maxdata <= mindata) {
@@ -488,16 +488,16 @@ public class GffChrMap {
 	}
 	/**
 	 * @param lsMapInfo
-	 *            »ùÒòĞÅÏ¢
+	 *            åŸºå› ä¿¡æ¯
 	 * @param structure
-	 *            »ùÒò½á¹¹£¬Ä¿Ç°Ö»ÓĞ GffDetailGene.TSS ºÍ GffDetailGene.TES
+	 *            åŸºå› ç»“æ„ï¼Œç›®å‰åªæœ‰ GffDetailGene.TSS å’Œ GffDetailGene.TES
 	 * @param color
 	 * @param small
-	 *            ×îĞ¡
+	 *            æœ€å°
 	 * @param big
-	 *            ×î´ó
+	 *            æœ€å¤§
 	 * @param scale
-	 *            scale´Î·½£¬´óÓÚ1ÔòÏ¡Êè¸ß±í´ï£¬Ğ¡ÓÚ1ÔòÏ¡ÊèµÍ±í´ï
+	 *            scaleæ¬¡æ–¹ï¼Œå¤§äº1åˆ™ç¨€ç–é«˜è¡¨è¾¾ï¼Œå°äº1åˆ™ç¨€ç–ä½è¡¨è¾¾
 	 * @param outFile
 	 */
 	public static void plotHeatMap2(ArrayList<MapInfo> lsMapInfo,
@@ -525,8 +525,8 @@ public class GffChrMap {
 	 * @param lsMapInfo1
 	 * @param lsMapInfo2
 	 * @param outFile
-	 * @param mindata1 ÈÈÍ¼ÉÏµÄËùÄÜÏÔÊ¾×îÉîÑÕÉ«µÄ×îĞ¡Öµ
-	 * @param maxdata1 ÈÈÍ¼ÉÏµÄËùÄÜÏÔÊ¾×îÉîÑÕÉ«µÄ×î´óÖµ
+	 * @param mindata1 çƒ­å›¾ä¸Šçš„æ‰€èƒ½æ˜¾ç¤ºæœ€æ·±é¢œè‰²çš„æœ€å°å€¼
+	 * @param maxdata1 çƒ­å›¾ä¸Šçš„æ‰€èƒ½æ˜¾ç¤ºæœ€æ·±é¢œè‰²çš„æœ€å¤§å€¼
 	 */
 	public static void plotHeatMapMinus(ArrayList<MapInfo> lsMapInfo1,
 			ArrayList<MapInfo> lsMapInfo2, String outFile, double mindata1,
@@ -547,11 +547,11 @@ public class GffChrMap {
 	}
 
 	/**
-	 * ¸ù¾İÇ°ÃæÉè¶¨upBpºÍdownBp ¸ù¾İPeakËù¸²¸ÇµÄ»ùÒò×ö³öTSSÍ¼
-	 * @param fileName PeakÎÄ¼ş
-	 * @param rowStart ´ÓµÚ¼¸ĞĞ¿ªÊ¼¶Á
-	 * @param binNum ·Ö³É¼¸·İ
-	 * @param resultFile Êä³öÎÄ¼ş
+	 * æ ¹æ®å‰é¢è®¾å®šupBpå’ŒdownBp æ ¹æ®Peakæ‰€è¦†ç›–çš„åŸºå› åšå‡ºTSSå›¾
+	 * @param fileName Peakæ–‡ä»¶
+	 * @param rowStart ä»ç¬¬å‡ è¡Œå¼€å§‹è¯»
+	 * @param binNum åˆ†æˆå‡ ä»½
+	 * @param resultFile è¾“å‡ºæ–‡ä»¶
 	 * @param geneStructure GffDetailGene.TSS
 	 */
 	public void plotTssPeak(String fileName, int rowStart, int binNum, String resultFile, GeneStructure geneStructure) {
@@ -567,20 +567,20 @@ public class GffChrMap {
 	/**
 	 * @param color
 	 * @param SortS2M
-	 *            ÊÇ·ñ´ÓĞ¡µ½´óÅÅĞò
+	 *            æ˜¯å¦ä»å°åˆ°å¤§æ’åº
 	 * @param txtExcel
 	 * @param colGeneID
-	 * @param colScore Èç¹ûĞ¡ÓÚ0»òµÈÓÚcolGeneID£¬ÄÇÃ´¾ÍÓÃÖ¸¶¨ÇøÓòµÄreadsµ±×÷score
+	 * @param colScore å¦‚æœå°äº0æˆ–ç­‰äºcolGeneIDï¼Œé‚£ä¹ˆå°±ç”¨æŒ‡å®šåŒºåŸŸçš„readså½“ä½œscore
 	 * @param rowStart
 	 * @param heapMapSmall
 	 * @param heapMapBig
 	 * @param scale
 	 * @param structure
-	 *            »ùÒò½á¹¹£¬Ä¿Ç°Ö»ÓĞ GffDetailGene.TSS ºÍ GffDetailGene.TES
+	 *            åŸºå› ç»“æ„ï¼Œç›®å‰åªæœ‰ GffDetailGene.TSS å’Œ GffDetailGene.TES
 	 * @param binNum
-	 *            ×îºó·Ö³É¼¸¿é
+	 *            æœ€ååˆ†æˆå‡ å—
 	 * @param mirandaResultOut
-	 * @return ·µ»Ø×î´óÖµºÍ×îĞ¡ÖµµÄÉè¶¨
+	 * @return è¿”å›æœ€å¤§å€¼å’Œæœ€å°å€¼çš„è®¾å®š
 	 */
 	public double[] plotTssPeakHeatMap(Color color, String fileName,int heatMapSmall, int heatMapBig, int rowStart, int binNum, String resultFile, GeneStructure geneStructure, boolean SortS2M) {
 		ArrayList<MapInfo> lsMapInfo = gffChrAbs.readFileRegionMapInfo(fileName, 1, 2, 3, 0, rowStart);
@@ -594,20 +594,20 @@ public class GffChrMap {
 				FileOperate.changeFileSuffix(resultFile, "_HeatMap", "png"));
 	}
 	/**
-	 * ¸ù¾İÈ«²¿»ùÒò×ö³öTSSÍ¼
-	 * @param binNum ·Ö³É¼¸·İ
-	 * @param resultFile Êä³öÎÄ¼ş
+	 * æ ¹æ®å…¨éƒ¨åŸºå› åšå‡ºTSSå›¾
+	 * @param binNum åˆ†æˆå‡ ä»½
+	 * @param resultFile è¾“å‡ºæ–‡ä»¶
 	 * @param geneStructure GffDetailGene.TSS
 	 */
 	public void plotTssAllGene(int binNum, String resultFile, GeneStructure geneStructure) {
 		plotTssGene(null, 0, binNum, resultFile, geneStructure);
 	}
 	/**
-	 * ¸ù¾İÇ°ÃæÉè¶¨upBpºÍdownBp ¸ù¾İÖ¸¶¨µÄ»ùÒò×ö³öTSSÍ¼
-	 * @param fileName »ùÒòÎÄ¼ş£¬±ØĞëµÚÒ»ÁĞÎªgeneID£¬ÄÚ²¿È¥ÖØ¸´, Èç¹ûÃ»ÓĞÎÄ¼ş£¬Ôò·µ»ØÈ«Ìå»ùÒò
-	 * @param rowStart ´ÓµÚ¼¸ĞĞ¿ªÊ¼¶Á
-	 * @param binNum ·Ö³É¼¸·İ
-	 * @param resultFile Êä³öÎÄ¼ş
+	 * æ ¹æ®å‰é¢è®¾å®šupBpå’ŒdownBp æ ¹æ®æŒ‡å®šçš„åŸºå› åšå‡ºTSSå›¾
+	 * @param fileName åŸºå› æ–‡ä»¶ï¼Œå¿…é¡»ç¬¬ä¸€åˆ—ä¸ºgeneIDï¼Œå†…éƒ¨å»é‡å¤, å¦‚æœæ²¡æœ‰æ–‡ä»¶ï¼Œåˆ™è¿”å›å…¨ä½“åŸºå› 
+	 * @param rowStart ä»ç¬¬å‡ è¡Œå¼€å§‹è¯»
+	 * @param binNum åˆ†æˆå‡ ä»½
+	 * @param resultFile è¾“å‡ºæ–‡ä»¶
 	 * @param geneStructure GffDetailGene.TSS
 	 */
 	public void plotTssGene(String fileName, int rowStart, int binNum, String resultFile, GeneStructure geneStructure) {
@@ -625,11 +625,11 @@ public class GffChrMap {
 		txtWrite.close();		
 	}
 	/**
-	 * ¸ø¶¨»ùÒòµÄsymbol£¬·µ»Ø¸Ã»ùÒòÔÚtss¸½½üÇøÓòµÄmapreadsµÄÆ½¾ùÊı
-	 * @param geneID »ùÒòÃû×Ö
-	 * @param tssUp tssÉÏÓÎ¶àÉÙbp ¸ºÊıÔÚÉÏÓÎÕıÊıÔÚÏÂÓÎ
-	 * @param tssDown tssÏÂÓÎ¶àÉÙbp ¸ºÊıÔÚÉÏÓÎÕıÊıÔÚÏÂÓÎ
-	 * @return Èç¹ûÃ»ÓĞÔò·µ»Ø-1
+	 * ç»™å®šåŸºå› çš„symbolï¼Œè¿”å›è¯¥åŸºå› åœ¨tssé™„è¿‘åŒºåŸŸçš„mapreadsçš„å¹³å‡æ•°
+	 * @param geneID åŸºå› åå­—
+	 * @param tssUp tssä¸Šæ¸¸å¤šå°‘bp è´Ÿæ•°åœ¨ä¸Šæ¸¸æ­£æ•°åœ¨ä¸‹æ¸¸
+	 * @param tssDown tssä¸‹æ¸¸å¤šå°‘bp è´Ÿæ•°åœ¨ä¸Šæ¸¸æ­£æ•°åœ¨ä¸‹æ¸¸
+	 * @return å¦‚æœæ²¡æœ‰åˆ™è¿”å›-1
 	 */
 	public double getGeneTss(String geneID, int tssUp, int tssDown) {
 		GffDetailGene gffDetailGene = gffChrAbs.getGffHashGene().searchLOC(geneID);
@@ -639,7 +639,7 @@ public class GffChrMap {
 		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplitMrna();
 		int tssSite = gffGeneIsoInfo.getTSSsite();
 		int tssStartR = 0; int tssEndR = 0;
-		//·½Ïò²»Í¬£¬ÇøÓòÒ²²»Í¬
+		//æ–¹å‘ä¸åŒï¼ŒåŒºåŸŸä¹Ÿä¸åŒ
 		if (gffGeneIsoInfo.isCis5to3()) {
 			tssStartR = tssSite + tssUp;
 			tssEndR = tssSite + tssDown;
@@ -658,10 +658,10 @@ public class GffChrMap {
 		return MathComput.mean(siteInfo);
 	}
 	/**
-	 * ¸ø¶¨»ùÒòµÄsymbol£¬·µ»Ø¸Ã»ùÒòÔÚtss¸½½üÇøÓòµÄmapreadsµÄÆ½¾ùÊı
-	 * @param geneID »ùÒòÃû×Ö
-	 * @param tssUp tssÉÏÓÎ¶àÉÙbp ¸ºÊıÔÚÉÏÓÎÕıÊıÔÚÏÂÓÎ
-	 * @param tssDown tssÏÂÓÎ¶àÉÙbp ¸ºÊıÔÚÉÏÓÎÕıÊıÔÚÏÂÓÎ
+	 * ç»™å®šåŸºå› çš„symbolï¼Œè¿”å›è¯¥åŸºå› åœ¨tssé™„è¿‘åŒºåŸŸçš„mapreadsçš„å¹³å‡æ•°
+	 * @param geneID åŸºå› åå­—
+	 * @param tssUp tssä¸Šæ¸¸å¤šå°‘bp è´Ÿæ•°åœ¨ä¸Šæ¸¸æ­£æ•°åœ¨ä¸‹æ¸¸
+	 * @param tssDown tssä¸‹æ¸¸å¤šå°‘bp è´Ÿæ•°åœ¨ä¸Šæ¸¸æ­£æ•°åœ¨ä¸‹æ¸¸
 	 */
 	public double getGeneBodySum(String geneID) {
 		GffDetailGene gffDetailGene = gffChrAbs.getGffHashGene().searchLOC(geneID);
@@ -679,23 +679,23 @@ public class GffChrMap {
 	
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * ×¨Îªº«ÑàÉè¼Æ<br>
-	 * µ±ÎªrefseqÊ±£¬»ñµÃµÄÄ³¸ö»ùÒòµÄ·Ö²¼Çé¿ö£¬°´ÕÕ3¸öbarcode»®·Ö
+	 * ä¸“ä¸ºéŸ©ç‡•è®¾è®¡<br>
+	 * å½“ä¸ºrefseqæ—¶ï¼Œè·å¾—çš„æŸä¸ªåŸºå› çš„åˆ†å¸ƒæƒ…å†µï¼ŒæŒ‰ç…§3ä¸ªbarcodeåˆ’åˆ†
 	 * 
-	 * @return Ã»ÓĞ¸Ã»ùÒòÔò·µ»Ønull
+	 * @return æ²¡æœ‰è¯¥åŸºå› åˆ™è¿”å›null
 	 */
 	public double[] getGeneReadsHYRefseq(String geneID) {
 		double[] tmpResult = getChrInfo(geneID, 1, 0);
 		if (tmpResult == null) {
 			return null;
 		}
-		// »ñµÃ¾ßÌå×ªÂ¼±¾µÄĞÅÏ¢
+		// è·å¾—å…·ä½“è½¬å½•æœ¬çš„ä¿¡æ¯
 		GffGeneIsoInfo gffGeneIsoInfoOut = gffChrAbs.getGffHashGene().searchISO(geneID);
 		return combineLoc(tmpResult, gffGeneIsoInfoOut.getLenUTR5() + 1);
 	}
 
 	/**
-	 * ¸ø¶¨atgÎ»µã£¬»ñµÃ¸ÃatgÎ»µãÔÚºÏ²¢ºóµÄĞòÁĞÖĞÓ¦¸ÃÊÇµÚ¼¸¸ö£¬´Ó1¿ªÊ¼
+	 * ç»™å®šatgä½ç‚¹ï¼Œè·å¾—è¯¥atgä½ç‚¹åœ¨åˆå¹¶åçš„åºåˆ—ä¸­åº”è¯¥æ˜¯ç¬¬å‡ ä¸ªï¼Œä»1å¼€å§‹
 	 * 
 	 * @param atgAASite
 	 * @return
@@ -703,22 +703,22 @@ public class GffChrMap {
 	public int getCombAtgSite(String geneID) {
 		GffGeneIsoInfo gffGeneIsoInfoOut = gffChrAbs.getGffHashGene().searchISO(geneID);
 		int atgSite = gffGeneIsoInfoOut.getLenUTR5() + 1;
-		// ³ıÒÔ3ÊÇÖ¸3¸ö¼î»ù
+		// é™¤ä»¥3æ˜¯æŒ‡3ä¸ªç¢±åŸº
 		return (int) Math.ceil((double) (atgSite - 1) / 3);
 	}
 
 	/**
-	 * ¸ø¶¨»ùÒòÃû£¬»ñµÃ¸Ã»ùÒòµÄatgÎ»µãÔÚmRNAÖĞÓ¦¸ÃÊÇµÚ¼¸¸öÎ»µã£¬´Ó1¿ªÊ¼
+	 * ç»™å®šåŸºå› åï¼Œè·å¾—è¯¥åŸºå› çš„atgä½ç‚¹åœ¨mRNAä¸­åº”è¯¥æ˜¯ç¬¬å‡ ä¸ªä½ç‚¹ï¼Œä»1å¼€å§‹
 	 * @param atgAASite
 	 * @return
 	 */
 	public int getAtgSite(String geneID) {
 		GffGeneIsoInfo gffGeneIsoInfoOut = gffChrAbs.getGffHashGene().searchISO(geneID);
 		return gffGeneIsoInfoOut.getLenUTR5() + 1;
-		// ³ıÒÔ3ÊÇÖ¸3¸ö¼î»ù
+		// é™¤ä»¥3æ˜¯æŒ‡3ä¸ªç¢±åŸº
 	}
 	/**
-	 * Éè¶¨peakµÄbedÎÄ¼ş£¬µÚÒ»ÁĞÎªchrID£¬µÚ¶şÁĞÎªÆğµã£¬µÚÈıÁĞÎªÖÕµã£¬ ·µ»ØÈ¥³ıpeakºó£¬Ã¿ÌõÈ¾É«ÌåµÄbgÇé¿ö
+	 * è®¾å®špeakçš„bedæ–‡ä»¶ï¼Œç¬¬ä¸€åˆ—ä¸ºchrIDï¼Œç¬¬äºŒåˆ—ä¸ºèµ·ç‚¹ï¼Œç¬¬ä¸‰åˆ—ä¸ºç»ˆç‚¹ï¼Œ è¿”å›å»é™¤peakåï¼Œæ¯æ¡æŸ“è‰²ä½“çš„bgæƒ…å†µ
 	 * @param peakFile
 	 * @param firstlinls1
 	 * @return
@@ -727,24 +727,24 @@ public class GffChrMap {
 		return mapReads.getChIPBG(peakFile, firstlinls1);
 	}
 	/**
-	 * ×¨Îªº«ÑàÉè¼Æ ½«Èı¸ö¼î»ùºÏ²¢Îª1¸öcoding£¬È¡3¸öµÄ×îºóÒ»¸ö¼î»ù¶ÔÓ¦µÄreadsÊı
+	 * ä¸“ä¸ºéŸ©ç‡•è®¾è®¡ å°†ä¸‰ä¸ªç¢±åŸºåˆå¹¶ä¸º1ä¸ªcodingï¼Œå–3ä¸ªçš„æœ€åä¸€ä¸ªç¢±åŸºå¯¹åº”çš„readsæ•°
 	 * 
 	 * @param geneReads
-	 *            ¸Ã»ùÒòµÄreadsĞÅÏ¢£¬±ØĞëÊÇµ¥¼î»ù¾«¶È
+	 *            è¯¥åŸºå› çš„readsä¿¡æ¯ï¼Œå¿…é¡»æ˜¯å•ç¢±åŸºç²¾åº¦
 	 * @param AtgSite
-	 *            ¸Ã»ùÒòµÄatgÎ»µã£¬´Ó1¿ªÊ¼¼ÆËã
-	 * @return ·µ»Ø¾­¹ıºÏ²¢µÄ½á¹û£¬Æ©Èç {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17}; atgÎ»µãÎª6
-	 *         ½á¹û{ 2,5,8,11,14,17};
+	 *            è¯¥åŸºå› çš„atgä½ç‚¹ï¼Œä»1å¼€å§‹è®¡ç®—
+	 * @return è¿”å›ç»è¿‡åˆå¹¶çš„ç»“æœï¼Œè­¬å¦‚ {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17}; atgä½ç‚¹ä¸º6
+	 *         ç»“æœ{ 2,5,8,11,14,17};
 	 */
 	private double[] combineLoc(double[] geneReads, int AtgSite) {
-		// ´ËÊ±µÄSeqInfoµÚÒ»Î»¾ÍÊÇÊµ¼ÊµÄµÚÒ»Î»£¬²»ÊÇatgsiteÁË
+		// æ­¤æ—¶çš„SeqInfoç¬¬ä¸€ä½å°±æ˜¯å®é™…çš„ç¬¬ä¸€ä½ï¼Œä¸æ˜¯atgsiteäº†
 		return MathComput.mySplineHY(geneReads, 3, AtgSite, 3);
 	}
 
 	/**
-	 * ½ö¸ø<b>º«Ñà</b>Ê¹ÓÃ<br>
-	 * »ñµÃ»ùÒòµÄĞÅÏ¢£¬È»ºóÅÅĞò£¬¿ÉÒÔ´ÓÀïÃæÌôÑ¡³öº¬reads×î¶àµÄ¼¸¸öÈ»ºó»­Í¼
-	 * ·µ»Ø¾­¹ıÅÅĞòµÄmapinfoµÄlist£¬Ã¿Ò»¸ömapInfo°üº¬ÁË¸Ã»ùÒòµÄºËÌÇÌåĞÅÏ¢
+	 * ä»…ç»™<b>éŸ©ç‡•</b>ä½¿ç”¨<br>
+	 * è·å¾—åŸºå› çš„ä¿¡æ¯ï¼Œç„¶åæ’åºï¼Œå¯ä»¥ä»é‡Œé¢æŒ‘é€‰å‡ºå«readsæœ€å¤šçš„å‡ ä¸ªç„¶åç”»å›¾
+	 * è¿”å›ç»è¿‡æ’åºçš„mapinfoçš„listï¼Œæ¯ä¸€ä¸ªmapInfoåŒ…å«äº†è¯¥åŸºå› çš„æ ¸ç³–ä½“ä¿¡æ¯
 	 */
 	public ArrayList<MapInfo> getChrInfo() {
 		ArrayList<String> lsChrID = mapReads.getChrIDLs();
@@ -760,7 +760,7 @@ public class GffChrMap {
 			double[] tmp = mapReads.getRangeInfo(mapReads.getBinNum(), string, 0, 0, 0);
 			mapReads.setNormalType(mapNormType);
 			double[] tmp2 = mapReads.getRangeInfo(mapReads.getBinNum(), string, 0, 0, 0);
-			// ///////////////// Òì ³£ ´¦ Àí
+			// ///////////////// å¼‚ å¸¸ å¤„ ç†
 			// /////////////////////////////////////////////////////////////////////
 			if (tmp == null && tmp2 == null) {
 				continue;
@@ -787,53 +787,53 @@ public class GffChrMap {
 	}
 
 	/**
-	 * ¾­¹ı±ê×¼»¯ ½«MapInfoÖĞµÄdoubleÌî³äÉÏÏàÓ¦µÄreadsĞÅÏ¢
+	 * ç»è¿‡æ ‡å‡†åŒ– å°†MapInfoä¸­çš„doubleå¡«å……ä¸Šç›¸åº”çš„readsä¿¡æ¯
 	 * 
 	 * @param binNum
-	 *            ´ı·Ö¸îµÄÇøÓòÊıÄ¿
+	 *            å¾…åˆ†å‰²çš„åŒºåŸŸæ•°ç›®
 	 * @param lsmapInfo
 	 * @param type
-	 *            0£º¼ÓÈ¨Æ½¾ù 1£ºÈ¡×î¸ßÖµ£¬2£º¼ÓÈ¨µ«²»Æ½¾ù--Ò²¾ÍÊÇ¼ÓºÍ
+	 *            0ï¼šåŠ æƒå¹³å‡ 1ï¼šå–æœ€é«˜å€¼ï¼Œ2ï¼šåŠ æƒä½†ä¸å¹³å‡--ä¹Ÿå°±æ˜¯åŠ å’Œ
 	 */
 	public void getRegionLs(int binNum, ArrayList<MapInfo> lsmapInfo, int type) {
 		mapReads.getRangeLs(binNum, lsmapInfo, type);
 	}
 	/**
-	 * ¾­¹ı±ê×¼»¯ ½«MapInfoÖĞµÄdoubleÌî³äÉÏÏàÓ¦µÄreadsĞÅÏ¢
+	 * ç»è¿‡æ ‡å‡†åŒ– å°†MapInfoä¸­çš„doubleå¡«å……ä¸Šç›¸åº”çš„readsä¿¡æ¯
 	 * 
 	 * @param binNum
-	 *            ´ı·Ö¸îµÄÇøÓòÊıÄ¿
+	 *            å¾…åˆ†å‰²çš„åŒºåŸŸæ•°ç›®
 	 * @param lsmapInfo
 	 * @param type
-	 *            0£º¼ÓÈ¨Æ½¾ù 1£ºÈ¡×î¸ßÖµ£¬2£º¼ÓÈ¨µ«²»Æ½¾ù--Ò²¾ÍÊÇ¼ÓºÍ
+	 *            0ï¼šåŠ æƒå¹³å‡ 1ï¼šå–æœ€é«˜å€¼ï¼Œ2ï¼šåŠ æƒä½†ä¸å¹³å‡--ä¹Ÿå°±æ˜¯åŠ å’Œ
 	 */
 	public void getRegion(int binNum, MapInfo mapInfo, int type) {
 		mapReads.getRange(binNum, mapInfo, type);
 	}
 	
 	/**
-	 * ¾­¹ı±ê×¼»¯£¬ºÍequationsĞŞÕı
+	 * ç»è¿‡æ ‡å‡†åŒ–ï¼Œå’Œequationsä¿®æ­£
 	 * @param lsmapInfo
-	 * @param thisInvNum  Ã¿¸öÇøÓòÄÚËùº¬µÄbpÊı£¬´óÓÚµÈÓÚinvNum£¬×îºÃÊÇinvNumµÄ±¶Êı Èç¹ûinvNum ==1 && thisInvNum == 1£¬½á¹û»áºÜ¾«È·
-	 * @param type 0£º¼ÓÈ¨Æ½¾ù 1£ºÈ¡×î¸ßÖµ£¬2£º¼ÓÈ¨µ«²»Æ½¾ù--Ò²¾ÍÊÇ¼ÓºÍ
+	 * @param thisInvNum  æ¯ä¸ªåŒºåŸŸå†…æ‰€å«çš„bpæ•°ï¼Œå¤§äºç­‰äºinvNumï¼Œæœ€å¥½æ˜¯invNumçš„å€æ•° å¦‚æœinvNum ==1 && thisInvNum == 1ï¼Œç»“æœä¼šå¾ˆç²¾ç¡®
+	 * @param type 0ï¼šåŠ æƒå¹³å‡ 1ï¼šå–æœ€é«˜å€¼ï¼Œ2ï¼šåŠ æƒä½†ä¸å¹³å‡--ä¹Ÿå°±æ˜¯åŠ å’Œ
 	 */
 	public void getRegion(MapInfo mapInfo, int thisInvNum, int type) {
 		mapReads.getRange(mapInfo, thisInvNum, type);
 	}
 
 	/**
-	 * »ñµÃgeneIDÒÔ¼°ÏàÓ¦È¨ÖØ£¬ÄÚ²¿×Ô¶¯È¥ÈßÓà£¬±£ÁôÈ¨ÖØ¸ßµÄÄÇ¸ö£¬²¢ÇÒÌî³äÏàÓ¦µÄreads
-	 * Èç¹ûÃ»ÓĞÈ¨ÖØ£¬¾Í°´ÕÕreadsµÄÃÜ¶È½øĞĞÅÅĞò
-	 * Ò»°ãÓÃÓÚ¸ù¾İgene express »­heapmapÍ¼
+	 * è·å¾—geneIDä»¥åŠç›¸åº”æƒé‡ï¼Œå†…éƒ¨è‡ªåŠ¨å»å†—ä½™ï¼Œä¿ç•™æƒé‡é«˜çš„é‚£ä¸ªï¼Œå¹¶ä¸”å¡«å……ç›¸åº”çš„reads
+	 * å¦‚æœæ²¡æœ‰æƒé‡ï¼Œå°±æŒ‰ç…§readsçš„å¯†åº¦è¿›è¡Œæ’åº
+	 * ä¸€èˆ¬ç”¨äºæ ¹æ®gene express ç”»heapmapå›¾
 	 * @param txtExcel
 	 * @param colGeneID
 	 * @param colScore
 	 * @param rowStart
-	 * @param Structure »ùÒòµÄÄÄ¸ö²¿·ÖµÄ½á¹¹ 
-	 * @param binNum ×îºó½á¹û·Ö³É¼¸¿é
+	 * @param Structure åŸºå› çš„å“ªä¸ªéƒ¨åˆ†çš„ç»“æ„ 
+	 * @param binNum æœ€åç»“æœåˆ†æˆå‡ å—
 	 */
 	public ArrayList<MapInfo> readFileGeneMapInfo(String txtExcel,int colGeneID, int colScore, int rowStart, GeneStructure Structure, int binNum) {
-		////////////////////     ¶Á ÎÄ ¼ş   ////////////////////////////////////////////
+		////////////////////     è¯» æ–‡ ä»¶   ////////////////////////////////////////////
 		int[] columnID = null;
 		if (colScore <= 0 || colScore == colGeneID) {
 			 columnID = new int[]{colGeneID};
@@ -845,11 +845,11 @@ public class GffChrMap {
 		return getLsGeneMapInfo(lstmp, Structure, binNum);
 	}
 	/**
-	 * ¸ø¶¨ÇøÓò£¬×Ô¶¯»ñµÃ»ùÒò
-	 * ¸ù¾İÇ°ÃæÉè¶¨upBpºÍdownBp
+	 * ç»™å®šåŒºåŸŸï¼Œè‡ªåŠ¨è·å¾—åŸºå› 
+	 * æ ¹æ®å‰é¢è®¾å®šupBpå’ŒdownBp
 	 * @param lsMapInfos
-	 * @param structure GffDetailGene.TSSµÈ
-	 * @param binNum ·Ö³É¼¸¿é
+	 * @param structure GffDetailGene.TSSç­‰
+	 * @param binNum åˆ†æˆå‡ å—
 	 * @return
 	 */
 	public ArrayList<MapInfo> getPeakCoveredGeneMapInfo(ArrayList<? extends MapInfo> lsMapInfos, GeneStructure structure, int binNum) {
@@ -860,15 +860,15 @@ public class GffChrMap {
 	}
 	
 	/**
-	 * »ñµÃgeneIDÒÔ¼°ÏàÓ¦È¨ÖØ£¬ÄÚ²¿×Ô¶¯È¥ÈßÓà£¬±£ÁôÈ¨ÖØ¸ßµÄÄÇ¸ö£¬²¢ÇÒÌî³äÏàÓ¦µÄreads
-	 * Èç¹ûÃ»ÓĞÈ¨ÖØ£¬¾Í°´ÕÕreadsµÄÃÜ¶È½øĞĞÅÅĞò
-	 * Ò»°ãÓÃÓÚ¸ù¾İgene express »­heapmapÍ¼
+	 * è·å¾—geneIDä»¥åŠç›¸åº”æƒé‡ï¼Œå†…éƒ¨è‡ªåŠ¨å»å†—ä½™ï¼Œä¿ç•™æƒé‡é«˜çš„é‚£ä¸ªï¼Œå¹¶ä¸”å¡«å……ç›¸åº”çš„reads
+	 * å¦‚æœæ²¡æœ‰æƒé‡ï¼Œå°±æŒ‰ç…§readsçš„å¯†åº¦è¿›è¡Œæ’åº
+	 * ä¸€èˆ¬ç”¨äºæ ¹æ®gene express ç”»heapmapå›¾
 	 * @param txtExcel
 	 * @param colGeneID
 	 * @param colScore
 	 * @param rowStart
-	 * @param Structure »ùÒòµÄÄÄ¸ö²¿·ÖµÄ½á¹¹ 
-	 * @param binNum ×îºó½á¹û·Ö³É¼¸¿é
+	 * @param Structure åŸºå› çš„å“ªä¸ªéƒ¨åˆ†çš„ç»“æ„ 
+	 * @param binNum æœ€åç»“æœåˆ†æˆå‡ å—
 	 */
 	public ArrayList<MapInfo> readGeneMapInfoAll(GeneStructure Structure, int binNum) {
 		ArrayList<String> lsGeneID = gffChrAbs.getGffHashGene().getLsNameAll();
@@ -879,16 +879,16 @@ public class GffChrMap {
 		return getLsGeneMapInfo(lstmp, Structure, binNum);
 	}
 	/**
-	 * »ñµÃgeneIDÒÔ¼°ÏàÓ¦È¨ÖØ£¬ÄÚ²¿×Ô¶¯È¥ÈßÓà£¬±£ÁôÈ¨ÖØ¸ßµÄÄÇ¸ö£¬²¢ÇÒÌî³äÏàÓ¦µÄreads
-	 * Ò»°ãÓÃÓÚ¸ù¾İgene express »­heapmapÍ¼
-	 * @param lsGeneValue string[2] 0:geneID 1:value ÆäÖĞ1 ¿ÉÒÔÃ»ÓĞ£¬ÄÇÃ´¾ÍÊÇstring[1] 0:geneID
+	 * è·å¾—geneIDä»¥åŠç›¸åº”æƒé‡ï¼Œå†…éƒ¨è‡ªåŠ¨å»å†—ä½™ï¼Œä¿ç•™æƒé‡é«˜çš„é‚£ä¸ªï¼Œå¹¶ä¸”å¡«å……ç›¸åº”çš„reads
+	 * ä¸€èˆ¬ç”¨äºæ ¹æ®gene express ç”»heapmapå›¾
+	 * @param lsGeneValue string[2] 0:geneID 1:value å…¶ä¸­1 å¯ä»¥æ²¡æœ‰ï¼Œé‚£ä¹ˆå°±æ˜¯string[1] 0:geneID
 	 * @param rowStart
-	 * @param Structure »ùÒòµÄÄÄ¸ö²¿·ÖµÄ½á¹¹
-	 * @param binNum ×îºó½á¹û·Ö³É¼¸¿é
+	 * @param Structure åŸºå› çš„å“ªä¸ªéƒ¨åˆ†çš„ç»“æ„
+	 * @param binNum æœ€åç»“æœåˆ†æˆå‡ å—
 	 * @return
 	 */
 	public ArrayList<MapInfo> getLsGeneMapInfo(ArrayList<String[]> lsGeneValue, GeneStructure Structure, int binNum) {
-		//ÓĞÈ¨ÖØµÄ¾ÍÊ¹ÓÃÕâ¸öhash
+		//æœ‰æƒé‡çš„å°±ä½¿ç”¨è¿™ä¸ªhash
  		HashMap<GffDetailGene, Double> hashGene2Value = new HashMap<GffDetailGene, Double>();
 
 		for (String[] strings : lsGeneValue) {
@@ -929,9 +929,9 @@ public class GffChrMap {
 	}
 	
 	/**
-	 * ¸ù¾İÇ°ÃæÉè¶¨upBpºÍdownBp
-	 * ¸ø¶¨Ò»ÏµÁĞgffDetailGene£¬ÒÔ¼°ÏëÒªµÄ²¿·Ö£¬·µ»Ø¶ÔÓ¦ÇøÓòµÄLsMapInfo
-	 * <b>×¢ÒâÀïÃæÃ»ÓĞÌî³äreadsµÄdouble[] value</b>
+	 * æ ¹æ®å‰é¢è®¾å®šupBpå’ŒdownBp
+	 * ç»™å®šä¸€ç³»åˆ—gffDetailGeneï¼Œä»¥åŠæƒ³è¦çš„éƒ¨åˆ†ï¼Œè¿”å›å¯¹åº”åŒºåŸŸçš„LsMapInfo
+	 * <b>æ³¨æ„é‡Œé¢æ²¡æœ‰å¡«å……readsçš„double[] value</b>
 	 * @param mapGffDetailGenes
 	 * @param structure
 	 * @return
@@ -944,15 +944,15 @@ public class GffChrMap {
 		return lsMapInfos;
 	}
 	/**
-	 * ¸ø¶¨peakµÄĞÅÏ¢£¬chrIDºÍÆğµãÖÕµã£¬·µ»Ø±»peak¸²¸Çµ½TssµÄ»ùÒòÃûºÍ¸²¸ÇÇé¿ö£¬ÓÃÓÚ×öTssÍ¼
-	 * ×Ô¶¯È¥ÈßÓà»ùÒò
-	 * @param lsPeakInfo mapInfo±ØĞëÓĞ chrID ºÍ startLoc ºÍ endLoc ÈıÏî 
-	 * @param structure GffDetailGene.TSSµÈ
+	 * ç»™å®špeakçš„ä¿¡æ¯ï¼ŒchrIDå’Œèµ·ç‚¹ç»ˆç‚¹ï¼Œè¿”å›è¢«peakè¦†ç›–åˆ°Tssçš„åŸºå› åå’Œè¦†ç›–æƒ…å†µï¼Œç”¨äºåšTsså›¾
+	 * è‡ªåŠ¨å»å†—ä½™åŸºå› 
+	 * @param lsPeakInfo mapInfoå¿…é¡»æœ‰ chrID å’Œ startLoc å’Œ endLoc ä¸‰é¡¹ 
+	 * @param structure GffDetailGene.TSSç­‰
 	 * @return
-	 * »ùÒòºÍÈ¨ÖØµÄhash±í
+	 * åŸºå› å’Œæƒé‡çš„hashè¡¨
 	 */
 	private HashMap<GffDetailGene,Double> getPeakGeneStructure(ArrayList<? extends MapInfo> lsMapInfos, GeneStructure structure) {
-		//´æ´¢×îºóµÄ»ùÒòºÍÈ¨ÖØ
+		//å­˜å‚¨æœ€åçš„åŸºå› å’Œæƒé‡
 		HashMap<GffDetailGene,Double> hashGffDetailGenes = new HashMap<GffDetailGene,Double>();
 		for (MapInfo mapInfo : lsMapInfos) {
 			Set<GffDetailGene> setGffDetailGene = getPeakStructureGene( mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), structure );
@@ -975,12 +975,12 @@ public class GffChrMap {
 		return hashGffDetailGenes;
 	}
 	/**
-	 * ¸ø¶¨×ø±êÇøÓò£¬·µ»Ø¸ÃpeakËù¸²¸ÇµÄGffDetailGene
-	 * @param tsstesRange ¸²¸Ç¶È£¬tss»òtesµÄ·¶Î§
+	 * ç»™å®šåæ ‡åŒºåŸŸï¼Œè¿”å›è¯¥peakæ‰€è¦†ç›–çš„GffDetailGene
+	 * @param tsstesRange è¦†ç›–åº¦ï¼Œtssæˆ–tesçš„èŒƒå›´
 	 * @param chrID
 	 * @param startLoc
 	 * @param endLoc
-	 * @param structure GffDetailGene.TSSµÈ
+	 * @param structure GffDetailGene.TSSç­‰
 	 * @return
 	 */
 	private Set<GffDetailGene> getPeakStructureGene(String chrID, int startLoc, int endLoc, GeneStructure structure) {
@@ -998,17 +998,17 @@ public class GffChrMap {
 			return gffCodGeneDU.getCoveredGffGene();
 		}
 		else {
-			logger.error("ÔİÊ±Ã»ÓĞ³ıTssºÍTesÖ®ÍâµÄ»ùÒò½á¹¹");
+			logger.error("æš‚æ—¶æ²¡æœ‰é™¤Tsså’ŒTesä¹‹å¤–çš„åŸºå› ç»“æ„");
 			return null;
 		}
 	}
 	/**
-	 * Ç°ÃæÉè¶¨upBpºÍdownBp
-	 * ¸ø¶¨gffDetailGene£¬ÒÔ¼°ÏëÒªµÄ²¿·Ö£¬·µ»Ø¶ÔÓ¦ÇøÓòµÄMapInfo
-	 * <b>×¢ÒâÀïÃæÃ»ÓĞÌî³äreadsµÄdouble[] value</b>
+	 * å‰é¢è®¾å®šupBpå’ŒdownBp
+	 * ç»™å®šgffDetailGeneï¼Œä»¥åŠæƒ³è¦çš„éƒ¨åˆ†ï¼Œè¿”å›å¯¹åº”åŒºåŸŸçš„MapInfo
+	 * <b>æ³¨æ„é‡Œé¢æ²¡æœ‰å¡«å……readsçš„double[] value</b>
 	 * @param gffDetailGene
-	 * @param value ¸Ã»ùÒòËù¶ÔÓ¦µÄÈ¨ÖØ
-	 * @param structure GffDetailGene.TSSµÈ
+	 * @param value è¯¥åŸºå› æ‰€å¯¹åº”çš„æƒé‡
+	 * @param structure GffDetailGene.TSSç­‰
 	 * @return
 	 */
 	private MapInfo getStructureLoc(GffDetailGene gffDetailGene, Double value,GeneStructure structure) {
@@ -1037,7 +1037,7 @@ public class GffChrMap {
 			mapInfoResult.setScore(value);
 		}
 		else {
-			logger.error("»¹Ã»Ìí¼Ó¸ÃÖÖÀàĞÍµÄstructure");
+			logger.error("è¿˜æ²¡æ·»åŠ è¯¥ç§ç±»å‹çš„structure");
 		}
 		return mapInfoResult;
 	}

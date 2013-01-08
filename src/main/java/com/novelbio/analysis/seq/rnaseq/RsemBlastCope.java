@@ -9,9 +9,9 @@ import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.model.modgeneid.GeneID;
 
 /** 
- * trinity»ñµÃµÄ½á¹û»á×öblast£¬ÒòÎªÊÇÓÃiso×öµÄblast£¬
- * ËùÒÔµÃµ½µÄ½á¹ûÒª½øĞĞÕûÀí³ÉÎª±í¸ñ
- * ½ö½«×îÍ¬Ô´µÄÌôÑ¡³öÀ´
+ * trinityè·å¾—çš„ç»“æœä¼šåšblastï¼Œå› ä¸ºæ˜¯ç”¨isoåšçš„blastï¼Œ
+ * æ‰€ä»¥å¾—åˆ°çš„ç»“æœè¦è¿›è¡Œæ•´ç†æˆä¸ºè¡¨æ ¼
+ * ä»…å°†æœ€åŒæºçš„æŒ‘é€‰å‡ºæ¥
  * @author zong0jie
  *
  */
@@ -56,8 +56,8 @@ public class RsemBlastCope {
 		txtRead.close();
 	}
 	/** 
-	 * ÓÃblastInfoHashSampleÀ´ĞŞÕıblastInfoHashModify
-	 * Ö÷Òª¾ÍÊÇÈç¹û·¢ÏÖevalue¸ü¸ßÔòÈ¡´úÔ­À´µÄ
+	 * ç”¨blastInfoHashSampleæ¥ä¿®æ­£blastInfoHashModify
+	 * ä¸»è¦å°±æ˜¯å¦‚æœå‘ç°evalueæ›´é«˜åˆ™å–ä»£åŸæ¥çš„
 	 * @param blastInfoHashModify
 	 * @param blastInfoHashSample
 	 */
@@ -77,10 +77,10 @@ public class RsemBlastCope {
 		}
 	}
 }
-/** ÊµÏÖhashCodeºÍequals·½·¨µÄblastInfo£¬·½±ã·ÅÈëhashsetÖĞÓÃÀ´È¥ÖØ¸´ */
+/** å®ç°hashCodeå’Œequalsæ–¹æ³•çš„blastInfoï¼Œæ–¹ä¾¿æ”¾å…¥hashsetä¸­ç”¨æ¥å»é‡å¤ */
 class BlastInfoHash extends BlastInfo {
 	static RsemGetGene2Iso rsemGetGene2Iso;
-	/** ±È¶ÔµÃ·Ö */
+	/** æ¯”å¯¹å¾—åˆ† */
 	double score;
 	String[] blastStr;
 	
@@ -98,12 +98,12 @@ class BlastInfoHash extends BlastInfo {
 		blastStr = ss;
 		blastStr[0] = super.queryID;
 	}
-	/** ½ö±È½ÏqueryID£¬subjectID */
+	/** ä»…æ¯”è¾ƒqueryIDï¼ŒsubjectID */
 	public int hashCode() {
 		String blastString = queryID;
 		return blastString.hashCode();
 	}
-	/** ½ö±È½ÏqueryID */
+	/** ä»…æ¯”è¾ƒqueryID */
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj == null) return false;

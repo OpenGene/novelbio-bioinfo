@@ -16,18 +16,18 @@ import com.novelbio.database.model.modgeneid.GeneType;
 public class GffHashCufflinkGTF extends GffHashGeneAbs{
 	private static Logger logger = Logger.getLogger(GffHashCufflinkGTF.class);
 	GffHashGene gffHashRef;
-	double likelyhood = 0.4;//ÏàËÆ¶ÈÔÚ0.4ÒÔÄÚµÄ×ªÂ¼±¾¶¼ËãÎªÍ¬Ò»¸ö»ùÒò
+	double likelyhood = 0.4;//ç›¸ä¼¼åº¦åœ¨0.4ä»¥å†…çš„è½¬å½•æœ¬éƒ½ç®—ä¸ºåŒä¸€ä¸ªåŸºå› 
 	String transcript = "transcript";
 
 	HashMap<String, GffGeneIsoInfo> mapID2Iso = new HashMap<String, GffGeneIsoInfo>();
 	
-	/** ¼ÇÂ¼×ªÂ¼±¾Ãû×ÖºÍ»ùÒòÃû×ÖµÄ¶ÔÕÕ±í£¬ÓÃÓÚ×îºó½«GffDetailGeneµÄÃû×Ö»»Î»»ùÒòÃû×Ö
-	 * keyÎªĞ¡Ğ´
+	/** è®°å½•è½¬å½•æœ¬åå­—å’ŒåŸºå› åå­—çš„å¯¹ç…§è¡¨ï¼Œç”¨äºæœ€åå°†GffDetailGeneçš„åå­—æ¢ä½åŸºå› åå­—
+	 * keyä¸ºå°å†™
 	 */
 	HashMap<String, String> mapIsoName2GeneName = new HashMap<String, String>();
 	
 	/**
-	 * Éè¶¨²Î¿¼»ùÒòµÄGffÎÄ¼ş
+	 * è®¾å®šå‚è€ƒåŸºå› çš„Gffæ–‡ä»¶
 	 * @param gffHashRef
 	 */
 	public void setGffHashRef(GffHashGene gffHashRef) {
@@ -40,7 +40,7 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 		HashMap<String, ArrayList<GffGeneIsoInfo>> mapChrID2LsIso = new HashMap<String, ArrayList<GffGeneIsoInfo>>();
 		
 		TxtReadandWrite txtgff = new TxtReadandWrite(gfffilename, false);
-		// »ùÒòÃû×Ö
+		// åŸºå› åå­—
 		ArrayList<GffGeneIsoInfo> lsGeneIsoInfos = null;
 		
 		GffGeneIsoInfo gffGeneIsoInfo = null;
@@ -53,9 +53,9 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 			if (content.contains("NM_001253689")) {
 				logger.error("stop");
 			}
-			String[] ss = content.split("\t");// °´ÕÕtab·Ö¿ª
+			String[] ss = content.split("\t");// æŒ‰ç…§tabåˆ†å¼€
 			
-			// ĞÂµÄÈ¾É«Ìå
+			// æ–°çš„æŸ“è‰²ä½“
 			if (!tmpChrID.equals(ss[0].toLowerCase()) ) {
 				tmpChrID = ss[0].toLowerCase();
 				lsGeneIsoInfos = getChrID2LsGffGeneIso(tmpChrID, mapChrID2LsIso);
@@ -128,15 +128,15 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 	}
 	
 	/**
-	 * ÕûÀíÄ³ÌõÈ¾É«ÌåµÄĞÅÏ¢
+	 * æ•´ç†æŸæ¡æŸ“è‰²ä½“çš„ä¿¡æ¯
 	 */
 	private void copeChrInfo(String chrID, List<GffGeneIsoInfo> lsGeneIsoInfos) {
 		ListGff lsResult = new ListGff();
 		lsResult.setName(chrID);
 		
-		if (lsGeneIsoInfos == null)// Èç¹ûÒÑ¾­´æÔÚÁËLOCList£¬Ò²¾ÍÊÇÇ°Ò»¸öLOCList£¬ÄÇÃ´½Ø¶Ì²¢×°ÈëLOCChrHashIDList
+		if (lsGeneIsoInfos == null)// å¦‚æœå·²ç»å­˜åœ¨äº†LOCListï¼Œä¹Ÿå°±æ˜¯å‰ä¸€ä¸ªLOCListï¼Œé‚£ä¹ˆæˆªçŸ­å¹¶è£…å…¥LOCChrHashIDList
 			return;
-		//ÅÅĞò
+		//æ’åº
 		Collections.sort(lsGeneIsoInfos, new Comparator<GffGeneIsoInfo>() {
 			public int compare(GffGeneIsoInfo o1, GffGeneIsoInfo o2) {
 				Integer o1Start = o1.getStartAbs();
@@ -146,7 +146,7 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 				return o1Start.compareTo(o2Start);
 			}
 		});
-		//ÒÀ´Î×°ÈëgffdetailGeneÖĞ
+		//ä¾æ¬¡è£…å…¥gffdetailGeneä¸­
 		GffDetailGene gffDetailGene = null;
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGeneIsoInfos) {
 			gffGeneIsoInfo.sort();
@@ -183,8 +183,8 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 		mapChrID2ListGff.put(chrID, lsResult);
 	}
 	/**
-	 * ¸ø¶¨chrIDºÍ×ø±ê£¬·µ»Ø¸ÃµãÓ¦¸ÃÊÇÕıÁ´»¹ÊÇ¸ºÁ´
-	 * Èç¹û²»Çå³şÕı¸ºÁ´ÇÒÃ»ÓĞ¸ø¶¨Ïà¹ØµÄrefGff£¬ÔòÖ±½Ó·µ»Øtrue
+	 * ç»™å®šchrIDå’Œåæ ‡ï¼Œè¿”å›è¯¥ç‚¹åº”è¯¥æ˜¯æ­£é“¾è¿˜æ˜¯è´Ÿé“¾
+	 * å¦‚æœä¸æ¸…æ¥šæ­£è´Ÿé“¾ä¸”æ²¡æœ‰ç»™å®šç›¸å…³çš„refGffï¼Œåˆ™ç›´æ¥è¿”å›true
 	 * @param chrID
 	 * @param LocID
 	 * @return

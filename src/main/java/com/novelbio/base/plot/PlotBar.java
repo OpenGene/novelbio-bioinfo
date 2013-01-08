@@ -27,10 +27,10 @@ public class PlotBar extends PlotScatter{
 		plotBar.setAxisX(0, 3);
 		plotBar.setAxisY(0, 20);
 		plotBar.setInsets(PlotScatter.INSETS_SIZE_ML);
-		plotBar.saveToFile("/home/zong0jie/×ÀÃæ/aaa.jpg", 1000, 1000);
+		plotBar.saveToFile("/home/zong0jie/æ¡Œé¢/aaa.jpg", 1000, 1000);
 	}
     /**
-     * using data to plot the Bar figure, Ö±½Ó¼ÓÈëplot£¬²»½øÈëhash±í
+     * using data to plot the Bar figure, ç›´æ¥åŠ å…¥plotï¼Œä¸è¿›å…¥hashè¡¨
      * @param lsNum data 
      * @param breakNum Number of subdivisions for analysis.
      * @param dotStyle
@@ -51,7 +51,7 @@ public class PlotBar extends PlotScatter{
     	pointRenderer.setSetting(PointRenderer.COLOR, barStyle.getColor());
     	pointRenderer.setSetting(BarPlot.BarRenderer.STROKE, barStyle.getBasicStroke());
     	pointRenderer.setSetting(BarPlot.BarRenderer.STROKE_COLOR, barStyle.getEdgeColor());
-    	//¹æ¶¨£¬dotnameÔÚµÚ3ÁĞ£¬dotvalueÒ²¾ÍÊÇ³£¹ævalueÔÚµÚ¶şÁĞ
+    	//è§„å®šï¼Œdotnameåœ¨ç¬¬3åˆ—ï¼Œdotvalueä¹Ÿå°±æ˜¯å¸¸è§„valueåœ¨ç¬¬äºŒåˆ—
     	//the third column is the name column
     	pointRenderer.setSetting(PointRenderer.VALUE_COLUMN, 2);
     	pointRenderer.setSetting(PointRenderer.VALUE_DISPLAYED, barStyle.isValueVisible());

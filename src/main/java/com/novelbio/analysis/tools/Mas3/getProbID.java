@@ -9,7 +9,7 @@ import com.novelbio.base.dataOperate.ExcelOperate;
 
 
 /**
- * MAS3µÄpathway½á¹û£¬½«ÆäÖĞµÄprobeIDÌáÈ¡³öÀ´£¬±£´æÎªexcel¸ñÊ½
+ * MAS3çš„pathwayç»“æœï¼Œå°†å…¶ä¸­çš„probeIDæå–å‡ºæ¥ï¼Œä¿å­˜ä¸ºexcelæ ¼å¼
  * @author zong0jie
  *
  */
@@ -29,8 +29,8 @@ public class getProbID {
 	/**
 	 * 
 	 * @param excelFile
-	 * @param rowNum ´ÓµÚ¼¸ĞĞ¿ªÊ¼¶ÁÈ¡
-	 * @param colNum ¶ÁÈ¡µÚ¼¸ÁĞµÄĞÅÏ¢
+	 * @param rowNum ä»ç¬¬å‡ è¡Œå¼€å§‹è¯»å–
+	 * @param colNum è¯»å–ç¬¬å‡ åˆ—çš„ä¿¡æ¯
 	 * @param resultExcel
 	 */
 	public static void getProbID(String excelFile, int rowNum,int colNum,String resultExcel) {

@@ -11,51 +11,51 @@ import com.novelbio.database.domain.geneanno.UniProtID;
 import com.novelbio.database.model.modgeneid.GeneID;
 
 /**
- * ±£´æÍøÂçÍ¼ÖĞµ¥¸ö½ÚµãĞÅÏ¢µÄÀà£¬Ã¿¸ö½ÚµãÓÃentityID½øĞĞÇø·Ö£¬ËùÒÔ±ØĞëÔÚ³õÊ¼»¯µÄÊ±ºòÊÖ¹¤<br>
- * Éè¶¨Ã¿¸ö½ÚµãµÄentityID£¬ÔÚ±È½Ï½ÚµãµÄÊ±ºòÒ²ÊÇÍ¨¹ıentityIDÀ´±È½ÏÁ½¸ö½ÚµãÊÇ·ñÒ»ÖÂ<br>
+ * ä¿å­˜ç½‘ç»œå›¾ä¸­å•ä¸ªèŠ‚ç‚¹ä¿¡æ¯çš„ç±»ï¼Œæ¯ä¸ªèŠ‚ç‚¹ç”¨entityIDè¿›è¡ŒåŒºåˆ†ï¼Œæ‰€ä»¥å¿…é¡»åœ¨åˆå§‹åŒ–çš„æ—¶å€™æ‰‹å·¥<br>
+ * è®¾å®šæ¯ä¸ªèŠ‚ç‚¹çš„entityIDï¼Œåœ¨æ¯”è¾ƒèŠ‚ç‚¹çš„æ—¶å€™ä¹Ÿæ˜¯é€šè¿‡entityIDæ¥æ¯”è¾ƒä¸¤ä¸ªèŠ‚ç‚¹æ˜¯å¦ä¸€è‡´<br>
  * <br>
- * Ó¦¸ÃÊÇ¸ö³¬Àà<br>
- * ÆäÖĞ°üÀ¨¸Ã½ÚµãËù°üº¬µÄ»ùÒò£¬¸Ã½ÚµãËùÔÚµÄÊı¾İ¿â£¬¸Ã½ÚµãËùÔÚµÄpathway<br>
+ * åº”è¯¥æ˜¯ä¸ªè¶…ç±»<br>
+ * å…¶ä¸­åŒ…æ‹¬è¯¥èŠ‚ç‚¹æ‰€åŒ…å«çš„åŸºå› ï¼Œè¯¥èŠ‚ç‚¹æ‰€åœ¨çš„æ•°æ®åº“ï¼Œè¯¥èŠ‚ç‚¹æ‰€åœ¨çš„pathway<br>
  * 
  * @author zong0jie
  *
  */
 public abstract class AbsNetEntity {
 	/**
-	 * ÒÔÏÂÊÇ±¾entity´ó¸ÅÊôÓÚÊ²Ã´Àà±ğ
+	 * ä»¥ä¸‹æ˜¯æœ¬entityå¤§æ¦‚å±äºä»€ä¹ˆç±»åˆ«
 	 */
 	public static int ENTITY_GENE = 123; 
 	public static int ENTITY_COMPOUND = 456;
 	public static int ENTITY_DRUG = 789;
 	/**
-	 * ¸Ã½ÚµãµÄÀàĞÍ£¬ÓÃÀ´±íÊ¾Õâ¸öÎ¨Ò»µã¡£
-	 * ÓĞÊ±ºò»áÓĞÕâÖÖÇé¿ö£¬Æ©ÈçKeggÀïÃæÒ»¸ö½ÚµãÓĞÈı¸ö»ùÒò¡£
-	 * ÄÇÃ´ÕâÈı¸öµãÔÚÍ¼Æ¬ÖĞÓ¦¸ÃÊÇÍ¬Ò»¸öµã¡£ÕâÊ±ºò¾Í¿ÉÒÔÓÃENTITY_COMPLEXÀ´±íÊ¾Õâ¸ö´ó½Úµã£¬ÆäËûĞ¡µãºÍËüÁ¬ÆğÀ´¡£
+	 * è¯¥èŠ‚ç‚¹çš„ç±»å‹ï¼Œç”¨æ¥è¡¨ç¤ºè¿™ä¸ªå”¯ä¸€ç‚¹ã€‚
+	 * æœ‰æ—¶å€™ä¼šæœ‰è¿™ç§æƒ…å†µï¼Œè­¬å¦‚Keggé‡Œé¢ä¸€ä¸ªèŠ‚ç‚¹æœ‰ä¸‰ä¸ªåŸºå› ã€‚
+	 * é‚£ä¹ˆè¿™ä¸‰ä¸ªç‚¹åœ¨å›¾ç‰‡ä¸­åº”è¯¥æ˜¯åŒä¸€ä¸ªç‚¹ã€‚è¿™æ—¶å€™å°±å¯ä»¥ç”¨ENTITY_COMPLEXæ¥è¡¨ç¤ºè¿™ä¸ªå¤§èŠ‚ç‚¹ï¼Œå…¶ä»–å°ç‚¹å’Œå®ƒè¿èµ·æ¥ã€‚
 	 * 
 	 */
 	public static int ENTITY_COMPLEX = 1024;
 	/**
-	 * ÒÔÏÂÊÇ±¾entity´¦ÔÚµÄDBinfo
+	 * ä»¥ä¸‹æ˜¯æœ¬entityå¤„åœ¨çš„DBinfo
 	 */
 	public static String DBINFO_KEGG = "kegg"; 
 	public static String DBINFO_REACTOME = "Reactome";
 
 	/**
-	 * ¸Ã½Úµã°üÀ¨Èô¸É¸öCopedID
+	 * è¯¥èŠ‚ç‚¹åŒ…æ‹¬è‹¥å¹²ä¸ªCopedID
 	 */
 	HashSet<GeneID> hashCopedIDs = new HashSet<GeneID>();
 	
 	/**
-	 * ¸Ã½ÚµãµÄID£¬ÓÃÀ´±íÊ¾Õâ¸öÎ¨Ò»µã¡£
-	 * ÓĞÊ±ºò»áÓĞÕâÖÖÇé¿ö£¬Æ©ÈçKeggÀïÃæÒ»¸ö½ÚµãÓĞÈı¸ö»ùÒò£¬¶øÕâÈı¸ö»ùÒòÔÚreactomeÖĞ¶ÔÓ¦ÁËÈı¸ö²»Í¬µÄ½Úµã¡£
-	 * ÄÇÃ´ÕâËÄ¸öµãÔÚÍ¼Æ¬ÖĞÓ¦¸ÃÊÇÍ¬Ò»¸öµã¡£ÕâÊ±ºò¾Í¿ÉÒÔÓÃentityIDÀ´±íÊ¾ÕâËÄ¸ö½ÚµãÔÚ×îºóµÄÍøÂçÍ¼ÖĞÆäÊµÊÇÍ¬Ò»¸ö½Úµã¡£
+	 * è¯¥èŠ‚ç‚¹çš„IDï¼Œç”¨æ¥è¡¨ç¤ºè¿™ä¸ªå”¯ä¸€ç‚¹ã€‚
+	 * æœ‰æ—¶å€™ä¼šæœ‰è¿™ç§æƒ…å†µï¼Œè­¬å¦‚Keggé‡Œé¢ä¸€ä¸ªèŠ‚ç‚¹æœ‰ä¸‰ä¸ªåŸºå› ï¼Œè€Œè¿™ä¸‰ä¸ªåŸºå› åœ¨reactomeä¸­å¯¹åº”äº†ä¸‰ä¸ªä¸åŒçš„èŠ‚ç‚¹ã€‚
+	 * é‚£ä¹ˆè¿™å››ä¸ªç‚¹åœ¨å›¾ç‰‡ä¸­åº”è¯¥æ˜¯åŒä¸€ä¸ªç‚¹ã€‚è¿™æ—¶å€™å°±å¯ä»¥ç”¨entityIDæ¥è¡¨ç¤ºè¿™å››ä¸ªèŠ‚ç‚¹åœ¨æœ€åçš„ç½‘ç»œå›¾ä¸­å…¶å®æ˜¯åŒä¸€ä¸ªèŠ‚ç‚¹ã€‚
 	 * 
 	 */
 	private String entityID = "";
 	
 	/**
-	 * ÊıÖµÓ¦¸ÃÊÇAbsNetEntityÖĞENTITYÖĞµÄÒ»Ô±£¬¿ÉÒÔÊÇ»¯ºÏÎï£¬»ùÒò£¬Ò©ÎïµÈ£¬°´ÕÕĞèÒª¿ÉÒÔÌí¼Ó
-	 * Ö»ÓĞµ±flag=ENTITY_GENEÊ±£¬²Å»áÓĞlsNcbiids»òlsUniProtIDs
+	 * æ•°å€¼åº”è¯¥æ˜¯AbsNetEntityä¸­ENTITYä¸­çš„ä¸€å‘˜ï¼Œå¯ä»¥æ˜¯åŒ–åˆç‰©ï¼ŒåŸºå› ï¼Œè¯ç‰©ç­‰ï¼ŒæŒ‰ç…§éœ€è¦å¯ä»¥æ·»åŠ 
+	 * åªæœ‰å½“flag=ENTITY_GENEæ—¶ï¼Œæ‰ä¼šæœ‰lsNcbiidsæˆ–lsUniProtIDs
 	 */
 	private String flag = "";
 	
@@ -64,13 +64,13 @@ public abstract class AbsNetEntity {
 	int taxID = 0;
 	
 	/**
-	 * ¸Ã½Úµã°üÀ¨Èô¸É¸öCopedID
+	 * è¯¥èŠ‚ç‚¹åŒ…æ‹¬è‹¥å¹²ä¸ªCopedID
 	 */
 	public HashSet<GeneID> getHashCopedIDs() {
 		return hashCopedIDs;
 	}
 	/**
-	 * ¸Ã½Úµã°üÀ¨Èô¸É¸öCopedID
+	 * è¯¥èŠ‚ç‚¹åŒ…æ‹¬è‹¥å¹²ä¸ªCopedID
 	 */
 	public void addCopedID(GeneID copedID)
 	{
@@ -78,26 +78,26 @@ public abstract class AbsNetEntity {
 	}
  
 	/**
-	 * ¸Ã½ÚµãµÄÎïÖÖ
+	 * è¯¥èŠ‚ç‚¹çš„ç‰©ç§
 	 */
 	public int getTaxID() {
 		return taxID;
 	}
 	/**
-	 * ¸Ã½ÚµãµÄÎïÖÖ
+	 * è¯¥èŠ‚ç‚¹çš„ç‰©ç§
 	 */
 	public void setTaxID(int taxID)
 	{
 		this.taxID = taxID;
 	}
 	/**
-	 * ÊıÖµÓ¦¸ÃÊÇAbsNetEntityÖĞENTITYÖĞµÄÒ»Ô±£¬¿ÉÒÔÊÇ»¯ºÏÎï£¬»ùÒò£¬Ò©ÎïµÈ£¬°´ÕÕĞèÒª¿ÉÒÔÌí¼Ó
+	 * æ•°å€¼åº”è¯¥æ˜¯AbsNetEntityä¸­ENTITYä¸­çš„ä¸€å‘˜ï¼Œå¯ä»¥æ˜¯åŒ–åˆç‰©ï¼ŒåŸºå› ï¼Œè¯ç‰©ç­‰ï¼ŒæŒ‰ç…§éœ€è¦å¯ä»¥æ·»åŠ 
 	 */
 	public String getFlag() {
 		return flag;
 	}
 	/**
-	 * 	½ö±È½ÏÁ½¸öAbsNetEntityµÄentityIDÊÇ·ñÏàÍ¬¡£µ«ÊÇµ±entityID.trim()Îª""Ê±£¬¶¼ºöÂÔ
+	 * 	ä»…æ¯”è¾ƒä¸¤ä¸ªAbsNetEntityçš„entityIDæ˜¯å¦ç›¸åŒã€‚ä½†æ˜¯å½“entityID.trim()ä¸º""æ—¶ï¼Œéƒ½å¿½ç•¥
 	 */
 	public boolean equalSimple(Object obj) {
 		if (this == obj) return true;
@@ -113,8 +113,8 @@ public abstract class AbsNetEntity {
 		return entityID.equals(otherObj.entityID) ;
 	}
 	/**
-	 * 	×ĞÏ¸±È½ÏÁ½¸öAbsNetEntityÊÇ·ñÏàÍ¬
-	 * ²»¹ıÒ²Ö»ÊÇ±È½ÏentityID£¬flag£¬lsNcbiidsºÍlsUniProtIDsÊÇ·ñÒ»ÖÂ
+	 * 	ä»”ç»†æ¯”è¾ƒä¸¤ä¸ªAbsNetEntityæ˜¯å¦ç›¸åŒ
+	 * ä¸è¿‡ä¹Ÿåªæ˜¯æ¯”è¾ƒentityIDï¼Œflagï¼ŒlsNcbiidså’ŒlsUniProtIDsæ˜¯å¦ä¸€è‡´
 	 */
 	public boolean equals(Object obj) {
 		if (!equalSimple(obj))
@@ -123,7 +123,7 @@ public abstract class AbsNetEntity {
 		if (!flag.equals(otherObj.getFlag())) 
 			return false;
 		
-		//NCBIIDÒÑ¾­ÖØĞ´¹ıequals·½·¨ÁË£¬Ö»±È½ÏgeneIDÊÇ·ñÒ»ÖÂ
+		//NCBIIDå·²ç»é‡å†™è¿‡equalsæ–¹æ³•äº†ï¼Œåªæ¯”è¾ƒgeneIDæ˜¯å¦ä¸€è‡´
 		if (!hashCopedIDs.equals(otherObj.getHashCopedIDs()))
 			return false;
 		
@@ -137,15 +137,15 @@ public abstract class AbsNetEntity {
 	}
 	
 	/**
-	 * ÓÃÀ´±£´æ
+	 * ç”¨æ¥ä¿å­˜
 	 */
 	static ArrayList<AbsNetRelate> hashAbsNetRelate = new ArrayList<AbsNetRelate>();
 	
 	/**
-	 * ¸ø¶¨Ò»¸öentityID£¬·µ»Ø¸ÃentityËùÓĞµÄÏ¸·Ö½Úµã£¬<br>
-	 * ÕâÖÖÇé¿öÍ¨³£ÎªÈçÏÂÇé¿ö£º<br>
-	 * Æ©ÈçKeggÀïÃæÒ»¸ö½ÚµãÓĞÈı¸ö»ùÒò£¬¶øÕâÈı¸ö»ùÒòÔÚreactomeÖĞ¶ÔÓ¦ÁËÈı¸ö²»Í¬µÄ½Úµã¡£<br>
-	 * ÄÇÃ´ÕâËÄ¸öµãÔÚÍ¼Æ¬ÖĞÓ¦¸ÃÊÇÍ¬Ò»¸öµã¡£<br>
+	 * ç»™å®šä¸€ä¸ªentityIDï¼Œè¿”å›è¯¥entityæ‰€æœ‰çš„ç»†åˆ†èŠ‚ç‚¹ï¼Œ<br>
+	 * è¿™ç§æƒ…å†µé€šå¸¸ä¸ºå¦‚ä¸‹æƒ…å†µï¼š<br>
+	 * è­¬å¦‚Keggé‡Œé¢ä¸€ä¸ªèŠ‚ç‚¹æœ‰ä¸‰ä¸ªåŸºå› ï¼Œè€Œè¿™ä¸‰ä¸ªåŸºå› åœ¨reactomeä¸­å¯¹åº”äº†ä¸‰ä¸ªä¸åŒçš„èŠ‚ç‚¹ã€‚<br>
+	 * é‚£ä¹ˆè¿™å››ä¸ªç‚¹åœ¨å›¾ç‰‡ä¸­åº”è¯¥æ˜¯åŒä¸€ä¸ªç‚¹ã€‚<br>
 	 * @param entityID
 	 * @return
 	 */
@@ -154,7 +154,7 @@ public abstract class AbsNetEntity {
 	}
 	
 	/**
-	 * ¸ø¶¨Ä³¸ö½Úµã£¬ÔÚ¶ÔÓ¦µÄpathwayÖĞ²éÕÒËüµÄÏà¹Ø½Úµã
+	 * ç»™å®šæŸä¸ªèŠ‚ç‚¹ï¼Œåœ¨å¯¹åº”çš„pathwayä¸­æŸ¥æ‰¾å®ƒçš„ç›¸å…³èŠ‚ç‚¹
 	 * @return
 	 */
 	public abstract ArrayList<AbsNetRelate> getRelate(boolean blast, int StaxID, double evalue);

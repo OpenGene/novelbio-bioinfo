@@ -7,14 +7,14 @@ import com.novelbio.base.multithread.RunProcess;
 public abstract class MTrecordCoper<T extends MTRecordCope> extends RunProcess<MTRecordCope>{
 	
 	protected MTRecoreReader<?, ? extends MTRecordRead> mtOneThreadReader;
-	/** ¶ÁÈ¡µÃµ½µÄÄÚÈİ¾Í±£´æÔÚÕâÀïÃæ */
+	/** è¯»å–å¾—åˆ°çš„å†…å®¹å°±ä¿å­˜åœ¨è¿™é‡Œé¢ */
 	protected AbstractQueue<? extends MTRecordRead> absQueue;
 	
-	/** Ö÷ÒªÊÇ¿´¶ÁÈ¡ÊÇ·ñÍê±Ï */
+	/** ä¸»è¦æ˜¯çœ‹è¯»å–æ˜¯å¦å®Œæ¯• */
 	public void setReader(MTRecoreReader<?, ? extends MTRecordRead> mtOneThreadReader) {
 		this.mtOneThreadReader = mtOneThreadReader;
 	}
-	/** Éè¶¨´ı¶ÁÈ¡µÄlist£¬¼¸¸öÏß³Ì¹²ÓÃÒ»¸ölist */
+	/** è®¾å®šå¾…è¯»å–çš„listï¼Œå‡ ä¸ªçº¿ç¨‹å…±ç”¨ä¸€ä¸ªlist */
 	public void setLsRecords(AbstractQueue<? extends MTRecordRead> absQueue) {
 		this.absQueue = absQueue;
 	}
@@ -37,9 +37,9 @@ public abstract class MTrecordCoper<T extends MTRecordCope> extends RunProcess<M
 		}
 		return false;
 	}
-	/** ĞèÒªÔÚrunningÖ®Ç°´¦ÀíµÄĞÅÏ¢£¬Æ©Èç¼ÆÊı¡¢²ÎÊıÉè¶¨µÈ£¬²»ĞèÒªµÄ»°Áô¿Õ */
+	/** éœ€è¦åœ¨runningä¹‹å‰å¤„ç†çš„ä¿¡æ¯ï¼Œè­¬å¦‚è®¡æ•°ã€å‚æ•°è®¾å®šç­‰ï¼Œä¸éœ€è¦çš„è¯ç•™ç©º */
 	protected abstract void copeBeforeRun();
 	
-	/** ´¦ÀíĞòÁĞ */
+	/** å¤„ç†åºåˆ— */
 	protected abstract void copeLsReads() throws InterruptedException;
 }

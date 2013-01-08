@@ -10,23 +10,23 @@ import com.novelbio.analysis.seq.chipseq.repeatMask.repeatRun;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 
 /**
- * Ë«×ø±ê
+ * åŒåæ ‡
  * @author zong0jie
  *
  */
 public class ListCodAbsDu<T extends ListDetailAbs, K extends ListCodAbs<T>>  {
-	//ÕâÁ½¸ö¶¼»áÔÚ¾ßÌåµÄÀàÖĞĞÂ½¨
-	/** peakÓë×ó¶ËItem½»¼¯Ê±£¬½»¼¯ÔÚ×ó¶ËItemÖĞËùÕ¼µÄ±ÈÀı */
+	//è¿™ä¸¤ä¸ªéƒ½ä¼šåœ¨å…·ä½“çš„ç±»ä¸­æ–°å»º
+	/** peakä¸å·¦ç«¯Itemäº¤é›†æ—¶ï¼Œäº¤é›†åœ¨å·¦ç«¯Itemä¸­æ‰€å çš„æ¯”ä¾‹ */
 	protected double opLeftInItem = -1;
-	/** peakÓë×ó¶ËItem½»¼¯Ê±£¬½»¼¯ÔÚpeakÖĞËùÕ¼µÄ±ÈÀı£¬Èç¹û±¾ÖµÎª100£¬ËµÃ÷¸ÃpeakÔÚÒ»¸öItemÄÚ  */
+	/** peakä¸å·¦ç«¯Itemäº¤é›†æ—¶ï¼Œäº¤é›†åœ¨peakä¸­æ‰€å çš„æ¯”ä¾‹ï¼Œå¦‚æœæœ¬å€¼ä¸º100ï¼Œè¯´æ˜è¯¥peakåœ¨ä¸€ä¸ªItemå†…  */
 	protected double opLeftInCod = -1;
-	/**  peakÓë×ó¶ËItem½»¼¯Ê±£¬Êµ¼Ê½»¼¯µÄbpÊı  */
+	/**  peakä¸å·¦ç«¯Itemäº¤é›†æ—¶ï¼Œå®é™…äº¤é›†çš„bpæ•°  */
 	protected int opLeftBp = -1;
-	/**  peakÓëÓÒ¶ËItem½»¼¯Ê±£¬½»¼¯ÔÚ×ó¶ËItemÖĞËùÕ¼µÄ±ÈÀı */
+	/**  peakä¸å³ç«¯Itemäº¤é›†æ—¶ï¼Œäº¤é›†åœ¨å·¦ç«¯Itemä¸­æ‰€å çš„æ¯”ä¾‹ */
 	protected double opRightInItem = -1;
-	/**  peakÓëÓÒ¶ËItem½»¼¯Ê±£¬½»¼¯ÔÚpeakÖĞËùÕ¼µÄ±ÈÀı£¬Èç¹û±¾ÖµÎª100£¬ËµÃ÷¸ÃpeakÔÚÒ»¸öItemÄÚ  */
+	/**  peakä¸å³ç«¯Itemäº¤é›†æ—¶ï¼Œäº¤é›†åœ¨peakä¸­æ‰€å çš„æ¯”ä¾‹ï¼Œå¦‚æœæœ¬å€¼ä¸º100ï¼Œè¯´æ˜è¯¥peakåœ¨ä¸€ä¸ªItemå†…  */
 	protected double opRightInCod = -1;
-	/** peakÓëÓÒ¶ËItem½»¼¯Ê±£¬Êµ¼Ê½»¼¯µÄbpÊı */
+	/** peakä¸å³ç«¯Itemäº¤é›†æ—¶ï¼Œå®é™…äº¤é›†çš„bpæ•° */
 	protected int opRightBp = -1;
 	
 	public ListCodAbsDu(ArrayList<T> lsgffDetail, K gffCod1, K gffCod2)
@@ -52,55 +52,55 @@ public class ListCodAbsDu<T extends ListDetailAbs, K extends ListCodAbs<T>>  {
 	}
 	protected K gffCod2 = null;	
 	
-	//Á½¸ö¶ËµãÖ®¼äµÄgffdetail
+	//ä¸¤ä¸ªç«¯ç‚¹ä¹‹é—´çš„gffdetail
 	protected ArrayList<T> lsgffDetailsMid = new ArrayList<T>();
 	public void setLsgffDetailsMid(ArrayList<T> lsgffDetailsMid) {
 		this.lsgffDetailsMid = lsgffDetailsMid;
 	}
 	/**
-	 *  peakÓë×ó¶ËItem½»¼¯Ê±£¬½»¼¯ÔÚ×ó¶ËItemÖĞËùÕ¼µÄ±ÈÀı
+	 *  peakä¸å·¦ç«¯Itemäº¤é›†æ—¶ï¼Œäº¤é›†åœ¨å·¦ç«¯Itemä¸­æ‰€å çš„æ¯”ä¾‹
 	 * @return
 	 */
 	public double getOpLeftInItem() {
 		return opLeftInItem;
 	}
 	/**
-	 * peakÓëÓÒ¶ËItem½»¼¯Ê±£¬½»¼¯ÔÚ×ó¶ËItemÖĞËùÕ¼µÄ±ÈÀı
+	 * peakä¸å³ç«¯Itemäº¤é›†æ—¶ï¼Œäº¤é›†åœ¨å·¦ç«¯Itemä¸­æ‰€å çš„æ¯”ä¾‹
 	 * @return
 	 */
 	public double getOpRightInItem() {
 		return opRightInItem;
 	}
 	/**
-	 *  peakÓë×ó¶ËItem½»¼¯Ê±£¬½»¼¯ÔÚpeakÖĞËùÕ¼µÄ±ÈÀı£¬Èç¹û±¾ÖµÎª100£¬ËµÃ÷¸ÃpeakÔÚÒ»¸öItemÄÚ
+	 *  peakä¸å·¦ç«¯Itemäº¤é›†æ—¶ï¼Œäº¤é›†åœ¨peakä¸­æ‰€å çš„æ¯”ä¾‹ï¼Œå¦‚æœæœ¬å€¼ä¸º100ï¼Œè¯´æ˜è¯¥peakåœ¨ä¸€ä¸ªItemå†…
 	 * @return
 	 */
 	public double getOpLeftInCod() {
 		return opLeftInCod;
 	}
 	/**
-	 *  peakÓëÓÒ¶ËItem½»¼¯Ê±£¬½»¼¯ÔÚpeakÖĞËùÕ¼µÄ±ÈÀı£¬Èç¹û±¾ÖµÎª100£¬ËµÃ÷¸ÃpeakÔÚÒ»¸öItemÄÚ
+	 *  peakä¸å³ç«¯Itemäº¤é›†æ—¶ï¼Œäº¤é›†åœ¨peakä¸­æ‰€å çš„æ¯”ä¾‹ï¼Œå¦‚æœæœ¬å€¼ä¸º100ï¼Œè¯´æ˜è¯¥peakåœ¨ä¸€ä¸ªItemå†…
 	 * @return
 	 */
 	public double getOpRightInCod() {
 		return opRightInCod;
 	}
 	/**
-	 *  peakÓë×ó¶ËItem½»¼¯Ê±£¬Êµ¼Ê½»¼¯µÄbpÊı
+	 *  peakä¸å·¦ç«¯Itemäº¤é›†æ—¶ï¼Œå®é™…äº¤é›†çš„bpæ•°
 	 * @return
 	 */
 	public int getOpLeftBp() {
 		return opLeftBp;
 	}
 	/**
-	 *  peakÓëÓÒ¶ËItem½»¼¯Ê±£¬Êµ¼Ê½»¼¯µÄbpÊı
+	 *  peakä¸å³ç«¯Itemäº¤é›†æ—¶ï¼Œå®é™…äº¤é›†çš„bpæ•°
 	 * @return
 	 */
 	public int getOpRightBp() {
 		return opRightBp;
 	}
 	/**
-	 * ·µ»Ø×ó¶ËµÄGffCod£¬¸²¸Ç³ÉÏàÓ¦µÄGffCodÀà
+	 * è¿”å›å·¦ç«¯çš„GffCodï¼Œè¦†ç›–æˆç›¸åº”çš„GffCodç±»
 	 * @return
 	 */
 	public K getGffCodLeft()
@@ -108,7 +108,7 @@ public class ListCodAbsDu<T extends ListDetailAbs, K extends ListCodAbs<T>>  {
 		return gffCod1;
 	}
 	/**
-	 * ·µ»ØÓÒ¶ËµÄGffCod£¬¸²¸Ç³ÉÏàÓ¦µÄGffCodÀà
+	 * è¿”å›å³ç«¯çš„GffCodï¼Œè¦†ç›–æˆç›¸åº”çš„GffCodç±»
 	 * @return
 	 */
 	public K getGffCodRight()
@@ -116,7 +116,7 @@ public class ListCodAbsDu<T extends ListDetailAbs, K extends ListCodAbs<T>>  {
 		return gffCod2;
 	}
 	/**
-	 * ·µ»ØÁ½¸ö×ø±êÖĞ¼ä¼Ğ×ÅµÄµÄGffDetail£¬¸²¸Ç³ÉÏàÓ¦µÄGffDetailÀà
+	 * è¿”å›ä¸¤ä¸ªåæ ‡ä¸­é—´å¤¹ç€çš„çš„GffDetailï¼Œè¦†ç›–æˆç›¸åº”çš„GffDetailç±»
 	 * @return
 	 */
 	public ArrayList<T> getLsGffDetailMid()
@@ -124,9 +124,9 @@ public class ListCodAbsDu<T extends ListDetailAbs, K extends ListCodAbs<T>>  {
 		return lsgffDetailsMid;
 	}
 	/**
-	 * ·µ»ØÈ«²¿°üº¬µÄgffDetailĞÅÏ¢
+	 * è¿”å›å…¨éƒ¨åŒ…å«çš„gffDetailä¿¡æ¯
 	 * @return
-	 * ¿ÕµÄÔò·µ»ØÒ»¸ösizeÎª0µÄlist
+	 * ç©ºçš„åˆ™è¿”å›ä¸€ä¸ªsizeä¸º0çš„list
 	 */
 	public ArrayList<T> getAllGffDetail() {
 		ArrayList<T> lsGffDetailAll = new ArrayList<T>();
@@ -148,7 +148,7 @@ public class ListCodAbsDu<T extends ListDetailAbs, K extends ListCodAbs<T>>  {
 		return lsGffDetailAll;
 	}
 	/**
-	 * Ë«×ø±ê²éÕÒ ÊäÈëÏà¹ØµÄGffHashÀà£¬È»ºóÌî³äÏà¹ØĞÅÏ¢<br>
+	 * åŒåæ ‡æŸ¥æ‰¾ è¾“å…¥ç›¸å…³çš„GffHashç±»ï¼Œç„¶åå¡«å……ç›¸å…³ä¿¡æ¯<br>
 	 */
 	private void calInfo() {
 		T gffDetail1 = gffCod1.getGffDetailThis();
@@ -165,7 +165,7 @@ public class ListCodAbsDu<T extends ListDetailAbs, K extends ListCodAbs<T>>  {
 			rightoverlap = gffCod2.getCoord() - gffDetail2.numberstart;
 		}
 		/**
-		 * Èç¹ûpeakÁ½¸ö¶Ëµã¶¼ÔÚÔÚÍ¬Ò»ÌõÄ¿Ö®ÄÚ
+		 * å¦‚æœpeakä¸¤ä¸ªç«¯ç‚¹éƒ½åœ¨åœ¨åŒä¸€æ¡ç›®ä¹‹å†…
 		 */
 		if (gffCod1.insideLOC && gffCod2.insideLOC && 
 				gffDetail1.equals(gffDetail2)
@@ -175,7 +175,7 @@ public class ListCodAbsDu<T extends ListDetailAbs, K extends ListCodAbs<T>>  {
 			opLeftInCod = 100;
 			opLeftBp = peakLength; opRightInItem = opLeftInItem; opRightInCod = 100; opRightBp = opLeftBp;
 		}
-		// Èç¹ûpeak×ó¶ËµãÔÚÒ»¸öÌõÄ¿ÄÚ£¬ÓÒ¶ËµãÔÚÁíÒ»¸öÌõÄ¿ÄÚ
+		// å¦‚æœpeakå·¦ç«¯ç‚¹åœ¨ä¸€ä¸ªæ¡ç›®å†…ï¼Œå³ç«¯ç‚¹åœ¨å¦ä¸€ä¸ªæ¡ç›®å†…
 		else if (gffCod1.insideLOC
 				&& gffCod2.insideLOC
 				&& !gffCod1.equals(gffCod2) )
@@ -187,14 +187,14 @@ public class ListCodAbsDu<T extends ListDetailAbs, K extends ListCodAbs<T>>  {
 			opRightInCod = 100 * (double) rightoverlap / peakLength;
 			opRightBp = rightoverlap;
 		}
-		// peakÖ»ÓĞ×ó¶ËµãÔÚÌõÄ¿ÄÚ
+		// peakåªæœ‰å·¦ç«¯ç‚¹åœ¨æ¡ç›®å†…
 		else if (gffCod1.insideLOC && !gffCod2.insideLOC) {
 			opLeftInItem = 100 * (double) leftoverlap / leftItemLength;
 			opLeftInCod = 100 * (double) leftoverlap / peakLength;
 			opLeftBp = leftoverlap;
 			opRightInItem = 0; opRightInCod = 0; opRightBp = 0;
 		}
-		// peakÖ»ÓĞÓÒ¶ËµãÔÚÌõÄ¿ÄÚ
+		// peakåªæœ‰å³ç«¯ç‚¹åœ¨æ¡ç›®å†…
 		else if (!gffCod1.insideLOC && gffCod2.insideLOC) {
 			opLeftInItem = 0; opLeftInCod = 0; opLeftBp = 0;
 			opRightInItem = 100 * (double) rightoverlap / rightItemLength;

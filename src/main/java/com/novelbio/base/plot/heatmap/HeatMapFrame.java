@@ -109,10 +109,10 @@ class HeatMapFrame extends JFrame
 //        panel.setColorForeground(Color.white);
 //        panel.setColorBackground(Color.white);
 //        panel.setAlpha(true);
-//        panel.saveToFile("/home/zong0jie/×ÀÃæ/testimagePan2.png",500,500,true);
+//        panel.saveToFile("/home/zong0jie/æ¡Œé¢/testimagePan2.png",500,500,true);
 //        this.getContentPane().add(panel);
         this.createImage(1000, 1000);
-//        saveToFile("/home/zong0jie/×ÀÃæ/testimage.png",1000,1000);
+//        saveToFile("/home/zong0jie/æ¡Œé¢/testimage.png",1000,1000);
     }
     
     // this function will be run from the EDT
@@ -122,7 +122,7 @@ class HeatMapFrame extends JFrame
         hmf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         hmf.setSize(500,500);
         hmf.setVisible(true);
-//        hmf.saveImage(hmf.panel,"/home/zong0jie/×ÀÃæ/testimageAll.png");
+//        hmf.saveImage(hmf.panel,"/home/zong0jie/æ¡Œé¢/testimageAll.png");
     }
 
     public static void main(String[] args)
@@ -145,7 +145,7 @@ class HeatMapFrame extends JFrame
     }
     
     /**
-     * ½«´°Ìå×é¼ş1£º1½ØÍ¼²¢±£´æÎªjpg
+     * å°†çª—ä½“ç»„ä»¶1ï¼š1æˆªå›¾å¹¶ä¿å­˜ä¸ºjpg
      * @param com
      * @param path
      */

@@ -41,26 +41,26 @@ public class CodeCounter {
 	
 	}
 	TxtReadandWrite txtOut;
-	/**ÆÕÍ¨ĞĞÊı*/
+	/**æ™®é€šè¡Œæ•°*/
 	private long normalLines=0;
-	/**×¢ÊÍĞĞÊı*/
+	/**æ³¨é‡Šè¡Œæ•°*/
 	private long commentLines=0;
-	/**¿Õ°×ĞĞÊı*/
+	/**ç©ºç™½è¡Œæ•°*/
 	private long spaceLines=0;
-	/**×ÜĞĞÊı*/
+	/**æ€»è¡Œæ•°*/
 	private long totalLines=0;
-	/**ÆÕÍ¨ĞĞÊı*/
+	/**æ™®é€šè¡Œæ•°*/
 	private long normalLinesAll=0;
-	/**×¢ÊÍĞĞÊı*/
+	/**æ³¨é‡Šè¡Œæ•°*/
 	private long commentLinesAll=0;
-	/**¿Õ°×ĞĞÊı*/
+	/**ç©ºç™½è¡Œæ•°*/
 	private long spaceLinesAll=0;
-	/**×ÜĞĞÊı*/
+	/**æ€»è¡Œæ•°*/
 	private long totalLinesAll=0;
 	
 	/***
-	 * Í¨¹ıjavaÎÄ¼şÂ·¾¶¹¹Ôì¸Ã¶ÔÏó
-	 * @param filePath javaÎÄ¼şÂ·¾¶
+	 * é€šè¿‡javaæ–‡ä»¶è·¯å¾„æ„é€ è¯¥å¯¹è±¡
+	 * @param filePath javaæ–‡ä»¶è·¯å¾„
 	 */
 	public CodeCounter(String filePath, String txtOutFile){
 		txtOut = new TxtReadandWrite(txtOutFile, true);
@@ -68,8 +68,8 @@ public class CodeCounter {
 		conclution(filePath);
 	}
 	/**
-	 * ´¦ÀíÎÄ¼şµÄ·½·¨
-	 * @param filePath ÎÄ¼şÂ·¾¶
+	 * å¤„ç†æ–‡ä»¶çš„æ–¹æ³•
+	 * @param filePath æ–‡ä»¶è·¯å¾„
 	 */
 	private void tree(String filePath){
 		File file=new File(filePath);
@@ -79,7 +79,7 @@ public class CodeCounter {
 		}else{
 		for(int i=0;i<childs.length;i++){
 			if(childs[i].isDirectory()){
-				//²»Í³¼ÆÒş²ØÎÄ¼ş¼Ğ
+				//ä¸ç»Ÿè®¡éšè—æ–‡ä»¶å¤¹
 				if (childs[i].getName().startsWith(".")) {
 					continue;
 				}
@@ -90,8 +90,8 @@ public class CodeCounter {
 				if (!childs[i].getName().matches(".*\\.java$")) {
 					continue;
 				}
-//				System.out.println("µ±Ç°"+childs[i].getName()+"´úÂëĞĞÊı:");
-				txtOut.writefileln("µ±Ç°"+childs[i].getName()+"´úÂëĞĞÊı:");
+//				System.out.println("å½“å‰"+childs[i].getName()+"ä»£ç è¡Œæ•°:");
+				txtOut.writefileln("å½“å‰"+childs[i].getName()+"ä»£ç è¡Œæ•°:");
 				parse(childs[i]);
 				getCodeCounter();
 			}
@@ -103,8 +103,8 @@ public class CodeCounter {
 		txtOut.close();
 	}
 	/**
-	 * ½âÎöÎÄ¼ş
-	 * @param file ÎÄ¼ş¶ÔÏó
+	 * è§£ææ–‡ä»¶
+	 * @param file æ–‡ä»¶å¯¹è±¡
 	 */
 	private void parse(File file){
 		BufferedReader br=null;
@@ -113,7 +113,7 @@ public class CodeCounter {
 			br=new BufferedReader(new FileReader(file));
 			String line="";
 			while((line=br.readLine())!=null){
-				line=line.trim();//È¥³ı¿Õ¸ñ
+				line=line.trim();//å»é™¤ç©ºæ ¼
 				if(line.matches("^[\\s&&[^\\n]]*$")
 //						|| line.equals("{") || line.equals("}")
 //						|| line.equals("});")
@@ -140,18 +140,18 @@ public class CodeCounter {
 		}
 	}
 	/**
-	 * µÃµ½JavaÎÄ¼şµÄ´úÂëĞĞÊı
+	 * å¾—åˆ°Javaæ–‡ä»¶çš„ä»£ç è¡Œæ•°
 	 */
 	private void getCodeCounter(){
 		totalLines=normalLines+spaceLines+commentLines;
-//		System.out.println("ÆÕÍ¨´úÂëĞĞÊı:"+normalLines);
-//		System.out.println("¿Õ°×´úÂëĞĞÊı:"+spaceLines);
-//		System.out.println("×¢ÊÍ´úÂëĞĞÊı:"+commentLines);
-//		System.out.println("´úÂë×ÜĞĞÊı:"+totalLines);
-		txtOut.writefileln("ÆÕÍ¨´úÂëĞĞÊı:"+normalLines);
-		txtOut.writefileln("¿Õ°×´úÂëĞĞÊı:"+spaceLines);
-		txtOut.writefileln("×¢ÊÍ´úÂëĞĞÊı:"+commentLines);
-		txtOut.writefileln("¸ÃÎÄ¼ş´úÂë×ÜĞĞÊı:"+totalLines);
+//		System.out.println("æ™®é€šä»£ç è¡Œæ•°:"+normalLines);
+//		System.out.println("ç©ºç™½ä»£ç è¡Œæ•°:"+spaceLines);
+//		System.out.println("æ³¨é‡Šä»£ç è¡Œæ•°:"+commentLines);
+//		System.out.println("ä»£ç æ€»è¡Œæ•°:"+totalLines);
+		txtOut.writefileln("æ™®é€šä»£ç è¡Œæ•°:"+normalLines);
+		txtOut.writefileln("ç©ºç™½ä»£ç è¡Œæ•°:"+spaceLines);
+		txtOut.writefileln("æ³¨é‡Šä»£ç è¡Œæ•°:"+commentLines);
+		txtOut.writefileln("è¯¥æ–‡ä»¶ä»£ç æ€»è¡Œæ•°:"+totalLines);
 
 		normalLines=0;
 		spaceLines=0;
@@ -160,22 +160,22 @@ public class CodeCounter {
 	}
 	
 	/**
-	 * µÃµ½JavaÎÄ¼şµÄ´úÂëĞĞÊı
+	 * å¾—åˆ°Javaæ–‡ä»¶çš„ä»£ç è¡Œæ•°
 	 */
 	private void getCodeCounterAll(String filePath){
 		System.out.println("");
-		System.out.println(filePath + "×Ü´úÂëÍ³¼Æ");
+		System.out.println(filePath + "æ€»ä»£ç ç»Ÿè®¡");
 		totalLinesAll=normalLinesAll+spaceLinesAll+commentLinesAll;
-		System.out.println("ÆÕÍ¨×Ü´úÂëĞĞÊı:"+normalLinesAll);
-		System.out.println("¿Õ°××Ü´úÂëĞĞÊı:"+spaceLinesAll);
-		System.out.println("×¢ÊÍ×Ü´úÂëĞĞÊı:"+commentLinesAll);
-		System.out.println("´úÂë×ÜĞĞÊı:"+totalLinesAll);
+		System.out.println("æ™®é€šæ€»ä»£ç è¡Œæ•°:"+normalLinesAll);
+		System.out.println("ç©ºç™½æ€»ä»£ç è¡Œæ•°:"+spaceLinesAll);
+		System.out.println("æ³¨é‡Šæ€»ä»£ç è¡Œæ•°:"+commentLinesAll);
+		System.out.println("ä»£ç æ€»è¡Œæ•°:"+totalLinesAll);
 		
 		txtOut.writefileln();
-		txtOut.writefileln(filePath + "×Ü´úÂëÍ³¼Æ");
-		txtOut.writefileln("ÆÕÍ¨×Ü´úÂëĞĞÊı:"+normalLinesAll);
-		txtOut.writefileln("¿Õ°××Ü´úÂëĞĞÊı:"+spaceLinesAll);
-		txtOut.writefileln("×¢ÊÍ×Ü´úÂëĞĞÊı:"+commentLinesAll);
-		txtOut.writefileln("´úÂë×ÜĞĞÊı:"+totalLinesAll);
+		txtOut.writefileln(filePath + "æ€»ä»£ç ç»Ÿè®¡");
+		txtOut.writefileln("æ™®é€šæ€»ä»£ç è¡Œæ•°:"+normalLinesAll);
+		txtOut.writefileln("ç©ºç™½æ€»ä»£ç è¡Œæ•°:"+spaceLinesAll);
+		txtOut.writefileln("æ³¨é‡Šæ€»ä»£ç è¡Œæ•°:"+commentLinesAll);
+		txtOut.writefileln("ä»£ç æ€»è¡Œæ•°:"+totalLinesAll);
 	}
 }

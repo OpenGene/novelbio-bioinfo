@@ -10,16 +10,16 @@ public interface MapGoIDconvert extends MapperSql{
 
 
 	/**
-	 * ÓÃGoIDquery,GoIDÁ½¸öÖĞµÄÈÎÒâ×éºÏÈ¥²éÕÒGoIDconvety±í
-	 * Ö÷ÒªÊÇÀ´¿´±¾ÁĞÊÇ·ñÒÑ¾­´æÔÚÁË£¬·µ»Øµ¥¸öGo2Term
+	 * ç”¨GoIDquery,GoIDä¸¤ä¸ªä¸­çš„ä»»æ„ç»„åˆå»æŸ¥æ‰¾GoIDconvetyè¡¨
+	 * ä¸»è¦æ˜¯æ¥çœ‹æœ¬åˆ—æ˜¯å¦å·²ç»å­˜åœ¨äº†ï¼Œè¿”å›å•ä¸ªGo2Term
 	 * @param Go2Term
 	 * @return
 	 */
 	public Go2Term queryGoIDconvert(Go2Term queryGo2Term);
 	
 	/**
-	 * ÓÃGoIDquery,GoIDÁ½¸öÖĞµÄÈÎÒâ×éºÏÈ¥²éÕÒGoIDconvety±í
-	 * Ö÷ÒªÊÇÀ´¿´±¾ÁĞÊÇ·ñÒÑ¾­´æÔÚÁË£¬·µ»Øµ¥¸öArrayList--Go2Term
+	 * ç”¨GoIDquery,GoIDä¸¤ä¸ªä¸­çš„ä»»æ„ç»„åˆå»æŸ¥æ‰¾GoIDconvetyè¡¨
+	 * ä¸»è¦æ˜¯æ¥çœ‹æœ¬åˆ—æ˜¯å¦å·²ç»å­˜åœ¨äº†ï¼Œè¿”å›å•ä¸ªArrayList--Go2Term
 	 * @param Go2Term
 	 * @return
 	 */
@@ -28,12 +28,12 @@ public interface MapGoIDconvert extends MapperSql{
 	public void insertGoIDconvert(Go2Term Go2Term);
 	
 	/**
-	 * ÓÃ GOIDÈ¥query
+	 * ç”¨ GOIDå»query
 	 * @param Go2Term
 	 */
 	public void updateGoIDconvertWhereGOID(Go2Term Go2Term);
 	/**
-	 * ÓÃQuery GOIDÈ¥query
+	 * ç”¨Query GOIDå»query
 	 * @param Go2Term
 	 */
 	public void updateGoIDconvertWhereQueryGOID(Go2Term Go2Term);

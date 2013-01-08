@@ -26,7 +26,7 @@ public interface MapTaxID  extends MapperSql{
 				and abbr = #{abbr} <br>
 			/if<br>
 	    /where <br>
-	 * 主要是来看本列是否已经存在了，返回单个TaxID
+	 * 涓昏鏄潵鐪嬫湰鍒楁槸鍚﹀凡缁忓瓨鍦ㄤ簡锛岃繑鍥炲崟涓猅axID
 	 * @param TaxInfo
 	 * @return
 	 */
@@ -49,7 +49,7 @@ public interface MapTaxID  extends MapperSql{
 				and abbr = #{abbr} <br>
 			/if<br>
 	    /where <br>
-	 * 主要是来看本列是否已经存在了，返回单个TaxID
+	 * 涓昏鏄潵鐪嬫湰鍒楁槸鍚﹀凡缁忓瓨鍦ㄤ簡锛岃繑鍥炲崟涓猅axID
 	 * @param TaxInfo
 	 * @return
 	 */

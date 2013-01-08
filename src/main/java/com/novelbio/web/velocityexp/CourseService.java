@@ -23,7 +23,7 @@ public class CourseService {
 	        course.setEndDate(date);;  
 	      Instructor instructor = new Instructor();  
 	      instructor.setFirstName("firstName-"+i);  
-	      instructor.setLastName("lastNameºóÃæ-"+i);  
+	      instructor.setLastName("lastNameåé¢-"+i);  
 	      course.setInstructor(instructor);  
 	      courseList.add(course);  
 	    }  

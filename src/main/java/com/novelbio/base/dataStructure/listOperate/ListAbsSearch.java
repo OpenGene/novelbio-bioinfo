@@ -7,10 +7,10 @@ public abstract class ListAbsSearch <E extends ListDetailAbs, T extends ListCodA
 	private static final long serialVersionUID = 4583552188474447935L;
 
 	/**
-	 * »ñµÃµÄÃ¿Ò»¸öÐÅÏ¢¶¼ÊÇÊµ¼ÊµÄ¶øÃ»ÓÐclone
-	 * ÊäÈëPeakNum£¬ºÍµ¥ÌõChrµÄlistÐÅÏ¢ ·µ»Ø¸ÃPeakNumµÄËùÔÚLOCID£¬ºÍ¾ßÌåÎ»ÖÃ
-	 * ²ÉÓÃcloneµÄ·½·¨»ñµÃÐÅÏ¢
-	 * Ã»ÕÒµ½¾Í·µ»Ønull
+	 * èŽ·å¾—çš„æ¯ä¸€ä¸ªä¿¡æ¯éƒ½æ˜¯å®žé™…çš„è€Œæ²¡æœ‰clone
+	 * è¾“å…¥PeakNumï¼Œå’Œå•æ¡Chrçš„listä¿¡æ¯ è¿”å›žè¯¥PeakNumçš„æ‰€åœ¨LOCIDï¼Œå’Œå…·ä½“ä½ç½®
+	 * é‡‡ç”¨cloneçš„æ–¹æ³•èŽ·å¾—ä¿¡æ¯
+	 * æ²¡æ‰¾åˆ°å°±è¿”å›žnull
 	 */
 	public T searchLocation(int Coordinate) {
 		CoordLocationInfo coordLocationInfo = LocPosition(Coordinate);
@@ -36,11 +36,11 @@ public abstract class ListAbsSearch <E extends ListDetailAbs, T extends ListCodA
 	}
 	
 	/**
-	 * ·µ»ØË«×ø±ê²éÑ¯µÄ½á¹û£¬ÄÚ²¿×Ô¶¯ÅÐ¶Ï cod1 ºÍ cod2µÄ´óÐ¡
-	 * Èç¹ûcod1 ºÍcod2 ÓÐÒ»¸öÐ¡ÓÚ0£¬ÄÇÃ´×ø±ê²»´æÔÚ£¬Ôò·µ»Ønull
-	 * @param chrID ÄÚ²¿×Ô¶¯Ð¡Ð´
-	 * @param cod1 ±ØÐë´óÓÚ0
-	 * @param cod2 ±ØÐë´óÓÚ0
+	 * è¿”å›žåŒåæ ‡æŸ¥è¯¢çš„ç»“æžœï¼Œå†…éƒ¨è‡ªåŠ¨åˆ¤æ–­ cod1 å’Œ cod2çš„å¤§å°
+	 * å¦‚æžœcod1 å’Œcod2 æœ‰ä¸€ä¸ªå°äºŽ0ï¼Œé‚£ä¹ˆåæ ‡ä¸å­˜åœ¨ï¼Œåˆ™è¿”å›žnull
+	 * @param chrID å†…éƒ¨è‡ªåŠ¨å°å†™
+	 * @param cod1 å¿…é¡»å¤§äºŽ0
+	 * @param cod2 å¿…é¡»å¤§äºŽ0
 	 * @return
 	 */
 	public K searchLocationDu(int cod1, int cod2) {
@@ -62,21 +62,21 @@ public abstract class ListAbsSearch <E extends ListDetailAbs, T extends ListCodA
 		return lsAbsDu;
 	}
 	/**
-	 * Éú³ÉÒ»¸öÈ«ÐÂµÄGffCodÀà
+	 * ç”Ÿæˆä¸€ä¸ªå…¨æ–°çš„GffCodç±»
 	 * @param listName
 	 * @param Coordinate
 	 * @return
 	 */
 	protected abstract T creatGffCod(String listName, int Coordinate);
 	/**
-	 * Éú³ÉÒ»¸öÈ«ÐÂµÄGffCodÀà
+	 * ç”Ÿæˆä¸€ä¸ªå…¨æ–°çš„GffCodç±»
 	 * @param listName
 	 * @param Coordinate
 	 * @return
 	 */
 	protected abstract K creatGffCodDu(T gffCod1, T gffCod2);
 	/**
-	 * ÒÑ²âÊÔ£¬ÄÜÓÃ
+	 * å·²æµ‹è¯•ï¼Œèƒ½ç”¨
 	 */
 	@SuppressWarnings("unchecked")
 	public ListAbsSearch<E, T, K> clone() {

@@ -1,8 +1,8 @@
 package com.novelbio.analysis.tools.compare;
 /**
- * ¹¦ÄÜ£º
- * 1. È¡ÖÐÎ»Êý
- * 2. ½«¶à¸öexcel¸ù¾ÝIDºÏ²¢Îª1¸ö£¬·½±ãÈ¡½»¼¯ºÍ²¢¼¯µÄ²Ù×÷
+ * åŠŸèƒ½ï¼š
+ * 1. å–ä¸­ä½æ•°
+ * 2. å°†å¤šä¸ªexcelæ ¹æ®IDåˆå¹¶ä¸º1ä¸ªï¼Œæ–¹ä¾¿å–äº¤é›†å’Œå¹¶é›†çš„æ“ä½œ
  * @author zong0jie
  *
  */

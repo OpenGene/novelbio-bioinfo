@@ -21,7 +21,7 @@ import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.other.downloadpicture.GetPictureUrl;
 import com.novelbio.other.downloadpicture.UrlPictureDownLoad;
-/** ÕÒµ½Ã¿¸ömidUrlËù¶ÔÓ¦µÄÒ³Ãæ£¬È»ºóÍ¨¹ı±¾Àà»ñµÃbigurlµÄdownloadÀà*/
+/** æ‰¾åˆ°æ¯ä¸ªmidUrlæ‰€å¯¹åº”çš„é¡µé¢ï¼Œç„¶åé€šè¿‡æœ¬ç±»è·å¾—bigurlçš„downloadç±»*/
 public class PixivGetPictureUrlToDownload extends GetPictureUrl {
 	private static Logger logger = Logger.getLogger(PixivGetPictureUrlToDownload.class);
 	String pixivUrl = "http://www.pixiv.net/";
@@ -33,7 +33,7 @@ public class PixivGetPictureUrlToDownload extends GetPictureUrl {
 	String name;
 	String savePath;
 	int pictureNum;
-	/** nullËµÃ÷Ö´ĞĞÊ§°Ü£¬ĞèÒªÖØĞÂÖ´ĞĞ */
+	/** nullè¯´æ˜æ‰§è¡Œå¤±è´¥ï¼Œéœ€è¦é‡æ–°æ‰§è¡Œ */
 	ArrayList<UrlPictureDownLoad> lsResult;
 	
 	public void setName(String name) {
@@ -48,14 +48,14 @@ public class PixivGetPictureUrlToDownload extends GetPictureUrl {
 	public void setWebFetch(HttpFetch webFetch) {
 		this.webFetch = webFetch;
 	}
-	/** ±£´æµÄÂ·¾¶ÀïÃæÓ¦¸ÃÒª°üº¬×÷ÕßÃû */
+	/** ä¿å­˜çš„è·¯å¾„é‡Œé¢åº”è¯¥è¦åŒ…å«ä½œè€…å */
 	public void setSavePath(String savePath) {
 		this.savePath = savePath;
 	}
 	public ArrayList<UrlPictureDownLoad> getLsResult() {
 		return lsResult;
 	}
-	/** ·µ»Ønull±íÊ¾Ê§°Ü£¬¾ÍĞèÒªÖØÅÜ
+	/** è¿”å›nullè¡¨ç¤ºå¤±è´¥ï¼Œå°±éœ€è¦é‡è·‘
 	 * @throws ParserException */
 	private void getLsPicture() throws ParserException {
 		webFetch.setUrl(midUrl);
@@ -65,7 +65,7 @@ public class PixivGetPictureUrlToDownload extends GetPictureUrl {
 		}
 		String info = webFetch.getResponse();
 		if (info == null) {
-			logger.error("Ã»×¥µ½¶«Î÷£º" + midUrl);
+			logger.error("æ²¡æŠ“åˆ°ä¸œè¥¿ï¼š" + midUrl);
 			lsResult = new ArrayList<UrlPictureDownLoad>();
 			return;
 		}
@@ -136,7 +136,7 @@ public class PixivGetPictureUrlToDownload extends GetPictureUrl {
 		resultUrl = HttpFetch.decode(resultUrl);
 		return resultUrl;
 	}
-	/** »ñÈ¡Á¬»·»­µÄurl 
+	/** è·å–è¿ç¯ç”»çš„url 
 	 * @throws ParserException */
 	private ArrayList<String> getPictureUrlManga(String mangaUrl) throws ParserException {
 		webFetch.setRefUrl(midUrl);
@@ -156,14 +156,14 @@ public class PixivGetPictureUrlToDownload extends GetPictureUrl {
 		ArrayList<String> lsMangaUrl = new ArrayList<String>();
 		SimpleNodeIterator iterator = nodeLsPicture.elements();
         while (iterator.hasMoreNodes()) {
-        	//Ã¿¸öÍ¼Æ¬µÄnode
+        	//æ¯ä¸ªå›¾ç‰‡çš„node
             Node nodePicture = iterator.nextNode();
             String url = getPictureUrl(nodePicture);
             lsMangaUrl.add(url);
         }
         return lsMangaUrl;
 	}
-	/** »ñµÃÃ¿¸öÍ¼Æ¬µÄurl 
+	/** è·å¾—æ¯ä¸ªå›¾ç‰‡çš„url 
 	 * @throws UnsupportedEncodingException */
 	private String getPictureUrl(Node nodePicture) {
 		String outUrl= null;

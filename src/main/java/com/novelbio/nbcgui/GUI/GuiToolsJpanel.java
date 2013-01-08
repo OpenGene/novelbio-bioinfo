@@ -61,7 +61,7 @@ public class GuiToolsJpanel extends JPanel {
 		
 		JButton btnOpenfileMedian = new JButton("OpenFile");
 		btnOpenfileMedian.setBounds(385, 37, 97, 24);
-		//选择待取中位数的文件
+		//閫夋嫨寰呭彇涓綅鏁扮殑鏂囦欢
 		btnOpenfileMedian.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				GUIFileOpen guiFileOpen = new GUIFileOpen();

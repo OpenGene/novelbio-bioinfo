@@ -7,9 +7,9 @@ import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 
 /**
- * Éı¼¶NCBIÏÂÔØµÄËùÓĞÎÄ¼şµÄÀà
+ * å‡çº§NCBIä¸‹è½½çš„æ‰€æœ‰æ–‡ä»¶çš„ç±»
  * @author zong0jie
- *ID×ª»»µÄÎÄ¼şÍøÖ·£ºftp://ftp.ncbi.nih.gov/gene/DATA/
+ *IDè½¬æ¢çš„æ–‡ä»¶ç½‘å€ï¼šftp://ftp.ncbi.nih.gov/gene/DATA/
  */
 public class NCBI {
 	String taxID = "";
@@ -71,9 +71,9 @@ public class NCBI {
 }
 
 /**
- * µ¼Èë´ÎĞò£º1
- * ½«gene2accionºÍgene2refseq.gzÕâÁ½¸öÎÄ¼şµ¼ÈëÊı¾İ¿â£¬½öµ¼ÈëÖ¸¶¨µÄÎïÖÖ
- * ÎÄ¼ş¸ñÊ½ÈçÏÂ<br>
+ * å¯¼å…¥æ¬¡åºï¼š1
+ * å°†gene2accionå’Œgene2refseq.gzè¿™ä¸¤ä¸ªæ–‡ä»¶å¯¼å…¥æ•°æ®åº“ï¼Œä»…å¯¼å…¥æŒ‡å®šçš„ç‰©ç§
+ * æ–‡ä»¶æ ¼å¼å¦‚ä¸‹<br>
  * tax_id	GeneID	status	RNA_ID	RNA_gi	pro_ID	pro_gi	  genomic_ID	genomic_gi	start_on_genomic_ID	end_on_genomic_ID	orientation	assembly<br>
 9	1246502	-	-	-	CBC03500.1	257287470	HB661642.1	257287469	-	-	?	- <br>
 9	1246502	VALIDATED	-	-	NP_047187.1	10954458	NC_001911.1	10954454	3040	4590	+	-<br>
@@ -81,8 +81,8 @@ public class NCBI {
  */
 class ImpGen2Acc extends ImportPerLine {
 	/**
-	 * ½«gene2accionºÍgene2refseq.gzÕâÁ½¸öÎÄ¼şµ¼ÈëÊı¾İ¿â£¬½öµ¼ÈëÖ¸¶¨µÄÎïÖÖ
-	 * ÎÄ¼ş¸ñÊ½ÈçÏÂ<br>
+	 * å°†gene2accionå’Œgene2refseq.gzè¿™ä¸¤ä¸ªæ–‡ä»¶å¯¼å…¥æ•°æ®åº“ï¼Œä»…å¯¼å…¥æŒ‡å®šçš„ç‰©ç§
+	 * æ–‡ä»¶æ ¼å¼å¦‚ä¸‹<br>
 	 * tax_id	GeneID	status	RNA_ID	RNA_gi	pro_ID	pro_gi	  genomic_ID	genomic_gi	start_on_genomic_ID	end_on_genomic_ID	orientation	assembly<br>
 	9	1246502	-	-	-	CBC03500.1	257287470	HB661642.1	257287469	-	-	?	- <br>
 	9	1246502	VALIDATED	-	-	NP_047187.1	10954458	NC_001911.1	10954454	3040	4590	+	-<br>
@@ -126,8 +126,8 @@ class ImpGen2Acc extends ImportPerLine {
 }
 
 /**
- * µ¼Èë´ÎĞò£º2
- * ½«gene2ensembl.gzÕâ¸öÎÄ¼şµ¼ÈëÊı¾İ¿â£¬Ã¿ĞĞµÄ¸ñÊ½ÈçÏÂ
+ * å¯¼å…¥æ¬¡åºï¼š2
+ * å°†gene2ensembl.gzè¿™ä¸ªæ–‡ä»¶å¯¼å…¥æ•°æ®åº“ï¼Œæ¯è¡Œçš„æ ¼å¼å¦‚ä¸‹
  * tax_id GeneID Ensembl_gene_id RNA_ID Ensembl_rna_id protein_ID Ensembl_protein_id
    7227	30970	FBgn0040373	NM_130477.2	FBtr0070108	NP_569833.1	FBpp0070103
    7227	30970	FBgn0040373	NM_166834.1	FBtr0070107	NP_726658.1	FBpp0070102
@@ -135,7 +135,7 @@ class ImpGen2Acc extends ImportPerLine {
  */
 class ImpGen2Ensembl extends ImportPerLine {
 	/**
-	 * ½«gene2ensembl.gzÕâ¸öÎÄ¼şµ¼ÈëÊı¾İ¿â£¬Ã¿ĞĞµÄ¸ñÊ½ÈçÏÂ
+	 * å°†gene2ensembl.gzè¿™ä¸ªæ–‡ä»¶å¯¼å…¥æ•°æ®åº“ï¼Œæ¯è¡Œçš„æ ¼å¼å¦‚ä¸‹
 	 * tax_id GeneID Ensembl_gene_id RNA_ID Ensembl_rna_id protein_ID Ensembl_protein_id
        7227	30970	FBgn0040373	NM_130477.2	FBtr0070108	NP_569833.1	FBpp0070103
        7227	30970	FBgn0040373	NM_166834.1	FBtr0070107	NP_726658.1	FBpp0070102
@@ -182,9 +182,9 @@ class ImpGen2Ensembl extends ImportPerLine {
 	}
 }
 /**
- * µ¼Èë´ÎĞò£º3
- * ÒòÎªÒ»¸ö»ùÒò¿ÉÄÜÓĞÓĞ¶à¸öuniprotID£¬ÎªÌá¸ßĞ§ÂÊ£¬²ÉÓÃstaticÉè¶¨µÄcopedID£¬·½±ãÁ¬ĞøÍ³¼Æ
- * ½«gene_refseq_uniprotkb_collab.gzÕâ¸öÎÄ¼şµ¼ÈëÊı¾İ¿â£¬Ã¿ĞĞµÄ¸ñÊ½ÈçÏÂ
+ * å¯¼å…¥æ¬¡åºï¼š3
+ * å› ä¸ºä¸€ä¸ªåŸºå› å¯èƒ½æœ‰æœ‰å¤šä¸ªuniprotIDï¼Œä¸ºæé«˜æ•ˆç‡ï¼Œé‡‡ç”¨staticè®¾å®šçš„copedIDï¼Œæ–¹ä¾¿è¿ç»­ç»Ÿè®¡
+ * å°†gene_refseq_uniprotkb_collab.gzè¿™ä¸ªæ–‡ä»¶å¯¼å…¥æ•°æ®åº“ï¼Œæ¯è¡Œçš„æ ¼å¼å¦‚ä¸‹
 #Format: NCBI_protein_accession UniProtKB_protein_accession (tab is used as a separator, pound sign - start of a comment)
 AP_000046	Q96678
 AP_000047	Q96679
@@ -210,8 +210,8 @@ class ImpGeneRef2UniID extends ImportPerLine {
 }
 
 /**
- * µ¼Èë´ÎĞò£º4
- * ½«geneInfo.gzÕâ¸öÎÄ¼şµ¼ÈëÊı¾İ¿â
+ * å¯¼å…¥æ¬¡åºï¼š4
+ * å°†geneInfo.gzè¿™ä¸ªæ–‡ä»¶å¯¼å…¥æ•°æ®åº“
  * @param content
  */
 class ImpGene2Info extends ImportPerLine {
@@ -239,10 +239,10 @@ class ImpGene2Info extends ImportPerLine {
 }
 
 /**
- * µ¼Èë´ÎĞò£º5
- * ÔÚµ¼ÈëgeneInfoºóµ¼ÈëÕâ¸öÎÄ¼ş
- * ÒòÎªÒ»¸ö»ùÒò¿ÉÄÜÓĞÓĞ¶àÆªÎÄÏ×£¬ÎªÌá¸ßĞ§ÂÊ£¬²ÉÓÃstaticÉè¶¨µÄcopedID£¬·½±ãÁ¬ĞøÍ³¼Æ
- * ½«gene2pubmed.gzÕâ¸öÎÄ¼şµ¼ÈëÊı¾İ¿â£¬Ã¿ĞĞµÄ¸ñÊ½ÈçÏÂ
+ * å¯¼å…¥æ¬¡åºï¼š5
+ * åœ¨å¯¼å…¥geneInfoåå¯¼å…¥è¿™ä¸ªæ–‡ä»¶
+ * å› ä¸ºä¸€ä¸ªåŸºå› å¯èƒ½æœ‰æœ‰å¤šç¯‡æ–‡çŒ®ï¼Œä¸ºæé«˜æ•ˆç‡ï¼Œé‡‡ç”¨staticè®¾å®šçš„copedIDï¼Œæ–¹ä¾¿è¿ç»­ç»Ÿè®¡
+ * å°†gene2pubmed.gzè¿™ä¸ªæ–‡ä»¶å¯¼å…¥æ•°æ®åº“ï¼Œæ¯è¡Œçš„æ ¼å¼å¦‚ä¸‹
  * #Format: tax_id GeneID PubMed_ID (tab is used as a separator, pound sign - start of a comment)
 9	1246500	9873079
 9	1246501	9873079
@@ -267,8 +267,8 @@ class ImpGene2Pub extends ImportPerLine {
 }
 
 /**
- * µ¼Èë´ÎĞò£º6
- * µ¼ÈëGOĞÅÏ¢£¬ÔÚµ¼ÈëGo2TermÎÄ¼şºóµ¼Èë¸Ã±í
+ * å¯¼å…¥æ¬¡åºï¼š6
+ * å¯¼å…¥GOä¿¡æ¯ï¼Œåœ¨å¯¼å…¥Go2Termæ–‡ä»¶åå¯¼å…¥è¯¥è¡¨
  * @author zong0jie
  *
  */

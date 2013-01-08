@@ -17,24 +17,24 @@ import com.novelbio.nbcgui.GUI.GuiBlastJpanel;
 public class CtrlBlastAnno extends SwingWorker<ArrayList<String[]>, ProgressData>
 {
 	/**
-	 * ÊÇ·ñĞèÒªblast
+	 * æ˜¯å¦éœ€è¦blast
 	 */
 	boolean blast = false;
 	/**
-	 * ²éÕÒÎïÖÖ
+	 * æŸ¥æ‰¾ç‰©ç§
 	 */
 	int taxID = 0;
 	/**
-	 * blastÎïÖÖ
+	 * blastç‰©ç§
 	 */
 	int StaxID = 0;
 	/**
-	 * blastµÄevalue
+	 * blastçš„evalue
 	 */
 	double evalue = 100;
 	
 	/**
-	 * ½çÃæ¶ÔÏó
+	 * ç•Œé¢å¯¹è±¡
 	 */
 //	GUIBlast guiBlast;
 	GuiBlastJpanel guiBlast;
@@ -59,7 +59,7 @@ public class CtrlBlastAnno extends SwingWorker<ArrayList<String[]>, ProgressData
 	List<String> lsAccID = null;
 	
 	/**
-	 * ×¼±¸¹¤×÷£¬½«geneID¶ÁÈëÄÚ´æÍ¬Ê±×¼±¸²éÕÒ£¬Í¬Ê±·µ»Ø×Ü¹²²éÕÒµÄÊıÁ¿£¬¸ø½ø¶ÈÌõ¼ÆÊı
+	 * å‡†å¤‡å·¥ä½œï¼Œå°†geneIDè¯»å…¥å†…å­˜åŒæ—¶å‡†å¤‡æŸ¥æ‰¾ï¼ŒåŒæ—¶è¿”å›æ€»å…±æŸ¥æ‰¾çš„æ•°é‡ï¼Œç»™è¿›åº¦æ¡è®¡æ•°
 	 * @return
 	 * @throws Exception
 	 */
@@ -69,7 +69,7 @@ public class CtrlBlastAnno extends SwingWorker<ArrayList<String[]>, ProgressData
 	}
 	
 	/**
-	 * ¸ø¶¨ÎÄ¼ş£¬ºÍÎÄ¼ş·Ö¸î·û£¬ÒÔ¼°µÚ¼¸ÁĞ£¬»ñµÃ¸ÃÁĞµÄ»ùÒòID
+	 * ç»™å®šæ–‡ä»¶ï¼Œå’Œæ–‡ä»¶åˆ†å‰²ç¬¦ï¼Œä»¥åŠç¬¬å‡ åˆ—ï¼Œè·å¾—è¯¥åˆ—çš„åŸºå› ID
 	 * @param fileName
 	 * @return
 	 * @throws Exception 
@@ -96,8 +96,8 @@ public class CtrlBlastAnno extends SwingWorker<ArrayList<String[]>, ProgressData
 						tmpAnno[j] = "";
 					}
 				}
-				//ÔÚtmpAnnoµÄ×îÇ°Ãæ¼ÓÉÏaccID£¬×îÎ²²¿¼ÓÉÏkeggID
-				/////////È¥³ıÎïÖÖÄÇÒ»ÁĞ/////////////////////////////
+				//åœ¨tmpAnnoçš„æœ€å‰é¢åŠ ä¸ŠaccIDï¼Œæœ€å°¾éƒ¨åŠ ä¸ŠkeggID
+				/////////å»é™¤ç‰©ç§é‚£ä¸€åˆ—/////////////////////////////
 				ArrayList<int[]> lsIndelInfo = new ArrayList<int[]>();
 				lsIndelInfo.add(new int[]{0,2});
 				lsIndelInfo.add(new int[]{length, 1});
@@ -107,17 +107,17 @@ public class CtrlBlastAnno extends SwingWorker<ArrayList<String[]>, ProgressData
 					lsIndelInfo.add(new int[]{4,1});
 				}
 				String[] tmpResult = ArrayOperate.indelElement(tmpAnno, lsIndelInfo, "");
-				tmpResult[0] = accID;	//ÔÚtmpAnnoµÄ×îÇ°Ãæ¼ÓÉÏaccID
-				tmpResult[1] = copedID.getAccIDDBinfo();//µÚ¶şÁĞ¼ÓÉÏÄ¬ÈÏÊı¾İ¿âµÄID
+				tmpResult[0] = accID;	//åœ¨tmpAnnoçš„æœ€å‰é¢åŠ ä¸ŠaccID
+				tmpResult[1] = copedID.getAccIDDBinfo();//ç¬¬äºŒåˆ—åŠ ä¸Šé»˜è®¤æ•°æ®åº“çš„ID
 				if (!blast) {
-					tmpResult[tmpResult.length - 1] = copedID.getKeggInfo().getKegID(); //×îÎ²²¿¼ÓÉÏkeggID
+					tmpResult[tmpResult.length - 1] = copedID.getKeggInfo().getKegID(); //æœ€å°¾éƒ¨åŠ ä¸ŠkeggID
 				}
 				else {
-					tmpResult[4] = copedID.getKeggInfo().getKegID(); //×îÎ²²¿¼ÓÉÏkeggID
+					tmpResult[4] = copedID.getKeggInfo().getKegID(); //æœ€å°¾éƒ¨åŠ ä¸ŠkeggID
 					GeneID copedIDblast = copedID.getGeneIDBlast();
 					if (copedIDblast != null ) {
-						tmpResult[6] = copedIDblast.getAccIDDBinfo();//¼ÓÉÏÄ¬ÈÏÊı¾İ¿âµÄID
-						tmpResult[tmpResult.length - 1] = copedIDblast.getKeggInfo().getKegID(); //×îÎ²²¿¼ÓÉÏkeggID
+						tmpResult[6] = copedIDblast.getAccIDDBinfo();//åŠ ä¸Šé»˜è®¤æ•°æ®åº“çš„ID
+						tmpResult[tmpResult.length - 1] = copedIDblast.getKeggInfo().getKegID(); //æœ€å°¾éƒ¨åŠ ä¸ŠkeggID
 					}
 				}
 				///////////////////////////////////////////////////

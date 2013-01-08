@@ -9,19 +9,19 @@ import com.novelbio.generalConf.NovelBioConst;
 
 public class Rplot {
 	/**
-	 * ÓÃR»­Ö±·½Í¼,ĞÂÍ¼°ÑÀÏÍ¼¸²¸Ç
+	 * ç”¨Rç”»ç›´æ–¹å›¾,æ–°å›¾æŠŠè€å›¾è¦†ç›–
 	 * @param data
-	 * @param min Êı¾İµÄ×îĞ¡Öµ Èç¹û×îĞ¡Öµ´óÓÚµÈÓÚ×î´óÖµ£¬ÄÇÃ´¾Í²»½øĞĞ¹ıÂË
-	 * @param max Êı¾İµÄ×î´óÖµ  Èç¹û×îĞ¡Öµ´óÓÚµÈÓÚ×î´óÖµ£¬ÄÇÃ´¾Í²»½øĞĞ¹ıÂË
-	 * @param mainTitle Ö÷±êÌâ
-	 * @param xTitle x±êÌâ
-	 * @param yTitle y±êÌâ
-	 * @param resultPath ½á¹ûÂ·¾¶
-	 * @param resultPrix ½á¹ûÎÄ¼şµÄÇ°×º£¬ºóÃæ´øÓĞdensity
+	 * @param min æ•°æ®çš„æœ€å°å€¼ å¦‚æœæœ€å°å€¼å¤§äºç­‰äºæœ€å¤§å€¼ï¼Œé‚£ä¹ˆå°±ä¸è¿›è¡Œè¿‡æ»¤
+	 * @param max æ•°æ®çš„æœ€å¤§å€¼  å¦‚æœæœ€å°å€¼å¤§äºç­‰äºæœ€å¤§å€¼ï¼Œé‚£ä¹ˆå°±ä¸è¿›è¡Œè¿‡æ»¤
+	 * @param mainTitle ä¸»æ ‡é¢˜
+	 * @param xTitle xæ ‡é¢˜
+	 * @param yTitle yæ ‡é¢˜
+	 * @param resultPath ç»“æœè·¯å¾„
+	 * @param resultPrix ç»“æœæ–‡ä»¶çš„å‰ç¼€ï¼Œåé¢å¸¦æœ‰density
 	 * @throws Exception
 	 */
 	public static void plotHist(Collection<? extends Number> data,double min,double max,String mainTitle,String xTitle,String yTitle,String resultPath,String resultPrix) throws Exception {
-		//Ğ´ÈëÊı¾İ
+		//å†™å…¥æ•°æ®
 		TxtReadandWrite txtR = new TxtReadandWrite();
 		txtR.setParameter(NovelBioConst.R_WORKSPACE_DENSITY_DATA, true, false);
 		if (min < max) {
@@ -47,19 +47,19 @@ public class Rplot {
 		FileOperate.moveFoldFile(NovelBioConst.R_WORKSPACE_DENSITY, resultPath, resultPrix,true);
 	}
 	/**
-	 * ÓÃR»­Ö±·½Í¼,ĞÂÍ¼°ÑÀÏÍ¼¸²¸Ç
+	 * ç”¨Rç”»ç›´æ–¹å›¾,æ–°å›¾æŠŠè€å›¾è¦†ç›–
 	 * @param data
-	 * @param min Êı¾İµÄ×îĞ¡Öµ Èç¹û×îĞ¡Öµ´óÓÚµÈÓÚ×î´óÖµ£¬ÄÇÃ´¾Í²»½øĞĞ¹ıÂË
-	 * @param max Êı¾İµÄ×î´óÖµ  Èç¹û×îĞ¡Öµ´óÓÚµÈÓÚ×î´óÖµ£¬ÄÇÃ´¾Í²»½øĞĞ¹ıÂË
-	 * @param mainTitle Ö÷±êÌâ
-	 * @param xTitle x±êÌâ
-	 * @param yTitle y±êÌâ
-	 * @param resultPath ½á¹ûÂ·¾¶
-	 * @param resultPrix ½á¹ûÎÄ¼şµÄÇ°×º£¬ºóÃæ´øÓĞdensity
+	 * @param min æ•°æ®çš„æœ€å°å€¼ å¦‚æœæœ€å°å€¼å¤§äºç­‰äºæœ€å¤§å€¼ï¼Œé‚£ä¹ˆå°±ä¸è¿›è¡Œè¿‡æ»¤
+	 * @param max æ•°æ®çš„æœ€å¤§å€¼  å¦‚æœæœ€å°å€¼å¤§äºç­‰äºæœ€å¤§å€¼ï¼Œé‚£ä¹ˆå°±ä¸è¿›è¡Œè¿‡æ»¤
+	 * @param mainTitle ä¸»æ ‡é¢˜
+	 * @param xTitle xæ ‡é¢˜
+	 * @param yTitle yæ ‡é¢˜
+	 * @param resultPath ç»“æœè·¯å¾„
+	 * @param resultPrix ç»“æœæ–‡ä»¶çš„å‰ç¼€ï¼Œåé¢å¸¦æœ‰density
 	 * @throws Exception
 	 */
 	public static void plotHist(double[] data,double min,double max,String mainTitle,String xTitle,String yTitle,String resultPath,String resultPrix) throws Exception {
-		//Ğ´ÈëÊı¾İ
+		//å†™å…¥æ•°æ®
 		TxtReadandWrite txtR = new TxtReadandWrite();
 		txtR.setParameter(NovelBioConst.R_WORKSPACE_DENSITY_DATA, true, false);
 		if (min < max) {
@@ -86,19 +86,19 @@ public class Rplot {
 	}
 	
 //	/**
-//	 * ÓÃR»­Ö±·½Í¼,ĞÂÍ¼°ÑÀÏÍ¼¸²¸Ç
+//	 * ç”¨Rç”»ç›´æ–¹å›¾,æ–°å›¾æŠŠè€å›¾è¦†ç›–
 //	 * @param data
-//	 * @param min Êı¾İµÄ×îĞ¡Öµ Èç¹û×îĞ¡Öµ´óÓÚµÈÓÚ×î´óÖµ£¬ÄÇÃ´¾Í²»½øĞĞ¹ıÂË
-//	 * @param max Êı¾İµÄ×î´óÖµ  Èç¹û×îĞ¡Öµ´óÓÚµÈÓÚ×î´óÖµ£¬ÄÇÃ´¾Í²»½øĞĞ¹ıÂË
-//	 * @param mainTitle Ö÷±êÌâ
-//	 * @param xTitle x±êÌâ
-//	 * @param yTitle y±êÌâ
-//	 * @param resultPath ½á¹ûÂ·¾¶
-//	 * @param resultPrix ½á¹ûÎÄ¼şµÄÇ°×º£¬ºóÃæ´øÓĞdensity
+//	 * @param min æ•°æ®çš„æœ€å°å€¼ å¦‚æœæœ€å°å€¼å¤§äºç­‰äºæœ€å¤§å€¼ï¼Œé‚£ä¹ˆå°±ä¸è¿›è¡Œè¿‡æ»¤
+//	 * @param max æ•°æ®çš„æœ€å¤§å€¼  å¦‚æœæœ€å°å€¼å¤§äºç­‰äºæœ€å¤§å€¼ï¼Œé‚£ä¹ˆå°±ä¸è¿›è¡Œè¿‡æ»¤
+//	 * @param mainTitle ä¸»æ ‡é¢˜
+//	 * @param xTitle xæ ‡é¢˜
+//	 * @param yTitle yæ ‡é¢˜
+//	 * @param resultPath ç»“æœè·¯å¾„
+//	 * @param resultPrix ç»“æœæ–‡ä»¶çš„å‰ç¼€ï¼Œåé¢å¸¦æœ‰density
 //	 * @throws Exception
 //	 */
 //	public static void plotHist(Collection<? extends Number> data,double min,double max,String mainTitle,String xTitle,String yTitle,String resultPath,String resultPrix) throws Exception {
-//		//Ğ´ÈëÊı¾İ
+//		//å†™å…¥æ•°æ®
 //		TxtReadandWrite txtR = new TxtReadandWrite();
 //		txtR.setParameter(NovelBioConst.R_WORKSPACE_DENSITY_DATA, true, false);
 //		if (min < max) {
@@ -126,7 +126,7 @@ public class Rplot {
 	
 	
 	/**
-	 * Ö´ĞĞR³ÌĞò£¬Ö±µ½R³ÌĞò½áÊøÔÙ·µ»Ø
+	 * æ‰§è¡ŒRç¨‹åºï¼Œç›´åˆ°Rç¨‹åºç»“æŸå†è¿”å›
 	 * @return
 	 * @throws IOException 
 	 * @throws IOException 
@@ -135,7 +135,7 @@ public class Rplot {
 	 */
 	private static int rscript(String scriptPath) throws IOException, InterruptedException  
 	{
-		//Õâ¸ö¾ÍÊÇÏà¶ÔÂ·¾¶£¬±ØĞëÔÚµ±Ç°ÎÄ¼ş¼ĞÏÂÔËĞĞ
+		//è¿™ä¸ªå°±æ˜¯ç›¸å¯¹è·¯å¾„ï¼Œå¿…é¡»åœ¨å½“å‰æ–‡ä»¶å¤¹ä¸‹è¿è¡Œ
 		String command=NovelBioConst.R_SCRIPT + scriptPath;
 		Runtime   r=Runtime.getRuntime();
 		Process p = r.exec(command);

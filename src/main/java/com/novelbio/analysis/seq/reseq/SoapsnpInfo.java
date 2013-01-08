@@ -17,11 +17,11 @@ public class SoapsnpInfo  implements Comparable<SoapsnpInfo>{
 
 	Logger logger = Logger.getLogger(LastzAlign.class);
 	/**
-	 * Ä¿±êÁ´µÄÃû×Ö
+	 * ç›®æ ‡é“¾çš„åå­—
 	 */
 	String seqName = "";
 	/**
-	 * ×îºóÔÚÄ¿±êĞòÁĞµÄÆğµã£¬Êµ¼ÊÆğµã
+	 * æœ€ååœ¨ç›®æ ‡åºåˆ—çš„èµ·ç‚¹ï¼Œå®é™…èµ·ç‚¹
 	 */
 	int startSeq = 0;
 	
@@ -40,11 +40,11 @@ public class SoapsnpInfo  implements Comparable<SoapsnpInfo>{
 	double pvalue = 100;
 	double avgCopyNumOfNearbyRegion = 0;
 	/**
-	 * ÊÇ·ñ±»dbsnpÊÕÂ¼
+	 * æ˜¯å¦è¢«dbsnpæ”¶å½•
 	 */
 	boolean booDBsnp = false;
 	/**
-	 * ÎÄ¼şÃû
+	 * æ–‡ä»¶å
 	 */
 	public String getSeqName() {
 		return seqName;
@@ -56,13 +56,13 @@ public class SoapsnpInfo  implements Comparable<SoapsnpInfo>{
 		return bestBase;
 	}
 	/**
-	 * Ö¸¶¨alignÎÄ±¾£¬¶ÁÈ¡ĞÅÏ¢
+	 * æŒ‡å®šalignæ–‡æœ¬ï¼Œè¯»å–ä¿¡æ¯
 	 */
 	public static  ArrayList<SoapsnpInfo> readInfo(String soapsnpFile) {
 		ArrayList<SoapsnpInfo> lsSoapsnpInfos = new ArrayList<SoapsnpInfo>();
 		
 		TxtReadandWrite txtSnp = new TxtReadandWrite(soapsnpFile, false);
-		//ºÜÓĞ¿ÉÄÜÃ»¶«Î÷£¬Ò²¾ÍÊÇlsInfo.size == 0
+		//å¾ˆæœ‰å¯èƒ½æ²¡ä¸œè¥¿ï¼Œä¹Ÿå°±æ˜¯lsInfo.size == 0
 		ArrayList<String> lsInfo = txtSnp.readfileLs();
 		for (String string : lsInfo) {
 			SoapsnpInfo soapsnpInfo = new SoapsnpInfo(string);
@@ -71,7 +71,7 @@ public class SoapsnpInfo  implements Comparable<SoapsnpInfo>{
 		return lsSoapsnpInfos;
 	}
 	/**
-	 * soapsnpµÄÃ¿Ò»ĞĞ
+	 * soapsnpçš„æ¯ä¸€è¡Œ
 	 * @param value
 	 */
 	private SoapsnpInfo(String value)

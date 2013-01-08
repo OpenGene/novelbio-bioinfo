@@ -21,8 +21,8 @@ import com.novelbio.base.gui.GUIInfo;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.generalConf.NovelBioConst;
 /**
- * ÊäÈëcmd£¬Ö´ĞĞÍê±Ïºó¿ÉÒÔ½«½á¹ûÊä³öµ½½çÃæ£¬Ä¿Ç°cmdÖ»Ö§³ÖÓ¢ÎÄ£¬·ñÔò»á³ö´í Ö»Òª¼Ì³ĞºóÖØĞ´process·½·¨¼´¿É
- * Èç¹ûÖ»ÊÇËæ±ãÓÃÓÃ£¬ÄÇÃ´µ÷ÓÃdoInBackground·½·¨¾ÍºÃ
+ * è¾“å…¥cmdï¼Œæ‰§è¡Œå®Œæ¯•åå¯ä»¥å°†ç»“æœè¾“å‡ºåˆ°ç•Œé¢ï¼Œç›®å‰cmdåªæ”¯æŒè‹±æ–‡ï¼Œå¦åˆ™ä¼šå‡ºé”™ åªè¦ç»§æ‰¿åé‡å†™processæ–¹æ³•å³å¯
+ * å¦‚æœåªæ˜¯éšä¾¿ç”¨ç”¨ï¼Œé‚£ä¹ˆè°ƒç”¨doInBackgroundæ–¹æ³•å°±å¥½
  * @author zong0jie
  */
 public class CmdOperate extends RunProcess<String> {
@@ -46,20 +46,20 @@ public class CmdOperate extends RunProcess<String> {
 	}
 	private static Logger logger = Logger.getLogger(CmdOperate.class);
 
-	/** ÊÇ·ñ½«pid¼Ó2£¬Èç¹ûÊÇĞ´ÈëÎÄ±¾È»ºóshÖ´ĞĞ£¬ÔòĞèÒª¼ÓÉÏ2 */
+	/** æ˜¯å¦å°†pidåŠ 2ï¼Œå¦‚æœæ˜¯å†™å…¥æ–‡æœ¬ç„¶åshæ‰§è¡Œï¼Œåˆ™éœ€è¦åŠ ä¸Š2 */
 	boolean shPID = false;
 	
-	/** ½ø³Ì */
+	/** è¿›ç¨‹ */
 	Process process = null;
-	/** ´ıÔËĞĞµÄÃüÁî */
+	/** å¾…è¿è¡Œçš„å‘½ä»¤ */
 	String cmd = "";
-	/** ÁÙÊ±ÎÄ¼şÔÚÎÄ¼ş¼Ğ */
+	/** ä¸´æ—¶æ–‡ä»¶åœ¨æ–‡ä»¶å¤¹ */
 	String scriptFold = "";
 	
 	GUIInfo guIcmd;
 	
 	/**
-	 * Ö±½ÓÔËĞĞ£¬²»Ğ´ÈëÎÄ±¾
+	 * ç›´æ¥è¿è¡Œï¼Œä¸å†™å…¥æ–‡æœ¬
 	 * @param cmd
 	 */
 	public CmdOperate(String cmd) {
@@ -67,7 +67,7 @@ public class CmdOperate extends RunProcess<String> {
 		shPID = false;
 	}
 	/** 
-	 * ÊÇ·ñÕ¹Ê¾GUI£¬Ä¬ÈÏ²»Õ¹Ê¾
+	 * æ˜¯å¦å±•ç¤ºGUIï¼Œé»˜è®¤ä¸å±•ç¤º
 	 */
 	public void setDisplayGUI(boolean displayGUI) {
 		if (displayGUI) {
@@ -78,16 +78,16 @@ public class CmdOperate extends RunProcess<String> {
 		}
 	}
 	/**
-	 * ³õÊ¼»¯ºóÖ±½Ó¿ªĞÂÏß³Ì¼´¿É
-	 * @param cmd ÊäÈëÃüÁî
-	 * @param cmdWriteInFileName ½«ÃüÁîĞ´ÈëµÄÎÄ±¾
+	 * åˆå§‹åŒ–åç›´æ¥å¼€æ–°çº¿ç¨‹å³å¯
+	 * @param cmd è¾“å…¥å‘½ä»¤
+	 * @param cmdWriteInFileName å°†å‘½ä»¤å†™å…¥çš„æ–‡æœ¬
 	 */
 	public CmdOperate(String cmd, String cmdWriteInFileName) {
 		this.cmd = cmd;
 		setCmdFile(cmdWriteInFileName);
 	}
 	/**
-	 * ¶àĞĞµÄÃüÁîĞĞ
+	 * å¤šè¡Œçš„å‘½ä»¤è¡Œ
 	 * @param lsCmd
 	 */
 	public CmdOperate(ArrayList<String> lsCmd) {
@@ -97,13 +97,13 @@ public class CmdOperate extends RunProcess<String> {
 		shPID = false;
 	}
 
-	/** Éè¶¨ĞèÒªÔËĞĞµÄÃüÁî */
+	/** è®¾å®šéœ€è¦è¿è¡Œçš„å‘½ä»¤ */
 	public void setCmd(String cmd) {
 		this.cmd = cmd;
 		shPID = false;
 	}
 	/**
-	 * ½«cmdĞ´ÈëÄÄ¸öÎÄ±¾£¬È»ºóÖ´ĞĞ£¬Èç¹û³õÊ¼»¯ÊäÈëÁËcmdWriteInFileName, ¾Í²»ĞèÒªÕâ¸öÁË
+	 * å°†cmdå†™å…¥å“ªä¸ªæ–‡æœ¬ï¼Œç„¶åæ‰§è¡Œï¼Œå¦‚æœåˆå§‹åŒ–è¾“å…¥äº†cmdWriteInFileName, å°±ä¸éœ€è¦è¿™ä¸ªäº†
 	 * @param cmd
 	 */
 	public void setCmdFile(String cmdWriteInFileName) {
@@ -116,7 +116,7 @@ public class CmdOperate extends RunProcess<String> {
 		cmd = "sh " + cmd1SH;
 	}
 	/**
-	 * Ö±½ÓÔËĞĞcmd£¬¿ÉÄÜ»á³ö´í ·µ»ØÁ½¸öarraylist-string µÚÒ»¸öÊÇInfo µÚ¶ş¸öÊÇerror
+	 * ç›´æ¥è¿è¡Œcmdï¼Œå¯èƒ½ä¼šå‡ºé”™ è¿”å›ä¸¤ä¸ªarraylist-string ç¬¬ä¸€ä¸ªæ˜¯Info ç¬¬äºŒä¸ªæ˜¯error
 	 * @param fileName
 	 * @return
 	 * @throws Exception
@@ -166,17 +166,17 @@ public class CmdOperate extends RunProcess<String> {
 			logger.error("cmd cannot executed correctly: " + cmd);
 		}
 	}
-	/** ²»ÄÜÊµÏÖ */
+	/** ä¸èƒ½å®ç° */
 	@Deprecated
 	public void threadSuspend() {
 	}
 	/** 
-	 * ²»ÄÜÊµÏÖ 
+	 * ä¸èƒ½å®ç° 
 	 * */
 	@Deprecated
 	public synchronized void threadResume() {
 	}
-	/** ÖÕÖ¹Ïß³Ì£¬ÔÚÑ­»·ÖĞÌí¼Ó */
+	/** ç»ˆæ­¢çº¿ç¨‹ï¼Œåœ¨å¾ªç¯ä¸­æ·»åŠ  */
 	public void threadStop() {
 		int pid = -10;
 		try {
@@ -187,7 +187,7 @@ public class CmdOperate extends RunProcess<String> {
 				}
 				System.out.println(pid);
 				Runtime.getRuntime().exec("kill -9 " + pid).waitFor();
-				process.destroy();// ÎŞ·¨É±ËÀÏß³Ì
+				process.destroy();// æ— æ³•æ€æ­»çº¿ç¨‹
 				process = null;
 			}
 		} catch (Exception e) { e.printStackTrace(); }
@@ -206,7 +206,7 @@ public class CmdOperate extends RunProcess<String> {
 	        throw new IllegalArgumentException("Needs to be a UNIXProcess");
 	    }
 	}
-	/** Ìí¼ÓÒıºÅ£¬Ò»°ãÊÇÎÄ¼şÂ·¾¶ĞèÒªÌí¼ÓÒıºÅ **/
+	/** æ·»åŠ å¼•å·ï¼Œä¸€èˆ¬æ˜¯æ–‡ä»¶è·¯å¾„éœ€è¦æ·»åŠ å¼•å· **/
 	public static String addQuot(String pathName) {
 		return "\"" + pathName + "\"";
 	}

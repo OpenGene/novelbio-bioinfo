@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 /** 
- * Ò»×éÑù±¾µÄ¹ıÂË£¬¿ÉÒÔÉè¶¨Ò»×éÑù±¾£¬È»ºó¸ù¾İÒ»×éÑù±¾ÀïÃæµÄĞÅÏ¢£¬½øĞĞ¹ıÂË
- * Æ©Èç±¾×éÑù±¾ÖĞ£¬¸ÃÎ»µã×îÉÙ¶àÉÙÔÓºÏsnp£¬×î¶à¶àÉÙÔÓºÏsnpµÈµÈ
+ * ä¸€ç»„æ ·æœ¬çš„è¿‡æ»¤ï¼Œå¯ä»¥è®¾å®šä¸€ç»„æ ·æœ¬ï¼Œç„¶åæ ¹æ®ä¸€ç»„æ ·æœ¬é‡Œé¢çš„ä¿¡æ¯ï¼Œè¿›è¡Œè¿‡æ»¤
+ * è­¬å¦‚æœ¬ç»„æ ·æœ¬ä¸­ï¼Œè¯¥ä½ç‚¹æœ€å°‘å¤šå°‘æ‚åˆsnpï¼Œæœ€å¤šå¤šå°‘æ‚åˆsnpç­‰ç­‰
  *  */
 public class SnpGroupFilterInfo {
 	public static final int Homo = 5;
@@ -32,7 +32,7 @@ public class SnpGroupFilterInfo {
 	
 	int SnpIndelAllMin = -1;
 	int snpIndelAllMax = -1;
-	/** Î´Öª»ùÒòĞÍµÄÑù±¾²»µÃ³¬¹ı¸Ã±ÈÀı£¬Ä¬ÈÏ0.5 */
+	/** æœªçŸ¥åŸºå› å‹çš„æ ·æœ¬ä¸å¾—è¶…è¿‡è¯¥æ¯”ä¾‹ï¼Œé»˜è®¤0.5 */
 	double unKnownProp = 0.5;
 	
 	int ThisSnpIndelHomoNum = 0;
@@ -44,8 +44,8 @@ public class SnpGroupFilterInfo {
 	int ThisSnpIndelAll = 0;
 	
 	/**
-	 * µ¥¸öÑù±¾¹ıÂËÊ±Ê¹ÓÃ£¬Ö±½ÓÉè¶¨Õâ¸ö£¬±ğµÄ¶¼²»ÓÃÉè¶¨ÁË
-	 * @param snpLevel Homo£¬HetoLessµÈ
+	 * å•ä¸ªæ ·æœ¬è¿‡æ»¤æ—¶ä½¿ç”¨ï¼Œç›´æ¥è®¾å®šè¿™ä¸ªï¼Œåˆ«çš„éƒ½ä¸ç”¨è®¾å®šäº†
+	 * @param snpLevel Homoï¼ŒHetoLessç­‰
 	 */
 	public void setSnpLevel(int snpLevel) {
 		if (snpLevel == Homo) {
@@ -64,9 +64,9 @@ public class SnpGroupFilterInfo {
 			setSampleSnpIndelHetoNum(0, 0);
 		}
 	}
-	/** Éè¶¨Ñù±¾Ãû³Æ,Ò²¾ÍÊÇĞèÒª¹ıÂËÄÄĞ©Ñù±¾
-	 * µ±¹ıÂËÒ»×éÑù±¾Ê±Ê¹ÓÃ
-	 * @param sampleName ¿ÉÒÔÊäÈënull£¬ÕâÑù¾Í»áÊ¹ÓÃrefSiteSnpIndel×Ô´øµÄÃû×Ö
+	/** è®¾å®šæ ·æœ¬åç§°,ä¹Ÿå°±æ˜¯éœ€è¦è¿‡æ»¤å“ªäº›æ ·æœ¬
+	 * å½“è¿‡æ»¤ä¸€ç»„æ ·æœ¬æ—¶ä½¿ç”¨
+	 * @param sampleName å¯ä»¥è¾“å…¥nullï¼Œè¿™æ ·å°±ä¼šä½¿ç”¨refSiteSnpIndelè‡ªå¸¦çš„åå­—
 	 */
 	public void addSampleName(String sampleName) {
 		this.setSampleName.add(sampleName);
@@ -74,44 +74,44 @@ public class SnpGroupFilterInfo {
 	public HashSet<String> getSetSampleName() {
 		return setSampleName;
 	}
-	/** Î»µãÎª´¿ºÏÎ»µãµÄÑù±¾£¬ÆäÊıÁ¿Çø¼ä */
+	/** ä½ç‚¹ä¸ºçº¯åˆä½ç‚¹çš„æ ·æœ¬ï¼Œå…¶æ•°é‡åŒºé—´ */
 	public void setSampleRefHomoNum(int refHomoMin, int refHomoMax) {
 		this.RefHomoMin = Math.min(refHomoMin, refHomoMax);
 		this.RefHomoMax = Math.max(refHomoMin, refHomoMax);
 	}
-	/** Î»µãÎªÔÓºÏsnpIndelµÄÑù±¾£¬ÆäÊıÁ¿Çø¼ä */
+	/** ä½ç‚¹ä¸ºæ‚åˆsnpIndelçš„æ ·æœ¬ï¼Œå…¶æ•°é‡åŒºé—´ */
 	public void setSampleSnpIndelHetoNum(int snpIndelHetoNumMin, int snpIndelHetoNumMax) {
 		this.SnpIndelHetoNumMin = Math.min(snpIndelHetoNumMin, snpIndelHetoNumMax);
 		this.SnpIndelHetoNumMax = Math.max(snpIndelHetoNumMin, snpIndelHetoNumMax);
 	}
-	/** Î»µãÎªº¬ÉÙÁ¿ÔÓºÏsnpIndelµÄÑù±¾£¬ÆäÊıÁ¿Çø¼ä */
+	/** ä½ç‚¹ä¸ºå«å°‘é‡æ‚åˆsnpIndelçš„æ ·æœ¬ï¼Œå…¶æ•°é‡åŒºé—´ */
 	public void setSampleSnpIndelHetoLessNum(int snpIndelHetoLessNumMin, int snpIndelHetoLessNumMax) {
 		this.SnpIndelHetoLessNumMin = Math.min(snpIndelHetoLessNumMin, snpIndelHetoLessNumMax);
 		this.SnpIndelHetoLessNumMax = Math.max(snpIndelHetoLessNumMin, snpIndelHetoLessNumMax);
 	}
-	/** Î»µãÎªº¬´óÁ¿ÔÓºÏsnpIndelµÄÑù±¾£¬ÆäÊıÁ¿Çø¼ä */
+	/** ä½ç‚¹ä¸ºå«å¤§é‡æ‚åˆsnpIndelçš„æ ·æœ¬ï¼Œå…¶æ•°é‡åŒºé—´ */
 	public void setSampleSnpIndelHetoMoreNum(int snpIndelHetoMoreNumMin, int snpIndelHetoMoreNumMax) {
 		this.SnpIndelHetoMoreNumMin = Math.min(snpIndelHetoMoreNumMin, snpIndelHetoMoreNumMax);
 		this.SnpIndelHetoMoreNumMax = Math.max(snpIndelHetoMoreNumMin, snpIndelHetoMoreNumMax);
 	}
-	/** º¬´¿ºÏSnpIndelÎ»µãµÄÑù±¾£¬ÆäÊıÁ¿Çø¼ä */
+	/** å«çº¯åˆSnpIndelä½ç‚¹çš„æ ·æœ¬ï¼Œå…¶æ•°é‡åŒºé—´ */
 	public void setSampleSnpIndelHomoNum(int snpIndelHomoNumMin, int snpIndelHomoNumMax) {
 		this.SnpIndelHomoNumMin = Math.min(snpIndelHomoNumMin, snpIndelHomoNumMax);
 		this.SnpIndelHomoNumMax = Math.max(snpIndelHomoNumMin, snpIndelHomoNumMax);
 	}
-	/** ²»¹Ü´¿ºÏ»¹ÊÇÔÓºÏ£¬ÀÛ¼ÆÎ»µãµÄÊıÁ¿ */
+	/** ä¸ç®¡çº¯åˆè¿˜æ˜¯æ‚åˆï¼Œç´¯è®¡ä½ç‚¹çš„æ•°é‡ */
 	public void setSampleSnpIndelNum(int SnpIndelAllMin, int snpIndelAllMax) {
 		this.SnpIndelAllMin = Math.min(SnpIndelAllMin, snpIndelAllMax);
 		this.snpIndelAllMax = Math.max(SnpIndelAllMin, snpIndelAllMax);
 	}
-	/** Î´Öª»ùÒòĞÍµÄÑù±¾²»µÃ³¬¹ı¸Ã±ÈÀı£¬Ä¬ÈÏ0.5 */
+	/** æœªçŸ¥åŸºå› å‹çš„æ ·æœ¬ä¸å¾—è¶…è¿‡è¯¥æ¯”ä¾‹ï¼Œé»˜è®¤0.5 */
 	public void setSampleUnKnownProp(double unKnownProp) {
 		this.unKnownProp = unKnownProp;
 	}
 	public void clearSampleName() {
 		setSampleName.clear();
 	}
-	/** ±©Â¶³öÀ´½ö¹©²âÊÔ£¬ÊıÖµÇåÁã£¬°üÀ¨Ñù±¾ÃûÒ²»á±»Çå¿Õ */
+	/** æš´éœ²å‡ºæ¥ä»…ä¾›æµ‹è¯•ï¼Œæ•°å€¼æ¸…é›¶ï¼ŒåŒ…æ‹¬æ ·æœ¬åä¹Ÿä¼šè¢«æ¸…ç©º */
 	public void clearAll() {
 		setSampleName.clear();
 		ThisSnpIndelHomoNum = 0;
@@ -122,7 +122,7 @@ public class SnpGroupFilterInfo {
 		ThisUnKnownSite = 0;
 		ThisSnpIndelAll = 0;
 	}
-	/** ±©Â¶³öÀ´½ö¹©²âÊÔ£¬ÊıÖµÇåÁã£¬²»Çå¿ÕÑù±¾Ãû */
+	/** æš´éœ²å‡ºæ¥ä»…ä¾›æµ‹è¯•ï¼Œæ•°å€¼æ¸…é›¶ï¼Œä¸æ¸…ç©ºæ ·æœ¬å */
 	public void clearData() {
 		ThisSnpIndelHomoNum = 0;
 		ThisSnpIndelHetoLessNum = 0;
@@ -132,7 +132,7 @@ public class SnpGroupFilterInfo {
 		ThisUnKnownSite = 0;
 		ThisSnpIndelAll = 0;
 	}
-	/** ±©Â¶³öÀ´½ö¹©²âÊÔ£¬ÀÛ¼Æ²¢¼ÆÊı */
+	/** æš´éœ²å‡ºæ¥ä»…ä¾›æµ‹è¯•ï¼Œç´¯è®¡å¹¶è®¡æ•° */
 	public void addSnpIndelHomoHetoType(SnpIndelHomoHetoType snpIndelHomoHetoType) {
 		if (snpIndelHomoHetoType == SnpIndelHomoHetoType.IndelHeto || snpIndelHomoHetoType == SnpIndelHomoHetoType.SnpHeto) {
 			ThisSnpIndelHetoNum++; ThisSnpIndelAll++;
@@ -153,7 +153,7 @@ public class SnpGroupFilterInfo {
 			ThisUnKnownSite++;
 		}
 	}
-	/** ±©Â¶³öÀ´½ö¹©²âÊÔ£¬ÊÇ·ñºÏ¸ñ */
+	/** æš´éœ²å‡ºæ¥ä»…ä¾›æµ‹è¯•ï¼Œæ˜¯å¦åˆæ ¼ */
 	public boolean isQualified() {
 		if (ThisUnKnownSite/setSampleName.size() >= unKnownProp) {
 			return false;
@@ -174,13 +174,13 @@ public class SnpGroupFilterInfo {
 	}
 	/** 
 	 * @param compareType<br>
-	 *  1£ºĞ¡ÓÚ <br>
-	 *  2 Ğ¡ÓÚµÈÓÚ <br>
-	 *  3£ºµÈÓÚ <br>
-	 *  4 ´óÓÚµÈÓÚ <br>
-	 *  5£º´óÓÚ
-	 * @param thisNum ±¾´Î
-	 * @param compareNum ÏÂÒ»´Î
+	 *  1ï¼šå°äº <br>
+	 *  2 å°äºç­‰äº <br>
+	 *  3ï¼šç­‰äº <br>
+	 *  4 å¤§äºç­‰äº <br>
+	 *  5ï¼šå¤§äº
+	 * @param thisNum æœ¬æ¬¡
+	 * @param compareNum ä¸‹ä¸€æ¬¡
 	 * @return
 	 */
 	private boolean compare(CompareType compareType, int thisNum, int compareNum) {

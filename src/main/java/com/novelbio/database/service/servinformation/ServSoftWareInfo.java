@@ -9,7 +9,7 @@ import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.mapper.information.MapSoftWareInfo;
 import com.novelbio.database.service.SpringFactory;
 /**
- * ´ıĞŞÕı£¬¾ÍÊÇ×Ô¶¯»¯µÄupdate¹¤×÷£¬²ÎÕÕservGeneInfo
+ * å¾…ä¿®æ­£ï¼Œå°±æ˜¯è‡ªåŠ¨åŒ–çš„updateå·¥ä½œï¼Œå‚ç…§servGeneInfo
  * @author zong0jie
  *
  */
@@ -39,7 +39,7 @@ public class ServSoftWareInfo implements MapSoftWareInfo{
 		mapSoftWareInfo.updateSoftWareInfo(softWareInfo);
 	}
 	/**
-	 * ÏÈ²éÕÒÓĞÃ»ÓĞ¸ÃÏî£¬Ã»ÓĞ¾Í²åÈë£¬ÓĞ¾ÍÉı¼¶
+	 * å…ˆæŸ¥æ‰¾æœ‰æ²¡æœ‰è¯¥é¡¹ï¼Œæ²¡æœ‰å°±æ’å…¥ï¼Œæœ‰å°±å‡çº§
 	 * @param softWareInfo
 	 */
 	public void update(SoftWareInfo softWareInfo) {

@@ -22,7 +22,7 @@ import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 /**
- * ¼ÆËãÃ¿¸ömiRNAµÄ±í´ï£¬ÎŞ·¨»ñµÃ×Ü±í´ïÖµ£¬Ö»ÄÜ»ñµÃÃ¿¸ö±í´ïÖµ
+ * è®¡ç®—æ¯ä¸ªmiRNAçš„è¡¨è¾¾ï¼Œæ— æ³•è·å¾—æ€»è¡¨è¾¾å€¼ï¼Œåªèƒ½è·å¾—æ¯ä¸ªè¡¨è¾¾å€¼
  * @author zong0jie
  *
  */
@@ -39,32 +39,32 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 	}
 	private static Logger logger = Logger.getLogger(MiRNACount.class);
 	
-	/** »ñµÃmiRNA¶¨Î»ĞÅÏ¢ */
+	/** è·å¾—miRNAå®šä½ä¿¡æ¯ */
 	ListMiRNALocation listMiRNALocation = new ListMiRNALocation();
-	/** miRNAÇ°Ìå */
+	/** miRNAå‰ä½“ */
 	SeqFastaHash seqFastaHashPreMiRNA = null;
-	/** miRNA³ÉÊìÌå */
+	/** miRNAæˆç†Ÿä½“ */
 	SeqFastaHash seqFastaHashMatureMiRNA = null;
-	/** ±È¶ÔµÄbedÎÄ¼ş */
+	/** æ¯”å¯¹çš„bedæ–‡ä»¶ */
 	BedSeq bedSeqMiRNA = null;
-	/** MappingÖÁÇ°Ìåµ«ÊÇÃ»µ½³ÉÊìÌåµÄĞòÁĞµÄºó×º */
+	/** Mappingè‡³å‰ä½“ä½†æ˜¯æ²¡åˆ°æˆç†Ÿä½“çš„åºåˆ—çš„åç¼€ */
 	String flag_MapTo_PreMirna_NotTo_MatureMirna_Suffix = "_pre";
 	/**
-	 * ³ÉÊìÌå
+	 * æˆç†Ÿä½“
 	 * key: mirName
 	 * value: mirMatureList
 	 */
 	HashMap<String, ArrayList<String[]>> mapMiRNAname2LsMatureName_Value;
 	/**
-	 * ³ÉÊìÌå, ÓÃÓÚ½á¹ûÖĞ
+	 * æˆç†Ÿä½“, ç”¨äºç»“æœä¸­
 	 */
 	HashMap<String, Double> mapMirMature2Value;
-	/** Ç°Ìå */
+	/** å‰ä½“ */
 	HashMap<String, Double> mapMiRNApre2Value;
 	
 	boolean countMiRNA = false;
 	/**
-	 * Éè¶¨miRNAµÄÇ°ÌåĞòÁĞºÍ³ÉÊìĞòÁĞ
+	 * è®¾å®šmiRNAçš„å‰ä½“åºåˆ—å’Œæˆç†Ÿåºåˆ—
 	 * @param hairpairMirna
 	 * @param matureMirna
 	 */
@@ -74,9 +74,9 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 		countMiRNA = false;
 	}
 	/**
-	 * ¸ø¶¨miRNAÎÄ¼şºÍÎïÖÖÃû
-	 * @param fileType ¶ÁÈ¡µÄÊÇmiReapµÄÎÄ¼ş»¹ÊÇRNA.dat ListMiRNALocation.TYPE_RNA_DATA »ò ListMiRNALocation.TYPE_MIREAP
-	 * @param Species ÎªmiRNA.datÖĞµÄÎïÖÖÃû£¬Èç¹ûÎÄ¼ş²»ÊÇmiRNA.dat£¬ÄÇ¾Í²»ÓÃĞ´ÁË
+	 * ç»™å®šmiRNAæ–‡ä»¶å’Œç‰©ç§å
+	 * @param fileType è¯»å–çš„æ˜¯miReapçš„æ–‡ä»¶è¿˜æ˜¯RNA.dat ListMiRNALocation.TYPE_RNA_DATA æˆ– ListMiRNALocation.TYPE_MIREAP
+	 * @param Species ä¸ºmiRNA.datä¸­çš„ç‰©ç§åï¼Œå¦‚æœæ–‡ä»¶ä¸æ˜¯miRNA.datï¼Œé‚£å°±ä¸ç”¨å†™äº†
 	 * @param rnadatFile
 	 */
 	public void setMiRNAinfo(int fileType, Species species, String rnadatFile) {
@@ -85,14 +85,14 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 		listMiRNALocation.ReadGffarray(rnadatFile);
 		countMiRNA = false;
 	}
-	/** Éè¶¨ĞèÒª¼ÆËã±í´ïÖµµÄbedÎÄ¼ş */
+	/** è®¾å®šéœ€è¦è®¡ç®—è¡¨è¾¾å€¼çš„bedæ–‡ä»¶ */
 	public void setBedSeqMiRNA(String bedFile) {
 		bedSeqMiRNA = new BedSeq(bedFile);
 		countMiRNA = false;
 	}
 
 	/**
-	 * Êä³öÎÄ¼şÇ°×º£¬¾ÍÊÇmiRNAµÄ¼ÆÊı
+	 * è¾“å‡ºæ–‡ä»¶å‰ç¼€ï¼Œå°±æ˜¯miRNAçš„è®¡æ•°
 	 * @param outFilePrefix
 	 */
 	public void writeResultToOut(String outFilePrefix) {
@@ -123,7 +123,7 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 	}
 	
 	/**
-	 * ¸ø¶¨miRNA³ÉÊìÌåÃû×Ö£¬´ÓÇ°ÌåÖĞ»ñµÃĞòÁĞ
+	 * ç»™å®šmiRNAæˆç†Ÿä½“åå­—ï¼Œä»å‰ä½“ä¸­è·å¾—åºåˆ—
 	 * @param ID
 	 * @return
 	 */
@@ -139,7 +139,7 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 			}
 			else {
 				if (!matureID.endsWith(flag_MapTo_PreMirna_NotTo_MatureMirna_Suffix)) {
-					logger.error("³öÏÖÎ´ÖªID£º" + mirID + " "  + matureID);
+					logger.error("å‡ºç°æœªçŸ¥IDï¼š" + mirID + " "  + matureID);
 				}
 				return null;
 			}
@@ -157,8 +157,8 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 		countMiRNA();
 	}
 	/**
-	 * ÎŞËùÎ½ÅÅ²»ÅÅĞò
-	 *¶ÁÈ¡bedÎÄ¼ş£¬È»ºóÔÚmirDatÖĞ²éÕÒĞÅÏ¢£¬²¢È·¶¨ÊıÁ¿
+	 * æ— æ‰€è°“æ’ä¸æ’åº
+	 *è¯»å–bedæ–‡ä»¶ï¼Œç„¶ååœ¨mirDatä¸­æŸ¥æ‰¾ä¿¡æ¯ï¼Œå¹¶ç¡®å®šæ•°é‡
 	 * @param outTxt
 	 */
 	private void countMiRNA() {
@@ -197,12 +197,12 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 			}
 		}
 	}
-	/** Ò»ĞĞÒ»ĞĞ´¦Àí
-	 * ²¢Ìî³ähashmap
+	/** ä¸€è¡Œä¸€è¡Œå¤„ç†
+	 * å¹¶å¡«å……hashmap
 	 *  */
 	private void copeBedRecordAndFillMap(BedRecord bedRecord) {
 		String subName = listMiRNALocation.searchMirName(bedRecord.getRefID(), bedRecord.getStartAbs(), bedRecord.getEndAbs());
-		//ÕÒ²»µ½Ãû×ÖµÄÔÚºóÃæÌí¼Ó
+		//æ‰¾ä¸åˆ°åå­—çš„åœ¨åé¢æ·»åŠ 
 		if (subName == null) {
 			subName = bedRecord.getRefID() + flag_MapTo_PreMirna_NotTo_MatureMirna_Suffix;
 		}
@@ -211,9 +211,9 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 		addMiRNAMatureCount(bedRecord.getRefID(), subName, value);
 	}
 	/**
-	 * ¸ø¶¨miRNAµÄÃû×Ö£¬ºÍÖµ£¬ÀÛ¼ÓÆğÀ´
+	 * ç»™å®šmiRNAçš„åå­—ï¼Œå’Œå€¼ï¼Œç´¯åŠ èµ·æ¥
 	 * @param miRNAname
-	 * @param thisMiRNAcount ±¾´ÎĞèÒªÀÛ¼ÆµÄmiRNAcount£¬ÒòÎªÒ»Ìõreads¿ÉÄÜmappingÖÁ¶à¸ömiRNA£¬ÄÇÃ´Ã¿¸ömiRNAµÄÊıÁ¿¼´Îª1/count
+	 * @param thisMiRNAcount æœ¬æ¬¡éœ€è¦ç´¯è®¡çš„miRNAcountï¼Œå› ä¸ºä¸€æ¡readså¯èƒ½mappingè‡³å¤šä¸ªmiRNAï¼Œé‚£ä¹ˆæ¯ä¸ªmiRNAçš„æ•°é‡å³ä¸º1/count
 	 */
 	private void addMiRNACount(String miRNAname, double thisMiRNAcount) {
 		if (mapMiRNApre2Value.containsKey(miRNAname)) {
@@ -224,23 +224,23 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 		}
 	}
 	/**
-	 * ¸ø¶¨miRNAµÄÃû×Ö£¬ºÍÖµ£¬ÀÛ¼ÓÆğÀ´
-	 * @param miRNAname miRNAµÄÃû×Ö
-	 * @param miRNADetailname miRNA³ÉÊìÌåµÄÃû×Ö
-	 * @param thisMiRNAcount ±¾´ÎĞèÒªÀÛ¼ÆµÄmiRNAcount£¬ÒòÎªÒ»Ìõreads¿ÉÄÜmappingÖÁ¶à¸ömiRNA£¬ÄÇÃ´Ã¿¸ömiRNAµÄÊıÁ¿¼´Îª1/count
+	 * ç»™å®šmiRNAçš„åå­—ï¼Œå’Œå€¼ï¼Œç´¯åŠ èµ·æ¥
+	 * @param miRNAname miRNAçš„åå­—
+	 * @param miRNADetailname miRNAæˆç†Ÿä½“çš„åå­—
+	 * @param thisMiRNAcount æœ¬æ¬¡éœ€è¦ç´¯è®¡çš„miRNAcountï¼Œå› ä¸ºä¸€æ¡readså¯èƒ½mappingè‡³å¤šä¸ªmiRNAï¼Œé‚£ä¹ˆæ¯ä¸ªmiRNAçš„æ•°é‡å³ä¸º1/count
 	 */
 	private void addMiRNAMatureCount(String miRNAname,String miRNADetailname, double thisMiRNAcount) {
 		if (mapMiRNAname2LsMatureName_Value.containsKey(miRNAname)) {
-			//»ñµÃ¾ßÌå³ÉÊìmiRNAµÄĞÅÏ¢
+			//è·å¾—å…·ä½“æˆç†ŸmiRNAçš„ä¿¡æ¯
 			ArrayList<String[]> lsTmpResult = mapMiRNAname2LsMatureName_Value.get(miRNAname);
 			for (String[] strings : lsTmpResult) {
 				if (strings[0].equals(miRNADetailname)) {
-					//ÀÛ¼Ó±í´ïÊıÖµ£¬¼ÓÍê¾ÍÌø³ö
+					//ç´¯åŠ è¡¨è¾¾æ•°å€¼ï¼ŒåŠ å®Œå°±è·³å‡º
 					strings[1] = (Double.parseDouble(strings[1]) + thisMiRNAcount) + "";
 					return;
 				}
 			}
-			//Èç¹ûÃ»ÓĞÌø³öËµÃ÷ÊÇµÚÒ»´ÎÕÒµ½¸ÃmiRNA
+			//å¦‚æœæ²¡æœ‰è·³å‡ºè¯´æ˜æ˜¯ç¬¬ä¸€æ¬¡æ‰¾åˆ°è¯¥miRNA
 			lsTmpResult.add(new String[]{miRNADetailname, thisMiRNAcount+""});
 		}
 		else {
@@ -257,12 +257,12 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 		return mapMiRNApre2Value;
 	}
 	
-	/** ½«¸ø¶¨µÄ¼¸×émiRNAµÄÖµºÏ²¢ÆğÀ´ */
+	/** å°†ç»™å®šçš„å‡ ç»„miRNAçš„å€¼åˆå¹¶èµ·æ¥ */
 	public ArrayList<String[]> combMapMir2Value(HashMap<String, HashMap<String, Double>> mapPrefix2_mapMiRNA2Value) {
 		CombMapMirPre2Value combMapMirPre2Value = new CombMapMirPre2Value(seqFastaHashPreMiRNA);
 		return combMapMirPre2Value.combValue(mapPrefix2_mapMiRNA2Value);
 	}
-	/** ½«¸ø¶¨µÄ¼¸×émiRNAµÄÖµºÏ²¢ÆğÀ´ */
+	/** å°†ç»™å®šçš„å‡ ç»„miRNAçš„å€¼åˆå¹¶èµ·æ¥ */
 	public ArrayList<String[]> combMapMir2MatureValue(HashMap<String, HashMap<String, Double>> mapPrefix2_mapMiRNAMature2Value) {
 		CombMapMirMature2Value combMapMirMature2Value = new CombMapMirMature2Value(this);
 		return combMapMirMature2Value.combValue(mapPrefix2_mapMiRNAMature2Value);
@@ -286,7 +286,7 @@ class CombMapMirPre2Value extends MirCombMapGetValueAbs {
 	}
 	
 	@Override
-	protected String[] getTitleIDAndInfo() {	/** ·µ»ØÉæ¼°µ½µÄËùÓĞmiRNAµÄÃû×Ö */
+	protected String[] getTitleIDAndInfo() {	/** è¿”å›æ¶‰åŠåˆ°çš„æ‰€æœ‰miRNAçš„åå­— */
 		String[] titleStart = new String[2];
 		titleStart[0] = TitleFormatNBC.miRNApreName.toString();
 		titleStart[1] = TitleFormatNBC.mirPreSequence.toString();
@@ -307,7 +307,7 @@ class CombMapMirMature2Value extends MirCombMapGetValueAbs {
 	}
 	
 	@Override
-	protected String[] getTitleIDAndInfo() {	/** ·µ»ØÉæ¼°µ½µÄËùÓĞmiRNAµÄÃû×Ö */
+	protected String[] getTitleIDAndInfo() {	/** è¿”å›æ¶‰åŠåˆ°çš„æ‰€æœ‰miRNAçš„åå­— */
 		String[] titleStart = new String[3];
 		titleStart[0] = TitleFormatNBC.miRNApreName.toString();
 		titleStart[1] = TitleFormatNBC.miRNAName.toString();

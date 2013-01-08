@@ -18,31 +18,31 @@ public class CufflinksGTF {
 
 	StrandSpecific strandSpecifictype = StrandSpecific.NONE;
 	ArrayList<SamFile> lsSamFiles = new ArrayList<SamFile>();
-	/** cufflinksËùÔÚÂ·¾¶ */
+	/** cufflinksæ‰€åœ¨è·¯å¾„ */
 	String ExePathCufflinks = "";
-	/** ÓÃÓÚĞ£ÕıµÄÈ¾É«Ìå */
+	/** ç”¨äºæ ¡æ­£çš„æŸ“è‰²ä½“ */
 	String chrFile = "";
 
-	/** ÔÚjunction µÄÒ»Í·ÉÏÖÁÉÙÒª´îµ½¶àÉÙbpµÄ¼î»ù */
+	/** åœ¨junction çš„ä¸€å¤´ä¸Šè‡³å°‘è¦æ­åˆ°å¤šå°‘bpçš„ç¢±åŸº */
 	double smallAnchorFraction = 0.09;
-	/** ÄÚº¬×Ó×î¶Ì¶àÉÙ£¬Ä¬ÈÏ50£¬Ğè¸ù¾İ²»Í¬ÎïÖÖ½øĞĞÉèÖÃ */
+	/** å†…å«å­æœ€çŸ­å¤šå°‘ï¼Œé»˜è®¤50ï¼Œéœ€æ ¹æ®ä¸åŒç‰©ç§è¿›è¡Œè®¾ç½® */
 	int intronLenMin = 50;
-	/** ÄÚº¬×Ó×î³¤¶àÉÙ£¬Ä¬ÈÏ500000£¬Ğè¸ù¾İ²»Í¬ÎïÖÖ½øĞĞÉèÖÃ */
+	/** å†…å«å­æœ€é•¿å¤šå°‘ï¼Œé»˜è®¤500000ï¼Œéœ€æ ¹æ®ä¸åŒç‰©ç§è¿›è¡Œè®¾ç½® */
 	int intronLenMax = 500000;
-	/** indelµÄ³¤¶È£¬Ä¬ÈÏÎª3 */
+	/** indelçš„é•¿åº¦ï¼Œé»˜è®¤ä¸º3 */
 	int indelLen = 6;
-	/** Ïß³ÌÊı */
+	/** çº¿ç¨‹æ•° */
 	int threadNum = 4;
-	/** Ä¬ÈÏÊÇsolexaµÄ×î³¤²åÈë */
+	/** é»˜è®¤æ˜¯solexaçš„æœ€é•¿æ’å…¥ */
 	int maxInsert = 450;
-	/** ´íÅä£¬Õâ¸ö×ßÄ¬ÈÏ±È½ÏºÃ£¬Ä¬ÈÏÎª2 */
+	/** é”™é…ï¼Œè¿™ä¸ªèµ°é»˜è®¤æ¯”è¾ƒå¥½ï¼Œé»˜è®¤ä¸º2 */
 	int mismatch = 2;
-	/** ¸ø¶¨GTFµÄÎÄ¼ş */
+	/** ç»™å®šGTFçš„æ–‡ä»¶ */
 	String gtfFile = "";
-	/** Êä³öÎÄ¼şÂ·¾¶ */
+	/** è¾“å‡ºæ–‡ä»¶è·¯å¾„ */
 	String outPathPrefix = "";
 	
-	/** Èç¹ûÊäÈë¶à¸öbamÎÄ¼ş£¬Ôò½«ËûÃÇºÏ²¢ÎªÒ»¸ö */
+	/** å¦‚æœè¾“å…¥å¤šä¸ªbamæ–‡ä»¶ï¼Œåˆ™å°†ä»–ä»¬åˆå¹¶ä¸ºä¸€ä¸ª */
 	String mergeSamFile;
 	
 	GffChrAbs gffChrAbs;
@@ -56,12 +56,12 @@ public class CufflinksGTF {
 	}
 
 	/**
-	 * Éè¶¨tophatËùÔÚµÄÎÄ¼ş¼ĞÒÔ¼°´ı±È¶ÔµÄÂ·¾¶
+	 * è®¾å®štophatæ‰€åœ¨çš„æ–‡ä»¶å¤¹ä»¥åŠå¾…æ¯”å¯¹çš„è·¯å¾„
 	 * 
 	 * @param exePath
-	 *            Èç¹ûÔÚ¸ùÄ¿Â¼ÏÂÔòÉèÖÃÎª""»ònull
+	 *            å¦‚æœåœ¨æ ¹ç›®å½•ä¸‹åˆ™è®¾ç½®ä¸º""æˆ–null
 	 * @param chrFile
-	 *            µ¥ÌõÈ¾É«Ìå
+	 *            å•æ¡æŸ“è‰²ä½“
 	 */
 	public void setExePath(String ExePathCufflinks, String chrFile) {
 		if (ExePathCufflinks == null || ExePathCufflinks.trim().equals(""))
@@ -80,8 +80,8 @@ public class CufflinksGTF {
 	}
 
 	/**
-	 * ÉèÖÃ×ó¶ËµÄĞòÁĞ£¬ÉèÖÃ»á°ÑÒÔÇ°µÄÇå¿Õ
-	 * ÊäÈëµÄ¶à¸öbamÎÄ¼ş»ámerge³ÉÎªÒ»¸öÈ»ºó×öcufflinksµÄÖØ½¨×ªÂ¼±¾
+	 * è®¾ç½®å·¦ç«¯çš„åºåˆ—ï¼Œè®¾ç½®ä¼šæŠŠä»¥å‰çš„æ¸…ç©º
+	 * è¾“å…¥çš„å¤šä¸ªbamæ–‡ä»¶ä¼šmergeæˆä¸ºä¸€ä¸ªç„¶ååšcufflinksçš„é‡å»ºè½¬å½•æœ¬
 	 * @param fqFile
 	 */
 	public void setBam(ArrayList<String> lsSamBamFile) {
@@ -93,7 +93,7 @@ public class CufflinksGTF {
 	}
 
 	/**
-	 * ÔÚjunction µÄÒ»Í·´îÉÏexonµÄ×î¶Ì±ÈÀı 0-1Ö®¼ä£¬Ä¬ÈÏ0.09
+	 * åœ¨junction çš„ä¸€å¤´æ­ä¸Šexonçš„æœ€çŸ­æ¯”ä¾‹ 0-1ä¹‹é—´ï¼Œé»˜è®¤0.09
 	 * */
 	public void setSmallAnchorFraction(double anchorLength) {
 		if (anchorLength <= 0 || anchorLength >= 1) {
@@ -102,7 +102,7 @@ public class CufflinksGTF {
 		this.smallAnchorFraction = anchorLength;
 	}
 
-	/** ÔÚjunction µÄÒ»Í·ÉÏÖÁÉÙÒª´îµ½¶àÉÙbpµÄ¼î»ù */
+	/** åœ¨junction çš„ä¸€å¤´ä¸Šè‡³å°‘è¦æ­åˆ°å¤šå°‘bpçš„ç¢±åŸº */
 	private String getAnchoProportion() {
 		return "-A " + smallAnchorFraction + " ";
 	}
@@ -129,24 +129,24 @@ public class CufflinksGTF {
 		}
 	}
 
-	/** ÄÚº¬×Ó×î¶Ì¶àÉÙ£¬Ä¬ÈÏ50£¬Ğè¸ù¾İ²»Í¬ÎïÖÖ½øĞĞÉèÖÃ */
+	/** å†…å«å­æœ€çŸ­å¤šå°‘ï¼Œé»˜è®¤50ï¼Œéœ€æ ¹æ®ä¸åŒç‰©ç§è¿›è¡Œè®¾ç½® */
 	private String getIntronLenMin() {
 		return "--min-intron-length " + intronLenMin + " ";
 	}
 
-	/** ÄÚº¬×Ó×î³¤¶àÉÙ£¬Ä¬ÈÏ500000£¬Ğè¸ù¾İ²»Í¬ÎïÖÖ½øĞĞÉèÖÃ */
+	/** å†…å«å­æœ€é•¿å¤šå°‘ï¼Œé»˜è®¤500000ï¼Œéœ€æ ¹æ®ä¸åŒç‰©ç§è¿›è¡Œè®¾ç½® */
 	public void setIntronLenMax(int intronLenMax) {
 		this.intronLenMax = intronLenMax;
 		booSetIntronMax = true;
 	}
 
-	/** ÄÚº¬×Ó×î¶Ì¶àÉÙ£¬Ä¬ÈÏ50£¬Ğè¸ù¾İ²»Í¬ÎïÖÖ½øĞĞÉèÖÃ */
+	/** å†…å«å­æœ€çŸ­å¤šå°‘ï¼Œé»˜è®¤50ï¼Œéœ€æ ¹æ®ä¸åŒç‰©ç§è¿›è¡Œè®¾ç½® */
 	public void setIntronLenMin(int intronLenMin) {
 		this.intronLenMin = intronLenMin;
 		booSetIntronMin = true;
 	}
 
-	/** ÄÚº¬×Ó×î³¤¶àÉÙ£¬Ä¬ÈÏ500000£¬Ğè¸ù¾İ²»Í¬ÎïÖÖ½øĞĞÉèÖÃ */
+	/** å†…å«å­æœ€é•¿å¤šå°‘ï¼Œé»˜è®¤500000ï¼Œéœ€æ ¹æ®ä¸åŒç‰©ç§è¿›è¡Œè®¾ç½® */
 	private String getIntronLenMax() {
 		return "--max-intron-length " + intronLenMax + " ";
 	}
@@ -164,7 +164,7 @@ public class CufflinksGTF {
 		return samFile;
 	}
 
-	/** Ïß³ÌÊıÁ¿£¬Ä¬ÈÏ4Ïß³Ì */
+	/** çº¿ç¨‹æ•°é‡ï¼Œé»˜è®¤4çº¿ç¨‹ */
 	public void setThreadNum(int threadNum) {
 		if (threadNum <= 0) {
 			threadNum = 1;
@@ -177,7 +177,7 @@ public class CufflinksGTF {
 	}
 
 	/**
-	 * ÓÃgtfÎÄ¼ş¸¨Öúmapping
+	 * ç”¨gtfæ–‡ä»¶è¾…åŠ©mapping
 	 * 
 	 * @param gtfFile
 	 */
@@ -185,7 +185,7 @@ public class CufflinksGTF {
 		this.gtfFile = gtfFile;
 	}
 
-	/** ÓÃGTFÎÄ¼şÀ´¸¨ÖúÔ¤²â */
+	/** ç”¨GTFæ–‡ä»¶æ¥è¾…åŠ©é¢„æµ‹ */
 	private String getGtfFile() {
 		setGTFfile();
 		if (FileOperate.isFileExist(gtfFile)) {
@@ -216,7 +216,7 @@ public class CufflinksGTF {
 	}
 
 	/**
-	 * STRAND_NULLµÈ£¬Ã²ËÆÊÇÉèÖÃRNA-SeqÊÇ·ñÎªÁ´ÌØÒìĞÔ²âĞòµÄ£¬³Ô²»×¼
+	 * STRAND_NULLç­‰ï¼Œè²Œä¼¼æ˜¯è®¾ç½®RNA-Seqæ˜¯å¦ä¸ºé“¾ç‰¹å¼‚æ€§æµ‹åºçš„ï¼Œåƒä¸å‡†
 	 * 
 	 * @param strandSpecifictype
 	 * <br>
@@ -241,7 +241,7 @@ public class CufflinksGTF {
 		this.strandSpecifictype = strandSpecifictype;
 	}
 	/**
-	 * ·µ»ØÁ´µÄ·½Ïò
+	 * è¿”å›é“¾çš„æ–¹å‘
 	 * @return
 	 */
 	private String getStrandSpecifictype() {
@@ -256,11 +256,11 @@ public class CufflinksGTF {
 	}
 
 	/**
-	 * ²ÎÊıÉè¶¨²»ÄÜÓÃÓÚsolid »¹Ã»¼ÓÈëgtfµÄÑ¡Ïî£¬Ò²¾ÍÊÇÄ¬ÈÏÃ»ÓĞgtf
+	 * å‚æ•°è®¾å®šä¸èƒ½ç”¨äºsolid è¿˜æ²¡åŠ å…¥gtfçš„é€‰é¡¹ï¼Œä¹Ÿå°±æ˜¯é»˜è®¤æ²¡æœ‰gtf
 	 */
 	public void runCufflinks() {
 		setIntronLen();
-		// linuxÃüÁîÈçÏÂ
+		// linuxå‘½ä»¤å¦‚ä¸‹
 		/**
 		 * cufflinks -o
 		 * /media/winE/NBC/Project/RNASeq_GF110614/resultTmp/cufflinks -p 4 -G
@@ -285,7 +285,7 @@ public class CufflinksGTF {
 		CmdOperate cmdOperate = new CmdOperate(cmd, "cufflinks");
 		cmdOperate.run();
 		
-		//TODO ÔËĞĞ½áÊøºó¿¼ÂÇÉ¾³ımergeµÄbamÎÄ¼ş
+		//TODO è¿è¡Œç»“æŸåè€ƒè™‘åˆ é™¤mergeçš„bamæ–‡ä»¶
 //		deleteMergeFile();
 	}
 	private void deleteMergeFile() {

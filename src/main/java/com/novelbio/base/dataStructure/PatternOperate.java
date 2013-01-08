@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * ÊäÈëÕıÔò±í´ïÊ½ºÍËù²éÕÒµÄÎÄ±¾£¬ÕÒµ½¸ÃÕıÔò±í´ïÊ½³öÏÖµÄÎ»ÖÃ
+ * è¾“å…¥æ­£åˆ™è¡¨è¾¾å¼å’Œæ‰€æŸ¥æ‰¾çš„æ–‡æœ¬ï¼Œæ‰¾åˆ°è¯¥æ­£åˆ™è¡¨è¾¾å¼å‡ºç°çš„ä½ç½®
  */
 public class PatternOperate {
 	String regex = "";
@@ -14,20 +14,20 @@ public class PatternOperate {
 	Pattern patInput;
 	Matcher matInput;
 	/**
-	 * <b>¸ß¼¶´¦Àí£¬ºÄÊ±³¤</b>
-	 * ÊäÈëstringinput£¬ÕıÔò±í´ïÊ½,ÒÔ¼°ÊÇ·ñÎŞÊÓ´óĞ¡Ğ´£¨True£©£¬
-	 * @param inputstr ÊäÈëËùÒª²éÕÒµÄstring
-	 * @param regex ÊäÈëÒªÆ¥ÅäµÄÕıÔò±í´ïÊ½
-	 * @param CASE ÊÇ·ñÎŞÊÓ´óĞ¡Ğ´¡£False:ÎŞÊÓ´óĞ¡Ğ´¡£True:¼ì²é´óĞ¡Ğ´
-	 * @return ·µ»ØList<String[3]>
-	 * list(i):inputÖĞÕÒµ½µÄµÚi¸öÆ¥Åä×Ö·û--¾ßÌåÄÚÈİÎªÀïÃæ×°µÄstring[2]Êı×é¡£<br/>
-	 * String[0]:ÕıÔò±í´ïÊ½µÄÄ³¸öÌØ¶¨µÄ×Ö·û´®<br/>
-	 * String[1]:¸Ã×Ö·û´®µÄÎ»ÖÃ£¬Îª¸Ã×Ö·û´®µÚÒ»¸ö×Ö·ûµ½Õâ¸ö×Ö·û´®ÆğµãµÄÎ»ÖÃ£ºacksdÖĞaÎª1,kÎª3<br/>
-	 * String[2]:¸Ã×Ö·û´®µÄÎ»ÖÃ£¬Îª¸Ã×Ö·û´®×îºóÒ»¸ö×Ö·ûµ½Õâ¸ö×Ö·û´®ÖÕµãµÄÎ»ÖÃ£ºacksdÖĞaÎª5,kÎª3
-	 * Èç¹ûÃ»ÕÒµ½£¬²»·µ»Ønull£¬¶øÊÇ·µ»ØÒ»¸ösizeÎª0µÄlist
+	 * <b>é«˜çº§å¤„ç†ï¼Œè€—æ—¶é•¿</b>
+	 * è¾“å…¥stringinputï¼Œæ­£åˆ™è¡¨è¾¾å¼,ä»¥åŠæ˜¯å¦æ— è§†å¤§å°å†™ï¼ˆTrueï¼‰ï¼Œ
+	 * @param inputstr è¾“å…¥æ‰€è¦æŸ¥æ‰¾çš„string
+	 * @param regex è¾“å…¥è¦åŒ¹é…çš„æ­£åˆ™è¡¨è¾¾å¼
+	 * @param CASE æ˜¯å¦æ— è§†å¤§å°å†™ã€‚False:æ— è§†å¤§å°å†™ã€‚True:æ£€æŸ¥å¤§å°å†™
+	 * @return è¿”å›List<String[3]>
+	 * list(i):inputä¸­æ‰¾åˆ°çš„ç¬¬iä¸ªåŒ¹é…å­—ç¬¦--å…·ä½“å†…å®¹ä¸ºé‡Œé¢è£…çš„string[2]æ•°ç»„ã€‚<br/>
+	 * String[0]:æ­£åˆ™è¡¨è¾¾å¼çš„æŸä¸ªç‰¹å®šçš„å­—ç¬¦ä¸²<br/>
+	 * String[1]:è¯¥å­—ç¬¦ä¸²çš„ä½ç½®ï¼Œä¸ºè¯¥å­—ç¬¦ä¸²ç¬¬ä¸€ä¸ªå­—ç¬¦åˆ°è¿™ä¸ªå­—ç¬¦ä¸²èµ·ç‚¹çš„ä½ç½®ï¼šacksdä¸­aä¸º1,kä¸º3<br/>
+	 * String[2]:è¯¥å­—ç¬¦ä¸²çš„ä½ç½®ï¼Œä¸ºè¯¥å­—ç¬¦ä¸²æœ€åä¸€ä¸ªå­—ç¬¦åˆ°è¿™ä¸ªå­—ç¬¦ä¸²ç»ˆç‚¹çš„ä½ç½®ï¼šacksdä¸­aä¸º5,kä¸º3
+	 * å¦‚æœæ²¡æ‰¾åˆ°ï¼Œä¸è¿”å›nullï¼Œè€Œæ˜¯è¿”å›ä¸€ä¸ªsizeä¸º0çš„list
 	 */
 	public static ArrayList<String[]> getPatLoc(String inputstr, String regex, boolean CASE) {
-    	//hashtableÓÃÀ´×°ÔØÕıÔò±í´ïÊ½µÄ²»Í¬¾ßÌå×Ö·û´®£¬ÓÃÒÔÅĞ¶ÏÄ³¸öÌØ¶¨×Ö·û´®³öÏÖµÄ´ÎÊı
+    	//hashtableç”¨æ¥è£…è½½æ­£åˆ™è¡¨è¾¾å¼çš„ä¸åŒå…·ä½“å­—ç¬¦ä¸²ï¼Œç”¨ä»¥åˆ¤æ–­æŸä¸ªç‰¹å®šå­—ç¬¦ä¸²å‡ºç°çš„æ¬¡æ•°
     	 Hashtable<String, Integer> pathash=new Hashtable<String, Integer>();
     	 ArrayList<String[]> listResult=new ArrayList<String[]>();
     
@@ -39,19 +39,19 @@ public class PatternOperate {
     		 patInput=Pattern.compile(regex);
     	 }
     	 matInput=patInput.matcher(inputstr);
-    	 Integer index;//Ä³¸ö×Ö·ûµÄ³öÏÖ´ÎÊı
+    	 Integer index;//æŸä¸ªå­—ç¬¦çš„å‡ºç°æ¬¡æ•°
     	 while(matInput.find()) {   
-    		 String[] patinfo=new String[3];//×°ÔØÕâ´ÎÕÒµ½µÄ×Ö·û´®µÄ¾ßÌåĞÅÏ¢
-    		 patinfo[0]=matInput.group();//Õâ´ÎÕÒµ½µÄ×Ö·û´®
+    		 String[] patinfo=new String[3];//è£…è½½è¿™æ¬¡æ‰¾åˆ°çš„å­—ç¬¦ä¸²çš„å…·ä½“ä¿¡æ¯
+    		 patinfo[0]=matInput.group();//è¿™æ¬¡æ‰¾åˆ°çš„å­—ç¬¦ä¸²
     		 if((index=pathash.get(patinfo[0]))==null) {
-    			 pathash.put(patinfo[0], 1);//µÚÒ»´Î·¢ÏÖ¸Ã×Ö·û´®£¬ÔòÉè¶¨Îª1
+    			 pathash.put(patinfo[0], 1);//ç¬¬ä¸€æ¬¡å‘ç°è¯¥å­—ç¬¦ä¸²ï¼Œåˆ™è®¾å®šä¸º1
     		 }
     		 else {
-    			 pathash.put(patinfo[0], index+1);//ÒÔÇ°·¢ÏÖ¹ı£¬Ôò+1
+    			 pathash.put(patinfo[0], index+1);//ä»¥å‰å‘ç°è¿‡ï¼Œåˆ™+1
     		 }
-    		 int locationstart=0;//ÉèÖÃ¸Ã±í´ïÊ½µ½Æğµã¾àÀëÎª0
-    		 int locationend=0;//¸Ã±í´ïÊ½µ½ÖÕµã¾àÀëÎª0
-    		 int num=pathash.get(patinfo[0]);//×Ü¹²·¢ÏÖÁËnum´Î
+    		 int locationstart=0;//è®¾ç½®è¯¥è¡¨è¾¾å¼åˆ°èµ·ç‚¹è·ç¦»ä¸º0
+    		 int locationend=0;//è¯¥è¡¨è¾¾å¼åˆ°ç»ˆç‚¹è·ç¦»ä¸º0
+    		 int num=pathash.get(patinfo[0]);//æ€»å…±å‘ç°äº†numæ¬¡
     		 for(int i=0; i<num;i++) {
     			 locationstart=inputstr.indexOf(patinfo[0], locationstart)+1;
     		 }
@@ -64,7 +64,7 @@ public class PatternOperate {
        return listResult;
     }
     /**
-     * ¸ø¶¨Ò»ĞĞ£¬·µ»ØÆäÖĞËùÓĞµÄÊı×Ö£¬Èç¹ûÃ»ÓĞ£¬Ôò·µ»Ø¿ÕµÄint[]
+     * ç»™å®šä¸€è¡Œï¼Œè¿”å›å…¶ä¸­æ‰€æœ‰çš„æ•°å­—ï¼Œå¦‚æœæ²¡æœ‰ï¼Œåˆ™è¿”å›ç©ºçš„int[]
      * @param inputstr
      * @return
      */
@@ -82,23 +82,23 @@ public class PatternOperate {
     
     
     /**
-     * <b>¼òµ¥´¦Àí£¬Ïà¶Ô¿ìËÙ</b>
-     * »ñµÃĞòÁĞÖĞÖ¸¶¨µÄËùÓĞÕıÔò±í´ïÊ½µÄÖµ
+     * <b>ç®€å•å¤„ç†ï¼Œç›¸å¯¹å¿«é€Ÿ</b>
+     * è·å¾—åºåˆ—ä¸­æŒ‡å®šçš„æ‰€æœ‰æ­£åˆ™è¡¨è¾¾å¼çš„å€¼
      * @param inputstr
      * @param regex
      * @param CASE
-     * @return Ã»ÓĞ×¥µ½µÄ»°£¬·µ»Øsize=0µÄlist
+     * @return æ²¡æœ‰æŠ“åˆ°çš„è¯ï¼Œè¿”å›size=0çš„list
      */
     public ArrayList<String> getPat(String inputstr) {
     	return getPat(inputstr, 0);
     }
     /**
-     * <b>¼òµ¥´¦Àí£¬Ïà¶Ô¿ìËÙ</b>
-     * »ñµÃĞòÁĞÖĞÖ¸¶¨µÄËùÓĞÕıÔò±í´ïÊ½µÄÖµ
+     * <b>ç®€å•å¤„ç†ï¼Œç›¸å¯¹å¿«é€Ÿ</b>
+     * è·å¾—åºåˆ—ä¸­æŒ‡å®šçš„æ‰€æœ‰æ­£åˆ™è¡¨è¾¾å¼çš„å€¼
      * @param inputstr
      * @param regex
      * @param CASE
-     * @return Ã»ÓĞ×¥µ½µÄ»°£¬·µ»Øsize=0µÄlist
+     * @return æ²¡æœ‰æŠ“åˆ°çš„è¯ï¼Œè¿”å›size=0çš„list
      */
     public ArrayList<String> getPat(String inputstr, int groupID)
     {
@@ -110,23 +110,23 @@ public class PatternOperate {
     	return lsresult;
     }
     /**
-     * <b>¼òµ¥´¦Àí£¬Ïà¶Ô¿ìËÙ</b>
-     * »ñµÃĞòÁĞÖĞÖ¸¶¨µÄµÚÒ»¸öÕıÔò±í´ïÊ½µÄÖµ
+     * <b>ç®€å•å¤„ç†ï¼Œç›¸å¯¹å¿«é€Ÿ</b>
+     * è·å¾—åºåˆ—ä¸­æŒ‡å®šçš„ç¬¬ä¸€ä¸ªæ­£åˆ™è¡¨è¾¾å¼çš„å€¼
      * @param inputstr
      * @param regex
      * @param CASE
-     * @return Ã»ÓĞ×¥µ½µÄ»°£¬·µ»Ønull
+     * @return æ²¡æœ‰æŠ“åˆ°çš„è¯ï¼Œè¿”å›null
      */
     public String getPatFirst(String inputstr) {
     	return getPatFirst(inputstr, 0);
     }
     /**
-     * <b>¼òµ¥´¦Àí£¬Ïà¶Ô¿ìËÙ</b>
-     * »ñµÃĞòÁĞÖĞÖ¸¶¨µÄµÚÒ»¸öÕıÔò±í´ïÊ½µÄÖµ
+     * <b>ç®€å•å¤„ç†ï¼Œç›¸å¯¹å¿«é€Ÿ</b>
+     * è·å¾—åºåˆ—ä¸­æŒ‡å®šçš„ç¬¬ä¸€ä¸ªæ­£åˆ™è¡¨è¾¾å¼çš„å€¼
      * @param inputstr
      * @param regex
      * @param CASE
-     * @return Ã»ÓĞ×¥µ½µÄ»°£¬·µ»Ønull
+     * @return æ²¡æœ‰æŠ“åˆ°çš„è¯ï¼Œè¿”å›null
      */
     public String getPatFirst(String inputstr, int groupID)  {
     	 matInput=patInput.matcher(inputstr);
@@ -136,15 +136,15 @@ public class PatternOperate {
     	return null;
     }
 	 /**
-	  * Éè¶¨ÕıÔò±í´ïÊ½
+	  * è®¾å®šæ­£åˆ™è¡¨è¾¾å¼
 	  * @param regex
-	  * @param CASE_SENSITIVE ´óĞ¡Ğ´ÊÇ·ñÃô¸Ğ
+	  * @param CASE_SENSITIVE å¤§å°å†™æ˜¯å¦æ•æ„Ÿ
 	  */
     public PatternOperate(String regex,boolean CASE_SENSITIVE) {
 		this.regex = regex;
 		this.CASE_SENSITIVE = CASE_SENSITIVE;
 
-    	 if(!CASE_SENSITIVE)//ÊÇ·ñÎŞÊÓ´óĞ¡Ğ´
+    	 if(!CASE_SENSITIVE)//æ˜¯å¦æ— è§†å¤§å°å†™
     	 {
     	     patInput=Pattern.compile(regex,Pattern.CASE_INSENSITIVE);
     	 }

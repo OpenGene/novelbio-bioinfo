@@ -227,9 +227,9 @@ public class HeatChart {
 	}
 	
 	/**
-	 * ¸ø¶¨ÊµÏÖHeatChart½Ó¿ÚµÄÊı¾İ¼¯£¬È»ºó»­Í¼
-	 * ×Ô¶¯½«HeatChartDataIntsÖĞµÄtitleÉèÖÃ¸øxvalue
-	 * ×¢ÒâlistÖĞËùÓĞÊı¾İµÄÎ¬¶ÈÓ¦¸ÃÒ»ÖÂ
+	 * ç»™å®šå®ç°HeatChartæ¥å£çš„æ•°æ®é›†ï¼Œç„¶åç”»å›¾
+	 * è‡ªåŠ¨å°†HeatChartDataIntsä¸­çš„titleè®¾ç½®ç»™xvalue
+	 * æ³¨æ„listä¸­æ‰€æœ‰æ•°æ®çš„ç»´åº¦åº”è¯¥ä¸€è‡´
 	 * @param lsHeatChartDataInts
 	 */
 	public HeatChart(java.util.List<? extends HeatChartDataInt> lsHeatChartDataInts) {
@@ -237,9 +237,9 @@ public class HeatChart {
 		setHeatChart(zValues, min(zValues), max(zValues));
 	}
 	/**
-	 * ¸ø¶¨ÊµÏÖHeatChart½Ó¿ÚµÄÊı¾İ¼¯£¬È»ºó»­Í¼
-	 * ×Ô¶¯½«HeatChartDataIntsÖĞµÄtitleÉèÖÃ¸øxvalue
-	 * ×¢ÒâlistÖĞËùÓĞÊı¾İµÄÎ¬¶ÈÓ¦¸ÃÒ»ÖÂ
+	 * ç»™å®šå®ç°HeatChartæ¥å£çš„æ•°æ®é›†ï¼Œç„¶åç”»å›¾
+	 * è‡ªåŠ¨å°†HeatChartDataIntsä¸­çš„titleè®¾ç½®ç»™xvalue
+	 * æ³¨æ„listä¸­æ‰€æœ‰æ•°æ®çš„ç»´åº¦åº”è¯¥ä¸€è‡´
 	 * @param lsHeatChartDataInts
 	 */
 	public HeatChart(java.util.List<? extends HeatChartDataInt> lsHeatChartDataInts, double low, double high) {

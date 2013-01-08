@@ -11,7 +11,7 @@ import com.novelbio.database.mapper.kegg.MapKIDgen2Keg;
 import com.novelbio.database.service.SpringFactory;
 
 /**
- * geneID到KeggID的转换表
+ * geneID鍒癒eggID鐨勮浆鎹㈣〃
  * @author zong0jie
  */
 @Service

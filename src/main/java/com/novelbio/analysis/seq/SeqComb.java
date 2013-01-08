@@ -7,10 +7,10 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 /**
- * ¶ÁÈ¡²âĞòÎÄ¼şµÄÀà¡£
- * ²âĞòÎÄ¼şÓĞ¹Ì¶¨µÄ¸ñÊ½£¬ÓëFasta¸ñÊ½²»Í¬¡£
- * fasta¸ñÊ½Ö»Òª¿ªÍ·ÓĞ>¼´¿É£¬¶ø±¾Àà¶ÁÈ¡µÄ²âĞòÎÄ¼şÃ¿ĞĞ¶¼ÒªÓĞ¹Ì¶¨µÄº¬Òå£¬
- * Ò²¾ÍÊÇÃ¿ÌõĞòÁĞ¶¼ÓĞ¹Ì¶¨µÄĞĞÊı
+ * è¯»å–æµ‹åºæ–‡ä»¶çš„ç±»ã€‚
+ * æµ‹åºæ–‡ä»¶æœ‰å›ºå®šçš„æ ¼å¼ï¼Œä¸Fastaæ ¼å¼ä¸åŒã€‚
+ * fastaæ ¼å¼åªè¦å¼€å¤´æœ‰>å³å¯ï¼Œè€Œæœ¬ç±»è¯»å–çš„æµ‹åºæ–‡ä»¶æ¯è¡Œéƒ½è¦æœ‰å›ºå®šçš„å«ä¹‰ï¼Œ
+ * ä¹Ÿå°±æ˜¯æ¯æ¡åºåˆ—éƒ½æœ‰å›ºå®šçš„è¡Œæ•°
  * @author zong0jie
  *
  */
@@ -20,7 +20,7 @@ public abstract class SeqComb {
 	protected int block = 1;
 	
 	/**
-	 * fastQÎÄ¼şÀïÃæµÄĞòÁĞÊıÁ¿
+	 * fastQæ–‡ä»¶é‡Œé¢çš„åºåˆ—æ•°é‡
 	 */
 	private int seqNum = -1;
 	private boolean readPattern = true;
@@ -30,7 +30,7 @@ public abstract class SeqComb {
 	protected String compressInType = TxtReadandWrite.TXT;
 	protected String compressOutType = TxtReadandWrite.TXT;
 	/**
-	 * ÉèÖÃÒ»¸öblock¼¸ĞĞ£¬Æ©ÈçsamÎÄ¼şµ¥¶ËÒ»ĞĞË«¶Ë2ĞĞ
+	 * è®¾ç½®ä¸€ä¸ªblockå‡ è¡Œï¼Œè­¬å¦‚samæ–‡ä»¶å•ç«¯ä¸€è¡ŒåŒç«¯2è¡Œ
 	 * @param block
 	 */
 	public void setBlock(int block) {
@@ -39,10 +39,10 @@ public abstract class SeqComb {
 	
 	/**
 	 * 
-	 * Éè¶¨ÎÄ¼şÑ¹Ëõ¸ñÊ½
-	 * ´ÓTxtReadandWrite.TXTÀ´
-	 * @param cmpInType ¶ÁÈ¡µÄÑ¹Ëõ¸ñÊ½ null»ò""±íÊ¾²»±ä
-	 * @param cmpOutType Ğ´ÈëµÄÑ¹Ëõ¸ñÊ½ null»ò""±íÊ¾²»±ä
+	 * è®¾å®šæ–‡ä»¶å‹ç¼©æ ¼å¼
+	 * ä»TxtReadandWrite.TXTæ¥
+	 * @param cmpInType è¯»å–çš„å‹ç¼©æ ¼å¼ nullæˆ–""è¡¨ç¤ºä¸å˜
+	 * @param cmpOutType å†™å…¥çš„å‹ç¼©æ ¼å¼ nullæˆ–""è¡¨ç¤ºä¸å˜
 	 */
 	public void setCompressType(String cmpInType, String cmpOutType) {
 		if (cmpInType != null && !cmpInType.equals("")) {
@@ -59,14 +59,14 @@ public abstract class SeqComb {
 		}
 	}
 	/**
-	 *  ÊäÈëµÄÑ¹Ëõ¸ñÊ½
+	 *  è¾“å…¥çš„å‹ç¼©æ ¼å¼
 	 * @return
 	 */
 	public String getCompressInType() {
 		return compressInType;
 	}
 	/**
-	 *  Êä³öµÄÑ¹Ëõ¸ñÊ½
+	 *  è¾“å‡ºçš„å‹ç¼©æ ¼å¼
 	 * @return
 	 */
 	public String getCompressOutType() {
@@ -77,7 +77,7 @@ public abstract class SeqComb {
 	/**
 	 * 
 	 * @param seqFile
-	 * @param block Ã¿¸öĞòÁĞÕ¼¼¸ĞĞ£¬Æ©ÈçfastQÎÄ¼şÃ¿¸öĞòÁĞÕ¼4ĞĞ
+	 * @param block æ¯ä¸ªåºåˆ—å å‡ è¡Œï¼Œè­¬å¦‚fastQæ–‡ä»¶æ¯ä¸ªåºåˆ—å 4è¡Œ
 	 */
 	public SeqComb(String seqFile, int block) {
 		this.seqFile = seqFile;
@@ -86,7 +86,7 @@ public abstract class SeqComb {
 	}
 	/**
 	 * @param seqFile
-	 * @param block Ã¿¸öĞòÁĞÕ¼¼¸ĞĞ£¬Æ©ÈçfastQÎÄ¼şÃ¿¸öĞòÁĞÕ¼4ĞĞ
+	 * @param block æ¯ä¸ªåºåˆ—å å‡ è¡Œï¼Œè­¬å¦‚fastQæ–‡ä»¶æ¯ä¸ªåºåˆ—å 4è¡Œ
 	 */
 	public SeqComb(String seqFile, int block, boolean creatFile) {
 		this.seqFile = seqFile;
@@ -100,15 +100,15 @@ public abstract class SeqComb {
 		}
 	}
 	/**
-	 * ·µ»ØÎÄ¼şÃû
+	 * è¿”å›æ–‡ä»¶å
 	 * @return
 	 */
 	public String getFileName() {
 		return seqFile;
 	}
 	/**
-	 * »ñµÃĞòÁĞµÄÊıÁ¿£¬²»¹ÜË«¶Ëµ¥¶Ë£¬¶¼Ö»·µ»ØÒ»¶ËµÄ²âĞòÊıÁ¿£¬Ò²¾ÍÊÇfragmentµÄÊıÁ¿
-	 * Èç¹û·µ»ØĞ¡ÓÚ0£¬ËµÃ÷³ö´í
+	 * è·å¾—åºåˆ—çš„æ•°é‡ï¼Œä¸ç®¡åŒç«¯å•ç«¯ï¼Œéƒ½åªè¿”å›ä¸€ç«¯çš„æµ‹åºæ•°é‡ï¼Œä¹Ÿå°±æ˜¯fragmentçš„æ•°é‡
+	 * å¦‚æœè¿”å›å°äº0ï¼Œè¯´æ˜å‡ºé”™
 	 * @throws Exception 
 	 */
 	public int getSeqNum(){
@@ -128,9 +128,9 @@ public abstract class SeqComb {
 		return seqNum;
 	}
 	/**
-	 * Ìİ¶ÈÌáÈ¡ĞòÁĞGradient
+	 * æ¢¯åº¦æå–åºåˆ—Gradient
 	 * @param block 
-	 * @param percent °Ù·Ö±È£¬´Ó 0-100
+	 * @param percent ç™¾åˆ†æ¯”ï¼Œä» 0-100
 	 * @param outFile
 	 * @throws Exception
 	 */
@@ -168,18 +168,18 @@ public abstract class SeqComb {
 	
 	
 	/**
-	 * ×¢ÒâÁ½¸öÒÔÏÂµÄadaptorÎŞ·¨¹ıÂË
-	 * ¹ıÂËÓÒ²à½ÓÍ·ĞòÁĞµÄ·½·¨£¬ÓÃÑ­»·ËÑË÷£¬ÈİĞí´íÅä£¬µ«ÊÇ²»ÄÜ¹»¹ıÂÇº¬ÓĞgapµÄadaptor¡£
-	 * Ëã·¨£¬¼ÙÉèÓÒ²à×î¶àÖ»ÓĞÒ»Õû¸ö½ÓÍ·¡£ÄÇÃ´ÏÈ½«½ÓÍ·Ö±½Ó¶Ôµ½ÓÒ²à¶ÔÆë£¬È»ºóÑ­»·µÄ½«½ÓÍ·¶Ôµ½readsÉÏÈ¥¡£
-	 * @param seqIn ÊäÈëĞòÁĞ ÎŞËùÎ½´óĞ¡Ğ´
-	 * @param seqAdaptor ½ÓÍ· ÎŞËùÎ½´óĞ¡Ğ´ ½ÓÍ·¿ÉÒÔÖ»Ğ´Ò»²¿·Ö
-	 * @param mapNum µÚÒ»´Î½ÓÍ·×ó¶Ëmappingµ½ĞòÁĞµÄµÚ¼¸¸ö¼î»ùÉÏ£¬´Ó1¿ªÊ¼¼ÇÊı£¬-1ËµÃ÷Ã»ÕÒµ½ ½¨ÒéÉè¶¨Îª£ºseqIn.length() +1- seqAdaptor.length()
-	 * @param numMM ×î¶àÈİ´í¼¸¸ömismatch 2¸ö±È½ÏºÃ
-	 * @param conNum ×î¶àÈİ´íÁ¬Ğø¼¸¸ömismatch£¬1¸ö±È½ÏºÃ
-	 * @param perMm ×î¶àÈİ´í°Ù·Ö±È Éè¶¨Îª30°É£¬Õâ¸öÊÇÅÂadaptorÌ«¶Ì
-	 * @return ·µ»Ø¸ÃtagµÄµÚÒ»¸ö¼î»ùÔÚĞòÁĞÉÏµÄÎ»ÖÃ£¬´Ó0¿ªÊ¼¼ÇÊı
-	 * Ò²¾ÍÊÇ¸ÃadaptorÇ°ÃæÓĞ¶àÉÙ¸ö¼î»ù£¬¿ÉÒÔÖ±½ÓÓÃsubstring(0,return)À´½ØÈ¡
-	 * -1ËµÃ÷Ã»ÓĞadaptor
+	 * æ³¨æ„ä¸¤ä¸ªä»¥ä¸‹çš„adaptoræ— æ³•è¿‡æ»¤
+	 * è¿‡æ»¤å³ä¾§æ¥å¤´åºåˆ—çš„æ–¹æ³•ï¼Œç”¨å¾ªç¯æœç´¢ï¼Œå®¹è®¸é”™é…ï¼Œä½†æ˜¯ä¸èƒ½å¤Ÿè¿‡è™‘å«æœ‰gapçš„adaptorã€‚
+	 * ç®—æ³•ï¼Œå‡è®¾å³ä¾§æœ€å¤šåªæœ‰ä¸€æ•´ä¸ªæ¥å¤´ã€‚é‚£ä¹ˆå…ˆå°†æ¥å¤´ç›´æ¥å¯¹åˆ°å³ä¾§å¯¹é½ï¼Œç„¶åå¾ªç¯çš„å°†æ¥å¤´å¯¹åˆ°readsä¸Šå»ã€‚
+	 * @param seqIn è¾“å…¥åºåˆ— æ— æ‰€è°“å¤§å°å†™
+	 * @param seqAdaptor æ¥å¤´ æ— æ‰€è°“å¤§å°å†™ æ¥å¤´å¯ä»¥åªå†™ä¸€éƒ¨åˆ†
+	 * @param mapNum ç¬¬ä¸€æ¬¡æ¥å¤´å·¦ç«¯mappingåˆ°åºåˆ—çš„ç¬¬å‡ ä¸ªç¢±åŸºä¸Šï¼Œä»1å¼€å§‹è®°æ•°ï¼Œ-1è¯´æ˜æ²¡æ‰¾åˆ° å»ºè®®è®¾å®šä¸ºï¼šseqIn.length() +1- seqAdaptor.length()
+	 * @param numMM æœ€å¤šå®¹é”™å‡ ä¸ªmismatch 2ä¸ªæ¯”è¾ƒå¥½
+	 * @param conNum æœ€å¤šå®¹é”™è¿ç»­å‡ ä¸ªmismatchï¼Œ1ä¸ªæ¯”è¾ƒå¥½
+	 * @param perMm æœ€å¤šå®¹é”™ç™¾åˆ†æ¯” è®¾å®šä¸º30å§ï¼Œè¿™ä¸ªæ˜¯æ€•adaptorå¤ªçŸ­
+	 * @return è¿”å›è¯¥tagçš„ç¬¬ä¸€ä¸ªç¢±åŸºåœ¨åºåˆ—ä¸Šçš„ä½ç½®ï¼Œä»0å¼€å§‹è®°æ•°
+	 * ä¹Ÿå°±æ˜¯è¯¥adaptorå‰é¢æœ‰å¤šå°‘ä¸ªç¢±åŸºï¼Œå¯ä»¥ç›´æ¥ç”¨substring(0,return)æ¥æˆªå–
+	 * -1è¯´æ˜æ²¡æœ‰adaptor
 	 */
 	public static int trimAdaptorR(String seqIn, String seqAdaptor, int mapNum, int numMM, int conNum, float perMm) {
 		if (seqAdaptor.equals("")) {
@@ -193,8 +193,8 @@ public abstract class SeqComb {
 		seqAdaptor = seqAdaptor.toUpperCase();
 		char[] chrIn = seqIn.toCharArray(); int lenIn = seqIn.length();
 		char[] chrAdaptor = seqAdaptor.toCharArray(); int lenA = seqAdaptor.length();
-		int con = 0;//¼ÇÂ¼Á¬ĞøµÄ·ÇÆ¥ÅäµÄ×Ö·ûÓĞ¼¸¸ö
-//		´Ó×óµ½ÓÒËÑË÷chrIn
+		int con = 0;//è®°å½•è¿ç»­çš„éåŒ¹é…çš„å­—ç¬¦æœ‰å‡ ä¸ª
+//		ä»å·¦åˆ°å³æœç´¢chrIn
 		for (int i = mapNum; i < lenIn; i++) {
 			int pm = 0; //perfect match
 			int mm = 0; //mismatch
@@ -224,18 +224,18 @@ public abstract class SeqComb {
 	
 	
 	/**
-	 * ×¢ÒâÁ½¸öÒÔÏÂµÄadaptorÎŞ·¨¹ıÂË
-	 * ¹ıÂË×ó²à½ÓÍ·ĞòÁĞµÄ·½·¨£¬ÓÃÑ­»·ËÑË÷£¬ÈİĞí´íÅä£¬µ«ÊÇ²»ÄÜ¹»¹ıÂÇº¬ÓĞgapµÄadaptor¡£
-	 * Ëã·¨£¬¼ÙÉè×ó²à×î¶àÖ»ÓĞÒ»Õû¸ö½ÓÍ·¡£ÄÇÃ´ÏÈ½«½ÓÍ·Ö±½Ó¶Ôµ½×ó²à¶ÔÆë£¬È»ºóÑ­»·µÄ½«½ÓÍ·¶Ôµ½readsÉÏÈ¥¡£
-	 * @param seqIn ÊäÈëĞòÁĞ ÎŞËùÎ½´óĞ¡Ğ´
-	 * @param seqAdaptor ½ÓÍ· ÎŞËùÎ½´óĞ¡Ğ´
-	 * @param mapNum µÚÒ»´Î½ÓÍ·ÓÒ¶Ëmappingµ½ĞòÁĞµÄµÚ¼¸¸ö¼î»ùÉÏ£¬´Ó1¿ªÊ¼¼ÇÊı£¬-1ËµÃ÷Ã»ÕÒµ½ ½¨ÒéÉè¶¨Îª£ºadaptorLeft.length()
-	 * @param numMM ×î¶àÈİ´í¼¸¸ömismatch 1¸ö±È½ÏºÃ
-	 * @param conNum ×î¶àÈİ´íÁ¬Ğø¼¸¸ömismatch£¬1¸ö±È½ÏºÃ
-	 * @param perMm ×î¶àÈİ´í°Ù·Ö±È,100½øÖÆ£¬Éè¶¨Îª30°É£¬Õâ¸öÊÇÅÂadaptorÌ«¶Ì
-	 * @return ·µ»Ø¸ÃtagµÄ×îÒ»¸ö¼î»ùÔÚĞòÁĞÉÏµÄÎ»ÖÃ£¬´Ó1¿ªÊ¼¼ÇÊı
-	 * Ò²¾ÍÊÇ¸ÃadaptorÇ°ÃæÓĞ¶àÉÙ¸ö¼î»ù£¬¿ÉÒÔÖ±½ÓÓÃsubstring(return)À´½ØÈ¡
-	 * -1ËµÃ÷Ã»ÓĞadaptor
+	 * æ³¨æ„ä¸¤ä¸ªä»¥ä¸‹çš„adaptoræ— æ³•è¿‡æ»¤
+	 * è¿‡æ»¤å·¦ä¾§æ¥å¤´åºåˆ—çš„æ–¹æ³•ï¼Œç”¨å¾ªç¯æœç´¢ï¼Œå®¹è®¸é”™é…ï¼Œä½†æ˜¯ä¸èƒ½å¤Ÿè¿‡è™‘å«æœ‰gapçš„adaptorã€‚
+	 * ç®—æ³•ï¼Œå‡è®¾å·¦ä¾§æœ€å¤šåªæœ‰ä¸€æ•´ä¸ªæ¥å¤´ã€‚é‚£ä¹ˆå…ˆå°†æ¥å¤´ç›´æ¥å¯¹åˆ°å·¦ä¾§å¯¹é½ï¼Œç„¶åå¾ªç¯çš„å°†æ¥å¤´å¯¹åˆ°readsä¸Šå»ã€‚
+	 * @param seqIn è¾“å…¥åºåˆ— æ— æ‰€è°“å¤§å°å†™
+	 * @param seqAdaptor æ¥å¤´ æ— æ‰€è°“å¤§å°å†™
+	 * @param mapNum ç¬¬ä¸€æ¬¡æ¥å¤´å³ç«¯mappingåˆ°åºåˆ—çš„ç¬¬å‡ ä¸ªç¢±åŸºä¸Šï¼Œä»1å¼€å§‹è®°æ•°ï¼Œ-1è¯´æ˜æ²¡æ‰¾åˆ° å»ºè®®è®¾å®šä¸ºï¼šadaptorLeft.length()
+	 * @param numMM æœ€å¤šå®¹é”™å‡ ä¸ªmismatch 1ä¸ªæ¯”è¾ƒå¥½
+	 * @param conNum æœ€å¤šå®¹é”™è¿ç»­å‡ ä¸ªmismatchï¼Œ1ä¸ªæ¯”è¾ƒå¥½
+	 * @param perMm æœ€å¤šå®¹é”™ç™¾åˆ†æ¯”,100è¿›åˆ¶ï¼Œè®¾å®šä¸º30å§ï¼Œè¿™ä¸ªæ˜¯æ€•adaptorå¤ªçŸ­
+	 * @return è¿”å›è¯¥tagçš„æœ€ä¸€ä¸ªç¢±åŸºåœ¨åºåˆ—ä¸Šçš„ä½ç½®ï¼Œä»1å¼€å§‹è®°æ•°
+	 * ä¹Ÿå°±æ˜¯è¯¥adaptorå‰é¢æœ‰å¤šå°‘ä¸ªç¢±åŸºï¼Œå¯ä»¥ç›´æ¥ç”¨substring(return)æ¥æˆªå–
+	 * -1è¯´æ˜æ²¡æœ‰adaptor
 	 */
 	public static int trimAdaptorL(String seqIn, String seqAdaptor, int mapNum, int conNum, int numMM, float perMm) {
 		if (seqAdaptor.equals("")) {
@@ -246,8 +246,8 @@ public abstract class SeqComb {
 		seqAdaptor = seqAdaptor.toUpperCase();
 		char[] chrIn = seqIn.toCharArray(); //int lenIn = seqIn.length();
 		char[] chrAdaptor = seqAdaptor.toCharArray(); int lenA = seqAdaptor.length();
-		int con = 0;//¼ÇÂ¼Á¬ĞøµÄ·ÇÆ¥ÅäµÄ×Ö·ûÓĞ¼¸¸ö
-//		´ÓÓÒµ½×óËÑË÷chrIn
+		int con = 0;//è®°å½•è¿ç»­çš„éåŒ¹é…çš„å­—ç¬¦æœ‰å‡ ä¸ª
+//		ä»å³åˆ°å·¦æœç´¢chrIn
 		for (int i = mapNum; i >= 0 ; i--) {
 			int pm = 0; //perfect match
 			int mm = 0; //mismatch
@@ -276,19 +276,19 @@ public abstract class SeqComb {
 	
 	
 	/**
-	 * ¹ıÂËÓÒ²àpolyA£¬µ±ÎªAAANNNAAANANAAÊ±£¬ÎŞÊÓN¼ÌĞø¹ıÂË
+	 * è¿‡æ»¤å³ä¾§polyAï¼Œå½“ä¸ºAAANNNAAANANAAæ—¶ï¼Œæ— è§†Nç»§ç»­è¿‡æ»¤
 	 * @param seqIn
-	 * @param numMM ¼¸¸ö´íÅä Ò»°ãÎª1
+	 * @param numMM å‡ ä¸ªé”™é… ä¸€èˆ¬ä¸º1
 	 * @return
-	 * ·µ»Ø¸ÃSeqµÄµÚÒ»¸öAÔÚĞòÁĞÉÏµÄÎ»ÖÃ£¬´Ó0¿ªÊ¼¼ÇÊı
-	 * Èç¹ûÃ»ÓĞA£¬·µ»ØÖµ == Seq.length()
-	 * Ò²¾ÍÊÇ¸ÃpolyAÇ°ÃæÓĞ¶àÉÙ¸ö¼î»ù£¬¿ÉÒÔÖ±½ÓÓÃsubstring(0,return)À´½ØÈ¡
+	 * è¿”å›è¯¥Seqçš„ç¬¬ä¸€ä¸ªAåœ¨åºåˆ—ä¸Šçš„ä½ç½®ï¼Œä»0å¼€å§‹è®°æ•°
+	 * å¦‚æœæ²¡æœ‰Aï¼Œè¿”å›å€¼ == Seq.length()
+	 * ä¹Ÿå°±æ˜¯è¯¥polyAå‰é¢æœ‰å¤šå°‘ä¸ªç¢±åŸºï¼Œå¯ä»¥ç›´æ¥ç”¨substring(0,return)æ¥æˆªå–
 	 */
 	public static int trimPolyA(String seqIn, int numMM, int maxConteniunNoneA) {
 		seqIn = seqIn.toUpperCase();
 		char[] chrIn = seqIn.toCharArray(); int lenIn = seqIn.length();
 		int numMismatch = 0;
-		int con = 0;//¼ÇÂ¼Á¬ĞøµÄ·ÇAµÄ×Ö·ûÓĞ¼¸¸ö
+		int con = 0;//è®°å½•è¿ç»­çš„éAçš„å­—ç¬¦æœ‰å‡ ä¸ª
 		for (int i = lenIn-1; i >= 0; i--) {
 			if (chrIn[i] != 'A' && chrIn[i] != 'N') {
 				numMismatch++;
@@ -298,7 +298,7 @@ public abstract class SeqComb {
 				con = 0;
 			}
 			if (numMismatch > numMM || con > maxConteniunNoneA) {
-				return i+con;//°Ñ×îºó²»ÊÇaµÄ»¹µÄ¼Ó»ØÈ¥
+				return i+con;//æŠŠæœ€åä¸æ˜¯açš„è¿˜çš„åŠ å›å»
 			}
 		}
 //		System.out.println(seqIn);
@@ -306,18 +306,18 @@ public abstract class SeqComb {
 	}
 	
 	/**
-	 * ¹ıÂË×ó²àpolyT£¬µ±ÎªTTTNNNTTTNTNTTÊ±£¬ÎŞÊÓN¼ÌĞø¹ıÂË
+	 * è¿‡æ»¤å·¦ä¾§polyTï¼Œå½“ä¸ºTTTNNNTTTNTNTTæ—¶ï¼Œæ— è§†Nç»§ç»­è¿‡æ»¤
 	 * @param seqIn
-	 * @param numMM ¼¸¸ö´íÅä Ò»°ãÎª1
+	 * @param numMM å‡ ä¸ªé”™é… ä¸€èˆ¬ä¸º1
 	 * @return
-	 * ·µ»Ø¸ÃtagµÄ×îºóÒ»¸ö¼î»ùÔÚĞòÁĞÉÏµÄÎ»ÖÃ£¬´Ó1¿ªÊ¼¼ÇÊı
-	 * Ò²¾ÍÊÇ¸ÃpolyTÓĞ¶àÉÙ¸ö¼î»ù£¬¿ÉÒÔÖ±½ÓÓÃsubstring(return)À´½ØÈ¡
+	 * è¿”å›è¯¥tagçš„æœ€åä¸€ä¸ªç¢±åŸºåœ¨åºåˆ—ä¸Šçš„ä½ç½®ï¼Œä»1å¼€å§‹è®°æ•°
+	 * ä¹Ÿå°±æ˜¯è¯¥polyTæœ‰å¤šå°‘ä¸ªç¢±åŸºï¼Œå¯ä»¥ç›´æ¥ç”¨substring(return)æ¥æˆªå–
 	 */
 	public static int trimPolyT(String seqIn, int numMM, int maxConteniunNoneT) {
 		seqIn = seqIn.toUpperCase();
 		char[] chrIn = seqIn.toCharArray(); int lenIn = seqIn.length();
 		int numMismatch = 0;
-		int con = 0;//¼ÇÂ¼Á¬ĞøµÄ·ÇAµÄ×Ö·ûÓĞ¼¸¸ö
+		int con = 0;//è®°å½•è¿ç»­çš„éAçš„å­—ç¬¦æœ‰å‡ ä¸ª
 		for (int i = 0; i < lenIn; i++) {
 			if (chrIn[i] != 'T' && chrIn[i] != 'N') {
 				numMismatch++;
@@ -327,7 +327,7 @@ public abstract class SeqComb {
 				con = 0;
 			}
 			if (numMismatch > numMM || con > maxConteniunNoneT) {
-				return i-con+1;//°Ñ×îºó²»ÊÇaµÄ»¹µÄ¼Ó»ØÈ¥
+				return i-con+1;//æŠŠæœ€åä¸æ˜¯açš„è¿˜çš„åŠ å›å»
 			}
 		}
 //		System.out.println(seqIn);

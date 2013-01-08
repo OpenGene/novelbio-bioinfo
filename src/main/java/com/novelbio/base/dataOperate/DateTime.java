@@ -6,72 +6,72 @@ import java.util.Random;
 
 import org.omg.CosNaming._BindingIteratorImplBase;
 /**
- * Ê±¼äÈÕÆÚÀà
- * ¿ÉÒÔÓÃÀ´¼ÆËã³ÌĞòÔËĞĞÊ±¼ä
+ * æ—¶é—´æ—¥æœŸç±»
+ * å¯ä»¥ç”¨æ¥è®¡ç®—ç¨‹åºè¿è¡Œæ—¶é—´
  * @author zong0jie
  *
  */
 public class DateTime {
 	long start = 0;
 	/**
-	 * ×Ô¶¯Éè¶¨ÆğÊ¼Ê±¼ä
+	 * è‡ªåŠ¨è®¾å®šèµ·å§‹æ—¶é—´
 	 */
 	public DateTime() {
-		start = System.currentTimeMillis(); //»ñÈ¡×î³õÊ±¼ä
+		start = System.currentTimeMillis(); //è·å–æœ€åˆæ—¶é—´
 	}
 	/**
-	 * Éè¶¨ÆğÊ¼Ê±¼ä
+	 * è®¾å®šèµ·å§‹æ—¶é—´
 	 */
 	public void setStartTime() {
-		start = System.currentTimeMillis(); //»ñÈ¡×î³õÊ±¼ä
+		start = System.currentTimeMillis(); //è·å–æœ€åˆæ—¶é—´
 	}
 	
 	/**
-	 * ´ÓÉè¶¨starttime¿ªÊ¼·µ»ØÔËĞĞÊ±¼ä£¬µ¥Î»ms
+	 * ä»è®¾å®šstarttimeå¼€å§‹è¿”å›è¿è¡Œæ—¶é—´ï¼Œå•ä½ms
 	 * @return
 	 */
 	public long getEclipseTime() {
-		long end=System.currentTimeMillis(); //»ñÈ¡ÔËĞĞ½áÊøÊ±¼ä
+		long end=System.currentTimeMillis(); //è·å–è¿è¡Œç»“æŸæ—¶é—´
 		return end-start; 
 	}
 	
 	/**
-	 * ·µ»Øµ±Ç°ÈÕÆÚ£¬¸ñÊ½ "yyyy-MM-dd"
+	 * è¿”å›å½“å‰æ—¥æœŸï¼Œæ ¼å¼ "yyyy-MM-dd"
 	 * @return
 	 */
 	public static String getDate() {
 	     SimpleDateFormat formatDate= new SimpleDateFormat( "yyyy-MM-dd");
-	     Date currentDate = new Date(); //µÃµ½µ±Ç°ÏµÍ³Ê±¼ä
-	     return formatDate.format(currentDate); //½«ÈÕÆÚÊ±¼ä¸ñÊ½»¯
+	     Date currentDate = new Date(); //å¾—åˆ°å½“å‰ç³»ç»Ÿæ—¶é—´
+	     return formatDate.format(currentDate); //å°†æ—¥æœŸæ—¶é—´æ ¼å¼åŒ–
 	}
 	/**
-	 * ·µ»Øµ±Ç°ÈÕÆÚ¼ÓÉÏÒ»¸öËæ»úÊı£¬×öÎ¨Ò»ÎÄ¼ş±àÂëÓÃ£¬¸ñÊ½ "yyyy-MM-ddhhss"
+	 * è¿”å›å½“å‰æ—¥æœŸåŠ ä¸Šä¸€ä¸ªéšæœºæ•°ï¼Œåšå”¯ä¸€æ–‡ä»¶ç¼–ç ç”¨ï¼Œæ ¼å¼ "yyyy-MM-ddhhss"
 	 * @return
 	 */
 	public static String getDateAndRandom() {
 	     SimpleDateFormat formatDate= new SimpleDateFormat( "yyyy-MM-ddhhss");
-	     Date currentDate = new Date(); //µÃµ½µ±Ç°ÏµÍ³Ê±¼ä
-	     String date = formatDate.format(currentDate); //½«ÈÕÆÚÊ±¼ä¸ñÊ½»¯
+	     Date currentDate = new Date(); //å¾—åˆ°å½“å‰ç³»ç»Ÿæ—¶é—´
+	     String date = formatDate.format(currentDate); //å°†æ—¥æœŸæ—¶é—´æ ¼å¼åŒ–
 	     Random random = new Random(System.currentTimeMillis());
 	     short Tmp = (short)random.nextInt();
 	     return date + Tmp;
 	}
 	/**
-	 * ·µ»Øµ±Ç°ÈÕÆÚ£¬¸ñÊ½ "yyyy-MM-dd-hh-mm-ss"
+	 * è¿”å›å½“å‰æ—¥æœŸï¼Œæ ¼å¼ "yyyy-MM-dd-hh-mm-ss"
 	 * @return
 	 */
 	public static String getDateDetail() {
 	     SimpleDateFormat formatDate= new SimpleDateFormat( "yyyy-MM-dd-hh-mm-ss");
-	     Date currentDate = new Date(); //µÃµ½µ±Ç°ÏµÍ³Ê±¼ä
-	     return formatDate.format(currentDate); //½«ÈÕÆÚÊ±¼ä¸ñÊ½»¯
+	     Date currentDate = new Date(); //å¾—åˆ°å½“å‰ç³»ç»Ÿæ—¶é—´
+	     return formatDate.format(currentDate); //å°†æ—¥æœŸæ—¶é—´æ ¼å¼åŒ–
 	}
 	/**
-	 * ·µ»Øµ±Ç°ÈÕÆÚ£¬¸ñÊ½ "yyyy-MM"
+	 * è¿”å›å½“å‰æ—¥æœŸï¼Œæ ¼å¼ "yyyy-MM"
 	 * @return
 	 */
 	public static String getDateMM() {
 	     SimpleDateFormat formatDate= new SimpleDateFormat( "yyyy-MM");
-	     Date currentDate = new Date(); //µÃµ½µ±Ç°ÏµÍ³Ê±¼ä
-	     return formatDate.format(currentDate); //½«ÈÕÆÚÊ±¼ä¸ñÊ½»¯
+	     Date currentDate = new Date(); //å¾—åˆ°å½“å‰ç³»ç»Ÿæ—¶é—´
+	     return formatDate.format(currentDate); //å°†æ—¥æœŸæ—¶é—´æ ¼å¼åŒ–
 	}
 }

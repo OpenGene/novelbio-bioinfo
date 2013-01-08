@@ -5,7 +5,7 @@ import com.novelbio.analysis.seq.fasta.SeqFasta;
 /**
  * 
  * @author zong0jie
- * °´ÕÕevalue´ÓĞ¡µ½´óÅÅĞò
+ * æŒ‰ç…§evalueä»å°åˆ°å¤§æ’åº
  */
 public class BlastSeqFasta {
 	
@@ -29,13 +29,13 @@ public class BlastSeqFasta {
 	int gapNumSubject;
 	
 	double score;
-	/** ´Ó0¿ªÊ¼¼ÇÊı£¬¿ÉÖ±½ÓÊ¹ÓÃsubstring·½·¨ */
+	/** ä»0å¼€å§‹è®°æ•°ï¼Œå¯ç›´æ¥ä½¿ç”¨substringæ–¹æ³• */
 	int startQuery;
-	/** ´Ó0¿ªÊ¼¼ÇÊı£¬¿ÉÖ±½ÓÊ¹ÓÃsubstring·½·¨ */
+	/** ä»0å¼€å§‹è®°æ•°ï¼Œå¯ç›´æ¥ä½¿ç”¨substringæ–¹æ³• */
 	int startSubject;
-	/** ´Ó1¿ªÊ¼¼ÇÊı£¬¿ÉÖ±½ÓÊ¹ÓÃsubstring·½·¨ */
+	/** ä»1å¼€å§‹è®°æ•°ï¼Œå¯ç›´æ¥ä½¿ç”¨substringæ–¹æ³• */
 	int endQuery;
-	/** ´Ó1¿ªÊ¼¼ÇÊı£¬¿ÉÖ±½ÓÊ¹ÓÃsubstring·½·¨ */
+	/** ä»1å¼€å§‹è®°æ•°ï¼Œå¯ç›´æ¥ä½¿ç”¨substringæ–¹æ³• */
 	int endSubject;
 	
 	public BlastSeqFasta(SeqFasta seqFastaQuery, SeqFasta seqFastaSubject) {
@@ -46,16 +46,16 @@ public class BlastSeqFasta {
 		this.seqFastaQuery = new SeqFasta(seqFastaQuery);
 		this.seqFastaSubject = new SeqFasta(seqFastaSubject);
 	}
-	/** Ä¬ÈÏ-1 */
+	/** é»˜è®¤-1 */
 	public void setMismatchScore(int mismatchScore) {
 		this.mismatchScore = mismatchScore;
 	}
-	/** Ä¬ÈÏ1.1£¬Ô½´óÏÂ½µÔ½¿ì */
+	/** é»˜è®¤1.1ï¼Œè¶Šå¤§ä¸‹é™è¶Šå¿« */
 	public void setGapDegrade(double gapDegrade) {
 		this.gapDegrade = gapDegrade;
 		
 	}
-	/** Ä¬ÈÏ-1 */
+	/** é»˜è®¤-1 */
 	public void setSpaceScore(int spaceScore) {
 		this.spaceScore = spaceScore;
 	}
@@ -147,19 +147,19 @@ public class BlastSeqFasta {
 	public SeqFasta getSeqFastaSubject() {
 		return seqFastaSubject;
 	}
-	/** ´Ó0¿ªÊ¼¼ÇÊı£¬¿ÉÖ±½ÓÊ¹ÓÃsubstring·½·¨ */
+	/** ä»0å¼€å§‹è®°æ•°ï¼Œå¯ç›´æ¥ä½¿ç”¨substringæ–¹æ³• */
 	public int getStartQuery() {
 		return startQuery;
 	}
-	/** ´Ó0¿ªÊ¼¼ÇÊı£¬¿ÉÖ±½ÓÊ¹ÓÃsubstring·½·¨ */
+	/** ä»0å¼€å§‹è®°æ•°ï¼Œå¯ç›´æ¥ä½¿ç”¨substringæ–¹æ³• */
 	public int getStartSubject() {
 		return startSubject;
 	}
-	/** ´Ó1¿ªÊ¼¼ÇÊı£¬¿ÉÖ±½ÓÊ¹ÓÃsubstring·½·¨ */
+	/** ä»1å¼€å§‹è®°æ•°ï¼Œå¯ç›´æ¥ä½¿ç”¨substringæ–¹æ³• */
 	public int getEndQuery() {
 		return endQuery;
 	}
-	/** ´Ó1¿ªÊ¼¼ÇÊı£¬¿ÉÖ±½ÓÊ¹ÓÃsubstring·½·¨ */
+	/** ä»1å¼€å§‹è®°æ•°ï¼Œå¯ç›´æ¥ä½¿ç”¨substringæ–¹æ³• */
 	public int getEndSubject() {
 		return endSubject;
 	}

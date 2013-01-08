@@ -17,19 +17,19 @@ public class SamPileUp {
 			System.out.println(samRecord.toString());
 		}
 	}
-	/** ×î¶à¿ÉÄÜ²åÈëµÄ¼î»ù */
+	/** æœ€å¤šå¯èƒ½æ’å…¥çš„ç¢±åŸº */
 	int maxBaseNum = 100;
 	
 	private Queue<SamRecord> queueSamRecord = new ConcurrentLinkedQueue<SamRecord>();
-	/** ²»ÄÜ²¢·¢ */
+	/** ä¸èƒ½å¹¶å‘ */
 	private Queue<Character> queueBase = new ArrayBlockingQueue<Character>(maxBaseNum);
-	/** ¶ÔÓÚÄ³¸öÎ»µãÀ´Ëµ£¬ÊÇ·ñÒÑ¾­×¼±¸ºÃÏàÓ¦µÄĞòÁĞ¼¯ */
+	/** å¯¹äºæŸä¸ªä½ç‚¹æ¥è¯´ï¼Œæ˜¯å¦å·²ç»å‡†å¤‡å¥½ç›¸åº”çš„åºåˆ—é›† */
 	boolean prepareForBase = false;
 	
 	Map<String, Long> mapChrIDlowcase2Length;
 	
 	/**
-	 * Éè¶¨È¾É«ÌåÃû³ÆÓë³¤¶ÈµÄ¶ÔÕÕ±í£¬×¢ÒâkeyÎªĞ¡Ğ´
+	 * è®¾å®šæŸ“è‰²ä½“åç§°ä¸é•¿åº¦çš„å¯¹ç…§è¡¨ï¼Œæ³¨æ„keyä¸ºå°å†™
 	 * @param mapChrIDlowcase2Length
 	 */
 	public void setMapChrIDlowcase2Length(
@@ -55,8 +55,8 @@ public class SamPileUp {
 
 class BaseInfo {
 	long baseNum;
-	/** + ¿ªÍ·±íÊ¾²åÈë
-	 * - ¿ªÍ·±íÊ¾É¾³ı
+	/** + å¼€å¤´è¡¨ç¤ºæ’å…¥
+	 * - å¼€å¤´è¡¨ç¤ºåˆ é™¤
 	 */
 	String baseDetail;
 }

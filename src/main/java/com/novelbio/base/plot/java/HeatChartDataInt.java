@@ -1,17 +1,17 @@
 package com.novelbio.base.plot.java;
 /**
- * ×¨ÃÅÓÃÓÚ»­Í¼µÄ½Ó¿Ú
+ * ä¸“é—¨ç”¨äºç”»å›¾çš„æ¥å£
  * @author zong0jie
  *
  */
 public interface HeatChartDataInt {
 	/**
-	 * ·µ»ØdoubleĞÅÏ¢
+	 * è¿”å›doubleä¿¡æ¯
 	 * @return
 	 */
 	public double[] getDouble();
 	/**
-	 * ·µ»ØÎÄ¼şµÄtitle
+	 * è¿”å›æ–‡ä»¶çš„title
 	 */
 	public String getName();
 }

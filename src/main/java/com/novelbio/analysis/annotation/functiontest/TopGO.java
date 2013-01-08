@@ -22,21 +22,21 @@ public class TopGO {
 	String tmplateScript = "";
 	String exeScript = "";
 	
-	/** topgoµÄĞÅÏ¢ */
+	/** topgoçš„ä¿¡æ¯ */
 	String GoType = "BP";
 	GoAlgorithm goAlgorithm;
 
 	String CalGeneIDFile;
 	String BGGeneFile;
 	
-	/** Êä³öGO½á¹ûÊı¾İ */
+	/** è¾“å‡ºGOç»“æœæ•°æ® */
 	String rawGoResultFile = "";
-	/** Êä³öGOµÄĞÅÏ¢£¬ÓÃÀ´×öGo2Gene±íµÄ */
+	/** è¾“å‡ºGOçš„ä¿¡æ¯ï¼Œç”¨æ¥åšGo2Geneè¡¨çš„ */
 	String GOInfoFile = "";
-	/** Õ¹Ê¾¶àÉÙ¸öGOTerm */
+	/** å±•ç¤ºå¤šå°‘ä¸ªGOTerm */
 	int displayGoNum = 300;
 
-	/** ĞèÒª×ö·ÖÎöµÄ»ùÒò */
+	/** éœ€è¦åšåˆ†æçš„åŸºå›  */
 	Collection<String> lsGeneID;
 	ArrayList<String> lsBG;
 	
@@ -57,11 +57,11 @@ public class TopGO {
 	private void setExeScriptPath() {
 		exeScript = PathDetail.getRworkspaceTmp() + "TopGO_" + DateTime.getDateAndRandom() + ".R";
 	}
-	/** ÊäÈëÎÄ¼ş */
+	/** è¾“å…¥æ–‡ä»¶ */
 	private void setRawGoResultFile() {
 		this.rawGoResultFile = workSpace + "TopGOResult_" + DateTime.getDateAndRandom() + ".txt";
 	}
-	/** ÊäÈëÎÄ¼ş */
+	/** è¾“å…¥æ–‡ä»¶ */
 	private void setGOInfoFile() {
 		this.GOInfoFile = workSpace + "TopGOInfo_" + DateTime.getDateAndRandom() + ".txt";
 		this.BGGeneFile = workSpace + "TopGOBG_" + DateTime.getDateAndRandom() + ".txt";
@@ -70,18 +70,18 @@ public class TopGO {
 		CalGeneIDFile = PathDetail.getRworkspaceTmp() + "TopGO_CalGeneIDFile" + DateTime.getDateAndRandom() + ".txt";
 	}
 	
-	/** ´ı¼ìÑéµÄ»ùÒò */
+	/** å¾…æ£€éªŒçš„åŸºå›  */
 	public void setLsGene(Collection<String> lsGeneID) {
 		this.lsGeneID = lsGeneID;
 	}
 	public void setDisplayGoNum(int displayGoNum) {
 		this.displayGoNum = displayGoNum;
 	}
-	/** ±³¾° */
+	/** èƒŒæ™¯ */
 	public void setLsBG(ArrayList<String> lsBG) {
 		this.lsBG = lsBG;
 	}
-	/** Go2Term.GO_BP µÈ */
+	/** Go2Term.GO_BP ç­‰ */
 	public void setGoType(String GoType) {
 		if (GoType.equals(Go2Term.GO_BP)) 
 			this.GoType = "BP";
@@ -93,10 +93,10 @@ public class TopGO {
 	public void setGoAlgrithm(GoAlgorithm goAlgorithm) {
 		this.goAlgorithm = goAlgorithm;
 	}
-	/** ½ö¹©²âÊÔ */
+	/** ä»…ä¾›æµ‹è¯• */
 	public String getOutScript() {
 		generateScript();
-		//½«´ı·ÖÎöµÄ»ùÒòĞ´ÈëÎÄ±¾
+		//å°†å¾…åˆ†æçš„åŸºå› å†™å…¥æ–‡æœ¬
 		fillCalGeneID_And_BG_File();
 		return exeScript;
 	}
@@ -196,8 +196,8 @@ public class TopGO {
 	}
 	
 	/**
-	 * µ÷ÓÃRrunning²¢Ğ´ÈëCmdµÄÃû×Ö,
-	 * ÀıÈç£º
+	 * è°ƒç”¨Rrunningå¹¶å†™å…¥Cmdçš„åå­—,
+	 * ä¾‹å¦‚ï¼š
 	 * Rrunning("DEseq")
 	 */
 	public void run() {
@@ -222,14 +222,14 @@ public class TopGO {
 	private void readResult() {
 		TxtReadandWrite txtRGo2Gene = new TxtReadandWrite(rawGoResultFile, false);
 		lsResult = txtRGo2Gene.ExcelRead(2, 2, txtRGo2Gene.ExcelRows(), txtRGo2Gene.ExcelColumns("\t"), 0);
-		//È¥³ı"ºÅ
+		//å»é™¤"å·
 		for (String[] strings : lsResult) {
 			for (int i = 0; i < strings.length; i++) {
 				strings[i] = strings[i].replace("\"", "");
 			}
 		}
 	}
-	/** ·µ»Ø»ñµÃµÄGo2GeneÁĞ±í */
+	/** è¿”å›è·å¾—çš„Go2Geneåˆ—è¡¨ */
 	private void readGo2GeneAll() {
 		try {
 			getGo2GeneAllTry();
@@ -243,8 +243,8 @@ public class TopGO {
 		}
 	}
 	/**
-	 * ÊäÈëÃ¿¸öGO¶ÔÓ¦µÄÈ«²¿»ùÒòÎÄ¼ş£¬ÓÉR²úÉú<br>
-	 * ¶ÁÈ¡RGoInfoÎÄ¼ş£¬½«ÀïÃæµÄGO2GeneµÄĞÅÏ¢±£´æÎª<br>
+	 * è¾“å…¥æ¯ä¸ªGOå¯¹åº”çš„å…¨éƒ¨åŸºå› æ–‡ä»¶ï¼Œç”±Räº§ç”Ÿ<br>
+	 * è¯»å–RGoInfoæ–‡ä»¶ï¼Œå°†é‡Œé¢çš„GO2Geneçš„ä¿¡æ¯ä¿å­˜ä¸º<br>
 	 * hash--GOID-lsGeneID
 	 * @return
 	 * @throws Exception 
@@ -266,7 +266,7 @@ public class TopGO {
 			mapGOID2LsGeneID.put(goID, content);
 		}
 	}
-	/** É¾³ıÖĞ¼äÎÄ¼ş */
+	/** åˆ é™¤ä¸­é—´æ–‡ä»¶ */
 	private void clean() {
 		FileOperate.DeleteFileFolder(exeScript);
 		FileOperate.DeleteFileFolder(BGGeneFile);
@@ -275,11 +275,11 @@ public class TopGO {
 		FileOperate.DeleteFileFolder(GOInfoFile);
 	}
 	
-	/** ·µ»Ø»ñµÃµÄ½á¹ûÎÄ¼ş */
+	/** è¿”å›è·å¾—çš„ç»“æœæ–‡ä»¶ */
 	public ArrayList<String[]> getLsTestResult() {
 		return lsResult;
 	}
-	/** ·µ»Ø»ñµÃµÄGo2GeneÁĞ±í */
+	/** è¿”å›è·å¾—çš„Go2Geneåˆ—è¡¨ */
 	public ArrayListMultimap<String, String> getGo2GeneUniIDAll() {
 		return mapGOID2LsGeneID;
 	}

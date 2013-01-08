@@ -126,7 +126,7 @@ public class Gradient
     /**
      * Creates an array of Color objects for use as a gradient, using an array of Color objects. It uses a linear interpolation between each pair of points. The parameter numSteps defines the total number of colors in the returned array, not the number of colors per segment.
      * @param colors An array of Color objects used for the gradient. The Color at index 0 will be the lowest color.
-     * @param numSteps The number of steps in the gradient. 250 is a good number. 也就是多少阶渐变，阶数越多颜色越平滑
+     * @param numSteps The number of steps in the gradient. 250 is a good number. 涔熷氨鏄灏戦樁娓愬彉锛岄樁鏁拌秺澶氶鑹茶秺骞虫粦
      */
     public static Color[] createMultiGradient(Color[] colors, int numSteps) {
         //we assume a linear gradient, with equal spacing between colors

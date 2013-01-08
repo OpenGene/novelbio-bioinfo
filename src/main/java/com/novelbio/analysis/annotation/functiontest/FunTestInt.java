@@ -7,72 +7,72 @@ import com.novelbio.database.model.modgeneid.GeneID;
 public interface FunTestInt {
 	
 	/**
-	 * Éè¶¨ÎïÖÖ
+	 * è®¾å®šç‰©ç§
 	 * @param taxID
 	 */
 	public void setTaxID(int taxID);
 	/**
-	 * »ñµÃµ±Ç°ÎïÖÖ
+	 * è·å¾—å½“å‰ç‰©ç§
 	 * @return
 	 */
 	public int getTaxID();
 	
 	/**
-	 * ¸ø¶¨accIDµÄlist£¬Éè¶¨´ı¼ìÑéµÄÑù±¾
+	 * ç»™å®šaccIDçš„listï¼Œè®¾å®šå¾…æ£€éªŒçš„æ ·æœ¬
 	 * @param lsCopedID
 	 */
 	public void setLsTestAccID(ArrayList<String> lsAccID);
 	/**
-	 * ¸ø¶¨accIDµÄcopedID£¬Éè¶¨´ı¼ìÑéµÄÑù±¾
+	 * ç»™å®šaccIDçš„copedIDï¼Œè®¾å®šå¾…æ£€éªŒçš„æ ·æœ¬
 	 * @param lsCopedID
 	 */
 	public void setLsTestGeneID(ArrayList<GeneID> lsCopedIDs);
 	/**
-	 * ×îºÃÄÜµÚÒ»Ê±¼äÉè¶¨
-	 * ¶ÁÈ¡genUniID item,item¸ñÊ½µÄ±í
+	 * æœ€å¥½èƒ½ç¬¬ä¸€æ—¶é—´è®¾å®š
+	 * è¯»å–genUniID item,itemæ ¼å¼çš„è¡¨
 	 * @param fileName
 	 */
 	public void setLsBGItem(String fileName);
 	
 	/**
-	 * ×îºÃÄÜµÚÒ»Ê±¼äÉè¶¨
-	 * ¶ÁÈ¡±³¾°ÎÄ¼ş£¬Ö¸¶¨¶ÁÈ¡Ä³Ò»ÁĞ
+	 * æœ€å¥½èƒ½ç¬¬ä¸€æ—¶é—´è®¾å®š
+	 * è¯»å–èƒŒæ™¯æ–‡ä»¶ï¼ŒæŒ‡å®šè¯»å–æŸä¸€åˆ—
 	 * @param fileName
 	 */
 	public void setLsBGAccID(String fileName, int colNum);
 	/**
-	 * ×îºÃÄÜµÚÒ»Ê±¼äÉè¶¨
-	 * ¶ÁÈ¡±³¾°ÎÄ¼ş£¬Ö¸¶¨¶ÁÈ¡Ä³Ò»ÁĞ
+	 * æœ€å¥½èƒ½ç¬¬ä¸€æ—¶é—´è®¾å®š
+	 * è¯»å–èƒŒæ™¯æ–‡ä»¶ï¼ŒæŒ‡å®šè¯»å–æŸä¸€åˆ—
 	 * @param fileName
 	 */
 	public void setLsBGCopedID(ArrayList<GeneID> lsBGaccID);
 	/**
-	 * ´ıĞŞÕı
-	 * ·µ»ØGene2ItemPvalue
+	 * å¾…ä¿®æ­£
+	 * è¿”å›Gene2ItemPvalue
 	 * @param Type
 	 * @return
 	 */
 	public ArrayList<StatisticTestGene2Item> getGene2ItemPvalue();
 	
 	/**
-	 * ·µ»Ø×îºóµÄ½á¹û£¬ElimGOĞèÒª¸²¸Ç¸Ã·½·¨
-	 * ¶Ô½á¹ûÅÅ¸öĞò
-	 * @return ½á¹ûÃ»¼Ó±êÌâ<br>
+	 * è¿”å›æœ€åçš„ç»“æœï¼ŒElimGOéœ€è¦è¦†ç›–è¯¥æ–¹æ³•
+	 * å¯¹ç»“æœæ’ä¸ªåº
+	 * @return ç»“æœæ²¡åŠ æ ‡é¢˜<br>
 	 * @throws Exception 
 	 */
 	public ArrayList<StatisticTestResult> getTestResult();
 
 	/**
-	 * Ä¿Ç°Ö»ÄÜÉè¶¨GOµÄtype
+	 * ç›®å‰åªèƒ½è®¾å®šGOçš„type
 	 */
 	public void setDetailType(String GOtype);
 	/**
-	 * GO2GeneID£¬Ä¿Ç°Ö»ÓĞelimGO²ÅÓĞ
+	 * GO2GeneIDï¼Œç›®å‰åªæœ‰elimGOæ‰æœ‰
 	 * @return
 	 */
 	public ArrayList<StatisticTestItem2Gene> getItem2GenePvalue();
 	/**
-	 * ±£´æ±¾LsBGµÄĞÅÏ¢
+	 * ä¿å­˜æœ¬LsBGçš„ä¿¡æ¯
 	 * @param txtBGItem
 	 */
 	public void saveLsBGItem(String txtBGItem);

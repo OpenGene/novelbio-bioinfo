@@ -9,8 +9,8 @@ import com.novelbio.analysis.seq.genome.mappingOperate.Alignment;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
 import com.novelbio.analysis.seq.mapping.Align;
  /**
-  * BedSeqÃ¿Ò»ĞĞµÄĞÅÏ¢<br>
-  * ¼æÈİ bamToBedµÄ 12ĞĞĞÅÏ¢¸ñÊ½
+  * BedSeqæ¯ä¸€è¡Œçš„ä¿¡æ¯<br>
+  * å…¼å®¹ bamToBedçš„ 12è¡Œä¿¡æ¯æ ¼å¼
   * @author zong0jie
   *
   */
@@ -26,23 +26,23 @@ public class BedRecord extends SiteInfo implements AlignRecord{
 	static final int COL_CIGAR = 6;
 	public static final int COL_MAPNUM = 7;
 	static final int COL_SEQ = 8;
-	/** ÊÇ·ñÎªunique mappingµÄÁĞ */
+	/** æ˜¯å¦ä¸ºunique mappingçš„åˆ— */
 	static final int COL_MAPQ = 9;
 	static final int COL_SPLIT_READS_LEN = 10;
 	static final int COL_SPLIT_READS_START = 11;
 	static final int COL_READSNUM = 12;
 
 	/**
-	 * ¶ÔÉÏÃæ×Ü¹²ÁĞµÄ¼ÆÊı£¬ÉÏÃæÈç¹ûÔö¼Ó»òÕßÉ¾¼õÁËÁĞ£¬ÕâÀïÒªÏàÓ¦µÄĞŞÕı
+	 * å¯¹ä¸Šé¢æ€»å…±åˆ—çš„è®¡æ•°ï¼Œä¸Šé¢å¦‚æœå¢åŠ æˆ–è€…åˆ å‡äº†åˆ—ï¼Œè¿™é‡Œè¦ç›¸åº”çš„ä¿®æ­£
 	 */
 	static final int ALL_COLNUM = 13;
 	
 	/**
-	 * mappingµ½ÁË¼¸¸öÉÏÈ¥
+	 * mappingåˆ°äº†å‡ ä¸ªä¸Šå»
 	 */
 	Integer mappingNum = null;
 	/**
-	 * ±¾Î»µãµÄ°üº¬ÁË¼¸ÌõoverlapµÄĞòÁĞ
+	 * æœ¬ä½ç‚¹çš„åŒ…å«äº†å‡ æ¡overlapçš„åºåˆ—
 	 */
 	Integer readsNum = null;
 	String CIGAR = null;
@@ -50,7 +50,7 @@ public class BedRecord extends SiteInfo implements AlignRecord{
 	
 	String readLineInfo = "";
 	
-	/** ÀàËÆ9,53,28 */
+	/** ç±»ä¼¼9,53,28 */
 	String splitLen;
 	/** 0,2134,11171 */
 	String splitStart;
@@ -63,7 +63,7 @@ public class BedRecord extends SiteInfo implements AlignRecord{
 		readLineInfo = bedline;
 		String[] ss = bedline.split("\t");
 		setRefID(ss[COL_CHRID]);
-		//BedµÄÆğµãÒ»°ãÒª¼ÓÉÏ1
+		//Bedçš„èµ·ç‚¹ä¸€èˆ¬è¦åŠ ä¸Š1
 		setStartEndLoc(Integer.parseInt(ss[COL_START]) + 1, Integer.parseInt(ss[COL_END]));
 		if (ss.length > COL_NAME && ss[COL_NAME] != null && !ss[COL_NAME].equals("")) {
 			setName(ss[COL_NAME]);
@@ -74,7 +74,7 @@ public class BedRecord extends SiteInfo implements AlignRecord{
 		if (ss.length > COL_STRAND && ss[COL_STRAND] != null && !ss[COL_STRAND].equals("")) {
 			setCis5to3(ss[COL_STRAND]);
 		}
-		//½«ĞòÁĞ×°Èëbedrecord£¬²¢ÇÒ²»½øĞĞ·´Ïò
+		//å°†åºåˆ—è£…å…¥bedrecordï¼Œå¹¶ä¸”ä¸è¿›è¡Œåå‘
 		if (ss.length > COL_SEQ && ss[COL_SEQ] != null && !ss[COL_SEQ].equals("")) {
 			try { setSeq(new SeqFasta("", ss[COL_SEQ]), false); } catch (Exception e) {  }
 		}
@@ -99,7 +99,7 @@ public class BedRecord extends SiteInfo implements AlignRecord{
 			try { splitStart = ss[COL_SPLIT_READS_START]; } catch (Exception e) {  }
 		}
 	}
-	/** ÅĞ¶¨ÊÇ·ñÎªbedÎÄ¼ş£¬Ö»ĞèÒªÅĞ¶¨chrID£¬start£¬end¼´¿É */
+	/** åˆ¤å®šæ˜¯å¦ä¸ºbedæ–‡ä»¶ï¼Œåªéœ€è¦åˆ¤å®šchrIDï¼Œstartï¼Œendå³å¯ */
 	public static boolean isBedRecord(String bedline) {
 		if (bedline == null) {
 			return false;
@@ -116,7 +116,7 @@ public class BedRecord extends SiteInfo implements AlignRecord{
 		}
 		return true;
 	}
-	/** ÊÇ·ñÎªunique mapping£¬²»ÊÇµÄ»°mappingµ½ÁË¼¸¸ö²»Í¬µÄÎ»µãÉÏÈ¥ */
+	/** æ˜¯å¦ä¸ºunique mappingï¼Œä¸æ˜¯çš„è¯mappingåˆ°äº†å‡ ä¸ªä¸åŒçš„ä½ç‚¹ä¸Šå» */
 	public void setMappingNum(int mappingNum) {
 		this.mappingNum = mappingNum;
 	}
@@ -126,7 +126,7 @@ public class BedRecord extends SiteInfo implements AlignRecord{
 	public String getCIGAR() {
 		return CIGAR;
 	}
-	/** ÊÇ·ñÎªunique mapping£¬²»ÊÇµÄ»°mappingµ½ÁË¼¸¸ö²»Í¬µÄÎ»µãÉÏÈ¥ */
+	/** æ˜¯å¦ä¸ºunique mappingï¼Œä¸æ˜¯çš„è¯mappingåˆ°äº†å‡ ä¸ªä¸åŒçš„ä½ç‚¹ä¸Šå» */
 	public Integer getMappingNum() {
 		if (mappingNum == null) {
 			return 1;
@@ -139,7 +139,7 @@ public class BedRecord extends SiteInfo implements AlignRecord{
 		}
 		return mapQuality;
 	}
-	/** ¸ÃbedÎÄ¼şÊÇ·ñ±»¸î³ÉÁËÒ»¶ÎÒ»¶ÎµÄ */
+	/** è¯¥bedæ–‡ä»¶æ˜¯å¦è¢«å‰²æˆäº†ä¸€æ®µä¸€æ®µçš„ */
 	public boolean isJunctionCovered() {
 		if (splitLen != null && !splitLen.equals("") && splitLen.contains(",")
 				&& splitStart != null && !splitStart.equals("") && splitStart.contains(",")
@@ -161,9 +161,9 @@ public class BedRecord extends SiteInfo implements AlignRecord{
 			splitLen = splitLen + "," + alignment.Length();
 		}
 	}
-	/** Èç¹ûÊÇmappingµ½junctionÉÏÈ¥£¬Ò»ÌõbedÎÄ¼ş¼ÇÂ¼»á±»ÇĞ³É±»ÇĞ³ÉµÄ¼¸¿éµÄÑù×Ó±£´æÔÚÕâÀï¡£
-	 * Ò²¾ÍÊÇÒ»¶ÎÒ»¶ÎµÄbed£¬ÄÇÃ´·µ»ØÃ¿Ò»¶ÎµÄĞÅÏ¢£¬
-	 * ¶¼ÊÇ¾ø¶Ô×ø±ê£¬´Ó1¿ªÊ¼
+	/** å¦‚æœæ˜¯mappingåˆ°junctionä¸Šå»ï¼Œä¸€æ¡bedæ–‡ä»¶è®°å½•ä¼šè¢«åˆ‡æˆè¢«åˆ‡æˆçš„å‡ å—çš„æ ·å­ä¿å­˜åœ¨è¿™é‡Œã€‚
+	 * ä¹Ÿå°±æ˜¯ä¸€æ®µä¸€æ®µçš„bedï¼Œé‚£ä¹ˆè¿”å›æ¯ä¸€æ®µçš„ä¿¡æ¯ï¼Œ
+	 * éƒ½æ˜¯ç»å¯¹åæ ‡ï¼Œä»1å¼€å§‹
 	 * @return
 	 */
 	public ArrayList<Align> getAlignmentBlocks() {
@@ -186,8 +186,8 @@ public class BedRecord extends SiteInfo implements AlignRecord{
 		return lsStartEnd;
 	}
 	/**
-	 * ±¾Î»µãµÄ°üº¬ÁË¼¸ÌõoverlapµÄĞòÁĞ
-	 * Èç¹ûÃ»ÓĞÕâÒ»Ïî£¬Ôò·µ»Ø1
+	 * æœ¬ä½ç‚¹çš„åŒ…å«äº†å‡ æ¡overlapçš„åºåˆ—
+	 * å¦‚æœæ²¡æœ‰è¿™ä¸€é¡¹ï¼Œåˆ™è¿”å›1
 	 * @return
 	 */
 	public int getReadsNum() {
@@ -197,7 +197,7 @@ public class BedRecord extends SiteInfo implements AlignRecord{
 		return readsNum;
 	}
 	/**
-	 * "+"»ò"-"
+	 * "+"æˆ–"-"
 	 * @param strand
 	 */
 	public void setCis5to3(String strand) {
@@ -211,12 +211,12 @@ public class BedRecord extends SiteInfo implements AlignRecord{
 			this.cis5to3 = false;
 		}
 		else {
-			logger.equals("³öÏÖÎ´Öªstrand");
+			logger.equals("å‡ºç°æœªçŸ¥strand");
 		}
 	}
 	/**
-	 * ±ØĞë´æÔÚ¸Ã×Ö·û£¬²»ÄÜÎª¿Õ
-	 * "+"»ò"-"
+	 * å¿…é¡»å­˜åœ¨è¯¥å­—ç¬¦ï¼Œä¸èƒ½ä¸ºç©º
+	 * "+"æˆ–"-"
 	 * @param strand
 	 */
 	public void setCis5to3(char strand) {
@@ -227,7 +227,7 @@ public class BedRecord extends SiteInfo implements AlignRecord{
 			this.cis5to3 = false;
 		}
 		else {
-			logger.equals("³öÏÖÎ´Öªstrand");
+			logger.equals("å‡ºç°æœªçŸ¥strand");
 		}
 	}
 	public void setCIGAR(String cIGAR) {
@@ -236,19 +236,19 @@ public class BedRecord extends SiteInfo implements AlignRecord{
 	public void setMapQuality(Integer mapQuality) {
 		this.mapQuality = mapQuality;
 	}
-	/** ·µ»ØÔ­Ê¼ÎÄ¼şÖĞ¶ÁÈ¡Ê±µÄĞÅÏ¢ */
+	/** è¿”å›åŸå§‹æ–‡ä»¶ä¸­è¯»å–æ—¶çš„ä¿¡æ¯ */
 	public String getRawStringInfo() {
 		return readLineInfo;
 	}
 	/**
-	 * ·µ»Ø±¾bedrecordËù¶ÔÓ¦µÄlineĞÅÏ¢
-	 * Èç¹û³ö´í£¬Ôò·µ»Ø¿Õ×Ö·û´®""
+	 * è¿”å›æœ¬bedrecordæ‰€å¯¹åº”çš„lineä¿¡æ¯
+	 * å¦‚æœå‡ºé”™ï¼Œåˆ™è¿”å›ç©ºå­—ç¬¦ä¸²""
 	 */
 	@Override
 	public String toString() {
 		String[] strings = new String[ALL_COLNUM];
 		strings[COL_CHRID] = refID;
-		//BedµÄÆğµãÊÇ´Ó0¿ªÊ¼¼ÆËãµÄ£¬ËùÒÔÊµ¼ÊÎ»µãÒª¼õÈ¥1
+		//Bedçš„èµ·ç‚¹æ˜¯ä»0å¼€å§‹è®¡ç®—çš„ï¼Œæ‰€ä»¥å®é™…ä½ç‚¹è¦å‡å»1
 		strings[COL_START] = (startLoc - 1) + "";
 		strings[COL_END] = endLoc +"";
 		strings[COL_CIGAR] = CIGAR;
@@ -275,7 +275,7 @@ public class BedRecord extends SiteInfo implements AlignRecord{
 			}
 		}
 		
-		//»ñµÃ±¾ÁĞ×î³¤µÄ·ÇnullÁĞÊı
+		//è·å¾—æœ¬åˆ—æœ€é•¿çš„énullåˆ—æ•°
 		int resultColNum = 0;
 		for (int i = strings.length - 1; i >= 0; i--) {
 			if (strings[i] != null && !strings[i].equals("null")) {
@@ -283,7 +283,7 @@ public class BedRecord extends SiteInfo implements AlignRecord{
 				break;
 			}
 		}
-		//³ö´í£¬¾ÍÊÇ±¾ĞĞÃ»¶«Î÷
+		//å‡ºé”™ï¼Œå°±æ˜¯æœ¬è¡Œæ²¡ä¸œè¥¿
 		if (resultColNum < 3) {
 			return "";
 		}

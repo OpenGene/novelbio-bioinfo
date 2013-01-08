@@ -3,11 +3,11 @@ package com.novelbio.base.dataStructure.listOperate;
 import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
 
 /**
- * ÆµÂÊÖ±·½Í¼µÄÃ¿¸öbin
+ * é¢‘ç‡ç›´æ–¹å›¾çš„æ¯ä¸ªbin
  * @author zongjie
  */
 public class HistBin extends ListDetailAbs {
-	/** ¼ÆÊıÆ÷ */
+	/** è®¡æ•°å™¨ */
 	long countNumber = 0;
 	double binNum = -Double.MAX_VALUE;
 	
@@ -22,7 +22,7 @@ public class HistBin extends ListDetailAbs {
 		}
 	}
 	/**
-	 * Éè¶¨·ÖÊı£¬¸ù¾İĞèÒª±£´ædoubleÖµ
+	 * è®¾å®šåˆ†æ•°ï¼Œæ ¹æ®éœ€è¦ä¿å­˜doubleå€¼
 	 * @param score
 	 */
 	public void setNumber(long number) {
@@ -35,7 +35,7 @@ public class HistBin extends ListDetailAbs {
 		this.countNumber = this.countNumber + addNum;
 	}
 	/**
-	 * Èç¹ûÉè¶¨ÁËbinNumÔò·µ»ØbinNum£¬Ã»Éè¶¨µÄ»°binµÄÍ·¼õÈ¥Î²£¬ËùÒÔ×¢ÒâÊÇ·ñÒªËÄÉáÎåÈë
+	 * å¦‚æœè®¾å®šäº†binNumåˆ™è¿”å›binNumï¼Œæ²¡è®¾å®šçš„è¯binçš„å¤´å‡å»å°¾ï¼Œæ‰€ä»¥æ³¨æ„æ˜¯å¦è¦å››èˆäº”å…¥
 	 * @return
 	 */
 	public double getThisNumber() {
@@ -46,7 +46,7 @@ public class HistBin extends ListDetailAbs {
 	}
 	
 	/**
-	 * »ñµÃ·ÖÊı£¬¸ù¾İĞèÒª±£´æµÄ¼ÆÊıÖµ
+	 * è·å¾—åˆ†æ•°ï¼Œæ ¹æ®éœ€è¦ä¿å­˜çš„è®¡æ•°å€¼
 	 * @return
 	 */
 	public long getCountNumber() {

@@ -33,8 +33,8 @@ import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 /**
- * ÌáÈ¡ÎªbedÎÄ¼şÊ±£¬½ö½ö¿¼ÂÇf-rÇé¿ö
- * ´ı¼ì²é£¬ÌØ±ğÊÇ×ª»»³ÉbedÎÄ¼şÊ±ÊÇ·ñ¾«È·µ½ÁË1bp£¬Æ©ÈçÆğµãÊÇ·ñÎª¿ªÇø¼ä
+ * æå–ä¸ºbedæ–‡ä»¶æ—¶ï¼Œä»…ä»…è€ƒè™‘f-ræƒ…å†µ
+ * å¾…æ£€æŸ¥ï¼Œç‰¹åˆ«æ˜¯è½¬æ¢æˆbedæ–‡ä»¶æ—¶æ˜¯å¦ç²¾ç¡®åˆ°äº†1bpï¼Œè­¬å¦‚èµ·ç‚¹æ˜¯å¦ä¸ºå¼€åŒºé—´
  * @author zong0jie
  *
  */
@@ -57,14 +57,14 @@ public class SamFile implements AlignSeq {
 	
 	String fileName = "";
 	/**
-	 * ·Çunique mappingµÄĞòÁĞÊÇ·ñÖ»Ëæ»ú³éÈ¡Ò»Ìõ
+	 * éunique mappingçš„åºåˆ—æ˜¯å¦åªéšæœºæŠ½å–ä¸€æ¡
 	 * @param notUniqueRandomSelectReads
 	 */
 	boolean uniqueRandomSelectReads = true;
-	/** mappingÖÊÁ¿Îª0 */
+	/** mappingè´¨é‡ä¸º0 */
 	int mapQualityFilter = 0;
 	/**
-	 * ¶ÁÈ¡samÎÄ¼şµÄÀà£¬×îºÃ²»ÒªÖ±½ÓÓÃ£¬ÓÃgetSamFileReader()·½·¨´úÌæ
+	 * è¯»å–samæ–‡ä»¶çš„ç±»ï¼Œæœ€å¥½ä¸è¦ç›´æ¥ç”¨ï¼Œç”¨getSamFileReader()æ–¹æ³•ä»£æ›¿
 	 */
 	SamReader samReader = new SamReader();
 //	SAMFileWriter samFileWriter;
@@ -72,7 +72,7 @@ public class SamFile implements AlignSeq {
 	
 	public SAMFileHeader.SortOrder SORT_ORDER;
 	
-	/** ÊÇ·ñÎªbamÎÄ¼ş */
+	/** æ˜¯å¦ä¸ºbamæ–‡ä»¶ */
 	boolean bamFile = false;
 	
 	boolean uniqMapping = false;
@@ -82,13 +82,13 @@ public class SamFile implements AlignSeq {
 	
 	String referenceFileName;
 	
-	/**¶ÁÈ¡ÒÑÓĞÎÄ¼ş
-	 * Èç¹ûÓĞË÷Òı»á×Ô¶¯¶ÁÈ¡Ë÷Òı
+	/**è¯»å–å·²æœ‰æ–‡ä»¶
+	 * å¦‚æœæœ‰ç´¢å¼•ä¼šè‡ªåŠ¨è¯»å–ç´¢å¼•
 	 */
 	public SamFile(String samBamFile) {
 		setSamFileRead(samBamFile);
 	}
-	/** ´´½¨ĞÂµÄsambamÎÄ¼ş£¬¸ù¾İÎÄ¼şÃû */
+	/** åˆ›å»ºæ–°çš„sambamæ–‡ä»¶ï¼Œæ ¹æ®æ–‡ä»¶å */
 	public SamFile(String samBamFile, SAMFileHeader samFileHeader) {
 		setSamFileNew(samFileHeader, samBamFile);
 		initialSoftWare();
@@ -116,10 +116,10 @@ public class SamFile implements AlignSeq {
 		samReader.setFileIndex(fileIndex);
 	}
 	/** 
-	 * ´´½¨ĞÂµÄsamÎÄ¼ş
+	 * åˆ›å»ºæ–°çš„samæ–‡ä»¶
 	 * @param samFileHeader
 	 * @param samFileCreate
-	 * @param sorted ÊäÈëµÄÎÄ¼şÊÇ·ñ¾­¹ıÅÅĞò
+	 * @param sorted è¾“å…¥çš„æ–‡ä»¶æ˜¯å¦ç»è¿‡æ’åº
 	 */
 	private void setSamFileNew(SAMFileHeader samFileHeader, String samFileCreate) {
 		this.fileName = samFileCreate;
@@ -140,7 +140,7 @@ public class SamFile implements AlignSeq {
 		} catch (Exception e) {}
 
 	}
-	/** ±È¶Ôµ½µÄreferenceµÄÎÄ¼şÃû */
+	/** æ¯”å¯¹åˆ°çš„referenceçš„æ–‡ä»¶å */
 	public void setReferenceFileName(String referenceFileName) {
 		this.referenceFileName = referenceFileName;
 		faidxRefsequence();
@@ -165,31 +165,31 @@ public class SamFile implements AlignSeq {
 	}
 	
 	/**
-	 * ÊÇ·ñÎªuniqMapping£¬Ä¬ÈÏÎªtrue
+	 * æ˜¯å¦ä¸ºuniqMappingï¼Œé»˜è®¤ä¸ºtrue
 	 * @param uniqMapping
 	 */
 	public void setUniqMapping(boolean uniqMapping) {
 		this.uniqMapping = uniqMapping;
 	}
 	/**
-	 * ·Çunique mappingµÄĞòÁĞÊÇ·ñÖ»Ëæ»ú³éÈ¡Ò»Ìõ
+	 * éunique mappingçš„åºåˆ—æ˜¯å¦åªéšæœºæŠ½å–ä¸€æ¡
 	 * @param notUniqueRandomSelectReads
 	 */
 	public void setUniqueRandomSelectOneRead(boolean uniqueRandomSelectReads) {
 		this.uniqueRandomSelectReads = uniqueRandomSelectReads;
 	}
 	/**
-	 * Ë«¶ËÊı¾İÊÇ·ñ»ñµÃÁ¬ÔÚÒ»ÆğµÄbedÎÄ¼ş
-	 * Èç¹ûÊäÈëÊÇµ¥¶ËÊı¾İ£¬Ôò½«ĞòÁĞÑÓ³¤·µ»ØbedÎÄ¼ş
-	 * ×¢Òâ£ºÈç¹ûÊÇË«¶ËÎÄ¼ş£¬<b>²»ÄÜÔ¤ÏÈÅÅĞò</b>
+	 * åŒç«¯æ•°æ®æ˜¯å¦è·å¾—è¿åœ¨ä¸€èµ·çš„bedæ–‡ä»¶
+	 * å¦‚æœè¾“å…¥æ˜¯å•ç«¯æ•°æ®ï¼Œåˆ™å°†åºåˆ—å»¶é•¿è¿”å›bedæ–‡ä»¶
+	 * æ³¨æ„ï¼šå¦‚æœæ˜¯åŒç«¯æ–‡ä»¶ï¼Œ<b>ä¸èƒ½é¢„å…ˆæ’åº</b>
 	 * @param getPairedBed
 	 */
 	public boolean isPairend() {
 		return samReader.isPairend();
 	}
-	//TODO Î´ÊµÏÖ
+	//TODO æœªå®ç°
 	/**
-	 * Î´ÊµÏÖ
+	 * æœªå®ç°
 	 * @param pairendExtend
 	 * @param mapQuality
 	 * @param uniqMapping
@@ -198,7 +198,7 @@ public class SamFile implements AlignSeq {
 		
 	}
 	/**
-	 * Ä¬ÈÏÎª10£¬Ò²¿ÉÉè¶¨Îª0
+	 * é»˜è®¤ä¸º10ï¼Œä¹Ÿå¯è®¾å®šä¸º0
 	 * @param mapQuality
 	 */
 	public void setMapQuality(int mapQuality) {
@@ -215,7 +215,7 @@ public class SamFile implements AlignSeq {
 	
 	/** 
 	 * the alignment of the returned SAMRecords need only overlap the interval of interest.
-	 * @param chrID ÎŞËùÎ½´óĞ¡Ğ´
+	 * @param chrID æ— æ‰€è°“å¤§å°å†™
 	 * @param start
 	 * @param end
 	 * @return
@@ -225,7 +225,7 @@ public class SamFile implements AlignSeq {
 	}
 	/**
 	 * each SAMRecord returned is will have its alignment completely contained in the interval of interest. 
-	 * @param chrID ÎŞËùÎ½´óĞ¡Ğ´
+	 * @param chrID æ— æ‰€è°“å¤§å°å†™
 	 * @param start
 	 * @param end
 	 * @return
@@ -241,7 +241,7 @@ public class SamFile implements AlignSeq {
 		return samReader.readLines(num);
 	}
 	/**
-	 * ¶ÁÈ¡Ç°¼¸ĞĞ£¬²»Ó°Ïì{@link #readLines()}
+	 * è¯»å–å‰å‡ è¡Œï¼Œä¸å½±å“{@link #readLines()}
 	 * @param num
 	 * @return
 	 */
@@ -257,7 +257,7 @@ public class SamFile implements AlignSeq {
 		return lsResult;
 	}
 	/**
-	 * ¶ÁÈ¡Ç°¼¸ĞĞ£¬²»Ó°Ïì{@link #readLines()}
+	 * è¯»å–å‰å‡ è¡Œï¼Œä¸å½±å“{@link #readLines()}
 	 * @param num
 	 * @return
 	 */
@@ -267,9 +267,9 @@ public class SamFile implements AlignSeq {
 		return samRecord;
 	}
 	/**
-	 * ×¢Òâ´óĞ¡Ğ´Çø·Ö
-	 * @param ReadName readsµÄÃû×Ö£¬Ö»ÒªĞ´¹Ø¼ü´Ê¾ÍĞĞÁË
-	 * @return Ã»ÕÒµ½¾Í·µ»Ønull
+	 * æ³¨æ„å¤§å°å†™åŒºåˆ†
+	 * @param ReadName readsçš„åå­—ï¼Œåªè¦å†™å…³é”®è¯å°±è¡Œäº†
+	 * @return æ²¡æ‰¾åˆ°å°±è¿”å›null
 	 */
 	public SamRecord getReads(String ReadName) {
 		return samReader.getReads(ReadName);
@@ -278,8 +278,8 @@ public class SamFile implements AlignSeq {
 		return samReader.getSamFileHead();
 	}
 	/**
-	 * ÌáÈ¡samÎÄ¼şÖĞÃ»ÓĞmappingÉÏµÄreads£¬½«Æä±£´æÎªµ¥¸öfastqÎÄ¼ş£¬ĞòÁĞÖÊÁ¿Ä¬ÈÏÎªÖĞµÈ
-	 * @param getNonUniq ÊÇ·ñ½«·ÇuniqµÄÒ²ÌáÈ¡³öÀ´
+	 * æå–samæ–‡ä»¶ä¸­æ²¡æœ‰mappingä¸Šçš„readsï¼Œå°†å…¶ä¿å­˜ä¸ºå•ä¸ªfastqæ–‡ä»¶ï¼Œåºåˆ—è´¨é‡é»˜è®¤ä¸ºä¸­ç­‰
+	 * @param getNonUniq æ˜¯å¦å°†éuniqçš„ä¹Ÿæå–å‡ºæ¥
 	 * @return
 	 */
 	public FastQ getUnMappedReads(boolean getNonUniq, String outFastQfile) {
@@ -301,7 +301,7 @@ public class SamFile implements AlignSeq {
 	}
 
 	/**
-	 * ½«ÄÇÖÖÒ»Í·mappingÉÏ£¬Ò»Í·Ã»ÓĞmappingÉÏµÄĞòÁĞ£¬Á½Í·¶¼ÌáÈ¡³öÀ´Ğ´ÈëÒ»¸ösamÎÄ¼ş
+	 * å°†é‚£ç§ä¸€å¤´mappingä¸Šï¼Œä¸€å¤´æ²¡æœ‰mappingä¸Šçš„åºåˆ—ï¼Œä¸¤å¤´éƒ½æå–å‡ºæ¥å†™å…¥ä¸€ä¸ªsamæ–‡ä»¶
 	 */
 	public SamFile getSingleUnMappedReads(String outSamFile) {
 		if (!isPairend()) {
@@ -315,7 +315,7 @@ public class SamFile implements AlignSeq {
 			if (!samRecord.isHavePairEnd()) {
 				continue;
 			}
-			//½«Ò»¶ÔsamRecordĞ´ÈëÎÄ¼ş
+			//å°†ä¸€å¯¹samRecordå†™å…¥æ–‡ä»¶
 			if (mapName2Record.containsKey(samRecord.getName())) {
 				SamRecord samRecord1 = mapName2Record.get(samRecord.getName());
 				if (samRecord1.isPaireReads(samRecord)) {
@@ -325,7 +325,7 @@ public class SamFile implements AlignSeq {
 					continue;
 				}
 			}
-			//ÕÒ³öÒ»¸ömappingÒ»¸öÃ»ÓĞmappingµÄ¼ÇÂ¼
+			//æ‰¾å‡ºä¸€ä¸ªmappingä¸€ä¸ªæ²¡æœ‰mappingçš„è®°å½•
 			if (samRecord.isMapped() ^ samRecord.isMateMapped() ) {
 				mapName2Record.put(samRecord.getName(), samRecord);
 			}
@@ -334,7 +334,7 @@ public class SamFile implements AlignSeq {
 		samFile.close();
 		return samFile;
 	}
-	/** ½«¶àµÄĞòÁĞÉ¾³ı£¬ÒÔ½ÚÔ¼ÄÚ´æ */
+	/** å°†å¤šçš„åºåˆ—åˆ é™¤ï¼Œä»¥èŠ‚çº¦å†…å­˜ */
 	private void removeMap(int remainNum, LinkedHashMap<String, SamRecord> mapName2Record) {
 		if (mapName2Record.size() <= remainNum) {
 			return;
@@ -360,7 +360,7 @@ public class SamFile implements AlignSeq {
     	return samFile.sort(outName);
     }
 	 /**
-	  * ÅÅĞò£¬Êä³öÎªbamĞÎÊ½
+	  * æ’åºï¼Œè¾“å‡ºä¸ºbamå½¢å¼
 	  * @param outFile
 	  */
     public SamFile sort(String outFile) {
@@ -386,18 +386,18 @@ public class SamFile implements AlignSeq {
     	samFile.isRealigned = isRealigned;
     }
 	/**
-	 * ÓÃsamtoolsÊµÏÖÁË
-	 * ½«samÎÄ¼şÑ¹ËõÎªbamÎÄ¼ş
-	 * Èç¹ûÊÇbamÎÄ¼ş£¬Ôò·µ»Ø
+	 * ç”¨samtoolså®ç°äº†
+	 * å°†samæ–‡ä»¶å‹ç¼©ä¸ºbamæ–‡ä»¶
+	 * å¦‚æœæ˜¯bamæ–‡ä»¶ï¼Œåˆ™è¿”å›
 	 */
 	public SamFile convertToBam() {
 		String outName = FileOperate.changeFilePrefix(fileName, "", "bam");
 		return convertToBam(outName);
 	}
 	/**
-	 * ÓÃsamtoolsÊµÏÖÁË
-	 * ½«samÎÄ¼şÑ¹ËõÎªbamÎÄ¼ş
-	 * Èç¹ûÊÇbamÎÄ¼ş£¬Ôò·µ»Ø
+	 * ç”¨samtoolså®ç°äº†
+	 * å°†samæ–‡ä»¶å‹ç¼©ä¸ºbamæ–‡ä»¶
+	 * å¦‚æœæ˜¯bamæ–‡ä»¶ï¼Œåˆ™è¿”å›
 	 */
 	public SamFile convertToBam(String outFile) {
 		if (bamFile) {
@@ -426,7 +426,7 @@ public class SamFile implements AlignSeq {
 		return samFile;
 	}
 	/**
-	 * ´ı¼ì²é
+	 * å¾…æ£€æŸ¥
 	 */
 	public void indexMake() {
 		if (FileOperate.isFileExist(getFileName() + ".bai")) {
@@ -444,7 +444,7 @@ public class SamFile implements AlignSeq {
 	}
 	
 	/**
-	 * ´ı¼ì²é
+	 * å¾…æ£€æŸ¥
 	 */
 	public SamFile realign(String outFile) {
 		BamRealign bamRealign = new BamRealign();
@@ -463,7 +463,7 @@ public class SamFile implements AlignSeq {
 		return recalibrate(outFile);
 	}
 	/**
-	 * ´ı¼ì²é
+	 * å¾…æ£€æŸ¥
 	 */
 	public SamFile recalibrate(String outFile) {
 		BamRecalibrate bamRecalibrate = new BamRecalibrate();
@@ -480,7 +480,7 @@ public class SamFile implements AlignSeq {
 		return removeDuplicate(outFile);
 	}
 	/**
-	 * ´ı¼ì²é
+	 * å¾…æ£€æŸ¥
 	 */
 	public SamFile removeDuplicate(String outFile) {
 		BamRemoveDuplicate bamRemoveDuplicate = new BamRemoveDuplicate();
@@ -492,9 +492,9 @@ public class SamFile implements AlignSeq {
 		return samFile;
 	}
 	/**
-	 * <b>Ê×ÏÈÉè¶¨reference</b>
-	 * snp callingĞèÒªµÄÒ»ÏµÁĞ´¦Àí<br>
-	 * ÒÀ´ÎÎª£ºconvert2bam<br>
+	 * <b>é¦–å…ˆè®¾å®šreference</b>
+	 * snp callingéœ€è¦çš„ä¸€ç³»åˆ—å¤„ç†<br>
+	 * ä¾æ¬¡ä¸ºï¼šconvert2bam<br>
 	 * sort<br>
 	 * index<br>
 	 * Realign<br>
@@ -524,7 +524,7 @@ public class SamFile implements AlignSeq {
 		
 		samFileRemoveDuplicate.indexMake();
 		
-		//recalibrateÔÚÃ»ÓĞsnpdbµÄ±íµÄÇé¿öÏÂ×ö²»ÁË£¬ÄÇ¾Í²»×öÁË
+		//recalibrateåœ¨æ²¡æœ‰snpdbçš„è¡¨çš„æƒ…å†µä¸‹åšä¸äº†ï¼Œé‚£å°±ä¸åšäº†
 //		SamFile samFileRecalibrate = samFileRemoveDuplicate.recalibrate();
 ////		FileOperate.delFile(samFileRemoveDuplicate.getFileName());
 ////		FileOperate.delFile(samFileRemoveDuplicate.getFileName()+".bai");
@@ -552,14 +552,14 @@ public class SamFile implements AlignSeq {
 		return toBedSingleEnd(TxtReadandWrite.TXT, FileOperate.changeFileSuffix(getFileName(), "", "bed"));
 	}
 	/**
-	 * <b>Ã»ÓĞ¿¼ÂÇbedÎÄ¼şµÄÆğµãÊÇ0»¹ÊÇ1</b>
-	 *<b>·Çuniq mappingÖ»Ö§³ÖbwaµÄ½á¹û</b>
-	 * ·µ»Øµ¥¶Ë
-	 * bedÎÄ¼şµÄscoreÁĞÎªmapping quality
-	 * <b>²»ÄÜÌôÑ¡¿çÈ¾É«ÌåµÄÈÚºÏ»ùÒò</b>
-	 * @param bedFileCompType bedÎÄ¼şµÄÑ¹Ëõ¸ñÊ½£¬TxtReadandWrite.TXTµÈÉè¶¨
-	 * @param bedFile ×îºó²úÉúµÄbedFile
-	 * @param extend ÊÇ·ñÑÓ³¤bedÎÄ¼ş
+	 * <b>æ²¡æœ‰è€ƒè™‘bedæ–‡ä»¶çš„èµ·ç‚¹æ˜¯0è¿˜æ˜¯1</b>
+	 *<b>éuniq mappingåªæ”¯æŒbwaçš„ç»“æœ</b>
+	 * è¿”å›å•ç«¯
+	 * bedæ–‡ä»¶çš„scoreåˆ—ä¸ºmapping quality
+	 * <b>ä¸èƒ½æŒ‘é€‰è·¨æŸ“è‰²ä½“çš„èåˆåŸºå› </b>
+	 * @param bedFileCompType bedæ–‡ä»¶çš„å‹ç¼©æ ¼å¼ï¼ŒTxtReadandWrite.TXTç­‰è®¾å®š
+	 * @param bedFile æœ€åäº§ç”Ÿçš„bedFile
+	 * @param extend æ˜¯å¦å»¶é•¿bedæ–‡ä»¶
 	 * @return
 	 */
 	public BedSeq toBedSingleEnd(String bedFileCompType, String bedFile) {
@@ -589,7 +589,7 @@ public class SamFile implements AlignSeq {
 	}
 	
 	/**
-	 * »ñµÃ¸ÃbamÎÄ¼şÖĞÈ¾É«ÌåµÄ³¤¶ÈĞÅÏ¢£¬×¢Òâkey¶¼ÎªĞ¡Ğ´
+	 * è·å¾—è¯¥bamæ–‡ä»¶ä¸­æŸ“è‰²ä½“çš„é•¿åº¦ä¿¡æ¯ï¼Œæ³¨æ„keyéƒ½ä¸ºå°å†™
 	 * @return
 	 */
 	public HashMap<String, Long> getChrID2LengthMap() {
@@ -597,8 +597,8 @@ public class SamFile implements AlignSeq {
 	}
 	/**
 	 * tobe checked
-	 * ·µ»ØË«¶Ë£¬Èç¹ûÊÇµ¥¶ËÎÄ¼ş£¬Ôò·µ»ØÑÓ³¤µÄµ¥¶Ë
-	 * ½«samÎÄ¼ş¸ÄÎªbedÎÄ¼ş£¬¸ù¾İmappingÖÊÁ¿ºÍÕı·´Ïò½øĞĞÉ¸Ñ¡
+	 * è¿”å›åŒç«¯ï¼Œå¦‚æœæ˜¯å•ç«¯æ–‡ä»¶ï¼Œåˆ™è¿”å›å»¶é•¿çš„å•ç«¯
+	 * å°†samæ–‡ä»¶æ”¹ä¸ºbedæ–‡ä»¶ï¼Œæ ¹æ®mappingè´¨é‡å’Œæ­£åå‘è¿›è¡Œç­›é€‰
 	 */
 	public BedSeq sam2bedPairEnd(String bedFileCompType, String bedFile) {
 		//TODO
@@ -626,7 +626,7 @@ public class SamFile implements AlignSeq {
 		return bamMerge.merge();
 	}
 	
-	/** ·µ»ØÊÇsamÎÄ¼ş£¬bamÎÄ¼ş»¹ÊÇÎ´ÖªÎÄ¼ş */
+	/** è¿”å›æ˜¯samæ–‡ä»¶ï¼Œbamæ–‡ä»¶è¿˜æ˜¯æœªçŸ¥æ–‡ä»¶ */
 	public static FormatSeq isSamBamFile(String samBamFile) {
 		FormatSeq thisFormate = FormatSeq.UNKNOWN;
 		if (!FileOperate.isFileExist(samBamFile)) {

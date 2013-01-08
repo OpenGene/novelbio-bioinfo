@@ -14,7 +14,7 @@ public abstract class GOInfoAbs{
 
 	private static Logger logger = Logger.getLogger(GOInfoAbs.class);
 	/**
-	 * geneUniIDËù¶ÔÓ¦µÄ¾ßÌåGOĞÅÏ¢
+	 * geneUniIDæ‰€å¯¹åº”çš„å…·ä½“GOä¿¡æ¯
 	 * @param genUniAccID
 	 * @param taxID
 	 */
@@ -30,28 +30,28 @@ public abstract class GOInfoAbs{
 	
 	ArrayList<AGene2Go> lsAGene2Gos = null;
 	/**
-	 * È¥ÈßÓàµÄ±£´ægoĞÅÏ¢
-	 * key£ºGOID
-	 * value£ºGene2Go
-	 * ÕâÀïµÄvalue±ØĞëÉè¶¨ÎªAGene2Go£¬ÒòÎª¸Ãhash»¹ÒªÈİÄÉÆäÀ´×Ô²»Í¬µÄCopedIDµÄGO£¬¶øÆäËûCopedIDµÄGOºÜ¿ÉÄÜÓë±¾GO²»Í¬£¬
-	 * À´×ÔUniGO»òGeneGO
+	 * å»å†—ä½™çš„ä¿å­˜goä¿¡æ¯
+	 * keyï¼šGOID
+	 * valueï¼šGene2Go
+	 * è¿™é‡Œçš„valueå¿…é¡»è®¾å®šä¸ºAGene2Goï¼Œå› ä¸ºè¯¥hashè¿˜è¦å®¹çº³å…¶æ¥è‡ªä¸åŒçš„CopedIDçš„GOï¼Œè€Œå…¶ä»–CopedIDçš„GOå¾ˆå¯èƒ½ä¸æœ¬GOä¸åŒï¼Œ
+	 * æ¥è‡ªUniGOæˆ–GeneGO
 	 */
 	HashMap<String,AGene2Go> hashGene2Gos = null;
 	/**
-	 * ĞèÒªÉè¶¨lsAGene2Gos
+	 * éœ€è¦è®¾å®šlsAGene2Gos
 	 */
 	protected abstract void setGene2Go();
 	
 	/**
-	 * ½«¶à¸öCopedIDµÄGOInfoAbs·ÅÔÚÒ»Æğ£¬È¡²¢¼¯È¥ÈßÓà
-	 * Ã»ÓĞÔò·µ»Ø¿ÕµÄLsResult
-	 * @param lsGoInfo ¶à¸öGOInfoAbsµÄlist
+	 * å°†å¤šä¸ªCopedIDçš„GOInfoAbsæ”¾åœ¨ä¸€èµ·ï¼Œå–å¹¶é›†å»å†—ä½™
+	 * æ²¡æœ‰åˆ™è¿”å›ç©ºçš„LsResult
+	 * @param lsGoInfo å¤šä¸ªGOInfoAbsçš„list
 	 * @return
 	 */
 	public ArrayList<AGene2Go> getLsGen2Go(ArrayList<GOInfoAbs> lsGoInfo, String GOType) {
 		setGene2Go();
 		hashGene2Gos = new HashMap<String, AGene2Go>();
-		//ÏÈ½«±¾»ùÒòµÄĞÅÏ¢¼ÓÈëHash±í
+		//å…ˆå°†æœ¬åŸºå› çš„ä¿¡æ¯åŠ å…¥Hashè¡¨
 		for (AGene2Go aGene2Go : getLsGene2Go(GOType)) {
 			if (hashGene2Gos.containsKey(aGene2Go.getGOID()))
 				continue;
@@ -73,15 +73,15 @@ public abstract class GOInfoAbs{
 		return ArrayOperate.getArrayListValue(hashGene2Gos);
 	}
 	/**
-	 * ¸ù¾İ¾ßÌåµÄGO_TYPEµÄ±ê¼Ç£¬»ñµÃ±¾GeneIDµÄGOĞÅÏ¢
+	 * æ ¹æ®å…·ä½“çš„GO_TYPEçš„æ ‡è®°ï¼Œè·å¾—æœ¬GeneIDçš„GOä¿¡æ¯
 	 * <br>
 	 * GO_BP<br>
 	 * GO_CC<br>
 	 * GO_MF<br>
 	 * GO_ALL<br>
-	 * @param GOType Go2Term.GO_BPµÈ£¬Èç¹ûÊÇGo2Term.GO_ALL£¬Ôò·µ»ØÈ«²¿µÄGOĞÅÏ¢
+	 * @param GOType Go2Term.GO_BPç­‰ï¼Œå¦‚æœæ˜¯Go2Term.GO_ALLï¼Œåˆ™è¿”å›å…¨éƒ¨çš„GOä¿¡æ¯
 	 * @return
-	 * Ã»ÓĞÔò·µ»ØÒ»¸ö¿ÕµÄlsResult
+	 * æ²¡æœ‰åˆ™è¿”å›ä¸€ä¸ªç©ºçš„lsResult
 	 */
 	public ArrayList<AGene2Go> getLsGene2Go(String GOType) {
 		setGene2Go();
@@ -104,13 +104,13 @@ public abstract class GOInfoAbs{
 		}
 	}
 	/**
-	 * Gotype ±ØĞëÊÇ£º<br>
+	 * Gotype å¿…é¡»æ˜¯ï¼š<br>
 	 * FUN_SHORT_BIO_P<br>
 	 * FUN_SHORT_CEL_C<br>
 	 * FUN_SHORT_MOL_F<br>
 	 * @param GoType
 	 * @return
-	 * Èç¹ûÃ»ÓĞ¸ÃÏîGO£¬Ôò·µ»ØÒ»¸ö¿ÕµÄlsResult
+	 * å¦‚æœæ²¡æœ‰è¯¥é¡¹GOï¼Œåˆ™è¿”å›ä¸€ä¸ªç©ºçš„lsResult
 	 */
 	private ArrayList<AGene2Go> getLsGoType(String GoType) {
 		ArrayList<AGene2Go> lsResult = new ArrayList<AGene2Go>();
@@ -128,7 +128,7 @@ public abstract class GOInfoAbs{
 		return lsResult;
 	}
 	/**
-	 * Ö¸¶¨GOID£¬·µ»Ø¾ßÌåµÄGO2TermĞÅÏ¢
+	 * æŒ‡å®šGOIDï¼Œè¿”å›å…·ä½“çš„GO2Termä¿¡æ¯
 	 * @param GOID
 	 * @return
 	 */

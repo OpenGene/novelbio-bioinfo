@@ -31,10 +31,10 @@ public class GffSpeciesInfo {
 	}
 
 	public ArrayList<String[]> getChrLength(Species species) {
-		/** ÎŞĞòµÄ±í¸ñ */
+		/** æ— åºçš„è¡¨æ ¼ */
 		ArrayList<String[]> lsChrLehgth = new ArrayList<String[]>();
 		long total = 0;
-		/** µÚÒ»ÁĞ°´ÕÕChr1ºÍChr2£¬Chr3ÅÅĞòµÄ±í */
+		/** ç¬¬ä¸€åˆ—æŒ‰ç…§Chr1å’ŒChr2ï¼ŒChr3æ’åºçš„è¡¨ */
 		for (String string : species.getMapChromInfo().keySet()) {
 			System.out.println(string);
 			System.out.println(species.getMapChromInfo().get(string));
@@ -51,7 +51,7 @@ public class GffSpeciesInfo {
 	}
 	
 	/**
-	 *°Ñ lsChrLehgthµÚÒ»ÁĞ°´ÕÕChr1ºÍChr2£¬Chr3ÅÅĞò
+	 *æŠŠ lsChrLehgthç¬¬ä¸€åˆ—æŒ‰ç…§Chr1å’ŒChr2ï¼ŒChr3æ’åº
 	 * @return 
 	 */
 	public ArrayList<String[]> sortLsChrInfo(ArrayList<String[]> lsChrID2Length) {
@@ -75,7 +75,7 @@ public class GffSpeciesInfo {
 	}
 
 	/**
-	 * »ñÈ¡ÎïÖÖµÄËùÓĞµÄ»ùÒò
+	 * è·å–ç‰©ç§çš„æ‰€æœ‰çš„åŸºå› 
 	 */
 	private HashSet<String> getSpeciesGene() {
 		HashMap<String, ListGff> mapChrID2LsGff = new HashMap<String, ListGff>();
@@ -92,7 +92,7 @@ public class GffSpeciesInfo {
 		return setGeneID;
 	}
 	/**
-	 * Ğ´ËùÓĞµÄÎïÖÖËùÓĞ»ùÒò
+	 * å†™æ‰€æœ‰çš„ç‰©ç§æ‰€æœ‰åŸºå› 
 	 */
 	public void writeGeneBG(Species species,String outPath) {
 		gffChrAbs.setSpecies(species);
@@ -105,8 +105,8 @@ public class GffSpeciesInfo {
 		txtReadandWrite.close();
 	}
 	/**
-	 * »ñÈ¡Ö¸¶¨»ùÒòµÄ¸÷¸öÍâÏÔ×Ó³¤¶È
-	 * @param geneSymbol Ö¸¶¨»ùÒò
+	 * è·å–æŒ‡å®šåŸºå› çš„å„ä¸ªå¤–æ˜¾å­é•¿åº¦
+	 * @param geneSymbol æŒ‡å®šåŸºå› 
 	 * @return
 	 */
 	private ArrayList<Integer>	getExonLength(String geneSymbol) {
@@ -119,8 +119,8 @@ public class GffSpeciesInfo {
 		return lsExonLength;
 	}
 	/**
-	 * »ñÈ¡Ö¸¶¨»ùÒòµÄ¸÷¸öÄÚº¬×Ó³¤¶È
-	 * @param geneSymbol Ö¸¶¨»ùÒò
+	 * è·å–æŒ‡å®šåŸºå› çš„å„ä¸ªå†…å«å­é•¿åº¦
+	 * @param geneSymbol æŒ‡å®šåŸºå› 
 	 * @return
 	 */
 	private ArrayList<Integer> getIntronLength(String geneSymbol) {
@@ -134,9 +134,9 @@ public class GffSpeciesInfo {
 	}
 	
 	/**
-	 *  Ğ´Ö¸¶¨ÎïÖÖµÄËùÓĞ»ùÒòµÄÄÚº¬×ÓºÍÍâÏÔ×ÓĞÅÏ¢
-	 * @param species  ÎïÖÖ	
-	 * @param outpath  Êä³öÎÄ¼şÂ·¾¶
+	 *  å†™æŒ‡å®šç‰©ç§çš„æ‰€æœ‰åŸºå› çš„å†…å«å­å’Œå¤–æ˜¾å­ä¿¡æ¯
+	 * @param species  ç‰©ç§	
+	 * @param outpath  è¾“å‡ºæ–‡ä»¶è·¯å¾„
 	 */
 	public void writeGeneDescription(Species species, String outpath) {
 		gffChrAbs.setSpecies(species);
@@ -159,9 +159,9 @@ public class GffSpeciesInfo {
 	}
 	
 /**
- * Ö¸¶¨ÎïÖÖĞ´ËùÓĞÍâÏÔ×ÓµÄ³¤¶È
- * @param species Ö¸¶¨ÎïÖÖ
- * @param outpath Êä³öÂ·¾¶
+ * æŒ‡å®šç‰©ç§å†™æ‰€æœ‰å¤–æ˜¾å­çš„é•¿åº¦
+ * @param species æŒ‡å®šç‰©ç§
+ * @param outpath è¾“å‡ºè·¯å¾„
  */
 	public void writeExonLength(Species species, String outpath) {
 		gffChrAbs.setSpecies(species);
@@ -177,9 +177,9 @@ public class GffSpeciesInfo {
 		txtWrite.close();
 	}
 	/**
-	 * Ö¸¶¨ÎïÖÖĞ´ËùÓĞÄÚº¬×ÓµÄ³¤¶È
-	 * @param species Ö¸¶¨ÎïÖÖ
-	 * @param outpath Êä³öÂ·¾¶
+	 * æŒ‡å®šç‰©ç§å†™æ‰€æœ‰å†…å«å­çš„é•¿åº¦
+	 * @param species æŒ‡å®šç‰©ç§
+	 * @param outpath è¾“å‡ºè·¯å¾„
 	 */
 	public void writeIntronLength(Species species, String outpath) {
 		gffChrAbs.setSpecies(species);

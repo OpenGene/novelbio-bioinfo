@@ -23,7 +23,7 @@ import com.novelbio.database.domain.geneanno.UniProtID;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
 import com.novelbio.database.model.modgeneid.GeneID;
 /**
- * ÅúÁ¿×¢ÊÍ
+ * æ‰¹é‡æ³¨é‡Š
  * @author zong0jie
  *
  */
@@ -48,17 +48,17 @@ public class AnnoQuery extends RunProcess<AnnoQuery.AnnoQueryDisplayInfo>{
 	
 	int firstLine = 0;
 	/**
-	 * ¿ÉÒÔÊäÈëtxt»òexcel
+	 * å¯ä»¥è¾“å…¥txtæˆ–excel
 	 * @param geneIDfile
 	 */
 	public void setGeneIDFile(String geneIDfile) {
 		lsGeneID = ExcelTxtRead.readLsExcelTxt(geneIDfile, 1);
 	}
-	/** ÊäÈë´ı²éÕÒµÄgeneÁĞ±íĞÅÏ¢ */
+	/** è¾“å…¥å¾…æŸ¥æ‰¾çš„geneåˆ—è¡¨ä¿¡æ¯ */
 	public void setLsGeneID(ArrayList<String[]> lsGeneID) {
 		this.lsGeneID = lsGeneID;
 	}
-	/** µÚÒ»ĞĞ´ÓÄÄÀï¿ªÊ¼£¬Êµ¼ÊĞĞ */
+	/** ç¬¬ä¸€è¡Œä»å“ªé‡Œå¼€å§‹ï¼Œå®é™…è¡Œ */
 	public void setFirstLineFrom1(int firstLine) {
 		if (firstLine >= 1) {
 			this.firstLine = firstLine - 1;
@@ -142,10 +142,10 @@ public class AnnoQuery extends RunProcess<AnnoQuery.AnnoQueryDisplayInfo>{
 		return title;
 	}
 	/**
-	 * ×¢ÊÍÊı¾İ£¬²»ĞèÒªblast
-	 * @param info ¸ø¶¨Ò»ĞĞĞÅÏ¢
-	 * @param taxID ÎïÖÖ
-	 * @param accColNum ¾ßÌå¸ÃinfoµÄÄÄ¸öcolumn£¬Êµ¼Êcolumn
+	 * æ³¨é‡Šæ•°æ®ï¼Œä¸éœ€è¦blast
+	 * @param info ç»™å®šä¸€è¡Œä¿¡æ¯
+	 * @param taxID ç‰©ç§
+	 * @param accColNum å…·ä½“è¯¥infoçš„å“ªä¸ªcolumnï¼Œå®é™…column
 	 * @return
 	 */
 	private static String[] getInfo(String[] info, int taxID, String accID) {
@@ -163,10 +163,10 @@ public class AnnoQuery extends RunProcess<AnnoQuery.AnnoQueryDisplayInfo>{
 		return result;
 	}
 	/**
-	 * ×¢ÊÍÊı¾İ£¬ĞèÒªblast
-	 * @param info ¸ø¶¨Ò»ĞĞĞÅÏ¢
-	 * @param taxID ÎïÖÖ
-	 * @param accColNum ¾ßÌå¸ÃinfoµÄÄÄ¸öcolumn£¬Êµ¼Êcolumn
+	 * æ³¨é‡Šæ•°æ®ï¼Œéœ€è¦blast
+	 * @param info ç»™å®šä¸€è¡Œä¿¡æ¯
+	 * @param taxID ç‰©ç§
+	 * @param accColNum å…·ä½“è¯¥infoçš„å“ªä¸ªcolumnï¼Œå®é™…column
 	 * @return
 	 */
 	private static String[] getInfoBlast(String[] info, int taxID, int subTaxID, double evalue, String accID) {

@@ -11,25 +11,25 @@ import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
- * »ñµÃÒ»¸ö±íµÄÖĞÎ»Êı
+ * è·å¾—ä¸€ä¸ªè¡¨çš„ä¸­ä½æ•°
  * @author zong0jie
  *
  */
 public class MedianGet {
 	public static void main(String[] args) {
 		MedianGet medianGet = new MedianGet();
-//		medianGet.getMedian("/media/winE/NBC/Project/miRNA_ZHENYANSUO_111018/20111113/miRNAÖÎÁÆºóVSÖÎÁÆÇ°.xls", 1, 
-//				"/media/winE/NBC/Project/miRNA_ZHENYANSUO_111018/20111113/miRNAÖÎÁÆºóVSÖÎÁÆÇ°_cope.xls", 2,3,4,5,6,7,8,9,10,11,12,13,14,15);
-		String file = "/home/zong0jie/×ÀÃæ/¹²±í´ïĞÅºÅÖµ - ¸±±¾.xls";
+//		medianGet.getMedian("/media/winE/NBC/Project/miRNA_ZHENYANSUO_111018/20111113/miRNAæ²»ç–—åVSæ²»ç–—å‰.xls", 1, 
+//				"/media/winE/NBC/Project/miRNA_ZHENYANSUO_111018/20111113/miRNAæ²»ç–—åVSæ²»ç–—å‰_cope.xls", 2,3,4,5,6,7,8,9,10,11,12,13,14,15);
+		String file = "/home/zong0jie/æ¡Œé¢/å…±è¡¨è¾¾ä¿¡å·å€¼ - å‰¯æœ¬.xls";
 		medianGet.getMedian(file, 1, 
 		FileOperate.changeFileSuffix(file, "_median", null), 2,3,4,5,6);
 	}
 
 	/**
-	 * @param filename ÎÄ¼şÃû
-	 * @param colAccID accIDËùÔÚµÄÁĞ£¬Êµ¼ÊÊı×Ö
-	 * @param outFile Êä³öÎÄ¼şÃû
-	 * @param colNum doubleÊı×ÖËùÔÚµÄÁĞ£¬Êµ¼ÊÊı×Ö
+	 * @param filename æ–‡ä»¶å
+	 * @param colAccID accIDæ‰€åœ¨çš„åˆ—ï¼Œå®é™…æ•°å­—
+	 * @param outFile è¾“å‡ºæ–‡ä»¶å
+	 * @param colNum doubleæ•°å­—æ‰€åœ¨çš„åˆ—ï¼Œå®é™…æ•°å­—
 	 */
 	public void getMedian(String excelFile, int colAccID, String outFile,int... colNum) {
 		ArrayList<Integer> lsCol = new ArrayList<Integer>();

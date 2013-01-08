@@ -30,17 +30,17 @@ import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.nbcgui.GUI.GuiAnnoInfo;
 
 /**
- * µÃµ½Ã¿¸ögeneµÄJunctionºó£¬¿ªÊ¼¼ÆËãÆä¿É±ä¼ô½ÓµÄ²îÒì
+ * å¾—åˆ°æ¯ä¸ªgeneçš„Junctionåï¼Œå¼€å§‹è®¡ç®—å…¶å¯å˜å‰ªæ¥çš„å·®å¼‚
  * @author zong0jie
  */
 public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	private static Logger logger = Logger.getLogger(ExonJunction.class);
 
 	GffHashGene gffHashGene = null;
-	/** È«Ìå²îÒì»ùÒòµÄÍâÏÔ×Ó
+	/** å…¨ä½“å·®å¼‚åŸºå› çš„å¤–æ˜¾å­
 	 * ls--
-	 * ls£ºgene
-	 * ExonSplicingTest£ºdifexon
+	 * lsï¼šgene
+	 * ExonSplicingTestï¼šdifexon
 	 *  */
 	ArrayList<ArrayList<ExonSplicingTest>> lsSplicingTests;
 	
@@ -51,59 +51,59 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	
 	ArrayListMultimap<String, SamFileReading> mapCond2SamReader = ArrayListMultimap.create();
 	
-	/** Í³¼Æ¿É±ä¼ô½ÓÊÂ¼şµÄmap
-	 * key£º¿É±ä¼ô½ÓÀàĞÍ
-	 * value£ºint[2]
-	 * 0£º ²îÒì¿É±ä¼ô½ÓÊıÁ¿
-	 * 1£º È«Ìå¿É±ä¼ô½ÓÊıÁ¿
+	/** ç»Ÿè®¡å¯å˜å‰ªæ¥äº‹ä»¶çš„map
+	 * keyï¼šå¯å˜å‰ªæ¥ç±»å‹
+	 * valueï¼šint[2]
+	 * 0ï¼š å·®å¼‚å¯å˜å‰ªæ¥æ•°é‡
+	 * 1ï¼š å…¨ä½“å¯å˜å‰ªæ¥æ•°é‡
 	 *  */
 	HashMap<ExonSplicingType, int[]> mapSplicingType2Num = new LinkedHashMap<ExonSplicingType, int[]>();
-	double pvalue = 0.05;//±íÊ¾²îÒì¿É±ä¼ô½ÓµÄÊÂ¼şµÄpvalueãĞÖµ
+	double pvalue = 0.05;//è¡¨ç¤ºå·®å¼‚å¯å˜å‰ªæ¥çš„äº‹ä»¶çš„pvalueé˜ˆå€¼
 	
 	/** 
-	 * Ò»¸ö»ùÒò¿ÉÄÜÓĞ¶à¸ö¿É±ä¼ô½ÓÊÂ¼ş£¬µ«ÊÇÎÒÃÇ¿ÉÒÔÖ»ÌôÑ¡ÆäÖĞ×îÏÔÖøµÄÄÇ¸ö¿É±ä¼ô½ÓÊÂ¼ş
-	 * Ò²¿ÉÒÔÊä³öÈ«²¿µÄ¿É±ä¼ô½ÓÊÂ¼ş
-	 * Ã¿¸ö»ùÒòÖ»ÓĞÒ»¸ö¿É±ä¼ô½ÓÊÂ¼ş
+	 * ä¸€ä¸ªåŸºå› å¯èƒ½æœ‰å¤šä¸ªå¯å˜å‰ªæ¥äº‹ä»¶ï¼Œä½†æ˜¯æˆ‘ä»¬å¯ä»¥åªæŒ‘é€‰å…¶ä¸­æœ€æ˜¾è‘—çš„é‚£ä¸ªå¯å˜å‰ªæ¥äº‹ä»¶
+	 * ä¹Ÿå¯ä»¥è¾“å‡ºå…¨éƒ¨çš„å¯å˜å‰ªæ¥äº‹ä»¶
+	 * æ¯ä¸ªåŸºå› åªæœ‰ä¸€ä¸ªå¯å˜å‰ªæ¥äº‹ä»¶
 	 */
 	boolean oneGeneOneSpliceEvent = true;
 	
 	SeqHash seqHash;
 	
 	/** 
-	 * mapreads¶ÁÈ¡bamÎÄ¼şµÄ×îĞ¡·Ö±æÂÊ £¬·Ö±æÂÊÔ½Ğ¡¾«¶ÈÔ½¸ßµ«ÊÇÄÚ´æÏûºÄÔ½´ó
-	 * ÔÚÕâÀï¸ß·Ö±æÂÊÃ»ÓĞÒâÒå£¬15¾ÍĞĞÁË
+	 * mapreadsè¯»å–bamæ–‡ä»¶çš„æœ€å°åˆ†è¾¨ç‡ ï¼Œåˆ†è¾¨ç‡è¶Šå°ç²¾åº¦è¶Šé«˜ä½†æ˜¯å†…å­˜æ¶ˆè€—è¶Šå¤§
+	 * åœ¨è¿™é‡Œé«˜åˆ†è¾¨ç‡æ²¡æœ‰æ„ä¹‰ï¼Œ15å°±è¡Œäº†
 	 */
 	int mapreadsBin = 15;
 	
 	boolean isLessMemory = true;
 	/**
-	 * ±íÊ¾²îÒì¿É±ä¼ô½ÓµÄÊÂ¼şµÄpvalueãĞÖµ£¬½öÓÃÓÚÍ³¼Æ²îÒì¿É±ä¼ô½ÓÊÂ¼şµÄÊıÁ¿£¬²»ÓÃÓÚ¿É±ä¼ô½ÓµÄÉ¸Ñ¡
+	 * è¡¨ç¤ºå·®å¼‚å¯å˜å‰ªæ¥çš„äº‹ä»¶çš„pvalueé˜ˆå€¼ï¼Œä»…ç”¨äºç»Ÿè®¡å·®å¼‚å¯å˜å‰ªæ¥äº‹ä»¶çš„æ•°é‡ï¼Œä¸ç”¨äºå¯å˜å‰ªæ¥çš„ç­›é€‰
 	 * @param pvalue
 	 */
 	public void setPvalue(double pvalue) {
 		this.pvalue = pvalue;
 	}
 	/**
-	 * ÊÇ·ñ²ÉÓÃ½ÚÊ¡ÄÚ´æÄ£Ê½
-	 * Èç¹û½ÚÊ¡ÄÚ´æ¾ÍÓÃSamMapReads ËÙ¶ÈÂı
-	 * Èç¹ûºÄÄÚ´æ¾ÍÓÃMapReads ËÙ¶È¿ì
+	 * æ˜¯å¦é‡‡ç”¨èŠ‚çœå†…å­˜æ¨¡å¼
+	 * å¦‚æœèŠ‚çœå†…å­˜å°±ç”¨SamMapReads é€Ÿåº¦æ…¢
+	 * å¦‚æœè€—å†…å­˜å°±ç”¨MapReads é€Ÿåº¦å¿«
 	 * @param isLessMemory
 	 */
 	public void setIsLessMemory(boolean isLessMemory) {
 		this.isLessMemory = isLessMemory;
 	}
 	/** 
-	 * mapreads¶ÁÈ¡bamÎÄ¼şµÄ×îĞ¡·Ö±æÂÊ £¬·Ö±æÂÊÔ½Ğ¡¾«¶ÈÔ½¸ßµ«ÊÇÄÚ´æÏûºÄÔ½´ó
-	 * ÔÚÕâÀï¸ß·Ö±æÂÊÃ»ÓĞÒâÒå£¬15¾ÍĞĞÁË
+	 * mapreadsè¯»å–bamæ–‡ä»¶çš„æœ€å°åˆ†è¾¨ç‡ ï¼Œåˆ†è¾¨ç‡è¶Šå°ç²¾åº¦è¶Šé«˜ä½†æ˜¯å†…å­˜æ¶ˆè€—è¶Šå¤§
+	 * åœ¨è¿™é‡Œé«˜åˆ†è¾¨ç‡æ²¡æœ‰æ„ä¹‰ï¼Œ15å°±è¡Œäº†
 	 */
 	public void setMapreadsBin(int mapreadsBin) {
 		this.mapreadsBin = mapreadsBin;
 	}
 	/** 
-	 * Ò»¸ö»ùÒò¿ÉÄÜÓĞ¶à¸ö¿É±ä¼ô½ÓÊÂ¼ş£¬µ«ÊÇÎÒÃÇ¿ÉÒÔÖ»ÌôÑ¡ÆäÖĞ×îÏÔÖøµÄÄÇ¸ö¿É±ä¼ô½ÓÊÂ¼ş
-	 * Ò²¿ÉÒÔÊä³öÈ«²¿µÄ¿É±ä¼ô½ÓÊÂ¼ş
-	 * @param oneGeneOneSpliceEvent true:  Ã¿¸ö»ùÒòÖ»ÓĞÒ»¸ö¿É±ä¼ô½ÓÊÂ¼ş, Ä¬ÈÏÎªtrue
-	 * false: Ã¿¸ö»ùÒòÊä³öÈ«²¿¿É±ä¼ô½ÓÊÂ¼ş
+	 * ä¸€ä¸ªåŸºå› å¯èƒ½æœ‰å¤šä¸ªå¯å˜å‰ªæ¥äº‹ä»¶ï¼Œä½†æ˜¯æˆ‘ä»¬å¯ä»¥åªæŒ‘é€‰å…¶ä¸­æœ€æ˜¾è‘—çš„é‚£ä¸ªå¯å˜å‰ªæ¥äº‹ä»¶
+	 * ä¹Ÿå¯ä»¥è¾“å‡ºå…¨éƒ¨çš„å¯å˜å‰ªæ¥äº‹ä»¶
+	 * @param oneGeneOneSpliceEvent true:  æ¯ä¸ªåŸºå› åªæœ‰ä¸€ä¸ªå¯å˜å‰ªæ¥äº‹ä»¶, é»˜è®¤ä¸ºtrue
+	 * false: æ¯ä¸ªåŸºå› è¾“å‡ºå…¨éƒ¨å¯å˜å‰ªæ¥äº‹ä»¶
 	 */
 	public void setOneGeneOneSpliceEvent(boolean oneGeneOneSpliceEvent) {
 		this.oneGeneOneSpliceEvent = oneGeneOneSpliceEvent;
@@ -117,7 +117,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		this.seqHash = seqHash;
 	}
 	
-	/** ´ÓÈ«»ùÒò×éÖĞ»ñÈ¡²îÒìµÄ¿É±ä¼ô½ÓÊÂ¼ş£¬·ÅÈëlsSplicingTestÖĞ */
+	/** ä»å…¨åŸºå› ç»„ä¸­è·å–å·®å¼‚çš„å¯å˜å‰ªæ¥äº‹ä»¶ï¼Œæ”¾å…¥lsSplicingTestä¸­ */
 	private void fillLsAll_Dif_Iso_Exon() {
 		ArrayList<GffDetailGene> lsGffDetailGenes = gffHashGene.getGffDetailAll();
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
@@ -140,7 +140,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	/**
-	 * ¼ÆÊı£¬¿´ÓĞ¶àÉÙisoÓëgffDetailGeneÍ¬·½Ïò£¬Èç¹ûÖ»ÓĞÒ»¸ö£¬ÔòÌø¹ı¸Ã»ùÒò
+	 * è®¡æ•°ï¼Œçœ‹æœ‰å¤šå°‘isoä¸gffDetailGeneåŒæ–¹å‘ï¼Œå¦‚æœåªæœ‰ä¸€ä¸ªï¼Œåˆ™è·³è¿‡è¯¥åŸºå› 
 	 * @param gffDetailGene
 	 * @return
 	 */
@@ -155,7 +155,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	/**
-	 * »ñµÃÃ¿¸ö gffDetailGeneÖĞµÄËùÓĞ²îÒìexon£¬°ü×°³É LsExonSplicingTest ²¢·µ»Ø
+	 * è·å¾—æ¯ä¸ª gffDetailGeneä¸­çš„æ‰€æœ‰å·®å¼‚exonï¼ŒåŒ…è£…æˆ LsExonSplicingTest å¹¶è¿”å›
 	 * @param gffDetailGene
 	 * @return
 	 */
@@ -180,8 +180,8 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		this.condition2 = condition2;
 	}
 	/**
-	 * Éè¶¨junctionÎÄ¼şÒÔ¼°Ëù¶ÔÓ¦µÄÊ±ÆÚ
-	 * Ä¿Ç°Ö»ÄÜ×öÁ½¸öÊ±ÆÚµÄ±È½Ï
+	 * è®¾å®šjunctionæ–‡ä»¶ä»¥åŠæ‰€å¯¹åº”çš„æ—¶æœŸ
+	 * ç›®å‰åªèƒ½åšä¸¤ä¸ªæ—¶æœŸçš„æ¯”è¾ƒ
 	 * @param condition
 	 * @param junctionFile
 	 */
@@ -201,7 +201,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		getTestResult_FromIso();
 	}
 	
-	//TODO ¿¼ÂÇ½«Æä¶ÀÁ¢³öÀ´£¬³ÉÎªÒ»¸ö¶ÁÈ¡Àà£¬È»ºóÍùÀïÃæÌí¼Ó¸÷ÖÖĞÅÏ¢Æ©Èç»ñµÃ±í´ïÖµ£¬»ñµÃ²îÒì¿É±ä¼ô½ÓµÈ
+	//TODO è€ƒè™‘å°†å…¶ç‹¬ç«‹å‡ºæ¥ï¼Œæˆä¸ºä¸€ä¸ªè¯»å–ç±»ï¼Œç„¶åå¾€é‡Œé¢æ·»åŠ å„ç§ä¿¡æ¯è­¬å¦‚è·å¾—è¡¨è¾¾å€¼ï¼Œè·å¾—å·®å¼‚å¯å˜å‰ªæ¥ç­‰
 	public void loadBamFile() {
 		TophatJunction tophatJunction = new TophatJunction();
 		for (String condition : mapCond2SamReader.keySet()) {
@@ -233,7 +233,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		mapReads.setNormalType(MapReads.NORMALIZATION_NO);
 		mapReads.setisUniqueMapping(true);
 		mapReads.prepareAlignRecord(samFileReading.getSamFile().readFirstLine());
-		//TODO ¿ÉÒÔ¿¼ÂÇ´ÓgtfÎÄ¼şÖĞ»ñÈ¡»ùÒò×é³¤¶ÈÈ»ºó¸øMapReadsÊ¹ÓÃ
+		//TODO å¯ä»¥è€ƒè™‘ä»gtfæ–‡ä»¶ä¸­è·å–åŸºå› ç»„é•¿åº¦ç„¶åç»™MapReadsä½¿ç”¨
 		mapReads.setMapChrID2Len(gffHashGene.getChrID2LengthForRNAseq());
 		samFileReading.addAlignmentRecorder(mapReads);
 		return mapReads;
@@ -246,7 +246,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		return samMapReads;
 	}
 	
-	/** ½«±í´ïĞÅÏ¢¼ÓÈëÍ³¼Æ */
+	/** å°†è¡¨è¾¾ä¿¡æ¯åŠ å…¥ç»Ÿè®¡ */
 	private void addMapReadsInfo(String condition, MapReadsAbs mapReads) {
 		int num = 0;
 		for (ArrayList<ExonSplicingTest> lsExonTest : lsSplicingTests) {
@@ -261,7 +261,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		}
 	}
 
-	/** »ñµÃ¼ìÑéÍê±ÏµÄtest */
+	/** è·å¾—æ£€éªŒå®Œæ¯•çš„test */
 	public ArrayList<ExonSplicingTest> getTestResult_FromIso() {
 		initialMapSplicingType2Num();
 		setConditionWhileConditionIsNull();
@@ -295,24 +295,24 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		}
 	}
 	/**
-	 * ¼ÆËãÃ¿¸öÊ±ÆÚµÄexonµÄ²îÖµ
+	 * è®¡ç®—æ¯ä¸ªæ—¶æœŸçš„exonçš„å·®å€¼
 	 * @param lsExonClusters
-	 * @return ls ExonSplicingTest -- ls Ã¿¸öÊ±ÆÚ -- ËùÉæ¼°µ½µÄexonµÄ¼ìÑé½á¹û£¬°´ÕÕpvalue´ÓĞ¡µ½´óÅÅĞò
+	 * @return ls ExonSplicingTest -- ls æ¯ä¸ªæ—¶æœŸ -- æ‰€æ¶‰åŠåˆ°çš„exonçš„æ£€éªŒç»“æœï¼ŒæŒ‰ç…§pvalueä»å°åˆ°å¤§æ’åº
 	 */
 	private void doTest_And_StatisticSplicingEvent(ArrayList<ExonSplicingTest> lsExonSplicingTest) {
 		for (ExonSplicingTest exonSplicingTest : lsExonSplicingTest) {
 			exonSplicingTest.setConditionsetAndJunction(setCondition, tophatJunction);
 			exonSplicingTest.setCompareCondition(condition1, condition2);
 		}
-		//°´ÕÕpvalue´ÓĞ¡µ½´óÅÅĞò
+		//æŒ‰ç…§pvalueä»å°åˆ°å¤§æ’åº
 		sortLsExonTest_Use_Pvalue(lsExonSplicingTest);
 		statisticsSplicingEvent(lsExonSplicingTest);
 	}
 	
 	/**
-	 *  Ò»°ãÊÇ15::5	13::0	ÕâÖÖĞÎÊ½
-	 * µ«ÓĞÊ±ºò»á³öÏÖ15	13 ÕâÖÖÃ÷ÏÔ²»ÊÇ×ªÂ¼±¾µÄ
-	 * ËùÒÔÔÚÕâÀï¼ì²é¸ÃÖµ²¢ÇÒÉ¾³ı£¬µ«ÊÇÕâÊÇÖÎ±ê²»ÖÎ±¾µÄ×ö·¨£¬¸ãÇå³şÎªÉ¶·¢Éú
+	 *  ä¸€èˆ¬æ˜¯15::5	13::0	è¿™ç§å½¢å¼
+	 * ä½†æœ‰æ—¶å€™ä¼šå‡ºç°15	13 è¿™ç§æ˜æ˜¾ä¸æ˜¯è½¬å½•æœ¬çš„
+	 * æ‰€ä»¥åœ¨è¿™é‡Œæ£€æŸ¥è¯¥å€¼å¹¶ä¸”åˆ é™¤ï¼Œä½†æ˜¯è¿™æ˜¯æ²»æ ‡ä¸æ²»æœ¬çš„åšæ³•ï¼Œææ¸…æ¥šä¸ºå•¥å‘ç”Ÿ
 	 * @param lsIsoExonSplicingTests
 	 * @return
 	 */
@@ -329,7 +329,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 
 	/**
-	 * Í³¼Æ¿É±ä¼ô½ÓÊÂ¼ş
+	 * ç»Ÿè®¡å¯å˜å‰ªæ¥äº‹ä»¶
 	 * @param lsExonSplicingTest
 	 */
 	private void statisticsSplicingEvent(ArrayList<ExonSplicingTest> lsExonSplicingTest) {
@@ -349,7 +349,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		}
 	}
 	
-	/** Ğ´ÈëÎÄ±¾ */
+	/** å†™å…¥æ–‡æœ¬ */
 	public void writeToFile(String fileName) {
 		TxtReadandWrite txtOut = new TxtReadandWrite(fileName, true);
 		ArrayList<ExonSplicingTest> lsSplicingTests = getTestResult_FromIso();
@@ -370,7 +370,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	private void sortLsExonTest_Use_Pvalue(ArrayList<ExonSplicingTest> lsExonSplicingTest) {
-		//°´ÕÕpvalue´ÓĞ¡µ½´óÅÅĞò
+		//æŒ‰ç…§pvalueä»å°åˆ°å¤§æ’åº
 		Collections.sort(lsExonSplicingTest, new Comparator<ExonSplicingTest>() {
 			public int compare(ExonSplicingTest o1, ExonSplicingTest o2) {
 				return o1.getAndCalculatePvalue().compareTo(o2.getAndCalculatePvalue());

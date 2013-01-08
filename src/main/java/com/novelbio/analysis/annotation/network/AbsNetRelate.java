@@ -3,37 +3,37 @@ package com.novelbio.analysis.annotation.network;
 import java.util.Set;
 
 /**
- * ±£´æÍøÂçÍ¼ÖĞÁ½¸ö½ÚµãÖ®¼äµÄ¹ØÏµ<br>
+ * ä¿å­˜ç½‘ç»œå›¾ä¸­ä¸¤ä¸ªèŠ‚ç‚¹ä¹‹é—´çš„å…³ç³»<br>
  * @author zong0jie
  */
 public class AbsNetRelate {
 	/**
-	 * KEGG£º
-	 * ÓëÁíÒ»¸öµ°°××é³ÉÁËÒ»¸ö´óµÄ¸´ºÏÎï£¬È»ºó¸Ã¸´ºÏÎï»á²ÎÓëºóĞøµÄpathway£¬ËùÒÔÓöµ½¸ÃÇé¿öĞèÒª½«ÕâÁ½¸öµ°°×ºÏ²¢ID
+	 * KEGGï¼š
+	 * ä¸å¦ä¸€ä¸ªè›‹ç™½ç»„æˆäº†ä¸€ä¸ªå¤§çš„å¤åˆç‰©ï¼Œç„¶åè¯¥å¤åˆç‰©ä¼šå‚ä¸åç»­çš„pathwayï¼Œæ‰€ä»¥é‡åˆ°è¯¥æƒ…å†µéœ€è¦å°†è¿™ä¸¤ä¸ªè›‹ç™½åˆå¹¶ID
 	 */
 	public static String RELATE_GROUP = "group"; 
 	/**
-	 * KEGG£º
+	 * KEGGï¼š
 	 * enzyme-enzyme relation, indicating two enzymes catalyzing successive reaction steps
 	 */
 	public static String RELATE_ECREL = "ECrel"; 
 	/**
-	 * KEGG£º
+	 * KEGGï¼š
 	 * protein-protein interaction, such as binding and modification
 	 */
 	public static String RELATE_PPREL = "PPrel"; 
 	/**
-	 * KEGG£º
+	 * KEGGï¼š
 	 * gene expression interaction, indicating relation of transcription factor and target gene product
 	 */
 	public static String RELATE_GEREL = "GErel"; 
 	/**
-	 * KEGG£º
+	 * KEGGï¼š
 	 * protein-compound interaction
 	 */
 	public static String RELATE_PCREL = "PCrel"; 
 	/**
-	 * KEGG£º
+	 * KEGGï¼š
 	 * enzyme-enzyme relation, indicating two enzymes catalyzing successive reaction steps
 	 */
 	public static String RELATE_MAPLINK = "maplink"; 
@@ -55,25 +55,25 @@ public class AbsNetRelate {
 	public static String RELATE_INDIRECT_COMPLEX = "indirect_complex";
 	
 	
-	///////////////ÒÔÉÏÊÇ¸÷ÖÖ³£Á¿//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////ä»¥ä¸Šæ˜¯å„ç§å¸¸é‡//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	AbsNetEntity absNetEntity1;
 	AbsNetEntity absNetEntity2;
 	
 	/**
-	 * RelateType£¬RelateTpye±ØĞëÔÚ±¾ÀàµÄ³£Á¿RELATEÏµÁĞÖĞ
+	 * RelateTypeï¼ŒRelateTpyeå¿…é¡»åœ¨æœ¬ç±»çš„å¸¸é‡RELATEç³»åˆ—ä¸­
 	 * @param absNetRelate
 	 */
 	String relateType = "";
 	/**
-	 * Éè¶¨µÚÒ»¸ö½Úµã
+	 * è®¾å®šç¬¬ä¸€ä¸ªèŠ‚ç‚¹
 	 * @param absNetRelate
 	 */
 	public void setNetEntity1(AbsNetEntity absNetEntity1) {
 		this.absNetEntity1 = absNetEntity1;
 	}
 	/**
-	 * »ñµÃµÚÒ»¸ö½Úµã
+	 * è·å¾—ç¬¬ä¸€ä¸ªèŠ‚ç‚¹
 	 * @param absNetRelate
 	 */
 	public AbsNetEntity getNetEntity1() {
@@ -81,14 +81,14 @@ public class AbsNetRelate {
 	}
 
 	/**
-	 * Éè¶¨µÚ¶ş¸ö½Úµã
+	 * è®¾å®šç¬¬äºŒä¸ªèŠ‚ç‚¹
 	 * @param absNetRelate
 	 */
 	public void setNetEntity2(AbsNetEntity absNetEntity2) {
 		this.absNetEntity2 = absNetEntity2;
 	}
 	/**
-	 * »ñµÃµÚ¶ş¸ö½Úµã
+	 * è·å¾—ç¬¬äºŒä¸ªèŠ‚ç‚¹
 	 * @param absNetRelate
 	 */
 	public AbsNetEntity getNetEntity2() {
@@ -96,14 +96,14 @@ public class AbsNetRelate {
 	}
 	
 	/**
-	 * Éè¶¨RelateType£¬RelateTpye±ØĞëÔÚ±¾ÀàµÄ³£Á¿RELATEÏµÁĞÖĞ
+	 * è®¾å®šRelateTypeï¼ŒRelateTpyeå¿…é¡»åœ¨æœ¬ç±»çš„å¸¸é‡RELATEç³»åˆ—ä¸­
 	 * @param absNetRelate
 	 */
 	public void setRelateType(String relateType) {
 		this.relateType = relateType;
 	}
 	/**
-	 * »ñµÃRelateType£¬RelateTpye±ØĞëÔÚ±¾ÀàµÄ³£Á¿RELATEÏµÁĞÖĞ
+	 * è·å¾—RelateTypeï¼ŒRelateTpyeå¿…é¡»åœ¨æœ¬ç±»çš„å¸¸é‡RELATEç³»åˆ—ä¸­
 	 * @param absNetRelate
 	 */
 	public String getRelateType() {

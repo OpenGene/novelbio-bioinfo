@@ -16,7 +16,7 @@ import com.novelbio.generalConf.NovelBioConst;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 /**
- * µ÷ÓÃDEGseqËã·¨£¬ÊÊÓÃÓÚRPKMµÄÊÔÑé£¬Æ©ÈçmRNAseq
+ * è°ƒç”¨DEGseqç®—æ³•ï¼Œé€‚ç”¨äºRPKMçš„è¯•éªŒï¼Œè­¬å¦‚mRNAseq
  * @author zong0jie
  */
 public class DiffExpDEGseq extends DiffExpAbs {
@@ -26,7 +26,7 @@ public class DiffExpDEGseq extends DiffExpAbs {
 		rawScript = PathDetail.getRworkspace().replace("\\", "/") + "DEGseqJava.txt";
 
 	}
-	/** »ùÒò±ê¼ÇÁĞ£¬Êµ¼ÊÁĞ£¬ÓÃÔÚRÀïÃæ£¬ËùÒÔ²»ĞèÒª¼õ1 */
+	/** åŸºå› æ ‡è®°åˆ—ï¼Œå®é™…åˆ—ï¼Œç”¨åœ¨Ré‡Œé¢ï¼Œæ‰€ä»¥ä¸éœ€è¦å‡1 */
 	public void setColID(int colID) {
 		this.colAccID = colID;
 		calculate = false;
@@ -75,7 +75,7 @@ public class DiffExpDEGseq extends DiffExpAbs {
 	}
 
 	/**
-	 * ¸ù¾İÊäÈëµÄcol2sampleName£¬·µ»ØMap¶ÔÕÕ±í
+	 * æ ¹æ®è¾“å…¥çš„col2sampleNameï¼Œè¿”å›Mapå¯¹ç…§è¡¨
 	 * @return
 	 */
 	private HashMap<String, ArrayList<Integer>> getMapSample2LsCol() {
@@ -94,7 +94,7 @@ public class DiffExpDEGseq extends DiffExpAbs {
 	}
 
 	/**
-	 * ¸ø¶¨Ñù±¾colµÄlist£¬·µ»ØÑù±¾ËùÔÚµÄÁĞ1£¬2£¬4£¬5Õâ¸öÑù×ÓµÄÎÄ±¾
+	 * ç»™å®šæ ·æœ¬colçš„listï¼Œè¿”å›æ ·æœ¬æ‰€åœ¨çš„åˆ—1ï¼Œ2ï¼Œ4ï¼Œ5è¿™ä¸ªæ ·å­çš„æ–‡æœ¬
 	 * 
 	 * @param lsSample
 	 * @return
@@ -127,7 +127,7 @@ public class DiffExpDEGseq extends DiffExpAbs {
 		}
 		return result;
 	}
-	/** ±È½ÏµÄÁĞ£¬Ö±½Ó·µ»ØÀàËÆ1£¬2£¬3£¬4Õâ¸öÑù×ÓµÄÎÄ±¾¼´¿É */
+	/** æ¯”è¾ƒçš„åˆ—ï¼Œç›´æ¥è¿”å›ç±»ä¼¼1ï¼Œ2ï¼Œ3ï¼Œ4è¿™ä¸ªæ ·å­çš„æ–‡æœ¬å³å¯ */
 	private String getSampleCol(int sampleNum) {
 		String result = "2";
 		for (int i = 2; i <= sampleNum; i++) {
@@ -140,13 +140,13 @@ public class DiffExpDEGseq extends DiffExpAbs {
 	protected void setOutScriptPath() {
 		outScript = workSpace + "DEGseq_" + DateTime.getDateAndRandom() + ".R";
 	}
-	/** ÊäÈëÎÄ¼şĞ´³ÉtxtÎÄ±¾ */
+	/** è¾“å…¥æ–‡ä»¶å†™æˆtxtæ–‡æœ¬ */
 	@Override
 	protected void setFileNameRawdata() {
 		fileNameRawdata = workSpace + "DEGseqGeneInfo_" + DateTime.getDateAndRandom() + ".txt";
 	}
 	/**
-	 * ²»ĞèÒªÌáÈ¡×¨ÃÅµÄĞÅÏ¢
+	 * ä¸éœ€è¦æå–ä¸“é—¨çš„ä¿¡æ¯
 	 */
 	@Override
 	protected void writeToGeneFile() {
@@ -180,13 +180,13 @@ public class DiffExpDEGseq extends DiffExpAbs {
 			lsResult.add(tmpResult);
 		}
 //		FileOperate.DeleteFileFolder(outFileName + outPutSuffix);
-		//·ÀÖ¹R»¹Ã»Êä³ö½á¹û¾ÍÈ¥¶ÁÈ¡
+		//é˜²æ­¢Rè¿˜æ²¡è¾“å‡ºç»“æœå°±å»è¯»å–
 		try { Thread.sleep(50); } catch (Exception e) { }
 		
 		TxtReadandWrite txtOutFinal = new TxtReadandWrite(outFileName, true);
 		txtOutFinal.ExcelWrite(lsResult);
 	}
-	/** A³ıÒÔB£¬ÖĞ¼ä´¦ÀíÁËÒ»Ğ©Òì³£ */
+	/** Aé™¤ä»¥Bï¼Œä¸­é—´å¤„ç†äº†ä¸€äº›å¼‚å¸¸ */
 	private String division(String A, String B) {
 		if (A.equals("NA") && B.equals("NA")) {
 			return "NA";

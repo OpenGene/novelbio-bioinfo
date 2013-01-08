@@ -68,8 +68,8 @@ public class GuiPearsonJpanel extends JPanel{
 	private JLabel jLabPathQtaxID;
 	private JScrollPaneData jScrollPaneInputPath;
 	////////////
-	static int QtaxID = 0;//²éÑ¯ÎïÖÖID
-	static int StaxID = 9606;//blastÎïÖÖID
+	static int QtaxID = 0;//æŸ¥è¯¢ç‰©ç§ID
+	static int StaxID = 9606;//blastç‰©ç§ID
 	
 	
 	public GuiPearsonJpanel() 
@@ -296,7 +296,7 @@ public class GuiPearsonJpanel extends JPanel{
 		Application.getInstance().getContext().getResourceMap(getClass()).injectComponents(this);
 	}
 	/**
-	 * ²é¿´ÎÄ¼şµÄÊó±ê»ò¼üÅÌÊÂ¼şÏìÓ¦Ê±µ÷ÓÃ
+	 * æŸ¥çœ‹æ–‡ä»¶çš„é¼ æ ‡æˆ–é”®ç›˜äº‹ä»¶å“åº”æ—¶è°ƒç”¨
 	 */
 	private void setPathProview(String filePath) {
 		ExcelOperate excelOperate = new ExcelOperate();

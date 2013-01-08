@@ -130,7 +130,7 @@ public class GuiRNASeqMapping extends JPanel {
 		});
 		cmbSpecies.setMapItem(Species.getSpeciesName2Species(Species.SEQINFO_SPECIES));
 		cmbSpecies.setBounds(9, 261, 147, 23);
-		//≥ı ºªØcmbSpeciesVersion
+		//ÂàùÂßãÂåñcmbSpeciesVersion
 		try { cmbSpeciesVersion.setMapItem(cmbSpecies.getSelectedValue().getMapVersion()); 	} catch (Exception e) { }
 		
 		add(cmbSpecies);

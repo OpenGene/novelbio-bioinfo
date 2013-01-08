@@ -10,22 +10,22 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 public class FastQRecord implements Cloneable {
 	private static Logger logger = Logger.getLogger(FastQRecord.class);
-	/** ÍòÒ»fastqÃ»ÓĞÃû×Ö£¬¾Í¸øËüËæ»ú¼Ó¸öÃû×Ö */
+	/** ä¸‡ä¸€fastqæ²¡æœ‰åå­—ï¼Œå°±ç»™å®ƒéšæœºåŠ ä¸ªåå­— */
 	static String SEQNAME = "Novelbio";
 	static long i = 0;
 	
-	/** fastQÀïÃæasc||ÂëµÄÖ¸±êÓë¸öÊı */
+	/** fastQé‡Œé¢asc||ç çš„æŒ‡æ ‡ä¸ä¸ªæ•° */
 	HashMap<Integer, Integer> mapFastQFilter;
 	
-	/** ¶ÁÈëµÄÎÄ±¾£¬½ö½öÓÃÓÚ³õÊ¼»¯ */
+	/** è¯»å…¥çš„æ–‡æœ¬ï¼Œä»…ä»…ç”¨äºåˆå§‹åŒ– */
 	String fastqStringReadIn;
 
 	private SeqFasta seqFasta = new SeqFasta();
 	protected int fastqOffset = FastQ.FASTQ_SANGER_OFFSET;
 	protected String seqQuality = "";
-	/** ĞòÁĞÖÊÁ¿¿ØÖÆ£¬µÍÓÚ¸ÃÖÊÁ¿¾ÍËµÃ÷±¾¼ÇÂ¼ÓĞÎÊÌâ */
+	/** åºåˆ—è´¨é‡æ§åˆ¶ï¼Œä½äºè¯¥è´¨é‡å°±è¯´æ˜æœ¬è®°å½•æœ‰é—®é¢˜ */
 	protected int quality = FastQ.QUALITY_MIDIAN;
-	/** ²Ã¼ôĞòÁĞÊ±×î¶ÌÎª¶àÉÙ */
+	/** è£å‰ªåºåˆ—æ—¶æœ€çŸ­ä¸ºå¤šå°‘ */
 	private int readsMinLen = 22;
 	
 	
@@ -35,14 +35,14 @@ public class FastQRecord implements Cloneable {
 		seqFasta.setTOLOWCASE(null);
 	}
 	/**
-	 * Ã¿ËÄĞĞÒ»¸ö¼ÇÂ¼£¬½«ÕâËÄĞĞÓÃlinux»Ø³µ¸ô¿ª£¬È»ºóÊäÈë
+	 * æ¯å››è¡Œä¸€ä¸ªè®°å½•ï¼Œå°†è¿™å››è¡Œç”¨linuxå›è½¦éš”å¼€ï¼Œç„¶åè¾“å…¥
 	 * @param fastqlines
 	 */
 	public FastQRecord(String fastqlines) {
 		this(fastqlines, true);
 	}
-	/** ¶ÁÈëfastqÎÄ¼şµ«¸ù¾İĞèÒª½øĞĞ³õÊ¼»¯
-	 * ÓÃÔÚfastq¹ıÂËµÄÊ±ºò£¬¿ÉÒÔÏÈ²»³õÊ¼»¯£¬È»ºóÔÚ¶àÏß³ÌµÄÊ±ºò½øĞĞ³õÊ¼»¯
+	/** è¯»å…¥fastqæ–‡ä»¶ä½†æ ¹æ®éœ€è¦è¿›è¡Œåˆå§‹åŒ–
+	 * ç”¨åœ¨fastqè¿‡æ»¤çš„æ—¶å€™ï¼Œå¯ä»¥å…ˆä¸åˆå§‹åŒ–ï¼Œç„¶ååœ¨å¤šçº¿ç¨‹çš„æ—¶å€™è¿›è¡Œåˆå§‹åŒ–
 	 *  */
 	protected FastQRecord(String fastqlines, boolean initial) {
 		fastqStringReadIn = fastqlines;
@@ -50,7 +50,7 @@ public class FastQRecord implements Cloneable {
 			initialReadRecord();
 		}
 	}
-	/**³õÊ¼»¯¶ÁÈëµÄÊı¾İ */
+	/**åˆå§‹åŒ–è¯»å…¥çš„æ•°æ® */
 	protected void initialReadRecord() {
 		if (seqFasta.getSeqName() != null) {
 			return;
@@ -83,13 +83,13 @@ public class FastQRecord implements Cloneable {
 	}
 
 	
-	/** ²Ã¼ôĞòÁĞÊ±×î¶ÌÎª¶àÉÙ£¬ Ä¬ÈÏÎª22
+	/** è£å‰ªåºåˆ—æ—¶æœ€çŸ­ä¸ºå¤šå°‘ï¼Œ é»˜è®¤ä¸º22
 	 */
 	public void setTrimMinLen(int trimMinLen) {
 		this.readsMinLen = trimMinLen;
 	}
 	/**
-	 * Éè¶¨ĞòÁĞÖÊÁ¿×Ö·û´®£¬ÓÃphred¸ñÊ½Éè¶¨
+	 * è®¾å®šåºåˆ—è´¨é‡å­—ç¬¦ä¸²ï¼Œç”¨phredæ ¼å¼è®¾å®š
 	 * @param fastaQuality
 	 */
 	public void setFastaQuality(String fastaQuality) {
@@ -102,29 +102,29 @@ public class FastQRecord implements Cloneable {
 		return seqFasta.Length();
 	}
 	/**
-	 * Éè¶¨Æ«ÒÆ
+	 * è®¾å®šåç§»
 	 * FASTQ_SANGER_OFFSET
 	 * @param fastqOffset
 	 */
 	public void setFastqOffset(int fastqOffset) {
 		this.fastqOffset = fastqOffset;
 	}
-	//////////////////////// ¹ıÂËµÍÖÊÁ¿µÄĞòÁĞ ///////////////////////////////////////////
+	//////////////////////// è¿‡æ»¤ä½è´¨é‡çš„åºåˆ— ///////////////////////////////////////////
 	/**
-	 * ×¢ÒâÁ½¸öÒÔÏÂµÄadaptorÎŞ·¨¹ıÂË
-	 * ¹ıÂËÓÒ²à½ÓÍ·ĞòÁĞµÄ·½·¨£¬ÓÃÑ­»·ËÑË÷£¬ÈİĞí´íÅä£¬µ«ÊÇ²»ÄÜ¹»¹ıÂÇº¬ÓĞgapµÄadaptor¡£
-	 * Ëã·¨£¬¼ÙÉèÓÒ²à×î¶àÖ»ÓĞÒ»Õû¸ö½ÓÍ·¡£ÄÇÃ´ÏÈ½«½ÓÍ·Ö±½Ó¶Ôµ½ÓÒ²à¶ÔÆë£¬È»ºóÑ­»·µÄ½«½ÓÍ·¶Ôµ½readsÉÏÈ¥¡£
-	 * @param seqAdaptorL ×ó¶Ë½ÓÍ· ÎŞËùÎ½´óĞ¡Ğ´ ½ÓÍ·¿ÉÒÔÖ»Ğ´Ò»²¿·Ö null»ò""±íÊ¾²»ÓÃ¹ıÂË¸Ã½ÓÍ·
-	 * @param seqAdaptorR ÓÒ¶Ë½ÓÍ· ÎŞËùÎ½´óĞ¡Ğ´ ½ÓÍ·¿ÉÒÔÖ»Ğ´Ò»²¿·Ö null»ò""±íÊ¾²»ÓÃ¹ıÂË¸Ã½ÓÍ·
-	 * @param mapNumLeft µÚÒ»´Î½ÓÍ·×ó¶Ë»òÓÒ¶Ëmappingµ½ĞòÁĞµÄµÚ¼¸¸ö¼î»ùÉÏ£¬´Ó1¿ªÊ¼¼ÇÊı£¬-1ËµÃ÷Ã»ÕÒµ½ ½¨ÒéÉè¶¨Îª£ºseqIn.length() +1- seqAdaptor.length()
-	 * Èç¹ûmapNum<0, Ôò×Ô¶¯Éè¶¨ÎªseqIn.length() +1- seqAdaptor.length()µÈĞÎÊ½
-	 * @param mapNumRight Í¬mapNumLeft£¬Õë¶ÔÓÒ¶Ë½ÓÍ·
-	 * @param numMM ×î¶àÈİ´í¼¸¸ömismatch 2¸ö±È½ÏºÃ
-	 * @param conNum ×î¶àÈİ´íÁ¬Ğø¼¸¸ömismatch£¬1¸ö±È½ÏºÃ
-	 * @param perMm ×î¶àÈİ´í°Ù·Ö±È Éè¶¨Îª30°É£¬Õâ¸öÊÇÅÂadaptorÌ«¶Ì
-	 * @return ·µ»Ø¸ÃtagµÄµÚÒ»¸ö¼î»ùÔÚĞòÁĞÉÏµÄÎ»ÖÃ£¬´Ó0¿ªÊ¼¼ÇÊı
-	 * Ò²¾ÍÊÇ¸ÃadaptorÇ°ÃæÓĞ¶àÉÙ¸ö¼î»ù£¬¿ÉÒÔÖ±½ÓÓÃsubstring(0,return)À´½ØÈ¡
-	 * -1ËµÃ÷Ã»ÓĞadaptor
+	 * æ³¨æ„ä¸¤ä¸ªä»¥ä¸‹çš„adaptoræ— æ³•è¿‡æ»¤
+	 * è¿‡æ»¤å³ä¾§æ¥å¤´åºåˆ—çš„æ–¹æ³•ï¼Œç”¨å¾ªç¯æœç´¢ï¼Œå®¹è®¸é”™é…ï¼Œä½†æ˜¯ä¸èƒ½å¤Ÿè¿‡è™‘å«æœ‰gapçš„adaptorã€‚
+	 * ç®—æ³•ï¼Œå‡è®¾å³ä¾§æœ€å¤šåªæœ‰ä¸€æ•´ä¸ªæ¥å¤´ã€‚é‚£ä¹ˆå…ˆå°†æ¥å¤´ç›´æ¥å¯¹åˆ°å³ä¾§å¯¹é½ï¼Œç„¶åå¾ªç¯çš„å°†æ¥å¤´å¯¹åˆ°readsä¸Šå»ã€‚
+	 * @param seqAdaptorL å·¦ç«¯æ¥å¤´ æ— æ‰€è°“å¤§å°å†™ æ¥å¤´å¯ä»¥åªå†™ä¸€éƒ¨åˆ† nullæˆ–""è¡¨ç¤ºä¸ç”¨è¿‡æ»¤è¯¥æ¥å¤´
+	 * @param seqAdaptorR å³ç«¯æ¥å¤´ æ— æ‰€è°“å¤§å°å†™ æ¥å¤´å¯ä»¥åªå†™ä¸€éƒ¨åˆ† nullæˆ–""è¡¨ç¤ºä¸ç”¨è¿‡æ»¤è¯¥æ¥å¤´
+	 * @param mapNumLeft ç¬¬ä¸€æ¬¡æ¥å¤´å·¦ç«¯æˆ–å³ç«¯mappingåˆ°åºåˆ—çš„ç¬¬å‡ ä¸ªç¢±åŸºä¸Šï¼Œä»1å¼€å§‹è®°æ•°ï¼Œ-1è¯´æ˜æ²¡æ‰¾åˆ° å»ºè®®è®¾å®šä¸ºï¼šseqIn.length() +1- seqAdaptor.length()
+	 * å¦‚æœmapNum<0, åˆ™è‡ªåŠ¨è®¾å®šä¸ºseqIn.length() +1- seqAdaptor.length()ç­‰å½¢å¼
+	 * @param mapNumRight åŒmapNumLeftï¼Œé’ˆå¯¹å³ç«¯æ¥å¤´
+	 * @param numMM æœ€å¤šå®¹é”™å‡ ä¸ªmismatch 2ä¸ªæ¯”è¾ƒå¥½
+	 * @param conNum æœ€å¤šå®¹é”™è¿ç»­å‡ ä¸ªmismatchï¼Œ1ä¸ªæ¯”è¾ƒå¥½
+	 * @param perMm æœ€å¤šå®¹é”™ç™¾åˆ†æ¯” è®¾å®šä¸º30å§ï¼Œè¿™ä¸ªæ˜¯æ€•adaptorå¤ªçŸ­
+	 * @return è¿”å›è¯¥tagçš„ç¬¬ä¸€ä¸ªç¢±åŸºåœ¨åºåˆ—ä¸Šçš„ä½ç½®ï¼Œä»0å¼€å§‹è®°æ•°
+	 * ä¹Ÿå°±æ˜¯è¯¥adaptorå‰é¢æœ‰å¤šå°‘ä¸ªç¢±åŸºï¼Œå¯ä»¥ç›´æ¥ç”¨substring(0,return)æ¥æˆªå–
+	 * -1è¯´æ˜æ²¡æœ‰adaptor
 	 */
 	public boolean trimAdaptor(String seqAdaptorL, String seqAdaptorR, int mapNumLeft, int mapNumRight, int numMM, int conNum, int perMm) {
 		if ((seqAdaptorL == null || seqAdaptorL.equals("")) && (seqAdaptorR == null || seqAdaptorR.equals(""))) {
@@ -147,8 +147,8 @@ public class FastQRecord implements Cloneable {
 		return trimSeq(leftNum, rightNum);
 	}
 	/**
-	 * cutOffÑ¡Ôñ10¼´ÈÏÎª10£¬°üÀ¨10ÒÔÏÂµÄĞòÁĞ¶¼²»ºÃ£¬ĞèÒªcutµô
-	 * @param numMM ¼¸¸öºÃµÄĞòÁĞ£¬¾ÍÊÇËµNNNCNNNÕâÖÖ£¬»µµÄÖĞ¼ä¼ĞÒ»¸öºÃµÄ Ò»°ãÎª1
+	 * cutOffé€‰æ‹©10å³è®¤ä¸º10ï¼ŒåŒ…æ‹¬10ä»¥ä¸‹çš„åºåˆ—éƒ½ä¸å¥½ï¼Œéœ€è¦cutæ‰
+	 * @param numMM å‡ ä¸ªå¥½çš„åºåˆ—ï¼Œå°±æ˜¯è¯´NNNCNNNè¿™ç§ï¼Œåçš„ä¸­é—´å¤¹ä¸€ä¸ªå¥½çš„ ä¸€èˆ¬ä¸º1
 	 * @return
 	 */
 	public boolean trimNNN( int numMM, int filterNum) {
@@ -157,7 +157,7 @@ public class FastQRecord implements Cloneable {
 		return trimSeq(numStart, numEnd);
 	}
 	/**
-	 * cutOffÑ¡Ôñ10¼´ÈÏÎª10£¬°üÀ¨10ÒÔÏÂµÄĞòÁĞ¶¼²»ºÃ£¬ĞèÒªcutµô
+	 * cutOffé€‰æ‹©10å³è®¤ä¸º10ï¼ŒåŒ…æ‹¬10ä»¥ä¸‹çš„åºåˆ—éƒ½ä¸å¥½ï¼Œéœ€è¦cutæ‰
 	 * @param fastQBlock
 	 * @param numMM
 	 * @return
@@ -165,7 +165,7 @@ public class FastQRecord implements Cloneable {
 	public boolean trimLowCase() {
 		char[] info = seqFasta.toString().toCharArray();
 		int numStart = 0;
-		//´ÓÇ°Ïòºó£¬Óöµ½Ğ¡Ğ´¾Í¼ÆÊı
+		//ä»å‰å‘åï¼Œé‡åˆ°å°å†™å°±è®¡æ•°
 		for (char c : info) {
 			if ((int)c > 90 )
 				numStart++;
@@ -186,40 +186,40 @@ public class FastQRecord implements Cloneable {
 		return trimSeq(numStart, numEnd);
 	}
 	/**
-	 * ¹ıÂËÓÒ²àpolyA
+	 * è¿‡æ»¤å³ä¾§polyA
 	 * @param block
-	 * @param mismatch ¿ÉÒÔÉè¶¨µÄÉÔÎ¢³¤Ò»µãµã£¬ÒòÎªÀïÃæÓĞÉè¶¨×î³¤Á¬Ğø´íÅäÎª1ÁË£¬ËùÒÔÕâÀï½¨Òé2-3
-	 * @return ·µ»Ø½Ø¶ÌºóµÄstring
-	 * Ò»Ñù»¹ÊÇÓÃTxtReadandWrite.huiche»»ĞĞ£¬×îºóÃ»ÓĞTxtReadandWrite.huiche
+	 * @param mismatch å¯ä»¥è®¾å®šçš„ç¨å¾®é•¿ä¸€ç‚¹ç‚¹ï¼Œå› ä¸ºé‡Œé¢æœ‰è®¾å®šæœ€é•¿è¿ç»­é”™é…ä¸º1äº†ï¼Œæ‰€ä»¥è¿™é‡Œå»ºè®®2-3
+	 * @return è¿”å›æˆªçŸ­åçš„string
+	 * ä¸€æ ·è¿˜æ˜¯ç”¨TxtReadandWrite.huicheæ¢è¡Œï¼Œæœ€åæ²¡æœ‰TxtReadandWrite.huiche
 	 */
 	public boolean trimPolyAR( int mismatch) {
 		int num = 	trimPolyA(seqFasta.toString(), mismatch,1);
 		return trimSeq(0, num);
 	}
 	/**
-	 * ¹ıÂË×ó²àpolyT
+	 * è¿‡æ»¤å·¦ä¾§polyT
 	 * @param block
-	 * @param mismatch ¿ÉÒÔÉè¶¨µÄÉÔÎ¢³¤Ò»µãµã£¬ÒòÎªÀïÃæÓĞÉè¶¨×î³¤Á¬Ğø´íÅäÎª1ÁË£¬ËùÒÔÕâÀï½¨Òé2-3
-	 * @return ·µ»Ø½Ø¶ÌºóµÄstring
-	 * Ò»Ñù»¹ÊÇÓÃTxtReadandWrite.huiche»»ĞĞ£¬×îºóÃ»ÓĞTxtReadandWrite.huiche
+	 * @param mismatch å¯ä»¥è®¾å®šçš„ç¨å¾®é•¿ä¸€ç‚¹ç‚¹ï¼Œå› ä¸ºé‡Œé¢æœ‰è®¾å®šæœ€é•¿è¿ç»­é”™é…ä¸º1äº†ï¼Œæ‰€ä»¥è¿™é‡Œå»ºè®®2-3
+	 * @return è¿”å›æˆªçŸ­åçš„string
+	 * ä¸€æ ·è¿˜æ˜¯ç”¨TxtReadandWrite.huicheæ¢è¡Œï¼Œæœ€åæ²¡æœ‰TxtReadandWrite.huiche
 	 */
 	public boolean trimPolyTL( int mismatch) {
 		int num = trimPolyT(seqFasta.toString(), mismatch,1);
 		return trimSeq(num, seqFasta.Length());
 	}
 	/**
-	 * ×¢ÒâÁ½¸öÒÔÏÂµÄadaptorÎŞ·¨¹ıÂË
-	 * ¹ıÂËÓÒ²à½ÓÍ·ĞòÁĞµÄ·½·¨£¬ÓÃÑ­»·ËÑË÷£¬ÈİĞí´íÅä£¬µ«ÊÇ²»ÄÜ¹»¹ıÂÇº¬ÓĞgapµÄadaptor¡£
-	 * Ëã·¨£¬¼ÙÉèÓÒ²à×î¶àÖ»ÓĞÒ»Õû¸ö½ÓÍ·¡£ÄÇÃ´ÏÈ½«½ÓÍ·Ö±½Ó¶Ôµ½ÓÒ²à¶ÔÆë£¬È»ºóÑ­»·µÄ½«½ÓÍ·¶Ôµ½readsÉÏÈ¥¡£
-	 * @param seqIn ÊäÈëĞòÁĞ ÎŞËùÎ½´óĞ¡Ğ´
-	 * @param seqAdaptor ½ÓÍ· ÎŞËùÎ½´óĞ¡Ğ´ ½ÓÍ·¿ÉÒÔÖ»Ğ´Ò»²¿·Ö
-	 * @param mapNum µÚÒ»´Î½ÓÍ·×ó¶Ëmappingµ½ĞòÁĞµÄµÚ¼¸¸ö¼î»ùÉÏ£¬´Ó1¿ªÊ¼¼ÇÊı£¬-1ËµÃ÷Ã»ÕÒµ½ ½¨ÒéÉè¶¨Îª£ºseqIn.length() +1- seqAdaptor.length()
-	 * @param numMM ×î¶àÈİ´í¼¸¸ömismatch 2¸ö±È½ÏºÃ
-	 * @param conNum ×î¶àÈİ´íÁ¬Ğø¼¸¸ömismatch£¬1¸ö±È½ÏºÃ
-	 * @param perMm ×î¶àÈİ´í°Ù·Ö±È Éè¶¨Îª30°É£¬Õâ¸öÊÇÅÂadaptorÌ«¶Ì
-	 * @return ·µ»Ø¸ÃtagµÄµÚÒ»¸ö¼î»ùÔÚĞòÁĞÉÏµÄÎ»ÖÃ£¬´Ó0¿ªÊ¼¼ÇÊı
-	 * Ò²¾ÍÊÇ¸ÃadaptorÇ°ÃæÓĞ¶àÉÙ¸ö¼î»ù£¬¿ÉÒÔÖ±½ÓÓÃsubstring(0,return)À´½ØÈ¡
-	 * -1ËµÃ÷Ã»ÓĞadaptor
+	 * æ³¨æ„ä¸¤ä¸ªä»¥ä¸‹çš„adaptoræ— æ³•è¿‡æ»¤
+	 * è¿‡æ»¤å³ä¾§æ¥å¤´åºåˆ—çš„æ–¹æ³•ï¼Œç”¨å¾ªç¯æœç´¢ï¼Œå®¹è®¸é”™é…ï¼Œä½†æ˜¯ä¸èƒ½å¤Ÿè¿‡è™‘å«æœ‰gapçš„adaptorã€‚
+	 * ç®—æ³•ï¼Œå‡è®¾å³ä¾§æœ€å¤šåªæœ‰ä¸€æ•´ä¸ªæ¥å¤´ã€‚é‚£ä¹ˆå…ˆå°†æ¥å¤´ç›´æ¥å¯¹åˆ°å³ä¾§å¯¹é½ï¼Œç„¶åå¾ªç¯çš„å°†æ¥å¤´å¯¹åˆ°readsä¸Šå»ã€‚
+	 * @param seqIn è¾“å…¥åºåˆ— æ— æ‰€è°“å¤§å°å†™
+	 * @param seqAdaptor æ¥å¤´ æ— æ‰€è°“å¤§å°å†™ æ¥å¤´å¯ä»¥åªå†™ä¸€éƒ¨åˆ†
+	 * @param mapNum ç¬¬ä¸€æ¬¡æ¥å¤´å·¦ç«¯mappingåˆ°åºåˆ—çš„ç¬¬å‡ ä¸ªç¢±åŸºä¸Šï¼Œä»1å¼€å§‹è®°æ•°ï¼Œ-1è¯´æ˜æ²¡æ‰¾åˆ° å»ºè®®è®¾å®šä¸ºï¼šseqIn.length() +1- seqAdaptor.length()
+	 * @param numMM æœ€å¤šå®¹é”™å‡ ä¸ªmismatch 2ä¸ªæ¯”è¾ƒå¥½
+	 * @param conNum æœ€å¤šå®¹é”™è¿ç»­å‡ ä¸ªmismatchï¼Œ1ä¸ªæ¯”è¾ƒå¥½
+	 * @param perMm æœ€å¤šå®¹é”™ç™¾åˆ†æ¯” è®¾å®šä¸º30å§ï¼Œè¿™ä¸ªæ˜¯æ€•adaptorå¤ªçŸ­
+	 * @return è¿”å›è¯¥tagçš„ç¬¬ä¸€ä¸ªç¢±åŸºåœ¨åºåˆ—ä¸Šçš„ä½ç½®ï¼Œä»0å¼€å§‹è®°æ•°
+	 * ä¹Ÿå°±æ˜¯è¯¥adaptorå‰é¢æœ‰å¤šå°‘ä¸ªç¢±åŸºï¼Œå¯ä»¥ç›´æ¥ç”¨substring(0,return)æ¥æˆªå–
+	 * -1è¯´æ˜æ²¡æœ‰adaptor
 	 */
 	public static int trimAdaptorR(String seqIn, String seqAdaptor, int mapNum, int numMM, int conNum, float perMm) {
 		if (seqAdaptor.equals("")) {
@@ -233,8 +233,8 @@ public class FastQRecord implements Cloneable {
 		seqAdaptor = seqAdaptor.toUpperCase();
 		char[] chrIn = seqIn.toCharArray(); int lenIn = seqIn.length();
 		char[] chrAdaptor = seqAdaptor.toCharArray(); int lenA = seqAdaptor.length();
-		int con = 0;//¼ÇÂ¼Á¬ĞøµÄ·ÇÆ¥ÅäµÄ×Ö·ûÓĞ¼¸¸ö
-//		´Ó×óµ½ÓÒËÑË÷chrIn
+		int con = 0;//è®°å½•è¿ç»­çš„éåŒ¹é…çš„å­—ç¬¦æœ‰å‡ ä¸ª
+//		ä»å·¦åˆ°å³æœç´¢chrIn
 		for (int i = mapNum; i < lenIn; i++) {
 			int pm = 0; //perfect match
 			int mm = 0; //mismatch
@@ -264,18 +264,18 @@ public class FastQRecord implements Cloneable {
 	}
 
 	/**
-	 * ×¢ÒâÁ½¸öÒÔÏÂµÄadaptorÎŞ·¨¹ıÂË
-	 * ¹ıÂË×ó²à½ÓÍ·ĞòÁĞµÄ·½·¨£¬ÓÃÑ­»·ËÑË÷£¬ÈİĞí´íÅä£¬µ«ÊÇ²»ÄÜ¹»¹ıÂÇº¬ÓĞgapµÄadaptor¡£
-	 * Ëã·¨£¬¼ÙÉè×ó²à×î¶àÖ»ÓĞÒ»Õû¸ö½ÓÍ·¡£ÄÇÃ´ÏÈ½«½ÓÍ·Ö±½Ó¶Ôµ½×ó²à¶ÔÆë£¬È»ºóÑ­»·µÄ½«½ÓÍ·¶Ôµ½readsÉÏÈ¥¡£
-	 * @param seqIn ÊäÈëĞòÁĞ ÎŞËùÎ½´óĞ¡Ğ´
-	 * @param seqAdaptor ½ÓÍ· ÎŞËùÎ½´óĞ¡Ğ´
-	 * @param mapNum µÚÒ»´Î½ÓÍ·ÓÒ¶Ëmappingµ½ĞòÁĞµÄµÚ¼¸¸ö¼î»ùÉÏ£¬´Ó1¿ªÊ¼¼ÇÊı£¬-1ËµÃ÷Ã»ÕÒµ½ ½¨ÒéÉè¶¨Îª£ºadaptorLeft.length()
-	 * @param numMM ×î¶àÈİ´í¼¸¸ömismatch 1¸ö±È½ÏºÃ
-	 * @param conNum ×î¶àÈİ´íÁ¬Ğø¼¸¸ömismatch£¬1¸ö±È½ÏºÃ
-	 * @param perMm ×î¶àÈİ´í°Ù·Ö±È,100½øÖÆ£¬Éè¶¨Îª30°É£¬Õâ¸öÊÇÅÂadaptorÌ«¶Ì
-	 * @return ·µ»Ø¸ÃtagµÄ×îÒ»¸ö¼î»ùÔÚĞòÁĞÉÏµÄÎ»ÖÃ£¬´Ó1¿ªÊ¼¼ÇÊı
-	 * Ò²¾ÍÊÇ¸ÃadaptorÇ°ÃæÓĞ¶àÉÙ¸ö¼î»ù£¬¿ÉÒÔÖ±½ÓÓÃsubstring(return)À´½ØÈ¡
-	 * -1ËµÃ÷Ã»ÓĞadaptor
+	 * æ³¨æ„ä¸¤ä¸ªä»¥ä¸‹çš„adaptoræ— æ³•è¿‡æ»¤
+	 * è¿‡æ»¤å·¦ä¾§æ¥å¤´åºåˆ—çš„æ–¹æ³•ï¼Œç”¨å¾ªç¯æœç´¢ï¼Œå®¹è®¸é”™é…ï¼Œä½†æ˜¯ä¸èƒ½å¤Ÿè¿‡è™‘å«æœ‰gapçš„adaptorã€‚
+	 * ç®—æ³•ï¼Œå‡è®¾å·¦ä¾§æœ€å¤šåªæœ‰ä¸€æ•´ä¸ªæ¥å¤´ã€‚é‚£ä¹ˆå…ˆå°†æ¥å¤´ç›´æ¥å¯¹åˆ°å·¦ä¾§å¯¹é½ï¼Œç„¶åå¾ªç¯çš„å°†æ¥å¤´å¯¹åˆ°readsä¸Šå»ã€‚
+	 * @param seqIn è¾“å…¥åºåˆ— æ— æ‰€è°“å¤§å°å†™
+	 * @param seqAdaptor æ¥å¤´ æ— æ‰€è°“å¤§å°å†™
+	 * @param mapNum ç¬¬ä¸€æ¬¡æ¥å¤´å³ç«¯mappingåˆ°åºåˆ—çš„ç¬¬å‡ ä¸ªç¢±åŸºä¸Šï¼Œä»1å¼€å§‹è®°æ•°ï¼Œ-1è¯´æ˜æ²¡æ‰¾åˆ° å»ºè®®è®¾å®šä¸ºï¼šadaptorLeft.length()
+	 * @param numMM æœ€å¤šå®¹é”™å‡ ä¸ªmismatch 1ä¸ªæ¯”è¾ƒå¥½
+	 * @param conNum æœ€å¤šå®¹é”™è¿ç»­å‡ ä¸ªmismatchï¼Œ1ä¸ªæ¯”è¾ƒå¥½
+	 * @param perMm æœ€å¤šå®¹é”™ç™¾åˆ†æ¯”,100è¿›åˆ¶ï¼Œè®¾å®šä¸º30å§ï¼Œè¿™ä¸ªæ˜¯æ€•adaptorå¤ªçŸ­
+	 * @return è¿”å›è¯¥tagçš„æœ€ä¸€ä¸ªç¢±åŸºåœ¨åºåˆ—ä¸Šçš„ä½ç½®ï¼Œä»1å¼€å§‹è®°æ•°
+	 * ä¹Ÿå°±æ˜¯è¯¥adaptorå‰é¢æœ‰å¤šå°‘ä¸ªç¢±åŸºï¼Œå¯ä»¥ç›´æ¥ç”¨substring(return)æ¥æˆªå–
+	 * -1è¯´æ˜æ²¡æœ‰adaptor
 	 */
 	public static int trimAdaptorL(String seqIn, String seqAdaptor, int mapNum, int conNum, int numMM, float perMm) {
 		if (seqAdaptor == null || seqAdaptor.equals("")) {
@@ -292,8 +292,8 @@ public class FastQRecord implements Cloneable {
 		seqAdaptor = seqAdaptor.toUpperCase();
 		char[] chrIn = seqIn.toCharArray(); //int lenIn = seqIn.length();
 		char[] chrAdaptor = seqAdaptor.toCharArray(); int lenA = seqAdaptor.length();
-		int con = 0;//¼ÇÂ¼Á¬ĞøµÄ·ÇÆ¥ÅäµÄ×Ö·ûÓĞ¼¸¸ö
-//		´ÓÓÒµ½×óËÑË÷chrIn
+		int con = 0;//è®°å½•è¿ç»­çš„éåŒ¹é…çš„å­—ç¬¦æœ‰å‡ ä¸ª
+//		ä»å³åˆ°å·¦æœç´¢chrIn
 		for (int i = mapNum; i >= 0 ; i--) {
 			int pm = 0; //perfect match
 			int mm = 0; //mismatch
@@ -320,7 +320,7 @@ public class FastQRecord implements Cloneable {
 		}
 		return 0;
 	}
-	/** ÅĞ¶¨ÊÇ·ñÍ¨¹ıÖÊ¼ì */
+	/** åˆ¤å®šæ˜¯å¦é€šè¿‡è´¨æ£€ */
 	private static boolean isMatch(int pm, int mm, int seqAdaptorLen,int maxMMnum, float perMm) {
 		int lenAdaptor = pm + mm;
 		if (pm >= ((double)seqAdaptorLen * (1 - perMm/100)) 
@@ -330,7 +330,7 @@ public class FastQRecord implements Cloneable {
 		}
 		return false;
 	}
-	/** ÓÃblastµÄ·½·¨À´ÕÒ½ÓÍ· */
+	/** ç”¨blastçš„æ–¹æ³•æ¥æ‰¾æ¥å¤´ */
 	private static int blastSeq(boolean leftAdaptor, String seqSeq, String seqAdaptor, int numMM, float perMm) {
 		BlastSeqFasta blastSeqFasta = new BlastSeqFasta(seqSeq, seqAdaptor);
 		blastSeqFasta.setSpaceScore(-2);
@@ -351,20 +351,20 @@ public class FastQRecord implements Cloneable {
 		}
 	}
 	/**
-	 * ¹ıÂËÓÒ²àpolyA£¬µ±ÎªAAANNNAAANANAAÊ±£¬ÎŞÊÓN¼ÌĞø¹ıÂË
+	 * è¿‡æ»¤å³ä¾§polyAï¼Œå½“ä¸ºAAANNNAAANANAAæ—¶ï¼Œæ— è§†Nç»§ç»­è¿‡æ»¤
 	 * @param seqIn
-	 * @param numMM ¼¸¸ö´íÅä Ò»°ãÎª1
-	 * @param maxConteniunNoneA ×î³¤Á¬Ğø´íÅä
+	 * @param numMM å‡ ä¸ªé”™é… ä¸€èˆ¬ä¸º1
+	 * @param maxConteniunNoneA æœ€é•¿è¿ç»­é”™é…
 	 * @return
-	 * ·µ»Ø¸ÃSeqµÄµÚÒ»¸öAÔÚĞòÁĞÉÏµÄÎ»ÖÃ£¬´Ó0¿ªÊ¼¼ÇÊı
-	 * Èç¹ûÃ»ÓĞA£¬·µ»ØÖµ == Seq.length()
-	 * Ò²¾ÍÊÇ¸ÃpolyAÇ°ÃæÓĞ¶àÉÙ¸ö¼î»ù£¬¿ÉÒÔÖ±½ÓÓÃsubstring(0,return)À´½ØÈ¡
+	 * è¿”å›è¯¥Seqçš„ç¬¬ä¸€ä¸ªAåœ¨åºåˆ—ä¸Šçš„ä½ç½®ï¼Œä»0å¼€å§‹è®°æ•°
+	 * å¦‚æœæ²¡æœ‰Aï¼Œè¿”å›å€¼ == Seq.length()
+	 * ä¹Ÿå°±æ˜¯è¯¥polyAå‰é¢æœ‰å¤šå°‘ä¸ªç¢±åŸºï¼Œå¯ä»¥ç›´æ¥ç”¨substring(0,return)æ¥æˆªå–
 	 */
 	private int trimPolyA(String seqIn, int numMM, int maxConteniunNoneA) {
 		seqIn = seqIn.toUpperCase();
 		char[] chrIn = seqIn.toCharArray(); int lenIn = seqIn.length();
 		int numMismatch = 0;
-		int con = 0;//¼ÇÂ¼Á¬ĞøµÄ·ÇAµÄ×Ö·ûÓĞ¼¸¸ö
+		int con = 0;//è®°å½•è¿ç»­çš„éAçš„å­—ç¬¦æœ‰å‡ ä¸ª
 		for (int i = lenIn-1; i >= 0; i--) {
 			if (chrIn[i] != 'A' && chrIn[i] != 'N') {
 				numMismatch++;
@@ -374,25 +374,25 @@ public class FastQRecord implements Cloneable {
 				con = 0;
 			}
 			if (numMismatch > numMM || con > maxConteniunNoneA) {
-				return i+con;//°Ñ×îºó²»ÊÇaµÄ»¹µÄ¼Ó»ØÈ¥
+				return i+con;//æŠŠæœ€åä¸æ˜¯açš„è¿˜çš„åŠ å›å»
 			}
 		}
 		return 0;
 	}
 	/**
-	 * ¹ıÂË×ó²àpolyT£¬µ±ÎªTTTNNNTTTNTNTTÊ±£¬ÎŞÊÓN¼ÌĞø¹ıÂË
+	 * è¿‡æ»¤å·¦ä¾§polyTï¼Œå½“ä¸ºTTTNNNTTTNTNTTæ—¶ï¼Œæ— è§†Nç»§ç»­è¿‡æ»¤
 	 * @param seqIn
-	 * @param numMM ¼¸¸ö´íÅä Ò»°ãÎª1
-	 * @param maxConteniunNoneA ×î³¤Á¬Ğø´íÅä
+	 * @param numMM å‡ ä¸ªé”™é… ä¸€èˆ¬ä¸º1
+	 * @param maxConteniunNoneA æœ€é•¿è¿ç»­é”™é…
 	 * @return
-	 * ·µ»Ø¸ÃtagµÄ×îºóÒ»¸ö¼î»ùÔÚĞòÁĞÉÏµÄÎ»ÖÃ£¬´Ó1¿ªÊ¼¼ÇÊı
-	 * Ò²¾ÍÊÇ¸ÃpolyTÓĞ¶àÉÙ¸ö¼î»ù£¬¿ÉÒÔÖ±½ÓÓÃsubstring(return)À´½ØÈ¡
+	 * è¿”å›è¯¥tagçš„æœ€åä¸€ä¸ªç¢±åŸºåœ¨åºåˆ—ä¸Šçš„ä½ç½®ï¼Œä»1å¼€å§‹è®°æ•°
+	 * ä¹Ÿå°±æ˜¯è¯¥polyTæœ‰å¤šå°‘ä¸ªç¢±åŸºï¼Œå¯ä»¥ç›´æ¥ç”¨substring(return)æ¥æˆªå–
 	 */
 	private int trimPolyT(String seqIn, int numMM, int maxConteniunNoneT) {
 		seqIn = seqIn.toUpperCase();
 		char[] chrIn = seqIn.toCharArray(); int lenIn = seqIn.length();
 		int numMismatch = 0;
-		int con = 0;//¼ÇÂ¼Á¬ĞøµÄ·ÇAµÄ×Ö·ûÓĞ¼¸¸ö
+		int con = 0;//è®°å½•è¿ç»­çš„éAçš„å­—ç¬¦æœ‰å‡ ä¸ª
 		for (int i = 0; i < lenIn; i++) {
 			if (chrIn[i] != 'T' && chrIn[i] != 'N') {
 				numMismatch++;
@@ -402,26 +402,26 @@ public class FastQRecord implements Cloneable {
 				con = 0;
 			}
 			if (numMismatch > numMM || con > maxConteniunNoneT) {
-				return i-con+1;//°Ñ×îºó²»ÊÇaµÄ»¹µÄ¼Ó»ØÈ¥
+				return i-con+1;//æŠŠæœ€åä¸æ˜¯açš„è¿˜çš„åŠ å›å»
 			}
 		}
 		return lenIn;
 	}
 	/**
-	 * ¹ıÂË×ó¶ËµÍÖÊÁ¿ĞòÁĞ£¬Q10£¬Q13ÒÔÏÂÎªµÍÖÊÁ¿ĞòÁĞ£¬Ò»Â·¼ôÇĞÖ±µ½È«²¿ÇĞ¹âÎªÖ¹
-	 * @param seqIn ÖÊÁ¿ÁĞ
-	 * @param cutOff µÍÖÊÁ¿ĞòÁĞµÄcutOff, Ğ¡ÓÚµÈÓÚËû¾Í»á±»cut
-	 * @param numMM ¼¸¸öºÃµÄĞòÁĞ£¬¾ÍÊÇËµNNNCNNNÕâÖÖ£¬»µµÄÖĞ¼ä¼ĞÒ»¸öºÃµÄ Ò»°ãÎª1
+	 * è¿‡æ»¤å·¦ç«¯ä½è´¨é‡åºåˆ—ï¼ŒQ10ï¼ŒQ13ä»¥ä¸‹ä¸ºä½è´¨é‡åºåˆ—ï¼Œä¸€è·¯å‰ªåˆ‡ç›´åˆ°å…¨éƒ¨åˆ‡å…‰ä¸ºæ­¢
+	 * @param seqIn è´¨é‡åˆ—
+	 * @param cutOff ä½è´¨é‡åºåˆ—çš„cutOff, å°äºç­‰äºä»–å°±ä¼šè¢«cut
+	 * @param numMM å‡ ä¸ªå¥½çš„åºåˆ—ï¼Œå°±æ˜¯è¯´NNNCNNNè¿™ç§ï¼Œåçš„ä¸­é—´å¤¹ä¸€ä¸ªå¥½çš„ ä¸€èˆ¬ä¸º1
 	 * @return
-	 * 	 * ·µ»Ø¸ÃNNNµÄµÚ×îºóÒ»¸ö¼î»ùÔÚĞòÁĞÉÏµÄÎ»ÖÃ£¬´Ó1¿ªÊ¼¼ÇÊı
-	 * Ò²¾ÍÊÇ¸ÃNNNÓĞ¶àÉÙ¸ö¼î»ù£¬¿ÉÒÔÖ±½ÓÓÃsubstring(return)À´½ØÈ¡
-	 * ·µ»Ø-1±íÊ¾³ö´í
+	 * 	 * è¿”å›è¯¥NNNçš„ç¬¬æœ€åä¸€ä¸ªç¢±åŸºåœ¨åºåˆ—ä¸Šçš„ä½ç½®ï¼Œä»1å¼€å§‹è®°æ•°
+	 * ä¹Ÿå°±æ˜¯è¯¥NNNæœ‰å¤šå°‘ä¸ªç¢±åŸºï¼Œå¯ä»¥ç›´æ¥ç”¨substring(return)æ¥æˆªå–
+	 * è¿”å›-1è¡¨ç¤ºå‡ºé”™
 	 */
 	private int trimNNNLeft(String seqIn,int cutOff, int numMM) {
 		char[] chrSeq = this.seqFasta.toString().toCharArray();
 		char[] chrIn = seqIn.toCharArray();
 		int numMismatch = 0;
-		int con = -1;//¼ÇÂ¼Á¬ĞøµÄµÍÖÊÁ¿µÄ×Ö·ûÓĞ¼¸¸ö
+		int con = -1;//è®°å½•è¿ç»­çš„ä½è´¨é‡çš„å­—ç¬¦æœ‰å‡ ä¸ª
 		for (int i = 0; i < chrIn.length; i++) {
 			if ((int)chrIn[i] - fastqOffset > cutOff && chrSeq[i] != 'N' && chrSeq[i] != 'n') {
 				numMismatch++;
@@ -430,26 +430,26 @@ public class FastQRecord implements Cloneable {
 				con = -1;
 			}
 			if (numMismatch > numMM) {
-				return i - con;//°Ñ×îºó²»ÊÇaµÄ»¹µÄ¼Ó»ØÈ¥
+				return i - con;//æŠŠæœ€åä¸æ˜¯açš„è¿˜çš„åŠ å›å»
 			}
 		}
 		return seqIn.length();
 	}
 	/**
-	 * ¹ıÂËÓÒ¶ËµÍÖÊÁ¿ĞòÁĞ£¬Q10£¬Q13ÒÔÏÂÎªµÍÖÊÁ¿ĞòÁĞ£¬Ò»Â·¼ôÇĞÖ±µ½È«²¿ÇĞ¹âÎªÖ¹
-	 * @param seqIn ÖÊÁ¿ÁĞ
-	 * @param cutOff µÍÖÊÁ¿ĞòÁĞµÄcutOff, Ğ¡ÓÚµÈÓÚËû¾Í»á±»cut
-	 * @param numMM ¼¸¸öºÃµÄĞòÁĞ£¬¾ÍÊÇËµNNNCNNNÕâÖÖ£¬»µµÄÖĞ¼ä¼ĞÒ»¸öºÃµÄ Ò»°ãÎª1
+	 * è¿‡æ»¤å³ç«¯ä½è´¨é‡åºåˆ—ï¼ŒQ10ï¼ŒQ13ä»¥ä¸‹ä¸ºä½è´¨é‡åºåˆ—ï¼Œä¸€è·¯å‰ªåˆ‡ç›´åˆ°å…¨éƒ¨åˆ‡å…‰ä¸ºæ­¢
+	 * @param seqIn è´¨é‡åˆ—
+	 * @param cutOff ä½è´¨é‡åºåˆ—çš„cutOff, å°äºç­‰äºä»–å°±ä¼šè¢«cut
+	 * @param numMM å‡ ä¸ªå¥½çš„åºåˆ—ï¼Œå°±æ˜¯è¯´NNNCNNNè¿™ç§ï¼Œåçš„ä¸­é—´å¤¹ä¸€ä¸ªå¥½çš„ ä¸€èˆ¬ä¸º1
 	 * @return
-	 * 	 * ·µ»Ø¸ÃNNNµÄµÚÒ»¸ö¼î»ùÔÚĞòÁĞÉÏµÄÎ»ÖÃ£¬´Ó0¿ªÊ¼¼ÇÊı
-	 * Ò²¾ÍÊÇ¸ÃNNNÇ°ÃæÓĞ¶àÉÙ¸ö¼î»ù£¬¿ÉÒÔÖ±½ÓÓÃsubstring(0,return)À´½ØÈ¡
-	 * ·µ»Ø-1±íÊ¾³ö´í
+	 * 	 * è¿”å›è¯¥NNNçš„ç¬¬ä¸€ä¸ªç¢±åŸºåœ¨åºåˆ—ä¸Šçš„ä½ç½®ï¼Œä»0å¼€å§‹è®°æ•°
+	 * ä¹Ÿå°±æ˜¯è¯¥NNNå‰é¢æœ‰å¤šå°‘ä¸ªç¢±åŸºï¼Œå¯ä»¥ç›´æ¥ç”¨substring(0,return)æ¥æˆªå–
+	 * è¿”å›-1è¡¨ç¤ºå‡ºé”™
 	 */
 	private int trimNNNRight(String seqIn,int cutOff, int numMM) {
 		char[] chrSeq = this.seqFasta.toString().toCharArray();
 		char[] chrIn = seqIn.toCharArray(); int lenIn = seqIn.length();
 		int numMismatch = 0;
-		int con = 0;//¼ÇÂ¼Á¬ĞøµÄµÍÖÊÁ¿µÄ×Ö·ûÓĞ¼¸¸ö
+		int con = 0;//è®°å½•è¿ç»­çš„ä½è´¨é‡çš„å­—ç¬¦æœ‰å‡ ä¸ª
 		for (int i = lenIn-1; i >= 0; i--) {
 			if ((int)chrIn[i] - fastqOffset > cutOff && chrSeq[i] != 'N' && chrSeq[i] != 'n') {
 				numMismatch++;
@@ -465,11 +465,11 @@ public class FastQRecord implements Cloneable {
 		return 0;
 	}
 	/**
-	 * ¸ø¶¨×óÓÒµÄ×ø±ê£¬È»ºó½«seqfasta½Ø¶Ì
-	 * @param start ºÍsubstringÒ»ÑùµÄÓÃ·¨
-	 * @param end ºÍsubstringÒ»ÑùµÄÓÃ·¨
-	 * @return ·µ»Ø½Ø¶ÌºóµÄstring
-	 * Èç¹û½Ø¶ÌºóµÄ³¤¶ÈĞ¡ÓÚÉè¶¨µÄ×î¶Ìreads³¤¶È£¬ÄÇÃ´¾Í·µ»Ønull
+	 * ç»™å®šå·¦å³çš„åæ ‡ï¼Œç„¶åå°†seqfastaæˆªçŸ­
+	 * @param start å’Œsubstringä¸€æ ·çš„ç”¨æ³•
+	 * @param end å’Œsubstringä¸€æ ·çš„ç”¨æ³•
+	 * @return è¿”å›æˆªçŸ­åçš„string
+	 * å¦‚æœæˆªçŸ­åçš„é•¿åº¦å°äºè®¾å®šçš„æœ€çŸ­readsé•¿åº¦ï¼Œé‚£ä¹ˆå°±è¿”å›null
 	 */
 	private boolean trimSeq(int start, int end) {
 		if (end - start < readsMinLen) {
@@ -490,7 +490,7 @@ public class FastQRecord implements Cloneable {
 		return true;
 	}
 	/**
-	 * ·µ»Øfastq¸ñÊ½µÄÎÄ±¾
+	 * è¿”å›fastqæ ¼å¼çš„æ–‡æœ¬
 	 * @return
 	 */
 	public String toString() {
@@ -511,7 +511,7 @@ public class FastQRecord implements Cloneable {
 		return "@" + seqFasta.getSeqName() + TxtReadandWrite.ENTER_LINUX + seqFasta.toString() + TxtReadandWrite.ENTER_LINUX + "+" + TxtReadandWrite.ENTER_LINUX + seqQuality;
 	}
 	/**
-	 * ¿ËÂ¡ĞòÁĞ
+	 * å…‹éš†åºåˆ—
 	 */
 	public FastQRecord clone() {
 		FastQRecord seqFasta = null;
@@ -529,10 +529,10 @@ public class FastQRecord implements Cloneable {
 		return seqFasta;
 	}
 
-	/////////////////////////////// ĞòÁĞÖÊÁ¿¿ØÖÆ£¬½ö¶ÔfastqÎÄ¼ş //////////////////////////////
+	/////////////////////////////// åºåˆ—è´¨é‡æ§åˆ¶ï¼Œä»…å¯¹fastqæ–‡ä»¶ //////////////////////////////
 	/**
-	 * ×î¿ªÊ¼ÒªÉè¶¨¸ßÖĞµÍµµ
-	 * ¿´±¾ĞòÁĞµÄÖÊÁ¿ÊÇ·ñ·ûºÏÒªÇó Ê×ÏÈ»áÅĞ¶¨ÖÊÁ¿ÊÇ·ñÒÔBBBBB½áÎ²£¬ÊÇµÄ»°Ö±½ÓÌø¹ı 
+	 * æœ€å¼€å§‹è¦è®¾å®šé«˜ä¸­ä½æ¡£
+	 * çœ‹æœ¬åºåˆ—çš„è´¨é‡æ˜¯å¦ç¬¦åˆè¦æ±‚ é¦–å…ˆä¼šåˆ¤å®šè´¨é‡æ˜¯å¦ä»¥BBBBBç»“å°¾ï¼Œæ˜¯çš„è¯ç›´æ¥è·³è¿‡ 
 	 * @return
 	 */
 	public boolean QC() {
@@ -542,12 +542,12 @@ public class FastQRecord implements Cloneable {
 		if (this.fastqOffset == FastQ.FASTQ_ILLUMINA_OFFSET && seqQuality.endsWith("BBBBBBBBBB") ) {
 			return false;
 		}
-		/** ¾Í¿´Q10£¬Q13ºÍQ20¾ÍĞĞÁË */
+		/** å°±çœ‹Q10ï¼ŒQ13å’ŒQ20å°±è¡Œäº† */
 		int[][] seqQC1 = copeFastQ(2, 10, 13, 20);
 		return filterFastQ(seqQC1);
 	}
 	/**
-	 * ½«mismatich±È¶ÔÖ¸±êÎÄ¼ş£¬¿´ÊÇ·ñ·ûºÏ
+	 * å°†mismatichæ¯”å¯¹æŒ‡æ ‡æ–‡ä»¶ï¼Œçœ‹æ˜¯å¦ç¬¦åˆ
 	 * @param thisFastQ
 	 * @return
 	 */
@@ -563,14 +563,14 @@ public class FastQRecord implements Cloneable {
 		return true;
 	}
 	/**
-	 * ¸ø¶¨Ò»ĞĞfastQµÄascIIÂë£¬Í¬Ê±Ö¸¶¨Ò»ÏµÁĞµÄQÖµ£¬·µ»Øasc||Ğ¡ÓÚ¸ÃQÖµµÄcharÓĞ¶àÉÙ
-	 * °´ÕÕQvalueÊäÈëµÄË³Ğò£¬Êä³ö¾ÍÊÇÏàÓ¦µÄint[]
-	 * @param Qvalue QvalueµÄãĞÖµ£¬¿ÉÒÔÖ¸¶¨¶à¸ö<b>±ØĞë´ÓĞ¡µ½´óÅÅÁĞ</b>£¬Ò»°ãÎªQ13£¬ÓĞÊ±ÎªQ10£¬¾ßÌå¼ûÎ¬»ù°Ù¿ÆµÄFASTQ format
-	 * @return int °´ÕÕË³Ğò£¬Ğ¡ÓÚµÈÓÚÃ¿¸öQvalueµÄÊıÁ¿
+	 * ç»™å®šä¸€è¡ŒfastQçš„ascIIç ï¼ŒåŒæ—¶æŒ‡å®šä¸€ç³»åˆ—çš„Qå€¼ï¼Œè¿”å›asc||å°äºè¯¥Qå€¼çš„charæœ‰å¤šå°‘
+	 * æŒ‰ç…§Qvalueè¾“å…¥çš„é¡ºåºï¼Œè¾“å‡ºå°±æ˜¯ç›¸åº”çš„int[]
+	 * @param Qvalue Qvalueçš„é˜ˆå€¼ï¼Œå¯ä»¥æŒ‡å®šå¤šä¸ª<b>å¿…é¡»ä»å°åˆ°å¤§æ’åˆ—</b>ï¼Œä¸€èˆ¬ä¸ºQ13ï¼Œæœ‰æ—¶ä¸ºQ10ï¼Œå…·ä½“è§ç»´åŸºç™¾ç§‘çš„FASTQ format
+	 * @return int æŒ‰ç…§é¡ºåºï¼Œå°äºç­‰äºæ¯ä¸ªQvalueçš„æ•°é‡
 	 */
 	private int[][] copeFastQ(int... Qvalue) {
 		if (fastqOffset == 0) {
-			System.out.println("FastQ.copeFastQ ,Ã»ÓĞÖ¸¶¨offset");
+			System.out.println("FastQ.copeFastQ ,æ²¡æœ‰æŒ‡å®šoffset");
 		}
 		int[][] qNum = new int[Qvalue.length][2];
 		for (int i = 0; i < qNum.length; i++) {
@@ -580,10 +580,10 @@ public class FastQRecord implements Cloneable {
 		for (int m = 0; m < fastq.length; m++) {
 			char c = fastq[m];
 			int qualityScore = (int) c - fastqOffset;
-			/////////////////////////ĞòÁĞÖÊÁ¿£¬Ã¿¸ö¼î»ùµÄÖÊÁ¿·Ö²¼Í³¼Æ/////////////////////////////////////////////////
+			/////////////////////////åºåˆ—è´¨é‡ï¼Œæ¯ä¸ªç¢±åŸºçš„è´¨é‡åˆ†å¸ƒç»Ÿè®¡/////////////////////////////////////////////////
 			//////////////////////////////////////////////////////////////////////////
 			for (int i = Qvalue.length - 1; i >= 0; i--) {
-				if (qualityScore <= Qvalue[i]) {//×¢ÒâÊÇĞ¡ÓÚµÈÓÚ
+				if (qualityScore <= Qvalue[i]) {//æ³¨æ„æ˜¯å°äºç­‰äº
 					qNum[i][1]++;
 					continue;
 				} else {

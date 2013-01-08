@@ -21,12 +21,12 @@ import net.sf.samtools.SAMSequenceRecord;
 public class SamReader {
 	private static Logger logger = Logger.getLogger(SamReader.class);
 	/**
-	 * ¶ÁÈ¡samÎÄ¼şµÄÀà£¬×îºÃ²»ÒªÖ±½ÓÓÃ£¬ÓÃgetSamFileReader()·½·¨´úÌæ
+	 * è¯»å–samæ–‡ä»¶çš„ç±»ï¼Œæœ€å¥½ä¸è¦ç›´æ¥ç”¨ï¼Œç”¨getSamFileReader()æ–¹æ³•ä»£æ›¿
 	 */
 	SAMFileReader samFileReader;
 	SAMFileHeader samFileHeader;
 	SAMRecordIterator samRecordIterator;
-	/** Ğ¡Ğ´µÄchrIDÓësamFileHeaderÖĞµÄchrIDµÄ¶ÔÕÕ±í */
+	/** å°å†™çš„chrIDä¸samFileHeaderä¸­çš„chrIDçš„å¯¹ç…§è¡¨ */
 	HashMap<String, String> mapChrIDlowCase2ChrID = new LinkedHashMap<String, String>();
 	HashMap<String, Long> mapChrIDlowCase2Length = new LinkedHashMap<String, Long>();
 	String fileName;
@@ -52,9 +52,9 @@ public class SamReader {
 		return samFileHeader.toString();
 	}
 	/**
-	 * Ë«¶ËÊı¾İÊÇ·ñ»ñµÃÁ¬ÔÚÒ»ÆğµÄbedÎÄ¼ş
-	 * Èç¹ûÊäÈëÊÇµ¥¶ËÊı¾İ£¬Ôò½«ĞòÁĞÑÓ³¤·µ»ØbedÎÄ¼ş
-	 * ×¢Òâ£ºÈç¹ûÊÇË«¶ËÎÄ¼ş£¬<b>²»ÄÜÔ¤ÏÈÅÅĞò</b>
+	 * åŒç«¯æ•°æ®æ˜¯å¦è·å¾—è¿åœ¨ä¸€èµ·çš„bedæ–‡ä»¶
+	 * å¦‚æœè¾“å…¥æ˜¯å•ç«¯æ•°æ®ï¼Œåˆ™å°†åºåˆ—å»¶é•¿è¿”å›bedæ–‡ä»¶
+	 * æ³¨æ„ï¼šå¦‚æœæ˜¯åŒç«¯æ–‡ä»¶ï¼Œ<b>ä¸èƒ½é¢„å…ˆæ’åº</b>
 	 * @param getPairedBed
 	 */
 	protected boolean isPairend() {
@@ -108,7 +108,7 @@ public class SamReader {
 		samFileHeader = samFileReader.getFileHeader();
 		mapChrIDlowCase2ChrID = new HashMap<String, String>();
 		mapChrIDlowCase2Length = new HashMap<String, Long>();
-		//»ñµÃreferenceµÄĞòÁĞĞÅÏ¢
+		//è·å¾—referenceçš„åºåˆ—ä¿¡æ¯
 		List<SAMSequenceRecord> lsSamSequenceRecords = samFileHeader.getSequenceDictionary().getSequences();
 		for (SAMSequenceRecord samSequenceRecord : lsSamSequenceRecords) {
 			mapChrIDlowCase2ChrID.put(samSequenceRecord.getSequenceName().toLowerCase(), samSequenceRecord.getSequenceName());
@@ -116,7 +116,7 @@ public class SamReader {
 		}
 	}
 	/**
-	 * »ñµÃ¸ÃbamÎÄ¼şÖĞÈ¾É«ÌåµÄ³¤¶ÈĞÅÏ¢£¬×¢Òâkey¶¼ÎªĞ¡Ğ´
+	 * è·å¾—è¯¥bamæ–‡ä»¶ä¸­æŸ“è‰²ä½“çš„é•¿åº¦ä¿¡æ¯ï¼Œæ³¨æ„keyéƒ½ä¸ºå°å†™
 	 * @return
 	 */
 	public HashMap<String, Long> getMapChrIDlowCase2Length() {
@@ -124,9 +124,9 @@ public class SamReader {
 		return mapChrIDlowCase2Length;
 	}
 	/**
-	 * ×¢Òâ´óĞ¡Ğ´Çø·Ö
-	 * @param ReadName readsµÄÃû×Ö£¬Ö»ÒªĞ´¹Ø¼ü´Ê¾ÍĞĞÁË
-	 * @return Ã»ÕÒµ½¾Í·µ»Ønull
+	 * æ³¨æ„å¤§å°å†™åŒºåˆ†
+	 * @param ReadName readsçš„åå­—ï¼Œåªè¦å†™å…³é”®è¯å°±è¡Œäº†
+	 * @return æ²¡æ‰¾åˆ°å°±è¿”å›null
 	 */
 	public SamRecord getReads(String ReadName) {
 		for (SamRecord samRecord : readLines()) {
@@ -138,8 +138,8 @@ public class SamReader {
 		return null;
 	}
 	/**
-	 * ´ÓµÚ¼¸ĞĞ¿ªÊ¼¶Á£¬ÊÇÊµ¼ÊĞĞ
-	 * @param lines Èç¹ûlinesĞ¡ÓÚ1£¬Ôò´ÓÍ·¿ªÊ¼¶ÁÈ¡
+	 * ä»ç¬¬å‡ è¡Œå¼€å§‹è¯»ï¼Œæ˜¯å®é™…è¡Œ
+	 * @param lines å¦‚æœlineså°äº1ï¼Œåˆ™ä»å¤´å¼€å§‹è¯»å–
 	 * @return
 	 */
 	public Iterable<SamRecord> readLines(int lines) {
@@ -169,8 +169,8 @@ public class SamReader {
 		close();
 		return isSamBamFile;
 	}
-	/** µü´ú¶ÁÈ¡ÎÄ¼ş
-	 * µ¥Ïß³Ì£¬²»ÄÜÍ¬Ê±¿ªÆôÁ½¸ö¶ÁĞ´Ïß³Ì
+	/** è¿­ä»£è¯»å–æ–‡ä»¶
+	 * å•çº¿ç¨‹ï¼Œä¸èƒ½åŒæ—¶å¼€å¯ä¸¤ä¸ªè¯»å†™çº¿ç¨‹
 	 */
 	public Iterable<SamRecord> readLines() {
 		closeIterate();
@@ -180,7 +180,7 @@ public class SamReader {
 	}
 	
 	/**
-	 * µ¥Ïß³Ì£¬²»ÄÜÍ¬Ê±¿ªÆôÁ½¸ö¶ÁĞ´Ïß³Ì
+	 * å•çº¿ç¨‹ï¼Œä¸èƒ½åŒæ—¶å¼€å¯ä¸¤ä¸ªè¯»å†™çº¿ç¨‹
 	 * each SAMRecord returned is will have its alignment completely contained in the interval of interest. 
 	 * @param chrID
 	 * @param start
@@ -193,7 +193,7 @@ public class SamReader {
 		getSamFileReader();
 		chrID = chrID.toLowerCase();
 		if (!mapChrIDlowCase2ChrID.containsKey(chrID)) {
-			logger.error("³öÏÖÎ´Öªreference");
+			logger.error("å‡ºç°æœªçŸ¥reference");
 			return null;
 		}
 		samRecordIterator = samFileReader.queryContained(mapChrIDlowCase2ChrID.get(chrID), start, end);
@@ -201,7 +201,7 @@ public class SamReader {
 	}
 	
 	/**
-	 * µ¥Ïß³Ì£¬²»ÄÜÍ¬Ê±¿ªÆôÁ½¸ö¶ÁĞ´Ïß³Ì
+	 * å•çº¿ç¨‹ï¼Œä¸èƒ½åŒæ—¶å¼€å¯ä¸¤ä¸ªè¯»å†™çº¿ç¨‹
 	 * the alignment of the returned SAMRecords need only overlap the interval of interest.
 	 * @param chrID
 	 * @param start
@@ -214,7 +214,7 @@ public class SamReader {
 		getSamFileReader();
 		chrID = chrID.toLowerCase();
 		if (!mapChrIDlowCase2ChrID.containsKey(chrID)) {
-			logger.error("³öÏÖÎ´Öªreference");
+			logger.error("å‡ºç°æœªçŸ¥reference");
 			return null;
 		}
 		samRecordIterator = samFileReader.queryOverlapping(mapChrIDlowCase2ChrID.get(chrID), start, end);

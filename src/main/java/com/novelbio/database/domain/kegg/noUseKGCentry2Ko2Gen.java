@@ -7,13 +7,13 @@ import java.util.ArrayList;
 public class noUseKGCentry2Ko2Gen {
 	/**
 	 * the ID of this entry in the pathway map <br>
-	 *  the identification number of this entry£¬´Ó1¿ªÊ¼¼ÇÊı
+	 *  the identification number of this entryï¼Œä»1å¼€å§‹è®°æ•°
 	 */
 	private int id;
 	
 	/**
-	 * the KEGGID of this entry£¬ÊäÈëÊ±ÏÈÒª½«nameÒÔ¿Õ¸ñ·Ö¸î³ÉÒ»¸öÒ»¸öµ¥¶ÀµÄÃû×Ö
-	 * example£º name="sma:SAV_2461 sma:SAV_3026 sma:SAV_3027"<br>
+	 * the KEGGID of this entryï¼Œè¾“å…¥æ—¶å…ˆè¦å°†nameä»¥ç©ºæ ¼åˆ†å‰²æˆä¸€ä¸ªä¸€ä¸ªå•ç‹¬çš„åå­—
+	 * exampleï¼š name="sma:SAV_2461 sma:SAV_3026 sma:SAV_3027"<br>
 	 * detail:<br>
 	 * <b>path:(accession)</b>  	pathway map
 	 * ex) name="path:map00040"
@@ -36,24 +36,24 @@ public class noUseKGCentry2Ko2Gen {
 	private String name;
 	
 	/**
-	 * ¸ÃentryËùÔÚµÄpathway
+	 * è¯¥entryæ‰€åœ¨çš„pathway
 	 */
 	private String pathName;
 	
 	/**
-	 * component×ÜÊı
+	 * componentæ€»æ•°
 	 */
 	private int compNum;
 	
 	/**
-	 * componentµÄ×ÜÊı
+	 * componentçš„æ€»æ•°
 	 */
 	public void setCompNum(int compNum)
 	{
 		this.compNum=compNum;
 	}
 	/**
-	 * componentµÄ×ÜÊı
+	 * componentçš„æ€»æ•°
 	 */
 	public int getCompNum()
 	{
@@ -61,18 +61,18 @@ public class noUseKGCentry2Ko2Gen {
 	}
 	
 	/**
-	 * componentµÄ ID£¬Ã»É¶ÓÃ
+	 * componentçš„ IDï¼Œæ²¡å•¥ç”¨
 	 */
 	private int compID;
 	/**
-	 * componentµÄentry ID£¬Ã»É¶ÓÃ
+	 * componentçš„entry IDï¼Œæ²¡å•¥ç”¨
 	 */
 	public void setCompID(int compID)
 	{
 		this.compID=compID;
 	}
 	/**
-	 * componentµÄentry ID
+	 * componentçš„entry ID
 	 */
 	public int getCompID()
 	{
@@ -80,18 +80,18 @@ public class noUseKGCentry2Ko2Gen {
 	}
 	
 	/**
-	 * component¸´ºÏÎïµÄentryID£¬ÔÚrelactionÖĞ¾Í¿ÉÄÜÒÔÕâ¸öentryIDÀ´±íÊ¾¹ØÏµ
+	 * componentå¤åˆç‰©çš„entryIDï¼Œåœ¨relactionä¸­å°±å¯èƒ½ä»¥è¿™ä¸ªentryIDæ¥è¡¨ç¤ºå…³ç³»
 	 */
 	private int parentID;
 	/**
-	 * component¸´ºÏÎïµÄentryID£¬ÔÚrelactionÖĞ¾Í¿ÉÄÜÒÔÕâ¸öentryIDÀ´±íÊ¾¹ØÏµ
+	 * componentå¤åˆç‰©çš„entryIDï¼Œåœ¨relactionä¸­å°±å¯èƒ½ä»¥è¿™ä¸ªentryIDæ¥è¡¨ç¤ºå…³ç³»
 	 */
 	public void setParentID(int parentID)
 	{
 		this.parentID=parentID;
 	}
 	/**
-	 * component¸´ºÏÎïµÄentryID£¬ÔÚrelactionÖĞ¾Í¿ÉÄÜÒÔÕâ¸öentryIDÀ´±íÊ¾¹ØÏµ
+	 * componentå¤åˆç‰©çš„entryIDï¼Œåœ¨relactionä¸­å°±å¯èƒ½ä»¥è¿™ä¸ªentryIDæ¥è¡¨ç¤ºå…³ç³»
 	 */
 	public int getParentID()
 	{
@@ -99,8 +99,8 @@ public class noUseKGCentry2Ko2Gen {
 	}
 	
 	/**
-	 * µ±typeÎªmapÇÒ²»Îª±¾pathwayÊ±£¬½«±¾pathwayºÍ¸Ãmap×é³Ésource--target²¢ÇÒ·ÅÈëKGRelationÀàÖĞ
-	 * µ±typeÎªgroupÊ±£¬½«componentÖĞÉæ¼°µ½µÄËùÓĞentryÁ½Á½±éÀú×é³Ésource--target²¢ÇÒ·ÅÈëKGReactionÀàÖĞ
+	 * å½“typeä¸ºmapä¸”ä¸ä¸ºæœ¬pathwayæ—¶ï¼Œå°†æœ¬pathwayå’Œè¯¥mapç»„æˆsource--targetå¹¶ä¸”æ”¾å…¥KGRelationç±»ä¸­
+	 * å½“typeä¸ºgroupæ—¶ï¼Œå°†componentä¸­æ¶‰åŠåˆ°çš„æ‰€æœ‰entryä¸¤ä¸¤éå†ç»„æˆsource--targetå¹¶ä¸”æ”¾å…¥KGReactionç±»ä¸­
 	 * the type of this entry. detail:<br>
 	 * <b>ortholog</b> 	the node is a Ko (ortholog group)<br>
 	 * <b>enzyme</b> 	the node is an enzyme<br>
@@ -127,7 +127,7 @@ public class noUseKGCentry2Ko2Gen {
 	
 	/**
 	 * the ID of this entry in the pathway map <br>
-	 *  the identification number of this entry£¬´Ó1¿ªÊ¼¼ÇÊı
+	 *  the identification number of this entryï¼Œä»1å¼€å§‹è®°æ•°
 	 */
 	public int getID()
 	{
@@ -135,7 +135,7 @@ public class noUseKGCentry2Ko2Gen {
 	}
 	/**
 	 * the ID of this entry in the pathway map <br>
-	 *  the identification number of this entry£¬´Ó1¿ªÊ¼¼ÇÊı
+	 *  the identification number of this entryï¼Œä»1å¼€å§‹è®°æ•°
 	 */
 	public void setID(int id)
 	{
@@ -143,8 +143,8 @@ public class noUseKGCentry2Ko2Gen {
 	}
 	
 	/**
-	 * the KEGGID of this entry£¬ÓÃ¿Õ¸ñ·Ö¸ô
-	 * example£º name="sma:SAV_2461 sma:SAV_3026 sma:SAV_3027"<br>
+	 * the KEGGID of this entryï¼Œç”¨ç©ºæ ¼åˆ†éš”
+	 * exampleï¼š name="sma:SAV_2461 sma:SAV_3026 sma:SAV_3027"<br>
 	 * detail:<br>
 	 * <b>path:(accession)</b>  	pathway map
 	 * ex) name="path:map00040"
@@ -169,8 +169,8 @@ public class noUseKGCentry2Ko2Gen {
 	}
 	/**
 	 * already trim()
-	 * the KEGGID of this entry£¬ÓÃ¿Õ¸ñ·Ö¸ô
-	 * example£º name="sma:SAV_2461 sma:SAV_3026 sma:SAV_3027"<br>
+	 * the KEGGID of this entryï¼Œç”¨ç©ºæ ¼åˆ†éš”
+	 * exampleï¼š name="sma:SAV_2461 sma:SAV_3026 sma:SAV_3027"<br>
 	 * detail:<br>
 	 * <b>path:(accession)</b>  	pathway map
 	 * ex) name="path:map00040"
@@ -197,21 +197,21 @@ public class noUseKGCentry2Ko2Gen {
 	
 	/**
 	 * already trim()
-	 * ¸ÃentryËùÔÚµÄpathway
+	 * è¯¥entryæ‰€åœ¨çš„pathway
 	 */
 	public void setPathName(String pathName) {
 		this.pathName=pathName.trim();
 	}
 	/**
-	 * ¸ÃentryËùÔÚµÄpathway
+	 * è¯¥entryæ‰€åœ¨çš„pathway
 	 */
 	public String getPathName() {
 		return this.pathName;
 	}
 	
 	/**
-	 * µ±typeÎªmapÇÒ²»Îª±¾pathwayÊ±£¬½«±¾pathwayºÍ¸Ãmap×é³Ésource--target²¢ÇÒ·ÅÈëKGRelationÀàÖĞ
-	 * µ±typeÎªgroupÊ±£¬½«componentÖĞÉæ¼°µ½µÄËùÓĞentryÁ½Á½±éÀú×é³Ésource--target²¢ÇÒ·ÅÈëKGReactionÀàÖĞ
+	 * å½“typeä¸ºmapä¸”ä¸ä¸ºæœ¬pathwayæ—¶ï¼Œå°†æœ¬pathwayå’Œè¯¥mapç»„æˆsource--targetå¹¶ä¸”æ”¾å…¥KGRelationç±»ä¸­
+	 * å½“typeä¸ºgroupæ—¶ï¼Œå°†componentä¸­æ¶‰åŠåˆ°çš„æ‰€æœ‰entryä¸¤ä¸¤éå†ç»„æˆsource--targetå¹¶ä¸”æ”¾å…¥KGReactionç±»ä¸­
 	 * the type of this entry. detail:<br>
 	 * <b>ortholog</b> 	the node is a Ko (ortholog group)<br>
 	 * <b>enzyme</b> 	the node is an enzyme<br>
@@ -226,8 +226,8 @@ public class noUseKGCentry2Ko2Gen {
 	}
 	/**
 	 * already trim()
-	 * µ±typeÎªmapÇÒ²»Îª±¾pathwayÊ±£¬½«±¾pathwayºÍ¸Ãmap×é³Ésource--target²¢ÇÒ·ÅÈëKGRelationÀàÖĞ
-	 * µ±typeÎªgroupÊ±£¬½«componentÖĞÉæ¼°µ½µÄËùÓĞentryÁ½Á½±éÀú×é³Ésource--target²¢ÇÒ·ÅÈëKGReactionÀàÖĞ
+	 * å½“typeä¸ºmapä¸”ä¸ä¸ºæœ¬pathwayæ—¶ï¼Œå°†æœ¬pathwayå’Œè¯¥mapç»„æˆsource--targetå¹¶ä¸”æ”¾å…¥KGRelationç±»ä¸­
+	 * å½“typeä¸ºgroupæ—¶ï¼Œå°†componentä¸­æ¶‰åŠåˆ°çš„æ‰€æœ‰entryä¸¤ä¸¤éå†ç»„æˆsource--targetå¹¶ä¸”æ”¾å…¥KGReactionç±»ä¸­
 	 * the type of this entry. detail:<br>
 	 * <b>ortholog</b> 	the node is a Ko (ortholog group)<br>
 	 * <b>enzyme</b> 	the node is an enzyme<br>

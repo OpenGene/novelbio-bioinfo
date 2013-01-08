@@ -6,12 +6,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 /**
- * ÄÚ½¨ÅÅĞò·½·¨
- * ½«¶àÌõListAbsºÏ²¢ºó£¬ÆäÃ¿¸öÔªËØµÄĞÅÏ¢
- * ºÏ²¢·½·¨ÎªÊ×ÏÈÁ½ÌõlistAbsºÏÔÚÒ»Æğ£¬È»ºóÅÅĞò¡£
- * Èç¹ûÁ½¸öelementÓĞ½»¼¯£¬¾Í½«ÕâÁ½¸öelement·ÅÔÚÒ»Æğ£¬×÷ÎªÒ»¸öelement
- * Èç¹ûÖ»ÓĞµ¥¶ÀÒ»¸öelement£¬¾Í·Å¸Ãelement
- * ËùÒÔ²»ÄÜÓĞ¿ÕµÄElementComb
+ * å†…å»ºæ’åºæ–¹æ³•
+ * å°†å¤šæ¡ListAbsåˆå¹¶åï¼Œå…¶æ¯ä¸ªå…ƒç´ çš„ä¿¡æ¯
+ * åˆå¹¶æ–¹æ³•ä¸ºé¦–å…ˆä¸¤æ¡listAbsåˆåœ¨ä¸€èµ·ï¼Œç„¶åæ’åºã€‚
+ * å¦‚æœä¸¤ä¸ªelementæœ‰äº¤é›†ï¼Œå°±å°†è¿™ä¸¤ä¸ªelementæ”¾åœ¨ä¸€èµ·ï¼Œä½œä¸ºä¸€ä¸ªelement
+ * å¦‚æœåªæœ‰å•ç‹¬ä¸€ä¸ªelementï¼Œå°±æ”¾è¯¥element
+ * æ‰€ä»¥ä¸èƒ½æœ‰ç©ºçš„ElementComb
  * @author zong0jie
  *
  * @param <T>
@@ -21,22 +21,22 @@ public class ListDetailComb<T extends ListDetailAbs> extends ListDetailAbs {
 		super("", "", null);
 	}
 	/**
-	 * »ùÒòÃû--int[2]:
-	 * 0: ¸ÃeleËùÔÚµÄÆğµã
-	 * 1: ¸ÃeleËùÔÚµÄÖÕµã¡£Èç¹û1<0£¬±íÊ¾¸ÃeleÊÇÌø¹ıµÄ£¬ÄÇÃ´0±íÊ¾µÄÊÇÇ°Ò»¸öeleµÄÎ»ÖÃ
+	 * åŸºå› å--int[2]:
+	 * 0: è¯¥eleæ‰€åœ¨çš„èµ·ç‚¹
+	 * 1: è¯¥eleæ‰€åœ¨çš„ç»ˆç‚¹ã€‚å¦‚æœ1<0ï¼Œè¡¨ç¤ºè¯¥eleæ˜¯è·³è¿‡çš„ï¼Œé‚£ä¹ˆ0è¡¨ç¤ºçš„æ˜¯å‰ä¸€ä¸ªeleçš„ä½ç½®
 	 */
 	HashMap<String, int[]> hashList2Num = new HashMap<String, int[]>();
 	/**
-	 * ±£´æÃ¿¸ölistabsÖĞµÄelement
+	 * ä¿å­˜æ¯ä¸ªlistabsä¸­çš„element
 	 */
 	ArrayList<ArrayList<T>> lsElement = new ArrayList<ArrayList<T>>();
 	ArrayList<T> lsSortEle = new ArrayList<T>();
 	String SEP = "\\";
 	boolean sorted = false;
 	/**
-	 * ¸ø¶¨Ò»¸öexonµÄlist£¬ÒÔ¼°¸ÃlistËùÕ¼Ô­Ê¼listµÄÆğµãÎ»ºÍÖÕµãÎ»µÄelement
-	 * Æ©Èç£¬¸ø¶¨ÁËÒ»¸ölist--º¬ÓĞÒ»¸öelement£¬ÆğµãµÚ2Î»£¬ÖÕµãµÚ2Î»
-	 * ¸ø¶¨ÁËÒ»¸ö¿Õlist»òÕßÃ»¸ølist£¬º¬ÓĞ0¸öelement£¬ÆğµãµÚ2Î»£¬ÖÕµãµÚ-2Î»--µ±ÖÕµãÎª¸ºÊıÊ±±íÊ¾¸ÃelementÊÇÌø¹ıµÄ
+	 * ç»™å®šä¸€ä¸ªexonçš„listï¼Œä»¥åŠè¯¥listæ‰€å åŸå§‹listçš„èµ·ç‚¹ä½å’Œç»ˆç‚¹ä½çš„element
+	 * è­¬å¦‚ï¼Œç»™å®šäº†ä¸€ä¸ªlist--å«æœ‰ä¸€ä¸ªelementï¼Œèµ·ç‚¹ç¬¬2ä½ï¼Œç»ˆç‚¹ç¬¬2ä½
+	 * ç»™å®šäº†ä¸€ä¸ªç©ºlistæˆ–è€…æ²¡ç»™listï¼Œå«æœ‰0ä¸ªelementï¼Œèµ·ç‚¹ç¬¬2ä½ï¼Œç»ˆç‚¹ç¬¬-2ä½--å½“ç»ˆç‚¹ä¸ºè´Ÿæ•°æ—¶è¡¨ç¤ºè¯¥elementæ˜¯è·³è¿‡çš„
 	 * @param element
 	 * @param numStart
 	 * @param numEnd
@@ -47,12 +47,12 @@ public class ListDetailComb<T extends ListDetailAbs> extends ListDetailAbs {
 			return;
 		}
 		lsElement.add(element);
-		/// Õâ¸ö¿ÉÒÔ²»ÉèÖÃ ////////////////
+		/// è¿™ä¸ªå¯ä»¥ä¸è®¾ç½® ////////////////
 		for (T t : element) {
 			this.parentName = t.getRefID();
 			break;
 		}
-		//Èç¹û±È½ÏµÄelementÀïÃæÓĞÏà·´µÄcis£¬ÄÇÃ´¾ÍÉè¶¨Îªnull
+		//å¦‚æœæ¯”è¾ƒçš„elementé‡Œé¢æœ‰ç›¸åçš„cisï¼Œé‚£ä¹ˆå°±è®¾å®šä¸ºnull
 		for (T t : element) {
 			if (isCis5to3() == null) {
 				setCis5to3(t.isCis5to3());
@@ -74,8 +74,8 @@ public class ListDetailComb<T extends ListDetailAbs> extends ListDetailAbs {
 			}
 		}
 		/**
-		 * ½«listÖĞµÄÔªËØ½øĞĞÅÅĞò£¬Èç¹ûelementÀïÃæ start > end£¬ÄÇÃ´¾Í´Ó´óµ½Ğ¡ÅÅĞò
-		 * Èç¹ûelementÀïÃæstart < end£¬ÄÇÃ´¾Í´ÓĞ¡µ½´óÅÅĞò
+		 * å°†listä¸­çš„å…ƒç´ è¿›è¡Œæ’åºï¼Œå¦‚æœelementé‡Œé¢ start > endï¼Œé‚£ä¹ˆå°±ä»å¤§åˆ°å°æ’åº
+		 * å¦‚æœelementé‡Œé¢start < endï¼Œé‚£ä¹ˆå°±ä»å°åˆ°å¤§æ’åº
 		 */
 		if ( isCis5to3() == null) {
 			Collections.sort(lsSortEle, new CompS2MAbs());
@@ -93,7 +93,7 @@ public class ListDetailComb<T extends ListDetailAbs> extends ListDetailAbs {
 		return lsSortEle.get(0).isCis5to3();
 	}
 	/**
-	 * ´ıÑéÖ¤
+	 * å¾…éªŒè¯
 	 */
 	@Override
 	public int getStartCis() {
@@ -106,7 +106,7 @@ public class ListDetailComb<T extends ListDetailAbs> extends ListDetailAbs {
 		return Math.min(lsSortEle.get(0).getStartAbs(), lsSortEle.get(lsSortEle.size() - 1).getStartAbs());
 	}
 	/**
-	 * ´ıÑéÖ¤
+	 * å¾…éªŒè¯
 	 */
 	@Override
 	public int getEndCis() {
@@ -114,7 +114,7 @@ public class ListDetailComb<T extends ListDetailAbs> extends ListDetailAbs {
 		return lsSortEle.get(lsSortEle.size() - 1).getEndCis();
 	}
 	/**
-	 * ´ıÑéÖ¤
+	 * å¾…éªŒè¯
 	 */
 	@Override
 	public int getEndAbs() {
@@ -135,7 +135,7 @@ public class ListDetailComb<T extends ListDetailAbs> extends ListDetailAbs {
 		}
 		return lsName;
 	}
-	/** ¼Ù¶¨¼¸¸ö×ªÂ¼±¾µÄÀ´Ô´Ò»ÖÂ */
+	/** å‡å®šå‡ ä¸ªè½¬å½•æœ¬çš„æ¥æºä¸€è‡´ */
 	@Override
 	public String getRefID() {
 		String name = lsElement.get(0).get(0).getRefID();
@@ -146,7 +146,7 @@ public class ListDetailComb<T extends ListDetailAbs> extends ListDetailAbs {
 		return lsElement.get(0).get(0).getName().get(0);
 	}
 	/**
-	 * ÊäÈëµÄ¼¸¸öexonÊÇ²»ÊÇÒ»ÑùµÄ
+	 * è¾“å…¥çš„å‡ ä¸ªexonæ˜¯ä¸æ˜¯ä¸€æ ·çš„
 	 * @return
 	 */
 	public boolean isSameEle() {

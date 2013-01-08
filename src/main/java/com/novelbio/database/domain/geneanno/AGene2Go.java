@@ -5,9 +5,9 @@ import org.apache.log4j.Logger;
 import com.novelbio.database.service.servgeneanno.ServGo2Term;
 
 /**
- * ÖØĞ´ÁËequalºÍhash
- * ÒªÁ½¸öncbiidµÄgeneIDºÍGOID¶¼ÏàÍ¬£¬²ÅÈÏÎªÕâÁ½¸öNCBIIDÏàÍ¬
- * µ«ÊÇÈç¹ûgeneIDÎª0£¬Ò²¾ÍÊÇNCBIID¸ù±¾Ã»ÓĞ³õÊ¼»¯£¬ÄÇÃ´Ö±½Ó·µ»Øfalse
+ * é‡å†™äº†equalå’Œhash
+ * è¦ä¸¤ä¸ªncbiidçš„geneIDå’ŒGOIDéƒ½ç›¸åŒï¼Œæ‰è®¤ä¸ºè¿™ä¸¤ä¸ªNCBIIDç›¸åŒ
+ * ä½†æ˜¯å¦‚æœgeneIDä¸º0ï¼Œä¹Ÿå°±æ˜¯NCBIIDæ ¹æœ¬æ²¡æœ‰åˆå§‹åŒ–ï¼Œé‚£ä¹ˆç›´æ¥è¿”å›false
  * 	@Override
  */
 public abstract class AGene2Go {
@@ -27,14 +27,14 @@ public abstract class AGene2Go {
 	public String getGOID() {
 		Go2Term go2Term = servGo2Term.getHashGo2Term().get(myGoID);
 		if (go2Term == null) {
-			logger.error("³öÏÖÎ´ÖªGOID£º" + myGoID);
+			logger.error("å‡ºç°æœªçŸ¥GOIDï¼š" + myGoID);
 			return null;
 		}
 		String goID = go2Term.getGoID();
 		return goID;
 	}
 //	/**
-//	 * ½ö¸øÊı¾İ¿âÊ¹ÓÃ
+//	 * ä»…ç»™æ•°æ®åº“ä½¿ç”¨
 //	 * @return
 //	 */
 //	@Deprecated
@@ -44,7 +44,7 @@ public abstract class AGene2Go {
 	
 	public void setGOID(String GoID) {
 		if (GoID == null) {
-			logger.error("GOIDÎ´Öª");
+			logger.error("GOIDæœªçŸ¥");
 			return;
 		}
 		GoID = GoID.trim();
@@ -87,8 +87,8 @@ public abstract class AGene2Go {
 		this.qualifier = qualifier;
 	}
 	/**
-	 * ¸ù¾İGo2Term½øĞĞÁËĞ£Õı
-	 * Ã»ÓĞ¾Í·µ»Ønull
+	 * æ ¹æ®Go2Termè¿›è¡Œäº†æ ¡æ­£
+	 * æ²¡æœ‰å°±è¿”å›null
 	 * @return
 	 */
 	public String getGOTerm() {
@@ -100,7 +100,7 @@ public abstract class AGene2Go {
 	}
 	
 	/**
-	 * ¿ÉÄÜ»á±»sep·Ö¸î
+	 * å¯èƒ½ä¼šè¢«sepåˆ†å‰²
 	 * @return
 	 */
 	public String getReference() {
@@ -110,8 +110,8 @@ public abstract class AGene2Go {
 		this.reference = reference;
 	}
 	/**
-	 * ¸ù¾İGo2Term½øĞĞÁËĞ£Õı
-	 * Ã»ÓĞ¾Í·µ»Ønull<br>
+	 * æ ¹æ®Go2Termè¿›è¡Œäº†æ ¡æ­£
+	 * æ²¡æœ‰å°±è¿”å›null<br>
 	 * FUN_SHORT_BIO_P<br>
 	 * FUN_SHORT_CEL_C<br>
 	 * FUN_SHORT_MOL_F<br>
@@ -121,12 +121,12 @@ public abstract class AGene2Go {
 		try {
 			return servGo2Term.getHashGo2Term().get(myGoID).getGoFunction();
 		} catch (Exception e) {
-			logger.error("³öÏÖÎ´ÖªGOID£º" + myGoID);
+			logger.error("å‡ºç°æœªçŸ¥GOIDï¼š" + myGoID);
 			return null;
 		}
 	}
 	/**
-	 * ¿ÉÄÜ»á±»sep·Ö¸î
+	 * å¯èƒ½ä¼šè¢«sepåˆ†å‰²
 	 * @return
 	 */
 	public String getDataBase() {
@@ -157,7 +157,7 @@ public abstract class AGene2Go {
 			return;
 		}
 		if (this.taxID != taxID) {
-			logger.error("´ı¿½±´µÄÁ½¸ögeneInfoÖĞµÄtaxID²»Ò»ÖÂ£¬Ô­taxID£º"+this.taxID + " ĞÂtaxID£º" + taxID );
+			logger.error("å¾…æ‹·è´çš„ä¸¤ä¸ªgeneInfoä¸­çš„taxIDä¸ä¸€è‡´ï¼ŒåŸtaxIDï¼š"+this.taxID + " æ–°taxIDï¼š" + taxID );
 		}
 	}
 	private void addEvidence(String evidence)
@@ -168,8 +168,8 @@ public abstract class AGene2Go {
 		this.qualifier = validate(this.qualifier, qualifier);
 	}
 	/**
-	 * trueËµÃ÷È·ÊµÓĞĞÂ¶«Î÷
-	 * Èç¹ûĞÅÏ¢ÖØ¸´£¬¾Í²»ĞèÒªÉı¼¶£¬Ôò·µ»Øfalse
+	 * trueè¯´æ˜ç¡®å®æœ‰æ–°ä¸œè¥¿
+	 * å¦‚æœä¿¡æ¯é‡å¤ï¼Œå°±ä¸éœ€è¦å‡çº§ï¼Œåˆ™è¿”å›false
 	 * @param gene2Go
 	 * @return
 	 */
@@ -187,9 +187,9 @@ public abstract class AGene2Go {
 	
 	
 	/**
-	 * trueËµÃ÷È·ÊµÓĞĞÂ¶«Î÷
-	 * Èç¹ûĞÅÏ¢ÖØ¸´£¬¾Í²»ĞèÒªÉı¼¶£¬Ôò·µ»Øfalse
-	 * Ìí¼ÓÁËDatabase£¬Qualifier£¬ReferenceºÍEvidence
+	 * trueè¯´æ˜ç¡®å®æœ‰æ–°ä¸œè¥¿
+	 * å¦‚æœä¿¡æ¯é‡å¤ï¼Œå°±ä¸éœ€è¦å‡çº§ï¼Œåˆ™è¿”å›false
+	 * æ·»åŠ äº†Databaseï¼ŒQualifierï¼ŒReferenceå’ŒEvidence
 	 * @param gene2Go
 	 * @return
 	 */
@@ -213,12 +213,12 @@ public abstract class AGene2Go {
 		return true;
 	}
 	/**
-	 * ÊÇ·ñĞèÒªÉı¼¶
+	 * æ˜¯å¦éœ€è¦å‡çº§
 	 * @param thisField
 	 * @param inputField
 	 * @return
-	 * false²»ĞèÒªÉı¼¶
-	 * true ĞèÒªÉı¼¶
+	 * falseä¸éœ€è¦å‡çº§
+	 * true éœ€è¦å‡çº§
 	 */
 	private boolean validateUpdate(String thisField, String inputField)
 	{
@@ -268,8 +268,8 @@ public abstract class AGene2Go {
 	
 	
 	/**
-	 * Ö»ÒªÁ½¸ögene2GOµÄgeneIDÏàÍ¬£¬¾ÍÈÏÎªÕâÁ½¸öNCBIIDÏàÍ¬
-	 * µ«ÊÇÈç¹ûgeneIDÎª0£¬Ò²¾ÍÊÇNCBIID¸ù±¾Ã»ÓĞ³õÊ¼»¯£¬ÄÇÃ´Ö±½Ó·µ»Øfalse
+	 * åªè¦ä¸¤ä¸ªgene2GOçš„geneIDç›¸åŒï¼Œå°±è®¤ä¸ºè¿™ä¸¤ä¸ªNCBIIDç›¸åŒ
+	 * ä½†æ˜¯å¦‚æœgeneIDä¸º0ï¼Œä¹Ÿå°±æ˜¯NCBIIDæ ¹æœ¬æ²¡æœ‰åˆå§‹åŒ–ï¼Œé‚£ä¹ˆç›´æ¥è¿”å›false
 	 * 	@Override
 	 */
 	public boolean equals(Object obj) {
@@ -293,7 +293,7 @@ public abstract class AGene2Go {
 		return getGeneUniId().equals(otherObj.getGeneUniId())&&getGOID().equals(otherObj.getGOID());
 	}
 	/**
-	 * ÖØĞ´hashcode£¬Ò²ÊÇ½öÕë¶ÔgeneID
+	 * é‡å†™hashcodeï¼Œä¹Ÿæ˜¯ä»…é’ˆå¯¹geneID
 	 */
 	public int hashCode(){
 		String id = getGeneUniId()+getGOID();

@@ -17,8 +17,8 @@ public class MethylationQZL {
 	
 	
 	public static void main(String[] args) throws Exception {
-		String excelFile = "/home/zong0jie/×ÀÃæ/NB90m VS UN12D.xls";
-		String out = "/home/zong0jie/×ÀÃæ/QZL/NB90mVSUN12D.txt";
+		String excelFile = "/home/zong0jie/æ¡Œé¢/NB90m VS UN12D.xls";
+		String out = "/home/zong0jie/æ¡Œé¢/QZL/NB90mVSUN12D.txt";
 		getInfo(excelFile, out);
 		
 		
@@ -26,7 +26,7 @@ public class MethylationQZL {
 	
 	
 	/**
-	 * ÊäÈëÎÄ¼ş
+	 * è¾“å…¥æ–‡ä»¶
 	 * @param excelFile
 	 */
 	public static void getInfo(String excelFile, String OutfileName) {
@@ -95,7 +95,7 @@ public class MethylationQZL {
 	
 	
 	/**
-	 * ¸ø¶¨lsInfoĞÅÏ¢£¬»ñµÃ×ø±êmiddleºÍ¸÷ÖÖĞÅÏ¢µÄÖĞÎ»Êı
+	 * ç»™å®šlsInfoä¿¡æ¯ï¼Œè·å¾—åæ ‡middleå’Œå„ç§ä¿¡æ¯çš„ä¸­ä½æ•°
 	 * @param lsInfo
 	 * @return
 	 */
@@ -128,7 +128,7 @@ public class MethylationQZL {
 	}
 	
 	/**
-	 * ¸ø¶¨Á½¸öhash±í£¬½«½á¹ûÕûÀíÎª6¸öÎÄ¼ş
+	 * ç»™å®šä¸¤ä¸ªhashè¡¨ï¼Œå°†ç»“æœæ•´ç†ä¸º6ä¸ªæ–‡ä»¶
 	 * @param hashAccIDInfoUp
 	 * @param hashAccIDInfoDown
 	 */

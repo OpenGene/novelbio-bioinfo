@@ -18,7 +18,7 @@ public class GffToRepeat {
 	GffsearchRepeat gffSearchRepeat=new GffsearchRepeat();
 	GffHashRepeat gffHashRepeat=new GffHashRepeat();
 	/**
-	 * ¸²¸Ç¶È°Ù·Ö±È£¬Í³¼ÆrepeatÊıÄ¿Ê±ÓÃµ½£¬µ±´óÓÚ¸Ã°Ù·Ö±ÈÊ±½«repeat¼ÆÈë
+	 * è¦†ç›–åº¦ç™¾åˆ†æ¯”ï¼Œç»Ÿè®¡repeatæ•°ç›®æ—¶ç”¨åˆ°ï¼Œå½“å¤§äºè¯¥ç™¾åˆ†æ¯”æ—¶å°†repeatè®¡å…¥
 	 */
 	int overLapProp=50;
 	public void setOverlapProp(int overLapProp) {
@@ -26,7 +26,7 @@ public class GffToRepeat {
 	}
 	
 	/**
-	 * ¶ÁÈ¡RepeatµÄ×ø±êÎÄ¼ş
+	 * è¯»å–Repeatçš„åæ ‡æ–‡ä»¶
 	 * @param gfffilename
 	 * @throws Exception
 	 */
@@ -37,11 +37,11 @@ public class GffToRepeat {
 	
 	
 	/**
-	 * ¸ø¶¨¶şÎ¬Êı×é,Í³¼Æ¸÷¸öÇøÓòËùÕ¼µÄ±ÈÖØ£¬Õë¶ÔUCSCknownGeneRepeatMasker
-	 * ÊäÈëµÄÊı¾İ£¬<br>
-	 * µÚÒ»Î¬ÊÇChrID<br>
-	 * µÚ¶şÎ¬ÊÇ×ø±ê<br>
-	 * ·µ»Ø×ø±êÍ³¼ÆĞÅÏ¢<br>
+	 * ç»™å®šäºŒç»´æ•°ç»„,ç»Ÿè®¡å„ä¸ªåŒºåŸŸæ‰€å çš„æ¯”é‡ï¼Œé’ˆå¯¹UCSCknownGeneRepeatMasker
+	 * è¾“å…¥çš„æ•°æ®ï¼Œ<br>
+	 * ç¬¬ä¸€ç»´æ˜¯ChrID<br>
+	 * ç¬¬äºŒç»´æ˜¯åæ ‡<br>
+	 * è¿”å›åæ ‡ç»Ÿè®¡ä¿¡æ¯<br>
 	 * arraylist-string[2]<br>
 	 * 0:repeatClass<br>
 	 * 1:Num<br>
@@ -49,12 +49,12 @@ public class GffToRepeat {
 	public ArrayList<String[]> locateCod(String[][] LOCIDInfo)
 	{
 		String outofRepeat="outofRepeat";
-		//Í³¼Æ½á¹û¼ÓÈëhashStatistic£¬key repeatÀàĞÍ£¬value repeatÊıÄ¿
+		//ç»Ÿè®¡ç»“æœåŠ å…¥hashStatisticï¼Œkey repeatç±»å‹ï¼Œvalue repeatæ•°ç›®
 		HashMap<String, Integer> hashStatistic=new HashMap<String, Integer>();
 		hashStatistic.put(outofRepeat, 0);
 		for (int i = 0; i < LOCIDInfo.length; i++) {
 			GffCodInfo tmpresult=(GffCodInfo)gffSearchRepeat.searchLocation(LOCIDInfo[i][0].toLowerCase(), Integer.parseInt(LOCIDInfo[i][1]), gffHashRepeat);
-			if(tmpresult.insideLOC)//»ùÒòÄÚ
+			if(tmpresult.insideLOC)//åŸºå› å†…
 			{
 				String locString=tmpresult.LOCID[0];
 				GffDetailRepeat tmpRepeat =(GffDetailRepeat)gffHashRepeat.getLocHashtable().get(locString);
@@ -78,7 +78,7 @@ public class GffToRepeat {
 			}
 		}
 		
-		//½«¹şÏ£±í±éÀú²¢×°Èëlist
+		//å°†å“ˆå¸Œè¡¨éå†å¹¶è£…å…¥list
 		ArrayList<String[]> result=new ArrayList<String[]>();
 		Iterator iter = hashStatistic.entrySet().iterator();
 		while (iter.hasNext()) {
@@ -95,14 +95,14 @@ public class GffToRepeat {
 	
 	
 	/**
-	 * ¸ø¶¨¶şÎ¬Êı×é,Í³¼Æ¸÷¸öÇøÓòËùÕ¼µÄ±ÈÖØ£¬Õë¶ÔUCSCknownGeneRepeatMasker
-	 * ÊäÈëµÄÊı¾İ£¬<br>
-	 * µÚÒ»Î¬ÊÇChrID<br>
-	 * µÚ¶şÎ¬ÊÇ×ø±ê<br>
-	 * ·µ»ØÃ¿¸ö×ø±êÔÚrepeatÉÏµÄ¾ßÌåÇé¿ö<br>
+	 * ç»™å®šäºŒç»´æ•°ç»„,ç»Ÿè®¡å„ä¸ªåŒºåŸŸæ‰€å çš„æ¯”é‡ï¼Œé’ˆå¯¹UCSCknownGeneRepeatMasker
+	 * è¾“å…¥çš„æ•°æ®ï¼Œ<br>
+	 * ç¬¬ä¸€ç»´æ˜¯ChrID<br>
+	 * ç¬¬äºŒç»´æ˜¯åæ ‡<br>
+	 * è¿”å›æ¯ä¸ªåæ ‡åœ¨repeatä¸Šçš„å…·ä½“æƒ…å†µ<br>
 	 * arraylist-string[4]<br>
 	 * 0:ChrID<br>
-	 * 1:×ø±ê<br>
+	 * 1:åæ ‡<br>
 	 * 2:repeatName<br>
 	 * 3:repeat-Class-family
 	 */
@@ -115,7 +115,7 @@ public class GffToRepeat {
 			tmprepeatInfo[0]=LOCIDInfo[i][0];
 			tmprepeatInfo[1]=LOCIDInfo[i][1];
 			GffCodInfo tmpCodInfo=(GffCodInfo)gffSearchRepeat.searchLocation(LOCIDInfo[i][0].toLowerCase(), Integer.parseInt(LOCIDInfo[i][1]), gffHashRepeat);
-			if(tmpCodInfo.insideLOC)//»ùÒòÄÚ
+			if(tmpCodInfo.insideLOC)//åŸºå› å†…
 			{
 				tmprepeatInfo[2]=tmpCodInfo.LOCID[0];
 				GffDetailRepeat tmpDetailRepeat =(GffDetailRepeat)gffHashRepeat.getLocHashtable().get(tmprepeatInfo[2]);
@@ -133,18 +133,18 @@ public class GffToRepeat {
 	
 	
 	/**
-	 * ¸ø¶¨¶şÎ¬Êı×é,Í³¼Æ¸÷¸öÇøÓòËùÕ¼µÄ±ÈÖØ£¬Õë¶ÔUCSCknown gene,
+	 * ç»™å®šäºŒç»´æ•°ç»„,ç»Ÿè®¡å„ä¸ªåŒºåŸŸæ‰€å çš„æ¯”é‡ï¼Œé’ˆå¯¹UCSCknown gene,
 	 * @param LOCIDInfo
-	 * ÊäÈëµÄÊı¾İ£¬<br>
-	 * µÚÒ»Î¬ÊÇChrID<br>
-	 * µÚ¶şÎ¬ÊÇ×ø±ê,µÚÈıÎ¬Ò²ÊÇ×ø±ê<br>
+	 * è¾“å…¥çš„æ•°æ®ï¼Œ<br>
+	 * ç¬¬ä¸€ç»´æ˜¯ChrID<br>
+	 * ç¬¬äºŒç»´æ˜¯åæ ‡,ç¬¬ä¸‰ç»´ä¹Ÿæ˜¯åæ ‡<br>
 	 * @param Bp
-	 * true:·µ»ØpeakËù¸²¸ÇµÄÃ¿¸örepeatµÄbpÊı<br>
-	 * false:µ±peakÓërepeatµÄ½»¼¯>50%(Á½ÕßÖĞ±È½ÏĞ¡µÄÄÇ¸öµÄ50%)Ê±£¬¸ÃÀàrepeatÊıÄ¿+1<br>
-	 * Èç¹û×ó¶Ëµã/ÓÒ¶ËµãÔÚrepeatÄÚ²¢ÇÒ×ó²¿·ÖµÄrepeat/peakËùÕ¼±ÈÀı³¬¹ıoverLapProp£¬Ôò¼Ó1£¬·ñÔòoutofRepeat+1<br>
-	 * ÖĞ¼ä³öÏÖÄ³¸örepeatµÄ»°£¬ÏàÓ¦repeat+1£¬È»ºóoutofRepeat+1<br>
-	 * ·µ»Ø×ø±êÍ³¼ÆĞÅÏ¢<br>
-	 * Èç¹û
+	 * true:è¿”å›peakæ‰€è¦†ç›–çš„æ¯ä¸ªrepeatçš„bpæ•°<br>
+	 * false:å½“peakä¸repeatçš„äº¤é›†>50%(ä¸¤è€…ä¸­æ¯”è¾ƒå°çš„é‚£ä¸ªçš„50%)æ—¶ï¼Œè¯¥ç±»repeatæ•°ç›®+1<br>
+	 * å¦‚æœå·¦ç«¯ç‚¹/å³ç«¯ç‚¹åœ¨repeatå†…å¹¶ä¸”å·¦éƒ¨åˆ†çš„repeat/peakæ‰€å æ¯”ä¾‹è¶…è¿‡overLapPropï¼Œåˆ™åŠ 1ï¼Œå¦åˆ™outofRepeat+1<br>
+	 * ä¸­é—´å‡ºç°æŸä¸ªrepeatçš„è¯ï¼Œç›¸åº”repeat+1ï¼Œç„¶åoutofRepeat+1<br>
+	 * è¿”å›åæ ‡ç»Ÿè®¡ä¿¡æ¯<br>
+	 * å¦‚æœ
 	 * arraylist-string[2]
 	 * 0:repeatClass
 	 * 1:Num
@@ -161,14 +161,14 @@ public class GffToRepeat {
 	
 	
 	/**
-	 * ¸ø¶¨¶şÎ¬Êı×é,Í³¼Æ¸÷¸öÇøÓòËùÕ¼µÄ±ÈÖØ£¬Õë¶ÔUCSCknown gene,Ö»ÓĞµ±peakºÍregionµÄ½»¼¯²¿·Ö´óÓÚÉè¶¨µÄoverLapPropÊ±£¬²ÅËãÒ»¸ö
-	 * ÊäÈëµÄÊı¾İ£¬<br>
-	 * µÚÒ»Î¬ÊÇChrID<br>
-	 * µÚ¶şÎ¬ÊÇ×ø±ê,µÚÈıÎ¬Ò²ÊÇ×ø±ê<br>
-	 * ·µ»Ø×ø±êÍ³¼ÆĞÅÏ¢<br>
-	 * Èç¹û×ó¶Ëµã/ÓÒ¶ËµãÔÚrepeatÄÚ²¢ÇÒ×ó²¿·ÖµÄrepeat/peakËùÕ¼±ÈÀı³¬¹ıoverLapProp£¬Ôò¼Ó1£¬·ñÔòoutofRepeat+1<br>
-	 * ÖĞ¼ä³öÏÖÄ³¸örepeatµÄ»°£¬ÏàÓ¦repeat+1£¬È»ºóoutofRepeat+1<br>
-	 * Èç¹û
+	 * ç»™å®šäºŒç»´æ•°ç»„,ç»Ÿè®¡å„ä¸ªåŒºåŸŸæ‰€å çš„æ¯”é‡ï¼Œé’ˆå¯¹UCSCknown gene,åªæœ‰å½“peakå’Œregionçš„äº¤é›†éƒ¨åˆ†å¤§äºè®¾å®šçš„overLapPropæ—¶ï¼Œæ‰ç®—ä¸€ä¸ª
+	 * è¾“å…¥çš„æ•°æ®ï¼Œ<br>
+	 * ç¬¬ä¸€ç»´æ˜¯ChrID<br>
+	 * ç¬¬äºŒç»´æ˜¯åæ ‡,ç¬¬ä¸‰ç»´ä¹Ÿæ˜¯åæ ‡<br>
+	 * è¿”å›åæ ‡ç»Ÿè®¡ä¿¡æ¯<br>
+	 * å¦‚æœå·¦ç«¯ç‚¹/å³ç«¯ç‚¹åœ¨repeatå†…å¹¶ä¸”å·¦éƒ¨åˆ†çš„repeat/peakæ‰€å æ¯”ä¾‹è¶…è¿‡overLapPropï¼Œåˆ™åŠ 1ï¼Œå¦åˆ™outofRepeat+1<br>
+	 * ä¸­é—´å‡ºç°æŸä¸ªrepeatçš„è¯ï¼Œç›¸åº”repeat+1ï¼Œç„¶åoutofRepeat+1<br>
+	 * å¦‚æœ
 	 * arraylist-string[2]
 	 * 0:repeatClass
 	 * 1:Num
@@ -183,14 +183,14 @@ public class GffToRepeat {
 			
 			Object[] objleftCodInfo=(Object[]) tmpresult.get(0);
 			GffCodInfo leftCodInfo=(GffCodInfo)objleftCodInfo[0];
-			double[] leftOverlap=(double[])objleftCodInfo[1];//×ó±ßµÄ½»¼¯Çé¿ö
+			double[] leftOverlap=(double[])objleftCodInfo[1];//å·¦è¾¹çš„äº¤é›†æƒ…å†µ
 			
 			
 			Object[] objrightCodInfo=(Object[]) tmpresult.get(1);
 			GffCodInfo rightCodInfo=(GffCodInfo)objrightCodInfo[0];
-			double[] rightOverlap=(double[])objrightCodInfo[1];//ÓÒ±ßµÄ½»¼¯Çé¿ö
+			double[] rightOverlap=(double[])objrightCodInfo[1];//å³è¾¹çš„äº¤é›†æƒ…å†µ
 			
-			if(leftOverlap[0]>=overLapProp||leftOverlap[1]>=overLapProp)//»ùÒòÄÚ
+			if(leftOverlap[0]>=overLapProp||leftOverlap[1]>=overLapProp)//åŸºå› å†…
 			{
 				String locString=leftCodInfo.LOCID[0];
 				GffDetailRepeat tmpRepeat =(GffDetailRepeat)gffHashRepeat.getLocHashtable().get(locString);
@@ -216,7 +216,7 @@ public class GffToRepeat {
 			{
 				String locString=rightCodInfo.LOCID[0];
 				//////////////////////////////////////////////////
-				//Èç¹û×óÓÒÁ½µã¶¼ÔÚÒ»¸örepeatÄÚ£¬ÔòÓÒµã²»¼ÆÊı²¢ÇÒ×óÓÒÖ®¼äÒ²²»Í¬¿´ÁË£¬¿Ï¶¨Ã»ÓĞ£¬¾Í½øÈëÏÂÒ»¸öÑ­»·
+				//å¦‚æœå·¦å³ä¸¤ç‚¹éƒ½åœ¨ä¸€ä¸ªrepeatå†…ï¼Œåˆ™å³ç‚¹ä¸è®¡æ•°å¹¶ä¸”å·¦å³ä¹‹é—´ä¹Ÿä¸åŒçœ‹äº†ï¼Œè‚¯å®šæ²¡æœ‰ï¼Œå°±è¿›å…¥ä¸‹ä¸€ä¸ªå¾ªç¯
 				if(locString!=leftCodInfo.LOCID[0])
 				{
 					GffDetailRepeat tmpRepeat =(GffDetailRepeat)gffHashRepeat.getLocHashtable().get(locString);
@@ -240,7 +240,7 @@ public class GffToRepeat {
 				tmp++;
 				hashStatistic.put(outofRepeat, tmp);
 			}
-			//¿´peak¸²¸Ç·¶Î§ÄÚÓĞÃ»ÓĞrepeat£¬ÓĞµÄ»°¾Í¼ÓÈë¼ÆÊı
+			//çœ‹peakè¦†ç›–èŒƒå›´å†…æœ‰æ²¡æœ‰repeatï¼Œæœ‰çš„è¯å°±åŠ å…¥è®¡æ•°
 			for (int j = 2; j < tmpresult.size(); j++) {
 				GffDetailRepeat tmpDetailRepeat=(GffDetailRepeat)tmpresult.get(j);
 				String repeatClass=tmpDetailRepeat.repeatClass+"/"+tmpDetailRepeat.repeatFamily;
@@ -260,7 +260,7 @@ public class GffToRepeat {
 				hashStatistic.put(outofRepeat, tmp);
 			}
 		}
-		//½«¹şÏ£±í±éÀú²¢×°Èëlist
+		//å°†å“ˆå¸Œè¡¨éå†å¹¶è£…å…¥list
 		ArrayList<String[]> result=new ArrayList<String[]>();
 		Iterator iter = hashStatistic.entrySet().iterator();
 		while (iter.hasNext()) {
@@ -276,14 +276,14 @@ public class GffToRepeat {
 	
 	
 	/**
-	 * ¸ø¶¨¶şÎ¬Êı×é,Í³¼Æ¸÷¸öÇøÓòËùÕ¼µÄ¾ßÌåbpÊı,ÕâÑù×Ó·½±ã×îºó³ö½á¹û
-	 * ÊäÈëµÄÊı¾İ£¬<br>
-	 * µÚÒ»Î¬ÊÇChrID<br>
-	 * µÚ¶şÎ¬ÊÇ×ø±ê,µÚÈıÎ¬Ò²ÊÇ×ø±ê<br>
-	 * ·µ»Ø×ø±êÍ³¼ÆĞÅÏ¢<br>
-	 * ¾ÍÊÇËµpeakËù¸²¸ÇµÄÃ¿¸öÀàĞÍrepeatµÄ¾ßÌåbpÊı
-	 * ÖĞ¼ä³öÏÖÄ³¸örepeatµÄ»°£¬ÏàÓ¦repeat+1£¬È»ºóoutofRepeat+1<br>
-	 * Èç¹û
+	 * ç»™å®šäºŒç»´æ•°ç»„,ç»Ÿè®¡å„ä¸ªåŒºåŸŸæ‰€å çš„å…·ä½“bpæ•°,è¿™æ ·å­æ–¹ä¾¿æœ€åå‡ºç»“æœ
+	 * è¾“å…¥çš„æ•°æ®ï¼Œ<br>
+	 * ç¬¬ä¸€ç»´æ˜¯ChrID<br>
+	 * ç¬¬äºŒç»´æ˜¯åæ ‡,ç¬¬ä¸‰ç»´ä¹Ÿæ˜¯åæ ‡<br>
+	 * è¿”å›åæ ‡ç»Ÿè®¡ä¿¡æ¯<br>
+	 * å°±æ˜¯è¯´peakæ‰€è¦†ç›–çš„æ¯ä¸ªç±»å‹repeatçš„å…·ä½“bpæ•°
+	 * ä¸­é—´å‡ºç°æŸä¸ªrepeatçš„è¯ï¼Œç›¸åº”repeat+1ï¼Œç„¶åoutofRepeat+1<br>
+	 * å¦‚æœ
 	 * arraylist-string[2]
 	 * 0:repeatClass
 	 * 1:Num
@@ -295,17 +295,17 @@ public class GffToRepeat {
 		hashStatistic.put(outofRepeat, (long)0);
 		for (int i = 0; i < LOCIDInfo.length; i++) {
 			ArrayList<Object> tmpresult=gffSearchRepeat.searchLocation(LOCIDInfo[i][0].toLowerCase(), Integer.parseInt(LOCIDInfo[i][1]),Integer.parseInt(LOCIDInfo[i][2]), gffHashRepeat);
-			long peakLen=Math.abs(Long.parseLong(LOCIDInfo[i][1])-Long.parseLong(LOCIDInfo[i][2]));//peakµÄ³¤¶È
+			long peakLen=Math.abs(Long.parseLong(LOCIDInfo[i][1])-Long.parseLong(LOCIDInfo[i][2]));//peakçš„é•¿åº¦
 			Object[] objleftCodInfo=(Object[]) tmpresult.get(0);
 			GffCodInfo leftCodInfo=(GffCodInfo)objleftCodInfo[0];
-			double[] leftOverlap=(double[])objleftCodInfo[1];//×ó±ßµÄ½»¼¯Çé¿ö
+			double[] leftOverlap=(double[])objleftCodInfo[1];//å·¦è¾¹çš„äº¤é›†æƒ…å†µ
 			
 			
 			Object[] objrightCodInfo=(Object[]) tmpresult.get(1);
 			GffCodInfo rightCodInfo=(GffCodInfo)objrightCodInfo[0];
-			double[] rightOverlap=(double[])objrightCodInfo[1];//ÓÒ±ßµÄ½»¼¯Çé¿ö
+			double[] rightOverlap=(double[])objrightCodInfo[1];//å³è¾¹çš„äº¤é›†æƒ…å†µ
 			long tmpOverlap=0;
-			if(leftCodInfo.insideLOC)//»ùÒòÄÚ
+			if(leftCodInfo.insideLOC)//åŸºå› å†…
 			{
 				String locString=leftCodInfo.LOCID[0];
 				GffDetailRepeat tmpRepeat =(GffDetailRepeat)gffHashRepeat.getLocHashtable().get(locString);
@@ -326,8 +326,8 @@ public class GffToRepeat {
 			{
 				String locString=rightCodInfo.LOCID[0];
 				//////////////////////////////////////////////////
-				//Èç¹û×óÓÒÁ½µã¶¼ÔÚÒ»¸örepeatÄÚ£¬ÔòÓÒµã²»¼ÆÊı²¢ÇÒ×óÓÒÖ®¼äÒ²²»Í¬¿´ÁË£¬¿Ï¶¨Ã»ÓĞ£¬¾Í½øÈëÏÂÒ»¸öÑ­»·
-				//ÏÖÔÚ¿¼ÂÇÁ½¸ö¶Ëµã²»ÔÚÒ»¸örepeatÄÚ
+				//å¦‚æœå·¦å³ä¸¤ç‚¹éƒ½åœ¨ä¸€ä¸ªrepeatå†…ï¼Œåˆ™å³ç‚¹ä¸è®¡æ•°å¹¶ä¸”å·¦å³ä¹‹é—´ä¹Ÿä¸åŒçœ‹äº†ï¼Œè‚¯å®šæ²¡æœ‰ï¼Œå°±è¿›å…¥ä¸‹ä¸€ä¸ªå¾ªç¯
+				//ç°åœ¨è€ƒè™‘ä¸¤ä¸ªç«¯ç‚¹ä¸åœ¨ä¸€ä¸ªrepeatå†…
 				if (!locString.equals(leftCodInfo.LOCID[0])) 
 				{
 					GffDetailRepeat tmpRepeat =(GffDetailRepeat)gffHashRepeat.getLocHashtable().get(locString);
@@ -346,7 +346,7 @@ public class GffToRepeat {
 				}
 			}
 		
-			//¿´peak¸²¸Ç·¶Î§ÄÚÓĞÃ»ÓĞrepeat£¬ÓĞµÄ»°¾Í¼ÓÈë¼ÆÊı
+			//çœ‹peakè¦†ç›–èŒƒå›´å†…æœ‰æ²¡æœ‰repeatï¼Œæœ‰çš„è¯å°±åŠ å…¥è®¡æ•°
 			for (int j = 2; j < tmpresult.size(); j++) {
 				GffDetailRepeat tmpDetailRepeat=(GffDetailRepeat)tmpresult.get(j);
 				String repeatClass=tmpDetailRepeat.repeatClass+"/"+tmpDetailRepeat.repeatFamily;
@@ -368,7 +368,7 @@ public class GffToRepeat {
 			if(tmpOutOfRepeat<0)
 			{
 				//System.out.println("error tmpOutOfRepeat<0,set it to 0");
-				//µ±Á½¸örepeatÖØµşÊ±¾Í»á³öÏÖ¸ºÊı£¬ÕâÖÖÇé¿öÊÇ´æÔÚµÄ
+				//å½“ä¸¤ä¸ªrepeaté‡å æ—¶å°±ä¼šå‡ºç°è´Ÿæ•°ï¼Œè¿™ç§æƒ…å†µæ˜¯å­˜åœ¨çš„
 				System.out.println("error tmpOutOfRepeat<0,set it to 0");
 				tmpOutOfRepeat=0;
 			}
@@ -376,7 +376,7 @@ public class GffToRepeat {
 			tmp=tmp+tmpOutOfRepeat;
 			hashStatistic.put(outofRepeat, tmp);
 		}
-		//½«¹şÏ£±í±éÀú²¢×°Èëlist
+		//å°†å“ˆå¸Œè¡¨éå†å¹¶è£…å…¥list
 		ArrayList<String[]> result=new ArrayList<String[]>();
 		Iterator iter = hashStatistic.entrySet().iterator();
 		while (iter.hasNext()) {
@@ -394,17 +394,17 @@ public class GffToRepeat {
 	
 	
 	/**
-	 * ¸ø¶¨¶şÎ¬Êı×é,»ñµÃÃ¿¸öpeakÓërepeatµÄ¾ßÌåÇé¿ö£¬Õë¶ÔUCSCknown gene
-	 * ÊäÈëµÄÊı¾İ£¬<br>
-	 * µÚÒ»Î¬ÊÇChrID<br>
-	 * µÚ¶şÎ¬ÊÇ×ø±ê,µÚÈıÎ¬Ò²ÊÇ×ø±ê<br>
-	 * ·µ»ØÃ¿¸ö×ø±êÔÚrepeatÉÏµÄ¾ßÌåÇé¿ö<br>
+	 * ç»™å®šäºŒç»´æ•°ç»„,è·å¾—æ¯ä¸ªpeakä¸repeatçš„å…·ä½“æƒ…å†µï¼Œé’ˆå¯¹UCSCknown gene
+	 * è¾“å…¥çš„æ•°æ®ï¼Œ<br>
+	 * ç¬¬ä¸€ç»´æ˜¯ChrID<br>
+	 * ç¬¬äºŒç»´æ˜¯åæ ‡,ç¬¬ä¸‰ç»´ä¹Ÿæ˜¯åæ ‡<br>
+	 * è¿”å›æ¯ä¸ªåæ ‡åœ¨repeatä¸Šçš„å…·ä½“æƒ…å†µ<br>
 	 * arraylist-string[5]<br>
 	 * 0:ChrID<br>
-	 * 1:×ø±ê<br>
-	 * 2:¼¸¸örepeat
-	 * 3:ÒÀ´ÎÃ¿¸örepeatµÄName<br>
-	 * 4:ÒÀ´ÎÃ¿¸örepeat-Class-family
+	 * 1:åæ ‡<br>
+	 * 2:å‡ ä¸ªrepeat
+	 * 3:ä¾æ¬¡æ¯ä¸ªrepeatçš„Name<br>
+	 * 4:ä¾æ¬¡æ¯ä¸ªrepeat-Class-family
 	 */
 	public ArrayList<String[]> locateCodregionInfo(String[][] LOCIDInfo)
 	{
@@ -419,14 +419,14 @@ public class GffToRepeat {
 			
 			Object[] objleftCodInfo=(Object[]) tmpRepeatResult.get(0);
 			GffCodInfo leftCodInfo=(GffCodInfo)objleftCodInfo[0];
-			double[] leftOverlap=(double[])objleftCodInfo[1];//×ó±ßµÄ½»¼¯Çé¿ö
+			double[] leftOverlap=(double[])objleftCodInfo[1];//å·¦è¾¹çš„äº¤é›†æƒ…å†µ
 			
 			Object[] objrightCodInfo=(Object[]) tmpRepeatResult.get(1);
 			GffCodInfo rightCodInfo=(GffCodInfo)objrightCodInfo[0];
-			double[] rightOverlap=(double[])objrightCodInfo[1];//ÓÒ±ßµÄ½»¼¯Çé¿ö
+			double[] rightOverlap=(double[])objrightCodInfo[1];//å³è¾¹çš„äº¤é›†æƒ…å†µ
 
-			int tmpRepeatNum=0;//×Ü¹²¼¸¸örepeat
-			if(leftOverlap[0]>=overLapProp||leftOverlap[1]>=overLapProp)//»ùÒòÄÚ)//»ùÒòÄÚ
+			int tmpRepeatNum=0;//æ€»å…±å‡ ä¸ªrepeat
+			if(leftOverlap[0]>=overLapProp||leftOverlap[1]>=overLapProp)//åŸºå› å†…)//åŸºå› å†…
 			{
 				tmpRepeatNum=1;
 				String locString=leftCodInfo.LOCID[0];
@@ -439,7 +439,7 @@ public class GffToRepeat {
 				tmpRepeatInfo[4]="none";
 			}
 
-			//¿´peak¸²¸Ç·¶Î§ÄÚÓĞÃ»ÓĞrepeat£¬ÓĞµÄ»°¾Í¼ÓÈë¼ÆÊı
+			//çœ‹peakè¦†ç›–èŒƒå›´å†…æœ‰æ²¡æœ‰repeatï¼Œæœ‰çš„è¯å°±åŠ å…¥è®¡æ•°
 			for (int j = 2; j < tmpRepeatResult.size(); j++) {
 				tmpRepeatNum++;
 				GffDetailRepeat tmpDetailRepeat=(GffDetailRepeat)tmpRepeatResult.get(j);
@@ -447,12 +447,12 @@ public class GffToRepeat {
 				tmpRepeatInfo[4]=tmpRepeatInfo[4]+"///"+tmpDetailRepeat.repeatClass+"/"+tmpDetailRepeat.repeatFamily;
 			}
 			
-			///////////////ÓÒ±ßµÄrepeatÎ»µã///////////////////////
+			///////////////å³è¾¹çš„repeatä½ç‚¹///////////////////////
 			if(rightOverlap[0]>=overLapProp||rightOverlap[1]>=overLapProp)
 			{
 				String locString=rightCodInfo.LOCID[0];
 				//////////////////////////////////////////////////
-				//Èç¹û×óÓÒÁ½µã¶¼ÔÚÒ»¸örepeatÄÚ£¬ÔòÓÒµã²»¼ÆÊı²¢ÇÒ×óÓÒÖ®¼äÒ²²»Í¬¿´ÁË£¬¿Ï¶¨Ã»ÓĞ£¬¾Í½øÈëÏÂÒ»¸öÑ­»·
+				//å¦‚æœå·¦å³ä¸¤ç‚¹éƒ½åœ¨ä¸€ä¸ªrepeatå†…ï¼Œåˆ™å³ç‚¹ä¸è®¡æ•°å¹¶ä¸”å·¦å³ä¹‹é—´ä¹Ÿä¸åŒçœ‹äº†ï¼Œè‚¯å®šæ²¡æœ‰ï¼Œå°±è¿›å…¥ä¸‹ä¸€ä¸ªå¾ªç¯
 				if(locString!=leftCodInfo.LOCID[0])
 				{
 					tmpRepeatNum++;

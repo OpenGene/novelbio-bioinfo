@@ -32,9 +32,9 @@ public class FreqStatisticInt{
 		gffDetailPeak.addReadsInElementNum();
 	}
 	/**
-	 * ·µ»ØÇø¼äÒÔ¼°Ã¿¸öÇø¼äµÄÊıÁ¿
-	 * key£ºintµÄÇø¼ä
-	 * value£º¾ßÌåÊıÁ¿
+	 * è¿”å›åŒºé—´ä»¥åŠæ¯ä¸ªåŒºé—´çš„æ•°é‡
+	 * keyï¼šintçš„åŒºé—´
+	 * valueï¼šå…·ä½“æ•°é‡
 	 * @return
 	 */
 	public LinkedHashMap<int[], Integer> getFreq()

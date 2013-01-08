@@ -47,7 +47,7 @@ public interface MapKIDKeg2Ko extends MapperSql {
 	public void insertKGIDkeg2Ko(KGIDkeg2Ko kGIDkeg2Ko);
 	
 	/**
-	 * 目前的升级方式是<br>
+	 * 鐩墠鐨勫崌绾ф柟寮忔槸<br>
 		update IDKeg2Ko set<br>
 		keggID = #{keggID},<br>
 		KO = #{KO},<br>

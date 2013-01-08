@@ -8,48 +8,48 @@ import com.novelbio.analysis.annotation.pathway.kegg.prepare.KGprepare;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.model.modgeneid.GeneID;
 /**
- * ´ÓNCBIµÄntºÍnrÊı¾İ¿âÖĞ»ñµÃÖ¸¶¨ÎïÖÖµÄĞòÁĞ²¢ÕûÀíÎªfasta¸ñÊ½
-	 * ÕûÀí³É:<br>
+ * ä»NCBIçš„ntå’Œnræ•°æ®åº“ä¸­è·å¾—æŒ‡å®šç‰©ç§çš„åºåˆ—å¹¶æ•´ç†ä¸ºfastaæ ¼å¼
+	 * æ•´ç†æˆ:<br>
 	 * >geneID<br>
-	 * ĞòÁĞ...............<br>.
-	 * µÄ¸ñÊ½
- * ÎªºóĞøµÄblast×ö×¼±¸
+	 * åºåˆ—...............<br>.
+	 * çš„æ ¼å¼
+ * ä¸ºåç»­çš„blaståšå‡†å¤‡
  * @author zong0jie
  *
  */
 public class GetSeq {
 	/**
-	 * ¸ø¶¨nrÊı¾İ¿âµÄ±êÌâÁĞ£¬ÀıÈç£º
+	 * ç»™å®šnræ•°æ®åº“çš„æ ‡é¢˜åˆ—ï¼Œä¾‹å¦‚ï¼š
 	 * >gi|71002820|ref|XP_756091.1| conidial pigment biosynthesis 1,3,6,8-tetrahydroxynaphthalene reductase Arp
 	 * 2 [Aspergillus fumigatus Af293]gi|6090729|gb|AAF03314.1|AF099736_1 1,3,6,8-tetrahydroxynaphthalene reductase [Asper
 	 * gillus fumigatus]gi|5689604|emb|CAB51900.1| 1,3,6,8-tetrahydroxynaphthalene reductase [Aspergillus fumiga
 	 * tus]gi|66853729|gb|EAL94053.1| conidial pigment biosynthesis 1,3,6,8-tetrahydroxynaphthalene reductase Arp2 [Asper
 	 * gillus fumigatus Af293]gi|159130146|gb|EDP55260.1| 1,3,6,8-tetrahydroxynaphthalene reductase [Aspergillus fumigatus A1163]<br>
-	 * ×¢ÒâÖ®¼äÓÃÆæ¹ÖµÄ·Ö¸ô·û·Ö¸ô¿ªÁË
-	 * @param geneTitle ÊäÈë»ùÒòµÄ±êÌâ£¬Ò²¾ÍÊÇnrÖĞgeneµÄµÚÒ»ÁĞ
-	 * @param TaxName ÎïÖÖÃû
-	 * @param hashAcc2GenID accIDÓëgeneIDµÄ¶ÔÕÕ±í
-	 * @param maxGeneIDNum Ò»¸öaccIDºÜ¿ÉÄÜ¶ÔÓ¦¶à¸ögeneID£¬µ«ÊÇ¶ÔÓ¦Ì«¶àÁË¾Í»áÓĞÎÊÌâ£¬ËùÒÔÕâÀïÖ¸¶¨Ò»¸ö×î´ó¶ÔÓ¦Êı£¬ÎÒ¾õµÃ3±È½ÏºÏÊÊ£¬¾ÍÊÇËµÒ»¸öaccID×î¶à¶ÔÓ¦3¸ögeneID£¬³¬¹ıÁËÕâ¸öĞòÁĞ¾Í²»ÒªÁË
-	 * @return  ×îºó·µ»Ø¸Ã±êÌâËù¶ÔÓ¦µÄgeneID£¬Èç¹û²»ÊÇÖ¸¶¨µÄÎïÖÖ»òÃ»ÓĞ¶ÔÓ¦µÄgeneID£¬Ôò·µ»Ønull.Èç¹û¶ÔÓ¦µÄgeneIDÊıÄ¿´óÓÚ maxGeneIDNum £¬ÄÇÃ´Ò²·µ»Ønull
-	 * ×îºó·µ»ØµÄÊÇ>geneID
-	 * ĞòÁĞ
-	 * ÕâÖÖ¸ñÊ½£¬Õâ¸öÎÄ¼şÖ»ÄÜÓÃÓÚblast²éÑ¯£¬¶ø²»ÄÜÓÃÓÚblast½¨Ë÷Òı£¬ÒòÎªÒ»¸ö»ùÒòºÜ¿ÉÄÜ»á±»ÇĞ³ÉºÃ¼¸¶ÏÈ»ºó·Ö±ğÓĞ¸÷×ÔµÄrefseq
+	 * æ³¨æ„ä¹‹é—´ç”¨å¥‡æ€ªçš„åˆ†éš”ç¬¦åˆ†éš”å¼€äº†
+	 * @param geneTitle è¾“å…¥åŸºå› çš„æ ‡é¢˜ï¼Œä¹Ÿå°±æ˜¯nrä¸­geneçš„ç¬¬ä¸€åˆ—
+	 * @param TaxName ç‰©ç§å
+	 * @param hashAcc2GenID accIDä¸geneIDçš„å¯¹ç…§è¡¨
+	 * @param maxGeneIDNum ä¸€ä¸ªaccIDå¾ˆå¯èƒ½å¯¹åº”å¤šä¸ªgeneIDï¼Œä½†æ˜¯å¯¹åº”å¤ªå¤šäº†å°±ä¼šæœ‰é—®é¢˜ï¼Œæ‰€ä»¥è¿™é‡ŒæŒ‡å®šä¸€ä¸ªæœ€å¤§å¯¹åº”æ•°ï¼Œæˆ‘è§‰å¾—3æ¯”è¾ƒåˆé€‚ï¼Œå°±æ˜¯è¯´ä¸€ä¸ªaccIDæœ€å¤šå¯¹åº”3ä¸ªgeneIDï¼Œè¶…è¿‡äº†è¿™ä¸ªåºåˆ—å°±ä¸è¦äº†
+	 * @return  æœ€åè¿”å›è¯¥æ ‡é¢˜æ‰€å¯¹åº”çš„geneIDï¼Œå¦‚æœä¸æ˜¯æŒ‡å®šçš„ç‰©ç§æˆ–æ²¡æœ‰å¯¹åº”çš„geneIDï¼Œåˆ™è¿”å›null.å¦‚æœå¯¹åº”çš„geneIDæ•°ç›®å¤§äº maxGeneIDNum ï¼Œé‚£ä¹ˆä¹Ÿè¿”å›null
+	 * æœ€åè¿”å›çš„æ˜¯>geneID
+	 * åºåˆ—
+	 * è¿™ç§æ ¼å¼ï¼Œè¿™ä¸ªæ–‡ä»¶åªèƒ½ç”¨äºblastæŸ¥è¯¢ï¼Œè€Œä¸èƒ½ç”¨äºblastå»ºç´¢å¼•ï¼Œå› ä¸ºä¸€ä¸ªåŸºå› å¾ˆå¯èƒ½ä¼šè¢«åˆ‡æˆå¥½å‡ æ–­ç„¶ååˆ†åˆ«æœ‰å„è‡ªçš„refseq
 	 */
 	private static String getNrGenID(String geneTitle,String TaxName,HashMap<String, String> hashAcc2GenID,int maxGeneIDNum) 
 	{
 		String[] ss = geneTitle.split("");
 		ArrayList<String> lsGeneID = new ArrayList<String>();
 		for (String string : ss)
-		{	//½«º¬ÓĞÖ¸¶¨ÎïÖÖµÄĞòÁĞ±êÌâ×°Èëlist
+		{	//å°†å«æœ‰æŒ‡å®šç‰©ç§çš„åºåˆ—æ ‡é¢˜è£…å…¥list
 			if (string.contains(TaxName)) 
 				lsGeneID.add(string);
 		}
-		//½«listµÄĞÅÏ¢·Ö±ğ½øÈëhash±í²éÕÒ£¬Èç¹û½á¹ûÖĞÖ»ÓĞÒ»ÏîgeneID£¬ÄÇÃ´Ö±½ÓÌø³ö²¢·µ»Ø¸ÃgeneID¡£
-		//Èç¹û½á¹ûÖĞÓĞ¶àÏîgeneID£¬ÄÇÃ´±éÀúÍêÈ«£¬¿´×î¶àmacheµÄgeneID¸öÊıÊÇ²»ÊÇĞ¡ÓÚmaxGeneIDNum¡£
-		//Èç¹ûĞ¡ÓÚµÄ»°£¬ÄÇÃ´geneID¾ÍÎªÄÇ¸ö×îĞ¡µÄ£¬Ò²¾ÍÊÇÓÃ"//"¸ô¿ªµÄÑùÊ½£¬ÕâÑù×Ó×îºó·½±ãÌí¼ÓÈëÊı¾İ¿â£¬×îºó¶à¸ögeneIDµÄĞÅÏ¢Ò»Æğµ÷Õû
-		int minGenNum = 100; //¼ÇÂ¼ÆäÖĞ¶ÔÓ¦×îÉÙµÄgeneIDµÄÊıÁ¿
-		int minGenID = -10;//¼ÇÂ¼¸ÃgeneIDµÄÎ»ÖÃĞÅÏ¢£¬·½±ã´ÓlsGeneIDÖĞÌáÈ¡
-		int minGeneIDsub = -10; //¼ÇÂ¼¸ÃgeneIDÔÚ¾ßÌåÄ³¸ögi|71002820|ref|XP_756091.1| conidial pigment biosynthesis 1,3,6,8-tetrahydroxynaphthalene reductase Arp 2 [Aspergillus fumigatus Af293]ÖĞµÄÎ»ÖÃ
+		//å°†listçš„ä¿¡æ¯åˆ†åˆ«è¿›å…¥hashè¡¨æŸ¥æ‰¾ï¼Œå¦‚æœç»“æœä¸­åªæœ‰ä¸€é¡¹geneIDï¼Œé‚£ä¹ˆç›´æ¥è·³å‡ºå¹¶è¿”å›è¯¥geneIDã€‚
+		//å¦‚æœç»“æœä¸­æœ‰å¤šé¡¹geneIDï¼Œé‚£ä¹ˆéå†å®Œå…¨ï¼Œçœ‹æœ€å¤šmacheçš„geneIDä¸ªæ•°æ˜¯ä¸æ˜¯å°äºmaxGeneIDNumã€‚
+		//å¦‚æœå°äºçš„è¯ï¼Œé‚£ä¹ˆgeneIDå°±ä¸ºé‚£ä¸ªæœ€å°çš„ï¼Œä¹Ÿå°±æ˜¯ç”¨"//"éš”å¼€çš„æ ·å¼ï¼Œè¿™æ ·å­æœ€åæ–¹ä¾¿æ·»åŠ å…¥æ•°æ®åº“ï¼Œæœ€åå¤šä¸ªgeneIDçš„ä¿¡æ¯ä¸€èµ·è°ƒæ•´
+		int minGenNum = 100; //è®°å½•å…¶ä¸­å¯¹åº”æœ€å°‘çš„geneIDçš„æ•°é‡
+		int minGenID = -10;//è®°å½•è¯¥geneIDçš„ä½ç½®ä¿¡æ¯ï¼Œæ–¹ä¾¿ä»lsGeneIDä¸­æå–
+		int minGeneIDsub = -10; //è®°å½•è¯¥geneIDåœ¨å…·ä½“æŸä¸ªgi|71002820|ref|XP_756091.1| conidial pigment biosynthesis 1,3,6,8-tetrahydroxynaphthalene reductase Arp 2 [Aspergillus fumigatus Af293]ä¸­çš„ä½ç½®
 		for (int i = 0; i< lsGeneID.size(); i++) 
 		{
 			String string = lsGeneID.get(i); 
@@ -66,7 +66,7 @@ public class GetSeq {
 				}
 				else {
 					String[] ss3 = geneID.split("//");
-					//ÕÒµ½×îÉÙµÄÄÇ¸ögeneIDÊÇÓÉÄÄ¸öaccID²éµ½µÄ
+					//æ‰¾åˆ°æœ€å°‘çš„é‚£ä¸ªgeneIDæ˜¯ç”±å“ªä¸ªaccIDæŸ¥åˆ°çš„
 					if (minGenNum > ss3.length) {
 						minGenNum = ss3.length;
 						minGenID = i;
@@ -89,11 +89,11 @@ public class GetSeq {
 	}
 	
 	/**
-	 * @param TaxName ÎïÖÖÃû£¬×¢ÒâÒªºÍnrÀïÃæµÄÃû×Ö¶ÔÓ¦
-	 * @param taxID ÎïÖÖID
-	 * @param nrFile nrÊı¾İÎÄ¼ş
-	 * @param outFile Êä³öÎÄ¼ş
-	 * @param maxGeneIDNum Ò»¸öaccIDºÜ¿ÉÄÜ¶ÔÓ¦¶à¸ögeneID£¬µ«ÊÇ¶ÔÓ¦Ì«¶àÁË¾Í»áÓĞÎÊÌâ£¬ËùÒÔÕâÀïÖ¸¶¨Ò»¸ö×î´ó¶ÔÓ¦Êı£¬ÎÒ¾õµÃ3±È½ÏºÏÊÊ£¬¾ÍÊÇËµÒ»¸öaccID×î¶à¶ÔÓ¦3¸ögeneID£¬³¬¹ıÁËÕâ¸öĞòÁĞ¾Í²»ÒªÁË
+	 * @param TaxName ç‰©ç§åï¼Œæ³¨æ„è¦å’Œnré‡Œé¢çš„åå­—å¯¹åº”
+	 * @param taxID ç‰©ç§ID
+	 * @param nrFile nræ•°æ®æ–‡ä»¶
+	 * @param outFile è¾“å‡ºæ–‡ä»¶
+	 * @param maxGeneIDNum ä¸€ä¸ªaccIDå¾ˆå¯èƒ½å¯¹åº”å¤šä¸ªgeneIDï¼Œä½†æ˜¯å¯¹åº”å¤ªå¤šäº†å°±ä¼šæœ‰é—®é¢˜ï¼Œæ‰€ä»¥è¿™é‡ŒæŒ‡å®šä¸€ä¸ªæœ€å¤§å¯¹åº”æ•°ï¼Œæˆ‘è§‰å¾—3æ¯”è¾ƒåˆé€‚ï¼Œå°±æ˜¯è¯´ä¸€ä¸ªaccIDæœ€å¤šå¯¹åº”3ä¸ªgeneIDï¼Œè¶…è¿‡äº†è¿™ä¸ªåºåˆ—å°±ä¸è¦äº†
 	 * @throws Exception 
 	 */
 	public static void getNrTaxSeq(String TaxName , int taxID, String nrFile, String outFile, int maxGeneIDNum) throws Exception 
@@ -106,17 +106,17 @@ public class GetSeq {
 		txtOutWrite.setParameter(outFile, true, false);
 		
 		BufferedReader readNr = txtNrRead.readfile();
-		String content = ""; boolean flag = false;//ÓÃÀ´±ê¼Ç¸ÃSeqÊÇ·ñĞ´ÈëÎÄ±¾
+		String content = ""; boolean flag = false;//ç”¨æ¥æ ‡è®°è¯¥Seqæ˜¯å¦å†™å…¥æ–‡æœ¬
 		while ((content = readNr.readLine()) != null) {
 			if (content.startsWith(">")) 
 			{
-				flag = false; //Ã¿´ÎÓöµ½ĞÂµÄĞòÁĞ¾ÍÖØÖÃflag
+				flag = false; //æ¯æ¬¡é‡åˆ°æ–°çš„åºåˆ—å°±é‡ç½®flag
 				String geneID = getNrGenID(content, TaxName, hashAcc2GenID, maxGeneIDNum);
 				if (geneID == null) 
 					continue;
-				else //ÕÒµ½ÁËgeneID
+				else //æ‰¾åˆ°äº†geneID
 				{
-					flag = true;//ËµÃ÷ÒÔÏÂĞ´ÈëÎÄ±¾
+					flag = true;//è¯´æ˜ä»¥ä¸‹å†™å…¥æ–‡æœ¬
 					txtOutWrite.writefile(">"+geneID +"\n", false);
 				}
 				continue;
@@ -125,16 +125,16 @@ public class GetSeq {
 				txtOutWrite.writefile(content+"\n", false);
 			}
 		}
-		txtOutWrite.writefile("");//È«²¿Ğ´ÈëÎÄ±¾
+		txtOutWrite.writefile("");//å…¨éƒ¨å†™å…¥æ–‡æœ¬
 		txtNrRead.close();
 		txtOutWrite.close();
 	}
 	
 	/**
-	 * @param taxID ÎïÖÖID
-	 * @param ntFile nrÊı¾İtÎÄ¼ş
-	 * @param outFile Êä³öÎÄ¼ş
-	 * @param maxGeneIDNum Ò»¸öaccIDºÜ¿ÉÄÜ¶Ô Ó¦¶à¸ögeneID£¬µ«ÊÇ¶ÔÓ¦Ì«¶àÁË¾Í»áÓĞÎÊÌâ£¬ËùÒÔÕâÀïÖ¸¶¨Ò»¸ö×î´ó¶ÔÓ¦Êı£¬ÎÒ¾õµÃ3±È½ÏºÏÊÊ£¬¾ÍÊÇËµÒ»¸öaccID×î¶à¶ÔÓ¦3¸ögeneID£¬³¬¹ıÁËÕâ¸öĞòÁĞ¾Í²»ÒªÁË
+	 * @param taxID ç‰©ç§ID
+	 * @param ntFile nræ•°æ®tæ–‡ä»¶
+	 * @param outFile è¾“å‡ºæ–‡ä»¶
+	 * @param maxGeneIDNum ä¸€ä¸ªaccIDå¾ˆå¯èƒ½å¯¹ åº”å¤šä¸ªgeneIDï¼Œä½†æ˜¯å¯¹åº”å¤ªå¤šäº†å°±ä¼šæœ‰é—®é¢˜ï¼Œæ‰€ä»¥è¿™é‡ŒæŒ‡å®šä¸€ä¸ªæœ€å¤§å¯¹åº”æ•°ï¼Œæˆ‘è§‰å¾—3æ¯”è¾ƒåˆé€‚ï¼Œå°±æ˜¯è¯´ä¸€ä¸ªaccIDæœ€å¤šå¯¹åº”3ä¸ªgeneIDï¼Œè¶…è¿‡äº†è¿™ä¸ªåºåˆ—å°±ä¸è¦äº†
 	 * @throws Exception 
 	 */
 	public static void getNtTaxSeq( int taxID, String ntFile, String outFile, int maxGeneIDNum) throws Exception 
@@ -147,17 +147,17 @@ public class GetSeq {
 		txtOutWrite.setParameter(outFile, true, false);
 		
 		BufferedReader readNr = txtNrRead.readfile();
-		String content = ""; boolean flag = false;//ÓÃÀ´±ê¼Ç¸ÃSeqÊÇ·ñĞ´ÈëÎÄ±¾
+		String content = ""; boolean flag = false;//ç”¨æ¥æ ‡è®°è¯¥Seqæ˜¯å¦å†™å…¥æ–‡æœ¬
 		while ((content = readNr.readLine()) != null) {
 			if (content.startsWith(">"))
 			{
-				flag = false; //Ã¿´ÎÓöµ½ĞÂµÄĞòÁĞ¾ÍÖØÖÃflag
+				flag = false; //æ¯æ¬¡é‡åˆ°æ–°çš„åºåˆ—å°±é‡ç½®flag
 				String geneID = getNtGenID(content, hashAcc2GenID, maxGeneIDNum);
 				if (geneID == null) 
 					continue;
-				else //ÕÒµ½ÁËgeneID
+				else //æ‰¾åˆ°äº†geneID
 				{
-					flag = true;//ËµÃ÷ÒÔÏÂĞ´ÈëÎÄ±¾
+					flag = true;//è¯´æ˜ä»¥ä¸‹å†™å…¥æ–‡æœ¬
 					txtOutWrite.writefile(">"+geneID +"\n", false);
 				}
 				continue;
@@ -166,26 +166,26 @@ public class GetSeq {
 				txtOutWrite.writefile(content+"\n", false);
 			}
 		}
-		txtOutWrite.writefile("");//È«²¿Ğ´ÈëÎÄ±¾
+		txtOutWrite.writefile("");//å…¨éƒ¨å†™å…¥æ–‡æœ¬
 		txtNrRead.close();
 		txtOutWrite.close();
 	}
 	/**
-	 * ¸ø¶¨ntÊı¾İ¿âµÄ±êÌâÁĞ£¬ÀıÈç£º
+	 * ç»™å®šntæ•°æ®åº“çš„æ ‡é¢˜åˆ—ï¼Œä¾‹å¦‚ï¼š
 	 * >gi|4|emb|X17276.1| Giant Panda satellite 1 DNA<br>
-	 * @param geneTitle ÊäÈë»ùÒòµÄ±êÌâ£¬Ò²¾ÍÊÇntÖĞgeneµÄµÚÒ»ÁĞ
-	 * @param TaxName ÎïÖÖÃû
-	 * @param hashAcc2GenID accIDÓëgeneIDµÄ¶ÔÕÕ±í
-	 * @param maxGeneIDNum Ò»¸öaccIDºÜ¿ÉÄÜ¶ÔÓ¦¶à¸ögeneID£¬µ«ÊÇ¶ÔÓ¦Ì«¶àÁË¾Í»áÓĞÎÊÌâ£¬ËùÒÔÕâÀïÖ¸¶¨Ò»¸ö×î´ó¶ÔÓ¦Êı£¬ÎÒ¾õµÃ3±È½ÏºÏÊÊ£¬¾ÍÊÇËµÒ»¸öaccID×î¶à¶ÔÓ¦3¸ögeneID£¬³¬¹ıÁËÕâ¸öĞòÁĞ¾Í²»ÒªÁË
-	 * @return  ×îºó·µ»Ø¸Ã±êÌâÖĞµÄaccID£¬¿ÉÒÔÓÃÓÚ×öblastË÷Òı£¬Èç¹û²»ÊÇÖ¸¶¨µÄÎïÖÖ»òÃ»ÓĞ¶ÔÓ¦µÄgeneID£¬Ôò·µ»Ønull.Èç¹û¶ÔÓ¦µÄgeneIDÊıÄ¿´óÓÚ maxGeneIDNum £¬ÄÇÃ´Ò²·µ»Ønull
+	 * @param geneTitle è¾“å…¥åŸºå› çš„æ ‡é¢˜ï¼Œä¹Ÿå°±æ˜¯ntä¸­geneçš„ç¬¬ä¸€åˆ—
+	 * @param TaxName ç‰©ç§å
+	 * @param hashAcc2GenID accIDä¸geneIDçš„å¯¹ç…§è¡¨
+	 * @param maxGeneIDNum ä¸€ä¸ªaccIDå¾ˆå¯èƒ½å¯¹åº”å¤šä¸ªgeneIDï¼Œä½†æ˜¯å¯¹åº”å¤ªå¤šäº†å°±ä¼šæœ‰é—®é¢˜ï¼Œæ‰€ä»¥è¿™é‡ŒæŒ‡å®šä¸€ä¸ªæœ€å¤§å¯¹åº”æ•°ï¼Œæˆ‘è§‰å¾—3æ¯”è¾ƒåˆé€‚ï¼Œå°±æ˜¯è¯´ä¸€ä¸ªaccIDæœ€å¤šå¯¹åº”3ä¸ªgeneIDï¼Œè¶…è¿‡äº†è¿™ä¸ªåºåˆ—å°±ä¸è¦äº†
+	 * @return  æœ€åè¿”å›è¯¥æ ‡é¢˜ä¸­çš„accIDï¼Œå¯ä»¥ç”¨äºåšblastç´¢å¼•ï¼Œå¦‚æœä¸æ˜¯æŒ‡å®šçš„ç‰©ç§æˆ–æ²¡æœ‰å¯¹åº”çš„geneIDï¼Œåˆ™è¿”å›null.å¦‚æœå¯¹åº”çš„geneIDæ•°ç›®å¤§äº maxGeneIDNum ï¼Œé‚£ä¹ˆä¹Ÿè¿”å›null
 	 */
 	private static String getNtGenID(String geneTitle,HashMap<String, String> hashAcc2GenID,int maxGeneIDNum) 
 	{
-		//½«listµÄĞÅÏ¢·Ö±ğ½øÈëhash±í²éÕÒ£¬Èç¹û½á¹ûÖĞÖ»ÓĞÒ»ÏîgeneID£¬ÄÇÃ´Ö±½ÓÌø³ö²¢·µ»Ø¸ÃgeneID¡£
-		//Èç¹û½á¹ûÖĞÓĞ¶àÏîgeneID£¬ÄÇÃ´±éÀúÍêÈ«£¬¿´×î¶àmacheµÄgeneID¸öÊıÊÇ²»ÊÇĞ¡ÓÚmaxGeneIDNum¡£
-		//Èç¹ûĞ¡ÓÚµÄ»°£¬ÄÇÃ´geneID¾ÍÎªÄÇ¸ö×îĞ¡µÄ£¬Ò²¾ÍÊÇÓÃ"//"¸ô¿ªµÄÑùÊ½£¬ÕâÑù×Ó×îºó·½±ãÌí¼ÓÈëÊı¾İ¿â£¬×îºó¶à¸ögeneIDµÄĞÅÏ¢Ò»Æğµ÷Õû
-		int minGenNum = 100; //¼ÇÂ¼ÆäÖĞ¶ÔÓ¦×îÉÙµÄgeneIDµÄÊıÁ¿
-		int minGeneIDsub = -10; //¼ÇÂ¼¸ÃgeneIDÔÚ¾ßÌåÄ³¸ögi|71002820|ref|XP_756091.1| conidial pigment biosynthesis 1,3,6,8-tetrahydroxynaphthalene reductase Arp 2 [Aspergillus fumigatus Af293]ÖĞµÄÎ»ÖÃ
+		//å°†listçš„ä¿¡æ¯åˆ†åˆ«è¿›å…¥hashè¡¨æŸ¥æ‰¾ï¼Œå¦‚æœç»“æœä¸­åªæœ‰ä¸€é¡¹geneIDï¼Œé‚£ä¹ˆç›´æ¥è·³å‡ºå¹¶è¿”å›è¯¥geneIDã€‚
+		//å¦‚æœç»“æœä¸­æœ‰å¤šé¡¹geneIDï¼Œé‚£ä¹ˆéå†å®Œå…¨ï¼Œçœ‹æœ€å¤šmacheçš„geneIDä¸ªæ•°æ˜¯ä¸æ˜¯å°äºmaxGeneIDNumã€‚
+		//å¦‚æœå°äºçš„è¯ï¼Œé‚£ä¹ˆgeneIDå°±ä¸ºé‚£ä¸ªæœ€å°çš„ï¼Œä¹Ÿå°±æ˜¯ç”¨"//"éš”å¼€çš„æ ·å¼ï¼Œè¿™æ ·å­æœ€åæ–¹ä¾¿æ·»åŠ å…¥æ•°æ®åº“ï¼Œæœ€åå¤šä¸ªgeneIDçš„ä¿¡æ¯ä¸€èµ·è°ƒæ•´
+		int minGenNum = 100; //è®°å½•å…¶ä¸­å¯¹åº”æœ€å°‘çš„geneIDçš„æ•°é‡
+		int minGeneIDsub = -10; //è®°å½•è¯¥geneIDåœ¨å…·ä½“æŸä¸ªgi|71002820|ref|XP_756091.1| conidial pigment biosynthesis 1,3,6,8-tetrahydroxynaphthalene reductase Arp 2 [Aspergillus fumigatus Af293]ä¸­çš„ä½ç½®
 		String[] ss2 = geneTitle.split("\\|");
 		for (int j = 0; j < ss2.length; j++)
 		{
@@ -199,10 +199,10 @@ public class GetSeq {
 			}
 			else {
 				String[] ss3 = geneID.split("//");
-				//ÕÒµ½×îÉÙµÄÄÇ¸ögeneIDÊÇÓÉÄÄ¸öaccID²éµ½µÄ
+				//æ‰¾åˆ°æœ€å°‘çš„é‚£ä¸ªgeneIDæ˜¯ç”±å“ªä¸ªaccIDæŸ¥åˆ°çš„
 				if (minGenNum > ss3.length) {
 					minGenNum = ss3.length;
-					minGeneIDsub = j;//ÊÇµÚ¼¸¸öID
+					minGeneIDsub = j;//æ˜¯ç¬¬å‡ ä¸ªID
 				}
 			}
 		}

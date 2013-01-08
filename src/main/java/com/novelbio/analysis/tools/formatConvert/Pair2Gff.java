@@ -9,7 +9,7 @@ import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 /**
- * ÂŞÊÏµÄNimbleScanµÄpairÎÄ¼ş¸ñÊ½×ª»¯ÎªgffÎÄ¼ş£¬¸øMEDME¶ÁÈ¡ÓÃµÄ
+ * ç½—æ°çš„NimbleScançš„pairæ–‡ä»¶æ ¼å¼è½¬åŒ–ä¸ºgffæ–‡ä»¶ï¼Œç»™MEDMEè¯»å–ç”¨çš„
  * chromosome, probe ids, start and stop chromosomal positions, and score are expected in columns 1, 3, 4, 5 and 6 repectively.
  * @author zong0jie
  *
@@ -20,7 +20,7 @@ public class Pair2Gff {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String parentFile = "/media/winE/NBC/Project/Microarray_WFL110423/Íõ·ïÁ¼ »ùÒòĞ¾Æ¬/Íõ·ïÁ¼ »ùÒòĞ¾Æ¬/chip result/Êı¾İÍ¼¼°Ô­Ê¼Êı¾İ/";
+		String parentFile = "/media/winE/NBC/Project/Microarray_WFL110423/ç‹å‡¤è‰¯ åŸºå› èŠ¯ç‰‡/ç‹å‡¤è‰¯ åŸºå› èŠ¯ç‰‡/chip result/æ•°æ®å›¾åŠåŸå§‹æ•°æ®/";
 
 		try {
 			String pairFile = parentFile  + "C_vs_N_532.pair";
@@ -39,7 +39,7 @@ public class Pair2Gff {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-//		String parentFile = "/media/winE/NBC/Project/Microarray_WFL110423/Íõ·ïÁ¼ »ùÒòĞ¾Æ¬/Íõ·ïÁ¼ »ùÒòĞ¾Æ¬/chip result/Êı¾İÍ¼¼°Ô­Ê¼Êı¾İ/MEDMEresultAbs/";
+//		String parentFile = "/media/winE/NBC/Project/Microarray_WFL110423/ç‹å‡¤è‰¯ åŸºå› èŠ¯ç‰‡/ç‹å‡¤è‰¯ åŸºå› èŠ¯ç‰‡/chip result/æ•°æ®å›¾åŠåŸå§‹æ•°æ®/MEDMEresultAbs/";
 //
 //		
 //		try {
@@ -58,7 +58,7 @@ public class Pair2Gff {
 //		}
 	}
 	/**
-	 * ÂŞÊÏµÄNimbleScanµÄpairÎÄ¼ş¸ñÊ½×ª»¯ÎªgffÎÄ¼ş
+	 * ç½—æ°çš„NimbleScançš„pairæ–‡ä»¶æ ¼å¼è½¬åŒ–ä¸ºgffæ–‡ä»¶
 	 * chromosome, probe ids, start and stop chromosomal positions, and score are expected in columns 1, 3, 4, 5 and 6 repectively.
 	 * @param pairFile
 	 * @param gffFile
@@ -74,8 +74,8 @@ public class Pair2Gff {
 		String content = "";
 		reader.readLine(); reader.readLine();
 		String ssOld = null; String ssNew = null;
-		String ssOld2 = null; String ssNew2 = null; //±£´æchr10:97505105-97506105·Ö¸îºóµÄÔªËØ£¬ÒòÎª¼×»ù»¯µÄÌ½Õë³¤¶ÈĞèÒª´ÓÏÂÒ»ĞĞ¼ÆËã±¾ĞĞµÄ³¤¶È£¬ËùÒÔĞèÒªOldºÍNewÁ½¸ö´æ´¢
-		//GffµÄ¸ñÊ½£¬µÚ¶ş¸öMEDME²»¶ÁÈ¡
+		String ssOld2 = null; String ssNew2 = null; //ä¿å­˜chr10:97505105-97506105åˆ†å‰²åçš„å…ƒç´ ï¼Œå› ä¸ºç”²åŸºåŒ–çš„æ¢é’ˆé•¿åº¦éœ€è¦ä»ä¸‹ä¸€è¡Œè®¡ç®—æœ¬è¡Œçš„é•¿åº¦ï¼Œæ‰€ä»¥éœ€è¦Oldå’ŒNewä¸¤ä¸ªå­˜å‚¨
+		//Gffçš„æ ¼å¼ï¼Œç¬¬äºŒä¸ªMEDMEä¸è¯»å–
 		txtGff.writefile("chrID\tMATCH_INDEX\tprobID\tstart\tstop\tscore\n");
 		while ((content = reader.readLine()) != null) {
 			ssOld = ssNew;
@@ -90,10 +90,10 @@ public class Pair2Gff {
 			
 			ssOld2 = ssNew2;
 			String[] ssOldarray2 = ssOldarray[2].split(":|-"); String[] ssNewarray2 = ssNewarray[2].split(":|-");//chr10:100017797-100018797
-			if (ssOldarray2[1].equals(ssNewarray2[1])) {//Èç¹ûÊÇÍ¬Ò»×éÌ½Õë£¬ÄÇÃ´¾ÉÌ½ÕëµÄ½áÎ²¾ÍÊÇĞÂÌ½ÕëÆğµã-1
+			if (ssOldarray2[1].equals(ssNewarray2[1])) {//å¦‚æœæ˜¯åŒä¸€ç»„æ¢é’ˆï¼Œé‚£ä¹ˆæ—§æ¢é’ˆçš„ç»“å°¾å°±æ˜¯æ–°æ¢é’ˆèµ·ç‚¹-1
 				tmpEnd = Long.parseLong(ssNewarray[4]) - 1 + "";
 			}
-			else {//Èç¹û²»ÊÇÍ¬Ò»×éÌ½Õë£¬ÄÇÃ´¾ÉÌ½ÕëµÄ½áÎ²¾ÍÊÇ×ÜÌ½Õë½áÎ²
+			else {//å¦‚æœä¸æ˜¯åŒä¸€ç»„æ¢é’ˆï¼Œé‚£ä¹ˆæ—§æ¢é’ˆçš„ç»“å°¾å°±æ˜¯æ€»æ¢é’ˆç»“å°¾
 				tmpEnd = ssOldarray2[2];
 			}
 //			String tmpResult = ssOldarray2[0] + "\t" + ssOldarray[2] + "\t" + ssOldarray[3] + "\t" + ssOldarray[4] + "\t" + tmpEnd  +"\t"
@@ -116,13 +116,13 @@ public class Pair2Gff {
 	
 	/**
 	 * @throws Exception 
-	 * @param gffPair ±£´æÌ½Õë¶ÔÓ¦µÄ×ø±êĞÅÏ¢
-	 * @param gffRMA532 ²»È¡logµÄ¼×»ù»¯Ğ¾Æ¬µÄRMAÊıÖµ
+	 * @param gffPair ä¿å­˜æ¢é’ˆå¯¹åº”çš„åæ ‡ä¿¡æ¯
+	 * @param gffRMA532 ä¸å–logçš„ç”²åŸºåŒ–èŠ¯ç‰‡çš„RMAæ•°å€¼
 	 * @param gffRMA635
-	 * @param contProbNum Á¬Ğø¼¸¸ùÌ½Õë³¬¹ıãĞÖµ£¬Ò»°ãÈ¡3±È½ÏºÃ
-	 * @param ratio ãĞÖµratio£¬Ò»°ãÈ¡2±È½ÏºÃ
-	 * @param excelResultFile excelµÄ½á¹ûÎÄ¼ş
-	 * @param prix sting[2] 532ºÍ635µÄsheetÃû×Ö
+	 * @param contProbNum è¿ç»­å‡ æ ¹æ¢é’ˆè¶…è¿‡é˜ˆå€¼ï¼Œä¸€èˆ¬å–3æ¯”è¾ƒå¥½
+	 * @param ratio é˜ˆå€¼ratioï¼Œä¸€èˆ¬å–2æ¯”è¾ƒå¥½
+	 * @param excelResultFile excelçš„ç»“æœæ–‡ä»¶
+	 * @param prix sting[2] 532å’Œ635çš„sheetåå­—
 	 * @throws Exception
 	 */
 	public static void getMeDIP(String gffPair,String gffRMA532,String gffRMA635,int contProbNum, double ratio,String excelResultFile,String[] prix) throws Exception {
@@ -135,13 +135,13 @@ public class Pair2Gff {
 	
 	/**
 	 * @throws Exception 
-	 * @param gffPair ±£´æÌ½Õë¶ÔÓ¦µÄ×ø±êĞÅÏ¢
-	 * @param gffRMA532 ²»È¡logµÄ¼×»ù»¯Ğ¾Æ¬µÄRMAÊıÖµ
+	 * @param gffPair ä¿å­˜æ¢é’ˆå¯¹åº”çš„åæ ‡ä¿¡æ¯
+	 * @param gffRMA532 ä¸å–logçš„ç”²åŸºåŒ–èŠ¯ç‰‡çš„RMAæ•°å€¼
 	 * @param gffRMA635
-	 * @param contProbNum Á¬Ğø¼¸¸ùÌ½Õë³¬¹ıãĞÖµ£¬Ò»°ãÈ¡3±È½ÏºÃ
-	 * @param ratio ãĞÖµratio£¬Ò»°ãÈ¡2±È½ÏºÃ
+	 * @param contProbNum è¿ç»­å‡ æ ¹æ¢é’ˆè¶…è¿‡é˜ˆå€¼ï¼Œä¸€èˆ¬å–3æ¯”è¾ƒå¥½
+	 * @param ratio é˜ˆå€¼ratioï¼Œä¸€èˆ¬å–2æ¯”è¾ƒå¥½
 	 * @throws Exception
-	 * @return Á½¸öArrayList£¬µÚÒ»¸ö532£¬µÚ¶ş¸ö635
+	 * @return ä¸¤ä¸ªArrayListï¼Œç¬¬ä¸€ä¸ª532ï¼Œç¬¬äºŒä¸ª635
 	 */
 	private static ArrayList<ArrayList<String[]>> getMeDIP(String gffPair,String gffRMA532,String gffRMA635,int contProbNum, double ratio) throws Exception {
 		TxtReadandWrite txtGffPair = new TxtReadandWrite();
@@ -152,14 +152,14 @@ public class Pair2Gff {
 		
 		TxtReadandWrite txtGffRMA635 = new TxtReadandWrite();
 		txtGffRMA635.setParameter(gffRMA635, false, true);
-		//±£´æÌ½ÕëIDµ½LOCµÄĞÅÏ¢£¬ÎªºóÃæÁ¬Ğø¶à¸ö¼×»ù»¯×ö×¼±¸
-		//key:Ì½ÕëÃû£¬value:0£ºLOC   1£ºÌ½ÕëÆğµã      2: µÚ¼¸¸öÌ½Õë£¬´Ó1¿ªÊ¼¼ÆËã
+		//ä¿å­˜æ¢é’ˆIDåˆ°LOCçš„ä¿¡æ¯ï¼Œä¸ºåé¢è¿ç»­å¤šä¸ªç”²åŸºåŒ–åšå‡†å¤‡
+		//key:æ¢é’ˆåï¼Œvalue:0ï¼šLOC   1ï¼šæ¢é’ˆèµ·ç‚¹      2: ç¬¬å‡ ä¸ªæ¢é’ˆï¼Œä»1å¼€å§‹è®¡ç®—
 		HashMap<String, String[]> hashProb2Loc = new HashMap<String, String[]>();
 		
 		BufferedReader readerGffPair = txtGffPair.readfile();
 		String content = "";
-		int i = 1;//¼ÆÊıÆ÷£¬¼ÆËãµÚ¼¸¸öÌ½Õë
-		String lasLOChash = ""; //ÉÏÒ»¸ùÌ½ÕëµÄ×Ü×ø±ê£¬¼ÆÊıÓÃµÄ£¬Èç¹û±¾Ì½ÕëºÍÉÏÒ»¸ùÌ½ÕëµÄ×Ü×ø±ê²»Í¬£¬¼ÆÊıÆ÷¹é1
+		int i = 1;//è®¡æ•°å™¨ï¼Œè®¡ç®—ç¬¬å‡ ä¸ªæ¢é’ˆ
+		String lasLOChash = ""; //ä¸Šä¸€æ ¹æ¢é’ˆçš„æ€»åæ ‡ï¼Œè®¡æ•°ç”¨çš„ï¼Œå¦‚æœæœ¬æ¢é’ˆå’Œä¸Šä¸€æ ¹æ¢é’ˆçš„æ€»åæ ‡ä¸åŒï¼Œè®¡æ•°å™¨å½’1
 
 		while ((content = readerGffPair.readLine()) != null) {
 			if (content.trim().startsWith("#") || content.trim().startsWith("IMAGE_ID")) {
@@ -170,13 +170,13 @@ public class Pair2Gff {
 			if (ss[1].equals("RANDOM") || ss[2].contains("random") )
 				continue;
 			
-			if(!ss[2].equals(lasLOChash))//Ì½Õë×ø±ê²»Í¬
-				i = 1;//¼ÆÊıÆ÷¹é1
+			if(!ss[2].equals(lasLOChash))//æ¢é’ˆåæ ‡ä¸åŒ
+				i = 1;//è®¡æ•°å™¨å½’1
 			
 			String[] tmpLOC = new String[3];
-			tmpLOC[0] = ss[2];//:0£ºLOC
-			tmpLOC[1] = ss[4];// 1£ºÌ½ÕëÆğµã
-			tmpLOC[2] = i +"";//2: µÚ¼¸ºÅÌ½Õë£¬·½±ãºóÆÚ¼ÆÊı£¬Á¬ĞøÈı¸öÌ½ÕëÈÏÎªÊÇ¼×»ù»¯Î»µã
+			tmpLOC[0] = ss[2];//:0ï¼šLOC
+			tmpLOC[1] = ss[4];// 1ï¼šæ¢é’ˆèµ·ç‚¹
+			tmpLOC[2] = i +"";//2: ç¬¬å‡ å·æ¢é’ˆï¼Œæ–¹ä¾¿åæœŸè®¡æ•°ï¼Œè¿ç»­ä¸‰ä¸ªæ¢é’ˆè®¤ä¸ºæ˜¯ç”²åŸºåŒ–ä½ç‚¹
 			lasLOChash = ss[2];
 			i++;
 			hashProb2Loc.put(ss[3], tmpLOC);
@@ -187,28 +187,28 @@ public class Pair2Gff {
 		String content532 = ""; String content635 = "";
 		String content532New = ""; String content635New = "";
 		String content532Old = ""; 
-		int tmpContProbNum = 0; //ÉÏ¸ùÌ½ÕëÊÇÀÛ¼ÆµÚ¼¸¸ùÌ½Õë
-		String lastLoc = ""; //ÕâÅúÌ½ÕëµÄLOC
-		int tmpProbNum = -10; //ÉÏ¸öÌ½ÕëÊÇLOCµÄµÚ¼¸¸ö
-		double allScore532 = 0;//×Ü¹²µÄscore£¬ÓÃÀ´¼ÆËã¶à¸öÁ¬ĞøÌ½ÕëµÄÆ½¾ùratio
-		double allScore635 = 0;//×Ü¹²µÄscore£¬ÓÃÀ´¼ÆËã¶à¸öÁ¬ĞøÌ½ÕëµÄÆ½¾ùratio
-		double lastRatio532 = 0;//ÉÏÒ»¸ö532µÄratioÖµ£¬Èç¹ûÉÏ¸öratio´óÓÚ2£¬¶ø±¾ratioĞ¡ÓÚ0.5£¬Í¬ÑùÒ²²»ÄÜ¼ÆÈëÍ³¼ÆµÄ
-		double allRatio532 = 0;//Õâ¸öallRatio×îºóµÃµ½µÄÆ½¾ùÊıÊÇratioµÄÆ½¾ùÊı£¬²»µÈÓÚscoreÖ®ºÍÏà³ı£¬¶øÊÇËûÃÇµÄ¼¸ºÎÆ½¾ùÊı£¿£¿
-		double lastRatio635 = 0;//ÉÏÒ»¸ö635µÄratioÖµ£¬Èç¹ûÉÏ¸öratio´óÓÚ2£¬¶ø±¾ratioĞ¡ÓÚ0.5£¬Í¬ÑùÒ²²»ÄÜ¼ÆÈëÍ³¼ÆµÄ
-		double allRatio635 = 0;//Õâ¸öallRatio×îºóµÃµ½µÄÆ½¾ùÊıÊÇratioµÄÆ½¾ùÊı£¬²»µÈÓÚscoreÖ®ºÍÏà³ı£¬¶øÊÇËûÃÇµÄ¼¸ºÎÆ½¾ùÊı£¿£¿
-		long peakStart = 0;//PeakµÄÆğµã£¬ÎªµÚÒ»¸öÌ½ÕëµÄÆğµã
-		long peakEnd = 0;//peakµÄÖÕµã£¬Îª×îºóÒ»¸öÌ½ÕëµÄÖÕµã+60
-		boolean flag = false; //ÊÇ·ñĞèÒª×Ü½áÉÏÒ»×éÌ½Õë
-		String[] LOCInfo = null; //±¾Ì½ÕëµÄ¾ßÌåĞÅÏ¢ value:0£ºLOC   1£ºÌ½ÕëÆğµã      2: µÚ¼¸¸öÌ½Õë£¬´Ó1¿ªÊ¼¼ÆËã
-		ArrayList<String[]> lsTmp532 = new ArrayList<String[]>();//½á¹û´æ·Å
+		int tmpContProbNum = 0; //ä¸Šæ ¹æ¢é’ˆæ˜¯ç´¯è®¡ç¬¬å‡ æ ¹æ¢é’ˆ
+		String lastLoc = ""; //è¿™æ‰¹æ¢é’ˆçš„LOC
+		int tmpProbNum = -10; //ä¸Šä¸ªæ¢é’ˆæ˜¯LOCçš„ç¬¬å‡ ä¸ª
+		double allScore532 = 0;//æ€»å…±çš„scoreï¼Œç”¨æ¥è®¡ç®—å¤šä¸ªè¿ç»­æ¢é’ˆçš„å¹³å‡ratio
+		double allScore635 = 0;//æ€»å…±çš„scoreï¼Œç”¨æ¥è®¡ç®—å¤šä¸ªè¿ç»­æ¢é’ˆçš„å¹³å‡ratio
+		double lastRatio532 = 0;//ä¸Šä¸€ä¸ª532çš„ratioå€¼ï¼Œå¦‚æœä¸Šä¸ªratioå¤§äº2ï¼Œè€Œæœ¬ratioå°äº0.5ï¼ŒåŒæ ·ä¹Ÿä¸èƒ½è®¡å…¥ç»Ÿè®¡çš„
+		double allRatio532 = 0;//è¿™ä¸ªallRatioæœ€åå¾—åˆ°çš„å¹³å‡æ•°æ˜¯ratioçš„å¹³å‡æ•°ï¼Œä¸ç­‰äºscoreä¹‹å’Œç›¸é™¤ï¼Œè€Œæ˜¯ä»–ä»¬çš„å‡ ä½•å¹³å‡æ•°ï¼Ÿï¼Ÿ
+		double lastRatio635 = 0;//ä¸Šä¸€ä¸ª635çš„ratioå€¼ï¼Œå¦‚æœä¸Šä¸ªratioå¤§äº2ï¼Œè€Œæœ¬ratioå°äº0.5ï¼ŒåŒæ ·ä¹Ÿä¸èƒ½è®¡å…¥ç»Ÿè®¡çš„
+		double allRatio635 = 0;//è¿™ä¸ªallRatioæœ€åå¾—åˆ°çš„å¹³å‡æ•°æ˜¯ratioçš„å¹³å‡æ•°ï¼Œä¸ç­‰äºscoreä¹‹å’Œç›¸é™¤ï¼Œè€Œæ˜¯ä»–ä»¬çš„å‡ ä½•å¹³å‡æ•°ï¼Ÿï¼Ÿ
+		long peakStart = 0;//Peakçš„èµ·ç‚¹ï¼Œä¸ºç¬¬ä¸€ä¸ªæ¢é’ˆçš„èµ·ç‚¹
+		long peakEnd = 0;//peakçš„ç»ˆç‚¹ï¼Œä¸ºæœ€åä¸€ä¸ªæ¢é’ˆçš„ç»ˆç‚¹+60
+		boolean flag = false; //æ˜¯å¦éœ€è¦æ€»ç»“ä¸Šä¸€ç»„æ¢é’ˆ
+		String[] LOCInfo = null; //æœ¬æ¢é’ˆçš„å…·ä½“ä¿¡æ¯ value:0ï¼šLOC   1ï¼šæ¢é’ˆèµ·ç‚¹      2: ç¬¬å‡ ä¸ªæ¢é’ˆï¼Œä»1å¼€å§‹è®¡ç®—
+		ArrayList<String[]> lsTmp532 = new ArrayList<String[]>();//ç»“æœå­˜æ”¾
 		ArrayList<String[]> lsTmp635 = new ArrayList<String[]>();
 		readerGffRMA532.readLine();
 		readerGffRMA635.readLine();
 		while ((content532 = readerGffRMA532.readLine()) != null) {
 			
 			content635 = readerGffRMA635.readLine();
-			content532Old = content532New; //¼ÇÂ¼ÉÏÒ»ĞĞµÄĞÅÏ¢
-//			String content635Old = content635New; //¼ÇÂ¼ÉÏÒ»ĞĞµÄĞÅÏ¢
+			content532Old = content532New; //è®°å½•ä¸Šä¸€è¡Œçš„ä¿¡æ¯
+//			String content635Old = content635New; //è®°å½•ä¸Šä¸€è¡Œçš„ä¿¡æ¯
 			content532New = content532;
 			content635New = content635;
 			
@@ -217,21 +217,21 @@ public class Pair2Gff {
 			String[] ss635 = content635New.split(" ");
 			
 			LOCInfo = hashProb2Loc.get(ss532[2]);
-			//±¾probeºÍÉÏ¸öprobeÊôÓÚÍ¬Ò»×éLOC£¬    ËûÃÇµÄÌ½ÕëÊÇ½ô°¤×ÅµÄ£¬   ËûÃÇµÄ532ºÍ635µÄratioÔÚÕı¸ºratioÖ®Íâ 
+			//æœ¬probeå’Œä¸Šä¸ªprobeå±äºåŒä¸€ç»„LOCï¼Œ    ä»–ä»¬çš„æ¢é’ˆæ˜¯ç´§æŒ¨ç€çš„ï¼Œ   ä»–ä»¬çš„532å’Œ635çš„ratioåœ¨æ­£è´Ÿratioä¹‹å¤– 
 			double tmpratio532 = Double.parseDouble(ss532[5])/Double.parseDouble(ss635[5]);
 			double tmpratio635 = Double.parseDouble(ss635[5])/Double.parseDouble(ss532[5]);
 			
-			//²¢ÇÒÉÏ×éÌ½ÕëÃ»ÓĞ×Ü½á¹ı
-			//¿ªÊ¼×Ü½áÉÏ×éÌ½ÕëµÄÇé¿ö
-			if (  flag  //ĞèÒª×ö×Ü½á
+			//å¹¶ä¸”ä¸Šç»„æ¢é’ˆæ²¡æœ‰æ€»ç»“è¿‡
+			//å¼€å§‹æ€»ç»“ä¸Šç»„æ¢é’ˆçš„æƒ…å†µ
+			if (  flag  //éœ€è¦åšæ€»ç»“
 					&&
 					(  !LOCInfo[0].equals(lastLoc) 
-					|| (Integer.parseInt(LOCInfo[2]) - tmpProbNum != 1) //Èç¹û±¾Ì½ÕëºÍÉÏ×éÌ½Õë²»ÊÇÁ¬×ÅµÄ
-					||(tmpratio532 < ratio && tmpratio635 < ratio)) //±¾Ì½ÕëÃ»ÓĞ³¬¹ıãĞÖµ
-					|| ( (lastRatio532 >= ratio && tmpratio635 >= ratio) || (lastRatio635 >= ratio && tmpratio532 >= ratio) ) //±¾Ì½Õë³¬¹ıãĞÖµÁË£¬µ«ÊÇºÍÉÏÒ»¸öÌ½ÕëµÄãĞÖµÕıºÃÊÇ·´µÄ
+					|| (Integer.parseInt(LOCInfo[2]) - tmpProbNum != 1) //å¦‚æœæœ¬æ¢é’ˆå’Œä¸Šç»„æ¢é’ˆä¸æ˜¯è¿ç€çš„
+					||(tmpratio532 < ratio && tmpratio635 < ratio)) //æœ¬æ¢é’ˆæ²¡æœ‰è¶…è¿‡é˜ˆå€¼
+					|| ( (lastRatio532 >= ratio && tmpratio635 >= ratio) || (lastRatio635 >= ratio && tmpratio532 >= ratio) ) //æœ¬æ¢é’ˆè¶…è¿‡é˜ˆå€¼äº†ï¼Œä½†æ˜¯å’Œä¸Šä¸€ä¸ªæ¢é’ˆçš„é˜ˆå€¼æ­£å¥½æ˜¯åçš„
 					)
 			{
-				//Ö»ÓĞµ±Á¬ĞøÌ½ÕëÊı³¬¹ıÁËÉè¶¨µÄÌ½ÕëÊı²ÅÄÜ¿ªÊ¼×ö×Ü½á
+				//åªæœ‰å½“è¿ç»­æ¢é’ˆæ•°è¶…è¿‡äº†è®¾å®šçš„æ¢é’ˆæ•°æ‰èƒ½å¼€å§‹åšæ€»ç»“
 				if (tmpContProbNum >= contProbNum) {
 					double avgScore532 = allScore532/tmpContProbNum;
 					double avgScore635 = allScore635/tmpContProbNum;
@@ -244,7 +244,7 @@ public class Pair2Gff {
 					tmpResult[2] = peakEnd + "";
 					tmpResult[3] = avgScore532 + "";
 					tmpResult[4] = avgScore635 + "";
-					tmpResult[6] = tmpContProbNum + ""; //Á¬ĞøÌ½ÕëÊı
+					tmpResult[6] = tmpContProbNum + ""; //è¿ç»­æ¢é’ˆæ•°
 					if (avgRatio532 >= ratio) {
 						tmpResult[5] = avgRatio532 + "";
 						lsTmp532.add(tmpResult);
@@ -253,8 +253,8 @@ public class Pair2Gff {
 						tmpResult[5] = avgRatio635 + "";
 						lsTmp635.add(tmpResult);
 					}
-					flag = false;//ÒÑ¾­×Ü½á¹ıÁË
-					//¸÷ÖÖÇåÁã
+					flag = false;//å·²ç»æ€»ç»“è¿‡äº†
+					//å„ç§æ¸…é›¶
 					tmpContProbNum = 0;
 					allScore532 = 0; allScore635 = 0; allRatio532 = 0; allRatio635 = 0;
 				}
@@ -263,8 +263,8 @@ public class Pair2Gff {
 			}
 			
 			if (  LOCInfo[0].equals(lastLoc) 
-					&& (Integer.parseInt(LOCInfo[2]) - tmpProbNum == 1) //Èç¹û±¾Ì½ÕëºÍÉÏ×éÌ½ÕëÁ¬×ÅµÄ
-					&& ( (lastRatio532>=ratio && tmpratio532 >= ratio) || (lastRatio635>=ratio && tmpratio635 >= ratio) ) //±¾Ì½Õë³¬¹ıãĞÖµÁË£¬²¢ÇÒºÍÉÏÒ»¸öÌ½ÕëµÄãĞÖµÏàÍ¬
+					&& (Integer.parseInt(LOCInfo[2]) - tmpProbNum == 1) //å¦‚æœæœ¬æ¢é’ˆå’Œä¸Šç»„æ¢é’ˆè¿ç€çš„
+					&& ( (lastRatio532>=ratio && tmpratio532 >= ratio) || (lastRatio635>=ratio && tmpratio635 >= ratio) ) //æœ¬æ¢é’ˆè¶…è¿‡é˜ˆå€¼äº†ï¼Œå¹¶ä¸”å’Œä¸Šä¸€ä¸ªæ¢é’ˆçš„é˜ˆå€¼ç›¸åŒ
 		    	)
 			{
 				peakEnd = Long.parseLong(LOCInfo[1]);
@@ -277,13 +277,13 @@ public class Pair2Gff {
 				tmpProbNum = Integer.parseInt(LOCInfo[2]);
 				lastRatio532 = tmpratio532; lastRatio635 = tmpratio635;
 			}
-			//±¾×éµÚÒ»¸ù³¬¹ıãĞÖµµÄÌ½Õë
+			//æœ¬ç»„ç¬¬ä¸€æ ¹è¶…è¿‡é˜ˆå€¼çš„æ¢é’ˆ
 			else if (  
 					(!LOCInfo[0].equals(lastLoc) 
-					|| (Integer.parseInt(LOCInfo[2]) - tmpProbNum != 1) //Èç¹û±¾Ì½ÕëºÍÉÏ×éÌ½Õë²»Á¬
-					||  ( (lastRatio532>=ratio && tmpratio635 >= ratio) || (lastRatio635>=ratio && tmpratio532 >= ratio))//±¾Ì½ÕëºÍÉÏÒ»¸öÌ½ÕëµÄratioÊÇ·´×ÅµÄ
+					|| (Integer.parseInt(LOCInfo[2]) - tmpProbNum != 1) //å¦‚æœæœ¬æ¢é’ˆå’Œä¸Šç»„æ¢é’ˆä¸è¿
+					||  ( (lastRatio532>=ratio && tmpratio635 >= ratio) || (lastRatio635>=ratio && tmpratio532 >= ratio))//æœ¬æ¢é’ˆå’Œä¸Šä¸€ä¸ªæ¢é’ˆçš„ratioæ˜¯åç€çš„
 					)
-					&&(tmpratio532 >= ratio || tmpratio635 >= ratio)	//±¾Ì½Õë³¬¹ıãĞÖµÁË
+					&&(tmpratio532 >= ratio || tmpratio635 >= ratio)	//æœ¬æ¢é’ˆè¶…è¿‡é˜ˆå€¼äº†
 		        )
 			{
 				peakStart = Long.parseLong(LOCInfo[1]);
@@ -300,8 +300,8 @@ public class Pair2Gff {
 			}
 			lastLoc = LOCInfo[0];
 		}
-		//×îºó×Ü½á
-		//Ö»ÓĞµ±Á¬ĞøÌ½ÕëÊı³¬¹ıÁËÉè¶¨µÄÌ½ÕëÊı²ÅÄÜ¿ªÊ¼×ö×Ü½á
+		//æœ€åæ€»ç»“
+		//åªæœ‰å½“è¿ç»­æ¢é’ˆæ•°è¶…è¿‡äº†è®¾å®šçš„æ¢é’ˆæ•°æ‰èƒ½å¼€å§‹åšæ€»ç»“
 		if (tmpContProbNum >= contProbNum) {
 			double avgScore532 = allScore532/tmpContProbNum;
 			double avgScore635 = allScore635/tmpContProbNum;
@@ -314,7 +314,7 @@ public class Pair2Gff {
 			tmpResult[2] = peakEnd + "";
 			tmpResult[3] = avgScore532 + "";
 			tmpResult[4] = avgScore635 + "";
-			tmpResult[6] = tmpContProbNum + ""; //Á¬ĞøÌ½ÕëÊı
+			tmpResult[6] = tmpContProbNum + ""; //è¿ç»­æ¢é’ˆæ•°
 			if (avgRatio532 >= ratio) {
 				tmpResult[5] = avgRatio532 + "";
 				lsTmp532.add(tmpResult);

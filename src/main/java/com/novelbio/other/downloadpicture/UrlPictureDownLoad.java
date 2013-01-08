@@ -8,7 +8,7 @@ import com.novelbio.other.downloadpicture.pixiv.PixivOperate;
 
 public class UrlPictureDownLoad implements Callable<UrlPictureDownLoad> {
 	HttpFetch webFetch;
-	/** ÎÒÃÇ¸øÃ¿¸öpixivµÄ±àºÅ£¬´ÓĞ¡µ½´óÅÅÁĞ£¬ÎªÁËÊÇä¯ÀÀÍ¼Æ¬µÄÊ±ºò¿ÉÒÔ·½±ã°´ÕÕË³ĞòÏÔÊ¾Í¼Æ¬ */
+	/** æˆ‘ä»¬ç»™æ¯ä¸ªpixivçš„ç¼–å·ï¼Œä»å°åˆ°å¤§æ’åˆ—ï¼Œä¸ºäº†æ˜¯æµè§ˆå›¾ç‰‡çš„æ—¶å€™å¯ä»¥æ–¹ä¾¿æŒ‰ç…§é¡ºåºæ˜¾ç¤ºå›¾ç‰‡ */
 	int pictureNum;
 	
 	String pictureUrl;
@@ -27,18 +27,18 @@ public class UrlPictureDownLoad implements Callable<UrlPictureDownLoad> {
 	public void setRefUrl(String refUrl) {
 		this.refUrl = refUrl;
 	}
-	/** Í¼Æ¬Ãû×Ö£¬Ã»ÓĞ¿ÉÒÔ²»Ìî£¬ÕâÑù¾ÍÖ±½ÓÓÃÁ¬½ÓÃû×öÃû×Ö */
+	/** å›¾ç‰‡åå­—ï¼Œæ²¡æœ‰å¯ä»¥ä¸å¡«ï¼Œè¿™æ ·å°±ç›´æ¥ç”¨è¿æ¥ååšåå­— */
 	public void setName(String name) {
 		this.name = name;
 	}
 	public boolean isSaveSucess() {
 		return saveSucess;
 	}
-	/** savePathÀïÃæ°üº¬×÷Õß */
+	/** savePathé‡Œé¢åŒ…å«ä½œè€… */
 	public void setSavePath(String savePath) {
 		this.savePath = savePath;
 	}
-	/** ÎÒÃÇ¸øÃ¿¸öpixivµÄ±àºÅ£¬´ÓĞ¡µ½´óÅÅÁĞ£¬ÎªÁËÊÇä¯ÀÀÍ¼Æ¬µÄÊ±ºò¿ÉÒÔ·½±ã°´ÕÕË³ĞòÏÔÊ¾Í¼Æ¬ */
+	/** æˆ‘ä»¬ç»™æ¯ä¸ªpixivçš„ç¼–å·ï¼Œä»å°åˆ°å¤§æ’åˆ—ï¼Œä¸ºäº†æ˜¯æµè§ˆå›¾ç‰‡çš„æ—¶å€™å¯ä»¥æ–¹ä¾¿æŒ‰ç…§é¡ºåºæ˜¾ç¤ºå›¾ç‰‡ */
 	public void setPictureNum(int pictureNum) {
 		this.pictureNum = pictureNum;
 	}
@@ -47,7 +47,7 @@ public class UrlPictureDownLoad implements Callable<UrlPictureDownLoad> {
 		downloadPicture();
 		return this;
 	}
-	/** ³É¹¦¾Í·µ»Ønull */
+	/** æˆåŠŸå°±è¿”å›null */
     public void downloadPicture() {
     	if (pictureUrl == null) {
 			saveSucess = true;
@@ -64,7 +64,7 @@ public class UrlPictureDownLoad implements Callable<UrlPictureDownLoad> {
     		saveSucess = false;
     	}
     }
-    /** ÏÂÔØÍ¼Æ¬ */
+    /** ä¸‹è½½å›¾ç‰‡ */
     private boolean download(HttpFetch webFetch, String savePath) {
     	while (webFetch.download(savePath)) {
     		if (FileOperate.getFileSize(savePath) > 2) {
@@ -125,10 +125,10 @@ public class UrlPictureDownLoad implements Callable<UrlPictureDownLoad> {
     }
 	
 	 /**
-	  * Ã»ÓĞ¾Í·µ»Ø""
-	  * ÓĞÎÄ¼şÃû¾Í·µ»ØÏÂ»®Ïß+ÎÄ¼şÃû£º"_name"
-	  * ÒòÎªpixivÖĞµÄ×÷ÕßÃû»òÎÄ¼şÃûÀïÃæ×ÜÊÇÓĞ¸÷ÖÖÆæ¹ÖµÄ×Ö·û£¬ÓĞĞ©²»ÄÜ³ÉÎªÎÄ¼ş¼ĞÃû£¬ËùÒÔÒª½«ËûÃÇÌæ»»µô
-  * ÊäÈë¾ÉÎÄ¼şÃû£¬½«Æä×ª±äÎªĞÂÎÄ¼şÃû
+	  * æ²¡æœ‰å°±è¿”å›""
+	  * æœ‰æ–‡ä»¶åå°±è¿”å›ä¸‹åˆ’çº¿+æ–‡ä»¶åï¼š"_name"
+	  * å› ä¸ºpixivä¸­çš„ä½œè€…åæˆ–æ–‡ä»¶åé‡Œé¢æ€»æ˜¯æœ‰å„ç§å¥‡æ€ªçš„å­—ç¬¦ï¼Œæœ‰äº›ä¸èƒ½æˆä¸ºæ–‡ä»¶å¤¹åï¼Œæ‰€ä»¥è¦å°†ä»–ä»¬æ›¿æ¢æ‰
+  * è¾“å…¥æ—§æ–‡ä»¶åï¼Œå°†å…¶è½¬å˜ä¸ºæ–°æ–‡ä»¶å
   * @param filepath
   * @param newPath
   */

@@ -4,7 +4,7 @@ import de.erichseifert.gral.graphics.Drawable;
 import de.erichseifert.gral.plots.XYPlot;
 
 /**
- * »¥¶¯µÄplot£¬µ÷ÓÃGRAL°üÊµÏÖ
+ * äº’åŠ¨çš„plotï¼Œè°ƒç”¨GRALåŒ…å®ç°
  * @author zong0jie
  *
  */
@@ -23,9 +23,9 @@ public abstract class PlotNBCInteractive extends PlotNBC{
      */
     boolean Ynavigator = true;
     
-    /** ÄÜ·ñ·Å´óËõĞ¡ */
+    /** èƒ½å¦æ”¾å¤§ç¼©å° */
     boolean zoom = true;
-    /** ÄÜ·ñÒÆ¶¯ */
+    /** èƒ½å¦ç§»åŠ¨ */
     boolean pannable = true;
     /** check whether just figure the figure or all the picture area(include the axis margn)  */
 	boolean plotareaAll = true;
@@ -47,28 +47,28 @@ public abstract class PlotNBCInteractive extends PlotNBC{
 	}
 
     /**
-     * Ä¬ÈÏÎªtrue
+     * é»˜è®¤ä¸ºtrue
      * @return
      */
     protected boolean isZoom() {
 		return zoom;
 	}
     /**
-     * Ä¬ÈÏÎªtrue
+     * é»˜è®¤ä¸ºtrue
      * @return
      */
     public void setZoom(boolean zoom) {
 		this.zoom = zoom;
 	}
     /**
-     * ÄÜ·ñÒÆ¶¯£¬Ä¬ÈÏÎªtrue
+     * èƒ½å¦ç§»åŠ¨ï¼Œé»˜è®¤ä¸ºtrue
      * @param pannable
      */
     public void setPannable(boolean pannable) {
 		this.pannable = pannable;
 	}
     /**
-     * ÄÜ·ñÒÆ¶¯£¬Ä¬ÈÏÎªtrue
+     * èƒ½å¦ç§»åŠ¨ï¼Œé»˜è®¤ä¸ºtrue
      * @param pannable
      */
     public boolean isPannable() {

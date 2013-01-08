@@ -5,9 +5,9 @@ import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
- * emboss½«alignment²úÉúÈ¨ÖØ¾ØÕó£¬È»ºó¸øProfitÀ´É¨ÃèmotifµÄ
+ * embosså°†alignmentäº§ç”Ÿæƒé‡çŸ©é˜µï¼Œç„¶åç»™Profitæ¥æ‰«æmotifçš„
  * @author zong0jie
- * <b>Ä¬ÈÏ½«ĞòÁĞ×ª»»ÎªĞ¡Ğ´È»ºóÉ¨Ãè<b>
+ * <b>é»˜è®¤å°†åºåˆ—è½¬æ¢ä¸ºå°å†™ç„¶åæ‰«æ<b>
  */
 public class Prophecy {
 //	prophecy -sequence "$filename" -datafile Epprofile  -type G -name novelbio -threshold 75 -outfile "$outFileName"
@@ -19,16 +19,16 @@ public class Prophecy {
 	
 	boolean isNr;
 	/**
-	 * @param isNR true ºËËáĞòÁĞ£¬ºËËáĞòÁĞÄ¬ÈÏÍ¬Ê±É¨ÃèÕı¸ºÁ´
-	 * false µ°°×ĞòÁĞ
+	 * @param isNR true æ ¸é…¸åºåˆ—ï¼Œæ ¸é…¸åºåˆ—é»˜è®¤åŒæ—¶æ‰«ææ­£è´Ÿé“¾
+	 * false è›‹ç™½åºåˆ—
 	 */
 	public Prophecy(boolean isNR) {
 		this.isNr = isNR;
 	}
 	
 	/**
-	 * Éè¶¨samtoolsËùÔÚµÄÎÄ¼ş¼ĞÒÔ¼°´ı±È¶ÔµÄÂ·¾¶
-	 * @param exePath Èç¹ûÔÚ¸ùÄ¿Â¼ÏÂÔòÉèÖÃÎª""»ònull
+	 * è®¾å®šsamtoolsæ‰€åœ¨çš„æ–‡ä»¶å¤¹ä»¥åŠå¾…æ¯”å¯¹çš„è·¯å¾„
+	 * @param exePath å¦‚æœåœ¨æ ¹ç›®å½•ä¸‹åˆ™è®¾ç½®ä¸º""æˆ–null
 	 */
 	public void setExePath(String exePath) {
 		if (exePath == null || exePath.trim().equals("")) {
@@ -38,7 +38,7 @@ public class Prophecy {
 		}
 	}
 	
-	/** ÊäÈëµÄÁ¬ÅäÎÄ¼ş */
+	/** è¾“å…¥çš„è¿é…æ–‡ä»¶ */
 	public void setInAlignment(String inAlignment) {
 		this.inAlignment = inAlignment;
 	}
@@ -71,7 +71,7 @@ public class Prophecy {
 		return " -name " + profitName + " ";
 	}
 	
-	/** ÊÇºËËá»¹ÊÇµ°°× */
+	/** æ˜¯æ ¸é…¸è¿˜æ˜¯è›‹ç™½ */
 	private String getSeqType() {
 		if (isNr) {
 			return " -snucleotide1 ";
@@ -79,7 +79,7 @@ public class Prophecy {
 			return " -sprotein1 ";
 		}
 	}
-	/** ·µ»Ø²úÉúµÄ¾ØÕó */
+	/** è¿”å›äº§ç”Ÿçš„çŸ©é˜µ */
 	public String[] generateProfit(String outFile) {
 		String[] result = new String[1];
 		if (isNr) {

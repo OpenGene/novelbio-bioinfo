@@ -26,7 +26,7 @@ import com.novelbio.database.model.modgeneid.GeneID;
 import de.erichseifert.gral.util.GraphicsUtils;
 
 /**
- * ÆäÖĞµÄChrFa¶ÁÈ¡Ê±ºò£¬±ØĞë½«Ã¿ĞĞµÄ»»ĞĞ·ûÏŞ¶¨Îª"\n",ÓĞĞ¡¹¤¾ßÄÜÓÃ
+ * å…¶ä¸­çš„ChrFaè¯»å–æ—¶å€™ï¼Œå¿…é¡»å°†æ¯è¡Œçš„æ¢è¡Œç¬¦é™å®šä¸º"\n",æœ‰å°å·¥å…·èƒ½ç”¨
  * 
  * @author zong0jie
  * 
@@ -35,18 +35,18 @@ public abstract class GffChrHanYan {
 private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 	GffChrAbs gffChrAbs;
 	MapReads mapReads;
-	/** ×î³¤µÄÄÇ¸öatgµÄÎ»ÖÃ */
+	/** æœ€é•¿çš„é‚£ä¸ªatgçš„ä½ç½® */
 	int atgAlign = 0;
-	/** AtgÉÏÓÎÎ»µã£¬²»°üº¬ATG */
+	/** Atgä¸Šæ¸¸ä½ç‚¹ï¼Œä¸åŒ…å«ATG */
 	int atgUp = 300;
-	/** AtgÏÂÓÎÎ»µã£¬°üº¬ATG */
+	/** Atgä¸‹æ¸¸ä½ç‚¹ï¼ŒåŒ…å«ATG */
 	int atgDown = 3000;
-	/** ±£´ægeneIDµ½accID£¬Ö÷ÒªÓÃÓÚ²éÕÒmapÀïÃæµÄ¾ßÌå»ùÒò 
-	 * key Ğ¡Ğ´
+	/** ä¿å­˜geneIDåˆ°accIDï¼Œä¸»è¦ç”¨äºæŸ¥æ‰¾mapé‡Œé¢çš„å…·ä½“åŸºå›  
+	 * key å°å†™
 	 * */
 	HashMap<String, String> mapGeneID2AccID;
-	/** accIDµ½seqInfo 
-	 * key Ğ¡Ğ´
+	/** accIDåˆ°seqInfo 
+	 * key å°å†™
 	 * */
 	HashMap<String, SeqInfo> mapAccID2SeqInfo;
 	
@@ -126,11 +126,11 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 	public void setNormType(int normalType) {
 		mapReads.setNormalType(normalType);
 	}
-	/** Ä¬ÈÏ»ñÈ¡atgÉÏÓÎ300bpµÄÎ»µã */
+	/** é»˜è®¤è·å–atgä¸Šæ¸¸300bpçš„ä½ç‚¹ */
 	public void setAtgUp(int atgUp) {
 		this.atgUp = atgUp;
 	}
-	/** Ä¬ÈÏ»ñÈ¡atgÏÂÓÎ3000bpµÄÎ»µã */
+	/** é»˜è®¤è·å–atgä¸‹æ¸¸3000bpçš„ä½ç‚¹ */
 	public void setAtgDown(int atgDown) {
 		this.atgDown = atgDown;
 	}
@@ -141,13 +141,13 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 		loadMap(mapFile, tagLength, uniqReads, startCod, cis5To3, uniqMapping);
 	}
 	/**
-	 * ¶ÁÈ¡MappingÎÄ¼ş£¬Éú³ÉÏàÓ¦µÄÒ»Î¬×ø±êÊı×é£¬×îºó±£´æÔÚÒ»¸ö¹şÏ£±íÖĞ¡£
-	 * @param mapFile mappingµÄ½á¹ûÎÄ¼ş£¬Ò»°ãÎªbed¸ñÊ½
-	 * @param tagLength Éè¶¨Ë«¶ËreadsTagÆ´ÆğÀ´ºó³¤¶ÈµÄ¹ÀËãÖµ£¬´óÓÚ20²Å»á½øĞĞÉèÖÃ¡£Ä¿Ç°solexaË«¶ËËÍÑù³¤¶È´ó¸ÅÊÇ200-400bp£¬²»ÓÃÌ«¾«È· ,Ä¬ÈÏÊÇ400
-	 * @param uniqReads Í¬Ò»Î»µãµÄÖØ¸´ÊÇ·ñ½ö±£ÁôÒ»¸ö
-	 * @param startCod ¿ªÍ·±£Áô¼¸Î»£¬º«ÑàÊÇ3Î»
-	 * @param cis5To3 ÊÇ·ñÌôÑ¡Ä³Ò»¸ö·½ÏòµÄreads
-	 * @param uniqMapping ÊÇ·ñÌôÑ¡Î¨Ò»±È¶ÔµÄ 
+	 * è¯»å–Mappingæ–‡ä»¶ï¼Œç”Ÿæˆç›¸åº”çš„ä¸€ç»´åæ ‡æ•°ç»„ï¼Œæœ€åä¿å­˜åœ¨ä¸€ä¸ªå“ˆå¸Œè¡¨ä¸­ã€‚
+	 * @param mapFile mappingçš„ç»“æœæ–‡ä»¶ï¼Œä¸€èˆ¬ä¸ºbedæ ¼å¼
+	 * @param tagLength è®¾å®šåŒç«¯readsTagæ‹¼èµ·æ¥åé•¿åº¦çš„ä¼°ç®—å€¼ï¼Œå¤§äº20æ‰ä¼šè¿›è¡Œè®¾ç½®ã€‚ç›®å‰solexaåŒç«¯é€æ ·é•¿åº¦å¤§æ¦‚æ˜¯200-400bpï¼Œä¸ç”¨å¤ªç²¾ç¡® ,é»˜è®¤æ˜¯400
+	 * @param uniqReads åŒä¸€ä½ç‚¹çš„é‡å¤æ˜¯å¦ä»…ä¿ç•™ä¸€ä¸ª
+	 * @param startCod å¼€å¤´ä¿ç•™å‡ ä½ï¼ŒéŸ©ç‡•æ˜¯3ä½
+	 * @param cis5To3 æ˜¯å¦æŒ‘é€‰æŸä¸€ä¸ªæ–¹å‘çš„reads
+	 * @param uniqMapping æ˜¯å¦æŒ‘é€‰å”¯ä¸€æ¯”å¯¹çš„ 
 	 */
 	protected abstract void loadMap(String mapFile, int tagLength, boolean uniqReads, int startCod, Boolean cis5To3, boolean uniqMapping);
 	
@@ -188,12 +188,12 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 		dotStyle.setStyle(DotStyle.STYLE_AREA);
 		plotScatter.addXY(x, y, dotStyle);
 		
-		//////////////////Ìí¼Ó±ß¿ò///////////////////////////////
+		//////////////////æ·»åŠ è¾¹æ¡†///////////////////////////////
 		DotStyle dotStyleAtg = new DotStyle();
 		dotStyleAtg.setStyle(DotStyle.STYLE_LINE);
 		dotStyleAtg.setColor(Color.RED);
 		dotStyleAtg.setSize(DotStyle.SIZE_B);
-		//0µã¾ÍÊÇatg
+		//0ç‚¹å°±æ˜¯atg
 		double[] xATG= new double[]{0, 0};
 		double[] yATG = new double[]{0, yMax};
 		plotScatter.addXY(xATG, yATG, dotStyleAtg);
@@ -213,7 +213,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 		dotStyleTss.setColor(Color.green);
 		dotStyleTss.setSize(DotStyle.SIZE_B);
 		
-		//0µã¾ÍÊÇatg
+		//0ç‚¹å°±æ˜¯atg
 		double[] xTss= new double[]{seqInfo.tssToAtgSite, seqInfo.tssToAtgSite};
 		double[] yTss = new double[]{0, yMax};
 		plotScatter.addXY(xTss, yTss, dotStyleTss);
@@ -222,7 +222,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 		dotStyleTes.setStyle(DotStyle.STYLE_LINE);
 		dotStyleTes.setColor(Color.green);
 		dotStyleTes.setSize(DotStyle.SIZE_B);
-		//0µã¾ÍÊÇatg
+		//0ç‚¹å°±æ˜¯atg
 		double[] xTes= new double[]{seqInfo.tesToAtgSite, seqInfo.tesToAtgSite};
 		double[] yTes = new double[]{0, yMax};
 		plotScatter.addXY(xTes, yTes, dotStyleTes);
@@ -233,7 +233,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 		
 		plotScatter.setBg(Color.WHITE);
 		plotScatter.setAlpha(false);
-		//×ø±êÖámapping
+		//åæ ‡è½´mapping
 //		plotScatter.setMapNum2ChangeY(0, 0, axisY, 500, 100);
 		plotScatter.setTitle(geneName +" Reads Density    ATG site: " + seqInfo.atgSite, null);
 		plotScatter.setTitleX("Gene Length", null, 0);
@@ -246,7 +246,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 	}
 	
 	/**
-	 * ¸ø¶¨»ùÒòÃû, ·µ»ØseqInfo
+	 * ç»™å®šåŸºå› å, è¿”å›seqInfo
 	 * @param geneName
 	 * @return
 	 */
@@ -301,7 +301,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 		if (atgUp <= 0) {
 			atgUp = atgAlign;
 		}
-		//´ø»ùÒòÃû×Ö
+		//å¸¦åŸºå› åå­—
 		String[][] GeneEndDensity = new String[lsResult.size()][lsResult.get(0).atg.length+1];
 		for (int i = 0; i < GeneEndDensity.length; i++) {
 			for (int j = 1; j < GeneEndDensity[0].length; j++) {
@@ -311,7 +311,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 		for (int i = 0; i < GeneEndDensity.length; i++) {
 			GeneEndDensity[i][0] = lsResult.get(i).seqName;
 		}
-		//²»´ø»ùÒòÃû×Ö
+		//ä¸å¸¦åŸºå› åå­—
 		double[][] GeneEndDensity2 = new double[lsResult.size()][lsResult.get(0).atg.length];
 		for (int i = 0; i < GeneEndDensity2.length; i++) {
 			for (int j = 0; j < GeneEndDensity2[0].length; j++) {
@@ -321,7 +321,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 		
 		ArrayList<double[]> lsAxisX2AxisY = new ArrayList<double[]>();
 		for (SeqInfo seqInfo : lsResult) {
-			//±éÀúÃ¿¸öexonµÄÃ¿¸öÎ»µã
+			//éå†æ¯ä¸ªexonçš„æ¯ä¸ªä½ç‚¹
 			for (int i = 0; i < seqInfo.atg.length; i++) {
 				double info = seqInfo.atg[i];
 				if (lsAxisX2AxisY.size() <= i) {
@@ -335,7 +335,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 		}
 		return lsAxisX2AxisY;
 	}
-	/////////////////////////////////////   º«ÑàµÄÏîÄ¿   //////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////   éŸ©ç‡•çš„é¡¹ç›®   //////////////////////////////////////////////////////////////////////////////////////////////////////////
 	public void drawHeatMap(String resultFilePath, String prefix) throws Exception {
 		resultFilePath = FileOperate.addSep(resultFilePath);
 		ArrayList<String> lsgenID = getAllGeneName();
@@ -365,7 +365,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 				GeneEndDensity2[i][j] = lsResult.get(i).atg[j];
 			}
 		}
-		System.out.println("½øĞĞ·ÖÎöµÄ»ùÒòÊıÄ¿£º" + GeneEndDensity.length);
+		System.out.println("è¿›è¡Œåˆ†æçš„åŸºå› æ•°ç›®ï¼š" + GeneEndDensity.length);
 		HeatChart map = new HeatChart(GeneEndDensity2,0,200);
 		map.setTitle("ATGsit: "+ (atgUp/3 +1) );
 		map.setXAxisLabel("X Axis");
@@ -391,7 +391,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("Í¼Æ¬µÄ¸ß¶ÈÏñËØÎª£º "+map.getChartSize().getHeight());
+		System.out.println("å›¾ç‰‡çš„é«˜åº¦åƒç´ ä¸ºï¼š "+map.getChartSize().getHeight());
 		
 		TxtReadandWrite txtReadandWrite = new TxtReadandWrite();
 		txtReadandWrite.setParameter(resultFilePath+prefix+"Atgmatrix.txt", true, false);
@@ -401,7 +401,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 
 	/**
 	 * @param lsGeneID
-	 * @param filled ¿ÕÎ»ÓÃÊ²Ã´Ìî³ä£¬Èç¹ûÊÇheatmap£¬¿¼ÂÇ-1£¬Èç¹ûÊÇµş¼Ó£¬¿¼ÂÇ0
+	 * @param filled ç©ºä½ç”¨ä»€ä¹ˆå¡«å……ï¼Œå¦‚æœæ˜¯heatmapï¼Œè€ƒè™‘-1ï¼Œå¦‚æœæ˜¯å åŠ ï¼Œè€ƒè™‘0
 	 */
 	private ArrayList<SeqInfo> getATGDensity(ArrayList<String> lsGeneID, int filled) {
 		GffHashGene gffHashGene = gffChrAbs.getGffHashGene();;
@@ -412,7 +412,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 			if (gffGeneIsoSearch.ismRNA()) {
 				seqInfo.atg = getReadsInfo(string,gffGeneIsoSearch);
 				if (seqInfo.atg == null) {
-					logger.error("±¾»ùÒòÃ»ÓĞÏàÓ¦µÄĞÅÏ¢£º"+gffGeneIsoSearch.getParentGffDetailGene().getName()+" "+ 
+					logger.error("æœ¬åŸºå› æ²¡æœ‰ç›¸åº”çš„ä¿¡æ¯ï¼š"+gffGeneIsoSearch.getParentGffDetailGene().getName()+" "+ 
 							gffGeneIsoSearch.getTSSsite() +"  " +gffGeneIsoSearch.getTESsite() +"  "+gffGeneIsoSearch.getName());
 					continue;
 				}
@@ -426,17 +426,17 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 		return setMatrix(lsAtg, filled);
 	}
 	/**
-	 * ½ö½öÕë¶Ôº«Ñà×öµÄ·ÖÎö£¬°´ÕÕ5UTRµÄ³¤¶È½øĞĞÅÅĞò£¬´ÓĞ¡µ½´óÅÅÁĞ£¬È»ºó
-	 * @param lsAtg key 5UTRµÄ³¤¶È£¬value£¬×Ü¹²ĞòÁĞµÄ³¤¶È£¬µÚÒ»Î»Îªatg¾ø¶ÔÎ»µã
-	 * @param AtgUp Ñ¡È¡ATGÉÏÓÎ¶àÉÙbp£¬²»°üÀ¨ATGÎ»µã -1ÎªÈ«Ñ¡ ×îºó¶ÔÆëÎ»µãµÄÉÏÓÎ¶àÉÙbp£¬²»°üÀ¨¶ÔÆğÎ»µã
-	 * @param AtgDown Ñ¡È¡ATGÏÂÓÎ¶àÉÙbp,²»°üÀ¨ATGÎ»µã¡£ -1ÎªÈ«Ñ¡ Ñ¡È¡¶ÔÆëÎ»µãµÄÏÂÓÎ¶àÉÙbp£¬²»°üÀ¨¶ÔÆëÎ»µã
-	 * @param filled ¿ÕÎ»ÓÃÊ²Ã´Ìî³ä£¬Èç¹ûÊÇheatmap£¬¿¼ÂÇ-1£¬Èç¹ûÊÇµş¼Ó£¬¿¼ÂÇ0
+	 * ä»…ä»…é’ˆå¯¹éŸ©ç‡•åšçš„åˆ†æï¼ŒæŒ‰ç…§5UTRçš„é•¿åº¦è¿›è¡Œæ’åºï¼Œä»å°åˆ°å¤§æ’åˆ—ï¼Œç„¶å
+	 * @param lsAtg key 5UTRçš„é•¿åº¦ï¼Œvalueï¼Œæ€»å…±åºåˆ—çš„é•¿åº¦ï¼Œç¬¬ä¸€ä½ä¸ºatgç»å¯¹ä½ç‚¹
+	 * @param AtgUp é€‰å–ATGä¸Šæ¸¸å¤šå°‘bpï¼Œä¸åŒ…æ‹¬ATGä½ç‚¹ -1ä¸ºå…¨é€‰ æœ€åå¯¹é½ä½ç‚¹çš„ä¸Šæ¸¸å¤šå°‘bpï¼Œä¸åŒ…æ‹¬å¯¹èµ·ä½ç‚¹
+	 * @param AtgDown é€‰å–ATGä¸‹æ¸¸å¤šå°‘bp,ä¸åŒ…æ‹¬ATGä½ç‚¹ã€‚ -1ä¸ºå…¨é€‰ é€‰å–å¯¹é½ä½ç‚¹çš„ä¸‹æ¸¸å¤šå°‘bpï¼Œä¸åŒ…æ‹¬å¯¹é½ä½ç‚¹
+	 * @param filled ç©ºä½ç”¨ä»€ä¹ˆå¡«å……ï¼Œå¦‚æœæ˜¯heatmapï¼Œè€ƒè™‘-1ï¼Œå¦‚æœæ˜¯å åŠ ï¼Œè€ƒè™‘0
 	 */
 	protected ArrayList<SeqInfo> setMatrix(ArrayList<SeqInfo> lsAtg, int filled) {
 		int maxGeneBody = 0;
-		//»ñµÃ×î³¤µÄUTR³¤¶È
-		atgAlign = getAtgAlign(lsAtg);//ÒªÓÃatg×öalignmentµÄ£¬ÄÚ²¿»¹½øĞĞÁËÅÅĞò
-		//»ñµÃ×î³¤µÄATGÏÂÓÎ³¤¶È,²»°üÀ¨ATGÎ»µã
+		//è·å¾—æœ€é•¿çš„UTRé•¿åº¦
+		atgAlign = getAtgAlign(lsAtg);//è¦ç”¨atgåšalignmentçš„ï¼Œå†…éƒ¨è¿˜è¿›è¡Œäº†æ’åº
+		//è·å¾—æœ€é•¿çš„ATGä¸‹æ¸¸é•¿åº¦,ä¸åŒ…æ‹¬ATGä½ç‚¹
 		for (SeqInfo ds : lsAtg) {
 			if (ds.seqName.equalsIgnoreCase("NM_139149")) {
 				logger.error("stop");
@@ -447,7 +447,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 		}
 		ArrayList<SeqInfo> lsdouble = new ArrayList<SeqInfo>();
 		for (SeqInfo ds : lsAtg) {
-			//´ËÊ±µÄSeqInfoµÚÒ»Î»¾ÍÊÇÊµ¼ÊµÄµÚÒ»Î»£¬²»ÊÇatgsiteÁË
+			//æ­¤æ—¶çš„SeqInfoç¬¬ä¸€ä½å°±æ˜¯å®é™…çš„ç¬¬ä¸€ä½ï¼Œä¸æ˜¯atgsiteäº†
 			SeqInfo tmpResult = setDouble(ds, atgAlign, maxGeneBody, filled);
 			lsdouble.add(tmpResult);
 		}
@@ -457,9 +457,9 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 		return lsdouble;
 	}
 	/**
-	 * ½«Èı¸ö¼î»ùºÏ²¢Îª1¸öcoding
-	 * @param AtgUp Ñ¡È¡ATGÉÏÓÎ¶àÉÙbp£¬²»°üÀ¨ATGÎ»µã -1ÎªÈ«Ñ¡ ×îºó¶ÔÆëÎ»µãµÄÉÏÓÎ¶àÉÙbo£¬²»°üÀ¨¶ÔÆğÎ»µã
-	 * @param AlignATGSite ×î³¤ATGµÄÎ»µãµÄ¾ø¶ÔÎ»ÖÃ£¬ĞèÒª¶ÔÆëÎ»µãÇ°ÃæµÄ³¤¶È
+	 * å°†ä¸‰ä¸ªç¢±åŸºåˆå¹¶ä¸º1ä¸ªcoding
+	 * @param AtgUp é€‰å–ATGä¸Šæ¸¸å¤šå°‘bpï¼Œä¸åŒ…æ‹¬ATGä½ç‚¹ -1ä¸ºå…¨é€‰ æœ€åå¯¹é½ä½ç‚¹çš„ä¸Šæ¸¸å¤šå°‘boï¼Œä¸åŒ…æ‹¬å¯¹èµ·ä½ç‚¹
+	 * @param AlignATGSite æœ€é•¿ATGçš„ä½ç‚¹çš„ç»å¯¹ä½ç½®ï¼Œéœ€è¦å¯¹é½ä½ç‚¹å‰é¢çš„é•¿åº¦
 	 */
 	private  void combineLoc(ArrayList<SeqInfo> lsdouble, int AlignATGSite) {
 		if (true) {
@@ -479,12 +479,12 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 		}
 	}
 	/**
-	 * »ñµÃÈ«»ùÒò×æÉÏ£¬atg¾àÀëUTR5ÆğµãµÄ×îÔ¶¾àÀë
-	 * @param lsAtg value£¬×Ü¹²ĞòÁĞµÄ³¤¶È£¬µÚÒ»Î»Îªatg¾ø¶ÔÎ»µã
+	 * è·å¾—å…¨åŸºå› ç¥–ä¸Šï¼Œatgè·ç¦»UTR5èµ·ç‚¹çš„æœ€è¿œè·ç¦»
+	 * @param lsAtg valueï¼Œæ€»å…±åºåˆ—çš„é•¿åº¦ï¼Œç¬¬ä¸€ä½ä¸ºatgç»å¯¹ä½ç‚¹
 	 * @return
 	 */
 	public int getAtgAlign( ArrayList<SeqInfo> lsAtg) {
-		//´Ó´óµ½Ğ¡ÅÅÁĞ
+		//ä»å¤§åˆ°å°æ’åˆ—
 		Collections.sort(lsAtg, new Comparator<SeqInfo>() {
 			@Override
 			public int compare(SeqInfo o1, SeqInfo o2) {
@@ -501,11 +501,11 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 	}
 	
 	/**
-	 * ½«ÊäÈëµÄÊı×éÖØÅÅÁĞ
-	 * @param input ÊäÈëÊı×é£¬µÚÒ»Î»Îªatg¾ø¶ÔÎ»µã,Ò²¾ÍÊÇĞèÒª¶ÔÆëµÄÎ»µã£¬´Ó0¿ªÊ¼¼ÇÊı
-	 * @param alignATGSite ×î³¤ATGµÄÎ»µãµÄ¾ø¶ÔÎ»ÖÃ£¬ĞèÒª¶ÔÆëÎ»µãÇ°ÃæµÄ³¤¶È£¬²»°üÀ¨atgÎ»µã
-	 * @param ATGbody AtgÏÂÓÎ×Ü¹²¶à³¤£¬°üÀ¨AtgÎ»µã,ĞèÒª¶ÔÆëÎ»µãµÄÏÂÓÎÓĞ¶à³¤
-	 * @param filled ¿ÕÎ»ÓÃÊ²Ã´Ìî³ä£¬Èç¹ûÊÇheatmap£¬¿¼ÂÇ-1£¬Èç¹ûÊÇµş¼Ó£¬¿¼ÂÇ0 ¿ÕÎ»ÓÃÊ²Ã´Ìî³ä
+	 * å°†è¾“å…¥çš„æ•°ç»„é‡æ’åˆ—
+	 * @param input è¾“å…¥æ•°ç»„ï¼Œç¬¬ä¸€ä½ä¸ºatgç»å¯¹ä½ç‚¹,ä¹Ÿå°±æ˜¯éœ€è¦å¯¹é½çš„ä½ç‚¹ï¼Œä»0å¼€å§‹è®°æ•°
+	 * @param alignATGSite æœ€é•¿ATGçš„ä½ç‚¹çš„ç»å¯¹ä½ç½®ï¼Œéœ€è¦å¯¹é½ä½ç‚¹å‰é¢çš„é•¿åº¦ï¼Œä¸åŒ…æ‹¬atgä½ç‚¹
+	 * @param ATGbody Atgä¸‹æ¸¸æ€»å…±å¤šé•¿ï¼ŒåŒ…æ‹¬Atgä½ç‚¹,éœ€è¦å¯¹é½ä½ç‚¹çš„ä¸‹æ¸¸æœ‰å¤šé•¿
+	 * @param filled ç©ºä½ç”¨ä»€ä¹ˆå¡«å……ï¼Œå¦‚æœæ˜¯heatmapï¼Œè€ƒè™‘-1ï¼Œå¦‚æœæ˜¯å åŠ ï¼Œè€ƒè™‘0 ç©ºä½ç”¨ä»€ä¹ˆå¡«å……
 	 * @return
 	 */
 	private SeqInfo setDouble(SeqInfo input, int alignATGSite, int ATGbody, int filled ) {
@@ -528,13 +528,13 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 				tmpresult = new double[alignATGSite + ATGbody];
 			}
 		}
-		//ÓÃ-1³äÂúÊı×é
+		//ç”¨-1å……æ»¡æ•°ç»„
 		for (int i = 0; i < tmpresult.length; i++) {
 			tmpresult[i] = filled;
 		}
-		//ÕıÊ½¼ÆËã	
+		//æ­£å¼è®¡ç®—	
 		if (atgUp < 0) {
-			//±éÀú»ùÒò³¤¶È
+			//éå†åŸºå› é•¿åº¦
 			for (int i = 0; i < input.atg.length - 1; i++) {
 				if (i + bias >= tmpresult.length) {
 					break;
@@ -575,20 +575,20 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 	}
 	
 	/**
-	 *	¸ø¶¨×ªÂ¼±¾£¬·µ»Ø¸Ã×ªÂ¼±¾µÄmRNAË®Æ½×ø±ê
+	 *	ç»™å®šè½¬å½•æœ¬ï¼Œè¿”å›è¯¥è½¬å½•æœ¬çš„mRNAæ°´å¹³åæ ‡
 	 * @param chrID
 	 * @param gffGeneIsoSearch
 	 * @return
-	 * double[] 0: atgÎ»µã,¾ø¶ÔÎ»µã£¬1-½áÊø ´Ótssµ½tesµÄÃ¿¸öÎ»µãµÄreadsÊıÄ¿
+	 * double[] 0: atgä½ç‚¹,ç»å¯¹ä½ç‚¹ï¼Œ1-ç»“æŸ ä»tssåˆ°tesçš„æ¯ä¸ªä½ç‚¹çš„readsæ•°ç›®
 	 */
 	protected abstract double[] getReadsInfo(String geneID, GffGeneIsoInfo gffGeneIsoInfo);
-	/////////////////////////////////////   º«ÑàµÄÏîÄ¿   //////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////   éŸ©ç‡•çš„é¡¹ç›®   //////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 
 class SeqInfo {
-	/** double[] 0: atgÎ»µã,¾ø¶ÔÎ»µã£¬1µ½½áÊø ´Ótssµ½tesµÄÃ¿¸öÎ»µãµÄreadsÊıÄ¿*/
+	/** double[] 0: atgä½ç‚¹,ç»å¯¹ä½ç‚¹ï¼Œ1åˆ°ç»“æŸ ä»tssåˆ°tesçš„æ¯ä¸ªä½ç‚¹çš„readsæ•°ç›®*/
 	public double[] atg;
-	/** ATG´ÓµÚ¼¸Î»¿ªÊ¼ */
+	/** ATGä»ç¬¬å‡ ä½å¼€å§‹ */
 	public int atgSite = 0;
 	public int uagToAtgSite = 0;
 

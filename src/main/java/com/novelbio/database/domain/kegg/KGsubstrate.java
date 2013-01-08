@@ -2,24 +2,24 @@ package com.novelbio.database.domain.kegg;
 
 
 /**
- * °üÀ¨µ×ÎïºÍ²úÎïµÄÀà£¬ÓÃtypeÀ´Çø·Öµ×ÎïºÍ²úÎï
+ * åŒ…æ‹¬åº•ç‰©å’Œäº§ç‰©çš„ç±»ï¼Œç”¨typeæ¥åŒºåˆ†åº•ç‰©å’Œäº§ç‰©
  * @author zong0jie
  *
  */
 public class KGsubstrate {
 
 	/**
-	 * substrateËùÔÚµÄpathway
+	 * substrateæ‰€åœ¨çš„pathway
 	 */
 	private String pathName;
 	
 	/**
-	 * substrateËùÔÚµÄreaction
+	 * substrateæ‰€åœ¨çš„reaction
 	 */
 	private int reactionID;
 	 
 	/**
-	 * ¾ÍÁ½¸ö£¬Ò»¸öÊÇsubstrate£¬Ò»¸öÊÇproduct
+	 * å°±ä¸¤ä¸ªï¼Œä¸€ä¸ªæ˜¯substrateï¼Œä¸€ä¸ªæ˜¯product
 	 */
 	private String type;
 	/**
@@ -66,7 +66,7 @@ public class KGsubstrate {
 	}
 	
 	/**
-	 * substrateËùÔÚµÄpathway
+	 * substrateæ‰€åœ¨çš„pathway
 	 * @return
 	 */
 	public String getPathName() {
@@ -74,7 +74,7 @@ public class KGsubstrate {
 	}
 	/**
 	 * already trim()
-	 * substrateËùÔÚµÄpathway
+	 * substrateæ‰€åœ¨çš„pathway
 	 * @return
 	 */
 	public void setPathName(String pathName) {
@@ -82,27 +82,27 @@ public class KGsubstrate {
 	}
 	
 	/**
-	 * substrateËùÔÚµÄreaction
+	 * substrateæ‰€åœ¨çš„reaction
 	 */
 	public int getReactionID() {
 		return this.reactionID;
 	}
 	/**
-	 * substrateËùÔÚµÄreaction
+	 * substrateæ‰€åœ¨çš„reaction
 	 */
 	public void setReactionID(int reactionID) {
 		this.reactionID=reactionID;
 	}
 	
 	/**
-	 * ¾ÍÁ½¸ö£¬Ò»¸öÊÇsubstrate£¬Ò»¸öÊÇproduct
+	 * å°±ä¸¤ä¸ªï¼Œä¸€ä¸ªæ˜¯substrateï¼Œä¸€ä¸ªæ˜¯product
 	 */
 	public String getType() {
 		return this.type;
 	}
 	/**
 	 * already trim()
-	 * ¾ÍÁ½¸ö£¬Ò»¸öÊÇsubstrate£¬Ò»¸öÊÇproduct
+	 * å°±ä¸¤ä¸ªï¼Œä¸€ä¸ªæ˜¯substrateï¼Œä¸€ä¸ªæ˜¯product
 	 */
 	public void setType(String type) {
 		this.type=type.trim();

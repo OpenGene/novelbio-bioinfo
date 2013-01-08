@@ -7,7 +7,7 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 /**
- * JTextField µÄÀ©Õ¹£¬·½±ãÉè¶¨Êä³ö×Ö·ûµÈµÈ
+ * JTextField çš„æ‰©å±•ï¼Œæ–¹ä¾¿è®¾å®šè¾“å‡ºå­—ç¬¦ç­‰ç­‰
  * @author zong0jie
  *
  */
@@ -21,29 +21,29 @@ public class JTextFieldData extends JTextField {
 	}
 	 /**
 	  * @param maxLen
-	  *            int ×î´ó³¤¶È(º¬Ğ¡ÊıÎ»)
+	  *            int æœ€å¤§é•¿åº¦(å«å°æ•°ä½)
 	  * @param decLen
-	  *            int Ğ¡ÊıÎ»³¤¶È
+	  *            int å°æ•°ä½é•¿åº¦
 	  */
 	public void setNumOnly(int maxLen, int decLen) {
 		setDocument(new NumberOnlyDoc(maxLen, decLen));
 	}
 	 /**
 	  * @param decLen
-	  *            int Ğ¡ÊıÎ»³¤¶È
+	  *            int å°æ•°ä½é•¿åº¦
 	  */
 	public void setNumOnly(int decLen) {
 		setDocument(new NumberOnlyDoc(decLen));
 	}
 	 /**
 	  * @param maxLen
-	  *            int ×î´ó³¤¶È(º¬Ğ¡ÊıÎ») Ä¬ÈÏ20
+	  *            int æœ€å¤§é•¿åº¦(å«å°æ•°ä½) é»˜è®¤20
 	  * @param decLen
-	  *            int Ğ¡ÊıÎ»³¤¶È Ä¬ÈÏÎª0
+	  *            int å°æ•°ä½é•¿åº¦ é»˜è®¤ä¸º0
 	  * @param minRange
-	  *            double ×îĞ¡Öµ Ä¬ÈÏÎŞÏŞĞ¡
+	  *            double æœ€å°å€¼ é»˜è®¤æ— é™å°
 	  * @param maxRange 
-	  *            double ×î´óÖµ Ä¬ÈÏÎŞÏŞ´ó
+	  *            double æœ€å¤§å€¼ é»˜è®¤æ— é™å¤§
 	  */
 	public void setNumOnly(int maxLen, int decLen, double minRange, double maxRange) {
 		setDocument(new NumberOnlyDoc(maxLen, decLen, minRange, maxRange));
@@ -52,20 +52,20 @@ public class JTextFieldData extends JTextField {
 	
 }
 /**
- * jtxtFeildÖ»ÄÜÊäÈëĞ¡Êıµã£¬¸ººÅºÍÊı×Ö
- * ·½·¨
- * Ê×ÏÈjtxtFeild.setDocument(new DoubleOnlyDoc());<br>
+ * jtxtFeildåªèƒ½è¾“å…¥å°æ•°ç‚¹ï¼Œè´Ÿå·å’Œæ•°å­—
+ * æ–¹æ³•
+ * é¦–å…ˆjtxtFeild.setDocument(new DoubleOnlyDoc());<br>
  * @author zong0jie
  *
  */
 class NumberOnlyDoc extends PlainDocument {
 	private static final long serialVersionUID = 84564523057L;
 	/**
-	 * ×î´ó³¤¶È 
+	 * æœ€å¤§é•¿åº¦ 
 	 */
-	int maxLength = 20;// Ä¬ÈÏµÄÊÇ20
+	int maxLength = 20;// é»˜è®¤çš„æ˜¯20
 	 /**
-	  * Ğ¡ÊıÎ»Êı
+	  * å°æ•°ä½æ•°
 	  */
 	 int decLength = 0;
 
@@ -74,9 +74,9 @@ class NumberOnlyDoc extends PlainDocument {
 	 double maxRange = Double.MAX_VALUE;
 	 /**
 	  * @param maxLen
-	  *            int ×î´ó³¤¶È(º¬Ğ¡ÊıÎ») Ä¬ÈÏ20
+	  *            int æœ€å¤§é•¿åº¦(å«å°æ•°ä½) é»˜è®¤20
 	  * @param decLen
-	  *            int Ğ¡ÊıÎ»³¤¶È Ä¬ÈÏÎª0
+	  *            int å°æ•°ä½é•¿åº¦ é»˜è®¤ä¸º0
 	  */
 	 public NumberOnlyDoc(int maxLen, int decLen) {
 	  maxLength = maxLen;
@@ -85,13 +85,13 @@ class NumberOnlyDoc extends PlainDocument {
 
 	 /**
 	  * @param maxLen
-	  *            int ×î´ó³¤¶È(º¬Ğ¡ÊıÎ») Ä¬ÈÏ20
+	  *            int æœ€å¤§é•¿åº¦(å«å°æ•°ä½) é»˜è®¤20
 	  * @param decLen
-	  *            int Ğ¡ÊıÎ»³¤¶È Ä¬ÈÏÎª0
+	  *            int å°æ•°ä½é•¿åº¦ é»˜è®¤ä¸º0
 	  * @param minRange
-	  *            double ×îĞ¡Öµ Ä¬ÈÏÎŞÏŞĞ¡
+	  *            double æœ€å°å€¼ é»˜è®¤æ— é™å°
 	  * @param maxRange 
-	  *            double ×î´óÖµ Ä¬ÈÏÎŞÏŞ´ó
+	  *            double æœ€å¤§å€¼ é»˜è®¤æ— é™å¤§
 	  */
 	 public NumberOnlyDoc(int maxLen, int decLen, double minRange, double maxRange) {
 	  this(maxLen, decLen);
@@ -99,7 +99,7 @@ class NumberOnlyDoc extends PlainDocument {
 	  this.maxRange = maxRange;
 	 }
 	 /**
-	  * Ğ¡ÊıÎ»Êı£¬Ä¬ÈÏÎª0
+	  * å°æ•°ä½æ•°ï¼Œé»˜è®¤ä¸º0
 	  * @param decLen
 	  */
 	 public NumberOnlyDoc(int decLen) {
@@ -116,14 +116,14 @@ class NumberOnlyDoc extends PlainDocument {
 			return;
 		}
 		if (
-		// ²»ÄÜÎªf,F,d,D
+		// ä¸èƒ½ä¸ºf,F,d,D
 		s.equals("F")
 				|| s.equals("f")
 				|| s.equals("D")
 				|| s.equals("d")
-				// µÚÒ»Î»ÊÇ0Ê±,µÚ¶şÎ»Ö»ÄÜÎªĞ¡Êıµã
+				// ç¬¬ä¸€ä½æ˜¯0æ—¶,ç¬¬äºŒä½åªèƒ½ä¸ºå°æ•°ç‚¹
 				|| (str.trim().equals("0") && !s.substring(0, 1).equals(".") && offset != 0)
-				// ÕûÊıÄ£Ê½²»ÄÜÊäÈëĞ¡Êıµã
+				// æ•´æ•°æ¨¡å¼ä¸èƒ½è¾“å…¥å°æ•°ç‚¹
 				|| (s.equals(".") && decLength == 0)) {
 			Toolkit.getDefaultToolkit().beep();
 			return;
@@ -131,11 +131,11 @@ class NumberOnlyDoc extends PlainDocument {
 		String strIntPart = "";
 		String strDecPart = "";
 		String strNew = str.substring(0, offset) + s + str.substring(offset, getLength());
-		//-ºÅ±ØĞëÔÚµÚÒ»Î»³öÏÖ
+		//-å·å¿…é¡»åœ¨ç¬¬ä¸€ä½å‡ºç°
 		if (!strNew.startsWith("-") && strNew.contains("-")) {
 			return;
 		}
-		strNew = strNew.replaceFirst("-", ""); // ¿ØÖÆÄÜÊäÈë¸ºÊı
+		strNew = strNew.replaceFirst("-", ""); // æ§åˆ¶èƒ½è¾“å…¥è´Ÿæ•°
 		int decPos = strNew.indexOf(".");
 		if (decPos > -1) {
 			strIntPart = strNew.substring(0, decPos);
@@ -150,7 +150,7 @@ class NumberOnlyDoc extends PlainDocument {
 			return;
 		}
 		try {
-			if (!strNew.equals("") && !strNew.equals("-")) {// ¿ØÖÆÄÜÊäÈë¸ºÊı
+			if (!strNew.equals("") && !strNew.equals("-")) {// æ§åˆ¶èƒ½è¾“å…¥è´Ÿæ•°
 				double d = Double.parseDouble(strNew);
 				if (d < minRange || d > maxRange) {
 					throw new Exception();
@@ -165,20 +165,20 @@ class NumberOnlyDoc extends PlainDocument {
 	
 	 /**
 	  * @param decLen
-	  *            int Ğ¡ÊıÎ»³¤¶È
+	  *            int å°æ•°ä½é•¿åº¦
 	  * @param maxLen
-	  *            int ×î´ó³¤¶È(º¬Ğ¡ÊıÎ»)
+	  *            int æœ€å¤§é•¿åº¦(å«å°æ•°ä½)
 	  * @param minRange
-	  *            double ×îĞ¡Öµ
+	  *            double æœ€å°å€¼
 	  * @param maxRange
-	  *            double ×î´óÖµ
+	  *            double æœ€å¤§å€¼
 	  */
 
 }
 
 /**
- * jtxtÖ»ÄÜÊäÈëÊı×Ö
- * ·½·¨
+ * jtxtåªèƒ½è¾“å…¥æ•°å­—
+ * æ–¹æ³•
  *  jtxtFeild.setDocument(new NumOnlyDoc());<br>
  * @author zong0jie
  *

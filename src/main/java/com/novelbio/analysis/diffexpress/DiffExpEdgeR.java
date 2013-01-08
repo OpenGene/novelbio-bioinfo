@@ -36,12 +36,12 @@ public class DiffExpEdgeR extends DiffExpAbs {
 	}
 	
 	/**
-	 * lslsGeneInfoÖĞÃ¿Ò»ÁĞÑù±¾Ëù¶ÔÓ¦µÄ±ê×¼»¯µÄÖµ
-	 * Ê×ÏÈ»ñµÃreadsÊı×î¶àµÄÑù±¾ m£¬ÆäreadsÊıÎª mNum£¬
-	 * È»ºó½«Ã¿¸öÑù±¾kµÄreadsÊı kNum
-	 * ±ê×¼»¯µÄÏµÊı  normalizeNum = kNum/mNum
-	 * ±ê×¼»¯·½·¨Îª Ñù±¾ kÖĞÃ¿¸ö»ùÒòµÄreadsÊı geneCountNumModify = geneCountNum * kNum/mNum
-	 * ¼´Îª geneCountNumModify = geneCountNum * normalizeNum
+	 * lslsGeneInfoä¸­æ¯ä¸€åˆ—æ ·æœ¬æ‰€å¯¹åº”çš„æ ‡å‡†åŒ–çš„å€¼
+	 * é¦–å…ˆè·å¾—readsæ•°æœ€å¤šçš„æ ·æœ¬ mï¼Œå…¶readsæ•°ä¸º mNumï¼Œ
+	 * ç„¶åå°†æ¯ä¸ªæ ·æœ¬kçš„readsæ•° kNum
+	 * æ ‡å‡†åŒ–çš„ç³»æ•°  normalizeNum = kNum/mNum
+	 * æ ‡å‡†åŒ–æ–¹æ³•ä¸º æ ·æœ¬ kä¸­æ¯ä¸ªåŸºå› çš„readsæ•° geneCountNumModify = geneCountNum * kNum/mNum
+	 * å³ä¸º geneCountNumModify = geneCountNum * normalizeNum
 	 */
 	HashMap<Integer, Double> mapColNum2NormalizeNum = new HashMap<Integer, Double>();
 	
@@ -49,18 +49,18 @@ public class DiffExpEdgeR extends DiffExpAbs {
 		rawScript = PathDetail.getRworkspace() + "edgeRJava.txt";
 	}
 	/**
-	 * »ñµÃÃ¿¸öÑù±¾ËùĞèÒª³ËÒÔµÄĞŞÕıÏµÊı
+	 * è·å¾—æ¯ä¸ªæ ·æœ¬æ‰€éœ€è¦ä¹˜ä»¥çš„ä¿®æ­£ç³»æ•°
 	 * @return
 	 */
 	protected void setNormalizeCoef() {
-		//ÓÃÀ´±éÀúÈ«²¿Ñù±¾ÁĞ
+		//ç”¨æ¥éå†å…¨éƒ¨æ ·æœ¬åˆ—
 		ArrayList<Integer> lsColNum = new ArrayList<Integer>();
 		
 		double maxSampleCount = 0;
-		//»ñµÃÑù±¾ÖĞreadsÊı×î¶àµÄÑù±¾£¬²¢×°ÔÚhash±íÖĞ
+		//è·å¾—æ ·æœ¬ä¸­readsæ•°æœ€å¤šçš„æ ·æœ¬ï¼Œå¹¶è£…åœ¨hashè¡¨ä¸­
 		for (int i = 0; i < lsSampleColumn2GroupName.size(); i++) {
 			String colSample = lsSampleColumn2GroupName.get(i)[0];
-			int colNum = Integer.parseInt(colSample) - 1;//Êµ¼ÊÁĞËùÒÔÒª¼õÈ¥1
+			int colNum = Integer.parseInt(colSample) - 1;//å®é™…åˆ—æ‰€ä»¥è¦å‡å»1
 			lsColNum.add(colNum);
 			ArrayList<Double> lsValue = new ArrayList<Double>();
 			for (String[] strings : lsGeneInfo) {
@@ -76,7 +76,7 @@ public class DiffExpEdgeR extends DiffExpAbs {
 			}
 		}
 		
-		//¼ÆËãÏµÊı
+		//è®¡ç®—ç³»æ•°
 		for (Integer integer : lsColNum) {
 			double tmpAllCounts = mapColNum2NormalizeNum.get(integer);
 			mapColNum2NormalizeNum.put(integer, maxSampleCount/tmpAllCounts);
@@ -90,10 +90,10 @@ public class DiffExpEdgeR extends DiffExpAbs {
 		super.calculateResult();
 	}
 	/**
-	 * »ñµÃ 
-	 * Ñù±¾Ê±ÆÚ--¸ÃÊ±ÆÚÄÚÆ½¾ùÖµ
-	 * µÄmap
-	 * ÄÚ²¿ÔÚÃ¿¸öÖµÉÏ¶¼³ËÒÔÁËĞŞÕıÏµÊı
+	 * è·å¾— 
+	 * æ ·æœ¬æ—¶æœŸ--è¯¥æ—¶æœŸå†…å¹³å‡å€¼
+	 * çš„map
+	 * å†…éƒ¨åœ¨æ¯ä¸ªå€¼ä¸Šéƒ½ä¹˜ä»¥äº†ä¿®æ­£ç³»æ•°
 	 * @param info
 	 * @return
 	 */
@@ -102,9 +102,9 @@ public class DiffExpEdgeR extends DiffExpAbs {
 		
 		for (int i = 0; i < lsSampleColumn2GroupName.size(); i++) {
 			int colNum = Integer.parseInt(lsSampleColumn2GroupName.get(i)[0]) - 1;
-			//Ã¿¸öÖµ¶¼³ËÒÔĞŞÕıÏµÊı
+			//æ¯ä¸ªå€¼éƒ½ä¹˜ä»¥ä¿®æ­£ç³»æ•°
 			double value = Double.parseDouble(info[colNum]) * mapColNum2NormalizeNum.get(colNum);
-			String timeInfo = lsSampleColumn2GroupName.get(i)[1];//Ê±ÆÚ
+			String timeInfo = lsSampleColumn2GroupName.get(i)[1];//æ—¶æœŸ
 			ArrayList<Double> lsValue = add_and_get_LsValue(timeInfo, mapTime2LsValue);
 			lsValue.add(value);
 		}
@@ -188,7 +188,7 @@ public class DiffExpEdgeR extends DiffExpAbs {
 		return estimate;
 	}
 	
-	/** ÊÇ·ñÓĞÖØ¸´ */
+	/** æ˜¯å¦æœ‰é‡å¤ */
 	private boolean isHaveReplicate() {
 		boolean haveReplicate = false;
 		HashSet<String> setGroupName = new HashSet<String>();
@@ -203,7 +203,7 @@ public class DiffExpEdgeR extends DiffExpAbs {
 	}
 	 
 	/**
-	 * Ìí¼ÓÑù±¾Ãû×ÖºÍ±È½Ï
+	 * æ·»åŠ æ ·æœ¬åå­—å’Œæ¯”è¾ƒ
 	 * result = exactTest(m, pair=c({$Compare})); 
 	 * result2=cbind(resultFinal,fdr=p.adjust(resultFinal[,3])); 
 	 * write.table(result2, file="{$OutFileName}",sep="\t")
@@ -256,7 +256,7 @@ public class DiffExpEdgeR extends DiffExpAbs {
 			lsResult.add(tmpResult);
 		}
 		FileOperate.DeleteFileFolder(outFileName);
-		//·ÀÖ¹R»¹Ã»Êä³ö½á¹û¾ÍÈ¥¶ÁÈ¡
+		//é˜²æ­¢Rè¿˜æ²¡è¾“å‡ºç»“æœå°±å»è¯»å–
 		try { Thread.sleep(50); } catch (Exception e) { }
 		
 		TxtReadandWrite txtOutFinal = new TxtReadandWrite(outFileName, true);

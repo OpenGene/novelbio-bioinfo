@@ -16,9 +16,9 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.generalConf.NovelBioConst;
 
 /**
- * ×Ô¶¯»¯½øĞĞblastµÄ·½·¨
- * ¿¼ÂÇ½«Â·¾¶·ÅÈëÊı¾İ¿âÖĞ
- * µ÷ÓÃNCBIµÄblast³ÌĞò½øĞĞblast·ÖÎö£¬¿¼ÂÇ½«½á¹û×Ô¶¯µ¼ÈëÊı¾İ¿â
+ * è‡ªåŠ¨åŒ–è¿›è¡Œblastçš„æ–¹æ³•
+ * è€ƒè™‘å°†è·¯å¾„æ”¾å…¥æ•°æ®åº“ä¸­
+ * è°ƒç”¨NCBIçš„blastç¨‹åºè¿›è¡Œblaståˆ†æï¼Œè€ƒè™‘å°†ç»“æœè‡ªåŠ¨å¯¼å…¥æ•°æ®åº“
  * @author zong0jie
  *
  */
@@ -28,7 +28,7 @@ public class BlastNBC {
 	String formatDB = "formatdb ";
 	String blastInputType = "-p ";
 	String queryFasta = "";
-	/**´ı±È¶ÔµÄÊı¾İ¿â£¬Èç¹ûÊÇfastaÎÄ¼ş£¬Ôò»á×Ô¶¯½¨Ë÷Òı*/
+	/**å¾…æ¯”å¯¹çš„æ•°æ®åº“ï¼Œå¦‚æœæ˜¯fastaæ–‡ä»¶ï¼Œåˆ™ä¼šè‡ªåŠ¨å»ºç´¢å¼•*/
 	String databaseSeq = "";
 	BlastType blastType = BlastType.tblastn;
 	
@@ -38,9 +38,9 @@ public class BlastNBC {
 		softWareInfo = new SoftWareInfo(SoftWare.blast);
 	}
 	/**
-	 * @return blastÊä³ö½á¹ûµÄ¹şÏ£±í
-	 * key£ºËµÃ÷
-	 * value£ºÊä³ö½á¹ûµÄÊı×Ö£¬Èç0ÎªÕı³££¬8Îª¼òĞ´¡£¿ÉÖ±½ÓÓÃÓÚÉèÖÃ±¾ÀàµÄ²ÎÊı
+	 * @return blastè¾“å‡ºç»“æœçš„å“ˆå¸Œè¡¨
+	 * keyï¼šè¯´æ˜
+	 * valueï¼šè¾“å‡ºç»“æœçš„æ•°å­—ï¼Œå¦‚0ä¸ºæ­£å¸¸ï¼Œ8ä¸ºç®€å†™ã€‚å¯ç›´æ¥ç”¨äºè®¾ç½®æœ¬ç±»çš„å‚æ•°
 	 */
 	public static HashMap<String, Integer> getHashResultType() {
 		HashMap<String, Integer> hashBlastType = new LinkedHashMap<String, Integer>();
@@ -50,22 +50,22 @@ public class BlastNBC {
 	}	
 	
 	/**
-	 * Éè¶¨blastµÄÄ£Ê½
+	 * è®¾å®šblastçš„æ¨¡å¼
 	 * @param blastType
-	 * BLAST_TBLASTNµÈ
+	 * BLAST_TBLASTNç­‰
 	 */
 	public void setBlastType(BlastType blastType) {
 		this.blastType = blastType;
 	}
 	/**
-	 * ´ıqueryµÄfastaÎÄ¼ş
+	 * å¾…queryçš„fastaæ–‡ä»¶
 	 * @param queryFasta
 	 */
 	public void setQueryFastaFile(String queryFasta) {
 		this.queryFasta = queryFasta;
 	}	
 	/**
-	 * ´ı±È¶ÔµÄÊı¾İ¿â£¬Èç¹ûÊÇfastaÎÄ¼ş£¬Ôò»á×Ô¶¯½¨Ë÷Òı
+	 * å¾…æ¯”å¯¹çš„æ•°æ®åº“ï¼Œå¦‚æœæ˜¯fastaæ–‡ä»¶ï¼Œåˆ™ä¼šè‡ªåŠ¨å»ºç´¢å¼•
 	 * @param databaseSeq
 	 */
 	public void setDatabaseSeq(String databaseSeq) {
@@ -73,7 +73,7 @@ public class BlastNBC {
 	}
 	String resultFile = "";
 	/**
-	 * Êä³öÎÄ¼ş
+	 * è¾“å‡ºæ–‡ä»¶
 	 * @param resultFile
 	 */
 	public void setResultFile(String resultFile) {
@@ -81,8 +81,8 @@ public class BlastNBC {
 	}
 	int cpuNum = 2;
 	/**
-	 * Éè¶¨cpuÊ¹ÓÃÊıÁ¿£¬¸Ğ¾õÉè¶¨ÁËÃ»ÓÃ
-	 * Ä¬ÈÏÎª2
+	 * è®¾å®šcpuä½¿ç”¨æ•°é‡ï¼Œæ„Ÿè§‰è®¾å®šäº†æ²¡ç”¨
+	 * é»˜è®¤ä¸º2
 	 * @param cpuNum
 	 */
 	public void setCpuNum(int cpuNum) {
@@ -90,53 +90,53 @@ public class BlastNBC {
 	}
 	int resultType = 8;
 	/**
-	 * ³£¹æÄ£Ê½Îª0
-	 * ¾«¼òÄ£Ê½Îª8
-	 * ¾ßÌå¿´ÎÄµµ
-	 * @param resultType Ä¬ÈÏÎª8
+	 * å¸¸è§„æ¨¡å¼ä¸º0
+	 * ç²¾ç®€æ¨¡å¼ä¸º8
+	 * å…·ä½“çœ‹æ–‡æ¡£
+	 * @param resultType é»˜è®¤ä¸º8
 	 */
 	public void setResultType(int resultType) {
 		this.resultType = resultType;
 	}
 	/**
-	 * ÏÔÊ¾¼¸¸ö½á¹û
+	 * æ˜¾ç¤ºå‡ ä¸ªç»“æœ
 	 */
 	int resultSeqNum = 2;
 	/**
-	 * @param resultSeqNum ÏÔÊ¾¼¸¸ö½á¹û
+	 * @param resultSeqNum æ˜¾ç¤ºå‡ ä¸ªç»“æœ
 	 */
 	public void setResultSeqNum(int resultSeqNum) {
 		this.resultSeqNum = resultSeqNum;
 	}
 	/**
-	 * ÏÔÊ¾¼¸¸ö±È¶Ô½á¹û
+	 * æ˜¾ç¤ºå‡ ä¸ªæ¯”å¯¹ç»“æœ
 	 */
 	int resultAlignNum = 2;
 	/**
-	 * Êä³ö¼¸¸ö±È¶Ô½á¹û£¬µ±setResultTypeÎª8µÄÊ±ºòºÃÏñ²»Æğ×÷ÓÃ
+	 * è¾“å‡ºå‡ ä¸ªæ¯”å¯¹ç»“æœï¼Œå½“setResultTypeä¸º8çš„æ—¶å€™å¥½åƒä¸èµ·ä½œç”¨
 	 * @param resultAlignNum
 	 */
 	public void setResultAlignNum(int resultAlignNum) {
 		this.resultAlignNum = resultAlignNum;
 	}
-	/** @param evalue ×îµÍÏàËÆ¶È£¬Ô½Ğ¡ÏàËÆ¶ÈÔ½¸ß¡£×îºÃÊÇ0µ½1Ö®¼ä£¬Ä¬ÈÏ0.1¡£Ò»°ã²»ÓÃ¸Ä  */
+	/** @param evalue æœ€ä½ç›¸ä¼¼åº¦ï¼Œè¶Šå°ç›¸ä¼¼åº¦è¶Šé«˜ã€‚æœ€å¥½æ˜¯0åˆ°1ä¹‹é—´ï¼Œé»˜è®¤0.1ã€‚ä¸€èˆ¬ä¸ç”¨æ”¹  */
 	double evalue = 0.1;
-	/** @param evalue ×îµÍÏàËÆ¶È£¬Ô½Ğ¡ÏàËÆ¶ÈÔ½¸ß¡£×îºÃÊÇ0µ½1Ö®¼ä£¬Ä¬ÈÏ0.1¡£Ò»°ã²»ÓÃ¸Ä */
+	/** @param evalue æœ€ä½ç›¸ä¼¼åº¦ï¼Œè¶Šå°ç›¸ä¼¼åº¦è¶Šé«˜ã€‚æœ€å¥½æ˜¯0åˆ°1ä¹‹é—´ï¼Œé»˜è®¤0.1ã€‚ä¸€èˆ¬ä¸ç”¨æ”¹ */
 	public void setEvalue(double evalue) {
 		this.evalue = evalue;
 	}
 	/**
-	 * ½«Ö¸¶¨µÄĞòÁĞ¶ÔÄ¿±êĞòÁĞ½øĞĞblast
-	 * @return false blastÊ§°Ü
-	 * true blast³É¹¦
+	 * å°†æŒ‡å®šçš„åºåˆ—å¯¹ç›®æ ‡åºåˆ—è¿›è¡Œblast
+	 * @return false blastå¤±è´¥
+	 * true blastæˆåŠŸ
 	 */
 	public boolean blast() {
 		if (indexExisted() == null) {
 			return false;
 		}
-		//Ë÷ÒıÊÇ·ñ´æÔÚ
+		//ç´¢å¼•æ˜¯å¦å­˜åœ¨
 		if (!indexExisted()) {
-			//ÊÇ·ñ³É¹¦¹¹½¨blastÊı¾İ¿â
+			//æ˜¯å¦æˆåŠŸæ„å»ºblastæ•°æ®åº“
 			if (!formatDB()) {
 				return false;
 			}
@@ -150,7 +150,7 @@ public class BlastNBC {
 		return true;
 	}
 	/**
-	 * databaseĞòÁĞÊÇºËËá»¹ÊÇµ°°×
+	 * databaseåºåˆ—æ˜¯æ ¸é…¸è¿˜æ˜¯è›‹ç™½
 	 * @return
 	 */
 	private String getSeqTypePro() {
@@ -162,14 +162,14 @@ public class BlastNBC {
 		else if(seqTypeFlag == SeqFasta.SEQ_DNA)
 			seqTypePro = "F ";
 		else {
-			logger.error("databaseSeq ĞòÁĞ³öÏÖÎ´Öª×Ö·û");
+			logger.error("databaseSeq åºåˆ—å‡ºç°æœªçŸ¥å­—ç¬¦");
 		}
 		return seqTypePro;
 	}
 	/**
-	 * ¶ÔÄ¿±êĞòÁĞ½¨Ë÷Òı
-	 * Èç¹ûË÷Òı²»´æÔÚ£¬Ò»°ã»á×Ô¶¯½¨Ë÷Òı¡£
-	 * Èç¹ûË÷Òı½¨´íÁË£¬²ÅĞèÒªÓÃÆäÖØ½¨
+	 * å¯¹ç›®æ ‡åºåˆ—å»ºç´¢å¼•
+	 * å¦‚æœç´¢å¼•ä¸å­˜åœ¨ï¼Œä¸€èˆ¬ä¼šè‡ªåŠ¨å»ºç´¢å¼•ã€‚
+	 * å¦‚æœç´¢å¼•å»ºé”™äº†ï¼Œæ‰éœ€è¦ç”¨å…¶é‡å»º
 	 */
 	private boolean formatDB() {
 		String seqTypePro = getSeqTypePro();
@@ -183,8 +183,8 @@ public class BlastNBC {
 		return true;
 	}
 	/**
-	 * ¿´Ë÷ÒıÊÇ·ñ´æÔÚ
-	 * @return true ´æÔÚ£¬ false ²»´æÔÚ null ĞòÁĞÓĞÎÊÌâ
+	 * çœ‹ç´¢å¼•æ˜¯å¦å­˜åœ¨
+	 * @return true å­˜åœ¨ï¼Œ false ä¸å­˜åœ¨ null åºåˆ—æœ‰é—®é¢˜
 	 */
 	private Boolean indexExisted() {
 		boolean indexExist = false;
@@ -200,16 +200,16 @@ public class BlastNBC {
 					 && FileOperate.isFileExist(databaseSeq + ".psi") && FileOperate.isFileExist(databaseSeq + ".psq");
 		}
 		else {
-			logger.error("ĞòÁĞ³öÏÖÎ´Öª×Ö·û");
+			logger.error("åºåˆ—å‡ºç°æœªçŸ¥å­—ç¬¦");
 			return null;
 		}
 		return indexExist;
 	}
 	/**
-	 * ÓÃÀ´ÆÁ±Î¼òµ¥ÖØ¸´ºÍµÍ¸´ÔÓ¶ÈĞòÁĞµÄ²ÎÊı£¬ÓĞTºÍFÁ½¸öÑ¡Ïî£¬Ñ¡Ôñ¡°T¡±£¬Ôò
-		³ÌĞòÔÚ±È¶Ô¹ı³ÌÖĞ»áÆÁ±ÎµôqueryĞòÁĞÖĞµÄ¼òµ¥ÖØ¸´ºÍµÍ¸´ÔÓ¶ÈĞòÁĞ£»Ñ¡Ôñ
-		¡°F¡±Ôò²»»áÆÁ±Î¡£NCBIµÄblast³ÌĞòÄ¬ÈÏÖµÊÇ¡°T¡±£¬ÎÒÃÇÄ¬ÈÏÊÇF£¬Ò²¾ÍÊÇ·µ»Ø -F F
-	 *µ«ÊÇRNAµÄtblastx×ßNCBIÄ¬ÈÏ£¬Ò²¾ÍÊÇ·µ»Ø"",·ñÔò»á±¨´í
+	 * ç”¨æ¥å±è”½ç®€å•é‡å¤å’Œä½å¤æ‚åº¦åºåˆ—çš„å‚æ•°ï¼Œæœ‰Tå’ŒFä¸¤ä¸ªé€‰é¡¹ï¼Œé€‰æ‹©â€œTâ€ï¼Œåˆ™
+		ç¨‹åºåœ¨æ¯”å¯¹è¿‡ç¨‹ä¸­ä¼šå±è”½æ‰queryåºåˆ—ä¸­çš„ç®€å•é‡å¤å’Œä½å¤æ‚åº¦åºåˆ—ï¼›é€‰æ‹©
+		â€œFâ€åˆ™ä¸ä¼šå±è”½ã€‚NCBIçš„blastç¨‹åºé»˜è®¤å€¼æ˜¯â€œTâ€ï¼Œæˆ‘ä»¬é»˜è®¤æ˜¯Fï¼Œä¹Ÿå°±æ˜¯è¿”å› -F F
+	 *ä½†æ˜¯RNAçš„tblastxèµ°NCBIé»˜è®¤ï¼Œä¹Ÿå°±æ˜¯è¿”å›"",å¦åˆ™ä¼šæŠ¥é”™
 	 */
 	private String getFilter() {
 		if (this.blastType == BlastType.tblastx) {
@@ -218,8 +218,8 @@ public class BlastNBC {
 		return " -F F ";
 	}
 	/**
-	 * ¸ø¶¨fasta¸ñÊ½µÄÎÄ¼ş£¬Éè¶¨NCBIµÄIDÎªÕıÔò±í´ïÊ½£¬½«Fasta¸ñÊ½µÄIDÌôÑ¡³öÀ´
-	 * ·µ»ØÒ»¸öĞÂµÄfastaÎÄ¼ş
+	 * ç»™å®šfastaæ ¼å¼çš„æ–‡ä»¶ï¼Œè®¾å®šNCBIçš„IDä¸ºæ­£åˆ™è¡¨è¾¾å¼ï¼Œå°†Fastaæ ¼å¼çš„IDæŒ‘é€‰å‡ºæ¥
+	 * è¿”å›ä¸€ä¸ªæ–°çš„fastaæ–‡ä»¶
 	 */
 	public static void getFasta(String fastaFile) {
 		SeqFastaHash seqFastaHash = new SeqFastaHash(fastaFile, "\\w+_\\d+", false, false, false);

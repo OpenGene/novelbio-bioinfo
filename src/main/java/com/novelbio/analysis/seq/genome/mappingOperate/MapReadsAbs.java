@@ -18,12 +18,12 @@ import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.species.Species;
 
 /**
- * ²»¿¼ÂÇÄÚ´æÏŞÖÆµÄ±à
- * T: ±¾´Îrunning´òËãÊä³öµÄÖĞ¼äĞÅÏ¢ÓÃMapReadsProcessInfoÀ´±£´æ
- * ½ø¶ÈÌõ¶àÏß³Ì£¬ĞèÒªÒÔÏÂ²Ù×÷ <br>
- * 1. ÔÚÑ­»·ÖĞÌí¼Ó suspendCheck()  À´¹ÒÆğÏß³Ì<br>
- * 2. ÔÚÑ­»·ÖĞ¼ì²é flagRun À´ÖÕÖ¹Ñ­»·<br>
- * 3: ÔÚÑ­»·ÖĞÌí¼Ó setRunInfo() ·½·¨À´»ñÈ¡ÔËĞĞÊ±³öÏÖµÄĞÅÏ¢
+ * ä¸è€ƒè™‘å†…å­˜é™åˆ¶çš„ç¼–
+ * T: æœ¬æ¬¡runningæ‰“ç®—è¾“å‡ºçš„ä¸­é—´ä¿¡æ¯ç”¨MapReadsProcessInfoæ¥ä¿å­˜
+ * è¿›åº¦æ¡å¤šçº¿ç¨‹ï¼Œéœ€è¦ä»¥ä¸‹æ“ä½œ <br>
+ * 1. åœ¨å¾ªç¯ä¸­æ·»åŠ  suspendCheck()  æ¥æŒ‚èµ·çº¿ç¨‹<br>
+ * 2. åœ¨å¾ªç¯ä¸­æ£€æŸ¥ flagRun æ¥ç»ˆæ­¢å¾ªç¯<br>
+ * 3: åœ¨å¾ªç¯ä¸­æ·»åŠ  setRunInfo() æ–¹æ³•æ¥è·å–è¿è¡Œæ—¶å‡ºç°çš„ä¿¡æ¯
  * @author zong0jie
  *
  * @author zong0jie
@@ -31,35 +31,35 @@ import com.novelbio.database.model.species.Species;
  */
 public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcessInfo> {
 	private static Logger logger = Logger.getLogger(MapReadsAbs.class);
-	/**½«³¤µÄµ¥¼î»ù¾«¶ÈµÄÒ»ÌõÈ¾É«ÌåÑ¹ËõÎª¶ÌµÄÃ¿¸öinv´óÔ¼10-20bpµÄĞòÁĞ£¬ÄÇÃ´Ñ¹Ëõ·½·¨Ñ¡ÔñÎª20bpÖĞµÄÊıÖµµÄÖĞÎ»Êı */
+	/**å°†é•¿çš„å•ç¢±åŸºç²¾åº¦çš„ä¸€æ¡æŸ“è‰²ä½“å‹ç¼©ä¸ºçŸ­çš„æ¯ä¸ªinvå¤§çº¦10-20bpçš„åºåˆ—ï¼Œé‚£ä¹ˆå‹ç¼©æ–¹æ³•é€‰æ‹©ä¸º20bpä¸­çš„æ•°å€¼çš„ä¸­ä½æ•° */
 	public static final int SUM_TYPE_MEDIAN = 2;
-	/**½«³¤µÄµ¥¼î»ù¾«¶ÈµÄÒ»ÌõÈ¾É«ÌåÑ¹ËõÎª¶ÌµÄÃ¿¸öinv´óÔ¼10-20bpµÄĞòÁĞ£¬ÄÇÃ´Ñ¹Ëõ·½·¨Ñ¡ÔñÎª20bpÖĞµÄÊıÖµµÄÆ½¾ùÊı */
+	/**å°†é•¿çš„å•ç¢±åŸºç²¾åº¦çš„ä¸€æ¡æŸ“è‰²ä½“å‹ç¼©ä¸ºçŸ­çš„æ¯ä¸ªinvå¤§çº¦10-20bpçš„åºåˆ—ï¼Œé‚£ä¹ˆå‹ç¼©æ–¹æ³•é€‰æ‹©ä¸º20bpä¸­çš„æ•°å€¼çš„å¹³å‡æ•° */
 	public static final int SUM_TYPE_MEAN = 3;
 	
-	/** ½«Ã¿¸ödouble[]ÇóºÍ/double.length Ò²¾ÍÊÇ½«Ã¿¸öµã³ıÒÔ¸ÃgeneµÄÆ½¾ù²âĞòÉî¶È */
+	/** å°†æ¯ä¸ªdouble[]æ±‚å’Œ/double.length ä¹Ÿå°±æ˜¯å°†æ¯ä¸ªç‚¹é™¤ä»¥è¯¥geneçš„å¹³å‡æµ‹åºæ·±åº¦ */
 	public static final int NORMALIZATION_PER_GENE = 128;
-	/** ½«Ã¿¸ödouble[]*1million/AllReadsNum Ò²¾ÍÊÇ½«Ã¿¸öµã³ıÒÔ²âĞòÉî¶È */
+	/** å°†æ¯ä¸ªdouble[]*1million/AllReadsNum ä¹Ÿå°±æ˜¯å°†æ¯ä¸ªç‚¹é™¤ä»¥æµ‹åºæ·±åº¦ */
 	public static final int NORMALIZATION_ALL_READS = 256;
-	/** ²»±ê×¼»¯ */
+	/** ä¸æ ‡å‡†åŒ– */
 	public static final int NORMALIZATION_NO = 64;
 
-	/** ¶ÔÓÚ½á¹ûµÄ±ê×¼»¯·½·¨ */
+	/** å¯¹äºç»“æœçš„æ ‡å‡†åŒ–æ–¹æ³• */
 	protected int NormalType = NORMALIZATION_ALL_READS;
 
-	 /** ĞòÁĞĞÅÏ¢,Ãû×Ö¶¼ÎªĞ¡Ğ´ */
+	 /** åºåˆ—ä¿¡æ¯,åå­—éƒ½ä¸ºå°å†™ */
 	 HashMap<String, Long> mapChrID2Len = new HashMap<String, Long>();
 	 
 	 Equations FormulatToCorrectReads;
 	 protected boolean booUniqueMapping = true;
 	 /**
-	  * key£ºchrID±ØĞëĞ¡Ğ´
-	  * value£º È¾É«Ìå¹ıÂËĞÅÏ¢£¬ÂíºìÏëÒªÖ»¿´tss£¬Ö»¿´exonµÈ±í´ï
+	  * keyï¼šchrIDå¿…é¡»å°å†™
+	  * valueï¼š æŸ“è‰²ä½“è¿‡æ»¤ä¿¡æ¯ï¼Œé©¬çº¢æƒ³è¦åªçœ‹tssï¼Œåªçœ‹exonç­‰è¡¨è¾¾
 	  */
 	 Map<String, List<? extends Alignment>> mapChrID2LsAlignmentFilter;
 	 protected long allReadsNum = 0;
 	 /**
-	  * @param invNum Ã¿¸ô¶àÉÙÎ»¼ÆÊı£¬Èç¹ûÉè¶¨Îª1£¬ÔòËã·¨»á±ä»¯£¬È»ºó»áºÜ¾«È·
-	  * @param mapFile mappingµÄ½á¹ûÎÄ¼ş£¬Ò»°ãÎªbed¸ñÊ½
+	  * @param invNum æ¯éš”å¤šå°‘ä½è®¡æ•°ï¼Œå¦‚æœè®¾å®šä¸º1ï¼Œåˆ™ç®—æ³•ä¼šå˜åŒ–ï¼Œç„¶åä¼šå¾ˆç²¾ç¡®
+	  * @param mapFile mappingçš„ç»“æœæ–‡ä»¶ï¼Œä¸€èˆ¬ä¸ºbedæ ¼å¼
 	  */
 	 public MapReadsAbs() {}
 
@@ -70,23 +70,23 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 		this.booUniqueMapping = booUniqueMapping;
 	}
 	 /**
-	  * Éè¶¨±ê×¼»¯·½·¨£¬¿ÉÒÔËæÊ±Éè¶¨£¬²»Ò»¶¨ÒªÔÚ¶ÁÈ¡ÎÄ¼şÇ°
-	  * Ä¬ÈÏÊÇNORMALIZATION_ALL_READS
+	  * è®¾å®šæ ‡å‡†åŒ–æ–¹æ³•ï¼Œå¯ä»¥éšæ—¶è®¾å®šï¼Œä¸ä¸€å®šè¦åœ¨è¯»å–æ–‡ä»¶å‰
+	  * é»˜è®¤æ˜¯NORMALIZATION_ALL_READS
 	  * @param normalType
 	  */
 	 public void setNormalType(int normalType) {
 		NormalType = normalType;
 	}
 	 /**
-	  * Éè¶¨±£ÁôµÄÇøÓò£¬Æ©ÈçÂíºìÏë¿´È«»ùÒò×éÉÏtssµÄ·Ö²¼£¬ÄÇÃ´¾Í½«tssµÄÇøÓò×°µ½¸ÃlsÖĞ¼ä
+	  * è®¾å®šä¿ç•™çš„åŒºåŸŸï¼Œè­¬å¦‚é©¬çº¢æƒ³çœ‹å…¨åŸºå› ç»„ä¸Štssçš„åˆ†å¸ƒï¼Œé‚£ä¹ˆå°±å°†tssçš„åŒºåŸŸè£…åˆ°è¯¥lsä¸­é—´
 	  * @param lsAlignments
 	  */
 	 public void setMapChrID2LsAlignments(Map<String, List<? extends Alignment>> mapChrID2LsAlignmentFilter) {
 		 this.mapChrID2LsAlignmentFilter = mapChrID2LsAlignmentFilter;
 	 }
 
-	 /** ÓÃspeciesÀïÃæÀ´Éè¶¨
-	  * keyÎñ±ØĞ¡Ğ´
+	 /** ç”¨speciesé‡Œé¢æ¥è®¾å®š
+	  * keyåŠ¡å¿…å°å†™
 	  *  */
 	 public void setMapChrID2Len(HashMap<String, Long> mapChrID2Len) {
 		 this.mapChrID2Len = mapChrID2Len;
@@ -95,19 +95,19 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 		return mapChrID2Len;
 	}
 	 /**
-	  * ·µ»ØËùÓĞchrIDµÄlist
+	  * è¿”å›æ‰€æœ‰chrIDçš„list
 	  * @return
 	  */
 	 public ArrayList<String> getChrIDLs() {
 		 return ArrayOperate.getArrayListKey(mapChrID2Len);
 	 }
 	 /**
-	  * ÓÃÓÚĞ£ÕıreadsÊıµÄ·½³Ì£¬Ä¬ÈÏÉè¶¨»ùÒò×éÉÏreadsµÄ×îĞ¡ÖµÎª0£¬·²ÊÇĞ£ÕıĞ¡ÓÚ0µÄ¶¼¸ÄÎª0
+	  * ç”¨äºæ ¡æ­£readsæ•°çš„æ–¹ç¨‹ï¼Œé»˜è®¤è®¾å®šåŸºå› ç»„ä¸Šreadsçš„æœ€å°å€¼ä¸º0ï¼Œå‡¡æ˜¯æ ¡æ­£å°äº0çš„éƒ½æ”¹ä¸º0
 	  * @param FormulatToCorrectReads
 	  */
 	 public void setFormulatToCorrectReads(Equations FormulatToCorrectReads) {
 		 this.FormulatToCorrectReads = FormulatToCorrectReads;
-		 //Ä¬ÈÏÉè¶¨»ùÒò×éÉÏreadsµÄ×îĞ¡ÖµÎª0£¬·²ÊÇĞ£ÕıĞ¡ÓÚ0µÄ¶¼¸ÄÎª0
+		 //é»˜è®¤è®¾å®šåŸºå› ç»„ä¸Šreadsçš„æœ€å°å€¼ä¸º0ï¼Œå‡¡æ˜¯æ ¡æ­£å°äº0çš„éƒ½æ”¹ä¸º0
 		 FormulatToCorrectReads.setMin(0);
 	 }
 
@@ -119,46 +119,46 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
  		}
  	}
 	/**
-	 * µ±ÊäÈëÎªmacsµÄbedÎÄ¼şÊ±£¬¿´ĞèÒªÈ»ºó<b>Ìø¹ıchrmÏîÄ¿</b><br>
-	 * ËùÓĞchrÏîÄ¿¶¼Ğ¡Ğ´
-	 * ¶ÁÈ¡MappingÎÄ¼ş£¬Éú³ÉÏàÓ¦µÄÒ»Î¬×ø±êÊı×é£¬×îºó±£´æÔÚÒ»¸ö¹şÏ£±íÖĞ¡£×¢Òâ£¬mappingÎÄ¼şÖĞµÄchrIDºÍchrLengthFileÖĞµÄchrIDÒªÒ»ÖÂ£¬·ñÔò»á³ö´í
-	 * @return ·µ»ØËùÓĞmappingµÄreadsÊıÁ¿
+	 * å½“è¾“å…¥ä¸ºmacsçš„bedæ–‡ä»¶æ—¶ï¼Œçœ‹éœ€è¦ç„¶å<b>è·³è¿‡chrmé¡¹ç›®</b><br>
+	 * æ‰€æœ‰chré¡¹ç›®éƒ½å°å†™
+	 * è¯»å–Mappingæ–‡ä»¶ï¼Œç”Ÿæˆç›¸åº”çš„ä¸€ç»´åæ ‡æ•°ç»„ï¼Œæœ€åä¿å­˜åœ¨ä¸€ä¸ªå“ˆå¸Œè¡¨ä¸­ã€‚æ³¨æ„ï¼Œmappingæ–‡ä»¶ä¸­çš„chrIDå’ŒchrLengthFileä¸­çš„chrIDè¦ä¸€è‡´ï¼Œå¦åˆ™ä¼šå‡ºé”™
+	 * @return è¿”å›æ‰€æœ‰mappingçš„readsæ•°é‡
 	 * @throws Exception
 	 */
 	protected abstract void ReadMapFileExp() throws Exception;
 
 	/**
-	 * Ìî³äÃ¿¸öMapInfo£¬Èç¹ûÃ»ÓĞÕÒµ½¸ÃÈ¾É«ÌåÎ»µã£¬ÔòÌî³änull
+	 * å¡«å……æ¯ä¸ªMapInfoï¼Œå¦‚æœæ²¡æœ‰æ‰¾åˆ°è¯¥æŸ“è‰²ä½“ä½ç‚¹ï¼Œåˆ™å¡«å……null
 
-	 * ¾­¹ı±ê×¼»¯£¬ºÍequationsĞŞÕı
+	 * ç»è¿‡æ ‡å‡†åŒ–ï¼Œå’Œequationsä¿®æ­£
 	 * @param lsmapInfo
-	 * @param thisInvNum  Ã¿¸öÇøÓòÄÚËùº¬µÄbpÊı£¬´óÓÚµÈÓÚinvNum£¬×îºÃÊÇinvNumµÄ±¶Êı Èç¹ûinvNum ==1 && thisInvNum == 1£¬½á¹û»áºÜ¾«È·
-	 * @param type 0£º¼ÓÈ¨Æ½¾ù 1£ºÈ¡×î¸ßÖµ£¬2£º¼ÓÈ¨µ«²»Æ½¾ù--Ò²¾ÍÊÇ¼ÓºÍ
+	 * @param thisInvNum  æ¯ä¸ªåŒºåŸŸå†…æ‰€å«çš„bpæ•°ï¼Œå¤§äºç­‰äºinvNumï¼Œæœ€å¥½æ˜¯invNumçš„å€æ•° å¦‚æœinvNum ==1 && thisInvNum == 1ï¼Œç»“æœä¼šå¾ˆç²¾ç¡®
+	 * @param type 0ï¼šåŠ æƒå¹³å‡ 1ï¼šå–æœ€é«˜å€¼ï¼Œ2ï¼šåŠ æƒä½†ä¸å¹³å‡--ä¹Ÿå°±æ˜¯åŠ å’Œ
 	 */
 	public void getRange(MapInfo mapInfo, int thisInvNum, int type) {
 		double[] Info = getRangeInfo(thisInvNum, mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), type);
 		mapInfo.setDouble(Info);
 	}
 	/**
-	 * ¾­¹ı±ê×¼»¯
-	 * ½«MapInfoÖĞµÄdoubleÌî³äÉÏÏàÓ¦µÄreadsĞÅÏ¢
-	 * @param binNum ´ı·Ö¸îµÄÇøÓòÊıÄ¿
+	 * ç»è¿‡æ ‡å‡†åŒ–
+	 * å°†MapInfoä¸­çš„doubleå¡«å……ä¸Šç›¸åº”çš„readsä¿¡æ¯
+	 * @param binNum å¾…åˆ†å‰²çš„åŒºåŸŸæ•°ç›®
 	 * @param lsmapInfo
-	 * @param type 0£º¼ÓÈ¨Æ½¾ù 1£ºÈ¡×î¸ßÖµ£¬2£º¼ÓÈ¨µ«²»Æ½¾ù--Ò²¾ÍÊÇ¼ÓºÍ
+	 * @param type 0ï¼šåŠ æƒå¹³å‡ 1ï¼šå–æœ€é«˜å€¼ï¼Œ2ï¼šåŠ æƒä½†ä¸å¹³å‡--ä¹Ÿå°±æ˜¯åŠ å’Œ
 	 */
 	public void getRange(int binNum, MapInfo mapInfo, int type) {
 		double[] Info = getRangeInfo(mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), binNum, type);
 		if (Info == null) {
-			logger.error("³öÏÖÎ´ÖªID£º"+mapInfo.getName() + " "+mapInfo.getRefID() + " " + mapInfo.getStartAbs() + " "+ mapInfo.getEndAbs());
+			logger.error("å‡ºç°æœªçŸ¥IDï¼š"+mapInfo.getName() + " "+mapInfo.getRefID() + " " + mapInfo.getStartAbs() + " "+ mapInfo.getEndAbs());
 		}
 		mapInfo.setDouble(Info);
 	}
 	/**
-	 * Ìî³äÃ¿¸öMapInfo£¬Ö±½ÓÉè¶¨£¬²»¿¼ÂÇ·½Ïò
-	 * ¾­¹ı±ê×¼»¯£¬ºÍequationsĞŞÕı
+	 * å¡«å……æ¯ä¸ªMapInfoï¼Œç›´æ¥è®¾å®šï¼Œä¸è€ƒè™‘æ–¹å‘
+	 * ç»è¿‡æ ‡å‡†åŒ–ï¼Œå’Œequationsä¿®æ­£
 	 * @param lsmapInfo
-	 * @param thisInvNum  Ã¿¸öÇøÓòÄÚËùº¬µÄbpÊı£¬´óÓÚµÈÓÚinvNum£¬×îºÃÊÇinvNumµÄ±¶Êı Èç¹ûinvNum ==1 && thisInvNum == 1£¬½á¹û»áºÜ¾«È·
-	 * @param type 0£º¼ÓÈ¨Æ½¾ù 1£ºÈ¡×î¸ßÖµ£¬2£º¼ÓÈ¨µ«²»Æ½¾ù--Ò²¾ÍÊÇ¼ÓºÍ
+	 * @param thisInvNum  æ¯ä¸ªåŒºåŸŸå†…æ‰€å«çš„bpæ•°ï¼Œå¤§äºç­‰äºinvNumï¼Œæœ€å¥½æ˜¯invNumçš„å€æ•° å¦‚æœinvNum ==1 && thisInvNum == 1ï¼Œç»“æœä¼šå¾ˆç²¾ç¡®
+	 * @param type 0ï¼šåŠ æƒå¹³å‡ 1ï¼šå–æœ€é«˜å€¼ï¼Œ2ï¼šåŠ æƒä½†ä¸å¹³å‡--ä¹Ÿå°±æ˜¯åŠ å’Œ
 	 */
 	public void getRangeLs(List<MapInfo> lsmapInfo, int thisInvNum, int type) {
 		for (MapInfo mapInfo : lsmapInfo) {
@@ -167,11 +167,11 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 		}
 	}
 	/**
-	 * ¾­¹ı±ê×¼»¯
-	 * ½«MapInfoÖĞµÄdoubleÌî³äÉÏÏàÓ¦µÄreadsĞÅÏ¢£¬Ö±½ÓÉè¶¨£¬²»¿¼ÂÇ·½Ïò
-	 * @param binNum ´ı·Ö¸îµÄÇøÓòÊıÄ¿
+	 * ç»è¿‡æ ‡å‡†åŒ–
+	 * å°†MapInfoä¸­çš„doubleå¡«å……ä¸Šç›¸åº”çš„readsä¿¡æ¯ï¼Œç›´æ¥è®¾å®šï¼Œä¸è€ƒè™‘æ–¹å‘
+	 * @param binNum å¾…åˆ†å‰²çš„åŒºåŸŸæ•°ç›®
 	 * @param lsmapInfo
-	 * @param type 0£º¼ÓÈ¨Æ½¾ù 1£ºÈ¡×î¸ßÖµ£¬2£º¼ÓÈ¨µ«²»Æ½¾ù--Ò²¾ÍÊÇ¼ÓºÍ
+	 * @param type 0ï¼šåŠ æƒå¹³å‡ 1ï¼šå–æœ€é«˜å€¼ï¼Œ2ï¼šåŠ æƒä½†ä¸å¹³å‡--ä¹Ÿå°±æ˜¯åŠ å’Œ
 	 */
 	public void getRangeLs(int binNum, List<MapInfo> lsmapInfo, int type) {
 		for (int i = 0; i < lsmapInfo.size(); i++) {
@@ -179,30 +179,30 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 			double[] Info = getRangeInfo(mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), binNum, type);
 			if (Info == null) {
 				lsmapInfo.remove(i); i--;
-				logger.error("³öÏÖÎ´ÖªID£º"+mapInfo.getName() + " "+mapInfo.getRefID() + " " + mapInfo.getStartAbs() + " "+ mapInfo.getEndAbs());
+				logger.error("å‡ºç°æœªçŸ¥IDï¼š"+mapInfo.getName() + " "+mapInfo.getRefID() + " " + mapInfo.getStartAbs() + " "+ mapInfo.getEndAbs());
 				continue;
 			}
 			mapInfo.setDouble(Info);
 		}
 	}
 	/**
-	 * ¾­¹ı±ê×¼»¯£¬ºÍequationsĞŞÕı£¬<b>×¢Òâ·µ»ØµÄÖµÒ»Ö±¶¼ÊÇ°´ÕÕ×ø±ê´ÓĞ¡µ½´ó£¬²»»á¸ù¾İ·½Ïò¶ø¸Ä±ä·½Ïò</b>
-	 * ¸ø¶¨×ø±ê·¶Î§£¬·µ»Ø¸ÃÇø¼äÄÚµÄĞÅÏ¢£¬È¡µãÎª¼ÓÈ¨Æ½¾ù
+	 * ç»è¿‡æ ‡å‡†åŒ–ï¼Œå’Œequationsä¿®æ­£ï¼Œ<b>æ³¨æ„è¿”å›çš„å€¼ä¸€ç›´éƒ½æ˜¯æŒ‰ç…§åæ ‡ä»å°åˆ°å¤§ï¼Œä¸ä¼šæ ¹æ®æ–¹å‘è€Œæ”¹å˜æ–¹å‘</b>
+	 * ç»™å®šåæ ‡èŒƒå›´ï¼Œè¿”å›è¯¥åŒºé—´å†…çš„ä¿¡æ¯ï¼Œå–ç‚¹ä¸ºåŠ æƒå¹³å‡
 	 * @param chrID
-	 * @param lsLoc Ò»¸ö×ªÂ¼±¾µÄexon list
-	 * @return null±íÊ¾³ö´í
+	 * @param lsLoc ä¸€ä¸ªè½¬å½•æœ¬çš„exon list
+	 * @return nullè¡¨ç¤ºå‡ºé”™
 	 */
 	public double[] getRangeInfo(String chrID, List<? extends Alignment> lsLoc) {
 		return getRangeInfo(chrID, lsLoc, -1 , 0);
 	}
 	/**
-	 *  ÓÃÓÚmRNAµÄ¼ÆËã£¬¾­¹ı±ê×¼»¯£¬ºÍequationsĞŞÕı
-	 * ÊäÈë×ø±êÇø¼ä£¬ĞèÒª»®·ÖµÄ¿éÊı£¬·µ»Ø¸Ã¶ÎÇøÓòÄÚreadsµÄÊı×é¡£Èç¹û¸ÃÈ¾É«ÌåÔÚmappingÊ±ºò²»´æÔÚ£¬Ôò·µ»Ønull
-	 * ¶¨Î»µ½Á½¸ö¶ËµãËùÔÚµÄ ¶ÁÈ¡invNumÇø¼ä£¬È»ºó¼ÆËãĞÂµÄinvNumÇø¼ä
+	 *  ç”¨äºmRNAçš„è®¡ç®—ï¼Œç»è¿‡æ ‡å‡†åŒ–ï¼Œå’Œequationsä¿®æ­£
+	 * è¾“å…¥åæ ‡åŒºé—´ï¼Œéœ€è¦åˆ’åˆ†çš„å—æ•°ï¼Œè¿”å›è¯¥æ®µåŒºåŸŸå†…readsçš„æ•°ç»„ã€‚å¦‚æœè¯¥æŸ“è‰²ä½“åœ¨mappingæ—¶å€™ä¸å­˜åœ¨ï¼Œåˆ™è¿”å›null
+	 * å®šä½åˆ°ä¸¤ä¸ªç«¯ç‚¹æ‰€åœ¨çš„ è¯»å–invNumåŒºé—´ï¼Œç„¶åè®¡ç®—æ–°çš„invNumåŒºé—´
 	 * @param chrID
-	 * @param lsLoc Ö±½ÓÊäÈëgffIso¼´¿É
-	 * @param binNum ·Ö³É¼¸·İ£¬Èç¹ûĞ¡ÓÚ0£¬Ôò²»½øĞĞºÏ²¢£¬Ö±½Ó·µ»Ø×Ô¼ºµÄ·İÊı
-	 * @param type  0£º¼ÓÈ¨Æ½¾ù 1£ºÈ¡×î¸ßÖµ£¬2£º¼ÓÈ¨µ«²»Æ½¾ù--Ò²¾ÍÊÇ¼ÓºÍ
+	 * @param lsLoc ç›´æ¥è¾“å…¥gffIsoå³å¯
+	 * @param binNum åˆ†æˆå‡ ä»½ï¼Œå¦‚æœå°äº0ï¼Œåˆ™ä¸è¿›è¡Œåˆå¹¶ï¼Œç›´æ¥è¿”å›è‡ªå·±çš„ä»½æ•°
+	 * @param type  0ï¼šåŠ æƒå¹³å‡ 1ï¼šå–æœ€é«˜å€¼ï¼Œ2ï¼šåŠ æƒä½†ä¸å¹³å‡--ä¹Ÿå°±æ˜¯åŠ å’Œ
 	 * @return
 	 */
 	private double[] getRangeInfo(String chrID, List<? extends Alignment> lsLoc, int binNum, int type) {
@@ -222,7 +222,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 		for (double[] ds : lstmp) {
 			len = len + ds.length;
 		}
-		//Éú³É×îÖÕ³¤¶ÈµÄdouble
+		//ç”Ÿæˆæœ€ç»ˆé•¿åº¦çš„double
 		double[] finalReads = new double[len];
 		int index = 0;
 		for (double[] ds : lstmp) {
@@ -236,7 +236,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 		}
 		return finalReads;
 	}
-	/** ½«ÊäÈëµÄloc´ÓĞ¡µ½´óÅÅĞò£¬µ«ÊÇ²¢²»¸Ä±äÊäÈëµÄloc */
+	/** å°†è¾“å…¥çš„locä»å°åˆ°å¤§æ’åºï¼Œä½†æ˜¯å¹¶ä¸æ”¹å˜è¾“å…¥çš„loc */
 	private ArrayList<Alignment> sortLsLoc(List<? extends Alignment> lsLoc) {
 		ArrayList<Alignment> lsLocNew = new ArrayList<Alignment>();
 		for (Alignment alignment : lsLoc) {
@@ -252,52 +252,52 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 		return lsLocNew;
 	}
 	/**
-	 * ¾­¹ı±ê×¼»¯£¬ºÍequationsĞŞÕı
-	 * ÊäÈë×ø±êÇø¼ä£¬Ä¬ÈÏÃ¿¸öÇø¼äµÄbpÊıÎªinvNum£¬·µ»Ø¸Ã¶ÎÇøÓòÄÚreadsµÄÊı×é
-	 * Èç¹û¸ÃÈ¾É«ÌåÔÚmappingÊ±ºò²»´æÔÚ£¬Ôò·µ»Ønull
-	 * Èç¹ûinvNum ==1 && thisInvNum == 1£¬½á¹û»áºÜ¾«È·
-	 * @param chrID Ò»¶¨ÒªĞ¡Ğ´
-	 * @param startNum Æğµã×ø±ê£¬ÎªÊµ¼ÊÆğµã£¬Èç¹ûstartNum<=0 ²¢ÇÒendNum<=0£¬Ôò·µ»ØÈ«³¤ĞÅÏ¢
-	 * @param endNum ÖÕµã×ø±ê£¬ÎªÊµ¼ÊÖÕµã
-	 * Èç¹û(endNum - startNum + 1) / thisInvNum >0.7£¬Ôò½«binNumÉèÖÃÎª1
-	 * @param type 0£º¼ÓÈ¨Æ½¾ù 1£ºÈ¡×î¸ßÖµ£¬2£º¼ÓÈ¨µ«²»Æ½¾ù--Ò²¾ÍÊÇ¼ÓºÍ
-	 * @return Èç¹ûÃ»ÓĞÕÒµ½¸ÃÈ¾É«ÌåÎ»µã£¬Ôò·µ»Ønull
+	 * ç»è¿‡æ ‡å‡†åŒ–ï¼Œå’Œequationsä¿®æ­£
+	 * è¾“å…¥åæ ‡åŒºé—´ï¼Œé»˜è®¤æ¯ä¸ªåŒºé—´çš„bpæ•°ä¸ºinvNumï¼Œè¿”å›è¯¥æ®µåŒºåŸŸå†…readsçš„æ•°ç»„
+	 * å¦‚æœè¯¥æŸ“è‰²ä½“åœ¨mappingæ—¶å€™ä¸å­˜åœ¨ï¼Œåˆ™è¿”å›null
+	 * å¦‚æœinvNum ==1 && thisInvNum == 1ï¼Œç»“æœä¼šå¾ˆç²¾ç¡®
+	 * @param chrID ä¸€å®šè¦å°å†™
+	 * @param startNum èµ·ç‚¹åæ ‡ï¼Œä¸ºå®é™…èµ·ç‚¹ï¼Œå¦‚æœstartNum<=0 å¹¶ä¸”endNum<=0ï¼Œåˆ™è¿”å›å…¨é•¿ä¿¡æ¯
+	 * @param endNum ç»ˆç‚¹åæ ‡ï¼Œä¸ºå®é™…ç»ˆç‚¹
+	 * å¦‚æœ(endNum - startNum + 1) / thisInvNum >0.7ï¼Œåˆ™å°†binNumè®¾ç½®ä¸º1
+	 * @param type 0ï¼šåŠ æƒå¹³å‡ 1ï¼šå–æœ€é«˜å€¼ï¼Œ2ï¼šåŠ æƒä½†ä¸å¹³å‡--ä¹Ÿå°±æ˜¯åŠ å’Œ
+	 * @return å¦‚æœæ²¡æœ‰æ‰¾åˆ°è¯¥æŸ“è‰²ä½“ä½ç‚¹ï¼Œåˆ™è¿”å›null
 	 */
 	public double[] getRangeInfo(String chrID,int startNum,int endNum,int type) {
 		return getRangeInfo(0, chrID, startNum, endNum, type);
 	}
 	/**
-	 * ¾­¹ı±ê×¼»¯£¬ºÍequationsĞŞÕı
-	 * ÊäÈë×ø±êÇø¼ä£¬ºÍÃ¿¸öÇø¼äµÄbpÊı£¬·µ»Ø¸Ã¶ÎÇøÓòÄÚreadsµÄÊı×é
-	 * ¶¨Î»µ½Á½¸ö¶ËµãËùÔÚµÄ ¶ÁÈ¡invNumÇø¼ä£¬È»ºó¼ÆËãĞÂµÄinvNumÇø¼ä£¬Èç¹û¸ÃÈ¾É«ÌåÔÚmappingÊ±ºò²»´æÔÚ£¬Ôò·µ»Ønull
-	 * @param thisInvNum Ã¿¸öÇøÓòÄÚËùº¬µÄbpÊı£¬´óÓÚµÈÓÚinvNum£¬×îºÃÊÇinvNumµÄ±¶Êı<br>
-	 * Èç¹ûthisInvNum <= 0£¬ÔòthisInvNum = invNum<br>
-	 * Èç¹ûinvNum ==1 && thisInvNum == 1£¬½á¹û»áºÜ¾«È·
-	 * @param chrID Ò»¶¨ÒªĞ¡Ğ´
-	 * @param startNum Æğµã×ø±ê£¬ÎªÊµ¼ÊÆğµã£¬Èç¹ûstartNum<=0 ²¢ÇÒendNum<=0£¬Ôò·µ»ØÈ«³¤ĞÅÏ¢
-	 * @param endNum ÖÕµã×ø±ê£¬ÎªÊµ¼ÊÖÕµã
-	 * Èç¹û(endNum - startNum + 1) / thisInvNum >0.7£¬Ôò½«binNumÉèÖÃÎª1
-	 * @param type 0£º¼ÓÈ¨Æ½¾ù 1£ºÈ¡×î¸ßÖµ£¬2£º¼ÓÈ¨µ«²»Æ½¾ù--Ò²¾ÍÊÇ¼ÓºÍ
-	 * @return Èç¹ûÃ»ÓĞÕÒµ½¸ÃÈ¾É«ÌåÎ»µã£¬Ôò·µ»Ønull
+	 * ç»è¿‡æ ‡å‡†åŒ–ï¼Œå’Œequationsä¿®æ­£
+	 * è¾“å…¥åæ ‡åŒºé—´ï¼Œå’Œæ¯ä¸ªåŒºé—´çš„bpæ•°ï¼Œè¿”å›è¯¥æ®µåŒºåŸŸå†…readsçš„æ•°ç»„
+	 * å®šä½åˆ°ä¸¤ä¸ªç«¯ç‚¹æ‰€åœ¨çš„ è¯»å–invNumåŒºé—´ï¼Œç„¶åè®¡ç®—æ–°çš„invNumåŒºé—´ï¼Œå¦‚æœè¯¥æŸ“è‰²ä½“åœ¨mappingæ—¶å€™ä¸å­˜åœ¨ï¼Œåˆ™è¿”å›null
+	 * @param thisInvNum æ¯ä¸ªåŒºåŸŸå†…æ‰€å«çš„bpæ•°ï¼Œå¤§äºç­‰äºinvNumï¼Œæœ€å¥½æ˜¯invNumçš„å€æ•°<br>
+	 * å¦‚æœthisInvNum <= 0ï¼Œåˆ™thisInvNum = invNum<br>
+	 * å¦‚æœinvNum ==1 && thisInvNum == 1ï¼Œç»“æœä¼šå¾ˆç²¾ç¡®
+	 * @param chrID ä¸€å®šè¦å°å†™
+	 * @param startNum èµ·ç‚¹åæ ‡ï¼Œä¸ºå®é™…èµ·ç‚¹ï¼Œå¦‚æœstartNum<=0 å¹¶ä¸”endNum<=0ï¼Œåˆ™è¿”å›å…¨é•¿ä¿¡æ¯
+	 * @param endNum ç»ˆç‚¹åæ ‡ï¼Œä¸ºå®é™…ç»ˆç‚¹
+	 * å¦‚æœ(endNum - startNum + 1) / thisInvNum >0.7ï¼Œåˆ™å°†binNumè®¾ç½®ä¸º1
+	 * @param type 0ï¼šåŠ æƒå¹³å‡ 1ï¼šå–æœ€é«˜å€¼ï¼Œ2ï¼šåŠ æƒä½†ä¸å¹³å‡--ä¹Ÿå°±æ˜¯åŠ å’Œ
+	 * @return å¦‚æœæ²¡æœ‰æ‰¾åˆ°è¯¥æŸ“è‰²ä½“ä½ç‚¹ï¼Œåˆ™è¿”å›null
 	 */
 	public abstract double[] getRangeInfo(int thisInvNum,String chrID,int startNum,int endNum,int type);
 	/**
-	 * ¾­¹ı±ê×¼»¯£¬ºÍequationsĞŞÕı
-	 * ÊäÈë×ø±êÇø¼ä£¬ĞèÒª»®·ÖµÄ¿éÊı£¬·µ»Ø¸Ã¶ÎÇøÓòÄÚreadsµÄÊı×é¡£Èç¹û¸ÃÈ¾É«ÌåÔÚmappingÊ±ºò²»´æÔÚ£¬Ôò·µ»Ønull
-	 * ¶¨Î»µ½Á½¸ö¶ËµãËùÔÚµÄ ¶ÁÈ¡invNumÇø¼ä£¬È»ºó¼ÆËãĞÂµÄinvNumÇø¼ä
-	 * @param lsAlignments ½«²»ÊôÓÚÖ¸¶¨Çø¶ÎÄÚµÄÊıÖµÈ«²¿Çå¿Õ£¬×îºÃÊÇlinkedlist
-	 * @param chrID Ò»¶¨ÒªĞ¡Ğ´
-	 * @param startNum Æğµã×ø±ê£¬ÎªÊµ¼ÊÆğµã Èç¹ûstartNum<=0 ²¢ÇÒendNum<=0£¬Ôò·µ»ØÈ«³¤ĞÅÏ¢
-	 * @param endNum ÖÕµã×ø±ê£¬ÎªÊµ¼ÊÖÕµã
-	 * @param binNum ´ı·Ö¸îµÄÇøÓòÊıÄ¿
-	 * @param type 0£º¼ÓÈ¨Æ½¾ù 1£ºÈ¡×î¸ßÖµ£¬2£º¼ÓÈ¨µ«²»Æ½¾ù--Ò²¾ÍÊÇ¼ÓºÍ
-	 * @return Èç¹ûÃ»ÓĞÕÒµ½¸ÃÈ¾É«ÌåÎ»µã£¬Ôò·µ»Ønull
+	 * ç»è¿‡æ ‡å‡†åŒ–ï¼Œå’Œequationsä¿®æ­£
+	 * è¾“å…¥åæ ‡åŒºé—´ï¼Œéœ€è¦åˆ’åˆ†çš„å—æ•°ï¼Œè¿”å›è¯¥æ®µåŒºåŸŸå†…readsçš„æ•°ç»„ã€‚å¦‚æœè¯¥æŸ“è‰²ä½“åœ¨mappingæ—¶å€™ä¸å­˜åœ¨ï¼Œåˆ™è¿”å›null
+	 * å®šä½åˆ°ä¸¤ä¸ªç«¯ç‚¹æ‰€åœ¨çš„ è¯»å–invNumåŒºé—´ï¼Œç„¶åè®¡ç®—æ–°çš„invNumåŒºé—´
+	 * @param lsAlignments å°†ä¸å±äºæŒ‡å®šåŒºæ®µå†…çš„æ•°å€¼å…¨éƒ¨æ¸…ç©ºï¼Œæœ€å¥½æ˜¯linkedlist
+	 * @param chrID ä¸€å®šè¦å°å†™
+	 * @param startNum èµ·ç‚¹åæ ‡ï¼Œä¸ºå®é™…èµ·ç‚¹ å¦‚æœstartNum<=0 å¹¶ä¸”endNum<=0ï¼Œåˆ™è¿”å›å…¨é•¿ä¿¡æ¯
+	 * @param endNum ç»ˆç‚¹åæ ‡ï¼Œä¸ºå®é™…ç»ˆç‚¹
+	 * @param binNum å¾…åˆ†å‰²çš„åŒºåŸŸæ•°ç›®
+	 * @param type 0ï¼šåŠ æƒå¹³å‡ 1ï¼šå–æœ€é«˜å€¼ï¼Œ2ï¼šåŠ æƒä½†ä¸å¹³å‡--ä¹Ÿå°±æ˜¯åŠ å’Œ
+	 * @return å¦‚æœæ²¡æœ‰æ‰¾åˆ°è¯¥æŸ“è‰²ä½“ä½ç‚¹ï¼Œåˆ™è¿”å›null
 	 * @return
 	 */
 	protected abstract double[] getRangeInfo(String chrID, int startNum, int endNum, int binNum, int type);
 	
 	/**
-	 * ÓÃÊäÈëµÄ¹«Ê½½øĞĞĞŞÕı
+	 * ç”¨è¾“å…¥çš„å…¬å¼è¿›è¡Œä¿®æ­£
 	 * @param input
 	 * @return
 	 */
@@ -311,28 +311,28 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 		return result;
 	}
 	 /**
-	  * ´ÓÕâÀïµÃµ½µÄÊµ¼ÊÄ³ÌõÈ¾É«ÌåµÄ³¤¶È
+	  * ä»è¿™é‡Œå¾—åˆ°çš„å®é™…æŸæ¡æŸ“è‰²ä½“çš„é•¿åº¦
 	  */
 	 protected long getChrLen(String chrID) {
 		 return mapChrID2Len.get(chrID.toLowerCase());
 	 }
-	 /** ÓĞÊ±ºòĞèÒªÓÃ²âĞòÁ¿×î´óµÄÒ»¸öÑù±¾µÄreadsÊıÀ´×ö±ê×¼»¯
-	  * <b>ÔÚ¶ÁÈ¡½áÊøºóÉè¶¨</b>
+	 /** æœ‰æ—¶å€™éœ€è¦ç”¨æµ‹åºé‡æœ€å¤§çš„ä¸€ä¸ªæ ·æœ¬çš„readsæ•°æ¥åšæ ‡å‡†åŒ–
+	  * <b>åœ¨è¯»å–ç»“æŸåè®¾å®š</b>
 	  * @param allReadsNum
 	  */
 	 public void setAllReadsNum(long allReadsNum) {
 		this.allReadsNum = allReadsNum;
 	}
 	 
-	 /** ×Ü¹²ÓĞ¶àÉÙreads²ÎÓëÁËmapping£¬Õâ¸ö´ÓReadMapFile²ÅÄÜµÃµ½¡£ */
+	 /** æ€»å…±æœ‰å¤šå°‘readså‚ä¸äº†mappingï¼Œè¿™ä¸ªä»ReadMapFileæ‰èƒ½å¾—åˆ°ã€‚ */
 	protected abstract long getAllReadsNum();
 	
 	/**
-	 * ¼ì²éÊäÈëµÄstart ºÍ endÊÇ·ñÔÚÖ¸¶¨Çø¼ä·¶Î§ÄÚ£¬
-	 * @param mapChrID2Length keyÎªĞ¡Ğ´
-	 * @param chrID ÊäÈëµÄ´óĞ¡Ğ´ÎŞËùÎ½
-	 * @param startNum Ğ¡ÓÚ0ÔòÉèÖÃÎª0
-	 * @param endNum Ğ¡ÓÚ0ÔòÉèÖÃÎª×î³¤·¶Î§
+	 * æ£€æŸ¥è¾“å…¥çš„start å’Œ endæ˜¯å¦åœ¨æŒ‡å®šåŒºé—´èŒƒå›´å†…ï¼Œ
+	 * @param mapChrID2Length keyä¸ºå°å†™
+	 * @param chrID è¾“å…¥çš„å¤§å°å†™æ— æ‰€è°“
+	 * @param startNum å°äº0åˆ™è®¾ç½®ä¸º0
+	 * @param endNum å°äº0åˆ™è®¾ç½®ä¸ºæœ€é•¿èŒƒå›´
 	 * @return
 	 */
 	public static int[] correctStartEnd(Map<String, ? extends Number> mapChrID2Length, String chrID, int startNum, int endNum) {
@@ -341,23 +341,23 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 		}
 		
 		if (!mapChrID2Length.containsKey(chrID.toLowerCase())) {
-			logger.error("²»´æÔÚ¸ÃÈ¾É«Ìå£º" + chrID);
+			logger.error("ä¸å­˜åœ¨è¯¥æŸ“è‰²ä½“ï¼š" + chrID);
 			return null;
 		}
 		if (endNum <= 0 || endNum > mapChrID2Length.get(chrID.toLowerCase()).intValue() ) {
 			endNum = mapChrID2Length.get(chrID.toLowerCase()).intValue();
 		}
 		if (startNum > endNum) {
-			logger.error("Æğµã²»ÄÜ±ÈÖÕµã´ó: "+chrID+" "+startNum+" "+endNum);
+			logger.error("èµ·ç‚¹ä¸èƒ½æ¯”ç»ˆç‚¹å¤§: "+chrID+" "+startNum+" "+endNum);
 			return null;
 		}
 		return new int[]{startNum, endNum};
 	}
 	/**
-	 * ¸ø¶¨×ø±êĞÅÏ¢£¬½«±È½ÏµÄ±ÈÖµ£¬Ò²¾ÍÊÇ¾ùÖµÏà³ı£¬·ÅÈëmapInfoµÄweightÄÚ
-	 * ÄÚ²¿±ê×¼»¯
-	 * @param mapReads µÚÒ»¸ömapReadsĞÅÏ¢
-	 * @param mapReads2 µÚ¶ş¸ömapReadsĞÅÏ¢
+	 * ç»™å®šåæ ‡ä¿¡æ¯ï¼Œå°†æ¯”è¾ƒçš„æ¯”å€¼ï¼Œä¹Ÿå°±æ˜¯å‡å€¼ç›¸é™¤ï¼Œæ”¾å…¥mapInfoçš„weightå†…
+	 * å†…éƒ¨æ ‡å‡†åŒ–
+	 * @param mapReads ç¬¬ä¸€ä¸ªmapReadsä¿¡æ¯
+	 * @param mapReads2 ç¬¬äºŒä¸ªmapReadsä¿¡æ¯
 	 * @param mapInfo
 	 */
 	public static void CmpMapReg(MapReads mapReads, MapReads mapReads2, MapInfo mapInfo) {
@@ -378,14 +378,14 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	}
 	
 	/**
-	 * <b>Èç¹û allReadsNum == 0 && NormalType != NORMALIZATION_ALL_READS£¬Ôò²»½øĞĞ±ê×¼»¯</b><br>
-	 * ÌáÈ¡µÄÔ­Ê¼Êı¾İĞèÒª¾­¹ı±ê×¼»¯ÔÙÊä³ö¡£
-	 * ±¾·½·¨½øĞĞ±ê×¼»¯
-	 * ÊäÈëµÄdoubleÖ±½ÓĞŞ¸Ä£¬²»·µ»Ø¡£<br>
-	 * ×îºóµÃµ½µÄ½á¹û¶¼ÒªÇó¾ùÖµ
-	 * ¸ø¶¨doubleÊı×é£¬°´ÕÕreads×ÜÊı½øĞĞ±ê×¼»¯,reads×ÜÊıÓÉ¶ÁÈ¡µÄmappingÎÄ¼ş×Ô¶¯»ñµÃ<br>
-	 * ×îºóÏÈ³ËÒÔ1millionÈ»ºóÔÙ³ıÒÔÃ¿¸ödoubleµÄÖµ<br>
-	 * @param doubleInfo ÌáÈ¡µÃµ½µÄÔ­Ê¼value
+	 * <b>å¦‚æœ allReadsNum == 0 && NormalType != NORMALIZATION_ALL_READSï¼Œåˆ™ä¸è¿›è¡Œæ ‡å‡†åŒ–</b><br>
+	 * æå–çš„åŸå§‹æ•°æ®éœ€è¦ç»è¿‡æ ‡å‡†åŒ–å†è¾“å‡ºã€‚
+	 * æœ¬æ–¹æ³•è¿›è¡Œæ ‡å‡†åŒ–
+	 * è¾“å…¥çš„doubleç›´æ¥ä¿®æ”¹ï¼Œä¸è¿”å›ã€‚<br>
+	 * æœ€åå¾—åˆ°çš„ç»“æœéƒ½è¦æ±‚å‡å€¼
+	 * ç»™å®šdoubleæ•°ç»„ï¼ŒæŒ‰ç…§readsæ€»æ•°è¿›è¡Œæ ‡å‡†åŒ–,readsæ€»æ•°ç”±è¯»å–çš„mappingæ–‡ä»¶è‡ªåŠ¨è·å¾—<br>
+	 * æœ€åå…ˆä¹˜ä»¥1millionç„¶åå†é™¤ä»¥æ¯ä¸ªdoubleçš„å€¼<br>
+	 * @param doubleInfo æå–å¾—åˆ°çš„åŸå§‹value
 	 * @return 
 	 */
 	public static void normDouble(int NormalType, double[] doubleInfo, long allReadsNum) {

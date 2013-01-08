@@ -2,7 +2,7 @@ package com.novelbio.nbcgui.GUI;
 
 import javax.swing.JPanel;
 /**
- * 甲基化，ChIP-Seq，RNA-Seq等联合分析的东西
+ * 鐢插熀鍖栵紝ChIP-Seq锛孯NA-Seq绛夎仈鍚堝垎鏋愮殑涓滆タ
  * @author zong0jie
  *
  */

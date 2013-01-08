@@ -14,12 +14,12 @@ import com.novelbio.database.service.SpringFactory;
 @Component
 public class ServTaxID implements MapTaxID{
 	/**
-	 * È«ÌåÎïÖÖID
+	 * å…¨ä½“ç‰©ç§ID
 	 */
 	static HashMap<String, Integer> hashNameTaxID = new LinkedHashMap<String, Integer>();
 	static ArrayList<Integer> lsAllTaxID = new ArrayList<Integer>();
 	/**
-	 * ½ö°üº¬ÓĞËõĞ´µÄÎïÖÖ
+	 * ä»…åŒ…å«æœ‰ç¼©å†™çš„ç‰©ç§
 	 */
 	static HashMap<String, Integer> hashNameTaxIDUsual = new LinkedHashMap<String, Integer>();
 	static HashMap<Integer, String> hashTaxIDName = new LinkedHashMap<Integer, String>();
@@ -36,7 +36,7 @@ public class ServTaxID implements MapTaxID{
 		return mapTaxID.queryTaxInfo(taxInfo);
 	}
 	/**
-	 * @param taxID 0 Ôò·µ»Ønull
+	 * @param taxID 0 åˆ™è¿”å›null
 	 * @return
 	 */
 	public TaxInfo queryTaxInfo(int taxID) {
@@ -48,7 +48,7 @@ public class ServTaxID implements MapTaxID{
 		return mapTaxID.queryTaxInfo(taxInfo);
 	}
 	/**
-	 * Ã»ÓĞ¾Í²åÈë£¬ÓĞ¾ÍÉı¼¶
+	 * æ²¡æœ‰å°±æ’å…¥ï¼Œæœ‰å°±å‡çº§
 	 * @param taxInfo
 	 */
 	public void update(TaxInfo taxInfo) {
@@ -78,7 +78,7 @@ public class ServTaxID implements MapTaxID{
 		mapTaxID.upDateTaxInfo(taxInfo);
 	}
 	/**
-	 * ·µ»Ø³£ÓÃÃû¶ÔtaxID
+	 * è¿”å›å¸¸ç”¨åå¯¹taxID
 	 * @param allSpecies
 	 * @return
 	 */
@@ -92,7 +92,7 @@ public class ServTaxID implements MapTaxID{
 		}
 	}
 	/**
-	 * ·µ»ØtaxID¶Ô³£ÓÃÃû
+	 * è¿”å›taxIDå¯¹å¸¸ç”¨å
 	 * @return
 	 */
 	public HashMap< Integer,String> getHashTaxIDName() {
@@ -100,7 +100,7 @@ public class ServTaxID implements MapTaxID{
 		return hashTaxIDName;
 	}
 	/**
-	 * ·µ»ØtaxID¶Ô³£ÓÃÃû
+	 * è¿”å›taxIDå¯¹å¸¸ç”¨å
 	 * @return
 	 */
 	public ArrayList< Integer> getLsAllTaxID() {

@@ -88,13 +88,13 @@ public class GuiBlastJpanel extends JPanel {
 	private DefaultTableModel jTabAnno;
 	private DefaultTableModel jTabGoandPath;
 	
-	static int QtaxID = 0;//²éÑ¯ÎïÖÖID
-//	static int StaxID = 4932;//blastÎïÖÖID
-	static int StaxID = 9606;//blastÎïÖÖID
+	static int QtaxID = 0;//æŸ¥è¯¢ç‰©ç§ID
+//	static int StaxID = 4932;//blastç‰©ç§ID
+	static int StaxID = 9606;//blastç‰©ç§ID
 	String GoClass = "";
 	
 	/**
-	 * Ò»´Î×î¶à²éÑ¯µÄ¸öÊı
+	 * ä¸€æ¬¡æœ€å¤šæŸ¥è¯¢çš„ä¸ªæ•°
 	 */
 	static int numLimit = 100000;
 	
@@ -299,15 +299,15 @@ public class GuiBlastJpanel extends JPanel {
 						lsAccID.add(queryID[i]);
 					}
 					List<String> lsGenID2 = null;
-					//////////////////Ò»´ÎÖ»ÄÜ¶ÁÈ¡3000¸ö
+					//////////////////ä¸€æ¬¡åªèƒ½è¯»å–3000ä¸ª
 					if (lsAccID.size()>numLimit) {
 						JOptionPane.showMessageDialog(null, "To ensure the stability of the database, the gene number of each query is limited in."+numLimit, "alert", JOptionPane.INFORMATION_MESSAGE); 
 						lsGenID2 = lsAccID.subList(0, numLimit);
 					}
 					else
 						lsGenID2 = lsAccID;
-					///////////////¸÷ÖÖÉèÖÃ
-					//ÉèÖÃ½ø¶ÈÌõ
+					///////////////å„ç§è®¾ç½®
+					//è®¾ç½®è¿›åº¦æ¡
 					getJBtnSaveAno().setEnabled(false);
 					jProgressBar1.setMinimum(0); jProgressBar1.setMaximum(lsGenID2.size()-1);
 					jProgressBar1.setValue(0);
@@ -318,7 +318,7 @@ public class GuiBlastJpanel extends JPanel {
 						boolean blast = jChBlast.isSelected();
 						if (!blast) 
 						{
-							//ÉèÖÃanno½á¹û¿ò
+							//è®¾ç½®annoç»“æœæ¡†
 							{
 								titleAnno = new String[5];
 								titleAnno[0] ="QueryID";titleAnno[1] = "AccID"; titleAnno[2] ="Symbol/AccID";titleAnno[3] ="Description";titleAnno[4] ="KeggID";
@@ -330,7 +330,7 @@ public class GuiBlastJpanel extends JPanel {
 							}
 						}
 						else {
-							//ÉèÖÃanno½á¹û¿ò
+							//è®¾ç½®annoç»“æœæ¡†
 							{
 								titleAnno = new String[10];
 								titleAnno[0] ="QueryID";titleAnno[1] ="AccID";titleAnno[2] ="Symbol/AccID";titleAnno[3] ="Description"; titleAnno[4] ="KeggID";
@@ -381,14 +381,14 @@ public class GuiBlastJpanel extends JPanel {
 					}
 					
 					
-					//////////////////Ò»´ÎÖ»ÄÜ¶ÁÈ¡3000¸ö
+					//////////////////ä¸€æ¬¡åªèƒ½è¯»å–3000ä¸ª
 					if (lsGenID.size() > numLimit) {
 						JOptionPane.showMessageDialog(null, "To ensure the stability of the database, the gene number of each query is limited in 3000.", "alert", JOptionPane.INFORMATION_MESSAGE); 
 						lsGenID2 = lsGenID2.subList(0, numLimit);
 					}
-					///////////////¸÷ÖÖÉèÖÃ
-					///////////////¸÷ÖÖÉèÖÃ///////////////
-					//ÉèÖÃ½ø¶ÈÌõ
+					///////////////å„ç§è®¾ç½®
+					///////////////å„ç§è®¾ç½®///////////////
+					//è®¾ç½®è¿›åº¦æ¡
 					getJBtnSaveGO().setEnabled(false);
 					jProgressBar1.setMinimum(0); jProgressBar1.setMaximum(lsGenID2.size()-1);
 					jProgressBar1.setValue(0);
@@ -400,7 +400,7 @@ public class GuiBlastJpanel extends JPanel {
 						boolean blast = jChBlast.isSelected();
 						if (!blast) 
 						{
-							//ÉèÖÃanno½á¹û¿ò
+							//è®¾ç½®annoç»“æœæ¡†
 							{
 								titleGoandPath = new String[4];
 								titleGoandPath[0] = "QueryID"; titleGoandPath[1] = "Symbol/AccID"; titleGoandPath[2] ="GOID"; titleGoandPath[3] = "GOTerm";
@@ -413,7 +413,7 @@ public class GuiBlastJpanel extends JPanel {
 						}
 						else 
 						{
-							//ÉèÖÃanno½á¹û¿ò
+							//è®¾ç½®annoç»“æœæ¡†
 							{
 								titleGoandPath = new String[8];
 								titleGoandPath[0] = "QueryID"; titleGoandPath[1] = "Symbol/AccID"; titleGoandPath[2] ="GOID"; titleGoandPath[3] = "GOTerm";
@@ -436,7 +436,7 @@ public class GuiBlastJpanel extends JPanel {
 						boolean blast = jChBlast.isSelected();
 						if (!blast) 
 						{
-							//ÉèÖÃanno½á¹û¿ò
+							//è®¾ç½®annoç»“æœæ¡†
 							{
 								titleGoandPath = new String[4];
 								titleGoandPath[0] = "QueryID"; titleGoandPath[1] = "Symbol/AccID"; titleGoandPath[2] ="PathID"; titleGoandPath[3] = "PathTitle";
@@ -449,7 +449,7 @@ public class GuiBlastJpanel extends JPanel {
 						}
 						else 
 						{
-							//ÉèÖÃanno½á¹û¿ò
+							//è®¾ç½®annoç»“æœæ¡†
 							{
 								titleGoandPath = new String[8];
 								titleGoandPath[0] = "QueryID"; titleGoandPath[1] = "Symbol/AccID"; titleGoandPath[2] ="PathID"; titleGoandPath[3] = "PathTitle";
@@ -495,8 +495,8 @@ public class GuiBlastJpanel extends JPanel {
 		return jLbGOandPath;
 	}
 
-///////////////////////////////////////////////////viewer·½·¨ÊµÏÖ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//´ò¿ªÎÄ±¾Ñ¡ÔñÆ÷
+///////////////////////////////////////////////////vieweræ–¹æ³•å®ç°///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//æ‰“å¼€æ–‡æœ¬é€‰æ‹©å™¨
 	private String getFileName() {
 		JFileChooser chooser = new JFileChooser();
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("txt/excel 2003", "txt","xls");
@@ -507,7 +507,7 @@ public class GuiBlastJpanel extends JPanel {
 		}
 		return null;
 	}
-	//´ò¿ªÎÄ±¾Ñ¡ÔñÆ÷
+	//æ‰“å¼€æ–‡æœ¬é€‰æ‹©å™¨
 	private String saveFileName() {
 		JFileChooser chooser = new JFileChooser();
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("txt/excel 2003", "txt","xls");
@@ -518,7 +518,7 @@ public class GuiBlastJpanel extends JPanel {
 		}
 		return null;
 	}
-////////////////////////////////////////±£´æÎÄ¼ş////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////ä¿å­˜æ–‡ä»¶////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	ArrayList<String[]> lsAnno = null;
 	ArrayList<String[]> lsGoandPath = null;
 	public void setLsAnno(ArrayList<String[]> lsAnno) {
@@ -527,7 +527,7 @@ public class GuiBlastJpanel extends JPanel {
 	public void setLsGoandPath(ArrayList<String[]> lsGoandPath) {
 		this.lsGoandPath = lsGoandPath;
 	}
-	///////////////¶ÁÈ¡ÎÄ±¾µÄµÚÒ»ÁĞ£¬²¢±£´æÎªarraylist-string,´íÎóÔò·µ»Ønull²¢ÇÒµ¯³ö´íÎó¶Ô»°¿ò/////////////////////////////////////////////////////////////
+	///////////////è¯»å–æ–‡æœ¬çš„ç¬¬ä¸€åˆ—ï¼Œå¹¶ä¿å­˜ä¸ºarraylist-string,é”™è¯¯åˆ™è¿”å›nullå¹¶ä¸”å¼¹å‡ºé”™è¯¯å¯¹è¯æ¡†/////////////////////////////////////////////////////////////
 	private ArrayList<String> getFirstCol(String filePath) {
 		ArrayList<String[]> lstmp = null;
 		try {

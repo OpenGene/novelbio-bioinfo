@@ -33,7 +33,7 @@ public class CtrlCufflinksTranscriptome {
 	public void setStrandSpecifictype(StrandSpecific strandSpecific) {
 		cufflinksGTF.setStrandSpecifictype(strandSpecific);
 	}
-	/** ÊÇ·ñÖØ½¨×ªÂ¼±¾ */
+	/** æ˜¯å¦é‡å»ºè½¬å½•æœ¬ */
 	public void setReconstructTranscriptome(boolean reconstructTranscriptome) {
 		this.reconstructTranscriptome = reconstructTranscriptome;
 	}

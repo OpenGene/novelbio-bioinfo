@@ -21,7 +21,7 @@ public class Petunia {
 	
 	public static void getSeq()
 	{
-		String seqIn = "/home/zong0jie/×ÀÃæ/°«Ç£Å£/Petunia_x_hybrida.mRNA.PUT.fasta";
+		String seqIn = "/home/zong0jie/æ¡Œé¢/çŸ®ç‰µç‰›/Petunia_x_hybrida.mRNA.PUT.fasta";
 		String regx = "PUT-159a-Petunia_x_hybrida-\\d+";
 		String seqOut = FileOperate.changeFileSuffix(seqIn, "_Coped", null);
 		SeqFastaHash seqFastaHash = new SeqFastaHash(seqIn,regx, false);

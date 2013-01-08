@@ -7,16 +7,16 @@ import com.novelbio.database.mapper.MapperSql;
 public interface MapGene2Go extends MapperSql{
 	
 	/**
-	 * ÓÃGeneIDÈ¥²éÕÒGene2Go±í
+	 * ç”¨GeneIDå»æŸ¥æ‰¾Gene2Goè¡¨
 	 * @param GeneID
 	 * @return
 	 */
 	public ArrayList<Gene2Go> queryLsGene2Go(Gene2Go gene2Go);
 	
 	/**
-	 * ÓÃGene2GoInfoÀàÈ¥²éÕÒGene2Go±í
-	 * Ö÷ÒªÊÇÀ´¿´±¾ÁĞÊÇ·ñÒÑ¾­´æÔÚÁË
-	 * ÓÃgeneIDºÍgoIDÈ¥²éÕÒÊı¾İ¿â
+	 * ç”¨Gene2GoInfoç±»å»æŸ¥æ‰¾Gene2Goè¡¨
+	 * ä¸»è¦æ˜¯æ¥çœ‹æœ¬åˆ—æ˜¯å¦å·²ç»å­˜åœ¨äº†
+	 * ç”¨geneIDå’ŒgoIDå»æŸ¥æ‰¾æ•°æ®åº“
 	 * @return
 	 */
 	public Gene2Go queryGene2Go(Gene2Go gene2Go);
@@ -24,7 +24,7 @@ public interface MapGene2Go extends MapperSql{
 	public void insertGene2Go(Gene2Go gene2Go);
 	
 	/**
-	 * Éı¼¶evidenceºÍreferenceÁ½Ïî
+	 * å‡çº§evidenceå’Œreferenceä¸¤é¡¹
 	 * @param geneInfo
 	 */
 	public void updateGene2Go(Gene2Go gene2Go);

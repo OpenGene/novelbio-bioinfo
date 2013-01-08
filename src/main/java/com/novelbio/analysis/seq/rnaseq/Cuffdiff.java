@@ -31,24 +31,24 @@ public class Cuffdiff {
 	
 	String outPath = "";
 	
-	//cuffdiffµÄ²ÎÊı
+	//cuffdiffçš„å‚æ•°
 	String exePath = "";
 	int threadNum = 4;
 	/** 
-	 * ×°ÔØÊäÈëÑù±¾SamµÄÎÄ¼ş
-	 * Ã¿¸ö×ÓÀàlistSam±íÊ¾Ò»ÏµÁĞµÄÖØ¸´
+	 * è£…è½½è¾“å…¥æ ·æœ¬Samçš„æ–‡ä»¶
+	 * æ¯ä¸ªå­ç±»listSamè¡¨ç¤ºä¸€ç³»åˆ—çš„é‡å¤
 	 *  */
 	ArrayListMultimap<String, String> lsmapPrefix2SetSample = ArrayListMultimap.create();
-	/** ²»ÖØ¸´µÄ±È½Ï£¬Ç°ÃæÎªtreat£¬ºóÃæÎªcontrol */
+	/** ä¸é‡å¤çš„æ¯”è¾ƒï¼Œå‰é¢ä¸ºtreatï¼Œåé¢ä¸ºcontrol */
 	HashMultimap<String, String> hashmapTreat2Col = HashMultimap.create();
-	/** Ñù±¾Ãû */
+	/** æ ·æœ¬å */
 	ArrayList<String> lsSampleName;
 	
 	MapLibrary mapLibrary;
 	
 	/**
-	 * Éè¶¨cuffdiffËùÔÚµÄÎÄ¼ş¼ĞÒÔ¼°´ı±È¶ÔµÄÂ·¾¶
-	 * @param exePath Èç¹ûÔÚ¸ùÄ¿Â¼ÏÂÔòÉèÖÃÎª""»ònull
+	 * è®¾å®šcuffdiffæ‰€åœ¨çš„æ–‡ä»¶å¤¹ä»¥åŠå¾…æ¯”å¯¹çš„è·¯å¾„
+	 * @param exePath å¦‚æœåœ¨æ ¹ç›®å½•ä¸‹åˆ™è®¾ç½®ä¸º""æˆ–null
 	 */
 	public void setExePath(String exePath) {
 		if (exePath == null || exePath.trim().equals("")) {
@@ -66,7 +66,7 @@ public class Cuffdiff {
 		this.threadNum = threadNum;
 	}
 	/**
-	 * Éè¶¨±È½Ï
+	 * è®¾å®šæ¯”è¾ƒ
 	 * @param mapPrefix2Prefix
 	 */
 	public void setCompare(ArrayList<String[]> lsTreat2Col) {
@@ -77,7 +77,7 @@ public class Cuffdiff {
 	public void setSeqFasta(String seqFastaPath) {
 		this.seqFastaPath = seqFastaPath;
 	}
-	/** ±ØĞëÊÇcuffcompare´¦Àí¹ıµÄgtfÎÄ¼ş */
+	/** å¿…é¡»æ˜¯cuffcompareå¤„ç†è¿‡çš„gtfæ–‡ä»¶ */
 	public void setGtfFile(String gtfFile) {
 		this.gtfFile = gtfFile;
 	}
@@ -95,7 +95,7 @@ public class Cuffdiff {
 	}
 
 	private String getMapLibrary() {
-		//TODO ¿¼ÂÇ·µ»Ø½¨¿â·½Ê½
+		//TODO è€ƒè™‘è¿”å›å»ºåº“æ–¹å¼
 		return "";
 	}
 	
@@ -107,7 +107,7 @@ public class Cuffdiff {
 		return " -o " + CmdOperate.addQuot(outPath) + " ";
 	}
 	
-	/** »ñµÃÑù±¾Ãû³Æ */
+	/** è·å¾—æ ·æœ¬åç§° */
 	private String getSampleName(String treat, String control) {
 		String out = " -L " + CmdOperate.addQuot(control) + "," + CmdOperate.addQuot(treat);
 		return out + " ";
@@ -133,7 +133,7 @@ public class Cuffdiff {
 		return sampleFile + " ";
 	}
 	
-	/** ÔËĞĞ */
+	/** è¿è¡Œ */
 	public void runCuffDiff() {
 		for (Entry<String, String> treat2value : hashmapTreat2Col.entries()) {
 			String cmd = exePath + "cuffdiff " + getMapLibrary() + getPathAndOtherParam() + getThreadNum() + getOutPath() + getSampleName(treat2value.getKey(), treat2value.getValue());

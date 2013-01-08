@@ -12,7 +12,7 @@ import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 
 /**
- * ÏŞ¶¨AÎÄ¼ş£¬ÈÃBÎÄ¼şÂıÂıÔö¼Ó£¬Ìİ¶È¼ÆËã¸²¸Ç¶È
+ * é™å®šAæ–‡ä»¶ï¼Œè®©Bæ–‡ä»¶æ…¢æ…¢å¢åŠ ï¼Œæ¢¯åº¦è®¡ç®—è¦†ç›–åº¦
  * @author zong0jie
  *
  */
@@ -33,13 +33,13 @@ public class PeakOverlapGrad {
 	}
 	
 	/**
-	 * ÓĞÁ½¸öÎÄ¼ş£¬Ò»¸öÊÇcoverageFile£¬Ò»¸öÊÇaddFile£¬ÎÒÃÇÏëÖªµÀ£¬Ëæ×ÅaddFileµÄÔö¼Ó£¨Æ©Èç¸ù¾İscoreÔö¼Ó£©£¬coverageFileÖĞÓĞ¶àÉÙPeak±»addFileËù¸²¸Ç
-	 * @param coverageFile ¸ºÁ´ µÚÒ»ĞĞÊÇ±êÌâÁĞ chrID£¬ startID£¬endID
-	 * @param addFile ÕıÁ´ µÚÒ»ĞĞÊÇ±êÌâÁĞ chrID£¬startID£¬endID£¬scoreID
-	 * @param txtPeakOverlapFile Êä³öµÄÃ¿¸öpeakOverlapµÄÏ¸½Ú
+	 * æœ‰ä¸¤ä¸ªæ–‡ä»¶ï¼Œä¸€ä¸ªæ˜¯coverageFileï¼Œä¸€ä¸ªæ˜¯addFileï¼Œæˆ‘ä»¬æƒ³çŸ¥é“ï¼Œéšç€addFileçš„å¢åŠ ï¼ˆè­¬å¦‚æ ¹æ®scoreå¢åŠ ï¼‰ï¼ŒcoverageFileä¸­æœ‰å¤šå°‘Peakè¢«addFileæ‰€è¦†ç›–
+	 * @param coverageFile è´Ÿé“¾ ç¬¬ä¸€è¡Œæ˜¯æ ‡é¢˜åˆ— chrIDï¼Œ startIDï¼ŒendID
+	 * @param addFile æ­£é“¾ ç¬¬ä¸€è¡Œæ˜¯æ ‡é¢˜åˆ— chrIDï¼ŒstartIDï¼ŒendIDï¼ŒscoreID
+	 * @param txtPeakOverlapFile è¾“å‡ºçš„æ¯ä¸ªpeakOverlapçš„ç»†èŠ‚
 	 */
 	public void getPeakOverLapInfo(String coverageFile, String addFile, String txtPeakOverlapFile, int stepNum) {
-		//ÏÈ°ÑtxtÎÄ±¾ÖĞµÄpeakĞÅÏ¢¶ÁÈ¡
+		//å…ˆæŠŠtxtæ–‡æœ¬ä¸­çš„peakä¿¡æ¯è¯»å–
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		int[] colNum=new int[3];
 		colNum[0]=1; colNum[1]=2; colNum[2]=3;
@@ -49,7 +49,7 @@ public class PeakOverlapGrad {
 		colNum2[0]=1; colNum2[1]=2; colNum2[2]=3; colNum2[3]=4;
 		ArrayList<String[]> lsPeak = ExcelTxtRead.readLsExcelTxt(addFile, colNum2, 2, -1);
 		
-		////¶ÔÁÙÊ±list½øĞĞÅÅĞò,Ê×ÏÈ°´ÕÕChrÅÅĞò£¬È»ºó°´ÕÕ¾ßÌå×ø±êÅÅĞò
+		////å¯¹ä¸´æ—¶listè¿›è¡Œæ’åº,é¦–å…ˆæŒ‰ç…§Chræ’åºï¼Œç„¶åæŒ‰ç…§å…·ä½“åæ ‡æ’åº
 	     Collections.sort(lsSearch,new Comparator<String[]>(){
 	            public int compare(String[] arg0, String[] arg1) {
 	            	int i=arg0[0].compareTo(arg1[0]);
@@ -61,18 +61,18 @@ public class PeakOverlapGrad {
 	               return i;
 	            }});
 	     /////////////////////////////////////////////////////////////////////////////
-	     ////¶ÔÁÙÊ±list½øĞĞÅÅĞò,°´ÕÕscoreÅÅĞò£¬´Óµ½µ½Ğ¡ÅÅĞò
+	     ////å¯¹ä¸´æ—¶listè¿›è¡Œæ’åº,æŒ‰ç…§scoreæ’åºï¼Œä»åˆ°åˆ°å°æ’åº
 	     Collections.sort(lsPeak,new Comparator<String[]>(){
 	            public int compare(String[] arg0, String[] arg1) {
 	            		Double a0 = Double.parseDouble(arg0[3]);
 	            		Double a1 = Double.parseDouble(arg1[3]);
-	            		return -a0.compareTo(a1);//´Óµ½µ½Ğ¡ÅÅĞò
+	            		return -a0.compareTo(a1);//ä»åˆ°åˆ°å°æ’åº
 	            }});
 		/////////////////////////////////////////////////////////////////////////////
 	     ArrayList<String[]> lsStepPeak = new ArrayList<String[]>();
 	     lsStepPeak.add(lsPeak.get(0));
 	     for (int i = 1; i < lsPeak.size(); i++) {
-	    	 //Ã¿stepnum¸ö½«Æä×°ÈëĞÂµÄlsPeak
+	    	 //æ¯stepnumä¸ªå°†å…¶è£…å…¥æ–°çš„lsPeak
 			if (i%stepNum == 0 || i == lsPeak.size()-1) {
 				String[] info = getOverlapInfo(lsStepPeak, lsSearch);
 				lsResult.add(info);
@@ -86,9 +86,9 @@ public class PeakOverlapGrad {
 	
 	
 	/**
-	 * ÓÃlsSearch È¥²éÕÒlsPeak£¬×îºó·µ»ØlsSearchÓĞ¶àÉÙ±»lsPeakËù¸²¸Ç
-	 * @param lsPeak ÎŞËùÎ½ÅÅĞò
-	 * @param lsSearch ±ØĞëÅÅ¹ıĞò£¬²»¿¼ÂÇºÏ²¢£¬Ò²¾ÍÊÇ¼òµ¥µÄ±éÀúpeak½øĞĞËÑË÷
+	 * ç”¨lsSearch å»æŸ¥æ‰¾lsPeakï¼Œæœ€åè¿”å›lsSearchæœ‰å¤šå°‘è¢«lsPeakæ‰€è¦†ç›–
+	 * @param lsPeak æ— æ‰€è°“æ’åº
+	 * @param lsSearch å¿…é¡»æ’è¿‡åºï¼Œä¸è€ƒè™‘åˆå¹¶ï¼Œä¹Ÿå°±æ˜¯ç®€å•çš„éå†peakè¿›è¡Œæœç´¢
 	 * 0: chrID 1:start 2:end
 	 * @return 0: Num of lsPeak   1:Num of lsSearchOverlap
 	 */

@@ -15,18 +15,18 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 /**
- * ID×ª»»£¬½«ensemblµÄ±í×ª»¯ÎªNCBIµÄ±í£¬ÒÔ¼°ÀàËÆ¹¦ÄÜ
+ * IDè½¬æ¢ï¼Œå°†ensemblçš„è¡¨è½¬åŒ–ä¸ºNCBIçš„è¡¨ï¼Œä»¥åŠç±»ä¼¼åŠŸèƒ½
  * @author zong0jie
  *
  */
 public class IDconvert {
 	/**
-	 * ´æ´¢gffFileºÍ¶ÔÓ¦µÄtaxID
+	 * å­˜å‚¨gffFileå’Œå¯¹åº”çš„taxID
 	 */
 	LinkedHashMap<String, Integer> hashEnsemblTaxID = new LinkedHashMap<String, Integer>();
 	/**
-	 * ´æ´¢¶ÔÓ¦µÄgffÎÄ¼ş£¬ÏÖÔÚÓÃNCBIµÄËÆºõ¸üºÏÊÊ£¬Èç¹ûÏíÓÃucsc¸ñÊ½µÄ,¾ÍÔÚÏÂÃæ¸Ä
-	 * Õâ¸öµÄÄ¿µÄÊÇ£¬Èç¹ûensembleÃ»ÕÒµ½¶ÔÓ¦µÄ»ùÒò£¬¾Íµ½ucscÏÂÃæÀ´²éÕÒ¶ÔÓ¦µÄ×ø±ê£¬¿´¸Ã×ø±êÏÂÓĞÃ»ÓĞ¶ÔÓ¦µÄ»ùÒò£¬È»ºóĞ´ÈëÊı¾İ¿â
+	 * å­˜å‚¨å¯¹åº”çš„gffæ–‡ä»¶ï¼Œç°åœ¨ç”¨NCBIçš„ä¼¼ä¹æ›´åˆé€‚ï¼Œå¦‚æœäº«ç”¨ucscæ ¼å¼çš„,å°±åœ¨ä¸‹é¢æ”¹
+	 * è¿™ä¸ªçš„ç›®çš„æ˜¯ï¼Œå¦‚æœensembleæ²¡æ‰¾åˆ°å¯¹åº”çš„åŸºå› ï¼Œå°±åˆ°ucscä¸‹é¢æ¥æŸ¥æ‰¾å¯¹åº”çš„åæ ‡ï¼Œçœ‹è¯¥åæ ‡ä¸‹æœ‰æ²¡æœ‰å¯¹åº”çš„åŸºå› ï¼Œç„¶åå†™å…¥æ•°æ®åº“
 	 */
 	ArrayList<String> lsUCSCFile = new ArrayList<String>();
 	String taxIDFile = "";
@@ -35,9 +35,9 @@ public class IDconvert {
 		this.taxIDFile = taxIDFile;
 	}
 	/**
-	 * ±ØĞëÊÇtxtÎÄ¼ş
-	 * @param fileName ´ÓensemblÏÂÔØµÄgtfÎÄ¼ş
-	 * @param ucscFile UCSCµÄ×ø±êÎÄ¼ş£¬²»ÊÇgtf¸ñÊ½µÄ
+	 * å¿…é¡»æ˜¯txtæ–‡ä»¶
+	 * @param fileName ä»ensemblä¸‹è½½çš„gtfæ–‡ä»¶
+	 * @param ucscFile UCSCçš„åæ ‡æ–‡ä»¶ï¼Œä¸æ˜¯gtfæ ¼å¼çš„
 	 * @param taxID
 	 */
 	public void setEnsemblFile(String fileName, String ucscFile, Integer taxID) {
@@ -60,7 +60,7 @@ public class IDconvert {
 	}
 }
 /**
- * ¸ù¾İUCSCµÄ×ø±êÎÄ¼ş£¬½«ensemblµÄgffÎÄ¼şËÑË÷refseqIDÈ»ºóµ¼Èëncbi¿â£¬ÕÒ²»µ½µÄÔòµ¼ÈëuniID¿â
+ * æ ¹æ®UCSCçš„åæ ‡æ–‡ä»¶ï¼Œå°†ensemblçš„gffæ–‡ä»¶æœç´¢refseqIDç„¶åå¯¼å…¥ncbiåº“ï¼Œæ‰¾ä¸åˆ°çš„åˆ™å¯¼å…¥uniIDåº“
  * @author zong0jie
  *
  */
@@ -73,9 +73,9 @@ class EnsembleGTF extends ImportPerLine
 	}
 	/**
 	 * E22C19W28_E50C23	protein_coding	CDS	775083	775229	.	-	0	 gene_id "ENSGALG00000010254"; transcript_id "ENSGALT00000016676"; exon_number "12"; gene_name "FAIM2"; gene_biotype "protein_coding"; protein_id "ENSGALP00000016657";
-	 * ensemblµÄgffµÄ¸ñÊ½
-	 * ½«Ö¸¶¨µÄÎÄ¼şµ¼ÈëÊı¾İ¿â£¬Èç¹ûÊÇÖØ¸´µÄ»ùÒò£¬¾Í²»µ¼ÈëÁË
-	 * Èç¹ûĞèÒªµ¼Èë¶àĞĞ£¬Æ©ÈçamiGOµÄĞÅÏ¢£¬Çë¸²¸Ç¸Ã·½·¨
+	 * ensemblçš„gffçš„æ ¼å¼
+	 * å°†æŒ‡å®šçš„æ–‡ä»¶å¯¼å…¥æ•°æ®åº“ï¼Œå¦‚æœæ˜¯é‡å¤çš„åŸºå› ï¼Œå°±ä¸å¯¼å…¥äº†
+	 * å¦‚æœéœ€è¦å¯¼å…¥å¤šè¡Œï¼Œè­¬å¦‚amiGOçš„ä¿¡æ¯ï¼Œè¯·è¦†ç›–è¯¥æ–¹æ³•
 	 */
 	public void updateFile(String gene2AccFile, boolean gzip) {
 		setReadFromLine();
@@ -84,7 +84,7 @@ class EnsembleGTF extends ImportPerLine
 			txtGene2Acc = new TxtReadandWrite(TxtReadandWrite.GZIP, gene2AccFile);
 		else 
 			txtGene2Acc = new TxtReadandWrite(gene2AccFile, false);
-		//´ÓµÚ¶şĞĞ¿ªÊ¼¶ÁÈ¡
+		//ä»ç¬¬äºŒè¡Œå¼€å§‹è¯»å–
 		String oldContent = null;
 		int num = 0;
 		for (String content : txtGene2Acc.readlines(readFromLine)) {
@@ -93,7 +93,7 @@ class EnsembleGTF extends ImportPerLine
 				logger.info("import line number:" + num);
 			}
 			String tmpString = checkIfSame(oldContent, content);
-			if (tmpString == null) {//·¢ÏÖĞÂµÄÄÚÈİ£¬Ôò½«ÀÏµÄÄÚÈİµ¼Èë
+			if (tmpString == null) {//å‘ç°æ–°çš„å†…å®¹ï¼Œåˆ™å°†è€çš„å†…å®¹å¯¼å…¥
 				if (!impPerLine(oldContent)) {
 					if (txtWriteExcep != null) {
 						txtWriteExcep.writefileln(oldContent);
@@ -105,7 +105,7 @@ class EnsembleGTF extends ImportPerLine
 				oldContent = tmpString;
 			}
 		}
-		//Ìø³öÑ­»·ºóÔÙµ¼Èë×îºóÒ»¸öoldContent
+		//è·³å‡ºå¾ªç¯åå†å¯¼å…¥æœ€åä¸€ä¸ªoldContent
 		if (!impPerLine(oldContent)) {
 			if (txtWriteExcep != null) {
 				txtWriteExcep.writefileln(oldContent);
@@ -122,10 +122,10 @@ class EnsembleGTF extends ImportPerLine
 	PatternOperate patTranscript = new PatternOperate("(?<=transcript_id \")\\w+", false);
 	
 	/**
-	 * ÅĞ¶ÏÁ½ĞĞÊÇ²»ÊÇÀ´×ÔÍ¬Ò»¸ö»ùÒò£¬Èç¹ûÀ´×ÔÍ¬Ò»¸ö»ùÒò£¬¾Í½«ĞÂ»ùÒòµÄ×ø±êºÍÀÏ»ùÒòµÄ×ø±êºÏ²¢
+	 * åˆ¤æ–­ä¸¤è¡Œæ˜¯ä¸æ˜¯æ¥è‡ªåŒä¸€ä¸ªåŸºå› ï¼Œå¦‚æœæ¥è‡ªåŒä¸€ä¸ªåŸºå› ï¼Œå°±å°†æ–°åŸºå› çš„åæ ‡å’Œè€åŸºå› çš„åæ ‡åˆå¹¶
 	 * @param oldLine
 	 * @param newLine
-	 * @return null ±íÊ¾ÊÇÒ»¸öÈ«ĞÂµÄline
+	 * @return null è¡¨ç¤ºæ˜¯ä¸€ä¸ªå…¨æ–°çš„line
 	 */
 	private String checkIfSame(String oldLine, String newLine) {
 		if (oldLine == null) {
@@ -193,7 +193,7 @@ class EnsembleGTF extends ImportPerLine
 			}
 		}
 		
-		//±¾·½·¨Ğ§ÂÊ½ÏµÍ£¬²»¹ıÎŞËùÎ½ÁË
+		//æœ¬æ–¹æ³•æ•ˆç‡è¾ƒä½ï¼Œä¸è¿‡æ— æ‰€è°“äº†
 		for (String string : ssID) {
 			if (string.contains("gene_id")) {
 				copedID.setUpdateAccID(string.replace("gene_id", "").replace("\"", "").trim());

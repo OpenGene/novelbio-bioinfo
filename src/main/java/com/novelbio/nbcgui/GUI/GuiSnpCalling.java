@@ -27,7 +27,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextPane;
 import javax.swing.UIManager;
 
-/** snpCallingµÄ½çÃæ */
+/** snpCallingçš„ç•Œé¢ */
 public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 	private JTextField txtHetoSnpProp;
 	private JTextField txtHetoMoreSnpProp;
@@ -302,7 +302,7 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		
 		setSnpCalling();
 	}
-	/** µ±ÎªsnpcallingÊ±ºòµÄ½çÃæ */
+	/** å½“ä¸ºsnpcallingæ—¶å€™çš„ç•Œé¢ */
 	private void setSnpCalling() {
 		sclInputFile.setTitle(new String[]{"Input PileUp File","Output Snp File"});
 		combSnpLevel.setEnabled(true);
@@ -328,7 +328,7 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		cmbVersion.setVisible(false);
 	}
 	
-	/** µ±Îª»ñµÃÃ¿¸ösnpĞÅÏ¢µÄÊ±ºòµÄ½çÃæ */
+	/** å½“ä¸ºè·å¾—æ¯ä¸ªsnpä¿¡æ¯çš„æ—¶å€™çš„ç•Œé¢ */
 	private void setSnpGetInfo() {
 		sclInputFile.setTitle(new String[]{"Input PileUp File", "Sample Name"});
 		combSnpLevel.setEnabled(false);
@@ -353,7 +353,7 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		cmbSpecies.setVisible(false);
 		cmbVersion.setVisible(false);
 	}
-	/** µ±Îª»ñµÃÃ¿¸ösnpĞÅÏ¢µÄÊ±ºòµÄ½çÃæ */
+	/** å½“ä¸ºè·å¾—æ¯ä¸ªsnpä¿¡æ¯çš„æ—¶å€™çš„ç•Œé¢ */
 	private void setSnpAnnotation() {
 		sclInputFile.setEnabled(false);
 		btnAddPileupFile.setEnabled(false);
@@ -454,7 +454,7 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 	public JProgressBar getProgressBar() {
 		return progressBar;
 	}
-	/** ¶ÁÈ¡ĞÅÏ¢ */
+	/** è¯»å–ä¿¡æ¯ */
 	public JTextPane getTxtInfo() {
 		return txtInformation;
 	}

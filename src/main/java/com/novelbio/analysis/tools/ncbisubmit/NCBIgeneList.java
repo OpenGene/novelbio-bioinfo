@@ -17,10 +17,10 @@ public class NCBIgeneList {
 	
 	String chrID = "NC_009443";
 	
-	/** 读取获得的genelist */
+	/** 璇诲彇鑾峰緱鐨刧enelist */
 	ArrayList<Gene> lsGene = new ArrayList<Gene>();
 
-	/** NCBI的基因列表，类似以下:<br>
+	/** NCBI鐨勫熀鍥犲垪琛紝绫讳技浠ヤ笅:<br>
 	 *    gene            1528..2460
                      /locus_tag="SSU98_0002"
          CDS             1528..2460
@@ -32,7 +32,7 @@ public class NCBIgeneList {
                      /protein_id="ABP91162.1"
                      /db_xref="GI:145690657"
 	 */
-	/** 给定NCBI的基因列表，然后获得每个基因的信息并保存 */
+	/** 缁欏畾NCBI鐨勫熀鍥犲垪琛紝鐒跺悗鑾峰緱姣忎釜鍩哄洜鐨勪俊鎭苟淇濆瓨 */
 	public void readNCBIgeneList(String ncbiGeneListFile) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(ncbiGeneListFile, false);
 		Position position = Position.gene;
@@ -96,7 +96,7 @@ public class NCBIgeneList {
 		}
 	}
 	/**
-	 * 输出gene信息
+	 * 杈撳嚭gene淇℃伅
 	 * @param outGeneInfoFile
 	 */
 	public void writeOutGeneName(String outGeneInfoFile) {
@@ -107,7 +107,7 @@ public class NCBIgeneList {
 		txtOut.close();
 	}
 	/**
-	 * 输出序列
+	 * 杈撳嚭搴忓垪
 	 * @param outFile
 	 */
 	public void writeOutSequence(String outSequenceFile) {

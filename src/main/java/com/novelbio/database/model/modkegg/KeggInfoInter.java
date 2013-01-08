@@ -15,8 +15,8 @@ public interface KeggInfoInter {
 	
 	
 	/**
-	 * geneID»òUniID»òAccID
-	 * Èç¹ûÊÇAccID£¬ÄÇÃ´Ò»¶¨ÊÇÃ»ÓĞGeneIDºÍUniIDµÄ
+	 * geneIDæˆ–UniIDæˆ–AccID
+	 * å¦‚æœæ˜¯AccIDï¼Œé‚£ä¹ˆä¸€å®šæ˜¯æ²¡æœ‰GeneIDå’ŒUniIDçš„
 	 */
 	public String getGenUniID();
 	
@@ -25,34 +25,34 @@ public interface KeggInfoInter {
 	public int getTaxID();
 
 	/**
-	 * ·µ»Ø¸ÃgeneIDËù¶ÔÓ¦µÄKGentry
+	 * è¿”å›è¯¥geneIDæ‰€å¯¹åº”çš„KGentry
 	 * @return
 	 */
 	public ArrayList<KGentry> getKgGentries();
 	/////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * »ñµÃ¸ÃkeggIDËù¶ÔÓ¦µÄKO
-	 * Èç¹ûÃ»ÓĞ¾Í·µ»Ønull
+	 * è·å¾—è¯¥keggIDæ‰€å¯¹åº”çš„KO
+	 * å¦‚æœæ²¡æœ‰å°±è¿”å›null
 	 */
 	public ArrayList<String> getLsKo();
 	
 	/**
-	 * »ñµÃ¸ÃaccID¶ÔÓ¦µÄËùÓĞ²»ÖØ¸´µÄkeggpathway¶ÔÏó
-	 * <b>²»½øĞĞblast</b>
+	 * è·å¾—è¯¥accIDå¯¹åº”çš„æ‰€æœ‰ä¸é‡å¤çš„keggpathwayå¯¹è±¡
+	 * <b>ä¸è¿›è¡Œblast</b>
 	 * @return
 	 */
 	public ArrayList<KGpathway> getLsKegPath();
 	/**
-	 * ÊäÈëblastµ½µÄCopedIDs
-	 * ·µ»Ø¸ÃgeneIDËù¶ÔÓ¦µÄKGentry
-	 * Ã»ÓĞÔò·µ»ØÒ»¸ö¿ÕµÄarraylist
+	 * è¾“å…¥blaståˆ°çš„CopedIDs
+	 * è¿”å›è¯¥geneIDæ‰€å¯¹åº”çš„KGentry
+	 * æ²¡æœ‰åˆ™è¿”å›ä¸€ä¸ªç©ºçš„arraylist
 	 * @return
 	 */
 	public ArrayList<KGentry> getLsKgGentries(ArrayList<? extends KeggInfoInter> ls_keggInfo);
 	/**
-	 * ÊäÈëblastµ½µÄcopedIDs£¬¿ÉÒÔÊÇ¶à¸ö
-	 * ·µ»Ø×îºóµÄKGentry½á¹û£¬°üÀ¨Ã»ÓĞblastµÄ½á¹û
+	 * è¾“å…¥blaståˆ°çš„copedIDsï¼Œå¯ä»¥æ˜¯å¤šä¸ª
+	 * è¿”å›æœ€åçš„KGentryç»“æœï¼ŒåŒ…æ‹¬æ²¡æœ‰blastçš„ç»“æœ
 	 * @param lscopedIDs
 	 * @return
 	 */

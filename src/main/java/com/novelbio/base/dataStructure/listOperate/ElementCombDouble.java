@@ -6,34 +6,34 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 /**
- * ÄÚ½¨ÅÅĞò·½·¨
- * ½«¶àÌõListAbsºÏ²¢ºó£¬ÆäÃ¿¸öÔªËØµÄĞÅÏ¢
- * ºÏ²¢·½·¨ÎªÊ×ÏÈÁ½ÌõlistAbsºÏÔÚÒ»Æğ£¬È»ºóÅÅĞò¡£
- * Èç¹ûÁ½¸öelementÓĞ½»¼¯£¬¾Í½«ÕâÁ½¸öelement·ÅÔÚÒ»Æğ£¬×÷ÎªÒ»¸öelement
- * Èç¹ûÖ»ÓĞµ¥¶ÀÒ»¸öelement£¬¾Í·Å¸Ãelement
- * ËùÒÔ²»ÄÜÓĞ¿ÕµÄElementComb
+ * å†…å»ºæ’åºæ–¹æ³•
+ * å°†å¤šæ¡ListAbsåˆå¹¶åï¼Œå…¶æ¯ä¸ªå…ƒç´ çš„ä¿¡æ¯
+ * åˆå¹¶æ–¹æ³•ä¸ºé¦–å…ˆä¸¤æ¡listAbsåˆåœ¨ä¸€èµ·ï¼Œç„¶åæ’åºã€‚
+ * å¦‚æœä¸¤ä¸ªelementæœ‰äº¤é›†ï¼Œå°±å°†è¿™ä¸¤ä¸ªelementæ”¾åœ¨ä¸€èµ·ï¼Œä½œä¸ºä¸€ä¸ªelement
+ * å¦‚æœåªæœ‰å•ç‹¬ä¸€ä¸ªelementï¼Œå°±æ”¾è¯¥element
+ * æ‰€ä»¥ä¸èƒ½æœ‰ç©ºçš„ElementComb
  * @author zong0jie
  *
  * @param <T>
  */
 public class ElementCombDouble<T extends ElementAbsDouble> implements ElementAbsDouble {
 	/**
-	 * »ùÒòÃû--int[2]:
-	 * 0: ¸ÃeleËùÔÚµÄÆğµã
-	 * 1: ¸ÃeleËùÔÚµÄÖÕµã¡£Èç¹û1<0£¬±íÊ¾¸ÃeleÊÇÌø¹ıµÄ£¬ÄÇÃ´0±íÊ¾µÄÊÇÇ°Ò»¸öeleµÄÎ»ÖÃ
+	 * åŸºå› å--int[2]:
+	 * 0: è¯¥eleæ‰€åœ¨çš„èµ·ç‚¹
+	 * 1: è¯¥eleæ‰€åœ¨çš„ç»ˆç‚¹ã€‚å¦‚æœ1<0ï¼Œè¡¨ç¤ºè¯¥eleæ˜¯è·³è¿‡çš„ï¼Œé‚£ä¹ˆ0è¡¨ç¤ºçš„æ˜¯å‰ä¸€ä¸ªeleçš„ä½ç½®
 	 */
 	HashMap<String, double[]> hashList2Num = new HashMap<String, double[]>();
 	/**
-	 * ±£´æÃ¿¸ölistabsÖĞµÄelement
+	 * ä¿å­˜æ¯ä¸ªlistabsä¸­çš„element
 	 */
 	ArrayList<ArrayList<T>> lsElement = new ArrayList<ArrayList<T>>();
 	ArrayList<T> lsSortEle = new ArrayList<T>();
 	String SEP = "\\";
 	boolean sorted = false;
 	/**
-	 * ¸ø¶¨Ò»¸öexonµÄlist£¬ÒÔ¼°¸ÃlistËùÕ¼Ô­Ê¼listµÄÆğµãÎ»ºÍÖÕµãÎ»µÄelement
-	 * Æ©Èç£¬¸ø¶¨ÁËÒ»¸ölist--º¬ÓĞÒ»¸öelement£¬ÆğµãµÚ2Î»£¬ÖÕµãµÚ2Î»
-	 * ¸ø¶¨ÁËÒ»¸ö¿Õlist»òÕßÃ»¸ølist£¬º¬ÓĞ0¸öelement£¬ÆğµãµÚ2Î»£¬ÖÕµãµÚ-2Î»--µ±ÖÕµãÎª¸ºÊıÊ±±íÊ¾¸ÃelementÊÇÌø¹ıµÄ
+	 * ç»™å®šä¸€ä¸ªexonçš„listï¼Œä»¥åŠè¯¥listæ‰€å åŸå§‹listçš„èµ·ç‚¹ä½å’Œç»ˆç‚¹ä½çš„element
+	 * è­¬å¦‚ï¼Œç»™å®šäº†ä¸€ä¸ªlist--å«æœ‰ä¸€ä¸ªelementï¼Œèµ·ç‚¹ç¬¬2ä½ï¼Œç»ˆç‚¹ç¬¬2ä½
+	 * ç»™å®šäº†ä¸€ä¸ªç©ºlistæˆ–è€…æ²¡ç»™listï¼Œå«æœ‰0ä¸ªelementï¼Œèµ·ç‚¹ç¬¬2ä½ï¼Œç»ˆç‚¹ç¬¬-2ä½--å½“ç»ˆç‚¹ä¸ºè´Ÿæ•°æ—¶è¡¨ç¤ºè¯¥elementæ˜¯è·³è¿‡çš„
 	 * @param element
 	 * @param numStart
 	 * @param numEnd
@@ -44,7 +44,7 @@ public class ElementCombDouble<T extends ElementAbsDouble> implements ElementAbs
 			return;
 		}
 		lsElement.add(element);
-		///// Õâ¸ö¿ÉÒÔ²»ÉèÖÃ ////////////////
+		///// è¿™ä¸ªå¯ä»¥ä¸è®¾ç½® ////////////////
 //		for (T t : element) {
 //			t.getParentName()
 //		}
@@ -60,8 +60,8 @@ public class ElementCombDouble<T extends ElementAbsDouble> implements ElementAbs
 			}
 		}
 		/**
-		 * ½«listÖĞµÄÔªËØ½øĞĞÅÅĞò£¬Èç¹ûelementÀïÃæ start > end£¬ÄÇÃ´¾Í´Ó´óµ½Ğ¡ÅÅĞò
-		 * Èç¹ûelementÀïÃæstart < end£¬ÄÇÃ´¾Í´ÓĞ¡µ½´óÅÅĞò
+		 * å°†listä¸­çš„å…ƒç´ è¿›è¡Œæ’åºï¼Œå¦‚æœelementé‡Œé¢ start > endï¼Œé‚£ä¹ˆå°±ä»å¤§åˆ°å°æ’åº
+		 * å¦‚æœelementé‡Œé¢start < endï¼Œé‚£ä¹ˆå°±ä»å°åˆ°å¤§æ’åº
 		 */
 		if ( isCis5to3() == null) {
 			Collections.sort(lsSortEle, new CompS2MAbsDouble());
@@ -79,7 +79,7 @@ public class ElementCombDouble<T extends ElementAbsDouble> implements ElementAbs
 		return lsSortEle.get(0).isCis5to3();
 	}
 	/**
-	 * ´ıÑéÖ¤
+	 * å¾…éªŒè¯
 	 */
 	@Override
 	public double getStartCis() {
@@ -92,7 +92,7 @@ public class ElementCombDouble<T extends ElementAbsDouble> implements ElementAbs
 		return Math.min(lsSortEle.get(0).getStartAbs(), lsSortEle.get(lsSortEle.size() - 1).getStartAbs());
 	}
 	/**
-	 * ´ıÑéÖ¤
+	 * å¾…éªŒè¯
 	 */
 	@Override
 	public double getEndCis() {
@@ -100,7 +100,7 @@ public class ElementCombDouble<T extends ElementAbsDouble> implements ElementAbs
 		return lsSortEle.get(lsSortEle.size() - 1).getEndCis();
 	}
 	/**
-	 * ´ıÑéÖ¤
+	 * å¾…éªŒè¯
 	 */
 	@Override
 	public double getEndAbs() {
@@ -130,7 +130,7 @@ public class ElementCombDouble<T extends ElementAbsDouble> implements ElementAbs
 		return name;
 	}
 	/**
-	 * ÊäÈëµÄ¼¸¸öexonÊÇ²»ÊÇÒ»ÑùµÄ
+	 * è¾“å…¥çš„å‡ ä¸ªexonæ˜¯ä¸æ˜¯ä¸€æ ·çš„
 	 * @return
 	 */
 	public boolean isSameEle()

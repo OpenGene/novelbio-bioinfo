@@ -6,7 +6,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
 
 /**
- * °ÑNCBIµÄrefseqµÄ¸ñÊ½½øĞĞĞŞÕı
+ * æŠŠNCBIçš„refseqçš„æ ¼å¼è¿›è¡Œä¿®æ­£
  * @author zong0jie
  */
 public class NCBIrefseqChangeFormat {

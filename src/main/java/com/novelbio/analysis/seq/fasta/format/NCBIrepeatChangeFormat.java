@@ -9,8 +9,8 @@ import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 /** 
- * NCBIµÄrepeatÓĞÎÊÌâ
- * È¾É«ÌåµÄNCBIIDºÍchrIDÖ®¼äµÄ×ª»»±í */
+ * NCBIçš„repeatæœ‰é—®é¢˜
+ * æŸ“è‰²ä½“çš„NCBIIDå’ŒchrIDä¹‹é—´çš„è½¬æ¢è¡¨ */
 public class NCBIrepeatChangeFormat {
 
 	public static void main(String[] args) {
@@ -23,7 +23,7 @@ public class NCBIrepeatChangeFormat {
 	HashMap<String, String> mapAccID2ChrID = new HashMap<String, String>();
 	/**
 	 * @param txtRepeat
-	 * @param accIDconvertTab È¾É«ÌåµÄNCBIIDºÍchrIDÖ®¼äµÄ×ª»»±í
+	 * @param accIDconvertTab æŸ“è‰²ä½“çš„NCBIIDå’ŒchrIDä¹‹é—´çš„è½¬æ¢è¡¨
 	 */
 	public void setTxtRef(String txtRepeat, String accIDconvertTab) {
 		this.txtRepeat = txtRepeat;

@@ -20,11 +20,11 @@ import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 
 /**
- * ¸øÖÜÇÙ×ö·ÖÎöµÄÒ»Ì×¶«Î÷
- * ÈËÀàÀïÃæÄ¬ÈÏÊÇ
- * NovelBioConst.GENOME_GFF_TYPE_UCSC, ºÍ
+ * ç»™å‘¨ç´åšåˆ†æçš„ä¸€å¥—ä¸œè¥¿
+ * äººç±»é‡Œé¢é»˜è®¤æ˜¯
+ * NovelBioConst.GENOME_GFF_TYPE_UCSC, å’Œ
  * NovelBioConst.GENOME_PATH_UCSC_HG18_GFF_REFSEQ
- * ÕâÁ½¸ö
+ * è¿™ä¸¤ä¸ª
  * @author zong0jie
  *
  */
@@ -45,11 +45,11 @@ public class PenncnvCope {
 	
 	HashMap<GeneID, HashMap<String, String>> hashGeneCnv = new HashMap<GeneID, HashMap<String,String>>();
 	/**
-	 * ÓÃÓÚcopedIDÅÅĞò
+	 * ç”¨äºcopedIDæ’åº
 	 */
 	LinkedHashSet<GeneID> hashCopedID = new LinkedHashSet<GeneID>();
 	/**
-	 * ÓÃÓÚsampleÅÅĞò
+	 * ç”¨äºsampleæ’åº
 	 */
 	LinkedHashSet<String> hashSample = new LinkedHashSet<String>();
 	
@@ -67,7 +67,7 @@ public class PenncnvCope {
 	
 	
 	/**
-	 * Ä¬ÈÏhg18µÄĞÅÏ¢
+	 * é»˜è®¤hg18çš„ä¿¡æ¯
 	 * @param GffType
 	 * @param GffFIle
 	 */
@@ -97,7 +97,7 @@ public class PenncnvCope {
 	}
 	
 	/**
-	 * ²éÕÒÄ³¸öcnvµÄ»ùÒòÇé¿ö
+	 * æŸ¥æ‰¾æŸä¸ªcnvçš„åŸºå› æƒ…å†µ
 	 * @param chrID
 	 * @param cod1
 	 * @param cod2
@@ -111,7 +111,7 @@ public class PenncnvCope {
 			if (!hashCopedID.contains(copedID)) {
 				hashCopedID.add(copedID);
 			}
-			//Ìí¼ÓcopedID
+			//æ·»åŠ copedID
 			if (hashGeneCnv.containsKey(copedID)) {
 				HashMap<String, String> hashTmpSample2Cnv = hashGeneCnv.get(copedID);
 				hashTmpSample2Cnv.put(sampleName, cnvstate);
@@ -154,11 +154,11 @@ public class PenncnvCope {
 	
 	
 	/**
-	 * ¸ø¶¨cnstateµÄÎÄ×Ö£¬·µ»Ø¾ßÌåµÄcnµÈ¼¶
-	 * @param cnstate ÀàËÆ"state5,cn=3"
+	 * ç»™å®šcnstateçš„æ–‡å­—ï¼Œè¿”å›å…·ä½“çš„cnç­‰çº§
+	 * @param cnstate ç±»ä¼¼"state5,cn=3"
 	 * @return
-	 * ³ö´í¾Í·µ»Ønull
-	 * ·µ»ØCN0-CN4ÖĞµÄÒ»¸ö
+	 * å‡ºé”™å°±è¿”å›null
+	 * è¿”å›CN0-CN4ä¸­çš„ä¸€ä¸ª
 	 */
 	private String getCNstate(String cnstate)
 	{
@@ -181,9 +181,9 @@ public class PenncnvCope {
 
 	
 	/**
-	 * @param colSampleName ĞèÒªÊÇ¸ø¶¨Ë³ĞòµÄ£¬È¥ÈßÓàµÄsampleÃû
-	 * ·µ»ØÒ»ÏµÁĞµÄlsGenes¶¼³õÊ¼»¯cnstatesÎªcn2
-	 * Í¬Ê±³õÊ¼»¯hashSample£¬Õâ¸öÓÃÓÚsampleÅÅĞòµÄ
+	 * @param colSampleName éœ€è¦æ˜¯ç»™å®šé¡ºåºçš„ï¼Œå»å†—ä½™çš„sampleå
+	 * è¿”å›ä¸€ç³»åˆ—çš„lsGeneséƒ½åˆå§‹åŒ–cnstatesä¸ºcn2
+	 * åŒæ—¶åˆå§‹åŒ–hashSampleï¼Œè¿™ä¸ªç”¨äºsampleæ’åºçš„
 	 */
 	private HashMap<String, String> getLsCNgene(Collection<String> colSampleName)
 	{

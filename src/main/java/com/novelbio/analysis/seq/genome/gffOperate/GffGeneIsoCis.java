@@ -13,14 +13,14 @@ import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 import com.novelbio.database.model.modgeneid.GeneType;
 /**
- * Ãû×ÖÍ¨Í¨Ğ¡Ğ´
- * ¼ÆËã¾àÀëÊ±£¬SnnnC<br>
- * S¾àÀëCÎª5£¬SºÍCÖØºÏÊ±¾àÀëÎª0<br>
+ * åå­—é€šé€šå°å†™
+ * è®¡ç®—è·ç¦»æ—¶ï¼ŒSnnnC<br>
+ * Sè·ç¦»Cä¸º5ï¼ŒSå’ŒCé‡åˆæ—¶è·ç¦»ä¸º0<br>
  * CnnnATG<br>
- * Cµ½UTRendµÄ¾àÀë: ATGsite - coord - 1;//CnnnATG<br>
- * Cµ½ATGµÄ¾àÀë: coord - ATGsite//CnnnATG<br>
- * ¾àÀë±¾ÍâÏÔ×ÓÆğÊ¼ nnnCnnÎª3¸ö¼î»ù£¬¾àÀëÖÕµãÎª2¸ö¼î»ù<br>
- * ¾àÀë±¾ÍâÏÔ×ÓÆğÊ¼ CnnÎª0¸ö¼î»ù<br>
+ * Cåˆ°UTRendçš„è·ç¦»: ATGsite - coord - 1;//CnnnATG<br>
+ * Cåˆ°ATGçš„è·ç¦»: coord - ATGsite//CnnnATG<br>
+ * è·ç¦»æœ¬å¤–æ˜¾å­èµ·å§‹ nnnCnnä¸º3ä¸ªç¢±åŸºï¼Œè·ç¦»ç»ˆç‚¹ä¸º2ä¸ªç¢±åŸº<br>
+ * è·ç¦»æœ¬å¤–æ˜¾å­èµ·å§‹ Cnnä¸º0ä¸ªç¢±åŸº<br>
  * @author zong0jie
  *
  */

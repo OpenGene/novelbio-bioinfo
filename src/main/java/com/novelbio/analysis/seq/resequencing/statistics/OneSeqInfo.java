@@ -5,13 +5,13 @@ import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo;
 import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo.SnpIndelType;
 
 public class OneSeqInfo extends RefSiteSnpIndel {
-	/** ±¾Î»µã×î¶àsnpµÄÀàĞÍ */
+	/** æœ¬ä½ç‚¹æœ€å¤šsnpçš„ç±»å‹ */
 	private SnpIndelType snpIndelType;
 	private int indelReadsNum;
 	
-	/** ¼ÇÂ¼Á¬ĞøµÄat»òGCÊıÁ¿ */
+	/** è®°å½•è¿ç»­çš„atæˆ–GCæ•°é‡ */
 	int sameTypeNum = 0;
-	/** ÖÜ±ßÁ¬ĞøÏàÍ¬AT »ò ÏàÍ¬CG µÄreads¸²¸Ç¶ÈÀÛ¼Ó£¬·½±ã×îºóÈ¡Æ½¾ùÖµ */
+	/** å‘¨è¾¹è¿ç»­ç›¸åŒAT æˆ– ç›¸åŒCG çš„readsè¦†ç›–åº¦ç´¯åŠ ï¼Œæ–¹ä¾¿æœ€åå–å¹³å‡å€¼ */
 	int readsNumCumulation = 0;
 	
 	OneSeqInfo oneSeqInfoLast;
@@ -22,13 +22,13 @@ public class OneSeqInfo extends RefSiteSnpIndel {
 	}
 	
 	/**
-	 * ÓÃÀàËÆ
+	 * ç”¨ç±»ä¼¼
 	 * chr1	914899	A	9	.,,.,,,..	9@>FC@3IG
-	 * ĞÅÏ¢À´ÉèÖÃseq
-	 * @param pileupLines ÀàËÆchr1	914899	A	9	.,,.,,,..	9@>FC@3IG
-	 * À´×Ôsam/bamÎÄ¼şpileupÖ®ºóµÄÎÄ¼ş
-	 * @param oneSeqInfoUp ÉÏÒ»ĞĞµÄĞÅÏ¢
-	 * @param snpThresholdReadsNum  µÃÊ§Î»µãµÄ×îĞ¡Öµ£¬snpThresholdPercentage
+	 * ä¿¡æ¯æ¥è®¾ç½®seq
+	 * @param pileupLines ç±»ä¼¼chr1	914899	A	9	.,,.,,,..	9@>FC@3IG
+	 * æ¥è‡ªsam/bamæ–‡ä»¶pileupä¹‹åçš„æ–‡ä»¶
+	 * @param oneSeqInfoUp ä¸Šä¸€è¡Œçš„ä¿¡æ¯
+	 * @param snpThresholdReadsNum  å¾—å¤±ä½ç‚¹çš„æœ€å°å€¼ï¼ŒsnpThresholdPercentage
 	 */
 	public OneSeqInfo(String pileupLines, OneSeqInfo oneSeqInfoLast) {
 		setSamToolsPilup(pileupLines);
@@ -74,16 +74,16 @@ public class OneSeqInfo extends RefSiteSnpIndel {
 	public OneSeqInfo getOneSeqInfoLast() {
 		return oneSeqInfoLast;
 	}
-	/** Çå³ı¶ÔÉÏÒ»¸öOneSeqInfoµÄÒıÓÃ */
+	/** æ¸…é™¤å¯¹ä¸Šä¸€ä¸ªOneSeqInfoçš„å¼•ç”¨ */
 	public void clearOneSeqInfoLast() {
 		this.oneSeqInfoLast = null;
 	}
 	/**
-	 * <b>Ã»ÓĞ½«ÉÏÒ»¸öÒıÓÃÇå¿Õ</b>
-	 * »ñµÃÏÂÒ»¸öÎ»µãµÄĞÅÏ¢£¬×¢Òâ£º
-	 * readsNumAll  ¶ÑµşµÄreadsÊıÁ¿
-	 * indelReadsNum  µÃÊ§Î»µãÊıÁ¿
-	 * ¶¼Îª0
+	 * <b>æ²¡æœ‰å°†ä¸Šä¸€ä¸ªå¼•ç”¨æ¸…ç©º</b>
+	 * è·å¾—ä¸‹ä¸€ä¸ªä½ç‚¹çš„ä¿¡æ¯ï¼Œæ³¨æ„ï¼š
+	 * readsNumAll  å †å çš„readsæ•°é‡
+	 * indelReadsNum  å¾—å¤±ä½ç‚¹æ•°é‡
+	 * éƒ½ä¸º0
 	 * @return
 	 */
 	public OneSeqInfo getOneSeqInfoNext(String refNextBase) {
@@ -101,14 +101,14 @@ public class OneSeqInfo extends RefSiteSnpIndel {
 		return oneSeqInfoNext;
 	}
 	
-	/** ÊÇ·ñºÍÉÏÒ»¸öOneSeqInfoÁ¬Ğø */
+	/** æ˜¯å¦å’Œä¸Šä¸€ä¸ªOneSeqInfoè¿ç»­ */
 	public boolean isContinuesSite() {
 		if (isSameChrID() && super.refSnpIndelStart == oneSeqInfoLast.getRefSnpIndelStart() + 1) {
 			return true;
 		}
 		return false;
 	}
-	/** ÊÇ·ñºÍÉÏÒ»¸öOneSeqInfoÔÚÍ¬Ò»ÌõÈ¾É«ÌåÉÏ */
+	/** æ˜¯å¦å’Œä¸Šä¸€ä¸ªOneSeqInfoåœ¨åŒä¸€æ¡æŸ“è‰²ä½“ä¸Š */
 	public boolean isSameChrID() {
 		if (oneSeqInfoLast == null) {
 			return false;
@@ -118,7 +118,7 @@ public class OneSeqInfo extends RefSiteSnpIndel {
 		}
 		return false;
 	}
-	/** ÊÇ·ñÓëÉÏÒ»¸ösiteÖĞ¼äÓĞgap */
+	/** æ˜¯å¦ä¸ä¸Šä¸€ä¸ªsiteä¸­é—´æœ‰gap */
 	public boolean isGapWithOneSeqLast() {
 		if (oneSeqInfoLast != null 
 				&& chrID.equalsIgnoreCase(oneSeqInfoLast.chrID) 
@@ -127,16 +127,16 @@ public class OneSeqInfo extends RefSiteSnpIndel {
 		}
 		return false;
 	}
-	/** ±ØĞë isGapWithOneSeqLast ÅĞ¶¨ÎªtrueÊ± ±¾ÏîÄ¿²ÅÓĞÒâÒå
-	 * ÓëÉÏÒ»¸ösiteÖĞ¼äµÄgap³¤¶È¡£
-	 * Èç¹ûÁ¬Ğø£¬ÔòÎª0
+	/** å¿…é¡» isGapWithOneSeqLast åˆ¤å®šä¸ºtrueæ—¶ æœ¬é¡¹ç›®æ‰æœ‰æ„ä¹‰
+	 * ä¸ä¸Šä¸€ä¸ªsiteä¸­é—´çš„gapé•¿åº¦ã€‚
+	 * å¦‚æœè¿ç»­ï¼Œåˆ™ä¸º0
 	 */
 	public int getGapLengthWithLastSeq() {
 		return getRefSnpIndelStart() - oneSeqInfoLast.getRefSnpIndelStart() - 1;
 	}
 	/**
-	 * ÊÇÁ¬Ğø¼î»ù£¬²¢ÇÒÎªÏàÍ¬µÄCG»òAT£¬²¢ÇÒ²»ÎªN
-	 * @param oneSeqInfoUp  ÉÏÒ»¸öoneSeqInfo
+	 * æ˜¯è¿ç»­ç¢±åŸºï¼Œå¹¶ä¸”ä¸ºç›¸åŒçš„CGæˆ–ATï¼Œå¹¶ä¸”ä¸ä¸ºN
+	 * @param oneSeqInfoUp  ä¸Šä¸€ä¸ªoneSeqInfo
 	 * @return
 	 */
 	public boolean isSameSiteType_And_Not_N() {
@@ -148,16 +148,16 @@ public class OneSeqInfo extends RefSiteSnpIndel {
 		}
 		return false;
 	}
-	/** »ñµÃÁ¬ĞøAT»òÕßGCµÄ¸²¸Ç¶ÈÆ½¾ùÊı */
+	/** è·å¾—è¿ç»­ATæˆ–è€…GCçš„è¦†ç›–åº¦å¹³å‡æ•° */
 	public double getSameSiteNumAvg() {
 		return readsNumCumulation/sameTypeNum;
 	}
-	/** Á¬ĞøAT»òÕßGCµÄÊıÁ¿ */
+	/** è¿ç»­ATæˆ–è€…GCçš„æ•°é‡ */
 	public int getSameSiteNum() {
 		return sameTypeNum;
 	}
 
-	/** »ñµÃ¸ÃÎ»µãµÄÀàĞÍ£¬Æ©ÈçÊÇCG£¬»¹ÊÇAT£¬»¹ÊÇN */
+	/** è·å¾—è¯¥ä½ç‚¹çš„ç±»å‹ï¼Œè­¬å¦‚æ˜¯CGï¼Œè¿˜æ˜¯ATï¼Œè¿˜æ˜¯N */
 	public SeqType getSiteSeqType() {
 		if(getRefBase().equals("A") || getRefBase().equals("T")) {
 			return SeqType.AT;

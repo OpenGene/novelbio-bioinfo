@@ -11,8 +11,8 @@ import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.model.modgeneid.GeneID;
 
 /**
- * ½«MicroarrayÓë±¾ÎïÖĞĞòÁĞblastµÄ½á¹ûµ¼ÈëÊı¾İ¿â
- * <b>×¢ÒâÒªÉè¶¨±È¶Ôµ½µÄÊÇAccID»¹ÊÇgeneID£¬Í¬Ê±Ò²±ğÍüÁËÉè¶¨Ğ¾Æ¬À´Ô´setDbInfo</b>
+ * å°†Microarrayä¸æœ¬ç‰©ä¸­åºåˆ—blastçš„ç»“æœå¯¼å…¥æ•°æ®åº“
+ * <b>æ³¨æ„è¦è®¾å®šæ¯”å¯¹åˆ°çš„æ˜¯AccIDè¿˜æ˜¯geneIDï¼ŒåŒæ—¶ä¹Ÿåˆ«å¿˜äº†è®¾å®šèŠ¯ç‰‡æ¥æºsetDbInfo</b>
  * @author zong0jie
  *
  */
@@ -25,21 +25,21 @@ public class MicroArrayBlast {
 		this.taxID = taxID;
 	}
 	/**
-	 * Éè¶¨evalueãĞÖµ£¬Ö»ÓĞµ±evalueĞ¡ÓÚµÈÓÚ¸ÃãĞÖµÊ±²Å»áµ¼ÈëÊı¾İ¿â
+	 * è®¾å®ševalueé˜ˆå€¼ï¼Œåªæœ‰å½“evalueå°äºç­‰äºè¯¥é˜ˆå€¼æ—¶æ‰ä¼šå¯¼å…¥æ•°æ®åº“
 	 * @param evalue
 	 */
 	public void setEvalue(double evalue) {
 		this.evalue = evalue;
 	}
 	/**
-	 * Éè¶¨identityãĞÖµ£¬Ö»ÓĞµ±identity´óÓÚµÈÓÚ¸ÃãĞÖµÊ±²Å»áµ¼ÈëÊı¾İ¿â
+	 * è®¾å®šidentityé˜ˆå€¼ï¼Œåªæœ‰å½“identityå¤§äºç­‰äºè¯¥é˜ˆå€¼æ—¶æ‰ä¼šå¯¼å…¥æ•°æ®åº“
 	 * @param evalue
 	 */
 	public void setIdentity(double identity) {
 		this.identity = identity;
 	}
 	/**
-	 * Éè¶¨Êı¾İ¿â£¬Ö¸ÃûÀ´Ô´ÓÚÄÄ¸öĞ¾Æ¬
+	 * è®¾å®šæ•°æ®åº“ï¼ŒæŒ‡åæ¥æºäºå“ªä¸ªèŠ¯ç‰‡
 	 * @param dbInfo
 	 */
 	public void setDbInfo(String dbInfo) {
@@ -48,7 +48,7 @@ public class MicroArrayBlast {
 	
 	String geneIDType = GeneID.IDTYPE_ACCID;
 	/**
-	 * blastµ½µÄIDÊÇaccID»¹ÊÇgeneID»¹ÊÇUniID
+	 * blaståˆ°çš„IDæ˜¯accIDè¿˜æ˜¯geneIDè¿˜æ˜¯UniID
 	 * @param blastID
 	 */
 	public void setGeneID(String geneIDType) {
@@ -56,8 +56,8 @@ public class MicroArrayBlast {
 	}
 	
 	/**
-	 * ½«Ö¸¶¨µÄÎÄ¼şµ¼ÈëÊı¾İ¿â£¬±ØĞëÊÇÃ¿Ò»ĞĞ¶¼ÄÜµ¥¶Àµ¼ÈëµÄ±í
-	 * Èç¹ûĞèÒªµ¼Èë¶àĞĞ£¬Æ©ÈçamiGOµÄĞÅÏ¢£¬Çë¸²¸Ç¸Ã·½·¨
+	 * å°†æŒ‡å®šçš„æ–‡ä»¶å¯¼å…¥æ•°æ®åº“ï¼Œå¿…é¡»æ˜¯æ¯ä¸€è¡Œéƒ½èƒ½å•ç‹¬å¯¼å…¥çš„è¡¨
+	 * å¦‚æœéœ€è¦å¯¼å…¥å¤šè¡Œï¼Œè­¬å¦‚amiGOçš„ä¿¡æ¯ï¼Œè¯·è¦†ç›–è¯¥æ–¹æ³•
 	 */
 	public void updateFile(String gene2AccFile, boolean gzip) {
 		TxtReadandWrite txtGene2Acc;
@@ -68,7 +68,7 @@ public class MicroArrayBlast {
 			txtGene2Acc = new TxtReadandWrite(gene2AccFile, false);
 
 		ArrayList<String[]> lsInfo = txtGene2Acc.ExcelRead(1, 1, -1, -1, 1);
-		//ÅÅ¸öĞò£¬°´ÕÕevalueºÍidentityÅÅĞò
+		//æ’ä¸ªåºï¼ŒæŒ‰ç…§evalueå’Œidentityæ’åº
 		Collections.sort(lsInfo, new Comparator<String[]>() {
 			/**
 			 * 0: queryID
@@ -82,15 +82,15 @@ public class MicroArrayBlast {
 				Double identity1 = Double.parseDouble(o1[2]);
 				Double evalue2 = Double.parseDouble(o2[10]);
 				Double identity2 = Double.parseDouble(o2[2]);
-				//evalueÔ½Ğ¡Ô½ºÃ
+				//evalueè¶Šå°è¶Šå¥½
 				int result = evalue1.compareTo(evalue2);
 				if (result != 0)
 					return result;
-				//identityÔ½´óÔ½ºÃ
+				//identityè¶Šå¤§è¶Šå¥½
 				return -identity1.compareTo(identity2);
 			}
 		});
-		//½«ÅÅĞòºóµÄlsInfoÈ¥ÖØ¸´
+		//å°†æ’åºåçš„lsInfoå»é‡å¤
 		ArrayList<String[]> lsFinal = new ArrayList<String[]>();
 		HashSet<String> hashID = new HashSet<String>();
 		for (String[] strings : lsInfo) {
@@ -99,16 +99,16 @@ public class MicroArrayBlast {
 			}
 			lsFinal.add(strings);
 		}
-		//½«È¥ÖØ¸´ºÍÅÅĞòµÄ±È¶Ô½á¹ûµ¼ÈëÊı¾İ¿â
-		boolean flag = true;//ÊÇ·ñµ¼ÈëÊı¾İ¿â
+		//å°†å»é‡å¤å’Œæ’åºçš„æ¯”å¯¹ç»“æœå¯¼å…¥æ•°æ®åº“
+		boolean flag = true;//æ˜¯å¦å¯¼å…¥æ•°æ®åº“
 		for (String[] strings : lsFinal) {
-			if (Double.parseDouble(strings[2]) > 90//Ò»ÖÂĞòÁĞ´óÓÚ90%
+			if (Double.parseDouble(strings[2]) > 90//ä¸€è‡´åºåˆ—å¤§äº90%
 					&&
 			(Double.parseDouble(strings[10]) < 1e-90
 			||
-			  (Double.parseDouble(strings[3]) > 100//±È¶Ô³¤¶È´óÓÚ100
+			  (Double.parseDouble(strings[3]) > 100//æ¯”å¯¹é•¿åº¦å¤§äº100
 					&& 
-			  Double.parseDouble(strings[4])+Double.parseDouble(strings[5]) <= Double.parseDouble(strings[3])*0.03//´íÅäºÍgapÖ®ºÍĞ¡ÓÚ±È¶Ô³¤¶ÈµÄ0.03
+			  Double.parseDouble(strings[4])+Double.parseDouble(strings[5]) <= Double.parseDouble(strings[3])*0.03//é”™é…å’Œgapä¹‹å’Œå°äºæ¯”å¯¹é•¿åº¦çš„0.03
 			  )
 		   )
 	      ) {
@@ -123,7 +123,7 @@ public class MicroArrayBlast {
 			
 			GeneID copedID = new GeneID(strings[0], taxID);
 
-			//Èç¹ûÊı¾İ¿âÖĞÃ»ÓĞÕâ¸öID£¬ÄÇÃ´¾Íµ¼ÈëÊı¾İ¿â
+			//å¦‚æœæ•°æ®åº“ä¸­æ²¡æœ‰è¿™ä¸ªIDï¼Œé‚£ä¹ˆå°±å¯¼å…¥æ•°æ®åº“
 			if (copedID.getIDtype().equals(GeneID.IDTYPE_ACCID)) {
 				if (!geneIDType.equals(GeneID.IDTYPE_ACCID)) {
 					copedID.setUpdateGeneID(strings[1], geneIDType);
@@ -132,13 +132,13 @@ public class MicroArrayBlast {
 					copedID.setUpdateRefAccID(strings[1]);
 				}
 			}
-			///////////////////////////Êı¾İ¿âÖĞÒÑ¾­ÓĞÕâ¸öIDÁË£¬ÄÇÃ´Ê×ÏÈ¿´ÊÇ·ñÊÇÍ¬Ò»¸öID£¬Èç¹û²»ÊÇµÄ»°£¬¿´evalueÊÇ·ñÎª0£¬identityÊÇ·ñ´óÓÚ99£¬ÊÇµÄ»°¾Í¸²¸Çµô////////////////////////
-			//////////////////////   ÓĞ´ıÊµÏÖ   //////////////////////////////////////////////////////////////////////////////////
+			///////////////////////////æ•°æ®åº“ä¸­å·²ç»æœ‰è¿™ä¸ªIDäº†ï¼Œé‚£ä¹ˆé¦–å…ˆçœ‹æ˜¯å¦æ˜¯åŒä¸€ä¸ªIDï¼Œå¦‚æœä¸æ˜¯çš„è¯ï¼Œçœ‹evalueæ˜¯å¦ä¸º0ï¼Œidentityæ˜¯å¦å¤§äº99ï¼Œæ˜¯çš„è¯å°±è¦†ç›–æ‰////////////////////////
+			//////////////////////   æœ‰å¾…å®ç°   //////////////////////////////////////////////////////////////////////////////////
 			else {
 				//TODO
 //				Double evalue = Double.parseDouble(strings[10]);
 //				Double identity = Double.parseDouble(strings[2]);
-//				//²»ÊÇºÜÏàËÆ¾ÍÈ¥³ı
+//				//ä¸æ˜¯å¾ˆç›¸ä¼¼å°±å»é™¤
 //				if (evalue > 1e-200 || identity < 99) {
 //					return;
 //				}

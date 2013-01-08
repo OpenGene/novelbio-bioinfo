@@ -8,9 +8,9 @@ import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 /**
- * ¸ù¾İsnpĞÅÏ¢£¬Ñ¡ÔñÄ³¼¸¸ö´¦ÀíÀïÃæ¶¼·¢Éú±ä»¯µÄ»ùÒò
- * ¸Ğ¾õÃ»Ê²Ã´ÓÃ
- * ÊäÈëµÄÎÄ¼şÊÇÑ¡¶¨µÄsnpÎÄ¼ş
+ * æ ¹æ®snpä¿¡æ¯ï¼Œé€‰æ‹©æŸå‡ ä¸ªå¤„ç†é‡Œé¢éƒ½å‘ç”Ÿå˜åŒ–çš„åŸºå› 
+ * æ„Ÿè§‰æ²¡ä»€ä¹ˆç”¨
+ * è¾“å…¥çš„æ–‡ä»¶æ˜¯é€‰å®šçš„snpæ–‡ä»¶
  * @author zong0jie
  *
  */
@@ -19,7 +19,7 @@ public class FilterGene {
 	ArrayList<String[]> lsInfo = null;
 	/**
 	 * key: gene
-	 * value: geneËù¶ÔÓ¦µÄĞĞ
+	 * value: geneæ‰€å¯¹åº”çš„è¡Œ
 	 */
 	HashMap<String, ArrayList<String[]>> hashInfo = new HashMap<String, ArrayList<String[]>>();
 	String flag = "TRUE";
@@ -72,7 +72,7 @@ public class FilterGene {
 		txtOut.ExcelWrite(lsGeneInfo);
 	}
 	/**
-	 * ¸ù¾İ¸ø¶¨ÁĞ£¬ÅĞ¶Ï¸ÃÁĞÊÇ·ñÎªtrue£¬Èç¹ûÎªtrue£¬ÔòÌáÈ¡ÏàÓ¦µÄgene
+	 * æ ¹æ®ç»™å®šåˆ—ï¼Œåˆ¤æ–­è¯¥åˆ—æ˜¯å¦ä¸ºtrueï¼Œå¦‚æœä¸ºtrueï¼Œåˆ™æå–ç›¸åº”çš„gene
 	 */
 	private HashSet<String> getGene(int... flagCol) {
 		HashSet<String> hashResult = new HashSet<String>();
@@ -90,7 +90,7 @@ public class FilterGene {
 		return hashResult;
 	}
 	/**
-	 * ¸ø¶¨Ò»×éhash±í£¬½«¹²ÓĞµÄ»ùÒòÌôÑ¡³öÀ´
+	 * ç»™å®šä¸€ç»„hashè¡¨ï¼Œå°†å…±æœ‰çš„åŸºå› æŒ‘é€‰å‡ºæ¥
 	 * @param hashGenes
 	 * @return
 	 */
@@ -105,7 +105,7 @@ public class FilterGene {
 					break;
 				}
 			}
-			//Èç¹ûÃ¿¸ö¶¼º¬ÓĞ
+			//å¦‚æœæ¯ä¸ªéƒ½å«æœ‰
 			if (flag)
 				lsResult.add(string);
 		}
@@ -113,7 +113,7 @@ public class FilterGene {
 	}
 	
 	/**
-	 * ¸ø¶¨geneID£¬½«º¬ÓĞ¸ÃgeneIDµÄËùÓĞĞĞÈ«²¿ÌáÈ¡³öÀ´
+	 * ç»™å®šgeneIDï¼Œå°†å«æœ‰è¯¥geneIDçš„æ‰€æœ‰è¡Œå…¨éƒ¨æå–å‡ºæ¥
 	 * @param lsGeneID
 	 * @return
 	 */

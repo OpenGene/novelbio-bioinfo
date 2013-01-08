@@ -2,7 +2,7 @@ package com.novelbio.analysis.seq.genome.gffOperate;
 
 import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
 /**
- * ¼Ì³Ğ Comparable ½Ó¿Ú£¬Ö»±È½Ïscore
+ * ç»§æ‰¿ Comparable æ¥å£ï¼Œåªæ¯”è¾ƒscore
  * @author zong0jie
  *
  */
@@ -18,28 +18,28 @@ public class ListDetailBin extends ListDetailAbs {
 	{}
 	
 	/**
-	 * Éè¶¨·ÖÊı£¬¸ù¾İĞèÒª±£´ædoubleÖµ
+	 * è®¾å®šåˆ†æ•°ï¼Œæ ¹æ®éœ€è¦ä¿å­˜doubleå€¼
 	 * @param score
 	 */
 	public void setScore(double score) {
 		this.score = score;
 	}
 	/**
-	 * »ñµÃ·ÖÊı£¬¸ù¾İĞèÒª±£´æµÄdoubleÖµ
+	 * è·å¾—åˆ†æ•°ï¼Œæ ¹æ®éœ€è¦ä¿å­˜çš„doubleå€¼
 	 * @return
 	 */
 	public double getScore() {
 		return score;
 	}
 	/**
-	 * Éè¶¨ÃèÊö£¬¸ù¾İĞèÒª±£´æstringÖµ
+	 * è®¾å®šæè¿°ï¼Œæ ¹æ®éœ€è¦ä¿å­˜stringå€¼
 	 * @param score
 	 */
 	public void setDescription(String description) {
 		this.description = description;
 	}
 	/**
-	 * »ñµÃÃèÊö£¬¸ù¾İĞèÒª±£´æµÄstringÖµ
+	 * è·å¾—æè¿°ï¼Œæ ¹æ®éœ€è¦ä¿å­˜çš„stringå€¼
 	 * @param description
 	 */
 	public String getDescription() {

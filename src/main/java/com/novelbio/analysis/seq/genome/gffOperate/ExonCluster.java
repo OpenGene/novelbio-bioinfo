@@ -30,19 +30,19 @@ public class ExonCluster {
 	int endLoc = 0;
 	ArrayList<ExonInfo> lsCombExon;
 	/**
-	 * list--ËùÓĞisoform
-	 * list--Ã¿¸öisoformÖĞ¸Ã×éµÄËùÓĞexon
-	 * Èç¹û¸ÃisoÌø¹ıÁËÕâ¸öexon£¬ÔòÀïÃæ×°¿ÕµÄlist
-	 * Èç¹û¸Ãiso¸ù±¾²»ÔÚÕâ¸ö·¶Î§ÄÚ,ÔòÀïÃæ¾ÍÃ»ÓĞÕâ¸ölist
+	 * list--æ‰€æœ‰isoform
+	 * list--æ¯ä¸ªisoformä¸­è¯¥ç»„çš„æ‰€æœ‰exon
+	 * å¦‚æœè¯¥isoè·³è¿‡äº†è¿™ä¸ªexonï¼Œåˆ™é‡Œé¢è£…ç©ºçš„list
+	 * å¦‚æœè¯¥isoæ ¹æœ¬ä¸åœ¨è¿™ä¸ªèŒƒå›´å†…,åˆ™é‡Œé¢å°±æ²¡æœ‰è¿™ä¸ªlist
 	 */
 	ArrayList<ArrayList<ExonInfo>> lsIsoExon = new ArrayList<ArrayList<ExonInfo>>();
 	ArrayList<GffGeneIsoInfo> lsIsoParent = new ArrayList<GffGeneIsoInfo>();
-	/** ¸ÃisoÌø¹ıÁËÕâ¸öexon£¬ÔòÀïÃæ×°¿ÕµÄlist
-	 *  Èç¹û¸Ãiso¸ù±¾²»ÔÚÕâ¸ö·¶Î§ÄÚ,ÔòÀïÃæ¾ÍÃ»ÓĞÕâ¸ölist
+	/** è¯¥isoè·³è¿‡äº†è¿™ä¸ªexonï¼Œåˆ™é‡Œé¢è£…ç©ºçš„list
+	 *  å¦‚æœè¯¥isoæ ¹æœ¬ä¸åœ¨è¿™ä¸ªèŒƒå›´å†…,åˆ™é‡Œé¢å°±æ²¡æœ‰è¿™ä¸ªlist
 	 */
 	HashMap<GffGeneIsoInfo, ArrayList<ExonInfo>> mapIso2LsExon = new HashMap<GffGeneIsoInfo, ArrayList<ExonInfo>>();
 	/**
-	 * ¼ÇÂ¼Ìø¹ı¸ÃexonclusterµÄIso£¬ºÍ¿ç¹ı¸ÃexonclusterµÄÄÇ¶ÔexonµÄ£¬Ç°Ò»¸öexonµÄ±àºÅ<br>
+	 * è®°å½•è·³è¿‡è¯¥exonclusterçš„Isoï¼Œå’Œè·¨è¿‡è¯¥exonclusterçš„é‚£å¯¹exonçš„ï¼Œå‰ä¸€ä¸ªexonçš„ç¼–å·<br>
 	 */
 	HashMap<GffGeneIsoInfo, Integer> mapIso2ExonNumSkipTheCluster = new HashMap<GffGeneIsoInfo, Integer>();
 	
@@ -80,7 +80,7 @@ public class ExonCluster {
 				return lsExonInfos.get(0).isCis5to3();
 			}
 		}
-		logger.error("±¾exonclusterÎª¿Õ");
+		logger.error("æœ¬exonclusterä¸ºç©º");
 		return true;
 	}
 	public void setExonClusterBefore(ExonCluster exonClusterBefore) {
@@ -101,7 +101,7 @@ public class ExonCluster {
 	public int getLength() {
 		return Math.abs(endLoc - startLoc);
 	}
-	/** ·µ»ØÆäËùÔÚµÄGffGene */
+	/** è¿”å›å…¶æ‰€åœ¨çš„GffGene */
 	public GffDetailGene getParentGene() {
 		for (ArrayList<ExonInfo> lsExonInfos : lsIsoExon) {
 			if (lsExonInfos.size() > 0) {
@@ -112,8 +112,8 @@ public class ExonCluster {
 	}
 	
 	/**
-	 * Èç¹û¸ÃisoÌø¹ıÁËÕâ¸öexon£¬ÔòÀïÃæ×°¿ÕµÄlist
-	 * Èç¹û¸Ãiso¸ù±¾²»ÔÚÕâ¸ö·¶Î§ÄÚ,ÔòÀïÃæ¾ÍÃ»ÓĞÕâ¸ölist
+	 * å¦‚æœè¯¥isoè·³è¿‡äº†è¿™ä¸ªexonï¼Œåˆ™é‡Œé¢è£…ç©ºçš„list
+	 * å¦‚æœè¯¥isoæ ¹æœ¬ä¸åœ¨è¿™ä¸ªèŒƒå›´å†…,åˆ™é‡Œé¢å°±æ²¡æœ‰è¿™ä¸ªlist
 	 * @param gffGeneIsoInfo
 	 * @param lsExon
 	 */
@@ -122,27 +122,27 @@ public class ExonCluster {
 		mapIso2LsExon.put(gffGeneIsoInfo, lsExon);
 	}
 	
-	/** ¸ÃisoÌø¹ıÁËÕâ¸öexon£¬ÔòÀïÃæ×°¿ÕµÄlist
-	 * Èç¹û¸Ãiso¸ù±¾²»ÔÚÕâ¸ö·¶Î§ÄÚ,ÔòÀïÃæ¾ÍÃ»ÓĞÕâ¸ölist
+	/** è¯¥isoè·³è¿‡äº†è¿™ä¸ªexonï¼Œåˆ™é‡Œé¢è£…ç©ºçš„list
+	 * å¦‚æœè¯¥isoæ ¹æœ¬ä¸åœ¨è¿™ä¸ªèŒƒå›´å†…,åˆ™é‡Œé¢å°±æ²¡æœ‰è¿™ä¸ªlist
 	 */
 	public HashMap<GffGeneIsoInfo, ArrayList<ExonInfo>> getMapIso2LsExon() {
 		return mapIso2LsExon;
 	}
 	/**
-	 * list--ËùÓĞisoform
-	 * list--Ã¿¸öisoformÖĞ¸Ã×éµÄËùÓĞexon
-	 * Èç¹û¸ÃisoÌø¹ıÁËÕâ¸öexon£¬ÔòÀïÃæ×°¿ÕµÄlist
+	 * list--æ‰€æœ‰isoform
+	 * list--æ¯ä¸ªisoformä¸­è¯¥ç»„çš„æ‰€æœ‰exon
+	 * å¦‚æœè¯¥isoè·³è¿‡äº†è¿™ä¸ªexonï¼Œåˆ™é‡Œé¢è£…ç©ºçš„list
 	 */
 	public ArrayList<ArrayList<ExonInfo>> getLsIsoExon() {
 		return lsIsoExon;
 	}
 	/**
-	 * ÓĞÊ±ºò»á³öÏÖÕâÖÖÇé¿ö£¬Á½¸öiso²»ÊÇÍ¬Ò»¸ötss£¬
-	 * ÄÇÃ´Ò»Í·¾Í»áÂ¶ÔÚÍâÃæ£¬ÕâÖÖÇé¿ö²»ÊÇÎÒÃÇÏëÒªµÄ£¬²»×ö²îÒì¿É±ä¼ô½Ó·ÖÎö
-	 * Æ©Èç:<br>
+	 * æœ‰æ—¶å€™ä¼šå‡ºç°è¿™ç§æƒ…å†µï¼Œä¸¤ä¸ªisoä¸æ˜¯åŒä¸€ä¸ªtssï¼Œ
+	 * é‚£ä¹ˆä¸€å¤´å°±ä¼šéœ²åœ¨å¤–é¢ï¼Œè¿™ç§æƒ…å†µä¸æ˜¯æˆ‘ä»¬æƒ³è¦çš„ï¼Œä¸åšå·®å¼‚å¯å˜å‰ªæ¥åˆ†æ
+	 * è­¬å¦‚:<br>
 	 * 0-1-----2-3-----4-5-----------<br>
 	 *  -----------------4'-5'----------<br>
-	 *  ÄÇÃ´0-1-----2-3ÕâÁ½¸öexon¾Í²»ÊÇÎÒÃÇÏëÒªµÄ¶«Î÷£¬·µ»Øtrue<br>
+	 *  é‚£ä¹ˆ0-1-----2-3è¿™ä¸¤ä¸ªexonå°±ä¸æ˜¯æˆ‘ä»¬æƒ³è¦çš„ä¸œè¥¿ï¼Œè¿”å›true<br>
 	 * @return
 	 */
 	public boolean isAtEdge() {
@@ -161,12 +161,12 @@ public class ExonCluster {
 	}
 	
 	/**
-	 * ÓĞÊ±ºò»á³öÏÖÕâÖÖÇé¿ö£¬Á½¸öiso²»ÊÇÍ¬Ò»¸ötss£¬µ«½áÎ²ÏàÍ¬
-	 * ÕâÖÖÇé¿ö²»ÊÇÎÒÃÇÏëÒªµÄ£¬²»×ö²îÒì¿É±ä¼ô½Ó·ÖÎö
-	 * Æ©Èç:<br>
+	 * æœ‰æ—¶å€™ä¼šå‡ºç°è¿™ç§æƒ…å†µï¼Œä¸¤ä¸ªisoä¸æ˜¯åŒä¸€ä¸ªtssï¼Œä½†ç»“å°¾ç›¸åŒ
+	 * è¿™ç§æƒ…å†µä¸æ˜¯æˆ‘ä»¬æƒ³è¦çš„ï¼Œä¸åšå·®å¼‚å¯å˜å‰ªæ¥åˆ†æ
+	 * è­¬å¦‚:<br>
 	 *4----5-----------<br>
 	 *  -4'-5'----------<br>
-	 *  ÕâÁ½¸öexon¾Í²»ÊÇÎÒÃÇÏëÒªµÄ¶«Î÷£¬·µ»Øtrue<br>
+	 *  è¿™ä¸¤ä¸ªexonå°±ä¸æ˜¯æˆ‘ä»¬æƒ³è¦çš„ä¸œè¥¿ï¼Œè¿”å›true<br>
 	 * @return
 	 */
 	public boolean isNotSameTss_But_SameEnd() {
@@ -208,14 +208,14 @@ public class ExonCluster {
 	}
 	
 	/**
-	 * ±¾×éÖĞÊÇ·ñÎªÏàÍ¬µÄexon£¬Èç¹ûÏàÍ¬ÁËÄÇÃ´Ò²¾ÍÃ»ÓĞ¿É±ä¼ô½ÓµÄËµ·¨ÁË
+	 * æœ¬ç»„ä¸­æ˜¯å¦ä¸ºç›¸åŒçš„exonï¼Œå¦‚æœç›¸åŒäº†é‚£ä¹ˆä¹Ÿå°±æ²¡æœ‰å¯å˜å‰ªæ¥çš„è¯´æ³•äº†
 	 * @return
 	 */
 	public boolean isSameExon() {
 		if (sameExon != null) {
 			return sameExon;
 		}
-		//Èç¹û±¾×éÖĞÓĞ²»Ö¹Ò»¸öexonµÄ×ªÂ¼±¾£¬²¢ÇÒ»¹ÓĞ¿çÔ½µÄjunction£¬ËµÃ÷±¾×éÓĞ¿É±äµÄexon
+		//å¦‚æœæœ¬ç»„ä¸­æœ‰ä¸æ­¢ä¸€ä¸ªexonçš„è½¬å½•æœ¬ï¼Œå¹¶ä¸”è¿˜æœ‰è·¨è¶Šçš„junctionï¼Œè¯´æ˜æœ¬ç»„æœ‰å¯å˜çš„exon
 		if (lsIsoExon.size() >= 1 && mapIso2ExonNumSkipTheCluster.size() >= 1) {
 			sameExon = false;
 			return false;
@@ -231,7 +231,7 @@ public class ExonCluster {
 				sameExon = false;
 				break;
 			}
-			//±È½ÏµÚÒ»¸ö¾ÍĞĞÁË£¬ÒòÎªÈç¹ûÓĞÁ½¸öÖ±½Ó¾Í·µ»ØfalseÁË
+			//æ¯”è¾ƒç¬¬ä¸€ä¸ªå°±è¡Œäº†ï¼Œå› ä¸ºå¦‚æœæœ‰ä¸¤ä¸ªç›´æ¥å°±è¿”å›falseäº†
 			ExonInfo exon = lsIsoExon.get(i).get(0);
 			if (!exon.equals(exonOld)) {
 				sameExon = false;
@@ -241,7 +241,7 @@ public class ExonCluster {
 		return sameExon;
 	}	
 	
-	/** ·µ»Ø¸ÃexonClusterÖĞµÄËùÓĞexon */
+	/** è¿”å›è¯¥exonClusterä¸­çš„æ‰€æœ‰exon */
 	public ArrayList<ExonInfo> getAllExons() {
 		if (lsCombExon != null) {
 			return lsCombExon;
@@ -252,7 +252,7 @@ public class ExonCluster {
 	
 	private void combExon() {
 		lsCombExon = new ArrayList<ExonInfo>();
-		//ÓÃÀ´È¥ÖØ¸´µÄhash±í
+		//ç”¨æ¥å»é‡å¤çš„hashè¡¨
 		HashSet<ExonInfo> hashExon = new HashSet<ExonInfo>();
 		for (ArrayList<ExonInfo> lsExon : lsIsoExon) {
 			for (ExonInfo is : lsExon) {
@@ -264,8 +264,8 @@ public class ExonCluster {
 		}
 	}
 	/**
-	 * ¼ÇÂ¼IsoNameºÍËù¶ÔÓ¦µÄµÚÒ»¸öexonNumµÄ±àºÅ<br>
-	 * Èç¹û±¾×éÖĞ¸ÃIsoNameµÄ×ªÂ¼±¾ÕıºÃÃ»ÓĞexonÂäÔÚ×éÖĞ£¬Ò²¾ÍÊÇÌø¹ıÈ¥ÁË£¬ÄÇÃ´¼ÇÂ¼¸ÃIsoÔÚ±¾×éµÄÇ°Ò»¸öexonµÄNum
+	 * è®°å½•IsoNameå’Œæ‰€å¯¹åº”çš„ç¬¬ä¸€ä¸ªexonNumçš„ç¼–å·<br>
+	 * å¦‚æœæœ¬ç»„ä¸­è¯¥IsoNameçš„è½¬å½•æœ¬æ­£å¥½æ²¡æœ‰exonè½åœ¨ç»„ä¸­ï¼Œä¹Ÿå°±æ˜¯è·³è¿‡å»äº†ï¼Œé‚£ä¹ˆè®°å½•è¯¥Isoåœ¨æœ¬ç»„çš„å‰ä¸€ä¸ªexonçš„Num
 	 * @param Isoname
 	 * @param exonNumStart
 	 */
@@ -273,7 +273,7 @@ public class ExonCluster {
 		mapIso2ExonNumSkipTheCluster.put(gffGeneIsoInfo, exonNumStart);
 	}
 	/**
-	 * ¼ÇÂ¼Ìø¹ı¸ÃexonclusterµÄIso£¬ºÍ¿ç¹ı¸ÃexonclusterµÄÄÇ¶ÔexonµÄ£¬Ç°Ò»¸öexonµÄ±àºÅ<br>
+	 * è®°å½•è·³è¿‡è¯¥exonclusterçš„Isoï¼Œå’Œè·¨è¿‡è¯¥exonclusterçš„é‚£å¯¹exonçš„ï¼Œå‰ä¸€ä¸ªexonçš„ç¼–å·<br>
 	 */
 	public HashMap<GffGeneIsoInfo, Integer> getMapIso2ExonIndexSkipTheCluster() {
 		return mapIso2ExonNumSkipTheCluster;
@@ -288,8 +288,8 @@ public class ExonCluster {
 	}
 	
 	/**
-	 * »ñµÃ±¾exonclusterµÄ¼ô½ÓÀàĞÍ
-	 * TODO »¹ÓĞÒ»Ğ©Ê¶±ğ²»³öÀ´
+	 * è·å¾—æœ¬exonclusterçš„å‰ªæ¥ç±»å‹
+	 * TODO è¿˜æœ‰ä¸€äº›è¯†åˆ«ä¸å‡ºæ¥
 	 * @return
 	 */
 	public HashSet<ExonSplicingType> getExonSplicingTypeSet() {
@@ -309,7 +309,7 @@ public class ExonCluster {
 		}
 		
 		ArrayList<ExonInfo> lsSingleExonInfo = getExonInfoSingleLs();
-		//Ç°ÃæµÄexon²»Ò»Ñù
+		//å‰é¢çš„exonä¸ä¸€æ ·
 		if (exonClusterBefore != null && !exonClusterBefore.isSameExon()) {
 			if (isAltStart(lsSingleExonInfo)) {
 				setSplicingTypes.add(ExonSplicingType.altstart);
@@ -321,7 +321,7 @@ public class ExonCluster {
 				setSplicingTypes.add(ExonSplicingType.mutually_exon);
 			}
 		}
-		//ºóÃæµÄexon²»Ò»Ñù
+		//åé¢çš„exonä¸ä¸€æ ·
 		if (exonClusterAfter != null && !exonClusterAfter.isSameExon()) {
 			if (isAltStart(lsSingleExonInfo)) {
 				setSplicingTypes.add(ExonSplicingType.altstart);
@@ -355,7 +355,7 @@ public class ExonCluster {
 	}
 	
 	private boolean isRetainIntron() {
-		//retainIntronÓĞÁ½¸öÌõ¼ş£º1£º´æÔÚÒ»¸ö³¤µÄexon£¬2£º´æÔÚÁ½¸ö¶ÌµÄexon
+		//retainIntronæœ‰ä¸¤ä¸ªæ¡ä»¶ï¼š1ï¼šå­˜åœ¨ä¸€ä¸ªé•¿çš„exonï¼Œ2ï¼šå­˜åœ¨ä¸¤ä¸ªçŸ­çš„exon
 		boolean twoExon = false;
 		boolean oneExon = false;
 		for (ArrayList<ExonInfo> lsExon : lsIsoExon) {
@@ -370,22 +370,22 @@ public class ExonCluster {
 	}
 
 	/**
-	 * µ±ÎªCassetteÊ±£¬Éè¶¨Îªµ¥¸öCassette»¹ÊÇCassette_Multi
-	 * Èç¹û²»·ûºÏCassetteµÄÌõ¼ş£¬Ôò·µ»Ønull
+	 * å½“ä¸ºCassetteæ—¶ï¼Œè®¾å®šä¸ºå•ä¸ªCassetteè¿˜æ˜¯Cassette_Multi
+	 * å¦‚æœä¸ç¬¦åˆCassetteçš„æ¡ä»¶ï¼Œåˆ™è¿”å›null
 	 */
 	private ExonSplicingType getIfCassette() {
 		ExonSplicingType splicingType = null;
-		//»ñµÃ±¾Î»µã´æÔÚÓĞexonµÄiso
+		//è·å¾—æœ¬ä½ç‚¹å­˜åœ¨æœ‰exonçš„iso
 		ArrayList<GffGeneIsoInfo> lsIso_ExonExist = new ArrayList<GffGeneIsoInfo>();
 		for (ArrayList<ExonInfo> lsExonInfos : lsIsoExon) {
 			if (lsExonInfos.size() > 0) {
 				lsIso_ExonExist.add(lsExonInfos.get(0).getParent());
 			}
 		}
-		//¿´Ìø¹ıºÍ´æÔÚµÄIsoÔÚÇ°ºóÎ»ÖÃÀïÃæÊÇ·ñ¶¼´æÔÚ
-		//Ò²¾ÍÊÇËµ±¾Î»µãÌø¹ıµÄisoÔÚÇ°ºó±ØĞë¶¼ÓĞexon
-		//±¾Î»µãÓĞexonµÄisoÔÚÇ°ºóÒ²±ØĞë¶¼ÓĞexon
-		//ÕâÑù²ÅÊÇcasstteµÄÀàĞÍ
+		//çœ‹è·³è¿‡å’Œå­˜åœ¨çš„Isoåœ¨å‰åä½ç½®é‡Œé¢æ˜¯å¦éƒ½å­˜åœ¨
+		//ä¹Ÿå°±æ˜¯è¯´æœ¬ä½ç‚¹è·³è¿‡çš„isoåœ¨å‰åå¿…é¡»éƒ½æœ‰exon
+		//æœ¬ä½ç‚¹æœ‰exonçš„isoåœ¨å‰åä¹Ÿå¿…é¡»éƒ½æœ‰exon
+		//è¿™æ ·æ‰æ˜¯casstteçš„ç±»å‹
 		if (!isOneIsoHaveExonBeforeAndAfter(lsIso_ExonExist) || !isOneIsoHaveExonBeforeAndAfter(mapIso2ExonNumSkipTheCluster.keySet())) {
 			return null;
 		}
@@ -405,9 +405,9 @@ public class ExonCluster {
 		return splicingType;
 	}
 	/**
-	 * ÊÇ·ñ´æÔÚÄ³¸ö×ªÂ¼±¾£¬¸Ã×ªÂ¼±¾ÔÚ±¾exonÇ°ºó¶¼º¬ÓĞexon
-	 * Ö»ÒªÓĞÒ»¸ö´æÔÚ¾ÍÅĞ¶¨Îªtrue
-	 * Ö÷ÒªÊÇÓÃÀ´ÅĞ¶¨casstteµÄ
+	 * æ˜¯å¦å­˜åœ¨æŸä¸ªè½¬å½•æœ¬ï¼Œè¯¥è½¬å½•æœ¬åœ¨æœ¬exonå‰åéƒ½å«æœ‰exon
+	 * åªè¦æœ‰ä¸€ä¸ªå­˜åœ¨å°±åˆ¤å®šä¸ºtrue
+	 * ä¸»è¦æ˜¯ç”¨æ¥åˆ¤å®šcasstteçš„
 	 * @return
 	 */
 	private boolean isOneIsoHaveExonBeforeAndAfter(Collection<GffGeneIsoInfo> lsIso_ExonExist) {
@@ -430,9 +430,9 @@ public class ExonCluster {
 	}
 	
 	/**
-	 * ¿´°üº¬¸ÃexonºÍ²»°üº¬¸ÃexonµÄisoÊÇ·ñÓĞÏàÍ¬µÄÇ°exonºÍºóexon
-	 * @param lsIso_ExonExist °üº¬¸ÃexonµÄiso
-	 * @param lsIso_ExonSkip ²»°üº¬¸ÃexonµÄiso
+	 * çœ‹åŒ…å«è¯¥exonå’Œä¸åŒ…å«è¯¥exonçš„isoæ˜¯å¦æœ‰ç›¸åŒçš„å‰exonå’Œåexon
+	 * @param lsIso_ExonExist åŒ…å«è¯¥exonçš„iso
+	 * @param lsIso_ExonSkip ä¸åŒ…å«è¯¥exonçš„iso
 	 */
 	private boolean isIsosHaveSameBeforeAfterExon(Collection<GffGeneIsoInfo> lsIso_ExonExist, Collection<GffGeneIsoInfo> lsIso_ExonSkip) {
 		int initialNum = -1000;
@@ -450,13 +450,13 @@ public class ExonCluster {
 	}
 	
 	/** 
-	 * »ñµÃÄ³¸öisoµÄÇ°ºóµÄ exonµÄÏà¶ÔÎ»ÖÃ
-	 * Æ©ÈçÄ³¸öisoÔÚÇ°ÃæÓĞÒ»¸öexon£¬ºóÃæÓĞÒ»¸öexon
-	 * ÔòÍ³¼ÆÎª0sepsign0
-	 * Èç¹ûÇ°ÃæµÄÇ°ÃæÓĞÒ»¸öexon£¬ºóÃæµÄºóÃæµÄºóÃæÓĞÒ»¸öexon
-	 * ÔòÍ³¼ÆÎª
+	 * è·å¾—æŸä¸ªisoçš„å‰åçš„ exonçš„ç›¸å¯¹ä½ç½®
+	 * è­¬å¦‚æŸä¸ªisoåœ¨å‰é¢æœ‰ä¸€ä¸ªexonï¼Œåé¢æœ‰ä¸€ä¸ªexon
+	 * åˆ™ç»Ÿè®¡ä¸º0sepsign0
+	 * å¦‚æœå‰é¢çš„å‰é¢æœ‰ä¸€ä¸ªexonï¼Œåé¢çš„åé¢çš„åé¢æœ‰ä¸€ä¸ªexon
+	 * åˆ™ç»Ÿè®¡ä¸º
 	 * -1sepSign2
-	 * @param initialNum ³õÊ¼»¯Êı×Ö£¬Éè¶¨ÎªÒ»¸ö±È½Ï´óµÄ¸ºÊı¾ÍºÃ£¬Ëæ±ãÉè¶¨£¬Æ©Èç-1000
+	 * @param initialNum åˆå§‹åŒ–æ•°å­—ï¼Œè®¾å®šä¸ºä¸€ä¸ªæ¯”è¾ƒå¤§çš„è´Ÿæ•°å°±å¥½ï¼Œéšä¾¿è®¾å®šï¼Œè­¬å¦‚-1000
 	 * @param lsIso_ExonExist
 	 * @return
 	 */
@@ -465,8 +465,8 @@ public class ExonCluster {
 		ExonCluster clusterBefore = exonClusterBefore;
 		ExonCluster clusterAfter = exonClusterAfter;
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsIso_ExonExist) {
-			int[] beforeAfter = new int[]{initialNum, initialNum};//³õÊ¼»¯Îª¸ºÊı
-			int numBefore = 0, numAfter = 0;//Ö±½ÓÉÏÒ»Î»µÄexon±ê¼ÇÎª0£¬ÔÙÏòÉÏÒ»Î»±ê¼ÇÎª-1
+			int[] beforeAfter = new int[]{initialNum, initialNum};//åˆå§‹åŒ–ä¸ºè´Ÿæ•°
+			int numBefore = 0, numAfter = 0;//ç›´æ¥ä¸Šä¸€ä½çš„exonæ ‡è®°ä¸º0ï¼Œå†å‘ä¸Šä¸€ä½æ ‡è®°ä¸º-1
 			while (clusterBefore != null) {
 				if (clusterBefore.isIsoHaveExon(gffGeneIsoInfo)) {
 					beforeAfter[0] = numBefore;
@@ -490,7 +490,7 @@ public class ExonCluster {
 	}
 	
 	/**
-	 * @param gffGeneIsoInfo ×¢ÒâgffgeneIsoInfoÖØĞ´¹ıhashcode
+	 * @param gffGeneIsoInfo æ³¨æ„gffgeneIsoInfoé‡å†™è¿‡hashcode
 	 * @return
 	 */
 	private boolean isIsoHaveExon(GffGeneIsoInfo gffGeneIsoInfo) {
@@ -501,12 +501,12 @@ public class ExonCluster {
 		return false;
 	}
 	
-	/** »ñµÃ±¾exonclusterÖĞ´æÔÚµÄµ¥¸öexon
-	 * Èç¹ûÊÇÁ¬ĞøÁ½¸öexon£¬¾ÍºÏ²¢ÎªÒ»¸ö
+	/** è·å¾—æœ¬exonclusterä¸­å­˜åœ¨çš„å•ä¸ªexon
+	 * å¦‚æœæ˜¯è¿ç»­ä¸¤ä¸ªexonï¼Œå°±åˆå¹¶ä¸ºä¸€ä¸ª
 	 *  **/
 	public ArrayList<ExonInfo> getExonInfoSingleLs() {
-		//½ö±£´æ¸ÃÎ»ÖÃÃ¿¸öisoÖ»ÓĞÒ»¸öexonµÄÄÇÖÖĞÅÏ¢£¬¾ÍÊÇËµ²»±£´æ retain intronÕâÖÖº¬ÓĞÁ½¸öexonµÄĞÅÏ¢
-		//ÓÃÀ´ÅĞ¶ÏcassetteºÍalt5£¬alt3Õâ¼¸Àà
+		//ä»…ä¿å­˜è¯¥ä½ç½®æ¯ä¸ªisoåªæœ‰ä¸€ä¸ªexonçš„é‚£ç§ä¿¡æ¯ï¼Œå°±æ˜¯è¯´ä¸ä¿å­˜ retain intronè¿™ç§å«æœ‰ä¸¤ä¸ªexonçš„ä¿¡æ¯
+		//ç”¨æ¥åˆ¤æ–­cassetteå’Œalt5ï¼Œalt3è¿™å‡ ç±»
 		ArrayList<ExonInfo> lsExonTmp = new ArrayList<ExonInfo>();
 		HashSet<ExonInfo> setRemoveSameExon = new HashSet<ExonInfo>();
 		for (ArrayList<ExonInfo> lsExon : lsIsoExon) {
@@ -514,7 +514,7 @@ public class ExonCluster {
 				continue;
 			}
 			ExonInfo exonInfo = lsExon.get(0).clone();
-			//½«¸ÃexonÀ©Õ¹ÎªÒ»¸ö´óµÄexon
+			//å°†è¯¥exonæ‰©å±•ä¸ºä¸€ä¸ªå¤§çš„exon
 			if (lsExon.size() > 1) {
 				exonInfo.setEndCis(lsExon.get(lsExon.size() - 1).getEndCis());
 			}
@@ -529,7 +529,7 @@ public class ExonCluster {
 		return lsExonTmp;
 	}
 	/**
-	 * ÊäÈëÓÉgetExonInfoSingleLsºÏ²¢ºóµÄlsExonInfo£¬ÆäÖĞÃ¿¸öExonInfoÀ´Ô´ÓÚ²»Í¬µÄIso
+	 * è¾“å…¥ç”±getExonInfoSingleLsåˆå¹¶åçš„lsExonInfoï¼Œå…¶ä¸­æ¯ä¸ªExonInfoæ¥æºäºä¸åŒçš„Iso
 	 * @param lsExonInfo
 	 * @return
 	 */
@@ -543,7 +543,7 @@ public class ExonCluster {
 		return false;
 	}
 	/**
-	 * ÊäÈëÓÉgetExonInfoSingleLsºÏ²¢ºóµÄlsExonInfo£¬ÆäÖĞÃ¿¸öExonInfoÀ´Ô´ÓÚ²»Í¬µÄIso
+	 * è¾“å…¥ç”±getExonInfoSingleLsåˆå¹¶åçš„lsExonInfoï¼Œå…¶ä¸­æ¯ä¸ªExonInfoæ¥æºäºä¸åŒçš„Iso
 	 * @param lsExonInfo
 	 * @return
 	 */
@@ -557,10 +557,10 @@ public class ExonCluster {
 		return false;
 	}
 	/**
-	 *  ÊÇ·ñºÍÇ°Ò»¸öexon»òºóÒ»¸öexonÎªmutually--Ò²¾ÍÊÇ»¥³â
+	 *  æ˜¯å¦å’Œå‰ä¸€ä¸ªexonæˆ–åä¸€ä¸ªexonä¸ºmutually--ä¹Ÿå°±æ˜¯äº’æ–¥
 	 * @param lsExonInfo
-	 * @param withBefore true£¬ÊÇ·ñºÍÇ°Ò»¸öexon»¥³â
-	 * false ÊÇ·ñºÍºóÒ»¸öexon»¥³â
+	 * @param withBefore trueï¼Œæ˜¯å¦å’Œå‰ä¸€ä¸ªexonäº’æ–¥
+	 * false æ˜¯å¦å’Œåä¸€ä¸ªexonäº’æ–¥
 	 * @return
 	 */
 	private boolean isWithMutually(List<ExonInfo> lsExonInfo, boolean withBefore) {
@@ -581,11 +581,11 @@ public class ExonCluster {
 		if (!isThisExonMutually) {
 			return false;
 		}
-		//ÆäËûisoÔÚÇ°Ãæ´æÔÚexon²¢ÇÒÔÚ±¾Î»µã²»´æÔÚexon
+		//å…¶ä»–isoåœ¨å‰é¢å­˜åœ¨exonå¹¶ä¸”åœ¨æœ¬ä½ç‚¹ä¸å­˜åœ¨exon
 		for (GffGeneIsoInfo gffGeneIsoInfo : mapIso2ExonNumSkipTheCluster.keySet()) {
 			ArrayList<ExonInfo> lsExons = exonClusterBeforeOrAfter.getMapIso2LsExon().get(gffGeneIsoInfo);
 			if (lsExons != null && lsExons.size() > 0) {
-				//²¢ÇÒ²»ÊÇ±¾isoµÄ×îºóÒ»¸öexon
+				//å¹¶ä¸”ä¸æ˜¯æœ¬isoçš„æœ€åä¸€ä¸ªexon
 				if (withBefore && lsExonInfo.get(lsExonInfo.size() - 1).getItemNum() != gffGeneIsoInfo.size())  {
 					return true;
 				}
@@ -597,8 +597,8 @@ public class ExonCluster {
 		return false;
 	}
 	
-	/** ½öÅĞ¶Ï±¾Î»µãµÄ¿É±ä¼ô½ÓÇé¿ö
-	 * Ò²¾ÍÊÇ½öÅĞ¶Ïalt5£¬alt3
+	/** ä»…åˆ¤æ–­æœ¬ä½ç‚¹çš„å¯å˜å‰ªæ¥æƒ…å†µ
+	 * ä¹Ÿå°±æ˜¯ä»…åˆ¤æ–­alt5ï¼Œalt3
 	 */
 	private LinkedList<ExonSplicingType> getSpliteTypeAlt5Alt3(List<ExonInfo> lsExonInfo) {
 		LinkedList<ExonSplicingType> setSplicingTypes = new LinkedList<ExonSplicingType>();
@@ -617,9 +617,9 @@ public class ExonCluster {
 		}
 		return setSplicingTypes;
 	}
-	/** »ñÈ¡ÓĞ±ä»¯µÄÇøÓò£¬ÓÃÓÚÌáÈ¡¸ÃÇøÓòµÄ±í´ïÖµ£¬¼ÆËãÊÇ·ñÎª²îÒìµÄ¿É±ä¼ô½Ó
-	 * Æ©Èçcassttet¾ÍÖ±½ÓÌáÈ¡Õû¸öexon
-	 * ¶øalt5µÈ¾ÍÌáÈ¡²îÒìµÄÄÄ¸öÆ¬¶Î 
+	/** è·å–æœ‰å˜åŒ–çš„åŒºåŸŸï¼Œç”¨äºæå–è¯¥åŒºåŸŸçš„è¡¨è¾¾å€¼ï¼Œè®¡ç®—æ˜¯å¦ä¸ºå·®å¼‚çš„å¯å˜å‰ªæ¥
+	 * è­¬å¦‚cassttetå°±ç›´æ¥æå–æ•´ä¸ªexon
+	 * è€Œalt5ç­‰å°±æå–å·®å¼‚çš„å“ªä¸ªç‰‡æ®µ 
 	 */
 	public SiteInfo getDifSite() {
 		HashSet<ExonSplicingType> setExonSplicingTypes = getExonSplicingTypeSet();
@@ -641,10 +641,10 @@ public class ExonCluster {
 		return siteInfo;
 	}
 
-	/** »ñµÃalt5£¬ alt3µÄ²îÒìÎ»µã */
+	/** è·å¾—alt5ï¼Œ alt3çš„å·®å¼‚ä½ç‚¹ */
 	private SiteInfo getAlt5Site() {
 		ArrayList<ExonInfo> lsExonInfo = getExonInfoSingleLs();
-		//°´ÕÕ³¤¶ÈÅÅĞò
+		//æŒ‰ç…§é•¿åº¦æ’åº
 		Collections.sort(lsExonInfo, new Comparator<ExonInfo>() {
 			public int compare(ExonInfo o1, ExonInfo o2) {
 				Integer start1 = o1.getEndCis();
@@ -658,10 +658,10 @@ public class ExonCluster {
 		return siteInfo;
 	}
 	
-	/** »ñµÃalt5£¬ alt3µÄ²îÒìÎ»µã */
+	/** è·å¾—alt5ï¼Œ alt3çš„å·®å¼‚ä½ç‚¹ */
 	private SiteInfo getAlt3Site() {
 		ArrayList<ExonInfo> lsExonInfo = getExonInfoSingleLs();
-		//°´ÕÕ³¤¶ÈÅÅĞò
+		//æŒ‰ç…§é•¿åº¦æ’åº
 		Collections.sort(lsExonInfo, new Comparator<ExonInfo>() {
 			public int compare(ExonInfo o1, ExonInfo o2) {
 				Integer start1 = o1.getStartCis();

@@ -13,7 +13,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.generalConf.NovelBioConst;
 
 /**
- * ¸øº«Ñà»­É¢µãÍ¼£¬Á½¸öÊ±ÆÚµÄmapping½á¹û½øĞĞ±È½Ï
+ * ç»™éŸ©ç‡•ç”»æ•£ç‚¹å›¾ï¼Œä¸¤ä¸ªæ—¶æœŸçš„mappingç»“æœè¿›è¡Œæ¯”è¾ƒ
  * 
  * @author zong0jie
  * 
@@ -28,7 +28,7 @@ public class ScatterPlot {
 	 * @param readsBed1
 	 * @param readsBed2
 	 * @param RefSeq
-	 *            mappingÎÄ¼şÊÇ·ñÊÇ¶Ôrefseq½øĞĞµÄmapping
+	 *            mappingæ–‡ä»¶æ˜¯å¦æ˜¯å¯¹refseqè¿›è¡Œçš„mapping
 	 */
 	public ScatterPlot(String gffType, String gffFile, String chrFileLen ,String readsBed1,
 			String readsBed2, boolean RefSeq) {
@@ -36,13 +36,13 @@ public class ScatterPlot {
 		gffChrMap2 = new GffChrMap(null, null, chrFileLen, readsBed2, 1, false);
 		if (RefSeq) {
 			gffChrMap1.setMapNormType(MapReads.NORMALIZATION_PER_GENE);
-			// ipauseÎª3
-			// unique reads£¬soapÎª4£¬ºóÀ´µÄ¶¼Îª7
+			// ipauseä¸º3
+			// unique readsï¼Œsoapä¸º4ï¼Œåæ¥çš„éƒ½ä¸º7
 			gffChrMap1.setFilter(true, 3, 4, true, true);
 
 			gffChrMap2.setMapNormType(MapReads.NORMALIZATION_PER_GENE);
-			// ipauseÎª3
-			// unique reads£¬soapÎª5£¬ºóÀ´µÄ¶¼Îª7
+			// ipauseä¸º3
+			// unique readsï¼Œsoapä¸º5ï¼Œåæ¥çš„éƒ½ä¸º7
 			gffChrMap2.setFilter(true, 3, 4, true, true);
 		} else {
 			// TODO
@@ -68,7 +68,7 @@ public class ScatterPlot {
 	
 	
 	/**
-	 * »ñµÃµ¥¸ö»ùÒòµÄ×ø±êĞÅÏ¢
+	 * è·å¾—å•ä¸ªåŸºå› çš„åæ ‡ä¿¡æ¯
 	 * @param geneID
 	 */
 	public void getData(String geneID) {
@@ -79,7 +79,7 @@ public class ScatterPlot {
 		}
 	}
 	/**
-	 * »ñµÃµÚÒ»¸öÊµÑéÅÅÃûÇ°nÎ»»ùÒòµÄ×ø±êĞÅÏ¢
+	 * è·å¾—ç¬¬ä¸€ä¸ªå®éªŒæ’åå‰nä½åŸºå› çš„åæ ‡ä¿¡æ¯
 	 * @param geneIDType
 	 */
 	public void getData(int geneNum,String outFile) {

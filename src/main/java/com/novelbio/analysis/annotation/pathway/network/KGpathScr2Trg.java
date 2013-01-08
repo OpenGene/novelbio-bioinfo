@@ -7,10 +7,10 @@ import com.novelbio.database.domain.kegg.KGentry;
 
 
 /**
- * ÓÃkeggµÄentry²éÕÒrelation±íºó£¬»ñµÃµÄ½á¹û±£´æÔÚ¸ÃÀàÀïÃæ<br>
- * Ò»¸öentry¶ÔÓ¦Ò»¸örelation£¬·µ»ØÒ»¸öĞÅÏ¢¡£<br>
- * ±¾Àà±£´æÓë²éÕÒentryÏà¹ØentryµÄKGentryĞÅÏ¢<br>
- * relation¹ØÏµ<br>
+ * ç”¨keggçš„entryæŸ¥æ‰¾relationè¡¨åï¼Œè·å¾—çš„ç»“æœä¿å­˜åœ¨è¯¥ç±»é‡Œé¢<br>
+ * ä¸€ä¸ªentryå¯¹åº”ä¸€ä¸ªrelationï¼Œè¿”å›ä¸€ä¸ªä¿¡æ¯ã€‚<br>
+ * æœ¬ç±»ä¿å­˜ä¸æŸ¥æ‰¾entryç›¸å…³entryçš„KGentryä¿¡æ¯<br>
+ * relationå…³ç³»<br>
  * subtypeName<br>
  * subtypeValue<br>
  * @author zong0jie
@@ -19,7 +19,7 @@ import com.novelbio.database.domain.kegg.KGentry;
 public class KGpathScr2Trg {
 	
 	/**
-	 * ±£´æ²éÕÒµÄentryĞÅÏ¢
+	 * ä¿å­˜æŸ¥æ‰¾çš„entryä¿¡æ¯
 	 */
 	private KGentry qkGentry;
 	public void setQKGentry(KGentry qkGentry) {
@@ -30,7 +30,7 @@ public class KGpathScr2Trg {
 	}
 	
 	/**
-	 * ±£´æÓë²éÕÒentryÏà¹ØµÄentryĞÅÏ¢
+	 * ä¿å­˜ä¸æŸ¥æ‰¾entryç›¸å…³çš„entryä¿¡æ¯
 	 */
 	private KGentry skGentry;
 	public void setSKGentry(KGentry skGentry) {
@@ -41,56 +41,56 @@ public class KGpathScr2Trg {
 	}
 	
 	/**
-	 * Á½¸öentry»¥×öµÄÀàĞÍ<br>
-	 * <b>Á½¸öÏàÍ¬µÄentryÖ»ÓĞÒ»¸ötype</b><br>
-	 * <b>component</b>µ±ÎªcomponentÊ±<br>
-	 * µ±Ö®¼äµÄ¹ØÏµÎª relation. detail:<br>
+	 * ä¸¤ä¸ªentryäº’åšçš„ç±»å‹<br>
+	 * <b>ä¸¤ä¸ªç›¸åŒçš„entryåªæœ‰ä¸€ä¸ªtype</b><br>
+	 * <b>component</b>å½“ä¸ºcomponentæ—¶<br>
+	 * å½“ä¹‹é—´çš„å…³ç³»ä¸º relation. detail:<br>
 	 * <b> ECrel</b>  	enzyme-enzyme relation, indicating two enzymes catalyzing successive reaction steps                 <br> 
 	 * <b>PPrel</b> 	protein-protein interaction, such as binding and modification							     <br>
 	 * <b>GErel</b> 	gene expression interaction, indicating relation of transcription factor and target gene product	     <br>
 	 * <b>PCrel</b> 	protein-compound interaction												     <br>
-	 * <b>maplink ÔİÊ±ÏÈ²»¿¼ÂÇ</b> 	link to another map				
+	 * <b>maplink æš‚æ—¶å…ˆä¸è€ƒè™‘</b> 	link to another map				
 	 */
 	private String type;
 	/**
-	 * Á½¸öentry»¥×öµÄÀàĞÍ<br>
-	 * <b>Á½¸öÏàÍ¬µÄentryÖ»ÓĞÒ»¸ötype</b><br>
-	 * <b>component</b>µ±ÎªcomponentÊ±<br>
-	 * µ±Ö®¼äµÄ¹ØÏµÎª relation. detail:<br>
+	 * ä¸¤ä¸ªentryäº’åšçš„ç±»å‹<br>
+	 * <b>ä¸¤ä¸ªç›¸åŒçš„entryåªæœ‰ä¸€ä¸ªtype</b><br>
+	 * <b>component</b>å½“ä¸ºcomponentæ—¶<br>
+	 * å½“ä¹‹é—´çš„å…³ç³»ä¸º relation. detail:<br>
 	 * <b> ECrel</b>  	enzyme-enzyme relation, indicating two enzymes catalyzing successive reaction steps                 <br> 
 	 * <b>PPrel</b> 	protein-protein interaction, such as binding and modification							     <br>
 	 * <b>GErel</b> 	gene expression interaction, indicating relation of transcription factor and target gene product	     <br>
 	 * <b>PCrel</b> 	protein-compound interaction												     <br>
-	 * <b>maplink ÔİÊ±ÏÈ²»¿¼ÂÇ</b> 	link to another map				
+	 * <b>maplink æš‚æ—¶å…ˆä¸è€ƒè™‘</b> 	link to another map				
 	 */
 	public String getType(){
 		return this.type;
 	}
 	
 	/**
-	 * Á½¸öentry»¥×öµÄÀàĞÍ<br>
-	 * <b>Á½¸öÏàÍ¬µÄentryÖ»ÓĞÒ»¸ötype</b><br>
-	 * <b>component</b>µ±ÎªcomponentÊ±<br>
-	 * µ±Ö®¼äµÄ¹ØÏµÎª relation. detail:<br>
+	 * ä¸¤ä¸ªentryäº’åšçš„ç±»å‹<br>
+	 * <b>ä¸¤ä¸ªç›¸åŒçš„entryåªæœ‰ä¸€ä¸ªtype</b><br>
+	 * <b>component</b>å½“ä¸ºcomponentæ—¶<br>
+	 * å½“ä¹‹é—´çš„å…³ç³»ä¸º relation. detail:<br>
 	 * <b> ECrel</b>  	enzyme-enzyme relation, indicating two enzymes catalyzing successive reaction steps                 <br> 
 	 * <b>PPrel</b> 	protein-protein interaction, such as binding and modification							     <br>
 	 * <b>GErel</b> 	gene expression interaction, indicating relation of transcription factor and target gene product	     <br>
 	 * <b>PCrel</b> 	protein-compound interaction												     <br>
-	 * <b>maplink ÔİÊ±ÏÈ²»¿¼ÂÇ</b> 	link to another map				
+	 * <b>maplink æš‚æ—¶å…ˆä¸è€ƒè™‘</b> 	link to another map				
 	 */
 	public void setType(String type) {
 		this.type = type;
 	}
 	/**
-	 * ±£´æÕâÁ½¸öentryÖ®¼äµÄsubtype¹ØÏµ<br>
-	 * ÒòÎªÁ½¸öentryÖ®¼äÓĞ²»Ö¹Ò»¸ö¹ØÏµ£¬ÈçÍ¬Ê±ÓĞbindingºÍactivationÖ®ÀàµÄ£¬ÄÇÃ´ËüÃÇÖ®¼äÓÃ//·Ö¸î<br>
+	 * ä¿å­˜è¿™ä¸¤ä¸ªentryä¹‹é—´çš„subtypeå…³ç³»<br>
+	 * å› ä¸ºä¸¤ä¸ªentryä¹‹é—´æœ‰ä¸æ­¢ä¸€ä¸ªå…³ç³»ï¼Œå¦‚åŒæ—¶æœ‰bindingå’Œactivationä¹‹ç±»çš„ï¼Œé‚£ä¹ˆå®ƒä»¬ä¹‹é—´ç”¨//åˆ†å‰²<br>
 	 * 0: subtypeName<br>
 	 * 1: subtypeValue<br>
 	 */
 	String[] subtypeInfo = new String[2];
 	/**
-	 * ±£´æÕâÁ½¸öentryÖ®¼äµÄsubtype¹ØÏµ<br>
-	 * ÒòÎªÁ½¸öentryÖ®¼äÓĞ²»Ö¹Ò»¸ö¹ØÏµ£¬ÈçÍ¬Ê±ÓĞbindingºÍactivationÖ®ÀàµÄ£¬ÄÇÃ´ËüÃÇÖ®¼äÓÃ//·Ö¸î<br>
+	 * ä¿å­˜è¿™ä¸¤ä¸ªentryä¹‹é—´çš„subtypeå…³ç³»<br>
+	 * å› ä¸ºä¸¤ä¸ªentryä¹‹é—´æœ‰ä¸æ­¢ä¸€ä¸ªå…³ç³»ï¼Œå¦‚åŒæ—¶æœ‰bindingå’Œactivationä¹‹ç±»çš„ï¼Œé‚£ä¹ˆå®ƒä»¬ä¹‹é—´ç”¨//åˆ†å‰²<br>
 	 * 0: subtypeName<br>
 	 * 1: subtypeValue<br>
 	 */
@@ -98,8 +98,8 @@ public class KGpathScr2Trg {
 		this.subtypeInfo = subtypeInfo;
 	}
 	/**
-	 * ±£´æÕâÁ½¸öentryÖ®¼äµÄsubtype¹ØÏµ<br>
-	 * ÒòÎªÁ½¸öentryÖ®¼äÓĞ²»Ö¹Ò»¸ö¹ØÏµ£¬ÈçÍ¬Ê±ÓĞbindingºÍactivationÖ®ÀàµÄ£¬ÄÇÃ´ËüÃÇÖ®¼äÓÃ//·Ö¸î<br>
+	 * ä¿å­˜è¿™ä¸¤ä¸ªentryä¹‹é—´çš„subtypeå…³ç³»<br>
+	 * å› ä¸ºä¸¤ä¸ªentryä¹‹é—´æœ‰ä¸æ­¢ä¸€ä¸ªå…³ç³»ï¼Œå¦‚åŒæ—¶æœ‰bindingå’Œactivationä¹‹ç±»çš„ï¼Œé‚£ä¹ˆå®ƒä»¬ä¹‹é—´ç”¨//åˆ†å‰²<br>
 	 * 0: subtypeName<br>
 	 * 1: subtypeValue<br>
 	 */
@@ -108,17 +108,17 @@ public class KGpathScr2Trg {
 	}
 	
 	/**
-	 * ±£´æÕâ¸ö¹ØÏµËùÔÚµÄpathway£¬Èç¹ûÕâ¸ö¹ØÏµ´¦ÔÚÁ½¸ö²»Í¬µÄpathway,ÄÇÃ´ÓÃ"//"·Ö¸î
+	 * ä¿å­˜è¿™ä¸ªå…³ç³»æ‰€åœ¨çš„pathwayï¼Œå¦‚æœè¿™ä¸ªå…³ç³»å¤„åœ¨ä¸¤ä¸ªä¸åŒçš„pathway,é‚£ä¹ˆç”¨"//"åˆ†å‰²
 	 */
 	String pathName;
 	/**
-	 * ±£´æÕâ¸ö¹ØÏµËùÔÚµÄpathway£¬Èç¹ûÕâ¸ö¹ØÏµ´¦ÔÚÁ½¸ö²»Í¬µÄpathway,ÄÇÃ´ÓÃ"//"·Ö¸î
+	 * ä¿å­˜è¿™ä¸ªå…³ç³»æ‰€åœ¨çš„pathwayï¼Œå¦‚æœè¿™ä¸ªå…³ç³»å¤„åœ¨ä¸¤ä¸ªä¸åŒçš„pathway,é‚£ä¹ˆç”¨"//"åˆ†å‰²
 	 */
 	public void setPathName(String pathName) {
 		this.pathName = pathName;
 	}
 	/**
-	 * ±£´æÕâ¸ö¹ØÏµËùÔÚµÄpathway£¬Èç¹ûÕâ¸ö¹ØÏµ´¦ÔÚÁ½¸ö²»Í¬µÄpathway,ÄÇÃ´ÓÃ"//"·Ö¸î
+	 * ä¿å­˜è¿™ä¸ªå…³ç³»æ‰€åœ¨çš„pathwayï¼Œå¦‚æœè¿™ä¸ªå…³ç³»å¤„åœ¨ä¸¤ä¸ªä¸åŒçš„pathway,é‚£ä¹ˆç”¨"//"åˆ†å‰²
 	 */
 	public String getPathName() {
 		return this.pathName ;

@@ -14,33 +14,33 @@ import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 /**
- * ÊäÈëÁ¬ÅäºÃµÄfastaÎÄ¼ş£¬»òĞòÁĞ
- * ÓÃembossµÄÈ¨ÖØ¾ØÕóÉ¨Ãèmotif
+ * è¾“å…¥è¿é…å¥½çš„fastaæ–‡ä»¶ï¼Œæˆ–åºåˆ—
+ * ç”¨embossçš„æƒé‡çŸ©é˜µæ‰«æmotif
  * @author zong0jie
  *
  */
 public class MotifEmboss {
 	public static void main(String[] args) {
 		String fileName = "TSS_36_UP.fasta";
-		SeqHash seqHashMotif = new SeqHash("/home/zong0jie/×ÀÃæ/20121224/motif.fasta");
-		SeqHash seqHash = new SeqHash("/home/zong0jie/×ÀÃæ/20121224/Tss/" + fileName);
+		SeqHash seqHashMotif = new SeqHash("/home/zong0jie/æ¡Œé¢/20121224/motif.fasta");
+		SeqHash seqHash = new SeqHash("/home/zong0jie/æ¡Œé¢/20121224/Tss/" + fileName);
 		MotifEmboss motifEmboss = new MotifEmboss();
 		motifEmboss.motifPath = "/home/zong0jie/Desktop/test/";
 		motifEmboss.setAlignedMotifSeqHash(seqHashMotif);
 		motifEmboss.setSeqHash(seqHash);
 		motifEmboss.setMotifEmbossScanAlgorithm(MotifEmbossScanAlgorithm.Frequency);
 		String[] result = motifEmboss.scanMotif();
-		FileOperate.moveFile(result[0], "/home/zong0jie/×ÀÃæ/20121224/motifResult", fileName + "motif.txt", true);
-		FileOperate.moveFile(result[1], "/home/zong0jie/×ÀÃæ/20121224/motifResult", fileName + "motif_reverse.txt", true);
+		FileOperate.moveFile(result[0], "/home/zong0jie/æ¡Œé¢/20121224/motifResult", fileName + "motif.txt", true);
+		FileOperate.moveFile(result[1], "/home/zong0jie/æ¡Œé¢/20121224/motifResult", fileName + "motif_reverse.txt", true);
 	}
 	
 	SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.emboss);
 	
-	/** Á¬ÅäºÃµÄmotif */
+	/** è¿é…å¥½çš„motif */
 	Collection<SeqFasta> colAlignmentMotif;
-	/** ÒªÉ¨ÃèµÄĞòÁĞ */
+	/** è¦æ‰«æçš„åºåˆ— */
 	Collection<SeqFasta> colSeqFasta;
-	/** motif·ÖÎöËùÔÚµÄÁÙÊ±ÎÄ¼ş¼Ğ */
+	/** motifåˆ†ææ‰€åœ¨çš„ä¸´æ—¶æ–‡ä»¶å¤¹ */
 	String motifPath;
 	
 	Prophecy prophecy;
@@ -48,23 +48,23 @@ public class MotifEmboss {
 	
 	MotifEmbossScanAlgorithm motifEmbossScanAlgorithm = MotifEmbossScanAlgorithm.Gribskov;
 	
-	/** ÊäÈëÁ¬ÅäºÃµÄmotif */
+	/** è¾“å…¥è¿é…å¥½çš„motif */
 	public void setColAlignedMotifFasta(Collection<SeqFasta> colAlignmentMotif) {
 		this.colAlignmentMotif = colAlignmentMotif;
 	}
 	
-	/** ÊäÈëÁ¬ÅäºÃµÄmotif */
+	/** è¾“å…¥è¿é…å¥½çš„motif */
 	public void setAlignedMotifSeqHash(SeqHash seqHash) {
 		colAlignmentMotif = new ArrayList<SeqFasta>();
 		addSeq(colAlignmentMotif, seqHash);
 	}
 	
-	/** ÊäÈëÒªÉ¨ÃèµÄĞòÁĞ */
+	/** è¾“å…¥è¦æ‰«æçš„åºåˆ— */
 	public void setColSeqFasta(Collection<SeqFasta> colSeqFasta) {
 		this.colSeqFasta = colSeqFasta;
 	}
 	
-	/** ÊäÈëÒªÉ¨ÃèµÄĞòÁĞ */
+	/** è¾“å…¥è¦æ‰«æçš„åºåˆ— */
 	public void setSeqHash(SeqHash seqHash) {
 		colSeqFasta = new ArrayList<SeqFasta>();
 		addSeq(colSeqFasta, seqHash);
@@ -96,8 +96,8 @@ public class MotifEmboss {
 		return resultMotif;
 	}
 	/**
-	 * ½«aligmentÎÄ¼şĞ´ÈëÎÄ±¾£¬²¢·µ»ØÎÄ¼şÃû
-	 * @param suffix Ê±¼äÈÕÆÚËæ»úÊı
+	 * å°†aligmentæ–‡ä»¶å†™å…¥æ–‡æœ¬ï¼Œå¹¶è¿”å›æ–‡ä»¶å
+	 * @param suffix æ—¶é—´æ—¥æœŸéšæœºæ•°
 	 * @return
 	 */
 	private String writeAlignedMotif(String suffix) {
@@ -111,8 +111,8 @@ public class MotifEmboss {
 	}
 	
 	/**
-	 * ½«´ıÉ¨ÃèµÄÎÄ¼şĞ´ÈëÎÄ±¾£¬²¢·µ»ØÎÄ¼şÃû
-	 * @param suffix Ê±¼äÈÕÆÚËæ»úÊı
+	 * å°†å¾…æ‰«æçš„æ–‡ä»¶å†™å…¥æ–‡æœ¬ï¼Œå¹¶è¿”å›æ–‡ä»¶å
+	 * @param suffix æ—¶é—´æ—¥æœŸéšæœºæ•°
 	 * @return
 	 */
 	private String writeSeqfastaNeedScan(String suffix) {
@@ -125,7 +125,7 @@ public class MotifEmboss {
 		return resultFile;
 	}
 	
-	/** Éú³É´ò·Ö¾ØÕó£¬²¢·µ»Ø½á¹û */
+	/** ç”Ÿæˆæ‰“åˆ†çŸ©é˜µï¼Œå¹¶è¿”å›ç»“æœ */
 	private String[] generateWeightMatrix(String alignedMotif, String suffix) {
 		prophecy.setExePath(softWareInfo.getExePath());
 		prophecy.setInAlignment(alignedMotif);
@@ -138,7 +138,7 @@ public class MotifEmboss {
 		boolean isNr = true;
 		int i = 100;
 		for (SeqFasta seqFasta : colSeqFasta) {
-			//ÅĞ¶¨Ç°100ÌõĞòÁĞ¿´ÊÇºËËá»¹ÊÇµ°°×
+			//åˆ¤å®šå‰100æ¡åºåˆ—çœ‹æ˜¯æ ¸é…¸è¿˜æ˜¯è›‹ç™½
 			if (i >= 100) {
 				break;
 			}
@@ -162,7 +162,7 @@ public class MotifEmboss {
 	}
 	
 	
-	/** embossµÄprophecyÈí¼şÓÃÀ´²úÉúÈ¨ÖØ¾ØÕóµÄËã·¨ */
+	/** embossçš„prophecyè½¯ä»¶ç”¨æ¥äº§ç”Ÿæƒé‡çŸ©é˜µçš„ç®—æ³• */
 	public static enum MotifEmbossScanAlgorithm {
 		Frequency, 
 		/**  For Gribskov the scoring scheme is based on a notion of distance 

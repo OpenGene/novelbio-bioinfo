@@ -120,7 +120,7 @@ public class ServRctIntact {
 	
 	/**
 	 * 
-	 * 给定一个geneID，以及该基因的dbinfo，返回所有与该基因相关的关系
+	 * 缁欏畾涓�涓猤eneID锛屼互鍙婅鍩哄洜鐨刣binfo锛岃繑鍥炴墍鏈変笌璇ュ熀鍥犵浉鍏崇殑鍏崇郴
 	 * @param genID
 	 * @param dbInfo
 	 * @return

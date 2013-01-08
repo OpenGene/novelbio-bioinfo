@@ -28,7 +28,7 @@ public class TestListAbs extends TestCase {
 		super.tearDown();
 	}
 	/**
-	 * ²âÊÔListAbs.getCombSep
+	 * æµ‹è¯•ListAbs.getCombSep
 	 */
 	@Test
 	public void testTransIsoNorm() {
@@ -62,7 +62,7 @@ public class TestListAbs extends TestCase {
 		assertEquals(33, lsSep.get(num)[1]);
 	}
 	/**
-	 * ²âÊÔListAbs.getCombSep
+	 * æµ‹è¯•ListAbs.getCombSep
 	 */
 	@Test
 	public void testTransIsoCasstteDouble() {
@@ -98,7 +98,7 @@ public class TestListAbs extends TestCase {
 	}
 	
 	/**
-	 * ²âÊÔListAbs.getCombSep
+	 * æµ‹è¯•ListAbs.getCombSep
 	 */
 	@Test
 	public void testCisIsoCasstteDouble() {

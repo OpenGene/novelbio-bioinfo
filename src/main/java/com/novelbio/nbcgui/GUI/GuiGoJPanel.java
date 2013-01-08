@@ -94,8 +94,8 @@ public class GuiGoJPanel extends JPanel{
 	
 	JComboBoxData<GoAlgorithm> cmbGoAlgorithm;
 	////////////
-	static int QtaxID = 0;//²éÑ¯ÎïÖÖID
-	static int StaxID = 9606;//blastÎïÖÖID
+	static int QtaxID = 0;//æŸ¥è¯¢ç‰©ç§ID
+	static int StaxID = 9606;//blastç‰©ç§ID
 	String GoClass = "";
 	
 	GUIFileOpen guiFileOpen = new GUIFileOpen();
@@ -497,7 +497,7 @@ public class GuiGoJPanel extends JPanel{
 	
 	
 	/**
-	 * ²é¿´ÎÄ¼şµÄÊó±ê»ò¼üÅÌÊÂ¼şÏìÓ¦Ê±µ÷ÓÃ
+	 * æŸ¥çœ‹æ–‡ä»¶çš„é¼ æ ‡æˆ–é”®ç›˜äº‹ä»¶å“åº”æ—¶è°ƒç”¨
 	 */
 	private void setGoProview(String filePath) {
 		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(filePath, 1);
@@ -511,7 +511,7 @@ public class GuiGoJPanel extends JPanel{
 		}
 	}
 	/**
-	 * analysis°´ÏÂÈ¥ºóµÃµ½½á¹û
+	 * analysisæŒ‰ä¸‹å»åå¾—åˆ°ç»“æœ
 	 */
 	private void getResult() {
 		String geneFileXls = jTxtFilePathGo.getText();
@@ -560,12 +560,12 @@ public class GuiGoJPanel extends JPanel{
 	}
 	
 	private void setNormalGo(CtrlGO ctrlGO) {
-		//jScrollPaneInputGo ×îÍâ²ãµÄ·½¿ò
-		//jTabbedPaneGOTest ÀïÃæµÄ±êÇ©¿ò
-		//jPanGoTest ¾ßÌåµÄ±êÇ©
-		// jScrollPaneGOtest ±êÇ©ÀïÃæµÄ·½¿ò
-		// jTabFInputGo ·½¿òÀïÃæµÄÊı¾İ¿ò
-		// jTabInputGo ¾ßÌåÊı¾İ
+		//jScrollPaneInputGo æœ€å¤–å±‚çš„æ–¹æ¡†
+		//jTabbedPaneGOTest é‡Œé¢çš„æ ‡ç­¾æ¡†
+		//jPanGoTest å…·ä½“çš„æ ‡ç­¾
+		// jScrollPaneGOtest æ ‡ç­¾é‡Œé¢çš„æ–¹æ¡†
+		// jTabFInputGo æ–¹æ¡†é‡Œé¢çš„æ•°æ®æ¡†
+		// jTabInputGo å…·ä½“æ•°æ®
 		HashMap<String, LinkedHashMap<String, ArrayList<String[]>>> hashResult = ctrlGO.getHashResult();
 		jTabbedPaneGoResult.removeAll();
 		int i = 0;
@@ -581,17 +581,17 @@ public class GuiGoJPanel extends JPanel{
 	}
 	
 	private void settab(JTabbedPane jTabbedPaneGoResult, String tabName , ArrayList<String[]> lsResult) {
-		//Àï²ã
+		//é‡Œå±‚
 		String[][] tableValue = null;
 		DefaultTableModel jTabResult = new DefaultTableModel(tableValue,lsResult.get(0));
-		//ÖĞ²ã
+		//ä¸­å±‚
 		JTable jTabFResult = new JTable();
 		jTabFResult.setModel(jTabResult);
-		//Íâ²ã
+		//å¤–å±‚
 		JScrollPane jScrollPanelResult = new JScrollPane();
 		jScrollPanelResult.setPreferredSize(new java.awt.Dimension(566, 305));
 		jScrollPanelResult.setViewportView(jTabFResult);
-		//×îÍâ²ã
+		//æœ€å¤–å±‚
 		jTabbedPaneGoResult.addTab(tabName, null, jScrollPanelResult, null);
 		for (int i = 1; i < lsResult.size(); i++) {
 			jTabResult.addRow(lsResult.get(i));

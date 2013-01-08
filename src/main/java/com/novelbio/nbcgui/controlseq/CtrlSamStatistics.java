@@ -4,7 +4,7 @@ import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
-/** ¸÷ÖÖÍ³¼Æ£¬Ö÷ÒªÊÇÍ³¼ÆSamÎÄ¼şµÄ */
+/** å„ç§ç»Ÿè®¡ï¼Œä¸»è¦æ˜¯ç»Ÿè®¡Samæ–‡ä»¶çš„ */
 public class CtrlSamStatistics {
 	SamFile samFile;
 	String outFile;

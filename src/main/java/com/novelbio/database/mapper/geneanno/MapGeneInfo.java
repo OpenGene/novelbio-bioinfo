@@ -9,18 +9,18 @@ import com.novelbio.database.mapper.MapperSql;
 
 public interface MapGeneInfo extends MapperSql{
 	/**
-	 * ÓÃGeneInfoÀàÈ¥²éÕÒGeneInfo±í
-	 * Ö÷ÒªÊÇÀ´¿´±¾ÁĞÊÇ·ñÒÑ¾­´æÔÚÁË
-	 * ÓÃgeneIDÈ¥²éÕÒÊı¾İ¿â
+	 * ç”¨GeneInfoç±»å»æŸ¥æ‰¾GeneInfoè¡¨
+	 * ä¸»è¦æ˜¯æ¥çœ‹æœ¬åˆ—æ˜¯å¦å·²ç»å­˜åœ¨äº†
+	 * ç”¨geneIDå»æŸ¥æ‰¾æ•°æ®åº“
 	 * @param geneInfo
 	 * @return
 	 */
 	public GeneInfo queryGeneInfo(GeneInfo geneInfo);
 	
 	/**
-	 * ÓÃGeneInfoÀàÈ¥²éÕÒGeneInfo±í
-	 * Ö÷ÒªÊÇÀ´¿´±¾ÁĞÊÇ·ñÒÑ¾­´æÔÚÁË
-	 * ÓÃgeneIDÈ¥²éÕÒÊı¾İ¿â
+	 * ç”¨GeneInfoç±»å»æŸ¥æ‰¾GeneInfoè¡¨
+	 * ä¸»è¦æ˜¯æ¥çœ‹æœ¬åˆ—æ˜¯å¦å·²ç»å­˜åœ¨äº†
+	 * ç”¨geneIDå»æŸ¥æ‰¾æ•°æ®åº“
 	 * 	@param geneInfo
 	 * @return
 	 */
@@ -29,7 +29,7 @@ public interface MapGeneInfo extends MapperSql{
 	public void insertGeneInfo(GeneInfo geneInfo);
 	
 	/**
-	 * ÓÃgeneID²éÕÒ£¬Éı¼¶È«²¿ÏîÄ¿£¬
+	 * ç”¨geneIDæŸ¥æ‰¾ï¼Œå‡çº§å…¨éƒ¨é¡¹ç›®ï¼Œ
 	 * @param geneInfo
 	 */
 	public void updateGeneInfo(GeneInfo geneInfo);

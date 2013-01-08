@@ -1,6 +1,6 @@
 package com.novelbio.database.mapper;
 /**
- * ËùÓĞmapper¶¼¼Ì³ĞÕâ¸ö½Ó¿Ú£¬Ö»ÊÇÓÃÀ´¼ò»¯springÅäÖÃÎÄ¼şËùÓÃ
+ * æ‰€æœ‰mapperéƒ½ç»§æ‰¿è¿™ä¸ªæ¥å£ï¼Œåªæ˜¯ç”¨æ¥ç®€åŒ–springé…ç½®æ–‡ä»¶æ‰€ç”¨
  * @author zong0jie
  *
  */

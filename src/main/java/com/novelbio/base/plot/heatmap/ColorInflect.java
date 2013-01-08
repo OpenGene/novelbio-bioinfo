@@ -1,6 +1,6 @@
 package com.novelbio.base.plot.heatmap;
 /**
- * ÑÕÉ«ºÍ¹ÕµãµÄÀà
+ * é¢œè‰²å’Œæ‹ç‚¹çš„ç±»
  * @author zong0jie
  *
  */

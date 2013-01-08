@@ -40,7 +40,7 @@ public interface MapKNIdKeg extends MapperSql{
 	public void insertKGNIdKeg(KGNIdKeg kgnIdKeg);
 	
 	/**
-	 * 目前的升级方式是<br>
+	 * 鐩墠鐨勫崌绾ф柟寮忔槸<br>
 		update idKeg set<br>
 		set<br>
 			if test="kegID !=null"<br>

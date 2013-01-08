@@ -25,7 +25,7 @@ import com.novelbio.database.service.servkegg.ServKRelation;
 
  
 /**
- * ½«¶ÁÈ¡µÄKGMLÎÄ¼şµ¼ÈëÊı¾İ¿â
+ * å°†è¯»å–çš„KGMLæ–‡ä»¶å¯¼å…¥æ•°æ®åº“
  * @author zong0jie
  *
  */
@@ -33,7 +33,7 @@ public class KGML2DB
 {
 	private static Logger logger = Logger.getLogger(KGML2DB.class);
 	/**
-	 * ½«KGMLµ¼ÈëÊı¾İ¿â
+	 * å°†KGMLå¯¼å…¥æ•°æ®åº“
 	 * @param filePath
 	 * @throws Exception
 	 */
@@ -48,7 +48,7 @@ public class KGML2DB
 			try {
 				example = serializer.read(KGML.class, source);
 			} catch (Exception e) {
-				logger.error("ÎÄ¼ş³ö´í£º"+source.getAbsolutePath());
+				logger.error("æ–‡ä»¶å‡ºé”™ï¼š"+source.getAbsolutePath());
 			}
 			kgml2DB(example);
 		}
@@ -62,7 +62,7 @@ public class KGML2DB
 		ServKReaction servKReaction = new ServKReaction();
 		ServKRelation servKRelation = new ServKRelation();
 		ServTaxID servTaxID = new ServTaxID();
-		//»ñµÃ¾ßÌåÎïÖÖ
+		//è·å¾—å…·ä½“ç‰©ç§
 		String taxAbbr=kgml.getSpecies();
 		TaxInfo taxInfo = new TaxInfo(); taxInfo.setAbbr(taxAbbr);
 		TaxInfo taxInfo2= servTaxID.queryTaxInfo(taxInfo);
@@ -71,8 +71,8 @@ public class KGML2DB
 			taxID = taxInfo2.getTaxID();
 		}
 		
-		///////////////////×°Èëentry/////////////////////////////////////////////////////////////////
-		///////////////////×¢Òâ£¬Èç¹ûentryµÄtypeÎªgroup£¬ÄÇÃ´½«ºóÃæÀïÃæµÄcomponent×°ÈërelationÖĞ//////////////////////////////////////////////////////////////////////////////
+		///////////////////è£…å…¥entry/////////////////////////////////////////////////////////////////
+		///////////////////æ³¨æ„ï¼Œå¦‚æœentryçš„typeä¸ºgroupï¼Œé‚£ä¹ˆå°†åé¢é‡Œé¢çš„componentè£…å…¥relationä¸­//////////////////////////////////////////////////////////////////////////////
 		ArrayList<Entry> lsEntry=kgml.getLsEntries();
 		for (int i = 0; i < lsEntry.size(); i++)
 		{
@@ -87,23 +87,23 @@ public class KGML2DB
 			///////////////////////////////////////////////////////////////////////////////////
 			if (kGentry.getType().equals("group"))
 			{
-				kGentry.setEntryName(lsEntry.get(i).getEntryName());//½ö½öÊÇÎªÁËÏÂÃæ¼ì²éÃû×ÖÊÇ²»ÊÇ"undefined"
-				//Èç¹ûÊÇgroupµÄ»°£¬ÏÈ¿´¿´nameÊÇ²»ÊÇundefined£¬²»ÊÇµÄ»°±¨´í
+				kGentry.setEntryName(lsEntry.get(i).getEntryName());//ä»…ä»…æ˜¯ä¸ºäº†ä¸‹é¢æ£€æŸ¥åå­—æ˜¯ä¸æ˜¯"undefined"
+				//å¦‚æœæ˜¯groupçš„è¯ï¼Œå…ˆçœ‹çœ‹nameæ˜¯ä¸æ˜¯undefinedï¼Œä¸æ˜¯çš„è¯æŠ¥é”™
 				if (!kGentry.getEntryName().equals("undefined")) 
 				{
-					System.out.println(kGentry.getPathName()+"µÄentryµÄtypeÎªgroup£¬µ«ÊÇname²»ÊÇundefined"+"   ÊÇ"+kGentry.getEntryName());
+					System.out.println(kGentry.getPathName()+"çš„entryçš„typeä¸ºgroupï¼Œä½†æ˜¯nameä¸æ˜¯undefined"+"   æ˜¯"+kGentry.getEntryName());
 					continue;
 				}
 				else 
 				{
-					////////////////////////////////////////½«ËùÓĞcomponent·Ö±ğ¶ÔÊı¾İ¿âµÄparentID½øĞĞÉı¼¶///////////////////////////////////////////////////////////////////////////
+					////////////////////////////////////////å°†æ‰€æœ‰componentåˆ†åˆ«å¯¹æ•°æ®åº“çš„parentIDè¿›è¡Œå‡çº§///////////////////////////////////////////////////////////////////////////
 					int compNum= lsEntry.get(i).getLsComponent().size();
 					for (int j = 0; j < compNum; j++)
 					{
-						int entryID=lsEntry.get(i).getLsComponent().get(j).getComID();//»ñµÃ¸ÃcomponentÖĞÒ»¸öentryµÄID
-						//»ñµÃÄÇ¸ö×ÓÀàµÄentryID
+						int entryID=lsEntry.get(i).getLsComponent().get(j).getComID();//è·å¾—è¯¥componentä¸­ä¸€ä¸ªentryçš„ID
+						//è·å¾—é‚£ä¸ªå­ç±»çš„entryID
 						Entry entryComp=kgml.getEntry(entryID);
-						//½«×ÓÀàµÄĞÅÏ¢¸³Öµ¸økgentry
+						//å°†å­ç±»çš„ä¿¡æ¯èµ‹å€¼ç»™kgentry
 						kGentry.setID(entryComp.getID());
 						kGentry.setLinkEntry(entryComp.getLinkEntry());
 						kGentry.setType(entryComp.getType());
@@ -116,7 +116,7 @@ public class KGML2DB
 						if (!lsEntry.get(i).getReaction().equals("")) {
 							ss2=lsEntry.get(i).getReaction().trim().split(" +"); 
 						}
-						//²»ÖªµÀ»á²»»áÓĞÕâÖÖÇé¿ö£¬groupÖĞµÄreactionºÍÆäÖĞµÄcomponentµÄreaction²»Ò»ÖÂ£¬Õâ¸ö¾ÍÊÇÀ´²âÊÔµÄ£¬Èç¹û·¢ÏÖ²»Ò»ÖÂÁË£¬ÄÇÃ´¾Í±¨´í¡£
+						//ä¸çŸ¥é“ä¼šä¸ä¼šæœ‰è¿™ç§æƒ…å†µï¼Œgroupä¸­çš„reactionå’Œå…¶ä¸­çš„componentçš„reactionä¸ä¸€è‡´ï¼Œè¿™ä¸ªå°±æ˜¯æ¥æµ‹è¯•çš„ï¼Œå¦‚æœå‘ç°ä¸ä¸€è‡´äº†ï¼Œé‚£ä¹ˆå°±æŠ¥é”™ã€‚
 						if (!entryComp.getReaction().equals("")&&
 								!lsEntry.get(i).getReaction().equals("")
 										&&!lsEntry.get(i).getReaction().equals(    entryComp.getReaction()   	)
@@ -124,25 +124,25 @@ public class KGML2DB
 						{
 							System.out.println(kGentry.getPathName()+"Component Error");
 						}
-						//×ÓÀà¸³ÖµcomponentĞÅÏ¢
+						//å­ç±»èµ‹å€¼componentä¿¡æ¯
 						kGentry.setCompID(j);
-						kGentry.setCompNum(compNum);//componentµÄÊıÁ¿
+						kGentry.setCompNum(compNum);//componentçš„æ•°é‡
 						
-						////Ãû×ÖÊÇ"sma:SAV_2461 sma:SAV_3026 sma:SAV_3027"¿Õ¸ñ·Ö¿ª
+						////åå­—æ˜¯"sma:SAV_2461 sma:SAV_3026 sma:SAV_3027"ç©ºæ ¼åˆ†å¼€
 						String[] ss=entryComp.getEntryName().trim().split(" +");
 						for (int k = 0; k < ss.length; k++) 
 						{
 							for (int k2 = 0; k2 < ss2.length; k2++) {
 								kGentry.setEntryName(ss[k]);
 								kGentry.setReaction(ss2[k2]);
-								//ÒòÎª±¾Ñ­»·ÖĞkGentryÒ»Ö±Ã»ÓĞnew£¬ËùÒÔÇ°Ò»´ÎµÄParentID»á¼ÌĞø´æÔÚ£¬´Ó¶ø¸ÉÈÅ²éÑ¯£¬ËùÒÔÒªÏÈÇåÁã
+								//å› ä¸ºæœ¬å¾ªç¯ä¸­kGentryä¸€ç›´æ²¡æœ‰newï¼Œæ‰€ä»¥å‰ä¸€æ¬¡çš„ParentIDä¼šç»§ç»­å­˜åœ¨ï¼Œä»è€Œå¹²æ‰°æŸ¥è¯¢ï¼Œæ‰€ä»¥è¦å…ˆæ¸…é›¶
 								kGentry.setParentID(0);
-								//ÏÈÓÃ²»°üº¬parentIDµÄkgentry²éÕÒÊı¾İ¿â£¬Ã»ÕÒµ½¾Í²åÈë£¬ÕÒµ½¾ÍÉı¼¶£¬Êµ¼ÊÒ²¾ÍÊÇ½«parentID¼ÓÉÏÈ¥
+								//å…ˆç”¨ä¸åŒ…å«parentIDçš„kgentryæŸ¥æ‰¾æ•°æ®åº“ï¼Œæ²¡æ‰¾åˆ°å°±æ’å…¥ï¼Œæ‰¾åˆ°å°±å‡çº§ï¼Œå®é™…ä¹Ÿå°±æ˜¯å°†parentIDåŠ ä¸Šå»
 								if (servKEntry.queryKGentry(kGentry)!=null) 
 								{
 									
 									kGentry.setParentID(lsEntry.get(i).getID());
-									//ÕâÀï¿ÉÄÜ»á±¨´í£¬ÕâÊÇÓÉÓÚÇ°Ãæµ¥¸ö×é·ÖÒÑ¾­ÊäÈëÁËÒ»±é£¬ËùÒÔÕâ¸ö´íÎóÃ»¹ØÏµ¿ÉÒÔºöÂÔ
+									//è¿™é‡Œå¯èƒ½ä¼šæŠ¥é”™ï¼Œè¿™æ˜¯ç”±äºå‰é¢å•ä¸ªç»„åˆ†å·²ç»è¾“å…¥äº†ä¸€éï¼Œæ‰€ä»¥è¿™ä¸ªé”™è¯¯æ²¡å…³ç³»å¯ä»¥å¿½ç•¥
 									servKEntry.updateKGentry(kGentry);
 								}
 								else 
@@ -161,7 +161,7 @@ public class KGML2DB
 				String[] ss2=lsEntry.get(i).getReaction().trim().split(" +"); 
 				for (int j = 0; j < ss.length; j++) 
 				{
-					//Èç¹ûÊÇ±¾pathway£¬ÔòÌø¹ı£¬·ñÔòµÄ»°×°ÈëpathRelation±íÖĞ
+					//å¦‚æœæ˜¯æœ¬pathwayï¼Œåˆ™è·³è¿‡ï¼Œå¦åˆ™çš„è¯è£…å…¥pathRelationè¡¨ä¸­
 					if (ss[j].trim().equals("")||ss[j].trim().equals(kgml.getPathName())) {
 						continue;
 					}
@@ -172,7 +172,7 @@ public class KGML2DB
 							servKEntry.insertKGentry(kGentry);
 						}
 					}
-					/////////////////////////////¿ÉÄÜ×öÒ»¸öµ¥¶ÀµÄmap¹ØÏµÍøÂç»á¸üºÃ
+					/////////////////////////////å¯èƒ½åšä¸€ä¸ªå•ç‹¬çš„mapå…³ç³»ç½‘ç»œä¼šæ›´å¥½
 					KGpathRelation kGpathRelation=new KGpathRelation();
 					kGpathRelation.setPathName(kgml.getPathName());
 					kGpathRelation.setScrPath(kgml.getPathName());
@@ -204,7 +204,7 @@ public class KGML2DB
 			}
 		}
 		
-		///////////////////×°Èëpathway/////////////////////////////////////////////////////////////////
+		///////////////////è£…å…¥pathway/////////////////////////////////////////////////////////////////
 		KGpathway kGpathway=new KGpathway();
 		kGpathway.setTaxID(taxID);
 		kGpathway.setPathName(kgml.getPathName());
@@ -217,7 +217,7 @@ public class KGML2DB
 			servKPathway.insertKGpathway(kGpathway);
 		}
 		
-		//////////////////×°ÈëreactionºÍsubstrate//////////////////////////////////////////////////////////////////
+		//////////////////è£…å…¥reactionå’Œsubstrate//////////////////////////////////////////////////////////////////
 		ArrayList<Reaction> lsReactions=kgml.getLsrReactions();
 		if (lsReactions!=null) {
 			for (int i = 0; i < lsReactions.size(); i++)
@@ -267,7 +267,7 @@ public class KGML2DB
 		}
 		
 		
-		/////////////////×°Èërelation/////////////////////////////////////////////////////////////////////
+		/////////////////è£…å…¥relation/////////////////////////////////////////////////////////////////////
 		ArrayList<Relation> lsRelations=kgml.getLsRelations();
 		if (lsRelations!=null) {
 			for (int i = 0; i < lsRelations.size(); i++)
@@ -277,7 +277,7 @@ public class KGML2DB
 				kGrelation.setEntry1ID(lsRelations.get(i).getEntry1ID());
 				kGrelation.setEntry2ID(lsRelations.get(i).getEntry2ID());
 				kGrelation.setType(lsRelations.get(i).getType());
-				/////////Èç¹ûÒ»¸örelationÖĞÓĞ¶àÖÖÏà»¥×÷ÓÃµÄÀàĞÍ£¬ÄÇÃ´ÏÖÔÚµÄ´¦Àí¾ÍÊÇ½«ÕâÃ´¶àÖÖÀàĞÍ²ğ³É¶àÁĞÀ´´æÈëÊı¾İ¿â¡£¿¼ÂÇ½«¶àÖÖ½áºÏĞ´ÈëÒ»ĞĞÓÃ//¸ô¿ª£¬Èçactive//binding//expression////////////////////////////////////////////////////////////////////////////////////////////
+				/////////å¦‚æœä¸€ä¸ªrelationä¸­æœ‰å¤šç§ç›¸äº’ä½œç”¨çš„ç±»å‹ï¼Œé‚£ä¹ˆç°åœ¨çš„å¤„ç†å°±æ˜¯å°†è¿™ä¹ˆå¤šç§ç±»å‹æ‹†æˆå¤šåˆ—æ¥å­˜å…¥æ•°æ®åº“ã€‚è€ƒè™‘å°†å¤šç§ç»“åˆå†™å…¥ä¸€è¡Œç”¨//éš”å¼€ï¼Œå¦‚active//binding//expression////////////////////////////////////////////////////////////////////////////////////////////
 				if (lsRelations.get(i).getLsSubtype()!=null) {
 					for (int j = 0; j < lsRelations.get(i).getLsSubtype().size(); j++) {
 						kGrelation.setSubtypeName(lsRelations.get(i).getLsSubtype().get(j).getName());

@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * Á½¸öentry¿ÉÄÜÓĞ¶à¸ö×÷ÓÃ·½·¨£¬Æ©ÈçbindingºÍactivationÍ¬Ê±´æÔÚÄÇÃ´Õâ¸ö¾Í³öÏÖÁ½´Î
+ * ä¸¤ä¸ªentryå¯èƒ½æœ‰å¤šä¸ªä½œç”¨æ–¹æ³•ï¼Œè­¬å¦‚bindingå’ŒactivationåŒæ—¶å­˜åœ¨é‚£ä¹ˆè¿™ä¸ªå°±å‡ºç°ä¸¤æ¬¡
  * @author zong0jie
  *
  */
 public class KGrelation {
 	
 	/**
-	 * ±¾Ïà»¥×÷ÓÃµÄ¹ØÏµ±ØĞëÔÚÖ¸¶¨µÄpathwayÏÂ²ÅÄÜÓĞ×÷ÓÃ
+	 * æœ¬ç›¸äº’ä½œç”¨çš„å…³ç³»å¿…é¡»åœ¨æŒ‡å®šçš„pathwayä¸‹æ‰èƒ½æœ‰ä½œç”¨
 	 */
 	private String pathName;
 	
@@ -29,7 +29,7 @@ public class KGrelation {
 	private int entry2;
 	
 	/**
-	 * <b>Á½¸öÏàÍ¬µÄentryÖ»ÓĞÒ»¸ötype</b>
+	 * <b>ä¸¤ä¸ªç›¸åŒçš„entryåªæœ‰ä¸€ä¸ªtype</b>
 	 * the type of this relation. detail:<br>
 	 * <b> ECrel</b>  	enzyme-enzyme relation, indicating two enzymes catalyzing successive reaction steps                 <br> 
 	 * <b>PPrel</b> 	protein-protein interaction, such as binding and modification							     <br>
@@ -40,8 +40,8 @@ public class KGrelation {
 	private String type;
 	
 	/**
-	 * »ñµÃÁ½¸öentryÏà»¥×÷ÓÃµÄÀàĞÍ£¬<b>Á½¸öÏàÍ¬µÄentry»áÓĞ¶à¸ö²»Í¬µÄsubtypeName</b>
-	 * ¾ßÌå¼ûÏÂ±í£ººÚÌåÎªname£¬µÚ¶şĞĞÎªvalue<br>
+	 * è·å¾—ä¸¤ä¸ªentryç›¸äº’ä½œç”¨çš„ç±»å‹ï¼Œ<b>ä¸¤ä¸ªç›¸åŒçš„entryä¼šæœ‰å¤šä¸ªä¸åŒçš„subtypeName</b>
+	 * å…·ä½“è§ä¸‹è¡¨ï¼šé»‘ä½“ä¸ºnameï¼Œç¬¬äºŒè¡Œä¸ºvalue<br>
 	 * Interaction/relation information <br>
 	 *      <b>name</b>  	value  	ECrel  	PPrel  	GErel  	Explanation <br>
 *      <b>compound</b> 	Entry element id attribute value for compound. 	ECrel 	PPrel 		shared with two successive reactions (ECrel) or intermediate of two interacting proteins (PPrel) <br>
@@ -64,7 +64,7 @@ public class KGrelation {
 	private String subtypeName;
 	
 	/**
-	 * »ñµÃÁ½¸öentryÏà»¥×÷ÓÃµÄÀàĞÍ£¬<b>Á½¸öÏàÍ¬µÄentry»áÓĞ¶à¸ö²»Í¬µÄsubtypeValue</b>¾ßÌå¼ûÏÂ±í£ººÚÌåÎªname£¬µÚ¶şĞĞÎªvalue<br>
+	 * è·å¾—ä¸¤ä¸ªentryç›¸äº’ä½œç”¨çš„ç±»å‹ï¼Œ<b>ä¸¤ä¸ªç›¸åŒçš„entryä¼šæœ‰å¤šä¸ªä¸åŒçš„subtypeValue</b>å…·ä½“è§ä¸‹è¡¨ï¼šé»‘ä½“ä¸ºnameï¼Œç¬¬äºŒè¡Œä¸ºvalue<br>
 	 * Interaction/relation information <br>
 	 *      <b>name</b>  	value  	ECrel  	PPrel  	GErel  	Explanation <br>
 *      <b>compound</b> 	Entry element id attribute value for compound. 	ECrel 	PPrel 		shared with two successive reactions (ECrel) or intermediate of two interacting proteins (PPrel) <br>
@@ -147,7 +147,7 @@ public class KGrelation {
 	}
 	
 	/**
-	 * ±¾Ïà»¥×÷ÓÃµÄ¹ØÏµ±ØĞëÔÚÖ¸¶¨µÄpathwayÏÂ²ÅÄÜÓĞ×÷ÓÃ
+	 * æœ¬ç›¸äº’ä½œç”¨çš„å…³ç³»å¿…é¡»åœ¨æŒ‡å®šçš„pathwayä¸‹æ‰èƒ½æœ‰ä½œç”¨
 	 */
 	public String getPathName() 
 	{
@@ -155,7 +155,7 @@ public class KGrelation {
 	}
 	/**
 	 * already trim()
-	 * ±¾Ïà»¥×÷ÓÃµÄ¹ØÏµ±ØĞëÔÚÖ¸¶¨µÄpathwayÏÂ²ÅÄÜÓĞ×÷ÓÃ
+	 * æœ¬ç›¸äº’ä½œç”¨çš„å…³ç³»å¿…é¡»åœ¨æŒ‡å®šçš„pathwayä¸‹æ‰èƒ½æœ‰ä½œç”¨
 	 */
 	public void setPathName(String pathName) 
 	{
@@ -163,7 +163,7 @@ public class KGrelation {
 	}
 	
 	/**
-	 * »ñµÃÁ½¸öentryÏà»¥×÷ÓÃµÄÀàĞÍ£¬¾ßÌå¼ûÏÂ±í£ººÚÌåÎªname£¬µÚ¶şĞĞÎªvalue<br>
+	 * è·å¾—ä¸¤ä¸ªentryç›¸äº’ä½œç”¨çš„ç±»å‹ï¼Œå…·ä½“è§ä¸‹è¡¨ï¼šé»‘ä½“ä¸ºnameï¼Œç¬¬äºŒè¡Œä¸ºvalue<br>
 	 * Interaction/relation information <br>
 	 *      <b>name</b>  	value  	ECrel  	PPrel  	GErel  	Explanation <br>
 *      <b>compound</b> 	Entry element id attribute value for compound. 	ECrel 	PPrel 		shared with two successive reactions (ECrel) or intermediate of two interacting proteins (PPrel) <br>
@@ -189,7 +189,7 @@ public class KGrelation {
 	}
 	/**
 	 * already trim()
-	 * »ñµÃÁ½¸öentryÏà»¥×÷ÓÃµÄÀàĞÍ£¬¾ßÌå¼ûÏÂ±í£ººÚÌåÎªname£¬µÚ¶şĞĞÎªvalue<br>
+	 * è·å¾—ä¸¤ä¸ªentryç›¸äº’ä½œç”¨çš„ç±»å‹ï¼Œå…·ä½“è§ä¸‹è¡¨ï¼šé»‘ä½“ä¸ºnameï¼Œç¬¬äºŒè¡Œä¸ºvalue<br>
 	 * Interaction/relation information <br>
 	 *      <b>name</b>  	value  	ECrel  	PPrel  	GErel  	Explanation <br>
 *      <b>compound</b> 	Entry element id attribute value for compound. 	ECrel 	PPrel 		shared with two successive reactions (ECrel) or intermediate of two interacting proteins (PPrel) <br>
@@ -215,7 +215,7 @@ public class KGrelation {
 	}
 	
 	/**
-	 * »ñµÃÁ½¸öentryÏà»¥×÷ÓÃµÄÀàĞÍ£¬¾ßÌå¼ûÏÂ±í£ººÚÌåÎªname£¬µÚ¶şĞĞÎªvalue<br>
+	 * è·å¾—ä¸¤ä¸ªentryç›¸äº’ä½œç”¨çš„ç±»å‹ï¼Œå…·ä½“è§ä¸‹è¡¨ï¼šé»‘ä½“ä¸ºnameï¼Œç¬¬äºŒè¡Œä¸ºvalue<br>
 	 * Interaction/relation information <br>
 	 *      <b>name</b>  	value  	ECrel  	PPrel  	GErel  	Explanation <br>
 *      <b>compound</b> 	Entry element id attribute value for compound. 	ECrel 	PPrel 		shared with two successive reactions (ECrel) or intermediate of two interacting proteins (PPrel) <br>
@@ -241,7 +241,7 @@ public class KGrelation {
 	}
 	/**
 	 * already trim()
-	 * »ñµÃÁ½¸öentryÏà»¥×÷ÓÃµÄÀàĞÍ£¬¾ßÌå¼ûÏÂ±í£ººÚÌåÎªname£¬µÚ¶şĞĞÎªvalue<br>
+	 * è·å¾—ä¸¤ä¸ªentryç›¸äº’ä½œç”¨çš„ç±»å‹ï¼Œå…·ä½“è§ä¸‹è¡¨ï¼šé»‘ä½“ä¸ºnameï¼Œç¬¬äºŒè¡Œä¸ºvalue<br>
 	 * Interaction/relation information <br>
 	 *      <b>name</b>  	value  	ECrel  	PPrel  	GErel  	Explanation <br>
 *      <b>compound</b> 	Entry element id attribute value for compound. 	ECrel 	PPrel 		shared with two successive reactions (ECrel) or intermediate of two interacting proteins (PPrel) <br>
@@ -279,8 +279,8 @@ public class KGrelation {
 	}
 	
 	/**
-	 * ÅĞ¶ÏÁ½¸öKGrelationÊÇ·ñÏàÍ¬£¬Ö»ĞèÒª±È½Ïentry1ºÍentry2¼´¿É
-	 * »¹Ã»Ğ´ºÃ
+	 * åˆ¤æ–­ä¸¤ä¸ªKGrelationæ˜¯å¦ç›¸åŒï¼Œåªéœ€è¦æ¯”è¾ƒentry1å’Œentry2å³å¯
+	 * è¿˜æ²¡å†™å¥½
 	 * @return
 	 */
 	private boolean equalsSimp(Object obj)
@@ -290,23 +290,23 @@ public class KGrelation {
 	
 	
 	/**
-	 * ÒòÎªÓĞĞ©relationÖĞÓĞÕâÖÖÇé¿ö£ºentry1¡¢entry2ÍêÈ«Ò»ÖÂ£¬¾ÍÊÇsubtype²»Ò»ÖÂ£¬Õâ¸ö¾ÍÊÇ½«Ò»ÖÂµÄentry1¡¢entry2È¥ÈßÓàµÄ
-	 * È¥³ıÈßÓàºó£¬½«subtypeÓÃ//·Ö¸î¿ª
+	 * å› ä¸ºæœ‰äº›relationä¸­æœ‰è¿™ç§æƒ…å†µï¼šentry1ã€entry2å®Œå…¨ä¸€è‡´ï¼Œå°±æ˜¯subtypeä¸ä¸€è‡´ï¼Œè¿™ä¸ªå°±æ˜¯å°†ä¸€è‡´çš„entry1ã€entry2å»å†—ä½™çš„
+	 * å»é™¤å†—ä½™åï¼Œå°†subtypeç”¨//åˆ†å‰²å¼€
 	 * @param lsKGrelations
 	 * @return
 	 */
 	public static HashMap<String, KGrelation> removeRep(ArrayList<KGrelation> lsKGrelations) 
 	{
-		/////////////////////////////////////////ÒòÎªÓĞĞ©relationÖĞÓĞÕâÖÖÇé¿ö£ºentry1¡¢entry2ÍêÈ«Ò»ÖÂ£¬¾ÍÊÇsubtype²»Ò»ÖÂ£¬Õâ¸ö¾ÍÊÇ½«Ò»ÖÂµÄentry1¡¢entry2È¥ÈßÓàµÄ////////////////////////////////////////////////////////////////
+		/////////////////////////////////////////å› ä¸ºæœ‰äº›relationä¸­æœ‰è¿™ç§æƒ…å†µï¼šentry1ã€entry2å®Œå…¨ä¸€è‡´ï¼Œå°±æ˜¯subtypeä¸ä¸€è‡´ï¼Œè¿™ä¸ªå°±æ˜¯å°†ä¸€è‡´çš„entry1ã€entry2å»å†—ä½™çš„////////////////////////////////////////////////////////////////
 		HashMap<String, KGrelation> hashPathID2KGRelation = new HashMap<String, KGrelation>();
 		for (int i = 0; i < lsKGrelations.size(); i++) 
 		{
 			KGrelation tmpKGrelation = lsKGrelations.get(i);
-			//ÒòÎªentryID1¶¼ÊÇÒ»ÑùµÄ£¬ËùÒÔ²»¿¼ÂÇentryID1
-			String key = tmpKGrelation.getPathName() + tmpKGrelation.getEntry2ID(); //pathNameºÍentryID2Á½¸öÔÚÒ»ÆğÊÇ¶ÀÒ»ÎŞ¶şµÄÁË£¬ÓÃÕâ¸öÁ¬³Çstring×÷Îªkey£¬ÒÔ´ËÀ´È¥ÖØ¸´£¬·ñÔòµÄ»°ÒªÔÚKGrelationÀàÖĞÖØĞ´hashÂë
+			//å› ä¸ºentryID1éƒ½æ˜¯ä¸€æ ·çš„ï¼Œæ‰€ä»¥ä¸è€ƒè™‘entryID1
+			String key = tmpKGrelation.getPathName() + tmpKGrelation.getEntry2ID(); //pathNameå’ŒentryID2ä¸¤ä¸ªåœ¨ä¸€èµ·æ˜¯ç‹¬ä¸€æ— äºŒçš„äº†ï¼Œç”¨è¿™ä¸ªè¿åŸstringä½œä¸ºkeyï¼Œä»¥æ­¤æ¥å»é‡å¤ï¼Œå¦åˆ™çš„è¯è¦åœ¨KGrelationç±»ä¸­é‡å†™hashç 
 			if (hashPathID2KGRelation.containsKey(key)) 
 			{
-				//Èç¹û³öÏÖÖØ¸´µÄentry1ºÍentry2¶Ô£¬ ÄÇÃ´½«subtypeNameºÍsubtypeValue¸½¼ÓÔÚºóÃæ
+				//å¦‚æœå‡ºç°é‡å¤çš„entry1å’Œentry2å¯¹ï¼Œ é‚£ä¹ˆå°†subtypeNameå’ŒsubtypeValueé™„åŠ åœ¨åé¢
 				KGrelation kGrelationtmp = hashPathID2KGRelation.get(key);
 				if ( kGrelationtmp.getSubtypeName().equals( tmpKGrelation.getSubtypeName() )  ) {
 					continue;

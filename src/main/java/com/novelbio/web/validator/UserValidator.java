@@ -11,37 +11,37 @@ import org.springframework.validation.Validator;
 import com.novelbio.web.model.User;
 @Component
 public class UserValidator implements Validator {
-	private static final Pattern EMAIL_PATTERN = Pattern // ¢ÙºÏ·¨EmailÕıÔò±í´ïÊ½
+	private static final Pattern EMAIL_PATTERN = Pattern // â‘ åˆæ³•Emailæ­£åˆ™è¡¨è¾¾å¼
 			.compile("(?:\\w[-._\\w]*\\w@\\w[-._\\w]*\\w\\.\\w{2,3}$)");
 
-	public boolean supports(Class clazz) { // ¢Ú¸ÃĞ£ÑéÆ÷Ö§³ÖµÄÄ¿±êÀà
+	public boolean supports(Class clazz) { // â‘¡è¯¥æ ¡éªŒå™¨æ”¯æŒçš„ç›®æ ‡ç±»
 		return clazz.equals(User.class);
 	}
 
-	public void validate(Object target, Errors errors) { // ¢Û¶ÔÄ¿±êÀà¶ÔÏó½øĞĞĞ£Ñé£¬´íÎó¼ÇÂ¼ÔÚerrorsÖĞ
-		User user = (User) target; // ¢Û-1 ÔìĞÍÎªUser¶ÔÏó
-		// ¢Û-2 Í¨¹ıSpringÌá¹©µÄĞ£Ñé¹¤¾ßÀà½øĞĞ¼òµ¥µÄ¹æÔòĞ£Ñé
+	public void validate(Object target, Errors errors) { // â‘¢å¯¹ç›®æ ‡ç±»å¯¹è±¡è¿›è¡Œæ ¡éªŒï¼Œé”™è¯¯è®°å½•åœ¨errorsä¸­
+		User user = (User) target; // â‘¢-1 é€ å‹ä¸ºUserå¯¹è±¡
+		// â‘¢-2 é€šè¿‡Springæä¾›çš„æ ¡éªŒå·¥å…·ç±»è¿›è¡Œç®€å•çš„è§„åˆ™æ ¡éªŒ
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name",
-				"required.name", "ÓÃ»§Ãû±ØĞëÌîĞ´");
+				"required.name", "ç”¨æˆ·åå¿…é¡»å¡«å†™");
 //		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password",
-//				"required.password", "ÃÜÂë²»ÄÜÎª¿Õ");
-		validateEmail(user.getEmail(), errors); // ¢Û-3 Ğ£ÑéEmail¸ñÊ½
+//				"required.password", "å¯†ç ä¸èƒ½ä¸ºç©º");
+		validateEmail(user.getEmail(), errors); // â‘¢-3 æ ¡éªŒEmailæ ¼å¼
 		validateName(user.getName(), errors);
 	}
 
-	private void validateEmail(String email, Errors errors) {// ¢ÜEmailºÏ·¨ĞÔĞ£Ñé
+	private void validateEmail(String email, Errors errors) {// â‘£Emailåˆæ³•æ€§æ ¡éªŒ
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email",
-				"required.email", "Email²»ÄÜÎª¿Õ");
-		Matcher m = EMAIL_PATTERN.matcher(email); // ¢Ü-1 Í¨¹ıÕıÔò±í´ïÊ½Ğ£ÑéEmail¸ñÊ½
+				"required.email", "Emailä¸èƒ½ä¸ºç©º");
+		Matcher m = EMAIL_PATTERN.matcher(email); // â‘£-1 é€šè¿‡æ­£åˆ™è¡¨è¾¾å¼æ ¡éªŒEmailæ ¼å¼
 		if (!m.matches()) {
-			errors.rejectValue("email", "invalid.email", "Email¸ñÊ½·Ç·¨");
+			errors.rejectValue("email", "invalid.email", "Emailæ ¼å¼éæ³•");
 		}
 	}
-	private void validateName(String name, Errors errors) {// ¢ÜEmailºÏ·¨ĞÔĞ£Ñé
+	private void validateName(String name, Errors errors) {// â‘£Emailåˆæ³•æ€§æ ¡éªŒ
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name",
-				"required.name", "ÇëÊäÈëÕıÈ·µÄÓÃ»§Ãû");
+				"required.name", "è¯·è¾“å…¥æ­£ç¡®çš„ç”¨æˆ·å");
 		if (name.trim().length()>20) {
-			errors.rejectValue("name", "invalid.name", "ÓÃ»§Ãû³¤¶ÈĞ¡ÓÚ20");
+			errors.rejectValue("name", "invalid.name", "ç”¨æˆ·åé•¿åº¦å°äº20");
 		}
 
 	}

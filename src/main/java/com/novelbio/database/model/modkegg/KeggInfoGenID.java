@@ -12,7 +12,7 @@ public class KeggInfoGenID extends KeggInfoAbs{
 
 	boolean bookgiDgen2Keg = false;
 	/**
-	 * Õâ¸öÊı¾İ¿âÖĞ¾ÍÊÇÒ»Ò»¶ÔÓ¦µÄ¹ØÏµ
+	 * è¿™ä¸ªæ•°æ®åº“ä¸­å°±æ˜¯ä¸€ä¸€å¯¹åº”çš„å…³ç³»
 	 */
 	private KGIDgen2Keg kgiDgen2Keg;
 	

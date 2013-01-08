@@ -28,21 +28,21 @@ public class CtrlRNAmap {
 	
 	MapRNA mapRNA;
 	GffChrAbs gffChrAbs;
-	/** tophatÊÇ·ñÓÃGTFÎÄ¼ş½øĞĞĞ£Õı£¬Ä¬ÈÏÎªtrue£¬Èç¹û³ö´í¾ÍÒª¿¼ÂÇ²»ÓÃGTF */
+	/** tophatæ˜¯å¦ç”¨GTFæ–‡ä»¶è¿›è¡Œæ ¡æ­£ï¼Œé»˜è®¤ä¸ºtrueï¼Œå¦‚æœå‡ºé”™å°±è¦è€ƒè™‘ä¸ç”¨GTF */
 	boolean useGTF = true;
 	String outPrefix;
-	/** ±£´æ×îÖÕ½á¹û£¬Ö»ÓĞrsem²Å»áÓĞ
-	 * µÚÒ»ĞĞÎª±êÌâ
-	 * Ö®ºóÃ¿Ò»ĞĞÎª»ùÒò±í´ïÇé¿ö
+	/** ä¿å­˜æœ€ç»ˆç»“æœï¼Œåªæœ‰rsemæ‰ä¼šæœ‰
+	 * ç¬¬ä¸€è¡Œä¸ºæ ‡é¢˜
+	 * ä¹‹åæ¯ä¸€è¡Œä¸ºåŸºå› è¡¨è¾¾æƒ…å†µ
 	 *  */
 	ArrayList<ArrayList<String>> lsExpResultRsemRPKM = new ArrayList<ArrayList<String>>();
-	/** ±£´æ×îÖÕ½á¹û£¬Ö»ÓĞrsem²Å»áÓĞ
-	 * µÚÒ»ĞĞÎª±êÌâ
-	 * Ö®ºóÃ¿Ò»ĞĞÎª»ùÒò±í´ïÇé¿ö
+	/** ä¿å­˜æœ€ç»ˆç»“æœï¼Œåªæœ‰rsemæ‰ä¼šæœ‰
+	 * ç¬¬ä¸€è¡Œä¸ºæ ‡é¢˜
+	 * ä¹‹åæ¯ä¸€è¡Œä¸ºåŸºå› è¡¨è¾¾æƒ…å†µ
 	 *  */
 	ArrayList<ArrayList<String>> lsExpResultRsemCounts = new ArrayList<ArrayList<String>>();
 	
-	/** ±¾ÏîÄ¿Îñ±ØµÚÒ»¸öÉè¶¨ */
+	/** æœ¬é¡¹ç›®åŠ¡å¿…ç¬¬ä¸€ä¸ªè®¾å®š */
 	public void setMapType(int mapType) {
 		if (mapType == TOP_HAT) {
 			this.mapType = TOP_HAT;
@@ -63,7 +63,7 @@ public class CtrlRNAmap {
 	public void setOutPathPrefix(String outPathPrefix) {
 		this.outPrefix = outPathPrefix;
 	}
-	/** MapTopÀïÃæµÄ²ÎÊı */
+	/** MapTopé‡Œé¢çš„å‚æ•° */
 	public void setStrandSpecifictype(StrandSpecific strandSpecifictype) {
 		this.strandSpecific = strandSpecifictype;
 	}
@@ -134,14 +134,14 @@ public class CtrlRNAmap {
 			mapRNA.setInsert(4500);
 		}
 	}
-	/** »ñµÃ»ùÒò±í´ï */
+	/** è·å¾—åŸºå› è¡¨è¾¾ */
 	private void setExpResultRPKM(String prefix, MapRNA mapRNA) {
 		if (mapType != RSEM) {
 			return;
 		}
 		MapRsem mapRsem = (MapRsem) mapRNA;
 		ArrayListMultimap<String, Double> mapGeneID2LsExp = mapRsem.getMapGeneID2LsExp();
-		//µÚÒ»×é½á¹ûÖ±½Ó×°½øÈ¥
+		//ç¬¬ä¸€ç»„ç»“æœç›´æ¥è£…è¿›å»
 		if (lsExpResultRsemRPKM.size() == 0) {
 			ArrayList<String> lsTitleRPKM = new ArrayList<String>();
 			lsTitleRPKM.add("GeneID"); lsTitleRPKM.add(prefix + "_RPKM");
@@ -151,12 +151,12 @@ public class CtrlRNAmap {
 				ArrayList<String> lsDetail = new ArrayList<String>();
 				
 				List<Double> lsValue = mapGeneID2LsExp.get(geneID);
-				lsDetail.add(geneID);//»ñµÃ»ùÒòÃû
-				lsDetail.add(MathComput.mean(lsValue) + "" );//»ñµÃÆ½¾ùÊı
+				lsDetail.add(geneID);//è·å¾—åŸºå› å
+				lsDetail.add(MathComput.mean(lsValue) + "" );//è·å¾—å¹³å‡æ•°
 				lsExpResultRsemRPKM.add(lsDetail);
 			}
 		}
-		//ºóÃæµÄ¾ÍÔÚhash±íÀïÃæ²é
+		//åé¢çš„å°±åœ¨hashè¡¨é‡Œé¢æŸ¥
 		else {
 			lsExpResultRsemRPKM.get(0).add(prefix + "_RPKM");
 			for (int i = 1; i < lsExpResultRsemRPKM.size(); i++) {
@@ -166,14 +166,14 @@ public class CtrlRNAmap {
 			}
 		}
 	}
-	/** »ñµÃ»ùÒò±í´ï */
+	/** è·å¾—åŸºå› è¡¨è¾¾ */
 	private void setExpResultCounts(String prefix, MapRNA mapRNA) {
 		if (mapType != RSEM) {
 			return;
 		}
 		MapRsem mapRsem = (MapRsem) mapRNA;
 		ArrayListMultimap<String, Integer> mapGeneID2LsCounts = mapRsem.getMapGeneID2LsCounts();
-		//µÚÒ»×é½á¹ûÖ±½Ó×°½øÈ¥
+		//ç¬¬ä¸€ç»„ç»“æœç›´æ¥è£…è¿›å»
 		if (lsExpResultRsemCounts.size() == 0) {
 			ArrayList<String> lsTitleCounts = new ArrayList<String>();
 			lsTitleCounts.add("GeneID"); lsTitleCounts.add(prefix + "_Counts");
@@ -182,12 +182,12 @@ public class CtrlRNAmap {
 				List<Integer> lsValue = mapGeneID2LsCounts.get(geneID);
 
 				ArrayList<String> lsDetail = new ArrayList<String>();
-				lsDetail.add(geneID);//»ñµÃ»ùÒòÃû
-				lsDetail.add((int)MathComput.mean(lsValue) + "" );//»ñµÃÆ½¾ùÊı
+				lsDetail.add(geneID);//è·å¾—åŸºå› å
+				lsDetail.add((int)MathComput.mean(lsValue) + "" );//è·å¾—å¹³å‡æ•°
 				lsExpResultRsemCounts.add(lsDetail);
 			}
 		}
-		//ºóÃæµÄ¾ÍÔÚhash±íÀïÃæ²é
+		//åé¢çš„å°±åœ¨hashè¡¨é‡Œé¢æŸ¥
 		else {
 			lsExpResultRsemCounts.get(0).add(prefix + "_Counts");
 			for (int i = 1; i < lsExpResultRsemCounts.size(); i++) {

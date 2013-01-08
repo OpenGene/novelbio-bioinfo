@@ -20,7 +20,7 @@ import org.jdesktop.application.Application;
 
 import com.novelbio.base.multithread.RunProcess;
 /**
- * 显示进度条和读取信息的框
+ * 鏄剧ず杩涘害鏉″拰璇诲彇淇℃伅鐨勬
  * */
 public class GUIprocess extends javax.swing.JPanel implements Runnable {
 	private JButton btnClose;

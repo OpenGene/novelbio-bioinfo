@@ -6,9 +6,9 @@ import org.apache.ibatis.migration.commands.NewCommand;
 import org.apache.log4j.Logger;
 
 /**
- * ĞèÒª¼ì²é
- * ¶àÌõlistabsºÏ²¢ÔÚÒ»Æğ
- * ÆäÄÚ²¿µÄÔªËØ¼´Îª
+ * éœ€è¦æ£€æŸ¥
+ * å¤šæ¡listabsåˆå¹¶åœ¨ä¸€èµ·
+ * å…¶å†…éƒ¨çš„å…ƒç´ å³ä¸º
  * @author zong0jie
  *
  */
@@ -17,11 +17,11 @@ extends ListAbs<M>
 {
 	private static final long serialVersionUID = -5877021643535236697L;
 	private static Logger logger = Logger.getLogger(ListComb.class);
-	/** È«Ìå´ı±È½ÏµÄlistabsĞÅÏ¢  */
+	/** å…¨ä½“å¾…æ¯”è¾ƒçš„listabsä¿¡æ¯  */
 	ArrayList<E> lsAllListAbs = new ArrayList<E>();
 	E  lsAllID = null;
 	/**
-	 * ±£´æËùÓĞexonºÏ²¢ºóµÄ±ß½ç
+	 * ä¿å­˜æ‰€æœ‰exonåˆå¹¶åçš„è¾¹ç•Œ
 	 */
 	ArrayList<int[]> lsExonBounder = new ArrayList<int[]>();
 	public void addListAbs(E lsListAbs) {
@@ -29,15 +29,15 @@ extends ListAbs<M>
 			setCis5to3(lsListAbs.isCis5to3());
 		}
 		else if (lsListAbs.isCis5to3() != null && isCis5to3() != lsListAbs.isCis5to3()) {
-			logger.error("Á½¸ö·½Ïò²»Í¬µÄlist²»ÄÜ½øĞĞ±È½Ï");
+			logger.error("ä¸¤ä¸ªæ–¹å‘ä¸åŒçš„listä¸èƒ½è¿›è¡Œæ¯”è¾ƒ");
 		}
 		lsAllListAbs.add(lsListAbs);
 	}
 
-	/** ½«ÊäÈëµÄ¶àÌõListAbsÕûÀí³ÉÏëÒªµÄ¸ñÊ½£¬²¢ÇÒ°´ÕÕelement½øĞĞ·Ö¶Î */
+	/** å°†è¾“å…¥çš„å¤šæ¡ListAbsæ•´ç†æˆæƒ³è¦çš„æ ¼å¼ï¼Œå¹¶ä¸”æŒ‰ç…§elementè¿›è¡Œåˆ†æ®µ */
 	boolean copelist = false;
 	/**
-	 * ½«ÊäÈëµÄ¶àÌõListAbsÕûÀí³ÉÏëÒªµÄ¸ñÊ½£¬²¢ÇÒ°´ÕÕelement½øĞĞ·Ö¶Î
+	 * å°†è¾“å…¥çš„å¤šæ¡ListAbsæ•´ç†æˆæƒ³è¦çš„æ ¼å¼ï¼Œå¹¶ä¸”æŒ‰ç…§elementè¿›è¡Œåˆ†æ®µ
 	 */
 	private void copeList()
 	{
@@ -55,15 +55,15 @@ extends ListAbs<M>
 	}
 	
 	/**
-	 * ´ı¼ì²é
-	 * ½«¾­¹ıÅÅĞòµÄexonlistºÏ²¢£¬»ñµÃ¼¸¸öÁ¬ĞøµÄexon£¬ÓÃÓÚ·Ö¶Î
+	 * å¾…æ£€æŸ¥
+	 * å°†ç»è¿‡æ’åºçš„exonliståˆå¹¶ï¼Œè·å¾—å‡ ä¸ªè¿ç»­çš„exonï¼Œç”¨äºåˆ†æ®µ
 	 */
 	private void combExon()
 	{
 		lsExonBounder.clear();
 		T exonOld =  lsAllID.get(0);
 		int[] exonBoundOld = new int[]{exonOld.getStartCis(), exonOld.getEndCis()};
-		boolean allFinal = false;//×îºóÒ»¸öexonÊÇ·ñĞèÒªÌí¼ÓÈëlistÖĞ
+		boolean allFinal = false;//æœ€åä¸€ä¸ªexonæ˜¯å¦éœ€è¦æ·»åŠ å…¥listä¸­
 		lsExonBounder.add(exonBoundOld);
 		for (int i = 1; i < lsAllID.size(); i++) {
 			T ele = lsAllID.get(i);
@@ -95,9 +95,9 @@ extends ListAbs<M>
 	}
 	
 	/**
-	 * ÕâÀï¿ÉÒÔÓÅ»¯
-	 * ´ı¼ì²é
-	 * °´ÕÕ·Ö×éºÃµÄ±ß½çexon£¬½«Ã¿¸ö×ªÂ¼±¾½øĞĞ»®·Ö
+	 * è¿™é‡Œå¯ä»¥ä¼˜åŒ–
+	 * å¾…æ£€æŸ¥
+	 * æŒ‰ç…§åˆ†ç»„å¥½çš„è¾¹ç•Œexonï¼Œå°†æ¯ä¸ªè½¬å½•æœ¬è¿›è¡Œåˆ’åˆ†
 	 */
 	private void setExonCluster()
 	{
@@ -106,12 +106,12 @@ extends ListAbs<M>
 			for (int m = 0; m < lsAllListAbs.size(); m ++) {
 			E lsAbs = lsAllListAbs.get(m);
 				if (lsAbs.isCis5to3() != isCis5to3()) {
-					logger.error("·½Ïò²»Ò»ÖÂ£¬²»ÄÜ±È½Ï");
+					logger.error("æ–¹å‘ä¸ä¸€è‡´ï¼Œä¸èƒ½æ¯”è¾ƒ");
 				}
 				ArrayList<T> lsExonClusterTmp = new ArrayList<T>();
-				//´Ó1¿ªÊ¼¼ÆÊı
-				int beforeExonNum = 0;//Èç¹û±¾isoformÕıºÃÃ»ÓĞÂäÔÚbounder×éÖĞµÄexon£¬ÄÇÃ´¾ÍÒª¼ÇÂ¼¸ÃisoformµÄÇ°ºóÁ½¸öexonµÄÎ»ÖÃ£¬ÓÃÓÚ²éÕÒ¿ç¹ıºÍÃ»ÓĞ¿ç¹ıµÄexon
-				boolean junc = false;//Èç¹û±¾isoformÕıºÃÃ»ÓĞÂäÔÚbounder×éÖĞµÄexon£¬ÄÇÃ´¾ÍĞèÒª¼ÇÂ¼Ìø¹ıµÄexonµÄÎ»ÖÃ£¬¾Í½«Õâ¸öflagÉèÖÃÎªtrue
+				//ä»1å¼€å§‹è®¡æ•°
+				int beforeExonNum = 0;//å¦‚æœæœ¬isoformæ­£å¥½æ²¡æœ‰è½åœ¨bounderç»„ä¸­çš„exonï¼Œé‚£ä¹ˆå°±è¦è®°å½•è¯¥isoformçš„å‰åä¸¤ä¸ªexonçš„ä½ç½®ï¼Œç”¨äºæŸ¥æ‰¾è·¨è¿‡å’Œæ²¡æœ‰è·¨è¿‡çš„exon
+				boolean junc = false;//å¦‚æœæœ¬isoformæ­£å¥½æ²¡æœ‰è½åœ¨bounderç»„ä¸­çš„exonï¼Œé‚£ä¹ˆå°±éœ€è¦è®°å½•è·³è¿‡çš„exonçš„ä½ç½®ï¼Œå°±å°†è¿™ä¸ªflagè®¾ç½®ä¸ºtrue
 				for (int i = 0; i < lsAbs.size(); i++) {
 					T ele = lsAbs.get(i);
 					if (isCis5to3()) {
@@ -125,7 +125,7 @@ extends ListAbs<M>
 							junc = false;
 						}
 						else if (ele.getStartCis() > exonBound[1]) {
-							//Èç¹ûÆğµã´óÓÚ±¾±ß½ç£¬ËµÃ÷¹ıÈ¥ÁË£¬ÄÇÃ´¿´lsExonClusterTmpÓĞ¶«Î÷Ã»£¬Ã»¶«Î÷±íÊ¾Ìø¹ı£¬ÓĞ¶«Î÷±íÊ¾Ã»ÓĞÌø¹ı
+							//å¦‚æœèµ·ç‚¹å¤§äºæœ¬è¾¹ç•Œï¼Œè¯´æ˜è¿‡å»äº†ï¼Œé‚£ä¹ˆçœ‹lsExonClusterTmpæœ‰ä¸œè¥¿æ²¡ï¼Œæ²¡ä¸œè¥¿è¡¨ç¤ºè·³è¿‡ï¼Œæœ‰ä¸œè¥¿è¡¨ç¤ºæ²¡æœ‰è·³è¿‡
 							if (lsExonClusterTmp.size() > 0)
 								junc = false;
 							else
@@ -144,7 +144,7 @@ extends ListAbs<M>
 							junc = false;
 						}
 						else if (ele.getStartCis() < exonBound[1]) {
-							//Èç¹ûÆğµã´óÓÚ±¾±ß½ç£¬ËµÃ÷¹ıÈ¥ÁË£¬ÄÇÃ´¿´lsExonClusterTmpÓĞ¶«Î÷Ã»£¬Ã»¶«Î÷±íÊ¾Ìø¹ı£¬ÓĞ¶«Î÷±íÊ¾Ã»ÓĞÌø¹ı
+							//å¦‚æœèµ·ç‚¹å¤§äºæœ¬è¾¹ç•Œï¼Œè¯´æ˜è¿‡å»äº†ï¼Œé‚£ä¹ˆçœ‹lsExonClusterTmpæœ‰ä¸œè¥¿æ²¡ï¼Œæ²¡ä¸œè¥¿è¡¨ç¤ºè·³è¿‡ï¼Œæœ‰ä¸œè¥¿è¡¨ç¤ºæ²¡æœ‰è·³è¿‡
 							if (lsExonClusterTmp.size() > 0)
 								junc = false;
 							else
@@ -165,7 +165,7 @@ extends ListAbs<M>
 	}
 	
 	/**
-	 * ·µ»ØÓĞ²îÒìµÄexonÏµÁĞList
+	 * è¿”å›æœ‰å·®å¼‚çš„exonç³»åˆ—List
 	 * @return
 	 */
 	public ArrayList<M> getDifExonCluster() {
@@ -179,7 +179,7 @@ extends ListAbs<M>
 		return lsDifExon;
 	}
 	/**
-	 * ĞÂ½¨Ò»¸öM£¬newÒ»¸ö¾ÍĞĞÁË
+	 * æ–°å»ºä¸€ä¸ªMï¼Œnewä¸€ä¸ªå°±è¡Œäº†
 	 * @return
 	 */
 	abstract M createListDetailComb();

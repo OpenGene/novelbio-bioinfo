@@ -20,7 +20,7 @@ public class CtrlCombFile {
 		this.oufFile = oufFile;
 	}
 	/**
-	 * ±È½ÏÄÄ¼¸ÁĞ
+	 * æ¯”è¾ƒå“ªå‡ åˆ—
 	 * @param colNum
 	 */
 	public void setCompareCol(String colNum) {
@@ -35,11 +35,11 @@ public class CtrlCombFile {
 		combineTab.setColCompareOverlapID(lsColID);
 	}
 	/**
-	 *  »ñµÃÃ¿¸öÎÄ¼şÃû, ¶ÔÓÚÃ¿¸öÎÄ¼ş£¬Éè¶¨ËüµÄIDÁĞ
-	 *  ¿ÉÒÔÁ¬Ğø²»¶ÏµÄÉè¶¨
-	 * @param condTxt ÎÄ¼şÈ«Ãû
-	 * @param codName ¸ø¸ÃÎÄ¼şÆğ¸öÃû×Ö£¬×îºóÔÚÁĞÖĞÏÔÊ¾
-	 * @param colDetai Ñ¡Ôñ¸ÃÎÄ¼şµÄÄÄ¼¸ÁĞ
+	 *  è·å¾—æ¯ä¸ªæ–‡ä»¶å, å¯¹äºæ¯ä¸ªæ–‡ä»¶ï¼Œè®¾å®šå®ƒçš„IDåˆ—
+	 *  å¯ä»¥è¿ç»­ä¸æ–­çš„è®¾å®š
+	 * @param condTxt æ–‡ä»¶å…¨å
+	 * @param codName ç»™è¯¥æ–‡ä»¶èµ·ä¸ªåå­—ï¼Œæœ€ååœ¨åˆ—ä¸­æ˜¾ç¤º
+	 * @param colDetai é€‰æ‹©è¯¥æ–‡ä»¶çš„å“ªå‡ åˆ—
 	 */
 	public void setColDetail(String condTxt, String codName, String colStrDetail) {
 		ArrayList<String[]> lsResult = PatternOperate.getPatLoc(colStrDetail, "\\d+", false);

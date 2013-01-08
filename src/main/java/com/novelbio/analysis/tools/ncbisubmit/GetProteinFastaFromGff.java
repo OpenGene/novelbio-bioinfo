@@ -6,7 +6,7 @@ import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
-/** 从最后的gff文件中将蛋白序列提取出来 */
+/** 浠庢渶鍚庣殑gff鏂囦欢涓皢铔嬬櫧搴忓垪鎻愬彇鍑烘潵 */
 public class GetProteinFastaFromGff {
 	public static void main(String[] args) {
 		GetProteinFastaFromGff getProteinFastaFromGff = new GetProteinFastaFromGff();

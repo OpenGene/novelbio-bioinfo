@@ -101,7 +101,7 @@ public class SamRecord extends SiteInfo implements AlignRecord{
 		return false;
 	}
 	
-	/** µ±Îªjunction readsµÄÊ±ºò²Å»áÓĞÒâÒå */
+	/** å½“ä¸ºjunction readsçš„æ—¶å€™æ‰ä¼šæœ‰æ„ä¹‰ */
 	public ArrayList<Align> getAlignmentBlocks() {
 		if (samRecord.getCigar().toString().contains("N")) {
 			List<AlignmentBlock> lsAlignmentBlocks = samRecord.getAlignmentBlocks();
@@ -155,9 +155,9 @@ public class SamRecord extends SiteInfo implements AlignRecord{
 		return samRecord.getMappingQuality();
 	}
 	/**
-	 * readsµÄÈ¨ÖØ£¬ÒâË¼ÏàÍ¬µÄreadsÔÚ±¾samÎÄ¼şÖĞ³öÏÖÁË¼¸´Î
-	 * bwaµÄ½á¹û£¬Ò»ÌõreadsÖ»ÓĞÒ»ĞĞ£¬ËùÒÔºã·µ»Ø1
-	 * tophatµÄ½á¹û£¬Ò»ÌõreadsÈç¹ûmappingÖÁ¶à¸öÎ»ÖÃ£¬ÔÚÎÄ¼şÖĞ¾Í»á³öÏÖ¶à´Î£¬ËùÒÔ·µ»Ø¿ÉÄÜ´óÓÚ1
+	 * readsçš„æƒé‡ï¼Œæ„æ€ç›¸åŒçš„readsåœ¨æœ¬samæ–‡ä»¶ä¸­å‡ºç°äº†å‡ æ¬¡
+	 * bwaçš„ç»“æœï¼Œä¸€æ¡readsåªæœ‰ä¸€è¡Œï¼Œæ‰€ä»¥æ’è¿”å›1
+	 * tophatçš„ç»“æœï¼Œä¸€æ¡readså¦‚æœmappingè‡³å¤šä¸ªä½ç½®ï¼Œåœ¨æ–‡ä»¶ä¸­å°±ä¼šå‡ºç°å¤šæ¬¡ï¼Œæ‰€ä»¥è¿”å›å¯èƒ½å¤§äº1
 	 * */
 	protected int getMappedReadsWeight() {
 		Object attrCC = samRecord.getAttribute("NH");
@@ -168,7 +168,7 @@ public class SamRecord extends SiteInfo implements AlignRecord{
 		return 1;
 	}
 	/**
-	 * ±¾ĞòÁĞ¿ÉÒÔmappingÖÁ¼¸¸ö²»Í¬Î»ÖÃ
+	 * æœ¬åºåˆ—å¯ä»¥mappingè‡³å‡ ä¸ªä¸åŒä½ç½®
 	 * */
 	public Integer getMappingNum() {
 		if (numMappedReadsInFile > 0) {
@@ -194,7 +194,7 @@ public class SamRecord extends SiteInfo implements AlignRecord{
 	}
 
 	/**
-	 * ÊÇ·ñÎªË«¶Ë»òÕßËµÓĞÁîÒ»¶Ë ·µ»Ønull£º±íÊ¾²»ÖªµÀµ½µ×ÓĞÃ»ÓĞÁíÒ»¶Ë£¬ÄÇÃ´¾ÍÒª¸ù¾İÊäÈëµÄÎÄ¼ş½øĞĞÅĞ¶Ï
+	 * æ˜¯å¦ä¸ºåŒç«¯æˆ–è€…è¯´æœ‰ä»¤ä¸€ç«¯ è¿”å›nullï¼šè¡¨ç¤ºä¸çŸ¥é“åˆ°åº•æœ‰æ²¡æœ‰å¦ä¸€ç«¯ï¼Œé‚£ä¹ˆå°±è¦æ ¹æ®è¾“å…¥çš„æ–‡ä»¶è¿›è¡Œåˆ¤æ–­
 	 * */
 	public boolean isHavePairEnd() {
 		if (isHavePaireReads != null) {
@@ -216,7 +216,7 @@ public class SamRecord extends SiteInfo implements AlignRecord{
 		return isHavePaireReads;
 	}
 
-	/** Ë«¶ËµÄÁíÒ»°ëÊÇ·ñmappingÉÏÁË£¬µ¥¶ËÒ²·µ»Øfalse */
+	/** åŒç«¯çš„å¦ä¸€åŠæ˜¯å¦mappingä¸Šäº†ï¼Œå•ç«¯ä¹Ÿè¿”å›false */
 	public boolean isMateMapped() {
 		if (!isHavePairEnd()) {
 			return false;
@@ -239,7 +239,7 @@ public class SamRecord extends SiteInfo implements AlignRecord{
 	public Cigar getCigar() {
 		return samRecord.getCigar();
 	}
-	/** ¸ø¶¨Ò»Ìõreads£¬¿´ÊÇ·ñÎªÆä³É¶ÔµÄreads */
+	/** ç»™å®šä¸€æ¡readsï¼Œçœ‹æ˜¯å¦ä¸ºå…¶æˆå¯¹çš„reads */
 	public boolean isPaireReads(SamRecord samRecord) {
 		if (!isHavePairEnd()) {
 			return false;
@@ -252,7 +252,7 @@ public class SamRecord extends SiteInfo implements AlignRecord{
 			} else if (!isMateMapped() && !samRecord.isMapped()) {
 				return true;
 			} else {
-				logger.error("Î´ÖªÇé¿ö");
+				logger.error("æœªçŸ¥æƒ…å†µ");
 				return false;
 			}
 		} else {
@@ -260,7 +260,7 @@ public class SamRecord extends SiteInfo implements AlignRecord{
 		}
 	}
 	/**
-	 * ·µ»ØµÚÒ»¸ö¼ÇÔØµÄbedrecord Ã»ÓĞmappingÉÏ¾Í·µ»Ønull
+	 * è¿”å›ç¬¬ä¸€ä¸ªè®°è½½çš„bedrecord æ²¡æœ‰mappingä¸Šå°±è¿”å›null
 	 * */
 	public FastQRecord toFastQRecord() {
 		FastQRecord fastQRecord = new FastQRecord();
@@ -270,7 +270,7 @@ public class SamRecord extends SiteInfo implements AlignRecord{
 		return fastQRecord;
 	}
 	/**
-	 * ·µ»ØµÚÒ»¸ö¼ÇÔØµÄbedrecord Ã»ÓĞmappingÉÏ¾Í·µ»Ønull
+	 * è¿”å›ç¬¬ä¸€ä¸ªè®°è½½çš„bedrecord æ²¡æœ‰mappingä¸Šå°±è¿”å›null
 	 * */
 	public BedRecord toBedRecordSE() {
 		if (!isMapped()) {
@@ -284,14 +284,14 @@ public class SamRecord extends SiteInfo implements AlignRecord{
 		bedRecord.setMapQuality(getMapQuality());
 		bedRecord.setSeq(getSeqFasta());
 		bedRecord.setScore(getMapQuality());
-		// ¼ÆÊı£¬mappingµ½ÁË¼¸´Î
+		// è®¡æ•°ï¼Œmappingåˆ°äº†å‡ æ¬¡
 		bedRecord.setMappingNum(getMappingNum());
 		bedRecord.setName(samRecord.getReadName());
 		bedRecord.setAlignmentBlocks(getAlignmentBlocks());
 		return bedRecord;
 	}
 
-	/** ÕâÑù·µ»Ø¾ÍÊÇÃ¿¸öSamRecord·µ»ØÒ»ÏµÁĞBedRecord */
+	/** è¿™æ ·è¿”å›å°±æ˜¯æ¯ä¸ªSamRecordè¿”å›ä¸€ç³»åˆ—BedRecord */
 	public ArrayList<BedRecord> toBedRecordSELs() {
 		ArrayList<BedRecord> lsBedRecords = new ArrayList<BedRecord>();
 		if (!isMapped()) {

@@ -95,7 +95,7 @@ public class Macs14control {
 		writePeaks();
 	}
 	/**
-	 * ĞŞÕı½á¹ûÎÄ¼ş	 */
+	 * ä¿®æ­£ç»“æœæ–‡ä»¶	 */
 	private void writePeaks() {
 		ArrayList<String[]> lsResult = modifyMacs14Result();
 		TxtReadandWrite txtWrite = new TxtReadandWrite(resultFile, true);
@@ -105,14 +105,14 @@ public class Macs14control {
 		txtWrite.close();
 	}
 	/**
-	 * ĞŞÕı½á¹ûÎÄ¼ş£¬Ìí¼ÓsummitÎ»µãÎªÀÏµÄsummitÎ»µã+length
+	 * ä¿®æ­£ç»“æœæ–‡ä»¶ï¼Œæ·»åŠ summitä½ç‚¹ä¸ºè€çš„summitä½ç‚¹+length
 	 */
 	private ArrayList<String[]> modifyMacs14Result() {
 		ArrayList<String[]> lsPeaksRaw = ExcelTxtRead.readLsExcelTxt(macs14.getResultPeakFile(), 20);
 
 		ArrayList<String[]> lsPeakResult = new ArrayList<String[]>();
 		String[] title = lsPeaksRaw.get(0);
-		// ¸ø-log10pvalue¼Ó¸öÀ¨»¡
+		// ç»™-log10pvalueåŠ ä¸ªæ‹¬å¼§
 		title[6] = "(" + title[6] + ")";
 		lsPeakResult.add(title);
 
@@ -124,7 +124,7 @@ public class Macs14control {
 			try {
 				strings[4] = String.valueOf(Integer.parseInt(tmpSubmmit) + Integer.parseInt(start));
 			} catch (Exception e) {
-				logger.error("¼ÆËãsummitÎ»µã³ö´í£º" + ArrayOperate.cmbString(strings,"\t"));
+				logger.error("è®¡ç®—summitä½ç‚¹å‡ºé”™ï¼š" + ArrayOperate.cmbString(strings,"\t"));
 			}			
 			lsPeakResult.add(strings);
 		}

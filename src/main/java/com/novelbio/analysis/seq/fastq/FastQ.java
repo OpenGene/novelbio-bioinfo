@@ -19,7 +19,7 @@ public class FastQ {
 	public static int QUALITY_LOW = 10;
 	public static int QUALITY_MIDIAN = 20;
 	/**
-	 * Ë«¶ËµÄÊ±ºòÖ»ÓĞÁ½¸öĞòÁĞ¶¼ÊÇºÃµÄ²Å±£Áô
+	 * åŒç«¯çš„æ—¶å€™åªæœ‰ä¸¤ä¸ªåºåˆ—éƒ½æ˜¯å¥½çš„æ‰ä¿ç•™
 	 */
 	public static int QUALITY_MIDIAN_PAIREND = 40;
 	public static int QUALITY_HIGM = 50;
@@ -32,11 +32,11 @@ public class FastQ {
 	FastQwrite fastQwrite = new FastQwrite();
 	FastQfilter fastQfilter = new FastQfilter(fastQRead, fastQwrite);
 	
-	/** Ä¬ÈÏÊÇ¶ÁÈ¡ */
+	/** é»˜è®¤æ˜¯è¯»å– */
 	public FastQ(String fastqFile) {
 		fastQRead.setFastqFile(fastqFile);
 	}
-	/** Ä¬ÈÏÊÇ¶ÁÈ¡ */
+	/** é»˜è®¤æ˜¯è¯»å– */
 	public FastQ(String fastqFile, boolean createNew) {
 		fastQwrite.setFastqFile(fastqFile);
 	}
@@ -62,8 +62,8 @@ public class FastQ {
 	public Iterable<FastQRecord> readlines() {
 		return fastQRead.readlines(true);
 	}
-	/** ¶ÁÈ¡fastqµÄÊ±ºòÊÇ·ñ³õÊ¼»¯
-	 * Ö÷ÒªÓÃÔÚ¶àÏß³Ì¹ıÂËreadsµÄÊ±ºò£¬¿ÉÒÔÔÚ¹ıÂËreadsµÄÊ±ºò²Å½øĞĞ³õÊ¼»¯
+	/** è¯»å–fastqçš„æ—¶å€™æ˜¯å¦åˆå§‹åŒ–
+	 * ä¸»è¦ç”¨åœ¨å¤šçº¿ç¨‹è¿‡æ»¤readsçš„æ—¶å€™ï¼Œå¯ä»¥åœ¨è¿‡æ»¤readsçš„æ—¶å€™æ‰è¿›è¡Œåˆå§‹åŒ–
 	 *  */
 	public Iterable<FastQRecord> readlines(boolean initial) {
 		return fastQRead.readlines(initial);
@@ -80,12 +80,12 @@ public class FastQ {
 	public int getReadsLenAvg() {
 		return fastQRead.getReadsLenAvg();
 	}
-	/** ¹ıÂËÍêÖ®ºó²ÅÄÜ»ñµÃµÄÖµ */
+	/** è¿‡æ»¤å®Œä¹‹åæ‰èƒ½è·å¾—çš„å€¼ */
 	public long getSeqNum() {
 		return fastQRead.readsNum;
 	}
 	/**
-	 * @return null ³ö´í
+	 * @return null å‡ºé”™
 	 */
 	public FastQ filterReads() {
 		setFilterReadsOutName(true, getOutFileName());
@@ -95,7 +95,7 @@ public class FastQ {
 		fastQfileOut1.fastQRead.readsNum = fastQfilter.allFilteredReadsNum;
 		return fastQfileOut1;
 	}
-	/** Ë«¶Ëreads¹ıÂË */
+	/** åŒç«¯readsè¿‡æ»¤ */
 	public FastQ[] filterReads(FastQ fastQfile2) {
 		fastQRead.setFastQReadMate(fastQfile2.fastQRead);
 		fastQwrite.setFastQwriteMate(fastQfile2.fastQwrite);
@@ -120,7 +120,7 @@ public class FastQ {
 		}
 		return writeName;
 	}
-	/** Éè¶¨¹ıÂËºóµÄÊä³öÎÄ¼şÃû */
+	/** è®¾å®šè¿‡æ»¤åçš„è¾“å‡ºæ–‡ä»¶å */
 	private void setFilterReadsOutName(boolean singleEnd, String outFileName) {
 		if (singleEnd) {
 			fastQwrite.setFastqFile(outFileName);
@@ -138,7 +138,7 @@ public class FastQ {
 		fastQfilter.run();
 	}
 	
-	/** ÔÚ½øĞĞfilterµÄÊ±ºòÒ²¿ÉÒÔµ¼Èëgui½øĞĞ²Ù×÷°É */
+	/** åœ¨è¿›è¡Œfilterçš„æ—¶å€™ä¹Ÿå¯ä»¥å¯¼å…¥guiè¿›è¡Œæ“ä½œå§ */
 	public FastQfilter getFastQfilter() {
 		return fastQfilter;
 	}
@@ -154,11 +154,11 @@ public class FastQ {
 		}
 	}
 	/**
-	 * ½«fastqÎÄ¼ş×ª»¯ÎªfastaÎÄ¼ş<br>
-	 * ²úÉúµÄÎÄ¼şÎªµ¥¶Ë£º fastaFile<br>
-	 * Ë«¶Ë£º Èç¹ûÓĞºó×ºÃû: Èçfasta.aa<br>
-	 * ÔòÎª fasta.aa ºÍ fasta2.aa<br>
-	 * Ã»ÓĞºó×ºÃûÔòÎª fasta ºÍ fasta2<br>
+	 * å°†fastqæ–‡ä»¶è½¬åŒ–ä¸ºfastaæ–‡ä»¶<br>
+	 * äº§ç”Ÿçš„æ–‡ä»¶ä¸ºå•ç«¯ï¼š fastaFile<br>
+	 * åŒç«¯ï¼š å¦‚æœæœ‰åç¼€å: å¦‚fasta.aa<br>
+	 * åˆ™ä¸º fasta.aa å’Œ fasta2.aa<br>
+	 * æ²¡æœ‰åç¼€ååˆ™ä¸º fasta å’Œ fasta2<br>
 	 * @param fastaFile
 	 * @throws Exception 
 	 */
@@ -170,9 +170,9 @@ public class FastQ {
 		txtFasta.close();
 	}
 	/**
-	 * ¸ø¶¨ÎÄ¼şÃû£¬»ñµÃ ÎÄ¼şÃû.fasta ºÍ ÎÄ¼şÃû.
+	 * ç»™å®šæ–‡ä»¶åï¼Œè·å¾— æ–‡ä»¶å.fasta å’Œ æ–‡ä»¶å.
 	 * @param showMessage
-	 * @param illuminaOffset ÊÇ·ñÎªilluminaµÄoffset
+	 * @param illuminaOffset æ˜¯å¦ä¸ºilluminaçš„offset
 	 */
 	public static void convertSff2FastQ(String fastaFile, boolean illuminaOffset) {
 		int offset = FASTQ_SANGER_OFFSET;
@@ -187,21 +187,21 @@ public class FastQ {
 		FastQ txtOutFastQ = new FastQ(fastQ, true);
 		
 		Iterator<String> txtQuality = txtReadQualtiy.readlines().iterator();
-		//¼ÆÊıÆ÷£¬ÒòÎªÃ¿Á½ĞĞÎªÒ»¸öµ¥Ôª
+		//è®¡æ•°å™¨ï¼Œå› ä¸ºæ¯ä¸¤è¡Œä¸ºä¸€ä¸ªå•å…ƒ
 		int num = 0;
 		FastQRecord fastQRecord = null;
 		for (String contentFasta : txtReadFasta.readlines()) {
 			String contentQuality = txtQuality.next();
-			//±êÌâĞĞ
+			//æ ‡é¢˜è¡Œ
 			if (num == 0) {
 				if (!contentFasta.equals(contentQuality)) {
-					logger.error("sff×ª»»³ö´íÀ­£¬¿´¿´fastaºÍqualityÊÇ²»ÊÇÀ´×ÔÍ¬Ò»¸öÎÄ¼ş");
+					logger.error("sffè½¬æ¢å‡ºé”™æ‹‰ï¼Œçœ‹çœ‹fastaå’Œqualityæ˜¯ä¸æ˜¯æ¥è‡ªåŒä¸€ä¸ªæ–‡ä»¶");
 				}
 				fastQRecord = new FastQRecord();
 				fastQRecord.setName(contentFasta.substring(1));
 				num++;
 			}
-			//¾ßÌåÄÚÈİ
+			//å…·ä½“å†…å®¹
 			else if (num == 1) {
 				fastQRecord.setSeq(contentFasta);
 				fastQRecord.setFastaQuality(convert2Phred(contentQuality, offset));
@@ -212,8 +212,8 @@ public class FastQ {
 		txtOutFastQ.close();
 	}
 	/**
-	 * ¸ø¶¨Ò»ÏµÁĞoffset£¬½«Êı×Ö×ª»¯ÎªfastqµÄqualityĞĞ
-	 * @param illumina ÊÇ·ñÊÇilluminaµÄoffset 
+	 * ç»™å®šä¸€ç³»åˆ—offsetï¼Œå°†æ•°å­—è½¬åŒ–ä¸ºfastqçš„qualityè¡Œ
+	 * @param illumina æ˜¯å¦æ˜¯illuminaçš„offset 
 	 * @return
 	 */
 	private static String convert2Phred(String qualityNum, int offset) {

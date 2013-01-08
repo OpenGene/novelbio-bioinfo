@@ -14,7 +14,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
 /**
- * ´ÓbamÎÄ¼ş»òbedÎÄ¼ş×ª»¯ÎªDGEµÄÖµ
+ * ä»bamæ–‡ä»¶æˆ–bedæ–‡ä»¶è½¬åŒ–ä¸ºDGEçš„å€¼
  * @author zong0jie
  *
  */
@@ -23,7 +23,7 @@ public class Align2DGEvalue {
 	List<String> lsTitle;
 	String resultFile;
 	boolean allTags = true;
-	/** dgeµÄ×î¶Ì³¤¶È */
+	/** dgeçš„æœ€çŸ­é•¿åº¦ */
 	int dgeMinLength = 18;
 	
 	HashMap<String, String> mapAccID2GeneID;
@@ -39,8 +39,8 @@ public class Align2DGEvalue {
 			}
 		}
 	}
-	/** Éè¶¨sam£¬bam£¬»òÕßbedÎÄ¼ş 
-	 * ÕâĞ©ÎÄ¼ş±ØĞëÊÇÅÅ¹ıĞòµÄ
+	/** è®¾å®šsamï¼Œbamï¼Œæˆ–è€…bedæ–‡ä»¶ 
+	 * è¿™äº›æ–‡ä»¶å¿…é¡»æ˜¯æ’è¿‡åºçš„
 	 * */
 	public void setLsAlignSeq(List<AlignSeq> lsAlignSeq, List<String> lsTitle, String resultFile) {
 		this.lsAlignSeq = lsAlignSeq;
@@ -48,7 +48,7 @@ public class Align2DGEvalue {
 		this.resultFile = resultFile;
 	}
 	
-	/** ½«ÊäÈëµÄÎÄ¼şÅÅĞò */
+	/** å°†è¾“å…¥çš„æ–‡ä»¶æ’åº */
 	public void sort() {
 		ArrayList<AlignSeq> lsSortedAlignSeq = new ArrayList<AlignSeq>();
 		for (AlignSeq alignSeq : lsAlignSeq) {
@@ -57,19 +57,19 @@ public class Align2DGEvalue {
 		lsAlignSeq = lsSortedAlignSeq;
 	}
 	/**
-	 * Ò»¸ö»ùÒò»áÓĞ¶à¸öÎ»µãÓĞreads¸²¸Ç£¬¾ÍÊÇËµDGEµÄÊÔÑé»áÔì³ÉÔÚÒ»¸ö»ùÒòµÄ¶à¸öÎ»ÖÃÓĞreads¸»¼¯
-	 * ÊÇÑ¡ÔñÈ«²¿reads»¹ÊÇÑ¡Ôñ×î¸ßµãµÄreads
+	 * ä¸€ä¸ªåŸºå› ä¼šæœ‰å¤šä¸ªä½ç‚¹æœ‰readsè¦†ç›–ï¼Œå°±æ˜¯è¯´DGEçš„è¯•éªŒä¼šé€ æˆåœ¨ä¸€ä¸ªåŸºå› çš„å¤šä¸ªä½ç½®æœ‰readså¯Œé›†
+	 * æ˜¯é€‰æ‹©å…¨éƒ¨readsè¿˜æ˜¯é€‰æ‹©æœ€é«˜ç‚¹çš„reads
 	 * @param allTags
 	 */
 	public void setAllTags(boolean allTags) {
 		this.allTags = allTags;
 	}
 	/**
-	 * ÎŞ·¨Éè¶¨compressType
-	 * ½«bedÎÄ¼ş×ª»¯³ÉDGEËùĞèµÄĞÅÏ¢£¬Ö±½Ó¿ÉÒÔÓÃDEseq·ÖÎöµÄ
+	 * æ— æ³•è®¾å®šcompressType
+	 * å°†bedæ–‡ä»¶è½¬åŒ–æˆDGEæ‰€éœ€çš„ä¿¡æ¯ï¼Œç›´æ¥å¯ä»¥ç”¨DEseqåˆ†æçš„
 	 * @param result
 	 * @param sort 
-	 * @param allTags ÊÇ·ñ»ñµÃÈ«²¿µÄÕıÏòtag£¬falseµÄ»°£¬Ö»Ñ¡Ôñ×î¶àµÄÕıÏòtagµÄÊıÁ¿
+	 * @param allTags æ˜¯å¦è·å¾—å…¨éƒ¨çš„æ­£å‘tagï¼Œfalseçš„è¯ï¼Œåªé€‰æ‹©æœ€å¤šçš„æ­£å‘tagçš„æ•°é‡
 	 * @param bedFile
 	 */
 	public String dgeCal() {
@@ -95,8 +95,8 @@ public class Align2DGEvalue {
 		return resultFile;
 	}
 	/**
-	 * ¸ø¶¨Ò»×éhash±í£¬key£ºlocID   value£ºexpressValue
-	 * ½«ËûÃÇºÏ²¢³ÉÒ»¸öhash±í
+	 * ç»™å®šä¸€ç»„hashè¡¨ï¼Œkeyï¼šlocID   valueï¼šexpressValue
+	 * å°†ä»–ä»¬åˆå¹¶æˆä¸€ä¸ªhashè¡¨
 	 * @param lsDGEvalue
 	 * @return
 	 */
@@ -122,10 +122,10 @@ public class Align2DGEvalue {
 		return hashValue;
 	}
 	/**
-	 * @param Alltags true: Ñ¡ÔñÈ«²¿tag£¬false£¬Ö»Ñ¡Ôñ×î¶àµÄtag
+	 * @param Alltags true: é€‰æ‹©å…¨éƒ¨tagï¼Œfalseï¼Œåªé€‰æ‹©æœ€å¤šçš„tag
 	 * @return
-	 * ·µ»ØÃ¿¸ö»ùÒòËù¶ÔÓ¦µÄ±í´ïÁ¿£¬°üÀ¨¶à¸ötagÖ®ºÍ--³ıÁË·´Ïòtag£¬ ÓÃ int[1]Ö»ÊÇÎªÁËµØÖ·ÒıÓÃ¡£
-	 * ÊäÈëµÄalign±ØĞëÅÅĞò
+	 * è¿”å›æ¯ä¸ªåŸºå› æ‰€å¯¹åº”çš„è¡¨è¾¾é‡ï¼ŒåŒ…æ‹¬å¤šä¸ªtagä¹‹å’Œ--é™¤äº†åå‘tagï¼Œ ç”¨ int[1]åªæ˜¯ä¸ºäº†åœ°å€å¼•ç”¨ã€‚
+	 * è¾“å…¥çš„alignå¿…é¡»æ’åº
 	 * @throws Exception
 	 */
 	private HashMap<String, Integer> getGeneExpress(AlignSeq alignSeq) throws Exception {
@@ -136,11 +136,11 @@ public class Align2DGEvalue {
 		AlignRecord lastRecord = null;
 		
 		for (AlignRecord alignRecord : alignSeq.readLines()) {
-			//mappingµ½»¥²¹Á´ÉÏµÄ£¬ÊÇ¼ÙµÄĞÅºÅ
+			//mappingåˆ°äº’è¡¥é“¾ä¸Šçš„ï¼Œæ˜¯å‡çš„ä¿¡å·
 			if (!alignRecord.isMapped() || alignRecord.isCis5to3() != null && !alignRecord.isCis5to3() || alignRecord.Length() < dgeMinLength) {
 				continue;
 			}
-			//³öÏÖĞÂ»ùÒò
+			//å‡ºç°æ–°åŸºå› 
 			if (lastRecord != null && !lastRecord.getRefID().equals(alignRecord.getRefID())) {
 				addMapGene2Exp(mapGene2Exp, lastRecord.getRefID(), summary(lsTmpExpValue));
 				lsTmpExpValue.clear();
@@ -180,7 +180,7 @@ public class Align2DGEvalue {
 		return result;
 	}
 	/**
-	 * ÊäÈëint[0] Ö»ÓĞ0Î»ÓĞĞÅÏ¢
+	 * è¾“å…¥int[0] åªæœ‰0ä½æœ‰ä¿¡æ¯
 	 * @param lsReads
 	 * @return
 	 */
@@ -194,7 +194,7 @@ public class Align2DGEvalue {
 		return (int)max;
 	}
 	/**
-	 * ÊäÈëint[0] Ö»ÓĞ0Î»ÓĞĞÅÏ¢
+	 * è¾“å…¥int[0] åªæœ‰0ä½æœ‰ä¿¡æ¯
 	 * @param lsReads
 	 * @return
 	 */

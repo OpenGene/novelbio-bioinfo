@@ -13,70 +13,70 @@ import com.novelbio.database.model.modkegg.KeggInfo;
 public interface GeneIDInt{
  
 	/**
-	 * idType£¬±ØĞëÊÇIDTYPEÖĞµÄÒ»ÖÖ
+	 * idTypeï¼Œå¿…é¡»æ˜¯IDTYPEä¸­çš„ä¸€ç§
 	 */
 	public String getIDtype();
 	
 	/**
-	 * ¾ßÌåµÄaccID£¬Èç¹ûÃ»ÓĞÔò¸ù¾İÎïÖÖËæ»ú×¥Ò»¸ö³öÀ´
+	 * å…·ä½“çš„accIDï¼Œå¦‚æœæ²¡æœ‰åˆ™æ ¹æ®ç‰©ç§éšæœºæŠ“ä¸€ä¸ªå‡ºæ¥
 	 */
 	public String getAccID();
 
 
 	/**
-	 * »ñµÃgeneID
-	 * Èç¹ûÊÇaccID¾Í·µ»Ø-1
+	 * è·å¾—geneID
+	 * å¦‚æœæ˜¯accIDå°±è¿”å›-1
 	 * @return
 	 */
 	public String getGenUniID();
 	/**
-	 * Èç¹ûÊı¾İ¿âÖĞÃ»ÓĞÕÒµ½¶ÔÓ¦µÄaccID£¬ÔòÉè¶¨Ê±ºòÊäÈëµÄÊÇÊ²Ã´taxID£¬·µ»ØµÄ¾ÍÊÇÍ¬ÑùµÄtaxID
+	 * å¦‚æœæ•°æ®åº“ä¸­æ²¡æœ‰æ‰¾åˆ°å¯¹åº”çš„accIDï¼Œåˆ™è®¾å®šæ—¶å€™è¾“å…¥çš„æ˜¯ä»€ä¹ˆtaxIDï¼Œè¿”å›çš„å°±æ˜¯åŒæ ·çš„taxID
 	 * @return
 	 */
 	public int getTaxID() ;
 	
 	/**
-	 * »ñµÃ¸Ã»ùÒòµÄdescription
+	 * è·å¾—è¯¥åŸºå› çš„description
 	 * @return
 	 */
 	public String getDescription() ;
 	/**
-	 * »ñµÃ¸Ã»ùÒòµÄsymbol
+	 * è·å¾—è¯¥åŸºå› çš„symbol
 	 * @return
 	 */
 	public String getSymbol();
 	
 	/**
-	 * »ñµÃ¸ÃCopeIDµÄList-KGentry,Èç¹ûÃ»ÓĞ»òÎª¿Õ£¬Ôò·µ»Ønull
-	 * @param blast ÊÇ·ñblastµ½ÏàÓ¦ÎïÖÖ²é¿´
-	 * @param StaxID Èç¹ûblastÎªtrue£¬ÄÇÃ´Éè¶¨StaxID
-	 * @return Èç¹ûÃ»ÓĞ¾Í·µ»Ønull
+	 * è·å¾—è¯¥CopeIDçš„List-KGentry,å¦‚æœæ²¡æœ‰æˆ–ä¸ºç©ºï¼Œåˆ™è¿”å›null
+	 * @param blast æ˜¯å¦blaståˆ°ç›¸åº”ç‰©ç§æŸ¥çœ‹
+	 * @param StaxID å¦‚æœblastä¸ºtrueï¼Œé‚£ä¹ˆè®¾å®šStaxID
+	 * @return å¦‚æœæ²¡æœ‰å°±è¿”å›null
 	 */
 	public ArrayList<KGentry> getKegEntity(boolean blast) ;
 	
 	
 	/**
-	 * 	 * Ö¸¶¨Ò»¸ödbInfo£¬·µ»Ø¸ÃdbInfoËù¶ÔÓ¦µÄaccID£¬Ã»ÓĞÔò·µ»Ønull
+	 * 	 * æŒ‡å®šä¸€ä¸ªdbInfoï¼Œè¿”å›è¯¥dbInfoæ‰€å¯¹åº”çš„accIDï¼Œæ²¡æœ‰åˆ™è¿”å›null
 	 * @param dbInfo
 	 * @return
 	 */
 	public String getAccIDDBinfo(String dbInfo);
 	
 	/**
-	 * ÏÈÉè¶¨blastµÄÇé¿ö Èç¹ûblast * 0:symbol 1:description  2:subjectSpecies 3:evalue
-	 * 4:symbol 5:description Èç¹û²»blast 0:symbol 1:description
+	 * å…ˆè®¾å®šblastçš„æƒ…å†µ å¦‚æœblast * 0:symbol 1:description  2:subjectSpecies 3:evalue
+	 * 4:symbol 5:description å¦‚æœä¸blast 0:symbol 1:description
 	 * 
 	 * @return
 	 */
 	public String[] getAnno( boolean blast ) ;
 	/**
-	 * »ñµÃÏàÓ¦µÄKeggInfoĞÅÏ¢
+	 * è·å¾—ç›¸åº”çš„KeggInfoä¿¡æ¯
 	 * @return
 	 */
 	public KeggInfo getKeggInfo();
 	/**
-	 * blast¶à¸öÎïÖÖ Ê×ÏÈÒªÉè¶¨blastµÄÄ¿±ê ÓÃ·½·¨£º setBlastInfo(double evalue, int... StaxID)
-	 * ¸ø¶¨Ò»ÏµÁĞµÄÄ¿±êÎïÖÖµÄtaxID£¬»ñµÃCopedIDlist Èç¹ûÃ»ÓĞ½á¹û£¬·µ»ØÒ»¸ö¿ÕµÄlsResult
+	 * blastå¤šä¸ªç‰©ç§ é¦–å…ˆè¦è®¾å®šblastçš„ç›®æ ‡ ç”¨æ–¹æ³•ï¼š setBlastInfo(double evalue, int... StaxID)
+	 * ç»™å®šä¸€ç³»åˆ—çš„ç›®æ ‡ç‰©ç§çš„taxIDï¼Œè·å¾—CopedIDlist å¦‚æœæ²¡æœ‰ç»“æœï¼Œè¿”å›ä¸€ä¸ªç©ºçš„lsResult
 	 * @param evalue
 	 * @param StaxID
 	 * @return
@@ -84,13 +84,13 @@ public interface GeneIDInt{
 	public ArrayList<GeneID> getLsBlastGeneID();
  
 	/**
-	 * Éè¶¨¶à¸öÎïÖÖ½øĞĞblast
+	 * è®¾å®šå¤šä¸ªç‰©ç§è¿›è¡Œblast
 	 * @param evalue
 	 * @param StaxID
 	 */
 	public void setBlastInfo(double evalue, int... StaxID);
 	/**
-	 * ·µ»Ø¸ÃCopedIDËù¶ÔÓ¦µÄGene2GOInfo <br>
+	 * è¿”å›è¯¥CopedIDæ‰€å¯¹åº”çš„Gene2GOInfo <br>
 	 * GO_BP<br>
 	 * GO_CC<br>
 	 * GO_MF<br>
@@ -103,23 +103,23 @@ public interface GeneIDInt{
 	
 	//////////   GoInfo   ////////////////
 	/**
-	 * 	blast¶à¸öÎïÖÖ
-	 * Ê×ÏÈÉè¶¨blastµÄÎïÖÖ
-	 * ÓÃ·½·¨£º setBlastInfo(double evalue, int... StaxID)
-	 * »ñµÃ¾­¹ıblastµÄGoInfo
+	 * 	blastå¤šä¸ªç‰©ç§
+	 * é¦–å…ˆè®¾å®šblastçš„ç‰©ç§
+	 * ç”¨æ–¹æ³•ï¼š setBlastInfo(double evalue, int... StaxID)
+	 * è·å¾—ç»è¿‡blastçš„GoInfo
 	 */
 	public ArrayList<AGene2Go> getGene2GOBlast(String GOType);
 	/**
-	 * blast¶à¸öÎïÖÖ
-	 * Ê×ÏÈÒªÉè¶¨blastµÄÄ¿±ê
-	 * ÓÃ·½·¨£º setBlastInfo(double evalue, int... StaxID)
+	 * blastå¤šä¸ªç‰©ç§
+	 * é¦–å…ˆè¦è®¾å®šblastçš„ç›®æ ‡
+	 * ç”¨æ–¹æ³•ï¼š setBlastInfo(double evalue, int... StaxID)
 	 * @return
-	 * ·µ»ØblastµÄĞÅÏ¢£¬°üÀ¨evalueµÈ£¬¸ÃlistºÍgetCopedIDLsBlast()µÃµ½µÄlistÊÇÒ»Ò»¶ÔÓ¦µÄ
+	 * è¿”å›blastçš„ä¿¡æ¯ï¼ŒåŒ…æ‹¬evalueç­‰ï¼Œè¯¥listå’ŒgetCopedIDLsBlast()å¾—åˆ°çš„listæ˜¯ä¸€ä¸€å¯¹åº”çš„
 	 */
 	public ArrayList<BlastInfo> getLsBlastInfos();
 
 	/**
-	 * µ¥¸öÎïÖÖµÄblast »ñµÃ±¾copedID blastµ½¶ÔÓ¦ÎïÖÖµÄµÚÒ»¸öcopedID£¬Ã»ÓĞ¾Í·µ»Ønull
+	 * å•ä¸ªç‰©ç§çš„blast è·å¾—æœ¬copedID blaståˆ°å¯¹åº”ç‰©ç§çš„ç¬¬ä¸€ä¸ªcopedIDï¼Œæ²¡æœ‰å°±è¿”å›null
 	 * 
 	 * @param StaxID
 	 * @param evalue
@@ -127,22 +127,22 @@ public interface GeneIDInt{
 	 */
 	GeneID getGeneIDBlast();
 	/**
-	 * 	blast¶à¸öÎïÖÖ
-	 * Ê×ÏÈÉè¶¨blastµÄÎïÖÖ
-	 * ÓÃ·½·¨£º setBlastInfo(double evalue, int... StaxID)
-	 * »ñµÃ¾­¹ıblastµÄKegPath
+	 * 	blastå¤šä¸ªç‰©ç§
+	 * é¦–å…ˆè®¾å®šblastçš„ç‰©ç§
+	 * ç”¨æ–¹æ³•ï¼š setBlastInfo(double evalue, int... StaxID)
+	 * è·å¾—ç»è¿‡blastçš„KegPath
 	 */
 	ArrayList<KGpathway> getKegPath(boolean blast);
 	/**
-	 * ÊäÈëÒÑÖªµÄgeneUniIDºÍIDtype
+	 * è¾“å…¥å·²çŸ¥çš„geneUniIDå’ŒIDtype
 	 * @param geneUniID
-	 * @param idType ±ØĞëÊÇCopedID.IDTYPE_GENEIDµÈ£¬¿ÉÒÔ²»ÊäÈë
+	 * @param idType å¿…é¡»æ˜¯CopedID.IDTYPE_GENEIDç­‰ï¼Œå¯ä»¥ä¸è¾“å…¥
 	 */
 	void setUpdateGeneID(String geneUniID, String idType);
 	/**
-	 * ÒÀ´ÎÊäÈëĞèÒªÉı¼¶µÄGOĞÅÏ¢£¬×îºóÉı¼¶<br>
-	 * ÕâÀïÖ»ÊÇÏÈ»ñÈ¡GOµÄĞÅÏ¢£¬×îºóµ÷ÓÃÉı¼¶methodµÄÊ±ºòÔÙÉı¼¶<br>
-	 * ¿ÉÒÔÁ¬Ğø²»¶ÏµÄÌí¼Ó
+	 * ä¾æ¬¡è¾“å…¥éœ€è¦å‡çº§çš„GOä¿¡æ¯ï¼Œæœ€åå‡çº§<br>
+	 * è¿™é‡Œåªæ˜¯å…ˆè·å–GOçš„ä¿¡æ¯ï¼Œæœ€åè°ƒç”¨å‡çº§methodçš„æ—¶å€™å†å‡çº§<br>
+	 * å¯ä»¥è¿ç»­ä¸æ–­çš„æ·»åŠ 
 	 * @param GOID
 	 * @param GOdatabase
 	 * @param GOevidence
@@ -159,84 +159,84 @@ GO_REF:0000004<br>
 	void setUpdateGO(String GOID, String GOdatabase, String GOevidence,
 			String GORef, String gOQualifiy);
 	/**
-	 * ÊäÈëĞèÒªupdateµÄgeneInfo£¬×¢Òâ²»ĞèÒªÉè¶¨geneUniID£¬³ı·ÇÊÇµ¥¶ÀÉı¼¶pubmedIDĞÅÏ¢£¬·ñÔò
-	 * <b>Îñ±ØÒªÉè¶¨geneinfoµÄdbinfo</b>£¬dbinfoÊÇÅĞ¶¨¸ÃgeneinfoÊı¾İ¿âÀ´Ô´µÄĞÅÏ¢<br>
-	 * ´ËÍâÈç¹û»¹ĞèÒªÉè¶¨synonme£¬²¢ÇÒsynonmeÊÇ±»¡°|¡±µÈ·ûºÅ¸ô¿ª<b>£¬Ôò»¹ĞèÉè¶¨·Ö¸ô·û "\\|"</b>
+	 * è¾“å…¥éœ€è¦updateçš„geneInfoï¼Œæ³¨æ„ä¸éœ€è¦è®¾å®šgeneUniIDï¼Œé™¤éæ˜¯å•ç‹¬å‡çº§pubmedIDä¿¡æ¯ï¼Œå¦åˆ™
+	 * <b>åŠ¡å¿…è¦è®¾å®šgeneinfoçš„dbinfo</b>ï¼Œdbinfoæ˜¯åˆ¤å®šè¯¥geneinfoæ•°æ®åº“æ¥æºçš„ä¿¡æ¯<br>
+	 * æ­¤å¤–å¦‚æœè¿˜éœ€è¦è®¾å®šsynonmeï¼Œå¹¶ä¸”synonmeæ˜¯è¢«â€œ|â€ç­‰ç¬¦å·éš”å¼€<b>ï¼Œåˆ™è¿˜éœ€è®¾å®šåˆ†éš”ç¬¦ "\\|"</b>
 	 * @param geneInfo
 	 */
 	public void setUpdateGeneInfo(AGeneInfo geneInfo);
 	/**
-	 * Èç¹ûĞÂµÄID²»¼ÓÈëUniID£¬ÄÇÃ´¾Í·µ»Øfalse
-	 * Èç¹ûÉı¼¶²»³É¹¦£¬Ò²·µ»Øfalse
-	 * ÎÄ¼şĞèÒª×î¿ªÊ¼ÓÃsetÖ¸¶¨
-	 * @param updateUniID ĞÂµÄIDÊÇ·ñ¼ÓÈëUniID
+	 * å¦‚æœæ–°çš„IDä¸åŠ å…¥UniIDï¼Œé‚£ä¹ˆå°±è¿”å›false
+	 * å¦‚æœå‡çº§ä¸æˆåŠŸï¼Œä¹Ÿè¿”å›false
+	 * æ–‡ä»¶éœ€è¦æœ€å¼€å§‹ç”¨setæŒ‡å®š
+	 * @param updateUniID æ–°çš„IDæ˜¯å¦åŠ å…¥UniID
 	 */
 	boolean update(boolean updateUniID);
 	/**
-	 * ¼ÇÂ¼¸ÃIDµÄÎïÖÖIDºÍÊı¾İ¿âĞÅÏ¢£¬ÓÃÓÚĞŞÕıÒÔÇ°µÄÊı¾İ¿â
+	 * è®°å½•è¯¥IDçš„ç‰©ç§IDå’Œæ•°æ®åº“ä¿¡æ¯ï¼Œç”¨äºä¿®æ­£ä»¥å‰çš„æ•°æ®åº“
 	 * 
 	 * @param taxID
 	 * @param DBInfo
-	 * @param ÊÇ·ñÓÃ±¾DBInfoĞŞÕıÒÔÇ°µÄDBInfo
-	 * ²»¹ÜÊÇtrue»¹ÊÇfalse£¬geneinfo¶¼»áÓÃÆä½øĞĞĞŞÕı
+	 * @param æ˜¯å¦ç”¨æœ¬DBInfoä¿®æ­£ä»¥å‰çš„DBInfo
+	 * ä¸ç®¡æ˜¯trueè¿˜æ˜¯falseï¼Œgeneinfoéƒ½ä¼šç”¨å…¶è¿›è¡Œä¿®æ­£
 	 */
 	void setUpdateDBinfo(String DBInfo, boolean overlapDBinfo);
 	/**
-	 * ¼ÇÂ¼¿ÉÄÜÓÃÓÚÉı¼¶Êı¾İ¿âµÄID Æ©Èç»ñµÃÒ»¸öIDÓëNCBIµÄ±ğµÄIDÓĞ¹ØÁª£¬¾ÍÓÃ±ğµÄIDÀ´²éÕÒÊı¾İ¿â£¬ÒÔ±ã»ñµÃ¸ÃaccIDËù¶ÔÓ¦µÄgenUniID
-	 * <b>ÖØĞÂÉè¶¨µÄÊ±ºò»áÇå¿Õ</b>
+	 * è®°å½•å¯èƒ½ç”¨äºå‡çº§æ•°æ®åº“çš„ID è­¬å¦‚è·å¾—ä¸€ä¸ªIDä¸NCBIçš„åˆ«çš„IDæœ‰å…³è”ï¼Œå°±ç”¨åˆ«çš„IDæ¥æŸ¥æ‰¾æ•°æ®åº“ï¼Œä»¥ä¾¿è·å¾—è¯¥accIDæ‰€å¯¹åº”çš„genUniID
+	 * <b>é‡æ–°è®¾å®šçš„æ—¶å€™ä¼šæ¸…ç©º</b>
 	 * @param updateUniID
 	 */
 	void setUpdateRefAccID(String... refAccID);
 	/**
-	 * ¼ÇÂ¼¿ÉÄÜÓÃÓÚÉı¼¶Êı¾İ¿âµÄID Æ©Èç»ñµÃÒ»¸öIDÓëNCBIµÄ±ğµÄIDÓĞ¹ØÁª£¬¾ÍÓÃ±ğµÄIDÀ´²éÕÒÊı¾İ¿â£¬ÒÔ±ã»ñµÃ¸ÃaccIDËù¶ÔÓ¦µÄgenUniID
+	 * è®°å½•å¯èƒ½ç”¨äºå‡çº§æ•°æ®åº“çš„ID è­¬å¦‚è·å¾—ä¸€ä¸ªIDä¸NCBIçš„åˆ«çš„IDæœ‰å…³è”ï¼Œå°±ç”¨åˆ«çš„IDæ¥æŸ¥æ‰¾æ•°æ®åº“ï¼Œä»¥ä¾¿è·å¾—è¯¥accIDæ‰€å¯¹åº”çš„genUniID
 	 */
 	void setUpdateRefAccID(ArrayList<String> lsRefAccID);
 	/**
-	 * Èç¹ûÃ»ÓĞQueryID, SubjectID, taxIDÖĞµÄÈÎºÎÒ»Ïî£¬¾Í²»Éı¼¶ Èç¹ûevalue>50 »ò evalue<0£¬¾Í²»Éı¼¶
-	 * ¿ÉÒÔÁ¬Ğø²»¶ÏµÄÌí¼Ó
-	 * @param SubAccID Ä¿±êÎïÖÖµÄaccID
-	 * @param subDBInfo Ä¿±êÎïÖÖµÄÊı¾İ¿âÀ´Ô´
-	 * @param SubTaxID Ä¿±êÎïÖÖµÄÎïÖÖID
-	 * @param evalue ÏàËÆ¶Èevalue
-	 * @param identities ÏàËÆ¶ÈĞÅÏ¢
+	 * å¦‚æœæ²¡æœ‰QueryID, SubjectID, taxIDä¸­çš„ä»»ä½•ä¸€é¡¹ï¼Œå°±ä¸å‡çº§ å¦‚æœevalue>50 æˆ– evalue<0ï¼Œå°±ä¸å‡çº§
+	 * å¯ä»¥è¿ç»­ä¸æ–­çš„æ·»åŠ 
+	 * @param SubAccID ç›®æ ‡ç‰©ç§çš„accID
+	 * @param subDBInfo ç›®æ ‡ç‰©ç§çš„æ•°æ®åº“æ¥æº
+	 * @param SubTaxID ç›®æ ‡ç‰©ç§çš„ç‰©ç§ID
+	 * @param evalue ç›¸ä¼¼åº¦evalue
+	 * @param identities ç›¸ä¼¼åº¦ä¿¡æ¯
 	 */
 	void setUpdateBlastInfo(String SubAccID, String subDBInfo, int SubTaxID,
 			double evalue, double identities);
 	/**
-	 * Éè¶¨accID£¬µ±ÓÃgeneUniID½øĞĞnew copedID¹¤×÷Ê±Ê¹ÓÃ
+	 * è®¾å®šaccIDï¼Œå½“ç”¨geneUniIDè¿›è¡Œnew copedIDå·¥ä½œæ—¶ä½¿ç”¨
 	 * @param accID
 	 */
 	void setUpdateAccID(String accID);
 	/**
-	 * Éè¶¨¸ÃIDµÄaccID£¬²»¾­¹ı´¦ÀíµÄID
+	 * è®¾å®šè¯¥IDçš„accIDï¼Œä¸ç»è¿‡å¤„ç†çš„ID
 	 */
 	void setUpdateAccIDNoCoped(String accID);
 	/**
-	 * ·µ»ØgeneinfoĞÅÏ¢
+	 * è¿”å›geneinfoä¿¡æ¯
 	 * @return
 	 */
 	AGeneInfo getGeneInfo();
 	/**
-	 * <b>È«ĞÂ¼ÓÈëID£¬ÒÔÇ°µÄID»á±»Çå¿Õ</b>
-	 * ÔÚ²ÉÓÃrefaccID×÷Îª²ÎÕÕ½øĞĞÉı¼¶IDµÄÊ±ºò£¬ÊÇ·ñ±ØĞëÊÇuniqID
-	 * uniqID£ºÓÃ¸ø¶¨µÄ²Î¿¼IDÄÜÕÒµ½Êı¾İ¿âÖĞµÄÎ¨Ò»»ùÒò
-	 * true£ºÖ»ÓĞµ±uniqIDÊ±²ÅÉı¼¶
-	 * null£ºÄ¬ÈÏ²ÎÊı--·ÇuniqIDÒ²Éı¼¶£¬²»¹ıÖ»Éı¼¶µÚÒ»¸ö»ùÒò
-	 * false£º·ÇuniqIDÒ²Éı¼¶£¬Éı¼¶ËÑË÷µ½µÄÈ«²¿ID£¬¸Ã¹¦ÄÜÉĞÎ´ÊµÏÖ
+	 * <b>å…¨æ–°åŠ å…¥IDï¼Œä»¥å‰çš„IDä¼šè¢«æ¸…ç©º</b>
+	 * åœ¨é‡‡ç”¨refaccIDä½œä¸ºå‚ç…§è¿›è¡Œå‡çº§IDçš„æ—¶å€™ï¼Œæ˜¯å¦å¿…é¡»æ˜¯uniqID
+	 * uniqIDï¼šç”¨ç»™å®šçš„å‚è€ƒIDèƒ½æ‰¾åˆ°æ•°æ®åº“ä¸­çš„å”¯ä¸€åŸºå› 
+	 * trueï¼šåªæœ‰å½“uniqIDæ—¶æ‰å‡çº§
+	 * nullï¼šé»˜è®¤å‚æ•°--éuniqIDä¹Ÿå‡çº§ï¼Œä¸è¿‡åªå‡çº§ç¬¬ä¸€ä¸ªåŸºå› 
+	 * falseï¼šéuniqIDä¹Ÿå‡çº§ï¼Œå‡çº§æœç´¢åˆ°çš„å…¨éƒ¨IDï¼Œè¯¥åŠŸèƒ½å°šæœªå®ç°
 	 * @param uniqID
 	 */
 	void setUpdateRefAccIDClear(Boolean uniqID);
-	/**<b>Ìí¼ÓID</b>
-	 * ÔÚ²ÉÓÃrefaccID×÷Îª²ÎÕÕ½øĞĞÉı¼¶IDµÄÊ±ºò£¬ÊÇ·ñ±ØĞëÊÇuniqID
-	 * uniqID£ºÓÃ¸ø¶¨µÄ²Î¿¼IDÄÜÕÒµ½Êı¾İ¿âÖĞµÄÎ¨Ò»»ùÒò
-	 * true£ºÖ»ÓĞµ±uniqIDÊ±²ÅÉı¼¶
-	 * null£ºÄ¬ÈÏ²ÎÊı--·ÇuniqIDÒ²Éı¼¶£¬²»¹ıÖ»Éı¼¶µÚÒ»¸ö»ùÒò
-	 * false£º·ÇuniqIDÒ²Éı¼¶£¬Éı¼¶ËÑË÷µ½µÄÈ«²¿ID£¬¸Ã¹¦ÄÜÉĞÎ´ÊµÏÖ
+	/**<b>æ·»åŠ ID</b>
+	 * åœ¨é‡‡ç”¨refaccIDä½œä¸ºå‚ç…§è¿›è¡Œå‡çº§IDçš„æ—¶å€™ï¼Œæ˜¯å¦å¿…é¡»æ˜¯uniqID
+	 * uniqIDï¼šç”¨ç»™å®šçš„å‚è€ƒIDèƒ½æ‰¾åˆ°æ•°æ®åº“ä¸­çš„å”¯ä¸€åŸºå› 
+	 * trueï¼šåªæœ‰å½“uniqIDæ—¶æ‰å‡çº§
+	 * nullï¼šé»˜è®¤å‚æ•°--éuniqIDä¹Ÿå‡çº§ï¼Œä¸è¿‡åªå‡çº§ç¬¬ä¸€ä¸ªåŸºå› 
+	 * falseï¼šéuniqIDä¹Ÿå‡çº§ï¼Œå‡çº§æœç´¢åˆ°çš„å…¨éƒ¨IDï¼Œè¯¥åŠŸèƒ½å°šæœªå®ç°
 	 * @param uniqID
 	 */
 	void addUpdateRefAccID(String... refAccID);
 	/**
-	 * Èç¹ûblastµ½geneUniIDÉÏÈ¥
+	 * å¦‚æœblaståˆ°geneUniIDä¸Šå»
 	 * @param SubGenUniID
 	 * @param subIDtype
 	 * @param subDBInfo
@@ -247,13 +247,13 @@ GO_REF:0000004<br>
 	void setUpdateBlastInfo(String SubGenUniID, String subIDtype,
 			String subDBInfo, int SubTaxID, double evalue, double identities);
 	/**
-	 * Èç¹ûÊäÈëµÄÊÇaccID£¬ÄÇÃ´·µ»Ø¸ÃaccID¶ÔÓ¦µÄÊı¾İ¿â
-	 * Èç¹ûÃ»ÓĞÔò·µ»Ønull
+	 * å¦‚æœè¾“å…¥çš„æ˜¯accIDï¼Œé‚£ä¹ˆè¿”å›è¯¥accIDå¯¹åº”çš„æ•°æ®åº“
+	 * å¦‚æœæ²¡æœ‰åˆ™è¿”å›null
 	 * @return
 	 */
 	String getDBinfo();
 	/**
-	 * ¾ßÌåµÄaccID£¬¸ù¾İÊı¾İ¿âÇé¿ö×¥Ò»¸ö³öÀ´
+	 * å…·ä½“çš„accIDï¼Œæ ¹æ®æ•°æ®åº“æƒ…å†µæŠ“ä¸€ä¸ªå‡ºæ¥
 	 */
 	String getAccIDDBinfo();
 

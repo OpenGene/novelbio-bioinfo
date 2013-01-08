@@ -12,9 +12,9 @@ public class XiaoBai {
 		overlap();
 	}
 	public static void overlap() {
-		String queryFile = "/home/zong0jie/桌面/7月汇总表生产厂商.xlsx";
-		String excelFile = "/home/zong0jie/桌面/原料及编码表.xlsx";
-		String outFile = "/home/zong0jie/桌面/7yue.xls";
+		String queryFile = "/home/zong0jie/妗岄潰/7鏈堟眹鎬昏〃鐢熶骇鍘傚晢.xlsx";
+		String excelFile = "/home/zong0jie/妗岄潰/鍘熸枡鍙婄紪鐮佽〃.xlsx";
+		String outFile = "/home/zong0jie/妗岄潰/7yue.xls";
 		
 		HashMap<String, String[]> mapSub_ID2Line = new HashMap<String, String[]>();
 		ArrayList<String[]> lsExcel = ExcelTxtRead.readLsExcelTxt(excelFile, 1);

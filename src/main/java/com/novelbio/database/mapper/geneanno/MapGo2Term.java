@@ -11,16 +11,16 @@ public interface MapGo2Term extends MapperSql{
 
 
 	/**
-	 * ÓÃGoIDquery,GoID,GoFunctionÈı¸öÖĞµÄÈÎÒâ×éºÏÈ¥²éÕÒGo2Term±í
-	 * Ö÷ÒªÊÇÀ´¿´±¾ÁĞÊÇ·ñÒÑ¾­´æÔÚÁË£¬·µ»Øµ¥¸öGo2Term
+	 * ç”¨GoIDquery,GoID,GoFunctionä¸‰ä¸ªä¸­çš„ä»»æ„ç»„åˆå»æŸ¥æ‰¾Go2Termè¡¨
+	 * ä¸»è¦æ˜¯æ¥çœ‹æœ¬åˆ—æ˜¯å¦å·²ç»å­˜åœ¨äº†ï¼Œè¿”å›å•ä¸ªGo2Term
 	 * @param Go2Term
 	 * @return
 	 */
 	public Go2Term queryGo2Term(Go2Term queryGo2Term);
 	
 	/**
-	 * ÓÃGoIDquery,GoID,GoFunctionÈı¸öÖĞµÄÈÎÒâ×éºÏÈ¥²éÕÒGo2Term±í
-	 * Ö÷ÒªÊÇÀ´¿´±¾ÁĞÊÇ·ñÒÑ¾­´æÔÚÁË£¬·µ»Øµ¥¸öArrayList--Go2Term
+	 * ç”¨GoIDquery,GoID,GoFunctionä¸‰ä¸ªä¸­çš„ä»»æ„ç»„åˆå»æŸ¥æ‰¾Go2Termè¡¨
+	 * ä¸»è¦æ˜¯æ¥çœ‹æœ¬åˆ—æ˜¯å¦å·²ç»å­˜åœ¨äº†ï¼Œè¿”å›å•ä¸ªArrayList--Go2Term
 	 * @param Go2Term
 	 * @return
 	 */
@@ -29,7 +29,7 @@ public interface MapGo2Term extends MapperSql{
 	public void insertGo2Term(Go2Term Go2Term);
 	
 	/**
-	 * Ä¿Ç°µÄÉı¼¶·½Ê½ÊÇ
+	 * ç›®å‰çš„å‡çº§æ–¹å¼æ˜¯
 	update Go2Term <br>
 		set<br>
 			if test="GoIDquery !=null"<br>

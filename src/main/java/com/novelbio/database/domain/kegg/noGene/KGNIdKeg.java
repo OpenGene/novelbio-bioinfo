@@ -3,14 +3,14 @@ package com.novelbio.database.domain.kegg.noGene;
 public class KGNIdKeg {
 	private String kegID;
 	/**
-	 * Éè¶¨CompoundµÈµÄKeggID
+	 * è®¾å®šCompoundç­‰çš„KeggID
 	 * @param kegID
 	 */
 	public void setKegID(String kegID) {
 		this.kegID = kegID;
 	}
 	/**
-	 * »ñµÃCompoundµÈµÄKeggID
+	 * è·å¾—Compoundç­‰çš„KeggID
 	 * @return
 	 */
 	public String getKegID() {
@@ -18,32 +18,32 @@ public class KGNIdKeg {
 	}
 	private String attribute;
 	/**
-	 * Éè¶¨KeggIDµÄÊôĞÔ£¬Ò²¾ÍÊÇµ½µ×ÊÇDrug»¹ÊÇCompound»¹ÊÇÆäËûµÄ
+	 * è®¾å®šKeggIDçš„å±æ€§ï¼Œä¹Ÿå°±æ˜¯åˆ°åº•æ˜¯Drugè¿˜æ˜¯Compoundè¿˜æ˜¯å…¶ä»–çš„
 	 * @param atrribute
 	 */
 	public void setAttribute(String attribute) {
 		this.attribute = attribute;
 	}
 	/**
-	 * »ñµÃKeggIDµÄÊôĞÔ£¬Ò²¾ÍÊÇµ½µ×ÊÇDrug»¹ÊÇCompound»¹ÊÇÆäËûµÄ
+	 * è·å¾—KeggIDçš„å±æ€§ï¼Œä¹Ÿå°±æ˜¯åˆ°åº•æ˜¯Drugè¿˜æ˜¯Compoundè¿˜æ˜¯å…¶ä»–çš„
 	 * @return
 	 */
 	public String getAttribute() {
 		return this.attribute;
 	}
 	/**
-	 * ³£ÓÃÃû£¬Ò²¾ÍÊÇ´ı×ª»»µÄID
+	 * å¸¸ç”¨åï¼Œä¹Ÿå°±æ˜¯å¾…è½¬æ¢çš„ID
 	 */
 	private String usualName;
 	/**
-	 * ³£ÓÃÃû£¬Ò²¾ÍÊÇ´ı×ª»»µÄID
+	 * å¸¸ç”¨åï¼Œä¹Ÿå°±æ˜¯å¾…è½¬æ¢çš„ID
 	 * @param usualName
 	 */
 	public void setUsualName(String usualName) {
 		this.usualName = usualName;
 	}
 	/**
-	 * ³£ÓÃÃû£¬Ò²¾ÍÊÇ´ı×ª»»µÄID
+	 * å¸¸ç”¨åï¼Œä¹Ÿå°±æ˜¯å¾…è½¬æ¢çš„ID
 	 * @return
 	 */
 	public String getUsualName() {

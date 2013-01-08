@@ -223,7 +223,7 @@ public class GuiCuffdiff extends JPanel {
 			return;
 		}
 		
-		//生成能给cuffdiff识别的gtf文件
+		//鐢熸垚鑳界粰cuffdiff璇嗗埆鐨刧tf鏂囦欢
 		cuffcompare.setExePath(softWareInfo.getExePath());
 		cuffcompare.setRefGtfFile(gtfFile);
 		cuffcompare.setOutPath(outFile);
@@ -265,7 +265,7 @@ public class GuiCuffdiff extends JPanel {
 		
 		cuffcompare.runCompareGtf();
 	}
-	/** 从物种生成的GTF文件 */
+	/** 浠庣墿绉嶇敓鎴愮殑GTF鏂囦欢 */
 	private String getSpeciesGtf(String outFile) {
 		Species species = guiLayeredPaneSpeciesVersionGff.getSelectSpecies();
 		if (species.getTaxID() != 0) {

@@ -15,62 +15,62 @@ import com.novelbio.base.fileOperate.FileOperate;
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 /**
- * ±£´æLastZµÃµ½µÄĞÅÏ¢£¬Ã¿Ò»ĞĞÒ»¸ölastZÀà
+ * ä¿å­˜LastZå¾—åˆ°çš„ä¿¡æ¯ï¼Œæ¯ä¸€è¡Œä¸€ä¸ªlastZç±»
  * @author zong0jie
  *
  */
 public class LastzAlign {
 	Logger logger = Logger.getLogger(LastzAlign.class);
 	/**
-	 * µÚÒ»ÌõÁ´µÄÃû×Ö
+	 * ç¬¬ä¸€æ¡é“¾çš„åå­—
 	 */
 	String seqName1 = "";
 	/**
-	 * µÚ¶şÌõÁ´µÄÃû×Ö
+	 * ç¬¬äºŒæ¡é“¾çš„åå­—
 	 */
 	String seqName2 = "";
 	/**
-	 * ×îºóÔÚÄ¿±êĞòÁĞµÄÆğµã
+	 * æœ€ååœ¨ç›®æ ‡åºåˆ—çš„èµ·ç‚¹
 	 */
 	int startSeq1 = 0;
 	/**
-	 * ×îºóÔÚÄ¿±êĞòÁĞµÄÖÕµã
+	 * æœ€ååœ¨ç›®æ ‡åºåˆ—çš„ç»ˆç‚¹
 	 */
 	int endSeq1 = 0;
 	/**
-	 * ×îºócontigĞòÁĞµÄÆğµã
+	 * æœ€åcontigåºåˆ—çš„èµ·ç‚¹
 	 */
 	int startSeq2 = 2;
 	/**
-	 * ×îºócontigĞòÁĞµÄÖÕµã
+	 * æœ€åcontigåºåˆ—çš„ç»ˆç‚¹
 	 */
 	int endSeq2 = 4;
 	/**
-	 * Ä¿±êĞòÁĞµÄ³¤¶È
+	 * ç›®æ ‡åºåˆ—çš„é•¿åº¦
 	 */
 	int seq1Len = 0;
 	/**
-	 * contigµÄ³¤¶È
+	 * contigçš„é•¿åº¦
 	 */
 	int seq2Len = 0;
 	
 	/**
-	 * È·¶¨Í·²¿£¬±íÊ¾Í·²¿¾Í¿ÉÒÔÓÃ¸ÃÎ»µãÀ´´úÌæ
-	 * falseµÄ»°£¬Í·²¿¾ÍÒªÌí¼ÓNNN£¬±íÊ¾ÎªÇ±ÔÚgap
+	 * ç¡®å®šå¤´éƒ¨ï¼Œè¡¨ç¤ºå¤´éƒ¨å°±å¯ä»¥ç”¨è¯¥ä½ç‚¹æ¥ä»£æ›¿
+	 * falseçš„è¯ï¼Œå¤´éƒ¨å°±è¦æ·»åŠ NNNï¼Œè¡¨ç¤ºä¸ºæ½œåœ¨gap
 	 */
 	boolean booStartConfirm = false;
 	/**
-	 * È·¶¨Î²²¿£¬±íÊ¾Î²²¿¾Í¿ÉÒÔÓÃ¸ÃÎ»µãÀ´´úÌæ
-	 * falseµÄ»°£¬Î²²¿¾ÍÒªÌí¼ÓNNN£¬±íÊ¾ÎªÇ±ÔÚgap
+	 * ç¡®å®šå°¾éƒ¨ï¼Œè¡¨ç¤ºå°¾éƒ¨å°±å¯ä»¥ç”¨è¯¥ä½ç‚¹æ¥ä»£æ›¿
+	 * falseçš„è¯ï¼Œå°¾éƒ¨å°±è¦æ·»åŠ NNNï¼Œè¡¨ç¤ºä¸ºæ½œåœ¨gap
 	 */
 	boolean booEndConfirm = false;
 
 	/**
-	 * ±¾readsÊÇ·ñÄÜÓÃÓÚ×é×°
+	 * æœ¬readsæ˜¯å¦èƒ½ç”¨äºç»„è£…
 	 */
 	boolean booAssemble = false;
 	/**
-	 * Õı·´Ïò
+	 * æ­£åå‘
 	 */
 	Boolean cis5to3 = null;
 	public void setCis5to3(boolean cis5to3) {
@@ -83,11 +83,11 @@ public class LastzAlign {
 	
 	String fileLastz = "";
 	/**
-	 * ±£´æÃ¿Ò»¸öalignmentµÄĞÅÏ¢,Ô­Ê¼°æ
+	 * ä¿å­˜æ¯ä¸€ä¸ªalignmentçš„ä¿¡æ¯,åŸå§‹ç‰ˆ
 	 */
 	ArrayList<AlignInfo> lsAlignInfoRaw = new ArrayList<AlignInfo>();
 	/**
-	 * ×°ÔØÄÜ¹»ÓÃÓÚÅĞ¶Ï½áºÏÎ»µãµÄalignmentĞÅÏ¢
+	 * è£…è½½èƒ½å¤Ÿç”¨äºåˆ¤æ–­ç»“åˆä½ç‚¹çš„alignmentä¿¡æ¯
 	 */
 	ArrayList<AlignInfo> lsAlignInfo = new ArrayList<AlignInfo>();
 	public int getStartSeq1() {
@@ -103,14 +103,14 @@ public class LastzAlign {
 		return endSeq2;
 	}
 	/**
-	 * Ö¸¶¨alignÎÄ±¾£¬¶ÁÈ¡ĞÅÏ¢
+	 * æŒ‡å®šalignæ–‡æœ¬ï¼Œè¯»å–ä¿¡æ¯
 	 */
 	public void readInfo(String AlignFile, int seqSubLen,int seqQueryLen) {
 		fileLastz = AlignFile;
 		seq1Len = seqSubLen;
 		seq2Len = seqQueryLen;
 		TxtReadandWrite txtAlign = new TxtReadandWrite(AlignFile, false);
-		//ºÜÓĞ¿ÉÄÜÃ»¶«Î÷£¬Ò²¾ÍÊÇlsInfo.size == 0
+		//å¾ˆæœ‰å¯èƒ½æ²¡ä¸œè¥¿ï¼Œä¹Ÿå°±æ˜¯lsInfo.size == 0
 		ArrayList<String> lsInfo = txtAlign.readfileLs();
 		if (lsInfo.size() == 1) {
 			booStartConfirm = false;
@@ -140,8 +140,8 @@ public class LastzAlign {
 		
 	}
 	/**
-	 * »ñµÃ¸ÃlastzµÃµ½µÄĞòÁĞĞÅÏ¢
-	 * @param seq ¸ÃscalfoldµÄÈ«³¤ĞÅÏ¢£¬ÕâÀï»á×Ô¶¯±»½Ø¶ÌÒÔ¼°·´Ïò»¥²¹ÎªĞèÒªµÄĞòÁĞ
+	 * è·å¾—è¯¥lastzå¾—åˆ°çš„åºåˆ—ä¿¡æ¯
+	 * @param seq è¯¥scalfoldçš„å…¨é•¿ä¿¡æ¯ï¼Œè¿™é‡Œä¼šè‡ªåŠ¨è¢«æˆªçŸ­ä»¥åŠåå‘äº’è¡¥ä¸ºéœ€è¦çš„åºåˆ—
 	 * @return
 	 */
 	public ModifyInfo getModifyInfo(String seq) {
@@ -171,7 +171,7 @@ public class LastzAlign {
 	}
 	
 	/**
-	 * Éè¶¨ĞòÁĞÃû³Æ£¬¸ù¾İ±êÌâÀ´È·¶¨
+	 * è®¾å®šåºåˆ—åç§°ï¼Œæ ¹æ®æ ‡é¢˜æ¥ç¡®å®š
 	 * @param title
 	 * @param value
 	 */
@@ -194,8 +194,8 @@ public class LastzAlign {
 	
 	
 	/**
-	 * »¹Ã»¿¼ÂÇĞòÁĞºá¿çÆğµã
-	 * ÊäÈëÔ­Ê¼µÄÁ¬ÅäĞÅÏ¢£¬ÅÅĞòºó·µ»ØmappingµÄ½á¹û
+	 * è¿˜æ²¡è€ƒè™‘åºåˆ—æ¨ªè·¨èµ·ç‚¹
+	 * è¾“å…¥åŸå§‹çš„è¿é…ä¿¡æ¯ï¼Œæ’åºåè¿”å›mappingçš„ç»“æœ
 	 * @param lsAlignInfoRaw
 	 */
 	public void analysis(ArrayList<AlignInfo> lsAlignInfoRaw) {
@@ -219,7 +219,7 @@ public class LastzAlign {
 				booEndConfirm = true;
 			else 
 				booEndConfirm = false;
-			//±¾alignmentµÄ³¤¶È»¹ÊÇÍ¦³¤µÄ
+			//æœ¬alignmentçš„é•¿åº¦è¿˜æ˜¯æŒºé•¿çš„
 			if (endSeq2 - startSeq2 +1 >= seq2Len * 0.8) {
 				booAssemble = true;
 			}
@@ -257,8 +257,8 @@ public class LastzAlign {
 	}
 
 	/**
-	 * Éè¶¨²ÎÊı
-	 * @param lsAlignTogethers ÒÑ¾­°´ÕÕseq2µÄstartÎ»µã½øĞĞÁËÅÅĞò
+	 * è®¾å®šå‚æ•°
+	 * @param lsAlignTogethers å·²ç»æŒ‰ç…§seq2çš„startä½ç‚¹è¿›è¡Œäº†æ’åº
 	 */
 	private void setParam(ArrayList<AlignInfo> lsAlignInfo) {
 		setCis5To3(lsAlignInfo);
@@ -278,21 +278,21 @@ public class LastzAlign {
 			booAssemble = true;
 			booStartConfirm = true;
 			booEndConfirm = true;
-			//»¹Ğèµ÷Õû£¬qºÍsÁ½ÕßµÄ¾àÀë¶¼Òª¼ÆËã
+			//è¿˜éœ€è°ƒæ•´ï¼Œqå’Œsä¸¤è€…çš„è·ç¦»éƒ½è¦è®¡ç®—
 			if (
 					
 				!
-				(  alignInfoStart.isCis5to3() == cis5to3 && //·½ÏòºÍ×ÜÌå·½ÏòÒ»ÖÂ
+				(  alignInfoStart.isCis5to3() == cis5to3 && //æ–¹å‘å’Œæ€»ä½“æ–¹å‘ä¸€è‡´
 						(
-								alignInfoStart.getAlignLen2() > seq2Len*0.2  //µÚÒ»¸öÆ¬¶ÎµÄ³¤¶È´óÓÚ×Ü³¤¶ÈµÄ20%
-								|| (lsAlignInfo.size() > 1 //»ò ¶ÔÓÚseq2À´Ëµ£¬ µÚÒ»¸öÆ¬¶ÎµÄ³¤¶È´óÓÚ ÓëÆä½ôÁÚalignµÄgap ³¤¶ÈµÄ20±¶
+								alignInfoStart.getAlignLen2() > seq2Len*0.2  //ç¬¬ä¸€ä¸ªç‰‡æ®µçš„é•¿åº¦å¤§äºæ€»é•¿åº¦çš„20%
+								|| (lsAlignInfo.size() > 1 //æˆ– å¯¹äºseq2æ¥è¯´ï¼Œ ç¬¬ä¸€ä¸ªç‰‡æ®µçš„é•¿åº¦å¤§äº ä¸å…¶ç´§é‚»alignçš„gap é•¿åº¦çš„20å€
 										&& alignInfoStart.getAlignLen2() > 20* ( lsAlignInfo.get(1).getAlignStart2() - alignInfoStart.getAlignEnd2()) 
 										 && 
-										 (		//²¢ÇÒ¶ÔÓÚseq1À´Ëµ£¬ µÚÒ»¸öÆ¬¶ÎµÄ³¤¶È´óÓÚ ÓëÆä½ôÁÚalignµÄgap ³¤¶ÈµÄ20±¶
+										 (		//å¹¶ä¸”å¯¹äºseq1æ¥è¯´ï¼Œ ç¬¬ä¸€ä¸ªç‰‡æ®µçš„é•¿åº¦å¤§äº ä¸å…¶ç´§é‚»alignçš„gap é•¿åº¦çš„20å€
 												 (lsAlignInfo.get(1).getAlignStart1() > alignInfoStart.getAlignEnd1()	&&	
 												 alignInfoStart.getAlignLen2() > 20* ( lsAlignInfo.get(1).getAlignStart1() - alignInfoStart.getAlignEnd1()))
-												 || ( //²¢ÇÒ¶ÔÓÚseq1À´Ëµ£¬ µÚÒ»¸öÆ¬¶Î³¤¶È´óÓÚ Æä¾àÀëÆğµãµÄ³¤¶È+ÓëÆä½ôÁÚalign¾àÀëÖÕµãµÄ³¤¶È µÄ 20±¶
-														 //Êµ¼ÊÉÏÕâ¸öÊÇÅĞ¶Ïalignºá¿çÊ×Î²
+												 || ( //å¹¶ä¸”å¯¹äºseq1æ¥è¯´ï¼Œ ç¬¬ä¸€ä¸ªç‰‡æ®µé•¿åº¦å¤§äº å…¶è·ç¦»èµ·ç‚¹çš„é•¿åº¦+ä¸å…¶ç´§é‚»alignè·ç¦»ç»ˆç‚¹çš„é•¿åº¦ çš„ 20å€
+														 //å®é™…ä¸Šè¿™ä¸ªæ˜¯åˆ¤æ–­alignæ¨ªè·¨é¦–å°¾
 														 lsAlignInfo.get(1).getAlignStart1() < alignInfoStart.getAlignEnd1()	&&	 
 														 alignInfoStart.getAlignLen2() > 20* ( lsAlignInfo.get(1).getAlignStart1() -1 + seq1Len - alignInfoStart.getAlignEnd1())
 												 )
@@ -353,11 +353,11 @@ public class LastzAlign {
 		if (alignInfoEnd.getAlignEnd2() - alignInfoStart.getAlignStart2() < seq2Len * 0.7) {
 			booAssemble = false;
 		}
-		//¿¼ÂÇ²ğ·Ö³ÉÁ½¸ö²»Í¬µÄlastZalign
-		//×¨ÃÅÅĞ¶ÏalignÊÇ·ñºá¿çÁËÆğµã£¬Èç¹ûÊÇµÄ»°£¬¼ÇÂ¼ºá¿çÎ»µã
+		//è€ƒè™‘æ‹†åˆ†æˆä¸¤ä¸ªä¸åŒçš„lastZalign
+		//ä¸“é—¨åˆ¤æ–­alignæ˜¯å¦æ¨ªè·¨äº†èµ·ç‚¹ï¼Œå¦‚æœæ˜¯çš„è¯ï¼Œè®°å½•æ¨ªè·¨ä½ç‚¹
 		if (booAssemble && alignInfoEnd.getAlignEnd1() < alignInfoStart.getAlignStart1()) {
 			for (int i = 0; i < lsAlignInfo.size()-1; i++) {
-				//¸ÃÎ»µã·¢ÉúÁËºá¿çÊÂ¼ş
+				//è¯¥ä½ç‚¹å‘ç”Ÿäº†æ¨ªè·¨äº‹ä»¶
 				if (lsAlignInfo.get(i).getAlignStart1() > lsAlignInfo.get(i+1).getAlignEnd1() && lsAlignInfo.get(i).getAlignEnd1() - lsAlignInfo.get(i+1).getAlignStart1() > seq1Len *0.90 ) {
 					crossStartSite = true;
 					crossStartSiteSeq1Start = lsAlignInfo.get(i+1).getAlignStart1();
@@ -370,7 +370,7 @@ public class LastzAlign {
 		}
 	}
 	/**
-	 * ·¢ÉúÁËºá¿çÆğµãÊÂ¼ş
+	 * å‘ç”Ÿäº†æ¨ªè·¨èµ·ç‚¹äº‹ä»¶
 	 */
 	boolean crossStartSite = false;
 	public boolean isCrossStartSite() {
@@ -383,32 +383,32 @@ public class LastzAlign {
 	
 	
 	/**
-	 * µ±crossStartSiteÎªtrueÊ±Ê¹ÓÃ
-	 * ºá¿çÆğµãµÄseq2ĞòÁĞµÄ×îÎ²¶Ë£¬¼´ĞÇºÅÎ»ÖÃ£¬±ÕÇø¼ä      --------------------*          --------------
+	 * å½“crossStartSiteä¸ºtrueæ—¶ä½¿ç”¨
+	 * æ¨ªè·¨èµ·ç‚¹çš„seq2åºåˆ—çš„æœ€å°¾ç«¯ï¼Œå³æ˜Ÿå·ä½ç½®ï¼Œé—­åŒºé—´      --------------------*          --------------
 	 * @return
 	 */
 	public int getCrossStartSiteSeq2End() {
 		return crossStartSiteSeq2End;
 	}
 	/**
-	 * µ±crossStartSiteÎªtrueÊ±Ê¹ÓÃ
-	 * ºá¿çÆğµãµÄseq2ĞòÁĞµÄ×îÇ°¶Ë£¬¼´ĞÇºÅÎ»ÖÃ£¬±ÕÇø¼ä      --------------------          *-------------
+	 * å½“crossStartSiteä¸ºtrueæ—¶ä½¿ç”¨
+	 * æ¨ªè·¨èµ·ç‚¹çš„seq2åºåˆ—çš„æœ€å‰ç«¯ï¼Œå³æ˜Ÿå·ä½ç½®ï¼Œé—­åŒºé—´      --------------------          *-------------
 	 * @return
 	 */
 	public int getCrossStartSiteSeq2Start() {
 		return crossStartSiteSeq2Start;
 	}
 	/**
-	 * µ±crossStartSiteÎªtrueÊ±Ê¹ÓÃ
-	 * ºá¿çÆğµãµÄseq1ĞòÁĞµÄ×îÎ²¶Ë£¬¼´ĞÇºÅÎ»ÖÃ£¬±ÕÇø¼ä      --------------------          --------------*
+	 * å½“crossStartSiteä¸ºtrueæ—¶ä½¿ç”¨
+	 * æ¨ªè·¨èµ·ç‚¹çš„seq1åºåˆ—çš„æœ€å°¾ç«¯ï¼Œå³æ˜Ÿå·ä½ç½®ï¼Œé—­åŒºé—´      --------------------          --------------*
 	 * @return
 	 */
 	public int getCrossStartSiteSeq1End() {
 		return crossStartSiteSeq1End;
 	}
 	/**
-	 * µ±crossStartSiteÎªtrueÊ±Ê¹ÓÃ
-	 * ºá¿çÆğµãµÄseq1ĞòÁĞµÄ×îÇ°¶Ë£¬¼´ĞÇºÅÎ»ÖÃ£¬±ÕÇø¼ä      *--------------------          --------------
+	 * å½“crossStartSiteä¸ºtrueæ—¶ä½¿ç”¨
+	 * æ¨ªè·¨èµ·ç‚¹çš„seq1åºåˆ—çš„æœ€å‰ç«¯ï¼Œå³æ˜Ÿå·ä½ç½®ï¼Œé—­åŒºé—´      *--------------------          --------------
 	 * @return
 	 */
 	public int getCrossStartSiteSeq1Start() {
@@ -418,9 +418,9 @@ public class LastzAlign {
 	
 	
 	/**
-	 * ÅĞ¶ÏÊäÈëµÄArrayList-AlignInfo ÊÇ·ñºÏÀí£¬Ö÷ÒªÅĞ¶ÏÒÀ¾İÊÇ£¬
-	 * ×î´óµÄÁ½¸öÆ¬¶ÎÈç¹ûÊÇÖØµşµÄ--ÔÚÈÎÒâÒ»ÌõÁ´ÉÏÓĞ³¬¹ı60%ÖØµş£¬¶øÔÚÁíÒ»ÌõÁ´ÉÏ¾àÀë³¬¹ıqueryÁ´µÄ³¤¶È£¬ÄÇÃ´¾ÍĞèÒªÈË¹¤ÅĞ¶ÏÁË
-	 * @param lsAlignInfoRaw ÒÑ¾­ÅÅ¹ıĞòÁË
+	 * åˆ¤æ–­è¾“å…¥çš„ArrayList-AlignInfo æ˜¯å¦åˆç†ï¼Œä¸»è¦åˆ¤æ–­ä¾æ®æ˜¯ï¼Œ
+	 * æœ€å¤§çš„ä¸¤ä¸ªç‰‡æ®µå¦‚æœæ˜¯é‡å çš„--åœ¨ä»»æ„ä¸€æ¡é“¾ä¸Šæœ‰è¶…è¿‡60%é‡å ï¼Œè€Œåœ¨å¦ä¸€æ¡é“¾ä¸Šè·ç¦»è¶…è¿‡queryé“¾çš„é•¿åº¦ï¼Œé‚£ä¹ˆå°±éœ€è¦äººå·¥åˆ¤æ–­äº†
+	 * @param lsAlignInfoRaw å·²ç»æ’è¿‡åºäº†
 	 * @return
 	 */
 	private boolean judgeAlignInfo(ArrayList<AlignInfo> lsAlignInfoRaw) {
@@ -431,8 +431,8 @@ public class LastzAlign {
 		AlignInfo alignInfo1 = lsAlignInfoRaw.get(0);
 		AlignInfo alignInfo2 = lsAlignInfoRaw.get(1);
 		double persentage = (double)Math.abs(alignInfo1.getAlignLen2() - alignInfo2.getAlignLen2())/Math.max(alignInfo1.getAlignLen2(),alignInfo2.getAlignLen2());
-		if (persentage >= 0.6 && (alignInfo1.getScore()/alignInfo2.getScore() > 0.7 && alignInfo1.getScore()/alignInfo2.getScore() < 1.4) ) {//Á½¸öÖØµş³¬¹ı0.6
-			//µÚÒ»Ìõreads
+		if (persentage >= 0.6 && (alignInfo1.getScore()/alignInfo2.getScore() > 0.7 && alignInfo1.getScore()/alignInfo2.getScore() < 1.4) ) {//ä¸¤ä¸ªé‡å è¶…è¿‡0.6
+			//ç¬¬ä¸€æ¡reads
 			if (alignInfo1.getAlignStart1() < alignInfo2.getAlignStart1() && alignInfo2.getAlignStart1() - alignInfo1.getAlignEnd1()> seq2Len ) {
 				return false;
 			}
@@ -443,18 +443,18 @@ public class LastzAlign {
 		return true;
 	}
 	/**
-	 * Ñ¡ÔñÅÅÃû¿¿Ç°µÄ¼¸Ìõalign×÷Îªseed£¬×é½¨×î³¤align£¬²¢ÕÒ³öÕâĞ©ÖĞ×î³¤µÄÒ»Ìõalign£¬²¢·µ»Ø
+	 * é€‰æ‹©æ’åé å‰çš„å‡ æ¡alignä½œä¸ºseedï¼Œç»„å»ºæœ€é•¿alignï¼Œå¹¶æ‰¾å‡ºè¿™äº›ä¸­æœ€é•¿çš„ä¸€æ¡alignï¼Œå¹¶è¿”å›
 	 * @param lsAlignInfoRaw
 	 * @param directedSparseGraph
-	 * @param seed Ñ¡Ôñ×î³¤µÄ¼¸Ìõalign
+	 * @param seed é€‰æ‹©æœ€é•¿çš„å‡ æ¡align
 	 * @return
-	 * ½á¹û°´ÕÕseq2µÄstartÎ»µãÅÅĞò
+	 * ç»“æœæŒ‰ç…§seq2çš„startä½ç‚¹æ’åº
 	 */
 	private ArrayList<AlignInfo> calLongestPath(ArrayList<AlignInfo> lsAlignInfoRaw,DirectedSparseGraph<AlignInfo, AlignTogether> directedSparseGraph,int seed)
 	{
 		HashMap<Integer, ArrayList<AlignTogether>> hashResult = new HashMap<Integer, ArrayList<AlignTogether>>();
-		ArrayList<Integer> lsScore = new ArrayList<Integer>();//±£´æÃ¿¸öalign×éºÏµÄ´ò·Ö
-		//°´ÕÕscore½øĞĞÅÅĞò
+		ArrayList<Integer> lsScore = new ArrayList<Integer>();//ä¿å­˜æ¯ä¸ªalignç»„åˆçš„æ‰“åˆ†
+		//æŒ‰ç…§scoreè¿›è¡Œæ’åº
 		Collections.sort(lsAlignInfoRaw, new Comp());
 		for (int i = 0; i < Math.min(seed,lsAlignInfoRaw.size()); i++) {
 			ArrayList<AlignTogether> lsAlignTogethersTmp = getLongestPath(lsAlignInfoRaw.get(i), directedSparseGraph);
@@ -473,7 +473,7 @@ public class LastzAlign {
 			
 			if (alignTogether.isPaired() == false) {
 				if (lsAlignTogethersResult.size() > 1) {
-					logger.error("Ö»ÓĞÒ»¸öalign£¬µ«ÊÇalignTogetherÈ´ÓĞºÜ¶à");
+					logger.error("åªæœ‰ä¸€ä¸ªalignï¼Œä½†æ˜¯alignTogetherå´æœ‰å¾ˆå¤š");
 					break;
 				}
 				continue;
@@ -509,7 +509,7 @@ public class LastzAlign {
 	}
 	
 	/**
-	 * ¼ÆËãÄ³¸öalignµÄ·ÖÊı£¬·ÖÊıÔ½¸ßËµÃ÷Ô½¿ÉĞÅ
+	 * è®¡ç®—æŸä¸ªalignçš„åˆ†æ•°ï¼Œåˆ†æ•°è¶Šé«˜è¯´æ˜è¶Šå¯ä¿¡
 	 * @return
 	 */
 	private int calScore(ArrayList<AlignTogether> lsAlignTogethers)
@@ -539,7 +539,7 @@ public class LastzAlign {
 			alignInfoFirst = alignTogetherTmp.getAlignInfoStart();
 		}
 		lsAlignTogethersUp.addAll(lsAlignTogethersDown);
-		//Èç¹û¶¼Ã»ÕÒµ½£¬ËµÃ÷¸ÃalignInfoFirst¾ÍÊÇ×î´óµÄÒ»¸öalign£¬Ö±½ÓÓÃ¾ÍºÃ
+		//å¦‚æœéƒ½æ²¡æ‰¾åˆ°ï¼Œè¯´æ˜è¯¥alignInfoFirstå°±æ˜¯æœ€å¤§çš„ä¸€ä¸ªalignï¼Œç›´æ¥ç”¨å°±å¥½
 		if (lsAlignTogethersUp.size() == 0) {
 			AlignTogether alignTogether = new AlignTogether(alignInfoFirst, null);
 			lsAlignTogethersUp.add(alignTogether);
@@ -549,11 +549,11 @@ public class LastzAlign {
 	
 	
 	/**
-	 * Ö¸¶¨Ò»¸öalignInfo£¬·µ»Ø¸ÃÓĞÏòÍ¼ÖĞ£¬¸Ã½ÚµãÉÏÓÎ/ÏÂÓÎ×î´óµÄÒ»Ìõ±ß¡£
-	 * Èç¹ûÃ»ÓĞÔò·µ»Ønull
+	 * æŒ‡å®šä¸€ä¸ªalignInfoï¼Œè¿”å›è¯¥æœ‰å‘å›¾ä¸­ï¼Œè¯¥èŠ‚ç‚¹ä¸Šæ¸¸/ä¸‹æ¸¸æœ€å¤§çš„ä¸€æ¡è¾¹ã€‚
+	 * å¦‚æœæ²¡æœ‰åˆ™è¿”å›null
 	 * @param alignInfo
 	 * @param directedSparseGraph
-	 * @param Down true, ¸ÃµãµÄÏÂÓÎ£¬ false£¬¸ÃµãµÄÉÏÓÎ
+	 * @param Down true, è¯¥ç‚¹çš„ä¸‹æ¸¸ï¼Œ falseï¼Œè¯¥ç‚¹çš„ä¸Šæ¸¸
 	 * @return
 	 */
 	private AlignTogether calLNextBigPath(AlignInfo alignInfo, DirectedSparseGraph<AlignInfo, AlignTogether> directedSparseGraph, boolean Down) 
@@ -574,7 +574,7 @@ public class LastzAlign {
 		return lsAlignTogether.get(0);
 	}
 	
-	/**±¾ĞòÁĞºÍÔ­Ê¼ĞòÁĞÓĞ½»µş£¬Ö»ÓĞÍ»³öÀ´µÄ²¿·Ö´óÓÚ¸ÃÖµ²Å»á¼ÆÈë¼ÆËã <br>
+	/**æœ¬åºåˆ—å’ŒåŸå§‹åºåˆ—æœ‰äº¤å ï¼Œåªæœ‰çªå‡ºæ¥çš„éƒ¨åˆ†å¤§äºè¯¥å€¼æ‰ä¼šè®¡å…¥è®¡ç®— <br>
 	 * -------------------------<br>
 	 *  -----------------------------------------------<br>
 	 *  --------------------------|<----- LEN----->|<br>
@@ -585,57 +585,57 @@ public class LastzAlign {
 
 
 /**
- * lastzÖĞalignment µÄĞÅÏ¢
- * ÓÃÖ®Ç°ÏÈÓÃsetTitleÉè¶¨±êÌâ
- * ÄÚÖÃÅÅĞò±È½Ï£¬°´ÕÕqueryĞòÁĞÆğµã½øĞĞÅÅĞò
- * ´ÓĞ¡µ½´óÅÅÁĞ
+ * lastzä¸­alignment çš„ä¿¡æ¯
+ * ç”¨ä¹‹å‰å…ˆç”¨setTitleè®¾å®šæ ‡é¢˜
+ * å†…ç½®æ’åºæ¯”è¾ƒï¼ŒæŒ‰ç…§queryåºåˆ—èµ·ç‚¹è¿›è¡Œæ’åº
+ * ä»å°åˆ°å¤§æ’åˆ—
  * @author zong0jie
  *
  */
 class AlignInfo implements Comparable<AlignInfo>
 {
 	/**
-	 * alignmentµÄ·ÖÊı
+	 * alignmentçš„åˆ†æ•°
 	 */
 	int score = 0; 
 	/**
-	 * alignÔÚµÚÒ»ÌõÁ´ÉÏµÄ³¤¶È
+	 * alignåœ¨ç¬¬ä¸€æ¡é“¾ä¸Šçš„é•¿åº¦
 	 */
 	int alignLen1 = 0;
 	/**
-	 * alignÔÚµÚ¶şÌõÁ´ÉÏµÄ³¤¶È
+	 * alignåœ¨ç¬¬äºŒæ¡é“¾ä¸Šçš„é•¿åº¦
 	 */
 	int alignLen2 = 0;
 	/**
-	 * µÚ¶şÌõÁ´Ïà¶ÔÓÚµÚÒ»ÌõÁ´µÄ·½Ïò
+	 * ç¬¬äºŒæ¡é“¾ç›¸å¯¹äºç¬¬ä¸€æ¡é“¾çš„æ–¹å‘
 	 */
 	boolean strand = true;
 	/**
-	 * alignÔÚµÚÒ»ÌõÁ´µÄÆğµã
+	 * alignåœ¨ç¬¬ä¸€æ¡é“¾çš„èµ·ç‚¹
 	 */
 	int alignStart1 = 0;
 	/**
-	 * alignÔÚµÚÒ»ÌõÁ´µÄÖÕµã
+	 * alignåœ¨ç¬¬ä¸€æ¡é“¾çš„ç»ˆç‚¹
 	 */
 	int alignEnd1 = 0;
 	/**
-	 * alignÔÚµÚ¶şÌõÁ´µÄÆğµã
+	 * alignåœ¨ç¬¬äºŒæ¡é“¾çš„èµ·ç‚¹
 	 */
 	int alignStart2 = 0;
 	/**
-	 * alignÔÚµÚ¶şÌõÁ´µÄÖÕµã
+	 * alignåœ¨ç¬¬äºŒæ¡é“¾çš„ç»ˆç‚¹
 	 */
 	int alignEnd2 = 0;
 	/**
-	 * ÕıÈ·Æ¥Åä¸öÊı
+	 * æ­£ç¡®åŒ¹é…ä¸ªæ•°
 	 */
 	int matchNum = 0;
 	/**
-	 * ´íÎóÆ¥Åä¸öÊı
+	 * é”™è¯¯åŒ¹é…ä¸ªæ•°
 	 */
 	int misMatchNum = 0;
 	/**
-	 * gap¸öÊı
+	 * gapä¸ªæ•°
 	 */
 	int gapNum = 0;
 	
@@ -659,15 +659,15 @@ class AlignInfo implements Comparable<AlignInfo>
 		return strand;
 	}
 	/**
-	 * Éè¶¨±êÌâ£¬µÚÒ»²½±ØĞëµÄ¹¤×÷
+	 * è®¾å®šæ ‡é¢˜ï¼Œç¬¬ä¸€æ­¥å¿…é¡»çš„å·¥ä½œ
 	 */
 	public static void setTitle(String title) {
 		Info = title.replace("#", "").split("\t");
 	}
 
 	/**
-	 * ¸ø¶¨±êÌâÁĞºÍÖµ£¬Ìî³ä±¾Àà
-	 * ÓÃÖ®Ç°ÏÈÓÃsetTitleÉè¶¨±êÌâ
+	 * ç»™å®šæ ‡é¢˜åˆ—å’Œå€¼ï¼Œå¡«å……æœ¬ç±»
+	 * ç”¨ä¹‹å‰å…ˆç”¨setTitleè®¾å®šæ ‡é¢˜
 	 */
 	public AlignInfo(String value) {
 		String[] ssvalue = value.split("\t");
@@ -746,7 +746,7 @@ class AlignInfo implements Comparable<AlignInfo>
 	}
 
 	/**
-	 * °´ÕÕalignstart2ºÍalignEnd2ÅÅĞò
+	 * æŒ‰ç…§alignstart2å’ŒalignEnd2æ’åº
 	 */
 	@Override
 	public int compareTo(AlignInfo o) {
@@ -786,7 +786,7 @@ class AlignInfo implements Comparable<AlignInfo>
 	}
 }
 /**
- * ½µĞòÅÅÁĞ
+ * é™åºæ’åˆ—
  * @author zong0jie
  *
  */
@@ -815,7 +815,7 @@ class Comp implements Comparator<AlignInfo>
 
 
 /**
- * Á½¸öalignÁ¬ÔÚÒ»ÆğµÄÒ»×é
+ * ä¸¤ä¸ªalignè¿åœ¨ä¸€èµ·çš„ä¸€ç»„
  * @author zong0jie
  *
  */
@@ -825,21 +825,21 @@ class AlignTogether implements Comparable<AlignTogether>
 	AlignInfo alignInfoEnd = null;
 	double score = 0;
 	/**
-	 * ËµÃ÷Ã»ÓĞÅä¶Ô£¬Ö»ÓĞalignInfoStart´æÔÚ
+	 * è¯´æ˜æ²¡æœ‰é…å¯¹ï¼Œåªæœ‰alignInfoStartå­˜åœ¨
 	 */
 	boolean boopair = true;
 	/**
-	 * ÔÚÄ£°åÁ´ÉÏ£¬Á½¸öalignÊ×Î²Ïà¾àµÄ¾àÀë
+	 * åœ¨æ¨¡æ¿é“¾ä¸Šï¼Œä¸¤ä¸ªaligné¦–å°¾ç›¸è·çš„è·ç¦»
 	 */
 	int alignDist1 = 0;
 	/**
-	 * ÔÚqueryÁ´ÉÏ£¬Á½¸öalignÊ×Î²Ïà¾àµÄ¾àÀë
+	 * åœ¨queryé“¾ä¸Šï¼Œä¸¤ä¸ªaligné¦–å°¾ç›¸è·çš„è·ç¦»
 	 */
 	int alignDist2 = 0;
 	/**
 	 * 
 	 * @param alignInfoStart
-	 * @param alignInfoEnd Èç¹ûÕâ¸öÎªnull£¬ËµÃ÷Ö»ÓĞÒ»¸ö²»³É¶Ô£¬×îºópairÉèÖÃÎªfalse
+	 * @param alignInfoEnd å¦‚æœè¿™ä¸ªä¸ºnullï¼Œè¯´æ˜åªæœ‰ä¸€ä¸ªä¸æˆå¯¹ï¼Œæœ€åpairè®¾ç½®ä¸ºfalse
 	 */
 	public AlignTogether(AlignInfo alignInfoStart, AlignInfo alignInfoEnd) {
 		this.alignInfoStart = alignInfoStart;
@@ -855,8 +855,8 @@ class AlignTogether implements Comparable<AlignTogether>
 		setEdgeScore();
 	}
 	/**
-	 * »ñµÃÁ½¸öalignÖ®¼äµÄ·ÖÊı£¬Îª¸ºÊı£¬Á½¸öÁ´ÀëµÄÔ½Ô¶·ÖÊıÔ½µÍ£¬gapµÄ¼ÆËã·½·¨Îª
-	 * 1Ò»¸ögapÎª1£¬µÚ¶ş¸öÎª0.95£¬µÚÈı¸öÎª0.90£¬ÕâÃ´¼ÓÆğÀ´
+	 * è·å¾—ä¸¤ä¸ªalignä¹‹é—´çš„åˆ†æ•°ï¼Œä¸ºè´Ÿæ•°ï¼Œä¸¤ä¸ªé“¾ç¦»çš„è¶Šè¿œåˆ†æ•°è¶Šä½ï¼Œgapçš„è®¡ç®—æ–¹æ³•ä¸º
+	 * 1ä¸€ä¸ªgapä¸º1ï¼Œç¬¬äºŒä¸ªä¸º0.95ï¼Œç¬¬ä¸‰ä¸ªä¸º0.90ï¼Œè¿™ä¹ˆåŠ èµ·æ¥
 	 */
 	private void setEdgeScore()
 	{
@@ -881,20 +881,20 @@ class AlignTogether implements Comparable<AlignTogether>
 		return alignDist2;
 	}
 	/**
-	 * falseËµÃ÷Ã»ÓĞÅä¶Ô£¬Ö»ÓĞalignInfoStart´æÔÚ
+	 * falseè¯´æ˜æ²¡æœ‰é…å¯¹ï¼Œåªæœ‰alignInfoStartå­˜åœ¨
 	 */
 	public boolean isPaired() {
 		return boopair;
 	}
 	/**
-	 * »ñµÃ·ÖÊı£¬Îª¸ºÊı
+	 * è·å¾—åˆ†æ•°ï¼Œä¸ºè´Ÿæ•°
 	 * @return
 	 */
 	public int getScore() {
 		return -(int)score;
 	}
 	/**
-	 * ½µĞòÅÅÁĞ
+	 * é™åºæ’åˆ—
 	 */
 	@Override
 	public int compareTo(AlignTogether o) {

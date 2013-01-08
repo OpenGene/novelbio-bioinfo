@@ -13,9 +13,9 @@ import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
 public class ExonInfo extends ListDetailAbs {
 	public ExonInfo() {}
 	/**
-	 * ¸ù¾İÕı·´Ïò×Ô¶¯Éè¶¨ÆğµãºÍÖÕµã
-	 * @param start ´Ó1¿ªÊ¼¼ÇÊı
-	 * @param end ´Ó1¿ªÊ¼¼ÇÊı
+	 * æ ¹æ®æ­£åå‘è‡ªåŠ¨è®¾å®šèµ·ç‚¹å’Œç»ˆç‚¹
+	 * @param start ä»1å¼€å§‹è®°æ•°
+	 * @param end ä»1å¼€å§‹è®°æ•°
 	 * @param cis
 	 */
 	public ExonInfo(String IsoName, boolean cis, int start, int end) {
@@ -24,9 +24,9 @@ public class ExonInfo extends ListDetailAbs {
 		numberend = Math.max(start, end);
 	}
 	/**
-	 * ¸ù¾İÕı·´Ïò×Ô¶¯Éè¶¨ÆğµãºÍÖÕµã
-	 * @param start ´Ó1¿ªÊ¼¼ÇÊı
-	 * @param end ´Ó1¿ªÊ¼¼ÇÊı
+	 * æ ¹æ®æ­£åå‘è‡ªåŠ¨è®¾å®šèµ·ç‚¹å’Œç»ˆç‚¹
+	 * @param start ä»1å¼€å§‹è®°æ•°
+	 * @param end ä»1å¼€å§‹è®°æ•°
 	 * @param cis
 	 */
 	public ExonInfo(GffGeneIsoInfo gffGeneIsoInfo, boolean cis, int start, int end) {
@@ -59,10 +59,10 @@ public class ExonInfo extends ListDetailAbs {
 		return (GffGeneIsoInfo) listAbs;
 	}
 	/**
-	 * ²»ÄÜÅĞ¶Ï²»Í¬È¾É«ÌåÉÏÏàÍ¬µÄ×ø±êÎ»µã
-	 * ²»±È½ÏÁ½¸öexonËùÔÚ×ªÂ¼±¾µÄÃû×Ö
-	 * Ò²²»±È½ÏËûÃÇ×Ô¼ºµÄÃû×Ö
-	 * ½ö±È½Ï×ø±êºÍ·½Ïò
+	 * ä¸èƒ½åˆ¤æ–­ä¸åŒæŸ“è‰²ä½“ä¸Šç›¸åŒçš„åæ ‡ä½ç‚¹
+	 * ä¸æ¯”è¾ƒä¸¤ä¸ªexonæ‰€åœ¨è½¬å½•æœ¬çš„åå­—
+	 * ä¹Ÿä¸æ¯”è¾ƒä»–ä»¬è‡ªå·±çš„åå­—
+	 * ä»…æ¯”è¾ƒåæ ‡å’Œæ–¹å‘
 	 */
 	public boolean equals(Object elementAbs) {
 		if (this == elementAbs) return true;
@@ -71,7 +71,7 @@ public class ExonInfo extends ListDetailAbs {
 		
 		if (getClass() != elementAbs.getClass()) return false;
 		ExonInfo element = (ExonInfo)elementAbs;
-		//ÏÈ²»±È½ÏÁ½¸öexonËùÔÚ×ªÂ¼±¾µÄÃû×Ö
+		//å…ˆä¸æ¯”è¾ƒä¸¤ä¸ªexonæ‰€åœ¨è½¬å½•æœ¬çš„åå­—
 		if (numberstart == element.numberstart && numberend == element.numberend && super.cis5to3 == element.cis5to3 ) {
 			if (getParent().getChrID().equalsIgnoreCase(element.getParent().getChrID())) {
 				return true;

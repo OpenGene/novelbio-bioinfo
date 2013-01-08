@@ -113,16 +113,16 @@ public class GuiFilterDifGene extends JPanel {
 	private void initial() {
 		sclDifGene.setTitle(new String[]{"DifGene", "FilteredDifGene"});
 		//DefaultIsNotBetween
-		//Ä¬ÈÏÕâ¸öÎ»µã²»ÊÇbetween
+		//é»˜è®¤è¿™ä¸ªä½ç‚¹ä¸æ˜¯between
 		sclFilter.setTitle(new String[]{"ColumnNum", "Small", "Big", "DefaultIsNotBetween"});
-		//Ò»°ãµÚÒ»ĞĞÊÇtitle
+		//ä¸€èˆ¬ç¬¬ä¸€è¡Œæ˜¯title
 		spnFirstLineBeRead.setValue(2);
 	}
 	
 	private void runFiltering() {
 		ArrayList<String[]> lsFilters = sclFilter.getLsDataInfo();
 		ArrayList<String[]> lsFileNames = sclDifGene.getLsDataInfo();
-		//×°ÔØ¹ıÂËÆ÷
+		//è£…è½½è¿‡æ»¤å™¨
 		difGeneFilter.clearFilter();
 		for (String[] filterInfo : lsFilters) {
 			boolean isBetweenSmall2Big = false;
@@ -132,7 +132,7 @@ public class GuiFilterDifGene extends JPanel {
 			difGeneFilter.addFilterInfo(Integer.parseInt(filterInfo[0]), Double.parseDouble(filterInfo[1]), Double.parseDouble(filterInfo[2]), isBetweenSmall2Big);
 		}
 		
-		//¿ªÊ¼¹ıÂË
+		//å¼€å§‹è¿‡æ»¤
 		for (String[] fileInAndOut : lsFileNames) {
 			difGeneFilter.setReadFromLines((Integer)spnFirstLineBeRead.getValue());
 			difGeneFilter.setInputFile(fileInAndOut[0]);

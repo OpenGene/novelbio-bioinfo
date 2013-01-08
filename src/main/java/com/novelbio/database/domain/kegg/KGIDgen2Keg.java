@@ -6,14 +6,14 @@ public class KGIDgen2Keg {
 	 */
 	private long geneID;
 	/**
-	 * NCBIID表中的geneID
+	 * NCBIID琛ㄤ腑鐨刧eneID
 	 */
 	public void setGeneID(long geneID)
 	{
 		this.geneID=geneID;
 	}
 	/**
-	 * NCBIID表中的geneID
+	 * NCBIID琛ㄤ腑鐨刧eneID
 	 */
 	public long getGeneID()
 	{
@@ -44,14 +44,14 @@ public class KGIDgen2Keg {
 	 */
 	private int taxID;
 	/**
-	 * NCBIID表中的geneID
+	 * NCBIID琛ㄤ腑鐨刧eneID
 	 */
 	public void setTaxID(int taxID)
 	{
 		this.taxID=taxID;
 	}
 	/**
-	 * NCBIID表中的geneID
+	 * NCBIID琛ㄤ腑鐨刧eneID
 	 */
 	public int getTaxID()
 	{

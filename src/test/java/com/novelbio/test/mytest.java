@@ -6,10 +6,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
@@ -44,9 +47,21 @@ public class mytest {
 	
 	private static Logger logger = Logger.getLogger(mytest.class);
 	
-	public static void main(String[] args) {
-		GffChrAbs gffChrAbs = new GffChrAbs(39947);
-		gffChrAbs.getGffHashGene().writeToGTF("/home/zong0jie/����/riceTigr7.GTF");
+	public static void main(String[] args) throws IOException {
+//		GffChrAbs gffChrAbs = new GffChrAbs(39947);
+//		gffChrAbs.getGffHashGene().writeToGTF("/home/zong0jie/锟斤拷锟斤拷/riceTigr7.GTF");
+		
+		//GBK锟斤拷锟斤拷锟绞皆达拷锟铰凤拷锟�		String srcDirPath = "/home/zong0jie/git/Novelbio-Bioinformatics-Analysis-Platform/src/test";
+		//转为UTF-8锟斤拷锟斤拷锟绞皆达拷锟铰凤拷锟�		String utf8DirPath = "/home/zong0jie/git/UTF8/test";
+		       
+		//锟斤拷取锟斤拷锟斤拷java锟侥硷拷
+		Collection<File> javaGbkFileCol =  FileUtils.listFiles(new File(srcDirPath), new String[]{"java"}, true);
+		       
+		for (File javaGbkFile : javaGbkFileCol) {
+		      //UTF8锟斤拷式锟侥硷拷路锟斤拷
+		      String utf8FilePath = utf8DirPath+javaGbkFile.getAbsolutePath().substring(srcDirPath.length());
+		       //使锟斤拷GBK锟斤拷取锟斤拷荩锟饺伙拷锟斤拷锟�TF-8写锟斤拷锟斤拷锟�		      FileUtils.writeLines(new File(utf8FilePath), "UTF-8", FileUtils.readLines(javaGbkFile, "GB2312"));       
+		}
 	}
 	
 	private void plotHist() {
@@ -80,7 +95,7 @@ public class mytest {
 		
 
 		snpAnnotation.setGffChrAbs(gffChrAbs);
-		snpAnnotation.addTxtSnpFile("/home/zong0jie/����/geneID.txt", "/home/zong0jie/����/geneID_Anno");
+		snpAnnotation.addTxtSnpFile("/home/zong0jie/锟斤拷锟斤拷/geneID.txt", "/home/zong0jie/锟斤拷锟斤拷/geneID_Anno");
 		snpAnnotation.setCol(1, 2, 3, 4);
 		snpAnnotation.run();
 //		

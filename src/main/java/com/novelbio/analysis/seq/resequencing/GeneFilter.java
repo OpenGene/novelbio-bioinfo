@@ -17,8 +17,8 @@ import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.database.model.modgeneid.GeneID;
 
 /**
- * ÒòÎªsnpÒ»°ã²»»á·¢ÉúÔÚÏàÍ¬µÄÎ»µã£¬¶ø¸ü¿ÉÄÜ·¢ÉúÔÚÏàÍ¬µÄ»ùÒò£¬ËùÒÔÓÃÕâ¸ö×öÒ»¸ö¹ıÂËÆ÷
- * ÓÃÀ´É¸Ñ¡³ö´ó²¿·ÖÑù±¾¶¼·¢ÉúÍ»±äµÄÄÇ¸ö»ùÒò
+ * å› ä¸ºsnpä¸€èˆ¬ä¸ä¼šå‘ç”Ÿåœ¨ç›¸åŒçš„ä½ç‚¹ï¼Œè€Œæ›´å¯èƒ½å‘ç”Ÿåœ¨ç›¸åŒçš„åŸºå› ï¼Œæ‰€ä»¥ç”¨è¿™ä¸ªåšä¸€ä¸ªè¿‡æ»¤å™¨
+ * ç”¨æ¥ç­›é€‰å‡ºå¤§éƒ¨åˆ†æ ·æœ¬éƒ½å‘ç”Ÿçªå˜çš„é‚£ä¸ªåŸºå› 
  * @author zong0jie
  */
 public class GeneFilter {
@@ -26,28 +26,28 @@ public class GeneFilter {
 	GffChrAbs gffChrAbs;
 	
 	/**
-	 * Õâ¸öÊÇÊäÈëµÄRefSiteSnpIndel
-	 * key: site×ª»¯Îªstring
-	 * value: snpÎ»µã
+	 * è¿™ä¸ªæ˜¯è¾“å…¥çš„RefSiteSnpIndel
+	 * key: siteè½¬åŒ–ä¸ºstring
+	 * value: snpä½ç‚¹
 	 */
 	HashMap<String, RefSiteSnpIndel> mapSiteInfo2SnpIndel = new HashMap<String, RefSiteSnpIndel>();
 	ArrayListMultimap<GeneID, RefSiteSnpIndel> mapGeneID2LsRefSiteSnpIndel = ArrayListMultimap.create();
 	/**
-	 * ½á¹ûmap£¬Ö»ÓĞµ±½á¹ûmapÎªnullµÄÊ±ºò£¬²Å»áÆô¶¯¹ıÂË
-	 * key£º·¢ÉúÍ»±äµÄÑù±¾ÊıÁ¿£¬µ¹ĞòÅÅÁĞ£¬Ò²¾ÍÊÇÊıÁ¿´Ó´óµ½Ğ¡ÅÅÁĞ
-	 * value£º¾ßÌå·¢ÉúÍ»±äµÄÒ»ÏµÁĞRefSiteSnpIndel
+	 * ç»“æœmapï¼Œåªæœ‰å½“ç»“æœmapä¸ºnullçš„æ—¶å€™ï¼Œæ‰ä¼šå¯åŠ¨è¿‡æ»¤
+	 * keyï¼šå‘ç”Ÿçªå˜çš„æ ·æœ¬æ•°é‡ï¼Œå€’åºæ’åˆ—ï¼Œä¹Ÿå°±æ˜¯æ•°é‡ä»å¤§åˆ°å°æ’åˆ—
+	 * valueï¼šå…·ä½“å‘ç”Ÿçªå˜çš„ä¸€ç³»åˆ—RefSiteSnpIndel
 	 */
 	TreeMap<Integer, List<RefSiteSnpIndel>> mapNum2LsMapSnpIndelInfo;
 	
-	//Ñù±¾Ãû
+	//æ ·æœ¬å
 	Set<String> setTreat = new HashSet<String>();
 	
-	/** ÊµÑé×éÍ¨¹ı¹ıÂËµÄ×îÉÙÊıÄ¿
-	 * ¾ÍÊÇËµÖ»ÒªÄ³¸ö»ùÒòÓĞ>=¸ÃÊıÁ¿µÄÑù±¾Í¨¹ıÖÊ¼ì£¬¾ÍÈÏÎª¸ÃgeneºÏ¸ñ
+	/** å®éªŒç»„é€šè¿‡è¿‡æ»¤çš„æœ€å°‘æ•°ç›®
+	 * å°±æ˜¯è¯´åªè¦æŸä¸ªåŸºå› æœ‰>=è¯¥æ•°é‡çš„æ ·æœ¬é€šè¿‡è´¨æ£€ï¼Œå°±è®¤ä¸ºè¯¥geneåˆæ ¼
 	 *  */
 	int treatFilteredMinNum = 0;
 	
-	/** ¹ıÂËµ¥¸ösnpSiteÎ»µãµÄ¹ıÂËÆ÷ */
+	/** è¿‡æ»¤å•ä¸ªsnpSiteä½ç‚¹çš„è¿‡æ»¤å™¨ */
 	SnpFilter snpFilterSingleSite = new SnpFilter();
 	
 	int snpLevel = SnpGroupFilterInfo.Heto;
@@ -58,16 +58,16 @@ public class GeneFilter {
 	}
 	
 	/**
-	 * ÉèÖÃ»ùÒò¹ıÂËÆ÷µÄlevel
-	 * @param snpLevel  SnpGroupFilterInfo.HetoLess µÈ
+	 * è®¾ç½®åŸºå› è¿‡æ»¤å™¨çš„level
+	 * @param snpLevel  SnpGroupFilterInfo.HetoLess ç­‰
 	 */
 	public void setSnpLevel(int snpLevel) {
 		snpFilterSingleSite.setSampleFilterInfoSingle(snpLevel);
 		mapNum2LsMapSnpIndelInfo = null;
 	}
 	/**
-	 * Ìí¼ÓÒÑ¾­¾­¹ıÉ¸Ñ¡µÄrefSiteSnpIndel£¬ÀïÃæÖ»±£ÁôÓĞÍ¨¹ı¹ıÂËµÄsnp¡£°´ÕÕÑù±¾¹ıÂË
-	 * @param refSiteSnpIndel ÖØ¸´Ìí¼ÓµÄ»°£¬ºóÃæµÄ»á¸²¸ÇÇ°ÃæµÄ
+	 * æ·»åŠ å·²ç»ç»è¿‡ç­›é€‰çš„refSiteSnpIndelï¼Œé‡Œé¢åªä¿ç•™æœ‰é€šè¿‡è¿‡æ»¤çš„snpã€‚æŒ‰ç…§æ ·æœ¬è¿‡æ»¤
+	 * @param refSiteSnpIndel é‡å¤æ·»åŠ çš„è¯ï¼Œåé¢çš„ä¼šè¦†ç›–å‰é¢çš„
 	 */
 	public void addLsRefSiteSnpIndel(Collection<RefSiteSnpIndel> colRefSiteSnpIndels) {
 		for (RefSiteSnpIndel refSiteSnpIndel : colRefSiteSnpIndels) {
@@ -75,33 +75,33 @@ public class GeneFilter {
 		}
 	}
 	/**
-	 * ²»ÒªÖØ¸´Ìí¼Ó
-	 * Ìí¼ÓÒÑ¾­¾­¹ıÉ¸Ñ¡µÄrefSiteSnpIndel£¬ÀïÃæÖ»±£ÁôÓĞÍ¨¹ı¹ıÂËµÄsnp¡£°´ÕÕÑù±¾¹ıÂË
-	 * @param refSiteSnpIndel ÖØ¸´Ìí¼ÓµÄ»°£¬ºóÃæµÄ»á¸²¸ÇÇ°ÃæµÄ
+	 * ä¸è¦é‡å¤æ·»åŠ 
+	 * æ·»åŠ å·²ç»ç»è¿‡ç­›é€‰çš„refSiteSnpIndelï¼Œé‡Œé¢åªä¿ç•™æœ‰é€šè¿‡è¿‡æ»¤çš„snpã€‚æŒ‰ç…§æ ·æœ¬è¿‡æ»¤
+	 * @param refSiteSnpIndel é‡å¤æ·»åŠ çš„è¯ï¼Œåé¢çš„ä¼šè¦†ç›–å‰é¢çš„
 	 */
 	public void addRefSiteSnpIndel(RefSiteSnpIndel refSiteSnpIndel) {
-		//TODO ×îºÃÌí¼ÓrefsitesnpindelÖĞ½ö°üº¬¹ıÂËºÃµÄsiteµÄmap
+		//TODO æœ€å¥½æ·»åŠ refsitesnpindelä¸­ä»…åŒ…å«è¿‡æ»¤å¥½çš„siteçš„map
 		refSiteSnpIndel.setGffChrAbs(gffChrAbs);
 		mapSiteInfo2SnpIndel.put(getRefSiteSnpIndelStr(refSiteSnpIndel), refSiteSnpIndel);
 		mapNum2LsMapSnpIndelInfo = null;
 	}
 	
-	/** ¼ìÑéÄÄĞ©Ñù±¾Ãû£¬Ñù±¾ÃûÒªºÍsnp¹ıÂËµÄÑù±¾ÃûÒ»ÖÂ */
+	/** æ£€éªŒå“ªäº›æ ·æœ¬åï¼Œæ ·æœ¬åè¦å’Œsnpè¿‡æ»¤çš„æ ·æœ¬åä¸€è‡´ */
 	public void addTreatName(String treatName) {
 		setTreat.add(treatName);
 		mapNum2LsMapSnpIndelInfo = null;
 	}
-	/** ¼ìÑéÄÄĞ©Ñù±¾Ãû£¬Ñù±¾ÃûÒªºÍsnp¹ıÂËµÄÑù±¾ÃûÒ»ÖÂ */
+	/** æ£€éªŒå“ªäº›æ ·æœ¬åï¼Œæ ·æœ¬åè¦å’Œsnpè¿‡æ»¤çš„æ ·æœ¬åä¸€è‡´ */
 	public void addTreatName(Collection<String> colTreatName) {
 		setTreat.addAll(colTreatName);
 		mapNum2LsMapSnpIndelInfo = null;
 	}
 	
-	/** ³¬¹ı¼¸¸ötreatº¬ÓĞ¸Ãgene¾ÍÈÏÎªÍ¨¹ıÁË */
+	/** è¶…è¿‡å‡ ä¸ªtreatå«æœ‰è¯¥geneå°±è®¤ä¸ºé€šè¿‡äº† */
 	public void setTreatFilteredNum(int treatFilteredNum) {
 		this.treatFilteredMinNum = treatFilteredNum;
 	}
-	/** »ñµÃÉè¶¨µÄtreatmentName */
+	/** è·å¾—è®¾å®šçš„treatmentName */
 	public Set<String> getSetTreat() {
 		return setTreat;
 	}
@@ -121,7 +121,7 @@ public class GeneFilter {
 	}
 	
 	
-	/** °ÑÊäÈëµÄrefInfoSnpIndel°´ÕÕ»ùÒòÃû×ÖÕûÀíÆğÀ´ */
+	/** æŠŠè¾“å…¥çš„refInfoSnpIndelæŒ‰ç…§åŸºå› åå­—æ•´ç†èµ·æ¥ */
 	private void setMapGeneID2LsRefSiteSnpIndel() {
 		for (RefSiteSnpIndel refInfoSnpIndel : mapSiteInfo2SnpIndel.values()) {
 			if (refInfoSnpIndel.getGffIso() == null) {
@@ -132,9 +132,9 @@ public class GeneFilter {
 		}
 	}
 	
-	/** °´ÕÕtreatµÄÑù±¾ÊıÁ¿ÅÅĞò£¬¾ÍÊÇÔ½¶àÑù±¾º¬ÓĞ¸Ã»ùÒò¾Í°ÑËûÌø³öÀ´£¬È»ºó±£´æ½øÈëtreemap */
+	/** æŒ‰ç…§treatçš„æ ·æœ¬æ•°é‡æ’åºï¼Œå°±æ˜¯è¶Šå¤šæ ·æœ¬å«æœ‰è¯¥åŸºå› å°±æŠŠä»–è·³å‡ºæ¥ï¼Œç„¶åä¿å­˜è¿›å…¥treemap */
 	private TreeMap<Integer, List<RefSiteSnpIndel>> sortByTreatSampleNum() {
-		//µ¹ĞòÅÅÁĞµÄtreemap
+		//å€’åºæ’åˆ—çš„treemap
 		mapNum2LsMapSnpIndelInfo =
 				new TreeMap<Integer, List<RefSiteSnpIndel>>(new Comparator<Integer>() {
 					@Override
@@ -151,14 +151,14 @@ public class GeneFilter {
 		return mapNum2LsMapSnpIndelInfo;
 	}
 	
-	/** ÊäÈëµÄ±ØĞëÊÇ¹ıÂËºóÖ»Ê£ÏÂcausal snpµÄRefSiteSnpIndel */
+	/** è¾“å…¥çš„å¿…é¡»æ˜¯è¿‡æ»¤ååªå‰©ä¸‹causal snpçš„RefSiteSnpIndel */
 	private int getTreatNum(List<RefSiteSnpIndel> lsSnpIndels) {
 		HashSet<String> setTreatName = new HashSet<String>();
 		for (RefSiteSnpIndel refSiteSnpIndel : lsSnpIndels) {
 
-			//µÚÒ» ÎÒÃÇÖ»ÄÜÕÒÄÄĞ©É¸Ñ¡³öÀ´µÄsnp£¬Ã»ÓĞÉ¸Ñ¡³öÀ´µÄ¾Í²»Òª¿¼ÂÇ¡£
-			//µÚ¶ş ¶ÔÓÚÉ¸Ñ¡³öÀ´µÄsnp£¬ÎÒÃÇÒÀÈ»Òª±éÀúÃ¿Ò»¸öÑù±¾£¬¿´¸ÃsnpÊÇ·ñ³¬¹ıãĞÖµ
-			//»ñµÃÇ°ÃæÉ¸Ñ¡Í¨¹ıµÄsnpÀàĞÍ
+			//ç¬¬ä¸€ æˆ‘ä»¬åªèƒ½æ‰¾å“ªäº›ç­›é€‰å‡ºæ¥çš„snpï¼Œæ²¡æœ‰ç­›é€‰å‡ºæ¥çš„å°±ä¸è¦è€ƒè™‘ã€‚
+			//ç¬¬äºŒ å¯¹äºç­›é€‰å‡ºæ¥çš„snpï¼Œæˆ‘ä»¬ä¾ç„¶è¦éå†æ¯ä¸€ä¸ªæ ·æœ¬ï¼Œçœ‹è¯¥snpæ˜¯å¦è¶…è¿‡é˜ˆå€¼
+			//è·å¾—å‰é¢ç­›é€‰é€šè¿‡çš„snpç±»å‹
 			for (SiteSnpIndelInfo siteSnpIndelInfo : refSiteSnpIndel.mapAllen2Num.values()) {
 				for (String treatName : setTreat) {
 					siteSnpIndelInfo.setSampleName(treatName);
@@ -171,7 +171,7 @@ public class GeneFilter {
 		return setTreatName.size();
 	}
 	
-	/** ¸ø¶¨MapInfoSnpIndel£¬·µ»ØÆä×ø±êËù¶ÔÓ¦µÄstring£¬ÓÃÓÚ×öhashmapµÄkey */
+	/** ç»™å®šMapInfoSnpIndelï¼Œè¿”å›å…¶åæ ‡æ‰€å¯¹åº”çš„stringï¼Œç”¨äºåšhashmapçš„key */
 	private static String getRefSiteSnpIndelStr(RefSiteSnpIndel refSiteSnpIndel) {
 		return refSiteSnpIndel.getRefID() + SepSign.SEP_ID + refSiteSnpIndel.getRefSnpIndelStart();
 	}

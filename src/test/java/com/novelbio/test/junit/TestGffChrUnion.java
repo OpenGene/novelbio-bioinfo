@@ -57,7 +57,7 @@ public class TestGffChrUnion extends TestCase {
 class SeqInfo
 {
 	/**
-	 * double[] 0: atgÎ»µã,¾ø¶ÔÎ»µã£¬1-½áÊø ´Ótssµ½tesµÄÃ¿¸öÎ»µãµÄreadsÊıÄ¿
+	 * double[] 0: atgä½ç‚¹,ç»å¯¹ä½ç‚¹ï¼Œ1-ç»“æŸ ä»tssåˆ°tesçš„æ¯ä¸ªä½ç‚¹çš„readsæ•°ç›®
 	 */
 	public double[] atg;
 	public String seqName = "";

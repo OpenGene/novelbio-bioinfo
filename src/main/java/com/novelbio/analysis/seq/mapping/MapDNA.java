@@ -6,33 +6,33 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 public abstract class MapDNA {
 	
-	/** ÊäÈëÒÑ¾­¹ıÂËºÃµÄfastqÎÄ¼ş */
+	/** è¾“å…¥å·²ç»è¿‡æ»¤å¥½çš„fastqæ–‡ä»¶ */
 	public abstract void setFqFile(FastQ leftFq, FastQ rightFq);
 	
 	/**
-	 * @param outFileName ½á¹ûÎÄ¼şÃû£¬ºó×º×Ô¶¯¸ÄÎªsam
+	 * @param outFileName ç»“æœæ–‡ä»¶åï¼Œåç¼€è‡ªåŠ¨æ”¹ä¸ºsam
 	 */
 	public abstract void setOutFileName(String outFileName);
 	/**
-	 * °Ù·ÖÖ®¶àÉÙµÄmismatch£¬»òÕß¼¸¸ömismatch
+	 * ç™¾åˆ†ä¹‹å¤šå°‘çš„mismatchï¼Œæˆ–è€…å‡ ä¸ªmismatch
 	 * @param mismatch
 	 */
 	public abstract void setMismatch(double mismatch);
 	
 	public abstract void setChrFile(String chrFile);
 	/**
-	 * Éè¶¨bwaËùÔÚµÄÎÄ¼ş¼ĞÒÔ¼°´ı±È¶ÔµÄÂ·¾¶
-	 * @param exePath Èç¹ûÔÚ¸ùÄ¿Â¼ÏÂÔòÉèÖÃÎª""»ònull
+	 * è®¾å®šbwaæ‰€åœ¨çš„æ–‡ä»¶å¤¹ä»¥åŠå¾…æ¯”å¯¹çš„è·¯å¾„
+	 * @param exePath å¦‚æœåœ¨æ ¹ç›®å½•ä¸‹åˆ™è®¾ç½®ä¸º""æˆ–null
 	 * @param chrFile
 	 */
 	public abstract void setExePath(String exePath);
 	
-	/** Ïß³ÌÊıÁ¿£¬Ä¬ÈÏ4Ïß³Ì */
+	/** çº¿ç¨‹æ•°é‡ï¼Œé»˜è®¤4çº¿ç¨‹ */
 	public abstract void setThreadNum(int threadNum);
 
 	public abstract void setMapLibrary(MapLibrary mapLibrary);
 	/**
-	 * ±¾´ÎmappingµÄ×é£¬ËùÓĞ²ÎÊı¶¼²»ÄÜÓĞ¿Õ¸ñ
+	 * æœ¬æ¬¡mappingçš„ç»„ï¼Œæ‰€æœ‰å‚æ•°éƒ½ä¸èƒ½æœ‰ç©ºæ ¼
 	 * @param sampleID 
 	 * @param LibraryName
 	 * @param SampleName
@@ -40,18 +40,18 @@ public abstract class MapDNA {
 	 */
 	public abstract void setSampleGroup(String sampleID, String LibraryName, String SampleName, String Platform);
 	/**
-	 * Ä¬ÈÏgapÎª4£¬Èç¹ûÊÇindel²éÕÒµÄ»°£¬ÉèÖÃµ½5»òÕß6±È½ÏºÏÊÊ
+	 * é»˜è®¤gapä¸º4ï¼Œå¦‚æœæ˜¯indelæŸ¥æ‰¾çš„è¯ï¼Œè®¾ç½®åˆ°5æˆ–è€…6æ¯”è¾ƒåˆé€‚
 	 * @param gapLength
 	 */
 	public abstract void setGapLength(int gapLength);
 
 	/**
-	 * ²ÎÊıÉè¶¨²»ÄÜÓÃÓÚsolid
+	 * å‚æ•°è®¾å®šä¸èƒ½ç”¨äºsolid
 	 */
 	public abstract SamFile mapReads();
 	
 	/**
-	 * Ä¿Ç°Ö»ÓĞbwaºÍbowtie2Á½ÖÖ
+	 * ç›®å‰åªæœ‰bwaå’Œbowtie2ä¸¤ç§
 	 * @param softMapping
 	 * @return
 	 */

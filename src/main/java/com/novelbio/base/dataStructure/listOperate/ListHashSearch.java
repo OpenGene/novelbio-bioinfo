@@ -14,46 +14,46 @@ import com.novelbio.database.domain.geneanno.SepSign;
 
 
 /**
- * »ñµÃGffµÄÏîÄ¿ĞÅÏ¢<br/>
- * ¾ßÌåµÄGffHashĞèÒªÊµÏÖReadGffarray²¢Í¨¹ı¸Ã·½·¨ÌîÂúÈı¸ö±í
- * @Chrhash hash£¨ChrID£©--ChrList--GeneInforList(GffDetailÀà)
- * @locHashtable hash£¨LOCID£©--GeneInforlist
- * @LOCIDList Ë³Ğò´æ´¢Ã¿¸ö»ùÒòºÅ»òÌõÄ¿ºÅ
+ * è·å¾—Gffçš„é¡¹ç›®ä¿¡æ¯<br/>
+ * å…·ä½“çš„GffHashéœ€è¦å®ç°ReadGffarrayå¹¶é€šè¿‡è¯¥æ–¹æ³•å¡«æ»¡ä¸‰ä¸ªè¡¨
+ * @Chrhash hashï¼ˆChrIDï¼‰--ChrList--GeneInforList(GffDetailç±»)
+ * @locHashtable hashï¼ˆLOCIDï¼‰--GeneInforlist
+ * @LOCIDList é¡ºåºå­˜å‚¨æ¯ä¸ªåŸºå› å·æˆ–æ¡ç›®å·
  */
 public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCodAbs<T>, K extends ListCodAbsDu<T, E>, M extends ListAbsSearch<T, E, K>> {
 	Logger logger = Logger.getLogger(ListHashSearch.class);
 	/**
-	 * ¹şÏ£±íLOC--LOCÏ¸½Ú<br>
-	 * ÓÃÓÚ¿ìËÙ½«LOC±àºÅ¶ÔÓ¦µ½LOCµÄÏ¸½Ú<br>
-	 * hash£¨LOCID£©--GeneInforlist£¬ÆäÖĞLOCID´ú±í¾ßÌåµÄÌõÄ¿±àºÅ <br>
-	  * »áÓĞÓĞ¶à¸öLOCID¹²ÓÃÒ»¸öÇøÓòµÄÇé¿ö£¬ËùÒÔÓĞ¶à¸ö²»Í¬µÄLOCIDÖ¸ÏòÍ¬Ò»¸öGffdetailUCSCgene<br>
+	 * å“ˆå¸Œè¡¨LOC--LOCç»†èŠ‚<br>
+	 * ç”¨äºå¿«é€Ÿå°†LOCç¼–å·å¯¹åº”åˆ°LOCçš„ç»†èŠ‚<br>
+	 * hashï¼ˆLOCIDï¼‰--GeneInforlistï¼Œå…¶ä¸­LOCIDä»£è¡¨å…·ä½“çš„æ¡ç›®ç¼–å· <br>
+	  * ä¼šæœ‰æœ‰å¤šä¸ªLOCIDå…±ç”¨ä¸€ä¸ªåŒºåŸŸçš„æƒ…å†µï¼Œæ‰€ä»¥æœ‰å¤šä¸ªä¸åŒçš„LOCIDæŒ‡å‘åŒä¸€ä¸ªGffdetailUCSCgene<br>
 	 */
 	protected LinkedHashMap<String,T> mapName2DetailAbs;
 	/**
-	 * ¹şÏ£±íLOC--ÔÚarraylistÉÏµÄNum<br>
-	 * ÓÃÓÚ¿ìËÙ½«LOC±àºÅ¶ÔÓ¦µ½Æä¶ÔÓ¦µÄchrÉÏµÄÎ»ÖÃ<br>
+	 * å“ˆå¸Œè¡¨LOC--åœ¨arraylistä¸Šçš„Num<br>
+	 * ç”¨äºå¿«é€Ÿå°†LOCç¼–å·å¯¹åº”åˆ°å…¶å¯¹åº”çš„chrä¸Šçš„ä½ç½®<br>
 	 */
 	protected LinkedHashMap<String,Integer> mapName2DetailNum;
-	/**  ÆğµãÄ¬ÈÏÎª¿ªÇø¼ä  */
+	/**  èµ·ç‚¹é»˜è®¤ä¸ºå¼€åŒºé—´  */
 	int startRegion = 1;
-	/**  ÖÕµãÄ¬ÈÏÎª±ÕÇø¼ä */
+	/**  ç»ˆç‚¹é»˜è®¤ä¸ºé—­åŒºé—´ */
 	int endRegion = 0;
 	/**
-	 * Õâ¸öÊÇÕæÕıµÄ²éÕÒÓÃhash±í<br>
-	 * Õâ¸ö¹şÏ£±íÀ´´æ´¢
-	 * hash£¨ChrID£©--ChrList--GeneInforList(GffDetailÀà)<br>
-	 * ÆäÖĞChrIDÎªĞ¡Ğ´£¬
-	 * ´ú±íÈ¾É«ÌåÃû×Ö£¬Òò´ËÓÃgetÀ´»ñÈ¡ÏàÓ¦µÄChrListµÄÊ±ºòÒªÊäÈëĞ¡Ğ´µÄChrID
-	 * chr¸ñÊ½£¬È«²¿Ğ¡Ğ´ chr1,chr2,chr11<br>
+	 * è¿™ä¸ªæ˜¯çœŸæ­£çš„æŸ¥æ‰¾ç”¨hashè¡¨<br>
+	 * è¿™ä¸ªå“ˆå¸Œè¡¨æ¥å­˜å‚¨
+	 * hashï¼ˆChrIDï¼‰--ChrList--GeneInforList(GffDetailç±»)<br>
+	 * å…¶ä¸­ChrIDä¸ºå°å†™ï¼Œ
+	 * ä»£è¡¨æŸ“è‰²ä½“åå­—ï¼Œå› æ­¤ç”¨getæ¥è·å–ç›¸åº”çš„ChrListçš„æ—¶å€™è¦è¾“å…¥å°å†™çš„ChrID
+	 * chræ ¼å¼ï¼Œå…¨éƒ¨å°å†™ chr1,chr2,chr11<br>
 	 */
 	protected LinkedHashMap<String, M> mapChrID2ListGff;
-	/** ±£´æËùÓĞgffDetailGene */
+	/** ä¿å­˜æ‰€æœ‰gffDetailGene */
 	ArrayList<T> lsGffDetailAll = new ArrayList<T>();
-	/** Ë³Ğò´æ´¢ChrHashÖĞµÄID£¬Õâ¸ö¾ÍÊÇChrHashÖĞÊµ¼Ê´æ´¢µÄID£¬Èç¹ûÁ½¸öItemÊÇÖØµşµÄ£¬¾ÍÈ¡ÆäÖĞµÄµÚÒ»¸ö */
+	/** é¡ºåºå­˜å‚¨ChrHashä¸­çš„IDï¼Œè¿™ä¸ªå°±æ˜¯ChrHashä¸­å®é™…å­˜å‚¨çš„IDï¼Œå¦‚æœä¸¤ä¸ªItemæ˜¯é‡å çš„ï¼Œå°±å–å…¶ä¸­çš„ç¬¬ä¸€ä¸ª */
 	protected ArrayList<String> lsNameAll;
 	/**
-	 * Õâ¸öListË³Ğò´æ´¢Ã¿¸ö»ùÒòºÅ»òÌõÄ¿ºÅ£¬Õâ¸ö´òËãÓÃÓÚÌáÈ¡Ëæ»ú»ùÒòºÅ£¬Êµ¼ÊÉÏÊÇËùÓĞÌõÄ¿°´Ë³Ğò·ÅÈë£¬µ«ÊÇ²»¿¼ÂÇ×ªÂ¼±¾(UCSC)»òÊÇÖØ¸´(Peak)
-	 * Õâ¸öIDÓëlocHashÒ»Ò»¶ÔÓ¦£¬µ«ÊÇ²»ÄÜÓÃËüÀ´È·¶¨Ä³ÌõÄ¿µÄÇ°Ò»¸ö»òºóÒ»¸öÌõÄ¿
+	 * è¿™ä¸ªListé¡ºåºå­˜å‚¨æ¯ä¸ªåŸºå› å·æˆ–æ¡ç›®å·ï¼Œè¿™ä¸ªæ‰“ç®—ç”¨äºæå–éšæœºåŸºå› å·ï¼Œå®é™…ä¸Šæ˜¯æ‰€æœ‰æ¡ç›®æŒ‰é¡ºåºæ”¾å…¥ï¼Œä½†æ˜¯ä¸è€ƒè™‘è½¬å½•æœ¬(UCSC)æˆ–æ˜¯é‡å¤(Peak)
+	 * è¿™ä¸ªIDä¸locHashä¸€ä¸€å¯¹åº”ï¼Œä½†æ˜¯ä¸èƒ½ç”¨å®ƒæ¥ç¡®å®šæŸæ¡ç›®çš„å‰ä¸€ä¸ªæˆ–åä¸€ä¸ªæ¡ç›®
 	 */
 	protected ArrayList<String> lsNameNoRedundent;
 	
@@ -63,10 +63,10 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 		return gfffilename;
 	}
 	/**
-	 * ÆğµãÊÇ·ñÎª±ÕÇø¼ä£¬²»ÊÇÔòÎª¿ªÇø¼ä£¬<br>
-	 * False: ¿ªÇø¼äµÄÒâË¼ÊÇ£¬24±íÊ¾´Ó0¿ªÊ¼¼ÆÊıµÄ24Î»£¬Ò²¾ÍÊÇÊµ¼ÊµÄ25Î»<br>
-	 * True: ±ÕÇø¼äµÄÒâË¼ÊÇ£¬24¾Í´ú±íµÚ24Î»<br>
-	 * UCSCµÄÄ¬ÈÏÎÄ¼şµÄÆğµãÊÇ¿ªÇø¼ä
+	 * èµ·ç‚¹æ˜¯å¦ä¸ºé—­åŒºé—´ï¼Œä¸æ˜¯åˆ™ä¸ºå¼€åŒºé—´ï¼Œ<br>
+	 * False: å¼€åŒºé—´çš„æ„æ€æ˜¯ï¼Œ24è¡¨ç¤ºä»0å¼€å§‹è®¡æ•°çš„24ä½ï¼Œä¹Ÿå°±æ˜¯å®é™…çš„25ä½<br>
+	 * True: é—­åŒºé—´çš„æ„æ€æ˜¯ï¼Œ24å°±ä»£è¡¨ç¬¬24ä½<br>
+	 * UCSCçš„é»˜è®¤æ–‡ä»¶çš„èµ·ç‚¹æ˜¯å¼€åŒºé—´
 	 */
 	public void setStartRegion(boolean region) {
 		if (region) 
@@ -75,22 +75,22 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 			this.startRegion = 1;
 	}
 	/**
-	 * ÆğµãÄ¬ÈÏÎª¿ªÇø¼ä
+	 * èµ·ç‚¹é»˜è®¤ä¸ºå¼€åŒºé—´
 	 */
 	public int getStartRegion() {
 		return startRegion;
 	}
 	/**
-	 * ÖÕµãÄ¬ÈÏÎª±ÕÇø¼ä
+	 * ç»ˆç‚¹é»˜è®¤ä¸ºé—­åŒºé—´
 	 */
 	public int getEndRegion() {
 		return endRegion;
 	}
 	/**
-	 * ÆğµãÊÇ·ñÎª±ÕÇø¼ä£¬²»ÊÇÔòÎª¿ªÇø¼ä£¬<br>
-	 * False: ¿ªÇø¼äµÄÒâË¼ÊÇ£¬24±íÊ¾´Ó0¿ªÊ¼¼ÆÊıµÄ24Î»£¬Ò²¾ÍÊÇÊµ¼ÊµÄ25Î»<br>
-	 * True: ±ÕÇø¼äµÄÒâË¼ÊÇ£¬24¾Í´ú±íµÚ24Î»<br>
-	 * UCSCµÄÄ¬ÈÏÎÄ¼şµÄÖÕµãÊÇ±ÕÇø¼ä¼ä
+	 * èµ·ç‚¹æ˜¯å¦ä¸ºé—­åŒºé—´ï¼Œä¸æ˜¯åˆ™ä¸ºå¼€åŒºé—´ï¼Œ<br>
+	 * False: å¼€åŒºé—´çš„æ„æ€æ˜¯ï¼Œ24è¡¨ç¤ºä»0å¼€å§‹è®¡æ•°çš„24ä½ï¼Œä¹Ÿå°±æ˜¯å®é™…çš„25ä½<br>
+	 * True: é—­åŒºé—´çš„æ„æ€æ˜¯ï¼Œ24å°±ä»£è¡¨ç¬¬24ä½<br>
+	 * UCSCçš„é»˜è®¤æ–‡ä»¶çš„ç»ˆç‚¹æ˜¯é—­åŒºé—´é—´
 	 */
 	public void setEndRegion(boolean region) {
 		if (region) 
@@ -99,9 +99,9 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 			this.endRegion = 1;
 	}
 	/**
-	 * ·µ»Ø¹şÏ£±í LOC--LOCÏ¸½Ú<br/>
-	 * ÓÃÓÚ¿ìËÙ½«LOC±àºÅ¶ÔÓ¦µ½LOCµÄÏ¸½Ú
-	 * hash£¨LOCID£©--GeneInforlist£¬ÆäÖĞLOCID´ú±í¾ßÌåµÄ»ùÒò±àºÅ <br/>
+	 * è¿”å›å“ˆå¸Œè¡¨ LOC--LOCç»†èŠ‚<br/>
+	 * ç”¨äºå¿«é€Ÿå°†LOCç¼–å·å¯¹åº”åˆ°LOCçš„ç»†èŠ‚
+	 * hashï¼ˆLOCIDï¼‰--GeneInforlistï¼Œå…¶ä¸­LOCIDä»£è¡¨å…·ä½“çš„åŸºå› ç¼–å· <br/>
 	 */
 	public HashMap<String,Integer> getMapName2DetailNum() {
 		if (mapName2DetailNum != null) {
@@ -114,9 +114,9 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 		return mapName2DetailNum;
 	}
 	/**
-	 * ·µ»Ø¹şÏ£±í LOC--LOCÏ¸½Ú<br/>
-	 * ÓÃÓÚ¿ìËÙ½«LOC±àºÅ¶ÔÓ¦µ½LOCµÄÏ¸½Ú
-	 * hash£¨LOCID£©--GeneInforlist£¬ÆäÖĞLOCID´ú±í¾ßÌåµÄ»ùÒò±àºÅ <br/>
+	 * è¿”å›å“ˆå¸Œè¡¨ LOC--LOCç»†èŠ‚<br/>
+	 * ç”¨äºå¿«é€Ÿå°†LOCç¼–å·å¯¹åº”åˆ°LOCçš„ç»†èŠ‚
+	 * hashï¼ˆLOCIDï¼‰--GeneInforlistï¼Œå…¶ä¸­LOCIDä»£è¡¨å…·ä½“çš„åŸºå› ç¼–å· <br/>
 	 */
 	public HashMap<String,T> getMapName2Detail() {
 		if (mapName2DetailAbs != null) {
@@ -129,7 +129,7 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 		return mapName2DetailAbs;
 	}
 	/**
-	 * ¸ø¶¨Ò»¸öchrID£¬·µ»Ø¸ÃchrIDËù¶ÔÓ¦µÄListAbs
+	 * ç»™å®šä¸€ä¸ªchrIDï¼Œè¿”å›è¯¥chrIDæ‰€å¯¹åº”çš„ListAbs
 	 * @param chrID
 	 * @return
 	 */
@@ -139,9 +139,9 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	}
 
 	/**
-	 * ·µ»ØListË³Ğò´æ´¢Ã¿¸ö»ùÒòºÅ»òÌõÄ¿ºÅ£¬Õâ¸ö´òËãÓÃÓÚÌáÈ¡Ëæ»ú»ùÒòºÅ¡£
-	 * ²»ÄÜÍ¨¹ı¸Ã·½·¨»ñµÃÄ³¸öLOCÔÚ»ùÒòÉÏµÄ¶¨Î»
-	 * Ã¿¸ögffDetail·µ»ØÒ»¸öName
+	 * è¿”å›Listé¡ºåºå­˜å‚¨æ¯ä¸ªåŸºå› å·æˆ–æ¡ç›®å·ï¼Œè¿™ä¸ªæ‰“ç®—ç”¨äºæå–éšæœºåŸºå› å·ã€‚
+	 * ä¸èƒ½é€šè¿‡è¯¥æ–¹æ³•è·å¾—æŸä¸ªLOCåœ¨åŸºå› ä¸Šçš„å®šä½
+	 * æ¯ä¸ªgffDetailè¿”å›ä¸€ä¸ªName
 	 */
 	public ArrayList<String> getLsNameNoRedundent() {
 		if (lsNameNoRedundent == null) {
@@ -154,7 +154,7 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 		}
 		return lsNameNoRedundent;
 	}
-	/** Ë³Ğò´æ´¢ChrHashÖĞµÄID£¬Õâ¸ö¾ÍÊÇChrHashÖĞÊµ¼Ê´æ´¢µÄID£¬Èç¹ûÁ½¸öItemÊÇÖØµşµÄ£¬¾ÍÈ«¼ÓÈë */
+	/** é¡ºåºå­˜å‚¨ChrHashä¸­çš„IDï¼Œè¿™ä¸ªå°±æ˜¯ChrHashä¸­å®é™…å­˜å‚¨çš„IDï¼Œå¦‚æœä¸¤ä¸ªItemæ˜¯é‡å çš„ï¼Œå°±å…¨åŠ å…¥ */
 	public ArrayList<String> getLsNameAll() {
 		if (lsNameAll != null) {
 			return lsNameAll;
@@ -167,12 +167,12 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	}
 
 	/**
-	 * ·µ»ØÕæÕıµÄ²éÕÒÓÃhash±í<br>
-	 * Õâ¸ö¹şÏ£±íÀ´´æ´¢
-	 * hash£¨ChrID£©--ChrList--GeneInforList(GffDetailÀà)<br>
-	 * ÆäÖĞChrIDÎªĞ¡Ğ´£¬
-	 * ´ú±íÈ¾É«ÌåÃû×Ö£¬Òò´ËÓÃgetÀ´»ñÈ¡ÏàÓ¦µÄChrListµÄÊ±ºòÒªÊäÈëĞ¡Ğ´µÄChrID
-	 * chr¸ñÊ½£¬È«²¿Ğ¡Ğ´ chr1,chr2,chr11<br>
+	 * è¿”å›çœŸæ­£çš„æŸ¥æ‰¾ç”¨hashè¡¨<br>
+	 * è¿™ä¸ªå“ˆå¸Œè¡¨æ¥å­˜å‚¨
+	 * hashï¼ˆChrIDï¼‰--ChrList--GeneInforList(GffDetailç±»)<br>
+	 * å…¶ä¸­ChrIDä¸ºå°å†™ï¼Œ
+	 * ä»£è¡¨æŸ“è‰²ä½“åå­—ï¼Œå› æ­¤ç”¨getæ¥è·å–ç›¸åº”çš„ChrListçš„æ—¶å€™è¦è¾“å…¥å°å†™çš„ChrID
+	 * chræ ¼å¼ï¼Œå…¨éƒ¨å°å†™ chr1,chr2,chr11<br>
 	 */
 	public HashMap<String, M> getMapChrID2LsGff() {
 		if (mapChrID2ListGff == null) {
@@ -181,14 +181,14 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 		return mapChrID2ListGff;
 	}
 	/**
-	 * »ñµÃµÄÃ¿Ò»¸öĞÅÏ¢¶¼ÊÇÊµ¼ÊµÄ¶øÃ»ÓĞclone
-	 * ÊäÈëPeakNum£¬ºÍµ¥ÌõChrµÄlistĞÅÏ¢ ·µ»Ø¸ÃPeakNumµÄËùÔÚLOCID£¬ºÍ¾ßÌåÎ»ÖÃ
-	 * ²ÉÓÃcloneµÄ·½·¨»ñµÃĞÅÏ¢
-	 * Ã»ÕÒµ½¾Í·µ»Ønull
+	 * è·å¾—çš„æ¯ä¸€ä¸ªä¿¡æ¯éƒ½æ˜¯å®é™…çš„è€Œæ²¡æœ‰clone
+	 * è¾“å…¥PeakNumï¼Œå’Œå•æ¡Chrçš„listä¿¡æ¯ è¿”å›è¯¥PeakNumçš„æ‰€åœ¨LOCIDï¼Œå’Œå…·ä½“ä½ç½®
+	 * é‡‡ç”¨cloneçš„æ–¹æ³•è·å¾—ä¿¡æ¯
+	 * æ²¡æ‰¾åˆ°å°±è¿”å›null
 	 */
 	public E searchLocation(String chrID, int cod1) {
 		chrID = chrID.toLowerCase();
-		M Loclist =  getMapChrID2LsGff().get(chrID);// Ä³Ò»ÌõÈ¾É«ÌåµÄĞÅÏ¢
+		M Loclist =  getMapChrID2LsGff().get(chrID);// æŸä¸€æ¡æŸ“è‰²ä½“çš„ä¿¡æ¯
 		if (Loclist == null) {
 			return null;
 		}
@@ -196,23 +196,23 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 		return gffCod1;
 	}
 	/**
-	 * ·µ»ØË«×ø±ê²éÑ¯µÄ½á¹û£¬ÄÚ²¿×Ô¶¯ÅĞ¶Ï cod1 ºÍ cod2µÄ´óĞ¡
-	 * Èç¹ûcod1 ºÍcod2 ÓĞÒ»¸öĞ¡ÓÚ0£¬ÄÇÃ´×ø±ê²»´æÔÚ£¬Ôò·µ»Ønull
-	 * @param chrID ÄÚ²¿×Ô¶¯Ğ¡Ğ´
-	 * @param cod1 ±ØĞë´óÓÚ0
-	 * @param cod2 ±ØĞë´óÓÚ0
+	 * è¿”å›åŒåæ ‡æŸ¥è¯¢çš„ç»“æœï¼Œå†…éƒ¨è‡ªåŠ¨åˆ¤æ–­ cod1 å’Œ cod2çš„å¤§å°
+	 * å¦‚æœcod1 å’Œcod2 æœ‰ä¸€ä¸ªå°äº0ï¼Œé‚£ä¹ˆåæ ‡ä¸å­˜åœ¨ï¼Œåˆ™è¿”å›null
+	 * @param chrID å†…éƒ¨è‡ªåŠ¨å°å†™
+	 * @param cod1 å¿…é¡»å¤§äº0
+	 * @param cod2 å¿…é¡»å¤§äº0
 	 * @return
 	 */
 	public K searchLocation(String chrID, int cod1, int cod2) {
 		chrID = chrID.toLowerCase();
-		M Loclist =  getMapChrID2LsGff().get(chrID);// Ä³Ò»ÌõÈ¾É«ÌåµÄĞÅÏ¢
+		M Loclist =  getMapChrID2LsGff().get(chrID);// æŸä¸€æ¡æŸ“è‰²ä½“çš„ä¿¡æ¯
 		if (Loclist == null) {
 			return null;
 		}
 		return Loclist.searchLocationDu(cod1, cod2);
 	}
 	/**
-	 * ¸ø¶¨ID£¬ÔÚÆäËù¶ÔÓ¦µÄĞÅÏ¢ÉÏ¼ÓÒ»
+	 * ç»™å®šIDï¼Œåœ¨å…¶æ‰€å¯¹åº”çš„ä¿¡æ¯ä¸ŠåŠ ä¸€
 	 * @param name
 	 * @param location
 	 */
@@ -225,9 +225,9 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 		gffDetailPeak.addReadsInElementNum();
 	}
 	/**
-	 * ·µ»ØÇø¼äÒÔ¼°Ã¿¸öÇø¼äµÄÊıÁ¿£¬Ç°Ãæ±ØĞëadd¹ı
-	 * key£ºintµÄÇø¼ä
-	 * value£º¾ßÌåÊıÁ¿
+	 * è¿”å›åŒºé—´ä»¥åŠæ¯ä¸ªåŒºé—´çš„æ•°é‡ï¼Œå‰é¢å¿…é¡»addè¿‡
+	 * keyï¼šintçš„åŒºé—´
+	 * valueï¼šå…·ä½“æ•°é‡
 	 * @return
 	 */
 	public LinkedHashMap<String,LinkedHashMap<int[], Integer>> getFreq() {
@@ -247,7 +247,7 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 		return hashResult;
 	}
 	/**
-	 * ÔÚ¶ÁÈ¡ÎÄ¼şºóÈç¹ûÓĞÊ²Ã´ĞèÒªÉèÖÃµÄ£¬¿ÉÒÔĞ´ÔÚsetOther();·½·¨ÀïÃæ
+	 * åœ¨è¯»å–æ–‡ä»¶åå¦‚æœæœ‰ä»€ä¹ˆéœ€è¦è®¾ç½®çš„ï¼Œå¯ä»¥å†™åœ¨setOther();æ–¹æ³•é‡Œé¢
 	 * @param gfffilename
 	 */
 	public void ReadGffarray(String gfffilename) {
@@ -267,40 +267,40 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 		}
 	}
 	/**
-	 * @±¾·½·¨ĞèÒª±»¸²¸Ç
-	 * ×îµ×²ã¶ÁÈ¡gffµÄ·½·¨<br>
-	 * ÊäÈëGffÎÄ¼ş£¬×îºó»ñµÃÁ½¸ö¹şÏ£±íºÍÒ»¸ölist±í,
-	 * ½á¹¹ÈçÏÂ£º<br/>
+	 * @æœ¬æ–¹æ³•éœ€è¦è¢«è¦†ç›–
+	 * æœ€åº•å±‚è¯»å–gffçš„æ–¹æ³•<br>
+	 * è¾“å…¥Gffæ–‡ä»¶ï¼Œæœ€åè·å¾—ä¸¤ä¸ªå“ˆå¸Œè¡¨å’Œä¸€ä¸ªlistè¡¨,
+	 * ç»“æ„å¦‚ä¸‹ï¼š<br/>
 	 * @1.Chrhash
-	 * £¨ChrID£©--ChrList--GeneInforList(GffDetailÀà)<br/>
-	 *   ÆäÖĞChrIDÎªĞ¡Ğ´£¬´ú±íÈ¾É«ÌåÃû×Ö£¬Òò´ËÓÃgetÀ´»ñÈ¡ÏàÓ¦µÄChrListµÄÊ±ºòÒªÊäÈëĞ¡Ğ´µÄChrID,
-	 * chr¸ñÊ½£¬È«²¿Ğ¡Ğ´ chr1,chr2,chr11<br/>
+	 * ï¼ˆChrIDï¼‰--ChrList--GeneInforList(GffDetailç±»)<br/>
+	 *   å…¶ä¸­ChrIDä¸ºå°å†™ï¼Œä»£è¡¨æŸ“è‰²ä½“åå­—ï¼Œå› æ­¤ç”¨getæ¥è·å–ç›¸åº”çš„ChrListçš„æ—¶å€™è¦è¾“å…¥å°å†™çš„ChrID,
+	 * chræ ¼å¼ï¼Œå…¨éƒ¨å°å†™ chr1,chr2,chr11<br/>
 	 * 
 	 * @2.locHashtable
-	 * £¨LOCID£©--GeneInforlist£¬ÆäÖĞLOCID´ú±í¾ßÌåµÄÌõÄ¿±àºÅ,¸÷¸öÌõÄ¿¶¨ÒåÓÉÏàÓ¦µÄGffHash¾ö¶¨ <br/>
+	 * ï¼ˆLOCIDï¼‰--GeneInforlistï¼Œå…¶ä¸­LOCIDä»£è¡¨å…·ä½“çš„æ¡ç›®ç¼–å·,å„ä¸ªæ¡ç›®å®šä¹‰ç”±ç›¸åº”çš„GffHashå†³å®š <br/>
 	 * 
 	 * @3.LOCIDList
-	 * £¨LOCID£©--LOCIDList£¬°´Ë³Ğò±£´æLOCID,Ö»ÄÜÓÃÓÚËæ»ú²éÕÒ»ùÒò£¬²»½¨ÒéÍ¨¹ıÆä»ñµÃÄ³»ùÒòµÄĞòºÅ<br/>
+	 * ï¼ˆLOCIDï¼‰--LOCIDListï¼ŒæŒ‰é¡ºåºä¿å­˜LOCID,åªèƒ½ç”¨äºéšæœºæŸ¥æ‰¾åŸºå› ï¼Œä¸å»ºè®®é€šè¿‡å…¶è·å¾—æŸåŸºå› çš„åºå·<br/>
 	 * @throws Exception 
 	 */
 	protected abstract void ReadGffarrayExcep(String gfffilename) throws Exception;
 	/**
-	 * ĞèÒª¸²¸Ç
-	 * ²éÕÒÄ³¸öÌØ¶¨LOCµÄĞÅÏ¢
+	 * éœ€è¦è¦†ç›–
+	 * æŸ¥æ‰¾æŸä¸ªç‰¹å®šLOCçš„ä¿¡æ¯
 	 * {return locHashtable.get(LOCID);}
-	 * @param LOCID ¸ø¶¨Ä³LOCµÄÃû³Æ£¬×¢ÒâÃû³ÆÊÇÒ»¸ö¶ÌµÄÃû×Ö£¬Æ©ÈçÔÚUCSC»ùÒòÖĞ£¬²»ÊÇlocstringÄÇÖÖºÃ¼¸¸ö»ùÒòÁ¬ÔÚÒ»ÆğµÄÃû×Ö£¬¶øÊÇµ¥¸öµÄ¶ÌµÄÃû×Ö
-	 * @return ·µ»Ø¸ÃLOCIDµÄ¾ßÌåGffDetailĞÅÏ¢£¬ÓÃÏàÓ¦µÄGffDetailÀà½ÓÊÕ
+	 * @param LOCID ç»™å®šæŸLOCçš„åç§°ï¼Œæ³¨æ„åç§°æ˜¯ä¸€ä¸ªçŸ­çš„åå­—ï¼Œè­¬å¦‚åœ¨UCSCåŸºå› ä¸­ï¼Œä¸æ˜¯locstringé‚£ç§å¥½å‡ ä¸ªåŸºå› è¿åœ¨ä¸€èµ·çš„åå­—ï¼Œè€Œæ˜¯å•ä¸ªçš„çŸ­çš„åå­—
+	 * @return è¿”å›è¯¥LOCIDçš„å…·ä½“GffDetailä¿¡æ¯ï¼Œç”¨ç›¸åº”çš„GffDetailç±»æ¥æ”¶
 	 */
 	public T searchLOC(String LOCID) {
 		return  getMapName2Detail().get(LOCID.toLowerCase());
 	}
 	/**
-	 * ĞèÒª¸²¸Ç
+	 * éœ€è¦è¦†ç›–
 	 * {return Chrhash.get(chrID).get(LOCNum);}
-	 * ¸ø¶¨chrIDºÍ¸ÃÈ¾É«ÌåÉÏµÄÎ»ÖÃ£¬·µ»ØGffDetailĞÅÏ¢
-	 * @param chrID Ğ¡Ğ´
-	 * @param LOCNum ¸ÃÈ¾É«ÌåÉÏ´ı²éÑ°LOCµÄintĞòºÅ
-	 * @return  ·µ»Ø¸ÃLOCIDµÄ¾ßÌåGffDetailĞÅÏ¢£¬ÓÃÏàÓ¦µÄGffDetailÀà½ÓÊÕ
+	 * ç»™å®šchrIDå’Œè¯¥æŸ“è‰²ä½“ä¸Šçš„ä½ç½®ï¼Œè¿”å›GffDetailä¿¡æ¯
+	 * @param chrID å°å†™
+	 * @param LOCNum è¯¥æŸ“è‰²ä½“ä¸Šå¾…æŸ¥å¯»LOCçš„intåºå·
+	 * @return  è¿”å›è¯¥LOCIDçš„å…·ä½“GffDetailä¿¡æ¯ï¼Œç”¨ç›¸åº”çš„GffDetailç±»æ¥æ”¶
 	 */
 	public T searchLOC(String chrID,int LOCNum) {
 		chrID = chrID.toLowerCase();
@@ -308,15 +308,15 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	}
 	
 	/**
-	 * ¸ø¶¨Ä³¸öLOCID£¬·µ»Ø¸ÃLOCÔÚÄ³ÌõÈ¾É«ÌåÖĞµÄÎ»ÖÃĞòºÅºÅ£¬µÚ¼¸Î»<br>
-	 * Ò²¾ÍÊÇChrhashÖĞÄ³¸öchrÏÂ¸ÃLOCµÄÎ»ÖÃ<br>
-	 * ¸ÃÎ»ÖÃ±ØĞë´óÓÚµÈÓÚ0£¬·ñÔò¾ÍÊÇ³ö´í<br>
-	 * ¸Ã±È½ÏÊÇÊ×ÏÈÓÃµ¥¸öLOCID´ÓlocHashtable»ñµÃÆäGffDetailÀà£¬È»ºóÓÃChrIDÔÚChrhashÖĞ»ñµÃÄ³ÌõÈ¾É«ÌåµÄgffdetailµÄList£¬È»ºó±È½ÏËûÃÇµÄlocStringÒÔ¼°»ùÒòµÄÆğµãºÍÖÕµã
-	 * ½ö½ö½«GffDetailµÄequal·½·¨ÖØĞ´¡£
-	 * @param LOCID ÊäÈëÄ³»ùÒò±àºÅ
+	 * ç»™å®šæŸä¸ªLOCIDï¼Œè¿”å›è¯¥LOCåœ¨æŸæ¡æŸ“è‰²ä½“ä¸­çš„ä½ç½®åºå·å·ï¼Œç¬¬å‡ ä½<br>
+	 * ä¹Ÿå°±æ˜¯Chrhashä¸­æŸä¸ªchrä¸‹è¯¥LOCçš„ä½ç½®<br>
+	 * è¯¥ä½ç½®å¿…é¡»å¤§äºç­‰äº0ï¼Œå¦åˆ™å°±æ˜¯å‡ºé”™<br>
+	 * è¯¥æ¯”è¾ƒæ˜¯é¦–å…ˆç”¨å•ä¸ªLOCIDä»locHashtableè·å¾—å…¶GffDetailç±»ï¼Œç„¶åç”¨ChrIDåœ¨Chrhashä¸­è·å¾—æŸæ¡æŸ“è‰²ä½“çš„gffdetailçš„Listï¼Œç„¶åæ¯”è¾ƒä»–ä»¬çš„locStringä»¥åŠåŸºå› çš„èµ·ç‚¹å’Œç»ˆç‚¹
+	 * ä»…ä»…å°†GffDetailçš„equalæ–¹æ³•é‡å†™ã€‚
+	 * @param LOCID è¾“å…¥æŸåŸºå› ç¼–å·
 	 * @return string[2]<br>
-	 * 0: È¾É«Ìå±àºÅ£¬chr1,chr2µÈ£¬¶¼ÎªĞ¡Ğ´<br>
-	 * 1:¸ÃÈ¾É«ÌåÉÏ¸ÃLOCµÄĞòºÅ£¬Èç1467µÈ
+	 * 0: æŸ“è‰²ä½“ç¼–å·ï¼Œchr1,chr2ç­‰ï¼Œéƒ½ä¸ºå°å†™<br>
+	 * 1:è¯¥æŸ“è‰²ä½“ä¸Šè¯¥LOCçš„åºå·ï¼Œå¦‚1467ç­‰
 	 */
 	public String[] getLOCNum(String LOCID) {
 		String[] result = new String[2];
@@ -326,7 +326,7 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 		return result;
 	}
 	/**
-	 * Éè¶¨Ã¿¸öGffDetailµÄtss2UpGeneºÍtes2DownGene
+	 * è®¾å®šæ¯ä¸ªGffDetailçš„tss2UpGeneå’Œtes2DownGene
 	 */
 	protected void setItemDistance() {
 		for (M lsGffDetail : mapChrID2ListGff.values()) {
@@ -366,14 +366,14 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 		}
 	}
 	/**
-	 * ÔÚ¶ÁÈ¡ÎÄ¼şºóÈç¹ûÓĞÊ²Ã´ĞèÒªÉèÖÃµÄ£¬¿ÉÒÔĞ´ÔÚsetOther();·½·¨ÀïÃæ£¬±¾·½·¢Îª¿Õ£¬Ö±½Ó¼Ì³Ğ¼´¿É
+	 * åœ¨è¯»å–æ–‡ä»¶åå¦‚æœæœ‰ä»€ä¹ˆéœ€è¦è®¾ç½®çš„ï¼Œå¯ä»¥å†™åœ¨setOther();æ–¹æ³•é‡Œé¢ï¼Œæœ¬æ–¹å‘ä¸ºç©ºï¼Œç›´æ¥ç»§æ‰¿å³å¯
 	 */
 	protected void setOther()
 	{
 		
 	}
 	/**
-	 * ·µ»ØËùÓĞ²»ÖØ¸´GffDetailGene
+	 * è¿”å›æ‰€æœ‰ä¸é‡å¤GffDetailGene
 	 * @return
 	 */
 	public ArrayList<T> getGffDetailAll() {

@@ -58,7 +58,7 @@ public class ZebraFish {
 class Zb2GeneID extends ImportPerLine
 {
 	/**
-	 * ¸²¸Ç¸Ã·½·¨À´Éè¶¨´ÓµÚ¼¸ĞĞ¿ªÊ¼¶ÁÈ¡
+	 * è¦†ç›–è¯¥æ–¹æ³•æ¥è®¾å®šä»ç¬¬å‡ è¡Œå¼€å§‹è¯»å–
 	 */
 	protected void setReadFromLine() {
 		this.readFromLine = 1;
@@ -80,14 +80,14 @@ class Zb2GeneID extends ImportPerLine
  * 2:
  * gene2refseq.txt
  * ensembl_1_to_1.txt
- * <b>¼ÇµÃÉè¶¨dbInfo</b>
+ * <b>è®°å¾—è®¾å®šdbInfo</b>
  * @author zong0jie
  *
  */
 class ZbRefSeqID extends ImportPerLine
 {
 	/**
-	 * ¸²¸Ç¸Ã·½·¨À´Éè¶¨´ÓµÚ¼¸ĞĞ¿ªÊ¼¶ÁÈ¡
+	 * è¦†ç›–è¯¥æ–¹æ³•æ¥è®¾å®šä»ç¬¬å‡ è¡Œå¼€å§‹è¯»å–
 	 */
 	protected void setReadFromLine() {
 		this.readFromLine = 1;
@@ -128,7 +128,7 @@ class ZbRefSeqID extends ImportPerLine
 class ZBGO extends ImportPerLine
 {
 	/**
-	 * ¸²¸Ç¸Ã·½·¨À´Éè¶¨´ÓµÚ¼¸ĞĞ¿ªÊ¼¶ÁÈ¡
+	 * è¦†ç›–è¯¥æ–¹æ³•æ¥è®¾å®šä»ç¬¬å‡ è¡Œå¼€å§‹è¯»å–
 	 */
 	protected void setReadFromLine() {
 		this.readFromLine = 1;

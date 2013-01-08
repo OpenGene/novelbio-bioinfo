@@ -42,9 +42,9 @@ public class ServSpeciesFile implements MapSpeciesFile{
 		mapSpeciesFile.updateSpeciesFile(speciesFile);
 	}
 	/**
-	 * @param taxID 必须选项，没这个就不用选了
-	 * @param version 可选，主要是hg19等等类似，不过我估计也用不到
-	 * @return 没有的话则返回size==0的list
+	 * @param taxID 蹇呴』閫夐」锛屾病杩欎釜灏变笉鐢ㄩ�変簡
+	 * @param version 鍙�夛紝涓昏鏄痟g19绛夌瓑绫讳技锛屼笉杩囨垜浼拌涔熺敤涓嶅埌
+	 * @return 娌℃湁鐨勮瘽鍒欒繑鍥瀞ize==0鐨刲ist
 	 */
 	public ArrayList<SpeciesFile> queryLsSpeciesFile(int taxID, String version) {
 		if (taxID <= 0) {
@@ -58,7 +58,7 @@ public class ServSpeciesFile implements MapSpeciesFile{
 		return queryLsSpeciesFile(speciesFile);
 	}
 	/**
-	 * 没有就插入，有就升级
+	 * 娌℃湁灏辨彃鍏ワ紝鏈夊氨鍗囩骇
 	 * @param taxInfo
 	 */
 	public void update(SpeciesFile speciesFile) {

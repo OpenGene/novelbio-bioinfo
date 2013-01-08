@@ -8,14 +8,14 @@ public interface GOInfoInt {
 
 	
 	/**
-	 * 将多个CopedID的GOInfoAbs放在一起，取并集去冗余
-	 * @param lsGoInfo 多个GOInfoAbs的list
+	 * 灏嗗涓狢opedID鐨凣OInfoAbs鏀惧湪涓�璧凤紝鍙栧苟闆嗗幓鍐椾綑
+	 * @param lsGoInfo 澶氫釜GOInfoAbs鐨刲ist
 	 * @return
 	 */
 	public ArrayList<AGene2Go> getLsGen2Go(ArrayList<? extends AGene2Go> lsGoInfo, String GOType);
 	/**
-	 * 根据具体的GO_TYPE的标记，获得本GeneID的GO信息
-	 * @param GOType 如果是GO_ALL，则返回全部的GO信息
+	 * 鏍规嵁鍏蜂綋鐨凣O_TYPE鐨勬爣璁帮紝鑾峰緱鏈珿eneID鐨凣O淇℃伅
+	 * @param GOType 濡傛灉鏄疓O_ALL锛屽垯杩斿洖鍏ㄩ儴鐨凣O淇℃伅
 	 * @return
 	 */
 	public ArrayList<AGene2Go> getLsGene2Go(String GOType);

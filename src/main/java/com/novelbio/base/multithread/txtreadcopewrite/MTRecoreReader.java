@@ -8,14 +8,14 @@ import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.multithread.RunProcess;
 
-/** ¶àÏß³ÌÖĞÒ»¸öÏß³Ì¶ÁÈ¡ÎÄ¼ş<br>
- * T: ¾ÍÊÇÊµ¼Ê¶ÁÈ¡µÄÄÚÈİ£¬Æ©ÈçString»òFastQRecord<br>
- * K: °ÑT°ü×°ºÃ£¬´«ÈëabsQueue²¢·¢listµÄ¶ÔÏó<br>
+/** å¤šçº¿ç¨‹ä¸­ä¸€ä¸ªçº¿ç¨‹è¯»å–æ–‡ä»¶<br>
+ * T: å°±æ˜¯å®é™…è¯»å–çš„å†…å®¹ï¼Œè­¬å¦‚Stringæˆ–FastQRecord<br>
+ * K: æŠŠTåŒ…è£…å¥½ï¼Œä¼ å…¥absQueueå¹¶å‘listçš„å¯¹è±¡<br>
  * 
- * ¶àÏß³Ì£¬ĞèÒªÒÔÏÂ²Ù×÷ <br>
- * 1. ÔÚÑ­»·ÖĞÌí¼Ó wait_To_Cope_AbsQueue()  À´¹ÒÆğÏß³Ì£¬Í¬Ê±·ÀÖ¹absQueue¶ÓÁĞ¹ı´ó<br>
- * 2. ÔÚÑ­»·ÖĞ¼ì²é flagRun À´ÖÕÖ¹Ñ­»·<br>
- * 3: ÔÚÑ­»·ÖĞÌí¼Ó setRunInfo() ·½·¨À´»ñÈ¡ÔËĞĞÊ±³öÏÖµÄĞÅÏ¢
+ * å¤šçº¿ç¨‹ï¼Œéœ€è¦ä»¥ä¸‹æ“ä½œ <br>
+ * 1. åœ¨å¾ªç¯ä¸­æ·»åŠ  wait_To_Cope_AbsQueue()  æ¥æŒ‚èµ·çº¿ç¨‹ï¼ŒåŒæ—¶é˜²æ­¢absQueueé˜Ÿåˆ—è¿‡å¤§<br>
+ * 2. åœ¨å¾ªç¯ä¸­æ£€æŸ¥ flagRun æ¥ç»ˆæ­¢å¾ªç¯<br>
+ * 3: åœ¨å¾ªç¯ä¸­æ·»åŠ  setRunInfo() æ–¹æ³•æ¥è·å–è¿è¡Œæ—¶å‡ºç°çš„ä¿¡æ¯
  * @author zong0jie
  *
  */
@@ -26,13 +26,13 @@ public abstract class MTRecoreReader <T, K extends MTRecordRead> extends RunProc
 	protected AbstractQueue<K> absQueue = new ArrayBlockingQueue<K>(maxNumReadInLs);
 	
 	
-	/** ÔÚÃ¿¸öMTRecordCopeÖĞ¶¼Éè¶¨±¾¶ÁÈ¡Àà£¬Í¬Ê±½« ¹«¹²¶ÓÁĞabsQueueÉèÖÃ¸øÃ¿Ò»¸öMTRecordCope */
+	/** åœ¨æ¯ä¸ªMTRecordCopeä¸­éƒ½è®¾å®šæœ¬è¯»å–ç±»ï¼ŒåŒæ—¶å°† å…¬å…±é˜Ÿåˆ—absQueueè®¾ç½®ç»™æ¯ä¸€ä¸ªMTRecordCope */
 	public void setLsCopedThread(ArrayList<? extends MTrecordCoper<? extends MTRecordCope>> lsCopedRecords) {
 		for (MTrecordCoper<? extends MTRecordCope> mtRecordCoper : lsCopedRecords) {
 			addFilterReads(mtRecordCoper);
 		}
 	}
-	/** ÔÚÃ¿¸öfilterReadsÖĞ¶¼Éè¶¨±¾¶ÁÈ¡Àà,Í¬Ê±½« ¹«¹²¶ÓÁĞabsQueueÉèÖÃ¸øÃ¿Ò»¸öMTRecordCope */
+	/** åœ¨æ¯ä¸ªfilterReadsä¸­éƒ½è®¾å®šæœ¬è¯»å–ç±»,åŒæ—¶å°† å…¬å…±é˜Ÿåˆ—absQueueè®¾ç½®ç»™æ¯ä¸€ä¸ªMTRecordCope */
 	public void addFilterReads(MTrecordCoper<? extends MTRecordCope> mtRecordCoper) {
 		mtRecordCoper.setReader(this);
 		mtRecordCoper.setLsRecords(absQueue);
@@ -49,7 +49,7 @@ public abstract class MTRecoreReader <T, K extends MTRecordRead> extends RunProc
 		return readlines(0);
 	}
 	/**
-	 * ¶ÁÈ¡Ç°¼¸ĞĞ£¬²»Ó°Ïì{@link #readlines()}
+	 * è¯»å–å‰å‡ è¡Œï¼Œä¸å½±å“{@link #readlines()}
 	 * @param num
 	 * @return
 	 */
@@ -64,7 +64,7 @@ public abstract class MTRecoreReader <T, K extends MTRecordRead> extends RunProc
 		}
 		return lsResult;
 	}
-	/** µÈ´ı´¦ÀíÏß³Ì½«AbsQueue¶ÓÁĞÖĞµÄ¼ÇÂ¼´¦Àíµô */
+	/** ç­‰å¾…å¤„ç†çº¿ç¨‹å°†AbsQueueé˜Ÿåˆ—ä¸­çš„è®°å½•å¤„ç†æ‰ */
 	protected void wait_To_Cope_AbsQueue() {
 		suspendCheck();
 		while (absQueue.size() == maxNumReadInLs) {
@@ -72,12 +72,12 @@ public abstract class MTRecoreReader <T, K extends MTRecordRead> extends RunProc
 		}
 	}
 	/**
-	 * ´ÓµÚ¼¸ĞĞ¿ªÊ¼¶Á£¬ÊÇÊµ¼ÊĞĞ
-	 * @param lines Èç¹ûlinesĞ¡ÓÚ1£¬Ôò´ÓÍ·¿ªÊ¼¶ÁÈ¡
+	 * ä»ç¬¬å‡ è¡Œå¼€å§‹è¯»ï¼Œæ˜¯å®é™…è¡Œ
+	 * @param lines å¦‚æœlineså°äº1ï¼Œåˆ™ä»å¤´å¼€å§‹è¯»å–
 	 * @return
 	 */
 	public abstract Iterable<T> readlines(int lines);
-	/** ¹Ø±ÕÏëÒª¹Ø±ÕµÄÁ÷£¬¼ÇµÃÓÃtry°üÎ§ */
+	/** å…³é—­æƒ³è¦å…³é—­çš„æµï¼Œè®°å¾—ç”¨tryåŒ…å›´ */
 	public abstract void close();
 	
 

@@ -17,7 +17,7 @@ public class GffToCG {
 	Gffsearch gffSearchCG=new GffsearchCG();
 	GffHashCG gffHashCG=new GffHashCG();
 	/**
-	 * ¸²¸Ç¶È°Ù·Ö±È£¬Í³¼ÆrepeatÊıÄ¿Ê±ÓÃµ½£¬µ±´óÓÚ¸Ã°Ù·Ö±ÈÊ±½«repeat¼ÆÈë
+	 * è¦†ç›–åº¦ç™¾åˆ†æ¯”ï¼Œç»Ÿè®¡repeatæ•°ç›®æ—¶ç”¨åˆ°ï¼Œå½“å¤§äºè¯¥ç™¾åˆ†æ¯”æ—¶å°†repeatè®¡å…¥
 	 */
 	int overLapProp=50;
 	public void setOverlapProp(int overLapProp) {
@@ -25,7 +25,7 @@ public class GffToCG {
 	}
 	
 	/**
-	 * ¶ÁÈ¡RepeatµÄ×ø±êÎÄ¼ş
+	 * è¯»å–Repeatçš„åæ ‡æ–‡ä»¶
 	 * @param gfffilename
 	 * @throws Exception
 	 */
@@ -35,14 +35,14 @@ public class GffToCG {
 	}
 	
 	/**
-	 * ¸ø¶¨¶şÎ¬Êı×é,Í³¼Æ¸÷¸öÇøÓòËùÕ¼µÄ¾ßÌåbpÊı,ÕâÑù×Ó·½±ã×îºó³ö½á¹û
-	 * ÊäÈëµÄÊı¾İ£¬<br>
-	 * µÚÒ»Î¬ÊÇChrID<br>
-	 * µÚ¶şÎ¬ÊÇ×ø±ê,µÚÈıÎ¬Ò²ÊÇ×ø±ê<br>
-	 * ·µ»Ø×ø±êÍ³¼ÆĞÅÏ¢<br>
-	 * ¾ÍÊÇËµpeakËù¸²¸ÇµÄÃ¿¸öÀàĞÍCpGµÄ¾ßÌåbpÊı
-	 * ÖĞ¼ä³öÏÖÄ³¸örepeatµÄ»°£¬ÏàÓ¦CpG+1£¬È»ºóNoCpG+1<br>
-	 * Èç¹û
+	 * ç»™å®šäºŒç»´æ•°ç»„,ç»Ÿè®¡å„ä¸ªåŒºåŸŸæ‰€å çš„å…·ä½“bpæ•°,è¿™æ ·å­æ–¹ä¾¿æœ€åå‡ºç»“æœ
+	 * è¾“å…¥çš„æ•°æ®ï¼Œ<br>
+	 * ç¬¬ä¸€ç»´æ˜¯ChrID<br>
+	 * ç¬¬äºŒç»´æ˜¯åæ ‡,ç¬¬ä¸‰ç»´ä¹Ÿæ˜¯åæ ‡<br>
+	 * è¿”å›åæ ‡ç»Ÿè®¡ä¿¡æ¯<br>
+	 * å°±æ˜¯è¯´peakæ‰€è¦†ç›–çš„æ¯ä¸ªç±»å‹CpGçš„å…·ä½“bpæ•°
+	 * ä¸­é—´å‡ºç°æŸä¸ªrepeatçš„è¯ï¼Œç›¸åº”CpG+1ï¼Œç„¶åNoCpG+1<br>
+	 * å¦‚æœ
 	 * arraylist-string[2]
 	 * 0:CGClass
 	 * 1:Num
@@ -54,17 +54,17 @@ public class GffToCG {
 		hashStatistic.put(outofCG, (long)0);
 		for (int i = 0; i < LOCIDInfo.length; i++) {
 			ArrayList<Object> tmpresult=gffSearchCG.searchLocation(LOCIDInfo[i][0].toLowerCase(), Integer.parseInt(LOCIDInfo[i][1]),Integer.parseInt(LOCIDInfo[i][2]), gffHashCG);
-			long peakLen=Math.abs(Long.parseLong(LOCIDInfo[i][1])-Long.parseLong(LOCIDInfo[i][2]));//peakµÄ³¤¶È
+			long peakLen=Math.abs(Long.parseLong(LOCIDInfo[i][1])-Long.parseLong(LOCIDInfo[i][2]));//peakçš„é•¿åº¦
 			Object[] objleftCodInfo=(Object[]) tmpresult.get(0);
 			GffCodInfo leftCodInfo=(GffCodInfo)objleftCodInfo[0];
-			double[] leftOverlap=(double[])objleftCodInfo[1];//×ó±ßµÄ½»¼¯Çé¿ö
+			double[] leftOverlap=(double[])objleftCodInfo[1];//å·¦è¾¹çš„äº¤é›†æƒ…å†µ
 			
 			
 			Object[] objrightCodInfo=(Object[]) tmpresult.get(1);
 			GffCodInfo rightCodInfo=(GffCodInfo)objrightCodInfo[0];
-			double[] rightOverlap=(double[])objrightCodInfo[1];//ÓÒ±ßµÄ½»¼¯Çé¿ö
+			double[] rightOverlap=(double[])objrightCodInfo[1];//å³è¾¹çš„äº¤é›†æƒ…å†µ
 			long tmpOverlap=0;
-			if(leftCodInfo.insideLOC)//»ùÒòÄÚ
+			if(leftCodInfo.insideLOC)//åŸºå› å†…
 			{
 				String locString=leftCodInfo.LOCID[0];
 				GffDetailCG tmpCG =(GffDetailCG)gffHashCG.getLocHashtable().get(locString);
@@ -85,8 +85,8 @@ public class GffToCG {
 			{
 				String locString=rightCodInfo.LOCID[0];
 				//////////////////////////////////////////////////
-				//Èç¹û×óÓÒÁ½µã¶¼ÔÚÒ»¸öCGÄÚ£¬ÔòÓÒµã²»¼ÆÊı²¢ÇÒ×óÓÒÖ®¼äÒ²²»Í¬¿´ÁË£¬¿Ï¶¨Ã»ÓĞ£¬¾Í½øÈëÏÂÒ»¸öÑ­»·
-				//ÏÖÔÚ¿¼ÂÇÁ½¸ö¶Ëµã²»ÔÚÒ»¸öCGÄÚ
+				//å¦‚æœå·¦å³ä¸¤ç‚¹éƒ½åœ¨ä¸€ä¸ªCGå†…ï¼Œåˆ™å³ç‚¹ä¸è®¡æ•°å¹¶ä¸”å·¦å³ä¹‹é—´ä¹Ÿä¸åŒçœ‹äº†ï¼Œè‚¯å®šæ²¡æœ‰ï¼Œå°±è¿›å…¥ä¸‹ä¸€ä¸ªå¾ªç¯
+				//ç°åœ¨è€ƒè™‘ä¸¤ä¸ªç«¯ç‚¹ä¸åœ¨ä¸€ä¸ªCGå†…
 				if (!locString.equals(leftCodInfo.LOCID[0])) 
 				{
 					GffDetailCG tmpCG =(GffDetailCG)gffHashCG.getLocHashtable().get(locString);
@@ -105,7 +105,7 @@ public class GffToCG {
 				}
 			}
 		
-			//¿´peak¸²¸Ç·¶Î§ÄÚÓĞÃ»ÓĞCG£¬ÓĞµÄ»°¾Í¼ÓÈë¼ÆÊı
+			//çœ‹peakè¦†ç›–èŒƒå›´å†…æœ‰æ²¡æœ‰CGï¼Œæœ‰çš„è¯å°±åŠ å…¥è®¡æ•°
 			for (int j = 2; j < tmpresult.size(); j++) {
 				GffDetailCG tmpDetailCG=(GffDetailCG)tmpresult.get(j);
 				String CGClass="CG";
@@ -132,7 +132,7 @@ public class GffToCG {
 			tmp=tmp+tmpOutOfCG;
 			hashStatistic.put(outofCG, tmp);
 		}
-		//½«¹şÏ£±í±éÀú²¢×°Èëlist
+		//å°†å“ˆå¸Œè¡¨éå†å¹¶è£…å…¥list
 		ArrayList<String[]> result=new ArrayList<String[]>();
 		Iterator iter = hashStatistic.entrySet().iterator();
 		while (iter.hasNext()) {
@@ -150,17 +150,17 @@ public class GffToCG {
 	
 	
 	/**
-	 * ¸ø¶¨¶şÎ¬Êı×é,»ñµÃÃ¿¸öpeakÓëCpGµÄ¾ßÌåÇé¿ö£¬Õë¶ÔUCSCknown gene
-	 * ÊäÈëµÄÊı¾İ£¬<br>
-	 * µÚÒ»Î¬ÊÇChrID<br>
-	 * µÚ¶şÎ¬ÊÇ×ø±ê,µÚÈıÎ¬Ò²ÊÇ×ø±ê<br>
-	 * ·µ»ØÃ¿¸ö×ø±êÔÚrepeatÉÏµÄ¾ßÌåÇé¿ö<br>
+	 * ç»™å®šäºŒç»´æ•°ç»„,è·å¾—æ¯ä¸ªpeakä¸CpGçš„å…·ä½“æƒ…å†µï¼Œé’ˆå¯¹UCSCknown gene
+	 * è¾“å…¥çš„æ•°æ®ï¼Œ<br>
+	 * ç¬¬ä¸€ç»´æ˜¯ChrID<br>
+	 * ç¬¬äºŒç»´æ˜¯åæ ‡,ç¬¬ä¸‰ç»´ä¹Ÿæ˜¯åæ ‡<br>
+	 * è¿”å›æ¯ä¸ªåæ ‡åœ¨repeatä¸Šçš„å…·ä½“æƒ…å†µ<br>
 	 * arraylist-string[5]<br>
 	 * 0:ChrID<br>
-	 * 1:×ø±ê<br>
-	 * 2:¼¸¸öCpG
-	 * 3:ÒÀ´ÎÃ¿¸öCpGµÄCG³¤¶È<br>
-	 * 4:ÒÀ´ÎÃ¿¸öCpGµÄCG°Ù·Ö±È
+	 * 1:åæ ‡<br>
+	 * 2:å‡ ä¸ªCpG
+	 * 3:ä¾æ¬¡æ¯ä¸ªCpGçš„CGé•¿åº¦<br>
+	 * 4:ä¾æ¬¡æ¯ä¸ªCpGçš„CGç™¾åˆ†æ¯”
 	 */
 	public ArrayList<String[]> locateCodregionInfo(String[][] LOCIDInfo)
 	{
@@ -175,14 +175,14 @@ public class GffToCG {
 			
 			Object[] objleftCodInfo=(Object[]) tmpCGResult.get(0);
 			GffCodInfo leftCodInfo=(GffCodInfo)objleftCodInfo[0];
-			double[] leftOverlap=(double[])objleftCodInfo[1];//×ó±ßµÄ½»¼¯Çé¿ö
+			double[] leftOverlap=(double[])objleftCodInfo[1];//å·¦è¾¹çš„äº¤é›†æƒ…å†µ
 			
 			Object[] objrightCodInfo=(Object[]) tmpCGResult.get(1);
 			GffCodInfo rightCodInfo=(GffCodInfo)objrightCodInfo[0];
-			double[] rightOverlap=(double[])objrightCodInfo[1];//ÓÒ±ßµÄ½»¼¯Çé¿ö
+			double[] rightOverlap=(double[])objrightCodInfo[1];//å³è¾¹çš„äº¤é›†æƒ…å†µ
 
-			int tmpCGNum=0;//×Ü¹²¼¸¸örepeat
-			if(leftOverlap[0]>=overLapProp||leftOverlap[1]>=overLapProp)//»ùÒòÄÚ)//»ùÒòÄÚ
+			int tmpCGNum=0;//æ€»å…±å‡ ä¸ªrepeat
+			if(leftOverlap[0]>=overLapProp||leftOverlap[1]>=overLapProp)//åŸºå› å†…)//åŸºå› å†…
 			{
 				tmpCGNum=1;
 				String locString=leftCodInfo.LOCID[0];
@@ -195,7 +195,7 @@ public class GffToCG {
 				tmpCGInfo[4]="none";
 			}
 
-			//¿´peak¸²¸Ç·¶Î§ÄÚÓĞÃ»ÓĞrepeat£¬ÓĞµÄ»°¾Í¼ÓÈë¼ÆÊı
+			//çœ‹peakè¦†ç›–èŒƒå›´å†…æœ‰æ²¡æœ‰repeatï¼Œæœ‰çš„è¯å°±åŠ å…¥è®¡æ•°
 			for (int j = 2; j < tmpCGResult.size(); j++) {
 				tmpCGNum++;
 				GffDetailCG tmpDetailCG=(GffDetailCG)tmpCGResult.get(j);
@@ -203,12 +203,12 @@ public class GffToCG {
 				tmpCGInfo[4]=tmpCGInfo[4]+"///"+tmpDetailCG.perCpG;
 			}
 			
-			///////////////ÓÒ±ßµÄrepeatÎ»µã///////////////////////
+			///////////////å³è¾¹çš„repeatä½ç‚¹///////////////////////
 			if(rightOverlap[0]>=overLapProp||rightOverlap[1]>=overLapProp)
 			{
 				String locString=rightCodInfo.LOCID[0];
 				//////////////////////////////////////////////////
-				//Èç¹û×óÓÒÁ½µã¶¼ÔÚÒ»¸örepeatÄÚ£¬ÔòÓÒµã²»¼ÆÊı²¢ÇÒ×óÓÒÖ®¼äÒ²²»Í¬¿´ÁË£¬¿Ï¶¨Ã»ÓĞ£¬¾Í½øÈëÏÂÒ»¸öÑ­»·
+				//å¦‚æœå·¦å³ä¸¤ç‚¹éƒ½åœ¨ä¸€ä¸ªrepeatå†…ï¼Œåˆ™å³ç‚¹ä¸è®¡æ•°å¹¶ä¸”å·¦å³ä¹‹é—´ä¹Ÿä¸åŒçœ‹äº†ï¼Œè‚¯å®šæ²¡æœ‰ï¼Œå°±è¿›å…¥ä¸‹ä¸€ä¸ªå¾ªç¯
 				if(locString!=leftCodInfo.LOCID[0])
 				{
 					tmpCGNum++;

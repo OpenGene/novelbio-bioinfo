@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
 public class ArrayOperate {
 	private static final Logger logger = Logger.getLogger(ArrayOperate.class);
 	/**
-	 * ºÏ²¢×Ö·û´®Êı×é
+	 * åˆå¹¶å­—ç¬¦ä¸²æ•°ç»„
 	 * @param ss
 	 * @param sep
 	 * @return
@@ -54,7 +54,7 @@ public class ArrayOperate {
 		return result;
 	}
 	/**
-	 * ¸ø¶¨lsString£¬½«lsString¿´×÷ArrayList-String[]£¬×İÏò½«ÆäºÏ²¢ÎªString[][]£¬Ò²¾ÍÊÇÀàËÆcbind
+	 * ç»™å®šlsStringï¼Œå°†lsStringçœ‹ä½œArrayList-String[]ï¼Œçºµå‘å°†å…¶åˆå¹¶ä¸ºString[][]ï¼Œä¹Ÿå°±æ˜¯ç±»ä¼¼cbind
 	 * @param lsStrings
 	 * @return
 	 */
@@ -72,12 +72,12 @@ public class ArrayOperate {
 		return result;
 	}
 	/**
-	 * ¶şÎ¬[][]µÄºÏ²¢£¬¸ø¶¨AT[][]ºÍBT[][]
-	 * ½«AT[][]ºÍBT[][]ºÏ²¢£¬¿ÉÒÔÖ¸¶¨BT²åÈëÔÚATµÄÄÄÒ»ÁĞÖĞ
-	 * <b>×¢Òâ£¬ATºÍBTµÄÀàĞÍ±ØĞëÏàµÈ£¬ĞĞÊı±ØĞëÏàµÈ,Ò²¾ÍÊÇµÚÒ»Î¬±ØĞëÏàµÈ</b>
+	 * äºŒç»´[][]çš„åˆå¹¶ï¼Œç»™å®šAT[][]å’ŒBT[][]
+	 * å°†AT[][]å’ŒBT[][]åˆå¹¶ï¼Œå¯ä»¥æŒ‡å®šBTæ’å…¥åœ¨ATçš„å“ªä¸€åˆ—ä¸­
+	 * <b>æ³¨æ„ï¼ŒATå’ŒBTçš„ç±»å‹å¿…é¡»ç›¸ç­‰ï¼Œè¡Œæ•°å¿…é¡»ç›¸ç­‰,ä¹Ÿå°±æ˜¯ç¬¬ä¸€ç»´å¿…é¡»ç›¸ç­‰</b>
 	 * @param AT
 	 * @param BT
-	 * @param instNum ²åÈëµ½ATµÄµÚ¼¸ÁĞÖ®ºó£¬ÊÇATµÄÊµ¼ÊÁĞ,Èç¹ûinstNum<1Ôò½ö½ö½«BT²¢µ½ATµÄºóÃæ¡£
+	 * @param instNum æ’å…¥åˆ°ATçš„ç¬¬å‡ åˆ—ä¹‹åï¼Œæ˜¯ATçš„å®é™…åˆ—,å¦‚æœinstNum<1åˆ™ä»…ä»…å°†BTå¹¶åˆ°ATçš„åé¢ã€‚
 	 * @return
 	 * 
 	 */
@@ -88,7 +88,7 @@ public class ArrayOperate {
 			instNum=AT[0].length;
 		}
 		instNum--;
-		//Í¨¹ı·´ÉäµÄ·½·¨ĞÂ½¨Êı×é
+		//é€šè¿‡åå°„çš„æ–¹æ³•æ–°å»ºæ•°ç»„
 		T[][]  result = (T[][]) Array.newInstance(AT.getClass().getComponentType().getComponentType(),rowNum,colNum);
 		for (int i = 0; i < rowNum; i++) 
 		{
@@ -109,12 +109,12 @@ public class ArrayOperate {
 		return result;
 	}
 	/**
-	 * ¶şÎ¬[][]µÄºÏ²¢£¬¸ø¶¨AT[][]ºÍBT[][]
-	 * ½«AT[][]ºÍBT[][]ºÏ²¢£¬¿ÉÒÔÖ¸¶¨BT²åÈëÔÚATµÄÄÄÒ»ÁĞÖĞ
-	 * <b>×¢Òâ£¬ATºÍBTµÄÀàĞÍ±ØĞëÏàµÈ£¬ĞĞÊı±ØĞëÏàµÈ,Ò²¾ÍÊÇµÚÒ»Î¬±ØĞëÏàµÈ</b>
+	 * äºŒç»´[][]çš„åˆå¹¶ï¼Œç»™å®šAT[][]å’ŒBT[][]
+	 * å°†AT[][]å’ŒBT[][]åˆå¹¶ï¼Œå¯ä»¥æŒ‡å®šBTæ’å…¥åœ¨ATçš„å“ªä¸€åˆ—ä¸­
+	 * <b>æ³¨æ„ï¼ŒATå’ŒBTçš„ç±»å‹å¿…é¡»ç›¸ç­‰ï¼Œè¡Œæ•°å¿…é¡»ç›¸ç­‰,ä¹Ÿå°±æ˜¯ç¬¬ä¸€ç»´å¿…é¡»ç›¸ç­‰</b>
 	 * @param AT
 	 * @param BT
-	 * @param instNum ²åÈëµ½ATµÄµÚ¼¸ÁĞÖ®ºó£¬ÊÇATµÄÊµ¼ÊÁĞ,Èç¹ûinstNum<1Ôò½ö½ö½«BT²¢µ½ATµÄºóÃæ¡£
+	 * @param instNum æ’å…¥åˆ°ATçš„ç¬¬å‡ åˆ—ä¹‹åï¼Œæ˜¯ATçš„å®é™…åˆ—,å¦‚æœinstNum<1åˆ™ä»…ä»…å°†BTå¹¶åˆ°ATçš„åé¢ã€‚
 	 * @return
 	 * 
 	 */
@@ -125,7 +125,7 @@ public class ArrayOperate {
 			instNum = lsAT.get(0).length;
 		}
 		instNum--;
-		//Í¨¹ı·´ÉäµÄ·½·¨ĞÂ½¨Êı×é
+		//é€šè¿‡åå°„çš„æ–¹æ³•æ–°å»ºæ•°ç»„
 		ArrayList<T[]> lsResult = new ArrayList<T[]>();
 		T[][]  result = (T[][]) Array.newInstance(lsAT.get(0).getClass().getComponentType(),rowNum,colNum);
 		for (int i = 0; i < rowNum; i++) 
@@ -163,13 +163,13 @@ public class ArrayOperate {
 	
 	/**
 	 * @deprecated
-	 * ²ÉÓÃ{@link combArray}È¡´ú
-	 * String[][]µÄºÏ²¢£¬¸ø¶¨Astring[][]ºÍBstring[][]
-	 * ½«Aobject[][]ºÍBobject[][]ºÏ²¢£¬¿ÉÒÔÖ¸¶¨Bobject²åÈëÔÚAobjectµÄÄÄÒ»ÁĞºó
-	 * <b>×¢Òâ£¬AobjectºÍBobjectµÄÀàĞÍ±ØĞëÏàµÈ£¬ĞĞÊı±ØĞëÏàµÈ,Ò²¾ÍÊÇµÚÒ»Î¬±ØĞëÏàµÈ</b>
+	 * é‡‡ç”¨{@link combArray}å–ä»£
+	 * String[][]çš„åˆå¹¶ï¼Œç»™å®šAstring[][]å’ŒBstring[][]
+	 * å°†Aobject[][]å’ŒBobject[][]åˆå¹¶ï¼Œå¯ä»¥æŒ‡å®šBobjectæ’å…¥åœ¨Aobjectçš„å“ªä¸€åˆ—å
+	 * <b>æ³¨æ„ï¼ŒAobjectå’ŒBobjectçš„ç±»å‹å¿…é¡»ç›¸ç­‰ï¼Œè¡Œæ•°å¿…é¡»ç›¸ç­‰,ä¹Ÿå°±æ˜¯ç¬¬ä¸€ç»´å¿…é¡»ç›¸ç­‰</b>
 	 * @param Aobject
 	 * @param Bobject
-	 * @param instNum ²åÈëµ½AobjectµÄµÚ¼¸ÁĞÖ®ºó£¬ÊÇAobjectµÄÊµ¼ÊÁĞ,Èç¹ûinstNum<1Ôò½ö½ö½«Bobject²¢µ½AobjectµÄºóÃæ¡£
+	 * @param instNum æ’å…¥åˆ°Aobjectçš„ç¬¬å‡ åˆ—ä¹‹åï¼Œæ˜¯Aobjectçš„å®é™…åˆ—,å¦‚æœinstNum<1åˆ™ä»…ä»…å°†Bobjectå¹¶åˆ°Aobjectçš„åé¢ã€‚
 	 * @return
 	 */
 	public static String[][] combStrArray(String[][] Astring,String[][] Bstring,int instNum) {
@@ -208,7 +208,7 @@ public class ArrayOperate {
 	}
 	
 	/**
-	 * ½«Êı×éÖĞĞ¡ÓÚsmallNumµÄÏîÄ¿È«²¿É¾³ı
+	 * å°†æ•°ç»„ä¸­å°äºsmallNumçš„é¡¹ç›®å…¨éƒ¨åˆ é™¤
 	 * @param column
 	 * @param smallNum
 	 * @return
@@ -229,12 +229,12 @@ public class ArrayOperate {
 	}
 	
 	/**
-	 * String[]µÄºÏ²¢£¬¸ø¶¨Astring[]ºÍBstring[]
-	 * ½«Astring[]ºÍBstring[]ºÏ²¢£¬¿ÉÒÔÖ¸¶¨Bstring²åÈëÔÚAstringµÄÄÄÒ»ÁĞºó
-	 * <b>×¢Òâ£¬AstringºÍBstringµÄÀàĞÍ±ØĞëÏàµÈ</b>
+	 * String[]çš„åˆå¹¶ï¼Œç»™å®šAstring[]å’ŒBstring[]
+	 * å°†Astring[]å’ŒBstring[]åˆå¹¶ï¼Œå¯ä»¥æŒ‡å®šBstringæ’å…¥åœ¨Astringçš„å“ªä¸€åˆ—å
+	 * <b>æ³¨æ„ï¼ŒAstringå’ŒBstringçš„ç±»å‹å¿…é¡»ç›¸ç­‰</b>
 	 * @param Astring
 	 * @param Bstring
-	 * @param instNum ²åÈëµ½AstringµÄµÚ¼¸ÁĞÖ®ºó£¬ÊÇAstringµÄÊµ¼ÊÁĞ,Èç¹ûinstNum<1Ôò½ö½ö½«Bobject²¢µ½AobjectµÄºóÃæ¡£
+	 * @param instNum æ’å…¥åˆ°Astringçš„ç¬¬å‡ åˆ—ä¹‹åï¼Œæ˜¯Astringçš„å®é™…åˆ—,å¦‚æœinstNum<1åˆ™ä»…ä»…å°†Bobjectå¹¶åˆ°Aobjectçš„åé¢ã€‚
 	 * @return
 	 */
 	public static<T> T[] combArray(T[] Aarray,T[] Barray,int instNum) {
@@ -258,10 +258,10 @@ public class ArrayOperate {
 	}
 	
 	/**
-	 * É¾³ıÊı×éÖĞµÄÒ»Ğ©ÏîÄ¿
+	 * åˆ é™¤æ•°ç»„ä¸­çš„ä¸€äº›é¡¹ç›®
 	 * @param <T>
-	 * @param Aarray Êı×é
-	 * @param deletNum ĞèÒªÉ¾³ıÄÄ¼¸Ïî£¬´Ó0¿ªÊ¼¼ÆËã£¬Èç¹û³¬³öÊı×éÏî£¬ÔòºöÂÔ
+	 * @param Aarray æ•°ç»„
+	 * @param deletNum éœ€è¦åˆ é™¤å“ªå‡ é¡¹ï¼Œä»0å¼€å§‹è®¡ç®—ï¼Œå¦‚æœè¶…å‡ºæ•°ç»„é¡¹ï¼Œåˆ™å¿½ç•¥
 	 * @return
 	 */
 	public static<T> T[] deletElement(T[] Aarray,int[] deletNum) {
@@ -285,22 +285,22 @@ public class ArrayOperate {
 		return result;
 	}
 	/**
-	 * <b>Ã»ÓĞÌí¼Ó·¶Î§¼ì²â¹¦ÄÜ</b>
-	 * <b>Í¬Ò»ÁĞ×î¶àÖ»ÄÜÌí¼ÓÉ¾³ı¸÷Ò»´Î</b><br>
-	 * Ìí¼Ó»òÕßÉ¾³ıÊı×éÖĞµÄÒ»Ğ©ÏîÄ¿
+	 * <b>æ²¡æœ‰æ·»åŠ èŒƒå›´æ£€æµ‹åŠŸèƒ½</b>
+	 * <b>åŒä¸€åˆ—æœ€å¤šåªèƒ½æ·»åŠ åˆ é™¤å„ä¸€æ¬¡</b><br>
+	 * æ·»åŠ æˆ–è€…åˆ é™¤æ•°ç»„ä¸­çš„ä¸€äº›é¡¹ç›®
 	 * @param <T>
-	 * @param Aarray Êı×é
-	 * @param lsIndelInfo ²»Òª³öÏÖĞ¡ÓÚ0Ïî¡£ĞèÒªÉ¾³ıÄÄ¼¸Ïî£¬´Ó0¿ªÊ¼¼ÆËã£¬<br>
-	 * 	<b>0£º</b> Ìí¼Ó»òÉ¾³ıÄÄÒ»Ïî<br>
-	 * ÕıÊı£ºÌí¼Ó£¬<b>Ìí¼ÓÔÚÖ¸¶¨Î»ÖÃµÄÇ°Ãæ</b>£¬<br>
-	 * ¸ºÊı£ºÉ¾³ı£¬Èç¹û³¬³öÊı×éÏî£¬ÔòºöÂÔ<br>
-	 * <b>1£º</b>Ìí¼Ó¼¸¸öÔªËØ£¬»òÉ¾³ı¸ÃÔªËØ<br>
-	 * <b>ÕıÊıÎªÌí¼Ó£¬Ìí¼Ó¿ÉÒÔ¶à¸ö£¬µ±Îª×îºóÒ»Ïî+1Ê±£¬Ö»ÄÜÌí¼Ó²»ÄÜÉ¾³ı<br>¸ºÊıÎªÉ¾³ı£¬Ö»ÄÜÉ¾³ıÒ»¸ö</b>
-	 * @param filling Ä¬ÈÏÌî³äµÄÔªËØ
+	 * @param Aarray æ•°ç»„
+	 * @param lsIndelInfo ä¸è¦å‡ºç°å°äº0é¡¹ã€‚éœ€è¦åˆ é™¤å“ªå‡ é¡¹ï¼Œä»0å¼€å§‹è®¡ç®—ï¼Œ<br>
+	 * 	<b>0ï¼š</b> æ·»åŠ æˆ–åˆ é™¤å“ªä¸€é¡¹<br>
+	 * æ­£æ•°ï¼šæ·»åŠ ï¼Œ<b>æ·»åŠ åœ¨æŒ‡å®šä½ç½®çš„å‰é¢</b>ï¼Œ<br>
+	 * è´Ÿæ•°ï¼šåˆ é™¤ï¼Œå¦‚æœè¶…å‡ºæ•°ç»„é¡¹ï¼Œåˆ™å¿½ç•¥<br>
+	 * <b>1ï¼š</b>æ·»åŠ å‡ ä¸ªå…ƒç´ ï¼Œæˆ–åˆ é™¤è¯¥å…ƒç´ <br>
+	 * <b>æ­£æ•°ä¸ºæ·»åŠ ï¼Œæ·»åŠ å¯ä»¥å¤šä¸ªï¼Œå½“ä¸ºæœ€åä¸€é¡¹+1æ—¶ï¼Œåªèƒ½æ·»åŠ ä¸èƒ½åˆ é™¤<br>è´Ÿæ•°ä¸ºåˆ é™¤ï¼Œåªèƒ½åˆ é™¤ä¸€ä¸ª</b>
+	 * @param filling é»˜è®¤å¡«å……çš„å…ƒç´ 
 	 * @return
 	 */
 	public static<T> T[] indelElement(T[] Aarray,ArrayList<int[]> lsIndelInfo, T filling) {
-		// 0£ºĞŞÕıµÚ¼¸Î»£¬1.¸ºÊıÉ¾³ı£¬ÕıÊıÔÚÇ°ÃæÌí¼ÓÒ»Î»
+		// 0ï¼šä¿®æ­£ç¬¬å‡ ä½ï¼Œ1.è´Ÿæ•°åˆ é™¤ï¼Œæ­£æ•°åœ¨å‰é¢æ·»åŠ ä¸€ä½
 		HashMap<Integer, TreeSet<Integer>> hashIndelInfo = new HashMap<Integer, TreeSet<Integer>>();
 		for (int[] i : lsIndelInfo) {
 			if (i[0] > Aarray.length || i[0] < 0)
@@ -315,22 +315,22 @@ public class ArrayOperate {
 				hashIndelInfo.put(Math.abs(i[0]), lsDetail);
 			}
 		}
-		///////// ¼ÆËã×îÖÕÊı×é³¤¶È //////////////////
+		///////// è®¡ç®—æœ€ç»ˆæ•°ç»„é•¿åº¦ //////////////////
 		int finalLen = Aarray.length;
 		for (TreeSet<Integer> treeSet : hashIndelInfo.values()) {
 			for (Integer integer : treeSet) {
 				if (integer < 0)
-					finalLen --;//¸ºÊı±íÊ¾½ö½«¸ÃÎ»µãÉ¾³ı
+					finalLen --;//è´Ÿæ•°è¡¨ç¤ºä»…å°†è¯¥ä½ç‚¹åˆ é™¤
 				else
-					finalLen = finalLen + integer;//ÕıÊı±íÊ¾ÔÚ¸ÃÎ»µãÖ®Ç°Ìí¼ÓÈô¸É¸ö¿ÕÎ»
+					finalLen = finalLen + integer;//æ­£æ•°è¡¨ç¤ºåœ¨è¯¥ä½ç‚¹ä¹‹å‰æ·»åŠ è‹¥å¹²ä¸ªç©ºä½
 			}
 		}
 		T[] result=(T[]) Array.newInstance(Aarray.getClass().getComponentType(), finalLen);//new T[Astring.length+Bstring.length];
-		int resultNum = 0;//Êä³öarrayµÄ×ø±ê
+		int resultNum = 0;//è¾“å‡ºarrayçš„åæ ‡
 		for (int i = 0; i < Aarray.length; i++) {
-			boolean flagDel = false;//ÊÇ·ñÌø¹ı¸ÃID
+			boolean flagDel = false;//æ˜¯å¦è·³è¿‡è¯¥ID
 			if (hashIndelInfo.containsKey(i)) {
-				//·´ÏòÅÅÁĞ£¬Ò²¾ÍÊÇ´Ó´óµ½Ğ¡ÅÅĞò
+				//åå‘æ’åˆ—ï¼Œä¹Ÿå°±æ˜¯ä»å¤§åˆ°å°æ’åº
 				NavigableSet<Integer> treeIndelInfo = hashIndelInfo.get(i).descendingSet();
 				for (Integer integer : treeIndelInfo) {
 					if (integer > 0) {
@@ -341,7 +341,7 @@ public class ArrayOperate {
 					}
 				}
 			}
-			//Èç¹ûÃ»ÓĞÌø¹ı
+			//å¦‚æœæ²¡æœ‰è·³è¿‡
 			if (!flagDel) {
 				result[resultNum] = Aarray[i];
 				resultNum++ ;
@@ -355,11 +355,11 @@ public class ArrayOperate {
 		return result;
 	}
 	/**
-	 * ÓÃhashµÄ·½·¨À´ºÏ²¢Á½¸öList<br>
-	 * ¸ø¶¨lsA¡¢lsB<br>
-	 * ÆäÖĞlsAµÄµÚAcolNumÁĞÃ»ÓĞÖØ¸´£¨´Ó0¿ªÊ¼¼ÆËã£©<br>
-	 * ½«lsAµÄµÚAcolNum£¨´Ó0¿ªÊ¼¼ÆËã£©ºÍlsBµÄµÚBcolNum£¨´Ó0¿ªÊ¼¼ÆËã£©½øĞĞ±È½Ï<br>
-	 * Èç¹ûÏàÍ¬£¬Ôò½«AcolNumÈ«²¿Ìí¼Óµ½lsBºóÃæ£¬×îºó·µ»ØÌí¼ÓºÃµÄlsA<br>
+	 * ç”¨hashçš„æ–¹æ³•æ¥åˆå¹¶ä¸¤ä¸ªList<br>
+	 * ç»™å®šlsAã€lsB<br>
+	 * å…¶ä¸­lsAçš„ç¬¬AcolNumåˆ—æ²¡æœ‰é‡å¤ï¼ˆä»0å¼€å§‹è®¡ç®—ï¼‰<br>
+	 * å°†lsAçš„ç¬¬AcolNumï¼ˆä»0å¼€å§‹è®¡ç®—ï¼‰å’ŒlsBçš„ç¬¬BcolNumï¼ˆä»0å¼€å§‹è®¡ç®—ï¼‰è¿›è¡Œæ¯”è¾ƒ<br>
+	 * å¦‚æœç›¸åŒï¼Œåˆ™å°†AcolNumå…¨éƒ¨æ·»åŠ åˆ°lsBåé¢ï¼Œæœ€åè¿”å›æ·»åŠ å¥½çš„lsA<br>
 	 * @return
 	 */
 	public static ArrayList<String[]> combArrayListHash(List<String[]> lsA ,List<String[]> lsB, int AcolNum, int BcolNum) 
@@ -385,10 +385,10 @@ public class ArrayOperate {
 	
 
 	/**
-	 * ÓÃÖ®Ç°Òª¿´Çå³şÖ¸¶¨µÄcolumnÊÇ·ñÔÚlsÄÚ <br>
-	 * ¸ø¶¨List£¬»ñµÃÆäÖĞÖ¸¶¨µÄÄ³¼¸ÁĞ,»ñµÃµÄÄ³¼¸ÁĞ°´ÕÕÖ¸¶¨µÄÁĞ½øĞĞÅÅÁĞ,<b>´Ó0¿ªÊ¼¼ÆÊı</b><br>
-	 * »òÕßÈ¥³ıÖ¸¶¨µÄÄ³¼¸ÁĞ<br>
-	 * ÓÃÒ»¸öboolean²ÎÊıÀ´Ö¸¶¨<br>
+	 * ç”¨ä¹‹å‰è¦çœ‹æ¸…æ¥šæŒ‡å®šçš„columnæ˜¯å¦åœ¨lså†… <br>
+	 * ç»™å®šListï¼Œè·å¾—å…¶ä¸­æŒ‡å®šçš„æŸå‡ åˆ—,è·å¾—çš„æŸå‡ åˆ—æŒ‰ç…§æŒ‡å®šçš„åˆ—è¿›è¡Œæ’åˆ—,<b>ä»0å¼€å§‹è®¡æ•°</b><br>
+	 * æˆ–è€…å»é™¤æŒ‡å®šçš„æŸå‡ åˆ—<br>
+	 * ç”¨ä¸€ä¸ªbooleanå‚æ•°æ¥æŒ‡å®š<br>
 	 * @return
 	 */
 	public static ArrayList<String[]> listCope(ArrayList<String[]> ls, int[] colNum, boolean include) 
@@ -402,10 +402,10 @@ public class ArrayOperate {
 				hashCol.add(colNum[i]);
 			}
 			int[] colNumResult = new int[ls.get(0).length - colNum.length]; 
-			int k=0;//¸ø×îºó½á¹û¼ÆÊı£¬Ò²¾ÍÊÇĞèÒªÄÄ¼¸ÁĞ
-			//±éÀúËùÓĞÁĞÊı
+			int k=0;//ç»™æœ€åç»“æœè®¡æ•°ï¼Œä¹Ÿå°±æ˜¯éœ€è¦å“ªå‡ åˆ—
+			//éå†æ‰€æœ‰åˆ—æ•°
 			for (int i = 0; i < ls.get(0).length; i++) {
-				//Èç¹û¸ÃÁĞÔÚÈ¥³ıÏîÖĞ£¬ÔòÌø¹ı
+				//å¦‚æœè¯¥åˆ—åœ¨å»é™¤é¡¹ä¸­ï¼Œåˆ™è·³è¿‡
 				if (hashCol.contains(i))
 				{
 					continue;
@@ -416,7 +416,7 @@ public class ArrayOperate {
 		}
 	}
 	/**
-	 * ¸ø¶¨List£¬»ñµÃÆäÖĞÖ¸¶¨µÄÄ³¼¸ÁĞ,»ñµÃµÄÄ³¼¸ÁĞ°´ÕÕÖ¸¶¨µÄÁĞ½øĞĞÅÅÁĞ£¬´Ó0¿ªÊ¼¼ÇÊı<br>
+	 * ç»™å®šListï¼Œè·å¾—å…¶ä¸­æŒ‡å®šçš„æŸå‡ åˆ—,è·å¾—çš„æŸå‡ åˆ—æŒ‰ç…§æŒ‡å®šçš„åˆ—è¿›è¡Œæ’åˆ—ï¼Œä»0å¼€å§‹è®°æ•°<br>
 	 * @param ls
 	 * @param colNum
 	 * @return
@@ -435,7 +435,7 @@ public class ArrayOperate {
 	
 	
 	/**
-	 * Á½¸ölistÈ¡½»¼¯,×¢ÒâlsAºÍlsBÀïÃæ²»ÒªÓĞÖØ¸´Ïî
+	 * ä¸¤ä¸ªlistå–äº¤é›†,æ³¨æ„lsAå’ŒlsBé‡Œé¢ä¸è¦æœ‰é‡å¤é¡¹
 	 * @return
 	 */
 	public static ArrayList<String> getCoLs(List<String>  lsA, List<String> lsB) {
@@ -453,14 +453,14 @@ public class ArrayOperate {
 	}
 	
 	/**
-	 * ¸ø¶¨Ò»¸öÊı×é£¬ÒÔ¼°ËüµÄÖĞµã×ø±ê£¬ºÍÉÏÓÎÏÂÓÎ×ø±ê£¬ÇĞ¸î»òÕßÀ©³ä¸ÃÊı×é
-	 * @param array Êı×é
-	 * @param center ÖĞĞÄÎ»ÖÃ£¬Æ©Èç2µÄ»°£¬¾ÍÊÇ¸ÃÊı×éµÄµÚ¶şÎ»
-	 * @param up ÖĞĞÄÉÏÃæµÄÔªËØ¸öÊı
-	 * @param down ÖĞĞÄÏÂÃæµÄÔªËØ¸öÊı
-	 * @param thisdefault Ä¬ÈÏÖµ£¬¾ÍÊÇÃ»ÓĞµÄµØ·½ÓÃÊ²Ã´Ìî³ä
+	 * ç»™å®šä¸€ä¸ªæ•°ç»„ï¼Œä»¥åŠå®ƒçš„ä¸­ç‚¹åæ ‡ï¼Œå’Œä¸Šæ¸¸ä¸‹æ¸¸åæ ‡ï¼Œåˆ‡å‰²æˆ–è€…æ‰©å……è¯¥æ•°ç»„
+	 * @param array æ•°ç»„
+	 * @param center ä¸­å¿ƒä½ç½®ï¼Œè­¬å¦‚2çš„è¯ï¼Œå°±æ˜¯è¯¥æ•°ç»„çš„ç¬¬äºŒä½
+	 * @param up ä¸­å¿ƒä¸Šé¢çš„å…ƒç´ ä¸ªæ•°
+	 * @param down ä¸­å¿ƒä¸‹é¢çš„å…ƒç´ ä¸ªæ•°
+	 * @param thisdefault é»˜è®¤å€¼ï¼Œå°±æ˜¯æ²¡æœ‰çš„åœ°æ–¹ç”¨ä»€ä¹ˆå¡«å……
 	 * @return
-	 * ×îºó·µ»Ø³¤¶ÈÎª up+1+downµÄarray
+	 * æœ€åè¿”å›é•¿åº¦ä¸º up+1+downçš„array
 	 */
 	public static double[] cuttArray(double[] array, int center, int up, int down, double thisdefault) {
 		center--;
@@ -488,7 +488,7 @@ public class ArrayOperate {
 	}
 	
 	/**
-	 * µßµ¹Êı×é£¬Ö±½ÓĞÔ½«´«ÈëµÄÊı×éµ¹ÖÃ£¬²»·µ»Ø¶«Î÷
+	 * é¢ å€’æ•°ç»„ï¼Œç›´æ¥æ€§å°†ä¼ å…¥çš„æ•°ç»„å€’ç½®ï¼Œä¸è¿”å›ä¸œè¥¿
 	 * @param array
 	 */
 	public static void convertArray(int[] array) {
@@ -502,7 +502,7 @@ public class ArrayOperate {
 	}
 	
 	/**
-	 * µßµ¹Êı×é£¬Ö±½ÓĞÔ½«´«ÈëµÄÊı×éµ¹ÖÃ£¬²»·µ»Ø¶«Î÷
+	 * é¢ å€’æ•°ç»„ï¼Œç›´æ¥æ€§å°†ä¼ å…¥çš„æ•°ç»„å€’ç½®ï¼Œä¸è¿”å›ä¸œè¥¿
 	 * @param array
 	 */
 	public static void convertArray(double[] array) {
@@ -516,7 +516,7 @@ public class ArrayOperate {
 	}
 	
 	/**
-	 * µßµ¹Êı×é£¬Ö±½ÓĞÔ½«´«ÈëµÄÊı×éµ¹ÖÃ£¬²»·µ»Ø¶«Î÷
+	 * é¢ å€’æ•°ç»„ï¼Œç›´æ¥æ€§å°†ä¼ å…¥çš„æ•°ç»„å€’ç½®ï¼Œä¸è¿”å›ä¸œè¥¿
 	 * @param array
 	 */
 	public static<T> void convertArray(T[] array) {
@@ -529,11 +529,11 @@ public class ArrayOperate {
 		}
 	}
 	/**
-	 * ½«hashmapµÄkeyÌáÈ¡³öÀ´
+	 * å°†hashmapçš„keyæå–å‡ºæ¥
 	 * @param <K> key
 	 * @param <V> value
 	 * @param hashMap
-	 * 	 * Ã»ÓĞ·µ»Ønull
+	 * 	 * æ²¡æœ‰è¿”å›null
 	 */
 	public static<K,V> ArrayList<K> getArrayListKey(Map<K, V> hashMap) {
 		if (hashMap == null || hashMap.size() == 0) {
@@ -548,11 +548,11 @@ public class ArrayOperate {
 		return lsResult;
 	}
 	/**
-	 * ½«hashmapµÄvalueÌáÈ¡³öÀ´
+	 * å°†hashmapçš„valueæå–å‡ºæ¥
 	 * @param <K> key
 	 * @param <V> value
 	 * @param hashMap
-	 * 	 * Ã»ÓĞ·µ»Ø ¿ÕµÄ list
+	 * 	 * æ²¡æœ‰è¿”å› ç©ºçš„ list
 	 */
 	public static<K,V> ArrayList<V> getArrayListValue(Map<K, V> hashMap) {
 		if (hashMap == null || hashMap.size() == 0) {
@@ -567,10 +567,10 @@ public class ArrayOperate {
 	}
 	
 	/**
-	 * ½«hashsetµÄvalueÌáÈ¡³öÀ´
+	 * å°†hashsetçš„valueæå–å‡ºæ¥
 	 * @param <K> key
 	 * @param hashset
-	 * Ã»ÓĞ·µ»ØÒ»¸ö¿ÕµÄarraylist
+	 * æ²¡æœ‰è¿”å›ä¸€ä¸ªç©ºçš„arraylist
 	 */
 	public static<K> ArrayList<K> getArrayListValue(Set<K> hashset) {
 		if (hashset == null || hashset.size() == 0) {
@@ -586,7 +586,7 @@ public class ArrayOperate {
 	}
 	
 	/**
-	 * ¸´ÖÆÊı×é
+	 * å¤åˆ¶æ•°ç»„
 	 * @param <T>
 	 * @param array
 	 * @return
@@ -596,12 +596,12 @@ public class ArrayOperate {
 	}
 	/**
 	 * using {@link #indelElement(Object[], int[])} replace<br>
-	 * ¸´ÖÆÊı×é
+	 * å¤åˆ¶æ•°ç»„
 	 * @param <T>
 	 * @param array
-	 * @param Length ½«arrayµÄLengthÎ»¸´ÖÆ¸ø½á¹ûarray£¬Èç¹ûlength > array.length£¬ÔòÑÓ³¤½á¹ûarray
+	 * @param Length å°†arrayçš„Lengthä½å¤åˆ¶ç»™ç»“æœarrayï¼Œå¦‚æœlength > array.lengthï¼Œåˆ™å»¶é•¿ç»“æœarray
 	 * @return
-	 * ×îºóÉú³ÉLength³¤¶ÈµÄarray
+	 * æœ€åç”ŸæˆLengthé•¿åº¦çš„array
 	 */
 	public static<T> T[] copyArray(T[] array, int Length) {
 		T[] result=(T[]) Array.newInstance(array.getClass().getComponentType(), Length);
@@ -614,13 +614,13 @@ public class ArrayOperate {
 		return result;
 	}
 	/**
-	 * ¸´ÖÆÊı×é
+	 * å¤åˆ¶æ•°ç»„
 	 * @param <T>
 	 * @param array
-	 * @param Length ½«arrayµÄLengthÎ»¸´ÖÆ¸ø½á¹ûarray£¬Èç¹ûLength > array.length£¬ÔòÑÓ³¤½á¹ûarray
-	 * @param ×îºó¸´ÖÆ¿¿Ç°»¹ÊÇ¿¿ºó£¬¿¿Ç° infoXXX£¬¿¿ºóXXXinfo
+	 * @param Length å°†arrayçš„Lengthä½å¤åˆ¶ç»™ç»“æœarrayï¼Œå¦‚æœLength > array.lengthï¼Œåˆ™å»¶é•¿ç»“æœarray
+	 * @param æœ€åå¤åˆ¶é å‰è¿˜æ˜¯é åï¼Œé å‰ infoXXXï¼Œé åXXXinfo
 	 * @return
-	 * ×îºóÉú³ÉLength³¤¶ÈµÄarray
+	 * æœ€åç”ŸæˆLengthé•¿åº¦çš„array
 	 */
 	public static<T> T[] copyArray(T[] array, int Length,boolean start) {
 		T[] result=(T[]) Array.newInstance(array.getClass().getComponentType(), Length);
@@ -646,21 +646,21 @@ public class ArrayOperate {
 		return result;
 	}
 	/**
-	 * ±È½ÏÁ½¸öÇøÓòÖ®¼äµÄoverlapµÄÊıÖµºÍ±ÈÀı
-	 * Êı×é±ØĞëÖ»ÓĞÁ½¸öÖµ£¬²¢ÇÒÊÇ±ÕÇø¼ä
-		 * ½á¹ûĞÅÏ¢£º
-		 * 0£ºÎ»ÖÃÇé¿ö,×Ü¹²6ÖÖÇé¿ö£¬ 0£ºÒ»ÖÂ 1£ºÊı×é1ÔÚÇ°  2£ºÊı×é2ÔÚÇ° <br>
-		 * 1£ºoverlapµÄbp<br>
-		 * 2£ºoverlapÕ¼1µÄ±ÈÖµ<br>
-		 * 3£ºoverlapÕ¼2µÄ±ÈÖµ<br>
+	 * æ¯”è¾ƒä¸¤ä¸ªåŒºåŸŸä¹‹é—´çš„overlapçš„æ•°å€¼å’Œæ¯”ä¾‹
+	 * æ•°ç»„å¿…é¡»åªæœ‰ä¸¤ä¸ªå€¼ï¼Œå¹¶ä¸”æ˜¯é—­åŒºé—´
+		 * ç»“æœä¿¡æ¯ï¼š
+		 * 0ï¼šä½ç½®æƒ…å†µ,æ€»å…±6ç§æƒ…å†µï¼Œ 0ï¼šä¸€è‡´ 1ï¼šæ•°ç»„1åœ¨å‰  2ï¼šæ•°ç»„2åœ¨å‰ <br>
+		 * 1ï¼šoverlapçš„bp<br>
+		 * 2ï¼šoverlapå 1çš„æ¯”å€¼<br>
+		 * 3ï¼šoverlapå 2çš„æ¯”å€¼<br>
 		 */
 	public static double[] cmpArray(double[] region1, double[] region2) {
 		/**
-		 * ½á¹ûĞÅÏ¢£º
-		 * 0£ºÎ»ÖÃÇé¿ö,×Ü¹²6ÖÖÇé¿ö£¬ 0£ºÒ»ÖÂ 1£ºÊı×é1ÔÚÇ°  2£ºÊı×é2ÔÚÇ°
-		 * 1£ºoverlapµÄbp
-		 * 2£ºoverlapÕ¼1µÄ±ÈÖµ
-		 * 3£ºoverlapÕ¼2µÄ±ÈÖµ
+		 * ç»“æœä¿¡æ¯ï¼š
+		 * 0ï¼šä½ç½®æƒ…å†µ,æ€»å…±6ç§æƒ…å†µï¼Œ 0ï¼šä¸€è‡´ 1ï¼šæ•°ç»„1åœ¨å‰  2ï¼šæ•°ç»„2åœ¨å‰
+		 * 1ï¼šoverlapçš„bp
+		 * 2ï¼šoverlapå 1çš„æ¯”å€¼
+		 * 3ï¼šoverlapå 2çš„æ¯”å€¼
 		 */
 		double[] result = new double[4];
 
@@ -739,7 +739,7 @@ public class ArrayOperate {
 			result[3] = 0;
 		}
 		else {
-			logger.error("³öÏÖÎ´Öª´íÎó£¬²»¿ÉÄÜ´æÔÚµÄregionÌØÕ÷£º"+ region1m[0] + " " +region1m[1 ] + "     " + region2m[0] + " "+ region2m[1]);
+			logger.error("å‡ºç°æœªçŸ¥é”™è¯¯ï¼Œä¸å¯èƒ½å­˜åœ¨çš„regionç‰¹å¾ï¼š"+ region1m[0] + " " +region1m[1 ] + "     " + region2m[0] + " "+ region2m[1]);
 			result[0] = -1;
 			result[1] = -1;
 			result[2] = -1;
@@ -750,20 +750,20 @@ public class ArrayOperate {
 	}
 
 	/**
-	 * ±È½ÏµÄÄÚÈİºÍcmpArrayÒ»Ä£Ò»Ñù£¬Ö»²»¹ı±È½ÏµÄÊ±ºò½«´óĞ¡·´¹ıÀ´¶øÒÑ
-	 * ´óµÄÔÚÇ°Ğ¡µÄÔÚºó
-	 * ±È½ÏÁ½¸öÇøÓòÖ®¼äµÄoverlapµÄÊıÖµºÍ±ÈÀı
-	 * Êı×é±ØĞëÖ»ÓĞÁ½¸öÖµ
+	 * æ¯”è¾ƒçš„å†…å®¹å’ŒcmpArrayä¸€æ¨¡ä¸€æ ·ï¼Œåªä¸è¿‡æ¯”è¾ƒçš„æ—¶å€™å°†å¤§å°åè¿‡æ¥è€Œå·²
+	 * å¤§çš„åœ¨å‰å°çš„åœ¨å
+	 * æ¯”è¾ƒä¸¤ä¸ªåŒºåŸŸä¹‹é—´çš„overlapçš„æ•°å€¼å’Œæ¯”ä¾‹
+	 * æ•°ç»„å¿…é¡»åªæœ‰ä¸¤ä¸ªå€¼
 	 * 
 	 */
 	public static double[] cmpArrayTrans(double[] region1, double[] region2) {
 		/**
-		 * ½á¹ûĞÅÏ¢£º
-		 * 0£ºÎ»ÖÃÇé¿ö£¬ 0£ºÒ»ÖÂ 1£ºÊı×é1ÔÚÇ°  2£ºÊı×é2ÔÚÇ°
-		 * 1£ºoverlapµÄbp
-		 * 2£ºoverlapÕ¼1µÄ±ÈÖµ
-		 * 3£ºoverlapÕ¼2µÄ±ÈÖµ
-		 * 4£º
+		 * ç»“æœä¿¡æ¯ï¼š
+		 * 0ï¼šä½ç½®æƒ…å†µï¼Œ 0ï¼šä¸€è‡´ 1ï¼šæ•°ç»„1åœ¨å‰  2ï¼šæ•°ç»„2åœ¨å‰
+		 * 1ï¼šoverlapçš„bp
+		 * 2ï¼šoverlapå 1çš„æ¯”å€¼
+		 * 3ï¼šoverlapå 2çš„æ¯”å€¼
+		 * 4ï¼š
 		 */
 		double[] result = new double[3];
 
@@ -837,7 +837,7 @@ public class ArrayOperate {
 			result[3] = 0;
 		}
 		else {
-			logger.error("³öÏÖÎ´Öª´íÎó£¬²»¿ÉÄÜ´æÔÚµÄregionÌØÕ÷£º"+ region1m[0] + " " +region1m[1 ] + "     " + region2m[0] + " "+ region2m[1]);
+			logger.error("å‡ºç°æœªçŸ¥é”™è¯¯ï¼Œä¸å¯èƒ½å­˜åœ¨çš„regionç‰¹å¾ï¼š"+ region1m[0] + " " +region1m[1 ] + "     " + region2m[0] + " "+ region2m[1]);
 			result[0] = -1;
 			result[1] = -1;
 			result[2] = -1;

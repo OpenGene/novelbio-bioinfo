@@ -12,7 +12,7 @@ import com.novelbio.database.model.modgeneid.GeneType;
 
 import junit.framework.TestCase;
 /**
- * 首先设定
+ * 棣栧厛璁惧畾
 	int boundMaxFalseGapBp = 1;
 
 	int boundMaxFalseGapBpTail = 1;
@@ -52,7 +52,7 @@ public class TestGffGeneCluster extends TestCase{
 	}
 	
 	/**
-	 * 装载gffGeneIsoInfoRefCis和gffGeneIsoInfoThisCis
+	 * 瑁呰浇gffGeneIsoInfoRefCis鍜実ffGeneIsoInfoThisCis
 	 */
 	private void assertCisIsoMid() {
 		boolean cis = true;
@@ -84,7 +84,7 @@ public class TestGffGeneCluster extends TestCase{
 		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 90, 100), gffGeneIsoInfoResult.get(4));
 	}
 	/**
-	 * 装载gffGeneIsoInfoRefCis和gffGeneIsoInfoThisCis
+	 * 瑁呰浇gffGeneIsoInfoRefCis鍜実ffGeneIsoInfoThisCis
 	 */
 	private void assertCisIsoNull() {
 		boolean cis = true;
@@ -116,7 +116,7 @@ public class TestGffGeneCluster extends TestCase{
 		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 90, 100), gffGeneIsoInfoResult.get(4));
 	}
 	/**
-	 * 装载gffGeneIsoInfoRefCis和gffGeneIsoInfoThisCis
+	 * 瑁呰浇gffGeneIsoInfoRefCis鍜実ffGeneIsoInfoThisCis
 	 */
 	private void assertCisIsoHeadHomo() {
 		boolean cis = true;
@@ -204,7 +204,7 @@ public class TestGffGeneCluster extends TestCase{
 		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 90, 100), gffGeneIsoInfoResult.get(4));
 	}
 	/**
-	 * 装载gffGeneIsoInfoRefCis和gffGeneIsoInfoThisCis
+	 * 瑁呰浇gffGeneIsoInfoRefCis鍜実ffGeneIsoInfoThisCis
 	 */
 	private void assertCisIsoHead2() {
 		boolean cis = true;
@@ -267,7 +267,7 @@ public class TestGffGeneCluster extends TestCase{
 		
 	}
 	/**
-	 * 装载gffGeneIsoInfoRefCis和gffGeneIsoInfoThisCis
+	 * 瑁呰浇gffGeneIsoInfoRefCis鍜実ffGeneIsoInfoThisCis
 	 */
 	private void assertCisIsoHead() {
 		boolean cis = true;
@@ -351,7 +351,7 @@ public class TestGffGeneCluster extends TestCase{
 	
 	
 	/**
-	 * 装载gffGeneIsoInfoRefTrans和gffGeneIsoInfoThisTrans
+	 * 瑁呰浇gffGeneIsoInfoRefTrans鍜実ffGeneIsoInfoThisTrans
 	 */
 	private void assertTransIsoMid() {
 		boolean cis = false;
@@ -448,7 +448,7 @@ public class TestGffGeneCluster extends TestCase{
 		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 10, 20), gffGeneIsoInfoResult.get(4));
 	}
 	/**
-	 * 装载gffGeneIsoInfoRefTrans和gffGeneIsoInfoThisTrans
+	 * 瑁呰浇gffGeneIsoInfoRefTrans鍜実ffGeneIsoInfoThisTrans
 	 */
 	private void assertTransIsoHeadHomo() {
 		boolean cis = false;
@@ -543,7 +543,7 @@ public class TestGffGeneCluster extends TestCase{
 	}
 	
 	/**
-	 * 装载gffGeneIsoInfoRefTrans和gffGeneIsoInfoThisTrans
+	 * 瑁呰浇gffGeneIsoInfoRefTrans鍜実ffGeneIsoInfoThisTrans
 	 */
 	private void assertTransIsoHead() {
 		boolean cis = false;

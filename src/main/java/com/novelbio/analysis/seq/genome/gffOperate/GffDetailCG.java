@@ -3,59 +3,59 @@ package com.novelbio.analysis.seq.genome.gffOperate;
 import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
 
 /**
- * Õë¶ÔUCSCµÄCpGallÎÄ¼şÉè¼ÆµÄDetaiĞÅÏ¢
- * @°üº¬³¬ÀàĞÅÏ¢
- * CpGÃû locString<br>
- * CpGÆğµã numberstart<br>
- * CpGÖÕµã numberend<br>
- * CpGËùÔÚÈ¾É«Ìå±àºÅ ChrID<br>
- * CpG·½Ïò cis5to3£¬ÎÄ¼şÄÚÃ»ÓĞCpG·½Ïò£¬ËùÒÔ·½ÏòÍ¨Í¨Îªtrue
+ * é’ˆå¯¹UCSCçš„CpGallæ–‡ä»¶è®¾è®¡çš„Detaiä¿¡æ¯
+ * @åŒ…å«è¶…ç±»ä¿¡æ¯
+ * CpGå locString<br>
+ * CpGèµ·ç‚¹ numberstart<br>
+ * CpGç»ˆç‚¹ numberend<br>
+ * CpGæ‰€åœ¨æŸ“è‰²ä½“ç¼–å· ChrID<br>
+ * CpGæ–¹å‘ cis5to3ï¼Œæ–‡ä»¶å†…æ²¡æœ‰CpGæ–¹å‘ï¼Œæ‰€ä»¥æ–¹å‘é€šé€šä¸ºtrue
  * 
- * @°üº¬CpGÌØÓĞĞÅÏ¢
- * CpG³¤¶È
- * CpGÊıÁ¿
- * GCÊıÁ¿
- * CpG°Ù·Ö±È
- * GC°Ù·Ö±È
- * CpG IslandÏÔÖøĞÔ
+ * @åŒ…å«CpGç‰¹æœ‰ä¿¡æ¯
+ * CpGé•¿åº¦
+ * CpGæ•°é‡
+ * GCæ•°é‡
+ * CpGç™¾åˆ†æ¯”
+ * GCç™¾åˆ†æ¯”
+ * CpG Islandæ˜¾è‘—æ€§
  * 
  * 
  * @author zong0jie
  *
  */
 public class GffDetailCG extends ListDetailAbs {
-	/** CpG³¤¶È  */
+	/** CpGé•¿åº¦  */
 	protected int lengthCpG=0;
-	/** CpGÊıÁ¿ */
+	/** CpGæ•°é‡ */
 	protected int numCpG=0;
-	/** GCÊıÁ¿  */
+	/** GCæ•°é‡  */
 	protected int numGC=0;
-	/**  CpG°Ù·Ö±È */
+	/**  CpGç™¾åˆ†æ¯” */
 	protected double perCpG=0;
-	/** GC°Ù·Ö±È */
+	/** GCç™¾åˆ†æ¯” */
 	protected double perGC=0;
-	/** ÏÔÖøĞÔ */
+	/** æ˜¾è‘—æ€§ */
 	protected double obsExp=0;
 	
 	public GffDetailCG(String chrID, String locString, boolean cis5to3) {
 		super(chrID, locString, cis5to3);
 	}
 	/**
-	 * CpG³¤¶È
+	 * CpGé•¿åº¦
 	 * @return
 	 */
 	public int getLength() {
 		return lengthCpG;
 	}
 	/**
-	 * GCÊıÁ¿
+	 * GCæ•°é‡
 	 * @return
 	 */
 	public int getNumCG() {
 		return numGC;
 	}
 	/**
-	 * GCÊıÁ¿
+	 * GCæ•°é‡
 	 * @return
 	 */
 	public double getPerCpG() {

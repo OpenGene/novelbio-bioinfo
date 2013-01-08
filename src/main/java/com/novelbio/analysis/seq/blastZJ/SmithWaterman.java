@@ -9,7 +9,7 @@ import com.novelbio.analysis.seq.fasta.SeqFasta;
 public class SmithWaterman extends SequenceAlignment {
 	private Cell highScoreCell;
 	double gapDegrade = 1.2;
-	/** 是否优先拼接尾部 */
+	/** 鏄惁浼樺厛鎷兼帴灏鹃儴 */
 	boolean isTailPriority = false;
 	
 	/**
@@ -21,7 +21,7 @@ public class SmithWaterman extends SequenceAlignment {
 	}
 
 	/**
-	* @param gapDegrade 空位罚分的递减，按照指数下降的递减，底数为gapDegrade
+	* @param gapDegrade 绌轰綅缃氬垎鐨勯�掑噺锛屾寜鐓ф寚鏁颁笅闄嶇殑閫掑噺锛屽簳鏁颁负gapDegrade
 	*/
 	public void setGapDegrade(double gapDegrade) {
 		this.gapDegrade = gapDegrade;
@@ -30,7 +30,7 @@ public class SmithWaterman extends SequenceAlignment {
 		super.initialize();
 		highScoreCell = scoreTable[0][0];
 	}
-	/** 设定优先拼接尾部 */
+	/** 璁惧畾浼樺厛鎷兼帴灏鹃儴 */
 	public void setTailPriroity() {
 		isTailPriority = true;
 	}
@@ -79,7 +79,7 @@ public class SmithWaterman extends SequenceAlignment {
 			}
 		}
 		else {
-		      //将所有的分数都乘以一个梯度，也就是靠近序列尾部的权重会高，由此来增加
+		      //灏嗘墍鏈夌殑鍒嗘暟閮戒箻浠ヤ竴涓搴︼紝涔熷氨鏄潬杩戝簭鍒楀熬閮ㄧ殑鏉冮噸浼氶珮锛岀敱姝ゆ潵澧炲姞
 		      if (scoreCell.getScore()*scoreCell.getGradAllScore(sequence1.length(), sequence2.length(), 0.4) 
 		    		  > 
 		      highScoreCell.getScore()*highScoreCell.getGradAllScore(sequence1.length(), sequence2.length(), 0.4)) 
@@ -94,7 +94,7 @@ public class SmithWaterman extends SequenceAlignment {
 	protected boolean traceBackIsNotDone(Cell currentCell) {
 		return currentCell.getScore() != 0;
 	}
-	/** 也就是最高分数的cell */
+	/** 涔熷氨鏄渶楂樺垎鏁扮殑cell */
 	@Override
 	public Cell getTracebackStartingCell() {
 		return highScoreCell;

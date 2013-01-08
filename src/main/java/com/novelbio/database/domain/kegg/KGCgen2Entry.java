@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 
 /**
- * ÓÃNCBIID¶ÔÏó²éÕÒ IDgen2Keg¡¢IDkeg2Ko¡¢entryÈıÕÅ±í
+ * ç”¨NCBIIDå¯¹è±¡æŸ¥æ‰¾ IDgen2Kegã€IDkeg2Koã€entryä¸‰å¼ è¡¨
  * @author zong0jie
  *
  */

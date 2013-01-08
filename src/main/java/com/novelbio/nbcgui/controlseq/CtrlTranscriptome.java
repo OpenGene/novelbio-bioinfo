@@ -1,6 +1,6 @@
 package com.novelbio.nbcgui.controlseq;
 /**
- * �ؽ�ת¼��
+ * 重建转录本
  * @author zong0jie
  * 
  */
