@@ -21,7 +21,7 @@ public class RiceID{
 	String gffTIGR = "";
 	String rapDBoutID = "";
 	String tigrDBoutID = "";
-	String                                                                                                                                                              = "";
+	String rap2MSU = "";
 	String tigrGoSlim = "";
 	
 	public void setDownLoadPath(String downLoadPath) {
