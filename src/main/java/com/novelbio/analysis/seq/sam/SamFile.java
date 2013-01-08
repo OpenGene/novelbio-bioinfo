@@ -27,6 +27,7 @@ import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.FormatSeq;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
@@ -274,8 +275,23 @@ public class SamFile implements AlignSeq {
 	public SamRecord getReads(String ReadName) {
 		return samReader.getReads(ReadName);
 	}
+	
+	/** 默认不排序 */
 	public SAMFileHeader getHeader() {
-		return samReader.getSamFileHead();
+		return getHeader(false);
+	}
+	
+	/** 是否需要排序 */
+	public SAMFileHeader getHeader(boolean isNeedSort) {
+		SAMFileHeader samFileHeader = samReader.getSamFileHead();
+		if (isNeedSort) {
+			samFileHeader.setSortOrder(SAMFileHeader.SortOrder.coordinate);
+			PathDetail.setTmpDir(FileOperate.getParentPathName(getFileName()));
+		} else {
+			samFileHeader.setSortOrder(SAMFileHeader.SortOrder.unsorted);
+		}
+		
+		return samFileHeader;
 	}
 	/**
 	 * 提取sam文件中没有mapping上的reads，将其保存为单个fastq文件，序列质量默认为中等
@@ -604,6 +620,7 @@ public class SamFile implements AlignSeq {
 		//TODO
 		return null;
 	}
+	/** 注意如果外面samRecord修改了chrID，那么这个samRecord的head也要重新设定 */
 	public void writeSamRecord(SamRecord samRecord) {
 		samWriter.writeToSamFileln(samRecord);
 	}

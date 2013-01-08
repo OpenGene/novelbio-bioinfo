@@ -505,7 +505,7 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	 * 则返回false
 	 */
 	public boolean prepareAlignRecord(AlignRecord alignRecordFirst) {
-		mapReadsAddAlignRecord = new MapReadsAddAlignRecord(this, fold);
+		mapReadsAddAlignRecord = new MapReadsAddAlignRecord(this);
 		if (startCod > 0 && alignRecordFirst.isCis5to3() == null) {
 			logger.error("不能设定startCod，因为没有设定方向列");
 			return false;
@@ -534,9 +534,9 @@ class MapReadsAddAlignRecord {
 	ChrMapReadsInfo chrMapReadsInfo = null;
 	int[] tmpOld = new int[2];//更新 tmpOld
 	int fold;
-	public MapReadsAddAlignRecord(MapReads mapReads, int fold) {
+	public MapReadsAddAlignRecord(MapReads mapReads) {
 		this.mapReads = mapReads;
-		this.fold = fold;
+		this.fold = mapReads.fold;
 	}
 	
 	public void addAlignRecord(AlignRecord alignRecord) {

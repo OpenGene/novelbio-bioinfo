@@ -317,11 +317,9 @@ public class FileOperate {
 	 *            文件 wfese 认作 "wfese"和""<br>
 	 * @return 返回包含目标文件全名的ArrayList
 	 */
-	public static ArrayList<String> getFoldFileNameLs(String filePath,
-			String filename, String suffix) {
+	public static ArrayList<String> getFoldFileNameLs(String filePath, String filename, String suffix) {
 		filePath = removeSep(filePath);
-		if (filename == null || filename.equals("*")) {// ||
-														// filename.equals(""))
+		if (filename == null || filename.equals("*")) {
 			filename = ".*";
 		}
 		if (suffix.equals("*")) {
@@ -333,10 +331,15 @@ public class FileOperate {
 		if (!file.exists()) {// 没有文件，则返回空
 			return null;
 		}
+		// 开始判断
+		PatternOperate patName = new PatternOperate(filename, false);
+		// 开始判断
+		PatternOperate patSuffix = new PatternOperate(suffix, false);
+		
 		// 如果只是文件则返回文件名
 		if (!file.isDirectory()) { // 获取文件名与后缀名
 			String fileName = file.getName();
-			if (isNeedFile(fileName, filename, suffix)) {
+			if (isNeedFile(patName, patSuffix, fileName, filename, suffix)) {
 				ListFilename.add(fileName);
 				return ListFilename;
 			}
@@ -347,7 +350,7 @@ public class FileOperate {
 			System.out.println("stop");
 		}
 		for (int i = 0; i < filenameraw.length; i++) {
-			if (isNeedFile(filenameraw[i], filename, suffix)) {
+			if (isNeedFile(patName, patSuffix, filenameraw[i], filename, suffix)) {
 				ListFilename.add(addSep(filePath) + filenameraw[i]);
 			}
 		}
@@ -372,12 +375,10 @@ public class FileOperate {
 	 *            文件 wfese 认作 "wfese"和""<br>
 	 * @return
 	 */
-	private static boolean isNeedFile(String fileName, String regxFilename,
-			String regxSuffix) {
+	private static boolean isNeedFile(PatternOperate patName, PatternOperate patSuffix, 
+			String fileName, String regxFilename, String regxSuffix) {
 		String[] fileNameSep = getFileNameSep(fileName);
-		// 开始判断
-		if (fileNameSep[0].matches(regxFilename)
-				&& fileNameSep[1].matches(regxSuffix)) {
+		if (patName.getPatFirst(fileNameSep[0]) != null && patSuffix.getPatFirst(fileNameSep[1]) != null) {
 			return true;
 		}
 		return false;

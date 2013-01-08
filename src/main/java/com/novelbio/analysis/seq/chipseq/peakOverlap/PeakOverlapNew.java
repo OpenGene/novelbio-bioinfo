@@ -2,7 +2,6 @@ package com.novelbio.analysis.seq.chipseq.peakOverlap;
 
 import java.util.ArrayList;
 
-import com.novelbio.analysis.seq.chipseq.repeatMask.RepeatMask;
 import com.novelbio.analysis.seq.genome.GffPeakOverLap;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 

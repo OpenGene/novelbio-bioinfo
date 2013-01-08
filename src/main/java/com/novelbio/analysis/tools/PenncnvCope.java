@@ -106,7 +106,7 @@ public class PenncnvCope {
 	 */
 	private void setLoc(String chrID, int cod1, int cod2, String sampleName, String cnvstate) {
 		GffCodGeneDU gffCodGeneDU = gffHashGene.searchLocation(chrID, cod1, cod2);
-		ArrayList<GeneID> lsCoveredGenes = gffCodGeneDU.getAllCoveredGenes();
+		ArrayList<GeneID> lsCoveredGenes = gffCodGeneDU.getCoveredGene();
 		for (GeneID copedID : lsCoveredGenes) {
 			if (!hashCopedID.contains(copedID)) {
 				hashCopedID.add(copedID);

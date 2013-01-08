@@ -13,6 +13,7 @@ import net.sf.samtools.SAMFileWriterFactory;
 import net.sf.samtools.SAMFileWriterImpl;
 import net.sf.samtools.SAMRecord;
 
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -30,7 +31,7 @@ public class BamSort {
     public void setSamFile(SamFile samFile) {
 		this.samFile = samFile;
 		SAMFileWriterImpl.setDefaultMaxRecordsInRam(maxRecordsInRam);
-		setTmpDir();
+		PathDetail.setTmpDir(FileOperate.getParentPathName(samFile.getFileName()));
 	}
     
 	/**
@@ -71,12 +72,4 @@ public class BamSort {
         return sortBamFile;
 	}
 	
-	private void setTmpDir() {
-		String filePath = FileOperate.getParentPathName(samFile.getFileName());
-		File f = new File(filePath);
-        if (!f.exists()) f.mkdirs();
-        f.setReadable(true, false);
-        f.setWritable(true, false);
-        System.setProperty("java.io.tmpdir", f.getAbsolutePath()); // in loop so that last one takes effect
-	}
 }

@@ -84,6 +84,15 @@ public class PathDetail {
 		return fold;
 	}
 	
+	/** 设定java的临时文件夹 */
+	public static void setTmpDir(String filePath) {
+		File f = new File(filePath);
+        if (!f.exists()) f.mkdirs();
+        f.setReadable(true, false);
+        f.setWritable(true, false);
+        System.setProperty("java.io.tmpdir", f.getAbsolutePath()); // in loop so that last one takes effect
+	}
+	
 	public static String getRworkspace() {
 		return getProjectPath() + "rscript"  + FileOperate.getSepPath();
 	}

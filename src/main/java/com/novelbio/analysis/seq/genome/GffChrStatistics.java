@@ -432,5 +432,11 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 			return readsize;
 		}
 	}
+
+
+	@Override
+	public void summary() {
+		//Nothing to do 
+	}
 }
 

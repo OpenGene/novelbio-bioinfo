@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
+import net.sf.samtools.SAMFileHeader;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
@@ -25,6 +27,8 @@ import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.resequencing.SnpAnnotation;
 import com.novelbio.analysis.seq.rnaseq.GffHashMerge;
 import com.novelbio.analysis.seq.rnaseq.TranscriptomStatistics;
+import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.listOperate.BoxPlotList;
@@ -48,22 +52,17 @@ public class mytest {
 	private static Logger logger = Logger.getLogger(mytest.class);
 	
 	public static void main(String[] args) throws IOException {
-//		GffChrAbs gffChrAbs = new GffChrAbs(39947);
-//		gffChrAbs.getGffHashGene().writeToGTF("/home/zong0jie/锟斤拷锟斤拷/riceTigr7.GTF");
+		SamFile samFile = new SamFile("/media/TOSHIBA EXT/9522/aaa.sam");
 		
-		//GBK锟斤拷锟斤拷锟绞皆达拷锟铰凤拷锟
-		String srcDirPath = "/home/zong0jie/git/Novelbio-Bioinformatics-Analysis-Platform/src/test";
-		//转为UTF-8锟斤拷锟斤拷锟绞皆达拷锟铰凤拷锟
-		String utf8DirPath = "/home/zong0jie/git/UTF8/test";
-		       
-		//锟斤拷取锟斤拷锟斤拷java锟侥硷拷
-		Collection<File> javaGbkFileCol =  FileUtils.listFiles(new File(srcDirPath), new String[]{"java"}, true);
-		       
-		for (File javaGbkFile : javaGbkFileCol) {
-		      //UTF8锟斤拷式锟侥硷拷路锟斤拷
-		      String utf8FilePath = utf8DirPath+javaGbkFile.getAbsolutePath().substring(srcDirPath.length());
-		       //使锟斤拷GBK锟斤拷取锟斤拷荩锟饺伙拷锟斤拷锟�TF-8写锟斤拷锟斤拷锟�		      FileUtils.writeLines(new File(utf8FilePath), "UTF-8", FileUtils.readLines(javaGbkFile, "GB2312"));       
+		SAMFileHeader samFileHeader = samFile.getHeader();
+		SamFile samFileBamOld = new SamFile("/media/TOSHIBA EXT/9522/a9522_sorted_realign_removeDuplicate.bam");
+		SamFile samFileResult = new SamFile("/media/TOSHIBA EXT/9522/a9522_sorted_realign_removeDuplicate_lowcase.bam", samFileHeader);
+		for (SamRecord samRecord : samFileBamOld.readLines()) {
+			samRecord.setHeader(samFileHeader);
+			samRecord.setChrID(samRecord.getRefID().toLowerCase());
+			samFileResult.writeSamRecord(samRecord);
 		}
+		samFileResult.close();
 	}
 	
 	private void plotHist() {

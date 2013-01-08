@@ -11,6 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
 import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
 import com.novelbio.base.dataStructure.listOperate.ListHashSearch;
@@ -32,6 +33,7 @@ import com.novelbio.base.dataStructure.listOperate.ListHashSearch;
  * 
  * 每个基因的起点终点和CDS的起点终点保存在GffDetailList类中<br/>
  */
+//public class GffHashCG extends ListHashSearch<ListDetailAbs, ListCodAbs<T>, ListCodAbsDu<T,E>, ListAbsSearch<T,E,K>> {
 public class GffHashCG extends ListHashSearch<ListDetailAbs, ListCodAbs<T>, ListCodAbsDu<T,E>, ListAbsSearch<T,E,K>> {
 
 	/**
@@ -53,8 +55,7 @@ public class GffHashCG extends ListHashSearch<ListDetailAbs, ListCodAbs<T>, List
      *
 	 * @throws Exception 
 	 */
-	public void ReadGffarrayExcep(String gfffilename) throws Exception 
- {
+	public void ReadGffarrayExcep(String gfffilename) throws Exception {
 		GffHashCG gffHashCG = new GffHashCG();
 		// 实例化三个表
 		Chrhash = new LinkedHashMap<String, ListAbsSearch<GffDetailCG>>();// 一个哈希表来存储每条染色体

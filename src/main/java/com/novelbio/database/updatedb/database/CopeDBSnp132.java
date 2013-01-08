@@ -1,6 +1,5 @@
 package com.novelbio.database.updatedb.database;
 
-import com.novelbio.analysis.seq.chipseq.repeatMask.repeatRun;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 

@@ -3,7 +3,6 @@ package com.novelbio.analysis.tools;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-import com.novelbio.analysis.seq.chipseq.PeakMacs;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 

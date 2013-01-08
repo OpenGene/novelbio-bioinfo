@@ -49,14 +49,14 @@ public class FengYing {
 		exonJunction.setIsoJunFile("KO", parentFile + "KOjunctions.bed");
 		exonJunction.setIsoJunFile("WT",parentFile + "WTjunctions.bed");
 //		System.out.println("finished reading junction reads");
-//		exonJunction.addBamSorted("KO", parentFile + "KOod.bam");
-//		exonJunction.addBamSorted("WT", parentFile + "WT0d.bam");
+		exonJunction.addBamSorted("KO", parentFile + "KOod.bam");
+		exonJunction.addBamSorted("WT", parentFile + "WT0d.bam");
 		exonJunction.setMapreadsBin(15);
 //		exonJunction.addBamFile_Sorted("WT2", parentFile + "MEFWT2da14m1_1/accepted_hits.bam");
 //		exonJunction.addBamFile_Sorted("WT2", parentFile + "MEFWT2da14m1_2/accepted_hits.bam");
 //		System.out.println(species.getVersionAll().get(1));
 //		species.setVersion(species.getVersionAll().get(1));
-//		exonJunction.loadBamFile();
+		exonJunction.loadBamFile();
 		System.out.println("finished reading bam file");
 
 		exonJunction.setOneGeneOneSpliceEvent(false);

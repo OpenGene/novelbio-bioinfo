@@ -18,8 +18,8 @@ import com.novelbio.generalConf.NovelBioConst;
  */
 public class NCBIchromFaChangeFormat {
 	public static void main(String[] args) {
-		String file = "/media/winE/Bioinformatics/genome/human/hg19_GRCh37/ChromFa";
-		String out = file + "/all/chrAll.fa";
+		String file = "/media/winE/Bioinformatics/genome/rice/tigr7/ChromFa";
+		String out = file + "/all/tigr7chrAll.fa";
 		FileOperate.createFolders(FileOperate.getParentPathName(out));
 		NCBIchromFaChangeFormat ncbIchromFaChangeFormat = new NCBIchromFaChangeFormat();
 		ncbIchromFaChangeFormat.setChromFaPath(file, "");
