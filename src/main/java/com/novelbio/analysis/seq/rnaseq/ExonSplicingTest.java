@@ -122,6 +122,78 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		return (int)new Mean().evaluate(info);
 	}
 
+	private void setFdr(double fdr) {
+		this.fdr = fdr;
+	}
+	/** 计算并获得pvalue */
+	public Double getAndCalculatePvalue() {
+		if (pvalue > 0) {
+			return pvalue;
+		}
+		fillJunctionReadsData();
+		if (isZeroCounts()) {
+			pvalue = 1.0;
+			return pvalue;
+		}
+	
+		double pvalueExp = getPvalueReads();
+		double pvalueCounts = getPvalueJunctionCounts();
+//		if (exonCluster.getExonSplicingType() == ExonSplicingType.retain_intron) {
+//			getPvalueRetain_Intron(pvalueExp, pvalueCounts);
+//		}
+//		else {
+			getPvalueCombine(pvalueExp, pvalueCounts);
+//		}
+		return pvalue;
+	}
+	
+	/** reads的条目是否为 0
+	 * 为0则无法计算pvalue ，那么就需要直接设定为1
+	 */
+	private boolean isZeroCounts() {
+		int[] cond1 = mapCondition2Counts.get(condition1);
+		int[] cond2 = mapCondition2Counts.get(condition2);
+		boolean isZero = true;
+		for (int i : cond1) {
+			if (i > 3) {
+				isZero = false;
+			}
+		}
+		for (int i : cond2) {
+			if (i > 3) {
+				isZero = false;
+			}
+		}
+		return isZero;
+	}
+	
+	private void fillJunctionReadsData() {
+		//跨过该exon的iso是否存在，0不存在，1存在
+		int junc = 0;
+		if (exonCluster.getMapIso2ExonIndexSkipTheCluster().size() > 0)
+			junc = 1;
+ 
+		GffDetailGene gffDetailGene = exonCluster.getParentGene();
+		String chrID = gffDetailGene.getRefID();
+		//一般 setCondition 里面只有两项，也就是仅比较两个时期的可变剪接
+		ArrayList<String> lsCondition = ArrayOperate.getArrayListKey(mapCondition2Counts);
+
+		Set<ExonSplicingType> setexExonSplicingTypes = exonCluster.getExonSplicingTypeSet();
+		for (String condition : lsCondition) {
+			int[] counts = null;
+			if (setexExonSplicingTypes.contains(ExonSplicingType.alt5)) {
+				counts = getAlt5Reads(junc, gffDetailGene, chrID, condition);
+			}
+			else if (setexExonSplicingTypes.contains(ExonSplicingType.alt3)) {
+				counts = getAlt3Reads(junc, gffDetailGene, chrID, condition);
+			}
+			else {
+				counts = getNorm(junc, gffDetailGene, chrID, condition);
+			}
+			
+			mapCondition2Counts.put(condition, counts);
+		}
+	}
 	/**
 	 * @param junc 跨过该exon的iso是否存在，0不存在，1存在
 	 * @param gffDetailGene
@@ -245,78 +317,6 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			setLocation.add(location);
 		}
 		return setLocation;
-	}
-	private void setFdr(double fdr) {
-		this.fdr = fdr;
-	}
-	/** 计算并获得pvalue */
-	public Double getAndCalculatePvalue() {
-		if (pvalue > 0) {
-			return pvalue;
-		}
-		fillJunctionReadsData();
-		if (isZeroCounts()) {
-			pvalue = 1.0;
-			return pvalue;
-		}
-	
-		double pvalueExp = getPvalueReads();
-		double pvalueCounts = getPvalueJunctionCounts();
-//		if (exonCluster.getExonSplicingType() == ExonSplicingType.retain_intron) {
-//			getPvalueRetain_Intron(pvalueExp, pvalueCounts);
-//		}
-//		else {
-			getPvalueCombine(pvalueExp, pvalueCounts);
-//		}
-		return pvalue;
-	}
-	
-	/** reads的条目是否为 0
-	 * 为0则无法计算pvalue ，那么就需要直接设定为1
-	 */
-	private boolean isZeroCounts() {
-		int[] cond1 = mapCondition2Counts.get(condition1);
-		int[] cond2 = mapCondition2Counts.get(condition2);
-		boolean isZero = true;
-		for (int i : cond1) {
-			if (i > 3) {
-				isZero = false;
-			}
-		}
-		for (int i : cond2) {
-			if (i > 3) {
-				isZero = false;
-			}
-		}
-		return isZero;
-	}
-	
-	private void fillJunctionReadsData() {
-		//跨过该exon的iso是否存在，0不存在，1存在
-		int junc = 0;
-		if (exonCluster.getMapIso2ExonIndexSkipTheCluster().size() > 0)
-			junc = 1;
- 
-		GffDetailGene gffDetailGene = exonCluster.getParentGene();
-		String chrID = gffDetailGene.getRefID();
-		//一般 setCondition 里面只有两项，也就是仅比较两个时期的可变剪接
-		ArrayList<String> lsCondition = ArrayOperate.getArrayListKey(mapCondition2Counts);
-
-		Set<ExonSplicingType> setexExonSplicingTypes = exonCluster.getExonSplicingTypeSet();
-		for (String condition : lsCondition) {
-			int[] counts = null;
-			if (setexExonSplicingTypes.contains(ExonSplicingType.alt5)) {
-				counts = getAlt5Reads(junc, gffDetailGene, chrID, condition);
-			}
-			else if (setexExonSplicingTypes.contains(ExonSplicingType.alt3)) {
-				counts = getAlt3Reads(junc, gffDetailGene, chrID, condition);
-			}
-			else {
-				counts = getNorm(junc, gffDetailGene, chrID, condition);
-			}
-			
-			mapCondition2Counts.put(condition, counts);
-		}
 	}
 
 	
@@ -550,9 +550,6 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		
 		
 		GffDetailGene gffDetailGene = exonCluster.getParentGene();
-		if (gffDetailGene.getName().contains("NM_001253689")) {
-			logger.error("stop");
-		}
 		lsResult.add(gffDetailGene.getName().get(0));
 		lsResult.add(exonCluster.getLocInfo());
 		lsResult.add(getCondition(cond1));

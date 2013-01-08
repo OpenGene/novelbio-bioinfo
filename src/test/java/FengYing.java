@@ -36,8 +36,11 @@ public class FengYing {
 		String parentFile = "/media/winF/NBC/Project/Project_FY/paper/";
 //		String parentFile = "C:/Users/jie/Desktop/paper/";
 		
+//		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
+//				parentFile + "mm10_from_cufflinks.gtf");
 		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
-				parentFile + "mm10_from_cufflinks.gtf");
+				parentFile + "mm10-ensemble-modified.gtf");
+		
 		System.out.println("finished reading GTF file");
 
 		ExonJunction exonJunction = new ExonJunction();
@@ -56,7 +59,7 @@ public class FengYing {
 //		exonJunction.addBamFile_Sorted("WT2", parentFile + "MEFWT2da14m1_2/accepted_hits.bam");
 //		System.out.println(species.getVersionAll().get(1));
 //		species.setVersion(species.getVersionAll().get(1));
-		exonJunction.loadBamFile();
+//		exonJunction.loadBamFile();
 		System.out.println("finished reading bam file");
 
 		exonJunction.setOneGeneOneSpliceEvent(false);
