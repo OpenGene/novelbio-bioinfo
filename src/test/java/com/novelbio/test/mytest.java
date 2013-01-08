@@ -51,8 +51,10 @@ public class mytest {
 //		GffChrAbs gffChrAbs = new GffChrAbs(39947);
 //		gffChrAbs.getGffHashGene().writeToGTF("/home/zong0jie/锟斤拷锟斤拷/riceTigr7.GTF");
 		
-		//GBK锟斤拷锟斤拷锟绞皆达拷锟铰凤拷锟�		String srcDirPath = "/home/zong0jie/git/Novelbio-Bioinformatics-Analysis-Platform/src/test";
-		//转为UTF-8锟斤拷锟斤拷锟绞皆达拷锟铰凤拷锟�		String utf8DirPath = "/home/zong0jie/git/UTF8/test";
+		//GBK锟斤拷锟斤拷锟绞皆达拷锟铰凤拷锟
+		String srcDirPath = "/home/zong0jie/git/Novelbio-Bioinformatics-Analysis-Platform/src/test";
+		//转为UTF-8锟斤拷锟斤拷锟绞皆达拷锟铰凤拷锟
+		String utf8DirPath = "/home/zong0jie/git/UTF8/test";
 		       
 		//锟斤拷取锟斤拷锟斤拷java锟侥硷拷
 		Collection<File> javaGbkFileCol =  FileUtils.listFiles(new File(srcDirPath), new String[]{"java"}, true);

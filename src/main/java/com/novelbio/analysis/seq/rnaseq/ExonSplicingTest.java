@@ -251,13 +251,10 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	}
 	/** 计算并获得pvalue */
 	public Double getAndCalculatePvalue() {
-		if (mapCondition2Counts.size() == 0) {
-			fillJunctionReadsData();
-		}
-		
 		if (pvalue > 0) {
 			return pvalue;
 		}
+		fillJunctionReadsData();
 		if (isZeroCounts()) {
 			pvalue = 1.0;
 			return pvalue;
