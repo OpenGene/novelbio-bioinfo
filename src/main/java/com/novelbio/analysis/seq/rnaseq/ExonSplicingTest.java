@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -22,6 +23,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonCluster.ExonSplicingType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
+import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.FisherTest;
 import com.novelbio.base.dataStructure.MathComput;
@@ -31,6 +33,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
 /** 可变剪接的检验 */
 public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	private static Logger logger = Logger.getLogger(ExonSplicingTest.class);
+	
 	/** 实验组和对照组的junction reads数量加起来小于这个数，就返回1 */
 	static int junctionReadsMinNum = 10;
 	
@@ -38,14 +41,17 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	TophatJunction tophatJunction;
 	
 	/** 每个exonCluster组中condition以及其对应的exon的junction reads counts */
-	LinkedHashMap<String, int[]> mapCondition2Counts = new LinkedHashMap<String, int[]>();
+	HashMap<String, int[]> mapCondition2Counts = new LinkedHashMap<String, int[]>();
 	
-	//TODO 表达可以放在这个hash表中
 	/** 每个exonCluster组中condition以及其对应的exon的expression reads counts
-	 * TODO 可以作成LinkedHashMap<String, ArrayList<int[]>> 
+	 * TODO 可以作成LinkedHashMap<String, ArrayList<int[]>>
 	 * list里面就是每个chrID
 	 *  */
-	LinkedHashMap<String, int[]> mapCondition2Exp = new LinkedHashMap<String, int[]>();
+	HashMap<String, int[]> mapCondition2Exp = new LinkedHashMap<String, int[]>();
+	
+	/** 每个exonCluster组中condition以及其对应的排序并建索引的bam文件 */
+	HashMap<String, SamFile> mapCond2Samfile = new LinkedHashMap<String, SamFile>();
+	
 	
 	String condition1;
 	String condition2;
@@ -72,6 +78,11 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		this.tophatJunction = tophatJunction;
 	}
 	
+	/** 输入condition和bam文件的对照表 */
+	public void setMapCond2Samfile(HashMap<String, SamFile> mapCond2Samfile) {
+		this.mapCond2Samfile = mapCond2Samfile;
+	}
+	
 	/** 必须设定 */
 	public void setCompareCondition(String condition1, String condition2) {
 		this.condition1 = condition1;
@@ -92,7 +103,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	 * 如果是相同的condition，则累加上去
 	 */
 	public void addMapCondition2MapReads(String condition, MapReadsAbs mapReads) {
-		SiteInfo siteInfo = exonCluster.getDifSite();
+		SiteInfo siteInfo = exonCluster.getDifSite(tophatJunction);
 		int[] tmpExpCond = new int[2];
 		
 		double[] info = mapReads.getRangeInfo(siteInfo.getRefID(), siteInfo.getStartAbs(), siteInfo.getEndAbs(), 0);
@@ -138,12 +149,8 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	
 		double pvalueExp = getPvalueReads();
 		double pvalueCounts = getPvalueJunctionCounts();
-//		if (exonCluster.getExonSplicingType() == ExonSplicingType.retain_intron) {
-//			getPvalueRetain_Intron(pvalueExp, pvalueCounts);
-//		}
-//		else {
-			getPvalueCombine(pvalueExp, pvalueCounts);
-//		}
+
+		getPvalueCombine(pvalueExp, pvalueCounts);
 		return pvalue;
 	}
 	
@@ -182,10 +189,10 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		for (String condition : lsCondition) {
 			int[] counts = null;
 			if (setexExonSplicingTypes.contains(ExonSplicingType.alt5)) {
-				counts = getAlt5Reads(junc, gffDetailGene, chrID, condition);
+				counts = getAlt5Reads(gffDetailGene, chrID, condition);
 			}
 			else if (setexExonSplicingTypes.contains(ExonSplicingType.alt3)) {
-				counts = getAlt3Reads(junc, gffDetailGene, chrID, condition);
+				counts = getAlt3Reads(gffDetailGene, chrID, condition);
 			}
 			else if (setexExonSplicingTypes.contains(ExonSplicingType.retain_intron)) {
 				//TODO 
@@ -204,12 +211,9 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	 * @param condition
 	 * @return
 	 */
-	private int[] getAlt5Reads(boolean junc, GffDetailGene gffDetailGene, String chrID, String condition) {
+	private int[] getAlt5Reads(GffDetailGene gffDetailGene, String chrID, String condition) {
 		ArrayList<ExonInfo> lsExon = exonCluster.getExonInfoSingleLs();
 		ArrayList<Integer> lsCounts = new ArrayList<Integer>();
-		if (junc) {
-			lsCounts.add(getJunReadsNum(gffDetailGene, condition));
-		}
 	
 		////合并终点loc
 		Set<Integer> setExonStartLoc = new LinkedHashSet<Integer>();
@@ -231,12 +235,9 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	 * @param condition
 	 * @return
 	 */
-	private int[] getAlt3Reads(boolean junc, GffDetailGene gffDetailGene, String chrID, String condition) {
+	private int[] getAlt3Reads(GffDetailGene gffDetailGene, String chrID, String condition) {
 		ArrayList<ExonInfo> lsExon = exonCluster.getExonInfoSingleLs();
 		ArrayList<Integer> lsCounts = new ArrayList<Integer>();
-		if (junc) {
-			lsCounts.add(getJunReadsNum(gffDetailGene, condition));
-		}
 		
 		//合并起点loc
 		Set<Integer> setExonStartLoc = new LinkedHashSet<Integer>();
@@ -247,8 +248,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			lsCounts.add( tophatJunction.getJunctionSite(condition, chrID, exonstart));
 		}
 		
-		int[] counts = getIntArray(lsCounts);
-		return counts;
+		return getIntArray(lsCounts);
 	}
 	
 	/**
@@ -271,13 +271,30 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			setExonStartLoc.add(exonInfo.getStartCis());
 		}
 		for (Integer exonstart : setExonStartLoc) {
-			lsCounts.add( tophatJunction.getJunctionSite(condition, chrID, exonstart));
+			lsCounts.add(tophatJunction.getJunctionSite(condition, chrID, exonstart));
 		}
 		
-		int[] counts = getIntArray(lsCounts);
-		return counts;
+		return getIntArray(lsCounts);
 	}
 	
+	private int[] getCasset(GffDetailGene gffDetailGene, String chrID, String condition) {
+		ArrayList<ExonInfo> lsExon = exonCluster.getExonInfoSingleLs();
+		ArrayList<Integer> lsCounts = new ArrayList<Integer>();
+		lsCounts.add(getJunReadsNum(gffDetailGene, condition));
+		
+		//合并起点loc
+		Set<Integer> setExonStartEndLoc = new LinkedHashSet<Integer>();
+		for (ExonInfo exonInfo : lsExon) {
+			setExonStartEndLoc.add(exonInfo.getStartCis());
+			setExonStartEndLoc.add(exonInfo.getEndCis());
+		}
+		int casset = 0;
+		for (Integer exonstart : setExonStartEndLoc) {
+			casset = casset + tophatJunction.getJunctionSite(condition, chrID, exonstart);
+		}
+		lsCounts.add(casset);
+		return getIntArray(lsCounts);
+	}
 	/**
 	 * @param junc 跨过该exon的iso是否存在，0不存在，1存在
 	 * @param gffDetailGene
@@ -285,26 +302,22 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	 * @param condition
 	 * @return
 	 */
-	private int[] getNorm(int junc, GffDetailGene gffDetailGene, String chrID, String condition) {
+	private int[] getNorm(boolean junc, GffDetailGene gffDetailGene, String chrID, String condition) {
 		ArrayList<ExonInfo> lsExon = exonCluster.getAllExons();
-		int[] counts = new int[lsExon.size() + junc];
-		
-		if (junc == 1)
-			counts[0] = getJunReadsNum(gffDetailGene, condition);
+		ArrayList<Integer> lsCounts = new ArrayList<Integer>();
+		if (junc) {
+			lsCounts.add(getJunReadsNum(gffDetailGene, condition));
+		}
 		
 		//合并相同的边界
 		HashSet<Integer> setLoc = new HashSet<Integer>();
 		for (int i = 0; i < lsExon.size(); i++) {
 			ExonInfo exon = lsExon.get(i);
-			counts[i+junc] = tophatJunction.getJunctionSite(condition, chrID, exon.getStartCis()) 
+			int thisCounts = tophatJunction.getJunctionSite(condition, chrID, exon.getStartCis()) 
 					+ tophatJunction.getJunctionSite(condition, chrID, exon.getEndCis());
+			lsCounts.add(thisCounts);
 		}
-		
-		
-		ExonInfo exon = lsExon.get(i);
-		counts[i+junc] = tophatJunction.getJunctionSite(condition, chrID, exon.getStartCis()) 
-				+ tophatJunction.getJunctionSite(condition, chrID, exon.getEndCis());
-		return counts;
+		return getIntArray(lsCounts);
 	}
 	/**
 	 * 获得跳过该exonCluster组的readsNum
@@ -327,6 +340,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		
 		return result;
 	}
+	
 	/** 查找含有该exon的转录本，
 	 * 获得跨过该外显子的坐标 */
 	private HashSet<String> getSkipExonLoc_From_IsoHaveExon() {
@@ -657,3 +671,15 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	}
 }
 
+/**
+ * 差异可变剪接的类型
+ * reads数量以及表达值等
+ * @author zong0jie
+ */
+class SpliceType2Value {
+	Set<ExonSplicingType> setExonSplicingTypes = new HashSet<ExonCluster.ExonSplicingType>();
+	HashMap<ExonSplicingType, List<Double>> mapSplicingType2LsExpValue = new HashMap<ExonCluster.ExonSplicingType, List<Double>>();
+	HashMap<ExonSplicingType, List<Double>> mapSplicingType2LsJunctionReads = new HashMap<ExonCluster.ExonSplicingType, List<Double>>();
+	
+	
+}

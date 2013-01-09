@@ -162,6 +162,22 @@ public class TophatJunction implements AlignmentRecorder {
 			mapJunc2Num.put(junc, junctionNum);
 		}
 	}
+	
+	/**
+	 * 给定坐标和位点，找出全体条件下locsite,以及总共有多少reads支持
+	 * 0表示没有junction
+	 * @param chrID
+	 * @param locSite
+	 * @return
+	 */
+	public int getJunctionSite(String chrID, int locSite) {
+		int num = 0;
+		for (String condition : mapCond_To_JuncOne2AllNum.keySet()) {
+			num = num + getJunctionSite(condition, chrID, locSite);
+		}
+		return num;
+	}
+	
 	/**
 	 * 给定坐标和位点，找出locsite,以及总共有多少reads支持
 	 * 0表示没有junction

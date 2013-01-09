@@ -69,12 +69,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	
 	SeqHash seqHash;
 	
-	/** 
-	 * mapreads读取bam文件的最小分辨率 ，分辨率越小精度越高但是内存消耗越大
-	 * 在这里高分辨率没有意义，15就行了
-	 */
-	int mapreadsBin = 15;
-	
 	boolean isLessMemory = true;
 	/**
 	 * 表示差异可变剪接的事件的pvalue阈值，仅用于统计差异可变剪接事件的数量，不用于可变剪接的筛选
@@ -92,13 +86,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	public void setIsLessMemory(boolean isLessMemory) {
 		this.isLessMemory = isLessMemory;
 	}
-	/** 
-	 * mapreads读取bam文件的最小分辨率 ，分辨率越小精度越高但是内存消耗越大
-	 * 在这里高分辨率没有意义，15就行了
-	 */
-	public void setMapreadsBin(int mapreadsBin) {
-		this.mapreadsBin = mapreadsBin;
-	}
+
 	/** 
 	 * 一个基因可能有多个可变剪接事件，但是我们可以只挑选其中最显著的那个可变剪接事件
 	 * 也可以输出全部的可变剪接事件
@@ -121,9 +109,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	private void fillLsAll_Dif_Iso_Exon() {
 		ArrayList<GffDetailGene> lsGffDetailGenes = gffHashGene.getGffDetailAll();
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
-			if (gffDetailGene.getName().contains("Tomm5")) {
-				logger.error("stop");
-			}
 			gffDetailGene.removeDupliIso();
 			if (gffDetailGene.getLsCodSplit().size() <= 1 || isOnlyOneIso(gffDetailGene)) {
 				continue;
