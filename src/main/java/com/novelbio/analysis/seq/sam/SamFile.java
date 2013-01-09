@@ -43,6 +43,9 @@ public class SamFile implements AlignSeq {
 	public static void main(String[] args) {
 		SamFile samFile = new SamFile("/media/winF/NBC/Project/Project_FY/paper/KOod.bam");
 		samFile.indexMake();
+		for (SamRecord samRecord : samFile.readLinesOverlap("chr6", 71853175, 71853175)) {
+			System.out.println(samRecord);
+		}
 	}
 	private static Logger logger = Logger.getLogger(SamFile.class);
 

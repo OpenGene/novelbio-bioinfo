@@ -17,18 +17,6 @@ import com.novelbio.base.dataStructure.MathComput;
  *
  */
 public class SamMapReads extends MapReadsAbs {
-	public static void main(String[] args) {
-		SamMapReads samMapReads = new SamMapReads(new SamFile("/media/winF/NBC/Project/Project_FY/paper/KOod.bam"));
-		double[] info = samMapReads.getRangeInfo("chr4", 108013084, 108013173);
-		for (int i = 0; i < info.length; i++) {
-			if (i%10 == 0) {
-				System.out.println();
-			}
-			System.out.print(info[i] + "\t");
-		}
-	}
-	
-	
 	Map<String, Long> mapChrIDlowcase2Length;
 	
 	SamFile samFile;
@@ -57,7 +45,7 @@ public class SamMapReads extends MapReadsAbs {
 	protected void ReadMapFileExp() throws Exception {
 		//TODO 可以考虑通过这个来获得bam文件的reads数量
 	}
-
+	
 	@Override
 	public double[] getRangeInfo(int thisInvNum, String chrID, int startNum, int endNum, int type) {
 		int[] startEndLoc = MapReadsAbs.correctStartEnd(mapChrIDlowcase2Length, chrID, startNum, endNum);

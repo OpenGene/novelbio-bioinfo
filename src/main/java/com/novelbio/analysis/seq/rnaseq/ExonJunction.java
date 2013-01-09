@@ -48,9 +48,9 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	LinkedHashSet<String> setCondition = new LinkedHashSet<String>();
 	
 	String condition1, condition2;
-	
+	/** condition到排序的bam文件 */
 	ArrayListMultimap<String, SamFileReading> mapCond2SamReader = ArrayListMultimap.create();
-	
+	ArrayListMultimap<String, SamFile> mapCond2SamFile = ArrayListMultimap.create();
 	/** 统计可变剪接事件的map
 	 * key：可变剪接类型
 	 * value：int[2]
@@ -114,12 +114,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				continue;
 			}
 			ArrayList<ExonSplicingTest> lsExonSplicingTest = null;
-			try {
-				lsExonSplicingTest = getGeneDifExon(gffDetailGene);
-			} catch (Exception e) {
-				lsExonSplicingTest = getGeneDifExon(gffDetailGene);
-			}
-			
+			lsExonSplicingTest = getGeneDifExon(gffDetailGene);
 			if (lsExonSplicingTest.size() == 0) {
 				continue;
 			}
@@ -182,6 +177,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		setCondition.add(condition);
 		SamFileReading samFileReading = new SamFileReading(new SamFile(sortedBamFile));
 		mapCond2SamReader.put(condition, samFileReading);
+		mapCond2SamFile.put(condition, new SamFile(sortedBamFile));
 	}
 	
 	public void running() {
@@ -191,7 +187,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	
 	//TODO 考虑将其独立出来，成为一个读取类，然后往里面添加各种信息譬如获得表达值，获得差异可变剪接等
 	public void loadBamFile() {
-		TophatJunction tophatJunction = new TophatJunction();
+		tophatJunction = new TophatJunction();
 		for (String condition : mapCond2SamReader.keySet()) {
 			tophatJunction.setCondition(condition);
 			List<SamFileReading> lsSamFileReadings = mapCond2SamReader.get(condition);
@@ -290,6 +286,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	private void doTest_And_StatisticSplicingEvent(ArrayList<ExonSplicingTest> lsExonSplicingTest) {
 		for (ExonSplicingTest exonSplicingTest : lsExonSplicingTest) {
 			exonSplicingTest.setConditionsetAndJunction(setCondition, tophatJunction);
+			exonSplicingTest.setMapCond2Samfile(mapCond2SamFile);
 			exonSplicingTest.setCompareCondition(condition1, condition2);
 		}
 		//按照pvalue从小到大排序
@@ -307,10 +304,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	private ArrayList<ExonSplicingTest> filterExon(ArrayList<ExonSplicingTest> lsIsoExonSplicingTests) {
 		ArrayList<ExonSplicingTest> lsResult = new ArrayList<ExonSplicingTest>();
 		for (ExonSplicingTest exonSplicingTest : lsIsoExonSplicingTests) {
-			if (exonSplicingTest.getExonCluster().getExonSplicingType() == ExonSplicingType.cassette 
-					&& exonSplicingTest.mapCondition2Counts.entrySet().iterator().next().getValue().length <=1) {
-				continue;
-			}
 			lsResult.add(exonSplicingTest);
 		}
 		return lsResult;
@@ -364,5 +357,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				return o1.getAndCalculatePvalue().compareTo(o2.getAndCalculatePvalue());
 			}
 		});
+		ExonSplicingTest.setFdr(lsExonSplicingTest);
 	}
 }

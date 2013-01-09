@@ -177,7 +177,20 @@ public class TophatJunction implements AlignmentRecorder {
 		}
 		return num;
 	}
-	
+	/**
+	 * 给定坐标和位点，找出全体条件下locsite,以及总共有多少reads支持
+	 * 0表示没有junction
+	 * @param chrID
+	 * @param locSite
+	 * @return
+	 */
+	public int getJunctionSite(String chrID, int locStart, int locEnd) {
+		int num = 0;
+		for (String condition : mapCond_To_JuncOne2AllNum.keySet()) {
+			num = num + getJunctionSite(condition, chrID, locStart, locEnd);
+		}
+		return num;
+	}
 	/**
 	 * 给定坐标和位点，找出locsite,以及总共有多少reads支持
 	 * 0表示没有junction
@@ -212,26 +225,6 @@ public class TophatJunction implements AlignmentRecorder {
 			resultNum = mapJuncPair2ReadsNum.get(key);
 		}
 		return resultNum;
-	}
-	
-	/**
-	 * 给定坐标和位点，找出locsite
-	 * @param chrID
-	 * @param locStartSite 无所谓前后，内部自动判断
-	 * @param locEndSite
-	 * @return
-	 */
-	public int getJunctionSite(String chrID, int locStartSite, int locEndSite, String condition) {
-		setCondition(condition);
-		int locS = Math.min(locStartSite, locEndSite);
-		int locE = Math.max(locStartSite, locEndSite);
-		String key = chrID.toLowerCase() + SepSign.SEP_INFO_SAMEDB + locS + SepSign.SEP_INFO +chrID.toLowerCase() + SepSign.SEP_INFO_SAMEDB + locE;
-		if (mapJuncPair2ReadsNum.containsKey(key) ) {
-			return mapJuncPair2ReadsNum.get(key);
-		}
-		else {
-			return 0;
-		}
 	}
 	
 	public void writeTo(String condition, String outPathPrefix) {

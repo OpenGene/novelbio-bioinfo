@@ -54,7 +54,6 @@ public class FengYing {
 //		System.out.println("finished reading junction reads");
 		exonJunction.addBamSorted("KO", parentFile + "KOod.bam");
 		exonJunction.addBamSorted("WT", parentFile + "WT0d.bam");
-		exonJunction.setMapreadsBin(15);
 //		exonJunction.addBamFile_Sorted("WT2", parentFile + "MEFWT2da14m1_1/accepted_hits.bam");
 //		exonJunction.addBamFile_Sorted("WT2", parentFile + "MEFWT2da14m1_2/accepted_hits.bam");
 //		System.out.println(species.getVersionAll().get(1));
@@ -63,7 +62,7 @@ public class FengYing {
 		System.out.println("finished reading bam file");
 
 		exonJunction.setOneGeneOneSpliceEvent(false);
-		String outResult = parentFile +  "KO_vs_WT_WWWGTF_Modiry.xls";
+		String outResult = parentFile +  "KO_vs_WT_Ensembl_New_Algorithm.xls";
 		exonJunction.writeToFile(outResult);
 	}
 

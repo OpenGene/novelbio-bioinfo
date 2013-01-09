@@ -80,6 +80,8 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 		this.endLoc = Math.max(startLoc, endLoc);
 		if (startLoc > endLoc) {
 			setCis5to3(false);
+		} else {
+			setCis5to3(true);
 		}
 	}
 	/**

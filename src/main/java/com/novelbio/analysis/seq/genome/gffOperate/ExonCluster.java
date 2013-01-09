@@ -311,22 +311,36 @@ public class ExonCluster {
 		
 		ArrayList<ExonInfo> lsSingleExonInfo = getExonInfoSingleLs();
 		//前面或后面的exon不一样
-		if (
-				(exonClusterBefore != null && !exonClusterBefore.isSameExon())
-				||
-				(exonClusterAfter != null && !exonClusterAfter.isSameExon())
-				) {
+		boolean beforeIsNotSame = (exonClusterBefore != null && !exonClusterBefore.isSameExon());
+		boolean afterIsNotSame = (exonClusterAfter != null && !exonClusterAfter.isSameExon());
+		if ( beforeIsNotSame || afterIsNotSame) {
 			if (isAltStart(lsSingleExonInfo)) {
 				setSplicingTypes.add(ExonSplicingType.altstart);
 			}
 			if (isAltEnd(lsSingleExonInfo)) {
 				setSplicingTypes.add(ExonSplicingType.altend);
 			}
-			else if (isWithMutually(lsSingleExonInfo, true)) {
+		}
+		
+		//前面的exon不一样
+		if (beforeIsNotSame) {
+			if (isWithMutually(lsSingleExonInfo, true)) {
 				setSplicingTypes.add(ExonSplicingType.mutually_exon);
 			}
 		}
-
+		//后面的exon不一样
+		if (afterIsNotSame) {
+			if (isWithMutually(lsSingleExonInfo, false)) {
+				setSplicingTypes.add(ExonSplicingType.mutually_exon);
+			}
+		}
+		
+		
+		
+		
+		
+		
+		
 		setSplicingTypes.addAll(getSpliteTypeAlt5Alt3(lsSingleExonInfo));
 		
 		if (setSplicingTypes.size() == 0 && isIsosHaveSameBeforeAfterExon(mapIso2LsExon.keySet(), mapIso2ExonNumSkipTheCluster.keySet())) {
@@ -670,13 +684,14 @@ public class ExonCluster {
 		SiteInfo siteInfoMaxReads = null;
 		for (ArrayList<ExonInfo> lsExonInfo : lsIsoExon) {
 			if (lsExonInfo.size() > 1) {
-				int startLoc =  lsExonInfo.get(0).getEndCis();
-				int endLoc = lsExonInfo.get(1).getStartCis();
-				int startNum = tophatJunction.getJunctionSite(chrID, startLoc);
-				int endNum = tophatJunction.getJunctionSite(chrID, endLoc);
-				if (startNum + endNum > maxReadsNum) {
-					maxReadsNum = startNum + endNum;
-					siteInfoMaxReads = new SiteInfo(chrID, startLoc, endLoc);
+				for (int i = 0; i < lsExonInfo.size() - 1; i++) {
+					int startLoc =  lsExonInfo.get(i).getEndCis();
+					int endLoc = lsExonInfo.get(i+1).getStartCis();
+					int readsNum = tophatJunction.getJunctionSite(chrID, startLoc, endLoc);
+					if (readsNum > maxReadsNum) {
+						maxReadsNum = readsNum;
+						siteInfoMaxReads = new SiteInfo(chrID, startLoc, endLoc);
+					}
 				}
 			}
 		}
