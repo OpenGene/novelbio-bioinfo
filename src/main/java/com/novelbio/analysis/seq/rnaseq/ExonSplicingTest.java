@@ -16,6 +16,7 @@ import org.apache.commons.math.stat.inference.TestUtils;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.hash.HashCode;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonCluster;
@@ -149,6 +150,10 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	public Double getAndCalculatePvalue() {
 		if (pvalue > 0) {
 			return pvalue;
+		}
+		//TODO 可以设置断点
+		if (exonCluster.getParentGene().getName().contains("Vdac3")) {
+			logger.error("stop");
 		}
 		fillJunctionReadsData();
 		
@@ -293,7 +298,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		for (SamRecord samRecord : samFile.readLinesOverlap(chrID, site, site)) {
 			List<Align> lsAligns = samRecord.getAlignmentBlocks();
 			for (Align align : lsAligns) {
-				if (align.getStartAbs() < site - 3 || align.getEndAbs() > site + 3) {
+				if (align.getStartAbs() < site - 3 && align.getEndAbs() > site + 3) {
 					throughSiteNum++;
 					break;
 				}
@@ -301,6 +306,20 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		}
 		return throughSiteNum;
 	}
+	
+	/**
+	 * @param junc 跨过该exon的iso是否存在，0不存在，1存在
+	 * @param gffDetailGene
+	 * @param chrID
+	 * @param condition
+	 * @return
+	 */
+	private ArrayList<Double> getAltStart(GffDetailGene gffDetailGene, String chrID, String condition) {
+		//TODO
+		SiteInfo siteInfo = exonCluster.getDifSite(ExonSplicingType.retain_intron, tophatJunction);
+		return null;
+	}
+	
 	/**
 	 * @param junc 跨过该exon的iso是否存在，0不存在，1存在
 	 * @param gffDetailGene
@@ -428,15 +447,21 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		
 		List<Double> lsJunc1 = mapCondition2SpliceInfo.get(condition1).getLsJun(splicingType);
 		List<Double> lsJunc2 = mapCondition2SpliceInfo.get(condition2).getLsJun(splicingType);
-		int[] cond1 = new int[2];
-		try {
-			cond1[0] = lsJunc1.get(0).intValue(); cond1[1] = lsJunc1.get(1).intValue();
-		} catch (Exception e) {
-			cond1[0] = lsJunc1.get(0).intValue(); cond1[1] = lsJunc1.get(1).intValue();
+		int[] cond1 = getReadsNum(lsJunc1);
+		int[] cond2 = getReadsNum(lsJunc2);
+		//遇到类似 0:5 0:50
+		//2：3：50  4：2：50
+		//等就要删除了
+		
+		int readsNumLess = 0;
+		for (int i = 0; i < cond1.length; i++) {
+			if (cond1[i] <= 5 && cond2[i] <= 5) {
+				readsNumLess++;
+			}
 		}
-		cond1[0] = lsJunc1.get(0).intValue(); cond1[1] = lsJunc1.get(1).intValue();
-		int[] cond2 = new int[2];
-		cond2[0] = lsJunc2.get(0).intValue(); cond2[1] = lsJunc2.get(1).intValue();
+		if (cond1.length - readsNumLess <= 1) {
+			return 1.0;
+		}
 		
 		if (MathComput.sum(cond1) + MathComput.sum(cond1) < junctionReadsMinNum) {
 			return 1.0;
@@ -448,6 +473,14 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		normalizeToLowValue(cond2, normalizedNum);
 
 		return chiSquareTestDataSetsComparison(cond1, cond2);
+	}
+	
+	private int[] getReadsNum(List<Double> lsJunc) {
+		int[] result = new int[lsJunc.size()];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = lsJunc.get(i).intValue();
+		}
+		return result;
 	}
 	
 	private double chiSquareTestDataSetsComparison(int[] cond1, int[] cond2) {
@@ -685,6 +718,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		}
 		return lsTitle.toArray(new String[0]);
 	}
+
 }
 
 /**
@@ -747,4 +781,7 @@ class SpliceType2Value {
 		}
 		return mapSplicingType2LsExpValue.get(exonSplicingType);
 	}
+	
+	
+
 }

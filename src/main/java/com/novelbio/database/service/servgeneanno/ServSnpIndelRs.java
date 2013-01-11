@@ -12,7 +12,7 @@ import com.novelbio.database.domain.geneanno.SnpIndelRs;
 import com.novelbio.database.mapper.geneanno.MapSnpIndelRs;
 import com.novelbio.database.service.SpringFactory;
 
-@Component
+@Service
 public class ServSnpIndelRs implements MapSnpIndelRs{
 	public static void main(String[] args) {
 		ServSnpIndelRs servSnpIndelRs = new ServSnpIndelRs();
@@ -22,7 +22,7 @@ public class ServSnpIndelRs implements MapSnpIndelRs{
         System.out.println(lsncbiid.get(0).getSnpRsID());
 //        assertEquals("aaa", lsncbiid.get(0).getSnpRsID());
 	}
-	@Autowired
+	@Inject
 	private MapSnpIndelRs mapSnpIndelRs;
 	public ServSnpIndelRs() {
 		mapSnpIndelRs = (MapSnpIndelRs)SpringFactory.getFactory().getBean("mapSnpIndelRs");

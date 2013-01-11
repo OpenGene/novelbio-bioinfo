@@ -512,13 +512,12 @@ public class GffDetailGene extends ListDetailAbs {
 			for (ArrayList<GffGeneIsoInfo> lsIso : ls_lsIso) {
 				if (flagGetNexIso)
 					break;
-
-				for (GffGeneIsoInfo gffGeneIsoInfoExist : lsIso) {
-					if (GffGeneIsoInfo.compareIsoRatio(gffGeneIsoInfo, gffGeneIsoInfoExist) >= prop) {
-						lsIso.add(gffGeneIsoInfo);
-						flagGetNexIso = true;
-						break;
-					}
+				
+				GffGeneIsoInfo gffGeneIsoInfoExist = lsIso.get(0);
+				if (GffGeneIsoInfo.compareIsoRatio(gffGeneIsoInfo, gffGeneIsoInfoExist) >= prop) {
+					lsIso.add(gffGeneIsoInfo);
+					flagGetNexIso = true;
+//					break;
 				}
 				
 			}
@@ -567,7 +566,9 @@ public class GffDetailGene extends ListDetailAbs {
 				break;
 			}
 		}
-		if (exonNum > 3) {
+		if (exonNum > 5) {
+			return 0.7;
+		} else if (exonNum > 3) {
 			return 0.6;
 		} else {
 			return 0.5;

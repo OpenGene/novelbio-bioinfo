@@ -22,6 +22,7 @@ import com.novelbio.database.domain.geneanno.SepSign;
 
 public class ExonCluster {
 	private static Logger logger = Logger.getLogger(ExonCluster.class);
+	/** 全体父亲ISO */
 	Collection<GffGeneIsoInfo> colGeneIsoInfosParent;
 	ExonCluster exonClusterBefore;
 	ExonCluster exonClusterAfter;
@@ -110,6 +111,17 @@ public class ExonCluster {
 			}
 		}
 		return null;
+	}
+	
+	/** 
+	 * 该iso是否覆盖了该exoncluster
+	 * 哪怕该iso没有这个exon，但是只要覆盖了，譬如跨过该exon，就返回true
+	 */
+	public boolean isIsoCover(GffGeneIsoInfo gffGeneIsoInfo) {
+		if (mapIso2LsExon.containsKey(gffGeneIsoInfo)) {
+			return true;
+		}
+		return false;
 	}
 	
 	/**
@@ -324,10 +336,13 @@ public class ExonCluster {
 		//前面或后面的exon不一样
 		boolean beforeIsNotSame = (exonClusterBefore != null && !exonClusterBefore.isSameExon());
 		boolean afterIsNotSame = (exonClusterAfter != null && !exonClusterAfter.isSameExon());
-		if ( beforeIsNotSame || afterIsNotSame) {
+		if (beforeIsNotSame) {
 			if (isAltStart(lsSingleExonInfo)) {
 				setSplicingTypes.add(ExonSplicingType.altstart);
 			}
+		}
+		
+		if (afterIsNotSame) {
 			if (isAltEnd(lsSingleExonInfo)) {
 				setSplicingTypes.add(ExonSplicingType.altend);
 			}
@@ -345,12 +360,6 @@ public class ExonCluster {
 				setSplicingTypes.add(ExonSplicingType.mutually_exon);
 			}
 		}
-		
-		
-		
-		
-		
-		
 		
 		setSplicingTypes.addAll(getSpliteTypeAlt5Alt3(lsSingleExonInfo));
 		
@@ -581,7 +590,7 @@ public class ExonCluster {
 		boolean isThisExonMutually = false;
 		for (ExonInfo exonInfo : lsExonInfo) {
 			ArrayList<ExonInfo> lsExons = exonClusterBeforeOrAfter.getMapIso2LsExon().get(exonInfo.getParent());
-			if (lsExons == null || lsExons.size() == 0 ) {
+			if (lsExons != null && lsExons.size() == 0 ) {
 				isThisExonMutually = true;
 				break;
 			}
@@ -614,16 +623,37 @@ public class ExonCluster {
 		if (lsExonInfo.size() <= 1) {
 			return setSplicingTypes;
 		}
-		int start = lsExonInfo.get(0).getStartCis(), end = lsExonInfo.get(0).getEndCis();
-		for (int i = 1; i < lsExonInfo.size(); i++) {
-			ExonInfo exonInfo = lsExonInfo.get(i);
-			if (exonInfo.getItemNum() != 0 && start != exonInfo.getStartCis()) {
-				setSplicingTypes.add(ExonSplicingType.alt3);
+		int start = 0, end = 0;
+		if (exonClusterBefore != null) {
+			for (ExonInfo exonInfo : lsExonInfo) {
+				if (exonClusterBefore.isIsoCover(exonInfo.getParent())) {
+					start = exonInfo.getStartCis();
+					break;
+				}
 			}
-			if (exonInfo.getItemNum() != exonInfo.getParent().size() - 1 && end != exonInfo.getEndCis()) {
-				setSplicingTypes.add(ExonSplicingType.alt5);
+			for (ExonInfo exonInfo : lsExonInfo) {
+				if (exonInfo.getStartCis() != start && exonClusterBefore.isIsoCover(exonInfo.getParent())) {
+					setSplicingTypes.add(ExonSplicingType.alt3);
+					break;
+				}
 			}
 		}
+
+		if (exonClusterAfter != null) {
+			for (ExonInfo exonInfo : lsExonInfo) {
+				if (exonClusterAfter.isIsoCover(exonInfo.getParent())) {
+					end = exonInfo.getEndCis();
+					break;
+				}
+			}
+			for (ExonInfo exonInfo : lsExonInfo) {
+				if (exonInfo.getEndCis() != end && exonClusterAfter.isIsoCover(exonInfo.getParent())) {
+					setSplicingTypes.add(ExonSplicingType.alt5);
+					break;
+				}
+			}
+		}
+		
 		return setSplicingTypes;
 	}
 	

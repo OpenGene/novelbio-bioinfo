@@ -118,6 +118,11 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		ArrayList<GffDetailGene> lsGffDetailGenes = gffHashGene.getGffDetailAll();
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 			gffDetailGene.removeDupliIso();
+			//TODO 可以设置断点
+			if (gffDetailGene.getName().contains("Mrps24")) {
+				logger.error("stop");
+			}
+			
 			if (gffDetailGene.getLsCodSplit().size() <= 1 || isOnlyOneIso(gffDetailGene)) {
 				continue;
 			}
@@ -169,8 +174,12 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		ArrayList<ExonCluster> lsExonClusters = gffDetailGene.getDifExonCluster();
 		if (lsExonClusters != null && lsExonClusters.size() != 0) {
 			for (ExonCluster exonCluster : lsExonClusters) {
-				if (exonCluster.isAtEdge() || exonCluster.isNotSameTss_But_SameEnd()) {
+				if (exonCluster.getLsIsoExon().size() == 1 || exonCluster.isAtEdge() || exonCluster.isNotSameTss_But_SameEnd()) {
 					continue;
+				}
+				//TODO 设置断点
+				if (gffDetailGene.getName().contains("Mrps24")) {
+					logger.error("stop");
 				}
 				ExonSplicingTest exonSplicingTest = new ExonSplicingTest(exonCluster);
 				lsExonSplicingTestResult.add(exonSplicingTest);
@@ -206,7 +215,14 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		if (!readJunctionFromBedFile) {
 			loadJunction();
 		}
-		loadExp();
+		logger.error("finish junction reads");
+		for (ArrayList<ExonSplicingTest> lsExonTest : lsSplicingTests) {
+			for (ExonSplicingTest exonSplicingTest : lsExonTest) {
+				exonSplicingTest.setJunctionInfo(tophatJunction);
+			}
+		}
+		
+//		loadExp();
 		
 		lsResult = getTestResult_FromIso();
 	}
@@ -276,7 +292,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		int num = 0;
 		for (ArrayList<ExonSplicingTest> lsExonTest : lsSplicingTests) {
 			for (ExonSplicingTest exonSplicingTest : lsExonTest) {
-				exonSplicingTest.setJunctionInfo(tophatJunction);
 				exonSplicingTest.addMapCondition2MapReads(condition, mapReads);
 			}
 			

@@ -54,7 +54,9 @@ public class SamFileReading extends RunProcess<Double>{
 	/** 清空，但不清除samFile */
 	public void clear() {
 		lsAlignmentRecorders.clear();
-		lsAlignments.clear();
+		try {
+			lsAlignments.clear();
+		} catch (Exception e) { }
 	}
 	
 	public SamFile getSamFile() {

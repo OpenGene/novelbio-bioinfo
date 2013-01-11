@@ -13,6 +13,7 @@ public class Align implements Alignment{
 	String chrID;
 	Boolean cis5to3;
 	public Align(String chrID, int start, int end) {
+		this.chrID = chrID;
 		this.start = Math.min(start, end);
 		this.end = Math.max(start, end);
 	}
