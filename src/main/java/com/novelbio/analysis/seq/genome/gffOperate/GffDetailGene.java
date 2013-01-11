@@ -5,8 +5,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map.Entry;
+import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 
@@ -465,7 +467,14 @@ public class GffDetailGene extends ListDetailAbs {
 		}
 	}
 	/**
-	 * 返回有差异的exon系列
+	 * 返回有差异的exon系列，用来分析差异可变剪接
+	 * 因此只返回该位点存在转录本并且有差异的位点
+	 * 譬如<br>
+	 *  1--2------------3--4----------5--6<br>
+	 *  1--2------------3--4----------5--6<br>
+	 *  -----------------------------------5‘-6’<br>
+	 *  1-2和3-4不返回<br>
+	 *  返回5-6<br>
 	 * @return
 	 */
 	public ArrayList<ExonCluster> getDifExonCluster() {
@@ -483,7 +492,7 @@ public class GffDetailGene extends ListDetailAbs {
 		
 		ArrayList<ExonCluster> lsDifExon = new ArrayList<ExonCluster>();
 		for (ExonCluster exonClusters : lsExonClusters) {
-			if (exonClusters.isSameExon()) {
+			if (exonClusters.isSameExonInExistIso()) {
 				continue;
 			}
 			lsDifExon.add(exonClusters);
@@ -497,6 +506,7 @@ public class GffDetailGene extends ListDetailAbs {
 		//存放lsiso组，每次输入的iso在组内查找最接近的组，然后放进去
 		ArrayList<ArrayList<GffGeneIsoInfo>> ls_lsIso = new ArrayList<ArrayList<GffGeneIsoInfo>>();
 		boolean flagGetNexIso = false;
+		double prop = getSimilarProp();
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
 			flagGetNexIso = false;
 			for (ArrayList<GffGeneIsoInfo> lsIso : ls_lsIso) {
@@ -504,12 +514,7 @@ public class GffDetailGene extends ListDetailAbs {
 					break;
 
 				for (GffGeneIsoInfo gffGeneIsoInfoExist : lsIso) {
-					try {
-						GffGeneIsoInfo.compareIsoRatio(gffGeneIsoInfo, gffGeneIsoInfoExist);
-					} catch (Exception e) {
-						GffGeneIsoInfo.compareIsoRatio(gffGeneIsoInfo, gffGeneIsoInfoExist);
-					}
-					if (GffGeneIsoInfo.compareIsoRatio(gffGeneIsoInfo, gffGeneIsoInfoExist) >= 0.5) {
+					if (GffGeneIsoInfo.compareIsoRatio(gffGeneIsoInfo, gffGeneIsoInfoExist) >= prop) {
 						lsIso.add(gffGeneIsoInfo);
 						flagGetNexIso = true;
 						break;
@@ -537,6 +542,37 @@ public class GffDetailGene extends ListDetailAbs {
 		return ls_lsIso.get(maxIsoIndex);
 	}
 	
+	//TODO
+	//两种策略，1：用稍微低一点prop，挑选出一组iso然后分析
+	//2.用稍微高一点的prop，挑出几组iso，然后每组都做分析
+	private double getSimilarProp() {
+		if (getLsCodSplit().size() <= 3) {
+			return 0.6;
+		}
+		//倒序排序
+		TreeSet<Integer> setExonNum = new TreeSet<Integer>(new Comparator<Integer>() {
+			public int compare(Integer o1, Integer o2) {
+				return -o1.compareTo(o2);
+			}
+		});
+		for (GffGeneIsoInfo gffGeneIsoInfo : getLsCodSplit()) {
+			setExonNum.add(gffGeneIsoInfo.size());
+		}
+		int exonNum = 0;
+		int i = 0;
+		for (Integer integer : setExonNum) {
+			exonNum = integer;
+			i++;
+			if (i == 2) {
+				break;
+			}
+		}
+		if (exonNum > 3) {
+			return 0.6;
+		} else {
+			return 0.5;
+		}
+	}
 	
 	/**
 	 * 给定一个转录本，返回与之最接近的转录本，相似度必须在指定范围内

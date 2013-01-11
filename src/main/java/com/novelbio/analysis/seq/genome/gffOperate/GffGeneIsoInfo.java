@@ -1052,7 +1052,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		ArrayList<int[]> lsExonBound = ListAbs.getCombSep(cis5To3, lsGffGeneIsoInfos, false);
 		ExonCluster exonClusterBefore = null;
 		for (int[] exonBound : lsExonBound) {
-			ExonCluster exonCluster = new ExonCluster(chrID, exonBound[0], exonBound[1]);
+			ExonCluster exonCluster = new ExonCluster(chrID, exonBound[0], exonBound[1], lsGffGeneIsoInfos);
 			
 			exonCluster.setExonClusterBefore(exonClusterBefore);
 			if (exonClusterBefore != null) {

@@ -16,9 +16,10 @@ import com.novelbio.generalConf.NovelBioConst;
 public class FengYing {
 	public static void main(String[] args) {
 		DateTime dateTime = new DateTime();
-		dateTime.setStartTime();
 		mouse();
-		System.out.println(dateTime.getEclipseTime());
+		dateTime.setStartTime();
+//		topJunctionTest();
+//		System.out.println(dateTime.getEclipseTime());
 //		String parentFile = "C:/Users/jie/Desktop/paper/";
 //		
 //		
@@ -31,6 +32,24 @@ public class FengYing {
 ////		samFileReading.run();
 //		tophatJunction.writeTo("KO", parentFile + "KOod_jun_junc.txt");
 	}
+	
+	public static void topJunctionTest() {
+		String parentFile = "/media/winF/NBC/Project/Project_FY/paper/";
+		TophatJunction tophatJunction = new TophatJunction();
+		tophatJunction.setJunFile("KO", parentFile + "KOjunctions.bed");
+		tophatJunction.setJunFile("WT",parentFile + "WTjunctions.bed");
+		System.out.println(tophatJunction.getJunctionSite("KO", "chr2", 154821007));
+		System.out.println(tophatJunction.getJunctionSite("KO", "chr2", 154821089));
+		System.out.println(tophatJunction.getJunctionSite("WT", "chr2", 154821007));
+		System.out.println(tophatJunction.getJunctionSite("WT", "chr2", 154821089));
+		
+		System.out.println(tophatJunction.getJunctionSite("KO", "chr2", 154791548, 154857269));
+		System.out.println(tophatJunction.getJunctionSite("KO", "chr2", 154791231, 154857269));
+		
+		System.out.println(tophatJunction.getJunctionSite("WT", "chr2", 154791548, 154857269));
+		System.out.println(tophatJunction.getJunctionSite("WT", "chr2", 154791231, 154857269));
+	}
+	
 	
 	public static void mouse() {
 		String parentFile = "/media/winF/NBC/Project/Project_FY/paper/";
@@ -45,7 +64,7 @@ public class FengYing {
 
 		ExonJunction exonJunction = new ExonJunction();
 		exonJunction.setGffHashGene(gffHashGene);
-		exonJunction.setIsLessMemory(false);
+		exonJunction.setIsLessMemory(true);
 //		Species species = new Species(10090, "mm10_NCBI");
 //		GffChrAbs gffChrAbs = new GffChrAbs(species);
 //		exonJunction.setSeqHash(gffChrAbs.getSeqHash());
@@ -58,11 +77,11 @@ public class FengYing {
 //		exonJunction.addBamFile_Sorted("WT2", parentFile + "MEFWT2da14m1_2/accepted_hits.bam");
 //		System.out.println(species.getVersionAll().get(1));
 //		species.setVersion(species.getVersionAll().get(1));
-//		exonJunction.loadBamFile();
+		exonJunction.run();
 		System.out.println("finished reading bam file");
 
 		exonJunction.setOneGeneOneSpliceEvent(false);
-		String outResult = parentFile +  "KO_vs_WT_Ensembl_New_Algorithm.xls";
+		String outResult = parentFile +  "KO_vs_WT_Ensembl_New_Algorithm_exp.xls";
 		exonJunction.writeToFile(outResult);
 	}
 

@@ -72,11 +72,16 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		this.seqHash = seqHash;
 	}
 	
-	public void setConditionsetAndJunction(LinkedHashSet<String> setCondition, TophatJunction tophatJunction) {
+	public void setCondition(LinkedHashSet<String> setCondition) {
 		//初始化
 		for (String string : setCondition) {
-			mapCondition2SpliceInfo.put(string, null);
+			if (!mapCondition2SpliceInfo.containsKey(string)) {
+				mapCondition2SpliceInfo.put(string, null);
+			}
 		}
+	}
+	
+	public void setJunctionInfo(TophatJunction tophatJunction) {
 		this.tophatJunction = tophatJunction;
 	}
 	
@@ -189,13 +194,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 				} else {
 					lsJunctionCounts = getNorm(junc, gffDetailGene, chrID, condition);
 				}
-				try {
-					spliceType2Value.addJunction(splicingType, lsJunctionCounts);
-				} catch (Exception e) {
-					spliceType2Value = getAndCreatSpliceType2Value(condition);
-					spliceType2Value.addJunction(splicingType, lsJunctionCounts);
-				}
-				
+				spliceType2Value.addJunction(splicingType, lsJunctionCounts);
 			}
 		}
 	}
@@ -430,6 +429,11 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		List<Double> lsJunc1 = mapCondition2SpliceInfo.get(condition1).getLsJun(splicingType);
 		List<Double> lsJunc2 = mapCondition2SpliceInfo.get(condition2).getLsJun(splicingType);
 		int[] cond1 = new int[2];
+		try {
+			cond1[0] = lsJunc1.get(0).intValue(); cond1[1] = lsJunc1.get(1).intValue();
+		} catch (Exception e) {
+			cond1[0] = lsJunc1.get(0).intValue(); cond1[1] = lsJunc1.get(1).intValue();
+		}
 		cond1[0] = lsJunc1.get(0).intValue(); cond1[1] = lsJunc1.get(1).intValue();
 		int[] cond2 = new int[2];
 		cond2[0] = lsJunc2.get(0).intValue(); cond2[1] = lsJunc2.get(1).intValue();
@@ -461,8 +465,6 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			return 1.0;
 		}
 	}
-
-
 	
 	/** Retain_Intron的pvalue比较奇怪，必须要exon才能计算的 */
 	private void getPvalueRetain_Intron(double pvalueExp, double pvalueCounts) {

@@ -22,10 +22,10 @@ import com.novelbio.database.domain.geneanno.SepSign;
 
 public class ExonCluster {
 	private static Logger logger = Logger.getLogger(ExonCluster.class);
+	Collection<GffGeneIsoInfo> colGeneIsoInfosParent;
 	ExonCluster exonClusterBefore;
 	ExonCluster exonClusterAfter;
 	
-	Boolean sameExon = null;
 	String chrID;
 	int startLoc = 0;
 	int endLoc = 0;
@@ -37,7 +37,6 @@ public class ExonCluster {
 	 * 如果该iso根本不在这个范围内,则里面就没有这个list
 	 */
 	ArrayList<ArrayList<ExonInfo>> lsIsoExon = new ArrayList<ArrayList<ExonInfo>>();
-	ArrayList<GffGeneIsoInfo> lsIsoParent = new ArrayList<GffGeneIsoInfo>();
 	/** 该iso跳过了这个exon，则里面装空的list
 	 *  如果该iso根本不在这个范围内,则里面就没有这个list
 	 */
@@ -47,10 +46,11 @@ public class ExonCluster {
 	 */
 	HashMap<GffGeneIsoInfo, Integer> mapIso2ExonNumSkipTheCluster = new HashMap<GffGeneIsoInfo, Integer>();
 		
-	public ExonCluster(String chrID, int start, int end) {
+	public ExonCluster(String chrID, int start, int end, Collection<GffGeneIsoInfo> colGeneIsoInfosParent) {
 		this.chrID = chrID;
 		this.startLoc = Math.min(start, end);
 		this.endLoc = Math.max(start, end);
+		this.colGeneIsoInfosParent = colGeneIsoInfosParent;
 	}
 	public String getChrID() {
 		return chrID;
@@ -209,21 +209,32 @@ public class ExonCluster {
 	}
 	
 	/**
+	 * 在已经存在的iso中是否是一致的
+	 * 那么如果iso不在这个exoncluster范围内，就不进行统计
+	 * @return
+	 */
+	public boolean isSameExonInExistIso() {
+		return isSameExon(false);
+	}
+	
+	/**
 	 * 本组中是否为相同的exon，如果相同了那么也就没有可变剪接的说法了
 	 * @return
 	 */
 	public boolean isSameExon() {
-		if (sameExon != null) {
-			return sameExon;
-		}
+		return isSameExon(true);
+	}
+	
+	private boolean isSameExon(boolean considerIsoNotInRegion) {
 		//如果本组中有不止一个exon的转录本，并且还有跨越的junction，说明本组有可变的exon
-		if (lsIsoExon.size() >= 1 && mapIso2ExonNumSkipTheCluster.size() >= 1) {
-			sameExon = false;
+		if (lsIsoExon.size() >= 1 && mapIso2ExonNumSkipTheCluster.size() >= 1	) {
 			return false;
 		}
-		sameExon = true;
+		if (considerIsoNotInRegion && lsIsoExon.size() < colGeneIsoInfosParent.size()) {
+			return false;
+		}
+		boolean sameExon = true;
 		if (lsIsoExon.get(0).size() != 1) {
-			sameExon = false;
 			return false;
 		}
 		ExonInfo exonOld = lsIsoExon.get(0).get(0);
@@ -240,7 +251,7 @@ public class ExonCluster {
 			}
 		}
 		return sameExon;
-	}	
+	}
 	
 	/** 返回该exonCluster中的所有exon */
 	public ArrayList<ExonInfo> getAllExons() {
@@ -669,7 +680,7 @@ public class ExonCluster {
 		Collections.sort(lsBount, new Comparator<Integer>() {
 			public int compare(Integer o1, Integer o2) {
 				Integer start1 = tophatJunction.getJunctionSite(chrID, o1);
-				Integer start2 =  tophatJunction.getJunctionSite(chrID, o2);
+				Integer start2 = tophatJunction.getJunctionSite(chrID, o2);
 				return -start1.compareTo(start2);
 			}
 		});
