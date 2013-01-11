@@ -229,7 +229,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	
 	private void loadJunction() {
 		//TODO 需要测试效率
-		ArrayList<Align> lsDifIsoGene = getLsDifIsoGene();
+		ArrayList<Align> lsDifIsoGene = null;//getLsDifIsoGene();
 		for (String condition : mapCond2SamReader.keySet()) {
 			tophatJunction.setCondition(condition);
 			List<SamFileReading> lsSamFileReadings = mapCond2SamReader.get(condition);

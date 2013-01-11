@@ -153,7 +153,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		}
 		//TODO 可以设置断点
 		if (exonCluster.getParentGene().getName().contains("Vdac3")) {
-			logger.error("stop");
+			logger.debug("stop");
 		}
 		fillJunctionReadsData();
 		
