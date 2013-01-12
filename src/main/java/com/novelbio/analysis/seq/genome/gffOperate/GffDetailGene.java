@@ -15,7 +15,7 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genome.gffOperate.ExonCluster;
-import com.novelbio.analysis.seq.genome.gffOperate.ExonCluster.ExonSplicingType;
+import com.novelbio.analysis.seq.genome.gffOperate.ExonCluster.SplicingAlternativeType;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
@@ -514,31 +514,31 @@ public class GffDetailGene extends ListDetailAbs {
 	 *  返回5-6<br>
 	 * @return
 	 */
-	public HashMap<String, ExonCluster> getMapLoc2DifExonCluster() {
+	public HashMap<String, ExonCluster> getDifExonMapLoc2Cluster() {
 		ArrayList<GffGeneIsoInfo> lsSameGroupIso = getLsGffGeneIsoSameGroup();
 		/**
 		 * 一个基因如果有不止一个的转录本，那么这些转录本的同一区域的exon就可以提取出来，并放入该list
 		 * 也就是每个exoncluster就是一个exon类，表示 
 		 */
-		HashMap<String, ExonCluster> mapChrID2ExonClusters = null;
+		HashMap<String, ExonCluster> mapLoc2DifExonCluster = new HashMap<String, ExonCluster>();
 		if (lsSameGroupIso.size() <= 1) {
 			return new HashMap<String, ExonCluster>();
 		}
 		boolean cis5to3 = lsSameGroupIso.get(0).isCis5to3();
-		add2MapLoc2DifExonCluster(cis5to3, lsSameGroupIso, mapChrID2ExonClusters);
+		add2MapLoc2DifExonCluster(cis5to3, lsSameGroupIso, mapLoc2DifExonCluster);
 		if (lsSameGroupIso.size() <= 2) {
-			return mapChrID2ExonClusters;
+			return mapLoc2DifExonCluster;
 		}
-		ArrayList<ExonCluster> lsTmpResult = new ArrayList<ExonCluster>(mapChrID2ExonClusters.values());
+		ArrayList<ExonCluster> lsTmpResult = new ArrayList<ExonCluster>(mapLoc2DifExonCluster.values());
 		for (ExonCluster exonCluster : lsTmpResult) {
 			//含有特别长exon的iso，要把他们除去再做分析
-			if (exonCluster.getExonSplicingTypeSet().contains(ExonSplicingType.retain_intron)) {
+			if (exonCluster.getExonSplicingTypeSet().contains(SplicingAlternativeType.retain_intron)) {
 				ArrayList<GffGeneIsoInfo> lsSameGroupIsoNew = getLsIsoRemoveLongExon(exonCluster, lsSameGroupIso);
-				add2MapLoc2DifExonCluster(cis5to3, lsSameGroupIsoNew, mapChrID2ExonClusters);
+				add2MapLoc2DifExonCluster(cis5to3, lsSameGroupIsoNew, mapLoc2DifExonCluster);
 			}
 		}
 	
-		return mapChrID2ExonClusters;
+		return mapLoc2DifExonCluster;
 	}
 	/**
 	 * 去除含有长长exon后的转录本集合
@@ -561,6 +561,12 @@ public class GffDetailGene extends ListDetailAbs {
 		return lsSameGroupIsoNew;
 	}
 	
+	/**
+	 * 把新的这一系列iso分组然后装入hash表
+	 * @param cis5to3
+	 * @param lsSameGroupIso
+	 * @param mapChrID2ExonClusters
+	 */
 	private void add2MapLoc2DifExonCluster(Boolean cis5to3, ArrayList<GffGeneIsoInfo> lsSameGroupIso,
 			HashMap<String, ExonCluster> mapChrID2ExonClusters) {
 		if (lsSameGroupIso.size() <= 1) {
@@ -568,18 +574,15 @@ public class GffDetailGene extends ListDetailAbs {
 		}
 		ArrayList<ExonCluster> lsExonClusters = GffGeneIsoInfo.getExonCluster(cis5to3, lsSameGroupIso);
 		for (ExonCluster exonClusters : lsExonClusters) {
-			String key = getHashKey(exonClusters);
+			String key = exonClusters.getHashKey();
 			if (exonClusters.isSameExonInExistIso() || exonClusters.getLsIsoExon().size() == 1
 					|| mapChrID2ExonClusters.containsKey(key) ) {
 				continue;
 			}
-			mapChrID2ExonClusters.put(getHashKey(exonClusters), exonClusters);
+			mapChrID2ExonClusters.put(exonClusters.getHashKey(), exonClusters);
 		}
 	}
-	
-	private String getHashKey(ExonCluster exonClusters) {
-		return exonClusters.getChrID() + "_" +exonClusters.getStartLocAbs() + exonClusters.getEndLocAbs();
-	}
+
 	/** 返回iso基本接近的一组做可变剪接分析
 	 * 只有当几个iso中只有少数几个exon的差距，才能做可变剪接的分析
 	 *  */

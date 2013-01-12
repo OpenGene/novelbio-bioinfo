@@ -65,6 +65,7 @@ public class FengYing {
 		ExonJunction exonJunction = new ExonJunction();
 		exonJunction.setGffHashGene(gffHashGene);
 		exonJunction.setIsLessMemory(true);
+		exonJunction.setOneGeneOneSpliceEvent(false);
 //		Species species = new Species(10090, "mm10_NCBI");
 //		GffChrAbs gffChrAbs = new GffChrAbs(species);
 //		exonJunction.setSeqHash(gffChrAbs.getSeqHash());

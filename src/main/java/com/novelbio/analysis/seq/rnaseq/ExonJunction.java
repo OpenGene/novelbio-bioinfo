@@ -17,8 +17,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.ExonCluster;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.genome.gffOperate.ExonCluster.ExonSplicingType;
-import com.novelbio.analysis.seq.genome.mappingOperate.Alignment;
+import com.novelbio.analysis.seq.genome.gffOperate.ExonCluster.SplicingAlternativeType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.mapping.Align;
@@ -69,7 +68,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	 * 0： 差异可变剪接数量
 	 * 1： 全体可变剪接数量
 	 *  */
-	HashMap<ExonSplicingType, int[]> mapSplicingType2Num = new LinkedHashMap<ExonSplicingType, int[]>();
+	HashMap<SplicingAlternativeType, int[]> mapSplicingType2Num = new LinkedHashMap<SplicingAlternativeType, int[]>();
 	double pvalue = 0.05;//表示差异可变剪接的事件的pvalue阈值
 	
 
@@ -171,15 +170,15 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	 */
 	private ArrayList<ExonSplicingTest> getGeneDifExon(GffDetailGene gffDetailGene) {
 		ArrayList<ExonSplicingTest> lsExonSplicingTestResult = new ArrayList<ExonSplicingTest>();
-		ArrayList<ExonCluster> lsExonClusters = gffDetailGene.getDifExonCluster();
-		if (lsExonClusters != null && lsExonClusters.size() != 0) {
-			for (ExonCluster exonCluster : lsExonClusters) {
+		HashMap<String, ExonCluster> mapLoc2ExonCluster = gffDetailGene.getDifExonMapLoc2Cluster();
+		if (mapLoc2ExonCluster.size() > 0) {
+			for (ExonCluster exonCluster : mapLoc2ExonCluster.values()) {
 				if (exonCluster.getLsIsoExon().size() == 1 || exonCluster.isAtEdge() || exonCluster.isNotSameTss_But_SameEnd()) {
 					continue;
 				}
 				//TODO 设置断点
 				if (gffDetailGene.getName().contains("Mrps24")) {
-					logger.error("stop");
+					logger.debug("stop");
 				}
 				ExonSplicingTest exonSplicingTest = new ExonSplicingTest(exonCluster);
 				lsExonSplicingTestResult.add(exonSplicingTest);
@@ -323,7 +322,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	
 	private void initialMapSplicingType2Num() {
 		mapSplicingType2Num.clear();
-		for (ExonSplicingType exonSplicingType : ExonSplicingType.getMapName2SplicingEvents().values()) {
+		for (SplicingAlternativeType exonSplicingType : SplicingAlternativeType.getMapName2SplicingEvents().values()) {
 			mapSplicingType2Num.put(exonSplicingType, new int[2]);
 		}
 	}
@@ -371,7 +370,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	 * @param lsExonSplicingTest
 	 */
 	private void statisticsSplicingEvent(ArrayList<ExonSplicingTest> lsExonSplicingTest) {
-		ExonSplicingType exonSplicingType = null;
+		SplicingAlternativeType exonSplicingType = null;
 		for (ExonSplicingTest exonSplicingTest : lsExonSplicingTest) {
 			exonSplicingType = exonSplicingTest.getExonCluster().getExonSplicingType();
 			int[] tmpInfo = new int[]{0, 0};
@@ -399,7 +398,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		
 		TxtReadandWrite txtStatistics = new TxtReadandWrite(FileOperate.changeFileSuffix(fileName, "_statistics", "txt"), true);
 		txtStatistics.writefileln("SplicingEvent\tSignificantNum\tAllNum");
-		for (Entry<ExonSplicingType, int[]> exonSplicingInfo : mapSplicingType2Num.entrySet()) {
+		for (Entry<SplicingAlternativeType, int[]> exonSplicingInfo : mapSplicingType2Num.entrySet()) {
 			String tmpResult = exonSplicingInfo.getKey() + "\t" + exonSplicingInfo.getValue()[0] + "\t" +  exonSplicingInfo.getValue()[1];
 			txtStatistics.writefileln(tmpResult);
 		}

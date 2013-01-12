@@ -23,7 +23,8 @@ import com.novelbio.analysis.seq.genome.gffOperate.ExonCluster;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.ExonCluster.ExonSplicingType;
+import com.novelbio.analysis.seq.genome.gffOperate.ExonCluster.SplicingAlternativeType;
+import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.PredictME;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
 import com.novelbio.analysis.seq.mapping.Align;
@@ -52,9 +53,9 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	
 	/** 每个exonCluster组中condition以及其对应的排序并建索引的bam文件 */
 	ArrayListMultimap<String, SamFile> mapCond2Samfile = ArrayListMultimap.create();
-	Set<ExonSplicingType> setSplicingTypes;
+	Set<SplicingAlternativeType> setSplicingTypes;
 	//差异最大的那个exonSplicingType
-	ExonSplicingType splicingType;
+	SplicingAlternativeType splicingType;
 	String condition1;
 	String condition2;
 	/** 设置一个负数的初始值 */
@@ -113,7 +114,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	public void addMapCondition2MapReads(String condition, MapReadsAbs mapReads) {
 		SpliceType2Value spliceType2Value = getAndCreatSpliceType2Value(condition);
 
-		for (ExonSplicingType splicingType : setSplicingTypes) {
+		for (SplicingAlternativeType splicingType : setSplicingTypes) {
 			ArrayList<Double> lsExp = new ArrayList<Double>();
 			SiteInfo siteInfo = exonCluster.getDifSite(splicingType, tophatJunction);
 			double[] info = mapReads.getRangeInfo(siteInfo.getRefID(), siteInfo.getStartAbs(), siteInfo.getEndAbs(), 0);
@@ -161,7 +162,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			pvalue = 1.0;
 			return pvalue;
 		}
-		for (ExonSplicingType splicingType : setSplicingTypes) {
+		for (SplicingAlternativeType splicingType : setSplicingTypes) {
 			double pvalueExp = getPvalueReads(splicingType);
 			double pvalueCounts = getPvalueJunctionCounts(splicingType);
 			double pvalue = getPvalueCombine(pvalueExp, pvalueCounts);
@@ -186,15 +187,15 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		ArrayList<String> lsCondition = ArrayOperate.getArrayListKey(mapCondition2SpliceInfo);
 		for (String condition : lsCondition) {
 			SpliceType2Value spliceType2Value = getAndCreatSpliceType2Value(condition);
-			for (ExonSplicingType splicingType : setSplicingTypes) {
+			for (SplicingAlternativeType splicingType : setSplicingTypes) {
 				List<Double> lsJunctionCounts = null;
-				if (splicingType == ExonSplicingType.alt5) {
+				if (splicingType == SplicingAlternativeType.alt5) {
 					lsJunctionCounts = getAlt5Reads(gffDetailGene, chrID, condition);
-				} else if (splicingType == ExonSplicingType.alt3) {
+				} else if (splicingType == SplicingAlternativeType.alt3) {
 					lsJunctionCounts = getAlt3Reads(gffDetailGene, chrID, condition);
-				} else if (splicingType == ExonSplicingType.retain_intron) {
-					lsJunctionCounts = getRetainIntron(gffDetailGene, chrID, condition);
-				} else if (splicingType == ExonSplicingType.cassette || splicingType == ExonSplicingType.cassette_multi) {
+				} else if (splicingType == SplicingAlternativeType.retain_intron) {
+					lsJunctionCounts = getRetainIntron(chrID, condition);
+				} else if (splicingType == SplicingAlternativeType.cassette || splicingType == SplicingAlternativeType.cassette_multi) {
 					lsJunctionCounts = getCasset(gffDetailGene, chrID, condition);
 				} else {
 					lsJunctionCounts = getNorm(junc, gffDetailGene, chrID, condition);
@@ -274,8 +275,8 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	 * @param condition
 	 * @return
 	 */
-	private ArrayList<Double> getRetainIntron(GffDetailGene gffDetailGene, String chrID, String condition) {
-		SiteInfo siteInfo = exonCluster.getDifSite(ExonSplicingType.retain_intron, tophatJunction);
+	private ArrayList<Double> getRetainIntron(String chrID, String condition) {
+		SiteInfo siteInfo = exonCluster.getDifSite(SplicingAlternativeType.retain_intron, tophatJunction);
 		ArrayList<Double> lsCounts = new ArrayList<Double>();
 		lsCounts.add((double) tophatJunction.getJunctionSite(chrID, siteInfo.getStartCis(), siteInfo.getEndCis()));
 	
@@ -306,6 +307,47 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		}
 		return throughSiteNum;
 	}
+	/**
+	 * @param junc 跨过该exon的iso是否存在，0不存在，1存在
+	 * @param gffDetailGene
+	 * @param chrID
+	 * @param condition
+	 * @return
+	 */
+	private ArrayList<Double> getMutuallyExclusive(String chrID, String condition) {
+		PredictME predictME = exonCluster.getPredictME();
+		ArrayList<Integer> lsBefore = new ArrayList<Integer>();
+		if (predictME.getLsExonThisBefore().size() > 0) {
+			for (ArrayList<ExonInfo> lsExonInfos : predictME.getLsExonThisBefore()) {
+				
+			}
+			tophatJunction.getJunctionSite(chrID, locSite);
+		}
+		
+		
+	}
+	
+	/**
+	 * 获得本exonList前一个或后一个exon的边界
+	 * 譬如：
+	 * ----1--2-------3--4-------------5--6----------
+	 * 输入3-4，则前一个为2
+	 * 后一个为5
+	 * @return
+	 */
+	private int getBeforeEndSite(ArrayList<ExonInfo> lsExons, boolean beforeOrAfter) {
+		int result = 0;
+		GffGeneIsoInfo gffGeneIsoInfo = lsExons.get(0).getParent();
+		if (beforeOrAfter) {
+			int exonIndex = lsExons.get(0).getItemNum();
+			result = gffGeneIsoInfo.get(exonIndex - 1).getEndCis();
+		} else {
+			int exonIndex = lsExons.get(lsExons.size() - 1).getItemNum();
+			result = gffGeneIsoInfo.get(exonIndex + 1).getStartCis();
+		}
+		return result;
+	}
+	
 	
 	/**
 	 * @param junc 跨过该exon的iso是否存在，0不存在，1存在
@@ -316,7 +358,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	 */
 	private ArrayList<Double> getAltStart(GffDetailGene gffDetailGene, String chrID, String condition) {
 		//TODO
-		SiteInfo siteInfo = exonCluster.getDifSite(ExonSplicingType.retain_intron, tophatJunction);
+		SiteInfo siteInfo = exonCluster.getDifSite(SplicingAlternativeType.retain_intron, tophatJunction);
 		return null;
 	}
 	
@@ -407,7 +449,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 
 	
 	/** 出错就返回-1 */
-	protected Double getPvalueReads(ExonSplicingType splicingType) {
+	protected Double getPvalueReads(SplicingAlternativeType splicingType) {
 		try {
 			return getPvalueReadsExp(splicingType);
 		} catch (Exception e) {
@@ -418,7 +460,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	/** 比较exon 表达量
 	 * 在这之前务必设定condition
 	 */
-	private Double getPvalueReadsExp(ExonSplicingType splicingType) {
+	private Double getPvalueReadsExp(SplicingAlternativeType splicingType) {
 		//表达水平超过该值就标准化
 		int normalizedValue = 50;
 		
@@ -441,7 +483,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	/** 比较junction reads
 	 * 在这之前务必设定condition
 	 */
-	protected Double getPvalueJunctionCounts(ExonSplicingType splicingType) {
+	protected Double getPvalueJunctionCounts(SplicingAlternativeType splicingType) {
 		//如果count数超过该值，就标准化
 		int normalizedNum = 200;
 		
@@ -729,23 +771,23 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 class SpliceType2Value {
 	private static Logger logger = Logger.getLogger(SpliceType2Value.class);
 	
-	Set<ExonSplicingType> setExonSplicingTypes = new HashSet<ExonCluster.ExonSplicingType>();
-	HashMap<ExonSplicingType, List<Double>> mapSplicingType2LsExpValue = new HashMap<ExonCluster.ExonSplicingType, List<Double>>();
-	HashMap<ExonSplicingType, List<Double>> mapSplicingType2LsJunctionReads = new HashMap<ExonCluster.ExonSplicingType, List<Double>>();
+	Set<SplicingAlternativeType> setExonSplicingTypes = new HashSet<ExonCluster.SplicingAlternativeType>();
+	HashMap<SplicingAlternativeType, List<Double>> mapSplicingType2LsExpValue = new HashMap<ExonCluster.SplicingAlternativeType, List<Double>>();
+	HashMap<SplicingAlternativeType, List<Double>> mapSplicingType2LsJunctionReads = new HashMap<ExonCluster.SplicingAlternativeType, List<Double>>();
 	
 	/** 添加表达 */
-	public void addExp(ExonSplicingType splicingType, List<Double> lsExp) {
+	public void addExp(SplicingAlternativeType splicingType, List<Double> lsExp) {
 		addLsDouble(mapSplicingType2LsExpValue, splicingType, lsExp);
 		setExonSplicingTypes.add(splicingType);
 	}
 	/** 添加表达 */
-	public void addJunction(ExonSplicingType splicingType, List<Double> lsJun) {
+	public void addJunction(SplicingAlternativeType splicingType, List<Double> lsJun) {
 		addLsDouble(mapSplicingType2LsJunctionReads, splicingType, lsJun);
 		setExonSplicingTypes.add(splicingType);
 	}
 	
 	/** 把一个lsDouble和map里面已有的LsDouble加起来 */
-	private static void addLsDouble(Map<ExonSplicingType, List<Double>> mapSplicingType2LsInfo, ExonSplicingType splicingType, List<Double> lsJun) {
+	private static void addLsDouble(Map<SplicingAlternativeType, List<Double>> mapSplicingType2LsInfo, SplicingAlternativeType splicingType, List<Double> lsJun) {
 		List<Double> lsNew = lsJun;
 		if (mapSplicingType2LsInfo.containsKey(splicingType)) {
 			lsNew = new ArrayList<Double>();
@@ -764,7 +806,7 @@ class SpliceType2Value {
 	}
 	
 	/** 获得reads，如果不存在这种类型的可变剪接，就返回null */
-	public List<Double> getLsJun(ExonSplicingType exonSplicingType) {
+	public List<Double> getLsJun(SplicingAlternativeType exonSplicingType) {
 		if (!setExonSplicingTypes.contains(exonSplicingType)) {
 			return null;
 		}
@@ -775,7 +817,7 @@ class SpliceType2Value {
 	
 	
 	/** 获得表达，如果不存在这种类型的可变剪接，就返回null */
-	public List<Double> getLsExp(ExonSplicingType exonSplicingType) {
+	public List<Double> getLsExp(SplicingAlternativeType exonSplicingType) {
 		if (!setExonSplicingTypes.contains(exonSplicingType)) {
 			return null;
 		}

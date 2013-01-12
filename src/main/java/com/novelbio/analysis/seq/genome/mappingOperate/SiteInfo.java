@@ -11,6 +11,11 @@ import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 
+/**
+ * 含有序列信息的Alignment
+ * @author zong0jie
+ *
+ */
 public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 	Logger logger = Logger.getLogger(MapInfo.class);
 	
