@@ -1,4 +1,4 @@
-package com.novelbio.analysis.seq.genome.gffOperate;
+package com.novelbio.analysis.seq.genome.gffOperate.exoncluster;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,7 +16,9 @@ import javax.imageio.stream.IIOByteBuffer;
 import org.apache.log4j.Logger;
 import org.apache.velocity.runtime.directive.Foreach;
 
-import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.PredictME;
+import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
 import com.novelbio.analysis.seq.rnaseq.TophatJunction;
 import com.novelbio.database.domain.geneanno.SepSign;
@@ -50,6 +52,8 @@ public class ExonCluster {
 	HashMap<GffGeneIsoInfo, Integer> mapIso2ExonNumSkipTheCluster = new HashMap<GffGeneIsoInfo, Integer>();
 	
 	PredictME predictME;
+	PredictAltStart predictAltStart;
+	PredictAltEnd predictAltEnd;
 	
 	public ExonCluster(String chrID, int start, int end, Collection<GffGeneIsoInfo> colGeneIsoInfosParent) {
 		this.chrID = chrID;
@@ -57,6 +61,8 @@ public class ExonCluster {
 		this.endLoc = Math.max(start, end);
 		this.colGeneIsoInfosParent = colGeneIsoInfosParent;
 		predictME = new PredictME(this);
+		predictAltStart = new PredictAltStart(this);
+		predictAltEnd = new PredictAltEnd(this);
 	}
 	public String getChrID() {
 		return chrID;
@@ -322,6 +328,12 @@ public class ExonCluster {
 	public PredictME getPredictME() {
 		return predictME;
 	}
+	public PredictAltStart getPredictAltStart() {
+		return predictAltStart;
+	}
+	public PredictAltEnd getPredictAltEnd() {
+		return predictAltEnd;
+	}
 	/**
 	 * 获得本exoncluster的剪接类型
 	 * TODO 还有一些识别不出来
@@ -343,26 +355,18 @@ public class ExonCluster {
 			setSplicingTypes.add(splicingType);
 		}
 		
-		ArrayList<ExonInfo> lsSingleExonInfo = getExonInfoSingleLs();
-		//前面或后面的exon不一样
-		boolean beforeIsNotSame = (exonClusterBefore != null && !exonClusterBefore.isSameExon());
-		boolean afterIsNotSame = (exonClusterAfter != null && !exonClusterAfter.isSameExon());
-		if (beforeIsNotSame) {
-			if (isAltStart(lsSingleExonInfo)) {
-				setSplicingTypes.add(SplicingAlternativeType.altstart);
-			}
+
+		if (predictAltStart.isAltStart()) {
+			setSplicingTypes.add(SplicingAlternativeType.altstart);
 		}
-		
-		if (afterIsNotSame) {
-			if (isAltEnd(lsSingleExonInfo)) {
-				setSplicingTypes.add(SplicingAlternativeType.altend);
-			}
+		if (predictAltEnd.isAltEnd()) {
+			setSplicingTypes.add(SplicingAlternativeType.altend);
 		}
-		
 		if (predictME.isMutuallyExclusive()) {
 			setSplicingTypes.add(SplicingAlternativeType.mutually_exclusive);
 		}
 		
+		ArrayList<ExonInfo> lsSingleExonInfo = getExonInfoSingleLs();
 		setSplicingTypes.addAll(getSpliteTypeAlt5Alt3(lsSingleExonInfo));
 		
 		if (setSplicingTypes.size() == 0 && isIsosHaveSameBeforeAfterExon(mapIso2LsExon.keySet(), mapIso2ExonNumSkipTheCluster.keySet())) {
@@ -549,33 +553,7 @@ public class ExonCluster {
 		}
 		return lsExonTmp;
 	}
-	/**
-	 * 输入由getExonInfoSingleLs合并后的lsExonInfo，其中每个ExonInfo来源于不同的Iso
-	 * @param lsExonInfo
-	 * @return
-	 */
-	private boolean isAltStart(List<ExonInfo> lsExonInfo) {
-		for (ExonInfo exonInfo : lsExonInfo) {
-			if (exonInfo.getItemNum() == 0) {
-				return true;
-			}
-		}
-		return false;
-	}
-	/**
-	 * 输入由getExonInfoSingleLs合并后的lsExonInfo，其中每个ExonInfo来源于不同的Iso
-	 * @param lsExonInfo
-	 * @return
-	 */
-	private boolean isAltEnd(List<ExonInfo> lsExonInfo) {
-		for (ExonInfo exonInfo : lsExonInfo) {
-			if (exonInfo.getItemNum() == exonInfo.getParent().size() - 1) {
-				return true;
-			}
-		}
-		return false;
-	}
-
+	
 	/**
 	 * 仅判断本位点的可变剪接情况
 	 * 也就是仅判断alt5，alt3

@@ -19,12 +19,12 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.hash.HashCode;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqHash;
-import com.novelbio.analysis.seq.genome.gffOperate.ExonCluster;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.ExonCluster.SplicingAlternativeType;
+import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.PredictME;
+import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster.SplicingAlternativeType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
 import com.novelbio.analysis.seq.mapping.Align;
@@ -197,6 +197,8 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 					lsJunctionCounts = getRetainIntron(chrID, condition);
 				} else if (splicingType == SplicingAlternativeType.cassette || splicingType == SplicingAlternativeType.cassette_multi) {
 					lsJunctionCounts = getCasset(gffDetailGene, chrID, condition);
+				} else if (splicingType == SplicingAlternativeType.mutually_exclusive) {
+					lsJunctionCounts = exonCluster.getPredictME().getjuncCounts(chrID, condition, tophatJunction);
 				} else {
 					lsJunctionCounts = getNorm(junc, gffDetailGene, chrID, condition);
 				}
@@ -306,25 +308,6 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			}
 		}
 		return throughSiteNum;
-	}
-	/**
-	 * @param junc 跨过该exon的iso是否存在，0不存在，1存在
-	 * @param gffDetailGene
-	 * @param chrID
-	 * @param condition
-	 * @return
-	 */
-	private ArrayList<Double> getMutuallyExclusive(String chrID, String condition) {
-		PredictME predictME = exonCluster.getPredictME();
-		ArrayList<Integer> lsBefore = new ArrayList<Integer>();
-		if (predictME.getLsExonThisBefore().size() > 0) {
-			for (ArrayList<ExonInfo> lsExonInfos : predictME.getLsExonThisBefore()) {
-				
-			}
-			tophatJunction.getJunctionSite(chrID, locSite);
-		}
-		
-		
 	}
 	
 	/**

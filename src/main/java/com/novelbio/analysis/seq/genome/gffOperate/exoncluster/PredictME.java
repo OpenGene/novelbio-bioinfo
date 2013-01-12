@@ -2,11 +2,11 @@ package com.novelbio.analysis.seq.genome.gffOperate.exoncluster;
 
 import java.util.ArrayList;
 
-import com.novelbio.analysis.seq.genome.gffOperate.ExonCluster;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.analysis.seq.rnaseq.TophatJunction;
 
 
 /** 判定本exonCluster是否为mutually exclusive */
@@ -44,7 +44,12 @@ public class PredictME {
 	public ArrayList<ArrayList<ExonInfo>> getLsExonThisBefore() {
 		return lsExonThisBefore;
 	}
-	
+	public ArrayList<Align[]> getSiteInfoBefore() {
+		return getSiteInfoMutually(lsExonBefore);
+	}
+	public ArrayList<Align[]> getSiteInfoAfter() {
+		return getSiteInfoMutually(lsExonAfter);
+	}
 	/**
 	 * 返回与前一个exon组成mutually exclusive所对应的site，前面一个和后面一个共两个<br>
 	 * 如：<br>
@@ -53,7 +58,7 @@ public class PredictME {
 	 * 返回 4-7和8-11<br>
 	 * @return
 	 */
-	public ArrayList<Align[]> getSiteInfoBeforeMutually() {
+	public ArrayList<Align[]> getSiteInfoThisBefore() {
 		return getSiteInfoMutually(lsExonThisBefore);
 	}
 	/**
@@ -64,7 +69,7 @@ public class PredictME {
 	 * 返回 4-5和6-9<br>
 	 * @return
 	 */
-	public ArrayList<Align[]> getSiteInfoAfterMutually() {
+	public ArrayList<Align[]> getSiteInfoThisAfter() {
 		return getSiteInfoMutually(lsExonThisAfter);
 	}
 	/**
@@ -183,7 +188,7 @@ public class PredictME {
 			ArrayList<ExonInfo> lsExons = exonClusterBeforeOrAfter.getMapIso2LsExon().get(gffGeneIsoInfo);
 			if (lsExons != null && lsExons.size() > 0) {
 				//并且不是本iso的最后一个exon
-				if (lsExons.get(lsExons.size() - 1).getItemNum() != gffGeneIsoInfo.size() && lsExons.get(0).getItemNum() != 0)  {
+				if (lsExons.get(lsExons.size() - 1).getItemNum() != gffGeneIsoInfo.size() - 1 && lsExons.get(0).getItemNum() != 0)  {
 					lsExonBeforeOrAfter.add(lsExons);
 				}
 			}
@@ -204,7 +209,8 @@ public class PredictME {
 				continue;
 			}
 			GffGeneIsoInfo gffGeneIsoInfo = lsExonInfo.get(0).getParent();
-			if (lsExonInfo.get(0).getItemNum() == 0 || lsExonInfo.get(lsExonInfo.size() - 1).getItemNum() == gffGeneIsoInfo.size()) {
+			if (lsExonInfo.get(0).getItemNum() == 0 
+					|| lsExonInfo.get(lsExonInfo.size() - 1).getItemNum() == gffGeneIsoInfo.size() - 1) {
 				continue;
 			}
 			
@@ -216,4 +222,31 @@ public class PredictME {
 		return lsExonThis;
 	}
 
+	/**
+	 * 用于mutually exclusive检测
+	 * @param chrID
+	 * @param condition
+	 * @param tophatJunction
+	 * @return
+	 */
+	public ArrayList<Double> getjuncCounts(String condition, TophatJunction tophatJunction) {
+		ArrayList<Double> lsCounts = new ArrayList<Double>();
+		if (getLsExonThisBefore().size() > 0) {
+			lsCounts.add((double) getJuncNum(getSiteInfoThisBefore(), condition, tophatJunction));
+			lsCounts.add((double) getJuncNum(getSiteInfoBefore(), condition, tophatJunction));
+		}
+		if (getLsExonThisAfter().size() > 0) {
+			lsCounts.add((double) getJuncNum(getSiteInfoThisAfter(), condition, tophatJunction));
+			lsCounts.add((double) getJuncNum(getSiteInfoAfter(), condition, tophatJunction));
+		}
+		return lsCounts;
+	}
+	private static int getJuncNum(ArrayList<Align[]> lsAligns, String condition, TophatJunction tophatJunction) {
+		int num = 0;
+		for (Align[] aligns : lsAligns) {
+			num = num + tophatJunction.getJunctionSite(condition,aligns[0].getRefID(), aligns[0].getStartAbs(), aligns[0].getEndAbs());
+			num = num + tophatJunction.getJunctionSite(condition,aligns[1].getRefID(), aligns[1].getStartAbs(), aligns[1].getEndAbs());
+		}
+		return num;
+	}
 }
