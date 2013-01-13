@@ -1,24 +1,26 @@
 package com.novelbio.analysis.seq.genome.gffOperate.exoncluster;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster.SplicingAlternativeType;
 import com.novelbio.analysis.seq.mapping.Align;
 
-public class PredictAltEnd {
-
-
-	ExonCluster exonCluster;
+public class PredictAltEnd extends SpliceTypePredict {
 	ArrayList<ArrayList<ExonInfo>> lsExonThis;
 	Boolean isAltEnd = null;
 	ArrayList<Align> lsSite;
 	
 	public PredictAltEnd(ExonCluster exonCluster) {
-		this.exonCluster = exonCluster;
+		super(exonCluster);
 	}
-
-	public boolean isAltEnd() {
+	@Override
+	public String getType() {
+		return SplicingAlternativeType.altend.toString();
+	}
+	public boolean isType() {
 		if (isAltEnd != null) {
 			return isAltEnd;
 		}
@@ -46,6 +48,9 @@ public class PredictAltEnd {
 	 */
 	private void find() {
 		lsSite = new ArrayList<Align>();
+		if (exonCluster.getMapIso2ExonIndexSkipTheCluster().size() <= 0) {
+			return;
+		}
 		for (ArrayList<ExonInfo> lsExonInfo : exonCluster.getLsIsoExon()) {
 			if (lsExonInfo.size() > 0) {
 				GffGeneIsoInfo gffGeneIsoInfo = lsExonInfo.get(0).getParent();
@@ -57,6 +62,21 @@ public class PredictAltEnd {
 				}
 			}
 		}
+	}
+	@Override
+	public ArrayList<Double> getJuncCounts(String condition) {
+		ArrayList<Double> lsCounts = new ArrayList<Double>();
+		isType();
+		HashSet<Integer> setEndSide = new HashSet<Integer>();
+		for (Align align : lsSite) {
+			setEndSide.add(align.getStartCis());
+		}
+		String chrID = lsSite.get(0).getRefID();
+		for (Integer integer : setEndSide) {
+			lsCounts.add((double) tophatJunction.getJunctionSite(condition, chrID, integer));
+		}
+		lsCounts.add((double) getJunReadsNum(condition));
+		return lsCounts;
 	}
 
 }

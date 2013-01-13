@@ -4,15 +4,14 @@ import java.util.ArrayList;
 
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster.SplicingAlternativeType;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.rnaseq.TophatJunction;
 
 
 /** 判定本exonCluster是否为mutually exclusive */
-public class PredictME {
-	ExonCluster exonCluster;
-	
+public class PredictME extends SpliceTypePredict {	
 	ArrayList<ArrayList<ExonInfo>> lsExonBefore;
 	ArrayList<ArrayList<ExonInfo>> lsExonThisBefore;//可以和前面组成mutually exclusive的exon
 	ArrayList<ArrayList<ExonInfo>> lsExonThisAfter;//可以和后面组成mutually exclusive的exon
@@ -21,9 +20,12 @@ public class PredictME {
 	Boolean isMutuallyExclusive = null;
 	
 	public PredictME(ExonCluster exonCluster) {
-		this.exonCluster = exonCluster;
+		super(exonCluster);
 	}
-	
+	@Override
+	public String getType() {
+		return SplicingAlternativeType.mutually_exclusive.toString();
+	}
 	public ArrayList<ArrayList<ExonInfo>> getLsExonBefore() {
 		return lsExonBefore;
 	}
@@ -83,7 +85,7 @@ public class PredictME {
 	 */
 	public ArrayList<Align[]> getSiteInfoMutually(ArrayList<ArrayList<ExonInfo>> lsExonThis) {
 		ArrayList<Align[]> lsSiteInfo = new ArrayList<Align[]>();
-		isMutuallyExclusive();
+		isType();
 		if (lsExonThis.size() == 0) {
 			return lsSiteInfo;
 		}
@@ -118,7 +120,7 @@ public class PredictME {
 		return aligns;
 	}
 	
-	public boolean isMutuallyExclusive() {
+	public boolean isType() {
 		if (isMutuallyExclusive != null) {
 			return isMutuallyExclusive;
 		}
@@ -229,7 +231,7 @@ public class PredictME {
 	 * @param tophatJunction
 	 * @return
 	 */
-	public ArrayList<Double> getjuncCounts(String condition, TophatJunction tophatJunction) {
+	public ArrayList<Double> getJuncCounts(String condition) {
 		ArrayList<Double> lsCounts = new ArrayList<Double>();
 		if (getLsExonThisBefore().size() > 0) {
 			lsCounts.add((double) getJuncNum(getSiteInfoThisBefore(), condition, tophatJunction));

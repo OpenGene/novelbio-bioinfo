@@ -198,8 +198,10 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 				} else if (splicingType == SplicingAlternativeType.cassette || splicingType == SplicingAlternativeType.cassette_multi) {
 					lsJunctionCounts = getCasset(gffDetailGene, chrID, condition);
 				} else if (splicingType == SplicingAlternativeType.mutually_exclusive) {
-					lsJunctionCounts = exonCluster.getPredictME().getjuncCounts(chrID, condition, tophatJunction);
-				} else {
+					lsJunctionCounts = exonCluster.getPredictME().getJuncCounts(condition);
+				} else if (splicingType == SplicingAlternativeType.altstart) {
+					
+				} {
 					lsJunctionCounts = getNorm(junc, gffDetailGene, chrID, condition);
 				}
 				spliceType2Value.addJunction(splicingType, lsJunctionCounts);
