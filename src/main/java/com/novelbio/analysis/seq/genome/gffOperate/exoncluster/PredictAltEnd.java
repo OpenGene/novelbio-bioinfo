@@ -1,17 +1,20 @@
 package com.novelbio.analysis.seq.genome.gffOperate.exoncluster;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster.SplicingAlternativeType;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.database.domain.geneanno.SepSign;
 
-public class PredictAltEnd extends SpliceTypePredict {
-	ArrayList<ArrayList<ExonInfo>> lsExonThis;
-	Boolean isAltEnd = null;
-	ArrayList<Align> lsSite;
+public class PredictAltEnd extends PredictAltStartEnd {
+
 	
 	public PredictAltEnd(ExonCluster exonCluster) {
 		super(exonCluster);
@@ -20,34 +23,35 @@ public class PredictAltEnd extends SpliceTypePredict {
 	public String getType() {
 		return SplicingAlternativeType.altend.toString();
 	}
-	public boolean isType() {
-		if (isAltEnd != null) {
-			return isAltEnd;
-		}
-		
-		if (isAfterNotSame()) {
-			find();
-		}
-		
-		if (lsSite == null || lsSite.size() == 0) {
-			isAltEnd = false;
-		} else {
-			isAltEnd = true;
-		}
-		return isAltEnd;
-	}
 	
-	private boolean isAfterNotSame() {
+	protected boolean isBeforeOrAfterNotSame() {
 		ExonCluster exonClusterAfter = exonCluster.getExonClusterAfter();
 		return exonClusterAfter != null && !exonClusterAfter.isSameExon();
+	}
+	
+	@Override
+	public ArrayList<Double> getJuncCounts(String condition) {
+		ArrayList<Double> lsCounts = new ArrayList<Double>();
+		isType();
+		HashSet<Integer> setStartSide = new HashSet<Integer>();
+		for (Align align : lsSite) {
+			setStartSide.add(align.getStartCis());
+		}
+		String chrID = lsSite.get(0).getRefID();
+		for (Integer integer : setStartSide) {
+			lsCounts.add((double) tophatJunction.getJunctionSite(condition, chrID, integer));
+		}
+		lsCounts.add((double) getJunReadsNum(condition));
+		return lsCounts;
 	}
 	
 	/**
 	 * 看本位点是否能和前一个exon组成mutually exclusivelsIsoExon
 	 * 并且填充lsExonThisBefore和lsExonBefore
 	 */
-	private void find() {
+	protected void find() {
 		lsSite = new ArrayList<Align>();
+		lslsExonInfos = new ArrayList<ArrayList<ExonInfo>>();
 		if (exonCluster.getMapIso2ExonIndexSkipTheCluster().size() <= 0) {
 			return;
 		}
@@ -59,24 +63,35 @@ public class PredictAltEnd extends SpliceTypePredict {
 					int end = lsExonInfo.get(lsExonInfo.size() - 1).getEndCis();
 					Align align = new Align(exonCluster.getChrID(), start, end);
 					lsSite.add(align);
+					lslsExonInfos.add(lsExonInfo);
 				}
 			}
 		}
 	}
+	
 	@Override
-	public ArrayList<Double> getJuncCounts(String condition) {
+	public Align getDifSite() {
 		ArrayList<Double> lsCounts = new ArrayList<Double>();
 		isType();
-		HashSet<Integer> setEndSide = new HashSet<Integer>();
-		for (Align align : lsSite) {
-			setEndSide.add(align.getStartCis());
+		//倒序，获得junction最多的reads
+		TreeMap<Integer, ArrayList<ExonInfo>> mapJuncNum2Exon = new TreeMap<Integer, ArrayList<ExonInfo>>(new Comparator<Integer>() {
+			public int compare(Integer o1, Integer o2) {
+				return -o1.compareTo(o2);
+			}
+		});
+		
+		for (ArrayList<ExonInfo> lsExonInfos : lslsExonInfos) {
+			int juncReads = tophatJunction.getJunctionSite(exonCluster.getChrID(), lsExonInfos.get(lsExonInfos.size() - 1).getStartCis());
+			mapJuncNum2Exon.put(juncReads, lsExonInfos);
 		}
-		String chrID = lsSite.get(0).getRefID();
-		for (Integer integer : setEndSide) {
-			lsCounts.add((double) tophatJunction.getJunctionSite(condition, chrID, integer));
-		}
-		lsCounts.add((double) getJunReadsNum(condition));
-		return lsCounts;
+		//获得第一个
+		Align align = null;
+		for (Integer juncNum : mapJuncNum2Exon.keySet()) {
+			ArrayList<ExonInfo> lsExonInfos = mapJuncNum2Exon.get(juncNum);
+			align = new Align(exonCluster.getChrID(), lsExonInfos.get(0).getStartCis(), lsExonInfos.get(lsExonInfos.size() - 1).getEndCis());
+			break;
+		}		
+		return align;
 	}
 
 }

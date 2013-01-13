@@ -4,8 +4,6 @@ import java.util.ArrayList;
 
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster.SplicingAlternativeType;
-import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.rnaseq.TophatJunction;
 
@@ -16,9 +14,7 @@ public class PredictME extends SpliceTypePredict {
 	ArrayList<ArrayList<ExonInfo>> lsExonThisBefore;//可以和前面组成mutually exclusive的exon
 	ArrayList<ArrayList<ExonInfo>> lsExonThisAfter;//可以和后面组成mutually exclusive的exon
 	ArrayList<ArrayList<ExonInfo>> lsExonAfter;
-		
-	Boolean isMutuallyExclusive = null;
-	
+			
 	public PredictME(ExonCluster exonCluster) {
 		super(exonCluster);
 	}
@@ -120,11 +116,8 @@ public class PredictME extends SpliceTypePredict {
 		return aligns;
 	}
 	
-	public boolean isType() {
-		if (isMutuallyExclusive != null) {
-			return isMutuallyExclusive;
-		}
-		
+	protected boolean isType() {
+		boolean istype = false;
 		if (isBeforeNotSame()) {
 			findBefore();
 		}
@@ -136,9 +129,9 @@ public class PredictME extends SpliceTypePredict {
 				||
 				(lsExonThisAfter != null && lsExonThisAfter.size() > 0)	
 			) {
-			isMutuallyExclusive = true;
+			istype = true;
 		}
-		return isMutuallyExclusive;
+		return istype;
 	}
 	
 	

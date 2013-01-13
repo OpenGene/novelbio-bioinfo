@@ -1,0 +1,132 @@
+package com.novelbio.analysis.seq.genome.gffOperate.exoncluster;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+
+import com.google.common.collect.ArrayListMultimap;
+import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.database.domain.geneanno.SepSign;
+
+public class PredictCassette extends SpliceTypePredict {
+	HashSet<GffGeneIsoInfo> setExistExonIso;
+	HashSet<GffGeneIsoInfo> setSkipExonIso;
+	
+	public PredictCassette(ExonCluster exonCluster) {
+		super(exonCluster);
+	}
+
+	@Override
+	public ArrayList<Double> getJuncCounts(String condition) {
+		ArrayList<Double> lsCounts = new ArrayList<Double>();
+		HashSet<Align> setAlignSkip = new HashSet<Align>();
+		HashSet<Align> setAlignExist = new HashSet<Align>();
+		
+		for (GffGeneIsoInfo gffGeneIsoInfo : setSkipExonIso) {
+			ArrayList<ExonInfo> lsExon = exonCluster.getIsoExon(gffGeneIsoInfo);
+			int beforeIndex = lsExon.get(0).getItemNum() - 1;
+			int afterIndex = lsExon.get(lsExon.size() - 1).getItemNum() + 1;
+			ExonInfo exonBefore = gffGeneIsoInfo.get(beforeIndex);
+			ExonInfo exonAfter = gffGeneIsoInfo.get(afterIndex);
+			Align align = new Align(exonCluster.getChrID(), exonBefore.getEndCis(), exonAfter.getStartCis());
+			setAlignSkip.add(align);
+		}
+		
+		for (GffGeneIsoInfo gffGeneIsoInfo : setExistExonIso) {
+			ArrayList<ExonInfo> lsExon = exonCluster.getIsoExon(gffGeneIsoInfo);
+			Align align = new Align(exonCluster.getChrID(), lsExon.get(0).getEndCis(), lsExon.get(lsExon.size() - 1).getStartCis());
+			setAlignSkip.add(align);
+		}
+		//获得junction reads
+		int skip = 0;
+		int exist = 0;
+		for (Align align : setAlignSkip) {
+			skip += tophatJunction.getJunctionSite(condition, exonCluster.getChrID(), align.getStartAbs(), align.getEndAbs());
+		}
+		for (Align align : setAlignExist) {
+			exist += tophatJunction.getJunctionSite(condition, exonCluster.getChrID(), align.getStartAbs(), align.getEndAbs());
+		}
+		lsCounts.add((double) skip);
+		lsCounts.add((double) exist);
+		return lsCounts;
+	}
+
+	@Override
+	protected boolean isType() {
+		boolean isType = false;
+		int initialNum = -1000;
+		ArrayListMultimap<String, GffGeneIsoInfo> setBeforAfterExist = getIsoHaveBeforeAndAfterExon(initialNum, exonCluster.getMapIso2LsExon().keySet());
+		ArrayListMultimap<String, GffGeneIsoInfo> setBeforAfterSkip = getIsoHaveBeforeAndAfterExon(initialNum, exonCluster.getMapIso2ExonIndexSkipTheCluster().keySet());
+		//判定是否前后的exon相同
+		for (String string : setBeforAfterExist.keySet()) {
+			if (string.contains(initialNum + "")) {
+				continue;
+			}
+			if (setBeforAfterSkip.containsKey(string)) {
+				setExistExonIso.addAll(setBeforAfterExist.get(string));
+				setSkipExonIso.addAll(setBeforAfterSkip.get(string));
+				isType = true;
+			}
+		}
+		return isType;
+	}
+	/** 
+	 * 获得某个iso的前后的 exon的相对位置
+	 * 譬如某个iso在前面有一个exon，后面有一个exon
+	 * 则统计为0sepsign0
+	 * 如果前面的前面有一个exon，后面的后面的后面有一个exon
+	 * 则统计为
+	 * -1sepSign2
+	 * @param initialNum 初始化数字，设定为一个比较大的负数就好，随便设定，譬如-1000
+	 * @param lsIso_ExonExist
+	 * @return
+	 */
+	private ArrayListMultimap<String, GffGeneIsoInfo> getIsoHaveBeforeAndAfterExon(int initialNum, Collection<GffGeneIsoInfo> lsIso_ExonExist) {
+		ArrayListMultimap<String, GffGeneIsoInfo> setBeforeAfter = ArrayListMultimap.create();
+		ExonCluster clusterBefore = exonCluster.exonClusterBefore;
+		ExonCluster clusterAfter = exonCluster.exonClusterAfter;
+		for (GffGeneIsoInfo gffGeneIsoInfo : lsIso_ExonExist) {
+			int[] beforeAfter = new int[]{initialNum, initialNum};//初始化为负数
+			int numBefore = 0, numAfter = 0;//直接上一位的exon标记为0，再向上一位标记为-1
+			while (clusterBefore != null) {
+				if (clusterBefore.isIsoHaveExon(gffGeneIsoInfo)) {
+					beforeAfter[0] = numBefore;
+					break;
+				}
+				clusterBefore = clusterBefore.exonClusterBefore;
+				numBefore--;
+			}
+			while (clusterAfter != null) {
+				if (clusterAfter.isIsoHaveExon(gffGeneIsoInfo)) {
+					beforeAfter[1] = numAfter;
+					break;
+				}
+				clusterAfter = clusterAfter.exonClusterAfter;
+				numAfter++;
+			}
+			String tmpBeforeAfter = beforeAfter[0] + SepSign.SEP_ID + beforeAfter[1];
+			setBeforeAfter.put(tmpBeforeAfter, gffGeneIsoInfo);
+		}
+		return setBeforeAfter;
+	}
+	
+	@Override
+	public String getType() {
+		for (GffGeneIsoInfo gffGeneIsoInfo : setExistExonIso) {
+			ArrayList<ExonInfo> lsExons = exonCluster.getIsoExon(gffGeneIsoInfo);
+			if (lsExons.size() > 1) {
+				return SplicingAlternativeType.cassette_multi.toString();
+			}
+		}
+		return SplicingAlternativeType.cassette.toString();
+	}
+
+	@Override
+	public Align getDifSite() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

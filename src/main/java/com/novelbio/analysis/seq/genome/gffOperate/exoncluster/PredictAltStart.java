@@ -1,22 +1,15 @@
 package com.novelbio.analysis.seq.genome.gffOperate.exoncluster;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.HashSet;
-import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster.SplicingAlternativeType;
 import com.novelbio.analysis.seq.mapping.Align;
-import com.novelbio.analysis.seq.rnaseq.TophatJunction;
-import com.novelbio.database.domain.geneanno.SepSign;
 
 //TODO 要和alt5 alt3区分开
-public class PredictAltStart extends SpliceTypePredict {
-	ArrayList<ArrayList<ExonInfo>> lsExonThis;
-	Boolean isAltStart = null;
+public class PredictAltStart extends PredictAltStartEnd {
 	ArrayList<Align> lsSite;
 	
 	public PredictAltStart(ExonCluster exonCluster) {
@@ -26,6 +19,7 @@ public class PredictAltStart extends SpliceTypePredict {
 	public String getType() {
 		return SplicingAlternativeType.altstart.toString();
 	}
+	
 	public ArrayList<Double> getJuncCounts(String condition) {
 		ArrayList<Double> lsCounts = new ArrayList<Double>();
 		isType();
@@ -40,25 +34,9 @@ public class PredictAltStart extends SpliceTypePredict {
 		lsCounts.add((double) getJunReadsNum(condition));
 		return lsCounts;
 	}
+
 	
-	public boolean isType() {
-		if (isAltStart != null) {
-			return isAltStart;
-		}
-		
-		if (isBeforeNotSame()) {
-			find();
-		}
-		
-		if (lsSite == null || lsSite.size() == 0) {
-			isAltStart = false;
-		} else {
-			isAltStart = true;
-		}
-		return isAltStart;
-	}
-	
-	private boolean isBeforeNotSame() {
+	protected boolean isBeforeOrAfterNotSame() {
 		ExonCluster exonClusterBefore = exonCluster.getExonClusterBefore();
 		return exonClusterBefore != null && !exonClusterBefore.isSameExon();
 	}
@@ -67,8 +45,9 @@ public class PredictAltStart extends SpliceTypePredict {
 	 * 看本位点是否能和前一个exon组成mutually exclusivelsIsoExon
 	 * 并且填充lsExonThisBefore和lsExonBefore
 	 */
-	private void find() {
+	protected void find() {
 		lsSite = new ArrayList<Align>();
+		lslsExonInfos = new ArrayList<ArrayList<ExonInfo>>();
 		if (exonCluster.getMapIso2ExonIndexSkipTheCluster().size() <= 0) {
 			return;
 		}
@@ -78,7 +57,33 @@ public class PredictAltStart extends SpliceTypePredict {
 				int end = lsExonInfo.get(lsExonInfo.size() - 1).getEndCis();
 				Align align = new Align(exonCluster.getChrID(), start, end);
 				lsSite.add(align);
+				lslsExonInfos.add(lsExonInfo);
 			}
 		}
+	}
+	
+	@Override
+	public Align getDifSite() {
+		ArrayList<Double> lsCounts = new ArrayList<Double>();
+		isType();
+		//倒序，获得junction最多的reads
+		TreeMap<Integer, ArrayList<ExonInfo>> mapJuncNum2Exon = new TreeMap<Integer, ArrayList<ExonInfo>>(new Comparator<Integer>() {
+			public int compare(Integer o1, Integer o2) {
+				return -o1.compareTo(o2);
+			}
+		});
+		
+		for (ArrayList<ExonInfo> lsExonInfos : lslsExonInfos) {
+			int juncReads = tophatJunction.getJunctionSite(exonCluster.getChrID(), lsExonInfos.get(lsExonInfos.size() - 1).getEndCis());
+			mapJuncNum2Exon.put(juncReads, lsExonInfos);
+		}
+		//获得第一个
+		Align align = null;
+		for (Integer juncNum : mapJuncNum2Exon.keySet()) {
+			ArrayList<ExonInfo> lsExonInfos = mapJuncNum2Exon.get(juncNum);
+			align = new Align(exonCluster.getChrID(), lsExonInfos.get(0).getStartCis(), lsExonInfos.get(lsExonInfos.size() - 1).getEndCis());
+			break;
+		}		
+		return align;
 	}
 }
