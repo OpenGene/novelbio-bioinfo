@@ -52,7 +52,7 @@ public class ExonCluster {
 	 */
 	HashMap<GffGeneIsoInfo, Integer> mapIso2ExonNumSkipTheCluster = new HashMap<GffGeneIsoInfo, Integer>();
 	
-	ArrayList<SpliceTypePredict> lsSpliceTypePredicts;
+	List<SpliceTypePredict> lsSpliceTypePredicts;
 	
 	public ExonCluster(String chrID, int start, int end, Collection<GffGeneIsoInfo> colGeneIsoInfosParent) {
 		this.chrID = chrID;
@@ -121,36 +121,6 @@ public class ExonCluster {
 		return null;
 	}
 	
-	/** 
-	 * 该iso是否覆盖了该exoncluster
-	 * 哪怕该iso没有这个exon，但是只要覆盖了，譬如跨过该exon，就返回true
-	 */
-	public boolean isIsoCover(GffGeneIsoInfo gffGeneIsoInfo) {
-		if (mapIso2LsExon.containsKey(gffGeneIsoInfo)) {
-			return true;
-		}
-		return false;
-	}
-	
-	/**
-	 * 返回某个iso所对应的exon
-	 * @return
-	 */
-	public ArrayList<ExonInfo> getIsoExon(GffGeneIsoInfo gffGeneIsoInfo) {
-		return mapIso2LsExon.get(gffGeneIsoInfo);
-	}
-	
-	/**
-	 * 如果该iso跳过了这个exon，则里面装空的list
-	 * 如果该iso根本不在这个范围内,则里面就没有这个list
-	 * @param gffGeneIsoInfo
-	 * @param lsExon
-	 */
-	public void addExonCluster(GffGeneIsoInfo gffGeneIsoInfo, ArrayList<ExonInfo> lsExon) {
-		lsIsoExon.add(lsExon);
-		mapIso2LsExon.put(gffGeneIsoInfo, lsExon);
-	}
-	
 	/** 该iso跳过了这个exon，则里面装空的list
 	 * 如果该iso根本不在这个范围内,则里面就没有这个list
 	 */
@@ -165,6 +135,32 @@ public class ExonCluster {
 	public ArrayList<ArrayList<ExonInfo>> getLsIsoExon() {
 		return lsIsoExon;
 	}
+	/** 
+	 * 该iso是否覆盖了该exoncluster
+	 * 哪怕该iso没有这个exon，但是只要覆盖了，譬如跨过该exon，就返回true
+	 */
+	public boolean isIsoCover(GffGeneIsoInfo gffGeneIsoInfo) {
+		if (mapIso2LsExon.containsKey(gffGeneIsoInfo)) {
+			return true;
+		}
+		return false;
+	}
+	/** 返回某个iso所对应的exon */
+	public ArrayList<ExonInfo> getIsoExon(GffGeneIsoInfo gffGeneIsoInfo) {
+		return mapIso2LsExon.get(gffGeneIsoInfo);
+	}
+	
+	/**
+	 * 如果该iso跳过了这个exon，则里面装空的list
+	 * 如果该iso根本不在这个范围内,则里面就没有这个list
+	 * @param gffGeneIsoInfo
+	 * @param lsExon
+	 */
+	public void addExonCluster(GffGeneIsoInfo gffGeneIsoInfo, ArrayList<ExonInfo> lsExon) {
+		lsIsoExon.add(lsExon);
+		mapIso2LsExon.put(gffGeneIsoInfo, lsExon);
+	}
+
 	/**
 	 * 有时候会出现这种情况，两个iso不是同一个tss，
 	 * 那么一头就会露在外面，这种情况不是我们想要的，不做差异可变剪接分析
@@ -307,13 +303,14 @@ public class ExonCluster {
 	 * 记录IsoName和所对应的第一个exonNum的编号<br>
 	 * 如果本组中该IsoName的转录本正好没有exon落在组中，也就是跳过去了，那么记录该Iso在本组的前一个exon的Num
 	 * @param Isoname
-	 * @param exonNumStart
+	 * @param exonNumStart 从0开始记数
 	 */
 	public void setIso2ExonNumSkipTheCluster(GffGeneIsoInfo gffGeneIsoInfo, int exonNumStart) {
 		mapIso2ExonNumSkipTheCluster.put(gffGeneIsoInfo, exonNumStart);
 	}
 	/**
 	 * 记录跳过该exoncluster的Iso，和跨过该exoncluster的那对exon的，前一个exon的编号<br>
+	 * 编号从0开始记数
 	 */
 	public HashMap<GffGeneIsoInfo, Integer> getMapIso2ExonIndexSkipTheCluster() {
 		return mapIso2ExonNumSkipTheCluster;
@@ -361,55 +358,31 @@ public class ExonCluster {
 		}
 		return lsExonTmp;
 	}
+	/** 返回所有SpliceType的类型 */
+	public Set<SplicingAlternativeType> getSplicingTypeSet() {
+		Set<SplicingAlternativeType> setSpliceTypePredicts = new HashSet<SplicingAlternativeType>();
+		List<SpliceTypePredict> lsSpliceTypePredicts = getSplicingTypeLs();
+		for (SpliceTypePredict spliceTypePredict : lsSpliceTypePredicts) {
+			setSpliceTypePredicts.add(spliceTypePredict.getType());
+		}
+		return setSpliceTypePredicts;
+	}
 	
 	/**
 	 * 获得本exoncluster的剪接类型
 	 * 如果返回空的list，说明不能做差异可变剪接分析
 	 * @return
 	 */
-	public ArrayList<SpliceTypePredict> getSplicingTypeLs() {
-		if (lsSpliceTypePredicts != null) {
-			return lsSpliceTypePredicts;
-		}
-		ArrayList<SpliceTypePredict> lsSpliceTypePredictsTmp = new ArrayList<SpliceTypePredict>();
-		SpliceTypePredict spliceTypeME = new PredictME(this);
-		SpliceTypePredict spliceTypeAS = new PredictAltStart(this);
-		SpliceTypePredict spliceTypeAE = new PredictAltEnd(this);
-		SpliceTypePredict spliceTypeRI = new PredictAltEnd(this);
-		SpliceTypePredict spliceTypeCS = new PredictAltEnd(this);
-		SpliceTypePredict spliceTypeA5 = new PredictAltEnd(this);
-		SpliceTypePredict spliceTypeA3 = new PredictAltEnd(this);
-		lsSpliceTypePredictsTmp.add(spliceTypeME);
-		lsSpliceTypePredictsTmp.add(spliceTypeAS);
-		lsSpliceTypePredictsTmp.add(spliceTypeAE);
-		lsSpliceTypePredictsTmp.add(spliceTypeRI);
-		lsSpliceTypePredictsTmp.add(spliceTypeCS);
-		lsSpliceTypePredictsTmp.add(spliceTypeA5);
-		lsSpliceTypePredictsTmp.add(spliceTypeA3);
-		
-		
-		if (isSameExonInExistIso() || isNotSameTss_But_SameEnd() || isAtEdge()) {
-			lsSpliceTypePredicts = new ArrayList<SpliceTypePredict>();
-			return lsSpliceTypePredicts;
-		}
-		
-		for (SpliceTypePredict spliceTypePredict : lsSpliceTypePredictsTmp) {
-			if (spliceTypePredict.isSpliceType()) {
-				lsSpliceTypePredicts.add(spliceTypePredict);
-			}
-		}
-		if (lsSpliceTypePredicts.size() == 0) {
-			lsSpliceTypePredicts.add(new PredictUnKnown(this));
+	public List<SpliceTypePredict> getSplicingTypeLs() {
+		if (lsSpliceTypePredicts == null) {
+			lsSpliceTypePredicts = SpliceTypePredict.getSplicingTypeLs(this);
 		}
 		return lsSpliceTypePredicts;
 	}
 	
 	/** 根据坐标设定一个key */
-	protected String getHashKey() {
-		return getChrID() + "_" +getStartLocAbs() + getEndLocAbs();
+	public String getHashKey() {
+		return getChrID() + "_" +getStartLocAbs() + "_" + getEndLocAbs();
 	}
 	
-
 }
-
-

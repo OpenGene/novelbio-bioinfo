@@ -55,10 +55,10 @@ public class FengYing {
 		String parentFile = "/media/winF/NBC/Project/Project_FY/paper/";
 //		String parentFile = "C:/Users/jie/Desktop/paper/";
 		
-//		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
-//				parentFile + "mm10_from_cufflinks.gtf");
 		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
-				parentFile + "mm10-ensemble-modified.gtf");
+				parentFile + "mm10_from_cufflinks.gtf");
+//		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
+//				parentFile + "mm10-ensemble-modified.gtf");
 		
 		System.out.println("finished reading GTF file");
 
@@ -82,7 +82,7 @@ public class FengYing {
 		System.out.println("finished reading bam file");
 
 		exonJunction.setOneGeneOneSpliceEvent(false);
-		String outResult = parentFile +  "KO_vs_WT_Ensembl_New_Algorithm_exp.xls";
+		String outResult = parentFile +  "KO_vs_WT_Cufflinks_New3_Algorithm_exp.xls";
 		exonJunction.writeToFile(outResult);
 	}
 

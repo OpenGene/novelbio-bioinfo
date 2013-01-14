@@ -1,6 +1,7 @@
 package com.novelbio.analysis.seq.genome.gffOperate.exoncluster;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -26,7 +27,12 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 	/** 获得alt5， alt3的差异位点 */
 	@Override
 	public Align getDifSite() {
-		Map<Integer, Integer> mapJuncNum2Edge = new TreeMap<Integer, Integer>();
+		Map<Integer, Integer> mapJuncNum2Edge = new TreeMap<Integer, Integer>(new Comparator<Integer>() {
+			@Override
+			public int compare(Integer o1, Integer o2) {
+				return -o1.compareTo(o2);
+			}
+		});
 		for (Integer integer : mapEdge2Iso.keySet()) {
 			mapJuncNum2Edge.put(tophatJunction.getJunctionSite(exonCluster.getChrID(), integer), integer);
 		}

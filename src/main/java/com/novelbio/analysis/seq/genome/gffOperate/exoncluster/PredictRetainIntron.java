@@ -111,8 +111,8 @@ public class PredictRetainIntron extends SpliceTypePredict {
 	}
 	
 	@Override
-	public String getType() {
-		return SplicingAlternativeType.retain_intron.toString();
+	public SplicingAlternativeType getType() {
+		return SplicingAlternativeType.retain_intron;
 	}
 
 }

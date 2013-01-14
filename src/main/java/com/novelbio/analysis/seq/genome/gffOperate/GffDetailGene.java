@@ -15,7 +15,8 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster;
-import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster.SplicingAlternativeType;
+import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict.SplicingAlternativeType;
+import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
@@ -532,7 +533,7 @@ public class GffDetailGene extends ListDetailAbs {
 		ArrayList<ExonCluster> lsTmpResult = new ArrayList<ExonCluster>(mapLoc2DifExonCluster.values());
 		for (ExonCluster exonCluster : lsTmpResult) {
 			//含有特别长exon的iso，要把他们除去再做分析
-			if (exonCluster.getExonSplicingTypeSet().contains(SplicingAlternativeType.retain_intron)) {
+			if (exonCluster.getSplicingTypeSet().contains(SplicingAlternativeType.retain_intron)) {
 				ArrayList<GffGeneIsoInfo> lsSameGroupIsoNew = getLsIsoRemoveLongExon(exonCluster, lsSameGroupIso);
 				add2MapLoc2DifExonCluster(cis5to3, lsSameGroupIsoNew, mapLoc2DifExonCluster);
 			}
@@ -541,16 +542,29 @@ public class GffDetailGene extends ListDetailAbs {
 		return mapLoc2DifExonCluster;
 	}
 	/**
-	 * 去除含有长长exon后的转录本集合
+	 * 去除含有长exon后的转录本集合
 	 * @return
 	 */
 	private ArrayList<GffGeneIsoInfo> getLsIsoRemoveLongExon(ExonCluster exonCluster, List<GffGeneIsoInfo> lsIsoRaw) {
+		//里面的连续两个exon中间的intron
+		//如果发现有转录本覆盖了该intron，那么就是造成retain intron的那个转录本，把它去除就好
+		Align alignIntron = null;
+		for (ArrayList<ExonInfo> lsexoninfo : exonCluster.getLsIsoExon()) {
+			if (lsexoninfo.size() > 1) {
+				alignIntron = new Align(exonCluster.getChrID(), lsexoninfo.get(0).getEndCis(), lsexoninfo.get(1).getStartCis());
+			}
+		}
+		//获得这种长的iso
 		HashSet<GffGeneIsoInfo> setGeneIsoWithLongExon = new HashSet<GffGeneIsoInfo>();
 		for (ArrayList<ExonInfo> lsexoninfo : exonCluster.getLsIsoExon()) {
-			if (lsexoninfo.size() == 1) {
+			if (lsexoninfo.size() > 0
+					&& lsexoninfo.get(0).getStartAbs() < alignIntron.getStartAbs()
+					&& lsexoninfo.get(0).getEndAbs() > alignIntron.getEndAbs())
+			{
 				setGeneIsoWithLongExon.add(lsexoninfo.get(0).getParent());
 			}
 		}
+		
 		ArrayList<GffGeneIsoInfo> lsSameGroupIsoNew = new ArrayList<GffGeneIsoInfo>();
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsIsoRaw) {
 			if (setGeneIsoWithLongExon.contains(gffGeneIsoInfo)) {

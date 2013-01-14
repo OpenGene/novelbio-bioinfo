@@ -107,8 +107,13 @@ public class PredictUnKnown extends SpliceTypePredict {
 	}
 
 	@Override
-	public String getType() {
-		return SplicingAlternativeType.unknown.toString();
+	public SplicingAlternativeType getType() {
+		return SplicingAlternativeType.unknown;
+	}
+
+	@Override
+	public Align getDifSite() {
+		return new Align(exonCluster.getChrID(), exonCluster.getStartCis(), exonCluster.getEndCis());
 	}
 	
 }

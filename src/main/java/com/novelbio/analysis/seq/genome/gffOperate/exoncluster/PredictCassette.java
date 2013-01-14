@@ -17,17 +17,40 @@ public class PredictCassette extends SpliceTypePredict {
 	public PredictCassette(ExonCluster exonCluster) {
 		super(exonCluster);
 	}
-
+	
 	@Override
 	public ArrayList<Double> getJuncCounts(String condition) {
+		return getJuncCountsLoose(condition);
+	}
+	/** 不完全按照转录本信息来 */
+	private ArrayList<Double> getJuncCountsLoose(String condition) {
+		ArrayList<Double> lsCounts = new ArrayList<Double>();
+		lsCounts.add((double) getJunReadsNum(condition));
+		HashSet<Align> setAlignExist = new HashSet<Align>();
+		
+		for (GffGeneIsoInfo gffGeneIsoInfo : setExistExonIso) {
+			ArrayList<ExonInfo> lsExon = exonCluster.getIsoExon(gffGeneIsoInfo);
+			Align align = new Align(exonCluster.getChrID(), lsExon.get(0).getStartCis(), lsExon.get(lsExon.size() - 1).getEndCis());
+			setAlignExist.add(align);
+		}
+		int exist = 0;
+		for (Align align : setAlignExist) {
+			exist += tophatJunction.getJunctionSite(condition, exonCluster.getChrID(), align.getStartAbs())
+					+  tophatJunction.getJunctionSite(condition, exonCluster.getChrID(), align.getEndAbs());
+		}
+		lsCounts.add((double) exist);
+		return lsCounts;
+	}
+	
+	/** 完全按照转录本信息来 */
+	private ArrayList<Double> getJuncCountsStrict(String condition) {
 		ArrayList<Double> lsCounts = new ArrayList<Double>();
 		HashSet<Align> setAlignSkip = new HashSet<Align>();
 		HashSet<Align> setAlignExist = new HashSet<Align>();
 		
 		for (GffGeneIsoInfo gffGeneIsoInfo : setSkipExonIso) {
-			ArrayList<ExonInfo> lsExon = exonCluster.getIsoExon(gffGeneIsoInfo);
-			int beforeIndex = lsExon.get(0).getItemNum() - 1;
-			int afterIndex = lsExon.get(lsExon.size() - 1).getItemNum() + 1;
+			int beforeIndex = exonCluster.getMapIso2ExonIndexSkipTheCluster().get(gffGeneIsoInfo);
+			int afterIndex = beforeIndex + 1;
 			ExonInfo exonBefore = gffGeneIsoInfo.get(beforeIndex);
 			ExonInfo exonAfter = gffGeneIsoInfo.get(afterIndex);
 			Align align = new Align(exonCluster.getChrID(), exonBefore.getEndCis(), exonAfter.getStartCis());
@@ -36,8 +59,17 @@ public class PredictCassette extends SpliceTypePredict {
 		
 		for (GffGeneIsoInfo gffGeneIsoInfo : setExistExonIso) {
 			ArrayList<ExonInfo> lsExon = exonCluster.getIsoExon(gffGeneIsoInfo);
-			Align align = new Align(exonCluster.getChrID(), lsExon.get(0).getEndCis(), lsExon.get(lsExon.size() - 1).getStartCis());
-			setAlignSkip.add(align);
+			if (lsExon.size() == 0) {
+				continue;
+			}
+			int beforeIndex = lsExon.get(0).getItemNum() - 1;
+			int afterIndex = lsExon.get(lsExon.size() - 1).getItemNum() + 1;
+			Align alignBefore = new Align(exonCluster.getChrID(), gffGeneIsoInfo.get(beforeIndex).getEndCis(), lsExon.get(0).getStartCis());
+			Align alignAfter = new Align(exonCluster.getChrID(), lsExon.get(lsExon.size() - 1).getEndCis(), 
+					gffGeneIsoInfo.get(afterIndex).getStartCis());
+			
+			setAlignExist.add(alignBefore);
+			setAlignExist.add(alignAfter);
 		}
 		//获得junction reads
 		int skip = 0;
@@ -55,9 +87,18 @@ public class PredictCassette extends SpliceTypePredict {
 
 	@Override
 	protected boolean isType() {
+		setExistExonIso = new HashSet<GffGeneIsoInfo>();
+		setSkipExonIso = new HashSet<GffGeneIsoInfo>();
 		boolean isType = false;
 		int initialNum = -1000;
-		ArrayListMultimap<String, GffGeneIsoInfo> setBeforAfterExist = getIsoHaveBeforeAndAfterExon(initialNum, exonCluster.getMapIso2LsExon().keySet());
+		ArrayList<GffGeneIsoInfo> lsGeneIsoInfosExist = new ArrayList<GffGeneIsoInfo>();
+		for (GffGeneIsoInfo gffGeneIsoInfo : exonCluster.getMapIso2LsExon().keySet()) {
+			if (exonCluster.getMapIso2LsExon().get(gffGeneIsoInfo).size() == 0) {
+				continue;
+			}
+			lsGeneIsoInfosExist.add(gffGeneIsoInfo);
+		}
+		ArrayListMultimap<String, GffGeneIsoInfo> setBeforAfterExist = getIsoHaveBeforeAndAfterExon(initialNum, lsGeneIsoInfosExist);
 		ArrayListMultimap<String, GffGeneIsoInfo> setBeforAfterSkip = getIsoHaveBeforeAndAfterExon(initialNum, exonCluster.getMapIso2ExonIndexSkipTheCluster().keySet());
 		//判定是否前后的exon相同
 		for (String string : setBeforAfterExist.keySet()) {
@@ -113,20 +154,19 @@ public class PredictCassette extends SpliceTypePredict {
 	}
 	
 	@Override
-	public String getType() {
+	public SplicingAlternativeType getType() {
 		for (GffGeneIsoInfo gffGeneIsoInfo : setExistExonIso) {
 			ArrayList<ExonInfo> lsExons = exonCluster.getIsoExon(gffGeneIsoInfo);
 			if (lsExons.size() > 1) {
-				return SplicingAlternativeType.cassette_multi.toString();
+				return SplicingAlternativeType.cassette_multi;
 			}
 		}
-		return SplicingAlternativeType.cassette.toString();
+		return SplicingAlternativeType.cassette;
 	}
 
 	@Override
 	public Align getDifSite() {
-		// TODO Auto-generated method stub
-		return null;
+		return new Align(exonCluster.getChrID(), exonCluster.getStartCis(), exonCluster.getEndCis());
 	}
 
 }

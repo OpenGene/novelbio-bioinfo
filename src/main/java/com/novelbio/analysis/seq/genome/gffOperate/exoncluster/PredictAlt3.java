@@ -8,16 +8,14 @@ import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 
 public class PredictAlt3 extends PredictAlt5Or3 {
-
-	Map<Integer, GffGeneIsoInfo> mapEdge2Iso;
 	
 	public PredictAlt3(ExonCluster exonCluster) {
 		super(exonCluster);
 	}
 
 	@Override
-	public String getType() {
-		return SplicingAlternativeType.alt3.toString();
+	public SplicingAlternativeType getType() {
+		return SplicingAlternativeType.alt3;
 	}
 	
 	/**

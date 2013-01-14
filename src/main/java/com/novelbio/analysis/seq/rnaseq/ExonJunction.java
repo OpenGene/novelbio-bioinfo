@@ -106,32 +106,9 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	public void setGffHashGene(GffHashGene gffHashGene) {
 		this.gffHashGene = gffHashGene;
 		lsSplicingTests = new ArrayList<ArrayList<ExonSplicingTest>>();
-		fillLsAll_Dif_Iso_Exon();
 	}
 	public void setSeqHash(SeqHash seqHash) {
 		this.seqHash = seqHash;
-	}
-	
-	/** 从全基因组中获取差异的可变剪接事件，放入lsSplicingTest中 */
-	private void fillLsAll_Dif_Iso_Exon() {
-		ArrayList<GffDetailGene> lsGffDetailGenes = gffHashGene.getGffDetailAll();
-		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
-			gffDetailGene.removeDupliIso();
-			//TODO 可以设置断点
-			if (gffDetailGene.getName().contains("Mrps24")) {
-				logger.error("stop");
-			}
-			
-			if (gffDetailGene.getLsCodSplit().size() <= 1 || isOnlyOneIso(gffDetailGene)) {
-				continue;
-			}
-			ArrayList<ExonSplicingTest> lsExonSplicingTest = null;
-			lsExonSplicingTest = getGeneDifExon(gffDetailGene);
-			if (lsExonSplicingTest.size() == 0) {
-				continue;
-			}
-			lsSplicingTests.add(lsExonSplicingTest);
-		}
 	}
 	
 	protected ArrayList<Align> getLsDifIsoGene() {
@@ -146,45 +123,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			lsAlignments.add(align);
 		}
 		return lsAlignments;
-	}
-	
-	/**
-	 * 计数，看有多少iso与gffDetailGene同方向，如果只有一个，则跳过该基因
-	 * @param gffDetailGene
-	 * @return
-	 */
-	private boolean isOnlyOneIso(GffDetailGene gffDetailGene) {
-		int tmpIso = 0;
-		for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-			if (gffGeneIsoInfo.isCis5to3() == gffDetailGene.isCis5to3()) {
-				tmpIso++;
-			}
-		}
-		return tmpIso <=1 ? true : false;
-	}
-	
-	/**
-	 * 获得每个 gffDetailGene中的所有差异exon，包装成 LsExonSplicingTest 并返回
-	 * @param gffDetailGene
-	 * @return
-	 */
-	private ArrayList<ExonSplicingTest> getGeneDifExon(GffDetailGene gffDetailGene) {
-		ArrayList<ExonSplicingTest> lsExonSplicingTestResult = new ArrayList<ExonSplicingTest>();
-		HashMap<String, ExonCluster> mapLoc2ExonCluster = gffDetailGene.getDifExonMapLoc2Cluster();
-		if (mapLoc2ExonCluster.size() > 0) {
-			for (ExonCluster exonCluster : mapLoc2ExonCluster.values()) {
-				if (exonCluster.getLsIsoExon().size() == 1 || exonCluster.isAtEdge() || exonCluster.isNotSameTss_But_SameEnd()) {
-					continue;
-				}
-				//TODO 设置断点
-				if (gffDetailGene.getName().contains("Mrps24")) {
-					logger.debug("stop");
-				}
-				ExonSplicingTest exonSplicingTest = new ExonSplicingTest(exonCluster);
-				lsExonSplicingTestResult.add(exonSplicingTest);
-			}
-		}
-		return lsExonSplicingTestResult;
 	}
 
 	public void setCompareGroups(String condition1, String condition2) {
@@ -215,11 +153,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			loadJunction();
 		}
 		logger.error("finish junction reads");
-		for (ArrayList<ExonSplicingTest> lsExonTest : lsSplicingTests) {
-			for (ExonSplicingTest exonSplicingTest : lsExonTest) {
-				exonSplicingTest.setJunctionInfo(tophatJunction);
-			}
-		}
+		fillLsAll_Dif_Iso_Exon();
 		
 //		loadExp();
 		
@@ -227,7 +161,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	private void loadJunction() {
-		//TODO 需要测试效率
 		ArrayList<Align> lsDifIsoGene = null;//getLsDifIsoGene();
 		for (String condition : mapCond2SamReader.keySet()) {
 			tophatJunction.setCondition(condition);
@@ -243,6 +176,64 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				setRunInfo(exonJunctionGuiInfo);
 			}
 		}
+	}
+	
+	/** 从全基因组中获取差异的可变剪接事件，放入lsSplicingTest中 */
+	private void fillLsAll_Dif_Iso_Exon() {
+		ArrayList<GffDetailGene> lsGffDetailGenes = gffHashGene.getGffDetailAll();
+		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
+			gffDetailGene.removeDupliIso();
+			if (gffDetailGene.getLsCodSplit().size() <= 1 || isOnlyOneIso(gffDetailGene)) {
+				continue;
+			}
+			ArrayList<ExonSplicingTest> lsExonSplicingTest = getGeneDifExon(gffDetailGene);
+			if (lsExonSplicingTest.size() == 0) {
+				continue;
+			}
+			lsSplicingTests.add(lsExonSplicingTest);
+		}
+	}
+	/**
+	 * 计数，看有多少iso与gffDetailGene同方向，如果只有一个，则跳过该基因
+	 * @param gffDetailGene
+	 * @return
+	 */
+	private boolean isOnlyOneIso(GffDetailGene gffDetailGene) {
+		int tmpIso = 0;
+		for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+			if (gffGeneIsoInfo.isCis5to3() == gffDetailGene.isCis5to3()) {
+				tmpIso++;
+			}
+		}
+		return tmpIso <=1 ? true : false;
+	}
+	/**
+	 * 获得每个 gffDetailGene中的所有差异exon，包装成 LsExonSplicingTest 并返回
+	 * @param gffDetailGene
+	 * @return
+	 */
+	private ArrayList<ExonSplicingTest> getGeneDifExon(GffDetailGene gffDetailGene) {
+		//TODO 设置断点
+		if (gffDetailGene.getName().contains("Trrap")) {
+			logger.debug("stop");
+		}
+		
+		ArrayList<ExonSplicingTest> lsExonSplicingTestResult = new ArrayList<ExonSplicingTest>();
+		HashMap<String, ExonCluster> mapLoc2ExonCluster = gffDetailGene.getDifExonMapLoc2Cluster();
+
+		if (mapLoc2ExonCluster.size() > 0) {
+			for (ExonCluster exonCluster : mapLoc2ExonCluster.values()) {
+				if (exonCluster.getLsIsoExon().size() == 1 || exonCluster.isAtEdge() || exonCluster.isNotSameTss_But_SameEnd()) {
+					continue;
+				}
+
+				ExonSplicingTest exonSplicingTest = new ExonSplicingTest(exonCluster);
+				//获得junction信息
+				exonSplicingTest.setJunctionInfo(mapCond2SamFile, tophatJunction);
+				lsExonSplicingTestResult.add(exonSplicingTest);
+			}
+		}
+		return lsExonSplicingTestResult;
 	}
 	
 	private void loadExp() {
@@ -266,7 +257,12 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			}
 		}
 	}
-	
+	private MapReadsAbs getSamMapReads(SamFileReading samFileReading) {
+		SamMapReads samMapReads = new SamMapReads(samFileReading.getSamFile());
+		samMapReads.setisUniqueMapping(true);
+		samMapReads.setNormalType(MapReadsAbs.NORMALIZATION_NO);
+		return samMapReads;
+	}
 	private MapReadsAbs getMapReads(SamFileReading samFileReading) {
 		MapReads mapReads = new MapReads();
 		mapReads.setInvNum(15);
@@ -277,13 +273,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		mapReads.setMapChrID2Len(gffHashGene.getChrID2LengthForRNAseq());
 		samFileReading.addAlignmentRecorder(mapReads);
 		return mapReads;
-	}
-	
-	private MapReadsAbs getSamMapReads(SamFileReading samFileReading) {
-		SamMapReads samMapReads = new SamMapReads(samFileReading.getSamFile());
-		samMapReads.setisUniqueMapping(true);
-		samMapReads.setNormalType(MapReadsAbs.NORMALIZATION_NO);
-		return samMapReads;
 	}
 	
 	/** 将表达信息加入统计 */
@@ -309,7 +298,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		ArrayList<ExonSplicingTest> lsResult = new ArrayList<ExonSplicingTest>();
 		for (ArrayList<ExonSplicingTest> lsIsoExonSplicingTests : lsSplicingTests) {
 			doTest_And_StatisticSplicingEvent(lsIsoExonSplicingTests);
-			lsIsoExonSplicingTests = filterExon(lsIsoExonSplicingTests);
 			if (oneGeneOneSpliceEvent) {
 				lsResult.add(lsIsoExonSplicingTests.get(0));
 			} else {
@@ -326,7 +314,10 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			mapSplicingType2Num.put(exonSplicingType, new int[2]);
 		}
 	}
-
+	/**
+	 * 如果没有设定condition
+	 * 则跟据setCondition的信息自动设定condition
+	 */
 	private void setConditionWhileConditionIsNull() {
 		if (condition1 == null && condition2 == null) {
 			ArrayList<String> lsCondition = ArrayOperate.getArrayListValue(setCondition);
@@ -341,8 +332,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	 */
 	private void doTest_And_StatisticSplicingEvent(ArrayList<ExonSplicingTest> lsExonSplicingTest) {
 		for (ExonSplicingTest exonSplicingTest : lsExonSplicingTest) {
-			exonSplicingTest.setCondition(setCondition);
-			exonSplicingTest.setMapCond2Samfile(mapCond2SamFile);
 			exonSplicingTest.setCompareCondition(condition1, condition2);
 		}
 		//按照pvalue从小到大排序
@@ -350,21 +339,16 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		statisticsSplicingEvent(lsExonSplicingTest);
 	}
 	
-	/**
-	 *  一般是15::5	13::0	这种形式
-	 * 但有时候会出现15	13 这种明显不是转录本的
-	 * 所以在这里检查该值并且删除，但是这是治标不治本的做法，搞清楚为啥发生
-	 * @param lsIsoExonSplicingTests
-	 * @return
-	 */
-	private ArrayList<ExonSplicingTest> filterExon(ArrayList<ExonSplicingTest> lsIsoExonSplicingTests) {
-		ArrayList<ExonSplicingTest> lsResult = new ArrayList<ExonSplicingTest>();
-		for (ExonSplicingTest exonSplicingTest : lsIsoExonSplicingTests) {
-			lsResult.add(exonSplicingTest);
-		}
-		return lsResult;
+	private void sortLsExonTest_Use_Pvalue(ArrayList<ExonSplicingTest> lsExonSplicingTest) {
+		//按照pvalue从小到大排序
+		Collections.sort(lsExonSplicingTest, new Comparator<ExonSplicingTest>() {
+			public int compare(ExonSplicingTest o1, ExonSplicingTest o2) {
+				return o1.getAndCalculatePvalue().compareTo(o2.getAndCalculatePvalue());
+			}
+		});
+		ExonSplicingTest.setFdr(lsExonSplicingTest);
 	}
-
+	
 	/**
 	 * 统计可变剪接事件
 	 * @param lsExonSplicingTest
@@ -372,7 +356,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	private void statisticsSplicingEvent(ArrayList<ExonSplicingTest> lsExonSplicingTest) {
 		SplicingAlternativeType exonSplicingType = null;
 		for (ExonSplicingTest exonSplicingTest : lsExonSplicingTest) {
-			exonSplicingType = exonSplicingTest.getExonCluster().getExonSplicingType();
+			exonSplicingType = exonSplicingTest.getSplicingType();
 			int[] tmpInfo = new int[]{0, 0};
 			if (mapSplicingType2Num.containsKey(exonSplicingType)) {
 				tmpInfo = mapSplicingType2Num.get(exonSplicingType);
@@ -404,17 +388,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		}
 		txtStatistics.close();
 	}
-	
-	private void sortLsExonTest_Use_Pvalue(ArrayList<ExonSplicingTest> lsExonSplicingTest) {
-		//按照pvalue从小到大排序
-		Collections.sort(lsExonSplicingTest, new Comparator<ExonSplicingTest>() {
-			public int compare(ExonSplicingTest o1, ExonSplicingTest o2) {
-				return o1.getAndCalculatePvalue().compareTo(o2.getAndCalculatePvalue());
-			}
-		});
-		ExonSplicingTest.setFdr(lsExonSplicingTest);
-	}
-	
+
 	public void clear() {
 		condition1 = null; condition2 = null;
 		lsResult = null;

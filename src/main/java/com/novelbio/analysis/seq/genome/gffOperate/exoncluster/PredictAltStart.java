@@ -10,14 +10,13 @@ import com.novelbio.analysis.seq.mapping.Align;
 
 //TODO 要和alt5 alt3区分开
 public class PredictAltStart extends PredictAltStartEnd {
-	ArrayList<Align> lsSite;
 	
 	public PredictAltStart(ExonCluster exonCluster) {
 		super(exonCluster);
 	}
 	@Override
-	public String getType() {
-		return SplicingAlternativeType.altstart.toString();
+	public SplicingAlternativeType getType() {
+		return SplicingAlternativeType.altstart;
 	}
 	
 	public ArrayList<Double> getJuncCounts(String condition) {

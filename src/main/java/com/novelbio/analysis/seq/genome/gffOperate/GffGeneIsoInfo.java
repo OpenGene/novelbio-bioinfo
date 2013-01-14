@@ -1025,7 +1025,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			return 2;
 		}
 
-		ArrayList<ArrayList<ExonInfo>> lsExon = exonCluster.lsIsoExon;
+		ArrayList<ArrayList<ExonInfo>> lsExon = exonCluster.getLsIsoExon();
 		if (lsExon.size() < 2) {
 			return 0;
 		}

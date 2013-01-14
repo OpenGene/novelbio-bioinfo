@@ -19,8 +19,8 @@ public class PredictME extends SpliceTypePredict {
 		super(exonCluster);
 	}
 	@Override
-	public String getType() {
-		return SplicingAlternativeType.mutually_exclusive.toString();
+	public SplicingAlternativeType getType() {
+		return SplicingAlternativeType.mutually_exclusive;
 	}
 	public ArrayList<ArrayList<ExonInfo>> getLsExonBefore() {
 		return lsExonBefore;
@@ -106,7 +106,7 @@ public class PredictME extends SpliceTypePredict {
 		int beforeStart = gffGeneIsoInfo.get(exonIndexBefore).getEndCis();
 		alignBefore = new Align(gffGeneIsoInfo.getChrID(), beforeStart, beforeEnd);
 		
-		int afterStart = lsExonInfos.get(lsExonInfos.size() - 1).getStartCis();
+		int afterStart = lsExonInfos.get(lsExonInfos.size() - 1).getEndCis();
 		int exonIndexAfter = lsExonInfos.get(lsExonInfos.size() - 1).getItemNum() + 1;
 		int afterEnd = gffGeneIsoInfo.get(exonIndexAfter).getStartCis();
 		alignAfter = new Align(gffGeneIsoInfo.getChrID(), afterStart, afterEnd);
@@ -211,7 +211,7 @@ public class PredictME extends SpliceTypePredict {
 			
 			ArrayList<ExonInfo> lsExons = exonClusterBeforeOrAfter.getMapIso2LsExon().get(gffGeneIsoInfo);
 			if (lsExons != null && lsExons.size() == 0 ) {
-				lsExonThis.add(lsExons);
+				lsExonThis.add(lsExonInfo);
 			}
 		}
 		return lsExonThis;
@@ -226,22 +226,40 @@ public class PredictME extends SpliceTypePredict {
 	 */
 	public ArrayList<Double> getJuncCounts(String condition) {
 		ArrayList<Double> lsCounts = new ArrayList<Double>();
-		if (getLsExonThisBefore().size() > 0) {
-			lsCounts.add((double) getJuncNum(getSiteInfoThisBefore(), condition, tophatJunction));
-			lsCounts.add((double) getJuncNum(getSiteInfoBefore(), condition, tophatJunction));
+		if (lsExonThisBefore != null && lsExonThisBefore.size() > 0) {
+			lsCounts.add((double) getJuncNum(true, getSiteInfoThisBefore(), condition, tophatJunction));
+			lsCounts.add((double) getJuncNum(false, getSiteInfoBefore(), condition, tophatJunction));
 		}
-		if (getLsExonThisAfter().size() > 0) {
-			lsCounts.add((double) getJuncNum(getSiteInfoThisAfter(), condition, tophatJunction));
-			lsCounts.add((double) getJuncNum(getSiteInfoAfter(), condition, tophatJunction));
+		if (lsExonThisAfter != null && lsExonThisAfter.size() > 0) {
+			lsCounts.add((double) getJuncNum(false, getSiteInfoThisAfter(), condition, tophatJunction));
+			lsCounts.add((double) getJuncNum(true, getSiteInfoAfter(), condition, tophatJunction));
 		}
 		return lsCounts;
 	}
-	private static int getJuncNum(ArrayList<Align[]> lsAligns, String condition, TophatJunction tophatJunction) {
+	/** 输入的是
+	 * 一个exon组成mutually exclusive所对应的site，前面一个和后面一个共两个<br>
+	 * 如：<br>
+	 * 3--4-----------5---6--------------------------------------9--10-<br>
+	 * 3--4----------------------------------7--8----------------11-12<br>
+	 * 输入4-5和6-9<br>
+	 * @param before true选取4-5，false选取6-9
+	 * 
+	 */
+	private static int getJuncNum(boolean before, ArrayList<Align[]> lsAligns, String condition, TophatJunction tophatJunction) {
 		int num = 0;
 		for (Align[] aligns : lsAligns) {
-			num = num + tophatJunction.getJunctionSite(condition,aligns[0].getRefID(), aligns[0].getStartAbs(), aligns[0].getEndAbs());
-			num = num + tophatJunction.getJunctionSite(condition,aligns[1].getRefID(), aligns[1].getStartAbs(), aligns[1].getEndAbs());
+			if (before) {
+				num = tophatJunction.getJunctionSite(condition,aligns[0].getRefID(), aligns[0].getStartAbs(), aligns[0].getEndAbs());
+			} else {
+				num = tophatJunction.getJunctionSite(condition,aligns[1].getRefID(), aligns[1].getStartAbs(), aligns[1].getEndAbs());
+			}
 		}
 		return num;
 	}
+
+	@Override
+	public Align getDifSite() {
+		return new Align(exonCluster.getChrID(), exonCluster.getStartCis(), exonCluster.getEndCis());
+	}
+
 }

@@ -2,16 +2,12 @@ package com.novelbio.analysis.seq.genome.gffOperate.exoncluster;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.TreeMap;
-import java.util.Map.Entry;
 
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.mapping.Align;
-import com.novelbio.database.domain.geneanno.SepSign;
 
 public class PredictAltEnd extends PredictAltStartEnd {
 
@@ -20,8 +16,8 @@ public class PredictAltEnd extends PredictAltStartEnd {
 		super(exonCluster);
 	}
 	@Override
-	public String getType() {
-		return SplicingAlternativeType.altend.toString();
+	public SplicingAlternativeType getType() {
+		return SplicingAlternativeType.altend;
 	}
 	
 	protected boolean isBeforeOrAfterNotSame() {
