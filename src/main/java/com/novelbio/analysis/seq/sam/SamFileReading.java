@@ -28,7 +28,11 @@ public class SamFileReading extends RunProcess<Double>{
 	 * @param lsAlignments
 	 */
 	public void setLsAlignments(List<? extends Alignment> lsAlignments) {
+		if (lsAlignments == null || lsAlignments.size() == 0) {
+			return;
+		}
 		this.lsAlignments = lsAlignments;
+
 		Collections.sort(lsAlignments, new Comparator<Alignment>() {
 			public int compare(Alignment o1, Alignment o2) {
 				int compare = 0;

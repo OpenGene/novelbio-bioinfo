@@ -15,6 +15,10 @@ import com.novelbio.generalConf.NovelBioConst;
 
 public class FengYing {
 	public static void main(String[] args) {
+		GffChrAbs gffChrAbs = new GffChrAbs(10090);
+		gffChrAbs.getGffHashGene().writeToGTF("/media/winF/NBC/Project/Project_FY/paper/NCBIGTF.gtf");
+	}
+	public static void main2(String[] args) {
 		DateTime dateTime = new DateTime();
 		mouse();
 		dateTime.setStartTime();
@@ -59,18 +63,18 @@ public class FengYing {
 				parentFile + "mm10_from_cufflinks.gtf");
 //		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
 //				parentFile + "mm10-ensemble-modified.gtf");
-		
-		System.out.println("finished reading GTF file");
+//		GffChrAbs gffChrAbs = new GffChrAbs(10090);
+//		System.out.println("finished reading GTF file");
 
 		ExonJunction exonJunction = new ExonJunction();
 		exonJunction.setGffHashGene(gffHashGene);
-		exonJunction.setIsLessMemory(true);
+		exonJunction.setIsLessMemory(false);
 		exonJunction.setOneGeneOneSpliceEvent(false);
 //		Species species = new Species(10090, "mm10_NCBI");
 //		GffChrAbs gffChrAbs = new GffChrAbs(species);
 //		exonJunction.setSeqHash(gffChrAbs.getSeqHash());
-		exonJunction.setIsoJunFile("KO", parentFile + "KOjunctions.bed");
-		exonJunction.setIsoJunFile("WT",parentFile + "WTjunctions.bed");
+//		exonJunction.setIsoJunFile("KO", parentFile + "KOjunctions.bed");
+//		exonJunction.setIsoJunFile("WT",parentFile + "WTjunctions.bed");
 //		System.out.println("finished reading junction reads");
 		exonJunction.addBamSorted("KO", parentFile + "KOod.bam");
 		exonJunction.addBamSorted("WT", parentFile + "WT0d.bam");
@@ -82,7 +86,7 @@ public class FengYing {
 		System.out.println("finished reading bam file");
 
 		exonJunction.setOneGeneOneSpliceEvent(false);
-		String outResult = parentFile +  "KO_vs_WT_Cufflinks_New3_Algorithm_exp.xls";
+		String outResult = parentFile +  "KO_vs_WT_Cufflinks_New4_Algorithm_withexp_test.xls";
 		exonJunction.writeToFile(outResult);
 	}
 

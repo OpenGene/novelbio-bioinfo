@@ -1,8 +1,6 @@
 package com.novelbio.analysis.seq.rnaseq;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -155,7 +153,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		logger.error("finish junction reads");
 		fillLsAll_Dif_Iso_Exon();
 		
-//		loadExp();
+		loadExp();
 		
 		lsResult = getTestResult_FromIso();
 	}
@@ -214,7 +212,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	 */
 	private ArrayList<ExonSplicingTest> getGeneDifExon(GffDetailGene gffDetailGene) {
 		//TODO 设置断点
-		if (gffDetailGene.getName().contains("Trrap")) {
+		if (gffDetailGene.getName().contains("Foxp1")) {
 			logger.debug("stop");
 		}
 		
@@ -340,13 +338,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	private void sortLsExonTest_Use_Pvalue(ArrayList<ExonSplicingTest> lsExonSplicingTest) {
-		//按照pvalue从小到大排序
-		Collections.sort(lsExonSplicingTest, new Comparator<ExonSplicingTest>() {
-			public int compare(ExonSplicingTest o1, ExonSplicingTest o2) {
-				return o1.getAndCalculatePvalue().compareTo(o2.getAndCalculatePvalue());
-			}
-		});
-		ExonSplicingTest.setFdr(lsExonSplicingTest);
+		ExonSplicingTest.sortAndFdr(lsExonSplicingTest);
 	}
 	
 	/**

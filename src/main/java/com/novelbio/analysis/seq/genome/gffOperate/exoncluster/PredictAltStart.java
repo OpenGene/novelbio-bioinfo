@@ -40,10 +40,6 @@ public class PredictAltStart extends PredictAltStartEnd {
 		return exonClusterBefore != null && !exonClusterBefore.isSameExon();
 	}
 	
-	/**
-	 * 看本位点是否能和前一个exon组成mutually exclusivelsIsoExon
-	 * 并且填充lsExonThisBefore和lsExonBefore
-	 */
 	protected void find() {
 		lsSite = new ArrayList<Align>();
 		lslsExonInfos = new ArrayList<ArrayList<ExonInfo>>();
@@ -63,7 +59,6 @@ public class PredictAltStart extends PredictAltStartEnd {
 	
 	@Override
 	public Align getDifSite() {
-		ArrayList<Double> lsCounts = new ArrayList<Double>();
 		isType();
 		//倒序，获得junction最多的reads
 		TreeMap<Integer, ArrayList<ExonInfo>> mapJuncNum2Exon = new TreeMap<Integer, ArrayList<ExonInfo>>(new Comparator<Integer>() {

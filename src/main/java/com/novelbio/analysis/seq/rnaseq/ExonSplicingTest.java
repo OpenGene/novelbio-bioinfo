@@ -2,6 +2,8 @@ package com.novelbio.analysis.seq.rnaseq;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -262,7 +264,6 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	}
 	
 	/** 
-	 * Retain_Intron的pvalue比较奇怪，必须要exon才能计算的
 	 *  公式：2^((log2(0.8)*0.5 + log2(0.1)*0.5))
 	 *  */
 	private double getPvalueCombine(double pvalueExp, double pvalueCounts) {
@@ -271,7 +272,9 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			pvalue = pvalueCounts;
 			return pvalue;
 		}
-		
+		if (pvalueCounts == 1) {
+			return 1;
+		}
 		double expPro = getPvaluePropExp();
 		double pvalueLog = Math.log10(pvalueExp) * expPro +  Math.log10(pvalueCounts) * (1 - expPro);
 		pvalue = Math.pow(10, pvalueLog);
@@ -371,28 +374,9 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		return pvalue.compareTo(o.pvalue);
 	}
 	
-	public static void setFdr(Collection<ExonSplicingTest> colExonSplicingTests) {
-		ArrayList<Double> lsPvalue = new ArrayList<Double>();
-		for (ExonSplicingTest exonSplicingTest : colExonSplicingTests) {
-			lsPvalue.add(exonSplicingTest.getAndCalculatePvalue());
-		}
-		
-		ArrayList<Double> lsFdr = MathComput.pvalue2Fdr(lsPvalue);
-		int i = 0;
-		for (ExonSplicingTest exonSplicingTest : colExonSplicingTests) {
-			exonSplicingTest.setFdr(lsFdr.get(i));
-			i++;
-		}
-	}
-	
 	public String[] toStringArray() {
 		getAndCalculatePvalue();
 		ArrayList<String> lsResult = new ArrayList<String>();
-		try {
-			List<Double> lsJunc1 = mapCondition2SpliceInfo.get(condition1).getLsJun(splicingType);
-		} catch (Exception e) {
-			List<Double> lsJunc1 = mapCondition2SpliceInfo.get(condition1).getLsJun(splicingType);
-		}
 		List<Double> lsJunc1 = mapCondition2SpliceInfo.get(condition1).getLsJun(splicingType);
 		List<Double> lsJunc2 = mapCondition2SpliceInfo.get(condition2).getLsJun(splicingType);
 		
@@ -446,6 +430,36 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			condition = condition + "::" + lsJunc.get(i).intValue();
 		}
 		return condition;
+	}
+	
+	/** 输入的信息会自动排序 */
+	public static void sortAndFdr(List<ExonSplicingTest> colExonSplicingTests) {
+		//按照pvalue从小到大排序
+		Collections.sort(colExonSplicingTests, new Comparator<ExonSplicingTest>() {
+			public int compare(ExonSplicingTest o1, ExonSplicingTest o2) {
+				return o1.getAndCalculatePvalue().compareTo(o2.getAndCalculatePvalue());
+			}
+		});
+		
+		ArrayList<Double> lsPvalue = new ArrayList<Double>();
+		for (ExonSplicingTest exonSplicingTest : colExonSplicingTests) {
+			if (exonSplicingTest.getAndCalculatePvalue() > 0.5) {
+				break;
+			}
+			lsPvalue.add(exonSplicingTest.getAndCalculatePvalue());
+		}
+		
+		ArrayList<Double> lsFdr = MathComput.pvalue2Fdr(lsPvalue);
+		int i = 0;
+		for (ExonSplicingTest exonSplicingTest : colExonSplicingTests) {
+			if (i < lsFdr.size()) {
+				exonSplicingTest.setFdr(lsFdr.get(i));
+			} else {
+				exonSplicingTest.setFdr(1);
+			}
+
+			i++;
+		}
 	}
 	
 	/** 获得标题 */

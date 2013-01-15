@@ -605,6 +605,14 @@ public class GffDetailGene extends ListDetailAbs {
 		ArrayList<ArrayList<GffGeneIsoInfo>> ls_lsIso = new ArrayList<ArrayList<GffGeneIsoInfo>>();
 		boolean flagGetNexIso = false;
 		double prop = getSimilarProp();
+		if (lsGffGeneIsoInfos.size() <= 3) {
+			ArrayList<GffGeneIsoInfo> lsResult = new ArrayList<GffGeneIsoInfo>();
+			for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
+				lsResult.add(gffGeneIsoInfo);
+			}
+			return lsResult;
+		}
+		
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
 			flagGetNexIso = false;
 			for (ArrayList<GffGeneIsoInfo> lsIso : ls_lsIso) {
@@ -647,26 +655,23 @@ public class GffDetailGene extends ListDetailAbs {
 			return 0.6;
 		}
 		//倒序排序
-		TreeSet<Integer> setExonNum = new TreeSet<Integer>(new Comparator<Integer>() {
+		ArrayList<Integer> lsExonNum = new ArrayList<Integer>();
+		for (GffGeneIsoInfo gffGeneIsoInfo : getLsCodSplit()) {
+			lsExonNum.add(gffGeneIsoInfo.size());
+		}
+		Collections.sort(lsExonNum, new Comparator<Integer>() {
 			public int compare(Integer o1, Integer o2) {
 				return -o1.compareTo(o2);
 			}
 		});
-		for (GffGeneIsoInfo gffGeneIsoInfo : getLsCodSplit()) {
-			setExonNum.add(gffGeneIsoInfo.size());
-		}
-		int exonNum = 0;
-		int i = 0;
-		for (Integer integer : setExonNum) {
-			exonNum = integer;
-			i++;
-			if (i == 2) {
-				break;
-			}
-		}
-		if (exonNum > 5) {
-			return 0.7;
-		} else if (exonNum > 3) {
+		int exonNum1 = 0;//最多转录本的exon数
+		int exonNum2 = 0;//第二多转录本的exon数
+		exonNum1 = lsExonNum.get(0);
+		exonNum2 = lsExonNum.get(1);
+		
+		if (exonNum1 <= 3) {
+			return 0.3;
+		} else if (exonNum2 > 3) {
 			return 0.6;
 		} else {
 			return 0.5;

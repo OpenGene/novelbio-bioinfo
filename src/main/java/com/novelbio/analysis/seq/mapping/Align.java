@@ -12,11 +12,23 @@ public class Align implements Alignment{
 	int start, end;
 	String chrID;
 	Boolean cis5to3;
+	/**
+	 * 根据输入的start和end自动正反向cis5to3
+	 * @param chrID
+	 * @param start
+	 * @param end
+	 */
 	public Align(String chrID, int start, int end) {
 		this.chrID = chrID;
 		this.start = Math.min(start, end);
 		this.end = Math.max(start, end);
+		if (start < end) {
+			cis5to3 = true;
+		} else if (start > end) {
+			cis5to3 = false;
+		}
 	}
+	/** 会覆盖已有的cis5to3 */
 	public void setCis5to3(Boolean cis5to3) {
 		this.cis5to3 = cis5to3;
 	}
