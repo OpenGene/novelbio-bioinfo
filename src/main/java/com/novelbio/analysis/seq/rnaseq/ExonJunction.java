@@ -168,9 +168,10 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				samFileReading.setLsAlignments(lsDifIsoGene);
 				samFileReading.setRunGetInfo(runGetInfo);
 				samFileReading.addAlignmentRecorder(tophatJunction);
-				samFileReading.run();				
+				samFileReading.run();
+				
 				GuiAnnoInfo exonJunctionGuiInfo = new GuiAnnoInfo();
-				//TODO
+				exonJunctionGuiInfo.setInfo("Finished Reading Junction");
 				setRunInfo(exonJunctionGuiInfo);
 			}
 		}

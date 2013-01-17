@@ -21,6 +21,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo.SnpIndelType;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.database.domain.geneanno.SepSign;
 
 /**
  * 解析samtools产生的pile up信息，将每一行生成一个本类，专门存储堆叠信息
@@ -71,7 +72,7 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	 */
 	public RefSiteSnpIndel(GffChrAbs gffChrAbs,String chrID, int refSnpIndelStart) {
 		this.gffChrAbs = gffChrAbs;
-		this.chrID = chrID;
+		this.chrID = chrID.toLowerCase();
 		this.refSnpIndelStart = refSnpIndelStart;
 	}
 	
@@ -930,13 +931,13 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	 * 先比refID，然后比start，end，或者比flag或者比score
 	 * 比score的时候就不考虑refID了
 	 */
-	public int compareTo(RefSiteSnpIndel mapInfoOther) {
-		int i = chrID.compareTo(mapInfoOther.chrID);
+	public int compareTo(RefSiteSnpIndel refSiteSnpIndel) {
+		int i = chrID.toLowerCase().compareTo(refSiteSnpIndel.chrID.toLowerCase());
 		if (i != 0) {
 			return i;
 		}
 		Integer site1 = refSnpIndelStart;
-		Integer site2 = mapInfoOther.refSnpIndelStart;
+		Integer site2 = refSiteSnpIndel.refSnpIndelStart;
 		return site1.compareTo(site2);
 	}
 	
@@ -987,6 +988,13 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		mapAllen2Num.clear();
 		mapSample2NormReadsInfo.clear();
 	}
+	
+	/** 获得chrID和loc的string，用于做key */
+	public String getKeySiteInfo() {
+		String key = getRefID() + SepSign.SEP_ID + getRefSnpIndelStart();
+		return key.toLowerCase();
+	}
+	
 	public static void writeToFile(String outFileName, ArrayList<RefSiteSnpIndel> lsRefSiteSnpIndels) {
 		Set<String> setSampleName = lsRefSiteSnpIndels.get(0).mapSample2NormReadsInfo.keySet();
 		writeToFile(outFileName, lsRefSiteSnpIndels, setSampleName);

@@ -170,6 +170,7 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 			}
 			/////////////////////////////////////////////////////////
 			Collections.sort(lsSnpSiteSimples);
+			System.out.println("stop");
 		}
 	}
 	
@@ -201,12 +202,12 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 			
 			String[] ss = samtoolsLine.split("\t");
 			int loc = Integer.parseInt(ss[1]);
-			if (loc == 7535269 && ss[0].equalsIgnoreCase("c")) {
+			if (loc == 11583717) {
 				logger.error("stop");
 			}
 			
 			
-			if (!ss[0].equalsIgnoreCase(tmpChrID)) {
+			if (!ss[0].trim().toLowerCase().equals(tmpChrID)) {
 				
 				tmpChrID = ss[0].toLowerCase();
 				lsMapInfos = mapChrID2LsSnpSite.get(tmpChrID);

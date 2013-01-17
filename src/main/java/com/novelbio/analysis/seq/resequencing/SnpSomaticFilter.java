@@ -34,7 +34,9 @@ public class SnpSomaticFilter {
 	 * 1：SampleFile  */
 	ArrayList<String[]> lsSample2SamPileupFile = new ArrayList<String[]>();
 
-	/** 用于多个样本的snp去冗余的，其中key表示该snp所在的起点信息，value就是该位点具体的snp情况 */
+	/** 用于多个样本的snp去冗余的，其中key表示该snp所在的起点信息，value就是该位点具体的snp情况
+	 * key小写
+	 *  */
 	Map<String, RefSiteSnpIndel> mapSiteInfo2RefSiteSnpIndel = new TreeMap<String, RefSiteSnpIndel>();
 	
 	/** 过滤后的snpSite，包含某个位点的所有信息 */
@@ -161,7 +163,7 @@ public class SnpSomaticFilter {
 	}
 	
 	private void addSnp_2_mapSiteInfo2RefSiteSnpIndel(RefSiteSnpIndel refSiteSnpIndel) {
-		String key = refSiteSnpIndel.getRefID() + SepSign.SEP_ID + refSiteSnpIndel.getRefSnpIndelStart();
+		String key = refSiteSnpIndel.getKeySiteInfo();
 		if (mapSiteInfo2RefSiteSnpIndel.containsKey(key)) {
 			RefSiteSnpIndel maInfoSnpIndelExist = mapSiteInfo2RefSiteSnpIndel.get(key);
 			maInfoSnpIndelExist.addAllenInfo(refSiteSnpIndel);

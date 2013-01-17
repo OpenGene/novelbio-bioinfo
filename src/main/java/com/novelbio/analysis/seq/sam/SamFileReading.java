@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.novelbio.analysis.seq.genome.mappingOperate.Alignment;
 import com.novelbio.base.multithread.RunProcess;
+import com.novelbio.nbcgui.GUI.GuiAnnoInfo;
 
 /**
  * 输入一系列的AlignmentRecorder，然后读取指定的sambam文件
@@ -15,7 +16,7 @@ import com.novelbio.base.multithread.RunProcess;
  * @author zong0jie
  *
  */
-public class SamFileReading extends RunProcess<Double>{
+public class SamFileReading extends RunProcess<GuiAnnoInfo>{
 	List<? extends Alignment> lsAlignments;
 	ArrayList<AlignmentRecorder> lsAlignmentRecorders = new ArrayList<AlignmentRecorder>();
 	SamFile samFile;
@@ -77,7 +78,8 @@ public class SamFileReading extends RunProcess<Double>{
 	}
 	
 	private void readAllLines() {
-		double readByte = 0;
+		GuiAnnoInfo guiAnnoInfo;
+		long readLines = 0;
 		for (SamRecord samRecord : samFile.readLines()) {
 			for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {
 				alignmentRecorder.addAlignRecord(samRecord);
@@ -86,13 +88,16 @@ public class SamFileReading extends RunProcess<Double>{
 			if (suspendFlag) {
 				break;
 			}
-			readByte = readByte + samRecord.toString().getBytes().length;
-			setRunInfo(readByte);
+			readLines++;
+			guiAnnoInfo = new GuiAnnoInfo();
+			guiAnnoInfo.setNum(readLines);
+			setRunInfo(guiAnnoInfo);
 			samRecord = null;
 		}
 	}
 	private void readSelectLines() {
-		double readByte = 0;
+		GuiAnnoInfo guiAnnoInfo;
+		long readLines = 0;
 		for (Alignment alignment : lsAlignments) {
 			for (SamRecord samRecord : samFile.readLinesOverlap(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs())) {
 				for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {
@@ -102,8 +107,10 @@ public class SamFileReading extends RunProcess<Double>{
 				if (suspendFlag) {
 					break;
 				}
-				readByte = readByte + samRecord.toString().getBytes().length;
-				setRunInfo(readByte);
+				readLines++;
+				guiAnnoInfo = new GuiAnnoInfo();
+				guiAnnoInfo.setNum(readLines);
+				setRunInfo(guiAnnoInfo);
 				samRecord = null;
 			}
 		}

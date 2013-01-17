@@ -153,8 +153,6 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 				} else {
 					refSiteSnpIndel.clear();
 				}
-			} else {
-				refSiteSnpIndel.clear();
 			}
 			refSiteSnpIndel = null;
 		}
@@ -174,7 +172,7 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 	
 	/** 将结果装入哈希表里面 */
 	private void addSnp_2_mapSiteInfo2RefSiteSnpIndel(RefSiteSnpIndel refSiteSnpIndel) {
-		String key = refSiteSnpIndel.getRefID() + SepSign.SEP_ID + refSiteSnpIndel.getRefSnpIndelStart();
+		String key = refSiteSnpIndel.getKeySiteInfo();
 		if (mapSiteInfo2RefSiteSnpIndel.containsKey(key)) {
 			RefSiteSnpIndel maInfoSnpIndelExist = mapSiteInfo2RefSiteSnpIndel.get(key);
 			maInfoSnpIndelExist.addAllenInfo(refSiteSnpIndel);

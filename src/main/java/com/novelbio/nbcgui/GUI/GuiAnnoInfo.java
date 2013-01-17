@@ -15,9 +15,31 @@ public class GuiAnnoInfo {
 	String info;
 	/** 列表信息 */
 	ArrayList<String[]> lsInfo = new ArrayList<String[]>();
+	/** 进度 */
+	double prop;
+	
+	/** 0到100的数字
+	 * 设定该区间后，所有的prop都会自动修正成该区间内的prop
+	 * 譬如设定20-50，prop为0.2，那么自动修正prop为 20+(50-20) * 0.2
+	 */
+	int[] step = new int[]{0, 100};
+	
+	public GuiAnnoInfo() {};
+	
+	/**
+	 * 0到100的数字
+	 * 设定该区间后，所有的prop都会自动修正成该区间内的prop
+	 * 譬如设定20-50，prop为0.2，那么自动修正prop为 20+(50-20) * 0.2
+	 */
+	public GuiAnnoInfo(int[] step) {
+		this.step = step;
+	}
 	
 	public void setNum(double num) {
 		this.num = num;
+	}
+	public void setProp(double prop) {
+		this.prop = prop;
 	}
 	public void setInfo(String info) {
 		this.info = info;
@@ -43,5 +65,8 @@ public class GuiAnnoInfo {
 	/** 列表信息 */
 	public ArrayList<String[]> getLsInfo() {
 		return lsInfo;
+	}
+	public double getProp() {
+		return prop;
 	}
 }
