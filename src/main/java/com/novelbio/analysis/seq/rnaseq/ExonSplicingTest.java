@@ -1,16 +1,13 @@
 package com.novelbio.analysis.seq.rnaseq;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.math.stat.descriptive.moment.Mean;
@@ -18,31 +15,28 @@ import org.apache.commons.math.stat.inference.TestUtils;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.hash.HashCode;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqHash;
-import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster;
-import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.PredictME;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.PredictRetainIntron;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict.SplicingAlternativeType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
-import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.SamFile;
-import com.novelbio.analysis.seq.sam.SamMapReads;
-import com.novelbio.analysis.seq.sam.SamRecord;
-import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.FisherTest;
 import com.novelbio.base.dataStructure.MathComput;
-import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.generalConf.TitleFormatNBC;
-import com.sun.tools.javac.jvm.Code;
 
-/** 可变剪接的检验 */
+/**
+ * 可变剪接的检验
+ * 有一个需要修正的地方
+ * 就是alt3和alt5
+ * 有时候这个只相差3个bp，就是边界就相差1-3个氨基酸
+ * 这种我觉得很扯淡
+ * 我觉得这种要被过滤掉
+ */
 public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	private static Logger logger = Logger.getLogger(ExonSplicingTest.class);
 	
@@ -276,8 +270,10 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			return 1;
 		}
 		double expPro = getPvaluePropExp();
-		double pvalueLog = Math.log10(pvalueExp) * expPro +  Math.log10(pvalueCounts) * (1 - expPro);
-		pvalue = Math.pow(10, pvalueLog);
+//		double pvalueLog = Math.log10(pvalueExp) * expPro +  Math.log10(pvalueCounts) * (1 - expPro);
+//		pvalue = Math.pow(10, pvalueLog);
+		
+		pvalue = pvalueExp * expPro +  pvalueCounts * (1 - expPro);
 		
 		if (pvalue > 1) {
 			pvalue = 1.0;
@@ -494,9 +490,7 @@ class SpliceType2Value {
 	Set<SplicingAlternativeType> setExonSplicingTypes = new HashSet<SplicingAlternativeType>();
 	HashMap<SplicingAlternativeType, List<Double>> mapSplicingType2LsExpValue = new HashMap<SplicingAlternativeType, List<Double>>();
 	HashMap<SplicingAlternativeType, List<Double>> mapSplicingType2LsJunctionReads = new HashMap<SplicingAlternativeType, List<Double>>();
-	
-	
-	
+
 	/** 添加表达 */
 	public void addExp(GffDetailGene gffDetailGene, SpliceTypePredict spliceTypePredict, MapReadsAbs mapReads) {
 		ArrayList<Double> lsExp = new ArrayList<Double>();

@@ -14,18 +14,17 @@ import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.NovelBioConst;
 
 public class FengYing {
-	public static void main(String[] args) {
+	public static void main2(String[] args) {
 		GffChrAbs gffChrAbs = new GffChrAbs(10090);
 		gffChrAbs.getGffHashGene().writeToGTF("/media/winF/NBC/Project/Project_FY/paper/NCBIGTF.gtf");
 	}
-	public static void main2(String[] args) {
+	public static void main(String[] args) {
 		DateTime dateTime = new DateTime();
 		mouse();
 		dateTime.setStartTime();
 //		topJunctionTest();
 //		System.out.println(dateTime.getEclipseTime());
 //		String parentFile = "C:/Users/jie/Desktop/paper/";
-//		
 //		
 //		TophatJunction tophatJunction = new TophatJunction();
 //		tophatJunction.setCondition("KO");
@@ -38,7 +37,7 @@ public class FengYing {
 	}
 	
 	public static void topJunctionTest() {
-		String parentFile = "/media/winF/NBC/Project/Project_FY/paper/";
+		String parentFile = "/media/winF/NBC/Project/Project_FY/chicken/Result/mapping/";
 		TophatJunction tophatJunction = new TophatJunction();
 		tophatJunction.setJunFile("KO", parentFile + "KOjunctions.bed");
 		tophatJunction.setJunFile("WT",parentFile + "WTjunctions.bed");
@@ -56,11 +55,11 @@ public class FengYing {
 	
 	
 	public static void mouse() {
-		String parentFile = "/media/winF/NBC/Project/Project_FY/paper/";
+		String parentFile = "/media/winF/NBC/Project/Project_FY/chicken/Result/mapping/";
 //		String parentFile = "C:/Users/jie/Desktop/paper/";
 		
 		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
-				parentFile + "mm10_from_cufflinks.gtf");
+				parentFile + "gal4merged.gtf");
 //		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
 //				parentFile + "mm10-ensemble-modified.gtf");
 //		GffChrAbs gffChrAbs = new GffChrAbs(10090);
@@ -76,8 +75,8 @@ public class FengYing {
 //		exonJunction.setIsoJunFile("KO", parentFile + "KOjunctions.bed");
 //		exonJunction.setIsoJunFile("WT",parentFile + "WTjunctions.bed");
 //		System.out.println("finished reading junction reads");
-		exonJunction.addBamSorted("KO", parentFile + "KOod.bam");
-		exonJunction.addBamSorted("WT", parentFile + "WT0d.bam");
+		exonJunction.addBamSorted("KO", parentFile + "DT40KO.bam");
+		exonJunction.addBamSorted("WT", parentFile + "DT40WT.bam");
 //		exonJunction.addBamFile_Sorted("WT2", parentFile + "MEFWT2da14m1_1/accepted_hits.bam");
 //		exonJunction.addBamFile_Sorted("WT2", parentFile + "MEFWT2da14m1_2/accepted_hits.bam");
 //		System.out.println(species.getVersionAll().get(1));
@@ -86,7 +85,7 @@ public class FengYing {
 		System.out.println("finished reading bam file");
 
 		exonJunction.setOneGeneOneSpliceEvent(false);
-		String outResult = parentFile +  "KO_vs_WT_Cufflinks_New4_Algorithm_withexp_test.xls";
+		String outResult = parentFile +  "KO_vs_WT_withexp_NewPvalue.xls";
 		exonJunction.writeToFile(outResult);
 	}
 

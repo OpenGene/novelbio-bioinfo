@@ -263,13 +263,17 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 		return anno;
 	}
 
-	
+	/**
+	 * 不查询数据库，直接返回gffDetailGene
+	 * @return
+	 */
 	public HashSet<GffDetailGene> getCoveredGffGene() {
 		setHashCoveredGenInfo();
 		return hashGffDetailGene;
 	}
 	/**
 	 * 由前面的设定，将所有符合要求的gene的全部提取出来
+	 * 查询数据库，并返回GeneID
 	 * @return
 	 */
 	public ArrayList<GeneID> getCoveredGene() {
