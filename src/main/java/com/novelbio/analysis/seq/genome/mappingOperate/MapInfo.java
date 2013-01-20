@@ -94,12 +94,11 @@ public class MapInfo extends SiteInfo implements HeatChartDataInt, Cloneable{
 	public static void setCompareType(int COMPARE_TYPE) {
 		compareInfo = COMPARE_TYPE;
 	}
+
 	/**
 	 * @param chrID
-	 * @param startLoc 从0开始，如果startLoc和endLoc都小于等于0，则需要对方返回全长信息
-	 * @param endLoc 从0开始
-	 * @param flag 比较的标签，可以是表达值等
-	 * @param title 本条目的名字，譬如基因名等
+	 * @param weight 权重
+	 * @param title 该区间的名字
 	 */
 	public MapInfo(String chrID,double weight, String title) {
 		this.refID = chrID;

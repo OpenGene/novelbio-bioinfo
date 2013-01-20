@@ -173,4 +173,8 @@ public abstract class SpliceTypePredict {
 		}
 	}
 
+	public  boolean isFiltered() {
+		return true;
+	}
+
 }

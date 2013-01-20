@@ -19,6 +19,7 @@ import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster;
+import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.PredictAlt5Or3;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.PredictRetainIntron;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict.SplicingAlternativeType;
@@ -147,6 +148,11 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			double pvalueExp = getPvalueReads(splicingType);
 			double pvalueCounts = getPvalueJunctionCounts(splicingType);
 			double pvalue = getPvalueCombine(pvalueExp, pvalueCounts);
+			
+			if (mapCondition2SpliceInfo.get(condition1).isFiltered(splicingType) == false) {
+				pvalue = 1.0;
+			}
+			
 			if (this.pvalue < 0 || pvalue < this.pvalue) {
 				this.splicingType = splicingType;
 				this.pvalue = pvalue;
@@ -490,7 +496,14 @@ class SpliceType2Value {
 	Set<SplicingAlternativeType> setExonSplicingTypes = new HashSet<SplicingAlternativeType>();
 	HashMap<SplicingAlternativeType, List<Double>> mapSplicingType2LsExpValue = new HashMap<SplicingAlternativeType, List<Double>>();
 	HashMap<SplicingAlternativeType, List<Double>> mapSplicingType2LsJunctionReads = new HashMap<SplicingAlternativeType, List<Double>>();
-
+	HashMap<SplicingAlternativeType, Boolean> mapSplicingType2IsFiltered = new HashMap<SpliceTypePredict.SplicingAlternativeType, Boolean>();
+	
+	/**
+	 * 是否通过过滤
+	 * 有些譬如类似alt5和alt3，如果差距太小，就不进行考虑
+	 */
+	boolean isFiltered = true;
+	
 	/** 添加表达 */
 	public void addExp(GffDetailGene gffDetailGene, SpliceTypePredict spliceTypePredict, MapReadsAbs mapReads) {
 		ArrayList<Double> lsExp = new ArrayList<Double>();
@@ -516,6 +529,7 @@ class SpliceType2Value {
 		
 		addLsDouble(mapSplicingType2LsJunctionReads, splicingAlternativeType, lsCounts);
 		setExonSplicingTypes.add(spliceTypePredict.getType());
+		mapSplicingType2IsFiltered.put(splicingAlternativeType, spliceTypePredict.isFiltered());
 	}
 	
 	/** 把一个lsDouble和map里面已有的LsDouble加起来 */
@@ -538,19 +552,25 @@ class SpliceType2Value {
 	}
 	
 	/** 获得reads，如果不存在这种类型的可变剪接，就返回null */
-	public List<Double> getLsJun(SplicingAlternativeType exonSplicingType) {
-		if (!setExonSplicingTypes.contains(exonSplicingType)) {
+	public List<Double> getLsJun(SplicingAlternativeType splicingAlternativeType) {
+		if (!setExonSplicingTypes.contains(splicingAlternativeType)) {
 			return null;
 		}
-		return mapSplicingType2LsJunctionReads.get(exonSplicingType);
+		return mapSplicingType2LsJunctionReads.get(splicingAlternativeType);
 	}
 		
 	/** 获得表达，如果不存在这种类型的可变剪接，就返回null */
-	public List<Double> getLsExp(SplicingAlternativeType exonSplicingType) {
-		if (!setExonSplicingTypes.contains(exonSplicingType)) {
+	public List<Double> getLsExp(SplicingAlternativeType splicingAlternativeType) {
+		if (!setExonSplicingTypes.contains(splicingAlternativeType)) {
 			return null;
 		}
-		return mapSplicingType2LsExpValue.get(exonSplicingType);
+		return mapSplicingType2LsExpValue.get(splicingAlternativeType);
 	}
-
+	
+	public boolean isFiltered(SplicingAlternativeType splicingAlternativeType) {
+		if (!setExonSplicingTypes.contains(splicingAlternativeType)) {
+			return false;
+		}
+		return mapSplicingType2IsFiltered.get(splicingAlternativeType);
+	}
 }

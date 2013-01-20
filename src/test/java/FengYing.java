@@ -1,4 +1,5 @@
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.rnaseq.ExonJunction;
@@ -14,11 +15,20 @@ import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.NovelBioConst;
 
 public class FengYing {
-	public static void main2(String[] args) {
-		GffChrAbs gffChrAbs = new GffChrAbs(10090);
-		gffChrAbs.getGffHashGene().writeToGTF("/media/winF/NBC/Project/Project_FY/paper/NCBIGTF.gtf");
-	}
 	public static void main(String[] args) {
+		String parentFile = "/media/winF/NBC/Project/Project_FY/chicken/Result/mapping/";
+		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
+				parentFile + "gal4merged.gtf");
+		int i = 0;
+		for (GffDetailGene gffDetailGene : gffHashGene.getGffDetailAll()) {
+			gffDetailGene.removeDupliIso();
+			if (gffDetailGene.getLsCodSplit().size() > 1) {
+				i ++;
+			}
+		}
+		System.out.println(i);
+	}
+	public static void main2(String[] args) {
 		DateTime dateTime = new DateTime();
 		mouse();
 		dateTime.setStartTime();
@@ -52,7 +62,6 @@ public class FengYing {
 		System.out.println(tophatJunction.getJunctionSite("WT", "chr2", 154791548, 154857269));
 		System.out.println(tophatJunction.getJunctionSite("WT", "chr2", 154791231, 154857269));
 	}
-	
 	
 	public static void mouse() {
 		String parentFile = "/media/winF/NBC/Project/Project_FY/chicken/Result/mapping/";

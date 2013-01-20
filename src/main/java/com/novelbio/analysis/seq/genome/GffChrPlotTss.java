@@ -227,15 +227,18 @@ public class GffChrPlotTss {
 		
 		lsGeneID2Value = new ArrayList<Gene2Value>();
 		for (GffDetailGene gffDetailGene : hashGene2Value.keySet()) {
-			Gene2Value gene2Value = new Gene2Value();
-			gene2Value.setGffGeneIsoInfo(gffDetailGene.getLongestSplitMrna());
+			Gene2Value gene2Value = new Gene2Value(gffDetailGene.getLongestSplitMrna());
 			gene2Value.setValue(hashGene2Value.get(gffDetailGene));
 			lsGeneID2Value.add(gene2Value);
 		}
 	}
 
-	/** <b>如果genestructure设定为tss或tes，那么务必首先设定tsstesRange</b><br>
-	 * 给定区域，获得被该区域覆盖的基因然后再做图。mapinfo中设定坐标位点和value */
+	/**
+	 * <b>如果genestructure设定为tss或tes，那么务必首先设定tsstesRange</b><br>
+	 * 给定区域，获得被该区域覆盖的基因然后再做图。mapinfo中设定坐标位点和value
+	 * @param lsMapInfos 给定的区域
+	 * @param geneStructure
+	 */
 	public void setSiteCoveredGene(ArrayList<MapInfo> lsMapInfos, GeneStructure geneStructure) {
 		this.lsGeneID2Value = Gene2Value.getLsGene2Vale(tsstesRange, gffChrAbs, lsMapInfos, geneStructure);
 	}

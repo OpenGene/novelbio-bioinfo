@@ -11,6 +11,14 @@ import com.novelbio.analysis.seq.mapping.Align;
 public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 	Map<Integer, GffGeneIsoInfo> mapEdge2Iso;
 	
+	/** 小于9个碱基，就不计算其pvalue */
+	public static final int lengthMin = 9;
+	/**
+	 * 是否通过过滤
+	 * alt5和alt3，如果差距太小，就不进行考虑
+	 */
+	boolean isFiltered = true;
+	
 	public PredictAlt5Or3(ExonCluster exonCluster) {
 		super(exonCluster);
 	}
@@ -45,9 +53,18 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 				break;
 			}
 		}
+		if (Math.abs(startEnd[0] - startEnd[1]) < lengthMin) {
+			isFiltered = false;
+		} else {
+			isFiltered = true;
+		}
 		return new Align(exonCluster.getChrID(), startEnd[0], startEnd[1]);
 	}
-
+	
+	public boolean isFiltered() {
+		return isFiltered;
+	}
+	
 	@Override
 	protected boolean isType() {
 		find();

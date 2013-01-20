@@ -27,6 +27,7 @@ public class Gene2Value {
 	private static final Logger logger = Logger.getLogger(Gene2Value.class);
 		
 	GffGeneIsoInfo gffGeneIsoInfo;
+	/** 权重 */
 	double value;
 	
 	/** tss或tes的扩展区域，一般哺乳动物为 -5000到5000 */
@@ -48,8 +49,12 @@ public class Gene2Value {
 	/** 对于lsExonIntronNumGetOrExclude选择get还是exclude，true为get，false为exclude */
 	boolean getOrExclude = true;
 	
+	public Gene2Value(GffGeneIsoInfo gffGeneIsoInfo) {
+		this.gffGeneIsoInfo = gffGeneIsoInfo;
+	}
 	/**
-	 * @param plotTssTesRegion tss或tes的扩展区域，一般哺乳动物为 -5000到5000
+	 * @param plotTssTesRegion tss或tes的扩展区域
+	 * 默认一般哺乳动物为 -5000到5000
 	 */
 	public void setPlotTssTesRegion(int[] plotTssTesRegion) {
 		this.plotTssTesRegion = plotTssTesRegion;
@@ -62,16 +67,15 @@ public class Gene2Value {
 	public void setSplitNum(int splitNum) {
 		this.splitNum = splitNum;
 	}
-	
-	public void setGffGeneIsoInfo(GffGeneIsoInfo gffGeneIsoInfo) {
-		this.gffGeneIsoInfo = gffGeneIsoInfo;
-	}
-	
+
+	/** 设定该基因的权重，譬如表达值等属性 */
 	public void setValue(double value) {
 		this.value = value;
 	}
 	
-	/** 提取的exon和intron，是叠在一起成为一体呢，还是头尾相连成为一体 */
+	/** 提取的exon和intron，是叠在一起成为一体呢，还是头尾相连成为一体
+	 * 默认首尾相连
+	 */
 	public void setExonIntronPileUp(boolean pileupExonIntron) {
 		this.pileupExonIntron = pileupExonIntron;
 	}
@@ -125,12 +129,12 @@ public class Gene2Value {
 			mapInfo.setStartEndLoc(gffGeneIsoInfo.getTESsite() + upstream, gffGeneIsoInfo.getTESsite() + downstream);
 			mapReads.getRange(splitNum, mapInfo, 0);
 		} else if (geneStructure == GeneStructure.EXON) {
-			sucess = setMapInfo(mapInfo, mapReads, gffGeneIsoInfo.getChrID(), gffGeneIsoInfo);
+			sucess = setMapInfo(mapInfo, mapReads, gffGeneIsoInfo);
 		} else if (geneStructure == GeneStructure.INTRON) {
 			if (gffGeneIsoInfo.getLsIntron().size() == 0) {
 				return null;
 			}
-			sucess = setMapInfo(mapInfo, mapReads, gffGeneIsoInfo.getChrID(), gffGeneIsoInfo.getLsIntron());
+			sucess = setMapInfo(mapInfo, mapReads, gffGeneIsoInfo.getLsIntron());
 		} else if (geneStructure == GeneStructure.ALLLENGTH) {
 			mapInfo.setStartEndLoc(gffGeneIsoInfo.getStartAbs(), gffGeneIsoInfo.getEndAbs());
 			mapReads.getRange(splitNum, mapInfo, 0);
@@ -138,17 +142,17 @@ public class Gene2Value {
 			if (!gffGeneIsoInfo.ismRNA()) {
 				return null;
 			}
-			sucess = setMapInfo(mapInfo, mapReads, gffGeneIsoInfo.getChrID(), gffGeneIsoInfo.getIsoInfoCDS());
+			sucess = setMapInfo(mapInfo, mapReads, gffGeneIsoInfo.getIsoInfoCDS());
 		} else if (geneStructure == GeneStructure.UTR3) {
 			if (gffGeneIsoInfo.getLenUTR3() < 20) {
 				return null;
 			}
-			sucess = setMapInfo(mapInfo, mapReads, gffGeneIsoInfo.getChrID(), gffGeneIsoInfo.getUTR3seq());
+			sucess = setMapInfo(mapInfo, mapReads, gffGeneIsoInfo.getUTR3seq());
 		} else if (geneStructure == GeneStructure.UTR5) {
 			if (gffGeneIsoInfo.getLenUTR5() < 20) {
 				return null;
 			}
-			sucess = setMapInfo(mapInfo, mapReads, gffGeneIsoInfo.getChrID(), gffGeneIsoInfo.getUTR5seq());
+			sucess = setMapInfo(mapInfo, mapReads, gffGeneIsoInfo.getUTR5seq());
 		} else {
 			return null;
 		}
@@ -159,7 +163,14 @@ public class Gene2Value {
 		return mapInfo;
 	}
 	
-	private boolean setMapInfo(MapInfo mapInfo, MapReads mapReads, String chrID, ArrayList<ExonInfo> lsExonInfos) {
+	/**
+	 * 根据指定的lsExonInfos信息，设定mapInfo的value
+	 * @param mapInfo
+	 * @param mapReads
+	 * @param lsExonInfos
+	 * @return
+	 */
+	private boolean setMapInfo(MapInfo mapInfo, MapReads mapReads, ArrayList<ExonInfo> lsExonInfos) {
 		double[] result = new double[splitNum];
 		List<ExonInfo> lsNew = getSelectLsExonInfo(lsExonInfos);
 		if (lsNew.size() == 0) {
@@ -169,7 +180,7 @@ public class Gene2Value {
 		if (pileupExonIntron) {
 			ArrayList<double[]> lsResult = new ArrayList<double[]>();
 			for (Alignment alignment : lsNew) {
-				double[] info = mapReads.getRangeInfo(chrID, alignment.getStartAbs(), alignment.getEndAbs(), 0);
+				double[] info = mapReads.getRangeInfo(mapInfo.getRefID(), alignment.getStartAbs(), alignment.getEndAbs(), 0);
 				if (info == null || info.length < 5) {
 					continue;
 				}
@@ -183,9 +194,9 @@ public class Gene2Value {
 			}
 		} else {
 			try {
-				result = mapReads.getRangeInfo(chrID, lsNew);
+				result = mapReads.getRangeInfo(mapInfo.getRefID(), lsNew);
 			} catch (Exception e) {
-				result = mapReads.getRangeInfo(chrID, lsNew);
+				result = mapReads.getRangeInfo(mapInfo.getRefID(), lsNew);
 			}
 			if (result == null || result.length < 10) {
 				return false;
@@ -196,8 +207,9 @@ public class Gene2Value {
 		mapInfo.setDouble(result);
 		return true;
 	}
-	/** 根据设定的lsExonIntronNumGetOrExclude和getOrExclude，返回选择的exoninfo
+	/** 根据设定的lsExonIntronNumGetOrExclude信息，返回选择的exoninfo
 	 * <b>暴露出来仅供测试</b>
+	 * @param lsExonInfos 输入的exon信息
 	 */
 	public List<ExonInfo> getSelectLsExonInfo(ArrayList<ExonInfo> lsExonInfos) {
 		HashSet<ExonInfo> setLocation = new HashSet<ExonInfo>();//去重复用的，防止lsSelect里面有重复的exoninfo
@@ -277,8 +289,7 @@ public class Gene2Value {
 		}
 		ArrayList<Gene2Value> lsGene2Values = new ArrayList<Gene2Value>();
 		for (GffDetailGene gffDetailGene : hashGffDetailGenes.keySet()) {
-			Gene2Value gene2Value = new Gene2Value();
-			gene2Value.setGffGeneIsoInfo(gffDetailGene.getLongestSplitMrna());
+			Gene2Value gene2Value = new Gene2Value(gffDetailGene.getLongestSplitMrna());
 			gene2Value.setValue(hashGffDetailGenes.get(gffDetailGene));
 			lsGene2Values.add(gene2Value);
 		}
@@ -321,8 +332,7 @@ public class Gene2Value {
 		ArrayList<Gene2Value> lsGene2Value = new ArrayList<Gene2Value>();
 		for (GffDetailGene gffDetailGene : gffChrAbs.getGffHashGene().getGffDetailAll()) {
 			GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplitMrna();
-			Gene2Value gene2Value = new Gene2Value();
-			gene2Value.setGffGeneIsoInfo(gffGeneIsoInfo);
+			Gene2Value gene2Value = new Gene2Value(gffGeneIsoInfo);
 			lsGene2Value.add(gene2Value);
 		}
 		return lsGene2Value;
