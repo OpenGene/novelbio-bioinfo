@@ -53,7 +53,7 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	 /**每隔多少位计数，如果设定为1，则算法会变化，然后会很精确*/
 	 int invNum = 10;
 	 /** 因为想加入小数，但是double比较占内存，所以就将数据乘以fold，然后最后除掉它就好 */
-	 int fold = 1000;
+	 int fold = 10000;
 	 /**添加samBam的文件用来获得信息
 	  * 注意在添加之前要先执行{@link #prepareAlignRecord(AlignRecord)}
 	  */
@@ -186,6 +186,7 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 				if (info[i] == 0) { 
 					continue;
 				}
+				info[i] = info[i]/fold;
 				ListCodAbs<ListDetailBin> gffcodPeak = gffHashPeak.searchLocation(chrID, i*invNum);
 				if (gffcodPeak != null && gffcodPeak.isInsideLoc()) {
 					continue;
@@ -317,7 +318,7 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 		}
 		int k = 0;
 		for (int i = startEnd[0]; i <= startEnd[1]; i++) {
-			result[k] = invNumReads[i];
+			result[k] = (double)invNumReads[i]/fold;
 			k++;
 		}
 		//标准化
@@ -452,9 +453,10 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 			if (i < 0) {
 				continue;
 			}
-			tmpRegReads[k] = invNumReads[i];
+			tmpRegReads[k] = (double)invNumReads[i]/fold;
 			k++;
 		}
+
 		normDouble(NormalType, tmpRegReads, getAllReadsNum());
 		double[] tmp = null;
 		try {
@@ -516,7 +518,14 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	public void summary() {
 		mapReadsAddAlignRecord.summary();
 	}
-
+	
+	/**
+	 * 四舍五入
+	 * @return
+	 */
+	private static int get4to5(double num) {
+		return (int)(num + 0.5);
+	}
 }
 
 /**
@@ -533,6 +542,7 @@ class MapReadsAddAlignRecord {
 	boolean flag = true;// 当没有该染色体时标记为false并且跳过所有该染色体上的坐标
 	ChrMapReadsInfo chrMapReadsInfo = null;
 	int[] tmpOld = new int[2];//更新 tmpOld
+	 /** 因为想加入小数，但是double比较占内存，所以就将数据乘以fold，然后最后除掉它就好 */
 	int fold;
 	public MapReadsAddAlignRecord(MapReads mapReads) {
 		this.mapReads = mapReads;
@@ -609,6 +619,7 @@ class MapReadsAddAlignRecord {
 	}
 	/**
 	 * 根据正反向截取相应的区域，最后返回需要累加的ArrayList<int[]>
+	 * 譬如韩燕的项目，只需要reads开头的前3个bp，那么就截取前三个就好
 	 * @param lsStartEnd
 	 * @param cis5to3
 	 * @return 如果cis5to3 = True，那么正着截取startCod长度的序列
@@ -676,6 +687,7 @@ class MapReadsAddAlignRecord {
 			}
 		}
 	}
+
 }
 
 
@@ -716,6 +728,7 @@ class ChrMapReadsInfo {
 	public long getReadsChrNum() {
 		return readsAllNum;
 	}
+	/** 设定总reads的数量 */
 	public void addReadsAllNum(long readsAllNum) {
 		this.readsAllNum = this.readsAllNum + readsAllNum;
 	}
@@ -747,7 +760,7 @@ class ChrMapReadsInfo {
 		
 		if (invNum == 1) {
 			for (int i = 0; i < SumLength - 2; i++) {
-				SumChrBpReads[i] = chrBpReads[i+1]/fold;
+				SumChrBpReads[i] = chrBpReads[i+1];
 				readsAllPipNum = readsAllPipNum + chrBpReads[i+1]/fold;
 			}
 			return;
@@ -756,9 +769,9 @@ class ChrMapReadsInfo {
 			 int[] tmpSumReads=new int[invNum];//将总的chrBpReads里的每一段提取出来
 			 int sumStart=i*invNum + 1; int k=0;//k是里面tmpSumReads的下标，实际下标就行，不用-1
 			 for (int j = sumStart; j < sumStart + invNum; j++) {
-				 int thisNum = chrBpReads[j]/fold;
+				 int thisNum = chrBpReads[j];
 				 tmpSumReads[k] = thisNum;
-				 readsAllPipNum = readsAllPipNum + thisNum;
+				 readsAllPipNum = readsAllPipNum + thisNum/fold;
 				 k++;
 			 }
 			 samplingSite(i, tmpSumReads);

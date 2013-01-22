@@ -6,7 +6,7 @@ import com.novelbio.analysis.seq.genome.mappingOperate.Alignment;
 /**
  * 最简单的Alignment
  * @author zong0jie
- * 重写了hashcode，为 chrID+start+end
+ * 重写了hashcode和equals方法，为 chrID+start+end
  */
 public class Align implements Alignment{
 	int start, end;
@@ -82,5 +82,17 @@ public class Align implements Alignment{
 	@Override
 	public int hashCode() {
 		return (chrID + start + "_" + end).hashCode();
+	}
+	
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		
+		if (getClass() != obj.getClass()) return false;
+		Align otherAlign = (Align)obj;
+		if (chrID.equals(otherAlign.chrID) && start == otherAlign.start && end == otherAlign.end && cis5to3 == otherAlign.cis5to3) {
+			return true;
+		}
+		return false;
 	}
 }

@@ -52,6 +52,9 @@ public class GffHashGene implements GffHashGeneInf{
 		gffHashGeneRefSeq.ReadGffarray(seqFasta);
 		this.gffHashGene = gffHashGeneRefSeq;
 	}
+	public void setGffHashGene(GffHashGeneAbs gffHashGene) {
+		this.gffHashGene = gffHashGene;
+	}
 	/**
 	 * 只设定参数，不读取
 	 * @param GffType

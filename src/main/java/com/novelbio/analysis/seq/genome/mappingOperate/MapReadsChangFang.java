@@ -114,7 +114,7 @@ public class MapReadsChangFang extends MapReads {
 				logger.info("超出范围：" + i);
 				continue;
 			}
-			chrBpReads[i] = chrBpReads[i] + methInfo[m];
+			chrBpReads[i] = chrBpReads[i] + methInfo[m]*fold;
 			m++;
 		}
 	}
@@ -143,7 +143,7 @@ class GtfHongXingMethy implements Alignment{
 	 */
 	public GtfHongXingMethy(String gtfLines, PatternOperate patternOperate) {
 		String[] ss = gtfLines.split("\t");
-		chrID = ss[0];
+		chrID = ss[0].toLowerCase();
 		start = Integer.parseInt(ss[3]);
 		end = start;
 		cis5to3 = ss[6].equals("+");
@@ -182,8 +182,7 @@ class GtfHongXingMethy implements Alignment{
 			}
 			String[] methyEvidence2Num = string.split(":");
 			int methyLevel = Integer.parseInt(methyEvidence2Num[0]);
-			int readsNum = Integer.parseInt(methyEvidence2Num[1]);
-			this.readsNum = this.readsNum + readsNum;
+			this.readsNum = Integer.parseInt(methyEvidence2Num[1]);;
 			this.methyScore = methyScore + methyLevel * readsNum;
 		}
 	}

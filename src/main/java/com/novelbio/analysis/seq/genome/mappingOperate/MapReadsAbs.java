@@ -30,6 +30,8 @@ import com.novelbio.database.model.species.Species;
  * 
  */
 public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcessInfo> {
+	/** 标准化数字会很小很小，乘以一个很大的数防止溢出 */
+	private static final int mulNum = 10000000;
 	private static Logger logger = Logger.getLogger(MapReadsAbs.class);
 	/**将长的单碱基精度的一条染色体压缩为短的每个inv大约10-20bp的序列，那么压缩方法选择为20bp中的数值的中位数 */
 	public static final int SUM_TYPE_MEDIAN = 2;
@@ -397,7 +399,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 		}
 		else if (NormalType == NORMALIZATION_ALL_READS) {
 			for (int i = 0; i < doubleInfo.length; i++) {
-				doubleInfo[i] = doubleInfo[i]*1000000/allReadsNum;
+				doubleInfo[i] = doubleInfo[i]*mulNum/allReadsNum;
 			}
 		}
 		else if (NormalType == NORMALIZATION_PER_GENE) {

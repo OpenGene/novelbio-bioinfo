@@ -213,7 +213,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	 */
 	private ArrayList<ExonSplicingTest> getGeneDifExon(GffDetailGene gffDetailGene) {
 		//TODO 设置断点
-		if (gffDetailGene.getName().contains("Foxp1")) {
+		if (gffDetailGene.getName().contains("CLASP2")) {
 			logger.debug("stop");
 		}
 		

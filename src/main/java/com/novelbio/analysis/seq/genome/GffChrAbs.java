@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapInfo;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -59,7 +60,11 @@ public class GffChrAbs {
 	public void setGffHash(GffHashGene gffHashGene) {
 		this.gffHashGene = gffHashGene;
 	}
-
+	public void setGffHash(GffHashGeneAbs gffHashGeneAbs) {
+		GffHashGene gffHashGene = new GffHashGene();
+		gffHashGene.setGffHashGene(gffHashGeneAbs);
+		this.gffHashGene = gffHashGene;
+	}
 	public void setSeqHash(SeqHash seqHash) {
 		this.seqHash = seqHash;
 	}

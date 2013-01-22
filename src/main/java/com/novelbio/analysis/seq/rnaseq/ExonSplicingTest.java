@@ -213,21 +213,8 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		List<Double> lsJunc2 = mapCondition2SpliceInfo.get(condition2).getLsJun(splicingType);
 		int[] cond1 = getReadsNum(lsJunc1);
 		int[] cond2 = getReadsNum(lsJunc2);
-		//遇到类似 0:5 0:50
-		//2：3：50  4：2：50
-		//等就要删除了
 		
-		int readsNumLess = 0;
-		for (int i = 0; i < cond1.length; i++) {
-			if (cond1[i] <= 5 && cond2[i] <= 5) {
-				readsNumLess++;
-			}
-		}
-		if (cond1.length - readsNumLess <= 1) {
-			return 1.0;
-		}
-		
-		if (MathComput.sum(cond1) + MathComput.sum(cond1) < junctionReadsMinNum) {
+		if (!filter(cond1, cond2)) {
 			return 1.0;
 		}
 		
@@ -245,6 +232,33 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			result[i] = lsJunc.get(i).intValue();
 		}
 		return result;
+	}
+	/** 某些情况不适合做分析，就过滤掉<br>
+	 * 譬如：遇到类似 0:5 0:50<br>
+	 * 和<br>
+	 * 2：3：50<br>  4：2：50<br>
+	 * 以及总reads过少的情况，就要删除不进行分析<br>
+	 */
+	private boolean filter(int[] cond1, int[] cond2) {
+		//遇到类似 0:5 0:50
+		//2：3：50  4：2：50
+		//等就要删除了
+		int allReadsNum = MathComput.sum(cond1) + MathComput.sum(cond2);
+		int readsNumLess = 0;
+		for (int i = 0; i < cond1.length; i++) {
+			if (cond1[i] <= allReadsNum/20 && cond2[i] <= allReadsNum/20) {
+				readsNumLess++;
+			}
+		}
+		if (cond1.length - readsNumLess <= 1) {
+			return false;
+		}
+		
+		//总reads数太少也过滤
+		if (MathComput.sum(cond1) + MathComput.sum(cond1) < junctionReadsMinNum) {
+			return false;
+		}
+		return true;
 	}
 	
 	private double chiSquareTestDataSetsComparison(int[] cond1, int[] cond2) {

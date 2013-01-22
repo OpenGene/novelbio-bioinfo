@@ -41,7 +41,7 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 	 */
 	protected void ReadGffarrayExcepTmp(String gfffilename) throws Exception {
 		setTaxID(gfffilename);
-		// 实例化四个表
+
 		mapChrID2ListGff = new LinkedHashMap<String, ListGff>();// 一个哈希表来存储每条染色体
 		
 		TxtReadandWrite txtGffRead = new TxtReadandWrite(gfffilename, false);
