@@ -64,6 +64,7 @@ public abstract class RunProcess<T> implements Runnable {
 	public void run() {
 		running();
 		flagFinish = true;
+		flagStop = true;
 		if (runGetInfo != null) {
 			runGetInfo.done(this);
 		}
@@ -79,6 +80,10 @@ public abstract class RunProcess<T> implements Runnable {
 			runGetInfo.setRunningInfo(runInfo);
 		}
 	}
+	public boolean isRunning() {
+		return !flagStop;
+	}
+	
 	public boolean isFinished() {
 		return flagFinish;
 	}

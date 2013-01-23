@@ -118,7 +118,7 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	 * 用于快速将LOC编号对应到LOC的细节
 	 * hash（LOCID）--GeneInforlist，其中LOCID代表具体的基因编号 <br/>
 	 */
-	public HashMap<String,T> getMapName2Detail() {
+	public HashMap<String, T> getMapName2Detail() {
 		if (mapName2DetailAbs != null) {
 			return mapName2DetailAbs;
 		}

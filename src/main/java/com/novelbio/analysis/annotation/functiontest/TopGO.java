@@ -213,7 +213,7 @@ public class TopGO {
 		CmdOperate cmdOperate = new CmdOperate(cmd);
 		Thread threadCmd = new Thread(cmdOperate);
 		threadCmd.start();
-		while (!cmdOperate.isFinished()) {
+		while (cmdOperate.isRunning()) {
 			try { Thread.sleep(100); } catch (InterruptedException e) {
 				e.printStackTrace();
 			}

@@ -3,16 +3,21 @@ package com.novelbio.analysis.seq.rnaseq;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Set;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.domain.geneanno.SepSign;
 
-public class TophatJunction implements AlignmentRecorder {
+public class TophatJunction extends RunProcess<Integer> implements AlignmentRecorder {
+	ArrayListMultimap<String, String> mapCond2JuncFile = ArrayListMultimap.create();
+	
 	/**
 	 * key condition
 	 * value: 某个junction与别的junction之间的对应关系
@@ -117,6 +122,29 @@ public class TophatJunction implements AlignmentRecorder {
 	 * @param junctionFile
 	 */
 	public void setJunFile(String condition, String junctionFile) {
+		mapCond2JuncFile.put(condition, junctionFile);
+	}
+	
+	@Override
+	protected void running() {
+		readJuncFile();
+	}
+	
+	public void readJuncFile() {
+		for (String condition : mapCond2JuncFile.keySet()) {
+			List<String> lsFileName = mapCond2JuncFile.get(condition);
+			for (String junctionFile : lsFileName) {
+				readJuncFile(condition, junctionFile);
+			}
+		}
+	}
+	
+	/**
+	 * 读取junction文件，文件中每个剪接位点只能出现一次\
+	 * @param condition
+	 * @param junctionFile
+	 */
+	private void readJuncFile(String condition, String junctionFile) {
 		setCondition(condition);
 		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(junctionFile, false);
 		for (String string : txtReadandWrite.readfileLs()) {
@@ -133,6 +161,7 @@ public class TophatJunction implements AlignmentRecorder {
 			addJunctionInfo(chrID, junct1, junct2, junctionNum);
 		}
 	}
+	
 	/** 
 	 * 添加单个剪接位点reads
 	 * @param chrID 染色体
@@ -260,4 +289,5 @@ public class TophatJunction implements AlignmentRecorder {
 	public void summary() {
 		//NOTHING TO DO
 	}
+
 }

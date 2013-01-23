@@ -39,7 +39,7 @@ public class CmdOperate extends RunProcess<String> {
 		CmdOperate cmdOperate = new CmdOperate(cmd);
 		Thread thread = new Thread(cmdOperate);
 		thread.start();
-		while (!cmdOperate.isFinished()) {
+		while (cmdOperate.isRunning()) {
 			Thread.sleep(100);
 		}
 		System.out.println("stop");

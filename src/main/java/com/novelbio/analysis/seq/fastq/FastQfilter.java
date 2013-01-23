@@ -66,7 +66,7 @@ class FastQfilter extends RunProcess<FastQrecordFilterRun> {
 			readSE();
 		}
 		fastQthreadWrite.setFinishedRead(true);
-		while (!fastQthreadWrite.isFinished()) {
+		while (fastQthreadWrite.isRunning()) {
 			try { Thread.sleep(100); 	} catch (InterruptedException e) { e.printStackTrace(); }
 		}
 		allFilteredReadsNum = fastQthreadWrite.getFilteredNum();

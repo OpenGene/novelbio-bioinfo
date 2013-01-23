@@ -149,7 +149,13 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	public void running() {
 		if (!readJunctionFromBedFile) {
 			loadJunction();
+		} else {
+			readJuncFile();
 		}
+		
+		suspendCheck();
+		
+		
 		logger.error("finish junction reads");
 		fillLsAll_Dif_Iso_Exon();
 		
@@ -174,6 +180,13 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				exonJunctionGuiInfo.setInfo("Finished Reading Junction");
 				setRunInfo(exonJunctionGuiInfo);
 			}
+		}
+	}
+	private void readJuncFile() {
+		Thread thread = new Thread(tophatJunction);
+		thread.start();
+		while (tophatJunction.isRunning()) {
+			try { Thread.sleep(200); } catch (InterruptedException e) { }
 		}
 	}
 	
