@@ -12,7 +12,7 @@ package com.novelbio.base.multithread;
 public abstract class RunProcess<T> implements Runnable {
 	protected RunGetInfo runGetInfo;
 	
-	protected boolean flagStop = false;
+	protected boolean flagStop = true;
 	protected boolean suspendFlag = false;
 	/** 是否结束 */
 	boolean flagFinish = false;
@@ -62,6 +62,7 @@ public abstract class RunProcess<T> implements Runnable {
 	}
 	@Override
 	public void run() {
+		flagStop = false;
 		running();
 		flagFinish = true;
 		flagStop = true;

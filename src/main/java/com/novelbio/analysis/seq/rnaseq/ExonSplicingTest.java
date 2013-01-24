@@ -48,7 +48,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	/** 每个exonCluster组中condition以及其对应的信息 */
 	HashMap<String, SpliceType2Value> mapCondition2SpliceInfo = new LinkedHashMap<String, SpliceType2Value>();
 	
-	//差异最大的那个exonSplicingType
+	/** 差异最大的那个exonSplicingType */
 	SplicingAlternativeType splicingType;
 	String condition1;
 	String condition2;

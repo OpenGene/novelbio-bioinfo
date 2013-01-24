@@ -57,6 +57,10 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	TophatJunction tophatJunction = new TophatJunction();
 	LinkedHashSet<String> setCondition = new LinkedHashSet<String>();
 	
+	/** 如果有一系列需要比较的conditions，就写在这个里面 */
+	List<String[]> lsCondCompare;
+	
+	/** 本次比较的condition */
 	String condition1, condition2;
 	/** condition到排序的bam文件 */
 	ArrayListMultimap<String, SamFileReading> mapCond2SamReader = ArrayListMultimap.create();
@@ -70,7 +74,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	HashMap<SplicingAlternativeType, int[]> mapSplicingType2Num = new LinkedHashMap<SplicingAlternativeType, int[]>();
 	double pvalue = 0.05;//表示差异可变剪接的事件的pvalue阈值
 	
-
+	String resultFile;
 	
 	/** 是否提取序列 */
 	SeqHash seqHash;
@@ -96,7 +100,14 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	public void setIsLessMemory(boolean isLessMemory) {
 		this.isLessMemory = isLessMemory;
 	}
-
+	
+	/**
+	 * 设定输出
+	 * @param resultFile
+	 */
+	public void setResultFile(String resultFile) {
+		this.resultFile = resultFile;
+	}
 	/** 
 	 * 一个基因可能有多个可变剪接事件，但是我们可以只挑选其中最显著的那个可变剪接事件
 	 * 也可以输出全部的可变剪接事件
@@ -132,6 +143,11 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		this.condition1 = condition1;
 		this.condition2 = condition2;
 	}
+	
+	public void setCompareGroupsLs(List<String[]> lsConditions) {
+		this.lsCondCompare = lsConditions;
+	}
+	
 	/**
 	 * 设定junction文件以及所对应的时期
 	 * 一旦设定该项目，则不会从bam文件中获取junction信息
@@ -156,26 +172,40 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		lsLevels.add(0.2);
 		lsLevels.add(0.6);
 		lsLevels.add(1.0);
+		long fileLength = getFileLength();
 		
 		guiRNAautoSplice.setProgressBarLevelLs(lsLevels);
 		if (!readJunctionFromBedFile) {
 			guiRNAautoSplice.setProcessBarStartEndBarNum("Reading Junction", 1, 0, 100);
 			loadJunction();
 		} else {
-			long fileLength = getFileLength();
 			guiRNAautoSplice.setProcessBarStartEndBarNum("Reading Junction", 1, 0, fileLength);
 			readJuncFile();
 		}
 		
 		suspendCheck();
-		
-		
 		logger.error("finish junction reads");
+		
 		fillLsAll_Dif_Iso_Exon();
 		
+		guiRNAautoSplice.setProcessBarStartEndBarNum("Reading Exp", 2, 0, fileLength);
 		loadExp();
 		
-		lsResult = getTestResult_FromIso();
+		if (lsCondCompare == null || lsCondCompare.size() == 0) {
+			lsCondCompare = new ArrayList<String[]>();
+			lsCondCompare.add(new String[]{condition1, condition2});
+		}
+		
+		guiRNAautoSplice.setProcessBarStartEndBarNum("Doing Test", 3, 0, lsSplicingTests.size() * lsCondCompare.size());
+		int num = 0;
+		for (String[] condCompare : lsCondCompare) {
+			setCompareGroups(condCompare[0], condCompare[1]);
+			lsResult = getTestResult_FromIso(num);
+			if (resultFile != null) {
+				String outFile = FileOperate.changeFileSuffix(resultFile, "_"+condition1 +"vs" + condition2, null);
+				writeToFile(outFile );
+			}			
+		}
 	}
 	
 	/**
@@ -198,22 +228,27 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	private void loadJunction() {
+		SamFileReading samFileReadingLast = null;
+		
 		ArrayList<Align> lsDifIsoGene = null;//getLsDifIsoGene();
 		for (String condition : mapCond2SamReader.keySet()) {
+			guiRNAautoSplice.setInformation("Reading Junction " + condition);
 			tophatJunction.setCondition(condition);
 			List<SamFileReading> lsSamFileReadings = mapCond2SamReader.get(condition);
 			for (SamFileReading samFileReading : lsSamFileReadings) {
+				if (samFileReadingLast != null) {
+					samFileReading.setReadInfo(samFileReadingLast.getReadLines(), samFileReadingLast.getReadByte());
+				}
+				samFileReadingLast = samFileReading;
 				
 				samFileReading.clear();
 				samFileReading.setLsAlignments(lsDifIsoGene);
 				samFileReading.setRunGetInfo(guiRNAautoSplice);
 				samFileReading.addAlignmentRecorder(tophatJunction);
 				samFileReading.run();
-				GuiAnnoInfo exonJunctionGuiInfo = new GuiAnnoInfo();
-				exonJunctionGuiInfo.setInfo("Finished Reading Junction");
-				setRunInfo(exonJunctionGuiInfo);
 			}
 		}
+		samFileReadingLast = null;
 	}
 	
 	private void readJuncFile() {
@@ -283,10 +318,19 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	private void loadExp() {
+		SamFileReading samFileReadingLast = null;
+
 		for (String condition : mapCond2SamReader.keySet()) {
+			guiRNAautoSplice.setInformation("Reading Exp " + condition);
+			
 			List<SamFileReading> lsSamFileReadings = mapCond2SamReader.get(condition);
 			for (SamFileReading samFileReading : lsSamFileReadings) {
+				if (samFileReadingLast != null) {
+					samFileReading.setReadInfo(samFileReadingLast.getReadLines(), samFileReadingLast.getReadByte());
+				}
 				samFileReading.clear();
+				samFileReadingLast = samFileReading;
+				
 				samFileReading.setRunGetInfo(runGetInfo);
 				MapReadsAbs mapReadsAbs = null;
 				if (isLessMemory) {
@@ -296,10 +340,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 					samFileReading.run();
 				}
 				addMapReadsInfo(condition, mapReadsAbs);
-
-				GuiAnnoInfo exonJunctionGuiInfo = new GuiAnnoInfo();
-				//TODO
-				setRunInfo(exonJunctionGuiInfo);
 			}
 		}
 	}
@@ -336,12 +376,16 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		}
 	}
 
-	/** 获得检验完毕的test */
-	private ArrayList<ExonSplicingTest> getTestResult_FromIso() {
+	/** 获得检验完毕的test
+	 * @param num 已经跑掉几个测试了，这个仅仅用在gui上
+	 * @return
+	 */
+	private ArrayList<ExonSplicingTest> getTestResult_FromIso(int num) {
 		initialMapSplicingType2Num();
 		setConditionWhileConditionIsNull();
 
 		ArrayList<ExonSplicingTest> lsResult = new ArrayList<ExonSplicingTest>();
+
 		for (ArrayList<ExonSplicingTest> lsIsoExonSplicingTests : lsSplicingTests) {
 			doTest_And_StatisticSplicingEvent(lsIsoExonSplicingTests);
 			if (oneGeneOneSpliceEvent) {
@@ -349,6 +393,15 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			} else {
 				lsResult.addAll(lsIsoExonSplicingTests);
 			}
+			num++;
+			if (flagStop) {
+				break;
+			}
+			suspendCheck();
+			GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
+			guiAnnoInfo.setNum(num);
+			guiAnnoInfo.setDouble(num);
+			setRunInfo(guiAnnoInfo);
 		}
 		sortLsExonTest_Use_Pvalue(lsResult);
 		return lsResult;

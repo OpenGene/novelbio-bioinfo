@@ -28,6 +28,12 @@ public class SamFileReading extends RunProcess<GuiAnnoInfo>{
 		readLines = 0;
 		readByte = 0;
 	}
+	public double getReadByte() {
+		return readByte;
+	}
+	public long getReadLines() {
+		return readLines;
+	}
 	/** 如果读取一系列的文件，安顺序读取需要在进度条显示读取的内容，就把上一个文件的信息设定进去
 	 * 
 	 * @param readByte
@@ -69,9 +75,11 @@ public class SamFileReading extends RunProcess<GuiAnnoInfo>{
 	public void addColAlignmentRecorder(Collection<AlignmentRecorder> colAlignmentRecorders) {
 		lsAlignmentRecorders.addAll(colAlignmentRecorders);
 	}
-	/** 清空，但不清除samFile */
+	/** 清空AlignmentRecorder和readByte和readLines，但不清除samFile */
 	public void clear() {
 		lsAlignmentRecorders.clear();
+		readByte = 0;
+		readLines = 0;
 		try {
 			lsAlignments.clear();
 		} catch (Exception e) { }
