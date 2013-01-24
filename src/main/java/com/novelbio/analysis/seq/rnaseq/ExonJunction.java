@@ -27,6 +27,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.nbcgui.GUI.GuiAnnoInfo;
+import com.novelbio.nbcgui.GUI.GuiRNAautoSplice;
 
 /**
  * 得到每个gene的Junction后，开始计算其可变剪接的差异
@@ -35,7 +36,7 @@ import com.novelbio.nbcgui.GUI.GuiAnnoInfo;
  */
 public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	private static Logger logger = Logger.getLogger(ExonJunction.class);
-
+	GuiRNAautoSplice guiRNAautoSplice;
 	GffHashGene gffHashGene = null;
 	/** 全体差异基因的外显子
 	 * ls--
@@ -75,6 +76,10 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	SeqHash seqHash;
 	
 	boolean isLessMemory = true;
+	
+	public void setGuiRNAautoSplice(GuiRNAautoSplice guiRNAautoSplice) {
+		this.guiRNAautoSplice = guiRNAautoSplice;
+	}
 	/**
 	 * 表示差异可变剪接的事件的pvalue阈值，仅用于统计差异可变剪接事件的数量，不用于可变剪接的筛选
 	 * @param pvalue
@@ -147,9 +152,18 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	public void running() {
+		ArrayList<Double> lsLevels = new ArrayList<Double>();
+		lsLevels.add(0.2);
+		lsLevels.add(0.6);
+		lsLevels.add(1.0);
+		
+		guiRNAautoSplice.setProgressBarLevelLs(lsLevels);
 		if (!readJunctionFromBedFile) {
+			guiRNAautoSplice.setProcessBarStartEndBarNum("Reading Junction", 1, 0, 100);
 			loadJunction();
 		} else {
+			long fileLength = getFileLength();
+			guiRNAautoSplice.setProcessBarStartEndBarNum("Reading Junction", 1, 0, fileLength);
 			readJuncFile();
 		}
 		
@@ -164,24 +178,44 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		lsResult = getTestResult_FromIso();
 	}
 	
+	/**
+	 * 获得文件长度
+	 * @return
+	 */
+	private long getFileLength() {
+		long fileLength = 0;
+		for (String condition : mapCond2SamReader.keySet()) {
+			List<SamFileReading> lsSamFileReadings = mapCond2SamReader.get(condition);
+			for (SamFileReading samFileReading : lsSamFileReadings) {
+				long thisFileLength = (long) (FileOperate.getFileSize(samFileReading.getSamFile().getFileName()) * 1024);
+				if (samFileReading.getSamFile().getFileName().endsWith("bam")) {
+					thisFileLength = thisFileLength * 8;
+				}
+				fileLength += thisFileLength;
+			}
+		}
+		return fileLength;
+	}
+	
 	private void loadJunction() {
 		ArrayList<Align> lsDifIsoGene = null;//getLsDifIsoGene();
 		for (String condition : mapCond2SamReader.keySet()) {
 			tophatJunction.setCondition(condition);
 			List<SamFileReading> lsSamFileReadings = mapCond2SamReader.get(condition);
 			for (SamFileReading samFileReading : lsSamFileReadings) {
+				
 				samFileReading.clear();
 				samFileReading.setLsAlignments(lsDifIsoGene);
-				samFileReading.setRunGetInfo(runGetInfo);
+				samFileReading.setRunGetInfo(guiRNAautoSplice);
 				samFileReading.addAlignmentRecorder(tophatJunction);
 				samFileReading.run();
-				
 				GuiAnnoInfo exonJunctionGuiInfo = new GuiAnnoInfo();
 				exonJunctionGuiInfo.setInfo("Finished Reading Junction");
 				setRunInfo(exonJunctionGuiInfo);
 			}
 		}
 	}
+	
 	private void readJuncFile() {
 		Thread thread = new Thread(tophatJunction);
 		thread.start();

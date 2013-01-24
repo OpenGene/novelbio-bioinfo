@@ -15,17 +15,22 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
+import com.novelbio.base.multithread.RunGetInfo;
+import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.NovelBioConst;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JCheckBox;
+import javax.swing.JProgressBar;
 
-public class GuiRNAautoSplice extends JPanel {
+public class GuiRNAautoSplice extends JPanel implements RunGetInfo<GuiAnnoInfo> {
+	static final int progressLength = 10000;
 	private JTextField txtGff;
 	JScrollPaneData scrlBam;
 	JScrollPaneData scrlCompare;
@@ -38,6 +43,22 @@ public class GuiRNAautoSplice extends JPanel {
 	JCheckBox chckbxDisplayAllSplicing;
 	GUIFileOpen guiFileOpen = new GUIFileOpen();
 	private JTextField txtSaveTo;
+	
+	JProgressBar progressBar;
+	JLabel lblInformation;
+	
+	/** 设定bar的分级<br>
+	 * 现在是3级<br>
+	 * 就是读取junction 1级<br>
+	 * 读取表达1级<br>
+	 * 计算差异1级<br>
+	 */
+	List<Double> lsProgressBarLevel = new ArrayList<Double>();
+	long startBarNum;
+	long endBarNum;
+	int level;
+
+	
 	/**
 	 * Create the panel.
 	 */
@@ -99,7 +120,7 @@ public class GuiRNAautoSplice extends JPanel {
 				run();
 			}
 		});
-		btnRun.setBounds(747, 459, 118, 24);
+		btnRun.setBounds(769, 427, 118, 24);
 		add(btnRun);
 		
 		btnOpengtf = new JButton("OpenGTF");
@@ -124,7 +145,7 @@ public class GuiRNAautoSplice extends JPanel {
 		add(lblAddbamfile);
 		
 		txtSaveTo = new JTextField();
-		txtSaveTo.setBounds(34, 462, 532, 18);
+		txtSaveTo.setBounds(20, 430, 532, 18);
 		add(txtSaveTo);
 		txtSaveTo.setColumns(10);
 		
@@ -134,11 +155,11 @@ public class GuiRNAautoSplice extends JPanel {
 				txtSaveTo.setText(guiFileOpen.saveFileName("Out", ""));
 			}
 		});
-		btnSaveto.setBounds(589, 459, 118, 24);
+		btnSaveto.setBounds(604, 427, 118, 24);
 		add(btnSaveto);
 		
 		scrlCompare = new JScrollPaneData();
-		scrlCompare.setBounds(642, 239, 223, 76);
+		scrlCompare.setBounds(642, 239, 245, 76);
 		add(scrlCompare);
 		
 		JLabel lblCompare = new JLabel("Compare");
@@ -151,7 +172,7 @@ public class GuiRNAautoSplice extends JPanel {
 				scrlCompare.addItem(new String[]{"",""});
 			}
 		});
-		btnAddCompare.setBounds(642, 327, 96, 24);
+		btnAddCompare.setBounds(642, 327, 115, 24);
 		add(btnAddCompare);
 		
 		JButton btnDeleteCompare = new JButton("DeleteCompare");
@@ -160,12 +181,20 @@ public class GuiRNAautoSplice extends JPanel {
 				scrlCompare.deleteSelRows();
 			}
 		});
-		btnDeleteCompare.setBounds(769, 327, 96, 24);
+		btnDeleteCompare.setBounds(769, 327, 118, 24);
 		add(btnDeleteCompare);
 		
 		chckbxDisplayAllSplicing = new JCheckBox("Display All Splicing Events");
-		chckbxDisplayAllSplicing.setBounds(31, 432, 237, 22);
+		chckbxDisplayAllSplicing.setBounds(20, 400, 237, 22);
 		add(chckbxDisplayAllSplicing);
+		
+		progressBar = new JProgressBar();
+		progressBar.setBounds(20, 487, 867, 14);
+		add(progressBar);
+		
+		lblInformation = new JLabel("");
+		lblInformation.setBounds(20, 460, 99, 14);
+		add(lblInformation);
 		
 		initial();
 	}
@@ -174,6 +203,9 @@ public class GuiRNAautoSplice extends JPanel {
 		selectSpecies();
 		scrlBam.setTitle(new String[]{"BamFile", "Prefix", "group"});
 		scrlCompare.setTitle(new String[] {"group1", "group2"});
+
+		progressBar.setMinimum(0);
+		progressBar.setMaximum(progressLength);
 	}
 	private void selectSpecies() {
 		Species species = combSpecies.getSelectedValue();
@@ -212,10 +244,67 @@ public class GuiRNAautoSplice extends JPanel {
 		for (String[] strings : scrlBam.getLsDataInfo()) {
 			exonJunction.addBamSorted(strings[1], strings[0]);
 		}
-		exonJunction.loadBamFile();
+		//TODO
+//		exonJunction.loadBamFile();
 		for (String[] compareGroups : scrlCompare.getLsDataInfo()) {
 			exonJunction.setCompareGroups(compareGroups[0], compareGroups[1]);
 			exonJunction.writeToFile(outFile + compareGroups[0] + "vs" +compareGroups[1] + ".xls");
 		}
+	}
+	public void setProgressBarLevelLs(List<Double> lsProgressBarLevel) {
+		this.lsProgressBarLevel = lsProgressBarLevel;
+	}
+	/**
+	 * 设定本次步骤里面将绘制progressBar的第几部分
+	 * 并且本部分的最短点和最长点分别是什么
+	 * @param level 本次步骤里面将绘制progressBar的第几部分，也就是跑到第几步了。总共3步
+	 * @param startBarNum 本步骤起点，一般为0
+	 * @param endBarNum 本步骤终点
+	 */
+	public void setProcessBarStartEndBarNum(String information, int level, long startBarNum, long endBarNum) {
+		this.level = level;
+		this.startBarNum = startBarNum;
+		this.endBarNum = endBarNum;
+		this.lblInformation.setText(information);
+	}
+	private void setProcessBarValue(long number) {
+		long progressNum = number - startBarNum;
+		if (progressNum < 0) {
+			progressNum = 0;
+		} else if (progressNum > endBarNum - startBarNum) {
+			progressNum = endBarNum - startBarNum;
+		}
+		double finalNum = (double)progressNum/(endBarNum - startBarNum);
+		int progressBarNum = (int) finalNum;
+		
+		double startProgress = 0, endProgress = lsProgressBarLevel.get(level);
+		if (level != 0) {
+			startProgress = lsProgressBarLevel.get(level - 1);
+		}
+		int num = (int) ((endProgress - startProgress) * progressLength * finalNum + startProgress * progressLength);
+		progressBar.setValue(num);
+	}
+	
+	@Override
+	public void setRunningInfo(GuiAnnoInfo info) {
+		setProcessBarValue((long) info.getNumDouble());
+	}
+	@Override
+	public void done(RunProcess<GuiAnnoInfo> runProcess) {
+		btnRun.setEnabled(true);
+	}
+	@Override
+	public void threadSuspended(RunProcess<GuiAnnoInfo> runProcess) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void threadResumed(RunProcess<GuiAnnoInfo> runProcess) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void threadStop(RunProcess<GuiAnnoInfo> runProcess) {
+		btnRun.setEnabled(true);
 	}
 }

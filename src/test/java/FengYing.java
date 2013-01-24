@@ -9,26 +9,28 @@ import com.novelbio.analysis.seq.rnaseq.TranscriptomStatistics;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamFileReading;
 import com.novelbio.analysis.seq.sam.SamRecord;
+import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateTime;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.NovelBioConst;
 
 public class FengYing {
-	public static void main2(String[] args) {
-		String parentFile = "/media/winF/NBC/Project/Project_FY/chicken/Result/mapping/";
-		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
-				parentFile + "gal4merged.gtf");
-		int i = 0;
-		for (GffDetailGene gffDetailGene : gffHashGene.getGffDetailAll()) {
-			gffDetailGene.removeDupliIso();
-			if (gffDetailGene.getLsCodSplit().size() > 1) {
-				i ++;
-			}
-		}
-		System.out.println(i);
-	}
 	public static void main(String[] args) {
+		TxtReadandWrite txtRead = new TxtReadandWrite("/media/winE/Bioinformatics/R/Protocol/Microarray/Noname2.txt", false);
+		TxtReadandWrite txtWrite = new TxtReadandWrite("/media/winE/Bioinformatics/R/Protocol/Microarray/NonameOut.txt", true);
+		for (String string : txtRead.readlines()) {
+			string = string.trim();
+			if (string.equals("")) {
+				continue;
+			}
+			string = CmdOperate.addQuot(string);
+			txtWrite.writefile(string + ", ");
+		}
+		txtRead.close();
+		txtWrite.close();
+	}
+	public static void main2(String[] args) {
 		DateTime dateTime = new DateTime();
 		mouse();
 		dateTime.setStartTime();

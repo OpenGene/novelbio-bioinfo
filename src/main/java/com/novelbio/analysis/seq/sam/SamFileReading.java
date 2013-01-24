@@ -20,9 +20,21 @@ public class SamFileReading extends RunProcess<GuiAnnoInfo>{
 	List<? extends Alignment> lsAlignments;
 	ArrayList<AlignmentRecorder> lsAlignmentRecorders = new ArrayList<AlignmentRecorder>();
 	SamFile samFile;
+	long readLines;
+	double readByte;
 	
 	public SamFileReading(SamFile samFile) {
 		this.samFile = samFile;
+		readLines = 0;
+		readByte = 0;
+	}
+	/** 如果读取一系列的文件，安顺序读取需要在进度条显示读取的内容，就把上一个文件的信息设定进去
+	 * 
+	 * @param readByte
+	 */
+	public void setReadInfo(Long readLines, double readByte) {
+		this.readLines = readLines;
+		this.readByte = readByte;
 	}
 	/**
 	 * 输入需要读取的区域，不用排序
@@ -47,6 +59,7 @@ public class SamFileReading extends RunProcess<GuiAnnoInfo>{
 			}
 		});
 	}
+	
 	public void setLsAlignmentRecorders(ArrayList<AlignmentRecorder> lsAlignmentRecorders) {
 		this.lsAlignmentRecorders = lsAlignmentRecorders;
 	}
@@ -67,6 +80,7 @@ public class SamFileReading extends RunProcess<GuiAnnoInfo>{
 	public SamFile getSamFile() {
 		return samFile;
 	}
+	
 	@Override
 	protected void running() {
 		if (lsAlignments == null || lsAlignments.size() == 0) {
@@ -79,7 +93,6 @@ public class SamFileReading extends RunProcess<GuiAnnoInfo>{
 	
 	private void readAllLines() {
 		GuiAnnoInfo guiAnnoInfo;
-		long readLines = 0;
 		for (SamRecord samRecord : samFile.readLines()) {
 			for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {
 				alignmentRecorder.addAlignRecord(samRecord);
@@ -88,9 +101,11 @@ public class SamFileReading extends RunProcess<GuiAnnoInfo>{
 			if (suspendFlag) {
 				break;
 			}
+			readByte += samRecord.toString().getBytes().length;
 			readLines++;
 			guiAnnoInfo = new GuiAnnoInfo();
 			guiAnnoInfo.setNum(readLines);
+			guiAnnoInfo.setDouble(readByte);
 			setRunInfo(guiAnnoInfo);
 			samRecord = null;
 		}
