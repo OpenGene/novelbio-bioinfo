@@ -526,7 +526,7 @@ class SpliceType2Value {
 		double[] info2 = mapReads.getRangeInfo(siteInfo.getRefID(), gffDetailGene.getLongestSplitMrna());
 		lsExp.add((double) (getMean(info) + 1));			
 		lsExp.add((double) (getMean(info2) + 1));
-		
+
 		addLsDouble(mapSplicingType2LsExpValue, spliceTypePredict.getType(), lsExp);
 		setExonSplicingTypes.add(spliceTypePredict.getType());
 	}

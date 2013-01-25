@@ -91,6 +91,10 @@ public class SamFileReading extends RunProcess<GuiAnnoInfo>{
 	
 	@Override
 	protected void running() {
+		reading();
+	}
+	
+	public void reading() {
 		if (lsAlignments == null || lsAlignments.size() == 0) {
 			readAllLines();
 		} else {
@@ -98,7 +102,6 @@ public class SamFileReading extends RunProcess<GuiAnnoInfo>{
 		}
 		summaryRecorder();
 	}
-	
 	private void readAllLines() {
 		GuiAnnoInfo guiAnnoInfo;
 		for (SamRecord samRecord : samFile.readLines()) {
@@ -111,10 +114,13 @@ public class SamFileReading extends RunProcess<GuiAnnoInfo>{
 			}
 			readByte += samRecord.toString().getBytes().length;
 			readLines++;
-			guiAnnoInfo = new GuiAnnoInfo();
-			guiAnnoInfo.setNum(readLines);
-			guiAnnoInfo.setDouble(readByte);
-			setRunInfo(guiAnnoInfo);
+			if (readLines%50000 == 0) {
+				guiAnnoInfo = new GuiAnnoInfo();
+				guiAnnoInfo.setNum(readLines);
+				guiAnnoInfo.setDouble(readByte);
+				guiAnnoInfo.setInfo("reading " + readLines + " lines");
+				setRunInfo(guiAnnoInfo);
+			}
 			samRecord = null;
 		}
 	}

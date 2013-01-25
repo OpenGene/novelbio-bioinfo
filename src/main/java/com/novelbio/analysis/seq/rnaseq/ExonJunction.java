@@ -27,7 +27,6 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.nbcgui.GUI.GuiAnnoInfo;
-import com.novelbio.nbcgui.GUI.GuiRNAautoSplice;
 
 /**
  * 得到每个gene的Junction后，开始计算其可变剪接的差异
@@ -36,7 +35,6 @@ import com.novelbio.nbcgui.GUI.GuiRNAautoSplice;
  */
 public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	private static Logger logger = Logger.getLogger(ExonJunction.class);
-	GuiRNAautoSplice guiRNAautoSplice;
 	GffHashGene gffHashGene = null;
 	/** 全体差异基因的外显子
 	 * ls--
@@ -79,11 +77,9 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	/** 是否提取序列 */
 	SeqHash seqHash;
 	
-	boolean isLessMemory = true;
+	boolean isLessMemory = false;
 	
-	public void setGuiRNAautoSplice(GuiRNAautoSplice guiRNAautoSplice) {
-		this.guiRNAautoSplice = guiRNAautoSplice;
-	}
+	CtrlSplicing ctrlSplicing;
 	/**
 	 * 表示差异可变剪接的事件的pvalue阈值，仅用于统计差异可变剪接事件的数量，不用于可变剪接的筛选
 	 * @param pvalue
@@ -168,27 +164,32 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	public void running() {
+		ctrlSplicing = new CtrlSplicing();
+		if (runGetInfo != null && runGetInfo instanceof CtrlSplicing) {
+			ctrlSplicing = (CtrlSplicing) runGetInfo;
+		}
+
 		ArrayList<Double> lsLevels = new ArrayList<Double>();
-		lsLevels.add(0.2);
-		lsLevels.add(0.6);
+		lsLevels.add(0.3);
+		lsLevels.add(0.4);
+		lsLevels.add(0.7);
 		lsLevels.add(1.0);
 		long fileLength = getFileLength();
-		
-		guiRNAautoSplice.setProgressBarLevelLs(lsLevels);
+		ctrlSplicing.setProcessBarStartEndBarNum("Reading Junction", 0, 0, fileLength);
+
+		ctrlSplicing.setProgressBarLevelLs(lsLevels);
 		if (!readJunctionFromBedFile) {
-			guiRNAautoSplice.setProcessBarStartEndBarNum("Reading Junction", 1, 0, 100);
 			loadJunction();
 		} else {
-			guiRNAautoSplice.setProcessBarStartEndBarNum("Reading Junction", 1, 0, fileLength);
 			readJuncFile();
 		}
 		
 		suspendCheck();
 		logger.error("finish junction reads");
-		
+		ctrlSplicing.setProcessBarStartEndBarNum("Get Junction Event", 1, 0, gffHashGene.getGffDetailAll().size());
 		fillLsAll_Dif_Iso_Exon();
 		
-		guiRNAautoSplice.setProcessBarStartEndBarNum("Reading Exp", 2, 0, fileLength);
+		ctrlSplicing.setProcessBarStartEndBarNum("Reading Exp", 2, 0, fileLength);
 		loadExp();
 		
 		if (lsCondCompare == null || lsCondCompare.size() == 0) {
@@ -196,7 +197,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			lsCondCompare.add(new String[]{condition1, condition2});
 		}
 		
-		guiRNAautoSplice.setProcessBarStartEndBarNum("Doing Test", 3, 0, lsSplicingTests.size() * lsCondCompare.size());
+		ctrlSplicing.setProcessBarStartEndBarNum("Doing Test", 2, 0, lsSplicingTests.size() * lsCondCompare.size());
 		int num = 0;
 		for (String[] condCompare : lsCondCompare) {
 			setCompareGroups(condCompare[0], condCompare[1]);
@@ -204,7 +205,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			if (resultFile != null) {
 				String outFile = FileOperate.changeFileSuffix(resultFile, "_"+condition1 +"vs" + condition2, null);
 				writeToFile(outFile );
-			}			
+			}
 		}
 	}
 	
@@ -232,20 +233,22 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		
 		ArrayList<Align> lsDifIsoGene = null;//getLsDifIsoGene();
 		for (String condition : mapCond2SamReader.keySet()) {
-			guiRNAautoSplice.setInformation("Reading Junction " + condition);
+			ctrlSplicing.setInfo("Reading Junction " + condition);
 			tophatJunction.setCondition(condition);
 			List<SamFileReading> lsSamFileReadings = mapCond2SamReader.get(condition);
 			for (SamFileReading samFileReading : lsSamFileReadings) {
+				samFileReading.clear();
+				samFileReading.getSamFile().indexMake();
 				if (samFileReadingLast != null) {
-					samFileReading.setReadInfo(samFileReadingLast.getReadLines(), samFileReadingLast.getReadByte());
+					samFileReading.setReadInfo(0L, samFileReadingLast.getReadByte());
 				}
 				samFileReadingLast = samFileReading;
 				
-				samFileReading.clear();
+				
 				samFileReading.setLsAlignments(lsDifIsoGene);
-				samFileReading.setRunGetInfo(guiRNAautoSplice);
+				samFileReading.setRunGetInfo(runGetInfo);
 				samFileReading.addAlignmentRecorder(tophatJunction);
-				samFileReading.run();
+				samFileReading.reading();
 			}
 		}
 		samFileReadingLast = null;
@@ -262,6 +265,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	/** 从全基因组中获取差异的可变剪接事件，放入lsSplicingTest中 */
 	private void fillLsAll_Dif_Iso_Exon() {
 		ArrayList<GffDetailGene> lsGffDetailGenes = gffHashGene.getGffDetailAll();
+		int i = 0;
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 			gffDetailGene.removeDupliIso();
 			if (gffDetailGene.getLsCodSplit().size() <= 1 || isOnlyOneIso(gffDetailGene)) {
@@ -272,7 +276,17 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				continue;
 			}
 			lsSplicingTests.add(lsExonSplicingTest);
+			if (i%500 == 0) {
+				GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
+				guiAnnoInfo.setNum(i);
+				guiAnnoInfo.setDouble(i);
+				guiAnnoInfo.setInfo("Get " + i + " Junction Event");
+				setRunInfo(guiAnnoInfo);
+				logger.debug(i);
+			}
+			i++;
 		}
+		logger.debug("finish");
 	}
 	/**
 	 * 计数，看有多少iso与gffDetailGene同方向，如果只有一个，则跳过该基因
@@ -321,14 +335,15 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		SamFileReading samFileReadingLast = null;
 
 		for (String condition : mapCond2SamReader.keySet()) {
-			guiRNAautoSplice.setInformation("Reading Exp " + condition);
+			ctrlSplicing.setInfo("Reading Exp " + condition);
 			
 			List<SamFileReading> lsSamFileReadings = mapCond2SamReader.get(condition);
 			for (SamFileReading samFileReading : lsSamFileReadings) {
-				if (samFileReadingLast != null) {
-					samFileReading.setReadInfo(samFileReadingLast.getReadLines(), samFileReadingLast.getReadByte());
-				}
 				samFileReading.clear();
+				if (samFileReadingLast != null) {
+					samFileReading.setReadInfo(0L, samFileReadingLast.getReadByte());
+				}
+			
 				samFileReadingLast = samFileReading;
 				
 				samFileReading.setRunGetInfo(runGetInfo);
@@ -337,7 +352,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 					mapReadsAbs = getSamMapReads(samFileReading);
 				} else {
 					mapReadsAbs = getMapReads(samFileReading);
-					samFileReading.run();
+					samFileReading.reading();
 				}
 				addMapReadsInfo(condition, mapReadsAbs);
 			}
@@ -370,7 +385,8 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			}
 			
 			if (num % 100 == 0) {
-				logger.error(num);
+				logger.debug(num);
+				ctrlSplicing.setDetailInfo("reading " + condition + " exp gene num" + num);
 			}
 			num ++;
 		}
@@ -481,7 +497,48 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		}
 		txtStatistics.close();
 	}
-
+	/** 终止线程，需要在循环中添加<br>
+	 * if (!flagRun)<br>
+	*			break; */
+	public void threadStop() {
+		super.threadStop();
+		for (String condition : mapCond2SamReader.keySet()) {
+			ctrlSplicing.setInfo("Reading Junction " + condition);
+			tophatJunction.setCondition(condition);
+			List<SamFileReading> lsSamFileReadings = mapCond2SamReader.get(condition);
+			for (SamFileReading samFileReading : lsSamFileReadings) {
+				samFileReading.threadStop();
+			}
+		}
+	}
+	/** 终止线程，需要在循环中添加<br>
+	 * if (!flagRun)<br>
+	*			break; */
+	public void threadSuspend() {
+		super.threadSuspend();
+		for (String condition : mapCond2SamReader.keySet()) {
+			ctrlSplicing.setInfo("Reading Junction " + condition);
+			tophatJunction.setCondition(condition);
+			List<SamFileReading> lsSamFileReadings = mapCond2SamReader.get(condition);
+			for (SamFileReading samFileReading : lsSamFileReadings) {
+				samFileReading.threadSuspend();
+			}
+		}
+	}
+	/** 终止线程，需要在循环中添加<br>
+	 * if (!flagRun)<br>
+	*			break; */
+	public void threadResume() {
+		super.threadResume();
+		for (String condition : mapCond2SamReader.keySet()) {
+			ctrlSplicing.setInfo("Reading Junction " + condition);
+			tophatJunction.setCondition(condition);
+			List<SamFileReading> lsSamFileReadings = mapCond2SamReader.get(condition);
+			for (SamFileReading samFileReading : lsSamFileReadings) {
+				samFileReading.threadResume();
+			}
+		}
+	}
 	public void clear() {
 		condition1 = null; condition2 = null;
 		lsResult = null;

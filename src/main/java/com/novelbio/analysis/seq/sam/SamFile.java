@@ -452,8 +452,9 @@ public class SamFile implements AlignSeq {
 			return;
 		}
 		BamIndex bamIndex = new BamIndex(this);
+		bamIndex.setExePath(softWareInfoSamtools.getExePath());
 		bamIndex.setBamFile(getFileName());
-		String index = bamIndex.index();
+		String index = bamIndex.indexSamtools();
 		samReader.setFileIndex(index);
 		bamIndex = null;
 	}

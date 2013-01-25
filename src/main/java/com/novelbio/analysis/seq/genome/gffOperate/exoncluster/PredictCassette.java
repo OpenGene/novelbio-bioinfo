@@ -35,7 +35,6 @@ public class PredictCassette extends SpliceTypePredict {
 		}
 		int exist = 0;
 		for (Align align : setAlignExist) {
-			System.out.println("");
 			exist += tophatJunction.getJunctionSite(condition, exonCluster.getChrID(), align.getStartAbs())
 					+  tophatJunction.getJunctionSite(condition, exonCluster.getChrID(), align.getEndAbs());
 		}

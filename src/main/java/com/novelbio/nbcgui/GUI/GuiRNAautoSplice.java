@@ -1,5 +1,6 @@
 package com.novelbio.nbcgui.GUI;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JComboBox;
 import javax.swing.JScrollPane;
@@ -8,6 +9,7 @@ import javax.swing.JTextField;
 
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.rnaseq.CtrlSplicing;
 import com.novelbio.analysis.seq.rnaseq.ExonJunction;
 import com.novelbio.analysis.seq.rnaseq.ExonSplicingTest;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -29,7 +31,7 @@ import javax.swing.JLabel;
 import javax.swing.JCheckBox;
 import javax.swing.JProgressBar;
 
-public class GuiRNAautoSplice extends JPanel implements RunGetInfo<GuiAnnoInfo> {
+public class GuiRNAautoSplice extends JPanel {
 	static final int progressLength = 10000;
 	private JTextField txtGff;
 	JScrollPaneData scrlBam;
@@ -46,7 +48,10 @@ public class GuiRNAautoSplice extends JPanel implements RunGetInfo<GuiAnnoInfo> 
 	
 	JProgressBar progressBar;
 	JLabel lblInformation;
-	ExonJunction exonJunction;
+	JLabel lblDetailInfo;
+	
+	CtrlSplicing ctrlSplicing = new CtrlSplicing();
+	
 	/** 设定bar的分级<br>
 	 * 现在是3级<br>
 	 * 就是读取junction 1级<br>
@@ -57,7 +62,6 @@ public class GuiRNAautoSplice extends JPanel implements RunGetInfo<GuiAnnoInfo> 
 	long startBarNum;
 	long endBarNum;
 	int level;
-
 	
 	/**
 	 * Create the panel.
@@ -95,10 +99,6 @@ public class GuiRNAautoSplice extends JPanel implements RunGetInfo<GuiAnnoInfo> 
 					lsInfo.add(tmResult);
 				}
 				scrlBam.addItemLs(lsInfo);
-				
-				if (exonJunction == null || !exonJunction.isRunning()) {
-					btnRun.setEnabled(true);
-				}
 			}
 		});
 		btnOpeanbam.setBounds(31, 349, 118, 24);
@@ -108,9 +108,6 @@ public class GuiRNAautoSplice extends JPanel implements RunGetInfo<GuiAnnoInfo> 
 		btnDelbam.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				scrlBam.deleteSelRows();
-				if (exonJunction == null || !exonJunction.isRunning()) {
-					btnRun.setEnabled(true);
-				}
 			}
 		});
 		btnDelbam.setBounds(369, 349, 118, 24);
@@ -160,9 +157,6 @@ public class GuiRNAautoSplice extends JPanel implements RunGetInfo<GuiAnnoInfo> 
 		btnSaveto.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				txtSaveTo.setText(guiFileOpen.saveFileName("Out", ""));
-				if (exonJunction == null || !exonJunction.isRunning()) {
-					btnRun.setEnabled(true);
-				}
 			}
 		});
 		btnSaveto.setBounds(604, 427, 118, 24);
@@ -180,9 +174,6 @@ public class GuiRNAautoSplice extends JPanel implements RunGetInfo<GuiAnnoInfo> 
 		btnAddCompare.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				scrlCompare.addItem(new String[]{"",""});
-				if (exonJunction == null || !exonJunction.isRunning()) {
-					btnRun.setEnabled(true);
-				}
 			}
 		});
 		btnAddCompare.setBounds(642, 327, 115, 24);
@@ -206,8 +197,12 @@ public class GuiRNAautoSplice extends JPanel implements RunGetInfo<GuiAnnoInfo> 
 		add(progressBar);
 		
 		lblInformation = new JLabel("");
-		lblInformation.setBounds(20, 460, 99, 14);
+		lblInformation.setBounds(20, 460, 217, 14);
 		add(lblInformation);
+		
+		lblDetailInfo = new JLabel("");
+		lblDetailInfo.setBounds(255, 460, 260, 14);
+		add(lblDetailInfo);
 		
 		initial();
 	}
@@ -249,23 +244,19 @@ public class GuiRNAautoSplice extends JPanel implements RunGetInfo<GuiAnnoInfo> 
 	}
 	private void run() {
 		progressBar.setValue(progressBar.getMinimum());
-		exonJunction = new ExonJunction();
-		exonJunction.setGffHashGene(getGffhashGene());
-		exonJunction.setOneGeneOneSpliceEvent(!chckbxDisplayAllSplicing.isSelected());
+		ctrlSplicing.setGuiRNAautoSplice(this);
+		ctrlSplicing.setGffHashGene(getGffhashGene());
+		ctrlSplicing.setDisplayAllEvent(chckbxDisplayAllSplicing.isSelected());
 		String outFile = txtSaveTo.getText();
 		if (FileOperate.isFileDirectory(outFile)) {
 			outFile = FileOperate.addSep(outFile);
 		}
-		for (String[] strings : scrlBam.getLsDataInfo()) {
-			exonJunction.addBamSorted(strings[1], strings[0]);
-		}
+		ctrlSplicing.setOutFile(outFile);
+		ctrlSplicing.setLsBam2Prefix(scrlBam.getLsDataInfo());
+		ctrlSplicing.setLsCompareGroup(scrlCompare.getLsDataInfo());
 		//TODO
-		exonJunction.setCompareGroupsLs(scrlCompare.getLsDataInfo());
-		exonJunction.setResultFile(outFile);
-		exonJunction.setRunGetInfo(this);
-		
 		btnRun.setEnabled(false);
-		Thread thread = new Thread(exonJunction);
+		Thread thread = new Thread(ctrlSplicing);
 		thread.start();
 
 	}
@@ -302,32 +293,34 @@ public class GuiRNAautoSplice extends JPanel implements RunGetInfo<GuiAnnoInfo> 
 		int num = (int) ((endProgress - startProgress) * progressLength * finalNum + startProgress * progressLength);
 		progressBar.setValue(num);
 	}
-	
-	public void setInformation(String info) {
+	public void setInfo(String info) {
 		this.lblInformation.setText(info);
 	}
 	
-	@Override
+	public void setDetailInfo(String info) {
+		this.lblDetailInfo.setText(info);
+	}
+	
 	public void setRunningInfo(GuiAnnoInfo info) {
 		setProcessBarValue((long) info.getNumDouble());
+		setDetailInfo(info.getInfo());
 	}
-	@Override
 	public void done(RunProcess<GuiAnnoInfo> runProcess) {
 		btnRun.setEnabled(true);
 		progressBar.setValue(progressBar.getMaximum());
 	}
-	@Override
 	public void threadSuspended(RunProcess<GuiAnnoInfo> runProcess) {
 		// TODO Auto-generated method stub
 		
 	}
-	@Override
 	public void threadResumed(RunProcess<GuiAnnoInfo> runProcess) {
 		// TODO Auto-generated method stub
 		
 	}
-	@Override
 	public void threadStop(RunProcess<GuiAnnoInfo> runProcess) {
 		btnRun.setEnabled(true);
+	}
+	public void setMessage(String string) {
+		JOptionPane.showMessageDialog(null, "Info", string, JOptionPane.INFORMATION_MESSAGE);
 	}
 }

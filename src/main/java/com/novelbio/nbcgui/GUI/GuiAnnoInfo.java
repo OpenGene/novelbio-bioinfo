@@ -52,7 +52,7 @@ public class GuiAnnoInfo {
 	}
 	/** 数量信息 */
 	public double getNumDouble() {
-		return num;
+		return numDouble;
 	}
 	/** 数量信息 */
 	public int getNumInt() {

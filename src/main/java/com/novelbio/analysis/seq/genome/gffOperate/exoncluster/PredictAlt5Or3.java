@@ -2,9 +2,12 @@ package com.novelbio.analysis.seq.genome.gffOperate.exoncluster;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Logger;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 
@@ -35,23 +38,39 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 	/** 获得alt5， alt3的差异位点 */
 	@Override
 	public Align getDifSite() {
-		Map<Integer, Integer> mapJuncNum2Edge = new TreeMap<Integer, Integer>(new Comparator<Integer>() {
-			@Override
+		Map<Integer, List<Integer>> mapJuncNum2Edge = new TreeMap<Integer, List<Integer>>(new Comparator<Integer>() {
 			public int compare(Integer o1, Integer o2) {
 				return -o1.compareTo(o2);
 			}
 		});
-		for (Integer integer : mapEdge2Iso.keySet()) {
-			mapJuncNum2Edge.put(tophatJunction.getJunctionSite(exonCluster.getChrID(), integer), integer);
+		for (Integer edge : mapEdge2Iso.keySet()) {
+			int juncNum = tophatJunction.getJunctionSite(exonCluster.getChrID(), edge);
+			List<Integer> lsSite = null;
+			if (mapJuncNum2Edge.containsKey(juncNum)) {
+				lsSite = mapJuncNum2Edge.get(juncNum);
+			} else {
+				lsSite = new ArrayList<Integer>();
+				mapJuncNum2Edge.put(juncNum, lsSite);
+			}
+			lsSite.add(edge);
+			
 		}
+		
 		int i = 0;
 		int[] startEnd = new int[2];
 		for (Integer juncNum : mapJuncNum2Edge.keySet()) {
-			startEnd[i] = mapJuncNum2Edge.get(juncNum);
-			i++;
-			if (i == 2) {
-				break;
+			List<Integer> lsSite = mapJuncNum2Edge.get(juncNum);
+			for (Integer integer : lsSite) {
+				if (i >= 2) {
+					break;
+				}
+				startEnd[i] = integer;
+				i++;
+
 			}
+		}
+		if (Math.abs(startEnd[0] - startEnd[1]) > 500000) {
+			System.out.println("stop");
 		}
 		if (Math.abs(startEnd[0] - startEnd[1]) < lengthMin) {
 			isFiltered = false;

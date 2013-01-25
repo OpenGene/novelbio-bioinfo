@@ -36,7 +36,7 @@ public abstract class RunProcess<T> implements Runnable {
 		}
 		notify();
 	}
-	/** 终止线程，在循环中添加<br>
+	/** 终止线程，需要在循环中添加<br>
 	 * if (!flagRun)<br>
 	*			break; */
 	public void threadStop() {

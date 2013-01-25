@@ -21,13 +21,32 @@ public class BamIndex {
 	private static Logger logger = Logger.getLogger(BamIndex.class);
 	SamFile samFile;
 	String bamFile;
-
+	
+	String ExePath = "";
+	public void setExePath(String exePath) {
+		if (exePath == null || exePath.trim().equals(""))
+			this.ExePath = "";
+		else
+			this.ExePath = FileOperate.addSep(exePath);
+	}
+	
 	public BamIndex(SamFile samFile) {
 		this.samFile = samFile;
 	}
 	public void setBamFile(String bamFile) {
 		this.bamFile = bamFile;
 	}
+	
+	public String indexSamtools() {
+		if (FileOperate.isFileExistAndBigThanSize(bamFile + ".bai", 1000)) {
+			return bamFile;
+		}
+		String cmd = ExePath + "samtools index " + "\"" + bamFile + "\"";
+		CmdOperate cmdOperate = new CmdOperate(cmd,"samIndex");
+		cmdOperate.run();
+		return bamFile;
+	}
+	
 	/**
 	 * 返回建好的索引名字
 	 * @return
