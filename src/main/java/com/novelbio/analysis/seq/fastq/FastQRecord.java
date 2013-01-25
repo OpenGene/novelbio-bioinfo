@@ -347,7 +347,7 @@ public class FastQRecord implements Cloneable {
 			return blastSeqFasta.getEndQuery();
 		}
 		else {
-			return blastSeqFasta.getStartQuery() + 1;
+			return blastSeqFasta.getStartQuery();
 		}
 	}
 	/**

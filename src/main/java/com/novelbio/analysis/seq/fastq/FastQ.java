@@ -36,9 +36,13 @@ public class FastQ {
 	public FastQ(String fastqFile) {
 		fastQRead.setFastqFile(fastqFile);
 	}
-	/** 默认是读取 */
+
 	public FastQ(String fastqFile, boolean createNew) {
-		fastQwrite.setFastqFile(fastqFile);
+		if (createNew) {
+			fastQwrite.setFastqFile(fastqFile);
+		} else {
+			fastQRead.setFastqFile(fastqFile);
+		}
 	}
 	public void setOffset(int offset) {
 		fastQRead.setOffset(offset);
