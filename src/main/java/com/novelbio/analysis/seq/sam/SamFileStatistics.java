@@ -6,10 +6,11 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.mapping.MappingReadsType;
 
-/** 不要自己建立 */
-public class SamFileStatistics {
+/** 仅用于分析sambam文件 */
+public class SamFileStatistics implements AlignmentRecorder {
 	public static void main(String[] args) {
 		SamFile samFile = new SamFile("/home/zong0jie/Desktop/sssFH.sam");
 		SamFileStatistics samFileStatistics = new SamFileStatistics();
@@ -73,6 +74,9 @@ public class SamFileStatistics {
 		}
 		return -1;
 	}
+	
+	
+	//TODO 待改进
 	public ArrayList<String[]> getMappingInfo() {
 		statistics();
 		
@@ -111,15 +115,17 @@ public class SamFileStatistics {
 		return lsChrID2Num;
 	}
 	
-	protected void statistics() {
+	public void statistics() {
 		if (countReadsNum) {
 			return;
 		}
 		countReadsNum = true;
-		getReadsNum();
+		 initial();
+		readSamFile();
 	}
-
-	private void getReadsNum() {
+	
+	/** 初始化 */
+	public void initial() {
 		allReadsNum = 0;
 		unmappedReadsNum = 0;
 		mappedReadsNum = 0;
@@ -127,35 +133,46 @@ public class SamFileStatistics {
 		repeatMappedReadsNum = 0;
 		junctionAllReads = 0;
 		junctionUniReads = 0;
-		
+	}
+	
+	private void readSamFile() {
 		for (SamRecord samRecord : samFile.readLines()) {
-			int readsMappedWeight = samRecord.getMappedReadsWeight();
-			allReadsNum = allReadsNum + (double)1/readsMappedWeight;
-			if (samRecord.isMapped()) {
-				mappedReadsNum = mappedReadsNum + (double)1/readsMappedWeight;
-				setChrReads(readsMappedWeight, samRecord);
-				if (samRecord.isUniqueMapping()) {
-					uniqMappedReadsNum ++;
-					if (samRecord.isJunctionReads()) {
-						junctionUniReads ++;
-					}
-				}
-				else {
-					repeatMappedReadsNum = repeatMappedReadsNum + (double)1/readsMappedWeight;
-				}
-				if (samRecord.isJunctionReads()) {
-					junctionAllReads = junctionAllReads + (double)1/readsMappedWeight;
-				}
-			}
-			else {
-				unmappedReadsNum = unmappedReadsNum + (double)1/readsMappedWeight;
-			}
+			addAlignRecord(samRecord);
 		}
 		samFile.close();
 	}
+
+	@Override
+	public void addAlignRecord(AlignRecord samRecord) {
+		int readsMappedWeight = 1;
+		if (samRecord instanceof SamRecord) {
+			 readsMappedWeight = ((SamRecord)samRecord).getMappedReadsWeight();
+		}
+		
+		allReadsNum = allReadsNum + (double)1/readsMappedWeight;
+		if (samRecord.isMapped()) {
+			mappedReadsNum = mappedReadsNum + (double)1/readsMappedWeight;
+			setChrReads(readsMappedWeight, samRecord);
+			if (samRecord.isUniqueMapping()) {
+				uniqMappedReadsNum ++;
+				if (samRecord.isJunctionCovered()) {
+					junctionUniReads ++;
+				}
+			}
+			else {
+				repeatMappedReadsNum = repeatMappedReadsNum + (double)1/readsMappedWeight;
+			}
+			if (samRecord.isJunctionCovered()) {
+				junctionAllReads = junctionAllReads + (double)1/readsMappedWeight;
+			}
+		}
+		else {
+			unmappedReadsNum = unmappedReadsNum + (double)1/readsMappedWeight;
+		}
+	}
+
 	
-	
-	private void setChrReads(int readsWeight, SamRecord samRecord) {
+	private void setChrReads(int readsWeight, AlignRecord samRecord) {
 		String chrID = samRecord.getRefID();
 		double[] chrNum;
 		if (mapChrID2ReadsNum.containsKey(chrID)) {
@@ -167,4 +184,7 @@ public class SamFileStatistics {
 		}
 		chrNum[0] = chrNum[0] + (double)1/readsWeight;
 	}
+
+	@Override
+	public void summary() {	}
 }

@@ -23,4 +23,6 @@ public interface AlignRecord extends Alignment{
 	/** 获得标志的位置，一般是中心点 */
 	public int getFlagSite();
 	
+	boolean isUniqueMapping();
+	
 }

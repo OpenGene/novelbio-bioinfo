@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 public enum TitleFormatNBC {
 	QueryID("QueryID"), AccID("AccID"), Symbol("Symbol"), Pvalue("P-Value"), Log2Pnegative("(-log2P)"),
+	GeneName("GeneName"),
 	
 	FDR("FDR"), FoldChange("FoldChange"), Log2FC("Log2FC"),
 	Log10FC("Log10FC"), Evalue("E-Value"),

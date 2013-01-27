@@ -185,6 +185,8 @@ public abstract class ListHashSearch < T extends ListDetailAbs, E extends ListCo
 	 * 输入PeakNum，和单条Chr的list信息 返回该PeakNum的所在LOCID，和具体位置
 	 * 采用clone的方法获得信息
 	 * 没找到就返回null
+	 * @param chrID 内部自动转化为小写
+	 * @param cod1 坐标
 	 */
 	public E searchLocation(String chrID, int cod1) {
 		chrID = chrID.toLowerCase();

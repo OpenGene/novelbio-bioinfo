@@ -11,7 +11,7 @@ import com.novelbio.database.domain.geneanno.SepSign;
 /**
  * compare的比较取决于父节点的方向，如果父节点的方向为null，则按照绝对值排序，如果是cis，那么就按cis的排序，如果为trans就按照trans的方式排序
  * 本类重写了equal代码，用于比较两个loc是否一致
- * 重写了hashcode 仅比较ChrID + "//" + locString + "//" + numberstart + "//" + numberstart;
+ * 重写了hashcode 仅比较ChrID + "//" + numberstart + "//" + numberstart;
  * 存储Gff文件中每个条目的具体信息，直接用于GffPeak文件
  * 包括<br>
  * 条目名 locString<br>

@@ -23,26 +23,42 @@ public class GffHashGene implements GffHashGeneInf{
 	}
 	
 	GffHashGeneAbs gffHashGene = null;
+	/**
+	 * 新建一个GffHashGeneUCSC的类，需要readGffFile
+	 */
 	public GffHashGene() {
 		gffHashGene = new GffHashGeneUCSC();		 
 	}
+	public GffHashGene(GffHashGeneAbs gffHashGene) {
+		this.gffHashGene = gffHashGene;
+	}
+	
 	public GffHashGene(String GffType, String gffFile) {
-		if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_UCSC)) {
+		GffFileType gffFileType = GffFileType.getType(GffType);
+		read(gffFileType, gffFile);
+	}
+	public GffHashGene(GffFileType gffType, String gffFile) {
+		read(gffType, gffFile);
+	}
+	
+	private void read(GffFileType gffType, String gffFile) {
+		if (gffType == GffFileType.UCSC) {
 			gffHashGene = new GffHashGeneUCSC();
 		}
-		else if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_TIGR) ) {
+		else if (gffType == GffFileType.TIGR) {
 			gffHashGene = new GffHashGenePlant(NovelBioConst.GENOME_GFF_TYPE_TIGR);
 		}
-		else if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_PLANT)) {
+		else if (gffType == GffFileType.Plant) {
 			gffHashGene = new GffHashGenePlant(NovelBioConst.GENOME_GFF_TYPE_PLANT);
 		}
-		else if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF)) {
+		else if (gffType == GffFileType.GTF) {
 			gffHashGene = new GffHashCufflinkGTF();
 		}
-		else if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_NCBI)) {
+		else if (gffType == GffFileType.NCBI) {
 			gffHashGene = new GffHashGeneNCBI();
 		}
 		gffHashGene.ReadGffarray(gffFile);
+	
 	}
 	
 	/** 如果是从Fasta序列而来的gff，就用这个包装 */

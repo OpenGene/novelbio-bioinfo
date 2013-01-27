@@ -305,7 +305,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return Math.abs(super.getLocDistmRNA(this.UAGsite, getTESsite() ) );
 	}
 	 /**
-     * @param num 指定第几个，如果超出，则返回-1000000000, 
+     * @param num 指定第几个，如果超出或小于0，则返回-1000000000, 
      * num 为实际个数。如果num=0则返回全部Exon的长度。
      * @return 
      */
@@ -318,7 +318,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			 // 0-0 0-1 1-0 1-1
 			// 2-1 2-0 1-1 1-0 0-1 0-tss cood
 			for (int i = 0; i < size(); i++) { 			
-				allExonLength = allExonLength + get(i).Length();
+				allExonLength += get(i).Length();
 			}
 			return allExonLength;
 		} else {
@@ -340,7 +340,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			// 0-0 0-1 1-0 1-1
 			// 2-1 2-0 1-1 1-0 0-1 0-tss cood
 			for (int i = 1; i < size(); i++) { 
-				allIntronLength = allIntronLength + Math.abs(get(i).getStartCis() - get(i-1).getEndCis()) - 1;
+				allIntronLength += Math.abs(get(i).getStartCis() - get(i-1).getEndCis()) - 1;
 			}
 			return allIntronLength;
 		}

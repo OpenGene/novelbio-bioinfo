@@ -36,8 +36,6 @@ public class GuiRNAautoSplice extends JPanel {
 	private JTextField txtGff;
 	JScrollPaneData scrlBam;
 	JScrollPaneData scrlCompare;
-	JComboBoxData<Species> combSpecies;
-	JComboBoxData<String> combVersion;
 	JButton btnOpeanbam;
 	JButton btnDelbam;
 	JButton btnRun;
@@ -51,6 +49,7 @@ public class GuiRNAautoSplice extends JPanel {
 	JLabel lblDetailInfo;
 	
 	CtrlSplicing ctrlSplicing = new CtrlSplicing();
+	GuiLayeredPaneSpeciesVersionGff panel;
 	
 	/** 设定bar的分级<br>
 	 * 现在是3级<br>
@@ -68,19 +67,6 @@ public class GuiRNAautoSplice extends JPanel {
 	 */
 	public GuiRNAautoSplice() {
 		setLayout(null);
-		
-		combSpecies = new JComboBoxData<Species>();
-		combSpecies.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				selectSpecies();
-			}
-		});
-		combSpecies.setBounds(642, 49, 223, 23);
-		add(combSpecies);
-		
-		combVersion = new JComboBoxData<String>();
-		combVersion.setBounds(642, 110, 223, 23);
-		add(combVersion);
 		
 		scrlBam = new JScrollPaneData();
 		scrlBam.setBounds(20, 34, 610, 303);
@@ -114,7 +100,7 @@ public class GuiRNAautoSplice extends JPanel {
 		add(btnDelbam);
 		
 		txtGff = new JTextField();
-		txtGff.setBounds(642, 162, 223, 18);
+		txtGff.setBounds(644, 159, 258, 18);
 		add(txtGff);
 		txtGff.setColumns(10);
 		
@@ -124,7 +110,7 @@ public class GuiRNAautoSplice extends JPanel {
 				run();
 			}
 		});
-		btnRun.setBounds(769, 427, 118, 24);
+		btnRun.setBounds(784, 427, 118, 24);
 		add(btnRun);
 		
 		btnOpengtf = new JButton("OpenGTF");
@@ -133,16 +119,8 @@ public class GuiRNAautoSplice extends JPanel {
 				txtGff.setText(guiFileOpen.openFileName("GTFfile", ""));
 			}
 		});
-		btnOpengtf.setBounds(747, 190, 118, 24);
+		btnOpengtf.setBounds(784, 190, 118, 24);
 		add(btnOpengtf);
-		
-		JLabel lblSpecies = new JLabel("Species");
-		lblSpecies.setBounds(642, 23, 69, 14);
-		add(lblSpecies);
-		
-		JLabel lblVersion = new JLabel("Version");
-		lblVersion.setBounds(642, 84, 69, 14);
-		add(lblVersion);
 		
 		JLabel lblAddbamfile = new JLabel("AddBamFile");
 		lblAddbamfile.setBounds(20, 12, 129, 14);
@@ -163,7 +141,7 @@ public class GuiRNAautoSplice extends JPanel {
 		add(btnSaveto);
 		
 		scrlCompare = new JScrollPaneData();
-		scrlCompare.setBounds(642, 239, 245, 76);
+		scrlCompare.setBounds(642, 239, 260, 76);
 		add(scrlCompare);
 		
 		JLabel lblCompare = new JLabel("Compare");
@@ -179,21 +157,21 @@ public class GuiRNAautoSplice extends JPanel {
 		btnAddCompare.setBounds(642, 327, 115, 24);
 		add(btnAddCompare);
 		
-		JButton btnDeleteCompare = new JButton("DeleteCompare");
+		JButton btnDeleteCompare = new JButton("DelCompare");
 		btnDeleteCompare.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				scrlCompare.deleteSelRows();
 			}
 		});
-		btnDeleteCompare.setBounds(769, 327, 118, 24);
+		btnDeleteCompare.setBounds(784, 327, 118, 24);
 		add(btnDeleteCompare);
 		
 		chckbxDisplayAllSplicing = new JCheckBox("Display All Splicing Events");
-		chckbxDisplayAllSplicing.setBounds(20, 400, 237, 22);
+		chckbxDisplayAllSplicing.setBounds(20, 400, 286, 22);
 		add(chckbxDisplayAllSplicing);
 		
 		progressBar = new JProgressBar();
-		progressBar.setBounds(20, 487, 867, 14);
+		progressBar.setBounds(20, 487, 882, 14);
 		add(progressBar);
 		
 		lblInformation = new JLabel("");
@@ -204,10 +182,18 @@ public class GuiRNAautoSplice extends JPanel {
 		lblDetailInfo.setBounds(255, 460, 260, 14);
 		add(lblDetailInfo);
 		
+		panel = new GuiLayeredPaneSpeciesVersionGff();
+		panel.setBounds(644, 50, 258, 99);
+		add(panel);
+		
+		JCheckBox chkUseExternalGTF = new JCheckBox("Use External GTF");
+		chkUseExternalGTF.setBounds(644, 12, 223, 27);
+		add(chkUseExternalGTF);
+		
 		initial();
 	}
 	private void initial() {
-		combSpecies.setMapItem(Species.getSpeciesName2Species(Species.SEQINFO_SPECIES));
+//		combSpecies.setMapItem(Species.getSpeciesName2Species(Species.SEQINFO_SPECIES));
 		selectSpecies();
 		scrlBam.setTitle(new String[]{"BamFile", "Prefix", "group"});
 		scrlCompare.setTitle(new String[] {"group1", "group2"});
@@ -216,32 +202,32 @@ public class GuiRNAautoSplice extends JPanel {
 		progressBar.setMaximum(progressLength);
 	}
 	private void selectSpecies() {
-		Species species = combSpecies.getSelectedValue();
-		combVersion.setMapItem(species.getMapVersion());
+//		Species species = combSpecies.getSelectedValue();
+//		combVersion.setMapItem(species.getMapVersion());
 	}
 	/** 如果txt存在，优先获得txt对应的gtf文件*/
 	private GffHashGene getGffhashGene() {
 		GffHashGene gffHashGeneResult = null;
-		Species species = combSpecies.getSelectedValue();
+//		Species species = combSpecies.getSelectedValue();
 		String gtfFile = txtGff.getText();
 		if (FileOperate.isFileExist(gtfFile)) {
 			gffHashGeneResult = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, txtGff.getText());
 		}
-		else if (species.getTaxID() != 0) {
-			species.setVersion(combVersion.getSelectedValue());
-			GffChrAbs gffChrAbs = new GffChrAbs(species);
-			gffHashGeneResult = gffChrAbs.getGffHashGene();
-		}
+//		else if (species.getTaxID() != 0) {
+//			species.setVersion(combVersion.getSelectedValue());
+//			GffChrAbs gffChrAbs = new GffChrAbs(species);
+//			gffHashGeneResult = gffChrAbs.getGffHashGene();
+//		}
 		return gffHashGeneResult;
 	}
 	//TODO
-	private Species getSpecies() {
-		Species species = combSpecies.getSelectedValue();
-		if (species.getTaxID() != 0) {
-			species.setVersion(combVersion.getSelectedValue());
-		}
-		return species;
-	}
+//	private Species getSpecies() {
+//		Species species = combSpecies.getSelectedValue();
+//		if (species.getTaxID() != 0) {
+//			species.setVersion(combVersion.getSelectedValue());
+//		}
+//		return species;
+//	}
 	private void run() {
 		progressBar.setValue(progressBar.getMinimum());
 		ctrlSplicing.setGuiRNAautoSplice(this);

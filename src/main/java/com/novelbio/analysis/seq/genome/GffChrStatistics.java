@@ -79,6 +79,7 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	public void setBedFile(BedSeq bedSeq) {
 		this.fileName = bedSeq.getFileName();
 	}
+	/** 设定第几列为summit，也就是这列为reads的中点，用这个中点来进行定位 */
 	public void setColSummit(int colSummit) {
 		this.colSummit = colSummit - 1;
 		isAlignFile = false;

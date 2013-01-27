@@ -73,26 +73,18 @@ public class SamRecord extends SiteInfo implements AlignRecord{
 	public String getDescription() {
 		return samRecord.toString();
 	}	  
-	public boolean isJunctionReads() {
+	public boolean isJunctionCovered() {
 		if (isJunctionReads != null) {
 			return isJunctionReads;
 		}
 		if (samRecord.getCigar().toString().contains("N")) {
-			return true;
+			isJunctionReads = true;
 		} else {
 			isJunctionReads = false;
 		}
 		return isJunctionReads;
 	}
-	
-	@Override
-	public boolean isJunctionCovered() {
-		if (samRecord.getCigar().toString().contains("N")) {
-			return true;
-		}
-		return false;
-	}
-	
+
 	/** 当为junction reads的时候才会有意义 */
 	public ArrayList<Align> getAlignmentBlocks() {
 		if (samRecord.getCigar().toString().contains("N")) {
@@ -119,7 +111,8 @@ public class SamRecord extends SiteInfo implements AlignRecord{
 	public Object getAttribute(String tag) {
 		return samRecord.getAttribute(tag);
 	}
-
+	
+	@Override
 	public boolean isUniqueMapping() {
 		Object attrXT = samRecord.getAttribute("XT");
 		if (attrXT != null) {

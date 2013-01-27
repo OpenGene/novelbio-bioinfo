@@ -311,4 +311,11 @@ public class BedRecord extends SiteInfo implements AlignRecord{
 	public boolean isMapped() {
 		return true;
 	}
+	@Override
+	public boolean isUniqueMapping() {
+		if (getMappingNum() == 1) {
+			return true;
+		}
+		return false;
+	}
 }
