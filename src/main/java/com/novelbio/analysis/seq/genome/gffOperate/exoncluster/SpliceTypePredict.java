@@ -147,7 +147,6 @@ public abstract class SpliceTypePredict {
 			lsResult.add(new PredictUnKnown(exonCluster));
 		}
 		return lsResult;
-	
 	}
 
 	public static enum SplicingAlternativeType {

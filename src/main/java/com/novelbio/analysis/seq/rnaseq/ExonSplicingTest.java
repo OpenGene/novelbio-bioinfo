@@ -306,7 +306,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	 *  */
 	private double getPvaluePropExp() {
 		double prop = 0.5;
-		double ratio = exonCluster.getLength()/(readsLength*3);
+		double ratio = exonCluster.getLength()/(readsLength * 3);
 		if (ratio > 1) {
 			prop = Math.pow(0.5, 1/ratio);
 		}
