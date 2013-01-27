@@ -119,11 +119,6 @@ public class GuiSamStatistics extends JPanel {
 				btnRun.setEnabled(false);
 				ctrlPeakStatistics.setQueryFile(readFile);
 
-				try { ctrlPeakStatistics.setColPeakSummit(Integer.parseInt(txtColPeakStartMid.getText()));
-				} catch (Exception e2) { }
-				try { ctrlPeakStatistics.setColChrID(Integer.parseInt(txtColChrID.getText()));
-				} catch (Exception e2) { }
-				
  				int[] tss = new int[]{0,0};
 				int[] tes = new int[]{0,0};
 				try { tss[0] = Integer.parseInt(txtTssUp.getText()); } catch (Exception e2) { }

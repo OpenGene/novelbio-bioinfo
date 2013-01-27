@@ -66,11 +66,15 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	}
 	/** tss的区间，上游负数下游正数，可以设置为-2000，-1000 */
 	public void setTssRegion(int[] tssRegion) {
-		this.tssRegion = tssRegion;
+		if (tssRegion != null) {
+			this.tssRegion = tssRegion;
+		}
 	}
 	/** tes的区间，上游负数下游正数，可以设置为100，200 */
 	public void setTesRegion(int[] tesRegion) {
-		this.tesRegion = tesRegion;
+		if (tesRegion != null) {
+			this.tesRegion = tesRegion;
+		}
 	}
 	public void setFileName(String fileName) {
 		this.fileName = fileName;

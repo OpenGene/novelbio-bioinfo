@@ -1,99 +1,163 @@
 package com.novelbio.nbcgui.controlquery;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import net.sf.samtools.SAMFileReader;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.FormatSeq;
+import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.GffChrStatistics;
 import com.novelbio.analysis.seq.genome.GffChrStatistics.GffChrStatiscticsProcessInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput;
 import com.novelbio.analysis.seq.sam.AlignSeqReading;
+import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunGetInfo;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.species.Species;
+import com.novelbio.nbcgui.GUI.GuiAnnoInfo;
 import com.novelbio.nbcgui.GUI.GuiPeakStatistics;
 import com.novelbio.nbcgui.GUI.GuiSamStatistics;
 
-public class CtrlSamRPKMLocate implements RunGetInfo<GffChrStatistics.GffChrStatiscticsProcessInfo> {
+public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo> , Runnable {
 	GuiSamStatistics guiSamStatistics;
-	GffChrStatistics gffChrStatistics = new GffChrStatistics();
-	RPKMcomput rpkMcomput = new RPKMcomput();
+
 	FormatSeq formatSeq;
 
-	
-	Species species;
+	GffChrAbs gffChrAbs = new GffChrAbs();
 	
 	List<String[]> lsReadFile;
+	boolean isCountRPKM = true;
+	boolean isLocStatistics = true;
 	
+	Set<String> setPrefix;
+	Map<String, GffChrStatistics> mapPrefix2LocStatistics;
+	RPKMcomput rpkMcomput;
+	
+	int[] tss;
+	int[] tes;
+	
+	String resultPrefix;
+
+	
+	/**
+	 * 必须设定{@link #setFormatSeq(FormatSeq)} 方法
+	 * 和{@link #setResultPrefix(String)} 方法
+	 * @param guiPeakStatistics
+	 */
 	public CtrlSamRPKMLocate(GuiSamStatistics guiPeakStatistics) {
 		this.guiSamStatistics = guiPeakStatistics;
-		gffChrStatistics.setRunGetInfo(this);
 	}
 	public void setSpecies(Species species) {
-		this.species = species;
+		this.gffChrAbs.setSpecies(species);
 	}
+	public void setGffHash(GffHashGene gffHashGene) {
+		this.gffChrAbs.setGffHash(gffHashGene);
+	}
+	public void setGffHash(GffHashGeneAbs gffHashGene) {
+		this.gffChrAbs.setGffHash(gffHashGene);
+	}
+	
 	public void setQueryFile(List<String[]> lsReadFile) {
 		this.lsReadFile = lsReadFile;
 	}
+	/** 设定文件格式 */
 	public void setFormatSeq(FormatSeq formatSeq) {
 		this.formatSeq = formatSeq;
 	}
 
 	public void setTssRange(int[] tss) {
-		gffChrStatistics.setTssRegion(tss);
+		this.tss = tss;
 	}
 	public void setTesRange(int[] tes) {
-		gffChrStatistics.setTesRegion(tes);
+		this.tes = tes;
 	}
-
-	public void execute() {
+	/** 设定输出文件路径前缀 */
+	public void setResultPrefix(String resultPrefix) {
+		this.resultPrefix = resultPrefix;
+	}
+	public void run() {
 		long fileSizeLong = getFileSize();
 		int fileSize = (int)(fileSizeLong/1000000);
 		
 		guiSamStatistics.getProcessBar().setMaximum(fileSize);
 		
-		List<AlignSeqReading> lsAlignSeqReadings = getLsAlignSeqReadings();
-		for (AlignSeqReading alignSeqReading : lsAlignSeqReadings) {
-			alignSeqReading.addAlignmentRecorder(gffChrStatistics);
-			alignSeqReading.addAlignmentRecorder(rpkMcomput);
+		ArrayListMultimap<String, AlignSeqReading> mapPrefix2AlignSeqReadings = getMapPrefix2AlignSeqReadings();
+		if (!isCountRPKM && !isLocStatistics) {
+			return;
+		}
+
+		for (String prefix : mapPrefix2AlignSeqReadings.keySet()) {
+			List<AlignSeqReading> lsAlignSeqReadings = mapPrefix2AlignSeqReadings.get(prefix);
+			List<AlignmentRecorder> lsAlignmentRecorders = new ArrayList<AlignmentRecorder>();
+			
+			if (isCountRPKM) {
+				rpkMcomput.setCurrentCondition(prefix);
+				lsAlignmentRecorders.add(rpkMcomput);
+			}
+			
+			if (isLocStatistics) {
+				GffChrStatistics gffChrStatistics = new GffChrStatistics();
+				gffChrStatistics.setGffChrAbs(gffChrAbs);
+				gffChrStatistics.setTesRegion(tes);
+				gffChrStatistics.setTssRegion(tss);
+				lsAlignmentRecorders.add(gffChrStatistics);
+				mapPrefix2LocStatistics.put(prefix, gffChrStatistics);
+			}
+			
+			for (AlignSeqReading alignSeqReading : lsAlignSeqReadings) {
+				alignSeqReading.addColAlignmentRecorder(lsAlignmentRecorders);
+				alignSeqReading.setRunGetInfo(this);
+				alignSeqReading.reading();
+			}
 		}
 		
-		
-		
-		
-		gffChrStatistics.clean();
-		gffChrStatistics.setSpecies(species);
-		gffChrStatistics.setFileName(readFile);
-		
-		Thread thread = new Thread(gffChrStatistics);
-		thread.start();
+		writeToFile();
 	}
 	
-	private List<AlignSeqReading> getLsAlignSeqReadings() {
-		ArrayList<AlignSeqReading> lsAlignSeqReadings = new ArrayList<AlignSeqReading>();
-		for (String[] fileName : lsReadFile) {
-			AlignSeq alignSeq;
-			if (formatSeq == FormatSeq.SAM || formatSeq == formatSeq.BAM) {
-				alignSeq = new SamFile(fileName[0]);
+	private ArrayListMultimap<String, AlignSeqReading> getMapPrefix2AlignSeqReadings() {
+		if (isLocStatistics) {
+			mapPrefix2LocStatistics = new HashMap<String, GffChrStatistics>();
+		}
+		if (isCountRPKM) {
+			rpkMcomput = new RPKMcomput();
+			rpkMcomput.setGffChrAbs(gffChrAbs);
+		}
+		
+		setPrefix = new LinkedHashSet<String>();
+		
+		ArrayListMultimap<String, AlignSeqReading> mapPrefix2AlignSeqReadings = ArrayListMultimap.create();
+		for (String[] fileName2Prefix : lsReadFile) {
+			setPrefix.add(fileName2Prefix[1]);
+			
+			AlignSeq alignSeq = null;
+			if (formatSeq == FormatSeq.SAM || formatSeq == FormatSeq.BAM) {
+				alignSeq = new SamFile(fileName2Prefix[0]);
 			} else if (formatSeq == FormatSeq.BED) {
-				alignSeq = new BedSeq(fileName[0]);
+				alignSeq = new BedSeq(fileName2Prefix[0]);
 			}
 			AlignSeqReading alignSeqReading = new AlignSeqReading(alignSeq);
-			lsAlignSeqReadings.add(alignSeqReading);
+			mapPrefix2AlignSeqReadings.put(fileName2Prefix[1], alignSeqReading);
 		}
-		return lsAlignSeqReadings;
+		return mapPrefix2AlignSeqReadings;
 	}
 	
 	private long getFileSize() {
 		long fileSizeLong = 0;
 		for (String[] fileName : lsReadFile) {
-			long thisFileSize = FileOperate.getFileSizeLong(fileName[0]);
+			long thisFileSize = FileOperate.getFileSizeLong(fileName[0]) * 1024;
 			if (fileName[0].endsWith("bam") || fileName[0].endsWith("gz")) {
 				thisFileSize = thisFileSize * 8;
 			}
@@ -102,29 +166,48 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GffChrStatistics.GffChrStat
 		return fileSizeLong;
 	}
 	
-	public ArrayList<String[]> getResult() {
-		return gffChrStatistics.getStatisticsResult();
+	private void writeToFile() {
+		if (isCountRPKM) {
+			String outRPM = FileOperate.changeFileSuffix(resultPrefix, "_rpm", "txt");
+			String outRPKM = FileOperate.changeFileSuffix(resultPrefix, "_rpkm", "txt");
+			
+			List<String[]> lsRpm = rpkMcomput.getLsRPMs();
+			List<String[]> lsRpkm = rpkMcomput.getLsRPKMs();
+			TxtReadandWrite txtWriteRpm = new TxtReadandWrite(outRPM, true);
+			txtWriteRpm.ExcelWrite(lsRpm);
+			TxtReadandWrite txtWriteRpkm = new TxtReadandWrite(outRPKM, true);
+			txtWriteRpkm.ExcelWrite(lsRpkm);
+		}
+		if (isLocStatistics) {
+			for (String prefix : setPrefix) {
+				GffChrStatistics gffChrStatistics = mapPrefix2LocStatistics.get(prefix);
+				String outStatistics = FileOperate.changeFileSuffix(resultPrefix, "_" + prefix + "_GeneStructure", "txt");
+				TxtReadandWrite txtWrite = new TxtReadandWrite(outStatistics, true);
+				txtWrite.ExcelWrite(gffChrStatistics.getStatisticsResult());
+			}
+		}
+		
 	}
 	@Override
-	public void setRunningInfo(GffChrStatiscticsProcessInfo info) {
-		guiSamStatistics.getProcessBar().setValue(info.getReadsize());
+	public void setRunningInfo(GuiAnnoInfo info) {
+		guiSamStatistics.getProcessBar().setValue((int)( info.getNumDouble()/1000000));
 	}
 	@Override
-	public void done(RunProcess<GffChrStatiscticsProcessInfo> runProcess) {
+	public void done(RunProcess<GuiAnnoInfo> runProcess) {
 		guiSamStatistics.getProcessBar().setValue(guiSamStatistics.getProcessBar().getMaximum());
 		guiSamStatistics.getBtnSave().setEnabled(true);
 		guiSamStatistics.getBtnRun().setEnabled(true);
 	}
 	@Override
-	public void threadSuspended(RunProcess<GffChrStatiscticsProcessInfo> runProcess) {
+	public void threadSuspended(RunProcess<GuiAnnoInfo> runProcess) {
 		guiSamStatistics.getBtnRun().setEnabled(true);
 	}
 	@Override
-	public void threadResumed(RunProcess<GffChrStatiscticsProcessInfo> runProcess) {
+	public void threadResumed(RunProcess<GuiAnnoInfo> runProcess) {
 		guiSamStatistics.getBtnRun().setEnabled(false);
 	}
 	@Override
-	public void threadStop(RunProcess<GffChrStatiscticsProcessInfo> runProcess) {
+	public void threadStop(RunProcess<GuiAnnoInfo> runProcess) {
 		guiSamStatistics.getBtnRun().setEnabled(true);
 	}
 }
