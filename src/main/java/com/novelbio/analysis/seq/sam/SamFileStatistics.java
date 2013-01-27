@@ -35,7 +35,7 @@ public class SamFileStatistics implements AlignmentRecorder {
 	
 	HashMap<String, double[]> mapChrID2ReadsNum = new HashMap<String, double[]>();
 	
-	protected SamFileStatistics() { }
+	public SamFileStatistics() { }
 	
 	protected void setSamFile(SamFile samFile) {
 		this.samFile = samFile;
@@ -75,11 +75,11 @@ public class SamFileStatistics implements AlignmentRecorder {
 		return -1;
 	}
 	
-	
-	//TODO 待改进
-	public ArrayList<String[]> getMappingInfo() {
-		statistics();
-		
+	/**
+	 * 首先要运行 statistics
+	 * @return
+	 */
+	public ArrayList<String[]> getMappingInfo() {		
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		lsResult.add(new String[]{"allReadsNum", (long)allReadsNum + ""});
 		lsResult.add(new String[]{"mappedReadsNum", (long)mappedReadsNum + ""});

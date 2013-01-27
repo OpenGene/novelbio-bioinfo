@@ -1,9 +1,14 @@
 package com.novelbio.analysis.seq.mapping;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
+import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.sam.SamFileStatistics;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -298,10 +303,10 @@ public class MapBwa extends MapDNA {
 		IndexMake();
 		bwaAln();
 		bwaSamPeSe();
-
+		
 		return copeAfterMapping(outFileName);
 	}
-	
+
 	/**
 	 * linux命令如下<br>
 	 * bwa aln -n 4 -o 1 -e 5 -t 4 -o 10 -I -l 18 /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna barcod_TGACT.fastq > TGACT.sai<br>
@@ -355,12 +360,21 @@ public class MapBwa extends MapDNA {
 			return outFileName + ".sam";
 		}
 	}
+	
+	/**
+	 * 将sam文件压缩成bam文件，然后做好统计并返回
+	 * @param outSamFile
+	 * @return
+	 */
 	private SamFile copeAfterMapping(String outSamFile) {
 		if (!FileOperate.isFileExistAndBigThanSize(outSamFile, 1)) {
 			return null;
 		}
 		SamFile samFile = new SamFile(outFileName);
-		SamFile bamFile = samFile.convertToBam();
+		samFileStatistics = new SamFileStatistics();
+		List<AlignmentRecorder> lsAlignmentRecorders = new ArrayList<AlignmentRecorder>();
+		lsAlignmentRecorders.add(samFileStatistics);
+		SamFile bamFile = samFile.convertToBam(lsAlignmentRecorders);
 		samFile.close();
 		deleteFile(samFile.getFileName(), bamFile.getFileName());
 		return bamFile;

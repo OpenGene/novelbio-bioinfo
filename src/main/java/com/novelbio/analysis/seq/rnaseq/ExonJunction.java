@@ -20,7 +20,7 @@ import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.SamFile;
-import com.novelbio.analysis.seq.sam.SamFileReading;
+import com.novelbio.analysis.seq.sam.AlignSeqReading;
 import com.novelbio.analysis.seq.sam.SamMapReads;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -61,7 +61,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	/** 本次比较的condition */
 	String condition1, condition2;
 	/** condition到排序的bam文件 */
-	ArrayListMultimap<String, SamFileReading> mapCond2SamReader = ArrayListMultimap.create();
+	ArrayListMultimap<String, AlignSeqReading> mapCond2SamReader = ArrayListMultimap.create();
 	ArrayListMultimap<String, SamFile> mapCond2SamFile = ArrayListMultimap.create();
 	/** 统计可变剪接事件的map
 	 * key：可变剪接类型
@@ -158,7 +158,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	
 	public void addBamSorted(String condition, String sortedBamFile) {
 		setCondition.add(condition);
-		SamFileReading samFileReading = new SamFileReading(new SamFile(sortedBamFile));
+		AlignSeqReading samFileReading = new AlignSeqReading(new SamFile(sortedBamFile));
 		mapCond2SamReader.put(condition, samFileReading);
 		mapCond2SamFile.put(condition, new SamFile(sortedBamFile));
 	}
@@ -216,8 +216,8 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	private long getFileLength() {
 		long fileLength = 0;
 		for (String condition : mapCond2SamReader.keySet()) {
-			List<SamFileReading> lsSamFileReadings = mapCond2SamReader.get(condition);
-			for (SamFileReading samFileReading : lsSamFileReadings) {
+			List<AlignSeqReading> lsSamFileReadings = mapCond2SamReader.get(condition);
+			for (AlignSeqReading samFileReading : lsSamFileReadings) {
 				long thisFileLength = (long) (FileOperate.getFileSize(samFileReading.getSamFile().getFileName()) * 1024);
 				if (samFileReading.getSamFile().getFileName().endsWith("bam")) {
 					thisFileLength = thisFileLength * 8;
@@ -229,14 +229,14 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	private void loadJunction() {
-		SamFileReading samFileReadingLast = null;
+		AlignSeqReading samFileReadingLast = null;
 		
 		ArrayList<Align> lsDifIsoGene = null;//getLsDifIsoGene();
 		for (String condition : mapCond2SamReader.keySet()) {
 			ctrlSplicing.setInfo("Reading Junction " + condition);
 			tophatJunction.setCondition(condition);
-			List<SamFileReading> lsSamFileReadings = mapCond2SamReader.get(condition);
-			for (SamFileReading samFileReading : lsSamFileReadings) {
+			List<AlignSeqReading> lsSamFileReadings = mapCond2SamReader.get(condition);
+			for (AlignSeqReading samFileReading : lsSamFileReadings) {
 				samFileReading.clear();
 				samFileReading.getSamFile().indexMake();
 				if (samFileReadingLast != null) {
@@ -332,13 +332,13 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	private void loadExp() {
-		SamFileReading samFileReadingLast = null;
+		AlignSeqReading samFileReadingLast = null;
 
 		for (String condition : mapCond2SamReader.keySet()) {
 			ctrlSplicing.setInfo("Reading Exp " + condition);
 			
-			List<SamFileReading> lsSamFileReadings = mapCond2SamReader.get(condition);
-			for (SamFileReading samFileReading : lsSamFileReadings) {
+			List<AlignSeqReading> lsSamFileReadings = mapCond2SamReader.get(condition);
+			for (AlignSeqReading samFileReading : lsSamFileReadings) {
 				samFileReading.clear();
 				if (samFileReadingLast != null) {
 					samFileReading.setReadInfo(0L, samFileReadingLast.getReadByte());
@@ -358,13 +358,13 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			}
 		}
 	}
-	private MapReadsAbs getSamMapReads(SamFileReading samFileReading) {
+	private MapReadsAbs getSamMapReads(AlignSeqReading samFileReading) {
 		SamMapReads samMapReads = new SamMapReads(samFileReading.getSamFile());
 		samMapReads.setisUniqueMapping(true);
 		samMapReads.setNormalType(MapReadsAbs.NORMALIZATION_NO);
 		return samMapReads;
 	}
-	private MapReadsAbs getMapReads(SamFileReading samFileReading) {
+	private MapReadsAbs getMapReads(AlignSeqReading samFileReading) {
 		MapReads mapReads = new MapReads();
 		mapReads.setInvNum(15);
 		mapReads.setNormalType(MapReads.NORMALIZATION_NO);
@@ -505,8 +505,8 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		for (String condition : mapCond2SamReader.keySet()) {
 			ctrlSplicing.setInfo("Reading Junction " + condition);
 			tophatJunction.setCondition(condition);
-			List<SamFileReading> lsSamFileReadings = mapCond2SamReader.get(condition);
-			for (SamFileReading samFileReading : lsSamFileReadings) {
+			List<AlignSeqReading> lsSamFileReadings = mapCond2SamReader.get(condition);
+			for (AlignSeqReading samFileReading : lsSamFileReadings) {
 				samFileReading.threadStop();
 			}
 		}
@@ -519,8 +519,8 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		for (String condition : mapCond2SamReader.keySet()) {
 			ctrlSplicing.setInfo("Reading Junction " + condition);
 			tophatJunction.setCondition(condition);
-			List<SamFileReading> lsSamFileReadings = mapCond2SamReader.get(condition);
-			for (SamFileReading samFileReading : lsSamFileReadings) {
+			List<AlignSeqReading> lsSamFileReadings = mapCond2SamReader.get(condition);
+			for (AlignSeqReading samFileReading : lsSamFileReadings) {
 				samFileReading.threadSuspend();
 			}
 		}
@@ -533,8 +533,8 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		for (String condition : mapCond2SamReader.keySet()) {
 			ctrlSplicing.setInfo("Reading Junction " + condition);
 			tophatJunction.setCondition(condition);
-			List<SamFileReading> lsSamFileReadings = mapCond2SamReader.get(condition);
-			for (SamFileReading samFileReading : lsSamFileReadings) {
+			List<AlignSeqReading> lsSamFileReadings = mapCond2SamReader.get(condition);
+			for (AlignSeqReading samFileReading : lsSamFileReadings) {
 				samFileReading.threadResume();
 			}
 		}

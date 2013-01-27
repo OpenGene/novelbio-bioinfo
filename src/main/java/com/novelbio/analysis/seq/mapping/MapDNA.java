@@ -2,9 +2,12 @@ package com.novelbio.analysis.seq.mapping;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.sam.SamFileStatistics;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 public abstract class MapDNA {
+	
+	SamFileStatistics samFileStatistics;
 	
 	/** 输入已经过滤好的fastq文件 */
 	public abstract void setFqFile(FastQ leftFq, FastQ rightFq);
@@ -63,5 +66,9 @@ public abstract class MapDNA {
 			mapSoftware = new MapBowtie(softMapping);
 		}
 		return mapSoftware;
+	}
+	
+	public SamFileStatistics getStatistics() {
+		return samFileStatistics;
 	}
 }

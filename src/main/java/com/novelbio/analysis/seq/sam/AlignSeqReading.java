@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import com.novelbio.analysis.seq.AlignRecord;
+import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.genome.mappingOperate.Alignment;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.nbcgui.GUI.GuiAnnoInfo;
@@ -16,15 +18,15 @@ import com.novelbio.nbcgui.GUI.GuiAnnoInfo;
  * @author zong0jie
  *
  */
-public class SamFileReading extends RunProcess<GuiAnnoInfo>{
-	List<? extends Alignment> lsAlignments;
+public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
+
 	ArrayList<AlignmentRecorder> lsAlignmentRecorders = new ArrayList<AlignmentRecorder>();
-	SamFile samFile;
+	AlignSeq alignSeqFile;
 	long readLines;
 	double readByte;
 	
-	public SamFileReading(SamFile samFile) {
-		this.samFile = samFile;
+	public AlignSeqReading(AlignSeq samFile) {
+		this.alignSeqFile = samFile;
 		readLines = 0;
 		readByte = 0;
 	}
@@ -42,29 +44,7 @@ public class SamFileReading extends RunProcess<GuiAnnoInfo>{
 		this.readLines = readLines;
 		this.readByte = readByte;
 	}
-	/**
-	 * 输入需要读取的区域，不用排序
-	 * @param lsAlignments
-	 */
-	public void setLsAlignments(List<? extends Alignment> lsAlignments) {
-		if (lsAlignments == null || lsAlignments.size() == 0) {
-			return;
-		}
-		this.lsAlignments = lsAlignments;
 
-		Collections.sort(lsAlignments, new Comparator<Alignment>() {
-			public int compare(Alignment o1, Alignment o2) {
-				int compare = 0;
-				compare = o1.getRefID().compareTo(o2.getRefID());
-				if (compare == 0) {
-					Integer o1int = o1.getStartAbs();
-					Integer o2int = o2.getStartAbs();
-					compare = o1int.compareTo(o2int);
-				}
-				return compare;
-			}
-		});
-	}
 	
 	public void setLsAlignmentRecorders(ArrayList<AlignmentRecorder> lsAlignmentRecorders) {
 		this.lsAlignmentRecorders = lsAlignmentRecorders;
@@ -80,13 +60,10 @@ public class SamFileReading extends RunProcess<GuiAnnoInfo>{
 		lsAlignmentRecorders.clear();
 		readByte = 0;
 		readLines = 0;
-		try {
-			lsAlignments.clear();
-		} catch (Exception e) { }
 	}
 	
-	public SamFile getSamFile() {
-		return samFile;
+	public AlignSeq getSamFile() {
+		return alignSeqFile;
 	}
 	
 	@Override
@@ -95,16 +72,12 @@ public class SamFileReading extends RunProcess<GuiAnnoInfo>{
 	}
 	
 	public void reading() {
-		if (lsAlignments == null || lsAlignments.size() == 0) {
-			readAllLines();
-		} else {
-			readSelectLines();
-		}
+		readAllLines();
 		summaryRecorder();
 	}
-	private void readAllLines() {
+	protected void readAllLines() {
 		GuiAnnoInfo guiAnnoInfo;
-		for (SamRecord samRecord : samFile.readLines()) {
+		for (AlignRecord samRecord : alignSeqFile.readLines()) {
 			for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {
 				alignmentRecorder.addAlignRecord(samRecord);
 			}
@@ -124,28 +97,8 @@ public class SamFileReading extends RunProcess<GuiAnnoInfo>{
 			samRecord = null;
 		}
 	}
-	private void readSelectLines() {
-		GuiAnnoInfo guiAnnoInfo;
-		long readLines = 0;
-		for (Alignment alignment : lsAlignments) {
-			for (SamRecord samRecord : samFile.readLinesOverlap(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs())) {
-				for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {
-					alignmentRecorder.addAlignRecord(samRecord);
-				}
-				suspendCheck();
-				if (suspendFlag) {
-					break;
-				}
-				readLines++;
-				guiAnnoInfo = new GuiAnnoInfo();
-				guiAnnoInfo.setNum(readLines);
-				setRunInfo(guiAnnoInfo);
-				samRecord = null;
-			}
-		}
-	}
 	
-	private void summaryRecorder() {
+	protected void summaryRecorder() {
 		for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {
 			alignmentRecorder.summary();
 		}

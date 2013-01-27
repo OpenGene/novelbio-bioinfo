@@ -410,15 +410,26 @@ public class SamFile implements AlignSeq {
 	 * 如果是bam文件，则返回
 	 */
 	public SamFile convertToBam() {
-		String outName = FileOperate.changeFilePrefix(fileName, "", "bam");
-		return convertToBam(outName);
+		return convertToBam(new ArrayList<AlignmentRecorder>());
 	}
+	
 	/**
 	 * 用samtools实现了
 	 * 将sam文件压缩为bam文件
 	 * 如果是bam文件，则返回
 	 */
-	public SamFile convertToBam(String outFile) {
+	public SamFile convertToBam(List<AlignmentRecorder> lsAlignmentRecorders) {
+		String outName = FileOperate.changeFilePrefix(fileName, "", "bam");
+		return convertToBam(lsAlignmentRecorders, outName);
+	}
+	/**
+	 * 用samtools实现了
+	 * 将sam文件压缩为bam文件
+	 * 如果是bam文件，则返回
+	 * @param lsAlignmentRecorders 各种统计监听器
+	 * @param outFile 输出文件
+	 */
+	public SamFile convertToBam(List<AlignmentRecorder> lsAlignmentRecorders, String outFile) {
 		if (bamFile) {
 			return this;
 		}
@@ -428,6 +439,12 @@ public class SamFile implements AlignSeq {
 		
 		SamFile samFile = new SamFile(outFile, getHeader());
 		for (SamRecord samRecord : readLines()) {
+			for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {
+				try {
+					alignmentRecorder.addAlignRecord(samRecord);
+				} catch (Exception e) { }
+				
+			}
 			samFile.writeSamRecord(samRecord);
 		}
 		close();
