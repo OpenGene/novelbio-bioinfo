@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.AGeneInfo;
 import com.novelbio.database.domain.geneanno.BlastInfo;
+import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgo.GOInfoAbs;
@@ -98,7 +99,7 @@ public interface GeneIDInt{
 	 * @param GOType
 	 * @return
 	 */
-	public ArrayList<AGene2Go> getGene2GO(String GOType);
+	public ArrayList<AGene2Go> getGene2GO(GOtype GOType);
 
 	
 	//////////   GoInfo   ////////////////
@@ -108,7 +109,7 @@ public interface GeneIDInt{
 	 * 用方法： setBlastInfo(double evalue, int... StaxID)
 	 * 获得经过blast的GoInfo
 	 */
-	public ArrayList<AGene2Go> getGene2GOBlast(String GOType);
+	public ArrayList<AGene2Go> getGene2GOBlast(GOtype GOType);
 	/**
 	 * blast多个物种
 	 * 首先要设定blast的目标

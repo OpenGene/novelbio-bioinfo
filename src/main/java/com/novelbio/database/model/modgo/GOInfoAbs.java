@@ -7,6 +7,7 @@ import java.util.HashSet;
 import org.apache.log4j.Logger;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.domain.geneanno.AGene2Go;
+import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.service.servgeneanno.ServGo2Term;
 
@@ -48,7 +49,7 @@ public abstract class GOInfoAbs{
 	 * @param lsGoInfo 多个GOInfoAbs的list
 	 * @return
 	 */
-	public ArrayList<AGene2Go> getLsGen2Go(ArrayList<GOInfoAbs> lsGoInfo, String GOType) {
+	public ArrayList<AGene2Go> getLsGen2Go(ArrayList<GOInfoAbs> lsGoInfo, GOtype GOType) {
 		setGene2Go();
 		hashGene2Gos = new HashMap<String, AGene2Go>();
 		//先将本基因的信息加入Hash表
@@ -83,24 +84,13 @@ public abstract class GOInfoAbs{
 	 * @return
 	 * 没有则返回一个空的lsResult
 	 */
-	public ArrayList<AGene2Go> getLsGene2Go(String GOType) {
+	public ArrayList<AGene2Go> getLsGene2Go(GOtype GOType) {
 		setGene2Go();
 		
-		if (GOType.equals(Go2Term.GO_BP)) {
-			return getLsGoType(Go2Term.FUN_SHORT_BIO_P);
-		}
-		else if (GOType.equals(Go2Term.GO_CC)) {
-			return getLsGoType(Go2Term.FUN_SHORT_CEL_C);
-		}
-		else if (GOType.equals(Go2Term.GO_MF)) {
-			return getLsGoType(Go2Term.FUN_SHORT_MOL_F);
-		}
-		else if (GOType.equals(Go2Term.GO_ALL)) {
+		if (GOType != GOtype.ALL) {
+			return getLsGoType(GOType);
+		} else {
 			return lsAGene2Gos;
-		}
-		else {
-			logger.error("UnKnown GOType: "+ GOType );
-			return new ArrayList<AGene2Go>();
 		}
 	}
 	/**
@@ -112,14 +102,14 @@ public abstract class GOInfoAbs{
 	 * @return
 	 * 如果没有该项GO，则返回一个空的lsResult
 	 */
-	private ArrayList<AGene2Go> getLsGoType(String GoType) {
+	private ArrayList<AGene2Go> getLsGoType(GOtype goType) {
 		ArrayList<AGene2Go> lsResult = new ArrayList<AGene2Go>();
 		HashSet<String> setGOID = new HashSet<String>();
 		if (lsAGene2Gos == null) {
 			return new ArrayList<AGene2Go>();
 		}
 		for (AGene2Go aGene2Go : lsAGene2Gos) {
-			if (!aGene2Go.getFunction().equals(GoType) || setGOID.contains(aGene2Go.getGOID())) {
+			if (aGene2Go.getFunction() != goType || setGOID.contains(aGene2Go.getGOID())) {
 				continue;
 			}
 			setGOID.add(aGene2Go.getGOID());

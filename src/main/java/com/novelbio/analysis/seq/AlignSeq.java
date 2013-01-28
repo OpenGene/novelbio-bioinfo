@@ -29,4 +29,6 @@ public interface AlignSeq {
 	public Iterable<? extends AlignRecord> readLines(int lines);
 	
 	public AlignSeq sort();
+	
+	public String getFileName();
 }

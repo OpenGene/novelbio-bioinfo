@@ -52,7 +52,7 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 	private GuiCuffdiff guiCuffdiff;
 	private GuiPeakCalling guiPeakCalling;
 	private GuiSpeciesInfo guiSpeciesInfo;
-	
+	private GuiSamStatistics guiSamStatistics;
 	
 	/**
 	* Auto-generated main method to display this JFrame
@@ -133,6 +133,9 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				
 				guiTranscriptomeCufflinks = new GuiTranscriptomeCufflinks();
 				jTabbedPane1.addTab("TranscriptomReconstruct", guiTranscriptomeCufflinks);
+				
+				guiSamStatistics = new GuiSamStatistics();
+				jTabbedPane1.addTab("SamStatisticsAndRPKM", guiSamStatistics);
 				
 				guiRNAautoSplice = new GuiRNAautoSplice();
 				jTabbedPane1.addTab("RNAautoSplice", guiRNAautoSplice);

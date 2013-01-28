@@ -31,11 +31,8 @@ import com.novelbio.nbcgui.GUI.GuiAnnoInfo;
 import com.novelbio.nbcgui.GUI.GuiPeakStatistics;
 import com.novelbio.nbcgui.GUI.GuiSamStatistics;
 
-public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo> , Runnable {
+public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo>, Runnable {
 	GuiSamStatistics guiSamStatistics;
-
-	FormatSeq formatSeq;
-
 	GffChrAbs gffChrAbs = new GffChrAbs();
 	
 	List<String[]> lsReadFile;
@@ -73,11 +70,9 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo> , Runnable {
 	public void setQueryFile(List<String[]> lsReadFile) {
 		this.lsReadFile = lsReadFile;
 	}
-	/** 设定文件格式 */
-	public void setFormatSeq(FormatSeq formatSeq) {
-		this.formatSeq = formatSeq;
+	public void setIsCountRPKM(boolean isCountRPKM) {
+		this.isCountRPKM = isCountRPKM;
 	}
-
 	public void setTssRange(int[] tss) {
 		this.tss = tss;
 	}
@@ -89,16 +84,14 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo> , Runnable {
 		this.resultPrefix = resultPrefix;
 	}
 	public void run() {
-		long fileSizeLong = getFileSize();
-		int fileSize = (int)(fileSizeLong/1000000);
-		
+		int fileSize = getFileSize();		
 		guiSamStatistics.getProcessBar().setMaximum(fileSize);
 		
-		ArrayListMultimap<String, AlignSeqReading> mapPrefix2AlignSeqReadings = getMapPrefix2AlignSeqReadings();
+		ArrayListMultimap<String, AlignSeqReading> mapPrefix2AlignSeqReadings = getMapPrefix2LsAlignSeqReadings();
 		if (!isCountRPKM && !isLocStatistics) {
 			return;
 		}
-
+		double readByte = 0;
 		for (String prefix : mapPrefix2AlignSeqReadings.keySet()) {
 			List<AlignSeqReading> lsAlignSeqReadings = mapPrefix2AlignSeqReadings.get(prefix);
 			List<AlignmentRecorder> lsAlignmentRecorders = new ArrayList<AlignmentRecorder>();
@@ -118,16 +111,36 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo> , Runnable {
 			}
 			
 			for (AlignSeqReading alignSeqReading : lsAlignSeqReadings) {
+				alignSeqReading.setReadInfo(0L, readByte);
 				alignSeqReading.addColAlignmentRecorder(lsAlignmentRecorders);
 				alignSeqReading.setRunGetInfo(this);
 				alignSeqReading.reading();
+				readByte = alignSeqReading.getReadByte();
 			}
 		}
 		
 		writeToFile();
+		done(null);
+		
 	}
 	
-	private ArrayListMultimap<String, AlignSeqReading> getMapPrefix2AlignSeqReadings() {
+	private int getFileSize() {
+		int fileSizeLong = 0;
+		for (String[] fileName : lsReadFile) {
+			long thisFileSize = (long) FileOperate.getFileSize(fileName[0]);
+			if (fileName[0].endsWith("bam") || fileName[0].endsWith("gz")) {
+				thisFileSize = thisFileSize * 8;
+			}
+			fileSizeLong += thisFileSize;
+		}
+		return fileSizeLong;
+	}
+	
+	/**
+	 * 本步会初始化mapPrefix2LocStatistics和rpkMcomput
+	 * @return
+	 */
+	private ArrayListMultimap<String, AlignSeqReading> getMapPrefix2LsAlignSeqReadings() {
 		if (isLocStatistics) {
 			mapPrefix2LocStatistics = new HashMap<String, GffChrStatistics>();
 		}
@@ -141,12 +154,15 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo> , Runnable {
 		ArrayListMultimap<String, AlignSeqReading> mapPrefix2AlignSeqReadings = ArrayListMultimap.create();
 		for (String[] fileName2Prefix : lsReadFile) {
 			setPrefix.add(fileName2Prefix[1]);
-			
+			FormatSeq formatSeq = getFileFormat(fileName2Prefix[0]);
+			//TODO
 			AlignSeq alignSeq = null;
 			if (formatSeq == FormatSeq.SAM || formatSeq == FormatSeq.BAM) {
 				alignSeq = new SamFile(fileName2Prefix[0]);
 			} else if (formatSeq == FormatSeq.BED) {
 				alignSeq = new BedSeq(fileName2Prefix[0]);
+			} else {
+				continue;
 			}
 			AlignSeqReading alignSeqReading = new AlignSeqReading(alignSeq);
 			mapPrefix2AlignSeqReadings.put(fileName2Prefix[1], alignSeqReading);
@@ -154,16 +170,8 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo> , Runnable {
 		return mapPrefix2AlignSeqReadings;
 	}
 	
-	private long getFileSize() {
-		long fileSizeLong = 0;
-		for (String[] fileName : lsReadFile) {
-			long thisFileSize = FileOperate.getFileSizeLong(fileName[0]) * 1024;
-			if (fileName[0].endsWith("bam") || fileName[0].endsWith("gz")) {
-				thisFileSize = thisFileSize * 8;
-			}
-			fileSizeLong += thisFileSize;
-		}
-		return fileSizeLong;
+	private FormatSeq getFileFormat(String fileName) {
+		 return FormatSeq.getFileType(fileName);
 	}
 	
 	private void writeToFile() {
@@ -190,7 +198,7 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo> , Runnable {
 	}
 	@Override
 	public void setRunningInfo(GuiAnnoInfo info) {
-		guiSamStatistics.getProcessBar().setValue((int)( info.getNumDouble()/1000000));
+		guiSamStatistics.getProcessBar().setValue((int)( info.getNumDouble()/1024));
 	}
 	@Override
 	public void done(RunProcess<GuiAnnoInfo> runProcess) {

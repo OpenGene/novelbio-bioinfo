@@ -76,7 +76,7 @@ public class CufflinksGTF {
 	}
 
 	private String getOutPathPrefix() {
-		return "-o \"" + outPathPrefix + "\" ";
+		return "-o " + CmdOperate.addQuot(outPathPrefix) + " ";
 	}
 
 	/**
@@ -152,14 +152,17 @@ public class CufflinksGTF {
 	}
 
 	private String getSamFile() {
-		String samFile;
+		String samFile = "";
 		if (lsSamFiles.size() == 1) {
-			samFile = "\"" + lsSamFiles.get(0).getFileName() + "\"";
+			samFile = CmdOperate.addQuot(lsSamFiles.get(0).getFileName() );
 		}
 		else {
 			mergeSamFile = outPathPrefix + "merge" + DateTime.getDateAndRandom() + ".bam";
-			mergeSamFile = SamFile.mergeBamFile(mergeSamFile, lsSamFiles);
-			samFile = "\"" + mergeSamFile + "\"";
+			SamFile mergeFile = SamFile.mergeBamFile(mergeSamFile, lsSamFiles);
+			if (mergeFile != null) {
+				mergeSamFile = mergeFile.getFileName();
+				samFile = CmdOperate.addQuot(mergeSamFile);
+			}		
 		}
 		return samFile;
 	}

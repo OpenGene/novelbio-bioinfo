@@ -3,6 +3,7 @@ package com.novelbio.database.domain.geneanno;
 import java.util.HashSet;
 
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.database.domain.geneanno.GOtype.GORelation;
 import com.novelbio.database.service.servgeneanno.ServGo2Term;
 
 public class Go2Term {
@@ -11,13 +12,6 @@ public class Go2Term {
 	public static final String RELATION_REGULATE = "REGULATE";
 	public static final String RELATION_REGULATE_POS = "REGULATE_POS";
 	public static final String RELATION_REGULATE_NEG = "REGULATE_NEG";
-	public static final String FUN_SHORT_BIO_P = "P";
-	public static final String FUN_SHORT_CEL_C = "C";
-	public static final String FUN_SHORT_MOL_F = "F";
-	public static final String GO_CC = "cellular component";
-	public static final String GO_MF = "molecular function";
-	public static final String GO_BP = "biological process";
-	public static final String GO_ALL = "all gene ontology";
 	
 	private ServGo2Term servGo2Term = new ServGo2Term();
     private String queryGoID;
@@ -69,7 +63,7 @@ public class Go2Term {
 	 * @param go2Term
 	 * @param relation 必须是RELATION中的一类
 	 */
-	public void addParent(Go2Term go2Term, String relation ) {
+	public void addParent(Go2Term go2Term, GORelation relation ) {
 		Parent = getUpdateParentChild(Parent, go2Term.getGoID(), relation);
 	}
 	/**
@@ -77,7 +71,7 @@ public class Go2Term {
 	 * @param go2Term
 	 * @param relation 必须是RELATION中的一类
 	 */
-	public void addParent(String goid, String relation ) {
+	public void addParent(String goid, GORelation relation ) {
 		Parent = getUpdateParentChild(Parent, goid, relation);
 	}
 	/**
@@ -85,7 +79,7 @@ public class Go2Term {
 	 * @param go2Term
 	 * @param relation 必须是RELATION中的一类
 	 */
-	public void addChild(Go2Term go2Term, String relation ) {
+	public void addChild(Go2Term go2Term, GORelation relation ) {
 		Child = getUpdateParentChild(Child, go2Term.getGoID(), relation);
 	}
 	/**
@@ -94,7 +88,7 @@ public class Go2Term {
 	 * @param go2Term
 	 * @param relation 必须是RELATION中的一类
 	 */
-	public void addChild(String goid, String relation ) {
+	public void addChild(String goid, GORelation relation ) {
 		Child = getUpdateParentChild(Child, goid, relation);
 	}
 	/**
@@ -104,7 +98,7 @@ public class Go2Term {
 	 * @param goID
 	 * @param relation
 	 */
-	public static String getUpdateParentChild(String parentChild, String goID, String relation) {
+	public static String getUpdateParentChild(String parentChild, String goID, GORelation relation) {
 		String update = relation + SepSign.SEP_INFO + goID;
 		if (parentChild == null) {
 			return update;
@@ -117,7 +111,7 @@ public class Go2Term {
 			for (int i = 0; i < sepGOID.length; i++) {
 				String[] sepRelate2GOID = sepGOID[i].split(SepSign.SEP_INFO);
 				if (sepRelate2GOID[1].equalsIgnoreCase(goID)) {
-					sepRelate2GOID[0] = relation;
+					sepRelate2GOID[0] = relation.toString();
 					sepGOID[i] = sepRelate2GOID[0] + SepSign.SEP_INFO + sepRelate2GOID[1];
 					break;
 				}
@@ -220,11 +214,11 @@ public class Go2Term {
 	 * FUN_SHORT_MOL_F<br>
 	 * @return
 	 */
-	public String getGoFunction() {
-		return GoFunction;
+	public GOtype getGoFunction() {
+		return GOtype.getMapStrShort2Gotype().get(GoFunction);
 	}
-	public void setGoFunction(String GoFunction) {
-		this.GoFunction = GoFunction;
+	public void setGoFunction(GOtype gotype) {
+		this.GoFunction = gotype.getOneWord();
 	}
 	/**
 	 * 仅比较GOID
@@ -263,7 +257,7 @@ public class Go2Term {
 		if (getClass() != other.getClass()) return false;
 		Go2Term otherObj = (Go2Term)other;
 		
-		if (cmpString(GoFunction, otherObj.getGoFunction())
+		if (cmpString(GoFunction, otherObj.GoFunction)
 			&&
 			cmpString(GoID, otherObj.getGoID())
 			&&

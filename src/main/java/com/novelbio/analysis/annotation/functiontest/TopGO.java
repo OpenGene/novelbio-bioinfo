@@ -12,6 +12,7 @@ import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateTime;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.domain.geneanno.SepSign;
 
@@ -23,7 +24,7 @@ public class TopGO {
 	String exeScript = "";
 	
 	/** topgo的信息 */
-	String GoType = "BP";
+	GOtype goType = GOtype.BP;
 	GoAlgorithm goAlgorithm;
 
 	String CalGeneIDFile;
@@ -82,13 +83,11 @@ public class TopGO {
 		this.lsBG = lsBG;
 	}
 	/** Go2Term.GO_BP 等 */
-	public void setGoType(String GoType) {
-		if (GoType.equals(Go2Term.GO_BP)) 
-			this.GoType = "BP";
-		else if (GoType.equals(Go2Term.GO_MF)) 
-			this.GoType = "MF";
-		else if (GoType.equals(Go2Term.GO_CC)) 
-			this.GoType = "CC";
+	public void setGoType(GOtype goType) {
+		if (goType == GOtype.ALL) {
+			this.goType = GOtype.BP;
+		}
+		this.goType = goType;
 	}
 	public void setGoAlgrithm(GoAlgorithm goAlgorithm) {
 		this.goAlgorithm = goAlgorithm;
@@ -135,7 +134,7 @@ public class TopGO {
 	
 	private String getGOtype(String content) {
 		String gotype = content.split(SepSign.SEP_ID)[1];
-		gotype = gotype.replace("{$GOType}", GoType);
+		gotype = gotype.replace("{$GOType}", goType.getTwoWord());
 		return gotype;
 	}
 	private String getGONum(String content) {

@@ -37,6 +37,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JTextFieldData;
 import com.novelbio.base.gui.GUIFileOpen;
+import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modgo.GOInfoAbs;
@@ -515,15 +516,15 @@ public class GuiGoJPanel extends JPanel{
 	 */
 	private void getResult() {
 		String geneFileXls = jTxtFilePathGo.getText();
-		String GOClass = "";
+		GOtype GOClass = GOtype.BP;
 		if (jRadBtnGoClassC.isSelected()) {
-			GOClass = Go2Term.GO_CC;
+			GOClass = GOtype.CC;
 		}
 		else if (jRadBtnGoClassP.isSelected()) {
-			GOClass = Go2Term.GO_BP;
+			GOClass = GOtype.BP;
 		}
 		else if (jRadBtnGoClassF.isSelected()) {
-			GOClass = Go2Term.GO_MF;
+			GOClass = GOtype.MF;
 		}
 		int colAccID = Integer.parseInt(jTxtAccColGo.getText());
 		int colFC = Integer.parseInt(jTxtValColGo.getText());

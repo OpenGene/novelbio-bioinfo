@@ -117,7 +117,7 @@ public abstract class AGene2Go {
 	 * FUN_SHORT_MOL_F<br>
 	 * @return
 	 */
-	public String getFunction() {
+	public GOtype getFunction() {
 		try {
 			return servGo2Term.getHashGo2Term().get(myGoID).getGoFunction();
 		} catch (Exception e) {
@@ -193,8 +193,7 @@ public abstract class AGene2Go {
 	 * @param gene2Go
 	 * @return
 	 */
-	public boolean addInfo(AGene2Go gene2Go)
-	{
+	public boolean addInfo(AGene2Go gene2Go) {
 		if (!validateUpdate(getDataBase(), gene2Go.getDataBase())
 			&& 
 			!validateUpdate(getQualifier(), gene2Go.getQualifier())

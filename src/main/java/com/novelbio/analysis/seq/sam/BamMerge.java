@@ -40,6 +40,16 @@ public class BamMerge {
 	public void clear() {
 		lsBamFile.clear();
 	}
+	
+	/** 返回merge后的SamFile，null 表示没有成功 */
+	public SamFile mergeSam() {
+		String outFileName = merge();
+		if (outFileName.equals("")) {
+			return null;
+		}
+		return new SamFile(outFileName);
+	}
+	
 	/** 返回merge后的名字，"" 表示没有成功 */
 	public String merge() {
 		if (lsBamFile.size() == 0) {
@@ -47,9 +57,9 @@ public class BamMerge {
 		} else if (lsBamFile.size() == 1) {
 			FileOperate.moveFile(lsBamFile.get(0), outFileName, true);
 		} else {
-			String cmd = ExePath + "samtools merge " + "\"" + outFileName + "\"";
+			String cmd = ExePath + "samtools merge " + CmdOperate.addQuot(outFileName);
 			for (String bamFile : lsBamFile) {
-				cmd = cmd + " \"" + bamFile + "\"";
+				cmd = cmd + " " + CmdOperate.addQuot(bamFile);
 			}
 			CmdOperate cmdOperate = new CmdOperate(cmd,"mergeBam");
 			cmdOperate.run();

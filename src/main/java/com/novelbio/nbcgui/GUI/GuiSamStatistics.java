@@ -31,16 +31,12 @@ import javax.swing.JLayeredPane;
  */
 public class GuiSamStatistics extends JPanel {
 	private static final long serialVersionUID = -4438216387830519443L;
-	private JTextField txtColChrID;
-	private JTextField txtColPeakStartMid;
-	JCheckBox chckSetColSummit;
-	JLabel lblPeakstartcolumn;
 	JProgressBar progressBar;
 	JScrollPaneData scrollPaneData;
-	
+	JCheckBox chkRpkmcount;
 	GUIFileOpen guiFileOpen = new GUIFileOpen();
 	
-	CtrlSamRPKMLocate ctrlPeakStatistics;
+	CtrlSamRPKMLocate ctrlSamRPKMLocate;
 	private JButton btnRun;
 	
 	ArrayList<String[]> lsGeneInfo;
@@ -52,6 +48,10 @@ public class GuiSamStatistics extends JPanel {
 	String readFile = "";
 	
 	GuiLayeredPaneSpeciesVersionGff layeredPane;
+	
+	JButton btnSave;
+	private JTextField txtSaveTo;
+	private JLabel lblSaveto;
 	/**
 	 * Create the panel.
 	 */
@@ -59,7 +59,7 @@ public class GuiSamStatistics extends JPanel {
 		setLayout(null);
 		
 		scrollPaneData = new JScrollPaneData();
-		scrollPaneData.setBounds(12, 30, 693, 511);
+		scrollPaneData.setBounds(12, 30, 693, 500);
 		add(scrollPaneData);
 		
 		JButton btnOpenfile = new JButton("BamSamBedFile");
@@ -79,35 +79,21 @@ public class GuiSamStatistics extends JPanel {
 		btnOpenfile.setBounds(717, 30, 163, 24);
 		add(btnOpenfile);
 		
-		chckSetColSummit = new JCheckBox("SetColSummit");
-		chckSetColSummit.addActionListener(new ActionListener() {
+		btnSave = new JButton("Save");
+		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				selectChckPeakRangeAnno(chckSetColSummit.isSelected());
+				String fileName = guiFileOpen.saveFileName("", "");
+				if (FileOperate.isFileDirectory(fileName)) {
+					fileName = FileOperate.addSep(fileName);
+				}
+				txtSaveTo.setText(fileName);
 			}
 		});
-		chckSetColSummit.setBounds(717, 228, 131, 22);
-		add(chckSetColSummit);
-		
-		txtColChrID = new JTextField();
-		txtColChrID.setBounds(717, 276, 114, 18);
-		add(txtColChrID);
-		txtColChrID.setColumns(10);
-		
-		JLabel lblChridcolumn = new JLabel("ChrIDColumn");
-		lblChridcolumn.setBounds(717, 258, 114, 14);
-		add(lblChridcolumn);
-		
-		txtColPeakStartMid = new JTextField();
-		txtColPeakStartMid.setBounds(717, 323, 114, 18);
-		add(txtColPeakStartMid);
-		txtColPeakStartMid.setColumns(10);
-		
-		lblPeakstartcolumn = new JLabel("PeakSummitColumn");
-		lblPeakstartcolumn.setBounds(717, 306, 157, 14);
-		add(lblPeakstartcolumn);
+		btnSave.setBounds(717, 561, 118, 24);
+		add(btnSave);
 		
 		progressBar = new JProgressBar();
-		progressBar.setBounds(12, 571, 693, 14);
+		progressBar.setBounds(12, 602, 957, 14);
 		add(progressBar);
 		
 		btnRun = new JButton("Run");
@@ -117,8 +103,8 @@ public class GuiSamStatistics extends JPanel {
 				progressBar.setValue(0);
 				
 				btnRun.setEnabled(false);
-				ctrlPeakStatistics.setQueryFile(readFile);
-
+				ctrlSamRPKMLocate.setQueryFile(scrollPaneData.getLsDataInfo());
+				ctrlSamRPKMLocate.setIsCountRPKM(chkRpkmcount.isSelected());
  				int[] tss = new int[]{0,0};
 				int[] tes = new int[]{0,0};
 				try { tss[0] = Integer.parseInt(txtTssUp.getText()); } catch (Exception e2) { }
@@ -126,13 +112,15 @@ public class GuiSamStatistics extends JPanel {
 				try { tes[0] = Integer.parseInt(txtTesUp.getText()); } catch (Exception e2) { }
 				try { tes[1] = Integer.parseInt(txtTesDown.getText()); } catch (Exception e2) { }
 				
-				ctrlPeakStatistics.setTssRange(tss);
-				ctrlPeakStatistics.setTesRange(tes);
+				ctrlSamRPKMLocate.setTssRange(tss);
+				ctrlSamRPKMLocate.setTesRange(tes);
+				ctrlSamRPKMLocate.setResultPrefix(txtSaveTo.getText());
 				
 				Species species = layeredPane.getSelectSpecies();
 				
-				ctrlPeakStatistics.setSpecies(species);
-				ctrlPeakStatistics.execute();
+				ctrlSamRPKMLocate.setSpecies(species);
+				Thread thread = new Thread(ctrlSamRPKMLocate);
+				thread.start();
 				btnSave.setEnabled(false);
 			}
 		});
@@ -140,78 +128,76 @@ public class GuiSamStatistics extends JPanel {
 		add(btnRun);
 		
 		txtTssUp = new JTextField();
-		txtTssUp.setBounds(717, 388, 52, 18);
+		txtTssUp.setText("-1500");
+		txtTssUp.setBounds(718, 283, 52, 18);
 		add(txtTssUp);
 		txtTssUp.setColumns(10);
 		
 		txtTssDown = new JTextField();
-		txtTssDown.setBounds(781, 388, 52, 18);
+		txtTssDown.setText("1500");
+		txtTssDown.setBounds(782, 283, 52, 18);
 		add(txtTssDown);
 		txtTssDown.setColumns(10);
 		
 		JLabel lblTss = new JLabel("Tss");
-		lblTss.setBounds(717, 353, 69, 14);
+		lblTss.setBounds(718, 248, 69, 14);
 		add(lblTss);
 		
 		JLabel lblUp = new JLabel("Up");
-		lblUp.setBounds(715, 367, 52, 14);
+		lblUp.setBounds(716, 262, 52, 14);
 		add(lblUp);
 		
 		JLabel lblDown = new JLabel("Down");
-		lblDown.setBounds(781, 367, 52, 14);
+		lblDown.setBounds(782, 262, 52, 14);
 		add(lblDown);
 		
 		txtTesUp = new JTextField();
-		txtTesUp.setBounds(717, 459, 52, 18);
+		txtTesUp.setText("-200");
+		txtTesUp.setBounds(718, 354, 52, 18);
 		add(txtTesUp);
 		txtTesUp.setColumns(10);
 		
 		JLabel lblUp_1 = new JLabel("Up");
-		lblUp_1.setBounds(717, 433, 69, 14);
+		lblUp_1.setBounds(718, 328, 69, 14);
 		add(lblUp_1);
 		
 		txtTesDown = new JTextField();
-		txtTesDown.setBounds(779, 459, 52, 18);
+		txtTesDown.setText("200");
+		txtTesDown.setBounds(780, 354, 52, 18);
 		add(txtTesDown);
 		txtTesDown.setColumns(10);
 		
 		JLabel lblDown_1 = new JLabel("Down");
-		lblDown_1.setBounds(779, 433, 69, 14);
+		lblDown_1.setBounds(780, 328, 69, 14);
 		add(lblDown_1);
 		
 		JLabel lblTes = new JLabel("Tes");
-		lblTes.setBounds(717, 418, 69, 14);
+		lblTes.setBounds(718, 313, 69, 14);
 		add(lblTes);
 		
 		layeredPane = new GuiLayeredPaneSpeciesVersionGff();
 		layeredPane.setBounds(717, 66, 221, 154);
 		add(layeredPane);
 		
-		JCheckBox chkRpkmcount = new JCheckBox("RPKMcount");
+		chkRpkmcount = new JCheckBox("RPKMcount");
 		chkRpkmcount.setBounds(713, 499, 131, 22);
 		add(chkRpkmcount);
+		
+		txtSaveTo = new JTextField();
+		txtSaveTo.setBounds(12, 567, 693, 18);
+		add(txtSaveTo);
+		txtSaveTo.setColumns(10);
+		
+		lblSaveto = new JLabel("SaveTo");
+		lblSaveto.setBounds(12, 542, 69, 14);
+		add(lblSaveto);
 		
 		initial();
 	}
 	
 	private void initial() {
-		ctrlPeakStatistics = new CtrlPeakStatistics(this);
-		chckSetColSummit.setSelected(true);
-		selectChckPeakRangeAnno(chckSetColSummit.isSelected());
+		ctrlSamRPKMLocate = new CtrlSamRPKMLocate(this);
 		scrollPaneData.setTitle(new String[]{"FileName", "Prefix"});
-	}
-	private void selectChckPeakRangeAnno(boolean isSelected) {
-		if (isSelected) {
-			lblPeakstartcolumn.setText("PeakStartColumn");
-			txtColChrID.setEnabled(true);
-			txtColPeakStartMid.setEnabled(true);
-		}
-		else {
-			txtColChrID.setText("");
-			txtColChrID.setEnabled(false);
-			txtColPeakStartMid.setText("");
-			txtColPeakStartMid.setEnabled(false);
-		}
 	}
 	
 	public JProgressBar getProcessBar() {

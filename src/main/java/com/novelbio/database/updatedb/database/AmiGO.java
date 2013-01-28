@@ -7,8 +7,10 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
+import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.domain.geneanno.Go2Term;
+import com.novelbio.database.domain.geneanno.GOtype.GORelation;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
 
@@ -128,13 +130,13 @@ class ImpGOExtObo extends ImportPerLine {
 			//GO Function
 			if (string.startsWith("namespace: ")) {
 				if (string.equals("namespace: biological_process")) {
-					go2Term.setGoFunction(Go2Term.FUN_SHORT_BIO_P);
+					go2Term.setGoFunction(GOtype.BP);
 				}
 				if (string.equals("namespace: molecular_function")) {
-					go2Term.setGoFunction(Go2Term.FUN_SHORT_MOL_F);
+					go2Term.setGoFunction(GOtype.MF);
 				}
 				if (string.equals("namespace: cellular_component")) {
-					go2Term.setGoFunction(Go2Term.FUN_SHORT_CEL_C);
+					go2Term.setGoFunction(GOtype.CC);
 				}
 			}
 			//GO Definition
@@ -148,7 +150,7 @@ class ImpGOExtObo extends ImportPerLine {
 					logger.error("is_a 中没有对应的GOID：" + string);
 				}
 				else {
-					go2Term.addParent(parentGOID, Go2Term.RELATION_IS);
+					go2Term.addParent(parentGOID, GORelation.IS);
 				}
 			}
 			if (string.startsWith("is_a:")) {
@@ -157,7 +159,7 @@ class ImpGOExtObo extends ImportPerLine {
 					logger.error("is_a 中没有对应的GOID：" + string);
 				}
 				else {
-					go2Term.addParent(parentGOID, Go2Term.RELATION_IS);
+					go2Term.addParent(parentGOID, GORelation.IS);
 				}
 			}
 			if (string.startsWith("relationship:")) {
@@ -167,16 +169,16 @@ class ImpGOExtObo extends ImportPerLine {
 					return false;
 				}
 				if (string.contains("part_of")) {
-					go2Term.addParent(parentGOID, Go2Term.RELATION_PARTOF);
+					go2Term.addParent(parentGOID, GORelation.PART_OF);
 				}
 				else if (string.contains("negatively_regulates")) {
-					go2Term.addParent(parentGOID, Go2Term.RELATION_REGULATE_NEG);
+					go2Term.addParent(parentGOID, GORelation.REGULATE_NEG);
 				}
 				else if (string.contains("regulates")) {
-					go2Term.addParent(parentGOID, Go2Term.RELATION_REGULATE);
+					go2Term.addParent(parentGOID, GORelation.REGULATE);
 				}
 				else if (string.contains("positively_regulates")) {
-					go2Term.addParent(parentGOID, Go2Term.RELATION_REGULATE_POS);
+					go2Term.addParent(parentGOID, GORelation.REGULATE_POS);
 				}
 			}
 			if (string.startsWith("alt_id:")) {
@@ -243,7 +245,7 @@ class ImpGOExtObo extends ImportPerLine {
 			if (go2Term == null) {
 				continue;
 			}
-			else if (go2Term.getGoFunction().equals(Go2Term.FUN_SHORT_BIO_P)) {
+			else if (go2Term.getGoFunction() == GOtype.BP) {
 				mapGOquery2GOID.put(GOID, lsReplaceAndConsider.get(i));
 				return;
 			}
@@ -304,7 +306,7 @@ class ImpGOExtObo extends ImportPerLine {
 				}
 				else {
 					Go2Term go2Term = Go2Term.queryGo2TermDB(GOID);
-					go2Term.addChild(childID, Go2Term.RELATION_IS);
+					go2Term.addChild(childID, GORelation.IS);
 					go2Term.update();
 				}
 			}
@@ -316,22 +318,22 @@ class ImpGOExtObo extends ImportPerLine {
 				}
 				if (string.contains("part_of")) {
 					Go2Term go2Term = Go2Term.queryGo2TermDB(GOID);
-					go2Term.addChild(childID, Go2Term.RELATION_PARTOF);
+					go2Term.addChild(childID, GORelation.PART_OF);
 					go2Term.update();
 				}
 				else if (string.contains("negatively_regulates")) {
 					Go2Term go2Term = Go2Term.queryGo2TermDB(GOID);
-					go2Term.addChild(childID, Go2Term.RELATION_REGULATE_NEG);
+					go2Term.addChild(childID, GORelation.REGULATE_NEG);
 					go2Term.update();
 				}
 				else if (string.contains("relationship: regulates")) {
 					Go2Term go2Term = Go2Term.queryGo2TermDB(GOID);
-					go2Term.addChild(childID, Go2Term.RELATION_REGULATE);
+					go2Term.addChild(childID, GORelation.REGULATE);
 					go2Term.update();
 				}
 				else if (string.contains("positively_regulates")) {
 					Go2Term go2Term = Go2Term.queryGo2TermDB(GOID);
-					go2Term.addChild(childID, Go2Term.RELATION_REGULATE_POS);
+					go2Term.addChild(childID, GORelation.REGULATE_POS);
 					go2Term.update();
 				}
 			}

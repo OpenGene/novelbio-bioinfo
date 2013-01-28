@@ -8,6 +8,7 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -24,6 +25,8 @@ import javax.swing.JSpinner;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 public class GuiSamToBed extends JPanel {
 	private JTextField txtExtend;
@@ -37,7 +40,6 @@ public class GuiSamToBed extends JPanel {
 	JCheckBox chckbxIndex;
 	JCheckBox chckbxRealign;
 	JButton btnSamtobed;
-	JCheckBox chckbxTobam;
 
 	JSpinner spinMapNumSmall;
 	JSpinner spinMapNumBig;
@@ -70,13 +72,14 @@ public class GuiSamToBed extends JPanel {
 				ArrayList<String> lsFileName = guiFileOpen.openLsFileName("SamBam", "");
 				ArrayList<String[]> lsToScrlFile = new ArrayList<String[]>();
 				for (String string : lsFileName) {
-					String[] strings = new String[]{string};
+					String prefix = FileOperate.getFileNameSep(string)[0].split("_")[0];
+					String[] strings = new String[]{string, prefix};
 					lsToScrlFile.add(strings);
 				}
 				scrlSamFile.addItemLs(lsToScrlFile);
 			}
 		});
-		btnNewButton.setBounds(402, 44, 157, 24);
+		btnNewButton.setBounds(576, 44, 157, 24);
 		add(btnNewButton);
 		
 		JButton btnConvertSam = new JButton("ConvertSam");
@@ -88,18 +91,38 @@ public class GuiSamToBed extends JPanel {
 				}
 				
 				ArrayList<String[]> lsInfo = scrlSamFile.getLsDataInfo();
+				ArrayListMultimap<String, String> mapPrefix2FileName = ArrayListMultimap.create();
+				HashSet<String> setTmp = new HashSet<String>();
 				for (String[] strings : lsInfo) {
 					if (FileOperate.isFileExist(strings[0])) {
-						convertSamFile(strings[0]);
+						String prefix = getPrefix(strings[1], setTmp);
+						mapPrefix2FileName.put(prefix, strings[0]);
 					}
 				}
+				
+				for (String prefix : mapPrefix2FileName.keySet()) {
+					List<String> lsSamFiles = mapPrefix2FileName.get(prefix);
+					convertSamFile(prefix, lsSamFiles);
+				}
+			}
+			
+			/** 如果prefix为null或""，则返回一个全新的prefix，意思不在任何分组中 */
+			private String getPrefix(String prefixOld, HashSet<String> setTmp) {
+				if (prefixOld != null && !prefixOld.equals("")) {
+					return prefixOld;
+				}
+				int i = 0;
+				while (setTmp.contains(i + "")) {
+					i++;
+				}
+				return i + "";
 			}
 		});
-		btnConvertSam.setBounds(402, 178, 157, 24);
+		btnConvertSam.setBounds(576, 178, 157, 24);
 		add(btnConvertSam);
 		
-		JLabel lblSamfile = new JLabel("SamFile");
-		lblSamfile.setBounds(12, 21, 69, 14);
+		JLabel lblSamfile = new JLabel("SamToBam");
+		lblSamfile.setBounds(12, 21, 121, 14);
 		add(lblSamfile);
 		
 		JButton btnBedFile = new JButton("OpenBedFile");
@@ -173,11 +196,11 @@ public class GuiSamToBed extends JPanel {
 		add(chckbxSortBed);
 		
 		chckbxSortBam = new JCheckBox("sortBam");
-		chckbxSortBam.setBounds(96, 179, 91, 22);
+		chckbxSortBam.setBounds(14, 205, 91, 22);
 		add(chckbxSortBam);
 		
 		chckbxIndex = new JCheckBox("index");
-		chckbxIndex.setBounds(191, 179, 69, 22);
+		chckbxIndex.setBounds(191, 204, 69, 22);
 		add(chckbxIndex);
 		
 		chckbxRealign = new JCheckBox("realignRemoveDupRecalibrate");
@@ -186,7 +209,7 @@ public class GuiSamToBed extends JPanel {
 //				selectRealign();
 			}
 		});
-		chckbxRealign.setBounds(12, 198, 256, 22);
+		chckbxRealign.setBounds(12, 223, 256, 22);
 		add(chckbxRealign);
 		
 		btnSamtobed = new JButton("SamtoBed");
@@ -202,10 +225,6 @@ public class GuiSamToBed extends JPanel {
 		});
 		btnSamtobed.setBounds(402, 273, 118, 24);
 		add(btnSamtobed);
-		
-		chckbxTobam = new JCheckBox("toBam");
-		chckbxTobam.setBounds(12, 179, 81, 22);
-		add(chckbxTobam);
 		
 		spinMapNumSmall = new JSpinner();
 		spinMapNumSmall.setBounds(401, 479, 49, 18);
@@ -237,7 +256,7 @@ public class GuiSamToBed extends JPanel {
 				}
 			}
 		});
-		scrlSamFile.setBounds(12, 44, 384, 127);
+		scrlSamFile.setBounds(12, 44, 552, 158);
 		add(scrlSamFile);
 		
 		JButton btnDelScrSam = new JButton("DeleteSam");
@@ -246,7 +265,7 @@ public class GuiSamToBed extends JPanel {
 				scrlSamFile.deleteSelRows();
 			}
 		});
-		btnDelScrSam.setBounds(402, 98, 157, 24);
+		btnDelScrSam.setBounds(576, 98, 157, 24);
 		add(btnDelScrSam);
 		
 		cmbSpecies = new JComboBoxData<Species>();
@@ -255,23 +274,23 @@ public class GuiSamToBed extends JPanel {
 				selectCombSpecies();
 			}
 		});
-		cmbSpecies.setBounds(584, 65, 171, 23);
+		cmbSpecies.setBounds(775, 64, 171, 23);
 		add(cmbSpecies);
 		
 		JLabel lblSpecies = new JLabel("Species");
-		lblSpecies.setBounds(587, 44, 69, 14);
+		lblSpecies.setBounds(778, 43, 69, 14);
 		add(lblSpecies);
 		
 		cmbVersion = new JComboBoxData<String>();
-		cmbVersion.setBounds(584, 129, 171, 23);
+		cmbVersion.setBounds(775, 128, 171, 23);
 		add(cmbVersion);
 		
 		JLabel lblVersion = new JLabel("Version");
-		lblVersion.setBounds(580, 103, 69, 14);
+		lblVersion.setBounds(771, 102, 69, 14);
 		add(lblVersion);
 		
 		txtReferenceSequence = new JTextField();
-		txtReferenceSequence.setBounds(581, 247, 231, 18);
+		txtReferenceSequence.setBounds(772, 246, 231, 18);
 		add(txtReferenceSequence);
 		txtReferenceSequence.setColumns(10);
 		
@@ -281,19 +300,19 @@ public class GuiSamToBed extends JPanel {
 				txtReferenceSequence.setText(guiFileOpen.openFileName("refseq", ""));
 			}
 		});
-		btnRefseqFile.setBounds(695, 273, 118, 24);
+		btnRefseqFile.setBounds(886, 272, 118, 24);
 		add(btnRefseqFile);
 		
 		radGenome = new JRadioButton("Genome");
-		radGenome.setBounds(585, 179, 91, 22);
+		radGenome.setBounds(776, 178, 91, 22);
 		add(radGenome);
 		
 		radRefRNA = new JRadioButton("RNA");
-		radRefRNA.setBounds(680, 179, 69, 22);
+		radRefRNA.setBounds(871, 178, 69, 22);
 		add(radRefRNA);
 		
 		chckbxGeneratepileupfile = new JCheckBox("GeneratePileUpFile");
-		chckbxGeneratepileupfile.setBounds(12, 217, 187, 22);
+		chckbxGeneratepileupfile.setBounds(297, 223, 187, 22);
 		add(chckbxGeneratepileupfile);
 		initial();
 	}
@@ -303,7 +322,7 @@ public class GuiSamToBed extends JPanel {
 		buttonGroupRad.add(radGenome);
 		buttonGroupRad.add(radRefRNA);
 		
-		scrlSamFile.setTitle(new String[]{"SamBamFile"});
+		scrlSamFile.setTitle(new String[]{"SamBamFile", "prefix"});
 		scrlBedFile.setTitle(new String[]{"BedFile"});
 		
 		radGenome.setSelected(true);
@@ -312,9 +331,9 @@ public class GuiSamToBed extends JPanel {
 		
 		selectCombSpecies();
 	}
+	
 	private void selectRealign() {
 		if (chckbxRealign.isSelected()) {
-			chckbxTobam.setEnabled(false);
 			chckbxSortBam.setEnabled(false);
 			chckbxIndex.setEnabled(false);
 			cmbSpecies.setEnabled(true);
@@ -326,7 +345,6 @@ public class GuiSamToBed extends JPanel {
 			selectCombSpecies();
 		}
 		else {
-			chckbxTobam.setEnabled(true);
 			chckbxSortBam.setEnabled(true);
 			chckbxIndex.setEnabled(true);
 			cmbSpecies.setEnabled(false);
@@ -336,8 +354,8 @@ public class GuiSamToBed extends JPanel {
 			txtReferenceSequence.setEnabled(false);
 			btnRefseqFile.setEnabled(false);		
 		}
-	
 	}
+	
 	private void selectCombSpecies() {
 		Species species = cmbSpecies.getSelectedValue();
 		if (species.getTaxID() == 0) {
@@ -362,7 +380,7 @@ public class GuiSamToBed extends JPanel {
 		samFile.setUniqueRandomSelectOneRead(chckbxNonUniqueMapping.isSelected());
 		samFile.toBedSingleEnd();
 	}
-	private void convertSamFile(String samFilestr) {
+	private void convertSamFile(String prefix, List<String> lsSamFilestr) {
 		String refFile = "";
 		Species species = cmbSpecies.getSelectedValue();
 		
@@ -379,25 +397,48 @@ public class GuiSamToBed extends JPanel {
 			}
 		}
 		
-		SamFile samFile = new SamFile(samFilestr);
-		samFile.setReferenceFileName(refFile);
-		
-		if (chckbxTobam.isSelected()) {
-			samFile = samFile.convertToBam();
+		List<SamFile> lsSamFiles = new ArrayList<SamFile>(); 
+		for (String string : lsSamFilestr) {
+			SamFile samFile = new SamFile(string);
+			samFile.setReferenceFileName(refFile);
+			lsSamFiles.add(samFile);
 		}
+		
+		SamFile samFileMerge = mergeSamFile(prefix, lsSamFiles);
 		if (chckbxSortBam.isSelected()) {
-			samFile = samFile.sort();
+			samFileMerge = samFileMerge.sort();
 		}
 		if (chckbxIndex.isSelected()) {
-			samFile.indexMake();
+			samFileMerge.indexMake();
 		}
 		if (chckbxRealign.isSelected()) {
-			try { samFile = samFile.copeSamFile2Snp(); } catch (Exception e) { }
+			try { samFileMerge = samFileMerge.copeSamFile2Snp(); } catch (Exception e) { }
 		}
 		if (chckbxGeneratepileupfile.isSelected()) {
-			samFile.pileup();
+			samFileMerge.pileup();
 		}
 	}
+	
+	/**
+	 * 将输入的文件转化为bam文件，并合并
+	 * @param prefix
+	 * @param lsSamFile
+	 * @return
+	 */
+	private SamFile mergeSamFile(String prefix, List<SamFile> lsSamFile) {
+		if (lsSamFile.size() == 1) {
+			return lsSamFile.get(0).convertToBam();
+		}
+		List<SamFile> lsBamFile = new ArrayList<SamFile>();
+		for (SamFile samFile : lsSamFile) {
+			lsBamFile.add(samFile.convertToBam());
+		}
+		String resultName = FileOperate.getParentPathName(lsBamFile.get(0).getFileName()) + prefix;
+		resultName = FileOperate.changeFileSuffix(resultName, "", "bam");
+		SamFile samFileMerge = SamFile.mergeBamFile(resultName , lsBamFile);
+		return samFileMerge;
+	}
+	
 	private void convertBedFile(String bedFile) {
 		BedSeq bedSeq = new BedSeq(bedFile);
 		if (chckbxExtend.isSelected()) {

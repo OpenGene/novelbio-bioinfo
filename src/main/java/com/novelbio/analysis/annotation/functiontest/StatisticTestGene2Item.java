@@ -7,6 +7,7 @@ import java.util.Set;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.database.domain.geneanno.AGene2Go;
+import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -81,9 +82,9 @@ class StatisticTestGene2GO extends StatisticTestGene2Item {
 		}
 		ArrayList<AGene2Go> lsGO = null;
 		if (blast) {
-			lsGO = geneID.getGene2GOBlast(Go2Term.GO_ALL);				
+			lsGO = geneID.getGene2GOBlast(GOtype.ALL);				
 		} else {
-			lsGO = geneID.getGene2GO(Go2Term.GO_ALL);
+			lsGO = geneID.getGene2GO(GOtype.ALL);
 		}
 		if (lsGO == null || lsGO.size() == 0) {
 			return lsFinal;

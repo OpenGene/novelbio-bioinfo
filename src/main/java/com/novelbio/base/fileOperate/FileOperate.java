@@ -193,7 +193,7 @@ public class FileOperate {
 	}
 
 	/**
-	 * <b>未经测试</b> 给定文件路径，返回大小，单位为K
+	 * <b>未经测试</b> 给定文件路径，返回大小，单位为byte
 	 * 
 	 * @param filePath
 	 * @return 没有文件返回0；出错返回-1000000000

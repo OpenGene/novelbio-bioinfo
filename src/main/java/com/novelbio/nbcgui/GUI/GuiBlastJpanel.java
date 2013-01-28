@@ -34,6 +34,7 @@ import org.jdesktop.application.Application;
 
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
+import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
@@ -91,7 +92,7 @@ public class GuiBlastJpanel extends JPanel {
 	static int QtaxID = 0;//查询物种ID
 //	static int StaxID = 4932;//blast物种ID
 	static int StaxID = 9606;//blast物种ID
-	String GoClass = "";
+	GOtype GoClass;
 	
 	/**
 	 * 一次最多查询的个数

@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.novelbio.analysis.seq.AlignRecord;
+import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.genome.mappingOperate.Alignment;
 import com.novelbio.nbcgui.GUI.GuiAnnoInfo;
 
@@ -46,6 +47,10 @@ public class AlignSamReading extends AlignSeqReading {
 			readSelectLines();
 		}
 		summaryRecorder();
+	}
+	
+	public SamFile getSamFile() {
+		return (SamFile)alignSeqFile;
 	}
 	
 	private void readSelectLines() {

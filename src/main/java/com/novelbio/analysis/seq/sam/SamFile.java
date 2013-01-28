@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -417,6 +418,8 @@ public class SamFile implements AlignSeq {
 	 * 用samtools实现了
 	 * 将sam文件压缩为bam文件
 	 * 如果是bam文件，则返回
+	 * @param lsAlignmentRecorders
+	 * 因为convertToBam的时候会遍历Bam文件，所以可以添加一系列这种监听器，同时进行一系列的统计工作
 	 */
 	public SamFile convertToBam(List<AlignmentRecorder> lsAlignmentRecorders) {
 		String outName = FileOperate.changeFilePrefix(fileName, "", "bam");
@@ -426,7 +429,7 @@ public class SamFile implements AlignSeq {
 	 * 用samtools实现了
 	 * 将sam文件压缩为bam文件
 	 * 如果是bam文件，则返回
-	 * @param lsAlignmentRecorders 各种统计监听器
+	 * @param lsAlignmentRecorders 因为convertToBam的时候会遍历Bam文件，所以可以添加一系列这种监听器，同时进行一系列的统计工作
 	 * @param outFile 输出文件
 	 */
 	public SamFile convertToBam(List<AlignmentRecorder> lsAlignmentRecorders, String outFile) {
@@ -651,7 +654,8 @@ public class SamFile implements AlignSeq {
 			samWriter.close();
 		}
 	}
-	public static String mergeBamFile(String outBamFile, ArrayList<SamFile> lsBamFile) {
+
+	public static SamFile mergeBamFile(String outBamFile, Collection<SamFile> lsBamFile) {
 		BamMerge bamMerge = new BamMerge();
 		ArrayList<String> lsBamFileName = new ArrayList<String>();
 		for (SamFile samFile : lsBamFile) {
@@ -661,9 +665,8 @@ public class SamFile implements AlignSeq {
 		bamMerge.setExePath(softWareInfoSamtools.getExePath());
 		bamMerge.setOutFileName(outBamFile);
 		bamMerge.setLsBamFile(lsBamFileName);
-		return bamMerge.merge();
+		return bamMerge.mergeSam();
 	}
-	
 	/** 返回是sam文件，bam文件还是未知文件 */
 	public static FormatSeq isSamBamFile(String samBamFile) {
 		FormatSeq thisFormate = FormatSeq.UNKNOWN;

@@ -18,6 +18,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.FisherTest;
 import com.novelbio.base.dataStructure.StatisticsTest;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.model.modgeneid.GeneID;
 
 public abstract class AbstFunTest implements FunTestInt{
@@ -343,7 +344,7 @@ public abstract class AbstFunTest implements FunTestInt{
 	/**
 	 * 目前只能设定GO的type
 	 */
-	public abstract void setDetailType(String GOtype);
+	public abstract void setDetailType(GOtype gotype);
 	
 	/**
 	 * 保存本LsBG的信息
@@ -361,6 +362,6 @@ public abstract class AbstFunTest implements FunTestInt{
 	 * 只能用于GO分析
 	 * @param goType
 	 */
-	public void setGoType(String goType) { }
+	public void setGoType(GOtype goType) { }
 	
 }

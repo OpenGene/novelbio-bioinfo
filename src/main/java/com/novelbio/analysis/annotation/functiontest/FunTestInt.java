@@ -2,6 +2,7 @@ package com.novelbio.analysis.annotation.functiontest;
 
 import java.util.ArrayList;
 
+import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.model.modgeneid.GeneID;
 
 public interface FunTestInt {
@@ -65,7 +66,7 @@ public interface FunTestInt {
 	/**
 	 * 目前只能设定GO的type
 	 */
-	public void setDetailType(String GOtype);
+	public void setDetailType(GOtype GOtype);
 	/**
 	 * GO2GeneID，目前只有elimGO才有
 	 * @return

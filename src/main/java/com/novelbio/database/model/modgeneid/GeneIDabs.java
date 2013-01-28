@@ -11,6 +11,7 @@ import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.AGeneInfo;
 import com.novelbio.database.domain.geneanno.AgeneUniID;
 import com.novelbio.database.domain.geneanno.BlastInfo;
+import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.domain.geneanno.Gene2Go;
 import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.domain.geneanno.UniProtID;
@@ -349,14 +350,14 @@ public abstract class GeneIDabs implements GeneIDInt {
 	 * @param GOType
 	 * @return
 	 */
-	public ArrayList<AGene2Go> getGene2GO(String GOType) {
+	public ArrayList<AGene2Go> getGene2GO(GOtype GOType) {
 		return getGOInfo().getLsGene2Go(GOType);
 	}
 	/**
 	 * blast多个物种 首先设定blast的物种 用方法： setBlastInfo(double evalue, int... StaxID)
 	 * 获得经过blast的GoInfo
 	 */
-	public ArrayList<AGene2Go> getGene2GOBlast(String GOType) {
+	public ArrayList<AGene2Go> getGene2GOBlast(GOtype GOType) {
 		setGoInfo();
 		ArrayList<GOInfoAbs> lsGoInfo = new ArrayList<GOInfoAbs>();
 

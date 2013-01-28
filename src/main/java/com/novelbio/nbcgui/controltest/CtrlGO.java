@@ -11,6 +11,7 @@ import com.novelbio.analysis.annotation.functiontest.StatisticTestResult;
 import com.novelbio.analysis.annotation.functiontest.TopGO.GoAlgorithm;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.generalConf.NovelBioConst;
 import com.sun.tools.doclets.formats.html.resources.standard;
@@ -21,7 +22,7 @@ public class CtrlGO extends CtrlGOPath{
 	/** 用单例模式 */
 	private static CtrlGO ctrlGO = null;
 
-	String GOClass = Go2Term.GO_BP;
+	GOtype GOClass = GOtype.BP;
 	GoAlgorithm goAlgorithm = GoAlgorithm.classic;
 	int[] staxID;
 	
@@ -34,7 +35,7 @@ public class CtrlGO extends CtrlGOPath{
 	 * @param StaxID
 	 * @return
 	 */
-	public static CtrlGO getInstance(GoAlgorithm goAlgorithm, String GOClass, int QtaxID, boolean blast, double evalue, int... StaxID) {
+	public static CtrlGO getInstance(GoAlgorithm goAlgorithm, GOtype GOClass, int QtaxID, boolean blast, double evalue, int... StaxID) {
 		ctrlGO = new CtrlGO(goAlgorithm, GOClass, QtaxID, blast, evalue, StaxID);
 		return ctrlGO;
 	}
@@ -57,7 +58,7 @@ public class CtrlGO extends CtrlGOPath{
 	 * @param StaxID
 	 * @param evalue
 	 */
-	private CtrlGO(GoAlgorithm goAlgorithm, String GOClass, int QtaxID, boolean blast,
+	private CtrlGO(GoAlgorithm goAlgorithm, GOtype GOClass, int QtaxID, boolean blast,
 			double evalue, int... StaxID) {
 		super(QtaxID, blast, evalue);
 		this.staxID = StaxID;
@@ -123,15 +124,7 @@ public class CtrlGO extends CtrlGOPath{
 				suffix = suffix + "_" + i;
 			}
 		}
-		if (GOClass.equals(Go2Term.GO_BP)) {
-			suffix = suffix + "_" + Go2Term.FUN_SHORT_BIO_P;
-		} else if (GOClass.equals(Go2Term.GO_CC)) {
-			suffix = suffix + "_" + Go2Term.FUN_SHORT_CEL_C;
-		} else if (GOClass.equals(Go2Term.GO_MF)) {
-			suffix = suffix + "_" + Go2Term.FUN_SHORT_MOL_F;
-		} else if (GOClass.equals(Go2Term.GO_ALL)) {
-			suffix = suffix + "_ALL";
-		}
+		suffix = suffix + "_" + GOClass.getOneWord();
 		return FileOperate.changeFileSuffix(fileName, suffix, "txt");
 	}
 	

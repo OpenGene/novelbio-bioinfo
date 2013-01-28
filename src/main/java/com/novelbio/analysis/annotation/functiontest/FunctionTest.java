@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.annotation.functiontest.TopGO.GoAlgorithm;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modgeneid.GeneID;
 
@@ -27,10 +28,10 @@ public class FunctionTest implements FunTestInt {
 	 */
 	public FunctionTest(String functionType, int taxID, boolean blast, double blastevalue, int... blasttaxID) {
 		if (functionType.equals(FUNCTION_GO_NOVELBIO)) {
-			funTest = new NovelGOFunTest(blast, Go2Term.GO_BP, blastevalue, blasttaxID);
+			funTest = new NovelGOFunTest(blast, GOtype.BP, blastevalue, blasttaxID);
 		}
 		else if (functionType.equals(FUNCTION_GO_ELIM)) {
-			funTest = new ElimGOFunTest(blast, Go2Term.GO_BP, blastevalue, blasttaxID);
+			funTest = new ElimGOFunTest(blast, GOtype.BP, blastevalue, blasttaxID);
 		}
 		else if (functionType.equals(FUNCTION_PATHWAY_KEGG)) {
 			funTest = new KEGGPathwayFunTest(blast, blastevalue, blasttaxID);
@@ -44,7 +45,7 @@ public class FunctionTest implements FunTestInt {
 	/**
 	 * 只能用于GO分析中
 	 */
-	public void setGOtype(String goType) {
+	public void setGOtype(GOtype goType) {
 		funTest.setGoType(goType);
 	}
 	/**
@@ -108,7 +109,7 @@ public class FunctionTest implements FunTestInt {
 	}
 
 	@Override
-	public void setDetailType(String GOtype) {
+	public void setDetailType(GOtype GOtype) {
 		funTest.setDetailType(GOtype);
 	}
 

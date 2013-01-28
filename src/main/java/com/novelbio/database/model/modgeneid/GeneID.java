@@ -11,6 +11,7 @@ import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.AGeneInfo;
 import com.novelbio.database.domain.geneanno.AgeneUniID;
 import com.novelbio.database.domain.geneanno.BlastInfo;
+import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.domain.geneanno.SepSign;
@@ -285,14 +286,14 @@ public class GeneID implements GeneIDInt{
 	}
 	//////////////  GO 方法  ///////////////////////
 	@Override
-	public ArrayList<AGene2Go> getGene2GO(String GOType) {
+	public ArrayList<AGene2Go> getGene2GO(GOtype GOType) {
 		return geneID.getGene2GO(GOType);
  	}
 	public GOInfoAbs getGOInfo() {
 		return geneID.getGOInfo();
 	}
 	@Override
-	public ArrayList<AGene2Go> getGene2GOBlast(String GOType) {
+	public ArrayList<AGene2Go> getGene2GOBlast(GOtype GOType) {
 		return geneID.getGene2GOBlast(GOType);
 	}
 	/////////////////////////////  static 方法  ////////////////////////////////////
@@ -391,7 +392,7 @@ public class GeneID implements GeneIDInt{
 	 * @param blast 注意lsCopedID里面的copedID必须要先设定过setBlast才有用
 	 * @reture 没有则返回null
 	 */
-	public static ArrayList<String[]> getLsGoInfo(ArrayList<GeneID> lsGeneID, String GOType, boolean blast) {
+	public static ArrayList<String[]> getLsGoInfo(ArrayList<GeneID> lsGeneID, GOtype GOType, boolean blast) {
 		if (validateListIsEmpty(lsGeneID)) return null;
 		
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
@@ -449,19 +450,7 @@ public class GeneID implements GeneIDInt{
 		}
 		return lsResult;
 	}
-	/**
-	 * GO对应GeneOntology的hash表
-	 * @return
-	 * HashMap - key:GO缩写 
-	 * value: 0: GO全名
-	 */
-	public static HashMap<String, String> getMapGOAbbr2GOID() {
-		HashMap<String, String> hashGOInfo = new HashMap<String, String>();
-		hashGOInfo.put(Go2Term.GO_BP, Go2Term.GO_BP);
-		hashGOInfo.put(Go2Term.GO_CC, Go2Term.GO_CC);
-		hashGOInfo.put(Go2Term.GO_MF, Go2Term.GO_MF);
-		return hashGOInfo;
-	}
+
 /////////////////////// 私有 static 方法 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	/** 查看该list是否有内容 */

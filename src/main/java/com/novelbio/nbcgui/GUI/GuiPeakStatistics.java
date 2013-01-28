@@ -9,7 +9,6 @@ import javax.swing.JTextField;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.gui.GUIFileOpen;
-import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.controlquery.CtrlPeakStatistics;
@@ -19,7 +18,6 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
 import javax.swing.JProgressBar;
-import javax.swing.JLayeredPane;
 
 /**
  * 批量注释，各种注释

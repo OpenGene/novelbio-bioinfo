@@ -9,6 +9,7 @@ import javax.swing.SwingWorker;
 
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.domain.geneanno.AGene2Go;
+import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.nbcgui.GUI.GuiBlastJpanel;
@@ -25,7 +26,7 @@ public class CtrlBlastGo extends SwingWorker<ArrayList<String[]>, ProgressDataGo
 	double evalue = 100;
 	
 	/** Go的类型 */
-	String GoClass = Go2Term.GO_BP;
+	GOtype GoClass = GOtype.BP;
 	/** 界面对象 */
 	GuiBlastJpanel guiBlast;
 	
@@ -38,7 +39,7 @@ public class CtrlBlastGo extends SwingWorker<ArrayList<String[]>, ProgressDataGo
 	 * @param evalue
 	 * @param guiBlast
 	 */
-	public CtrlBlastGo(boolean blast, int taxID, int StaxID, double evalue,GuiBlastJpanel guiBlast,String GOclass) {
+	public CtrlBlastGo(boolean blast, int taxID, int StaxID, double evalue,GuiBlastJpanel guiBlast,GOtype GOclass) {
 		this.blast = blast;
 		this.taxID = taxID;
 		this.StaxID = StaxID;
@@ -174,7 +175,7 @@ public class CtrlBlastGo extends SwingWorker<ArrayList<String[]>, ProgressDataGo
 	 * 14: GO可信度<br>
 	 * <b>如果没找到GO信息，则返回null，不会返回一个空的list</b>
 	 */
-	private ArrayList<String[]> getLsGeneGo(String accID, int taxID,String GoClass, boolean blast, double evalue, int StaxID)
+	private ArrayList<String[]> getLsGeneGo(String accID, int taxID,GOtype GoClass, boolean blast, double evalue, int StaxID)
 	{
 		String[] tmpAccIDInfo = new String[]{accID, "", "",""};
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();

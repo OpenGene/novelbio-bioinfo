@@ -14,6 +14,7 @@ import com.novelbio.base.dataStructure.FisherTest;
 import com.novelbio.base.dataStructure.StatisticsTest;
 import com.novelbio.base.dataStructure.StatisticsTest.StatisticsPvalueType;
 import com.novelbio.database.domain.geneanno.AGene2Go;
+import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgeneid.GeneID;
 
@@ -179,8 +180,8 @@ public abstract class GeneID2LsItem {
 }
 
 class GeneID2LsGo extends GeneID2LsItem {
-	String GOtype;
-	public void setGOtype(String gOtype) {
+	GOtype GOtype;
+	public void setGOtype(GOtype gOtype) {
 		GOtype = gOtype;
 	}
 	@Override

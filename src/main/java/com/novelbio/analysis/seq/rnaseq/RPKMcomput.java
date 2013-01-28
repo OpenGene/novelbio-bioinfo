@@ -221,7 +221,7 @@ public class RPKMcomput implements AlignmentRecorder {
 		List<String> lsConditions = ArrayOperate.getArrayListKey(mapCond2CountsNum);
 		lsConditions.add(0, TitleFormatNBC.GeneName.toString());
 		lsResult.add(lsConditions.toArray(new String[0]));
-		
+		lsConditions.remove(0);
 		for (String geneName : mapGeneName2Length.keySet()) {
 			ArrayList<String> lsTmpResult = new ArrayList<String>();
 			lsTmpResult.add(geneName);

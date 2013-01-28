@@ -9,21 +9,22 @@ import java.util.List;
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.domain.geneanno.AGene2Go;
+import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.database.service.servgeneanno.ServGo2Term;
 
 public class NovelGOFunTest extends AbstFunTest{
-	String GoType = Go2Term.GO_BP;
+	GOtype GoType = GOtype.BP;
 	ServGo2Term servGo2Term = new ServGo2Term();
 	
 	public NovelGOFunTest(ArrayList<GeneID> lsCopedIDsTest,
-			ArrayList<GeneID> lsCopedIDsBG, boolean blast, String GoType) {
+			ArrayList<GeneID> lsCopedIDsBG, boolean blast, GOtype GoType) {
 		super(lsCopedIDsTest, lsCopedIDsBG, blast);
 		this.GoType = GoType;
 	}
-	public NovelGOFunTest(boolean blast,String GoType, double evalue, int...blastTaxID) {
+	public NovelGOFunTest(boolean blast,GOtype GoType, double evalue, int...blastTaxID) {
 		this.GoType = GoType;
 		setBlast(blast, evalue, blastTaxID);
 	}
@@ -35,7 +36,7 @@ public class NovelGOFunTest extends AbstFunTest{
 	 * @param goType
 	 */
 	@Override
-	public void setGoType(String goType) {
+	public void setGoType(GOtype goType) {
 		this.GoType = goType;
 	}
 	
@@ -60,8 +61,8 @@ public class NovelGOFunTest extends AbstFunTest{
 	}
 
 	@Override
-	public void setDetailType(String GOtype) {
-		this.GoType = GOtype;
+	public void setDetailType(GOtype gotype) {
+		this.GoType = gotype;
 	}
 	/**
 	 * 不返回

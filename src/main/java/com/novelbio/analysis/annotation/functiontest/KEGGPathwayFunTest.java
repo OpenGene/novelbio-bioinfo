@@ -7,6 +7,7 @@ import java.util.HashSet;
 
 import javax.swing.plaf.BorderUIResource.TitledBorderUIResource;
 
+import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modkegg.KeggInfo;
@@ -48,7 +49,7 @@ public class KEGGPathwayFunTest extends AbstFunTest{
 	 * 暂时没用
 	 */
 	@Override
-	public void setDetailType(String GOtype) {}
+	public void setDetailType(GOtype GOtype) {}
 	/**
 	 * 不返回
 	 */

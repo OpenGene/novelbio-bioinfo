@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.annotation.functiontest.TopGO.GoAlgorithm;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.model.modgeneid.GeneID;
 
 public class ElimGOFunTest extends NovelGOFunTest{
@@ -22,10 +23,10 @@ public class ElimGOFunTest extends NovelGOFunTest{
 	TopGO topGO = new TopGO();
 	
 	public ElimGOFunTest() {}
-	public ElimGOFunTest(ArrayList<GeneID> lsCopedIDsTest, ArrayList<GeneID> lsCopedIDsBG, boolean blast, String GoType) {
+	public ElimGOFunTest(ArrayList<GeneID> lsCopedIDsTest, ArrayList<GeneID> lsCopedIDsBG, boolean blast, GOtype GoType) {
 		super(lsCopedIDsTest, lsCopedIDsBG, blast, GoType);
 	}
-	public ElimGOFunTest(boolean blast,String GoType, double evalue, int...blastTaxID) {
+	public ElimGOFunTest(boolean blast,GOtype GoType, double evalue, int...blastTaxID) {
 		super(blast, GoType, evalue, blastTaxID);
 		this.GoType = GoType;
 	}
