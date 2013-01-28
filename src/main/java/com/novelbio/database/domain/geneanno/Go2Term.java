@@ -27,14 +27,14 @@ public class Go2Term {
 	 * 譬如RELATION_IS，RELATION_PARTOF等
 	 * 必须是两个GO之间才会有该信息
 	 */
-	private String flag;
+	private GORelation gorelation;
 	/**
 	 * 存储本GOID与别的GOID之间的关系
 	 * 譬如RELATION_IS，RELATION_PARTOF等
 	 * 必须是两个GO之间才会有该信息
 	 */
-	private void setFlag(String flag) {
-		this.flag = flag;
+	private void setRelation(GORelation gorelation) {
+		this.gorelation = gorelation;
 	}
 	/**
 	 * go信息的具体定义
@@ -51,12 +51,14 @@ public class Go2Term {
 		return Definition;
 	}
 	/**
-	 * 存储本GOID与别的GOID之间的关系
-	 * 譬如RELATION_IS，RELATION_PARTOF等
-	 * 必须是两个GO之间才会有该信息
+	 * <b>只有getParent或者getChild才有的flag，</b>表示与其他GOID之间的关系<br>
+	 * 如果是直接从数据库获得，则返回GORelation.NONE<br><br>
+	 * 存储本GOID与别的GOID之间的关系<br>
+	 * 譬如RELATION_IS，RELATION_PARTOF等<br>
+	 * 必须是两个GO之间才会有该信息<br>
 	 */
-	public String getFlag() {
-		return flag;
+	public GORelation getRelation() {
+		return gorelation;
 	}
 	/**
 	 * 设定其上游父类GO的信息
@@ -148,12 +150,11 @@ public class Go2Term {
 		for (String string : ss) {
 			String[] ssInfo = string.split(SepSign.SEP_INFO);
 			Go2Term go2Term = servGo2Term.queryGo2Term(ssInfo[1]);
-			go2Term.setFlag(ssInfo[0]);
+			go2Term.setRelation(GORelation.getMapStr2GoRelation().get(ssInfo[0]));
 			hashResult.add(go2Term);
 		}
 		return hashResult;
 	}
-	
 	
 	public String getGoIDQuery() {
 		return queryGoID;

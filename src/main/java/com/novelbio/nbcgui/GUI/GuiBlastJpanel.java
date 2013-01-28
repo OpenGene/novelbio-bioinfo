@@ -34,6 +34,7 @@ import org.jdesktop.application.Application;
 
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
+import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -58,9 +59,6 @@ import java.awt.Dimension;
 * LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
 */
 public class GuiBlastJpanel extends JPanel {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -610030039829839849L;
 	private JTextArea jTxtGenID;
 	private JLabel jLbGeneID;
@@ -70,7 +68,7 @@ public class GuiBlastJpanel extends JPanel {
 	private ButtonGroup buttonGroup1;
 	private JScrollPane jScrlGOTable;
 	private JComboBox jCmbSpeciesBlast;
-	private JComboBox jComGOClassSelect;
+	private JComboBoxData<GOtype> jComGOClassSelect;
 	private JLabel jLabelTax;
 	private JComboBox jCobTaxSelect;
 	private JLabel jLbGOandPath;
@@ -636,22 +634,16 @@ public class GuiBlastJpanel extends JPanel {
 		}
 	}
 	
-	public JComboBox getJCmbGOClassSelect() {
-		if(jComGOClassSelect == null) {
-			ComboBoxModel jCmbGOClassSelectModel = 
-				new DefaultComboBoxModel(
-						new String[] { Go2Term.GO_BP, Go2Term.GO_MF,Go2Term.GO_CC, Go2Term.GO_ALL});
-			jComGOClassSelect = new JComboBox();
-			jComGOClassSelect.setBounds(448, 307, 303, 23);
-			jComGOClassSelect.setModel(jCmbGOClassSelectModel);
-			GoClass = (String) jComGOClassSelect.getSelectedItem();
-			jComGOClassSelect.addActionListener(new ActionListener() 
-			{
-				public void actionPerformed(ActionEvent evt) {
-					GoClass = (String) jComGOClassSelect.getSelectedItem();
-				}
-			});
-		}
+	public JComboBoxData<GOtype> getJCmbGOClassSelect() {
+		jComGOClassSelect = new JComboBoxData<GOtype>();
+		jComGOClassSelect.setMapItem(GOtype.getMapStr2Gotype());
+		GoClass = jComGOClassSelect.getSelectedValue();
+		jComGOClassSelect.addActionListener(new ActionListener() 
+		{
+			public void actionPerformed(ActionEvent evt) {
+				GoClass = jComGOClassSelect.getSelectedValue();
+			}
+		});
 		return jComGOClassSelect;
 	}
 	

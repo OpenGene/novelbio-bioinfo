@@ -61,7 +61,7 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 				GoID = #{GoID} 
 			</if>
 			<if test="GoFunction != null and GoFunction != ''">
-				and GoFunction = #{GoFunction} 
+				and GoFunction = #{GoFunction}
 			</if>
 	</update>	
 </mapper>

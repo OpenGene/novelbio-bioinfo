@@ -25,22 +25,20 @@ public abstract class AGene2Go {
 	public abstract void setGeneUniID(String geneUniID);
 	
 	public String getGOID() {
+		Go2Term go2Term = getGO2Term();
+		if (go2Term == null) {
+			return null;
+		}
+		return go2Term.getGoID();
+	}
+	public Go2Term getGO2Term() {
 		Go2Term go2Term = servGo2Term.getHashGo2Term().get(myGoID);
 		if (go2Term == null) {
 			logger.error("出现未知GOID：" + myGoID);
 			return null;
 		}
-		String goID = go2Term.getGoID();
-		return goID;
+		return go2Term;
 	}
-//	/**
-//	 * 仅给数据库使用
-//	 * @return
-//	 */
-//	@Deprecated
-//	public String getGOIDNorm() {
-//		return GoID;
-//	}
 	
 	public void setGOID(String GoID) {
 		if (GoID == null) {

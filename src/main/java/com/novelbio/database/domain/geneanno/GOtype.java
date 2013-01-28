@@ -47,8 +47,23 @@ public enum GOtype {
 		mapStrShort2Gotype.put("A", ALL);
 		return mapStrShort2Gotype;
 	}
+	
 	public static enum GORelation {
-		IS, REGULATE, PART_OF, REGULATE_POS, REGULATE_NEG
+		NONE, IS, PART_OF, REGULATE, REGULATE_POS, REGULATE_NEG;
+		static Map<String, GORelation> mapStr2GoRelation;
+	
+		public static Map<String, GORelation> getMapStr2GoRelation() {
+			if (mapStr2GoRelation != null) {
+				return mapStr2GoRelation;
+			}
+			mapStr2GoRelation.put("NONE", NONE);
+			mapStr2GoRelation.put("IS", IS);
+			mapStr2GoRelation.put("PART_OF", PART_OF);
+			mapStr2GoRelation.put("REGULATE", REGULATE);
+			mapStr2GoRelation.put("REGULATE_POS", REGULATE_POS);
+			mapStr2GoRelation.put("REGULATE_NEG", REGULATE_NEG);
+			return mapStr2GoRelation;
+		}
 	}
 	
 }
