@@ -425,7 +425,7 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	 * @param invNumReads 某条染色体上面的reads堆叠情况
 	 * @param startNum 实际num
 	 * @param endNum 实际num
-	 * @param binNum
+	 * @param binNum 分割的份数，小于0就直接返回
 	 * @param type
 	 * @return
 	 */
@@ -459,12 +459,22 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 
 		normDouble(NormalType, tmpRegReads, getAllReadsNum());
 		double[] tmp = null;
-		try {
-			tmp =  MathComput.mySpline(tmpRegReads, binNum,leftBias,rightBias,type);
-		} catch (Exception e) {
-			return null;
+		if (binNum <= 0) {
+			tmp = tmpRegReads;
+		} else {
+			try {
+				tmp =  MathComput.mySpline(tmpRegReads, binNum,leftBias,rightBias,type);
+			} catch (Exception e) {
+				return null;
+			}
 		}
-		tmp = equationsCorrect(tmp);
+		
+		try {
+			tmp = equationsCorrect(tmp);
+		} catch (Exception e) {
+			return tmp;
+		}
+		
 		return tmp;
 	}
 

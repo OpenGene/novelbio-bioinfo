@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
+import com.novelbio.analysis.seq.genome.Gene2Value;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
@@ -266,23 +267,18 @@ public class MapInfo extends SiteInfo implements HeatChartDataInt, Cloneable{
 	
 	/**
 	 * 给定mapInfo的list
-	 * 将里面的double[]合并成一个，假定mapInfo中的value等长
+	 * 将里面的double[]合并成一个，mapInfo中的value可以<b>不等长</b>
 	 */
 	public static double[] getCombLsMapInfo(List<MapInfo> lsmapinfo) {
-		double[] result = new double[lsmapinfo.get(0).getDouble().length];
+		List<double[]> lsInfo = new ArrayList<double[]>();
 		for (MapInfo mapInfo : lsmapinfo) {
 			double[] tmp = mapInfo.getDouble();
 			if (tmp == null) {
 				continue;
 			}
-			for (int i = 0; i < result.length; i++) {
-				result[i] = result[i] + tmp[i];
-			}
+			lsInfo.add(tmp);
 		}
-		for (int i = 0; i < result.length; i++) {
-			result[i] = result[i]/lsmapinfo.size();
-		}
-		return result;
+		return Gene2Value.getSumList(lsInfo);
 	}
 	
 	/**

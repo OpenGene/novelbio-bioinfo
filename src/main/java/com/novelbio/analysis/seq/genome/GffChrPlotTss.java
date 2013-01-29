@@ -273,7 +273,7 @@ public class GffChrPlotTss {
 		
 		ArrayList<double[]> lsResult = new ArrayList<double[]>();
 		double[] yvalue = MapInfo.getCombLsMapInfo(lsMapInfos);
-		double[] xvalue = getXvalue();
+		double[] xvalue = getXvalue(yvalue.length);
 		if (xvalue.length != yvalue.length) {
 			logger.error("xvalue 和 yvalue 的长度不一致，请检查");
 		}
@@ -286,11 +286,19 @@ public class GffChrPlotTss {
 		return lsResult;
 	}
 	
+	private double[] getXvalue(int length) {
+		if (splitNum > 0) {
+			return getXvalueNorm();
+		} else {
+			return getXvalueNotNorm(length);
+		}
+	}
+	
 	/**
 	 * 根据设定的yvalue值和画出两边的边界，设定x的value值
 	 * @return
 	 */
-	private double[] getXvalue() {
+	private double[] getXvalueNorm() {
 		double[] xResult = null;
 		xResult = new double[splitNum];
 		//Gene2Value里面对于tss和tes会加上1，因为有0点
@@ -310,6 +318,23 @@ public class GffChrPlotTss {
 		}
 		return xResult;
 	}
+	
+	/**
+	 * 根据设定的yvalue值和画出两边的边界，设定x的value值
+	 * 不同长度的exon等不标准化，根据马红的要求直接合并
+	 * 所以只用于exon，intron等做图
+	 * @return
+	 */
+	private double[] getXvalueNotNorm(int length) {
+		double[] xResult = null;
+		xResult = new double[length];
+		for (int i = 0; i < xResult.length; i++) {
+			xResult[i] = mapReads.getBinNum() * i;
+		}
+		
+		return xResult;
+	}
+	
 	
 	/** 首先要设定好lsMapInfos */
 	public PlotHeatMap plotHeatMap() {
@@ -331,10 +356,10 @@ public class GffChrPlotTss {
 	/** 将lsGeneID2Value中的信息填充到lsMapInfos中去 */
 	private void setLsMapInfos() {
 		//TODO 应该改成 每次设定新的lsMapInfo，GeneID，和GeneStructure就重新跑
-		if (lsMapInfos != null && lsMapInfos.size() > 0 && (lsGeneID2Value == null || lsGeneID2Value.size() == 0)) {
-			mapReads.getRangeLs(this.splitNum, lsMapInfos, 0);
-			return;
-		}
+//		if (lsMapInfos != null && lsMapInfos.size() > 0 && (lsGeneID2Value == null || lsGeneID2Value.size() == 0)) {
+//			mapReads.getRangeLs(this.splitNum, lsMapInfos, 0);
+//			return;
+//		}
 		lsMapInfos = new ArrayList<MapInfo>();
 		for (Gene2Value gene2Value : lsGeneID2Value) {
 			gene2Value.setPlotTssTesRegion(plotTssTesRange);

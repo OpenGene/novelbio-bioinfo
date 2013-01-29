@@ -98,6 +98,9 @@ public class RPKMcomput implements AlignmentRecorder {
 			currentReadsNum += 1/alignRecord.getMappingNum();
 			int midLoc = (align.getStartAbs() + align.getEndAbs())/2;
 			GffCodGene gffCodGene = gffHashGene.searchLocation(align.getRefID(), midLoc);
+			if (gffCodGene == null) {
+				continue;
+			}
 			String geneName = getName(cis5to3, gffCodGene);
 			//找到后就可以跳出了，因为一条reads只要找到1个位置即可
 			if (geneName != null) {

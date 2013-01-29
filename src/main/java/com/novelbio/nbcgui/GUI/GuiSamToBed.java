@@ -433,8 +433,12 @@ public class GuiSamToBed extends JPanel {
 		for (SamFile samFile : lsSamFile) {
 			lsBamFile.add(samFile.convertToBam());
 		}
-		String resultName = FileOperate.getParentPathName(lsBamFile.get(0).getFileName()) + prefix;
-		resultName = FileOperate.changeFileSuffix(resultName, "", "bam");
+		String resultPrefix = guiFileOpen.saveFileName("", "");
+		if (FileOperate.isFileDirectory(resultPrefix)) {
+			resultPrefix = FileOperate.addSep(resultPrefix);
+		}
+		String resultName = resultPrefix + prefix;
+		resultName = FileOperate.changeFileSuffix(resultName, "_merge", "bam");
 		SamFile samFileMerge = SamFile.mergeBamFile(resultName , lsBamFile);
 		return samFileMerge;
 	}

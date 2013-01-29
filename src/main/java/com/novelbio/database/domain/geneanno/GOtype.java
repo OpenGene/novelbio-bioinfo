@@ -1,5 +1,6 @@
 package com.novelbio.database.domain.geneanno;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public enum GOtype {
@@ -31,6 +32,7 @@ public enum GOtype {
 		if (mapStr2Gotype != null) {
 			return mapStr2Gotype;
 		}
+		mapStr2Gotype = new HashMap<String, GOtype>();
 		mapStr2Gotype.put("BP", BP);
 		mapStr2Gotype.put("CC", CC);
 		mapStr2Gotype.put("MF", MF);
@@ -41,6 +43,7 @@ public enum GOtype {
 		if (mapStrShort2Gotype != null) {
 			return mapStrShort2Gotype;
 		}
+		mapStrShort2Gotype = new HashMap<String, GOtype>();
 		mapStrShort2Gotype.put("P", BP);
 		mapStrShort2Gotype.put("C", CC);
 		mapStrShort2Gotype.put("F", MF);
@@ -56,6 +59,7 @@ public enum GOtype {
 			if (mapStr2GoRelation != null) {
 				return mapStr2GoRelation;
 			}
+			mapStr2GoRelation = new HashMap<String, GOtype.GORelation>();
 			mapStr2GoRelation.put("NONE", NONE);
 			mapStr2GoRelation.put("IS", IS);
 			mapStr2GoRelation.put("PART_OF", PART_OF);

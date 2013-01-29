@@ -62,7 +62,7 @@ public class ServGo2Term implements MapGo2Term{
 		}
 		//查找Go2Term有没有信息，没有就插入
 		Go2Term go2Term2 = mapGo2Term.queryGo2Term(go2Term);
-		if ( (go2Term.getGoFunction() != null && go2Term.getGoTerm() != null)
+		if ( (go2Term.getGOtype() != null && go2Term.getGoTerm() != null)
 				|| go2Term.getParent().size() > 0 || go2Term.getChild().size() > 0
 				) {
 			if (go2Term2 != null && !go2Term2.equalsAll(go2Term) ) {
@@ -164,6 +164,7 @@ public class ServGo2Term implements MapGo2Term{
 		HashMap<String, Go2Term> hashGOIDconvert = new HashMap<String, Go2Term>();
 		ArrayList<Go2Term> lsAllConvert = mapGoIDconvert.queryLsGoIDconvert(queryGo2Term);
 		ArrayList<Go2Term> lsAllGo2Term = mapGo2Term.queryLsGo2Term(queryGo2Term);
+
 		for (Go2Term go2Term : lsAllGo2Term) {
 			hashGOIDconvert.put(go2Term.getGoID(), go2Term);
 		}

@@ -117,7 +117,7 @@ public abstract class AGene2Go {
 	 */
 	public GOtype getFunction() {
 		try {
-			return servGo2Term.getHashGo2Term().get(myGoID).getGoFunction();
+			return servGo2Term.getHashGo2Term().get(myGoID).getGOtype();
 		} catch (Exception e) {
 			logger.error("出现未知GOID：" + myGoID);
 			return null;

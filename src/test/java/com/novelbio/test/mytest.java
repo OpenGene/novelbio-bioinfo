@@ -23,6 +23,8 @@ import com.novelbio.analysis.seq.fastq.FastQRecordFilter;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneNCBI;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.resequencing.SnpAnnotation;
 import com.novelbio.analysis.seq.rnaseq.GffHashMerge;
@@ -52,17 +54,8 @@ public class mytest {
 	private static Logger logger = Logger.getLogger(mytest.class);
 	
 	public static void main(String[] args) throws IOException {
-		SamFile samFile = new SamFile("/media/TOSHIBA EXT/9522/aaa.sam");
-		
-		SAMFileHeader samFileHeader = samFile.getHeader();
-		SamFile samFileBamOld = new SamFile("/media/TOSHIBA EXT/9522/a9522_sorted_realign_removeDuplicate.bam");
-		SamFile samFileResult = new SamFile("/media/TOSHIBA EXT/9522/a9522_sorted_realign_removeDuplicate_lowcase.bam", samFileHeader);
-		for (SamRecord samRecord : samFileBamOld.readLines()) {
-			samRecord.setHeader(samFileHeader);
-			samRecord.setChrID(samRecord.getRefID().toLowerCase());
-			samFileResult.writeSamRecord(samRecord);
-		}
-		samFileResult.close();
+		GffHashGeneAbs gffHashGeneAbs = new GffHashGeneNCBI();
+		gffHashGeneAbs.ReadGffarray(gfffilename);
 	}
 	
 	private void plotHist() {

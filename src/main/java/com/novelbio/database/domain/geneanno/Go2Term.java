@@ -6,7 +6,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.domain.geneanno.GOtype.GORelation;
 import com.novelbio.database.service.servgeneanno.ServGo2Term;
 
-public class Go2Term {
+public class Go2Term implements Cloneable {
 	public static final String RELATION_IS = "IS";
 	public static final String RELATION_PARTOF = "PART_OF";
 	public static final String RELATION_REGULATE = "REGULATE";
@@ -150,8 +150,9 @@ public class Go2Term {
 		for (String string : ss) {
 			String[] ssInfo = string.split(SepSign.SEP_INFO);
 			Go2Term go2Term = servGo2Term.queryGo2Term(ssInfo[1]);
-			go2Term.setRelation(GORelation.getMapStr2GoRelation().get(ssInfo[0]));
-			hashResult.add(go2Term);
+			Go2Term go2TermNew = go2Term.clone();
+			go2TermNew.setRelation(GORelation.getMapStr2GoRelation().get(ssInfo[0]));
+			hashResult.add(go2TermNew);
 		}
 		return hashResult;
 	}
@@ -215,10 +216,10 @@ public class Go2Term {
 	 * FUN_SHORT_MOL_F<br>
 	 * @return
 	 */
-	public GOtype getGoFunction() {
+	public GOtype getGOtype() {
 		return GOtype.getMapStrShort2Gotype().get(GoFunction);
 	}
-	public void setGoFunction(GOtype gotype) {
+	public void setGOtype(GOtype gotype) {
 		this.GoFunction = gotype.getOneWord();
 	}
 	/**
@@ -292,8 +293,7 @@ public class Go2Term {
 	 * 	仅比较GOID
 	 */
 	@Override
-	public int hashCode()
-	{
+	public int hashCode() {
 		String result = GoID;
 		return result.hashCode();
 	}
@@ -305,5 +305,25 @@ public class Go2Term {
 	 */
 	public boolean update() {
 		return servGo2Term.updateGo2TermComb(this);
+	}
+	
+	public Go2Term clone() {
+		Go2Term go2Term = null;
+		try {
+			go2Term = (Go2Term) super.clone();
+			go2Term.Child = Child;
+			go2Term.Definition = Definition;
+			go2Term.GoFunction = GoFunction;
+			go2Term.GoID = GoID;
+			go2Term.gorelation = gorelation;
+			go2Term.GoTerm = GoTerm;
+			go2Term.Parent = Parent;
+			go2Term.queryGoID = queryGoID;
+			go2Term.servGo2Term = servGo2Term;
+			
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
+		return go2Term;
 	}
 }

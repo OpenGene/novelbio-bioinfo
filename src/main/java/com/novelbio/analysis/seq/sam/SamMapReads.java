@@ -75,11 +75,12 @@ public class SamMapReads extends MapReadsAbs {
 			return null;
 		}
 		double[] result = null;
-		try {
-			result = MathComput.mySpline(value, binNum, 0, 0, type);
-		} catch (Exception e) {
+		if (binNum <= 0) {
+			result = value;
+		} else {
 			result = MathComput.mySpline(value, binNum, 0, 0, type);
 		}
+		
 		normDouble(NormalType, result, allReadsNum);
 		return result;
 	}

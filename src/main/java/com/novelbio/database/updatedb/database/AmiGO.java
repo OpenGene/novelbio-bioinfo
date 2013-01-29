@@ -130,13 +130,13 @@ class ImpGOExtObo extends ImportPerLine {
 			//GO Function
 			if (string.startsWith("namespace: ")) {
 				if (string.equals("namespace: biological_process")) {
-					go2Term.setGoFunction(GOtype.BP);
+					go2Term.setGOtype(GOtype.BP);
 				}
 				if (string.equals("namespace: molecular_function")) {
-					go2Term.setGoFunction(GOtype.MF);
+					go2Term.setGOtype(GOtype.MF);
 				}
 				if (string.equals("namespace: cellular_component")) {
-					go2Term.setGoFunction(GOtype.CC);
+					go2Term.setGOtype(GOtype.CC);
 				}
 			}
 			//GO Definition
@@ -245,7 +245,7 @@ class ImpGOExtObo extends ImportPerLine {
 			if (go2Term == null) {
 				continue;
 			}
-			else if (go2Term.getGoFunction() == GOtype.BP) {
+			else if (go2Term.getGOtype() == GOtype.BP) {
 				mapGOquery2GOID.put(GOID, lsReplaceAndConsider.get(i));
 				return;
 			}

@@ -59,7 +59,7 @@ public class GuiSamStatistics extends JPanel {
 		setLayout(null);
 		
 		scrollPaneData = new JScrollPaneData();
-		scrollPaneData.setBounds(12, 30, 693, 500);
+		scrollPaneData.setBounds(12, 30, 693, 461);
 		add(scrollPaneData);
 		
 		JButton btnOpenfile = new JButton("BamSamBedFile");
@@ -89,11 +89,11 @@ public class GuiSamStatistics extends JPanel {
 				txtSaveTo.setText(fileName);
 			}
 		});
-		btnSave.setBounds(717, 561, 118, 24);
+		btnSave.setBounds(717, 518, 118, 24);
 		add(btnSave);
 		
 		progressBar = new JProgressBar();
-		progressBar.setBounds(12, 602, 957, 14);
+		progressBar.setBounds(12, 559, 957, 14);
 		add(progressBar);
 		
 		btnRun = new JButton("Run");
@@ -124,7 +124,7 @@ public class GuiSamStatistics extends JPanel {
 				btnSave.setEnabled(false);
 			}
 		});
-		btnRun.setBounds(851, 561, 118, 24);
+		btnRun.setBounds(851, 518, 118, 24);
 		add(btnRun);
 		
 		txtTssUp = new JTextField();
@@ -180,16 +180,16 @@ public class GuiSamStatistics extends JPanel {
 		add(layeredPane);
 		
 		chkRpkmcount = new JCheckBox("RPKMcount");
-		chkRpkmcount.setBounds(713, 499, 131, 22);
+		chkRpkmcount.setBounds(713, 469, 131, 22);
 		add(chkRpkmcount);
 		
 		txtSaveTo = new JTextField();
-		txtSaveTo.setBounds(12, 567, 693, 18);
+		txtSaveTo.setBounds(12, 524, 693, 18);
 		add(txtSaveTo);
 		txtSaveTo.setColumns(10);
 		
 		lblSaveto = new JLabel("SaveTo");
-		lblSaveto.setBounds(12, 542, 69, 14);
+		lblSaveto.setBounds(12, 499, 69, 14);
 		add(lblSaveto);
 		
 		initial();

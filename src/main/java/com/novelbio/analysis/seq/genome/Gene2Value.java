@@ -33,7 +33,7 @@ public class Gene2Value {
 	/** tss或tes的扩展区域，一般哺乳动物为 -5000到5000 */
 	int[] plotTssTesRegion = new int[]{-5000, 5000};
 	
-	int splitNum = 1000;
+	int splitNum = 500;
 	
 	/** 提取的exon和intron，是叠在一起成为一体呢，还是头尾相连成为一体 */
 	boolean pileupExonIntron = false;
@@ -45,7 +45,7 @@ public class Gene2Value {
 	 * -1为倒数第一个
 	 * -2为倒数第二个
 	 */
-	ArrayList<Integer> lsExonIntronNumGetOrExclude;
+	List<Integer> lsExonIntronNumGetOrExclude;
 	/** 对于lsExonIntronNumGetOrExclude选择get还是exclude，true为get，false为exclude */
 	boolean getOrExclude = true;
 	
@@ -63,6 +63,7 @@ public class Gene2Value {
 	 * 如果提取的是exon或者intron的区域，因为exon和intron每个基因都不是等长的，所以要设定划分的分数.
 	 * 如果是tss和tes区域，也需要划分成指定的份数
 	 * @param splitNumExonIntron 默认为500份
+	 * <b>小于0表示不进行划修正，仅考虑MapReads产生那会儿的划分。exon是多少就是多少</b>
 	 */
 	public void setSplitNum(int splitNum) {
 		this.splitNum = splitNum;
@@ -86,7 +87,7 @@ public class Gene2Value {
 	 * -1倒数第一个，-2倒数第二个
 	 * @param getOrExclude true：提取， false 不提取
 	 * */
-	public void setGetNum(ArrayList<Integer> lsExonIntronNumGetOrExclude, boolean getOrExclude) {
+	public void setGetNum(List<Integer> lsExonIntronNumGetOrExclude, boolean getOrExclude) {
 		this.lsExonIntronNumGetOrExclude = lsExonIntronNumGetOrExclude;
 		if (lsExonIntronNumGetOrExclude != null) {
 			//排个序 1，2，3，4........-4，-3，-2，-1
@@ -163,14 +164,23 @@ public class Gene2Value {
 		return mapInfo;
 	}
 	
+	private boolean setMapInfo(MapInfo mapInfo, MapReads mapReads, ArrayList<ExonInfo> lsExonInfos) {
+		if (splitNum > 0) {
+			return setMapInfoNormLength(mapInfo, mapReads, lsExonInfos);
+		} else {
+			return setMapInfoNotNorm(mapInfo, mapReads, lsExonInfos);
+		}
+	}
+	
 	/**
-	 * 根据指定的lsExonInfos信息，设定mapInfo的value
+	 * 根据指定的lsExonInfos信息，设定mapInfo的value<br>
+	 * 会根据splitNum的数量对结果进行标准化
 	 * @param mapInfo
 	 * @param mapReads
 	 * @param lsExonInfos
 	 * @return
 	 */
-	private boolean setMapInfo(MapInfo mapInfo, MapReads mapReads, ArrayList<ExonInfo> lsExonInfos) {
+	private boolean setMapInfoNormLength(MapInfo mapInfo, MapReads mapReads, ArrayList<ExonInfo> lsExonInfos) {
 		double[] result = new double[splitNum];
 		List<ExonInfo> lsNew = getSelectLsExonInfo(lsExonInfos);
 		if (lsNew.size() == 0) {
@@ -193,11 +203,7 @@ public class Gene2Value {
 				}
 			}
 		} else {
-			try {
-				result = mapReads.getRangeInfo(mapInfo.getRefID(), lsNew);
-			} catch (Exception e) {
-				result = mapReads.getRangeInfo(mapInfo.getRefID(), lsNew);
-			}
+			result = mapReads.getRangeInfo(mapInfo.getRefID(), lsNew);
 			if (result == null || result.length < 10) {
 				return false;
 			}
@@ -207,6 +213,48 @@ public class Gene2Value {
 		mapInfo.setDouble(result);
 		return true;
 	}
+	
+	/**
+	 * 根据指定的lsExonInfos信息，设定mapInfo的value<br>
+	 * <b>不会</b>根据splitNum的数量对结果进行标准化
+	 * @param mapInfo
+	 * @param mapReads
+	 * @param lsExonInfos
+	 * @return
+	 */
+	private boolean setMapInfoNotNorm(MapInfo mapInfo, MapReads mapReads, ArrayList<ExonInfo> lsExonInfos) {
+		double[] result;
+		List<ExonInfo> lsNew = getSelectLsExonInfo(lsExonInfos);
+		if (lsNew.size() == 0) {
+			return false;
+		}
+		
+		if (pileupExonIntron) {
+			ArrayList<double[]> lsTmp = new ArrayList<double[]>();
+			for (Alignment alignment : lsNew) {
+				double[] info = mapReads.getRangeInfo(mapInfo.getRefID(), alignment.getStartAbs(), alignment.getEndAbs(), 0);
+				if (info == null || info.length < 5) {
+					continue;
+				}
+				lsTmp.add(info);
+			}
+			result = getSumList(lsTmp);
+		} else {
+			result = mapReads.getRangeInfo(mapInfo.getRefID(), lsNew);
+			if (result == null || result.length < 10) {
+				return false;
+			}
+		}
+		
+		mapInfo.setDouble(result);
+		return true;
+	}
+	
+	
+	
+	
+	
+	
 	/** 根据设定的lsExonIntronNumGetOrExclude信息，返回选择的exoninfo
 	 * <b>暴露出来仅供测试</b>
 	 * @param lsExonInfos 输入的exon信息
@@ -337,4 +385,37 @@ public class Gene2Value {
 		}
 		return lsGene2Value;
 	}
+	
+	/**
+	 * 将lsInfo里面的double叠加起来，最后加成一个double[]
+	 * @param lsInfo 里面的double[] 可以不等长，里面不可以包括null
+	 * @return
+	 */
+	public static double[] getSumList(List<double[]> lsInfo) {
+		if (lsInfo.size() == 0) {
+			return null;
+		}
+		ArrayList<Double> lsResult = new ArrayList<Double>();
+		double[] tmp = lsInfo.get(0);
+		for (double d : tmp) {
+			lsResult.add(d);
+		}
+		
+		for (int i = 1; i < lsInfo.size(); i++) {
+			double[] tmpAdd = lsInfo.get(i);
+			for (int j = 0; j < tmpAdd.length; j++) {
+				if (j < lsResult.size()) {
+					lsResult.set(j, lsResult.get(j) + tmpAdd[j]);
+				} else {
+					lsResult.add(tmpAdd[j]);
+				}
+			}
+		}
+		double[] result = new double[lsResult.size()];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = lsResult.get(i);
+		}
+		return result;
+	}
+	
 }

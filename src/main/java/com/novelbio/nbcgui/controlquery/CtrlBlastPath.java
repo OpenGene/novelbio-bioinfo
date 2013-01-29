@@ -13,7 +13,9 @@ import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.nbcgui.GUI.GuiBlastJpanel;
 
-
+/**
+ * @author zong0jie
+ */
 public class CtrlBlastPath extends SwingWorker<ArrayList<String[]>, ProgressDataPath> {
 
 
