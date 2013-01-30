@@ -100,10 +100,23 @@ public class GuiSamToBed extends JPanel {
 					}
 				}
 				
+				String resultMergePath = null;
 				for (String prefix : mapPrefix2FileName.keySet()) {
 					List<String> lsSamFiles = mapPrefix2FileName.get(prefix);
-					convertSamFile(prefix, lsSamFiles);
+					if (lsSamFiles.size() > 1) {
+						resultMergePath = guiFileOpen.saveFileName("", "");
+						if (FileOperate.isFileDirectory(resultMergePath)) {
+							resultMergePath = FileOperate.addSep(resultMergePath);
+						}
+					}
 				}
+				
+				for (String prefix : mapPrefix2FileName.keySet()) {
+					List<String> lsSamFiles = mapPrefix2FileName.get(prefix);
+					convertSamFile(resultMergePath, prefix, lsSamFiles);
+				}
+				
+				
 			}
 			
 			/** 如果prefix为null或""，则返回一个全新的prefix，意思不在任何分组中 */
@@ -380,7 +393,7 @@ public class GuiSamToBed extends JPanel {
 		samFile.setUniqueRandomSelectOneRead(chckbxNonUniqueMapping.isSelected());
 		samFile.toBedSingleEnd();
 	}
-	private void convertSamFile(String prefix, List<String> lsSamFilestr) {
+	private void convertSamFile(String resultMergePath, String prefix, List<String> lsSamFilestr) {
 		String refFile = "";
 		Species species = cmbSpecies.getSelectedValue();
 		
@@ -404,7 +417,7 @@ public class GuiSamToBed extends JPanel {
 			lsSamFiles.add(samFile);
 		}
 		
-		SamFile samFileMerge = mergeSamFile(prefix, lsSamFiles);
+		SamFile samFileMerge = mergeSamFile(resultMergePath, prefix, lsSamFiles);
 		if (chckbxSortBam.isSelected()) {
 			samFileMerge = samFileMerge.sort();
 		}
@@ -425,7 +438,7 @@ public class GuiSamToBed extends JPanel {
 	 * @param lsSamFile
 	 * @return
 	 */
-	private SamFile mergeSamFile(String prefix, List<SamFile> lsSamFile) {
+	private SamFile mergeSamFile(String resultPath, String prefix, List<SamFile> lsSamFile) {
 		if (lsSamFile.size() == 1) {
 			return lsSamFile.get(0).convertToBam();
 		}
@@ -433,11 +446,8 @@ public class GuiSamToBed extends JPanel {
 		for (SamFile samFile : lsSamFile) {
 			lsBamFile.add(samFile.convertToBam());
 		}
-		String resultPrefix = guiFileOpen.saveFileName("", "");
-		if (FileOperate.isFileDirectory(resultPrefix)) {
-			resultPrefix = FileOperate.addSep(resultPrefix);
-		}
-		String resultName = resultPrefix + prefix;
+		
+		String resultName = resultPath + prefix;
 		resultName = FileOperate.changeFileSuffix(resultName, "_merge", "bam");
 		SamFile samFileMerge = SamFile.mergeBamFile(resultName , lsBamFile);
 		return samFileMerge;
