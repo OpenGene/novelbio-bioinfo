@@ -20,12 +20,12 @@ public class FQrecordFilterQC extends FQrecordFilter {
 	
 	/** 没用 */
 	@Override
-	protected int trimLeft() {
+	protected int trimLeft(FastQRecord fastQRecord) {
 		return 0;
 	}
 	/** 没用 */
 	@Override
-	protected int trimRight() {
+	protected int trimRight(FastQRecord fastQRecord) {
 		return 0;
 	}
 
@@ -38,7 +38,7 @@ public class FQrecordFilterQC extends FQrecordFilter {
 	 * 看本序列的质量是否符合要求 首先会判定质量是否以BBBBB结尾，是的话直接跳过 
 	 * @return
 	 */
-	public boolean filter() {
+	public boolean filter(FastQRecord fastQRecord) {
 		if (fastQRecord.seqFasta.toString().length() < readsMinLen) {
 			return false;
 		}
@@ -49,7 +49,7 @@ public class FQrecordFilterQC extends FQrecordFilter {
 			return true;
 		}
 		/** 就看Q10，Q13和Q20就行了 */
-		int[][] seqQC1 = copeFastQ(2, 10, 13, 20);
+		int[][] seqQC1 = copeFastQ(fastQRecord, 2, 10, 13, 20);
 		return filterFastQ(seqQC1);
 	}
 	/**
@@ -58,7 +58,7 @@ public class FQrecordFilterQC extends FQrecordFilter {
 	 * @param Qvalue Qvalue的阈值，可以指定多个<b>必须从小到大排列</b>，一般为Q13，有时为Q10，具体见维基百科的FASTQ format
 	 * @return int 按照顺序，小于等于每个Qvalue的数量
 	 */
-	private int[][] copeFastQ(int... Qvalue) {
+	private int[][] copeFastQ(FastQRecord fastQRecord, int... Qvalue) {
 		if (fastqOffset == 0) {
 			System.out.println("FastQ.copeFastQ ,没有指定offset");
 		}

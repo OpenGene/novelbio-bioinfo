@@ -7,7 +7,7 @@ public class FQrecordFilterLowcase extends FQrecordFilter {
 	}
 	
 	@Override
-	protected int trimLeft() {
+	protected int trimLeft(FastQRecord fastQRecord) {
 		char[] info = fastQRecord.seqFasta.toString().toCharArray();
 		int numStart = 0;
 		//从前向后，遇到小写就计数
@@ -21,7 +21,7 @@ public class FQrecordFilterLowcase extends FQrecordFilter {
 	}
 
 	@Override
-	protected int trimRight() {
+	protected int trimRight(FastQRecord fastQRecord) {
 		char[] info = fastQRecord.seqFasta.toString().toCharArray();
 		int numEnd = info.length;
 		for (int i = info.length - 1; i >= 0; i--) {

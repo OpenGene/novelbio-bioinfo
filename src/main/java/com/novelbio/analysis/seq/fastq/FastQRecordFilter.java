@@ -133,12 +133,12 @@ public class FastQRecordFilter {
 		}
 		boolean filtered = true;
 		for (FQrecordFilter fQrecordFilter : lsFQrecordFilters) {
-			fQrecordFilter.setFastQRecord(fastQRecord);
-			if (!fQrecordFilter.filter()) {
+			if (!fQrecordFilter.filter(fastQRecord)) {
 				filtered = false;
 				break;
 			}
 		}
+		
 		return filtered;
 	}
 	/** 没有通过过滤就返回false */
@@ -149,10 +149,8 @@ public class FastQRecordFilter {
 		
 		boolean filtered = true;
 		for (FQrecordFilter fQrecordFilter : lsFQrecordFilters) {
-			fQrecordFilter.setFastQRecord(fastQRecord1);
-			boolean filter1 = fQrecordFilter.filter();
-			fQrecordFilter.setFastQRecord(fastQRecord2);
-			boolean filter2 = fQrecordFilter.filter();
+			boolean filter1 = fQrecordFilter.filter(fastQRecord1);
+			boolean filter2 = fQrecordFilter.filter(fastQRecord2);
 			if (!filter1 || !filter2) {
 				filtered = false;
 				break;

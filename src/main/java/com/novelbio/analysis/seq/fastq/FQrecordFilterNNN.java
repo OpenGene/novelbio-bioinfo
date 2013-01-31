@@ -44,7 +44,7 @@ public class FQrecordFilterNNN extends FQrecordFilter {
 	 * 也就是该NNN有多少个碱基，可以直接用substring(return)来截取
 	 * 返回-1表示出错
 	 */
-	protected int trimLeft() {
+	protected int trimLeft(FastQRecord fastQRecord) {
 		int left = fastQRecord.seqQuality.length();
 		char[] chrSeq = fastQRecord.getSeqFasta().toString().toCharArray();
 		char[] chrIn = fastQRecord.seqQuality.toCharArray();
@@ -71,7 +71,7 @@ public class FQrecordFilterNNN extends FQrecordFilter {
 	 * 也就是该NNN前面有多少个碱基，可以直接用substring(0,return)来截取
 	 * 返回-1表示出错
 	 */
-	protected int trimRight() {
+	protected int trimRight(FastQRecord fastQRecord) {
 		int right = 0;
 		char[] chrSeq = fastQRecord.getSeqFasta().toString().toCharArray();
 		char[] chrIn = fastQRecord.seqQuality.toCharArray(); int lenIn =  fastQRecord.seqQuality.length();
@@ -90,8 +90,6 @@ public class FQrecordFilterNNN extends FQrecordFilter {
 				break;
 			}
 		}
-		logger.error( fastQRecord.getLength());
-		logger.error( fastQRecord.getSeqFasta().toString().length());
 		return right;
 	}
 

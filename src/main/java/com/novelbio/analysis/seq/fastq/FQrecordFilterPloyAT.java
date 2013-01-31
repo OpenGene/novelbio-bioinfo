@@ -32,7 +32,7 @@ public class FQrecordFilterPloyAT extends FQrecordFilter {
 		this.maxConteniunNone = maxConteniunNone;
 	}
 	@Override
-	protected int trimLeft() {
+	protected int trimLeft(FastQRecord fastQRecord) {
 		if (filterT) {
 			return trimPolyT(fastQRecord.getSeqFasta().toString(), mismatch, maxConteniunNone);
 		} else {
@@ -41,7 +41,7 @@ public class FQrecordFilterPloyAT extends FQrecordFilter {
 	}
 
 	@Override
-	protected int trimRight() {
+	protected int trimRight(FastQRecord fastQRecord) {
 		if (filterA) {
 			return trimPolyA(fastQRecord.getSeqFasta().toString(), mismatch, maxConteniunNone);
 		} else {
@@ -58,7 +58,7 @@ public class FQrecordFilterPloyAT extends FQrecordFilter {
 	 * 如果没有A，返回值 == Seq.length()
 	 * 也就是该polyA前面有多少个碱基，可以直接用substring(0,return)来截取
 	 */
-	private int trimPolyA(String seqIn, int numMM, int maxConteniunNoneA) {
+	private static int trimPolyA(String seqIn, int numMM, int maxConteniunNoneA) {
 		seqIn = seqIn.toUpperCase();
 		char[] chrIn = seqIn.toCharArray(); int lenIn = seqIn.length();
 		int numMismatch = 0;

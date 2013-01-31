@@ -4,15 +4,10 @@ import org.apache.log4j.Logger;
 
 public abstract class FQrecordFilter {
 	private static Logger logger = Logger.getLogger(FQrecordFilter.class);
-	FastQRecord fastQRecord;
 	
 	int readsMinLen;
 	int fastqOffset;
-	
-	/** 设定序列 */
-	public void setFastQRecord(FastQRecord fastQRecord) {
-		this.fastQRecord = fastQRecord;
-	}
+
 	/** 裁剪序列时最短为多少， 默认为22
 	 */
 	public void setTrimMinLen(int trimMinLen) {
@@ -32,20 +27,20 @@ public abstract class FQrecordFilter {
 	 * reads质量太差或过滤失败则返回false
 	 * @return
 	 */
-	public boolean filter() {
-		return trimSeq(fastQRecord, readsMinLen, trimLeft(), trimRight());
+	public boolean filter(FastQRecord fastQRecord) {
+		return trimSeq(fastQRecord, readsMinLen, trimLeft(fastQRecord), trimRight(fastQRecord));
 	}
 	
 	/**
 	 * 获得过滤左端的Num，可以用substring截取
 	 * @return
 	 */
-	protected abstract int trimLeft();
+	protected abstract int trimLeft(FastQRecord fastQRecord);
 	/**
 	 * 获得过滤左端的Num，可以用substring截取
 	 * @return
 	 */
-	protected abstract int trimRight();
+	protected abstract int trimRight(FastQRecord fastQRecord);
 	
 	/**
 	 * 本过滤器是否参与过滤
@@ -70,15 +65,11 @@ public abstract class FQrecordFilter {
 		if (start == 0 && end == fastQRecord.seqQuality.length()) {
 			return true;
 		}
-		if (end > fastQRecord.getLength()) {
-			logger.error(fastQRecord.getLength());
-		}
 		try {
 			fastQRecord.seqFasta = fastQRecord.seqFasta.trimSeq(start, end);
 			fastQRecord.seqQuality = fastQRecord.seqQuality.substring(start, end);
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error("stop");
 			return false;
 		}
 		return true;

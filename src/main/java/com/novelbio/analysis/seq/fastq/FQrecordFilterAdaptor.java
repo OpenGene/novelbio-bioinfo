@@ -6,7 +6,7 @@ import com.novelbio.analysis.seq.blastZJ.BlastSeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 
 public class FQrecordFilterAdaptor extends FQrecordFilter {
-	Logger logger = Logger.getLogger(FQrecordFilterAdaptor.class); 
+//	Logger logger = Logger.getLogger(FQrecordFilterAdaptor.class); 
 	String seqAdaptorL;
 	String seqAdaptorR;
 	int mapNumLeft = -1;
@@ -64,7 +64,7 @@ public class FQrecordFilterAdaptor extends FQrecordFilter {
 	}
 	
 	@Override
-	protected int trimLeft() {
+	protected int trimLeft(FastQRecord fastQRecord) {
 		SeqFasta seqFasta = fastQRecord.getSeqFasta();
 		int leftNum = 0;
 		if (seqAdaptorL == null || seqAdaptorL.equals("")) {
@@ -79,7 +79,7 @@ public class FQrecordFilterAdaptor extends FQrecordFilter {
 	}
 
 	@Override
-	protected int trimRight() {
+	protected int trimRight(FastQRecord fastQRecord) {
 		SeqFasta seqFasta = fastQRecord.getSeqFasta();
 		int rightNum = seqFasta.Length();
 		if (seqAdaptorR == null || seqAdaptorR.equals("")) {
@@ -89,14 +89,6 @@ public class FQrecordFilterAdaptor extends FQrecordFilter {
 			rightNum = trimAdaptorR(seqFasta.toString(), seqAdaptorR, mapNumRight, numMM,conNum, perMm);
 		} else {
 			rightNum = trimAdaptorR(seqFasta.toString(), seqAdaptorR, seqFasta.Length() - seqAdaptorR.length(), numMM,conNum, perMm);
-		}
-		if (rightNum > seqFasta.Length()) {
-			logger.error("stop");
-			if (mapNumRight >= 0) {
-				rightNum = trimAdaptorR(seqFasta.toString(), seqAdaptorR, mapNumRight, numMM,conNum, perMm);
-			} else {
-				rightNum = trimAdaptorR(seqFasta.toString(), seqAdaptorR, seqFasta.Length() - seqAdaptorR.length(), numMM,conNum, perMm);
-			}
 		}
 		return rightNum;
 	}

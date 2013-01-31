@@ -54,8 +54,23 @@ public class mytest {
 	private static Logger logger = Logger.getLogger(mytest.class);
 	
 	public static void main(String[] args) throws IOException {
-		GffHashGeneAbs gffHashGeneAbs = new GffHashGeneNCBI();
-		gffHashGeneAbs.ReadGffarray(gfffilename);
+		FastQRecordFilter fastQRecordFilter = new FastQRecordFilter();
+		fastQRecordFilter.setFilterParamReadsLenMin(18);
+		fastQRecordFilter.setFilterParamTrimNNN(true);
+		fastQRecordFilter.setFilterParamAdaptorRight("TTCGTATGCCGTCTTCTGCTTGAAAAAAAA");
+		
+		FastQ fastQ = new FastQ("F:\\lisheng\\N1_filtered.fastq");
+//		fastQ.setFilter(fastQRecordFilter);
+//		fastQ.filterReads();
+		int i = 0;
+		for (FastQRecord fastQRecord : fastQ.readlines()) {
+			System.out.println(fastQRecord.toString());
+			if (i>100) {
+				break;
+			}
+			i++;
+		}
+	
 	}
 	
 	private void plotHist() {
