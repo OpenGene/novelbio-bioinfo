@@ -70,6 +70,9 @@ public abstract class FQrecordFilter {
 		if (start == 0 && end == fastQRecord.seqQuality.length()) {
 			return true;
 		}
+		if (end > fastQRecord.getLength()) {
+			logger.error(fastQRecord.getLength());
+		}
 		try {
 			fastQRecord.seqFasta = fastQRecord.seqFasta.trimSeq(start, end);
 			fastQRecord.seqQuality = fastQRecord.seqQuality.substring(start, end);

@@ -1,9 +1,12 @@
 package com.novelbio.analysis.seq.fastq;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.analysis.seq.blastZJ.BlastSeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 
 public class FQrecordFilterAdaptor extends FQrecordFilter {
+	Logger logger = Logger.getLogger(FQrecordFilterAdaptor.class); 
 	String seqAdaptorL;
 	String seqAdaptorR;
 	int mapNumLeft = -1;
@@ -86,6 +89,14 @@ public class FQrecordFilterAdaptor extends FQrecordFilter {
 			rightNum = trimAdaptorR(seqFasta.toString(), seqAdaptorR, mapNumRight, numMM,conNum, perMm);
 		} else {
 			rightNum = trimAdaptorR(seqFasta.toString(), seqAdaptorR, seqFasta.Length() - seqAdaptorR.length(), numMM,conNum, perMm);
+		}
+		if (rightNum > seqFasta.Length()) {
+			logger.error("stop");
+			if (mapNumRight >= 0) {
+				rightNum = trimAdaptorR(seqFasta.toString(), seqAdaptorR, mapNumRight, numMM,conNum, perMm);
+			} else {
+				rightNum = trimAdaptorR(seqFasta.toString(), seqAdaptorR, seqFasta.Length() - seqAdaptorR.length(), numMM,conNum, perMm);
+			}
 		}
 		return rightNum;
 	}

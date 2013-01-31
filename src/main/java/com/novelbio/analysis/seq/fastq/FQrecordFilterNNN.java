@@ -45,6 +45,7 @@ public class FQrecordFilterNNN extends FQrecordFilter {
 	 * 返回-1表示出错
 	 */
 	protected int trimLeft() {
+		int left = fastQRecord.seqQuality.length();
 		char[] chrSeq = fastQRecord.getSeqFasta().toString().toCharArray();
 		char[] chrIn = fastQRecord.seqQuality.toCharArray();
 		int numMismatch = 0;
@@ -57,10 +58,11 @@ public class FQrecordFilterNNN extends FQrecordFilter {
 				con = -1;
 			}
 			if (numMismatch > numGoodBp) {
-				return i - con;//把最后不是a的还的加回去
+				left = i - con;//把最后不是a的还的加回去
+				break;
 			}
 		}
-		return fastQRecord.seqQuality.length();
+		return left;
 	}
 	/**
 	 * 过滤右端低质量序列，Q10，Q13以下为低质量序列，一路剪切直到全部切光为止
@@ -70,6 +72,7 @@ public class FQrecordFilterNNN extends FQrecordFilter {
 	 * 返回-1表示出错
 	 */
 	protected int trimRight() {
+		int right = 0;
 		char[] chrSeq = fastQRecord.getSeqFasta().toString().toCharArray();
 		char[] chrIn = fastQRecord.seqQuality.toCharArray(); int lenIn =  fastQRecord.seqQuality.length();
 		int numMismatch = 0;
@@ -83,13 +86,13 @@ public class FQrecordFilterNNN extends FQrecordFilter {
 				con = 0;
 			}
 			if (numMismatch > numGoodBp) {
-				if (i + con > fastQRecord.getLength()) {
-					logger.error("stop");
-				}
-				return i+con;
+				right = i+con;
+				break;
 			}
 		}
-		return 0;
+		logger.error( fastQRecord.getLength());
+		logger.error( fastQRecord.getSeqFasta().toString().length());
+		return right;
 	}
 
 }
