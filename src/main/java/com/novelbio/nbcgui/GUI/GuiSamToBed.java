@@ -108,6 +108,7 @@ public class GuiSamToBed extends JPanel {
 						if (FileOperate.isFileDirectory(resultMergePath)) {
 							resultMergePath = FileOperate.addSep(resultMergePath);
 						}
+						break;
 					}
 				}
 				

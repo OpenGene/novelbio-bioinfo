@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.base.dataStructure.MathComput;
 
 public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 	Map<Integer, GffGeneIsoInfo> mapEdge2Iso;
@@ -30,8 +31,8 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 	public ArrayList<Double> getJuncCounts(String condition) {
 		Align align = getDifSite();
 		ArrayList<Double> lsResult = new ArrayList<Double>();
-		lsResult.add((double) tophatJunction.getJunctionSite(condition, exonCluster.getChrID(), align.getStartCis()));
-		lsResult.add((double) tophatJunction.getJunctionSite(condition, exonCluster.getChrID(), align.getEndCis()));
+		lsResult.add((double) tophatJunction.getJunctionSite(condition, exonCluster.getChrID(), align.getStartAbs()));
+		lsResult.add((double) tophatJunction.getJunctionSite(condition, exonCluster.getChrID(), align.getEndAbs()));
 		return lsResult;
 	}
 	
@@ -43,6 +44,9 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 				return -o1.compareTo(o2);
 			}
 		});
+		//把每个exon边界 所对应的junc reads Num放入treemap
+		//junc reads Num为key，treemap直接排序
+		//为防止junc reads num重复，用list装value
 		for (Integer edge : mapEdge2Iso.keySet()) {
 			int juncNum = tophatJunction.getJunctionSite(exonCluster.getChrID(), edge);
 			List<Integer> lsSite = null;
@@ -53,9 +57,9 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 				mapJuncNum2Edge.put(juncNum, lsSite);
 			}
 			lsSite.add(edge);
-			
 		}
 		
+		//获得reads数最多的两个边界
 		int i = 0;
 		int[] startEnd = new int[2];
 		for (Integer juncNum : mapJuncNum2Edge.keySet()) {
@@ -66,9 +70,9 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 				}
 				startEnd[i] = integer;
 				i++;
-
 			}
 		}
+		
 		if (Math.abs(startEnd[0] - startEnd[1]) > 500000) {
 			System.out.println("stop");
 		}
@@ -77,7 +81,7 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 		} else {
 			isFiltered = true;
 		}
-		return new Align(exonCluster.getChrID(), startEnd[0], startEnd[1]);
+		return new Align(exonCluster.getChrID(), MathComput.min(startEnd), MathComput.max(startEnd));
 	}
 	
 	public boolean isFiltered() {
