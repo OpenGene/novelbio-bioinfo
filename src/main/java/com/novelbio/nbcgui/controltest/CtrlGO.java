@@ -70,7 +70,7 @@ public class CtrlGO extends CtrlGOPath{
 		} else {
 			functionTest = new FunctionTest(FunctionTest.FUNCTION_GO_NOVELBIO, QtaxID, blast, evalue, StaxID);
 		}
-		functionTest.setGOtype(GOClass);
+		functionTest.setDetailType(GOClass);
 	}
 	@Override
 	protected void copeFile(String prix, String excelPath) {

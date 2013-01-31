@@ -45,12 +45,6 @@ public class FunctionTest implements FunTestInt {
 	/**
 	 * 只能用于GO分析中
 	 */
-	public void setGOtype(GOtype goType) {
-		funTest.setGoType(goType);
-	}
-	/**
-	 * 只能用于GO分析中
-	 */
 	public void setGOAlgorithm(GoAlgorithm goAlgorithm) {
 		try {
 			((ElimGOFunTest)funTest).setAlgorithm(goAlgorithm);

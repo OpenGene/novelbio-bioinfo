@@ -30,15 +30,7 @@ public class NovelGOFunTest extends AbstFunTest{
 	}
 	
 	public NovelGOFunTest() {}
-	
-	/**
-	 * GOabs中的GOtype
-	 * @param goType
-	 */
-	@Override
-	public void setGoType(GOtype goType) {
-		this.GoType = goType;
-	}
+
 	
 	@Override
 	protected ArrayList<GeneID2LsItem> convert2Item(Collection<GeneID> lsGeneIDs) {

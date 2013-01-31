@@ -13,8 +13,13 @@ public class FastQrecordFilterRun implements Callable<FastQrecordFilterRun> {
 	
 	boolean filterSucess = false;
 	
+	/**
+	 * 将设定好参数的fastQRecordFilter放进来
+	 * @param fastQRecordFilter
+	 */
 	public void setFastQRecordFilter(FastQRecordFilter fastQRecordFilter) {
 		this.fastQRecordFilter = fastQRecordFilter;
+		fastQRecordFilter.fillLsfFQrecordFilters();
 	}
 	/** 这里最好导入没有经过初始化的fastqRecord */
 	public void setFastQRecordSE(FastQRecord fastQRecord1) {
@@ -43,6 +48,7 @@ public class FastQrecordFilterRun implements Callable<FastQrecordFilterRun> {
 				}
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			filterSucess = false;
 		}
 		

@@ -1,33 +1,26 @@
 package com.novelbio.analysis.seq.fastq;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.List;
 
-import com.novelbio.base.multithread.txtreadcopewrite.MTRecordCope;
-import com.novelbio.base.multithread.txtreadcopewrite.MTrecordCoper;
-
-/** 实际上是过滤的类，不过可以用其来设定过滤的参数 */
+/** 实际上是过滤的类，不过可以用其来设定过滤的参数
+ * 过滤前要先设定{@link #setLsfFQrecordFilters()}}
+ *  */
 public class FastQRecordFilter {
 	int phredOffset;
 	int readsLenMin = 18;
-	String adaptorLeft, adaptorRight;
-	/** 最多错配几个 */
-	int adaptermaxMismach = 4;
-	/** 最多连续错配几个 */
-	int adaptermaxConMismatch = 2;
-	int proportionMisMathch = 25;
-	
-	/** 是否需要删除这些 */
-	boolean trimPolyA_right = false, trimPolyT_left = false, trimNNN = true;
-	/** PGM的数据中，小写的序列是adaptor */
-	boolean adaptorLowercase = false;
-	
-	/** 从reads两边切的base quality阈值，小于这个值就会被切掉 */
-	int trimEndFilterQuality = 14;
-	
-	int mapNumLeft = -1, mapNumRight = -1;
+
 	/** fastQ里面asc||码的指标与个数 */
 	HashMap<Integer, Integer> mapFastQFilter = new HashMap<Integer, Integer>();
+	
+	FQrecordFilterAdaptor fQrecordFilterAdaptor = new FQrecordFilterAdaptor();
+	FQrecordFilterNNN fQrecordFilterNNN = new FQrecordFilterNNN();
+	FQrecordFilterPloyAT fQrecordFilterPloyAT = new FQrecordFilterPloyAT();
+	FQrecordFilterQC fQrecordFilterQC = new FQrecordFilterQC();
+	FQrecordFilterLowcase fQrecordFilterLowcase = new FQrecordFilterLowcase();
+	
+	List<FQrecordFilter> lsFQrecordFilters;
 	
 	/**
 	 * 设定全局过滤指标
@@ -41,119 +34,130 @@ public class FastQRecordFilter {
 	public void setFilterParamReadsLenMin(int readsLenMin) {
 		this.readsLenMin = readsLenMin;
 	}
+	/** 如果有adapterL，则必须先设定该方法，否则会报错 */
 	public void setFilterParamAdaptorLeft(String adaptorLeft) {
-		this.adaptorLeft = adaptorLeft;
+		fQrecordFilterAdaptor = new FQrecordFilterAdaptor();
+		fQrecordFilterAdaptor.setSeqAdaptorL(adaptorLeft);
 	}
+	/** 如果有adapterR，则必须先设定该方法，否则会报错 */
 	public void setFilterParamAdaptorRight(String adaptorRight) {
-		this.adaptorRight = adaptorRight;
+		fQrecordFilterAdaptor.setSeqAdaptorR(adaptorRight);
 	}
 	/** 最多错配，默认为4 */
 	public void setFilterParamAdaptermaxMismach(int adaptermaxMismach) {
-		this.adaptermaxMismach = adaptermaxMismach;
+		fQrecordFilterAdaptor.setNumMM(adaptermaxMismach);
 	}
 	/** 最多连续错配，默认为2 */
 	public void setFilterParamAdaptermaxConMismatch(int adaptermaxConMismatch) {
-		this.adaptermaxConMismatch = adaptermaxConMismatch;
+		fQrecordFilterAdaptor.setConNum(adaptermaxConMismatch);
 	}
-	/**最多错配比例，默认25 % */
+	/**最多错配比例，默认25 %，100为单位 */
 	public void setFilterParamProportionMisMathch(int proportionMisMathch) {
-		this.proportionMisMathch = proportionMisMathch;
+		fQrecordFilterAdaptor.setPerMm(proportionMisMathch);
 	}
 	/** 默认为ture */
 	public void setFilterParamAdaptorScanLeftStart(boolean adaptorScanLeftStart) {
+		int mapNumLeft = 0;
 		if (adaptorScanLeftStart) {
 			mapNumLeft = 1;
 		} else {
 			mapNumLeft = -1;
 		}
+		fQrecordFilterAdaptor.setMapNumLeft(mapNumLeft);
 	}
 	/** 默认为ture */
 	public void setFilterParamAdaptorScanRightStart(boolean adaptorScanRightStart) {
+		int mapNumRight = 0;
 		if (adaptorScanRightStart) {
 			mapNumRight = 1;
 		} else {
 			mapNumRight = -1;
 		}
+		fQrecordFilterAdaptor.setMapNumRight(mapNumRight);
 	}
+	
 	/** 默认为false */
 	public void setFilterParamTrimPolyA_right(boolean trimPolyA_right) {
-		this.trimPolyA_right = trimPolyA_right;
+		fQrecordFilterPloyAT.setFilterA(trimPolyA_right);
 	}
 	/** 默认false */
 	public void setFilterParamTrimPolyT_left(boolean trimPolyT_left) {
-		this.trimPolyT_left = trimPolyT_left;
+		fQrecordFilterPloyAT.setFilterT(trimPolyT_left);
 	}
+	
 	/**默认true */
 	public void setFilterParamTrimNNN(boolean trimNNN) {
-		this.trimNNN = trimNNN;
+		fQrecordFilterNNN.setTrimNNN(trimNNN);
 	}	
 	/**默认false */
 	public void setFilterParamAdaptorLowercase(boolean adaptorLowercase) {
-		this.adaptorLowercase = adaptorLowercase;
+		fQrecordFilterLowcase.setFiterLowcase(adaptorLowercase);
 	}
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	protected void setPhredOffset(int phredOffset) {
 		this.phredOffset = phredOffset;
 	}
 	
+	/**
+	 * 初始化过滤器
+	 * 本方法内部确定过滤器的顺序 
+	 */
+	protected void fillLsfFQrecordFilters() {
+		if (lsFQrecordFilters != null) {
+			return;
+		}
+		List<FQrecordFilter> lsFQrecordFilterTmp = new ArrayList<FQrecordFilter>();
+		lsFQrecordFilterTmp.add(fQrecordFilterAdaptor);
+		lsFQrecordFilterTmp.add(fQrecordFilterPloyAT);
+		lsFQrecordFilterTmp.add(fQrecordFilterNNN);
+		lsFQrecordFilterTmp.add(fQrecordFilterLowcase);
+		lsFQrecordFilterTmp.add(fQrecordFilterQC);
+		
+		fQrecordFilterQC.setMapFastQFilter(mapFastQFilter);
+		
+		lsFQrecordFilters = new ArrayList<FQrecordFilter>();
+		for (FQrecordFilter fQrecordFilter : lsFQrecordFilterTmp) {
+			if (fQrecordFilter.isUsing()) {
+				fQrecordFilter.setFastqOffset(phredOffset);
+				fQrecordFilter.setTrimMinLen(readsLenMin);
+				lsFQrecordFilters.add(fQrecordFilter);
+			}
+		}
+		return;
+	}
+
 	/** 没有通过过滤就返回false */
 	public boolean filterFastQRecordSE(FastQRecord fastQRecord) {
-		if (fastQRecord == null) return false;
-		
-		fastQRecord.setFastqOffset(phredOffset);
-		fastQRecord.setTrimMinLen(readsLenMin);
-		fastQRecord.setMapFastqFilter(mapFastQFilter);
-		boolean filterSucess = fastQRecord.trimAdaptor(adaptorLeft, adaptorRight, mapNumLeft, 
-				mapNumRight, adaptermaxMismach, adaptermaxConMismatch, proportionMisMathch);
-		
-		if (!filterSucess) return false;
-		if (trimPolyA_right && !fastQRecord.trimPolyAR(2)) {
+		if (fastQRecord == null) {
 			return false;
 		}
-		if (trimPolyT_left && !fastQRecord.trimPolyTL(2)) {
-			return false;
+		boolean filtered = true;
+		for (FQrecordFilter fQrecordFilter : lsFQrecordFilters) {
+			fQrecordFilter.setFastQRecord(fastQRecord);
+			if (!fQrecordFilter.filter()) {
+				filtered = false;
+				break;
+			}
 		}
-		if (trimNNN && !fastQRecord.trimNNN(2, trimEndFilterQuality)) {
-			return false;
-		}
-		if (adaptorLowercase && !fastQRecord.trimLowCase()) {
-			return false;
-		}
-		if (!fastQRecord.QC()) return false;
-		return true;
+		return filtered;
 	}
-	
 	/** 没有通过过滤就返回false */
 	public boolean filterFastQRecordPE(FastQRecord fastQRecord1, FastQRecord fastQRecord2) {
-		if (fastQRecord1 == null && fastQRecord2 == null) return false;
+		if (fastQRecord1 == null || fastQRecord2 == null) {
+			return false;
+		}
 		
-		fastQRecord1.setFastqOffset(phredOffset);
-		fastQRecord1.setTrimMinLen(readsLenMin);
-		fastQRecord1.setMapFastqFilter(mapFastQFilter);
-		boolean filterSucess1 = fastQRecord1.trimAdaptor(adaptorLeft, adaptorRight, mapNumLeft, 
-				mapNumRight, adaptermaxMismach, adaptermaxConMismatch, proportionMisMathch);
-		
-		fastQRecord2.setFastqOffset(phredOffset);
-		fastQRecord2.setTrimMinLen(readsLenMin);
-		fastQRecord2.setMapFastqFilter(mapFastQFilter);
-		boolean filterSucess2 = fastQRecord2.trimAdaptor(adaptorLeft, adaptorRight, mapNumLeft, 
-				mapNumRight, adaptermaxMismach, adaptermaxConMismatch, proportionMisMathch);
-		
-		if (!filterSucess1 || ! filterSucess2) return false;
-		if (trimPolyA_right && (!fastQRecord1.trimPolyAR(2) || !fastQRecord2.trimPolyAR(2)) ) {
-			return false;
+		boolean filtered = true;
+		for (FQrecordFilter fQrecordFilter : lsFQrecordFilters) {
+			fQrecordFilter.setFastQRecord(fastQRecord1);
+			boolean filter1 = fQrecordFilter.filter();
+			fQrecordFilter.setFastQRecord(fastQRecord2);
+			boolean filter2 = fQrecordFilter.filter();
+			if (!filter1 || !filter2) {
+				filtered = false;
+				break;
+			}
 		}
-		if (trimPolyT_left && (!fastQRecord1.trimPolyTL(2) || !fastQRecord2.trimPolyTL(2)) ) {
-			return false;
-		}
-		if (trimNNN && (!fastQRecord1.trimNNN(2, trimEndFilterQuality) || !fastQRecord2.trimNNN(2, trimEndFilterQuality)) ) {
-			return false;
-		}
-		if (adaptorLowercase && (!fastQRecord1.trimLowCase() || !fastQRecord2.trimLowCase()) ) {
-			return false;
-		}
-		if (!fastQRecord1.QC() && !fastQRecord2.QC()) return false;
-		return true;
+		return filtered;
 	}
-	
 }

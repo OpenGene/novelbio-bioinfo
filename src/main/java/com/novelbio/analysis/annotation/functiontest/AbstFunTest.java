@@ -358,10 +358,4 @@ public abstract class AbstFunTest implements FunTestInt{
 		txtOut.close();
 	}
 	
-	/**
-	 * 只能用于GO分析
-	 * @param goType
-	 */
-	public void setGoType(GOtype goType) { }
-	
 }

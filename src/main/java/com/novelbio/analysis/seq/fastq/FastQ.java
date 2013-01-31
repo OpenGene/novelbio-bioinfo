@@ -25,6 +25,7 @@ public class FastQ {
 	public static int QUALITY_HIGM = 50;
 	public static int QUALITY_LOW_454 = 60;
 	public static int QUALITY_LOW_PGM = 70;
+	public static int QUALITY_NONE = 80;
 	
 	private int threadNum_FilterFastqRecord = 10;
 	
@@ -239,6 +240,7 @@ public class FastQ {
 		mapReadsQualtiy.put("LowQuality", QUALITY_LOW);
 		mapReadsQualtiy.put("LowQuality454", QUALITY_LOW_454);
 		mapReadsQualtiy.put("LowQualityPGM", QUALITY_LOW_PGM);
+		mapReadsQualtiy.put("None", QUALITY_NONE);
 		return mapReadsQualtiy;
 	}
 	
@@ -265,12 +267,11 @@ public class FastQ {
 			mapFastQFilter.put(13, 15);
 			mapFastQFilter.put(20, 40);
 		} else if (QUALITY == FastQ.QUALITY_LOW_PGM) {
-			// hashFastQFilter.put(2, 1);
-			mapFastQFilter.put(10, 6);
-			mapFastQFilter.put(15, 20);
-//			mapFastQFilter.put(20, 80);
+			mapFastQFilter.put(10, 10);
+			mapFastQFilter.put(15, 30);
+		} else if (QUALITY == FastQ.QUALITY_NONE) {
+			//空的就不会过滤
 		} else {
-			// hashFastQFilter.put(2, 1);
 			mapFastQFilter.put(10, 2);
 			mapFastQFilter.put(13, 6);
 			mapFastQFilter.put(20, 10);

@@ -96,6 +96,7 @@ class FastQfilter extends RunProcess<FastQrecordFilterRun> {
 			}
 		}
 	}
+	
 	private void readPE() {
 		fastQReader.readsNum = 0;
 		try { fastQReader.fastQReadMate.readsNum = 0; } catch (Exception e) { }
