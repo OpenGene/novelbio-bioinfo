@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import com.novelbio.analysis.seq.blastZJ.BlastSeqFasta;
+import com.novelbio.analysis.seq.fastq.FQrecordFilterAdaptor;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
@@ -246,7 +247,7 @@ public class FastaGetCDSFromProtein {
 		int atgsite = 0;
 		for (int orf = 0; orf < 3; orf++) {
 			proteinSeqTranslate = seqFasta.toStringAA(cis5to3, orf);
-			atgsite = FastQRecord.trimAdaptorR(proteinSeqTranslate, proteinStartSite, 0, 3, 10, 30);
+			atgsite = FQrecordFilterAdaptor.trimAdaptorR(proteinSeqTranslate, proteinStartSite, 0, 3, 10, 30);
 			if (atgsite >= 0 && atgsite < proteinSeqTranslate.length()) {
 				compareInfo = new CompareInfo();
 				compareInfo.atgAASite = atgsite;
@@ -261,7 +262,7 @@ public class FastaGetCDSFromProtein {
 			return null;
 		}
 		
-		int uagsite = FastQRecord.trimAdaptorL(proteinSeqTranslate, proteinEndSite, 0, 3, 10, 30);
+		int uagsite = FQrecordFilterAdaptor.trimAdaptorL(proteinSeqTranslate, proteinEndSite, 0, 3, 10, 30);
 		if (uagsite > atgsite && uagsite <= proteinSeqTranslate.length()) {
 			compareInfo.uagAASite = uagsite;
 			return compareInfo;

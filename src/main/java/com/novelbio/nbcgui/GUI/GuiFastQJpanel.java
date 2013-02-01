@@ -139,8 +139,7 @@ public class GuiFastQJpanel extends JPanel {
 					for (Component component : lsComponentsMapping) {
 						component.setEnabled(false);
 					}
-				}
-				else {
+				} else {
 					for (Component component : lsComponentsMapping) {
 						component.setEnabled(true);
 					}

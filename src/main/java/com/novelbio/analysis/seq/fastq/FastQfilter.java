@@ -80,7 +80,6 @@ class FastQfilter extends RunProcess<FastQrecordFilterRun> {
 	private void readSE() {
 		fastQReader.readsNum = 0;
 		for (FastQRecord fastQRecord : fastQReader.readlines(false)) {
-			fastQReader.readsNum ++;
 			wait_To_Cope_AbsQueue();
 			if (flagStop) {
 				break;

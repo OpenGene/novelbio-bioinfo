@@ -230,6 +230,7 @@ public class CtrlFastQMapping {
 		}
 		return compressType;
 	}
+	
 	private void filteredReads() {
 		HashSet<String> setPrefix = new HashSet<String>();
 		for (String string : lsCondition) {
@@ -257,6 +258,7 @@ public class CtrlFastQMapping {
 		}
 		txtReport.writefileln();
 	}
+	
 	private FastQ[] filteredFastQFile(FastQ fastq1, FastQ fastq2) {
 		FastQ[] fasQFiltered = new FastQ[2];
 		if (filter) {
