@@ -394,8 +394,12 @@ public abstract class SiteSnpIndelInfo {
 		return (chrID + SepSign.SEP_ID + Loc + SepSign.SEP_ID + referenceSeq 
 				+ SepSign.SEP_ID + thisSeq).toLowerCase();
 	}
+	/**
+	 * 清空refSeqIntactAA的序列
+	 * 同时清空mapSample2thisBaseNum
+	 */
 	public void clean() {
-		refSeqIntactAA.clear();
+		refSeqIntactAA.setSeq(null);
 		mapSample2thisBaseNum.clear();
 	}
 	public static enum SnpIndelType {

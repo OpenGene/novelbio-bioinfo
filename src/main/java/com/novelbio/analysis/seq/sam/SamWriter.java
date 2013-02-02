@@ -14,26 +14,26 @@ public class SamWriter {
 	SAMFileWriter samFileWriter;
 	SAMFileWriterFactory samFileWriterFactory = new SAMFileWriterFactory();
 	
-	public SamWriter(SAMFileHeader samFileHeader, String outSamFile) {
+	public SamWriter(boolean presorted, SAMFileHeader samFileHeader, String outSamFile) {
 		boolean writeToBam = true;
 		if (outSamFile.endsWith(".sam")) {
 			writeToBam = false;
 		}
 		File samFile = new File(outSamFile);
 		if (writeToBam) {
-			samFileWriter = samFileWriterFactory.makeBAMWriter(samFileHeader, false, samFile, 7);
+			samFileWriter = samFileWriterFactory.makeBAMWriter(samFileHeader, presorted, samFile, 7);
 		} else {
-			samFileWriter = samFileWriterFactory.makeSAMWriter(samFileHeader, false, samFile);
+			samFileWriter = samFileWriterFactory.makeSAMWriter(samFileHeader, presorted, samFile);
 		}
 	}
 	
 	/** 默认写入bam文件 */
-	public SamWriter(SAMFileHeader samFileHeader, String outSamFile, boolean writeToBam) {
+	public SamWriter(boolean presorted, SAMFileHeader samFileHeader, String outSamFile, boolean writeToBam) {
 		File samFile = new File(outSamFile);
 		if (writeToBam) {
-			samFileWriter = samFileWriterFactory.makeBAMWriter(samFileHeader, false, samFile, 7);
+			samFileWriter = samFileWriterFactory.makeBAMWriter(samFileHeader, presorted, samFile, 7);
 		} else {
-			samFileWriter = samFileWriterFactory.makeSAMWriter(samFileHeader, false, samFile);
+			samFileWriter = samFileWriterFactory.makeSAMWriter(samFileHeader, presorted, samFile);
 		}
 	}
 	

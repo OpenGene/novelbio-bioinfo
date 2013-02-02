@@ -14,11 +14,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import net.sf.samtools.SAMFileHeader;
+import net.sf.samtools.SAMFileHeader.SortOrder;
 import net.sf.samtools.SAMFileWriter;
 import net.sf.samtools.SAMFileWriterFactory;
 import net.sf.samtools.SAMSequenceRecord;
+import net.sf.samtools.SAMTextHeaderCodec;
 import net.sf.samtools.util.BlockCompressedInputStream;
 import net.sf.samtools.util.BlockCompressedStreamConstants;
+import net.sf.samtools.util.StringLineReader;
 
 import org.apache.log4j.Logger;
 
@@ -30,6 +33,7 @@ import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
@@ -93,12 +97,18 @@ public class SamFile implements AlignSeq {
 	public SamFile(String samBamFile) {
 		setSamFileRead(samBamFile);
 	}
-	/** 创建新的sambam文件，根据文件名 */
+	/** 创建新的sambam文件，根据文件名
+	 * 默认输入的序列没有经过排序
+	 */
 	public SamFile(String samBamFile, SAMFileHeader samFileHeader) {
-		setSamFileNew(samFileHeader, samBamFile);
+		setSamFileNew(samFileHeader, samBamFile, false);
 		initialSoftWare();
 	}
-	
+	/** 创建新的sambam文件，根据文件名 */
+	public SamFile(String samBamFile, SAMFileHeader samFileHeader, boolean preSorted) {
+		setSamFileNew(samFileHeader, samBamFile, preSorted);
+		initialSoftWare();
+	}
 	private void setSamFileRead(String samBamFile) {
 		String bamindex = samBamFile + ".bai";
 		if (!FileOperate.isFileExistAndBigThanSize(samBamFile, 0)) {
@@ -124,11 +134,11 @@ public class SamFile implements AlignSeq {
 	 * 创建新的sam文件
 	 * @param samFileHeader
 	 * @param samFileCreate
-	 * @param sorted 输入的文件是否经过排序
+	 * @param preSorted 输入的文件是否经过排序
 	 */
-	private void setSamFileNew(SAMFileHeader samFileHeader, String samFileCreate) {
+	private void setSamFileNew(SAMFileHeader samFileHeader, String samFileCreate, boolean preSorted) {
 		this.fileName = samFileCreate;
-		samWriter = new SamWriter(samFileHeader, samFileCreate);
+		samWriter = new SamWriter(preSorted, samFileHeader, samFileCreate);
 	}
 	
 	private static void initialSoftWare() {
@@ -291,10 +301,7 @@ public class SamFile implements AlignSeq {
 		if (isNeedSort) {
 			samFileHeader.setSortOrder(SAMFileHeader.SortOrder.coordinate);
 			PathDetail.setTmpDir(FileOperate.getParentPathName(getFileName()));
-		} else {
-			samFileHeader.setSortOrder(SAMFileHeader.SortOrder.unsorted);
 		}
-		
 		return samFileHeader;
 	}
 	/**
@@ -474,7 +481,7 @@ public class SamFile implements AlignSeq {
 		BamIndex bamIndex = new BamIndex(this);
 		bamIndex.setExePath(softWareInfoSamtools.getExePath());
 		bamIndex.setBamFile(getFileName());
-		String index = bamIndex.indexSamtools();
+		String index = bamIndex.index();
 		samReader.setFileIndex(index);
 		bamIndex = null;
 	}
@@ -587,7 +594,46 @@ public class SamFile implements AlignSeq {
 		bamPileup.setExePath(softWareInfoSamtools.getExePath());
 		bamPileup.pileup(outPileUpFile);
 	}
-
+	
+	/**
+	 * 把该samfile的refID都修正为小写字母
+	 * @return
+	 */
+	public SamFile changeToLowcase() {
+		SAMFileHeader samFileHeader = getHeader();
+		boolean isLowcase = true;
+		for (SAMSequenceRecord samSequenceRecord : samFileHeader.getSequenceDictionary().getSequences()) {
+			if (!samSequenceRecord.getSequenceName().equals(samSequenceRecord.getSequenceName().toLowerCase())) {
+				isLowcase = false;
+				break;
+			}
+		}
+		if (isLowcase) {
+			return this;
+		}
+		
+		String textHead = samFileHeader.getTextHeader();
+		String[] ss = textHead.split("@SQ\t");
+		for (int i = 1; i < ss.length; i++) {
+			String[] ss2 = ss[i].split("\t");
+			String[] ss3 = ss2[0].split(":");
+			ss3[1] = ss3[1].toLowerCase();
+			ss2[0] = ArrayOperate.cmbString(ss3, ":");
+			ss[i] = ArrayOperate.cmbString(ss2, "\t");
+		}
+		textHead = ArrayOperate.cmbString(ss, "@SQ\t");
+		SAMTextHeaderCodec headerCodec = new SAMTextHeaderCodec();
+		SAMFileHeader mFileHeaderLowcase = headerCodec.decode(new StringLineReader(textHead), null);
+		
+		SamFile samFileOut = new SamFile(FileOperate.changeFileSuffix(getFileName(), "_Lowcase", null), mFileHeaderLowcase, mFileHeaderLowcase.getSortOrder() != SortOrder.unsorted);
+		for (SamRecord samRecord : readLines()) {
+			samRecord.setRefID(samRecord.getRefID().toLowerCase());
+			samFileOut.writeSamRecord(samRecord);
+		}
+		samFileOut.close();
+		return samFileOut;
+	}
+	
 	public BedSeq toBedSingleEnd() {
 		return toBedSingleEnd(TxtReadandWrite.TXT, FileOperate.changeFileSuffix(getFileName(), "", "bed"));
 	}
