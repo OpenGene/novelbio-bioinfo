@@ -53,7 +53,7 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 	private GuiPeakCalling guiPeakCalling;
 	private GuiSpeciesInfo guiSpeciesInfo;
 	private GuiSamStatistics guiSamStatistics;
-	
+	private GuiSnpFiltering guiSnpFiltering;
 	/**
 	* Auto-generated main method to display this JFrame
 	*/
@@ -175,6 +175,9 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				
 				guiSpeciesInfo = new GuiSpeciesInfo();
 				jTabbedPane1.addTab("SpeciesInfo", guiSpeciesInfo);
+				
+				guiSnpFiltering = new GuiSnpFiltering();
+				jTabbedPane1.addTab("snpFiltering", guiSnpFiltering);
 			}
 			pack();
 			this.setSize(1050, 699);
