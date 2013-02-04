@@ -10,6 +10,11 @@ import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.plot.DotStyle;
 import com.novelbio.base.plot.PlotScatter;
 
+/**
+ * 绘制snp连锁的图，张大兵的snp finder
+ * @author zong0jie
+ *
+ */
 public class PlotSnpScatter {
 	public static void main(String[] args) {
 		String excelTxt = "/media/winF/NBC/Project/Project_ZDB_Lab/QXL/Project_ZDB/pileup/9522snpvsZDBQ60-1_filtered.xls";

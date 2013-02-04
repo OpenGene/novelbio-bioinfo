@@ -7,6 +7,7 @@ import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 /** 用于查找多样本SnpSomatic的service类
+ * 找出somatic snp，并且这些样本的snp在同一个基因内部
  * 首先要把SNPGATKcope对象设定并运行好，然后再执行这个
  *  
  *  */
@@ -104,7 +105,7 @@ public class SnpSomaticFinder {
 		geneFilter.setTreatFilteredNum(treatFilteredNum);
 	}
 	
-	public void setSnpLevel(int snpLevel) {
+	public void setSnpLevel(SnpLevel snpLevel) {
 		geneFilter.setSnpLevel(snpLevel);
 	}
 

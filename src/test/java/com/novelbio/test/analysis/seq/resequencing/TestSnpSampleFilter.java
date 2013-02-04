@@ -11,19 +11,20 @@ public class TestSnpSampleFilter extends TestCase{
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
+		snpSampleFilter.setSnp_HetoMore_Contain_SnpProp_Min(0.4);
 	}
 	@Override
 	protected void tearDown() throws Exception {
 				super.tearDown();
 	}
-	public void testSnpHetoLess() {
+	public void testSnpRefHomo() {
 		SnpIndelHomoHetoType snpIndelHomoHetoType = snpSampleFilter.getSnpIndelType(SnpIndelType.DELETION, 3, 100, 103);
 		assertEquals(SnpIndelHomoHetoType.IndelHetoLess, snpIndelHomoHetoType);
 		int numSnp = 1;
 		int numRef = 44;
 		int numAll = numSnp + numRef;
 		snpIndelHomoHetoType = snpSampleFilter.getSnpIndelType(SnpIndelType.MISMATCH, numSnp, numRef, numAll);
-		assertEquals(SnpIndelHomoHetoType.SnpHetoLess, snpIndelHomoHetoType);
+		assertEquals(SnpIndelHomoHetoType.RefHomo, snpIndelHomoHetoType);
 		
 	}
 	

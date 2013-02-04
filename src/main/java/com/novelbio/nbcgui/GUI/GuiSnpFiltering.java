@@ -1,35 +1,42 @@
 package com.novelbio.nbcgui.GUI;
 
-import javax.swing.JComboBox;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JButton;
 
-import org.apache.commons.math.stat.correlation.SpearmansCorrelation;
-
+import com.novelbio.analysis.seq.resequencing.SnpLevel;
 import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
-import com.novelbio.database.model.species.Species;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class GuiSnpFiltering extends JPanel {
-	JScrollPaneData scrollPane;
+	JScrollPaneData sclSnpFile;
+	JScrollPaneData sclSnpPileUp;
+	JScrollPaneData sclCompare;
+	JComboBoxData<String> cmbGroup = new JComboBoxData<String>();
+	JComboBoxData<SnpLevel> cmbSnpLevel = new JComboBoxData<SnpLevel>();
+	
+	
 	/**
 	 * Create the panel.
 	 */
 	public GuiSnpFiltering() {
 		setLayout(null);
 		
-		scrollPane = new JScrollPaneData();
-		scrollPane.setBounds(32, 26, 724, 124);
-		add(scrollPane);
+		sclSnpFile = new JScrollPaneData();
+		sclSnpFile.setBounds(32, 26, 724, 124);
+		add(sclSnpFile);
 		
 		JButton btnAddSnpFile = new JButton("AddSnpFile");
 		btnAddSnpFile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				scrollPane.addItem(new String[]{"sese","sfefse"});
+				sclSnpFile.addItem(new String[]{"",""});
 			}
 		});
 		btnAddSnpFile.setBounds(32, 162, 118, 24);
@@ -39,9 +46,9 @@ public class GuiSnpFiltering extends JPanel {
 		btnDelSnpFile.setBounds(638, 162, 118, 24);
 		add(btnDelSnpFile);
 		
-		JScrollPane scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBounds(32, 198, 724, 110);
-		add(scrollPane_1);
+		sclSnpPileUp = new JScrollPaneData();
+		sclSnpPileUp.setBounds(32, 198, 724, 110);
+		add(sclSnpPileUp);
 		
 		JButton btnAddPileUp = new JButton("AddPileUp");
 		btnAddPileUp.setBounds(32, 315, 118, 24);
@@ -51,23 +58,50 @@ public class GuiSnpFiltering extends JPanel {
 		btnDelFileUp.setBounds(638, 320, 118, 24);
 		add(btnDelFileUp);
 		
-		JScrollPane scrollPane_2 = new JScrollPane();
-		scrollPane_2.setBounds(32, 362, 401, 104);
-		add(scrollPane_2);
+		sclCompare = new JScrollPaneData();
+		sclCompare.setBounds(32, 362, 401, 104);
+		add(sclCompare);
 		
 		JButton btnAddcompare = new JButton("AddCmp");
+		btnAddcompare.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				sclCompare.addItem(new String[]{"", ""});
+			}
+		});
 		btnAddcompare.setBounds(445, 362, 91, 24);
 		add(btnAddcompare);
 		
 		JButton btnDelcompare = new JButton("DelCmp");
 		btnDelcompare.setBounds(444, 442, 91, 24);
 		add(btnDelcompare);
+		
+		cmbGroup.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				changeSclCompareGroup();
+			}
+			public void mousePressed(MouseEvent e) {
+				changeSclCompareGroup();
+			}
+		});
+		
 		initial();
 	}
 	private void initial() {
-		JComboBoxData<Species> jComboBox = new JComboBoxData<Species>();
-		jComboBox.setMapItem(Species.getSpeciesName2Species(Species.SEQINFO_SPECIES));
-		scrollPane.setTitle(new String[]{"adsf","fsefe"});
-		scrollPane.setItem(1, jComboBox);
+		cmbSnpLevel.setMapItem(SnpLevel.getMapStr2SnpLevel());
+		sclCompare.setTitle(new String[]{"Group","SnpLevel","MinNum","MaxNum"});
+		sclCompare.setItem(1, cmbSnpLevel);
+
+		sclSnpFile.setTitle(new String[]{"SnpFile","Group"});
+		sclCompare.setItem(0, cmbGroup);
+	}
+	
+	private void changeSclCompareGroup() {
+		ArrayList<String[]> lsSnp2Prefix = sclSnpFile.getLsDataInfo();
+		Map<String, String> mapString2Value = new HashMap<String, String>();
+		for (String[] snp2prefix : lsSnp2Prefix) {
+			mapString2Value.put(snp2prefix[1], snp2prefix[1]);
+		}
+		cmbGroup.setMapItem(mapString2Value);
 	}
 }

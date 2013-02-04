@@ -1,7 +1,5 @@
 package com.novelbio.analysis.seq.resequencing;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 
 /** 
@@ -9,11 +7,6 @@ import java.util.HashSet;
  * 譬如本组样本中，该位点最少多少杂合snp，最多多少杂合snp等等
  *  */
 public class SnpGroupFilterInfo {
-	public static final int Homo = 5;
-	public static final int HetoLess = 10;
-	public static final int Heto = 20;
-	public static final int HetoMore = 30;
-	
 	HashSet<String> setSampleName = new HashSet<String>();
 	int SnpIndelHomoNumMin = -1;
 	int SnpIndelHomoNumMax = -1;
@@ -47,21 +40,21 @@ public class SnpGroupFilterInfo {
 	 * 单个样本过滤时使用，直接设定这个，别的都不用设定了
 	 * @param snpLevel Homo，HetoLess等
 	 */
-	public void setSnpLevel(int snpLevel) {
-		if (snpLevel == Homo) {
+	public void setSnpLevel(SnpLevel snpLevel) {
+		if (snpLevel == SnpLevel.Homo) {
 			setSampleRefHomoNum(1, 1);
 		}
-		else if (snpLevel == HetoLess) {
+		else if (snpLevel == SnpLevel.HetoLess) {
 			setSampleSnpIndelNum(1, 1);
 		}
-		else if (snpLevel == Heto) {
+		else if (snpLevel == SnpLevel.HetoMid) {
 			setSampleSnpIndelNum(1, 1);
 			setSampleSnpIndelHetoLessNum(0, 0);
 		}
-		else if (snpLevel == HetoMore) {
+		else if (snpLevel == SnpLevel.HetoMore) {
 			setSampleSnpIndelNum(1, 1);
 			setSampleSnpIndelHetoLessNum(0, 0);
-			setSampleSnpIndelHetoNum(0, 0);
+			setSampleSnpIndelHetoMidNum(0, 0);
 		}
 	}
 	/** 设定样本名称,也就是需要过滤哪些样本
@@ -74,33 +67,81 @@ public class SnpGroupFilterInfo {
 	public HashSet<String> getSetSampleName() {
 		return setSampleName;
 	}
+	
+	/**
+	 * <b>每个group类每个level0只能设定一次，总共可以设定多次</b>
+	 * 过滤用，输入snp的类型，以及样本的数量区间
+	 * @param snpIndelLevel 仅有该snp的类型的数量，譬如输入SnpIndelLevel.HetoLess，那么就只看该leve的样本数量，大于和小于的都不看
+	 * @param minNum
+	 * @param maxNum
+	 */
+	public void setSampleSnpRegion(SnpLevel snpIndelLevel, int minNum, int maxNum) {
+		if (snpIndelLevel == SnpLevel.Homo) {
+			setSampleRefHomoNum(minNum, maxNum);
+		} else if (snpIndelLevel == SnpLevel.HetoLess) {
+			setSampleSnpIndelHetoLessNum(minNum, maxNum);
+		} else if (snpIndelLevel == SnpLevel.HetoMid) {
+			setSampleSnpIndelHetoMidNum(minNum, maxNum);
+		} else if (snpIndelLevel == SnpLevel.HetoMore) {
+			setSampleSnpIndelHetoMoreNum(minNum, maxNum);
+		} else if (snpIndelLevel == SnpLevel.SnpHomo) {
+			setSampleSnpIndelHomoNum(minNum, maxNum);
+		}
+	}
+	
+	/**
+	 * <b>每个group类总共level设定一次</b>
+	 * 过滤用，输入snp的类型，以及样本的数量区间<br>
+	 * 当输入{@link SnpLevel#Homo}}时，功能和{@link #setSampleSnpRegion(SnpLevel, int, int)} 一致<br>
+	 * @param snpIndelLevel 有该snp类型，并且大于该snp的类型的数量，譬如输入SnpIndelLevel.HetoLess，那么就看HetoLess,HetoMid,HetoMore,SnpHomo
+	 * 这些leve的样本数量
+	 * @param minNum
+	 * @param maxNum
+	 */
+	public void setSampleSnpRegionUp(SnpLevel snpIndelLevel, int minNum, int maxNum) {
+		if (snpIndelLevel == SnpLevel.Homo) {
+			setSampleRefHomoNum(minNum, maxNum);
+		} else if (snpIndelLevel == SnpLevel.HetoLess) {
+			setSampleSnpIndelNum(minNum, maxNum);
+		} else if (snpIndelLevel == SnpLevel.HetoMid) {
+			setSampleSnpIndelNum(minNum, maxNum);
+			setSampleSnpIndelHetoLessNum(0, 0);
+		} else if (snpIndelLevel == SnpLevel.HetoMore) {
+			setSampleSnpIndelNum(minNum, maxNum);
+			setSampleSnpIndelHetoLessNum(0, 0);
+			setSampleSnpIndelHetoMidNum(0, 0);
+		} else if (snpIndelLevel == SnpLevel.SnpHomo) {
+			setSampleSnpIndelHomoNum(minNum, maxNum);
+		}
+	}
+	
 	/** 位点为纯合位点的样本，其数量区间 */
-	public void setSampleRefHomoNum(int refHomoMin, int refHomoMax) {
+	private void setSampleRefHomoNum(int refHomoMin, int refHomoMax) {
 		this.RefHomoMin = Math.min(refHomoMin, refHomoMax);
 		this.RefHomoMax = Math.max(refHomoMin, refHomoMax);
 	}
 	/** 位点为杂合snpIndel的样本，其数量区间 */
-	public void setSampleSnpIndelHetoNum(int snpIndelHetoNumMin, int snpIndelHetoNumMax) {
+	private void setSampleSnpIndelHetoMidNum(int snpIndelHetoNumMin, int snpIndelHetoNumMax) {
 		this.SnpIndelHetoNumMin = Math.min(snpIndelHetoNumMin, snpIndelHetoNumMax);
 		this.SnpIndelHetoNumMax = Math.max(snpIndelHetoNumMin, snpIndelHetoNumMax);
 	}
 	/** 位点为含少量杂合snpIndel的样本，其数量区间 */
-	public void setSampleSnpIndelHetoLessNum(int snpIndelHetoLessNumMin, int snpIndelHetoLessNumMax) {
+	private void setSampleSnpIndelHetoLessNum(int snpIndelHetoLessNumMin, int snpIndelHetoLessNumMax) {
 		this.SnpIndelHetoLessNumMin = Math.min(snpIndelHetoLessNumMin, snpIndelHetoLessNumMax);
 		this.SnpIndelHetoLessNumMax = Math.max(snpIndelHetoLessNumMin, snpIndelHetoLessNumMax);
 	}
 	/** 位点为含大量杂合snpIndel的样本，其数量区间 */
-	public void setSampleSnpIndelHetoMoreNum(int snpIndelHetoMoreNumMin, int snpIndelHetoMoreNumMax) {
+	private void setSampleSnpIndelHetoMoreNum(int snpIndelHetoMoreNumMin, int snpIndelHetoMoreNumMax) {
 		this.SnpIndelHetoMoreNumMin = Math.min(snpIndelHetoMoreNumMin, snpIndelHetoMoreNumMax);
 		this.SnpIndelHetoMoreNumMax = Math.max(snpIndelHetoMoreNumMin, snpIndelHetoMoreNumMax);
 	}
 	/** 含纯合SnpIndel位点的样本，其数量区间 */
-	public void setSampleSnpIndelHomoNum(int snpIndelHomoNumMin, int snpIndelHomoNumMax) {
+	private void setSampleSnpIndelHomoNum(int snpIndelHomoNumMin, int snpIndelHomoNumMax) {
 		this.SnpIndelHomoNumMin = Math.min(snpIndelHomoNumMin, snpIndelHomoNumMax);
 		this.SnpIndelHomoNumMax = Math.max(snpIndelHomoNumMin, snpIndelHomoNumMax);
 	}
 	/** 不管纯合还是杂合，累计位点的数量 */
-	public void setSampleSnpIndelNum(int SnpIndelAllMin, int snpIndelAllMax) {
+	private void setSampleSnpIndelNum(int SnpIndelAllMin, int snpIndelAllMax) {
 		this.SnpIndelAllMin = Math.min(SnpIndelAllMin, snpIndelAllMax);
 		this.snpIndelAllMax = Math.max(SnpIndelAllMin, snpIndelAllMax);
 	}
@@ -204,15 +245,6 @@ public class SnpGroupFilterInfo {
 			return thisNum > compareNum;
 		}
 		return false;
-	}
-	
-	public static HashMap<String, Integer> getMap_Str2SnpLevel() {
-		HashMap<String, Integer> mapStr2SnpLevel = new HashMap<String, Integer>();
-		mapStr2SnpLevel.put("Homo", Homo);
-		mapStr2SnpLevel.put("HetoLess", HetoLess);
-		mapStr2SnpLevel.put("Heto", Heto);
-		mapStr2SnpLevel.put("HetoMore", HetoMore);
-		return mapStr2SnpLevel;
 	}
 	
 	enum CompareType {

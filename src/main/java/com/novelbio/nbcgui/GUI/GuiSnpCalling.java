@@ -10,6 +10,7 @@ import javax.swing.JProgressBar;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.resequencing.SnpAnnotation;
 import com.novelbio.analysis.seq.resequencing.SnpGroupFilterInfo;
+import com.novelbio.analysis.seq.resequencing.SnpLevel;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JComboBoxData;
@@ -33,7 +34,7 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 	private JTextField txtHetoMoreSnpProp;
 	JTextPane txtInformation;
 	
-	JComboBoxData<Integer> combSnpLevel;
+	JComboBoxData<SnpLevel> combSnpLevel;
 	JButton btnAddPileupFile;
 	JButton btnDeletePileupFile;
 	JButton btnRun;
@@ -107,7 +108,7 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		});
 		add(btnDeletePileupFile);
 		
-		combSnpLevel = new JComboBoxData<Integer>();
+		combSnpLevel = new JComboBoxData<SnpLevel>();
 		combSnpLevel.setBounds(14, 213, 190, 23);
 		add(combSnpLevel);
 		
@@ -288,7 +289,7 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 	}
 	
 	private void initial() {
-		combSnpLevel.setMapItem(SnpGroupFilterInfo.getMap_Str2SnpLevel());
+		combSnpLevel.setMapItem(SnpLevel.getMapStr2SnpLevel());
 		buttonGroupSnpCallingFinding = new ButtonGroup();
 		buttonGroupSnpCallingFinding.add(rdbtnGetSnpDetail);
 		buttonGroupSnpCallingFinding.add(rdbtnSnpcalling);

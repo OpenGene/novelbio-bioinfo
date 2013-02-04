@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo;
 import com.novelbio.analysis.seq.resequencing.SnpFilter;
+import com.novelbio.analysis.seq.resequencing.SnpLevel;
 import com.novelbio.base.dataStructure.listOperate.HistList;
 
 /**
@@ -39,7 +40,7 @@ public class StatisticsIndelProp implements StatisticsUnit {
 	 * 设定样本名和要过滤的snpLevel
 	 * @param snpLevel 待查找的snp级别 SnpGroupFilterInfo.HetoLess 等
 	 */
-	public void setSnpSampleInfo(int snpLevel) {
+	public void setSnpSampleInfo(SnpLevel snpLevel) {
 		snpFilter.setSampleFilterInfoSingle(snpLevel);
 	}
 	

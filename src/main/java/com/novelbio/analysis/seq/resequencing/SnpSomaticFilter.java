@@ -47,9 +47,6 @@ public class SnpSomaticFilter {
 	
 	/** 用来过滤样本的 */
 	SnpFilter snpFilterSamples = new SnpFilter();
-
-	/** 多组样本之间比较的信息 */
-	ArrayList<SnpGroupFilterInfo> lsSampleDetailCompare = new ArrayList<SnpGroupFilterInfo>();
 	
 	boolean getVCFflag = false;
 	
@@ -71,7 +68,7 @@ public class SnpSomaticFilter {
 		lsSample2NBCfiles.add(new String[]{sampleName, nbcFile});
 	}
 	
-	public void addSnpFromPileUpFile(String sampleName, int snpLevel, String pileUpfile) {
+	public void addSnpFromPileUpFile(String sampleName, SnpLevel snpLevel, String pileUpfile) {
 		SnpCalling snpCalling = new SnpCalling();
 		snpCalling.setGffChrAbs(gffChrAbs);
 		snpCalling.setMapSiteInfo2RefSiteSnpIndel(mapSiteInfo2RefSiteSnpIndel);
@@ -87,7 +84,7 @@ public class SnpSomaticFilter {
 	
 	/** 过滤样本的具体信息 */
 	public void addFilterSample(SnpGroupFilterInfo snpGroupFilterInfo) {
-		lsSampleDetailCompare.add(snpGroupFilterInfo);
+		snpFilterSamples.addSampleFilterInfo(snpGroupFilterInfo);
 	}
 	
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
@@ -188,10 +185,7 @@ public class SnpSomaticFilter {
 	/** 必须在readSnpDetailFromPileUp之后执行 */
 	public void filterSnp() {
 		snpFilterSamples.clearSampleFilterInfo();
-		for (SnpGroupFilterInfo snpGroupInfoFilter : lsSampleDetailCompare) {
-			snpFilterSamples.addSampleFilterInfo(snpGroupInfoFilter);
-		}
-		
+
 		lsFilteredRefSite.clear();
 		lsFilteredRefSnp.clear();
 		for (RefSiteSnpIndel refSiteSnpIndel : mapSiteInfo2RefSiteSnpIndel.values()) {
@@ -268,7 +262,7 @@ public class SnpSomaticFilter {
 	
 	/** 重置过滤的样本信息 */
 	public void clearSampleFilterInfo() {
-		lsSampleDetailCompare.clear();
+		snpFilterSamples.clearSampleFilterInfo();
 	}
 	
 	/**

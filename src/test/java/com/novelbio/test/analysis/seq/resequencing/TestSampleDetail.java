@@ -1,26 +1,30 @@
 package com.novelbio.test.analysis.seq.resequencing;
 
+import org.junit.Test;
+
 import com.novelbio.analysis.seq.resequencing.SnpGroupFilterInfo;
 import com.novelbio.analysis.seq.resequencing.SnpIndelHomoHetoType;
+import com.novelbio.analysis.seq.resequencing.SnpLevel;
 
 import junit.framework.TestCase;
 
 public class TestSampleDetail extends TestCase{
 	SnpGroupFilterInfo sampleDetail2A = new SnpGroupFilterInfo();
+	
 	@Override
 	protected void setUp() throws Exception {
-
 		super.setUp();
 	}
 	@Override
 	protected void tearDown() throws Exception {
-				super.tearDown();
+		super.tearDown();
 	}
 	
-	public void test() {
-		sampleDetail2A.setSampleRefHomoNum(1, 1);
-		sampleDetail2A.setSampleSnpIndelHetoNum(0, 0);
-		sampleDetail2A.setSampleSnpIndelHomoNum(0, 0);
+	@Test
+	public void testHomo() {
+		sampleDetail2A.setSampleSnpRegion(SnpLevel.Homo, 1, 1);
+		sampleDetail2A.setSampleSnpRegion(SnpLevel.HetoMid, 0, 0);
+		sampleDetail2A.setSampleSnpRegion(SnpLevel.SnpHomo, 0, 0);
 	
 		sampleDetail2A.addSampleName("2A");
 		sampleDetail2A.clearData();
@@ -35,6 +39,39 @@ public class TestSampleDetail extends TestCase{
 		sampleDetail2A.addSnpIndelHomoHetoType(SnpIndelHomoHetoType.UnKnown);
 		assertEquals(false, sampleDetail2A.isQualified());
 		
-
+		sampleDetail2A.clearData();
+		sampleDetail2A.addSnpIndelHomoHetoType(SnpIndelHomoHetoType.UnKnown);
+		assertEquals(false, sampleDetail2A.isQualified());
+		
+		sampleDetail2A.clearData();
+		sampleDetail2A.addSnpIndelHomoHetoType(SnpIndelHomoHetoType.RefHomo);
+		assertEquals(true, sampleDetail2A.isQualified());
+	}
+	
+	@Test
+	public void testHetoMore() {
+		sampleDetail2A.setSampleSnpRegion(SnpLevel.Homo, 0, 0);
+		sampleDetail2A.setSampleSnpRegion(SnpLevel.HetoMore, 1, 1);
+	
+		sampleDetail2A.addSampleName("2A");
+		sampleDetail2A.clearData();
+		sampleDetail2A.addSnpIndelHomoHetoType(SnpIndelHomoHetoType.SnpHetoLess);
+		assertEquals(false, sampleDetail2A.isQualified());
+		
+		sampleDetail2A.clearData();
+		sampleDetail2A.addSnpIndelHomoHetoType(SnpIndelHomoHetoType.SnpHetoMore);
+		assertEquals(true, sampleDetail2A.isQualified());
+		
+		sampleDetail2A.clearData();
+		sampleDetail2A.addSnpIndelHomoHetoType(SnpIndelHomoHetoType.SnpHeto);
+		assertEquals(false, sampleDetail2A.isQualified());
+		
+		sampleDetail2A.clearData();
+		sampleDetail2A.addSnpIndelHomoHetoType(SnpIndelHomoHetoType.UnKnown);
+		assertEquals(false, sampleDetail2A.isQualified());
+		
+		sampleDetail2A.clearData();
+		sampleDetail2A.addSnpIndelHomoHetoType(SnpIndelHomoHetoType.RefHomo);
+		assertEquals(false, sampleDetail2A.isQualified());
 	}
 }

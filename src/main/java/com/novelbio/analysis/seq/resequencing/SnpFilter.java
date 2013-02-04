@@ -86,7 +86,7 @@ public class SnpFilter {
 	 * @param sampleName 样本名，null表示走默认
 	 * @param snpLevel SnpGroupFilterInfo.HetoLess 等
 	 */
-	public void setSampleFilterInfoSingle(int snpLevel) {
+	public void setSampleFilterInfoSingle(SnpLevel snpLevel) {
 		setSampleFilterInfoSingle(null, snpLevel);
 	}
 	
@@ -95,7 +95,7 @@ public class SnpFilter {
 	 * @param sampleName 样本名，null表示走默认，也就是仅过滤refSiteSnpIndel设定的样本名
 	 * @param snpLevel SnpGroupFilterInfo.HetoLess 等
 	 */
-	public void setSampleFilterInfoSingle(String sampleName, int snpLevel) {
+	public void setSampleFilterInfoSingle(String sampleName, SnpLevel snpLevel) {
 		this.setSampleFilterInfo.clear();
 		SnpGroupFilterInfo snpGroupFilterInfo = new SnpGroupFilterInfo();
 		snpGroupFilterInfo.addSampleName(sampleName);
@@ -123,7 +123,6 @@ public class SnpFilter {
 	 * */
 	public ArrayList<SiteSnpIndelInfo> getFilterdSnp(RefSiteSnpIndel refSiteSnpIndel) {
 		ArrayList<SiteSnpIndelInfo> lsSnpFiltered = new ArrayList<SiteSnpIndelInfo>();
-		boolean isQualified = true;
 		for (SiteSnpIndelInfo siteSnpIndelInfo : refSiteSnpIndel.getLsAllenInfoSortBig2Small()) {
 			if (isFilterdSnp(siteSnpIndelInfo)) {
 				lsSnpFiltered.add(siteSnpIndelInfo);
@@ -225,6 +224,7 @@ public class SnpFilter {
 }
 
 /**
+ * 暂时没用
  * 所有条件，负数都表示不参考，忽略该项
  * 所有条件，如果是下界，则为大于等于
  * 如果是上界，则为小于

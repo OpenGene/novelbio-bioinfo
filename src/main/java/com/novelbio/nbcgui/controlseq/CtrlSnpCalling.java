@@ -6,6 +6,7 @@ import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.resequencing.SnpCalling;
 import com.novelbio.analysis.seq.resequencing.SnpFilterDetailInfo;
 import com.novelbio.analysis.seq.resequencing.SnpGroupFilterInfo;
+import com.novelbio.analysis.seq.resequencing.SnpLevel;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunGetInfo;
 import com.novelbio.base.multithread.RunProcess;
@@ -35,7 +36,7 @@ public class CtrlSnpCalling implements RunGetInfo<SnpFilterDetailInfo> {
 	}
 	
 	/** snp过滤等级 */
-	public void setSnpFilterLevel(int snpLevel) {
+	public void setSnpFilterLevel(SnpLevel snpLevel) {
 		snpCalling.setSnpLevel(snpLevel);
 	}
 	public void addSnpFromPileUpFile(String pileUpFile, String outSnpFile) {

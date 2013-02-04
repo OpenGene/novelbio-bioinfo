@@ -50,7 +50,7 @@ public class GeneFilter {
 	/** 过滤单个snpSite位点的过滤器 */
 	SnpFilter snpFilterSingleSite = new SnpFilter();
 	
-	int snpLevel = SnpGroupFilterInfo.Heto;
+	SnpLevel snpLevel = SnpLevel.HetoMid;
 	
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
@@ -61,7 +61,7 @@ public class GeneFilter {
 	 * 设置基因过滤器的level
 	 * @param snpLevel  SnpGroupFilterInfo.HetoLess 等
 	 */
-	public void setSnpLevel(int snpLevel) {
+	public void setSnpLevel(SnpLevel snpLevel) {
 		snpFilterSingleSite.setSampleFilterInfoSingle(snpLevel);
 		mapNum2LsMapSnpIndelInfo = null;
 	}
