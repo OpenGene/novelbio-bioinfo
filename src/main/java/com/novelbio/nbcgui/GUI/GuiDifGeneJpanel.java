@@ -14,7 +14,12 @@ import com.novelbio.base.gui.JScrollPaneData;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.swing.JTextField;
 import javax.swing.JLabel;
 
@@ -27,6 +32,8 @@ public class GuiDifGeneJpanel extends JPanel {
 	DiffExpAbs diffExpAbs;
 	JComboBoxData<Integer> cmbMethod;
 	
+	JComboBoxData<String> cmbGroup = new JComboBoxData<String>();
+	
 	private JTextField txtSave;
 	private JTextField txtColAccID;
 	/**
@@ -35,20 +42,25 @@ public class GuiDifGeneJpanel extends JPanel {
 	public GuiDifGeneJpanel() {
 		setLayout(null);
 		
+		cmbGroup.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				changeSclCompareGroup();
+			}
+		});
+		
 		scrollPaneNormData = new JScrollPaneData();
 		scrollPaneNormData.setBounds(12, 24, 611, 501);
 		add(scrollPaneNormData);
 		
 		scrollPaneSample = new JScrollPaneData();
 		scrollPaneSample.setBounds(635, 24, 310, 195);
-		scrollPaneSample.setTitle(new String[]{"SampleColumn","GroupName"});
 		add(scrollPaneSample);
 		
 		JButton btnSetSample = new JButton("SetSample");
 		btnSetSample.setBounds(634, 231, 83, 20);
 		btnSetSample.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				scrollPaneSample.addItem(new String[]{"",""});
+				scrollPaneSample.addItem(new String[]{"", ""});
 			}
 		});
 		btnSetSample.setMargin(new Insets(0, 0, 0, 0));
@@ -66,14 +78,13 @@ public class GuiDifGeneJpanel extends JPanel {
 		
 		scrollPaneDesign = new JScrollPaneData();
 		scrollPaneDesign.setBounds(635, 268, 310, 150);
-		scrollPaneDesign.setTitle(new String[]{"group1","group2","FileName"});
 		add(scrollPaneDesign);
 		
 		JButton btnSetDesign = new JButton("addDesign");
 		btnSetDesign.setBounds(635, 431, 82, 20);
 		btnSetDesign.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				scrollPaneDesign.addItem(new String[]{"",""});
+				scrollPaneDesign.addItem(new String[]{"", ""});
 			}
 		});
 		btnSetDesign.setMargin(new Insets(0, 0, 0, 0));
@@ -170,6 +181,10 @@ public class GuiDifGeneJpanel extends JPanel {
 	
 	public void initial() {
 		cmbMethod.setMapItem(DiffExpAbs.getMapMethod2ID());
+		scrollPaneSample.setTitle(new String[]{"SampleColumn","GroupName"});
+		scrollPaneDesign.setTitle(new String[]{"group1","group2","FileName"});
+		scrollPaneDesign.setItem(0, cmbGroup);
+		scrollPaneDesign.setItem(1, cmbGroup);
 	}
 	
 	private String getPathPrefix() {
@@ -182,5 +197,14 @@ public class GuiDifGeneJpanel extends JPanel {
 			return FileOperate.addSep(pathPrefix);
 		}
 		return pathPrefix;
+	}
+	
+	private void changeSclCompareGroup() {
+		ArrayList<String[]> lsSnp2Prefix = scrollPaneSample.getLsDataInfo();
+		Map<String, String> mapString2Value = new HashMap<String, String>();
+		for (String[] snp2prefix : lsSnp2Prefix) {
+			mapString2Value.put(snp2prefix[1], snp2prefix[1]);
+		}
+		cmbGroup.setMapItem(mapString2Value);
 	}
 }

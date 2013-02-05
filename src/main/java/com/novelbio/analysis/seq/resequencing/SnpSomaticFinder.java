@@ -2,7 +2,9 @@ package com.novelbio.analysis.seq.resequencing;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
@@ -82,14 +84,54 @@ public class SnpSomaticFinder {
 		
 	}
 	
-	SnpSomaticFilter snpgatKcope;
+	SnpSomaticFilter snpSomaticFilter;
 	GeneFilter geneFilter = new GeneFilter();
 	ArrayList<RefSiteSnpIndel> lsRefSiteSnpIndelsResult;
 	
-	public void setSnpgatKcope(SnpSomaticFilter snpgatKcope) {
-		this.snpgatKcope = snpgatKcope;
+	/**
+	 * 添加snp文件，必须是NBC的snp格式
+	 * 第一列ChrID
+	 * 第二列location
+	 * 第三列refSeq
+	 * 第四列thisSeq
+	 * @param lsSnpFile2Prefix
+	 * String 0: SnpFile
+	 * 1: Prefix
+	 */
+	public void setSnpFile(List<String[]> lsSnpFile2Prefix) {
+		for (String[] strings : lsSnpFile2Prefix) {
+			snpSomaticFilter.addSnpFromNBCfile(strings[1], strings[0]);
+		}
 	}
-
+	
+	/**
+	 * 添加snp的PileUp文件
+	 * @param lsSnpFile2Prefix
+	 * String 0: SnpFile
+	 * 1: Prefix
+	 */
+	public void setSnpPileUpFile(List<String[]> lsSnpPileFile2Prefix) {
+		for (String[] strings : lsSnpPileFile2Prefix) {
+			snpSomaticFilter.addSampileupFile(strings[1], strings[0]);
+		}
+	}
+	
+	/**
+	 * 
+	 * @param lsGroup2Files
+	 */
+	public void addSnpGroupInfo(List<String[]> lsGroup2Files) {
+		ArrayListMultimap<String, String[]> mapGroup2LsFiles = ArrayListMultimap.create();
+		for (String[] strings : lsGroup2Files) {
+			mapGroup2LsFiles.put(strings[0], strings);
+		}
+		for (String group : mapGroup2LsFiles.keySet()) {
+			List<String[]> lsInfo = mapGroup2LsFiles.get(group);
+		}
+		
+		
+	}
+	
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		geneFilter.setGffChrAbs(gffChrAbs);
 	}
@@ -110,17 +152,17 @@ public class SnpSomaticFinder {
 	}
 
 	public void running() {
-		ArrayList<RefSiteSnpIndel> lsFilteredRefSnp = snpgatKcope.getLsFilteredSnp();
+		ArrayList<RefSiteSnpIndel> lsFilteredRefSnp = snpSomaticFilter.getLsFilteredSnp();
 		geneFilter.addLsRefSiteSnpIndel(lsFilteredRefSnp);
 		lsRefSiteSnpIndelsResult = geneFilter.filterSnpInGene();
 	}
 	
 	public void writeToFile(String fileName) {
 		TxtReadandWrite txtOutput = new TxtReadandWrite(fileName, true);
-		String[] title = RefSiteSnpIndel.getTitleFromSampleName(geneFilter.getSetTreat(), snpgatKcope.getVCFflag());
+		String[] title = RefSiteSnpIndel.getTitleFromSampleName(geneFilter.getSetTreat(), snpSomaticFilter.getVCFflag());
 		txtOutput.writefileln(title);
 		for (RefSiteSnpIndel refSiteSnpIndel : lsRefSiteSnpIndelsResult) {
-			ArrayList<String[]> lsTmpResult = refSiteSnpIndel.toStringLsSnp(geneFilter.getSetTreat(), snpgatKcope.getVCFflag());
+			ArrayList<String[]> lsTmpResult = refSiteSnpIndel.toStringLsSnp(geneFilter.getSetTreat(), snpSomaticFilter.getVCFflag());
 			for (String[] strings : lsTmpResult) {
 				txtOutput.writefileln(strings);
 			}

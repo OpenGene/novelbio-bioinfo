@@ -24,8 +24,12 @@ import com.novelbio.generalConf.NovelBioConst;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JLabel;
 import javax.swing.JCheckBox;
@@ -62,12 +66,14 @@ public class GuiRNAautoSplice extends JPanel {
 	long endBarNum;
 	int level;
 	
+	JComboBoxData<String> cmbGroup = new JComboBoxData<String>();
+	
 	/**
 	 * Create the panel.
 	 */
 	public GuiRNAautoSplice() {
 		setLayout(null);
-		
+
 		scrlBam = new JScrollPaneData();
 		scrlBam.setBounds(20, 34, 610, 303);
 		add(scrlBam);
@@ -100,7 +106,7 @@ public class GuiRNAautoSplice extends JPanel {
 		add(btnDelbam);
 		
 		txtGff = new JTextField();
-		txtGff.setBounds(644, 159, 258, 18);
+		txtGff.setBounds(644, 170, 258, 18);
 		add(txtGff);
 		txtGff.setColumns(10);
 		
@@ -183,7 +189,7 @@ public class GuiRNAautoSplice extends JPanel {
 		add(lblDetailInfo);
 		
 		panel = new GuiLayeredPaneSpeciesVersionGff();
-		panel.setBounds(644, 50, 258, 99);
+		panel.setBounds(644, 34, 258, 130);
 		add(panel);
 		
 		JCheckBox chkUseExternalGTF = new JCheckBox("Use External GTF");
@@ -196,8 +202,17 @@ public class GuiRNAautoSplice extends JPanel {
 //		combSpecies.setMapItem(Species.getSpeciesName2Species(Species.SEQINFO_SPECIES));
 		selectSpecies();
 		scrlBam.setTitle(new String[]{"BamFile", "Prefix", "group"});
-		scrlCompare.setTitle(new String[] {"group1", "group2"});
 
+		cmbGroup.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				changeSclCompareGroup();
+			}
+		});
+		
+		scrlCompare.setTitle(new String[] {"group1", "group2"});
+		scrlCompare.setItem(0, cmbGroup);
+		scrlCompare.setItem(1, cmbGroup);
+		
 		progressBar.setMinimum(0);
 		progressBar.setMaximum(progressLength);
 	}
@@ -308,5 +323,14 @@ public class GuiRNAautoSplice extends JPanel {
 	}
 	public void setMessage(String string) {
 		JOptionPane.showMessageDialog(null, "Info", string, JOptionPane.INFORMATION_MESSAGE);
+	}
+	
+	private void changeSclCompareGroup() {
+		ArrayList<String[]> lsSnp2Prefix = scrlBam.getLsDataInfo();
+		Map<String, String> mapString2Value = new HashMap<String, String>();
+		for (String[] snp2prefix : lsSnp2Prefix) {
+			mapString2Value.put(snp2prefix[1], snp2prefix[1]);
+		}
+		cmbGroup.setMapItem(mapString2Value);
 	}
 }

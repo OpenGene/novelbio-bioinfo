@@ -45,9 +45,6 @@ public class FastQ {
 			fastQRead.setFastqFile(fastqFile);
 		}
 	}
-	public void setOffset(int offset) {
-		fastQRead.setOffset(offset);
-	}
 	public int getOffset() {
 		return fastQRead.getOffset();
 	}

@@ -219,7 +219,7 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		//TODO :chrID是否需要小写
 		chrID = inputLines[0];
 		refSnpIndelStart = Integer.parseInt(inputLines[1]); 
-		getAndAddAllenInfo(inputLines[6], inputLines[7]);
+		getAndAddAllenInfo(inputLines[2], inputLines[3]);
 		
 	}
 
@@ -778,21 +778,7 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		LinkedList<String> lsResultTmp = new LinkedList<String>();
 		lsResultTmp.add(chrID);//0
 		lsResultTmp.add(refSnpIndelStart + "");//1
-		
-		if (gffGeneIsoInfo != null) {
-			lsResultTmp.add(gffGeneIsoInfo.getName());
-			lsResultTmp.add(gffGeneIsoInfo.getGeneID().getSymbol());
-			lsResultTmp.add(gffGeneIsoInfo.getGeneID().getDescription());
-		}
-		else{
-			lsResultTmp.add("");
-			lsResultTmp.add("");
-			lsResultTmp.add("");
-		}
-		if (prop >= 0)
-			lsResultTmp.add(prop + "");
-		else
-			lsResultTmp.add("");
+	
 		
 		//对于每个snp的样式
 		for (Entry<String, SiteSnpIndelInfo> entry : mapAllen2Num.entrySet()) {
@@ -807,6 +793,23 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 			lsTmpInfo.add(siteSnpIndelInfo.getReferenceSeq());
 			lsTmpInfo.add(siteSnpIndelInfo.getThisSeq());
 			lsTmpInfo.add(siteSnpIndelInfo.getSnpIndelRs().getSnpRsID());
+			
+			if (gffGeneIsoInfo != null) {
+				lsResultTmp.add(gffGeneIsoInfo.getName());
+				lsResultTmp.add(gffGeneIsoInfo.getGeneID().getSymbol());
+				lsResultTmp.add(gffGeneIsoInfo.getGeneID().getDescription());
+			}
+			else{
+				lsResultTmp.add("");
+				lsResultTmp.add("");
+				lsResultTmp.add("");
+			}
+			if (prop >= 0) {
+				lsResultTmp.add(prop + "");
+			} else {
+				lsResultTmp.add("");
+			}
+			
 			if (lsSampleNames == null) {
 				lsSampleNames = mapSample2NormReadsInfo.keySet();
 			}
@@ -863,13 +866,16 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		LinkedList<String> lsTitle = new LinkedList<String>();
 		lsTitle.add("ChrID");
 		lsTitle.add("Loc");
+		lsTitle.add("RefSequence");
+		lsTitle.add("ThisSequence");
+		lsTitle.add("DBsnpID");
+		
 		lsTitle.add("GeneID");
 		lsTitle.add("GeneSymbol");
 		lsTitle.add("Description");
 		lsTitle.add("Distance2GeneStart");
-		lsTitle.add("RefSequence");
-		lsTitle.add("ThisSequence");
-		lsTitle.add("DBsnpID");
+
+		
 		for (String sampleName : lsSampleNames) {
 			lsTitle.add(sampleName + "_ReadsDepth");
 			lsTitle.add(sampleName + "_ThisReadsNum");

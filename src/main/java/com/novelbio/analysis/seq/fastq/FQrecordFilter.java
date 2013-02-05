@@ -5,10 +5,10 @@ import org.apache.log4j.Logger;
 public abstract class FQrecordFilter {
 	private static Logger logger = Logger.getLogger(FQrecordFilter.class);
 	
-	int readsMinLen;
+	int readsMinLen = 20;
 	int fastqOffset;
 
-	/** 裁剪序列时最短为多少， 默认为22
+	/** 裁剪序列时最短为多少， 默认为20
 	 */
 	public void setTrimMinLen(int trimMinLen) {
 		this.readsMinLen = trimMinLen;

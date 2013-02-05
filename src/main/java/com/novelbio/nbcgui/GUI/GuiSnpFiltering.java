@@ -74,24 +74,24 @@ public class GuiSnpFiltering extends JPanel {
 		JButton btnDelcompare = new JButton("DelCmp");
 		btnDelcompare.setBounds(444, 442, 91, 24);
 		add(btnDelcompare);
-		
+
+		initial();
+	}
+	private void initial() {
 		cmbGroup.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				changeSclCompareGroup();
-			}
 			public void mousePressed(MouseEvent e) {
 				changeSclCompareGroup();
 			}
 		});
 		
-		initial();
-	}
-	private void initial() {
-		cmbSnpLevel.setMapItem(SnpLevel.getMapStr2SnpLevel());
+		sclSnpPileUp.setTitle(new String[]{"PileUpFile","Group"});
+		sclSnpPileUp.setItem(1, cmbGroup);
+		
 		sclCompare.setTitle(new String[]{"Group","SnpLevel","MinNum","MaxNum"});
+		cmbSnpLevel.setMapItem(SnpLevel.getMapStr2SnpLevel());
 		sclCompare.setItem(1, cmbSnpLevel);
 
+		
 		sclSnpFile.setTitle(new String[]{"SnpFile","Group"});
 		sclCompare.setItem(0, cmbGroup);
 	}

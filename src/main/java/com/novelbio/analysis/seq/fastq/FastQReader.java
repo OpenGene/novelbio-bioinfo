@@ -54,11 +54,9 @@ class FastQReader {
 		this.seqFile = seqFile;
 		txtSeqFile = new TxtReadandWrite(compressInType, seqFile, false);
 		readsNum = 0;
+		getOffset();
 	}
-	/** 不设定就会自动判定 */
-	public void setOffset(int offset) {
-		this.offset = offset;
-	}
+
 	public int getOffset() {
 		setFastQFormatLen();
 		return offset;
@@ -179,8 +177,7 @@ class FastQReader {
 								}
 								linestr = linestr + TxtReadandWrite.ENTER_LINUX + lineTmp;
 							}
-							fastQRecord = new FastQRecord(linestr, initial);
-							fastQRecord.setFastqOffset(offset);
+							fastQRecord = new FastQRecord(linestr, offset, initial);
 							readsNum++;
 						} catch (IOException ioEx) {
 							fastQRecord = null;
@@ -264,8 +261,8 @@ class FastQReader {
 								linestr1 = linestr1 + TxtReadandWrite.ENTER_LINUX + lineTmp1;
 								linestr2 = linestr2 + TxtReadandWrite.ENTER_LINUX + lineTmp2;
 							}
-							fastQRecord[0] = new FastQRecord(linestr1, initial);
-							fastQRecord[1] = new FastQRecord(linestr2, initial);
+							fastQRecord[0] = new FastQRecord(linestr1, offset, initial);
+							fastQRecord[1] = new FastQRecord(linestr2, offset, initial);
 							fastQRecord[0].setFastqOffset(offset);
 							fastQRecord[0].setFastqOffset(offset);
 						} catch (IOException ioEx) {
@@ -297,16 +294,8 @@ class FastQReader {
 			return;
 		}
 		ArrayList<FastQRecord> lsFastQRecordsTop500 = getLsFastQSeq(500);
-		int fastQformat = guessFastOFormat(lsFastQRecordsTop500);
+		offset = guessFastOFormat(lsFastQRecordsTop500);
 		readsLenAvg = getReadsLenAvg(lsFastQRecordsTop500);
-		if (fastQformat == FASTQ_ILLUMINA_OFFSET) {
-			offset = FASTQ_ILLUMINA_OFFSET;
-			return;
-		}
-		if (fastQformat == FASTQ_SANGER_OFFSET) {
-			offset = FASTQ_SANGER_OFFSET;
-			return;
-		}
 	}
 	
 	/**

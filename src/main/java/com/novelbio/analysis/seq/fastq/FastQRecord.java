@@ -31,14 +31,15 @@ public class FastQRecord implements Cloneable {
 	 * 每四行一个记录，将这四行用linux回车隔开，然后输入
 	 * @param fastqlines
 	 */
-	public FastQRecord(String fastqlines) {
-		this(fastqlines, true);
+	public FastQRecord(String fastqlines, int fastqOffset) {
+		this(fastqlines, fastqOffset, true);
 	}
 	/** 读入fastq文件但根据需要进行初始化
 	 * 用在fastq过滤的时候，可以先不初始化，然后在多线程的时候进行初始化
 	 *  */
-	protected FastQRecord(String fastqlines, boolean initial) {
+	protected FastQRecord(String fastqlines, int fastqOffset, boolean initial) {
 		fastqStringReadIn = fastqlines;
+		this.fastqOffset = fastqOffset;
 		if (initial) {
 			initialReadRecord();
 		}
@@ -80,7 +81,26 @@ public class FastQRecord implements Cloneable {
 	 * @param fastaQuality
 	 */
 	public void setFastaQuality(String fastaQuality) {
-		this.seqQuality = fastaQuality;
+		char[] quality = fastaQuality.toCharArray();
+		if (fastqOffset == FastQ.FASTQ_SANGER_OFFSET) {
+			for (int i = 0; i < quality.length; i++) {
+				if (quality[i] < 33 ) {
+					quality[i] = 33;
+				} else if (quality[i] > 126) {
+					quality[i] = 126;
+				}
+			}
+		} else {
+			for (int i = 0; i < quality.length; i++) {
+				if (quality[i] < 64 ) {
+					quality[i] = 64;
+				} else if (quality[i] > 157) {
+					quality[i] = 157;
+				}
+			}
+		}
+		
+		this.seqQuality = String.copyValueOf(quality);
 	}
 	public String getSeqQuality() {
 		return seqQuality;
