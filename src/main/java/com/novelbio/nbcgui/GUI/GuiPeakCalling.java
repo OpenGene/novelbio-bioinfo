@@ -414,8 +414,7 @@ public class GuiPeakCalling extends JPanel {
 		macs14control.setpathinputColl(txtControlFileMacs.getText());
 		macs14control.setPathoutput(txtSavePath.getText());
 		macs14control.setPvalue(pvalue);
-		speciesID = species.getTaxID();
-		macs14control.setSpecies(new Species(speciesID));
+		macs14control.setSpecies(species);
 		macs14control.peakCalling();
 	}
 	

@@ -21,6 +21,7 @@ public class PeakCallingSicer {
 	private String speciesString = "hg19";
 	private String outputDir;
 	private String InputDir;
+	//结尾不需要"/"
 	private String PathTo;
 
 	private int redundancyThreshold = 2;
@@ -32,7 +33,9 @@ public class PeakCallingSicer {
 	private String koControlFile;
 	private String wtBedFile;
 	private String wtControlFile;
-
+	/**
+	 * 后面自动加上"/"
+	 */
 	String exePath = "";
 	/**
 	 * 设定SICER的执行路径
@@ -44,7 +47,9 @@ public class PeakCallingSicer {
 		} else {
 			this.exePath = FileOperate.addSep(exePath);
 		}
+		PathTo = FileOperate.removeSep(exePath);
 	}
+	
 	public void setInputDir(String inputDir) {
 		this.InputDir = inputDir;
 	}
@@ -109,9 +114,6 @@ public class PeakCallingSicer {
 	
 	public void setEvalue(int evalue) {
 		Evalue = evalue;
-	}
-	public void setPathTo(String pathTo) {
-		PathTo = pathTo;
 	}
 	
 	private String getInputDir() {
@@ -206,7 +208,6 @@ public class PeakCallingSicer {
 	}
 	
 	public String sicerCmd(PeakCallingSicerType sicerType) {
-		String sicerPath = exePath + "SICER";
 		String strsicerCmd = null;
 		String tmpCmd = getInputDir() + getKoBedFile()  + getKoControlFile()  + getOutputDir() + getSpecies() + getRedundancyThreshold()
 				+ getWindowSize() + getFragmentSize() + getEffectiveGenomeSize() + getGapSize() + getFDR() + getPathTo();
@@ -216,16 +217,16 @@ public class PeakCallingSicer {
 				+ getGapSize() + getEvalue() + getFDR() + getSpecies() + getEffectiveGenomeSize() + getFragmentSize() + getKoThreshold() 
 				+ getWtThreshold() + getInputDir() + getOutputDir() + getPathTo();
 		if (sicerType.equals(PeakCallingSicerType.SICER )){
-			strsicerCmd = "sh " + sicerPath + "/SICER.sh " +tmpCmd;
+			strsicerCmd = "sh " + exePath + "SICER.sh " +tmpCmd;
 		}
 		if (sicerType.equals(PeakCallingSicerType.SICERrb)) {
-			strsicerCmd = "sh "  + sicerPath + "/SICER-rb.sh " +tmpCmdrb;
+			strsicerCmd = "sh "  + exePath + "SICER-rb.sh " +tmpCmdrb;
 		}
 		if (sicerType.equals(PeakCallingSicerType.SICERdf)) {
-			strsicerCmd = "sh " + sicerPath + "/SICER-df.sh" + tmpCmd2 ;
+			strsicerCmd = "sh " + exePath + "SICER-df.sh" + tmpCmd2 ;
 		}
 		if (sicerType.equals(PeakCallingSicerType.SICERdfrb)) {
-			strsicerCmd = "sh " + sicerPath + "/SICER-df-rb.sh" + tmpCmd2;
+			strsicerCmd = "sh " + exePath + "SICER-df-rb.sh" + tmpCmd2;
 		}
 		return strsicerCmd;
 	}
