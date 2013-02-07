@@ -42,6 +42,8 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	protected static String regProduct = "(?<=product\\=)[\\w\\-%]+";
 	/** geneID的正则 */
 	protected static String regGeneID = "(?<=Dbxref\\=GeneID\\:)\\d+";
+	/** Name的正则 */
+	protected static String regName = "(?<=Name\\=)[\\w\\-%]+";
 	/** ID的正则 */
 	protected static String regID = "(?<=ID\\=)\\w+";
 	/** parentID的正则 */
@@ -73,6 +75,8 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	PatternOperate patmRNAName = null;
 	/** "(?<=Dbxref\\=GeneID\\:)\\d+" */
 	PatternOperate patGeneID = null;
+	/** "(?<=Name\\=)\\w+" */
+	PatternOperate patName = null;
 	/** "(?<=ID\\=)\\w+" */
 	PatternOperate patID = null;
 	/** "(?<=Parent\\=)\\w+" */
@@ -101,7 +105,8 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	 */
 	private HashMap<String, Boolean> mapGeneName2IsHaveExon = new HashMap<String, Boolean>();
 	int numCopedIDsearch = 0;//查找taxID的次数最多10次
-
+	/** 默认连上数据库 */
+	boolean database = true;
 	/**
 	 * 设定mRNA和gene的类似名，在gff文件里面出现的
 	 */
@@ -124,6 +129,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 		
 		patGeneID = new PatternOperate(regGeneID, false);
 		patID = new PatternOperate(regID, false);
+		patName = new PatternOperate(regName, false);
 		patParentID = new PatternOperate(regParentID, false);
 	}
 	/**
@@ -276,14 +282,19 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
    private String getGeneName(String content) {
 	   String geneName = patGeneName.getPatFirst(content);//查找基因名字
 	   if (geneName == null) {
-		   String geneID = patGeneID.getPatFirst(content);
-		   GeneID copedID = null;
-		   try {
-			   copedID = new GeneID(GeneID.IDTYPE_GENEID, geneID, taxID);
-		} catch (Exception e) {
-			   copedID = new GeneID(GeneID.IDTYPE_GENEID, geneID, taxID);
+		   if (database) {
+			   try {
+				   String geneID = patGeneID.getPatFirst(content);
+				   GeneID copedID  = new GeneID(GeneID.IDTYPE_GENEID, geneID, taxID);
+				   geneName = copedID.getAccID();
+			   } catch (Exception e) {
+				   geneName = patName.getPatFirst(content);
+				   database = false;
+			   }
+		   } else {
+			   geneName = patName.getPatFirst(content);
 		}
-		   geneName = copedID.getAccID();
+		   	   
 	   }
 	   if (geneName == null) {
 		   logger.error("GffHashPlantGeneError: 文件  "+ getGffFilename() + "  在本行可能没有指定的基因ID  " +content);
