@@ -121,6 +121,13 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 			return input;
 		}
 		GeneID geneID = gffGeneIsoInfo.getGeneID();
+		if (!geneID.getIDtype().equals(GeneID.IDTYPE_ACCID)) {
+			lsInfo.add(geneID.getSymbol());
+			lsInfo.add(geneID.getDescription());
+		} else {
+			lsInfo.add(gffGeneIsoInfo.getName());
+			lsInfo.add("");
+		}
 		lsInfo.add(geneID.getSymbol());
 		lsInfo.add(geneID.getDescription());
 		lsInfo.add(gffGeneIsoInfo.toStringCodLocStr(refStartSite));

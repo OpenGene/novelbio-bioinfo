@@ -288,15 +288,13 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 				   GeneID copedID  = new GeneID(GeneID.IDTYPE_GENEID, geneID, taxID);
 				   geneName = copedID.getAccID();
 			   } catch (Exception e) {
-				   geneName = patName.getPatFirst(content);
 				   database = false;
 			   }
-		   } else {
-			   geneName = patName.getPatFirst(content);
-		}
-		   	   
+		   }
 	   }
 	   if (geneName == null) {
+		   geneName = patName.getPatFirst(content);
+	   } if (geneName == null) {
 		   logger.error("GffHashPlantGeneError: 文件  "+ getGffFilename() + "  在本行可能没有指定的基因ID  " +content);
 	   }
 	   return geneName;

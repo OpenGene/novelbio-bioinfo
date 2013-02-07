@@ -52,7 +52,6 @@ public class NCBIID extends AgeneUniID{
 	}
 	@Override
 	public String getGeneIDtype() {
-		// TODO Auto-generated method stub
 		return GeneID.IDTYPE_GENEID;
 	}
 	

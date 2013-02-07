@@ -47,7 +47,8 @@ public class PeakCallingSicer {
 		} else {
 			this.exePath = FileOperate.addSep(exePath);
 		}
-		PathTo = FileOperate.removeSep(exePath);
+		PathTo = FileOperate.getParentPathName(exePath);
+		PathTo = FileOperate.removeSep(PathTo);
 	}
 	
 	public void setInputDir(String inputDir) {

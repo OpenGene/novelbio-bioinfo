@@ -123,7 +123,13 @@ public class SicerControl {
 		linkBed(wtBedPathAndFile);
 		peakCallingSicer.setWtBedFile(FileOperate.getFileName(wtBedPathAndFile));
 	}
-
+	
+	/**
+	 * 如果没有指定prefix，则从文件名自动生成prefix
+	 * @param fileName
+	 * @param prefix
+	 * @return
+	 */
 	private String getPrefix(String fileName, String prefix) {
 		if (prefix != null && !prefix.trim().equals("")) {
 			return prefix.trim();
@@ -132,12 +138,12 @@ public class SicerControl {
 	}
 	public void setKoControlFile(String koColBed) {
 		linkBed(koColBed);
-		peakCallingSicer.setWtBedFile(FileOperate.getFileName(koColBed));
+		peakCallingSicer.setKoControlFile(FileOperate.getFileName(koColBed));
 	}
 	
 	public void setWtControlFile(String wetColBed) {
 		linkBed(wetColBed);
-		peakCallingSicer.setWtBedFile(FileOperate.getFileName(wetColBed));
+		peakCallingSicer.setWtControlFile(FileOperate.getFileName(wetColBed));
 	}
 	
 	private void setInputDir(String indir) {
@@ -145,7 +151,11 @@ public class SicerControl {
 		peakCallingSicer.setInputDir(indir);
 	}
 
-	
+	/**
+	 * 根据输入的bed文件，自动设定effective genome size
+	 * 和reads的insert size等
+	 * @param inputBed
+	 */
 	private void setParamFromBedFile(String inputBed) {
 		BedSeq bedSeq = new BedSeq(inputBed);
 		int i = 1;
@@ -163,6 +173,9 @@ public class SicerControl {
 	}
 	
 	private void linkBed(String inputBed) {
+		if (FileOperate.isFileExistAndBigThanSize(inputBed, 0.01)) {
+			return;
+		}
 		String indir = FileOperate.getParentPathName(inputBed);
 		String bedfile = FileOperate.getFileName(inputBed);
 		if (!this.dir.equals(indir)) {

@@ -439,8 +439,7 @@ public class GuiPeakCalling extends JPanel {
 				dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 				dialog.setVisible(true);
 				sicerControl.setMethylationType(dialog.getWindowSize(), dialog.getGapSize());
-			}
-			else {
+			} else {
 				sicerControl.setMethylationType(dialog.getWindowSize(), dialog.getGapSize());
 			}
 		}
@@ -448,7 +447,8 @@ public class GuiPeakCalling extends JPanel {
 	}
 	
 	public static class GuiWinAndGsize extends JDialog {
-
+		private static final long serialVersionUID = -7836621158081537978L;
+		
 		private final JPanel contentPanel = new JPanel();
 		private JTextField windowSizetextField;
 		private JTextField gapSizetextField;
