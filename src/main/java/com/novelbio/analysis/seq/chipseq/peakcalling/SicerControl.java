@@ -2,10 +2,8 @@ package com.novelbio.analysis.seq.chipseq.peakcalling;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -14,19 +12,13 @@ import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.chipseq.peakcalling.PeakCallingSicer.PeakCallingSicerType;
-import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.tools.Mas3.getProbID;
-import com.novelbio.base.cmd.CmdOperate;
-import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.TitleFormatNBC;
-import com.sun.tools.javac.code.Attribute.Array;
 
 public class SicerControl {
 	private static Logger logger = Logger.getLogger(SicerControl.class);
@@ -58,7 +50,7 @@ public class SicerControl {
 	public void setSicerType( PeakCallingSicerType peakCallingSicerType) {
 		this.peakCallingSicerType = peakCallingSicerType;
 	}
-
+	
 	public void setMethylationType(int methylationType) {
 		if (methylationType == METHY_H3K4) {
 			peakCallingSicer.setWindowSize(200);
@@ -111,6 +103,7 @@ public class SicerControl {
 	}
 	
 	public void setSpecies(Species species) {
+		this.species = species;
 		peakCallingSicer.setSpecies(species.getVersion().split("_")[0]);
 	}
 	
@@ -203,7 +196,7 @@ public class SicerControl {
 	
 	private void modifyGenomePy() {
 		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.sicer);
-		String GenomeDataFile = softWareInfo.getExePath() + "SICER/lib/GenomeData.py";
+		String GenomeDataFile = softWareInfo.getExePath() + "lib/GenomeData.py";
 		ModifyGenomeData.modifyDataFile(species, GenomeDataFile);
 	}
 	

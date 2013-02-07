@@ -131,7 +131,7 @@ public class SoftWareInfo {
 		if (isPath==1) {
 			return "";
 		}
-		return locationPath + FileOperate.getSepPath();
+		return FileOperate.addSep(locationPath);
 	}
 	public String getInstallPath() {
 		querySoftWareInfo();
