@@ -12,13 +12,15 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.plot.DotStyle;
 import com.novelbio.base.plot.PlotScatter;
 import com.novelbio.base.plot.heatmap.Gradient;
 import com.novelbio.base.plot.heatmap.PlotHeatMap;
 /**
- * setTsstesRange 和 setPlotTssTesRange这两个方法要第一时间设定
+ * setTsstesRange 和 setPlotTssTesRange这两个方法要第一时间设定<br>
+ * 每次设定好后必须运行{@link #fillLsMapInfos()}
  * @author zong0jie
  *
  */
@@ -38,7 +40,10 @@ public class GffChrPlotTss {
 	/** 绘制图片的gene */
 	ArrayList<Gene2Value> lsGeneID2Value;
 	
-	/** 结果图片分割为1000份 */
+	/**
+	 * 结果图片分割为1000份
+	 * 小于0表示不进行分割，直接按照长度合并起来
+	 */
 	int splitNum = 1001;
 	/**  tss或tes的扩展绘图区域，默认哺乳动物为 -5000到5000 */
 	int[] plotTssTesRange = new int[]{-5000, 5000};
@@ -102,7 +107,9 @@ public class GffChrPlotTss {
 		this.getOrExclude = getOrExclude;
 	}
 	
-	/** 设定切割分数，默认为1000 */
+	/** 设定切割分数，默认为1000 
+	 * 小于0表示不进行分割，直接按照长度合并起来
+	 */
 	public void setSplitNum(int splitNum) {
 		//因为是从0开始计数，所以要+1
 		this.splitNum = splitNum + 1;
@@ -167,19 +174,24 @@ public class GffChrPlotTss {
 		return mapReads;
 	}
 	
-	/** 用来做给定区域的图。mapinfo中设定坐标位点和value
+	/** 
+	 * 设定本方法后<b>不需要</b>运行{@link #fillLsMapInfos()}<br>
+	 * 用来做给定区域的图。mapinfo中设定坐标位点和value
 	 * 这个和输入gene，2选1。谁先设定选谁
 	 *  */
 	public void setSiteRegion(ArrayList<MapInfo> lsMapInfos) {
 		this.lsMapInfos = MapInfo.getCombLsMapInfoBigScore(lsMapInfos, 1000, true);
 	}
 	
-	/** 设定为全基因组 */
+	/** 
+	 * 设定本方法后需要运行{@link #fillLsMapInfos()}<br>
+	 * 设定为全基因组 */
 	public void setGeneIDGenome() {
 		lsGeneID2Value = Gene2Value.readGeneMapInfoAll(gffChrAbs);
 	}
 	
 	/**
+	* 设定本方法后需要运行{@link #fillLsMapInfos()}<br>
 	 * 给定要画tss图的基因list
 	 * 内部去重复
 	 * 会根据MapInfo.isMin2max()标签确定遇到重复项是取value大的还是小的
@@ -191,9 +203,6 @@ public class GffChrPlotTss {
 	 * @return
 	 */
 	public void setGeneID2ValueLs(ArrayList<String[]> lsGeneValue) {
-		//清空
-		lsMapInfos = new ArrayList<MapInfo>();
-		
 		//有权重的就使用这个hash
  		HashMap<GffDetailGene, Double> hashGene2Value = new HashMap<GffDetailGene, Double>();
 
@@ -234,6 +243,7 @@ public class GffChrPlotTss {
 	}
 
 	/**
+	 * 设定本方法后需要运行{@link #fillLsMapInfos()}<br>
 	 * <b>如果genestructure设定为tss或tes，那么务必首先设定tsstesRange</b><br>
 	 * 给定区域，获得被该区域覆盖的基因然后再做图。mapinfo中设定坐标位点和value
 	 * @param lsMapInfos 给定的区域
@@ -268,18 +278,23 @@ public class GffChrPlotTss {
 		return plotScatter;
 	}
 	
-	public ArrayList<double[]> getLsXYtsstes() {
-		setLsMapInfos();
-		
+	/**
+	 * 提取前务必设定{@link #fillLsMapInfos()}
+	 * @return
+	 */
+	public ArrayList<double[]> getLsXYtsstes() {		
 		ArrayList<double[]> lsResult = new ArrayList<double[]>();
 		double[] yvalue = MapInfo.getCombLsMapInfo(lsMapInfos);
+		List<Integer> lsCoverage = getLsGeneCoverage(lsMapInfos);
+		
 		double[] xvalue = getXvalue(yvalue.length);
 		if (xvalue.length != yvalue.length) {
 			logger.error("xvalue 和 yvalue 的长度不一致，请检查");
 		}
 		for (int i = 0; i < xvalue.length; i++) {
+			int coverage = lsCoverage.get(i);
 			double[] tmpResult= new double[2];
-			tmpResult[0] = xvalue[i];
+			tmpResult[0] = xvalue[i] * lsMapInfos.size() /coverage;
 			tmpResult[1] = yvalue[i];
 			lsResult.add(tmpResult);
 		}
@@ -338,7 +353,6 @@ public class GffChrPlotTss {
 	
 	/** 首先要设定好lsMapInfos */
 	public PlotHeatMap plotHeatMap() {
-		setLsMapInfos();
 		if (heatmapMax <= heatmapMin) {
 			heatmapMax = getMaxData(lsMapInfos, 99);
 		}
@@ -353,13 +367,11 @@ public class GffChrPlotTss {
 		return heatMap;
 	}
 	
-	/** 将lsGeneID2Value中的信息填充到lsMapInfos中去 */
-	private void setLsMapInfos() {
-		//TODO 应该改成 每次设定新的lsMapInfo，GeneID，和GeneStructure就重新跑
-//		if (lsMapInfos != null && lsMapInfos.size() > 0 && (lsGeneID2Value == null || lsGeneID2Value.size() == 0)) {
-//			mapReads.getRangeLs(this.splitNum, lsMapInfos, 0);
-//			return;
-//		}
+	/** 将lsGeneID2Value中的信息填充到 lsMapInfos 中去 */
+	public void fillLsMapInfos() {
+		if (lsGeneID2Value == null || lsGeneID2Value.size() == 0) {
+			return;
+		}
 		lsMapInfos = new ArrayList<MapInfo>();
 		for (Gene2Value gene2Value : lsGeneID2Value) {
 			gene2Value.setPlotTssTesRegion(plotTssTesRange);
@@ -372,6 +384,20 @@ public class GffChrPlotTss {
 			}
 		}
 		logger.debug("finished reading");
+	}
+	
+	public void writeLsMapInfoToFile(String filename) {
+		TxtReadandWrite txtWrite = new TxtReadandWrite(filename, true);
+		for (MapInfo mapInfo : lsMapInfos) {
+			txtWrite.writefileln(mapInfo.getName());
+			double[] value = mapInfo.getDouble();
+			String[] info = new String[value.length];
+			for (int i = 0; i < info.length; i++) {
+				info[i] = value[i] + "";
+			}
+			txtWrite.writefileln(info);
+		}
+		txtWrite.close();
 	}
 	
 	/**
@@ -389,6 +415,30 @@ public class GffChrPlotTss {
 			}
 		}
 		return MathComput.median(lsDouble, percentage);
+	}
+	
+	/**
+	 * 根据给定的List-MapInfo lsMapInfos<br>
+	 * 获得从第一个碱基开始，含有该位点的基因数量。也就是覆盖度<br>
+	 * 譬如总共3个mapinfos<br>
+	 * 1:4bp长   2:3bp长   3:1bp长<br>
+	 * 那么第一位有3个基因，第二位有2个基因，第三位有2个基因，第四位有1个基因<br>
+	 * 则返回 3-2-2-1<br>
+	 * @return
+	 */
+	private List<Integer> getLsGeneCoverage(List<MapInfo> lsMapInfos) {
+		List<Integer> lsResult = new ArrayList<Integer>();
+		for (MapInfo mapInfo : lsMapInfos) {
+			double[] info = mapInfo.getDouble();
+			for (int i = 0; i < info.length; i++) {
+				if (i < lsResult.size() - 1) {
+					 lsResult.set(i, lsResult.get(i)+1);
+				} else {
+					lsResult.add(1);
+				}
+			}
+		}
+		return lsResult;
 	}
 	
 	/**

@@ -28,8 +28,7 @@ public class TestGene2Value extends TestCase {
 		gffGeneIsoInfoCis.add(new ExonInfo(gffGeneIsoInfoCis, true, 900, 1000));
 		gffGeneIsoInfoCis.add(new ExonInfo(gffGeneIsoInfoCis, true, 1100, 1200));
 		gffGeneIsoInfoCis.add(new ExonInfo(gffGeneIsoInfoCis, true, 1300, 1400));
-		
-		gene2Value.setGffGeneIsoInfo(gffGeneIsoInfoCis);
+		gene2Value = new Gene2Value(gffGeneIsoInfoCis);
 		
 		super.setUp();
 	
