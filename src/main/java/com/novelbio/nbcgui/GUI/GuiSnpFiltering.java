@@ -9,17 +9,28 @@ import com.novelbio.base.gui.JScrollPaneData;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.swing.JScrollPane;
+import javax.swing.JComboBox;
 
 public class GuiSnpFiltering extends JPanel {
 	JScrollPaneData sclSnpFile;
 	JScrollPaneData sclSnpPileUp;
-	JScrollPaneData sclCompare;
-	JComboBoxData<String> cmbGroup = new JComboBoxData<String>();
+	JScrollPaneData sclGroup2Sample;
+	JScrollPaneData sclGropuInfo;
+
+	JComboBoxData<String> cmbSample = new JComboBoxData<String>();
+	/** 在sclGroup2Prefix中使用，可以添加新的group */
+	JComboBoxData<String> cmbGroupSet = new JComboBoxData<String>();
+	/** 在sclGropuInfo中使用，不可以添加新的group */
+	JComboBoxData<String> cmbGroupGet = new JComboBoxData<String>();
 	JComboBoxData<SnpLevel> cmbSnpLevel = new JComboBoxData<SnpLevel>();
 	
 	
@@ -30,7 +41,7 @@ public class GuiSnpFiltering extends JPanel {
 		setLayout(null);
 		
 		sclSnpFile = new JScrollPaneData();
-		sclSnpFile.setBounds(32, 26, 724, 124);
+		sclSnpFile.setBounds(32, 29, 724, 124);
 		add(sclSnpFile);
 		
 		JButton btnAddSnpFile = new JButton("AddSnpFile");
@@ -51,6 +62,11 @@ public class GuiSnpFiltering extends JPanel {
 		add(sclSnpPileUp);
 		
 		JButton btnAddPileUp = new JButton("AddPileUp");
+		btnAddPileUp.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				sclSnpPileUp.addItem(new String[]{"", ""});
+			}
+		});
 		btnAddPileUp.setBounds(32, 315, 118, 24);
 		add(btnAddPileUp);
 		
@@ -58,50 +74,113 @@ public class GuiSnpFiltering extends JPanel {
 		btnDelFileUp.setBounds(638, 320, 118, 24);
 		add(btnDelFileUp);
 		
-		sclCompare = new JScrollPaneData();
-		sclCompare.setBounds(32, 362, 401, 104);
-		add(sclCompare);
+		sclGropuInfo = new JScrollPaneData();
+		sclGropuInfo.setBounds(324, 362, 432, 104);
+		add(sclGropuInfo);
 		
 		JButton btnAddcompare = new JButton("AddCmp");
 		btnAddcompare.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				sclCompare.addItem(new String[]{"", ""});
+				sclGropuInfo.addItem(new String[]{"", ""});
 			}
 		});
-		btnAddcompare.setBounds(445, 362, 91, 24);
+		btnAddcompare.setBounds(324, 479, 91, 24);
 		add(btnAddcompare);
 		
 		JButton btnDelcompare = new JButton("DelCmp");
-		btnDelcompare.setBounds(444, 442, 91, 24);
+		btnDelcompare.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				sclGropuInfo.deleteSelRows();
+			}
+		});
+		btnDelcompare.setBounds(665, 479, 91, 24);
 		add(btnDelcompare);
+		
+		sclGroup2Sample = new JScrollPaneData();
+		sclGroup2Sample.setBounds(32, 362, 267, 104);
+		add(sclGroup2Sample);
+		
+		JButton btnAddgroup = new JButton("AddGroup");
+		btnAddgroup.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				sclGroup2Sample.addItem(new String[]{"",""});
+			}
+		});
+		btnAddgroup.setBounds(32, 478, 102, 27);
+		add(btnAddgroup);
+		
+		JButton btnDelGroup = new JButton("DelGroup");
+		btnDelGroup.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				sclGroup2Sample.deleteSelRows();
+			}
+		});
+		btnDelGroup.setBounds(189, 478, 109, 27);
+		add(btnDelGroup);
+		
+		JComboBox comboBox = new JComboBox();
+		comboBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		comboBox.setBounds(324, 523, 102, 24);
+		add(comboBox);
 
 		initial();
 	}
 	private void initial() {
-		cmbGroup.addMouseListener(new MouseAdapter() {
+		cmbSample.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				changeSclComparePrefix();
+			}
+		});
+		cmbGroupSet.setEditable(true);
+		cmbGroupSet.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				changeSclCompareGroup();
+			}
+		});
+		cmbGroupGet.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
 				changeSclCompareGroup();
 			}
 		});
 		
-		sclSnpPileUp.setTitle(new String[]{"PileUpFile","Group"});
-		sclSnpPileUp.setItem(1, cmbGroup);
+		sclSnpFile.setTitle(new String[]{"SnpFile","Sample"});
 		
-		sclCompare.setTitle(new String[]{"Group","SnpLevel","MinNum","MaxNum"});
-		cmbSnpLevel.setMapItem(SnpLevel.getMapStr2SnpLevel());
-		sclCompare.setItem(1, cmbSnpLevel);
+		sclSnpPileUp.setTitle(new String[]{"PileUpFile","Sample"});
+		sclSnpPileUp.setItem(1, cmbSample);
 
-		
-		sclSnpFile.setTitle(new String[]{"SnpFile","Group"});
-		sclCompare.setItem(0, cmbGroup);
+		sclGroup2Sample.setTitle(new String[]{"Group","Sample"});
+		cmbSnpLevel.setMapItem(SnpLevel.getMapStr2SnpLevel());
+		sclGroup2Sample.setItem(0, cmbGroupSet);
+		sclGroup2Sample.setItem(1, cmbSample);
+
+		sclGropuInfo.setTitle(new String[]{"Group","SnpLevel","MinNum","MaxNum"});
+		cmbSnpLevel.setMapItem(SnpLevel.getMapStr2SnpLevel());
+		sclGropuInfo.setItem(1, cmbSnpLevel);
+		sclGropuInfo.setItem(0, cmbGroupGet);
 	}
 	
-	private void changeSclCompareGroup() {
+	private void changeSclComparePrefix() {
 		ArrayList<String[]> lsSnp2Prefix = sclSnpFile.getLsDataInfo();
 		Map<String, String> mapString2Value = new HashMap<String, String>();
 		for (String[] snp2prefix : lsSnp2Prefix) {
 			mapString2Value.put(snp2prefix[1], snp2prefix[1]);
 		}
-		cmbGroup.setMapItem(mapString2Value);
+		cmbSample.setMapItem(mapString2Value);
+	}
+	
+	private void changeSclCompareGroup() {
+		ArrayList<String[]> lsSnp2Prefix = sclGroup2Sample.getLsDataInfo();
+		Map<String, String> mapString2Value = new HashMap<String, String>();
+		for (String[] group2Prefix : lsSnp2Prefix) {
+			if (group2Prefix[0].trim().equals("")) {
+				continue;
+			}
+			mapString2Value.put(group2Prefix[0].trim(), group2Prefix[0].trim());
+		}
+		cmbGroupGet.setMapItem(mapString2Value);
+		cmbGroupSet.setMapItem(mapString2Value);
 	}
 }

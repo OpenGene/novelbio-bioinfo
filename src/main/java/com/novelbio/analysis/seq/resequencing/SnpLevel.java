@@ -30,4 +30,7 @@ public enum SnpLevel {
 		return mapStr2SnpLevel;
 	}
 	
+	public static SnpLevel getSnpLevel(String snpLevel) {
+		return getMapStr2SnpLevel().get(snpLevel);
+	}
 }

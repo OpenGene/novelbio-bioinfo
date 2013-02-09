@@ -2,7 +2,11 @@ package com.novelbio.analysis.seq.resequencing;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
@@ -14,6 +18,8 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
  *  
  *  */
 public class SnpSomaticFinder {
+	private static Logger logger = Logger.getLogger(SnpSomaticFinder.class);
+	
 	public static void main(String[] args) {
 		String parentFile = "/media/winF/NBC/Project/Project_HXW/20121018/mapping/";
 		
@@ -59,8 +65,8 @@ public class SnpSomaticFinder {
 		sampleDetailCol.setSampleSnpIndelHetoMoreNum(1, 3);
 		sampleDetailCol.setSampleSnpIndelHetoLessNum(0, 0);
 		
-		snpSomaticFilter.addFilterSample(sampleDetailTreat);
-		snpSomaticFilter.addFilterSample(sampleDetailCol);
+		snpSomaticFilter.addFilterGroup(sampleDetailTreat);
+		snpSomaticFilter.addFilterGroup(sampleDetailCol);
 		
 		snpSomaticFilter.readSnpDetailFromFile();
 		snpSomaticFilter.writeToFile("/media/winF/NBC/Project/Project_HXW/20121018/result/ColvsTreat.xls");
@@ -87,15 +93,17 @@ public class SnpSomaticFinder {
 	SnpSomaticFilter snpSomaticFilter;
 	GeneFilter geneFilter = new GeneFilter();
 	ArrayList<RefSiteSnpIndel> lsRefSiteSnpIndelsResult;
+	Map<String, SnpGroupFilterInfo> mapGroupName2Group;
 	
 	/**
-	 * 添加snp文件，必须是NBC的snp格式
-	 * 第一列ChrID
-	 * 第二列location
-	 * 第三列refSeq
-	 * 第四列thisSeq
-	 * @param lsSnpFile2Prefix
-	 * String 0: SnpFile
+	 * 添加snp文件，必须是NBC的snp格式<br>
+	 * 第一列ChrID<br>
+	 * 第二列location<br>
+	 * 第三列refSeq<br>
+	 * 第四列thisSeq<br>
+	 * @param lsSnpFile2Prefix<br>
+	 * ls-String<br>
+	 *  0: SnpFile<br>
 	 * 1: Prefix
 	 */
 	public void setSnpFile(List<String[]> lsSnpFile2Prefix) {
@@ -117,19 +125,44 @@ public class SnpSomaticFinder {
 	}
 	
 	/**
-	 * 
-	 * @param lsGroup2Files
+	 * 设定group和sample名字之间的关系
+	 * @param lsGroup2Prefix
 	 */
-	public void addSnpGroupInfo(List<String[]> lsGroup2Files) {
-		ArrayListMultimap<String, String[]> mapGroup2LsFiles = ArrayListMultimap.create();
-		for (String[] strings : lsGroup2Files) {
-			mapGroup2LsFiles.put(strings[0], strings);
+	public void setSnpGroupInfo(List<String[]> lsGroup2Prefix) {
+		mapGroupName2Group = new HashMap<String, SnpGroupFilterInfo>();
+		ArrayListMultimap<String, String> mapGroup2LsFiles = ArrayListMultimap.create();
+		for (String[] strings : lsGroup2Prefix) {
+			mapGroup2LsFiles.put(strings[0], strings[1]);
 		}
 		for (String group : mapGroup2LsFiles.keySet()) {
-			List<String[]> lsInfo = mapGroup2LsFiles.get(group);
+			List<String> lsSample = mapGroup2LsFiles.get(group);
+			for (String sampleName : lsSample) {
+				SnpGroupFilterInfo sampleDetailTreat = new SnpGroupFilterInfo();
+				sampleDetailTreat.addSampleName(sampleName);
+				mapGroupName2Group.put(group, sampleDetailTreat);
+			}
 		}
-		
-		
+	}
+	
+	/**
+	 * 设定每个组的信息，譬如snp level，数量等
+	 */
+	public void setGroupInfo(List<String[]> lsGroupInfo) {
+		for (String[] strings : lsGroupInfo) {
+			SnpGroupFilterInfo snpGroupFilterInfo = mapGroupName2Group.get(strings[0]);
+			try {
+				snpGroupFilterInfo.setSampleSnpRegionUp(SnpLevel.getSnpLevel(strings[1]), Integer.parseInt(strings[2]), Integer.parseInt(strings[3]));
+			} catch (Exception e) {
+				logger.error("SnpGroupFilterInfo 设定时出错");
+			}
+		}
+	}
+	
+	public void prepare() {
+		for (String groupName : mapGroupName2Group.keySet()) {
+			SnpGroupFilterInfo snpGroupFilterInfo = mapGroupName2Group.get(groupName);
+			snpSomaticFilter.addFilterGroup(snpGroupFilterInfo);
+		}
 	}
 	
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {

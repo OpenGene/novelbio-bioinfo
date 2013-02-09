@@ -83,7 +83,7 @@ public class SnpSomaticFilter {
 	}
 	
 	/** 过滤样本的具体信息 */
-	public void addFilterSample(SnpGroupFilterInfo snpGroupFilterInfo) {
+	public void addFilterGroup(SnpGroupFilterInfo snpGroupFilterInfo) {
 		snpFilterSamples.addSampleFilterInfo(snpGroupFilterInfo);
 	}
 	

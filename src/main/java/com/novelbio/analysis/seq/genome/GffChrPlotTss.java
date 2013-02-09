@@ -431,11 +431,11 @@ public class GffChrPlotTss {
 		for (MapInfo mapInfo : lsMapInfos) {
 			double[] info = mapInfo.getDouble();
 			for (int i = 0; i < info.length; i++) {
-				if (i < lsResult.size() - 1) {
+				if (i < lsResult.size()) {
 					 lsResult.set(i, lsResult.get(i)+1);
 				} else {
 					lsResult.add(1);
-				}
+				}//TODO 
 			}
 		}
 		return lsResult;
