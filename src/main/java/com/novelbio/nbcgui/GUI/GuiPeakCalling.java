@@ -120,9 +120,6 @@ public class GuiPeakCalling extends JPanel {
 		saveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String outPath = guiFileOpen.saveFileNameAndPath("", "");
-				if (FileOperate.isFileDirectory(outPath)) {
-					outPath = FileOperate.addSep(outPath);
-				}
 				txtSavePath.setText(outPath);
 			}
 		});

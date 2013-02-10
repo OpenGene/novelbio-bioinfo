@@ -17,7 +17,10 @@ import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.database.model.modgeneid.GeneID;
 
 /**
- * 因为snp一般不会发生在相同的位点，而更可能发生在相同的基因，所以用这个做一个过滤器
+ * 因为snp一般不会发生在相同的位点，而更可能发生在相同的基因。
+ * 也就是说一个snp可能只有一个样本突变，
+ * 而一个基因可能有多个样本发生突变。
+ * 所以用这个做一个过滤器
  * 用来筛选出大部分样本都发生突变的那个基因
  * @author zong0jie
  */
@@ -40,12 +43,12 @@ public class GeneFilter {
 	TreeMap<Integer, List<RefSiteSnpIndel>> mapNum2LsMapSnpIndelInfo;
 	
 	//样本名
-	Set<String> setTreat = new HashSet<String>();
+	Set<String> setSampleName = new HashSet<String>();
 	
 	/** 实验组通过过滤的最少数目
 	 * 就是说只要某个基因有>=该数量的样本通过质检，就认为该gene合格
 	 *  */
-	int treatFilteredMinNum = 0;
+	int sampleFilteredMinNum = 0;
 	
 	/** 过滤单个snpSite位点的过滤器 */
 	SnpFilter snpFilterSingleSite = new SnpFilter();
@@ -87,32 +90,36 @@ public class GeneFilter {
 	}
 	
 	/** 检验哪些样本名，样本名要和snp过滤的样本名一致 */
-	public void addTreatName(String treatName) {
-		setTreat.add(treatName);
+	public void addSampleName(String colSampleName) {
+		setSampleName.add(colSampleName);
 		mapNum2LsMapSnpIndelInfo = null;
 	}
 	/** 检验哪些样本名，样本名要和snp过滤的样本名一致 */
-	public void addTreatName(Collection<String> colTreatName) {
-		setTreat.addAll(colTreatName);
+	public void addSampleName(Collection<String> colSampleName) {
+		setSampleName.addAll(colSampleName);
+		mapNum2LsMapSnpIndelInfo = null;
+	}
+	public void setSampleName(Collection<String> colSampleName) {
+		setSampleName = new HashSet<String>(colSampleName);
 		mapNum2LsMapSnpIndelInfo = null;
 	}
 	
 	/** 超过几个treat含有该gene就认为通过了 */
-	public void setTreatFilteredNum(int treatFilteredNum) {
-		this.treatFilteredMinNum = treatFilteredNum;
+	public void setSampleFilteredNum(int sampleFilteredNum) {
+		this.sampleFilteredMinNum = sampleFilteredNum;
 	}
 	/** 获得设定的treatmentName */
-	public Set<String> getSetTreat() {
-		return setTreat;
+	public Set<String> getSetSampleName() {
+		return setSampleName;
 	}
 	public ArrayList<RefSiteSnpIndel> filterSnpInGene() {
 		ArrayList<RefSiteSnpIndel> lsResult = new ArrayList<RefSiteSnpIndel>();
 		if (mapNum2LsMapSnpIndelInfo == null) {
 			setMapGeneID2LsRefSiteSnpIndel();
-			sortByTreatSampleNum();
+			sortBySampleNum();
 		}
 		for (Integer filteredTreatNum : mapNum2LsMapSnpIndelInfo.keySet()) {
-			if (filteredTreatNum < treatFilteredMinNum) {
+			if (filteredTreatNum < sampleFilteredMinNum) {
 				continue;
 			}
 			lsResult.addAll(mapNum2LsMapSnpIndelInfo.get(filteredTreatNum));
@@ -132,8 +139,8 @@ public class GeneFilter {
 		}
 	}
 	
-	/** 按照treat的样本数量排序，就是越多样本含有该基因就把他跳出来，然后保存进入treemap */
-	private TreeMap<Integer, List<RefSiteSnpIndel>> sortByTreatSampleNum() {
+	/** 按照sample的样本数量排序，就是越多样本含有该基因就把他跳出来，然后保存进入treemap */
+	private TreeMap<Integer, List<RefSiteSnpIndel>> sortBySampleNum() {
 		//倒序排列的treemap
 		mapNum2LsMapSnpIndelInfo =
 				new TreeMap<Integer, List<RefSiteSnpIndel>>(new Comparator<Integer>() {
@@ -145,30 +152,30 @@ public class GeneFilter {
 		
 		for (GeneID geneID : mapGeneID2LsRefSiteSnpIndel.keySet()) {
 			List<RefSiteSnpIndel> lsSnpIndels = mapGeneID2LsRefSiteSnpIndel.get(geneID);
-			int filteredSampleNum = getTreatNum(lsSnpIndels);
+			int filteredSampleNum = getFilteredSampleNum(lsSnpIndels);
 			mapNum2LsMapSnpIndelInfo.put(filteredSampleNum, lsSnpIndels);
 		}
 		return mapNum2LsMapSnpIndelInfo;
 	}
 	
 	/** 输入的必须是过滤后只剩下causal snp的RefSiteSnpIndel */
-	private int getTreatNum(List<RefSiteSnpIndel> lsSnpIndels) {
-		HashSet<String> setTreatName = new HashSet<String>();
+	private int getFilteredSampleNum(List<RefSiteSnpIndel> lsSnpIndels) {
+		HashSet<String> setSampleName = new HashSet<String>();
 		for (RefSiteSnpIndel refSiteSnpIndel : lsSnpIndels) {
 
-			//第一 我们只能找哪些筛选出来的snp，没有筛选出来的就不要考虑。
+			//第一 我们只能找那些筛选出来的snp，没有筛选出来的就不要考虑。
 			//第二 对于筛选出来的snp，我们依然要遍历每一个样本，看该snp是否超过阈值
 			//获得前面筛选通过的snp类型
 			for (SiteSnpIndelInfo siteSnpIndelInfo : refSiteSnpIndel.mapAllen2Num.values()) {
-				for (String treatName : setTreat) {
+				for (String treatName : setSampleName) {
 					siteSnpIndelInfo.setSampleName(treatName);
 					if (snpFilterSingleSite.isFilterdSnp(siteSnpIndelInfo)) {
-						setTreatName.add(treatName);
+						setSampleName.add(treatName);
 					}
 				}
 			}
 		}
-		return setTreatName.size();
+		return setSampleName.size();
 	}
 	
 	/** 给定MapInfoSnpIndel，返回其坐标所对应的string，用于做hashmap的key */

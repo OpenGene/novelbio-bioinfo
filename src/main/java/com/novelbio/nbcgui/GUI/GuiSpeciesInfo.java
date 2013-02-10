@@ -68,13 +68,6 @@ public class GuiSpeciesInfo extends JPanel {
 		btnOutFile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 			 String outFile =  guiFileOpen.saveFileNameAndPath("", "");
-			 if (FileOperate.isFileDirectory(outFile)) {
-				 outFile =  FileOperate.addSep(outFile);
-			 }
-			 else {
-				 outFile =  FileOperate.getParentPathName(outFile);
-				 outFile = FileOperate.addSep(outFile);
-			}
 			 txtOutPath.setText(outFile);
 			}
 		});

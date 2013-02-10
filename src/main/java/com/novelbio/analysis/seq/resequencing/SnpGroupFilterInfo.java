@@ -72,10 +72,17 @@ public class SnpGroupFilterInfo {
 	 * <b>每个group类每个level0只能设定一次，总共可以设定多次</b>
 	 * 过滤用，输入snp的类型，以及样本的数量区间
 	 * @param snpIndelLevel 仅有该snp的类型的数量，譬如输入SnpIndelLevel.HetoLess，那么就只看该leve的样本数量，大于和小于的都不看
-	 * @param minNum
-	 * @param maxNum
+	 * @param minNum 该组最少有多少个样本满足这个snp级别，小于0表示0个样本满足
+	 * @param maxNum 该组最多有多少个样本满足这个snp级别，小于0表示全部样本都满足
 	 */
 	public void setSampleSnpRegion(SnpLevel snpIndelLevel, int minNum, int maxNum) {
+		if (maxNum < 0) {
+			maxNum = setSampleName.size();
+		}
+		if (minNum < 0) {
+			minNum = 0;
+		}
+		
 		if (snpIndelLevel == SnpLevel.Homo) {
 			setSampleRefHomoNum(minNum, maxNum);
 		} else if (snpIndelLevel == SnpLevel.HetoLess) {
@@ -95,10 +102,17 @@ public class SnpGroupFilterInfo {
 	 * 当输入{@link SnpLevel#Homo}}时，功能和{@link #setSampleSnpRegion(SnpLevel, int, int)} 一致<br>
 	 * @param snpIndelLevel 有该snp类型，并且大于该snp的类型的数量，譬如输入SnpIndelLevel.HetoLess，那么就看HetoLess,HetoMid,HetoMore,SnpHomo
 	 * 这些leve的样本数量
-	 * @param minNum
-	 * @param maxNum
+	 * @param minNum 该组最少有多少个样本满足这个snp级别，小于0表示0个样本满足
+	 * @param maxNum 该组最多有多少个样本满足这个snp级别，小于0表示全部样本都满足
 	 */
 	public void setSampleSnpRegionUp(SnpLevel snpIndelLevel, int minNum, int maxNum) {
+		if (maxNum < 0) {
+			maxNum = setSampleName.size();
+		}
+		if (minNum < 0) {
+			minNum = 0;
+		}
+		
 		if (snpIndelLevel == SnpLevel.Homo) {
 			setSampleRefHomoNum(minNum, maxNum);
 		} else if (snpIndelLevel == SnpLevel.HetoLess) {

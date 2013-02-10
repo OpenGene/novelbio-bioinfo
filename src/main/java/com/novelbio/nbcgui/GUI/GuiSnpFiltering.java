@@ -4,6 +4,9 @@ import javax.swing.JPanel;
 import javax.swing.JButton;
 
 import com.novelbio.analysis.seq.resequencing.SnpLevel;
+import com.novelbio.analysis.seq.resequencing.SnpSomaticFinder;
+import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
 
@@ -14,11 +17,16 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JScrollPane;
 import javax.swing.JComboBox;
+import javax.swing.JTextField;
+import javax.swing.JCheckBox;
+import javax.swing.JSpinner;
+import javax.swing.JLabel;
 
 public class GuiSnpFiltering extends JPanel {
 	JScrollPaneData sclSnpFile;
@@ -32,8 +40,20 @@ public class GuiSnpFiltering extends JPanel {
 	/** 在sclGropuInfo中使用，不可以添加新的group */
 	JComboBoxData<String> cmbGroupGet = new JComboBoxData<String>();
 	JComboBoxData<SnpLevel> cmbSnpLevel = new JComboBoxData<SnpLevel>();
+	JComboBoxData<SnpLevel> cmbSnpLevelShow = new JComboBoxData<SnpLevel>();
+	private JTextField txtSaveTo;
 	
+	JPanel guiLayeredPaneSpeciesVersionGff;
+	JSpinner snpGeneSnpNum;
 	
+	GUIFileOpen guiFileOpen = new GUIFileOpen();
+	
+	SnpSomaticFinder snpSomaticFinder = new SnpSomaticFinder();
+	JCheckBox chckbxFiltergene;
+	
+	/** 是否要运行读取方法，因为读取很花时间，如果只是调整参数，就不用再次读取了 */
+	boolean isReadPileUp = true;
+	boolean isFilterSnp = true;
 	/**
 	 * Create the panel.
 	 */
@@ -41,50 +61,67 @@ public class GuiSnpFiltering extends JPanel {
 		setLayout(null);
 		
 		sclSnpFile = new JScrollPaneData();
-		sclSnpFile.setBounds(32, 29, 724, 124);
+		sclSnpFile.setBounds(32, 29, 619, 124);
 		add(sclSnpFile);
 		
 		JButton btnAddSnpFile = new JButton("AddSnpFile");
 		btnAddSnpFile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				sclSnpFile.addItem(new String[]{"",""});
+				List<String> lsFileName = guiFileOpen.openLsFileName("", "");
+				List<String[]> lsFileName2Prefix = new ArrayList<String[]>();
+				for (String fileName : lsFileName) {
+					String prefix = FileOperate.getFileNameSep(fileName)[0].split("_")[0];
+					lsFileName2Prefix.add(new String[]{fileName, prefix});
+				}
+				sclSnpFile.addItemLs(lsFileName2Prefix);
+				isReadPileUp = true;
+				isFilterSnp = true;
 			}
 		});
 		btnAddSnpFile.setBounds(32, 162, 118, 24);
 		add(btnAddSnpFile);
 		
 		JButton btnDelSnpFile = new JButton("DelSnpFile");
-		btnDelSnpFile.setBounds(638, 162, 118, 24);
+		btnDelSnpFile.setBounds(534, 166, 118, 24);
 		add(btnDelSnpFile);
 		
 		sclSnpPileUp = new JScrollPaneData();
-		sclSnpPileUp.setBounds(32, 198, 724, 110);
+		sclSnpPileUp.setBounds(32, 198, 619, 110);
 		add(sclSnpPileUp);
 		
 		JButton btnAddPileUp = new JButton("AddPileUp");
 		btnAddPileUp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				sclSnpPileUp.addItem(new String[]{"", ""});
+				List<String> lsFileName = guiFileOpen.openLsFileName("", "");
+				List<String[]> lsFileName2Prefix = new ArrayList<String[]>();
+				for (String fileName : lsFileName) {
+					String prefix = FileOperate.getFileNameSep(fileName)[0].split("_")[0];
+					lsFileName2Prefix.add(new String[]{fileName, prefix});
+				}
+				sclSnpPileUp.addItemLs(lsFileName2Prefix);
+				isReadPileUp = true;
+				isFilterSnp = true;
 			}
 		});
 		btnAddPileUp.setBounds(32, 315, 118, 24);
 		add(btnAddPileUp);
 		
 		JButton btnDelFileUp = new JButton("DelFileUp");
-		btnDelFileUp.setBounds(638, 320, 118, 24);
+		btnDelFileUp.setBounds(533, 321, 118, 24);
 		add(btnDelFileUp);
 		
 		sclGropuInfo = new JScrollPaneData();
-		sclGropuInfo.setBounds(324, 362, 432, 104);
+		sclGropuInfo.setBounds(32, 362, 350, 104);
 		add(sclGropuInfo);
 		
 		JButton btnAddcompare = new JButton("AddCmp");
 		btnAddcompare.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				sclGropuInfo.addItem(new String[]{"", ""});
+				sclGropuInfo.addItem(new String[]{"", "" ,"", "", ""});
+				isFilterSnp = true;
 			}
 		});
-		btnAddcompare.setBounds(324, 479, 91, 24);
+		btnAddcompare.setBounds(32, 479, 91, 24);
 		add(btnAddcompare);
 		
 		JButton btnDelcompare = new JButton("DelCmp");
@@ -93,20 +130,21 @@ public class GuiSnpFiltering extends JPanel {
 				sclGropuInfo.deleteSelRows();
 			}
 		});
-		btnDelcompare.setBounds(665, 479, 91, 24);
+		btnDelcompare.setBounds(291, 479, 91, 24);
 		add(btnDelcompare);
 		
 		sclGroup2Sample = new JScrollPaneData();
-		sclGroup2Sample.setBounds(32, 362, 267, 104);
+		sclGroup2Sample.setBounds(661, 29, 194, 124);
 		add(sclGroup2Sample);
 		
 		JButton btnAddgroup = new JButton("AddGroup");
 		btnAddgroup.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				sclGroup2Sample.addItem(new String[]{"",""});
+				isFilterSnp = true;
 			}
 		});
-		btnAddgroup.setBounds(32, 478, 102, 27);
+		btnAddgroup.setBounds(661, 161, 91, 27);
 		add(btnAddgroup);
 		
 		JButton btnDelGroup = new JButton("DelGroup");
@@ -115,16 +153,62 @@ public class GuiSnpFiltering extends JPanel {
 				sclGroup2Sample.deleteSelRows();
 			}
 		});
-		btnDelGroup.setBounds(189, 478, 109, 27);
+		btnDelGroup.setBounds(764, 161, 91, 27);
 		add(btnDelGroup);
 		
-		JComboBox comboBox = new JComboBox();
-		comboBox.addActionListener(new ActionListener() {
+		guiLayeredPaneSpeciesVersionGff = new JPanel();
+		guiLayeredPaneSpeciesVersionGff.setBounds(420, 358, 231, 145);
+		add(guiLayeredPaneSpeciesVersionGff);
+		
+		JButton btnRun = new JButton("Run");
+		btnRun.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				run();
 			}
 		});
-		comboBox.setBounds(324, 523, 102, 24);
-		add(comboBox);
+		btnRun.setBounds(698, 527, 113, 27);
+		add(btnRun);
+		
+		txtSaveTo = new JTextField();
+		txtSaveTo.setBounds(37, 528, 502, 24);
+		add(txtSaveTo);
+		txtSaveTo.setColumns(10);
+		
+		JButton btnSaveto = new JButton("SaveTo");
+		btnSaveto.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String fileName = guiFileOpen.saveFileNameAndPath("", "");
+				txtSaveTo.setText(fileName);
+			}
+		});
+		btnSaveto.setBounds(553, 527, 113, 27);
+		add(btnSaveto);
+		
+		cmbSnpLevelShow.setBounds(661, 393, 177, 24);
+		add(cmbSnpLevelShow);
+		
+		chckbxFiltergene = new JCheckBox("FilterGene");
+		chckbxFiltergene.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (chckbxFiltergene.isSelected()) {
+					cmbSnpLevelShow.setEnabled(true);
+					snpGeneSnpNum.setEnabled(true);
+				} else {
+					cmbSnpLevelShow.setEnabled(true);
+					snpGeneSnpNum.setEnabled(true);
+				}
+			}
+		});
+		chckbxFiltergene.setBounds(661, 357, 133, 27);
+		add(chckbxFiltergene);
+		
+		snpGeneSnpNum = new JSpinner();
+		snpGeneSnpNum.setBounds(661, 465, 91, 24);
+		add(snpGeneSnpNum);
+		
+		JLabel lblSnpnumPerGene = new JLabel("SnpNum per Gene");
+		lblSnpnumPerGene.setBounds(661, 434, 133, 18);
+		add(lblSnpnumPerGene);
 
 		initial();
 	}
@@ -160,6 +244,8 @@ public class GuiSnpFiltering extends JPanel {
 		cmbSnpLevel.setMapItem(SnpLevel.getMapStr2SnpLevel());
 		sclGropuInfo.setItem(1, cmbSnpLevel);
 		sclGropuInfo.setItem(0, cmbGroupGet);
+		
+		cmbSnpLevelShow.setMapItem(SnpLevel.getMapStr2SnpLevel());
 	}
 	
 	private void changeSclComparePrefix() {
@@ -182,5 +268,34 @@ public class GuiSnpFiltering extends JPanel {
 		}
 		cmbGroupGet.setMapItem(mapString2Value);
 		cmbGroupSet.setMapItem(mapString2Value);
+	}
+	
+	private void run() {
+		if (isReadPileUp) {
+			snpSomaticFinder.setSnpFile(sclSnpFile.getLsDataInfo());
+			snpSomaticFinder.setSnpPileUpFile(sclSnpPileUp.getLsDataInfo());
+			snpSomaticFinder.readPileupFile();
+			isReadPileUp = false;
+		}
+		
+		if (isFilterSnp) {
+			snpSomaticFinder.setGroup2Sample(sclGroup2Sample.getLsDataInfo());
+			snpSomaticFinder.setGroupInfo(sclGropuInfo.getLsDataInfo());
+			snpSomaticFinder.filterSnp();
+			isFilterSnp = false;
+		}
+		
+		if (chckbxFiltergene.isSelected()) {
+			snpSomaticFinder.setGffChrAbs(guiLayeredPaneSpeciesVersionGff.);
+			snpSomaticFinder.setSnpLevel(cmbSnpLevelShow.getSelectedValue());
+			snpSomaticFinder.setTreatFilteredNum((Integer)snpGeneSnpNum.getValue());
+			snpSomaticFinder.filterByGene();
+		}
+		String fileName = txtSaveTo.getText();
+		if (fileName.endsWith("/") || fileName.endsWith("\\")) {
+			fileName = fileName + "filteredsnp.txt";
+		}
+		FileOperate.createFolders(FileOperate.getParentPathName(fileName));
+		snpSomaticFinder.writeToFile(fileName);
 	}
 }

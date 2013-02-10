@@ -99,7 +99,7 @@ public class SnpFilterScript {
 
 		sampleDetailNorm.setSampleRefHomoNum(1, 6);
 		sampleDetailNorm.setSampleSnpIndelNum(0, 0);
-		snpgatKcope.addFilterSample(sampleDetailNorm);
+		snpgatKcope.addFilterGroup(sampleDetailNorm);
 		
 		SnpGroupFilterInfo sampleDetailTreat = new SnpGroupFilterInfo();
 		sampleDetailTreat.setSampleUnKnownProp(0.2);
@@ -112,7 +112,7 @@ public class SnpFilterScript {
 		sampleDetailTreat.setSampleRefHomoNum(0, 5);
 		sampleDetailTreat.setSampleSnpIndelHetoMoreNum(1, 6);
 		sampleDetailTreat.setSampleSnpIndelHetoLessNum(0, 6);
-		snpgatKcope.addFilterSample(sampleDetailTreat);
+		snpgatKcope.addFilterGroup(sampleDetailTreat);
 		
 		snpgatKcope.readSnpDetailFromFile();
 		snpgatKcope.writeToFile(parentFile + "result/NormvsTreat.xls");
@@ -124,24 +124,24 @@ public class SnpFilterScript {
 		geneFilter.setGffChrAbs(new GffChrAbs(9606));
 		geneFilter.setSnpLevel(SnpGroupFilterInfo.Heto);
 		geneFilter.addLsRefSiteSnpIndel(snpgatKcope.getLsFilteredSnp());
-		geneFilter.setTreatFilteredNum(2);
-		geneFilter.addTreatName("5B");
-		geneFilter.addTreatName("7B");
-		geneFilter.addTreatName("10B");
-		geneFilter.addTreatName("3B");
-		geneFilter.addTreatName("2B");
-		geneFilter.addTreatName("C");
-		geneFilter.setTreatFilteredNum(2);
+		geneFilter.setSampleFilteredNum(2);
+		geneFilter.addSampleName("5B");
+		geneFilter.addSampleName("7B");
+		geneFilter.addSampleName("10B");
+		geneFilter.addSampleName("3B");
+		geneFilter.addSampleName("2B");
+		geneFilter.addSampleName("C");
+		geneFilter.setSampleFilteredNum(2);
 		ArrayList<RefSiteSnpIndel> lsFilteredSnp2 = geneFilter.filterSnpInGene();
 		String outFile2 = parentFile + "result/filteredGene_2Num.xls";
 		RefSiteSnpIndel.writeToFile(outFile2, lsFilteredSnp2);
 		
-		geneFilter.setTreatFilteredNum(3);
+		geneFilter.setSampleFilteredNum(3);
 		ArrayList<RefSiteSnpIndel> lsFilteredSnp3 = geneFilter.filterSnpInGene();
 		String outFile3 = parentFile + "result/filteredGene_3Num.xls";
 		RefSiteSnpIndel.writeToFile(outFile3, lsFilteredSnp3);
 		
-		geneFilter.setTreatFilteredNum(4);
+		geneFilter.setSampleFilteredNum(4);
 		ArrayList<RefSiteSnpIndel> lsFilteredSnp4 = geneFilter.filterSnpInGene();
 		String outFile4 = parentFile + "result/filteredGene_4Num.xls";
 		RefSiteSnpIndel.writeToFile(outFile4, lsFilteredSnp4);
@@ -177,14 +177,14 @@ public class SnpFilterScript {
 		sampleDetail10A.setSampleRefHomoNum(1, 1);
 		sampleDetail10A.setSampleSnpIndelHetoNum(0, 0);
 		sampleDetail10A.setSampleSnpIndelHomoNum(0, 0);
-		snpgatKcope.addFilterSample(sampleDetail10A);
+		snpgatKcope.addFilterGroup(sampleDetail10A);
 		
 		SnpGroupFilterInfo sampleDetail10B = new SnpGroupFilterInfo();
 		sampleDetail10B.addSampleName("10B");
 		sampleDetail10B.setSampleRefHomoNum(0, 0);
 		sampleDetail10B.setSampleSnpIndelNum(1, 1);
 		sampleDetail10B.setSampleSnpIndelHetoLessNum(0, 0);
-		snpgatKcope.addFilterSample(sampleDetail10B);
+		snpgatKcope.addFilterGroup(sampleDetail10B);
 		
 		snpgatKcope.readSnpDetailFromFile();
 		snpgatKcope.writeToFile("/media/winF/NBC/Project/Project_HXW/20121018/result/10Avs10B.xls");
@@ -206,14 +206,14 @@ public class SnpFilterScript {
 		sampleDetail5A.setSampleRefHomoNum(1, 1);
 		sampleDetail5A.setSampleSnpIndelHetoNum(0, 0);
 		sampleDetail5A.setSampleSnpIndelHomoNum(0, 0);
-		snpgatKcope.addFilterSample(sampleDetail5A);
+		snpgatKcope.addFilterGroup(sampleDetail5A);
 		
 		SnpGroupFilterInfo sampleDetail5B = new SnpGroupFilterInfo();
 		sampleDetail5B.addSampleName("5B");
 		sampleDetail5B.setSampleRefHomoNum(0, 0);
 		sampleDetail5B.setSampleSnpIndelNum(1, 1);
 		sampleDetail5B.setSampleSnpIndelHetoLessNum(0, 0);
-		snpgatKcope.addFilterSample(sampleDetail5B);
+		snpgatKcope.addFilterGroup(sampleDetail5B);
 		
 		snpgatKcope.readSnpDetailFromFile();
 		snpgatKcope.writeToFile("/media/winF/NBC/Project/Project_HXW/20121018/result/5Avs5B.xls");
@@ -236,7 +236,7 @@ public class SnpFilterScript {
 		SnpGroupFilterInfo sampleDetail7A = new SnpGroupFilterInfo();
 		sampleDetail7A.addSampleName("7A");
 		sampleDetail7A.setSampleRefHomoNum(1, 1);
-		snpgatKcope.addFilterSample(sampleDetail7A);
+		snpgatKcope.addFilterGroup(sampleDetail7A);
 		
 		SnpGroupFilterInfo sampleDetail7B = new SnpGroupFilterInfo();
 		sampleDetail7B.addSampleName("7B");
@@ -244,7 +244,7 @@ public class SnpFilterScript {
 		sampleDetail7B.setSampleSnpIndelNum(1, 1);
 		sampleDetail7B.setSampleSnpIndelHetoLessNum(0, 0);
 		sampleDetail7B.setSampleSnpIndelHetoLessNum(0, 0);
-		snpgatKcope.addFilterSample(sampleDetail7B);
+		snpgatKcope.addFilterGroup(sampleDetail7B);
 		
 		snpgatKcope.readSnpDetailFromFile();
 		snpgatKcope.writeToFile("/media/winF/NBC/Project/Project_HXW/20121018/result/7Avs7B.xls");
@@ -273,7 +273,7 @@ public class SnpFilterScript {
 		sampleDetailILM.setSampleRefHomoNum(1, 1);
 		sampleDetailILM.setSampleSnpIndelHetoNum(0, 0);
 		sampleDetailILM.setSampleSnpIndelHomoNum(0, 0);
-		snpgatKcope.addFilterSample(sampleDetailILM);
+		snpgatKcope.addFilterGroup(sampleDetailILM);
 		
 		SnpGroupFilterInfo sampleDetailPGM = new SnpGroupFilterInfo();
 		sampleDetailPGM.addSampleName("PGM");
@@ -281,7 +281,7 @@ public class SnpFilterScript {
 		sampleDetailPGM.setSampleSnpIndelNum(1, 1);
 		sampleDetailPGM.setSampleSnpIndelHetoLessNum(0, 0);
 		sampleDetailPGM.setSampleSnpIndelHetoNum(0, 0);
-		snpgatKcope.addFilterSample(sampleDetailPGM);
+		snpgatKcope.addFilterGroup(sampleDetailPGM);
 		
 		snpgatKcope.readSnpDetailFromFile();
 		snpgatKcope.writeToFile(parentFile + "PGMsnpvsILM.xls");
@@ -308,7 +308,7 @@ public class SnpFilterScript {
 		sampleDetail9522.setSampleRefHomoNum(1, 1);
 		sampleDetail9522.setSampleSnpIndelHetoNum(0, 0);
 		sampleDetail9522.setSampleSnpIndelHomoNum(0, 0);
-		snpgatKcope.addFilterSample(sampleDetail9522);
+		snpgatKcope.addFilterGroup(sampleDetail9522);
 		
 		SnpGroupFilterInfo sampleDetailMut = new SnpGroupFilterInfo();
 		sampleDetailMut.addSampleName(sampleName);
@@ -316,7 +316,7 @@ public class SnpFilterScript {
 		sampleDetailMut.setSampleSnpIndelNum(1, 1);
 		sampleDetailMut.setSampleSnpIndelHetoLessNum(0, 0);
 		sampleDetailMut.setSampleSnpIndelHetoNum(0, 0);
-		snpgatKcope.addFilterSample(sampleDetailMut);
+		snpgatKcope.addFilterGroup(sampleDetailMut);
 		
 		snpgatKcope.readSnpDetailFromFile();
 		snpgatKcope.writeToFile(parentFile + "9522snpvs"+sampleName+".xls");

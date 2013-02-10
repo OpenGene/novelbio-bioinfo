@@ -45,9 +45,6 @@ public class GuiKegArrayDownload extends JPanel implements RunGetInfo<Integer> {
 			public void actionPerformed(ActionEvent arg0) {
 				btnNewButton.setEnabled(true);
 				String outFile =  guiFileOpen.saveFileNameAndPath("", "");
-				if (FileOperate.isFileDirectory(outFile)) {
-					outFile = FileOperate.addSep(outFile);
-				}
 				txtOutPath.setText(outFile);
 			}
 		});

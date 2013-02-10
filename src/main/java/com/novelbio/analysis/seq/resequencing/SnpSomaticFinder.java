@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -78,15 +79,15 @@ public class SnpSomaticFinder {
 		GeneFilter geneFilter = new GeneFilter();
 		geneFilter.setGffChrAbs(new GffChrAbs(9606));
 		geneFilter.setSnpLevel(SnpGroupFilterInfo.Heto);
-		geneFilter.setTreatFilteredNum(2);
-		geneFilter.addTreatName("5B");
-		geneFilter.addTreatName("7B");
-		geneFilter.addTreatName("10B");
+		geneFilter.setSampleFilteredNum(2);
+		geneFilter.addSampleName("5B");
+		geneFilter.addSampleName("7B");
+		geneFilter.addSampleName("10B");
 		
 		String outFile = "/media/winF/NBC/Project/Project_HXW/20121018/result/ColvsTreat_Filter_filterGene.xls";
 		
 		ArrayList<RefSiteSnpIndel> lsRefSiteSnpIndels = geneFilter.filterSnpInGene();
-		RefSiteSnpIndel.writeToFile(outFile, lsRefSiteSnpIndels, geneFilter.getSetTreat(), false);
+		RefSiteSnpIndel.writeToFile(outFile, lsRefSiteSnpIndels, geneFilter.getSetSampleName(), false);
 		
 	}
 	
@@ -94,6 +95,8 @@ public class SnpSomaticFinder {
 	GeneFilter geneFilter = new GeneFilter();
 	ArrayList<RefSiteSnpIndel> lsRefSiteSnpIndelsResult;
 	Map<String, SnpGroupFilterInfo> mapGroupName2Group;
+	
+	boolean filterGene = false;
 	
 	/**
 	 * 添加snp文件，必须是NBC的snp格式<br>
@@ -126,26 +129,31 @@ public class SnpSomaticFinder {
 	
 	/**
 	 * 设定group和sample名字之间的关系
-	 * @param lsGroup2Prefix
+	 * @param lsGroup2Sample
 	 */
-	public void setSnpGroupInfo(List<String[]> lsGroup2Prefix) {
+	public void setGroup2Sample(List<String[]> lsGroup2Sample) {
 		mapGroupName2Group = new HashMap<String, SnpGroupFilterInfo>();
-		ArrayListMultimap<String, String> mapGroup2LsFiles = ArrayListMultimap.create();
-		for (String[] strings : lsGroup2Prefix) {
-			mapGroup2LsFiles.put(strings[0], strings[1]);
+		ArrayListMultimap<String, String> mapGroup2LsSamples = ArrayListMultimap.create();
+		for (String[] strings : lsGroup2Sample) {
+			mapGroup2LsSamples.put(strings[0], strings[1]);
 		}
-		for (String group : mapGroup2LsFiles.keySet()) {
-			List<String> lsSample = mapGroup2LsFiles.get(group);
+		for (String group : mapGroup2LsSamples.keySet()) {
+			SnpGroupFilterInfo snpGroup = new SnpGroupFilterInfo();
+			List<String> lsSample = mapGroup2LsSamples.get(group);
 			for (String sampleName : lsSample) {
-				SnpGroupFilterInfo sampleDetailTreat = new SnpGroupFilterInfo();
-				sampleDetailTreat.addSampleName(sampleName);
-				mapGroupName2Group.put(group, sampleDetailTreat);
+				snpGroup.addSampleName(sampleName);
 			}
+			mapGroupName2Group.put(group, snpGroup);
 		}
 	}
 	
 	/**
 	 * 设定每个组的信息，譬如snp level，数量等
+	 * 输入的list-string[]
+	 * 0: groupName
+	 * 1: SnpLevel
+	 * 2: 有该级别及以上的Snp的最少数量
+	 * 3: 有该级别及以上的Snp的最大数量
 	 */
 	public void setGroupInfo(List<String[]> lsGroupInfo) {
 		for (String[] strings : lsGroupInfo) {
@@ -158,44 +166,70 @@ public class SnpSomaticFinder {
 		}
 	}
 	
-	public void prepare() {
-		for (String groupName : mapGroupName2Group.keySet()) {
-			SnpGroupFilterInfo snpGroupFilterInfo = mapGroupName2Group.get(groupName);
-			snpSomaticFilter.addFilterGroup(snpGroupFilterInfo);
-		}
-	}
-	
+	/**
+	 * 设定GeneFilter的信息
+	 * @param gffChrAbs
+	 */
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		geneFilter.setGffChrAbs(gffChrAbs);
 	}
 	/**
 	 * 添加要检验的样本名
+	 * 如果不输入样本名，或输入空的样本名，则用全体样本名去做分析
 	 * @param colTreatName
 	 */
-	public void addTreatName(Collection<String> colTreatName) {
-		geneFilter.addTreatName(colTreatName);
+	public void setTreatName(Collection<String> colTreatName) {
+		geneFilter.setSampleName(colTreatName);
 	}
 	/** 其中有几个样本出现这种情况就算通过 */
 	public void setTreatFilteredNum(int treatFilteredNum) {
-		geneFilter.setTreatFilteredNum(treatFilteredNum);
+		geneFilter.setSampleFilteredNum(treatFilteredNum);
 	}
 	
 	public void setSnpLevel(SnpLevel snpLevel) {
 		geneFilter.setSnpLevel(snpLevel);
 	}
 
-	public void running() {
-		ArrayList<RefSiteSnpIndel> lsFilteredRefSnp = snpSomaticFilter.getLsFilteredSnp();
-		geneFilter.addLsRefSiteSnpIndel(lsFilteredRefSnp);
-		lsRefSiteSnpIndelsResult = geneFilter.filterSnpInGene();
+	/**
+	 * 过滤差异的snp
+	 */
+	public void readPileupFile() {
+		snpSomaticFilter.readSnpDetailFromFile();
 	}
 	
+	 public void filterSnp() {
+		 snpSomaticFilter.clearGroupFilterInfo();
+		for (String groupName : mapGroupName2Group.keySet()) {
+			SnpGroupFilterInfo snpGroupFilterInfo = mapGroupName2Group.get(groupName);
+			snpSomaticFilter.addFilterGroup(snpGroupFilterInfo);
+		}
+		snpSomaticFilter.filterSnp();
+		lsRefSiteSnpIndelsResult = snpSomaticFilter.getLsFilteredSnp();
+		filterGene = false;
+	}
+	
+	/**
+	 * 根据基因再进行一次过滤，就是一个基因中有多少snp
+	 */
+	public void filterByGene() {
+		geneFilter.addLsRefSiteSnpIndel(lsRefSiteSnpIndelsResult);
+		lsRefSiteSnpIndelsResult = geneFilter.filterSnpInGene();
+		filterGene = true;
+	}
+
 	public void writeToFile(String fileName) {
 		TxtReadandWrite txtOutput = new TxtReadandWrite(fileName, true);
-		String[] title = RefSiteSnpIndel.getTitleFromSampleName(geneFilter.getSetTreat(), snpSomaticFilter.getVCFflag());
+		Set<String> setSampleName = snpSomaticFilter.getSetSampleName();
+		if (filterGene) {
+			if (geneFilter.getSetSampleName().size() == 0) {
+				geneFilter.setSampleName(setSampleName);
+			}
+			setSampleName = geneFilter.getSetSampleName();
+		}
+		String[] title = RefSiteSnpIndel.getTitleFromSampleName(setSampleName, snpSomaticFilter.getVCFflag());
 		txtOutput.writefileln(title);
 		for (RefSiteSnpIndel refSiteSnpIndel : lsRefSiteSnpIndelsResult) {
-			ArrayList<String[]> lsTmpResult = refSiteSnpIndel.toStringLsSnp(geneFilter.getSetTreat(), snpSomaticFilter.getVCFflag());
+			ArrayList<String[]> lsTmpResult = refSiteSnpIndel.toStringLsSnp(setSampleName, snpSomaticFilter.getVCFflag());
 			for (String[] strings : lsTmpResult) {
 				txtOutput.writefileln(strings);
 			}

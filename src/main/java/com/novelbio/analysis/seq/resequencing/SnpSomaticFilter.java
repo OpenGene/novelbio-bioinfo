@@ -183,9 +183,7 @@ public class SnpSomaticFilter {
 	
 	
 	/** 必须在readSnpDetailFromPileUp之后执行 */
-	public void filterSnp() {
-		snpFilterSamples.clearSampleFilterInfo();
-
+	public void filterSnp() {		
 		lsFilteredRefSite.clear();
 		lsFilteredRefSnp.clear();
 		for (RefSiteSnpIndel refSiteSnpIndel : mapSiteInfo2RefSiteSnpIndel.values()) {
@@ -208,10 +206,11 @@ public class SnpSomaticFilter {
 	public ArrayList<RefSiteSnpIndel> getLsFilteredSite() {
 		return lsFilteredRefSite;
 	}
+	
 	/**
 	 * 返回筛选过的snp位点
-	 * 没有用fiterSnp方法，为空
-	 * 用fiterSnp方法，返回通过质检的位点，位点中仅含有causal snp情况
+	 * 没有用filterSnp方法，为空
+	 * 用filterSnp方法，返回通过质检的位点，位点中仅含有causal snp情况
 	 * @return
 	 */
 	public ArrayList<RefSiteSnpIndel> getLsFilteredSnp() {
@@ -261,10 +260,9 @@ public class SnpSomaticFilter {
 	}
 	
 	/** 重置过滤的样本信息 */
-	public void clearSampleFilterInfo() {
-		snpFilterSamples.clearSampleFilterInfo();
+	public void clearGroupFilterInfo() {
+		snpFilterSamples.clearGroupFilterInfo();
 	}
-	
 	/**
 	 * 给定文本，和domain信息，获得具体domain的信息
 	 * @param txtExcelSNP

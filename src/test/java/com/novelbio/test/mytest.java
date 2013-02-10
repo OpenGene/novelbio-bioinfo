@@ -54,10 +54,12 @@ public class mytest {
 	private static Logger logger = Logger.getLogger(mytest.class);
 	
 	public static void main(String[] args) throws IOException {
-//		SamFile samFile = new SamFile("/home/zong0jie/Desktop/paper/miRNA/result/tmpMapping/imDC_miRNA.sam");
-		int a = (int)';';
-		char aa = 33;
-		System.out.println(aa);
+		GffHashGeneNCBI gffHashGeneNCBI = new GffHashGeneNCBI();
+		gffHashGeneNCBI.setTaxID(1000);
+		gffHashGeneNCBI.ReadGffarray("C:\\Users\\zong0jie\\Desktop\\NC_012926.gff");
+		System.out.println(gffHashGeneNCBI.searchISO("SSUBM407_r0002").getStart());
+		System.out.println(gffHashGeneNCBI.searchISO("SSUBM407_r0002").getGeneType().toString());
+
 	}
 	
 	private void plotHist() {

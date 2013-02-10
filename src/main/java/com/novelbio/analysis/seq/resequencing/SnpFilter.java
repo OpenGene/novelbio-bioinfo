@@ -105,7 +105,7 @@ public class SnpFilter {
 	}
 	
 	/** 重置样本信息 */
-	public void clearSampleFilterInfo() {
+	public void clearGroupFilterInfo() {
 		setSampleFilterInfo.clear();
 	}
 		
@@ -135,7 +135,7 @@ public class SnpFilter {
 	 * 输入的snp位点是否通过检验
 	 * 采用给定的SnpGroupFilterInfo来对结果进行检验。输入几组SnpGroupFilterInfo就做几个检验。
 	 * 检验结果取and，也就是说只要有一个SnpGroupFilterInfo没有通过，就返回false。
-	 * @param siteSnpIndelInfo
+	 * @param siteSnpIndelInfo 如果输入的snpGroupFilterInfo中有样本名，就鉴定snpGroupFilterInfo中的样本。否则就鉴定siteSnpIndelInfo中设定的样本名
 	 * @return
 	 */
 	public boolean isFilterdSnp(SiteSnpIndelInfo siteSnpIndelInfo) {
@@ -153,7 +153,6 @@ public class SnpFilter {
 				break;
 		}
 		return isQualified;
-		
 	}
 	
 	/** 输入之前要指定样本名，

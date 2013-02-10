@@ -883,7 +883,6 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 				lsTitle.add(sampleName + "_FilteredFlag");
 				lsTitle.add(sampleName + "_Quality");
 			}
-
 		}
 		lsTitle.add("OrfShift");
 		lsTitle.add("IsInExon");
