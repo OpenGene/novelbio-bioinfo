@@ -40,7 +40,7 @@ public class DonmaiGetDownloadUrl  extends GetPictureUrl {
 
 	@Override
 	public GetPictureUrl call() throws Exception {
-		webFetch.setUrl(url);
+		webFetch.setUri(url);
 		if (!webFetch.query(retryNum)) {
 			lsResult = null;
 			return this;

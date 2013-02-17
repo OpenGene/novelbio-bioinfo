@@ -77,7 +77,7 @@ public class DownKeggPng extends RunProcess<Integer> {
 	private ArrayList<String> findWebHref(String URL) {
 		ArrayList<String> lsUrl = new ArrayList<String>();
 		HttpFetch httpFetch = HttpFetch.getInstance();
-		httpFetch.setUrl(URL);
+		httpFetch.setUri(URL);
 		if (httpFetch.query(10)) {
 			for (String	oneLines : httpFetch.readResponse()) {
 				if (oneLines.contains("target=\"_map\"")) {
@@ -101,7 +101,7 @@ public class DownKeggPng extends RunProcess<Integer> {
 	private String findPngHref(String pngURL) {
 		HttpFetch httpFetch = HttpFetch.getInstance();
 		String pngHref = null;
-			httpFetch.setUrl(pngURL);
+			httpFetch.setUri(pngURL);
 			if (httpFetch.query(10)) {
 				for (String onePngLines : httpFetch.readResponse()) {
 					if (onePngLines.contains("usemap=\"#mapdata\"")) {
@@ -128,7 +128,7 @@ public class DownKeggPng extends RunProcess<Integer> {
 	 */
 	private void downPng(String pngHrefString) {
 		HttpFetch httpFetch = HttpFetch.getInstance();
-		httpFetch.setUrl(pngHrefString);
+		httpFetch.setUri(pngHrefString);
 		httpFetch.query();
 		String[] urlTmps =  pngHrefString.split("/");
 		int length = urlTmps.length;

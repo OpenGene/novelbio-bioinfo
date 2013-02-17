@@ -58,7 +58,7 @@ public class PixivGetPictureUrlToDownload extends GetPictureUrl {
 	/** 返回null表示失败，就需要重跑
 	 * @throws ParserException */
 	private void getLsPicture() throws ParserException {
-		webFetch.setUrl(midUrl);
+		webFetch.setUri(midUrl);
 		if (!webFetch.query(retryNum)) {
 			lsResult = null;
 			return;
@@ -118,8 +118,8 @@ public class PixivGetPictureUrlToDownload extends GetPictureUrl {
 	}
 	private String getPictureUrlBigAbs(String bigUrl) throws ParserException {
 		String resultUrl = "";
-		webFetch.setRefUrl(midUrl);
-		webFetch.setUrl(bigUrl);
+		webFetch.setRefUri(midUrl);
+		webFetch.setUri(bigUrl);
 		if (!webFetch.query(retryNum)) {
 			return null;
 		}
@@ -139,8 +139,8 @@ public class PixivGetPictureUrlToDownload extends GetPictureUrl {
 	/** 获取连环画的url 
 	 * @throws ParserException */
 	private ArrayList<String> getPictureUrlManga(String mangaUrl) throws ParserException {
-		webFetch.setRefUrl(midUrl);
-		webFetch.setUrl(mangaUrl);
+		webFetch.setRefUri(midUrl);
+		webFetch.setUri(mangaUrl);
 		if (!webFetch.query(retryNum)) {
 			return null;
 		}

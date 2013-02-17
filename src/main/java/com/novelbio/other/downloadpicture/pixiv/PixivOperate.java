@@ -57,7 +57,7 @@ public class PixivOperate extends DownloadOperate{
     	mapPostKey2Value.put("pixiv_id", name);
     	mapPostKey2Value.put("pass", password);
     	webFetch.setPostParam(mapPostKey2Value);
-    	webFetch.setUrl("http://www.pixiv.net/index.php");
+    	webFetch.setUri("http://www.pixiv.net/index.php");
     	if (!webFetch.query()) {
 			getcookies();
 		}
@@ -77,7 +77,7 @@ public class PixivOperate extends DownloadOperate{
 	 */
 	protected boolean setPictureNum_And_PageNum_Auther_And_PixivGetPath() {
 		try {
-			webFetch.setUrl(urlAuther);
+			webFetch.setUri(urlAuther);
 			while (!webFetch.query(retryGetPageNum)) {
 				Thread.sleep(500);
 			}
@@ -85,12 +85,12 @@ public class PixivOperate extends DownloadOperate{
 			String pixivAutherInfo = webFetch.getResponse();
 			Parser parser = new Parser(pixivAutherInfo);
 			
-			NodeFilter filterNum = new AndFilter(new TagNameFilter("div"), new HasAttributeFilter("class", "count-badge"));
+			NodeFilter filterNum = new AndFilter(new TagNameFilter("span"), new HasAttributeFilter("class", "count-badge"));
 			NodeList nodeListNum = parser.parse(filterNum);
 			allPictureNum = getNodeAllPicture(nodeListNum);
 			
 			parser = new Parser(pixivAutherInfo);
-			NodeFilter filterName = new AndFilter(new TagNameFilter("a"), new HasAttributeFilter("class", "avatar_m"));
+			NodeFilter filterName = new AndFilter(new TagNameFilter("h1"), new HasAttributeFilter("class", "user"));
 			NodeList nodeAutherName = parser.parse(filterName);
 			autherName = getAuterName(nodeAutherName) + "_" + autherID;
 			savePath = FileOperate.addSep(savePath) + UrlPictureDownLoad.generateoutName(autherName) + FileOperate.getSepPath();
@@ -112,6 +112,9 @@ public class PixivOperate extends DownloadOperate{
         if (iteratorPages.hasMoreNodes()) {
         	nodeNumBefore = iteratorPages.nextNode();
 		}
+        if (iteratorPages.hasMoreNodes()) {
+        	nodeNumBefore = iteratorPages.nextNode();
+		}
         String pageRaw = nodeNumBefore.toPlainTextString();
         String pageNum = pageRaw.replace("件", "").trim();
         return Integer.parseInt(pageNum);
@@ -123,14 +126,14 @@ public class PixivOperate extends DownloadOperate{
 	private String getAuterName(NodeList getAuterName) {
 		String autherName = null;
 		Node nodeAuther = getAuterName.elementAt(0);
-		String autherRaw = nodeAuther.getText();
-		String[] ss = autherRaw.split(" ");
-		for (String string : ss) {
-			if (string.contains("title")) {
-				autherName = string.replace("title=", "").replace("\"", "").trim();
-				break;
-			}
-		}
+		autherName = nodeAuther.toPlainTextString();
+//		String[] ss = autherRaw.split(" ");
+//		for (String string : ss) {
+//			if (string.contains("title")) {
+//				autherName = string.replace("title=", "").replace("\"", "").trim();
+//				break;
+//			}
+//		}
 		return autherName;
 	}
 	

@@ -70,7 +70,7 @@ public class DownloadFile {
 		for (String gourl : lsGO) {
 			String fileName = FileOperate.getFileName(gourl);
 			HttpFetch httpFetch = HttpFetch.getInstance();
-			httpFetch.setUrl(gourl);
+			httpFetch.setUri(gourl);
 			httpFetch.query();
 			httpFetch.download(saveto + fileName);
 		}

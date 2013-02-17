@@ -157,7 +157,7 @@ public class GuiSnpFiltering extends JPanel {
 		add(btnDelGroup);
 		
 		guiLayeredPaneSpeciesVersionGff = new JPanel();
-		guiLayeredPaneSpeciesVersionGff.setBounds(420, 358, 231, 145);
+		guiLayeredPaneSpeciesVersionGff.setBounds(396, 358, 255, 145);
 		add(guiLayeredPaneSpeciesVersionGff);
 		
 		JButton btnRun = new JButton("Run");

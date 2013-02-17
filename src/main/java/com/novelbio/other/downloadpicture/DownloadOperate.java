@@ -42,19 +42,19 @@ public abstract class DownloadOperate {
 //		}
 		
 		
-//		PixivOperate pixivOperate = new PixivOperate();
-//		pixivOperate.getcookies();
-//		pixivOperate.setUrlAuther("27517");
-//		pixivOperate.setDownloadFast(true);
-//		pixivOperate.setSavePath("/home/zong0jie/图片/My Pictures/picture/pixivTest");
-//		pixivOperate.run();
+		PixivOperate pixivOperate = new PixivOperate();
+		pixivOperate.getcookies();
+		pixivOperate.setUrlAuther("403278");
+		pixivOperate.setDownloadFast(true);
+		pixivOperate.setSavePath("D:/Picture/pixiv");
+		pixivOperate.run();
 		
 		
 		DonmaiOperate donmaiOperate = new DonmaiOperate();
 		donmaiOperate.getcookies();
-		donmaiOperate.setUrlAuther("gangbang");
+		donmaiOperate.setUrlAuther("kishida_mel");
 		donmaiOperate.setDownloadFast(true);
-		donmaiOperate.setSavePath("/home/zong0jie/图片/My Pictures/picture/donmai");
+		donmaiOperate.setSavePath("D:/Picture/donmai");
 		donmaiOperate.run();
 		
 	}
@@ -137,6 +137,7 @@ public abstract class DownloadOperate {
  *
  */
 class DownloadPictureFile {
+	private static Logger logger = Logger.getLogger(DownloadPictureFile.class);
 	boolean downloadFast = false;
 	
 	ArrayList<UrlPictureDownLoad> lsDownLoads = new ArrayList<UrlPictureDownLoad>();
@@ -243,6 +244,8 @@ class DownloadPictureFile {
 				if (!pixivUrlDownLoad.isSaveSucess()) {
 					Future<UrlPictureDownLoad> result = executorDownload.submit(pixivUrlDownLoad);
 					lsFutureDownLoad.add(result);
+				} else {
+					logger.error("finish " + pixivUrlDownLoad.name);
 				}
 			} else {//没执行成功就接着执行
 				lsFutureDownLoad.add(futureDownload);

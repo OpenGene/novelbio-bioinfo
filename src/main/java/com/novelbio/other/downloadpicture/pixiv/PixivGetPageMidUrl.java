@@ -77,7 +77,7 @@ public class PixivGetPageMidUrl {
 	 * @throws ParserException 
 	 */
 	private boolean getPictures() throws ParserException {
-		webFetch.setUrl(pageUrl);
+		webFetch.setUri(pageUrl);
 		if (!webFetch.query(retryNum)) {
 			return false;
 		}
@@ -112,26 +112,31 @@ public class PixivGetPageMidUrl {
 	/** 获得每个图片的url */
 	private String getPictureUrl(Node nodePicture) {
 		String urlAll = nodePicture.getText();
+		 urlAll = HttpFetch.decode(urlAll).trim();
 		 urlAll = urlAll.replace("a", "").replace("href=", "").replace("\"", "").trim();
-		 urlAll = HttpFetch.decode(urlAll);
+		 urlAll = urlAll.split(" ")[0];
+		 if (urlAll.startsWith("/")) {
+			urlAll = urlAll.substring(1);
+		}
 		return urlAll;
 	}
 	/** 获得每个图片的名字 */
 	private String getPictureName(Node nodePicture) {
-		String name = "";
-		NodeFilter filterUrl = new TagNameFilter("img");
-		//只可能有一个url
-		NodeList nodelsUrl = nodePicture.getChildren().extractAllNodesThatMatch(filterUrl);
-		String allName = nodelsUrl.elementAt(0).getText();
-		String[] ss = allName.split(" ");
-		for (String string : ss) {
-			if (string.contains("title")) {
-				name = string.replace("title=", "").replace("\"", "");
-				name = name.substring(0,name.length() - 1);
-				break;
-			}
-		}
+		String name = nodePicture.toPlainTextString();
 		return name;
+//		NodeFilter filterUrl = new TagNameFilter("img");
+//		//只可能有一个url
+//		NodeList nodelsUrl = nodePicture.getChildren().extractAllNodesThatMatch(filterUrl);
+//		String allName = nodelsUrl.elementAt(0).getText();
+//		String[] ss = allName.split(" ");
+//		for (String string : ss) {
+//			if (string.contains("title")) {
+//				name = string.replace("title=", "").replace("\"", "");
+//				name = name.substring(0,name.length() - 1);
+//				break;
+//			}
+//		}
+//		return name;
 	}
 	
 	/**

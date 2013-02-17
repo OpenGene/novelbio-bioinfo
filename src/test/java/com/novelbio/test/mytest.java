@@ -8,9 +8,13 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import net.sf.samtools.SAMFileHeader;
 
@@ -53,15 +57,51 @@ public class mytest {
 	
 	private static Logger logger = Logger.getLogger(mytest.class);
 	
-	public static void main(String[] args) throws IOException {
-		GffHashGeneNCBI gffHashGeneNCBI = new GffHashGeneNCBI();
-		gffHashGeneNCBI.setTaxID(1000);
-		gffHashGeneNCBI.ReadGffarray("C:\\Users\\zong0jie\\Desktop\\NC_012926.gff");
-		System.out.println(gffHashGeneNCBI.searchISO("SSUBM407_r0002").getStart());
-		System.out.println(gffHashGeneNCBI.searchISO("SSUBM407_r0002").getGeneType().toString());
-
+	public static void main(String[] args) throws IOException, URISyntaxException {
+		HttpFetch httpFetch = HttpFetch.getInstance();
+		getcookies(httpFetch);
+		httpFetch.setUri("http://i1.pixiv.net/img21/img/kinguman/28907378.jpg");
+		httpFetch.setRefUri("http://www.pixiv.net/member_illust.php?mode=medium&illust_id=28907378");
+		httpFetch.query();
+		httpFetch.download("D:\\Picture\\pixiv\\車山_403278\\aaa.jpg");
 	}
 	
+	/**
+	 * 获得pixiv的cookies
+	 */
+    public static void getcookies(HttpFetch webFetch) {
+    	if (webFetch == null) {
+			webFetch = HttpFetch.getInstance();
+		}
+    	if (webFetch.getCookies() != null) {
+    		return;
+    	}
+    	Map<String, String> mapPostKey2Value = new HashMap<String, String>();
+    	mapPostKey2Value.put("mode", "login");
+    	mapPostKey2Value.put("pixiv_id", "facemun");
+    	mapPostKey2Value.put("pass", "f12344321n");
+    	webFetch.setPostParam(mapPostKey2Value);
+    	webFetch.setUri("http://www.pixiv.net/index.php");
+    	if (!webFetch.query()) {
+			getcookies(webFetch);
+		}
+   }
+    
+    private static String changeFileSuffix(String fileName, String append, String suffix) {
+		int endDot = fileName.lastIndexOf(".");
+		int indexSep = Math.max(fileName.indexOf("/"), fileName.indexOf("\\"));
+		String result;
+		if (endDot > indexSep) {
+			result = fileName.substring(0, endDot);
+		} else {
+			result = fileName;
+		}
+		suffix = suffix.trim();
+		if (!suffix.equals("")) {
+			suffix = "." + suffix;
+		}
+		return result + append + suffix;
+    }
 	private void plotHist() {
 		HistList histList = HistList.creatHistList(true);
 		histList.setStartBin(1, "", 0, 1);

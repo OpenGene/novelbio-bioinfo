@@ -1,31 +1,45 @@
 package com.novelbio.other.downloadpicture;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.concurrent.Callable;
+
+import javax.imageio.ImageIO;
 
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.plot.GraphicCope;
 import com.novelbio.other.downloadpicture.pixiv.PixivOperate;
 
 public class UrlPictureDownLoad implements Callable<UrlPictureDownLoad> {
-	HttpFetch webFetch;
+	HttpFetch httpFetch;
 	/** 我们给每个pixiv的编号，从小到大排列，为了是浏览图片的时候可以方便按照顺序显示图片 */
 	int pictureNum;
 	
-	String pictureUrl;
-	String refUrl;
+	URI pictureUrl;
+	URI refUrl;
 	
 	String savePath;
 
 	String name;
 	boolean saveSucess = false;
 	public void setWebFetch(HttpFetch webFetch) {
-		this.webFetch = webFetch;
+		this.httpFetch = webFetch;
 	}
 	public void setPictureUrl(String pictureUrl) {
-		this.pictureUrl = pictureUrl;
+		try {
+			this.pictureUrl = new URI(pictureUrl);
+		} catch (URISyntaxException e) {}
 	}
 	public void setRefUrl(String refUrl) {
-		this.refUrl = refUrl;
+		try {
+			this.refUrl = new URI(refUrl);
+		} catch (URISyntaxException e) {}
 	}
 	/** 图片名字，没有可以不填，这样就直接用连接名做名字 */
 	public void setName(String name) {
@@ -53,48 +67,63 @@ public class UrlPictureDownLoad implements Callable<UrlPictureDownLoad> {
 			saveSucess = true;
 			return;
 		}
-    	webFetch.setUrl(pictureUrl);
-    	webFetch.setRefUrl(refUrl);
-    	webFetch.query();
+    	httpFetch.setUri(pictureUrl);
+    	httpFetch.setRefUri(refUrl);
+    	httpFetch.query();
     	String savePath = getSaveName();
     	
-    	if(download(webFetch, savePath)) {
-    		saveSucess = true;
-    	} else {
-    		saveSucess = false;
-    	}
+    	try {
+			if(download(httpFetch, savePath)) {
+				saveSucess = true;
+			} else {
+				saveSucess = false;
+			}
+		} catch (Exception e) {
+			saveSucess = false;
+		}
     }
-    /** 下载图片 */
-    private boolean download(HttpFetch webFetch, String savePath) {
+    /** 下载图片 
+     * @throws URISyntaxException 
+     * @throws IOException */
+    private boolean download(HttpFetch webFetch, String savePath) throws URISyntaxException, IOException {
+    	String picuri = "";
+    	boolean sucess = false;
     	while (webFetch.download(savePath)) {
     		if (FileOperate.getFileSize(savePath) > 2) {
-    			return true;
+    			sucess = true;
+    			break;
 			} else {
-				FileOperate.delFile(savePath);;
-				pictureUrl = FileOperate.changeFileSuffix(pictureUrl, "", "png").replace("http:/", "http://");
-				webFetch.setUrl(pictureUrl);
+				FileOperate.delFile(savePath);
+				picuri = FileOperate.changeFileSuffix(pictureUrl.toString(), "", "png");
+				pictureUrl = new URI(picuri);
+				webFetch.setUri(pictureUrl);
 				webFetch.query();
 				savePath = FileOperate.changeFileSuffix(savePath, "", "png");
 				while (webFetch.download(savePath)) {
 					if (FileOperate.getFileSize(savePath) > 2) {
-						return true;
+						sucess = true;
+						break;
 					} else {
 						FileOperate.delFile(savePath);
-						pictureUrl = FileOperate.changeFileSuffix(pictureUrl, "", "gif").replace("http:/", "http://");;
-						webFetch.setUrl(pictureUrl);
+						picuri = FileOperate.changeFileSuffix(pictureUrl.toString(), "", "gif");
+						pictureUrl = new URI(picuri);
+						webFetch.setUri(pictureUrl);
 						webFetch.query();
 						savePath = FileOperate.changeFileSuffix(savePath, "", "gif");
 						while (webFetch.download(savePath)) {
 							if (FileOperate.getFileSize(savePath) > 2) {
-								return true;
+								sucess = true;
+								break;
 							} else {
 								FileOperate.delFile(savePath);
-								pictureUrl = FileOperate.changeFileSuffix(pictureUrl, "", "jpeg").replace("http:/", "http://");;
-								webFetch.setUrl(pictureUrl);
+								picuri = FileOperate.changeFileSuffix(pictureUrl.toString(), "", "jpeg");
+								pictureUrl = new URI(picuri);
+								webFetch.setUri(pictureUrl);
 								webFetch.query();
 								savePath = FileOperate.changeFileSuffix(savePath, "", "jpeg");
 								while (webFetch.download(savePath)) {
-									return true;
+									sucess = true;
+									break;
 								}
 							}
 						}
@@ -102,11 +131,34 @@ public class UrlPictureDownLoad implements Callable<UrlPictureDownLoad> {
 				}
 			}
 		}
-    	return false;
+    	if (sucess && savePath.endsWith(".png")) {
+			BufferedImage bufferedImage = ImageIO.read(new File(savePath));
+			if (bufferedImage == null) {
+				return false;
+			}
+			if (bufferedImage.getWidth() > 5000) {
+				int w = (int) (bufferedImage.getWidth() * 0.6); 
+				int h = (int) (bufferedImage.getHeight() * 0.6);
+				bufferedImage = GraphicCope.resizeImage(bufferedImage, w, h);
+			} else if (bufferedImage.getWidth() > 4000) {
+				int w = (int) (bufferedImage.getWidth() * 0.7); 
+				int h = (int) (bufferedImage.getHeight() * 0.7);
+				bufferedImage = GraphicCope.resizeImage(bufferedImage, w, h);
+			} else if (bufferedImage.getWidth() > 3000) {
+				int w = (int) (bufferedImage.getWidth() * 0.9); 
+				int h = (int) (bufferedImage.getHeight() * 0.9);
+				bufferedImage = GraphicCope.resizeImage(bufferedImage, w, h);
+			}
+			String outSavePath = FileOperate.changeFileSuffix(savePath, null, "jpg");
+			ImageIO.write(bufferedImage, "jpg", new File(outSavePath));
+			FileOperate.delFile(savePath);
+		}
+    	
+    	return sucess;
     }
     
     private String getSaveName() {
-    	String[] ss = pictureUrl.split("/");
+    	String[] ss = pictureUrl.toString().split("/");
     	String suffix = ss[ss.length - 1];
     	if (suffix.contains("?")) {
 			suffix = suffix.split("\\?")[0];

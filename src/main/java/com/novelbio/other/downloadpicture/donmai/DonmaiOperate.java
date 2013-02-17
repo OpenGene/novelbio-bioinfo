@@ -41,12 +41,11 @@ public class DonmaiOperate extends DownloadOperate {
 	@Override
 	protected boolean setPictureNum_And_PageNum_Auther_And_PixivGetPath() {
 		try {
-			webFetch.setUrl(urlAuther);
+			webFetch.setUri(urlAuther);
 			while (!webFetch.query(retryGetPageNum)) {
 			}
 			String pixivAutherInfo = webFetch.getResponse();
 			Parser parser = new Parser(pixivAutherInfo);
-			
 			NodeFilter filterNum = new AndFilter(new TagNameFilter("div"), new HasAttributeFilter("class", "pagination"));
 			NodeList nodeListNum = parser.parse(filterNum);
 			
