@@ -19,64 +19,33 @@ import com.sun.tools.doclets.formats.html.resources.standard;
 public class CtrlGO extends CtrlGOPath{
 	private static final Logger logger = Logger.getLogger(CtrlGO.class);
 	
-	/** 用单例模式 */
-	private static CtrlGO ctrlGO = null;
-
 	GOtype GOClass = GOtype.BP;
 	GoAlgorithm goAlgorithm = GoAlgorithm.classic;
-	int[] staxID;
 	
 	/**
-	 * @param elimGo
-	 * @param GOClass GOInfoAbs.GO_BP
-	 * @param QtaxID
-	 * @param blast
-	 * @param evalue
-	 * @param StaxID
-	 * @return
+	 * @param goAlgorithm
+	 * @param qTaxID
 	 */
-	public static CtrlGO getInstance(GoAlgorithm goAlgorithm, GOtype GOClass, int QtaxID, boolean blast, double evalue, int... StaxID) {
-		ctrlGO = new CtrlGO(goAlgorithm, GOClass, QtaxID, blast, evalue, StaxID);
-		return ctrlGO;
-	}
-	/**
-	 * 返回已有的GtrlGO
-	 * @return
-	 */
-	public static CtrlGO getInstance() {
-		return ctrlGO;
-	}
-	/**
-	 * @param elimGo
-	 * @param geneFileXls
-	 * @param GOClass GOInfoAbs.GO_BP
-	 * @param colAccID
-	 * @param colFC
-	 * @param backGroundFile
-	 * @param QtaxID
-	 * @param blast
-	 * @param StaxID
-	 * @param evalue
-	 */
-	private CtrlGO(GoAlgorithm goAlgorithm, GOtype GOClass, int QtaxID, boolean blast,
-			double evalue, int... StaxID) {
-		super(QtaxID, blast, evalue);
-		this.staxID = StaxID;
-		this.goAlgorithm = goAlgorithm;
-		this.GOClass = GOClass;
+	public CtrlGO(GoAlgorithm goAlgorithm, int qTaxID) {
 		if (goAlgorithm != GoAlgorithm.novelgo) {
-			functionTest = new FunctionTest(FunctionTest.FUNCTION_GO_ELIM, QtaxID, blast, evalue, StaxID);
+			functionTest = new FunctionTest(FunctionTest.FUNCTION_GO_ELIM, qTaxID);
 			functionTest.setGOAlgorithm(goAlgorithm);
 		} else {
-			functionTest = new FunctionTest(FunctionTest.FUNCTION_GO_NOVELBIO, QtaxID, blast, evalue, StaxID);
+			functionTest = new FunctionTest(FunctionTest.FUNCTION_GO_NOVELBIO, qTaxID);
 		}
-		functionTest.setDetailType(GOClass);
 	}
+ 
+	
+	public void setGOType(GOtype goType) {
+		functionTest.setDetailType(goType);
+	}
+
 	@Override
 	protected void copeFile(String prix, String excelPath) {
 		if (goAlgorithm != GoAlgorithm.novelgo) {
-			FileOperate.moveFile(FileOperate.changeFileSuffix(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP, "_"+prix, null),
-					FileOperate.getParentPathName(excelPath), FileOperate.getFileNameSep(excelPath)[0] + prix + "GoMap.pdf", true);
+			String goMapFileSource = FileOperate.changeFileSuffix(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP, "_"+prix, null);
+			String goMapFileTargetName = FileOperate.getFileNameSep(excelPath)[0] + prix + "GoMap.pdf";
+			FileOperate.moveFile(goMapFileSource, FileOperate.getParentPathName(excelPath), goMapFileTargetName, true);
 		}
 	}
 	@Override
@@ -117,10 +86,11 @@ public class CtrlGO extends CtrlGOPath{
 	@Override
 	String getGene2ItemFileName(String fileName) {
 		String suffix = "_GO_Item";
-		if (blast) {
+		int[] blastTaxID = functionTest.getBlastTaxID();
+		if (functionTest.isBlast()) {
 			suffix = suffix + "_blast";
-			MathComput.sort(staxID, true);//排个序
-			for (int i : staxID) {
+			MathComput.sort(blastTaxID, true);//排个序
+			for (int i : blastTaxID) {
 				suffix = suffix + "_" + i;
 			}
 		}

@@ -15,17 +15,6 @@ import com.novelbio.generalConf.TitleFormatNBC;
 
 public class KEGGPathwayFunTest extends AbstFunTest{
 
-	public KEGGPathwayFunTest(ArrayList<GeneID> lsCopedIDsTest,
-			ArrayList<GeneID> lsCopedIDsBG, boolean blast) {
-		super(lsCopedIDsTest, lsCopedIDsBG, blast);
-	}
-	
-	public KEGGPathwayFunTest(boolean blast, double evalue, int... blastTaxID) {
-		setBlast(blast, evalue, blastTaxID);
-	}
-	
-	public KEGGPathwayFunTest() {}
-
 	@Override
 	protected ArrayList<GeneID2LsItem> convert2Item(Collection<GeneID> lsGeneIDs) {
 		HashSet<String> hashGenUniID = new HashSet<String>();
@@ -36,7 +25,7 @@ public class KEGGPathwayFunTest extends AbstFunTest{
 			}
 			hashGenUniID.add(geneID.getGenUniID());
 			GeneID2LsItem geneID2LsItem = new GeneID2LsPath();
-			geneID2LsItem.setGeneID(geneID, blast);
+			geneID2LsItem.setGeneID(geneID, isBlast());
 			if (!geneID2LsItem.isValidate()) {
 				continue;
 			}
@@ -59,7 +48,7 @@ public class KEGGPathwayFunTest extends AbstFunTest{
 	}
 
 	@Override
-	protected ArrayList<GeneID2LsItem> readFromBGfile(ArrayList<String[]> lsTmpGeneID2LsItem) {
+	protected ArrayList<GeneID2LsItem> readFromBGfile(Collection<String[]> lsTmpGeneID2LsItem) {
 		ArrayList<GeneID2LsItem> lsGeneID2LsItem = new ArrayList<GeneID2LsItem>();
 		for (String[] strings : lsTmpGeneID2LsItem) {
 			GeneID2LsPath geneID2LsPath = new GeneID2LsPath();
@@ -82,5 +71,6 @@ public class KEGGPathwayFunTest extends AbstFunTest{
 	protected String getItemTerm(String item) {
 		return KeggInfo.getKGpathway(item).getTitle();
 	}
+ 
 
 }

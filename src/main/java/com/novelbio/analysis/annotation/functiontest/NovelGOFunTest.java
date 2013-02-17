@@ -18,19 +18,10 @@ import com.novelbio.database.service.servgeneanno.ServGo2Term;
 public class NovelGOFunTest extends AbstFunTest{
 	GOtype GoType = GOtype.BP;
 	ServGo2Term servGo2Term = new ServGo2Term();
-	
-	public NovelGOFunTest(ArrayList<GeneID> lsCopedIDsTest,
-			ArrayList<GeneID> lsCopedIDsBG, boolean blast, GOtype GoType) {
-		super(lsCopedIDsTest, lsCopedIDsBG, blast);
-		this.GoType = GoType;
+ 
+	public void setGoType(GOtype goType) {
+		GoType = goType;
 	}
-	public NovelGOFunTest(boolean blast,GOtype GoType, double evalue, int...blastTaxID) {
-		this.GoType = GoType;
-		setBlast(blast, evalue, blastTaxID);
-	}
-	
-	public NovelGOFunTest() {}
-
 	
 	@Override
 	protected ArrayList<GeneID2LsItem> convert2Item(Collection<GeneID> lsGeneIDs) {
@@ -43,7 +34,7 @@ public class NovelGOFunTest extends AbstFunTest{
 			hashGenUniID.add(geneID.getGenUniID());
 			GeneID2LsGo geneID2LsItem = new GeneID2LsGo();
 			geneID2LsItem.setGOtype(GoType);
-			geneID2LsItem.setGeneID(geneID, blast);
+			geneID2LsItem.setGeneID(geneID, isBlast());
 			if (!geneID2LsItem.isValidate()) {
 				continue;
 			}
@@ -78,7 +69,7 @@ public class NovelGOFunTest extends AbstFunTest{
 			StatisticTestItem2Gene statisticTestItem2Gene = new StatisticTestItem2Gene();
 			statisticTestItem2Gene.setStatisticTestResult(statisticTestResult);
 			statisticTestItem2Gene.setLsGeneIDs(lsFinalGeneIDs);
-			statisticTestItem2Gene.setBlast(blast);
+			statisticTestItem2Gene.setBlast(isBlast());
 			lStatisticTestItem2Gene.add(statisticTestItem2Gene);
 		}
 		return lStatisticTestItem2Gene;
@@ -89,7 +80,7 @@ public class NovelGOFunTest extends AbstFunTest{
 		for (StatisticTestGene2Item statisticTestGene2Item : lsStatisticTestGene2Items) {
 			GeneID2LsGo geneID2LsItem = new GeneID2LsGo();
 			geneID2LsItem.setGOtype(GoType);
-			geneID2LsItem.setGeneID(statisticTestGene2Item.geneID, blast);
+			geneID2LsItem.setGeneID(statisticTestGene2Item.geneID, isBlast());
 			
 			for (String goid : geneID2LsItem.getSetItemID()) {
 				hashGo2LsGene.put(goid, statisticTestGene2Item.geneID);
@@ -98,7 +89,7 @@ public class NovelGOFunTest extends AbstFunTest{
 		return hashGo2LsGene;
 	}
 	@Override
-	protected ArrayList<GeneID2LsItem> readFromBGfile(ArrayList<String[]> lsTmpGeneID2LsItem) {
+	protected ArrayList<GeneID2LsItem> readFromBGfile(Collection<String[]> lsTmpGeneID2LsItem) {
 		ArrayList<GeneID2LsItem> lsGeneID2LsItem = new ArrayList<GeneID2LsItem>();
 		for (String[] strings : lsTmpGeneID2LsItem) {
 			GeneID2LsGo geneID2LsGo = new GeneID2LsGo();

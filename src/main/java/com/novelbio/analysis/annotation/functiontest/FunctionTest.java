@@ -1,6 +1,7 @@
 package com.novelbio.analysis.annotation.functiontest;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import org.apache.log4j.Logger;
 
@@ -26,21 +27,37 @@ public class FunctionTest implements FunTestInt {
 	 * 是否blast，如果blast那么blast到哪几个物种
 	 * @param functionType
 	 */
-	public FunctionTest(String functionType, int taxID, boolean blast, double blastevalue, int... blasttaxID) {
+	public FunctionTest(String functionType, int taxID) {
 		if (functionType.equals(FUNCTION_GO_NOVELBIO)) {
-			funTest = new NovelGOFunTest(blast, GOtype.BP, blastevalue, blasttaxID);
+			funTest = new NovelGOFunTest();
 		}
 		else if (functionType.equals(FUNCTION_GO_ELIM)) {
-			funTest = new ElimGOFunTest(blast, GOtype.BP, blastevalue, blasttaxID);
+			funTest = new ElimGOFunTest();
 		}
 		else if (functionType.equals(FUNCTION_PATHWAY_KEGG)) {
-			funTest = new KEGGPathwayFunTest(blast, blastevalue, blasttaxID);
+			funTest = new KEGGPathwayFunTest();
 		}
 		else {
 			logger.error("unknown functiontest: "+ functionType);
 			return;
 		}
 		funTest.setTaxID(taxID);
+	}
+	
+	/**
+	 * 设定blast
+	 * @param blastevalue
+	 * @param blasttaxID
+	 */
+	public void setBlastInfo(double blastevalue, int... blasttaxID) {
+		funTest.setBlast(blastevalue, blasttaxID);
+	}
+	public boolean isBlast() {
+		return funTest.isBlast();
+	}
+	/** 比对到哪些物种上去了 */
+	public int[] getBlastTaxID() {
+		return funTest.getBlastTaxID();
 	}
 	/**
 	 * 只能用于GO分析中
@@ -54,12 +71,12 @@ public class FunctionTest implements FunTestInt {
 	}
 	
 	@Override
-	public void setLsTestAccID(ArrayList<String> lsCopedID) {
+	public void setLsTestAccID(Collection<String> lsCopedID) {
 		funTest.setLsTestAccID(lsCopedID);
 	}
 
 	@Override
-	public void setLsTestGeneID(ArrayList<GeneID> lsCopedIDs) {
+	public void setLsTestGeneID(Collection<GeneID> lsCopedIDs) {
 		funTest.setLsTestGeneID(lsCopedIDs);
 	}
 
@@ -74,21 +91,21 @@ public class FunctionTest implements FunTestInt {
 	}
 	/**
 	 * 读取AccID文件，然后将Item保存至相应的文件夹中
-	 * @param fileName
-	 * @param colNum
-	 * @param outLsItem
+	 * @param fileName 文本名
+	 * @param colNum 读取第几列，也就是accID所在的列
+	 * @param outLsItemFile 输出的文本名
 	 */
-	public void setLsBGAccID(String fileName, int colNum, String outLsItem) {
+	public void setLsBGAccID(String fileName, int colNum, String outLsItemFile) {
 		funTest.setLsBGAccID(fileName, colNum);
 		ArrayList<GeneID2LsItem> lsBG = funTest.getLsBG();
-		TxtReadandWrite txtOut = new TxtReadandWrite(outLsItem, true);
+		TxtReadandWrite txtOut = new TxtReadandWrite(outLsItemFile, true);
 		for (GeneID2LsItem geneID2LsGO : lsBG) {
 			txtOut.writefileln(geneID2LsGO.toString());
 		}
 		txtOut.close();
 	}
 	@Override
-	public void setLsBGCopedID(ArrayList<GeneID> lsBGaccID) {
+	public void setLsBGCopedID(Collection<GeneID> lsBGaccID) {
 		funTest.setLsBGCopedID(lsBGaccID);
 	}
 

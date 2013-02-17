@@ -22,9 +22,6 @@ public class CtrlSnpGetInfo implements RunGetInfo<SnpFilterDetailInfo>{
 		this.guiSnpCalling = guiSnpCalling;
 		snpDetailGet.setRunGetInfo(this);
 	}
-	public void setGffChrAbs(GffChrAbs gffChrAbs) {
-		snpDetailGet.setGffChrAbs(gffChrAbs);
-	}
 	/** 读取文件
 	 * @param lsReadFile
 	 * @param colChrID 实际列数

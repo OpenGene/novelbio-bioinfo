@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.velocity.runtime.parser.node.PutExecutor;
@@ -28,12 +29,11 @@ public abstract class AbstFunTest implements FunTestInt{
 	public static final String TEST_KEGGPATH = "KEGGpathway";
 	
 	int taxID = 0;
-	boolean blast = false;
 	int[] blastTaxID = null;
 	double blastEvalue = 1e-10;
 	
-	ArrayList<GeneID> lsCopedIDsTest = null;
-	ArrayList<GeneID> lsCopedIDsBG = null;
+	Set<GeneID> lsCopedIDsTest = null;
+	Set<GeneID> lsCopedIDsBG = null;
 	/** genUniID item,item格式  */
 	ArrayList<GeneID2LsItem> lsTest = null;
 	/** genUniID item,item格式 */
@@ -57,29 +57,25 @@ public abstract class AbstFunTest implements FunTestInt{
 	ArrayList<String[]> lsGene2GOPath = null;
 	
 	StatisticsTest statisticsTest;
-
-	public AbstFunTest(ArrayList<GeneID> lsCopedIDsTest, ArrayList<GeneID> lsCopedIDsBG, boolean blast) {
-		this.lsCopedIDsTest = lsCopedIDsTest;
-		this.lsCopedIDsBG = lsCopedIDsBG;
-		this.blast = blast;
-	}
-	
-	public AbstFunTest() {}
-	
+		
 	public void setStatisticsTest(StatisticsTest statisticsTest) {
 		this.statisticsTest = statisticsTest;
 	}
 	
-	public void setBlast(boolean blast, double evalue, int... blastTaxID) {
-		this.blast = blast;
+	public void setBlast(double evalue, int... blastTaxID) {
 		this.blastTaxID = blastTaxID;
 		this.blastEvalue = evalue;
 	}
-	
-	public void setBlastTaxID(int... taxID) {
-		this.blastTaxID = taxID;
+	/** 比对到哪些物种上去了 */
+	public int[] getBlastTaxID() {
+		return blastTaxID;
 	}
-
+	public boolean isBlast() {
+		if (blastTaxID != null && blastTaxID.length > 0) {
+			return true;
+		}
+		return false;
+	}
 	/**
 	 * 设定物种
 	 * @param taxID
@@ -118,7 +114,7 @@ public abstract class AbstFunTest implements FunTestInt{
 	 * @param lsTmpGeneID2LsItem
 	 * @return
 	 */
-	protected abstract ArrayList<GeneID2LsItem> readFromBGfile(ArrayList<String[]> lsTmpGeneID2LsItem);
+	protected abstract ArrayList<GeneID2LsItem> readFromBGfile(Collection<String[]> lsTmpGeneID2LsItem);
 	
 	/**
 	 * 第一时间设定
@@ -128,7 +124,7 @@ public abstract class AbstFunTest implements FunTestInt{
 	public void setLsBGAccID(String fileName, int colNum) {
 		lsTestResult = new ArrayList<StatisticTestResult>();
 		if (lsCopedIDsBG == null) {
-			lsCopedIDsBG = new ArrayList<GeneID>();
+			lsCopedIDsBG = new HashSet<GeneID>();
 		}
 		lsCopedIDsBG.clear();
 		
@@ -143,7 +139,7 @@ public abstract class AbstFunTest implements FunTestInt{
 		}
 		for (String[] strings : accID) {
 			GeneID copedID = new GeneID(strings[0], taxID, false);
-			if (blast) {
+			if (isBlast()) {
 				copedID.setBlastInfo(blastEvalue, blastTaxID);
 			}
 			lsCopedIDsBG.add(copedID);
@@ -152,16 +148,16 @@ public abstract class AbstFunTest implements FunTestInt{
 		BGnum = lsBGGeneID2Items.size();
 	}
 	/**
-	 * 第一时间设定
+	 * 第一时间设定，在此之前必须先设定{@link #setBlast(boolean, double, int...)} blast情况
 	 * 读取背景文件，指定读取某一列
 	 * @param showMessage
 	 */
-	public void setLsBGCopedID(ArrayList<GeneID> lsBGaccID) {
+	public void setLsBGCopedID(Collection<GeneID> lsBGaccID) {
 		lsTestResult = new ArrayList<StatisticTestResult>();
 		for (GeneID copedID : lsBGaccID) {
 			copedID.setBlastInfo(blastEvalue, blastTaxID);
 		}
-		this.lsCopedIDsBG = lsBGaccID;
+		this.lsCopedIDsBG = new HashSet<GeneID>(lsBGaccID);
 		lsBGGeneID2Items = convert2Item(lsCopedIDsBG);
 		BGnum = lsBGGeneID2Items.size();
 	}
@@ -173,8 +169,8 @@ public abstract class AbstFunTest implements FunTestInt{
 		return lsBGGeneID2Items;
 	}
 	
-	public void setLsTestAccID(ArrayList<String> lsCopedID) {
-		lsCopedIDsTest = new ArrayList<GeneID>();		
+	public void setLsTestAccID(Collection<String> lsCopedID) {
+		lsCopedIDsTest = new HashSet<GeneID>();		
 		for (String string : lsCopedID) {
 			GeneID copedID = new GeneID(string, taxID, false);
 			lsCopedIDsTest.add(copedID);
@@ -182,8 +178,8 @@ public abstract class AbstFunTest implements FunTestInt{
 		initial();
 	}
 	
-	public void setLsTestGeneID(ArrayList<GeneID> lsCopedIDs) {
-		this.lsCopedIDsTest = lsCopedIDs;
+	public void setLsTestGeneID(Collection<GeneID> lsCopedIDs) {
+		this.lsCopedIDsTest = new HashSet<GeneID>(lsCopedIDs);
 		initial();
 	}
 	
@@ -197,7 +193,7 @@ public abstract class AbstFunTest implements FunTestInt{
 	 * 设定hashgene2CopedID，就是一个geneID会对应多个accID的这种
 	 * @param lsCopedIDs
 	 */
-	private void fillCopedIDInfo(ArrayList<GeneID> lsCopedIDs) {
+	private void fillCopedIDInfo(Collection<GeneID> lsCopedIDs) {
 		//////////////  先 清 空  ////////////////////////
 		HashSet<String> setAccID = new HashSet<String>();
 		mapGeneUniID2LsGeneID.clear();
@@ -218,11 +214,11 @@ public abstract class AbstFunTest implements FunTestInt{
 	 * @param lsTest
 	 * @return
 	 */
-	private ArrayList<GeneID2LsItem> getLsTestFromLsBG(ArrayList<GeneID> lsTest) {
+	private ArrayList<GeneID2LsItem> getLsTestFromLsBG(Collection<GeneID> lsTest) {
 		//去冗余用的
 		HashSet<GeneID> setGeneIDs = new HashSet<GeneID>();
 		for (GeneID geneID : lsTest) {
-			if (blast) {
+			if (isBlast()) {
 				geneID.setBlastInfo(blastEvalue, blastTaxID);
 			}
 			setGeneIDs.add(geneID);
@@ -276,7 +272,7 @@ public abstract class AbstFunTest implements FunTestInt{
 		Map<String, StatisticTestResult> mapItem2StatictResult = getMapItemID2StatisticsResult();
 		for (GeneID geneID : lsCopedIDsTest) {
 			StatisticTestGene2Item statisticTestGene2Item = creatStatisticTestGene2Item();
-			statisticTestGene2Item.setGeneID(geneID, blast);
+			statisticTestGene2Item.setGeneID(geneID, isBlast());
 			statisticTestGene2Item.setStatisticTestResult(mapItem2StatictResult);
 			lsTestResult.add(statisticTestGene2Item);
 		}

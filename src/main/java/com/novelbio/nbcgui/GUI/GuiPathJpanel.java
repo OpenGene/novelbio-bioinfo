@@ -86,6 +86,7 @@ public class GuiPathJpanel extends JPanel{
 	static int QtaxID = 0;//查询物种ID
 	static int StaxID = 9606;//blast物种ID
 	
+	CtrlPath ctrlPath;
 	
 	public GuiPathJpanel() 
 	{
@@ -346,7 +347,6 @@ public class GuiPathJpanel extends JPanel{
 				public void actionPerformed(ActionEvent evt) {
 					GUIFileOpen guiFileOpen = new GUIFileOpen();
 					String savefilename = guiFileOpen.saveFileName("excel2003", "xls");
-					CtrlPath ctrlPath = CtrlPath.getInstance();
 					if (!FileOperate.getFileNameSep(savefilename)[1].equals("xls")) {
 						savefilename = savefilename+".xls";
 					}
@@ -464,16 +464,19 @@ public class GuiPathJpanel extends JPanel{
 		String backGroundFile = jTxtBGPath.getText();
 		boolean blast = jChkBlastPath.isSelected();
 		double evalue = 1e-10;
-		
-		CtrlPath ctrlPath = null;
-		
+				
 		ArrayList<String[]> lsAccID = null;
-		if (colAccID != colFC)
+		if (colAccID != colFC) {
 			 lsAccID = ExcelTxtRead.readLsExcelTxt(geneFileXls, new int[]{colAccID, colFC}, 1, 0);
-		else
+		} else {
 			lsAccID = ExcelTxtRead.readLsExcelTxt(geneFileXls, new int[]{colAccID}, 1, 0);
+		}
 		
-		ctrlPath = CtrlPath.getInstance(QtaxID, blast, evalue, StaxID);
+		ctrlPath = new CtrlPath(QtaxID);
+		if (blast) {
+			ctrlPath.setBlastInfo(evalue, StaxID);
+		}
+		
 		ctrlPath.setLsBG(backGroundFile);
 		
 		if (!jChkCluster.isSelected() || colAccID == colFC) {

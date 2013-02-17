@@ -1,6 +1,7 @@
 package com.novelbio.analysis.annotation.functiontest;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -22,12 +23,12 @@ public interface FunTestInt {
 	 * 给定accID的list，设定待检验的样本
 	 * @param lsCopedID
 	 */
-	public void setLsTestAccID(ArrayList<String> lsAccID);
+	public void setLsTestAccID(Collection<String> lsAccID);
 	/**
 	 * 给定accID的copedID，设定待检验的样本
 	 * @param lsCopedID
 	 */
-	public void setLsTestGeneID(ArrayList<GeneID> lsCopedIDs);
+	public void setLsTestGeneID(Collection<GeneID> lsCopedIDs);
 	/**
 	 * 最好能第一时间设定
 	 * 读取genUniID item,item格式的表
@@ -46,7 +47,7 @@ public interface FunTestInt {
 	 * 读取背景文件，指定读取某一列
 	 * @param fileName
 	 */
-	public void setLsBGCopedID(ArrayList<GeneID> lsBGaccID);
+	public void setLsBGCopedID(Collection<GeneID> lsBGaccID);
 	/**
 	 * 待修正
 	 * 返回Gene2ItemPvalue

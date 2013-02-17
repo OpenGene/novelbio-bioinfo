@@ -12,6 +12,7 @@ import com.novelbio.analysis.annotation.functiontest.StatisticTestResult;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modgo.GOInfoAbs;
@@ -25,57 +26,22 @@ public class CtrlPath extends CtrlGOPath {
 	private static CtrlPath ctrlPath = null;
 
 	/**
-	 * @param elimGo
-	 * @param GOClass GOInfoAbs.GO_BP
 	 * @param QtaxID
-	 * @param blast
-	 * @param evalue
-	 * @param StaxID
-	 * @return
 	 */
-	public static CtrlPath getInstance(int QtaxID, boolean blast, double evalue, int... StaxID) {
-		ctrlPath = new CtrlPath(QtaxID, blast, evalue, StaxID);
-		return ctrlPath;
-	}
-	/**
-	 * 返回已有的GtrlGO
-	 * @return
-	 */
-	public static CtrlPath getInstance() {
-		return ctrlPath;
-	}
-	
-	/**
-	 * @param elimGo
-	 * @param geneFileXls
-	 * @param GOClass GOInfoAbs.GO_BP
-	 * @param colAccID
-	 * @param colFC
-	 * @param backGroundFile
-	 * @param QtaxID
-	 * @param blast
-	 * @param StaxID
-	 * @param evalue
-	 */
-	private CtrlPath(int QtaxID, boolean blast,
-			double evalue, int... StaxID) {
-		super(QtaxID, blast, evalue);
-		functionTest = new FunctionTest(FunctionTest.FUNCTION_PATHWAY_KEGG,
-					QtaxID, blast, evalue, StaxID);
+	public CtrlPath(int QtaxID) {
+		functionTest = new FunctionTest(FunctionTest.FUNCTION_PATHWAY_KEGG, QtaxID);
 	}
 
 	@Override
-	protected LinkedHashMap<String, ArrayList<String[]>> calItem2GenePvalue(
-			String prix, ArrayList<StatisticTestResult> lsResultTest) {
+	protected LinkedHashMap<String, ArrayList<String[]>> calItem2GenePvalue(String prix, ArrayList<StatisticTestResult> lsResultTest) {
 		LinkedHashMap<String, ArrayList<String[]>> hashResult = new LinkedHashMap<String, ArrayList<String[]>>();
-		// //////////////////////
+
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		lsResult.add(StatisticTestResult.getTitleGo());
 		for (StatisticTestResult statisticTestResult : lsResultTest) {
 			lsResult.add(statisticTestResult.toStringArray());
 		}
 		hashResult.put("Pathway_Result", lsResult);
-		// //////////////////////
 
 		ArrayList<StatisticTestGene2Item> lsGene2PathPvalue = functionTest.getGene2ItemPvalue();
 		ArrayList<String[]> lsGene2GoInfo = new ArrayList<String[]>();
@@ -93,8 +59,17 @@ public class CtrlPath extends CtrlGOPath {
 	}
 	@Override
 	String getGene2ItemFileName(String fileName) {
-		return FileOperate.changeFileSuffix(fileName, "_Path_Item", "txt");
+		String suffix = "_Path_Item";
+		int[] blastTaxID = functionTest.getBlastTaxID();
+		if (functionTest.isBlast()) {
+			suffix = suffix + "_blast";
+			MathComput.sort(blastTaxID, true);//排个序
+			for (int i : blastTaxID) {
+				suffix = suffix + "_" + i;
+			}
+		}
+		return FileOperate.changeFileSuffix(fileName, suffix, "txt");
 	}
-
+ 
 	
 }

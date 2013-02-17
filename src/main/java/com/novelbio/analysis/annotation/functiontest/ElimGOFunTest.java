@@ -22,14 +22,6 @@ public class ElimGOFunTest extends NovelGOFunTest{
 	
 	TopGO topGO = new TopGO();
 	
-	public ElimGOFunTest() {}
-	public ElimGOFunTest(ArrayList<GeneID> lsCopedIDsTest, ArrayList<GeneID> lsCopedIDsBG, boolean blast, GOtype GoType) {
-		super(lsCopedIDsTest, lsCopedIDsBG, blast, GoType);
-	}
-	public ElimGOFunTest(boolean blast,GOtype GoType, double evalue, int...blastTaxID) {
-		super(blast, GoType, evalue, blastTaxID);
-		this.GoType = GoType;
-	}
 	public void setAlgorithm(GoAlgorithm goAlgorithm) {
 		topGO.setGoAlgrithm(goAlgorithm);
 	}
@@ -113,7 +105,7 @@ public class ElimGOFunTest extends NovelGOFunTest{
 				StatisticTestItem2Gene statisticTestItem2GeneElimGo = new StatisticTestItem2Gene();
 				statisticTestItem2GeneElimGo.setStatisticTestResult(statisticTestResult);
 				statisticTestItem2GeneElimGo.setLsGeneIDs(lscopedIDs);
-				statisticTestItem2GeneElimGo.setBlast(blast);
+				statisticTestItem2GeneElimGo.setBlast(isBlast());
 				lStatisticTestItem2GeneElimGos.add(statisticTestItem2GeneElimGo);
 			}
 		}
