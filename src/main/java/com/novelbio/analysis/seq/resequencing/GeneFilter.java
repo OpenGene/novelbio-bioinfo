@@ -15,6 +15,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.model.species.Species;
 
 /**
  * 因为snp一般不会发生在相同的位点，而更可能发生在相同的基因。
@@ -59,7 +60,12 @@ public class GeneFilter {
 		this.gffChrAbs = gffChrAbs;
 		mapNum2LsMapSnpIndelInfo = null;
 	}
-	
+	public void setSpecies(Species species) {
+		if (gffChrAbs == null) {
+			gffChrAbs = new GffChrAbs();
+		}
+		gffChrAbs.setSpecies(species);
+	}
 	/**
 	 * 设置基因过滤器的level
 	 * @param snpLevel  SnpGroupFilterInfo.HetoLess 等

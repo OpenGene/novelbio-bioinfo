@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 
@@ -433,10 +435,18 @@ public class Species {
 	 * @return
 	 */
 	public static HashMap<String, Species> getSpeciesName2Species(int speciesType) {
-		HashMap<String, Species> mapSpeciesName2Species = new HashMap<String, Species>();
+		HashMap<String, Species> mapName2Species = new LinkedHashMap<String, Species>();
+		mapName2Species.put("UnKnown Species", new Species());
+		//按照物种名进行排序
+		TreeMap<String, Species> treemapName2Species = new TreeMap<String, Species>();
+		
 		ServTaxID servTaxID = new ServTaxID();
 		ServSpeciesFile servSpeciesFile = new ServSpeciesFile();
-		ArrayList<Integer> lsTaxID = servTaxID.getLsAllTaxID();
+		List<Integer> lsTaxID = new ArrayList<Integer>();
+		try {
+			lsTaxID = servTaxID.getLsAllTaxID();
+		} catch (Exception e) { }
+		
 		for (Integer taxID : lsTaxID) {
 			Species species = new Species(taxID);
 			if (speciesType == ALL_SPECIES) {
@@ -452,11 +462,17 @@ public class Species {
 					continue;
 				}
 			}
-			mapSpeciesName2Species.put(species.getCommonName(), species);
+			treemapName2Species.put(species.getCommonName().toLowerCase(), species);
 		}
-		mapSpeciesName2Species.put("UnKnown Species", new Species());
-		return mapSpeciesName2Species;
+		
+		for (String name : treemapName2Species.keySet()) {
+			Species species = treemapName2Species.get(name);
+			mapName2Species.put(species.getCommonName(), species);
+		}
+		
+		return mapName2Species;
 	}
+	
 	/**
 	 * 返回物种的常用名，并且按照字母排序（忽略大小写）
 	 * 可以配合getSpeciesNameTaxID方法来获得taxID

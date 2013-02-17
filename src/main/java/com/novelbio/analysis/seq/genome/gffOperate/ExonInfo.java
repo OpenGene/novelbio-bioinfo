@@ -9,7 +9,18 @@ import org.apache.commons.math.stat.descriptive.moment.ThirdMoment;
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.genome.mappingOperate.Alignment;
 import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
-
+/**
+ * 本类重写了equal代码，用于比较两个loc是否一致
+ * 重写了hashcode 仅比较ChrID + "//" + numberstart + "//" + numberstart;
+ * 
+ * 不比较两个exon所在转录本的名字<br>
+ * 包括<br>
+ * 条目起点 numberstart<br>
+ * 条目终点 numberend<br>
+ * 条目方向 cis5to3
+ * @author zong0jie
+ *
+ */
 public class ExonInfo extends ListDetailAbs {
 	public ExonInfo() {}
 	/**

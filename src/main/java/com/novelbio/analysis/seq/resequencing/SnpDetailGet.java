@@ -21,8 +21,6 @@ import com.novelbio.database.domain.geneanno.SepSign;
 public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 	private static Logger logger = Logger.getLogger(SnpDetailGet.class);
 	
-	GffChrAbs gffChrAbs;
-
 	/** key为小写 */
 	Map<String, ArrayList<RefSiteSnpIndel>> mapChrID2LsSnpSite = new HashMap<String, ArrayList<RefSiteSnpIndel>>();
 	/** 样本信息 */
@@ -38,10 +36,6 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 	long readByte;
 	int findSnp;
 	
-	
-	public void setGffChrAbs(GffChrAbs gffChrAbs) {
-		this.gffChrAbs = gffChrAbs;
-	}
 	/** 是否需要获取vcf的flag */
 	public void setGetVCFflag(boolean getVCFflag) {
 		this.getVCFflag = getVCFflag;
@@ -88,7 +82,7 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 			if (isReplicateSnpSite(ss[colChrID], snpSiteLoc))
 				continue;
 			
-			RefSiteSnpIndel snpSiteSimple = new RefSiteSnpIndel(gffChrAbs, ss[colChrID], snpSiteLoc);
+			RefSiteSnpIndel snpSiteSimple = new RefSiteSnpIndel(ss[colChrID], snpSiteLoc);
 			String snpChrID = snpSiteSimple.getRefID().toLowerCase();
 			
 			ArrayList<RefSiteSnpIndel> lsSnpSiteSimples = mapChrID2LsSnpSite.get(snpChrID);
@@ -110,13 +104,17 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 		return false;
 		
 	}
-	/** 将输入文件整理为<br>
+	/**
+	 * 输入list-RefSiteSnpIndel，将会获得这些Snp的具体信息，并将结果直接填写进入该list中<br>
+	 * 
+	 * 将输入文件整理为<br>
 	 * chrID----List--MapInfo<br>
 	 * 的格式<br>
 	 * @param lsSite
 	 * @return
 	 */
 	public void setMapChrID2InfoSnpIndel(Collection<RefSiteSnpIndel> lsSite) {
+		mapChrID2LsSnpSite.clear();
 		/** 每个chrID对应一组mapinfo，也就是一个list */
 		// 按照chr位置装入hash表
 		for (RefSiteSnpIndel refSiteSnpIndel : lsSite) {
@@ -202,10 +200,6 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 			
 			String[] ss = samtoolsLine.split("\t");
 			int loc = Integer.parseInt(ss[1]);
-			if (loc == 11583717) {
-				logger.error("stop");
-			}
-			
 			
 			if (!ss[0].trim().toLowerCase().equals(tmpChrID)) {
 				
@@ -268,10 +262,10 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 	}
 	/** 会首先判断 loc是否与当前的refSiteSnpIndel位点一致 */
 	private boolean addMapSiteInfo(int loc, ArrayList<RefSiteSnpIndel> lsMapInfos, int mapInfoIndex, String sampleName, String samtoolsLine) {
-		if (loc != lsMapInfos.get(mapInfoIndex).getRefSnpIndelStart())
+		if (loc != lsMapInfos.get(mapInfoIndex).getRefSnpIndelStart()) {
 			return false;
+		}
 		RefSiteSnpIndel refSiteSnpIndel = lsMapInfos.get(mapInfoIndex);
-		refSiteSnpIndel.setGffChrAbs(gffChrAbs);
 		refSiteSnpIndel.setSampleName(sampleName);
 		refSiteSnpIndel.setSamToolsPilup(samtoolsLine);
 		return true;

@@ -1,11 +1,12 @@
 package com.novelbio.analysis.seq.resequencing;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public enum SnpLevel {
-	/** 纯合 */
-	Homo, 
+	/** Ref纯合，表示没有snp */
+	RefHomo, 
 	/** 杂合很少，只要有就跳选出来，可以认为是最宽松的阈值 */
 	HetoLess, 
 	/** 中等杂合 */
@@ -21,8 +22,8 @@ public enum SnpLevel {
 		if (mapStr2SnpLevel != null) {
 			return mapStr2SnpLevel;
 		}
-		mapStr2SnpLevel = new HashMap<String, SnpLevel>();
-		mapStr2SnpLevel.put("Homo", Homo);
+		mapStr2SnpLevel = new LinkedHashMap<String, SnpLevel>();
+		mapStr2SnpLevel.put("RefHomo", RefHomo);
 		mapStr2SnpLevel.put("HetoLess", HetoLess);
 		mapStr2SnpLevel.put("HetoMid", HetoMid);
 		mapStr2SnpLevel.put("HetoMore", HetoMore);

@@ -11,8 +11,8 @@ public class SnpGroupFilterInfo {
 	int SnpIndelHomoNumMin = -1;
 	int SnpIndelHomoNumMax = -1;
 	
-	int SnpIndelHetoNumMin = -1;
-	int SnpIndelHetoNumMax = -1;
+	int SnpIndelHetoMidNumMin = -1;
+	int SnpIndelHetoMidNumMax = -1;
 	
 	int SnpIndelHetoLessNumMin = -1;
 	int SnpIndelHetoLessNumMax = -1;
@@ -30,7 +30,7 @@ public class SnpGroupFilterInfo {
 	
 	int ThisSnpIndelHomoNum = 0;
 	int ThisSnpIndelHetoLessNum = 0;
-	int ThisSnpIndelHetoNum = 0;
+	int ThisSnpIndelHetoMidNum = 0;
 	int ThisSnpIndelHetoMoreNum = 0;
 	int ThisRefHomo = 0;	
 	double ThisUnKnownSite = 0;
@@ -41,7 +41,7 @@ public class SnpGroupFilterInfo {
 	 * @param snpLevel Homo，HetoLess等
 	 */
 	public void setSnpLevel(SnpLevel snpLevel) {
-		if (snpLevel == SnpLevel.Homo) {
+		if (snpLevel == SnpLevel.RefHomo) {
 			setSampleRefHomoNum(1, 1);
 		}
 		else if (snpLevel == SnpLevel.HetoLess) {
@@ -69,7 +69,7 @@ public class SnpGroupFilterInfo {
 	}
 	
 	/**
-	 * <b>每个group类每个level0只能设定一次，总共可以设定多次</b>
+	 * <b>每个group类每个level只能设定一次，总共可以设定多次</b>
 	 * 过滤用，输入snp的类型，以及样本的数量区间
 	 * @param snpIndelLevel 仅有该snp的类型的数量，譬如输入SnpIndelLevel.HetoLess，那么就只看该leve的样本数量，大于和小于的都不看
 	 * @param minNum 该组最少有多少个样本满足这个snp级别，小于0表示0个样本满足
@@ -83,7 +83,7 @@ public class SnpGroupFilterInfo {
 			minNum = 0;
 		}
 		
-		if (snpIndelLevel == SnpLevel.Homo) {
+		if (snpIndelLevel == SnpLevel.RefHomo) {
 			setSampleRefHomoNum(minNum, maxNum);
 		} else if (snpIndelLevel == SnpLevel.HetoLess) {
 			setSampleSnpIndelHetoLessNum(minNum, maxNum);
@@ -97,11 +97,16 @@ public class SnpGroupFilterInfo {
 	}
 	
 	/**
-	 * <b>每个group类总共level设定一次</b>
+	 * <b>当SnpLevel为{@link SnpLevel#HetoMid} 和{@link SnpLevel#HetoMore}时</b>，
+	 * 每个group类只能设定该类型level一次，后设定的覆盖前设定
+	 *  ，且<b>低于该等级的snp类型设定为0个，</b>即如果设定SnpLevel为{@link SnpLevel#HetoMid} ，则{@link SnpLevel#HetoLess} 自动设定为0到0 ;<br><br>
+	 *  
+	 * 其他的SnpLevel如{@link SnpLevel#HetoLess} 或 {@link SnpLevel#RefHomo}等可以设定多次，并且只会改变自身数量
+	 * 
 	 * 过滤用，输入snp的类型，以及样本的数量区间<br>
-	 * 当输入{@link SnpLevel#Homo}}时，功能和{@link #setSampleSnpRegion(SnpLevel, int, int)} 一致<br>
+	 * 当输入{@link SnpLevel#RefHomo}时，功能和{@link #setSampleSnpRegion(SnpLevel, int, int)} 一致<br>
 	 * @param snpIndelLevel 有该snp类型，并且大于该snp的类型的数量，譬如输入SnpIndelLevel.HetoLess，那么就看HetoLess,HetoMid,HetoMore,SnpHomo
-	 * 这些leve的样本数量
+	 * 这些leve的样本数量。
 	 * @param minNum 该组最少有多少个样本满足这个snp级别，小于0表示0个样本满足
 	 * @param maxNum 该组最多有多少个样本满足这个snp级别，小于0表示全部样本都满足
 	 */
@@ -113,7 +118,7 @@ public class SnpGroupFilterInfo {
 			minNum = 0;
 		}
 		
-		if (snpIndelLevel == SnpLevel.Homo) {
+		if (snpIndelLevel == SnpLevel.RefHomo) {
 			setSampleRefHomoNum(minNum, maxNum);
 		} else if (snpIndelLevel == SnpLevel.HetoLess) {
 			setSampleSnpIndelNum(minNum, maxNum);
@@ -136,8 +141,8 @@ public class SnpGroupFilterInfo {
 	}
 	/** 位点为杂合snpIndel的样本，其数量区间 */
 	private void setSampleSnpIndelHetoMidNum(int snpIndelHetoNumMin, int snpIndelHetoNumMax) {
-		this.SnpIndelHetoNumMin = Math.min(snpIndelHetoNumMin, snpIndelHetoNumMax);
-		this.SnpIndelHetoNumMax = Math.max(snpIndelHetoNumMin, snpIndelHetoNumMax);
+		this.SnpIndelHetoMidNumMin = Math.min(snpIndelHetoNumMin, snpIndelHetoNumMax);
+		this.SnpIndelHetoMidNumMax = Math.max(snpIndelHetoNumMin, snpIndelHetoNumMax);
 	}
 	/** 位点为含少量杂合snpIndel的样本，其数量区间 */
 	private void setSampleSnpIndelHetoLessNum(int snpIndelHetoLessNumMin, int snpIndelHetoLessNumMax) {
@@ -171,7 +176,7 @@ public class SnpGroupFilterInfo {
 		setSampleName.clear();
 		ThisSnpIndelHomoNum = 0;
 		ThisSnpIndelHetoLessNum = 0;
-		ThisSnpIndelHetoNum = 0;
+		ThisSnpIndelHetoMidNum = 0;
 		ThisSnpIndelHetoMoreNum = 0;
 		ThisRefHomo = 0;	
 		ThisUnKnownSite = 0;
@@ -181,7 +186,7 @@ public class SnpGroupFilterInfo {
 	public void clearData() {
 		ThisSnpIndelHomoNum = 0;
 		ThisSnpIndelHetoLessNum = 0;
-		ThisSnpIndelHetoNum = 0;
+		ThisSnpIndelHetoMidNum = 0;
 		ThisSnpIndelHetoMoreNum = 0;
 		ThisRefHomo = 0;	
 		ThisUnKnownSite = 0;
@@ -189,8 +194,8 @@ public class SnpGroupFilterInfo {
 	}
 	/** 暴露出来仅供测试，累计并计数 */
 	public void addSnpIndelHomoHetoType(SnpIndelHomoHetoType snpIndelHomoHetoType) {
-		if (snpIndelHomoHetoType == SnpIndelHomoHetoType.IndelHeto || snpIndelHomoHetoType == SnpIndelHomoHetoType.SnpHeto) {
-			ThisSnpIndelHetoNum++; ThisSnpIndelAll++;
+		if (snpIndelHomoHetoType == SnpIndelHomoHetoType.IndelHetoMid || snpIndelHomoHetoType == SnpIndelHomoHetoType.SnpHetoMid) {
+			ThisSnpIndelHetoMidNum++; ThisSnpIndelAll++;
 		}
 		else if (snpIndelHomoHetoType == SnpIndelHomoHetoType.SnpHomo || snpIndelHomoHetoType == SnpIndelHomoHetoType.IndelHomo) {
 			ThisSnpIndelHomoNum++; ThisSnpIndelAll++;
@@ -215,7 +220,7 @@ public class SnpGroupFilterInfo {
 		}
 		
 		if (compare(CompareType.BigerEqual, ThisRefHomo, RefHomoMin) && compare(CompareType.SmallEqual, ThisRefHomo, RefHomoMax)
-				&&compare(CompareType.BigerEqual, ThisSnpIndelHetoNum, SnpIndelHetoNumMin) && compare(CompareType.SmallEqual, ThisSnpIndelHetoNum, SnpIndelHetoNumMax)
+				&&compare(CompareType.BigerEqual, ThisSnpIndelHetoMidNum, SnpIndelHetoMidNumMin) && compare(CompareType.SmallEqual, ThisSnpIndelHetoMidNum, SnpIndelHetoMidNumMax)
 				
 				&&compare(CompareType.BigerEqual, ThisSnpIndelHetoLessNum, SnpIndelHetoLessNumMin) && compare(CompareType.SmallEqual, ThisSnpIndelHetoLessNum, SnpIndelHetoLessNumMax)
 				&&compare(CompareType.BigerEqual, ThisSnpIndelHetoMoreNum, SnpIndelHetoMoreNumMin) && compare(CompareType.SmallEqual, ThisSnpIndelHetoMoreNum, SnpIndelHetoMoreNumMax)

@@ -21,7 +21,7 @@ import com.novelbio.database.domain.geneanno.SepSign;
  */
 public class SnpSomaticFilter {
 	private static final Logger logger = Logger.getLogger(SnpSomaticFilter.class);
-	GffChrAbs gffChrAbs;
+//	GffChrAbs gffChrAbs;
 
 	/** vcf的列 */
 	VcfCols vcfCols = new VcfCols();
@@ -70,7 +70,6 @@ public class SnpSomaticFilter {
 	
 	public void addSnpFromPileUpFile(String sampleName, SnpLevel snpLevel, String pileUpfile) {
 		SnpCalling snpCalling = new SnpCalling();
-		snpCalling.setGffChrAbs(gffChrAbs);
 		snpCalling.setMapSiteInfo2RefSiteSnpIndel(mapSiteInfo2RefSiteSnpIndel);
 		snpCalling.setSnpLevel(snpLevel);
 		snpCalling.addSnpFromPileUpFile(sampleName, pileUpfile, FileOperate.changeFileSuffix(pileUpfile, "_outSnp", "txt"));
@@ -85,10 +84,6 @@ public class SnpSomaticFilter {
 	/** 过滤样本的具体信息 */
 	public void addFilterGroup(SnpGroupFilterInfo snpGroupFilterInfo) {
 		snpFilterSamples.addSampleFilterInfo(snpGroupFilterInfo);
-	}
-	
-	public void setGffChrAbs(GffChrAbs gffChrAbs) {
-		this.gffChrAbs = gffChrAbs;
 	}
 	
 	/** 在设定snp文件的情况下，从pileup文件中获取snp信息
@@ -135,7 +130,7 @@ public class SnpSomaticFilter {
 			
 			try {Integer.parseInt(ss[vcfCols.colSnpStart]); } catch (Exception e) { continue; }
 			
-			RefSiteSnpIndel refSiteSnpIndel = new RefSiteSnpIndel(gffChrAbs, sampleName);
+			RefSiteSnpIndel refSiteSnpIndel = new RefSiteSnpIndel(sampleName);
 			refSiteSnpIndel.setVcfLines(sampleName, vcfCols, vcfLines);
 			
 			addSnp_2_mapSiteInfo2RefSiteSnpIndel(refSiteSnpIndel);
@@ -153,7 +148,7 @@ public class SnpSomaticFilter {
 			
 			try {Integer.parseInt(ss[vcfCols.colSnpStart]); } catch (Exception e) { continue; }
 			
-			RefSiteSnpIndel refSiteSnpIndel = new RefSiteSnpIndel(gffChrAbs, sampleName);
+			RefSiteSnpIndel refSiteSnpIndel = new RefSiteSnpIndel(sampleName);
 			refSiteSnpIndel.setNBCLines(sampleName, vcfLines);
 			addSnp_2_mapSiteInfo2RefSiteSnpIndel(refSiteSnpIndel);
 		}
@@ -173,7 +168,6 @@ public class SnpSomaticFilter {
 	
 	private void getSnpDetail(Collection<RefSiteSnpIndel> colRefSiteSnpIndels) {
 		SnpDetailGet snpDetailGet = new SnpDetailGet();
-		snpDetailGet.setGffChrAbs(gffChrAbs);
 		snpDetailGet.setMapChrID2InfoSnpIndel(colRefSiteSnpIndels);
 		for (String[] sample2PileUp : lsSample2SamPileupFile) {
 			snpDetailGet.addSample2PileupFile(sample2PileUp[0], sample2PileUp[1]);
@@ -181,9 +175,8 @@ public class SnpSomaticFilter {
 		snpDetailGet.run();
 	}
 	
-	
 	/** 必须在readSnpDetailFromPileUp之后执行 */
-	public void filterSnp() {		
+	public void filterSnp() {
 		lsFilteredRefSite.clear();
 		lsFilteredRefSnp.clear();
 		for (RefSiteSnpIndel refSiteSnpIndel : mapSiteInfo2RefSiteSnpIndel.values()) {
@@ -233,13 +226,13 @@ public class SnpSomaticFilter {
 		}
 		return setSample;
 	}
-	
+
 	/**
 	 * 讲过滤后的结果写入文本。
 	 * 如果没有过滤只运行了readSnpDetailFromFile，那就将读取的detail写入文本
 	 * @param txtFile
 	 */
-	public void writeToFile(String txtFile) {
+	public void writeToFile(GffChrAbs gffChrAbs, String txtFile) {
 		LinkedHashSet<String> setSample = getSetSampleName();
 		
 		TxtReadandWrite txtOut = new TxtReadandWrite(txtFile, true);
@@ -249,9 +242,10 @@ public class SnpSomaticFilter {
 		if (lsFilteredRefSnp == null || lsFilteredRefSnp.size() == 0) {
 			lsWriteIn = lsFilteredRefSite;
 		}
-		for (int i = 0; i < lsWriteIn.size(); i++) {
-			RefSiteSnpIndel refSiteSnpIndel = lsFilteredRefSite.get(i);
+		for (RefSiteSnpIndel refSiteSnpIndel : lsWriteIn) {
+			refSiteSnpIndel.setGffChrAbs(gffChrAbs);
 			ArrayList<String[]> lsResult = refSiteSnpIndel.toStringLsSnp(setSample, false, getVCFflag);
+			refSiteSnpIndel.setGffChrAbs(null);
 			for (String[] strings : lsResult) {
 				txtOut.writefileln(strings);
 			}

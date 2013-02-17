@@ -35,25 +35,25 @@ public class TestSnpSampleFilter extends TestCase{
 		int numRef = 100;
 		int numAll = numSnp + numRef;
 		snpIndelHomoHetoType = snpSampleFilter.getSnpIndelType(SnpIndelType.DELETION, numSnp, numRef, numAll);
-		assertEquals(SnpIndelHomoHetoType.IndelHeto, snpIndelHomoHetoType);
+		assertEquals(SnpIndelHomoHetoType.IndelHetoMid, snpIndelHomoHetoType);
 
 		numSnp = 15;
 		numRef = 100;
 		numAll = numSnp + numRef;
 		snpIndelHomoHetoType = snpSampleFilter.getSnpIndelType(SnpIndelType.DELETION, numSnp, numRef, numAll);
-		assertEquals(SnpIndelHomoHetoType.IndelHeto, snpIndelHomoHetoType);
+		assertEquals(SnpIndelHomoHetoType.IndelHetoMid, snpIndelHomoHetoType);
 		
 		numSnp = 2;
 		numRef = 4;
 		numAll = numSnp + numRef;
 		snpIndelHomoHetoType = snpSampleFilter.getSnpIndelType(SnpIndelType.DELETION, numSnp, numRef, numAll);
-		assertEquals(SnpIndelHomoHetoType.IndelHeto, snpIndelHomoHetoType);
+		assertEquals(SnpIndelHomoHetoType.IndelHetoMid, snpIndelHomoHetoType);
 		
 		numSnp = 2;
 		numRef = 17;
 		numAll = numSnp + numRef;
 		snpIndelHomoHetoType = snpSampleFilter.getSnpIndelType(SnpIndelType.DELETION, numSnp, numRef, numAll);
-		assertEquals(SnpIndelHomoHetoType.IndelHeto, snpIndelHomoHetoType);
+		assertEquals(SnpIndelHomoHetoType.IndelHetoMid, snpIndelHomoHetoType);
 	}
 	
 	public void testIndelHetoMore() {

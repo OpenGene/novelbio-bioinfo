@@ -3,6 +3,7 @@ package com.novelbio.nbcgui.GUI;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 
+import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.resequencing.SnpLevel;
 import com.novelbio.analysis.seq.resequencing.SnpSomaticFinder;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -43,7 +44,7 @@ public class GuiSnpFiltering extends JPanel {
 	JComboBoxData<SnpLevel> cmbSnpLevelShow = new JComboBoxData<SnpLevel>();
 	private JTextField txtSaveTo;
 	
-	JPanel guiLayeredPaneSpeciesVersionGff;
+	GuiLayeredPaneSpeciesVersionGff guiLayeredPaneSpeciesVersionGff;
 	JSpinner snpGeneSnpNum;
 	
 	GUIFileOpen guiFileOpen = new GUIFileOpen();
@@ -156,7 +157,7 @@ public class GuiSnpFiltering extends JPanel {
 		btnDelGroup.setBounds(764, 161, 91, 27);
 		add(btnDelGroup);
 		
-		guiLayeredPaneSpeciesVersionGff = new JPanel();
+		guiLayeredPaneSpeciesVersionGff = new GuiLayeredPaneSpeciesVersionGff();
 		guiLayeredPaneSpeciesVersionGff.setBounds(396, 358, 255, 145);
 		add(guiLayeredPaneSpeciesVersionGff);
 		
@@ -194,8 +195,8 @@ public class GuiSnpFiltering extends JPanel {
 					cmbSnpLevelShow.setEnabled(true);
 					snpGeneSnpNum.setEnabled(true);
 				} else {
-					cmbSnpLevelShow.setEnabled(true);
-					snpGeneSnpNum.setEnabled(true);
+					cmbSnpLevelShow.setEnabled(false);
+					snpGeneSnpNum.setEnabled(false);
 				}
 			}
 		});
@@ -286,7 +287,7 @@ public class GuiSnpFiltering extends JPanel {
 		}
 		
 		if (chckbxFiltergene.isSelected()) {
-			snpSomaticFinder.setGffChrAbs(guiLayeredPaneSpeciesVersionGff.);
+			snpSomaticFinder.setSpecies(guiLayeredPaneSpeciesVersionGff.getSelectSpecies());
 			snpSomaticFinder.setSnpLevel(cmbSnpLevelShow.getSelectedValue());
 			snpSomaticFinder.setTreatFilteredNum((Integer)snpGeneSnpNum.getValue());
 			snpSomaticFinder.filterByGene();

@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.database.model.species.Species;
 
 /** 用于查找多样本SnpSomatic的service类
  * 找出somatic snp，并且这些样本的snp在同一个基因内部
@@ -47,7 +48,6 @@ public class SnpSomaticFinder {
 		snpSomaticFilter.addSampileupFile("10B", parentFile + "10B_sorted_realign_removeDuplicate_pileup.gz");
 		
 		snpSomaticFilter.setSnp_HetoMore_Contain_SnpProp_Min(0.2);
-		
 		SnpGroupFilterInfo sampleDetailTreat = new SnpGroupFilterInfo();
 		sampleDetailTreat.addSampleName("5A");
 		sampleDetailTreat.addSampleName("7A");
@@ -173,6 +173,14 @@ public class SnpSomaticFinder {
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		geneFilter.setGffChrAbs(gffChrAbs);
 	}
+	/**
+	 * 设定GeneFilter的信息
+	 * @param gffChrAbs
+	 */
+	public void setSpecies(Species species) {
+		geneFilter.setSpecies(species);
+	}
+	
 	/**
 	 * 添加要检验的样本名
 	 * 如果不输入样本名，或输入空的样本名，则用全体样本名去做分析

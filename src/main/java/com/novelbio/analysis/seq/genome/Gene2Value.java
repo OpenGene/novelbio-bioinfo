@@ -20,6 +20,7 @@ import com.novelbio.analysis.seq.genome.mappingOperate.Alignment;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 
 /** 基因与结构提取，主要用于画tss图等 */
@@ -169,14 +170,6 @@ public class Gene2Value {
 		return mapInfo;
 	}
 	
-	private boolean setMapInfo(MapInfo mapInfo, MapReads mapReads, ArrayList<ExonInfo> lsExonInfos) {
-		if (splitNum > 0) {
-			return setMapInfoNormLength(mapInfo, mapReads, lsExonInfos);
-		} else {
-			return setMapInfoNotNorm(mapInfo, mapReads, lsExonInfos);
-		}
-	}
-	
 	/**
 	 * 根据指定的lsExonInfos信息，设定mapInfo的value<br>
 	 * 会根据splitNum的数量对结果进行标准化
@@ -185,8 +178,12 @@ public class Gene2Value {
 	 * @param lsExonInfos
 	 * @return
 	 */
-	private boolean setMapInfoNormLength(MapInfo mapInfo, MapReads mapReads, ArrayList<ExonInfo> lsExonInfos) {
-		double[] result = new double[splitNum];
+	private boolean setMapInfo(MapInfo mapInfo, MapReads mapReads, List<ExonInfo> lsExonInfos) {
+		if (!isCanGetExon(lsExonInfos)) {
+			return false;
+		}
+		
+		double[] result = null;
 		List<ExonInfo> lsNew = getSelectLsExonInfo(lsExonInfos);
 		if (lsNew.size() == 0) {
 			return false;
@@ -199,21 +196,24 @@ public class Gene2Value {
 				if (info == null || info.length < 5) {
 					continue;
 				}
-				info = MathComput.mySpline(info, splitNum, 0, 0, 0);
+				if (splitNum > 0) {
+					info = MathComput.mySpline(info, splitNum, 0, 0, 0);
+				}
 				lsResult.add(info);
 			}
-			for (double[] ds : lsResult) {
-				for (int i = 0; i < ds.length; i++) {
-					result[i] = result[i] + ds[i];
-				}
+			result = ArrayOperate.getSumList(lsResult);
+			if (result == null || result.length < 1) {
+				return false;
 			}
-			lsCoverage = getLsCoverage(result.length, lsResult.size());
+			lsCoverage = ArrayOperate.getLsCoverage(lsResult);
 		} else {
 			result = mapReads.getRangeInfo(mapInfo.getRefID(), lsNew);
 			if (result == null || result.length < 10) {
 				return false;
 			}
-			result = MathComput.mySpline(result, splitNum, 0, 0, 0);
+			if (splitNum > 0) {
+				result = MathComput.mySpline(result, splitNum, 0, 0, 0);
+			}
 			lsCoverage = getLsCoverage(result.length, 1);
 		}
 		result = getNormalizedValue(result, lsCoverage);
@@ -222,49 +222,34 @@ public class Gene2Value {
 	}
 	
 	/**
-	 * 根据指定的lsExonInfos信息，设定mapInfo的value<br>
-	 * <b>不会</b>根据splitNum的数量对结果进行标准化
-	 * @param mapInfo
-	 * @param mapReads
-	 * @param lsExonInfos
+	 * 是否能提取所需的exon和intron
+	 * 如果提取第一位的exon，而本list中只有一位，则不提去
 	 * @return
 	 */
-	private boolean setMapInfoNotNorm(MapInfo mapInfo, MapReads mapReads, ArrayList<ExonInfo> lsExonInfos) {
-		double[] result;
-		List<ExonInfo> lsNew = getSelectLsExonInfo(lsExonInfos);
-		List<Integer> lsCoverage = new ArrayList<Integer>();
-		if (lsNew.size() == 0) {
+	private boolean isCanGetExon(List<ExonInfo> lsExonInfos) {
+		if (lsExonInfos.size() < 3) {
 			return false;
 		}
-		
-		if (pileupExonIntron) {
-			ArrayList<double[]> lsTmp = new ArrayList<double[]>();
-			for (Alignment alignment : lsNew) {
-				double[] info = mapReads.getRangeInfo(mapInfo.getRefID(), alignment.getStartAbs(), alignment.getEndAbs(), 0);
-				if (info == null || info.length < 5) {
-					continue;
-				}
-				lsTmp.add(info);
-			}
-			result = getSumList(lsTmp);
-			lsCoverage = getLsCoverage(lsTmp);
-		} else {
-			result = mapReads.getRangeInfo(mapInfo.getRefID(), lsNew);
-			if (result == null || result.length < 10) {
-				return false;
-			}
-			lsCoverage = getLsCoverage(result.length, 1);
-		}
-		result = getNormalizedValue(result, lsCoverage);
-		mapInfo.setDouble(result);
 		return true;
+		
+		
+//		if (lsExonIntronNumGetOrExclude.size() == 1 && lsExonIntronNumGetOrExclude.get(0) == 1 && lsExonInfos.size() == 1) {
+//			return false;
+//		} else if (lsExonIntronNumGetOrExclude.size() == 1 && lsExonIntronNumGetOrExclude.get(0) == -1 && lsExonInfos.size() == 1) {
+//			return false;
+//		} else if (lsExonIntronNumGetOrExclude.size() == 2 
+//				&& lsExonIntronNumGetOrExclude.get(0) == 1 && lsExonIntronNumGetOrExclude.get(0) == -1
+//				&& lsExonInfos.size() == 2) {
+//			return false;
+//		}
+//		return true;
 	}
-
+	
 	/** 根据设定的lsExonIntronNumGetOrExclude信息，返回选择的exoninfo
 	 * <b>暴露出来仅供测试</b>
 	 * @param lsExonInfos 输入的exon信息
 	 */
-	public List<ExonInfo> getSelectLsExonInfo(ArrayList<ExonInfo> lsExonInfos) {
+	public List<ExonInfo> getSelectLsExonInfo(List<ExonInfo> lsExonInfos) {
 		HashSet<ExonInfo> setLocation = new HashSet<ExonInfo>();//去重复用的，防止lsSelect里面有重复的exoninfo
 		List<ExonInfo> lsSelect = new ArrayList<ExonInfo>();
 		if (lsExonIntronNumGetOrExclude == null || lsExonIntronNumGetOrExclude.size() == 0) {
@@ -389,56 +374,6 @@ public class Gene2Value {
 			lsGene2Value.add(gene2Value);
 		}
 		return lsGene2Value;
-	}
-	
-	/**
-	 * 将lsInfo里面的double叠加起来，最后加成一个double[]
-	 * @param lsInfo 里面的double[] 可以不等长，里面不可以包括null
-	 * @return
-	 */
-	public static double[] getSumList(List<double[]> lsInfo) {
-		if (lsInfo.size() == 0) {
-			return null;
-		}
-		ArrayList<Double> lsResult = new ArrayList<Double>();
-		for (double[] ds : lsInfo) {
-			for (int i = 0; i < ds.length; i++) {
-				if (i < lsResult.size()) {
-					lsResult.set(i, lsResult.get(i) + ds[i]);
-				} else {
-					lsResult.add(ds[i]);
-				}
-			}
-		}
-
-		double[] result = new double[lsResult.size()];
-		for (int i = 0; i < result.length; i++) {
-			result[i] = lsResult.get(i);
-		}
-		return result;
-	}
-	
-	/** 给定一系列double[]，计算覆盖度，
-	 * 因为输入的double[] 是不等长的
-	 * 就要知道第一位有几个 double[]，第二位有几个 double[]
-	 * @param lsInfo
-	 * @return
-	 */
-	private static List<Integer> getLsCoverage(List<double[]> lsInfo) {
-		if (lsInfo.size() == 0) {
-			return null;
-		}
-		List<Integer> lsResult = new ArrayList<Integer>();
-		for (double[] ds : lsInfo) {
-			for (int i = 0; i < ds.length; i++) {
-				if (i < lsResult.size()) {
-					lsResult.set(i, lsResult.get(i) +1);
-				} else {
-					lsResult.add(1);
-				}
-			}
-		}
-		return lsResult;
 	}
 	
 	private static List<Integer> getLsCoverage(int length, int coverageNum) {

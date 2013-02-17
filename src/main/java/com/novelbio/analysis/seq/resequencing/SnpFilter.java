@@ -120,7 +120,7 @@ public class SnpFilter {
 	 * 该位点是否通过质检，位点中包含了多个样本
 	 * 如果通过质检了，就返回通过质检的那个snp类型
 	 * 否则返回空的list
-	 * */
+	 */
 	public ArrayList<SiteSnpIndelInfo> getFilterdSnp(RefSiteSnpIndel refSiteSnpIndel) {
 		ArrayList<SiteSnpIndelInfo> lsSnpFiltered = new ArrayList<SiteSnpIndelInfo>();
 		for (SiteSnpIndelInfo siteSnpIndelInfo : refSiteSnpIndel.getLsAllenInfoSortBig2Small()) {
@@ -212,10 +212,10 @@ public class SnpFilter {
 				&& (double)numRef/numAll > Snp_Hete_Contain_RefProp_Min   )
 		{
 				if (siteSnpIndelInfo == SnpIndelType.INSERT || siteSnpIndelInfo == SnpIndelType.DELETION) {
-					return SnpIndelHomoHetoType.IndelHeto;
+					return SnpIndelHomoHetoType.IndelHetoMid;
 				}
 				else if (siteSnpIndelInfo == SnpIndelType.MISMATCH) {
-					return SnpIndelHomoHetoType.SnpHeto;
+					return SnpIndelHomoHetoType.SnpHetoMid;
 				}
 		}
 		return SnpIndelHomoHetoType.UnKnown;

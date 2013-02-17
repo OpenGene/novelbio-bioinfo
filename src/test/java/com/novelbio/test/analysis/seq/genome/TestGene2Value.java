@@ -18,8 +18,19 @@ import junit.framework.TestCase;
 public class TestGene2Value extends TestCase {
 	Gene2Value gene2Value = new Gene2Value(null);
 	GffGeneIsoInfo gffGeneIsoInfoCis = new GffGeneIsoCis("test", GeneType.mRNA);
-	@Override
-	protected void setUp() throws Exception {
+
+	public void testNorm() {
+		setUpNorm();
+		getTest();
+		getTest2();
+		getTest3();
+		getOverlapTest();
+		
+		removeTest();
+		removeTest2();
+		removeOverlapTest();
+	}
+	protected void setUpNorm() {
 		gffGeneIsoInfoCis = new GffGeneIsoCis("test", GeneType.mRNA);
 		gffGeneIsoInfoCis.add(new ExonInfo(gffGeneIsoInfoCis, true, 100, 200));
 		gffGeneIsoInfoCis.add(new ExonInfo(gffGeneIsoInfoCis, true, 300, 400));
@@ -29,25 +40,6 @@ public class TestGene2Value extends TestCase {
 		gffGeneIsoInfoCis.add(new ExonInfo(gffGeneIsoInfoCis, true, 1100, 1200));
 		gffGeneIsoInfoCis.add(new ExonInfo(gffGeneIsoInfoCis, true, 1300, 1400));
 		gene2Value = new Gene2Value(gffGeneIsoInfoCis);
-		
-		super.setUp();
-	
-	}
-	
-	@Override
-	protected void tearDown() throws Exception {
-		// TODO Auto-generated method stub
-		super.tearDown();
-	}
-	
-	public void test() {
-		getTest();
-		getTest2();
-		getOverlapTest();
-		
-		removeTest();
-		removeTest2();
-		removeOverlapTest();
 	}
 	
 	private void getTest() {
@@ -79,7 +71,19 @@ public class TestGene2Value extends TestCase {
 		assertEquals(gffGeneIsoInfoCis.get(gffGeneIsoInfoCis.size() - 2), lsExonInfo.get(2));
 		assertEquals(gffGeneIsoInfoCis.get(gffGeneIsoInfoCis.size() - 1), lsExonInfo.get(3));
 	}
-	
+	private void getTest3() {
+		ArrayList<Integer> lsGet = new ArrayList<Integer>();
+		lsGet.add(1);
+		lsGet.add(2);
+		lsGet.add(6);
+		gene2Value.setGetNum(lsGet, true);
+		List<ExonInfo> lsExonInfo = gene2Value.getSelectLsExonInfo(gffGeneIsoInfoCis);
+		
+		assertEquals(3, lsExonInfo.size());
+		assertEquals(gffGeneIsoInfoCis.get(0), lsExonInfo.get(0));
+		assertEquals(gffGeneIsoInfoCis.get(1), lsExonInfo.get(1));
+		assertEquals(gffGeneIsoInfoCis.get(gffGeneIsoInfoCis.size() - 2), lsExonInfo.get(2));
+	}
 	private void getOverlapTest() {
 		ArrayList<Integer> lsGet = new ArrayList<Integer>();
 		lsGet.add(1);

@@ -267,7 +267,7 @@ public class MapInfo extends SiteInfo implements HeatChartDataInt, Cloneable{
 	
 	/**
 	 * 给定mapInfo的list
-	 * 将里面的double[]合并成一个，mapInfo中的value可以<b>不等长</b>
+	 * 将里面的double[]叠加起来，mapInfo中的value可以<b>不等长</b>
 	 */
 	public static double[] getCombLsMapInfo(List<MapInfo> lsmapinfo) {
 		List<double[]> lsInfo = new ArrayList<double[]>();
@@ -278,7 +278,7 @@ public class MapInfo extends SiteInfo implements HeatChartDataInt, Cloneable{
 			}
 			lsInfo.add(tmp);
 		}
-		return Gene2Value.getSumList(lsInfo);
+		return ArrayOperate.getSumList(lsInfo);
 	}
 	
 	/**

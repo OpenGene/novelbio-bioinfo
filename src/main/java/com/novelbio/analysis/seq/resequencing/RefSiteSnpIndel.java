@@ -54,36 +54,61 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	 */
 	GffGeneIsoInfo gffGeneIsoInfo;
 	GffChrAbs gffChrAbs;
-		String sampleName = SampleDefaultName;
+	String sampleName = SampleDefaultName;
 	
 	public RefSiteSnpIndel() {}
+	
+	/**
+	 * @param gffChrAbs
+	 * @param sampleName
+	 */
+	public RefSiteSnpIndel(String sampleName) {
+		setSampleName(sampleName);
+	}
+	
 	/**
 	 * @param gffChrAbs
 	 * @param sampleName
 	 */
 	public RefSiteSnpIndel(GffChrAbs gffChrAbs, String sampleName) {
-		this.gffChrAbs = gffChrAbs;
+		setGffChrAbs(gffChrAbs);
 		setSampleName(sampleName);
 	}
+	/**
+	 * @param chrID
+	 * @param refSnpIndelStart
+	 */
+	public RefSiteSnpIndel(String chrID, int refSnpIndelStart) {
+		this.chrID = chrID.toLowerCase();
+		this.refSnpIndelStart = refSnpIndelStart;
+	}
+	
 	/**
 	 * @param gffChrAbs
 	 * @param chrID
 	 * @param refSnpIndelStart
 	 */
 	public RefSiteSnpIndel(GffChrAbs gffChrAbs,String chrID, int refSnpIndelStart) {
-		this.gffChrAbs = gffChrAbs;
+		setGffChrAbs(gffChrAbs);
 		this.chrID = chrID.toLowerCase();
 		this.refSnpIndelStart = refSnpIndelStart;
 	}
 	
+	/**
+	 * 设定GffChrAbs
+	 * 如果设定为null，则会清空Iso，从而减少内存消耗
+	 * @param gffChrAbs
+	 */
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		if (gffChrAbs == null) {
+			setGffIso();
 			return;
 		}
 		if (this.gffChrAbs != null && this.gffChrAbs.getSpecies() != null && this.gffChrAbs.getSpecies().equals(gffChrAbs.getSpecies())) {
 			return;
 		}
 		this.gffChrAbs = gffChrAbs;
+		setGffIso();
 	}
 	
 	public void setRefSnpIndelStart(String chrID, int refSnpIndelStart) {
@@ -170,7 +195,7 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	 * -1表示没有该项目
 	 */
 	public double getProp() {
-		setGffIso();
+		setGffIso();//TODO 本句似乎可以删掉
 		return prop;
 	}
 	/**
@@ -188,13 +213,14 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		return refSnpIndelStart;
 	}
 	/**
-	 * 获得所在的转录本
+	 * 获得所在的转录本，如果GffChrAbs为空，则会清空Iso
 	 * @return
 	 */
 	public GffGeneIsoInfo getGffIso() {
-		setGffIso();
+		setGffIso();//TODO 本句似乎可以删掉
 		return gffGeneIsoInfo;
 	}
+
 	/**
 	 * 判断另一个snp或者indel是不是与本mapInfo在同一个转录本中
 	 * 两个refSiteSnpIndel都必须有gffGeneIsoInfo设置好
@@ -344,7 +370,12 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	 * 同时设定setProp，cis5to3，和name，都用gffGeneIsoInfo的信息
 	 */
 	private void setGffIso() {
-		if (gffChrAbs == null || gffChrAbs.getGffHashGene() == null || (gffGeneIsoInfo != null && prop >= 0)
+		if (gffChrAbs == null || gffChrAbs.getGffHashGene() == null) {
+			gffGeneIsoInfo = null;
+			return;
+		}
+		
+		if ( (gffGeneIsoInfo != null && prop >= 0)
 				||
 				chrID == null || chrID.trim().equals("") || refSnpIndelStart <= 0
 				)

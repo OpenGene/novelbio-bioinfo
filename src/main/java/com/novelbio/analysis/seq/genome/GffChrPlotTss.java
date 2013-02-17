@@ -13,6 +13,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.plot.DotStyle;
 import com.novelbio.base.plot.PlotScatter;
@@ -197,9 +198,9 @@ public class GffChrPlotTss {
 	 * 会根据MapInfo.isMin2max()标签确定遇到重复项是取value大的还是小的
 	 * 获得geneID以及相应权重，内部自动去冗余，保留权重高的那个，并且填充相应的reads
 	 * 一般用于根据gene express 画heapmap图
-	 * @param lsGeneValue string[2] 
-	 * 0:geneID 
-	 * 1:value 其中1 可以没有，那么就是string[1] 0:geneID
+	 * @param lsGeneValue string[2] <br>
+	 * 0:geneID <br>
+	 * 1:value 其中1 可以没有，那么就是string[1] 0:geneID<br>
 	 * @return
 	 */
 	public void setGeneID2ValueLs(ArrayList<String[]> lsGeneValue) {
@@ -294,62 +295,40 @@ public class GffChrPlotTss {
 		for (int i = 0; i < xvalue.length; i++) {
 			int coverage = lsCoverage.get(i);
 			double[] tmpResult= new double[2];
-			tmpResult[0] = xvalue[i] * lsMapInfos.size() /coverage;
-			tmpResult[1] = yvalue[i];
+			tmpResult[0] = xvalue[i];
+			tmpResult[1] = yvalue[i] / coverage;
 			lsResult.add(tmpResult);
 		}
 		return lsResult;
 	}
-	
-	private double[] getXvalue(int length) {
-		if (splitNum > 0) {
-			return getXvalueNorm();
-		} else {
-			return getXvalueNotNorm(length);
-		}
-	}
-	
 	/**
 	 * 根据设定的yvalue值和画出两边的边界，设定x的value值
+	 * 如果是不同长度的exon等不标准化，根据马红的要求直接合并
 	 * @return
 	 */
-	private double[] getXvalueNorm() {
-		double[] xResult = null;
-		xResult = new double[splitNum];
+	private double[] getXvalue(int length) {
+		double[] xResult = new double[length];
 		//Gene2Value里面对于tss和tes会加上1，因为有0点
 		if (geneStructure == GeneStructure.TSS || geneStructure == GeneStructure.TES) {
 			xResult[0] = plotTssTesRange[0];
-			double intervalNum = (double)(plotTssTesRange[1] - plotTssTesRange[0] )/(splitNum - 1);
+			double intervalNum = (double)(plotTssTesRange[1] - plotTssTesRange[0] )/(length - 1);
 			for (int i = 1; i < xResult.length; i++) {
 				xResult[i] = xResult[i-1] + intervalNum;
 			}
 			for (int i = 0; i < xResult.length; i++) {
 				xResult[i] = (int)xResult[i];
 			}
+		} else if(splitNum > 0) {
+			for (int i = 0; i < xResult.length; i++) {
+				xResult[i] = (double)i/(length - 1); 
+			}
 		} else {
 			for (int i = 0; i < xResult.length; i++) {
-				xResult[i] = (double)i/(splitNum - 1); 
+				xResult[i] = mapReads.getBinNum() * i;
 			}
 		}
 		return xResult;
 	}
-	
-	/**
-	 * 根据设定的yvalue值和画出两边的边界，设定x的value值
-	 * 不同长度的exon等不标准化，根据马红的要求直接合并
-	 * 所以只用于exon，intron等做图
-	 * @return
-	 */
-	private double[] getXvalueNotNorm(int length) {
-		double[] xResult = null;
-		xResult = new double[length];
-		for (int i = 0; i < xResult.length; i++) {
-			xResult[i] = mapReads.getBinNum() * i;
-		}
-		
-		return xResult;
-	}
-	
 	
 	/** 首先要设定好lsMapInfos */
 	public PlotHeatMap plotHeatMap() {
@@ -401,7 +380,7 @@ public class GffChrPlotTss {
 	}
 	
 	/**
-	 * 根据输入的 lsMapInfos，获得指定分位点的值
+	 * 根据输入的 lsMapInfos，获得指定分位点的值，用于heatmap设定最大值的颜色
 	 * @param lsMapInfos
 	 * @param percentage 分为点，譬如99表示最大的99%分位点
 	 * @return
@@ -427,29 +406,20 @@ public class GffChrPlotTss {
 	 * @return
 	 */
 	private List<Integer> getLsGeneCoverage(List<MapInfo> lsMapInfos) {
-		List<Integer> lsResult = new ArrayList<Integer>();
+		List<double[]> lsDouble = new ArrayList<double[]>();
 		for (MapInfo mapInfo : lsMapInfos) {
-			double[] info = mapInfo.getDouble();
-			for (int i = 0; i < info.length; i++) {
-				if (i < lsResult.size()) {
-					 lsResult.set(i, lsResult.get(i)+1);
-				} else {
-					lsResult.add(1);
-				}//TODO 
-			}
+			lsDouble.add(mapInfo.getDouble());
 		}
-		return lsResult;
+		return ArrayOperate.getLsCoverage(lsDouble);
 	}
 	
 	/**
-	 * 清空那种list的信息，主要是
-	 * 绘制图片的区域<br>
-	   ArrayList< MapInfo > lsMapInfos;<br>
-	绘制图片的gene<br>
-	  ArrayList< Gene2Value > lsGeneID2Value;<br>
-	 设定需要提取，或不提取的exon或intron的个数，譬如杨红星要求仅分析第一位的intron<br>
-		ArrayList<Integer> lsExonIntronNumGetOrExclude<br><br>
-		<b>所以需要重新设定 {@link  #setGeneIDGenome()} 等方法</b>
+	 * 清空以下三个list<br>
+	 * 1. 绘制图片的区域  ArrayList< MapInfo > lsMapInfos;<br>
+	 * 2. 绘制图片的gene  ArrayList< Gene2Value > lsGeneID2Value;<br>
+	 * 3. 设定需要提取，或不提取的exon或intron的个数，譬如杨红星要求仅分析第一位的intron 
+		ArrayList< Integer > lsExonIntronNumGetOrExclude<br><br>
+		<b>执行该方法后需重新设定 {@link  #setGeneIDGenome()} 等方法</b>
 	 */
 	public void clearCollectionInfo() {
 		try { lsMapInfos.clear(); } catch (Exception e) { }

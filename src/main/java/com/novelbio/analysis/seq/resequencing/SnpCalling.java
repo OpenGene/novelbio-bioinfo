@@ -14,8 +14,7 @@ import com.novelbio.database.domain.geneanno.SepSign;
 /** 单个pileup文件的snp calling */
 public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 	private static Logger logger = Logger.getLogger(SnpCalling.class);
-
-	/** 主要写snp的基因信息 */
+	
 	GffChrAbs gffChrAbs;
 	
 	/** 从pileup文本中获取snp的信息
@@ -139,7 +138,7 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 				notifyGUI(readLines, readByte);
 			}
 			////////////////////////////////////////////////
-			RefSiteSnpIndel refSiteSnpIndel = new RefSiteSnpIndel(gffChrAbs, sampleName);
+			RefSiteSnpIndel refSiteSnpIndel = new RefSiteSnpIndel(sampleName);
 			refSiteSnpIndel.setSamToolsPilup(pileupLines);
 			
 			ArrayList<SiteSnpIndelInfo> lsFilteredSnp = snpFilter.getFilterdSnp(refSiteSnpIndel);
@@ -191,7 +190,10 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 		if (txtSnpOut == null) {
 			return true;
 		}
+		
+		refSiteSnpIndel.setGffChrAbs(gffChrAbs);
 		ArrayList<String[]> lsInfo = refSiteSnpIndel.toStringLsSnp(lsFilteredSnp);
+		refSiteSnpIndel.setGffChrAbs(null);
 		if (lsInfo.size() == 0) {
 			logger.error("error");
 		}
