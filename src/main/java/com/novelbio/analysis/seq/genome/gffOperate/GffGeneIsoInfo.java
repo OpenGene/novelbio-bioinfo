@@ -476,6 +476,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	}
 	/**
 	 * 使用前先判定在Exon中，坐标到该转录本atg的距离
+	 * 当坐标为atg的a时，返回0。以此类推。
 	 * 不去除内含子的直接用cod2atg/cod2End
 	 * 如果不在内含子中，则为很大的负数，大概-10000000
 	 */

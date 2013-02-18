@@ -12,7 +12,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.generalConf.TitleFormatNBC;
-
+//TODO 本类中的注释功能在RefSiteSnpIndel类中已经写过类似的tostring方法，考虑将两个合并起来
 /** 
  * snp annotation的类，一般用不到，因为其他已经集成了该功能<br>
  * 待annotation的必须是txt文本
@@ -111,9 +111,7 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 		}
 		ArrayList<String> lsInfo = ArrayOperate.converArray2List(input.split("\t"));
 		int refStartSite = Integer.parseInt(lsInfo.get(colRefStartSite));
-		if (refStartSite == 13789674) {
-			logger.error("stop");
-		}
+
 		RefSiteSnpIndel refSiteSnpIndel = new RefSiteSnpIndel(gffChrAbs, lsInfo.get(colChrID), refStartSite);
 		SiteSnpIndelInfo siteSnpIndelInfo = refSiteSnpIndel.getAndAddAllenInfo(lsInfo.get(colRefNr), lsInfo.get(colThisNr));
 		GffGeneIsoInfo gffGeneIsoInfo = refSiteSnpIndel.getGffIso();
@@ -144,6 +142,7 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 		lsInfo.add(siteSnpIndelInfo.getRefAAnr().toStringAA3());
 		lsInfo.add(siteSnpIndelInfo.getThisAAnr().toString());
 		lsInfo.add(siteSnpIndelInfo.getThisAAnr().toStringAA3());
+		lsInfo.add(siteSnpIndelInfo.getRefAAnr().toStringAA3() + refSiteSnpIndel.getAffectAANum() + siteSnpIndelInfo.getThisAAnr().toStringAA3());
 		lsInfo.add(siteSnpIndelInfo.getSplitTypeEffected());
 		lsInfo.add(siteSnpIndelInfo.getAAchamicalConvert());
 		String[] result = ArrayOperate.converList2Array(lsInfo);
@@ -164,6 +163,7 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 		lsTitle.add("RefAA");
 		lsTitle.add("ThisNr");
 		lsTitle.add("ThisAA");
+		lsTitle.add("ConvertType");
 		lsTitle.add("SplitType");
 		lsTitle.add("ChamicalConvert");
 		return lsTitle;
