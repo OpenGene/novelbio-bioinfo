@@ -87,7 +87,12 @@ public abstract class MapDNA {
 	public SamFileStatistics getStatistics() {
 		return samFileStatistics;
 	}
-
+	
+	/**
+	 * 是否顺利执行
+	 * 实际上只要mapping能执行起来，譬如运行个10s没出错，就说明索引没问题了
+	 * @return
+	 */
 	protected abstract boolean mapping();
 	
 	/**

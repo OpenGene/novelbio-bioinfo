@@ -330,7 +330,12 @@ public class MapBwa extends MapDNA {
 			cmdOperate = new CmdOperate(cmd2,"bwaMapping2");
 			cmdOperate.run();
 		}
-		return cmdOperate.isFinishedNormal();
+		
+		if (cmdOperate.getRunTime() > 5000 || cmdOperate.isFinishedNormal()) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	/**
 	 * 这里设定了将基因组读入内存的限制
