@@ -53,7 +53,7 @@ public class GuiRNAautoSplice extends JPanel {
 	JLabel lblDetailInfo;
 	
 	CtrlSplicing ctrlSplicing = new CtrlSplicing();
-	GuiLayeredPaneSpeciesVersionGff panel;
+	GuiLayeredPaneSpeciesVersionGff guiLayeredPaneSpeciesVersionGff;
 	
 	/** 设定bar的分级<br>
 	 * 现在是3级<br>
@@ -188,9 +188,9 @@ public class GuiRNAautoSplice extends JPanel {
 		lblDetailInfo.setBounds(255, 460, 260, 14);
 		add(lblDetailInfo);
 		
-		panel = new GuiLayeredPaneSpeciesVersionGff();
-		panel.setBounds(644, 34, 258, 130);
-		add(panel);
+		guiLayeredPaneSpeciesVersionGff = new GuiLayeredPaneSpeciesVersionGff();
+		guiLayeredPaneSpeciesVersionGff.setBounds(644, 34, 258, 130);
+		add(guiLayeredPaneSpeciesVersionGff);
 		
 		JCheckBox chkUseExternalGTF = new JCheckBox("Use External GTF");
 		chkUseExternalGTF.setBounds(644, 12, 223, 27);
@@ -223,26 +223,18 @@ public class GuiRNAautoSplice extends JPanel {
 	/** 如果txt存在，优先获得txt对应的gtf文件*/
 	private GffHashGene getGffhashGene() {
 		GffHashGene gffHashGeneResult = null;
-//		Species species = combSpecies.getSelectedValue();
+
 		String gtfFile = txtGff.getText();
 		if (FileOperate.isFileExist(gtfFile)) {
 			gffHashGeneResult = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, txtGff.getText());
+		} else {
+			Species species = guiLayeredPaneSpeciesVersionGff.getSelectSpecies();
+			GffChrAbs gffChrAbs = new GffChrAbs(species);
+			gffHashGeneResult = gffChrAbs.getGffHashGene();
 		}
-//		else if (species.getTaxID() != 0) {
-//			species.setVersion(combVersion.getSelectedValue());
-//			GffChrAbs gffChrAbs = new GffChrAbs(species);
-//			gffHashGeneResult = gffChrAbs.getGffHashGene();
-//		}
 		return gffHashGeneResult;
 	}
-	//TODO
-//	private Species getSpecies() {
-//		Species species = combSpecies.getSelectedValue();
-//		if (species.getTaxID() != 0) {
-//			species.setVersion(combVersion.getSelectedValue());
-//		}
-//		return species;
-//	}
+
 	private void run() {
 		progressBar.setValue(progressBar.getMinimum());
 		ctrlSplicing.setGuiRNAautoSplice(this);
@@ -329,7 +321,7 @@ public class GuiRNAautoSplice extends JPanel {
 		ArrayList<String[]> lsSnp2Prefix = scrlBam.getLsDataInfo();
 		Map<String, String> mapString2Value = new HashMap<String, String>();
 		for (String[] snp2prefix : lsSnp2Prefix) {
-			mapString2Value.put(snp2prefix[1], snp2prefix[1]);
+			mapString2Value.put(snp2prefix[2], snp2prefix[2]);
 		}
 		cmbGroup.setMapItem(mapString2Value);
 	}

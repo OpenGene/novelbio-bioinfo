@@ -243,19 +243,21 @@ public class MapBowtie extends MapDNA {
 	/**
 	 * 制作索引
 	 * 这个暴露出来是给MirDeep用的
+	 * @param forceMakeIndex 强制建立索引
+	 * @return true：表示运行了建索引程序，不代表成功建立了索引
 	 */
-	public void IndexMakeBowtie() {
+	public boolean IndexMake(boolean forceMakeIndex) {
 		SoftWareInfo softWareInfo = new SoftWareInfo();
 //		linux命令如下 
 //	 	bwa index -p prefix -a algoType -c  chrFile
 //		-c 是solid用
-		if (bowtieVersion == SoftWare.bowtie) {
+		if (!forceMakeIndex && bowtieVersion == SoftWare.bowtie) {
 			if (FileOperate.isFileExist(getChrNameWithoutSuffix() + ".3.ebwt") == true)
-				return;
+				return false;
 		}
-		else if (bowtieVersion == SoftWare.bowtie2) {
+		else if (!forceMakeIndex && bowtieVersion == SoftWare.bowtie2) {
 			if (FileOperate.isFileExist(getChrNameWithoutSuffix() + ".3.bt2") == true)
-				return;
+				return false;
 		}
 
 		String cmd = "";
@@ -271,17 +273,17 @@ public class MapBowtie extends MapDNA {
 		cmd = cmd + CmdOperate.addQuot(getChrFile()) + " " + CmdOperate.addQuot(getChrNameWithoutSuffix());
 		CmdOperate cmdOperate = new CmdOperate(cmd, "bwaMakeIndex");
 		cmdOperate.run();
+		return true;
 	}
 	
-	public SamFile mapReads() {
-		outFileName = MapBwa.addSamToFileName(outFileName);
-		IndexMakeBowtie();
-
+	public boolean mapping() {
+		outFileName = addSamToFileName(outFileName);
+		
 		String cmd = ""; cmd = ExePathBowtie + "bowtie2 ";
 		cmd = cmd + getOptions() + " -x " + getChrNameWithoutSuffix() + getLsFqFile() + getOutFileName();
 		CmdOperate cmdOperate = new CmdOperate(cmd, "bwaMapping2");
 		cmdOperate.run();
-		return copeAfterMapping(outFileName);
+		return cmdOperate.isFinishedNormal();
 	}
 	
 	/**
@@ -289,8 +291,9 @@ public class MapBowtie extends MapDNA {
 	 * @param outSamFile
 	 * @return
 	 */
-	private SamFile copeAfterMapping(String outSamFile) {
-		if (!FileOperate.isFileExistAndBigThanSize(outSamFile, 1)) {
+	@Override
+	protected SamFile copeAfterMapping() {
+		if (!FileOperate.isFileExistAndBigThanSize(outFileName, 1)) {
 			return null;
 		}
 		SamFile samFile = new SamFile(outFileName);

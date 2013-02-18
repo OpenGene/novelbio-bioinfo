@@ -3,6 +3,8 @@ package com.novelbio.nbcgui.controlseq;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
@@ -41,6 +43,7 @@ public class CtrlFastQMapping {
 	String adaptorRight = "";
 	boolean adaptorLowercase =false;
 	
+	//以下为输入文件
 	/** 排列顺序与lsFastQfileLeft和lsFastQfileRight相同 
 	 * 表示分组
 	 * */
@@ -50,9 +53,9 @@ public class CtrlFastQMapping {
 	
 	String outFilePrefix = "";
 	
-	HashMap<String, ArrayList<FastQ[]>> mapCondition2LsFastQLR = new HashMap<String, ArrayList<FastQ[]>>();
-	
-	HashMap<String, FastQ[]> mapCondition2CombFastQLRFiltered = new HashMap<String, FastQ[]>();
+	//以下为开始过滤和过滤后的文件
+	HashMap<String, ArrayList<FastQ[]>> mapCondition2LsFastQLR = new LinkedHashMap<String, ArrayList<FastQ[]>>();
+	HashMap<String, FastQ[]> mapCondition2CombFastQLRFiltered = new LinkedHashMap<String, FastQ[]>();
 	
 	boolean mapping = false;
 	int gapLen = 5;
@@ -232,7 +235,7 @@ public class CtrlFastQMapping {
 	}
 	
 	private void filteredReads() {
-		HashSet<String> setPrefix = new HashSet<String>();
+		HashSet<String> setPrefix = new LinkedHashSet<String>();
 		for (String string : lsCondition) {
 			setPrefix.add(string);
 		}

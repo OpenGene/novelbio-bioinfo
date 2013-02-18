@@ -5,6 +5,13 @@ import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamFileStatistics;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
+/**
+ * 设定了自动化建索引的方法，并且在mapping失败后会再次建索引
+ * 但是还需要补充别的方法，譬如mapping失败后，用一个标准fq文件去做mapping，如果成功则说明索引没问题。
+ * 这样才能最好的提高效率
+ * @author zong0jie
+ *
+ */
 public abstract class MapDNA {
 	
 	SamFileStatistics samFileStatistics;
@@ -49,9 +56,18 @@ public abstract class MapDNA {
 	public abstract void setGapLength(int gapLength);
 
 	/**
-	 * 参数设定不能用于solid
+	 * mapping
+	 * @return
 	 */
-	public abstract SamFile mapReads();
+	public SamFile mapReads() {
+		boolean isIndexMake = IndexMake(false);
+		boolean isMappingSucess = mapping();
+		if (!isMappingSucess && !isIndexMake) {
+			IndexMake(true);
+			mapping();
+		}
+		return copeAfterMapping();
+	}
 	
 	/**
 	 * 目前只有bwa和bowtie2两种
@@ -70,5 +86,32 @@ public abstract class MapDNA {
 	
 	public SamFileStatistics getStatistics() {
 		return samFileStatistics;
+	}
+
+	protected abstract boolean mapping();
+	
+	/**
+	 * 构建索引
+	 * @param force 默认会检查是否已经构建了索引，是的话则返回。
+	 * 如果face为true，则强制构建索引
+	 * @return
+	 */
+	protected abstract boolean IndexMake(boolean force);
+
+	protected abstract SamFile copeAfterMapping();
+	
+	/**
+	 * 如果文件后缀名不是.sam，则在文件末尾添加.sam
+	 * @param outFileName
+	 * @return
+	 */
+	protected static String addSamToFileName(String outFileName) {
+		if (outFileName.endsWith(".sam")) {
+			return outFileName;
+		} else if (outFileName.endsWith(".")) {
+			return outFileName + "sam";
+		} else {
+			return outFileName + ".sam";
+		}
 	}
 }

@@ -12,7 +12,7 @@ public class FastQRecordFilter {
 	int readsLenMin = 18;
 
 	/** fastQ里面asc||码的指标与个数 */
-	HashMap<Integer, Integer> mapFastQFilter = new HashMap<Integer, Integer>();
+	HashMap<Integer, Integer> mapFastQFilter;
 	
 	FQrecordFilterAdaptor fQrecordFilterAdaptor = new FQrecordFilterAdaptor();
 	FQrecordFilterNNN fQrecordFilterNNN = new FQrecordFilterNNN();
@@ -22,11 +22,17 @@ public class FastQRecordFilter {
 	
 	List<FQrecordFilter> lsFQrecordFilters;
 	
+	boolean isModifyQuality = false;
+	
 	/**
 	 * 设定全局过滤指标
 	 * @param QUALITY
 	 */
 	public void setQualityFilter(int QUALITY) {
+		if (QUALITY == FastQ.QUALITY_NOTFILTER) {
+			isModifyQuality = true;
+			return;
+		}
 		mapFastQFilter = FastQ.getMapFastQFilter(QUALITY);
 	}
 	///////////////////////////////////////////  参数设置  ///////////////////////////////////////////////////////////////////////
@@ -131,6 +137,7 @@ public class FastQRecordFilter {
 		if (fastQRecord == null) {
 			return false;
 		}
+		fastQRecord.setModifyQuality(isModifyQuality);
 		boolean filtered = true;
 		for (FQrecordFilter fQrecordFilter : lsFQrecordFilters) {
 			if (!fQrecordFilter.filter(fastQRecord)) {
@@ -146,7 +153,8 @@ public class FastQRecordFilter {
 		if (fastQRecord1 == null || fastQRecord2 == null) {
 			return false;
 		}
-		
+		fastQRecord1.setModifyQuality(isModifyQuality);
+		fastQRecord2.setModifyQuality(isModifyQuality);
 		boolean filtered = true;
 		for (FQrecordFilter fQrecordFilter : lsFQrecordFilters) {
 			boolean filter1 = fQrecordFilter.filter(fastQRecord1);

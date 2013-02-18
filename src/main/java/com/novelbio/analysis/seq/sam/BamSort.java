@@ -4,7 +4,6 @@ import java.io.File;
 
 import net.sf.picard.sam.SortSam;
 import net.sf.picard.util.Log;
-import net.sf.picard.util.ProgressLogger;
 import net.sf.samtools.SAMFileHeader.SortOrder;
 import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMFileReader;
@@ -59,10 +58,10 @@ public class BamSort {
         reader.getFileHeader().setSortOrder(SORT_ORDER);
         SAMFileWriter writer = new SAMFileWriterFactory().makeSAMOrBAMWriter(reader.getFileHeader(), false, fileOut);
 
-        ProgressLogger progress = new ProgressLogger(log, (int) 1e7, "Read");
+//        ProgressLogger progress = new ProgressLogger(log, (int) 1e7, "Read");
         for (final SAMRecord rec: reader) {
             writer.addAlignment(rec);
-            progress.record(rec);
+//            progress.record(rec);
         }
 
         log.info("Finished reading inputs, merging and writing to output now.");

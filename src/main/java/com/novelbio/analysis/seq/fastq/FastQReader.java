@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import org.apache.log4j.Logger;
@@ -293,9 +294,9 @@ class FastQReader {
 		if (offset != 0) {
 			return;
 		}
-		ArrayList<FastQRecord> lsFastQRecordsTop500 = getLsFastQSeq(500);
-		offset = guessFastOFormat(lsFastQRecordsTop500);
-		readsLenAvg = getReadsLenAvg(lsFastQRecordsTop500);
+		ArrayList<FastQRecord> lsFastQRecordsTop1000 = getLsFastQSeq(1000);
+		offset = guessFastOFormat(lsFastQRecordsTop1000);
+		readsLenAvg = getReadsLenAvg(lsFastQRecordsTop1000);
 	}
 	
 	/**
@@ -323,32 +324,80 @@ class FastQReader {
 	 * @return FASTQ_ILLUMINA或者FASTQ_SANGER
 	 */
 	private int guessFastOFormat(ArrayList<FastQRecord> lsFastqRecord) {
-		ArrayList<Double> lsQuality = new ArrayList<Double>();
+		ArrayList<Integer> lsQuality = new ArrayList<Integer>();
 		for (FastQRecord fastQRecord : lsFastqRecord) {
 			char[] fastq = fastQRecord.getSeqQuality().toCharArray();
 			for (int i = 0; i < fastq.length; i++) {
-				lsQuality.add((double) fastq[i]);
+				lsQuality.add((int) fastq[i]);
 			}
 		}
 		Collections.sort(lsQuality);
-		double min5 = lsQuality.get((int) (lsQuality.size() * 0.05));
-		double max95 = lsQuality.get((int) (lsQuality.size() * 0.95));
-		if (min5 < 59) {
+ 
+		if (getPercentage(lsQuality, 5) < 59) {
 			return FASTQ_SANGER_OFFSET;
 		}
-		if (max95 > 95) {
+		if (getPercentage(lsQuality, 95) > 95) {
 			return FASTQ_ILLUMINA_OFFSET;
 		}
 		// 如果前两个都没搞定，后面还能判定
-		if (lsQuality.get(0) < 59) {
+		if (lsQuality.get(10) < 59) {
 			return FASTQ_SANGER_OFFSET;
 		}
-		if (lsQuality.get(lsQuality.size() - 1) > 103) {
+		if (lsQuality.get(lsQuality.size() - 10) > 103) {
 			return FASTQ_ILLUMINA_OFFSET;
+		}
+		
+		int offset = guessFormate(lsQuality);
+		if (offset > 0) {
+			return offset;
 		}
 		logger.error(txtSeqFile.getFileName() + " has a problem, FastQ can not gess the fastQ format, set the format as FASTQ_ILLUMINA_OFFSET");
 		// 都没判断出来，猜测为illumina格式
-		return FASTQ_ILLUMINA_OFFSET;
+		return FASTQ_SANGER_OFFSET;
+	}
+	
+	private int guessFormate(List<Integer> lsQuality) {
+		int illumina = 0;
+		int sanger = 0;
+		for (int percentage = 20; percentage < 80; percentage = percentage + 5) {
+			int score = lsQuality.get((int) (lsQuality.size() * (0.01 * percentage)));
+			if (score >= 75) {
+				illumina ++;
+			} 
+			if (score >= 80) {
+				illumina ++;
+			}
+			if (score >= 90) {
+				illumina ++;
+			}
+			if (score <= 78) {
+				sanger ++;
+			}
+			if (score <= 75) {
+				sanger ++;
+			}
+			if (score <= 70) {
+				sanger ++;
+			}
+		}
+		if (illumina > sanger) {
+			return FASTQ_ILLUMINA_OFFSET;
+		} else if (illumina < sanger) {
+			return FASTQ_SANGER_OFFSET;
+		} else {
+			return 0;
+		}
+	}
+	
+	
+	/**
+	 * 获得分位点数字
+	 * @param lsQuality 从小到大排序的list
+	 * @param percentage 100*分位点，譬如95就表示list中从小到大排名95%的数字
+	 * @return
+	 */
+	private int getPercentage(List<Integer> lsQuality, int percentage) {
+		return lsQuality.get((int) (lsQuality.size() * (0.01 * percentage)));
 	}
 	
 	/**

@@ -26,6 +26,7 @@ public class FastQ {
 	public static int QUALITY_LOW_454 = 60;
 	public static int QUALITY_LOW_PGM = 70;
 	public static int QUALITY_NONE = 80;
+	public static int QUALITY_NOTFILTER = 90;
 	
 	private int threadNum_FilterFastqRecord = 10;
 	
@@ -238,6 +239,7 @@ public class FastQ {
 		mapReadsQualtiy.put("LowQuality454", QUALITY_LOW_454);
 		mapReadsQualtiy.put("LowQualityPGM", QUALITY_LOW_PGM);
 		mapReadsQualtiy.put("None", QUALITY_NONE);
+		mapReadsQualtiy.put("NotFilter", QUALITY_NOTFILTER);
 		return mapReadsQualtiy;
 	}
 	

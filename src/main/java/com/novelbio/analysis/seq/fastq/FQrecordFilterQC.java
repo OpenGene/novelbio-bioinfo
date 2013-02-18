@@ -2,6 +2,8 @@ package com.novelbio.analysis.seq.fastq;
 
 import java.util.Map;
 
+import org.apache.commons.collections.functors.IfClosure;
+
 /**
  * 需要设定mapFastQFilter
  * @author zong0jie
@@ -31,6 +33,9 @@ public class FQrecordFilterQC extends FQrecordFilter {
 
 	@Override
 	public boolean isUsing() {
+		if (mapFastQFilter == null || mapFastQFilter.size() == 0) {
+			return false;
+		}
 		return true;
 	}
 	/**
@@ -44,9 +49,6 @@ public class FQrecordFilterQC extends FQrecordFilter {
 		}
 		if (this.fastqOffset == FastQ.FASTQ_ILLUMINA_OFFSET && fastQRecord.seqQuality.endsWith("BBBBBBBBBB") ) {
 			return false;
-		}
-		if (mapFastQFilter == null || mapFastQFilter.size() == 0) {
-			return true;
 		}
 		/** 就看Q10，Q13和Q20就行了 */
 		int[][] seqQC1 = copeFastQ(fastQRecord, 2, 10, 13, 20);

@@ -90,7 +90,10 @@ public class MapBwa extends MapDNA {
 		leftFq = seqFile;
 		this.outFileName = outFileName;
 	}
-	/** 输入已经过滤好的fastq文件 */
+	/** 输入已经过滤好的fastq文件
+	 * @param leftFq
+	 * @param rightFq 没有文件则输入null
+	 */
 	public void setFqFile(String leftFq, String rightFq) {
 		if (FileOperate.isFileExistAndBigThanSize(leftFq, 1) && FileOperate.isFileExistAndBigThanSize(rightFq, 1)) {
 			this.leftFq = leftFq;
@@ -295,25 +298,25 @@ public class MapBwa extends MapDNA {
 		}
 		return "";
 	}
-	/**
-	 * 参数设定不能用于solid
-	 */
-	public SamFile mapReads() {
+	
+	@Override
+	protected boolean mapping() {
 		outFileName = addSamToFileName(outFileName);
-		IndexMake();
-		bwaAln();
+		if (!bwaAln()) {
+			return false;
+		}
 		bwaSamPeSe();
-		
-		return copeAfterMapping(outFileName);
+		return true;
 	}
-
 	/**
 	 * linux命令如下<br>
 	 * bwa aln -n 4 -o 1 -e 5 -t 4 -o 10 -I -l 18 /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna barcod_TGACT.fastq > TGACT.sai<br>
 	 * bwa aln -n 4 -o 1 -e 5 -t 4 -o 10 -I -l 18 /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna barcod_TGACT2.fastq > TGACT2.sai<br>
 	 * bwa sampe -P -n 4 /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna TGACT.sai TGACT2.sai barcod_TGACT.fastq
+	 *
+	 * @return 是否成功运行
 	 */
-	private void bwaAln() {
+	private boolean bwaAln() {
 		String cmd = ""; cmd = ExePath + "bwa aln ";
 		cmd = cmd + getMismatch() + getGapNum() + getGapLen() + getThreadNum()
 				+ getSeedSize() + getOpenPanalty() + getFastQoffset();
@@ -327,6 +330,7 @@ public class MapBwa extends MapDNA {
 			cmdOperate = new CmdOperate(cmd2,"bwaMapping2");
 			cmdOperate.run();
 		}
+		return cmdOperate.isFinishedNormal();
 	}
 	/**
 	 * 这里设定了将基因组读入内存的限制
@@ -351,23 +355,13 @@ public class MapBwa extends MapDNA {
 		cmdOperate.run();
 	}
 	
-	protected static String addSamToFileName(String outFileName) {
-		if (outFileName.endsWith(".sam")) {
-			return outFileName;
-		} else if (outFileName.endsWith(".")) {
-			return outFileName + "sam";
-		} else {
-			return outFileName + ".sam";
-		}
-	}
-	
 	/**
 	 * 将sam文件压缩成bam文件，然后做好统计并返回
 	 * @param outSamFile
 	 * @return
 	 */
-	private SamFile copeAfterMapping(String outSamFile) {
-		if (!FileOperate.isFileExistAndBigThanSize(outSamFile, 1)) {
+	protected SamFile copeAfterMapping() {
+		if (!FileOperate.isFileExistAndBigThanSize(outFileName, 1)) {
 			return null;
 		}
 		SamFile samFile = new SamFile(outFileName);
@@ -395,12 +389,17 @@ public class MapBwa extends MapDNA {
 		}
 	}
 	
-	protected void IndexMake() {
+	/**
+	 * @param force 是否强制建索引，只有当mapping出错的时候才会强制建索引，但是也只会建一次
+	 * @return true仅表示是否运行了建索引程序，不代表建索引成功
+	 */
+	@Override
+	protected boolean IndexMake(boolean force) {
 //		linux命令如下 
 //	 	bwa index -p prefix -a algoType -c  chrFile
 //		-c 是solid用
-		if (FileOperate.isFileExist(chrFile + ".bwt") == true) {
-			return;
+		if (!force && FileOperate.isFileExist(chrFile + ".bwt") == true) {
+			return false;
 		}
 		String cmd = this.ExePath + "bwa index ";
 		cmd = cmd + getChrLen();//用哪种算法
@@ -409,6 +408,7 @@ public class MapBwa extends MapDNA {
 		logger.info(cmd);
 		CmdOperate cmdOperate = new CmdOperate(cmd,"bwaMakeIndex");
 		cmdOperate.run();
+		return true;
 	}
 	/**
 	 * 根据基因组大小判断采用哪种编码方式

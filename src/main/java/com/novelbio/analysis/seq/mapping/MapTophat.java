@@ -41,8 +41,6 @@ public class MapTophat implements MapRNA{
 	String ExePathTophat = "";
 	/** 默认用bowtie2 做mapping */
 	SoftWare bowtieVersion = SoftWare.bowtie2;
-
-	boolean pairend = false;
 	
 	/** 在junction 的一头上至少要搭到多少bp的碱基 */
 	int anchorLength = 10;
@@ -214,6 +212,15 @@ public class MapTophat implements MapRNA{
 		return lsFileName;
 	}
 	
+	private boolean isPairend() {
+		boolean pairend;
+		if (lsLeftFq.size() > 0 && lsRightFq.size() > 0) {
+			pairend = true;
+		} else {
+			pairend = false;
+		}
+		return pairend;
+	}
 	/**
 	 * -r 150等，表示pairend中间的长度
 	 * @return
@@ -378,12 +385,20 @@ public class MapTophat implements MapRNA{
 		setIntronLen();
 		setGTFfile();
 		mapBowtie.setBowtieVersion(bowtieVersion);
-		mapBowtie.IndexMakeBowtie();
-		if (lsLeftFq.size() > 0 && lsRightFq.size() > 0) {
-			pairend = true;
-		} else {
-			pairend = false;
+		mapBowtie.IndexMake(false);
+		
+		String cmd = getCmd();
+		logger.info(cmd);
+		CmdOperate cmdOperate = new CmdOperate(cmd, "bwaMapping");
+		cmdOperate.run();
+		
+		if (generateGtfFile) {
+			FileOperate.delFile(gtfFile);
 		}
+		changeFileName();
+	}
+	
+	private String getCmd() {
 		// linux命令如下
 		/**
 		 * tophat -r 120 -a 10 -m 1 -i 20 -I 6000 --solexa1.3-quals -F 0.15 -p 4
@@ -403,7 +418,7 @@ public class MapTophat implements MapRNA{
 		 */
 		String cmd = "";
 		cmd = ExePathTophat + "tophat " + getBowtie();
-		if (pairend) {
+		if (isPairend()) {
 			cmd = cmd + getInsert(); // 插入长度
 		}
 		cmd = cmd + getAnchoLen() + getAnchorMismatch() + getIntronLenMin() + getIntronLenMax() + getGtfFile();
@@ -419,15 +434,7 @@ public class MapTophat implements MapRNA{
 
 		cmd = cmd + " " + mapBowtie.getChrNameWithoutSuffix() + " ";
 		cmd = cmd + " " + getLsFqFile();
-		
-		logger.info(cmd);
-		CmdOperate cmdOperate = new CmdOperate(cmd, "bwaMapping");
-		cmdOperate.run();
-		
-		if (generateGtfFile) {
-			FileOperate.delFile(gtfFile);
-		}
-		changeFileName();
+		return cmd;
 	}
 	
 	private void changeFileName() {

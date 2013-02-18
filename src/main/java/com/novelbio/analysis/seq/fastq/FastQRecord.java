@@ -23,6 +23,9 @@ public class FastQRecord implements Cloneable {
 	protected int fastqOffset = FastQ.FASTQ_SANGER_OFFSET;
 	protected String seqQuality = "";	
 	
+	/** 如果过滤出错，就要用这个重新设定quality，全部设置为f */
+	boolean modifyQuality = false;
+	
 	public FastQRecord() {
 		seqFasta = new SeqFasta();
 		seqFasta.setTOLOWCASE(null);
@@ -84,18 +87,18 @@ public class FastQRecord implements Cloneable {
 		char[] quality = fastaQuality.toCharArray();
 		if (fastqOffset == FastQ.FASTQ_SANGER_OFFSET) {
 			for (int i = 0; i < quality.length; i++) {
-				if (quality[i] < 33 ) {
-					quality[i] = 33;
-				} else if (quality[i] > 126) {
-					quality[i] = 126;
+				if (quality[i] <= 33 ) {
+					quality[i] = 34;
+				} else if (quality[i] >= 125) {
+					quality[i] = 125;
 				}
 			}
 		} else {
 			for (int i = 0; i < quality.length; i++) {
-				if (quality[i] < 64 ) {
-					quality[i] = 64;
-				} else if (quality[i] > 157) {
-					quality[i] = 157;
+				if (quality[i] <= 64 ) {
+					quality[i] = 65;
+				} else if (quality[i] >= 125) {
+					quality[i] = 125;
 				}
 			}
 		}
@@ -104,6 +107,10 @@ public class FastQRecord implements Cloneable {
 	}
 	public String getSeqQuality() {
 		return seqQuality;
+	}
+	/** 如果过滤出错，就要用这个重新设定quality，全部设置为f */
+	public void setModifyQuality(boolean modifyQuality) {
+		this.modifyQuality = modifyQuality;
 	}
 	public int getLength() {
 		return seqFasta.Length();
@@ -122,7 +129,7 @@ public class FastQRecord implements Cloneable {
 	 * @return
 	 */
 	public String toString() {
-		if (seqQuality.length() != seqFasta.Length()) {
+		if (seqQuality.length() != seqFasta.Length() || modifyQuality) {
 			char[] quality = new char[seqFasta.Length()];
 			if (fastqOffset == FastQ.FASTQ_ILLUMINA_OFFSET) {
 				for (int i = 0; i < quality.length; i++) {
