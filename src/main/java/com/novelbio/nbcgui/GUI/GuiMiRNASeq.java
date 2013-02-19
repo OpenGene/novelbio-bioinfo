@@ -28,6 +28,7 @@ import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.database.domain.geneanno.SpeciesFile.ExtractSmallRNASeq;
 import com.novelbio.database.model.species.Species;
 import javax.swing.JComboBox;
+import javax.swing.JScrollPane;
 
 public class GuiMiRNASeq extends JPanel{
 	private static final long serialVersionUID = -5940420720636777182L;
@@ -35,30 +36,26 @@ public class GuiMiRNASeq extends JPanel{
 	private JTextField txtRefseqFile;
 	private JTextField txtOutPathPrefix;
 	JCheckBox chkMapAllBedFileToGenome;
-	JComboBoxData<Species> combSpecies;
-	JComboBoxData<String> comboVersion;
-	
+
 	JButton btnRunning;
 	JCheckBox chkMapping;
 	JButton btnRefseqfile;
 	JButton btnOutpath;
-	JCheckBox chkbxExtractSeq;
 	JScrollPaneData sclpanFastq;
 	JCheckBox chkPredictMiRNA;
 	JScrollPaneData sclNovelMiRNAbed;
 	JButton btnDelFastQfilerow;
 	
 	ArrayList<Component> lsComponentsMapping = new ArrayList<Component>();
-	ArrayList<Component> lsComponentsExtractSeq = new ArrayList<Component>();
 	ArrayList<Component> lsComponentsPredictMiRNA = new ArrayList<Component>();
-	ArrayList<Component> lsComponentsAnalysisPredictMiRNA = new ArrayList<Component>();
 	HashSet<Component> lsComponentsAll = new HashSet<Component>();
 	
 	GUIFileOpen guiFileOpen = new GUIFileOpen();
 	
 	CtrlMiRNAfastq ctrlMiRNAfastq = new CtrlMiRNAfastq();
 	CtrlMiRNApredict ctrlMiRNApredict = new CtrlMiRNApredict();
-
+	GuiLayeredPaneSpeciesVersionGff guiSpeciesVersionGff;
+	
 	private JButton btnFastqfile;
 	private JButton btnNovelmirnabed;
 	private JButton btnDelNovelMiRNAbedFileRow;
@@ -103,11 +100,7 @@ public class GuiMiRNASeq extends JPanel{
 		chkMapping = new JCheckBox("MappingAndAnalysis");
 		chkMapping.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (!chkMapping.isSelected()) {
-					chkPredictMiRNA.setSelected(false);
-				}
-				chkbxExtractSeq.setSelected(false);
-				chkSelected(chkMapping.isSelected(), chkPredictMiRNA.isSelected(), false);
+				chkSelected(chkMapping.isSelected(), chkPredictMiRNA.isSelected());
 			}
 		});
 		chkMapping.setBounds(79, 527, 206, 22);
@@ -146,18 +139,6 @@ public class GuiMiRNASeq extends JPanel{
 		});
 		btnOutpath.setBounds(709, 465, 95, 24);
 		add(btnOutpath);
-		
-		chkbxExtractSeq = new JCheckBox("extract seq");
-		chkbxExtractSeq.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				chkMapping.setSelected(false);
-				chkPredictMiRNA.setSelected(false);
-				chkSelected(false, false, chkbxExtractSeq.isSelected());
-
-			}
-		});
-		chkbxExtractSeq.setBounds(534, 527, 110, 22);
-		add(chkbxExtractSeq);
 		
 		btnFastqfile = new JButton("FastqFile");
 		btnFastqfile.addActionListener(new ActionListener() {
@@ -213,40 +194,22 @@ public class GuiMiRNASeq extends JPanel{
 		chkPredictMiRNA = new JCheckBox("PredictMiRNA");
 		chkPredictMiRNA.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				chkbxExtractSeq.setSelected(false);
-				chkSelected(chkMapping.isSelected(), chkPredictMiRNA.isSelected(), false);
+				chkSelected(chkMapping.isSelected(), chkPredictMiRNA.isSelected());
 			}
 		});
 		chkPredictMiRNA.setBounds(315, 527, 131, 22);
 		add(chkPredictMiRNA);
 		
-		JLabel lblSpecies = new JLabel("Species");
-		lblSpecies.setBounds(23, 350, 69, 14);
-		add(lblSpecies);
+	 
 		
-		JLabel lblVersion = new JLabel("Version");
-		lblVersion.setBounds(23, 401, 69, 14);
-		add(lblVersion);
-		
-		combSpecies = new JComboBoxData<Species>();
-		combSpecies.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Species species = combSpecies.getSelectedValue();
-				comboVersion.setMapItem(species.getMapVersion());
-			}
-		});
-		combSpecies.setBounds(23, 366, 195, 23);
-		add(combSpecies);
-		
-		
-		comboVersion = new JComboBoxData<String>();
-		comboVersion.setBounds(23, 421, 195, 23);
-		add(comboVersion);
+		guiSpeciesVersionGff = new GuiLayeredPaneSpeciesVersionGff();
+		guiSpeciesVersionGff.setBounds(23, 340, 295, 158);
+		add(guiSpeciesVersionGff);
 		initialize();
 	}
 	
 	
-	private void chkSelected(boolean booChkMap, boolean booChkPredictMiRNA, boolean booChkExtractSeq) {
+	private void chkSelected(boolean booChkMap, boolean booChkPredictMiRNA) {
 		if (booChkMap && !booChkPredictMiRNA) {
 			for (Component component : lsComponentsAll)
 				component.setEnabled(false);
@@ -269,19 +232,12 @@ public class GuiMiRNASeq extends JPanel{
 		else if (!booChkMap && booChkPredictMiRNA) {
 			for (Component component : lsComponentsAll)
 				component.setEnabled(false);
-			for (Component component : lsComponentsAnalysisPredictMiRNA)
+			for (Component component : lsComponentsPredictMiRNA)
 				component.setEnabled(true);
 			btnRunning.setEnabled(true);
 		}
 		
-		else if (booChkExtractSeq) {
-			for (Component component : lsComponentsAll)
-				component.setEnabled(false);
-			for (Component component : lsComponentsExtractSeq)
-				component.setEnabled(true);
-			btnRunning.setEnabled(true);
-		}
-		else if (!booChkMap && !booChkExtractSeq && !booChkPredictMiRNA) {
+		else if (!booChkMap && !booChkPredictMiRNA) {
 			for (Component component : lsComponentsAll) {
 				component.setEnabled(false);
 			}
@@ -298,47 +254,26 @@ public class GuiMiRNASeq extends JPanel{
 		lsComponentsMapping.add(btnDelFastQfilerow);
 		lsComponentsMapping.add(chkMapAllBedFileToGenome);
 		lsComponentsMapping.add(btnFastqfile);
-		lsComponentsMapping.add(combSpecies);
-		lsComponentsMapping.add(combSpecies);
-		
-		lsComponentsExtractSeq.add(txtRefseqFile);
-		lsComponentsExtractSeq.add(btnRefseqfile);
 		
 		lsComponentsPredictMiRNA.add(btnDelNovelMiRNAbedFileRow);
 		lsComponentsPredictMiRNA.add(btnNovelmirnabed);
 		lsComponentsPredictMiRNA.add(sclNovelMiRNAbed);
-		lsComponentsPredictMiRNA.add(combSpecies);
-		lsComponentsPredictMiRNA.add(comboVersion);
 				
-
-		
-		lsComponentsAll.addAll(lsComponentsExtractSeq);
 		lsComponentsAll.addAll(lsComponentsMapping);
 		lsComponentsAll.addAll(lsComponentsPredictMiRNA);
 
 		chkMapping.setSelected(true);
-		for (Component component : lsComponentsExtractSeq) {
-			component.setEnabled(false);
-		}
+
 		for (Component component : lsComponentsMapping) {
 			component.setEnabled(true);
 		}
-		chkbxExtractSeq.setSelected(false);
 		sclpanFastq.setTitle(new String[]{"FastqFile", "prefix"});
 		sclNovelMiRNAbed.setTitle(new String[]{"BedFile", "prefix"});
-		HashMap<String, Integer> hashFileType = new HashMap<String, Integer>();
-		hashFileType.put("miReapFile",ListMiRNALocation.TYPE_MIREAP);
-		hashFileType.put("miRNAdata",ListMiRNALocation.TYPE_RNA_DATA);
-		
-		HashMap<String, Species> hashSpecies = Species.getSpeciesName2Species(Species.SEQINFO_SPECIES);           // new HashMap<String, String>();
-//		hashSpecies.put("miReapFile",ListMiRNALocation.TYPE_RNA_DATA);
-		combSpecies.setMapItem(hashSpecies);
 	}
 	
 	
 	private void running() {
-		Species species = combSpecies.getSelectedValue();
-		species.setVersion(comboVersion.getSelectedValue());
+		Species species = guiSpeciesVersionGff.getSelectSpecies();
 		GffChrAbs gffChrAbs = new GffChrAbs(species);
 		ctrlMiRNAfastq.clear();
 		ArrayList<String[]> lsBedFile2Prefix = new ArrayList<String[]>();
@@ -354,14 +289,10 @@ public class GuiMiRNASeq extends JPanel{
 			}
 			runPredict(lsBedFile2Prefix, gffChrAbs, species);
 		}
-		
-		if (chkbxExtractSeq.isSelected()) {
-			runExtractSeq();
-		}
 	}
 	
 	private void runMapping(GffChrAbs gffChrAbs, Species species, ArrayList<String[]> lsfastqFile2Prefix) {
-		ctrlMiRNAfastq.setMappingAll2Genome(chkbxExtractSeq.isSelected());
+		ctrlMiRNAfastq.setMappingAll2Genome(chkMapAllBedFileToGenome.isSelected());
 		ctrlMiRNAfastq.setSpecies(species);
 		ctrlMiRNAfastq.setOutPath(txtOutPathPrefix.getText());
 		ctrlMiRNAfastq.setGffChrAbs(gffChrAbs);
@@ -399,16 +330,5 @@ public class GuiMiRNASeq extends JPanel{
 		result[0] = FileOperate.getFileName(out);
 		result[1] = FileOperate.getParentPathName(out);
 		return result;
-	}
-	
-	/**
-	 * 是否单独运行，就是前面是否有mapping
-	 * @param solo 前面是否有mapping
-	 */
-	private void runExtractSeq() {
-		ExtractSmallRNASeq extractSmallRNASeq = new ExtractSmallRNASeq();
-		extractSmallRNASeq.setRefseqFile(txtRefseqFile.getText());
-		extractSmallRNASeq.setOutPathPrefix(txtOutPathPrefix.getText());
-		extractSmallRNASeq.getSeq();
 	}
 }

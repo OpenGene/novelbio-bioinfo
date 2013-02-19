@@ -156,12 +156,14 @@ public class FastaGetCDSFromProtein {
 		gffGeneIsoInfo.add(new ExonInfo(gffGeneIsoInfo, blastSeqFasta.cis5to3, atgSite, uagSite));
 		return gffGeneIsoInfo;
 	}
+	
 	private boolean isStartWithM(BlastSeqFastaCompare blastSeqFasta) {
 		if (blastSeqFasta.getStartSubject() == 0 && blastSeqFasta.getAlignmentSubject().toLowerCase().startsWith("m") ) {
 			return true;
 		}
 		return false;
 	}
+	
 	/** 从比对的最近的位点向前扫描，直到扫描到最远的UAG位点，同时将UAG后面一位标记为ATG */
 	private int scanAtgSite(int orf, int alignAtgSite) {
 		char[] seq = seqFasta.SeqSequence.toUpperCase().toCharArray();
@@ -247,7 +249,7 @@ public class FastaGetCDSFromProtein {
 		int atgsite = 0;
 		for (int orf = 0; orf < 3; orf++) {
 			proteinSeqTranslate = seqFasta.toStringAA(cis5to3, orf);
-			atgsite = FQrecordFilterAdaptor.trimAdaptorR(proteinSeqTranslate, proteinStartSite, 0, 3, 10, 30);
+			atgsite = FQrecordFilterAdaptor.trimAdaptorR(proteinSeqTranslate, proteinStartSite, 0, 3, 1, 80,20);
 			if (atgsite >= 0 && atgsite < proteinSeqTranslate.length()) {
 				compareInfo = new CompareInfo();
 				compareInfo.atgAASite = atgsite;
@@ -262,7 +264,7 @@ public class FastaGetCDSFromProtein {
 			return null;
 		}
 		
-		int uagsite = FQrecordFilterAdaptor.trimAdaptorL(proteinSeqTranslate, proteinEndSite, 0, 3, 10, 30);
+		int uagsite = FQrecordFilterAdaptor.trimAdaptorL(proteinSeqTranslate, proteinEndSite, 0, 3, 1, 80, 20);
 		if (uagsite > atgsite && uagsite <= proteinSeqTranslate.length()) {
 			compareInfo.uagAASite = uagsite;
 			return compareInfo;

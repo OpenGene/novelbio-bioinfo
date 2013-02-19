@@ -407,7 +407,7 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	
 	/** 返回该位点的起点在第几个氨基酸上，如果不在cds中则返回 -1 */
 	public int getAffectAANum() {
-		if (gffGeneIsoInfo.getCodLoc(getRefSnpIndelStart()) != GffGeneIsoInfo.COD_LOCUTR_CDS) {
+		if (gffGeneIsoInfo.getCodLocUTRCDS(getRefSnpIndelStart()) != GffGeneIsoInfo.COD_LOCUTR_CDS) {
 			return -1;
 		}
 		int num = gffGeneIsoInfo.getCod2ATGmRNA(getRefSnpIndelStart());
@@ -875,19 +875,8 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 			
 			lsTmpInfo.add(siteSnpIndelInfo.getOrfShift() + "");
 			lsTmpInfo.add(siteSnpIndelInfo.isExon() + "");
-			if (siteSnpIndelInfo.isCDS()) {
-				lsTmpInfo.add(siteSnpIndelInfo.getRefAAnr().toString());
-				lsTmpInfo.add(siteSnpIndelInfo.getRefAAnr().toStringAA1());
-				lsTmpInfo.add(siteSnpIndelInfo.getThisAAnr().toString());
-				lsTmpInfo.add(siteSnpIndelInfo.getThisAAnr().toStringAA1());
-				lsTmpInfo.add(siteSnpIndelInfo.getRefAAnr().toStringAA3()+getAffectAANum() + siteSnpIndelInfo.getThisAAnr().toStringAA3());
-				lsTmpInfo.add(siteSnpIndelInfo.getAAattrConvert());
-				lsTmpInfo.add(siteSnpIndelInfo.getSplitTypeEffected());
-			}
-			else {
-//				for (int i = 0; i < 6; i++)
-//					lsTmpInfo.add("");
-			}
+			lsTmpInfo.addAll(siteSnpIndelInfo.toStrings());
+			
 			String[] infpoStrings = lsTmpInfo.toArray(new String[0]);
 			lsResult.add(infpoStrings);
 		}
@@ -927,13 +916,7 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		}
 		lsTitle.add("OrfShift");
 		lsTitle.add("IsInExon");
-		lsTitle.add("RefAAnr");
-		lsTitle.add("RefAA");
-		lsTitle.add("ThisAAnr");
-		lsTitle.add("ThisAA");
-		lsTitle.add("AAConvert");
-		lsTitle.add("Chemical Transform");
-		lsTitle.add("split info");
+		lsTitle.addAll(SiteSnpIndelInfo.getTitle());
 		String[] infpoStrings = lsTitle.toArray(new String[0]);
 		return infpoStrings;
 	}

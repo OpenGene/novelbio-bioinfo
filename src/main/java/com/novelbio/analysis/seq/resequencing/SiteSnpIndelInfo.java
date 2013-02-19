@@ -1,7 +1,11 @@
 package com.novelbio.analysis.seq.resequencing;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -378,11 +382,55 @@ public abstract class SiteSnpIndelInfo {
 			mapSample2thisBaseNum.put(entry.getKey(), entry.getValue());
 		}
 	}
-	/////////////////////////////////////// 静态方法，获得所有指定区域的位点的信息 ///////////////////////////////
-	public static String getMyTitle() {
-		String result = "ChrID\tSnpLoc\tRefBase\tAllelic_depths_Ref\tThisBase\tAllelic_depths_Alt \tQuality\tFilter\tAllele_Balance_Hets()\tIsInExon\tDistance_To_Start\t" + 
-		"RefAAnr\tRefAAseq\tThisAAnr\tThisAASeq\tAA_chemical_property\tOrfShift\tSnpDB_ID\tGeneAccID\tGeneSymbol\tGeneDescription";
-		return result;
+	
+	/**
+	 * 返回该类涉及到的展示信息为linkedlist<br>
+	 * lsTitle.add("RefNr");<br>
+		lsTitle.add("RefAA");<br>
+		lsTitle.add("ThisNr");<br>
+		lsTitle.add("ThisAA");<br>
+		lsTitle.add("ConvertType");<br>
+		lsTitle.add("ChamicalConvert");<br>
+	 * @return
+	 */
+	public List<String> toStrings() {
+		List<String> lsInfo = new LinkedList<String>();
+		lsInfo.add(getRefAAnr().toString());
+		lsInfo.add(getRefAAnr().toStringAA3());
+		lsInfo.add(getThisAAnr().toString());
+		lsInfo.add(getThisAAnr().toStringAA3());
+		if (this instanceof SiteSnpIndelInfoSnp && this.refSiteSnpIndelParent.getAffectAANum() > 0) {
+			lsInfo.add(getRefAAnr().toStringAA3() + this.refSiteSnpIndelParent.getAffectAANum() + getThisAAnr().toStringAA3());
+		} else {
+			lsInfo.add("");
+		}
+//		lsInfo.add(getSplitTypeEffected());
+		lsInfo.add(getAAchamicalConvert());
+		return lsInfo;
+	}
+	
+	/**
+	 * 获得标题，为linkedlist<br>
+	 * lsTitle.add("RefNr");<br>
+		lsTitle.add("RefAA");<br>
+		lsTitle.add("ThisNr");<br>
+		lsTitle.add("ThisAA");<br>
+		lsTitle.add("ConvertType");<br>
+		lsTitle.add("ChamicalConvert");<br>
+	 * @return
+	 */
+	public static List<String> getTitle() {
+		List<String> lsTitle = new LinkedList<String>();
+		lsTitle.add("RefNr");
+		lsTitle.add("RefAA");
+		lsTitle.add("ThisNr");
+		lsTitle.add("ThisAA");
+		lsTitle.add("ConvertType");
+//		lsTitle.add("SplitType");
+		lsTitle.add("ChamicalConvert");
+		
+		return lsTitle;
+
 	}
 	/**
 	 * 必须与 public String getMismatchInfo() 一致

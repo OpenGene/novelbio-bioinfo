@@ -78,8 +78,8 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 			
 			TxtReadandWrite txtRead = new TxtReadandWrite(txtfile[0], false);
 			TxtReadandWrite txtWrite = new TxtReadandWrite(txtfile[1], true);
-			txtWrite.writefileln(txtRead.readFirstLine() + "\t" + ArrayOperate.cmbString(ArrayOperate.converList2Array(getTitleLs()), "\t"));
-			for (String snpInfo : txtRead.readlines(1)) {
+			setTitle(txtRead, txtWrite);
+			for (String snpInfo : txtRead.readlines(2)) {
 				//////
 				suspendCheck();
 				if (flagStop)
@@ -103,6 +103,18 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 			txtWrite.close();
 		}
 	}
+	
+	/** 设定输出文件的title，如果没有title则将第一行进行注释 */
+	private void setTitle(TxtReadandWrite txtRead, TxtReadandWrite txtWrite) {
+		String firstLine = txtRead.readFirstLine();
+		try {
+			String anno = annoSnp(firstLine);
+			txtWrite.writefileln(anno);
+		} catch (Exception e) {
+			txtWrite.writefileln(firstLine + "\t" + ArrayOperate.cmbString(ArrayOperate.converList2Array(getTitleLs()), "\t"));
+		}
+	}
+	
 	/** 注释结果 */
 	private String annoSnp(String input) {
 		input = input.trim();
@@ -126,8 +138,7 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 			lsInfo.add(gffGeneIsoInfo.getName());
 			lsInfo.add("");
 		}
-		lsInfo.add(geneID.getSymbol());
-		lsInfo.add(geneID.getDescription());
+		
 		lsInfo.add(gffGeneIsoInfo.toStringCodLocStr(refStartSite));
 		
 		//如果snp落在了intron里面，本项目就不计数了
@@ -137,14 +148,8 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 		} else {
 			lsInfo.add("");
 		}
-	
-		lsInfo.add(siteSnpIndelInfo.getRefAAnr().toString());
-		lsInfo.add(siteSnpIndelInfo.getRefAAnr().toStringAA3());
-		lsInfo.add(siteSnpIndelInfo.getThisAAnr().toString());
-		lsInfo.add(siteSnpIndelInfo.getThisAAnr().toStringAA3());
-		lsInfo.add(siteSnpIndelInfo.getRefAAnr().toStringAA3() + refSiteSnpIndel.getAffectAANum() + siteSnpIndelInfo.getThisAAnr().toStringAA3());
-		lsInfo.add(siteSnpIndelInfo.getSplitTypeEffected());
-		lsInfo.add(siteSnpIndelInfo.getAAchamicalConvert());
+		
+		lsInfo.addAll(siteSnpIndelInfo.toStrings());
 		String[] result = ArrayOperate.converList2Array(lsInfo);
 		return ArrayOperate.cmbString(result, "\t");
 	}
@@ -159,13 +164,7 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 		lsTitle.add(TitleFormatNBC.Description.toString());
 		lsTitle.add("LocationDescription");
 		lsTitle.add("PropToGeneStart");
-		lsTitle.add("RefNr");
-		lsTitle.add("RefAA");
-		lsTitle.add("ThisNr");
-		lsTitle.add("ThisAA");
-		lsTitle.add("ConvertType");
-		lsTitle.add("SplitType");
-		lsTitle.add("ChamicalConvert");
+		lsTitle.addAll(SiteSnpIndelInfo.getTitle());
 		return lsTitle;
 	}
 }

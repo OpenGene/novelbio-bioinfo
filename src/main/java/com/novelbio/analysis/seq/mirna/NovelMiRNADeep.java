@@ -156,6 +156,11 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 	private String getChromFaSeq() {
 		return chromFaIndexBowtie + " ";
 	}
+	private String getChromFaIndex() {
+		String result = FileOperate.getParentPathName(chromFaIndexBowtie) + FileOperate.getFileNameSep(chromFaIndexBowtie)[0];
+		return result + " ";
+	}
+	
 	/** 产生输入的reads文件
 	 * 会将输入的bed文件比对基因组，获得没有mapping至正向exon的序列，然后写入文本并转化为fastq文件
 	 *  */
@@ -213,9 +218,9 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 		moveAndCopeFile();
 	}
 	private void mapping() {
-		mapBowtie.IndexMakeBowtie();
+		mapBowtie.IndexMake(false);
 		String cmdMapping = mirDeepPath + "mapper.pl " + creatFastaMappingFile() +"-c -j " + getReadsMinLen();
-		cmdMapping = cmdMapping + "-m -p " + getChromFaSeq() + "-s " + getCollapseReadsFa() + "-t " + getMappingArf() + "-v";
+		cmdMapping = cmdMapping + "-m -p " + getChromFaIndex() + "-s " + getCollapseReadsFa() + "-t " + getMappingArf() + "-v";
 		CmdOperate cmdOperate = new CmdOperate(cmdMapping, "mirDeepMapping_" + species);
 		cmdOperate.run();
 		
@@ -287,8 +292,9 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 		if (suffix == null) {
 			logger.error("没有找到report里面的文件名:" + getReportFileRandom());
 		}
-		return suffix;		
+		return suffix;
 	}
+	
 	/**
 	 * 从mirDeep的结果文件中获得新miRNA的名字
 	 * @param mirDeepResultCvs

@@ -25,7 +25,7 @@ public class GetSeqInfo extends SeqFastaHash{
 	 */
 	public void getSeqInfoAll(int flankingLen, int distance,String txtOutFile) {
 		SeqFasta seqFasta = getSeqFastaAll().get(0);
-		ArrayList<LocInfo> lslocInfo = seqFasta.getSeqInfo();
+		ArrayList<LocInfo> lslocInfo = null;//seqFasta.getSeqInfo();
 		ArrayList<double[]> lsTmp = new ArrayList<double[]>();
 		for (LocInfo locInfo : lslocInfo) {
 			double[] tmploc = new double[2];

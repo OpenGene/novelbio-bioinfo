@@ -94,7 +94,7 @@ public class ModifySeq {
 		}
 		txtReadandWrite.close();
 		txtModifySeqInfoFile.close();
-		ArrayList<LocInfo> lsresult = seqFasta.getSeqInfo();
+		ArrayList<LocInfo> lsresult = null;//seqFasta.getSeqInfo();
 		TxtReadandWrite txtStatistic = new TxtReadandWrite(statictis, true);
 		
 		try {
@@ -137,7 +137,7 @@ public class ModifySeq {
 		}
 		txtReadandWrite.close();
 		txtModifySeqInfoFile.close();
-		ArrayList<LocInfo> lsresult = seqFasta.getSeqInfo();
+		ArrayList<LocInfo> lsresult = null;//seqFasta.getSeqInfo();
 		TxtReadandWrite txtStatistic = new TxtReadandWrite(statictis, true);
 		
 		try {

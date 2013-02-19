@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
@@ -202,7 +203,7 @@ public class Species {
 		return speciesFile.getChromSeqFile();
 	}
 	/** 获得这个species在本version下的全体GffType */
-	public HashMap<String, GFFtype> getMapGffTypeAll() {
+	public Map<String, GFFtype> getMapGffTypeAll() {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
 		return speciesFile.getMapGffType();
 	}

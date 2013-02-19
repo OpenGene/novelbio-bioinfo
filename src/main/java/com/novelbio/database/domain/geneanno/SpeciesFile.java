@@ -3,6 +3,8 @@ package com.novelbio.database.domain.geneanno;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 
@@ -135,9 +137,9 @@ public class SpeciesFile {
 	 * 按照优先级返回gff文件，优先级由GFFtype来决定
 	 * @return GffFile
 	 */
-	public HashMap<String, GFFtype> getMapGffType() {
+	public Map<String, GFFtype> getMapGffType() {
 		filledHashGffType2GffFile();
-		HashMap<String, GFFtype> mapString2GffType = new HashMap<String, SpeciesFile.GFFtype>();
+		TreeMap<String, GFFtype> mapString2GffType = new TreeMap<String, SpeciesFile.GFFtype>();
 		if (hashGffType2GffFile.size() == 0) {
 			return mapString2GffType;
 		}

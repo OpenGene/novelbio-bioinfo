@@ -33,7 +33,7 @@ public class RunInfo {
 		TxtReadandWrite txtOutSeq = new TxtReadandWrite(out, true);
 		txtOutSeq.writefilePerLine(seqFastaHash.getSeqFastaAll().get(0).toString(), 100);
 		txtOutSeq.close();
-		ArrayList<LocInfo> lsresult = seqFastaHash.getSeqFastaAll().get(0).getSeqInfo();
+		ArrayList<LocInfo> lsresult = null;// seqFastaHash.getSeqFastaAll().get(0).getSeqInfo();
 		TxtReadandWrite txtStatistic = new TxtReadandWrite(statistic, true);
 
 		for (LocInfo locInfo : lsresult) {

@@ -53,32 +53,32 @@ public class SnpSomaticFinder {
 		sampleDetailTreat.addSampleName("7A");
 		sampleDetailTreat.addSampleName("10A");
 		
-		sampleDetailTreat.setSampleRefHomoNum(1, 3);
-		sampleDetailTreat.setSampleSnpIndelHetoNum(0, 0);
-		sampleDetailTreat.setSampleSnpIndelHomoNum(0, 0);
+//		sampleDetailTreat.setSampleRefHomoNum(1, 3);
+//		sampleDetailTreat.setSampleSnpIndelHetoNum(0, 0);
+//		sampleDetailTreat.setSampleSnpIndelHomoNum(0, 0);
 		
 		SnpGroupFilterInfo sampleDetailCol = new SnpGroupFilterInfo();
 		sampleDetailCol.addSampleName("5B");
 		sampleDetailCol.addSampleName("7B");
 		sampleDetailCol.addSampleName("10B");
 
-		sampleDetailCol.setSampleRefHomoNum(0, 0);
-		sampleDetailCol.setSampleSnpIndelHetoMoreNum(1, 3);
-		sampleDetailCol.setSampleSnpIndelHetoLessNum(0, 0);
+//		sampleDetailCol.setSampleRefHomoNum(0, 0);
+//		sampleDetailCol.setSampleSnpIndelHetoMoreNum(1, 3);
+//		sampleDetailCol.setSampleSnpIndelHetoLessNum(0, 0);
 		
 		snpSomaticFilter.addFilterGroup(sampleDetailTreat);
 		snpSomaticFilter.addFilterGroup(sampleDetailCol);
 		
 		snpSomaticFilter.readSnpDetailFromFile();
-		snpSomaticFilter.writeToFile("/media/winF/NBC/Project/Project_HXW/20121018/result/ColvsTreat.xls");
+//		snpSomaticFilter.writeToFile("/media/winF/NBC/Project/Project_HXW/20121018/result/ColvsTreat.xls");
 		
 		snpSomaticFilter.filterSnp();
-		snpSomaticFilter.writeToFile("/media/winF/NBC/Project/Project_HXW/20121018/result/ColvsTreat_Filter.xls");
+//		snpSomaticFilter.writeToFile("/media/winF/NBC/Project/Project_HXW/20121018/result/ColvsTreat_Filter.xls");
 		
 		snpSomaticFilter.getLsFilteredSnp();
 		GeneFilter geneFilter = new GeneFilter();
 		geneFilter.setGffChrAbs(new GffChrAbs(9606));
-		geneFilter.setSnpLevel(SnpGroupFilterInfo.Heto);
+//		geneFilter.setSnpLevel(SnpGroupFilterInfo.Heto);
 		geneFilter.setSampleFilteredNum(2);
 		geneFilter.addSampleName("5B");
 		geneFilter.addSampleName("7B");

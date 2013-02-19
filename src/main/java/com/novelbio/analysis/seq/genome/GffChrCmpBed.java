@@ -10,7 +10,7 @@ import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-
+//TODO 没做好的类
 /**
  * 比较两个bed文件之间的区别
  * 在com.novelbio.analysis.project.cdg.CmpTssMethy中使用
@@ -37,7 +37,7 @@ public class GffChrCmpBed extends GffChrAbs {
 			mapReads2.setBedSeq(readsFile2);
 			mapReads2.setInvNum(binNum);
 			mapReads2.setMapChrID2Len(super.species.getMapChromInfo());
-			mapReads2.setNormalType(mapNormType);
+//			mapReads2.setNormalType(mapNormType);
 			mapReads2.running();
 		}
 	}
@@ -105,7 +105,7 @@ public class GffChrCmpBed extends GffChrAbs {
 		for (int i = 0; i < lsCmpRegion.size(); i++) {
 			int[] is = lsCmpRegion.get(i);
 			MapInfo mapInfo = new MapInfo(chrID, is[0], is[1]);
-			MapReads.CmpMapReg(mapReads, mapReads2, mapInfo);
+//			MapReads.CmpMapReg(mapReads, mapReads2, mapInfo);
 			result[i] = mapInfo.getScore();
 		}
 		return result;

@@ -6,7 +6,7 @@ import com.novelbio.database.domain.react.RctInteract;
 
 public class ServRctIntact {
 	
-	MapRctIneract mapRctIneract;
+//	MapRctIneract mapRctIneract;
 	/**
 	 * 		where <br>
 			if test="taxID !=0 and taxID !=null"<br>
@@ -30,7 +30,8 @@ public class ServRctIntact {
 	 * @return
 	 */
 	public static RctInteract qRctIntact(RctInteract rctInteract) {
-		return mapRctIneract.qRctInteract(rctInteract);
+		return null;
+//		return mapRctIneract.qRctInteract(rctInteract);
 	}
 	
 	/**
@@ -56,7 +57,8 @@ public class ServRctIntact {
 	 * @return
 	 */
 	public static ArrayList<RctInteract> qLsRctIntacts(RctInteract rctInteract) {
-		return mapRctIneract.qLsRctInteracts(rctInteract);
+		return null;
+//		return mapRctIneract.qLsRctInteracts(rctInteract);
 	}
 	
 	/**
@@ -64,7 +66,7 @@ public class ServRctIntact {
 	 * @return
 	 */
 	public static void instRctInteract(RctInteract rctInteract) {
-		 mapRctIneract.instRctInteract(rctInteract);
+//		 mapRctIneract.instRctInteract(rctInteract);
 	}
 	/**
 		update rctinteract<br>
@@ -115,7 +117,7 @@ public class ServRctIntact {
 	 * @return
 	 */
 	public static void updbRctInteract(RctInteract rctInteract) {
-		 mapRctIneract.updbRctInteract(rctInteract);
+//		 mapRctIneract.updbRctInteract(rctInteract);
 	}
 	
 	/**

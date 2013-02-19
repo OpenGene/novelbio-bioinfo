@@ -35,6 +35,9 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	public static final int COD_LOC_INTRON = 200;
 	/** 标记codInExon不在转录本中  */
 	public static final int COD_LOC_OUT = 300;
+	
+	/**  标记codInExon不在exon中 */
+	public static final int COD_LOCUTR_NONE = 1000;
 	/**  标记codInExon处在5UTR中  */
 	public static final int COD_LOCUTR_5UTR = 5000;
 	/**  标记codInExon处在3UTR中 */
@@ -366,7 +369,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	/**
 	 * 在转录本的哪个位置
 	 * 0: 有COD_LOC_EXON，COD_LOC_INTRON，COD_LOC_OUT三种
-	 * 1: 有COD_LOCUTR_5UTR，COD_LOCUTR_3UTR，两种
+	 * 1: 有COD_LOCUTR_5UTR，COD_LOCUTR_3UTR，COD_LOCUTR_NONE,COD_LOCUTR_CDS四种
 	 * @return
 	 */
 	private int[] getCodLocInfo(int coord) {
@@ -374,6 +377,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		int ExIntronnum = getNumCodInEle(coord);
 		if (ExIntronnum == 0) {
 			codLoc[0] = COD_LOC_OUT;
+			codLoc[1] = COD_LOCUTR_NONE;
 		} 
 		else if (ExIntronnum > 0) {
 			codLoc[0] = COD_LOC_EXON;
