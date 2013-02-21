@@ -114,7 +114,7 @@ public class MapReadsChangFang extends MapReads {
 				logger.info("超出范围：" + i);
 				continue;
 			}
-			chrBpReads[i] = chrBpReads[i] + methInfo[m]*fold;
+			chrBpReads[i] = chrBpReads[i] + methInfo[m] * fold;
 			m++;
 		}
 	}

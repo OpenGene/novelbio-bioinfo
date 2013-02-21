@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import org.apache.log4j.Logger;
+
+import com.novelbio.analysis.annotation.functiontest.ElimGOFunTest;
 import com.novelbio.analysis.annotation.functiontest.FunctionTest;
+import com.novelbio.analysis.annotation.functiontest.NovelGOFunTest;
 import com.novelbio.analysis.annotation.functiontest.StatisticTestGene2Item;
 import com.novelbio.analysis.annotation.functiontest.StatisticTestItem2Gene;
 import com.novelbio.analysis.annotation.functiontest.StatisticTestResult;
@@ -21,20 +24,27 @@ public class CtrlGO extends CtrlGOPath{
 	
 	GOtype GOClass = GOtype.BP;
 	GoAlgorithm goAlgorithm = GoAlgorithm.classic;
-	
+	int goLevel = -1;
 	/**
 	 * @param goAlgorithm
 	 * @param qTaxID
 	 */
 	public CtrlGO(GoAlgorithm goAlgorithm, int qTaxID) {
 		if (goAlgorithm != GoAlgorithm.novelgo) {
-			functionTest = new FunctionTest(FunctionTest.FUNCTION_GO_ELIM, qTaxID);
-			functionTest.setGOAlgorithm(goAlgorithm);
+			functionTest = FunctionTest.getInstance(FunctionTest.FUNCTION_GO_ELIM, qTaxID);
+			((ElimGOFunTest) functionTest).setAlgorithm(goAlgorithm);
 		} else {
-			functionTest = new FunctionTest(FunctionTest.FUNCTION_GO_NOVELBIO, qTaxID);
+			functionTest = FunctionTest.getInstance(FunctionTest.FUNCTION_GO_NOVELBIO, qTaxID);
 		}
 	}
- 
+	
+	/** GO的层级分析，只有当算法为NovelGO时才能使用 */
+	public void setGOlevel(int levelNum) {
+		if (functionTest instanceof NovelGOFunTest) {
+			goLevel = levelNum;
+			((NovelGOFunTest) functionTest).setGOlevel(levelNum);
+		}
+	}
 	
 	public void setGOType(GOtype goType) {
 		functionTest.setDetailType(goType);
@@ -48,6 +58,7 @@ public class CtrlGO extends CtrlGOPath{
 			FileOperate.moveFile(goMapFileSource, FileOperate.getParentPathName(excelPath), goMapFileTargetName, true);
 		}
 	}
+	
 	@Override
 	protected LinkedHashMap<String, ArrayList<String[]>> calItem2GenePvalue(String prix, ArrayList<StatisticTestResult> lsResultTest) {
 			LinkedHashMap<String, ArrayList<String[]>> hashResult = new LinkedHashMap<String, ArrayList<String[]>>();
@@ -83,6 +94,7 @@ public class CtrlGO extends CtrlGOPath{
 			
 		return hashResult;
 	}
+	
 	@Override
 	String getGene2ItemFileName(String fileName) {
 		String suffix = "_GO_Item";
@@ -95,6 +107,9 @@ public class CtrlGO extends CtrlGOPath{
 			}
 		}
 		suffix = suffix + "_" + GOClass.getOneWord();
+		if (goLevel > 0) {
+			suffix = suffix + "_" + goLevel + "Level";
+		}
 		return FileOperate.changeFileSuffix(fileName, suffix, "txt");
 	}
 	

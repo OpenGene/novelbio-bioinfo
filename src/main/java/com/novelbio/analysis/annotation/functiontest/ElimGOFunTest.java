@@ -72,7 +72,7 @@ public class ElimGOFunTest extends NovelGOFunTest{
 	private ArrayList<String[]> doTest() {
 		topGO.setGoType(GoType);
 		ArrayList<String> lsBG = new ArrayList<String>();
-		for (GeneID2LsItem geneID2LsItem : lsBGGeneID2Items) {
+		for (GeneID2LsItem geneID2LsItem : mapBGGeneID2Items.values()) {
 			lsBG.add(geneID2LsItem.toString());
 		}
 		

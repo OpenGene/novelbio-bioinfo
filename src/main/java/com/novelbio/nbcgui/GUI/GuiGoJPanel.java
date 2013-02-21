@@ -44,6 +44,7 @@ import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.controltest.CtrlGO;
 import javax.swing.SpringLayout;
+import javax.swing.JSpinner;
 
 
 /**
@@ -81,22 +82,24 @@ public class GuiGoJPanel extends JPanel{
 	private JLabel jLabValueColGo;
 	private JLabel jLabAccColGo;
 	private JTextFieldData jTxtAccColGo;
-	private JRadioButton jRadBtnGoClassC;
-	private JRadioButton jRadBtnGoClassF;
-	private JRadioButton jRadBtnGoClassP;
-	private JComboBox jCombBlastTaxGo;
+
 	private JCheckBox jChkBlastGo;
 	private ButtonGroup btnGroupGoMethod;
 	private ButtonGroup btnGroupGoClass;
-	private JComboBox jCombSelSpeGo;
+
 	private JCheckBox jChkCluster;
 	private JLabel jLabGoQtaxID;
 	private JScrollPane jScrollPaneInputGo;
 	
+	JSpinner spnGOlevel;
+	
 	JComboBoxData<GoAlgorithm> cmbGoAlgorithm;
-	////////////
-	static int QtaxID = 0;//查询物种ID
-	static int StaxID = 9606;//blast物种ID
+	JComboBoxData<GOtype> cmbGOType;
+	JComboBoxData<Species> cmbSelSpeGo;
+	JComboBoxData<Species> cmbBlastTaxGo;
+	
+	JCheckBox chkGOLevel;
+	
 	String GoClass = "";
 	
 	GUIFileOpen guiFileOpen = new GUIFileOpen();
@@ -115,12 +118,9 @@ public class GuiGoJPanel extends JPanel{
 		add(jChkCluster);
 		add(jTxtBGGo);
 		add(jLabGoQtaxID);
-		add(jCombBlastTaxGo);
-		add(jCombSelSpeGo);
-		add(jRadBtnGoClassP);
+		add(cmbBlastTaxGo);
+		add(cmbSelSpeGo);
 		add(jLabGoType);
-		add(jRadBtnGoClassF);
-		add(jRadBtnGoClassC);
 		add(jLabValueColGo);
 		add(jTxtDownValueGo);
 		add(jTxtUpValueGo);
@@ -141,9 +141,48 @@ public class GuiGoJPanel extends JPanel{
 		add(jProgressBarGo);
 		
 		cmbGoAlgorithm = new JComboBoxData<GoAlgorithm>();
+		cmbGoAlgorithm.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (cmbGoAlgorithm.getSelectedValue() == GoAlgorithm.novelgo) {
+					chkGOLevel.setEnabled(true);
+					if (chkGOLevel.isSelected()) {
+						spnGOlevel.setEnabled(true);
+					} else {
+						spnGOlevel.setEnabled(false);
+					}
+				} else {
+					chkGOLevel.setEnabled(false);
+					spnGOlevel.setEnabled(false);
+				}
+			}
+		});
 		cmbGoAlgorithm.setBounds(12, 352, 152, 23);
 		cmbGoAlgorithm.setMapItem(GoAlgorithm.getMapStr2GoAlgrithm());
 		add(cmbGoAlgorithm);
+		
+		cmbGOType = new JComboBoxData<GOtype>();
+		cmbGOType.setBounds(12, 453, 206, 23);
+		cmbGOType.setMapItem(GOtype.getMapStr2Gotype());
+		add(cmbGOType);
+		
+		spnGOlevel = new JSpinner();
+		spnGOlevel.setBounds(104, 388, 60, 18);
+		add(spnGOlevel);
+		
+		chkGOLevel = new JCheckBox("GOLevel");
+		chkGOLevel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (chkGOLevel.isSelected()) {
+					spnGOlevel.setEnabled(true);
+				} else {
+					spnGOlevel.setEnabled(false);
+				}
+			}
+		});
+		chkGOLevel.setBounds(8, 386, 92, 22);
+		add(chkGOLevel);
+		
+		initial();
 	}
 	private void setComponent() {
 		btnGroupGoMethod = new ButtonGroup();
@@ -184,8 +223,6 @@ public class GuiGoJPanel extends JPanel{
 						e.printStackTrace();
 						System.out.println("mei you wen jian");
 					}
-					
-					
 				}
 			});
 		}
@@ -213,7 +250,7 @@ public class GuiGoJPanel extends JPanel{
 		}
 		{
 			jLabGoType = new JLabel();
-			jLabGoType.setBounds(12, 403, 136, 13);
+			jLabGoType.setBounds(12, 431, 136, 13);
 			jLabGoType.setText("GO Type");
 		}
 		{
@@ -325,25 +362,6 @@ public class GuiGoJPanel extends JPanel{
 			jLabAlgorithm.setText("Algorithm");
 		}
 		{
-			jRadBtnGoClassP = new JRadioButton();
-			jRadBtnGoClassP.setBounds(12, 424, 175, 22);
-			jRadBtnGoClassP.setText("Biological Process");
-			jRadBtnGoClassP.setSelected(true);
-			btnGroupGoClass.add(jRadBtnGoClassP);
-		}
-		{
-			jRadBtnGoClassF = new JRadioButton();
-			jRadBtnGoClassF.setBounds(12, 450, 173, 21);
-			jRadBtnGoClassF.setText("Molecular Function");
-			btnGroupGoClass.add(jRadBtnGoClassF);
-		}
-		{
-			jRadBtnGoClassC = new JRadioButton();
-			jRadBtnGoClassC.setBounds(12, 475, 174, 20);
-			jRadBtnGoClassC.setText("Cellular Component");
-			btnGroupGoClass.add(jRadBtnGoClassC);
-		}
-		{
 			jLabBGGo = new JLabel();
 			jLabBGGo.setBounds(12, 121, 92, 14);
 			jLabBGGo.setText("BackGround");
@@ -355,30 +373,9 @@ public class GuiGoJPanel extends JPanel{
 			jTxtBGGo.setBounds(104, 119, 200, 18);
 		}
 		{
-			final HashMap<String, Integer> hashTaxID = Species.getSpeciesNameTaxID(false);
-			int i = 0;
-			ArrayList<String> keys = Species.getSpeciesName(false);
-			String[] speciesarray = new String[keys.size()+1];
-			for(String key:keys)
-			{
-				speciesarray[i] = key; i++;
-			}
-			speciesarray[i] = "all";
-			ComboBoxModel jCombSelSpeGoModel = new DefaultComboBoxModel(speciesarray);
-			jCombSelSpeGo = new JComboBox();
-			jCombSelSpeGo.setBounds(131, 77, 173, 23);
-			jCombSelSpeGo.setModel(jCombSelSpeGoModel);
-			jCombSelSpeGo.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent evt) {
-					String species = (String) jCombSelSpeGo.getSelectedItem();
-					if (hashTaxID.get(species) == null) {
-						QtaxID = 0;
-					}
-					else {
-						QtaxID =hashTaxID.get(species);
-					}
-				}
-			});
+			cmbSelSpeGo = new JComboBoxData<Species>();
+			cmbSelSpeGo.setBounds(131, 77, 173, 23);
+			cmbSelSpeGo.setMapItem(Species.getSpeciesName2Species(Species.ALL_SPECIES));
 		}
 		{
 			jChkBlastGo = new JCheckBox();
@@ -386,34 +383,23 @@ public class GuiGoJPanel extends JPanel{
 			jChkBlastGo.setText("Blast");
 		}
 		{
-			final HashMap<String, Integer> hashTaxID = Species.getSpeciesNameTaxID(false);
-			int i = 0;
-			ArrayList<String> keys = Species.getSpeciesName(false);
-			String[] speciesarray = new String[keys.size()+1];
-			for(String key:keys)
-			{
-				speciesarray[i] = key; i++;
-			}
-			speciesarray[i] = "all";
-			ComboBoxModel jCombBlastTaxModel = 
-				new DefaultComboBoxModel(speciesarray);
-			jCombBlastTaxGo = new JComboBox();
-			jCombBlastTaxGo.setBounds(131, 510, 172, 26);
-			jCombBlastTaxGo.setModel(jCombBlastTaxModel);
-			jCombBlastTaxGo.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent evt) {
-					String species = (String) jCombBlastTaxGo.getSelectedItem();
-					if (hashTaxID.get(species) == null) {
-						StaxID = 0;
-					}
-					else {
-						StaxID =hashTaxID.get(species);
-					}
-				}
-			});
+			cmbBlastTaxGo = new JComboBoxData<Species>();
+			cmbBlastTaxGo.setBounds(131, 510, 172, 26);
+			cmbBlastTaxGo.setMapItem(Species.getSpeciesName2Species(Species.ALL_SPECIES));
 		}
 	}
 	
+	private void initial() {
+		if (cmbGoAlgorithm.getSelectedValue() == GoAlgorithm.novelgo) {
+			chkGOLevel.setEnabled(true);
+			chkGOLevel.setSelected(false);
+		} else {
+			chkGOLevel.setEnabled(false);
+			spnGOlevel.setEnabled(false);
+		}
+		
+		spnGOlevel.setValue(2);
+	}
 	
 	/**
 	 * 查看文件的鼠标或键盘事件响应时调用
@@ -434,14 +420,6 @@ public class GuiGoJPanel extends JPanel{
 	 */
 	private void run() {
 		String geneFileXls = jTxtFilePathGo.getText();
-		GOtype GOClass = GOtype.BP;
-		if (jRadBtnGoClassC.isSelected()) {
-			GOClass = GOtype.CC;
-		} else if (jRadBtnGoClassP.isSelected()) {
-			GOClass = GOtype.BP;
-		} else if (jRadBtnGoClassF.isSelected()) {
-			GOClass = GOtype.MF;
-		}
 		int colAccID = Integer.parseInt(jTxtAccColGo.getText());
 		int colFC = Integer.parseInt(jTxtValColGo.getText());
 		ArrayList<String[]> lsAccID = null;
@@ -454,12 +432,15 @@ public class GuiGoJPanel extends JPanel{
 		String backGroundFile = jTxtBGGo.getText();
 		double evalue = 1e-10;
 		
-		ctrlGO = new CtrlGO(cmbGoAlgorithm.getSelectedValue(), QtaxID);
+		ctrlGO = new CtrlGO(cmbGoAlgorithm.getSelectedValue(), cmbSelSpeGo.getSelectedValue().getTaxID());
 		if (jChkBlastGo.isSelected()) {
-			ctrlGO.setBlastInfo(evalue, StaxID);
+			ctrlGO.setBlastInfo(evalue, cmbBlastTaxGo.getSelectedValue().getTaxID());
 		}
-		
+		ctrlGO.setGOType(cmbGOType.getSelectedValue());
 		ctrlGO.setLsBG(backGroundFile);
+		if (chkGOLevel.isSelected()) {
+			ctrlGO.setGOlevel((Integer) spnGOlevel.getValue());
+		}
 		
 		if (!jChkCluster.isSelected() || colAccID == colFC) {
 			double up = 0; double down = 0;

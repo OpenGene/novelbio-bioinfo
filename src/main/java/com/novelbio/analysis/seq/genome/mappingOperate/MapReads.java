@@ -622,7 +622,7 @@ class MapReadsAddAlignRecord {
 		//如果没有可变剪接
 		lsadd = alignRecord.getAlignmentBlocks();
 		lsadd = setStartCod(lsadd, mapReads.startCod, cis5to3This);
-		int addNum = (int) ((double)1*fold/alignRecord.getMappingNum());
+		int addNum = (int) ((double)1*fold / alignRecord.getMappingNum());
 		addChrLoc(chrBpReads, lsadd, addNum);
 		chrMapReadsInfo.readsAllNum = chrMapReadsInfo.readsAllNum + 1;
 		return tmpStartEnd;
@@ -716,7 +716,7 @@ class ChrMapReadsInfo {
 	/** 本条染色体上的reads数量 */
 	long readsAllNum;
 	/** 本条染色体上的reads的堆叠数之和 */
-	long readsAllPipNum;
+	double readsAllPipNum;
 	/** 用于校正数据 */
 	Equations FormulatToCorrectReads; 
 	
@@ -743,7 +743,7 @@ class ChrMapReadsInfo {
 		this.readsAllNum = this.readsAllNum + readsAllNum;
 	}
 	public long getReadsPipNum() {
-		return readsAllPipNum;
+		return (long) readsAllPipNum;
 	}
 	/**
 	 * 直接从0开始记录，1代表第二个invNum,也和实际相同
@@ -758,9 +758,7 @@ class ChrMapReadsInfo {
 	 * 给定chrBpReads，将chrBpReads里面的值按照invNum区间放到SumChrBpReads里面
 	 * 因为是引用传递，里面修改了SumChrBpReads后，外面会变掉
 	 * @param chrBpReads 每个碱基的reads累计值
-	 * @param invNum 区间
-	 * @param type 取值类型，中位数或平均值，0中位数，1均值 其他的默认中位数
-	 * @param SumChrBpReads 将每个区间内的
+	 * @param fold 增加倍数，因为是integer无法取小数，所以搞个fold，扩大1000倍表示小数点三位有效数字
 	 */
 	protected void sumChrBp(int[] chrBpReads, int fold) {
 		// //////////SumChrBpReads设定//////////////////////////////////
@@ -771,7 +769,7 @@ class ChrMapReadsInfo {
 		if (invNum == 1) {
 			for (int i = 0; i < SumLength - 2; i++) {
 				SumChrBpReads[i] = chrBpReads[i+1];
-				readsAllPipNum = readsAllPipNum + chrBpReads[i+1]/fold;
+				readsAllPipNum = readsAllPipNum + (double)chrBpReads[i+1]/fold;
 			}
 			return;
 		 }
@@ -781,7 +779,7 @@ class ChrMapReadsInfo {
 			 for (int j = sumStart; j < sumStart + invNum; j++) {
 				 int thisNum = chrBpReads[j];
 				 tmpSumReads[k] = thisNum;
-				 readsAllPipNum = readsAllPipNum + thisNum/fold;
+				 readsAllPipNum = readsAllPipNum + (double)thisNum/fold;
 				 k++;
 			 }
 			 samplingSite(i, tmpSumReads);
@@ -789,12 +787,15 @@ class ChrMapReadsInfo {
 	}
 	
 	private void samplingSite(int siteNum, int[] tmpSumReads) {
-		 if (type == MapReadsAbs.SUM_TYPE_MEDIAN) //每隔一段区域取样，建议每隔10bp取样，取中位数
+		 if (type == MapReadsAbs.SUM_TYPE_MEDIAN) { //每隔一段区域取样，建议每隔10bp取样，取中位数
 			 SumChrBpReads[siteNum] = (int) MathComput.median(tmpSumReads);
-		 else if (type == MapReadsAbs.SUM_TYPE_MEAN) 
+		 } else if (type == MapReadsAbs.SUM_TYPE_MEAN) { 
 			 SumChrBpReads[siteNum] = (int) MathComput.mean(tmpSumReads);
-		 else //默认取中位数
+		 } else if (type == MapReadsAbs.SUM_TYPE_SUM) {
+			SumChrBpReads[siteNum] = MathComput.sum(tmpSumReads);
+		}else {//默认取中位数 
 			 SumChrBpReads[siteNum] = (int) MathComput.median(tmpSumReads);
+		 }
 	}
 
 }

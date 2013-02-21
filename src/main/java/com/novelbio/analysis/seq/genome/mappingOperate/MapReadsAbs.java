@@ -37,6 +37,8 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	public static final int SUM_TYPE_MEDIAN = 2;
 	/**将长的单碱基精度的一条染色体压缩为短的每个inv大约10-20bp的序列，那么压缩方法选择为20bp中的数值的平均数 */
 	public static final int SUM_TYPE_MEAN = 3;
+	/**将长的单碱基精度的一条染色体压缩为短的每个inv大约10-20bp的序列，那么压缩方法选择为20bp中的数值的总和 */
+	public static final int SUM_TYPE_SUM = 4;
 	
 	/** 将每个double[]求和/double.length 也就是将每个点除以该gene的平均测序深度 */
 	public static final int NORMALIZATION_PER_GENE = 128;

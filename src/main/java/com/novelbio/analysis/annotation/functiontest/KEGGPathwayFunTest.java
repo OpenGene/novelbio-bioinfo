@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.swing.plaf.BorderUIResource.TitledBorderUIResource;
 
@@ -13,25 +15,16 @@ import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modkegg.KeggInfo;
 import com.novelbio.generalConf.TitleFormatNBC;
 
-public class KEGGPathwayFunTest extends AbstFunTest{
+public class KEGGPathwayFunTest extends FunctionTest {
 
 	@Override
-	protected ArrayList<GeneID2LsItem> convert2Item(Collection<GeneID> lsGeneIDs) {
-		HashSet<String> hashGenUniID = new HashSet<String>();
-		ArrayList<GeneID2LsItem> lsResult = new ArrayList<GeneID2LsItem>();
-		for (GeneID geneID : lsGeneIDs) {
-			if (hashGenUniID.contains(geneID.getGenUniID())) {
-				continue;
-			}
-			hashGenUniID.add(geneID.getGenUniID());
-			GeneID2LsItem geneID2LsItem = new GeneID2LsPath();
-			geneID2LsItem.setGeneID(geneID, isBlast());
-			if (!geneID2LsItem.isValidate()) {
-				continue;
-			}
-			lsResult.add(geneID2LsItem);
+	protected GeneID2LsItem convert2Item(GeneID geneID) {
+		GeneID2LsItem geneID2LsItem = new GeneID2LsPath();
+		geneID2LsItem.setGeneID(geneID, isBlast());
+		if (!geneID2LsItem.isValidate()) {
+			return null;
 		}
-		return lsResult;
+		return geneID2LsItem;
 	}
 	
 	/**
@@ -48,8 +41,8 @@ public class KEGGPathwayFunTest extends AbstFunTest{
 	}
 
 	@Override
-	protected ArrayList<GeneID2LsItem> readFromBGfile(Collection<String[]> lsTmpGeneID2LsItem) {
-		ArrayList<GeneID2LsItem> lsGeneID2LsItem = new ArrayList<GeneID2LsItem>();
+	protected Map<String, GeneID2LsItem> readFromBGfile(Collection<String[]> lsTmpGeneID2LsItem) {
+		Map<String, GeneID2LsItem> lsGeneID2LsItem = new LinkedHashMap<String, GeneID2LsItem>();
 		for (String[] strings : lsTmpGeneID2LsItem) {
 			GeneID2LsPath geneID2LsPath = new GeneID2LsPath();
 			geneID2LsPath.setGeneUniID(strings[0]);
@@ -57,7 +50,7 @@ public class KEGGPathwayFunTest extends AbstFunTest{
 			for (String item : items) {
 				geneID2LsPath.addItemID(item);
 			}
-			lsGeneID2LsItem.add(geneID2LsPath);
+			lsGeneID2LsItem.put(strings[0], geneID2LsPath);
 		}
 		return lsGeneID2LsItem;
 	}

@@ -22,7 +22,7 @@ public abstract class GeneID2LsItem {
 	private static final Logger logger = Logger.getLogger(GeneID2LsItem.class);
 	
 	String geneUniID;
-	HashSet<String> setItemID = new HashSet<String>();
+	Set<String> setItemID = new HashSet<String>();
 	GeneID geneID;
 	boolean blast;
 	
@@ -46,10 +46,13 @@ public abstract class GeneID2LsItem {
 		setItemID.add(itemID.toUpperCase());
 	}
 	
-	public HashSet<String> getSetItemID() {
+	public Set<String> getSetItemID() {
 		return setItemID;
 	}
-	
+	/**
+	 * 是否有效
+	 * @return
+	 */
 	public boolean isValidate() {
 		if (setItemID.size() == 0 || geneUniID == null || geneUniID.equals("")) {
 			return false;
@@ -180,9 +183,12 @@ public abstract class GeneID2LsItem {
 }
 
 class GeneID2LsGo extends GeneID2LsItem {
-	GOtype GOtype;
-	public void setGOtype(GOtype gOtype) {
-		GOtype = gOtype;
+	GOtype goType;
+	
+	protected GeneID2LsGo() {}
+	
+	public void setGOtype(GOtype goType) {
+		this.goType  = goType;
 	}
 	@Override
 	public void setGeneID(GeneID geneID, boolean blast) {
@@ -190,15 +196,24 @@ class GeneID2LsGo extends GeneID2LsItem {
 		this.geneUniID = geneID.getGenUniID();
 		ArrayList<AGene2Go> lsGo = null;
 		if (blast) {
-			lsGo = geneID.getGene2GOBlast(GOtype);
+			lsGo = geneID.getGene2GOBlast(goType );
 		} else {
-			lsGo = geneID.getGene2GO(GOtype);
+			lsGo = geneID.getGene2GO(goType );
 		}
 		for (AGene2Go aGene2Go : lsGo) {
-			setItemID.add(aGene2Go.getGOID());
+			addItemID(aGene2Go.getGOID());
 		}
 	}
-
+	
+	public static GeneID2LsGo getInstance(int goLevel) {
+		if (goLevel < 0) {
+			return new GeneID2LsGo();
+		} else {
+			GeneID2LsGoLevel geneID2LsGo = new GeneID2LsGoLevel();
+			geneID2LsGo.setGoLevel(goLevel);
+			return geneID2LsGo;
+		}
+	}
 }
 
 class GeneID2LsPath extends GeneID2LsItem {
@@ -207,7 +222,7 @@ class GeneID2LsPath extends GeneID2LsItem {
 		this.geneUniID = geneID.getGenUniID();
 		ArrayList<KGpathway> lsPath = geneID.getKegPath(blast);
 		for (KGpathway kGpathway : lsPath) {
-			setItemID.add(kGpathway.getPathName());
+			addItemID(kGpathway.getPathName());
 		}
 	}
 }

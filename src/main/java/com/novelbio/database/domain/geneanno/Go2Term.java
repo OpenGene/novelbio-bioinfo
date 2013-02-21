@@ -6,6 +6,11 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.domain.geneanno.GOtype.GORelation;
 import com.novelbio.database.service.servgeneanno.ServGo2Term;
 
+/**
+ * 重写了equal和hashcode
+ * @author zong0jie
+ *
+ */
 public class Go2Term implements Cloneable {
 	public static final String RELATION_IS = "IS";
 	public static final String RELATION_PARTOF = "PART_OF";

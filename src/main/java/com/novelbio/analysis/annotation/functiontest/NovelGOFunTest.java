@@ -1,55 +1,51 @@
 package com.novelbio.analysis.annotation.functiontest;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.GOtype;
-import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.database.service.servgeneanno.ServGo2Term;
 
-public class NovelGOFunTest extends AbstFunTest{
+public class NovelGOFunTest extends FunctionTest {
 	GOtype GoType = GOtype.BP;
 	ServGo2Term servGo2Term = new ServGo2Term();
- 
+	
+	/**
+	 * 如果大于0，则做层级GO
+	 */
+	int GOlevel = -1;
+	
 	public void setGoType(GOtype goType) {
 		GoType = goType;
 	}
-	
+	/**
+	 * 如果大于0，则做层级GO
+	 * 默认-1，不做层级GO
+	 */
+	public void setGOlevel(int gOlevel) {
+		GOlevel = gOlevel;
+	}
 	@Override
-	protected ArrayList<GeneID2LsItem> convert2Item(Collection<GeneID> lsGeneIDs) {
-		HashSet<String> hashGenUniID = new HashSet<String>();
-		ArrayList<GeneID2LsItem> lsResult = new ArrayList<GeneID2LsItem>();
-		for (GeneID geneID : lsGeneIDs) {
-			if (hashGenUniID.contains(geneID.getGenUniID())) {
-				continue;
-			}
-			hashGenUniID.add(geneID.getGenUniID());
-			GeneID2LsGo geneID2LsItem = new GeneID2LsGo();
-			geneID2LsItem.setGOtype(GoType);
-			geneID2LsItem.setGeneID(geneID, isBlast());
-			if (!geneID2LsItem.isValidate()) {
-				continue;
-			}
-			lsResult.add(geneID2LsItem);
+	protected GeneID2LsItem convert2Item(GeneID geneID) {
+		GeneID2LsGo geneID2LsItem = GeneID2LsGo.getInstance(GOlevel);
+		geneID2LsItem.setGOtype(GoType);
+		geneID2LsItem.setGeneID(geneID, isBlast());
+		if (!geneID2LsItem.isValidate()) {
+			return null;
 		}
-		return lsResult;
+		return geneID2LsItem;
 	}
 
 	@Override
 	public void setDetailType(GOtype gotype) {
 		this.GoType = gotype;
 	}
-	/**
-	 * 不返回
-	 */
+ 
 	@Override
 	public ArrayList<StatisticTestItem2Gene> getItem2GenePvalue() {
 		ArrayList<StatisticTestResult> lsTestResult = getTestResult();
@@ -74,35 +70,34 @@ public class NovelGOFunTest extends AbstFunTest{
 		}
 		return lStatisticTestItem2Gene;
 	}
+	
 	private ArrayListMultimap<String, GeneID> getGo2GeneUniID() {
 		ArrayListMultimap<String, GeneID> hashGo2LsGene = ArrayListMultimap.create();
 		ArrayList<StatisticTestGene2Item> lsStatisticTestGene2Items = getGene2ItemPvalue();
 		for (StatisticTestGene2Item statisticTestGene2Item : lsStatisticTestGene2Items) {
-			GeneID2LsGo geneID2LsItem = new GeneID2LsGo();
-			geneID2LsItem.setGOtype(GoType);
-			geneID2LsItem.setGeneID(statisticTestGene2Item.geneID, isBlast());
-			
+			GeneID2LsItem geneID2LsItem = convert2Item(statisticTestGene2Item.geneID);
 			for (String goid : geneID2LsItem.getSetItemID()) {
 				hashGo2LsGene.put(goid, statisticTestGene2Item.geneID);
 			}
 		}
 		return hashGo2LsGene;
 	}
+	
 	@Override
-	protected ArrayList<GeneID2LsItem> readFromBGfile(Collection<String[]> lsTmpGeneID2LsItem) {
-		ArrayList<GeneID2LsItem> lsGeneID2LsItem = new ArrayList<GeneID2LsItem>();
+	protected Map<String, GeneID2LsItem> readFromBGfile(Collection<String[]> lsTmpGeneID2LsItem) {
+		Map<String, GeneID2LsItem> mapGeneID2LsItem = new LinkedHashMap<String, GeneID2LsItem>();
 		for (String[] strings : lsTmpGeneID2LsItem) {
-			GeneID2LsGo geneID2LsGo = new GeneID2LsGo();
+			GeneID2LsGo geneID2LsGo = GeneID2LsGo.getInstance(GOlevel);
 			geneID2LsGo.setGeneUniID(strings[0]);
 			String[] items = strings[1].split(",");
 			for (String item : items) {
 				geneID2LsGo.addItemID(item);
 			}
-			lsGeneID2LsItem.add(geneID2LsGo);
+			mapGeneID2LsItem.put(strings[0], geneID2LsGo);
 		}
-		return lsGeneID2LsItem;
-	
+		return mapGeneID2LsItem;
 	}
+	
 	@Override
 	protected StatisticTestGene2Item creatStatisticTestGene2Item() {
 		return new StatisticTestGene2GO();

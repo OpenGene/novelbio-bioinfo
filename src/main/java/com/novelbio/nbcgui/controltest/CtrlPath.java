@@ -29,7 +29,7 @@ public class CtrlPath extends CtrlGOPath {
 	 * @param QtaxID
 	 */
 	public CtrlPath(int QtaxID) {
-		functionTest = new FunctionTest(FunctionTest.FUNCTION_PATHWAY_KEGG, QtaxID);
+		functionTest = FunctionTest.getInstance(FunctionTest.FUNCTION_PATHWAY_KEGG, QtaxID);
 	}
 
 	@Override
@@ -71,5 +71,4 @@ public class CtrlPath extends CtrlGOPath {
 		return FileOperate.changeFileSuffix(fileName, suffix, "txt");
 	}
  
-	
 }
