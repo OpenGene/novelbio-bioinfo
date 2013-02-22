@@ -35,6 +35,7 @@ import org.jdesktop.application.Application;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.gui.JComboBoxData;
+import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -66,11 +67,10 @@ public class GuiBlastJpanel extends JPanel {
 	private JRadioButton jRadioButtonPath;
 	private JRadioButton jRadioButtonGO;
 	private ButtonGroup buttonGroup1;
-	private JScrollPane jScrlGOTable;
-	private JComboBox jCmbSpeciesBlast;
-	private JComboBoxData<GOtype> jComGOClassSelect;
+	private JScrollPaneData jScrlGOTable;
+
 	private JLabel jLabelTax;
-	private JComboBox jCobTaxSelect;
+
 	private JLabel jLbGOandPath;
 	private JLabel jLblCond;
 	private JButton jBtnGoPath;
@@ -82,16 +82,12 @@ public class GuiBlastJpanel extends JPanel {
 	private JButton jBtnGetFile;
 	private JCheckBox jChBlast;
 	private JTable jTabFAnno;
-	private JTable jTabFGoandPath;
 	private JScrollPane jScroxTxtGeneID;
 	private DefaultTableModel jTabAnno;
-	private DefaultTableModel jTabGoandPath;
 	
-	static int QtaxID = 0;//查询物种ID
-//	static int StaxID = 4932;//blast物种ID
-	static int StaxID = 9606;//blast物种ID
-	GOtype GoClass;
-	
+	private JComboBoxData<GOtype> jComGOClassSelect;
+	private JComboBoxData<Species> jCmbSpeciesBlast;
+	private JComboBoxData<Species> jCobTaxSelect;
 	/**
 	 * 一次最多查询的个数
 	 */
@@ -99,7 +95,6 @@ public class GuiBlastJpanel extends JPanel {
 	
 	GuiBlastJpanel jBlastJpanel = null;
 	public GuiBlastJpanel() {
-		
 
 			this.setPreferredSize(new Dimension(1046, 652));
 			setAlignmentX(0.0f);
@@ -159,14 +154,13 @@ public class GuiBlastJpanel extends JPanel {
 		{
 			jChBlast = new JCheckBox();
 			jChBlast.setBounds(212, 270, 67, 20);
-			;
 			jChBlast.setMargin(new java.awt.Insets(0, 0, 0, 0));
 			jChBlast.setName("jChBlast");
 		}
 		{
 			jScrollPane1 = new JScrollPane();
 			jScrollPane1.setBounds(212, 32, 822, 230);
-			jScrlGOTable = new JScrollPane();
+			jScrlGOTable = new JScrollPaneData();
 			jScrlGOTable.setBounds(7, 343, 1027, 266);
 		}
 	
@@ -200,7 +194,7 @@ public class GuiBlastJpanel extends JPanel {
 	
 	private JScrollPane getJScrlGOTable() {
 		if(jScrlGOTable == null) {
-			jScrlGOTable = new JScrollPane();
+			jScrlGOTable = new JScrollPaneData();
 			jScrlGOTable.setBounds(7, 343, 1027, 236);
 		}
 		return jScrlGOTable;
@@ -215,21 +209,14 @@ public class GuiBlastJpanel extends JPanel {
 			jBtnSaveGO.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
 					if (lsGoandPath != null && lsGoandPath.size()>0) {
-						saveFile(lsGoandPath,titleGoandPath);
+						saveFile(lsGoandPath, jScrlGOTable.getTitle());
 					}
 				}
 			});
 		}
 		return jBtnSaveGO;
 	}
-	
-	private void setGroup(GroupLayout jPanBlastLayout) {
-				
-	}
-	
-	
-	
-	public JProgressBar getJProgressBar1() {
+	 public JProgressBar getJProgressBar1() {
 		if(jProgressBar1 == null) {
 			jProgressBar1 = new JProgressBar();
 			jProgressBar1.setBounds(0, 614, 1027, 13);
@@ -274,9 +261,6 @@ public class GuiBlastJpanel extends JPanel {
 	
 	public DefaultTableModel getJTabAnnol() {
 		return jTabAnno;
-	}
-	public DefaultTableModel getJTabGoandPath() {
-		return jTabGoandPath;
 	}
 	
 	CtrlBlastAnno ctrlAnno;
@@ -342,7 +326,7 @@ public class GuiBlastJpanel extends JPanel {
 								jTabFAnno.setModel(jTabAnno);
 							}
 						}
-						ctrlAnno = new CtrlBlastAnno(blast, QtaxID, StaxID, 1e-10,jBlastJpanel );
+						ctrlAnno = new CtrlBlastAnno(blast, jCobTaxSelect.getSelectedValue().getTaxID(), jCmbSpeciesBlast.getSelectedValue().getTaxID(), 1e-10,jBlastJpanel );
 						ctrlAnno.prepare(lsGenID2);
 						ctrlAnno.execute();
 						
@@ -356,7 +340,6 @@ public class GuiBlastJpanel extends JPanel {
 
 	CtrlBlastGo ctrlGo;
 	CtrlBlastPath ctrlPath;
-	String[] titleGoandPath = null;
 	public JButton getJBtnGoPath() {
 		if(jBtnGoPath == null) {
 			jBtnGoPath = new JButton();
@@ -364,8 +347,6 @@ public class GuiBlastJpanel extends JPanel {
 			jBtnGoPath.setText("Query");
 			jBtnGoPath.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
-
-
 					String[] queryID = jTxtGenID.getText().split("\n");
 					ArrayList<String> lsGenID = new ArrayList<String>();
 					for (int i = 0; i < queryID.length; i++) {
@@ -394,76 +375,42 @@ public class GuiBlastJpanel extends JPanel {
 					getJBtnGoPath().setEnabled(false);
 					getJLbGOandPath().setText("Running, please be patient.");
 					///////////////////
-					if (jRadioButtonGO.isSelected())
-					{
+					if (jRadioButtonGO.isSelected()) {
 						boolean blast = jChBlast.isSelected();
-						if (!blast) 
-						{
-							//设置anno结果框
-							{
-								titleGoandPath = new String[4];
-								titleGoandPath[0] = "QueryID"; titleGoandPath[1] = "Symbol/AccID"; titleGoandPath[2] ="GOID"; titleGoandPath[3] = "GOTerm";
-								String[][] tableValue = null;
-								jTabGoandPath = new DefaultTableModel(tableValue,titleGoandPath);
-								jTabFGoandPath = new JTable();
-								jScrlGOTable.setViewportView(jTabFGoandPath);
-								jTabFGoandPath.setModel(jTabGoandPath);
-							}
+						String[] titleGoandPath = null;
+						if (!blast) {
+							titleGoandPath = new String[4];
+							titleGoandPath[0] = "QueryID"; titleGoandPath[1] = "Symbol/AccID"; titleGoandPath[2] ="GOID"; titleGoandPath[3] = "GOTerm";
 						}
-						else 
-						{
-							//设置anno结果框
-							{
-								titleGoandPath = new String[8];
-								titleGoandPath[0] = "QueryID"; titleGoandPath[1] = "Symbol/AccID"; titleGoandPath[2] ="GOID"; titleGoandPath[3] = "GOTerm";
-								titleGoandPath[4] = "evalue"; titleGoandPath[5] = "BlastSymbol/AccID"; titleGoandPath[6] ="BlastGOID"; titleGoandPath[7] = "BlastGOTerm";
-								String[] columnName = {  "QueryID", "Symbol/AccID","GOID","GOTerm","evalue", "BlastSymbol/AccID","BlastGOID","BlastGOTerm"};
-								String[][] tableValue = null;
-								jTabGoandPath = new DefaultTableModel(tableValue,columnName);
-								jTabFGoandPath = new JTable();
-								jScrlGOTable.setViewportView(jTabFGoandPath);
-								jTabFGoandPath.setModel(jTabGoandPath);
-							}
+						else {
+							titleGoandPath = new String[]{  "QueryID", "Symbol/AccID","GOID","GOTerm","evalue", "BlastSymbol/AccID","BlastGOID","BlastGOTerm"};
 						}
-						ctrlGo = new CtrlBlastGo(blast, QtaxID, StaxID, 1e-10, jBlastJpanel,GoClass);
+						jScrlGOTable.setTitle(titleGoandPath);
+						ctrlGo = new CtrlBlastGo(jBlastJpanel);
+						ctrlGo.setTaxID(jCobTaxSelect.getSelectedValue().getTaxID());
+						if (jChBlast.isSelected()) {
+							ctrlGo.setBlastInfo(jCmbSpeciesBlast.getSelectedValue().getTaxID(), 1e-10);
+						}
+						ctrlGo.setGoClass(jComGOClassSelect.getSelectedValue());
 						ctrlGo.prepare(lsGenID2);
 						ctrlGo.execute();
-						//ctrlAnno.done();
 					}
 					else if (jRadioButtonPath.isSelected()) {
-
 						boolean blast = jChBlast.isSelected();
-						if (!blast) 
-						{
-							//设置anno结果框
-							{
-								titleGoandPath = new String[4];
-								titleGoandPath[0] = "QueryID"; titleGoandPath[1] = "Symbol/AccID"; titleGoandPath[2] ="PathID"; titleGoandPath[3] = "PathTitle";
-								String[][] tableValue = null;
-								jTabGoandPath = new DefaultTableModel(tableValue,titleGoandPath);
-								jTabFGoandPath = new JTable();
-								jScrlGOTable.setViewportView(jTabFGoandPath);
-								jTabFGoandPath.setModel(jTabGoandPath);
-							}
+						String[] titleGoandPath = null;
+						if (!blast) {
+							titleGoandPath = new String[4];
+							titleGoandPath[0] = "QueryID"; titleGoandPath[1] = "Symbol/AccID"; titleGoandPath[2] ="PathID"; titleGoandPath[3] = "PathTitle";
 						}
-						else 
-						{
-							//设置anno结果框
-							{
-								titleGoandPath = new String[8];
-								titleGoandPath[0] = "QueryID"; titleGoandPath[1] = "Symbol/AccID"; titleGoandPath[2] ="PathID"; titleGoandPath[3] = "PathTitle";
-								titleGoandPath[4] = "evalue"; titleGoandPath[5] = "BlastSymbol/AccID"; titleGoandPath[6] ="BlastPathID"; titleGoandPath[7] = "BlastPathTitle";
-								String[][] tableValue = null;
-								jTabGoandPath = new DefaultTableModel(tableValue,titleGoandPath);
-								jTabFGoandPath = new JTable();
-								jScrlGOTable.setViewportView(jTabFGoandPath);
-								jTabFGoandPath.setModel(jTabGoandPath);
-							}
+						else {
+							titleGoandPath = new String[8];
+							titleGoandPath[0] = "QueryID"; titleGoandPath[1] = "Symbol/AccID"; titleGoandPath[2] ="PathID"; titleGoandPath[3] = "PathTitle";
+							titleGoandPath[4] = "evalue"; titleGoandPath[5] = "BlastSymbol/AccID"; titleGoandPath[6] ="BlastPathID"; titleGoandPath[7] = "BlastPathTitle";						
 						}
-						ctrlPath = new CtrlBlastPath(blast, QtaxID, StaxID, 1e-10, jBlastJpanel);
+						jScrlGOTable.setTitle(titleGoandPath);
+						ctrlPath = new CtrlBlastPath(blast, jCobTaxSelect.getSelectedValue().getTaxID(), jCmbSpeciesBlast.getSelectedValue().getTaxID(), 1e-10, jBlastJpanel);
 						ctrlPath.prepare(lsGenID2);
 						ctrlPath.execute();
-						//ctrlAnno.done();
 					}
 				}
 			});
@@ -561,41 +508,9 @@ public class GuiBlastJpanel extends JPanel {
 	}
 	private JComboBox getJCobTaxSelect() {
 		if(jCobTaxSelect == null) {
-			final HashMap<String, Integer> hashTaxID = Species.getSpeciesNameTaxID(false);
-			
-			
-//			String[] speciesarray = new String[hashTaxID.size()];
-			int i = 0;
-			ArrayList<String> keys = Species.getSpeciesName(false);
-			String[] speciesarray = new String[keys.size()+1];
-			for(String key:keys)
-			{
-				speciesarray[i] = key; i++;
-			}
-			speciesarray[i] = "test";
-			ComboBoxModel jCobTaxSelectModel = 
-				new DefaultComboBoxModel(speciesarray);
-			jCobTaxSelect = new JComboBox();
+			jCobTaxSelect = new JComboBoxData<Species>();
+			jCobTaxSelect.setMapItem(Species.getSpeciesName2Species(Species.KEGGNAME_SPECIES));
 			jCobTaxSelect.setBounds(800, 2, 228, 23);
-			jCobTaxSelect.setModel(jCobTaxSelectModel);
-			String species = (String) jCobTaxSelect.getSelectedItem();
-			if (hashTaxID.get(species) == null) {
-				QtaxID = 0;
-			}
-			else {
-				QtaxID =hashTaxID.get(species);
-			}
-			jCobTaxSelect.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent evt) {
-					String species = (String) jCobTaxSelect.getSelectedItem();
-					if (hashTaxID.get(species) == null) {
-						QtaxID = 0;
-					}
-					else {
-						QtaxID =hashTaxID.get(species);
-					}
-				}
-			});
 		}
 		return jCobTaxSelect;
 	}
@@ -635,66 +550,26 @@ public class GuiBlastJpanel extends JPanel {
 	}
 	
 	public JComboBoxData<GOtype> getJCmbGOClassSelect() {
-		jComGOClassSelect = new JComboBoxData<GOtype>();
-		jComGOClassSelect.setMapItem(GOtype.getMapStr2Gotype());
-		GoClass = jComGOClassSelect.getSelectedValue();
-		jComGOClassSelect.addActionListener(new ActionListener() 
-		{
-			public void actionPerformed(ActionEvent evt) {
-				GoClass = jComGOClassSelect.getSelectedValue();
-			}
-		});
+		if (jComGOClassSelect == null) {
+			jComGOClassSelect = new JComboBoxData<GOtype>();
+			jComGOClassSelect.setBounds(453, 307, 229, 23);
+			jComGOClassSelect.setMapItem(GOtype.getMapStrAllGotype(true));
+		}
 		return jComGOClassSelect;
 	}
 	
 	private JComboBox getJCmbSpeciesBlast() {
-//		if(jCmbSpeciesBlast == null) {
-//			ComboBoxModel jCmbSpeciesBlastModel = 
-//				new DefaultComboBoxModel(
-//						new String[] { "Item One", "Item Two" });
-//			jCmbSpeciesBlast = new JComboBox();
-//			jCmbSpeciesBlast.setModel(jCmbSpeciesBlastModel);
-//		}
-//		return jCmbSpeciesBlast;
-
-
 		if(jCmbSpeciesBlast == null) {
-			final HashMap<String, Integer> hashTaxID = Species.getSpeciesNameTaxID(false);
-			int i = 0;
-			ArrayList<String> keys = Species.getSpeciesName(false);
-			String[] speciesarray = new String[keys.size()];
-			for(String key:keys)
-			{
-				speciesarray[i] = key; i++;
-			}
-			ComboBoxModel jCobTaxSelectModel = 
-				new DefaultComboBoxModel(speciesarray);
-			jCmbSpeciesBlast = new JComboBox();
+			jCmbSpeciesBlast = new JComboBoxData<Species>();
+			jCmbSpeciesBlast.setMapItem(Species.getSpeciesName2Species(Species.KEGGNAME_SPECIES));
 			jCmbSpeciesBlast.setBounds(283, 269, 229, 23);
-			jCmbSpeciesBlast.setModel(jCobTaxSelectModel);
-			String species = (String) jCmbSpeciesBlast.getSelectedItem();
-			if (hashTaxID.get(species) == null) {
-				StaxID = 0;
-			}
-			else {
-				StaxID =hashTaxID.get(species);
-			}
-			jCmbSpeciesBlast.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent evt) {
-					String species = (String) jCmbSpeciesBlast.getSelectedItem();
-					if (hashTaxID.get(species) == null) {
-						StaxID = 0;
-					}
-					else {
-						StaxID =hashTaxID.get(species);
-					}
-				}
-			});
 		}
 		return jCmbSpeciesBlast;
-	
 	}
 
 	NBCJDialog nbcjDialog;
+	public JScrollPaneData getJTabGoandPath() {
+		return jScrlGOTable;
+	}
 
 }

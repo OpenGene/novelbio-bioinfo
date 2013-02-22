@@ -90,8 +90,10 @@ public class GeneIDNcbi extends GeneIDabs {
 	public void setBlastInfo(double evalue, int... StaxID) {
 		lsBlastInfos = new ArrayList<BlastInfo>();
 		for (int i : StaxID) {
-			BlastInfo blastInfo = servBlastInfo.queryBlastInfo(genUniID, taxID,
-					i, evalue);
+			if (i <= 0) {
+				continue;
+			}
+			BlastInfo blastInfo = servBlastInfo.queryBlastInfo(genUniID, taxID, i, evalue);
 			addLsBlastInfo(blastInfo);
 		}
 		isBlastedFlag = false;

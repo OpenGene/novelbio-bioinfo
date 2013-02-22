@@ -84,8 +84,6 @@ public class GuiGoJPanel extends JPanel{
 	private JTextFieldData jTxtAccColGo;
 
 	private JCheckBox jChkBlastGo;
-	private ButtonGroup btnGroupGoMethod;
-	private ButtonGroup btnGroupGoClass;
 
 	private JCheckBox jChkCluster;
 	private JLabel jLabGoQtaxID;
@@ -162,7 +160,7 @@ public class GuiGoJPanel extends JPanel{
 		
 		cmbGOType = new JComboBoxData<GOtype>();
 		cmbGOType.setBounds(12, 453, 206, 23);
-		cmbGOType.setMapItem(GOtype.getMapStr2Gotype());
+		cmbGOType.setMapItem(GOtype.getMapStrAllGotype(false));
 		add(cmbGOType);
 		
 		spnGOlevel = new JSpinner();
@@ -185,8 +183,6 @@ public class GuiGoJPanel extends JPanel{
 		initial();
 	}
 	private void setComponent() {
-		btnGroupGoMethod = new ButtonGroup();
-		btnGroupGoClass = new ButtonGroup();
 		{
 			jLabGoQtaxID = new JLabel();
 			jLabGoQtaxID.setBounds(12, 79, 111, 18);
@@ -203,7 +199,6 @@ public class GuiGoJPanel extends JPanel{
 						} catch (Exception e) {
 							System.out.println("mei you wen jian");
 						}
-						
 					}
 				}
 			});
@@ -375,7 +370,7 @@ public class GuiGoJPanel extends JPanel{
 		{
 			cmbSelSpeGo = new JComboBoxData<Species>();
 			cmbSelSpeGo.setBounds(131, 77, 173, 23);
-			cmbSelSpeGo.setMapItem(Species.getSpeciesName2Species(Species.ALL_SPECIES));
+			cmbSelSpeGo.setMapItem(Species.getSpeciesName2Species(Species.KEGGNAME_SPECIES));
 		}
 		{
 			jChkBlastGo = new JCheckBox();
@@ -385,7 +380,7 @@ public class GuiGoJPanel extends JPanel{
 		{
 			cmbBlastTaxGo = new JComboBoxData<Species>();
 			cmbBlastTaxGo.setBounds(131, 510, 172, 26);
-			cmbBlastTaxGo.setMapItem(Species.getSpeciesName2Species(Species.ALL_SPECIES));
+			cmbBlastTaxGo.setMapItem(Species.getSpeciesName2Species(Species.KEGGNAME_SPECIES));
 		}
 	}
 	
@@ -435,11 +430,15 @@ public class GuiGoJPanel extends JPanel{
 		ctrlGO = new CtrlGO(cmbGoAlgorithm.getSelectedValue(), cmbSelSpeGo.getSelectedValue().getTaxID());
 		if (jChkBlastGo.isSelected()) {
 			ctrlGO.setBlastInfo(evalue, cmbBlastTaxGo.getSelectedValue().getTaxID());
+		} else {
+			ctrlGO.setBlastInfo(100, -10);
 		}
 		ctrlGO.setGOType(cmbGOType.getSelectedValue());
 		ctrlGO.setLsBG(backGroundFile);
 		if (chkGOLevel.isSelected()) {
 			ctrlGO.setGOlevel((Integer) spnGOlevel.getValue());
+		} else {
+			ctrlGO.setGOlevel(-1);
 		}
 		
 		if (!jChkCluster.isSelected() || colAccID == colFC) {

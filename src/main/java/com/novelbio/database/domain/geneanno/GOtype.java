@@ -1,7 +1,9 @@
 package com.novelbio.database.domain.geneanno;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.LinkedBlockingDeque;
 
 public enum GOtype {
 	BP("Biological Process", "BP", "P"), CC("Cellular Component", "CC", "C"), MF("Molecular Function", "MF", "F"), ALL("All", "ALL", "A");
@@ -10,6 +12,7 @@ public enum GOtype {
 	String twoWord = "";
 	static Map<String, GOtype> mapStr2Gotype;
 	static Map<String, GOtype> mapStrShort2Gotype;
+	static Map<String, GOtype> mapStrAll2Gotype;
 	
 	GOtype(String detail, String twoWord, String oneWord) {
 		this.detail = detail;
@@ -32,7 +35,7 @@ public enum GOtype {
 		if (mapStr2Gotype != null) {
 			return mapStr2Gotype;
 		}
-		mapStr2Gotype = new HashMap<String, GOtype>();
+		mapStr2Gotype = new LinkedHashMap<String, GOtype>();
 		mapStr2Gotype.put("BP", BP);
 		mapStr2Gotype.put("CC", CC);
 		mapStr2Gotype.put("MF", MF);
@@ -43,13 +46,39 @@ public enum GOtype {
 		if (mapStrShort2Gotype != null) {
 			return mapStrShort2Gotype;
 		}
-		mapStrShort2Gotype = new HashMap<String, GOtype>();
+		mapStrShort2Gotype = new LinkedHashMap<String, GOtype>();
 		mapStrShort2Gotype.put("P", BP);
 		mapStrShort2Gotype.put("C", CC);
 		mapStrShort2Gotype.put("F", MF);
 		mapStrShort2Gotype.put("A", ALL);
 		return mapStrShort2Gotype;
 	}
+	
+	/**
+	 * key: 全长说明文字
+	 * @param needAll 是否需要All这个选项。All表示所有的GO类型
+	 * @return
+	 */
+	public static Map<String, GOtype> getMapStrAllGotype(boolean needAll) {
+		if (mapStrAll2Gotype != null) {
+			if (needAll && !mapStrAll2Gotype.containsKey("ALL")) {
+				mapStrAll2Gotype.put("ALL", ALL);
+			} else if (!needAll && mapStrAll2Gotype.containsKey("ALL")) {
+				mapStrAll2Gotype.remove("ALL");
+			}
+			return mapStrAll2Gotype;
+		}
+		mapStrAll2Gotype = new LinkedHashMap<String, GOtype>();
+		mapStrAll2Gotype.put("Biological Process", BP);
+		mapStrAll2Gotype.put("Cellular Component", CC);
+		mapStrAll2Gotype.put("Molecular Function", MF);
+		if (needAll) {
+			mapStrAll2Gotype.put("ALL", ALL);
+		}
+		
+		return mapStrAll2Gotype;
+	}
+	
 	
 	public static enum GORelation {
 		NONE, IS, PART_OF, REGULATE, REGULATE_POS, REGULATE_NEG;

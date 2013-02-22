@@ -6,12 +6,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.service.servgeneanno.ServGo2Term;
 
 public class NovelGOFunTest extends FunctionTest {
+	private static final Logger logger = Logger.getLogger(NovelGOFunTest.class); 
 	GOtype GoType = GOtype.BP;
 	ServGo2Term servGo2Term = new ServGo2Term();
 	
@@ -46,7 +49,6 @@ public class NovelGOFunTest extends FunctionTest {
 		this.GoType = gotype;
 	}
  
-	@Override
 	public ArrayList<StatisticTestItem2Gene> getItem2GenePvalue() {
 		ArrayList<StatisticTestResult> lsTestResult = getTestResult();
 		ArrayList<StatisticTestItem2Gene> lStatisticTestItem2Gene = new ArrayList<StatisticTestItem2Gene>();
@@ -75,7 +77,10 @@ public class NovelGOFunTest extends FunctionTest {
 		ArrayListMultimap<String, GeneID> hashGo2LsGene = ArrayListMultimap.create();
 		ArrayList<StatisticTestGene2Item> lsStatisticTestGene2Items = getGene2ItemPvalue();
 		for (StatisticTestGene2Item statisticTestGene2Item : lsStatisticTestGene2Items) {
-			GeneID2LsItem geneID2LsItem = convert2Item(statisticTestGene2Item.geneID);
+			GeneID2LsItem geneID2LsItem = convert2ItemFromBG(statisticTestGene2Item.geneID, false);
+			if (geneID2LsItem == null) {
+				continue;
+			}
 			for (String goid : geneID2LsItem.getSetItemID()) {
 				hashGo2LsGene.put(goid, statisticTestGene2Item.geneID);
 			}

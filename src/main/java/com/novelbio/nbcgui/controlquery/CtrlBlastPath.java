@@ -82,8 +82,7 @@ public class CtrlBlastPath extends SwingWorker<ArrayList<String[]>, ProgressData
 	 * @return
 	 * @throws Exception 
 	 */
-	public ArrayList<String[]> doInBackground() throws Exception 
-	{
+	public ArrayList<String[]> doInBackground() throws Exception {
 		System.out.println("run");
 		ArrayList<String[]> lsDesp = new ArrayList<String[]>();
 		int length = 0;
@@ -146,8 +145,7 @@ public class CtrlBlastPath extends SwingWorker<ArrayList<String[]>, ProgressData
 	 * 2:PathID
 	 * 3:PathName
 	 */
-	public static ArrayList<String[]> getGenPath(String accID,int taxID,boolean blast,int subTaxID,double evalue)
-	{
+	public static ArrayList<String[]> getGenPath(String accID,int taxID,boolean blast,int subTaxID,double evalue) {
 		String[] tmpAccIDInfo = new String[] { accID, ""};
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		GeneID copedID = new GeneID(accID, taxID);
@@ -230,9 +228,8 @@ public class CtrlBlastPath extends SwingWorker<ArrayList<String[]>, ProgressData
 			if (guiBlast.getJProgressBar1().getValue()<ProgressDataPath.rowNum) {
 				guiBlast.getJProgressBar1().setValue(ProgressDataPath.rowNum);
 			}
-			for (String[] strings: ProgressDataPath.lsInfo) 
-			{
-				guiBlast.getJTabGoandPath().addRow(strings);
+			for (String[] strings: ProgressDataPath.lsInfo) {
+				guiBlast.getJTabGoandPath().addItem(strings);
 			}
 		}
 	}

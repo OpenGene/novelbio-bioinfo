@@ -25,7 +25,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.model.modgeneid.GeneID;
 
-public abstract class FunctionTest implements FunTestInt{
+public abstract class FunctionTest {
 	private static final Logger logger = Logger.getLogger(FunctionTest.class);
 	
 	public static final String FUNCTION_GO_NOVELBIO = "gene ontology";
@@ -78,8 +78,12 @@ public abstract class FunctionTest implements FunTestInt{
 		return blastTaxID;
 	}
 	public boolean isBlast() {
-		if (blastTaxID != null && blastTaxID.length > 0) {
-			return true;
+		if (blastTaxID != null) {
+			for (int taxID : blastTaxID) {
+				if (taxID > 0) {
+					return true;
+				}
+			}
 		}
 		return false;
 	}
@@ -183,7 +187,29 @@ public abstract class FunctionTest implements FunTestInt{
 		mapBGGeneID2Items = convert2Item(lsCopedIDsBG);
 		BGnum = mapBGGeneID2Items.size();
 	}
-	
+	/**
+	 * 补充BG的基因，因为BG可能没有cover 输入的testGene
+	 * 不过我觉得没必要这样做
+	 * @param lsBGaccID
+	 */
+	public void addBGGeneID(Collection<GeneID> lsBGaccID) {
+		for (GeneID geneID : lsBGaccID) {
+			convert2ItemFromBG(geneID, true);
+		}
+		BGnum = mapBGGeneID2Items.size();
+	}
+	/**
+	 * 补充BG的基因，因为BG可能没有cover 输入的testGene
+	 * 不过我觉得没必要这样做
+	 * @param lsBGaccID
+	 */
+	public void addBGGeneIDAccID(Collection<String> lsBGaccID) {
+		for (String string : lsBGaccID) {
+			GeneID geneID = new GeneID(string, taxID);
+			convert2ItemFromBG(geneID, true);
+		}
+		BGnum = mapBGGeneID2Items.size();
+	}
 	private Map<String, GeneID2LsItem> convert2Item(Collection<GeneID> lsGeneID) {
 		Map<String, GeneID2LsItem> mapGeneID2LsItem = new LinkedHashMap<String, GeneID2LsItem>();
 		for (GeneID geneID : lsGeneID) {
@@ -195,6 +221,11 @@ public abstract class FunctionTest implements FunTestInt{
 		}
 		return mapGeneID2LsItem;
 	}
+	
+	public ArrayList<StatisticTestItem2Gene> getItem2GenePvalue() {
+		return new ArrayList<StatisticTestItem2Gene>();
+	}
+	
 	/**
 	 * 要先读取AccID文件
 	 * @return
@@ -267,8 +298,8 @@ public abstract class FunctionTest implements FunTestInt{
 		ArrayList<GeneID2LsItem> lsout = new ArrayList<GeneID2LsItem>();
 		
 		for (GeneID geneID : setGeneIDs) {
-			GeneID2LsItem tmpresult = convert2ItemFromBG(geneID);
-			if (tmpresult == null) {
+			GeneID2LsItem tmpresult = convert2ItemFromBG(geneID, false);
+			if (tmpresult == null || !tmpresult.isValidate()) {
 				continue;
 			}
 			lsout.add(tmpresult);
@@ -280,14 +311,18 @@ public abstract class FunctionTest implements FunTestInt{
 	 * 首先在BG中查找GeneID2LsItem
 	 * 找不到再到数据库里面找，顺便将找到的结果添加入BG
 	 * @param geneID
-	 * @return
+	 * @return addToBG true 将找到的结果添加入BG
+	 * false 不添加入BG
 	 */
-	private GeneID2LsItem convert2ItemFromBG(GeneID geneID) {
+	protected GeneID2LsItem convert2ItemFromBG(GeneID geneID, boolean addToBG) {
 		GeneID2LsItem tmpresult = mapBGGeneID2Items.get(geneID.getGenUniID());
-		if (tmpresult == null) {
+		if (tmpresult == null && addToBG) {
 			tmpresult = convert2Item(geneID);
+			if (tmpresult != null) {
+				mapBGGeneID2Items.put(geneID.getGenUniID(), tmpresult);
+			}
 		}
-		mapBGGeneID2Items.put(geneID.getGenUniID(), tmpresult);
+		
 		return tmpresult;
 	}
 	
@@ -346,28 +381,27 @@ public abstract class FunctionTest implements FunTestInt{
 		if (lsTestResult != null && lsTestResult.size() > 10) {
 			return lsTestResult;
 		}
-		ArrayList<GeneID2LsItem> lstest = new ArrayList<GeneID2LsItem>();
-		for (GeneID2LsItem geneID2LsGO : lsTest) {
-			if (!geneID2LsGO.isValidate()) {
-				continue;
-			}
-			lstest.add(geneID2LsGO);
-		}
+		List<GeneID2LsItem> lstest = getFilteredLs(lsTest);
 		if (lstest.size() == 0) {
 			return null;
 		}
-		ArrayList<GeneID2LsItem> lsbg = new ArrayList<GeneID2LsItem>();
-		for (GeneID2LsItem geneID2LsGO : mapBGGeneID2Items.values()) {
-			if (!geneID2LsGO.isValidate()) {
-				continue;
-			}
-			lsbg.add(geneID2LsGO);
-		}
-		lsTestResult = GeneID2LsItem.getFisherResult(statisticsTest, lstest, lsbg,BGnum);
+		List<GeneID2LsItem> lsbg = getFilteredLs(mapBGGeneID2Items.values());
+		lsTestResult = GeneID2LsItem.getFisherResult(statisticsTest, lstest, lsbg, BGnum);
 		for (StatisticTestResult statisticTestResult : lsTestResult) {
 			statisticTestResult.setItemTerm(getItemTerm(statisticTestResult.getItemName()));
 		}
 		return lsTestResult;
+	}
+	
+	private List<GeneID2LsItem> getFilteredLs(Collection<GeneID2LsItem> lsInput) {
+		List<GeneID2LsItem> lsResult = new ArrayList<GeneID2LsItem>();
+		for (GeneID2LsItem geneID2LsGO : lsInput) {
+			if (!geneID2LsGO.isValidate()) {
+				continue;
+			}
+			lsResult.add(geneID2LsGO);
+		}
+		return lsResult;
 	}
 	/**
 	 * 返回指定的Item的注释

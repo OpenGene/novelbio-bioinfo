@@ -2,7 +2,9 @@ package com.novelbio.nbcgui.controlquery;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
@@ -10,18 +12,17 @@ import javax.swing.SwingWorker;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.GOtype;
+import com.novelbio.database.domain.geneanno.Gene2Go;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.nbcgui.GUI.GuiBlastJpanel;
 
 
 public class CtrlBlastGo extends SwingWorker<ArrayList<String[]>, ProgressDataGo> {
-	/** 是否需要blast */
-	boolean blast = false;
 	/** 查找物种 */
 	int taxID = 0;
 	/** blast物种 */
-	int StaxID = 0;
+	int StaxID = -1;
 	/** blast的evalue */
 	double evalue = 100;
 	
@@ -33,21 +34,26 @@ public class CtrlBlastGo extends SwingWorker<ArrayList<String[]>, ProgressDataGo
 	List<String> lsGeneID = null;
 	
 	/**
-	 * @param blast
-	 * @param taxID
-	 * @param StaxID
-	 * @param evalue
 	 * @param guiBlast
 	 */
-	public CtrlBlastGo(boolean blast, int taxID, int StaxID, double evalue,GuiBlastJpanel guiBlast,GOtype GOclass) {
-		this.blast = blast;
+	public CtrlBlastGo(GuiBlastJpanel guiBlast) {
+		this.guiBlast =guiBlast;
+	}
+	public void setTaxID(int taxID) {
 		this.taxID = taxID;
+	}
+	public void setGoClass(GOtype goClass) {
+		GoClass = goClass;
+	}
+	/**
+	 * 如果 StaxID小于0，就表示不进行blast
+	 * @param StaxID
+	 * @param evalue
+	 */
+	public void setBlastInfo(int StaxID, double evalue) {
 		this.StaxID = StaxID;
 		this.evalue = evalue;
-		this.guiBlast =guiBlast;
-		this.GoClass = GOclass;
 	}
-
 	/**
 	 * 准备工作，将geneID读入内存同时准备查找，同时返回总共查找的数量，给进度条计数
 	 * @return
@@ -58,6 +64,14 @@ public class CtrlBlastGo extends SwingWorker<ArrayList<String[]>, ProgressDataGo
 		return lsGeneID.size();
 	}
 	
+	private boolean isBlast() {
+		if (StaxID > 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	/**
 	 * 给定文件，和文件分割符，以及第几列，获得该列的基因ID
 	 * @param fileName
@@ -66,185 +80,164 @@ public class CtrlBlastGo extends SwingWorker<ArrayList<String[]>, ProgressDataGo
 	 */
 	public ArrayList<String[]> doInBackground() throws Exception {
 		ArrayList<String[]> lsDesp = new ArrayList<String[]>();
-		int length = 0;
-		if (blast) {
-			length = 13;
-		} else {
-			length = 5; 
-		}
-		
 		for (int i = 0; i<lsGeneID.size(); i++) {
 			String geneID = lsGeneID.get(i).trim();
-			ArrayList<String[]> lsTmpInfo = new ArrayList<String[]>();
-			try {
-				ArrayList<String[]> lstmpAnno = getLsGeneGo(geneID,taxID,GoClass, blast, evalue, StaxID);
-				if (lstmpAnno == null || lstmpAnno.size()<1) {
-					String[] tmp = new String[length];
-					for (int j = 0; j < tmp.length; j++) {
-						tmp[j] = "";
-					}
-					tmp[0] = geneID;
-					lstmpAnno = new ArrayList<String[]>();
-					lstmpAnno.add(tmp);
-				}
-	
-				ProgressDataGo progressData  = new ProgressDataGo();
-				progressData.rowNum = i;
-				for (int j = 0; j < lstmpAnno.size(); j++) {
-					
-				// (String[] strings : lstmpAnno) 
-				
-					//结果中包含了第2列和第9列的geneID信息
-					//没有blast为stirng[5]
-					//blast为string[13]
-					String[] strings2 =null;
-					
-					if(blast)
-					{
-						strings2 = new String[9];
-						int m = 0;
-						for (int k = 0; k < lstmpAnno.get(0).length; k++) {
-							if (k == 1 || k==3 || k == 6 || k== 8 || k==9 || k == 11 || k == 14) {
-								continue;
-							}
-							strings2[m] =  lstmpAnno.get(j)[k]; m++;
-						}
-					}
-					else 
-					{
-						strings2 = new String[4];
-						int m = 0;
-						for (int k = 0; k <  lstmpAnno.get(0).length; k++) {
-							if (k == 1 || k == 3 || k == 6) {
-								continue;
-							}
-							strings2[m] =  lstmpAnno.get(j)[k]; m++;
-						}
-					}
-					lsTmpInfo.add(strings2);
-					lsDesp.add(strings2);
-				}
-				progressData.lsInfo = lsTmpInfo;
-				publish(progressData);
-//				lsDesp.addAll(lstmpAnno);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			List<String[]> lstmpAnno = getLsGeneGo(geneID);
+			ProgressDataGo progressData  = new ProgressDataGo();
+			progressData.rowNum = i;
+			lsDesp.addAll(lstmpAnno);
+			progressData.lsInfo = lstmpAnno;
+			publish(progressData);
 		}
 		return lsDesp;
 	}
-	
-	/**
-	 * @param accID
-	 * @param taxID
-	 * @param GoClass * GO_BP<br>
-	 * GO_CC<br>
-	 * GO_MF<br>
-	 * GO_ALL<br>
-	 * @param blast
-	 * @param evalue
-	 * @param StaxID
-	 * @return
-	 * <b>当blast为false时</b><br>
-	 * ArrayList-String[7] <br>
-其中：0: queryID<br>
-1: uniID<br>
-2: symbol<br>
-3: description<br>
-4: GOID<br>
-5: GOTerm<br>
-6: Evidence<br>
-	 * <b>如果没找到，则返回null，不会返回一个空的list</b><br>
-	 * 	 * <b>当blast为true时</b><br>
-	 * ArrayList-String[15]
-	 * 其中：<br>
-	 * 0: queryID<br>
-	 * 1: queryGeneID<br>
-	 * 2: querySymbol<br>
-	 * 3: Description<br>
-	 * 4: GOID<br>
-	 * 5: GOTerm<br>
-	 * 6: GO可信度<br>
-	 * 7: blastEvalue<br>
-	 * 8: taxID<br>
-	 * 9: subjectGeneID<br>
-	 * 10: subjectSymbol<br>
-	 * 11: Description<br>
-	 * 12: GOID<br>
-	 * 13: GOTerm<br>
-	 * 14: GO可信度<br>
-	 * <b>如果没找到GO信息，则返回null，不会返回一个空的list</b>
-	 */
-	private ArrayList<String[]> getLsGeneGo(String accID, int taxID,GOtype GoClass, boolean blast, double evalue, int StaxID)
-	{
-		String[] tmpAccIDInfo = new String[]{accID, "", "",""};
-		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		GeneID copedID = new GeneID(accID, taxID);
-		if (copedID.getIDtype().equals(GeneID.IDTYPE_ACCID)) {
-			return null;
-		}
-		tmpAccIDInfo[1] = copedID.getGenUniID();
-		tmpAccIDInfo[2] = copedID.getSymbol();tmpAccIDInfo[3] = copedID.getDescription();
-		copedID.setBlastInfo(evalue, StaxID);
-		//本基因的GO信息
-		ArrayList<AGene2Go> lsGOthis = copedID.getGene2GO(GoClass);
-		for (AGene2Go aGene2Go : lsGOthis) {
-			String[] tmpResult = ArrayOperate.copyArray(tmpAccIDInfo, 7);
-			tmpResult[4] = aGene2Go.getGOID(); tmpResult[5] = aGene2Go.getGOTerm(); tmpResult[6] = aGene2Go.getEvidence();
-			lsResult.add(tmpResult);
-		}
-		if (!blast) {
-			if (lsResult.size() == 0) {
-				return null;
+
+	private List<String[]> getLsGeneGo(String accID) {
+		List<String[]> lsResult = null;
+		GeneID geneID = new GeneID(accID, taxID);
+		if (geneID.getIDtype().equals(GeneID.IDTYPE_ACCID)) {
+			String[] result = null;
+			if (!isBlast()) {
+				result = new String[4];
+			} else {
+				result = new String[8];
 			}
-			return lsResult;
+			result[0] = accID;
+			for (int i = 1; i < result.length; i++) {
+				result[i] = "";
+			}
+			lsResult = new ArrayList<String[]>();
+			lsResult.add(result);
+		} else {
+			if (!isBlast()) {
+				lsResult = getLsGOInfo(geneID);
+			} else {
+				lsResult = getLsGOInfoBlast(geneID);
+			}
 		}
-		//blast基因的GO信息
-		ArrayList<String[]> lsResultBlast = new ArrayList<String[]>();
-		
-		GeneID copedIDblast = copedID.getGeneIDBlast();
-		if (copedIDblast == null) {
-			for (String[] strings : lsResult) {
-				String[] result = ArrayOperate.copyArray(strings, 15);
-				lsResultBlast.add(result);
-			}
-			return lsResultBlast;
-		}
-		ArrayList<AGene2Go> lsGOBlast = copedIDblast.getGene2GO(GoClass);
-		for (int i = 0; i < lsGOBlast.size(); i++) {
-			if (lsResult == null)
-				lsResult = new ArrayList<String[]>();
-			String[] tmpResultBlast = new String[15];
-			//初始化
-			for (int j = 0; j < tmpResultBlast.length; j++) {
-				tmpResultBlast[j] = "";
-			}
-			if (i < lsResult.size()) {
-				for (int j = 0; j < lsResult.get(i).length; j++) {
-					tmpResultBlast [j] = lsResult.get(i)[j];
-				}
-			}
-			else {
-				tmpResultBlast[0] = accID; tmpResultBlast[1] = copedID.getGenUniID();
-				tmpResultBlast[2] = copedID.getSymbol();tmpResultBlast[3] = copedID.getDescription();
-			}
-			tmpResultBlast[7] = copedID.getLsBlastInfos().get(0).getEvalue() + "";
-			tmpResultBlast[8] = copedIDblast.getTaxID() + "";
-			tmpResultBlast[9] = copedIDblast.getGenUniID();
-			tmpResultBlast[10] = copedIDblast.getSymbol();
-			tmpResultBlast[11] = copedIDblast.getDescription();
-			tmpResultBlast[12] = lsGOBlast.get(i).getGOID();
-			tmpResultBlast[13] = lsGOBlast.get(i).getGOTerm();
-			tmpResultBlast[14] = lsGOBlast.get(i).getEvidence();;
-			lsResultBlast.add(tmpResultBlast);
-		}
-		
-		return lsResultBlast;
+
+		return lsResult;
 	}
 	
+	private List<String[]> getLsGOInfo(GeneID geneID) {
+		List<String[]> lsResult = new ArrayList<String[]>();
+		
+		ArrayList<String> lsResultTmp = new ArrayList<String>();
+		lsResultTmp.add(geneID.getAccID());
+		lsResultTmp.add(geneID.getSymbol());
+		List<AGene2Go> lsGene2Gos = geneID.getGene2GO(GoClass);
+		for (AGene2Go aGene2Go : lsGene2Gos) {
+			ArrayList<String> lsTmp = (ArrayList<String>) lsResultTmp.clone();
+			lsTmp.add(aGene2Go.getGOID());
+			lsTmp.add(aGene2Go.getGOTerm());
+			lsResult.add(lsTmp.toArray(new String[0]));
+		}
+		if (lsResult.size() == 0) {
+			fillLsResult(geneID.getAccID(), lsResult, 4);
+		}
+		return lsResult;
+	}
+	
+	private List<String[]> getLsGOInfoBlast(GeneID geneID) {
+		List<String[]> lsResult = new ArrayList<String[]>();
+		
+		ArrayList<String> lsResultTmp = new ArrayList<String>();
+		lsResultTmp.add(geneID.getAccID());
+		lsResultTmp.add(geneID.getSymbol());
+		
+		List<AGene2Go> lsGene2Gos = geneID.getGene2GO(GoClass);
+		geneID.setBlastInfo(evalue, StaxID);
+		List<AGene2Go> lsGene2GoBlast = new ArrayList<AGene2Go>();
+		if (geneID.getGeneIDBlast() != null) {
+			lsGene2GoBlast = geneID.getGeneIDBlast().getGene2GO(GoClass);
+		}
+		List<AGene2Go[]> lsGoInfo = getLsGOInfoBlast(lsGene2Gos, lsGene2GoBlast);
+		for (AGene2Go[] aGene2Gos : lsGoInfo) {
+			ArrayList<String> lsTmp = (ArrayList<String>) lsResultTmp.clone();
+			addGoInfo(lsTmp, aGene2Gos[0]);
+			if (aGene2Gos[1] != null) {
+				lsTmp.add(geneID.getLsBlastInfos().get(0).getEvalue() + "");
+				lsTmp.add(geneID.getGeneIDBlast().getSymbol());
+			} else {
+				lsTmp.add(""); lsTmp.add("");
+			}
+			addGoInfo(lsTmp, aGene2Gos[1]);
+			lsResult.add(lsTmp.toArray(new String[0]));
+		}
+		if (lsResult.size() == 0) {
+			fillLsResult(geneID.getAccID(), lsResult, 8);
+		}
+		
+		return lsResult;
+	}
+	
+	private void addGoInfo(List<String> lsTmp, AGene2Go aGene2Go) {
+		if (aGene2Go == null) {
+			lsTmp.add(""); lsTmp.add("");
+		} else {
+			lsTmp.add(aGene2Go.getGOID());
+			lsTmp.add(aGene2Go.getGOTerm());
+		}
+	}
+	
+	private void fillLsResult(String accID, List<String[]> lsResult, int arrayLength) {
+		String[] tmpResult = new String[arrayLength];
+		tmpResult[0] = accID;
+		for (int i = 1; i < tmpResult.length; i++) {
+			tmpResult[i] = "";
+		}
+		lsResult.add(tmpResult);
+	}
+	
+	/**
+	 * 把两个list里面的GO合并在一个list里面，相同的Go放在一列
+	 * @param lsGene2Go
+	 * @param lsGene2GoBlast
+	 * @return
+	 */
+	private List<AGene2Go[]> getLsGOInfoBlast(List<AGene2Go> lsGene2Go, List<AGene2Go> lsGene2GoBlast) {
+		List<AGene2Go[]> lsAGene2Gos = new ArrayList<AGene2Go[]>();
+		Map<String, AGene2Go> mapGOID2DetailBlast = new HashMap<String, AGene2Go>();
+		for (AGene2Go aGene2Go : lsGene2GoBlast) {
+			mapGOID2DetailBlast.put(aGene2Go.getGOID(), aGene2Go);
+		}
+		
+		for (AGene2Go aGene2Go : lsGene2Go) {
+			AGene2Go[] aGene2Gos = new AGene2Go[2];
+			aGene2Gos[0] = aGene2Go;
+			if (mapGOID2DetailBlast.containsKey(aGene2Go.getGOID())) {
+				aGene2Gos[1] = mapGOID2DetailBlast.get(aGene2Go.getGOID());
+				mapGOID2DetailBlast.remove(aGene2Go.getGOID());
+			}
+			lsAGene2Gos.add(aGene2Gos);
+		}
+		
+		for (AGene2Go aGene2Go : mapGOID2DetailBlast.values()) {
+			AGene2Go[] aGene2Gos = new AGene2Go[2];
+			aGene2Gos[1] = aGene2Go;
+			lsAGene2Gos.add(aGene2Gos);
+		}
+		return lsAGene2Gos;
+	}
+	
+	public static String[] getTitle(boolean blast) {
+		List<String> lsTitle = new ArrayList<String>();
+		lsTitle.add("QueryID");
+		lsTitle.add("Symbol/AccID");
+		lsTitle.add("GOID");
+		lsTitle.add("GOTerm");
+		if (blast) {
+			lsTitle.add("evalue");
+			lsTitle.add("BlastSymbol/AccID");
+			lsTitle.add("BlastGOID");
+			lsTitle.add("GOTerm");
+		}
+		return lsTitle.toArray(new String[0]);
+	}
+	
+	
 	@Override
-	public void process(List<ProgressDataGo> data)
-	{
+	public void process(List<ProgressDataGo> data) {
 		if (isCancelled()) {
 			return;
 		}
@@ -252,9 +245,8 @@ public class CtrlBlastGo extends SwingWorker<ArrayList<String[]>, ProgressDataGo
 			if (guiBlast.getJProgressBar1().getValue()<progressDataGo.rowNum) {
 				guiBlast.getJProgressBar1().setValue(progressDataGo.rowNum);
 			}
-			for (String[] strings: progressDataGo.lsInfo) 
-			{
-				guiBlast.getJTabGoandPath().addRow(strings);
+			for (String[] strings: progressDataGo.lsInfo) {
+				guiBlast.getJTabGoandPath().addItem(strings);
 			}
 		}
 	}
@@ -277,8 +269,7 @@ public class CtrlBlastGo extends SwingWorker<ArrayList<String[]>, ProgressDataGo
 	}
 }
 
-class ProgressDataGo
-{
+class ProgressDataGo {
 	int rowNum=0;
-	ArrayList<String[]> lsInfo = null;
+	List<String[]> lsInfo = null;
 }

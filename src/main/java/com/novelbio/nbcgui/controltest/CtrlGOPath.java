@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -144,16 +145,19 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 			if (strings[0] == null || strings[0].trim().equals("")) {
 				continue;
 			}
-			if (strings.length == 1) {
-				mapPrefix2AccID.put("All", strings[0]);
-			} else if (strings.length > 1 && Double.parseDouble(strings[1]) <= down ) {
-				mapPrefix2AccID.put("Down", strings[0]);
-			} else if (strings.length > 1 && Double.parseDouble(strings[1]) >= up) {
-				mapPrefix2AccID.put("Up", strings[0]);
-			}
+			try {
+				if (strings.length == 1) {
+					mapPrefix2AccID.put("All", strings[0]);
+				} else if (strings.length > 1 && Double.parseDouble(strings[1]) <= down ) {
+					mapPrefix2AccID.put("Down", strings[0]);
+				} else if (strings.length > 1 && Double.parseDouble(strings[1]) >= up) {
+					mapPrefix2AccID.put("Up", strings[0]);
+				}
+			} catch (Exception e) { }
 		}
-		for (String prefix : mapPrefix2AccID.keySet()) {
-			getResult(prefix, mapPrefix2AccID.get(prefix));
+		HashMultimap<String, GeneID> mapPrefix2SetAccID = addBG_And_Convert2GeneID(mapPrefix2AccID);
+		for (String prefix : mapPrefix2SetAccID.keySet()) {
+			getResult(prefix, mapPrefix2SetAccID.get(prefix));
 		}
 	}
 	
@@ -167,15 +171,36 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 	public void runCluster() {
 		isCluster = true;
 		hashResultGene.clear();
-		HashMultimap<String, String> mapCluster2SetGeneID = HashMultimap.create();
+		HashMultimap<String, String> mapCluster2SetAccID = HashMultimap.create();
 		for (String[] accID2prefix : lsAccID2Value) {
-			mapCluster2SetGeneID.put(accID2prefix[1], accID2prefix[0]);
+			mapCluster2SetAccID.put(accID2prefix[1], accID2prefix[0]);
 		}
+		HashMultimap<String, GeneID> mapCluster2SetGeneID = addBG_And_Convert2GeneID(mapCluster2SetAccID);
 		for (String prefix : mapCluster2SetGeneID.keySet()) {
 			getResult(prefix, mapCluster2SetGeneID.get(prefix));
 		}
 	}
 	
+	/** 将输入转化为geneID */
+	private HashMultimap<String, GeneID> addBG_And_Convert2GeneID(HashMultimap<String, String> mapPrefix2SetAccID) {
+		HashMultimap<String, GeneID> mapPrefix2SetGeneID = HashMultimap.create();
+		for (String prefix : mapPrefix2SetAccID.keySet()) {
+			Set<String> setAccID = mapPrefix2SetAccID.get(prefix);
+			for (String accID : setAccID) {
+				GeneID geneID = new GeneID(accID, functionTest.getTaxID());
+				if (!geneID.getIDtype().equals(GeneID.IDTYPE_ACCID)) {
+					mapPrefix2SetGeneID.put(prefix, geneID);
+				}
+			}
+		}
+		//以下是打算将输入的testID补充进入BG，不过我觉得没必要了
+		//我们只要将BG尽可能做到全面即可，不用想太多
+//		for (String prefix : mapPrefix2SetGeneID.keySet()) {
+//			Set<GeneID> setGeneIDs = mapPrefix2SetGeneID.get(prefix);
+//			functionTest.addBGGeneID(setGeneIDs);
+//		}
+		return mapPrefix2SetGeneID;
+	}
 	/**
 	 * 用这个计算，算完后才能save等
 	 * @param functionTest
@@ -184,8 +209,8 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 	 * @return
 	 * 没有就返回null
 	 */
-	private void getResult(String prix, Collection<String>lsCopedIDs) {
-		functionTest.setLsTestAccID(lsCopedIDs);
+	private void getResult(String prix, Collection<GeneID>lsCopedIDs) {
+		functionTest.setLsTestGeneID(lsCopedIDs);
 		ArrayList<StatisticTestResult> lsResultTest = functionTest.getTestResult();
 		if (lsResultTest == null || lsResultTest.size() == 0) {
 			return;

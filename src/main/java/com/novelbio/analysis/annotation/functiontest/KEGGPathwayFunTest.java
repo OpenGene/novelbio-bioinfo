@@ -32,13 +32,6 @@ public class KEGGPathwayFunTest extends FunctionTest {
 	 */
 	@Override
 	public void setDetailType(GOtype GOtype) {}
-	/**
-	 * 不返回
-	 */
-	@Override
-	public ArrayList<StatisticTestItem2Gene> getItem2GenePvalue() {
-		return null;
-	}
 
 	@Override
 	protected Map<String, GeneID2LsItem> readFromBGfile(Collection<String[]> lsTmpGeneID2LsItem) {
