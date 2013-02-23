@@ -5,12 +5,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 
@@ -21,11 +19,9 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modgeneid.GeneType;
 import com.novelbio.generalConf.NovelBioConst;
-import com.sun.tools.corba.se.idl.StringGen;
 /**
  * 考虑将其中的iso装入hash表中，以加快查找效率
  * 重写了clone但是没有重写equals和hash
@@ -54,7 +50,7 @@ public class GffDetailGene extends ListDetailAbs {
 	private ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfos = new ArrayList<GffGeneIsoInfo>();//存储可变剪接的mRNA
 	ListGff listGff;
 	int taxID = 0;
-	HashSet<GeneID> setGeneID;
+	Set<GeneID> setGeneID;
 	
 	boolean removeDuplicateIso = false;
 	Boolean ismRNA = null;
@@ -337,7 +333,7 @@ public class GffDetailGene extends ListDetailAbs {
 	public void clearIso() {
 		lsGffGeneIsoInfos.clear();
 	}
-	public HashSet<GeneID> getSetGeneID() {
+	public Set<GeneID> getSetGeneID() {
 		if (setGeneID != null) {
 			return setGeneID;
 		}
