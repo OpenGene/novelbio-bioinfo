@@ -43,8 +43,17 @@ public class BamSort {
 		else
 			this.ExePath = FileOperate.addSep(exePath);
 	}
-
+	
+	/**
+	 * 注意：samtools在排序后并不会修改SO:unsorted这个标签
+	 * @param outFile
+	 * @return
+	 */
 	public String sortSamtools(String outFile) {
+		SAMFileReader reader = samFile.samReader.getSamFileReader();
+		if (reader.getFileHeader().getSortOrder() == SortOrder.coordinate) {
+			return outFile;
+		}
 		String cmd = ExePath + "samtools sort " + CmdOperate.addQuot(samFile.getFileName()) + " " 
 				+ CmdOperate.addQuot(FileOperate.changeFileSuffix(outFile, "", ""));
 		CmdOperate cmdOperate = new CmdOperate(cmd,"sortBam");
@@ -54,7 +63,10 @@ public class BamSort {
 	
 	public String sortJava(String sortBamFile) {
 		File fileOut = new File(sortBamFile);
-		SAMFileReader reader = samFile.samReader.getSamFileReader();;
+		SAMFileReader reader = samFile.samReader.getSamFileReader();
+		if (reader.getFileHeader().getSortOrder() == SortOrder.coordinate) {
+			return sortBamFile;
+		}
         reader.getFileHeader().setSortOrder(SORT_ORDER);
         SAMFileWriter writer = new SAMFileWriterFactory().makeSAMOrBAMWriter(reader.getFileHeader(), false, fileOut);
 

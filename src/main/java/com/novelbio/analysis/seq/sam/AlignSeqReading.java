@@ -45,13 +45,24 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 		this.readByte = readByte;
 	}
 
-	
+	/**
+	 * 设定记录器，也就是记录该sam文件Record的信息
+	 * @param lsAlignmentRecorders
+	 */
 	public void setLsAlignmentRecorders(ArrayList<AlignmentRecorder> lsAlignmentRecorders) {
 		this.lsAlignmentRecorders = lsAlignmentRecorders;
 	}
+	/**
+	 * 添加记录器，也就是记录该sam文件Record的信息
+	 * @param alignmentRecorder
+	 */
 	public void addAlignmentRecorder(AlignmentRecorder alignmentRecorder) {
 		lsAlignmentRecorders.add(alignmentRecorder);
 	}
+	/**
+	 * 添加记录器，也就是记录该sam文件Record的信息
+	 * @param colAlignmentRecorders
+	 */
 	public void addColAlignmentRecorder(Collection<AlignmentRecorder> colAlignmentRecorders) {
 		lsAlignmentRecorders.addAll(colAlignmentRecorders);
 	}

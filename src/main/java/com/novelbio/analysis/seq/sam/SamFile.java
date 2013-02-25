@@ -383,6 +383,9 @@ public class SamFile implements AlignSeq {
 
     public SamFile sort() {
     	SamFile samFile = convertToBam();
+    	if (samFile.getFileName().endsWith("_sorted.bam")) {
+			return samFile;
+		}
     	String outName = FileOperate.changeFileSuffix(getFileName(), "_sorted", "bam");
     	return samFile.sort(outName);
     }

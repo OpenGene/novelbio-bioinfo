@@ -101,7 +101,7 @@ public class GuiGoJPanel extends JPanel{
 	String GoClass = "";
 	
 	GUIFileOpen guiFileOpen = new GUIFileOpen();
-	CtrlGO ctrlGO;
+	CtrlGO ctrlGO = new CtrlGO();
 	public GuiGoJPanel() {
 	
 
@@ -426,8 +426,9 @@ public class GuiGoJPanel extends JPanel{
 		
 		String backGroundFile = jTxtBGGo.getText();
 		double evalue = 1e-10;
-		
-		ctrlGO = new CtrlGO(cmbGoAlgorithm.getSelectedValue(), cmbSelSpeGo.getSelectedValue().getTaxID());
+		ctrlGO.clearParam();
+		ctrlGO.setGoAlgorithm(cmbGoAlgorithm.getSelectedValue());
+		ctrlGO.setTaxID(cmbSelSpeGo.getSelectedValue().getTaxID());
 		if (jChkBlastGo.isSelected()) {
 			ctrlGO.setBlastInfo(evalue, cmbBlastTaxGo.getSelectedValue().getTaxID());
 		} else {

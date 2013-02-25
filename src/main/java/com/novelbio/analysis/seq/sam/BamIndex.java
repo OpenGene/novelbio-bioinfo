@@ -37,12 +37,16 @@ public class BamIndex {
 		this.bamFile = bamFile;
 	}
 	
-	public String indexSamtools() {
+	/**
+	 * 返回建好的索引名字
+	 * @return
+	 */
+	public String index() {
 		if (FileOperate.isFileExistAndBigThanSize(bamFile + ".bai", 1000)) {
 			return bamFile;
 		}
 		String cmd = ExePath + "samtools index " + "\"" + bamFile + "\"";
-		CmdOperate cmdOperate = new CmdOperate(cmd,"samIndex");
+		CmdOperate cmdOperate = new CmdOperate(cmd, "samIndex");
 		cmdOperate.run();
 		return bamFile;
 	}
@@ -51,7 +55,7 @@ public class BamIndex {
 	 * 返回建好的索引名字
 	 * @return
 	 */
-	public String index() {
+	public String indexJava() {
 		if (!FileOperate.isFileExistAndBigThanSize(getIndexFileName(), 1000)) {
 			makeIndex();
 		}

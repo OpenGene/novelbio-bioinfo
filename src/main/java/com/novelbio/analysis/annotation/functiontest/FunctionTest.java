@@ -68,7 +68,6 @@ public abstract class FunctionTest {
 	public void setStatisticsTest(StatisticsTest statisticsTest) {
 		this.statisticsTest = statisticsTest;
 	}
-	
 	public void setBlastInfo(double evalue, int... blastTaxID) {
 		this.blastTaxID = blastTaxID;
 		this.blastEvalue = evalue;
@@ -183,7 +182,7 @@ public abstract class FunctionTest {
 		for (GeneID copedID : lsBGaccID) {
 			copedID.setBlastInfo(blastEvalue, blastTaxID);
 		}
-		this.lsCopedIDsBG = new HashSet<GeneID>(lsBGaccID);
+		lsCopedIDsBG = new HashSet<GeneID>(lsBGaccID);
 		mapBGGeneID2Items = convert2Item(lsCopedIDsBG);
 		BGnum = mapBGGeneID2Items.size();
 	}
@@ -427,14 +426,12 @@ public abstract class FunctionTest {
 		txtOut.close();
 	}
 	
-	
-
 	/**
 	 * 选择一种检验方式FUNCTION_GO_NOVELBIO等
 	 * 是否blast，如果blast那么blast到哪几个物种
 	 * @param functionType
 	 */
-	public static FunctionTest getInstance(String functionType, int taxID) {
+	public static FunctionTest getInstance(String functionType) {
 		FunctionTest functionTest;
 		if (functionType.equals(FUNCTION_GO_NOVELBIO)) {
 			functionTest = new NovelGOFunTest();
@@ -449,7 +446,6 @@ public abstract class FunctionTest {
 			logger.error("unknown functiontest: "+ functionType);
 			return null;
 		}
-		functionTest.setTaxID(taxID);
 		return functionTest;
 	}
 	

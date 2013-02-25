@@ -20,16 +20,13 @@ import com.novelbio.generalConf.NovelBioConst;
 import com.novelbio.nbcgui.GUI.GuiGoJPanel;
 
 public class CtrlPath extends CtrlGOPath {
-
 	private static final Logger logger = Logger.getLogger(CtrlPath.class);
-	/** 用单例模式  */
-	private static CtrlPath ctrlPath = null;
 
 	/**
 	 * @param QtaxID
 	 */
-	public CtrlPath(int QtaxID) {
-		functionTest = FunctionTest.getInstance(FunctionTest.FUNCTION_PATHWAY_KEGG, QtaxID);
+	public CtrlPath() {
+		functionTest = FunctionTest.getInstance(FunctionTest.FUNCTION_PATHWAY_KEGG);
 	}
 
 	@Override
@@ -70,5 +67,10 @@ public class CtrlPath extends CtrlGOPath {
 		}
 		return FileOperate.changeFileSuffix(fileName, suffix, "txt");
 	}
- 
+
+	@Override
+	protected void clear() {
+		functionTest = FunctionTest.getInstance(FunctionTest.FUNCTION_PATHWAY_KEGG);
+	}
+	
 }

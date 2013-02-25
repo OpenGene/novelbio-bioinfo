@@ -17,11 +17,13 @@ public class AlignSamReading extends AlignSeqReading {
 	}
 	
 	/**
-	 * 输入需要读取的区域，不用排序
-	 * @param lsAlignments
+	 * 输入需要读取的区域，不用排序<br>
+	 * 如果输入的是null，则清空<br>
+	 * 如果输入的是size为0的list，则不改变原有设定
+	 * @param lsAlignments 输入Align的chrID无所谓大小写
 	 */
 	public void setLsAlignments(List<? extends Alignment> lsAlignments) {
-		if (lsAlignments == null || lsAlignments.size() == 0) {
+		if (lsAlignments.size() == 0) {
 			return;
 		}
 		this.lsAlignments = lsAlignments;

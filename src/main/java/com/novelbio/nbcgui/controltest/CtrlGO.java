@@ -25,16 +25,18 @@ public class CtrlGO extends CtrlGOPath{
 	GOtype GOClass = GOtype.BP;
 	GoAlgorithm goAlgorithm = GoAlgorithm.classic;
 	int goLevel = -1;
+	
 	/**
+	 * 必须第一时间设定，这个就会初始化检验模块
+	 * 如果重新设定了该算法，则所有参数都会清空
 	 * @param goAlgorithm
-	 * @param qTaxID
 	 */
-	public CtrlGO(GoAlgorithm goAlgorithm, int qTaxID) {
+	public void setGoAlgorithm(GoAlgorithm goAlgorithm) {
 		if (goAlgorithm != GoAlgorithm.novelgo) {
-			functionTest = FunctionTest.getInstance(FunctionTest.FUNCTION_GO_ELIM, qTaxID);
+			functionTest = FunctionTest.getInstance(FunctionTest.FUNCTION_GO_ELIM);
 			((ElimGOFunTest) functionTest).setAlgorithm(goAlgorithm);
 		} else {
-			functionTest = FunctionTest.getInstance(FunctionTest.FUNCTION_GO_NOVELBIO, qTaxID);
+			functionTest = FunctionTest.getInstance(FunctionTest.FUNCTION_GO_NOVELBIO);
 		}
 	}
 	
@@ -112,5 +114,14 @@ public class CtrlGO extends CtrlGOPath{
 		}
 		return FileOperate.changeFileSuffix(fileName, suffix, "txt");
 	}
+
+	@Override
+	protected void clear() {
+		GOClass = GOtype.BP;
+		goAlgorithm = GoAlgorithm.classic;
+		goLevel = -1;
+		functionTest = null;
+	}
+	
 	
 }

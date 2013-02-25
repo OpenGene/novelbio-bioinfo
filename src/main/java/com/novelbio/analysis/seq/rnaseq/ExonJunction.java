@@ -52,7 +52,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	boolean oneGeneOneSpliceEvent = true;
 	
 	/** 是否从junction文件中读取信息 */
-	boolean readJunctionFromBedFile = false;
+	boolean readFromJunctionFile = false;
 	TophatJunction tophatJunction = new TophatJunction();
 	LinkedHashSet<String> setCondition = new LinkedHashSet<String>();
 	
@@ -79,7 +79,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	SeqHash seqHash;
 	
 	boolean isLessMemory = false;
-	
+	boolean readExp = true;
 	CtrlSplicing ctrlSplicing;
 	/**
 	 * 表示差异可变剪接的事件的pvalue阈值，仅用于统计差异可变剪接事件的数量，不用于可变剪接的筛选
@@ -92,12 +92,16 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	 * 是否采用节省内存模式
 	 * 如果节省内存就用SamMapReads 速度慢
 	 * 如果耗内存就用MapReads 速度快
+	 * 默认false
 	 * @param isLessMemory
 	 */
 	public void setIsLessMemory(boolean isLessMemory) {
 		this.isLessMemory = isLessMemory;
 	}
-	
+	/** 是否读取表达 */
+	public void setReadExp(boolean readExp) {
+		this.readExp = readExp;
+	}
 	/**
 	 * 设定输出
 	 * @param resultFile
@@ -108,7 +112,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	/** 
 	 * 一个基因可能有多个可变剪接事件，但是我们可以只挑选其中最显著的那个可变剪接事件
 	 * 也可以输出全部的可变剪接事件
-	 * @param oneGeneOneSpliceEvent true:  每个基因只有一个可变剪接事件, 默认为true
+	 * @param oneGeneOneSpliceEvent true:  每个基因只有一个可变剪接事件, <b>默认为true</b>
 	 * false: 每个基因输出全部可变剪接事件
 	 */
 	public void setOneGeneOneSpliceEvent(boolean oneGeneOneSpliceEvent) {
@@ -154,7 +158,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	public void setIsoJunFile(String condition,String junctionFile) {
 		tophatJunction.setJunFile(condition,junctionFile);
 		setCondition.add(condition);
-		readJunctionFromBedFile = true;
+		readFromJunctionFile = true;
 	}
 	
 	public void addBamSorted(String condition, String sortedBamFile) {
@@ -179,8 +183,8 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		ctrlSplicing.setProcessBarStartEndBarNum("Reading Junction", 0, 0, fileLength);
 
 		ctrlSplicing.setProgressBarLevelLs(lsLevels);
-		if (!readJunctionFromBedFile) {
-			loadJunction();
+		if (!readFromJunctionFile) {
+			loadJunctionBam();
 		} else {
 			readJuncFile();
 		}
@@ -191,7 +195,10 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		fillLsAll_Dif_Iso_Exon();
 		
 		ctrlSplicing.setProcessBarStartEndBarNum("Reading Exp", 2, 0, fileLength);
-		loadExp();
+		
+		if (readExp) {
+			loadExp();
+		}
 		
 		if (lsCondCompare == null || lsCondCompare.size() == 0) {
 			lsCondCompare = new ArrayList<String[]>();
@@ -229,10 +236,10 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		return fileLength;
 	}
 	
-	private void loadJunction() {
+	private void loadJunctionBam() {
 		AlignSeqReading samFileReadingLast = null;
 		
-		ArrayList<Align> lsDifIsoGene = null;//getLsDifIsoGene();
+		List<Align> lsDifIsoGene = new ArrayList<Align>();//getLsDifIsoGene();
 		for (String condition : mapCond2SamReader.keySet()) {
 			ctrlSplicing.setInfo("Reading Junction " + condition);
 			tophatJunction.setCondition(condition);
@@ -243,13 +250,19 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				if (samFileReadingLast != null) {
 					samFileReading.setReadInfo(0L, samFileReadingLast.getReadByte());
 				}
-				samFileReadingLast = samFileReading;
 				
+				List<Align> lsAlign = new ArrayList<Align>();
 				
+				//TODO 如果只需要读取很短的位点做测试，就可以在这里设定
+//				lsAlign.add(new Align("chr8", 23575238, 23583750));
+				
+				samFileReading.setLsAlignments(lsAlign);
 				samFileReading.setLsAlignments(lsDifIsoGene);
 				samFileReading.setRunGetInfo(runGetInfo);
 				samFileReading.addAlignmentRecorder(tophatJunction);
 				samFileReading.reading();
+				samFileReadingLast = samFileReading;
+
 			}
 		}
 		samFileReadingLast = null;
@@ -310,9 +323,9 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	 */
 	private ArrayList<ExonSplicingTest> getGeneDifExon(GffDetailGene gffDetailGene) {
 		//TODO 设置断点
-		if (gffDetailGene.getName().contains("CLASP2")) {
-			logger.debug("stop");
-		}
+//		if (gffDetailGene.getName().contains("CLASP2")) {
+//			logger.debug("stop");
+//		}
 		
 		ArrayList<ExonSplicingTest> lsExonSplicingTestResult = new ArrayList<ExonSplicingTest>();
 		HashMap<String, ExonCluster> mapLoc2ExonCluster = gffDetailGene.getDifExonMapLoc2Cluster();
@@ -483,7 +496,8 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	/** 写入文本 */
 	public void writeToFile(String fileName) {
 		TxtReadandWrite txtOut = new TxtReadandWrite(fileName, true);
-		txtOut.writefileln(ExonSplicingTest.getTitle(condition1, condition2,true));
+		boolean isGetSeq = seqHash == null ? false : true;
+		txtOut.writefileln(ExonSplicingTest.getTitle(condition1, condition2, isGetSeq));
 		for (ExonSplicingTest chisqTest : lsResult) {
 			chisqTest.setGetSeq(seqHash);
 			txtOut.writefileln(chisqTest.toStringArray());
@@ -549,6 +563,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		mapSplicingType2Num.clear();
 		setCondition.clear();
 		tophatJunction = new TophatJunction();
-		readJunctionFromBedFile = false;
+		readFromJunctionFile = false;
 	}
 }

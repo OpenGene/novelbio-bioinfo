@@ -18,6 +18,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.swing.JTextField;
@@ -201,7 +202,7 @@ public class GuiDifGeneJpanel extends JPanel {
 	
 	private void changeSclCompareGroup() {
 		ArrayList<String[]> lsSnp2Prefix = scrollPaneSample.getLsDataInfo();
-		Map<String, String> mapString2Value = new HashMap<String, String>();
+		Map<String, String> mapString2Value = new LinkedHashMap<String, String>();
 		for (String[] snp2prefix : lsSnp2Prefix) {
 			mapString2Value.put(snp2prefix[1], snp2prefix[1]);
 		}

@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqHash;
+import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.PredictAlt5Or3;
@@ -351,37 +352,39 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	}
 	
 	/** 
-	 * 获得一系列序列：
-	 * 1.前一个和后一个exon和intron的序列
-	 * 2. 当前exon
-	 * 3. 当前exon左右扩展300bp
+	 * 获得一系列序列：<br>
+	 * 1. 当前exon<br>
+	 * 2. 当前exon左右扩展300bp<br>
+	 * 3.前一个和后一个exon和intron的序列
 	 */
 	protected ArrayList<SeqFasta> getSeq(SeqHash seqHash) {
 		ArrayList<SeqFasta> lsSeqFastas = new ArrayList<SeqFasta>();
-		
-//		ArrayList<ExonInfo> lsGetExon = new ArrayList<ExonInfo>();
-//		if (exonCluster.getExonClusterBefore() != null) {
-//			ExonCluster exonClusterBefore = exonCluster.getExonClusterBefore();
-//			lsGetExon.add(new ExonInfo("exonCluster", exonCluster.isCis5To3(), exonClusterBefore.getStartCis(), exonClusterBefore.getEndCis()));
-//		}
-//		lsGetExon.add(new ExonInfo("exonCluster", exonCluster.isCis5To3(), exonCluster.getStartCis(), exonCluster.getEndCis()));
-//		if (exonCluster.getExonClusterAfter() != null) {
-//			ExonCluster exonClusterAfter = exonCluster.getExonClusterAfter();
-//			lsGetExon.add(new ExonInfo("exonCluster", exonCluster.isCis5To3(), exonClusterAfter.getStartCis(), exonClusterAfter.getEndCis()));
-//		}
-//		
-//		SeqFasta seqFasta = seqHash.getSeq(exonCluster.getChrID(), lsGetExon, true);
-//		if (seqFasta != null && !exonCluster.isCis5To3()) {
-//			seqFasta = seqFasta.reservecom();
-//		}
 		
 		SeqFasta seqFasta = seqHash.getSeq(exonCluster.isCis5To3(), exonCluster.getChrID(), 
 				exonCluster.getStartLocAbs(), exonCluster.getEndLocAbs());
 		lsSeqFastas.add(seqFasta);
 		
-		SeqFasta seqFasta2 = seqHash.getSeq(exonCluster.isCis5To3(), exonCluster.getChrID(),
+		seqFasta = seqHash.getSeq(exonCluster.isCis5To3(), exonCluster.getChrID(),
 				exonCluster.getStartLocAbs() - 300, exonCluster.getEndLocAbs() + 300);
-		lsSeqFastas.add(seqFasta2);
+		lsSeqFastas.add(seqFasta);
+		
+		ArrayList<ExonInfo> lsGetExon = new ArrayList<ExonInfo>();
+		if (exonCluster.getExonClusterBefore() != null) {
+			ExonCluster exonClusterBefore = exonCluster.getExonClusterBefore();
+			lsGetExon.add(new ExonInfo("exonCluster", exonCluster.isCis5To3(), exonClusterBefore.getStartCis(), exonClusterBefore.getEndCis()));
+		}
+		lsGetExon.add(new ExonInfo("exonCluster", exonCluster.isCis5To3(), exonCluster.getStartCis(), exonCluster.getEndCis()));
+		if (exonCluster.getExonClusterAfter() != null) {
+			ExonCluster exonClusterAfter = exonCluster.getExonClusterAfter();
+			lsGetExon.add(new ExonInfo("exonCluster", exonCluster.isCis5To3(), exonClusterAfter.getStartCis(), exonClusterAfter.getEndCis()));
+		}
+		
+		seqFasta = seqHash.getSeq(exonCluster.getChrID(), lsGetExon, true);
+		if (seqFasta != null && !exonCluster.isCis5To3()) {
+			seqFasta = seqFasta.reservecom();
+		}
+		lsSeqFastas.add(seqFasta);
+
 		
 		return lsSeqFastas;
 	}
@@ -493,24 +496,30 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		lsTitle.add(TitleFormatNBC.Symbol.toString());
 		lsTitle.add(TitleFormatNBC.Description.toString());
 		if (isGetSeq) {
-			lsTitle.add("sequence");
+			lsTitle.add("Casual_Exon");
+			lsTitle.add("Casual_Exon+-300bp");
+			lsTitle.add("Casual_Exon+-1Exon");
 		}
 		return lsTitle.toArray(new String[0]);
 	}
 
 }
 /**
- * 差异可变剪接的类型
- * reads数量以及表达值等
+ * 某个时期的某个位点的<br>
+ * 
+ * 某种可变剪接形式的<br>
+ * 
+ * 表达和Junction Reads数
+ * 
  * @author zong0jie
  */
 class SpliceType2Value {
-	private static Logger logger = Logger.getLogger(SpliceType2Value.class);
+	private static final Logger logger = Logger.getLogger(SpliceType2Value.class);
 	
 	Set<SplicingAlternativeType> setExonSplicingTypes = new HashSet<SplicingAlternativeType>();
 	HashMap<SplicingAlternativeType, List<Double>> mapSplicingType2LsExpValue = new HashMap<SplicingAlternativeType, List<Double>>();
 	HashMap<SplicingAlternativeType, List<Double>> mapSplicingType2LsJunctionReads = new HashMap<SplicingAlternativeType, List<Double>>();
-	HashMap<SplicingAlternativeType, Boolean> mapSplicingType2IsFiltered = new HashMap<SpliceTypePredict.SplicingAlternativeType, Boolean>();
+	HashMap<SplicingAlternativeType, Boolean> mapSplicingType2IsFiltered = new HashMap<SplicingAlternativeType, Boolean>();
 	
 	/**
 	 * 是否通过过滤
@@ -536,7 +545,7 @@ class SpliceType2Value {
 		}
 		return (int)new Mean().evaluate(info);
 	}
-	/** 添加表达 */
+	/** 添加指定时期的JunctionReads */
 	public void addJunction(String condition, SpliceTypePredict spliceTypePredict) {
 		SplicingAlternativeType splicingAlternativeType = spliceTypePredict.getType();
 		ArrayList<Double> lsCounts = spliceTypePredict.getJuncCounts(condition);

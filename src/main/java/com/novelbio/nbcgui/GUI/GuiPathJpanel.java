@@ -86,7 +86,7 @@ public class GuiPathJpanel extends JPanel{
 	static int QtaxID = 0;//查询物种ID
 	static int StaxID = 9606;//blast物种ID
 	
-	CtrlPath ctrlPath;
+	CtrlPath ctrlPath = new CtrlPath();
 	
 	public GuiPathJpanel() 
 	{
@@ -472,7 +472,9 @@ public class GuiPathJpanel extends JPanel{
 			lsAccID = ExcelTxtRead.readLsExcelTxt(geneFileXls, new int[]{colAccID}, 1, 0);
 		}
 		
-		ctrlPath = new CtrlPath(QtaxID);
+		ctrlPath.clearParam();
+		ctrlPath.setTaxID(QtaxID);
+		
 		if (blast) {
 			ctrlPath.setBlastInfo(evalue, StaxID);
 		}

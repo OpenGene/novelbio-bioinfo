@@ -161,8 +161,8 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 	
 	private GffDetailGene createGffDetailGene(ListGff lsParent, GffGeneIsoInfo gffGeneIsoInfo) {
 		String geneName = gffGeneIsoInfo.getName();//这里实际上是Iso Name
-		if (mapIsoName2GeneName.containsKey(gffGeneIsoInfo.getName())) {
-			geneName = mapIsoName2GeneName.get(geneName);
+		if (mapIsoName2GeneName.containsKey(geneName.toLowerCase())) {
+			geneName = mapIsoName2GeneName.get(geneName.toLowerCase());
 		}
 		GffDetailGene gffDetailGene = new GffDetailGene(lsParent, geneName, gffGeneIsoInfo.isCis5to3());
 		gffDetailGene.addIso(gffGeneIsoInfo);

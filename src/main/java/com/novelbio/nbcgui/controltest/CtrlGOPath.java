@@ -27,7 +27,7 @@ import com.novelbio.nbcgui.GUI.GuiGoJPanel;
  *
  */
 public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
-	private static final Logger logger = Logger.getLogger(CtrlGO.class);
+	private static final Logger logger = Logger.getLogger(CtrlGOPath.class);
 
 	FunctionTest functionTest = null;
 	
@@ -51,7 +51,11 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 	 * value：相应的结果
 	 */
 	LinkedHashMap<String, LinkedHashMap<String,ArrayList<String[]>>> hashResultGene = new LinkedHashMap<String, LinkedHashMap<String,ArrayList<String[]>>>();
-
+	
+	public void setTaxID(int taxID) {
+		functionTest.setTaxID(taxID);
+	}
+	
 	/** lsAccID2Value  arraylist-string[] 若为string[2],则第二个为上下调关系，判断上下调
 	 * 若为string[1] 则跑全部基因作分析
 	 */
@@ -266,7 +270,20 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 	 * 譬如elimGO需要移动GOMAP等
 	 */
 	protected abstract void copeFile(String prix, String excelPath);
-
+	
+	/**
+	 * 清空参数，每次调用之前先清空参数
+	 */
+	public void clearParam() {
+		up = -1;
+		down = -1;
+		isCluster = false;
+		lsAccID2Value = null;
+		hashResultGene = new LinkedHashMap<String, LinkedHashMap<String,ArrayList<String[]>>>();
+		clear();
+	}
+	
+	protected abstract void clear();
 }
 
 class GoPathInfo {

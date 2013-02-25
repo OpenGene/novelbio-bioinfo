@@ -85,8 +85,8 @@ public class GuiSamToBed extends JPanel {
 		JButton btnConvertSam = new JButton("ConvertSam");
 		btnConvertSam.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (chckbxRealign.isSelected() && cmbSpecies.getSelectedValue().getTaxID() == 0) {
-					JOptionPane.showConfirmDialog(null, "ReAlign Need the Species Info", "Warning", JOptionPane.WARNING_MESSAGE);
+				if ((chckbxRealign.isSelected() || chckbxGeneratepileupfile.isSelected()) && cmbSpecies.getSelectedValue().getTaxID() == 0) {
+					JOptionPane.showConfirmDialog(null, "ReAlign And PileUp Need the Species Info", "Warning", JOptionPane.CLOSED_OPTION);
 					return;
 				}
 				

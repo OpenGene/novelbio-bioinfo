@@ -31,6 +31,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -77,7 +78,14 @@ public class GuiSnpFilterSimple extends JPanel {
 	 */
 	public GuiSnpFilterSimple() {
 		setLayout(null);
-
+		
+//		cmbGroup.setEditable(true);
+		cmbGroup.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				changeSclCompareGroup();
+			}
+		});
+		
 		sclPileupFile = new JScrollPaneData();
 		sclPileupFile.setBounds(20, 231, 610, 155);
 		add(sclPileupFile);
@@ -187,10 +195,29 @@ public class GuiSnpFilterSimple extends JPanel {
 		add(lblAddSnpFile);
 		
 		JButton btnOpensnp = new JButton("OpenSnp");
+		btnOpensnp.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ArrayList<String> lsFile = guiFileOpen.openLsFileName("TxtFile", "");
+				ArrayList<String[]> lsInfo = new ArrayList<String[]>();
+				for (String string : lsFile) {
+					//0: fileName   1: sampleName 2:group
+					String[] tmResult = new String[3];
+					tmResult[0] = string; tmResult[1] = FileOperate.getFileNameSep(string)[0].split("_")[0];
+					tmResult[2] = tmResult[1];
+					lsInfo.add(tmResult);
+				}
+				sclSnpFile.addItemLs(lsInfo);
+			}
+		});
 		btnOpensnp.setBounds(20, 178, 118, 24);
 		add(btnOpensnp);
 		
 		JButton btnDelsnp = new JButton("DelSnp");
+		btnDelsnp.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				sclSnpFile.deleteSelRows();
+			}
+		});
 		btnDelsnp.setBounds(512, 178, 118, 24);
 		add(btnDelsnp);
 		
@@ -199,12 +226,7 @@ public class GuiSnpFilterSimple extends JPanel {
 	private void initial() {
 		sclSnpFile.setTitle(new String[]{"SnpFile", "Prefix"});
 		sclPileupFile.setTitle(new String[]{"PileUpFile", "Prefix"});
-		cmbGroup.setEditable(true);
-		cmbGroup.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
-				changeSclCompareGroup();
-			}
-		});
+
 		cmbSnpLevel.setMapItem(SnpLevel.getMapStr2SnpLevel());
 		scrlCompare.setTitle(new String[] {"Treat", "TreatSnp", "Control"});
 		scrlCompare.setItem(0, cmbGroup);
@@ -308,11 +330,9 @@ public class GuiSnpFilterSimple extends JPanel {
 	}
 	public void threadSuspended(RunProcess<GuiAnnoInfo> runProcess) {
 		// TODO Auto-generated method stub
-		
 	}
 	public void threadResumed(RunProcess<GuiAnnoInfo> runProcess) {
 		// TODO Auto-generated method stub
-		
 	}
 	public void threadStop(RunProcess<GuiAnnoInfo> runProcess) {
 		btnRun.setEnabled(true);
@@ -322,11 +342,12 @@ public class GuiSnpFilterSimple extends JPanel {
 	}
 	
 	private void changeSclCompareGroup() {
-		ArrayList<String[]> lsSnp2Prefix = sclSnpFile.getLsDataInfo();
+		ArrayList<String[]> lsSnp2Prefix = new ArrayList<String[]>();
+		lsSnp2Prefix.addAll(sclSnpFile.getLsDataInfo());
 		lsSnp2Prefix.addAll(sclPileupFile.getLsDataInfo());
-		Map<String, String> mapString2Value = new HashMap<String, String>();
+		Map<String, String> mapString2Value = new LinkedHashMap<String, String>();
 		for (String[] snp2prefix : lsSnp2Prefix) {
-			if (snp2prefix[0] == null || snp2prefix[0].equals("")) {
+			if (snp2prefix[0] == null || snp2prefix[0].equals("") || snp2prefix[1] == null || snp2prefix[1].equals("")) {
 				continue;
 			}
 			mapString2Value.put(snp2prefix[1], snp2prefix[1]);

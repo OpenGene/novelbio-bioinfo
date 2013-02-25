@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.genome.gffOperate.exoncluster;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
@@ -26,17 +27,15 @@ public class PredictCassette extends SpliceTypePredict {
 	private ArrayList<Double> getJuncCountsLoose(String condition) {
 		ArrayList<Double> lsCounts = new ArrayList<Double>();
 		lsCounts.add((double) getJunReadsNum(condition));
-		HashSet<Align> setAlignExist = new HashSet<Align>();
-		
+		Set<Integer> setAlignExist = new HashSet<Integer>();
 		for (GffGeneIsoInfo gffGeneIsoInfo : setExistExonIso) {
 			ArrayList<ExonInfo> lsExon = exonCluster.getIsoExon(gffGeneIsoInfo);
-			Align align = new Align(exonCluster.getChrID(), lsExon.get(0).getStartCis(), lsExon.get(lsExon.size() - 1).getEndCis());
-			setAlignExist.add(align);
+			setAlignExist.add(lsExon.get(0).getStartCis());
+			setAlignExist.add(lsExon.get(lsExon.size() - 1).getEndCis());
 		}
 		int exist = 0;
-		for (Align align : setAlignExist) {
-			exist += tophatJunction.getJunctionSite(condition, exonCluster.getChrID(), align.getStartAbs())
-					+  tophatJunction.getJunctionSite(condition, exonCluster.getChrID(), align.getEndAbs());
+		for (Integer align : setAlignExist) {
+			exist = exist + tophatJunction.getJunctionSite(condition, exonCluster.getChrID(), align);
 		}
 		lsCounts.add((double) exist);
 		return lsCounts;

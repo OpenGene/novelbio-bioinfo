@@ -392,7 +392,6 @@ public class GffDetailGene extends ListDetailAbs {
 		return anno;
 	}
 
-	
 	/**
 	 * 去除重复Isoform
 	 */
@@ -434,12 +433,12 @@ public class GffDetailGene extends ListDetailAbs {
 	 * @param gffDetailGeneParent
 	 */
 	public void addIso(GffGeneIsoInfo gffGeneIsoInfo) {
-		if (gffGeneIsoInfo == null || gffGeneIsoInfo.size() == 0)
+		if (gffGeneIsoInfo == null || gffGeneIsoInfo.size() == 0) {
 			return;
-	
+		}
+		
 		gffGeneIsoInfo.setGffDetailGeneParent(this);
 		removeDuplicateIso = false;
-
 		if (cis5to3 != null && gffGeneIsoInfo.isCis5to3() != cis5to3) {
 			cis5to3 = null;
 		}
