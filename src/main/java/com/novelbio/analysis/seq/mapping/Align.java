@@ -95,4 +95,11 @@ public class Align implements Alignment{
 		}
 		return false;
 	}
+	
+	/**
+	 * 不带方向的返回结果string
+	 */
+	public String toStringNoCis() {
+		return chrID + ":" + getStartAbs() + "-" + getEndAbs();
+	}
 }

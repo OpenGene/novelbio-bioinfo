@@ -259,6 +259,7 @@ public class GuiRNAautoSplice extends JPanel {
 	/**
 	 * 设定本次步骤里面将绘制progressBar的第几部分
 	 * 并且本部分的最短点和最长点分别是什么
+	 * @param information gui上显示的文本信息
 	 * @param level 本次步骤里面将绘制progressBar的第几部分，也就是跑到第几步了。总共3步
 	 * @param startBarNum 本步骤起点，一般为0
 	 * @param endBarNum 本步骤终点

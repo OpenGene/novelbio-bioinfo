@@ -46,7 +46,10 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	static int junctionReadsMinNum = 10;
 	
 	ExonCluster exonCluster;
-	/** 每个exonCluster组中condition以及其对应的信息 */
+	/** 每个exonCluster组中condition以及其对应的信息<br>
+	 * key condition<br>
+	 * value SpliceType2Value<br>
+	 *  */
 	HashMap<String, SpliceType2Value> mapCondition2SpliceInfo = new LinkedHashMap<String, SpliceType2Value>();
 	
 	/** 差异最大的那个exonSplicingType */
@@ -56,6 +59,8 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	/** 设置一个负数的初始值 */
 	Double pvalue= -1.0;
 	double fdr = 1.0;
+	
+	/** readsLength越长，juncReadsPvalue所占的比例就越大 */
 	int readsLength = 100;
 	
 	SeqHash seqHash;
@@ -67,7 +72,6 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	public void setGetSeq(SeqHash seqHash) {
 		this.seqHash = seqHash;
 	}
-
 	
 	/** <b>在此之前必须设定{@link #setMapCond2Samfile(ArrayListMultimap)}</b><br> */
 	public void setJunctionInfo(ArrayListMultimap<String, SamFile> mapCond2Samfile, TophatJunction tophatJunction) {
@@ -322,7 +326,6 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		}
 		return prop;
 	}
-
 	
 	/** 
 	 * 当可变剪接的形式为cassette时，修正输入的值
@@ -405,7 +408,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		
 		GffDetailGene gffDetailGene = exonCluster.getParentGene();
 		lsResult.add(gffDetailGene.getName().get(0));
-		lsResult.add(exonCluster.getLocInfo());
+		lsResult.add(mapCondition2SpliceInfo.get(condition1).getSpliceTypePredict(splicingType).getDifSite().toStringNoCis());
 		lsResult.add(getConditionInt(lsJunc1));
 		lsResult.add(getConditionInt(lsJunc2));
 		
@@ -517,9 +520,9 @@ class SpliceType2Value {
 	private static final Logger logger = Logger.getLogger(SpliceType2Value.class);
 	
 	Set<SplicingAlternativeType> setExonSplicingTypes = new HashSet<SplicingAlternativeType>();
-	HashMap<SplicingAlternativeType, List<Double>> mapSplicingType2LsExpValue = new HashMap<SplicingAlternativeType, List<Double>>();
-	HashMap<SplicingAlternativeType, List<Double>> mapSplicingType2LsJunctionReads = new HashMap<SplicingAlternativeType, List<Double>>();
-	HashMap<SplicingAlternativeType, Boolean> mapSplicingType2IsFiltered = new HashMap<SplicingAlternativeType, Boolean>();
+	ArrayListMultimap<SplicingAlternativeType, Double> mapSplicingType2LsExpValue = ArrayListMultimap.create();
+	ArrayListMultimap<SplicingAlternativeType, Double> mapSplicingType2LsJunctionReads = ArrayListMultimap.create();
+	Map<SplicingAlternativeType, SpliceTypePredict> mapSplicingType2Detail = new HashMap<SplicingAlternativeType, SpliceTypePredict>();
 	
 	/**
 	 * 是否通过过滤
@@ -545,55 +548,62 @@ class SpliceType2Value {
 		}
 		return (int)new Mean().evaluate(info);
 	}
-	/** 添加指定时期的JunctionReads */
+	/** 添加指定时期的JunctionReads
+	 * condition是用来设定spliceTypePredict的时期的
+	 */
 	public void addJunction(String condition, SpliceTypePredict spliceTypePredict) {
 		SplicingAlternativeType splicingAlternativeType = spliceTypePredict.getType();
 		ArrayList<Double> lsCounts = spliceTypePredict.getJuncCounts(condition);
 		
 		addLsDouble(mapSplicingType2LsJunctionReads, splicingAlternativeType, lsCounts);
 		setExonSplicingTypes.add(spliceTypePredict.getType());
-		mapSplicingType2IsFiltered.put(splicingAlternativeType, spliceTypePredict.isFiltered());
+		mapSplicingType2Detail.put(splicingAlternativeType, spliceTypePredict);
 	}
 	
 	/** 把一个lsDouble和map里面已有的LsDouble加起来 */
-	private static void addLsDouble(Map<SplicingAlternativeType, List<Double>> mapSplicingType2LsInfo, SplicingAlternativeType splicingType, List<Double> lsJun) {
-		List<Double> lsNew = lsJun;
+	private static void addLsDouble(ArrayListMultimap<SplicingAlternativeType, Double> mapSplicingType2LsInfo, 
+			SplicingAlternativeType splicingType, List<Double> lsJunNew) {
 		if (mapSplicingType2LsInfo.containsKey(splicingType)) {
-			lsNew = new ArrayList<Double>();
-			List<Double> lsJunOld = mapSplicingType2LsInfo.get(splicingType);
-			if (lsJunOld.size() != lsJun.size()) {
+			List<Double> lsJun = mapSplicingType2LsInfo.get(splicingType);
+			if (lsJunNew.size() != lsJun.size()) {
 				logger.error("出错");
 				return;
 			}
 			//新老加起来放入map
-			for (int i = 0; i < lsJunOld.size(); i++) {
-				lsNew.add(lsJunOld.get(i) + lsJun.get(i));
+			for (int i = 0; i < lsJun.size(); i++) {
+				lsJun.set(i, lsJun.get(i) + lsJunNew.get(i));
 			}
 		}
-		
-		mapSplicingType2LsInfo.put(splicingType, lsJun);
 	}
 	
 	/** 获得reads，如果不存在这种类型的可变剪接，就返回null */
 	public List<Double> getLsJun(SplicingAlternativeType splicingAlternativeType) {
-		if (!setExonSplicingTypes.contains(splicingAlternativeType)) {
-			return null;
-		}
 		return mapSplicingType2LsJunctionReads.get(splicingAlternativeType);
 	}
 		
 	/** 获得表达，如果不存在这种类型的可变剪接，就返回null */
 	public List<Double> getLsExp(SplicingAlternativeType splicingAlternativeType) {
-		if (!setExonSplicingTypes.contains(splicingAlternativeType)) {
-			return null;
-		}
 		return mapSplicingType2LsExpValue.get(splicingAlternativeType);
 	}
 	
+	/**
+	 * 给定指定的剪接类型，返回该剪接类型的各种指标
+	 * @param splicingAlternativeType
+	 * @return
+	 */
+	public SpliceTypePredict getSpliceTypePredict(SplicingAlternativeType splicingAlternativeType) {
+		return mapSplicingType2Detail.get(splicingAlternativeType);
+	}
+	
+	/**
+	 * 输入的可变剪接类型是否通过过滤
+	 * 例外：alt5和alt3，如果差异的那一小段的太短，譬如长度小于10bp，就会返回false
+	 * @return
+	 */
 	public boolean isFiltered(SplicingAlternativeType splicingAlternativeType) {
 		if (!setExonSplicingTypes.contains(splicingAlternativeType)) {
 			return false;
 		}
-		return mapSplicingType2IsFiltered.get(splicingAlternativeType);
+		return mapSplicingType2Detail.get(splicingAlternativeType).isFiltered();
 	}
 }

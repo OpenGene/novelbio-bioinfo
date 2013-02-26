@@ -1,6 +1,7 @@
 package com.novelbio.analysis.seq.rnaseq;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -328,10 +329,10 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 //		}
 		
 		ArrayList<ExonSplicingTest> lsExonSplicingTestResult = new ArrayList<ExonSplicingTest>();
-		HashMap<String, ExonCluster> mapLoc2ExonCluster = gffDetailGene.getDifExonMapLoc2Cluster();
+		Collection<ExonCluster> mapLoc2ExonCluster = gffDetailGene.getDifExonMapLoc2Cluster();
 
-		if (mapLoc2ExonCluster.size() > 0) {
-			for (ExonCluster exonCluster : mapLoc2ExonCluster.values()) {
+		if (!mapLoc2ExonCluster.isEmpty()) {
+			for (ExonCluster exonCluster : mapLoc2ExonCluster) {
 				if (exonCluster.getLsIsoExon().size() == 1 || exonCluster.isAtEdge() || exonCluster.isNotSameTss_But_SameEnd()) {
 					continue;
 				}

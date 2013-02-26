@@ -171,7 +171,12 @@ public abstract class SpliceTypePredict {
 			return mapName2Events;
 		}
 	}
-
+	
+	/**
+	 * 是否为所识别的位点，一般情况下都为true。
+	 * 例外：alt5和alt3，如果差异的那一小段的太短，譬如长度小于10bp，就会返回false
+	 * @return
+	 */
 	public  boolean isFiltered() {
 		return true;
 	}
