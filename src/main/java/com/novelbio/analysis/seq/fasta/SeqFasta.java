@@ -148,7 +148,7 @@ public class SeqFasta implements Cloneable {
 			return "序列坐标错误 "+SeqName+" "+startlocation+" "+endlocation;
 		}
 		
-		if (endlocation - startlocation > 20000) {
+		if (endlocation - startlocation > 1000000) {
 			logger.error("最多提取20000bp "+SeqName+" "+startlocation+" "+endlocation);
 			return "最多提取20000bp"+SeqName+" "+startlocation+" "+endlocation;
 		}

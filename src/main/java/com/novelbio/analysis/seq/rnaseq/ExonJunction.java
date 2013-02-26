@@ -80,6 +80,9 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	SeqHash seqHash;
 	
 	boolean isLessMemory = false;
+	/** 是否读取表达
+	 * 默认true
+	*/
 	boolean readExp = true;
 	CtrlSplicing ctrlSplicing;
 	/**
@@ -99,7 +102,9 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	public void setIsLessMemory(boolean isLessMemory) {
 		this.isLessMemory = isLessMemory;
 	}
-	/** 是否读取表达 */
+	/** 是否读取表达
+	 * 默认true
+	*/
 	public void setReadExp(boolean readExp) {
 		this.readExp = readExp;
 	}

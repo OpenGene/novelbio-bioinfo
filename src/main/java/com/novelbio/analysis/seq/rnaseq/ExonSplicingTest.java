@@ -573,6 +573,8 @@ class SpliceType2Value {
 			for (int i = 0; i < lsJun.size(); i++) {
 				lsJun.set(i, lsJun.get(i) + lsJunNew.get(i));
 			}
+		} else {
+			mapSplicingType2LsInfo.putAll(splicingType, lsJunNew);
 		}
 	}
 	
