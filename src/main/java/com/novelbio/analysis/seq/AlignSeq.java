@@ -31,4 +31,6 @@ public interface AlignSeq {
 	public AlignSeq sort();
 	
 	public String getFileName();
+	
+	public void close();
 }

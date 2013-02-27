@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.apache.commons.math.linear.Array2DRowFieldMatrix;
 
+import com.novelbio.analysis.seq.fasta.SeqFasta;
+import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunGetInfo;
@@ -15,6 +17,8 @@ import com.novelbio.nbcgui.GUI.GuiRNAautoSplice;
 public class CtrlSplicing implements RunGetInfo<GuiAnnoInfo> , Runnable{
 	GuiRNAautoSplice guiRNAautoSplice;
 	GffHashGene gffHashGene;
+	SeqHash seqHash;
+	
 	boolean isDisplayAllEvent = true; 
 	String outFile;
 	List<String[]> lsBam2Prefix;
@@ -57,15 +61,27 @@ public class CtrlSplicing implements RunGetInfo<GuiAnnoInfo> , Runnable{
 	@Override
 	public void threadStop(RunProcess<GuiAnnoInfo> runProcess) {
 		// TODO Auto-generated method stub
-		
 	}
 	
 	public void setGffHashGene(GffHashGene gffHashGene) {
 		this.gffHashGene = gffHashGene;
 	}
+	/**
+	 * 如果seqhash
+	 * @param seqPath
+	 */
+	public void setSeqPath(String seqPath) {
+		try {
+			this.seqHash = new SeqHash(seqPath);
+		} catch (Exception e) {
+			this.seqHash = null;
+		}
+	}
+	
 	public void setDisplayAllEvent(boolean isDisplayAllEvent) {
 		this.isDisplayAllEvent = isDisplayAllEvent;
 	}
+	
 	public void setOutFile(String outFile) {
 		this.outFile = outFile;
 	}
@@ -88,7 +104,7 @@ public class CtrlSplicing implements RunGetInfo<GuiAnnoInfo> , Runnable{
 		exonJunction.setCompareGroupsLs(lsCompareGroup);
 		exonJunction.setResultFile(outFile);
 		exonJunction.setRunGetInfo(this);
-		
+		exonJunction.setSeqHash(seqHash);
 		Thread thread = new Thread(exonJunction);
 		thread.start();
 		

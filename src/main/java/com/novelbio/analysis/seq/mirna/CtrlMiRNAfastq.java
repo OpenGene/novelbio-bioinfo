@@ -18,20 +18,7 @@ import com.novelbio.database.model.species.Species;
  * @author zong0jie
  */
 public class CtrlMiRNAfastq {
-	public static void main(String[] args) {
-		Species species = new Species(10090);
-		MiRNACount miRNACount = new MiRNACount();
-		
-		miRNACount.setMiRNAinfo(ListMiRNALocation.TYPE_RNA_DATA, species, PathDetail.getMiRNADat());
-		
-		miRNACount.setMiRNAfile(species.getMiRNAhairpinFile(), species.getMiRNAmatureFile());
-		miRNACount.setBedSeqMiRNA("/media/winF/NBC/Project/MiRNA_Test_20121112/test/tmpBed/CSC24hA_filtered_miRNA.bed");
-		miRNACount.run();
-		miRNACount.writeResultToOut("/media/winF/NBC/Project/MiRNA_Test_20121112/test");
-		miRNACount.getMapMirMature2Value();
-		miRNACount.getMapMiRNApre2Value();
-	}
-	private static Logger logger = Logger.getLogger(CtrlMiRNAfastq.class);
+	private static final Logger logger = Logger.getLogger(CtrlMiRNAfastq.class);
 	
 	Species species;
 	/** 设定gff和chrome */
@@ -51,7 +38,6 @@ public class CtrlMiRNAfastq {
 	///////输出文件夹 //////////
 	String outPath;
 	String outPathTmpMapping;
-	String outPathTmpBed;
 	///////输出数量 ///////////
 	HashMap<String, HashMap<String, Double>> mapPrefix2MiRNAPre = new HashMap<String, HashMap<String,Double>>();
 	HashMap<String, HashMap<String, Double>> mapPrefix2MiRNAmature = new HashMap<String, HashMap<String,Double>>();
@@ -64,7 +50,7 @@ public class CtrlMiRNAfastq {
 	HashMap<String, HashMap<String, Double>> mapPrefix2GeneInfo = new HashMap<String, HashMap<String,Double>>();
 	
 	////// 没有mapping到的bed文件，用于预测新miRNA的 */
-	ArrayList<String[]> lsNovelMiRNAbedfile2Prefix = new ArrayList<String[]>();
+	ArrayList<String[]> lsNovelMiRNASamFile2Prefix = new ArrayList<String[]>();
 	
 	/** 务必首先设定 */
 	public void setSpecies(Species species) {
@@ -87,7 +73,6 @@ public class CtrlMiRNAfastq {
 		this.outPath = FileOperate.addSep(outPath);
 		FileOperate.createFolders(this.outPath);
 		this.outPathTmpMapping = this.outPath + "tmpMapping";
-		this.outPathTmpBed = this.outPath + "tmpBed";
 	}
 	
 	/** rfam的信息比较文件，类似一个键值表 */
@@ -115,14 +100,13 @@ public class CtrlMiRNAfastq {
 		mapPrefix2MiRNAncrna.clear();
 		
 		FileOperate.createFolders(outPathTmpMapping);
-		FileOperate.createFolders(outPathTmpBed);
 		setConfigFile();
 		for (String[] fastq2Prefix : lsFastqFile2Prefix) {
 			//文件名为输出文件夹+文件前缀
 			miRNAmappingPipline.setSample(fastq2Prefix[1], fastq2Prefix[0]);
-			miRNAmappingPipline.setOutPathTmp(outPathTmpMapping, outPathTmpBed);
+			miRNAmappingPipline.setOutPathTmp(outPathTmpMapping);
 			miRNAmappingPipline.mappingPipeline();
-			lsNovelMiRNAbedfile2Prefix.add(new String[]{miRNAmappingPipline.getOutGenomebed(), fastq2Prefix[1]});
+			lsNovelMiRNASamFile2Prefix.add(new String[]{miRNAmappingPipline.getOutGenomeAlignSeq().getFileName(), fastq2Prefix[1]});
 			countSmallRNA(outPath, fastq2Prefix[1], miRNAmappingPipline);
 		}
 	}
@@ -160,8 +144,8 @@ public class CtrlMiRNAfastq {
 	*/
 	private void countMiRNA(String outPath, String prefix, MiRNAmapPipline miRNAmappingPipline) {
 		miRNACount.setMiRNAfile(species.getMiRNAhairpinFile(), species.getMiRNAmatureFile());
-		if (FileOperate.isFileExistAndBigThanSize(miRNAmappingPipline.getOutMiRNAbed(),1)) {
-			miRNACount.setBedSeqMiRNA(miRNAmappingPipline.getOutMiRNAbed());
+		if (FileOperate.isFileExistAndBigThanSize(miRNAmappingPipline.getOutMiRNAAlignSeq().getFileName(), 1)) {
+			miRNACount.setAlignFile(miRNAmappingPipline.getOutMiRNAAlignSeq());
 			miRNACount.run();
 			miRNACount.writeResultToOut(outPath);
 			mapPrefix2MiRNAmature.put(prefix, miRNACount.getMapMirMature2Value());
@@ -182,8 +166,8 @@ public class CtrlMiRNAfastq {
 	 *  */
 	private void countRfam(String outPath, String prefix, MiRNAmapPipline miRNAmappingPipline) {
 		rfamStatistic.setOutputFile(outPath + "RfamStatistics.txt");
-		if (FileOperate.isFileExistAndBigThanSize(miRNAmappingPipline.getOutRfambed(), 10)) {
-			rfamStatistic.countRfamInfo(miRNAmappingPipline.getOutRfambed());
+		if (FileOperate.isFileExistAndBigThanSize(miRNAmappingPipline.getOutRfamAlignSeq().getFileName(), 10)) {
+			rfamStatistic.countRfamInfo(miRNAmappingPipline.getOutRfamAlignSeq());
 			mapPrefix2MiRNArfam.put(prefix, rfamStatistic.getMapRfam2Counts());
 		}
 	}
@@ -191,8 +175,8 @@ public class CtrlMiRNAfastq {
 	 * @param solo 单独计数
 	 *  */
 	private void countNCrna(String outPath, String prefix, MiRNAmapPipline miRNAmappingPipline) {
-		if (FileOperate.isFileExistAndBigThanSize(miRNAmappingPipline.getOutNCRNAbed(), 10)) {
-			readsOnNCrna.setBedSed(miRNAmappingPipline.getOutNCRNAbed());
+		if (FileOperate.isFileExistAndBigThanSize(miRNAmappingPipline.getOutNCRNAAlignSeq().getFileName(), 10)) {
+			readsOnNCrna.setAlignSeq(miRNAmappingPipline.getOutNCRNAAlignSeq());
 			readsOnNCrna.searchNCrna();
 			readsOnNCrna.writeToFile(outPath + "NCrnaStatistics.txt");
 			mapPrefix2MiRNAncrna.put(prefix, readsOnNCrna.getMapNCrnaID_2_nameDescripValue());
@@ -203,9 +187,9 @@ public class CtrlMiRNAfastq {
 	 * @param solo 单独计数
 	 *  */
 	private void countRepeatGene(String outPath, String prefix, MiRNAmapPipline miRNAmappingPipline) {
-		if (FileOperate.isFileExistAndBigThanSize(miRNAmappingPipline.getOutGenomebed(), 10) ) {
+		if (FileOperate.isFileExistAndBigThanSize(miRNAmappingPipline.getOutGenomeAlignSeq().getFileName(), 10) ) {
 			readRepeatGff();
-			readsOnRepeatGene.countReadsInfo(miRNAmappingPipline.getOutGenomebed());
+			readsOnRepeatGene.countReadsInfo(miRNAmappingPipline.getOutGenomeAlignSeq());
 			readsOnRepeatGene.writeToFileGeneProp(outPath + "geneProp.txt");
 			readsOnRepeatGene.writeToFileRepeatFamily(outPath + "RepeatFamily.txt");
 			readsOnRepeatGene.writeToFileRepeatName(outPath + "RepeatName.txt");
@@ -252,7 +236,7 @@ public class CtrlMiRNAfastq {
 	 * 必须要等mapping完后才能获取
 	 */
 	public ArrayList<String[]> getLsGenomeBed2Prefix() {
-		return lsNovelMiRNAbedfile2Prefix;
+		return lsNovelMiRNASamFile2Prefix;
 	}
 	
 	/** 清空存储的信息 */

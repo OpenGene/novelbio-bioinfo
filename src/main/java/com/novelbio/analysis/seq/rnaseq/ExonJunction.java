@@ -128,6 +128,10 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		this.gffHashGene = gffHashGene;
 		lsSplicingTests = new ArrayList<ArrayList<ExonSplicingTest>>();
 	}
+	/**
+	 * 如果seqhash为true，则提取序列
+	 * @param seqHash
+	 */
 	public void setSeqHash(SeqHash seqHash) {
 		this.seqHash = seqHash;
 	}

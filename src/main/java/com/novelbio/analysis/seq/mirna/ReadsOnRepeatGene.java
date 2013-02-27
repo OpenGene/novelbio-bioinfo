@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 
+import com.novelbio.analysis.seq.AlignRecord;
+import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
@@ -52,25 +54,23 @@ public class ReadsOnRepeatGene {
 			gffHashRepeat.ReadGffarray(repeatGffFile);
 		}
 	}
-	public void countReadsInfo(String bedFile) {
+	public void countReadsInfo(AlignSeq alignSeq) {
 		mapRepeatName2Value = new HashMap<String, Double>();
 		mapRepeatFamily2Value = new HashMap<String, Double>();
 		mapGeneStructure2Value = new HashMap<String, Double>();
 		
-		
-		BedSeq bedSeq = new BedSeq(bedFile);
-		for (BedRecord bedRecord : bedSeq.readLines()) {
+		for (AlignRecord alignRecord : alignSeq.readLines()) {
 			String repeatInfo = null;
 			if (gffHashRepeat != null) {//如果没有读取repeat文件，则返回
-				repeatInfo = searchReadsRepeat(bedRecord.getRefID(), bedRecord.getStartAbs(), bedRecord.getEndAbs());
+				repeatInfo = searchReadsRepeat(alignRecord.getRefID(), alignRecord.getStartAbs(), alignRecord.getEndAbs());
 				if (repeatInfo != null) {
-					addHashRepeat(repeatInfo, bedRecord.getMappingNum());
+					addHashRepeat(repeatInfo, alignRecord.getMappingNum());
 				}
 			}
 			if (gffChrAbs != null && gffChrAbs.getGffHashGene() != null) {
-				int[] geneLocInfo = searchGene(bedRecord.isCis5to3(), bedRecord.getRefID(), bedRecord.getStartAbs(), bedRecord.getEndAbs());
+				int[] geneLocInfo = searchGene(alignRecord.isCis5to3(), alignRecord.getRefID(), alignRecord.getStartAbs(), alignRecord.getEndAbs());
 				if (geneLocInfo != null) {
-					addHashGene(geneLocInfo[0], geneLocInfo[1]==1 ,bedRecord.getMappingNum());
+					addHashGene(geneLocInfo[0], geneLocInfo[1]==1 ,alignRecord.getMappingNum());
 				}
 				
 			}

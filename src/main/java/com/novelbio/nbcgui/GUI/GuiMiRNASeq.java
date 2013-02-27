@@ -306,7 +306,7 @@ public class GuiMiRNASeq extends JPanel{
 	private void runPredict(ArrayList<String[]> lsBedFile2Prefix, GffChrAbs gffChrAbs, Species species) {
 		ctrlMiRNApredict.setGffChrAbs(gffChrAbs);
 		ctrlMiRNApredict.setSpecies(species);
-		ctrlMiRNApredict.setLsBedFile2Prefix(lsBedFile2Prefix);
+		ctrlMiRNApredict.setLsSamFile2Prefix(lsBedFile2Prefix);
 		ctrlMiRNApredict.setOutPath(txtOutPathPrefix.getText());
 		
 		ctrlMiRNApredict.runMiRNApredict();

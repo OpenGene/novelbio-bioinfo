@@ -2,7 +2,10 @@ package com.novelbio.analysis.seq.mirna;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
+import com.novelbio.analysis.seq.AlignRecord;
+import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
@@ -10,14 +13,16 @@ import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public abstract class NovelMiRNApredict {
 	/** 查找定位在反向exon和intron上的序列 */
 	GffChrAbs gffChrAbs = null;
-	/** 输入的一个bedseq文件 */
-	BedSeq bedSeqInput = null;
+	/** 输入的bedseq文件 */
+	List<SamFile> lsAlignSeqFile = new ArrayList<SamFile>();
 	
 	public abstract void setOutPath(String outPath);
 	
@@ -30,57 +35,45 @@ public abstract class NovelMiRNApredict {
 	/**
 	 * 与setBedSeq(String bedFile) 二选一
 	 * 将多个样本得到的mapping 至 genome上的bed文件合并，并作为输入mireap的文件
-	 * @param outFile 合并的bed文件名
-	 * @param bedSeqFile
-	 */
-	public void setBedSeq(String outFile, String... bedSeqFile) {
-		if (bedSeqFile.length == 1) {
-			FileOperate.linkFile(bedSeqFile[0], outFile, true);
-		} else {
-			BedSeq bedSeq = BedSeq.combBedFile(outFile, bedSeqFile);
-		}
-		
-		setBedSeqInput(outFile);
-	}
-	/**
-	 * 与setBedSeq(String bedFile) 二选一
-	 * 将多个样本得到的mapping 至 genome上的bed文件合并，并作为输入mireap的文件
 	 * @param outFile 获得合并的bed文件名
 	 * @param lsBedSeqFile 一系列的bed文件
 	 */
-	public void setBedSeqInput(String outFile, ArrayList<String> lsBedSeqFile) {
-		if (lsBedSeqFile.size() == 1) {
-			FileOperate.linkFile(lsBedSeqFile.get(0), outFile, true);
-		} else {
-			BedSeq bedSeq = BedSeq.combBedFile(outFile, lsBedSeqFile);
-		}
-
-		setBedSeqInput(outFile);
+	public void setSeqInput(List<SamFile> lsAlignSeqFile) {
+		this.lsAlignSeqFile = lsAlignSeqFile; 
 	}
 	/**
 	 * 与setBedSeq(String outFile, String... bedSeqFile) 二选一
 	 * 样本得到的bed文件
 	 * @param bedFile
 	 */
-	public void setBedSeqInput(String bedFile) {
-		bedSeqInput = new BedSeq(bedFile);
+	public void setSeqInput(SamFile alignSeq) {
+		lsAlignSeqFile.clear();
+		lsAlignSeqFile.add(alignSeq);
 	}
 	/**
 	 * 遍历bed文件，获得reads不在基因上的序列
-	 * @param outBed reads不在基因组上的序列
+	 * @param outFileName reads不在基因组上的序列的文件名
 	 */
-	protected BedSeq getBedReadsNotOnCDS(String outBed) {
-		BedSeq bedResult = new BedSeq(outBed, true);
+	protected BedSeq getReadsNotOnCDS(String outFileName) {
+		boolean search = true;
 		if (gffChrAbs == null || gffChrAbs.getGffHashGene() == null) {
-			return new BedSeq(bedSeqInput.getFileName());
+			search = false;
 		}
-		for (BedRecord bedRecord : bedSeqInput.readLines()) {
-			GffCodGene gffCod = gffChrAbs.getGffHashGene().searchLocation(bedRecord.getRefID(), bedRecord.getMidLoc());
-			if (readsNotOnCDS(gffCod, bedRecord.isCis5to3()))
-				bedResult.writeBedRecord(bedRecord);
+		
+		BedSeq alignSeqResult = new BedSeq(outFileName);
+		for (SamFile alignSeq : lsAlignSeqFile) {
+			for (SamRecord alignRecord : alignSeq.readLines()) {
+				if (search) {
+					GffCodGene gffCod = gffChrAbs.getGffHashGene().searchLocation(alignRecord.getRefID(), (alignRecord.getStartAbs() + alignRecord.getEndAbs())/2);
+					if (!readsNotOnCDS(gffCod, alignRecord.isCis5to3())) {
+						continue;
+					}
+				}
+				alignSeqResult.writeBedRecord(alignRecord.toBedRecordSE());
+			}
 		}
-		bedResult.closeWrite();
-		return bedResult;
+		alignSeqResult.closeWrite();
+		return alignSeqResult;
 	}
 	/**
 	 * 判定输入的reads是否位于intron或gene外或反向exon上

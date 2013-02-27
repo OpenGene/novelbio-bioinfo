@@ -9,11 +9,14 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 import org.omg.CosNaming._BindingIteratorImplBase;
 
+import com.novelbio.analysis.seq.AlignRecord;
+import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
+import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.listOperate.ListBin;
 import com.novelbio.base.multithread.RunProcess;
@@ -46,7 +49,7 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 	/** miRNA成熟体 */
 	SeqFastaHash seqFastaHashMatureMiRNA = null;
 	/** 比对的bed文件 */
-	BedSeq bedSeqMiRNA = null;
+	AlignSeq alignSeqMiRNA = null;
 	/** Mapping至前体但是没到成熟体的序列的后缀 */
 	String flag_MapTo_PreMirna_NotTo_MatureMirna_Suffix = "_pre";
 	/**
@@ -86,8 +89,8 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 		countMiRNA = false;
 	}
 	/** 设定需要计算表达值的bed文件 */
-	public void setBedSeqMiRNA(String bedFile) {
-		bedSeqMiRNA = new BedSeq(bedFile);
+	public void setAlignFile(AlignSeq alignSeq) {
+		alignSeqMiRNA =alignSeq;
 		countMiRNA = false;
 	}
 
@@ -172,8 +175,8 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 		countMiRNA = true;
 		
 		int countLoop = 0;
-		for (BedRecord bedRecord : bedSeqMiRNA.readLines()) {
-			copeBedRecordAndFillMap(bedRecord);
+		for (AlignRecord alignRecord : alignSeqMiRNA.readLines()) {
+			copeRecordAndFillMap(alignRecord);
 			
 			suspendCheck();
 			if (flagStop) break;
@@ -200,15 +203,15 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 	/** 一行一行处理
 	 * 并填充hashmap
 	 *  */
-	private void copeBedRecordAndFillMap(BedRecord bedRecord) {
-		String subName = listMiRNALocation.searchMirName(bedRecord.getRefID(), bedRecord.getStartAbs(), bedRecord.getEndAbs());
+	private void copeRecordAndFillMap(AlignRecord alignRecord) {
+		String subName = listMiRNALocation.searchMirName(alignRecord.getRefID(), alignRecord.getStartAbs(), alignRecord.getEndAbs());
 		//找不到名字的在后面添加
 		if (subName == null) {
-			subName = bedRecord.getRefID() + flag_MapTo_PreMirna_NotTo_MatureMirna_Suffix;
+			subName = alignRecord.getRefID() + flag_MapTo_PreMirna_NotTo_MatureMirna_Suffix;
 		}
-		double value = (double)1/bedRecord.getMappingNum();
-		addMiRNACount(bedRecord.getRefID(), value);
-		addMiRNAMatureCount(bedRecord.getRefID(), subName, value);
+		double value = (double)1/alignRecord.getMappingNum();
+		addMiRNACount(alignRecord.getRefID(), value);
+		addMiRNAMatureCount(alignRecord.getRefID(), subName, value);
 	}
 	/**
 	 * 给定miRNA的名字，和值，累加起来

@@ -21,7 +21,7 @@ public class FastQRecord implements Cloneable {
 
 	SeqFasta seqFasta = new SeqFasta();
 	protected int fastqOffset = FastQ.FASTQ_SANGER_OFFSET;
-	protected String seqQuality = "";	
+	protected String seqQuality = "";
 	
 	/** 如果过滤出错，就要用这个重新设定quality，全部设置为f */
 	boolean modifyQuality = false;

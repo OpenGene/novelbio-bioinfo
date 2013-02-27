@@ -29,22 +29,6 @@ import com.novelbio.database.model.species.Species;
  * @author zong0jie
  */
 public class NovelMiRNADeep extends NovelMiRNApredict {
-	public static void main(String[] args) {
-		NovelMiRNADeep novelMiRNADeep = new NovelMiRNADeep();
-		String outPath = "/media/winF/NBC/Project/MethyArray_QZL110907/QZL_Fifth/Filted/result/";
-		novelMiRNADeep.setBedSeqInput(outPath + "SampleAll_To_Predict.bed");
-		Species species = new Species(10090);
-		SoftWareInfo softWareInfo = new SoftWareInfo();
-		softWareInfo.setName(SoftWare.mirDeep);
-		novelMiRNADeep.setExePath(softWareInfo.getExePath(), species.getIndexChr(SoftWare.bowtie));
-		
-		novelMiRNADeep.setGffChrAbs(new GffChrAbs(species));
-		novelMiRNADeep.setMiRNASeq(species.getMiRNAmatureFile(), null, species.getMiRNAhairpinFile());
-		
-		novelMiRNADeep.setSpecies(species.getCommonName());
-		novelMiRNADeep.setOutPath("/media/winF/NBC/Project/MethyArray_QZL110907/QZL_Fifth/Filted/result/test");
-		novelMiRNADeep.predict();
-	}
 	Logger logger = Logger.getLogger(NovelMiRNADeep.class);
 	
 	MapBowtie mapBowtie = new MapBowtie(SoftWare.bowtie);
@@ -166,7 +150,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 	 *  */
 	private String creatFastaMappingFile() {
 		if (fastaInput == null || fastaInput.trim().equals("")) {
-			fastaInput = FileOperate.changeFileSuffix(bedSeqInput.getFileName(), "_Potential_DenoveMirna", "fasta");
+			fastaInput = FileOperate.changeFileSuffix(lsAlignSeqFile.get(0).getFileName(), "_Potential_DenoveMirna", "fasta");
 			fastaInput = outPath + FileOperate.getFileName(fastaInput);
 		}
 		if (!FileOperate.isFileExist(fastaInput)) {
@@ -180,9 +164,9 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 	 * @param fastaOut
 	 */
 	private void convertNoCDSbed2Fasta(String fastaOut) {
-		String out = FileOperate.changeFileSuffix(bedSeqInput.getFileName(), "_Potential_DenoveMirna", null);
+		String out = FileOperate.changeFileSuffix(lsAlignSeqFile.get(0).getFileName(), "_Potential_DenoveMirna", null);
 		out = outPath + FileOperate.getFileName(out);
-		BedSeq bedSeq = getBedReadsNotOnCDS(out);
+		BedSeq bedSeq = getReadsNotOnCDS(out);
 		TxtReadandWrite txtOut = new TxtReadandWrite(fastaOut, true);
 		for (BedRecord bedRecord : bedSeq.readLines()) {
 			txtOut.writefileln(bedRecord.getSeqFasta().toStringNRfasta());

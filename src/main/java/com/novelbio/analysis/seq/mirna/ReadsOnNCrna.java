@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import com.novelbio.analysis.seq.AlignRecord;
+import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.BedSeq;
+import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.generalConf.TitleFormatNBC;
@@ -22,22 +25,22 @@ public class ReadsOnNCrna {
 	 * 2: num
 	 */
 	HashMap<String, Double> mapNCrnaID_2_nameDescripValue;
-	BedSeq bedSeq;
+	AlignSeq alignSeq;
 	
-	public void setBedSed(String bedseqFile) {
-		bedSeq = new BedSeq(bedseqFile);
+	public void setAlignSeq(AlignSeq alignSeq) {
+		this.alignSeq = alignSeq;
 	}
 	
 	public void searchNCrna() {
 		mapNCrnaID_2_nameDescripValue = new HashMap<String, Double>();
-		for (BedRecord bedRecord : bedSeq.readLines()) {
-			if (mapNCrnaID_2_nameDescripValue.containsKey(bedRecord.getRefID())) {
-				double info = mapNCrnaID_2_nameDescripValue.get(bedRecord.getRefID());
-				info = (double)1/bedRecord.getMappingNum() + info;
-				mapNCrnaID_2_nameDescripValue.put(bedRecord.getRefID(), info);
+		for (AlignRecord alignRecord : alignSeq.readLines()) {
+			if (mapNCrnaID_2_nameDescripValue.containsKey(alignRecord.getRefID())) {
+				double info = mapNCrnaID_2_nameDescripValue.get(alignRecord.getRefID());
+				info = (double)1/alignRecord.getMappingNum() + info;
+				mapNCrnaID_2_nameDescripValue.put(alignRecord.getRefID(), info);
 			}
 			else {
-				mapNCrnaID_2_nameDescripValue.put(bedRecord.getRefID(), (double)1/bedRecord.getMappingNum() );
+				mapNCrnaID_2_nameDescripValue.put(alignRecord.getRefID(), (double)1/alignRecord.getMappingNum() );
 			}
 		}
 	}

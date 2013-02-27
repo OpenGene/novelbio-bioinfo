@@ -8,8 +8,11 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.AlignRecord;
+import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.BedSeq;
+import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.SepSign;
@@ -45,9 +48,9 @@ public class RfamStatistic {
 	 * @param mapBedFile mapping至Rfam序列的bed文件
 	 * @param outFile 输出文件
 	 */
-	public void countRfamInfo(String mapBedFile) {
+	public void countRfamInfo(AlignSeq alignSeq) {
 		mapRfamID2Counts = new HashMap<String, Double>();
-		readRfamBed(mapBedFile);
+		readRfamBam(alignSeq);
 		ArrayList<String[]> lsResult = getInfo();
 		TxtReadandWrite txtOut = new TxtReadandWrite(outputFile, true);
 		txtOut.ExcelWrite(lsResult);
@@ -80,11 +83,10 @@ public class RfamStatistic {
 	 * mapping 至 rfam 的 bed 文件
 	 * @param bedFile
 	 */
-	private void readRfamBed(String bedFile) {
-		BedSeq bedSeq = new BedSeq(bedFile);
-		for (BedRecord bedRecord : bedSeq.readLines()) {
-			String RfamID = bedRecord.getRefID().split("//")[0];
-			Double thisCount = (double)1/bedRecord.getMappingNum();
+	private void readRfamBam(AlignSeq alignSeq) {
+		for (AlignRecord samRecord : alignSeq.readLines()) {
+			String RfamID = samRecord.getRefID().split("//")[0];
+			Double thisCount = (double)1/samRecord.getMappingNum();
 			if (mapRfamID2Counts.containsKey(RfamID)) {
 				double newCounts = mapRfamID2Counts.get(RfamID) + thisCount;
 				mapRfamID2Counts.put(RfamID, newCounts);
@@ -92,6 +94,7 @@ public class RfamStatistic {
 			}
 			mapRfamID2Counts.put(RfamID, thisCount);
 		}
+		alignSeq.close();
 	}
 	
 	/**

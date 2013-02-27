@@ -2,12 +2,14 @@ package com.novelbio.analysis.seq.mirna;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
@@ -20,7 +22,7 @@ public class CtrlMiRNApredict {
 	Species species;
 	String outPath;
 	
-	ArrayList<String[]> lsBedFile2Prefix = new ArrayList<String[]>();
+	ArrayList<String[]> lsSamFile2Prefix = new ArrayList<String[]>();
 	
 	NovelMiRNADeep novelMiRNADeep = new NovelMiRNADeep();
 	SoftWareInfo softWareInfo = new SoftWareInfo();
@@ -42,8 +44,8 @@ public class CtrlMiRNApredict {
 	public void setOutPath(String outPath) {
 		this.outPath = FileOperate.addSep(outPath);
 	}
-	public void setLsBedFile2Prefix(ArrayList<String[]> lsBedFile2Prefix) {
-		this.lsBedFile2Prefix = lsBedFile2Prefix;
+	public void setLsSamFile2Prefix(ArrayList<String[]> lsSamFile2Prefix) {
+		this.lsSamFile2Prefix = lsSamFile2Prefix;
 	}
 
 	public void runMiRNApredict() {
@@ -53,7 +55,7 @@ public class CtrlMiRNApredict {
 		if (gffChrAbs == null) {
 			gffChrAbs = new GffChrAbs(species);
 		}
-		if (lsBedFile2Prefix.size() <= 0) {
+		if (lsSamFile2Prefix.size() <= 0) {
 			return;
 		}
 		String novelMiRNAPathDeep = outPath + "miRNApredictDeep/";
@@ -62,12 +64,12 @@ public class CtrlMiRNApredict {
 			return;
 		}
 		
-		ArrayList<String> lsBedFile = new ArrayList<String>();
-		for (String[] prefix2bed : lsBedFile2Prefix) {
-			lsBedFile.add(prefix2bed[0]);
+		List<SamFile> lsBedFile = new ArrayList<SamFile>();
+		for (String[] prefix2bed : lsSamFile2Prefix) {
+			lsBedFile.add(new SamFile(prefix2bed[0]));
 		}
 		
-		novelMiRNADeep.setBedSeqInput(outPath + "SampleAll_To_Predict.bed", lsBedFile);
+		novelMiRNADeep.setSeqInput(lsBedFile);
 		softWareInfo.setName(SoftWare.mirDeep);
 		novelMiRNADeep.setExePath(softWareInfo.getExePath(), species.getIndexChr(SoftWare.bowtie));
 		novelMiRNADeep.setGffChrAbs(gffChrAbs);
@@ -76,7 +78,7 @@ public class CtrlMiRNApredict {
 		novelMiRNADeep.setOutPath(novelMiRNAPathDeep);
 		novelMiRNADeep.predict();
 		
-		for (String[] bed2Prefix : lsBedFile2Prefix) {
+		for (String[] bed2Prefix : lsSamFile2Prefix) {
 			getMirPredictCount(bed2Prefix[0], bed2Prefix[1]);
 		}
 	}
@@ -91,13 +93,12 @@ public class CtrlMiRNApredict {
 		
 		miRNAmapPipline.setExePath(softWareInfo.getExePath());
 		miRNAmapPipline.setMiRNApreSeq(novelMiRNADeep.getNovelMiRNAhairpin());
-		miRNAmapPipline.setOutPathTmp(outPath +"novelMiRNAmapping", outPath + "novelMiRNATmpBed");
+		miRNAmapPipline.setOutPathTmp(outPath +"novelMiRNAmapping");
 		
 		miRNAmapPipline.setSample(prefix, fastQ.getReadFileName());
 		miRNAmapPipline.mappingMiRNA();
-		String bedSeqMiRNAnovel = miRNAmapPipline.getOutMiRNAbed();
 		
-		miRNACount.setBedSeqMiRNA(bedSeqMiRNAnovel);
+		miRNACount.setAlignFile(miRNAmapPipline.getOutMiRNAAlignSeq());
 		miRNACount.setMiRNAfile(novelMiRNADeep.getNovelMiRNAhairpin(), novelMiRNADeep.getNovelMiRNAmature());
 		miRNACount.setMiRNAinfo(ListMiRNALocation.TYPE_MIRDEEP, new Species(), novelMiRNADeep.getNovelMiRNAdeepMrdFile());
 		String outPathNovel = outPath + prefix + FileOperate.getSepPath();
