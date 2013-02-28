@@ -62,7 +62,7 @@ public abstract class MiRNAtargetAbs {
 		if (inputUTR3seq == null || inputUTR3seq.equals("")) {
 			inputUTR3seq = FileOperate.changeFileSuffix(predictResultFinal, "_3UTR", "fasta");
 		}
-		gffChrSeq.setSaveToFile(true);
+		gffChrSeq.setIsSaveToFile(true);
 		gffChrSeq.setOutPutFile(inputUTR3seq);
 		gffChrSeq.setGeneStructure(GeneStructure.UTR3);
 		gffChrSeq.setGetAllIso(false);

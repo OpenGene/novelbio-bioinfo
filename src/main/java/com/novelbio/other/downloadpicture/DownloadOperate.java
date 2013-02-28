@@ -143,14 +143,14 @@ class DownloadPictureFile {
 	ArrayList<UrlPictureDownLoad> lsDownLoads = new ArrayList<UrlPictureDownLoad>();
 	//等待要获得下载url的序列
 	ThreadPoolExecutor executorGetUrlPrepToDownload = new ThreadPoolExecutor(3, 4, 5000, TimeUnit.MICROSECONDS, new ArrayBlockingQueue<Runnable>(1000));
+	LinkedList<Future<GetPictureUrl>> lsUrlPrepToDownLoad = new LinkedList<Future<GetPictureUrl>>();
+
 	//等待下载的类
 	ThreadPoolExecutor executorDownload = new ThreadPoolExecutor(3, 4, 5000, TimeUnit.MICROSECONDS, new ArrayBlockingQueue<Runnable>(1000));
-	
-	LinkedList<Future<GetPictureUrl>> lsUrlPrepToDownLoad = new LinkedList<Future<GetPictureUrl>>();
 	LinkedList<Future<UrlPictureDownLoad>> lsFutureDownLoad = new LinkedList<Future<UrlPictureDownLoad>>();
 	
 	/**
-	 * 下载图片url的类
+	 * 下载图片url的类，装入线程池
 	 * @param lsPrepareDownloads
 	 */
 	public void setLsPrepareDownloads(ArrayList<? extends GetPictureUrl> lsPrepareDownloads) {

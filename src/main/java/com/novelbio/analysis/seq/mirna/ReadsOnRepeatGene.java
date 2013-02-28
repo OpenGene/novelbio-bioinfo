@@ -60,6 +60,10 @@ public class ReadsOnRepeatGene {
 		mapGeneStructure2Value = new HashMap<String, Double>();
 		
 		for (AlignRecord alignRecord : alignSeq.readLines()) {
+			if (!alignRecord.isMapped()) {
+				continue;
+			}
+			
 			String repeatInfo = null;
 			if (gffHashRepeat != null) {//如果没有读取repeat文件，则返回
 				repeatInfo = searchReadsRepeat(alignRecord.getRefID(), alignRecord.getStartAbs(), alignRecord.getEndAbs());

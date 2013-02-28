@@ -47,8 +47,8 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 public class SamFile implements AlignSeq {
 	public static void main(String[] args) {
 		SamFile samFile = new SamFile("/media/winF/NBC/Project/Project_FY/paper/KOod.bam");
-		samFile.indexMake();
-		for (SamRecord samRecord : samFile.readLinesOverlap("chr6", 71853175, 71853175)) {
+		samFile.close();
+		for (SamRecord samRecord : samFile.readLines()) {
 			System.out.println(samRecord);
 		}
 	}
@@ -778,6 +778,39 @@ public class SamFile implements AlignSeq {
     	}
     	return bytesRead;
     }
+	
+	/**
+	 * 从含有序列的bed文件获得fastQ文件
+	 * @param outFileName fastQ文件全名（包括路径）
+	 * @throws Exception
+	 */
+	public FastQ getFastQ() {
+		String outFileName = FileOperate.changeFileSuffix(getFileName(), "", "fastq");
+		return getFastQ(outFileName);
+	}
+	/**
+	 * 从含有序列的bed文件获得fastQ文件
+	 * @param outFileName fastQ文件全名（包括路径）
+	 * @throws Exception
+	 */
+	public FastQ getFastQ(String outFileName) {
+		FastQ fastQ = new FastQ(outFileName, true);
+		String compressOutType = TxtReadandWrite.TXT;
+		if (outFileName.endsWith("gz")) {
+			compressOutType = TxtReadandWrite.GZIP;
+		}
+		fastQ.setCompressType(compressOutType, compressOutType);
+		for (SamRecord samRecord : readLines()) {
+			FastQRecord fastQRecord = new FastQRecord();
+			fastQRecord.setName(samRecord.getName());
+			fastQRecord.setFastaQuality(samRecord.getReadsQuality());
+			fastQRecord.setFastqOffset(FastQ.FASTQ_SANGER_OFFSET);
+			fastQRecord.setSeq(samRecord.getSeqFasta().toString());
+			fastQ.writeFastQRecord(fastQRecord);
+		}
+		fastQ.close();
+		return fastQ;
+	}
 }
 /**
  * Constants used in reading & writing BAM files

@@ -15,6 +15,7 @@ import com.novelbio.analysis.seq.mapping.MapTophat;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.base.HashMapLsValue;
 import com.novelbio.base.dataStructure.MathComput;
+import com.novelbio.base.fileOperate.FileOperate;
 
 public class CtrlRNAmap {
 	public static final int TOP_HAT = 2;
@@ -27,7 +28,12 @@ public class CtrlRNAmap {
 	HashMap<String, ArrayList<ArrayList<FastQ>>> mapPrefix2LsFastq;
 	
 	MapRNA mapRNA;
+	
 	GffChrAbs gffChrAbs;
+	String indexFile = "";
+	/** ""表示使用GTF */
+	String gtfAndGene2Iso = "";
+	
 	/** tophat是否用GTF文件进行校正，默认为true，如果出错就要考虑不用GTF */
 	boolean useGTF = true;
 	String outPrefix;
@@ -76,6 +82,17 @@ public class CtrlRNAmap {
 	public void setIsUseGTF(boolean useGTF) {
 		this.useGTF= useGTF;
 	}
+	/**
+	 * 如果referece在数据库中找不到，就输入该文件
+	 * @param indexFile
+	 */
+	public void setIndexFile(String indexFile) {
+		this.indexFile = indexFile;
+	}
+	public void setGtfAndGene2Iso(String gtfAndGene2Iso) {
+		this.gtfAndGene2Iso = gtfAndGene2Iso;
+	}
+	
 	public void mapping() {
 		lsExpResultRsemRPKM = new ArrayList<ArrayList<String>>();
 		lsExpResultRsemCounts = new ArrayList<ArrayList<String>>();
@@ -86,16 +103,20 @@ public class CtrlRNAmap {
 			setRefFile();
 			String prefix = entry.getKey();
 			ArrayList<ArrayList<FastQ>> lsFastqFR = entry.getValue();
-			mapRNA.setGffChrAbs(gffChrAbs);
+		
 			mapRNA.setLeftFq(lsFastqFR.get(0));
 			mapRNA.setRightFq(lsFastqFR.get(1));
 			setMapLibrary(mapLibrary);
 			mapRNA.setStrandSpecifictype(strandSpecific);
 			mapRNA.setThreadNum(threadNum);
 			mapRNA.setOutPathPrefix(outPrefix + prefix);
-			if (!useGTF) {
-				mapRNA.setGtfFile(null);
+			
+			if (mapType == TOP_HAT && !useGTF) {
+				mapRNA.setGtf_Gene2Iso(null);
+			} else {
+				mapRNA.setGtf_Gene2Iso(gtfAndGene2Iso);
 			}
+			
 			mapRNA.mapReads();
 			setExpResultCounts(prefix, mapRNA);
 			setExpResultRPKM(prefix, mapRNA);
@@ -116,10 +137,14 @@ public class CtrlRNAmap {
 		}
 	}
 	private void setRefFile() {
+		if (gffChrAbs == null && FileOperate.isFileExist(indexFile)) {
+			mapRNA.setFileRef(indexFile);
+			return;
+		}
+		
 		if (mapType == TOP_HAT) {
 			mapRNA.setFileRef(gffChrAbs.getSpecies().getIndexChr(mapRNA.getBowtieVersion()));
-		}
-		else {
+		} else {
 			mapRNA.setFileRef(gffChrAbs.getSpecies().getRefseqFile());
 		}
 	}

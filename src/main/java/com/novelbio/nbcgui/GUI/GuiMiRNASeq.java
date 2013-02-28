@@ -12,14 +12,21 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.JLabel;
 import javax.swing.JCheckBox;
 
+import com.novelbio.analysis.seq.AlignSeq;
+import com.novelbio.analysis.seq.BedSeq;
+import com.novelbio.analysis.seq.FormatSeq;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.mirna.CtrlMiRNAfastq;
 import com.novelbio.analysis.seq.mirna.CtrlMiRNApredict;
 import com.novelbio.analysis.seq.mirna.ListMiRNALocation;
+import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
@@ -276,18 +283,29 @@ public class GuiMiRNASeq extends JPanel{
 		Species species = guiSpeciesVersionGff.getSelectSpecies();
 		GffChrAbs gffChrAbs = new GffChrAbs(species);
 		ctrlMiRNAfastq.clear();
-		ArrayList<String[]> lsBedFile2Prefix = new ArrayList<String[]>();
+		Map<AlignSeq, String> mapBedFile2Prefix = new LinkedHashMap<AlignSeq, String>();
 		if (chkMapping.isSelected()) {
 			runMapping(gffChrAbs, species, sclpanFastq.getLsDataInfo());
-		
-			lsBedFile2Prefix = ctrlMiRNAfastq.getLsGenomeBed2Prefix();
+			mapBedFile2Prefix = ctrlMiRNAfastq.getMapGenomeBed2Prefix();
 		}
 		if (chkPredictMiRNA.isSelected()) {
 			//如果没有mapping，则取输入的bed文件
-			if (lsBedFile2Prefix.size() == 0) {
-				lsBedFile2Prefix = sclNovelMiRNAbed.getLsDataInfo();
+			if (mapBedFile2Prefix.size() == 0) {
+				List<String[]> lsInfo = sclNovelMiRNAbed.getLsDataInfo();
+				for (String[] strings : lsInfo) {
+					AlignSeq alignSeq = null;
+					if (FormatSeq.getFileType(strings[0]) == FormatSeq.BED) {
+						alignSeq = new BedSeq(strings[0]);
+					} else if (FormatSeq.getFileType(strings[0]) == FormatSeq.BAM || FormatSeq.getFileType(strings[0]) == FormatSeq.SAM) {
+						alignSeq = new SamFile(strings[0]);
+					}
+					
+					if (alignSeq != null) {
+						mapBedFile2Prefix.put(alignSeq, strings[1]);
+					}
+				}
 			}
-			runPredict(lsBedFile2Prefix, gffChrAbs, species);
+			runPredict(mapBedFile2Prefix, gffChrAbs, species);
 		}
 	}
 	
@@ -303,10 +321,10 @@ public class GuiMiRNASeq extends JPanel{
 		ctrlMiRNAfastq.writeToFile();
 	}
 	
-	private void runPredict(ArrayList<String[]> lsBedFile2Prefix, GffChrAbs gffChrAbs, Species species) {
+	private void runPredict(Map<AlignSeq, String> mapBedFile2Prefix, GffChrAbs gffChrAbs, Species species) {
 		ctrlMiRNApredict.setGffChrAbs(gffChrAbs);
 		ctrlMiRNApredict.setSpecies(species);
-		ctrlMiRNApredict.setLsSamFile2Prefix(lsBedFile2Prefix);
+		ctrlMiRNApredict.setLsSamFile2Prefix(mapBedFile2Prefix);
 		ctrlMiRNApredict.setOutPath(txtOutPathPrefix.getText());
 		
 		ctrlMiRNApredict.runMiRNApredict();

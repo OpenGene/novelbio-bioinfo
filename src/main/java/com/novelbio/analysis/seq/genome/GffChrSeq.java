@@ -69,7 +69,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	/** 默认是ture，表示存入output文件
 	 * 否则结果保存在lsResult中
 	 */
-	public void setSaveToFile(boolean saveToFile) {
+	public void setIsSaveToFile(boolean saveToFile) {
 		this.saveToFile = saveToFile;
 	}
 	/** 提取全基因组序列的时候，是每个Gene提取一条Iso还是提取全部Iso <br>

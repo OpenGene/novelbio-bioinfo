@@ -176,6 +176,9 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 		
 		int countLoop = 0;
 		for (AlignRecord alignRecord : alignSeqMiRNA.readLines()) {
+			if (!alignRecord.isMapped()) {
+				continue;
+			}
 			copeRecordAndFillMap(alignRecord);
 			
 			suspendCheck();

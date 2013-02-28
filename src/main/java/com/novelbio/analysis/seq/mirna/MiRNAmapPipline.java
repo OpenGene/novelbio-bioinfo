@@ -81,23 +81,23 @@ public class MiRNAmapPipline {
 	public void setOutPathTmp(String outPathTmpMapping) {
 		this.outPathTmpMapping = FileOperate.addSep(outPathTmpMapping);
 	}
-	/** 比对miRNA的bed文件结果 */
+	/** 比对miRNA的Sam文件结果 */
 	public AlignSeq getOutMiRNAAlignSeq() {
 		return new SamFile(samFileMiRNA);
 	}
-	/** 比对rfam的bed文件结果 */
+	/** 比对rfam的Sam文件结果 */
 	public AlignSeq getOutRfamAlignSeq() {
 		return new SamFile(samFileRfam);
 	}
-	/** 比对refseq中的ncRNA的bed文件结果 */
+	/** 比对refseq中的ncRNA的Sam文件结果 */
 	public AlignSeq getOutNCRNAAlignSeq() {
 		return new SamFile(samFileNCRNA);
 	}
-	/** 比对基因组的bed文件结果 */
+	/** 比对基因组的Sam文件结果 */
 	public AlignSeq getOutGenomeAlignSeq() {
 		return new SamFile(samFileGenome);
 	}
-	/** 比对miRNA的bed文件结果 */
+	/** 比对miRNA的Sam文件结果 */
 	public AlignSeq getOutGenomeAllAlignSeq() {
 		return new SamFile(samFileGenomeAll);
 	}

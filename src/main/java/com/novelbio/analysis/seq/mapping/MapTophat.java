@@ -72,7 +72,7 @@ public class MapTophat implements MapRNA{
 	boolean booSetIntronMin = false;
 	boolean booSetIntronMax = false;
 	
-	
+	/** 输入的gffChrAbs中只需要含有GffHashGene即可 */
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 	}
@@ -336,7 +336,7 @@ public class MapTophat implements MapRNA{
 	 * 如果设定为null，则表示不使用gtf文件
 	 * @param gtfFile
 	 */
-	public void setGtfFile(String gtfFile) {
+	public void setGtf_Gene2Iso(String gtfFile) {
 		this.gtfFile = gtfFile;
 	}
 
@@ -357,7 +357,7 @@ public class MapTophat implements MapRNA{
 		}
 		if (gffChrAbs != null && gffChrAbs.getGffHashGene() != null) {
 			String path = FileOperate.getParentPathName(lsLeftFq.get(0).getReadFileName());
-			String outGTF = path + gffChrAbs.getSpecies().getAbbrName() + DateTime.getDateAndRandom() + ".GTF";
+			String outGTF = path + FileOperate.getFileNameSep(gffChrAbs.getGffHashGene().getGffFilename())[0] + DateTime.getDateAndRandom() + ".GTF";
 			gffChrAbs.getGffHashGene().writeToGTF(outGTF, "novelbio");
 			this.gtfFile = outGTF;
 			generateGtfFile = true;

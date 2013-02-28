@@ -2,8 +2,13 @@ package com.novelbio.analysis.seq.mirna;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
+
+import com.novelbio.analysis.seq.AlignRecord;
+import com.novelbio.analysis.seq.AlignSeq;
 
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.base.PathDetail;
@@ -50,7 +55,7 @@ public class CtrlMiRNAfastq {
 	HashMap<String, HashMap<String, Double>> mapPrefix2GeneInfo = new HashMap<String, HashMap<String,Double>>();
 	
 	////// 没有mapping到的bed文件，用于预测新miRNA的 */
-	ArrayList<String[]> lsNovelMiRNASamFile2Prefix = new ArrayList<String[]>();
+	Map<AlignSeq, String> mapNovelMiRNASamFile2Prefix = new LinkedHashMap<AlignSeq, String>();
 	
 	/** 务必首先设定 */
 	public void setSpecies(Species species) {
@@ -106,7 +111,7 @@ public class CtrlMiRNAfastq {
 			miRNAmappingPipline.setSample(fastq2Prefix[1], fastq2Prefix[0]);
 			miRNAmappingPipline.setOutPathTmp(outPathTmpMapping);
 			miRNAmappingPipline.mappingPipeline();
-			lsNovelMiRNASamFile2Prefix.add(new String[]{miRNAmappingPipline.getOutGenomeAlignSeq().getFileName(), fastq2Prefix[1]});
+			mapNovelMiRNASamFile2Prefix.put(miRNAmappingPipline.getOutGenomeAlignSeq(), fastq2Prefix[1]);
 			countSmallRNA(outPath, fastq2Prefix[1], miRNAmappingPipline);
 		}
 	}
@@ -235,8 +240,8 @@ public class CtrlMiRNAfastq {
 	 * 返回mapping至基因组上的bed文件
 	 * 必须要等mapping完后才能获取
 	 */
-	public ArrayList<String[]> getLsGenomeBed2Prefix() {
-		return lsNovelMiRNASamFile2Prefix;
+	public Map<AlignSeq, String> getMapGenomeBed2Prefix() {
+		return mapNovelMiRNASamFile2Prefix;
 	}
 	
 	/** 清空存储的信息 */

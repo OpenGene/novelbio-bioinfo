@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
+import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.mappingOperate.Alignment;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
 import com.novelbio.analysis.seq.mapping.Align;
@@ -58,6 +59,19 @@ public class BedRecord extends SiteInfo implements AlignRecord{
 	public BedRecord() {
 		super(null);
 	}
+	public BedRecord(AlignRecord alignRecord) {
+		setRefID(alignRecord.getRefID());
+		setStartEndLoc(alignRecord.getStartAbs(), alignRecord.getEndAbs());
+		setName(alignRecord.getName());
+		setCis5to3(alignRecord.isCis5to3());
+		setSeq(alignRecord.getSeqFasta());
+		CIGAR = alignRecord.getCIGAR();
+		mappingNum = alignRecord.getMappingNum();
+		mapQuality = alignRecord.getMapQuality();
+		setAlignmentBlocks(alignRecord.getAlignmentBlocks());
+		setScore(alignRecord.getMapQuality());		
+	}
+	
 	public BedRecord(String bedline) {
 		super();
 		readLineInfo = bedline;
@@ -125,6 +139,13 @@ public class BedRecord extends SiteInfo implements AlignRecord{
 	}
 	public String getCIGAR() {
 		return CIGAR;
+	}
+	public FastQRecord getFastQRecord() {
+		FastQRecord fastQRecord = new FastQRecord();
+		fastQRecord.setName(getName());
+		fastQRecord.setSeq(getSeqFasta().toString());
+		fastQRecord.setModifyQuality(true);
+		return fastQRecord;
 	}
 	/** 是否为unique mapping，不是的话mapping到了几个不同的位点上去 */
 	public Integer getMappingNum() {
@@ -318,4 +339,5 @@ public class BedRecord extends SiteInfo implements AlignRecord{
 		}
 		return false;
 	}
+	
 }

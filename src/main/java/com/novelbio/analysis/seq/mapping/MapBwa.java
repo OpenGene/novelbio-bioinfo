@@ -331,7 +331,7 @@ public class MapBwa extends MapDNA {
 			cmdOperate.run();
 		}
 		
-		if (cmdOperate.getRunTime() > 5000 || cmdOperate.isFinishedNormal()) {
+		if (cmdOperate.isFinishedNormal() || cmdOperate.getRunTime() > overTime) {
 			return true;
 		} else {
 			return false;

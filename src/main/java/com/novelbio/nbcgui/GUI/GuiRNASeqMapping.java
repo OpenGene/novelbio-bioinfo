@@ -75,14 +75,16 @@ public class GuiRNASeqMapping extends JPanel {
 	ButtonGroup buttonGroup = new ButtonGroup();
 	JRadioButton rdbtnRsem;
 	JRadioButton rdbtnTophat;
-
+	JButton btnGtf;
 
 	
-	CtrlRNAmap ctrlRNAmap = new CtrlRNAmap();
+	CtrlRNAmap ctrlRNAmap;
 	
 	ArrayList<Component> lsComponentsMapping = new ArrayList<Component>();
 	ArrayList<Component> lsComponentsFiltering = new ArrayList<Component>();
 	private JLabel lblLibraryType;
+	private JTextField txtGtfGene2Iso;
+	JLabel lblGtfGene2Iso;
 	
 	public GuiRNASeqMapping() {
 		setLayout(null);
@@ -116,16 +118,7 @@ public class GuiRNASeqMapping extends JPanel {
 		cmbSpecies = new JComboBoxData<Species>();
 		cmbSpecies.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Species species = cmbSpecies.getSelectedValue();
-				cmbSpeciesVersion.setMapItem(species.getMapVersion());
-				if (species.getTaxID() == 0) {
-					btnMappingindex.setEnabled(true);
-					txtMappingIndex.setEnabled(true);
-				}
-				else {
-					btnMappingindex.setEnabled(false);
-					txtMappingIndex.setEditable(false);
-				}
+				selectSpecies();
 			}
 		});
 		cmbSpecies.setMapItem(Species.getSpeciesName2Species(Species.SEQINFO_SPECIES));
@@ -140,7 +133,7 @@ public class GuiRNASeqMapping extends JPanel {
 		add(lblSpecies);
 		
 		txtMappingIndex = new JTextField();
-		txtMappingIndex.setBounds(10, 461, 337, 24);
+		txtMappingIndex.setBounds(10, 380, 337, 24);
 		add(txtMappingIndex);
 		txtMappingIndex.setColumns(10);
 		
@@ -182,15 +175,15 @@ public class GuiRNASeqMapping extends JPanel {
 		add(lblSpeciesVersio);
 		
 		JLabel lblMappingToFile = new JLabel("Mapping To File");
-		lblMappingToFile.setBounds(10, 437, 121, 14);
+		lblMappingToFile.setBounds(10, 365, 121, 14);
 		add(lblMappingToFile);
 		
 		chckbxUseGtf = new JCheckBox("Use GTF");
-		chckbxUseGtf.setBounds(391, 358, 131, 22);
+		chckbxUseGtf.setBounds(393, 330, 131, 22);
 		add(chckbxUseGtf);
 		
 		btnMappingindex = new JButton("MappingIndex");
-		btnMappingindex.setBounds(387, 461, 134, 24);
+		btnMappingindex.setBounds(359, 380, 134, 24);
 		btnMappingindex.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				txtMappingIndex.setText(guiFileOpen.openFileName("", ""));
@@ -202,6 +195,7 @@ public class GuiRNASeqMapping extends JPanel {
 		btnRun.setBounds(653, 512, 118, 24);
 		btnRun.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				 ctrlRNAmap = new CtrlRNAmap();
 				Species species = cmbSpecies.getSelectedValue();
 				species.setVersion(cmbSpeciesVersion.getSelectedValue());
 				
@@ -219,7 +213,14 @@ public class GuiRNASeqMapping extends JPanel {
 				}
 				
 				ctrlRNAmap.setMapPrefix2LsFastq(getMapPrefix2LsFastq());
-				ctrlRNAmap.setGffChrAbs(new GffChrAbs(species));
+				if (species == null || species.getTaxID() == 0) {
+					ctrlRNAmap.setGtfAndGene2Iso(txtGtfGene2Iso.getText());
+					ctrlRNAmap.setIndexFile(txtMappingIndex.getText());
+					
+				} else {
+					ctrlRNAmap.setGffChrAbs(new GffChrAbs(species));
+				}
+				
 				ctrlRNAmap.setLibrary(cmbLibraryType.getSelectedValue());
 				ctrlRNAmap.setStrandSpecifictype(cmbStrandType.getSelectedValue());
 				ctrlRNAmap.setThreadNum(threadNum);
@@ -274,6 +275,7 @@ public class GuiRNASeqMapping extends JPanel {
 				cmbLibraryType.setVisible(false);
 				cmbStrandType.setVisible(false);
 				chckbxUseGtf.setVisible(false);
+				lblGtfGene2Iso.setText("Gene2IsoFile");
 			}
 		});
 		rdbtnRsem.setBounds(418, 261, 88, 22);
@@ -287,26 +289,40 @@ public class GuiRNASeqMapping extends JPanel {
 				cmbLibraryType.setVisible(true);
 				cmbStrandType.setVisible(true);
 				chckbxUseGtf.setVisible(true);
+				lblGtfGene2Iso.setText("GTFfile");
 			}
 		});
 		rdbtnTophat.setBounds(599, 261, 151, 22);
 		add(rdbtnTophat);
 		
 		lblStrandType = new JLabel("StrandType");
-		lblStrandType.setBounds(12, 339, 90, 14);
+		lblStrandType.setBounds(10, 304, 90, 14);
 		add(lblStrandType);
 		
 		cmbStrandType = new JComboBoxData<StrandSpecific>();
-		cmbStrandType.setBounds(10, 359, 197, 23);
+		cmbStrandType.setBounds(10, 330, 197, 23);
 		add(cmbStrandType);
 		
 		lblLibraryType = new JLabel("Library Type");
-		lblLibraryType.setBounds(238, 339, 121, 14);
+		lblLibraryType.setBounds(238, 304, 121, 14);
 		add(lblLibraryType);
 		
 		cmbLibraryType = new JComboBoxData<MapLibrary>();
-		cmbLibraryType.setBounds(238, 359, 124, 23);
+		cmbLibraryType.setBounds(238, 330, 124, 23);
 		add(cmbLibraryType);
+		
+		lblGtfGene2Iso = new JLabel("GTF");
+		lblGtfGene2Iso.setBounds(9, 413, 166, 14);
+		add(lblGtfGene2Iso);
+		
+		txtGtfGene2Iso = new JTextField();
+		txtGtfGene2Iso.setBounds(10, 428, 337, 24);
+		add(txtGtfGene2Iso);
+		txtGtfGene2Iso.setColumns(10);
+		
+		btnGtf = new JButton("GTF");
+		btnGtf.setBounds(359, 428, 134, 24);
+		add(btnGtf);
 
 
 		
@@ -330,8 +346,6 @@ public class GuiRNASeqMapping extends JPanel {
 		lsComponentsMapping.add(cmbSpecies);
 		lsComponentsMapping.add(cmbSpeciesVersion);
 		lsComponentsMapping.add(btnMappingindex);
-		
-		txtMappingIndex.setEnabled(false);
 		btnMappingindex.setEnabled(false);
 		
 		buttonGroup.add(rdbtnRsem);
@@ -342,6 +356,7 @@ public class GuiRNASeqMapping extends JPanel {
 		rdbtnTophat.setSelected(true);
 		
 		chckbxUseGtf.setSelected(true);
+		selectSpecies();
 	}
 	
 	/**
@@ -384,5 +399,25 @@ public class GuiRNASeqMapping extends JPanel {
 			mapPrefix2LsFastq.put(prefix, lsFastqLR);
 		}
 		return lsFastqLR;
+	}
+	
+	/**
+	 * 当选择了物种之后进行的判定
+	 */
+	private void selectSpecies() {
+		Species species = cmbSpecies.getSelectedValue();
+		cmbSpeciesVersion.setMapItem(species.getMapVersion());
+		if (species.getTaxID() == 0) {
+			btnMappingindex.setEnabled(true);
+			txtMappingIndex.setEnabled(true);
+			btnGtf.setEnabled(true);
+			txtGtfGene2Iso.setEnabled(true);
+		} else {
+			btnMappingindex.setEnabled(false);
+			txtMappingIndex.setEnabled(false);
+			btnGtf.setEnabled(false);
+			txtGtfGene2Iso.setEnabled(false);
+		}
+	
 	}
 }

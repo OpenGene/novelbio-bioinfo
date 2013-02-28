@@ -264,6 +264,7 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 	public SeqFasta getSeqFasta() {
 		return seqFasta;
 	}
+	
 	public void setScore(double score) {
 		this.score = score;
 	}

@@ -85,6 +85,9 @@ public class RfamStatistic {
 	 */
 	private void readRfamBam(AlignSeq alignSeq) {
 		for (AlignRecord samRecord : alignSeq.readLines()) {
+			if (!samRecord.isMapped()) {
+				continue;
+			}
 			String RfamID = samRecord.getRefID().split("//")[0];
 			Double thisCount = (double)1/samRecord.getMappingNum();
 			if (mapRfamID2Counts.containsKey(RfamID)) {
@@ -105,6 +108,10 @@ public class RfamStatistic {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		for (Entry<String, Double> entry : mapRfamID2Counts.entrySet()) {
 			String[] rfamInfo = mapRfamID2Info.get(entry.getKey());
+			if (rfamInfo == null) {
+				logger.error("出现未知ID" + entry.getKey());
+				continue;
+			}
 			String[] tmpResult = new String[rfamInfo.length + 2];
 			tmpResult[0] = entry.getKey();
 			tmpResult[1] = entry.getValue() + "";

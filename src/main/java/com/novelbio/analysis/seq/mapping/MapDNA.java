@@ -13,6 +13,10 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
  *
  */
 public abstract class MapDNA {
+	/**
+	 * 超时时间，意思如果mapping时间大于该时间，index就不太会出错了
+	 */
+	static int overTime = 50000;
 	
 	SamFileStatistics samFileStatistics;
 	

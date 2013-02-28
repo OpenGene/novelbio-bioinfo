@@ -321,7 +321,9 @@ public class SamRecord extends SiteInfo implements AlignRecord{
 		}
 		return lsBedRecords;
 	}
-
+	public String getReadsQuality() {
+		return samRecord.getBaseQualityString();
+	}
 	public int hashCode() {
 		return samRecord.hashCode();
 	}
@@ -336,5 +338,19 @@ public class SamRecord extends SiteInfo implements AlignRecord{
 	@Override
 	public String getRawStringInfo() {
 		return samRecord.getSAMString();
+	}
+	
+	@Override
+	public String getCIGAR() {
+		return samRecord.getCigarString();
+	}
+
+	@Override
+	public FastQRecord getFastQRecord() {
+		FastQRecord fastQRecord = new FastQRecord();
+		fastQRecord.setName(getName());
+		fastQRecord.setSeq(getSeqFasta().toString());
+		fastQRecord.setFastaQuality(getReadsQuality());
+		return fastQRecord;
 	}
 }

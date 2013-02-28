@@ -283,7 +283,7 @@ public class MapBowtie extends MapDNA {
 		cmd = cmd + getOptions() + " -x " + getChrNameWithoutSuffix() + getLsFqFile() + getOutFileName();
 		CmdOperate cmdOperate = new CmdOperate(cmd, "bwaMapping2");
 		cmdOperate.run();
-		if (cmdOperate.getRunTime() > 5000 || cmdOperate.isFinishedNormal()) {
+		if (cmdOperate.getRunTime() > overTime || cmdOperate.isFinishedNormal()) {
 			return true;
 		} else {
 			return false;

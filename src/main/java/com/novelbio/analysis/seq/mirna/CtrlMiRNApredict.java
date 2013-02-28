@@ -3,9 +3,12 @@ package com.novelbio.analysis.seq.mirna;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.swing.JOptionPane;
 
+import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
@@ -17,12 +20,11 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
 
 public class CtrlMiRNApredict {
-	
 	GffChrAbs gffChrAbs;
 	Species species;
 	String outPath;
 	
-	ArrayList<String[]> lsSamFile2Prefix = new ArrayList<String[]>();
+	Map<AlignSeq, String> lsSamFile2Prefix;
 	
 	NovelMiRNADeep novelMiRNADeep = new NovelMiRNADeep();
 	SoftWareInfo softWareInfo = new SoftWareInfo();
@@ -44,7 +46,7 @@ public class CtrlMiRNApredict {
 	public void setOutPath(String outPath) {
 		this.outPath = FileOperate.addSep(outPath);
 	}
-	public void setLsSamFile2Prefix(ArrayList<String[]> lsSamFile2Prefix) {
+	public void setLsSamFile2Prefix(Map<AlignSeq, String> lsSamFile2Prefix) {
 		this.lsSamFile2Prefix = lsSamFile2Prefix;
 	}
 
@@ -64,12 +66,7 @@ public class CtrlMiRNApredict {
 			return;
 		}
 		
-		List<SamFile> lsBedFile = new ArrayList<SamFile>();
-		for (String[] prefix2bed : lsSamFile2Prefix) {
-			lsBedFile.add(new SamFile(prefix2bed[0]));
-		}
-		
-		novelMiRNADeep.setSeqInput(lsBedFile);
+		novelMiRNADeep.setSeqInput(lsSamFile2Prefix.keySet());
 		softWareInfo.setName(SoftWare.mirDeep);
 		novelMiRNADeep.setExePath(softWareInfo.getExePath(), species.getIndexChr(SoftWare.bowtie));
 		novelMiRNADeep.setGffChrAbs(gffChrAbs);
@@ -78,15 +75,14 @@ public class CtrlMiRNApredict {
 		novelMiRNADeep.setOutPath(novelMiRNAPathDeep);
 		novelMiRNADeep.predict();
 		
-		for (String[] bed2Prefix : lsSamFile2Prefix) {
-			getMirPredictCount(bed2Prefix[0], bed2Prefix[1]);
+		for (Entry<AlignSeq, String> seq2Prefix : lsSamFile2Prefix.entrySet()) {
+			getMirPredictCount(seq2Prefix.getKey(), seq2Prefix.getValue());
 		}
 	}
 	
-	private void getMirPredictCount(String bedFile, String prefix) {
-		BedSeq bedSeqInput = new BedSeq(bedFile);
-		FastQ fastQ = bedSeqInput.getFastQ();
-		
+	private void getMirPredictCount(AlignSeq alignSeq, String prefix) {
+		FastQ fastQ = alignSeq.getFastQ();
+		alignSeq.close();
 		SoftWareInfo softWareInfo = new SoftWareInfo();
 		softWareInfo.setName(SoftWare.bwa);
 		MiRNAmapPipline miRNAmapPipline = new MiRNAmapPipline();

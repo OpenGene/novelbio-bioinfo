@@ -68,5 +68,5 @@ public interface MapRNA {
 	 * 如果设定为null，则表示不使用gtf文件
 	 * @param gtfFile
 	 */
-	public void setGtfFile(String gtfFile);
+	public void setGtf_Gene2Iso(String gtfFile);
 }

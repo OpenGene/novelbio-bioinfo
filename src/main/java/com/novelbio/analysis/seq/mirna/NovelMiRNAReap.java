@@ -65,7 +65,7 @@ public class NovelMiRNAReap extends NovelMiRNApredict{
 	GAATGGATAAGGATTAGCGATGATACA<br>
 	 */
 	private void getNovelMiRNASeq(String mapFile, String seqFile) {
-		String out = FileOperate.changeFileSuffix(lsAlignSeqFile.get(0).getFileName(), "_Potential_DenoveMirna", null);
+		String out = FileOperate.changeFileSuffix(lsAlignSeqFile.iterator().next().getFileName(), "_Potential_DenoveMirna", "fasta");
 		BedSeq bedSeq = getReadsNotOnCDS(out);
 		bedSeq = bedSeq.sort();
 		writeMireapFormat(bedSeq, mapFile, seqFile);

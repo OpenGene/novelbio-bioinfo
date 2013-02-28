@@ -25,14 +25,6 @@ import com.novelbio.database.model.species.Species;
  *
  */
 public class MapRsem implements MapRNA{
-	public static void main(String[] args) {
-		MapRsem mapRsem = new MapRsem();
-		Species species = new Species(3702);
-		GffChrAbs gffChrAbs = new GffChrAbs(species);
-		mapRsem.setExePath("", "");
-		mapRsem.setGffChrAbs(gffChrAbs);
-		mapRsem.createGene2IsoAndRefSeq();
-	}
 	private static Logger logger = Logger.getLogger(MapRsem.class);
 	
 	Species species;
@@ -76,14 +68,16 @@ public class MapRsem implements MapRNA{
 	}
 
 	/**
-	 * 设定Gff文件和chrFile
+	 * 设定Gff文件
 	 * @param gffFile
 	 */
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
+		if (gffChrAbs == null) {
+			return;
+		}
 		gffChrSeq = new GffChrSeq(gffChrAbs);
 		this.species = gffChrAbs.getSpecies();
-		setFileRef(species.getRefseqFile());
 	}
 	/**
 	 * 设定bwa所在的文件夹以及待比对的路径
@@ -102,8 +96,8 @@ public class MapRsem implements MapRNA{
 			this.exePathBowtie = FileOperate.addSep(exePathBowtie);
 	}
 	/**
-	 * 设定Gff文件和refFile
-	 * @param gffFile
+	 * 设定refFile
+	 * @param refFile
 	 */
 	public void setFileRef(String refFile) {
 		this.refFile = refFile;
@@ -140,9 +134,15 @@ public class MapRsem implements MapRNA{
 	}
 	/** 产生全新的reference */
 	private void createGene2IsoAndRefSeq() {
+		if (FileOperate.isFileExistAndBigThanSize(refFile, 0.01) && FileOperate.isFileExistAndBigThanSize(gene2isoFile, 0.01)) {
+			return;
+		}
+		if (gffChrAbs == null) {
+			return;
+		}
+		
 		String pathRsemIndex = FileOperate.getParentPathName(gffChrAbs.getSeqHash().getChrFile()) + "index/rsemRef_Index_" + species.getVersion().replace(" ", "") + FileOperate.getSepPath();
 		String refFileRsem = pathRsemIndex +  "RefGene.fa";
-		gene2isoFile = pathRsemIndex +  "RefGene_gene2iso.txt";
 
 		if (!FileOperate.isFileExist(refFileRsem)) {
 			FileOperate.createFolders(pathRsemIndex);
@@ -156,6 +156,7 @@ public class MapRsem implements MapRNA{
 		refFile = refFileRsem;//将rsem的reffile替换给reffile，因为后面都是用reffile来做索引
 		
 		if (!FileOperate.isFileExist(gene2isoFile)) {
+			gene2isoFile = pathRsemIndex +  "RefGene_gene2iso.txt";
 			TxtReadandWrite txtGene2Iso = new TxtReadandWrite(gene2isoFile, true);
 			SeqFastaHash seqFastaHash = new SeqFastaHash(refFile, null, false);
 			//先找gff文件里面有没有对应的geneName，没有再找数据库，再没有就直接贴上基因名
@@ -286,6 +287,8 @@ public class MapRsem implements MapRNA{
 	
 	/** 没用，给tophat用的 */
 	@Override
-	public void setGtfFile(String gtfFile) { }
+	public void setGtf_Gene2Iso(String gtfFile) {
+		this.gene2isoFile = gtfFile;
+	}
 	
 }

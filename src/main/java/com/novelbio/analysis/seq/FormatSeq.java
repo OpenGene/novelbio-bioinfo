@@ -10,6 +10,11 @@ import com.novelbio.analysis.seq.sam.SamFile;
 public enum FormatSeq {
 	 FASTQ, SAM, BAM, BED, UNKNOWN;
 	 
+	 /**
+	  * 目前只能判定ben文件和sam，bam文件
+	  * @param fileName
+	  * @return
+	  */
 	 public static FormatSeq getFileType(String fileName) {
 		 if (BedSeq.isBedFile(fileName)) {
 			return FormatSeq.BED;

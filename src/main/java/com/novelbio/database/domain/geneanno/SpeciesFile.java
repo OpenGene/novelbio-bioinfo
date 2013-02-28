@@ -12,8 +12,11 @@ import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fasta.format.NCBIchromFaChangeFormat;
+import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.GffChrSeq;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
+import com.novelbio.analysis.seq.genome.gffOperate.GffFileType;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
@@ -123,14 +126,21 @@ public class SpeciesFile {
 		this.chromSeq = chromSeq;
 	}
 	public String getChromSeqFile() {
+		if (chromSeq == null || chromSeq.trim().equals("")) {
+			chromSeq = FileOperate.addSep(chromPath) + "all/chrAll.fa";
+		}
+		
 		if (!FileOperate.isFileExistAndBigThanSize(chromSeq, 10)) {
 			String path = getChromFaPath();
 			FileOperate.createFolders(FileOperate.getParentPathName(chromSeq));
 			NCBIchromFaChangeFormat ncbIchromFaChangeFormat = new NCBIchromFaChangeFormat();
 			ncbIchromFaChangeFormat.setChromFaPath(path, getChromFaRegx());
 			ncbIchromFaChangeFormat.writeToSingleFile(chromSeq);
+			//将自动生成的chromSeq导入数据库
+			update();
 		}
 		return chromSeq;
+		
 	}
 
 	/**
@@ -174,11 +184,12 @@ public class SpeciesFile {
 	}
 	/**
 	 * 按照优先级返回gff文件，优先级由GFFtype来决定
+	 * 公返回枚举
 	 * @return  GffType<br>
 	 */
-	public String getGffFileType() {
+	public GffFileType getGffFileType() {
 		String[] gffInfo = getGffFileAndType();
-		return gffInfo[0];
+		return GffFileType.getType(gffInfo[0]);
 	}
 	/**
 	 * 按照优先级返回gff文件，优先级由GFFtype来决定
@@ -236,7 +247,7 @@ public class SpeciesFile {
 		filledHashIndexPath(indexRefseq, mapSoftware2RefseqIndexPath);
 		String indexRefseqThis =  mapSoftware2RefseqIndexPath.get(softMapping.toString());
 		if (!FileOperate.isFileExist(indexRefseqThis)) {
-			indexRefseqThis = creatAndGetSeqIndex(true, softMapping, getRefseqFile(), mapSoftware2RefseqIndexPath);
+			indexRefseqThis = creatAndGetSeqIndex(true, softMapping, getRefRNAFile(), mapSoftware2RefseqIndexPath);
 		
 			indexRefseq = addIndex(indexRefseq, softMapping, indexRefseqThis);
 			update();
@@ -332,7 +343,30 @@ public class SpeciesFile {
 	public void setRefseqFile(String refseqFile) {
 		this.refseqFile = refseqFile;
 	}
-	public String getRefseqFile() {
+	public String getRefRNAFile() {
+		if (refseqFile == null || refseqFile.trim().equals("")) {
+			refseqFile = FileOperate.getParentPathName( getChromFaPath()) + "refrna/rna.fa";
+		}
+		if (FileOperate.isFileExistAndBigThanSize(refseqFile, 0.2)) {
+			return refseqFile;
+		}
+		try {
+			GffChrAbs gffChrAbs = new GffChrAbs();
+			gffChrAbs.setGffHash(new GffHashGene(getGffFileType(), getGffFile()));
+			gffChrAbs.setSeqHash(new SeqHash(getChromFaPath(), getChromFaRegx()));
+			GffChrSeq gffChrSeq = new GffChrSeq(gffChrAbs);
+			gffChrSeq.setGeneStructure(GeneStructure.ALLLENGTH);
+			gffChrSeq.setGetAAseq(false);
+			gffChrSeq.setGetAllIso(true);
+			gffChrSeq.setGetIntron(false);
+			gffChrSeq.setGetSeqIsoGenomWide();
+			gffChrSeq.setOutPutFile(refseqFile);
+			gffChrSeq.run();
+			update();
+		} catch (Exception e) {
+			logger.error("生成 RefRNA序列出错");
+		}
+	
 		return refseqFile;
 	}
 	public void setRefseqNCfile(String refseqNCfile) {
@@ -344,7 +378,7 @@ public class SpeciesFile {
 	/** 获取仅含有最长转录本的refseq文件，是核酸序列，没有就返回null */
 	public String getRefseqLongestIsoNrFile() {
 		String chromFaPath = getChromFaPath();
-		String refseqLongestIsoFile = FileOperate.getParentPathName(chromFaPath) + "refseqLongestIso/refseqLongestIsoNr.fa";
+		String refseqLongestIsoFile = FileOperate.getParentPathName(chromFaPath) + "refrna/refseqLongestIsoNr.fa";
 		if (!FileOperate.isFileExistAndBigThanSize(refseqLongestIsoFile,10)) {
 			FileOperate.createFolders(FileOperate.getParentPathName(refseqLongestIsoFile));
 			try {

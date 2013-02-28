@@ -150,7 +150,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 	 *  */
 	private String creatFastaMappingFile() {
 		if (fastaInput == null || fastaInput.trim().equals("")) {
-			fastaInput = FileOperate.changeFileSuffix(lsAlignSeqFile.get(0).getFileName(), "_Potential_DenoveMirna", "fasta");
+			fastaInput = FileOperate.changeFileSuffix(lsAlignSeqFile.iterator().next().getFileName(), "_Potential_DenoveMirna" + DateTime.getDateAndRandom(), "fasta");
 			fastaInput = outPath + FileOperate.getFileName(fastaInput);
 		}
 		if (!FileOperate.isFileExist(fastaInput)) {
@@ -164,7 +164,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 	 * @param fastaOut
 	 */
 	private void convertNoCDSbed2Fasta(String fastaOut) {
-		String out = FileOperate.changeFileSuffix(lsAlignSeqFile.get(0).getFileName(), "_Potential_DenoveMirna", null);
+		String out = FileOperate.changeFileSuffix(lsAlignSeqFile.iterator().next().getFileName(), "_Predict_Mirna", "bed");
 		out = outPath + FileOperate.getFileName(out);
 		BedSeq bedSeq = getReadsNotOnCDS(out);
 		TxtReadandWrite txtOut = new TxtReadandWrite(fastaOut, true);

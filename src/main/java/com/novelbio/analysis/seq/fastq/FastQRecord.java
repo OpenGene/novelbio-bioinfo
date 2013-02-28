@@ -108,7 +108,11 @@ public class FastQRecord implements Cloneable {
 	public String getSeqQuality() {
 		return seqQuality;
 	}
-	/** 如果过滤出错，就要用这个重新设定quality，全部设置为f */
+	/** 
+	 * 重置fastQuality<br>
+	 * 
+	 * 如果过滤出错，就要用这个重新设定quality，全部设置为f
+	 */
 	public void setModifyQuality(boolean modifyQuality) {
 		this.modifyQuality = modifyQuality;
 	}

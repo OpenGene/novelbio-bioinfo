@@ -34,6 +34,9 @@ public class ReadsOnNCrna {
 	public void searchNCrna() {
 		mapNCrnaID_2_nameDescripValue = new HashMap<String, Double>();
 		for (AlignRecord alignRecord : alignSeq.readLines()) {
+			if (!alignRecord.isMapped()) {
+				continue;
+			}
 			if (mapNCrnaID_2_nameDescripValue.containsKey(alignRecord.getRefID())) {
 				double info = mapNCrnaID_2_nameDescripValue.get(alignRecord.getRefID());
 				info = (double)1/alignRecord.getMappingNum() + info;

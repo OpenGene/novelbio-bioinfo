@@ -12,6 +12,7 @@ import java.util.TreeMap;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
+import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -30,7 +31,7 @@ import com.novelbio.database.service.servgeneanno.ServTaxID;
 public class Species {
 	public static void main(String[] args) {
 		Species species = new Species(10090);
-		species.getMapGffTypeAll();
+		species.getRefseqFile();
 	}
 	private static Logger logger = Logger.getLogger(Species.class);
 	/** 全部物种 */
@@ -274,7 +275,7 @@ public class Species {
 	/** 获得本物中指定version的refseq的序列 */
 	public String getRefseqFile() {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
-		return speciesFile.getRefseqFile();
+		return speciesFile.getRefRNAFile();
 	}
 	/** 获取仅含有最长转录本的refseq文件，是核酸序列，没有就返回null */
 	public String getRefseqLongestIsoNrFile() {

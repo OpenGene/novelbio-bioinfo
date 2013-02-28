@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
@@ -32,5 +33,7 @@ public interface AlignSeq {
 	
 	public String getFileName();
 	
+	public FastQ getFastQ();
+
 	public void close();
 }
