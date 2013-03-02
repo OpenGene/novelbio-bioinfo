@@ -3,8 +3,8 @@ package com.novelbio.nbcgui.GUI;
 import javax.swing.JLayeredPane;
 import javax.swing.JLabel;
 
+import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.base.gui.JComboBoxData;
-import com.novelbio.database.domain.geneanno.SpeciesFile.GFFtype;
 import com.novelbio.database.model.species.Species;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -13,7 +13,7 @@ public class GuiLayeredPaneSpeciesVersionGff extends JLayeredPane {
 	Species species;
 	JComboBoxData<Species> cmbSpecies;
 	JComboBoxData<String> cmbVersion;
-	JComboBoxData<GFFtype> cmbGffType;
+	JComboBoxData<GffType> cmbGffType;
 		
 	public GuiLayeredPaneSpeciesVersionGff() {
 		setLayout(null);
@@ -48,7 +48,7 @@ public class GuiLayeredPaneSpeciesVersionGff extends JLayeredPane {
 		lblDBtype.setBounds(13, 94, 52, 14);
 		add(lblDBtype);
 		
-		cmbGffType = new JComboBoxData<GFFtype>();
+		cmbGffType = new JComboBoxData<GffType>();
 		cmbGffType.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				selectGffType();

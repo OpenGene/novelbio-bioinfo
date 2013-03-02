@@ -761,17 +761,24 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	
 	/**
 	 * 返回全部snp类型和样本的信息
+	 * 
 	 * @return
 	 */
 	public ArrayList<String[]> toStringLsSnp() {
-		return toStringLsSnp(null, false);
+		return toStringLsSnp(null, false, false);
 	}
 	/**
 	 * 返回挑选出的snp类型和样本的信息
+	 * @param lsMismatchInfo 仅选出指定的snp size为0则返回本位点全体snp和indel，如果为空表示获取全部，不能为null
+	 * @param simple 是否返回简单的信息，就是不包含iso的信息
 	 * @return
 	 */
-	public ArrayList<String[]> toStringLsSnp(ArrayList<SiteSnpIndelInfo> lsMismatchInfo) {
-		return toStringLsSnp(null,false, false, lsMismatchInfo);
+	public ArrayList<String[]> toStringLsSnp(ArrayList<SiteSnpIndelInfo> lsMismatchInfo, boolean simple) {
+		if (simple) {
+			return toStringLsSnpSimple(null,false, false, lsMismatchInfo);
+		} else {
+			return toStringLsSnp(null,false, false, lsMismatchInfo);
+		}
 	}
 	/**
 	 * 给定样本名，返回全部snp类型和样本的信息
@@ -803,16 +810,32 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		for (SiteSnpIndelInfo siteSnpIndelInfo : lsMismatchInfo) {
 			setSnpSite.add(siteSnpIndelInfo.getMismatchInfo());
 		}
-		return getStringLsSnp(lsSampleNames,false, getGATKflag, setSnpSite);
+		return getStringLsSnp(lsSampleNames,false, getGATKflag, setSnpSite, false);
+	}
+	/**
+	 * @param lsSampleNames
+	 * @param getGATK
+	 * @param lsMismatchInfo 仅选出指定的snp size为0则返回本位点全体snp和indel，如果为空表示获取全部，不能为null
+	 * @return
+	 */
+	public ArrayList<String[]> toStringLsSnpSimple(Collection<String> lsSampleNames, boolean getGATK, boolean getGATKflag, ArrayList<SiteSnpIndelInfo> lsMismatchInfo) {
+		HashSet<String> setSnpSite = new HashSet<String>();
+		for (SiteSnpIndelInfo siteSnpIndelInfo : lsMismatchInfo) {
+			setSnpSite.add(siteSnpIndelInfo.getMismatchInfo());
+		}
+		return getStringLsSnp(lsSampleNames,false, getGATKflag, setSnpSite, true);
 	}
 	/**
 	 * 给定样本名，返回全部snp类型和样本的信息
 	 * @param lsSampleNames 样本名, 全部就选null
 	 * @param getGATK 是否仅将GATK认定的snp提取出来 没有GATK就选false
+	 * @param getGATKflag 是否将GATK的flag提取出来
 	 * @param setMismatchInfo 仅选出指定的snp size为0则返回本位点全体snp和indel
+	 * @param simple 是否为简化版本，简化版不包括ISO等信息
 	 * @return
 	 */
-	private ArrayList<String[]> getStringLsSnp(Collection<String> lsSampleNames, boolean getGATK, boolean getGATKflag, Set<String> setMismatchInfo) {
+	private ArrayList<String[]> getStringLsSnp(Collection<String> lsSampleNames, boolean getGATK, boolean getGATKflag, 
+			Set<String> setMismatchInfo, boolean simple) {
 		setGffIso();
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		LinkedList<String> lsResultTmp = new LinkedList<String>();
@@ -834,19 +857,19 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 			lsTmpInfo.add(siteSnpIndelInfo.getThisSeq());
 			lsTmpInfo.add(siteSnpIndelInfo.getSnpIndelRs().getSnpRsID());
 			
-			if (gffGeneIsoInfo != null) {
+			if (!simple && gffGeneIsoInfo != null) {
 				lsResultTmp.add(gffGeneIsoInfo.getName());
 				lsResultTmp.add(gffGeneIsoInfo.getGeneID().getSymbol());
 				lsResultTmp.add(gffGeneIsoInfo.getGeneID().getDescription());
 			}
-			else{
+			else if (!simple && gffGeneIsoInfo == null) {
 				lsResultTmp.add("");
 				lsResultTmp.add("");
 				lsResultTmp.add("");
 			}
-			if (prop >= 0) {
+			if (!simple && prop >= 0) {
 				lsResultTmp.add(prop + "");
-			} else {
+			} else if (!simple && prop < 0) {
 				lsResultTmp.add("");
 			}
 			
@@ -858,7 +881,7 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 				if (sampleRefReadsInfo == null) {
 					lsTmpInfo.add(0 + "");
 					lsTmpInfo.add(0 + "");
-					if (getGATKflag) {
+					if (!simple && getGATKflag) {
 						lsTmpInfo.add("");
 						lsTmpInfo.add("");
 					}
@@ -867,15 +890,17 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 				siteSnpIndelInfo.setSampleName(sampleName);
 				lsTmpInfo.add(sampleRefReadsInfo.getReadsDepth() + "");
 				lsTmpInfo.add(siteSnpIndelInfo.getReadsNum() + "");
-				if (getGATKflag) {
+				if (!simple && getGATKflag) {
 					lsTmpInfo.add(siteSnpIndelInfo.getVcfInfoFilter());
 					lsTmpInfo.add(siteSnpIndelInfo.getQuality());
 				}
 			}
 			
-			lsTmpInfo.add(siteSnpIndelInfo.getOrfShift() + "");
-			lsTmpInfo.add(siteSnpIndelInfo.isExon() + "");
-			lsTmpInfo.addAll(siteSnpIndelInfo.toStrings());
+			if (!simple) {
+				lsTmpInfo.add(siteSnpIndelInfo.getOrfShift() + "");
+				lsTmpInfo.add(siteSnpIndelInfo.isExon() + "");
+				lsTmpInfo.addAll(siteSnpIndelInfo.toStrings());
+			}
 			
 			String[] infpoStrings = lsTmpInfo.toArray(new String[0]);
 			lsResult.add(infpoStrings);

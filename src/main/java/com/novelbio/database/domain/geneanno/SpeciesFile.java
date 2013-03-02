@@ -15,8 +15,8 @@ import com.novelbio.analysis.seq.fasta.format.NCBIchromFaChangeFormat;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.GffChrSeq;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
-import com.novelbio.analysis.seq.genome.gffOperate.GffFileType;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
@@ -147,14 +147,14 @@ public class SpeciesFile {
 	 * 按照优先级返回gff文件，优先级由GFFtype来决定
 	 * @return GffFile
 	 */
-	public Map<String, GFFtype> getMapGffType() {
+	public Map<String, GffType> getMapGffType() {
 		filledHashGffType2GffFile();
-		TreeMap<String, GFFtype> mapString2GffType = new TreeMap<String, SpeciesFile.GFFtype>();
+		TreeMap<String, GffType> mapString2GffType = new TreeMap<String, GffType>();
 		if (hashGffType2GffFile.size() == 0) {
 			return mapString2GffType;
 		}
 		for (String gfftypeString : hashGffType2GffFile.keySet()) {
-			mapString2GffType.put(gfftypeString, GFFtype.getMapString2GffType().get(gfftypeString.toUpperCase()));
+			mapString2GffType.put(gfftypeString, GffType.getMapGffType().get(gfftypeString.toLowerCase()));
 		}
 		return mapString2GffType;
 	}
@@ -166,7 +166,7 @@ public class SpeciesFile {
 	 * @param GFFtype 指定gfftype 如果为null，表示不指定
 	 * @return
 	 */
-	public String getGffFile(GFFtype gfFtype) {
+	public String getGffFile(GffType gfFtype) {
 		if (gfFtype == null) {
 			return getGffFile();
 		}
@@ -187,9 +187,9 @@ public class SpeciesFile {
 	 * 公返回枚举
 	 * @return  GffType<br>
 	 */
-	public GffFileType getGffFileType() {
+	public GffType getGffType() {
 		String[] gffInfo = getGffFileAndType();
-		return GffFileType.getType(gffInfo[0]);
+		return GffType.getType(gffInfo[0]);
 	}
 	/**
 	 * 按照优先级返回gff文件，优先级由GFFtype来决定
@@ -200,7 +200,7 @@ public class SpeciesFile {
 		if (hashGffType2GffFile.size() == 0) {
 			return new String[]{null, null};
 		}
-		for (GFFtype gfFtype : GFFtype.values()) {
+		for (GffType gfFtype : GffType.values()) {
 			if (hashGffType2GffFile.containsKey(gfFtype.toString().toLowerCase())) {
 				return new String[]{gfFtype.toString(), hashGffType2GffFile.get(gfFtype.toString().toLowerCase())};
 			}
@@ -352,7 +352,7 @@ public class SpeciesFile {
 		}
 		try {
 			GffChrAbs gffChrAbs = new GffChrAbs();
-			gffChrAbs.setGffHash(new GffHashGene(getGffFileType(), getGffFile()));
+			gffChrAbs.setGffHash(new GffHashGene(getGffType(), getGffFile()));
 			gffChrAbs.setSeqHash(new SeqHash(getChromFaPath(), getChromFaRegx()));
 			GffChrSeq gffChrSeq = new GffChrSeq(gffChrAbs);
 			gffChrSeq.setGeneStructure(GeneStructure.ALLLENGTH);
@@ -452,7 +452,7 @@ public class SpeciesFile {
 		String[] gffType2File = gffGeneFile.split(SepSign.SEP_ID);
 		for (String string : gffType2File) {
 			String[] gffDetail = string.split(SepSign.SEP_INFO);
-			hashGffType2GffFile.put(gffDetail[0].toLowerCase(), gffDetail[1]);
+			hashGffType2GffFile.put(gffDetail[0].toLowerCase().replace("gff_", ""), gffDetail[1]);
 		}
 	}
 	
@@ -510,27 +510,6 @@ public class SpeciesFile {
 		}
 		return false;
 	
-	}
-	public static enum GFFtype {
-		GFF_NCBI , GFF_UCSC,GFF_PLANT,GFF_TIGR,GFF_CUFFLINKS;
-		static HashMap<String, GFFtype> mapString2GffType = new HashMap<String, SpeciesFile.GFFtype>();
-		/**
-		 * key为大写
-		 * @return
-		 */
-		public static HashMap<String, GFFtype> getMapString2GffType() {
-			if (mapString2GffType.size() > 0) {
-				return mapString2GffType;
-			}
-			mapString2GffType.put("GFF_NCBI", GFF_NCBI);
-			mapString2GffType.put("GFF_UCSC", GFF_UCSC);
-			mapString2GffType.put("GFF_PLANT", GFF_PLANT);
-			mapString2GffType.put("GFF_TIGR", GFF_TIGR);
-			mapString2GffType.put("GFF_CUFFLINKS", GFF_CUFFLINKS);
-			
-			return mapString2GffType;
-		}
-		
 	}
 	
 	/** 提取小RNA的一系列序列 */

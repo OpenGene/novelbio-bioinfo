@@ -59,13 +59,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	public static final String PROMOTER_PROXIMAL_STR = "Proximal Promoter_";
 	/**  Proximal Promoter_  */
 	public static final String PROMOTER_DOWNSTREAMTSS_STR = "Promoter DownStream Of Tss_";
-	
-	public static HashSet<GeneType> hashMRNA = new HashSet<GeneType>();
-	static {
-		hashMRNA.add(GeneType.mRNA);
-		hashMRNA.add(GeneType.PSEU_TRANSCRIPT);
-		hashMRNA.add(GeneType.mRNA_TE);
-	}
+
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	private GeneType flagTypeGene = GeneType.mRNA;
 	/** 设定基因的转录起点上游长度，默认为0 */
@@ -695,6 +689,11 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		else {
 			logger.error("NCBI的Gff文件有问题，其exon会窜位，本次添加exon出错，请check: " + locStart + " " + locEnd);
 		}
+	}
+	protected void addFirstExon(int locStart, int locEnd) {
+		ExonInfo exonInfo = new ExonInfo(this,isCis5to3(), locStart, locEnd);
+		clear();
+		add(exonInfo);
 	}
 	/**
 	 * 获得该转录本的起点，不考虑方向

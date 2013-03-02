@@ -27,8 +27,7 @@ public class ServTaxID implements MapTaxID{
 	@Autowired
 	private MapTaxID mapTaxID;
 
-	public ServTaxID()
-	{
+	public ServTaxID() {
 		mapTaxID = (MapTaxID)SpringFactory.getFactory().getBean("mapTaxID");
 	}
 	@Override
@@ -116,6 +115,7 @@ public class ServTaxID implements MapTaxID{
 		try {
 			lsTaxID = mapTaxID.queryLsTaxInfo(taxInfo);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return;
 		}
 		for (TaxInfo taxInfo2 : lsTaxID) {

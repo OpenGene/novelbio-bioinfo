@@ -22,7 +22,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
-
+//TODO 移动文件还不够好
 /**
  * 新的miRNA的预测，基于mirDeep的算法
  * 注意bowtie必须在系统变量下。可以通过修改mapper.pl文件来设置bowtie的文件夹路径
@@ -65,7 +65,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 	}
 	/**
 	 * 从bed文件转变为fasta格式，或直接设定fasta文件
-	 * 设定待比对的短序列fasta文件名字，可以随便设定。如果不舍定，则默认为输入bed文件+_Potential_DenoveMirna.fasta;
+	 * 设定待比对的短序列fasta文件名字，可以随便设定。如果不设定，则默认为输入bed文件+_Potential_DenoveMirna.fasta;
 	 * 推荐不设定
 	 * @param fastaOut
 	 * */
@@ -250,7 +250,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 		for (String string : lsFileName) {
 			String fileName = FileOperate.getFileName(string);
 			FileOperate.moveFile(string, outPath, outPrefix +fileName.replace("_" + suffix, ""), true);
-			logger.info("move:" + string + "\tto:" + outPrefix +fileName.replace("_" + suffix, ""));
+			logger.info("move:" + string + "\t" + "to:" + outPrefix +fileName.replace("_" + suffix, ""));
 		}
 		String outFinal = outPath + outPrefix;
 		

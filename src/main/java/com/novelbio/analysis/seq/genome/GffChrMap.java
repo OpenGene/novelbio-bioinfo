@@ -22,6 +22,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashCG;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
@@ -42,7 +43,6 @@ import com.novelbio.base.plot.heatmap.Gradient;
 import com.novelbio.base.plot.heatmap.PlotHeatMap;
 import com.novelbio.base.plot.java.HeatChart;
 import com.novelbio.database.domain.geneanno.SepSign;
-import com.novelbio.database.domain.geneanno.SpeciesFile.GFFtype;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modgeneid.GeneType;
 import com.novelbio.database.model.species.Species;
@@ -60,7 +60,7 @@ public class GffChrMap {
 	public static void main(String[] args) {
 		GffChrAbs gffChrAbs = new GffChrAbs();
 		Species species = new Species(10090);
-		species.setGfftype(GFFtype.GFF_UCSC);
+		species.setGfftype(GffType.UCSC);
 		MapReads mapReads = new MapReads();
 		mapReads.setBedSeq("/media/winF/NBC/Project/ChIP-Seq_LXW/mappingc007_filtered_extend_sorted.bed");
 		mapReads.setMapChrID2Len(species.getMapChromInfo());

@@ -12,6 +12,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
+import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
@@ -255,13 +256,24 @@ public class GffChrPlotTss {
 	}
 	
 	public PlotScatter plotLine(DotStyle dotStyle) {
-		ArrayList<double[]> lsXY = getLsXYtsstes();
+		return plotLine(dotStyle, null);
+	}
+	
+	/**
+	 * @param dotStyle
+	 * @param xStartEnd 仅绘制指定区间。譬如马红要求仅看0-500的图
+	 * null 表示没有这个限制
+	 * @return
+	 */
+	public PlotScatter plotLine(DotStyle dotStyle, double[] xStartEnd) {
+		ArrayList<double[]> lsXY = getLsXYtsstes(xStartEnd);
 		double[] yInfo = new double[lsXY.size()];
 		for (int i = 0; i < yInfo.length; i++) {
 			yInfo[i] = lsXY.get(i)[1];
 		}
 		double ymax = MathComput.max(yInfo);
 		double xStart = lsXY.get(0)[0]; double xEnd = lsXY.get(lsXY.size() - 1)[0];
+
 		PlotScatter plotScatter = new PlotScatter(PlotScatter.PLOT_TYPE_SCATTERPLOT);
 		plotScatter.addXY(lsXY, dotStyle);
 		double xLen = xEnd - xStart;
@@ -281,9 +293,16 @@ public class GffChrPlotTss {
 	
 	/**
 	 * 提取前务必设定{@link #fillLsMapInfos()}
+	 * @param xStartEnd 仅绘制指定区间。譬如马红要求仅看0-500的图
 	 * @return
 	 */
-	public ArrayList<double[]> getLsXYtsstes() {		
+	public ArrayList<double[]> getLsXYtsstes(double[] xStartEnd) {
+		if (xStartEnd != null) {
+			double length = xStartEnd[1] - xStartEnd[0];
+			xStartEnd[0] = xStartEnd[0] - 0.01 * length;
+			xStartEnd[1] = xStartEnd[1] + 0.01 * length;
+		}
+		
 		ArrayList<double[]> lsResult = new ArrayList<double[]>();
 		double[] yvalue = MapInfo.getCombLsMapInfo(lsMapInfos);
 		List<Integer> lsCoverage = getLsGeneCoverage(lsMapInfos);
@@ -293,6 +312,10 @@ public class GffChrPlotTss {
 			logger.error("xvalue 和 yvalue 的长度不一致，请检查");
 		}
 		for (int i = 0; i < xvalue.length; i++) {
+			if (xStartEnd != null && (xvalue[i] < xStartEnd[0] || xvalue[i] > xStartEnd[1])) {
+				continue;
+			}
+			
 			int coverage = lsCoverage.get(i);
 			double[] tmpResult= new double[2];
 			tmpResult[0] = xvalue[i];
@@ -414,6 +437,7 @@ public class GffChrPlotTss {
 	}
 	
 	/**
+	 * <b>绘图前调用</b><br>
 	 * 清空以下三个list<br>
 	 * 1. 绘制图片的区域  ArrayList< MapInfo > lsMapInfos;<br>
 	 * 2. 绘制图片的gene  ArrayList< Gene2Value > lsGeneID2Value;<br>

@@ -13,12 +13,12 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fasta.SeqHash;
+import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.SpeciesFile;
-import com.novelbio.database.domain.geneanno.SpeciesFile.GFFtype;
 import com.novelbio.database.domain.geneanno.TaxInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -58,7 +58,7 @@ public class Species {
 	String sepVersionAndYear = "_year_";
 	
 	/** 需要获得哪一种gffType */
-	GFFtype gfftype;
+	GffType gfftype;
 	
 	public Species() {}
 	public Species(int taxID) {
@@ -204,12 +204,12 @@ public class Species {
 		return speciesFile.getChromSeqFile();
 	}
 	/** 获得这个species在本version下的全体GffType */
-	public Map<String, GFFtype> getMapGffTypeAll() {
+	public Map<String, GffType> getMapGffTypeAll() {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
 		return speciesFile.getMapGffType();
 	}
 	/** 设定需要获取哪一种gff文件的注释 */
-	public void setGfftype(GFFtype gfftype) {
+	public void setGfftype(GffType gfftype) {
 		this.gfftype = gfftype;
 	}
 	/**
@@ -225,7 +225,7 @@ public class Species {
 	 * 指定version，和type，返回对应的gff文件，没有则返回null
 	 * @param Type
 	 */
-	public String getGffFile(GFFtype gffType) {
+	public String getGffFile(GffType gffType) {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
 		return speciesFile.getGffFile(gffType);
 	}
@@ -239,7 +239,7 @@ public class Species {
 	public String getGffFileType() {
 		if (gfftype == null) {
 			SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
-			gfftype = GFFtype.getMapString2GffType().get(speciesFile.getGffFileType());
+			gfftype = speciesFile.getGffType();
 		}
 		return gfftype.toString();
 	}

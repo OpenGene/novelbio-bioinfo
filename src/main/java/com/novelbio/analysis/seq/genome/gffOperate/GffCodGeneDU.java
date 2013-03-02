@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.model.modgeneid.GeneType;
 
 /**
  * 待检查，默认走全部覆盖该基因，没有5UTR和3UTR
@@ -491,7 +492,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 			if (utr5) {
 				if (flag[i] == 0
 						&& geneBody == false
-						&& GffGeneIsoInfo.hashMRNA.contains(gffGeneIsoInfo.getGeneType())
+						&& GeneType.isMRNA_CanHaveUTR(gffGeneIsoInfo.getGeneType())
 						&& gffGeneIsoInfo.getCod2ATG(coordStart) <= 0
 						&& gffGeneIsoInfo.getCod2Tss(coordEnd) >= 0
 						&& (gffGeneIsoInfo.getNumCodInEle(coordStart) != gffGeneIsoInfo.getNumCodInEle(coordStart) 
@@ -505,7 +506,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 			if (utr3) {
 				if (flag[i] == 0
 						&& geneBody == false
-						&& GffGeneIsoInfo.hashMRNA.contains(gffGeneIsoInfo.getGeneType())
+						&& GeneType.isMRNA_CanHaveUTR(gffGeneIsoInfo.getGeneType())
 						&& gffGeneIsoInfo.getCod2Tes(coordStart) <= 0
 						&& gffGeneIsoInfo.getCod2UAG(coordEnd) >= 0
 						&& (gffGeneIsoInfo.getNumCodInEle(coordStart) != gffGeneIsoInfo.getNumCodInEle(coordEnd) 

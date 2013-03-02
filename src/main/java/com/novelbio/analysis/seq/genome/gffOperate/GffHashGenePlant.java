@@ -66,7 +66,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 			mapMRNA2GeneType.put("mRNA",GeneType.mRNA);
 			mapMRNA2GeneType.put("miRNA",GeneType.miRNA);
 			mapMRNA2GeneType.put("tRNA",GeneType.tRNA);
-			mapMRNA2GeneType.put("pseudogenic_transcript", GeneType.PSEU_TRANSCRIPT);
+			mapMRNA2GeneType.put("pseudogenic_transcript", GeneType.PSEU);
 			mapMRNA2GeneType.put("snoRNA", GeneType.snoRNA);
 			mapMRNA2GeneType.put("snRNA", GeneType.snRNA);
 			mapMRNA2GeneType.put("rRNA", GeneType.rRNA);

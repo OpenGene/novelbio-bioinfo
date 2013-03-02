@@ -166,7 +166,7 @@ public class GffDetailGene extends ListDetailAbs {
 	 */
 	protected void addExon(int locStart,int locEnd) {
 		if (lsGffGeneIsoInfos.size() == 0) {//如果发现一个没有转录本的，则新添加一个gene设置类型为pseudo
-			addsplitlist(getName().get(0), GeneType.PSEU_TRANSCRIPT);
+			addsplitlist(getName().get(0), GeneType.PSEU);
 		}
 		GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(lsGffGeneIsoInfos.size()-1);//include one special loc start number to end number
 		gffGeneIsoInfo.addExon(locStart, locEnd);

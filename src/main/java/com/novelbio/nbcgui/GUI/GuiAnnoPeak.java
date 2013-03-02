@@ -11,7 +11,6 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
-import com.novelbio.database.domain.geneanno.SpeciesFile.GFFtype;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.controlquery.CtrlBatchAnnoPeak;
 

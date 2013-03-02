@@ -33,28 +33,28 @@ public class GffHashGene implements GffHashGeneInf{
 		this.gffHashGene = gffHashGene;
 	}
 	
-	public GffHashGene(String GffType, String gffFile) {
-		GffFileType gffFileType = GffFileType.getType(GffType);
+	public GffHashGene(String gffType, String gffFile) {
+		GffType gffFileType = GffType.getType(gffType);
 		read(gffFileType, gffFile);
 	}
-	public GffHashGene(GffFileType gffType, String gffFile) {
+	public GffHashGene(GffType gffType, String gffFile) {
 		read(gffType, gffFile);
 	}
 	
-	private void read(GffFileType gffType, String gffFile) {
-		if (gffType == GffFileType.UCSC) {
+	private void read(GffType gffType, String gffFile) {
+		if (gffType == GffType.UCSC) {
 			gffHashGene = new GffHashGeneUCSC();
 		}
-		else if (gffType == GffFileType.TIGR) {
+		else if (gffType == GffType.TIGR) {
 			gffHashGene = new GffHashGenePlant(NovelBioConst.GENOME_GFF_TYPE_TIGR);
 		}
-		else if (gffType == GffFileType.Plant) {
+		else if (gffType == GffType.Plant) {
 			gffHashGene = new GffHashGenePlant(NovelBioConst.GENOME_GFF_TYPE_PLANT);
 		}
-		else if (gffType == GffFileType.GTF) {
+		else if (gffType == GffType.GTF) {
 			gffHashGene = new GffHashCufflinkGTF();
 		}
-		else if (gffType == GffFileType.NCBI) {
+		else if (gffType == GffType.NCBI) {
 			gffHashGene = new GffHashGeneNCBI();
 		}
 		gffHashGene.ReadGffarray(gffFile);

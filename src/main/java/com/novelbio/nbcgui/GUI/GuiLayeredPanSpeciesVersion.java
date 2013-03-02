@@ -7,10 +7,11 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 
 import com.novelbio.base.gui.JComboBoxData;
-import com.novelbio.database.domain.geneanno.SpeciesFile.GFFtype;
 import com.novelbio.database.model.species.Species;
 
 public class GuiLayeredPanSpeciesVersion extends JLayeredPane {
+	private static final long serialVersionUID = 3280337322982250278L;
+
 	/** 外部传入如果选择species之后可能会发生的反应 */
 	SpeciesSelect speciesSelect;
 	

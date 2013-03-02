@@ -395,6 +395,13 @@ public abstract class SiteSnpIndelInfo {
 	 */
 	public List<String> toStrings() {
 		List<String> lsInfo = new LinkedList<String>();
+		if (refSiteSnpIndelParent.getGffIso() == null) {
+			for (int i = 0; i < 6; i++) {
+				lsInfo.add("");
+			}
+			return lsInfo;
+		}
+		
 		lsInfo.add(getRefAAnr().toString());
 		lsInfo.add(getRefAAnr().toStringAA3());
 		lsInfo.add(getThisAAnr().toString());

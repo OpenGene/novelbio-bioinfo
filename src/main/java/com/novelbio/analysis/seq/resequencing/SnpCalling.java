@@ -103,8 +103,12 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 			if (outPutFile != null && outPutFile.trim().equals("")) {
 				outPutFile = FileOperate.changeFileSuffix(sample2PileupFile[1], "_SnpInfo", "txt");
 			}
+			try {
+				addPileupToLsSnpIndel(sample2PileupFile[0], sample2PileupFile[1], outPutFile);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			
-			addPileupToLsSnpIndel(sample2PileupFile[0], sample2PileupFile[1], outPutFile);
 		}
 	}
 	private void notifyGUI(String pileupFileName) {
@@ -192,7 +196,13 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 		}
 		
 		refSiteSnpIndel.setGffChrAbs(gffChrAbs);
-		ArrayList<String[]> lsInfo = refSiteSnpIndel.toStringLsSnp(lsFilteredSnp);
+		ArrayList<String[]> lsInfo = null;
+		try {
+			lsInfo = refSiteSnpIndel.toStringLsSnp(lsFilteredSnp, true);
+		} catch (Exception e) {
+			return false;
+		}
+		
 		refSiteSnpIndel.setGffChrAbs(null);
 		if (lsInfo.size() == 0) {
 			logger.error("error");
