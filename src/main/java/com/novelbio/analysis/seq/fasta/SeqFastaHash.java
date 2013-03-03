@@ -216,8 +216,7 @@ public class SeqFastaHash extends SeqHashAbs {
 		return seqfasta.getSubSeq((int)startlocation, (int)endlocation, true);
 	}
 	/**
-	 * 输入序列名，自动转变为小写
-	 * 输入序列坐标，起点和终点
+	 * 输入序列名，名字会自动转变为小写
 	 * 返回序列
 	 */
 	public SeqFasta getSeqFasta(String seqID) {

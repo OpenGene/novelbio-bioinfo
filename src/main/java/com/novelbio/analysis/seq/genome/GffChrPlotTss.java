@@ -297,12 +297,6 @@ public class GffChrPlotTss {
 	 * @return
 	 */
 	public ArrayList<double[]> getLsXYtsstes(double[] xStartEnd) {
-		if (xStartEnd != null) {
-			double length = xStartEnd[1] - xStartEnd[0];
-			xStartEnd[0] = xStartEnd[0] - 0.01 * length;
-			xStartEnd[1] = xStartEnd[1] + 0.01 * length;
-		}
-		
 		ArrayList<double[]> lsResult = new ArrayList<double[]>();
 		double[] yvalue = MapInfo.getCombLsMapInfo(lsMapInfos);
 		List<Integer> lsCoverage = getLsGeneCoverage(lsMapInfos);
@@ -311,16 +305,35 @@ public class GffChrPlotTss {
 		if (xvalue.length != yvalue.length) {
 			logger.error("xvalue 和 yvalue 的长度不一致，请检查");
 		}
+		
+		double yStartValue = Double.MAX_VALUE;
+		double yEndValue = Double.MAX_VALUE;
 		for (int i = 0; i < xvalue.length; i++) {
-			if (xStartEnd != null && (xvalue[i] < xStartEnd[0] || xvalue[i] > xStartEnd[1])) {
-				continue;
+			int coverage = lsCoverage.get(i);
+			if (xStartEnd != null) {
+				if (xvalue[i] < xStartEnd[0]) {
+					yStartValue = yvalue[i] / coverage;
+					continue;
+				} else if (xvalue[i] > xStartEnd[1]) {
+					yEndValue = yvalue[i] / coverage;
+					break;
+				}
 			}
 			
-			int coverage = lsCoverage.get(i);
 			double[] tmpResult= new double[2];
 			tmpResult[0] = xvalue[i];
 			tmpResult[1] = yvalue[i] / coverage;
 			lsResult.add(tmpResult);
+		}
+		
+		/** 将结果的头尾设定为输入的头尾 */
+		if (lsResult.get(0)[0] > xStartEnd[0]) {
+			double[] start = new double[]{xStartEnd[0], yStartValue};
+			lsResult.add(0, start);
+		}
+		if (lsResult.get(lsResult.size() - 1)[0] < xStartEnd[1]) {
+			double[] end = new double[]{xStartEnd[1], yEndValue};
+			lsResult.add(end);
 		}
 		return lsResult;
 	}
