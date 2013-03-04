@@ -232,7 +232,7 @@ public class SnpSomaticFilter {
 	 * 如果没有过滤只运行了readSnpDetailFromFile，那就将读取的detail写入文本
 	 * @param txtFile
 	 */
-	public void writeToFile(GffChrAbs gffChrAbs, String txtFile) {
+	public void writeToFile(GffChrAbs gffChrAbs, boolean simpleTable, String txtFile) {
 		LinkedHashSet<String> setSample = getSetSampleName();
 		
 		TxtReadandWrite txtOut = new TxtReadandWrite(txtFile, true);
@@ -244,7 +244,7 @@ public class SnpSomaticFilter {
 		}
 		for (RefSiteSnpIndel refSiteSnpIndel : lsWriteIn) {
 			refSiteSnpIndel.setGffChrAbs(gffChrAbs);
-			ArrayList<String[]> lsResult = refSiteSnpIndel.toStringLsSnp(setSample, false, getVCFflag);
+			ArrayList<String[]> lsResult = refSiteSnpIndel.toStringLsSnp(setSample, getVCFflag, true);
 			refSiteSnpIndel.setGffChrAbs(null);
 			for (String[] strings : lsResult) {
 				txtOut.writefileln(strings);

@@ -27,7 +27,6 @@ public class NCBIchromFaChangeFormat {
 	}
 	
 	String chrFile = ""; String regx = "\\bchr\\w*";
-	PatternOperate patChrID;
 	
 	public void setChromFaPath(String chromFaPath, String regx) {
 		this.chrFile = chromFaPath;
@@ -37,7 +36,7 @@ public class NCBIchromFaChangeFormat {
 		TxtReadandWrite txtWrite = new TxtReadandWrite(outFile, true);
 		for (String chrFileName : initialAndGetFileList()) {
 			TxtReadandWrite txtRead = new TxtReadandWrite(chrFileName, false);
-			writeToFile(patChrID.getPatFirst(FileOperate.getFileName(chrFileName)), txtRead, txtWrite);
+			writeToFile(FileOperate.getFileNameSep(chrFileName)[0], txtRead, txtWrite);
 		}
 		txtWrite.close();
 	}
@@ -49,7 +48,6 @@ public class NCBIchromFaChangeFormat {
 		if (regx.equals("") || regx == null) {
 			regx = "\\bchr\\w*";
 		}
-		patChrID = new PatternOperate(regx, false);
 		
 		final PatternOperate patNum = new PatternOperate("\\d+", false);
 		ArrayList<String> lsFileName = FileOperate.getFoldFileNameLs(chrFile,regx, "*");

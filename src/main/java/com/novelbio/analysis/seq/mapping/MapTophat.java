@@ -244,6 +244,9 @@ public class MapTophat implements MapRNA{
 		}
 		if (gffChrAbs != null && gffChrAbs.getGffHashGene() != null) {
 			ArrayList<Integer> lsIntronSortedS2M = gffChrAbs.getGffHashGene().getLsIntronSortedS2M();
+			if (lsIntronSortedS2M.size() < 0) {
+				return;
+			}
 			int intronLenMin = lsIntronSortedS2M.get(50);
 			int intronLenMax = lsIntronSortedS2M.get(lsIntronSortedS2M.size() - 10);
 			if (intronLenMin < this.intronLenMin) {
@@ -334,6 +337,7 @@ public class MapTophat implements MapRNA{
 	/**
 	 * 用gtf文件辅助mapping
 	 * 如果设定为null，则表示不使用gtf文件
+	 * 如果设定为“”等不存在文件的，则使用GffChrAbs中的Gff文件
 	 * @param gtfFile
 	 */
 	public void setGtf_Gene2Iso(String gtfFile) {
@@ -351,7 +355,7 @@ public class MapTophat implements MapRNA{
 		return "";
 	}
 	private void setGTFfile() {
-		if (gtfFile == null || FileOperate.isFileExistAndBigThanSize(gtfFile, 100)) {
+		if (gtfFile == null || FileOperate.isFileExistAndBigThanSize(gtfFile, 0.1)) {
 			generateGtfFile = false;
 			return;
 		}

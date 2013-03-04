@@ -272,7 +272,7 @@ public class GuiSnpFilterSimple extends JPanel {
 			snpSomaticFilter.addFilterGroup(sampleDetailCol);
 			
 			snpSomaticFilter.filterSnp();
-			snpSomaticFilter.writeToFile(gffChrAbs, txtSaveTo.getText() + strings[0] + "vs" + strings[2] + "_" +strings[1] + ".xls");
+			snpSomaticFilter.writeToFile(gffChrAbs, true, txtSaveTo.getText() + strings[0] + "vs" + strings[2] + "_" +strings[1] + ".xls");
 		}
 	}
 	

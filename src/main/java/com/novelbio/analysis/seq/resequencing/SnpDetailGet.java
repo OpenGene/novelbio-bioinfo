@@ -245,7 +245,7 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 		txtWrite.writefileln(RefSiteSnpIndel.getTitleFromSampleName(mapSample2PileupFile.keySet(), getVCFflag));
 		for (ArrayList<RefSiteSnpIndel> lsRefSiteSnpIndel : mapChrID2LsSnpSite.values()) {//每条染色体
 			for (RefSiteSnpIndel refSiteSnpIndel : lsRefSiteSnpIndel) {//每个位点
-				ArrayList<String[]> lsResult = refSiteSnpIndel.toStringLsSnp(mapSample2PileupFile.keySet(), false, getVCFflag);
+				ArrayList<String[]> lsResult = refSiteSnpIndel.toStringLsSnp(mapSample2PileupFile.keySet(), getVCFflag, new ArrayList<SiteSnpIndelInfo>(), true);
 				for (String[] strings : lsResult) {//每个位点所存在的snp
 					txtWrite.writefileln(strings);
 				}

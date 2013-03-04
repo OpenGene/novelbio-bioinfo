@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
+import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapInfo;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -91,7 +92,12 @@ public class GffChrAbs {
 	public SeqHash getSeqHash() {
 		return seqHash;
 	}
-
+	public void setGffFile(int taxID, GffType gffType, String gffFile) {
+		if (FileOperate.isFileExist(gffFile)) {
+			gffHashGene = new GffHashGene(gffType, gffFile);
+			gffHashGene.setTaxID(taxID);
+		}
+	}
 	public void setGffFile(int taxID, String gffType, String gffFile) {
 		if (FileOperate.isFileExist(gffFile)) {
 			gffHashGene = new GffHashGene(gffType, gffFile);

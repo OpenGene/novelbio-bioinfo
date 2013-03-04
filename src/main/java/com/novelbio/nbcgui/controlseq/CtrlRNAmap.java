@@ -3,6 +3,7 @@ package com.novelbio.nbcgui.controlseq;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -25,7 +26,7 @@ public class CtrlRNAmap {
 	StrandSpecific strandSpecific;
 	
 	int threadNum = 4;
-	HashMap<String, ArrayList<ArrayList<FastQ>>> mapPrefix2LsFastq;
+	Map<String, ArrayList<ArrayList<FastQ>>> mapPrefix2LsFastq;
 	
 	MapRNA mapRNA;
 	
@@ -48,16 +49,15 @@ public class CtrlRNAmap {
 	 *  */
 	ArrayList<ArrayList<String>> lsExpResultRsemCounts = new ArrayList<ArrayList<String>>();
 	
-	/** 本项目务必第一个设定 */
-	public void setMapType(int mapType) {
+	public CtrlRNAmap(int mapType) {
 		if (mapType == TOP_HAT) {
 			this.mapType = TOP_HAT;
 		}
 		else if (mapType == RSEM) {
 			this.mapType = RSEM;
-		}
+		}	
 	}
-	public void setMapPrefix2LsFastq(HashMap<String, ArrayList<ArrayList<FastQ>>> mapPrefix2LsFastq) {
+	public void setMapPrefix2LsFastq(Map<String, ArrayList<ArrayList<FastQ>>> mapPrefix2LsFastq) {
 		this.mapPrefix2LsFastq = mapPrefix2LsFastq;
 	}
 	
@@ -100,6 +100,7 @@ public class CtrlRNAmap {
 			if (!creatMapRNA()) {
 				return;
 			}
+			mapRNA.setGffChrAbs(gffChrAbs);
 			setRefFile();
 			String prefix = entry.getKey();
 			ArrayList<ArrayList<FastQ>> lsFastqFR = entry.getValue();
@@ -137,7 +138,7 @@ public class CtrlRNAmap {
 		}
 	}
 	private void setRefFile() {
-		if (gffChrAbs == null && FileOperate.isFileExist(indexFile)) {
+		if (gffChrAbs == null || FileOperate.isFileExist(indexFile)) {
 			mapRNA.setFileRef(indexFile);
 			return;
 		}

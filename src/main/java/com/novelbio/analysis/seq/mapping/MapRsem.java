@@ -285,7 +285,9 @@ public class MapRsem implements MapRNA{
 		}
 	}
 	
-	/** 没用，给tophat用的 */
+	/** 设定Gene2Iso文件，如果有文件就用这个文件。
+	 * 如果文件不存在，则从GffChrAbs中生成这个文件
+	 *  */
 	@Override
 	public void setGtf_Gene2Iso(String gtfFile) {
 		this.gene2isoFile = gtfFile;

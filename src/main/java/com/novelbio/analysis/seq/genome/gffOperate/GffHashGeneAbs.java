@@ -164,8 +164,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		    for (int i = 0; i < chrLOCNum; i++) {
 				GffDetailGene tmpUCSCgene=value.get(i);
 				GffGeneIsoInfo gffGeneIsoInfoLong = tmpUCSCgene.getLongestSplitMrna();
-				gffGeneIsoInfoLong.getLsIntron();
-				for (ExonInfo intronInfo : gffGeneIsoInfoLong) {
+				for (ExonInfo intronInfo : gffGeneIsoInfoLong.getLsIntron()) {
 					lsIntronLen.add(intronInfo.Length());
 				}
 			}

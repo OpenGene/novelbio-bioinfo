@@ -195,7 +195,13 @@ public class GuiRNASeqMapping extends JPanel {
 		btnRun.setBounds(653, 512, 118, 24);
 		btnRun.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				 ctrlRNAmap = new CtrlRNAmap();
+				if (rdbtnRsem.isSelected()) {
+					ctrlRNAmap = new CtrlRNAmap(CtrlRNAmap.RSEM);
+				}
+				else if (rdbtnTophat.isSelected()) {
+					ctrlRNAmap = new CtrlRNAmap(CtrlRNAmap.TOP_HAT);
+				}
+
 				Species species = cmbSpecies.getSelectedValue();
 				species.setVersion(cmbSpeciesVersion.getSelectedValue());
 				
@@ -205,12 +211,7 @@ public class GuiRNASeqMapping extends JPanel {
 				out = FileOperate.addSep(out);
 				FileOperate.createFolders(out);
 				
-				if (rdbtnRsem.isSelected()) {
-					ctrlRNAmap.setMapType(CtrlRNAmap.RSEM);
-				}
-				else if (rdbtnTophat.isSelected()) {
-					ctrlRNAmap.setMapType(CtrlRNAmap.TOP_HAT);
-				}
+		
 				
 				ctrlRNAmap.setMapPrefix2LsFastq(getMapPrefix2LsFastq());
 				if (species == null || species.getTaxID() == 0) {

@@ -188,12 +188,12 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 		   if (ss[2].equals("match") || ss[2].equals("chromosome") || ss[0].startsWith("NW_") || ss[0].startsWith("NT_")) {
 			   continue;
 		   }
+		   if (content.contains("NC_015595")) {
+			   logger.error("stop");
+		   }
 		   ss[0] = getChrID(ss);
 		   if (ss[2].equals("region")) {
 			   continue;
-		   }
-		   if (content.contains("AT3TE00010")) {
-			   logger.error("stop");
 		   }
 		   //读取到gene
 		   if (setIsGene.contains(ss[2])) {
@@ -264,7 +264,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
     */
    private String[] addNewGene(String[] ss) {
 	 //when read the # and the line contains gene, it means the new LOC
-	   String geneID = patID.getPatFirst(ss[8]);
+	   String geneID = ss[0] + patID.getPatFirst(ss[8]);
 	   String geneName = getGeneName(ss[8]); setTaxID(ss, geneName);
 	   
 	   GffDetailGene gffDetailLOC = mapGenID2GffDetail.get(geneID);
@@ -288,8 +288,8 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
     * 1: rnaName
     */
    private String[]  addMRNA(String[] lastGeneIDandName, String[] ss) {
-	   String rnaID = patID.getPatFirst(ss[8]);
-	   String rnaName = add_MapRnaID2RnaName_And_MapRnaID2GeneID(lastGeneIDandName, rnaID, ss[8]);
+	   String rnaID = ss[0] + patID.getPatFirst(ss[8]);
+	   String rnaName = add_MapRnaID2RnaName_And_MapRnaID2GeneID(lastGeneIDandName, rnaID, ss);
 	   GffDetailGene gffDetailGene = getGffDetailRnaID(rnaID);
 	   
 	   String[] mRNAname = getMrnaName(rnaName, ss);
@@ -316,22 +316,24 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
     * @param ss
     * @return  返回加入的rna名字
     */
-   private String add_MapRnaID2RnaName_And_MapRnaID2GeneID(String[] lastGeneIDandName, String rnaID, String ss8) {
-	   String rnaName = patmRNAName.getPatFirst(ss8);
+   private String add_MapRnaID2RnaName_And_MapRnaID2GeneID(String[] lastGeneIDandName, String rnaID, String[] ss) {
+	   String rnaName = patmRNAName.getPatFirst(ss[8]);
 	   if (rnaName == null) {
 		   rnaName = lastGeneIDandName[1];
 	   }
 	   //tRNA这种里面是没有parentID的，所以就将其上一行的geneID抓过来就行了
-	   String geneID = patParentID.getPatFirst(ss8);
+	   String geneID = patParentID.getPatFirst(ss[8]);
 	   if (geneID == null) {
 		   geneID = lastGeneIDandName[0];
-	   }
+	   } else {
+		geneID = ss[0] + geneID;
+	}
 	   mapRnaID2GeneID.put(rnaID, geneID);
 	   return rnaName;
    }
    
    private boolean addExon(String[] lastGeneID2Name, String[] lastRnaID2Name, String[] ss) {
-	   String rnaID = getRNAID(lastGeneID2Name, lastRnaID2Name, ss[8]);
+	   String rnaID = getRNAID(lastGeneID2Name, lastRnaID2Name, ss);
 	   
 	   GffGeneIsoInfo gffGeneIsoInfo = null;
 	   int exonStart = Integer.parseInt(ss[3]);
@@ -361,7 +363,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
    private void addCDS(String[] lastGeneID2Name, String[] lastRnaID2Name, String[] ss) {
 	   int cdsStart = Integer.parseInt(ss[3]);
 	   int cdsEnd = Integer.parseInt(ss[4]);
-	   String rnaID = getRNAID(lastGeneID2Name, lastRnaID2Name, ss[8]);
+	   String rnaID = getRNAID(lastGeneID2Name, lastRnaID2Name, ss);
 	   String geneID = getGeneID(rnaID);
 	   GffGeneIsoInfo gffGeneIsoInfo = getGffIso(rnaID, cdsStart, cdsEnd);
 	   gffGeneIsoInfo.setATGUAG(Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
@@ -379,13 +381,15 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
     * @param lastRNAID
     * @param
     */
-   private String getRNAID(String[] lastGeneID2Name, String[] lastRNAID2Name, String ss8) {
-	   String rnaID = patParentID.getPatFirst(ss8);
+   private String getRNAID(String[] lastGeneID2Name, String[] lastRNAID2Name, String[] ss) {
+	   String rnaID = patParentID.getPatFirst(ss[8]);
 	   if (rnaID == null) {
 		   rnaID = lastRNAID2Name[0];
 		   if (rnaID == null) {
 			   rnaID = lastGeneID2Name[0];
 		   }
+	   } else {
+		   rnaID = ss[0] + rnaID;
 	   }
 	   return rnaID;
    }

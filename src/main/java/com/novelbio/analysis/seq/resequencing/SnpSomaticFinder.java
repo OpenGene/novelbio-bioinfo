@@ -237,7 +237,7 @@ public class SnpSomaticFinder {
 		String[] title = RefSiteSnpIndel.getTitleFromSampleName(setSampleName, snpSomaticFilter.getVCFflag());
 		txtOutput.writefileln(title);
 		for (RefSiteSnpIndel refSiteSnpIndel : lsRefSiteSnpIndelsResult) {
-			ArrayList<String[]> lsTmpResult = refSiteSnpIndel.toStringLsSnp(setSampleName, snpSomaticFilter.getVCFflag());
+			ArrayList<String[]> lsTmpResult = refSiteSnpIndel.toStringLsSnp(setSampleName, snpSomaticFilter.getVCFflag(), true);//(setSampleName, snpSomaticFilter.getVCFflag());
 			for (String[] strings : lsTmpResult) {
 				txtOutput.writefileln(strings);
 			}
