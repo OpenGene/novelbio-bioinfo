@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
+import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 
@@ -16,7 +17,7 @@ import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
  * @author zong0jie
  *
  */
-public class SiteInfo implements Comparable<SiteInfo>, Alignment {
+public class SiteSeqInfo implements Comparable<SiteSeqInfo>, Alignment {
 	Logger logger = Logger.getLogger(MapInfo.class);
 	
 	/** 比较mapinfo的起点终点 */
@@ -45,11 +46,11 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 	SeqFasta seqFasta = new SeqFasta();
 	
 	
-	public SiteInfo() { }
+	public SiteSeqInfo() { }
 	/**
 	 * @param chrID
 	 */
-	public SiteInfo(String chrID) {
+	public SiteSeqInfo(String chrID) {
 		this.refID = chrID;
 	}
 	/**
@@ -60,7 +61,7 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 	 * @param weight
 	 * @param title 本条目的名字，譬如基因名等
 	 */
-	public SiteInfo(String chrID, int startLoc, int endLoc, int flagLoc ,double weight, String title) {
+	public SiteSeqInfo(String chrID, int startLoc, int endLoc, int flagLoc ,double weight, String title) {
 		this.refID = chrID;
 		this.startLoc = startLoc;
 		this.endLoc = endLoc;
@@ -74,7 +75,7 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 	 * @param startLoc 从0开始，如果startLoc和endLoc都小于等于0，则需要对方返回全长信息
 	 * @param endLoc 从0开始
 	 */
-	public SiteInfo(String chrID, int startLoc, int endLoc) {
+	public SiteSeqInfo(String chrID, int startLoc, int endLoc) {
 		if (startLoc < 0)
 			startLoc = 0;
 		if (endLoc < 0)
@@ -96,7 +97,7 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 	 * @param flag 比较的标签，可以是表达值等
 	 * @param title 本条目的名字，譬如基因名等
 	 */
-	public SiteInfo(String chrID,double weight, String title) {
+	public SiteSeqInfo(String chrID,double weight, String title) {
 		this.refID = chrID;
 		this.score = weight;
 		this.name = title;
@@ -170,7 +171,7 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 	 * @param length
 	 */
 	public void extend(int length) {
-		if (Length() >= length) {
+		if (getLength() >= length) {
 			return;
 		}
 		if (cis5to3 == null || cis5to3) {
@@ -186,14 +187,14 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 	 * @param length
 	 */
 	public void extendCenter(int range) {
-		if (Length() >= range*2) {
+		if (getLength() >= range*2) {
 			return;
 		}
 		int loc = getMidLoc();
 		startLoc = loc - range;
 		endLoc = loc + range;
 	}
-	public int Length() {
+	public int getLength() {
 		return Math.abs(endLoc - startLoc);
 	}
 
@@ -343,7 +344,7 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 	 * 先比refID，然后比start，end，或者比flag或者比score
 	 * 比score的时候就不考虑refID了
 	 */
-	public int compareTo(SiteInfo siteInfo) {
+	public int compareTo(SiteSeqInfo siteInfo) {
 		if (compareType == COMPARE_LOCFLAG) {
 			int i = refID.compareTo(siteInfo.refID);
 			if (i != 0) {
@@ -405,11 +406,11 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 		return score;
 	}
 	
-	public SiteInfo clone() {
+	public SiteSeqInfo clone() {
 		
-		SiteInfo siteInfo;
+		SiteSeqInfo siteInfo;
 		try {
-			siteInfo = (SiteInfo) super.clone();
+			siteInfo = (SiteSeqInfo) super.clone();
 			siteInfo.cis5to3 = cis5to3;
 			siteInfo.description = description;
 			siteInfo.endLoc = endLoc;
@@ -434,7 +435,7 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 	 * @param max true：选择权重最大的 false：选择权重最小的
 	 * @return
 	 */
-	public static<T extends SiteInfo> List<T> sortLsMapInfo(List<T> lsmapinfo, double distance) {
+	public static<T extends SiteSeqInfo> List<T> sortLsMapInfo(List<T> lsmapinfo, double distance) {
 		HashMap<String, ArrayList<double[]>> hashLsMapInfo = new HashMap<String, ArrayList<double[]>>();
 		HashMap<String, T> hashMapInfo = new HashMap<String, T>();
 		for (T mapInfo : lsmapinfo) {
@@ -471,9 +472,9 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 	 * @param lsSiteInfo
 	 * @return
 	 */
-	public static int[] getLsMapInfoUpDown(List<? extends SiteInfo> lsSiteInfo) {
+	public static int[] getLsMapInfoUpDown(List<? extends SiteSeqInfo> lsSiteInfo) {
 		int maxUp = 0; int maxDown = 0;
-		for (SiteInfo siteInfo : lsSiteInfo) {
+		for (SiteSeqInfo siteInfo : lsSiteInfo) {
 			int tmpUp = siteInfo.getFlagSite() - siteInfo.getStartAbs();
 			int tmpDown = siteInfo.getEndAbs() - siteInfo.getFlagSite();
 			if (tmpUp > maxUp) {
@@ -494,7 +495,7 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 		if (obj == null) return false;
 		
 		if (getClass() != obj.getClass()) return false;
-		SiteInfo otherObj = (SiteInfo)obj;
+		SiteSeqInfo otherObj = (SiteSeqInfo)obj;
 		if (
 				cis5to3 == otherObj.cis5to3
 				&& refID.equals(otherObj.refID)
@@ -512,7 +513,7 @@ public class SiteInfo implements Comparable<SiteInfo>, Alignment {
 	 * 仅判断坐标是否一致
 	 * 就是判断start和end是否一致
 	 */
-	public boolean equalsLoc(SiteInfo mapInfo) {
+	public boolean equalsLoc(SiteSeqInfo mapInfo) {
 		if (mapInfo.getStartAbs() == getStartAbs() && mapInfo.getEndAbs() == getEndAbs()) {
 			return true;
 		}

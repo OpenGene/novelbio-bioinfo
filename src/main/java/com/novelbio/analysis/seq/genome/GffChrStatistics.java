@@ -16,7 +16,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
-import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
+import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamFile;
@@ -155,29 +155,17 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	}
 	
 	public void addAlignRecord(AlignRecord alignRecord) {
-		ArrayList<SiteInfo> lsSiteInfos = getLsGetBedSiteInfo(alignRecord);
-		for (SiteInfo siteInfo : lsSiteInfos) {
-			searchSite(siteInfo);
+		for (Align align : alignRecord.getAlignmentBlocks()) {
+			searchSite(align);
 		}
 	}
-	
-	private ArrayList<SiteInfo> getLsGetBedSiteInfo(AlignRecord alignRecord) {
-		ArrayList<SiteInfo> lSiteInfos = new ArrayList<SiteInfo>();
-		ArrayList<Align> lsAligns = alignRecord.getAlignmentBlocks();
-		for (Align align : lsAligns) {
-			SiteInfo siteInfo = new SiteInfo(alignRecord.getRefID(), align.getStartCis(), align.getEndCis());
-			siteInfo.setFlagLoc( (align.getStartCis() + align.getEndCis())/2);
-			lSiteInfos.add(siteInfo);
-		}
-		return lSiteInfos;
-	}
-	
+
 	private void readNormFile(String peakFile) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(peakFile, false);
 		int i = 0;
 		for (String readLine : txtRead.readlines(firstLine)) {
-			SiteInfo siteInfo = readInfo(readLine.split("\t"));
-			searchSite(siteInfo);
+			Align align = readInfo(readLine.split("\t"));
+			searchSite(align);
 			
 			allnumber = allnumber + readLine.getBytes().length;
 			if (i%1000 == 0) {
@@ -188,21 +176,20 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 			if (flagStop) break;
 		}
 	}
+	
 	/**
 	 * 给定坐标信息list，返回该坐标所对应的mapinfo
 	 * @param lsIn  string[2] 则返回 chrID summit
 	 * string[3] 则返回chrID start end
 	 * @return
 	 */
-	private SiteInfo readInfo(String[] readLine) {
+	private Align readInfo(String[] readLine) {
 		try {
-			SiteInfo siteInfo = new SiteInfo(readLine[colChrID]);
-			siteInfo.setFlagLoc(Integer.parseInt(readLine[colSummit].trim()));
-			return siteInfo;
+			Align align = new Align(readLine[colChrID], Integer.parseInt(readLine[colSummit].trim()), Integer.parseInt(readLine[colSummit].trim()));
+			return align;
 		} catch (Exception e) {
 			return null;
 		}
-
 	}
 	/**
 	 * 输入单个坐标位点，返回定位信息，用于统计位点的定位情况
@@ -218,27 +205,27 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	 * 6: GeneEnd，在基因外的尾部 由setStatistic()方法的GeneEnd定义
 	 * 7: Tss 包括Tss上和Tss下，由filterTss定义
 	 */
-	private void searchSite(SiteInfo siteInfo) {
+	private void searchSite(Align align) {
 		suspendCheck();
 		
-		if (siteInfo == null) {
+		if (align == null) {
 			return;
 		}
 		boolean flagIntraGenic = false;//在gene内的标记
-		GffCodGene gffCodGene = gffChrAbs.getGffHashGene().searchLocation(siteInfo.getRefID(), siteInfo.getFlagSite());
+		GffCodGene gffCodGene = gffChrAbs.getGffHashGene().searchLocation(align.getRefID(), align.getMidSite());
 		if (gffCodGene == null) {
 			return;
 		}
 		if (gffCodGene.isInsideLoc()) {
-			flagIntraGenic = setStatisticsNum(gffCodGene.getGffDetailThis(), siteInfo.getFlagSite());
+			flagIntraGenic = setStatisticsNum(gffCodGene.getGffDetailThis(), align.getMidSite());
+		} else {
+			flagIntraGenic = setStatisticsNum(gffCodGene.getGffDetailUp(), gffCodGene.getGffDetailDown(), align.getMidSite());
 		}
-		else {
-			flagIntraGenic = setStatisticsNum(gffCodGene.getGffDetailUp(), gffCodGene.getGffDetailDown(), siteInfo.getFlagSite());
-		}
-		if (flagIntraGenic)
+		if (flagIntraGenic) {
 			intraGenic++;
-		else
+		} else {
 			interGenic++;
+		}
 	}
 	/**
 	 * 设定统计值，并返回是否在IntraGenic中，也就是基因内部

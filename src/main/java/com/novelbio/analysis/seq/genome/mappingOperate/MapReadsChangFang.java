@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsChangFang.CGmethyType;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.PatternOperate;
 
 /**
@@ -225,7 +226,7 @@ class GtfHongXingMethy implements Alignment{
 	}
 	
 	@Override
-	public int Length() {
+	public int getLength() {
 		return Math.abs(getStartAbs() - getEndAbs()) + 1;
 	}
 	

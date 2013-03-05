@@ -16,7 +16,7 @@ import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
+import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.database.domain.geneanno.SnpIndelRs;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -40,7 +40,7 @@ public abstract class SiteSnpIndelInfo {
 
 	String referenceSeq;
 	/** 如果snp落在了exon上，则该类来保存ref所影响到的氨基酸的序列 */
-	SiteInfo refSeqIntactAA = new SiteInfo();
+	SiteSeqInfo refSeqIntactAA = new SiteSeqInfo();
 	
 	String thisSeq;
 	

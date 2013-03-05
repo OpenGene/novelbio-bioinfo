@@ -185,12 +185,10 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	   for (String content : txtgff.readlines()) {
 		   if(content.charAt(0)=='#') continue;
 		   String[] ss = content.split("\t");//按照tab分开
-		   if (ss[2].equals("match") || ss[2].equals("chromosome") || ss[0].startsWith("NW_") || ss[0].startsWith("NT_")) {
+		   if (ss[2].equals("match") || ss[2].toLowerCase().equals("chromosome") || ss[2].toLowerCase().equals("intron") || ss[0].startsWith("NW_") || ss[0].startsWith("NT_")) {
 			   continue;
 		   }
-		   if (content.contains("NC_015595")) {
-			   logger.error("stop");
-		   }
+		   
 		   ss[0] = getChrID(ss);
 		   if (ss[2].equals("region")) {
 			   continue;
@@ -245,7 +243,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 					   chrID = "chr" + PatternOperate.getPatLoc(ss[8], regxChrID, false).get(0)[0];
 				   } catch (Exception e) {
 					   logger.error("本位置出错，错误的region，本来一个region应该是一个染色体，这里不知道是什么 " + ArrayOperate.cmbString(ss, "\t"));
-					   chrID = "unkonwn";
+					   chrID = GeneID.removeDot(ss[0]);
 				   }
 			   }
 			   mapID2ChrID.put(ss[0], chrID);

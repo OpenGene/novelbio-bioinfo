@@ -152,8 +152,8 @@ public class GffGeneCluster {
 		}
 		for (int i = 0; i < lsGeneCluster.size(); i++) {
 			for (GffDetailGene gffDetailGene : lsGeneCluster.get(i)) {
-				if (gffDetailGene.Length() > lengthGffGene) {
-					lengthGffGene = gffDetailGene.Length();
+				if (gffDetailGene.getLength() > lengthGffGene) {
+					lengthGffGene = gffDetailGene.getLength();
 					index = i;
 				}
 			}

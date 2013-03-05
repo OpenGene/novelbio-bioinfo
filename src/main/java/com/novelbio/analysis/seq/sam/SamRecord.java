@@ -16,7 +16,7 @@ import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.BedRecord;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
-import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
+import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 
 import net.sf.samtools.AlignmentBlock;
@@ -35,7 +35,7 @@ import net.sf.samtools.util.DateParser;
 import net.sf.samtools.util.Iso8601Date;
 import net.sf.samtools.util.StringUtil;
 
-public class SamRecord extends SiteInfo implements AlignRecord{
+public class SamRecord extends SiteSeqInfo implements AlignRecord{
 	private static Logger logger = Logger.getLogger(SamRecord.class);
 	SAMRecord samRecord;
 	Boolean isJunctionReads;
@@ -308,7 +308,7 @@ public class SamRecord extends SiteInfo implements AlignRecord{
 			String[] info = string.split(",");
 			bedRecord.setRefID(info[0]);
 			int start1 = Integer.parseInt(info[1].substring(1));
-			int end1 = start1 + Length() - 1;
+			int end1 = start1 + getLength() - 1;
 			bedRecord.setStartEndLoc(start1, end1);
 			bedRecord.setCIGAR(info[2]);
 			bedRecord.setCis5to3(info[1].charAt(0));

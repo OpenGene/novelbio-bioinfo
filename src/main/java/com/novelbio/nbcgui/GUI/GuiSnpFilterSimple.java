@@ -72,6 +72,8 @@ public class GuiSnpFilterSimple extends JPanel {
 	JComboBoxData<SnpLevel> cmbSnpLevel = new JComboBoxData<SnpLevel>();
 	
 	GffChrAbs gffChrAbs = new GffChrAbs();
+	private JTextField txtSnpHeto;
+	private JTextField txtSnpHetoMore;
 	
 	/**
 	 * Create the panel.
@@ -138,18 +140,18 @@ public class GuiSnpFilterSimple extends JPanel {
 		JButton btnSaveto = new JButton("SaveTo");
 		btnSaveto.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				txtSaveTo.setText(guiFileOpen.saveFileName("Out", ""));
+				txtSaveTo.setText(guiFileOpen.saveFileNameAndPath("Out", ""));
 			}
 		});
 		btnSaveto.setBounds(606, 481, 118, 24);
 		add(btnSaveto);
 		
 		scrlCompare = new JScrollPaneData();
-		scrlCompare.setBounds(642, 258, 260, 111);
+		scrlCompare.setBounds(642, 273, 260, 96);
 		add(scrlCompare);
 		
 		JLabel lblCompare = new JLabel("Compare");
-		lblCompare.setBounds(644, 232, 69, 14);
+		lblCompare.setBounds(642, 248, 69, 14);
 		add(lblCompare);
 		
 		JButton btnAddCompare = new JButton("AddCompare");
@@ -221,6 +223,24 @@ public class GuiSnpFilterSimple extends JPanel {
 		btnDelsnp.setBounds(512, 178, 118, 24);
 		add(btnDelsnp);
 		
+		JLabel lblHetosnppropfilter = new JLabel("HetoSnpPropFilter");
+		lblHetosnppropfilter.setBounds(642, 199, 144, 14);
+		add(lblHetosnppropfilter);
+		
+		JLabel label = new JLabel("HetoMoreSnpPropFilter");
+		label.setBounds(642, 222, 179, 14);
+		add(label);
+		
+		txtSnpHeto = new JTextField();
+		txtSnpHeto.setBounds(833, 197, 69, 18);
+		add(txtSnpHeto);
+		txtSnpHeto.setColumns(10);
+		
+		txtSnpHetoMore = new JTextField();
+		txtSnpHetoMore.setBounds(832, 220, 70, 18);
+		add(txtSnpHetoMore);
+		txtSnpHetoMore.setColumns(10);
+		
 		initial();
 	}
 	private void initial() {
@@ -240,7 +260,12 @@ public class GuiSnpFilterSimple extends JPanel {
 	private void run() {
 		gffChrAbs.setSpecies(guiLayeredPaneSpeciesVersionGff.getSelectSpecies());
 		SnpSomaticFilter snpSomaticFilter = new SnpSomaticFilter();
-		snpSomaticFilter.setSnp_HetoMore_Contain_SnpProp_Min(0.3);
+		try {
+			snpSomaticFilter.setSnp_Heto_Contain_SnpProp_Min(Double.parseDouble(txtSnpHeto.getText()));
+		} catch (Exception e) { }
+		try {
+			snpSomaticFilter.setSnp_HetoMore_Contain_SnpProp_Min(Double.parseDouble(txtSnpHetoMore.getText()));
+		} catch (Exception e) { }
 
 		List<String[]> lsSnpCompareInfo = scrlCompare.getLsDataInfo();
 		List<String[]> lsSnpFile = sclSnpFile.getLsDataInfo();

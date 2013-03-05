@@ -850,22 +850,24 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 			
 			lsTmpInfo.add(siteSnpIndelInfo.getReferenceSeq());
 			lsTmpInfo.add(siteSnpIndelInfo.getThisSeq());
-			lsTmpInfo.add(siteSnpIndelInfo.getSnpIndelRs().getSnpRsID());
 			
-			if (!simple && gffGeneIsoInfo != null) {
-				lsResultTmp.add(gffGeneIsoInfo.getName());
-				lsResultTmp.add(gffGeneIsoInfo.getGeneID().getSymbol());
-				lsResultTmp.add(gffGeneIsoInfo.getGeneID().getDescription());
-			}
-			else if (!simple && gffGeneIsoInfo == null) {
-				lsResultTmp.add("");
-				lsResultTmp.add("");
-				lsResultTmp.add("");
-			}
-			if (!simple && prop >= 0) {
-				lsResultTmp.add(prop + "");
-			} else if (!simple && prop < 0) {
-				lsResultTmp.add("");
+			if (!simple) {
+				lsTmpInfo.add(siteSnpIndelInfo.getSnpIndelRs().getSnpRsID());
+				if (gffGeneIsoInfo != null) {
+					lsResultTmp.add(gffGeneIsoInfo.getName());
+					lsResultTmp.add(gffGeneIsoInfo.getGeneID().getSymbol());
+					lsResultTmp.add(gffGeneIsoInfo.getGeneID().getDescription());
+				}
+				else if (gffGeneIsoInfo == null) {
+					lsResultTmp.add("");
+					lsResultTmp.add("");
+					lsResultTmp.add("");
+				}
+				if (prop >= 0) {
+					lsResultTmp.add(prop + "");
+				} else if (prop < 0) {
+					lsResultTmp.add("");
+				}
 			}
 			
 			if (lsSampleNames == null || lsSampleNames.size() == 0) {
@@ -903,8 +905,8 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		return lsResult;
 	}
 	
-	public static String[] getTitleFromSampleName(Collection<String> lsSampleNames) {
-		return getTitleFromSampleName(lsSampleNames, false);
+	public static String[] getTitleFromSampleName(Collection<String> lsSampleNames, boolean simple) {
+		return getTitleFromSampleName(lsSampleNames, false, simple);
 	}
 	
 	/** 
@@ -912,19 +914,19 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	 * @param lsSampleNames
 	 * @return
 	 */
-	public static String[] getTitleFromSampleName(Collection<String> lsSampleNames, boolean getGATKflag) {
+	public static String[] getTitleFromSampleName(Collection<String> lsSampleNames, boolean getGATKflag, boolean simple) {
 		LinkedList<String> lsTitle = new LinkedList<String>();
 		lsTitle.add("ChrID");
 		lsTitle.add("Loc");
 		lsTitle.add("RefSequence");
 		lsTitle.add("ThisSequence");
-		lsTitle.add("DBsnpID");
-		
-		lsTitle.add("GeneID");
-		lsTitle.add("GeneSymbol");
-		lsTitle.add("Description");
-		lsTitle.add("Distance2GeneStart");
-
+		if (!simple) {
+			lsTitle.add("DBsnpID");
+			lsTitle.add("GeneID");
+			lsTitle.add("GeneSymbol");
+			lsTitle.add("Description");
+			lsTitle.add("Distance2GeneStart");
+		}
 		
 		for (String sampleName : lsSampleNames) {
 			lsTitle.add(sampleName + "_ReadsDepth");
@@ -934,9 +936,12 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 				lsTitle.add(sampleName + "_Quality");
 			}
 		}
-		lsTitle.add("OrfShift");
-		lsTitle.add("IsInExon");
-		lsTitle.addAll(SiteSnpIndelInfo.getTitle());
+		if (!simple) {
+			lsTitle.add("OrfShift");
+			lsTitle.add("IsInExon");
+			lsTitle.addAll(SiteSnpIndelInfo.getTitle());
+		}
+		
 		String[] infpoStrings = lsTitle.toArray(new String[0]);
 		return infpoStrings;
 	}
@@ -1056,7 +1061,7 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	public static void writeToFile(String outFileName, ArrayList<RefSiteSnpIndel> lsRefSiteSnpIndels, 
 			Collection<String> lsSampleNames, boolean getGATKflag, boolean simpleTable) {
 		TxtReadandWrite txtOutput = new TxtReadandWrite(outFileName, true);
-		String[] title = RefSiteSnpIndel.getTitleFromSampleName(lsSampleNames);
+		String[] title = RefSiteSnpIndel.getTitleFromSampleName(lsSampleNames,getGATKflag, simpleTable);
 		txtOutput.writefileln(title);
 		for (RefSiteSnpIndel refSiteSnpIndel : lsRefSiteSnpIndels) {
 			ArrayList<String[]> lsTmpResult = refSiteSnpIndel.toStringLsSnp(lsSampleNames, getGATKflag, new ArrayList<SiteSnpIndelInfo>(), simpleTable);//(lsSampleNames, getGATKflag);

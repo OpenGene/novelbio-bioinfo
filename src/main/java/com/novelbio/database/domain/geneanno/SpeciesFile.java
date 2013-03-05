@@ -127,7 +127,7 @@ public class SpeciesFile {
 	}
 	public String getChromSeqFile() {
 		if (chromSeq == null || chromSeq.trim().equals("")) {
-			chromSeq = FileOperate.addSep(chromPath) + "all/chrAll.fa";
+			chromSeq = FileOperate.addSep(getChromFaPath()) + "all/chrAll.fa";
 		}
 		
 		if (!FileOperate.isFileExistAndBigThanSize(chromSeq, 10)) {

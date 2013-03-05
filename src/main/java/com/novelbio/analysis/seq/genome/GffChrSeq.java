@@ -12,7 +12,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
-import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
+import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.species.Species;
@@ -41,7 +41,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	/** 是提取位点还是提取基因 */
 	boolean booGetIsoSeq = false;
 	LinkedHashSet<GffGeneIsoInfo> setIsoToGetSeq = new LinkedHashSet<GffGeneIsoInfo>();
-	ArrayList<SiteInfo> lsSiteInfos = new ArrayList<SiteInfo>();
+	ArrayList<SiteSeqInfo> lsSiteInfos = new ArrayList<SiteSeqInfo>();
 	
 	/** 默认存入文件，否则返回一个listSeqFasta */
 	boolean saveToFile = true;
@@ -172,7 +172,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	 * 输入位点提取序列
 	 * @param lsListGffName
 	 */
-	public void setGetSeqSite(ArrayList<SiteInfo> lsSiteName) {
+	public void setGetSeqSite(ArrayList<SiteSeqInfo> lsSiteName) {
 		lsSiteInfos = lsSiteName;
 		booGetIsoSeq = false;
 	}
@@ -238,7 +238,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 			}
 		}
 		else {
-			for (SiteInfo siteInfo : lsSiteInfos) {
+			for (SiteSeqInfo siteInfo : lsSiteInfos) {
 				num++;
 				getSeq(siteInfo);
 				SeqFasta seqFasta = siteInfo.getSeqFasta();
@@ -299,7 +299,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	 * 给定坐标，获得该坐标所对应的序列,会根据输入的方向进行反向
 	 * @return
 	 */
-	public void getSeq(SiteInfo siteInfo) {
+	public void getSeq(SiteSeqInfo siteInfo) {
 		gffChrAbs.getSeqHash().getSeq(siteInfo);
 	}
 	/**
@@ -324,7 +324,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	 */
 	public SeqFasta getSeq(String IsoName, int startExon, int endExon, boolean getIntron) {
 		GffGeneIsoInfo gffGeneIsoInfo = getIso(IsoName);
-		SeqFasta seqFasta = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.getChrID(), startExon, endExon, gffGeneIsoInfo, getIntron);
+		SeqFasta seqFasta = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.getRefID(), startExon, endExon, gffGeneIsoInfo, getIntron);
 		if (seqFasta == null) {
 			return null;
 		}
@@ -371,7 +371,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		if (lsExonInfos.size() == 0) {
 			return null;
 		}
-		SeqFasta seqFastaResult = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.getChrID(), lsExonInfos, getIntron);
+		SeqFasta seqFastaResult = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.getRefID(), lsExonInfos, getIntron);
 		if (seqFastaResult == null) {
 			return null;
 		}
@@ -399,9 +399,9 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		}
 		int start = Math.min(startlocation, endlocation);
 		int end = Math.max(startlocation, endlocation);
-		SeqFasta seq = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.isCis5to3(), gffGeneIsoInfo.getChrID(), start, end);
+		SeqFasta seq = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.isCis5to3(), gffGeneIsoInfo.getRefID(), start, end);
 		if (seq == null) {
-			logger.error("没有提取到序列：" + " "+ gffGeneIsoInfo.getChrID() + " " + start + " " + end);
+			logger.error("没有提取到序列：" + " "+ gffGeneIsoInfo.getRefID() + " " + start + " " + end);
 			return null;
 		}
 		seq.setName(gffGeneIsoInfo.getName());
@@ -423,7 +423,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 					continue;
 				}
 				setRemoveRedundent.add(gffGeneIsoInfo.getName());
-				SeqFasta seq = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.getChrID(), gffGeneIsoInfo, false);
+				SeqFasta seq = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.getRefID(), gffGeneIsoInfo, false);
 				if (seq == null) {
 					continue;
 				}

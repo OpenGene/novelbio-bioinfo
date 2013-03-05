@@ -4,7 +4,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 public class GuiSelectSpecies extends JPanel {
-
 	/**
 	 * Create the panel.
 	 */

@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.MathComput;
 
 public abstract class PredictAlt5Or3 extends SpliceTypePredict {
@@ -31,8 +32,8 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 	public ArrayList<Double> getJuncCounts(String condition) {
 		Align align = getDifSite();
 		ArrayList<Double> lsResult = new ArrayList<Double>();
-		lsResult.add((double) tophatJunction.getJunctionSite(condition, exonCluster.getChrID(), align.getStartAbs()));
-		lsResult.add((double) tophatJunction.getJunctionSite(condition, exonCluster.getChrID(), align.getEndAbs()));
+		lsResult.add((double) tophatJunction.getJunctionSite(condition, exonCluster.getRefID(), align.getStartAbs()));
+		lsResult.add((double) tophatJunction.getJunctionSite(condition, exonCluster.getRefID(), align.getEndAbs()));
 		return lsResult;
 	}
 	
@@ -48,7 +49,7 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 		//junc reads Num为key，treemap直接排序
 		//为防止junc reads num重复，用list装value
 		for (Integer edge : mapEdge2Iso.keySet()) {
-			int juncNum = tophatJunction.getJunctionSite(exonCluster.getChrID(), edge);
+			int juncNum = tophatJunction.getJunctionSite(exonCluster.getRefID(), edge);
 			List<Integer> lsSite = null;
 			if (mapJuncNum2Edge.containsKey(juncNum)) {
 				lsSite = mapJuncNum2Edge.get(juncNum);
@@ -81,7 +82,13 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 		} else {
 			isFiltered = true;
 		}
-		return new Align(exonCluster.getChrID(), MathComput.min(startEnd), MathComput.max(startEnd));
+		return new Align(exonCluster.getRefID(), MathComput.min(startEnd), MathComput.max(startEnd));
+	}
+	
+	public List<? extends Alignment> getBGSite() {
+		List<Alignment> lsAlignments = new ArrayList<Alignment>();
+		lsAlignments.add(exonCluster);
+		return lsAlignments;
 	}
 	
 	public boolean isFiltered() {

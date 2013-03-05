@@ -54,7 +54,7 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 		String geneExon = "";
 		for (ExonInfo exons : this) {
 			
-			geneExon = geneExon + getChrID() + "\t" +title + "\texon\t" + exons.getStartAbs()  + "\t" + exons.getEndAbs() 
+			geneExon = geneExon + getRefID() + "\t" +title + "\texon\t" + exons.getStartAbs()  + "\t" + exons.getEndAbs() 
 		         + "\t" + "." + "\t" + strand + "\t.\t" + "gene_id \"" + geneID + "\"; transcript_id " + "\"" + getName()+"\"; " + TxtReadandWrite.ENTER_LINUX;
 		}
 		return geneExon;
@@ -65,7 +65,7 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 		String geneExon = "";
 		for (int i = 0; i < size(); i++) {
 			ExonInfo exons = get(i);
-			geneExon = geneExon + getChrID() + "\t" +title + "\texon\t" + exons.getStartAbs() + "\t" + exons.getEndAbs()
+			geneExon = geneExon + getRefID() + "\t" +title + "\texon\t" + exons.getStartAbs() + "\t" + exons.getEndAbs()
 		     + "\t"+"."+"\t" +strand+"\t.\t"+ "ID=exon:" + getName()  + ":" + (i+1) +";Parent=" + getName() + " "+TxtReadandWrite.ENTER_LINUX;
 		}
 		return geneExon;

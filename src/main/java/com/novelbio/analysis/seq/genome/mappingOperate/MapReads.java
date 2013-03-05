@@ -17,6 +17,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
 import com.novelbio.analysis.seq.genome.gffOperate.ListHashBin;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
+import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.Equations;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.listOperate.ListAbs;
@@ -644,11 +645,11 @@ class MapReadsAddAlignRecord {
 		if (cis5to3) {
 			for (int i = 0; i < lsStartEnd.size(); i++) {
 				Alignment alignment = lsStartEnd.get(i);
-				if (StartCodLen - lsStartEnd.get(i).Length() > 0) {
+				if (StartCodLen - lsStartEnd.get(i).getLength() > 0) {
 					Align align = new Align(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs());
 					align.setCis5to3(alignment.isCis5to3());
 					lsResult.add(align);
-					StartCodLen = StartCodLen - alignment.Length();
+					StartCodLen = StartCodLen - alignment.getLength();
 				}
 				else {
 					Align lastAlign = new Align(alignment.getRefID(), alignment.getStartAbs(), alignment.getStartAbs() + StartCodLen - 1);
@@ -660,12 +661,12 @@ class MapReadsAddAlignRecord {
 		else {
 			for (int i = lsStartEnd.size() - 1; i >= 0; i--) {
 				Alignment alignment = lsStartEnd.get(i);
-				if (StartCodLen - alignment.Length() > 0) {
+				if (StartCodLen - alignment.getLength() > 0) {
 					Align align = new Align(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs());
 					align.setCis5to3(alignment.isCis5to3());
 					
 					lsResult.add(0,align);
-					StartCodLen = StartCodLen - alignment.Length();
+					StartCodLen = StartCodLen - alignment.getLength();
 				}
 				else {
 					Align align = new Align(alignment.getRefID(), alignment.getEndAbs() - StartCodLen + 1, alignment.getEndAbs());

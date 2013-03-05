@@ -6,6 +6,7 @@ import java.util.List;
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.base.dataStructure.Alignment;
 
 /**
  * 这个不在那八种定义内，就是提前终止<br>
@@ -27,8 +28,8 @@ public class PredictEndDifStop extends SpliceTypePredict {
 		ArrayList<Double> lsCounts = new ArrayList<Double>();
 		for (List<ExonInfo> lsExonInfos : ls_lsExonInfos) {
 			for (ExonInfo exonInfo : lsExonInfos) {
-				int num = tophatJunction.getJunctionSite(condition, exonCluster.getChrID(), exonInfo.getStartCis());
-				num += tophatJunction.getJunctionSite(condition, exonCluster.getChrID(), exonInfo.getEndCis());
+				int num = tophatJunction.getJunctionSite(condition, exonCluster.getRefID(), exonInfo.getStartCis());
+				num += tophatJunction.getJunctionSite(condition, exonCluster.getRefID(), exonInfo.getEndCis());
 				lsCounts.add((double) num);
 			}
 		}
@@ -74,7 +75,12 @@ public class PredictEndDifStop extends SpliceTypePredict {
 	/** 待修正 */
 	@Override
 	public Align getDifSite() {
-		return new Align(exonCluster.getChrID(), exonCluster.getStartCis(), exonCluster.getEndCis());
+		return new Align(exonCluster.getRefID(), exonCluster.getStartCis(), exonCluster.getEndCis());
+	}
+
+	@Override
+	public List<? extends Alignment> getBGSite() {
+		return exonCluster.getParentGene().getLongestSplitMrna();
 	}
 	
 }

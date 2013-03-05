@@ -244,7 +244,7 @@ public class MapTophat implements MapRNA{
 		}
 		if (gffChrAbs != null && gffChrAbs.getGffHashGene() != null) {
 			ArrayList<Integer> lsIntronSortedS2M = gffChrAbs.getGffHashGene().getLsIntronSortedS2M();
-			if (lsIntronSortedS2M.size() < 0) {
+			if (lsIntronSortedS2M.size() < 50) {
 				return;
 			}
 			int intronLenMin = lsIntronSortedS2M.get(50);

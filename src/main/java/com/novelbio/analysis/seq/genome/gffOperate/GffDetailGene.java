@@ -571,7 +571,7 @@ public class GffDetailGene extends ListDetailAbs {
 		Align alignIntron = null;
 		for (ArrayList<ExonInfo> lsexoninfo : exonCluster.getLsIsoExon()) {
 			if (lsexoninfo.size() > 1) {
-				alignIntron = new Align(exonCluster.getChrID(), lsexoninfo.get(0).getEndCis(), lsexoninfo.get(1).getStartCis());
+				alignIntron = new Align(exonCluster.getRefID(), lsexoninfo.get(0).getEndCis(), lsexoninfo.get(1).getStartCis());
 			}
 		}
 		//获得这种长的iso

@@ -71,7 +71,7 @@ public class Yanghongxing {
 		gffChrPlotTss.setGeneStructure(GeneStructure.TSS);
 		plotScatter = gffChrPlotTss.plotLine(dotStyle);
 		plotScatter.setBg(Color.WHITE);
-		plotScatter.setInsets(PlotScatter.INSETS_SIZE_M);
+		plotScatter.setInsets(PlotScatter.INSETS_SIZE_ML);
 		plotScatter.saveToFile(path + "tss.png", 2000, 1000);
 	
 		///////////////////////////////////////////////
@@ -81,7 +81,7 @@ public class Yanghongxing {
 		gffChrPlotTss.setGeneStructure(GeneStructure.TES);
 		plotScatter = gffChrPlotTss.plotLine(dotStyle);
 		plotScatter.setBg(Color.WHITE);
-		plotScatter.setInsets(PlotScatter.INSETS_SIZE_M);
+		plotScatter.setInsets(PlotScatter.INSETS_SIZE_ML);
 		plotScatter.saveToFile(path + "tes.png", 2000, 1000);
 		
 		///////////////////////////////////////////////
@@ -91,7 +91,7 @@ public class Yanghongxing {
 		gffChrPlotTss.setGeneStructure(GeneStructure.ALLLENGTH);
 		plotScatter = gffChrPlotTss.plotLine(dotStyle);
 		plotScatter.setBg(Color.WHITE);
-		plotScatter.setInsets(PlotScatter.INSETS_SIZE_M);
+		plotScatter.setInsets(PlotScatter.INSETS_SIZE_ML);
 		plotScatter.saveToFile(path + "allGene.png", 2000, 1000);
 		
 		///////////////////////////////////////////////
@@ -101,7 +101,7 @@ public class Yanghongxing {
 		gffChrPlotTss.setGeneStructure(GeneStructure.INTRON);
 		plotScatter = gffChrPlotTss.plotLine(dotStyle);
 		plotScatter.setBg(Color.WHITE);
-		plotScatter.setInsets(PlotScatter.INSETS_SIZE_M);
+		plotScatter.setInsets(PlotScatter.INSETS_SIZE_ML);
 		plotScatter.saveToFile(path + "Intron.png", 2000, 1000);
 		
 		///////////////////////////////////////////////
@@ -115,7 +115,7 @@ public class Yanghongxing {
 		gffChrPlotTss.setGetOrExclude(true);
 		plotScatter = gffChrPlotTss.plotLine(dotStyle);
 		plotScatter.setBg(Color.WHITE);
-		plotScatter.setInsets(PlotScatter.INSETS_SIZE_M);
+		plotScatter.setInsets(PlotScatter.INSETS_SIZE_ML);
 		plotScatter.saveToFile(path + "Intron1.png", 2000, 1000);
 		///////////////////////////////////////////////
 		gffChrPlotTss.clearCollectionInfo();
@@ -128,7 +128,7 @@ public class Yanghongxing {
 		gffChrPlotTss.setGetOrExclude(true);
 		plotScatter = gffChrPlotTss.plotLine(dotStyle);
 		plotScatter.setBg(Color.WHITE);
-		plotScatter.setInsets(PlotScatter.INSETS_SIZE_M);
+		plotScatter.setInsets(PlotScatter.INSETS_SIZE_ML);
 		plotScatter.saveToFile(path + "Intron-1.png", 2000, 1000);
 		/////////////////////////////////////////////////////////
 		gffChrPlotTss.clearCollectionInfo();
@@ -141,7 +141,7 @@ public class Yanghongxing {
 		gffChrPlotTss.setGetOrExclude(false);
 		plotScatter = gffChrPlotTss.plotLine(dotStyle);
 		plotScatter.setBg(Color.WHITE);
-		plotScatter.setInsets(PlotScatter.INSETS_SIZE_M);
+		plotScatter.setInsets(PlotScatter.INSETS_SIZE_ML);
 		plotScatter.saveToFile(path + "Intron_Exclude_1and-1.png", 2000, 1000);
 		
 		/////////////////////////////////////////////////////////
@@ -151,7 +151,7 @@ public class Yanghongxing {
 		gffChrPlotTss.setGeneStructure(GeneStructure.EXON);
 		plotScatter = gffChrPlotTss.plotLine(dotStyle);
 		plotScatter.setBg(Color.WHITE);
-		plotScatter.setInsets(PlotScatter.INSETS_SIZE_M);
+		plotScatter.setInsets(PlotScatter.INSETS_SIZE_ML);
 		plotScatter.saveToFile(path + "Exon.png", 2000, 1000);
 		
 		///////////////////////////////////////////////

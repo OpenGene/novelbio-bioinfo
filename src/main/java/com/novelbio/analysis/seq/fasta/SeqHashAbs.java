@@ -16,7 +16,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapInfo;
-import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
+import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 public abstract class SeqHashAbs implements SeqHashInt{
@@ -302,7 +302,7 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	 * @param getIntron 是否提取内含子区域，True，内含子小写，外显子大写。False，只提取外显子
 	 */
 	public SeqFasta getSeq(GffGeneIsoInfo gffGeneIsoInfo, boolean getIntron) {
-		 return getSeq(gffGeneIsoInfo.getChrID(), gffGeneIsoInfo, getIntron);
+		 return getSeq(gffGeneIsoInfo.getRefID(), gffGeneIsoInfo, getIntron);
 	}
 	/**
 	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基<br>
@@ -375,7 +375,7 @@ public abstract class SeqHashAbs implements SeqHashInt{
 		return lsSeqfasta;
 	}
 	@Override
-	public void getSeq(SiteInfo siteInfo) {
+	public void getSeq(SiteSeqInfo siteInfo) {
 		SeqFasta seqFasta = getSeq(siteInfo.getRefID(), siteInfo.getStartAbs(), siteInfo.getEndAbs());
 		siteInfo.setSeq(seqFasta, true);
 	}

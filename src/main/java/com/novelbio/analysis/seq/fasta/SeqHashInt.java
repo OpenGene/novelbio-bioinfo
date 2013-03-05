@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
-import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
+import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 
 public interface SeqHashInt {
 	/**
@@ -126,7 +126,7 @@ public interface SeqHashInt {
 	 * 会用mapInfo的名字替换seqfasta的名字
 	 * @param mapInfo
 	 */
-	void getSeq(SiteInfo mapInfo);
+	void getSeq(SiteSeqInfo mapInfo);
 	/** 从头到尾遍历某条序列上的碱基 */
 	Iterable<Character> readBase(String refID);
 	

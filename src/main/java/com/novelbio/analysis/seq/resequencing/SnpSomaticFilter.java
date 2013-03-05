@@ -51,7 +51,7 @@ public class SnpSomaticFilter {
 	boolean getVCFflag = false;
 	
 	/** 判定为snp Heto所含有的snp比例不得小于该数值 */
-	public void setSnp_Hete_Contain_SnpProp_Min(double snp_Hete_Contain_SnpProp_Min) {
+	public void setSnp_Heto_Contain_SnpProp_Min(double snp_Hete_Contain_SnpProp_Min) {
 		snpFilterSamples.setSnp_Hete_Contain_SnpProp_Min(snp_Hete_Contain_SnpProp_Min);
 	}
 	
@@ -236,7 +236,7 @@ public class SnpSomaticFilter {
 		LinkedHashSet<String> setSample = getSetSampleName();
 		
 		TxtReadandWrite txtOut = new TxtReadandWrite(txtFile, true);
-		txtOut.writefileln(RefSiteSnpIndel.getTitleFromSampleName(setSample, getVCFflag));
+		txtOut.writefileln(RefSiteSnpIndel.getTitleFromSampleName(setSample, getVCFflag, true));
 		//优先写入过滤后的snp位点
 		ArrayList<RefSiteSnpIndel> lsWriteIn = lsFilteredRefSnp;
 		if (lsFilteredRefSnp == null || lsFilteredRefSnp.size() == 0) {

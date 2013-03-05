@@ -16,10 +16,10 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
-import com.novelbio.analysis.seq.genome.mappingOperate.Alignment;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
-import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
+import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
+import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 
@@ -122,7 +122,7 @@ public class Gene2Value {
 	 */
 	public MapInfo getMapInfo(MapReads mapReads, GeneStructure geneStructure) {
 		boolean sucess = true;
-		MapInfo mapInfo = new MapInfo(gffGeneIsoInfo.getChrID(), value, gffGeneIsoInfo.getName());
+		MapInfo mapInfo = new MapInfo(gffGeneIsoInfo.getRefID(), value, gffGeneIsoInfo.getName());
 		mapInfo.setCis5to3(gffGeneIsoInfo.isCis5to3());
 		int upstream = plotTssTesRegion[0]; int downstream = plotTssTesRegion[1];
 		if (!gffGeneIsoInfo.isCis5to3()) {
@@ -343,7 +343,7 @@ public class Gene2Value {
 	 * @param structure GffDetailGene.TSS等。如果是gene body区域，就返回整个基因
 	 * @return
 	 */
-	private static Set<GffDetailGene> getPeakStructureGene(int[] tssTesRange, GffChrAbs gffChrAbs, SiteInfo siteInfo, GeneStructure structure) {
+	private static Set<GffDetailGene> getPeakStructureGene(int[] tssTesRange, GffChrAbs gffChrAbs, SiteSeqInfo siteInfo, GeneStructure structure) {
 		GffCodGeneDU gffCodGeneDU = gffChrAbs.getGffHashGene().searchLocation(siteInfo.getRefID(), siteInfo.getStartAbs(), siteInfo.getEndAbs());
 		if (gffCodGeneDU == null) {
 			return new HashSet<GffDetailGene>();

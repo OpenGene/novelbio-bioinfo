@@ -5,6 +5,8 @@ import javax.swing.JLabel;
 import java.awt.Font;
 
 import com.novelbio.analysis.seq.genome.GffSpeciesInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
@@ -22,6 +24,7 @@ import java.util.HashMap;
 
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import javax.swing.JComboBox;
 
 public class GuiSpeciesInfo extends JPanel {
 	/**
@@ -32,8 +35,11 @@ public class GuiSpeciesInfo extends JPanel {
 	GUIFileOpen guiFileOpen = new GUIFileOpen();
 	JScrollPaneData scrollPaneData;
 	JComboBoxData<String> comboBoxData;
+	JComboBoxData<GffType> cmbGTFtype;
+	
 	GuiLayeredPaneSpeciesVersionGff guiLayeredPanSpeciesVersion;
 	GffSpeciesInfo specieInformation = new GffSpeciesInfo();
+	private JTextField txtGTFfile;
 	
 	/**
 	 * Create the panel.
@@ -44,11 +50,9 @@ public class GuiSpeciesInfo extends JPanel {
 		
 		JLabel lblSpecieinformation = new JLabel("SpecieInformation");
 		lblSpecieinformation.setFont(new Font("Dialog", Font.BOLD, 16));
-		lblSpecieinformation.setBounds(138, 34, 177, 24);
+		lblSpecieinformation.setBounds(95, 12, 177, 24);
 		add(lblSpecieinformation);
-		
-		
-		
+				
 		guiLayeredPanSpeciesVersion = new GuiLayeredPaneSpeciesVersionGff();
 		guiLayeredPanSpeciesVersion.addFocusListener(new FocusAdapter() {
 			@Override
@@ -56,11 +60,11 @@ public class GuiSpeciesInfo extends JPanel {
 				
 			}
 		});
-		guiLayeredPanSpeciesVersion.setBounds(96, 70, 237, 160);
+		guiLayeredPanSpeciesVersion.setBounds(95, 48, 237, 153);
 		add(guiLayeredPanSpeciesVersion);
 		
 		txtOutPath = new JTextField();
-		txtOutPath.setBounds(582, 101, 189, 31);
+		txtOutPath.setBounds(546, 48, 237, 31);
 		add(txtOutPath);
 		txtOutPath.setColumns(10);
 		
@@ -71,37 +75,34 @@ public class GuiSpeciesInfo extends JPanel {
 			 txtOutPath.setText(outFile);
 			}
 		});
-		btnOutFile.setBounds(345, 101, 189, 31);
+		btnOutFile.setBounds(546, 91, 111, 31);
 		add(btnOutFile);
 		
 		JButton btnSaveInfo = new JButton("Save  Info");
 		btnSaveInfo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				Species species = guiLayeredPanSpeciesVersion.getSelectSpecies();
-				
-			
+				specieInformation.setSpecies(species);
 				String selectType =  comboBoxData.getSelectedValue();
 				String outpath = txtOutPath.getText();
 				if (selectType.equals("Exon")) {
-					specieInformation.writeExonLength(species, outpath);
+					specieInformation.writeExonLength(outpath);
+				} else if (selectType.equals("Intron")) {
+					specieInformation.writeIntronLength(outpath);
+				} else if (selectType.equals("GeneBG")) {
+					specieInformation.writeGeneBG(outpath);
+				} else if (selectType.equals("GeneDescription")) {
+					specieInformation.writeGeneDescription(outpath);
+				} else if (selectType.equals("GTFfile")) {
+					specieInformation.getGffChrAbs().getGffHashGene().writeToGTF(outpath + species.getAbbrName() + "_GTFfile.gtf");
 				}
-				if (selectType.equals("Intron")) {
-					specieInformation.writeIntronLength(species, outpath);
-				}
-				if (selectType.equals("GeneBG")) {
-					specieInformation.writeGeneBG(species, outpath);
-				}
-				if (selectType.equals("GeneDescription")) {
-					specieInformation.writeGeneDescription(species, outpath);
-				}
-
 			}
 		});
-		btnSaveInfo.setBounds(582, 158, 189, 31);
+		btnSaveInfo.setBounds(661, 91, 124, 31);
 		add(btnSaveInfo);
 		
 		scrollPaneData = new JScrollPaneData();
-		scrollPaneData.setBounds(96, 264, 676, 333);
+		scrollPaneData.setBounds(95, 213, 697, 303);
 		add(scrollPaneData);
 		
 		HashMap<String, String> mapselectType = new HashMap<String, String>();
@@ -109,8 +110,9 @@ public class GuiSpeciesInfo extends JPanel {
 		mapselectType.put("Intron", "Intron");
 		mapselectType.put("GeneBG", "GeneBG");
 		mapselectType.put("GeneDescription", "GeneDescription");
+		mapselectType.put("GTFfile", "GTFfile");
 		comboBoxData = new JComboBoxData<String>();
-		comboBoxData.setBounds(345, 158, 189, 31);
+		comboBoxData.setBounds(344, 48, 189, 31);
 		comboBoxData.setMapItem(mapselectType);
 		add(comboBoxData);
 		
@@ -124,10 +126,9 @@ public class GuiSpeciesInfo extends JPanel {
 				String[] title = {"Chromosome","Length"};
  				scrollPaneData.setTitle(title);
 				scrollPaneData.addItemLs(lsChrAndLength);
-				
 			}
 		});
-		btnSelectChrLength.setBounds(96, 231, 189, 31);
+		btnSelectChrLength.setBounds(344, 173, 189, 31);
 		add(btnSelectChrLength);
 		
 		JButton btnSaveTo = new JButton("Save  ChrInfo");
@@ -142,8 +143,42 @@ public class GuiSpeciesInfo extends JPanel {
 				txtWrite.close();
 			}
 		});
-		btnSaveTo.setBounds(625, 231, 146, 28);
+		btnSaveTo.setBounds(640, 173, 146, 28);
 		add(btnSaveTo);
+		
+		txtGTFfile = new JTextField();
+		txtGTFfile.setBounds(267, 551, 401, 21);
+		add(txtGTFfile);
+		txtGTFfile.setColumns(10);
+		
+		JButton btnOpenGTF = new JButton("Open");
+		btnOpenGTF.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				txtGTFfile.setText(guiFileOpen.openFileName("", ""));
+			}
+		});
+		btnOpenGTF.setBounds(676, 549, 118, 24);
+		add(btnOpenGTF);
+		
+		JLabel lblConverttogtf = new JLabel("ConvertToGTF");
+		lblConverttogtf.setBounds(95, 527, 132, 18);
+		add(lblConverttogtf);
+		
+		cmbGTFtype = new JComboBoxData<GffType>();
+		cmbGTFtype.setMapItem(GffType.getMapGffTypeSimple());
+		cmbGTFtype.setBounds(95, 549, 163, 23);
+		add(cmbGTFtype);
+		
+		JButton btnSaveGTF = new JButton("Save");
+		btnSaveGTF.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String out = guiFileOpen.openFileName("", "");
+				GffHashGene gffHashGene = new GffHashGene(cmbGTFtype.getSelectedValue(), txtGTFfile.getSelectedText());
+				gffHashGene.writeToGTF(FileOperate.changeFileSuffix(out, "", "gtf"));
+			}
+		});
+		btnSaveGTF.setBounds(676, 589, 118, 24);
+		add(btnSaveGTF);
 		
 		
 	}

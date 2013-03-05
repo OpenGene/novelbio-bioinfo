@@ -1,11 +1,13 @@
 package com.novelbio.analysis.seq.genome.gffOperate.exoncluster;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.rnaseq.TophatJunction;
+import com.novelbio.base.dataStructure.Alignment;
 
 
 /** 判定本exonCluster是否为mutually exclusive */
@@ -104,12 +106,12 @@ public class PredictME extends SpliceTypePredict {
 		int beforeEnd = lsExonInfos.get(0).getStartCis();
 		int exonIndexBefore = lsExonInfos.get(0).getItemNum() - 1;
 		int beforeStart = gffGeneIsoInfo.get(exonIndexBefore).getEndCis();
-		alignBefore = new Align(gffGeneIsoInfo.getChrID(), beforeStart, beforeEnd);
+		alignBefore = new Align(gffGeneIsoInfo.getRefID(), beforeStart, beforeEnd);
 		
 		int afterStart = lsExonInfos.get(lsExonInfos.size() - 1).getEndCis();
 		int exonIndexAfter = lsExonInfos.get(lsExonInfos.size() - 1).getItemNum() + 1;
 		int afterEnd = gffGeneIsoInfo.get(exonIndexAfter).getStartCis();
-		alignAfter = new Align(gffGeneIsoInfo.getChrID(), afterStart, afterEnd);
+		alignAfter = new Align(gffGeneIsoInfo.getRefID(), afterStart, afterEnd);
 		
 		aligns[0] = alignBefore;
 		aligns[1] = alignAfter;
@@ -259,7 +261,11 @@ public class PredictME extends SpliceTypePredict {
 
 	@Override
 	public Align getDifSite() {
-		return new Align(exonCluster.getChrID(), exonCluster.getStartCis(), exonCluster.getEndCis());
+		return new Align(exonCluster.getRefID(), exonCluster.getStartCis(), exonCluster.getEndCis());
+	}
+	@Override
+	public List<? extends Alignment> getBGSite() {
+		return exonCluster.getParentGene().getLongestSplitMrna();
 	}
 
 }

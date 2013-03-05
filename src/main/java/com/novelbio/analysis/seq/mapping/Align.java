@@ -1,6 +1,6 @@
 package com.novelbio.analysis.seq.mapping;
 
-import com.novelbio.analysis.seq.genome.mappingOperate.Alignment;
+import com.novelbio.base.dataStructure.Alignment;
 
 
 /**
@@ -57,7 +57,7 @@ public class Align implements Alignment{
 	}
 	
 	@Override
-	public int Length() {
+	public int getLength() {
 		return Math.abs(start - end) + 1;
 	}
 	@Override
@@ -77,6 +77,10 @@ public class Align implements Alignment{
 	@Override
 	public String getRefID() {
 		return chrID;
+	}
+	/** 获得中间位点 */
+	public int getMidSite() {
+		return (start + end)/2;
 	}
 	
 	@Override

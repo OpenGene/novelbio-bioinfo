@@ -13,9 +13,10 @@ import java.util.Map.Entry;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
+import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.rnaseq.TophatJunction;
+import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.database.domain.geneanno.SepSign;
 
 public abstract class SpliceTypePredict {
@@ -48,9 +49,16 @@ public abstract class SpliceTypePredict {
 	protected abstract boolean isType();
 	/** 获得剪接类型 */
 	public abstract SplicingAlternativeType getType();
-	/** 获得不同的位点，用于检测表达 */
+	/** 获得差异可变剪接的位点，用于检测表达 */
 	public abstract Align getDifSite();
-	
+	/**
+	 * 获得比较的位点
+	 * 如果是cassette则返回全基因长度
+	 * 如果是retain intron和alt5 alt3，返回该exon的长度<br>
+	 * <b>list中的单个Alignment不考虑方向</b><br>
+	 * 可以直接返回{@link GffGeneIsoInfo}
+	 */
+	public abstract List<? extends Alignment> getBGSite();
 	/**
 	 * 获得跳过该exonCluster组的readsNum
 	 * @param gffDetailGene
