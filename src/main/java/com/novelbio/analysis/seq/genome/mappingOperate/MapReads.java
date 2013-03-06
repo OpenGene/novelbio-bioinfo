@@ -25,8 +25,8 @@ import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.database.model.species.Species;
 /**
  * 输入的mapping结果已经排序好，并且染色体已经分开好。
- * 不考虑内存限制的编
- * 
+ * 不考虑内存限制的编<br>
+ * 注意在添加之前要先执行{@link #prepareAlignRecord(AlignRecord)}
  * @author zong0jie
  * 
  */
@@ -129,7 +129,7 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	 */
 	public double getChrReadsPipMean(String chrID) {
 		ChrMapReadsInfo chrMapReadsInfo = mapChrID2ReadsInfo.get(chrID.toLowerCase());
-		return chrMapReadsInfo.getReadsPipNum()/chrMapReadsInfo.chrLength;
+		return (double)chrMapReadsInfo.getReadsPipNum()/chrMapReadsInfo.chrLength;
 	}
 	
 	/**
@@ -139,7 +139,7 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	 * @param readsTagLength
 	 */
 	public  void setTagLength(int thisTagLength) {
-		tagLength=thisTagLength;
+		tagLength = thisTagLength;
 	}
 	
 	protected boolean isUniqueMapping() {
@@ -632,6 +632,7 @@ class MapReadsAddAlignRecord {
 	 * 根据正反向截取相应的区域，最后返回需要累加的ArrayList<int[]>
 	 * 譬如韩燕的项目，只需要reads开头的前3个bp，那么就截取前三个就好
 	 * @param lsStartEnd
+	 * @param StartCodLen 譬如韩燕的项目，只需要reads开头的前3个bp，那么就设定为3
 	 * @param cis5to3
 	 * @return 如果cis5to3 = True，那么正着截取startCod长度的序列
 	 * 如果cis5to3 = False，那么反着截取startCod长度的序列

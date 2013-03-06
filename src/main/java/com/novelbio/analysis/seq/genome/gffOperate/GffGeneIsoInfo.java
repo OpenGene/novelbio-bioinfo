@@ -36,7 +36,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	/** 标记codInExon不在转录本中  */
 	public static final int COD_LOC_OUT = 300;
 	
-	/**  标记codInExon不在exon中 */
+	/**  标记codInExon不在UTR或CDS中，譬如该基因是none coding rna，那么就没有UTR和CDS */
 	public static final int COD_LOCUTR_NONE = 1000;
 	/**  标记codInExon处在5UTR中  */
 	public static final int COD_LOCUTR_5UTR = 5000;
@@ -291,7 +291,10 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @return
 	 */
 	public int getLenUTR5() {
-		return Math.abs(super.getLocDistmRNA(getTSSsite(), this.ATGsite) );
+		if (ismRNA()) {
+			return Math.abs(super.getLocDistmRNA(getTSSsite(), this.ATGsite) );
+		}
+		return 0;
 	}
 	
 	/**
@@ -299,7 +302,10 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @return
 	 */
 	public int getLenUTR3() {
-		return Math.abs(super.getLocDistmRNA(this.UAGsite, getTESsite() ) );
+		if (ismRNA()) {
+			return Math.abs(super.getLocDistmRNA(this.UAGsite, getTESsite() ) );
+		}
+		return 0;
 	}
 	 /**
      * @param num 指定第几个，如果超出或小于0，则返回-1000000000, 
@@ -375,10 +381,14 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		} 
 		else if (ExIntronnum > 0) {
 			codLoc[0] = COD_LOC_EXON;
+			if (!ismRNA()) {
+				codLoc[1] = COD_LOCUTR_NONE;
+				return codLoc;
+			}
+			//只有当该iso为mRNA时才进行判定
 			if((coord < ATGsite && isCis5to3()) || (coord > ATGsite && !isCis5to3())){        //坐标小于atg，在5‘UTR中,也是在外显子中
 				codLoc[1] = COD_LOCUTR_5UTR;
-			} 
-			else if((coord > UAGsite && isCis5to3()) || (coord < UAGsite && !isCis5to3())){       //大于cds起始区，在3‘UTR中
+			} else if((coord > UAGsite && isCis5to3()) || (coord < UAGsite && !isCis5to3())){       //大于cds起始区，在3‘UTR中
 				codLoc[1] = COD_LOCUTR_3UTR; 
 			} else {
 				codLoc[1] = COD_LOCUTR_CDS; 

@@ -140,7 +140,7 @@ public class GuiRNAautoSplice extends JPanel {
 		JButton btnSaveto = new JButton("SaveTo");
 		btnSaveto.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				txtSaveTo.setText(guiFileOpen.saveFileName("Out", ""));
+				txtSaveTo.setText(guiFileOpen.saveFileNameAndPath("", ""));
 			}
 		});
 		btnSaveto.setBounds(604, 427, 118, 24);
@@ -241,9 +241,6 @@ public class GuiRNAautoSplice extends JPanel {
 		ctrlSplicing.setGffHashGene(getGffhashGene());
 		ctrlSplicing.setDisplayAllEvent(chckbxDisplayAllSplicing.isSelected());
 		String outFile = txtSaveTo.getText();
-		if (FileOperate.isFileDirectory(outFile)) {
-			outFile = FileOperate.addSep(outFile);
-		}
 		ctrlSplicing.setOutFile(outFile);
 		ctrlSplicing.setLsBam2Prefix(scrlBam.getLsDataInfo());
 		ctrlSplicing.setLsCompareGroup(scrlCompare.getLsDataInfo());

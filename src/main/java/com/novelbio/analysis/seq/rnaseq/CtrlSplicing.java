@@ -92,10 +92,7 @@ public class CtrlSplicing implements RunGetInfo<GuiAnnoInfo> , Runnable{
 		exonJunction.setGffHashGene(gffHashGene);
 		exonJunction.setOneGeneOneSpliceEvent(!isDisplayAllEvent);
 		exonJunction.setRunGetInfo(this);
-		
-		if (FileOperate.isFileDirectory(outFile)) {
-			outFile = FileOperate.addSep(outFile);
-		}
+
 		for (String[] strings : lsBam2Prefix) {
 			//TODO 暂时没有多对多比较
 			exonJunction.addBamSorted(strings[2], strings[0]);

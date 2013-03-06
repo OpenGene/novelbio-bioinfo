@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.mapper.geneanno.MapBlastInfo;
-import com.novelbio.database.mapper.geneanno.MapGene2Go;
 import com.novelbio.database.service.SpringFactory;
 @Service
 public class ServBlastInfo implements MapBlastInfo {
