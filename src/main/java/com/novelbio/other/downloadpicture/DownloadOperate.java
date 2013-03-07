@@ -42,12 +42,12 @@ public abstract class DownloadOperate {
 //		}
 		
 		
-		PixivOperate pixivOperate = new PixivOperate();
-		pixivOperate.getcookies();
-		pixivOperate.setUrlAuther("403278");
-		pixivOperate.setDownloadFast(true);
-		pixivOperate.setSavePath("D:/Picture/pixiv");
-		pixivOperate.run();
+//		PixivOperate pixivOperate = new PixivOperate();
+//		pixivOperate.getcookies();
+//		pixivOperate.setUrlAuther("403278");
+//		pixivOperate.setDownloadFast(true);
+//		pixivOperate.setSavePath("D:/Picture/pixiv");
+//		pixivOperate.run();
 		
 		
 		DonmaiOperate donmaiOperate = new DonmaiOperate();

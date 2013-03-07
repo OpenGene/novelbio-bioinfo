@@ -100,7 +100,7 @@ public class UrlPictureDownLoad implements Callable<UrlPictureDownLoad> {
 				webFetch.query();
 				savePath = FileOperate.changeFileSuffix(savePath, "", "png");
 				while (webFetch.download(savePath)) {
-					if (FileOperate.getFileSize(savePath) > 2) {
+					if (FileOperate.getFileSize(savePath) > 20) {
 						sucess = true;
 						break;
 					} else {

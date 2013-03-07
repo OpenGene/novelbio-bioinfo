@@ -46,7 +46,7 @@ public class DonmaiOperate extends DownloadOperate {
 			}
 			String pixivAutherInfo = webFetch.getResponse();
 			Parser parser = new Parser(pixivAutherInfo);
-			NodeFilter filterNum = new AndFilter(new TagNameFilter("div"), new HasAttributeFilter("class", "pagination"));
+			NodeFilter filterNum = new AndFilter(new TagNameFilter("div"), new HasAttributeFilter("class", "paginator"));
 			NodeList nodeListNum = parser.parse(filterNum);
 			
 			allPages = getNodeAllPages(nodeListNum);
@@ -56,7 +56,7 @@ public class DonmaiOperate extends DownloadOperate {
 			pixivGetPathExistPic.setSavePath(savePath);
 			return true;
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}
 		return false;
 	}

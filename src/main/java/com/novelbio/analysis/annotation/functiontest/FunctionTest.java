@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.picard.annotation.Gene;
-
 import org.apache.log4j.Logger;
 import org.apache.velocity.runtime.parser.node.PutExecutor;
 

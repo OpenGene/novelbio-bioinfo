@@ -68,7 +68,7 @@ public class DonmaiGetPictureUrl extends GetPictureUrl {
 			return this;
 		}
 		Parser parser = new Parser(info);
-		NodeFilter filterPicture = new AndFilter(new TagNameFilter("img"), new HasAttributeFilter("class"));
+		NodeFilter filterPicture = new AndFilter(new TagNameFilter("img"), new HasAttributeFilter("alt"));
 		NodeList nodeLsPicture = parser.parse(filterPicture);
 		lsResult = getLsDownloads(nodeLsPicture);
 		return this;
@@ -80,6 +80,9 @@ public class DonmaiGetPictureUrl extends GetPictureUrl {
 	    while (nodelist.hasMoreNodes()) {
 	    	String info = nodelist.nextNode().toHtml();
 	    	String[] ss = info.split(" ");
+	    	if (ss[1].contains("Advertisement")) {
+				continue;
+			}
 	    	for (String string : ss) {
 				if (string.contains("src=")) {
 					String[] ss2 = string.replace("src=", "").replace("\"", "").trim().split("/");
