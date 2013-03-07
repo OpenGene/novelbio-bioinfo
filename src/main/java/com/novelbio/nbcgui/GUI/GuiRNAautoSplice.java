@@ -12,6 +12,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.rnaseq.CtrlSplicing;
 import com.novelbio.analysis.seq.rnaseq.ExonJunction;
 import com.novelbio.analysis.seq.rnaseq.ExonSplicingTest;
+import com.novelbio.analysis.seq.rnaseq.GUIinfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
@@ -35,7 +36,7 @@ import javax.swing.JLabel;
 import javax.swing.JCheckBox;
 import javax.swing.JProgressBar;
 
-public class GuiRNAautoSplice extends JPanel {
+public class GuiRNAautoSplice extends JPanel implements GUIinfo {
 	static final int progressLength = 10000;
 	private JTextField txtGff;
 	JScrollPaneData scrlBam;

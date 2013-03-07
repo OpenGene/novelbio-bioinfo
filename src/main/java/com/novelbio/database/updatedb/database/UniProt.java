@@ -122,7 +122,7 @@ class IdmappingSelected extends ImportPerLine {
 		String[] ss = content.split("\t");
 		ss = ArrayOperate.copyArray(ss, 23);
 		int taxID = Integer.parseInt(ss[13]);
-		if (!hashTaxID.contains(taxID)) {
+		if (!setTaxID.contains(taxID)) {
 			return true;
 		}
 		GeneID copedID = null;
@@ -288,7 +288,7 @@ class IdmappingSelectedGOPubmed extends IdmappingSelected
 		String[] ss = content.split("\t");
 		ss = ArrayOperate.copyArray(ss, 23);
 		int taxID = Integer.parseInt(ss[13]);
-		if (!hashTaxID.contains(taxID)) {
+		if (!setTaxID.contains(taxID)) {
 			return true;
 		}
 		GeneID copedID = null;

@@ -15,7 +15,7 @@ import com.novelbio.nbcgui.GUI.GuiAnnoInfo;
 import com.novelbio.nbcgui.GUI.GuiRNAautoSplice;
 
 public class CtrlSplicing implements RunGetInfo<GuiAnnoInfo> , Runnable{
-	GuiRNAautoSplice guiRNAautoSplice;
+	GUIinfo guiRNAautoSplice;
 	GffHashGene gffHashGene;
 	SeqHash seqHash;
 	
@@ -25,7 +25,7 @@ public class CtrlSplicing implements RunGetInfo<GuiAnnoInfo> , Runnable{
 	List<String[]> lsCompareGroup;
 	
 	
-	public void setGuiRNAautoSplice(GuiRNAautoSplice guiRNAautoSplice) {
+	public void setGuiRNAautoSplice(GUIinfo guiRNAautoSplice) {
 		this.guiRNAautoSplice = guiRNAautoSplice;
 	}
 	
@@ -70,12 +70,8 @@ public class CtrlSplicing implements RunGetInfo<GuiAnnoInfo> , Runnable{
 	 * 如果seqhash
 	 * @param seqPath
 	 */
-	public void setSeqPath(String seqPath) {
-		try {
-			this.seqHash = new SeqHash(seqPath);
-		} catch (Exception e) {
-			this.seqHash = null;
-		}
+	public void setSeqHash(SeqHash seqHash) {
+		this.seqHash = seqHash;
 	}
 	
 	public void setDisplayAllEvent(boolean isDisplayAllEvent) {

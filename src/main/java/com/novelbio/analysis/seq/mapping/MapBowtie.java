@@ -135,7 +135,7 @@ public class MapBowtie extends MapDNA {
 			outFileName = FileOperate.changeFileSuffix(lsLeftFq.get(0).getReadFileName(), "_result", "sam");
 		}
 		String outName = MapBwa.addSamToFileName(outFileName);
-		return " -S " + outName;
+		return " -S " + CmdOperate.addQuot(outName);
 	}
 	
 	private String getOffset() {
@@ -320,7 +320,6 @@ public class MapBowtie extends MapDNA {
 			FileOperate.delFile(samFile);
 		}
 	}
-	
 	
 	/** 没用 */
 	public void setMismatch(double mismatch) { }

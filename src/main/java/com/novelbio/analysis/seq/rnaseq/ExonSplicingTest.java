@@ -421,14 +421,17 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 //		lsResult.add(geneID.getSymbol());
 //		lsResult.add(geneID.getDescription());
 		if (seqHash != null) {
-			ArrayList<SeqFasta> lsSeqFasta = getSeq(seqHash);
-			for (SeqFasta seqFasta : lsSeqFasta) {
-				try {
-					lsResult.add(seqFasta.toString());
-				} catch (Exception e) {
-					lsResult.add("");
+			try {
+				ArrayList<SeqFasta> lsSeqFasta = getSeq(seqHash);
+				for (SeqFasta seqFasta : lsSeqFasta) {
+					try {
+						lsResult.add(seqFasta.toString());
+					} catch (Exception e) {
+						lsResult.add("");
+					}
 				}
-		
+			} catch (Exception e) {
+				// TODO: handle exception
 			}
 		}
 		return lsResult.toArray(new String[0]);
