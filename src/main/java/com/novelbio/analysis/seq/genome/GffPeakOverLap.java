@@ -277,7 +277,7 @@ public class GffPeakOverLap
 		tmpOverlapLength= lsSearchReslut.getOpLeftBp() + lsSearchReslut.getOpRightBp();
 		if (lsSearchReslut.getLsGffDetailMid() != null) {
 			for (ListDetailBin gffDetailPeak : lsSearchReslut.getLsGffDetailMid()) {
-				tmpOverlapLength = tmpOverlapLength + (int)gffDetailPeak.Length();
+				tmpOverlapLength = tmpOverlapLength + (int)gffDetailPeak.getLength();
 			}
 		}
 		if (tmpOverlapLength < 0) {

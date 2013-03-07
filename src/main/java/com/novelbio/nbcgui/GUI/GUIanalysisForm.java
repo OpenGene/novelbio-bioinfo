@@ -55,7 +55,7 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 	private GuiSamStatistics guiSamStatistics;
 	private GuiSnpFiltering guiSnpFiltering;
 	private GuiSnpFilterSimple guiSnpFilterSimple;
-	
+	private GuiRNAautoSpliceSimple guiRNAautoSpliceSimple;
 	/**
 	* Auto-generated main method to display this JFrame
 	*/
@@ -85,6 +85,7 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				jTabbedPane1 = new JTabbedPane();
 				getContentPane().add(jTabbedPane1, BorderLayout.CENTER);
 				jTabbedPane1.setPreferredSize(new java.awt.Dimension(1035, 682));
+				
 				guiBlastJpanel = new GuiBlastJpanel();
 				jTabbedPane1.addTab("Query", null, guiBlastJpanel, null);
 				
@@ -183,6 +184,9 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				
 				guiSnpFilterSimple = new GuiSnpFilterSimple();
 				jTabbedPane1.addTab("snpFilterSample", guiSnpFilterSimple);
+				
+//				guiRNAautoSpliceSimple = new GuiRNAautoSpliceSimple();
+//				jTabbedPane1.addTab("RNAautoSplice", guiRNAautoSpliceSimple);
 			}
 			pack();
 			this.setSize(1150, 750);

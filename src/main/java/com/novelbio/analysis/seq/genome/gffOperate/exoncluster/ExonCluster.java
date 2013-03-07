@@ -20,11 +20,12 @@ import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict.SplicingAlternativeType;
-import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
+import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.analysis.seq.rnaseq.TophatJunction;
+import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.database.domain.geneanno.SepSign;
 
-public class ExonCluster {
+public class ExonCluster implements Alignment {
 	private static Logger logger = Logger.getLogger(ExonCluster.class);
 	
 	/** 全体父亲ISO */
@@ -61,30 +62,31 @@ public class ExonCluster {
 		this.colGeneIsoInfosParent = colGeneIsoInfosParent;
 
 	}
-	public String getChrID() {
+	public String getRefID() {
 		return chrID;
 	}
-	public int getStartLocAbs() {
+	public int getStartAbs() {
 		return startLoc;
 	}
-	public int getEndLocAbs() {
+	public int getEndAbs() {
 		return endLoc;
 	}
 	public int getStartCis() {
-		if (isCis5To3()) {
+		if (isCis5to3()) {
 			return startLoc;
 		} else {
 			return endLoc;
 		}
 	}
 	public int getEndCis() {
-		if (isCis5To3()) {
+		if (isCis5to3()) {
 			return endLoc;
 		} else {
 			return startLoc;
 		}
 	}
-	public boolean isCis5To3() {
+	
+	public Boolean isCis5to3() {
 		for (ArrayList<ExonInfo> lsExonInfos : lsIsoExon) {
 			if (lsExonInfos.size() > 0) {
 				return lsExonInfos.get(0).isCis5to3();
@@ -382,7 +384,8 @@ public class ExonCluster {
 	
 	/** 根据坐标设定一个key */
 	public String getHashKey() {
-		return getChrID() + "_" +getStartLocAbs() + "_" + getEndLocAbs();
+		return getRefID() + "_" +getStartAbs() + "_" + getEndAbs();
 	}
+
 	
 }

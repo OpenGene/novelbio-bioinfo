@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
+import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -174,15 +174,15 @@ public class SeqHash implements SeqHashInt{
 	 * @param mapInfo
 	 */
 	@Override
-	public void getSeq(SiteInfo mapInfo) {
+	public void getSeq(SiteSeqInfo mapInfo) {
 		seqHashAbs.getSeq(mapInfo);
 	}
 	/**
 	 * 根据给定的mapInfo，获得序列，注意序列会根据cis5to3进行反向
 	 * @param mapinfoRefSeqIntactAA
 	 */
-	public void getSeq(ArrayList<? extends SiteInfo> lsMapInfos) {
-		for (SiteInfo mapInfo : lsMapInfos) {
+	public void getSeq(ArrayList<? extends SiteSeqInfo> lsMapInfos) {
+		for (SiteSeqInfo mapInfo : lsMapInfos) {
 			getSeq(mapInfo);
 		}
 	}

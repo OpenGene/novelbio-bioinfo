@@ -12,6 +12,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.rnaseq.CtrlSplicing;
 import com.novelbio.analysis.seq.rnaseq.ExonJunction;
 import com.novelbio.analysis.seq.rnaseq.ExonSplicingTest;
+import com.novelbio.analysis.seq.rnaseq.GUIinfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
@@ -35,7 +36,7 @@ import javax.swing.JLabel;
 import javax.swing.JCheckBox;
 import javax.swing.JProgressBar;
 
-public class GuiRNAautoSplice extends JPanel {
+public class GuiRNAautoSplice extends JPanel implements GUIinfo {
 	static final int progressLength = 10000;
 	private JTextField txtGff;
 	JScrollPaneData scrlBam;
@@ -140,7 +141,7 @@ public class GuiRNAautoSplice extends JPanel {
 		JButton btnSaveto = new JButton("SaveTo");
 		btnSaveto.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				txtSaveTo.setText(guiFileOpen.saveFileName("Out", ""));
+				txtSaveTo.setText(guiFileOpen.saveFileNameAndPath("", ""));
 			}
 		});
 		btnSaveto.setBounds(604, 427, 118, 24);
@@ -241,9 +242,6 @@ public class GuiRNAautoSplice extends JPanel {
 		ctrlSplicing.setGffHashGene(getGffhashGene());
 		ctrlSplicing.setDisplayAllEvent(chckbxDisplayAllSplicing.isSelected());
 		String outFile = txtSaveTo.getText();
-		if (FileOperate.isFileDirectory(outFile)) {
-			outFile = FileOperate.addSep(outFile);
-		}
 		ctrlSplicing.setOutFile(outFile);
 		ctrlSplicing.setLsBam2Prefix(scrlBam.getLsDataInfo());
 		ctrlSplicing.setLsCompareGroup(scrlCompare.getLsDataInfo());

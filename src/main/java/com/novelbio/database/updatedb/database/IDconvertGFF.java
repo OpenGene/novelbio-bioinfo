@@ -50,7 +50,7 @@ public class IDconvertGFF {
 		Collection<GffDetailGene> lsGffDetailGenes = gffHashGeneQuery.getLocHashtable().values();
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-				String chrID = gffGeneIsoInfo.getChrID();
+				String chrID = gffGeneIsoInfo.getRefID();
 				int startID = gffGeneIsoInfo.getStartAbs();
 				int endID = gffGeneIsoInfo.getEndAbs();
 				if (gffGeneIsoInfo.getName().contains("Glyma01g00600.1")) {

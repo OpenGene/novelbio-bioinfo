@@ -85,6 +85,11 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	*/
 	boolean readExp = true;
 	CtrlSplicing ctrlSplicing;
+	
+	/**
+	 * 读取区域，调试用。设定之后就只会读取这个区域的reads
+	 */
+	List<Align> lsReadReagion;
 	/**
 	 * 表示差异可变剪接的事件的pvalue阈值，仅用于统计差异可变剪接事件的数量，不用于可变剪接的筛选
 	 * @param pvalue
@@ -114,6 +119,10 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	 */
 	public void setResultFile(String resultFile) {
 		this.resultFile = resultFile;
+	}
+	
+	public void setLsReadRegion(List<Align> lsAligns) {
+		lsReadReagion = lsAligns;
 	}
 	/** 
 	 * 一个基因可能有多个可变剪接事件，但是我们可以只挑选其中最显著的那个可变剪接事件
@@ -221,7 +230,12 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			setCompareGroups(condCompare[0], condCompare[1]);
 			lsResult = getTestResult_FromIso(num);
 			if (resultFile != null) {
-				String outFile = FileOperate.changeFileSuffix(resultFile, "_"+condition1 +"vs" + condition2, null);
+				String outFile = "";
+				if (FileOperate.isFileDirectory(resultFile)) {
+					outFile = resultFile + condition1 +"vs" + condition2;
+				} else {
+					outFile = FileOperate.changeFileSuffix(resultFile, "_"+condition1 +"vs" + condition2, null);
+				}
 				writeToFile(outFile );
 			}
 		}
@@ -249,7 +263,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	private void loadJunctionBam() {
 		AlignSeqReading samFileReadingLast = null;
 		
-		List<Align> lsDifIsoGene = new ArrayList<Align>();//getLsDifIsoGene();
+//		List<Align> lsDifIsoGene = new ArrayList<Align>();//getLsDifIsoGene();
 		for (String condition : mapCond2SamReader.keySet()) {
 			ctrlSplicing.setInfo("Reading Junction " + condition);
 			tophatJunction.setCondition(condition);
@@ -261,13 +275,8 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 					samFileReading.setReadInfo(0L, samFileReadingLast.getReadByte());
 				}
 				
-				List<Align> lsAlign = new ArrayList<Align>();
-				
-				//TODO 如果只需要读取很短的位点做测试，就可以在这里设定
-//				lsAlign.add(new Align("chr8", 23575238, 23583750));
-				
-				samFileReading.setLsAlignments(lsAlign);
-				samFileReading.setLsAlignments(lsDifIsoGene);
+				samFileReading.setLsAlignments(lsReadReagion);
+//				samFileReading.setLsAlignments(lsDifIsoGene);
 				samFileReading.setRunGetInfo(runGetInfo);
 				samFileReading.addAlignmentRecorder(tophatJunction);
 				samFileReading.reading();
@@ -369,7 +378,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				}
 			
 				samFileReadingLast = samFileReading;
-				
+				samFileReading.setLsAlignments(lsReadReagion);
 				samFileReading.setRunGetInfo(runGetInfo);
 				MapReadsAbs mapReadsAbs = null;
 				if (isLessMemory) {

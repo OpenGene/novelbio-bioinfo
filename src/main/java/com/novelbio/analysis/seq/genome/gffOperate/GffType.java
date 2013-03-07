@@ -21,12 +21,15 @@ public enum GffType {
 	
 	/** key为小写 */
 	static Map<String, GffType> mapName2Type;
+	/** key为小写 */
+	static Map<String, GffType> mapName2TypeSimple;
 	
 	public static GffType getType(String typeName) {
 		return getMapGffType().get(typeName.toLowerCase());
 	}
 	/**
 	 * key为小写
+	 * 各种key都有了
 	 * @return
 	 */
 	public static Map<String, GffType> getMapGffType() {
@@ -48,6 +51,25 @@ public enum GffType {
 		mapName2Type.put("PLANT".toLowerCase(), Plant);
 		mapName2Type.put("NCBI".toLowerCase(), NCBI);
 		mapName2Type.put("FASTA".toLowerCase(), Fasta);
+		return mapName2Type;
+	}
+	
+	/**
+	 * key为小写
+	 * key只有指定的几个
+	 * @return
+	 */
+	public static Map<String, GffType> getMapGffTypeSimple() {
+		if (mapName2TypeSimple != null) {
+			return mapName2TypeSimple;
+		}
+		mapName2TypeSimple = new HashMap<String, GffType>();
+		mapName2TypeSimple.put("GTF".toLowerCase(), GTF);
+		mapName2TypeSimple.put("UCSC".toLowerCase(), UCSC);
+		mapName2TypeSimple.put("TIGR".toLowerCase(), TIGR);
+		mapName2TypeSimple.put("PLANT".toLowerCase(), Plant);
+		mapName2TypeSimple.put("NCBI".toLowerCase(), NCBI);
+		mapName2TypeSimple.put("FASTA".toLowerCase(), Fasta);
 		return mapName2Type;
 	}
 }

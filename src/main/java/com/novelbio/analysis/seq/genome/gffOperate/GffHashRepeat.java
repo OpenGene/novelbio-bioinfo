@@ -74,7 +74,7 @@ ListCodAbsDu<GffDetailRepeat, ListCodAbs<GffDetailRepeat>>, ListBin<GffDetailRep
 		
 		for (int i = 0; i < LOCNum; i++) {
 			GffDetailRepeat gffDetailRepeat=mapName2DetailAbs.get(lsNameNoRedundent.get(i));
-			int tmpLength=gffDetailRepeat.Length();
+			int tmpLength=gffDetailRepeat.getLength();
 			String tmprepeatClass=gffDetailRepeat.repeatClass+"/"+gffDetailRepeat.repeatFamily;
 			if (hashRepeatLength.containsKey(tmprepeatClass)) //含有已知的repeat，则把repeat的长度累加上去
 			{

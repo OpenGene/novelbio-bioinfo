@@ -2,13 +2,9 @@ package com.novelbio.analysis.seq.sam;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.AlignSeq;
-import com.novelbio.analysis.seq.genome.mappingOperate.Alignment;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.nbcgui.GUI.GuiAnnoInfo;
 

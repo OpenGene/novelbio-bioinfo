@@ -21,12 +21,14 @@ import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.PredictAlt5Or3;
+import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.PredictAltStart;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.PredictRetainIntron;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict.SplicingAlternativeType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.FisherTest;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.generalConf.TitleFormatNBC;
@@ -363,31 +365,27 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	protected ArrayList<SeqFasta> getSeq(SeqHash seqHash) {
 		ArrayList<SeqFasta> lsSeqFastas = new ArrayList<SeqFasta>();
 		
-		SeqFasta seqFasta = seqHash.getSeq(exonCluster.isCis5To3(), exonCluster.getChrID(), 
-				exonCluster.getStartLocAbs(), exonCluster.getEndLocAbs());
+		SeqFasta seqFasta = seqHash.getSeq(exonCluster.isCis5to3(), exonCluster.getRefID(), 
+				exonCluster.getStartAbs(), exonCluster.getEndAbs());
 		lsSeqFastas.add(seqFasta);
 		
-		seqFasta = seqHash.getSeq(exonCluster.isCis5To3(), exonCluster.getChrID(),
-				exonCluster.getStartLocAbs() - 300, exonCluster.getEndLocAbs() + 300);
+		seqFasta = seqHash.getSeq(exonCluster.isCis5to3(), exonCluster.getRefID(),
+				exonCluster.getStartAbs() - 300, exonCluster.getEndAbs() + 300);
 		lsSeqFastas.add(seqFasta);
 		
 		ArrayList<ExonInfo> lsGetExon = new ArrayList<ExonInfo>();
 		if (exonCluster.getExonClusterBefore() != null) {
 			ExonCluster exonClusterBefore = exonCluster.getExonClusterBefore();
-			lsGetExon.add(new ExonInfo("exonCluster", exonCluster.isCis5To3(), exonClusterBefore.getStartCis(), exonClusterBefore.getEndCis()));
+			lsGetExon.add(new ExonInfo("exonCluster", exonCluster.isCis5to3(), exonClusterBefore.getStartCis(), exonClusterBefore.getEndCis()));
 		}
-		lsGetExon.add(new ExonInfo("exonCluster", exonCluster.isCis5To3(), exonCluster.getStartCis(), exonCluster.getEndCis()));
+		lsGetExon.add(new ExonInfo("exonCluster", exonCluster.isCis5to3(), exonCluster.getStartCis(), exonCluster.getEndCis()));
 		if (exonCluster.getExonClusterAfter() != null) {
 			ExonCluster exonClusterAfter = exonCluster.getExonClusterAfter();
-			lsGetExon.add(new ExonInfo("exonCluster", exonCluster.isCis5To3(), exonClusterAfter.getStartCis(), exonClusterAfter.getEndCis()));
+			lsGetExon.add(new ExonInfo("exonCluster", exonCluster.isCis5to3(), exonClusterAfter.getStartCis(), exonClusterAfter.getEndCis()));
 		}
 		
-		seqFasta = seqHash.getSeq(exonCluster.getChrID(), lsGetExon, true);
-		if (seqFasta != null && !exonCluster.isCis5To3()) {
-			seqFasta = seqFasta.reservecom();
-		}
+		seqFasta = seqHash.getSeq(exonCluster.getRefID(), lsGetExon, true);
 		lsSeqFastas.add(seqFasta);
-
 		
 		return lsSeqFastas;
 	}
@@ -423,21 +421,24 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 //		lsResult.add(geneID.getSymbol());
 //		lsResult.add(geneID.getDescription());
 		if (seqHash != null) {
-			ArrayList<SeqFasta> lsSeqFasta = getSeq(seqHash);
-			for (SeqFasta seqFasta : lsSeqFasta) {
-				try {
-					lsResult.add(seqFasta.toString());
-				} catch (Exception e) {
-					lsResult.add("");
+			try {
+				ArrayList<SeqFasta> lsSeqFasta = getSeq(seqHash);
+				for (SeqFasta seqFasta : lsSeqFasta) {
+					try {
+						lsResult.add(seqFasta.toString());
+					} catch (Exception e) {
+						lsResult.add("");
+					}
 				}
-		
+			} catch (Exception e) {
+				// TODO: handle exception
 			}
 		}
 		return lsResult.toArray(new String[0]);
 	}
 	
 	private String getCondition(List<Double> lsJunc) {
-		if (lsJunc == null) {
+		if (lsJunc == null || lsJunc.size() == 0) {
 			return "";
 		}
 		String condition = lsJunc.get(0)+ "";
@@ -532,10 +533,15 @@ class SpliceType2Value {
 	
 	/** 添加表达 */
 	public void addExp(GffDetailGene gffDetailGene, SpliceTypePredict spliceTypePredict, MapReadsAbs mapReads) {
+		if (gffDetailGene.getName().contains("Foxp1") && spliceTypePredict instanceof PredictAltStart) {
+			logger.error("stop");
+		}
+		
 		ArrayList<Double> lsExp = new ArrayList<Double>();
 		Align siteInfo = spliceTypePredict.getDifSite();
+		List<? extends Alignment> siteInfoBG = spliceTypePredict.getBGSite();
 		double[] info = mapReads.getRangeInfo(siteInfo.getRefID(), siteInfo.getStartAbs(), siteInfo.getEndAbs(), 0);
-		double[] info2 = mapReads.getRangeInfo(siteInfo.getRefID(), gffDetailGene.getLongestSplitMrna());
+		double[] info2 = mapReads.getRangeInfo(siteInfo.getRefID(), siteInfoBG);
 		lsExp.add((double) (getMean(info) + 1));			
 		lsExp.add((double) (getMean(info2) + 1));
 

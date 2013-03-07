@@ -23,13 +23,17 @@ public class GffSpeciesInfo {
 	private static Logger logger = Logger.getLogger(GffSpeciesInfo.class);
 	GffChrAbs gffChrAbs = new GffChrAbs();
 	private String[] totals = new String[2];
-	public static void main(String[] args) {
-		Species species = new Species(9606);
-		String outpath = "/home/ywd/cs/cs";
-		GffSpeciesInfo specieInformation = new GffSpeciesInfo();
-		specieInformation.writeGeneDescription(species, outpath);
+	
+	public void setGffChrAbs(GffChrAbs gffChrAbs) {
+		this.gffChrAbs = gffChrAbs;
 	}
-
+	public GffChrAbs getGffChrAbs() {
+		return gffChrAbs;
+	}
+	public void setSpecies(Species species) {
+		this.gffChrAbs.setSpecies(species);
+	}
+	
 	public ArrayList<String[]> getChrLength(Species species) {
 		/** 无序的表格 */
 		ArrayList<String[]> lsChrLehgth = new ArrayList<String[]>();
@@ -94,8 +98,7 @@ public class GffSpeciesInfo {
 	/**
 	 * 写所有的物种所有基因
 	 */
-	public void writeGeneBG(Species species,String outPath) {
-		gffChrAbs.setSpecies(species);
+	public void writeGeneBG(String outPath) {
 		HashSet<String> setGeneID = getSpeciesGene();
 		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(outPath + "geneBG.txt", true);
 		txtReadandWrite.writefileln("GeneSymbol");
@@ -138,9 +141,8 @@ public class GffSpeciesInfo {
 	 * @param species  物种	
 	 * @param outpath  输出文件路径
 	 */
-	public void writeGeneDescription(Species species, String outpath) {
-		gffChrAbs.setSpecies(species);
-		String speciseName = species.getAbbrName();
+	public void writeGeneDescription(String outpath) {
+		String speciseName = gffChrAbs.getSpecies().getAbbrName();
 		HashSet<String> setGeneID = getSpeciesGene();
 		TxtReadandWrite txtWrite = new TxtReadandWrite(outpath + speciseName + "ExonAndIntronLehgth.txt", true);
 		for (String geneID : setGeneID) {
@@ -163,8 +165,7 @@ public class GffSpeciesInfo {
  * @param species 指定物种
  * @param outpath 输出路径
  */
-	public void writeExonLength(Species species, String outpath) {
-		gffChrAbs.setSpecies(species);
+	public void writeExonLength(String outpath) {
 		TxtReadandWrite txtWrite = new TxtReadandWrite(outpath + "ExonLength.txt", true);
 		txtWrite.writefileln("ExonLength");
 		Set<String> setGeneID = getSpeciesGene();
@@ -181,8 +182,7 @@ public class GffSpeciesInfo {
 	 * @param species 指定物种
 	 * @param outpath 输出路径
 	 */
-	public void writeIntronLength(Species species, String outpath) {
-		gffChrAbs.setSpecies(species);
+	public void writeIntronLength(String outpath) {
 		TxtReadandWrite txtWrite  = new TxtReadandWrite(outpath + "IntronLength.txt", true);
 		txtWrite.writefileln("IntronLength");
 		Set<String> setGeneID = getSpeciesGene();

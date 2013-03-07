@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
-import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
+import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 
 public interface SeqHashInt {
 	/**
@@ -91,7 +91,7 @@ public interface SeqHashInt {
 
 	/**
 	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基<br>
-	 * 按照GffGeneIsoInfo转录本给定的情况，自动提取相对于基因转录方向的序列
+	 * <b>按照List-ExonInfo中的方向，自动提取相对于基因转录方向的序列</b>
 	 * @param lsInfo ArrayList-int[] 给定的转录本，每一对是一个外显子
 	 * @param getIntron 是否提取内含子区域，True，内含子小写，外显子大写。False，只提取外显子
 	 * 没有染色体或序列超出范围则返回null
@@ -126,7 +126,7 @@ public interface SeqHashInt {
 	 * 会用mapInfo的名字替换seqfasta的名字
 	 * @param mapInfo
 	 */
-	void getSeq(SiteInfo mapInfo);
+	void getSeq(SiteSeqInfo mapInfo);
 	/** 从头到尾遍历某条序列上的碱基 */
 	Iterable<Character> readBase(String refID);
 	

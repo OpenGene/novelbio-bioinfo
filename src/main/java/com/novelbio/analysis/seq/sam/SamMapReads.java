@@ -3,9 +3,9 @@ package com.novelbio.analysis.seq.sam;
 import java.util.ArrayList;
 import java.util.Map;
 
-import com.novelbio.analysis.seq.genome.mappingOperate.Alignment;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.MathComput;
 
 /**
@@ -171,7 +171,7 @@ public class SamMapReads extends MapReadsAbs {
 	 */
 	private static int[] getStartEndAlign(int[] startEnd, Alignment align) {
 		int alignStart = 0;
-		int alignEnd = align.Length() - 1;
+		int alignEnd = align.getLength() - 1;
 		
 		if (align.getStartAbs() < startEnd[0]) {
 			alignStart = startEnd[0] - align.getStartAbs();

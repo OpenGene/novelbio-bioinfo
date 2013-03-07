@@ -185,15 +185,13 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	   for (String content : txtgff.readlines()) {
 		   if(content.charAt(0)=='#') continue;
 		   String[] ss = content.split("\t");//按照tab分开
-		   if (ss[2].equals("match") || ss[2].equals("chromosome") || ss[0].startsWith("NW_") || ss[0].startsWith("NT_")) {
+		   if (ss[2].equals("match") || ss[2].toLowerCase().equals("chromosome") || ss[2].toLowerCase().equals("intron") || ss[0].startsWith("NW_") || ss[0].startsWith("NT_")) {
 			   continue;
 		   }
+		   
 		   ss[0] = getChrID(ss);
 		   if (ss[2].equals("region")) {
 			   continue;
-		   }
-		   if (content.contains("AT3TE00010")) {
-			   logger.error("stop");
 		   }
 		   //读取到gene
 		   if (setIsGene.contains(ss[2])) {
@@ -245,7 +243,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 					   chrID = "chr" + PatternOperate.getPatLoc(ss[8], regxChrID, false).get(0)[0];
 				   } catch (Exception e) {
 					   logger.error("本位置出错，错误的region，本来一个region应该是一个染色体，这里不知道是什么 " + ArrayOperate.cmbString(ss, "\t"));
-					   chrID = "unkonwn";
+					   chrID = GeneID.removeDot(ss[0]);
 				   }
 			   }
 			   mapID2ChrID.put(ss[0], chrID);
@@ -264,7 +262,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
     */
    private String[] addNewGene(String[] ss) {
 	 //when read the # and the line contains gene, it means the new LOC
-	   String geneID = patID.getPatFirst(ss[8]);
+	   String geneID = ss[0] + patID.getPatFirst(ss[8]);
 	   String geneName = getGeneName(ss[8]); setTaxID(ss, geneName);
 	   
 	   GffDetailGene gffDetailLOC = mapGenID2GffDetail.get(geneID);
@@ -288,8 +286,8 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
     * 1: rnaName
     */
    private String[]  addMRNA(String[] lastGeneIDandName, String[] ss) {
-	   String rnaID = patID.getPatFirst(ss[8]);
-	   String rnaName = add_MapRnaID2RnaName_And_MapRnaID2GeneID(lastGeneIDandName, rnaID, ss[8]);
+	   String rnaID = ss[0] + patID.getPatFirst(ss[8]);
+	   String rnaName = add_MapRnaID2RnaName_And_MapRnaID2GeneID(lastGeneIDandName, rnaID, ss);
 	   GffDetailGene gffDetailGene = getGffDetailRnaID(rnaID);
 	   
 	   String[] mRNAname = getMrnaName(rnaName, ss);
@@ -316,33 +314,34 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
     * @param ss
     * @return  返回加入的rna名字
     */
-   private String add_MapRnaID2RnaName_And_MapRnaID2GeneID(String[] lastGeneIDandName, String rnaID, String ss8) {
-	   String rnaName = patmRNAName.getPatFirst(ss8);
+   private String add_MapRnaID2RnaName_And_MapRnaID2GeneID(String[] lastGeneIDandName, String rnaID, String[] ss) {
+	   String rnaName = patmRNAName.getPatFirst(ss[8]);
 	   if (rnaName == null) {
 		   rnaName = lastGeneIDandName[1];
 	   }
 	   //tRNA这种里面是没有parentID的，所以就将其上一行的geneID抓过来就行了
-	   String geneID = patParentID.getPatFirst(ss8);
+	   String geneID = patParentID.getPatFirst(ss[8]);
 	   if (geneID == null) {
 		   geneID = lastGeneIDandName[0];
-	   }
+	   } else {
+		geneID = ss[0] + geneID;
+	}
 	   mapRnaID2GeneID.put(rnaID, geneID);
 	   return rnaName;
    }
    
    private boolean addExon(String[] lastGeneID2Name, String[] lastRnaID2Name, String[] ss) {
-	   String rnaID = getRNAID(lastGeneID2Name, lastRnaID2Name, ss[8]);
+	   String rnaID = getRNAID(lastGeneID2Name, lastRnaID2Name, ss);
 	   
 	   GffGeneIsoInfo gffGeneIsoInfo = null;
 	   int exonStart = Integer.parseInt(ss[3]);
 	   int exonEnd = Integer.parseInt(ss[4]);
 	   
 	   try {
-		   gffGeneIsoInfo = getGffIso(rnaID, exonStart, exonEnd);//TODO
+		   gffGeneIsoInfo = getGffIso(rnaID, exonStart, exonEnd, GeneType.ncRNA);//TODO
 	   } catch (Exception e) {
 		   logger.error("出现未知exon：" + ArrayOperate.cmbString(ss, "\t"));
-		   gffGeneIsoInfo = getGffIso(rnaID, exonStart, exonEnd);//TODO
-		  return false;
+		   return false;
 	   }
 	   String geneID = getGeneID(rnaID);
 	   if (mapGeneName2IsHaveExon.get(geneID) == null) {
@@ -361,9 +360,9 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
    private void addCDS(String[] lastGeneID2Name, String[] lastRnaID2Name, String[] ss) {
 	   int cdsStart = Integer.parseInt(ss[3]);
 	   int cdsEnd = Integer.parseInt(ss[4]);
-	   String rnaID = getRNAID(lastGeneID2Name, lastRnaID2Name, ss[8]);
+	   String rnaID = getRNAID(lastGeneID2Name, lastRnaID2Name, ss);
 	   String geneID = getGeneID(rnaID);
-	   GffGeneIsoInfo gffGeneIsoInfo = getGffIso(rnaID, cdsStart, cdsEnd);
+	   GffGeneIsoInfo gffGeneIsoInfo = getGffIso(rnaID, cdsStart, cdsEnd, GeneType.mRNA);
 	   gffGeneIsoInfo.setATGUAG(Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
 	   if (mapGeneName2IsHaveExon.get(geneID) == null) {
 		   logger.error("没有找到相应的GeneID:" + geneID);
@@ -379,13 +378,15 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
     * @param lastRNAID
     * @param
     */
-   private String getRNAID(String[] lastGeneID2Name, String[] lastRNAID2Name, String ss8) {
-	   String rnaID = patParentID.getPatFirst(ss8);
+   private String getRNAID(String[] lastGeneID2Name, String[] lastRNAID2Name, String[] ss) {
+	   String rnaID = patParentID.getPatFirst(ss[8]);
 	   if (rnaID == null) {
 		   rnaID = lastRNAID2Name[0];
 		   if (rnaID == null) {
 			   rnaID = lastGeneID2Name[0];
 		   }
+	   } else {
+		   rnaID = ss[0] + rnaID;
 	   }
 	   return rnaID;
    }
@@ -494,6 +495,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
    }
    
    /**
+    * 
     * 从hashRnaID2RnaName中获得该RNA的GffGeneIsoInfo
     * 这里的genID不是我们数据库里面的geneID，而是NCBI gff所特有的ID
     * @param rnaID 输入的rnaID
@@ -506,16 +508,17 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
     * NC_000001.10	RefSeq	exon	94313178	94313213<br>
     * 这时候两个tRNA的rnaID是一样的，但是这两个tRNA确实是两个不同的iso，所以就要根据坐标将两个exon分别装入两个iso中
     * @param endExon 如果startExon和endExon中有一个小于0，则直接返回listIso的第一个ISO
+    * @param geneType 如果没有找到iso，则新建的iso是什么类型
     * @return
     */
-   private GffGeneIsoInfo getGffIso(String rnaID, int startExon, int endExon) {
+   private GffGeneIsoInfo getGffIso(String rnaID, int startExon, int endExon, GeneType geneType) {
 	   List<GffGeneIsoInfo> lsGffGeneIsoInfo = mapRnaID2LsIso.get(rnaID);
 	   List<ExonInfo> lsGffLoc = mapRnaID2LsIsoLocInfo.get(rnaID);
 	   if (lsGffGeneIsoInfo.size() == 0) {
 		   mapRnaID2GeneID.put(rnaID, rnaID);
 		   GffDetailGene gffDetailGene = getGffDetailGenID(rnaID);
 		   GffGeneIsoInfo gffGeneIsoInfo = null;
-		   gffGeneIsoInfo = gffDetailGene.addsplitlist(gffDetailGene.getNameSingle(), GeneType.ncRNA);
+		   gffGeneIsoInfo = gffDetailGene.addsplitlist(gffDetailGene.getNameSingle(), geneType);
 		
 		   mapRnaID2LsIso.put(rnaID, gffGeneIsoInfo);
 		   lsGffGeneIsoInfo = mapRnaID2LsIso.get(rnaID);

@@ -21,7 +21,7 @@ import com.novelbio.base.plot.java.HeatChartDataInt;
  * @author zong0jie
  *
  */
-public class MapInfo extends SiteInfo implements HeatChartDataInt, Cloneable{
+public class MapInfo extends SiteSeqInfo implements HeatChartDataInt, Cloneable{
 	Logger logger = Logger.getLogger(MapInfo.class);
 	/** 比较mapinfo的起点终点 */
 	public static final int COMPARE_LOCSITE = 100;

@@ -3,12 +3,14 @@ package com.novelbio.analysis.seq.genome.gffOperate.exoncluster;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.database.domain.geneanno.SepSign;
 
 public class PredictCassette extends SpliceTypePredict {
@@ -35,7 +37,7 @@ public class PredictCassette extends SpliceTypePredict {
 		}
 		int exist = 0;
 		for (Integer align : setAlignExist) {
-			exist = exist + tophatJunction.getJunctionSite(condition, exonCluster.getChrID(), align);
+			exist = exist + tophatJunction.getJunctionSite(condition, exonCluster.getRefID(), align);
 		}
 		lsCounts.add((double) exist);
 		return lsCounts;
@@ -52,7 +54,7 @@ public class PredictCassette extends SpliceTypePredict {
 			int afterIndex = beforeIndex + 1;
 			ExonInfo exonBefore = gffGeneIsoInfo.get(beforeIndex);
 			ExonInfo exonAfter = gffGeneIsoInfo.get(afterIndex);
-			Align align = new Align(exonCluster.getChrID(), exonBefore.getEndCis(), exonAfter.getStartCis());
+			Align align = new Align(exonCluster.getRefID(), exonBefore.getEndCis(), exonAfter.getStartCis());
 			setAlignSkip.add(align);
 		}
 		
@@ -63,8 +65,8 @@ public class PredictCassette extends SpliceTypePredict {
 			}
 			int beforeIndex = lsExon.get(0).getItemNum() - 1;
 			int afterIndex = lsExon.get(lsExon.size() - 1).getItemNum() + 1;
-			Align alignBefore = new Align(exonCluster.getChrID(), gffGeneIsoInfo.get(beforeIndex).getEndCis(), lsExon.get(0).getStartCis());
-			Align alignAfter = new Align(exonCluster.getChrID(), lsExon.get(lsExon.size() - 1).getEndCis(), 
+			Align alignBefore = new Align(exonCluster.getRefID(), gffGeneIsoInfo.get(beforeIndex).getEndCis(), lsExon.get(0).getStartCis());
+			Align alignAfter = new Align(exonCluster.getRefID(), lsExon.get(lsExon.size() - 1).getEndCis(), 
 					gffGeneIsoInfo.get(afterIndex).getStartCis());
 			
 			setAlignExist.add(alignBefore);
@@ -74,10 +76,10 @@ public class PredictCassette extends SpliceTypePredict {
 		int skip = 0;
 		int exist = 0;
 		for (Align align : setAlignSkip) {
-			skip += tophatJunction.getJunctionSite(condition, exonCluster.getChrID(), align.getStartAbs(), align.getEndAbs());
+			skip += tophatJunction.getJunctionSite(condition, exonCluster.getRefID(), align.getStartAbs(), align.getEndAbs());
 		}
 		for (Align align : setAlignExist) {
-			exist += tophatJunction.getJunctionSite(condition, exonCluster.getChrID(), align.getStartAbs(), align.getEndAbs());
+			exist += tophatJunction.getJunctionSite(condition, exonCluster.getRefID(), align.getStartAbs(), align.getEndAbs());
 		}
 		lsCounts.add((double) skip);
 		lsCounts.add((double) exist);
@@ -165,7 +167,12 @@ public class PredictCassette extends SpliceTypePredict {
 
 	@Override
 	public Align getDifSite() {
-		return new Align(exonCluster.getChrID(), exonCluster.getStartCis(), exonCluster.getEndCis());
+		return new Align(exonCluster.getRefID(), exonCluster.getStartCis(), exonCluster.getEndCis());
+	}
+
+	@Override
+	public List<? extends Alignment> getBGSite() {
+		return exonCluster.getParentGene().getLongestSplitMrna();
 	}
 
 }

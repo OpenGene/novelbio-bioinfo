@@ -63,9 +63,15 @@ public interface MapRNA {
 	/** 参数设定不能用于solid 还没加入gtf的选项，也就是默认没有gtf */
 	public void mapReads();
 	SoftWare getBowtieVersion();
+	
 	/**
-	 * 仅tophat使用，gtf文件辅助mapping
+	 * 用gtf文件辅助mapping
 	 * 如果设定为null，则表示不使用gtf文件
+	 * 如果设定为“”等不存在文件的，则使用GffChrAbs中的Gff文件
+	 * 
+	 * 设定Gene2Iso文件，如果有文件就用这个文件。
+	 * 如果文件不存在，则从GffChrAbs中生成这个文件
+	 * 
 	 * @param gtfFile
 	 */
 	public void setGtf_Gene2Iso(String gtfFile);

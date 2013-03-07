@@ -26,7 +26,7 @@ import com.novelbio.database.model.modgeneid.GeneType;
  * 如果反向则从大到小排列，且int0&gt;int1
  * @return
  */
-public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<ExonInfo>, ListCodAbsDu<ExonInfo, ListCodAbs<ExonInfo>>>{
+public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<ExonInfo>, ListCodAbsDu<ExonInfo, ListCodAbs<ExonInfo>>> {
 	private static final Logger logger = Logger.getLogger(GffGeneIsoInfo.class);
 	private static final long serialVersionUID = -6015332335255457620L;
 	/** 标记codInExon处在外显子中 */
@@ -36,7 +36,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	/** 标记codInExon不在转录本中  */
 	public static final int COD_LOC_OUT = 300;
 	
-	/**  标记codInExon不在exon中 */
+	/**  标记codInExon不在UTR或CDS中，譬如该基因是none coding rna，那么就没有UTR和CDS */
 	public static final int COD_LOCUTR_NONE = 1000;
 	/**  标记codInExon处在5UTR中  */
 	public static final int COD_LOCUTR_5UTR = 5000;
@@ -176,7 +176,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 		return true;
 	}
-	public String getChrID() {
+	public String getRefID() {
 		if (gffDetailGeneParent == null) {
 			return "";
 		}
@@ -291,7 +291,10 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @return
 	 */
 	public int getLenUTR5() {
-		return Math.abs(super.getLocDistmRNA(getTSSsite(), this.ATGsite) );
+		if (ismRNA()) {
+			return Math.abs(super.getLocDistmRNA(getTSSsite(), this.ATGsite) );
+		}
+		return 0;
 	}
 	
 	/**
@@ -299,7 +302,10 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @return
 	 */
 	public int getLenUTR3() {
-		return Math.abs(super.getLocDistmRNA(this.UAGsite, getTESsite() ) );
+		if (ismRNA()) {
+			return Math.abs(super.getLocDistmRNA(this.UAGsite, getTESsite() ) );
+		}
+		return 0;
 	}
 	 /**
      * @param num 指定第几个，如果超出或小于0，则返回-1000000000, 
@@ -315,12 +321,12 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			 // 0-0 0-1 1-0 1-1
 			// 2-1 2-0 1-1 1-0 0-1 0-tss cood
 			for (int i = 0; i < size(); i++) { 			
-				allExonLength += get(i).Length();
+				allExonLength += get(i).getLength();
 			}
 			return allExonLength;
 		} else {
 			num--;
-			return get(num).Length();
+			return get(num).getLength();
 		}
 	}
 	 /**
@@ -375,10 +381,14 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		} 
 		else if (ExIntronnum > 0) {
 			codLoc[0] = COD_LOC_EXON;
+			if (!ismRNA()) {
+				codLoc[1] = COD_LOCUTR_NONE;
+				return codLoc;
+			}
+			//只有当该iso为mRNA时才进行判定
 			if((coord < ATGsite && isCis5to3()) || (coord > ATGsite && !isCis5to3())){        //坐标小于atg，在5‘UTR中,也是在外显子中
 				codLoc[1] = COD_LOCUTR_5UTR;
-			} 
-			else if((coord > UAGsite && isCis5to3()) || (coord < UAGsite && !isCis5to3())){       //大于cds起始区，在3‘UTR中
+			} else if((coord > UAGsite && isCis5to3()) || (coord < UAGsite && !isCis5to3())){       //大于cds起始区，在3‘UTR中
 				codLoc[1] = COD_LOCUTR_3UTR; 
 			} else {
 				codLoc[1] = COD_LOCUTR_CDS; 
@@ -913,7 +923,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		
 		GffGeneIsoInfo otherObj = (GffGeneIsoInfo)obj;
 		//物种，起点终点，ATG，UAG，外显子长度 等都一致
-		boolean flag =  this.getTaxID() == otherObj.getTaxID() && this.getChrID().equals(otherObj.getChrID()) && this.getATGsite() == otherObj.getATGsite()
+		boolean flag =  this.getTaxID() == otherObj.getTaxID() && this.getRefID().equals(otherObj.getRefID()) && this.getATGsite() == otherObj.getATGsite()
 		&& this.getUAGsite() == otherObj.getUAGsite() && this.getTSSsite() == otherObj.getTSSsite()
 		&& this.getListLen() == otherObj.getListLen();
 		if (flag && equalsIso(otherObj) ) {
@@ -926,7 +936,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @return
 	 */
 	public int hashCode() {
-		String info = this.getTaxID() + "//" + this.getChrID() + "//" + this.getATGsite() + "//" + this.getUAGsite() + "//" + this.getTSSsite() + "//" + this.getListLen();
+		String info = this.getTaxID() + "//" + this.getRefID() + "//" + this.getATGsite() + "//" + this.getUAGsite() + "//" + this.getTSSsite() + "//" + this.getListLen();
 		for (ExonInfo exonInfo : this) {
 			info = info + SepSign.SEP_INFO + exonInfo.getName();
 		}
@@ -1055,7 +1065,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * 了方向然后按照方向顺序装进去的 
 	 */
 	public static ArrayList<ExonCluster> getExonCluster(Boolean cis5To3,  ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfos) {
-		String chrID = lsGffGeneIsoInfos.get(0).getChrID();
+		String chrID = lsGffGeneIsoInfos.get(0).getRefID();
 		ArrayList<ExonCluster> lsResult = new ArrayList<ExonCluster>();
 		ArrayList<int[]> lsExonBound = ListAbs.getCombSep(cis5To3, lsGffGeneIsoInfos, false);
 		ExonCluster exonClusterBefore = null;

@@ -16,7 +16,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapInfo;
-import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
+import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 public abstract class SeqHashAbs implements SeqHashInt{
@@ -247,7 +247,7 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	 * seqname = chrID_第一个外显子的起点_第一个外显子的终点
 	 * 完全兼容gffgeneinfo获得的序列
 	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基
-	 * 不管转录本的方向，总是从基因组的5‘向3’提取。
+	 * <b>不管转录本的方向，总是从基因组的5‘向3’提取。</b>
 	 * 方向需要人工设定cisseq
 	 * @param cisseq 正反向，是否需要反向互补。正向永远是5to3
 	 * @param chrID 无所谓大小写
@@ -302,11 +302,13 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	 * @param getIntron 是否提取内含子区域，True，内含子小写，外显子大写。False，只提取外显子
 	 */
 	public SeqFasta getSeq(GffGeneIsoInfo gffGeneIsoInfo, boolean getIntron) {
-		 return getSeq(gffGeneIsoInfo.getChrID(), gffGeneIsoInfo, getIntron);
+		 SeqFasta seqFasta = getSeq(gffGeneIsoInfo.getRefID(), gffGeneIsoInfo, getIntron);
+		 seqFasta.setName(gffGeneIsoInfo.getName());
+		 return seqFasta;
 	}
 	/**
 	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基<br>
-	 * 按照GffGeneIsoInfo转录本给定的情况，自动提取相对于基因转录方向的序列
+	 * <b>按照List-ExonInfo中的方向，自动提取相对于基因转录方向的序列</b>
 	 * 没有则返回一个空的seqfastq
 	 * @param chrID 染色体
 	 * @param lsInfo ArrayList-int[] 给定的转录本，每一对是一个外显子
@@ -375,7 +377,7 @@ public abstract class SeqHashAbs implements SeqHashInt{
 		return lsSeqfasta;
 	}
 	@Override
-	public void getSeq(SiteInfo siteInfo) {
+	public void getSeq(SiteSeqInfo siteInfo) {
 		SeqFasta seqFasta = getSeq(siteInfo.getRefID(), siteInfo.getStartAbs(), siteInfo.getEndAbs());
 		siteInfo.setSeq(seqFasta, true);
 	}

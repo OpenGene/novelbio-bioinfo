@@ -1,6 +1,7 @@
 package com.novelbio.analysis.seq.genome;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
@@ -16,7 +17,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
-import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
+import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamFile;
@@ -38,15 +39,15 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	int[] tssRegion = new int[]{-2000, 2000};
 	int[] tesRegion = new int[]{-100, 100};
 	
-	long UTR5num = 0;
-	long UTR3num = 0;
-	long exonNum = 0;
-	long intronNum = 0;
-	long tssNum = 0;
-	long tesNum = 0;
+	double UTR5num = 0;
+	double UTR3num = 0;
+	double exonNum = 0;
+	double intronNum = 0;
+	double tssNum = 0;
+	double tesNum = 0;
 	
-	long interGenic = 0;
-	long intraGenic = 0;
+	double interGenic = 0;
+	double intraGenic = 0;
 
 	int colChrID = 0;
 	int colSummit = -1;
@@ -76,6 +77,10 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 			this.tesRegion = tesRegion;
 		}
 	}
+	/**
+	 * 可以自动设定为bed或bam文件
+	 * @param fileName
+	 */
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
 	}
@@ -83,11 +88,17 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	public void setBedFile(BedSeq bedSeq) {
 		this.fileName = bedSeq.getFileName();
 	}
-	/** 设定第几列为summit，也就是这列为reads的中点，用这个中点来进行定位 */
+	/** 设定第几列为summit，也就是这列为reads的中点，用这个中点来进行定位
+	 * <b>每次读取都要重新设定</b>
+	 */
 	public void setColSummit(int colSummit) {
 		this.colSummit = colSummit - 1;
 		isAlignFile = false;
 	}
+	/**
+	 * <b>每次读取都要重新设定</b>
+	 * @param colChrID
+	 */
 	public void setColChrID(int colChrID) {
 		this.colChrID = colChrID - 1;
 		isAlignFile = false;
@@ -104,6 +115,10 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	protected void running() {
 		getSummitStatistic();
 	}
+	
+	/**
+	 * 每次运行新统计前要先清空
+	 */
 	public void clean() {
 		UTR5num = 0;
 		UTR3num = 0;
@@ -152,32 +167,23 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 			i++;
 			if (flagStop) break;
 		}
+		isAlignFile = true;
 	}
 	
 	public void addAlignRecord(AlignRecord alignRecord) {
-		ArrayList<SiteInfo> lsSiteInfos = getLsGetBedSiteInfo(alignRecord);
-		for (SiteInfo siteInfo : lsSiteInfos) {
-			searchSite(siteInfo);
-		}
-	}
-	
-	private ArrayList<SiteInfo> getLsGetBedSiteInfo(AlignRecord alignRecord) {
-		ArrayList<SiteInfo> lSiteInfos = new ArrayList<SiteInfo>();
-		ArrayList<Align> lsAligns = alignRecord.getAlignmentBlocks();
+		List<Align> lsAligns = alignRecord.getAlignmentBlocks();
 		for (Align align : lsAligns) {
-			SiteInfo siteInfo = new SiteInfo(alignRecord.getRefID(), align.getStartCis(), align.getEndCis());
-			siteInfo.setFlagLoc( (align.getStartCis() + align.getEndCis())/2);
-			lSiteInfos.add(siteInfo);
+			double prop = (double)1/lsAligns.size()/alignRecord.getMappingNum();
+			searchSite(prop, align);
 		}
-		return lSiteInfos;
 	}
-	
+
 	private void readNormFile(String peakFile) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(peakFile, false);
 		int i = 0;
 		for (String readLine : txtRead.readlines(firstLine)) {
-			SiteInfo siteInfo = readInfo(readLine.split("\t"));
-			searchSite(siteInfo);
+			Align align = readInfo(readLine.split("\t"));
+			searchSite(1, align);
 			
 			allnumber = allnumber + readLine.getBytes().length;
 			if (i%1000 == 0) {
@@ -188,26 +194,28 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 			if (flagStop) break;
 		}
 	}
+	
 	/**
 	 * 给定坐标信息list，返回该坐标所对应的mapinfo
 	 * @param lsIn  string[2] 则返回 chrID summit
 	 * string[3] 则返回chrID start end
 	 * @return
 	 */
-	private SiteInfo readInfo(String[] readLine) {
+	private Align readInfo(String[] readLine) {
 		try {
-			SiteInfo siteInfo = new SiteInfo(readLine[colChrID]);
-			siteInfo.setFlagLoc(Integer.parseInt(readLine[colSummit].trim()));
-			return siteInfo;
+			Align align = new Align(readLine[colChrID], Integer.parseInt(readLine[colSummit].trim()), Integer.parseInt(readLine[colSummit].trim()));
+			return align;
 		} catch (Exception e) {
 			return null;
 		}
-
 	}
 	/**
 	 * 输入单个坐标位点，返回定位信息，用于统计位点的定位情况
 	 * 只判断最长转录本
-	 * @param mapInfo
+	 * @param prop 权重，意思本align占总reads的百分比
+	 * 譬如一条reads可以同时mapping至多个位点，则比重下降。
+	 * 一条reads有多个align，比重也下降
+	 * @param align
 	 * @return int[8]
 	 * 0: UpNbp,N由setStatistic()方法的TSS定义
 	 * 1: Exon<br>
@@ -218,27 +226,27 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	 * 6: GeneEnd，在基因外的尾部 由setStatistic()方法的GeneEnd定义
 	 * 7: Tss 包括Tss上和Tss下，由filterTss定义
 	 */
-	private void searchSite(SiteInfo siteInfo) {
+	private void searchSite(double prop, Align align) {
 		suspendCheck();
 		
-		if (siteInfo == null) {
+		if (align == null) {
 			return;
 		}
 		boolean flagIntraGenic = false;//在gene内的标记
-		GffCodGene gffCodGene = gffChrAbs.getGffHashGene().searchLocation(siteInfo.getRefID(), siteInfo.getFlagSite());
+		GffCodGene gffCodGene = gffChrAbs.getGffHashGene().searchLocation(align.getRefID(), align.getMidSite());
 		if (gffCodGene == null) {
 			return;
 		}
 		if (gffCodGene.isInsideLoc()) {
-			flagIntraGenic = setStatisticsNum(gffCodGene.getGffDetailThis(), siteInfo.getFlagSite());
+			flagIntraGenic = setStatisticsNum(prop, gffCodGene.getGffDetailThis(), align.getMidSite());
+		} else {
+			flagIntraGenic = setStatisticsNum(prop, gffCodGene.getGffDetailUp(), gffCodGene.getGffDetailDown(), align.getMidSite());
 		}
-		else {
-			flagIntraGenic = setStatisticsNum(gffCodGene.getGffDetailUp(), gffCodGene.getGffDetailDown(), siteInfo.getFlagSite());
+		if (flagIntraGenic) {
+			intraGenic += 1*prop;
+		} else {
+			interGenic += 1*prop;
 		}
-		if (flagIntraGenic)
-			intraGenic++;
-		else
-			interGenic++;
 	}
 	/**
 	 * 设定统计值，并返回是否在IntraGenic中，也就是基因内部
@@ -246,17 +254,17 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	 * @param coord
 	 * @return
 	 */
-	private boolean setStatisticsNum(GffDetailGene gffDetailGene, int coord) {
+	private boolean setStatisticsNum(double prop, GffDetailGene gffDetailGene, int coord) {
 		gffDetailGene.setTssRegion(tssRegion);
 		gffDetailGene.setTesRegion(tesRegion);
 		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplitMrna();
 		boolean flagIntraGenic = true;
 		//Tss Tes
 		if (gffGeneIsoInfo.isCodInIsoTss(coord) ) {
-			tssNum++;
+			tssNum += 1*prop;
 		}
 		else if (gffGeneIsoInfo.isCodInIsoGenEnd(coord) ) {
-			tesNum++;
+			tesNum += 1*prop;
 		}
 		
 		boolean isInExon = false;
@@ -266,26 +274,26 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 		// 每个转录本都查一遍
 		for (GffGeneIsoInfo gffGeneIsoInfo2 : lsIso) {
 			if (gffGeneIsoInfo2.getCodLoc(coord) == GffGeneIsoInfo.COD_LOC_EXON) {
-				exonNum++;
+				exonNum += 1*prop;
 				isInExon = true;
 				break;
 			}
 		}
 		if (!isInExon && gffGeneIsoInfo.getCodLoc(coord) == GffGeneIsoInfo.COD_LOC_INTRON) {
-			intronNum++;
+			intronNum += 1*prop;
 		}
 		
 		//UTR
 		if (gffGeneIsoInfo.getCodLocUTRCDS(coord) == GffGeneIsoInfo.COD_LOCUTR_5UTR) {
-			UTR5num++;
-		}
-		if (gffGeneIsoInfo.getCodLocUTRCDS(coord) == GffGeneIsoInfo.COD_LOCUTR_3UTR) {
-			UTR3num++;
+			UTR5num += 1*prop;
+			System.out.println();
+		} else if (gffGeneIsoInfo.getCodLocUTRCDS(coord) == GffGeneIsoInfo.COD_LOCUTR_3UTR) {
+			UTR3num += 1*prop;
 		}
 		return flagIntraGenic;
 	}
 	
-	private boolean setStatisticsNum(GffDetailGene gffDetailGeneUp, GffDetailGene gffDetailGeneDown, int coord) {
+	private boolean setStatisticsNum(double prop, GffDetailGene gffDetailGeneUp, GffDetailGene gffDetailGeneDown, int coord) {
 		boolean flagIntraGenic = false;
 		if (gffDetailGeneUp != null ) {
 			gffDetailGeneUp.setTssRegion(tssRegion);
@@ -307,14 +315,14 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 		if ( ( gffGeneIsoInfoUp != null && gffGeneIsoInfoUp.isCodInIsoTss(coord) ) 
 				|| ( gffGeneIsoInfoDown != null && gffGeneIsoInfoDown.isCodInIsoTss(coord) )
 			) {
-			tssNum++;
+			tssNum += 1*prop;
 			flagIntraGenic =true;
 		}
 		//GeneEnd
 		if ( (gffGeneIsoInfoUp != null && gffGeneIsoInfoUp.isCodInIsoGenEnd(coord) )
 				|| ( gffGeneIsoInfoDown != null && gffGeneIsoInfoDown.isCodInIsoGenEnd(coord) )
 			) {
-			tesNum++;
+			tesNum += 1*prop;
 			flagIntraGenic =true;
 		}
 		return flagIntraGenic;
@@ -324,14 +332,14 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 		GffChrStatistics gffChrStatistics = getStatisticsBackGround();
 		ArrayList<String[]> lsTitle = new ArrayList<String[]>();
 		lsTitle.add(new String[]{"Item", "Number", "BackGround"});
-		lsTitle.add(new String[]{"UTR5", UTR5num + "", gffChrStatistics.UTR5num + ""});
-		lsTitle.add(new String[]{"UTR3", UTR3num + "", gffChrStatistics.UTR3num + ""});
-		lsTitle.add(new String[]{"Exon", exonNum + "", gffChrStatistics.exonNum + ""});
-		lsTitle.add(new String[]{"Intron", intronNum + "", gffChrStatistics.intronNum + ""});
-		lsTitle.add(new String[]{"Tss", tssNum + "", gffChrStatistics.tssNum + ""});
-		lsTitle.add(new String[]{"Tes", tesNum + "", gffChrStatistics.tesNum + ""});
-		lsTitle.add(new String[]{"InterGenic", interGenic + "", gffChrStatistics.interGenic + ""});
-		lsTitle.add(new String[]{"IntraGenic", intraGenic + "", gffChrStatistics.intraGenic + ""});
+		lsTitle.add(new String[]{"UTR5", (long)UTR5num + "", (long)gffChrStatistics.UTR5num + ""});
+		lsTitle.add(new String[]{"UTR3", (long)UTR3num + "", (long)gffChrStatistics.UTR3num + ""});
+		lsTitle.add(new String[]{"Exon", (long)exonNum + "", (long)gffChrStatistics.exonNum + ""});
+		lsTitle.add(new String[]{"Intron", (long)intronNum + "", (long)gffChrStatistics.intronNum + ""});
+		lsTitle.add(new String[]{"Tss", (long)tssNum + "", (long)gffChrStatistics.tssNum + ""});
+		lsTitle.add(new String[]{"Tes", (long)tesNum + "", (long)gffChrStatistics.tesNum + ""});
+		lsTitle.add(new String[]{"InterGenic", (long)interGenic + "", (long)gffChrStatistics.interGenic + ""});
+		lsTitle.add(new String[]{"IntraGenic", (long)intraGenic + "", (long)gffChrStatistics.intraGenic + ""});
 		return lsTitle;
 	}
 	

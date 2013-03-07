@@ -137,7 +137,7 @@ public class Align2DGEvalue {
 		
 		for (AlignRecord alignRecord : alignSeq.readLines()) {
 			//mapping到互补链上的，是假的信号
-			if (!alignRecord.isMapped() || alignRecord.isCis5to3() != null && !alignRecord.isCis5to3() || alignRecord.Length() < dgeMinLength) {
+			if (!alignRecord.isMapped() || alignRecord.isCis5to3() != null && !alignRecord.isCis5to3() || alignRecord.getLength() < dgeMinLength) {
 				continue;
 			}
 			//出现新基因

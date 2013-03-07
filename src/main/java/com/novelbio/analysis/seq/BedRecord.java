@@ -6,16 +6,16 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
-import com.novelbio.analysis.seq.genome.mappingOperate.Alignment;
-import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
+import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.base.dataStructure.Alignment;
  /**
   * BedSeq每一行的信息<br>
   * 兼容 bamToBed的 12行信息格式
   * @author zong0jie
   *
   */
-public class BedRecord extends SiteInfo implements AlignRecord{
+public class BedRecord extends SiteSeqInfo implements AlignRecord{
 	static private Logger logger = Logger.getLogger(BedRecord.class);
 	
 	static final int COL_CHRID = 0;
@@ -174,12 +174,12 @@ public class BedRecord extends SiteInfo implements AlignRecord{
 			return;
 		}
 		
-		splitLen = lsAlign.get(0).Length() + "";
+		splitLen = lsAlign.get(0).getLength() + "";
 		splitStart = "0";
 		for (int i = 1; i < lsAlign.size(); i++) {
 			Alignment alignment = lsAlign.get(i);
 			splitStart = splitStart + "," + (alignment.getStartAbs() - getStartAbs());
-			splitLen = splitLen + "," + alignment.Length();
+			splitLen = splitLen + "," + alignment.getLength();
 		}
 	}
 	/** 如果是mapping到junction上去，一条bed文件记录会被切成被切成的几块的样子保存在这里。

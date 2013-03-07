@@ -1,3 +1,4 @@
+import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
@@ -17,21 +18,8 @@ import com.novelbio.generalConf.NovelBioConst;
 
 public class FengYing {
 	public static void main(String[] args) {
-		TxtReadandWrite txtRead = new TxtReadandWrite("/media/winE/Bioinformatics/R/Protocol/Microarray/Noname2.txt", false);
-		TxtReadandWrite txtWrite = new TxtReadandWrite("/media/winE/Bioinformatics/R/Protocol/Microarray/NonameOut.txt", true);
-		for (String string : txtRead.readlines()) {
-			string = string.trim();
-			if (string.equals("")) {
-				continue;
-			}
-			string = CmdOperate.addQuot(string);
-			txtWrite.writefile(string + ", ");
-		}
-		txtRead.close();
-		txtWrite.close();
-	}
-	public static void main2(String[] args) {
 		DateTime dateTime = new DateTime();
+		chicken();
 		mouse();
 		dateTime.setStartTime();
 //		topJunctionTest();
@@ -75,11 +63,12 @@ public class FengYing {
 				parentFile + "mm10-ensemble-modified.gtf");
 //		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
 //				parentFile + "mm10-ensemble-modified.gtf");
-//		GffChrAbs gffChrAbs = new GffChrAbs(10090);
+		GffChrAbs gffChrAbs = new GffChrAbs(10090);
 //		System.out.println("finished reading GTF file");
 
 		ExonJunction exonJunction = new ExonJunction();
 		exonJunction.setGffHashGene(gffHashGene);
+		exonJunction.setSeqHash(gffChrAbs.getSeqHash());
 		exonJunction.setIsLessMemory(false);
 		exonJunction.setOneGeneOneSpliceEvent(false);
 //		Species species = new Species(10090, "mm10_NCBI");
@@ -102,5 +91,29 @@ public class FengYing {
 		exonJunction.writeToFile(outResult);
 	}
 
+	
+	public static void chicken() {
+		String parentFile = "/home/zong0jie/Desktop/paper/chicken/";
+		GffChrAbs gffChrAbs = new GffChrAbs(new Species(9031));
+		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
+				parentFile + "gal4-merged.gtf");
+		
+		ExonJunction exonJunction = new ExonJunction();
+		exonJunction.setGffHashGene(gffHashGene);
+		exonJunction.setSeqHash(gffChrAbs.getSeqHash());
+		exonJunction.setIsLessMemory(false);
+		exonJunction.setOneGeneOneSpliceEvent(false);
+		
+		exonJunction.addBamSorted("KO", parentFile + "DT40KO.bam");
+		exonJunction.addBamSorted("WT", parentFile + "DT40WT.bam");
+		exonJunction.run();
+		System.out.println("finished reading bam file");
+
+		exonJunction.setOneGeneOneSpliceEvent(false);
+		String outResult = parentFile +  "Chicken_KO_vs_WT_withexp_NewPvalue.txt";
+		exonJunction.writeToFile(outResult);
+	}
+	
+	
 }
 	

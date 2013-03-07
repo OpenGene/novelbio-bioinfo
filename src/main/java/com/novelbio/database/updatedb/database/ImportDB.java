@@ -13,13 +13,23 @@ import com.novelbio.generalConf.NovelBioConst;
  *
  */
 public class ImportDB {
-	static String databasePath = "/media/winE/Bioinformatics/DataBaseUpdate/";
+	static String databasePath2 = "/media/winE/Bioinformatics/DataBaseUpdate/";
 	static String taxIDFile = databasePath + "常见物种IDKEGGAll.txt";
 	static String GOPath = databasePath;
 	
+	String softToolsFile;
+	String taxInfoFile;
+	String speciesFile;
+	
+	String databasePath;
+	
 	public static void main(String[] args) {
-//		updateSoftInfo();
-//		updateSpecies();
+		ImportDB importDB = new ImportDB();
+		importDB.setDownloadPath(downloadPath);
+		importDB.setSoftToolsFile(softToolsFile);
+		importDB.setSpeciesFile(speciesFile);
+		importDB.updateSoftInfo();
+		importDB.updateSpecies();
 		
 //		updateNCBIID();
 //		updateUniprotID();
@@ -33,14 +43,38 @@ public class ImportDB {
 //		updateMicroarray();
 //		updateSoyBean();
 //		updateZeaMaize();
-		updateBlast();
+//		updateBlast();
 //		updateAffy();
 	}
+	
+	public void setSoftToolsFile(String softToolsFile) {
+		this.softToolsFile = softToolsFile;
+	}
+	public static void setTaxIDFile(String taxIDFile) {
+		ImportDB.taxIDFile = taxIDFile;
+	}
+	public void setSpeciesFile(String speciesFile) {
+		this.speciesFile = speciesFile;
+	}
+	public void setDownloadPath(String databasePath) {
+		this.databasePath = databasePath;
+	}
+	
+	private void updateSoftInfo() {
+		SoftWareInfo.updateInfo(softToolsFile);
+	}
+
+	private void updateSpecies() {
+		Species species = new Species();
+		species.setUpdateSpeciesFile(speciesFile);
+		species.setUpdateTaxInfo(taxInfoFile);
+		species.update();
+	}
+	
 	/**
 	 * 升级从NCBI下载的信息
 	 */
-	private static void updateNCBIID() {
-	
+	private void updateNCBIID() {
 		String gene2Acc = databasePath + "gene2accession.gz";
 		String gene2Ref = databasePath + "gene2refseq.gz";
 		String gene2ensembl = databasePath + "gene2ensembl.gz";
@@ -49,7 +83,6 @@ public class ImportDB {
 		String gene2Pub = databasePath + "gene2pubmed.gz";
 		String goExtObo = GOPath + "gene_ontology_ext.obo";
 		String gene2GO = databasePath + "gene2go.gz";
-		
 		
 		NCBI ncbi = new NCBI();
 		ncbi.setTaxID(taxIDFile);
@@ -65,7 +98,7 @@ public class ImportDB {
 	/**
 	 * 升级从UniProt下载的信息
 	 */
-	private static void updateUniprotID() {
+	private void updateUniprotID() {
 		String idmappingSelectedFile = databasePath + "idmapping_selected.tab.gz";
 		String impgene_associationgoa_uniprotFile = GOPath + "gene_association.goa_uniprot.gz";
 		String outUniIDFile = databasePath + "outIdmap.txt";
@@ -76,11 +109,13 @@ public class ImportDB {
 		uniProt.setImpgene_associationgoa_uniprotFile(impgene_associationgoa_uniprotFile);
 		uniProt.update();
 	}
-	private static void updateEnsembl() {
+	private void updateEnsembl() {
+		Species species;
+		species.getGffFile();
 //		String ensemblFileMouse = "/media/winE/Bioinformatics/DataBase/Mus_musculus.NCBIM37.65.gtf"; 
 //		String ucscGffFileMouse = "/media/winE/Bioinformatics/GenomeData/mouse/ucsc_mm9/refseqSortUsing.txt";
 //		int taxIDMouse = 10090;
-		IDconvert ensembl = new IDconvert();
+		IDconvertEnsembl2NCBI ensembl = new IDconvertEnsembl2NCBI();
 //		ensembl.setEnsemblFile(ensemblFileMouse, ucscGffFileMouse, taxIDMouse);
 		
 //		String ensemblFileChicken = "/media/winE/Bioinformatics/GenomeData/checken/GeneLoc/Gallus_gallus.WASHUC2.65.gtf";
@@ -101,7 +136,7 @@ public class ImportDB {
 		ensembl.update();
 	}
 	
-	private static void updateRiceID() {
+	private void updateRiceID() {
 		String riceParentPath = "/media/winE/Bioinformatics/DataBase/Rice/";
 		String gffRapDB = riceParentPath + "RAP_genes.gff3";
 		String gffTIGR =  riceParentPath + "Tigr_all.gff3";
@@ -119,7 +154,7 @@ public class ImportDB {
 		riceID.update();
 	}
 	
-	private static void updateBlast() {
+	private void updateBlast() {
 		String blastFile = "/media/winE/Bioinformatics/BLAST/result/chicken/ensemblNr2HumAA";
 		String outFIle = "/media/winE/Bioinformatics/BLAST/result/chicken/ensemblNr2HumAA_out";
 		int queryTaxID = 0;
@@ -244,7 +279,7 @@ public class ImportDB {
 		blast.updateFile(blastFile, false);
 	}
 	
-	private static void updateAffy()
+	private void updateAffy()
 	{
 		String affyFile = "";
 		String outFile = "";
@@ -347,7 +382,7 @@ public class ImportDB {
 		normAffy.updateFile(affyFile, false);
 	}
 	
-	private static void updateTAIR() {
+	private void updateTAIR() {
 		Arabidopsis arabidopsis = new Arabidopsis();
 		String parentPath = "/media/winE/Bioinformatics/GenomeData/Arabidopsis/tair10DB/";
 		String athGO = parentPath + "ATH_GO_GOSLIM.txt/ATH_GO_GOSLIM2.txt";
@@ -367,7 +402,7 @@ public class ImportDB {
 		arabidopsis.update();
 	}
 	
-	private static void updateZB()
+	private void updateZB()
 	{
 		String zbEnsembl = "/media/winE/Bioinformatics/GenomeData/danio_rerio/ensembl_1_to_1.txt";
 		String zbGeneIDFile = "/media/winE/Bioinformatics/GenomeData/danio_rerio/gene2geneID.txt";
@@ -381,7 +416,7 @@ public class ImportDB {
 		zebraFish.update();
 	}
 	
-	private static void updateMicroarray() {
+	private void updateMicroarray() {
 		String zerbfishFile = "/media/winE/Bioinformatics/Affymetrix/rice/Affy2Loc.txt";
 		String zerbfishFile2 = "/media/winE/Bioinformatics/BLAST/result/zebrafish/affy2zerbfish_coped.xls";
 		MicroArrayBlast microArrayBlast = null;
@@ -409,7 +444,7 @@ public class ImportDB {
 		microArrayBlast.updateFile(zerbfishFile, false);
 	}
 	
-	private static void updateYeast() {
+	private void updateYeast() {
 		String yeastDBxrefFile = "/media/winE/Bioinformatics/GenomeData/yeast/dbxref.tab.txt";
 		String SGD_featuresFile = "/media/winE/Bioinformatics/GenomeData/yeast/SGD_features.tab.txt";
 		String Gene_AssociationFile ="/media/winE/Bioinformatics/GenomeData/yeast/gene_association.sgd/gene_association.sgd";
@@ -426,7 +461,7 @@ public class ImportDB {
 		yeast.update();
 	}
 
-	private static void updateSoyBean() {
+	private void updateSoyBean() {
 		String soyDbxref = "/media/winE/Bioinformatics/GenomeData/soybean/dbxref";
 		String soyAnno = "/media/winE/Bioinformatics/GenomeData/soybean/Gmax_109_annotation_info.txt";
 		SoyBean soyBean = new SoyBean();
@@ -435,7 +470,7 @@ public class ImportDB {
 		soyBean.update();
 	}
 	
-	private static void updateZeaMaize() {
+	private void updateZeaMaize() {
 		String zeamaizeDbxref = "/media/winE/Bioinformatics/GenomeData/maize/ZmB73_5a_xref.txt";
 		String maizeGeneInfo =
 				"/media/winE/Bioinformatics/GenomeData/maize/ZmB73_5a_gene_descriptors.txt/ZmB73_5a_gene_descriptors.txt";
@@ -444,17 +479,5 @@ public class ImportDB {
 		maizeGDB.setMaizeGeneInfo(maizeGeneInfo);
 		maizeGDB.update();
 	}
-	
-	private static void updateSoftInfo() {
-		String softToolsFile = "/media/winE/bioinformaticsTools/SoftwareInfo_english.xls";
-		SoftWareInfo.updateInfo(softToolsFile);
-	}
-	private static void updateSpecies() {
-		String speciesFile = "/media/winE/Bioinformatics/GenomeData/SpeciesFile.xls";
-		String taxInfoFile = "";
-		Species species = new Species();
-		species.setUpdateSpeciesFile(speciesFile);
-		species.setUpdateTaxInfo(taxInfoFile);
-		species.update();
-	}
+
 }

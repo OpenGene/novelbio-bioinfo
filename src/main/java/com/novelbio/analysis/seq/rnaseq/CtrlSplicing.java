@@ -15,7 +15,7 @@ import com.novelbio.nbcgui.GUI.GuiAnnoInfo;
 import com.novelbio.nbcgui.GUI.GuiRNAautoSplice;
 
 public class CtrlSplicing implements RunGetInfo<GuiAnnoInfo> , Runnable{
-	GuiRNAautoSplice guiRNAautoSplice;
+	GUIinfo guiRNAautoSplice;
 	GffHashGene gffHashGene;
 	SeqHash seqHash;
 	
@@ -25,7 +25,7 @@ public class CtrlSplicing implements RunGetInfo<GuiAnnoInfo> , Runnable{
 	List<String[]> lsCompareGroup;
 	
 	
-	public void setGuiRNAautoSplice(GuiRNAautoSplice guiRNAautoSplice) {
+	public void setGuiRNAautoSplice(GUIinfo guiRNAautoSplice) {
 		this.guiRNAautoSplice = guiRNAautoSplice;
 	}
 	
@@ -70,12 +70,8 @@ public class CtrlSplicing implements RunGetInfo<GuiAnnoInfo> , Runnable{
 	 * 如果seqhash
 	 * @param seqPath
 	 */
-	public void setSeqPath(String seqPath) {
-		try {
-			this.seqHash = new SeqHash(seqPath);
-		} catch (Exception e) {
-			this.seqHash = null;
-		}
+	public void setSeqHash(SeqHash seqHash) {
+		this.seqHash = seqHash;
 	}
 	
 	public void setDisplayAllEvent(boolean isDisplayAllEvent) {
@@ -92,10 +88,7 @@ public class CtrlSplicing implements RunGetInfo<GuiAnnoInfo> , Runnable{
 		exonJunction.setGffHashGene(gffHashGene);
 		exonJunction.setOneGeneOneSpliceEvent(!isDisplayAllEvent);
 		exonJunction.setRunGetInfo(this);
-		
-		if (FileOperate.isFileDirectory(outFile)) {
-			outFile = FileOperate.addSep(outFile);
-		}
+
 		for (String[] strings : lsBam2Prefix) {
 			//TODO 暂时没有多对多比较
 			exonJunction.addBamSorted(strings[2], strings[0]);

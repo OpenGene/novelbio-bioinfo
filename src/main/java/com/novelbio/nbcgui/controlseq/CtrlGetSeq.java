@@ -8,7 +8,7 @@ import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.GffChrSeq;
 import com.novelbio.analysis.seq.genome.GffChrSeq.GffChrSeqProcessInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
-import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
+import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.base.multithread.RunGetInfo;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.species.Species;
@@ -80,7 +80,7 @@ public class CtrlGetSeq implements RunGetInfo<GffChrSeq.GffChrSeqProcessInfo>{
 	 * 输入位点提取序列
 	 * @param lsIsoName
 	 */
-	public void setGetSeqSite(ArrayList<SiteInfo> lsIsoName) {
+	public void setGetSeqSite(ArrayList<SiteSeqInfo> lsIsoName) {
 		gffChrSeq.setGetSeqSite(lsIsoName);
 	}
 	/** 如果不是保存在文件中，就可以通过这个来获得结果 */

@@ -51,7 +51,7 @@ public class SnpSomaticFilter {
 	boolean getVCFflag = false;
 	
 	/** 判定为snp Heto所含有的snp比例不得小于该数值 */
-	public void setSnp_Hete_Contain_SnpProp_Min(double snp_Hete_Contain_SnpProp_Min) {
+	public void setSnp_Heto_Contain_SnpProp_Min(double snp_Hete_Contain_SnpProp_Min) {
 		snpFilterSamples.setSnp_Hete_Contain_SnpProp_Min(snp_Hete_Contain_SnpProp_Min);
 	}
 	
@@ -232,11 +232,11 @@ public class SnpSomaticFilter {
 	 * 如果没有过滤只运行了readSnpDetailFromFile，那就将读取的detail写入文本
 	 * @param txtFile
 	 */
-	public void writeToFile(GffChrAbs gffChrAbs, String txtFile) {
+	public void writeToFile(GffChrAbs gffChrAbs, boolean simpleTable, String txtFile) {
 		LinkedHashSet<String> setSample = getSetSampleName();
 		
 		TxtReadandWrite txtOut = new TxtReadandWrite(txtFile, true);
-		txtOut.writefileln(RefSiteSnpIndel.getTitleFromSampleName(setSample, getVCFflag));
+		txtOut.writefileln(RefSiteSnpIndel.getTitleFromSampleName(setSample, getVCFflag, true));
 		//优先写入过滤后的snp位点
 		ArrayList<RefSiteSnpIndel> lsWriteIn = lsFilteredRefSnp;
 		if (lsFilteredRefSnp == null || lsFilteredRefSnp.size() == 0) {
@@ -244,7 +244,7 @@ public class SnpSomaticFilter {
 		}
 		for (RefSiteSnpIndel refSiteSnpIndel : lsWriteIn) {
 			refSiteSnpIndel.setGffChrAbs(gffChrAbs);
-			ArrayList<String[]> lsResult = refSiteSnpIndel.toStringLsSnp(setSample, false, getVCFflag);
+			ArrayList<String[]> lsResult = refSiteSnpIndel.toStringLsSnp(setSample, getVCFflag, true);
 			refSiteSnpIndel.setGffChrAbs(null);
 			for (String[] strings : lsResult) {
 				txtOut.writefileln(strings);

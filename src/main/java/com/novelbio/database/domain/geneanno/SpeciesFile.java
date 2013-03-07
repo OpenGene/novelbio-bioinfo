@@ -75,8 +75,8 @@ public class SpeciesFile {
 	HashMap<String, String> mapSoftware2ChrIndexPath = new LinkedHashMap<String, String>();
 	/** 从indexRefseq转化而来, key: 软件名，为小写 value：路径 */
 	HashMap<String, String> mapSoftware2RefseqIndexPath = new LinkedHashMap<String, String>();
-	/** 从gffGeneFile来，key：gffType  value：gffFile */
-	HashMap<String, String> hashGffType2GffFile = new LinkedHashMap<String, String>();
+	/** 从gffGeneFile来，key：Gff来源的数据库  value：GffType + SepSign + gffFile */
+	Map<String, String> mapGffDB_2_GffTypeGffFile = new LinkedHashMap<String, String>();
 	
 	/** 是否已经查找过 */
 	boolean searched = false;
@@ -127,7 +127,7 @@ public class SpeciesFile {
 	}
 	public String getChromSeqFile() {
 		if (chromSeq == null || chromSeq.trim().equals("")) {
-			chromSeq = FileOperate.addSep(chromPath) + "all/chrAll.fa";
+			chromSeq = FileOperate.addSep(getChromFaPath()) + "all/chrAll.fa";
 		}
 		
 		if (!FileOperate.isFileExistAndBigThanSize(chromSeq, 10)) {

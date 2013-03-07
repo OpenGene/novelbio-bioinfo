@@ -16,7 +16,7 @@ import com.novelbio.database.domain.geneanno.TaxInfo;
 abstract class ImportPerLine
 {
 	private static Logger logger = Logger.getLogger(ImportPerLine.class);
-	static HashSet<Integer> hashTaxID = null;
+	static HashSet<Integer> setTaxID = null;
 	static String taxIDfile = "";
 	int readFromLine = 1;
 	//多此一举的设定，回头慢慢修正
@@ -96,7 +96,7 @@ abstract class ImportPerLine
 		if (ImportPerLine.taxIDfile.equals(taxIDfile)) {
 			return;
 		}
-		hashTaxID = new HashSet<Integer>();
+		setTaxID = new HashSet<Integer>();
 		TxtReadandWrite txtTaxID=new TxtReadandWrite(taxIDfile, false);
 		for (String string : txtTaxID.readlines()) {
 			if (string.startsWith("#")) {
@@ -114,7 +114,7 @@ abstract class ImportPerLine
 			taxInfo.setComName(ss[3]);
 			taxInfo.setAbbr(ss[4]);
 			taxInfo.update();
-			hashTaxID.add(Integer.parseInt(ss[0]));
+			setTaxID.add(Integer.parseInt(ss[0]));
 		}
 	}
 	/**

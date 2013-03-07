@@ -11,6 +11,7 @@ import org.apache.commons.collections.list.SetUniqueList;
 import org.apache.commons.math.stat.descriptive.moment.Mean;
 import org.apache.log4j.Logger;
 
+import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.Equations;
 import com.novelbio.base.dataStructure.MathComput;
@@ -204,7 +205,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * 输入坐标区间，需要划分的块数，返回该段区域内reads的数组。如果该染色体在mapping时候不存在，则返回null
 	 * 定位到两个端点所在的 读取invNum区间，然后计算新的invNum区间
 	 * @param chrID
-	 * @param lsLoc 直接输入gffIso即可
+	 * @param lsLoc 直接输入gffIso即可，<b>输入的Alignment不考虑方向</b>
 	 * @param binNum 分成几份，如果小于0，则不进行合并，直接返回自己的份数
 	 * @param type  0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 * @return

@@ -57,7 +57,7 @@ public class PredictAltEnd extends PredictAltStartEnd {
 				if (lsExonInfo.get(lsExonInfo.size() - 1).getItemNum() == gffGeneIsoInfo.size() - 1) {
 					int start = lsExonInfo.get(0).getStartCis();
 					int end = lsExonInfo.get(lsExonInfo.size() - 1).getEndCis();
-					Align align = new Align(exonCluster.getChrID(), start, end);
+					Align align = new Align(exonCluster.getRefID(), start, end);
 					lsSite.add(align);
 					lslsExonInfos.add(lsExonInfo);
 				}
@@ -77,14 +77,14 @@ public class PredictAltEnd extends PredictAltStartEnd {
 		});
 		
 		for (ArrayList<ExonInfo> lsExonInfos : lslsExonInfos) {
-			int juncReads = tophatJunction.getJunctionSite(exonCluster.getChrID(), lsExonInfos.get(lsExonInfos.size() - 1).getStartCis());
+			int juncReads = tophatJunction.getJunctionSite(exonCluster.getRefID(), lsExonInfos.get(lsExonInfos.size() - 1).getStartCis());
 			mapJuncNum2Exon.put(juncReads, lsExonInfos);
 		}
 		//获得第一个
 		Align align = null;
 		for (Integer juncNum : mapJuncNum2Exon.keySet()) {
 			ArrayList<ExonInfo> lsExonInfos = mapJuncNum2Exon.get(juncNum);
-			align = new Align(exonCluster.getChrID(), lsExonInfos.get(0).getStartCis(), lsExonInfos.get(lsExonInfos.size() - 1).getEndCis());
+			align = new Align(exonCluster.getRefID(), lsExonInfos.get(0).getStartCis(), lsExonInfos.get(lsExonInfos.size() - 1).getEndCis());
 			break;
 		}		
 		return align;

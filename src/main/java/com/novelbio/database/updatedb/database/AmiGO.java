@@ -508,7 +508,7 @@ Example:O43526-2
 			logger.error("taxID出错：" + lineContent);
 		}
 		
-		if (!hashTaxID.contains(taxID)) {
+		if (!setTaxID.contains(taxID)) {
 			return true;
 		}
 		GeneID copedID = new GeneID(ss[1], taxID);

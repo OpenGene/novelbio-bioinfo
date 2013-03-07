@@ -54,7 +54,9 @@ public class SnpFilter {
 	
 	HashSet<SnpGroupFilterInfo> setSampleFilterInfo = new HashSet<SnpGroupFilterInfo>();
 	
-	/** 判定为snp Heto所含有的snp比例不得小于该数值 */
+	/** 判定为snp Heto More所含有的snp比例不得小于该数值
+	 * 如果该值小于Snp_Hete_Contain_SnpProp_Min，则该值会修正为Snp_Hete_Contain_SnpProp_Min的值
+	 */
 	public void setSnp_HetoMore_Contain_SnpProp_Min(double snp_HetoMore_Contain_SnpProp_Min) {
 		Snp_HetoMore_Contain_SnpProp_Min = snp_HetoMore_Contain_SnpProp_Min;
 	}
@@ -171,6 +173,10 @@ public class SnpFilter {
 	 * 输入之前要指定样本名，
 	 * 返回指定的snpindel的信息 */
 	public SnpIndelHomoHetoType getSnpIndelType(SnpIndelType siteSnpIndelInfo, int numSnpIndel, int numRef, int numAll) {
+		if (Snp_Hete_Contain_SnpProp_Min > Snp_HetoMore_Contain_SnpProp_Min) {
+			Snp_HetoMore_Contain_SnpProp_Min = Snp_Hete_Contain_SnpProp_Min;
+		}
+		
 		if (numAll >= Snp_Homo_ReadsAllNumMin && numRef <= Snp_Homo_Contain_RefNumMax
 			&& (double)numRef/numAll <= Snp_Homo_Contain_RefProp_Max ) 
 		{

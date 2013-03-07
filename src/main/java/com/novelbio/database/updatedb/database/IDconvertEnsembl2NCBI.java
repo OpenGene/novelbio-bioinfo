@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.PatternOperate;
@@ -19,7 +20,7 @@ import com.novelbio.generalConf.NovelBioConst;
  * @author zong0jie
  *
  */
-public class IDconvert {
+public class IDconvertEnsembl2NCBI {
 	/**
 	 * 存储gffFile和对应的taxID
 	 */
@@ -46,13 +47,13 @@ public class IDconvert {
 	}
 	public void update() {
 		EnsembleGTF ensembleGTF = new EnsembleGTF();
-		ensembleGTF.setTaxIDFile(taxIDFile);
+		EnsembleGTF.setTaxIDFile(taxIDFile);
 		int i = 0;
 		for (Entry<String, Integer> entry : hashEnsemblTaxID.entrySet()) {
 			String fileName = entry.getKey();
 			int taxID = entry.getValue();
 			ensembleGTF.setTaxID(taxID);
-			ensembleGTF.setGffHashGene(NovelBioConst.GENOME_GFF_TYPE_NCBI, lsUCSCFile.get(i));
+			ensembleGTF.setGffHashGene(GffType.NCBI, lsUCSCFile.get(i));
 			ensembleGTF.setTxtWriteExcep(FileOperate.changeFileSuffix(fileName, "_NotFindInDB", null));
 			ensembleGTF.updateFile(fileName, false);
 			i ++;
@@ -64,11 +65,13 @@ public class IDconvert {
  * @author zong0jie
  *
  */
-class EnsembleGTF extends ImportPerLine
-{
+class EnsembleGTF extends ImportPerLine {
 	private static Logger logger = Logger.getLogger(EnsembleGTF.class);
 	GffHashGene gffHashGene;
-	public void setGffHashGene(String geneType, String gffFile) {
+	
+	PatternOperate patTranscript = new PatternOperate("(?<=transcript_id \")\\w+", false);
+	
+	public void setGffHashGene(GffType geneType, String gffFile) {
 		gffHashGene =  new GffHashGene(geneType, gffFile);
 	}
 	/**
@@ -100,8 +103,7 @@ class EnsembleGTF extends ImportPerLine
 					}
 				}
 				oldContent = content;
-			}
-			else {
+			} else {
 				oldContent = tmpString;
 			}
 		}
@@ -118,8 +120,6 @@ class EnsembleGTF extends ImportPerLine
 		}
 		logger.info("finished import file " + gene2AccFile);
 	}
-	
-	PatternOperate patTranscript = new PatternOperate("(?<=transcript_id \")\\w+", false);
 	
 	/**
 	 * 判断两行是不是来自同一个基因，如果来自同一个基因，就将新基因的坐标和老基因的坐标合并
@@ -151,7 +151,10 @@ class EnsembleGTF extends ImportPerLine
 	}
 	
 	/**
-	 * E22C19W28_E50C23	protein_coding	CDS	775083	775229	.	-	0	 gene_id "ENSGALG00000010254"; transcript_id "ENSGALT00000016676"; exon_number "12"; gene_name "FAIM2"; gene_biotype "protein_coding"; protein_id "ENSGALP00000016657";
+	 * E22C19W28_E50C23	protein_coding	CDS	775083	775229	.	-	0	
+	 *  gene_id "ENSGALG00000010254"; transcript_id "ENSGALT00000016676"; exon_number "12"; gene_name "FAIM2"; gene_biotype "protein_coding"; protein_id "ENSGALP00000016657";
+	 *  
+	 *  先在数据库中找geneName等，找不到再找gff文件
 	 */
 	@Override
 	public boolean impPerLine(String lineContent) {
@@ -169,6 +172,9 @@ class EnsembleGTF extends ImportPerLine
 			else if (string.contains("transcript_id")) {
 				lsRefID.add(string.replace("transcript_id", "").replace("\"", "").trim());
 			}
+			else if (string.contains("transcript_name")) {
+				lsRefID.add(string.replace("transcript_name", "").replace("\"", "").trim());
+			}
 			else if (string.contains("gene_name")) {
 				lsRefID.add(string.replace("gene_name", "").replace("\"", "").trim());
 			}
@@ -176,19 +182,17 @@ class EnsembleGTF extends ImportPerLine
 				lsRefID.add(string.replace("protein_id", "").replace("\"", "").trim());
 			}
 		}
-		GeneID copedID = new GeneID("", taxID);
-		copedID.setUpdateRefAccID(lsRefID);
-		copedID.setUpdateRefAccIDClear(true);
-		if (copedID.getIDtype().equals(GeneID.IDTYPE_ACCID)) {
+		GeneID geneID = new GeneID("", taxID);
+		geneID.setUpdateRefAccID(lsRefID);
+		geneID.setUpdateRefAccIDClear(true);
+		if (geneID.getIDtype().equals(GeneID.IDTYPE_ACCID)) {
 			GffCodGeneDU gffCodGeneDu = gffHashGene.searchLocation("chr"+ss[0].toLowerCase().replace("chr", ""), Integer.parseInt(ss[3]),  Integer.parseInt(ss[4]));
 			if (gffCodGeneDu == null || gffCodGeneDu.getAllGffDetail().size() <= 0) {
-//				copedID.update(false);
 				return false;
 			}
 			int geneNum = gffCodGeneDu.getAllGffDetail().size()/2;
-			copedID = gffCodGeneDu.getAllGffDetail().get(geneNum).getLongestSplitMrna().getGeneID();
-			if (copedID.getIDtype().equals(GeneID.IDTYPE_ACCID)) {
-//				copedID.update(false);
+			geneID = gffCodGeneDu.getAllGffDetail().get(geneNum).getLongestSplitMrna().getGeneID();
+			if (geneID.getIDtype().equals(GeneID.IDTYPE_ACCID)) {
 				return false;
 			}
 		}
@@ -196,24 +200,24 @@ class EnsembleGTF extends ImportPerLine
 		//本方法效率较低，不过无所谓了
 		for (String string : ssID) {
 			if (string.contains("gene_id")) {
-				copedID.setUpdateAccID(string.replace("gene_id", "").replace("\"", "").trim());
-				copedID.setUpdateDBinfo(NovelBioConst.DBINFO_ENSEMBL_GENE, false);
-				copedID.update(true);
+				geneID.setUpdateAccID(string.replace("gene_id", "").replace("\"", "").trim());
+				geneID.setUpdateDBinfo(NovelBioConst.DBINFO_ENSEMBL_GENE, false);
+				geneID.update(true);
 			}
 			else if (string.contains("transcript_id")) {
-				copedID.setUpdateAccID(string.replace("transcript_id", "").replace("\"", "").trim());
-				copedID.setUpdateDBinfo(NovelBioConst.DBINFO_ENSEMBL_TRS, false);
-				copedID.update(true);
+				geneID.setUpdateAccID(string.replace("transcript_id", "").replace("\"", "").trim());
+				geneID.setUpdateDBinfo(NovelBioConst.DBINFO_ENSEMBL_TRS, false);
+				geneID.update(true);
 			}
 			else if (string.contains("gene_name")) {
-				copedID.setUpdateAccID(string.replace("gene_name", "").replace("\"", "").trim());
-				copedID.setUpdateDBinfo(NovelBioConst.DBINFO_SYMBOL, false);
-				copedID.update(true);
+				geneID.setUpdateAccID(string.replace("gene_name", "").replace("\"", "").trim());
+				geneID.setUpdateDBinfo(NovelBioConst.DBINFO_SYMBOL, false);
+				geneID.update(true);
 			}
 			else if (string.contains("protein_id")) {
-				copedID.setUpdateAccID(string.replace("protein_id", "").replace("\"", "").trim());
-				copedID.setUpdateDBinfo(NovelBioConst.DBINFO_ENSEMBL_PRO, false);
-				copedID.update(true);
+				geneID.setUpdateAccID(string.replace("protein_id", "").replace("\"", "").trim());
+				geneID.setUpdateDBinfo(NovelBioConst.DBINFO_ENSEMBL_PRO, false);
+				geneID.update(true);
 			}
 		}
 		return true;

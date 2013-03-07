@@ -3,12 +3,14 @@ package com.novelbio.analysis.seq.genome.gffOperate.exoncluster;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map.Entry;
 
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.database.domain.geneanno.SepSign;
 
 public class PredictUnKnown extends SpliceTypePredict {
@@ -31,8 +33,8 @@ public class PredictUnKnown extends SpliceTypePredict {
 			setAligns.add(new Align(exonInfo.getRefID(), exonInfo.getStartAbs(), exonInfo.getEndAbs()));
 		}
 		for (Align align : setAligns) {
-			int thisCounts = tophatJunction.getJunctionSite(condition, exonCluster.getChrID(), align.getStartCis()) 
-					+ tophatJunction.getJunctionSite(condition, exonCluster.getChrID(), align.getEndCis());
+			int thisCounts = tophatJunction.getJunctionSite(condition, exonCluster.getRefID(), align.getStartCis()) 
+					+ tophatJunction.getJunctionSite(condition, exonCluster.getRefID(), align.getEndCis());
 			lsCounts.add((double) thisCounts);
 		}
 		return lsCounts;
@@ -113,7 +115,12 @@ public class PredictUnKnown extends SpliceTypePredict {
 
 	@Override
 	public Align getDifSite() {
-		return new Align(exonCluster.getChrID(), exonCluster.getStartCis(), exonCluster.getEndCis());
+		return new Align(exonCluster.getRefID(), exonCluster.getStartCis(), exonCluster.getEndCis());
+	}
+
+	@Override
+	public List<? extends Alignment> getBGSite() {
+		return exonCluster.getParentGene().getLongestSplitMrna();
 	}
 	
 }

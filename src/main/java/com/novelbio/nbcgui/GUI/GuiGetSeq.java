@@ -14,7 +14,7 @@ import com.novelbio.analysis.seq.genome.GffChrSeq;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
-import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
+import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.gui.GUIFileOpen;
@@ -392,7 +392,7 @@ public class GuiGetSeq extends JPanel {
 		ctrlGetSeq.setOutPutFile(txtSavePath.getText());
 		ctrlGetSeq.setGetAAseq(chckbxGetaminoacid.isSelected());
 		
-		ArrayList<SiteInfo> lsSiteInfo = new ArrayList<SiteInfo>();
+		ArrayList<SiteSeqInfo> lsSiteInfo = new ArrayList<SiteSeqInfo>();
 		for (String[] info : lsInfo) {
 			String chrID = info[colChrID];
 			int start, end;
@@ -402,7 +402,7 @@ public class GuiGetSeq extends JPanel {
 			} catch (Exception e) {
 				continue;
 			}
-			SiteInfo siteInfo = new SiteInfo(chrID, start, end);
+			SiteSeqInfo siteInfo = new SiteSeqInfo(chrID, start, end);
 			lsSiteInfo.add(siteInfo);
 		}
 		
@@ -426,7 +426,7 @@ public class GuiGetSeq extends JPanel {
 		ctrlGetSeq.setOutPutFile(txtSavePath.getText());
 		ctrlGetSeq.setGetAAseq(chckbxGetaminoacid.isSelected());
 		
-		ArrayList<SiteInfo> lsSiteInfo = new ArrayList<SiteInfo>();
+		ArrayList<SiteSeqInfo> lsSiteInfo = new ArrayList<SiteSeqInfo>();
 		for (String[] info : lsInfo) {
 			String chrID = info[colChrID];
 			int Summit = 0;
@@ -437,7 +437,7 @@ public class GuiGetSeq extends JPanel {
 			}
 			int start = Summit + upstream;
 			int end = Summit + dowstream;
-			SiteInfo siteInfo = new SiteInfo(chrID, start, end);
+			SiteSeqInfo siteInfo = new SiteSeqInfo(chrID, start, end);
 			lsSiteInfo.add(siteInfo);
 		}
 		

@@ -52,7 +52,7 @@ public class BamSort {
 	public String sortSamtools(String outFile) {
 		SAMFileReader reader = samFile.samReader.getSamFileReader();
 		if (reader.getFileHeader().getSortOrder() == SortOrder.coordinate) {
-			return outFile;
+			return samFile.getFileName();
 		}
 		String cmd = ExePath + "samtools sort " + CmdOperate.addQuot(samFile.getFileName()) + " " 
 				+ CmdOperate.addQuot(FileOperate.changeFileSuffix(outFile, "", ""));

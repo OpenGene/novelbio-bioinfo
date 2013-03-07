@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
-import com.novelbio.analysis.seq.genome.mappingOperate.Alignment;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.base.dataStructure.Alignment;
 
 public interface AlignRecord extends Alignment{
 	/** 是否为unique mapping，不是的话mapping到了几个不同的位点上去 */

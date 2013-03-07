@@ -27,13 +27,13 @@ import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneNCBI;
-import com.novelbio.analysis.seq.genome.mappingOperate.Alignment;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsHanyanChrom;
-import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
+import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.BarStyle;
@@ -156,12 +156,12 @@ public class GffChrMap {
 		GffHashGene gffHashGene = gffChrAbs.getGffHashGene();
 		HashMap<String, List<? extends Alignment>> mapChrID2LsAlignment = new HashMap<String, List<? extends Alignment>>();
 		for (String chrID : gffHashGene.getMapChrID2LsGff().keySet()) {
-			ArrayList<SiteInfo> lsAlignment = new ArrayList<SiteInfo>();
+			ArrayList<SiteSeqInfo> lsAlignment = new ArrayList<SiteSeqInfo>();
 			ListGff listGff = gffHashGene.getMapChrID2LsGff().get(chrID.toLowerCase());
 			for (GffDetailGene gffDetailGene : listGff) {
 				lsAlignment.addAll(getGeneStructureRangeForChrPlot(geneStructure, gffDetailGene, num));
 			}
-			SiteInfo.setCompareType(SiteInfo.COMPARE_LOCSITE);
+			SiteSeqInfo.setCompareType(SiteSeqInfo.COMPARE_LOCSITE);
 			Collections.sort(lsAlignment);
 			mapChrID2LsAlignment.put(chrID.toLowerCase(), lsAlignment);
 		}
@@ -174,12 +174,12 @@ public class GffChrMap {
 	 * @param num 具体第几个，譬如马红就想看第一个内含子或者第一个外显子 小于等于0表示看全体
 	 * @return
 	 */
-	private ArrayList<SiteInfo> getGeneStructureRangeForChrPlot(GeneStructure geneStructure, GffDetailGene gffDetailGene, int num) {
+	private ArrayList<SiteSeqInfo> getGeneStructureRangeForChrPlot(GeneStructure geneStructure, GffDetailGene gffDetailGene, int num) {
 		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplitMrna();
-		ArrayList<SiteInfo> lsResult = new ArrayList<SiteInfo>();
+		ArrayList<SiteSeqInfo> lsResult = new ArrayList<SiteSeqInfo>();
 		
 		if (geneStructure == GeneStructure.TSS) {
-			SiteInfo siteInfo = new SiteInfo(gffDetailGene.getRefID());
+			SiteSeqInfo siteInfo = new SiteSeqInfo(gffDetailGene.getRefID());
 			if (gffGeneIsoInfo.isCis5to3()) {
 				siteInfo.setStartEndLoc(gffGeneIsoInfo.getTSSsite() + plotRange[0], gffGeneIsoInfo.getTSSsite() + plotRange[1]);
 			} else {
@@ -189,7 +189,7 @@ public class GffChrMap {
 		}
 		
 		else if (geneStructure == GeneStructure.TES) {
-			SiteInfo siteInfo = new SiteInfo(gffDetailGene.getRefID());
+			SiteSeqInfo siteInfo = new SiteSeqInfo(gffDetailGene.getRefID());
 			if (gffGeneIsoInfo.isCis5to3()) {
 				siteInfo.setStartEndLoc(gffGeneIsoInfo.getTESsite() + plotRange[0], gffGeneIsoInfo.getTESsite() + plotRange[1]);
 			} else {
@@ -201,13 +201,13 @@ public class GffChrMap {
 		else if (geneStructure == GeneStructure.EXON) {
 			if (num <= 0) {
 				for (ExonInfo exonInfo : gffGeneIsoInfo) {
-					SiteInfo siteInfo = new SiteInfo(gffDetailGene.getRefID());
+					SiteSeqInfo siteInfo = new SiteSeqInfo(gffDetailGene.getRefID());
 					siteInfo.setStartEndLoc(exonInfo.getStartAbs(), exonInfo.getEndAbs());
 					lsResult.add(siteInfo);
 				}
 			} else {
 				if (gffGeneIsoInfo.size() > num) {
-					SiteInfo siteInfo = new SiteInfo(gffDetailGene.getRefID());
+					SiteSeqInfo siteInfo = new SiteSeqInfo(gffDetailGene.getRefID());
 					siteInfo.setStartEndLoc(gffGeneIsoInfo.get(num - 1).getStartAbs(), gffGeneIsoInfo.get(num - 1).getEndAbs());
 					lsResult.add(siteInfo);
 				}
@@ -217,14 +217,14 @@ public class GffChrMap {
 		else if (geneStructure == GeneStructure.INTRON) {
 			if (num <= 0) {
 				for (ExonInfo exonInfo : gffGeneIsoInfo.getLsIntron()) {
-					SiteInfo siteInfo = new SiteInfo(gffDetailGene.getRefID());
+					SiteSeqInfo siteInfo = new SiteSeqInfo(gffDetailGene.getRefID());
 					siteInfo.setStartEndLoc(exonInfo.getStartAbs(), exonInfo.getEndAbs());
 					lsResult.add(siteInfo);
 				}
 			} else {
 				ArrayList<ExonInfo> lsIntron = gffGeneIsoInfo.getLsIntron();
 				if (lsIntron.size() >= num) {
-					SiteInfo siteInfo = new SiteInfo(gffDetailGene.getRefID());
+					SiteSeqInfo siteInfo = new SiteSeqInfo(gffDetailGene.getRefID());
 					siteInfo.setStartEndLoc(lsIntron.get(num - 1).getStartAbs(), lsIntron.get(num - 1).getEndAbs());
 					lsResult.add(siteInfo);
 				}
@@ -232,13 +232,13 @@ public class GffChrMap {
 			
 		} else if (geneStructure == GeneStructure.UTR5) {
 			for (ExonInfo exonInfo : gffGeneIsoInfo.getUTR5seq()) {
-				SiteInfo siteInfo = new SiteInfo(gffDetailGene.getRefID());
+				SiteSeqInfo siteInfo = new SiteSeqInfo(gffDetailGene.getRefID());
 				siteInfo.setStartEndLoc(exonInfo.getStartAbs(), exonInfo.getEndAbs());
 				lsResult.add(siteInfo);
 			}
 		} else if (geneStructure == GeneStructure.UTR3) {
 			for (ExonInfo exonInfo : gffGeneIsoInfo.getUTR3seq()) {
-				SiteInfo siteInfo = new SiteInfo(gffDetailGene.getRefID());
+				SiteSeqInfo siteInfo = new SiteSeqInfo(gffDetailGene.getRefID());
 				siteInfo.setStartEndLoc(exonInfo.getStartAbs(), exonInfo.getEndAbs());
 				lsResult.add(siteInfo);
 			}
@@ -650,7 +650,7 @@ public class GffChrMap {
 		}
 		int tssStart = Math.min(tssStartR, tssEndR);
 		int tssEnd = Math.max(tssStartR, tssEndR);
-		double[] siteInfo = mapReads.getRangeInfo(mapReads.getBinNum(), gffGeneIsoInfo.getChrID(), tssStart, tssEnd, 0);
+		double[] siteInfo = mapReads.getRangeInfo(mapReads.getBinNum(), gffGeneIsoInfo.getRefID(), tssStart, tssEnd, 0);
 		if (siteInfo == null) {
 //			System.out.println("stop");
 			return -1;
@@ -673,7 +673,7 @@ public class GffChrMap {
 		int tesSite = gffGeneIsoInfo.getTESsite();
 		int tssStart = Math.min(tssSite, tesSite);
 		int tssEnd = Math.max(tssSite, tesSite);
-		double[] siteInfo = mapReads.getRangeInfo(mapReads.getBinNum(), gffGeneIsoInfo.getChrID(), tssStart, tssEnd, 0);
+		double[] siteInfo = mapReads.getRangeInfo(mapReads.getBinNum(), gffGeneIsoInfo.getRefID(), tssStart, tssEnd, 0);
 		return MathComput.sum(siteInfo);
 	}
 	

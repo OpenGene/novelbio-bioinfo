@@ -7,10 +7,11 @@ import java.util.List;
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.mappingOperate.SiteInfo;
+import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
+import com.novelbio.base.dataStructure.Alignment;
 
 /**
  * 获取getJuncCounts时需要设定
@@ -35,12 +36,12 @@ public class PredictRetainIntron extends SpliceTypePredict {
 		ArrayList<Double> lsCounts = new ArrayList<Double>();
 		getJunctionSite();
 		
-		lsCounts.add((double) tophatJunction.getJunctionSite(condition, exonCluster.getChrID(), alignRetain.getStartCis(), alignRetain.getEndCis()));
+		lsCounts.add((double) tophatJunction.getJunctionSite(condition, exonCluster.getRefID(), alignRetain.getStartCis(), alignRetain.getEndCis()));
 		List<SamFile> lsSamFile = mapCond2Samfile.get(condition);
 		int throughStart = 0, throughEnd = 0;
 		for (SamFile samFile : lsSamFile) {
-			throughStart += getThroughSiteReadsNum(samFile, exonCluster.getChrID(), alignRetain.getStartCis());
-			throughEnd += getThroughSiteReadsNum(samFile, exonCluster.getChrID(), alignRetain.getEndCis());
+			throughStart += getThroughSiteReadsNum(samFile, exonCluster.getRefID(), alignRetain.getStartCis());
+			throughEnd += getThroughSiteReadsNum(samFile, exonCluster.getRefID(), alignRetain.getEndCis());
 		}
 		lsCounts.add( ((double)(throughStart + throughEnd)/2));
 		
@@ -58,10 +59,10 @@ public class PredictRetainIntron extends SpliceTypePredict {
 				for (int i = 0; i < lsExonInfo.size() - 1; i++) {
 					int startLoc =  lsExonInfo.get(i).getEndCis();
 					int endLoc = lsExonInfo.get(i+1).getStartCis();
-					int readsNum = tophatJunction.getJunctionSite(exonCluster.getChrID(), startLoc, endLoc);
+					int readsNum = tophatJunction.getJunctionSite(exonCluster.getRefID(), startLoc, endLoc);
 					if (readsNum > maxReadsNum) {
 						maxReadsNum = readsNum;
-						alignRetain = new Align(exonCluster.getChrID(), startLoc, endLoc);
+						alignRetain = new Align(exonCluster.getRefID(), startLoc, endLoc);
 					}
 				}
 			}
@@ -86,6 +87,13 @@ public class PredictRetainIntron extends SpliceTypePredict {
 	public Align getDifSite() {
 		getJunctionSite();
 		return alignRetain;
+	}
+	
+	@Override
+	public List<? extends Alignment> getBGSite() {
+		List<Alignment> lsAlignments = new ArrayList<Alignment>();
+		lsAlignments.add(exonCluster);
+		return lsAlignments;
 	}
 	
 	/**
@@ -114,5 +122,6 @@ public class PredictRetainIntron extends SpliceTypePredict {
 	public SplicingAlternativeType getType() {
 		return SplicingAlternativeType.retain_intron;
 	}
+
 
 }

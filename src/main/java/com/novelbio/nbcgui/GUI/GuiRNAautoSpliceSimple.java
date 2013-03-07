@@ -7,11 +7,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 
+import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.rnaseq.CtrlSplicing;
 import com.novelbio.analysis.seq.rnaseq.ExonJunction;
 import com.novelbio.analysis.seq.rnaseq.ExonSplicingTest;
+import com.novelbio.analysis.seq.rnaseq.GUIinfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
@@ -35,7 +37,7 @@ import javax.swing.JLabel;
 import javax.swing.JCheckBox;
 import javax.swing.JProgressBar;
 
-public class GuiRNAautoSpliceSimple extends GuiRNAautoSplice {
+public class GuiRNAautoSpliceSimple extends JPanel implements GUIinfo {
 	static final int progressLength = 10000;
 	private JTextField txtGff;
 	JScrollPaneData scrlBam;
@@ -66,7 +68,7 @@ public class GuiRNAautoSpliceSimple extends GuiRNAautoSplice {
 	int level;
 	
 	JComboBoxData<String> cmbGroup = new JComboBoxData<String>();
-	private JTextField txtSeqPath;
+	private JTextField txtChromFaPath;
 	
 	/**
 	 * Create the panel.
@@ -125,7 +127,7 @@ public class GuiRNAautoSpliceSimple extends GuiRNAautoSplice {
 				txtGff.setText(guiFileOpen.openFileName("GTFfile", ""));
 			}
 		});
-		btnOpengtf.setBounds(750, 58, 150, 24);
+		btnOpengtf.setBounds(760, 57, 142, 24);
 		add(btnOpengtf);
 		
 		JLabel lblAddbamfile = new JLabel("AddBamFile");
@@ -140,18 +142,18 @@ public class GuiRNAautoSpliceSimple extends GuiRNAautoSplice {
 		JButton btnSaveto = new JButton("SaveTo");
 		btnSaveto.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				txtSaveTo.setText(guiFileOpen.saveFileName("Out", ""));
+				txtSaveTo.setText(guiFileOpen.saveFileNameAndPath("", ""));
 			}
 		});
 		btnSaveto.setBounds(604, 427, 118, 24);
 		add(btnSaveto);
 		
 		scrlCompare = new JScrollPaneData();
-		scrlCompare.setBounds(642, 239, 260, 76);
+		scrlCompare.setBounds(642, 205, 260, 110);
 		add(scrlCompare);
 		
 		JLabel lblCompare = new JLabel("Compare");
-		lblCompare.setBounds(642, 214, 69, 14);
+		lblCompare.setBounds(642, 179, 69, 14);
 		add(lblCompare);
 		
 		JButton btnAddCompare = new JButton("AddCompare");
@@ -188,19 +190,19 @@ public class GuiRNAautoSpliceSimple extends GuiRNAautoSplice {
 		lblDetailInfo.setBounds(255, 460, 260, 14);
 		add(lblDetailInfo);
 		
-		txtSeqPath = new JTextField();
-		txtSeqPath.setBounds(642, 107, 258, 18);
-		add(txtSeqPath);
-		txtSeqPath.setColumns(10);
+		txtChromFaPath = new JTextField();
+		txtChromFaPath.setBounds(643, 111, 257, 18);
+		add(txtChromFaPath);
+		txtChromFaPath.setColumns(10);
 		
-		JButton btnOpenseqfold = new JButton("OpenSeqFold");
-		btnOpenseqfold.addActionListener(new ActionListener() {
+		JButton btnOpenSeqPath = new JButton("OpenSeqPath");
+		btnOpenSeqPath.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				txtSeqPath.setText(guiFileOpen.openFilePathName("", ""));
+				txtChromFaPath.setText(guiFileOpen.openFilePathName("", ""));
 			}
 		});
-		btnOpenseqfold.setBounds(750, 137, 152, 24);
-		add(btnOpenseqfold);
+		btnOpenSeqPath.setBounds(760, 135, 140, 24);
+		add(btnOpenSeqPath);
 		
 		initial();
 	}
@@ -228,9 +230,7 @@ public class GuiRNAautoSpliceSimple extends GuiRNAautoSplice {
 	}
 	/** 如果txt存在，优先获得txt对应的gtf文件*/
 	private GffHashGene getGffhashGene() {
-		GffHashGene gffHashGeneResult = null;
-		String gtfFile = txtGff.getText();
-		gffHashGeneResult = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, gtfFile);
+		GffHashGene gffHashGeneResult = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, txtGff.getText());
 		return gffHashGeneResult;
 	}
 
@@ -238,9 +238,13 @@ public class GuiRNAautoSpliceSimple extends GuiRNAautoSplice {
 		progressBar.setValue(progressBar.getMinimum());
 		ctrlSplicing.setGuiRNAautoSplice(this);
 		ctrlSplicing.setGffHashGene(getGffhashGene());
+		try {
+			SeqHash seqHash = new SeqHash(txtChromFaPath.getText());
+			ctrlSplicing.setSeqHash(seqHash);
+		} catch (Exception e) { }
+
 		ctrlSplicing.setDisplayAllEvent(chckbxDisplayAllSplicing.isSelected());
 		String outFile = txtSaveTo.getText();
-		ctrlSplicing.setSeqPath(txtSeqPath.getText());
 		ctrlSplicing.setOutFile(outFile);
 		ctrlSplicing.setLsBam2Prefix(scrlBam.getLsDataInfo());
 		ctrlSplicing.setLsCompareGroup(scrlCompare.getLsDataInfo());
@@ -275,6 +279,7 @@ public class GuiRNAautoSpliceSimple extends GuiRNAautoSplice {
 			progressNum = endBarNum - startBarNum;
 		}
 		double finalNum = (double)progressNum/(endBarNum - startBarNum);
+		int progressBarNum = (int) finalNum;
 		
 		double startProgress = 0, endProgress = lsProgressBarLevel.get(level);
 		if (level != 0) {

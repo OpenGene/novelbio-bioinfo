@@ -93,11 +93,11 @@ public class RPKMcomput implements AlignmentRecorder {
 	@Override
 	public void addAlignRecord(AlignRecord alignRecord) {
 		boolean cis5to3 = alignRecord.isCis5to3();
+		currentReadsNum += (double)1/alignRecord.getMappingNum();
+		
 		List<Align> lsAligns = alignRecord.getAlignmentBlocks();
 		for (Align align : lsAligns) {
-			currentReadsNum += 1/alignRecord.getMappingNum();
-			int midLoc = (align.getStartAbs() + align.getEndAbs())/2;
-			GffCodGene gffCodGene = gffHashGene.searchLocation(align.getRefID(), midLoc);
+			GffCodGene gffCodGene = gffHashGene.searchLocation(align.getRefID(), align.getMidSite());
 			if (gffCodGene == null) {
 				continue;
 			}
@@ -178,7 +178,7 @@ public class RPKMcomput implements AlignmentRecorder {
 			countsNum = new double[1];
 			mapCond2ReadsCounts.put(currentCondition, countsNum);
 		}
-		countsNum[0] += 1/mapNum;
+		countsNum[0] += (double)1/mapNum;
 	}
 	
 	@Override

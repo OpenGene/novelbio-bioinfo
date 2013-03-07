@@ -92,7 +92,7 @@ class ImpGen2Acc extends ImportPerLine {
 	protected boolean impPerLine(String content) {
 		String[] ss = content.split("\t");
 		int taxID = Integer.parseInt(ss[0]);
-		if (!hashTaxID.contains(taxID)) {
+		if (!setTaxID.contains(taxID)) {
 			return true;
 		}
 		GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, ss[1], taxID);
@@ -145,7 +145,7 @@ class ImpGen2Ensembl extends ImportPerLine {
 	protected boolean impPerLine(String content) {
 		String[] ss = content.split("\t");
 		int taxID = Integer.parseInt(ss[0]);
-		if (!hashTaxID.contains(taxID)) {
+		if (!setTaxID.contains(taxID)) {
 			return true;
 		}
 		GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, ss[1], taxID);
@@ -199,7 +199,7 @@ class ImpGeneRef2UniID extends ImportPerLine {
 		String[] ss = content.split("\t");
 		if (copedID == null || !copedID.getAccID().equals(GeneID.removeDot(ss[0]))) {
 			copedID = new GeneID(ss[0],0);
-			if (copedID.getTaxID() == 0 || !hashTaxID.contains(copedID.getTaxID())) {
+			if (copedID.getTaxID() == 0 || !setTaxID.contains(copedID.getTaxID())) {
 				return true;
 			}
 		}
@@ -219,7 +219,7 @@ class ImpGene2Info extends ImportPerLine {
 	protected boolean impPerLine(String content) {
 		String[] ss = content.split("\t");
 		int taxID = Integer.parseInt(ss[0]);
-		if (!hashTaxID.contains(taxID)) {
+		if (!setTaxID.contains(taxID)) {
 			return true;
 		}
 		GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, ss[1], taxID);
@@ -255,7 +255,7 @@ class ImpGene2Pub extends ImportPerLine {
 	protected boolean impPerLine(String content) {
 		String[] ss = content.split("\t");
 		int taxID = Integer.parseInt(ss[0]);
-		if (!hashTaxID.contains(taxID)) {
+		if (!setTaxID.contains(taxID)) {
 			return true;
 		}
 		AGeneInfo geneInfo = new GeneInfo();
@@ -277,7 +277,7 @@ class ImpGene2GO extends ImportPerLine {
 	protected boolean impPerLine(String lineContent) {
 		String[] ss = lineContent.split("\t");
 		int taxID = Integer.parseInt(ss[0]);
-		if (!hashTaxID.contains(taxID)) {
+		if (!setTaxID.contains(taxID)) {
 			return true;
 		}
 		GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, ss[1], taxID);

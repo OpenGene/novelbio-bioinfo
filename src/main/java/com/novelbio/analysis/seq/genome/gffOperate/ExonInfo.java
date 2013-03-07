@@ -7,7 +7,6 @@ import java.util.HashSet;
 import org.apache.commons.math.stat.descriptive.moment.ThirdMoment;
 
 import com.novelbio.analysis.seq.AlignSeq;
-import com.novelbio.analysis.seq.genome.mappingOperate.Alignment;
 import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
 /**
  * 本类重写了equal代码，用于比较两个loc是否一致
@@ -84,7 +83,7 @@ public class ExonInfo extends ListDetailAbs {
 		ExonInfo element = (ExonInfo)elementAbs;
 		//先不比较两个exon所在转录本的名字
 		if (numberstart == element.numberstart && numberend == element.numberend && super.cis5to3 == element.cis5to3 ) {
-			if (getParent().getChrID().equalsIgnoreCase(element.getParent().getChrID())) {
+			if (getParent().getRefID().equalsIgnoreCase(element.getParent().getRefID())) {
 				return true;
 			}
 		}
@@ -96,7 +95,7 @@ public class ExonInfo extends ListDetailAbs {
 		if (cis5to3) {
 			i = -1;
 		}
-		return numberstart * 100000 + numberend * i + getParent().getChrID().hashCode();
+		return numberstart * 100000 + numberend * i + getParent().getRefID().hashCode();
 	}
 }
 

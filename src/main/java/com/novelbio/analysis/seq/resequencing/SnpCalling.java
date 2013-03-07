@@ -198,7 +198,7 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 		refSiteSnpIndel.setGffChrAbs(gffChrAbs);
 		ArrayList<String[]> lsInfo = null;
 		try {
-			lsInfo = refSiteSnpIndel.toStringLsSnp(lsFilteredSnp, true);
+			lsInfo = refSiteSnpIndel.toStringLsSnp(lsFilteredSnp, false, true);
 		} catch (Exception e) {
 			return false;
 		}
