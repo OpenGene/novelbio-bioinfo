@@ -1,9 +1,12 @@
 package com.novelbio.database.domain.geneanno;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
@@ -35,12 +38,15 @@ import com.novelbio.database.service.servgeneanno.ServSpeciesFile;
  */
 public class SpeciesFile {
 	private static Logger logger = Logger.getLogger(SpeciesFile.class);
+	/** GffDB排序用的，越靠前表示该DB越有用 */
+	private static Map<String, Integer> mapGffDB2Priority ;
+	
 	int taxID = 0;
 	/** 文件版本 */
 	String version = "";
 	/** 该版本的年代，大概年代就行 */
 	int publishYear = 0;
-	/** 染色体所在文件夹
+	/** 染色体所在文件夹、
 	 * 格式 regex SepSign.SEP_ID chromPath
 	 *  */
 	String chromPath = "";
@@ -75,8 +81,10 @@ public class SpeciesFile {
 	HashMap<String, String> mapSoftware2ChrIndexPath = new LinkedHashMap<String, String>();
 	/** 从indexRefseq转化而来, key: 软件名，为小写 value：路径 */
 	HashMap<String, String> mapSoftware2RefseqIndexPath = new LinkedHashMap<String, String>();
-	/** 从gffGeneFile来，key：Gff来源的数据库  value：GffType + SepSign + gffFile */
-	Map<String, String> mapGffDB_2_GffTypeGffFile = new LinkedHashMap<String, String>();
+	/** 从gffGeneFile来，<br>
+	 * key：Gff来源的数据库 <br>
+	 * value：GffType + {@link SepSign#SEP_INFO_SAMEDB} + gffFile */
+	Map<String, String> mapGffDB_2_GffTypeGffFile;
 	
 	/** 是否已经查找过 */
 	boolean searched = false;
@@ -140,21 +148,20 @@ public class SpeciesFile {
 			update();
 		}
 		return chromSeq;
-		
 	}
 
 	/**
-	 * 按照优先级返回gff文件，优先级由GFFtype来决定
+	 * 按照优先级返回gff文件，优先级由GffDB来决定
 	 * @return GffFile
 	 */
-	public Map<String, GffType> getMapGffType() {
-		filledHashGffType2GffFile();
-		TreeMap<String, GffType> mapString2GffType = new TreeMap<String, GffType>();
-		if (hashGffType2GffFile.size() == 0) {
+	public Map<String, String> getMapGffDB() {
+		filledMapGffDB2GffFile();
+		Map<String, String> mapString2GffType = new LinkedHashMap<String, String>();
+		if (mapGffDB_2_GffTypeGffFile.size() == 0) {
 			return mapString2GffType;
 		}
-		for (String gfftypeString : hashGffType2GffFile.keySet()) {
-			mapString2GffType.put(gfftypeString, GffType.getMapGffType().get(gfftypeString.toLowerCase()));
+		for (String gfftypeString : mapGffDB_2_GffTypeGffFile.keySet()) {
+			mapString2GffType.put(gfftypeString, gfftypeString);
 		}
 		return mapString2GffType;
 	}
@@ -163,56 +170,82 @@ public class SpeciesFile {
 	}
 	/**
 	 * 获得某个Type的Gff文件，如果没有则返回null
-	 * @param GFFtype 指定gfftype 如果为null，表示不指定
+	 * @param gffDB 指定gffDB 如果为null，表示不指定，则返回默认
 	 * @return
 	 */
-	public String getGffFile(GffType gfFtype) {
-		if (gfFtype == null) {
+	public String getGffFile(String gffDB) {
+		if (gffDB == null) {
 			return getGffFile();
 		}
-		filledHashGffType2GffFile();
-		return hashGffType2GffFile.get(gfFtype.toString().toLowerCase());
+		filledMapGffDB2GffFile();
+		return mapGffDB_2_GffTypeGffFile.get(gffDB.toLowerCase()).split(SepSign.SEP_INFO_SAMEDB)[1];
 	}
 	/**
-	 * 按照优先级返回gff文件，优先级由GFFtype来决定
-	 * @return 0: GffType<br>
-	 * 1: GffFile
+	 * 获得某个Type的GffType，如果没有则返回null
+	 * @param GFFtype 指定gfftype 如果为null，表示不指定，则返回默认
+	 * @return
 	 */
-	public String getGffFile() {
-		String[] gffInfo = getGffFileAndType();
-		return gffInfo[1];
+	public GffType getGffType(String gffDB) {
+		if (gffDB == null) {
+			return getGffType();
+		}
+		filledMapGffDB2GffFile();
+		String gffType = mapGffDB_2_GffTypeGffFile.get(gffDB.toLowerCase()).split(SepSign.SEP_INFO_SAMEDB)[0];
+		return GffType.getType(gffType);
 	}
+	
 	/**
 	 * 按照优先级返回gff文件，优先级由GFFtype来决定
-	 * 公返回枚举
-	 * @return  GffType<br>
+	 * @return GffDB
 	 */
-	public GffType getGffType() {
-		String[] gffInfo = getGffFileAndType();
-		return GffType.getType(gffInfo[0]);
+	public String getGffDB() {
+		String[] gffInfo = getGffDB2GffTypeFile();
+		return gffInfo[0];
 	}
+	
 	/**
 	 * 按照优先级返回gff文件，优先级由GFFtype来决定
 	 * @return GffFile
 	 */
-	private String[] getGffFileAndType() {
-		filledHashGffType2GffFile();
-		if (hashGffType2GffFile.size() == 0) {
+	public String getGffFile() {
+		String[] gffInfo = getGffDB2GffTypeFile();
+		return gffInfo[1].split(SepSign.SEP_INFO_SAMEDB)[1];
+	}
+	/**
+	 * 按照优先级返回gff类型，优先级由GffDB来决定
+	 * 公返回枚举
+	 * @return  GffType
+	 */
+	public GffType getGffType() {
+		String[] gffInfo = getGffDB2GffTypeFile();
+		String gffType = gffInfo[1].split(SepSign.SEP_INFO_SAMEDB)[0];
+		return GffType.getType(gffType);
+	}
+	/**
+	 * 按照优先级返回gff文件，优先级由GFFDB来决定
+	 * @return string[2]
+	 * 0: gffDB
+	 * 1: GffType + {@link SepSign#SEP_INFO_SAMEDB} + GffFile
+	 */
+	private String[] getGffDB2GffTypeFile() {
+		filledMapGffDB2GffFile();
+		if (mapGffDB_2_GffTypeGffFile.size() == 0) {
 			return new String[]{null, null};
 		}
-		for (GffType gfFtype : GffType.values()) {
-			if (hashGffType2GffFile.containsKey(gfFtype.toString().toLowerCase())) {
-				return new String[]{gfFtype.toString(), hashGffType2GffFile.get(gfFtype.toString().toLowerCase())};
-			}
-		}
-		return new String[]{null, null};
+		Entry<String, String> entyGffDB2File = mapGffDB_2_GffTypeGffFile.entrySet().iterator().next();
+		String gffDB = entyGffDB2File.getKey();
+		String gffType2File = entyGffDB2File.getValue();
+		return new String[]{gffDB, gffType2File};
 	}
+	
 	public void setGffRepeatFile(String gffRepeatFile) {
 		this.gffRepeatFile = gffRepeatFile;
 	}
+	
 	public String getGffRepeatFile() {
 		return gffRepeatFile;
 	}
+	
 	public void setIndexSeq(String indexSeq) {
 		this.indexChr = indexSeq;
 	}
@@ -444,15 +477,32 @@ public class SpeciesFile {
 		}
 	}
 	/** 用gffGeneFile填充GffType2GffFile所需路径hash表 */
-	private void filledHashGffType2GffFile() {
+	private void filledMapGffDB2GffFile() {
 		if (gffGeneFile == null) return;
-		if (hashGffType2GffFile.size() > 0) {
+		if (mapGffDB_2_GffTypeGffFile != null) {
 			return;
 		}
+		mapGffDB_2_GffTypeGffFile = new TreeMap<String, String>(new Comparator<String>() {
+			@Override
+			public int compare(String o1, String o2) {
+				Integer int1 = getMapGffDBsort().get(o1);
+				Integer int2 = getMapGffDBsort().get(o1);
+				if (int1 != null && int2 != null) {
+					return int1.compareTo(int2);
+				} else if (int1 != null && int2 == null) {
+					return -1;
+				} else if (int1 == null && int2 != null) {
+					return 1;
+				} else {
+					return 0;
+				}						
+			}
+		});
+		
 		String[] gffType2File = gffGeneFile.split(SepSign.SEP_ID);
 		for (String string : gffType2File) {
 			String[] gffDetail = string.split(SepSign.SEP_INFO);
-			hashGffType2GffFile.put(gffDetail[0].toLowerCase().replace("gff_", ""), gffDetail[1]);
+			mapGffDB_2_GffTypeGffFile.put(gffDetail[0].toLowerCase(), gffDetail[1]);
 		}
 	}
 	
@@ -757,6 +807,22 @@ public class SpeciesFile {
 			 txtOut.close();
 		}
 	}
-
+	
+	/**
+	 * 返回按照优先级排序的gffDB
+	 * @return
+	 */
+	private static Map<String, Integer> getMapGffDBsort() {
+		if (mapGffDB2Priority != null) {
+			return mapGffDB2Priority;
+		}
+		mapGffDB2Priority = new HashMap<String, Integer>();
+		mapGffDB2Priority.put("NCBI", 1);
+		mapGffDB2Priority.put("PLANT", 2);
+		mapGffDB2Priority.put("TIGR", 3);
+		mapGffDB2Priority.put("ENSEMBL", 4);
+		mapGffDB2Priority.put("UCSC", 5);
+		return mapGffDB2Priority;
+	}
 }
 

@@ -58,7 +58,7 @@ public class Species {
 	String sepVersionAndYear = "_year_";
 	
 	/** 需要获得哪一种gffType */
-	GffType gfftype;
+	String gffDB;
 	
 	public Species() {}
 	public Species(int taxID) {
@@ -203,14 +203,14 @@ public class Species {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
 		return speciesFile.getChromSeqFile();
 	}
-	/** 获得这个species在本version下的全体GffType */
-	public Map<String, GffType> getMapGffTypeAll() {
+	/** 获得这个species在本version下的全体GffDB */
+	public Map<String, String> getMapGffDBAll() {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
-		return speciesFile.getMapGffType();
+		return speciesFile.getMapGffDB();
 	}
 	/** 设定需要获取哪一种gff文件的注释 */
-	public void setGfftype(GffType gfftype) {
-		this.gfftype = gfftype;
+	public void setGffDB(String gffDB) {
+		this.gffDB = gffDB;
 	}
 	/**
 	 * 指定version，和type，返回对应的gff文件，没有则返回null，
@@ -219,29 +219,46 @@ public class Species {
 	 * @return gffFilePath
 	 */
 	public String getGffFile() {
-		return getGffFile(gfftype);
-	}
-	/**
-	 * 指定version，和type，返回对应的gff文件，没有则返回null
-	 * @param Type
-	 */
-	public String getGffFile(GffType gffType) {
-		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
-		return speciesFile.getGffFile(gffType);
+		return getGffFile(gffDB);
 	}
 
 	/**
-	 * 指定version，和type，返回对应的gff文件，没有则返回null，
-	 * 自动选择最优先的gfftype。
+	 * 指定version, type和gffDB返回对应的gff文件，没有则返回null
+	 * @param gffDB 无所谓大小写
+	 */
+	public String getGffFile(String gffDB) {
+		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
+		return speciesFile.getGffFile(gffDB);
+	}
+	
+	/**
+	 * @param gffDB 无所谓大小写
+	 * @return
+	 */
+	public GffType getGffType() {
+		return getGffType(gffDB);
+	}
+	
+	/**
+	 * @param gffDB 无所谓大小写
+	 * @return
+	 */
+	public GffType getGffType(String gffDB) {
+		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
+		return speciesFile.getGffType(gffDB); 
+	}
+	/**
+	 * 指定version，和type，返回对应的gffDB信息，没有则返回null，
+	 * 自动选择最优先的gffDB。
 	 * 优先级由GFFtype来决定
 	 * @return gffType
 	 */
-	public String getGffFileType() {
-		if (gfftype == null) {
+	public String getGffDB() {
+		if (gffDB == null) {
 			SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
-			gfftype = speciesFile.getGffType();
+			gffDB = speciesFile.getGffDB();
 		}
-		return gfftype.toString();
+		return gffDB;
 	}
 	/**
 	 * 返回UCSC的gffRepeat

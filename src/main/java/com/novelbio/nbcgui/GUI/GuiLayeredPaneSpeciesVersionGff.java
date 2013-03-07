@@ -13,7 +13,7 @@ public class GuiLayeredPaneSpeciesVersionGff extends JLayeredPane {
 	Species species;
 	JComboBoxData<Species> cmbSpecies;
 	JComboBoxData<String> cmbVersion;
-	JComboBoxData<GffType> cmbGffType;
+	JComboBoxData<String> cmbGffDB;
 		
 	public GuiLayeredPaneSpeciesVersionGff() {
 		setLayout(null);
@@ -48,14 +48,14 @@ public class GuiLayeredPaneSpeciesVersionGff extends JLayeredPane {
 		lblDBtype.setBounds(13, 94, 52, 14);
 		add(lblDBtype);
 		
-		cmbGffType = new JComboBoxData<GffType>();
-		cmbGffType.addActionListener(new ActionListener() {
+		cmbGffDB = new JComboBoxData<String>();
+		cmbGffDB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				selectGffType();
+				selectGffDB();
 			}
 		});
-		cmbGffType.setBounds(12, 112, 196, 23);
-		add(cmbGffType);
+		cmbGffDB.setBounds(12, 112, 196, 23);
+		add(cmbGffDB);
 		initial();
 	}
 	
@@ -75,14 +75,14 @@ public class GuiLayeredPaneSpeciesVersionGff extends JLayeredPane {
 	private void selectVersion() {
 		if (species.getTaxID() != 0) {
 			species.setVersion(cmbVersion.getSelectedValue());
-			cmbGffType.setMapItem(species.getMapGffTypeAll());
-			selectGffType();
+			cmbGffDB.setMapItem(species.getMapGffDBAll());
+			selectGffDB();
 		}
 	}
 	
-	private void selectGffType() {
+	private void selectGffDB() {
 		if (species.getTaxID() != 0) {
-			species.setGfftype(cmbGffType.getSelectedValue());
+			species.setGffDB(cmbGffDB.getSelectedValue());
 		}
 	}
 	public Species getSelectSpecies() {

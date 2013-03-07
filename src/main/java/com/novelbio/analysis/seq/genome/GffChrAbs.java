@@ -39,8 +39,7 @@ public class GffChrAbs {
 
 	public void setTaxID(int taxID) {
 		this.species = new Species(taxID);
-		setGffFile(species.getTaxID(), species.getGffFileType(),
-				species.getGffFile());
+		setGffFile(species.getTaxID(), species.getGffType(), species.getGffFile());
 		setChrFile(species.getChromFaPath(), species.getChromFaRegex());
 	}
 
@@ -53,8 +52,7 @@ public class GffChrAbs {
 		}
 
 		this.species = species;
-		setGffFile(species.getTaxID(), species.getGffFileType(),
-				species.getGffFile());
+		setGffFile(species.getTaxID(), species.getGffType(), species.getGffFile());
 		setChrFile(species.getChromFaPath(), species.getChromFaRegex());
 	}
 
