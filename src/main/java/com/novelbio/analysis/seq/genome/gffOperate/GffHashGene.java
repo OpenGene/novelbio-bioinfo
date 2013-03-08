@@ -45,11 +45,8 @@ public class GffHashGene implements GffHashGeneInf{
 		if (gffType == GffType.UCSC) {
 			gffHashGene = new GffHashGeneUCSC();
 		}
-		else if (gffType == GffType.TIGR) {
-			gffHashGene = new GffHashGenePlant(NovelBioConst.GENOME_GFF_TYPE_TIGR);
-		}
-		else if (gffType == GffType.Plant) {
-			gffHashGene = new GffHashGenePlant(NovelBioConst.GENOME_GFF_TYPE_PLANT);
+		else if (gffType == GffType.TIGR || gffType == GffType.Plant) {
+			gffHashGene = new GffHashGenePlant(gffType);
 		}
 		else if (gffType == GffType.GTF) {
 			gffHashGene = new GffHashCufflinkGTF();
@@ -71,25 +68,7 @@ public class GffHashGene implements GffHashGeneInf{
 	public void setGffHashGene(GffHashGeneAbs gffHashGene) {
 		this.gffHashGene = gffHashGene;
 	}
-	/**
-	 * 只设定参数，不读取
-	 * @param GffType
-	 * @param gffFile
-	 */
-	public void setGffType(String GffType) {
-		if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_UCSC)) {
-			gffHashGene = new GffHashGeneUCSC();
-		}
-		else if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_TIGR) ) {
-			gffHashGene = new GffHashGenePlant(NovelBioConst.GENOME_GFF_TYPE_TIGR);
-		}
-		else if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_PLANT)) {
-			gffHashGene = new GffHashGenePlant(NovelBioConst.GENOME_GFF_TYPE_PLANT);
-		}
-		else if (GffType.equals(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF)) {
-			gffHashGene = new GffHashCufflinkGTF();
-		}
-	}
+
 	public void setTaxID(int taxID) {
 		if (taxID > 0) {
 			gffHashGene.setTaxID(taxID);

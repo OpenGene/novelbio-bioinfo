@@ -57,19 +57,6 @@ import de.erichseifert.gral.util.GraphicsUtils;
  * 
  */
 public class GffChrMap {
-	public static void main(String[] args) {
-		GffChrAbs gffChrAbs = new GffChrAbs();
-		Species species = new Species(10090);
-		species.setGfftype(GffType.UCSC);
-		MapReads mapReads = new MapReads();
-		mapReads.setBedSeq("/media/winF/NBC/Project/ChIP-Seq_LXW/mappingc007_filtered_extend_sorted.bed");
-		mapReads.setMapChrID2Len(species.getMapChromInfo());
-		mapReads.run();
-		gffChrAbs.setSpecies(species);
-		GffChrMap gffChrMap = new GffChrMap(gffChrAbs);
-		String resultFile = "/media/winF/NBC/Project/ChIP-Seq_LXW/tss";
-		gffChrMap.plotTssAllGene(1000, resultFile, GeneStructure.TSS);
-	}
 	
 	GffChrAbs gffChrAbs = new GffChrAbs();
 	

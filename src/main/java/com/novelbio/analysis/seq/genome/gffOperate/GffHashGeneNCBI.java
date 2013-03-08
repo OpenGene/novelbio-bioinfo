@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
@@ -58,27 +59,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 	private static HashSet<String> setIsChromosome = new HashSet<String>();
 		
 	public static void main(String[] args) {
-////		GffHashGeneNCBI.modifyNCBIgffFile("/media/winE/Bioinformatics/genome/checken/gal4_UCSC/gff/ref_Gallus_gallus-4.0_top_level.gff3");
-//		GffHashGeneNCBI gffHashGeneNCBI = new GffHashGeneNCBI();
-//		gffHashGeneNCBI.ReadGffarray("/media/winE/Bioinformatics/genome/human/hg19_GRCh37/gff/ref_GRCh37.p9_top_level_modify.gff3");
-//		GffGeneIsoInfo gffGeneIsoInfo = gffHashGeneNCBI.searchISO("XM_003481161");		
-//		System.out.println(gffGeneIsoInfo.getName());
-//		gffGeneIsoInfo = gffHashGeneNCBI.searchISO("IGKV");
-//		System.out.println(gffGeneIsoInfo.getName());
-//		System.out.println(gffGeneIsoInfo.getATGsite());
-//		System.out.println(gffGeneIsoInfo.getUAGsite());
-//		System.out.println(gffGeneIsoInfo.get(0).getStartCis());
-//		System.out.println(gffGeneIsoInfo.get(1).getEndCis());
-		TxtReadandWrite txtRead = new TxtReadandWrite("/media/winE/Bioinformatics/genome/human/hg19_GRCh37/gff/ref_GRCh37.p9_top_level.gff3", false);
-		TxtReadandWrite txtWrite = new TxtReadandWrite("/media/winE/Bioinformatics/genome/human/hg19_GRCh37/gff/ref_GRCh37.p9_top_levelaaaa.gff3", true);
-		for (String string : txtRead.readlines()) {
-			String[] ss = string.split("\t");
-			if (ss.length >= 3 && ss[2].equals("region")) {
-				txtWrite.writefileln(string);
-			}
-		}
-		txtRead.close();
-		txtWrite.close();
+		GffChrAbs gffChrAbs = new GffChrAbs(10090);
 	
 	}
 	
@@ -213,8 +194,12 @@ public class GffHashGeneNCBI extends GffHashGeneAbs{
 		   else if (ss[2].equals("CDS")) {
 			   addCDS(thisGeneIDandName, thisRnaIDandName, ss);
 		   }
-		   else
+		   else if (ss[2].equals("STS") || ss[2].contains("gene_segment")) {
+			   continue;
+		   } else {
 			   logger.error("出现未知exon：" +  ArrayOperate.cmbString(ss, "\t"));
+		   }
+			  
 	   }
 	   setGffList();
 	   txtgff.close();

@@ -81,10 +81,13 @@ public class SpeciesFile {
 	HashMap<String, String> mapSoftware2ChrIndexPath = new LinkedHashMap<String, String>();
 	/** 从indexRefseq转化而来, key: 软件名，为小写 value：路径 */
 	HashMap<String, String> mapSoftware2RefseqIndexPath = new LinkedHashMap<String, String>();
+	
 	/** 从gffGeneFile来，<br>
 	 * key：Gff来源的数据库 <br>
-	 * value：GffType + {@link SepSign#SEP_INFO_SAMEDB} + gffFile */
+	 * value：GFFDB + {@link SepSign#SEP_INFO} + GffType + {@link SepSign#SEP_INFO_SAMEDB} + gffFile */
 	Map<String, String> mapGffDB_2_GffTypeGffFile;
+	/** 用来将小写的DB转化为正常的DB，使得getDB获得的字符应该是正常的DB */
+	Map<String, String> mapGffDB2DB;
 	
 	/** 是否已经查找过 */
 	boolean searched = false;
@@ -156,14 +159,14 @@ public class SpeciesFile {
 	 */
 	public Map<String, String> getMapGffDB() {
 		filledMapGffDB2GffFile();
-		Map<String, String> mapString2GffType = new LinkedHashMap<String, String>();
-		if (mapGffDB_2_GffTypeGffFile.size() == 0) {
-			return mapString2GffType;
+		Map<String, String> mapStringDB = new LinkedHashMap<String, String>();
+		if (mapGffDB2DB.size() == 0) {
+			return mapStringDB;
 		}
-		for (String gfftypeString : mapGffDB_2_GffTypeGffFile.keySet()) {
-			mapString2GffType.put(gfftypeString, gfftypeString);
+		for (String gffDB : mapGffDB2DB.values()) {
+			mapStringDB.put(gffDB, gffDB);
 		}
-		return mapString2GffType;
+		return mapStringDB;
 	}
 	public void setGffGeneFile(String gffGeneFile) {
 		this.gffGeneFile = gffGeneFile;
@@ -234,6 +237,7 @@ public class SpeciesFile {
 		}
 		Entry<String, String> entyGffDB2File = mapGffDB_2_GffTypeGffFile.entrySet().iterator().next();
 		String gffDB = entyGffDB2File.getKey();
+		gffDB = mapGffDB2DB.get(gffDB);
 		String gffType2File = entyGffDB2File.getValue();
 		return new String[]{gffDB, gffType2File};
 	}
@@ -482,27 +486,13 @@ public class SpeciesFile {
 		if (mapGffDB_2_GffTypeGffFile != null) {
 			return;
 		}
-		mapGffDB_2_GffTypeGffFile = new TreeMap<String, String>(new Comparator<String>() {
-			@Override
-			public int compare(String o1, String o2) {
-				Integer int1 = getMapGffDBsort().get(o1);
-				Integer int2 = getMapGffDBsort().get(o1);
-				if (int1 != null && int2 != null) {
-					return int1.compareTo(int2);
-				} else if (int1 != null && int2 == null) {
-					return -1;
-				} else if (int1 == null && int2 != null) {
-					return 1;
-				} else {
-					return 0;
-				}						
-			}
-		});
-		
+		mapGffDB_2_GffTypeGffFile = new LinkedHashMap<String, String>();
+		mapGffDB2DB = new LinkedHashMap<String, String>();
 		String[] gffType2File = gffGeneFile.split(SepSign.SEP_ID);
 		for (String string : gffType2File) {
 			String[] gffDetail = string.split(SepSign.SEP_INFO);
 			mapGffDB_2_GffTypeGffFile.put(gffDetail[0].toLowerCase(), gffDetail[1]);
+			mapGffDB2DB.put(gffDetail[0].toLowerCase(), gffDetail[0]);
 		}
 	}
 	
@@ -808,21 +798,5 @@ public class SpeciesFile {
 		}
 	}
 	
-	/**
-	 * 返回按照优先级排序的gffDB
-	 * @return
-	 */
-	private static Map<String, Integer> getMapGffDBsort() {
-		if (mapGffDB2Priority != null) {
-			return mapGffDB2Priority;
-		}
-		mapGffDB2Priority = new HashMap<String, Integer>();
-		mapGffDB2Priority.put("NCBI", 1);
-		mapGffDB2Priority.put("PLANT", 2);
-		mapGffDB2Priority.put("TIGR", 3);
-		mapGffDB2Priority.put("ENSEMBL", 4);
-		mapGffDB2Priority.put("UCSC", 5);
-		return mapGffDB2Priority;
-	}
 }
 

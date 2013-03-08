@@ -172,6 +172,18 @@ public class GffDetailGene extends ListDetailAbs {
 		gffGeneIsoInfo.addExon(locStart, locEnd);
 	}
 	/**
+	 * 添加exon坐标，不考虑排序的问题<br>
+	 * <b>如果发现一个没有转录本的，则新添加一个gene设置类型为pseudo</b>
+	 */
+	protected void addExonNorm(int locStart,int locEnd) {
+		if (lsGffGeneIsoInfos.size() == 0) {//如果发现一个没有转录本的，则新添加一个gene设置类型为pseudo
+			addsplitlist(getName().get(0), GeneType.PSEU);
+		}
+		GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(lsGffGeneIsoInfos.size()-1);//include one special loc start number to end number
+		gffGeneIsoInfo.addExonNorm(locStart, locEnd);
+	}
+	
+	/**
 	 * 针对水稻拟南芥的GFF文件
 	 * 给转录本添加exon坐标，GFF3的exon的格式是
 	 * 当gene为反方向时，exon是从大到小排列的
@@ -191,13 +203,20 @@ public class GffDetailGene extends ListDetailAbs {
 		GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(lsGffGeneIsoInfos.size()-1);//include one special loc start number to end number
 		gffGeneIsoInfo.setATGUAG(atg, uag);
 	}
-	/**
-	 * 如果是非编码RNA，则将atg和uag设置为最后一位
-	 */
+	/** 如果是非编码RNA，则将atg和uag设置为最后一位 */
 	protected void setATGUAGncRNA() {
 		GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(lsGffGeneIsoInfos.size()-1);//include one special loc start number to end number
 		gffGeneIsoInfo.sort();
 		gffGeneIsoInfo.setATGUAGncRNA();
+	}
+	/**
+	 * 合并最近添加的一个gffIso<br>
+	 * 如果输入的是GffPlant的类型，
+	 * 那么可能UTR和CDS会错位。这时候就需要先将exon排序，然后合并两个中间只差一位的exon
+	 */
+	protected void combineExon() {
+		GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(lsGffGeneIsoInfos.size()-1);//include one special loc start number to end number
+		gffGeneIsoInfo.combineExon();
 	}
 	/**
 	 * 直接添加转录本，根据genedetail的信息设置cis5to3。之后用addcds()方法给该转录本添加exon

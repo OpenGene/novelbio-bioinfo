@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.genome.gffOperate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -670,6 +671,13 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 		return filter;
 	}
+	
+	/** 最常规的添加exon，不做任何判定 */
+	protected void addExonNorm(int locStart, int locEnd) {
+		ExonInfo exonInfo = new ExonInfo(this,isCis5to3(), locStart, locEnd);
+		add(exonInfo);
+	}
+	
 	/**
 	 * 假设是安顺序添加的ID
 	 * 这个要确认
@@ -715,6 +723,36 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @return
 	 */
 	public abstract int getEndAbs();
+	
+	/**
+	 * 如果输入的是GffPlant的类型，
+	 * 那么可能UTR和CDS会错位。这时候就需要先将exon排序，然后合并两个中间只差一位的exon
+	 */
+	protected void combineExon() {
+		sort();
+		List<ExonInfo> lsExoninfo = new ArrayList<ExonInfo>();
+		lsExoninfo.add(get(0));
+		
+		boolean combine = false;
+		for (int i = 1; i < this.size(); i++) {
+			ExonInfo exonInfo = get(i);
+			if (Math.abs(exonInfo.getStartCis() - lsExoninfo.get(lsExoninfo.size() - 1).getEndCis()) == 1) {
+				combine = true;
+				lsExoninfo.get(lsExoninfo.size() - 1).setEndCis(exonInfo.getEndCis());
+			} else {
+				lsExoninfo.add(exonInfo);
+			}
+		}
+		
+		if (combine) {
+			clear();
+			for (ExonInfo exonInfo : lsExoninfo) {
+				add(exonInfo);
+			}
+		}
+		lsExoninfo = null;
+	}
+	
 	/**
 	 * 返回该基因的GTF格式文件，末尾有换行符
 	 * @param geneID 该基因的名字

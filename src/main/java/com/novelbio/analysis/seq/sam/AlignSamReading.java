@@ -22,7 +22,7 @@ public class AlignSamReading extends AlignSeqReading {
 	 * @param lsAlignments 输入Align的chrID无所谓大小写
 	 */
 	public void setLsAlignments(List<? extends Alignment> lsAlignments) {
-		if (lsAlignments.size() == 0) {
+		if (lsAlignments == null || lsAlignments.size() == 0) {
 			return;
 		}
 		this.lsAlignments = lsAlignments;
