@@ -70,24 +70,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 			hashgene.add("pseudogene");
 		}
 	}
-	
-	/**
-	 * 最底层读取gff的方法，本方法只能读取UCSCknown gene<br>
-	 * 输入Gff文件，最后获得两个哈希表和一个list表<br/>
-	 * 结构如下：<br/>
-     * 输入Gff文件，最后获得两个哈希表和一个list表, 结构如下：<br>
-     * <b>1.Chrhash</b><br>
-     * （ChrID）--ChrList-- GeneInforList(GffDetail类)
-     * 其中ChrID为小写，代表染色体名字，因此用get来获取相应的ChrList的时候要输入小写的ChrID, chr格式，全部小写 chr1,chr2,chr11<br>
-     *  <b>2.locHashtable</b><br>
-    * 其中LOCID代表具体的条目编号，在UCSCkonwn gene里面没有转录本一说，
-	 * 只有两个LOCID共用一个区域的情况，所以只能够两个不同的LOCID指向同一个GffdetailUCSCgene
-     *  <b>3.LOCIDList</b><br>
-     * （LOCID）--LOCIDList，按顺序保存LOCID,这里不考虑多个转录本，每一个转录本就是一个单独的LOCID <br>
-     * <b>4. LOCChrHashIDList </b><br>
-     *   LOCChrHashIDList中保存LOCID代表具体的条目编号,与Chrhash里的名字一致，将同一基因的多个转录本放在一起： NM_XXXX/NM_XXXX...<br>
-	 * @throws Exception 
-	 */
+
    protected void ReadGffarrayExcepTmp(String gfffilename) throws Exception {
 	   setHashName();
 		mapChrID2ListGff = new LinkedHashMap<String, ListGff>();
@@ -107,9 +90,6 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 		   if(content.length() == 0 || content.charAt(0)=='#') {
 			   continue;
 		   }
-		  if (content.contains("AT3TE00010")) {
-			logger.error("stop");
-		}
 		   ////////////////// 需要进行替换的地方 /////////////////////////////////////////////////////////////
 		   if (geneType != GeneType.mRNA) {
 			   content = content.replace("pseudogenic_exon", "CDS");
@@ -182,8 +162,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 					   geneType = GeneType.getGeneType(ss[2]);
 				   }
 				   gffDetailLOC.addsplitlist(mRNAname, geneType);
-			   }
-			   else {
+			   } else {
 				   logger.error("GffHashPlantGeneError: 文件  "+gfffilename+"  在本行可能没有指定的基因ID  " + content);
 			   }
 		   }
