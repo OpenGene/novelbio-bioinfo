@@ -23,16 +23,6 @@ import com.novelbio.database.model.modgeneid.GeneType;
  * 每个基因的起点终点和CDS的起点终点保存在GffDetailList类中<br/>
  */
 public class GffHashGenePlant extends GffHashGeneAbs{
-	public static void main(String[] args) {
-		GffHashGenePlant gffHashGenePlant = new GffHashGenePlant(GffType.Plant);
-		gffHashGenePlant.ReadGffarray("/media/winE/NBCplatform/genome/rice/tigr7/gff/all.gff3");
-		for (GffDetailGene gffDetailGene : gffHashGenePlant.getGffDetailAll()) {
-			GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLsCodSplit().get(0);
-			System.out.println(gffGeneIsoInfo.getStart());
-			System.out.println(gffGeneIsoInfo.getName());
-			break;
-		}
-	}
 	private static Logger logger = Logger.getLogger(GffHashGenePlant.class);
 
 	/** 基因名字的正则 */

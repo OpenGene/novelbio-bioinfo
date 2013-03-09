@@ -23,12 +23,14 @@ public class CtrlSplicing implements RunGetInfo<GuiAnnoInfo> , Runnable{
 	String outFile;
 	List<String[]> lsBam2Prefix;
 	List<String[]> lsCompareGroup;
-	
+	boolean memoryLow = false;
 	
 	public void setGuiRNAautoSplice(GUIinfo guiRNAautoSplice) {
 		this.guiRNAautoSplice = guiRNAautoSplice;
 	}
-	
+	public void setMemoryLow(boolean memoryLow) {
+		this.memoryLow = memoryLow;
+	}
 	public void setLsBam2Prefix(List<String[]> lsBam2Prefix) {
 		this.lsBam2Prefix = lsBam2Prefix;
 	}
@@ -88,7 +90,7 @@ public class CtrlSplicing implements RunGetInfo<GuiAnnoInfo> , Runnable{
 		exonJunction.setGffHashGene(gffHashGene);
 		exonJunction.setOneGeneOneSpliceEvent(!isDisplayAllEvent);
 		exonJunction.setRunGetInfo(this);
-
+		exonJunction.setIsLessMemory(memoryLow);
 		for (String[] strings : lsBam2Prefix) {
 			//TODO 暂时没有多对多比较
 			exonJunction.addBamSorted(strings[2], strings[0]);
@@ -107,9 +109,9 @@ public class CtrlSplicing implements RunGetInfo<GuiAnnoInfo> , Runnable{
 			try { Thread.sleep(300); } catch (InterruptedException e) { }
 		}
 		if (!exonJunction.isFinished()) {
-			guiRNAautoSplice.setMessage("Error");
+			guiRNAautoSplice.setMessage("Running Error");
 		} else {
-			guiRNAautoSplice.setMessage("Finished");
+			guiRNAautoSplice.setMessage("Congratulations! Enjoy your PASH.");
 		}
 		guiRNAautoSplice.done(null);
 	}

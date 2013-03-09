@@ -15,7 +15,7 @@ import com.novelbio.database.model.modgeneid.GeneType;
 
 /** 细菌的GFF文件，因为细菌只有一个染色体，所以默认名字是novelbio */
 public class GffHashGeneBacterium extends GffHashGeneAbs {
-	private static Logger logger = Logger.getLogger(GffHashCufflinkGTF.class);
+	private static Logger logger = Logger.getLogger(GffHashGTF.class);
 	double likelyhood = 0.4;//相似度在0.4以内的转录本都算为同一个基因
 
 	HashMap<String, GffGeneIsoInfo> mapID2Iso = new HashMap<String, GffGeneIsoInfo>();

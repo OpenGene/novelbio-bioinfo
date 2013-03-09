@@ -69,6 +69,8 @@ public class GuiRNAautoSpliceSimple extends JPanel implements GUIinfo {
 	
 	JComboBoxData<String> cmbGroup = new JComboBoxData<String>();
 	private JTextField txtChromFaPath;
+	private JCheckBox chckbxLowMemoryUse;
+	private JLabel lblNewLabel;
 	
 	/**
 	 * Create the panel.
@@ -77,10 +79,10 @@ public class GuiRNAautoSpliceSimple extends JPanel implements GUIinfo {
 		setLayout(null);
 
 		scrlBam = new JScrollPaneData();
-		scrlBam.setBounds(20, 34, 610, 303);
+		scrlBam.setBounds(20, 34, 610, 296);
 		add(scrlBam);
 		
-		btnOpeanbam = new JButton("OpeanBam");
+		btnOpeanbam = new JButton("AddBam");
 		btnOpeanbam.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ArrayList<String> lsFile = guiFileOpen.openLsFileName("BamFile", "");
@@ -95,7 +97,7 @@ public class GuiRNAautoSpliceSimple extends JPanel implements GUIinfo {
 				scrlBam.addItemLs(lsInfo);
 			}
 		});
-		btnOpeanbam.setBounds(31, 349, 118, 24);
+		btnOpeanbam.setBounds(20, 342, 115, 24);
 		add(btnOpeanbam);
 		
 		btnDelbam = new JButton("DelBam");
@@ -104,21 +106,21 @@ public class GuiRNAautoSpliceSimple extends JPanel implements GUIinfo {
 				scrlBam.deleteSelRows();
 			}
 		});
-		btnDelbam.setBounds(369, 349, 118, 24);
+		btnDelbam.setBounds(515, 342, 115, 24);
 		add(btnDelbam);
 		
 		txtGff = new JTextField();
-		txtGff.setBounds(642, 33, 258, 18);
+		txtGff.setBounds(642, 55, 258, 18);
 		add(txtGff);
 		txtGff.setColumns(10);
 		
-		btnRun = new JButton("run");
+		btnRun = new JButton("runPASH");
 		btnRun.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				run();
 			}
 		});
-		btnRun.setBounds(784, 427, 118, 24);
+		btnRun.setBounds(771, 409, 129, 63);
 		add(btnRun);
 		
 		btnOpengtf = new JButton("OpenGTF");
@@ -127,15 +129,15 @@ public class GuiRNAautoSpliceSimple extends JPanel implements GUIinfo {
 				txtGff.setText(guiFileOpen.openFileName("GTFfile", ""));
 			}
 		});
-		btnOpengtf.setBounds(760, 57, 142, 24);
+		btnOpengtf.setBounds(758, 81, 142, 24);
 		add(btnOpengtf);
 		
-		JLabel lblAddbamfile = new JLabel("AddBamFile");
+		JLabel lblAddbamfile = new JLabel("BamFiles");
 		lblAddbamfile.setBounds(20, 12, 129, 14);
 		add(lblAddbamfile);
 		
 		txtSaveTo = new JTextField();
-		txtSaveTo.setBounds(20, 430, 532, 18);
+		txtSaveTo.setBounds(20, 409, 532, 18);
 		add(txtSaveTo);
 		txtSaveTo.setColumns(10);
 		
@@ -145,53 +147,53 @@ public class GuiRNAautoSpliceSimple extends JPanel implements GUIinfo {
 				txtSaveTo.setText(guiFileOpen.saveFileNameAndPath("", ""));
 			}
 		});
-		btnSaveto.setBounds(604, 427, 118, 24);
+		btnSaveto.setBounds(583, 406, 140, 24);
 		add(btnSaveto);
 		
 		scrlCompare = new JScrollPaneData();
-		scrlCompare.setBounds(642, 205, 260, 110);
+		scrlCompare.setBounds(642, 145, 260, 148);
 		add(scrlCompare);
 		
-		JLabel lblCompare = new JLabel("Compare");
-		lblCompare.setBounds(642, 179, 69, 14);
+		JLabel lblCompare = new JLabel("Comparison");
+		lblCompare.setBounds(642, 127, 92, 14);
 		add(lblCompare);
 		
-		JButton btnAddCompare = new JButton("AddCompare");
+		JButton btnAddCompare = new JButton("AddCmp");
 		btnAddCompare.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				scrlCompare.addItem(new String[]{"",""});
 			}
 		});
-		btnAddCompare.setBounds(642, 327, 115, 24);
+		btnAddCompare.setBounds(642, 306, 115, 24);
 		add(btnAddCompare);
 		
-		JButton btnDeleteCompare = new JButton("DelCompare");
+		JButton btnDeleteCompare = new JButton("DelCmp");
 		btnDeleteCompare.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				scrlCompare.deleteSelRows();
 			}
 		});
-		btnDeleteCompare.setBounds(784, 327, 118, 24);
+		btnDeleteCompare.setBounds(782, 305, 118, 24);
 		add(btnDeleteCompare);
 		
 		chckbxDisplayAllSplicing = new JCheckBox("Display All Splicing Events");
-		chckbxDisplayAllSplicing.setBounds(20, 400, 286, 22);
+		chckbxDisplayAllSplicing.setBounds(20, 379, 229, 22);
 		add(chckbxDisplayAllSplicing);
 		
 		progressBar = new JProgressBar();
-		progressBar.setBounds(20, 487, 882, 14);
+		progressBar.setBounds(18, 511, 882, 14);
 		add(progressBar);
 		
 		lblInformation = new JLabel("");
-		lblInformation.setBounds(20, 460, 217, 14);
+		lblInformation.setBounds(18, 484, 217, 14);
 		add(lblInformation);
 		
 		lblDetailInfo = new JLabel("");
-		lblDetailInfo.setBounds(255, 460, 260, 14);
+		lblDetailInfo.setBounds(253, 484, 260, 14);
 		add(lblDetailInfo);
 		
 		txtChromFaPath = new JTextField();
-		txtChromFaPath.setBounds(643, 111, 257, 18);
+		txtChromFaPath.setBounds(20, 454, 532, 18);
 		add(txtChromFaPath);
 		txtChromFaPath.setColumns(10);
 		
@@ -201,8 +203,20 @@ public class GuiRNAautoSpliceSimple extends JPanel implements GUIinfo {
 				txtChromFaPath.setText(guiFileOpen.openFilePathName("", ""));
 			}
 		});
-		btnOpenSeqPath.setBounds(760, 135, 140, 24);
+		btnOpenSeqPath.setBounds(583, 451, 140, 24);
 		add(btnOpenSeqPath);
+		
+		chckbxLowMemoryUse = new JCheckBox("Low Memory (Note: spend more time)");
+		chckbxLowMemoryUse.setBounds(253, 379, 429, 22);
+		add(chckbxLowMemoryUse);
+		
+		JLabel lblOptiontoFetchSeq = new JLabel("Option:To Fetch Seq");
+		lblOptiontoFetchSeq.setBounds(20, 439, 164, 14);
+		add(lblOptiontoFetchSeq);
+		
+		lblNewLabel = new JLabel("Annotation");
+		lblNewLabel.setBounds(642, 35, 115, 14);
+		add(lblNewLabel);
 		
 		initial();
 	}
@@ -248,6 +262,7 @@ public class GuiRNAautoSpliceSimple extends JPanel implements GUIinfo {
 		ctrlSplicing.setOutFile(outFile);
 		ctrlSplicing.setLsBam2Prefix(scrlBam.getLsDataInfo());
 		ctrlSplicing.setLsCompareGroup(scrlCompare.getLsDataInfo());
+		ctrlSplicing.setMemoryLow(chckbxLowMemoryUse.isSelected());
 		//TODO
 		btnRun.setEnabled(false);
 		Thread thread = new Thread(ctrlSplicing);
@@ -316,7 +331,7 @@ public class GuiRNAautoSpliceSimple extends JPanel implements GUIinfo {
 		btnRun.setEnabled(true);
 	}
 	public void setMessage(String string) {
-		JOptionPane.showMessageDialog(null, "Info", string, JOptionPane.INFORMATION_MESSAGE);
+		JOptionPane.showMessageDialog(null, string, "Info", JOptionPane.INFORMATION_MESSAGE);
 	}
 	
 	private void changeSclCompareGroup() {

@@ -2,11 +2,13 @@ package com.novelbio.database.updatedb.database;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -190,8 +192,9 @@ class EnsembleGTF extends ImportPerLine {
 			if (gffCodGeneDu == null || gffCodGeneDu.getAllGffDetail().size() <= 0) {
 				return false;
 			}
-			int geneNum = gffCodGeneDu.getAllGffDetail().size()/2;
-			geneID = gffCodGeneDu.getAllGffDetail().get(geneNum).getLongestSplitMrna().getGeneID();
+			int geneNum = gffCodGeneDu.getCoveredGffGene().size()/2;
+			List<GffDetailGene> lsGenes = new ArrayList<GffDetailGene>(gffCodGeneDu.getCoveredGffGene());
+			geneID = lsGenes.get(geneNum).getLongestSplitMrna().getGeneID();
 			if (geneID.getIDtype().equals(GeneID.IDTYPE_ACCID)) {
 				return false;
 			}

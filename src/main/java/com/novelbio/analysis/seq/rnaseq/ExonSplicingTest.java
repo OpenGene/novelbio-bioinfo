@@ -394,6 +394,37 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		return pvalue.compareTo(o.pvalue);
 	}
 	
+	public String[] toStringSeq() {
+		if (seqHash == null) {
+			return null;
+		}
+		getAndCalculatePvalue();
+		ArrayList<String> lsResult = new ArrayList<String>();
+		GffDetailGene gffDetailGene = exonCluster.getParentGene();
+		lsResult.add(gffDetailGene.getName().get(0));
+		lsResult.add(mapCondition2SpliceInfo.get(condition1).getSpliceTypePredict(splicingType).getDifSite().toStringNoCis());
+
+		try {
+			ArrayList<SeqFasta> lsSeqFasta = getSeq(seqHash);
+			for (SeqFasta seqFasta : lsSeqFasta) {
+				try {
+					lsResult.add(seqFasta.toString());
+				} catch (Exception e) {
+					lsResult.add("");
+				}
+			}
+		} catch (Exception e) {
+			String[] ss = new String[5];
+			for (int i = 0; i < ss.length; i++) {
+				ss[i] = "";
+			}
+			return ss;
+		}
+		
+		return lsResult.toArray(new String[0]);
+	
+	}
+	
 	public String[] toStringArray() {
 		getAndCalculatePvalue();
 		ArrayList<String> lsResult = new ArrayList<String>();
@@ -420,20 +451,21 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 //		GeneID geneID = gffDetailGene.getSetGeneID().iterator().next();
 //		lsResult.add(geneID.getSymbol());
 //		lsResult.add(geneID.getDescription());
-		if (seqHash != null) {
-			try {
-				ArrayList<SeqFasta> lsSeqFasta = getSeq(seqHash);
-				for (SeqFasta seqFasta : lsSeqFasta) {
-					try {
-						lsResult.add(seqFasta.toString());
-					} catch (Exception e) {
-						lsResult.add("");
-					}
-				}
-			} catch (Exception e) {
-				// TODO: handle exception
-			}
-		}
+		
+//		if (seqHash != null) {
+//			try {
+//				ArrayList<SeqFasta> lsSeqFasta = getSeq(seqHash);
+//				for (SeqFasta seqFasta : lsSeqFasta) {
+//					try {
+//						lsResult.add(seqFasta.toString());
+//					} catch (Exception e) {
+//						lsResult.add("");
+//					}
+//				}
+//			} catch (Exception e) {
+//				// TODO: handle exception
+//			}
+//		}
 		return lsResult.toArray(new String[0]);
 	}
 	
@@ -486,7 +518,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	}
 	
 	/** 获得标题 */
-	public static String[] getTitle(String condition1, String condition2, boolean isGetSeq) {
+	public static String[] getTitle(String condition1, String condition2) {
 		ArrayList<String> lsTitle = new ArrayList<String>();
 		lsTitle.add(TitleFormatNBC.AccID.toString());
 		lsTitle.add(TitleFormatNBC.Location.toString());
@@ -499,14 +531,18 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		lsTitle.add("SplicingType");
 		lsTitle.add(TitleFormatNBC.Symbol.toString());
 		lsTitle.add(TitleFormatNBC.Description.toString());
-		if (isGetSeq) {
-			lsTitle.add("Casual_Exon");
-			lsTitle.add("Casual_Exon+-300bp");
-			lsTitle.add("Casual_Exon+-1Exon");
-		}
 		return lsTitle.toArray(new String[0]);
 	}
-
+	/** 获得标题 */
+	public static String[] getSeqTitle() {
+		ArrayList<String> lsTitle = new ArrayList<String>();
+		lsTitle.add(TitleFormatNBC.AccID.toString());
+		lsTitle.add(TitleFormatNBC.Location.toString());
+		lsTitle.add("Casual_Exon");
+		lsTitle.add("Casual_Exon+-300bp");
+		lsTitle.add("Casual_Exon+-1Exon");
+		return lsTitle.toArray(new String[0]);
+	}
 }
 /**
  * 某个时期的某个位点的<br>

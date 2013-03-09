@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.genome.gffOperate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -754,6 +755,27 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	}
 	
 	/**
+	 * 排序并去除重复exon
+	 */
+	public void sort() {
+		super.sort();
+		LinkedHashSet<ExonInfo> setExonInfos = new LinkedHashSet<ExonInfo>();
+		boolean haveDuplicateExon = false;
+		for (ExonInfo exonInfo : this) {
+			if (setExonInfos.contains(exonInfo)) {
+				haveDuplicateExon = true;
+				continue;
+			}
+			setExonInfos.add(exonInfo);
+		}
+		if (haveDuplicateExon) {
+			clear();
+			for (ExonInfo exonInfo : setExonInfos) {
+				add(exonInfo);
+			}
+		}
+	}
+	/**
 	 * 返回该基因的GTF格式文件，末尾有换行符
 	 * @param geneID 该基因的名字
 	 * @param title 该GTF文件的名称
@@ -907,8 +929,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		String result = "gene_position:";
 		if ( isCis5to3()) {
 			result = result + "forward ";
-		}
-		else {
+		} else {
 			result = result + "reverse ";
 		}
 		int codLoc = getCodLoc(coord);
@@ -916,15 +937,12 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		if (isCodInIsoTss(coord) && codLoc == COD_LOC_OUT) {
 			if (getCod2Tss(coord) > PROMOTER_INTERGENIC_MAMMUM) {
 				result = result + PROMOTER_INTERGENIC_STR;
-			}
-			else if (getCod2Tss(coord) > PROMOTER_DISTAL_MAMMUM) {
+			} else if (getCod2Tss(coord) > PROMOTER_DISTAL_MAMMUM) {
 				result = result + PROMOTER_DISTAL_STR;
-			}
-			else {
+			} else {
 				result = result + PROMOTER_PROXIMAL_STR;;
 			}
-		}
-		else if (isCodInIsoTss(coord) && codLoc != COD_LOC_OUT) {
+		} else if (isCodInIsoTss(coord) && codLoc != COD_LOC_OUT) {
 			result = result + PROMOTER_DOWNSTREAMTSS_STR;
 		}
 		
@@ -932,15 +950,13 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		//UTR
 		if (getCodLocUTRCDS(coord) == COD_LOCUTR_5UTR) {
 			result = result + "5UTR_";
-		}
-		else if (getCodLocUTRCDS(coord) == COD_LOCUTR_3UTR) {
+		} else if (getCodLocUTRCDS(coord) == COD_LOCUTR_3UTR) {
 			result = result + "3UTR_";
 		}
 		//exon intron
 		if (codLoc == COD_LOC_EXON) {
 			result = result + "Exon:exon_Position_Number_is:" + getNumCodInEle(coord);
-		}
-		else if (codLoc == COD_LOC_INTRON) {
+		} else if (codLoc == COD_LOC_INTRON) {
 			result = result + "Intron_intron_Position_Number_is:" + Math.abs(getNumCodInEle(coord));
 		}
 		//gene end

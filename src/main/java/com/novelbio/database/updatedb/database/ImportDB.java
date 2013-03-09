@@ -1,5 +1,11 @@
 package com.novelbio.database.updatedb.database;
 
+import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGTF;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -13,17 +19,30 @@ import com.novelbio.generalConf.NovelBioConst;
  *
  */
 public class ImportDB {
-	static String databasePath2 = "/media/winE/Bioinformatics/DataBaseUpdate/";
-	static String taxIDFile = databasePath + "常见物种IDKEGGAll.txt";
-	static String GOPath = databasePath;
+	public static void main(String[] args) {
+		GffHashGene gffHashGene = new GffHashGene(GffType.NCBI, "/media/winE/NBCplatform/genome/zebrafish/ref_Zv9_top_level.gff3");
+		GffDetailGene gffDetailGene = gffHashGene.searchLOC("trgv5");
+		System.out.println(gffDetailGene.getStartCis() + "\t" + gffDetailGene.getEndCis());
+		for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+			System.out.println(gffGeneIsoInfo.getName());
+			for (ExonInfo exonInfo : gffGeneIsoInfo) {
+				System.out.println(exonInfo.getStartCis() + "\t" + exonInfo.getEndCis());
+			}
+		}
+//		GffHashGTF.modifyEnsemblGTF("/media/winE/NBCplatform/genome/zebrafish/Danio_rerio.Zv9.70.gtf");
+	}
+	String databasePath2 = "/media/winE/Bioinformatics/DataBaseUpdate/";
+
 	
 	String softToolsFile;
 	String taxInfoFile;
 	String speciesFile;
 	
 	String databasePath;
+	String taxIDFile = databasePath + "常见物种IDKEGGAll.txt";
+	String GOPath = databasePath;
 	
-	public static void main(String[] args) {
+	public static void main2(String[] args) {
 		ImportDB importDB = new ImportDB();
 		importDB.setDownloadPath(downloadPath);
 		importDB.setSoftToolsFile(softToolsFile);

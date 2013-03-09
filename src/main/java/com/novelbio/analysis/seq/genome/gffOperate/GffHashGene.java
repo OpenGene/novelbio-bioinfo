@@ -49,7 +49,7 @@ public class GffHashGene implements GffHashGeneInf{
 			gffHashGene = new GffHashGenePlant(gffType);
 		}
 		else if (gffType == GffType.GTF) {
-			gffHashGene = new GffHashCufflinkGTF();
+			gffHashGene = new GffHashGTF();
 		}
 		else if (gffType == GffType.NCBI) {
 			gffHashGene = new GffHashGeneNCBI();
@@ -85,7 +85,7 @@ public class GffHashGene implements GffHashGeneInf{
 	 * 专门给冯英的项目用的，设定ref的Gffinfo
 	 */
 	public void setGffHash(GffHashGene gffHashRef) {
-		GffHashCufflinkGTF gff = (GffHashCufflinkGTF)gffHashGene;
+		GffHashGTF gff = (GffHashGTF)gffHashGene;
 		gff.setGffHashRef(gffHashRef);
 	}
 	

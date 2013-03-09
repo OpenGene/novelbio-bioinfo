@@ -39,7 +39,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 	ArrayList<String[]> lsAnno;
 	
 	/** 保存最后选择到的gene key: geneName + sep +chrID */
-	HashSet<GffDetailGene> hashGffDetailGene;
+	Set<GffDetailGene> setGffDetailGene;
 	
 	/** 左侧坐标保存的基因信息，Up和Down之间没有交集
 	 * 里面保存的GffDetailGene都是clone的
@@ -268,9 +268,9 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 	 * 不查询数据库，直接返回gffDetailGene
 	 * @return
 	 */
-	public HashSet<GffDetailGene> getCoveredGffGene() {
+	public Set<GffDetailGene> getCoveredGffGene() {
 		setHashCoveredGenInfo();
-		return hashGffDetailGene;
+		return setGffDetailGene;
 	}
 	/**
 	 * 由前面的设定，将所有符合要求的gene的全部提取出来
@@ -283,7 +283,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 		HashSet<GeneID> hashCopedID = new HashSet<GeneID>();
 		ArrayList<GeneID> lsCopedIDs = new ArrayList<GeneID>();
 	
-		for (GffDetailGene gffDetailGene : hashGffDetailGene) {
+		for (GffDetailGene gffDetailGene : setGffDetailGene) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 				GeneID copedID = new GeneID(gffGeneIsoInfo.getName(),
 						getGffCodLeft().getGffDetailUp().getTaxID(),
@@ -299,29 +299,29 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 	}
 	/** 将两个位点间覆盖到的基因提取出来，保存至hashGffDetailGene */
 	private void setHashCoveredGenInfo() {
-		if (flagSearchHash && hashGffDetailGene != null) {
+		if (flagSearchHash && setGffDetailGene != null) {
 			return;
 		}
 		flagSearchHash = true;
-		hashGffDetailGene = new LinkedHashSet<GffDetailGene>();
+		setGffDetailGene = new LinkedHashSet<GffDetailGene>();
 		//TODO: 这里修改tss和tes后，gffDetailgene要修改tss和tes，gffiso也要修改tss和tes
 		setStructureGene_And_Remove_IsoNotBeFiltered();
 		for (GffDetailGene gffDetailGene : setGffDetailGenesLeft) {
-			hashGffDetailGene.add(gffDetailGene);
+			setGffDetailGene.add(gffDetailGene);
 		}
 		if (lsgffDetailsMid != null) {
 			for (GffDetailGene gffDetailGene : lsgffDetailsMid) {
-				if (hashGffDetailGene.contains(gffDetailGene)) {
+				if (setGffDetailGene.contains(gffDetailGene)) {
 //					logger.error("lsmid出现与第一个点一样的iso，建议复查");
 					continue;
 				}
-				hashGffDetailGene.add(gffDetailGene);
+				setGffDetailGene.add(gffDetailGene);
 			}
 		}
 		for (GffDetailGene gffDetailGene : setGffDetailGenesRight) {
-			if (hashGffDetailGene.contains(gffDetailGene))
+			if (setGffDetailGene.contains(gffDetailGene))
 				continue;
-			hashGffDetailGene.add(gffDetailGene);
+			setGffDetailGene.add(gffDetailGene);
 		}
 	}
 	/**

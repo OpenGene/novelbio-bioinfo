@@ -21,13 +21,7 @@ import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
 
 public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCodGene, GffCodGeneDU, ListGff> implements GffHashGeneInf {
-	public static void main(String[] args) {
-		Species species = new Species(9606);
-		GffChrAbs gffChrAbs = new GffChrAbs(species);
-		GffGeneIsoInfo gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO("AT1G16860");
-		System.out.println("stop");
-	}
-	private static Logger logger = Logger.getLogger(GffHashGeneAbs.class);
+	private static final Logger logger = Logger.getLogger(GffHashGeneAbs.class);
 	int taxID = 0;
 	String acc2GeneIDfile = "";
 	String gfffile = "";

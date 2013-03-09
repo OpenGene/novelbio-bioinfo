@@ -7,6 +7,7 @@ import java.util.HashMap;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGenePlant;
+import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -94,7 +95,7 @@ public class GlyMaxIDNCBI {
 	
 	public void readGFFFile(String gffFile, String txtOut) {
 		TxtReadandWrite txtOutGene = new TxtReadandWrite(txtOut, true);
-		GffHashGenePlant gffHashGene = new GffHashGenePlant(NovelBioConst.GENOME_GFF_TYPE_PLANT);
+		GffHashGenePlant gffHashGene = new GffHashGenePlant(GffType.Plant);
 		gffHashGene.ReadGffarray(gffFile);
 		for (ArrayList<ListDetailBin> lsGffGene : hashLsGffGene.values()) {
 			for (ListDetailBin gffDetailGene : lsGffGene) {

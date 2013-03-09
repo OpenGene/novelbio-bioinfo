@@ -515,13 +515,26 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	/** 写入文本 */
 	public void writeToFile(String fileName) {
 		TxtReadandWrite txtOut = new TxtReadandWrite(fileName, true);
+		
 		boolean isGetSeq = seqHash == null ? false : true;
-		txtOut.writefileln(ExonSplicingTest.getTitle(condition1, condition2, isGetSeq));
+		TxtReadandWrite txtOutSeq = null;
+		if (isGetSeq) {
+			txtOutSeq = new TxtReadandWrite(FileOperate.changeFileSuffix(fileName, "_Seq", "txt"), true);
+		}
+		
+		txtOut.writefileln(ExonSplicingTest.getTitle(condition1, condition2));
 		for (ExonSplicingTest chisqTest : lsResult) {
 			chisqTest.setGetSeq(seqHash);
 			txtOut.writefileln(chisqTest.toStringArray());
+			if (isGetSeq) {
+				txtOutSeq.writefileln(chisqTest.toStringSeq());
+			}
 		}
+		
 		txtOut.close();
+		if (isGetSeq) {
+			txtOutSeq.close();
+		}
 		
 		TxtReadandWrite txtStatistics = new TxtReadandWrite(FileOperate.changeFileSuffix(fileName, "_statistics", "txt"), true);
 		txtStatistics.writefileln("SplicingEvent\tSignificantNum\tAllNum");

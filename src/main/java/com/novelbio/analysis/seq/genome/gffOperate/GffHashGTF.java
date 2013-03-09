@@ -12,10 +12,11 @@ import org.apache.log4j.Logger;
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modgeneid.GeneType;
 
-public class GffHashCufflinkGTF extends GffHashGeneAbs{
-	private static Logger logger = Logger.getLogger(GffHashCufflinkGTF.class);
+public class GffHashGTF extends GffHashGeneAbs{
+	private static Logger logger = Logger.getLogger(GffHashGTF.class);
 	GffHashGene gffHashRef;
 	double likelyhood = 0.4;//相似度在0.4以内的转录本都算为同一个基因
 	String transcript = "transcript";
@@ -196,8 +197,7 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 			}
 			if (gffCodGene.isInsideLoc()) {
 				return gffCodGene.getGffDetailThis().isCis5to3();
-			}
-			else {
+			} else {
 				int a = Integer.MAX_VALUE;
 				int b = Integer.MAX_VALUE;
 				if (gffCodGene.getGffDetailUp() != null) {
@@ -216,4 +216,22 @@ public class GffHashCufflinkGTF extends GffHashGeneAbs{
 		}
 	}
 	
+	/**
+	 * 修正ensembl的GTF文件，主要是将一些没用的行，譬如H开头，G开头的删除
+	 * 同时将染色体名字从 1 改为 chr1
+	 */
+	public static void modifyEnsemblGTF(String ensemblGTF) {
+		TxtReadandWrite txtRead = new TxtReadandWrite(ensemblGTF, false);
+		String fileName = FileOperate.changeFileSuffix(ensemblGTF, "_modify", null);
+		fileName = FileOperate.changeFilePrefix(fileName, "Ensembl_", null);
+		TxtReadandWrite txtWrite = new TxtReadandWrite(fileName, true);
+		for (String string : txtRead.readlines()) {
+			if (string.startsWith("H") || string.startsWith("G") || string.startsWith("N")) {
+				continue;
+			}
+			txtWrite.writefileln("chr" + string);
+		}
+		txtRead.close();
+		txtWrite.close();
+	}
 }
