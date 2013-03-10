@@ -38,6 +38,7 @@ public class ImportDB {
 	String taxInfoFile;
 	String speciesFile;
 	
+	/** NCBI等数据库文件下载后存放的路径 */
 	String databasePath;
 	String taxIDFile = databasePath + "常见物种IDKEGGAll.txt";
 	String GOPath = databasePath;
@@ -78,6 +79,7 @@ public class ImportDB {
 	public void setSpeciesFile(String speciesFile) {
 		this.speciesFile = speciesFile;
 	}
+	/** NCBI等数据库文件下载后存放的路径 */
 	public void setDownloadPath(String databasePath) {
 		this.databasePath = databasePath;
 	}

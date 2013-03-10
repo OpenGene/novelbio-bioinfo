@@ -86,6 +86,9 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 		GuiAnnoInfo guiAnnoInfo;
 		for (AlignRecord samRecord : alignSeqFile.readLines()) {
 			for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {
+				if (alignmentRecorder == null) {
+					continue;
+				}
 				alignmentRecorder.addAlignRecord(samRecord);
 			}
 			suspendCheck();

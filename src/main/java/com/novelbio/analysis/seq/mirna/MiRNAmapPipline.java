@@ -1,10 +1,17 @@
 package com.novelbio.analysis.seq.mirna;
 
+import net.sf.samtools.SAMFileReader;
+
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.mapping.MapBwa;
+import com.novelbio.analysis.seq.sam.AlignSamReading;
+import com.novelbio.analysis.seq.sam.AlignSeqReading;
 import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.sam.SamFileStatistics;
+import com.novelbio.analysis.seq.sam.SamReader;
+import com.novelbio.analysis.seq.sam.SamToFastq;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -126,7 +133,7 @@ public class MiRNAmapPipline {
 			unMappedFq = outputTmpFinal + "unMap2miRNA.fq";
 			samFileMiRNA = mapping(fqFile, miRNApreSeq, samFileMiRNA, unMappedFq);
 			unMappedMiRNA = unMappedFq;
-			if (mappingAll2Seq) {
+			if (!mappingAll2Seq) {
 				fqFile = unMappedFq;
 			}
 		}
@@ -134,7 +141,7 @@ public class MiRNAmapPipline {
 		if (FileOperate.isFileExist(rfamSeq)) {
 			unMappedFq = outputTmpFinal + "unMap2rfam.fq";
 			samFileRfam = mapping(fqFile, rfamSeq, samFileRfam, unMappedFq);
-			if (mappingAll2Seq) {
+			if (!mappingAll2Seq) {
 				fqFile = unMappedFq;
 			}
 		}
@@ -186,13 +193,28 @@ public class MiRNAmapPipline {
 		mapBwa.setChrFile(chrFile);
 		mapBwa.setExePath(exePath);
 		SamFile samFile = mapBwa.mapReads();
-//		samFile.setUniqMapping(uniqueMapping);
-//		samFile.setUniqueRandomSelectOneRead(uniqueMappedReadsRandomSelectOne);
+		
 		try { Thread.sleep(1000); } catch (Exception e) { }
+		
+		AlignSeqReading alignSamReading = new AlignSamReading(samFile);
+		SamFileStatistics samFileStatistics = new SamFileStatistics();
+		samFileStatistics.initial();
+		
+		SamToFastq samToFastq = null;
 		if (unMappedFq != null && !unMappedFq.equals("")) {
-			samFile.getUnMappedReads(false, unMappedFq);
+			samToFastq = new SamToFastq();
+			samToFastq.setFastqFile(unMappedFq);
+			samToFastq.setJustUnMapped(true);
 		}
+		
+		alignSamReading.addAlignmentRecorder(samToFastq);
+		alignSamReading.addAlignmentRecorder(samFileStatistics);
+		
+		alignSamReading.reading();
 		samFile.close();
+		
+		samFileStatistics.writeToFile(FileOperate.changeFileSuffix(samFile.getFileName(), "_Statistics", "txt"));
+		
 		return samFile.getFileName();
 	}
 }

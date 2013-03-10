@@ -12,13 +12,6 @@ import com.novelbio.database.model.modgeneid.GeneID;
  */
 public interface GffHashGeneInf  {
 	/**
-	 * 起点是否为闭区间，不是则为开区间，<br>
-	 * False: 开区间的意思是，24表示从0开始计数的24位，也就是实际的25位<br>
-	 * True: 闭区间的意思是，24就代表第24位<br>
-	 * UCSC的默认文件的终点是闭区间间
-	 */
-	public void setEndRegion(boolean region);
-	/**
 	 * 返回List顺序存储每个基因号或条目号，这个打算用于提取随机基因号。
 	 * 不能通过该方法获得某个LOC在基因上的定位
 	 */

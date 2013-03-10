@@ -34,7 +34,7 @@ public class GffHashMerge {
 		GffHashMerge gffHashMerge = new GffHashMerge();
 		gffHashMerge.setSpecies(species);
 		gffHashMerge.setGffHashGeneRef(new GffHashGene(species.getGffType(), species.getGffFile()));
-		gffHashMerge.addGffHashGene(new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, gffhashGeneCuf));
+		gffHashMerge.addGffHashGene(new GffHashGene(GffType.GTF, gffhashGeneCuf));
 		GffHashGene gffHashGene = gffHashMerge.getGffHashGeneModifyResult();
 		gffHashGene.removeDuplicateIso();
 		gffHashGene.writeToGTF(gffFinal, "novelbio");
@@ -42,7 +42,7 @@ public class GffHashMerge {
 		gffHashMerge = new GffHashMerge();
 		gffHashMerge.setSpecies(species);
 		gffHashMerge.setGffHashGeneRef(new GffHashGene(species.getGffType(), species.getGffFile()));
-		gffHashMerge.addGffHashGene(new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, gffFinal));
+		gffHashMerge.addGffHashGene(new GffHashGene(GffType.GTF, gffFinal));
 
 		TranscriptomStatistics transcriptomStatistics = gffHashMerge.getStatisticsCompareGff();
 		TxtReadandWrite txtOut = new TxtReadandWrite(gffFinalStatistics, true);
@@ -66,7 +66,7 @@ public class GffHashMerge {
 		gffHashMerge = new GffHashMerge();
 		gffHashMerge.setSpecies(species);
 		gffHashMerge.setGffHashGeneRef(new GffHashGene(species.getGffType(), species.getGffFile()));
-		gffHashMerge.addGffHashGene(new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, gffFinal));
+		gffHashMerge.addGffHashGene(new GffHashGene(GffType.GTF, gffFinal));
 	
 		TranscriptomStatistics transcriptomStatistics = gffHashMerge.getStatisticsCompareGff();
 		TxtReadandWrite txtOut = new TxtReadandWrite(gffFinalStatistics, true);

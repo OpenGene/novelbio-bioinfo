@@ -25,15 +25,16 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	public GffHashGene(GffHashGeneAbs gffHashGene) {
 		this.gffHashGene = gffHashGene;
 	}
+	
 	/**
-	 * 读取并初始化
+	 * 读取并初始化，可以用isFinished()来判定是否顺利运行完毕
 	 * @param gffType
 	 * @param gffFile
 	 */
 	public GffHashGene(GffType gffType, String gffFile) {
 		this.gffType = gffType;
 		this.gffFile = gffFile;
-		read(gffType, gffFile);
+		flagFinish = read(gffType, gffFile);
 	}
 	
 	/**
@@ -49,10 +50,10 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	
 	@Override
 	protected void running() {
-		read(gffType, gffFile);
+		flagFinish = read(gffType, gffFile);
 	}
 	
-	private void read(GffType gffType, String gffFile) {
+	private boolean read(GffType gffType, String gffFile) {
 		if (gffType == GffType.UCSC) {
 			gffHashGene = new GffHashGeneUCSC();
 		}
@@ -65,8 +66,7 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 		else if (gffType == GffType.NCBI) {
 			gffHashGene = new GffHashGeneNCBI();
 		}
-		gffHashGene.ReadGffarray(gffFile);
-	
+		return gffHashGene.ReadGffarray(gffFile);
 	}
 	
 	/** 如果是从Fasta序列而来的gff，就用这个包装 */
@@ -108,10 +108,7 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 			}
 		}
 	}
-	@Override
-	public void setEndRegion(boolean region) {
-		gffHashGene.setEndRegion(region);
-	}
+
 	/** 顺序存储ChrHash中的ID，这个就是ChrHash中实际存储的ID，如果两个Item是重叠的，就全加入 */
 	public ArrayList<String> getLsNameAll() {
 		return gffHashGene.getLsNameAll();
@@ -124,10 +121,6 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	@Override
 	public String[] getLOCNum(String LOCID) {
 		return gffHashGene.getLOCNum(LOCID);
-	}
-
-	public void setStartRegion(boolean region) {
-		gffHashGene.setStartRegion(region);
 	}
 
 	public HashMap<String, GffDetailGene> getLocHashtable() {

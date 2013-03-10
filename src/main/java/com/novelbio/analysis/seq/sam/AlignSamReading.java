@@ -8,6 +8,11 @@ import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.nbcgui.GUI.GuiAnnoInfo;
 
+/**
+ * 这里面可以设定一系列的监听器，然后完成一次mapping，统计多个信息的目的
+ * @author zong0jie
+ *
+ */
 public class AlignSamReading extends AlignSeqReading {
 	List<? extends Alignment> lsAlignments;
 

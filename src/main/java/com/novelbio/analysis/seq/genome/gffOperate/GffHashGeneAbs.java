@@ -41,7 +41,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	 * 4. 删除不同的iso
 	 * @param gfffilename
 	 */
-	public void ReadGffarray(String gfffilename) {
+	public boolean ReadGffarray(String gfffilename) {
 		this.acc2GeneIDfile = FileOperate.changeFileSuffix(gfffilename, "_accID2geneID", "list");
 		super.ReadGffarray(gfffilename);
 		
@@ -55,38 +55,37 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 					try {
 						gffGeneIsoInfo.setATGUAGncRNA();
 					} catch (Exception e) {
-						gffGeneIsoInfo.setATGUAGncRNA();
+						logger.error("Set ATG UAG Site Error: " + gffGeneIsoInfo.getName());
 					}
 				}
 				gffDetailGene.removeDupliIso();
 			}
 		}
+		return true;
 	}
 	/**
 	 * 在读取文件后如果有什么需要设置的，可以写在setOther();方法里面
 	 * @param gfffilename
+	 * @throws Exception 
 	 */
-	public void ReadGffarrayExcep(String gfffilename) {
-		try {
-			ReadGffarrayExcepTmp(gfffilename);
-			for (Entry<String, ListGff> entry : mapChrID2ListGff.entrySet()) {
-				String chrID = entry.getKey();
-				ListGff listGff = entry.getValue();
-				ListGff listGffNew = listGff.combineOverlapGene();
-				//装入hash表
-				for (GffDetailGene gffDetailGene : listGff) {
-					for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-						mapName2Iso.put(GeneID.removeDot(gffGeneIsoInfo.getName().toLowerCase()), gffGeneIsoInfo);
-						mapName2Iso.put(gffGeneIsoInfo.getName().toLowerCase(), gffGeneIsoInfo);
-					}
+	public void ReadGffarrayExcep(String gfffilename) throws Exception {
+		ReadGffarrayExcepTmp(gfffilename);
+		for (Entry<String, ListGff> entry : mapChrID2ListGff.entrySet()) {
+			String chrID = entry.getKey();
+			ListGff listGff = entry.getValue();
+			ListGff listGffNew = listGff.combineOverlapGene();
+			//装入hash表
+			for (GffDetailGene gffDetailGene : listGff) {
+				for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+					mapName2Iso.put(GeneID.removeDot(gffGeneIsoInfo.getName().toLowerCase()), gffGeneIsoInfo);
+					mapName2Iso.put(gffGeneIsoInfo.getName().toLowerCase(), gffGeneIsoInfo);
 				}
-				mapChrID2ListGff.put(chrID, listGffNew);
-				listGff = null;
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+			mapChrID2ListGff.put(chrID, listGffNew);
+			listGff = null;
 		}
 	}
+	
 	protected abstract void ReadGffarrayExcepTmp(String gfffilename) throws Exception;
 	public int getTaxID() {
 		return taxID;

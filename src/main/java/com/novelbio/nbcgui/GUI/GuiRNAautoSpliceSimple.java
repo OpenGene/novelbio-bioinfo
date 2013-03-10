@@ -254,6 +254,14 @@ public class GuiRNAautoSpliceSimple extends JPanel implements GUIinfo {
 	private void run() {
 		progressBar.setValue(progressBar.getMinimum());
 		ctrlSplicing.setGuiRNAautoSplice(this);
+		GffHashGene gffHashGene = getGffhashGene();
+		if (gffHashGene.isFinished()) {
+			setInfo("Finished Reading GTF File");
+		} else {
+			setInfo(" PASH Is Interrupted Because Reading GTF File Encounters Error");
+			return;
+		}
+			
 		ctrlSplicing.setGffHashGene(getGffhashGene());
 		try {
 			SeqHash seqHash = new SeqHash(txtChromFaPath.getText());

@@ -8,20 +8,12 @@ import java.util.Map.Entry;
 
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.mapping.MappingReadsType;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 
-/** 仅用于分析sambam文件 */
+/** 仅用于分析sambam文件
+ * 根据需求判定是否需要执行{@link #initial()}
+ *  */
 public class SamFileStatistics implements AlignmentRecorder {
-	public static void main(String[] args) {
-		SamFile samFile = new SamFile("/home/zong0jie/Desktop/sssFH.sam");
-		SamFileStatistics samFileStatistics = new SamFileStatistics();
-		samFileStatistics.setSamFile(samFile);
-		ArrayList<String[]> lsResult = samFileStatistics.getMappingInfo();
-		System.out.println("stop");
-		for (String[] strings : lsResult) {
-			System.out.println(strings[0] + "\t" + strings[1]);
-		}
-	}
-	
 	SamFile samFile;
 	boolean countReadsNum;
 	
@@ -73,6 +65,12 @@ public class SamFileStatistics implements AlignmentRecorder {
 			return (long)junctionAllReads;
 		}
 		return -1;
+	}
+	
+	/** 把结果写入文本，首先要运行 statistics */
+	public void writeToFile(String outFileName) {
+		TxtReadandWrite txtWrite = new TxtReadandWrite(outFileName, true);
+		txtWrite.ExcelWrite(getMappingInfo());
 	}
 	
 	/**
