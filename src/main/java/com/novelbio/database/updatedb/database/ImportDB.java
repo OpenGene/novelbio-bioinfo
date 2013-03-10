@@ -43,6 +43,9 @@ public class ImportDB {
 	String GOPath = databasePath;
 	
 	public static void main2(String[] args) {
+		String downloadPath = "";
+		String softToolsFile = "";
+		String speciesFile = "";
 		ImportDB importDB = new ImportDB();
 		importDB.setDownloadPath(downloadPath);
 		importDB.setSoftToolsFile(softToolsFile);
@@ -69,8 +72,8 @@ public class ImportDB {
 	public void setSoftToolsFile(String softToolsFile) {
 		this.softToolsFile = softToolsFile;
 	}
-	public static void setTaxIDFile(String taxIDFile) {
-		ImportDB.taxIDFile = taxIDFile;
+	public void setTaxIDFile(String taxIDFile) {
+		this.taxIDFile = taxIDFile;
 	}
 	public void setSpeciesFile(String speciesFile) {
 		this.speciesFile = speciesFile;

@@ -26,8 +26,7 @@ public class GffChrAbs {
 	SeqHash seqHash = null;
 	Species species;
 
-	public GffChrAbs() {
-	}
+	public GffChrAbs() {}
 
 	public GffChrAbs(Species species) {
 		setSpecies(species);
@@ -96,13 +95,7 @@ public class GffChrAbs {
 			gffHashGene.setTaxID(taxID);
 		}
 	}
-	public void setGffFile(int taxID, String gffType, String gffFile) {
-		if (FileOperate.isFileExist(gffFile)) {
-			gffHashGene = new GffHashGene(gffType, gffFile);
-			gffHashGene.setTaxID(taxID);
-		}
-	}
-
+	
 	/**
 	 * chrFile 序列文件或序列文件夹 regx 如果是序列文件，则用该正则表达式提取每个序列的名字，如果是序列文件夹，
 	 * 则用该正则表达式提取含有该文件名的文件 单文件默认为"";文件夹默认为"\\bchr\\w*"；

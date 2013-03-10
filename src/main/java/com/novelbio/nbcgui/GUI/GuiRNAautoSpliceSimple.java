@@ -10,6 +10,7 @@ import javax.swing.JTextField;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.rnaseq.CtrlSplicing;
 import com.novelbio.analysis.seq.rnaseq.ExonJunction;
 import com.novelbio.analysis.seq.rnaseq.ExonSplicingTest;
@@ -244,7 +245,9 @@ public class GuiRNAautoSpliceSimple extends JPanel implements GUIinfo {
 	}
 	/** 如果txt存在，优先获得txt对应的gtf文件*/
 	private GffHashGene getGffhashGene() {
-		GffHashGene gffHashGeneResult = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, txtGff.getText());
+		GffHashGene gffHashGeneResult = new GffHashGene();
+		gffHashGeneResult.setGffInfo(GffType.GTF, txtGff.getText());
+		gffHashGeneResult.run();
 		return gffHashGeneResult;
 	}
 

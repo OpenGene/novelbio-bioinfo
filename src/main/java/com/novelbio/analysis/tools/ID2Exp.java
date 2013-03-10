@@ -6,6 +6,7 @@ import java.util.HashMap;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -24,7 +25,7 @@ public class ID2Exp {
 		id2Exp.addTss();
 	}
 	
-	GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_UCSC, NovelBioConst.GENOME_PATH_UCSC_MM9_GFF_REFSEQ);
+	GffHashGene gffHashGene = new GffHashGene();
 	ArrayList<String[]> lsMethyInfo = new ArrayList<String[]>();
 	ArrayList<String[]> lsMicroarrayInfo = new ArrayList<String[]>();
 	int taxID = 10090;

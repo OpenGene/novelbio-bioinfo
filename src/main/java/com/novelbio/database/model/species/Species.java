@@ -208,7 +208,10 @@ public class Species {
 		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
 		return speciesFile.getMapGffDB();
 	}
-	/** 设定需要获取哪一种gff文件的注释 */
+	/**
+	 * 设定需要获取哪一种gff文件的注释
+	 * @param gffDB 大小写不敏感
+	 */
 	public void setGffDB(String gffDB) {
 		this.gffDB = gffDB;
 	}

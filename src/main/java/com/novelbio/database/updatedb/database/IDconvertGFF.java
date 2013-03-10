@@ -12,6 +12,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.PatternOperate;
@@ -37,11 +38,8 @@ public class IDconvertGFF {
 	public void setTaxID(int taxID) {
 		this.taxID = taxID;
 	}
-	public void setGffQuery(String gffFile, String gffType) {
-		gffHashGeneQuery = new GffHashGene(gffType, gffFile);
-	}
-	public void setGffDestination(String gffFile, String gffType) {
-		gffHashGeneDestination = new GffHashGene(gffType, gffFile);
+	public void setGffDestination(GffHashGene gffHashGeneDestination) {
+		this.gffHashGeneDestination = gffHashGeneDestination;
 	}
 	public void setDBinfo(String dBinfo) {
 		DBinfo = dBinfo;

@@ -11,6 +11,7 @@ import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.listOperate.ListAbs;
@@ -80,8 +81,8 @@ public class GffHashMerge {
 		
 		GffHashMerge gffHashMerge = new GffHashMerge();
 		gffHashMerge.setSpecies(new Species(9013));
-		gffHashMerge.setGffHashGeneRef(new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, gffHashGeneRef));
-		gffHashMerge.addGffHashGene(new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, gffhashGeneCuf));
+		gffHashMerge.setGffHashGeneRef(new GffHashGene(GffType.GTF, gffHashGeneRef));
+		gffHashMerge.addGffHashGene(new GffHashGene(GffType.GTF, gffhashGeneCuf));
 		
 		GffHashGene gffHashGene = gffHashMerge.getGffHashGeneModifyResult();
 		gffHashGene.removeDuplicateIso();
@@ -89,8 +90,8 @@ public class GffHashMerge {
 		
 		gffHashMerge = new GffHashMerge();
 		gffHashMerge.setSpecies(new Species(9013));
-		gffHashMerge.setGffHashGeneRef(new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, gffHashGeneRef));
-		gffHashMerge.addGffHashGene(new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, gffFinal));
+		gffHashMerge.setGffHashGeneRef(new GffHashGene(GffType.GTF, gffHashGeneRef));
+		gffHashMerge.addGffHashGene(new GffHashGene(GffType.GTF, gffFinal));
 		
 		TranscriptomStatistics transcriptomStatistics = gffHashMerge.getStatisticsCompareGff();
 		TxtReadandWrite txtOut = new TxtReadandWrite(gffFinalStatistics, true);

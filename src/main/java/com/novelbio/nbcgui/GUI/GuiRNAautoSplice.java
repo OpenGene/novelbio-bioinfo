@@ -9,6 +9,7 @@ import javax.swing.JTextField;
 
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.rnaseq.CtrlSplicing;
 import com.novelbio.analysis.seq.rnaseq.ExonJunction;
 import com.novelbio.analysis.seq.rnaseq.ExonSplicingTest;
@@ -227,7 +228,7 @@ public class GuiRNAautoSplice extends JPanel implements GUIinfo {
 
 		String gtfFile = txtGff.getText();
 		if (FileOperate.isFileExist(gtfFile)) {
-			gffHashGeneResult = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, txtGff.getText());
+			gffHashGeneResult = new GffHashGene(GffType.GTF, txtGff.getText());
 		} else {
 			Species species = guiLayeredPaneSpeciesVersionGff.getSelectSpecies();
 			GffChrAbs gffChrAbs = new GffChrAbs(species);

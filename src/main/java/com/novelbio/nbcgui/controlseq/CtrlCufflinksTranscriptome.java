@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.rnaseq.CufflinksGTF;
 import com.novelbio.analysis.seq.rnaseq.GffHashMerge;
@@ -58,7 +59,7 @@ public class CtrlCufflinksTranscriptome {
 		String cufGTF = cufflinksGTF.getCufflinksGTFPath();
 		gffHashMerge.setSpecies(gffChrAbs.getSpecies());
 		gffHashMerge.setGffHashGeneRef(gffChrAbs.getGffHashGene());
-		gffHashMerge.addGffHashGene(new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, cufGTF));
+		gffHashMerge.addGffHashGene(new GffHashGene(GffType.GTF, cufGTF));
 		GffHashGene gffHashGene = gffHashMerge.getGffHashGeneModifyResult();
 		gffHashGene.removeDuplicateIso();
 		gffHashGene.writeToGTF(outGtf, "novelbio");
@@ -67,7 +68,7 @@ public class CtrlCufflinksTranscriptome {
 		gffHashMerge = new GffHashMerge();
 		gffHashMerge.setSpecies(gffChrAbs.getSpecies());
 		gffHashMerge.setGffHashGeneRef(gffChrAbs.getGffHashGene());
-		gffHashMerge.addGffHashGene(new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, outGtf));
+		gffHashMerge.addGffHashGene(new GffHashGene(GffType.GTF, outGtf));
 
 		TranscriptomStatistics transcriptomStatistics = gffHashMerge.getStatisticsCompareGff();
 		TxtReadandWrite txtOut = new TxtReadandWrite(outStatistics, true);

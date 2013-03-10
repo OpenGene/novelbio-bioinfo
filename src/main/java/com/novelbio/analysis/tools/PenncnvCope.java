@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.generalConf.NovelBioConst;
@@ -38,7 +39,7 @@ public class PenncnvCope {
 	public static final String CN4 = "cn4";
 	
 	GffHashGene gffHashGene = null;
-	String gffType = NovelBioConst.GENOME_GFF_TYPE_UCSC;
+	GffType gffType = GffType.UCSC;
 	String gffFile = NovelBioConst.GENOME_PATH_UCSC_HG18_GFF_REFSEQ;
 	
 	String state = "";
@@ -71,7 +72,7 @@ public class PenncnvCope {
 	 * @param GffType
 	 * @param GffFIle
 	 */
-	public void setParam(String GffType, String GffFIle)
+	public void setParam(GffType GffType, String GffFIle)
 	{
 		this.gffFile = GffFIle;
 		this.gffType = GffType;

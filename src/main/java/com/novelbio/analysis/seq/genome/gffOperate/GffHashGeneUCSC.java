@@ -7,7 +7,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modgeneid.GeneType;
-
+//TODO 开闭区间修正
 /**
  * 本开闭区间已经设定
  * UCSC的默认文件的起点是开区间，终点为闭区间。水稻拟南芥的还没有设定开闭区间

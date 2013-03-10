@@ -35,7 +35,7 @@ import com.novelbio.database.model.modgeneid.GeneType;
  * 
  * 每个基因的起点终点和CDS的起点终点保存在GffDetailList类中<br/>
  */
-public class GffHashGeneNCBI extends GffHashGeneAbs{
+public class GffHashGeneNCBI extends GffHashGeneAbs {
 	private static final Logger logger = Logger.getLogger(GffHashGeneNCBI.class);
 	
 	/** 基因名字的正则，可以改成识别人类或者其他,这里是拟南芥，默认  NCBI的ID  */

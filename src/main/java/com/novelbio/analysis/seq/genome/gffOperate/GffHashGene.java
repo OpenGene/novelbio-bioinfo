@@ -3,41 +3,52 @@ package com.novelbio.analysis.seq.genome.gffOperate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map.Entry;
 
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
+import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.generalConf.NovelBioConst;
+
 /**
- * 读取大豆的GFF文件有问题，主要是5UTR和3UTR一块，需要修正
+ * 
+ * 本类加载时不返回信息，只有在结束时才会返回是否成功
  * @author zong0jie
- *
  */
-public class GffHashGene implements GffHashGeneInf{
-	
-	public static void main(String[] args) {
-		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
-				"/media/winE/NBC/Project/Project_FY_Lab/Result/tophat/cufflinkAlla15m1bf/new/novelbioModify_a15m1bf_All_highAll20111220.GTF");
-		gffHashGene.writeToGFFIsoMoreThanOne("/media/winE/NBC/Project/Project_FY_Lab/Result/tophat/cufflinkAlla15m1bf/novelbioModify_a15m1bf_All_high60MISO20111220.GFF3", "novelbio");
-	}
-	
+public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	GffHashGeneAbs gffHashGene = null;
+	GffType gffType;
+	String gffFile;
+	
 	/**
 	 * 新建一个GffHashGeneUCSC的类，需要readGffFile
 	 */
-	public GffHashGene() {
-		gffHashGene = new GffHashGeneUCSC();		 
-	}
+	public GffHashGene() { }
 	public GffHashGene(GffHashGeneAbs gffHashGene) {
 		this.gffHashGene = gffHashGene;
 	}
-	
-	public GffHashGene(String gffType, String gffFile) {
-		GffType gffFileType = GffType.getType(gffType);
-		read(gffFileType, gffFile);
-	}
+	/**
+	 * 读取并初始化
+	 * @param gffType
+	 * @param gffFile
+	 */
 	public GffHashGene(GffType gffType, String gffFile) {
+		this.gffType = gffType;
+		this.gffFile = gffFile;
+		read(gffType, gffFile);
+	}
+	
+	/**
+	 * 读取但不初始化<br>
+	 * 设定完该信息后可以通过运行run来加载Gff信息
+	 * @param gffFile
+	 * @param gffType
+	 */
+	public void setGffInfo(GffType gffType, String gffFile) {
+		this.gffFile = gffFile;
+		this.gffType = gffType;
+	}
+	
+	@Override
+	protected void running() {
 		read(gffType, gffFile);
 	}
 	
@@ -228,5 +239,6 @@ public class GffHashGene implements GffHashGeneInf{
 		}
 		return mapChrID2Length;
 	}
+
 	
 }

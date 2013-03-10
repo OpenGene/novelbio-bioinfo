@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.Set;
 
 import junit.framework.TestCase;
 
@@ -18,8 +20,10 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.database.domain.geneanno.SepSign;
+import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.NovelBioConst;
 
 public class TestGffUCSCInfo extends TestCase{
@@ -29,10 +33,11 @@ public class TestGffUCSCInfo extends TestCase{
 	HashMap<String, GffDetailGene> hashGffDetail;
 	
 	@Before
-	public void setUp() throws Exception
-	{
+	public void setUp() throws Exception {
 		//UCSC test
-		gffHashUCSC = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_UCSC, NovelBioConst.GENOME_PATH_UCSC_HG19_GFF_REFSEQ);
+		Species species = new Species(9606);
+		species.setGffDB("UCSC");
+		gffHashUCSC = new GffHashGene(species.getGffType(), species.getGffFile());
 		gffCodInfoUCSCgenechr1_1385068 = (GffCodGene) gffHashUCSC.searchLocation("chr1", 1385069);//
 		lsAllLoc = gffHashUCSC.getLsNameNoRedundent();
 		hashGffDetail = gffHashUCSC.getLocHashtable();
@@ -191,9 +196,9 @@ public class TestGffUCSCInfo extends TestCase{
 		for (String[] strings : lsPeak) {
 			String chrID = strings[0]; int start = Integer.parseInt(strings[1]); int end = Integer.parseInt(strings[2]);
 			GffCodGeneDU gffCodGeneDU = gffHashUCSC.searchLocation(chrID, start, end);
-			HashSet<GffDetailGene> hashSetTss = gffCodGeneDU.getTSSGene(tss);
+			gffCodGeneDU.setGeneBody(false);
+			Set<GffDetailGene> hashSetTss = gffCodGeneDU.getCoveredGffGene();
 			gffCodGeneDU.setTss(tss); gffCodGeneDU.setGeneBody(false);
-			HashSet<GffDetailGene> colGffDetailGenes = gffCodGeneDU.getCoveredGffGene();
 			
 //			HashSet<GffDetailGene> hashSet = new HashSet<GffDetailGene>();
 //			for (GffDetailGene gffDetailGene : colGffDetailGenes) {
