@@ -232,9 +232,9 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			if (resultFile != null) {
 				String outFile = "";
 				if (FileOperate.isFileDirectory(resultFile)) {
-					outFile = resultFile + condition1 +"vs" + condition2;
+					outFile = resultFile + condition1 +"vs" + condition2 + ".txt";
 				} else {
-					outFile = FileOperate.changeFileSuffix(resultFile, "_"+condition1 +"vs" + condition2, null);
+					outFile = FileOperate.changeFileSuffix(resultFile, "_"+condition1 +"vs" + condition2, "txt");
 				}
 				writeToFile(outFile );
 			}

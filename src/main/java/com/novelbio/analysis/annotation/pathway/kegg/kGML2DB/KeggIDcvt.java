@@ -1,22 +1,17 @@
 package com.novelbio.analysis.annotation.pathway.kegg.kGML2DB;
 
 import java.io.BufferedReader;
-import java.util.ArrayList;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.domain.kegg.KGIDgen2Keg;
 import com.novelbio.database.domain.kegg.KGIDkeg2Ko;
 import com.novelbio.database.domain.kegg.noGene.KGNCompInfo;
 import com.novelbio.database.domain.kegg.noGene.KGNIdKeg;
-import com.novelbio.database.mapper.geneanno.MapNCBIID;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.service.servgeneanno.ServGene2Go;
 import com.novelbio.database.service.servkegg.ServKIDKeg2Ko;
 import com.novelbio.database.service.servkegg.ServKIDgen2Keg;
 import com.novelbio.database.service.servkegg.ServKNCompInfo;
 import com.novelbio.database.service.servkegg.ServKNIdKeg;
-import com.novelbio.generalConf.NovelBioConst;
 
 /**
  * 将KEGGID与geneID和KEGGID与KO的关系等导入数据库

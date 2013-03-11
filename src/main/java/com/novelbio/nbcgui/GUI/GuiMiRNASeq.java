@@ -66,6 +66,7 @@ public class GuiMiRNASeq extends JPanel{
 	private JButton btnFastqfile;
 	private JButton btnNovelmirnabed;
 	private JButton btnDelNovelMiRNAbedFileRow;
+	private JCheckBox chkMapAllToRfam;
 	
 	/**
 	 * Launch the application.
@@ -90,8 +91,8 @@ public class GuiMiRNASeq extends JPanel{
 		setLayout(null);
 
 		//是否将全部的bed文件mapping至基因组上，用于看基因组上的reads分布
-		chkMapAllBedFileToGenome = new JCheckBox("mapping all bedFile to Genome");
-		chkMapAllBedFileToGenome.setBounds(23, 310, 245, 22);
+		chkMapAllBedFileToGenome = new JCheckBox("Mapping All To Genome");
+		chkMapAllBedFileToGenome.setBounds(227, 310, 197, 22);
 		add(chkMapAllBedFileToGenome);
 
 		
@@ -212,6 +213,10 @@ public class GuiMiRNASeq extends JPanel{
 		guiSpeciesVersionGff = new GuiLayeredPaneSpeciesVersionGff();
 		guiSpeciesVersionGff.setBounds(23, 340, 295, 158);
 		add(guiSpeciesVersionGff);
+		
+		chkMapAllToRfam = new JCheckBox("Mapping All To Rfam");
+		chkMapAllToRfam.setBounds(16, 307, 178, 22);
+		add(chkMapAllToRfam);
 		initialize();
 	}
 	
@@ -317,6 +322,7 @@ public class GuiMiRNASeq extends JPanel{
 		ctrlMiRNAfastq.setLsFastqFile(lsfastqFile2Prefix);
 		ctrlMiRNAfastq.setMiRNAinfo(PathDetail.getMiRNADat());
 		ctrlMiRNAfastq.setRfamFile(PathDetail.getRfamTab());
+		ctrlMiRNAfastq.setMapAll2Rfam(chkMapAllToRfam.isSelected());
 		ctrlMiRNAfastq.mappingAndCounting();
 		ctrlMiRNAfastq.writeToFile();
 	}

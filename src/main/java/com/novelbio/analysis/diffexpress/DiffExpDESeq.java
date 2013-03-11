@@ -16,7 +16,6 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.SepSign;
-import com.novelbio.generalConf.NovelBioConst;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 /**

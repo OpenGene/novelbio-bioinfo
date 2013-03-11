@@ -21,7 +21,6 @@ import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.generalConf.NovelBioConst;
 
 /**
  * 及其消耗内存

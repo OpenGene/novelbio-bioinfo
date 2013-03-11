@@ -1,30 +1,24 @@
 package com.novelbio.nbcgui.GUI;
 
-import javax.swing.JPanel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
-import javax.swing.JTextField;
-import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
 
 import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
-import com.novelbio.analysis.seq.rnaseq.GffHashMerge;
-import com.novelbio.analysis.seq.rnaseq.TranscriptomStatistics;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.generalConf.NovelBioConst;
 import com.novelbio.nbcgui.controlseq.CtrlCufflinksTranscriptome;
-
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import javax.swing.JSpinner;
 
 public class GuiTranscriptomeCufflinks extends JPanel {
 	private JTextField txtSavePathAndPrefix;

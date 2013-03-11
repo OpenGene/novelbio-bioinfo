@@ -2,6 +2,7 @@ package com.novelbio.database.model.modgeneid;
 
 import java.util.ArrayList;
 
+import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.AGeneInfo;
 import com.novelbio.database.domain.geneanno.BlastInfo;
@@ -61,7 +62,7 @@ public interface GeneIDInt{
 	 * @param dbInfo
 	 * @return
 	 */
-	public String getAccIDDBinfo(String dbInfo);
+	public String getAccIDDBinfo(DBAccIDSource dbInfo);
 	
 	/**
 	 * 先设定blast的情况 如果blast * 0:symbol 1:description  2:subjectSpecies 3:evalue
@@ -157,7 +158,7 @@ GO_REF:0000020<br>
 GO_REF:0000004<br>
 	 * @param gOQualifiy
 	 */
-	void setUpdateGO(String GOID, String GOdatabase, String GOevidence,
+	void setUpdateGO(String GOID, DBAccIDSource GOdatabase, String GOevidence,
 			String GORef, String gOQualifiy);
 	/**
 	 * 输入需要update的geneInfo，注意不需要设定geneUniID，除非是单独升级pubmedID信息，否则
@@ -181,7 +182,7 @@ GO_REF:0000004<br>
 	 * @param 是否用本DBInfo修正以前的DBInfo
 	 * 不管是true还是false，geneinfo都会用其进行修正
 	 */
-	void setUpdateDBinfo(String DBInfo, boolean overlapDBinfo);
+	void setUpdateDBinfo(DBAccIDSource DBInfo, boolean overlapDBinfo);
 	/**
 	 * 记录可能用于升级数据库的ID 譬如获得一个ID与NCBI的别的ID有关联，就用别的ID来查找数据库，以便获得该accID所对应的genUniID
 	 * <b>重新设定的时候会清空</b>

@@ -60,15 +60,15 @@ public class Yeast {
 		
 		Ppa_ncbi_geneid ppa_ncbi_geneid = new Ppa_ncbi_geneid();
 		ppa_ncbi_geneid.setTaxID(4922);
-		ppa_ncbi_geneid.updateFile(ppa_ncbi_geneidFile, false);
+		ppa_ncbi_geneid.updateFile(ppa_ncbi_geneidFile);
 		
 		Pipas_Fun pipas_Fun = new Pipas_Fun();
 		pipas_Fun.setTaxID(4922);
-		pipas_Fun.updateFile(Pipas_FunFile, false);
+		pipas_Fun.updateFile(Pipas_FunFile);
 		
 		Pipas_GO_Slim pipas_GO_Slim = new Pipas_GO_Slim();
 		pipas_GO_Slim.setTaxID(4922);
-		pipas_GO_Slim.updateFile(Pipas_GO_SlimFile, true);
+		pipas_GO_Slim.updateFile(Pipas_GO_SlimFile);
 	}
 }
 /**

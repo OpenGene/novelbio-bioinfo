@@ -37,7 +37,7 @@ public class MaizeGDB {
 		String outfile = FileOperate.changeFileSuffix(maizeDbxref, "_out", null);
 		maizeAccID.setTxtWriteExcep(FileOperate.changeFileSuffix(maizeDbxref, "_out", null));
 		maizeAccID.setUniProtID(false);
-		maizeAccID.updateFile(maizeDbxref, false);
+		maizeAccID.updateFile(maizeDbxref);
 		
 		maizeAccID = new MaizeAccID();
 		maizeAccID.setTaxID(taxID);
@@ -45,17 +45,17 @@ public class MaizeGDB {
 		maizeAccID.setReadFromLine(1);
 		maizeAccID.setTxtWriteExcep(FileOperate.changeFileSuffix(outfile, "_out2", null));
 		maizeAccID.setUniProtID(true);
-		maizeAccID.updateFile(outfile, false);
+		maizeAccID.updateFile(outfile);
 		
 		MaizeGeneInfo maizeGeneInfo = new MaizeGeneInfo();
 		maizeGeneInfo.setReadFromLine(2);
 		maizeGeneInfo.setTxtWriteExcep(FileOperate.changeFileSuffix(maizeGeneInfoFile, "_out", null));
-		maizeGeneInfo.updateFile(maizeGeneInfoFile, false);
+		maizeGeneInfo.updateFile(maizeGeneInfoFile);
 		
 		MaizeGO maizeGO = new MaizeGO();
 		maizeGO.setReadFromLine(2);
 		maizeGO.setTxtWriteExcep(FileOperate.changeFileSuffix(maizeDbxref, "_GOout", null));
-		maizeGO.updateFile(maizeDbxref, false);
+		maizeGO.updateFile(maizeDbxref);
 	}
 }
 

@@ -6,10 +6,9 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.apache.velocity.app.event.ReferenceInsertionEventHandler.referenceInsertExecutor;
 
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.generalConf.NovelBioConst;
+import com.novelbio.database.DBAccIDSource;
 /**
  * ibatis在操作数据库时会自动使用类中的setter和getter给属性赋值
  * 如果不想用类中的这些方法，那么setter和getter的名字不要和属性一样就好
@@ -27,15 +26,15 @@ public abstract class AGeneInfo {
 	}
 	
 	private static Logger logger = Logger.getLogger(AGeneInfo.class);
-	static ArrayList<String> lsDBinfo = new ArrayList<String>();
+	static List<DBAccIDSource> lsDBinfo = new ArrayList<DBAccIDSource>();
 	static{
-		lsDBinfo.add(NovelBioConst.DBINFO_NCBI_ACC_GenralID);
-		lsDBinfo.add(NovelBioConst.DBINFO_UNIPROT_GenralID);
+		lsDBinfo.add(DBAccIDSource.NCBI);
+		lsDBinfo.add(DBAccIDSource.Uniprot);
 	}
 	/**
 	 * 特定的物种对应特定的数据库
 	 */
-	static HashMap<Integer, String> hashDBtype = new HashMap<Integer, String>();
+	static HashMap<Integer, DBAccIDSource> hashDBtype = new HashMap<Integer, DBAccIDSource>();
 	
 	private String symbol;
 	private String locusTag;
@@ -68,12 +67,12 @@ public abstract class AGeneInfo {
 	 * 拟南芥就用TAIR
 	 * @return
 	 */
-	private String getDatabaseType() {
+	private DBAccIDSource getDatabaseType() {
 		if (hashDBtype.size() == 0) {
-			hashDBtype.put(39947, NovelBioConst.DBINFO_RICE_TIGR);
-			hashDBtype.put(3702, NovelBioConst.DBINFO_ATH_TAIR);
-			hashDBtype.put(3847, NovelBioConst.DBINFO_GLYMAX_SOYBASE);
-			hashDBtype.put(4102, NovelBioConst.DBINFO_PLANTGDB_ACC);
+			hashDBtype.put(39947, DBAccIDSource.TIGR_rice);
+			hashDBtype.put(3702, DBAccIDSource.TAIR_ATH);
+			hashDBtype.put(3847, DBAccIDSource.SOYBASE);
+			hashDBtype.put(4102, DBAccIDSource.PlantGDB);
 		}
 		return hashDBtype.get(taxID);
 	}
@@ -111,8 +110,8 @@ public abstract class AGeneInfo {
 		    NovelBioConst.DBINFO_UNIPROT_GenralID
 	 * @param fromDB
 	 */
-	public void setDBinfo(String fromDB) {
-		this.dbInfo = fromDB.trim();
+	public void setDBinfo(DBAccIDSource fromDB) {
+		this.dbInfo = fromDB.toString();
 		if (symbol != null && symbol.contains(SepSign.SEP_INFO)) {
 			symbol = dbInfo + SepSign.SEP_INFO + symbol.split(SepSign.SEP_INFO)[1];
 		}
@@ -616,8 +615,8 @@ public abstract class AGeneInfo {
 				return result;
 			}
 		}
-		for (String string : lsDBinfo) {
-			String result = hashInfo.get(string);
+		for (DBAccIDSource dbAccIDSource : lsDBinfo) {
+			String result = hashInfo.get(dbAccIDSource);
 			if (result != null) {
 				return result;
 			}

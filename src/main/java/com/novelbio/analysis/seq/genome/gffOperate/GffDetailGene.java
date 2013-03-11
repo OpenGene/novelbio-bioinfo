@@ -23,7 +23,7 @@ import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modgeneid.GeneType;
-import com.novelbio.generalConf.NovelBioConst;
+import com.novelbio.generalConf.TitleFormatNBC;
 /**
  * 考虑将其中的iso装入hash表中，以加快查找效率
  * 重写了clone但是没有重写equals和hash
@@ -756,7 +756,7 @@ public class GffDetailGene extends ListDetailAbs {
 	 */
 	public String toGFFformate(String title) {
 		if (title == null || title.trim().equals("")) {
-			title = NovelBioConst.COMPANY_NAME_ABBR;
+			title = TitleFormatNBC.CompanyNameAbbr.toString();
 		}
 		String strand = "+";
 		if (!isCis5to3()) {

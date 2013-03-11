@@ -1,30 +1,20 @@
 package com.novelbio.analysis.seq.mirna;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.AlignSeq;
-import com.novelbio.analysis.seq.BedRecord;
-import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailRepeat;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashRepeat;
-import com.novelbio.analysis.seq.rnaseq.GffGeneCluster;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
-import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.geneanno.SepSign;
-import com.novelbio.database.model.species.Species;
-import com.novelbio.generalConf.NovelBioConst;
 import com.novelbio.generalConf.TitleFormatNBC;
 /**
  * bed文件在repeat和gene上的分布情况，可以单独设定repeat或者是gene

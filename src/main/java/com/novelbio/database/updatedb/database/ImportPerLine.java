@@ -49,14 +49,11 @@ abstract class ImportPerLine
 	 * 将指定的文件导入数据库，必须是每一行都能单独导入的表
 	 * 如果需要导入多行，譬如amiGO的信息，请覆盖该方法
 	 */
-	public void updateFile(String gene2AccFile, boolean gzip) {
+	public void updateFile(String gene2AccFile) {
 		setReadFromLine();
 		TxtReadandWrite txtGene2Acc;
-		if (gzip) {
-			txtGene2Acc = new TxtReadandWrite(TxtReadandWrite.GZIP, gene2AccFile);
-		} else { 
-			txtGene2Acc = new TxtReadandWrite(gene2AccFile, false);
-		}
+		txtGene2Acc = new TxtReadandWrite(gene2AccFile, false);
+		
 		
 		//从第二行开始读取
 		int num = 0;

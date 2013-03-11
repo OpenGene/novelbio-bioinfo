@@ -45,7 +45,7 @@ public class SoyBean {
 		soyDbXref.setTaxID(taxID);
 		soyDbXref.setReadFromLine(1);
 		soyDbXref.setTxtWriteExcep(FileOperate.changeFileSuffix(soyDbxref, "_out", null));
-		soyDbXref.updateFile(soyDbxref, false);
+		soyDbXref.updateFile(soyDbxref);
 		
 		SoyGeneInfo soyGeneInfo = new SoyGeneInfo();
 		soyGeneInfo.setTaxID(taxID);

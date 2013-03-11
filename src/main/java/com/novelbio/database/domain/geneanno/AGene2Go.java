@@ -2,6 +2,7 @@ package com.novelbio.database.domain.geneanno;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.service.servgeneanno.ServGo2Term;
 
 /**

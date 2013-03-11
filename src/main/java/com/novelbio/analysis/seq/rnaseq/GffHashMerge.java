@@ -5,9 +5,7 @@ import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fasta.SeqHash;
-import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
@@ -16,7 +14,6 @@ import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.listOperate.ListAbs;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.generalConf.NovelBioConst;
 /** 重建转录本 */
 public class GffHashMerge {
 	private static Logger logger = Logger.getLogger(GffHashMerge.class);

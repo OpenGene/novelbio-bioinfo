@@ -3,7 +3,6 @@ package com.novelbio.nbcgui.controltest;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -18,9 +17,6 @@ import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.model.modgo.GOInfoAbs;
-import com.novelbio.generalConf.NovelBioConst;
-import com.novelbio.nbcgui.GUI.GuiGoJPanel;
 /**
  * 考虑添加进度条
  * @author zong0jie

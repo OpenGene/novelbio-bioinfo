@@ -37,16 +37,16 @@ public class UniProt {
 		IdmappingSelected idmappingSelected = new IdmappingSelected();
 		IdmappingSelected.setTaxIDFile(taxIDFile);
 		idmappingSelected.setTxtWriteExcep(outUniIDFile);
-		idmappingSelected.updateFile(idmappingSelectedFile, true);
+		idmappingSelected.updateFile(idmappingSelectedFile);
 		
 		Impgene_associationgoa_uniprot impgene_associationgoa_uniprot = new Impgene_associationgoa_uniprot();
-		impgene_associationgoa_uniprot.updateFile(impgene_associationgoa_uniprotFile, true);
+		impgene_associationgoa_uniprot.updateFile(impgene_associationgoa_uniprotFile);
 		idmappingSelected.setUpdateUniprotID(true);
 		idmappingSelected.setTxtWriteExcep(outUniIDFile+"_2");
-		idmappingSelected.updateFile(outUniIDFile, false);
+		idmappingSelected.updateFile(outUniIDFile);
 		
 		IdmappingSelectedGOPubmed idmappingSelectedGOPubmed = new IdmappingSelectedGOPubmed();
-		idmappingSelectedGOPubmed.updateFile(idmappingSelectedFile, true);
+		idmappingSelectedGOPubmed.updateFile(idmappingSelectedFile);
 		
 	}
 }

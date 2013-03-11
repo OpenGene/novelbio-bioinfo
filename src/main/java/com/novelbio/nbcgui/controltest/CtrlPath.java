@@ -1,23 +1,15 @@
 package com.novelbio.nbcgui.controltest;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
+
 import com.novelbio.analysis.annotation.functiontest.FunctionTest;
 import com.novelbio.analysis.annotation.functiontest.StatisticTestGene2Item;
 import com.novelbio.analysis.annotation.functiontest.StatisticTestResult;
-import com.novelbio.base.dataOperate.ExcelOperate;
-import com.novelbio.base.dataOperate.ExcelTxtRead;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.model.modgo.GOInfoAbs;
-import com.novelbio.generalConf.NovelBioConst;
-import com.novelbio.nbcgui.GUI.GuiGoJPanel;
 
 public class CtrlPath extends CtrlGOPath {
 	private static final Logger logger = Logger.getLogger(CtrlPath.class);

@@ -46,7 +46,7 @@ public class ZebraFish {
 		
 		ZBGO zbgo = new ZBGO();
 		zbgo.setTxtWriteExcep(FileOperate.changeFileSuffix(ZbGOFile, "_out", null));
-		zbgo.updateFile(ZbGOFile, false);
+		zbgo.updateFile(ZbGOFile);
 	}
 }
 /**

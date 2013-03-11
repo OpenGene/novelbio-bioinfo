@@ -13,7 +13,6 @@ import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
-import com.novelbio.generalConf.NovelBioConst;
 
 /**
  * 自动化进行blast的方法

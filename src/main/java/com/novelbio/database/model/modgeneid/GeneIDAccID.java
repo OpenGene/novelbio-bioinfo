@@ -2,6 +2,7 @@ package com.novelbio.database.model.modgeneid;
 
 import java.util.ArrayList;
 
+import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.AgeneUniID;
 import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.domain.geneanno.Gene2Go;
@@ -47,7 +48,7 @@ public class GeneIDAccID extends GeneIDabs{
 		symbol = "";
 	}
 	@Override
-	protected AgeneUniID getGenUniID(String genUniID, String dbInfo) {
+	protected AgeneUniID getGenUniID(String genUniID, DBAccIDSource dbInfo) {
 		return null;
 	}
 	@Override

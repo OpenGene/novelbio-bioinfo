@@ -2,23 +2,16 @@ package com.novelbio.analysis.tools;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 
-
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.generalConf.NovelBioConst;
 
 /**
  * 给周琴做分析的一套东西
@@ -40,7 +33,7 @@ public class PenncnvCope {
 	
 	GffHashGene gffHashGene = null;
 	GffType gffType = GffType.UCSC;
-	String gffFile = NovelBioConst.GENOME_PATH_UCSC_HG18_GFF_REFSEQ;
+	String gffFile = "";
 	
 	String state = "";
 	

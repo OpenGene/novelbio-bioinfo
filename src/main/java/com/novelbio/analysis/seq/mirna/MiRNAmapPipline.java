@@ -47,11 +47,13 @@ public class MiRNAmapPipline {
 	
 	/** 是否全部mapping至genome上，默认为true */
 	boolean mappingAll2Genome = true;
+	/** 是将全部reads mapping到下一步的数据库上还是将上一次剩下的reads mapping到下一步的数据库上 */
+	boolean mappingAll2Rfam = true;
+	
 	/** 全部reads mapping至全基因组上后产生的bed文件 */
 	String samFileGenomeAll = null;
 	
-	/** 是将全部reads mapping到下一步的数据库上还是将上一次剩下的reads mapping到下一步的数据库上 */
-	boolean mappingAll2Seq = true;
+
 	
 	/** 是否全部mapping至genome上，默认为true */
 	public void setMappingAll2Genome(boolean mappingAll2Genome) {
@@ -59,7 +61,7 @@ public class MiRNAmapPipline {
 	}
 	/** 是将全部reads mapping到下一步的数据库上还是将上一次剩下的reads mapping到下一步的数据库上 */
 	public void setMappingAll2Seq(boolean mappingAll2Seq) {
-		this.mappingAll2Seq = mappingAll2Seq;
+		this.mappingAll2Rfam = mappingAll2Seq;
 	}
 	
 	public void setRfamSeq(String rfamSeq) {
@@ -133,7 +135,7 @@ public class MiRNAmapPipline {
 			unMappedFq = outputTmpFinal + "unMap2miRNA.fq";
 			samFileMiRNA = mapping(fqFile, miRNApreSeq, samFileMiRNA, unMappedFq);
 			unMappedMiRNA = unMappedFq;
-			if (!mappingAll2Seq) {
+			if (!mappingAll2Rfam) {
 				fqFile = unMappedFq;
 			}
 		}
@@ -141,9 +143,7 @@ public class MiRNAmapPipline {
 		if (FileOperate.isFileExist(rfamSeq)) {
 			unMappedFq = outputTmpFinal + "unMap2rfam.fq";
 			samFileRfam = mapping(fqFile, rfamSeq, samFileRfam, unMappedFq);
-			if (!mappingAll2Seq) {
-				fqFile = unMappedFq;
-			}
+			fqFile = unMappedFq;
 		}
 		
 		if (FileOperate.isFileExist(ncRNAseq)) {

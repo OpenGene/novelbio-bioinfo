@@ -56,34 +56,34 @@ public class RiceID{
 		RiceTIGRGFFID riceTIGRGFFID = new RiceTIGRGFFID();
 		riceTIGRGFFID.setTxtWriteExcep(tigrDBoutID);
 		riceTIGRGFFID.setInsertAccID(false);
-		riceTIGRGFFID.updateFile(gffTIGR, false);
+		riceTIGRGFFID.updateFile(gffTIGR);
 		
 		RiceRapDBID riceRapDBID = new RiceRapDBID();
 		riceRapDBID.setTxtWriteExcep(rapDBoutID);
 		riceRapDBID.setInsertAccID(false);
-		riceRapDBID.updateFile(gffRapDB, false);
+		riceRapDBID.updateFile(gffRapDB);
 		
 		RiceRap2MSU riceRap2MSU = new RiceRap2MSU();
-		riceRap2MSU.updateFile(rap2MSU, false);
+		riceRap2MSU.updateFile(rap2MSU);
 		
 		riceRapDBID.setInsertAccID(true);
 		riceRapDBID.setTxtWriteExcep(rapDBoutID + "_2");
-		riceRapDBID.updateFile(rapDBoutID, false);
+		riceRapDBID.updateFile(rapDBoutID);
 		
 		riceTIGRGFFID.setInsertAccID(true);
 		riceTIGRGFFID.setTxtWriteExcep(tigrDBoutID + "_2");
-		riceTIGRGFFID.updateFile(tigrDBoutID, false);
+		riceTIGRGFFID.updateFile(tigrDBoutID);
 		
 /////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		RiceRapDBInfo riceRapDBInfo = new RiceRapDBInfo();
-		riceRapDBInfo.updateFile(gffRapDB, false);
+		riceRapDBInfo.updateFile(gffRapDB);
 		
 		RiceTIGRInfo riceTIGRInfo = new RiceTIGRInfo();
-		riceTIGRInfo.updateFile(gffTIGR, false);
+		riceTIGRInfo.updateFile(gffTIGR);
 		
 		RiceTIGRGO riceTIGRGO = new RiceTIGRGO();
-		riceTIGRGO.updateFile(tigrGoSlim, false);
+		riceTIGRGO.updateFile(tigrGoSlim);
 	}
 	
 	

@@ -1,43 +1,30 @@
 package com.novelbio.nbcgui.GUI;
 
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JComboBox;
-import javax.swing.JScrollPane;
-import javax.swing.JButton;
-import javax.swing.JTextField;
-
-import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.resequencing.SnpGroupFilterInfo;
-import com.novelbio.analysis.seq.resequencing.SnpLevel;
-import com.novelbio.analysis.seq.resequencing.SnpSomaticFilter;
-import com.novelbio.analysis.seq.rnaseq.CtrlSplicing;
-import com.novelbio.analysis.seq.rnaseq.ExonJunction;
-import com.novelbio.analysis.seq.rnaseq.ExonSplicingTest;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.base.gui.GUIFileOpen;
-import com.novelbio.base.gui.JComboBoxData;
-import com.novelbio.base.gui.JScrollPaneData;
-import com.novelbio.base.multithread.RunGetInfo;
-import com.novelbio.base.multithread.RunProcess;
-import com.novelbio.database.model.species.Species;
-import com.novelbio.generalConf.NovelBioConst;
-
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JCheckBox;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JTextField;
+
+import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.resequencing.SnpGroupFilterInfo;
+import com.novelbio.analysis.seq.resequencing.SnpLevel;
+import com.novelbio.analysis.seq.resequencing.SnpSomaticFilter;
+import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.gui.GUIFileOpen;
+import com.novelbio.base.gui.JComboBoxData;
+import com.novelbio.base.gui.JScrollPaneData;
+import com.novelbio.base.multithread.RunProcess;
 
 public class GuiSnpFilterSimple extends JPanel {
 	static final int progressLength = 10000;

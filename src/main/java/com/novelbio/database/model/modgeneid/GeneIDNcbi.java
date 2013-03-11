@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.AgeneUniID;
 import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.domain.geneanno.GeneInfo;
@@ -59,11 +60,11 @@ public class GeneIDNcbi extends GeneIDabs {
 	}
 
 	@Override
-	protected AgeneUniID getGenUniID(String genUniID, String dbInfo) {
+	protected AgeneUniID getGenUniID(String genUniID, DBAccIDSource dbInfo) {
 		int geneID = Integer.parseInt(genUniID);
 		NCBIID ncbiid = new NCBIID();
 		ncbiid.setGeneId(geneID);
-		ncbiid.setTaxID(taxID); ncbiid.setDBInfo(dbInfo);
+		ncbiid.setTaxID(taxID); ncbiid.setDBInfo(dbInfo.toString());
 		ServNCBIID servGeneAnno = new ServNCBIID();
 		ArrayList<NCBIID> lsSubject = servGeneAnno.queryLsNCBIID(ncbiid);
 		for (NCBIID ncbiid2 : lsSubject) {
@@ -75,7 +76,7 @@ public class GeneIDNcbi extends GeneIDabs {
 				return ncbiid2;
 			}
 		}
-		if (dbInfo != null && !dbInfo.trim().equals("")) {
+		if (dbInfo != null && !dbInfo.toString().equals("")) {
 			return getGenUniID(genUniID, null);
 		}
 		return null;

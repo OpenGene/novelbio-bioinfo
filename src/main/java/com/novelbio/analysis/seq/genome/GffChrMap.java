@@ -1,52 +1,40 @@
 package com.novelbio.analysis.seq.genome;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Paint;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashCG;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffType;
-import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneNCBI;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
-import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsHanyanChrom;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.base.plot.BarStyle;
 import com.novelbio.base.plot.DotStyle;
 import com.novelbio.base.plot.PlotScatter;
 import com.novelbio.base.plot.heatmap.Gradient;
 import com.novelbio.base.plot.heatmap.PlotHeatMap;
-import com.novelbio.base.plot.java.HeatChart;
 import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modgeneid.GeneType;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.generalConf.NovelBioConst;
 
 import de.erichseifert.gral.util.GraphicsUtils;
 

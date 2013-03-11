@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.AGeneInfo;
 import com.novelbio.database.domain.geneanno.AgeneUniID;
@@ -97,18 +98,11 @@ public class GeneID implements GeneIDInt{
 		}
 		ArrayList<AgeneUniID> lsaccID = GeneIDabs.getNCBIUniTax(accID, taxID);
 		if (lsaccID.size() == 0) {
-			geneID = new GeneIDAccID(accID, "0", taxID);
+			geneID = geneIDfactoryInt.createGeneID(accID, IDTYPE_ACCID, accID, taxID);
 			return;
 		}
 		AgeneUniID geneUniID = lsaccID.get(0);
-		if (geneUniID.getGeneIDtype().equals(IDTYPE_UNIID)) {
-			geneID = new GeneIDUni(accID, geneUniID.getGenUniID(), taxID);
-		}
-		else if (geneUniID.getGeneIDtype().equals(IDTYPE_GENEID)) {
-			geneID = new GeneIDNcbi(accID, geneUniID.getGenUniID(), taxID);
-		} else {
-			geneID = new GeneIDAccID(accID, "0", taxID);
-		}
+		geneID = geneIDfactoryInt.createGeneID(accID, geneUniID.getGeneIDtype(), geneUniID.getGenUniID(), taxID);
 	}
 	/**
 	 * 设定初始值，会自动去数据库查找accID并完成填充本类。
@@ -226,7 +220,7 @@ public class GeneID implements GeneIDInt{
 		return geneID.getSymbol();
 	}
 	@Override
-	public String getAccIDDBinfo(String dbInfo) {
+	public String getAccIDDBinfo(DBAccIDSource dbInfo) {
 		return geneID.getAccIDDBinfo(dbInfo);
 	}
 	/**
@@ -516,7 +510,7 @@ public class GeneID implements GeneIDInt{
 	}
 
 	@Override
-	public void setUpdateGO(String GOID, String GOdatabase, String GOevidence,
+	public void setUpdateGO(String GOID, DBAccIDSource GOdatabase, String GOevidence,
 			String GORef, String gOQualifiy) {
 		geneID.setUpdateGO(GOID, GOdatabase, GOevidence, GORef, gOQualifiy);
 	}
@@ -532,7 +526,7 @@ public class GeneID implements GeneIDInt{
 	}
 
 	@Override
-	public void setUpdateDBinfo(String DBInfo, boolean overlapDBinfo) {
+	public void setUpdateDBinfo(DBAccIDSource DBInfo, boolean overlapDBinfo) {
 		geneID.setUpdateDBinfo(DBInfo, overlapDBinfo);
 	}
 

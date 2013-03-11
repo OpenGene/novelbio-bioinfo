@@ -14,7 +14,6 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.SepSign;
-import com.novelbio.generalConf.NovelBioConst;
 
 public abstract class DiffExpAbs {
 	public static final int LIMMA = 10;

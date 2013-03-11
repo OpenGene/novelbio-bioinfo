@@ -12,12 +12,10 @@ import com.novelbio.analysis.annotation.functiontest.StatisticTestGene2Item;
 import com.novelbio.analysis.annotation.functiontest.StatisticTestItem2Gene;
 import com.novelbio.analysis.annotation.functiontest.StatisticTestResult;
 import com.novelbio.analysis.annotation.functiontest.TopGO.GoAlgorithm;
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.GOtype;
-import com.novelbio.database.domain.geneanno.Go2Term;
-import com.novelbio.generalConf.NovelBioConst;
-import com.sun.tools.doclets.formats.html.resources.standard;
 
 public class CtrlGO extends CtrlGOPath{
 	private static final Logger logger = Logger.getLogger(CtrlGO.class);
@@ -55,7 +53,7 @@ public class CtrlGO extends CtrlGOPath{
 	@Override
 	protected void copeFile(String prix, String excelPath) {
 		if (goAlgorithm != GoAlgorithm.novelgo) {
-			String goMapFileSource = FileOperate.changeFileSuffix(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP, "_"+prix, null);
+			String goMapFileSource = FileOperate.changeFileSuffix(PathDetail.getRworkspace() + "topGO/tGOall_elim_10_def.pdf", "_"+prix, null);
 			String goMapFileTargetName = FileOperate.getFileNameSep(excelPath)[0] + prix + "GoMap.pdf";
 			FileOperate.moveFile(goMapFileSource, FileOperate.getParentPathName(excelPath), goMapFileTargetName, true);
 		}
@@ -84,7 +82,7 @@ public class CtrlGO extends CtrlGOPath{
 //			}
 			
 			if (goAlgorithm != GoAlgorithm.novelgo) {
-				FileOperate.changeFileSuffixReal(NovelBioConst.R_WORKSPACE_TOPGO_GOMAP, "_"+prix, null);
+				FileOperate.changeFileSuffixReal(PathDetail.getRworkspace() + "topGO/tGOall_elim_10_def.pdf", "_"+prix, null);
 			}
 			ArrayList<StatisticTestItem2Gene> lsGO2Gene = functionTest.getItem2GenePvalue();
 			ArrayList<String[]> lsGo2GeneResult = new ArrayList<String[]>();

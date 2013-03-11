@@ -91,11 +91,13 @@ public class ServNCBIID implements MapNCBIID{
 	public boolean updateNCBIID(NCBIID ncbiid, boolean override) {
 		if (ncbiid.getAccID().length() > 30) {
 			logger.error("accID太长：" + ncbiid.getAccID() + "\t" + ncbiid.getDBInfo());
-			if (ncbiid.getAccID().contains("GO:")) {
-				logger.error("stop");
-			}
 			return false;
 		}
+		if (ncbiid.getAccID().contains("GO:")) {
+			logger.error("不能导入GO信息");
+			return false;
+		}
+		
 		String db = ncbiid.getDBInfo();
 		//查询的时候为了防止查不到，先除去dbinfo的信息
 		ncbiid.setDBInfo("");
@@ -119,8 +121,7 @@ public class ServNCBIID implements MapNCBIID{
 				}
 				return false;
 			}
-		}
-		else {
+		} else {
 			if (override && !lsResult.get(0).getDBInfo().equals(db)) {
 				ncbiid.setDBInfo(db);
 				try {

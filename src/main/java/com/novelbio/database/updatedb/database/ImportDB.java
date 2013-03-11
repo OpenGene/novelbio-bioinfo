@@ -3,7 +3,6 @@ package com.novelbio.database.updatedb.database;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGTF;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -300,7 +299,7 @@ public class ImportDB {
 		blast.setTaxID(queryTaxID);
 		blast.setTxtWriteExcep(outFIle);
 		blast.setIDisBlastType(false);
-		blast.updateFile(blastFile, false);
+		blast.updateFile(blastFile);
 	}
 	
 	private void updateAffy()
@@ -355,7 +354,7 @@ public class ImportDB {
 		normAffy.setTaxID(taxID);
 		normAffy.setTxtWriteExcep(outFile);
 		normAffy.setDbInfo(NovelBioConst.DBINFO_AFFY_RICE_31);
-		normAffy.updateFile(affyFile, false);
+		normAffy.updateFile(affyFile);
 
 		/////////   Pig Porcine  //////////////////////////////////////////////;
 //		affyFile = "";
@@ -403,7 +402,7 @@ public class ImportDB {
 		normAffy.setTaxID(taxID);
 		normAffy.setTxtWriteExcep(outFile);
 		normAffy.setDbInfo(NovelBioConst.DBINFO_AFFY_MOUSE_430_2);
-		normAffy.updateFile(affyFile, false);
+		normAffy.updateFile(affyFile);
 	}
 	
 	private void updateTAIR() {

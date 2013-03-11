@@ -41,13 +41,9 @@ class ImpGOExtObo extends ImportPerLine {
 	 * 所以覆盖方法
 	 */
 	@Override
-	public void updateFile(String gene2AccFile, boolean gzip) {
+	public void updateFile(String gene2AccFile) {
 		TxtReadandWrite txtGene2Acc;
-		if (gzip) {
-			txtGene2Acc = new TxtReadandWrite(TxtReadandWrite.GZIP, gene2AccFile);
-		} else {
-			txtGene2Acc = new TxtReadandWrite(gene2AccFile, false);
-		}
+		txtGene2Acc = new TxtReadandWrite(gene2AccFile, false);
 		
 		//从第二行开始读取，第一次导入
 		String tmpContent = null;

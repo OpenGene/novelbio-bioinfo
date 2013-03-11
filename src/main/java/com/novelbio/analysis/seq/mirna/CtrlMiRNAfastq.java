@@ -88,6 +88,9 @@ public class CtrlMiRNAfastq {
 	public void setMappingAll2Genome(boolean mappingAll2Genome) {
 		miRNAmappingPipline.setMappingAll2Genome(mappingAll2Genome);
 	}
+	public void setMapAll2Rfam(boolean mappingAll2Rfam) {
+		miRNAmappingPipline.setMappingAll2Seq(mappingAll2Rfam);
+	}
 	/**
 	 * miRNA计算表达使用
 	 * @param rnadatFile miRNA.dat文件

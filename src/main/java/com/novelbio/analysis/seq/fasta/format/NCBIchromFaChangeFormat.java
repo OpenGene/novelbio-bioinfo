@@ -4,12 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneNCBI;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.generalConf.NovelBioConst;
 
 /**
  * 修正从NCBI上下载的序列，将fasta格式中的序列名改为文件名

@@ -12,7 +12,6 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.updatedb.database.MicroArrayBlast;
-import com.novelbio.generalConf.NovelBioConst;
 
 /**
  * 给定excel中的第一列ID，同一个cell中的ID用“//”隔开，同时又给定microarray文件，将microarray的值附加上去，并且加上该基因的tss坐标

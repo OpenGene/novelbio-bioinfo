@@ -191,7 +191,7 @@ public class GuiBlast extends JPanel implements GuiNeedOpenFile{
 				blast.setSubTaxID((Integer)cmbSSpecies.getSelectedValue());
 				blast.setTaxID((Integer)cmbQSpecies.getSelectedValue());
 				blast.setTxtWriteExcep(FileOperate.changeFileSuffix(textUpDateBlast.getText(), "_cannotUpDate", null));
-				blast.updateFile(textUpDateBlast.getText(), false);
+				blast.updateFile(textUpDateBlast.getText());
 			}
 		});
 		add(btnUpdataBlast);

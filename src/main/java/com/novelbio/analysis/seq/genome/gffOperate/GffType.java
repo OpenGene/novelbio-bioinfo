@@ -3,8 +3,6 @@ package com.novelbio.analysis.seq.genome.gffOperate;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.novelbio.generalConf.NovelBioConst;
-
 public enum GffType {
 	/** NCBI动物的GFF文件，需要经过修正才好读取 */
 	NCBI,

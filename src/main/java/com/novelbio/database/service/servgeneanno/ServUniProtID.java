@@ -84,9 +84,10 @@ public class ServUniProtID implements MapUniProtID{
 	public boolean updateUniProtID(UniProtID uniProtID, boolean override) {
 		if (uniProtID.getAccID().length() > 30) {
 			logger.error("accID太长：" + uniProtID.getAccID() + "\t" + uniProtID.getDBInfo());
-			if (uniProtID.getAccID().contains("GO:")) {
-				logger.error("stop");
-			}
+			return false;
+		}
+		if (uniProtID.getAccID().contains("GO:")) {
+			logger.error("不能导入GO信息");
 			return false;
 		}
 		

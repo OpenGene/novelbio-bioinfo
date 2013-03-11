@@ -81,32 +81,32 @@ public class Arabidopsis {
 	public void update() {
 		TAIR_NCBI_GENEID_mapping tair_NCBI_GENEID_mapping = new TAIR_NCBI_GENEID_mapping();
 		tair_NCBI_GENEID_mapping.setTxtWriteExcep(FileOperate.changeFileSuffix(TAIRNCBIGeneIDmapping, "_out", "txt"));
-		tair_NCBI_GENEID_mapping.updateFile(TAIRNCBIGeneIDmapping, false);
+		tair_NCBI_GENEID_mapping.updateFile(TAIRNCBIGeneIDmapping);
 		
 		TAIR_NCBI_REFSEQ_mapping_PROT_RNA tair_NCBI_REFSEQ_mapping_PROT_RNA = new TAIR_NCBI_REFSEQ_mapping_PROT_RNA();
 		tair_NCBI_REFSEQ_mapping_PROT_RNA.setTxtWriteExcep(FileOperate.changeFileSuffix(TAIRNCBIRefSeqMappingPROT, "_out", "txt"));
 		tair_NCBI_REFSEQ_mapping_PROT_RNA.setProtein(true);
-		tair_NCBI_REFSEQ_mapping_PROT_RNA.updateFile(TAIRNCBIRefSeqMappingPROT, false);
+		tair_NCBI_REFSEQ_mapping_PROT_RNA.updateFile(TAIRNCBIRefSeqMappingPROT);
 		
 		tair_NCBI_REFSEQ_mapping_PROT_RNA.setProtein(false);
 		tair_NCBI_REFSEQ_mapping_PROT_RNA.setTxtWriteExcep(FileOperate.changeFileSuffix(TAIRNCBIRefSeqMappingRNA, "_out", "txt"));
-		tair_NCBI_REFSEQ_mapping_PROT_RNA.updateFile(TAIRNCBIRefSeqMappingRNA, false);
+		tair_NCBI_REFSEQ_mapping_PROT_RNA.updateFile(TAIRNCBIRefSeqMappingRNA);
 		
 		TAIR_Model_cDNA_associations tair_Model_cDNA_associations = new TAIR_Model_cDNA_associations();
 		tair_Model_cDNA_associations.setTxtWriteExcep(FileOperate.changeFileSuffix(TAIRModelcDNAAssociations, "_out", "txt"));
-		tair_Model_cDNA_associations.updateFile(TAIRModelcDNAAssociations, false);
+		tair_Model_cDNA_associations.updateFile(TAIRModelcDNAAssociations);
 
 		Uniprot2AGI uniprot2agi = new Uniprot2AGI();
 		uniprot2agi.setTxtWriteExcep(FileOperate.changeFileSuffix(Uniprot2AGIFile, "_out", "txt"));
-		uniprot2agi.updateFile(Uniprot2AGIFile, false);
+		uniprot2agi.updateFile(Uniprot2AGIFile);
 		
 		TAIR_functional_descriptions tair_functional_descriptions = new TAIR_functional_descriptions();
 		tair_functional_descriptions.setTxtWriteExcep(FileOperate.changeFileSuffix(TAIRFunctionalDescriptions, "_out", "txt"));
-		tair_functional_descriptions.updateFile(TAIRFunctionalDescriptions, false);
+		tair_functional_descriptions.updateFile(TAIRFunctionalDescriptions);
 		
 		ATH_GO_GOSLIM ath_GO_GOSLIM = new ATH_GO_GOSLIM();
 		ath_GO_GOSLIM.setTxtWriteExcep(FileOperate.changeFileSuffix(AthGO, "_out", "txt"));
-		ath_GO_GOSLIM.updateFile(AthGO, false);
+		ath_GO_GOSLIM.updateFile(AthGO);
 	}
 }
 /**
