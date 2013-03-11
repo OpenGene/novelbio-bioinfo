@@ -520,7 +520,7 @@ Example:O43526-2
 		geneInfo.setDescrp(ss[9]);
 		geneInfo.setDBinfo(NovelBioConst.DBINFO_UNIPROT_GenralID);
 		copedID.setUpdateGeneInfo(geneInfo);
-		copedID.setUpdateGO(ss[4], NovelBioConst.DBINFO_UNIPROTID, ss[6], ss[5], ss[3]);
+		copedID.addUpdateGO(ss[4], NovelBioConst.DBINFO_UNIPROTID, ss[6], ss[5], ss[3]);
 		return copedID.update(true);
 	}
 	

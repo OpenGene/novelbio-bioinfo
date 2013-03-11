@@ -350,7 +350,7 @@ class RapDBGO extends ImportPerLine
 			matcher = pattern.matcher(lineContent);
 			while (matcher.find()) {
 				String tmpGOID = matcher.group(1);
-				copedID.setUpdateGO(tmpGOID, NovelBioConst.DBINFO_RICE_RAPDB, "", "", "");
+				copedID.addUpdateGO(tmpGOID, NovelBioConst.DBINFO_RICE_RAPDB, "", "", "");
 			}
 		return copedID.update(false);
 	}
@@ -504,7 +504,7 @@ class RiceRapDBInfo extends ImportPerLine
 		geneInfo.setPubIDs(lsPubmeds);
 		geneInfo.setDBinfo(NovelBioConst.DBINFO_RICE_RAPDB);
 		for (String string : lsGOs) {
-			copedID.setUpdateGO(string, NovelBioConst.DBINFO_RICE_RAPDB, null, null, null);
+			copedID.addUpdateGO(string, NovelBioConst.DBINFO_RICE_RAPDB, null, null, null);
 		}
 		
 		copedID.setUpdateGeneInfo(geneInfo);
@@ -570,7 +570,7 @@ class RiceTIGRGO extends ImportPerLine
 		GeneID copedID = new GeneID(LocID, 39947);
 		for (int j = 1; j < ss.length; j++) 
 		{//每个GOID都装入
-			copedID.setUpdateGO(ss[j].trim(), NovelBioConst.DBINFO_RICE_TIGR, null, null, null);
+			copedID.addUpdateGO(ss[j].trim(), NovelBioConst.DBINFO_RICE_TIGR, null, null, null);
 		}
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_RICE_TIGR, false);
 		return copedID.update(false);

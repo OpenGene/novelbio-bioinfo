@@ -158,7 +158,7 @@ GO_REF:0000020<br>
 GO_REF:0000004<br>
 	 * @param gOQualifiy
 	 */
-	void setUpdateGO(String GOID, DBAccIDSource GOdatabase, String GOevidence,
+	void addUpdateGO(String GOID, DBAccIDSource GOdatabase, String GOevidence,
 			String GORef, String gOQualifiy);
 	/**
 	 * 输入需要update的geneInfo，注意不需要设定geneUniID，除非是单独升级pubmedID信息，否则
@@ -218,16 +218,7 @@ GO_REF:0000004<br>
 	 * @return
 	 */
 	AGeneInfo getGeneInfo();
-	/**
-	 * <b>全新加入ID，以前的ID会被清空</b>
-	 * 在采用refaccID作为参照进行升级ID的时候，是否必须是uniqID
-	 * uniqID：用给定的参考ID能找到数据库中的唯一基因
-	 * true：只有当uniqID时才升级
-	 * null：默认参数--非uniqID也升级，不过只升级第一个基因
-	 * false：非uniqID也升级，升级搜索到的全部ID，该功能尚未实现
-	 * @param uniqID
-	 */
-	void setUpdateRefAccIDClear(Boolean uniqID);
+
 	/**<b>添加ID</b>
 	 * 在采用refaccID作为参照进行升级ID的时候，是否必须是uniqID
 	 * uniqID：用给定的参考ID能找到数据库中的唯一基因

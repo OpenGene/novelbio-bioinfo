@@ -251,7 +251,7 @@ class Gene_Association extends ImportPerLine
 		String[] ss = lineContent.split("\t");
 		GeneID copedID = new GeneID(ss[1], taxID);
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_SSC_ID, false);
-		copedID.setUpdateGO(ss[4], ss[14], ss[6], ss[5], ss[0]);
+		copedID.addUpdateGO(ss[4], ss[14], ss[6], ss[5], ss[0]);
 		return copedID.update(false);
 	}
 }
@@ -355,7 +355,7 @@ class Pipas_GO_Slim extends ImportPerLine
 			Gene2Go gene2Go = new Gene2Go();
 			gene2Go.setGOID(string2);
 			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_PPA_ID, false);
-			copedID.setUpdateGO(string2, NovelBioConst.DBINFO_PPA_ID, null, null, null);
+			copedID.addUpdateGO(string2, NovelBioConst.DBINFO_PPA_ID, null, null, null);
 		}
 		return copedID.update(false);
 	}

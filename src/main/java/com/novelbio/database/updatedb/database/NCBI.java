@@ -280,9 +280,9 @@ class ImpGene2GO extends ImportPerLine {
 		}
 		GeneID geneID = new GeneID(GeneID.IDTYPE_GENEID, ss[1], taxID);
 		if (ss[6] == null || ss[6].equals("") || ss[6].equals("-")) {
-			geneID.setUpdateGO(ss[2], DBAccIDSource.NCBI, ss[3], null, ss[4]);
+			geneID.addUpdateGO(ss[2], DBAccIDSource.NCBI, ss[3], null, ss[4]);
 		} else {
-			geneID.setUpdateGO(ss[2], DBAccIDSource.NCBI, ss[3], "PMID:"+ss[6], ss[4]);
+			geneID.addUpdateGO(ss[2], DBAccIDSource.NCBI, ss[3], "PMID:"+ss[6], ss[4]);
 		}
 		geneID.setUpdateDBinfo(DBAccIDSource.NCBI, false);
 		return geneID.update(false);

@@ -207,7 +207,7 @@ class MaizeGO extends ImportPerLine
 		else
 			copedID = new GeneID(ss[0].split("_")[0], taxID);
 			
-		copedID.setUpdateGO(ss[2], NovelBioConst.DBINFO_MAIZE_MGDB, null, null, null);
+		copedID.addUpdateGO(ss[2], NovelBioConst.DBINFO_MAIZE_MGDB, null, null, null);
 		return copedID.update(false);
 	}
 }

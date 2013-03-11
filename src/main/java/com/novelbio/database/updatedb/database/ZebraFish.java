@@ -156,7 +156,7 @@ class ZBGO extends ImportPerLine
 		geneInfo.setModDate(ss[13]);
 		
 		copedID.setUpdateGeneInfo(geneInfo);
-		copedID.setUpdateGO(ss[4], NovelBioConst.DBINFO_DRE_ZFIN, ss[6], pubmed, null);
+		copedID.addUpdateGO(ss[4], NovelBioConst.DBINFO_DRE_ZFIN, ss[6], pubmed, null);
 		return copedID.update(true);
 	}
 }

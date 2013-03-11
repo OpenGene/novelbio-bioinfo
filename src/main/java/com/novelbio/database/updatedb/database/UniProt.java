@@ -353,7 +353,7 @@ class IdmappingSelectedGOPubmed extends IdmappingSelected
 	{
 		String[] ss = ssGOID.split(";");
 		for (String string : ss) {
-			copedID.setUpdateGO(string, dbInfo, "", "", NovelBioConst.DBINFO_UNIPROTID);
+			copedID.addUpdateGO(string, dbInfo, "", "", NovelBioConst.DBINFO_UNIPROTID);
 		}
 		if (!copedID.update(false)) {
 			return false;

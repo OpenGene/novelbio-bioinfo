@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.UniProtID;
 import com.novelbio.database.mapper.geneanno.MapUniProtID;
 import com.novelbio.database.service.SpringFactory;
@@ -91,16 +92,24 @@ public class ServUniProtID implements MapUniProtID{
 			return false;
 		}
 		
-		String db = uniProtID.getDBInfo();
-		//查询的时候为了防止查不到，先除去dbinfo的信息
-		uniProtID.setDBInfo("");
 		if (uniProtID.getAccID() == null) {
 			logger.error("accID不存在，不能升级");
 			return false;
 		}
+		
+		String db = uniProtID.getDBInfo();
+		String uniID = uniProtID.getGenUniID();
+		//查询的时候为了防止查不到，先除去dbinfo的信息
+		uniProtID.setDBInfo("");
+		if (uniProtID.getTaxID() != 0 
+				&& !uniProtID.getDBInfo().equals(DBAccIDSource.Symbol) && uniProtID.getDBInfo().equals(DBAccIDSource.Synonyms)) {
+			uniProtID.setGenUniID("");
+		}
+
 		ArrayList<UniProtID> lsResult = mapUniProtID.queryLsUniProtID(uniProtID);
 		if (lsResult == null || lsResult.size() == 0) {
 			uniProtID.setDBInfo(db);
+			uniProtID.setGenUniID(uniID);
 			try {
 				mapUniProtID.insertUniProtID(uniProtID);
 				return true;
@@ -113,6 +122,7 @@ public class ServUniProtID implements MapUniProtID{
 		else {
 			if (override && !lsResult.get(0).getDBInfo().equals(db)) {
 				uniProtID.setDBInfo(db);
+				uniProtID.setGenUniID(lsResult.get(0).getGenUniID());
 				try {
 					mapUniProtID.updateUniProtID(uniProtID);
 					return true;

@@ -510,9 +510,9 @@ public class GeneID implements GeneIDInt{
 	}
 
 	@Override
-	public void setUpdateGO(String GOID, DBAccIDSource GOdatabase, String GOevidence,
+	public void addUpdateGO(String GOID, DBAccIDSource GOdatabase, String GOevidence,
 			String GORef, String gOQualifiy) {
-		geneID.setUpdateGO(GOID, GOdatabase, GOevidence, GORef, gOQualifiy);
+		geneID.addUpdateGO(GOID, GOdatabase, GOevidence, GORef, gOQualifiy);
 	}
 
 	@Override
@@ -551,11 +551,6 @@ public class GeneID implements GeneIDInt{
 	@Override
 	public void setUpdateAccID(String accID) {
 		geneID.setUpdateAccID(accID);
-	}
-
-	@Override
-	public void setUpdateRefAccIDClear(Boolean uniqID) {
-		geneID.setUpdateRefAccIDClear(uniqID);
 	}
 
 	@Override

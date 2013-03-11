@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.AgeneUniID;
 import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
@@ -97,18 +98,25 @@ public class ServNCBIID implements MapNCBIID{
 			logger.error("不能导入GO信息");
 			return false;
 		}
-		
-		String db = ncbiid.getDBInfo();
-		//查询的时候为了防止查不到，先除去dbinfo的信息
-		ncbiid.setDBInfo("");
 		if (ncbiid.getAccID() == null) {
 			logger.error("accID不存在，不能升级");
 			return false;
 		}
+		
+		String db = ncbiid.getDBInfo();
+		String geneID = ncbiid.getGenUniID();
+		//查询的时候为了防止查不到，先除去dbinfo的信息
+		ncbiid.setDBInfo("");
+		if (ncbiid.getTaxID() != 0 
+				&& !ncbiid.getDBInfo().equals(DBAccIDSource.Symbol) && ncbiid.getDBInfo().equals(DBAccIDSource.Synonyms)) {
+			ncbiid.setGeneId(0);
+		}
+
 		ArrayList<NCBIID> lsResult = mapNCBIID.queryLsNCBIID(ncbiid);
 		if (lsResult == null || lsResult.size() == 0) {
 			//插入的时候再加上
 			ncbiid.setDBInfo(db);
+			ncbiid.setGenUniID(geneID);
 			try {
 				mapNCBIID.insertNCBIID(ncbiid);
 				return true;
@@ -124,6 +132,7 @@ public class ServNCBIID implements MapNCBIID{
 		} else {
 			if (override && !lsResult.get(0).getDBInfo().equals(db)) {
 				ncbiid.setDBInfo(db);
+				ncbiid.setGenUniID(lsResult.get(0).getGenUniID());
 				try {
 					mapNCBIID.updateNCBIID(ncbiid);
 					return true;

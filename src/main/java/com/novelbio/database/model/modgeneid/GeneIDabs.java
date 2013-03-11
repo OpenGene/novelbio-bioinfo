@@ -427,18 +427,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 	 * 记录可能用于升级数据库的ID 譬如获得一个ID与NCBI的别的ID有关联，就用别的ID来查找数据库，以便获得该accID所对应的genUniID
 	 */
 	ArrayList<String> lsRefAccID = new ArrayList<String>();
-	Boolean uniqID = null;
-	/**
-	 * 在采用refaccID作为参照进行升级ID的时候，是否必须是uniqID
-	 * @param uniqID	用给定的参考ID能找到数据库中的唯一基因
-	 * true：只有当uniqID时才升级
-	 * null：默认参数--非uniqID也升级，不过只升级第一个基因
-	 * false：非uniqID也升级，升级搜索到的全部ID，该功能尚未实现
-	 */
-	@Override
-	public void setUpdateRefAccIDClear(Boolean uniqID) {
-		this.uniqID = uniqID;
-	}
+
 	/**
 	 * 添加可能用于升级数据库的ID 
 	 * 譬如获得一个ID与NCBI的别的ID有关联，就用别的ID来查找数据库，以便获得该accID所对应的genUniID
@@ -511,16 +500,13 @@ public abstract class GeneIDabs implements GeneIDInt {
 		}
 		this.idType = idType;
 	}
-	/**
-	 * 设定该ID的accID
-	 */
+	
+	/** 设定该ID的accID */
 	@Override
 	public void setUpdateAccID(String accID) {
 		this.accID = GeneID.removeDot(accID);
 	}
-	/**
-	 * 设定该ID的accID，不经过处理的ID
-	 */
+	/** 设定该ID的accID，不经过处理的ID */
 	@Override
 	public void setUpdateAccIDNoCoped(String accID) {
 		this.accID = accID;
@@ -539,7 +525,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 	 * @param gOQualifiy 没有就设置为 null 
 	 */
 	@Override
-	public void setUpdateGO(String GOID, DBAccIDSource GOdatabase, String GOevidence,
+	public void addUpdateGO(String GOID, DBAccIDSource GOdatabase, String GOevidence,
 			String GORef, String gOQualifiy) {
 		if (GOID == null) {
 			return;

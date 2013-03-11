@@ -319,7 +319,7 @@ class ATH_GO_GOSLIM extends ImportPerLine
 		}
 		GeneID copedID = new GeneID(ss[0], taxID);
 		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_ATH_TAIR, true);
-		copedID.setUpdateGO(ss[5], NovelBioConst.DBINFO_ATH_TAIR, ss[9], ss[12], ss[13]);
+		copedID.addUpdateGO(ss[5], NovelBioConst.DBINFO_ATH_TAIR, ss[9], ss[12], ss[13]);
 		return copedID.update(false);
 	}
 }
