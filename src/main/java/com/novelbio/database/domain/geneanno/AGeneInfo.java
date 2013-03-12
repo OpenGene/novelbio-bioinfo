@@ -84,6 +84,11 @@ public abstract class AGeneInfo {
 	public void setSep(String sep) {
 		this.sep = sep;
 	}
+	/**
+	 * 设定synonams等可能存在的分割符，譬如从NCBI下载的ID导入数据库的时候可能存在有 | 作为多个synonams的分割符
+	 * 设定后，提取synonams和symbol等都是用synonams进行
+	 * @param sep
+	 */
 	public String getSep() {
 		return sep;
 	}

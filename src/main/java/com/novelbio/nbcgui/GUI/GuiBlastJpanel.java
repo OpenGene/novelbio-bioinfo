@@ -1,22 +1,17 @@
 package com.novelbio.nbcgui.GUI;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 import javax.swing.ButtonGroup;
-import javax.swing.ComboBoxModel;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -27,24 +22,19 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
-import javax.swing.LayoutStyle;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
-import org.jdesktop.application.Application;
 
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.database.domain.geneanno.GOtype;
-import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.controlquery.CtrlBlastAnno;
 import com.novelbio.nbcgui.controlquery.CtrlBlastGo;
 import com.novelbio.nbcgui.controlquery.CtrlBlastPath;
-import javax.swing.SpringLayout;
-import java.awt.Dimension;
 
 
 /**
@@ -120,7 +110,6 @@ public class GuiBlastJpanel extends JPanel {
 			add(jScrollPane1);
 			add(getJScrlGOTable());
 			add(getJProgressBar1());
-			Application.getInstance().getContext().getResourceMap(getClass()).injectComponents(this);
 			jBlastJpanel = this;
 		
 	}
@@ -509,8 +498,8 @@ public class GuiBlastJpanel extends JPanel {
 	private JComboBox getJCobTaxSelect() {
 		if(jCobTaxSelect == null) {
 			jCobTaxSelect = new JComboBoxData<Species>();
-			jCobTaxSelect.setMapItem(Species.getSpeciesName2Species(Species.KEGGNAME_SPECIES));
 			jCobTaxSelect.setBounds(800, 2, 228, 23);
+			jCobTaxSelect.setMapItem(Species.getSpeciesName2Species(Species.KEGGNAME_SPECIES));
 		}
 		return jCobTaxSelect;
 	}
@@ -561,8 +550,8 @@ public class GuiBlastJpanel extends JPanel {
 	private JComboBox getJCmbSpeciesBlast() {
 		if(jCmbSpeciesBlast == null) {
 			jCmbSpeciesBlast = new JComboBoxData<Species>();
-			jCmbSpeciesBlast.setMapItem(Species.getSpeciesName2Species(Species.KEGGNAME_SPECIES));
 			jCmbSpeciesBlast.setBounds(283, 269, 229, 23);
+			jCmbSpeciesBlast.setMapItem(Species.getSpeciesName2Species(Species.KEGGNAME_SPECIES));
 		}
 		return jCmbSpeciesBlast;
 	}

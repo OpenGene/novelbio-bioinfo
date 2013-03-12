@@ -13,7 +13,6 @@ import com.novelbio.database.domain.geneanno.AGeneInfo;
 import com.novelbio.database.domain.geneanno.AgeneUniID;
 import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.domain.geneanno.GOtype;
-import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.database.domain.geneanno.UniProtID;
@@ -21,8 +20,6 @@ import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.database.model.modkegg.KeggInfo;
-import com.novelbio.database.service.servgeneanno.ServNCBIID;
-import com.novelbio.database.service.servgeneanno.ServUniProtID;
 
 /**
  * <b>注意blastInfo中的SubjectTab和QueryTab有问题，需要重写</b><br>
@@ -131,45 +128,7 @@ public class GeneID implements GeneIDInt{
 		}
 		return lsCopedIDs;
 	}
-	
-	
-	/**
-	 * 设定初始值，会自动去数据库验证geneUniID并完成填充本类。
-	 * 如果在数据库中没有找到相应的geneUniID，则返回null
-	 * 只能产生一个CopedID，此时accID = ""
-	 * @param idType 必须是IDTYPE中的一种
-	 * @param genUniID
-	 * @param taxID 物种ID
-	 */
-	@Deprecated
-	public static GeneID validCopedID(String idType, String genUniID,int taxID) {
-		ServNCBIID servNCBIID = new ServNCBIID();
-		ServUniProtID servUniProtID = new ServUniProtID();
-		GeneID copedID = null;
-		if (idType.equals(IDTYPE_ACCID)) {
-			return null;
-		}
-		else if (idType.equals(IDTYPE_GENEID)) {
-			NCBIID ncbiid = servNCBIID.queryNCBIID(Integer.parseInt(genUniID), taxID);
-			if (ncbiid != null) {
-				String genUniID2 = ncbiid.getGeneId() + "";
-				int taxID2 = ncbiid.getTaxID();
-				copedID = new GeneID(idType, genUniID2, taxID2);
-				return copedID;
-			}
-		}
-		else if (idType.equals(IDTYPE_UNIID)) {
-			UniProtID uniProtID = servUniProtID.getUniProtID(genUniID, taxID);
-			if (uniProtID != null) {
-				String genUniID2 = uniProtID.getUniID();
-				int taxID2 = uniProtID.getTaxID();
-				copedID = new GeneID(idType, genUniID2, taxID2);
-				return copedID;
-			}
-		}
-		return null;
-	}
-	
+
 	//////////////////  Blast setting  ///////////////////////////////////////////
 	@Override
 	public void setBlastInfo(double evalue, int... StaxID) {
@@ -529,7 +488,9 @@ public class GeneID implements GeneIDInt{
 	public void setUpdateDBinfo(DBAccIDSource DBInfo, boolean overlapDBinfo) {
 		geneID.setUpdateDBinfo(DBInfo, overlapDBinfo);
 	}
-
+	public void setUpdateDBinfo(String DBInfo, boolean overlapDBinfo) {
+		geneID.setUpdateDBinfo(DBInfo, overlapDBinfo);
+	}
 	@Override
 	public void setUpdateRefAccID(String... refAccID) {
 		geneID.setUpdateRefAccID(refAccID);

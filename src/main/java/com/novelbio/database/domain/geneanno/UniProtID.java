@@ -9,7 +9,9 @@ import com.novelbio.database.model.modgeneid.GeneID;
  */
 public class UniProtID extends AgeneUniID{
 		private String uniID;
-
+		
+		protected UniProtID() { }
+		
 		public String getUniID() {
 			return uniID;
 		}

@@ -7,12 +7,12 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
+import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.GOtype;
+import com.novelbio.database.domain.geneanno.GOtype.GORelation;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.domain.geneanno.Go2Term;
-import com.novelbio.database.domain.geneanno.GOtype.GORelation;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.generalConf.NovelBioConst;
 
 public class AmiGO {
 	/**
@@ -335,8 +335,7 @@ class ImpGOExtObo extends ImportPerLine {
 			}
 		}
 	}
-	private String extractGOID(String GOIDstring)
-	{
+	private String extractGOID(String GOIDstring) {
 		ArrayList<String[]> lsResult = PatternOperate.getPatLoc(GOIDstring, "GO:\\d+", false);
 		if (lsResult == null || lsResult.size() == 0) {
 			return null;
@@ -344,7 +343,6 @@ class ImpGOExtObo extends ImportPerLine {
 		return lsResult.get(0)[0];
 	}
 }
-
 
 /**
  * 先把其他的全倒入一遍后，再导入这个，导完后将别的没有找到NCBIID的导入uniprotID表。
@@ -510,7 +508,7 @@ Example:O43526-2
 		GeneID copedID = new GeneID(ss[1], taxID);
 		//找到合适的表，NCBI或UniProt，并导入UniID
 		copedID.setUpdateRefAccID(ss[1],ss[2]);
-		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_UNIPROT_UNIID, false);
+		copedID.setUpdateDBinfo(DBAccIDSource.Uniprot, false);
 		copedID.update(true);
 		//导入symbol和description
 //		copedID.setUpdateAccID(ss[2]);
@@ -518,9 +516,9 @@ Example:O43526-2
 		GeneInfo geneInfo = new GeneInfo();
 		geneInfo.setSymb(ss[2]);
 		geneInfo.setDescrp(ss[9]);
-		geneInfo.setDBinfo(NovelBioConst.DBINFO_UNIPROT_GenralID);
+		geneInfo.setDBinfo(DBAccIDSource.Uniprot);
 		copedID.setUpdateGeneInfo(geneInfo);
-		copedID.addUpdateGO(ss[4], NovelBioConst.DBINFO_UNIPROTID, ss[6], ss[5], ss[3]);
+		copedID.addUpdateGO(ss[4], DBAccIDSource.Uniprot, ss[6], ss[5], ss[3]);
 		return copedID.update(true);
 	}
 	

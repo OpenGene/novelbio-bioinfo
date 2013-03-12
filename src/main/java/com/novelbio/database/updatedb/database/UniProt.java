@@ -1,14 +1,12 @@
 package com.novelbio.database.updatedb.database;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import org.apache.poi.hssf.record.cont.ContinuableRecord;
-
-import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.generalConf.NovelBioConst;
 
 /**
  * 升级UniProt下载的所有文件的类
@@ -128,63 +126,38 @@ class IdmappingSelected extends ImportPerLine {
 		GeneID copedID = null;
 		//如果geneID存在，那么就新建一个geneUniID的类
 		ArrayList<String> lsRefAccID = new ArrayList<String>();
-		if (!ss[2].equals("")) {
-			if (!ss[2].contains(";")) {
-				copedID = new GeneID(GeneID.IDTYPE_GENEID, ss[2], taxID);
-			}
-			else {
-				String[] geneIDs = ss[2].split(";");
-				for (String string : geneIDs) {
-					copedID = new GeneID(GeneID.IDTYPE_GENEID, string, taxID);
-					if (updateInfo(ss[0], copedID, NovelBioConst.DBINFO_UNIPROT_GenralID) && !updateUniprotID) {
-						return false;
-					}
-					updateInfo(ss[1], copedID, NovelBioConst.DBINFO_UNIPROT_UNIPROTKB_ID);
-					updateInfo(ss[7], copedID, NovelBioConst.DBINFO_IPI);
-					updateInfo(ss[8].replace("UniRef100_", ""), copedID, NovelBioConst.DBINFO_UNIPROT_UNIGENE);
-					updateInfo(ss[9].replace("UniRef90_", ""), copedID, NovelBioConst.DBINFO_UNIPROT_UNIGENE);
-					updateInfo(ss[10].replace("UniRef50_", ""), copedID, NovelBioConst.DBINFO_UNIPROT_UNIGENE);
-					updateInfo(ss[11], copedID, NovelBioConst.DBINFO_UNIPROT_UNIPARC);
-					updateInfo(ss[12], copedID, NovelBioConst.DBINFO_PIR);
-					updateInfo(ss[15], copedID, NovelBioConst.DBINFO_UNIPROT_UNIGENE);
-					updateInfo(ss[17], copedID, NovelBioConst.DBINFO_EMBL);
-					updateInfo(ss[18], copedID, NovelBioConst.DBINFO_EMBL_CDS);
-					updateInfo(ss[19], copedID, NovelBioConst.DBINFO_ENSEMBL);
-					updateInfo(ss[20], copedID, NovelBioConst.DBINFO_ENSEMBL_TRS);
-					updateInfo(ss[21], copedID, NovelBioConst.DBINFO_ENSEMBL_PRO);
-				}
-				return true;
-			}
+		if (!ss[2].equals("") && !ss[2].contains(";")) {
+			copedID = new GeneID(GeneID.IDTYPE_GENEID, ss[2], taxID);
 		}
 		else {
 			//就是要给一个完全没有的ID
 			copedID = new GeneID("", taxID);
 			lsRefAccID = new ArrayList<String>();
-			addListAccID(ss[3], lsRefAccID);
-			addListAccID(ss[4], lsRefAccID);
-			addListAccID(ss[15], lsRefAccID);
-			addListAccID(ss[0], lsRefAccID);
-			addListAccID(ss[19], lsRefAccID);
-			addListAccID(ss[20], lsRefAccID);
-			addListAccID(ss[21], lsRefAccID);
+			lsRefAccID.addAll(getListAccID(ss[3]));
+			lsRefAccID.addAll(getListAccID(ss[4]));
+			lsRefAccID.addAll(getListAccID(ss[15]));
+			lsRefAccID.addAll(getListAccID(ss[0]));
+			lsRefAccID.addAll(getListAccID(ss[19]));
+			lsRefAccID.addAll(getListAccID(ss[20]));
+			lsRefAccID.addAll(getListAccID(ss[21]));
  			copedID.setUpdateRefAccID(lsRefAccID);
 		}
-		if (updateInfo(ss[0], copedID, NovelBioConst.DBINFO_UNIPROT_GenralID) && !updateUniprotID) {
+		if (!updateInfo(ss[0], copedID, DBAccIDSource.Uniprot)) {
 			return false;
 		}
-		updateInfo(ss[1], copedID, NovelBioConst.DBINFO_UNIPROT_UNIPROTKB_ID);
-		updateInfo(ss[7], copedID, NovelBioConst.DBINFO_IPI);
-		updateInfo(ss[8].replace("UniRef100_", ""), copedID, NovelBioConst.DBINFO_UNIPROT_UNIGENE);
-		updateInfo(ss[9].replace("UniRef90_", ""), copedID, NovelBioConst.DBINFO_UNIPROT_UNIGENE);
-		updateInfo(ss[10].replace("UniRef50_", ""), copedID, NovelBioConst.DBINFO_UNIPROT_UNIGENE);
-		updateInfo(ss[11], copedID, NovelBioConst.DBINFO_UNIPROT_UNIPARC);
-		updateInfo(ss[12], copedID, NovelBioConst.DBINFO_PIR);
-		updateInfo(ss[15], copedID, NovelBioConst.DBINFO_UNIPROT_UNIGENE);
-		updateInfo(ss[17], copedID, NovelBioConst.DBINFO_EMBL);
-		updateInfo(ss[18], copedID, NovelBioConst.DBINFO_EMBL_CDS);
-		updateInfo(ss[19], copedID, NovelBioConst.DBINFO_ENSEMBL);
-		updateInfo(ss[20], copedID, NovelBioConst.DBINFO_ENSEMBL_TRS);
-		updateInfo(ss[21], copedID, NovelBioConst.DBINFO_ENSEMBL_PRO);
+		updateInfo(ss[1], copedID, DBAccIDSource.UniprotKB_ID);
+		updateInfo(ss[7], copedID, DBAccIDSource.IPI);
+		updateInfo(ss[8].replace("UniRef100_", ""), copedID, DBAccIDSource.UniprotUniGene);
+		updateInfo(ss[9].replace("UniRef90_", ""), copedID, DBAccIDSource.UniprotUniGene);
+		updateInfo(ss[10].replace("UniRef50_", ""), copedID, DBAccIDSource.UniprotUniGene);
+		updateInfo(ss[11], copedID, DBAccIDSource.UniprotPARC);
+		updateInfo(ss[12], copedID, DBAccIDSource.PIR);
+		updateInfo(ss[15], copedID, DBAccIDSource.UniprotUniGene);
+		updateInfo(ss[17], copedID, DBAccIDSource.EMBL);
+		updateInfo(ss[18], copedID, DBAccIDSource.EMBL_CDS);
+		updateInfo(ss[19], copedID, DBAccIDSource.Ensembl);
+		updateInfo(ss[20], copedID, DBAccIDSource.Ensembl_TRS);
+		updateInfo(ss[21], copedID, DBAccIDSource.Ensembl_Pro);
 		return true;
 	}
 	/**
@@ -192,9 +165,10 @@ class IdmappingSelected extends ImportPerLine {
 	 * @param tmpAccID
 	 * @param lsRefAccID
 	 */
-	private void addListAccID(String tmpAccID, ArrayList<String> lsRefAccID) {
+	private List<String> getListAccID(String tmpAccID) {
+		ArrayList<String> lsRefAccID = new ArrayList<String>();
 		if (tmpAccID == null || tmpAccID.equals("")) {
-			return;
+			return new ArrayList<String>();
 		}
 		String[] ss = tmpAccID.split(";");
 		for (String string : ss) {
@@ -202,6 +176,7 @@ class IdmappingSelected extends ImportPerLine {
 				lsRefAccID.add(string);
 			}
 		}
+		return lsRefAccID;
 	}
 	/**
 	 * 升级ssID到geneID中
@@ -211,7 +186,7 @@ class IdmappingSelected extends ImportPerLine {
 	 * @param updateUniprotID 搜索不到的ID是否导入uniID表中
 	 * @return
 	 */
-	private boolean updateInfo(String ssID, GeneID copedID, String dbInfo) {
+	private boolean updateInfo(String ssID, GeneID copedID, DBAccIDSource dbInfo) {
 		if (ssID == null || ssID.equals("")) {
 			return true;
 		}
@@ -219,7 +194,7 @@ class IdmappingSelected extends ImportPerLine {
 		for (String string : ss) {
 			copedID.setUpdateAccID(string);
 			copedID.setUpdateDBinfo(dbInfo, false);
-			if (copedID.update(updateUniprotID)) {
+			if (!copedID.update(updateUniprotID)) {
 				return false;
 			}
 		}
@@ -254,8 +229,7 @@ class IdmappingSelected extends ImportPerLine {
 22. Ensembl_PRO
 23. Additional PubMed
 */
-class IdmappingSelectedGOPubmed extends IdmappingSelected
-{
+class IdmappingSelectedGOPubmed extends IdmappingSelected {
 	/**
 	 * 将idmapping_selected.tab导入数据库，仅导入指定的物种
 	 * 文件格式如下<br>
@@ -294,24 +268,9 @@ class IdmappingSelectedGOPubmed extends IdmappingSelected
 		GeneID copedID = null;
 		//如果geneID存在，那么就新建一个geneUniID的类
 		ArrayList<String> lsRefAccID = new ArrayList<String>();
-		if (!ss[2].equals("")) {
-			if (!ss[2].contains(";")) {
-				copedID = new GeneID(GeneID.IDTYPE_GENEID, ss[2], taxID);
-			}
-			else {
-				String[] geneIDs = ss[2].split(";");
-				for (String string : geneIDs) {
-					copedID = new GeneID(GeneID.IDTYPE_GENEID, string, taxID);
-					if (copedID.getIDtype().equals(GeneID.IDTYPE_ACCID)) {
-						return false;
-					}
-					updateGO(ss[6], copedID, NovelBioConst.DBINFO_UNIPROTID);
-					updatePubmed(ss[16], copedID);
-				}
-				return true;
-			}
-		}
-		else {
+		if (!ss[2].equals("") && !ss[2].contains(";")) {
+			copedID = new GeneID(GeneID.IDTYPE_GENEID, ss[2], taxID);
+		} else {
 			//就是要给一个完全没有的ID
 			copedID = new GeneID("", taxID);
 			lsRefAccID = new ArrayList<String>();
@@ -328,7 +287,7 @@ class IdmappingSelectedGOPubmed extends IdmappingSelected
 			return false;
 		}
 		if (ss[6] != null && !ss[6].equals("")) {
-			updateGO(ss[6], copedID, NovelBioConst.DBINFO_UNIPROT_GenralID);
+			updateGO(ss[6], copedID, DBAccIDSource.Uniprot);
 		}
 		if (ss[16] != null && !ss[16].equals("")) {
 			updatePubmed(ss[16], copedID);
@@ -348,20 +307,18 @@ class IdmappingSelectedGOPubmed extends IdmappingSelected
 		}
 	}
 	
-	
-	private boolean updateGO(String ssGOID, GeneID copedID, String dbInfo)
-	{
+	private boolean updateGO(String ssGOID, GeneID copedID, DBAccIDSource dbInfo) {
 		String[] ss = ssGOID.split(";");
 		for (String string : ss) {
-			copedID.addUpdateGO(string, dbInfo, "", "", NovelBioConst.DBINFO_UNIPROTID);
+			copedID.addUpdateGO(string, dbInfo, "", "", "");
 		}
 		if (!copedID.update(false)) {
 			return false;
 		}
 		return true;
 	}
-	private boolean updatePubmed(String ssPubmed, GeneID copedID)
-	{
+	
+	private boolean updatePubmed(String ssPubmed, GeneID copedID) {
 		String[] ss = ssPubmed.split(";");
 		for (String string : ss) {
 			GeneInfo geneInfo = new GeneInfo();

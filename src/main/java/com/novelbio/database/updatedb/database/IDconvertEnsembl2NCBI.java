@@ -16,7 +16,6 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.generalConf.NovelBioConst;
 /**
  * ID转换，将ensembl的表转化为NCBI的表，以及类似功能
  * @author zong0jie

@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
+import org.springframework.validation.DataBinder;
 
 import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.AGene2Go;
@@ -16,6 +17,7 @@ import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.domain.geneanno.Gene2Go;
 import com.novelbio.database.domain.geneanno.NCBIID;
+import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.database.domain.geneanno.UniProtID;
 import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.domain.kegg.KGpathway;
@@ -25,10 +27,9 @@ import com.novelbio.database.model.species.Species;
 import com.novelbio.database.service.servgeneanno.ServBlastInfo;
 import com.novelbio.database.service.servgeneanno.ServGene2Go;
 import com.novelbio.database.service.servgeneanno.ServGeneInfo;
-import com.novelbio.database.service.servgeneanno.ServNCBIID;
+import com.novelbio.database.service.servgeneanno.ServNCBIUniID;
 import com.novelbio.database.service.servgeneanno.ServUniGene2Go;
 import com.novelbio.database.service.servgeneanno.ServUniGeneInfo;
-import com.novelbio.database.service.servgeneanno.ServUniProtID;
 
 public abstract class GeneIDabs implements GeneIDInt {
 	private static Logger logger = Logger.getLogger(GeneIDabs.class);
@@ -55,8 +56,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 	String geneIDDBinfo;
 	// //////////////////// service 层
 	ServBlastInfo servBlastInfo = new ServBlastInfo();
-	ServNCBIID servNCBIID = new ServNCBIID();
-	ServUniProtID servUniProtID = new ServUniProtID();
+	ServNCBIUniID servNcbiUniID = new ServNCBIUniID();
 	ServGeneInfo servGeneInfo = new ServGeneInfo();
 	ServUniGeneInfo servUniGeneInfo = new ServUniGeneInfo();
 	ServGene2Go servGene2Go = new ServGene2Go();
@@ -482,6 +482,22 @@ public abstract class GeneIDabs implements GeneIDInt {
 		}
 		this.overrideUpdateDBinfo = overlapDBinfo;
 	}
+	
+	/**
+	 * 记录该ID的物种ID和数据库信息，用于修正以前的数据库
+	 * 
+	 * @param taxID
+	 * @param DBInfo
+	 * @param 是否用本DBInfo修正以前的DBInfo
+	 * 不管是true还是false，geneinfo都会用其进行修正
+	 */
+	public void setUpdateDBinfo(String DBInfo, boolean overlapDBinfo) {
+		if (DBInfo != null && !DBInfo.equals("")) {
+			this.geneIDDBinfo = DBInfo;
+		}
+		this.overrideUpdateDBinfo = overlapDBinfo;
+	}
+	
 	/**
 	 * 输入已知的geneUniID和IDtype
 	 * 
@@ -608,7 +624,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 	}
 	/**
 	 * 如果新的ID不加入UniID，那么就写入指定的文件中 文件需要最开始用set指定
-	 * 
+	 * 只要有一个错误就会返回
 	 * @param updateUniID
 	 */
 	@Override
@@ -621,24 +637,20 @@ public abstract class GeneIDabs implements GeneIDInt {
 			logger.error("geneID为0，请check");
 			return false;
 		}
-		boolean flag1 = false;
-		try {
-			flag1 = updateGeneID(geneUniID, updateUniID);
-		} catch (Exception e) {
-			e.printStackTrace();
+
+		if(!updateGeneID(geneUniID, updateUniID)) {
 			return false;
 		}
-		
-		boolean flag2 = updateGeneInfo();
-		boolean flag3 = false;
-		try {
-			flag3 = updateGene2Go();
-		} catch (Exception e) {
-			e.printStackTrace();
+		if(!updateGeneInfo()) {
+			return false;
 		}
-		
-		boolean flag4 = updateBlastInfo();
-		return flag1&&flag2&&flag3&&flag4;
+		if (!updateGene2Go()) {
+			return false;
+		}
+		if (!updateBlastInfo()) {
+			return false;
+		}
+		return true;
 	}
 
 	/** 升级GO数据库 */
@@ -664,11 +676,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 	}
 
 	/**
-	 * 升级失败的ID写入本表
-	 */
-	static String txtUpdateFailFile = "";
-
-	/**
+	 * 根据输入的geneUniID--中的geneID，升级AccID和DBinfo
 	 * 升级geneID数据库，并且将geneUniID按照数据库进行重置 <b>只升级第一个获得的geneID</b>
 	 * 如果accID没有，则不升级
 	 * @param 如果在数据库中没有找到对应的ID
@@ -691,32 +699,19 @@ public abstract class GeneIDabs implements GeneIDInt {
 		// 只升级第一个获得的geneID
 		if (geneUniID != null) {
 			this.idType = geneUniID.getGeneIDtype();
-			
-			if (geneUniID.getGeneIDtype().equals(GeneID.IDTYPE_GENEID)) {
-				NCBIID ncbiid = new NCBIID();
-				ncbiid.setAccID(accID);
-				ncbiid.setDBInfo(this.geneIDDBinfo);
-				ncbiid.setGenUniID(geneUniID.getGenUniID());
-				ncbiid.setTaxID(geneUniID.getTaxID());
-				servNCBIID.updateNCBIID(ncbiid, overrideUpdateDBinfo);
-			} else if (geneUniID.getGeneIDtype().equals(GeneID.IDTYPE_UNIID)) {
-				UniProtID uniProtID = new UniProtID();
-				uniProtID.setAccID(accID);
-				uniProtID.setDBInfo(this.geneIDDBinfo);
-				uniProtID.setGenUniID(geneUniID.getGenUniID());
-				uniProtID.setTaxID(geneUniID.getTaxID());
-				servUniProtID.updateUniProtID(uniProtID, overrideUpdateDBinfo);
-			}
+			AgeneUniID ageneUniID = AgeneUniID.creatAgeneUniID(idType);
+			ageneUniID.setAccID(accID);
+			ageneUniID.setDBInfo(this.geneIDDBinfo);
+			ageneUniID.setGenUniID(genUniID);
+			ageneUniID.setTaxID(taxID);
+			servNcbiUniID.updateNCBIUniID(ageneUniID, overrideUpdateDBinfo);
 		} else if (updateUniID) {
-			UniProtID uniProtID = new UniProtID();
+			AgeneUniID uniProtID =  AgeneUniID.creatAgeneUniID(GeneID.IDTYPE_UNIID);
 			uniProtID.setAccID(accID);
 			uniProtID.setDBInfo(this.geneIDDBinfo);
-			uniProtID.setGenUniID(accID);
+			uniProtID.setGenUniID(genUniID);
 			uniProtID.setTaxID(taxID);
-			servUniProtID.updateUniProtID(uniProtID, overrideUpdateDBinfo);
-			// 重置geneUniID
-			idType = GeneID.IDTYPE_UNIID;
-			genUniID = accID;
+			servNcbiUniID.updateNCBIUniID(uniProtID, overrideUpdateDBinfo);
 			//防止下一个导入的时候出错
 //			try {
 //				Thread.sleep(10);
@@ -744,115 +739,47 @@ public abstract class GeneIDabs implements GeneIDInt {
 		geneInfo.setTaxID(taxID);
 		if (idType.equals(GeneID.IDTYPE_UNIID)) {
 			servUniGeneInfo.updateUniGenInfo(genUniID, taxID, geneInfo);
-			updateUniGeneInfoSymbolAndSynonyms(geneInfo);
 		} else if (idType.equals(GeneID.IDTYPE_GENEID)) {
-			try {
-				servGeneInfo.updateGenInfo(genUniID, taxID, geneInfo);
-			} catch (Exception e) {
-				servGeneInfo.updateGenInfo(genUniID, taxID, geneInfo);
-			}
-			updateGeneInfoSymbolAndSynonyms(geneInfo);
-		}
-		else {
+			servGeneInfo.updateGenInfo(genUniID, taxID, geneInfo);
+		} else {
 			return false;
 		}
+		updateGeneInfoSymbolAndSynonyms(idType, geneInfo);
 		geneInfo = null;
 		return true;
 	}
 	
-	private void updateGeneInfoSymbolAndSynonyms(AGeneInfo geneInfo2) {
-		NCBIID ncbiid = null;
-		if (geneInfo2.getSep() != null && !geneInfo2.equals("")) {
-			if (geneInfo2.getSymb() != null) {
-				String[] ssymb = geneInfo2.getSymb().split(geneInfo2.getSep());
-				for (String string : ssymb) {
-					ncbiid = new NCBIID();
-					ncbiid.setAccID(string.trim());
-					ncbiid.setDBInfo(DBAccIDSource.Symbol.toString());
-					ncbiid.setGenUniID(genUniID);
-					ncbiid.setTaxID(taxID);
-					servNCBIID.updateNCBIID(ncbiid, true);
-				}
-			}
-			if (geneInfo2.getSynonym() != null) {
-				String[] ssynonym = geneInfo2.getSynonym().split(geneInfo2.getSep());
-				for (String string : ssynonym) {
-					ncbiid = new NCBIID();
-					ncbiid.setAccID(string.trim());
-					ncbiid.setDBInfo(DBAccIDSource.Synonyms.toString());
-					ncbiid.setGenUniID(genUniID);
-					ncbiid.setTaxID(taxID);
-					servNCBIID.updateNCBIID(ncbiid, true);
-				}
+	private void updateGeneInfoSymbolAndSynonyms(String idType, AGeneInfo geneInfoUpdate) {
+		AgeneUniID ageneUniID = null;
+		String sep = SepSign.SEP_ID;
+		if (geneInfoUpdate.getSep() != null && !geneInfoUpdate.getSep().equals("")) {
+			sep = geneInfoUpdate.getSep();
+		}
+		if (geneInfoUpdate.getSymb() != null) {
+			String[] ssymb = geneInfoUpdate.getSymb().split(sep);
+			for (String string : ssymb) {
+				ageneUniID = AgeneUniID.creatAgeneUniID(idType);
+				ageneUniID.setAccID(string.trim());
+				ageneUniID.setDBInfo(DBAccIDSource.Symbol.toString());
+				ageneUniID.setGenUniID(genUniID);
+				ageneUniID.setTaxID(taxID);
+				servNcbiUniID.updateNCBIUniID(ageneUniID, true);
 			}
 		}
-		else {
-			if (geneInfo2.getSymb() != null) {
-				ncbiid = new NCBIID();
-				ncbiid.setAccID(geneInfo2.getSymb());
-				ncbiid.setDBInfo(DBAccIDSource.Symbol.toString());
-				ncbiid.setGenUniID(genUniID);
-				ncbiid.setTaxID(taxID);
-				servNCBIID.updateNCBIID(ncbiid, false);
-			}
-			if (geneInfo2.getSynonym() != null) {
-				ncbiid = new NCBIID();
-				ncbiid.setAccID(geneInfo2.getSynonym());
-				ncbiid.setDBInfo(DBAccIDSource.Synonyms.toString());
-				ncbiid.setGenUniID(genUniID);
-				ncbiid.setTaxID(taxID);
-				servNCBIID.updateNCBIID(ncbiid, false);
+		if (geneInfoUpdate.getSynonym() != null) {
+			String[] ssynonym = geneInfoUpdate.getSynonym().split(sep);
+			for (String string : ssynonym) {
+				ageneUniID = AgeneUniID.creatAgeneUniID(idType);
+				ageneUniID.setAccID(string.trim());
+				ageneUniID.setDBInfo(DBAccIDSource.Synonyms.toString());
+				ageneUniID.setGenUniID(genUniID);
+				ageneUniID.setTaxID(taxID);
+				servNcbiUniID.updateNCBIUniID(ageneUniID, true);
 			}
 		}
 	}
-	private void updateUniGeneInfoSymbolAndSynonyms(AGeneInfo uniGeneInfo) {
-		UniProtID uniprotID = null;
-		if (uniGeneInfo.getSep() != null && !uniGeneInfo.equals("")) {
-			if (uniGeneInfo.getSymb() != null) {
-				String[] ssymb = uniGeneInfo.getSymb().split(uniGeneInfo.getSep());
-				for (String string : ssymb) {
-					uniprotID = new UniProtID();
-					uniprotID.setAccID(string.trim());
-					uniprotID.setDBInfo(DBAccIDSource.Symbol.toString());
-					uniprotID.setGenUniID(genUniID);
-					uniprotID.setTaxID(taxID);
-					servUniProtID.updateUniProtID(uniprotID, true);
-				}
-			}
-			if (uniGeneInfo.getSynonym() != null) {
-				String[] ssynonym = uniGeneInfo.getSynonym().split(uniGeneInfo.getSep());
-				for (String string : ssynonym) {
-					uniprotID = new UniProtID();
-					uniprotID.setAccID(string.trim());
-					uniprotID.setDBInfo(DBAccIDSource.Synonyms.toString());
-					uniprotID.setGenUniID(genUniID);
-					uniprotID.setTaxID(taxID);
-					servUniProtID.updateUniProtID(uniprotID, true);
-				}
-			}
-		}
-		else {
-			if (uniGeneInfo.getSymb() != null) {
-				uniprotID = new UniProtID();
-				uniprotID.setAccID(uniGeneInfo.getSymb());
-				uniprotID.setDBInfo(DBAccIDSource.Symbol.toString());
-				uniprotID.setGenUniID(genUniID);
-				uniprotID.setTaxID(taxID);
-				servUniProtID.updateUniProtID(uniprotID, true);
-			}
-			if (uniGeneInfo.getSynonym() != null) {
-				uniprotID = new UniProtID();
-				uniprotID.setAccID(uniGeneInfo.getSynonym());
-				uniprotID.setDBInfo(DBAccIDSource.Synonyms.toString());
-				uniprotID.setGenUniID(genUniID);
-				uniprotID.setTaxID(taxID);
-				servUniProtID.updateUniProtID(uniprotID, true);
-			}
-		}
-	}
+	
 	// /////////////////////// 升级 Blast 的信息
-	// /////////////////////////////////////////////////////
-
 	private boolean updateBlastInfo() {
 		boolean blastCorrect = true;
 		if (genUniID == null || genUniID.equals("")) {
@@ -874,17 +801,13 @@ public abstract class GeneIDabs implements GeneIDInt {
 	// /////////////////////// 升级 uniGene 的信息
 	/**
 	 * 根据lsRefAccID的信息设定geneUniID和IDtype 获得所对应的geneUniID<br>
-	 * 如果没搜到则返回null
+	 * 如果没搜到则返回null<br>
+	 * 内部已经将genUniID和IDType和TaxID都改过来了
 	 */
 	private AgeneUniID getUpdateGenUniID() {
 		// /// 如果已经有了IDtype，就直接返回 ////////////////////////////////////////
 		if (!idType.equals(GeneID.IDTYPE_ACCID)) {
-			AgeneUniID geneUniID = null;
-			if (idType.equals(GeneID.IDTYPE_GENEID)) {
-				geneUniID = new NCBIID();
-			} else if (idType.equals(GeneID.IDTYPE_UNIID)) {
-				geneUniID = new UniProtID();
-			}
+			AgeneUniID geneUniID = AgeneUniID.creatAgeneUniID(idType);
 			geneUniID.setTaxID(taxID);
 			geneUniID.setGenUniID(genUniID);
 			geneUniID.setAccID(accID);
@@ -901,6 +824,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 			} else if (lsTmpGenUniID.size() == 1 && lsTmpGenUniID.get(0).getDBInfo().equals(GeneID.IDTYPE_GENEID)) {
 				genUniID = lsTmpGenUniID.get(0).getGenUniID();
 				idType = GeneID.IDTYPE_GENEID;
+				taxID =  lsTmpGenUniID.get(0).getTaxID();
 				return lsTmpGenUniID.get(0);
 			}
 			lsgeneID.add(lsTmpGenUniID);
@@ -929,6 +853,9 @@ public abstract class GeneIDabs implements GeneIDInt {
 			}
 		}
 		AgeneUniID ageneUniID = lsgeneID.get(0).get(0);
+		genUniID = ageneUniID.getGenUniID();
+		idType = ageneUniID.getGeneIDtype();
+		taxID = ageneUniID.getTaxID();
 		return ageneUniID;
 	}
 
@@ -960,27 +887,26 @@ public abstract class GeneIDabs implements GeneIDInt {
 			return lsResult;
 		}
 		
-		ServNCBIID servGeneAnno = new ServNCBIID();
-		ServUniProtID servUniProtID = new ServUniProtID();
-
-		NCBIID ncbiid = new NCBIID();
+		ServNCBIUniID servGeneAnno = new ServNCBIUniID();
+		AgeneUniID ncbiid = AgeneUniID.creatAgeneUniID(GeneID.IDTYPE_GENEID);
 		ncbiid.setAccID(accID);
 		ncbiid.setTaxID(taxID);
 		
 		// 先查ncbiid
-		ArrayList<NCBIID> lsNcbiids = servGeneAnno.queryLsNCBIID(ncbiid);
+		ArrayList<? extends AgeneUniID> lsNcbiids = servGeneAnno.queryLsAgeneUniID(ncbiid);
 		if (lsNcbiids != null && lsNcbiids.size() > 0) {
 			return getLsGeneIDinfo(lsNcbiids);
 		}
 		// 查不到查uniprotID
 		else {
-			UniProtID uniProtID = new UniProtID();
+			AgeneUniID uniProtID = AgeneUniID.creatAgeneUniID(GeneID.IDTYPE_UNIID);
 			uniProtID.setAccID(accID);
 			uniProtID.setTaxID(taxID);
-			ArrayList<UniProtID> lsUniProtIDs = servUniProtID.queryLsUniProtID(uniProtID);
+			ArrayList<? extends AgeneUniID> lsUniProtIDs = servGeneAnno.queryLsAgeneUniID(uniProtID);
 			return getLsGeneIDinfo(lsUniProtIDs);
 		}
 	}
+	
 	/** 指定一系列的NCBIID或者UniID，进行过滤，
 	 * 主要是过滤
 	 * 如果同一个物种得到了两个以上的accID，那么跳过数据库为DBINFO_SYNONYMS的项目 */

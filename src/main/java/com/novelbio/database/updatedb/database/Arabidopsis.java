@@ -1,12 +1,8 @@
 package com.novelbio.database.updatedb.database;
 
-import java.util.ArrayList;
-import java.util.Set;
-
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.generalConf.NovelBioConst;
 
 /**
  * 将tair10的数据导入数据库

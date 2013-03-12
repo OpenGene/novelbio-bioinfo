@@ -32,12 +32,13 @@ import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.fastq.FastQRecordFilter;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.GffChrStatistics;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailCG;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashCufflinkGTF;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGTF;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneNCBI;
@@ -53,6 +54,7 @@ import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.listOperate.BoxPlotList;
 import com.novelbio.base.dataStructure.listOperate.HistBin;
 import com.novelbio.base.dataStructure.listOperate.HistList;
@@ -77,9 +79,21 @@ public class mytest {
 	private static Logger logger = Logger.getLogger(mytest.class);
 	
 	public static void main(String[] args) throws IOException, URISyntaxException {
-		GffChrAbs gffChrAbs = new GffChrAbs(4577);
-		SamFile
-		System.out.println(gffChrAbs.getGffHashGene().getGffFilename());
+		Species species = new Species(9606);
+		
+		System.out.println(species.getGffDB());
+		System.out.println(species.getGffType());
+		System.out.println(species.getGffFile());
+		
+		species = new Species(10090);
+		
+		System.out.println(species.getGffDB());
+		System.out.println(species.getGffType());
+		System.out.println(species.getGffFile());
+		species.setGffDB("UCSC");
+		System.out.println(species.getGffDB());
+		System.out.println(species.getGffType());
+		System.out.println(species.getGffFile());
 	}
 	
 	private void testMapTophat() {
@@ -108,6 +122,7 @@ public class mytest {
 		ctrlRNAmap.setThreadNum(4);
 		ctrlRNAmap.mapping();
 	}
+	
 	private void wzfBlast() {
 		TxtReadandWrite txtRead = new TxtReadandWrite("/media/winF/NBC/Project/Project_WZF/compareGenomic/blast/result", false);
 		Set<String> setGeneName = new HashSet<String>();

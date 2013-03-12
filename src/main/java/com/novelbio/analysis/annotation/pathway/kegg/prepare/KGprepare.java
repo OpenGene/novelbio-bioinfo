@@ -3,16 +3,14 @@ package com.novelbio.analysis.annotation.pathway.kegg.prepare;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Map;
 
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.database.domain.geneanno.AgeneUniID;
 import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.domain.geneanno.UniProtID;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.service.servgeneanno.ServNCBIID;
-import com.novelbio.database.service.servgeneanno.ServUniProtID;
+import com.novelbio.database.service.servgeneanno.ServNCBIUniID;
 
 
 
@@ -74,41 +72,43 @@ public class KGprepare {
 	 */
 	public ArrayList<String[]> getLsAcc2GenID(String accIDFile,int rowStartNum,int colNum,int taxID,boolean Sep) throws Exception 
 	{
-		ServNCBIID servNCBIID = new ServNCBIID();
-		ServUniProtID servUniProtID = new ServUniProtID();
+		ServNCBIUniID servNCBIID = new ServNCBIUniID();
 		Hashtable<String, String> hashAcc2Gen = new Hashtable<String, String>();
 		String geneID[] =KGprepare.getAccID(accIDFile, rowStartNum, colNum);
  
 		for (int i = 0; i < geneID.length; i++) {
 			///////////////////如果类似XM_002121.1类型，那么将.1去除////////////////////////////////////
-			NCBIID ncbiid=new NCBIID();UniProtID uniProtID=new UniProtID();
+			AgeneUniID ageneUniID = AgeneUniID.creatAgeneUniID(GeneID.IDTYPE_GENEID);
 			String accID = GeneID.removeDot(geneID[i]);
-			ncbiid.setAccID(accID);ncbiid.setTaxID(taxID);
-			uniProtID.setAccID(accID);uniProtID.setTaxID(taxID);
-			ArrayList<NCBIID> lsNcbiids=servNCBIID.queryLsNCBIID(ncbiid);
+			ageneUniID.setAccID(accID); 
+			ageneUniID.setTaxID(taxID);
+			ArrayList<? extends AgeneUniID> lsNcbiids=servNCBIID.queryLsAgeneUniID(ageneUniID);
 			//先查找NCBIID表
-			if (lsNcbiids != null && lsNcbiids.size() > 0) 
-			{
-				String tmpGeneID = lsNcbiids.get(0).getGeneId() + "" ;
+			if (lsNcbiids != null && lsNcbiids.size() > 0) {
+				String tmpGeneID = lsNcbiids.get(0).getGenUniID();
 				if (Sep) {
 					hashAcc2Gen.put(accID,tmpGeneID);
-				}
-				else {
+				} else {
 					hashAcc2Gen.put(tmpGeneID,tmpGeneID);
 				}
-				continue;
+			} else {
+				ageneUniID = AgeneUniID.creatAgeneUniID(GeneID.IDTYPE_UNIID);
+				ageneUniID.setAccID(accID); 
+				ageneUniID.setTaxID(taxID);
+				ArrayList<? extends AgeneUniID> lsUniProtIDs = servNCBIID.queryLsAgeneUniID(ageneUniID);
+				if (lsUniProtIDs != null && lsUniProtIDs.size() > 0) {
+					String tmpGeneID = lsUniProtIDs.get(0).getGenUniID();
+					if (Sep) {
+						hashAcc2Gen.put(accID,tmpGeneID);
+					}
+					else {
+						hashAcc2Gen.put(tmpGeneID,tmpGeneID);
+					}
+				}
 			}
+			
 			//没找到的话，查找UniProtID表
-			ArrayList<UniProtID> lsUniProtIDs=servUniProtID.queryLsUniProtID(uniProtID);
-			if (lsUniProtIDs != null && lsUniProtIDs.size() > 0) {
-				String tmpGeneID = lsUniProtIDs.get(0).getUniID();
-				if (Sep) {
-					hashAcc2Gen.put(accID,tmpGeneID);
-				}
-				else {
-					hashAcc2Gen.put(tmpGeneID,tmpGeneID);
-				}
-			}
+		
 		}
 		ArrayList<String[]> lsAcc2GenID=new ArrayList<String[]>();
 		

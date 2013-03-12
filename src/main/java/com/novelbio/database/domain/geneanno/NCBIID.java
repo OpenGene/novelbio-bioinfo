@@ -9,7 +9,9 @@ import com.novelbio.database.model.modgeneid.GeneID;
  */
 public class NCBIID extends AgeneUniID{
 	private long geneID;
-
+	
+	protected NCBIID() {}
+	
 	public long getGeneId() {
 		return geneID;
 	}
@@ -48,7 +50,11 @@ public class NCBIID extends AgeneUniID{
 	}
 	@Override
 	public void setGenUniID(String genUniID) {
-		setGeneId(Long.parseLong(genUniID));
+		try {
+			setGeneId(Long.parseLong(genUniID));
+		} catch (Exception e) {
+			setGeneId(0);
+		}
 	}
 	@Override
 	public String getGeneIDtype() {

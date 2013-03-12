@@ -184,6 +184,15 @@ GO_REF:0000004<br>
 	 */
 	void setUpdateDBinfo(DBAccIDSource DBInfo, boolean overlapDBinfo);
 	/**
+	 * 记录该ID的物种ID和数据库信息，用于修正以前的数据库
+	 * 
+	 * @param taxID
+	 * @param DBInfo
+	 * @param 是否用本DBInfo修正以前的DBInfo
+	 * 不管是true还是false，geneinfo都会用其进行修正
+	 */
+	void setUpdateDBinfo(String DBInfo, boolean overlapDBinfo);
+	/**
 	 * 记录可能用于升级数据库的ID 譬如获得一个ID与NCBI的别的ID有关联，就用别的ID来查找数据库，以便获得该accID所对应的genUniID
 	 * <b>重新设定的时候会清空</b>
 	 * @param updateUniID

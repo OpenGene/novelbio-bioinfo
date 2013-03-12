@@ -9,7 +9,6 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.generalConf.NovelBioConst;
 
 /**
  * 
@@ -18,18 +17,6 @@ import com.novelbio.generalConf.NovelBioConst;
  *
  */
 public class ImportDB {
-	public static void main(String[] args) {
-		GffHashGene gffHashGene = new GffHashGene(GffType.NCBI, "/media/winE/NBCplatform/genome/zebrafish/ref_Zv9_top_level.gff3");
-		GffDetailGene gffDetailGene = gffHashGene.searchLOC("trgv5");
-		System.out.println(gffDetailGene.getStartCis() + "\t" + gffDetailGene.getEndCis());
-		for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-			System.out.println(gffGeneIsoInfo.getName());
-			for (ExonInfo exonInfo : gffGeneIsoInfo) {
-				System.out.println(exonInfo.getStartCis() + "\t" + exonInfo.getEndCis());
-			}
-		}
-//		GffHashGTF.modifyEnsemblGTF("/media/winE/NBCplatform/genome/zebrafish/Danio_rerio.Zv9.70.gtf");
-	}
 	String databasePath2 = "/media/winE/Bioinformatics/DataBaseUpdate/";
 
 	
@@ -302,8 +289,7 @@ public class ImportDB {
 		blast.updateFile(blastFile);
 	}
 	
-	private void updateAffy()
-	{
+	private void updateAffy() {
 		String affyFile = "";
 		String outFile = "";
 		int taxID = 0;

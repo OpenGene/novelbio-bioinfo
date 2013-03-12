@@ -6,37 +6,26 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
-import java.util.Map.Entry;
 
-import javax.swing.ButtonGroup;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
-import javax.swing.table.DefaultTableModel;
-import org.jdesktop.application.Application;
 
-import com.novelbio.analysis.annotation.pathway.kegg.kGpath.Scr2Target;
-import com.novelbio.analysis.annotation.pathway.kegg.prepare.KGprepare;
 import com.novelbio.analysis.coexp.simpCoExp.SimpCoExp;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.base.gui.JTextFieldData;
-import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
 
 
@@ -293,7 +282,6 @@ public class GuiPearsonJpanel extends JPanel{
 				.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
 				.addComponent(jProgressBarPath, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
 				.addGap(0, 6, Short.MAX_VALUE));
-		Application.getInstance().getContext().getResourceMap(getClass()).injectComponents(this);
 	}
 	/**
 	 * 查看文件的鼠标或键盘事件响应时调用

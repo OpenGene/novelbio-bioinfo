@@ -6,12 +6,8 @@ import org.apache.log4j.Logger;
 import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.AgeneUniID;
 import com.novelbio.database.domain.geneanno.BlastInfo;
-import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.domain.geneanno.UniGeneInfo;
-import com.novelbio.database.domain.geneanno.UniProtID;
 import com.novelbio.database.model.modgo.GOInfoUniID;
-import com.novelbio.database.service.servgeneanno.ServNCBIID;
-import com.novelbio.database.service.servgeneanno.ServUniProtID;
 
 public class GeneIDUni extends GeneIDabs{
 	private static Logger logger = Logger.getLogger(GeneIDUni.class);
@@ -30,10 +26,10 @@ public class GeneIDUni extends GeneIDabs{
 		this.idType = GeneID.IDTYPE_UNIID;
 		this.taxID = taxID;
 		if (taxID == 0 || accID != null) {
-			UniProtID uniProtID = new UniProtID();
+			AgeneUniID uniProtID = AgeneUniID.creatAgeneUniID(GeneID.IDTYPE_UNIID);
 			uniProtID.setAccID(accID);
 			uniProtID.setGenUniID(genUniID);
-			ArrayList<UniProtID> lsTmp = servUniProtID.queryLsUniProtID(uniProtID);
+			ArrayList<? extends AgeneUniID> lsTmp = servNcbiUniID.queryLsAgeneUniID(uniProtID);
 			if (lsTmp.size() > 0) {
 				if (taxID == 0) {
 					this.taxID = lsTmp.get(0).getTaxID();
@@ -56,22 +52,18 @@ public class GeneIDUni extends GeneIDabs{
 
 	@Override
 	protected AgeneUniID getGenUniID(String genUniID, DBAccIDSource dbInfo) {
-		UniProtID uniProtID = new UniProtID();
-		uniProtID.setUniID(genUniID);
-		uniProtID.setTaxID(taxID); uniProtID.setDBInfo(dbInfo.toString());
-		servUniProtID = new ServUniProtID();
-		ArrayList<UniProtID> lsSubject = servUniProtID.queryLsUniProtID(uniProtID);
-		for (UniProtID uniProtID2 : lsSubject) {
-			UniProtID uniProtIDQueryAccID = new UniProtID();
-			uniProtIDQueryAccID.setAccID(uniProtID2.getAccID());
-			uniProtIDQueryAccID.setTaxID(taxID);
-			ArrayList<UniProtID> lsuniprotIDs = servUniProtID.queryLsUniProtID(uniProtIDQueryAccID);
-			if (lsuniprotIDs.size() == 1) {
-				return uniProtID2;
-			}
+		AgeneUniID uniProtID = AgeneUniID.creatAgeneUniID(GeneID.IDTYPE_UNIID);
+		uniProtID.setGenUniID(genUniID);
+		uniProtID.setTaxID(taxID); 
+		if (dbInfo != null) {
+			uniProtID.setDBInfo(dbInfo.toString());
 		}
-		if (dbInfo != null && !dbInfo.equals("")) {
-			return getGenUniID(genUniID, null);	
+		ArrayList<? extends AgeneUniID> lsSubject = servNcbiUniID.queryLsAgeneUniID(uniProtID);
+		if (lsSubject.size() > 0) {
+			return lsSubject.get(0);
+		}
+		if (dbInfo != null && !dbInfo.toString().equals("")) {
+			return getGenUniID(genUniID, null);
 		}
 		return null;
 	}

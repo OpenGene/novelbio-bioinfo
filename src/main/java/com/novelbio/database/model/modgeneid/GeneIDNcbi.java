@@ -10,7 +10,6 @@ import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.model.modgo.GOInfoGenID;
-import com.novelbio.database.service.servgeneanno.ServNCBIID;
 
 public class GeneIDNcbi extends GeneIDabs {
 	private static Logger logger = Logger.getLogger(GeneIDNcbi.class);
@@ -32,10 +31,10 @@ public class GeneIDNcbi extends GeneIDabs {
 		super.idType = GeneID.IDTYPE_GENEID;
 		this.taxID = taxID;
 		if (taxID == 0 || accID != null) {
-			NCBIID ncbiid = new NCBIID();
+			AgeneUniID ncbiid = AgeneUniID.creatAgeneUniID(GeneID.IDTYPE_GENEID);
 			ncbiid.setAccID(accID);
 			ncbiid.setGenUniID(genUniID);
-			ArrayList<NCBIID> lsTmp = servNCBIID.queryLsNCBIID(ncbiid);
+			ArrayList<? extends AgeneUniID> lsTmp = servNcbiUniID.queryLsAgeneUniID(ncbiid);
 			if (lsTmp.size() > 0) {
 				if (taxID == 0) {
 					this.taxID = lsTmp.get(0).getTaxID();
@@ -61,20 +60,15 @@ public class GeneIDNcbi extends GeneIDabs {
 
 	@Override
 	protected AgeneUniID getGenUniID(String genUniID, DBAccIDSource dbInfo) {
-		int geneID = Integer.parseInt(genUniID);
-		NCBIID ncbiid = new NCBIID();
-		ncbiid.setGeneId(geneID);
-		ncbiid.setTaxID(taxID); ncbiid.setDBInfo(dbInfo.toString());
-		ServNCBIID servGeneAnno = new ServNCBIID();
-		ArrayList<NCBIID> lsSubject = servGeneAnno.queryLsNCBIID(ncbiid);
-		for (NCBIID ncbiid2 : lsSubject) {
-			NCBIID ncbiidQueryAccID = new NCBIID();
-			ncbiidQueryAccID.setAccID(ncbiid2.getAccID());
-			ncbiidQueryAccID.setTaxID(taxID);
-			ArrayList<NCBIID> lsncbiid = servGeneAnno.queryLsNCBIID(ncbiidQueryAccID);
-			if (lsncbiid.size() == 1) {
-				return ncbiid2;
-			}
+		AgeneUniID ncbiid = AgeneUniID.creatAgeneUniID(GeneID.IDTYPE_GENEID);
+		ncbiid.setGenUniID(genUniID);
+		ncbiid.setTaxID(taxID); 
+		if (dbInfo != null) {
+			ncbiid.setDBInfo(dbInfo.toString());
+		}
+		ArrayList<? extends AgeneUniID> lsSubject = servNcbiUniID.queryLsAgeneUniID(ncbiid);
+		if (lsSubject.size() > 0) {
+			return lsSubject.get(0);
 		}
 		if (dbInfo != null && !dbInfo.toString().equals("")) {
 			return getGenUniID(genUniID, null);

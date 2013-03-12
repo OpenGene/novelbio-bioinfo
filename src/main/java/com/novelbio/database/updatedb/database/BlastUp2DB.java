@@ -1,14 +1,14 @@
 package com.novelbio.database.updatedb.database;
 
+import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.generalConf.NovelBioConst;
 
 public class BlastUp2DB extends ImportPerLine{
 	public  BlastUp2DB() {
 		this.readFromLine = 1;
 	}
 	int subTaxID = 0;
-	String queryDBinfo = "";
+	String queryDBinfo;
 	public void setQueryDBinfo(String queryDBinfo) {
 		this.queryDBinfo = queryDBinfo;
 		setReadFromLine(1);
@@ -65,14 +65,13 @@ public class BlastUp2DB extends ImportPerLine{
 		GeneID copedID = null;
 		if (!queryIDType.equals(GeneID.IDTYPE_ACCID)) {
 			copedID = new GeneID(queryIDType, ss[0], taxID);
-		}
-		else {
+		} else {
 			copedID = new GeneID(ss[0], taxID);
 		}
 		
 		copedID.setUpdateDBinfo(queryDBinfo, false);
 		if (!blastIDType.equals(GeneID.IDTYPE_ACCID)) {
-			copedID.setUpdateBlastInfo(ss[1],blastIDType,  blastDBinfo, subTaxID, Double.parseDouble(ss[10]), Double.parseDouble(ss[2]));
+			copedID.setUpdateBlastInfo(ss[1], blastIDType, blastDBinfo, subTaxID, Double.parseDouble(ss[10]), Double.parseDouble(ss[2]));
 		}
 		else {
 			String accID = ss[1];

@@ -1,8 +1,12 @@
+import java.util.ArrayList;
+import java.util.List;
+
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.rnaseq.ExonJunction;
 import com.novelbio.analysis.seq.rnaseq.GffHashMerge;
 import com.novelbio.analysis.seq.rnaseq.TophatJunction;
@@ -19,7 +23,7 @@ import com.novelbio.generalConf.NovelBioConst;
 public class FengYing {
 	public static void main(String[] args) {
 		DateTime dateTime = new DateTime();
-		chicken();
+//		chicken();
 		mouse();
 		dateTime.setStartTime();
 //		topJunctionTest();
@@ -65,12 +69,17 @@ public class FengYing {
 //				parentFile + "mm10-ensemble-modified.gtf");
 		GffChrAbs gffChrAbs = new GffChrAbs(10090);
 //		System.out.println("finished reading GTF file");
-
+		
+		//TODO 设定断点
+		List<Align> lsAlign = new ArrayList<Align>();
+		lsAlign.add(new Align("chr6", 98504487, 99922471));
+		
 		ExonJunction exonJunction = new ExonJunction();
 		exonJunction.setGffHashGene(gffHashGene);
 		exonJunction.setSeqHash(gffChrAbs.getSeqHash());
 		exonJunction.setIsLessMemory(false);
 		exonJunction.setOneGeneOneSpliceEvent(false);
+		exonJunction.setLsReadRegion(lsAlign);
 //		Species species = new Species(10090, "mm10_NCBI");
 //		GffChrAbs gffChrAbs = new GffChrAbs(species);
 //		exonJunction.setSeqHash(gffChrAbs.getSeqHash());

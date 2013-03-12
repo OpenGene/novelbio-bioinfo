@@ -1,10 +1,17 @@
 package com.novelbio.database.domain.geneanno;
+
+import org.apache.log4j.Logger;
+
+import com.novelbio.database.model.modgeneid.GeneID;
+
 /**
  * 重写了equal和hash
  * 只要两个ncbiid的geneID相同，就认为这两个NCBIID相同
  * 但是如果geneID为0，也就是NCBIID根本没有初始化，那么直接返回false
  */
 public abstract class AgeneUniID {
+	private static final Logger logger = Logger.getLogger(AgeneUniID.class);
+	
     private int taxID;
 	private String accessID;
 	private String dbInfo;
@@ -70,4 +77,14 @@ public abstract class AgeneUniID {
 		return getGenUniID().hashCode(); 
 	}
 	
+	public static AgeneUniID creatAgeneUniID(String idType) {
+		if (idType.equals(GeneID.IDTYPE_GENEID)) {
+			return new NCBIID();
+		} else if (idType.equals(GeneID.IDTYPE_UNIID)) {
+			return new UniProtID();
+		} else {
+			logger.error("出现未知idType: " + idType);
+			return null;
+		}
+	}
 }
