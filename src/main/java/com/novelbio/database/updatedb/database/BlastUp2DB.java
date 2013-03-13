@@ -1,6 +1,5 @@
 package com.novelbio.database.updatedb.database;
 
-import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.model.modgeneid.GeneID;
 
 public class BlastUp2DB extends ImportPerLine{

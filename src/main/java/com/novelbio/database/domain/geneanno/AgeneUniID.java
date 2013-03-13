@@ -3,6 +3,8 @@ package com.novelbio.database.domain.geneanno;
 import org.apache.log4j.Logger;
 
 import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.service.servgeneanno.ServDBInfo;
+import com.novelbio.database.service.servgeneanno.ServNCBIUniID;
 
 /**
  * 重写了equal和hash
@@ -15,6 +17,10 @@ public abstract class AgeneUniID {
     private int taxID;
 	private String accessID;
 	private String dbInfo;
+	
+	ServDBInfo servDBInfo = new ServDBInfo();
+	ServNCBIUniID servNCBIUniID = new ServNCBIUniID();
+	DBInfo databaseInfo;
 	
 	public int getTaxID() {
 		return taxID;
@@ -44,11 +50,36 @@ public abstract class AgeneUniID {
 		this.accessID = accessID;
 	}  
 	
-	public String getDBInfo() {
-		return dbInfo;
+	public DBInfo getDataBaseInfo() {
+		if (dbInfo == null || dbInfo.equals("")) {
+			return databaseInfo;
+		}
+		if (databaseInfo == null) {
+			DBInfo dbInfo = new DBInfo();
+			dbInfo.setDbName(this.dbInfo);
+			databaseInfo = servDBInfo.queryDBInfo(dbInfo);
+		}
+		return databaseInfo;
 	}
+	
 	public void setDBInfo(String dbInfo) {
 		this.dbInfo = dbInfo;
+	}
+	
+	public void setDataBaseInfo(DBInfo dbInfo) {
+		this.dbInfo = dbInfo.getDbName();
+		this.databaseInfo = dbInfo;
+	}
+	
+	/**
+	 * <b>没有accID，放弃升级</b>
+	 * 没有该ID就插入，有该ID的话看如果需要override，如果override且数据库不一样，就覆盖升级
+	 * @param nCBIID
+	 * @param override
+	 */
+	public void update(boolean overrideDBinfo) {
+		servNCBIUniID.updateNCBIUniID(this, overrideDBinfo);
+		servDBInfo.updateDBInfo(databaseInfo);
 	}
 	
 	/**

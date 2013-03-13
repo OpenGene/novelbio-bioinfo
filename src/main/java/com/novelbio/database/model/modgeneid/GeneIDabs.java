@@ -7,18 +7,16 @@ import java.util.Comparator;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
-import org.springframework.validation.DataBinder;
 
 import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.AGeneInfo;
 import com.novelbio.database.domain.geneanno.AgeneUniID;
 import com.novelbio.database.domain.geneanno.BlastInfo;
+import com.novelbio.database.domain.geneanno.DBInfo;
 import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.domain.geneanno.Gene2Go;
-import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.domain.geneanno.SepSign;
-import com.novelbio.database.domain.geneanno.UniProtID;
 import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgo.GOInfoAbs;
@@ -53,10 +51,8 @@ public abstract class GeneIDabs implements GeneIDInt {
 	boolean isBlastedFlag = false;
 	ArrayList<GeneID> lsBlastGeneID = new ArrayList<GeneID>();
 	boolean overrideUpdateDBinfo = false;
-	String geneIDDBinfo;
 	// //////////////////// service 层
 	ServBlastInfo servBlastInfo = new ServBlastInfo();
-	ServNCBIUniID servNcbiUniID = new ServNCBIUniID();
 	ServGeneInfo servGeneInfo = new ServGeneInfo();
 	ServUniGeneInfo servUniGeneInfo = new ServUniGeneInfo();
 	ServGene2Go servGene2Go = new ServGene2Go();
@@ -68,7 +64,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 	 * @return
 	 */
 	@Override
-	public String getDBinfo() {
+	public DBInfo getDBinfo() {
 		return this.geneIDDBinfo;
 	}
 	/**
@@ -186,9 +182,9 @@ public abstract class GeneIDabs implements GeneIDInt {
 	}
 	
 	/**
-	 * 具体的accID，根据数据库情况抓一个出来
+	 * 具体的accID，根据其默认数据库情况抓一个出来
 	 */
-	public String getAccIDDBinfo() {
+	public String getAccID_With_DefaultDB() {
 		 String accID = getAccIDDBinfo(getDatabaseTyep());
 		 if (accID == null) {
 			 accID = getAccID();
@@ -704,14 +700,14 @@ public abstract class GeneIDabs implements GeneIDInt {
 			ageneUniID.setDBInfo(this.geneIDDBinfo);
 			ageneUniID.setGenUniID(genUniID);
 			ageneUniID.setTaxID(taxID);
-			servNcbiUniID.updateNCBIUniID(ageneUniID, overrideUpdateDBinfo);
+			ageneUniID.update(overrideUpdateDBinfo);
 		} else if (updateUniID) {
 			AgeneUniID uniProtID =  AgeneUniID.creatAgeneUniID(GeneID.IDTYPE_UNIID);
 			uniProtID.setAccID(accID);
 			uniProtID.setDBInfo(this.geneIDDBinfo);
 			uniProtID.setGenUniID(genUniID);
 			uniProtID.setTaxID(taxID);
-			servNcbiUniID.updateNCBIUniID(uniProtID, overrideUpdateDBinfo);
+			uniProtID.update(overrideUpdateDBinfo);
 			//防止下一个导入的时候出错
 //			try {
 //				Thread.sleep(10);
@@ -763,7 +759,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 				ageneUniID.setDBInfo(DBAccIDSource.Symbol.toString());
 				ageneUniID.setGenUniID(genUniID);
 				ageneUniID.setTaxID(taxID);
-				servNcbiUniID.updateNCBIUniID(ageneUniID, true);
+				ageneUniID.update(true);
 			}
 		}
 		if (geneInfoUpdate.getSynonym() != null) {
@@ -774,7 +770,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 				ageneUniID.setDBInfo(DBAccIDSource.Synonyms.toString());
 				ageneUniID.setGenUniID(genUniID);
 				ageneUniID.setTaxID(taxID);
-				servNcbiUniID.updateNCBIUniID(ageneUniID, true);
+				ageneUniID.update(true);
 			}
 		}
 	}
@@ -821,7 +817,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 			ArrayList<AgeneUniID> lsTmpGenUniID = getNCBIUniTax(refAccID, taxID);
 			if (lsTmpGenUniID.size() == 0) {
 				continue;
-			} else if (lsTmpGenUniID.size() == 1 && lsTmpGenUniID.get(0).getDBInfo().equals(GeneID.IDTYPE_GENEID)) {
+			} else if (lsTmpGenUniID.size() == 1 && lsTmpGenUniID.get(0).getGeneIDtype().equals(GeneID.IDTYPE_GENEID)) {
 				genUniID = lsTmpGenUniID.get(0).getGenUniID();
 				idType = GeneID.IDTYPE_GENEID;
 				taxID =  lsTmpGenUniID.get(0).getTaxID();
@@ -913,7 +909,7 @@ public abstract class GeneIDabs implements GeneIDInt {
 	private static ArrayList<AgeneUniID> getLsGeneIDinfo(ArrayList<? extends AgeneUniID> lsNcbiids) {
 		ArrayList<AgeneUniID> lsGeneIDinfo = new ArrayList<AgeneUniID>();
 		for (AgeneUniID geneUniID : lsNcbiids) {
-			if (geneUniID.getDBInfo().equals(DBAccIDSource.Synonyms.toString())) {
+			if (geneUniID.getDataBaseInfo().getDbName().equals(DBAccIDSource.Synonyms.toString())) {
 				continue;
 			}
 			lsGeneIDinfo.add(geneUniID);

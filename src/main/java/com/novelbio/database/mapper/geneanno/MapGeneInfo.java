@@ -7,7 +7,7 @@ import org.apache.ibatis.session.SqlSession;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.mapper.MapperSql;
 
-public interface MapGeneInfo extends MapperSql{
+public interface MapGeneInfo extends MapperSql {
 	/**
 	 * 用GeneInfo类去查找GeneInfo表
 	 * 主要是来看本列是否已经存在了

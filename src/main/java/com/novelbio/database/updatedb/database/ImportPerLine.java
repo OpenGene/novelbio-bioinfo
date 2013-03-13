@@ -13,8 +13,7 @@ import com.novelbio.database.domain.geneanno.TaxInfo;
  * @author zong0jie
  *
  */
-abstract class ImportPerLine
-{
+abstract class ImportPerLine {
 	private static Logger logger = Logger.getLogger(ImportPerLine.class);
 	static HashSet<Integer> setTaxID = null;
 	static String taxIDfile = "";

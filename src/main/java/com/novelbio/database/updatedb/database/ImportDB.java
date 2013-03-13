@@ -40,8 +40,10 @@ public class ImportDB {
 		importDB.updateSoftInfo();
 		importDB.updateSpecies();
 		
-//		updateNCBIID();
-//		updateUniprotID();
+		importDB.updateNCBIID();
+		importDB.updateUniprotID();
+		importDB.updateMicroarray();
+		
 		
 //		updateRiceID();//只导了前两个
 //		updateTAIR();
@@ -49,7 +51,7 @@ public class ImportDB {
 //		updateEnsembl();
 //		updateYeast();
 //		
-//		updateMicroarray();
+
 //		updateSoyBean();
 //		updateZeaMaize();
 //		updateBlast();
@@ -339,7 +341,7 @@ public class ImportDB {
 		normAffy = new NormAffy();
 		normAffy.setTaxID(taxID);
 		normAffy.setTxtWriteExcep(outFile);
-		normAffy.setDbInfo(NovelBioConst.DBINFO_AFFY_RICE_31);
+		normAffy.setDBInfo(NovelBioConst.DBINFO_AFFY_RICE_31);
 		normAffy.updateFile(affyFile);
 
 		/////////   Pig Porcine  //////////////////////////////////////////////;
@@ -387,7 +389,7 @@ public class ImportDB {
 		normAffy = new NormAffy();
 		normAffy.setTaxID(taxID);
 		normAffy.setTxtWriteExcep(outFile);
-		normAffy.setDbInfo(NovelBioConst.DBINFO_AFFY_MOUSE_430_2);
+		normAffy.setDBInfo(NovelBioConst.DBINFO_AFFY_MOUSE_430_2);
 		normAffy.updateFile(affyFile);
 	}
 	
@@ -411,8 +413,7 @@ public class ImportDB {
 		arabidopsis.update();
 	}
 	
-	private void updateZB()
-	{
+	private void updateZB() {
 		String zbEnsembl = "/media/winE/Bioinformatics/GenomeData/danio_rerio/ensembl_1_to_1.txt";
 		String zbGeneIDFile = "/media/winE/Bioinformatics/GenomeData/danio_rerio/gene2geneID.txt";
 		String zbGOFile = "/media/winE/Bioinformatics/GenomeData/danio_rerio/gene_association.zfin";
@@ -434,20 +435,20 @@ public class ImportDB {
 		zerbfishFile = "/media/winE/Bioinformatics/BLAST/result/zebrafish/affy2zerbfishRefSeq.xls";
 		zerbfishFile2 = "/media/winE/Bioinformatics/BLAST/result/zebrafish/affy2zerbfish_coped.xls";
 		microArrayBlast = new MicroArrayBlast();
-		microArrayBlast.setDbInfo(NovelBioConst.DBINFO_AFFY_ZEBRAFISH);
+		microArrayBlast.setDBInfo(NovelBioConst.DBINFO_AFFY_ZEBRAFISH);
 		microArrayBlast.setGeneID(GeneID.IDTYPE_ACCID);
 //		microArrayBlast.updateFile(zerbfishFile, false);
 //		microArrayBlast.updateFile(zerbfishFile2, false);
 		////////////////////  水稻  /////////////////////////////
 		zerbfishFile = "/media/winE/Bioinformatics/Affymetrix/rice/Affy2Loc.txt";
 		microArrayBlast = new MicroArrayBlast();
-		microArrayBlast.setDbInfo(NovelBioConst.DBINFO_AFFY_RICE_31);
+		microArrayBlast.setDBInfo(NovelBioConst.DBINFO_AFFY_RICE_31);
 //		microArrayBlast.setGeneID(CopedID.IDTYPE_ACCID);
 //		microArrayBlast.updateFile(zerbfishFile, false);
 		////////////////////  大豆  /////////////////////////////
 		zerbfishFile = "/media/winE/Bioinformatics/Affymetrix/soybean/affy2Gly_nr.txt";
 		microArrayBlast = new MicroArrayBlast();
-		microArrayBlast.setDbInfo(NovelBioConst.DBINFO_AFFY_GLMAX);
+		microArrayBlast.setDBInfo(NovelBioConst.DBINFO_AFFY_GLMAX);
 		microArrayBlast.setGeneID(GeneID.IDTYPE_ACCID);
 		microArrayBlast.setTaxID(3847);
 		microArrayBlast.updateFile(zerbfishFile, false);

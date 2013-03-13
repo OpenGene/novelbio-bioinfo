@@ -19,12 +19,6 @@ import com.novelbio.database.DBAccIDSource;
  *
  */
 public abstract class AGeneInfo {
-	public static void main(String[] args) {
-		AGeneInfo aGeneInfo = new GeneInfo();
-		System.out.println("sfesf");
-		System.out.println(aGeneInfo.validateField("ncbi", "NCBI@@CisiCp070", "fsefsefe", true).trim());
-	}
-	
 	private static Logger logger = Logger.getLogger(AGeneInfo.class);
 	static List<DBAccIDSource> lsDBinfo = new ArrayList<DBAccIDSource>();
 	static{

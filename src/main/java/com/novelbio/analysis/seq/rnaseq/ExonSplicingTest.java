@@ -20,7 +20,6 @@ import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster;
-import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.PredictAlt5Or3;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.PredictAltStart;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.PredictRetainIntron;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict;
@@ -316,14 +315,13 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		double ratio = exonCluster.getLength()/(readsLength * 3);
 		if (ratio > 1) {
 			prop = Math.pow(0.5, 1/ratio);
-		}
-		else {
+		} else {
 			prop = 1 - Math.pow(0.5, ratio);
 		}
+		
 		if (prop > 0.85) {
 			prop = 0.85;
-		}
-		else if (prop < 0.15) {
+		} else if (prop < 0.15) {
 			prop = 0.15;
 		}
 		return prop;

@@ -156,8 +156,8 @@ public class GeneID implements GeneIDInt{
 		return geneID.getAccID();
 	}
 	@Override
-	public String getAccIDDBinfo() {
-		return geneID.getAccIDDBinfo();
+	public String getAccID_With_DefaultDB() {
+		return geneID.getAccID_With_DefaultDB();
 	}
 	@Override
 	public String getGenUniID() {

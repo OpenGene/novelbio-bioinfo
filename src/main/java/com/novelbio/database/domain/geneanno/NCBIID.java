@@ -19,7 +19,7 @@ public class NCBIID extends AgeneUniID{
 		this.geneID = geneID;
 	}
 	
-	
+
 	/**
 	 * 只要两个ncbiid的geneID相同，就认为这两个NCBIID相同
 	 * 但是如果geneID为0，也就是NCBIID根本没有初始化，那么直接返回false

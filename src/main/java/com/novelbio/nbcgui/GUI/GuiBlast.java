@@ -1,28 +1,24 @@
 package com.novelbio.nbcgui.GUI;
 
-import javax.swing.JPanel;
-import javax.swing.SpringLayout;
-import javax.swing.JTextField;
-import javax.swing.JButton;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import javax.swing.JComboBox;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import com.novelbio.analysis.annotation.blast.BlastNBC;
 import com.novelbio.analysis.annotation.blast.BlastType;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
-import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JTextFieldData;
-import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.database.updatedb.database.BlastUp2DB;
-
-import javax.swing.JCheckBox;
 
 public class GuiBlast extends JPanel implements GuiNeedOpenFile{
 	private JTextField textQueryFasta;

@@ -1,17 +1,11 @@
 package com.novelbio.database.updatedb.database;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import com.novelbio.analysis.annotation.blast.BlastNBC;
-import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
-import com.novelbio.analysis.seq.genome.GffChrSeq;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.generalConf.NovelBioConst;
 /**
  * 常规affy的注释文件，仅导入affy探针，其他注释通通不导入<br>
  * <b>如果导入不进去，考虑将ss[8]放入筛选条件</b><br>
@@ -43,31 +37,33 @@ public class NormAffy extends ImportPerLine {
 		if (ss[0].startsWith("Probe")) {
 			return true;
 		}
-		GeneID copedID = new GeneID(ss[0], taxID);
-		copedID.setUpdateDBinfo(dbInfo, true);
+		GeneID geneID = new GeneID(ss[0], taxID);
+		geneID.setUpdateDBinfo(dbInfo, true);
 		if (!ss[18].equals("---")) {
 			String[] ssGeneID = ss[18].split("///");
-			copedID.setUpdateGeneID(ssGeneID[0].trim(), GeneID.IDTYPE_GENEID);
+			geneID.setUpdateGeneID(ssGeneID[0].trim(), GeneID.IDTYPE_GENEID);
 		}
 		ArrayList<String> lsRefAccID = new ArrayList<String>();
 //		addRefAccID(lsRefAccID, ss[8]);
-		addRefAccID(lsRefAccID, ss[10]); addRefAccID(lsRefAccID, ss[14]); addRefAccID(lsRefAccID, ss[17]);
-		addRefAccID(lsRefAccID, ss[19]); addRefAccID(lsRefAccID, ss[22]);
-		addRefAccID(lsRefAccID, ss[23]); addRefAccID(lsRefAccID, ss[25]);
-		copedID.setUpdateRefAccID(lsRefAccID);
-		return copedID.update(false);
+		lsRefAccID.addAll(getLsRefAccID(ss[10])); lsRefAccID.addAll(getLsRefAccID(ss[14])); lsRefAccID.addAll(getLsRefAccID(ss[17]));
+		lsRefAccID.addAll(getLsRefAccID(ss[19])); lsRefAccID.addAll(getLsRefAccID(ss[22]));
+		lsRefAccID.addAll(getLsRefAccID(ss[23])); lsRefAccID.addAll(getLsRefAccID(ss[25]));
+		geneID.setUpdateRefAccID(lsRefAccID);
+		return geneID.update(false);
 	}
 	
-	private void addRefAccID(ArrayList<String> lsRefAccID, String cellInfo) {
-		if (cellInfo.equals("---")) {
-			return;
+	private List<String> getLsRefAccID(String cellInfo) {
+		List<String> lsResult = new ArrayList<String>();
+ 		if (cellInfo.equals("---")) {
+			return lsResult;
 		}
 		else {
 			String[] info = cellInfo.split("///");
 			for (String string : info) {
-				lsRefAccID.add(string);
+				lsResult.add(string);
 			}
 		}
+ 		return lsResult;
 	}
 	
 	/**

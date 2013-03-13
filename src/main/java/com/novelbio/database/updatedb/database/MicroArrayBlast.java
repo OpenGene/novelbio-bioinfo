@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Set;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.model.modgeneid.GeneID;
 
 /**
@@ -59,13 +59,9 @@ public class MicroArrayBlast {
 	 * 将指定的文件导入数据库，必须是每一行都能单独导入的表
 	 * 如果需要导入多行，譬如amiGO的信息，请覆盖该方法
 	 */
-	public void updateFile(String gene2AccFile, boolean gzip) {
-		TxtReadandWrite txtGene2Acc;
+	public void updateFile(String gene2AccFile) {
+		TxtReadandWrite txtGene2Acc = new TxtReadandWrite(gene2AccFile, false);
 		TxtReadandWrite txtOut = new TxtReadandWrite(FileOperate.changeFileSuffix(gene2AccFile, "_out", "txt"), true);
-		if (gzip)
-			txtGene2Acc = new TxtReadandWrite(TxtReadandWrite.GZIP, gene2AccFile);
-		else 
-			txtGene2Acc = new TxtReadandWrite(gene2AccFile, false);
 
 		ArrayList<String[]> lsInfo = txtGene2Acc.ExcelRead(1, 1, -1, -1, 1);
 		//排个序，按照evalue和identity排序
@@ -92,70 +88,31 @@ public class MicroArrayBlast {
 		});
 		//将排序后的lsInfo去重复
 		ArrayList<String[]> lsFinal = new ArrayList<String[]>();
-		HashSet<String> hashID = new HashSet<String>();
+		Set<String> setID = new HashSet<String>();
 		for (String[] strings : lsInfo) {
-			if (hashID.contains(strings[0])) {
+			if (setID.contains(strings[0])) {
 				continue;
 			}
 			lsFinal.add(strings);
 		}
 		//将去重复和排序的比对结果导入数据库
-		boolean flag = true;//是否导入数据库
 		for (String[] strings : lsFinal) {
-			if (Double.parseDouble(strings[2]) > 90//一致序列大于90%
-					&&
-			(Double.parseDouble(strings[10]) < 1e-90
-			||
-			  (Double.parseDouble(strings[3]) > 100//比对长度大于100
-					&& 
-			  Double.parseDouble(strings[4])+Double.parseDouble(strings[5]) <= Double.parseDouble(strings[3])*0.03//错配和gap之和小于比对长度的0.03
-			  )
-		   )
-	      ) {
-				flag = true;
-			}
-			else {
-				flag = false;
-			}
-			if (!flag) {
+			if(!isAddToDB(strings)) {
 				continue;
 			}
 			
-			GeneID copedID = new GeneID(strings[0], taxID);
-
+			GeneID geneID = new GeneID(strings[0], taxID);
 			//如果数据库中没有这个ID，那么就导入数据库
-			if (copedID.getIDtype().equals(GeneID.IDTYPE_ACCID)) {
+			if (geneID.getIDtype().equals(GeneID.IDTYPE_ACCID)) {
 				if (!geneIDType.equals(GeneID.IDTYPE_ACCID)) {
-					copedID.setUpdateGeneID(strings[1], geneIDType);
-				}
-				else {
-					copedID.setUpdateRefAccID(strings[1]);
+					geneID.setUpdateGeneID(strings[1], geneIDType);
+				} else {
+					geneID.setUpdateRefAccID(strings[1]);
 				}
 			}
-			///////////////////////////数据库中已经有这个ID了，那么首先看是否是同一个ID，如果不是的话，看evalue是否为0，identity是否大于99，是的话就覆盖掉////////////////////////
-			//////////////////////   有待实现   //////////////////////////////////////////////////////////////////////////////////
-			else {
-				//TODO
-//				Double evalue = Double.parseDouble(strings[10]);
-//				Double identity = Double.parseDouble(strings[2]);
-//				//不是很相似就去除
-//				if (evalue > 1e-200 || identity < 99) {
-//					return;
-//				}
-//				
-//				CopedID copedID2 = null; String genUniID = "";
-//				if (geneIDType.equals(CopedID.IDTYPE_ACCID)) {
-//					copedID2 = new CopedID(strings[1], taxID);
-//					genUniID = copedID2.getGenUniID();
-//				}
-//				if (copedID.getGenUniID().equals(genUniID)) {
-//					return;
-//				}
-//				copedID.setUpdateAccID(accID);
-				continue;
-			}
-			copedID.setUpdateDBinfo(dbInfo, true);
-			if (copedID.update(false)) {
+			
+			geneID.setUpdateDBinfo(dbInfo, true);
+			if (geneID.update(false)) {
 				txtOut.writefileln(strings);
 			}
 		}
@@ -164,5 +121,28 @@ public class MicroArrayBlast {
 		txtGene2Acc.close();
 	}
 	
-
+	/**
+	 * 是否能blast到合适的基因并导入数据库
+	 * @param inputBlastInfo blast的那一行
+	 * @return
+	 */
+	private boolean isAddToDB(String[] inputBlastInfo) {
+		boolean flag = false;
+		if (Double.parseDouble(inputBlastInfo[2]) > 90//一致序列大于90%
+				&&
+		(Double.parseDouble(inputBlastInfo[10]) < 1e-90
+		||
+		  (Double.parseDouble(inputBlastInfo[3]) > 100//比对长度大于100
+				&& 
+		  Double.parseDouble(inputBlastInfo[4])+Double.parseDouble(inputBlastInfo[5]) <= Double.parseDouble(inputBlastInfo[3])*0.05//错配和gap之和小于比对长度的0.03
+		  )
+	   )
+      ) {
+			flag = true;
+		}
+		else {
+			flag = false;
+		}
+		return flag;
+	}
 }

@@ -6,6 +6,7 @@ import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.AGeneInfo;
 import com.novelbio.database.domain.geneanno.BlastInfo;
+import com.novelbio.database.domain.geneanno.DBInfo;
 import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.domain.kegg.KGpathway;
@@ -253,11 +254,11 @@ GO_REF:0000004<br>
 	 * 如果没有则返回null
 	 * @return
 	 */
-	String getDBinfo();
+	DBInfo getDBinfo();
 	/**
 	 * 具体的accID，根据数据库情况抓一个出来
 	 */
-	String getAccIDDBinfo();
+	String getAccID_With_DefaultDB();
 
 	public GOInfoAbs getGOInfo();
 
