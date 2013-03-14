@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">  
+<!--singleTable Operate in FriceDB -->
+<mapper namespace="com.novelbio.database.mapper.geneanno.MapDBInfo">
+	<select id="queryDBInfo" parameterType="DBinfo" resultType="DBInfo">
+		select *
+		from dbinfo
+		<where>
+			<if test="dbName !='' and dbName !=null">
+				dbname = #{dbName} 
+			</if>
+			<if test="dbOrg !=null and dbOrg != ''">
+				and dbOrg = #{dbOrg} 
+			</if>
+	    </where> 
+	</select>
+	<select id="queryLsDBInfo" parameterType="DBinfo" resultType="DBinfo">
+		select *
+		from dbinfo
+		<where>
+			<if test="dbName !='' and dbName !=null">
+				dbName = #{dbName} 
+			</if>
+			<if test="dbOrg !=null and dbOrg != ''">
+				and dbOrg = #{dbOrg} 
+			</if>
+	    </where> 
+	</select>
+	<insert id="insertDBInfo" parameterType="DBinfo">
+		insert into dbinfo (dbName,dbOrg,description)
+		values (#{dbName},#{dbOrg},#{description})
+	</insert>
+	<update id="updateDBInfo" parameterType="DBinfo">
+		update ncbiid
+		<set>
+			<if test="dbName !=null and dbName !=''">
+				dbName = #{dbName},
+			</if>
+			<if test="dbOrg !=null and dbOrg !=''">
+				dbOrg = #{dbOrg}
+			</if>
+			<if test="description !=null and description !=''">
+				description = #{description}
+			</if>
+		</set>
+		where
+			<if test="dbName !='' and dbName !=null">
+				dbName = #{dbName} 
+			</if>
+			<if test="dbOrg !=null and dbOrg != ''">
+				and dbOrg = #{dbOrg} 
+			</if>
+	</update>
+</mapper>

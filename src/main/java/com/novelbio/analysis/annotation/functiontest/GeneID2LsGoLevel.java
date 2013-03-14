@@ -41,7 +41,7 @@ public class GeneID2LsGoLevel extends GeneID2LsGo {
 			lsGo = geneID.getGene2GO(goType);
 		}
 		this.geneID = geneID;
-		this.geneUniID = geneID.getGenUniID();
+		this.geneUniID = geneID.getGeneUniID();
 		for (Go2Term go2Term : selectGo(lsGo)) {
 			setItemID.add(go2Term.getGoID());
 		}

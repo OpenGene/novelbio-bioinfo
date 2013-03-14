@@ -1,5 +1,6 @@
 package com.novelbio.database.domain.geneanno;
 
+import org.apache.ibatis.metadata.Database;
 import org.apache.log4j.Logger;
 
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -28,8 +29,16 @@ public abstract class AgeneUniID {
 	public void setTaxID(int taxID) {
 		this.taxID = taxID;
 	}
+	/** geneUniID是否不为0，null 和 "" */
+	public boolean isValidGenUniID() {
+		if (getGenUniID() == null || getGenUniID().equals("") || getGenUniID().equals("0")) {
+			return false;
+		}
+		return true;
+	}
+	
 	/** 返回GeneID.NCBIID等 */
-	public abstract String getGeneIDtype();
+	public abstract Integer getGeneIDtype();
 	public abstract String getGenUniID();
 	public abstract void setGenUniID(String genUniID);
 	/**
@@ -51,24 +60,39 @@ public abstract class AgeneUniID {
 	}  
 	
 	public DBInfo getDataBaseInfo() {
-		if (dbInfo == null || dbInfo.equals("")) {
-			return databaseInfo;
-		}
-		if (databaseInfo == null) {
-			DBInfo dbInfo = new DBInfo();
-			dbInfo.setDbName(this.dbInfo);
-			databaseInfo = servDBInfo.queryDBInfo(dbInfo);
-		}
+		fillDataBase();
 		return databaseInfo;
 	}
 	
-	public void setDBInfo(String dbInfo) {
+	public void setDataBaseInfo(String dbInfo) {
 		this.dbInfo = dbInfo;
+		fillDataBase();
 	}
 	
-	public void setDataBaseInfo(DBInfo dbInfo) {
-		this.dbInfo = dbInfo.getDbName();
-		this.databaseInfo = dbInfo;
+	private void fillDataBase() {
+		if (this.dbInfo == null || this.dbInfo.equals("")) {
+			this.databaseInfo = null;
+			return;
+		}
+		
+		if (this.databaseInfo == null) {
+			DBInfo databaseInfo = new DBInfo();
+			databaseInfo.setDbName(dbInfo);
+			this.databaseInfo = servDBInfo.queryDBInfo(databaseInfo);
+		}
+		if (this.databaseInfo == null) {
+			this.databaseInfo = new DBInfo();
+			this.databaseInfo.setDbName(dbInfo);
+		}
+	}
+	
+	public void setDataBaseInfo(DBInfo databaseInfo) {
+		this.databaseInfo = databaseInfo;
+		if (databaseInfo == null) {
+			this.dbInfo = null;
+		} else {
+			this.dbInfo = databaseInfo.getDbName();
+		}		
 	}
 	
 	/**
@@ -93,25 +117,32 @@ public abstract class AgeneUniID {
 		if (getClass() != obj.getClass()) return false;
 		
 		AgeneUniID otherObj = (AgeneUniID)obj;
-		if(getGenUniID() == null || getGenUniID().trim().equals("") || otherObj.getGenUniID() == null || otherObj.getGenUniID().trim().equals("")) {
-			return false;
+		if(!isValidGenUniID() && !isValidGenUniID()) {
+			if (accessID == null && otherObj.accessID == null) {
+				return true;
+			} else if (accessID != null) {
+				return accessID.equals(otherObj.accessID);
+			} else if (otherObj.accessID != null) {
+				return otherObj.accessID.equals(accessID);
+			}
+		} else if (isValidGenUniID()) {
+			return getGenUniID().equals(otherObj.getGenUniID());
+		} else if (otherObj.isValidGenUniID()) {
+			return otherObj.getGenUniID().equals(getGenUniID());
 		}
-		if (getGenUniID().equals("0") || otherObj.getGenUniID().equals("0") ) {
-			return false;
-		}
-		return getGenUniID().equals(otherObj.getGenUniID());
+		return false;
 	}
 	/**
 	 * 重写hashcode，也是仅针对geneID
 	 */
-	public int hashCode(){ 
+	public int hashCode(){
 		return getGenUniID().hashCode(); 
 	}
 	
-	public static AgeneUniID creatAgeneUniID(String idType) {
-		if (idType.equals(GeneID.IDTYPE_GENEID)) {
+	public static AgeneUniID creatAgeneUniID(int idType) {
+		if (idType == GeneID.IDTYPE_GENEID) {
 			return new NCBIID();
-		} else if (idType.equals(GeneID.IDTYPE_UNIID)) {
+		} else if (idType == GeneID.IDTYPE_UNIID) {
 			return new UniProtID();
 		} else {
 			logger.error("出现未知idType: " + idType);

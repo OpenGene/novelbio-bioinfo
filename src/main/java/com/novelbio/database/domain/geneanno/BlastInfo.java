@@ -47,22 +47,22 @@ public class BlastInfo implements Comparable<BlastInfo>{
 		
 	     if (AccIDQ != null && !AccIDQ.equals("")) {
 			copedIDQ = new GeneID(AccIDQ, taxIDQ);
-			this.queryID = copedIDQ.getGenUniID();
+			this.queryID = copedIDQ.getGeneUniID();
 			this.queryTax = copedIDQ.getTaxID();
 	     }
 		
 	     if (AccIDS != null && !AccIDS.equals("")) {
 	    	 copedIDS = new GeneID(AccIDS, taxIDS);
-	    	 this.subjectID = copedIDS.getGenUniID();
+	    	 this.subjectID = copedIDS.getGeneUniID();
 	    	 this.subjectTax = copedIDS.getTaxID();
-	    	 this.subjectTab = copedIDS.getIDtype();
+	    	 this.subjectTab = copedIDS.getIDtype() + "";
 	     }
 	}
 	/**
 	 * 如果是要导入数据库，必须用该方式new一个<br>
 	 * 还需要设定evalue, identity和queryDB, subjectDB
 	 */
-	public BlastInfo(String AccIDQ, int taxIDQ , String genUniIDS, String IDType,int taxIDS) {
+	public BlastInfo(String AccIDQ, int taxIDQ , String genUniIDS, int IDType,int taxIDS) {
 		setDate();
 		if (taxIDQ < 0)
 			taxIDQ = 0;
@@ -71,15 +71,15 @@ public class BlastInfo implements Comparable<BlastInfo>{
 		
 	     if (AccIDQ != null && !AccIDQ.equals("")) {
 			copedIDQ = new GeneID(AccIDQ, taxIDQ);
-			this.queryID = copedIDQ.getGenUniID();
+			this.queryID = copedIDQ.getGeneUniID();
 			this.queryTax = copedIDQ.getTaxID();
 	     }
 		
 	     if (genUniIDS != null && !genUniIDS.equals("")) {
 	    	 copedIDS = new GeneID(IDType, genUniIDS, taxIDS);
-	    	 this.subjectID = copedIDS.getGenUniID();
+	    	 this.subjectID = copedIDS.getGeneUniID();
 	    	 this.subjectTax = copedIDS.getTaxID();
-	    	 this.subjectTab = copedIDS.getIDtype();
+	    	 this.subjectTab = copedIDS.getIDtype() + "";
 	     }
 	}
 	/**
@@ -101,7 +101,7 @@ public class BlastInfo implements Comparable<BlastInfo>{
 		}
 		
 		if (genUniQ != null && !genUniQ.equals("") && !genUniQ.equals("0")) {
-			this.queryID = copedIDQ.getGenUniID();
+			this.queryID = copedIDQ.getGeneUniID();
 			this.queryTax = copedIDQ.getTaxID();
 		}
 		/////////////////////////////////////////////////////////////////////////////
@@ -112,13 +112,18 @@ public class BlastInfo implements Comparable<BlastInfo>{
 		}
 		
 		if (genUniS != null && !genUniS.equals("") && !genUniS.equals("0")) {
-			this.subjectID = copedIDS.getGenUniID();
+			this.subjectID = copedIDS.getGeneUniID();
 			this.subjectTax = copedIDS.getTaxID();
-			this.subjectTab = copedIDS.getIDtype();
+			this.subjectTab = copedIDS.getIDtype() + "";
 		}
 	}
 	
-	
+	public GeneID getGeneIDQ() {
+		return copedIDQ;
+	}
+	public GeneID getGeneIDS() {
+		return copedIDS;
+	}
 	/**
 	 * 两个一起设定比较方便
 	 * @param evalue
@@ -130,8 +135,8 @@ public class BlastInfo implements Comparable<BlastInfo>{
 	}
 	/**
 	 * 两个一起设定比较方便
-//	 * @param queryDBInfo
-//	 * @param subDBInfo
+	 * @param queryDBInfo
+	 * @param subDBInfo
 	 */
 	public void setQueryDB_SubDB(String queryDBInfo, String subDBInfo) {
 		this.queryDB = queryDBInfo;
@@ -260,14 +265,14 @@ public class BlastInfo implements Comparable<BlastInfo>{
 	/**
 	 * 设置blast得到的数据是基于哪个表的，有NCBIID和UniprotID两个选择
 	 */
-	public void setSubjectTab(String subjectTab) {
-		this.subjectTab=subjectTab;
+	public void setSubTab(int subjectTab) {
+		this.subjectTab = subjectTab + "";
 	}
 	/**
 	 * 获得blast得到的数据是基于哪个表的，有NCBIID和UniprotID两个选择
 	 */
-	public String getSubjectTab() {
-		return this.subjectTab;
+	public int getSubTab() {
+		return Integer.parseInt(this.subjectTab);
 	}
 	/**
 	 * 按照evalue从小到大排序

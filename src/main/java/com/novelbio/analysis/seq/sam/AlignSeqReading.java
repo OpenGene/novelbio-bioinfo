@@ -97,7 +97,7 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 			}
 			readByte += samRecord.toString().getBytes().length;
 			readLines++;
-			if (readLines%50000 == 0) {
+			if (readLines%200 == 0) {
 				guiAnnoInfo = new GuiAnnoInfo();
 				guiAnnoInfo.setNum(readLines);
 				guiAnnoInfo.setDouble(readByte);

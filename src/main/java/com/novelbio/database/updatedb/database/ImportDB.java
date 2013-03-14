@@ -341,7 +341,7 @@ public class ImportDB {
 		normAffy = new NormAffy();
 		normAffy.setTaxID(taxID);
 		normAffy.setTxtWriteExcep(outFile);
-		normAffy.setDBInfo(NovelBioConst.DBINFO_AFFY_RICE_31);
+		normAffy.setDataBaseInfo(NovelBioConst.DBINFO_AFFY_RICE_31);
 		normAffy.updateFile(affyFile);
 
 		/////////   Pig Porcine  //////////////////////////////////////////////;
@@ -389,7 +389,7 @@ public class ImportDB {
 		normAffy = new NormAffy();
 		normAffy.setTaxID(taxID);
 		normAffy.setTxtWriteExcep(outFile);
-		normAffy.setDBInfo(NovelBioConst.DBINFO_AFFY_MOUSE_430_2);
+		normAffy.setDataBaseInfo(NovelBioConst.DBINFO_AFFY_MOUSE_430_2);
 		normAffy.updateFile(affyFile);
 	}
 	
@@ -435,20 +435,20 @@ public class ImportDB {
 		zerbfishFile = "/media/winE/Bioinformatics/BLAST/result/zebrafish/affy2zerbfishRefSeq.xls";
 		zerbfishFile2 = "/media/winE/Bioinformatics/BLAST/result/zebrafish/affy2zerbfish_coped.xls";
 		microArrayBlast = new MicroArrayBlast();
-		microArrayBlast.setDBInfo(NovelBioConst.DBINFO_AFFY_ZEBRAFISH);
+		microArrayBlast.setDataBaseInfo(NovelBioConst.DBINFO_AFFY_ZEBRAFISH);
 		microArrayBlast.setGeneID(GeneID.IDTYPE_ACCID);
 //		microArrayBlast.updateFile(zerbfishFile, false);
 //		microArrayBlast.updateFile(zerbfishFile2, false);
 		////////////////////  水稻  /////////////////////////////
 		zerbfishFile = "/media/winE/Bioinformatics/Affymetrix/rice/Affy2Loc.txt";
 		microArrayBlast = new MicroArrayBlast();
-		microArrayBlast.setDBInfo(NovelBioConst.DBINFO_AFFY_RICE_31);
+		microArrayBlast.setDataBaseInfo(NovelBioConst.DBINFO_AFFY_RICE_31);
 //		microArrayBlast.setGeneID(CopedID.IDTYPE_ACCID);
 //		microArrayBlast.updateFile(zerbfishFile, false);
 		////////////////////  大豆  /////////////////////////////
 		zerbfishFile = "/media/winE/Bioinformatics/Affymetrix/soybean/affy2Gly_nr.txt";
 		microArrayBlast = new MicroArrayBlast();
-		microArrayBlast.setDBInfo(NovelBioConst.DBINFO_AFFY_GLMAX);
+		microArrayBlast.setDataBaseInfo(NovelBioConst.DBINFO_AFFY_GLMAX);
 		microArrayBlast.setGeneID(GeneID.IDTYPE_ACCID);
 		microArrayBlast.setTaxID(3847);
 		microArrayBlast.updateFile(zerbfishFile, false);

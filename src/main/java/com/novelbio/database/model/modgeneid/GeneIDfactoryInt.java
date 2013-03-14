@@ -1,5 +1,7 @@
 package com.novelbio.database.model.modgeneid;
 
+import com.novelbio.database.domain.geneanno.AgeneUniID;
+
 public interface GeneIDfactoryInt {
 
 	/**
@@ -8,17 +10,21 @@ public interface GeneIDfactoryInt {
 	 * @param genUniID
 	 * @param taxID 物种ID
 	 */
-	public GeneIDInt createGeneID(String idType, String genUniID, int taxID);
+	public GeneIDInt createGeneID(int idType, String genUniID, int taxID);
 	
 	/**
 	 * 设定初始值，不验证 如果在数据库中没有找到相应的geneUniID，则返回null 只能产生一个CopedID，此时accID = ""
-	 * 
-	 * @param idType
-	 *            必须是IDTYPE中的一种
-	 * @param genUniID
+	 * @param accID
 	 * @param taxID
-	 *            物种ID
+	 * @return
 	 */
-	public GeneIDInt createGeneID(String accID,String idType, String genUniID, int taxID);
+	public GeneIDInt createGeneID(String accID, int taxID);
+	/**
+	 * 设定初始值，不验证 如果在数据库中没有找到相应的geneUniID，则返回null 只能产生一个CopedID，此时accID = ""
+	 * @param idType  必须是IDTYPE中的一种
+	 * @param genUniID
+	 * @param taxID 物种ID
+	 */
+	GeneIDInt createGeneID(AgeneUniID ageneUniID);
 
 }

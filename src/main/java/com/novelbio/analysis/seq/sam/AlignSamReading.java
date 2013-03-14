@@ -62,7 +62,6 @@ public class AlignSamReading extends AlignSeqReading {
 	private void readSelectLines() {
 		SamFile samFile = (SamFile)super.alignSeqFile;
 		GuiAnnoInfo guiAnnoInfo;
-		long readLines = 0;
 		for (Alignment alignment : lsAlignments) {
 			for (AlignRecord samRecord : samFile.readLinesOverlap(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs())) {
 				for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {
@@ -72,14 +71,19 @@ public class AlignSamReading extends AlignSeqReading {
 				if (suspendFlag) {
 					break;
 				}
-				readLines++;
-				guiAnnoInfo = new GuiAnnoInfo();
-				guiAnnoInfo.setNum(readLines);
-				setRunInfo(guiAnnoInfo);
+				
+				if (readLines%5000 == 0) {
+					guiAnnoInfo = new GuiAnnoInfo();
+					guiAnnoInfo.setNum(readLines);
+					guiAnnoInfo.setDouble(readByte);
+					guiAnnoInfo.setInfo("reading " + readLines + " lines");
+					setRunInfo(guiAnnoInfo);
+				}
 				samRecord = null;
 			}
 		}
 	}
+	
 	/** 清空AlignmentRecorder和readByte和readLines，但不清除samFile */
 	public void clear() {
 		super.clear();

@@ -214,7 +214,7 @@ public abstract class FunctionTest {
 			if (geneID2LsItem == null) {
 				continue;
 			}
-			mapGeneID2LsItem.put(geneID.getGenUniID(), geneID2LsItem);
+			mapGeneID2LsItem.put(geneID.getGeneUniID(), geneID2LsItem);
 		}
 		return mapGeneID2LsItem;
 	}
@@ -266,7 +266,7 @@ public abstract class FunctionTest {
 				continue;
 			}
 			setAccID.add(geneID.getAccID());
-			mapGeneUniID2LsGeneID.put(geneID.getGenUniID(), geneID);
+			mapGeneUniID2LsGeneID.put(geneID.getGeneUniID(), geneID);
 		}
 	}
 	/**
@@ -312,11 +312,11 @@ public abstract class FunctionTest {
 	 * false 不添加入BG
 	 */
 	protected GeneID2LsItem convert2ItemFromBG(GeneID geneID, boolean addToBG) {
-		GeneID2LsItem tmpresult = mapBGGeneID2Items.get(geneID.getGenUniID());
+		GeneID2LsItem tmpresult = mapBGGeneID2Items.get(geneID.getGeneUniID());
 		if (tmpresult == null && addToBG) {
 			tmpresult = convert2Item(geneID);
 			if (tmpresult != null) {
-				mapBGGeneID2Items.put(geneID.getGenUniID(), tmpresult);
+				mapBGGeneID2Items.put(geneID.getGeneUniID(), tmpresult);
 			}
 		}
 		

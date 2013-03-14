@@ -153,7 +153,7 @@ public class AnnoQuery extends RunProcess<AnnoQuery.AnnoQueryDisplayInfo>{
 		result[result.length - 1] = "";
 		result[result.length - 2] = "";
 		GeneID copedID = new GeneID(accID, taxID);
-		if (copedID.getIDtype().equals(GeneID.IDTYPE_ACCID)) {
+		if (copedID.getIDtype() == GeneID.IDTYPE_ACCID) {
 			return result;
 		}
 		else {
@@ -175,7 +175,7 @@ public class AnnoQuery extends RunProcess<AnnoQuery.AnnoQueryDisplayInfo>{
 		result[result.length - 3] = "";result[result.length - 4] = "";
 		result[result.length - 5] = "";
 		GeneID copedID = new GeneID(accID, taxID);
-		if (copedID.getIDtype().equals(GeneID.IDTYPE_ACCID)) {
+		if (copedID.getIDtype() == GeneID.IDTYPE_ACCID) {
 			return result;
 		}
 		else {
@@ -198,7 +198,7 @@ public class AnnoQuery extends RunProcess<AnnoQuery.AnnoQueryDisplayInfo>{
 			String accID = string[colGeneID];
 			GeneID copedID = new GeneID(accID, taxID);
 			String[] resString = ArrayOperate.copyArray(string, string.length + 1);
-			resString[resString.length - 1] = copedID.getGenUniID();
+			resString[resString.length - 1] = copedID.getGeneUniID();
 			txtOut.writefileln(resString);
 		}
 		txtOut.close();

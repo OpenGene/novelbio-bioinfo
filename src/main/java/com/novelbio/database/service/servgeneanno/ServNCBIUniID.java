@@ -56,9 +56,10 @@ public class ServNCBIUniID {
 			return mapUniProtID.queryLsUniProtID((UniProtID)QueryNCBIID);
 		} else {
 			logger.error("出现未知类型: " + QueryNCBIID.getAccID() + "\t" + QueryNCBIID.getGeneIDtype());
-			return null;
+			return new ArrayList<AgeneUniID>();
 		}
 	}
+	
 	public void insertNCBIUniID(AgeneUniID ageneUniID) {
 		if (ageneUniID instanceof NCBIID) {
 			mapNCBIID.insertNCBIID((NCBIID)ageneUniID);
@@ -87,7 +88,7 @@ public class ServNCBIUniID {
 	 * @param dbInfo 为null表示不设置
 	 * @return
 	 */
-	public AgeneUniID queryGenUniID(String idType, String geneUniID, int taxID, String dbInfo) {
+	public AgeneUniID queryGenUniID(int idType, String geneUniID, int taxID, String dbInfo) {
 		if (dbInfo != null) 
 			dbInfo = dbInfo.trim();
 		else 
@@ -96,12 +97,12 @@ public class ServNCBIUniID {
 		AgeneUniID ageneUniID = AgeneUniID.creatAgeneUniID(idType);
 		ageneUniID.setGenUniID(geneUniID); ageneUniID.setTaxID(taxID);
 		if (!dbInfo.trim().equals("")) {
-			ageneUniID.setDBInfo(dbInfo.trim());
+			ageneUniID.setDataBaseInfo(dbInfo.trim());
 		}
 		ArrayList<? extends AgeneUniID> lsAgeneUniIDs= queryLsAgeneUniID(ageneUniID);
 		//如果带数据库的没找到，就重置数据库
 		if (!dbInfo.equals("") && (lsAgeneUniIDs == null || lsAgeneUniIDs.size() < 1) ) {
-			ageneUniID.setDBInfo("");
+			ageneUniID.setDataBaseInfo("");
 			lsAgeneUniIDs= queryLsAgeneUniID(ageneUniID);
 		}
 		if ((lsAgeneUniIDs == null || lsAgeneUniIDs.size() < 1)) {
@@ -119,7 +120,7 @@ public class ServNCBIUniID {
 	 */
 	public boolean updateNCBIUniID(AgeneUniID ncbiid, boolean override) {
 		if (ncbiid.getAccID().length() > 30) {
-			logger.error("accID太长：" + ncbiid.getAccID() + "\t" + ncbiid.getDBInfo());
+			logger.error("accID太长：" + ncbiid.getAccID() + "\t" + ncbiid.getDataBaseInfo().getDbName());
 			return false;
 		}
 		if (ncbiid.getAccID().contains("GO:")) {
@@ -131,19 +132,20 @@ public class ServNCBIUniID {
 			return false;
 		}
 		
-		String db = ncbiid.getDBInfo();
+		String db = ncbiid.getDataBaseInfo().getDbName();
 		String geneID = ncbiid.getGenUniID();
 		//查询的时候为了防止查不到，先除去dbinfo的信息
-		ncbiid.setDBInfo("");
+		ncbiid.setDataBaseInfo("");
 		if (ncbiid.getTaxID() != 0 
-				&& !ncbiid.getDBInfo().equals(DBAccIDSource.Symbol) && ncbiid.getDBInfo().equals(DBAccIDSource.Synonyms)) {
+				&& !ncbiid.getDataBaseInfo().getDbName().equals(DBAccIDSource.Symbol) 
+				&& ncbiid.getDataBaseInfo().getDbName().equals(DBAccIDSource.Synonyms)) {
 			ncbiid.setGenUniID("0");
 		}
 
 		ArrayList<? extends AgeneUniID> lsResult = queryLsAgeneUniID(ncbiid);
 		if (lsResult == null || lsResult.size() == 0) {
 			//插入的时候再加上
-			ncbiid.setDBInfo(db);
+			ncbiid.setDataBaseInfo(db);
 			ncbiid.setGenUniID(geneID);
 			try {
 				insertNCBIUniID(ncbiid);
@@ -164,8 +166,8 @@ public class ServNCBIUniID {
 				return false;
 			}
 			
-			if (override && !ncbiidSub.getDBInfo().equals(db)) {
-				ncbiid.setDBInfo(db);
+			if (override && !ncbiidSub.getDataBaseInfo().getDbName().equals(db)) {
+				ncbiid.setDataBaseInfo(db);
 				ncbiid.setGenUniID(geneID);
 				try {
 					updateNCBIUniID(ncbiid);
@@ -184,7 +186,7 @@ public class ServNCBIUniID {
 	 * @param taxID 物种ID
 	 * @return
 	 */
-	public AgeneUniID queryNCBIUniID(String idType, String geneID, int taxID) {
+	public AgeneUniID queryNCBIUniID(int idType, String geneID, int taxID) {
 		if (geneID == null || geneID.equals("") || geneID.equals("0")) {
 			return null;
 		}

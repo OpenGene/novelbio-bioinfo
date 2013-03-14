@@ -188,7 +188,7 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 			Set<String> setAccID = mapPrefix2SetAccID.get(prefix);
 			for (String accID : setAccID) {
 				GeneID geneID = new GeneID(accID, functionTest.getTaxID());
-				if (!geneID.getIDtype().equals(GeneID.IDTYPE_ACCID)) {
+				if (geneID.getIDtype() != GeneID.IDTYPE_ACCID) {
 					mapPrefix2SetGeneID.put(prefix, geneID);
 				}
 			}

@@ -57,7 +57,7 @@ public class NCBIID extends AgeneUniID{
 		}
 	}
 	@Override
-	public String getGeneIDtype() {
+	public Integer getGeneIDtype() {
 		return GeneID.IDTYPE_GENEID;
 	}
 	

@@ -258,7 +258,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 		} else {
 			setMapGeneID2AccID();
 			GeneID geneID = new GeneID(geneName, gffChrAbs.getTaxID());
-			accID = mapGeneID2AccID.get(geneID.getGenUniID().toLowerCase());
+			accID = mapGeneID2AccID.get(geneID.getGeneUniID().toLowerCase());
 		}
 		return mapAccID2SeqInfo.get(accID.toLowerCase());
 	}
@@ -283,7 +283,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 		ArrayList<String> lsAccID = mapReads.getChrIDLs();
 		for (String string : lsAccID) {
 			GeneID geneID = new GeneID(string, gffChrAbs.getSpecies().getTaxID());
-			mapGeneID2AccID.put(geneID.getGenUniID().toLowerCase(), string);
+			mapGeneID2AccID.put(geneID.getGeneUniID().toLowerCase(), string);
 		}
 	}
 	public void drawAtgPlot(String resultFileOut) {
@@ -388,7 +388,6 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 		try {
 			map.saveToFile(new File(resultFilePath+prefix+"Atg.png"));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		System.out.println("图片的高度像素为： "+map.getChartSize().getHeight());

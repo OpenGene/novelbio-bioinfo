@@ -286,7 +286,6 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 		//UTR
 		if (gffGeneIsoInfo.getCodLocUTRCDS(coord) == GffGeneIsoInfo.COD_LOCUTR_5UTR) {
 			UTR5num += 1*prop;
-			System.out.println();
 		} else if (gffGeneIsoInfo.getCodLocUTRCDS(coord) == GffGeneIsoInfo.COD_LOCUTR_3UTR) {
 			UTR3num += 1*prop;
 		}

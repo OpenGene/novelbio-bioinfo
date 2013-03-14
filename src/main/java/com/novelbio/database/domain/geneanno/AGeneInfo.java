@@ -277,11 +277,16 @@ public abstract class AGeneInfo {
 		this.mapLocation = validateField(dbInfo, null, mapLocation,true);
 	}
 	/**
-	 * description
+	 * description<br>
+	 * 没有就返回""
 	 * @return
 	 */
 	public String getDescrp() {
-		return getInfoSep(description);
+		String descrip =  getInfoSep(description);
+		if (descrip == null) {
+			descrip = "";
+		}
+		return descrip.replaceAll("\"", "");
 	}
 	public void setDescrp(String description) {
 		this.description = validateField(dbInfo, null,description,true);

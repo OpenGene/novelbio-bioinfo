@@ -11,14 +11,12 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.listOperate.ListHashSearch;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.model.species.Species;
 
 public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCodGene, GffCodGeneDU, ListGff> implements GffHashGeneInf {
 	private static final Logger logger = Logger.getLogger(GffHashGeneAbs.class);
@@ -103,12 +101,12 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		GffDetailGene gffDetailGene = super.searchLOC(accID);
 		if (gffDetailGene == null) {
 			GeneID copedID = new GeneID(accID, taxID, false);
-			if (copedID.getIDtype().equals(GeneID.IDTYPE_ACCID)) {
+			if (copedID.getIDtype() == GeneID.IDTYPE_ACCID) {
 				return null;
 			}
 			String locID = null;
 			try {
-				locID = getMapGeneID2Acc(acc2GeneIDfile).get(copedID.getGenUniID()).split("//")[0];
+				locID = getMapGeneID2Acc(acc2GeneIDfile).get(copedID.getGeneUniID()).split("//")[0];
 			} catch (Exception e) {
 				logger.error("没有该accID："+accID);
 				return null;
@@ -182,7 +180,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 			return gffGeneIsoInfo.getParentGffDetailGene();
 		}
 		
-		String locID = getMapGeneID2Acc(acc2GeneIDfile).get(copedID.getGenUniID()).split("//")[0];
+		String locID = getMapGeneID2Acc(acc2GeneIDfile).get(copedID.getGeneUniID()).split("//")[0];
 		return super.searchLOC(locID);
 	}
 	
@@ -236,7 +234,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 			GeneID copedID = new GeneID(accID, taxID, false);
 			String[] tmpAccID = new String[2];
 			tmpAccID[0] = copedID.getAccID();
-			tmpAccID[1] = copedID.getGenUniID();
+			tmpAccID[1] = copedID.getGeneUniID();
 			lsResult.add(tmpAccID);
 		}
 		return lsResult;

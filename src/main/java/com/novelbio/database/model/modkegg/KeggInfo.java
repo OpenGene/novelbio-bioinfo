@@ -10,15 +10,15 @@ import com.novelbio.database.model.modgeneid.GeneID;
 public class KeggInfo implements KeggInfoInter{
 
 	KeggInfoAbs keggInfoAbs;
-	public KeggInfo(String idType, String genUniAccID, int taxID)
-	{
-		if (idType.equals(GeneID.IDTYPE_UNIID)) {
+	
+	public KeggInfo(int idType, String genUniAccID, int taxID) {
+		if (idType == GeneID.IDTYPE_UNIID) {
 			keggInfoAbs = new KeggInfoUniID(genUniAccID, taxID);
 		}
-		else if (idType.equals(GeneID.IDTYPE_GENEID)) {
+		else if (idType == GeneID.IDTYPE_GENEID) {
 			keggInfoAbs = new KeggInfoGenID(genUniAccID, taxID);
 		}
-		else if (idType.equals(GeneID.IDTYPE_ACCID)) {
+		else if (idType == GeneID.IDTYPE_ACCID) {
 			keggInfoAbs = new KeggInfoAccID(genUniAccID, taxID);
 		}
 	}

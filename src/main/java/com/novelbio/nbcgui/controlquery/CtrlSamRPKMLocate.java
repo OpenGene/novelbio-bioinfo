@@ -7,15 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.samtools.SAMFileReader;
-
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.FormatSeq;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.GffChrStatistics;
-import com.novelbio.analysis.seq.genome.GffChrStatistics.GffChrStatiscticsProcessInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput;
@@ -28,7 +25,6 @@ import com.novelbio.base.multithread.RunGetInfo;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.GUI.GuiAnnoInfo;
-import com.novelbio.nbcgui.GUI.GuiPeakStatistics;
 import com.novelbio.nbcgui.GUI.GuiSamStatistics;
 
 public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo>, Runnable {
@@ -155,7 +151,7 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo>, Runnable {
 		for (String[] fileName2Prefix : lsReadFile) {
 			setPrefix.add(fileName2Prefix[1]);
 			FormatSeq formatSeq = getFileFormat(fileName2Prefix[0]);
-			//TODO
+
 			AlignSeq alignSeq = null;
 			if (formatSeq == FormatSeq.SAM || formatSeq == FormatSeq.BAM) {
 				alignSeq = new SamFile(fileName2Prefix[0]);
@@ -165,6 +161,7 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo>, Runnable {
 				continue;
 			}
 			AlignSeqReading alignSeqReading = new AlignSeqReading(alignSeq);
+			
 			mapPrefix2AlignSeqReadings.put(fileName2Prefix[1], alignSeqReading);
 		}
 		return mapPrefix2AlignSeqReadings;

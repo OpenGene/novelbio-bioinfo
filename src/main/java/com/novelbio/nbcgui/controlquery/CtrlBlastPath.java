@@ -149,7 +149,7 @@ public class CtrlBlastPath extends SwingWorker<ArrayList<String[]>, ProgressData
 		String[] tmpAccIDInfo = new String[] { accID, ""};
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		GeneID copedID = new GeneID(accID, taxID);
-		if (copedID.getIDtype().equals(GeneID.IDTYPE_ACCID)) {
+		if (copedID.getIDtype() == GeneID.IDTYPE_ACCID) {
 			return null;
 		}
 		tmpAccIDInfo[1] = copedID.getSymbol();

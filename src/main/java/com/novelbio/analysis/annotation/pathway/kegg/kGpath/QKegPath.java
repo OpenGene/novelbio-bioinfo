@@ -82,7 +82,7 @@ public class QKegPath {
 		}
 		kegIDInfo[4] = copedID.getLsBlastInfos().get(0).getEvalue() + "";
 		kegIDInfo[5] = subTaxID + "";
-		kegIDInfo[6] = copedID.getGeneIDBlast().getGenUniID();
+		kegIDInfo[6] = copedID.getGeneIDBlast().getGeneUniID();
 		ArrayList<String> lsKO =  copedID.getGeneIDBlast().getKeggInfo().getLsKo();
 		if (lsKO == null || lsKO.size() == 0) {
 			return kegIDInfo;
@@ -132,11 +132,11 @@ public class QKegPath {
 		
 			String[] geneInfo = new String[3];
 			geneInfo[0] = accID.get(i);
-			if (copedID.getIDtype().equals(GeneID.IDTYPE_GENEID)) {
-				geneInfo[1] = copedID.getGenUniID();
+			if (copedID.getIDtype() == GeneID.IDTYPE_GENEID) {
+				geneInfo[1] = copedID.getGeneUniID();
 			}
-			else if (copedID.getIDtype().equals(GeneID.IDTYPE_UNIID)) {
-				geneInfo[2] = copedID.getGenUniID();
+			else if (copedID.getIDtype() == GeneID.IDTYPE_UNIID) {
+				geneInfo[2] = copedID.getGeneUniID();
 			}
 			lsResult.add(geneInfo);
 		}

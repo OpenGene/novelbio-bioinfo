@@ -53,7 +53,7 @@ public class UniProtID extends AgeneUniID{
 			setUniID(genUniID);
 		}
 		@Override
-		public String getGeneIDtype() {
+		public Integer getGeneIDtype() {
 			return GeneID.IDTYPE_UNIID;
 		}
 }

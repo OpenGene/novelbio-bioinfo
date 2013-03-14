@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.AGeneInfo;
+import com.novelbio.database.domain.geneanno.AgeneUniID;
 import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.domain.geneanno.DBInfo;
 import com.novelbio.database.domain.geneanno.GOtype;
@@ -14,24 +15,17 @@ import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.database.model.modkegg.KeggInfo;
 
 public interface GeneIDInt{
- 
+
+	AgeneUniID getAgeneUniID();
 	/**
 	 * idType，必须是IDTYPE中的一种
 	 */
-	public String getIDtype();
-	
+	public int getIDtype();
 	/**
 	 * 具体的accID，如果没有则根据物种随机抓一个出来
 	 */
 	public String getAccID();
 
-
-	/**
-	 * 获得geneID
-	 * 如果是accID就返回-1
-	 * @return
-	 */
-	public String getGenUniID();
 	/**
 	 * 如果数据库中没有找到对应的accID，则设定时候输入的是什么taxID，返回的就是同样的taxID
 	 * @return
@@ -63,7 +57,7 @@ public interface GeneIDInt{
 	 * @param dbInfo
 	 * @return
 	 */
-	public String getAccIDDBinfo(DBAccIDSource dbInfo);
+	public AgeneUniID getAccIDDBinfo(String dbInfo);
 	
 	/**
 	 * 先设定blast的情况 如果blast * 0:symbol 1:description  2:subjectSpecies 3:evalue
@@ -141,7 +135,7 @@ public interface GeneIDInt{
 	 * @param geneUniID
 	 * @param idType 必须是CopedID.IDTYPE_GENEID等，可以不输入
 	 */
-	void setUpdateGeneID(String geneUniID, String idType);
+	void setUpdateGeneID(String geneUniID, int idType);
 	/**
 	 * 依次输入需要升级的GO信息，最后升级<br>
 	 * 这里只是先获取GO的信息，最后调用升级method的时候再升级<br>
@@ -247,7 +241,7 @@ GO_REF:0000004<br>
 	 * @param evalue
 	 * @param identities
 	 */
-	void setUpdateBlastInfo(String SubGenUniID, String subIDtype,
+	void setUpdateBlastInfo(String SubGenUniID, int subIDtype,
 			String subDBInfo, int SubTaxID, double evalue, double identities);
 	/**
 	 * 如果输入的是accID，那么返回该accID对应的数据库
@@ -258,11 +252,12 @@ GO_REF:0000004<br>
 	/**
 	 * 具体的accID，根据数据库情况抓一个出来
 	 */
-	String getAccID_With_DefaultDB();
+	AgeneUniID getAccID_With_DefaultDB();
 
 	public GOInfoAbs getGOInfo();
-
-
-
-
+	
+	
+	public boolean equals(Object obj);
+	
+	public int hashCode();
 }
