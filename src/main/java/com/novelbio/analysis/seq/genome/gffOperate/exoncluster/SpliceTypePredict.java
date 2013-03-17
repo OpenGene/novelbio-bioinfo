@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
@@ -19,6 +20,7 @@ import com.novelbio.analysis.seq.rnaseq.TophatJunction;
 import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.database.domain.geneanno.SepSign;
 
+//TODO 需要返回该差异剪接位点所对应的两类Iso
 public abstract class SpliceTypePredict {
 	ExonCluster exonCluster;
 	TophatJunction tophatJunction;
@@ -110,7 +112,7 @@ public abstract class SpliceTypePredict {
 	private HashSet<String> getSkipExonLoc_From_IsoWithoutExon(GffDetailGene gffDetailGene) {
 		HashSet<String> setLocation = new HashSet<String>();
 		
-		HashMap<GffGeneIsoInfo, Integer> hashTmp = exonCluster.getMapIso2ExonIndexSkipTheCluster();
+		Map<GffGeneIsoInfo, Integer> hashTmp = exonCluster.getMapIso2ExonIndexSkipTheCluster();
 		for (Entry<GffGeneIsoInfo, Integer> entry : hashTmp.entrySet()) {
 			GffGeneIsoInfo gffGeneIsoInfo = entry.getKey();
 			int exonNum = entry.getValue();

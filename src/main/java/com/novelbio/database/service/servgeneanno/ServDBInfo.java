@@ -33,7 +33,7 @@ public class ServDBInfo {
 	}
 
 	public void updateDBInfo(DBInfo dbInfo) {
-		updateDBInfo(dbInfo);
+		mapDBInfo.updateDBInfo(dbInfo);
 	}
 	
 	/** insert和update一体化
@@ -47,7 +47,10 @@ public class ServDBInfo {
 		if (lsDbInfos == null || lsDbInfos.size() == 0) {
 			insertDBInfo(dbInfo);
 		} else {
-			updateDBInfo(dbInfo);
+			for (DBInfo dbInfo2 : lsDbInfos) {
+				dbInfo.setDbInfoID(dbInfo2.getDbInfoID());
+				updateDBInfo(dbInfo);
+			}			
 		}
 		updateDBInfo(dbInfo);
 	}

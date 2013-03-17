@@ -1,18 +1,14 @@
 package com.novelbio.analysis.seq.sam;
 
 import java.io.File;
-import java.net.URL;
 
-import org.apache.log4j.Logger;
-
-import net.sf.picard.io.IoUtil;
-import net.sf.samtools.BAMIndex;
 import net.sf.samtools.BAMIndexer;
 import net.sf.samtools.SAMException;
 import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMRecord;
-import net.sf.samtools.util.CloserUtil;
+
+import org.apache.log4j.Logger;
 
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;

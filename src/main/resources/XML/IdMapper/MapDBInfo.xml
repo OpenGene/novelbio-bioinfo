@@ -8,10 +8,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		select *
 		from dbinfo
 		<where>
-			<if test="dbName !='' and dbName !=null">
-				dbname = #{dbName} 
+			<if test="dbInfoID &gt; 0">
+				dbInfoID = #{dbInfoID} 
 			</if>
-			<if test="dbOrg !=null and dbOrg != ''">
+			<if test="dbInfoID &lt;= 0 and dbName !=null and dbName !=''">
+				and dbName = #{dbName} 
+			</if>
+			<if test="dbInfoID &lt;= 0 and dbOrg !=null and dbOrg !=''">
 				and dbOrg = #{dbOrg} 
 			</if>
 	    </where> 
@@ -20,37 +23,37 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		select *
 		from dbinfo
 		<where>
-			<if test="dbName !='' and dbName !=null">
-				dbName = #{dbName} 
+			<if test="dbInfoID &gt; 0">
+				dbInfoID = #{dbInfoID} 
 			</if>
-			<if test="dbOrg !=null and dbOrg != ''">
+			<if test="dbInfoID &lt;= 0 and dbName !=null and dbName !=''">
+				and dbName = #{dbName} 
+			</if>
+			<if test="dbInfoID &lt;= 0 and dbOrg !=null and dbOrg !=''">
 				and dbOrg = #{dbOrg} 
 			</if>
-	    </where> 
+	    </where>
 	</select>
-	<insert id="insertDBInfo" parameterType="DBinfo">
+	<insert id="insertDBInfo" parameterType="DBinfo" useGeneratedKeys="true" keyProperty="dbInfoID">
 		insert into dbinfo (dbName,dbOrg,description)
 		values (#{dbName},#{dbOrg},#{description})
 	</insert>
 	<update id="updateDBInfo" parameterType="DBinfo">
-		update ncbiid
+		update dbinfo
 		<set>
 			<if test="dbName !=null and dbName !=''">
 				dbName = #{dbName},
 			</if>
 			<if test="dbOrg !=null and dbOrg !=''">
-				dbOrg = #{dbOrg}
+				dbOrg = #{dbOrg},
 			</if>
 			<if test="description !=null and description !=''">
 				description = #{description}
 			</if>
 		</set>
 		where
-			<if test="dbName !='' and dbName !=null">
-				dbName = #{dbName} 
-			</if>
-			<if test="dbOrg !=null and dbOrg != ''">
-				and dbOrg = #{dbOrg} 
+			<if test="dbInfoID &gt; 0">
+				dbInfoID = #{dbInfoID} 
 			</if>
 	</update>
 </mapper>

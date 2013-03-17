@@ -73,6 +73,10 @@ public class GeneIDabs implements GeneIDInt {
 		ageneUniID.setGenUniID(genUniID);
 		ageneUniID.setTaxID(taxID);
 		List<? extends AgeneUniID> lsTmp = servNCBIUniID.queryLsAgeneUniID(ageneUniID);
+		if (lsTmp.size() == 0) {
+			this.ageneUniID = ageneUniID;
+			return;
+		}
 		String DBsource = getDatabaseType(lsTmp.get(0).getTaxID());
 		this.ageneUniID = getGeneUniIDwithDB(lsTmp, DBsource);
 	}
@@ -880,6 +884,7 @@ public class GeneIDabs implements GeneIDInt {
 		
 		// 保存所有refID--也就是用于查找数据库的refxDB的信息ID，他们所对应的geneUniID
 		ArrayList<ArrayList<AgeneUniID>> lsgeneID = new ArrayList<ArrayList<AgeneUniID>>();
+		ArrayList<ArrayList<AgeneUniID>> lsgeneIDUniProt = new ArrayList<ArrayList<AgeneUniID>>();
 		for (String refAccID : lsRefAccID) {
 			ArrayList<AgeneUniID> lsTmpGenUniID = getNCBIUniTax(refAccID, this.ageneUniID.getTaxID());
 			if (lsTmpGenUniID.size() == 0) {
@@ -890,9 +895,20 @@ public class GeneIDabs implements GeneIDInt {
 				ageneUniID.setDataBaseInfo(this.ageneUniID.getDataBaseInfo());
 				this.ageneUniID = ageneUniID;
 				this.isAccID = false;
+				return;
+			} else if (lsTmpGenUniID.get(0).getDataBaseInfo().getDbOrg().equals("UniProt")) {
+				lsgeneIDUniProt.add(lsTmpGenUniID);
+			} else {
+				lsgeneID.add(lsTmpGenUniID);
 			}
-			lsgeneID.add(lsTmpGenUniID);
 		}
+		
+		//如果ref所对应的NCBI的geneID超过两个，就需要check了
+		if (lsgeneID.size() == 0 && lsgeneIDUniProt.size() > 0) {
+			logger.error("出现奇怪的ID，请check：" + getAccID());
+			lsgeneID.addAll(lsgeneIDUniProt);
+		}
+		
 		// 挑选出含有geneUniID的geneID
 		Collections.sort(lsgeneID, new Comparator<ArrayList<AgeneUniID>>() {
 			public int compare(ArrayList<AgeneUniID> o1, ArrayList<AgeneUniID> o2) {

@@ -25,24 +25,25 @@ public class ImportDB {
 	String speciesFile;
 	
 	/** NCBI等数据库文件下载后存放的路径 */
-	String databasePath;
-	String taxIDFile = databasePath + "常见物种IDKEGGAll.txt";
-	String GOPath = databasePath;
+	String databasePath = "/media/winE/Bioinformatics/DataBaseUpdate/";
 	
-	public static void main2(String[] args) {
-		String downloadPath = "";
+	String taxIDFile = databasePath + "常见物种IDKEGGAll.txt";
+	String GOPath = "/media/winE/Bioinformatics/DataBaseUpdate/GO/";
+	
+	public static void main(String[] args) {
+		String downloadPath = "/media/winE/Bioinformatics/DataBase/";
 		String softToolsFile = "";
 		String speciesFile = "";
 		ImportDB importDB = new ImportDB();
 		importDB.setDownloadPath(downloadPath);
-		importDB.setSoftToolsFile(softToolsFile);
-		importDB.setSpeciesFile(speciesFile);
-		importDB.updateSoftInfo();
-		importDB.updateSpecies();
+//		importDB.setSoftToolsFile(softToolsFile);
+//		importDB.setSpeciesFile(speciesFile);
+//		importDB.updateSoftInfo();
+//		importDB.updateSpecies();
 		
 		importDB.updateNCBIID();
 		importDB.updateUniprotID();
-		importDB.updateMicroarray();
+//		importDB.updateMicroarray();
 		
 		
 //		updateRiceID();//只导了前两个
@@ -83,9 +84,7 @@ public class ImportDB {
 		species.update();
 	}
 	
-	/**
-	 * 升级从NCBI下载的信息
-	 */
+	/** 升级从NCBI下载的信息 */
 	private void updateNCBIID() {
 		String gene2Acc = databasePath + "gene2accession.gz";
 		String gene2Ref = databasePath + "gene2refseq.gz";
@@ -107,6 +106,7 @@ public class ImportDB {
 		ncbi.setGene2GO(gene2GO);
 		ncbi.importFile();
 	}
+	
 	/**
 	 * 升级从UniProt下载的信息
 	 */

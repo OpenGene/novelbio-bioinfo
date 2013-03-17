@@ -21,8 +21,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="taxID !=null and taxID !=0">
 				and TaxID = #{taxID} 
 			</if>
-			<if test="dbInfo !=null and dbInfo != ''">
-				and DataBaseInfo = #{dbInfo}
+			<if test="dbInfoID &gt; 0">
+				and dbInfoID = #{dbInfoID}
 			</if>
 		</where>
 	</select>
@@ -39,14 +39,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="taxID !=null and taxID !=0">
 				and TaxID = #{taxID} 
 			</if>
-			<if test="dbInfo !=null and dbInfo != ''">
-				and DataBaseInfo = #{dbInfo}
+			<if test="dbInfoID &gt; 0">
+				and dbInfoID = #{dbInfoID}
 			</if>
 		</where>
 	</select>
 	<insert id="insertUniProtID" parameterType="UniProtID">
-		insert into uniprotid (TaxID,UniID,accessID,DataBaseInfo)
-		values (#{taxID},#{uniID},#{accessID},#{dbInfo})
+		insert into uniprotid (TaxID,UniID,accessID,dbInfoID)
+		values (#{taxID},#{uniID},#{accessID},#{dbInfoID})
 	</insert>
 	<update id="updateUniProtID" parameterType="UniProtID">
 		update uniprotid 
@@ -57,8 +57,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="uniID !=null and uniID != ''">
 				UniID = #{uniID},
 			</if>
-			<if test="dbInfo !=null and dbInfo != ''">
-				DataBaseInfo = #{dbInfo},
+			<if test="dbInfoID &gt; 0">
+				and dbInfoID = #{dbInfoID}
 			</if>
 			<if test="accessID !=null and accessID != ''">
 				accessID = #{accessID} 

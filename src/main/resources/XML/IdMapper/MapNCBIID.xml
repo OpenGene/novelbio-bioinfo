@@ -21,8 +21,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="taxID !=0 and taxID !=null">
 				and TaxID = #{taxID} 
 			</if>
-			<if test="dbInfo !=null and dbInfo != ''">
-				and DataBaseInfo = #{dbInfo}
+			<if test="dbInfoID &gt; 0">
+				and dbInfoID = #{dbInfoID}
 			</if>
 	    </where> 
 	</select>
@@ -39,14 +39,14 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="taxID !=0 and taxID !=null">
 				and TaxID = #{taxID} 
 			</if>
-			<if test="dbInfo !=null and dbInfo != ''">
-				and DataBaseInfo = #{dbInfo}
+			<if test="dbInfoID &gt; 0">
+				and dbInfoID = #{dbInfoID}
 			</if>
 	    </where> 
 	</select>
 	<insert id="insertNCBIID" parameterType="NCBIID">
-		insert into ncbiid (TaxID,GeneID,accessID,DataBaseInfo)
-		values (#{taxID},#{geneID},#{accessID},#{dbInfo})
+		insert into ncbiid (TaxID,GeneID,accessID,dbInfoID)
+		values (#{taxID},#{geneID},#{accessID},#{dbInfoID})
 	</insert>
 	<update id="updateNCBIID" parameterType="NCBIID">
 		update ncbiid
@@ -57,8 +57,8 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 			<if test="geneID !=null and geneID !=0">
 				GeneID = #{geneID},
 			</if>
-			<if test="dbInfo !=null and dbInfo != ''">
-				DataBaseInfo = #{dbInfo},
+			<if test="dbInfoID &gt; 0">
+				and dbInfoID = #{dbInfoID}
 			</if>
 			<if test="accessID !=null and accessID != ''">
 				accessID = #{accessID} 

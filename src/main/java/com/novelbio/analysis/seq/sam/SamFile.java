@@ -15,8 +15,6 @@ import java.util.List;
 
 import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMFileHeader.SortOrder;
-import net.sf.samtools.SAMFileWriter;
-import net.sf.samtools.SAMFileWriterFactory;
 import net.sf.samtools.SAMSequenceRecord;
 import net.sf.samtools.SAMTextHeaderCodec;
 import net.sf.samtools.util.BlockCompressedInputStream;
@@ -138,6 +136,11 @@ public class SamFile implements AlignSeq {
 	 */
 	private void setSamFileNew(SAMFileHeader samFileHeader, String samFileCreate, boolean preSorted) {
 		this.fileName = samFileCreate;
+		if (samFileCreate.endsWith("bam")) {
+			bamFile = true;
+		} else {
+			bamFile = false;
+		}
 		samWriter = new SamWriter(preSorted, samFileHeader, samFileCreate);
 	}
 	
@@ -450,7 +453,15 @@ public class SamFile implements AlignSeq {
 			FileOperate.changeFileSuffix(outFile, "", ".bam");
 		}
 		
-		SamFile samFile = new SamFile(outFile, getHeader());
+		//如果已经排过序了，就不需要再进行排序
+		SAMFileHeader samFileHeader = getHeader();
+		SamFile samFile = null;
+		if (samFileHeader.getSortOrder() != SortOrder.unsorted) {
+			samFile = new SamFile(outFile, samFileHeader, true);
+		} else {
+			samFile = new SamFile(outFile, samFileHeader);
+		}
+		
 		for (SamRecord samRecord : readLines()) {
 			for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {
 				try {

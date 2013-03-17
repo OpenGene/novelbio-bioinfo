@@ -2,8 +2,8 @@ package com.novelbio.analysis.seq.sam;
 
 import java.io.File;
 
-import net.sf.picard.sam.SortSam;
-import net.sf.picard.util.Log;
+//import net.sf.picard.sam.SortSam;
+//import net.sf.picard.util.Log;
 import net.sf.samtools.SAMFileHeader.SortOrder;
 import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMFileReader;
@@ -21,7 +21,7 @@ public class BamSort {
 		SamFile samFile = new SamFile("/media/winF/NBC/Project/Project_ZDB_Lab/QXL/Project_ZDB/mapping/Q60-1.bam");
 		samFile.sort("/media/winF/NBC/Project/Project_ZDB_Lab/QXL/Project_ZDB/mapping/Q60-2");
 	}
-    private final Log log = Log.getInstance(SortSam.class);
+//    private final Log log = Log.getInstance(SortSam.class);
     SAMFileHeader.SortOrder SORT_ORDER = SAMFileHeader.SortOrder.coordinate;
     SamFile samFile;
     int maxRecordsInRam = 500000;
@@ -76,7 +76,7 @@ public class BamSort {
 //            progress.record(rec);
         }
 
-        log.info("Finished reading inputs, merging and writing to output now.");
+//        log.info("Finished reading inputs, merging and writing to output now.");
 
         reader.close();
         writer.close();

@@ -1,6 +1,7 @@
 package com.novelbio.analysis.seq.sam;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -35,12 +36,23 @@ public class SamReader {
 	
 	boolean isOpen = false;
 	
-	public void setFileName(String fileName) {
+	public void setFileName(String fileName, String fileIndex) {
 		this.fileName = fileName;
 		close();
 		samFileReader = null;
 		samFileHeader = null;
+		if (FileOperate.isFileExistAndBigThanSize(fileIndex, 0)) {
+			this.fileIndex = fileIndex;
+		}
+		initialSamHeadAndReader();
 	}
+	
+	public void setFileStream(InputStream inputStream) {
+		
+		
+		samFileHeader = null;
+	}
+	
 	public void setFileIndex(String fileIndex) {
 		if (FileOperate.isFileExistAndBigThanSize(fileIndex, 0)) {
 			this.fileIndex = fileIndex;
@@ -77,16 +89,14 @@ public class SamReader {
 		return pairend;
 	}
 	protected SAMFileHeader getSamFileHead() {
-		initialSamHeadAndReader();
 		return samFileHeader;
 	}
 	
 	protected SAMFileReader getSamFileReader() {
-		initialSamHeadAndReader();
 		return samFileReader;
 	}
 	
-	private void initialSamHeadAndReader() {
+	private void initialSamHeadAndReader(InputStream inputStream) {
 		if (samFileHeader != null && samFileReader != null && isOpen == true 
 				&& 
 				(
@@ -99,11 +109,16 @@ public class SamReader {
 		}
 		close();
 		isOpen = true;
+		
+		
+		
 		File file = new File(fileName);
 		File index = null;
 		if (fileIndex != null) {
 			index = new File(fileIndex);
 		}
+		samFileReader = new samfiler
+		
 		samFileReader = new SAMFileReader(file, index);
 		samFileHeader = samFileReader.getFileHeader();
 		mapChrIDlowCase2ChrID = new HashMap<String, String>();
@@ -120,7 +135,6 @@ public class SamReader {
 	 * @return
 	 */
 	public HashMap<String, Long> getMapChrIDlowCase2Length() {
-		initialSamHeadAndReader();
 		return mapChrIDlowCase2Length;
 	}
 	/**

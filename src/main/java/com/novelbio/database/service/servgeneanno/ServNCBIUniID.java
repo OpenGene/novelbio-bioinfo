@@ -119,6 +119,10 @@ public class ServNCBIUniID {
 	 * @param override
 	 */
 	public boolean updateNCBIUniID(AgeneUniID ncbiid, boolean override) {
+		if (ncbiid.getAccID() == null) {
+			logger.error("accID不存在，不能升级");
+			return false;
+		}
 		if (ncbiid.getAccID().length() > 30) {
 			logger.error("accID太长：" + ncbiid.getAccID() + "\t" + ncbiid.getDataBaseInfo().getDbName());
 			return false;
@@ -127,10 +131,7 @@ public class ServNCBIUniID {
 			logger.error("不能导入GO信息");
 			return false;
 		}
-		if (ncbiid.getAccID() == null) {
-			logger.error("accID不存在，不能升级");
-			return false;
-		}
+
 		
 		String db = ncbiid.getDataBaseInfo().getDbName();
 		String geneID = ncbiid.getGenUniID();
@@ -138,37 +139,29 @@ public class ServNCBIUniID {
 		ncbiid.setDataBaseInfo("");
 		if (ncbiid.getTaxID() != 0 
 				&& !ncbiid.getDataBaseInfo().getDbName().equals(DBAccIDSource.Symbol) 
-				&& ncbiid.getDataBaseInfo().getDbName().equals(DBAccIDSource.Synonyms)) {
+				&& !ncbiid.getDataBaseInfo().getDbName().equals(DBAccIDSource.Synonyms)) {
 			ncbiid.setGenUniID("0");
 		}
 
 		ArrayList<? extends AgeneUniID> lsResult = queryLsAgeneUniID(ncbiid);
+		//query完了就把两个信息给重新设定回去
+		ncbiid.setGenUniID(geneID);
+		ncbiid.setDataBaseInfo(db);
 		if (lsResult == null || lsResult.size() == 0) {
-			//插入的时候再加上
-			ncbiid.setDataBaseInfo(db);
-			ncbiid.setGenUniID(geneID);
 			try {
 				insertNCBIUniID(ncbiid);
 				return true;
 			} catch (Exception e) {
 				logger.error("cannot insert into database: " + ncbiid.getAccID());
-				try {
-					updateNCBIUniID(ncbiid);
-				} catch (Exception e2) {
-					e.printStackTrace();
-				}
 				return false;
 			}
 		} else {
 			AgeneUniID ncbiidSub = lsResult.get(0);
-			if (!geneID.equals(ncbiidSub.getGenUniID())) {
-				logger.error("该AccID已经对应到了一个不同的GeneID上，因此没有升级该ID" + ncbiid.getAccID() + "geneid:" + ncbiid.getGenUniID());
+			if (!geneID.equals(ncbiidSub.getGenUniID()) && !ncbiidSub.getDataBaseInfo().getDbOrg().equals("UniProt")) {
+				logger.error("该AccID已经对应到了一个不同的GeneID上，因此没有升级该ID " + ncbiid.getAccID() + "geneid:" + ncbiid.getGenUniID());
 				return false;
 			}
-			
 			if (override && !ncbiidSub.getDataBaseInfo().getDbName().equals(db)) {
-				ncbiid.setDataBaseInfo(db);
-				ncbiid.setGenUniID(geneID);
 				try {
 					updateNCBIUniID(ncbiid);
 					return true;

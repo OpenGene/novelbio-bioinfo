@@ -57,6 +57,9 @@ abstract class ImportPerLine {
 		//从第二行开始读取
 		int num = 0;
 		for (String content : txtGene2Acc.readlines(readFromLine)) {
+			if (content.startsWith("#")) {
+				continue;
+			}
 			try {
 				if (!impPerLine(content)) {
 					if (txtWriteExcep != null) {

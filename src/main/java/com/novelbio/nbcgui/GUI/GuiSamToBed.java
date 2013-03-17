@@ -392,7 +392,9 @@ public class GuiSamToBed extends JPanel {
 	private void samToBed(String samFilestr) {
 		SamFile samFile = new SamFile(samFilestr);
 		samFile.setUniqueRandomSelectOneRead(chckbxNonUniqueMapping.isSelected());
-		samFile.toBedSingleEnd();
+		BedSeq bedSeq = samFile.toBedSingleEnd();
+		samFile.close();
+		bedSeq.close();
 	}
 	private void convertSamFile(String resultMergePath, String prefix, List<String> lsSamFilestr) {
 		String refFile = "";

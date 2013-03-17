@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.imageio.stream.IIOByteBuffer;
@@ -23,6 +24,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.analysis.seq.rnaseq.TophatJunction;
 import com.novelbio.base.dataStructure.Alignment;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.domain.geneanno.SepSign;
 
 public class ExonCluster implements Alignment {
@@ -37,21 +39,15 @@ public class ExonCluster implements Alignment {
 	int startLoc = 0;
 	int endLoc = 0;
 	ArrayList<ExonInfo> lsCombExon;
-	/**
-	 * list--所有isoform
-	 * list--每个isoform中该组的所有exon
-	 * 如果该iso跳过了这个exon，则里面装空的list
-	 * 如果该iso根本不在这个范围内,则里面就没有这个list
-	 */
-	ArrayList<ArrayList<ExonInfo>> lsIsoExon = new ArrayList<ArrayList<ExonInfo>>();
+
 	/** 该iso跳过了这个exon，则里面装空的list
 	 *  如果该iso根本不在这个范围内,则里面就没有这个list
 	 */
-	HashMap<GffGeneIsoInfo, ArrayList<ExonInfo>> mapIso2LsExon = new HashMap<GffGeneIsoInfo, ArrayList<ExonInfo>>();
+	Map<GffGeneIsoInfo, ArrayList<ExonInfo>> mapIso2LsExon = new LinkedHashMap<GffGeneIsoInfo, ArrayList<ExonInfo>>();
 	/**
 	 * 记录跳过该exoncluster的Iso，和跨过该exoncluster的那对exon的，前一个exon的编号<br>
 	 */
-	HashMap<GffGeneIsoInfo, Integer> mapIso2ExonNumSkipTheCluster = new HashMap<GffGeneIsoInfo, Integer>();
+	Map<GffGeneIsoInfo, Integer> mapIso2ExonNumSkipTheCluster = new HashMap<GffGeneIsoInfo, Integer>();
 	
 	List<SpliceTypePredict> lsSpliceTypePredicts;
 	
@@ -87,7 +83,7 @@ public class ExonCluster implements Alignment {
 	}
 	
 	public Boolean isCis5to3() {
-		for (ArrayList<ExonInfo> lsExonInfos : lsIsoExon) {
+		for (ArrayList<ExonInfo> lsExonInfos : mapIso2LsExon.values()) {
 			if (lsExonInfos.size() > 0) {
 				return lsExonInfos.get(0).isCis5to3();
 			}
@@ -115,7 +111,7 @@ public class ExonCluster implements Alignment {
 	}
 	/** 返回其所在的GffGene */
 	public GffDetailGene getParentGene() {
-		for (ArrayList<ExonInfo> lsExonInfos : lsIsoExon) {
+		for (ArrayList<ExonInfo> lsExonInfos : mapIso2LsExon.values()) {
 			if (lsExonInfos.size() > 0) {
 				return lsExonInfos.get(0).getParent().getParentGffDetailGene();
 			}
@@ -126,7 +122,7 @@ public class ExonCluster implements Alignment {
 	/** 该iso跳过了这个exon，则里面装空的list
 	 * 如果该iso根本不在这个范围内,则里面就没有这个list
 	 */
-	public HashMap<GffGeneIsoInfo, ArrayList<ExonInfo>> getMapIso2LsExon() {
+	public Map<GffGeneIsoInfo, ArrayList<ExonInfo>> getMapIso2LsExon() {
 		return mapIso2LsExon;
 	}
 	/**
@@ -135,7 +131,7 @@ public class ExonCluster implements Alignment {
 	 * 如果该iso跳过了这个exon，则里面装空的list
 	 */
 	public ArrayList<ArrayList<ExonInfo>> getLsIsoExon() {
-		return lsIsoExon;
+		return ArrayOperate.getArrayListValue(mapIso2LsExon);
 	}
 	/** 
 	 * 该iso是否覆盖了该exoncluster
@@ -159,7 +155,6 @@ public class ExonCluster implements Alignment {
 	 * @param lsExon
 	 */
 	public void addExonCluster(GffGeneIsoInfo gffGeneIsoInfo, ArrayList<ExonInfo> lsExon) {
-		lsIsoExon.add(lsExon);
 		mapIso2LsExon.put(gffGeneIsoInfo, lsExon);
 	}
 
@@ -175,7 +170,7 @@ public class ExonCluster implements Alignment {
 	public boolean isAtEdge() {
 		if (exonClusterBefore == null || exonClusterAfter == null ) {
 			int thisExistIso = 0;
-			for (ArrayList<ExonInfo> lsexons : lsIsoExon) {
+			for (ArrayList<ExonInfo> lsexons : mapIso2LsExon.values()) {
 				if (lsexons.size() > 0) {
 					thisExistIso++;
 				}
@@ -201,7 +196,7 @@ public class ExonCluster implements Alignment {
 		if (exonClusterBefore != null && exonClusterAfter != null) {
 			return false;
 		}
-		for (ArrayList<ExonInfo> lsexons : lsIsoExon) {
+		for (ArrayList<ExonInfo> lsexons : mapIso2LsExon.values()) {
 			if (lsexons.size() > 2) {
 				return false;
 			}
@@ -252,6 +247,7 @@ public class ExonCluster implements Alignment {
 	}
 	
 	private boolean isSameExon(boolean considerIsoNotInRegion) {
+		List<ArrayList<ExonInfo>> lsIsoExon = ArrayOperate.getArrayListValue(mapIso2LsExon);
 		//如果本组中有不止一个exon的转录本，并且还有跨越的junction，说明本组有可变的exon
 		if (lsIsoExon.size() >= 1 && mapIso2ExonNumSkipTheCluster.size() >= 1	) {
 			return false;
@@ -292,7 +288,7 @@ public class ExonCluster implements Alignment {
 		lsCombExon = new ArrayList<ExonInfo>();
 		//用来去重复的hash表
 		HashSet<ExonInfo> hashExon = new HashSet<ExonInfo>();
-		for (ArrayList<ExonInfo> lsExon : lsIsoExon) {
+		for (ArrayList<ExonInfo> lsExon : mapIso2LsExon.values()) {
 			for (ExonInfo is : lsExon) {
 				hashExon.add( is);
 			}
@@ -314,7 +310,7 @@ public class ExonCluster implements Alignment {
 	 * 记录跳过该exoncluster的Iso，和跨过该exoncluster的那对exon的，前一个exon的编号<br>
 	 * 编号从0开始记数
 	 */
-	public HashMap<GffGeneIsoInfo, Integer> getMapIso2ExonIndexSkipTheCluster() {
+	public Map<GffGeneIsoInfo, Integer> getMapIso2ExonIndexSkipTheCluster() {
 		return mapIso2ExonNumSkipTheCluster;
 	}
 
@@ -341,7 +337,7 @@ public class ExonCluster implements Alignment {
 		//用来判断cassette和alt5，alt3这几类
 		ArrayList<ExonInfo> lsExonTmp = new ArrayList<ExonInfo>();
 		HashSet<ExonInfo> setRemoveSameExon = new HashSet<ExonInfo>();
-		for (ArrayList<ExonInfo> lsExon : lsIsoExon) {
+		for (ArrayList<ExonInfo> lsExon : mapIso2LsExon.values()) {
 			if (lsExon.size() == 0) {
 				continue;
 			}

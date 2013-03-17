@@ -524,6 +524,10 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		
 		txtOut.writefileln(ExonSplicingTest.getTitle(condition1, condition2));
 		for (ExonSplicingTest chisqTest : lsResult) {
+			//TODO 设定断点
+//			if (chisqTest.getExonCluster().getParentGene().getName().contains("KTN1")) {
+//				logger.error("stop");
+//			}
 			chisqTest.setGetSeq(seqHash);
 			txtOut.writefileln(chisqTest.toStringArray());
 			if (isGetSeq) {

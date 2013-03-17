@@ -1,5 +1,7 @@
 package com.novelbio.database.updatedb.database;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.AGeneInfo;
 import com.novelbio.database.domain.geneanno.GeneInfo;
@@ -52,6 +54,7 @@ public class NCBI {
 		ImportPerLine.setTaxIDFile(taxID);
 		ImportPerLine impFile = null;
 		impFile = new ImpGen2Acc();
+		impFile.setReadFromLine(2);
 		impFile.updateFile(gene2Acc);
 		impFile.updateFile(gene2Ref);
 		impFile = new ImpGen2Ensembl();
@@ -79,6 +82,7 @@ public class NCBI {
 9	1246503	-	-	-	AAD12601.1	3282741	AF041837.1	3282736	-	-	?	-
  */
 class ImpGen2Acc extends ImportPerLine {
+	private static final Logger logger = Logger.getLogger(ImpGen2Acc.class);
 	/**
 	 * 将gene2accion和gene2refseq.gz这两个文件导入数据库，仅导入指定的物种
 	 * 文件格式如下<br>
@@ -94,31 +98,34 @@ class ImpGen2Acc extends ImportPerLine {
 		if (!setTaxID.contains(taxID)) {
 			return true;
 		}
+
 		GeneID geneID = new GeneID(GeneID.IDTYPE_GENEID, ss[1], taxID);
-
-		geneID.setUpdateAccID(ss[3]);
-		if (ss[3].startsWith("NM_") || ss[3].startsWith("NR_")) {
-			geneID.setUpdateDBinfo(DBAccIDSource.RefSeqRNA, false);
-		} else {
-			geneID.setUpdateDBinfo(DBAccIDSource.RNAAC, false);
+		
+		if (!ss[3].equals("-") && !ss[3].equals("")) {
+			geneID.setUpdateAccID(ss[3]);
+			if (ss[3].startsWith("NM_") || ss[3].startsWith("NR_")) {
+				geneID.setUpdateDBinfo(DBAccIDSource.RefSeqRNA, false);
+			} else {
+				geneID.setUpdateDBinfo(DBAccIDSource.RNAAC, false);
+			}
+			geneID.update(false);
 		}
-		geneID.update(false);
-
-		geneID.setUpdateAccID(ss[5]);
-		if (ss[5].startsWith("NP_") || ss[5].startsWith("XP_") || ss[5].startsWith("YP_")) {
-			geneID.setUpdateDBinfo(DBAccIDSource.RefSeqPro, false);
-		} else {
-			geneID.setUpdateDBinfo(DBAccIDSource.ProteinAC, false);
+	
+		if (!ss[5].equals("-") && !ss[5].equals("")) {
+			geneID.setUpdateAccID(ss[5]);
+			if (ss[5].startsWith("NP_") || ss[5].startsWith("XP_") || ss[5].startsWith("YP_")) {
+				geneID.setUpdateDBinfo(DBAccIDSource.RefSeqPro, false);
+			} else {
+				geneID.setUpdateDBinfo(DBAccIDSource.ProteinAC, false);
+			}
+			geneID.update(false);
 		}
-		geneID.update(false);
 
-		geneID.setUpdateAccID(ss[6]);
-		geneID.setUpdateDBinfo(DBAccIDSource.ProteinGI, false);
-		geneID.update(false);
-
-		geneID.setUpdateAccID(ss[7]);
-		geneID.setUpdateDBinfo(DBAccIDSource.GeneAC, false);
-		geneID.update(false);
+		if (!ss[6].equals("-") && !ss[6].equals("")) {
+			geneID.setUpdateAccID(ss[6]);
+			geneID.setUpdateDBinfo(DBAccIDSource.ProteinGI, false);
+			geneID.update(false);
+		}
 		return true;
 	}
 }

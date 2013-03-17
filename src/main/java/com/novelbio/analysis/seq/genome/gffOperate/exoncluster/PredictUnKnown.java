@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
@@ -90,7 +91,7 @@ public class PredictUnKnown extends SpliceTypePredict {
 	private HashSet<String> getSkipExonLoc_From_IsoWithoutExon(GffDetailGene gffDetailGene) {
 		HashSet<String> setLocation = new HashSet<String>();
 		
-		HashMap<GffGeneIsoInfo, Integer> hashTmp = exonCluster.getMapIso2ExonIndexSkipTheCluster();
+		Map<GffGeneIsoInfo, Integer> hashTmp = exonCluster.getMapIso2ExonIndexSkipTheCluster();
 		for (Entry<GffGeneIsoInfo, Integer> entry : hashTmp.entrySet()) {
 			GffGeneIsoInfo gffGeneIsoInfo = entry.getKey();
 			int exonNum = entry.getValue();

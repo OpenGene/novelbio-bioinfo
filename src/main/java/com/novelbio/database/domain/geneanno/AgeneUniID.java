@@ -1,6 +1,5 @@
 package com.novelbio.database.domain.geneanno;
 
-import org.apache.ibatis.metadata.Database;
 import org.apache.log4j.Logger;
 
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -17,7 +16,7 @@ public abstract class AgeneUniID {
 	
     private int taxID;
 	private String accessID;
-	private String dbInfo;
+	private int dbInfoID = -1;
 	
 	ServDBInfo servDBInfo = new ServDBInfo();
 	ServNCBIUniID servNCBIUniID = new ServNCBIUniID();
@@ -64,34 +63,45 @@ public abstract class AgeneUniID {
 		return databaseInfo;
 	}
 	
-	public void setDataBaseInfo(String dbInfo) {
-		this.dbInfo = dbInfo;
+	public void setDataBaseInfo(int dbInfoID) {
+		this.dbInfoID = dbInfoID;
+		fillDataBase();
+	}
+	/**
+	 * 输入数据库的具体名字，譬如affy_U133等
+	 * 然后会到数据库中查找具体的芯片型号等
+	 * @param dbName
+	 */
+	public void setDataBaseInfo(String dbName) {
+		if (dbName == null || dbName.equals("")) {
+			return;
+		}
+		DBInfo databaseInfo = new DBInfo();
+		databaseInfo.setDbName(dbName);
+		this.databaseInfo = servDBInfo.queryDBInfo(databaseInfo);
+		this.dbInfoID = this.databaseInfo.getDbInfoID();
 		fillDataBase();
 	}
 	
 	private void fillDataBase() {
-		if (this.dbInfo == null || this.dbInfo.equals("")) {
+		if (this.dbInfoID < 0) {
 			this.databaseInfo = null;
 			return;
 		}
 		
 		if (this.databaseInfo == null) {
 			DBInfo databaseInfo = new DBInfo();
-			databaseInfo.setDbName(dbInfo);
+			databaseInfo.setDbInfoID(dbInfoID);
 			this.databaseInfo = servDBInfo.queryDBInfo(databaseInfo);
-		}
-		if (this.databaseInfo == null) {
-			this.databaseInfo = new DBInfo();
-			this.databaseInfo.setDbName(dbInfo);
 		}
 	}
 	
 	public void setDataBaseInfo(DBInfo databaseInfo) {
 		this.databaseInfo = databaseInfo;
 		if (databaseInfo == null) {
-			this.dbInfo = null;
+			this.dbInfoID = -1;
 		} else {
-			this.dbInfo = databaseInfo.getDbName();
+			this.dbInfoID = databaseInfo.getDbInfoID();
 		}		
 	}
 	
@@ -103,7 +113,6 @@ public abstract class AgeneUniID {
 	 */
 	public void update(boolean overrideDBinfo) {
 		servNCBIUniID.updateNCBIUniID(this, overrideDBinfo);
-		servDBInfo.updateDBInfo(databaseInfo);
 	}
 	
 	/**
