@@ -1,6 +1,9 @@
 package com.novelbio.analysis.seq.sam;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
@@ -182,4 +185,55 @@ public class SamMapReads extends MapReadsAbs {
 		return new int[]{alignStart, alignEnd};
 	}
 
+	/**
+	 *  用于mRNA的计算，经过标准化，和equations修正
+	 * 输入坐标区间，返回该段区域内reads的数组。如果该染色体在mapping时候不存在，则返回null
+	 * @param chrID
+	 * @param lsLoc 直接输入gffIso即可，<b>输入的Alignment不考虑方向</b>
+	 * @param type  0：加权平均 1：取最高值，2：加权但不平均--也就是加和
+	 * @return
+	 */
+	protected List<double[]> getRangeInfoLs(String chrID, List<? extends Alignment> lsLoc, int type) {
+		List<double[]> lsResult = new ArrayList<double[]>();
+		if (lsLoc.size() > 1 && !lsLoc.get(0).isCis5to3()) {
+			lsLoc = sortLsLoc(lsLoc);
+		}
+		
+		int start = lsLoc.get(0).getStartAbs();
+		int end = lsLoc.get(lsLoc.size() - 1).getEndAbs();
+		double[] info = getRangeInfo(0, chrID, start, end, type);
+		for (Alignment alignment : lsLoc) {
+			double[] tmpInfo = new double[alignment.getLength()];
+			int startBias = alignment.getStartAbs() - start;
+			for (int i = 0; i < alignment.getLength(); i++) {
+				tmpInfo[i] = info[startBias + i];
+			}
+			lsResult.add(tmpInfo);
+		}
+		return lsResult;
+	}
+	
+	/**
+	 *  用于mRNA的计算，经过标准化，和equations修正
+	 * 输入坐标区间，返回该段区域内reads的数组。如果该染色体在mapping时候不存在，则返回null
+	 * @param chrID
+	 * @param lsLoc 直接输入gffIso即可，<b>输入的Alignment不考虑方向</b>
+	 * @param type  0：加权平均 1：取最高值，2：加权但不平均--也就是加和
+	 * @return
+	 */
+	public List<double[]> getRangeInfoLsOld(String chrID, List<? extends Alignment> lsLoc) {
+		ArrayList<double[]> lstmp = new ArrayList<double[]>();
+		if (lsLoc.size() > 1 && !lsLoc.get(0).isCis5to3()) {
+			lsLoc = sortLsLoc(lsLoc);
+		}
+	
+		for (Alignment is : lsLoc) {
+			double[] info = getRangeInfo(0, chrID, is.getStartAbs(), is.getEndAbs(), 0);
+			if (info == null) {
+				return null;
+			}
+			lstmp.add(info);
+		}
+		return lstmp;
+	}
 }

@@ -4,14 +4,15 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.multithread.RunProcess;
@@ -68,10 +69,18 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	}
 	/** 默认是ture，表示存入output文件
 	 * 否则结果保存在lsResult中
+	 * 如果要保存入文件，还需设定{@link #setOutPutFile(String)}
 	 */
 	public void setIsSaveToFile(boolean saveToFile) {
 		this.saveToFile = saveToFile;
 	}
+	/** 存入的output文件名
+	 * 如果要保存入文件，还需设定{@link #setIsSaveToFile(boolean)}
+	 */
+	public void setOutPutFile(String outPutFile) {
+		this.outFile = outPutFile;
+	}
+	
 	/** 提取全基因组序列的时候，是每个Gene提取一条Iso还是提取全部Iso <br>
 	 * true：提取该基因对应的转录本<br>
 	 * false 提取该基因所在基因的最长转录本<br>
@@ -100,9 +109,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 	}
-	public void setOutPutFile(String outPutFile) {
-		this.outFile = outPutFile;
-	}
+
 	/** 待提取基因的哪一个部分 */
 	public void setGeneStructure(GeneStructure geneStructure) {
 		this.geneStructure = geneStructure;
@@ -111,10 +118,14 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	 * 输入名字提取序列，内部会去除重复基因
 	 * @param lsIsoName
 	 */
-	public void setGetSeqIso(ArrayList<String> lsIsoName) {
+	public void setGetSeqIso(List<String> lsIsoName) {
 		setIsoToGetSeq.clear();
 		for (String string : lsIsoName) {
 			GffGeneIsoInfo gffGeneIsoInfo = getIso(string);
+			if (gffGeneIsoInfo == null) {
+				logger.error("没找到基因：" + string);
+				continue;
+			}
 			if (getOnlyMRNA && !gffGeneIsoInfo.ismRNA()) {
 				continue;
 			}
@@ -270,10 +281,15 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	}
 	
 	private GffGeneIsoInfo getIso(String IsoName) {
-		if (getAllIso)
+		if (getAllIso) {
 			return gffChrAbs.getGffHashGene().searchISO(IsoName);
-		else
-			return gffChrAbs.getGffHashGene().searchLOC(IsoName).getLongestSplitMrna();
+		} else {
+			GffDetailGene gffDetailGene = gffChrAbs.getGffHashGene().searchLOC(IsoName);
+			if (gffDetailGene != null) {
+				return gffDetailGene.getLongestSplitMrna();
+			}
+		}
+		return null;
 	}
 	
 	

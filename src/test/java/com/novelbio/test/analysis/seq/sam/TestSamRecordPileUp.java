@@ -32,6 +32,7 @@ public class TestSamRecordPileUp extends TestCase{
 			}
 		}
 	}
+	
 	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();

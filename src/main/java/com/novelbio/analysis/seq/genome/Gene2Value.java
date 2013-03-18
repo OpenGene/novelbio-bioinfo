@@ -190,9 +190,9 @@ public class Gene2Value {
 		}
 		List<Integer> lsCoverage = new ArrayList<Integer>();
 		if (pileupExonIntron) {
-			ArrayList<double[]> lsResult = new ArrayList<double[]>();
-			for (Alignment alignment : lsNew) {
-				double[] info = mapReads.getRangeInfo(mapInfo.getRefID(), alignment.getStartAbs(), alignment.getEndAbs(), 0);
+			List<double[]> lsInfo = mapReads.getRangeInfoLs(mapInfo.getRefID(), lsNew);
+			List<double[]> lsResult = new ArrayList<double[]>();
+			for (double[] info : lsInfo) {
 				if (info == null || info.length < 5) {
 					continue;
 				}

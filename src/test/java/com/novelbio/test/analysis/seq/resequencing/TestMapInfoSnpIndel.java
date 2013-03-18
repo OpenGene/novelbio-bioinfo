@@ -232,13 +232,6 @@ public class TestMapInfoSnpIndel extends TestCase {
 		assertEquals(3, result.get(0).getReadsNum());
 		ArrayList<String> lsSample = new ArrayList<String>();
 		lsSample.add("2A"); lsSample.add("2B");
-		ArrayList<String[]> lsResult = mapInfoSnpIndel.toStringLsSnp(lsSample, true);
-		for (String[] strings : lsResult) {
-			for (String string : strings) {
-				System.out.print(string + "\t");
-			}
-			System.out.println();
-		}
 	}
 	
 	

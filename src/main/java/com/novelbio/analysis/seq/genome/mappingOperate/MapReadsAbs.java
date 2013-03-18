@@ -134,7 +134,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 
 	/**
 	 * 填充每个MapInfo，如果没有找到该染色体位点，则填充null
-
+     * 不考虑mapInfo的方向
 	 * 经过标准化，和equations修正
 	 * @param lsmapInfo
 	 * @param thisInvNum  每个区域内所含的bp数，大于等于invNum，最好是invNum的倍数 如果invNum ==1 && thisInvNum == 1，结果会很精确
@@ -146,6 +146,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	}
 	/**
 	 * 经过标准化
+     * 不考虑mapInfo的方向
 	 * 将MapInfo中的double填充上相应的reads信息
 	 * @param binNum 待分割的区域数目
 	 * @param lsmapInfo
@@ -201,6 +202,17 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 		return getRangeInfo(chrID, lsLoc, -1 , 0);
 	}
 	/**
+	 * 经过标准化，和equations修正，<b>注意返回的值一直都是按照坐标从小到大，不会根据方向而改变方向</b>
+	 * 给定坐标范围，返回该区间内的信息，取点为加权平均
+	 * @param chrID
+	 * @param lsLoc 一个转录本的exon list
+	 * @return null表示出错
+	 */
+	public List<double[]> getRangeInfoLs(String chrID, List<? extends Alignment> lsLoc) {
+		return getRangeInfoLs(chrID, lsLoc, 0);
+	}
+
+	/**
 	 *  用于mRNA的计算，经过标准化，和equations修正
 	 * 输入坐标区间，需要划分的块数，返回该段区域内reads的数组。如果该染色体在mapping时候不存在，则返回null
 	 * 定位到两个端点所在的 读取invNum区间，然后计算新的invNum区间
@@ -210,19 +222,9 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @param type  0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 * @return
 	 */
-	private double[] getRangeInfo(String chrID, List<? extends Alignment> lsLoc, int binNum, int type) {
-		ArrayList<double[]> lstmp = new ArrayList<double[]>();
-		if (lsLoc.size() > 1 && !lsLoc.get(0).isCis5to3()) {
-			lsLoc = sortLsLoc(lsLoc);
-		}
-	
-		for (Alignment is : lsLoc) {
-			double[] info = getRangeInfo(0, chrID, is.getStartAbs(), is.getEndAbs(), type);
-			if (info == null) {
-				return null;
-			}
-			lstmp.add(info);
-		}
+	protected double[] getRangeInfo(String chrID, List<? extends Alignment> lsLoc, int binNum, int type) {
+		List<double[]> lstmp = getRangeInfoLs(chrID, lsLoc, type);
+				
 		int len = 0;
 		for (double[] ds : lstmp) {
 			len = len + ds.length;
@@ -241,8 +243,36 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 		}
 		return finalReads;
 	}
-	/** 将输入的loc从小到大排序，但是并不改变输入的loc */
-	private ArrayList<Alignment> sortLsLoc(List<? extends Alignment> lsLoc) {
+	
+	/**
+	 *  用于mRNA的计算，经过标准化，和equations修正
+	 * 输入坐标区间，返回该段区域内reads的数组。如果该染色体在mapping时候不存在，则返回null
+	 * @param chrID
+	 * @param lsLoc 直接输入gffIso即可，<b>输入的Alignment不考虑方向</b>
+	 * @param type  0：加权平均 1：取最高值，2：加权但不平均--也就是加和
+	 * @return
+	 */
+	protected List<double[]> getRangeInfoLs(String chrID, List<? extends Alignment> lsLoc, int type) {
+		ArrayList<double[]> lstmp = new ArrayList<double[]>();
+		if (lsLoc.size() > 1 && !lsLoc.get(0).isCis5to3()) {
+			lsLoc = sortLsLoc(lsLoc);
+		}
+	
+		for (Alignment is : lsLoc) {
+			double[] info = getRangeInfo(0, chrID, is.getStartAbs(), is.getEndAbs(), type);
+			if (info == null) {
+				return null;
+			}
+			lstmp.add(info);
+		}
+		return lstmp;
+	}
+	
+	/** 将输入的loc按照StartAbs从小到大排序，<br>
+	 * 并返回排序后的全新的List<br>
+	 * 输入的list其自身并不排序
+	 */
+	protected ArrayList<Alignment> sortLsLoc(List<? extends Alignment> lsLoc) {
 		ArrayList<Alignment> lsLocNew = new ArrayList<Alignment>();
 		for (Alignment alignment : lsLoc) {
 			lsLocNew.add(alignment);

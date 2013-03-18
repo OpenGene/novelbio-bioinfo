@@ -24,6 +24,7 @@ import com.novelbio.analysis.seq.sam.AlignSamReading;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.AlignSeqReading;
 import com.novelbio.analysis.seq.sam.SamMapReads;
+import com.novelbio.base.dataOperate.DateTime;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -391,12 +392,14 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			}
 		}
 	}
+	
 	private MapReadsAbs getSamMapReads(AlignSamReading samFileReading) {
 		SamMapReads samMapReads = new SamMapReads(samFileReading.getSamFile());
 		samMapReads.setisUniqueMapping(true);
 		samMapReads.setNormalType(MapReadsAbs.NORMALIZATION_NO);
 		return samMapReads;
 	}
+	
 	private MapReadsAbs getMapReads(AlignSeqReading samFileReading) {
 		MapReads mapReads = new MapReads();
 		mapReads.setInvNum(15);
@@ -411,15 +414,17 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	
 	/** 将表达信息加入统计 */
 	private void addMapReadsInfo(String condition, MapReadsAbs mapReads) {
+		DateTime dateTime = new DateTime();
+		dateTime.setStartTime();
 		int num = 0;
 		for (ArrayList<ExonSplicingTest> lsExonTest : lsSplicingTests) {
 			for (ExonSplicingTest exonSplicingTest : lsExonTest) {
 				exonSplicingTest.addMapCondition2MapReads(condition, mapReads);
 			}
-			
 			if (num % 100 == 0) {
-				logger.debug(num);
+				logger.error(num);
 				ctrlSplicing.setDetailInfo("reading " + condition + " exp gene num" + num);
+				logger.error(dateTime.getEclipseTime());
 			}
 			num ++;
 		}

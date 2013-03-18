@@ -75,7 +75,30 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		this.seqHash = seqHash;
 	}
 	
-	/** <b>在此之前必须设定{@link #setMapCond2Samfile(ArrayListMultimap)}</b><br> */
+	/** 必须设定 */
+	public void setCompareCondition(String condition1, String condition2) {
+		this.condition1 = condition1;
+		this.condition2 = condition2;
+	}
+	
+	/** 测序长度，根据这个长度来判定pvalue的比例 */
+	public void setReadsLength(int readsLength) {
+		this.readsLength = readsLength;
+	}
+
+	public ExonCluster getExonCluster() {
+		return exonCluster;
+	}
+
+	private void setFdr(double fdr) {
+		this.fdr = fdr;
+	}
+	
+	/**
+	 * 设定每个时期对应的Sam文件，以及junction信息
+	 * @param mapCond2Samfile 在校正retainIntron时使用
+	 * @param tophatJunction
+	 */
 	public void setJunctionInfo(ArrayListMultimap<String, SamFile> mapCond2Samfile, TophatJunction tophatJunction) {
 		List<SpliceTypePredict> lsSpliceTypePredicts = exonCluster.getSplicingTypeLs();
 		if (lsSpliceTypePredicts.size() == 0) {
@@ -100,9 +123,15 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	 */
 	public void addMapCondition2MapReads(String condition, MapReadsAbs mapReads) {
 		SpliceType2Value spliceType2Value = getAndCreatSpliceType2Value(condition);
-		
+		double[] BG = null;
+		List<? extends Alignment> lsSiteInfoBG = null;
 		for (SpliceTypePredict spliceTypePredict : exonCluster.getSplicingTypeLs()) {
-			spliceType2Value.addExp(exonCluster.getParentGene(), spliceTypePredict, mapReads);
+			if (!spliceTypePredict.getBGSite().equals(lsSiteInfoBG)) {				
+				lsSiteInfoBG = spliceTypePredict.getBGSite();
+				BG = mapReads.getRangeInfo(spliceTypePredict.getDifSite().getRefID(), lsSiteInfoBG);
+			}
+			
+			spliceType2Value.addExp(exonCluster.getParentGene(), spliceTypePredict, mapReads, BG);
 		}
 	}
 	
@@ -118,25 +147,6 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		return spliceType2Value;
 	}
 
-	
-	/** 必须设定 */
-	public void setCompareCondition(String condition1, String condition2) {
-		this.condition1 = condition1;
-		this.condition2 = condition2;
-	}
-	
-	/** 测序长度，根据这个长度来判定pvalue的比例 */
-	public void setReadsLength(int readsLength) {
-		this.readsLength = readsLength;
-	}
-
-	public ExonCluster getExonCluster() {
-		return exonCluster;
-	}
-
-	private void setFdr(double fdr) {
-		this.fdr = fdr;
-	}
 	/** 计算并获得pvalue */
 	public Double getAndCalculatePvalue() {
 		if (pvalue > 0) {
@@ -587,22 +597,24 @@ class SpliceType2Value {
 	boolean isFiltered = true;
 	
 	/** 添加表达 */
-	public void addExp(GffDetailGene gffDetailGene, SpliceTypePredict spliceTypePredict, MapReadsAbs mapReads) {
-		if (gffDetailGene.getName().contains("Foxp1") && spliceTypePredict instanceof PredictAltStart) {
-			logger.error("stop");
-		}
+	public void addExp(GffDetailGene gffDetailGene, SpliceTypePredict spliceTypePredict, MapReadsAbs mapReads, double[] BGinfo) {
+		//TODO
+//		if (gffDetailGene.getName().contains("Foxp1") && spliceTypePredict instanceof PredictAltStart) {
+//			logger.error("stop");
+//		}
 		
 		ArrayList<Double> lsExp = new ArrayList<Double>();
 		Align siteInfo = spliceTypePredict.getDifSite();
-		List<? extends Alignment> siteInfoBG = spliceTypePredict.getBGSite();
 		double[] info = mapReads.getRangeInfo(siteInfo.getRefID(), siteInfo.getStartAbs(), siteInfo.getEndAbs(), 0);
-		double[] info2 = mapReads.getRangeInfo(siteInfo.getRefID(), siteInfoBG);
-		lsExp.add((double) (getMean(info) + 1));			
-		lsExp.add((double) (getMean(info2) + 1));
+
+		lsExp.add((double) (getMean(info) + 1));
+		lsExp.add((double) (getMean(BGinfo) + 1));
 
 		addLsDouble(mapSplicingType2LsExpValue, spliceTypePredict.getType(), lsExp);
 		setExonSplicingTypes.add(spliceTypePredict.getType());
 	}
+	
+	
 	private static int getMean(double[] info) {
 		if (info == null) {
 			return -1;
