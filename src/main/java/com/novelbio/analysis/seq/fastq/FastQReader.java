@@ -1,6 +1,7 @@
 package com.novelbio.analysis.seq.fastq;
 
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,6 +11,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 import org.apache.log4j.Logger;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataOperate.TxtReadandWrite.TXTtype;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.base.multithread.txtreadcopewrite.MTRecordRead;
@@ -25,36 +27,26 @@ import com.novelbio.base.multithread.txtreadcopewrite.MTRecoreReader;
  * 
  * @author zong0jie
  */
-class FastQReader {
+class FastQReader implements Closeable {
 	private static Logger logger = Logger.getLogger(FastQReader.class);
 	public static int FASTQ_SANGER_OFFSET = 33;
 	public static int FASTQ_ILLUMINA_OFFSET = 64;
 	
 	private int offset = 0;
 	
-	String seqFile = "";
 	long readsNum = 0;
 	
 	protected TxtReadandWrite txtSeqFile;
-	protected String compressInType = TxtReadandWrite.TXT;
 	
 	/** 另一端的读取文件，双端读取的时候才有用，两端是对应的读 */
 	FastQReader fastQReadMate;
 	
 	int readsLenAvg = 0;
-	
+
 	/** 标准文件名的话，自动判断是否为gz压缩 */
-	public void setFastqFile(String seqFile) {
-		String houzhui = FileOperate.getFileNameSep(seqFile)[1];
-		if (houzhui.equals("gz")) {
-			setCompressType(TxtReadandWrite.GZIP);
-		}
-		else {
-			setCompressType(TxtReadandWrite.TXT);
-		}
-		this.seqFile = seqFile;
-		txtSeqFile = new TxtReadandWrite(compressInType, seqFile, false);
+	public FastQReader(String seqFile) {
 		readsNum = 0;
+		txtSeqFile = new TxtReadandWrite(seqFile, false);
 		getOffset();
 	}
 
@@ -62,24 +54,10 @@ class FastQReader {
 		setFastQFormatLen();
 		return offset;
 	}
-	/**
-	 * 设定文件压缩格式
-	 * 从TxtReadandWrite.TXT来
-	 * @param cmpInType 读取的压缩格式 null或""表示不变
-	 * @param cmpOutType 写入的压缩格式 null或""表示不变
-	 */
-	public void setCompressType(String cmpInType) {
-		if (cmpInType != null && !cmpInType.equals("")) {
-			this.compressInType = cmpInType;
-		}
-	}
-	/** 输入的压缩格式 */
-	public String getCompressInType() {
-		return compressInType;
-	}
+	
 	/** 返回文件名 */
 	public String getFileName() {
-		return seqFile;
+		return txtSeqFile.getFileName();
 	}
 	
 	/** 设定另一个FastqRead，也就是双端的另一端 */
@@ -107,6 +85,7 @@ class FastQReader {
 			}
 			lsResult.add(info);
 		}
+		close();
 		return lsResult;
 	}
 	/**
@@ -316,6 +295,7 @@ class FastQReader {
 			thisnum ++ ;
 			lsFastqRecord.add(fastQRecord);
 		}
+		close();
 		return lsFastqRecord;
 	}
 	/**

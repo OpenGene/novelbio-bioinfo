@@ -12,8 +12,8 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.BufferedRandomAccessFile;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
@@ -24,7 +24,7 @@ public class ChrStringHash extends SeqHashAbs{
 	private static Logger logger = Logger.getLogger(ChrStringHash.class);
 	
 	/** 以下哈希表的键是染色体名称，都是小写，格式如：chr1，chr2，chr10 */
-	HashMap<String, RandomAccessFile> mapChrID2RandomFile;
+	HashMap<String, BufferedRandomAccessFile> mapChrID2RandomFile;
 	HashMap<String, BufferedReader> mapChrID2BufReader;
 	HashMap<String, TxtReadandWrite> mapChrID2Txt;
 	HashMap<String, Integer> mapChrID2EnterType;
@@ -55,7 +55,7 @@ public class ChrStringHash extends SeqHashAbs{
 	 */
 	protected void setChrFile() throws Exception {
 		ArrayList<String> lsChrFile = initialAndGetFileList();
-		RandomAccessFile chrRAseq = null;
+		BufferedRandomAccessFile chrRAseq = null;
 		TxtReadandWrite txtChrTmp = null;
 		BufferedReader bufChrSeq = null;
 		
@@ -64,7 +64,7 @@ public class ChrStringHash extends SeqHashAbs{
 			String[] chrFileName = FileOperate.getFileNameSep(fileNam);
 			lsSeqName.add(chrFileName[0]);
 
-			chrRAseq = new RandomAccessFile(fileNam, "r");
+			chrRAseq = new BufferedRandomAccessFile(fileNam, "r");
 			txtChrTmp = new TxtReadandWrite(fileNam, false);
 			String enterType = txtChrTmp.getEnterType();
 			bufChrSeq = txtChrTmp.readfile();
@@ -93,7 +93,7 @@ public class ChrStringHash extends SeqHashAbs{
 		if (regx == null)
 			regx = "\\bchr\\w*";
 		
-		mapChrID2RandomFile = new HashMap<String, RandomAccessFile>();
+		mapChrID2RandomFile = new HashMap<String, BufferedRandomAccessFile>();
 		mapChrID2BufReader = new HashMap<String, BufferedReader>();
 		mapChrID2Txt = new HashMap<String, TxtReadandWrite>();
 		mapChrID2EnterType = new HashMap<String, Integer>();
@@ -102,7 +102,7 @@ public class ChrStringHash extends SeqHashAbs{
 	}
 	/** 设定染色体长度 */
 	private void setChrLength() throws IOException {
-		for (Entry<String, RandomAccessFile> entry : mapChrID2RandomFile.entrySet()) {
+		for (Entry<String, BufferedRandomAccessFile> entry : mapChrID2RandomFile.entrySet()) {
 			String chrID = entry.getKey();
 			RandomAccessFile chrRAfile = entry.getValue();
 			// 设定到0位

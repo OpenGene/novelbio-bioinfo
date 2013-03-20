@@ -7,8 +7,8 @@ import java.util.List;
 
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.AlignSeq;
-import com.novelbio.analysis.seq.BedRecord;
-import com.novelbio.analysis.seq.BedSeq;
+import com.novelbio.analysis.seq.bed.BedRecord;
+import com.novelbio.analysis.seq.bed.BedSeq;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
@@ -79,7 +79,7 @@ public abstract class NovelMiRNApredict {
 				bedSeq.writeBedRecord(new BedRecord(alignRecord));
 			}
 		}
-		bedSeq.closeWrite();
+		bedSeq.close();
 		return bedSeq;
 	}
 	/**

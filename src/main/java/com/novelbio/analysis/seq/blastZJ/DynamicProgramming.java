@@ -91,8 +91,7 @@ public abstract class DynamicProgramming {
 
    public void printScoreTable(String txtFile) throws Exception {
 	      ensureTableIsFilledIn();
-	      TxtReadandWrite txtMatrix = new TxtReadandWrite();
-	      txtMatrix.setParameter(txtFile, true, false);
+	      TxtReadandWrite txtMatrix = new TxtReadandWrite(txtFile, true);
 	      for (int i = 0; i < sequence2.length() + 2; i++) {
 	         for (int j = 0; j < sequence1.length() + 2; j++) {
 	            if (i == 0) {

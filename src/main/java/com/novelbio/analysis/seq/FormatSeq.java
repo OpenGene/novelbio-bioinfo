@@ -1,5 +1,6 @@
 package com.novelbio.analysis.seq;
 
+import com.novelbio.analysis.seq.bed.BedSeq;
 import com.novelbio.analysis.seq.sam.SamFile;
 
 /**

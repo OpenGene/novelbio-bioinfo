@@ -20,8 +20,8 @@ import javax.swing.JLabel;
 import javax.swing.JCheckBox;
 
 import com.novelbio.analysis.seq.AlignSeq;
-import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.FormatSeq;
+import com.novelbio.analysis.seq.bed.BedSeq;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.mirna.CtrlMiRNAfastq;
 import com.novelbio.analysis.seq.mirna.CtrlMiRNApredict;

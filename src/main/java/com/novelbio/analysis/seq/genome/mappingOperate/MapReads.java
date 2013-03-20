@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.AlignSeq;
-import com.novelbio.analysis.seq.BedSeq;
+import com.novelbio.analysis.seq.bed.BedSeq;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
 import com.novelbio.analysis.seq.genome.gffOperate.ListHashBin;

@@ -9,9 +9,9 @@ import org.w3c.dom.ls.LSSerializer;
 
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.AlignSeq;
-import com.novelbio.analysis.seq.BedRecord;
-import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.FormatSeq;
+import com.novelbio.analysis.seq.bed.BedRecord;
+import com.novelbio.analysis.seq.bed.BedSeq;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;

@@ -445,7 +445,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   }
 	   if (taxID == 0 && numCopedIDsearch < 20) {
 		   	ArrayList<GeneID> lsCopedIDs = GeneID.createLsCopedID(geneName, taxID, false);
-		   	if (lsCopedIDs.size() == 1) {
+		   	if (lsCopedIDs != null && lsCopedIDs.size() == 1) {
 		   		taxID = lsCopedIDs.get(0).getTaxID();
 		   	}
 		   	numCopedIDsearch ++;

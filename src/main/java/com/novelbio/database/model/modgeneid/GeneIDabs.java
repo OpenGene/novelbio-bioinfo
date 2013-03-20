@@ -960,9 +960,13 @@ public class GeneIDabs implements GeneIDInt {
 		AgeneUniID ncbiid = AgeneUniID.creatAgeneUniID(GeneID.IDTYPE_GENEID);
 		ncbiid.setAccID(accID);
 		ncbiid.setTaxID(taxID);
-		
+		ArrayList<? extends AgeneUniID> lsNcbiids = null;
 		// 先查ncbiid
-		ArrayList<? extends AgeneUniID> lsNcbiids = servGeneAnno.queryLsAgeneUniID(ncbiid);
+		try {
+			lsNcbiids = servGeneAnno.queryLsAgeneUniID(ncbiid);
+		} catch (Exception e) {
+			return null;
+		}
 		if (lsNcbiids != null && lsNcbiids.size() > 0) {
 			return getLsGeneIDinfo(lsNcbiids);
 		}

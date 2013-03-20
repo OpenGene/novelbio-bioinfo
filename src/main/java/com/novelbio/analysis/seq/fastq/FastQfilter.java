@@ -34,7 +34,7 @@ class FastQfilter extends RunProcess<FastQrecordFilterRun> {
 	ThreadPoolExecutor executorPool;
 	ArrayBlockingQueue<Future<FastQrecordFilterRun>> queueResult;
 	
-	public FastQfilter(FastQReader fastQReader, FastQwrite fastqWrite) {
+	public void setFastQReadAndWrite(FastQReader fastQReader, FastQwrite fastqWrite) {
 		this.fastQReader = fastQReader;
 		fastQthreadWrite.setFastQwrite(fastqWrite);
 	}

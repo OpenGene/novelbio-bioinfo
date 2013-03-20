@@ -221,7 +221,7 @@ public class MeDIParrayGFF {
 			) {
 				if (lsTmpResult.size() >= probNum) {
 					for (String[] strings : lsTmpResult) {
-						txtOut.ExcelWrite(strings, true);
+						txtOut.writefileln(strings);
 					}
 				}
 				lsTmpResult = new ArrayList<String[]>();

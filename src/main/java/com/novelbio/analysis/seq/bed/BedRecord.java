@@ -1,9 +1,10 @@
-package com.novelbio.analysis.seq;
+package com.novelbio.analysis.seq.bed;
 
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;

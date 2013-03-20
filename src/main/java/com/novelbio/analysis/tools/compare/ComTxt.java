@@ -137,18 +137,16 @@ public class ComTxt {
 			}
 		}
 		///////////////////////写入文本//////////////////////////////////////////////////////
-		TxtReadandWrite txtOutFile=new TxtReadandWrite();
 		String file1Name = new File(file1).getName();
 		String file2Name = new File(file2).getName();
 		
-		txtOutFile.setParameter(outPutFile+"Info.txt", true, false);
 		int interactNum = lsInteract.size(); 
 		int Aonly = lsonly1.size();
 		int Bonly = lsonly2.size();
-		txtOutFile.writefile("interactNum\t"+interactNum+"\n");
-		txtOutFile.writefile(file1Name+"\t"+Aonly+"\t"+(double)interactNum/(Aonly+interactNum)+"\n");
-		txtOutFile.writefile(file2Name+"\t"+Bonly+"\t"+(double)interactNum/(Bonly+interactNum)+"\n");
-		
+		TxtReadandWrite txtOutFile=new TxtReadandWrite(outPutFile+"Info.txt", true);
+		txtOutFile.writefileln("interactNum\t"+interactNum);
+		txtOutFile.writefileln(file1Name+"\t"+Aonly+"\t"+(double)interactNum/(Aonly+interactNum));
+		txtOutFile.writefileln(file2Name+"\t"+Bonly+"\t"+(double)interactNum/(Bonly+interactNum));
 		
 		String[] title1 = strFile1.get(0);String[] title2 = strFile2.get(0);
 		String[] title = ArrayOperate.combArray(title1, title2, 0);
@@ -156,15 +154,16 @@ public class ComTxt {
 		lsonly1.add(0,title1);
 		lsonly2.add(0,title2);
 		
+		TxtReadandWrite txtOutFileInteract=new TxtReadandWrite(outPutFile+"interaction.xls", true);
+		txtOutFileInteract.ExcelWrite(lsInteract);
+		txtOutFileInteract.close();
 
-		txtOutFile.setParameter(outPutFile+"interaction.xls", true, false);
-		txtOutFile.ExcelWrite(lsInteract);
+		TxtReadandWrite txtOutFile1 = new TxtReadandWrite(outPutFile+"Only"+file1Name, true);
+		txtOutFile1.ExcelWrite(lsonly1);
+		txtOutFile1.close();
 		
-
-		txtOutFile.setParameter(outPutFile+"Only"+file1Name, true, false);
-		txtOutFile.ExcelWrite(lsonly1);
-		txtOutFile.setParameter(outPutFile+"Only"+file2Name, true, false);
-		txtOutFile.ExcelWrite(lsonly2);
-		
+		TxtReadandWrite txtOutFile2 = new TxtReadandWrite(outPutFile+"Only"+file2Name, true);
+		txtOutFile2.ExcelWrite(lsonly2);
+		txtOutFile2.close();
 	}
 }

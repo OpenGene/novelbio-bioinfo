@@ -65,10 +65,8 @@ public class Pair2Gff {
 	 * @throws Exception 
 	 */
 	public static void pair2gff(String pairFile, String gffFile) throws Exception {
-		TxtReadandWrite txtPair = new TxtReadandWrite();
-		txtPair.setParameter(pairFile, false, true);
-		TxtReadandWrite txtGff = new TxtReadandWrite();
-		txtGff.setParameter(gffFile, true, false);
+		TxtReadandWrite txtPair = new TxtReadandWrite(pairFile);
+		TxtReadandWrite txtGff = new TxtReadandWrite(gffFile);
 		
 		BufferedReader reader = txtPair.readfile();
 		String content = "";
@@ -144,14 +142,10 @@ public class Pair2Gff {
 	 * @return 两个ArrayList，第一个532，第二个635
 	 */
 	private static ArrayList<ArrayList<String[]>> getMeDIP(String gffPair,String gffRMA532,String gffRMA635,int contProbNum, double ratio) throws Exception {
-		TxtReadandWrite txtGffPair = new TxtReadandWrite();
-		txtGffPair.setParameter(gffPair, false, true);
+		TxtReadandWrite txtGffPair = new TxtReadandWrite(gffPair);
+		TxtReadandWrite txtGffRMA532 = new TxtReadandWrite(gffRMA532);
+		TxtReadandWrite txtGffRMA635 = new TxtReadandWrite(gffRMA635);
 		
-		TxtReadandWrite txtGffRMA532 = new TxtReadandWrite();
-		txtGffRMA532.setParameter(gffRMA532, false, true);
-		
-		TxtReadandWrite txtGffRMA635 = new TxtReadandWrite();
-		txtGffRMA635.setParameter(gffRMA635, false, true);
 		//保存探针ID到LOC的信息，为后面连续多个甲基化做准备
 		//key:探针名，value:0：LOC   1：探针起点      2: 第几个探针，从1开始计算
 		HashMap<String, String[]> hashProb2Loc = new HashMap<String, String[]>();

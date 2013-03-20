@@ -26,7 +26,7 @@ public class ArrayTools {
 		ArrayList<String> lsName=new ArrayList<String>();
 		lsName.add("A");lsName.add("B");lsName.add("C");lsName.add("D");lsName.add("E");lsName.add("F");lsName.add("G");lsName.add("H");
 		
-		TxtReadandWrite txtReadandWrite=new TxtReadandWrite();
+	
 		String resultFilePath=filePath+"/"+outFileName;
 		FileOperate.createFolders(resultFilePath);
 		
@@ -48,8 +48,9 @@ public class ArrayTools {
 				
 				//thisFilePath=thisFilePath.substring(1);
 				String path=resultFilePath+"/"+lsName.get(ss)+kk+".txt";kk++;
-				txtReadandWrite.setParameter(path, true,false);
+				TxtReadandWrite txtReadandWrite=new TxtReadandWrite(path, true);
 				txtReadandWrite.ExcelWrite(sepResult);
+				txtReadandWrite.close();
 			}
 				
 		}

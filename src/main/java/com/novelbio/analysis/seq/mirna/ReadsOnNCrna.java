@@ -6,8 +6,8 @@ import java.util.Map.Entry;
 
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.AlignSeq;
-import com.novelbio.analysis.seq.BedRecord;
-import com.novelbio.analysis.seq.BedSeq;
+import com.novelbio.analysis.seq.bed.BedRecord;
+import com.novelbio.analysis.seq.bed.BedSeq;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.model.modgeneid.GeneID;

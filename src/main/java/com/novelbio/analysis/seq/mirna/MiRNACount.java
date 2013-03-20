@@ -11,8 +11,8 @@ import org.omg.CosNaming._BindingIteratorImplBase;
 
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.AlignSeq;
-import com.novelbio.analysis.seq.BedRecord;
-import com.novelbio.analysis.seq.BedSeq;
+import com.novelbio.analysis.seq.bed.BedRecord;
+import com.novelbio.analysis.seq.bed.BedSeq;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;

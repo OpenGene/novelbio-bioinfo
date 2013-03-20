@@ -13,7 +13,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.AlignRecord;
-import com.novelbio.analysis.seq.BedRecord;
+import com.novelbio.analysis.seq.bed.BedRecord;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;

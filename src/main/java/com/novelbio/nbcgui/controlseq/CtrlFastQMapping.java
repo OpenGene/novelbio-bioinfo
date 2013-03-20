@@ -204,34 +204,17 @@ public class CtrlFastQMapping {
 	 * @param num lsCondition的编号
 	 */
 	private void setFastqLR(FastQ[] tmpFastQLR, String fastqL, String fastqR) {
-		String compressType = getCompressType(fastqL, fastqR);
 		if (FileOperate.isFileExistAndBigThanSize(fastqL, 1) && FileOperate.isFileExistAndBigThanSize(fastqR, 1)) {
 			tmpFastQLR[0] = new FastQ(fastqL);
 			tmpFastQLR[1] = new FastQ(fastqR);;
-			setFastQParameter(tmpFastQLR[0], compressType);
 		}
 		else if (FileOperate.isFileExistAndBigThanSize(fastqL, 1)) {
 			tmpFastQLR[0] = new FastQ(fastqL);
-			setFastQParameter(tmpFastQLR[0], compressType);
 		}
 		else if (FileOperate.isFileExistAndBigThanSize(fastqR, 1)) {
 			tmpFastQLR[0] = new FastQ(fastqR);
-			setFastQParameter(tmpFastQLR[0], compressType);
 		}
-	}
-	private String getCompressType(String fastqL, String fastqR) {
-		String compressType = TxtReadandWrite.TXT;
-		if (FileOperate.isFileExistAndBigThanSize(fastqL, 10)) {
-			if (fastqL.endsWith(".gz")) {
-				compressType = TxtReadandWrite.GZIP;
-			}
-		}
-		else if (FileOperate.isFileExistAndBigThanSize(fastqR, 10)) {
-			if (fastqR.endsWith(".gz")) {
-				compressType = TxtReadandWrite.GZIP;
-			}
-		}
-		return compressType;
+		setFastQParameter(tmpFastQLR[0]);
 	}
 	
 	private void filteredReads() {
@@ -317,7 +300,7 @@ public class CtrlFastQMapping {
 		
 		mapCondition2CombFastQLRFiltered.put(condition, new FastQ[]{fastQL, fastQR});
 	}
-	private void setFastQParameter(FastQ fastQ, String compressType) {
+	private void setFastQParameter(FastQ fastQ) {
 		FastQRecordFilter fastQfilterRecord = new FastQRecordFilter();
 		fastQfilterRecord.setFilterParamAdaptorLeft(adaptorLeft.trim());
 		fastQfilterRecord.setFilterParamAdaptorRight(adaptorRight.trim());
@@ -326,7 +309,6 @@ public class CtrlFastQMapping {
 		fastQfilterRecord.setQualityFilter(this.fastqQuality);
 		fastQfilterRecord.setFilterParamTrimNNN(trimNNN);
 		fastQ.setFilter(fastQfilterRecord);
-		fastQ.setCompressType(compressType, TxtReadandWrite.TXT);
 	}
 	
 	private void mapping() {

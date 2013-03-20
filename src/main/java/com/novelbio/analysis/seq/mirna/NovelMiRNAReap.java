@@ -3,8 +3,8 @@ package com.novelbio.analysis.seq.mirna;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import com.novelbio.analysis.seq.BedRecord;
-import com.novelbio.analysis.seq.BedSeq;
+import com.novelbio.analysis.seq.bed.BedRecord;
+import com.novelbio.analysis.seq.bed.BedSeq;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;

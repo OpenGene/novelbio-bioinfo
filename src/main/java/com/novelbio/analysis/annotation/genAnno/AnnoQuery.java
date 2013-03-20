@@ -72,7 +72,7 @@ public class AnnoQuery extends RunProcess<AnnoQuery.AnnoQueryDisplayInfo>{
 	}
 	public void writeTo(String txtFile) {
 		TxtReadandWrite txtWrite = new TxtReadandWrite(txtFile, true);
-		txtWrite.ExcelWrite(lsResult, 1, 1);
+		txtWrite.ExcelWrite(lsResult);
 	}
 	public void setTaxIDthis(int taxIDthis) {
 		this.taxIDthis = taxIDthis;

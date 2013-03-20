@@ -9,8 +9,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.novelbio.analysis.seq.BedRecord;
-import com.novelbio.analysis.seq.BedSeq;
+import com.novelbio.analysis.seq.bed.BedRecord;
+import com.novelbio.analysis.seq.bed.BedSeq;
 import com.novelbio.analysis.seq.chipseq.peakcalling.PeakCallingSicer.PeakCallingSicerType;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;

@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 import javax.swing.JOptionPane;
 
 import com.novelbio.analysis.seq.AlignSeq;
-import com.novelbio.analysis.seq.BedSeq;
+import com.novelbio.analysis.seq.bed.BedSeq;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.sam.SamFile;

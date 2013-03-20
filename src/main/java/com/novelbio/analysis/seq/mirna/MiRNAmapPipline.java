@@ -4,7 +4,7 @@ import net.sf.samtools.SAMFileReader;
 
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.AlignSeq;
-import com.novelbio.analysis.seq.BedSeq;
+import com.novelbio.analysis.seq.bed.BedSeq;
 import com.novelbio.analysis.seq.mapping.MapBwa;
 import com.novelbio.analysis.seq.sam.AlignSamReading;
 import com.novelbio.analysis.seq.sam.AlignSeqReading;

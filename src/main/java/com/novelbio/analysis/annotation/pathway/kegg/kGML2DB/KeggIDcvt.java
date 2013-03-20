@@ -27,14 +27,10 @@ public class KeggIDcvt {
 	public static void upDateGen2Keg(String gen2KegFile) throws Exception 
 	{
 		ServKIDgen2Keg servKIDgen2Keg = new ServKIDgen2Keg();
-		TxtReadandWrite txtgene2Keg=new TxtReadandWrite();
-		txtgene2Keg.setParameter(gen2KegFile, false, true);
+		TxtReadandWrite txtgene2Keg=new TxtReadandWrite(gen2KegFile);
 		int TaxID=0;
 		////////////////获得taxID////////////////////////////////////////////////////////
-		BufferedReader reader=txtgene2Keg.readfile();
-		String content="";
-		while ((content=reader.readLine())!=null) 
-		{
+		for (String content : txtgene2Keg.readlines()) {
 			String[] ss=content.split("\t"); 
 			long geneID=Long.parseLong(ss[1].replace("ncbi-geneid:", "").replace("equivalent", "").trim());
 			GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, geneID + "", 0);
@@ -58,10 +54,7 @@ public class KeggIDcvt {
 			System.err.println("在NCBIID表中没有找到该物种的taxID");
 			return;
 		}
-		BufferedReader reader2=txtgene2Keg.readfile();
-		String content2="";
-		while ((content2=reader2.readLine())!=null) 
-		{
+		for (String content2 : txtgene2Keg.readlines()) {
 			String[] ss=content2.split("\t");
 			String kegID=ss[0];long geneID=Long.parseLong(ss[1].replace("ncbi-geneid:", "").trim());
 			KGIDgen2Keg kgiDgen2Keg=new KGIDgen2Keg();
@@ -83,14 +76,10 @@ public class KeggIDcvt {
 	{
 		ServKIDgen2Keg servKIDgen2Keg = new ServKIDgen2Keg();
 		ServKIDKeg2Ko servKIDKeg2Ko = new ServKIDKeg2Ko();
-		TxtReadandWrite txtKeg2Ko=new TxtReadandWrite();
-		txtKeg2Ko.setParameter(keg2KoFile, false, true);
+		TxtReadandWrite txtKeg2Ko=new TxtReadandWrite(keg2KoFile);
 		int TaxID=0;
 		////////////////获得taxID////////////////////////////////////////////////////////
-		BufferedReader reader=txtKeg2Ko.readfile();
-		String content="";
-		while ((content=reader.readLine())!=null) 
-		{
+		for (String content : txtKeg2Ko.readlines()) {
 			String[] ss=content.split("\t"); 
 			String kegID=ss[0].trim();
 			KGIDgen2Keg kgiDgen2Keg=new KGIDgen2Keg();
@@ -106,10 +95,8 @@ public class KeggIDcvt {
 			System.err.println("在gene2Keg表中没有找到该物种的taxID");
 			return;
 		}
-		BufferedReader reader2=txtKeg2Ko.readfile();
-		String content2="";
-		while ((content2=reader2.readLine())!=null) 
-		{
+		
+		for (String content2 : txtKeg2Ko.readlines()) {
 			String[] ss=content2.split("\t");
 			String kegID=ss[0];String ko=ss[1].trim();
 			KGIDkeg2Ko kgDkeg2Ko=new KGIDkeg2Ko();
@@ -125,12 +112,10 @@ public class KeggIDcvt {
 	 * @param compFile
 	 * @throws Exception 
 	 */
-	public static void upDateKegCompound(String compFile) throws Exception
-	{
+	public static void upDateKegCompound(String compFile) throws Exception {
 		ServKNIdKeg servKNIdKeg = new ServKNIdKeg();
 		ServKNCompInfo servKNCompInfo = new ServKNCompInfo();
-		TxtReadandWrite txtComp = new TxtReadandWrite();
-		txtComp.setParameter(compFile, false, true);
+		TxtReadandWrite txtComp = new TxtReadandWrite(compFile);
 		BufferedReader readerComp = txtComp.readfile();
 		String content = "";
 		while ((content = readerComp.readLine())!=null) 
@@ -209,5 +194,6 @@ public class KeggIDcvt {
 				continue;
 			}
 		}
+		txtComp.close();
 	}
 }

@@ -26,9 +26,9 @@ import net.sf.samtools.util.StringLineReader;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.AlignSeq;
-import com.novelbio.analysis.seq.BedRecord;
-import com.novelbio.analysis.seq.BedSeq;
 import com.novelbio.analysis.seq.FormatSeq;
+import com.novelbio.analysis.seq.bed.BedRecord;
+import com.novelbio.analysis.seq.bed.BedSeq;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.base.PathDetail;

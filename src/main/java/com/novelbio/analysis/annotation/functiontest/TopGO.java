@@ -220,7 +220,7 @@ public class TopGO {
 	}
 	private void readResult() {
 		TxtReadandWrite txtRGo2Gene = new TxtReadandWrite(rawGoResultFile, false);
-		lsResult = txtRGo2Gene.ExcelRead(2, 2, txtRGo2Gene.ExcelRows(), txtRGo2Gene.ExcelColumns("\t"), 0);
+		lsResult = txtRGo2Gene.ExcelRead(2, 2, txtRGo2Gene.ExcelRows(), txtRGo2Gene.ExcelColumns(), 0);
 		//去除"号
 		for (String[] strings : lsResult) {
 			for (int i = 0; i < strings.length; i++) {

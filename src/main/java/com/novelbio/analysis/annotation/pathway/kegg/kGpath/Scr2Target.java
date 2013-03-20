@@ -361,9 +361,8 @@ public class Scr2Target {
 		String[] title = new String[5];
 		title[0] = "source"; title[1] = "target"; title[2] = "relation"; title[3] = "detailRelation";  title[4] = "pathway"; 
 		lsScr2Target.add(0, title);
-		TxtReadandWrite txtReadandWrite = new TxtReadandWrite();
-		txtReadandWrite.setParameter(ResultFIleScr2Target, true, false);
-		txtReadandWrite.ExcelWrite(lsScr2Target, 1, 1);
+		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(ResultFIleScr2Target, true);
+		txtReadandWrite.ExcelWrite(lsScr2Target);
 		
 		
 		Enumeration<String> keys=hashEntryInfoResult.keys();
@@ -380,8 +379,11 @@ public class Scr2Target {
 		title2[4] = "subject TaxID";title2[5] = "subject Symbol/accID";title2[6] = "subject Description";
 		title2[7] = "pathWay";
 		lsAttribute.add(0,title2);
-		txtReadandWrite.setParameter(resultFIleAttribute, true, false);
-		txtReadandWrite.ExcelWrite(lsAttribute, 1, 1);
+		
+		TxtReadandWrite txtReadandWrite2 = new TxtReadandWrite(resultFIleAttribute, true);
+		txtReadandWrite2.ExcelWrite(lsAttribute);
+		txtReadandWrite.close();
+		txtReadandWrite2.close();
 	}
 	
 	/**

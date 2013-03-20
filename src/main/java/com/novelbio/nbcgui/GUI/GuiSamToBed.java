@@ -9,7 +9,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.novelbio.analysis.seq.BedSeq;
+import com.novelbio.analysis.seq.bed.BedSeq;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;

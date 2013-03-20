@@ -48,12 +48,10 @@ public class ChromFaConvert {
 				fileNam = chrFilePath + chrFileName[0] + "." + chrFileName[1];
 				fileNamNew = chrFilePath+chrFileName[0] + "." + chrFileName[1] + "new";
 			}
-			TxtReadandWrite txtFile = new TxtReadandWrite();
-			txtFile.setParameter(fileNam, false, true);
+			TxtReadandWrite txtFile = new TxtReadandWrite(fileNam);
 			BufferedReader chrReader = txtFile.readfile();
 			
-			TxtReadandWrite txtFileNew = new TxtReadandWrite();
-			txtFileNew.setParameter(fileNamNew, true, false);
+			TxtReadandWrite txtFileNew = new TxtReadandWrite(fileNamNew, true);
 			
 			String content = "";
 			while ((content = chrReader.readLine()) != null) {

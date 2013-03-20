@@ -94,6 +94,8 @@ public class GeneID implements GeneIDInt{
 	 * @param accID 如果类似XM_002121.1类型，那么将.1去除
 	 * @param taxID
 	 * @param blastType 具体的accID是否类似 blast的结果，如：dbj|AK240418.1|，那么获得AK240418，一般都是false
+	 * @param 如果没查到则返回空的list
+	 * 返回null表示没有连上数据库
 	 */
 	public static ArrayList<GeneID> createLsCopedID(String accID,int taxID,boolean blastType) {
 		ArrayList<GeneID> lsCopedIDs = new ArrayList<GeneID>();
@@ -102,6 +104,9 @@ public class GeneID implements GeneIDInt{
 		}
 		
 		ArrayList<AgeneUniID> lsaccID = GeneIDabs.getNCBIUniTax(accID, taxID);
+		if (lsaccID == null) {
+			return null;
+		}
 		for (AgeneUniID ageneUniID : lsaccID) {
 			 GeneID copedID = new GeneID(ageneUniID);
 			 lsCopedIDs.add(copedID);

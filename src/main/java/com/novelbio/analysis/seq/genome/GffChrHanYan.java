@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -392,9 +393,13 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 		}
 		System.out.println("图片的高度像素为： "+map.getChartSize().getHeight());
 		
-		TxtReadandWrite txtReadandWrite = new TxtReadandWrite();
-		txtReadandWrite.setParameter(resultFilePath+prefix+"Atgmatrix.txt", true, false);
-		txtReadandWrite.ExcelWrite(GeneEndDensity);
+		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(resultFilePath+prefix+"Atgmatrix.txt", true);
+		List<String[]> lsThisResult = new ArrayList<String[]>();
+		for (int i = 0; i < GeneEndDensity.length; i++) {
+			lsThisResult.add(GeneEndDensity[i]);
+		}
+		txtReadandWrite.ExcelWrite(lsThisResult);
+		txtReadandWrite.close();
 	}
 	protected abstract ArrayList<String> getAllGeneName();
 

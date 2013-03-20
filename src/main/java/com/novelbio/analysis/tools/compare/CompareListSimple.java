@@ -167,7 +167,6 @@ public class CompareListSimple {
 		
 		
 		ArrayList<String[]> ls1=null;ArrayList<String[]> ls2=null;
-		TxtReadandWrite txt = new TxtReadandWrite();
 		
 		try {
 			ExcelOperate excel = new ExcelOperate();
@@ -178,8 +177,9 @@ public class CompareListSimple {
 		}
 		
 		if (ls1 == null || ls1.size()<1) {
-			txt.setParameter(filePath+FileA, false,true);
+			TxtReadandWrite txt = new TxtReadandWrite(filePath+FileA);
 			ls1=txt.ExcelRead(firstlinels1, 1, txt.ExcelRows(), -1, 1);//从目标行读取
+			txt.close();
 		}
 			
 		try {
@@ -190,25 +190,25 @@ public class CompareListSimple {
 			// TODO: handle exception
 		}
 		if (ls2 == null || ls2.size()<1) {
-			txt.setParameter(filePath+FileB, false,true);
+			TxtReadandWrite txt = new TxtReadandWrite(filePath+FileB);
 			ls2=txt.ExcelRead(firstlinels2, 1, txt.ExcelRows(), -1, 1);
+			txt.close();
 		}
 
 		ArrayList<ArrayList<String[]>> compareResult=compareList(ls1, ls2,considerCase);
 		String intersectionResultFilePath=filePath+resultFold+"/";
-
-		txt.setParameter(intersectionResultFilePath+FileAonly, true,false);
-		txt.ExcelWrite(compareResult.get(0), 1, 1);
 		
-		txt.setParameter(intersectionResultFilePath+FileBonly, true,false);
-		txt.ExcelWrite(compareResult.get(1), 1, 1);
-	
-		txt.setParameter(intersectionResultFilePath+FileIntersection, true,false);
-		txt.ExcelWrite(compareResult.get(2), 1, 1);
-	 
+		TxtReadandWrite txt1 = new TxtReadandWrite(intersectionResultFilePath+FileAonly, true);
+		txt1.ExcelWrite(compareResult.get(0));
+		txt1.close();
+		
+		TxtReadandWrite txt2 = new TxtReadandWrite(intersectionResultFilePath+FileBonly, true);
+		txt2.ExcelWrite(compareResult.get(1));
+		txt2.close();
+		
+		TxtReadandWrite txt3 = new TxtReadandWrite(intersectionResultFilePath+FileIntersection, true);
+		txt3.ExcelWrite(compareResult.get(2));
+		txt3.close();
 	}
-	
- 
-	
-	
+
 }

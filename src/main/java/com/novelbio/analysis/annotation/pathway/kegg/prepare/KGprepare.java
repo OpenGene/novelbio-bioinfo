@@ -3,6 +3,7 @@ package com.novelbio.analysis.annotation.pathway.kegg.prepare;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
 
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -30,16 +31,19 @@ public class KGprepare {
 	 * @return
 	 * @throws Exception
 	 */
-	public static String[] getAccID(String accIDFile,int rowStartNum,int colNum) throws Exception 
-	{
-		TxtReadandWrite txtReadandWrite = new TxtReadandWrite();
-		txtReadandWrite.setParameter(accIDFile, false, true);
-		String[][] geneID=txtReadandWrite.ExcelRead("\t", rowStartNum, colNum,txtReadandWrite.ExcelRows(),colNum);
-		String[] geneID2=new String[geneID.length];
-		for (int i = 0; i < geneID.length; i++) {
-			geneID2[i] = GeneID.removeDot(geneID[i][0]);
+	public static String[] getAccID(String accIDFile,int rowStartNum,int colNum) throws Exception {
+		colNum--;
+		if (colNum < 0) {
+			colNum = 0;
 		}
-		return geneID2;
+		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(accIDFile);
+		List<String> lsAccID = new ArrayList<String>();
+		for (String string : txtReadandWrite.readlines()) {
+			String[] ss = string.split("\t");
+			lsAccID.add(ss[colNum]);
+		}
+		txtReadandWrite.close();
+		return lsAccID.toArray(new String[0]);
 	}
 	/**
 	 * 

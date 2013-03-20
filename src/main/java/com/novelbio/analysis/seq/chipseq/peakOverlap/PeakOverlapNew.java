@@ -38,8 +38,7 @@ public class PeakOverlapNew {
 			e.printStackTrace();
 		}
 		ArrayList<String[]> resultexcel=cdgPeak.compareMinus2Plus(false);
-		TxtReadandWrite txtPeakOverlap=new TxtReadandWrite();
-		txtPeakOverlap.setParameter(txtPeakOverlapFile, true,false);
+		TxtReadandWrite txtPeakOverlap=new TxtReadandWrite(txtPeakOverlapFile, true);
 		try {
 			txtPeakOverlap.ExcelWrite(resultexcel);
 		} catch (Exception e) {
@@ -67,7 +66,6 @@ public class PeakOverlapNew {
 		int minusLength=cdgPeak.getMinusallLength();
 		int plusLength=cdgPeak.getPlusallLength();
 		int[] peakOverlapLength=cdgPeak.getOverlapInfo();
-		TxtReadandWrite txtPeakOverlap=new TxtReadandWrite();
 		ArrayList<String[]> resultexcel=new ArrayList<String[]>();
 
 		String[] result0=new String[2];
@@ -125,13 +123,9 @@ public class PeakOverlapNew {
 		result10[1]=(double)peakOverlapLength[1]/cdgPeak.getMinusNum()+"";
 		resultexcel.add(result10);
 		
-		txtPeakOverlap.setParameter(txtPeakOverlapStatisticFile, true,false);
-		try {
-			txtPeakOverlap.ExcelWrite(resultexcel);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
+		TxtReadandWrite txtPeakOverlap=new TxtReadandWrite(txtPeakOverlapStatisticFile, true);
+		txtPeakOverlap.ExcelWrite(resultexcel);
+		txtPeakOverlap.close();
 		System.out.println("ok");
 	}
 }
