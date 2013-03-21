@@ -234,148 +234,7 @@ public class BedSeq implements AlignSeq{
 		bedSeqFiltered.close();
 		return bedSeqFiltered;
 	}
-	
-	/**
-	 * 用dge的方法来获得基因表达量
-	 * @param sort 是否需要排序
-	 * 出错返回null
-	 */
-	public Map<String, Integer> getDGEnum(boolean sort, boolean allTags) {
-		BedSeq bedseq = null;
-		if (sort) {
-			bedseq = sort(FileOperate.changeFileSuffix(getFileName(), "_DGESort", null));
-		}
-		else {
-			bedseq = this;
-		}
-		try {
-			return bedseq.getGeneExpress(allTags);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
-	
-	//TODO tobe checked
-	/**
-	 * @param Alltags true: 选择全部tag，false，只选择最多的tag
-	 * @return
-	 * 返回每个基因所对应的表达量，包括多个tag之和--除了反向tag， 用 int[1]只是为了地址引用。
-	 * bed文件必须排序
-	 * @throws Exception
-	 */
-	private Map<String, Integer> getGeneExpress(boolean Alltags) throws Exception {
-		BedRecord bedRecordLast = null;
-		Map<String, Integer> mapResult = new HashMap<String, Integer>();
-		ArrayList<int[]> lsTmpExpValue = new ArrayList<int[]>();
-		int[] tmpCount = new int[]{0};
-		for (BedRecord bedRecord : readLines()) {
-			//mapping到互补链上的，是假的信号
-			if (!bedRecord.isCis5to3()) {
-				continue;
-			}
-			if (bedRecordLast != null && !bedRecordLast.getRefID().equals(bedRecord.getRefID())) {
-				if (Alltags) {
-					mapResult.put(bedRecordLast.getRefID(), sum(lsTmpExpValue));
-				} else {
-					mapResult.put(bedRecordLast.getRefID(), max(lsTmpExpValue));
-				}
-				lsTmpExpValue.clear();
-				tmpCount = new int[]{0};
-			} else if (bedRecordLast == null || bedRecord.getStartAbs() > bedRecordLast.getEndAbs()) {
-				tmpCount = new int[]{0};
-				lsTmpExpValue.add(tmpCount);
-			}
-			tmpCount[0] ++;
-			bedRecordLast = bedRecord;
-		}
-		return mapResult;
-	}
-	/**
-	 * 输入int[0] 只有0位有信息
-	 * @param lsReads
-	 * @return
-	 */
-	private int max(ArrayList<int[]> lsReads) {
-		int max = lsReads.get(0)[0];
-		for (int[] is : lsReads) {
-			if (is[0] > max) {
-				max = is[0];
-			}
-		}
-		return max;
-	}
-	/**
-	 * 输入int[0] 只有0位有信息
-	 * @param lsReads
-	 * @return
-	 */
-	private int sum(ArrayList<int[]> lsReads) {
-		int sum = 0;
-		for (int[] is : lsReads) {
-			sum = sum + is[0];
-		}
-		return sum;
-	}
-	/**
-	 * 
-	 * 无法设定compressType
-	 * 将bed文件转化成DGE所需的信息，直接可以用DEseq分析的
-	 * @param result
-	 * @param sort 
-	 * @param allTags 是否获得全部的正向tag，false的话，只选择最多的正向tag的数量
-	 * @param bedFile
-	 */
-	public static void dgeCal(String result, boolean sort, boolean allTags, String... bedFile) {
-		ArrayList<Map<String, Integer>> lsDGEvalue = new ArrayList<Map<String,Integer>>();
-		for (String string : bedFile) {
-			BedSeq bedSeq = new BedSeq(string);
-			lsDGEvalue.add(bedSeq.getDGEnum(sort,allTags));
-		}
-		HashMap<String, int[]> hashResult = combineHashDGEvalue(lsDGEvalue);
-		TxtReadandWrite txtOut = new TxtReadandWrite(result, true);
-		String title = "GeneID";
-		for (String string : bedFile) {
-			title = title + "\t"+ FileOperate.getFileNameSep(string)[0];
-		}
-		txtOut.writefileln(title);
-		for (Entry<String, int[]> entry : hashResult.entrySet()) {
-			String loc = entry.getKey(); int[] value = entry.getValue();
-			for (int i : value) {
-				loc = loc + "\t" + i;
-			}
-			txtOut.writefileln(loc);
-		}
-		txtOut.close();
-	}
-	/**
-	 * 给定一组hash表，key：locID   value：expressValue
-	 * 将他们合并成一个hash表
-	 * @param lsDGEvalue
-	 * @return
-	 */
-	private static HashMap<String, int[]> combineHashDGEvalue(ArrayList<Map<String, Integer>> lsDGEvalue) {
-		HashMap<String, int[]> hashValue = new HashMap<String, int[]>();
-		for (int i = 0; i < lsDGEvalue.size(); i++) {
-			Map<String, Integer> hashTmp = lsDGEvalue.get(i);
-			for (Entry<String, Integer> entry : hashTmp.entrySet()) {
-				String loc = entry.getKey(); int value = entry.getValue();
-			
-				if (hashValue.containsKey(loc)) {
-					int[] tmpvalue = hashValue.get(loc);
-					tmpvalue[i] = value;
-				}
-				else
-				{
-					int[] tmpvalue = new int[lsDGEvalue.size()];
-					tmpvalue[i] = value;
-					hashValue.put(loc, tmpvalue);
-				}
-			}
-		}
-		return hashValue;
-	}
+
 	/**
 	 * 输入经过排序的peakfile,或者说bedfile，将重叠的peak进行合并 注意，结果中仅保留peak，没有保留其他多的信息
 	 * 从第一行开始合并
@@ -463,42 +322,47 @@ public class BedSeq implements AlignSeq{
 	 * @param readLines 从第几行开始读
 	 */
 	private BedSeq combBedOverlapCis5to3(int readLines, String outFile) {
-			BedSeq bedSeqResult = new BedSeq(outFile, true);
-			if (readLines < 1) {
-				readLines = 1;
-			}
-			BedRecord bedRecordLast = null;
-			for (BedRecord bedRecord : readLines(readLines)) {
-				if (bedRecordLast == null) {
-					bedRecordLast = new BedRecord();
-					bedRecordLast.setRefID(bedRecord.getRefID());
-					bedRecordLast.setStartEndLoc(bedRecord.getStartAbs(), bedRecord.getEndAbs());
-					bedRecordLast.setCis5to3(bedRecord.isCis5to3());
-				}
-				if	(!bedRecord.getRefID().equals(bedRecordLast.getRefID()) || bedRecord.getStartAbs() >= bedRecordLast.getEndAbs() || bedRecord.isCis5to3() != bedRecordLast.isCis5to3()) {
-					bedSeqResult.writeBedRecord(bedRecordLast);
-					bedRecordLast = new BedRecord();
-					bedRecordLast.setRefID(bedRecord.getRefID());
-					bedRecordLast.setStartEndLoc(bedRecord.getStartAbs(), bedRecord.getEndAbs());
-					bedRecordLast.setCis5to3(bedRecord.isCis5to3());
-					//因为bedRecord内部默认ReadsNum为null，而如果为null，提取时显示为1，所以所有为1的都要手工设定一下
-					if (bedRecordLast.getReadsNum() == 1) {
-						bedRecordLast.setReadsNum(1);
-					}
-					continue;
-				}
-				else if (bedRecord.getStartAbs() < bedRecordLast.getEndAbs()) {
-					//发现一个overlap就加上1，表示该区域有多条reads
-					bedRecordLast.setReadsNum(bedRecordLast.getReadsNum() + 1);
-					if (bedRecordLast.getEndAbs() < bedRecord.getEndAbs()) {
-						bedRecordLast.setStartEndLoc(bedRecordLast.getStartAbs(), bedRecord.getEndAbs());
-					}
-				}
-			}
-			bedSeqResult.writeBedRecord(bedRecordLast);
-			bedSeqResult.close();
-			return bedSeqResult;
+		BedSeq bedSeqResult = new BedSeq(outFile, true);
+		if (readLines < 1) {
+			readLines = 1;
 		}
+		BedRecord bedRecordLast = null;
+		for (BedRecord bedRecord : readLines(readLines)) {
+			if (bedRecordLast == null) {
+				bedRecordLast = new BedRecord();
+				bedRecordLast.setRefID(bedRecord.getRefID());
+				bedRecordLast.setStartEndLoc(bedRecord.getStartAbs(), bedRecord.getEndAbs());
+				bedRecordLast.setCis5to3(bedRecord.isCis5to3());
+			}
+			if (!bedRecord.getRefID().equals(bedRecordLast.getRefID())
+					|| bedRecord.getStartAbs() >= bedRecordLast.getEndAbs()
+					|| bedRecord.isCis5to3() != bedRecordLast.isCis5to3()) {
+				bedSeqResult.writeBedRecord(bedRecordLast);
+				bedRecordLast = new BedRecord();
+				bedRecordLast.setRefID(bedRecord.getRefID());
+				bedRecordLast.setStartEndLoc(bedRecord.getStartAbs(), bedRecord.getEndAbs());
+				bedRecordLast.setCis5to3(bedRecord.isCis5to3());
+				// 因为bedRecord内部默认ReadsNum为null，而如果为null，提取时显示为1，所以所有为1的都要手工设定一下
+				if (bedRecordLast.getReadsNum() == 1) {
+					bedRecordLast.setReadsNum(1);
+				}
+				continue;
+			} else if (bedRecord.getStartAbs() < bedRecordLast.getEndAbs()) {
+				// 发现一个overlap就加上1，表示该区域有多条reads
+				bedRecordLast.setReadsNum(bedRecordLast.getReadsNum() + 1);
+				if (bedRecordLast.getEndAbs() < bedRecord.getEndAbs()) {
+					bedRecordLast.setStartEndLoc(bedRecordLast.getStartAbs(), bedRecord.getEndAbs());
+				}
+			}
+		}
+		bedSeqResult.writeBedRecord(bedRecordLast);
+		bedSeqResult.close();
+		return bedSeqResult;
+	}
+	/**
+	 * 输入经过排序的bedfile，将重复的bedrecord进行合并，合并的信息取第一条
+	 * @param peakFile 
+	 */
 	public BedSeq removeDuplicat() {
 		String out = FileOperate.changeFileSuffix(getFileName(), "_removeDup", null);
 		return removeDuplicat(out);

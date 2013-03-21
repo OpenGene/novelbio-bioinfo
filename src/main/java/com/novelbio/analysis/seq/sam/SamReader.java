@@ -6,11 +6,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import org.apache.commons.math.optimization.univariate.BracketFinder;
-import org.apache.log4j.Logger;
-
-import com.novelbio.base.fileOperate.FileOperate;
-
 import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMFormatException;
@@ -18,8 +13,12 @@ import net.sf.samtools.SAMRecord;
 import net.sf.samtools.SAMRecordIterator;
 import net.sf.samtools.SAMSequenceRecord;
 
+import org.apache.log4j.Logger;
+
+import com.novelbio.base.fileOperate.FileOperate;
+
 public class SamReader {
-	private static Logger logger = Logger.getLogger(SamReader.class);
+	private static final Logger logger = Logger.getLogger(SamReader.class);
 	/**
 	 * 读取sam文件的类，最好不要直接用，用getSamFileReader()方法代替
 	 */
@@ -41,6 +40,7 @@ public class SamReader {
 		samFileReader = null;
 		samFileHeader = null;
 	}
+	
 	public void setFileIndex(String fileIndex) {
 		if (FileOperate.isFileExistAndBigThanSize(fileIndex, 0)) {
 			this.fileIndex = fileIndex;

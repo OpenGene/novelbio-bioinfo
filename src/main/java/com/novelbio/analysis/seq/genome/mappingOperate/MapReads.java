@@ -605,7 +605,7 @@ class MapReadsAddAlignRecord {
 	protected int[] addLoc(AlignRecord alignRecord, int[] tmpOld, int[] chrBpReads, ChrMapReadsInfo chrMapReadsInfo) {
 		boolean cis5to3This = alignRecord.isCis5to3();
 		if ((mapReads.FilteredStrand != null && alignRecord.isCis5to3() != mapReads.FilteredStrand)
-				|| (mapReads.isUniqueMapping() && alignRecord.getMappingNum() > 1)
+				|| (mapReads.isUniqueMapping() && !alignRecord.isUniqueMapping())
 				) {
 			return tmpOld;
 		}

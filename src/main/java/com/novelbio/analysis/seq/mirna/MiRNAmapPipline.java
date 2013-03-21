@@ -192,6 +192,7 @@ public class MiRNAmapPipline {
 		MapBwa mapBwa = new MapBwa(fqFile, samFileName);
 		mapBwa.setChrFile(chrFile);
 		mapBwa.setExePath(exePath);
+		mapBwa.setGapLength(5);
 		SamFile samFile = mapBwa.mapReads();
 		
 		try { Thread.sleep(1000); } catch (Exception e) { }

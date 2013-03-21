@@ -9,6 +9,7 @@ import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.dataStructure.Alignment;
  /**
   * BedSeq每一行的信息<br>
@@ -67,7 +68,11 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord{
 		setCis5to3(alignRecord.isCis5to3());
 		setSeq(alignRecord.getSeqFasta());
 		CIGAR = alignRecord.getCIGAR();
-		mappingNum = alignRecord.getMappingNum();
+		if (alignRecord instanceof SamRecord) {
+			mappingNum = ((SamRecord)alignRecord).getMappingReads();
+		} else {
+			mappingNum = alignRecord.getMappingNum();
+		}
 		mapQuality = alignRecord.getMapQuality();
 		setAlignmentBlocks(alignRecord.getAlignmentBlocks());
 		setScore(alignRecord.getMapQuality());		

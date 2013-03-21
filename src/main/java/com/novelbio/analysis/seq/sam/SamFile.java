@@ -45,14 +45,7 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
  *
  */
 public class SamFile implements AlignSeq {
-	public static void main(String[] args) {
-		SamFile samFile = new SamFile("/media/winF/NBC/Project/Project_FY/paper/KOod.bam");
-		samFile.close();
-		for (SamRecord samRecord : samFile.readLines()) {
-			System.out.println(samRecord);
-		}
-	}
-	private static Logger logger = Logger.getLogger(SamFile.class);
+	private static final Logger logger = Logger.getLogger(SamFile.class);
 
 	public static final int MAPPING_ALLREADS = 2;
 	public static final int MAPPING_ALLMAPPEDREADS = 4;

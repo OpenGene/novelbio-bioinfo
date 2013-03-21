@@ -152,10 +152,29 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 		}
 		return 1;
 	}
+	
+	/**
+	 * 本序列在本文件中出现了几次，
+	 * 意思就是如果是非unique mapping，但是该Reads只出现一次，则返回1，譬如BWA
+	 * 如果是Tophat，则会出现多次，则返回多次的信息
+	 */
+	public Integer getMappingNum() {
+		if (numMappedReadsInFile > 0) {
+			return numMappedReadsInFile;
+		}
+		Object attrCC = samRecord.getAttribute("NH");
+		if (attrCC != null) {
+			numMappedReadsInFile = (Integer) attrCC;
+		} else {
+			numMappedReadsInFile = 1;
+		}
+		return numMappedReadsInFile;
+	}
+	
 	/**
 	 * 本序列可以mapping至几个不同位置
-	 * */
-	public Integer getMappingNum() {
+	 */
+	public Integer getMappingReads() {
 		if (numMappedReadsInFile > 0) {
 			return numMappedReadsInFile;
 		}
@@ -177,7 +196,7 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 		numMappedReadsInFile = 1;
 		return numMappedReadsInFile;
 	}
-
+	
 	/**
 	 * 是否为双端或者说有令一端 返回null：表示不知道到底有没有另一端，那么就要根据输入的文件进行判断
 	 * */

@@ -1,4 +1,4 @@
-package com.novelbio.analysis.seq;
+package com.novelbio.analysis.seq.rnaseq;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,12 +6,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-import com.novelbio.analysis.seq.fasta.SeqFastaHash;
-import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
+import com.novelbio.analysis.seq.AlignRecord;
+import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
 /**
  * 从bam文件或bed文件转化为DGE的值
@@ -37,6 +34,7 @@ public class Align2DGEvalue {
 				String[] ss = content.split("\t");
 				mapAccID2GeneID.put(ss[1], ss[0]);
 			}
+			txtGene2Iso.close();
 		}
 	}
 	/** 设定sam，bam，或者bed文件 
@@ -110,9 +108,7 @@ public class Align2DGEvalue {
 				if (hashValue.containsKey(loc)) {
 					int[] tmpvalue = hashValue.get(loc);
 					tmpvalue[i] = value;
-				}
-				else
-				{
+				} else {
 					int[] tmpvalue = new int[lsDGEvalue.size()];
 					tmpvalue[i] = value;
 					hashValue.put(loc, tmpvalue);
@@ -152,6 +148,9 @@ public class Align2DGEvalue {
 				lsTmpExpValue.add(tmpCount);
 			}
 			lastRecord = alignRecord;
+			//TODO 如果是bwa mapping的结果，可能会mapping至多个位点，但是该reads只存在一次。
+			//这时候就应该直接+1
+			//而tophat的mapping结果，mapping至多个位点，同一个reads就会存在多次。这时候用这个方法就行
 			tmpCount[0] = tmpCount[0] + (double)1/alignRecord.getMappingNum();
 		}
 		return mapGene2Exp;

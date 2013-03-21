@@ -29,6 +29,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.database.service.servgeneanno.ServSpeciesFile;
+import com.sun.tools.javac.util.Name;
 
 /**
  * 保存某个物种的各种文件信息，譬如mapping位置等等
@@ -556,9 +557,8 @@ public class SpeciesFile {
 	static public class ExtractSmallRNASeq {
 		public static void main(String[] args) {
 			ExtractSmallRNASeq extractSmallRNASeq = new ExtractSmallRNASeq();
-			extractSmallRNASeq.setRNAdata("/media/winE/Bioinformatics/DataBase/sRNA/miRNA.dat", "HSA");
-			extractSmallRNASeq.setOutPathPrefix("/media/winE/Bioinformatics/DataBase/sRNA/test");
-			extractSmallRNASeq.getSeq();
+			extractSmallRNASeq.extractRfam("/media/winE/Bioinformatics/genome/sRNA/Rfam2_1.fasta", 
+					"/media/winE/Bioinformatics/genome/sRNA/Rfam_test.fasta", 0);
 			
 		}
 		
@@ -768,12 +768,12 @@ public class SpeciesFile {
 			return finalSeq;
 		}
 		/**
-		 * 从miRBase的hairpinFile文件中提取miRNA序列
+		 * 从rfam.txt文件中提取指定物种的ncRNA序列
 		 * @param hairpinFile
 		 * @param outNCRNA
 		 * @param regx 物种的英文，人类就是Homo sapiens
 		 */
-		private void extractRfam(String rfamFile, String outRfam, int taxIDquery) {
+		private void extractRfamOld(String rfamFile, String outRfam, int taxIDquery) {
 			TxtReadandWrite txtOut = new TxtReadandWrite(outRfam, true);
 			 SeqFastaHash seqFastaHash = new SeqFastaHash(rfamFile,null,false);
 			 seqFastaHash.setDNAseq(true);
@@ -796,6 +796,42 @@ public class SpeciesFile {
 			 }
 			 txtOut.close();
 		}
+		
+		/**
+		 * 修正rfam.txt文件中提取指定物种的ncRNA序列
+		 * @param hairpinFile
+		 * @param outNCRNA
+		 * @param regx 物种的英文，人类就是Homo sapiens
+		 */
+		private void extractRfam(String rfamFile, String outRfam, int taxIDquery) {
+			TxtReadandWrite txtRead = new TxtReadandWrite(rfamFile, false);
+			TxtReadandWrite txtWrite = new TxtReadandWrite(outRfam, true);
+
+			HashMap<String, Integer> map = new HashMap<String, Integer>();
+			for (String string : txtRead.readlines()) {
+				if (string.startsWith(">")) {
+					string = string.split(" +")[0].replace(";", "//");
+					if (map.containsKey(string)) {
+						int tmp = map.get(string) + 1;
+						map.put(string, tmp);
+					} else {
+						map.put(string, 0);
+					}
+					int tmpNum = map.get(string);
+					if (tmpNum == 0) {
+						txtWrite.writefileln(string);
+					} else {
+						txtWrite.writefileln(string + "_new" + tmpNum);
+					}
+				} else {
+					string = string.replace("U", "T");
+					txtWrite.writefileln(string);
+				}
+			}
+			txtRead.close();
+			txtWrite.close();
+		}
+		
 	}
 	
 }
