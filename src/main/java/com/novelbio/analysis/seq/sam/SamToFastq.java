@@ -1,5 +1,10 @@
 package com.novelbio.analysis.seq.sam;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+
+import net.sf.samtools.SAMFileHeader;
+
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
@@ -34,11 +39,6 @@ public class SamToFastq implements AlignmentRecorder {
 	 */
 	public void setFastqFile(String outFileName) {
 		fastQ = new FastQ(outFileName, true);
-		String compressOutType = TxtReadandWrite.TXT;
-		if (outFileName.endsWith("gz")) {
-			compressOutType = TxtReadandWrite.GZIP;
-		}
-		fastQ.setCompressType(compressOutType, compressOutType);
 	}
 	@Override
 	public void addAlignRecord(AlignRecord alignRecord) {

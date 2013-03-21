@@ -28,29 +28,29 @@ public class SamReader {
 	/** 小写的chrID与samFileHeader中的chrID的对照表 */
 	HashMap<String, String> mapChrIDlowCase2ChrID = new LinkedHashMap<String, String>();
 	HashMap<String, Long> mapChrIDlowCase2Length = new LinkedHashMap<String, Long>();
+	
 	String fileName;
 	String fileIndex;
+	
 	Boolean pairend;
-	
-	boolean isOpen = false;
-	
-	public void setFileName(String fileName) {
+		
+	public SamReader(String fileName) {
 		this.fileName = fileName;
-		close();
-		samFileReader = null;
-		samFileHeader = null;
+		initialSamHeadAndReader(null);
+	}
+	
+	public SamReader(String fileName, String fileIndex) {
+		this.fileName = fileName;
+		initialSamHeadAndReader(fileIndex);
 	}
 	
 	public void setFileIndex(String fileIndex) {
+		this.fileIndex = fileIndex;
 		if (FileOperate.isFileExistAndBigThanSize(fileIndex, 0)) {
-			this.fileIndex = fileIndex;
+			initialSamHeadAndReader(fileIndex);
 		}
 	}
-	
-	public String getName() {
-		SAMFileHeader samFileHeader = getSamFileReader().getFileHeader();
-		return samFileHeader.toString();
-	}
+
 	/**
 	 * 双端数据是否获得连在一起的bed文件
 	 * 如果输入是单端数据，则将序列延长返回bed文件
@@ -76,18 +76,9 @@ public class SamReader {
 		}
 		return pairend;
 	}
-	protected SAMFileHeader getSamFileHead() {
-		initialSamHeadAndReader();
-		return samFileHeader;
-	}
 	
-	protected SAMFileReader getSamFileReader() {
-		initialSamHeadAndReader();
-		return samFileReader;
-	}
-	
-	private void initialSamHeadAndReader() {
-		if (samFileHeader != null && samFileReader != null && isOpen == true 
+	private void initialSamHeadAndReader(String fileIndex) {
+		if (samFileHeader != null && samFileReader != null
 				&& 
 				(
 						(fileIndex == null && !samFileReader.hasIndex())
@@ -98,7 +89,6 @@ public class SamReader {
 			return;
 		}
 		close();
-		isOpen = true;
 		File file = new File(fileName);
 		File index = null;
 		if (fileIndex != null) {
@@ -115,12 +105,20 @@ public class SamReader {
 			mapChrIDlowCase2Length.put(samSequenceRecord.getSequenceName().toLowerCase(), (long) samSequenceRecord.getSequenceLength());
 		}
 	}
+	
+	protected SAMFileHeader getSamFileHead() {
+		return samFileHeader;
+	}
+	
+	protected SAMFileReader getSamFileReader() {
+		return samFileReader;
+	}
+	
 	/**
 	 * 获得该bam文件中染色体的长度信息，注意key都为小写
 	 * @return
 	 */
 	public HashMap<String, Long> getMapChrIDlowCase2Length() {
-		initialSamHeadAndReader();
 		return mapChrIDlowCase2Length;
 	}
 	/**
@@ -190,7 +188,6 @@ public class SamReader {
 	public Iterable<SamRecord> readLinesContained(String chrID, int start, int end) {
 		closeIterate();
 		
-		getSamFileReader();
 		chrID = chrID.toLowerCase();
 		if (!mapChrIDlowCase2ChrID.containsKey(chrID)) {
 			logger.error("出现未知reference");
@@ -211,7 +208,6 @@ public class SamReader {
 	public Iterable<SamRecord> readLinesOverlap(String chrID, int start, int end) {
 		closeIterate();
 		
-		getSamFileReader();
 		chrID = chrID.toLowerCase();
 		if (!mapChrIDlowCase2ChrID.containsKey(chrID)) {
 			logger.error("出现未知reference");
@@ -224,16 +220,13 @@ public class SamReader {
 	private void closeIterate() {
 		try {
 			samRecordIterator.close();
-		} catch (Exception e) {
-		}
+		} catch (Exception e) { }
 	}
 	public boolean isBinary() {
-		initialSamHeadAndReader();
 		return samFileReader.isBinary();
 	}
 	
 	public void close() {
-		isOpen = false;
 		try {
 			samFileReader.close();
 		} catch (Exception e) {  }

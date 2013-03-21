@@ -9,12 +9,13 @@ import net.sf.samtools.SAMFileWriter;
 import net.sf.samtools.SAMFileWriterFactory;
 
 public class SamWriter {
-	private static Logger logger = Logger.getLogger(SamWriter.class);
-	
+	private static final Logger logger = Logger.getLogger(SamWriter.class);
+	String fileName;
 	SAMFileWriter samFileWriter;
 	SAMFileWriterFactory samFileWriterFactory = new SAMFileWriterFactory();
 	
 	public SamWriter(boolean presorted, SAMFileHeader samFileHeader, String outSamFile) {
+		this.fileName = outSamFile;
 		boolean writeToBam = true;
 		if (outSamFile.endsWith(".sam")) {
 			writeToBam = false;
@@ -29,6 +30,7 @@ public class SamWriter {
 	
 	/** 默认写入bam文件 */
 	public SamWriter(boolean presorted, SAMFileHeader samFileHeader, String outSamFile, boolean writeToBam) {
+		this.fileName = outSamFile;
 		File samFile = new File(outSamFile);
 		if (writeToBam) {
 			samFileWriter = samFileWriterFactory.makeBAMWriter(samFileHeader, presorted, samFile, 7);

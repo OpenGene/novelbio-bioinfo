@@ -57,19 +57,12 @@ public class SamFile implements AlignSeq {
 	static SoftWareInfo softWareInfoGATK = new SoftWareInfo();
 	static SoftWareInfo softWareInfoPicard = new SoftWareInfo();
 	
-	String fileName = "";
-	/**
-	 * 非unique mapping的序列是否只随机抽取一条
-	 * @param notUniqueRandomSelectReads
-	 */
-	boolean uniqueRandomSelectReads = true;
+	boolean read = true;
+
 	/** mapping质量为0 */
-	int mapQualityFilter = 0;
-	/**
-	 * 读取sam文件的类，最好不要直接用，用getSamFileReader()方法代替
-	 */
-	SamReader samReader = new SamReader();
-//	SAMFileWriter samFileWriter;
+//	int mapQualityFilter = 0;
+
+	SamReader samReader;
 	SamWriter samWriter;
 	
 	public SAMFileHeader.SortOrder SORT_ORDER;
@@ -77,11 +70,8 @@ public class SamFile implements AlignSeq {
 	/** 是否为bam文件 */
 	boolean bamFile = false;
 	
-	boolean uniqMapping = false;
 	boolean isRealigned = false;
-	
-	SamFileStatistics samFileStatistics;
-	
+		
 	String referenceFileName;
 	
 	/**读取已有文件
@@ -112,7 +102,6 @@ public class SamFile implements AlignSeq {
 	}
 	
 	private void setSamFileRead(String samFileExist, String fileIndex) {
-		this.fileName = samFileExist;
 		FormatSeq formatSeq = isSamBamFile(samFileExist);
 		if (formatSeq == FormatSeq.UNKNOWN) {
 			return;
@@ -120,9 +109,10 @@ public class SamFile implements AlignSeq {
 		if (formatSeq == FormatSeq.BAM) {
 			bamFile = true;
 		}
-		samReader.setFileName(samFileExist);
-		samReader.setFileIndex(fileIndex);
+		samReader = new SamReader(samFileExist, fileIndex);
+		read = true;
 	}
+	
 	/** 
 	 * 创建新的sam文件
 	 * @param samFileHeader
@@ -130,7 +120,7 @@ public class SamFile implements AlignSeq {
 	 * @param preSorted 输入的文件是否经过排序
 	 */
 	private void setSamFileNew(SAMFileHeader samFileHeader, String samFileCreate, boolean preSorted) {
-		this.fileName = samFileCreate;
+		read = false;
 		samWriter = new SamWriter(preSorted, samFileHeader, samFileCreate);
 	}
 	
@@ -169,23 +159,13 @@ public class SamFile implements AlignSeq {
 	}
 
 	public String getFileName() {
-		return fileName;
+		if (read) {
+			return samReader.fileName;
+		} else {
+			return samWriter.fileName;
+		}
 	}
-	
-	/**
-	 * 是否为uniqMapping，默认为true
-	 * @param uniqMapping
-	 */
-	public void setUniqMapping(boolean uniqMapping) {
-		this.uniqMapping = uniqMapping;
-	}
-	/**
-	 * 非unique mapping的序列是否只随机抽取一条
-	 * @param notUniqueRandomSelectReads
-	 */
-	public void setUniqueRandomSelectOneRead(boolean uniqueRandomSelectReads) {
-		this.uniqueRandomSelectReads = uniqueRandomSelectReads;
-	}
+
 	/**
 	 * 双端数据是否获得连在一起的bed文件
 	 * 如果输入是单端数据，则将序列延长返回bed文件
@@ -195,30 +175,13 @@ public class SamFile implements AlignSeq {
 	public boolean isPairend() {
 		return samReader.isPairend();
 	}
-	//TODO 未实现
+
 	/**
-	 * 未实现
-	 * @param pairendExtend
-	 * @param mapQuality
-	 * @param uniqMapping
-	 */
-	public void setBedInfo(boolean pairendExtend, int mapQuality, int uniqMapping) {
-		
-	}
-	/**
-	 * 默认为10，也可设定为0
+	 * 默认为0，在pileup时候用到
 	 * @param mapQuality
 	 */
 	public void setMapQuality(int mapQuality) {
 		this.mapQualityFilter = mapQuality;
-	}
-
-
-	public SamFileStatistics getStatistics() {
-		samFileStatistics = new SamFileStatistics();
-		samFileStatistics.setSamFile(this);
-		samFileStatistics.statistics();
-		return samFileStatistics;
 	}
 	
 	/** 
@@ -262,6 +225,7 @@ public class SamFile implements AlignSeq {
 			}
 			lsResult.add(samRecord);
 		}
+		close();
 		return lsResult;
 	}
 	/**
