@@ -93,7 +93,7 @@ public class RPKMcomput implements AlignmentRecorder {
 	@Override
 	public void addAlignRecord(AlignRecord alignRecord) {
 		boolean cis5to3 = alignRecord.isCis5to3();
-		currentReadsNum += (double)1/alignRecord.getMappingNum();
+		currentReadsNum += (double)1/alignRecord.getMappedReadsWeight();
 		
 		List<Align> lsAligns = alignRecord.getAlignmentBlocks();
 		for (Align align : lsAligns) {
@@ -104,7 +104,7 @@ public class RPKMcomput implements AlignmentRecorder {
 			String geneName = getName(cis5to3, gffCodGene);
 			//找到后就可以跳出了，因为一条reads只要找到1个位置即可
 			if (geneName != null) {
-				addInMapGeneName2Cond2ReadsCounts(geneName, alignRecord.getMappingNum());
+				addInMapGeneName2Cond2ReadsCounts(geneName, alignRecord.getMappedReadsWeight());
 				break;
 			}
 		}

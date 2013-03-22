@@ -82,7 +82,7 @@ public class RfamStatistic {
 				continue;
 			}
 			String RfamID = samRecord.getRefID().split("//")[0];
-			Double thisCount = (double)1/samRecord.getMappingNum();
+			Double thisCount = (double)1/samRecord.getMappedReadsWeight();
 			if (mapRfamID2Counts.containsKey(RfamID)) {
 				double newCounts = mapRfamID2Counts.get(RfamID) + thisCount;
 				mapRfamID2Counts.put(RfamID, newCounts);

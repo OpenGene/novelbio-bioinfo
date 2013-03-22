@@ -623,7 +623,7 @@ class MapReadsAddAlignRecord {
 		//如果没有可变剪接
 		lsadd = alignRecord.getAlignmentBlocks();
 		lsadd = setStartCod(lsadd, mapReads.startCod, cis5to3This);
-		int addNum = (int) ((double)1*fold / alignRecord.getMappingNum());
+		int addNum = (int) ((double)1*fold / alignRecord.getMappedReadsWeight());
 		addChrLoc(chrBpReads, lsadd, addNum);
 		chrMapReadsInfo.readsAllNum = chrMapReadsInfo.readsAllNum + 1;
 		return tmpStartEnd;

@@ -28,6 +28,10 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord{
 	static final int COL_STRAND = 5;
 	static final int COL_CIGAR = 6;
 	public static final int COL_MAPNUM = 7;
+	
+	/** 该reads的权重，意思就是本reads在本文件中出现了几次，出现一次就是1 */
+	public static final int COL_MAPWEIGHT = 13;
+	
 	static final int COL_SEQ = 8;
 	/** 是否为unique mapping的列 */
 	static final int COL_MAPQ = 9;
@@ -40,14 +44,18 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord{
 	 */
 	static final int ALL_COLNUM = 13;
 	
-	/**
-	 * mapping到了几个上去
-	 */
+	/** mapping到了几个上去 */
 	Integer mappingNum = null;
+	/** 该reads的权重，意思就是本reads在本文件中出现了几次，出现一次就是1 */
+	Integer mappingWeight = null;
+	
 	/**
 	 * 本位点的包含了几条overlap的序列
 	 */
 	Integer readsNum = null;
+	
+	
+	
 	String CIGAR = null;
 	Integer mapQuality = null;
 	
@@ -68,11 +76,8 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord{
 		setCis5to3(alignRecord.isCis5to3());
 		setSeq(alignRecord.getSeqFasta());
 		CIGAR = alignRecord.getCIGAR();
-		if (alignRecord instanceof SamRecord) {
-			mappingNum = ((SamRecord)alignRecord).getMappingReads();
-		} else {
-			mappingNum = alignRecord.getMappingNum();
-		}
+		mappingNum = alignRecord.getMappingNum();
+		mappingWeight = alignRecord.getMappedReadsWeight();
 		mapQuality = alignRecord.getMapQuality();
 		setAlignmentBlocks(alignRecord.getAlignmentBlocks());
 		setScore(alignRecord.getMapQuality());		
@@ -103,7 +108,9 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord{
 		}
 		if (ss.length > COL_CIGAR && ss[COL_CIGAR] != null && !ss[COL_CIGAR].equals("")) {
 			try { CIGAR = ss[COL_CIGAR]; 	} catch (Exception e) { }
-			
+		}
+		if (ss.length > COL_MAPWEIGHT && ss[COL_MAPWEIGHT] != null && !ss[COL_MAPWEIGHT].equals("")) {
+			try { mappingWeight = Integer.parseInt(ss[COL_MAPWEIGHT]); } catch (Exception e) {  }
 		}
 		if (ss.length > COL_MAPQ && ss[COL_MAPQ] != null && !ss[COL_MAPQ].equals("")) {
 			try { mapQuality = Integer.parseInt(ss[COL_MAPQ]); } catch (Exception e) { }
@@ -140,6 +147,9 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord{
 	public void setMappingNum(int mappingNum) {
 		this.mappingNum = mappingNum;
 	}
+	public void setMappingWeight(int mapWeight) {
+		this.mappingWeight = mapWeight;
+	}
 	public void setReadsNum(int readsNum) {
 		this.readsNum = readsNum;
 	}
@@ -160,6 +170,14 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord{
 		}
 		return mappingNum;
 	}
+	
+	public int getMappedReadsWeight() {
+		if (mappingWeight == null) {
+			return 1;
+		}
+		return mappingWeight;
+	}
+	
 	public Integer getMapQuality() {
 		if (mapQuality == null) {
 			return 30;
@@ -292,6 +310,7 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord{
 		strings[COL_READSNUM] = readsNum + "";
 		strings[COL_SPLIT_READS_LEN] = splitLen + "";
 		strings[COL_SPLIT_READS_START] = splitStart + "";
+		strings[COL_MAPWEIGHT] = mappingWeight + "";
 		
 		if (cis5to3 != null) {
 			if (cis5to3) {
@@ -332,6 +351,10 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord{
 		bedRecord.mappingNum = mappingNum;
 		bedRecord.mapQuality = mapQuality;
 		bedRecord.readsNum = readsNum;
+		bedRecord.mappingWeight = mappingWeight;
+		bedRecord.splitLen = splitLen;
+		bedRecord.splitStart = splitStart;
+		bedRecord.readLineInfo = readLineInfo;
 		return bedRecord;
 	}
 	@Override

@@ -144,7 +144,7 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 	 * bwa的结果，一条reads只有一行，所以恒返回1
 	 * tophat的结果，一条reads如果mapping至多个位置，在文件中就会出现多次，所以返回可能大于1
 	 * */
-	protected int getMappedReadsWeight() {
+	public int getMappedReadsWeight() {
 		Object attrCC = samRecord.getAttribute("NH");
 		if (attrCC != null) {
 			numMappedReadsInFile = (Integer) attrCC;
@@ -159,22 +159,6 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 	 * 如果是Tophat，则会出现多次，则返回多次的信息
 	 */
 	public Integer getMappingNum() {
-		if (numMappedReadsInFile > 0) {
-			return numMappedReadsInFile;
-		}
-		Object attrCC = samRecord.getAttribute("NH");
-		if (attrCC != null) {
-			numMappedReadsInFile = (Integer) attrCC;
-		} else {
-			numMappedReadsInFile = 1;
-		}
-		return numMappedReadsInFile;
-	}
-	
-	/**
-	 * 本序列可以mapping至几个不同位置
-	 */
-	public Integer getMappingReads() {
 		if (numMappedReadsInFile > 0) {
 			return numMappedReadsInFile;
 		}
@@ -332,6 +316,7 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 			bedRecord.setCIGAR(info[2]);
 			bedRecord.setCis5to3(info[1].charAt(0));
 			bedRecord.setMappingNum(getMappingNum());
+			bedRecord.setMappingWeight(getMappedReadsWeight());
 			bedRecord.setMapQuality(getMapQuality());
 			bedRecord.setScore(samRecord.getMappingQuality());
 			bedRecord.setSeq(new SeqFasta(samRecord.getReadString()), false);

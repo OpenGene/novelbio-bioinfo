@@ -10,10 +10,10 @@ import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.mapping.MappingReadsType;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
-/** 仅用于分析sambam文件
+/** <>仅用于分析sambam文件<>
  * 根据需求判定是否需要执行{@link #initial()}
  *  */
-public class SamFileStatistics implements AlignmentRecorder {
+public class SamFileStatistics implements AlignmentRecorderSam {
 	SamFile samFile;
 	boolean countReadsNum;
 	
@@ -141,12 +141,8 @@ public class SamFileStatistics implements AlignmentRecorder {
 	}
 
 	@Override
-	public void addAlignRecord(AlignRecord samRecord) {
-		int readsMappedWeight = 1;
-		if (samRecord instanceof SamRecord) {
-			 readsMappedWeight = ((SamRecord)samRecord).getMappedReadsWeight();
-		}
-		
+	public void addAlignRecord(SamRecord samRecord) {
+		int readsMappedWeight = samRecord.getMappedReadsWeight();
 		allReadsNum = allReadsNum + (double)1/readsMappedWeight;
 		if (samRecord.isMapped()) {
 			mappedReadsNum = mappedReadsNum + (double)1/readsMappedWeight;

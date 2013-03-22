@@ -39,11 +39,11 @@ public class ReadsOnNCrna {
 			}
 			if (mapNCrnaID_2_nameDescripValue.containsKey(alignRecord.getRefID())) {
 				double info = mapNCrnaID_2_nameDescripValue.get(alignRecord.getRefID());
-				info = (double)1/alignRecord.getMappingNum() + info;
+				info = (double)1/alignRecord.getMappedReadsWeight() + info;
 				mapNCrnaID_2_nameDescripValue.put(alignRecord.getRefID(), info);
 			}
 			else {
-				mapNCrnaID_2_nameDescripValue.put(alignRecord.getRefID(), (double)1/alignRecord.getMappingNum() );
+				mapNCrnaID_2_nameDescripValue.put(alignRecord.getRefID(), (double)1/alignRecord.getMappedReadsWeight() );
 			}
 		}
 	}

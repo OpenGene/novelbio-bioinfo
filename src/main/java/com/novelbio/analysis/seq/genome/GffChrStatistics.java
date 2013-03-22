@@ -173,7 +173,7 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	public void addAlignRecord(AlignRecord alignRecord) {
 		List<Align> lsAligns = alignRecord.getAlignmentBlocks();
 		for (Align align : lsAligns) {
-			double prop = (double)1/lsAligns.size()/alignRecord.getMappingNum();
+			double prop = (double)1/lsAligns.size()/alignRecord.getMappedReadsWeight();
 			searchSite(prop, align);
 		}
 	}

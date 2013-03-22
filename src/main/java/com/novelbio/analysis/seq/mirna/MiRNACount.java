@@ -206,7 +206,7 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 		if (subName == null) {
 			subName = alignRecord.getRefID() + flag_MapTo_PreMirna_NotTo_MatureMirna_Suffix;
 		}
-		double value = (double)1/alignRecord.getMappingNum();
+		double value = (double)1/alignRecord.getMappedReadsWeight();
 		addMiRNACount(alignRecord.getRefID(), value);
 		addMiRNAMatureCount(alignRecord.getRefID(), subName, value);
 	}

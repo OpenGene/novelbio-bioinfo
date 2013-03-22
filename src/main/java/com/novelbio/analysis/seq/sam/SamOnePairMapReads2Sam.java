@@ -7,10 +7,17 @@ import net.sf.samtools.SAMFileHeader;
 
 import com.novelbio.analysis.seq.AlignRecord;
 
-public class SamOnePairMapReads2Fastq implements AlignmentRecorder {
+/**
+ * 把一端mapping上，另一端没mapping上的文件写入一个sam文件
+ * @author zong0jie
+ *
+ */
+public class SamOnePairMapReads2Sam implements AlignmentRecorder {
 	LinkedHashMap<String, SamRecord> mapName2Record = new LinkedHashMap<String, SamRecord>();
 	
-	public void addAlignRecord(SamRecord samRecord) {
+	public void addAlignRecord(AlignRecord samRecord) {
+		
+		
 		if (!samRecord.isHavePairEnd()) {
 			continue;
 		}

@@ -8,7 +8,10 @@ import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.dataStructure.Alignment;
 
 public interface AlignRecord extends Alignment{
-	/** 是否为unique mapping，不是的话mapping到了几个不同的位点上去 */
+	/** 是否为unique mapping，不是的话mapping到了几个不同的位点上去<br>
+	 * 但是一个文件里面可能仅出现一条该reads，如果要确认具体出现多少次该reads，请用{@link #getMappingNum()}
+	 * @return
+	 */
 	public Integer getMappingNum();
 	public Integer getMapQuality();
 	
@@ -33,4 +36,10 @@ public interface AlignRecord extends Alignment{
 	boolean isUniqueMapping();
 	
 	public FastQRecord getFastQRecord();
+	/**
+	 * reads的权重，意思相同的reads在本sam文件中出现了几次
+	 * bwa的结果，一条reads只有一行，所以恒返回1
+	 * tophat的结果，一条reads如果mapping至多个位置，在文件中就会出现多次，所以返回可能大于1
+	 * */
+	public int getMappedReadsWeight();
 }

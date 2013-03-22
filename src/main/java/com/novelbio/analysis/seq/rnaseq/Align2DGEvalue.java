@@ -151,7 +151,7 @@ public class Align2DGEvalue {
 			//TODO 如果是bwa mapping的结果，可能会mapping至多个位点，但是该reads只存在一次。
 			//这时候就应该直接+1
 			//而tophat的mapping结果，mapping至多个位点，同一个reads就会存在多次。这时候用这个方法就行
-			tmpCount[0] = tmpCount[0] + (double)1/alignRecord.getMappingNum();
+			tmpCount[0] = tmpCount[0] + (double)1/alignRecord.getMappedReadsWeight();
 		}
 		return mapGene2Exp;
 	}
