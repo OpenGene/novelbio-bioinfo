@@ -21,13 +21,14 @@ import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.rnaseq.CtrlSplicing;
-import com.novelbio.analysis.seq.rnaseq.GUIinfo;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.species.Species;
+import com.novelbio.nbcgui.GUIinfo;
+import com.novelbio.nbcgui.GuiAnnoInfo;
 
 public class GuiRNAautoSplice extends JPanel implements GUIinfo {
 	static final int progressLength = 10000;

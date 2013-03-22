@@ -1,6 +1,5 @@
 package com.novelbio.analysis.seq.sam;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import net.sf.samtools.SAMFileHeader;
@@ -8,6 +7,7 @@ import net.sf.samtools.SAMFileHeader;
 import com.novelbio.analysis.seq.AlignRecord;
 
 /**
+ * <b>仅能用于SamBam文件</b>
  * 把一端mapping上，另一端没mapping上的文件写入一个sam文件
  * @author zong0jie
  *
@@ -15,20 +15,38 @@ import com.novelbio.analysis.seq.AlignRecord;
 public class SamOnePairMapReads2Sam implements AlignmentRecorder {
 	LinkedHashMap<String, SamRecord> mapName2Record = new LinkedHashMap<String, SamRecord>();
 	
-	public void addAlignRecord(AlignRecord samRecord) {
-		
-		
+	SamFile samFileWrite;
+	
+	public SamOnePairMapReads2Sam(String outFileName, SAMFileHeader samFileHeader) {
+		this.samFileWrite = new SamFile(outFileName, samFileHeader);
+		mapName2Record.clear();
+	}
+	
+	/**
+	 * @param outFileName 输出文件
+	 * @param samFileRead 从输入文件中读取samHeader信息
+	 */
+	public SamOnePairMapReads2Sam(String outFileName, SamFile samFileRead) {
+		this.samFileWrite = new SamFile(outFileName, samFileRead.getHeader());
+		mapName2Record.clear();
+	}
+	
+	public void addAlignRecord(AlignRecord alignRecord) {
+		if (alignRecord instanceof SamRecord != true) {
+			return;
+		}
+		SamRecord samRecord = (SamRecord)alignRecord;
 		if (!samRecord.isHavePairEnd()) {
-			continue;
+			return;
 		}
 		//将一对samRecord写入文件
 		if (mapName2Record.containsKey(samRecord.getName())) {
 			SamRecord samRecord1 = mapName2Record.get(samRecord.getName());
 			if (samRecord1.isPaireReads(samRecord)) {
-				samFile.writeSamRecord(samRecord1);
-				samFile.writeSamRecord(samRecord);
+				samFileWrite.writeSamRecord(samRecord1);
+				samFileWrite.writeSamRecord(samRecord);
 				mapName2Record.remove(samRecord.getName());
-				continue;
+				return;
 			}
 		}
 		//找出一个mapping一个没有mapping的记录
@@ -36,60 +54,35 @@ public class SamOnePairMapReads2Sam implements AlignmentRecorder {
 			mapName2Record.put(samRecord.getName(), samRecord);
 		}
 		removeMap(5000, mapName2Record);
-	
 	}
 
-	@Override
-	public void summary() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	/**
-	 * 将那种一头mapping上，一头没有mapping上的序列，两头都提取出来写入一个sam文件
-	 */
-	public SamFile getSingleUnMappedReads(String outSamFile) {
-		for (SamRecord samRecord : samReader.readLines()) {
-			if (!samRecord.isHavePairEnd()) {
-				continue;
-			}
-			//将一对samRecord写入文件
-			if (mapName2Record.containsKey(samRecord.getName())) {
-				SamRecord samRecord1 = mapName2Record.get(samRecord.getName());
-				if (samRecord1.isPaireReads(samRecord)) {
-					samFile.writeSamRecord(samRecord1);
-					samFile.writeSamRecord(samRecord);
-					mapName2Record.remove(samRecord.getName());
-					continue;
-				}
-			}
-			//找出一个mapping一个没有mapping的记录
-			if (samRecord.isMapped() ^ samRecord.isMateMapped() ) {
-				mapName2Record.put(samRecord.getName(), samRecord);
-			}
-			removeMap(5000, mapName2Record);
-		}
-		samFile.close();
-		return samFile;
-	}
 	/** 将多的序列删除，以节约内存 */
 	private void removeMap(int remainNum, LinkedHashMap<String, SamRecord> mapName2Record) {
-		if (mapName2Record.size() <= remainNum) {
+		int size = mapName2Record.size();
+		if (size <= remainNum) {
 			return;
 		}
-		int num = mapName2Record.size() - remainNum;
+		int num = size - remainNum;
 		int count = 0;
-		ArrayList<String> lsName = new ArrayList<String>();
+		//将开头的几个record删除
 		for (String recordName : mapName2Record.keySet()) {
 			if (count > num) {
 				break;
 			}
-			lsName.add(recordName);
+			mapName2Record.remove(recordName);
 			count++;
 		}
-		for (String recordName : lsName) {
-			mapName2Record.remove(recordName);
-		}
 	}
+
+	@Override
+	public void summary() {}
 	
+	/**
+	 * 输出的samFile没有调用{@link SamFile#close()}
+	 * @return
+	 */
+	public SamFile getSamFileWrite() {
+		return samFileWrite;
+	}
+
 }

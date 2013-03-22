@@ -29,7 +29,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
-import com.novelbio.nbcgui.GUI.GuiAnnoInfo;
+import com.novelbio.nbcgui.GuiAnnoInfo;
 
 /**
  * 得到每个gene的Junction后，开始计算其可变剪接的差异

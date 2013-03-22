@@ -6,7 +6,7 @@ import java.util.Collection;
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.base.multithread.RunProcess;
-import com.novelbio.nbcgui.GUI.GuiAnnoInfo;
+import com.novelbio.nbcgui.GuiAnnoInfo;
 
 /**
  * 输入一系列的AlignmentRecorder，然后读取指定的sambam文件
@@ -26,12 +26,15 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 		readLines = 0;
 		readByte = 0;
 	}
+	
 	public double getReadByte() {
 		return readByte;
 	}
+	
 	public long getReadLines() {
 		return readLines;
 	}
+	
 	/** 如果读取一系列的文件，安顺序读取需要在进度条显示读取的内容，就把上一个文件的信息设定进去
 	 * 
 	 * @param readByte
@@ -78,9 +81,10 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 		reading();
 	}
 	
-	public void reading() {
+	private void reading() {
 		readAllLines();
 		summaryRecorder();
+		alignSeqFile.close();
 	}
 	protected void readAllLines() {
 		GuiAnnoInfo guiAnnoInfo;

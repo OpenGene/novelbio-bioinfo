@@ -6,12 +6,12 @@ import java.util.List;
 
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.base.dataStructure.Alignment;
-import com.novelbio.nbcgui.GUI.GuiAnnoInfo;
+import com.novelbio.nbcgui.GuiAnnoInfo;
 
 /**
  * 这里面可以设定一系列的监听器，然后完成一次mapping，统计多个信息的目的
+ * 读完后内部自动关闭文件
  * @author zong0jie
- *
  */
 public class AlignSamReading extends AlignSeqReading {
 	List<? extends Alignment> lsAlignments;
@@ -53,6 +53,7 @@ public class AlignSamReading extends AlignSeqReading {
 			readSelectLines();
 		}
 		summaryRecorder();
+		alignSeqFile.close();
 	}
 	
 	public SamFile getSamFile() {

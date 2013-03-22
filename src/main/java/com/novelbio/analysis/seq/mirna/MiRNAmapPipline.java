@@ -211,7 +211,7 @@ public class MiRNAmapPipline {
 		alignSamReading.addAlignmentRecorder(samToFastq);
 		alignSamReading.addAlignmentRecorder(samFileStatistics);
 		
-		alignSamReading.reading();
+		alignSamReading.run();
 		samFile.close();
 		
 		samFileStatistics.writeToFile(FileOperate.changeFileSuffix(samFile.getFileName(), "_Statistics", "txt"));

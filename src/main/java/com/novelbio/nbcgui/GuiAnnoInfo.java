@@ -1,6 +1,5 @@
-package com.novelbio.nbcgui.GUI;
+package com.novelbio.nbcgui;
 
-import java.io.StringWriter;
 import java.util.ArrayList;
 
 /**

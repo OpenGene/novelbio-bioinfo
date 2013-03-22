@@ -1,32 +1,33 @@
 package com.novelbio.nbcgui.GUI;
 
-import javax.swing.ButtonGroup;
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-
-import com.google.common.collect.ArrayListMultimap;
-import com.novelbio.analysis.seq.bed.BedSeq;
-import com.novelbio.analysis.seq.sam.SamFile;
-import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.base.gui.GUIFileOpen;
-import com.novelbio.base.gui.JComboBoxData;
-import com.novelbio.base.gui.JScrollPaneData;
-import com.novelbio.database.model.species.Species;
-
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import javax.swing.JRadioButton;
-import javax.swing.JCheckBox;
-import javax.swing.JSpinner;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
+
+import com.google.common.collect.ArrayListMultimap;
+import com.novelbio.analysis.seq.bed.BedSeq;
+import com.novelbio.analysis.seq.sam.AlignSamReading;
+import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.sam.SamToBed;
+import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.gui.GUIFileOpen;
+import com.novelbio.base.gui.JComboBoxData;
+import com.novelbio.base.gui.JScrollPaneData;
+import com.novelbio.database.model.species.Species;
 
 public class GuiSamToBed extends JPanel {
 	private JTextField txtExtend;
@@ -390,12 +391,15 @@ public class GuiSamToBed extends JPanel {
 		}
 	}
 	private void samToBed(String samFilestr) {
-		SamFile samFile = new SamFile(samFilestr);
-		samFile.setUniqueRandomSelectOneRead(chckbxNonUniqueMapping.isSelected());
-		BedSeq bedSeq = samFile.toBedSingleEnd();
-		samFile.close();
+		AlignSamReading alignSamReading = new AlignSamReading(new SamFile(samFilestr));
+		SamToBed samToBed = new SamToBed(samFilestr);
+		samToBed.setUniqueRandomSelectOneRead(chckbxNonUniqueMapping.isSelected());
+		alignSamReading.addAlignmentRecorder(samToBed);
+		alignSamReading.run();
+		BedSeq bedSeq = samToBed.getBedSeq();
 		bedSeq.close();
 	}
+	
 	private void convertSamFile(String resultMergePath, String prefix, List<String> lsSamFilestr) {
 		String refFile = "";
 		Species species = cmbSpecies.getSelectedValue();

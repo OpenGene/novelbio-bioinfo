@@ -15,12 +15,17 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
 import javax.swing.JScrollPane;
+import javax.swing.JProgressBar;
+import javax.swing.JLabel;
 
 public class GuiLinesStatistics extends JPanel {
 	CtrlSamStatistics ctrlSamStatistics = new CtrlSamStatistics();
 	GUIFileOpen guiFileOpen = new GUIFileOpen();
 	JCheckBox chckbxSambamfile;
 	JScrollPaneData sclBamSamFile;
+	JLabel lblSampleDetail;
+	JLabel lblLinesDetail;
+	JButton btnRun;
 	/**
 	 * Create the panel.
 	 */
@@ -55,7 +60,7 @@ public class GuiLinesStatistics extends JPanel {
 		btnDelSelectRow.setBounds(620, 48, 131, 24);
 		add(btnDelSelectRow);
 		
-		JButton btnRun = new JButton("Run");
+		btnRun = new JButton("Run");
 		btnRun.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ArrayList<String[]> lsFileName2Out = sclBamSamFile.getLsDataInfo();
@@ -76,10 +81,33 @@ public class GuiLinesStatistics extends JPanel {
 				}
 			}
 		});
-		btnRun.setBounds(632, 469, 118, 24);
+		btnRun.setBounds(620, 348, 131, 24);
 		add(btnRun);
 		
+		JLabel lblSample = new JLabel("Sample");
+		lblSample.setBounds(22, 379, 69, 14);
+		add(lblSample);
+		
+		JLabel lblLines = new JLabel("Lines");
+		lblLines.setBounds(22, 405, 69, 14);
+		add(lblLines);
+		
+		lblSampleDetail = new JLabel("");
+		lblSampleDetail.setBounds(103, 379, 171, 14);
+		add(lblSampleDetail);
+		
+		lblLinesDetail = new JLabel("");
+		lblLinesDetail.setBounds(103, 405, 171, 14);
+		add(lblLinesDetail);
+	}
 	
-
+	public JLabel getLblLinesDetail() {
+		return lblLinesDetail;
+	}
+	public JLabel getLblSampleDetail() {
+		return lblSampleDetail;
+	}
+	public JButton getBtnRun() {
+		return btnRun;
 	}
 }

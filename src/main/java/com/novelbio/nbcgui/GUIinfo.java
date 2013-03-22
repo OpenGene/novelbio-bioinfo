@@ -1,10 +1,8 @@
-package com.novelbio.analysis.seq.rnaseq;
+package com.novelbio.nbcgui;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.novelbio.base.multithread.RunProcess;
-import com.novelbio.nbcgui.GUI.GuiAnnoInfo;
 
 public interface GUIinfo {
 	
@@ -16,8 +14,7 @@ public interface GUIinfo {
 
 	void setProgressBarLevelLs(List<Double> lsLevels);
 
-	void setProcessBarStartEndBarNum(String string, int level,
-			long startBarNum, long endBarNum);
+	void setProcessBarStartEndBarNum(String string, int level, long startBarNum, long endBarNum);
 
 	void setDetailInfo(String string);
 

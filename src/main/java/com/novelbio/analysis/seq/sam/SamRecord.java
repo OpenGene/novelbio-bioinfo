@@ -272,6 +272,7 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 		bedRecord.setMapQuality(getMapQuality());
 		bedRecord.setSeq(getSeqFasta());
 		bedRecord.setScore(getMapQuality());
+		bedRecord.setMappingWeight(getMappedReadsWeight());
 		// 计数，mapping到了几次
 		bedRecord.setMappingNum(getMappingNum());
 		bedRecord.setName(samRecord.getReadName());
@@ -306,6 +307,7 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 		if (tmpInfo == null) {
 			return lsBedRecords;
 		}
+		lsBedRecords.get(0).setMappingWeight(tmpInfo.length + 1);
 		for (String string : tmpInfo) {
 			BedRecord bedRecord = new BedRecord();
 			String[] info = string.split(",");
@@ -316,7 +318,7 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 			bedRecord.setCIGAR(info[2]);
 			bedRecord.setCis5to3(info[1].charAt(0));
 			bedRecord.setMappingNum(getMappingNum());
-			bedRecord.setMappingWeight(getMappedReadsWeight());
+			bedRecord.setMappingWeight(tmpInfo.length + 1);
 			bedRecord.setMapQuality(getMapQuality());
 			bedRecord.setScore(samRecord.getMappingQuality());
 			bedRecord.setSeq(new SeqFasta(samRecord.getReadString()), false);

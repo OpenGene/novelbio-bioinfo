@@ -12,7 +12,8 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunGetInfo;
 import com.novelbio.base.multithread.RunProcess;
-import com.novelbio.nbcgui.GUI.GuiAnnoInfo;
+import com.novelbio.nbcgui.GUIinfo;
+import com.novelbio.nbcgui.GuiAnnoInfo;
 import com.novelbio.nbcgui.GUI.GuiRNAautoSplice;
 
 public class CtrlSplicing implements RunGetInfo<GuiAnnoInfo> , Runnable{

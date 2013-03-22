@@ -10,13 +10,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMFileHeader.SortOrder;
-import net.sf.samtools.SAMFileWriter;
-import net.sf.samtools.SAMFileWriterFactory;
 import net.sf.samtools.SAMSequenceRecord;
 import net.sf.samtools.SAMTextHeaderCodec;
 import net.sf.samtools.util.BlockCompressedInputStream;
@@ -27,12 +24,10 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.FormatSeq;
-import com.novelbio.analysis.seq.bed.BedRecord;
 import com.novelbio.analysis.seq.bed.BedSeq;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.base.PathDetail;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
@@ -58,9 +53,6 @@ public class SamFile implements AlignSeq {
 	static SoftWareInfo softWareInfoPicard = new SoftWareInfo();
 	
 	boolean read = true;
-
-	/** mapping质量为0 */
-//	int mapQualityFilter = 0;
 
 	SamReader samReader;
 	SamWriter samWriter;
@@ -175,14 +167,6 @@ public class SamFile implements AlignSeq {
 	public boolean isPairend() {
 		return samReader.isPairend();
 	}
-
-	/**
-	 * 默认为0，在pileup时候用到
-	 * @param mapQuality
-	 */
-	public void setMapQuality(int mapQuality) {
-		this.mapQualityFilter = mapQuality;
-	}
 	
 	/** 
 	 * the alignment of the returned SAMRecords need only overlap the interval of interest.
@@ -279,64 +263,6 @@ public class SamFile implements AlignSeq {
 		close();
 		return fastQ;
 	}
-	public SamFile getSingleUnMappedReads() {
-		String out = FileOperate.changeFileSuffix(fileName, "_SingleFile", null);
-		return getSingleUnMappedReads(out);
-	}
-
-	/**
-	 * 将那种一头mapping上，一头没有mapping上的序列，两头都提取出来写入一个sam文件
-	 */
-	public SamFile getSingleUnMappedReads(String outSamFile) {
-		if (!isPairend()) {
-			return null;
-		}
-	
-		SAMFileHeader samFileHeader = samReader.getSamFileHead();
-		SamFile samFile = new SamFile(outSamFile, samFileHeader);
-		LinkedHashMap<String, SamRecord> mapName2Record = new LinkedHashMap<String, SamRecord>();
-		for (SamRecord samRecord : samReader.readLines()) {
-			if (!samRecord.isHavePairEnd()) {
-				continue;
-			}
-			//将一对samRecord写入文件
-			if (mapName2Record.containsKey(samRecord.getName())) {
-				SamRecord samRecord1 = mapName2Record.get(samRecord.getName());
-				if (samRecord1.isPaireReads(samRecord)) {
-					samFile.writeSamRecord(samRecord1);
-					samFile.writeSamRecord(samRecord);
-					mapName2Record.remove(samRecord.getName());
-					continue;
-				}
-			}
-			//找出一个mapping一个没有mapping的记录
-			if (samRecord.isMapped() ^ samRecord.isMateMapped() ) {
-				mapName2Record.put(samRecord.getName(), samRecord);
-			}
-			removeMap(5000, mapName2Record);
-		}
-		samFile.close();
-		return samFile;
-	}
-	/** 将多的序列删除，以节约内存 */
-	private void removeMap(int remainNum, LinkedHashMap<String, SamRecord> mapName2Record) {
-		if (mapName2Record.size() <= remainNum) {
-			return;
-		}
-		int num = mapName2Record.size() - remainNum;
-		int count = 0;
-		ArrayList<String> lsName = new ArrayList<String>();
-		for (String recordName : mapName2Record.keySet()) {
-			if (count > num) {
-				break;
-			}
-			lsName.add(recordName);
-			count++;
-		}
-		for (String recordName : lsName) {
-			mapName2Record.remove(recordName);
-		}
-	}
 
     public SamFile sort() {
     	SamFile samFile = convertToBam();
@@ -366,11 +292,9 @@ public class SamFile implements AlignSeq {
 	}
     
     private void setParamSamFile(SamFile samFile) {
-    	samFile.mapQualityFilter = mapQualityFilter;
     	samFile.referenceFileName = referenceFileName;
-    	samFile.uniqMapping = uniqMapping;
-    	samFile.uniqueRandomSelectReads = uniqueRandomSelectReads;
     	samFile.isRealigned = isRealigned;
+    	samFile.referenceFileName = referenceFileName;
     }
 	/**
 	 * 用samtools实现了
@@ -389,7 +313,7 @@ public class SamFile implements AlignSeq {
 	 * 因为convertToBam的时候会遍历Bam文件，所以可以添加一系列这种监听器，同时进行一系列的统计工作
 	 */
 	public SamFile convertToBam(List<AlignmentRecorder> lsAlignmentRecorders) {
-		String outName = FileOperate.changeFilePrefix(fileName, "", "bam");
+		String outName = FileOperate.changeFilePrefix(getFileName(), "", "bam");
 		return convertToBam(lsAlignmentRecorders, outName);
 	}
 	/**
@@ -418,17 +342,8 @@ public class SamFile implements AlignSeq {
 			samFile.writeSamRecord(samRecord);
 		}
 		close();
-		samFile.setSamFileRead(samFile.fileName);
+		samFile.setSamFileRead(samFile.getFileName());
 		samFile.close();
-
-//		SamToBam samToBam = new SamToBam();
-//		samToBam.setExePath(softWareInfoSamtools.getExePath());
-//		samToBam.setSamFile(fileName);
-//		samToBam.setSeqFai(faidxRefsequence());
-//		String fileOutName = samToBam.convertToBam(outFile);
-//		SamFile samFile = new SamFile(fileOutName);
-//
-//		setParamSamFile(samFile);
 		return samFile;
 	}
 	/**
@@ -446,7 +361,7 @@ public class SamFile implements AlignSeq {
 		bamIndex = null;
 	}
 	public SamFile realign() {
-		String outFile = FileOperate.changeFileSuffix(fileName, "_realign", "bam");
+		String outFile = FileOperate.changeFileSuffix(getFileName(), "_realign", "bam");
 		return realign(outFile);
 	}
 	
@@ -466,7 +381,7 @@ public class SamFile implements AlignSeq {
 	}
 	
 	public SamFile recalibrate() {
-		String outFile = FileOperate.changeFileSuffix(fileName, "recalibrate", "bam");
+		String outFile = FileOperate.changeFileSuffix(getFileName(), "recalibrate", "bam");
 		return recalibrate(outFile);
 	}
 	/**
@@ -483,7 +398,7 @@ public class SamFile implements AlignSeq {
 		return samFile;
 	}
 	public SamFile removeDuplicate() {
-		String outFile = FileOperate.changeFileSuffix(fileName, "_removeDuplicate", "bam");
+		String outFile = FileOperate.changeFileSuffix(getFileName(), "_removeDuplicate", "bam");
 		return removeDuplicate(outFile);
 	}
 	/**
@@ -539,12 +454,18 @@ public class SamFile implements AlignSeq {
 //		samFileRecalibrate.index();
 		return samFileRemoveDuplicate;
 	}
+	/**
+	 * mapQualityFilter设定为10
+	 */
 	public void pileup() {
 		String pileupFile = FileOperate.changeFileSuffix(getFileName(), "_pileup", "gz");
-		pileup(pileupFile);
+		pileup(pileupFile, 10);
 	}
-	
-	public void pileup(String outPileUpFile) {
+	public void pileup(int mapQualityFilter) {
+		String pileupFile = FileOperate.changeFileSuffix(getFileName(), "_pileup", "gz");
+		pileup(pileupFile, 10);
+	}
+	public void pileup(String outPileUpFile, int mapQualityFilter) {
 		SamFile bamFile = convertToBam();
 		BamPileup bamPileup = new BamPileup();
 		bamPileup.setBamFile(bamFile.getFileName());
@@ -594,46 +515,6 @@ public class SamFile implements AlignSeq {
 		return samFileOut;
 	}
 	
-	public BedSeq toBedSingleEnd() {
-		return toBedSingleEnd(TxtReadandWrite.TXT, FileOperate.changeFileSuffix(getFileName(), "", "bed"));
-	}
-	/**
-	 * <b>没有考虑bed文件的起点是0还是1</b>
-	 *<b>非uniq mapping只支持bwa的结果</b>
-	 * 返回单端
-	 * bed文件的score列为mapping quality
-	 * <b>不能挑选跨染色体的融合基因</b>
-	 * @param bedFileCompType bed文件的压缩格式，TxtReadandWrite.TXT等设定
-	 * @param bedFile 最后产生的bedFile
-	 * @param extend 是否延长bed文件
-	 * @return
-	 */
-	public BedSeq toBedSingleEnd(String bedFileCompType, String bedFile) {
-		BedSeq bedSeq = new BedSeq(bedFile, true);
-		bedSeq.setCompressType(null, bedFileCompType);
-		for (SamRecord samRecord : readLines()) {
-			if (!samRecord.isMapped() || samRecord.getMapQuality() < mapQualityFilter
-					|| (uniqMapping && !samRecord.isUniqueMapping()) ) {
-				continue;
-			}
-			if (uniqueRandomSelectReads) {
-				BedRecord bedRecord = samRecord.toBedRecordSE();
-				bedSeq.writeBedRecord(bedRecord);
-				bedRecord = null;
-			} else {
-				ArrayList<BedRecord> lsBedRecord = samRecord.toBedRecordSELs();
-				for (BedRecord bedRecord : lsBedRecord) {
-					bedSeq.writeBedRecord(bedRecord);
-				}
-				lsBedRecord = null;
-			}
-			samRecord = null;
-		}
-		bedSeq.closeWrite();
-		close();
-		return bedSeq;
-	}
-	
 	/**
 	 * 获得该bam文件中染色体的长度信息，注意key都为小写
 	 * @return
@@ -679,8 +560,7 @@ public class SamFile implements AlignSeq {
 		if (!FileOperate.isFileExist(samBamFile)) {
 			return thisFormate;
 		}
-		SamReader samReader = new SamReader();
-		samReader.setFileName(samBamFile);
+		SamReader samReader = new SamReader(samBamFile);
 		if (!samReader.isSamBamFile()) {
 			return thisFormate;
 		}
@@ -752,11 +632,6 @@ public class SamFile implements AlignSeq {
 	 */
 	public FastQ getFastQ(String outFileName) {
 		FastQ fastQ = new FastQ(outFileName, true);
-		String compressOutType = TxtReadandWrite.TXT;
-		if (outFileName.endsWith("gz")) {
-			compressOutType = TxtReadandWrite.GZIP;
-		}
-		fastQ.setCompressType(compressOutType, compressOutType);
 		for (SamRecord samRecord : readLines()) {
 			FastQRecord fastQRecord = new FastQRecord();
 			fastQRecord.setName(samRecord.getName());

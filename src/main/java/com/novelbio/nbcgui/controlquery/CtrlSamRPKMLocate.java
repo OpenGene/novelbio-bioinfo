@@ -24,7 +24,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunGetInfo;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.nbcgui.GUI.GuiAnnoInfo;
+import com.novelbio.nbcgui.GuiAnnoInfo;
 import com.novelbio.nbcgui.GUI.GuiSamStatistics;
 
 public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo>, Runnable {
@@ -110,7 +110,7 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo>, Runnable {
 				alignSeqReading.setReadInfo(0L, readByte);
 				alignSeqReading.addColAlignmentRecorder(lsAlignmentRecorders);
 				alignSeqReading.setRunGetInfo(this);
-				alignSeqReading.reading();
+				alignSeqReading.run();
 				readByte = alignSeqReading.getReadByte();
 			}
 		}

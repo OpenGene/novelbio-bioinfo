@@ -1,14 +1,8 @@
 package com.novelbio.analysis.seq.sam;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-
-import net.sf.samtools.SAMFileHeader;
-
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class SamToFastq implements AlignmentRecorder {
