@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.modgeneid.GeneID;
 
@@ -36,7 +37,23 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 		this.gffFile = gffFile;
 		flagFinish = read(gffType, gffFile);
 	}
-	
+	/**
+	 * 读取并初始化，可以用isFinished()来判定是否顺利运行完毕
+	 * @param gffFile 根据文件后缀名判断是GFF还是GTF
+	 */
+	public GffHashGene(String gffFile) {
+		String suffix = FileOperate.getFileNameSep(gffFile)[1];
+		if (suffix.trim().toLowerCase().equals("gff") || suffix.trim().toLowerCase().equals("gff3")) {
+			this.gffType = GffType.NCBI;
+		} else if (suffix.trim().toLowerCase().equals("gtf")) {
+			this.gffType = GffType.GTF;
+		} else {
+			this.gffType = GffType.UCSC;
+		}
+		
+		this.gffFile = gffFile;
+		flagFinish = read(gffType, gffFile);
+	}
 	/**
 	 * 读取但不初始化<br>
 	 * 设定完该信息后可以通过运行run来加载Gff信息

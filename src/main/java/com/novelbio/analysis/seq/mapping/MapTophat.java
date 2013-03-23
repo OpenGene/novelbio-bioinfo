@@ -355,7 +355,7 @@ public class MapTophat implements MapRNA{
 		return "";
 	}
 	private void setGTFfile() {
-		if (gtfFile == null || FileOperate.isFileExistAndBigThanSize(gtfFile, 0.1)) {
+		if (gtfFile == null || !FileOperate.isFileExistAndBigThanSize(gtfFile, 0.1)) {
 			generateGtfFile = false;
 			return;
 		}

@@ -59,6 +59,10 @@ public class GuiLayeredPaneSpeciesVersionGff extends JLayeredPane {
 		initial();
 	}
 	
+	public void addActionListener(ActionListener actionListener) {
+		cmbSpecies.addActionListener(actionListener);
+	}
+	
 	private void initial() {
 		cmbSpecies.setMapItem(Species.getSpeciesName2Species(Species.SEQINFO_SPECIES));
 		selectSpecies();

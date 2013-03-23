@@ -322,6 +322,11 @@ public class GuiRNASeqMapping extends JPanel {
 		txtGtfGene2Iso.setColumns(10);
 		
 		btnGtf = new JButton("GTF");
+		btnGtf.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				txtGtfGene2Iso.setText(guiFileOpen.openFileName("", ""));
+			}
+		});
 		btnGtf.setBounds(359, 428, 134, 24);
 		add(btnGtf);
 

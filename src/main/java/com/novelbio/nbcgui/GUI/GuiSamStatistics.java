@@ -6,6 +6,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JTextField;
 
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -44,6 +45,7 @@ public class GuiSamStatistics extends JPanel {
 	private JTextField txtTssDown;
 	private JTextField txtTesUp;
 	private JTextField txtTesDown;
+	JButton btnOpenGtf;
 	
 	String readFile = "";
 	
@@ -52,6 +54,7 @@ public class GuiSamStatistics extends JPanel {
 	JButton btnSave;
 	private JTextField txtSaveTo;
 	private JLabel lblSaveto;
+	private JTextField txtGTF;
 	/**
 	 * Create the panel.
 	 */
@@ -59,7 +62,7 @@ public class GuiSamStatistics extends JPanel {
 		setLayout(null);
 		
 		scrollPaneData = new JScrollPaneData();
-		scrollPaneData.setBounds(12, 30, 693, 461);
+		scrollPaneData.setBounds(12, 30, 693, 395);
 		add(scrollPaneData);
 		
 		JButton btnOpenfile = new JButton("BamSamBedFile");
@@ -117,8 +120,14 @@ public class GuiSamStatistics extends JPanel {
 				ctrlSamRPKMLocate.setResultPrefix(txtSaveTo.getText());
 				
 				Species species = layeredPane.getSelectSpecies();
+				if (species.getTaxID() == 0 && !txtGTF.getText().equals("")) {
+					String gtfFile = txtGTF.getText();
+					GffHashGene gffHashGene = new GffHashGene(gtfFile);
+					ctrlSamRPKMLocate.setGffHash(gffHashGene);
+				} else {
+					ctrlSamRPKMLocate.setSpecies(species);
+				}
 				
-				ctrlSamRPKMLocate.setSpecies(species);
 				Thread thread = new Thread(ctrlSamRPKMLocate);
 				thread.start();
 				btnSave.setEnabled(false);
@@ -177,10 +186,21 @@ public class GuiSamStatistics extends JPanel {
 		
 		layeredPane = new GuiLayeredPaneSpeciesVersionGff();
 		layeredPane.setBounds(717, 66, 221, 154);
+		layeredPane.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (layeredPane.getSelectSpecies().getTaxID() == 0) {
+					btnOpenGtf.setEnabled(false);
+					txtGTF.setEnabled(false);
+				} else {
+					btnOpenGtf.setEnabled(true);
+					txtGTF.setEnabled(true);
+				}
+			}
+		});
 		add(layeredPane);
 		
 		chkRpkmcount = new JCheckBox("RPKMcount");
-		chkRpkmcount.setBounds(713, 469, 131, 22);
+		chkRpkmcount.setBounds(717, 403, 131, 22);
 		add(chkRpkmcount);
 		
 		txtSaveTo = new JTextField();
@@ -191,6 +211,19 @@ public class GuiSamStatistics extends JPanel {
 		lblSaveto = new JLabel("SaveTo");
 		lblSaveto.setBounds(12, 499, 69, 14);
 		add(lblSaveto);
+		
+		txtGTF = new JTextField();
+		txtGTF.setBounds(12, 458, 693, 18);
+		add(txtGTF);
+		txtGTF.setColumns(10);
+		
+		btnOpenGtf = new JButton("OpenGTF");
+		btnOpenGtf.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnOpenGtf.setBounds(717, 455, 118, 24);
+		add(btnOpenGtf);
 		
 		initial();
 	}

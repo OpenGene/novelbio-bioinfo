@@ -22,9 +22,15 @@ import net.sf.samtools.SAMFileHeader;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.index.Index;
+import org.springframework.data.mongodb.core.query.Order;
+import org.springframework.data.mongodb.core.query.Query;
 
-import com.novelbio.analysis.seq.BedRecord;
-import com.novelbio.analysis.seq.BedSeq;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultimap;
+import com.mongodb.Mongo;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fasta.format.NCBIchromFaChangeFormat;
@@ -69,9 +75,11 @@ import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.domain.geneanno.Gene2Go;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
+import com.novelbio.database.mapper.geneanno.MapBlastInfo;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.generalConf.NovelBioConst;
+import com.novelbio.database.mongotestmodel.MongoPerson;
+import com.novelbio.database.service.SpringFactory;
 import com.novelbio.nbcgui.controlseq.CtrlRNAmap;
 
 
@@ -79,21 +87,20 @@ public class mytest {
 	private static Logger logger = Logger.getLogger(mytest.class);
 	
 	public static void main(String[] args) throws IOException, URISyntaxException {
-		Species species = new Species(9606);
+		MongoTemplate mongoTemplate = (MongoTemplate)SpringFactory.getFactory().getBean("mongoTemplate");
+		mongoTemplate.indexOps(MongoPerson.class).ensureIndex(new Index().on("name",Order.ASCENDING));
+
+//		MongoPerson mongoPerson = new MongoPerson();
+//		mongoPerson.setAge(10);
+//		mongoPerson.setInfo("fsefse");
+//		mongoPerson.setName("faserfsr");
+//		mongoTemplate.insert(mongoPerson);
+//		logger.info(mongoOps.findOne(new Query(where("name").is("Joe")), Person.class));
+//		mongoOps.dropCollection("person");
 		
-		System.out.println(species.getGffDB());
-		System.out.println(species.getGffType());
-		System.out.println(species.getGffFile());
+
 		
-		species = new Species(10090);
 		
-		System.out.println(species.getGffDB());
-		System.out.println(species.getGffType());
-		System.out.println(species.getGffFile());
-		species.setGffDB("UCSC");
-		System.out.println(species.getGffDB());
-		System.out.println(species.getGffType());
-		System.out.println(species.getGffFile());
 	}
 	
 	private void testMapTophat() {

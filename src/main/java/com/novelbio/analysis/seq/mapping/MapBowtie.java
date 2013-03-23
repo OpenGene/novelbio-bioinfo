@@ -75,7 +75,7 @@ public class MapBowtie extends MapDNA {
 	/** 获得没有后缀名的序列 */
 	protected String getChrNameWithoutSuffix() {
 		String chrFileName = FileOperate.getParentPathName(chrFile) + FileOperate.getFileNameSep(chrFile)[0];
-		return chrFileName;
+		return CmdOperate.addQuot(chrFileName);
 	}
 	public void setMapLibrary(MapLibrary mapLibrary) {
 		this.mapLibrary = mapLibrary;
