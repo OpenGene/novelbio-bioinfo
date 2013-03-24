@@ -1,11 +1,11 @@
 package com.novelbio.database.service.servgeneanno;
 
 import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.novelbio.database.DBAccIDSource;
@@ -16,7 +16,7 @@ import com.novelbio.database.mapper.geneanno.MapNCBIID;
 import com.novelbio.database.mapper.geneanno.MapUniProtID;
 import com.novelbio.database.service.SpringFactory;
 @Service
-public class ServNCBIUniID {
+public class ServNCBIUniID implements ServNCBIUniIDInt {
 	private static final Logger logger = Logger.getLogger(ServNCBIUniID.class);
 	@Inject
 	private MapNCBIID mapNCBIID;
@@ -27,18 +27,8 @@ public class ServNCBIUniID {
 		mapNCBIID = (MapNCBIID) SpringFactory.getFactory().getBean("mapNCBIID");
 		mapUniProtID = (MapUniProtID) SpringFactory.getFactory().getBean("mapUniProtID");
 	}
-	//TODO 正规写法
-//	@Inject
-//	protected MapNCBIID mapNCBIID;
-//	private static ServGeneAnno info; 
-//	@PostConstruct
-//	public void init()
-//	{
-//	    info = this;
-//	    info.mapNCBIID = this.mapNCBIID;
-//	}
 
-	public AgeneUniID queryNCBIUniIID(AgeneUniID QueryNCBIID) {
+	public AgeneUniID queryNCBIUniID(AgeneUniID QueryNCBIID) {
 		if (QueryNCBIID instanceof NCBIID) {
 			return mapNCBIID.queryNCBIID((NCBIID)QueryNCBIID);
 		} else if (QueryNCBIID instanceof UniProtID) {
@@ -49,7 +39,7 @@ public class ServNCBIUniID {
 		}
 	}
 	
-	public ArrayList<? extends AgeneUniID> queryLsAgeneUniID(AgeneUniID QueryNCBIID) {
+	public List<? extends AgeneUniID> queryLsAgeneUniID(AgeneUniID QueryNCBIID) {
 		if (QueryNCBIID instanceof NCBIID) {
 			return mapNCBIID.queryLsNCBIID((NCBIID)QueryNCBIID);
 		} else if (QueryNCBIID instanceof UniProtID) {
@@ -99,7 +89,7 @@ public class ServNCBIUniID {
 		if (!dbInfo.trim().equals("")) {
 			ageneUniID.setDataBaseInfo(dbInfo.trim());
 		}
-		ArrayList<? extends AgeneUniID> lsAgeneUniIDs= queryLsAgeneUniID(ageneUniID);
+		List<? extends AgeneUniID> lsAgeneUniIDs= queryLsAgeneUniID(ageneUniID);
 		//如果带数据库的没找到，就重置数据库
 		if (!dbInfo.equals("") && (lsAgeneUniIDs == null || lsAgeneUniIDs.size() < 1) ) {
 			ageneUniID.setDataBaseInfo("");
@@ -143,7 +133,7 @@ public class ServNCBIUniID {
 			ncbiid.setGenUniID("0");
 		}
 
-		ArrayList<? extends AgeneUniID> lsResult = queryLsAgeneUniID(ncbiid);
+		List<? extends AgeneUniID> lsResult = queryLsAgeneUniID(ncbiid);
 		//query完了就把两个信息给重新设定回去
 		ncbiid.setGenUniID(geneID);
 		ncbiid.setDataBaseInfo(db);
@@ -186,7 +176,7 @@ public class ServNCBIUniID {
 		AgeneUniID ncbiid = AgeneUniID.creatAgeneUniID(idType);
 		ncbiid.setGenUniID(geneID);
 		ncbiid.setTaxID(taxID);
-		ArrayList<? extends AgeneUniID> lsResult = queryLsAgeneUniID(ncbiid);
+		List<? extends AgeneUniID> lsResult = queryLsAgeneUniID(ncbiid);
 		if (lsResult == null || lsResult.size() == 0) {
 			return null;
 		}

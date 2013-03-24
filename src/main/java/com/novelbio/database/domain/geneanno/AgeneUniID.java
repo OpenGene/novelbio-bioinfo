@@ -1,8 +1,17 @@
 package com.novelbio.database.domain.geneanno;
 
+import org.apache.hadoop.mapred.Reporter;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.mongorepo.geneanno.RepoNCBIID;
+import com.novelbio.database.service.SpringFactory;
 import com.novelbio.database.service.servgeneanno.ServDBInfo;
 import com.novelbio.database.service.servgeneanno.ServNCBIUniID;
 
@@ -14,13 +23,31 @@ import com.novelbio.database.service.servgeneanno.ServNCBIUniID;
 public abstract class AgeneUniID {
 	private static final Logger logger = Logger.getLogger(AgeneUniID.class);
 	
-    private int taxID;
-	private String accessID;
-	private int dbInfoID = -1;
+	@Id
+	private String id;
 	
-	ServDBInfo servDBInfo = new ServDBInfo();
-	ServNCBIUniID servNCBIUniID = new ServNCBIUniID();
+    private int taxID;
+	
+	@Field(value="accID")
+	private String accessID;
+	
+	private String dbInfoID;
+	
+	@DBRef
 	DBInfo databaseInfo;
+	
+	@Transient
+	ServDBInfo servDBInfo = new ServDBInfo();
+	@Transient
+	ServNCBIUniID servNCBIUniID = new ServNCBIUniID();
+
+	@Transient
+	@Autowired
+	RepoNCBIID repNCBIID;
+	
+	public AgeneUniID() {
+		repNCBIID = (RepoNCBIID)SpringFactory.getFactory().getBean("repNCBIID");
+	}
 	
 	public int getTaxID() {
 		return taxID;
@@ -63,7 +90,7 @@ public abstract class AgeneUniID {
 		return databaseInfo;
 	}
 	
-	public void setDataBaseInfo(int dbInfoID) {
+	public void setDataBaseInfoID(String dbInfoID) {
 		this.dbInfoID = dbInfoID;
 		fillDataBase();
 	}
@@ -84,7 +111,7 @@ public abstract class AgeneUniID {
 	}
 	
 	private void fillDataBase() {
-		if (this.dbInfoID < 0) {
+		if (this.dbInfoID== null || this.dbInfoID.equals("")) {
 			this.databaseInfo = null;
 			return;
 		}
@@ -99,7 +126,7 @@ public abstract class AgeneUniID {
 	public void setDataBaseInfo(DBInfo databaseInfo) {
 		this.databaseInfo = databaseInfo;
 		if (databaseInfo == null) {
-			this.dbInfoID = -1;
+			this.dbInfoID = null;
 		} else {
 			this.dbInfoID = databaseInfo.getDbInfoID();
 		}		

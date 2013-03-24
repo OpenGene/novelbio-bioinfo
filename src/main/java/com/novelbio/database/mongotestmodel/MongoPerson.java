@@ -2,6 +2,7 @@ package com.novelbio.database.mongotestmodel;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 //本类保存到person这个表中
@@ -11,6 +12,7 @@ public class MongoPerson {
 	private String id;
 	private long age = 0;
 	/** 标题 */
+	@Indexed(unique = true)
 	private String name;
 	
 //	@Transient

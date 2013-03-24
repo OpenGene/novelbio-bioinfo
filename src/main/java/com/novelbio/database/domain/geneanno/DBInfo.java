@@ -1,18 +1,24 @@
 package com.novelbio.database.domain.geneanno;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.service.servgeneanno.ServDBInfo;
+import com.novelbio.database.service.servgeneanno.ServDBInfoMongo;
 
 public class DBInfo {
 	public static void main(String[] args) {
 		updateDBinfo("/media/winE/NBCplatform/DBinfo.txt");
 	}
 	
-	
-	int dbInfoID = -1;
+	@Id
+	String dbInfoID;
 	/** 数据库名称 */
+	@Indexed
 	String dbName;
 	/** 数据库来源组织，譬如affy、NCBI等 */
+	@Indexed
 	String dbOrg;
 	/** 数据库描述 */
 	String description;
@@ -35,15 +41,15 @@ public class DBInfo {
 	public String getDescription() {
 		return description;
 	}
-	public int getDbInfoID() {
+	public String getDbInfoID() {
 		return dbInfoID;
 	}
-	public void setDbInfoID(int dbinfo) {
+	public void setDbInfoID(String dbinfo) {
 		this.dbInfoID = dbinfo;
 	}
 	
 	public static void updateDBinfo(String dbInfoFile) {
-		ServDBInfo servDBInfo = new ServDBInfo();
+		ServDBInfoMongo servDBInfo = new ServDBInfoMongo();
 		TxtReadandWrite txtRead = new TxtReadandWrite(dbInfoFile, false);
 		for (String content : txtRead.readlines()) {
 			content = content.trim();
@@ -58,5 +64,17 @@ public class DBInfo {
 			servDBInfo.updateDBInfo(dbInfo, true);
 		}
 		txtRead.close();
+	}
+	
+	public boolean equals(Object object) {
+		if (this == object) return true;
+		if (object == null) return false;
+		
+		if (getClass() != object.getClass()) return false;
+		DBInfo otherObj = (DBInfo)object;
+		if (dbName.equals(otherObj.getDbName()) && dbOrg.equals(otherObj.getDbOrg())) {
+			return true;
+		}
+		return false;
 	}
 }

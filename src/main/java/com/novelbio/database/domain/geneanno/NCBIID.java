@@ -1,5 +1,9 @@
 package com.novelbio.database.domain.geneanno;
 
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import com.novelbio.database.model.modgeneid.GeneID;
 
 /**
@@ -7,6 +11,11 @@ import com.novelbio.database.model.modgeneid.GeneID;
  * @author zong0jie
  *
  */
+@Document(collection="ncbiid")
+@CompoundIndexes({
+    @CompoundIndex(unique = true, name = "gene_acc_idx", def = "{'geneID': 1, 'accID': -1}"),
+    @CompoundIndex(unique = true, name = "acc_tax_idx", def = "{'accID': 1, 'taxID': -1}")
+ })
 public class NCBIID extends AgeneUniID{
 	private long geneID;
 	
