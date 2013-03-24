@@ -1,6 +1,10 @@
 package com.novelbio.database.domain.geneanno;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+
+import org.springframework.data.mongodb.core.index.Indexed;
 
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.domain.geneanno.GOtype.GORelation;
@@ -12,19 +16,16 @@ import com.novelbio.database.service.servgeneanno.ServGo2Term;
  *
  */
 public class Go2Term implements Cloneable {
-	public static final String RELATION_IS = "IS";
-	public static final String RELATION_PARTOF = "PART_OF";
-	public static final String RELATION_REGULATE = "REGULATE";
-	public static final String RELATION_REGULATE_POS = "REGULATE_POS";
-	public static final String RELATION_REGULATE_NEG = "REGULATE_NEG";
 	
 	private ServGo2Term servGo2Term = new ServGo2Term();
+	@Indexed(unique = true)
     private String queryGoID;
+	@Indexed
 	private String GoID;
 	private String GoTerm;
 	private String GoFunction;
-	private String Parent;
-	private String Child;
+	private Map<String, GORelation> mapParentGO2Relate = new HashMap<String, GORelation>();;
+	private Map<String, GORelation> mapChildGO2Relate = new HashMap<String, GORelation>();;
 	private String Definition;
 
 	/**
@@ -71,15 +72,15 @@ public class Go2Term implements Cloneable {
 	 * @param relation 必须是RELATION中的一类
 	 */
 	public void addParent(Go2Term go2Term, GORelation relation ) {
-		Parent = getUpdateParentChild(Parent, go2Term.getGoID(), relation);
+		mapParentGO2Relate.put(go2Term.getGoID(), relation);
 	}
 	/**
 	 * 设定其上游父类GO的信息，可以连续设定，新设定的会追加而不是覆盖
 	 * @param go2Term
 	 * @param relation 必须是RELATION中的一类
 	 */
-	public void addParent(String goid, GORelation relation ) {
-		Parent = getUpdateParentChild(Parent, goid, relation);
+	public void addParent(String goid, GORelation relation) {
+		mapParentGO2Relate.put(goid, relation);
 	}
 	/**
 	 * 设定其下游子类GO的信息，可以连续设定，新设定的会追加而不是覆盖
@@ -87,7 +88,7 @@ public class Go2Term implements Cloneable {
 	 * @param relation 必须是RELATION中的一类
 	 */
 	public void addChild(Go2Term go2Term, GORelation relation ) {
-		Child = getUpdateParentChild(Child, go2Term.getGoID(), relation);
+		mapChildGO2Relate.put(go2Term.getGoID(), relation);
 	}
 	/**
 	 * 设定其下游子类GO的信息
@@ -96,67 +97,28 @@ public class Go2Term implements Cloneable {
 	 * @param relation 必须是RELATION中的一类
 	 */
 	public void addChild(String goid, GORelation relation ) {
-		Child = getUpdateParentChild(Child, goid, relation);
-	}
-	/**
-	 * 仅供测试使用
-	 * 给定goID和relation，然后在parentchild中找，找到重复的就返回，不重复的就升级
-	 * @param parentChile
-	 * @param goID
-	 * @param relation
-	 */
-	public static String getUpdateParentChild(String parentChild, String goID, GORelation relation) {
-		String update = relation + SepSign.SEP_INFO + goID;
-		if (parentChild == null) {
-			return update;
-		} else if (!parentChild.toLowerCase().contains(goID.toLowerCase())) {
-			return parentChild + SepSign.SEP_ID + update;
-		} else if (parentChild.toLowerCase().contains(update.toLowerCase())) {
-			return parentChild;
-		} else {
-			String[] sepGOID = parentChild.split(SepSign.SEP_ID);
-			for (int i = 0; i < sepGOID.length; i++) {
-				String[] sepRelate2GOID = sepGOID[i].split(SepSign.SEP_INFO);
-				if (sepRelate2GOID[1].equalsIgnoreCase(goID)) {
-					sepRelate2GOID[0] = relation.toString();
-					sepGOID[i] = sepRelate2GOID[0] + SepSign.SEP_INFO + sepRelate2GOID[1];
-					break;
-				}
-			}
-			parentChild = ArrayOperate.cmbString(sepGOID, SepSign.SEP_ID);
-			return parentChild;
-		}
+		mapChildGO2Relate.put(goid, relation);
 	}
 	
 	public HashSet<Go2Term> getParent() {
-		return getParentChild(Parent);
+		return getParentChild(mapParentGO2Relate);
 	}
 	public HashSet<Go2Term> getChild() {
-		return getParentChild(Child);
-	}
-	/** 仅供test */
-	public String getParentTest() {
-		return Parent;
-	}
-	/** 仅供test */
-	public String getChildTest() {
-		return Child;
+		return getParentChild(mapChildGO2Relate);
 	}
 	/**
 	 * 返回父类
 	 * @return
 	 */
-	private HashSet<Go2Term> getParentChild(String ParentChild) {
+	private HashSet<Go2Term> getParentChild(Map<String, GORelation> mapParentChildGO2Relation) {
 		HashSet<Go2Term> hashResult = new HashSet<Go2Term>();
-		if (ParentChild == null) {
+		if (mapParentChildGO2Relation == null) {
 			return hashResult;
 		}
-		String[] ss = ParentChild.split(SepSign.SEP_ID);
-		for (String string : ss) {
-			String[] ssInfo = string.split(SepSign.SEP_INFO);
-			Go2Term go2Term = servGo2Term.queryGo2Term(ssInfo[1]);
+		for (String goTerm : mapParentChildGO2Relation.keySet()) {
+			Go2Term go2Term = servGo2Term.queryGo2Term(goTerm);
 			Go2Term go2TermNew = go2Term.clone();
-			go2TermNew.setRelation(GORelation.getMapStr2GoRelation().get(ssInfo[0]));
+			go2TermNew.setRelation(mapParentChildGO2Relation.get(go2Term));
 			hashResult.add(go2TermNew);
 		}
 		return hashResult;
@@ -272,9 +234,9 @@ public class Go2Term implements Cloneable {
 			&&
 			cmpString(Definition, otherObj.getDefinition())
 			&&
-			cmpString(Parent, otherObj.Parent)	
+			mapChildGO2Relate.equals(otherObj.mapChildGO2Relate)
 			&&
-			cmpString(Child, otherObj.Child)	
+			mapParentGO2Relate.equals(otherObj.mapParentGO2Relate)
 				) {
 			return true;
 		}
@@ -316,13 +278,19 @@ public class Go2Term implements Cloneable {
 		Go2Term go2Term = null;
 		try {
 			go2Term = (Go2Term) super.clone();
-			go2Term.Child = Child;
+			go2Term.mapChildGO2Relate = new HashMap<String, GOtype.GORelation>();
+			for (String goID : mapChildGO2Relate.keySet()) {
+				go2Term.mapChildGO2Relate.put(goID, mapChildGO2Relate.get(goID));
+			}
+			go2Term.mapParentGO2Relate = new HashMap<String, GOtype.GORelation>();
+			for (String goID : mapParentGO2Relate.keySet()) {
+				go2Term.mapParentGO2Relate.put(goID, mapParentGO2Relate.get(goID));
+			}
 			go2Term.Definition = Definition;
 			go2Term.GoFunction = GoFunction;
 			go2Term.GoID = GoID;
 			go2Term.gorelation = gorelation;
 			go2Term.GoTerm = GoTerm;
-			go2Term.Parent = Parent;
 			go2Term.queryGoID = queryGoID;
 			go2Term.servGo2Term = servGo2Term;
 			

@@ -1,7 +1,5 @@
 package com.novelbio.database.service.servgeneanno;
 
-import java.util.ArrayList;
-
 import javax.inject.Inject;
 
 import com.novelbio.database.domain.geneanno.DBInfo;
@@ -21,12 +19,12 @@ public class ServDBInfoMongo {
 	 * 用dbName去查询
 	 * @return
 	 */
-	public DBInfo queryDBinfo(DBInfo dbInfo) {
-		return repoDBinfo.findByDBname(dbInfo.getDbName());
+	public DBInfo findByDBname(String dbName) {
+		return repoDBinfo.findByDBname(dbName);
 	}
 	
-	public DBInfo queryDBinfoByID(DBInfo dbInfo) {
-		return repoDBinfo.findOne(dbInfo.getDbInfoID());
+	public DBInfo findOne(String dbInfoID) {
+		return repoDBinfo.findOne(dbInfoID);
 	}
 	
 	/** insert和update一体化

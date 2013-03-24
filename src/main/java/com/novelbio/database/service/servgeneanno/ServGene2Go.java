@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.Gene2Go;
 import com.novelbio.database.mapper.geneanno.MapGene2Go;
-import com.novelbio.database.mapper.geneanno.MapGeneInfo;
-import com.novelbio.database.mapper.geneanno.MapGo2Term;
 import com.novelbio.database.service.SpringFactory;
 @Service
 public class ServGene2Go implements MapGene2Go {
@@ -74,8 +72,7 @@ public class ServGene2Go implements MapGene2Go {
 			if (gene2GoOld.addInfo(gene2Go)) {
 				updateGene2Go(gene2GoOld);
 			}
-		}
-		else {
+		} else {
 			Gene2Go gene2GoNew = new Gene2Go();
 			gene2GoNew.copyInfo(gene2Go);
 			if (gene2GoNew.getGOID() == null) {

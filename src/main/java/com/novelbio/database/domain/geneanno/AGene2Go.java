@@ -1,8 +1,14 @@
 package com.novelbio.database.domain.geneanno;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.log4j.Logger;
+import org.springframework.data.mongodb.core.index.Indexed;
 
 import com.novelbio.database.DBAccIDSource;
+import com.novelbio.database.service.servgeneanno.ServDBInfo;
+import com.novelbio.database.service.servgeneanno.ServDBInfoMongo;
 import com.novelbio.database.service.servgeneanno.ServGo2Term;
 
 /**
@@ -14,14 +20,23 @@ import com.novelbio.database.service.servgeneanno.ServGo2Term;
 public abstract class AGene2Go {
 	private static Logger logger = Logger.getLogger(AGene2Go.class);
 	public static final String EVIDENCE_IEA = "IEA";
-	public static final String SEP = "//";
-	private String myGoID;
-	private String evidence;
-	private String qualifier;
-	private String reference;
-	private String dataBase;
+	
+	@Indexed
+	private String goID;
+	@Indexed
 	private int taxID;
+	
+	private Set<String> setEvid = new HashSet<String>();
+	private String qualifier;
+	private Set<String> setPubID = new HashSet<String>();
+	private Set<String> setDB = new HashSet<String>();
+
+
+	
 	private ServGo2Term servGo2Term = new ServGo2Term();
+	private ServDBInfoMongo servDBInfo = new ServDBInfoMongo();
+	
+
 	public abstract String getGeneUniId();
 	public abstract void setGeneUniID(String geneUniID);
 	
@@ -33,9 +48,9 @@ public abstract class AGene2Go {
 		return go2Term.getGoID();
 	}
 	public Go2Term getGO2Term() {
-		Go2Term go2Term = servGo2Term.getHashGo2Term().get(myGoID);
+		Go2Term go2Term = servGo2Term.getHashGo2Term().get(goID);
 		if (go2Term == null) {
-			logger.error("出现未知GOID：" + myGoID);
+			logger.error("出现未知GOID：" + goID);
 			return null;
 		}
 		return go2Term;
@@ -51,25 +66,39 @@ public abstract class AGene2Go {
 			return;
 		}
 		try {
-			this.myGoID = servGo2Term.getHashGo2Term().get(GoID).getGoID();
+			this.goID = servGo2Term.getHashGo2Term().get(GoID).getGoID();
 		} catch (Exception e) {
-			this.myGoID = GoID;
+			this.goID = GoID;
 		}
 	}
 	public void setTaxID(int taxID) {
-		this.taxID = taxID;
+		if (taxID == 0) {
+			return;
+		}
+		if (this.taxID == 0) {
+			this.taxID = taxID;
+			return;
+		}
+		if (this.taxID != taxID) {
+			logger.error("待拷贝的两个geneInfo中的taxID不一致，原taxID："+this.taxID + " 新taxID：" + taxID );
+		}
 	}
 	public int getTaxID() {
 		return taxID;
 	}
-	public String getEvidence() {
-		return evidence;
+	
+	public Set<String> getEvidence() {
+		return setEvid;
 	}
-	public void setEvidence(String evidence) {
+	
+	public void addEvidence(String evidence) {
 		if (evidence == null || evidence.trim().equals("")) {
 			return;
 		}
-		this.evidence = evidence.trim();
+		if (setEvid == null) {
+			setEvid = new HashSet<String>();
+		}
+		setEvid.add(evidence);
 	}
 	
 	public String getQualifier() {
@@ -92,22 +121,16 @@ public abstract class AGene2Go {
 	 */
 	public String getGOTerm() {
 		try {
-			return servGo2Term.getHashGo2Term().get(myGoID).getGoTerm();
+			return servGo2Term.getHashGo2Term().get(goID).getGoTerm();
 		} catch (Exception e) {
 			return null;
 		}
 	}
 	
-	/**
-	 * 可能会被sep分割
-	 * @return
-	 */
-	public String getReference() {
-		return reference;
+	public Set<String> getReference() {
+		return setPubID;
 	}
-	public void setReference(String reference) {
-		this.reference = reference;
-	}
+	
 	/**
 	 * 根据Go2Term进行了校正
 	 * 没有就返回null<br>
@@ -118,9 +141,9 @@ public abstract class AGene2Go {
 	 */
 	public GOtype getFunction() {
 		try {
-			return servGo2Term.getHashGo2Term().get(myGoID).getGOtype();
+			return servGo2Term.getHashGo2Term().get(goID).getGOtype();
 		} catch (Exception e) {
-			logger.error("出现未知GOID：" + myGoID);
+			logger.error("出现未知GOID：" + goID);
 			return null;
 		}
 	}
@@ -128,142 +151,87 @@ public abstract class AGene2Go {
 	 * 可能会被sep分割
 	 * @return
 	 */
-	public String getDataBase() {
-		return dataBase;
+	public Set<DBInfo> getDataBase() {
+		Set<DBInfo> setDbInfos = new HashSet<DBInfo>();
+		for (String dbInfoID : setDB) {
+			setDbInfos.add(servDBInfo.findOne(dbInfoID));
+		}
+		return setDbInfos;
 	}
-	public void setDataBase(String dataBase) {
-		this.dataBase = dataBase;
+	public void addDBName(String dbName) {
+		DBInfo dbInfo = servDBInfo.findByDBname(dbName);
+		if (dbInfo != null) {
+			setDB.add(dbInfo.getDbInfoID());
+		}
 	}
 	
-	private void addDataBase(String dataBase)
-	{
-		this.dataBase = validate(this.dataBase, dataBase);
+	public void addDBID(String dbInfoID) {
+		this.setDB.add(dbInfoID);
 	}
-	private void addReference(String reference)
-	{
-		this.reference = validate(this.reference, reference);
+ 
+	private void addReference(String reference) {
+		setPubID.add(reference);
 	}
-	private void addQualifier(String qualifier)
-	{
-		this.qualifier = validate(this.qualifier, qualifier);
-	}
-	private void addTaxID(int taxID) {
-		if (taxID == 0) {
-			return;
-		}
-		if (this.taxID == 0) {
-			this.taxID = taxID;
-			return;
-		}
-		if (this.taxID != taxID) {
-			logger.error("待拷贝的两个geneInfo中的taxID不一致，原taxID："+this.taxID + " 新taxID：" + taxID );
-		}
-	}
-	private void addEvidence(String evidence)
-	{
-		if (evidence == null || evidence.equals("") || evidence.equals(EVIDENCE_IEA)) {
-			return;
-		}
-		this.qualifier = validate(this.qualifier, qualifier);
-	}
+	
 	/**
 	 * true说明确实有新东西
 	 * 如果信息重复，就不需要升级，则返回false
 	 * @param gene2Go
 	 * @return
 	 */
-	public void copyInfo(AGene2Go gene2Go)
-	{
-		setDataBase(gene2Go.getDataBase());
-		setEvidence(gene2Go.getEvidence());
+	public void copyInfo(AGene2Go gene2Go) {
+		for (DBInfo dbInfo : gene2Go.getDataBase()) {
+			addDBID(dbInfo.getDbInfoID());
+		}
+		for (String evidence : gene2Go.getEvidence()) {
+			addEvidence(evidence);
+		}
+		
 		setGeneUniID(gene2Go.getGeneUniId());
 		setGOID(gene2Go.getGOID());
-//		setGOTerm(gene2Go.getGOTerm());
 		setQualifier(gene2Go.getQualifier());
-		setReference(gene2Go.getReference());
+		for (String pubmedID : gene2Go.getReference()) {
+			addReference(pubmedID);
+		}
 		setTaxID(gene2Go.getTaxID());
 	}
-	
-	
+
 	/**
-	 * true说明确实有新东西
-	 * 如果信息重复，就不需要升级，则返回false
+	 * 将新的gene2Go的信息往这个里面添加，如果true，说明需要update
+	 * false不需要update
 	 * 添加了Database，Qualifier，Reference和Evidence
 	 * @param gene2Go
 	 * @return
 	 */
 	public boolean addInfo(AGene2Go gene2Go) {
-		if (!validateUpdate(getDataBase(), gene2Go.getDataBase())
-			&& 
-			!validateUpdate(getQualifier(), gene2Go.getQualifier())
-			&&
-			!validateUpdate(getReference(), gene2Go.getReference())
-			&&
-			!validateUpdate(getEvidence(), gene2Go.getEvidence())
-		) {
-			return false;
-		}
-		addDataBase(gene2Go.getDataBase());
-		addQualifier(gene2Go.getQualifier());
-		addReference(gene2Go.getReference());
-		addEvidence(gene2Go.getEvidence());
-		addTaxID(gene2Go.getTaxID());
-		return true;
-	}
-	/**
-	 * 是否需要升级
-	 * @param thisField
-	 * @param inputField
-	 * @return
-	 * false不需要升级
-	 * true 需要升级
-	 */
-	private boolean validateUpdate(String thisField, String inputField)
-	{
-		if (thisField == null) {
-			thisField = "";
-		}
-		if (inputField == null) {
-			return false;
-		}
-		inputField = inputField.trim();
-		if (inputField.equals("-") || inputField.equals("")) {
-			return false;
-		}
-		if (thisField.contains(inputField)) {
-			return false;
-		}
-		else {
-			return true;
-		}
-	}
-	
-	private String validate(String thisField, String inputField)
-	{
-		String inputFieldFinal = "";
-		if (inputField == null) {
-			return thisField;
-		}
-		inputField = inputField.trim();
-		if (inputField.equals("-") || inputField.equals("")) {
-			return thisField;
-		}
-		else {
-			inputFieldFinal = inputField;
-		}
-		if (thisField == null || thisField.equals("")) {
-			return inputFieldFinal;
-		}
-		else {
-			if (inputFieldFinal.equals("") || thisField.contains(inputField)) {
-				return thisField;
-			}
-			else {
-				return thisField + SEP + inputFieldFinal;
+		boolean update = false;
+		for (DBInfo dbInfo : gene2Go.getDataBase()) {
+			if (!setDB.contains(dbInfo.getDbInfoID())) {
+				setDB.add(dbInfo.getDbInfoID());
+				update = true;
 			}
 		}
+		for (String evidence : gene2Go.getEvidence()) {
+			if (!setEvid.contains(evidence)) {
+				setEvid.add(evidence);
+				update = true;
+			}
+		}
+		for (String pubmedID : gene2Go.getReference()) {
+			if (!setPubID.contains(pubmedID)) {
+				setPubID.add(pubmedID);
+				update = true;
+			}
+		}
+		setGeneUniID(gene2Go.getGeneUniId());
+		setGOID(gene2Go.getGOID());
+		setQualifier(gene2Go.getQualifier());
+		for (String pubmedID : gene2Go.getReference()) {
+			addReference(pubmedID);
+		}
+		setTaxID(gene2Go.getTaxID());
+		return update;
 	}
-	
 	
 	/**
 	 * 只要两个gene2GO的geneID相同，就认为这两个NCBIID相同

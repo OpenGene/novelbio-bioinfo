@@ -1,38 +1,55 @@
 package com.novelbio.database.domain.geneanno;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.index.Indexed;
 
+import com.novelbio.base.dataOperate.DateTime;
 import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.service.servgeneanno.ServDBInfo;
+import com.novelbio.database.service.servgeneanno.ServDBInfoMongo;
 
 /**
  * 
  * @author zong0jie
  * 按照evalue从小到大排序
  */
-public class BlastInfo implements Comparable<BlastInfo>{
-	GeneID copedIDQ = null;
-	GeneID copedIDS = null;
-
+public class BlastInfo implements Comparable<BlastInfo> {
+	@Id
+	private String id;
+	@Indexed
 	protected String queryID;
+	@Indexed
 	protected String subjectID;
 	
 	protected String blastDate;
-	protected String subjectDB;
+	protected String subjectDBID;
 	protected double identities=0;
 	protected double evalue = 100;
 	protected int subjectTax;
 	
-	protected String queryDB;
+	protected String queryDBID;
 	protected int queryTax;
 	
-	private void setDate() {
-		SimpleDateFormat formatDate= new SimpleDateFormat( "yyyy-MM-dd");
-	     Date currentDate = new Date(); //得到当前系统时间
-	     blastDate = formatDate.format(currentDate); //将日期时间格式化
-	}
+	private int subjectTab;
+	
+	@Transient
+	GeneID copedIDQ = null;
+	@Transient
+	GeneID copedIDS = null;
+	
+	@Transient
+	@Autowired
+	ServDBInfoMongo servDBInfo;
+	
 	public BlastInfo() {
+		servDBInfo = new ServDBInfoMongo();
 		setDate();
+	}
+	
+	private void setDate() {
+	     blastDate = DateTime.getDate(); //将日期时间格式化
 	}
 	/**
 	 * 如果是要导入数据库，必须用该方式new一个<br>
@@ -55,7 +72,7 @@ public class BlastInfo implements Comparable<BlastInfo>{
 	    	 copedIDS = new GeneID(AccIDS, taxIDS);
 	    	 this.subjectID = copedIDS.getGeneUniID();
 	    	 this.subjectTax = copedIDS.getTaxID();
-	    	 this.subjectTab = copedIDS.getIDtype() + "";
+	    	 this.subjectTab = copedIDS.getIDtype();
 	     }
 	}
 	/**
@@ -79,7 +96,7 @@ public class BlastInfo implements Comparable<BlastInfo>{
 	    	 copedIDS = new GeneID(IDType, genUniIDS, taxIDS);
 	    	 this.subjectID = copedIDS.getGeneUniID();
 	    	 this.subjectTax = copedIDS.getTaxID();
-	    	 this.subjectTab = copedIDS.getIDtype() + "";
+	    	 this.subjectTab = copedIDS.getIDtype();
 	     }
 	}
 	/**
@@ -114,7 +131,7 @@ public class BlastInfo implements Comparable<BlastInfo>{
 		if (genUniS != null && !genUniS.equals("") && !genUniS.equals("0")) {
 			this.subjectID = copedIDS.getGeneUniID();
 			this.subjectTax = copedIDS.getTaxID();
-			this.subjectTab = copedIDS.getIDtype() + "";
+			this.subjectTab = copedIDS.getIDtype();
 		}
 	}
 	
@@ -138,9 +155,9 @@ public class BlastInfo implements Comparable<BlastInfo>{
 	 * @param queryDBInfo
 	 * @param subDBInfo
 	 */
-	public void setQueryDB_SubDB(String queryDBInfo, String subDBInfo) {
-		this.queryDB = queryDBInfo;
-		this.subjectDB = subDBInfo;
+	public void setQueryDB_SubDB(DBInfo queryDBInfo, DBInfo subDBInfo) {
+		this.queryDBID = queryDBInfo.getDbInfoID();
+		this.subjectDBID = subDBInfo.getDbInfoID();
 	}
 	/**
 	 * 设置查找的序列ID
@@ -171,14 +188,14 @@ public class BlastInfo implements Comparable<BlastInfo>{
 	/**
 	 * 设置查找序列的来源，譬如Agilent
 	 */
-	public void setQueryDB(String queryDB) {
-		this.queryDB=queryDB;
+	public void setQueryDBID(String queryDBID) {
+		this.queryDBID = queryDBID;
 	}
 	/**
 	 * 获得查找序列的来源，譬如Agilent
 	 */
-	public String getQueryDB() {
-		return this.queryDB;
+	public DBInfo getQueryDB() {
+		return servDBInfo.findOne(queryDBID);
 	}
 ///////////////////////////////////////////////////////////////////////////////////
 	/**
@@ -198,8 +215,7 @@ public class BlastInfo implements Comparable<BlastInfo>{
 	/**
 	 * 设置Blast搜索到的序列的物种
 	 */
-	public void setSubjectTax(int subjectTax) 
-	{
+	public void setSubjectTax(int subjectTax) {
 		this.subjectTax=subjectTax;
 	}
 	/**
@@ -209,17 +225,13 @@ public class BlastInfo implements Comparable<BlastInfo>{
 		return this.subjectTax;
 	}
 ///////////////////////////////////////////////////////////////////////////////////
-	/**
-	 * 设置Blast搜索到的序列的来源，如agilent
-	 */
-	public void setSubjectDB(String subjectDB) {
-		this.subjectDB=subjectDB;
+	/** 设置Blast搜索到的序列的来源，如agilent */
+	public void setSubjectDBID(String subjectDBID) {
+		this.subjectDBID = subjectDBID;
 	}
-	/**
-	 * 获得Blast搜索到的序列的来源，如agilent
-	 */
-	public String getSubjecttDB() {
-		return this.subjectDB;
+	/** 获得Blast搜索到的序列的来源，如agilent */
+	public DBInfo getSubjecttDB() {
+		return servDBInfo.findOne(subjectDBID);
 	}
 ///////////////////////////////////////////////////////////////////////////////////
 	/**
@@ -261,18 +273,18 @@ public class BlastInfo implements Comparable<BlastInfo>{
 		return this.blastDate;
 	}
 ///////////////////////////////////////////////////////////////////////////////////
-	private String subjectTab;
+	
 	/**
 	 * 设置blast得到的数据是基于哪个表的，有NCBIID和UniprotID两个选择
 	 */
 	public void setSubTab(int subjectTab) {
-		this.subjectTab = subjectTab + "";
+		this.subjectTab = subjectTab;
 	}
 	/**
 	 * 获得blast得到的数据是基于哪个表的，有NCBIID和UniprotID两个选择
 	 */
 	public int getSubTab() {
-		return Integer.parseInt(this.subjectTab);
+		return this.subjectTab;
 	}
 	/**
 	 * 按照evalue从小到大排序

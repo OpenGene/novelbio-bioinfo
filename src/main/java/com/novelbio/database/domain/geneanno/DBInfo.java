@@ -4,14 +4,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.service.servgeneanno.ServDBInfo;
 import com.novelbio.database.service.servgeneanno.ServDBInfoMongo;
 
 public class DBInfo {
-	public static void main(String[] args) {
-		updateDBinfo("/media/winE/NBCplatform/DBinfo.txt");
-	}
-	
 	@Id
 	String dbInfoID;
 	/** 数据库名称 */

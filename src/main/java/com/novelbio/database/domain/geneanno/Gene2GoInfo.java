@@ -4,10 +4,8 @@ import java.util.ArrayList;
 /**
  * 用accID查找NCBIID、refSeq信息、GoInfo、geneInfo四个表
  * @author zong0jie
- *
  */
 public class Gene2GoInfo {
-
 	private int taxID;
 	private long geneID;
 	private String quaryID;
