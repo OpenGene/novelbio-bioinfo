@@ -2,8 +2,6 @@ package com.novelbio.database.domain.geneanno;
 
 import java.util.ArrayList;
 
-import org.apache.ibatis.migration.commands.NewCommand;
-
 import com.novelbio.database.model.modgeneid.GeneID;
 
 /**

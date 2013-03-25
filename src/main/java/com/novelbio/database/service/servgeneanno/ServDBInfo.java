@@ -40,7 +40,8 @@ public class ServDBInfo {
 	 * @param DBInfo必须要填充DBName和DBorg两项
 	 */
 	public void updateDBInfo(DBInfo dbInfo, boolean overlapDescription) {
-		if (dbInfo.getDbName() == null || dbInfo.getDbName().equals("") || dbInfo.getDbOrg() == null || dbInfo.getDbOrg().equals("")) {
+		if (dbInfo.getDbName() == null || dbInfo.getDbName().equals("") 
+				|| dbInfo.getDbOrg() == null || dbInfo.getDbOrg().equals("")) {
 			return;
 		}
 		List<DBInfo> lsDbInfos = queryLsDBInfo(dbInfo);

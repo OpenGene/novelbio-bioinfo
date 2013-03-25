@@ -1,6 +1,9 @@
 package com.novelbio.database.domain.geneanno;
 
+import org.springframework.data.mongodb.core.index.Indexed;
+
 public class UniGeneInfo extends AGeneInfo{
+	@Indexed(unique = true)
 	private String uniProtID;
 	
 	public String getUniProtID() {

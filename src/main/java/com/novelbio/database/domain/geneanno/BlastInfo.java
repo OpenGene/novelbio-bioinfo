@@ -7,7 +7,6 @@ import org.springframework.data.mongodb.core.index.Indexed;
 
 import com.novelbio.base.dataOperate.DateTime;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.service.servgeneanno.ServDBInfo;
 import com.novelbio.database.service.servgeneanno.ServDBInfoMongo;
 
 /**

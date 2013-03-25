@@ -29,7 +29,7 @@ public abstract class AGene2Go {
 	private Set<String> setEvid = new HashSet<String>();
 	private String qualifier;
 	private Set<String> setPubID = new HashSet<String>();
-	private Set<String> setDB = new HashSet<String>();
+	private Set<DBInfo> setDB = new HashSet<DBInfo>();
 
 
 	
@@ -57,20 +57,18 @@ public abstract class AGene2Go {
 	}
 	
 	public void setGOID(String GoID) {
-		if (GoID == null) {
+		if (GoID == null || GoID.trim().equals("")) {
 			logger.error("GOID未知");
 			return;
 		}
 		GoID = GoID.trim();
-		if (GoID == null || GoID.trim().equals("")) {
-			return;
-		}
 		try {
 			this.goID = servGo2Term.getHashGo2Term().get(GoID).getGoID();
 		} catch (Exception e) {
 			this.goID = GoID;
 		}
 	}
+	
 	public void setTaxID(int taxID) {
 		if (taxID == 0) {
 			return;
@@ -83,6 +81,7 @@ public abstract class AGene2Go {
 			logger.error("待拷贝的两个geneInfo中的taxID不一致，原taxID："+this.taxID + " 新taxID：" + taxID );
 		}
 	}
+	
 	public int getTaxID() {
 		return taxID;
 	}
@@ -98,7 +97,7 @@ public abstract class AGene2Go {
 		if (setEvid == null) {
 			setEvid = new HashSet<String>();
 		}
-		setEvid.add(evidence);
+		setEvid.add(evidence.trim());
 	}
 	
 	public String getQualifier() {
@@ -113,18 +112,6 @@ public abstract class AGene2Go {
 			return;
 		}
 		this.qualifier = qualifier;
-	}
-	/**
-	 * 根据Go2Term进行了校正
-	 * 没有就返回null
-	 * @return
-	 */
-	public String getGOTerm() {
-		try {
-			return servGo2Term.getHashGo2Term().get(goID).getGoTerm();
-		} catch (Exception e) {
-			return null;
-		}
 	}
 	
 	public Set<String> getReference() {
@@ -147,89 +134,39 @@ public abstract class AGene2Go {
 			return null;
 		}
 	}
-	/**
-	 * 可能会被sep分割
-	 * @return
-	 */
+
 	public Set<DBInfo> getDataBase() {
-		Set<DBInfo> setDbInfos = new HashSet<DBInfo>();
-		for (String dbInfoID : setDB) {
-			setDbInfos.add(servDBInfo.findOne(dbInfoID));
-		}
-		return setDbInfos;
+		return setDB;
 	}
+	
 	public void addDBName(String dbName) {
 		DBInfo dbInfo = servDBInfo.findByDBname(dbName);
 		if (dbInfo != null) {
-			setDB.add(dbInfo.getDbInfoID());
+			setDB.add(dbInfo);
 		}
 	}
 	
-	public void addDBID(String dbInfoID) {
-		this.setDB.add(dbInfoID);
+	public void addDBID(DBInfo dbInfo) {
+		this.setDB.add(dbInfo);
 	}
  
-	private void addReference(String reference) {
+	public void addReference(String reference) {
 		setPubID.add(reference);
-	}
-	
-	/**
-	 * true说明确实有新东西
-	 * 如果信息重复，就不需要升级，则返回false
-	 * @param gene2Go
-	 * @return
-	 */
-	public void copyInfo(AGene2Go gene2Go) {
-		for (DBInfo dbInfo : gene2Go.getDataBase()) {
-			addDBID(dbInfo.getDbInfoID());
-		}
-		for (String evidence : gene2Go.getEvidence()) {
-			addEvidence(evidence);
-		}
-		
-		setGeneUniID(gene2Go.getGeneUniId());
-		setGOID(gene2Go.getGOID());
-		setQualifier(gene2Go.getQualifier());
-		for (String pubmedID : gene2Go.getReference()) {
-			addReference(pubmedID);
-		}
-		setTaxID(gene2Go.getTaxID());
 	}
 
 	/**
 	 * 将新的gene2Go的信息往这个里面添加，如果true，说明需要update
 	 * false不需要update
-	 * 添加了Database，Qualifier，Reference和Evidence
+	 * 添加了Database，Qualifier，Reference和Evidence<br>
+	 * geneUniID、GOID、TaxID、Qualifier不添加。
 	 * @param gene2Go
 	 * @return
 	 */
 	public boolean addInfo(AGene2Go gene2Go) {
 		boolean update = false;
-		for (DBInfo dbInfo : gene2Go.getDataBase()) {
-			if (!setDB.contains(dbInfo.getDbInfoID())) {
-				setDB.add(dbInfo.getDbInfoID());
-				update = true;
-			}
-		}
-		for (String evidence : gene2Go.getEvidence()) {
-			if (!setEvid.contains(evidence)) {
-				setEvid.add(evidence);
-				update = true;
-			}
-		}
-		for (String pubmedID : gene2Go.getReference()) {
-			if (!setPubID.contains(pubmedID)) {
-				setPubID.add(pubmedID);
-				update = true;
-			}
-		}
-		setGeneUniID(gene2Go.getGeneUniId());
-		setGOID(gene2Go.getGOID());
-		setQualifier(gene2Go.getQualifier());
-		for (String pubmedID : gene2Go.getReference()) {
-			addReference(pubmedID);
-		}
-		setTaxID(gene2Go.getTaxID());
+		update = update || GeneInfo.addInfo(setDB, gene2Go.setDB);
+		update = update || GeneInfo.addInfo(setEvid, gene2Go.setEvid);
+		update = update || GeneInfo.addInfo(setPubID, gene2Go.setPubID);
 		return update;
 	}
 	
@@ -240,19 +177,16 @@ public abstract class AGene2Go {
 	 */
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
-		
 		if (obj == null) return false;
-		
 		if (getClass() != obj.getClass()) return false;
 		
 		AGene2Go otherObj = (AGene2Go)obj;
 		
-		if(getGeneUniId() == null || getGeneUniId().trim().equals("") || otherObj.getGeneUniId() == null || otherObj.getGeneUniId().trim().equals(""))
-		{
+		if(getGeneUniId() == null || getGeneUniId().trim().equals("") 
+				|| otherObj.getGeneUniId() == null || otherObj.getGeneUniId().trim().equals("")) {
 			return false;
 		}
-		
-		if (getGeneUniId().equals("0") || otherObj.getGeneUniId().equals("0") ) {
+		if (getGeneUniId().equals("0") || otherObj.getGeneUniId().equals("0")) {
 			return false;
 		}
 		
@@ -265,10 +199,5 @@ public abstract class AGene2Go {
 		String id = getGeneUniId()+getGOID();
 		return id.hashCode(); 
 	}
-	
-	
-	
-	
-	
 	
 }

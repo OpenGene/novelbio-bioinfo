@@ -1,6 +1,9 @@
 package com.novelbio.database.domain.geneanno;
 
+import org.springframework.data.mongodb.core.index.Indexed;
+
 public class GeneInfo extends AGeneInfo{
+	@Indexed(unique = true)
 	private long geneID;
 	
 	public long getGeneID() {
@@ -18,6 +21,5 @@ public class GeneInfo extends AGeneInfo{
 	public void setGeneUniID(String geneUniID) {
 		setGeneID(Long.parseLong(geneUniID));
 	}
-	
 	
 }

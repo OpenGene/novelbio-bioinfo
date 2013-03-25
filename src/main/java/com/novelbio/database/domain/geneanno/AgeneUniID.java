@@ -1,15 +1,12 @@
 package com.novelbio.database.domain.geneanno;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.mongorepo.geneanno.RepoNCBIID;
-import com.novelbio.database.service.SpringFactory;
 import com.novelbio.database.service.servgeneanno.ServDBInfo;
 import com.novelbio.database.service.servgeneanno.ServNCBIUniID;
 
@@ -38,14 +35,6 @@ public abstract class AgeneUniID {
 	ServDBInfo servDBInfo = new ServDBInfo();
 	@Transient
 	ServNCBIUniID servNCBIUniID = new ServNCBIUniID();
-
-	@Transient
-	@Autowired
-	RepoNCBIID repNCBIID;
-	
-	public AgeneUniID() {
-		repNCBIID = (RepoNCBIID)SpringFactory.getFactory().getBean("repNCBIID");
-	}
 	
 	public int getTaxID() {
 		return taxID;

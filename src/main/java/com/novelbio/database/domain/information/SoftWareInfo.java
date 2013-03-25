@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import org.apache.velocity.runtime.directive.Foreach;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -19,13 +22,11 @@ import com.novelbio.database.service.servinformation.ServSoftWareInfo;
  * 生物信息的软件以及执行路径
  * @author zong0jie
  */
+@Document(collection = "software")
 public class SoftWareInfo {
-	public static void main(String[] args) {
-//		SoftWareInfo.updateInfo("/home/zong0jie/桌面/SoftwareInfo_english.txt");
-		SoftWareInfo softWareInfo = new SoftWareInfo();
-		softWareInfo.setName("picard");
-		System.out.println(softWareInfo.getDescription());
-	}
+	@Id
+	String id;
+	@Indexed
 	private String softName;
 	private String descrip;
 	private String web = "";

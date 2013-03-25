@@ -1,15 +1,18 @@
 package com.novelbio.database.domain.geneanno;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
@@ -22,14 +25,13 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
 import com.novelbio.base.PathDetail;
-import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.database.service.servgeneanno.ServSpeciesFile;
-import com.sun.tools.javac.util.Name;
 
 /**
  * 保存某个物种的各种文件信息，譬如mapping位置等等
@@ -37,11 +39,14 @@ import com.sun.tools.javac.util.Name;
  * @author zong0jie
  *
  */
+@Document(collection="speciesfile")
+@CompoundIndexes({
+    @CompoundIndex(unique = true, name = "species_version_idx", def = "{'taxID': 1, 'version': -1}"),
+ })
 public class SpeciesFile {
-	private static Logger logger = Logger.getLogger(SpeciesFile.class);
-	/** GffDB排序用的，越靠前表示该DB越有用 */
-	private static Map<String, Integer> mapGffDB2Priority ;
-	
+	private static final Logger logger = Logger.getLogger(SpeciesFile.class);
+	@Id
+	String id;
 	int taxID = 0;
 	/** 文件版本 */
 	String version = "";
@@ -50,50 +55,33 @@ public class SpeciesFile {
 	/** 染色体所在文件夹、
 	 * 格式 regex SepSign.SEP_ID chromPath
 	 *  */
-	String chromPath = "";
+	String[] chromPath2Regx = new String[2];
 	/** 染色体的单文件序列 */
 	String chromSeq = "";
-	/** 保存不同mapping软件所对应的索引，格式<br>
-	 *  mappingSoftware SepSign.SEP_INFO  indexPath SepSign.SEP_ID mappingSoftware SepSign.SEP_INFO  indexPath
-	 *  */
-	String indexChr;
-	/** 各种gffgene文件放在一起，有ucsc，ncbi，tigr，tair等等
-	 * GffType SepSign.SEP_INFO Gfffile SepSign.SEP_ID GffType SepSign.SEP_INFO Gfffile
-	 *  */
-	String gffGeneFile;
+	/** 保存不同mapping软件所对应的索引
+	 */
+	Map<SoftWare, String> mapSoftware2IndexChrom = new HashMap<SoftWare, String>();
+
 	/** gff的repeat文件，从ucsc下载 */
 	String gffRepeatFile = "";
 	/** refseq文件 */
 	String refseqFile = "";
-	/** 保存不同mapping软件所对应的索引，格式<br>
-	 *  mappingSoftware SepSign.SEP_INFO  indexPath SepSign.SEP_ID mappingSoftware SepSign.SEP_INFO  indexPath
-	 *  */
-	String indexRefseq;
+	/** 保存不同mapping软件所对应的索引
+	 */
+	Map<SoftWare, String> mapSoftware2IndexRef = new HashMap<SoftWare, String>();
 	/** refseq中的NCRNA文件 */
 	String refseqNCfile = "";
-	
-	/** 染色体长度信息，包括总长度和每条染色体长度，格式<br>
-	 * chrID SepSign.SEP_INFO  chrLen SepSign.SEP_ID chrID SepSign.SEP_INFO  chrLen
+	/** key: chrID，为小写    value: chrLen */
+	private Map<String, Long> mapChrID2ChrLen = new LinkedHashMap<String, Long>();
+
+	/**
+	 * key: DBname, 为小写<br>
+	 * value: 0, GffType 1:GffFile
 	 */
-	private String chromInfo;
-	/** 从chrominfo转化而来 key: chrID，为小写    value: chrLen */
-	private HashMap<String, Integer> hashChrID2ChrLen = new LinkedHashMap<String, Integer>();
-	/** 从indexSeq转化而来, key: 软件名，为小写 value：路径 */
-	HashMap<String, String> mapSoftware2ChrIndexPath = new LinkedHashMap<String, String>();
-	/** 从indexRefseq转化而来, key: 软件名，为小写 value：路径 */
-	HashMap<String, String> mapSoftware2RefseqIndexPath = new LinkedHashMap<String, String>();
-	
-	/** 从gffGeneFile来，<br>
-	 * key：Gff来源的数据库 <br>
-	 * value：GFFDB + {@link SepSign#SEP_INFO} + GffType + {@link SepSign#SEP_INFO_SAMEDB} + gffFile */
-	Map<String, String> mapGffDB_2_GffTypeGffFile;
+	Map<String, String[]> mapDB2GffTypeAndFile = new HashMap<String, String[]>();
 	/** 用来将小写的DB转化为正常的DB，使得getDB获得的字符应该是正常的DB */
+	@Transient
 	Map<String, String> mapGffDB2DB;
-	
-	/** 是否已经查找过 */
-	boolean searched = false;
-	/** 查找的service层 */
-	ServSpeciesFile servSpeciesFile = new ServSpeciesFile();
 	
 	public void setTaxID(int taxID) {
 		this.taxID = taxID;
@@ -112,27 +100,20 @@ public class SpeciesFile {
 	 * key: chrID 小写
 	 * value： length
 	 */
-	public HashMap<String, Long> getMapChromInfo() {
-		HashMap<String, Long> mapChrID2Len = new HashMap<String, Long>(); 
-		String[] chrID2Lens = chromInfo.split(SepSign.SEP_ID);
-		for (String chrid2Len : chrID2Lens) {
-			String[] ss = chrid2Len.split(SepSign.SEP_INFO);
-			mapChrID2Len.put(ss[0].toLowerCase(), Long.parseLong(ss[1]));
-		}
-		return mapChrID2Len;
+	public Map<String, Long> getMapChromInfo() {
+		return mapChrID2ChrLen;
 	}
-	public void setChromPath(String chromPath) {
-		this.chromPath = chromPath;
+	public void setChromPath(String regx, String chromPath) {
+		chromPath2Regx[0] = chromPath;
+		chromPath2Regx[1] = regx;
 	}
 	/** 获得chromeFa的路径 */
 	public String getChromFaPath() {
-		String[] ss = chromPath.split(SepSign.SEP_ID);
-		return ss[1];
+		return chromPath2Regx[0];
 	}
 	/** 获得chromeFa的正则 */
 	public String getChromFaRegx() {
-		String[] ss = chromPath.split(SepSign.SEP_ID);
-		return ss[0];
+		return chromPath2Regx[1];
 	}
 	public void setChromSeq(String chromSeq) {
 		this.chromSeq = chromSeq;
@@ -155,11 +136,10 @@ public class SpeciesFile {
 	}
 
 	/**
-	 * 按照优先级返回gff文件，优先级由GffDB来决定
+	 * 给GUI的下拉框用的，一般用不到
 	 * @return GffFile
 	 */
 	public Map<String, String> getMapGffDB() {
-		filledMapGffDB2GffFile();
 		Map<String, String> mapStringDB = new LinkedHashMap<String, String>();
 		if (mapGffDB2DB.size() == 0) {
 			return mapStringDB;
@@ -169,9 +149,7 @@ public class SpeciesFile {
 		}
 		return mapStringDB;
 	}
-	public void setGffGeneFile(String gffGeneFile) {
-		this.gffGeneFile = gffGeneFile;
-	}
+	
 	/**
 	 * 获得某个Type的Gff文件，如果没有则返回null
 	 * @param gffDB 指定gffDB 如果为null，表示不指定，则返回默认
@@ -181,8 +159,7 @@ public class SpeciesFile {
 		if (gffDB == null) {
 			return getGffFile();
 		}
-		filledMapGffDB2GffFile();
-		return mapGffDB_2_GffTypeGffFile.get(gffDB.toLowerCase()).split(SepSign.SEP_INFO_SAMEDB)[1];
+		return mapDB2GffTypeAndFile.get(gffDB.toLowerCase())[1];
 	}
 	/**
 	 * 获得某个Type的GffType，如果没有则返回null
@@ -193,8 +170,7 @@ public class SpeciesFile {
 		if (gffDB == null) {
 			return getGffType();
 		}
-		filledMapGffDB2GffFile();
-		String gffType = mapGffDB_2_GffTypeGffFile.get(gffDB.toLowerCase()).split(SepSign.SEP_INFO_SAMEDB)[0];
+		String gffType = mapDB2GffTypeAndFile.get(gffDB.toLowerCase())[0];
 		return GffType.getType(gffType);
 	}
 	
@@ -227,20 +203,20 @@ public class SpeciesFile {
 	}
 	/**
 	 * 按照优先级返回gff文件，优先级由GFFDB来决定
-	 * @return string[2]
-	 * 0: gffDB
-	 * 1: GffType + {@link SepSign#SEP_INFO_SAMEDB} + GffFile
+	 * @return string[2]<br>
+	 * 0: gffDB<br>
+	 * 1: GffType<br>
+	 * 2: GffFile
 	 */
 	private String[] getGffDB2GffTypeFile() {
-		filledMapGffDB2GffFile();
-		if (mapGffDB_2_GffTypeGffFile.size() == 0) {
+		if (mapDB2GffTypeAndFile.size() == 0) {
 			return new String[]{null, null};
 		}
-		Entry<String, String> entyGffDB2File = mapGffDB_2_GffTypeGffFile.entrySet().iterator().next();
+		Entry<String, String[]> entyGffDB2File = mapDB2GffTypeAndFile.entrySet().iterator().next();
 		String gffDB = entyGffDB2File.getKey();
 		gffDB = mapGffDB2DB.get(gffDB);
-		String gffType2File = entyGffDB2File.getValue();
-		return new String[]{gffDB, gffType2File};
+		String[] gffType2File = entyGffDB2File.getValue();
+		return new String[]{gffDB, gffType2File[0], gffType2File[1]};
 	}
 	
 	public void setGffRepeatFile(String gffRepeatFile) {
@@ -251,59 +227,36 @@ public class SpeciesFile {
 		return gffRepeatFile;
 	}
 	
-	public void setIndexSeq(String indexSeq) {
-		this.indexChr = indexSeq;
-	}
 	/** 返回该mapping软件所对应的index的文件
 	 * 没有就新建一个
 	 * 格式如下：
 	 * softMapping.toString() + "_Chr_Index/"
 	 */
 	public String getIndexChromFa(SoftWare softMapping) {
-		filledHashIndexPath(indexChr, mapSoftware2ChrIndexPath);
-		String indexChromFa =  mapSoftware2ChrIndexPath.get(softMapping.toString());
+		String indexChromFa = mapSoftware2IndexChrom.get(softMapping);
 		if (!FileOperate.isFileExist(indexChromFa)) {
-			indexChromFa = creatAndGetSeqIndex(false, softMapping, getChromSeqFile(), mapSoftware2ChrIndexPath);
-			
-			String indexNew = addIndex(indexChr, softMapping, indexChromFa);
-			if (indexChr == null || !indexChr.equals(indexNew)) {
-				indexChr = indexNew;
-				update();
-			}
+			indexChromFa = creatAndGetSeqIndex(false, softMapping, getChromSeqFile(), mapSoftware2IndexChrom);
+			update();
 		}
 		return indexChromFa;
 	}
 	
-	public void setIndexRefseq(String indexRefseq) {
-		this.indexRefseq = indexRefseq;
+	public void addIndexRefseq(SoftWare softWare, String indexRefseq) {
+		mapSoftware2IndexRef.put(softWare, indexRefseq);
 	}
 	/** 返回该mapping软件所对应的index的文件
 	 * 没有就新建一个
 	 * 格式如下：softMapping.toString() + "_Ref_Index/"
 	 */
 	public String getIndexRefseq(SoftWare softMapping) {
-		filledHashIndexPath(indexRefseq, mapSoftware2RefseqIndexPath);
-		String indexRefseqThis =  mapSoftware2RefseqIndexPath.get(softMapping.toString());
+		String indexRefseqThis =  mapSoftware2IndexRef.get(softMapping);
 		if (!FileOperate.isFileExist(indexRefseqThis)) {
-			indexRefseqThis = creatAndGetSeqIndex(true, softMapping, getRefRNAFile(), mapSoftware2RefseqIndexPath);
-		
-			indexRefseq = addIndex(indexRefseq, softMapping, indexRefseqThis);
+			indexRefseqThis = creatAndGetSeqIndex(true, softMapping, getRefRNAFile(), mapSoftware2IndexRef);
 			update();
 		}
 		return indexRefseqThis;
 	}
-	private String addIndex(String indexOld, SoftWare softMapping, String indexThis) {
-		String addIndex = softMapping.toString() + SepSign.SEP_INFO + indexThis;
-		if (indexOld == null ||  !indexOld.contains(addIndex)) {
-			if (indexOld == null || indexOld.trim().equals("")) {
-				indexOld = addIndex;
-			}
-			else {
-				indexOld = indexOld + SepSign.SEP_ID + addIndex;
-			}
-		}
-		return indexOld;
-	}
+	
 	/**
 	 * 如果不存在该index，那么就新创建一个index并且保存入数据库 
 	 * @param refseq 是否为refseq
@@ -313,7 +266,7 @@ public class SpeciesFile {
 	 * @param mapSoftware2ChrIndexPath 该index所对应的hash表，如 mapSoftware2ChrIndexPath
 	 * @return softMapping.toString() + "_Ref_Index/" 或 softMapping.toString() + "_Chr_Index/"
 	 */
-	private String creatAndGetSeqIndex(Boolean refseq, SoftWare softMapping, String seqFile, HashMap<String, String> mapSoftware2ChrIndexPath) {
+	private String creatAndGetSeqIndex(Boolean refseq, SoftWare softMapping, String seqFile, Map<SoftWare, String> mapSoftware2ChrIndexPath) {
 		String indexChromFinal = null;
 		String IndexPath = null;
 		String seqName = null;
@@ -340,7 +293,7 @@ public class SpeciesFile {
 			logger.error("创建链接出错：" + seqFile + " " + indexChromFinal);
 			return null;
 		}
-		mapSoftware2ChrIndexPath.put(softMapping.toString(), indexChromFinal);
+		mapSoftware2ChrIndexPath.put(softMapping, indexChromFinal);
 		
 		return indexChromFinal;
 	}
@@ -450,76 +403,12 @@ public class SpeciesFile {
 		}
 		return rfamFile;
 	}
-	/** 用chromInfo填充染色体长度hash表 */
-	private void filledHashChrLen() {
-		if (chromInfo == null) return;
-		if (hashChrID2ChrLen.size() > 0) {
-			return;
-		}
-		String[] chrLen = chromInfo.split(SepSign.SEP_ID);
-		for (String string : chrLen) {
-			String[] chrLenDetail = string.split(SepSign.SEP_INFO);
-			hashChrID2ChrLen.put(chrLenDetail[0].toLowerCase(), Integer.parseInt(chrLenDetail[1]));
-		}
-	}
-	
-	/** 用indexSeq填充mapping所需路径hash表 
-	 * @param indexSeq 输入的indexSeq文本
-	 * @param mapSoftware2ChrIndexPath 待填充的hashSoft2Index key：软件名  value：路径
-	 * */
-	private void filledHashIndexPath(String indexSeq, HashMap<String, String> hashSoft2index) {
-		if (indexSeq == null || indexSeq.trim().equals("")) return;
-		if (hashSoft2index.size() > 0) {
-			return;
-		}
-		String[] indexInfo = indexSeq.split(SepSign.SEP_ID);
-		for (String string : indexInfo) {
-			String[] indexDetail = string.split(SepSign.SEP_INFO);
-			//简单的错误判断，就怕indexDetail是空的
-			if (indexDetail.length < 2) continue;
-			
-			hashSoft2index.put(indexDetail[0].toLowerCase(), indexDetail[1]);
-		}
-	}
-	/** 用gffGeneFile填充GffType2GffFile所需路径hash表 */
-	private void filledMapGffDB2GffFile() {
-		if (gffGeneFile == null) return;
-		if (mapGffDB_2_GffTypeGffFile != null) {
-			return;
-		}
-		mapGffDB_2_GffTypeGffFile = new LinkedHashMap<String, String>();
-		mapGffDB2DB = new LinkedHashMap<String, String>();
-		String[] gffType2File = gffGeneFile.split(SepSign.SEP_ID);
-		for (String string : gffType2File) {
-			String[] gffDetail = string.split(SepSign.SEP_INFO);
-			mapGffDB_2_GffTypeGffFile.put(gffDetail[0].toLowerCase(), gffDetail[1]);
-			mapGffDB2DB.put(gffDetail[0].toLowerCase(), gffDetail[0]);
-		}
-	}
 	
 	public void update() {
 		servSpeciesFile.update(this);
 	}
-	public HashMap<String, Integer> getHashChrID2ChrLen() {
-		setChromLenInfo();
-		filledHashChrLen();
-		return hashChrID2ChrLen;
-	}
-	/**
-	 * 设定长度
-	 */
-	private void setChromLenInfo() {
-		if (chromInfo != null && !chromInfo.equals("")) {
-			return;
-		}
-		SeqHash seqHash = new SeqHash(getChromFaPath(), getChromFaRegx());
-		ArrayList<String[]> lsChrLen = seqHash.getChrLengthInfo();
-		chromInfo = lsChrLen.get(0)[0] + SepSign.SEP_INFO + lsChrLen.get(0)[1];
-	
-		for (int i = 1; i < lsChrLen.size(); i++) {
-			String[] tmpLen = lsChrLen.get(i);
-			chromInfo = chromInfo + SepSign.SEP_ID + tmpLen[0] + SepSign.SEP_INFO + tmpLen[1];
-		}
+	public Map<String, Long> getHashChrID2ChrLen() {
+		return mapChrID2ChrLen;
 	}
 	/**
 	 * 仔仔细细的全部比较一遍，方便用于数据库升级
@@ -532,25 +421,25 @@ public class SpeciesFile {
 		
 		if (getClass() != obj.getClass()) return false;
 		SpeciesFile otherObj = (SpeciesFile)obj;
-		
-		if (ArrayOperate.compareString(this.chromInfo, otherObj.chromInfo)
-				&& ArrayOperate.compareString(this.chromPath, otherObj.chromPath)
-				&& ArrayOperate.compareString(this.chromSeq, otherObj.chromSeq)
-				&& ArrayOperate.compareString(this.gffGeneFile, otherObj.gffGeneFile)
-				&& ArrayOperate.compareString(this.gffRepeatFile, otherObj.gffRepeatFile)
-				&& ArrayOperate.compareString(this.indexChr, otherObj.indexChr)	
-				&& this.publishYear == otherObj.publishYear
-				&& ArrayOperate.compareString(this.refseqFile, otherObj.refseqFile)
-				&&ArrayOperate.compareString( this.refseqNCfile, otherObj.refseqNCfile)
-				&& this.taxID == otherObj.taxID
-				&& ArrayOperate.compareString(this.version, otherObj.version)
-				&& ArrayOperate.compareString(this.indexRefseq, otherObj.indexRefseq)
-				)
+		if (mapChrID2ChrLen.equals(otherObj.mapChrID2ChrLen)
+			&& mapDB2GffTypeAndFile.equals(otherObj.mapDB2GffTypeAndFile)
+			&& mapGffDB2DB.equals(otherObj.mapGffDB2DB)
+			&& mapSoftware2IndexChrom.equals(otherObj.mapSoftware2IndexChrom)
+			&& mapSoftware2IndexRef.equals(otherObj.mapSoftware2IndexRef)
+			&& ArrayOperate.compareString(chromPath2Regx[0], otherObj.chromPath2Regx[0])
+			&& ArrayOperate.compareString(chromPath2Regx[1], otherObj.chromPath2Regx[1])
+			&& ArrayOperate.compareString(chromSeq, otherObj.chromSeq)
+			&& ArrayOperate.compareString(gffRepeatFile, otherObj.gffRepeatFile)
+			&& this.publishYear == otherObj.publishYear
+			&& ArrayOperate.compareString(this.refseqFile, otherObj.refseqFile)
+			&&ArrayOperate.compareString( this.refseqNCfile, otherObj.refseqNCfile)
+			&& this.taxID == otherObj.taxID
+			&& ArrayOperate.compareString(this.version, otherObj.version)
+			)
 		{
 			return true;
 		}
 		return false;
-	
 	}
 	
 	/** 提取小RNA的一系列序列 */

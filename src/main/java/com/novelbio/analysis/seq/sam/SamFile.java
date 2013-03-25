@@ -73,13 +73,21 @@ public class SamFile implements AlignSeq {
 		setSamFileRead(samBamFile);
 	}
 	/** 创建新的sambam文件，根据文件名
-	 * 默认输入的序列没有经过排序
+	 * 根据samFileHeader来定义默认输入的序列是否已经经过排序。
 	 */
 	public SamFile(String samBamFile, SAMFileHeader samFileHeader) {
-		setSamFileNew(samFileHeader, samBamFile, false);
+		if (samFileHeader.getSortOrder() != SortOrder.unsorted) {
+			setSamFileNew(samFileHeader, samBamFile, false);
+		} else {
+			setSamFileNew(samFileHeader, samBamFile, true);
+		}
 		initialSoftWare();
 	}
-	/** 创建新的sambam文件，根据文件名 */
+	/** 创建新的sambam文件'
+	 * @param samBamFile
+	 * @param samFileHeader
+	 * @param preSorted 输入的文件是否已经排序了
+	 */
 	public SamFile(String samBamFile, SAMFileHeader samFileHeader, boolean preSorted) {
 		setSamFileNew(samFileHeader, samBamFile, preSorted);
 		initialSoftWare();
@@ -536,10 +544,14 @@ public class SamFile implements AlignSeq {
 		samWriter.writeToSamFileln(samRecord);
 	}
 	public void close() {
-		samReader.close();
+		if (samReader != null) {
+			samReader.close();
+		}
 		if (samWriter != null) {
 			samWriter.close();
 		}
+		samReader = new SamReader(getFileName());
+		read = true;
 	}
 
 	public static SamFile mergeBamFile(String outBamFile, Collection<SamFile> lsBamFile) {

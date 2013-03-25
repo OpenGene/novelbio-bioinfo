@@ -61,6 +61,10 @@ public class DBInfo {
 		txtRead.close();
 	}
 	
+	public int hashCode() {
+		return (SepSign.SEP_ID + dbName + SepSign.SEP_ID + dbOrg).hashCode();
+	}
+	
 	public boolean equals(Object object) {
 		if (this == object) return true;
 		if (object == null) return false;

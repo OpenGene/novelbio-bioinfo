@@ -2,23 +2,31 @@ package com.novelbio.database.domain.geneanno;
 
 import java.util.HashMap;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import com.novelbio.database.service.servgeneanno.ServTaxID;
 
 /**
  * 有关taxID的表格
  * @author zong0jie
  */
+@Document(collection = "taxinfo")
 public class TaxInfo {
 	ServTaxID servTaxID = new ServTaxID();
-	/** NCBI的物种ID */	
+	/** NCBI的物种ID */
+	@Id
 	private int taxID;
 	/** KEGG上的缩写 */
+	@Indexed
 	private String abbr;//缩写
 	/** 拉丁名 */
 	private String latin;//常用名
 	/** 常用名 */
 	private String comName;//常用名
 	/** 中文名 */
+	@Indexed
 	private String chnName;//中文名
 	/**
 	 * NCBI的物种ID
