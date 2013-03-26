@@ -46,7 +46,7 @@ public class AlignSamReading extends AlignSeqReading {
 		});
 	}
 	
-	public void reading() {
+	protected void reading() {
 		if (lsAlignments == null || lsAlignments.size() == 0) {
 			readAllLines();
 		} else {

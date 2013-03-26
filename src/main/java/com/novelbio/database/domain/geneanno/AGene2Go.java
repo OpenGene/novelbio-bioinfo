@@ -6,8 +6,6 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.springframework.data.mongodb.core.index.Indexed;
 
-import com.novelbio.database.DBAccIDSource;
-import com.novelbio.database.service.servgeneanno.ServDBInfo;
 import com.novelbio.database.service.servgeneanno.ServDBInfoMongo;
 import com.novelbio.database.service.servgeneanno.ServGo2Term;
 
@@ -21,7 +19,6 @@ public abstract class AGene2Go {
 	private static Logger logger = Logger.getLogger(AGene2Go.class);
 	public static final String EVIDENCE_IEA = "IEA";
 	
-	@Indexed
 	private String goID;
 	@Indexed
 	private int taxID;

@@ -950,7 +950,7 @@ public class GeneIDabs implements GeneIDInt {
 	 * @param taxID 物种ID，如果不知道就设置为0，只要不是symbol都可以为0
 	 * @return list-string[] 0: IDtype 1: geneUniID 2: taxID
 	 */
-	protected static ArrayList<AgeneUniID> getNCBIUniTax(String accID, int taxID) {
+	protected static List<AgeneUniID> getNCBIUniTax(String accID, int taxID) {
 		ArrayList<AgeneUniID> lsResult = new ArrayList<AgeneUniID>();
 		if (accID == null || accID.equals("")) {
 			return lsResult;
@@ -960,7 +960,7 @@ public class GeneIDabs implements GeneIDInt {
 		AgeneUniID ncbiid = AgeneUniID.creatAgeneUniID(GeneID.IDTYPE_GENEID);
 		ncbiid.setAccID(accID);
 		ncbiid.setTaxID(taxID);
-		ArrayList<? extends AgeneUniID> lsNcbiids = null;
+		List<? extends AgeneUniID> lsNcbiids = null;
 		// 先查ncbiid
 		try {
 			lsNcbiids = servGeneAnno.queryLsAgeneUniID(ncbiid);
@@ -975,7 +975,7 @@ public class GeneIDabs implements GeneIDInt {
 			AgeneUniID uniProtID = AgeneUniID.creatAgeneUniID(GeneID.IDTYPE_UNIID);
 			uniProtID.setAccID(accID);
 			uniProtID.setTaxID(taxID);
-			ArrayList<? extends AgeneUniID> lsUniProtIDs = servGeneAnno.queryLsAgeneUniID(uniProtID);
+			List<? extends AgeneUniID> lsUniProtIDs = servGeneAnno.queryLsAgeneUniID(uniProtID);
 			return getLsGeneIDinfo(lsUniProtIDs);
 		}
 	}
@@ -983,7 +983,7 @@ public class GeneIDabs implements GeneIDInt {
 	/** 指定一系列的NCBIID或者UniID，进行过滤，
 	 * 主要是过滤
 	 * 如果同一个物种得到了两个以上的accID，那么跳过数据库为DBINFO_SYNONYMS的项目 */
-	private static ArrayList<AgeneUniID> getLsGeneIDinfo(ArrayList<? extends AgeneUniID> lsNcbiids) {
+	private static List<AgeneUniID> getLsGeneIDinfo(List<? extends AgeneUniID> lsNcbiids) {
 		ArrayList<AgeneUniID> lsGeneIDinfo = new ArrayList<AgeneUniID>();
 		for (AgeneUniID geneUniID : lsNcbiids) {
 			if (geneUniID.getDataBaseInfo().getDbName().equals(DBAccIDSource.Synonyms.toString())) {

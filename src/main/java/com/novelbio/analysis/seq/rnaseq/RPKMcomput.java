@@ -20,6 +20,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.generalConf.TitleFormatNBC;
 
@@ -187,12 +188,12 @@ public class RPKMcomput implements AlignmentRecorder {
 	}
 	
 	/** 返回计算得到的rpm值 */
-	public ArrayList<String[]> getLsRPMs() {
+	public ArrayList<String[]> getLsTPMs() {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		List<String> lsConditions = ArrayOperate.getArrayListKey(mapCond2CountsNum);
 		lsConditions.add(0, TitleFormatNBC.GeneName.toString());
 		lsResult.add(lsConditions.toArray(new String[0]));
-		
+		lsConditions.remove(0);//除去第一个geneName这项，在这个之后的才是condition
 		for (String geneName : mapGeneName2Length.keySet()) {
 			ArrayList<String> lsTmpResult = new ArrayList<String>();
 			lsTmpResult.add(geneName);
@@ -213,7 +214,33 @@ public class RPKMcomput implements AlignmentRecorder {
 		}
 		return lsResult;
 	}
-	
+	/** 返回counts数量，可以拿来给DEseq继续做标准化 */
+	public ArrayList<String[]> getLsCounts() {
+		ArrayList<String[]> lsResult = new ArrayList<String[]>();
+		List<String> lsConditions = ArrayOperate.getArrayListKey(mapCond2CountsNum);
+		lsConditions.add(0, TitleFormatNBC.GeneName.toString());
+		lsResult.add(lsConditions.toArray(new String[0]));
+		lsConditions.remove(0);
+		for (String geneName : mapGeneName2Length.keySet()) {
+			ArrayList<String> lsTmpResult = new ArrayList<String>();
+			lsTmpResult.add(geneName);
+			Map<String, double[]> mapCond2Counts = mapGeneName2Cond2ReadsCounts.get(geneName);
+			for (String conditions : lsConditions) {
+				if (mapCond2Counts == null) {
+					lsTmpResult.add(0 + "");
+				} else {
+					double[] readsCounts = mapCond2Counts.get(conditions);
+					if (readsCounts == null) {
+						lsTmpResult.add(0 + "");
+					} else {
+						lsTmpResult.add((int)readsCounts[0]+ "");
+					}
+				}
+			}
+			lsResult.add(lsTmpResult.toArray(new String[0]));
+		}
+		return lsResult;
+	}	
 	/**
 	 * 返回计算得到的rpkm值
 	 * 其中allreadscount的单位是百万
@@ -245,4 +272,18 @@ public class RPKMcomput implements AlignmentRecorder {
 		}
 		return lsResult;
 	}
+	
+	/** 输入文件前缀，把所有结果写入该文件为前缀的文本中 */
+	public void writeToFile(String fileNamePrefix) {
+		TxtReadandWrite txtWriteTpm = new TxtReadandWrite(fileNamePrefix + "_TPM", true);
+		TxtReadandWrite txtWriteCounts = new TxtReadandWrite(fileNamePrefix + "_RawCounts", true);
+		TxtReadandWrite txtWriteRPKM = new TxtReadandWrite(fileNamePrefix + "_RPKM", true);
+		txtWriteCounts.ExcelWrite(getLsCounts());
+		txtWriteRPKM.ExcelWrite(getLsRPKMs());
+		txtWriteTpm.ExcelWrite(getLsTPMs());
+		txtWriteCounts.close();
+		txtWriteRPKM.close();
+		txtWriteTpm.close();
+	}
+	
 }

@@ -3,7 +3,10 @@ package com.novelbio.database.domain.geneanno;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.novelbio.base.dataOperate.DateTime;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -14,10 +17,13 @@ import com.novelbio.database.service.servgeneanno.ServDBInfoMongo;
  * @author zong0jie
  * 按照evalue从小到大排序
  */
+@Document(collection = "blastInfo")
+@CompoundIndexes({
+    @CompoundIndex(name = "queryID_queryTax_idx", def = "{'queryID': 1, 'queryTax': -1 , 'subjectTax': 1}")
+ })
 public class BlastInfo implements Comparable<BlastInfo> {
 	@Id
 	private String id;
-	@Indexed
 	protected String queryID;
 	@Indexed
 	protected String subjectID;
@@ -26,10 +32,11 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	protected String subjectDBID;
 	protected double identities=0;
 	protected double evalue = 100;
+	
+	protected int queryTax;
 	protected int subjectTax;
 	
 	protected String queryDBID;
-	protected int queryTax;
 	
 	private int subjectTab;
 	

@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.domain.geneanno.GOtype.GORelation;
@@ -16,6 +17,7 @@ import com.novelbio.database.service.servgeneanno.ServGo2Term;
  * @author zong0jie
  *
  */
+@Document(collection = "go2term")
 public class Go2Term implements Cloneable {
 	
 	private ServGo2Term servGo2Term = new ServGo2Term();

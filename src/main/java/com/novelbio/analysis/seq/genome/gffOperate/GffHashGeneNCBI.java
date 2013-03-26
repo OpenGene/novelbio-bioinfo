@@ -41,7 +41,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	/** 基因名字的正则，可以改成识别人类或者其他,这里是拟南芥，默认  NCBI的ID  */
 	protected static String regGeneName = "(?<=gene\\=)[\\w\\-%]+";
 	/**  可变剪接mRNA的正则，默认 NCBI的ID */
-	protected static String regSplitmRNA = "(?<=transcript_id\\=)[\\w\\-\\.]+";
+	protected static String regSplitmRNA = "(?<=transcript_id\\=)[\\w\\-\\.]+|(?<=stable_id\\=)[\\w\\-\\.]+";
 	/**  可变剪接mRNA的产物的正则，默认 NCBI的symbol */
 	protected static String regProduct = "(?<=product\\=)[\\w\\-%]+";
 	/** geneID的正则 */
@@ -57,11 +57,6 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	private static HashSet<String> setIsGene = new HashSet<String>();
 	/** gene类似名 */
 	private static HashSet<String> setIsChromosome = new HashSet<String>();
-		
-	public static void main(String[] args) {
-		GffChrAbs gffChrAbs = new GffChrAbs(10090);
-	
-	}
 	
 	/** "(?<=gene\\=)\\w+" */
 	PatternOperate patGeneName = null;
@@ -194,10 +189,10 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		   else if (ss[2].equals("CDS")) {
 			   addCDS(thisGeneIDandName, thisRnaIDandName, ss);
 		   }
-		   else if (ss[2].equals("STS") || ss[2].contains("gene_segment")) {
+		   else if (ss[2].equals("STS") || ss[2].contains("gene_segment") || ss[2].contains("contig")) {
 			   continue;
 		   } else {
-			   logger.error("出现未知exon：" +  ArrayOperate.cmbString(ss, "\t"));
+			   logger.debug("出现未知exon：" +  ArrayOperate.cmbString(ss, "\t"));
 		   }
 			  
 	   }
@@ -214,11 +209,11 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
     */
    private String getChrID(String[] ss) {
 	   String chrID;
-	   String regxChrID = "(?<=chromosome\\=)\\w+";
 	   try {
 		   if (ss[2].equals("region")) {
+			   String regxChrID = "(?<=chromosome\\=)\\w+";
 			   if (ss[8].contains("genome=genomic")) {
-				return null;
+				   return null;
 			   } else if (ss[8].contains("genome=mitochondrion")) {
 				   chrID = "chrm";
 			   } else if (ss[8].contains("genome=chloroplast")) {
@@ -234,11 +229,11 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 			   mapID2ChrID.put(ss[0], chrID);
 		   }
 	   } catch (Exception e) { }
-	   
-	   if (ss[0].toLowerCase().startsWith("chr")) {
-			return ss[0];
-		}
-	   return mapID2ChrID.get(ss[0]);
+	   String chrIDResult = mapID2ChrID.get(ss[0]);
+	   if (chrIDResult == null) {
+		   mapID2ChrID.put(ss[0], ss[0]);
+	   }
+	   return ss[0];
    }
    /** 当读取到gene时，就是读到了一个新的基因，那么新建一个基因
     * 并且返回string[2]<br>
@@ -378,10 +373,12 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
    
    private String getGeneName(String content) {
 	   String geneName = patGeneName.getPatFirst(content);//查找基因名字
+	   String geneID = null;
+	   String ID = patID.getPatFirst(content);
 	   if (geneName == null) {
+		   geneID = patGeneID.getPatFirst(content);
 		   if (database) {
 			   try {
-				   String geneID = patGeneID.getPatFirst(content);
 				   GeneID copedID  = new GeneID(GeneID.IDTYPE_GENEID, geneID, taxID);
 				   geneName = copedID.getAccID();
 			   } catch (Exception e) {
@@ -391,9 +388,19 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   }
 	   if (geneName == null) {
 		   geneName = patName.getPatFirst(content);
-	   } if (geneName == null) {
-		   logger.error("GffHashPlantGeneError: 文件  "+ getGffFilename() + "  在本行可能没有指定的基因ID  " +content);
-	   }
+		}
+		if (geneName == null) {
+			if (geneID == null && ID == null) {
+				logger.error("GffHashNCBI: 文件  " + getGffFilename() + "  在本行可能没有指定的基因ID  " + content);
+			} else {
+				if (geneID != null) {
+					geneName = geneID;
+				} else {
+					geneName = ID;
+				}
+				
+			}
+		} 
 	   return geneName;
    }
    /**
@@ -444,7 +451,9 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		   return;
 	   }
 	   if (taxID == 0 && numCopedIDsearch < 20) {
-		   	ArrayList<GeneID> lsCopedIDs = GeneID.createLsCopedID(geneName, taxID, false);
+		   ArrayList<GeneID> lsCopedIDs = null;
+//		   try {  lsCopedIDs = GeneID.createLsCopedID(geneName, taxID, false); } catch (Exception e) {   }
+		   
 		   	if (lsCopedIDs != null && lsCopedIDs.size() == 1) {
 		   		taxID = lsCopedIDs.get(0).getTaxID();
 		   	}

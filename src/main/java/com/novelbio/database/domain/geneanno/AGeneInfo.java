@@ -8,15 +8,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 
-import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.DBAccIDSource;
-import com.novelbio.database.mapper.geneanno.MapDBInfo;
-import com.novelbio.database.mongorepo.geneanno.RepoDBinfo;
-import com.sun.tools.internal.xjc.reader.xmlschema.bindinfo.BIConversion.Static;
 /**
  * ibatis在操作数据库时会自动使用类中的setter和getter给属性赋值
  * 如果不想用类中的这些方法，那么setter和getter的名字不要和属性一样就好

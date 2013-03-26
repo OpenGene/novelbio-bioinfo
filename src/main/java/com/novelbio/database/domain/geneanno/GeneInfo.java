@@ -1,7 +1,9 @@
 package com.novelbio.database.domain.geneanno;
 
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+@Document(collection = "geneinfo")
 public class GeneInfo extends AGeneInfo{
 	@Indexed(unique = true)
 	private long geneID;

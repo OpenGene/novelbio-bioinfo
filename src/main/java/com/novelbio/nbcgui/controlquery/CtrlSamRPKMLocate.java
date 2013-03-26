@@ -173,15 +173,22 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo>, Runnable {
 	
 	private void writeToFile() {
 		if (isCountRPKM) {
-			String outRPM = FileOperate.changeFileSuffix(resultPrefix, "_rpm", "txt");
+			String outTPM = FileOperate.changeFileSuffix(resultPrefix, "_tpm", "txt");
 			String outRPKM = FileOperate.changeFileSuffix(resultPrefix, "_rpkm", "txt");
+			String outCounts = FileOperate.changeFileSuffix(resultPrefix, "_Counts", "txt");
 			
-			List<String[]> lsRpm = rpkMcomput.getLsRPMs();
+			List<String[]> lsTpm = rpkMcomput.getLsTPMs();
 			List<String[]> lsRpkm = rpkMcomput.getLsRPKMs();
-			TxtReadandWrite txtWriteRpm = new TxtReadandWrite(outRPM, true);
-			txtWriteRpm.ExcelWrite(lsRpm);
+			List<String[]> lsCounts = rpkMcomput.getLsRPKMs();
+			TxtReadandWrite txtWriteRpm = new TxtReadandWrite(outTPM, true);
+			txtWriteRpm.ExcelWrite(lsTpm);
 			TxtReadandWrite txtWriteRpkm = new TxtReadandWrite(outRPKM, true);
 			txtWriteRpkm.ExcelWrite(lsRpkm);
+			TxtReadandWrite txtWriteCounts = new TxtReadandWrite(outCounts, true);
+			txtWriteRpkm.ExcelWrite(lsCounts);
+			txtWriteCounts.close();
+			txtWriteRpkm.close();
+			txtWriteRpm.close();
 		}
 		if (isLocStatistics) {
 			for (String prefix : setPrefix) {
@@ -189,6 +196,7 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo>, Runnable {
 				String outStatistics = FileOperate.changeFileSuffix(resultPrefix, "_" + prefix + "_GeneStructure", "txt");
 				TxtReadandWrite txtWrite = new TxtReadandWrite(outStatistics, true);
 				txtWrite.ExcelWrite(gffChrStatistics.getStatisticsResult());
+				txtWrite.close();
 			}
 		}
 		

@@ -81,7 +81,7 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 		reading();
 	}
 	
-	private void reading() {
+	protected void reading() {
 		readAllLines();
 		summaryRecorder();
 		alignSeqFile.close();
