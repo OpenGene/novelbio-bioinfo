@@ -10,7 +10,7 @@ import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
-import com.novelbio.base.dataOperate.DateTime;
+import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class CufflinksGTF {
@@ -157,7 +157,7 @@ public class CufflinksGTF {
 			samFile = CmdOperate.addQuot(lsSamFiles.get(0).getFileName() );
 		}
 		else {
-			mergeSamFile = outPathPrefix + "merge" + DateTime.getDateAndRandom() + ".bam";
+			mergeSamFile = outPathPrefix + "merge" + DateUtil.getDateAndRandom() + ".bam";
 			SamFile mergeFile = SamFile.mergeBamFile(mergeSamFile, lsSamFiles);
 			if (mergeFile != null) {
 				mergeSamFile = mergeFile.getFileName();
@@ -205,7 +205,7 @@ public class CufflinksGTF {
 			String path = FileOperate.getParentPathName(lsSamFiles.get(0)
 					.getFileName());
 			String outGTF = path + gffChrAbs.getSpecies().getAbbrName()
-					+ DateTime.getDateAndRandom() + ".GTF";
+					+ DateUtil.getDateAndRandom() + ".GTF";
 			gffChrAbs.getGffHashGene().writeToGTF(outGTF, "novelbio");
 			this.gtfFile = outGTF;
 		}

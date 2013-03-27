@@ -7,7 +7,7 @@ import junit.framework.Protectable;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqHash;
-import com.novelbio.base.dataOperate.DateTime;
+import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
@@ -84,7 +84,7 @@ public class MotifEmboss {
 	
 	private String[] scanMotif() {
 		setParam();
-		String suffix = "_" +DateTime.getDateAndRandom();
+		String suffix = "_" +DateUtil.getDateAndRandom();
 		String alignedMotif = writeAlignedMotif(suffix);
 		String seqfastaNeedScan = writeSeqfastaNeedScan(suffix);
 		String[] weightMatrixFile = generateWeightMatrix(alignedMotif, suffix);

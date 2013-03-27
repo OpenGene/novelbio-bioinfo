@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
 import com.novelbio.base.PathDetail;
-import com.novelbio.base.dataOperate.DateTime;
+import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -137,12 +137,12 @@ public class DiffExpDEGseq extends DiffExpAbs {
 	
 	@Override
 	protected void setOutScriptPath() {
-		outScript = workSpace + "DEGseq_" + DateTime.getDateAndRandom() + ".R";
+		outScript = workSpace + "DEGseq_" + DateUtil.getDateAndRandom() + ".R";
 	}
 	/** 输入文件写成txt文本 */
 	@Override
 	protected void setFileNameRawdata() {
-		fileNameRawdata = workSpace + "DEGseqGeneInfo_" + DateTime.getDateAndRandom() + ".txt";
+		fileNameRawdata = workSpace + "DEGseqGeneInfo_" + DateUtil.getDateAndRandom() + ".txt";
 	}
 	/**
 	 * 不需要提取专门的信息

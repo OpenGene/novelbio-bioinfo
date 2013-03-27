@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
-import com.novelbio.base.dataOperate.DateTime;
+import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.SepSign;
@@ -42,7 +42,7 @@ public class AffyNormalization {
 		workSpace = PathDetail.getRworkspaceTmp();
 	}
 	private void setOutScriptPath() {
-		outScript = PathDetail.getRworkspaceTmp() + "AffyNorm_" + DateTime.getDateAndRandom() + ".R";
+		outScript = PathDetail.getRworkspaceTmp() + "AffyNorm_" + DateUtil.getDateAndRandom() + ".R";
 	}
 	public void setLsRawCelFile(ArrayList<String> lsRawCelFile) {
 		this.lsRawCelFile = lsRawCelFile;

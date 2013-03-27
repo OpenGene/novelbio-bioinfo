@@ -23,7 +23,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.util.Random;
 
-import com.novelbio.base.dataOperate.DateTime;
+import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.test.ExamplePanel;
 
 import de.erichseifert.gral.data.DataSeries;
@@ -53,7 +53,7 @@ public class ConvolutionExample extends ExamplePanel {
 
         @SuppressWarnings("unchecked")
         public ConvolutionExample() {
-        	DateTime dateTime = new DateTime();
+        	DateUtil dateTime = new DateUtil();
         	dateTime.setStartTime();
                 // Generate 200 data points
                 DataTable data = new DataTable(Double.class, Double.class);

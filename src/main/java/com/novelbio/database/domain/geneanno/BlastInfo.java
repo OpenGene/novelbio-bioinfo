@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.novelbio.base.dataOperate.DateTime;
+import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.service.servgeneanno.ServDBInfoMongo;
 
@@ -55,7 +55,7 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	}
 	
 	private void setDate() {
-	     blastDate = DateTime.getDate(); //将日期时间格式化
+	     blastDate = DateUtil.getDate(); //将日期时间格式化
 	}
 	/**
 	 * 如果是要导入数据库，必须用该方式new一个<br>

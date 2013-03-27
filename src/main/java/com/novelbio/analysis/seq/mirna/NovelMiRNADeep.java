@@ -16,7 +16,7 @@ import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.mapping.MapBowtie;
 import com.novelbio.analysis.tools.compare.runCompSimple;
 import com.novelbio.base.cmd.CmdOperate;
-import com.novelbio.base.dataOperate.DateTime;
+import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
@@ -84,7 +84,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 		if (createReportFile) {
 			Random random = new Random();
 			int randomInt = (int)(random.nextDouble() * 1000);
-			reportFile = "report" + DateTime.getDateDetail() + randomInt + ".log";
+			reportFile = "report" + DateUtil.getDateDetail() + randomInt + ".log";
 		}
 		return reportFile;
 	}
@@ -150,7 +150,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 	 *  */
 	private String creatFastaMappingFile() {
 		if (fastaInput == null || fastaInput.trim().equals("")) {
-			fastaInput = FileOperate.changeFileSuffix(lsAlignSeqFile.iterator().next().getFileName(), "_Potential_DenoveMirna" + DateTime.getDateAndRandom(), "fasta");
+			fastaInput = FileOperate.changeFileSuffix(lsAlignSeqFile.iterator().next().getFileName(), "_Potential_DenoveMirna" + DateUtil.getDateAndRandom(), "fasta");
 			fastaInput = outPath + FileOperate.getFileName(fastaInput);
 		}
 		if (!FileOperate.isFileExist(fastaInput)) {

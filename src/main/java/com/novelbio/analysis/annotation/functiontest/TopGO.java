@@ -9,7 +9,7 @@ import java.util.LinkedHashMap;
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
-import com.novelbio.base.dataOperate.DateTime;
+import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.GOtype;
@@ -56,19 +56,19 @@ public class TopGO {
 		workSpace = PathDetail.getRworkspaceTmp();
 	}
 	private void setExeScriptPath() {
-		exeScript = PathDetail.getRworkspaceTmp() + "TopGO_" + DateTime.getDateAndRandom() + ".R";
+		exeScript = PathDetail.getRworkspaceTmp() + "TopGO_" + DateUtil.getDateAndRandom() + ".R";
 	}
 	/** 输入文件 */
 	private void setRawGoResultFile() {
-		this.rawGoResultFile = workSpace + "TopGOResult_" + DateTime.getDateAndRandom() + ".txt";
+		this.rawGoResultFile = workSpace + "TopGOResult_" + DateUtil.getDateAndRandom() + ".txt";
 	}
 	/** 输入文件 */
 	private void setGOInfoFile() {
-		this.GOInfoFile = workSpace + "TopGOInfo_" + DateTime.getDateAndRandom() + ".txt";
-		this.BGGeneFile = workSpace + "TopGOBG_" + DateTime.getDateAndRandom() + ".txt";
+		this.GOInfoFile = workSpace + "TopGOInfo_" + DateUtil.getDateAndRandom() + ".txt";
+		this.BGGeneFile = workSpace + "TopGOBG_" + DateUtil.getDateAndRandom() + ".txt";
 	}
 	private void setCalGeneIDFilePath() {
-		CalGeneIDFile = PathDetail.getRworkspaceTmp() + "TopGO_CalGeneIDFile" + DateTime.getDateAndRandom() + ".txt";
+		CalGeneIDFile = PathDetail.getRworkspaceTmp() + "TopGO_CalGeneIDFile" + DateUtil.getDateAndRandom() + ".txt";
 	}
 	
 	/** 待检验的基因 */

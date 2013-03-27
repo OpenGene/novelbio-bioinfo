@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
-import com.novelbio.base.dataOperate.DateTime;
+import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -120,13 +120,13 @@ public class DiffExpEdgeR extends DiffExpAbs {
 	
 	@Override
 	protected void setOutScriptPath() {
-		outScript = workSpace + "EdgeR_" + DateTime.getDateAndRandom() + ".R";
+		outScript = workSpace + "EdgeR_" + DateUtil.getDateAndRandom() + ".R";
 		
 	}
 
 	@Override
 	protected void setFileNameRawdata() {
-		fileNameRawdata = workSpace + "EdgeRGeneInfo_" + DateTime.getDateAndRandom() + ".txt";
+		fileNameRawdata = workSpace + "EdgeRGeneInfo_" + DateUtil.getDateAndRandom() + ".txt";
 	}
 
 	@Override

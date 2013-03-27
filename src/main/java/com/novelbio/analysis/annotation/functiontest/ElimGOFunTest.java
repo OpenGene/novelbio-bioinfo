@@ -1,7 +1,6 @@
 package com.novelbio.analysis.annotation.functiontest;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -10,8 +9,6 @@ import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.annotation.functiontest.TopGO.GoAlgorithm;
-import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.model.modgeneid.GeneID;
 
 public class ElimGOFunTest extends NovelGOFunTest{

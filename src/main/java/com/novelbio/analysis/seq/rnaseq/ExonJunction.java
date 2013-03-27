@@ -24,7 +24,7 @@ import com.novelbio.analysis.seq.sam.AlignSamReading;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.AlignSeqReading;
 import com.novelbio.analysis.seq.sam.SamMapReads;
-import com.novelbio.base.dataOperate.DateTime;
+import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -414,7 +414,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	
 	/** 将表达信息加入统计 */
 	private void addMapReadsInfo(String condition, MapReadsAbs mapReads) {
-		DateTime dateTime = new DateTime();
+		DateUtil dateTime = new DateUtil();
 		dateTime.setStartTime();
 		int num = 0;
 		for (ArrayList<ExonSplicingTest> lsExonTest : lsSplicingTests) {

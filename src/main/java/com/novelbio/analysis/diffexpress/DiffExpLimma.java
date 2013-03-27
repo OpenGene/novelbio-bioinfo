@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.novelbio.base.PathDetail;
-import com.novelbio.base.dataOperate.DateTime;
+import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -49,12 +49,12 @@ public class DiffExpLimma extends DiffExpAbs{
 	
 	@Override
 	protected void setOutScriptPath() {
-		outScript = workSpace + "Limma_" + DateTime.getDateAndRandom() + ".R";
+		outScript = workSpace + "Limma_" + DateUtil.getDateAndRandom() + ".R";
 	}
 
 	@Override
 	protected void setFileNameRawdata() {
-		fileNameRawdata = workSpace + "LimmaGeneInfo_" + DateTime.getDateAndRandom() + ".txt";
+		fileNameRawdata = workSpace + "LimmaGeneInfo_" + DateUtil.getDateAndRandom() + ".txt";
 	}
 	@Override
 	protected void generateScript() {

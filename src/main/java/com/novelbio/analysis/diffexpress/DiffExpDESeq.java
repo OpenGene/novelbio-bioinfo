@@ -10,7 +10,7 @@ import java.util.Map.Entry;
 
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
-import com.novelbio.base.dataOperate.DateTime;
+import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -41,10 +41,10 @@ public class DiffExpDESeq extends DiffExpAbs {
 		return isRepeatExp;
 	}
 	protected void setOutScriptPath() {
-		outScript = workSpace + "deseq_"+ DateTime.getDateAndRandom() +".R";
+		outScript = workSpace + "deseq_"+ DateUtil.getDateAndRandom() +".R";
 	}
 	protected void setFileNameRawdata() {
-		fileNameRawdata = workSpace + "deseqGeneInfo_"+ DateTime.getDateAndRandom() + ".txt";
+		fileNameRawdata = workSpace + "deseqGeneInfo_"+ DateUtil.getDateAndRandom() + ".txt";
 	}
 	protected void generateScript() {
 		TxtReadandWrite txtReadScript = new TxtReadandWrite(rawScript, false);

@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.base.cmd.CmdOperate;
-import com.novelbio.base.dataOperate.DateTime;
+import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
@@ -361,7 +361,7 @@ public class MapTophat implements MapRNA{
 		}
 		if (gffChrAbs != null && gffChrAbs.getGffHashGene() != null) {
 			String path = FileOperate.getParentPathName(lsLeftFq.get(0).getReadFileName());
-			String outGTF = path + FileOperate.getFileNameSep(gffChrAbs.getGffHashGene().getGffFilename())[0] + DateTime.getDateAndRandom() + ".GTF";
+			String outGTF = path + FileOperate.getFileNameSep(gffChrAbs.getGffHashGene().getGffFilename())[0] + DateUtil.getDateAndRandom() + ".GTF";
 			gffChrAbs.getGffHashGene().writeToGTF(outGTF, "novelbio");
 			this.gtfFile = outGTF;
 			generateGtfFile = true;
