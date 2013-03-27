@@ -63,9 +63,11 @@ public class PixivGetPageMidUrl {
 	public ArrayList<PixivGetPictureUrlToDownload> getLsToDownloadUrl() {
 		try {
 			if(!getPictures()) {
+				webFetch.readResponse();
 				return null;
 			}
 		} catch (ParserException e) {
+			webFetch.readResponse();
 			return null;
 		}
 		return getLsPixivGetPictureUrlToDownloads();

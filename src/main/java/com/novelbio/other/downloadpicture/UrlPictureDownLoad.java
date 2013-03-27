@@ -7,6 +7,9 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import javax.imageio.ImageIO;
@@ -88,47 +91,23 @@ public class UrlPictureDownLoad implements Callable<UrlPictureDownLoad> {
     private boolean download(HttpFetch webFetch, String savePath) throws URISyntaxException, IOException {
     	String picuri = "";
     	boolean sucess = false;
+    	LinkedList<String> lsSuffix = new LinkedList<String>();
+    	lsSuffix.add("png"); lsSuffix.add("gif"); lsSuffix.add("jpeg");
     	while (webFetch.download(savePath)) {
     		if (FileOperate.getFileSize(savePath) > 2) {
     			sucess = true;
     			break;
 			} else {
 				FileOperate.delFile(savePath);
-				picuri = FileOperate.changeFileSuffix(pictureUrl.toString(), "", "png");
+				if (lsSuffix.isEmpty()) {
+					break;
+				}
+				String suffix = lsSuffix.poll();
+				picuri = FileOperate.changeFileSuffix(pictureUrl.toString(), "", suffix);
 				pictureUrl = new URI(picuri);
 				webFetch.setUri(pictureUrl);
 				webFetch.query();
-				savePath = FileOperate.changeFileSuffix(savePath, "", "png");
-				while (webFetch.download(savePath)) {
-					if (FileOperate.getFileSize(savePath) > 20) {
-						sucess = true;
-						break;
-					} else {
-						FileOperate.delFile(savePath);
-						picuri = FileOperate.changeFileSuffix(pictureUrl.toString(), "", "gif");
-						pictureUrl = new URI(picuri);
-						webFetch.setUri(pictureUrl);
-						webFetch.query();
-						savePath = FileOperate.changeFileSuffix(savePath, "", "gif");
-						while (webFetch.download(savePath)) {
-							if (FileOperate.getFileSize(savePath) > 2) {
-								sucess = true;
-								break;
-							} else {
-								FileOperate.delFile(savePath);
-								picuri = FileOperate.changeFileSuffix(pictureUrl.toString(), "", "jpeg");
-								pictureUrl = new URI(picuri);
-								webFetch.setUri(pictureUrl);
-								webFetch.query();
-								savePath = FileOperate.changeFileSuffix(savePath, "", "jpeg");
-								while (webFetch.download(savePath)) {
-									sucess = true;
-									break;
-								}
-							}
-						}
-					}
-				}
+				savePath = FileOperate.changeFileSuffix(savePath, "", suffix);
 			}
 		}
     	if (sucess && savePath.endsWith(".png")) {

@@ -1,7 +1,9 @@
 package com.novelbio.other.downloadpicture;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -12,6 +14,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.FormatSeq;
 import com.novelbio.base.dataOperate.HttpFetch;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.other.downloadpicture.donmai.DonmaiOperate;
 import com.novelbio.other.downloadpicture.pixiv.PixivGetPathExistPic;
@@ -21,41 +24,42 @@ import com.novelbio.other.downloadpicture.pixiv.PixivOperate;
 public abstract class DownloadOperate {
 	private static Logger logger = Logger.getLogger(DownloadOperate.class);
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
+		PixivOperate pixivOperate = new PixivOperate();
+		pixivOperate.getcookies();
+		Set<String> setUrl = new LinkedHashSet<String>();
+		TxtReadandWrite txtReadUrl = new TxtReadandWrite("D:/zongjie/Desktop/pixiv.txt", false);
+		for (String urlID : txtReadUrl.readlines()) {
+			urlID = urlID.trim();
+			if (urlID.equals("")) {
+				continue;
+			}
+			setUrl.add(urlID);
+		}
+		for (String urlID : setUrl) {
+			pixivOperate.setUrlAuther(urlID);
+			pixivOperate.setSavePath("D:\\Picture\\pixiv");
+			pixivOperate.run();
+//			HttpFetch.ressetCM();
+			Thread.sleep(100);
+			logger.error("finished url:" + urlID);
+		}
+		txtReadUrl.close();
+		
 //		PixivOperate pixivOperate = new PixivOperate();
 //		pixivOperate.getcookies();
-//		Set<String> setUrl = new LinkedHashSet<String>();
-//		TxtReadandWrite txtReadUrl = new TxtReadandWrite("/home/zong0jie/图片/My Pictures/picture/pixivurl.txt", false);
-//		for (String urlID : txtReadUrl.readlines()) {
-//			urlID = urlID.trim();
-//			if (urlID.equals("")) {
-//				continue;
-//			}
-//			setUrl.add(urlID);
-//		}
-//		for (String urlID : setUrl) {			
-//			pixivOperate.setUrlAuther(urlID);
-//			pixivOperate.setSavePath("/home/zong0jie/图片/My Pictures/picture/pixivTest");
-//			pixivOperate.running();
-//			Thread.sleep(100);
-//			logger.error("finished url:" + urlID);
-//		}
-		
-		
-//		PixivOperate pixivOperate = new PixivOperate();
-//		pixivOperate.getcookies();
-//		pixivOperate.setUrlAuther("403278");
+//		pixivOperate.setUrlAuther("1641495");
 //		pixivOperate.setDownloadFast(true);
 //		pixivOperate.setSavePath("D:/Picture/pixiv");
 //		pixivOperate.run();
 		
 		
-		DonmaiOperate donmaiOperate = new DonmaiOperate();
-		donmaiOperate.getcookies();
-		donmaiOperate.setUrlAuther("kishida_mel");
-		donmaiOperate.setDownloadFast(true);
-		donmaiOperate.setSavePath("D:/Picture/donmai");
-		donmaiOperate.run();
+//		DonmaiOperate donmaiOperate = new DonmaiOperate();
+//		donmaiOperate.getcookies();
+//		donmaiOperate.setUrlAuther("cunnilingus");
+//		donmaiOperate.setDownloadFast(true);
+//		donmaiOperate.setSavePath("D:/Picture/donmai");
+//		donmaiOperate.run();
 		
 	}
 	

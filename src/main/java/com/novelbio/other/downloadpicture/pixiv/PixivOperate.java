@@ -95,9 +95,10 @@ public class PixivOperate extends DownloadOperate{
 			autherName = getAuterName(nodeAutherName) + "_" + autherID;
 			savePath = FileOperate.addSep(savePath) + UrlPictureDownLoad.generateoutName(autherName) + FileOperate.getSepPath();
 			allPages = (int) Math.ceil((double)allPictureNum/20);
+			webFetch.readResponse();
 			return true;
 		} catch (Exception e) {
-			// TODO: handle exception
+			webFetch.readResponse();
 		}
 		return false;
 	}

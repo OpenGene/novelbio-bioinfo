@@ -35,7 +35,7 @@ public class DonmaiOperate extends DownloadOperate {
 	@Override
 	public void setUrlAuther(String urlAutherid) {
 		this.urlAuther = "http://www.donmai.us/post/index?tags=" + urlAutherid;
-		autherID = urlAutherid + "";
+		autherID = urlAutherid + "";    
 	}
 
 	@Override
