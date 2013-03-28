@@ -21,8 +21,8 @@ import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.AlignSamReading;
-import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.AlignSeqReading;
+import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamMapReads;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -280,7 +280,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 //				samFileReading.setLsAlignments(lsDifIsoGene);
 				samFileReading.setRunGetInfo(runGetInfo);
 				samFileReading.addAlignmentRecorder(tophatJunction);
-				samFileReading.reading();
+				samFileReading.run();
 				samFileReadingLast = samFileReading;
 
 			}
@@ -386,7 +386,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 					mapReadsAbs = getSamMapReads(samFileReading);
 				} else {
 					mapReadsAbs = getMapReads(samFileReading);
-					samFileReading.reading();
+					samFileReading.run();
 				}
 				addMapReadsInfo(condition, mapReadsAbs);
 			}

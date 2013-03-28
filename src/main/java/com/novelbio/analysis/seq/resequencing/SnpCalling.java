@@ -2,7 +2,6 @@ package com.novelbio.analysis.seq.resequencing;
 
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 
@@ -10,7 +9,6 @@ import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
-import com.novelbio.database.domain.geneanno.SepSign;
 /** 单个pileup文件的snp calling */
 public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 	private static Logger logger = Logger.getLogger(SnpCalling.class);

@@ -11,11 +11,10 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
-import com.novelbio.database.domain.geneanno.SepSign;
 
 /** 指定一系列的snp位点，以及多个pileup文件，获得这些位点的实际reads数量 */
 public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {

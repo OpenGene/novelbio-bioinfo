@@ -6,7 +6,6 @@ import java.util.List;
 
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.base.dataStructure.Alignment;
-import com.novelbio.nbcgui.GuiAnnoInfo;
 
 /**
  * 这里面可以设定一系列的监听器，然后完成一次mapping，统计多个信息的目的
@@ -62,25 +61,13 @@ public class AlignSamReading extends AlignSeqReading {
 	
 	private void readSelectLines() {
 		SamFile samFile = (SamFile)super.alignSeqFile;
-		GuiAnnoInfo guiAnnoInfo;
 		for (Alignment alignment : lsAlignments) {
 			for (AlignRecord samRecord : samFile.readLinesOverlap(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs())) {
-				for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {
-					alignmentRecorder.addAlignRecord(samRecord);
-				}
 				suspendCheck();
 				if (suspendFlag) {
 					break;
 				}
-				
-				if (readLines%5000 == 0) {
-					guiAnnoInfo = new GuiAnnoInfo();
-					guiAnnoInfo.setNum(readLines);
-					guiAnnoInfo.setDouble(readByte);
-					guiAnnoInfo.setInfo("reading " + readLines + " lines");
-					setRunInfo(guiAnnoInfo);
-				}
-				samRecord = null;
+				addOneSeq(samRecord);
 			}
 		}
 	}

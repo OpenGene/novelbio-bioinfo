@@ -2,18 +2,17 @@ package com.novelbio.analysis.seq.genome.gffOperate;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster;
+import com.novelbio.base.SepSign;
 import com.novelbio.base.dataStructure.listOperate.ListAbs;
-import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
+import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
-import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modgeneid.GeneType;
 

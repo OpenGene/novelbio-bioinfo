@@ -1,9 +1,6 @@
 package com.novelbio.analysis.seq.genome.gffOperate.exoncluster;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -14,11 +11,10 @@ import java.util.Map.Entry;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.rnaseq.TophatJunction;
+import com.novelbio.base.SepSign;
 import com.novelbio.base.dataStructure.Alignment;
-import com.novelbio.database.domain.geneanno.SepSign;
 
 //TODO 需要返回该差异剪接位点所对应的两类Iso
 public abstract class SpliceTypePredict {

@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 
 import com.novelbio.base.PathDetail;
+import com.novelbio.base.SepSign;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
@@ -13,7 +14,6 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 public class DiffExpEdgeR extends DiffExpAbs {

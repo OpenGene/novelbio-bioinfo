@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.database.domain.geneanno.SepSign;
+import com.novelbio.base.SepSign;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
 

@@ -87,29 +87,32 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 		alignSeqFile.close();
 	}
 	protected void readAllLines() {
-		GuiAnnoInfo guiAnnoInfo;
 		for (AlignRecord samRecord : alignSeqFile.readLines()) {
-			for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {
-				if (alignmentRecorder == null) {
-					continue;
-				}
-				alignmentRecorder.addAlignRecord(samRecord);
-			}
 			suspendCheck();
 			if (suspendFlag) {
 				break;
 			}
-			readByte += samRecord.toString().getBytes().length;
-			readLines++;
-			if (readLines%200 == 0) {
-				guiAnnoInfo = new GuiAnnoInfo();
-				guiAnnoInfo.setNum(readLines);
-				guiAnnoInfo.setDouble(readByte);
-				guiAnnoInfo.setInfo("reading " + readLines + " lines");
-				setRunInfo(guiAnnoInfo);
-			}
-			samRecord = null;
+			addOneSeq(samRecord);
 		}
+	}
+	
+	protected void addOneSeq(AlignRecord samRecord) {
+		for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {
+			if (alignmentRecorder == null) {
+				continue;
+			}
+			alignmentRecorder.addAlignRecord(samRecord);
+		}
+		readByte += samRecord.toString().getBytes().length;
+		readLines++;
+		if (readLines%5000 == 0) {
+			GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
+			guiAnnoInfo.setNum(readLines);
+			guiAnnoInfo.setDouble(readByte);
+			guiAnnoInfo.setInfo("reading " + readLines + " lines");
+			setRunInfo(guiAnnoInfo);
+		}
+		samRecord = null;
 	}
 	
 	protected void summaryRecorder() {

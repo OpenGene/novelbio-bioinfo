@@ -11,9 +11,9 @@ import com.google.common.collect.HashMultimap;
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
+import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.multithread.RunProcess;
-import com.novelbio.database.domain.geneanno.SepSign;
 
 public class TophatJunction extends RunProcess<Integer> implements AlignmentRecorder {
 	ArrayListMultimap<String, String> mapCond2JuncFile = ArrayListMultimap.create();

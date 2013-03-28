@@ -10,8 +10,8 @@ import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.base.SepSign;
 import com.novelbio.base.dataStructure.Alignment;
-import com.novelbio.database.domain.geneanno.SepSign;
 
 public class PredictCassette extends SpliceTypePredict {
 	HashSet<GffGeneIsoInfo> setExistExonIso;
