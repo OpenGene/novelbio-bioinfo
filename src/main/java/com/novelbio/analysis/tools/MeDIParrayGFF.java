@@ -9,7 +9,6 @@ import java.util.Map;
 import org.apache.commons.math.stat.StatUtils;
 import org.apache.commons.math.stat.inference.TestUtils;
 
-import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -23,8 +22,10 @@ public class MeDIParrayGFF {
 	public static final int SMALL_TAIL = 200;
 	public static final int TWO_TAIL = 100;
 	
-	int colStart = 3;
-	int colEnd = 4;
+	/** 从0开始 */
+	int colChrID = 0;
+	int colStart = 2;
+	int colEnd = 3;
 	
 	List<String> lsMedipGffFile = new ArrayList<String>();
 	List<String> lsMedipGffFileRunning;
@@ -43,17 +44,20 @@ public class MeDIParrayGFF {
 	double pvalue = 0.05;
 	int probNum = 3;
 	
+	/** 从0开始 */
 	int colRatio = -1;
 	int colPvalue = -1;
+	
 	public static void main(String[] args) {
 		MeDIParrayGFF meDIParrayGFF = new MeDIParrayGFF();
 		meDIParrayGFF.lsMedipGffFileRunning = new ArrayList<String>();
 		meDIParrayGFF.lsMedipGffFileRunning.add("/media/winF/NBC/Project/fmf_methylation/SignalMap_GFF_files/ams/428496A01.gff");
-		meDIParrayGFF.lsMedipGffFileRunning.add("/media/winF/NBC/Project/fmf_methylation/SignalMap_GFF_files/ams/428496A02.gff");
+//		meDIParrayGFF.lsMedipGffFileRunning.add("/media/winF/NBC/Project/fmf_methylation/SignalMap_GFF_files/ams/428496A02.gff");
 		meDIParrayGFF.lsMedipGffFileRunning.add("/media/winF/NBC/Project/fmf_methylation/SignalMap_GFF_files/ams/428496A03.gff");
-		meDIParrayGFF.setOutFile("/media/winF/NBC/Project/fmf_methylation/SignalMap_GFF_files/Result");
-		meDIParrayGFF.setColSample1(new int[]{1});
-		meDIParrayGFF.setColSample2(new int[]{2});
+		meDIParrayGFF.setOutFile("/media/winF/NBC/Project/fmf_methylation/SignalMap_GFF_files/3vs1");
+		meDIParrayGFF.setProbNum(4);
+		meDIParrayGFF.setColSample1(new int[]{2});
+		meDIParrayGFF.setColSample2(new int[]{1});
 		meDIParrayGFF.calculateResult();
 
 	}
@@ -61,7 +65,10 @@ public class MeDIParrayGFF {
 	public void setOutFile(String outFile) {
 		this.outFile = outFile;
 	}
-	
+	/** 连续几根探针甲基化就算差异，默认是3 */
+	public void setProbNum(int probNum) {
+		this.probNum = probNum;
+	}
 	public void setColSample1(int[] colSample1) {
 		for (int i = 0; i < colSample1.length; i++) {
 			colSample1[i] = 4 + colSample1[i];
@@ -153,11 +160,17 @@ public class MeDIParrayGFF {
 		TxtReadandWrite txtOutAll = new TxtReadandWrite(FileOperate.changeFileSuffix(outFile, "_All", "txt"), true);
 		txtOutAll.writefileln(lsCombine);
 		txtOutAll.close();
+		
 		ArrayList<String[]> lsResult = getCombProbe(lsCombine);
 		lsResult.add(0, getLsTitle().toArray(new String[0]));
 		TxtReadandWrite txtOutFilter = new TxtReadandWrite(FileOperate.changeFileSuffix(outFile, "_Filter", "txt"), true);
 		txtOutFilter.ExcelWrite(lsResult);
 		txtOutFilter.close();
+		
+		ArrayList<String[]> lsFilterCombine = copeFinal(lsResult);
+		TxtReadandWrite txtOutCombine = new TxtReadandWrite(FileOperate.changeFileSuffix(outFile, "_Combine", "txt"), true);
+		txtOutCombine.ExcelWrite(lsFilterCombine);
+		txtOutCombine.close();
 	}
 	
 	/**
@@ -211,10 +224,10 @@ public class MeDIParrayGFF {
 		lsTitle.addAll(lsPrefix);
 		if (isPvalueCal) {
 			lsTitle.add("Pvalue");
-			colPvalue = lsTitle.size();
+			colPvalue = lsTitle.size() - 1;
 		}
 		lsTitle.add("Ratio");
-		colRatio = lsTitle.size();
+		colRatio = lsTitle.size() - 1;
 		lsTitle.add("TreatMedian");
 		lsTitle.add("ColMedian");
 		return lsTitle;
@@ -280,7 +293,6 @@ public class MeDIParrayGFF {
 	 * @throws Exception
 	 */
 	private ArrayList<String[]> getCombProbe(ArrayList<ArrayList<String>> lsInput) {
-		colRatio--;colStart--;colEnd--; colPvalue--;
 //		txtOut.writefileln("chrID\tMATCH_INDEX\tprobID\tstart\tstop\tscore");
 		ArrayList<String[]> lsTmpOut = new ArrayList<String[]>();
 		ArrayList<String[]> lsFinal = new ArrayList<String[]>();
@@ -291,21 +303,19 @@ public class MeDIParrayGFF {
 				i++;
 				continue;
 			}
-			if ((Double.parseDouble(lsTmpResult.get(colRatio)) > fcDown && Double.parseDouble(lsTmpResult.get(colRatio)) < fcUp &&
-					(!isPvalueCal || (colPvalue >= 0 && Double.parseDouble(lsTmpResult.get(colPvalue)) <= pvalue))
+			if ((Double.parseDouble(lsTmpResult.get(colRatio)) > fcDown && Double.parseDouble(lsTmpResult.get(colRatio)) < fcUp ||
+					(isPvalueCal && (colPvalue >= 0 && Double.parseDouble(lsTmpResult.get(colPvalue)) > pvalue))
 					)//当出现不满足探针时
 					||
 					(int)Double.parseDouble(lsTmpResult.get(colStart)) - lastEnd > 2000//不连续探针
 					||//连续探针的强度不一致，一会儿上调一会儿下调
-					(lsTmpResult.size() > 0 && Double.parseDouble(lsTmpResult.get(colRatio)) >= fcUp 
-							&& lsTmpOut.size() > 0 && Double.parseDouble(lsTmpOut.get(lsTmpOut.size()-1)[colRatio]) <= fcDown 
-							&& (!isPvalueCal || (colPvalue >= 0 && Double.parseDouble(lsTmpResult.get(colPvalue)) <= pvalue)))
+					(Double.parseDouble(lsTmpResult.get(colRatio)) >= fcUp 
+							&& lsTmpOut.size() > 0 && Double.parseDouble(lsTmpOut.get(lsTmpOut.size()-1)[colRatio]) <= fcDown)
 					||
-					(lsTmpResult.size() > 0 && Double.parseDouble(lsTmpResult.get(colRatio)) <= fcDown 
-							&& lsTmpOut.size() > 0 &&  Double.parseDouble(lsTmpOut.get(lsTmpOut.size()-1)[colRatio]) >= fcUp 
-							&& (!isPvalueCal || (colPvalue >= 0 && Double.parseDouble(lsTmpResult.get(colPvalue)) <= pvalue)))
+					(Double.parseDouble(lsTmpResult.get(colRatio)) <= fcDown 
+							&& lsTmpOut.size() > 0 &&  Double.parseDouble(lsTmpOut.get(lsTmpOut.size()-1)[colRatio]) >= fcUp)
 					) {
-						if (lsTmpResult.size() >= probNum) {
+						if (lsTmpOut.size() >= probNum) {
 							for (String[] strings : lsTmpOut) {
 								lsFinal.add(strings);
 							}
@@ -328,15 +338,13 @@ public class MeDIParrayGFF {
 	 * @param inFile
 	 * @param outFile
 	 */
-	public static void copeFinalFile(String inFile, String outFile, int colChrID, int colStart, int colEnd) {
-		colChrID--; colStart--; colEnd--;
-		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(inFile, 1);
+	private ArrayList<String[]> copeFinal(ArrayList<String[]> lsInput) {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		//加上title
-		lsResult.add(lsInfo.get(0));
+		lsResult.add(lsInput.get(0));
 		ArrayList<String[]> lsTmp = new ArrayList<String[]>();
-		for (int i = 1; i < lsInfo.size(); i++) {
-			String[] tmp = lsInfo.get(i);
+		for (int i = 1; i < lsInput.size(); i++) {
+			String[] tmp = lsInput.get(i);
 			//如果本探针和上一个探针只相差2000bp
 			if (lsTmp.size() == 0) {
 				lsTmp.add(tmp);
@@ -350,10 +358,12 @@ public class MeDIParrayGFF {
 				lsTmp.add(tmp);
 			}
 		}
-		lsResult.add(getMedProb(lsTmp));
-		TxtReadandWrite txtOut = new TxtReadandWrite(outFile, true);
-		txtOut.ExcelWrite(lsResult);
-		txtOut.close();
+		//在结束的时候最后总结一下
+		if (lsTmp.size() > 0) {
+			lsResult.add(getMedProb(lsTmp));
+		}
+	
+		return lsResult;
 	}
 	
 	private static String[] getMedProb(ArrayList<String[]> lsProbs) {
