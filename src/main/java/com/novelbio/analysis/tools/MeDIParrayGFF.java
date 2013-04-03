@@ -49,17 +49,67 @@ public class MeDIParrayGFF {
 	int colPvalue = -1;
 	
 	public static void main(String[] args) {
+		String path = "/media/winF/NBC/Project/Methylation_WZYXY/ratio/ams";
+		
 		MeDIParrayGFF meDIParrayGFF = new MeDIParrayGFF();
 		meDIParrayGFF.lsMedipGffFileRunning = new ArrayList<String>();
-		meDIParrayGFF.lsMedipGffFileRunning.add("/media/winF/NBC/Project/fmf_methylation/SignalMap_GFF_files/ams/428496A01.gff");
+		
+		meDIParrayGFF.lsMedipGffFileRunning.add(path + "533487A01.gff.gff");
+		meDIParrayGFF.lsMedipGffFileRunning.add(path + "533487A02.gff..gff");
+		meDIParrayGFF.lsMedipGffFileRunning.add(path + "533487A03.gff..gff");
+		meDIParrayGFF.lsMedipGffFileRunning.add(path + "555423A01.gff..gff");
+		meDIParrayGFF.lsMedipGffFileRunning.add(path + "555423A02.gff..gff");
+		meDIParrayGFF.lsMedipGffFileRunning.add(path + "555423A03.gff..gff");
+		meDIParrayGFF.lsMedipGffFileRunning.add(path + "555448A01.gff..gff");
+		meDIParrayGFF.lsMedipGffFileRunning.add(path + "555448A02.gff..gff");
+		meDIParrayGFF.lsMedipGffFileRunning.add(path + "555448A03.gff..gff");
+
+//		meDIParrayGFF.lsMedipGffFileRunning = new ArrayList<String>();
+//		meDIParrayGFF.lsMedipGffFileRunning.add("/media/winF/NBC/Project/fmf_methylation/SignalMap_GFF_files/ams/428496A01.gff");
 //		meDIParrayGFF.lsMedipGffFileRunning.add("/media/winF/NBC/Project/fmf_methylation/SignalMap_GFF_files/ams/428496A02.gff");
-		meDIParrayGFF.lsMedipGffFileRunning.add("/media/winF/NBC/Project/fmf_methylation/SignalMap_GFF_files/ams/428496A03.gff");
-		meDIParrayGFF.setOutFile("/media/winF/NBC/Project/fmf_methylation/SignalMap_GFF_files/3vs1");
-		meDIParrayGFF.setProbNum(4);
+//		meDIParrayGFF.lsMedipGffFileRunning.add("/media/winF/NBC/Project/fmf_methylation/SignalMap_GFF_files/ams/428496A03.gff");
+		meDIParrayGFF.setOutFile("/media/winF/NBC/Project/Methylation_WZYXY/ratio/");
+		meDIParrayGFF.setProbNum(3);
 		meDIParrayGFF.setColSample1(new int[]{2});
 		meDIParrayGFF.setColSample2(new int[]{1});
-		meDIParrayGFF.calculateResult();
+//		meDIParrayGFF.calculateResult();
+		
+		meDIParrayGFF.preCope();
 
+	}
+	
+	public void initial() {
+		colChrID = 0;
+		colStart = 2;
+		colEnd = 3;
+		
+		lsMedipGffFile = new ArrayList<String>();
+		lsMedipGffFileRunning = null;
+		lsPrefix = null;
+		tTestType = 200;
+		/** 是否计算了pvalue，如果不符合t检验的条件，就不会进行t检验 */
+		isPvalueCal = true;
+		
+		outFile = "";;
+		
+		colSample1 = null;
+		colSample2 = null;
+		
+		fcUp = 2;
+		fcDown = 0.5;
+		pvalue = 0.05;
+		probNum = 3;
+		
+		colRatio = -1;
+		colPvalue = -1;
+	}
+	
+	/**
+	 * 设定gffRatio文件
+	 * @param gffRatioFile
+	 */
+	public void addRawGffRatioFile(String gffRatioFile) {
+		lsMedipGffFile.add(gffRatioFile);
 	}
 	
 	public void setOutFile(String outFile) {
@@ -81,34 +131,8 @@ public class MeDIParrayGFF {
 		}
 		this.colSample2 = colSample2;
 	}
-	/**
-	 * 将一个文件夹中所有的Gff文件整理为MEME可识别的文件
-	 * 
-	 * @param ratiogff
-	 * @param mirandaResultOut
-	 * @throws Exception
-	 */
-	private static void formatPath(String filePath) {
-		ArrayList<String[]> lsFile = FileOperate.getFoldFileName(filePath, "*", "gff");
-		for (String[] strings : lsFile) {
-			String fileName = FileOperate.addSep(filePath) + strings[0] + "." + strings[1];
-			String fileOut = FileOperate.changeFileSuffix(fileName, "_coped", null);
-			try {
-				format(fileName, fileOut);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	/**
-	 * 需要的是Nembergin的GffRatio方法
-	 * 
-	 * @param lsMedipGffFile
-	 */
-	public void setLsMedipGffRatio(List<String> lsMedipGffFile) {
-		this.lsMedipGffFile = lsMedipGffFile;
-	}
-
+	
+	/** 将文件进行预处理 */
 	protected void preCope() {
 		lsMedipGffFileRunning = new ArrayList<String>();
 		for (String gffFile : lsMedipGffFile) {
