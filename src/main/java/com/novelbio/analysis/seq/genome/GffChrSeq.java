@@ -135,7 +135,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		}
 		booGetIsoSeq = true;
 	}
-	public void setGetSeqIsoGenomWide() {
+	public void setGetSeqGenomWide() {
 		getGenomWide = true;
 	}
 	/**

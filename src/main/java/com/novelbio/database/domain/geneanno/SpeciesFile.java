@@ -350,7 +350,7 @@ public class SpeciesFile {
 			gffChrSeq.setGetAAseq(false);
 			gffChrSeq.setGetAllIso(true);
 			gffChrSeq.setGetIntron(false);
-			gffChrSeq.setGetSeqIsoGenomWide();
+			gffChrSeq.setGetSeqGenomWide();
 			gffChrSeq.setOutPutFile(refseqFile);
 			gffChrSeq.run();
 			update();
@@ -382,7 +382,7 @@ public class SpeciesFile {
 				gffChrSeq.setGetAAseq(false);
 				gffChrSeq.setGetAllIso(false);
 				gffChrSeq.setIsGetOnlyMRNA(true);
-				gffChrSeq.setGetSeqIsoGenomWide();
+				gffChrSeq.setGetSeqGenomWide();
 				gffChrSeq.setOutPutFile(refseqLongestIsoFile);
 				gffChrSeq.run();
 			} catch (Exception e) {

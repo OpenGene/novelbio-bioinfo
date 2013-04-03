@@ -1,13 +1,8 @@
 package com.novelbio.analysis.seq.mirna;
 
-import java.util.ArrayList;
-
-import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.GffChrSeq;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
-import com.novelbio.base.cmd.CmdOperate;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public abstract class MiRNAtargetAbs {
@@ -66,7 +61,7 @@ public abstract class MiRNAtargetAbs {
 		gffChrSeq.setOutPutFile(inputUTR3seq);
 		gffChrSeq.setGeneStructure(GeneStructure.UTR3);
 		gffChrSeq.setGetAllIso(false);
-		gffChrSeq.setGetSeqIsoGenomWide();
+		gffChrSeq.setGetSeqGenomWide();
 		//提取序列
 		gffChrSeq.run();
 		return inputUTR3seq;

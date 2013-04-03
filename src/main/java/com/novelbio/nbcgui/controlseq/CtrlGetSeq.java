@@ -2,7 +2,6 @@ package com.novelbio.nbcgui.controlseq;
 
 import java.util.ArrayList;
 
-import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.GffChrSeq;
@@ -74,7 +73,7 @@ public class CtrlGetSeq implements RunGetInfo<GffChrSeq.GffChrSeqProcessInfo>{
 	 * @param lsListGffName
 	 */
 	public void setGetSeqIsoGenomWide() {
-		gffChrSeq.setGetSeqIsoGenomWide();
+		gffChrSeq.setGetSeqGenomWide();
 	}
 	/**
 	 * 输入位点提取序列
