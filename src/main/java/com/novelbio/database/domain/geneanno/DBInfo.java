@@ -4,7 +4,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.service.servgeneanno.ServDBInfoMongo;
+import com.novelbio.database.service.servgeneanno.ManageDBInfo;
 
 public class DBInfo {
 	@Id
@@ -44,7 +44,7 @@ public class DBInfo {
 	}
 	
 	public static void updateDBinfo(String dbInfoFile) {
-		ServDBInfoMongo servDBInfo = new ServDBInfoMongo();
+		ManageDBInfo servDBInfo = new ManageDBInfo();
 		TxtReadandWrite txtRead = new TxtReadandWrite(dbInfoFile, false);
 		for (String content : txtRead.readlines()) {
 			content = content.trim();

@@ -9,7 +9,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.domain.geneanno.Go2Term;
-import com.novelbio.database.service.servgeneanno.ServGo2Term;
+import com.novelbio.database.service.servgeneanno.ManageGo2Term;
 
 public abstract class GOInfoAbs{
 
@@ -123,7 +123,7 @@ public abstract class GOInfoAbs{
 	 * @return
 	 */
 	public static Go2Term getGO2Term(String GOID) {
-		ServGo2Term servGo2Term = new ServGo2Term();
+		ManageGo2Term servGo2Term = new ManageGo2Term();
 		return servGo2Term.queryGo2Term(GOID);
 	}
 	

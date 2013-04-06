@@ -11,24 +11,25 @@ import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.mapper.geneanno.MapGo2Term;
 import com.novelbio.database.mapper.geneanno.MapGoIDconvert;
 import com.novelbio.database.mapper.geneanno.MapNCBIID;
+import com.novelbio.database.mongorepo.geneanno.RepoGo2Term;
 import com.novelbio.database.service.SpringFactory;
+//TODO 测试mongodb是否能对set中的元素建立索引，如果可以，则go2term可以设定为setQueryGOID和GOID两个
+//并且只需要对setQueryGOID建立索引j
 @Service
-public class ServGo2Term implements MapGo2Term{
+public class ManageGo2Term implements MapGo2Term{
 	@Inject
-	private MapGo2Term mapGo2Term;
-	@Inject
-	private MapGoIDconvert mapGoIDconvert;
+	private RepoGo2Term repoGo2Term;
+	
 	/**
 	 * 存储Go2Term的信息
 	 * key:Go
 	 * value:GoInfo
 	 * 0:QueryGoID,1:GoID,2:GoTerm 3:GoFunction
 	 */
-	static HashMap<String, Go2Term> hashGo2Term = new HashMap<String, Go2Term>();
+	static HashMap<String, Go2Term> mapGo2Term = new HashMap<String, Go2Term>();
 	
-	public ServGo2Term() {
-		mapGo2Term = (MapGo2Term) SpringFactory.getFactory().getBean("mapGo2Term");
-		mapGoIDconvert = (MapGoIDconvert) SpringFactory.getFactory().getBean("mapGoIDconvert");
+	public ManageGo2Term() {
+		repoGo2Term = (RepoGo2Term) SpringFactory.getFactory().getBean("repoGo2Term");
 	}
 	/**
 	 * 全部读入内存后，hash访问。第一次速度慢，后面效率很高
@@ -100,7 +101,7 @@ public class ServGo2Term implements MapGo2Term{
 	 * 注意最好能给定queryGOID
 	 */
 	@Override
-	public Go2Term queryGo2Term(Go2Term queryGo2Term) {
+	public Go2Term queryGo2Term(String goID) {
 		//如果没有GOID
 		if ( (queryGo2Term.getGoID() == null || queryGo2Term.getGoID().equals("")) 
 				&& queryGo2Term.getGoIDQuery() != null && !queryGo2Term.getGoIDQuery().equals("")
@@ -119,36 +120,7 @@ public class ServGo2Term implements MapGo2Term{
 		go2Term2.setGoIDQuery(queryGo2Term.getGoIDQuery());
 		return go2Term2;
 	}
-	/**
-	 * 根据需要获取GO信息
-	 * 其中如果没有设定goID和goIDquery的话，就会返回全部信息，<br>
-	 * <b>注意这些信息中没有GOIDquery</b>
-	 * @param queryGo2Term
-	 * @return
-	 */
-	@Override
-	public ArrayList<Go2Term> queryLsGo2Term(Go2Term queryGo2Term) {
-		//如果queryGOID和GOID中有一项存在，则返回相对应的信息
-		if (queryGo2Term.getGoIDQuery() != null && queryGo2Term.getGoIDQuery().equals("")
-			||
-			queryGo2Term.getGoID() != null && queryGo2Term.getGoID().equals("")
-				) {
-			if ( (queryGo2Term.getGoID() == null || queryGo2Term.getGoID().equals("")) 
-					&& queryGo2Term.getGoIDQuery() != null && !queryGo2Term.getGoIDQuery().equals("")
-					) {
-				queryGo2Term.setGoID(mapGoIDconvert.queryGoIDconvert(queryGo2Term).getGoID());
-			}
-			ArrayList<Go2Term> lsGo2Terms = mapGo2Term.queryLsGo2Term(queryGo2Term);
-			if (queryGo2Term.getGoIDQuery() != null && !queryGo2Term.getGoIDQuery().equals("")  ) {
-				for (Go2Term go2Term : lsGo2Terms) {
-					go2Term.setGoIDQuery(queryGo2Term.getGoIDQuery());
-				}
-			}
-			return lsGo2Terms;
-		}
-		//如果都不存在，则返回全部信息
-		return mapGo2Term.queryLsGo2Term(queryGo2Term);
- 	}
+	
 	/**
 	 * 根据需要获取GO信息
 	 * 其中如果没有设定goID和goIDquery的话，就会返回全部信息，<br>
@@ -158,30 +130,15 @@ public class ServGo2Term implements MapGo2Term{
 	 */
 	public HashMap<String, Go2Term> getHashGo2Term() {
 		Go2Term queryGo2Term = new Go2Term();
-		if (hashGo2Term.size() > 0) {
-			return hashGo2Term;
+		if (mapGo2Term.size() > 0) {
+			return mapGo2Term;
 		}
-		HashMap<String, Go2Term> hashGOIDconvert = new HashMap<String, Go2Term>();
-		ArrayList<Go2Term> lsAllConvert = mapGoIDconvert.queryLsGoIDconvert(queryGo2Term);
-		ArrayList<Go2Term> lsAllGo2Term = mapGo2Term.queryLsGo2Term(queryGo2Term);
-
+		List<Go2Term> lsAllGo2Term = repoGo2Term.findAll();
 		for (Go2Term go2Term : lsAllGo2Term) {
-			hashGOIDconvert.put(go2Term.getGoID(), go2Term);
+			mapGo2Term.put(go2Term.getGoIDQuery(), go2Term);
+			mapGo2Term.put(go2Term.getGoID(), go2Term);
 		}
-		for (Go2Term go2Term : lsAllConvert) {
-			hashGo2Term.put(go2Term.getGoIDQuery(), hashGOIDconvert.get(go2Term.getGoID()));
-		}
-		return hashGo2Term;
+		return mapGo2Term;
 	}
-
-	@Override
-	public void insertGo2Term(Go2Term Go2Term) {
-		mapGo2Term.insertGo2Term(Go2Term);
-	}
-
-	@Override
-	public void updateGo2Term(Go2Term Go2Term) {
-		mapGo2Term.updateGo2Term(Go2Term);
-	}
-
+	
 }

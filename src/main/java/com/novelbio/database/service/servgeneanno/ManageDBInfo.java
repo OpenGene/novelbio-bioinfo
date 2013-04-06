@@ -6,12 +6,12 @@ import com.novelbio.database.domain.geneanno.DBInfo;
 import com.novelbio.database.mongorepo.geneanno.RepoDBinfo;
 import com.novelbio.database.service.SpringFactory;
 
-public class ServDBInfoMongo {
+public class ManageDBInfo {
 
 	@Inject
 	RepoDBinfo repoDBinfo;
 	
-	public ServDBInfoMongo() {
+	public ManageDBInfo() {
 		repoDBinfo = (RepoDBinfo)SpringFactory.getFactory().getBean("repoDBinfo");
 	}
 	

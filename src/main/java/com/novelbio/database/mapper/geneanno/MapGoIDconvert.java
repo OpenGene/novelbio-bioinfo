@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.mapper.MapperSql;
 
-public interface MapGoIDconvert extends MapperSql{
+public interface MapGoIDconvert extends MapperSql {
 
 
 
