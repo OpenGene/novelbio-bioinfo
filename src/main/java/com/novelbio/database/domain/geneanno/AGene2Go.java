@@ -6,8 +6,8 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.springframework.data.mongodb.core.index.Indexed;
 
-import com.novelbio.database.service.servgeneanno.ServDBInfoMongo;
-import com.novelbio.database.service.servgeneanno.ServGo2Term;
+import com.novelbio.database.service.servgeneanno.ManageDBInfo;
+import com.novelbio.database.service.servgeneanno.ManageGo2Term;
 
 /**
  * 重写了equal和hash
@@ -27,25 +27,22 @@ public abstract class AGene2Go {
 	private String qualifier;
 	private Set<String> setPubID = new HashSet<String>();
 	private Set<DBInfo> setDB = new HashSet<DBInfo>();
-
-
 	
-	private ServGo2Term servGo2Term = new ServGo2Term();
-	private ServDBInfoMongo servDBInfo = new ServDBInfoMongo();
+	ManageGo2Term manageGo2Term = new ManageGo2Term();
+	ManageDBInfo manageDBInfo = new ManageDBInfo();
 	
-
 	public abstract String getGeneUniId();
 	public abstract void setGeneUniID(String geneUniID);
 	
 	public String getGOID() {
 		Go2Term go2Term = getGO2Term();
 		if (go2Term == null) {
-			return null;
+			return goID;
 		}
 		return go2Term.getGoID();
 	}
 	public Go2Term getGO2Term() {
-		Go2Term go2Term = servGo2Term.getHashGo2Term().get(goID);
+		Go2Term go2Term = manageGo2Term.getHashGo2Term().get(goID);
 		if (go2Term == null) {
 			logger.error("出现未知GOID：" + goID);
 			return null;
@@ -60,23 +57,17 @@ public abstract class AGene2Go {
 		}
 		GoID = GoID.trim();
 		try {
-			this.goID = servGo2Term.getHashGo2Term().get(GoID).getGoID();
+			this.goID = manageGo2Term.getHashGo2Term().get(GoID).getGoID();
 		} catch (Exception e) {
 			this.goID = GoID;
 		}
 	}
 	
 	public void setTaxID(int taxID) {
-		if (taxID == 0) {
+		if (taxID <= 0) {
 			return;
 		}
-		if (this.taxID == 0) {
-			this.taxID = taxID;
-			return;
-		}
-		if (this.taxID != taxID) {
-			logger.error("待拷贝的两个geneInfo中的taxID不一致，原taxID："+this.taxID + " 新taxID：" + taxID );
-		}
+		this.taxID = taxID;
 	}
 	
 	public int getTaxID() {
@@ -91,15 +82,13 @@ public abstract class AGene2Go {
 		if (evidence == null || evidence.trim().equals("")) {
 			return;
 		}
-		if (setEvid == null) {
-			setEvid = new HashSet<String>();
-		}
 		setEvid.add(evidence.trim());
 	}
 	
 	public String getQualifier() {
 		return qualifier;
 	}
+	
 	public void setQualifier(String qualifier) {
 		if (qualifier == null) {
 			return;
@@ -125,7 +114,7 @@ public abstract class AGene2Go {
 	 */
 	public GOtype getFunction() {
 		try {
-			return servGo2Term.getHashGo2Term().get(goID).getGOtype();
+			return manageGo2Term.getHashGo2Term().get(goID).getGOtype();
 		} catch (Exception e) {
 			logger.error("出现未知GOID：" + goID);
 			return null;
@@ -137,7 +126,7 @@ public abstract class AGene2Go {
 	}
 	
 	public void addDBName(String dbName) {
-		DBInfo dbInfo = servDBInfo.findByDBname(dbName);
+		DBInfo dbInfo = manageDBInfo.findByDBname(dbName);
 		if (dbInfo != null) {
 			setDB.add(dbInfo);
 		}

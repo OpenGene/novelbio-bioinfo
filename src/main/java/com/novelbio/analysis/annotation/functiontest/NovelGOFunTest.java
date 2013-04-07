@@ -11,12 +11,12 @@ import org.apache.log4j.Logger;
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.service.servgeneanno.ServGo2Term;
+import com.novelbio.database.service.servgeneanno.ManageGo2Term;
 
 public class NovelGOFunTest extends FunctionTest {
 	private static final Logger logger = Logger.getLogger(NovelGOFunTest.class); 
 	GOtype GoType = GOtype.BP;
-	ServGo2Term servGo2Term = new ServGo2Term();
+	ManageGo2Term servGo2Term = new ManageGo2Term();
 	
 	/**
 	 * 如果大于0，则做层级GO

@@ -26,6 +26,7 @@ public abstract class DownloadOperate {
 	
 	public static void main(String[] args) throws InterruptedException {
 		PixivOperate pixivOperate = new PixivOperate();
+		pixivOperate.setDownloadFast(true);
 		pixivOperate.getcookies();
 		Set<String> setUrl = new LinkedHashSet<String>();
 		TxtReadandWrite txtReadUrl = new TxtReadandWrite("D:/zongjie/Desktop/pixiv.txt", false);
@@ -159,7 +160,13 @@ class DownloadPictureFile {
 	 */
 	public void setLsPrepareDownloads(ArrayList<? extends GetPictureUrl> lsPrepareDownloads) {
 		for (GetPictureUrl pixivGetPictureUrlToDownload : lsPrepareDownloads) {
-			Future<GetPictureUrl> result = executorGetUrlPrepToDownload.submit(pixivGetPictureUrlToDownload);
+			Future<GetPictureUrl> result = null;
+			try {
+				result = executorGetUrlPrepToDownload.submit(pixivGetPictureUrlToDownload);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
 			lsUrlPrepToDownLoad.add(result);
 		}
 	}

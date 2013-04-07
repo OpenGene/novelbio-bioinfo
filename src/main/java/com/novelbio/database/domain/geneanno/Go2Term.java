@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.domain.geneanno.GOtype.GORelation;
-import com.novelbio.database.service.servgeneanno.ServGo2Term;
+import com.novelbio.database.service.servgeneanno.ManageGo2Term;
 
 /**
  * 重写了equal和hashcode
@@ -20,7 +20,7 @@ import com.novelbio.database.service.servgeneanno.ServGo2Term;
 @Document(collection = "go2term")
 public class Go2Term implements Cloneable {
 	
-	private ServGo2Term servGo2Term = new ServGo2Term();
+	private ManageGo2Term servGo2Term = new ManageGo2Term();
 	@Indexed(unique = true)
     private String queryGoID;
 	@Indexed
@@ -114,6 +114,9 @@ public class Go2Term implements Cloneable {
 		return queryGoID;
 	}
 	public void setGoIDQuery(String GoIDQuery) {
+		if (queryGoID != null && !queryGoID.equals(GoIDQuery)) {
+			logger.error("error: find more than one queryGOID");
+		}
 		this.queryGoID = GoIDQuery;
 	}
 
@@ -137,7 +140,7 @@ public class Go2Term implements Cloneable {
 	 * @return
 	 */
 	public static Go2Term queryGo2Term(String GOID) {
-		ServGo2Term servGo2Term = new ServGo2Term();
+		ManageGo2Term servGo2Term = new ManageGo2Term();
 		return servGo2Term.queryGo2Term(GOID);
 	}
 	/**
@@ -146,7 +149,7 @@ public class Go2Term implements Cloneable {
 	 * @return
 	 */
 	public static Go2Term queryGo2TermDB(String GOID) {
-		ServGo2Term servGo2Term = new ServGo2Term();
+		ManageGo2Term servGo2Term = new ManageGo2Term();
 		Go2Term go2Term = new Go2Term();
 		go2Term.setGoIDQuery(GOID);
 		return servGo2Term.queryGo2Term(go2Term);
@@ -157,7 +160,7 @@ public class Go2Term implements Cloneable {
 	 * @return
 	 */
 	public static Go2Term queryGo2TermDB(Go2Term go2Term) {
-		ServGo2Term servGo2Term = new ServGo2Term();
+		ManageGo2Term servGo2Term = new ManageGo2Term();
 		return servGo2Term.queryGo2Term(go2Term);
 	}
 	public void setGoTerm(String GoTerm) {

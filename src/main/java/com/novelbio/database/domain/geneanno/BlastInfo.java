@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.service.servgeneanno.ServDBInfoMongo;
+import com.novelbio.database.service.servgeneanno.ManageDBInfo;
 
 /**
  * 
@@ -29,28 +29,26 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	protected String subjectID;
 	
 	protected String blastDate;
-	protected String subjectDBID;
+
 	protected double identities=0;
 	protected double evalue = 100;
 	
 	protected int queryTax;
 	protected int subjectTax;
-	
-	protected String queryDBID;
-	
+
 	private int subjectTab;
 	
 	@Transient
-	GeneID copedIDQ = null;
+	GeneID geneIDQ = null;
 	@Transient
-	GeneID copedIDS = null;
+	GeneID geneIDS = null;
 	
-	@Transient
-	@Autowired
-	ServDBInfoMongo servDBInfo;
+	@DBRef
+	protected DBInfo queryDB;
+	@DBRef
+	protected DBInfo subjectDB;
 	
 	public BlastInfo() {
-		servDBInfo = new ServDBInfoMongo();
 		setDate();
 	}
 	
@@ -69,16 +67,16 @@ public class BlastInfo implements Comparable<BlastInfo> {
 			taxIDS = 0;
 		
 	     if (AccIDQ != null && !AccIDQ.equals("")) {
-			copedIDQ = new GeneID(AccIDQ, taxIDQ);
-			this.queryID = copedIDQ.getGeneUniID();
-			this.queryTax = copedIDQ.getTaxID();
+			geneIDQ = new GeneID(AccIDQ, taxIDQ);
+			this.queryID = geneIDQ.getGeneUniID();
+			this.queryTax = geneIDQ.getTaxID();
 	     }
 		
 	     if (AccIDS != null && !AccIDS.equals("")) {
-	    	 copedIDS = new GeneID(AccIDS, taxIDS);
-	    	 this.subjectID = copedIDS.getGeneUniID();
-	    	 this.subjectTax = copedIDS.getTaxID();
-	    	 this.subjectTab = copedIDS.getIDtype();
+	    	 geneIDS = new GeneID(AccIDS, taxIDS);
+	    	 this.subjectID = geneIDS.getGeneUniID();
+	    	 this.subjectTax = geneIDS.getTaxID();
+	    	 this.subjectTab = geneIDS.getIDtype();
 	     }
 	}
 	/**
@@ -87,22 +85,20 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	 */
 	public BlastInfo(String AccIDQ, int taxIDQ , String genUniIDS, int IDType,int taxIDS) {
 		setDate();
-		if (taxIDQ < 0)
-			taxIDQ = 0;
-		if (taxIDS < 0)
-			taxIDS = 0;
+		if (taxIDQ < 0) taxIDQ = 0;
+		if (taxIDS < 0) taxIDS = 0;
 		
 	     if (AccIDQ != null && !AccIDQ.equals("")) {
-			copedIDQ = new GeneID(AccIDQ, taxIDQ);
-			this.queryID = copedIDQ.getGeneUniID();
-			this.queryTax = copedIDQ.getTaxID();
+			geneIDQ = new GeneID(AccIDQ, taxIDQ);
+			this.queryID = geneIDQ.getGeneUniID();
+			this.queryTax = geneIDQ.getTaxID();
 	     }
 		
 	     if (genUniIDS != null && !genUniIDS.equals("")) {
-	    	 copedIDS = new GeneID(IDType, genUniIDS, taxIDS);
-	    	 this.subjectID = copedIDS.getGeneUniID();
-	    	 this.subjectTax = copedIDS.getTaxID();
-	    	 this.subjectTab = copedIDS.getIDtype();
+	    	 geneIDS = new GeneID(IDType, genUniIDS, taxIDS);
+	    	 this.subjectID = geneIDS.getGeneUniID();
+	    	 this.subjectTax = geneIDS.getTaxID();
+	    	 this.subjectTab = geneIDS.getIDtype();
 	     }
 	}
 	/**
@@ -118,34 +114,34 @@ public class BlastInfo implements Comparable<BlastInfo> {
 			taxIDS = 0;
 		
 		try {
-			copedIDQ = new GeneID(GeneID.IDTYPE_GENEID, genUniQ, taxIDQ);
+			geneIDQ = new GeneID(GeneID.IDTYPE_GENEID, genUniQ, taxIDQ);
 		} catch (Exception e) {
-			copedIDQ = new GeneID(GeneID.IDTYPE_UNIID, genUniQ, taxIDQ);
+			geneIDQ = new GeneID(GeneID.IDTYPE_UNIID, genUniQ, taxIDQ);
 		}
 		
 		if (genUniQ != null && !genUniQ.equals("") && !genUniQ.equals("0")) {
-			this.queryID = copedIDQ.getGeneUniID();
-			this.queryTax = copedIDQ.getTaxID();
+			this.queryID = geneIDQ.getGeneUniID();
+			this.queryTax = geneIDQ.getTaxID();
 		}
 		/////////////////////////////////////////////////////////////////////////////
 		try {
-			copedIDS = new GeneID(GeneID.IDTYPE_GENEID, genUniS, taxIDS);
+			geneIDS = new GeneID(GeneID.IDTYPE_GENEID, genUniS, taxIDS);
 		} catch (Exception e) {
-			copedIDS = new GeneID(GeneID.IDTYPE_UNIID, genUniS, taxIDS);
+			geneIDS = new GeneID(GeneID.IDTYPE_UNIID, genUniS, taxIDS);
 		}
 		
 		if (genUniS != null && !genUniS.equals("") && !genUniS.equals("0")) {
-			this.subjectID = copedIDS.getGeneUniID();
-			this.subjectTax = copedIDS.getTaxID();
-			this.subjectTab = copedIDS.getIDtype();
+			this.subjectID = geneIDS.getGeneUniID();
+			this.subjectTax = geneIDS.getTaxID();
+			this.subjectTab = geneIDS.getIDtype();
 		}
 	}
 	
 	public GeneID getGeneIDQ() {
-		return copedIDQ;
+		return geneIDQ;
 	}
 	public GeneID getGeneIDS() {
-		return copedIDS;
+		return geneIDS;
 	}
 	/**
 	 * 两个一起设定比较方便
@@ -162,8 +158,8 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	 * @param subDBInfo
 	 */
 	public void setQueryDB_SubDB(DBInfo queryDBInfo, DBInfo subDBInfo) {
-		this.queryDBID = queryDBInfo.getDbInfoID();
-		this.subjectDBID = subDBInfo.getDbInfoID();
+		this.queryDB = queryDBInfo;
+		this.subjectDB = subDBInfo;
 	}
 	/**
 	 * 设置查找的序列ID
@@ -192,16 +188,10 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	}
 ///////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * 设置查找序列的来源，譬如Agilent
-	 */
-	public void setQueryDBID(String queryDBID) {
-		this.queryDBID = queryDBID;
-	}
-	/**
 	 * 获得查找序列的来源，譬如Agilent
 	 */
 	public DBInfo getQueryDB() {
-		return servDBInfo.findOne(queryDBID);
+		return queryDB;
 	}
 ///////////////////////////////////////////////////////////////////////////////////
 	/**
@@ -231,13 +221,9 @@ public class BlastInfo implements Comparable<BlastInfo> {
 		return this.subjectTax;
 	}
 ///////////////////////////////////////////////////////////////////////////////////
-	/** 设置Blast搜索到的序列的来源，如agilent */
-	public void setSubjectDBID(String subjectDBID) {
-		this.subjectDBID = subjectDBID;
-	}
 	/** 获得Blast搜索到的序列的来源，如agilent */
 	public DBInfo getSubjecttDB() {
-		return servDBInfo.findOne(subjectDBID);
+		return subjectDB;
 	}
 ///////////////////////////////////////////////////////////////////////////////////
 	/**

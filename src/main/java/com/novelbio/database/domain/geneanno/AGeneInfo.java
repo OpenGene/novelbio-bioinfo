@@ -23,11 +23,6 @@ import com.novelbio.database.DBAccIDSource;
  */
 public abstract class AGeneInfo {
 	private static final Logger logger = Logger.getLogger(AGeneInfo.class);
-	static List<DBAccIDSource> lsDBinfo = new ArrayList<DBAccIDSource>();
-	static{
-		lsDBinfo.add(DBAccIDSource.NCBI);
-		lsDBinfo.add(DBAccIDSource.Uniprot);
-	}
 	
 	private String typeOfGene;
 	
@@ -198,6 +193,13 @@ public abstract class AGeneInfo {
 		return update;
 	}
 	
+	/**
+	 * 将SetOther装到setThis里面，如果setOther中出现了新的item，则返回true
+	 * 否则返回false
+	 * @param setThis
+	 * @param setOther
+	 * @return
+	 */
 	protected static<T>  boolean addInfo(Set<T> setThis, Set<T> setOther) {
 		boolean add = false;
 		for (T t : setOther) {
