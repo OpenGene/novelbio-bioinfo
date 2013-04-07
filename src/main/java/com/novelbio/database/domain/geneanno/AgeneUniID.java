@@ -7,8 +7,9 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.service.servgeneanno.ManageDBInfo;
 import com.novelbio.database.service.servgeneanno.ServDBInfo;
-import com.novelbio.database.service.servgeneanno.ServNCBIUniID;
+import com.novelbio.database.service.servgeneanno.ManageNCBIUniID;
 
 /**
  * 重写了equal和hash
@@ -32,9 +33,8 @@ public abstract class AgeneUniID {
 	DBInfo databaseInfo;
 	
 	@Transient
-	ServDBInfo servDBInfo = new ServDBInfo();
-	@Transient
-	ServNCBIUniID servNCBIUniID = new ServNCBIUniID();
+	ManageDBInfo manageDBInfo = new ManageDBInfo();
+
 	
 	public int getTaxID() {
 		return taxID;
@@ -90,9 +90,7 @@ public abstract class AgeneUniID {
 		if (dbName == null || dbName.equals("")) {
 			return;
 		}
-		DBInfo databaseInfo = new DBInfo();
-		databaseInfo.setDbName(dbName);
-		this.databaseInfo = servDBInfo.queryDBInfo(databaseInfo);
+		this.databaseInfo = manageDBInfo.findByDBname(dbName);
 		this.dbInfoID = this.databaseInfo.getDbInfoID();
 		fillDataBase();
 	}
@@ -106,7 +104,7 @@ public abstract class AgeneUniID {
 		if (this.databaseInfo == null) {
 			DBInfo databaseInfo = new DBInfo();
 			databaseInfo.setDbInfoID(dbInfoID);
-			this.databaseInfo = servDBInfo.queryDBInfo(databaseInfo);
+			this.databaseInfo = manageDBInfo.findOne(dbInfoID);
 		}
 	}
 	
@@ -126,7 +124,8 @@ public abstract class AgeneUniID {
 	 * @param override
 	 */
 	public void update(boolean overrideDBinfo) {
-		servNCBIUniID.updateNCBIUniID(this, overrideDBinfo);
+		ManageNCBIUniID manageNCBIUniID = new ManageNCBIUniID();
+		manageNCBIUniID.updateNCBIUniID(this, overrideDBinfo);
 	}
 	
 	/**

@@ -9,9 +9,9 @@ import com.novelbio.database.domain.geneanno.UniGeneInfo;
 public interface RepoGo2Term extends PagingAndSortingRepository<Go2Term, String> {
 
 	@Query(value="{ 'queryGoID' : ?0 }")
-	UniGeneInfo findByQueryGoID(String queryGoID);
+	Go2Term findByQueryGoID(String queryGoID);
 	
 	@Query(value="{ 'GoID' : ?0 }")
-	UniGeneInfo findByGoID(String GoID);
+	Go2Term findByGoID(String GoID);
 	
 }

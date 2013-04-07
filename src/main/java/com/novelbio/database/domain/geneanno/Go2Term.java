@@ -3,6 +3,7 @@ package com.novelbio.database.domain.geneanno;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -20,9 +21,8 @@ import com.novelbio.database.service.servgeneanno.ManageGo2Term;
 @Document(collection = "go2term")
 public class Go2Term implements Cloneable {
 	
-	private ManageGo2Term servGo2Term = new ManageGo2Term();
 	@Indexed(unique = true)
-    private String queryGoID;
+    private Set<String> setQueryGoID = new HashSet<String>();
 	@Indexed
 	private String GoID;
 	private String GoTerm;
@@ -110,14 +110,13 @@ public class Go2Term implements Cloneable {
 		return hashResult;
 	}
 	
-	public String getGoIDQuery() {
-		return queryGoID;
+	public Set<String> getGoIDQuery() {
+		return setQueryGoID;
 	}
-	public void setGoIDQuery(String GoIDQuery) {
-		if (queryGoID != null && !queryGoID.equals(GoIDQuery)) {
-			logger.error("error: find more than one queryGOID");
+	public void addGoIDQuery(String GoIDQuery) {
+		if (GoIDQuery != null && !GoIDQuery.equals("")) {
+			setQueryGoID.add(GoIDQuery);
 		}
-		this.queryGoID = GoIDQuery;
 	}
 
 	public String getGoID() {
@@ -129,40 +128,13 @@ public class Go2Term implements Cloneable {
 	 */
 	public void setGoID(String GoID) {
 		this.GoID = GoID;
+		setQueryGoID.add(GoID);
 	}
 	
 	public String getGoTerm() {
 		return GoTerm;
 	}
-	/**
-	 * 全部读入内存后，hash访问。第一次速度慢，后面效率很高
-	 * @param GOID
-	 * @return
-	 */
-	public static Go2Term queryGo2Term(String GOID) {
-		ManageGo2Term servGo2Term = new ManageGo2Term();
-		return servGo2Term.queryGo2Term(GOID);
-	}
-	/**
-	 * 通过访问数据库查询，效率相对低
-	 * @param GOID
-	 * @return
-	 */
-	public static Go2Term queryGo2TermDB(String GOID) {
-		ManageGo2Term servGo2Term = new ManageGo2Term();
-		Go2Term go2Term = new Go2Term();
-		go2Term.setGoIDQuery(GOID);
-		return servGo2Term.queryGo2Term(go2Term);
-	}
-	/**
-	 * 通过访问数据库查询，效率相对低
-	 * @param go2Term
-	 * @return
-	 */
-	public static Go2Term queryGo2TermDB(Go2Term go2Term) {
-		ManageGo2Term servGo2Term = new ManageGo2Term();
-		return servGo2Term.queryGo2Term(go2Term);
-	}
+
 	public void setGoTerm(String GoTerm) {
 		this.GoTerm = GoTerm;
 	}  
@@ -240,14 +212,14 @@ public class Go2Term implements Cloneable {
 		String result = GoID;
 		return result.hashCode();
 	}
-	/**
-	 * 整合升级模式，将go2term拆成goconvert和go2term分别进行升级 如果已经有了就不升级，
-	 * 没有才升级 升级方式是简单的覆盖，
-	 * 不像geneInfo有add等方式 不过如果go2term中其他都没有，则不升级
-	 * @return
-	 */
-	public boolean update() {
-		return servGo2Term.updateGo2TermComb(this);
+
+	public boolean addInfo(Go2Term go2Term) {
+		boolean update = false;
+		update = update || AGeneInfo.addInfo(setQueryGoID, go2Term.setQueryGoID);
+		update = update || AGeneInfo.addInfo(mapChildGO2Relate.keySet(), go2Term.mapChildGO2Relate.keySet());
+		update = update || AGeneInfo.addInfo(mapParentGO2Relate.keySet(), go2Term.mapParentGO2Relate.keySet());
+		
+		return update;
 	}
 	
 	public Go2Term clone() {
@@ -267,8 +239,10 @@ public class Go2Term implements Cloneable {
 			go2Term.GoID = GoID;
 			go2Term.gorelation = gorelation;
 			go2Term.GoTerm = GoTerm;
-			go2Term.queryGoID = queryGoID;
-			go2Term.servGo2Term = servGo2Term;
+			go2Term.setQueryGoID = new HashSet<String>();
+			for (String goID : setQueryGoID) {
+				go2Term.setQueryGoID.add(goID);
+			}
 			
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();

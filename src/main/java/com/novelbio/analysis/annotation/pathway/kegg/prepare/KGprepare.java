@@ -11,7 +11,7 @@ import com.novelbio.database.domain.geneanno.AgeneUniID;
 import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.domain.geneanno.UniProtID;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.service.servgeneanno.ServNCBIUniID;
+import com.novelbio.database.service.servgeneanno.ManageNCBIUniID;
 
 
 
@@ -76,7 +76,7 @@ public class KGprepare {
 	 */
 	public ArrayList<String[]> getLsAcc2GenID(String accIDFile,int rowStartNum,int colNum,int taxID,boolean Sep) throws Exception 
 	{
-		ServNCBIUniID servNCBIID = new ServNCBIUniID();
+		ManageNCBIUniID servNCBIID = new ManageNCBIUniID();
 		Hashtable<String, String> hashAcc2Gen = new Hashtable<String, String>();
 		String geneID[] =KGprepare.getAccID(accIDFile, rowStartNum, colNum);
  

@@ -1,16 +1,15 @@
 package com.novelbio.database.domain.geneanno;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.service.servgeneanno.ManageDBInfo;
 
 /**
  * 
@@ -55,16 +54,15 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	private void setDate() {
 	     blastDate = DateUtil.getDate(); //将日期时间格式化
 	}
+	
 	/**
 	 * 如果是要导入数据库，必须用该方式new一个<br>
 	 * 还需要设定evalue, identity和queryDB, subjectDB
 	 */
 	public BlastInfo(String AccIDQ, int taxIDQ , String AccIDS, int taxIDS) {
 		setDate();
-		if (taxIDQ < 0)
-			taxIDQ = 0;
-		if (taxIDS < 0)
-			taxIDS = 0;
+		if (taxIDQ < 0) taxIDQ = 0;
+		if (taxIDS < 0) taxIDS = 0;
 		
 	     if (AccIDQ != null && !AccIDQ.equals("")) {
 			geneIDQ = new GeneID(AccIDQ, taxIDQ);
@@ -79,6 +77,7 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	    	 this.subjectTab = geneIDS.getIDtype();
 	     }
 	}
+	
 	/**
 	 * 如果是要导入数据库，必须用该方式new一个<br>
 	 * 还需要设定evalue, identity和queryDB, subjectDB
@@ -108,15 +107,13 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	public BlastInfo(int taxIDQ, String genUniQ, int taxIDS, String genUniS) {
 		setDate();
 		
-		if (taxIDQ < 0)
-			taxIDQ = 0;
-		if (taxIDS < 0)
-			taxIDS = 0;
+		if (taxIDQ < 0) taxIDQ = 0;
+		if (taxIDS < 0) taxIDS = 0;
 		
 		try {
 			geneIDQ = new GeneID(GeneID.IDTYPE_GENEID, genUniQ, taxIDQ);
 		} catch (Exception e) {
-			geneIDQ = new GeneID(GeneID.IDTYPE_UNIID, genUniQ, taxIDQ);
+			e.printStackTrace();
 		}
 		
 		if (genUniQ != null && !genUniQ.equals("") && !genUniQ.equals("0")) {

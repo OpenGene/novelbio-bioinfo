@@ -30,7 +30,7 @@ import com.novelbio.database.model.species.Species;
 import com.novelbio.database.service.servgeneanno.ServBlastInfo;
 import com.novelbio.database.service.servgeneanno.ServGene2Go;
 import com.novelbio.database.service.servgeneanno.ServGeneInfo;
-import com.novelbio.database.service.servgeneanno.ServNCBIUniID;
+import com.novelbio.database.service.servgeneanno.ManageNCBIUniID;
 import com.novelbio.database.service.servgeneanno.ServUniGene2Go;
 import com.novelbio.database.service.servgeneanno.ServUniGeneInfo;
 
@@ -52,7 +52,7 @@ public class GeneIDabs implements GeneIDInt {
 	
 	boolean overrideUpdateDBinfo = false;
 	// //////////////////// service 层
-	ServNCBIUniID servNCBIUniID = new ServNCBIUniID();
+	ManageNCBIUniID servNCBIUniID = new ManageNCBIUniID();
 	ServBlastInfo servBlastInfo = new ServBlastInfo();
 	ServGeneInfo servGeneInfo = new ServGeneInfo();
 	ServUniGeneInfo servUniGeneInfo = new ServUniGeneInfo();
@@ -956,7 +956,7 @@ public class GeneIDabs implements GeneIDInt {
 			return lsResult;
 		}
 		
-		ServNCBIUniID servGeneAnno = new ServNCBIUniID();
+		ManageNCBIUniID servGeneAnno = new ManageNCBIUniID();
 		AgeneUniID ncbiid = AgeneUniID.creatAgeneUniID(GeneID.IDTYPE_GENEID);
 		ncbiid.setAccID(accID);
 		ncbiid.setTaxID(taxID);

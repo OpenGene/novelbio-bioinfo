@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.math.MathException;
 import org.apache.commons.math.stat.StatUtils;
 import org.apache.commons.math.stat.inference.TestUtils;
 
@@ -19,7 +20,7 @@ import com.novelbio.base.fileOperate.FileOperate;
  */
 public class MeDIParrayGFF {
 	public static final int BIG_TAIL = 200;
-	public static final int SMALL_TAIL = 200;
+	public static final int SMALL_TAIL = 300;
 	public static final int TWO_TAIL = 100;
 	
 	/** 从0开始 */
@@ -30,7 +31,7 @@ public class MeDIParrayGFF {
 	List<String> lsMedipGffFile = new ArrayList<String>();
 	List<String> lsMedipGffFileRunning;
 	List<String> lsPrefix;
-	int tTestType = 200;
+	int tTestType = TWO_TAIL;
 	/** 是否计算了pvalue，如果不符合t检验的条件，就不会进行t检验 */
 	boolean isPvalueCal = true;
 	
@@ -49,32 +50,32 @@ public class MeDIParrayGFF {
 	int colPvalue = -1;
 	
 	public static void main(String[] args) {
-		String path = "/media/winF/NBC/Project/Methylation_WZYXY/ratio/ams";
+		String path = "/media/winF/NBC/Project/Methylation_WZYXY/ratio/ams/";
 		
 		MeDIParrayGFF meDIParrayGFF = new MeDIParrayGFF();
 		meDIParrayGFF.lsMedipGffFileRunning = new ArrayList<String>();
 		
 		meDIParrayGFF.lsMedipGffFileRunning.add(path + "533487A01.gff.gff");
-		meDIParrayGFF.lsMedipGffFileRunning.add(path + "533487A02.gff..gff");
-		meDIParrayGFF.lsMedipGffFileRunning.add(path + "533487A03.gff..gff");
-		meDIParrayGFF.lsMedipGffFileRunning.add(path + "555423A01.gff..gff");
-		meDIParrayGFF.lsMedipGffFileRunning.add(path + "555423A02.gff..gff");
-		meDIParrayGFF.lsMedipGffFileRunning.add(path + "555423A03.gff..gff");
-		meDIParrayGFF.lsMedipGffFileRunning.add(path + "555448A01.gff..gff");
-		meDIParrayGFF.lsMedipGffFileRunning.add(path + "555448A02.gff..gff");
-		meDIParrayGFF.lsMedipGffFileRunning.add(path + "555448A03.gff..gff");
+		meDIParrayGFF.lsMedipGffFileRunning.add(path + "533487A02.gff.gff");
+		meDIParrayGFF.lsMedipGffFileRunning.add(path + "533487A03.gff.gff");
+//		meDIParrayGFF.lsMedipGffFileRunning.add(path + "555423A01.gff.gff");
+//		meDIParrayGFF.lsMedipGffFileRunning.add(path + "555423A02.gff.gff");
+//		meDIParrayGFF.lsMedipGffFileRunning.add(path + "555423A03.gff.gff");
+		meDIParrayGFF.lsMedipGffFileRunning.add(path + "555448A01.gff.gff");
+		meDIParrayGFF.lsMedipGffFileRunning.add(path + "555448A02.gff.gff");
+		meDIParrayGFF.lsMedipGffFileRunning.add(path + "555448A03.gff.gff");
 
 //		meDIParrayGFF.lsMedipGffFileRunning = new ArrayList<String>();
 //		meDIParrayGFF.lsMedipGffFileRunning.add("/media/winF/NBC/Project/fmf_methylation/SignalMap_GFF_files/ams/428496A01.gff");
 //		meDIParrayGFF.lsMedipGffFileRunning.add("/media/winF/NBC/Project/fmf_methylation/SignalMap_GFF_files/ams/428496A02.gff");
 //		meDIParrayGFF.lsMedipGffFileRunning.add("/media/winF/NBC/Project/fmf_methylation/SignalMap_GFF_files/ams/428496A03.gff");
-		meDIParrayGFF.setOutFile("/media/winF/NBC/Project/Methylation_WZYXY/ratio/");
+		meDIParrayGFF.setOutFile("/media/winF/NBC/Project/Methylation_WZYXY/ratio/ams_P0.05");
 		meDIParrayGFF.setProbNum(3);
-		meDIParrayGFF.setColSample1(new int[]{2});
-		meDIParrayGFF.setColSample2(new int[]{1});
-//		meDIParrayGFF.calculateResult();
+		meDIParrayGFF.setColTreat(new int[]{4 ,5, 6});
+		meDIParrayGFF.setColControl(new int[]{1, 2, 3});
+		meDIParrayGFF.calculateResult();
 		
-		meDIParrayGFF.preCope();
+//		meDIParrayGFF.preCope();
 
 	}
 	
@@ -86,7 +87,7 @@ public class MeDIParrayGFF {
 		lsMedipGffFile = new ArrayList<String>();
 		lsMedipGffFileRunning = null;
 		lsPrefix = null;
-		tTestType = 200;
+		tTestType = TWO_TAIL;
 		/** 是否计算了pvalue，如果不符合t检验的条件，就不会进行t检验 */
 		isPvalueCal = true;
 		
@@ -119,13 +120,13 @@ public class MeDIParrayGFF {
 	public void setProbNum(int probNum) {
 		this.probNum = probNum;
 	}
-	public void setColSample1(int[] colSample1) {
+	public void setColTreat(int[] colSample1) {
 		for (int i = 0; i < colSample1.length; i++) {
 			colSample1[i] = 4 + colSample1[i];
 		}
 		this.colSample1 = colSample1;
 	}
-	public void setColSample2(int[] colSample2) {
+	public void setColControl(int[] colSample2) {
 		for (int i = 0; i < colSample2.length; i++) {
 			colSample2[i] = 4 + colSample2[i];
 		}
@@ -279,6 +280,9 @@ public class MeDIParrayGFF {
 			for (int j = 0; j < sample2.length; j++) {
 				sample2[j] = Double.parseDouble(lsStrings.get(colSample2[j] - 1));
 			}
+			if (lsStrings.get(2).equals("10375235")) {
+				System.out.println("stop");
+			}
 			addPvalue(lsStrings, sample1, sample2);
 			double medS1 = MathComput.median(sample1);
 			double medS2 = MathComput.median(sample2);
@@ -303,7 +307,7 @@ public class MeDIParrayGFF {
 		} else {
 			try { pvalue = TestUtils.tTest(sample1, sample2); } catch (Exception e) { }
 		}
-		if (tTestType != 100) {
+		if (tTestType != TWO_TAIL) {
 			pvalue = pvalue/2;
 		}
 		lsTmpResult.add(pvalue + "");

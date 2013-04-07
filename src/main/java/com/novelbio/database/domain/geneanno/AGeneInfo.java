@@ -1,17 +1,13 @@
 package com.novelbio.database.domain.geneanno;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
-
-import com.novelbio.database.DBAccIDSource;
 /**
  * ibatis在操作数据库时会自动使用类中的setter和getter给属性赋值
  * 如果不想用类中的这些方法，那么setter和getter的名字不要和属性一样就好
@@ -88,7 +84,11 @@ public abstract class AGeneInfo {
 	}
 
 	public String getSymb() {
-		return getInfoSep(symbol);
+		return mapSymbol.values().iterator().next();
+	}
+	
+	public String getSymb(DBInfo dbInfo) {
+		return mapSymbol.get(dbInfo);
 	}
 	/**
 	 * 故意名字起的和symbol不一样，这样可以防止自动注入
@@ -120,25 +120,30 @@ public abstract class AGeneInfo {
 	 * @return
 	 */
 	public String getDescrp() {
-		String descrip =  getInfoSep(description);
+		String descrip = mapDescription.values().iterator().next();
 		if (descrip == null) {
 			descrip = "";
 		}
 		return descrip.replaceAll("\"", "");
 	}
+	
 	public void setDescrp(DBInfo dbInfo, String description) {
+		if (description == null) return;
+		description = description.replaceAll("\"", "").trim();
+		if (description.equals("") || description.equals("-")) return;
+		
 		mapDescription.put(dbInfo, description);
 	}
 
 	public String getTypeOfGene() {
 		return typeOfGene;
 	}
+	
 	public void setTypeOfGene(String typeOfGene) {
 		if (typeOfGene == null) return;
 		typeOfGene = typeOfGene.trim();
-		if (typeOfGene.equals("") || typeOfGene.equals("-")) {
-			return;
-		}
+		if (typeOfGene.equals("") || typeOfGene.equals("-")) return;
+		
 		this.typeOfGene = typeOfGene.trim();
 	}
 
@@ -149,7 +154,9 @@ public abstract class AGeneInfo {
 	public Set<String> getSymNom() {
 		return setSymNome;
 	}
+	
 	public void addSymNom(String symNome) {
+		if (symNome.equals("") || symNome.equals("-")) return;
 		this.setSymNome.add(symNome);
 	}
 

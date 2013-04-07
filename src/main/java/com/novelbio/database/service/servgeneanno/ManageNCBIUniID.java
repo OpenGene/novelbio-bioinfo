@@ -16,14 +16,14 @@ import com.novelbio.database.mapper.geneanno.MapNCBIID;
 import com.novelbio.database.mapper.geneanno.MapUniProtID;
 import com.novelbio.database.service.SpringFactory;
 @Service
-public class ServNCBIUniID implements ServNCBIUniIDInt {
-	private static final Logger logger = Logger.getLogger(ServNCBIUniID.class);
+public class ManageNCBIUniID implements ServNCBIUniIDInt {
+	private static final Logger logger = Logger.getLogger(ManageNCBIUniID.class);
 	@Inject
 	private MapNCBIID mapNCBIID;
 	@Inject
 	private MapUniProtID mapUniProtID;
 	
-	public ServNCBIUniID() {
+	public ManageNCBIUniID() {
 		mapNCBIID = (MapNCBIID) SpringFactory.getFactory().getBean("mapNCBIID");
 		mapUniProtID = (MapUniProtID) SpringFactory.getFactory().getBean("mapUniProtID");
 	}

@@ -18,7 +18,7 @@ import com.novelbio.database.service.SpringFactory;
 
 public class ServNCBIUniIDmongo implements ServNCBIUniIDInt {
 
-	private static final Logger logger = Logger.getLogger(ServNCBIUniID.class);
+	private static final Logger logger = Logger.getLogger(ManageNCBIUniID.class);
 	@Inject
 	private RepoNCBIID repoNCBIID;
 	@Inject

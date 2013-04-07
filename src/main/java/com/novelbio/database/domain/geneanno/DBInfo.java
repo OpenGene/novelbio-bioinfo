@@ -3,6 +3,7 @@ package com.novelbio.database.domain.geneanno;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 
+import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.service.servgeneanno.ManageDBInfo;
 
