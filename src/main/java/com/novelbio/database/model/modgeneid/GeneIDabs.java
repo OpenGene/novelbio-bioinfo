@@ -153,7 +153,6 @@ public class GeneIDabs implements GeneIDInt {
 	}
 	
 	/**
-	 * 
 	 * 有geneUniID就用geneUniID去query
 	 * 否则就用accID去query
 	 * @param evalue 小于0就走默认 为1e-10
@@ -409,7 +408,6 @@ public class GeneIDabs implements GeneIDInt {
 	public List<AGene2Go> getGene2GO(GOtype GOType) {
 		return getGOInfo().getLsGene2Go(GOType);
 	}
-	
 	/**
 	 * blast多个物种 首先设定blast的物种 用方法： setBlastInfo(double evalue, int... StaxID)
 	 * 获得经过blast的GoInfo
@@ -611,6 +609,9 @@ public class GeneIDabs implements GeneIDInt {
 	public void setUpdateGeneInfo(AGeneInfo geneInfo) {
 		this.geneInfo = geneInfo;
 	}
+
+	// 专门用于升级
+	ArrayList<BlastInfo> lsBlastInfosUpdate = null;
 
 	/**
 	 * 如果没有QueryID, SubjectID, taxID中的任何一项，就不升级 如果evalue>50 或 evalue<0，就不升级

@@ -99,10 +99,10 @@
         <property name="mapperLocations">
             <list>
                 <!-- 表示在com.hoo.resultmap包或以下所有目录中，以-resultmap.xml结尾所有文件 -->
-                <value>classpath:XML/IdMapper/*.xml</value>
+                <!-- <value>classpath:XML/IdMapper/*.xml</value> -->
                 <value>classpath:XML/KeggMapper/*.xml</value>
-                <value>classpath:XML/ReactMapper/*.xml</value>
-                <value>classpath:XML/InformationMapper/*.xml</value>
+                <!-- <value>classpath:XML/ReactMapper/*.xml</value> -->
+               	<!-- <value>classpath:XML/InformationMapper/*.xml</value> -->
             </list>
         </property>
     </bean>
@@ -121,10 +121,10 @@
 
     <!-- 通过扫描的模式，扫描目录在com/hoo/mapper目录下，所有的mapper都继承SqlMapper接口， 这样一个bean就可以了 -->
  	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer" lazy-init="true">
-		<property name="basePackage" value="com.novelbio.database.mapper"/>
+		<property name="basePackage" value="com.novelbio.database.mapper.kegg"/>
 		<property name="markerInterface" value="com.novelbio.database.mapper.MapperSql"/>
-    </bean> 
+    </bean>
     
-      <!-- 自动探测 enable component scanning (beware that this does not enable mapper scanning!)     --> 
-    <context:component-scan base-package="com.novelbio.database.mapper.geneanno" />
+    <!-- 自动探测 enable component scanning (beware that this does not enable mapper scanning!)     --> 
+    <context:component-scan base-package="com.novelbio.database.mapper.kegg" />
 </beans>

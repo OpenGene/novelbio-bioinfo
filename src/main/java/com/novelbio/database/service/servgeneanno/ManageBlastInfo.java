@@ -4,12 +4,11 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.mongorepo.geneanno.RepoBlastInfo;
 import com.novelbio.database.service.SpringFactory;
-@Service
+
 public class ManageBlastInfo {
 	@Autowired
 	RepoBlastInfo repoBlastInfo;
@@ -59,7 +58,13 @@ d * @param evalue 设定阈值 如果evalue <= -1或evalue >=5，则不起作用
 	public List<BlastInfo> queryBlastInfoLs(String queryID, int taxIDQ) {
 		return repoBlastInfo.findByQueryID(queryID, taxIDQ);
 	}
-
+	
+	public void save(BlastInfo blastInfo) {
+		if (blastInfo != null) {
+			repoBlastInfo.save(blastInfo);
+		}
+	}
+	
 	/**
 	 * 给定blastInfo的信息，如果数据库中的本物种已经有了该结果，则比较evalue，用低evalue的覆盖高evalue的
 	 * 如果没有，则插入

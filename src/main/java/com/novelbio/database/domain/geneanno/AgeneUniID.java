@@ -32,7 +32,9 @@ public abstract class AgeneUniID {
 	@Transient
 	ManageDBInfo manageDBInfo = new ManageDBInfo();
 
-	
+	public String getId() {
+		return id;
+	}
 	public int getTaxID() {
 		return taxID;
 	}

@@ -10,7 +10,6 @@ import com.novelbio.database.domain.geneanno.SnpIndelRs;
 import com.novelbio.database.mapper.geneanno.MapSnpIndelRs;
 import com.novelbio.database.service.SpringFactory;
 
-@Service
 public class ServSnpIndelRs implements MapSnpIndelRs{
 	public static void main(String[] args) {
 		ServSnpIndelRs servSnpIndelRs = new ServSnpIndelRs();

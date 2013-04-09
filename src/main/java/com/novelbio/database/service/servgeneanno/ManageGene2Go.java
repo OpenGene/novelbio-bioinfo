@@ -4,13 +4,12 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.Gene2Go;
 import com.novelbio.database.mongorepo.geneanno.RepoGene2Go;
 import com.novelbio.database.service.SpringFactory;
-@Service
+
 public class ManageGene2Go {
 	private static Logger logger = Logger.getLogger(ManageGene2Go.class);
 	@Autowired
