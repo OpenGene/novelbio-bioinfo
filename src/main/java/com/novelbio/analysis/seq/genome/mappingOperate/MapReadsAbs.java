@@ -52,7 +52,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	protected int NormalType = NORMALIZATION_ALL_READS;
 
 	 /** 序列信息,名字都为小写 */
-	 HashMap<String, Long> mapChrID2Len = new HashMap<String, Long>();
+	 Map<String, Long> mapChrID2Len = new HashMap<String, Long>();
 	 
 	 Equations FormulatToCorrectReads;
 	 protected boolean booUniqueMapping = true;
@@ -93,10 +93,10 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 /** 用species里面来设定
 	  * key务必小写
 	  *  */
-	 public void setMapChrID2Len(HashMap<String, Long> mapChrID2Len) {
+	 public void setMapChrID2Len(Map<String, Long> mapChrID2Len) {
 		 this.mapChrID2Len = mapChrID2Len;
 	 }
-	 public HashMap<String, Long> getMapChrID2Len() {
+	 public Map<String, Long> getMapChrID2Len() {
 		return mapChrID2Len;
 	}
 	 /**

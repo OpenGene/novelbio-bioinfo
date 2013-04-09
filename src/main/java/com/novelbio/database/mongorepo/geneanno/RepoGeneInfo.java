@@ -11,6 +11,5 @@ public interface RepoGeneInfo extends PagingAndSortingRepository<GeneInfo, Strin
 	GeneInfo findByGeneID(long geneID);
 	
 	@Query(value="{ 'geneID' : ?0, 'taxID' : ?1 }")
-	GeneInfo findByGoIDAndTaxID(long geneID, int taxID);
-	
+	GeneInfo findByGeneIDAndTaxID(long geneID, int taxID);	
 }

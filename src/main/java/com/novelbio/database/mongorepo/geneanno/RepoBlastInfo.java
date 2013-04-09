@@ -9,13 +9,15 @@ import com.novelbio.database.domain.geneanno.BlastInfo;
 
 public interface RepoBlastInfo extends PagingAndSortingRepository<BlastInfo, String> {
 	
-	@Query(value="{ 'queryID' : ?0 }")
-	List<BlastInfo> findByDBorg(String queryID);
-	
-	@Query(value="{ 'subjectID' : ?0}")
-	List<BlastInfo> findByDBname(String subjectID);
+	@Query(value="{ 'subjectID' : ?0, 'subjectTax' : ?1}")
+	List<BlastInfo> findBySubID(String subjectID, int subjectTax);
 
 	@Query(value="{ 'queryID' : ?0, 'queryTax' : ?1, 'subjectTax' : ?2}")
-	List<BlastInfo> findByDBname(String queryID, int queryTax, int subjectTax);
+	List<BlastInfo> findByQueryIDAndSubTaxID(String queryID, int queryTax, int subjectTax);
 	
+	@Query(value="{ 'queryID' : ?0, 'queryTax' : ?1}")
+	List<BlastInfo> findByQueryID(String queryID, int queryTax);
+	
+	@Query(value="{ 'queryID' : ?0, 'queryTax' : ?1, 'subjectID' : ?2, 'subjectTax' : ?3}")
+	BlastInfo findByQueryIDAndSubID(String queryID, int queryTax, String subjectID, int subjectTax);
 }

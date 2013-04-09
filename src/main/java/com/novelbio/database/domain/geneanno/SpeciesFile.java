@@ -11,7 +11,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
@@ -28,10 +27,9 @@ import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.database.service.servgeneanno.ServSpeciesFile;
+import com.novelbio.database.service.servgeneanno.ManageSpeciesFile;
 
 /**
  * 保存某个物种的各种文件信息，譬如mapping位置等等
@@ -82,6 +80,15 @@ public class SpeciesFile {
 	/** 用来将小写的DB转化为正常的DB，使得getDB获得的字符应该是正常的DB */
 	@Transient
 	Map<String, String> mapGffDB2DB;
+	
+	/** mongodb的ID */
+	public void setId(String id) {
+		this.id = id;
+	}
+	/** mongodb的ID */
+	public String getId() {
+		return id;
+	}
 	
 	public void setTaxID(int taxID) {
 		this.taxID = taxID;
@@ -150,6 +157,11 @@ public class SpeciesFile {
 		return mapStringDB;
 	}
 	
+	public void addGffDB2TypeFile(String gffDB, GffType gffType, String gffFile) {
+		mapDB2GffTypeAndFile.put(gffDB.toLowerCase(), new String[]{gffType.name(), gffFile});
+	}
+	
+	
 	/**
 	 * 获得某个Type的Gff文件，如果没有则返回null
 	 * @param gffDB 指定gffDB 如果为null，表示不指定，则返回默认
@@ -189,7 +201,7 @@ public class SpeciesFile {
 	 */
 	public String getGffFile() {
 		String[] gffInfo = getGffDB2GffTypeFile();
-		return gffInfo[1].split(SepSign.SEP_INFO_SAMEDB)[1];
+		return gffInfo[2];
 	}
 	/**
 	 * 按照优先级返回gff类型，优先级由GffDB来决定
@@ -198,7 +210,7 @@ public class SpeciesFile {
 	 */
 	public GffType getGffType() {
 		String[] gffInfo = getGffDB2GffTypeFile();
-		String gffType = gffInfo[1].split(SepSign.SEP_INFO_SAMEDB)[0];
+		String gffType = gffInfo[1];
 		return GffType.getType(gffType);
 	}
 	/**
@@ -226,7 +238,9 @@ public class SpeciesFile {
 	public String getGffRepeatFile() {
 		return gffRepeatFile;
 	}
-	
+	public void addIndexChrom(SoftWare softWare, String indexChrom) {
+		mapSoftware2IndexChrom.put(softWare, indexChrom);
+	}
 	/** 返回该mapping软件所对应的index的文件
 	 * 没有就新建一个
 	 * 格式如下：
@@ -405,8 +419,10 @@ public class SpeciesFile {
 	}
 	
 	public void update() {
-		servSpeciesFile.update(this);
+		ManageSpeciesFile manageSpeciesFile = new ManageSpeciesFile();
+		manageSpeciesFile.update(this);
 	}
+	
 	public Map<String, Long> getHashChrID2ChrLen() {
 		return mapChrID2ChrLen;
 	}

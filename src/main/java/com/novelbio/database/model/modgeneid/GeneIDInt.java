@@ -1,6 +1,7 @@
 package com.novelbio.database.model.modgeneid;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.AGene2Go;
@@ -105,7 +106,7 @@ public interface GeneIDInt{
 	 * 用方法： setBlastInfo(double evalue, int... StaxID)
 	 * 获得经过blast的GoInfo
 	 */
-	public ArrayList<AGene2Go> getGene2GOBlast(GOtype GOType);
+	public List<AGene2Go> getGene2GOBlast(GOtype GOType);
 	/**
 	 * blast多个物种
 	 * 首先要设定blast的目标
@@ -197,17 +198,7 @@ GO_REF:0000004<br>
 	 * 记录可能用于升级数据库的ID 譬如获得一个ID与NCBI的别的ID有关联，就用别的ID来查找数据库，以便获得该accID所对应的genUniID
 	 */
 	void setUpdateRefAccID(ArrayList<String> lsRefAccID);
-	/**
-	 * 如果没有QueryID, SubjectID, taxID中的任何一项，就不升级 如果evalue>50 或 evalue<0，就不升级
-	 * 可以连续不断的添加
-	 * @param SubAccID 目标物种的accID
-	 * @param subDBInfo 目标物种的数据库来源
-	 * @param SubTaxID 目标物种的物种ID
-	 * @param evalue 相似度evalue
-	 * @param identities 相似度信息
-	 */
-	void setUpdateBlastInfo(String SubAccID, String subDBInfo, int SubTaxID,
-			double evalue, double identities);
+
 	/**
 	 * 设定accID，当用geneUniID进行new copedID工作时使用
 	 * @param accID
@@ -232,17 +223,9 @@ GO_REF:0000004<br>
 	 * @param uniqID
 	 */
 	void addUpdateRefAccID(String... refAccID);
-	/**
-	 * 如果blast到geneUniID上去
-	 * @param SubGenUniID
-	 * @param subIDtype
-	 * @param subDBInfo
-	 * @param SubTaxID
-	 * @param evalue
-	 * @param identities
-	 */
-	void setUpdateBlastInfo(String SubGenUniID, int subIDtype,
-			String subDBInfo, int SubTaxID, double evalue, double identities);
+
+	void addUpdateBlastInfo(BlastInfo blastInfo);
+
 	/**
 	 * 如果输入的是accID，那么返回该accID对应的数据库
 	 * 如果没有则返回null
@@ -256,8 +239,8 @@ GO_REF:0000004<br>
 
 	public GOInfoAbs getGOInfo();
 	
-	
 	public boolean equals(Object obj);
 	
 	public int hashCode();
+	
 }

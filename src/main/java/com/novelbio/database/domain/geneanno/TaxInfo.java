@@ -6,7 +6,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.novelbio.database.service.servgeneanno.ServTaxID;
+import com.novelbio.database.service.servgeneanno.ManageSpeciesFile;
+import com.novelbio.database.service.servgeneanno.ManageTaxID;
 
 /**
  * 有关taxID的表格
@@ -14,7 +15,6 @@ import com.novelbio.database.service.servgeneanno.ServTaxID;
  */
 @Document(collection = "taxinfo")
 public class TaxInfo {
-	ServTaxID servTaxID = new ServTaxID();
 	/** NCBI的物种ID */
 	@Id
 	private int taxID;
@@ -103,7 +103,7 @@ public class TaxInfo {
 	 * @return
 	 */
 	public static HashMap<String, Integer> getHashNameTaxID(boolean allID) {
-		ServTaxID servTaxID = new ServTaxID();
+		ManageTaxID servTaxID = new ManageTaxID();
 		return servTaxID.getSpeciesNameTaxID(allID);
 	}
 	/**
@@ -111,10 +111,11 @@ public class TaxInfo {
 	 * @return
 	 */
 	public static HashMap<Integer,String> getHashTaxIDName() {
-		ServTaxID servTaxID = new ServTaxID();
+		ManageTaxID servTaxID = new ManageTaxID();
 		return servTaxID.getHashTaxIDName();
 	}
 	public void update() {
+		ManageTaxID servTaxID = new ManageTaxID();
 		servTaxID.update(this);
 	}
 	/**

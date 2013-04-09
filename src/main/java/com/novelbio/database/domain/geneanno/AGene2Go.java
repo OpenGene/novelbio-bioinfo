@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 
 import com.novelbio.database.service.servgeneanno.ManageDBInfo;
@@ -28,7 +29,9 @@ public abstract class AGene2Go {
 	private Set<String> setPubID = new HashSet<String>();
 	private Set<DBInfo> setDB = new HashSet<DBInfo>();
 	
+	@Transient
 	ManageGo2Term manageGo2Term = new ManageGo2Term();
+	@Transient
 	ManageDBInfo manageDBInfo = new ManageDBInfo();
 	
 	public abstract String getGeneUniId();
@@ -42,7 +45,7 @@ public abstract class AGene2Go {
 		return go2Term.getGoID();
 	}
 	public Go2Term getGO2Term() {
-		Go2Term go2Term = manageGo2Term.getHashGo2Term().get(goID);
+		Go2Term go2Term = manageGo2Term.queryGo2Term(goID);
 		if (go2Term == null) {
 			logger.error("出现未知GOID：" + goID);
 			return null;
@@ -57,7 +60,7 @@ public abstract class AGene2Go {
 		}
 		GoID = GoID.trim();
 		try {
-			this.goID = manageGo2Term.getHashGo2Term().get(GoID).getGoID();
+			this.goID = manageGo2Term.queryGo2Term(GoID).getGoID();
 		} catch (Exception e) {
 			this.goID = GoID;
 		}
@@ -114,7 +117,7 @@ public abstract class AGene2Go {
 	 */
 	public GOtype getFunction() {
 		try {
-			return manageGo2Term.getHashGo2Term().get(goID).getGOtype();
+			return manageGo2Term.queryGo2Term(goID).getGOtype();
 		} catch (Exception e) {
 			logger.error("出现未知GOID：" + goID);
 			return null;
@@ -153,9 +156,24 @@ public abstract class AGene2Go {
 		update = update || GeneInfo.addInfo(setDB, gene2Go.setDB);
 		update = update || GeneInfo.addInfo(setEvid, gene2Go.setEvid);
 		update = update || GeneInfo.addInfo(setPubID, gene2Go.setPubID);
+		if ((qualifier == null || qualifier.equals("")) && gene2Go.qualifier != null && !gene2Go.qualifier.equals("") && !qualifier.equals("-")) {
+			qualifier = gene2Go.qualifier;
+			update = true;
+		}
 		return update;
 	}
-	
+	/**
+	 * 浅层复制，set等仅仅引用传递
+	 * 但是geneID不复制
+	 */
+	public void copyInfo(AGene2Go gene2Go) {
+		this.goID = gene2Go.goID;
+		this.qualifier = gene2Go.qualifier;
+		this.setDB = gene2Go.setDB;
+		this.setEvid = gene2Go.setEvid;
+		this.setPubID = gene2Go.setPubID;
+		this.taxID = gene2Go.taxID;
+	}
 	/**
 	 * 只要两个gene2GO的geneID相同，就认为这两个NCBIID相同
 	 * 但是如果geneID为0，也就是NCBIID根本没有初始化，那么直接返回false

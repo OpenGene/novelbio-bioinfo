@@ -12,8 +12,8 @@ import java.util.TreeMap;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
-import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
+import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -22,16 +22,15 @@ import com.novelbio.database.domain.geneanno.SpeciesFile;
 import com.novelbio.database.domain.geneanno.TaxInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.service.servgeneanno.ServSpeciesFile;
-import com.novelbio.database.service.servgeneanno.ServTaxID;
+import com.novelbio.database.service.servgeneanno.ManageSpeciesFile;
+import com.novelbio.database.service.servgeneanno.ManageTaxID;
 /**
  * 物种信息，包括名字，以及各个文件所在路径
  * @author zong0jie
  */
 public class Species {
 	public static void main(String[] args) {
-		Species species = new Species(10090);
-		species.getRefseqFile();
+		System.out.println(SoftWare.valueOf("blast"));
 	}
 	private static Logger logger = Logger.getLogger(Species.class);
 	/** 全部物种 */
@@ -49,9 +48,9 @@ public class Species {
 	 */
 	ArrayList<String[]> lsVersion = new ArrayList<String[]>();
 	/** key：版本ID,通通小写  value：具体的信息 */
-	HashMap<String, SpeciesFile> hashVersion2Species = new HashMap<String, SpeciesFile>();
-	ServSpeciesFile servSpeciesFile = new ServSpeciesFile();
-	ServTaxID servTaxID = new ServTaxID();
+	HashMap<String, SpeciesFile> mapVersion2Species = new HashMap<String, SpeciesFile>();
+	ManageSpeciesFile servSpeciesFile = new ManageSpeciesFile();
+	ManageTaxID servTaxID = new ManageTaxID();
 	
 	String updateTaxInfoFile = "";
 	String updateSpeciesFile = "";
@@ -99,7 +98,7 @@ public class Species {
 			return;
 		}
 		version = version.split(sepVersionAndYear)[0].toLowerCase();
-		if (!hashVersion2Species.containsKey(version)) {
+		if (!mapVersion2Species.containsKey(version)) {
 			return;
 		}
 		this.version = version;
@@ -147,10 +146,10 @@ public class Species {
 			e.printStackTrace();
 			return;
 		}
-		ArrayList<SpeciesFile> lsSpeciesFile = servSpeciesFile.queryLsSpeciesFile(taxID, null);
+		List<SpeciesFile> lsSpeciesFile = servSpeciesFile.queryLsSpeciesFile(taxID);
 		for (SpeciesFile speciesFile : lsSpeciesFile) {
 			lsVersion.add(new String[]{speciesFile.getVersion(), speciesFile.getPublishYear() + ""});
-			hashVersion2Species.put(speciesFile.getVersion().toLowerCase(), speciesFile);
+			mapVersion2Species.put(speciesFile.getVersion().toLowerCase(), speciesFile);
 		}
 		//年代从大到小排序
 		Collections.sort(lsVersion, new Comparator<String[]>() {
@@ -174,14 +173,14 @@ public class Species {
 	 * key: chrID 小写
 	 * value： length
 	 */
-	public HashMap<String, Long> getMapChromInfo() {
-		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
+	public Map<String, Long> getMapChromInfo() {
+		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getMapChromInfo();
 	}
 	/** 染色体全长序列 */
 	public long getChromLenAll() {
-		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
-		HashMap<String, Long> hashChrID2Len = speciesFile.getMapChromInfo();
+		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
+		Map<String, Long> hashChrID2Len = speciesFile.getMapChromInfo();
 		ArrayList<Long> lsChrLen = ArrayOperate.getArrayListValue(hashChrID2Len);
 		Long len = 0L;
 		for (Long chrLen : lsChrLen) {
@@ -191,21 +190,21 @@ public class Species {
 	}
 	/** 获得chr文件的path */
 	public String getChromFaPath() {
-		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
+		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getChromFaPath();
 	}
 	/** 获得chr文件的regex */
 	public String getChromFaRegex() {
-		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
+		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getChromFaRegx();
 	}
 	public String getChromSeq() {
-		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
+		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getChromSeqFile();
 	}
 	/** 获得这个species在本version下的全体GffDB */
 	public Map<String, String> getMapGffDBAll() {
-		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
+		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getMapGffDB();
 	}
 	/**
@@ -230,7 +229,7 @@ public class Species {
 	 * @param gffDB 无所谓大小写
 	 */
 	public String getGffFile(String gffDB) {
-		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
+		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getGffFile(gffDB);
 	}
 	
@@ -247,7 +246,7 @@ public class Species {
 	 * @return
 	 */
 	public GffType getGffType(String gffDB) {
-		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
+		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getGffType(gffDB); 
 	}
 	/**
@@ -258,7 +257,7 @@ public class Species {
 	 */
 	public String getGffDB() {
 		if (gffDB == null) {
-			SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
+			SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 			gffDB = speciesFile.getGffDB();
 		}
 		return gffDB;
@@ -269,37 +268,37 @@ public class Species {
 	 * @return
 	 */
 	public String getGffRepeat() {
-		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
+		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getGffRepeatFile();
 	}
 	/** 获得本物种指定version的miRNA前体序列 */
 	public String getMiRNAhairpinFile() {
-		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
+		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getMiRNAhairpinFile();
 	}
 	/** 获得本物种指定version的miRNA序列 */
 	public String getMiRNAmatureFile() {
-		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
+		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getMiRNAmatureFile();
 	}
 	/** 获得本物中指定version的rfam序列 */
 	public String getRfamFile() {
-		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
+		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getRfamFile();
 	}
 	/** 获得本物中指定version的refseq的ncRNA序列 */
 	public String getRefseqNCfile() {
-		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
+		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getRefseqNCfile();
 	}
 	/** 获得本物中指定version的refseq的序列 */
 	public String getRefseqFile() {
-		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
+		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getRefRNAFile();
 	}
 	/** 获取仅含有最长转录本的refseq文件，是核酸序列，没有就返回null */
 	public String getRefseqLongestIsoNrFile() {
-		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
+		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getRefseqLongestIsoNrFile();
 	}
 	/** 指定mapping的软件，获得该软件所对应的索引文件
@@ -307,7 +306,7 @@ public class Species {
 	 * softMapping.toString() + "_Chr_Index/"
 	 *  */
 	public String getIndexChr(SoftWare softMapping) {
-		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
+		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getIndexChromFa(softMapping);
 	}
 	/** 指定mapping的软件，获得该软件所对应的索引文件
@@ -315,7 +314,7 @@ public class Species {
 	 * softMapping.toString() + "_Ref_Index/" 
 	 *  */
 	public String getIndexRef(SoftWare softMapping) {
-		SpeciesFile speciesFile = hashVersion2Species.get(version.toLowerCase());
+		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getIndexRefseq(softMapping);
 	}
 	////////////////////////    升级   //////////////////////////////////////////////////////////////////////////////////////
@@ -393,16 +392,29 @@ public class Species {
 			speciesFile.setPublishYear((int)Double.parseDouble(info[m]));
 			
 			m = hashName2ColNum.get("chrompath");
-			speciesFile.setChromPath(info[m]);
+			String[] chromInfo = info[m].split(SepSign.SEP_INFO);
+			speciesFile.setChromPath(chromInfo[0], chromInfo[1]);
 			
 			m = hashName2ColNum.get("chromseq");
 			speciesFile.setChromSeq(info[m]);
-			
+			//TODO 看下分隔符对不对
 			m = hashName2ColNum.get("indexchr");
-			speciesFile.setIndexSeq(info[m]);
-			
+			if (!info[m].equals("")) {
+				String[] indexChrInfo = info[m].split(SepSign.SEP_ID);
+				for (String indexChrDetail : indexChrInfo) {
+					String[] indexDetail = indexChrDetail.split(SepSign.SEP_INFO);
+					speciesFile.addIndexChrom(SoftWare.valueOf(indexDetail[0]), indexDetail[1]);
+				}
+			}
+						
 			m = hashName2ColNum.get("gffgenefile");
-			speciesFile.setGffGeneFile(info[m]);
+			if (!info[m].equals("")) {
+				String[] gffUnit = info[m].split(SepSign.SEP_ID);
+				for (String gffInfo : gffUnit) {
+					String[] gffDB2TypeFile = gffInfo.split(SepSign.SEP_INFO);
+					speciesFile.addGffDB2TypeFile(gffDB2TypeFile[0], GffType.getType(gffDB2TypeFile[1]), gffDB2TypeFile[2]);
+				}
+			}
 			
 			m = hashName2ColNum.get("gffrepeatfile");
 			speciesFile.setGffRepeatFile(info[m]);
@@ -440,17 +452,7 @@ public class Species {
 		}
 		return gene2IsoFile;
 	}
-	
-	/**
-	 * 返回常用名对taxID
-	 * @param allID true返回全部ID， false返回常用ID--也就是有缩写的ID
-	 * @return
-	 */
-	@Deprecated
-	public static HashMap<String, Integer> getSpeciesNameTaxID(boolean allID) {
-		ServTaxID servTaxID = new ServTaxID();
-		return servTaxID.getSpeciesNameTaxID(allID);
-	}
+
 	/**
 	 * 返回常用名对taxID
 	 * @param speciesType 根据不同的
@@ -462,8 +464,8 @@ public class Species {
 		//按照物种名进行排序
 		TreeMap<String, Species> treemapName2Species = new TreeMap<String, Species>();
 		
-		ServTaxID servTaxID = new ServTaxID();
-		ServSpeciesFile servSpeciesFile = new ServSpeciesFile();
+		ManageTaxID servTaxID = new ManageTaxID();
+		ManageSpeciesFile servSpeciesFile = new ManageSpeciesFile();
 		List<Integer> lsTaxID = new ArrayList<Integer>();
 		try {
 			lsTaxID = servTaxID.getLsAllTaxID();
@@ -479,7 +481,7 @@ public class Species {
 				}
 			}
 			else if (speciesType == SEQINFO_SPECIES) {
-				ArrayList<SpeciesFile> lsSpeciesFiles = servSpeciesFile.queryLsSpeciesFile(taxID, null);
+				List<SpeciesFile> lsSpeciesFiles = servSpeciesFile.queryLsSpeciesFile(taxID);
 				if (lsSpeciesFiles.size() == 0) {
 					continue;
 				}
@@ -494,40 +496,7 @@ public class Species {
 		
 		return mapName2Species;
 	}
-	
-	/**
-	 * 返回物种的常用名，并且按照字母排序（忽略大小写）
-	 * 可以配合getSpeciesNameTaxID方法来获得taxID
-	 * @param allID true返回全部ID， false返回常用ID--也就是有缩写的ID
-	 * @return
-	 */
-	@Deprecated
-	public static ArrayList<String> getSpeciesName(boolean allID) {
-		ArrayList<String> lsResult = new ArrayList<String>();
-		ServTaxID servTaxID = new ServTaxID();
-		HashMap<String, Integer> hashSpecies = servTaxID.getSpeciesNameTaxID(allID);
-		for (String name : hashSpecies.keySet()) {
-			if (name != null && !name.equals("")) {
-				lsResult.add(name);
-			}
-		}
-		Collections.sort(lsResult, new Comparator<String>() {
-			@Override
-			public int compare(String o1, String o2) {
-				return o1.compareToIgnoreCase(o2);
-			}
-		});
-		return lsResult;
-	}
-	/**
-	 * 返回taxID对常用名
-	 * @return
-	 */
-	@Deprecated
-	public static HashMap<Integer,String> getSpeciesTaxIDName() {
-		ServTaxID servTaxID = new ServTaxID();
-		return servTaxID.getHashTaxIDName();
-	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;

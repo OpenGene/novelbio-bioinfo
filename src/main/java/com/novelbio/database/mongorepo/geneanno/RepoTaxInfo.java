@@ -7,7 +7,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.novelbio.database.domain.geneanno.TaxInfo;
 
-public interface RepoTaxInfo extends PagingAndSortingRepository<TaxInfo, String>{
+public interface RepoTaxInfo extends PagingAndSortingRepository<TaxInfo, Integer>{
 
 	@Query(value="{ 'taxID' : ?0 }")
 	TaxInfo findByTaxID(int taxID);

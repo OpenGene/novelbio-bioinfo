@@ -6,17 +6,15 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-import org.apache.velocity.runtime.directive.Foreach;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.geneanno.SpeciesFile;
-import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.service.servinformation.ServSoftWareInfo;
+import com.novelbio.database.service.servinformation.ManageSoftWareInfo;
 
 /**
  * 生物信息的软件以及执行路径
@@ -34,18 +32,26 @@ public class SoftWareInfo {
 	private String installPath;
 	/** 所在文件夹 */
 	private String locationPath;
-	private String use;
+	private String usage;
 	private String ver;
 	/** 是否处于环境变量中:1表示true */
 	int isPath = 1;
+	
 	/** 是否已经查找过 */
+	@Transient
 	boolean searched = false;
-	/** 查找用的 */
-	ServSoftWareInfo servSoftWareInfo = new ServSoftWareInfo();
-
+	@Transient
+	ManageSoftWareInfo manageSoftWareInfo = new ManageSoftWareInfo();
+	
 	public SoftWareInfo() { }
 	public SoftWareInfo(SoftWare softName) { 
 		setName(softName);
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public String getId() {
+		return id;
 	}
 	
 	public void setName(String softName) {
@@ -88,11 +94,11 @@ public class SoftWareInfo {
 	 */
 	public void setUsage(String usage) {
 		searched = false;
-		this.use = usage;
+		this.usage = usage;
 	}
 	public String getUsage() {
 		querySoftWareInfo();
-		return use;
+		return usage;
 	}
 	/** 运行路径，如果是系统路径的话就为 "" */
 	public void setInstallPath(String installPath) {
@@ -143,12 +149,9 @@ public class SoftWareInfo {
 	 * 升级本信息，没有就插入，有就升级
 	 */
 	public void update() {
-		servSoftWareInfo.update(this);
+		manageSoftWareInfo.update(this);
 	}
-	public ArrayList<SoftWareInfo> queryLsSoftWareInfo() {
-		ArrayList<SoftWareInfo> lsSoftWareInfos = servSoftWareInfo.queryLsSoftWareInfo(this);
-		return lsSoftWareInfos;
-	}
+	
 	/**
 	 * 必须要有软件名，最好有版本号
 	 */
@@ -159,20 +162,8 @@ public class SoftWareInfo {
 		if (softName == null || softName.trim().equals("")) {
 			return;
 		}
-		ArrayList<SoftWareInfo> lsSoftWareInfos = servSoftWareInfo.queryLsSoftWareInfo(this);
-		if (lsSoftWareInfos == null || lsSoftWareInfos.size() == 0) {
-			return;
-		}
-		if (lsSoftWareInfos.size() > 1) {
-			//根据版本号进行排序
-			Collections.sort(lsSoftWareInfos, new Comparator<SoftWareInfo>() {
-				@Override
-				public int compare(SoftWareInfo o1, SoftWareInfo o2) {
-					return o1.getVersion().compareTo(o2.getVersion());
-				}
-			});
-		}
-		copyInfo(lsSoftWareInfos.get(lsSoftWareInfos.size() - 1));
+		SoftWareInfo softWareInfos = manageSoftWareInfo.findSoftwareByName(getName());
+		copyInfo(softWareInfos);
 		searched = true;
 	}
 	
@@ -182,7 +173,7 @@ public class SoftWareInfo {
 		this.descrip = softWareInfo.descrip;
 		this.installPath = softWareInfo.installPath;
 		this.locationPath = softWareInfo.locationPath;
-		this.use = softWareInfo.use;
+		this.usage = softWareInfo.usage;
 		this.ver = softWareInfo.ver;
 		this.web = softWareInfo.web;
 		this.isPath = softWareInfo.isPath;
@@ -203,7 +194,7 @@ public class SoftWareInfo {
 				&& this.isPath == otherObj.isPath
 				&& ArrayOperate.compareString(this.locationPath, otherObj.locationPath)
 				&& ArrayOperate.compareString(this.softName, otherObj.softName)
-				&& ArrayOperate.compareString(this.use, otherObj.use)
+				&& ArrayOperate.compareString(this.usage, otherObj.usage)
 				&& ArrayOperate.compareString(this.ver, otherObj.ver)
 				&& ArrayOperate.compareString(this.web, otherObj.web)
 				)
@@ -266,8 +257,8 @@ public class SoftWareInfo {
 		static HashMap<String, SoftWare> mapStr2MapSoftware = new LinkedHashMap<String, SoftWareInfo.SoftWare>();
 		public static HashMap<String, SoftWare> getMapStr2MappingSoftware() {
 			if (mapStr2MapSoftware.size() == 0) {
-				mapStr2MapSoftware.put("BWA", bwa);
-				mapStr2MapSoftware.put("BOWTIE2", bowtie2);
+				mapStr2MapSoftware.put("bwa", bwa);
+				mapStr2MapSoftware.put("bowtie2", bowtie2);
 			}
 			return mapStr2MapSoftware;
 		}

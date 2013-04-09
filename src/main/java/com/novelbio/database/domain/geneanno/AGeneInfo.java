@@ -199,7 +199,21 @@ public abstract class AGeneInfo {
 		update = update || addInfo(setSynonyms, geneInfo.setSynonyms);
 		return update;
 	}
-	
+	/** 浅层复制，不复制geneID */
+	public void copeyInfo(AGeneInfo geneInfo) {
+		this.dbInfo = geneInfo.dbInfo;
+		this.mapDescription = geneInfo.mapDescription;
+		this.mapSymbol = geneInfo.mapSymbol;
+		this.modDate = geneInfo.modDate;
+		this.setDbXrefs = geneInfo.setDbXrefs;
+		this.setFullNameNome = geneInfo.setFullNameNome;
+		this.setPubmedIDs = geneInfo.setPubmedIDs;
+		this.setSymNome = geneInfo.setSymNome;
+		this.setSynonyms = geneInfo.setSynonyms;
+		this.taxID = geneInfo.taxID;
+		this.typeOfGene = geneInfo.typeOfGene;
+		
+	}
 	/**
 	 * 将SetOther装到setThis里面，如果setOther中出现了新的item，则返回true
 	 * 否则返回false

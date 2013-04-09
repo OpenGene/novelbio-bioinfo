@@ -66,6 +66,9 @@ public class DBInfo {
 		return (SepSign.SEP_ID + dbName + SepSign.SEP_ID + dbOrg).hashCode();
 	}
 	
+	/**
+	 * 仅比较DBname和DBorg两项
+	 */
 	public boolean equals(Object object) {
 		if (this == object) return true;
 		if (object == null) return false;

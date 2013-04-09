@@ -8,7 +8,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.service.servgeneanno.ManageDBInfo;
-import com.novelbio.database.service.servgeneanno.ServDBInfo;
 import com.novelbio.database.service.servgeneanno.ManageNCBIUniID;
 
 /**
@@ -26,9 +25,7 @@ public abstract class AgeneUniID {
 	
 	@Field(value="accID")
 	private String accessID;
-	
-	private String dbInfoID;
-	
+		
 	@DBRef
 	DBInfo databaseInfo;
 	
@@ -73,13 +70,14 @@ public abstract class AgeneUniID {
 	}  
 	
 	public DBInfo getDataBaseInfo() {
-		fillDataBase();
 		return databaseInfo;
 	}
 	
 	public void setDataBaseInfoID(String dbInfoID) {
-		this.dbInfoID = dbInfoID;
-		fillDataBase();
+		if (dbInfoID == null || dbInfoID.equals("")) {
+			return;
+		}
+		this.databaseInfo = manageDBInfo.findOne(dbInfoID);
 	}
 	/**
 	 * 输入数据库的具体名字，譬如affy_U133等
@@ -91,30 +89,12 @@ public abstract class AgeneUniID {
 			return;
 		}
 		this.databaseInfo = manageDBInfo.findByDBname(dbName);
-		this.dbInfoID = this.databaseInfo.getDbInfoID();
-		fillDataBase();
-	}
-	
-	private void fillDataBase() {
-		if (this.dbInfoID== null || this.dbInfoID.equals("")) {
-			this.databaseInfo = null;
-			return;
-		}
-		
-		if (this.databaseInfo == null) {
-			DBInfo databaseInfo = new DBInfo();
-			databaseInfo.setDbInfoID(dbInfoID);
-			this.databaseInfo = manageDBInfo.findOne(dbInfoID);
-		}
 	}
 	
 	public void setDataBaseInfo(DBInfo databaseInfo) {
-		this.databaseInfo = databaseInfo;
-		if (databaseInfo == null) {
-			this.dbInfoID = null;
-		} else {
-			this.dbInfoID = databaseInfo.getDbInfoID();
-		}		
+		if (databaseInfo != null) {
+			this.databaseInfo = databaseInfo;
+		}
 	}
 	
 	/**

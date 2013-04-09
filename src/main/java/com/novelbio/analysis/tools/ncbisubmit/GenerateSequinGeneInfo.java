@@ -1,16 +1,7 @@
 package com.novelbio.analysis.tools.ncbisubmit;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-
-import org.apache.poi.ss.util.SSCellRange;
-
-import com.novelbio.analysis.seq.fasta.SeqFasta;
-import com.novelbio.analysis.seq.fasta.SeqFastaHash;
-import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.sun.tools.javah.resources.l10n;
 
 /**
  * 将gff文件整理成为Sequin识别的格式

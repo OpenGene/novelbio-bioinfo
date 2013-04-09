@@ -23,14 +23,16 @@ import com.novelbio.database.model.modgeneid.GeneID;
 public class BlastInfo implements Comparable<BlastInfo> {
 	@Id
 	private String id;
-	protected String queryID;
+	private String queryID;
 	@Indexed
-	protected String subjectID;
+	private String subjectID;
 	
-	protected String blastDate;
+	private String blastDate;
 
-	protected double identities=0;
-	protected double evalue = 100;
+	private double identities = 0;
+	private double evalue = 100;
+	private double score = 0;
+	private int alignLen = 0;
 	
 	protected int queryTax;
 	protected int subjectTax;
@@ -49,6 +51,14 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	
 	public BlastInfo() {
 		setDate();
+	}
+	/** mongodb中的id */
+	public void setId(String id) {
+		this.id = id;
+	}
+	/** mongodb中的id */
+	public String getId() {
+		return id;
 	}
 	
 	private void setDate() {
@@ -262,6 +272,18 @@ public class BlastInfo implements Comparable<BlastInfo> {
 		return this.blastDate;
 	}
 ///////////////////////////////////////////////////////////////////////////////////
+	public void setAlignLen(int alignLen) {
+		this.alignLen = alignLen;
+	}
+	public int getAlignLen() {
+		return alignLen;
+	}
+	public void setScore(double score) {
+		this.score = score;
+	}
+	public double getScore() {
+		return score;
+	}
 	
 	/**
 	 * 设置blast得到的数据是基于哪个表的，有NCBIID和UniprotID两个选择
@@ -276,7 +298,8 @@ public class BlastInfo implements Comparable<BlastInfo> {
 		return this.subjectTab;
 	}
 	/**
-	 * 按照evalue从小到大排序
+	 * 按照相似度排序
+	 * -1 表示更可信
 	 */
 	@Override
 	public int compareTo(BlastInfo o) {
@@ -284,9 +307,14 @@ public class BlastInfo implements Comparable<BlastInfo> {
 		Double evalueO = o.getEvalue();
 		Double identityThis = identities;
 		Double identityO = o.identities;
-		int result = evalueThis.compareTo(evalueO);
+		Double scoreThis = score;
+		Double scoreO = o.score;
+		int result = -scoreThis.compareTo(scoreO);
 		if (result == 0) {
 			result = -identityThis.compareTo(identityO);
+		}
+		if (result == 0) {
+			result = evalueThis.compareTo(evalueO);
 		}
 		return result;
 	}

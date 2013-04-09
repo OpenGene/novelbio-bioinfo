@@ -26,7 +26,7 @@ public class Go2Term implements Cloneable {
 	@Indexed
 	private String GoID;
 	private String GoTerm;
-	private String GoFunction;
+	private String GoType;
 	private Map<Go2Term, GORelation> mapParentGO2Relate = new HashMap<Go2Term, GORelation>();;
 	private Map<Go2Term, GORelation> mapChildGO2Relate = new HashMap<Go2Term, GORelation>();;
 	private String Definition;
@@ -145,10 +145,10 @@ public class Go2Term implements Cloneable {
 	 * @return
 	 */
 	public GOtype getGOtype() {
-		return GOtype.getMapStrShort2Gotype().get(GoFunction);
+		return GOtype.getMapStrShort2Gotype().get(GoType);
 	}
 	public void setGOtype(GOtype gotype) {
-		this.GoFunction = gotype.getOneWord();
+		this.GoType = gotype.getOneWord();
 	}
 	/**
 	 * 仅比较GOID
@@ -187,7 +187,7 @@ public class Go2Term implements Cloneable {
 		if (getClass() != other.getClass()) return false;
 		Go2Term otherObj = (Go2Term)other;
 		
-		if (ArrayOperate.compareString(GoFunction, otherObj.GoFunction)
+		if (ArrayOperate.compareString(GoType, otherObj.GoType)
 			&&
 			ArrayOperate.compareString(GoID, otherObj.getGoID())
 			&&
@@ -213,15 +213,34 @@ public class Go2Term implements Cloneable {
 		return result.hashCode();
 	}
 
+	/**
+	 * 添加信息并返回是否需要更新
+	 * @param go2Term
+	 * @return
+	 */
 	public boolean addInfo(Go2Term go2Term) {
 		boolean update = false;
 		update = update || AGeneInfo.addInfo(setQueryGoID, go2Term.setQueryGoID);
 		update = update || AGeneInfo.addInfo(mapChildGO2Relate.keySet(), go2Term.mapChildGO2Relate.keySet());
 		update = update || AGeneInfo.addInfo(mapParentGO2Relate.keySet(), go2Term.mapParentGO2Relate.keySet());
 		
+		if (go2Term.GoType != null && !go2Term.GoType.equals(GoType)) {
+			GoType = go2Term.GoType;
+			update = true;
+		}
+		
+		if (go2Term.Definition != null && !go2Term.Definition.equals(Definition)) {
+			Definition = go2Term.Definition;
+			update = true;
+		}
+		if (go2Term.GoID != null && !go2Term.GoID.equals(GoID)) {
+			GoID = go2Term.GoID;
+			update = true;
+		}
+		
 		return update;
 	}
-	
+
 	public Go2Term clone() {
 		Go2Term go2Term = null;
 		try {
@@ -235,7 +254,7 @@ public class Go2Term implements Cloneable {
 				go2Term.mapParentGO2Relate.put(goID, mapParentGO2Relate.get(goID));
 			}
 			go2Term.Definition = Definition;
-			go2Term.GoFunction = GoFunction;
+			go2Term.GoType = GoType;
 			go2Term.GoID = GoID;
 			go2Term.gorelation = gorelation;
 			go2Term.GoTerm = GoTerm;

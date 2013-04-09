@@ -4,8 +4,6 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.novelbio.database.domain.geneanno.SnpIndelRs;

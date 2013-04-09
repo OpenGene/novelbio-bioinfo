@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @CompoundIndexes({
     @CompoundIndex(unique = true, name = "go_tax_idx", def = "{'goID': 1, 'taxID': -1}")
  })
-public class Gene2Go extends AGene2Go{
+public class Gene2Go extends AGene2Go {
 	@Indexed
 	private long geneID;
 	

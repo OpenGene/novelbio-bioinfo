@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.base.SepSign;
 import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.AGeneInfo;
@@ -18,7 +19,6 @@ import com.novelbio.database.domain.geneanno.DBInfo;
 import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.domain.geneanno.Gene2Go;
 import com.novelbio.database.domain.geneanno.GeneInfo;
-import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.database.domain.geneanno.UniGeneInfo;
 import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.domain.kegg.KGpathway;
@@ -27,12 +27,11 @@ import com.novelbio.database.model.modgo.GOInfoGenID;
 import com.novelbio.database.model.modgo.GOInfoUniID;
 import com.novelbio.database.model.modkegg.KeggInfo;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.database.service.servgeneanno.ServBlastInfo;
-import com.novelbio.database.service.servgeneanno.ServGene2Go;
-import com.novelbio.database.service.servgeneanno.ServGeneInfo;
+import com.novelbio.database.service.servgeneanno.ManageBlastInfo;
+import com.novelbio.database.service.servgeneanno.ManageGeneInfo;
 import com.novelbio.database.service.servgeneanno.ManageNCBIUniID;
-import com.novelbio.database.service.servgeneanno.ServUniGene2Go;
-import com.novelbio.database.service.servgeneanno.ServUniGeneInfo;
+import com.novelbio.database.service.servgeneanno.ManageUniGene2Go;
+import com.novelbio.database.service.servgeneanno.ManageUniGeneInfo;
 
 public class GeneIDabs implements GeneIDInt {
 	private static Logger logger = Logger.getLogger(GeneIDabs.class);
@@ -53,11 +52,9 @@ public class GeneIDabs implements GeneIDInt {
 	boolean overrideUpdateDBinfo = false;
 	// //////////////////// service 层
 	ManageNCBIUniID servNCBIUniID = new ManageNCBIUniID();
-	ServBlastInfo servBlastInfo = new ServBlastInfo();
-	ServGeneInfo servGeneInfo = new ServGeneInfo();
-	ServUniGeneInfo servUniGeneInfo = new ServUniGeneInfo();
-	ServGene2Go servGene2Go = new ServGene2Go();
-	ServUniGene2Go servUniGene2Go = new ServUniGene2Go();
+	ManageBlastInfo servBlastInfo = new ManageBlastInfo();
+	ManageGeneInfo servGeneInfo = new ManageGeneInfo();
+	ManageUniGeneInfo servUniGeneInfo = new ManageUniGeneInfo();
 	// ///////////////////////////////////////////////////////////////////////////////////////////
 	
 	/**
@@ -398,19 +395,6 @@ public class GeneIDabs implements GeneIDInt {
 		}
 		return tmpAnno;
 	}
-	// ////////////////////////////////GOInfo
-	/**
-	 * 设定 goInfoAbs的信息
-	 */
-	protected void setGoInfo() {
-		if (getIDtype() == GeneID.IDTYPE_GENEID) {
-			goInfoAbs = new GOInfoGenID(ageneUniID.getGenUniID(), ageneUniID.getTaxID());
-		} else if (getIDtype() == GeneID.IDTYPE_UNIID) {
-			goInfoAbs = new GOInfoUniID(ageneUniID.getGenUniID(), getTaxID());
-		} else {
-			goInfoAbs = new GOInfoUniID(ageneUniID.getAccID(), ageneUniID.getTaxID());
-		}
-	}
 
 	/**
 	 * 返回该基因所对应的GOInfo信息，不包含Blast
@@ -418,7 +402,7 @@ public class GeneIDabs implements GeneIDInt {
 	 */
 	public GOInfoAbs getGOInfo() {
 		if (goInfoAbs == null) {
-			setGoInfo();
+			goInfoAbs = GOInfoAbs.createGOInfoAbs(ageneUniID.getGeneIDtype(), ageneUniID.getGenUniID(), ageneUniID.getTaxID());
 		}
 		return goInfoAbs;
 	}
@@ -438,16 +422,17 @@ public class GeneIDabs implements GeneIDInt {
 	 * blast多个物种 首先设定blast的物种 用方法： setBlastInfo(double evalue, int... StaxID)
 	 * 获得经过blast的GoInfo
 	 */
-	public ArrayList<AGene2Go> getGene2GOBlast(GOtype GOType) {
-		setGoInfo();
-		ArrayList<GOInfoAbs> lsGoInfo = new ArrayList<GOInfoAbs>();
+	public List<AGene2Go> getGene2GOBlast(GOtype GOType) {
+		List<GOInfoAbs> lsGoInfo = new ArrayList<GOInfoAbs>();
 
 		ArrayList<GeneID> lsBlastGeneIDs = getLsBlastGeneID();
 		for (GeneID geneID : lsBlastGeneIDs) {
 			lsGoInfo.add(geneID.getGOInfo());
 		}
-		return getGOInfo().getLsGen2Go(lsGoInfo, GOType);
+		lsGoInfo.add(getGOInfo());
+		return GOInfoAbs.getLsGen2Go(lsGoInfo, GOType);
 	}
+	
 	ArrayList<KGentry> lsKGentries = null;
 	// ////////////////KEGG //////////////////////////////////////////////
 	/**
@@ -609,9 +594,6 @@ public class GeneIDabs implements GeneIDInt {
 	public void setUpdateAccIDNoCoped(String accID) {
 		ageneUniID.setAccID(accID);
 	}
-	
-	/** 记录升级的GO信息的，每次升级完毕后都清空 */
-	ArrayList<Gene2Go> lsGOInfoUpdate = new ArrayList<Gene2Go>();
 
 	/**
 	 * 依次输入需要升级的GO信息，最后升级 这里只是先获取GO的信息，最后调用升级method的时候再升级
@@ -625,21 +607,7 @@ public class GeneIDabs implements GeneIDInt {
 	@Override
 	public void addUpdateGO(String GOID, DBAccIDSource GOdatabase, String GOevidence,
 			String GORef, String gOQualifiy) {
-		if (GOID == null) {
-			return;
-		}
-		GOID = GOID.trim();
-		if (GOID.equals("")) {
-			return;	
-		}
-		Gene2Go gene2Go = new Gene2Go();
-		gene2Go.setGOID(GOID);
-		gene2Go.setTaxID(ageneUniID.getTaxID());
-		gene2Go.setEvidence(GOevidence);
-		gene2Go.setDataBase(GOdatabase.toString());
-		gene2Go.setQualifier(gOQualifiy);
-		gene2Go.setReference(GORef);
-		lsGOInfoUpdate.add(gene2Go);
+		goInfoAbs.addGOid(getTaxID(), GOID, GOdatabase, GOevidence, GORef, gOQualifiy);
 	}
 
 	/**
@@ -654,62 +622,23 @@ public class GeneIDabs implements GeneIDInt {
 
 	// 专门用于升级
 	ArrayList<BlastInfo> lsBlastInfosUpdate = null;
-	
+
 	/**
 	 * 如果没有QueryID, SubjectID, taxID中的任何一项，就不升级 如果evalue>50 或 evalue<0，就不升级
 	 * 可以连续不断的添加
 	 * @param blastInfo
 	 */
 	@Override
-	public void setUpdateBlastInfo(String SubAccID, String subDBInfo, int SubTaxID, double evalue, double identities) {
-		if (!ageneUniID.isValidGenUniID()) {
+	public void addUpdateBlastInfo(BlastInfo blastInfo) {
+		if (!ageneUniID.isValidGenUniID() || blastInfo.getSubTab() == GeneID.IDTYPE_ACCID) {
 			return;
 		}
-		BlastInfo blastInfo = new BlastInfo(null, 0, SubAccID, SubTaxID);
-		if (blastInfo.getSubTab() == GeneID.IDTYPE_ACCID) {
-			logger.error("没有该blast的accID："+SubAccID);
-			return;
-		}
-		addLsBlastUpdate(evalue, blastInfo, identities, subDBInfo);
-	}
-	/**
-	 * 
-	 * 如果没有QueryID, SubjectID, taxID中的任何一项，就不升级 如果evalue>50 或 evalue<0，就不升级
-	 * 可以连续不断的添加
-	 * @param blastInfo
-	 */
-	@Override
-	public void setUpdateBlastInfo(String SubGenUniID, int subIDtype, String subDBInfo, int SubTaxID, double evalue, double identities) {
-		if (!ageneUniID.isValidGenUniID()) {
-			return;
-		}
-		
-		BlastInfo blastInfo = new BlastInfo(null, 0, SubGenUniID, subIDtype, SubTaxID);
-		if (blastInfo.getSubTab() == GeneID.IDTYPE_ACCID) {
-			logger.error("没有该blast的geneUniID："+SubGenUniID);
-			return;
-		}
-		addLsBlastUpdate(evalue, blastInfo, identities, subDBInfo);
-	}
-	
-	/**
-	 * 输入初始化好的BlastInfo
-	 * @param blastInfo
-	 */
-	private void addLsBlastUpdate(double evalue, BlastInfo blastInfo, double identities, String subDBInfo) {
-		if (blastInfo.getSubTab() == GeneID.IDTYPE_ACCID) {
-			logger.error("没有该blast的accID："+blastInfo.getGeneIDS().getAccID());
-			return;
-		}
-		blastInfo.setQueryID(ageneUniID.getGenUniID());
-		blastInfo.setQueryTax(getTaxID());
-		blastInfo.setEvalue_Identity(evalue, identities);
-		blastInfo.setQueryDB_SubDB(ageneUniID.getDataBaseInfo().getDbName(), subDBInfo);
 		if (lsBlastInfosUpdate == null) {
 			lsBlastInfosUpdate = new ArrayList<BlastInfo>();
 		}
 		lsBlastInfosUpdate.add(blastInfo);
 	}
+	
 	/**
 	 * 如果新的ID不加入UniID，那么就写入指定的文件中 文件需要最开始用set指定
 	 * 只要有一个错误就会返回
@@ -743,22 +672,12 @@ public class GeneIDabs implements GeneIDInt {
 
 	/** 升级GO数据库 */
 	private boolean updateGene2Go() {
-		boolean flag = true;
-		if (!ageneUniID.isValidGenUniID()) {
+		try {
+			goInfoAbs.update();
+		} catch (Exception e) {
 			return false;
 		}
-		for (Gene2Go gene2Go : lsGOInfoUpdate) {
-			if (getIDtype() == GeneID.IDTYPE_GENEID) {
-				if (!servGene2Go.updateGene2Go(ageneUniID.getGenUniID(), ageneUniID.getTaxID(), gene2Go))
-					flag = false;
-			} else if (getIDtype() == GeneID.IDTYPE_UNIID) {
-				if (!servUniGene2Go.updateUniGene2Go(ageneUniID.getGenUniID(), ageneUniID.getTaxID(), gene2Go))
-					flag = false;
-			} else {
-				return false;
-			}
-		}
-		return flag;
+		return true;
 	}
 
 	/**
