@@ -2,13 +2,12 @@ package com.novelbio.database.service.servgeneanno;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.novelbio.database.domain.geneanno.AGeneInfo;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.mongorepo.geneanno.RepoGeneInfo;
 import com.novelbio.database.service.SpringFactory;
-@Service
+
 public class ManageGeneInfo {
 	private static Logger logger = Logger.getLogger(ManageGeneInfo.class);
 	@Autowired

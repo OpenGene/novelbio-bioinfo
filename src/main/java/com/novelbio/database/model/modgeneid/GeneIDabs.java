@@ -42,7 +42,7 @@ public class GeneIDabs implements GeneIDInt {
 	boolean isAccID = false;
 	
 	/** 譬方和多个物种进行blast，然后结合这些物种的信息，取并集 */
-	ArrayList<BlastInfo> lsBlastInfos = null;
+	BlastList blastList;
 	AGeneInfo geneInfo = null;
 	KeggInfo keggInfo;
 	GOInfoAbs goInfoAbs = null;
@@ -52,10 +52,8 @@ public class GeneIDabs implements GeneIDInt {
 	boolean overrideUpdateDBinfo = false;
 	// //////////////////// service 层
 	ManageNCBIUniID servNCBIUniID = new ManageNCBIUniID();
-	ManageBlastInfo servBlastInfo = new ManageBlastInfo();
 	ManageGeneInfo servGeneInfo = new ManageGeneInfo();
 	ManageUniGeneInfo servUniGeneInfo = new ManageUniGeneInfo();
-	// ///////////////////////////////////////////////////////////////////////////////////////////
 	
 	/**
 	 * 输入已经查询好的ageneUniID
@@ -155,8 +153,10 @@ public class GeneIDabs implements GeneIDInt {
 	}
 	
 	/**
+	 * 
 	 * 有geneUniID就用geneUniID去query
 	 * 否则就用accID去query
+	 * @param evalue 小于0就走默认 为1e-10
 	 */
 	@Override
 	public void setBlastInfo(double evalue, int... StaxID) {
@@ -164,16 +164,9 @@ public class GeneIDabs implements GeneIDInt {
 		if (!ageneUniID.isValidGenUniID()) {
 			geneUniID = ageneUniID.getAccID();
 		}
-		lsBlastInfos = new ArrayList<BlastInfo>();
-		for (int i : StaxID) {
-			if (i <= 0) {
-				continue;
-			}
-			BlastInfo blastInfo = servBlastInfo.queryBlastInfo(geneUniID, ageneUniID.getTaxID(), i,evalue);
-			if (blastInfo != null) {
-				lsBlastInfos.add(blastInfo);
-			}
-		}
+		blastList = new BlastList(geneUniID, getTaxID());
+		blastList.setTaxID(StaxID);
+		blastList.setEvalue(evalue);
 		// 重置blastGeneID的内容
 		lsBlastGeneID = null;
 	}
@@ -206,10 +199,10 @@ public class GeneIDabs implements GeneIDInt {
 			return lsBlastGeneID;
 		}
 		lsBlastGeneID = new ArrayList<GeneID>();
-		if (lsBlastInfos == null || lsBlastInfos.size() == 0) {
+		if (blastList == null) {
 			return lsBlastGeneID;
 		}
-		for (BlastInfo blastInfo : lsBlastInfos) {
+		for (BlastInfo blastInfo : blastList.getBlastInfo()) {
 			GeneID geneID = getBlastGeneID(blastInfo);
 			if (geneID != null) {
 				lsBlastGeneID.add(geneID);
@@ -234,8 +227,8 @@ public class GeneIDabs implements GeneIDInt {
 	 * blast多个物种 首先要设定blast的目标 用方法： setBlastInfo(double evalue, int... StaxID)
 	 * @return 返回blast的信息，包括evalue等，该list和{@link #getLsBlastGeneID()}得到的list是一一对应的
 	 */
-	public ArrayList<BlastInfo> getLsBlastInfos() {
-		return lsBlastInfos;
+	public List<BlastInfo> getLsBlastInfos() {
+		return blastList.getBlastInfo();
 	}
 	
 	/**
@@ -336,9 +329,7 @@ public class GeneIDabs implements GeneIDInt {
 		return symbol;
 	}
 
-	/**
-	 * 设定geneInfo信息
-	 */
+	/** 设定geneInfo信息 */
 	protected void setGenInfo() {
 		if (getIDtype() == GeneID.IDTYPE_GENEID) {
 			GeneInfo geneInfoq = new GeneInfo();
@@ -415,9 +406,10 @@ public class GeneIDabs implements GeneIDInt {
 	 * @param GOType
 	 * @return
 	 */
-	public ArrayList<AGene2Go> getGene2GO(GOtype GOType) {
+	public List<AGene2Go> getGene2GO(GOtype GOType) {
 		return getGOInfo().getLsGene2Go(GOType);
 	}
+	
 	/**
 	 * blast多个物种 首先设定blast的物种 用方法： setBlastInfo(double evalue, int... StaxID)
 	 * 获得经过blast的GoInfo
@@ -620,9 +612,6 @@ public class GeneIDabs implements GeneIDInt {
 		this.geneInfo = geneInfo;
 	}
 
-	// 专门用于升级
-	ArrayList<BlastInfo> lsBlastInfosUpdate = null;
-
 	/**
 	 * 如果没有QueryID, SubjectID, taxID中的任何一项，就不升级 如果evalue>50 或 evalue<0，就不升级
 	 * 可以连续不断的添加
@@ -633,10 +622,10 @@ public class GeneIDabs implements GeneIDInt {
 		if (!ageneUniID.isValidGenUniID() || blastInfo.getSubTab() == GeneID.IDTYPE_ACCID) {
 			return;
 		}
-		if (lsBlastInfosUpdate == null) {
-			lsBlastInfosUpdate = new ArrayList<BlastInfo>();
+		if (blastList == null) {
+			blastList = new BlastList(getAgeneUniID().getGenUniID(), getTaxID());
 		}
-		lsBlastInfosUpdate.add(blastInfo);
+		blastList.addBlastInfo(blastInfo);
 	}
 	
 	/**
@@ -771,23 +760,16 @@ public class GeneIDabs implements GeneIDInt {
 		}
 	}
 	
-	// /////////////////////// 升级 Blast 的信息
 	private boolean updateBlastInfo() {
-		boolean blastCorrect = true;
-		if (!ageneUniID.isValidGenUniID()) {
-			return false;
-		}
-		if (lsBlastInfosUpdate == null) {
-			return true;
-		}
-		for (BlastInfo blastInfo : lsBlastInfosUpdate) {
-			if (blastInfo.getSubTab() == GeneID.IDTYPE_ACCID) {
-				blastCorrect = false;
-				continue;
+		if (blastList != null) {
+			try {
+				blastList.update();
+				return true;
+			} catch (Exception e) {
+				return false;
 			}
-			servBlastInfo.updateBlast(blastInfo);
 		}
-		return blastCorrect;
+		return true;
 	}
 
 	// /////////////////////// 升级 uniGene 的信息

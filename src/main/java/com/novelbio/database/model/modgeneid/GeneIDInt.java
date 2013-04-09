@@ -96,7 +96,7 @@ public interface GeneIDInt{
 	 * @param GOType
 	 * @return
 	 */
-	public ArrayList<AGene2Go> getGene2GO(GOtype GOType);
+	public List<AGene2Go> getGene2GO(GOtype GOType);
 
 	
 	//////////   GoInfo   ////////////////
@@ -114,7 +114,7 @@ public interface GeneIDInt{
 	 * @return
 	 * 返回blast的信息，包括evalue等，该list和getCopedIDLsBlast()得到的list是一一对应的
 	 */
-	public ArrayList<BlastInfo> getLsBlastInfos();
+	public List<BlastInfo> getLsBlastInfos();
 
 	/**
 	 * 单个物种的blast 获得本copedID blast到对应物种的第一个copedID，没有就返回null

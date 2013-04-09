@@ -60,13 +60,13 @@ public abstract class GOInfoAbs{
 	 * @return
 	 * 没有则返回一个空的lsResult
 	 */
-	public Collection<AGene2Go> getLsGene2Go(GOtype GOType) {
+	public List<AGene2Go> getLsGene2Go(GOtype GOType) {
 		setGene2Go();
 		
 		if (GOType != GOtype.ALL) {
 			return getLsGoType(GOType);
 		} else {
-			return mapGene2Gos.values();
+			return new ArrayList<AGene2Go>(mapGene2Gos.values());
 		}
 	}
 	/**
