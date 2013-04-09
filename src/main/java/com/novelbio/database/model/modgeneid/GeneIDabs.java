@@ -17,21 +17,13 @@ import com.novelbio.database.domain.geneanno.AgeneUniID;
 import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.domain.geneanno.DBInfo;
 import com.novelbio.database.domain.geneanno.GOtype;
-import com.novelbio.database.domain.geneanno.Gene2Go;
-import com.novelbio.database.domain.geneanno.GeneInfo;
-import com.novelbio.database.domain.geneanno.UniGeneInfo;
 import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgo.GOInfoAbs;
-import com.novelbio.database.model.modgo.GOInfoGenID;
-import com.novelbio.database.model.modgo.GOInfoUniID;
 import com.novelbio.database.model.modkegg.KeggInfo;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.database.service.servgeneanno.ManageBlastInfo;
 import com.novelbio.database.service.servgeneanno.ManageGeneInfo;
 import com.novelbio.database.service.servgeneanno.ManageNCBIUniID;
-import com.novelbio.database.service.servgeneanno.ManageUniGene2Go;
-import com.novelbio.database.service.servgeneanno.ManageUniGeneInfo;
 
 public class GeneIDabs implements GeneIDInt {
 	private static Logger logger = Logger.getLogger(GeneIDabs.class);
@@ -53,8 +45,7 @@ public class GeneIDabs implements GeneIDInt {
 	// //////////////////// service 层
 	ManageNCBIUniID servNCBIUniID = new ManageNCBIUniID();
 	ManageGeneInfo servGeneInfo = new ManageGeneInfo();
-	ManageUniGeneInfo servUniGeneInfo = new ManageUniGeneInfo();
-	
+
 	/**
 	 * 输入已经查询好的ageneUniID
 	 * @param ageneUniID
@@ -276,13 +267,13 @@ public class GeneIDabs implements GeneIDInt {
 	 * @param dbInfo
 	 * @return
 	 */
-	protected AgeneUniID getGenUniID(AgeneUniID genUniID, String dbInfo) {
-		if (getIDtype() == GeneID.IDTYPE_ACCID || genUniID.getDataBaseInfo().getDbName().equals(dbInfo)) {
+	protected AgeneUniID getGenUniID(AgeneUniID genUniID, String dbName) {
+		if (getIDtype() == GeneID.IDTYPE_ACCID || genUniID.getDataBaseInfo().getDbName().equals(dbName)) {
 			return genUniID;
 		}
 		genUniID.setDataBaseInfo("");
-		ArrayList<? extends AgeneUniID> lsSubject = servNCBIUniID.queryLsAgeneUniID(genUniID);
-		return getGeneUniIDwithDB(lsSubject, dbInfo);
+		List<AgeneUniID> lsSubject = servNCBIUniID.findByGeneUniID(genUniID.getGeneIDtype(), genUniID.getGenUniID(), genUniID.getTaxID());
+		return getGeneUniIDwithDB(lsSubject, dbName);
 	}
 	
 	public int getTaxID() {
@@ -323,26 +314,12 @@ public class GeneIDabs implements GeneIDInt {
 		if (symbol == null || symbol.equals("")) {
 			symbol = getGenUniID(ageneUniID, getDatabaseType(ageneUniID.getTaxID())).getAccID();
 		}
-		//TODO
-//		symbol = symbol.replace("@", "");
 		return symbol;
 	}
 
 	/** 设定geneInfo信息 */
 	protected void setGenInfo() {
-		if (getIDtype() == GeneID.IDTYPE_GENEID) {
-			GeneInfo geneInfoq = new GeneInfo();
-			long geneID = Long.parseLong(ageneUniID.getGenUniID());
-			geneInfoq.setGeneID(geneID);
-			geneInfoq.setTaxID(getTaxID());
-			geneInfo = servGeneInfo.queryGeneInfo(geneInfoq);
-		}
-		else if (getIDtype() == GeneID.IDTYPE_UNIID) {
-			UniGeneInfo uniGeneInfo = new UniGeneInfo();
-			uniGeneInfo.setUniProtID(ageneUniID.getGenUniID());
-			uniGeneInfo.setTaxID(getTaxID());
-			geneInfo = servUniGeneInfo.queryUniGeneInfo(uniGeneInfo);
-		}
+		geneInfo = servGeneInfo.queryGeneInfo(getIDtype(), ageneUniID.getGenUniID(), getTaxID());
 	}
 	
 	/**
@@ -363,12 +340,12 @@ public class GeneIDabs implements GeneIDInt {
 					&& getLsBlastInfos().size() > 0) {
 				for (int i = 0; i < getLsBlastInfos().size(); i++) {
 					if (tmpAnno[2] == null || tmpAnno[2].trim().equals("")) {
-						tmpAnno[2] = Species.getSpeciesTaxIDName().get(getLsBlastInfos().get(i).getSubjectTax());
+						tmpAnno[2] = Species.getSpeciesName2Species(Species.ALL_SPECIES).get(getLsBlastInfos().get(i).getSubjectTax()).getCommonName();
 						tmpAnno[3] = getLsBlastInfos().get(i).getEvalue() + "";
 						tmpAnno[4] = getLsBlastGeneID().get(i).getSymbol();
 						tmpAnno[5] = getLsBlastGeneID().get(i).getDescription();
 					} else {
-						tmpAnno[2] = tmpAnno[2] + "//" + Species.getSpeciesTaxIDName().get(getLsBlastInfos().get(i).getSubjectTax());
+						tmpAnno[2] = tmpAnno[2] + "//" + Species.getSpeciesName2Species(Species.ALL_SPECIES).get(getLsBlastInfos().get(i).getSubjectTax()).getCommonName();
 						tmpAnno[3] = tmpAnno[3] + "//" + getLsBlastInfos().get(i).getEvalue();
 						tmpAnno[4] = tmpAnno[4] + "//" + getLsBlastGeneID().get(i).getSymbol();
 						tmpAnno[5] = tmpAnno[5] + "//" + getLsBlastGeneID().get(i).getDescription();
@@ -719,13 +696,7 @@ public class GeneIDabs implements GeneIDInt {
 			return true;
 		}
 		geneInfo.setTaxID(getTaxID());
-		if (getIDtype() == GeneID.IDTYPE_UNIID) {
-			servUniGeneInfo.updateUniGenInfo(ageneUniID.getGenUniID(), getTaxID(), geneInfo);
-		} else if (getIDtype() == GeneID.IDTYPE_GENEID) {
-			servGeneInfo.updateGenInfo(ageneUniID.getGenUniID(), getTaxID(), geneInfo);
-		} else {
-			return false;
-		}
+		servGeneInfo.updateGenInfo(getIDtype(), ageneUniID.getGenUniID(), getTaxID(), geneInfo);
 		updateGeneInfoSymbolAndSynonyms(getIDtype(), geneInfo);
 		geneInfo = null;
 		return true;
@@ -733,24 +704,17 @@ public class GeneIDabs implements GeneIDInt {
 	
 	private void updateGeneInfoSymbolAndSynonyms(int idType, AGeneInfo geneInfoUpdate) {
 		AgeneUniID ageneUniID = null;
-		String sep = SepSign.SEP_ID;
-		if (geneInfoUpdate.getSep() != null && !geneInfoUpdate.getSep().equals("")) {
-			sep = geneInfoUpdate.getSep();
-		}
 		if (geneInfoUpdate.getSymb() != null) {
-			String[] ssymb = geneInfoUpdate.getSymb().split(sep);
-			for (String string : ssymb) {
-				ageneUniID = AgeneUniID.creatAgeneUniID(idType);
-				ageneUniID.setAccID(string.trim());
-				ageneUniID.setDataBaseInfo(DBAccIDSource.Symbol.toString());
-				ageneUniID.setGenUniID(this.ageneUniID.getGenUniID());
-				ageneUniID.setTaxID(getTaxID());
-				ageneUniID.update(true);
-			}
+			String ssymb = geneInfoUpdate.getSymb();
+			ageneUniID = AgeneUniID.creatAgeneUniID(idType);
+			ageneUniID.setAccID(ssymb.trim());
+			ageneUniID.setDataBaseInfo(DBAccIDSource.Symbol.toString());
+			ageneUniID.setGenUniID(this.ageneUniID.getGenUniID());
+			ageneUniID.setTaxID(getTaxID());
+			ageneUniID.update(true);
 		}
 		if (geneInfoUpdate.getSynonym() != null) {
-			String[] ssynonym = geneInfoUpdate.getSynonym().split(sep);
-			for (String string : ssynonym) {
+			for (String string : geneInfoUpdate.getSynonym()) {
 				ageneUniID = AgeneUniID.creatAgeneUniID(idType);
 				ageneUniID.setAccID(string.trim());
 				ageneUniID.setDataBaseInfo(DBAccIDSource.Synonyms.toString());

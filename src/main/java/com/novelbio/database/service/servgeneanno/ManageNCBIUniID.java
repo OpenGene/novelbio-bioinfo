@@ -155,7 +155,7 @@ public class ManageNCBIUniID {
 			logger.error("不能导入GO信息");
 			return false;
 		}
-		AgeneUniID ageneUniID = findByGeneIDAndAccID(ncbiid.getGeneIDtype(), ncbiid.getGenUniID(), ncbiid.getAccID());
+		AgeneUniID ageneUniID = findByGeneUniIDAndAccIDAndTaxID(ncbiid.getGeneIDtype(), ncbiid.getGenUniID(), ncbiid.getAccID(), ncbiid.getTaxID());
 		if (ageneUniID == null) {
 			if (ncbiid.getGeneIDtype() == GeneID.IDTYPE_GENEID) {
 				repoNCBIID.save((NCBIID)ncbiid);
