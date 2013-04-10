@@ -36,7 +36,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/package/jnlp.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/package/miglayout-3.5.5.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/package/picard-1.63.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/package/sam-1.79.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/package/snappy-java-1.0.3-rc3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/package/GRAL-0.8-doc.zip"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6">
