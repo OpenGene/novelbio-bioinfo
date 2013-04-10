@@ -283,7 +283,7 @@ class IdmappingSelectedGOPubmed extends IdmappingSelected {
 			addListAccID(ss[21], lsRefAccID);
  			copedID.setUpdateRefAccID(lsRefAccID);
 		}
-		if (copedID.getIDtype().equals(GeneID.IDTYPE_ACCID)) {
+		if (copedID.getIDtype() == GeneID.IDTYPE_ACCID) {
 			return false;
 		}
 		if (ss[6] != null && !ss[6].equals("")) {
@@ -322,7 +322,7 @@ class IdmappingSelectedGOPubmed extends IdmappingSelected {
 		String[] ss = ssPubmed.split(";");
 		for (String string : ss) {
 			GeneInfo geneInfo = new GeneInfo();
-			geneInfo.setPubID(string);
+			geneInfo.addPubID(string);
 			copedID.setUpdateGeneInfo(geneInfo);
 			if (!copedID.update(false)) {
 				return false;

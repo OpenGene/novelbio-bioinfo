@@ -6,6 +6,7 @@ import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.AGeneInfo;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.service.servgeneanno.ManageDBInfo;
 
 /**
  * 升级NCBI下载的所有文件的类
@@ -220,6 +221,7 @@ class ImpGeneRef2UniID extends ImportPerLine {
  * @param content
  */
 class ImpGene2Info extends ImportPerLine {
+	ManageDBInfo manageDBInfo = new ManageDBInfo();
 	@Override
 	protected boolean impPerLine(String content) {
 		String[] ss = content.split("\t");
@@ -229,14 +231,23 @@ class ImpGene2Info extends ImportPerLine {
 		}
 		GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, ss[1], taxID);
 		GeneInfo geneInfo = new GeneInfo();
-		geneInfo.setDBinfo(DBAccIDSource.NCBI);
-		geneInfo.setSep("\\|");
-		geneInfo.setSymb(ss[2]); geneInfo.setLocTag(ss[3]);
-		geneInfo.setSynonym(ss[4]); geneInfo.setDbXref(ss[5]);
-		geneInfo.setChrm(ss[6]); geneInfo.setMapLoc(ss[7]);
+		geneInfo.setDBinfo(manageDBInfo.findByDBname(DBAccIDSource.NCBI.name()));
+		geneInfo.setSymb(ss[2]);
+		
+		String[] syno = ss[4].split("\\|");
+		for (String synonyms : syno) {
+			geneInfo.addSynonym(synonyms);
+		}
+		String[] sym = ss[10].split("\\|");
+		for (String symNome : sym) {
+			geneInfo.addSymNom(symNome);
+		}
+		String[] ful = ss[10].split("\\|");
+		for (String fulName : ful) {
+			geneInfo.addFullName(fulName);
+		}
+		
 		geneInfo.setDescrp(ss[8]); geneInfo.setTypeOfGene(ss[9]);
-		geneInfo.setSymNom(ss[10]); geneInfo.setFullName(ss[11]);
-		geneInfo.setNomState(ss[12]); geneInfo.setOtherDesg(ss[13]);
 		geneInfo.setModDate(ss[14]);
 		copedID.setUpdateGeneInfo(geneInfo);
 		return copedID.update(false);
@@ -265,7 +276,7 @@ class ImpGene2Pub extends ImportPerLine {
 		}
 		AGeneInfo geneInfo = new GeneInfo();
 		GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, ss[1], taxID);
-		geneInfo.setPubID(ss[2]);
+		geneInfo.addPubID(ss[2]);
 		copedID.setUpdateGeneInfo(geneInfo);
 		return copedID.update(false);
 	}

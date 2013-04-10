@@ -94,7 +94,7 @@ public abstract class AGeneInfo {
 	 * 故意名字起的和symbol不一样，这样可以防止自动注入
 	 * @param symbol
 	 */
-	public void setSymb(DBInfo dbInfo, String symbol) {
+	public void setSymb(String symbol) {
 		mapSymbol.put(dbInfo, symbol);
 	}
 	/**
@@ -127,7 +127,7 @@ public abstract class AGeneInfo {
 		return descrip.replaceAll("\"", "");
 	}
 	
-	public void setDescrp(DBInfo dbInfo, String description) {
+	public void setDescrp(String description) {
 		if (description == null) return;
 		description = description.replaceAll("\"", "").trim();
 		if (description.equals("") || description.equals("-")) return;

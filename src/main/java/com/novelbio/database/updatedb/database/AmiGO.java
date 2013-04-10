@@ -13,6 +13,7 @@ import com.novelbio.database.domain.geneanno.GOtype.GORelation;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.service.servgeneanno.ManageDBInfo;
 import com.novelbio.database.service.servgeneanno.ManageGo2Term;
 
 public class AmiGO {
@@ -350,6 +351,7 @@ class ImpGOExtObo extends ImportPerLine {
  */
 class Impgene_associationgoa_uniprot extends ImportPerLine {
 	private static Logger logger = Logger.getLogger(Impgene_associationgoa_uniprot.class);
+	ManageDBInfo manageDBInfo = new ManageDBInfo();
 	/**
 	 * 从第5行开始读取
 	 */
@@ -511,9 +513,9 @@ Example:O43526-2
 //		copedID.setUpdateAccID(ss[2]);
 //		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_SYMBOL, false);
 		GeneInfo geneInfo = new GeneInfo();
+		geneInfo.setDBinfo(manageDBInfo.findByDBname(DBAccIDSource.Uniprot.name()));
 		geneInfo.setSymb(ss[2]);
 		geneInfo.setDescrp(ss[9]);
-		geneInfo.setDBinfo(DBAccIDSource.Uniprot);
 		copedID.setUpdateGeneInfo(geneInfo);
 		copedID.addUpdateGO(ss[4], DBAccIDSource.Uniprot, ss[6], ss[5], ss[3]);
 		return copedID.update(true);
