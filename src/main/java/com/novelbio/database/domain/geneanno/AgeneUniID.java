@@ -106,6 +106,9 @@ public abstract class AgeneUniID {
 	 * @param override
 	 */
 	public void update(boolean overrideDBinfo) {
+		if (!overrideDBinfo && getId() != null && !getId().equals("")) {
+			return;
+		}
 		ManageNCBIUniID manageNCBIUniID = new ManageNCBIUniID();
 		manageNCBIUniID.updateNCBIUniID(this, overrideDBinfo);
 	}

@@ -26,74 +26,83 @@ public class ManageNCBIUniID {
 		repoUniID = (RepoUniID) SpringFactory.getFactory().getBean("repoUniID");
 	}
 	
-	public AgeneUniID findByGeneIDAndAccID(int geneType, String geneUniID, String accID) {
-		if (geneType == GeneID.IDTYPE_GENEID) {
-			return repoNCBIID.findByGeneIDAndAccID(Long.parseLong(geneUniID), accID);
-		} else if (geneType == GeneID.IDTYPE_UNIID) {
-			return repoUniID.findByUniIDAndAccID(geneUniID, accID);
-		}
-		return null;
-	}
-	
+	/**
+	 * @param geneType
+	 * @param geneUniID
+	 * @param accID
+	 * @param taxID 小于等于0表示不考虑
+	 * @return
+	 */
 	public AgeneUniID findByGeneUniIDAndAccIDAndTaxID(int geneType, String geneUniID, String accID, int taxID){
 		if (geneType == GeneID.IDTYPE_GENEID) {
-			return repoNCBIID.findByGeneIDAndAccIDAndTaxID(Long.parseLong(geneUniID), accID, taxID);
+			if (taxID > 0) {
+				return repoNCBIID.findByGeneIDAndAccIDAndTaxID(Long.parseLong(geneUniID), accID, taxID);
+			} else {
+				return repoNCBIID.findByGeneIDAndAccID(Long.parseLong(geneUniID), accID);
+			}
 		} else if (geneType == GeneID.IDTYPE_UNIID) {
-			return repoUniID.findByUniIDAndAccIDAndTaxID(geneUniID, accID, taxID);
+			if (taxID > 0) {
+				return repoUniID.findByUniIDAndAccIDAndTaxID(geneUniID, accID, taxID);
+			} else {
+				return repoUniID.findByUniIDAndAccID(geneUniID, accID);
+			}
 		}
 		return null;
 	}
 	
-	public AgeneUniID findByAccIDAndTaxID(int geneType, String accID, int taxID) {
-		if (geneType == GeneID.IDTYPE_GENEID) {
-			return repoNCBIID.findByAccIDAndTaxID( accID, taxID);
-		} else if (geneType == GeneID.IDTYPE_UNIID) {
-			return repoUniID.findByAccIDAndTaxID(accID, taxID);
-		}
-		return null;
-	}
-	
-	public List<AgeneUniID> findByGeneUniID(int geneType, String geneUniID) {
+	public ArrayList<AgeneUniID> findByAccID(int geneType, String accID, int taxID) {
 		List<? extends AgeneUniID> lsResult = new ArrayList<AgeneUniID>();
 		if (geneType == GeneID.IDTYPE_GENEID) {
-			lsResult = repoNCBIID.findByGeneID(Long.parseLong(geneUniID));
+			if (taxID > 0) {
+				lsResult = repoNCBIID.findByAccIDAndTaxID(accID, taxID);
+			} else {
+				lsResult = repoNCBIID.findByAccID(accID);
+			}
 		} else if (geneType == GeneID.IDTYPE_UNIID) {
-			lsResult = repoUniID.findByUniID(geneUniID);
+			if (taxID > 0) {
+				lsResult = repoUniID.findByAccIDAndTaxID(accID, taxID);
+			} else {
+				lsResult = repoUniID.findByAccID(accID);
+			}
 		}
 		return new ArrayList<AgeneUniID>(lsResult);
 	}
-	
+
 	/**
 	 * 如果存在则返回第一个找到的geneID
 	 * 不存在就返回null
 	 * @param geneID 输入geneID
-	 * @param taxID 物种ID
+	 * @param taxID 物种ID，小于等于0表示不设置taxID
 	 * @return
 	 */
 	public AgeneUniID findByGeneUniIDAndTaxIdFirst(int geneType, String geneUniID, int taxID) {
-		List<? extends AgeneUniID> lsResult = findByGeneUniIDAndTaxId(geneType, geneUniID, taxID);
+		List<? extends AgeneUniID> lsResult = findByGeneUniID(geneType, geneUniID, taxID);
 		if (lsResult.size() > 0) {
 			return lsResult.get(0);
 		}
 		return null;
 	}
 	
-	public List<AgeneUniID> findByGeneUniIDAndTaxId(int geneType, String geneUniID, int taxID) {
+	/**
+	 * 不存在就返回空的list
+	 * @param geneID 输入geneID
+	 * @param taxID 物种ID，小于等于0表示不设置taxID
+	 * @return
+	 */
+	public List<AgeneUniID> findByGeneUniID(int geneType, String geneUniID, int taxID) {
 		List<? extends AgeneUniID> lsResult = new ArrayList<AgeneUniID>();
 		if (geneType == GeneID.IDTYPE_GENEID) {
-			lsResult = repoNCBIID.findByGeneIDAndTaxId(Long.parseLong(geneUniID), taxID);
+			if (taxID > 0) {
+				lsResult = repoNCBIID.findByGeneIDAndTaxId(Long.parseLong(geneUniID), taxID);
+			} else {
+				lsResult = repoNCBIID.findByGeneID(Long.parseLong(geneUniID));
+			}
 		} else if (geneType == GeneID.IDTYPE_UNIID) {
-			lsResult = repoUniID.findByUniIDAndTaxId(geneUniID, taxID);
-		}
-		return new ArrayList<AgeneUniID>(lsResult);
-	}
-
-	public List<AgeneUniID> findByAccID(int geneType, String accID) {
-		List<? extends AgeneUniID> lsResult = new ArrayList<AgeneUniID>();
-		if (geneType == GeneID.IDTYPE_GENEID) {
-			lsResult = repoNCBIID.findByAccID(accID);
-		} else if (geneType == GeneID.IDTYPE_UNIID) {
-			lsResult = repoUniID.findByAccID(accID);
+			if (taxID > 0) {
+				lsResult = repoUniID.findByUniIDAndTaxId(geneUniID, taxID);
+			} else {
+				lsResult = repoUniID.findByUniID(geneUniID);
+			}
 		}
 		return new ArrayList<AgeneUniID>(lsResult);
 	}
@@ -103,7 +112,7 @@ public class ManageNCBIUniID {
 	 * 如果找到了就返回找到的第一个的ncbiid对象
 	 * 如果没找到，再去除dbinfo查找，如果还没找到，就返回Null
 	 * @param geneID
-	 * @param taxID
+	 * @param taxID 小于等于0表示不设置
 	 * @param dbInfo 为null表示不设置
 	 * @return
 	 */
@@ -113,7 +122,7 @@ public class ManageNCBIUniID {
 		else 
 			dbName = "";
 		
-		List<AgeneUniID> lsAgeneUniIDs = findByGeneUniIDAndTaxId(idType, geneUniID, taxID);
+		List<AgeneUniID> lsAgeneUniIDs = findByGeneUniID(idType, geneUniID, taxID);
 		if ((lsAgeneUniIDs == null || lsAgeneUniIDs.size() < 1)) {
 			return null;
 		}
@@ -146,7 +155,7 @@ public class ManageNCBIUniID {
 			logger.error("不能导入GO信息");
 			return false;
 		}
-		AgeneUniID ageneUniID = findByGeneIDAndAccID(ncbiid.getGeneIDtype(), ncbiid.getGenUniID(), ncbiid.getAccID());
+		AgeneUniID ageneUniID = findByGeneUniIDAndAccIDAndTaxID(ncbiid.getGeneIDtype(), ncbiid.getGenUniID(), ncbiid.getAccID(), ncbiid.getTaxID());
 		if (ageneUniID == null) {
 			if (ncbiid.getGeneIDtype() == GeneID.IDTYPE_GENEID) {
 				repoNCBIID.save((NCBIID)ncbiid);
@@ -167,5 +176,6 @@ public class ManageNCBIUniID {
 		}
 		return true;
 	}
+
 
 }

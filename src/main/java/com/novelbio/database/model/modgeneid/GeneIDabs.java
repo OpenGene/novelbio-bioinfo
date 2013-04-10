@@ -17,21 +17,13 @@ import com.novelbio.database.domain.geneanno.AgeneUniID;
 import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.domain.geneanno.DBInfo;
 import com.novelbio.database.domain.geneanno.GOtype;
-import com.novelbio.database.domain.geneanno.Gene2Go;
-import com.novelbio.database.domain.geneanno.GeneInfo;
-import com.novelbio.database.domain.geneanno.UniGeneInfo;
 import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgo.GOInfoAbs;
-import com.novelbio.database.model.modgo.GOInfoGenID;
-import com.novelbio.database.model.modgo.GOInfoUniID;
 import com.novelbio.database.model.modkegg.KeggInfo;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.database.service.servgeneanno.ManageBlastInfo;
 import com.novelbio.database.service.servgeneanno.ManageGeneInfo;
 import com.novelbio.database.service.servgeneanno.ManageNCBIUniID;
-import com.novelbio.database.service.servgeneanno.ManageUniGene2Go;
-import com.novelbio.database.service.servgeneanno.ManageUniGeneInfo;
 
 public class GeneIDabs implements GeneIDInt {
 	private static Logger logger = Logger.getLogger(GeneIDabs.class);
@@ -53,8 +45,7 @@ public class GeneIDabs implements GeneIDInt {
 	// //////////////////// service 层
 	ManageNCBIUniID servNCBIUniID = new ManageNCBIUniID();
 	ManageGeneInfo servGeneInfo = new ManageGeneInfo();
-	ManageUniGeneInfo servUniGeneInfo = new ManageUniGeneInfo();
-	
+
 	/**
 	 * 输入已经查询好的ageneUniID
 	 * @param ageneUniID
@@ -63,11 +54,14 @@ public class GeneIDabs implements GeneIDInt {
 		this.ageneUniID = ageneUniID;
 	}
 	
-	protected GeneIDabs(int idType, String genUniID, int taxID) {
+	protected GeneIDabs(int idType, String geneUniID, int taxID) {
 		AgeneUniID ageneUniID = AgeneUniID.creatAgeneUniID(idType);
-		ageneUniID.setGenUniID(genUniID);
+		ageneUniID.setGenUniID(geneUniID);
 		ageneUniID.setTaxID(taxID);
-		List<? extends AgeneUniID> lsTmp = servNCBIUniID.queryLsAgeneUniID(ageneUniID);
+		List<AgeneUniID> lsTmp = null;
+		if (taxID <= 0) {
+			lsTmp = servNCBIUniID.findByGeneUniID(idType, geneUniID, taxID);
+		}
 		if (lsTmp.size() == 0) {
 			this.ageneUniID = ageneUniID;
 			return;
@@ -98,28 +92,25 @@ public class GeneIDabs implements GeneIDInt {
 	 * 根据输入的物种，返回该物种特定的那个ID，譬如水稻就返回LOCID
 	 * 如果没有，则再搜索RefSeqRNA
 	 * 如果再没有，则随便返回一个ID
+	 * @param lsAgenUniID 输入的list不能为空
+	 * @param dbSource
 	 * @return
 	 */
-	private AgeneUniID getGeneUniIDwithDB(List<? extends AgeneUniID> lsAgenUniID, String dbSource) {
+	private AgeneUniID getGeneUniIDwithDB(List<AgeneUniID> lsAgenUniID, String dbSource) {
 		AgeneUniID ageneUniID = null;
-		if (lsAgenUniID.size() > 0) {
-			for (AgeneUniID ageneUniIDSub : lsAgenUniID) {
-				if (ageneUniIDSub.getDataBaseInfo().getDbName().equals(dbSource)) {
-					ageneUniID = ageneUniIDSub;
-					break;
-				} else if (ageneUniIDSub.getDataBaseInfo().getDbName().equals(DBAccIDSource.RefSeqRNA.toString())) {
-					ageneUniID = ageneUniIDSub;
-				}
+		for (AgeneUniID ageneUniIDSub : lsAgenUniID) {
+			if (ageneUniIDSub.getDataBaseInfo().getDbName().equals(dbSource)) {
+				ageneUniID = ageneUniIDSub;
+				break;
+			} else if (ageneUniIDSub.getDataBaseInfo().getDbName().equals(DBAccIDSource.RefSeqRNA.toString())) {
+				ageneUniID = ageneUniIDSub;
 			}
-			isAccID = false;
-			if (ageneUniID != null) {
-				return ageneUniID;
-			} else {
-				return lsAgenUniID.get(0);
-			}
-		} else {
-			isAccID = true;
+		}
+		isAccID = false;
+		if (ageneUniID != null) {
 			return ageneUniID;
+		} else {
+			return lsAgenUniID.get(0);
 		}
 	}
 	
@@ -153,7 +144,6 @@ public class GeneIDabs implements GeneIDInt {
 	}
 	
 	/**
-	 * 
 	 * 有geneUniID就用geneUniID去query
 	 * 否则就用accID去query
 	 * @param evalue 小于0就走默认 为1e-10
@@ -277,13 +267,13 @@ public class GeneIDabs implements GeneIDInt {
 	 * @param dbInfo
 	 * @return
 	 */
-	protected AgeneUniID getGenUniID(AgeneUniID genUniID, String dbInfo) {
-		if (getIDtype() == GeneID.IDTYPE_ACCID || genUniID.getDataBaseInfo().getDbName().equals(dbInfo)) {
+	protected AgeneUniID getGenUniID(AgeneUniID genUniID, String dbName) {
+		if (getIDtype() == GeneID.IDTYPE_ACCID || genUniID.getDataBaseInfo().getDbName().equals(dbName)) {
 			return genUniID;
 		}
 		genUniID.setDataBaseInfo("");
-		ArrayList<? extends AgeneUniID> lsSubject = servNCBIUniID.queryLsAgeneUniID(genUniID);
-		return getGeneUniIDwithDB(lsSubject, dbInfo);
+		List<AgeneUniID> lsSubject = servNCBIUniID.findByGeneUniID(genUniID.getGeneIDtype(), genUniID.getGenUniID(), genUniID.getTaxID());
+		return getGeneUniIDwithDB(lsSubject, dbName);
 	}
 	
 	public int getTaxID() {
@@ -324,26 +314,12 @@ public class GeneIDabs implements GeneIDInt {
 		if (symbol == null || symbol.equals("")) {
 			symbol = getGenUniID(ageneUniID, getDatabaseType(ageneUniID.getTaxID())).getAccID();
 		}
-		//TODO
-//		symbol = symbol.replace("@", "");
 		return symbol;
 	}
 
 	/** 设定geneInfo信息 */
 	protected void setGenInfo() {
-		if (getIDtype() == GeneID.IDTYPE_GENEID) {
-			GeneInfo geneInfoq = new GeneInfo();
-			long geneID = Long.parseLong(ageneUniID.getGenUniID());
-			geneInfoq.setGeneID(geneID);
-			geneInfoq.setTaxID(getTaxID());
-			geneInfo = servGeneInfo.queryGeneInfo(geneInfoq);
-		}
-		else if (getIDtype() == GeneID.IDTYPE_UNIID) {
-			UniGeneInfo uniGeneInfo = new UniGeneInfo();
-			uniGeneInfo.setUniProtID(ageneUniID.getGenUniID());
-			uniGeneInfo.setTaxID(getTaxID());
-			geneInfo = servUniGeneInfo.queryUniGeneInfo(uniGeneInfo);
-		}
+		geneInfo = servGeneInfo.queryGeneInfo(getIDtype(), ageneUniID.getGenUniID(), getTaxID());
 	}
 	
 	/**
@@ -364,12 +340,12 @@ public class GeneIDabs implements GeneIDInt {
 					&& getLsBlastInfos().size() > 0) {
 				for (int i = 0; i < getLsBlastInfos().size(); i++) {
 					if (tmpAnno[2] == null || tmpAnno[2].trim().equals("")) {
-						tmpAnno[2] = Species.getSpeciesTaxIDName().get(getLsBlastInfos().get(i).getSubjectTax());
+						tmpAnno[2] = Species.getSpeciesName2Species(Species.ALL_SPECIES).get(getLsBlastInfos().get(i).getSubjectTax()).getCommonName();
 						tmpAnno[3] = getLsBlastInfos().get(i).getEvalue() + "";
 						tmpAnno[4] = getLsBlastGeneID().get(i).getSymbol();
 						tmpAnno[5] = getLsBlastGeneID().get(i).getDescription();
 					} else {
-						tmpAnno[2] = tmpAnno[2] + "//" + Species.getSpeciesTaxIDName().get(getLsBlastInfos().get(i).getSubjectTax());
+						tmpAnno[2] = tmpAnno[2] + "//" + Species.getSpeciesName2Species(Species.ALL_SPECIES).get(getLsBlastInfos().get(i).getSubjectTax()).getCommonName();
 						tmpAnno[3] = tmpAnno[3] + "//" + getLsBlastInfos().get(i).getEvalue();
 						tmpAnno[4] = tmpAnno[4] + "//" + getLsBlastGeneID().get(i).getSymbol();
 						tmpAnno[5] = tmpAnno[5] + "//" + getLsBlastGeneID().get(i).getDescription();
@@ -409,7 +385,6 @@ public class GeneIDabs implements GeneIDInt {
 	public List<AGene2Go> getGene2GO(GOtype GOType) {
 		return getGOInfo().getLsGene2Go(GOType);
 	}
-	
 	/**
 	 * blast多个物种 首先设定blast的物种 用方法： setBlastInfo(double evalue, int... StaxID)
 	 * 获得经过blast的GoInfo
@@ -612,6 +587,9 @@ public class GeneIDabs implements GeneIDInt {
 		this.geneInfo = geneInfo;
 	}
 
+	// 专门用于升级
+	ArrayList<BlastInfo> lsBlastInfosUpdate = null;
+
 	/**
 	 * 如果没有QueryID, SubjectID, taxID中的任何一项，就不升级 如果evalue>50 或 evalue<0，就不升级
 	 * 可以连续不断的添加
@@ -718,13 +696,7 @@ public class GeneIDabs implements GeneIDInt {
 			return true;
 		}
 		geneInfo.setTaxID(getTaxID());
-		if (getIDtype() == GeneID.IDTYPE_UNIID) {
-			servUniGeneInfo.updateUniGenInfo(ageneUniID.getGenUniID(), getTaxID(), geneInfo);
-		} else if (getIDtype() == GeneID.IDTYPE_GENEID) {
-			servGeneInfo.updateGenInfo(ageneUniID.getGenUniID(), getTaxID(), geneInfo);
-		} else {
-			return false;
-		}
+		servGeneInfo.updateGenInfo(getIDtype(), ageneUniID.getGenUniID(), getTaxID(), geneInfo);
 		updateGeneInfoSymbolAndSynonyms(getIDtype(), geneInfo);
 		geneInfo = null;
 		return true;
@@ -732,24 +704,17 @@ public class GeneIDabs implements GeneIDInt {
 	
 	private void updateGeneInfoSymbolAndSynonyms(int idType, AGeneInfo geneInfoUpdate) {
 		AgeneUniID ageneUniID = null;
-		String sep = SepSign.SEP_ID;
-		if (geneInfoUpdate.getSep() != null && !geneInfoUpdate.getSep().equals("")) {
-			sep = geneInfoUpdate.getSep();
-		}
 		if (geneInfoUpdate.getSymb() != null) {
-			String[] ssymb = geneInfoUpdate.getSymb().split(sep);
-			for (String string : ssymb) {
-				ageneUniID = AgeneUniID.creatAgeneUniID(idType);
-				ageneUniID.setAccID(string.trim());
-				ageneUniID.setDataBaseInfo(DBAccIDSource.Symbol.toString());
-				ageneUniID.setGenUniID(this.ageneUniID.getGenUniID());
-				ageneUniID.setTaxID(getTaxID());
-				ageneUniID.update(true);
-			}
+			String ssymb = geneInfoUpdate.getSymb();
+			ageneUniID = AgeneUniID.creatAgeneUniID(idType);
+			ageneUniID.setAccID(ssymb.trim());
+			ageneUniID.setDataBaseInfo(DBAccIDSource.Symbol.toString());
+			ageneUniID.setGenUniID(this.ageneUniID.getGenUniID());
+			ageneUniID.setTaxID(getTaxID());
+			ageneUniID.update(true);
 		}
 		if (geneInfoUpdate.getSynonym() != null) {
-			String[] ssynonym = geneInfoUpdate.getSynonym().split(sep);
-			for (String string : ssynonym) {
+			for (String string : geneInfoUpdate.getSynonym()) {
 				ageneUniID = AgeneUniID.creatAgeneUniID(idType);
 				ageneUniID.setAccID(string.trim());
 				ageneUniID.setDataBaseInfo(DBAccIDSource.Synonyms.toString());
@@ -841,7 +806,7 @@ public class GeneIDabs implements GeneIDInt {
 		this.isAccID = false;
 	}
 
-	// ///////////////// static method
+	// ///////////////// static method   ///////////////////////
 	/**
 	 * 给定一个accessID，搜索数据库
 	 * 返回list-AgeneUniID
@@ -858,33 +823,23 @@ public class GeneIDabs implements GeneIDInt {
 		}
 		
 		ManageNCBIUniID servGeneAnno = new ManageNCBIUniID();
-		AgeneUniID ncbiid = AgeneUniID.creatAgeneUniID(GeneID.IDTYPE_GENEID);
-		ncbiid.setAccID(accID);
-		ncbiid.setTaxID(taxID);
-		List<? extends AgeneUniID> lsNcbiids = null;
-		// 先查ncbiid
-		try {
-			lsNcbiids = servGeneAnno.queryLsAgeneUniID(ncbiid);
-		} catch (Exception e) {
-			return null;
+		List<AgeneUniID> lsAgeneUniIDs = servGeneAnno.findByAccID(GeneID.IDTYPE_GENEID, accID, taxID);
+		if (lsAgeneUniIDs.size() == 0) {
+			lsAgeneUniIDs = servGeneAnno.findByAccID(GeneID.IDTYPE_GENEID, accID, taxID);
 		}
-		if (lsNcbiids != null && lsNcbiids.size() > 0) {
-			return getLsGeneIDinfo(lsNcbiids);
-		}
-		// 查不到查uniprotID
-		else {
-			AgeneUniID uniProtID = AgeneUniID.creatAgeneUniID(GeneID.IDTYPE_UNIID);
-			uniProtID.setAccID(accID);
-			uniProtID.setTaxID(taxID);
-			List<? extends AgeneUniID> lsUniProtIDs = servGeneAnno.queryLsAgeneUniID(uniProtID);
-			return getLsGeneIDinfo(lsUniProtIDs);
-		}
+		return getLsGeneIDinfo(lsAgeneUniIDs);
 	}
 	
 	/** 指定一系列的NCBIID或者UniID，进行过滤，
 	 * 主要是过滤
 	 * 如果同一个物种得到了两个以上的accID，那么跳过数据库为DBINFO_SYNONYMS的项目 */
-	private static List<AgeneUniID> getLsGeneIDinfo(List<? extends AgeneUniID> lsNcbiids) {
+	private static List<AgeneUniID> getLsGeneIDinfo(List<AgeneUniID> lsNcbiids) {
+		if (lsNcbiids.size() == 0) {
+			return new ArrayList<AgeneUniID>();
+		}
+		if (lsNcbiids.size() == 1) {
+			return lsNcbiids;
+		}
 		ArrayList<AgeneUniID> lsGeneIDinfo = new ArrayList<AgeneUniID>();
 		for (AgeneUniID geneUniID : lsNcbiids) {
 			if (geneUniID.getDataBaseInfo().getDbName().equals(DBAccIDSource.Synonyms.toString())) {
@@ -892,12 +847,12 @@ public class GeneIDabs implements GeneIDInt {
 			}
 			lsGeneIDinfo.add(geneUniID);
 		}
-		if (lsGeneIDinfo.size() == 0 && lsNcbiids.size() > 0) {
+		if (lsGeneIDinfo.size() == 0) {
 			lsGeneIDinfo.addAll(lsNcbiids);
 		}
 		return lsGeneIDinfo;
 	}
-	// /////////////////////////// 重写equals等
+	
 	/**
 	 * 只要两个ncbiid的geneID相同，就认为这两个NCBIID相同
 	 * 但是如果geneID为0，也就是NCBIID根本没有初始化，那么直接返回false

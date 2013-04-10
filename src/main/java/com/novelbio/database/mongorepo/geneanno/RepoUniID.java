@@ -20,13 +20,13 @@ public interface RepoUniID extends PagingAndSortingRepository<UniProtID, String>
 	@Query(value="{ 'accID' : ?0}")
 	List<UniProtID> findByAccID(String accID);
 	
+	@Query(value="{ 'accID' : ?0 ,  'taxID' : ?1}")
+	List<UniProtID> findByAccIDAndTaxID(String accID, int taxID);	
+	
 	@Query(value="{ 'uniID' : ?0 ,  'accID' : ？1}")
 	UniProtID findByUniIDAndAccID(String uniID, String accID);
 	
 	@Query(value="{ 'uniID' : ?0 ,  'accID' : ?1, 'taxID' : ?2}")
 	UniProtID findByUniIDAndAccIDAndTaxID(String uniID, String accID, int taxID);
-	
-	@Query(value="{ 'accID' : ?0 ,  'taxID' : ?1}")
-	UniProtID findByAccIDAndTaxID(String accID, int taxID);	
 
 }

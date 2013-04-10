@@ -1,84 +1,33 @@
 package com.novelbio.test;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.samtools.SAMFileHeader;
-
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
-import org.springframework.data.mongodb.core.MongoOperations;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.index.Index;
-import org.springframework.data.mongodb.core.query.Order;
-import org.springframework.data.mongodb.core.query.Query;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.HashMultimap;
-import com.mongodb.Mongo;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
-import com.novelbio.analysis.seq.fasta.format.NCBIchromFaChangeFormat;
 import com.novelbio.analysis.seq.fastq.FastQ;
-import com.novelbio.analysis.seq.fastq.FastQRecord;
-import com.novelbio.analysis.seq.fastq.FastQRecordFilter;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.GffChrStatistics;
-import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailCG;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGTF;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneNCBI;
-import com.novelbio.analysis.seq.genome.gffOperate.GffType;
-import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
-import com.novelbio.analysis.seq.mapping.MapBwa;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
-import com.novelbio.analysis.seq.resequencing.RefSiteSnpIndel;
 import com.novelbio.analysis.seq.resequencing.SnpAnnotation;
-import com.novelbio.analysis.seq.rnaseq.GffHashMerge;
-import com.novelbio.analysis.seq.rnaseq.TranscriptomStatistics;
-import com.novelbio.analysis.seq.sam.SamFile;
-import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.base.dataStructure.listOperate.BoxPlotList;
-import com.novelbio.base.dataStructure.listOperate.HistBin;
 import com.novelbio.base.dataStructure.listOperate.HistList;
-import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.BarStyle;
-import com.novelbio.base.plot.BoxStyle;
 import com.novelbio.base.plot.DotStyle;
-import com.novelbio.base.plot.PlotBox;
 import com.novelbio.base.plot.PlotScatter;
-import com.novelbio.database.domain.geneanno.AGene2Go;
-import com.novelbio.database.domain.geneanno.GOtype;
-import com.novelbio.database.domain.geneanno.Gene2Go;
-import com.novelbio.database.domain.geneanno.Go2Term;
-import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
-import com.novelbio.database.mapper.geneanno.MapBlastInfo;
+import com.novelbio.database.domain.geneanno.AgeneUniID;
+import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.model.species.Species;
-import com.novelbio.database.mongotestmodel.MongoPerson;
+import com.novelbio.database.mongorepo.geneanno.RepoNCBIID;
 import com.novelbio.database.service.SpringFactory;
 import com.novelbio.nbcgui.controlseq.CtrlRNAmap;
 
@@ -87,19 +36,12 @@ public class mytest {
 	private static Logger logger = Logger.getLogger(mytest.class);
 	
 	public static void main(String[] args) throws IOException, URISyntaxException {
-		MongoTemplate mongoTemplate = (MongoTemplate)SpringFactory.getFactory().getBean("mongoTemplate");
-		mongoTemplate.indexOps(MongoPerson.class).ensureIndex(new Index().on("name",Order.ASCENDING));
-
-//		MongoPerson mongoPerson = new MongoPerson();
-//		mongoPerson.setAge(10);
-//		mongoPerson.setInfo("fsefse");
-//		mongoPerson.setName("faserfsr");
-//		mongoTemplate.insert(mongoPerson);
-//		logger.info(mongoOps.findOne(new Query(where("name").is("Joe")), Person.class));
-//		mongoOps.dropCollection("person");
-		
-
-		
+		RepoNCBIID repoNCBIID = (RepoNCBIID)SpringFactory.getFactory().getBean("repoNCBIID");
+		NCBIID ncbiid = (NCBIID) AgeneUniID.creatAgeneUniID(GeneID.IDTYPE_GENEID);
+		ncbiid.setAccID("testA22");
+		ncbiid.setGeneId(1234665);
+		repoNCBIID.save(ncbiid);
+		System.out.println(ncbiid.getId());
 		
 	}
 	
