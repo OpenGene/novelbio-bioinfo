@@ -27,8 +27,8 @@ public class Go2Term implements Cloneable {
 	private String GoID;
 	private String GoTerm;
 	private String GoType;
-	private Map<Go2Term, GORelation> mapParentGO2Relate = new HashMap<Go2Term, GORelation>();;
-	private Map<Go2Term, GORelation> mapChildGO2Relate = new HashMap<Go2Term, GORelation>();;
+	private Map<String, GORelation> mapParentGO2Relate = new HashMap<String, GORelation>();;
+	private Map<String, GORelation> mapChildGO2Relate = new HashMap<String, GORelation>();;
 	private String Definition;
 
 	/**
@@ -75,36 +75,39 @@ public class Go2Term implements Cloneable {
 	 * @param go2Term
 	 * @param relation 必须是RELATION中的一类
 	 */
-	public void addParent(Go2Term go2Term, GORelation relation ) {
-		mapParentGO2Relate.put(go2Term, relation);
+	public void addParent(String goID, GORelation relation ) {
+		mapParentGO2Relate.put(goID, relation);
 	}
 	/**
 	 * 设定其下游子类GO的信息，可以连续设定，新设定的会追加而不是覆盖
 	 * @param go2Term
 	 * @param relation 必须是RELATION中的一类
 	 */
-	public void addChild(Go2Term go2Term, GORelation relation ) {
-		mapChildGO2Relate.put(go2Term, relation);
+	public void addChild(String goID, GORelation relation ) {
+		mapChildGO2Relate.put(goID, relation);
 	}
 	
 	public HashSet<Go2Term> getParent() {
 		return getParentChild(mapParentGO2Relate);
 	}
+	
 	public HashSet<Go2Term> getChild() {
 		return getParentChild(mapChildGO2Relate);
 	}
+	
 	/**
 	 * 返回父类
 	 * @return
 	 */
-	private HashSet<Go2Term> getParentChild(Map<Go2Term, GORelation> mapParentChildGO2Relation) {
+	private HashSet<Go2Term> getParentChild(Map<String, GORelation> mapParentChildGO2Relation) {
+		ManageGo2Term manageGo2Term = new ManageGo2Term();
 		HashSet<Go2Term> hashResult = new HashSet<Go2Term>();
 		if (mapParentChildGO2Relation == null) {
 			return hashResult;
 		}
-		for (Go2Term goTerm : mapParentChildGO2Relation.keySet()) {
-			Go2Term go2TermNew = goTerm.clone();
-			go2TermNew.setRelation(mapParentChildGO2Relation.get(goTerm));
+		for (String goID : mapParentChildGO2Relation.keySet()) {
+			Go2Term go2TermNew = manageGo2Term.queryGo2Term(goID).clone();
+			go2TermNew.setRelation(mapParentChildGO2Relation.get(goID));
 			hashResult.add(go2TermNew);
 		}
 		return hashResult;
@@ -245,12 +248,12 @@ public class Go2Term implements Cloneable {
 		Go2Term go2Term = null;
 		try {
 			go2Term = (Go2Term) super.clone();
-			go2Term.mapChildGO2Relate = new HashMap<Go2Term, GOtype.GORelation>();
-			for (Go2Term goID : mapChildGO2Relate.keySet()) {
+			go2Term.mapChildGO2Relate = new HashMap<String, GOtype.GORelation>();
+			for (String goID : mapChildGO2Relate.keySet()) {
 				go2Term.mapChildGO2Relate.put(goID, mapChildGO2Relate.get(goID));
 			}
-			go2Term.mapParentGO2Relate = new HashMap<Go2Term, GOtype.GORelation>();
-			for (Go2Term goID : mapParentGO2Relate.keySet()) {
+			go2Term.mapParentGO2Relate = new HashMap<String, GOtype.GORelation>();
+			for (String goID : mapParentGO2Relate.keySet()) {
 				go2Term.mapParentGO2Relate.put(goID, mapParentGO2Relate.get(goID));
 			}
 			go2Term.Definition = Definition;

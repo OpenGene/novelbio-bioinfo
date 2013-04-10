@@ -24,6 +24,8 @@ public class BlastList {
 
 	Map<Integer, Map<String, BlastInfo>> mapSubTaxID2_Key2BlastInfo = new HashMap<Integer, Map<String,BlastInfo>>();
 	List<BlastInfo> lsUpdate = new ArrayList<BlastInfo>();
+	/** 比对到的geneID */
+	List<GeneID> lsBlastGeneID;
 	
 	/**
 	 * 一旦初始化就会进行查找，所以在外面最好进行延迟初始
@@ -45,12 +47,13 @@ public class BlastList {
 			return;
 		}
 		this.lsSTaxID = lsStaxID;
+		lsBlastGeneID = null;
 	}
 	/**
 	 * 设定需要比对到的物种，null或者不输入表示选择全体
 	 * @param taxID
 	 */
-	public void setTaxID(int... taxID) {
+	public void setTaxIDBlastTo(int... taxID) {
 		this.lsSTaxID.clear();
 		if (taxID == null || taxID.length == 0) {
 			return;
@@ -58,19 +61,52 @@ public class BlastList {
 		for (int i : taxID) {
 			lsSTaxID.add(i);
 		}
+		lsBlastGeneID = null;
 	}
 	
-	/** 设定一个物种选择一个blast到的gene还是多个blast到的gene */
-	public void setGetOneSeqPerTaxID(boolean isGetOneSeqPerTaxID) {
+	/**
+	 * 设定参数
+	 * @param evalueCutoff 小于0就走默认，默认1e-10 
+	 * @param isGetOneSeqPerTaxID  设定一个物种选择一个blast到的gene还是多个blast到的gene
+	 */
+	public void setEvalue_And_GetOneSeqPerTaxID(double evalueCutoff, boolean isGetOneSeqPerTaxID) {
 		this.isGetOneSeqPerTaxID = isGetOneSeqPerTaxID;
-	}
-	
-	/** 小于0就走默认，默认1e-10 */
-	public void setEvalue(double evalueCutoff) {
 		if (evalueCutoff < 0) {
 			return;
 		}
 		this.evalueCutoff = evalueCutoff;
+		lsBlastGeneID = null;
+	}
+	
+	/**
+	 * 没有则返回空的list
+	 * @return
+	 */
+	public List<GeneID> getLsBlastGeneID() {
+		if (lsBlastGeneID != null) {
+			return lsBlastGeneID;
+		}
+		lsBlastGeneID = new ArrayList<GeneID>();
+		for (BlastInfo blastInfo : getBlastInfo()) {
+			GeneID geneID = getBlastGeneID(blastInfo);
+			if (geneID != null) {
+				lsBlastGeneID.add(geneID);
+			}
+		}
+		return lsBlastGeneID;
+	}
+
+	/**
+	 * 获得设定的第一个blast的对象，首先要设定blast的目标
+	 * @param blastInfo
+	 * @return
+	 */
+	private GeneID getBlastGeneID(BlastInfo blastInfo) {
+		if (blastInfo == null) return null;
+		
+		int idType = blastInfo.getSubTab();
+		GeneID geneID = new GeneID(idType, blastInfo.getSubjectID(), blastInfo.getSubjectTax());
+		return geneID;
 	}
 	
 	public List<BlastInfo> getBlastInfo() {
@@ -147,7 +183,7 @@ public class BlastList {
 		Map<String, BlastInfo> mapKey2BlastInfo = mapSubTaxID2_Key2BlastInfo.get(blastInfo.getQueryTax());
 		if (mapKey2BlastInfo != null && mapKey2BlastInfo.containsKey(getKey(blastInfo))) {
 			BlastInfo blastInfoSub = mapKey2BlastInfo.get(getKey(blastInfo));
-			if (blastInfoSub.compareTo(blastInfo) == -1) {
+			if (blastInfo.compareTo(blastInfoSub) == -1) {
 				blastInfo.setId(blastInfoSub.getId());
 				mapKey2BlastInfo.put(getKey(blastInfo), blastInfo);
 				lsUpdate.add(blastInfo);

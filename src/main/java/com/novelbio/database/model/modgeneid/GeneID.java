@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.DBAccIDSource;
@@ -31,10 +32,10 @@ import com.novelbio.database.model.modkegg.KeggInfo;
  * @author zong0jie
  */
 public class GeneID implements GeneIDInt{
+	public final static int IDTYPE_GENEID = 100;
+	public final static int IDTYPE_UNIID = 200;
 	public final static int IDTYPE_ACCID = 300; 
-	public final static int IDTYPE_GENEID = 200;
-	public final static int IDTYPE_UNIID = 100;
-	
+
 	private GeneIDInt geneID;
 	
 	GeneIDfactoryInt geneIDfactoryInt = new GeneIDfactory();
@@ -103,7 +104,7 @@ public class GeneID implements GeneIDInt{
 			accID = accID.split("\\|")[1];
 		}
 		
-		ArrayList<AgeneUniID> lsaccID = GeneIDabs.getNCBIUniTax(accID, taxID);
+		List<AgeneUniID> lsaccID = GeneIDabs.getNCBIUniTax(accID, taxID);
 		if (lsaccID == null) {
 			return null;
 		}
@@ -119,12 +120,12 @@ public class GeneID implements GeneIDInt{
 	public void setBlastInfo(double evalue, int... StaxID) {
 		geneID.setBlastInfo(evalue,StaxID);
 	}
-	public ArrayList<BlastInfo> getLsBlastInfos() {
+	public List<BlastInfo> getLsBlastInfos() {
 		return geneID.getLsBlastInfos();
 	}
 ///////////////////////   获得blast  copedID  ///////////////////////////////////////////////////////////////////
 	@Override
-	public ArrayList<GeneID> getLsBlastGeneID() {
+	public List<GeneID> getLsBlastGeneID() {
 		return geneID.getLsBlastGeneID();
 	}
 	@Override
@@ -180,9 +181,11 @@ public class GeneID implements GeneIDInt{
 						0:symbol 1:description<br>
 	 */
 	@Override
+	@Deprecated
 	public String[] getAnno(boolean blast) {
 		return geneID.getAnno(blast);
 	}
+	
 	public static String[] getTitleAnno(boolean blast) {
 		String[] titleAnno = null;
 		if (blast) {
@@ -218,14 +221,14 @@ public class GeneID implements GeneIDInt{
 	}
 	//////////////  GO 方法  ///////////////////////
 	@Override
-	public ArrayList<AGene2Go> getGene2GO(GOtype GOType) {
+	public List<AGene2Go> getGene2GO(GOtype GOType) {
 		return geneID.getGene2GO(GOType);
  	}
 	public GOInfoAbs getGOInfo() {
 		return geneID.getGOInfo();
 	}
 	@Override
-	public ArrayList<AGene2Go> getGene2GOBlast(GOtype GOType) {
+	public List<AGene2Go> getGene2GOBlast(GOtype GOType) {
 		return geneID.getGene2GOBlast(GOType);
 	}
 	/////////////////////////////  static 方法  ////////////////////////////////////
@@ -331,7 +334,7 @@ public class GeneID implements GeneIDInt{
 		HashSet<GeneID> setUniqueGeneID = ArrayOperate.removeDuplicate(lsGeneID);
 		for (GeneID geneID : setUniqueGeneID) {
 			////////////////////////////////////////////////////////////
-			ArrayList<AGene2Go> lstmpgo;
+			List<AGene2Go> lstmpgo;
 			if (blast) {
 				lstmpgo = geneID.getGene2GOBlast(GOType);
 			}
@@ -449,24 +452,17 @@ public class GeneID implements GeneIDInt{
 		geneID.addUpdateRefAccID(refAccID);
 	}
 	@Override
-	public void setUpdateRefAccID(ArrayList<String> lsRefAccID) {
+	public void setUpdateRefAccID(List<String> lsRefAccID) {
 		geneID.setUpdateRefAccID(lsRefAccID);
 	}
 	@Override
-	public void setUpdateBlastInfo(String SubAccID, String subDBInfo,
-			int SubTaxID, double evalue, double identities) {
-		geneID.setUpdateBlastInfo(SubAccID, subDBInfo, SubTaxID, evalue, identities);
+	public void addUpdateBlastInfo(BlastInfo blastInfo) {
+		geneID.addUpdateBlastInfo(blastInfo);
 	}
 
 	@Override
 	public void setUpdateAccID(String accID) {
 		geneID.setUpdateAccID(accID);
-	}
-
-	@Override
-	public void setUpdateBlastInfo(String SubGenUniID, int subIDtype,
-			String subDBInfo, int SubTaxID, double evalue, double identities) {
-		geneID.setUpdateBlastInfo(SubGenUniID, subIDtype, subDBInfo, SubTaxID, evalue, identities);
 	}
 
 	@Override

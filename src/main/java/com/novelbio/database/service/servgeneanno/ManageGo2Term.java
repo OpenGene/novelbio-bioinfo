@@ -52,7 +52,7 @@ public class ManageGo2Term {
 	public void saveGo2Term(Go2Term go2Term) {
 		synchronized (lock) {
 			boolean update = false;
-			Go2Term go2TermS =  repoGo2Term.findByGoID(go2Term.getGoID());
+			Go2Term go2TermS = queryGo2Term(go2Term.getGoID());
 			if (go2TermS == null) {
 				go2TermS = go2Term;
 				update = true;

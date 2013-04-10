@@ -79,7 +79,7 @@ public interface GeneIDInt{
 	 * @param StaxID
 	 * @return
 	 */
-	public ArrayList<GeneID> getLsBlastGeneID();
+	public List<GeneID> getLsBlastGeneID();
  
 	/**
 	 * 设定多个物种进行blast
@@ -197,7 +197,7 @@ GO_REF:0000004<br>
 	/**
 	 * 记录可能用于升级数据库的ID 譬如获得一个ID与NCBI的别的ID有关联，就用别的ID来查找数据库，以便获得该accID所对应的genUniID
 	 */
-	void setUpdateRefAccID(ArrayList<String> lsRefAccID);
+	void setUpdateRefAccID(List<String> lsRefAccID);
 
 	/**
 	 * 设定accID，当用geneUniID进行new copedID工作时使用

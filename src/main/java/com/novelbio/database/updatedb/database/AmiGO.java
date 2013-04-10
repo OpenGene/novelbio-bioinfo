@@ -13,6 +13,7 @@ import com.novelbio.database.domain.geneanno.GOtype.GORelation;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.service.servgeneanno.ManageGo2Term;
 
 public class AmiGO {
 	/**
@@ -33,6 +34,7 @@ public class AmiGO {
 class ImpGOExtObo extends ImportPerLine {
 	private static Logger logger = Logger.getLogger(ImpGOExtObo.class);
 	
+	ManageGo2Term manageGo2Term = new ManageGo2Term();
 	/** queryID和实际ID */
 	HashMap<String, String> mapGOquery2GOID = new HashMap<String, String>();
 	
@@ -48,10 +50,6 @@ class ImpGOExtObo extends ImportPerLine {
 		//从第二行开始读取，第一次导入
 		String tmpContent = null;
 		for (String content : txtGene2Acc.readlines(2)) {
-			if (content.contains("GO:0030530")) {
-				logger.error("stop");
-			}
-			
 			if (content.startsWith("[Term]")) {
 				tmpContent = content;
 				continue;
@@ -181,12 +179,11 @@ class ImpGOExtObo extends ImportPerLine {
 				lsQueryID.add(extractGOID(string));
 			}
 		}
-		go2Term.update();
-		
-		mapGOquery2GOID.put(go2Term.getGoID(), go2Term.getGoID());
-		for (String string2 : lsQueryID) {
-			mapGOquery2GOID.put(string2, go2Term.getGoID());
+		go2Term.addGoIDQuery(go2Term.getGoID());
+		for (String queryID : lsQueryID) {
+			go2Term.addGoIDQuery(queryID);
 		}
+		manageGo2Term.saveGo2Term(go2Term);
 		return true;
 	}
 	
@@ -229,6 +226,7 @@ class ImpGOExtObo extends ImportPerLine {
 			importReplaceAndConsider(lsGOIDConsider, GOID);			
 		}
 	}
+	
 	/**
 	 * 首先导入是BP的信息，如果没有BP信息，才导入常规信息
 	 * 从后向前导入，因为越后面的分类越细
@@ -237,7 +235,7 @@ class ImpGOExtObo extends ImportPerLine {
 	 */
 	private void importReplaceAndConsider(ArrayList<String> lsReplaceAndConsider, String GOID) {
 		for (int i = lsReplaceAndConsider.size() - 1; i >= 0; i--) {
-			Go2Term go2Term = Go2Term.queryGo2Term(lsReplaceAndConsider.get(i));
+			Go2Term go2Term = manageGo2Term.queryGo2Term(lsReplaceAndConsider.get(i));
 			if (go2Term == null) {
 				continue;
 			}
@@ -269,10 +267,9 @@ class ImpGOExtObo extends ImportPerLine {
 	private void updateConvertID() {
 		for (String queryGOid : mapGOquery2GOID.keySet()) {
 			String subjectGOid = mapGOquery2GOID.get(queryGOid);
-			Go2Term go2Term = new Go2Term();
-			go2Term.setGoIDQuery(queryGOid);
-			go2Term.setGoID(subjectGOid);
-			go2Term.update();
+			Go2Term go2Term = manageGo2Term.queryGo2Term(subjectGOid);
+			go2Term.addGoIDQuery(queryGOid);
+			manageGo2Term.saveGo2Term(go2Term);
 		}
 	}
 	
@@ -301,9 +298,9 @@ class ImpGOExtObo extends ImportPerLine {
 					logger.error("is_a 中没有对应的GOID：" + string);
 				}
 				else {
-					Go2Term go2Term = Go2Term.queryGo2TermDB(GOID);
+					Go2Term go2Term = manageGo2Term.queryGo2Term(GOID);
 					go2Term.addChild(childID, GORelation.IS);
-					go2Term.update();
+					manageGo2Term.saveGo2Term(go2Term);
 				}
 			}
 			if (string.startsWith("relationship:")) {
@@ -313,24 +310,24 @@ class ImpGOExtObo extends ImportPerLine {
 					return;
 				}
 				if (string.contains("part_of")) {
-					Go2Term go2Term = Go2Term.queryGo2TermDB(GOID);
+					Go2Term go2Term = manageGo2Term.queryGo2Term(GOID);
 					go2Term.addChild(childID, GORelation.PART_OF);
-					go2Term.update();
+					manageGo2Term.saveGo2Term(go2Term);
 				}
 				else if (string.contains("negatively_regulates")) {
-					Go2Term go2Term = Go2Term.queryGo2TermDB(GOID);
+					Go2Term go2Term = manageGo2Term.queryGo2Term(GOID);
 					go2Term.addChild(childID, GORelation.REGULATE_NEG);
-					go2Term.update();
+					manageGo2Term.saveGo2Term(go2Term);
 				}
 				else if (string.contains("relationship: regulates")) {
-					Go2Term go2Term = Go2Term.queryGo2TermDB(GOID);
+					Go2Term go2Term = manageGo2Term.queryGo2Term(GOID);
 					go2Term.addChild(childID, GORelation.REGULATE);
-					go2Term.update();
+					manageGo2Term.saveGo2Term(go2Term);
 				}
 				else if (string.contains("positively_regulates")) {
-					Go2Term go2Term = Go2Term.queryGo2TermDB(GOID);
+					Go2Term go2Term = manageGo2Term.queryGo2Term(GOID);
 					go2Term.addChild(childID, GORelation.REGULATE_POS);
-					go2Term.update();
+					manageGo2Term.saveGo2Term(go2Term);
 				}
 			}
 		}

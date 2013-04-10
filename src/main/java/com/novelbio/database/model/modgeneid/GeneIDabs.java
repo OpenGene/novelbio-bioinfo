@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.base.SepSign;
 import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.AGeneInfo;
@@ -29,23 +28,28 @@ public class GeneIDabs implements GeneIDInt {
 	private static Logger logger = Logger.getLogger(GeneIDabs.class);
 	static HashMap<Integer, String> hashDBtype = new HashMap<Integer, String>();
 	
-	AgeneUniID ageneUniID;
 	/** 是否没有在数据库中查询到 */
 	boolean isAccID = false;
+	AgeneUniID ageneUniID;
+
 	
 	/** 譬方和多个物种进行blast，然后结合这些物种的信息，取并集 */
 	BlastList blastList;
 	AGeneInfo geneInfo = null;
 	KeggInfo keggInfo;
 	GOInfoAbs goInfoAbs = null;
-	
-	ArrayList<GeneID> lsBlastGeneID = null;
-	
+		
 	boolean overrideUpdateDBinfo = false;
 	// //////////////////// service 层
 	ManageNCBIUniID servNCBIUniID = new ManageNCBIUniID();
 	ManageGeneInfo servGeneInfo = new ManageGeneInfo();
-
+	
+	
+	/**
+	 * 记录可能用于升级数据库的ID 譬如获得一个ID与NCBI的别的ID有关联，就用别的ID来查找数据库，以便获得该accID所对应的genUniID
+	 */
+	ArrayList<String> lsRefAccID = new ArrayList<String>();
+	
 	/**
 	 * 输入已经查询好的ageneUniID
 	 * @param ageneUniID
@@ -155,10 +159,8 @@ public class GeneIDabs implements GeneIDInt {
 			geneUniID = ageneUniID.getAccID();
 		}
 		blastList = new BlastList(geneUniID, getTaxID());
-		blastList.setTaxID(StaxID);
-		blastList.setEvalue(evalue);
-		// 重置blastGeneID的内容
-		lsBlastGeneID = null;
+		blastList.setTaxIDBlastTo(StaxID);
+		blastList.setEvalue_And_GetOneSeqPerTaxID(evalue, true);
 	}
 	
 	/**
@@ -169,7 +171,7 @@ public class GeneIDabs implements GeneIDInt {
 	 */
 	@Override
 	public GeneID getGeneIDBlast() {
-		ArrayList<GeneID> lsGeneIDs = getLsBlastGeneID();
+		List<GeneID> lsGeneIDs = getLsBlastGeneID();
 		if (lsGeneIDs.size() != 0) {
 			return lsGeneIDs.get(0);
 		}
@@ -184,40 +186,21 @@ public class GeneIDabs implements GeneIDInt {
 	 * @return
 	 */
 	@Override
-	public ArrayList<GeneID> getLsBlastGeneID() {
-		if (lsBlastGeneID != null) {
-			return lsBlastGeneID;
-		}
-		lsBlastGeneID = new ArrayList<GeneID>();
+	public List<GeneID> getLsBlastGeneID() {
 		if (blastList == null) {
-			return lsBlastGeneID;
+			return new ArrayList<GeneID>();
 		}
-		for (BlastInfo blastInfo : blastList.getBlastInfo()) {
-			GeneID geneID = getBlastGeneID(blastInfo);
-			if (geneID != null) {
-				lsBlastGeneID.add(geneID);
-			}
-		}
-		return lsBlastGeneID;
+		return blastList.getLsBlastGeneID();
 	}
 
-	/**
-	 * 获得设定的第一个blast的对象，首先要设定blast的目标
-	 * @param blastInfo
-	 * @return
-	 */
-	private GeneID getBlastGeneID(BlastInfo blastInfo) {
-		if (blastInfo == null) return null;
-		
-		int idType = blastInfo.getSubTab();
-		GeneID geneID = new GeneID(idType, blastInfo.getSubjectID(), blastInfo.getSubjectTax());
-		return geneID;
-	}
 	/**
 	 * blast多个物种 首先要设定blast的目标 用方法： setBlastInfo(double evalue, int... StaxID)
 	 * @return 返回blast的信息，包括evalue等，该list和{@link #getLsBlastGeneID()}得到的list是一一对应的
 	 */
 	public List<BlastInfo> getLsBlastInfos() {
+		if (blastList == null) {
+			return new ArrayList<BlastInfo>();
+		}
 		return blastList.getBlastInfo();
 	}
 	
@@ -226,7 +209,6 @@ public class GeneIDabs implements GeneIDInt {
 	 * 不过在设定了lsRefAccID后，可以根据具体的lsRefAccID去查找数据库并确定idtype
 	 */
 	public int getIDtype() {
-		//TODO
 		if (isAccID && lsRefAccID != null && lsRefAccID.size() > 0) {
 			setUpdateGenUniID();
 		}
@@ -319,7 +301,9 @@ public class GeneIDabs implements GeneIDInt {
 
 	/** 设定geneInfo信息 */
 	protected void setGenInfo() {
-		geneInfo = servGeneInfo.queryGeneInfo(getIDtype(), ageneUniID.getGenUniID(), getTaxID());
+		if (geneInfo == null) {
+			geneInfo = servGeneInfo.queryGeneInfo(getIDtype(), ageneUniID.getGenUniID(), getTaxID());
+		}
 	}
 	
 	/**
@@ -392,7 +376,7 @@ public class GeneIDabs implements GeneIDInt {
 	public List<AGene2Go> getGene2GOBlast(GOtype GOType) {
 		List<GOInfoAbs> lsGoInfo = new ArrayList<GOInfoAbs>();
 
-		ArrayList<GeneID> lsBlastGeneIDs = getLsBlastGeneID();
+		List<GeneID> lsBlastGeneIDs = getLsBlastGeneID();
 		for (GeneID geneID : lsBlastGeneIDs) {
 			lsGoInfo.add(geneID.getGOInfo());
 		}
@@ -416,7 +400,7 @@ public class GeneIDabs implements GeneIDInt {
 		if (!blast) {
 			return keggInfo.getLsKgGentries(null);
 		} else {
-			ArrayList<GeneID> lsGeneIDsBlast = getLsBlastGeneID();
+			List<GeneID> lsGeneIDsBlast = getLsBlastGeneID();
 			ArrayList<KeggInfo> lsKeggInfos = new ArrayList<KeggInfo>();
 			for (GeneID copedID : lsGeneIDsBlast) {
 				lsKeggInfos.add(copedID.getKeggInfo());
@@ -446,7 +430,7 @@ public class GeneIDabs implements GeneIDInt {
 		getKeggInfo();
 		if (blast) {
 			ArrayList<KeggInfo> lskeggInfo = new ArrayList<KeggInfo>();
-			ArrayList<GeneID> lsBlastCopedIDs = getLsBlastGeneID();
+			List<GeneID> lsBlastCopedIDs = getLsBlastGeneID();
 			for (GeneID copedID : lsBlastCopedIDs) {
 				lskeggInfo.add(copedID.getKeggInfo());
 			}
@@ -455,11 +439,6 @@ public class GeneIDabs implements GeneIDInt {
 			return keggInfo.getLsKegPath();
 		}
 	}
-	// ///////////////// update method
-	/**
-	 * 记录可能用于升级数据库的ID 譬如获得一个ID与NCBI的别的ID有关联，就用别的ID来查找数据库，以便获得该accID所对应的genUniID
-	 */
-	ArrayList<String> lsRefAccID = new ArrayList<String>();
 
 	/**
 	 * 添加可能用于升级数据库的ID 
@@ -488,7 +467,7 @@ public class GeneIDabs implements GeneIDInt {
 	 * 记录可能用于升级数据库的ID 譬如获得一个ID与NCBI的别的ID有关联，就用别的ID来查找数据库，以便获得该accID所对应的genUniID
 	 */
 	@Override
-	public void setUpdateRefAccID(ArrayList<String> lsRefAccID) {
+	public void setUpdateRefAccID(List<String> lsRefAccID) {
 		this.lsRefAccID.clear();
 		for (String string : lsRefAccID) {
 			String tmpRefID = GeneID.removeDot(string);
@@ -586,9 +565,6 @@ public class GeneIDabs implements GeneIDInt {
 	public void setUpdateGeneInfo(AGeneInfo geneInfo) {
 		this.geneInfo = geneInfo;
 	}
-
-	// 专门用于升级
-	ArrayList<BlastInfo> lsBlastInfosUpdate = null;
 
 	/**
 	 * 如果没有QueryID, SubjectID, taxID中的任何一项，就不升级 如果evalue>50 或 evalue<0，就不升级
@@ -747,18 +723,18 @@ public class GeneIDabs implements GeneIDInt {
 		if (getIDtype() != GeneID.IDTYPE_ACCID) {
 			return;
 		}
-		
 		// 保存所有refID--也就是用于查找数据库的refxDB的信息ID，他们所对应的geneUniID
-		ArrayList<ArrayList<AgeneUniID>> lsgeneID = new ArrayList<ArrayList<AgeneUniID>>();
-		ArrayList<ArrayList<AgeneUniID>> lsgeneIDUniProt = new ArrayList<ArrayList<AgeneUniID>>();
+		ArrayList<List<AgeneUniID>> lsgeneID = new ArrayList<List<AgeneUniID>>();
+		ArrayList<List<AgeneUniID>> lsgeneIDUniProt = new ArrayList<List<AgeneUniID>>();
 		for (String refAccID : lsRefAccID) {
-			ArrayList<AgeneUniID> lsTmpGenUniID = getNCBIUniTax(refAccID, this.ageneUniID.getTaxID());
+			List<AgeneUniID> lsTmpGenUniID = getNCBIUniTax(refAccID, this.ageneUniID.getTaxID());
 			if (lsTmpGenUniID.size() == 0) {
 				continue;
 			} else if (lsTmpGenUniID.size() == 1 && lsTmpGenUniID.get(0).getGeneIDtype().equals(GeneID.IDTYPE_GENEID)) {
 				AgeneUniID ageneUniID = lsTmpGenUniID.get(0);
 				ageneUniID.setAccID(this.ageneUniID.getAccID());
 				ageneUniID.setDataBaseInfo(this.ageneUniID.getDataBaseInfo());
+				ageneUniID.setId(null);
 				this.ageneUniID = ageneUniID;
 				this.isAccID = false;
 				return;
@@ -776,8 +752,8 @@ public class GeneIDabs implements GeneIDInt {
 		}
 		
 		// 挑选出含有geneUniID的geneID
-		Collections.sort(lsgeneID, new Comparator<ArrayList<AgeneUniID>>() {
-			public int compare(ArrayList<AgeneUniID> o1, ArrayList<AgeneUniID> o2) {
+		Collections.sort(lsgeneID, new Comparator<List<AgeneUniID>>() {
+			public int compare(List<AgeneUniID> o1, List<AgeneUniID> o2) {
 				Integer o1Info = o1.get(0).getGeneIDtype();
 				Integer o2Info = o2.get(0).getGeneIDtype();
 				int flag = o1Info.compareTo(o2Info);
@@ -802,6 +778,7 @@ public class GeneIDabs implements GeneIDInt {
 		AgeneUniID ageneUniID = lsgeneID.get(0).get(0);
 		ageneUniID.setAccID(this.ageneUniID.getAccID());
 		ageneUniID.setDataBaseInfo(this.ageneUniID.getDataBaseInfo());
+		ageneUniID.setId(null);
 		this.ageneUniID = ageneUniID;
 		this.isAccID = false;
 	}
@@ -825,7 +802,7 @@ public class GeneIDabs implements GeneIDInt {
 		ManageNCBIUniID servGeneAnno = new ManageNCBIUniID();
 		List<AgeneUniID> lsAgeneUniIDs = servGeneAnno.findByAccID(GeneID.IDTYPE_GENEID, accID, taxID);
 		if (lsAgeneUniIDs.size() == 0) {
-			lsAgeneUniIDs = servGeneAnno.findByAccID(GeneID.IDTYPE_GENEID, accID, taxID);
+			lsAgeneUniIDs = servGeneAnno.findByAccID(GeneID.IDTYPE_UNIID, accID, taxID);
 		}
 		return getLsGeneIDinfo(lsAgeneUniIDs);
 	}
@@ -856,7 +833,6 @@ public class GeneIDabs implements GeneIDInt {
 	/**
 	 * 只要两个ncbiid的geneID相同，就认为这两个NCBIID相同
 	 * 但是如果geneID为0，也就是NCBIID根本没有初始化，那么直接返回false
-	 * 
 	 * @Override
 	 */
 	public boolean equals(Object obj) {
