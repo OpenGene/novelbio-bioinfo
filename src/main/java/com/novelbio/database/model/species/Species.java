@@ -392,7 +392,7 @@ public class Species {
 			speciesFile.setPublishYear((int)Double.parseDouble(info[m]));
 			
 			m = hashName2ColNum.get("chrompath");
-			String[] chromInfo = info[m].split(SepSign.SEP_INFO);
+			String[] chromInfo = info[m].split(SepSign.SEP_ID);
 			speciesFile.setChromPath(chromInfo[0], chromInfo[1]);
 			
 			m = hashName2ColNum.get("chromseq");

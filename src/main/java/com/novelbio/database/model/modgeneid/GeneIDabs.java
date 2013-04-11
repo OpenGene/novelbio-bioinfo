@@ -62,7 +62,7 @@ public class GeneIDabs implements GeneIDInt {
 		AgeneUniID ageneUniID = AgeneUniID.creatAgeneUniID(idType);
 		ageneUniID.setGenUniID(geneUniID);
 		ageneUniID.setTaxID(taxID);
-		List<AgeneUniID> lsTmp = null;
+		List<AgeneUniID> lsTmp = new ArrayList<AgeneUniID>();
 		if (taxID <= 0) {
 			lsTmp = servNCBIUniID.findByGeneUniID(idType, geneUniID, taxID);
 		}

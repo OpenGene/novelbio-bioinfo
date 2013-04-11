@@ -63,7 +63,6 @@ public class SoftWareInfo {
 		searched = false;
 	}
 	public String getName() {
-		querySoftWareInfo();
 		return softName;
 	}
 	public void setDescription(String description) {
@@ -162,7 +161,7 @@ public class SoftWareInfo {
 		if (softName == null || softName.trim().equals("")) {
 			return;
 		}
-		SoftWareInfo softWareInfos = manageSoftWareInfo.findSoftwareByName(getName());
+		SoftWareInfo softWareInfos = manageSoftWareInfo.findSoftwareByName(softName);
 		copyInfo(softWareInfos);
 		searched = true;
 	}

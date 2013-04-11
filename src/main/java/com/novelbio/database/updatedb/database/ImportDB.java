@@ -6,9 +6,11 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.geneanno.DBInfo;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
+import com.novelbio.database.service.servgeneanno.ManageDBInfo;
 
 /**
  * 
@@ -25,24 +27,25 @@ public class ImportDB {
 	String speciesFile;
 	
 	/** NCBI等数据库文件下载后存放的路径 */
-	String databasePath = "/media/winE/Bioinformatics/DataBaseUpdate/";
+	String downloadPath = "/media/winE/NBCplatform/genome/";
 	
-	String taxIDFile = databasePath + "常见物种IDKEGGAll.txt";
+	String taxIDFile = downloadPath + "常见物种IDKEGGAll.txt";
 	String GOPath = "/media/winE/Bioinformatics/DataBaseUpdate/GO/";
 	
 	public static void main(String[] args) {
 		String downloadPath = "/media/winE/Bioinformatics/DataBase/";
-		String softToolsFile = "";
-		String speciesFile = "";
+		String softToolsFile = "/media/winE/NBCplatform/BioInfomaticsToolsPlatform/SoftwareInfo.txt";
+		String speciesFile = "/media/winE/NBCplatform/genome/SpeciesFileThis.txt";
+		String dbInfo = "/media/winE/NBCplatform/DBinfo.txt";
 		ImportDB importDB = new ImportDB();
 		importDB.setDownloadPath(downloadPath);
-//		importDB.setSoftToolsFile(softToolsFile);
-//		importDB.setSpeciesFile(speciesFile);
+		importDB.setSoftToolsFile(softToolsFile);
+		importDB.setSpeciesFile(speciesFile);
+//		importDB.updateDBinfo(dbInfo);
 //		importDB.updateSoftInfo();
 //		importDB.updateSpecies();
-		
 		importDB.updateNCBIID();
-		importDB.updateUniprotID();
+//		importDB.updateUniprotID();
 //		importDB.updateMicroarray();
 		
 		
@@ -70,7 +73,7 @@ public class ImportDB {
 	}
 	/** NCBI等数据库文件下载后存放的路径 */
 	public void setDownloadPath(String databasePath) {
-		this.databasePath = databasePath;
+		this.downloadPath = databasePath;
 	}
 	
 	private void updateSoftInfo() {
@@ -84,16 +87,20 @@ public class ImportDB {
 		species.update();
 	}
 	
+	private void updateDBinfo(String dbInfoFile) {
+		DBInfo.updateDBinfo(dbInfoFile);
+	}
+	
 	/** 升级从NCBI下载的信息 */
 	private void updateNCBIID() {
-		String gene2Acc = databasePath + "gene2accession.gz";
-		String gene2Ref = databasePath + "gene2refseq.gz";
-		String gene2ensembl = databasePath + "gene2ensembl.gz";
-		String geneRef2UniID = databasePath + "gene_refseq_uniprotkb_collab.gz";
-		String gene2Info = databasePath + "gene_info.gz";
-		String gene2Pub = databasePath + "gene2pubmed.gz";
+		String gene2Acc = downloadPath + "gene2accession.gz";
+		String gene2Ref = downloadPath + "gene2refseq.gz";
+		String gene2ensembl = downloadPath + "gene2ensembl.gz";
+		String geneRef2UniID = downloadPath + "gene_refseq_uniprotkb_collab.gz";
+		String gene2Info = downloadPath + "gene_info.gz";
+		String gene2Pub = downloadPath + "gene2pubmed.gz";
 		String goExtObo = GOPath + "gene_ontology_ext.obo";
-		String gene2GO = databasePath + "gene2go.gz";
+		String gene2GO = downloadPath + "gene2go.gz";
 		
 		NCBI ncbi = new NCBI();
 		ncbi.setTaxID(taxIDFile);
@@ -111,9 +118,9 @@ public class ImportDB {
 	 * 升级从UniProt下载的信息
 	 */
 	private void updateUniprotID() {
-		String idmappingSelectedFile = databasePath + "idmapping_selected.tab.gz";
+		String idmappingSelectedFile = downloadPath + "idmapping_selected.tab.gz";
 		String impgene_associationgoa_uniprotFile = GOPath + "gene_association.goa_uniprot.gz";
-		String outUniIDFile = databasePath + "outIdmap.txt";
+		String outUniIDFile = downloadPath + "outIdmap.txt";
 		UniProt uniProt = new UniProt();
 		uniProt.setIdmappingSelectedFile(idmappingSelectedFile);
 		uniProt.setTaxIDFile(taxIDFile);

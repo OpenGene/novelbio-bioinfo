@@ -2,11 +2,12 @@ package com.novelbio.database.domain.geneanno;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.service.servgeneanno.ManageDBInfo;
-
+@Document(collection = "dbinfo")
 public class DBInfo {
 	@Id
 	String dbInfoID;
