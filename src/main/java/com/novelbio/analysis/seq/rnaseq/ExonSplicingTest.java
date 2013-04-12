@@ -323,6 +323,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	 *  */
 	private double getPvaluePropExp() {
 		double prop = 0.5;
+		//TODO 将ratio换掉，把exonCluster.getLength()换成difSite.Length();
 		double ratio = exonCluster.getLength()/(readsLength * 3);
 		if (ratio > 1) {
 			prop = Math.pow(0.5, 1/ratio);
@@ -408,7 +409,6 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 //					}
 //				}
 //			} catch (Exception e) {
-//				// TODO: handle exception
 //			}
 //		}
 		return lsResult.toArray(new String[0]);
@@ -573,6 +573,8 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		return lsTitle.toArray(new String[0]);
 	}
 }
+
+//TODO 把SplicingAlternativeType换成SpliceTypePredict
 /**
  * 某个时期的某个位点的<br>
  * 
@@ -584,7 +586,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
  */
 class SpliceType2Value {
 	private static final Logger logger = Logger.getLogger(SpliceType2Value.class);
-	
+
 	Set<SplicingAlternativeType> setExonSplicingTypes = new HashSet<SplicingAlternativeType>();
 	ArrayListMultimap<SplicingAlternativeType, Double> mapSplicingType2LsExpValue = ArrayListMultimap.create();
 	ArrayListMultimap<SplicingAlternativeType, Double> mapSplicingType2LsJunctionReads = ArrayListMultimap.create();

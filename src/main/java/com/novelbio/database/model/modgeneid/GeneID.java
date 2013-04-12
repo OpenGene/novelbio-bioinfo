@@ -262,11 +262,7 @@ public class GeneID implements GeneIDInt{
 		int dotIndex = tmpGeneID.lastIndexOf(".");
 		//如果类似XM_002121.1类型
 		if (dotIndex>0 && tmpGeneID.length() - dotIndex <= 3) {
-			String subIndex = tmpGeneID.substring(dotIndex + 1, tmpGeneID.length());
-			try {
-				int num = Integer.parseInt(subIndex);
-				tmpGeneID = tmpGeneID.substring(0,dotIndex);
-			} catch (Exception e) { }
+			tmpGeneID = tmpGeneID.substring(0,dotIndex);
 		}
 		return tmpGeneID;
 	}
@@ -475,6 +471,7 @@ public class GeneID implements GeneIDInt{
 		return geneID.getDBinfo();
 	}
 	
+	/** 小写 */
 	public String getGeneUniID() {
 		return geneID.getAgeneUniID().getGenUniID();
 	}

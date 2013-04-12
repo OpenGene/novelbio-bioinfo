@@ -27,7 +27,7 @@ public class ManageSpeciesFile {
 		if (taxID <= 0) {
 			return null;
 		}
-		return repoSpeciesFile.findByTaxIDAndVersion(taxID, version);
+		return repoSpeciesFile.findByTaxIDAndVersion(taxID, version.toLowerCase());
 	}
 	
 	/**

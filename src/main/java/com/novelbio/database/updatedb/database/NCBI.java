@@ -57,19 +57,19 @@ public class NCBI {
 		impFile = new ImpGen2Acc();
 		impFile.setReadFromLine(2);
 		impFile.updateFile(gene2Acc);
-		impFile.updateFile(gene2Ref);
-		impFile = new ImpGen2Ensembl();
-		impFile.updateFile(gene2ensembl);
-		impFile = new ImpGeneRef2UniID();
-		impFile.updateFile(geneRef2UniID);
-		impFile = new ImpGene2Info();
-		impFile.updateFile(gene2Info);
-		impFile = new ImpGene2Pub();
-		impFile.updateFile(gene2Pub);
-		impFile = new ImpGOExtObo();
-		impFile.updateFile(goExtObo);
-		impFile = new ImpGene2GO();
-		impFile.updateFile(gene2GO);
+//		impFile.updateFile(gene2Ref);
+//		impFile = new ImpGen2Ensembl();
+//		impFile.updateFile(gene2ensembl);
+//		impFile = new ImpGeneRef2UniID();
+//		impFile.updateFile(geneRef2UniID);
+//		impFile = new ImpGene2Info();
+//		impFile.updateFile(gene2Info);
+//		impFile = new ImpGene2Pub();
+//		impFile.updateFile(gene2Pub);
+//		impFile = new ImpGOExtObo();
+//		impFile.updateFile(goExtObo);
+//		impFile = new ImpGene2GO();
+//		impFile.updateFile(gene2GO);
 	}
 }
 

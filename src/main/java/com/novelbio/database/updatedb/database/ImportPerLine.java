@@ -69,12 +69,11 @@ abstract class ImportPerLine {
 			} catch (Exception e) {
 				e.printStackTrace();
 				logger.error("stop");
-				impPerLine(content);
 			}
 	
 			num++;
-			if (num%10000 == 0) {
-				logger.info("import line number:" + num);
+			if (num%1000 == 0) {
+				logger.error("import line number:" + num);
 			}
 		}
 		impEnd();

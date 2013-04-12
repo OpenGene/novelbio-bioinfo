@@ -616,6 +616,9 @@ public class GeneIDabs implements GeneIDInt {
 	/** 升级GO数据库 */
 	private boolean updateGene2Go() {
 		try {
+			if (goInfoAbs == null) {
+				return true;
+			}
 			goInfoAbs.update();
 		} catch (Exception e) {
 			return false;
@@ -627,7 +630,7 @@ public class GeneIDabs implements GeneIDInt {
 	 * 根据输入的geneUniID--中的geneID，升级AccID和DBinfo
 	 * 升级geneID数据库，并且将geneUniID按照数据库进行重置 <b>只升级第一个获得的geneID</b>
 	 * 如果accID没有，则不升级
-	 * @param 如果在数据库中没有找到对应的ID
+	 * @param updateUniID 如果在数据库中没有找到对应的ID
 	 *            ，是否将ID导入UniID库
 	 *            true,导入uniID库，并且重置idtype
 	 * @throws EOFException

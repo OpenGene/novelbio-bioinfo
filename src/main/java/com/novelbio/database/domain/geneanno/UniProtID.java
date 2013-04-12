@@ -23,9 +23,10 @@ public class UniProtID extends AgeneUniID {
 	public String getUniID() {
 		return uniID;
 	}
-
+	
+	/** 自动转成小写 */
 	public void setUniID(String uniID) {
-		this.uniID = uniID;
+		this.uniID = uniID.toLowerCase();
 	}
 
 	/** 只要两个uniprotID的UniID相同，就认为这两个uniprotID相同
@@ -50,7 +51,8 @@ public class UniProtID extends AgeneUniID {
 	public int hashCode() {
 		return uniID.hashCode();
 	}
-
+	
+	/** 小写的 */
 	@Override
 	public String getGenUniID() {
 		return uniID;

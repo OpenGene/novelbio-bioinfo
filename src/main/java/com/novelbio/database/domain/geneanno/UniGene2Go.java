@@ -17,7 +17,7 @@ public class UniGene2Go extends AGene2Go{
 		return uniID;
 	}
 	public void setUniProtID(String uniProtID) {
-		this.uniID = uniProtID;
+		this.uniID = uniProtID.toLowerCase();
 	}
 	
 	@Override

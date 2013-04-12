@@ -130,8 +130,8 @@ public class Go2Term implements Cloneable {
 	 * @param GoID
 	 */
 	public void setGoID(String GoID) {
-		this.GoID = GoID;
-		setQueryGoID.add(GoID);
+		this.GoID = GoID.trim().toUpperCase();
+		setQueryGoID.add(this.GoID);
 	}
 	
 	public String getGoTerm() {
@@ -173,7 +173,7 @@ public class Go2Term implements Cloneable {
 		if (otherObj.getGoID() == null) {
 			return false;
 		}
-		if (GoID.trim().equalsIgnoreCase(otherObj.getGoID().trim())) {
+		if (GoID.equals(otherObj.GoID)) {
 			return true;
 		}
 		return false;
@@ -192,11 +192,11 @@ public class Go2Term implements Cloneable {
 		
 		if (ArrayOperate.compareString(GoType, otherObj.GoType)
 			&&
-			ArrayOperate.compareString(GoID, otherObj.getGoID())
+			ArrayOperate.compareString(GoID, otherObj.GoID)
 			&&
-			ArrayOperate.compareString(GoTerm, otherObj.getGoTerm())	
+			ArrayOperate.compareString(GoTerm, otherObj.GoTerm)	
 			&&
-			ArrayOperate.compareString(Definition, otherObj.getDefinition())
+			ArrayOperate.compareString(Definition, otherObj.Definition)
 			&&
 			mapChildGO2Relate.equals(otherObj.mapChildGO2Relate)
 			&&

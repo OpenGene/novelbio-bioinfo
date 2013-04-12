@@ -20,12 +20,12 @@ public abstract class AgeneUniID {
 	
 	@Id
 	private String id;
-	
     private int taxID;
+    /** 通通小写 */
+	private String accID;
+	/** 原始值，不小写 */
+	private String accIDraw;
 	
-	@Field(value="accID")
-	private String accessID;
-		
 	@DBRef
 	DBInfo databaseInfo;
 	
@@ -54,6 +54,7 @@ public abstract class AgeneUniID {
 	
 	/** 返回GeneID.NCBIID等 */
 	public abstract Integer getGeneIDtype();
+	/** 小写的 */
 	public abstract String getGenUniID();
 	public abstract void setGenUniID(String genUniID);
 	/**
@@ -61,17 +62,18 @@ public abstract class AgeneUniID {
 	 * @return
 	 */
 	public String getAccID() {
-		if (accessID == null) {
+		if (accIDraw == null) {
 			return null;
 		}
-		accessID = accessID.trim();
-		if (accessID.equals("")) {
+		accIDraw = accIDraw.trim();
+		if (accIDraw.equals("")) {
 			return null;
 		}
-		return accessID;
+		return accIDraw;
 	}
 	public void setAccID(String accessID) {
-		this.accessID = accessID;
+		this.accID = accessID.toLowerCase();
+		this.accIDraw = accessID;
 	}  
 	
 	public DBInfo getDataBaseInfo() {
@@ -128,12 +130,12 @@ public abstract class AgeneUniID {
 		
 		AgeneUniID otherObj = (AgeneUniID)obj;
 		if(!isValidGenUniID() && !isValidGenUniID()) {
-			if (accessID == null && otherObj.accessID == null) {
+			if (accID == null && otherObj.accID == null) {
 				return true;
-			} else if (accessID != null) {
-				return accessID.equals(otherObj.accessID);
-			} else if (otherObj.accessID != null) {
-				return otherObj.accessID.equals(accessID);
+			} else if (accID != null) {
+				return accID.equals(otherObj.accID);
+			} else if (otherObj.accID != null) {
+				return otherObj.accID.equals(accID);
 			}
 		} else if (isValidGenUniID()) {
 			return getGenUniID().equals(otherObj.getGenUniID());

@@ -14,26 +14,30 @@ public class DBInfo {
 	/** 数据库名称 */
 	@Indexed
 	String dbName;
+	String dbNameRaw;
 	/** 数据库来源组织，譬如affy、NCBI等 */
 	@Indexed
 	String dbOrg;
+	String dbOrgRaw;
 	/** 数据库描述 */
 	String description;
 	
 	public void setDbName(String dbName) {
-		this.dbName = dbName;
+		this.dbName = dbName.toLowerCase();
+		this.dbNameRaw = dbName;
 	}
 	public void setDbOrg(String dbOrg) {
-		this.dbOrg = dbOrg;
+		this.dbOrg = dbOrg.toLowerCase();
+		this.dbOrgRaw = dbOrg;
 	}
 	public void setDescription(String description) {
 		this.description = description;
 	}
 	public String getDbName() {
-		return dbName;
+		return dbNameRaw;
 	}
 	public String getDbOrg() {
-		return dbOrg;
+		return dbOrgRaw;
 	}
 	public String getDescription() {
 		return description;
@@ -76,7 +80,7 @@ public class DBInfo {
 		
 		if (getClass() != object.getClass()) return false;
 		DBInfo otherObj = (DBInfo)object;
-		if (dbName.equals(otherObj.getDbName()) && dbOrg.equals(otherObj.getDbOrg())) {
+		if (dbName.equals(otherObj.dbName) && dbOrg.equals(otherObj.dbOrg)) {
 			return true;
 		}
 		return false;

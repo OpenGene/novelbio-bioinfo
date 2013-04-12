@@ -6,11 +6,15 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.DBAccIDSource;
+import com.novelbio.database.domain.geneanno.AgeneUniID;
 import com.novelbio.database.domain.geneanno.DBInfo;
+import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.database.service.servgeneanno.ManageDBInfo;
+import com.novelbio.database.service.servgeneanno.ManageNCBIUniID;
 
 /**
  * 
@@ -44,6 +48,9 @@ public class ImportDB {
 //		importDB.updateDBinfo(dbInfo);
 //		importDB.updateSoftInfo();
 //		importDB.updateSpecies();
+		
+		
+//		importDB.initialDB();
 		importDB.updateNCBIID();
 //		importDB.updateUniprotID();
 //		importDB.updateMicroarray();
@@ -61,6 +68,24 @@ public class ImportDB {
 //		updateBlast();
 //		updateAffy();
 	}
+	
+	public void initialDB() {
+		ManageNCBIUniID manageNCBIUniID = new ManageNCBIUniID();
+		AgeneUniID ageneUniID = AgeneUniID.creatAgeneUniID(GeneID.IDTYPE_GENEID);
+		ageneUniID.setAccID("Test");
+		ageneUniID.setDataBaseInfo(DBAccIDSource.NCBI.name());
+		ageneUniID.setGenUniID("0");
+		ageneUniID.setTaxID(0);
+		manageNCBIUniID.saveNCBIUniID(ageneUniID);
+		
+		ageneUniID = AgeneUniID.creatAgeneUniID(GeneID.IDTYPE_UNIID);
+		ageneUniID.setAccID("Test");
+		ageneUniID.setDataBaseInfo(DBAccIDSource.NCBI.name());
+		ageneUniID.setGenUniID("0");
+		ageneUniID.setTaxID(0);
+		manageNCBIUniID.saveNCBIUniID(ageneUniID);
+	}
+	
 	
 	public void setSoftToolsFile(String softToolsFile) {
 		this.softToolsFile = softToolsFile;

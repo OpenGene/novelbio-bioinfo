@@ -12,7 +12,7 @@ public class UniGeneInfo extends AGeneInfo{
 		return uniID;
 	}
 	public void setUniProtID(String uniProtID) {
-		this.uniID = uniProtID;
+		this.uniID = uniProtID.toLowerCase();
 	}
 	
 	@Override

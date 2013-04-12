@@ -21,6 +21,15 @@ public class ManageNCBIUniID {
 	@Autowired
 	private RepoUniID repoUniID;
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public ManageNCBIUniID() {
 		repoNCBIID = (RepoNCBIID) SpringFactory.getFactory().getBean("repoNCBIID");
 		repoUniID = (RepoUniID) SpringFactory.getFactory().getBean("repoUniID");
@@ -135,6 +144,13 @@ public class ManageNCBIUniID {
 		
 	}
 	
+	public void saveNCBIUniID(AgeneUniID ncbiid) {
+		if (ncbiid.getGeneIDtype() == GeneID.IDTYPE_GENEID) {
+			repoNCBIID.save((NCBIID)ncbiid);
+		} else {
+			repoUniID.save((UniProtID)ncbiid);
+		}
+	}
 	/**
 	 * ncbiid必须填写完全
 	 * <b>没有accID，放弃升级</b>
@@ -155,24 +171,25 @@ public class ManageNCBIUniID {
 			logger.error("不能导入GO信息");
 			return false;
 		}
-		AgeneUniID ageneUniID = findByGeneUniIDAndAccIDAndTaxID(ncbiid.getGeneIDtype(), ncbiid.getGenUniID(), ncbiid.getAccID(), ncbiid.getTaxID());
-		if (ageneUniID == null) {
+		try {
 			if (ncbiid.getGeneIDtype() == GeneID.IDTYPE_GENEID) {
 				repoNCBIID.save((NCBIID)ncbiid);
 			} else {
 				repoUniID.save((UniProtID)ncbiid);
 			}
-		} else if (override) {
-			if (ageneUniID.getTaxID() == ncbiid.getTaxID() && ageneUniID.getDataBaseInfo().equals(ncbiid.getDataBaseInfo())) {
-				return true;
-			}
-			ageneUniID.setTaxID(ncbiid.getTaxID());
-			ageneUniID.setDataBaseInfo(ncbiid.getDataBaseInfo());
-			if (ncbiid.getGeneIDtype() == GeneID.IDTYPE_GENEID) {
-				repoNCBIID.save((NCBIID)ageneUniID);
-			} else {
-				repoUniID.save((UniProtID)ageneUniID);
-			}
+		} catch (Exception e) {
+			 if (override) {
+				 AgeneUniID ageneUniID = findByGeneUniIDAndAccIDAndTaxID(ncbiid.getGeneIDtype(), ncbiid.getGenUniID(), ncbiid.getAccID(), ncbiid.getTaxID());
+				 if (ageneUniID.getDataBaseInfo().equals(ncbiid.getDataBaseInfo())) {
+					 return true;
+				 }
+				 ageneUniID.setDataBaseInfo(ncbiid.getDataBaseInfo());
+				 if (ncbiid.getGeneIDtype() == GeneID.IDTYPE_GENEID) {
+					 repoNCBIID.save((NCBIID)ageneUniID);
+				 } else {
+					 repoUniID.save((UniProtID)ageneUniID);
+				 }
+			 }
 		}
 		return true;
 	}

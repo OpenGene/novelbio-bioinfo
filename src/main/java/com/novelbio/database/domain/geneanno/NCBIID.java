@@ -13,8 +13,8 @@ import com.novelbio.database.model.modgeneid.GeneID;
  */
 @Document(collection="ncbiid")
 @CompoundIndexes({
-    @CompoundIndex(unique = true, name = "gene_acc_idx", def = "{'geneID': 1, 'accID': -1}"),
-    @CompoundIndex(unique = true, name = "acc_tax_idx", def = "{'accID': 1, 'taxID': -1}")
+    @CompoundIndex(unique = true, name = "gene_acc_tax_idx", def = "{'geneID': 1, 'accID': -1, 'taxID': 1}"),
+    @CompoundIndex(unique = false, name = "acc_tax_idx", def = "{'accID': 1, 'taxID': -1}")
  })
 public class NCBIID extends AgeneUniID{
 	private long geneID;

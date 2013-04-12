@@ -31,7 +31,7 @@ public class ManageDBInfo {
 			mapDBName2DBinfo = new ConcurrentHashMap<String, DBInfo>();
 			for (DBInfo dbInfo : repoDBinfo.findAll()) {
 				mapDBid2DBinfo.put(dbInfo.getDbInfoID(), dbInfo);
-				mapDBName2DBinfo.put(dbInfo.getDbInfoID(), dbInfo);
+				mapDBName2DBinfo.put(dbInfo.getDbName(), dbInfo);
 			}
 		}
 	}
