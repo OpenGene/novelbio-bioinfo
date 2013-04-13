@@ -1,8 +1,11 @@
 package com.novelbio.database.service.servgeneanno;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -18,7 +21,8 @@ public class ManageBlastInfo {
 	static ArrayListMultimap<String, BlastInfo> mapQueryIDTaxIDQTaxIDS_2_BlastInfo = ArrayListMultimap.create();
 	static ArrayListMultimap<String, BlastInfo> mapQueryIDTaxIDQ_2_BlastInfo = ArrayListMultimap.create();
 	/** 这个做缓存 */
-	static List<BlastInfo> lsBlastInfosUpdate = new ArrayList<BlastInfo>(num);
+	static Set<BlastInfo> setBlastInfosUpdate = new LinkedHashSet<BlastInfo>(num);
+	static Map<String, BlastInfo> mapQueryIDQueryTaxSubTaxSubID_2_BlastInfo = new HashMap<String, BlastInfo>();
 	
 	@Autowired
 	RepoBlastInfo repoBlastInfo;
@@ -77,16 +81,14 @@ d * @param evalue 设定阈值 如果evalue <= -1或evalue >=5，则不起作用
 	
 	public void save(BlastInfo blastInfo, boolean saveToDB) {
 		synchronized (lock) {
-			if (blastInfo == null) {
-				return;
+			if (blastInfo != null && !setBlastInfosUpdate.contains(blastInfo)) {
+				setBlastInfosUpdate.add(blastInfo);
 			}
-			if (lsBlastInfosUpdate.size() < num-10 && !saveToDB) {
-				lsBlastInfosUpdate.add(blastInfo);
-			} else {
-				repoBlastInfo.save(lsBlastInfosUpdate);
+			if (setBlastInfosUpdate.size() > num-10 || saveToDB) {
+				repoBlastInfo.save(setBlastInfosUpdate);
 				mapQueryIDTaxIDQ_2_BlastInfo.clear();
 				mapQueryIDTaxIDQTaxIDS_2_BlastInfo.clear();
-				lsBlastInfosUpdate.clear();
+				setBlastInfosUpdate.clear();
 			}
 		}
 	}

@@ -18,7 +18,8 @@ import com.novelbio.database.model.modgeneid.GeneID;
  */
 @Document(collection = "blastInfo")
 @CompoundIndexes({
-    @CompoundIndex(name = "queryID_queryTax_idx", def = "{'queryID': 1, 'queryTax': -1 , 'subjectTax': 1}")
+    @CompoundIndex(unique = true, name = "queryID_queryTax_subTax_subID_idx",
+    		def = "{'queryID': 1, 'queryTax': -1 , 'subjectTax': 1, 'subjectID': -1}")
  })
 public class BlastInfo implements Comparable<BlastInfo> {
 	@Id
