@@ -110,12 +110,12 @@ public abstract class AgeneUniID {
 	 * @param nCBIID
 	 * @param override
 	 */
-	public void update(boolean overrideDBinfo) {
+	public boolean update(boolean overrideDBinfo) {
 		if (!overrideDBinfo && getId() != null && !getId().equals("")) {
-			return;
+			return true;
 		}
 		ManageNCBIUniID manageNCBIUniID = new ManageNCBIUniID();
-		manageNCBIUniID.updateNCBIUniID(this, overrideDBinfo);
+		return manageNCBIUniID.updateNCBIUniID(this, overrideDBinfo);
 	}
 	
 	/**

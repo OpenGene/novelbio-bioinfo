@@ -639,27 +639,26 @@ public class GeneIDabs implements GeneIDInt {
 		if (!ageneUniID.isValidGenUniID() && ageneUniID.getAccID() == null) {
 			return false;
 		}
-		
+		boolean update = false;
 		if (ageneUniID.getDataBaseInfo() == null || ageneUniID.getDataBaseInfo().getDbName().equals("")) {
 			logger.error("升级geneID时没有设置该gene的数据库来源，自动设置为NCBIID");
 			ageneUniID.setDataBaseInfo(DBAccIDSource.NCBI.toString());
 		}
-		// 只升级第一个获得的geneID
 		if (getIDtype() != GeneID.IDTYPE_ACCID) {
-			ageneUniID.update(overrideUpdateDBinfo);
+			update = ageneUniID.update(overrideUpdateDBinfo);
 		} else if (updateUniID) {
 			AgeneUniID uniProtID =  AgeneUniID.creatAgeneUniID(GeneID.IDTYPE_UNIID);
 			uniProtID.setAccID(ageneUniID.getAccID());
 			uniProtID.setDataBaseInfo(ageneUniID.getDataBaseInfo());
 			uniProtID.setGenUniID(ageneUniID.getGenUniID());
 			uniProtID.setTaxID(ageneUniID.getTaxID());
-			uniProtID.update(overrideUpdateDBinfo);
+			update = uniProtID.update(overrideUpdateDBinfo);
 			//TODO 防止下一个导入的时候出错
 //			try { hread.sleep(10); } catch (InterruptedException e) { }
 		} else {
 			return false;
 		}
-		return true;
+		return update;
 	}
 	/**
 	 * 根据geneID和idType升级相关的geneInfo
@@ -676,12 +675,13 @@ public class GeneIDabs implements GeneIDInt {
 		}
 		geneInfo.setTaxID(getTaxID());
 		servGeneInfo.updateGenInfo(getIDtype(), ageneUniID.getGenUniID(), getTaxID(), geneInfo);
-		updateGeneInfoSymbolAndSynonyms(getIDtype(), geneInfo);
+		boolean update = updateGeneInfoSymbolAndSynonyms(getIDtype(), geneInfo);
 		geneInfo = null;
-		return true;
+		return update;
 	}
 	
-	private void updateGeneInfoSymbolAndSynonyms(int idType, AGeneInfo geneInfoUpdate) {
+	private boolean updateGeneInfoSymbolAndSynonyms(int idType, AGeneInfo geneInfoUpdate) {
+		boolean update = false;
 		AgeneUniID ageneUniID = null;
 		if (geneInfoUpdate.getSymb() != null) {
 			String ssymb = geneInfoUpdate.getSymb();
@@ -690,7 +690,7 @@ public class GeneIDabs implements GeneIDInt {
 			ageneUniID.setDataBaseInfo(DBAccIDSource.Symbol.toString());
 			ageneUniID.setGenUniID(this.ageneUniID.getGenUniID());
 			ageneUniID.setTaxID(getTaxID());
-			ageneUniID.update(true);
+			update = ageneUniID.update(true);
 		}
 		if (geneInfoUpdate.getSynonym() != null) {
 			for (String string : geneInfoUpdate.getSynonym()) {
@@ -699,9 +699,10 @@ public class GeneIDabs implements GeneIDInt {
 				ageneUniID.setDataBaseInfo(DBAccIDSource.Synonyms.toString());
 				ageneUniID.setGenUniID(this.ageneUniID.getGenUniID());
 				ageneUniID.setTaxID(getTaxID());
-				ageneUniID.update(true);
+				update = update && ageneUniID.update(true);
 			}
 		}
+		return update;
 	}
 	
 	private boolean updateBlastInfo() {

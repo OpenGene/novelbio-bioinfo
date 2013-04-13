@@ -170,28 +170,40 @@ public class ManageNCBIUniID {
 			logger.error("不能导入GO信息");
 			return false;
 		}
-		 AgeneUniID ageneUniID = findByGeneUniIDAndAccIDAndTaxID(ncbiid.getGeneIDtype(), ncbiid.getGenUniID(), ncbiid.getAccID(), ncbiid.getTaxID());
-		 if (ageneUniID == null) {
-			 if (ncbiid.getGeneIDtype() == GeneID.IDTYPE_GENEID) {
-				 repoNCBIID.save((NCBIID)ncbiid);
-			 } else {
-				 repoUniID.save((UniProtID)ncbiid);
-			 }
-		} else {
-			 if (override) {
-				 if (ageneUniID.getDataBaseInfo().equals(ncbiid.getDataBaseInfo())) {
-					 return true;
-				 }
-				 ageneUniID.setDataBaseInfo(ncbiid.getDataBaseInfo());
-				 if (ncbiid.getGeneIDtype() == GeneID.IDTYPE_GENEID) {
-					 repoNCBIID.save((NCBIID)ageneUniID);
-				 } else {
-					 repoUniID.save((UniProtID)ageneUniID);
-				 }
-			 }
+		try {
+			AgeneUniID ageneUniID = findByGeneUniIDAndAccIDAndTaxID(ncbiid.getGeneIDtype(), ncbiid.getGenUniID(), ncbiid.getAccID(), ncbiid.getTaxID());
+			if (ageneUniID == null) {
+				try {
+					if (ncbiid.getGeneIDtype() == GeneID.IDTYPE_GENEID) {
+						repoNCBIID.save((NCBIID)ncbiid);
+					} else {
+						repoUniID.save((UniProtID)ncbiid);
+					}
+				} catch (Exception e) {
+					update(ncbiid);
+				}
+			} else {
+				if (override) {
+					update(ncbiid);
+				}
+			}
+		} catch (Exception e) {
+			return false;
 		}
 		return true;
 	}
 
-
+	private boolean update(AgeneUniID ncbiid) {
+		 AgeneUniID ageneUniID = findByGeneUniIDAndAccIDAndTaxID(ncbiid.getGeneIDtype(), ncbiid.getGenUniID(), ncbiid.getAccID(), ncbiid.getTaxID());
+		 if (ageneUniID.getDataBaseInfo().equals(ncbiid.getDataBaseInfo())) {
+			 return true;
+		 }
+		 ageneUniID.setDataBaseInfo(ncbiid.getDataBaseInfo());
+		 if (ncbiid.getGeneIDtype() == GeneID.IDTYPE_GENEID) {
+			 repoNCBIID.save((NCBIID)ageneUniID);
+		 } else {
+			 repoUniID.save((UniProtID)ageneUniID);
+		 }
+		 return true;
+	}
 }
