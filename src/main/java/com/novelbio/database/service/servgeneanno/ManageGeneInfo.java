@@ -36,12 +36,11 @@ public class ManageGeneInfo {
 			}
 		} else {
 			if (taxID > 0) {
-				return repoUniGeneInfo.findByUniIDAndTaxID(genUniID, taxID);
+				return repoUniGeneInfo.findByUniIDAndTaxID(genUniID.toLowerCase(), taxID);
 			} else {
-				return repoUniGeneInfo.findByUniID(genUniID);
+				return repoUniGeneInfo.findByUniID(genUniID.toLowerCase());
 			}
 		}
-		
 	}
 	
 	/**

@@ -42,7 +42,7 @@ public class ManageGo2Term {
 	}
 	/** 全部读入内存后，hash访问。第一次速度慢，后面效率很高 */
 	public Go2Term queryGo2Term(String goID) {
-		return mapGoID2GOTerm.get(goID);
+		return mapGoID2GOTerm.get(goID.toUpperCase());
 	}
 	
 	/**

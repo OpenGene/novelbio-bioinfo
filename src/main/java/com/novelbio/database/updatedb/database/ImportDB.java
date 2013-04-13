@@ -27,7 +27,6 @@ public class ImportDB {
 
 	
 	String softToolsFile;
-	String taxInfoFile;
 	String speciesFile;
 	
 	/** NCBI等数据库文件下载后存放的路径 */
@@ -108,7 +107,7 @@ public class ImportDB {
 	private void updateSpecies() {
 		Species species = new Species();
 		species.setUpdateSpeciesFile(speciesFile);
-		species.setUpdateTaxInfo(taxInfoFile);
+		species.setUpdateTaxInfo(taxIDFile);
 		species.update();
 	}
 	

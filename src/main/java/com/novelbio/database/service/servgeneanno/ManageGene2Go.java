@@ -1,6 +1,5 @@
 package com.novelbio.database.service.servgeneanno;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,11 +15,7 @@ import com.novelbio.database.service.SpringFactory;
 public class ManageGene2Go {
 	private static Logger logger = Logger.getLogger(ManageGene2Go.class);
 	
-	static double[] lock = new double[0];
-	static int num = 10000;
-	static Map<String, Gene2Go> mapGeneIDTaxIDGOID2Gene2Go = new HashMap<String, Gene2Go>();
-	
-	
+	static double[] lock = new double[0];	
 	
 	@Autowired
 	private RepoGene2Go repoGene2Go;

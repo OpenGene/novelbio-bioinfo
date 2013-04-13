@@ -31,7 +31,7 @@ public class ManageDBInfo {
 			mapDBName2DBinfo = new ConcurrentHashMap<String, DBInfo>();
 			for (DBInfo dbInfo : repoDBinfo.findAll()) {
 				mapDBid2DBinfo.put(dbInfo.getDbInfoID(), dbInfo);
-				mapDBName2DBinfo.put(dbInfo.getDbName(), dbInfo);
+				mapDBName2DBinfo.put(dbInfo.getDbNameLowcase(), dbInfo);
 			}
 		}
 	}
@@ -40,7 +40,7 @@ public class ManageDBInfo {
 	 * @return
 	 */
 	public DBInfo findByDBname(String dbName) {
-		return mapDBName2DBinfo.get(dbName);
+		return mapDBName2DBinfo.get(dbName.toLowerCase());
 	}
 	
 	public DBInfo findOne(String dbInfoID) {
@@ -71,7 +71,7 @@ public class ManageDBInfo {
 			if (update) {
 				dbInfoS = repoDBinfo.save(dbInfoS);
 				mapDBid2DBinfo.put(dbInfoS.getDbInfoID(), dbInfoS);
-				mapDBName2DBinfo.put(dbInfoS.getDbName(), dbInfoS);
+				mapDBName2DBinfo.put(dbInfoS.getDbNameLowcase(), dbInfoS);
 			}
 		}
 	}

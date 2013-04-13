@@ -33,6 +33,9 @@ public class DBInfo {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+	public String getDbNameLowcase() {
+		return dbName;
+	}
 	public String getDbName() {
 		return dbNameRaw;
 	}

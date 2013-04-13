@@ -10,7 +10,7 @@ import com.novelbio.database.mongorepo.geneanno.RepoSpeciesFile;
 import com.novelbio.database.service.SpringFactory;
 
 public class ManageSpeciesFile {
-	private static Logger logger = Logger.getLogger(ManageSpeciesFile.class);
+	private static final Logger logger = Logger.getLogger(ManageSpeciesFile.class);
 	
 	@Autowired
 	private RepoSpeciesFile repoSpeciesFile;

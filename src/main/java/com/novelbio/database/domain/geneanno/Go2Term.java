@@ -76,7 +76,7 @@ public class Go2Term implements Cloneable {
 	 * @param relation 必须是RELATION中的一类
 	 */
 	public void addParent(String goID, GORelation relation ) {
-		mapParentGO2Relate.put(goID, relation);
+		mapParentGO2Relate.put(goID.toUpperCase(), relation);
 	}
 	/**
 	 * 设定其下游子类GO的信息，可以连续设定，新设定的会追加而不是覆盖
@@ -84,7 +84,7 @@ public class Go2Term implements Cloneable {
 	 * @param relation 必须是RELATION中的一类
 	 */
 	public void addChild(String goID, GORelation relation ) {
-		mapChildGO2Relate.put(goID, relation);
+		mapChildGO2Relate.put(goID.toUpperCase(), relation);
 	}
 	
 	public HashSet<Go2Term> getParent() {

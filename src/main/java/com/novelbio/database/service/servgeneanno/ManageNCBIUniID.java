@@ -21,15 +21,6 @@ public class ManageNCBIUniID {
 	@Autowired
 	private RepoUniID repoUniID;
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	public ManageNCBIUniID() {
 		repoNCBIID = (RepoNCBIID) SpringFactory.getFactory().getBean("repoNCBIID");
 		repoUniID = (RepoUniID) SpringFactory.getFactory().getBean("repoUniID");
@@ -43,23 +34,31 @@ public class ManageNCBIUniID {
 	 * @return
 	 */
 	public AgeneUniID findByGeneUniIDAndAccIDAndTaxID(int geneType, String geneUniID, String accID, int taxID){
+		accID = accID.toLowerCase();
 		if (geneType == GeneID.IDTYPE_GENEID) {
 			if (taxID > 0) {
 				return repoNCBIID.findByGeneIDAndAccIDAndTaxID(Long.parseLong(geneUniID), accID, taxID);
 			} else {
-				return repoNCBIID.findByGeneIDAndAccID(Long.parseLong(geneUniID), accID);
+				List<NCBIID> lsResult = repoNCBIID.findByGeneIDAndAccID(Long.parseLong(geneUniID), accID);
+				if (lsResult.size() > 0) {
+					return lsResult.get(0);
+				}
 			}
 		} else if (geneType == GeneID.IDTYPE_UNIID) {
 			if (taxID > 0) {
-				return repoUniID.findByUniIDAndAccIDAndTaxID(geneUniID, accID, taxID);
+				return repoUniID.findByUniIDAndAccIDAndTaxID(geneUniID.toLowerCase(), accID, taxID);
 			} else {
-				return repoUniID.findByUniIDAndAccID(geneUniID, accID);
+				List<UniProtID> lsResult = repoUniID.findByUniIDAndAccID(geneUniID.toLowerCase(), accID);
+				if (lsResult.size() > 0) {
+					return lsResult.get(0);
+				}
 			}
 		}
 		return null;
 	}
 	
 	public ArrayList<AgeneUniID> findByAccID(int geneType, String accID, int taxID) {
+		accID =  accID.toLowerCase();
 		List<? extends AgeneUniID> lsResult = new ArrayList<AgeneUniID>();
 		if (geneType == GeneID.IDTYPE_GENEID) {
 			if (taxID > 0) {
@@ -108,9 +107,9 @@ public class ManageNCBIUniID {
 			}
 		} else if (geneType == GeneID.IDTYPE_UNIID) {
 			if (taxID > 0) {
-				lsResult = repoUniID.findByUniIDAndTaxId(geneUniID, taxID);
+				lsResult = repoUniID.findByUniIDAndTaxId(geneUniID.toLowerCase(), taxID);
 			} else {
-				lsResult = repoUniID.findByUniID(geneUniID);
+				lsResult = repoUniID.findByUniID(geneUniID.toLowerCase());
 			}
 		}
 		return new ArrayList<AgeneUniID>(lsResult);
@@ -136,7 +135,7 @@ public class ManageNCBIUniID {
 			return null;
 		}
 		for (AgeneUniID ageneUniID : lsAgeneUniIDs) {
-			if (ageneUniID.getDataBaseInfo().getDbName().equals(dbName)) {
+			if (ageneUniID.getDataBaseInfo().getDbName().equalsIgnoreCase(dbName)) {
 				return ageneUniID;
 			}
 		}
@@ -171,15 +170,15 @@ public class ManageNCBIUniID {
 			logger.error("不能导入GO信息");
 			return false;
 		}
-		try {
-			if (ncbiid.getGeneIDtype() == GeneID.IDTYPE_GENEID) {
-				repoNCBIID.save((NCBIID)ncbiid);
-			} else {
-				repoUniID.save((UniProtID)ncbiid);
-			}
-		} catch (Exception e) {
+		 AgeneUniID ageneUniID = findByGeneUniIDAndAccIDAndTaxID(ncbiid.getGeneIDtype(), ncbiid.getGenUniID(), ncbiid.getAccID(), ncbiid.getTaxID());
+		 if (ageneUniID == null) {
+			 if (ncbiid.getGeneIDtype() == GeneID.IDTYPE_GENEID) {
+				 repoNCBIID.save((NCBIID)ncbiid);
+			 } else {
+				 repoUniID.save((UniProtID)ncbiid);
+			 }
+		} else {
 			 if (override) {
-				 AgeneUniID ageneUniID = findByGeneUniIDAndAccIDAndTaxID(ncbiid.getGeneIDtype(), ncbiid.getGenUniID(), ncbiid.getAccID(), ncbiid.getTaxID());
 				 if (ageneUniID.getDataBaseInfo().equals(ncbiid.getDataBaseInfo())) {
 					 return true;
 				 }

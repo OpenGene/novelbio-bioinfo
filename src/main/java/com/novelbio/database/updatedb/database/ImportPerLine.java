@@ -72,7 +72,7 @@ abstract class ImportPerLine {
 			}
 	
 			num++;
-			if (num%1000 == 0) {
+			if (num%10000 == 0) {
 				logger.error("import line number:" + num);
 			}
 		}

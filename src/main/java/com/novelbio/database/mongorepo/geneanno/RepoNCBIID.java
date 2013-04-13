@@ -22,7 +22,7 @@ public interface RepoNCBIID extends PagingAndSortingRepository<NCBIID, String> {
 	List<NCBIID> findByAccIDAndTaxID(String accID, int taxID);
 	
 	@Query(value="{ 'geneID' : ?0 ,  'accID' : ?1}")
-	NCBIID findByGeneIDAndAccID(long geneID, String accID);
+	List<NCBIID> findByGeneIDAndAccID(long geneID, String accID);
 	
 	@Query(value="{ 'geneID' : ?0 ,  'accID' : ?1, 'taxID' : ?2}")
 	NCBIID findByGeneIDAndAccIDAndTaxID(long geneID, String accID, int taxID);

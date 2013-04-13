@@ -24,7 +24,7 @@ public interface RepoUniID extends PagingAndSortingRepository<UniProtID, String>
 	List<UniProtID> findByAccIDAndTaxID(String accID, int taxID);	
 	
 	@Query(value="{ 'uniID' : ?0 ,  'accID' : ？1}")
-	UniProtID findByUniIDAndAccID(String uniID, String accID);
+	List<UniProtID> findByUniIDAndAccID(String uniID, String accID);
 	
 	@Query(value="{ 'uniID' : ?0 ,  'accID' : ?1, 'taxID' : ?2}")
 	UniProtID findByUniIDAndAccIDAndTaxID(String uniID, String accID, int taxID);

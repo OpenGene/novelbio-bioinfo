@@ -24,14 +24,14 @@ public class ManageUniGene2Go {
 	
 	/** 推荐用这个，谁知道有没有可能一个geneID对应多个物种啊 */
 	public List<UniGene2Go> queryLsGene2Go(String uniID, int taxid) {
-		return repoUniGene2Go.findByUniIDAndTaxID(uniID, taxid);
+		return repoUniGene2Go.findByUniIDAndTaxID(uniID.toLowerCase(), taxid);
 	}
 	
 	public UniGene2Go queryGene2Go(String uniID, int taxID,String GOID) {
 		if (GOID == null) {
 			return null;
 		}
-		return repoUniGene2Go.findByUniIDAndTaxIDAndGOID(uniID, taxID, GOID);
+		return repoUniGene2Go.findByUniIDAndTaxIDAndGOID(uniID.toLowerCase(), taxID, GOID);
 	}
 	/** 直接保存 */
 	public void saveGene2Go(UniGene2Go gene2Go) {

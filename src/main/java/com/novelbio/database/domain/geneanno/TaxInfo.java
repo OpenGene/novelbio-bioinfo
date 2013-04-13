@@ -47,7 +47,7 @@ public class TaxInfo {
 		if (abbr == null) {
 			return;
 		}
-		this.abbr=abbr.trim();
+		this.abbr=abbr.trim().toLowerCase();
 	}
 	/** KEGG上的缩写 */
 	public String getAbbr() {

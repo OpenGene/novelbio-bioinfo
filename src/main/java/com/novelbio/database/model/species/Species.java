@@ -340,6 +340,7 @@ public class Species {
 	private void updateTaxInfo(String txtFile) {
 		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(txtFile, 0);
 		String[] title = lsInfo.get(0);
+		title[0] = title[0].replace("#", "");
 		HashMap<String, Integer> hashName2ColNum = new HashMap<String, Integer>();
 		for (int i = 0; i < title.length; i++) {
 			hashName2ColNum.put(title[i].trim().toLowerCase(), i);
