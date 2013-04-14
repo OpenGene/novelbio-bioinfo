@@ -2,6 +2,7 @@ package com.novelbio.database.updatedb.database;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.AGeneInfo;
 import com.novelbio.database.domain.geneanno.GeneInfo;
@@ -56,12 +57,13 @@ public class NCBI {
 		ImportPerLine impFile = null;
 		impFile = new ImpGen2Acc();
 		impFile.setReadFromLine(2);
-		impFile.updateFile(gene2Acc);
+//		impFile.updateFile(gene2Acc);
 //		impFile.updateFile(gene2Ref);
-//		impFile = new ImpGen2Ensembl();
+		impFile = new ImpGen2Ensembl();
+//		impFile.setTxtWriteExcep(FileOperate.changeFileSuffix(gene2ensembl, "_filed", "txt"));
 //		impFile.updateFile(gene2ensembl);
-//		impFile = new ImpGeneRef2UniID();
-//		impFile.updateFile(geneRef2UniID);
+		impFile = new ImpGeneRef2UniID();
+		impFile.updateFile(geneRef2UniID);
 //		impFile = new ImpGene2Info();
 //		impFile.updateFile(gene2Info);
 //		impFile = new ImpGene2Pub();
@@ -155,35 +157,45 @@ class ImpGen2Ensembl extends ImportPerLine {
 			return true;
 		}
 		GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, ss[1], taxID);
- 
 		
-		copedID.setUpdateAccID(ss[2]);
-		copedID.setUpdateDBinfo(DBAccIDSource.Ensembl_Gene, false);
-		copedID.update(false);
-		
-		copedID.setUpdateAccID(ss[3]);
-		if (ss[3].startsWith("NM_") || ss[3].startsWith("NR_")) {
-			copedID.setUpdateDBinfo(DBAccIDSource.RefSeqRNA, true);
-		} else {
-			copedID.setUpdateDBinfo(DBAccIDSource.RNAAC, false);
+		if (!ss[2].equals("-") && !ss[2].equals("")) {
+			copedID.setUpdateAccID(ss[2]);
+			copedID.setUpdateDBinfo(DBAccIDSource.Ensembl_Gene, false);
+			copedID.update(false);
 		}
-		copedID.update(false);
 		
-		copedID.setUpdateAccID(ss[4]);
-		copedID.setUpdateDBinfo(DBAccIDSource.Ensembl_RNA, false);
-		copedID.update(false);
-		
-		copedID.setUpdateAccID(ss[5]);
-		if (ss[5].startsWith("NP_") || ss[5].startsWith("XP_") || ss[5].startsWith("YP_")) {
-			copedID.setUpdateDBinfo(DBAccIDSource.RefSeqPro, true);
-		} else {
-			copedID.setUpdateDBinfo(DBAccIDSource.ProteinAC, false);
+		if (!ss[3].equals("-") && !ss[3].equals("")) {
+			copedID.setUpdateAccID(ss[3]);
+			if (ss[3].startsWith("NM_") || ss[3].startsWith("NR_")) {
+				copedID.setUpdateDBinfo(DBAccIDSource.RefSeqRNA, true);
+			} else {
+				copedID.setUpdateDBinfo(DBAccIDSource.RNAAC, false);
+			}
+			copedID.update(false);
 		}
-		copedID.update(false);
 		
-		copedID.setUpdateAccID(ss[6]);
-		copedID.setUpdateDBinfo(DBAccIDSource.Ensembl_Pro, false);
-		copedID.update(false);
+		if (!ss[4].equals("-") && !ss[4].equals("")) {
+			copedID.setUpdateAccID(ss[4]);
+			copedID.setUpdateDBinfo(DBAccIDSource.Ensembl_RNA, false);
+			copedID.update(false);
+		}
+	
+		if (!ss[5].equals("-") && !ss[5].equals("")) {
+			copedID.setUpdateAccID(ss[5]);
+			if (ss[5].startsWith("NP_") || ss[5].startsWith("XP_") || ss[5].startsWith("YP_")) {
+				copedID.setUpdateDBinfo(DBAccIDSource.RefSeqPro, true);
+			} else {
+				copedID.setUpdateDBinfo(DBAccIDSource.ProteinAC, false);
+			}
+			copedID.update(false);
+		}
+		
+		if (!ss[6].equals("-") && !ss[6].equals("")) {
+			copedID.setUpdateAccID(ss[6]);
+			copedID.setUpdateDBinfo(DBAccIDSource.Ensembl_Pro, false);
+			copedID.update(false);
+		}
+		
 		return true;
 	}
 }

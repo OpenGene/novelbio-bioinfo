@@ -15,10 +15,12 @@ import com.novelbio.database.domain.geneanno.AgeneUniID;
 import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.domain.geneanno.DBInfo;
 import com.novelbio.database.domain.geneanno.GOtype;
+import com.novelbio.database.domain.geneanno.TaxInfo;
 import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.database.model.modkegg.KeggInfo;
+import com.novelbio.database.model.species.Species;
 
 /**
  * <b>注意blastInfo中的SubjectTab和QueryTab有问题，需要重写</b><br>
@@ -373,9 +375,9 @@ public class GeneID implements GeneIDInt{
 			
 			String[] strGene2Path = new String[2];
 			strGene2Path[0] = geneID.getAgeneUniID().getGenUniID();
-			strGene2Path[1] = lstmpgo.get(0).getPathName();
+			strGene2Path[1] = "PATH:" + lstmpgo.get(0).getMapNum();
 			for (int i = 1; i < lstmpgo.size(); i++) {
-				strGene2Path[1] = strGene2Path[1] + ","+lstmpgo.get(i).getPathName();
+				strGene2Path[1] = strGene2Path[1] + "," + "PATH:" + lstmpgo.get(i).getMapNum();
 			}
 			lsResult.add(strGene2Path);
 		}

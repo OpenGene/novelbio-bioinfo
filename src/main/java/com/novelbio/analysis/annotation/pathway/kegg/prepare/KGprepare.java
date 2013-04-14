@@ -46,7 +46,6 @@ public class KGprepare {
 		return lsAccID.toArray(new String[0]);
 	}
 	/**
-	 * 
 	 * 读取指定excel2003文本，获得geneID信息数组, 如果类似XM_002121.1类型，那么将.1去除
 	 * @param rowStartNum 从第几行开始读
 	 * @param colNum geneID在第几列

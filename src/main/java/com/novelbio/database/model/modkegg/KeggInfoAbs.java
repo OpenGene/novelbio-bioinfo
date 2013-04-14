@@ -95,7 +95,7 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 		getKgGentries();
 		if (ls_keggInfo != null && ls_keggInfo.size() > 0) {
 			for (KeggInfoInter keggInfo : ls_keggInfo) {
-				getBlastQInfo(keggInfo.getLsKo());
+				getBlastQInfo(keggInfo.getKegID(), keggInfo.getTaxID());
 			}
 		}
 		return ArrayOperate.getArrayListValue(hashKegEntities);
@@ -151,12 +151,11 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 	 * @param lscopedIDs 如果没有blast，就不输入该项，设置为null即可
 	 * @return
 	 */
-	public ArrayList<KGpathway> getLsKegPath(ArrayList<? extends KeggInfoInter> ls_keggInfo)
-	{
+	public ArrayList<KGpathway> getLsKegPath(ArrayList<? extends KeggInfoInter> ls_keggInfo) {
 		getKgGentries();
 		if (ls_keggInfo != null && ls_keggInfo.size() > 0) {
 			for (KeggInfoInter keggInfo : ls_keggInfo) {
-				getBlastQInfo(keggInfo.getLsKo());
+				getBlastQInfo(keggInfo.getKegID(), keggInfo.getTaxID());
 			}
 		}
 		ArrayList<KGpathway> lsKGpathways = new ArrayList<KGpathway>();
@@ -189,7 +188,7 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 		for (KGentry kGentry : lsKGentries) {
 			KGpathway kGpathwayQ = new KGpathway(); kGpathwayQ.setPathName(kGentry.getPathName());
 			KGpathway kGpathway = getHashKGpath().get(kGentry.getPathName());//DaoKPathway.queryKGpathway(kGpathwayQ);
-			hashPath.put(kGpathway.getPathName(), kGpathway);
+			hashPath.put(kGpathway.getMapNum(), kGpathway);
 		}
 		return ArrayOperate.getArrayListValue(hashPath);
 	}
@@ -200,48 +199,29 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 	 * 如果没有就返回null
 	 * accID需要将其覆盖，因为理论上accID只有希望对应component
 	 */
-	private void getBlastQInfo(List<String> lsKO)
-	{
-		if (lsKO == null) {
+	private void getBlastQInfo(String kegIDS, int taxIDS) {
+		if (kegIDS == null || taxIDS == 0) {
 			return;
 		}
 		ArrayList<KGentry> lsQKegEntities = new ArrayList<KGentry>();
-		for (String ko : lsKO) {
-			KGIDkeg2Ko kgiDkeg2Ko = new KGIDkeg2Ko();  kgiDkeg2Ko.setKo(ko); kgiDkeg2Ko.setTaxID(taxID);
-			ArrayList<KGIDkeg2Ko> lsKgiDkeg2Kos = servKIDKeg2Ko.queryLsKGIDkeg2Ko(kgiDkeg2Ko);
-			ArrayList<KGentry> lskGentriesTmp = new ArrayList<KGentry>();
-			////////////////如果geneBlast到了人类，并且得到了相应的KO，那么获得该KO所对应本物种的KeggID，并用KeggID直接mapping回本基因////////////////////////////////////////////////////////////////
-			if (lsKgiDkeg2Kos != null && lsKgiDkeg2Kos.size()>0) 
-			{
-				//虽然一个ko对应多个keggID，但是对于pathway来说，一个ko就对应到一个pathway上，所以一个ko就够了
-				String keggID = lsKgiDkeg2Kos.get(0).getKeggID();//这就是本物中的KeggID，用这个KeggID直接可以搜索相应的pathway
-				KGentry kGentry = new KGentry(); kGentry.setEntryName(keggID); kGentry.setTaxID(taxID);
-				//在给定ko和taxID的情况下，一个ko可以参与多个pathway，和一个pathway里的多个entry
-				lskGentriesTmp=KGentry.getLsEntity(kGentry);
-			}
-			/////////////如果geneBlast到了人类，并且得到了相应的KO，那么获得该KO所对应本物种的KeggID，如果没有KeggID，则用KOmapping回本基因//////////////////////////////////////////////////////////////////
-			else
-			{
-				KGentry kGentry = new KGentry(); kGentry.setEntryName(ko); kGentry.setTaxID(taxID);
-				//在给定ko和taxID的情况下，一个ko可以参与多个pathway，和一个pathway里的多个entry
-				lskGentriesTmp=KGentry.getLsEntity(kGentry);
-			}
-			if (lskGentriesTmp == null || lskGentriesTmp.size() < 1 ) {
-				continue;
-			}
-			lsQKegEntities.addAll(lskGentriesTmp);
+		KGentry kGentry = new KGentry(); kGentry.setEntryName(keggID); kGentry.setTaxID(taxID);
+		ArrayList<KGentry> lskGentriesTmp = KGentry.getLsEntity(kGentry);
+		if (lskGentriesTmp == null || lskGentriesTmp.size() < 1 ) {
+			return;
 		}
+		lsQKegEntities.addAll(lskGentriesTmp);
+
+
 		if (lsQKegEntities.size() < 1 ) {
 			return;
 		}
-		for (KGentry kGentry : lsQKegEntities) {
-			if (!hashKegEntities.contains(kGentry)) {
-				hashKegEntities.add(kGentry);
+		for (KGentry kGentry2 : lsQKegEntities) {
+			if (!hashKegEntities.contains(kGentry2)) {
+				hashKegEntities.add(kGentry2);
 			}
 		}
 	}
 
-	
 	/**
 	 * 还有做Relation方面的工作
 	 */
@@ -274,6 +254,7 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 		for (KGpathway kGpathway2 : lsKGpathways) 
 		{
 			hashKGPath.put(kGpathway2.getPathName(), kGpathway2);
+			hashKGPath.put("PATH:" + kGpathway2.getMapNum(), kGpathway2);	
 		}
 		return hashKGPath;
 	}

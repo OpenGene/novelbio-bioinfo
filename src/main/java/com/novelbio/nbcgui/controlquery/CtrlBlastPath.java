@@ -10,6 +10,7 @@ import javax.swing.SwingWorker;
 
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.domain.kegg.KGentry;
+import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.nbcgui.GUI.GuiBlastJpanel;
 
@@ -154,16 +155,16 @@ public class CtrlBlastPath extends SwingWorker<ArrayList<String[]>, ProgressData
 		}
 		tmpAccIDInfo[1] = copedID.getSymbol();
 		copedID.setBlastInfo(evalue, subTaxID);
-		// 本基因的GO信息
-		ArrayList<KGentry> lsKGentrythis = copedID.getKegEntity(false);
+		// 本基因的Path信息
+		ArrayList<KGpathway> lsKGentrythis = copedID.getKegPath(blast);
 		HashSet<String> hashPathID = new HashSet<String>();
-		for (KGentry kGentry : lsKGentrythis) {
+		for (KGpathway kGpathway : lsKGentrythis) {
 			String[] tmpResult = ArrayOperate.copyArray(tmpAccIDInfo, 4);
-			if (hashPathID.contains(kGentry.getPathName())) {
+			if (hashPathID.contains(kGpathway.getMapNum())) {
 				continue;
 			}
-			tmpResult[2] = kGentry.getPathName();
-			tmpResult[3] = kGentry.getPathTitle();
+			tmpResult[2] = "PATH:" + kGpathway.getMapNum();
+			tmpResult[3] = kGpathway.getTitle();
 			lsResult.add(tmpResult);
 		}
 		if (!blast) {

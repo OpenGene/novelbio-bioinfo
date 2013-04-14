@@ -49,7 +49,6 @@ public class ImportDB {
 //		importDB.updateSpecies();
 		
 		
-//		importDB.initialDB();
 		importDB.updateNCBIID();
 //		importDB.updateUniprotID();
 //		importDB.updateMicroarray();
@@ -66,23 +65,6 @@ public class ImportDB {
 //		updateZeaMaize();
 //		updateBlast();
 //		updateAffy();
-	}
-	
-	public void initialDB() {
-		ManageNCBIUniID manageNCBIUniID = new ManageNCBIUniID();
-		AgeneUniID ageneUniID = AgeneUniID.creatAgeneUniID(GeneID.IDTYPE_GENEID);
-		ageneUniID.setAccID("Test");
-		ageneUniID.setDataBaseInfo(DBAccIDSource.NCBI.name());
-		ageneUniID.setGenUniID("0");
-		ageneUniID.setTaxID(0);
-		manageNCBIUniID.saveNCBIUniID(ageneUniID);
-		
-		ageneUniID = AgeneUniID.creatAgeneUniID(GeneID.IDTYPE_UNIID);
-		ageneUniID.setAccID("Test");
-		ageneUniID.setDataBaseInfo(DBAccIDSource.NCBI.name());
-		ageneUniID.setGenUniID("0");
-		ageneUniID.setTaxID(0);
-		manageNCBIUniID.saveNCBIUniID(ageneUniID);
 	}
 	
 	

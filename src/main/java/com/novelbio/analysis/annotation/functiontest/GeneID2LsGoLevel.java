@@ -33,7 +33,7 @@ public class GeneID2LsGoLevel extends GeneID2LsGo {
 	@Override
 	public void setGeneID(GeneID geneID, boolean blast) {
 		
-		ArrayList<AGene2Go> lsGo = null;
+		List<AGene2Go> lsGo = null;
 		
 		if (blast) {
 			lsGo = geneID.getGene2GOBlast(goType);

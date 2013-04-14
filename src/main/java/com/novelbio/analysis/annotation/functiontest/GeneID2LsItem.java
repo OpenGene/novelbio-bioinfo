@@ -194,7 +194,7 @@ class GeneID2LsGo extends GeneID2LsItem {
 	public void setGeneID(GeneID geneID, boolean blast) {
 		this.geneID = geneID;
 		this.geneUniID = geneID.getGeneUniID();
-		ArrayList<AGene2Go> lsGo = null;
+		List<AGene2Go> lsGo = null;
 		if (blast) {
 			lsGo = geneID.getGene2GOBlast(goType );
 		} else {
@@ -222,7 +222,7 @@ class GeneID2LsPath extends GeneID2LsItem {
 		this.geneUniID = geneID.getGeneUniID();
 		ArrayList<KGpathway> lsPath = geneID.getKegPath(blast);
 		for (KGpathway kGpathway : lsPath) {
-			addItemID(kGpathway.getPathName());
+			addItemID("PATH:" + kGpathway.getMapNum());
 		}
 	}
 }

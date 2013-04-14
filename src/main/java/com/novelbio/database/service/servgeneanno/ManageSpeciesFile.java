@@ -20,14 +20,14 @@ public class ManageSpeciesFile {
 
 	/**
 	 * @param taxID 必须选项，没这个就不用选了
-	 * @param version 必须选，主要是hg19等等类似，不过我估计也用不到
+	 * @param version 必须选，主要是hg19等等类似，不过我估计也用不到 <b> Version大小写敏感</b>
 	 * @return 没有的话则返回size==0的list
 	 */
 	public SpeciesFile querySpeciesFile(int taxID, String version) {
 		if (taxID <= 0) {
 			return null;
 		}
-		return repoSpeciesFile.findByTaxIDAndVersion(taxID, version.toLowerCase());
+		return repoSpeciesFile.findByTaxIDAndVersion(taxID, version);
 	}
 	
 	/**
@@ -43,6 +43,7 @@ public class ManageSpeciesFile {
 	}
 	
 	/**
+	 * Version大小写敏感
 	 * 没有就插入，有就升级
 	 * @param taxInfo
 	 */

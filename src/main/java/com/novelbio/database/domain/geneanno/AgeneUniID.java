@@ -72,6 +72,9 @@ public abstract class AgeneUniID {
 		return accIDraw;
 	}
 	public void setAccID(String accessID) {
+		if (accessID == null) {
+			return;
+		}
 		this.accID = accessID.toLowerCase();
 		this.accIDraw = accessID;
 	}  

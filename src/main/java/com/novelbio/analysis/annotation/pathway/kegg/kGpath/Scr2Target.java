@@ -11,7 +11,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.kegg.KGIDkeg2Ko;
 import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.service.servgeneanno.ServGeneInfo;
+import com.novelbio.database.service.servgeneanno.ManageGeneInfo;
 import com.novelbio.database.service.servkegg.ServKEntry;
 import com.novelbio.database.service.servkegg.ServKIDKeg2Ko;
 
@@ -396,7 +396,6 @@ public class Scr2Target {
 	 */
 	private static void getRelation(String pathName, ArrayList<Object[]> lsRelationInfo ,int QtaxID,String ResultFIleScr2Target, String resultFIleAttribute) throws Exception 
 	{
-		ServGeneInfo servGeneInfo = new ServGeneInfo();
 		//source 2 target 的表格
 		//string[3] 0:source 1:target 2:relation
 		ArrayList<String[]> lsScr2Target = new ArrayList<String[]>();

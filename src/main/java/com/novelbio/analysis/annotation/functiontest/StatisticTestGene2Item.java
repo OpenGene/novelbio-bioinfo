@@ -2,6 +2,7 @@ package com.novelbio.analysis.annotation.functiontest;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -80,7 +81,7 @@ class StatisticTestGene2GO extends StatisticTestGene2Item {
 				lsTmpFinal.add("");
 			}
 		}
-		ArrayList<AGene2Go> lsGO = null;
+		List<AGene2Go> lsGO = null;
 		if (blast) {
 			lsGO = geneID.getGene2GOBlast(GOtype.ALL);				
 		} else {
@@ -97,7 +98,7 @@ class StatisticTestGene2GO extends StatisticTestGene2Item {
 			StatisticTestResult statisticTestResult = mapItem2StatisticTestResult.get(aGene2Go.getGOID().toLowerCase());
 			
 			lsTmpFinalNew.add(aGene2Go.getGOID());
-			lsTmpFinalNew.add(aGene2Go.getGOTerm());
+			lsTmpFinalNew.add(aGene2Go.getGO2Term().getGoTerm());
 			
 //			lsTmpFinalNew.add(statisticTestResult.difGeneInItemNum + "");
 //			lsTmpFinalNew.add(statisticTestResult.allDifGeneNum + "");
@@ -166,10 +167,10 @@ class StatisticTestGene2Path extends StatisticTestGene2Item {
 		}
 		for (KGpathway kGpathway : lsPath) {
 			ArrayList<String> lsTmpFinalNew = (ArrayList<String>) lsTmpFinal.clone();
-			if (!mapItem2StatisticTestResult.containsKey(kGpathway.getPathName().toLowerCase())) {
+			if (!mapItem2StatisticTestResult.containsKey("PATH:" + kGpathway.getMapNum())) {
 				continue;
 			}
-			StatisticTestResult statisticTestResult = mapItem2StatisticTestResult.get(kGpathway.getPathName().toLowerCase());
+			StatisticTestResult statisticTestResult = mapItem2StatisticTestResult.get("PATH:" + kGpathway.getMapNum());
 			
 			lsTmpFinalNew.add(kGpathway.getTitle());
 			lsTmpFinalNew.add(kGpathway.getPathName());
