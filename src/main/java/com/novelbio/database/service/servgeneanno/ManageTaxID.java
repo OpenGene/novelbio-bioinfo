@@ -3,6 +3,7 @@ package com.novelbio.database.service.servgeneanno;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -58,7 +59,17 @@ public class ManageTaxID {
 	public TaxInfo queryTaxInfo(int taxID) {
 		return mapTaxID2TaxInfo.get(taxID);
 	}
-	
+	/**
+	 * @param taxID 0 则返回null
+	 * @return
+	 */
+	public TaxInfo queryAbbr(String abbr) {
+		List<TaxInfo> lsTaxInfos = repoTaxInfo.findByAbbr(abbr);
+		if (lsTaxInfos.size() == 0) {
+			return null;
+		}
+		return lsTaxInfos.get(0);
+	}
 	/**
 	 * 没有就插入，有就升级
 	 * @param taxInfo

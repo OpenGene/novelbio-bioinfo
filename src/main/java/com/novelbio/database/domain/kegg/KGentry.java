@@ -40,69 +40,16 @@ public class KGentry {
 	 */
 	private String name;
 	
-	/**
-	 * 该entry所在的pathwayID
-	 */
+	/**  该entry所在的pathwayID */
 	private String pathName;
 	
-	/**
-	 * component总数
-	 */
+	/** component总数 */
 	private int compNum;
-	
-	/**
-	 * component的总数
-	 */
-	public void setCompNum(int compNum)
-	{
-		this.compNum=compNum;
-	}
-	/**
-	 * component的总数
-	 */
-	public int getCompNum()
-	{
-		return compNum;
-	}
-	
-	/**
-	 * component的 ID，没啥用
-	 */
+	/** component的 ID，没啥用 */
 	private int compID;
-	/**
-	 * component的entry ID，没啥用
-	 */
-	public void setCompID(int compID)
-	{
-		this.compID=compID;
-	}
-	/**
-	 * component的entry ID
-	 */
-	public int getCompID()
-	{
-		return compID;
-	}
 	
-	/**
-	 * component复合物的entryID，在relaction中就可能以这个entryID来表示关系
-	 */
+	/** component复合物的entryID，在relaction中就可能以这个entryID来表示关系 */
 	private int parentID;
-	/**
-	 * component复合物的entryID，在relaction中就可能以这个entryID来表示关系
-	 */
-	public void setParentID(int parentID)
-	{
-		this.parentID=parentID;
-	}
-	/**
-	 * component复合物的entryID，在relaction中就可能以这个entryID来表示关系
-	 */
-	public int getParentID()
-	{
-		return parentID;
-	}
-	
 	/**
 	 * 当type为map且不为本pathway时，将本pathway和该map组成source--target并且放入KGRelation类中
 	 * 当type为group时，将component中涉及到的所有entry两两遍历组成source--target并且放入KGReaction类中
@@ -116,34 +63,59 @@ public class KGentry {
      *<b>map</b> 	the node is a linked pathway map<br>
 	 */
 	private String type;
-	
-	
 	/**
 	 * the resource location of the information about this entry  example:<br>
 	 * <b>URL</b> 	ex)link="http://www.genome.jp/dbget-bin/www_bget?eco+b1207"
 	 */
 	private String linkEntry;
 	
+	private int taxID;
+
 	/**
 	 * the KEGGID of corresponding reaction.  example:<br>
 	 * ex)reaction="rn:R02749"
 	 */
 	private String reactionName;
+	/** component的总数 */
+	public void setCompNum(int compNum) {
+		this.compNum=compNum;
+	}
+	/** component的总数 */
+	public int getCompNum() {
+		return compNum;
+	}
+	
+
+	/** component的entry ID，没啥用 */
+	public void setCompID(int compID) {
+		this.compID=compID;
+	}
+	/** component的entry ID */
+	public int getCompID() {
+		return compID;
+	}
+
+	/** component复合物的entryID，在relaction中就可能以这个entryID来表示关系 */
+	public void setParentID(int parentID) {
+		this.parentID=parentID;
+	}
+	/** component复合物的entryID，在relaction中就可能以这个entryID来表示关系 */
+	public int getParentID() {
+		return parentID;
+	}
 	
 	/**
 	 * the ID of this entry in the pathway map <br>
 	 *  the identification number of this entry，从1开始记数
 	 */
-	public int getID()
-	{
+	public int getID() {
 		return this.id;
 	}
 	/**
 	 * the ID of this entry in the pathway map <br>
 	 *  the identification number of this entry，从1开始记数
 	 */
-	public void setID(int id)
-	{
+	public void setID(int id) {
 		this.id=id;
 	}
 	
@@ -277,7 +249,6 @@ public class KGentry {
 		this.linkEntry=linkEntry.trim();
 	}
 	
-	private int taxID;
 	public int getTaxID() {
 		return this.taxID;
 	}
@@ -293,8 +264,7 @@ public class KGentry {
 	 * 获得与本Entity组成复合体的其他KegEntity，注意List中不包含本KegEntity
 	 * @return
 	 */
-	public ArrayList<KGentry> getCompEntity()
-	{
+	public ArrayList<KGentry> getCompEntity() {
 		ArrayList<KGentry> lsKGentries = new ArrayList<KGentry>();
 		/**
 		 * 保存最后获得与之相关的entry信息
@@ -323,9 +293,7 @@ public class KGentry {
 	 * 获得有本Entity参与的relation关系，里面可能会有重复项存在
 	 * @return
 	 */
-	public ArrayList<KGrelation> getRelatEntity()
-	{
-		
+	public ArrayList<KGrelation> getRelatEntity() 	{
 		KGrelation tmpQkGrelation=new KGrelation();
 		tmpQkGrelation.setEntry1ID(id); tmpQkGrelation.setPathName(pathName);
 		ArrayList<KGrelation> lsKGrelations1 = servKRelation.queryLsKGrelations(tmpQkGrelation);
@@ -381,8 +349,6 @@ public class KGentry {
 			return lskegEntities;
 		}
 	
-	
-
 		/**
 		 * 给定kGentry，用里面的信息搜数据库并返回，如果没搜到的话就返回null<br>
 		 		where<br>
@@ -459,8 +425,7 @@ public class KGentry {
 		/**
 		 * 比较entryName, PathName, 该pathway中的entryID三项
 		 */
-		public boolean equals(Object obj)
-		{
+		public boolean equals(Object obj) {
 			if (this == obj) return true;
 			if (obj == null) return false;
 			

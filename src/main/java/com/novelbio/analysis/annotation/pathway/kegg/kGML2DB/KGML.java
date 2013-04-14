@@ -78,8 +78,7 @@ public class KGML {
 	 * the KEGGID of this pathway map.  example:<br>
 	 * <b>path:ko*****     path:[org prefix]***** </b> the KEGGID of this pathway map ex) name="path:ko00010"   name="path:hsa00010"
 	 */
-	public String getPathName()
-	{
+	public String getPathName() {
 		if (this.pathName==null) {
 			return "";
 		}
@@ -92,8 +91,7 @@ public class KGML {
 	 * <b>ec</b>   the reference pathway map represented by ENZYME identifiers<br>
 	 * <b>[org prefix]</b>   the organism-specific pathway map for "org"<br>
 	 */
-	public String getSpecies() 
-	{
+	public String getSpecies() {
 		if (this.species==null) {
 			return "";
 		}
@@ -103,8 +101,7 @@ public class KGML {
 	 * the map number of this pathway map. example:<br>
 	 * <b>five-digit integer</b>   	ex) number="00030"
 	 */
-	public String getMapNum() 
-	{
+	public String getMapNum() {
 		if (this.mapNum==null) {
 			return "";
 		}
@@ -115,8 +112,7 @@ public class KGML {
 	 * the title of this pathway map. example:<br>
 	 * <b>string</b> ex) title="Pentose phosphate pathway"
 	 */
-	public String getTitle() 
-	{
+	public String getTitle() {
 		if (this.title==null) {
 			return "";
 		}
@@ -127,8 +123,7 @@ public class KGML {
 	 * the resource location of the information about this pathway map.  example:<br>
 	 * <b>URL</b>  ex) link="http://www.genome.jp/kegg-bin/show_pathway?ko00010"
 	 */
-	public String getLinkUrl() 
-	{
+	public String getLinkUrl() {
 		if (this.linkUrl==null) {
 			return "";
 		}
@@ -150,8 +145,7 @@ public class KGML {
 	 *  the direction of the interaction is from entry1 to entry2.
 	 * @return
 	 */
-	public ArrayList<Relation> getLsRelations() 
-	{
+	public ArrayList<Relation> getLsRelations() {
 		return this.lsRelations;
 	}
 	/**
@@ -204,8 +198,7 @@ public class KGML {
 
 
 @Root(name="entry")
-class Entry
-{	
+class Entry {	
 	/**
 	 * the ID of this entry in the pathway map <br>
 	 *  the identification number of this entry，从1开始记数
@@ -253,7 +246,6 @@ class Entry
 	@Attribute(name="type")
 	private String type;
 	
-	
 	/**
 	 * the resource location of the information about this entry  example:<br>
 	 * <b>URL</b> 	ex)link="http://www.genome.jp/dbget-bin/www_bget?eco+b1207"
@@ -289,8 +281,7 @@ class Entry
 	 * the ID of this entry in the pathway map <br>
 	 *  the identification number of this entry，从1开始记数
 	 */
-	public int getID()
-	{
+	public int getID() {
 		return this.id;
 	}
 	
@@ -298,8 +289,7 @@ class Entry
 	 * the resource location of the information about this entry  example:<br>
 	 * <b>URL</b> 	ex)link="http://www.genome.jp/dbget-bin/www_bget?eco+b1207"
 	 */
-	public String getLinkEntry()
-	{
+	public String getLinkEntry() {
 		if (this.linkEntry==null) {
 			return "";
 		}
@@ -383,8 +373,7 @@ class Entry
  *
  */
 @Root(name="graphics")
-class Graphics
-{
+class Graphics {
 	@Attribute(required=false)
 	private String name;
 	@Attribute(required=false)
@@ -413,8 +402,7 @@ class Graphics
  *
  */
 @Root(name="component")
-class Component
-{
+class Component {
 	@Attribute
 	private int id;
 	
@@ -433,8 +421,7 @@ class Component
  *
  */
 @Root(name="relation")
-class Relation
-{
+class Relation {
 	/**
 	 * the first (from) entry that defines this relation. detail:<br>
 	 * the ID of node which takes part in this relation
@@ -467,16 +454,14 @@ class Relation
 	 * the first (from) entry that defines this relation. detail:<br>
 	 * the ID of node which takes part in this relation
 	 */
-	public int getEntry1ID() 
-	{
+	public int getEntry1ID() {
 		return this.entry1;
 	}
 	/**
 	 * the second (to) entry that defines this relation. detail<br>
 	 * the ID of node which takes part in this relation
 	 */
-	public int getEntry2ID() 
-	{
+	public int getEntry2ID() {
 		return this.entry2;
 	}
 	/**
@@ -487,8 +472,7 @@ class Relation
 	 * <b>PCrel</b> 	protein-compound interaction												     <br>
 	 * <b>maplink</b> 	link to another map													     <br> 
 	 */
-	public String getType() 
-	{
+	public String getType() {
 		if (this.type==null) {
 			return "";
 		}
@@ -510,8 +494,7 @@ class Relation
  *
  */
 @Root(name="subtype")
-class Subtype
-{
+class Subtype {
 	/**
 	 * Interaction/relation information <br>
 	 *      <b>name</b>  	value  	ECrel  	PPrel  	GErel  	Explanation <br>
@@ -621,8 +604,7 @@ class Subtype
 
 
 @Root(name="reaction")
-class Reaction
-{
+class Reaction {
 	/**
 	 * the ID of this reaction,和Entry的ID是同一个
 	 */
@@ -716,8 +698,7 @@ class Reaction
  *
  */
 @Root(name="substrate")
-class Substrate
-{
+class Substrate {
 	/**
 	 * the ID of this substrate
 	 * the identification number of this substrate
@@ -756,8 +737,7 @@ class Substrate
  *
  */
 @Root(name="product")
-class Product
-{
+class Product {
 	/**
 	 * the ID of this product
 	 * the identification number of this product
@@ -797,8 +777,7 @@ class Product
  *
  */
 @Root(name="alt")
-class Alt
-{
+class Alt {
 	/**
 	 * the KEGGID of node
 	 * ex) cpd:C05378   gl:G00037
@@ -813,13 +792,3 @@ class Alt
 		return this.name.trim();
 	}
 }
-
-
-
-
-
-
-
-
-
-

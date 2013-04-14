@@ -24,8 +24,7 @@ public class KeggIDcvt {
 	 * @param gen2KegFile
 	 * @throws Exception 
 	 */
-	public static void upDateGen2Keg(String gen2KegFile) throws Exception 
-	{
+	public static void upDateGen2Keg(String gen2KegFile) throws Exception {
 		ServKIDgen2Keg servKIDgen2Keg = new ServKIDgen2Keg();
 		TxtReadandWrite txtgene2Keg=new TxtReadandWrite(gen2KegFile);
 		int TaxID=0;
@@ -72,8 +71,7 @@ public class KeggIDcvt {
 	 * @param keg2KoFile
 	 * @throws Exception 
 	 */
-	public static void upDateKeg2Ko(String keg2KoFile) throws Exception 
-	{
+	public static void upDateKeg2Ko(String keg2KoFile) throws Exception {
 		ServKIDgen2Keg servKIDgen2Keg = new ServKIDgen2Keg();
 		ServKIDKeg2Ko servKIDKeg2Ko = new ServKIDKeg2Ko();
 		TxtReadandWrite txtKeg2Ko=new TxtReadandWrite(keg2KoFile);
