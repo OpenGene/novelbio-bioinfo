@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -20,16 +21,17 @@ import com.novelbio.database.service.servgeneanno.ManageGo2Term;
  */
 @Document(collection = "go2term")
 public class Go2Term implements Cloneable {
-	
+	@Id
+	String id;
 	@Indexed(unique = true)
     private Set<String> setQueryGoID = new HashSet<String>();
 	@Indexed
-	private String GoID;
-	private String GoTerm;
-	private String GoType;
+	private String goID;
+	private String goTerm;
+	private String goType;
 	private Map<String, GORelation> mapParentGO2Relate = new HashMap<String, GORelation>();;
 	private Map<String, GORelation> mapChildGO2Relate = new HashMap<String, GORelation>();;
-	private String Definition;
+	private String definition;
 
 	/**
 	 * 存储本GOID与别的GOID之间的关系
@@ -37,28 +39,28 @@ public class Go2Term implements Cloneable {
 	 * 必须是两个GO之间才会有该信息
 	 */
 	@Transient
-	private GORelation gorelation;
+	private GORelation goRelation;
 	/**
 	 * 存储本GOID与别的GOID之间的关系
 	 * 譬如RELATION_IS，RELATION_PARTOF等
 	 * 必须是两个GO之间才会有该信息
 	 */
 	private void setRelation(GORelation gorelation) {
-		this.gorelation = gorelation;
+		this.goRelation = gorelation;
 	}
 	/**
 	 * go信息的具体定义
 	 * @param definition
 	 */
 	public void setDefinition(String definition) {
-		Definition = definition.replace("\"", "");
+		definition = definition.replace("\"", "");
 	}
 	/**
 	 * go信息的具体定义
 	 * @param definition
 	 */
 	public String getDefinition() {
-		return Definition;
+		return definition;
 	}
 	/**
 	 * <b>只有getParent或者getChild才有的flag，</b>表示与其他GOID之间的关系<br>
@@ -68,7 +70,7 @@ public class Go2Term implements Cloneable {
 	 * 必须是两个GO之间才会有该信息<br>
 	 */
 	public GORelation getRelation() {
-		return gorelation;
+		return goRelation;
 	}
 	/**
 	 * 设定其上游父类GO的信息
@@ -123,23 +125,23 @@ public class Go2Term implements Cloneable {
 	}
 
 	public String getGoID() {
-		return GoID;
+		return goID;
 	}
 	/**
 	 * 常规设定
 	 * @param GoID
 	 */
 	public void setGoID(String GoID) {
-		this.GoID = GoID.trim().toUpperCase();
-		setQueryGoID.add(this.GoID);
+		this.goID = GoID.trim().toUpperCase();
+		setQueryGoID.add(this.goID);
 	}
 	
 	public String getGoTerm() {
-		return GoTerm;
+		return goTerm;
 	}
 
 	public void setGoTerm(String GoTerm) {
-		this.GoTerm = GoTerm;
+		this.goTerm = GoTerm;
 	}  
 	/**
 	 * FUN_SHORT_BIO_P<br>
@@ -148,10 +150,10 @@ public class Go2Term implements Cloneable {
 	 * @return
 	 */
 	public GOtype getGOtype() {
-		return GOtype.getMapStrShort2Gotype().get(GoType);
+		return GOtype.getMapStrShort2Gotype().get(goType);
 	}
 	public void setGOtype(GOtype gotype) {
-		this.GoType = gotype.getOneWord();
+		this.goType = gotype.getOneWord();
 	}
 	/**
 	 * 仅比较GOID
@@ -167,13 +169,13 @@ public class Go2Term implements Cloneable {
 		
 		if (getClass() != other.getClass()) return false;
 		Go2Term otherObj = (Go2Term)other;
-		if (GoID == null) {
+		if (goID == null) {
 			return false;
 		}
 		if (otherObj.getGoID() == null) {
 			return false;
 		}
-		if (GoID.equals(otherObj.GoID)) {
+		if (goID.equals(otherObj.goID)) {
 			return true;
 		}
 		return false;
@@ -190,13 +192,13 @@ public class Go2Term implements Cloneable {
 		if (getClass() != other.getClass()) return false;
 		Go2Term otherObj = (Go2Term)other;
 		
-		if (ArrayOperate.compareString(GoType, otherObj.GoType)
+		if (ArrayOperate.compareString(goType, otherObj.goType)
 			&&
-			ArrayOperate.compareString(GoID, otherObj.GoID)
+			ArrayOperate.compareString(goID, otherObj.goID)
 			&&
-			ArrayOperate.compareString(GoTerm, otherObj.GoTerm)	
+			ArrayOperate.compareString(goTerm, otherObj.goTerm)	
 			&&
-			ArrayOperate.compareString(Definition, otherObj.Definition)
+			ArrayOperate.compareString(definition, otherObj.definition)
 			&&
 			mapChildGO2Relate.equals(otherObj.mapChildGO2Relate)
 			&&
@@ -212,7 +214,7 @@ public class Go2Term implements Cloneable {
 	 */
 	@Override
 	public int hashCode() {
-		String result = GoID;
+		String result = goID;
 		return result.hashCode();
 	}
 
@@ -224,30 +226,34 @@ public class Go2Term implements Cloneable {
 	public boolean addInfo(Go2Term go2Term) {
 		boolean update = false;
 		update = update || AGeneInfo.addInfo(setQueryGoID, go2Term.setQueryGoID);
-		update = update || AGeneInfo.addInfo(mapChildGO2Relate.keySet(), go2Term.mapChildGO2Relate.keySet());
-		update = update || AGeneInfo.addInfo(mapParentGO2Relate.keySet(), go2Term.mapParentGO2Relate.keySet());
+		update = update || AGeneInfo.addInfo(mapChildGO2Relate, go2Term.mapChildGO2Relate);
+		update = update || AGeneInfo.addInfo(mapParentGO2Relate, go2Term.mapParentGO2Relate);
 		
-		if (go2Term.GoType != null && !go2Term.GoType.equals(GoType)) {
-			GoType = go2Term.GoType;
+		if (go2Term.goType != null && !go2Term.goType.equals(goType)) {
+			goType = go2Term.goType;
 			update = true;
 		}
 		
-		if (go2Term.Definition != null && !go2Term.Definition.equals(Definition)) {
-			Definition = go2Term.Definition;
+		if (go2Term.definition != null && !go2Term.definition.equals(definition)) {
+			definition = go2Term.definition;
 			update = true;
 		}
-		if (go2Term.GoID != null && !go2Term.GoID.equals(GoID)) {
-			GoID = go2Term.GoID;
+		if (go2Term.goID != null && !go2Term.goID.equals(goID)) {
+			goID = go2Term.goID;
 			update = true;
 		}
 		
 		return update;
 	}
-
+	
+	/**
+	 * ID也一起clone
+	 */
 	public Go2Term clone() {
 		Go2Term go2Term = null;
 		try {
 			go2Term = (Go2Term) super.clone();
+			go2Term.id = id;
 			go2Term.mapChildGO2Relate = new HashMap<String, GOtype.GORelation>();
 			for (String goID : mapChildGO2Relate.keySet()) {
 				go2Term.mapChildGO2Relate.put(goID, mapChildGO2Relate.get(goID));
@@ -256,11 +262,11 @@ public class Go2Term implements Cloneable {
 			for (String goID : mapParentGO2Relate.keySet()) {
 				go2Term.mapParentGO2Relate.put(goID, mapParentGO2Relate.get(goID));
 			}
-			go2Term.Definition = Definition;
-			go2Term.GoType = GoType;
-			go2Term.GoID = GoID;
-			go2Term.gorelation = gorelation;
-			go2Term.GoTerm = GoTerm;
+			go2Term.definition = definition;
+			go2Term.goType = goType;
+			go2Term.goID = goID;
+			go2Term.goRelation = goRelation;
+			go2Term.goTerm = goTerm;
 			go2Term.setQueryGoID = new HashSet<String>();
 			for (String goID : setQueryGoID) {
 				go2Term.setQueryGoID.add(goID);

@@ -71,7 +71,7 @@ public class DBInfo {
 	}
 	
 	public int hashCode() {
-		return (SepSign.SEP_ID + dbName + SepSign.SEP_ID + dbOrg).hashCode();
+		return (dbName + SepSign.SEP_ID + dbOrg).hashCode();
 	}
 	
 	/**

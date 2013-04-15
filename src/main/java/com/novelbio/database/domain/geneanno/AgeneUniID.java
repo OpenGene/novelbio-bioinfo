@@ -72,7 +72,7 @@ public abstract class AgeneUniID {
 		return accIDraw;
 	}
 	public void setAccID(String accessID) {
-		if (accessID == null) {
+		if (accessID == null || accessID.equals("")) {
 			return;
 		}
 		this.accID = accessID.toLowerCase();
@@ -83,28 +83,33 @@ public abstract class AgeneUniID {
 		return databaseInfo;
 	}
 	
-	public void setDataBaseInfoID(String dbInfoID) {
+	/** 是否添加了，false表示不需要添加 */
+	public boolean setDataBaseInfoID(String dbInfoID) {
 		if (dbInfoID == null || dbInfoID.equals("")) {
-			return;
+			return false;
 		}
-		this.databaseInfo = manageDBInfo.findOne(dbInfoID);
+		DBInfo databaseInfo = manageDBInfo.findOne(dbInfoID);
+		return setDataBaseInfo(databaseInfo);
 	}
 	/**
 	 * 输入数据库的具体名字，譬如affy_U133等
 	 * 然后会到数据库中查找具体的芯片型号等
 	 * @param dbName
 	 */
-	public void setDataBaseInfo(String dbName) {
+	public boolean setDataBaseInfo(String dbName) {
 		if (dbName == null || dbName.equals("")) {
-			return;
+			return false;
 		}
-		this.databaseInfo = manageDBInfo.findByDBname(dbName);
+		DBInfo databaseInfo = manageDBInfo.findByDBname(dbName);
+		return setDataBaseInfo(databaseInfo);
 	}
 	
-	public void setDataBaseInfo(DBInfo databaseInfo) {
-		if (databaseInfo != null) {
+	public boolean setDataBaseInfo(DBInfo databaseInfo) {
+		if (databaseInfo != null && (this.databaseInfo == null || !this.databaseInfo.equals(databaseInfo)) ) {
 			this.databaseInfo = databaseInfo;
+			return true;
 		}
+		return false;
 	}
 	
 	/**

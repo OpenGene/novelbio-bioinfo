@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 /**
@@ -19,11 +20,13 @@ import org.springframework.data.mongodb.core.index.Indexed;
  */
 public abstract class AGeneInfo {
 	private static final Logger logger = Logger.getLogger(AGeneInfo.class);
+	@Id
+	String id;
 	
 	private String typeOfGene;
 	
-	private Map<DBInfo, String> mapSymbol = new HashMap<DBInfo, String>();
-	private Map<DBInfo, String> mapDescription = new HashMap<DBInfo, String>();
+	private Map<String, String> mapSymbol = new HashMap<String, String>();
+	private Map<String, String> mapDescription = new HashMap<String, String>();
 
 	private Set<String> setSynonyms = new HashSet<String>();
 	private Set<String> setDbXrefs = new HashSet<String>();
@@ -84,18 +87,28 @@ public abstract class AGeneInfo {
 	}
 
 	public String getSymb() {
-		return mapSymbol.values().iterator().next();
+		String symbol = null;
+		if (mapSymbol == null || mapSymbol.size() == 0) {
+			return "";
+		}
+		if (dbInfo != null) {
+			symbol = mapSymbol.get(dbInfo.getDbNameLowcase());
+		}
+		if (symbol == null || symbol.equals("")) {
+			symbol = mapSymbol.values().iterator().next();
+		}
+		if (symbol != null) {
+			return symbol.replaceAll("\"", "");
+		}
+		return "";
 	}
 	
-	public String getSymb(DBInfo dbInfo) {
-		return mapSymbol.get(dbInfo);
-	}
 	/**
 	 * 故意名字起的和symbol不一样，这样可以防止自动注入
 	 * @param symbol
 	 */
 	public void setSymb(String symbol) {
-		mapSymbol.put(dbInfo, symbol);
+		mapSymbol.put(dbInfo.getDbNameLowcase(), symbol);
 	}
 	/**
 	 * synonyms
@@ -105,6 +118,9 @@ public abstract class AGeneInfo {
 		return setSynonyms;
 	}
 	public void addSynonym(String synonyms) {
+		if (synonyms == null || synonyms.equals("") || synonyms.equals("-")) {
+			return;
+		}
 		setSynonyms.add(synonyms);
 	}
 	
@@ -120,11 +136,20 @@ public abstract class AGeneInfo {
 	 * @return
 	 */
 	public String getDescrp() {
-		String descrip = mapDescription.values().iterator().next();
-		if (descrip == null) {
-			descrip = "";
+		String descrip = null;
+		if (mapDescription == null || mapDescription.size() == 0) {
+			return "";
 		}
-		return descrip.replaceAll("\"", "");
+		if (dbInfo != null) {
+			descrip = mapDescription.get(dbInfo.getDbNameLowcase());
+		}
+		if (descrip == null || descrip.equals("")) {
+			descrip = mapDescription.values().iterator().next();
+		}
+		if (descrip != null) {
+			return descrip.replaceAll("\"", "");
+		}
+		return "";
 	}
 	
 	public void setDescrp(String description) {
@@ -132,7 +157,7 @@ public abstract class AGeneInfo {
 		description = description.replaceAll("\"", "").trim();
 		if (description.equals("") || description.equals("-")) return;
 		
-		mapDescription.put(dbInfo, description);
+		mapDescription.put(dbInfo.getDbNameLowcase(), description);
 	}
 
 	public String getTypeOfGene() {
@@ -156,7 +181,7 @@ public abstract class AGeneInfo {
 	}
 	
 	public void addSymNom(String symNome) {
-		if (symNome.equals("") || symNome.equals("-")) return;
+		if (symNome == null || symNome.equals("") || symNome.equals("-")) return;
 		this.setSymNome.add(symNome);
 	}
 
@@ -168,6 +193,7 @@ public abstract class AGeneInfo {
 		return setFullNameNome;
 	}
 	public void addFullName(String fullNameFromNomenclature) {
+		if (fullNameFromNomenclature == null || fullNameFromNomenclature.equals("") || fullNameFromNomenclature.equals("-")) return;
 		this.setFullNameNome.add(fullNameFromNomenclature);
 	}
 
@@ -180,15 +206,15 @@ public abstract class AGeneInfo {
 	
 	public boolean addInfo(AGeneInfo geneInfo) {
 		boolean update = false;
-		for (DBInfo dbInfo : geneInfo.mapDescription.keySet()) {
-			if (!mapDescription.containsKey(dbInfo)) {
-				mapDescription.put(dbInfo, geneInfo.mapDescription.get(dbInfo));
+		for (String dbInfoName : geneInfo.mapDescription.keySet()) {
+			if (!mapDescription.containsKey(dbInfoName)) {
+				mapDescription.put(dbInfoName, geneInfo.mapDescription.get(dbInfoName));
 				update = true;
 			}
 		}
-		for (DBInfo dbInfo : geneInfo.mapSymbol.keySet()) {
-			if (!mapSymbol.containsKey(dbInfo)) {
-				mapSymbol.put(dbInfo, geneInfo.mapSymbol.get(dbInfo));
+		for (String dbInfoName : geneInfo.mapSymbol.keySet()) {
+			if (!mapSymbol.containsKey(dbInfoName)) {
+				mapSymbol.put(dbInfoName, geneInfo.mapSymbol.get(dbInfoName));
 				update = true;
 			}
 		}
@@ -226,6 +252,25 @@ public abstract class AGeneInfo {
 		for (T t : setOther) {
 			if (!setThis.contains(t)) {
 				setThis.add(t);
+				add = true;
+			}
+		}
+		return add;
+	}
+	
+	/**
+	 * 将SetOther装到setThis里面，如果setOther中出现了新的item，则返回true
+	 * 否则返回false
+	 * @param <K>
+	 * @param setThis
+	 * @param setOther
+	 * @return
+	 */
+	protected static<T, K>  boolean addInfo(Map<T, K> mapThis, Map<T, K> mapOther) {
+		boolean add = false;
+		for (T t : mapOther.keySet()) {
+			if (!mapThis.containsKey(t)) {
+				mapThis.put(t, mapOther.get(t));
 				add = true;
 			}
 		}

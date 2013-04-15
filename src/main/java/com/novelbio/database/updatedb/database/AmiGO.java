@@ -116,7 +116,9 @@ class ImpGOExtObo extends ImportPerLine {
 		for (String string : ss) {
 			//GOID
 			if (string.startsWith("id:")) {
-				go2Term.setGoID(string.replace("id:", "").trim());
+				String GOID = string.replace("id:", "").trim().toUpperCase();
+				go2Term.setGoID(GOID);
+				mapGOquery2GOID.put(GOID, GOID);
 			}
 			//GOterm
 			if (string.startsWith("name:")) {

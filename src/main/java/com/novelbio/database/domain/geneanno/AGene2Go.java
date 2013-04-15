@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 
@@ -19,6 +20,9 @@ import com.novelbio.database.service.servgeneanno.ManageGo2Term;
 public abstract class AGene2Go {
 	private static Logger logger = Logger.getLogger(AGene2Go.class);
 	public static final String EVIDENCE_IEA = "IEA";
+	
+	@Id
+	String id;
 	
 	private String goID;
 	@Indexed
@@ -82,10 +86,9 @@ public abstract class AGene2Go {
 	}
 	
 	public void addEvidence(String evidence) {
-		if (evidence == null || evidence.trim().equals("")) {
-			return;
+		if (evidence != null && !evidence.trim().equals("")) {
+			setEvid.add(evidence.trim());
 		}
-		setEvid.add(evidence.trim());
 	}
 	
 	public String getQualifier() {
@@ -136,11 +139,15 @@ public abstract class AGene2Go {
 	}
 	
 	public void addDBID(DBInfo dbInfo) {
-		this.setDB.add(dbInfo);
+		if (dbInfo != null) {
+			this.setDB.add(dbInfo);
+		}
 	}
  
 	public void addReference(String reference) {
-		setPubID.add(reference);
+		if (reference != null && !reference.equals("")) {
+			setPubID.add(reference);
+		}
 	}
 
 	/**

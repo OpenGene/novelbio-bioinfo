@@ -13,14 +13,13 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.GOtype;
-import com.novelbio.database.domain.geneanno.Gene2Go;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.service.servgeneanno.ManageGo2Term;
 
-public abstract class GOInfoAbs{
-
-	private static Logger logger = Logger.getLogger(GOInfoAbs.class);
+/** 该类内部没有进行延迟初始，所以需要在外部延迟初始该类 */
+public abstract class GOInfoAbs {
+	private static final Logger logger = Logger.getLogger(GOInfoAbs.class);
 
 	String genUniAccID = null;
 	int taxID = 0;
@@ -60,9 +59,7 @@ public abstract class GOInfoAbs{
 	 * @return
 	 * 没有则返回一个空的lsResult
 	 */
-	public List<AGene2Go> getLsGene2Go(GOtype GOType) {
-		setGene2Go();
-		
+	public List<AGene2Go> getLsGene2Go(GOtype GOType) {		
 		if (GOType != GOtype.ALL) {
 			return getLsGoType(GOType);
 		} else {

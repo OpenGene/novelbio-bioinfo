@@ -14,6 +14,7 @@ public class GOInfoGenID extends GOInfoAbs {
 	ManageGene2Go servGene2Go = new ManageGene2Go();
 	public GOInfoGenID(String genUniAccID, int taxID) {
 		super(genUniAccID, taxID);
+		setGene2Go();
 	}
 
 	@Override

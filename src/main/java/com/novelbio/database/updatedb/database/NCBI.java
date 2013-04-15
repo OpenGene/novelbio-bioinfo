@@ -2,7 +2,6 @@ package com.novelbio.database.updatedb.database;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.AGeneInfo;
 import com.novelbio.database.domain.geneanno.GeneInfo;
@@ -24,9 +23,7 @@ public class NCBI {
 	String gene2Pub = "";
 	String goExtObo = "";
 	String gene2GO = "";
-	public static void main(String[] args) {
-		
-	}
+
 	public void setTaxID(String taxID) {
 		this.taxID = taxID;
 	}
@@ -60,18 +57,19 @@ public class NCBI {
 //		impFile.updateFile(gene2Acc);
 //		impFile.updateFile(gene2Ref);
 		impFile = new ImpGen2Ensembl();
-//		impFile.setTxtWriteExcep(FileOperate.changeFileSuffix(gene2ensembl, "_filed", "txt"));
+//		impFile.setTxtWriteExcep(FileOperate.changeFileSuffix(gene2ensembl, "_failed", "txt"));
 //		impFile.updateFile(gene2ensembl);
-		impFile = new ImpGeneRef2UniID();
-		impFile.updateFile(geneRef2UniID);
+//		impFile = new ImpGeneRef2UniID();
+//		impFile.updateFile(geneRef2UniID);
 //		impFile = new ImpGene2Info();
+//		impFile.setTxtWriteExcep(FileOperate.changeFileSuffix(gene2Info, "_failed", "txt"));
 //		impFile.updateFile(gene2Info);
 //		impFile = new ImpGene2Pub();
 //		impFile.updateFile(gene2Pub);
 //		impFile = new ImpGOExtObo();
 //		impFile.updateFile(goExtObo);
-//		impFile = new ImpGene2GO();
-//		impFile.updateFile(gene2GO);
+		impFile = new ImpGene2GO();
+		impFile.updateFile(gene2GO);
 	}
 }
 
@@ -321,5 +319,3 @@ class ImpGene2GO extends ImportPerLine {
 	{
 	}
 }
-
-

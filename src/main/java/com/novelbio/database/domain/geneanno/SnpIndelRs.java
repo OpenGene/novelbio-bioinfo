@@ -1,6 +1,5 @@
 package com.novelbio.database.domain.geneanno;
 
-import com.novelbio.analysis.tools.Mas3.getProbID;
 
 /**
  * UCSC的SNP信息

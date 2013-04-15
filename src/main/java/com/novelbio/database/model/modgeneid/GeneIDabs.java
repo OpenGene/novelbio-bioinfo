@@ -31,7 +31,8 @@ public class GeneIDabs implements GeneIDInt {
 	/** 是否没有在数据库中查询到 */
 	boolean isAccID = false;
 	AgeneUniID ageneUniID;
-
+	/** 是否需要升级genUniID */
+	boolean updateGenUniID = false;
 	
 	/** 譬方和多个物种进行blast，然后结合这些物种的信息，取并集 */
 	BlastList blastList;
@@ -56,6 +57,9 @@ public class GeneIDabs implements GeneIDInt {
 	 */
 	protected GeneIDabs(AgeneUniID ageneUniID) {
 		this.ageneUniID = ageneUniID;
+		if (ageneUniID.getId() == null || ageneUniID.getId().equals("")) {
+			updateGenUniID = true;
+		}
 	}
 	
 	protected GeneIDabs(int idType, String geneUniID, int taxID) {
@@ -68,6 +72,7 @@ public class GeneIDabs implements GeneIDInt {
 		}
 		if (lsTmp.size() == 0) {
 			this.ageneUniID = ageneUniID;
+			updateGenUniID = true;
 			return;
 		}
 		String DBsource = getDatabaseType(lsTmp.get(0).getTaxID());
@@ -88,6 +93,7 @@ public class GeneIDabs implements GeneIDInt {
 			ageneUniID = AgeneUniID.creatAgeneUniID(GeneID.IDTYPE_UNIID);
 			ageneUniID.setAccID(accID);
 			ageneUniID.setTaxID(taxID);
+			updateGenUniID = true;
 			isAccID = true;
 		}
 	}
@@ -489,7 +495,9 @@ public class GeneIDabs implements GeneIDInt {
 	@Override
 	public void setUpdateDBinfo(DBAccIDSource DBInfo, boolean overlapDBinfo) {
 		if (DBInfo != null) {
-			ageneUniID.setDataBaseInfo(DBInfo.toString());
+			if (ageneUniID.setDataBaseInfo(DBInfo.toString()) && overlapDBinfo) {
+				updateGenUniID = true;
+			}
 		}
 		this.overrideUpdateDBinfo = overlapDBinfo;
 	}
@@ -504,7 +512,9 @@ public class GeneIDabs implements GeneIDInt {
 	 */
 	public void setUpdateDBinfo(String DBInfo, boolean overlapDBinfo) {
 		if (DBInfo != null && !DBInfo.equals("")) {
-			ageneUniID.setDataBaseInfo(DBInfo);
+			if (ageneUniID.setDataBaseInfo(DBInfo.toString()) && overlapDBinfo) {
+				updateGenUniID = true;
+			}
 		}
 		this.overrideUpdateDBinfo = overlapDBinfo;
 	}
@@ -526,21 +536,35 @@ public class GeneIDabs implements GeneIDInt {
 			ageneUniID.setTaxID(this.getTaxID());
 			this.ageneUniID = ageneUniID;
 			this.isAccID = false;
+			updateGenUniID = true;
 		}
 	}
 	
 	/** 设定该ID的accID */
 	@Override
 	public void setUpdateAccID(String accID) {
-		ageneUniID.setAccID(GeneID.removeDot(accID));
-
+		setUpdateAccID(accID, true);
 	}
 	/** 设定该ID的accID，不经过处理的ID */
 	@Override
 	public void setUpdateAccIDNoCoped(String accID) {
-		ageneUniID.setAccID(accID);
+		setUpdateAccID(accID, false);
 	}
-
+	/**
+	 *  设定该ID的accID
+	 * @param accID
+	 * @param coped 是否经过处理
+	 */
+	private void setUpdateAccID(String accID, boolean coped) {
+		if (accID == null || accID.equals("")) return;
+		if (coped) {
+			accID = GeneID.removeDot(accID);
+		}
+		if (ageneUniID.getAccID() != null && ageneUniID.getAccID().equalsIgnoreCase(accID)) { return; }
+		
+		ageneUniID.setAccID(accID);
+		updateGenUniID = true;
+	}
 	/**
 	 * 依次输入需要升级的GO信息，最后升级 这里只是先获取GO的信息，最后调用升级method的时候再升级
 	 * 可以连续不断的添加
@@ -553,7 +577,7 @@ public class GeneIDabs implements GeneIDInt {
 	@Override
 	public void addUpdateGO(String GOID, DBAccIDSource GOdatabase, String GOevidence,
 			String GORef, String gOQualifiy) {
-		goInfoAbs.addGOid(getTaxID(), GOID, GOdatabase, GOevidence, GORef, gOQualifiy);
+		getGOInfo().addGOid(getTaxID(), GOID, GOdatabase, GOevidence, GORef, gOQualifiy);
 	}
 
 	/**
@@ -636,7 +660,11 @@ public class GeneIDabs implements GeneIDInt {
 	 * @throws EOFException
 	 */
 	private boolean updateGeneID(boolean updateUniID) {
-		if (!ageneUniID.isValidGenUniID() && ageneUniID.getAccID() == null) {
+		if (!updateGenUniID || ageneUniID.getAccID() == null || ageneUniID.getAccID().equals("")) {
+			return true;
+		}
+		
+		if (!ageneUniID.isValidGenUniID()) {
 			return false;
 		}
 		boolean update = false;
@@ -653,8 +681,6 @@ public class GeneIDabs implements GeneIDInt {
 			uniProtID.setGenUniID(ageneUniID.getGenUniID());
 			uniProtID.setTaxID(ageneUniID.getTaxID());
 			update = uniProtID.update(overrideUpdateDBinfo);
-			//TODO 防止下一个导入的时候出错
-//			try { hread.sleep(10); } catch (InterruptedException e) { }
 		} else {
 			return false;
 		}
@@ -674,7 +700,12 @@ public class GeneIDabs implements GeneIDInt {
 			return true;
 		}
 		geneInfo.setTaxID(getTaxID());
-		servGeneInfo.updateGenInfo(getIDtype(), ageneUniID.getGenUniID(), getTaxID(), geneInfo);
+		try {
+			servGeneInfo.updateGenInfo(getIDtype(), ageneUniID.getGenUniID(), getTaxID(), geneInfo);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 		boolean update = updateGeneInfoSymbolAndSynonyms(getIDtype(), geneInfo);
 		geneInfo = null;
 		return update;
@@ -683,7 +714,7 @@ public class GeneIDabs implements GeneIDInt {
 	private boolean updateGeneInfoSymbolAndSynonyms(int idType, AGeneInfo geneInfoUpdate) {
 		boolean update = false;
 		AgeneUniID ageneUniID = null;
-		if (geneInfoUpdate.getSymb() != null) {
+		if (geneInfoUpdate.getSymb() != null && !geneInfoUpdate.getSymb().equals("")) {
 			String ssymb = geneInfoUpdate.getSymb();
 			ageneUniID = AgeneUniID.creatAgeneUniID(idType);
 			ageneUniID.setAccID(ssymb.trim());
@@ -692,7 +723,7 @@ public class GeneIDabs implements GeneIDInt {
 			ageneUniID.setTaxID(getTaxID());
 			update = ageneUniID.update(true);
 		}
-		if (geneInfoUpdate.getSynonym() != null) {
+		if (geneInfoUpdate.getSynonym() != null && geneInfoUpdate.getSynonym().size() > 0) {
 			for (String string : geneInfoUpdate.getSynonym()) {
 				ageneUniID = AgeneUniID.creatAgeneUniID(idType);
 				ageneUniID.setAccID(string.trim());
