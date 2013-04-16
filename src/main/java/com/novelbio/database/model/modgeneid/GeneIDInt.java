@@ -137,7 +137,9 @@ public interface GeneIDInt{
 	 * @param idType 必须是CopedID.IDTYPE_GENEID等，可以不输入
 	 */
 	void setUpdateGeneID(String geneUniID, int idType);
+	
 	/**
+	 * <b>务必在设定好lsRef等信息后再添加</b>
 	 * 依次输入需要升级的GO信息，最后升级<br>
 	 * 这里只是先获取GO的信息，最后调用升级method的时候再升级<br>
 	 * 可以连续不断的添加
@@ -155,7 +157,7 @@ GO_REF:0000004<br>
 	 * @param gOQualifiy
 	 */
 	void addUpdateGO(String GOID, DBAccIDSource GOdatabase, String GOevidence,
-			String GORef, String gOQualifiy);
+			List<String> lsGOref, String gOQualifiy);
 	/**
 	 * 输入需要update的geneInfo，注意不需要设定geneUniID，除非是单独升级pubmedID信息，否则
 	 * <b>务必要设定geneinfo的dbinfo</b>，dbinfo是判定该geneinfo数据库来源的信息<br>
@@ -223,7 +225,7 @@ GO_REF:0000004<br>
 	 * @param uniqID
 	 */
 	void addUpdateRefAccID(String... refAccID);
-
+	/** <b>务必在设定好lsRef等信息后再添加</b> */
 	void addUpdateBlastInfo(BlastInfo blastInfo);
 
 	/**
@@ -234,6 +236,7 @@ GO_REF:0000004<br>
 	DBInfo getDBinfo();
 	/**
 	 * 具体的accID，根据数据库情况抓一个出来
+	 * 没找到，也就是说数据库中没有该基因，则返回Null
 	 */
 	AgeneUniID getAccID_With_DefaultDB();
 
@@ -242,5 +245,10 @@ GO_REF:0000004<br>
 	public boolean equals(Object obj);
 	
 	public int hashCode();
+	
+	/** 有genUniID的返回genUniID,没有的返回accID
+	 * @return
+	 */
+	String getGeneUniID();
 	
 }

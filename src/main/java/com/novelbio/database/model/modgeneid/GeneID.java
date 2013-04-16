@@ -15,12 +15,10 @@ import com.novelbio.database.domain.geneanno.AgeneUniID;
 import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.domain.geneanno.DBInfo;
 import com.novelbio.database.domain.geneanno.GOtype;
-import com.novelbio.database.domain.geneanno.TaxInfo;
 import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.database.model.modkegg.KeggInfo;
-import com.novelbio.database.model.species.Species;
 
 /**
  * <b>注意blastInfo中的SubjectTab和QueryTab有问题，需要重写</b><br>
@@ -417,11 +415,11 @@ public class GeneID implements GeneIDInt{
 	public void setUpdateGeneID(String geneUniID, int idType) {
 		geneID.setUpdateGeneID(geneUniID, idType);
 	}
-
+	
 	@Override
 	public void addUpdateGO(String GOID, DBAccIDSource GOdatabase, String GOevidence,
-			String GORef, String gOQualifiy) {
-		geneID.addUpdateGO(GOID, GOdatabase, GOevidence, GORef, gOQualifiy);
+			List<String> lsGOref, String gOQualifiy) {
+		geneID.addUpdateGO(GOID, GOdatabase, GOevidence, lsGOref, gOQualifiy);
 	}
 
 	@Override
@@ -474,8 +472,9 @@ public class GeneID implements GeneIDInt{
 	}
 	
 	/** 小写 */
+	@Override
 	public String getGeneUniID() {
-		return geneID.getAgeneUniID().getGenUniID();
+		return geneID.getGeneUniID();
 	}
 	
 	@Override

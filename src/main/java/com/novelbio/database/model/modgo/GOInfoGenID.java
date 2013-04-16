@@ -23,6 +23,9 @@ public class GOInfoGenID extends GOInfoAbs {
 			return;
 		}
 		mapGene2Gos = new HashMap<String, AGene2Go>();
+		if (genUniAccID == null || genUniAccID.equals("")) {
+			return;
+		}
 		List<Gene2Go>  lstmp = servGene2Go.queryLsGene2Go(Integer.parseInt(genUniAccID), taxID);
 		if (lstmp == null || lstmp.size() == 0) {
 			return;

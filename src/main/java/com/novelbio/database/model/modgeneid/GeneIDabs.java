@@ -21,6 +21,7 @@ import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.database.model.modkegg.KeggInfo;
 import com.novelbio.database.model.species.Species;
+import com.novelbio.database.service.servgeneanno.ManageDBInfo;
 import com.novelbio.database.service.servgeneanno.ManageGeneInfo;
 import com.novelbio.database.service.servgeneanno.ManageNCBIUniID;
 
@@ -44,7 +45,7 @@ public class GeneIDabs implements GeneIDInt {
 	// //////////////////// service 层
 	ManageNCBIUniID servNCBIUniID = new ManageNCBIUniID();
 	ManageGeneInfo servGeneInfo = new ManageGeneInfo();
-	
+	ManageDBInfo manageDBInfo = new ManageDBInfo();
 	
 	/**
 	 * 记录可能用于升级数据库的ID 譬如获得一个ID与NCBI的别的ID有关联，就用别的ID来查找数据库，以便获得该accID所对应的genUniID
@@ -63,6 +64,11 @@ public class GeneIDabs implements GeneIDInt {
 	}
 	
 	protected GeneIDabs(int idType, String geneUniID, int taxID) {
+		if (idType == GeneID.IDTYPE_ACCID) {
+			setAccID(geneUniID, taxID);
+			return;
+		}
+		
 		AgeneUniID ageneUniID = AgeneUniID.creatAgeneUniID(idType);
 		ageneUniID.setGenUniID(geneUniID);
 		ageneUniID.setTaxID(taxID);
@@ -85,6 +91,10 @@ public class GeneIDabs implements GeneIDInt {
 	 * @param taxID
 	 */
 	protected GeneIDabs(String accID, int taxID) {
+		setAccID(accID, taxID);
+	}
+	
+	private void setAccID(String accID, int taxID) {
 		List<AgeneUniID> lsAgeneUniID = getNCBIUniTax(accID, taxID);
 		if (lsAgeneUniID.size() > 0) {
 			ageneUniID = lsAgeneUniID.get(0);
@@ -107,6 +117,10 @@ public class GeneIDabs implements GeneIDInt {
 	 * @return
 	 */
 	private AgeneUniID getGeneUniIDwithDB(List<AgeneUniID> lsAgenUniID, String dbSource) {
+		if (lsAgenUniID == null || lsAgenUniID.size() == 0) {
+			return null;
+		}
+		
 		AgeneUniID ageneUniID = null;
 		for (AgeneUniID ageneUniIDSub : lsAgenUniID) {
 			if (ageneUniIDSub.getDataBaseInfo().getDbName().equals(dbSource)) {
@@ -147,7 +161,16 @@ public class GeneIDabs implements GeneIDInt {
 	public AgeneUniID getAgeneUniID() {
 		return ageneUniID;
 	}
-	
+
+	@Override
+	public String getGeneUniID() {
+		if (isAccID) {
+			return ageneUniID.getAccID();
+		} else {
+			return ageneUniID.getGenUniID();
+		}
+	}
+
 	@Override
 	public DBInfo getDBinfo() {
 		return ageneUniID.getDataBaseInfo();
@@ -160,11 +183,7 @@ public class GeneIDabs implements GeneIDInt {
 	 */
 	@Override
 	public void setBlastInfo(double evalue, int... StaxID) {
-		String geneUniID = ageneUniID.getGenUniID();
-		if (!ageneUniID.isValidGenUniID()) {
-			geneUniID = ageneUniID.getAccID();
-		}
-		blastList = new BlastList(geneUniID, getTaxID());
+		blastList = new BlastList(getIDtype(), getGeneUniID(), getTaxID());
 		blastList.setTaxIDBlastTo(StaxID);
 		blastList.setEvalue_And_GetOneSeqPerTaxID(evalue, true);
 	}
@@ -256,10 +275,11 @@ public class GeneIDabs implements GeneIDInt {
 	 * @return
 	 */
 	protected AgeneUniID getGenUniID(AgeneUniID genUniID, String dbName) {
-		if (getIDtype() == GeneID.IDTYPE_ACCID || genUniID.getDataBaseInfo().getDbName().equals(dbName)) {
+		if (getIDtype() == GeneID.IDTYPE_ACCID || 
+				( genUniID.getDataBaseInfo() != null && genUniID.getDataBaseInfo().getDbName().equals(dbName))
+			) {
 			return genUniID;
 		}
-		genUniID.setDataBaseInfo("");
 		List<AgeneUniID> lsSubject = servNCBIUniID.findByGeneUniID(genUniID.getGeneIDtype(), genUniID.getGenUniID(), genUniID.getTaxID());
 		return getGeneUniIDwithDB(lsSubject, dbName);
 	}
@@ -359,7 +379,7 @@ public class GeneIDabs implements GeneIDInt {
 	 */
 	public GOInfoAbs getGOInfo() {
 		if (goInfoAbs == null) {
-			goInfoAbs = GOInfoAbs.createGOInfoAbs(ageneUniID.getGeneIDtype(), ageneUniID.getGenUniID(), ageneUniID.getTaxID());
+			goInfoAbs = GOInfoAbs.createGOInfoAbs(getIDtype(), getGeneUniID(), ageneUniID.getTaxID());
 		}
 		return goInfoAbs;
 	}
@@ -487,7 +507,7 @@ public class GeneIDabs implements GeneIDInt {
 	/**
 	 * 记录该ID的物种ID和数据库信息，用于修正以前的数据库
 	 * 
-	 * @param taxID
+	 * @param taxIDfile
 	 * @param DBInfo
 	 * @param 是否用本DBInfo修正以前的DBInfo
 	 * 不管是true还是false，geneinfo都会用其进行修正
@@ -505,7 +525,7 @@ public class GeneIDabs implements GeneIDInt {
 	/**
 	 * 记录该ID的物种ID和数据库信息，用于修正以前的数据库
 	 * 
-	 * @param taxID
+	 * @param taxIDfile
 	 * @param DBInfo
 	 * @param 是否用本DBInfo修正以前的DBInfo
 	 * 不管是true还是false，geneinfo都会用其进行修正
@@ -527,6 +547,9 @@ public class GeneIDabs implements GeneIDInt {
 	 */
 	@Override
 	public void setUpdateGeneID(String geneUniID, int idType) {
+		if ( !isAccID && ageneUniID.getGeneIDtype() == idType && ageneUniID.getGenUniID() != null && ageneUniID.getGenUniID().equals(geneUniID)) {
+			return;
+		}
 		if (geneUniID != null && !geneUniID.trim().equals("")
 				&& !geneUniID.trim().equals("0")) {
 			AgeneUniID ageneUniID = AgeneUniID.creatAgeneUniID(idType);
@@ -534,6 +557,7 @@ public class GeneIDabs implements GeneIDInt {
 			ageneUniID.setAccID(this.ageneUniID.getAccID());
 			ageneUniID.setGenUniID(geneUniID);
 			ageneUniID.setTaxID(this.getTaxID());
+
 			this.ageneUniID = ageneUniID;
 			this.isAccID = false;
 			updateGenUniID = true;
@@ -563,6 +587,7 @@ public class GeneIDabs implements GeneIDInt {
 		if (ageneUniID.getAccID() != null && ageneUniID.getAccID().equalsIgnoreCase(accID)) { return; }
 		
 		ageneUniID.setAccID(accID);
+		ageneUniID.setId(null);
 		updateGenUniID = true;
 	}
 	/**
@@ -576,7 +601,7 @@ public class GeneIDabs implements GeneIDInt {
 	 */
 	@Override
 	public void addUpdateGO(String GOID, DBAccIDSource GOdatabase, String GOevidence,
-			String GORef, String gOQualifiy) {
+			List<String> GORef, String gOQualifiy) {
 		getGOInfo().addGOid(getTaxID(), GOID, GOdatabase, GOevidence, GORef, gOQualifiy);
 	}
 
@@ -601,7 +626,12 @@ public class GeneIDabs implements GeneIDInt {
 			return;
 		}
 		if (blastList == null) {
-			blastList = new BlastList(getAgeneUniID().getGenUniID(), getTaxID());
+			blastList = new BlastList(getIDtype(), getGeneUniID(), getTaxID());
+//			if (isAccID) {
+//				blastList = new BlastList(GeneID.IDTYPE_ACCID, ageneUniID.getAccID(), getTaxID());
+//			} else {
+//				blastList = new BlastList(ageneUniID.getGeneIDtype(), ageneUniID.getGenUniID(), getTaxID());
+//			}
 		}
 		blastList.addBlastInfo(blastInfo);
 	}
@@ -643,6 +673,12 @@ public class GeneIDabs implements GeneIDInt {
 			if (goInfoAbs == null) {
 				return true;
 			}
+			//补救措施
+			if (!goInfoAbs.getGenUniAccID().equals(getAgeneUniID().getGenUniID())) {
+				GOInfoAbs goInfoAbsNew = GOInfoAbs.createGOInfoAbs(getIDtype(), getAgeneUniID().getGenUniID(), getTaxID());
+				goInfoAbsNew.addGOinfo(goInfoAbs);
+				goInfoAbs = goInfoAbsNew;
+			}
 			goInfoAbs.update();
 		} catch (Exception e) {
 			return false;
@@ -670,7 +706,11 @@ public class GeneIDabs implements GeneIDInt {
 		boolean update = false;
 		if (ageneUniID.getDataBaseInfo() == null || ageneUniID.getDataBaseInfo().getDbName().equals("")) {
 			logger.error("升级geneID时没有设置该gene的数据库来源，自动设置为NCBIID");
-			ageneUniID.setDataBaseInfo(DBAccIDSource.NCBI.toString());
+			if (ageneUniID.getGeneIDtype() == GeneID.IDTYPE_GENEID) {
+				ageneUniID.setDataBaseInfo(DBAccIDSource.NCBI.toString());
+			} else {
+				ageneUniID.setDataBaseInfo(DBAccIDSource.Uniprot.name());
+			}
 		}
 		if (getIDtype() != GeneID.IDTYPE_ACCID) {
 			update = ageneUniID.update(overrideUpdateDBinfo);
@@ -700,6 +740,17 @@ public class GeneIDabs implements GeneIDInt {
 			return true;
 		}
 		geneInfo.setTaxID(getTaxID());
+		if (geneInfo.getDbInfo() == null) {
+			if (getDBinfo() == null) {
+				if (ageneUniID.getGeneIDtype() == GeneID.IDTYPE_GENEID) {
+					geneInfo.setDBinfo(manageDBInfo.findByDBname(DBAccIDSource.NCBI.name()));
+				} else {
+					geneInfo.setDBinfo(manageDBInfo.findByDBname(DBAccIDSource.Uniprot.name()));
+				}
+			} else {
+				geneInfo.setDBinfo(getDBinfo());
+			}
+		}
 		try {
 			servGeneInfo.updateGenInfo(getIDtype(), ageneUniID.getGenUniID(), getTaxID(), geneInfo);
 		} catch (Exception e) {
@@ -738,6 +789,16 @@ public class GeneIDabs implements GeneIDInt {
 	
 	private boolean updateBlastInfo() {
 		if (blastList != null) {
+			if (
+				!((isAccID && blastList.getIdType() == GeneID.IDTYPE_ACCID)
+					|| (!isAccID && blastList.getIdType() == ageneUniID.getGeneIDtype()))
+				&& blastList.getGenUniID() == getGeneUniID()
+					)  {
+				blastList.
+			}
+			
+			
+			
 			try {
 				blastList.update();
 				return true;
@@ -755,7 +816,7 @@ public class GeneIDabs implements GeneIDInt {
 	 * 内部已经将genUniID和IDType和TaxID都改过来了
 	 */
 	private void setUpdateGenUniID() {
-		if (getIDtype() != GeneID.IDTYPE_ACCID) {
+		if (!isAccID) {
 			return;
 		}
 		// 保存所有refID--也就是用于查找数据库的refxDB的信息ID，他们所对应的geneUniID
@@ -871,16 +932,11 @@ public class GeneIDabs implements GeneIDInt {
 	 * @Override
 	 */
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-
-		if (obj == null)
-			return false;
-
-		if (getClass() != obj.getClass())
-			return false;
-		GeneID otherObj = (GeneID) obj;
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
 		
+		GeneID otherObj = (GeneID) obj;
 		return ageneUniID.equals(otherObj.getAgeneUniID());
 	}
 

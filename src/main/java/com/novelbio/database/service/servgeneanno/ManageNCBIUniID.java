@@ -27,6 +27,34 @@ public class ManageNCBIUniID {
 	}
 	
 	/**
+	 * 删除该ageneUnID
+	 * 首先判定ID，没有的话再去查找
+	 * @param ageneUniID
+	 */
+	public void delete(AgeneUniID ageneUniID) {
+		if (ageneUniID instanceof NCBIID) {
+			if (ageneUniID.getId() != null && !ageneUniID.getId().equals("")) {
+				repoNCBIID.delete(ageneUniID.getId());
+			} else {
+				ageneUniID = findByGeneUniIDAndAccIDAndTaxID(GeneID.IDTYPE_GENEID, ageneUniID.getGenUniID(), ageneUniID.getAccID(), ageneUniID.getTaxID());
+				if (ageneUniID != null) {
+					repoNCBIID.delete(ageneUniID.getId());
+				}
+			}
+		} else {
+			if (ageneUniID.getId() != null && !ageneUniID.getId().equals("")) {
+				repoUniID.delete(ageneUniID.getId());
+			} else {
+				ageneUniID = findByGeneUniIDAndAccIDAndTaxID(GeneID.IDTYPE_UNIID, ageneUniID.getGenUniID(), ageneUniID.getAccID(), ageneUniID.getTaxID());
+				if (ageneUniID != null) {
+					repoUniID.delete(ageneUniID.getId());
+				}
+			}
+		}
+	}
+	
+	
+	/**
 	 * @param geneType
 	 * @param geneUniID
 	 * @param accID

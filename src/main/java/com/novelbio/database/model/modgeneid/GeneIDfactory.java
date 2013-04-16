@@ -23,7 +23,7 @@ public class GeneIDfactory implements GeneIDfactoryInt {
 	 * 设定初始值，不验证 如果在数据库中没有找到相应的geneUniID，则返回null 只能产生一个CopedID，此时accID = ""
 	 * @param idType  必须是IDTYPE中的一种
 	 * @param genUniID
-	 * @param taxID 物种ID
+	 * @param taxIDfile 物种ID
 	 */
 	@Override
 	public GeneIDInt createGeneID(AgeneUniID ageneUniID) {
@@ -44,7 +44,7 @@ public class GeneIDfactory implements GeneIDfactoryInt {
 		if (accID != null) {
 			accID = accID.replace("\"", "").trim();
 			accID = GeneID.removeDot(accID);
-			if (accID.equals("")) {
+			if (accID == null || accID.equals("")) {
 				accID = null;
 			}
 		}

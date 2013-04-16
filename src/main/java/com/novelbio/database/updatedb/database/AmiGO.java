@@ -16,22 +16,36 @@ import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.service.servgeneanno.ManageDBInfo;
 import com.novelbio.database.service.servgeneanno.ManageGo2Term;
 
+
 public class AmiGO {
-	/**
-	 * http://www.geneontology.org/GO.downloads.files.shtml
-	 * GO.terms_alt_ids
-	 */
+	String taxIDfile = "";
+	String goExtObo = "";
 	
-	/**
-	 * http://www.geneontology.org/GO.downloads.annotations.shtml
-	 * annotation
-	 */
+	public void setTaxIDfile(String taxID) {
+		this.taxIDfile = taxID;
+	}
+	public void setGoExtObo(String goExtObo) {
+		this.goExtObo = goExtObo;
+	}
 	
-//	ImpGen2Acc
-	
+	public void importFile() {
+		ImportPerLine.setTaxIDFile(taxIDfile);
+		ImportPerLine impFile = null;
+		impFile = new ImpGOExtObo();
+		impFile.updateFile(goExtObo);
+	}
+
 }
 
+/**
+ * http://www.geneontology.org/GO.downloads.files.shtml
+ * GO.terms_alt_ids
+ */
 
+/**
+ * http://www.geneontology.org/GO.downloads.annotations.shtml
+ * annotation
+ */
 class ImpGOExtObo extends ImportPerLine {
 	private static Logger logger = Logger.getLogger(ImpGOExtObo.class);
 	

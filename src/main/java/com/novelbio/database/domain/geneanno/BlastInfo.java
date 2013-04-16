@@ -8,11 +8,13 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.hg.doc.fa;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.database.model.modgeneid.GeneID;
 
 /**
- * 
+ * <b>导入数据库的时候数据库中必须已经存在了subjectID</b><br>
+ * 如果数据库中不存在queryID，而又需要导入，则先导入queryID，再导入blast信息
  * @author zong0jie
  * 按照evalue从小到大排序
  */
@@ -36,23 +38,68 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	private int alignLen = 0;
 	
 	protected int queryTax;
+	protected int queryIDtype;
 	protected int subjectTax;
-
-	private int subjectTab;
+	private int subjectIDtype;
 	
 	@Transient
 	GeneID geneIDQ = null;
 	@Transient
 	GeneID geneIDS = null;
 	
-	@DBRef
-	protected DBInfo queryDB;
-	@DBRef
-	protected DBInfo subjectDB;
-	
 	public BlastInfo() {
 		setDate();
 	}
+	
+	/**
+	 * 用 <b>-m8</b> 参数跑出来的Blast程序跑出来的结果
+	 * 默认Blast的QueryID和SubjectID都为AccID
+	 * @param taxIDQ
+	 * @param taxIDS
+	 * @param blastStr blast的那一行
+	 */
+	public BlastInfo(int taxIDQ, int taxIDS, String blastStr) {
+		this(taxIDQ, taxIDS, false, blastStr);
+	}
+	
+	/**
+	 * 用 <b>-m8</b> 参数跑出来的Blast程序跑出来的结果
+	 * @param taxIDQ
+	 * @param taxIDS
+	 * @param isgeneID blast中的ID是否为geneID
+	 * @param blastStr blast的那一行
+	 */
+	public BlastInfo(int taxIDQ, int taxIDS, boolean isgeneID, String blastStr) {
+		setDate();
+		String[] blastInfo = blastStr.split("\t");
+		if (!isgeneID) {
+			geneIDQ = new GeneID(blastInfo[0], taxIDQ);
+			geneIDS = new GeneID(blastInfo[1], taxIDS);
+		} else {
+			geneIDQ = new GeneID(GeneID.IDTYPE_GENEID, blastInfo[0], taxIDQ);
+			if (geneIDQ.getAccID_With_DefaultDB() == null) {
+				geneIDQ = new GeneID(GeneID.IDTYPE_UNIID, blastInfo[0], taxIDQ);
+			}
+			geneIDS = new GeneID(GeneID.IDTYPE_GENEID, blastInfo[1], taxIDQ);
+			if (geneIDS.getAccID_With_DefaultDB() == null) {
+				geneIDS = new GeneID(GeneID.IDTYPE_UNIID, blastInfo[1], taxIDQ);
+			}
+		}
+		this.queryID = geneIDQ.getGeneUniID();
+		this.queryTax = geneIDQ.getTaxID();
+		this.queryIDtype = geneIDQ.getIDtype();
+		
+		this.subjectID = geneIDS.getGeneUniID();
+		this.subjectTax = geneIDS.getTaxID();
+		this.subjectIDtype = geneIDS.getIDtype();
+		
+		this.alignLen = Integer.parseInt(blastInfo[3]);
+		this.evalue = Double.parseDouble(blastInfo[10]);
+		this.identities = Double.parseDouble(blastInfo[2]);
+		this.score = Integer.parseInt(blastInfo[11]);
+	}
+	
+	
 	/** mongodb中的id */
 	public void setId(String id) {
 		this.id = id;
@@ -66,89 +113,17 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	     blastDate = DateUtil.getDate(); //将日期时间格式化
 	}
 	
-	/**
-	 * 如果是要导入数据库，必须用该方式new一个<br>
-	 * 还需要设定evalue, identity和queryDB, subjectDB
-	 */
-	public BlastInfo(String AccIDQ, int taxIDQ , String AccIDS, int taxIDS) {
-		setDate();
-		if (taxIDQ < 0) taxIDQ = 0;
-		if (taxIDS < 0) taxIDS = 0;
-		
-	     if (AccIDQ != null && !AccIDQ.equals("")) {
-			geneIDQ = new GeneID(AccIDQ, taxIDQ);
-			this.queryID = geneIDQ.getGeneUniID();
-			this.queryTax = geneIDQ.getTaxID();
-	     }
-		
-	     if (AccIDS != null && !AccIDS.equals("")) {
-	    	 geneIDS = new GeneID(AccIDS, taxIDS);
-	    	 this.subjectID = geneIDS.getGeneUniID();
-	    	 this.subjectTax = geneIDS.getTaxID();
-	    	 this.subjectTab = geneIDS.getIDtype();
-	     }
-	}
-	
-	/**
-	 * 如果是要导入数据库，必须用该方式new一个<br>
-	 * 还需要设定evalue, identity和queryDB, subjectDB
-	 */
-	public BlastInfo(String AccIDQ, int taxIDQ , String genUniIDS, int IDType,int taxIDS) {
-		setDate();
-		if (taxIDQ < 0) taxIDQ = 0;
-		if (taxIDS < 0) taxIDS = 0;
-		
-	     if (AccIDQ != null && !AccIDQ.equals("")) {
-			geneIDQ = new GeneID(AccIDQ, taxIDQ);
-			this.queryID = geneIDQ.getGeneUniID();
-			this.queryTax = geneIDQ.getTaxID();
-	     }
-		
-	     if (genUniIDS != null && !genUniIDS.equals("")) {
-	    	 geneIDS = new GeneID(IDType, genUniIDS, taxIDS);
-	    	 this.subjectID = geneIDS.getGeneUniID();
-	    	 this.subjectTax = geneIDS.getTaxID();
-	    	 this.subjectTab = geneIDS.getIDtype();
-	     }
-	}
-	/**
-	 * 如果是要导入数据库，必须用该方式new一个<br>
-	 * 还需要设定evalue, identity和queryDB, subjectDB
-	 */
-	public BlastInfo(int taxIDQ, String genUniQ, int taxIDS, String genUniS) {
-		setDate();
-		
-		if (taxIDQ < 0) taxIDQ = 0;
-		if (taxIDS < 0) taxIDS = 0;
-		
-		try {
-			geneIDQ = new GeneID(GeneID.IDTYPE_GENEID, genUniQ, taxIDQ);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		if (genUniQ != null && !genUniQ.equals("") && !genUniQ.equals("0")) {
-			this.queryID = geneIDQ.getGeneUniID();
-			this.queryTax = geneIDQ.getTaxID();
-		}
-		/////////////////////////////////////////////////////////////////////////////
-		try {
-			geneIDS = new GeneID(GeneID.IDTYPE_GENEID, genUniS, taxIDS);
-		} catch (Exception e) {
-			geneIDS = new GeneID(GeneID.IDTYPE_UNIID, genUniS, taxIDS);
-		}
-		
-		if (genUniS != null && !genUniS.equals("") && !genUniS.equals("0")) {
-			this.subjectID = geneIDS.getGeneUniID();
-			this.subjectTax = geneIDS.getTaxID();
-			this.subjectTab = geneIDS.getIDtype();
-		}
-	}
-	
 	public GeneID getGeneIDQ() {
+		if (geneIDQ == null) {
+			geneIDQ = new GeneID(queryIDtype, queryID, queryTax);
+		}
 		return geneIDQ;
 	}
+	
 	public GeneID getGeneIDS() {
+		if (geneIDS == null) {
+			geneIDS = new GeneID(subjectIDtype, subjectID, subjectTax);
+		}
 		return geneIDS;
 	}
 	/**
@@ -161,52 +136,16 @@ public class BlastInfo implements Comparable<BlastInfo> {
 		this.identities = identities;
 	}
 	/**
-	 * 两个一起设定比较方便
-	 * @param queryDBInfo
-	 * @param subDBInfo
-	 */
-	public void setQueryDB_SubDB(DBInfo queryDBInfo, DBInfo subDBInfo) {
-		this.queryDB = queryDBInfo;
-		this.subjectDB = subDBInfo;
-	}
-	/**
-	 * 设置查找的序列ID
-	 */
-	public void setQueryID(String queryID) {
-		this.queryID=queryID.trim();
-	}
-	/**
 	 * 设置搜到的序列ID
 	 */
 	public String getQueryID() {
 		return this.queryID.trim();
-	}
-///////////////////////////////////////////////////////////////////////////////////
-	/**
-	 * 设置查找序列的物种
-	 */
-	public void setQueryTax(int queryTax) {
-		this.queryTax=queryTax;
 	}
 	/**
 	 * 设置查找序列的物种
 	 */
 	public int getQueryTax() {
 		return this.queryTax;
-	}
-///////////////////////////////////////////////////////////////////////////////////
-	/**
-	 * 获得查找序列的来源，譬如Agilent
-	 */
-	public DBInfo getQueryDB() {
-		return queryDB;
-	}
-///////////////////////////////////////////////////////////////////////////////////
-	/**
-	 * 设置Blast搜索到的序列的genUniID
-	 */
-	public void setSubjectID(String subjectID) {
-		this.subjectID=subjectID;
 	}
 
 	/**
@@ -215,89 +154,43 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	public String getSubjectID() {
 		return this.subjectID;
 	}
-///////////////////////////////////////////////////////////////////////////////////
-	/**
-	 * 设置Blast搜索到的序列的物种
-	 */
-	public void setSubjectTax(int subjectTax) {
-		this.subjectTax=subjectTax;
-	}
+
 	/**
 	 * 获得Blast搜索到的序列的物种
 	 */
 	public int getSubjectTax() {
 		return this.subjectTax;
 	}
-///////////////////////////////////////////////////////////////////////////////////
-	/** 获得Blast搜索到的序列的来源，如agilent */
-	public DBInfo getSubjecttDB() {
-		return subjectDB;
-	}
-///////////////////////////////////////////////////////////////////////////////////
-	/**
-	 * 设置查找的相似度,初值为0
-	 */
-	public void setIdentities(double identities) {
-		this.identities=identities;
-	}
+
 	/**
 	 * 设置查找的相似度,初值为0
 	 */
 	public double getIdentities() {
 		return this.identities;
 	}
-///////////////////////////////////////////////////////////////////////////////////
-	/**
-	 * 设置查找的evalue，初值为100
-	 */
-	public void setEvalue(double evalue) {
-		this.evalue=evalue;
-	}
+
 	/**
 	 * 获得查找的evalue，初值为100
 	 */
 	public double getEvalue() {
 		return this.evalue;
 	}
-///////////////////////////////////////////////////////////////////////////////////
-	/**
-	 * 设置查找的日期
-	 */
-	public void setBlastDate(String blastDate) {
-		this.blastDate=blastDate;
-	}
+
 	/**
 	 * 获得查找的日期
 	 */
 	public String getBlastDate() {
 		return this.blastDate;
 	}
-///////////////////////////////////////////////////////////////////////////////////
-	public void setAlignLen(int alignLen) {
-		this.alignLen = alignLen;
-	}
+
 	public int getAlignLen() {
 		return alignLen;
 	}
-	public void setScore(double score) {
-		this.score = score;
-	}
+
 	public double getScore() {
 		return score;
 	}
-	
-	/**
-	 * 设置blast得到的数据是基于哪个表的，有NCBIID和UniprotID两个选择
-	 */
-	public void setSubTab(int subjectTab) {
-		this.subjectTab = subjectTab;
-	}
-	/**
-	 * 获得blast得到的数据是基于哪个表的，有NCBIID和UniprotID两个选择
-	 */
-	public int getSubTab() {
-		return this.subjectTab;
-	}
+
 	/**
 	 * 按照相似度排序
 	 * -1 表示更可信

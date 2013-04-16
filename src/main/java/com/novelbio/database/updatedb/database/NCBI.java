@@ -1,7 +1,12 @@
 package com.novelbio.database.updatedb.database;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
+import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.AGeneInfo;
 import com.novelbio.database.domain.geneanno.GeneInfo;
@@ -14,18 +19,36 @@ import com.novelbio.database.service.servgeneanno.ManageDBInfo;
  *ID转换的文件网址：ftp://ftp.ncbi.nih.gov/gene/DATA/
  */
 public class NCBI {
-	String taxID = "";
+	public static void main(String[] args) {
+		TxtReadandWrite txtRead = new TxtReadandWrite("/media/winE/Bioinformatics/DataBaseUpdate/gene2go.gz");
+		for (String string : txtRead.readlines()) {
+			String[] ss = string.split("\t");
+			if (ss.length < 7) {
+				continue;
+			}
+			String pmd = string.split("\t")[6];
+			try {
+				Integer.parseInt(pmd);
+			} catch (Exception e) {
+				if (pmd.equals("") || pmd.equals("-")) {
+					continue;
+				}
+				System.out.println(pmd);
+			}
+		}
+		txtRead.close();
+	}
+	String taxIDfile = "";
 	String gene2Acc = "";
 	String gene2Ref = "";
 	String gene2ensembl = "";
 	String geneRef2UniID = "";
 	String gene2Info = "";
 	String gene2Pub = "";
-	String goExtObo = "";
 	String gene2GO = "";
 
 	public void setTaxID(String taxID) {
-		this.taxID = taxID;
+		this.taxIDfile = taxID;
 	}
 	public void setGene2AccFile(String gen2Acc, String gene2Ref) {
 		this.gene2Acc = gen2Acc;
@@ -43,31 +66,26 @@ public class NCBI {
 	public void setGene2Pub(String gene2Pub) {
 		this.gene2Pub = gene2Pub;
 	}
-	public void setGOExtObo(String goExtObo) {
-		this.goExtObo = goExtObo;
-	}
 	public void setGene2GO(String gene2GO) {
 		this.gene2GO = gene2GO;
 	}
 	public void importFile() {
-		ImportPerLine.setTaxIDFile(taxID);
+		ImportPerLine.setTaxIDFile(taxIDfile);
 		ImportPerLine impFile = null;
 		impFile = new ImpGen2Acc();
 		impFile.setReadFromLine(2);
-//		impFile.updateFile(gene2Acc);
-//		impFile.updateFile(gene2Ref);
+		impFile.updateFile(gene2Acc);
+		impFile.updateFile(gene2Ref);
 		impFile = new ImpGen2Ensembl();
-//		impFile.setTxtWriteExcep(FileOperate.changeFileSuffix(gene2ensembl, "_failed", "txt"));
-//		impFile.updateFile(gene2ensembl);
-//		impFile = new ImpGeneRef2UniID();
-//		impFile.updateFile(geneRef2UniID);
-//		impFile = new ImpGene2Info();
-//		impFile.setTxtWriteExcep(FileOperate.changeFileSuffix(gene2Info, "_failed", "txt"));
-//		impFile.updateFile(gene2Info);
-//		impFile = new ImpGene2Pub();
-//		impFile.updateFile(gene2Pub);
-//		impFile = new ImpGOExtObo();
-//		impFile.updateFile(goExtObo);
+		impFile.setTxtWriteExcep(FileOperate.changeFileSuffix(gene2ensembl, "_failed", "txt"));
+		impFile.updateFile(gene2ensembl);
+		impFile = new ImpGeneRef2UniID();
+		impFile.updateFile(geneRef2UniID);
+		impFile = new ImpGene2Info();
+		impFile.setTxtWriteExcep(FileOperate.changeFileSuffix(gene2Info, "_failed", "txt"));
+		impFile.updateFile(gene2Info);
+		impFile = new ImpGene2Pub();
+		impFile.updateFile(gene2Pub);
 		impFile = new ImpGene2GO();
 		impFile.updateFile(gene2GO);
 	}
@@ -310,11 +328,22 @@ class ImpGene2GO extends ImportPerLine {
 		if (ss[6] == null || ss[6].equals("") || ss[6].equals("-")) {
 			geneID.addUpdateGO(ss[2], DBAccIDSource.NCBI, ss[3], null, ss[4]);
 		} else {
-			geneID.addUpdateGO(ss[2], DBAccIDSource.NCBI, ss[3], "PMID:"+ss[6], ss[4]);
+			geneID.addUpdateGO(ss[2], DBAccIDSource.NCBI, ss[3], getLsGOref(ss[6]), ss[4]);
 		}
 		geneID.setUpdateDBinfo(DBAccIDSource.NCBI, false);
 		return geneID.update(false);
 	}
+	
+	/** 这种形式：2194232|2233252|2370849|3448462 */
+	private List<String> getLsGOref(String ss6) {
+		List<String> lsResult = new ArrayList<String>();
+		String[] ss = ss6.split("\\|");
+		for (String string : ss) {
+			lsResult.add("PMID:" + string);
+		}
+		return lsResult;
+	}
+	
 	void impEnd()
 	{
 	}

@@ -55,9 +55,9 @@ public class ImportDB {
 //		importDB.updateDBinfo(dbInfo);
 //		importDB.updateSoftInfo();
 //		importDB.updateSpecies();
+		importDB.updateGODB();
 		
-		
-		importDB.updateNCBIID();
+//		importDB.updateNCBIID();
 //		importDB.updateUniprotID();
 //		importDB.updateMicroarray();
 		
@@ -93,7 +93,14 @@ public class ImportDB {
 	private void updateSoftInfo() {
 		SoftWareInfo.updateInfo(softToolsFile);
 	}
-
+	
+	private void updateGODB() {
+		AmiGO amiGO = new AmiGO();
+		amiGO.setGoExtObo(GOPath + "gene_ontology_ext.obo");
+		amiGO.setTaxIDfile(taxIDFile);
+		amiGO.importFile();
+	}
+	
 	private void updateSpecies() {
 		Species species = new Species();
 		species.setUpdateSpeciesFile(speciesFile);
@@ -123,7 +130,6 @@ public class ImportDB {
 		ncbi.setGene2Info(gene2Info);
 		ncbi.setGene2Pub(gene2Pub);
 		ncbi.setGeneRef2UniID(geneRef2UniID);
-		ncbi.setGOExtObo(goExtObo);
 		ncbi.setGene2GO(gene2GO);
 		ncbi.importFile();
 	}

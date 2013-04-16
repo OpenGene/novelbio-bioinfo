@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -33,7 +34,7 @@ public abstract class GOInfoAbs {
 	 */
 	Map<String, AGene2Go> mapGene2Gos = null;
 	
-	List<AGene2Go> lsUpdate = new ArrayList<AGene2Go>();
+	Set<AGene2Go> setUpdate = new HashSet<AGene2Go>();
 	/**
 	 * geneUniID所对应的具体GO信息
 	 * @param genUniAccID
@@ -43,6 +44,26 @@ public abstract class GOInfoAbs {
 		this.genUniAccID = genUniAccID;
 		this.taxID = taxID;
 	}
+	
+	public String getGenUniAccID() {
+		return genUniAccID;
+	}
+	
+	public void addGOinfo(GOInfoAbs goInfoAbs) {
+		for (String goID : goInfoAbs.mapGene2Gos.keySet()) {
+			AGene2Go aGene2Go = mapGene2Gos.get(goID);
+			AGene2Go aGene2GoOther = goInfoAbs.mapGene2Gos.get(goID);
+			if (aGene2Go == null) {
+				mapGene2Gos.put(goID, aGene2GoOther);
+				setUpdate.add(aGene2GoOther);
+			} else {
+				if (aGene2Go.addInfo(aGene2GoOther)) {
+					setUpdate.add(aGene2GoOther);
+				}
+			}
+		}
+	}
+	
 	/**
 	 * 需要设定lsAGene2Gos
 	 */
@@ -92,7 +113,7 @@ public abstract class GOInfoAbs {
 	}
 	
 	public void addGOid(int taxID, String GOID, DBAccIDSource GOdatabase, String GOevidence,
-			String GORef, String gOQualifiy) {
+			List<String> lsGORef, String goQualifiy) {
 		if (GOID == null) {
 			return;
 		}
@@ -105,21 +126,23 @@ public abstract class GOInfoAbs {
 		gene2Go.setTaxID(taxID);
 		gene2Go.addEvidence(GOevidence);
 		gene2Go.addDBName(GOdatabase.toString());
-		gene2Go.setQualifier(gOQualifiy);
-		gene2Go.addReference(GORef);
+		gene2Go.setQualifier(goQualifiy);
+		gene2Go.addReference(lsGORef);
 		if (mapGene2Gos.containsKey(GOID)) {
 			AGene2Go aGene2Go = mapGene2Gos.get(GOID);
 			if (aGene2Go.addInfo(gene2Go)) {
-				lsUpdate.add(aGene2Go);
+				setUpdate.add(aGene2Go);
 			}
 		} else {
-			lsUpdate.add(gene2Go);
+			gene2Go.setGeneUniID(getGenUniAccID());
+			setUpdate.add(gene2Go);
+			mapGene2Gos.put(GOID, gene2Go);
 		}
 	}
 	protected abstract AGene2Go createGene2Go();
 	
 	public void update() {
-		for (AGene2Go aGene2Go : lsUpdate) {
+		for (AGene2Go aGene2Go : setUpdate) {
 			save(aGene2Go);
 		}
 	}

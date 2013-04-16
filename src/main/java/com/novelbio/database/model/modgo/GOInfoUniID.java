@@ -1,18 +1,15 @@
 package com.novelbio.database.model.modgo;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import com.novelbio.database.domain.geneanno.AGene2Go;
-import com.novelbio.database.domain.geneanno.Gene2Go;
 import com.novelbio.database.domain.geneanno.UniGene2Go;
 import com.novelbio.database.service.servgeneanno.ManageUniGene2Go;
 
-public class GOInfoUniID extends GOInfoAbs{
+public class GOInfoUniID extends GOInfoAbs {
 	private static Logger logger = Logger.getLogger(GOInfoUniID.class);
 	ManageUniGene2Go servUniGene2Go = new ManageUniGene2Go();
 	
@@ -27,6 +24,9 @@ public class GOInfoUniID extends GOInfoAbs{
 			return;
 		}
 		mapGene2Gos = new HashMap<String, AGene2Go>();
+		if (genUniAccID == null || genUniAccID.equals("")) {
+			return;
+		}
 		List<UniGene2Go>  lstmp = servUniGene2Go.queryLsGene2Go(genUniAccID, taxID);
 		if (lstmp == null || lstmp.size() == 0) {
 			return;

@@ -225,9 +225,9 @@ public class Go2Term implements Cloneable {
 	 */
 	public boolean addInfo(Go2Term go2Term) {
 		boolean update = false;
-		update = update || AGeneInfo.addInfo(setQueryGoID, go2Term.setQueryGoID);
-		update = update || AGeneInfo.addInfo(mapChildGO2Relate, go2Term.mapChildGO2Relate);
-		update = update || AGeneInfo.addInfo(mapParentGO2Relate, go2Term.mapParentGO2Relate);
+		update = AGeneInfo.addInfo(setQueryGoID, go2Term.setQueryGoID) || update;
+		update = AGeneInfo.addInfo(mapChildGO2Relate, go2Term.mapChildGO2Relate) || update;
+		update = AGeneInfo.addInfo(mapParentGO2Relate, go2Term.mapParentGO2Relate) || update;
 		
 		if (go2Term.goType != null && !go2Term.goType.equals(goType)) {
 			goType = go2Term.goType;

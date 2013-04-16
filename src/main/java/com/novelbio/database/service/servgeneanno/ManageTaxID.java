@@ -60,7 +60,7 @@ public class ManageTaxID {
 		return mapTaxID2TaxInfo.get(taxID);
 	}
 	/**
-	 * @param taxID 0 则返回null
+	 * @param taxIDfile 0 则返回null
 	 * @return
 	 */
 	public TaxInfo queryAbbr(String abbr) {

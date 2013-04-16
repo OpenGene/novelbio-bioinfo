@@ -218,11 +218,11 @@ public abstract class AGeneInfo {
 				update = true;
 			}
 		}
-		update = update || addInfo(setDbXrefs, geneInfo.setDbXrefs);
-		update = update || addInfo(setFullNameNome, geneInfo.setFullNameNome);
-		update = update || addInfo(setPubmedIDs, geneInfo.setPubmedIDs);
-		update = update || addInfo(setSymNome, geneInfo.setSymNome);
-		update = update || addInfo(setSynonyms, geneInfo.setSynonyms);
+		update = addInfo(setDbXrefs, geneInfo.setDbXrefs) || update;
+		update = addInfo(setFullNameNome, geneInfo.setFullNameNome) || update;
+		update = addInfo(setPubmedIDs, geneInfo.setPubmedIDs) || update;
+		update = addInfo(setSymNome, geneInfo.setSymNome) || update;
+		update = addInfo(setSynonyms, geneInfo.setSynonyms) || update;
 		return update;
 	}
 	/** 浅层复制，不复制geneID */

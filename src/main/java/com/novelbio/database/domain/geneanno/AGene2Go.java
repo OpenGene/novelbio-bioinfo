@@ -1,6 +1,7 @@
 package com.novelbio.database.domain.geneanno;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -31,7 +32,7 @@ public abstract class AGene2Go {
 	private Set<String> setEvid = new HashSet<String>();
 	private String qualifier;
 	private Set<String> setPubID = new HashSet<String>();
-	private Set<DBInfo> setDB = new HashSet<DBInfo>();
+	private Set<String> setDB = new HashSet<String>();
 	
 	@Transient
 	ManageGo2Term manageGo2Term = new ManageGo2Term();
@@ -128,22 +129,35 @@ public abstract class AGene2Go {
 	}
 
 	public Set<DBInfo> getDataBase() {
-		return setDB;
+		Set<DBInfo> setDbInfos = new HashSet<DBInfo>();
+		if (setDB != null) {
+			for (String dbInfoID : setDB) {
+				setDbInfos.add(manageDBInfo.findOne(dbInfoID));
+			}
+		}
+		return setDbInfos;
 	}
 	
 	public void addDBName(String dbName) {
 		DBInfo dbInfo = manageDBInfo.findByDBname(dbName);
 		if (dbInfo != null) {
-			setDB.add(dbInfo);
+			setDB.add(dbInfo.getDbInfoID());
 		}
 	}
 	
 	public void addDBID(DBInfo dbInfo) {
 		if (dbInfo != null) {
-			this.setDB.add(dbInfo);
+			this.setDB.add(dbInfo.getDbInfoID());
 		}
 	}
- 
+	public void addReference(List<String> lsReference) {
+		if (lsReference == null) {
+			return;
+		}
+		for (String reference : lsReference) {
+			addReference(reference);
+		}
+	}
 	public void addReference(String reference) {
 		if (reference != null && !reference.equals("")) {
 			setPubID.add(reference);
@@ -160,10 +174,10 @@ public abstract class AGene2Go {
 	 */
 	public boolean addInfo(AGene2Go gene2Go) {
 		boolean update = false;
-		update = update || GeneInfo.addInfo(setDB, gene2Go.setDB);
-		update = update || GeneInfo.addInfo(setEvid, gene2Go.setEvid);
-		update = update || GeneInfo.addInfo(setPubID, gene2Go.setPubID);
-		if ((qualifier == null || qualifier.equals("")) && gene2Go.qualifier != null && !gene2Go.qualifier.equals("") && !qualifier.equals("-")) {
+		update = GeneInfo.addInfo(setDB, gene2Go.setDB) || update;
+		update = GeneInfo.addInfo(setEvid, gene2Go.setEvid) || update;
+		update = GeneInfo.addInfo(setPubID, gene2Go.setPubID) || update;
+		if (gene2Go.qualifier != null && !gene2Go.qualifier.equals("") && !qualifier.equals("-")) {
 			qualifier = gene2Go.qualifier;
 			update = true;
 		}

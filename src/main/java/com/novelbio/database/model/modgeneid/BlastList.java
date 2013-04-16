@@ -12,6 +12,7 @@ import com.novelbio.database.service.servgeneanno.ManageBlastInfo;
 
 /** 处理blast信息的类 */
 public class BlastList {
+	int idType;
 	String genUniID;
 	int taxID;
 	double evalueCutoff = 1e-10;
@@ -32,14 +33,24 @@ public class BlastList {
 	 * @param genUniID
 	 * @param taxID 物种ID不能为0
 	 */
-	public BlastList(String genUniID, int taxID) {
+	public BlastList(int idType, String genUniID, int taxID) {
+		this.idType = idType;
 		this.genUniID = genUniID;
 		this.taxID = taxID;
 		searchBlastInfo();
 	}
+	
+	public String getGenUniID() {
+		return genUniID;
+	}
+	
+	public int getIdType() {
+		return idType;
+	}
+	
 	/**
 	 * 设定需要比对到的物种，null或者不输入表示选择全体
-	 * @param taxID
+	 * @param taxIDfile
 	 */
 	public void setTaxID(List<Integer> lsStaxID) {
 		this.lsSTaxID.clear();
@@ -104,8 +115,7 @@ public class BlastList {
 	private GeneID getBlastGeneID(BlastInfo blastInfo) {
 		if (blastInfo == null) return null;
 		
-		int idType = blastInfo.getSubTab();
-		GeneID geneID = new GeneID(idType, blastInfo.getSubjectID(), blastInfo.getSubjectTax());
+		GeneID geneID = blastInfo.getGeneIDS();
 		return geneID;
 	}
 	
