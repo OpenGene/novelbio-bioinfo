@@ -5,13 +5,10 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.hg.doc.fa;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.model.modgeneid.GeneIDInt;
 
 /**
  * <b>导入数据库的时候数据库中必须已经存在了subjectID</b><br>

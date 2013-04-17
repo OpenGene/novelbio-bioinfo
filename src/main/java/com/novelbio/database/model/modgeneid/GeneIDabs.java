@@ -2,12 +2,10 @@ package com.novelbio.database.model.modgeneid;
 
 import java.io.EOFException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -28,7 +26,7 @@ import com.novelbio.database.service.servgeneanno.ManageGeneInfo;
 import com.novelbio.database.service.servgeneanno.ManageNCBIUniID;
 
 public class GeneIDabs implements GeneIDInt {
-	private static Logger logger = Logger.getLogger(GeneIDabs.class);
+	private static final Logger logger = Logger.getLogger(GeneIDabs.class);
 	static HashMap<Integer, String> hashDBtype = new HashMap<Integer, String>();
 	
 	/** 是否没有在数据库中查询到 */
