@@ -54,11 +54,16 @@ public abstract class GOInfoAbs {
 			AGene2Go aGene2Go = mapGene2Gos.get(goID);
 			AGene2Go aGene2GoOther = goInfoAbs.mapGene2Gos.get(goID);
 			if (aGene2Go == null) {
-				mapGene2Gos.put(goID, aGene2GoOther);
-				setUpdate.add(aGene2GoOther);
+				aGene2Go = createGene2Go();
+				aGene2Go.copyInfo(aGene2GoOther);
+				aGene2Go.setGeneUniID(genUniAccID);
+				aGene2Go.setTaxID(taxID);
+				
+				mapGene2Gos.put(goID, aGene2Go);
+				setUpdate.add(aGene2Go);
 			} else {
 				if (aGene2Go.addInfo(aGene2GoOther)) {
-					setUpdate.add(aGene2GoOther);
+					setUpdate.add(aGene2Go);
 				}
 			}
 		}

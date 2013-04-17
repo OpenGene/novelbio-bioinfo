@@ -9,6 +9,7 @@ import junit.framework.TestCase;
 
 import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.AgeneUniID;
+import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.domain.geneanno.Gene2Go;
 import com.novelbio.database.domain.geneanno.GeneInfo;
@@ -64,7 +65,8 @@ public class TestGeneID extends TestCase {
 	}
 	@Test
 	public void test() {
-		testGoInsert();
+//		testGoInsert();
+		testBlastInsert();
 	}
 		
 	
@@ -90,6 +92,13 @@ public class TestGeneID extends TestCase {
 		ageneUniID.setTaxID(taxID);
 		manageNCBIUniID.saveNCBIUniID(ageneUniID);
 		
+		ageneUniID = AgeneUniID.creatAgeneUniID(GeneID.IDTYPE_GENEID);
+		ageneUniID.setAccID("Test6");
+		ageneUniID.setDataBaseInfo(DBAccIDSource.EMBL.name());
+		ageneUniID.setGenUniID("12345678904");
+		ageneUniID.setTaxID(taxID + 1);
+		manageNCBIUniID.saveNCBIUniID(ageneUniID);
+		
 		AgeneUniID ageneUniIDGet = manageNCBIUniID.findByGeneUniIDAndAccIDAndTaxID(GeneID.IDTYPE_GENEID, "1234567890", "Test1", taxID);
 		assertEquals("Test1", ageneUniIDGet.getAccID());
 		assertEquals("1234567890", ageneUniIDGet.getGenUniID());
@@ -104,6 +113,11 @@ public class TestGeneID extends TestCase {
 		assertEquals("Test2", ageneUniIDGet.getAccID());
 		assertEquals("12345678903", ageneUniIDGet.getGenUniID());
 		assertEquals(taxID, ageneUniIDGet.getTaxID());
+		
+		ageneUniIDGet = manageNCBIUniID.findByGeneUniIDAndAccIDAndTaxID(GeneID.IDTYPE_GENEID, "12345678904", "Test2", taxID + 1);
+		assertEquals("Test6", ageneUniIDGet.getAccID());
+		assertEquals("12345678904", ageneUniIDGet.getGenUniID());
+		assertEquals(taxID + 1, ageneUniIDGet.getTaxID());
 	}
 	
 	private void testGeneIDInsert() {
@@ -169,7 +183,7 @@ public class TestGeneID extends TestCase {
 	}
 	
 	private void testGoInsert() {
-		GeneID geneID = new GeneID("eee", taxID);
+		GeneID geneID = new GeneID("fseresr", taxID);
 		geneID.addUpdateRefAccID("Test2");
 		
 		geneID.addUpdateRefAccID("test1");
@@ -188,8 +202,8 @@ public class TestGeneID extends TestCase {
 		GeneID geneID2 = new GeneID("Test5", taxID);
 		assertEquals(1, geneID2.getGene2GO(GOtype.BP).size());
 		assertEquals("NOT", geneID2.getGene2GO(GOtype.BP).get(0).getQualifier());
-		assertEquals(1, geneID2.getGene2GO(GOtype.BP).get(0).getEvidence().size());
-		assertEquals(1, geneID2.getGene2GO(GOtype.BP).get(0).getReference().size());
+		assertEquals(2, geneID2.getGene2GO(GOtype.BP).get(0).getEvidence().size());
+		assertEquals(3, geneID2.getGene2GO(GOtype.BP).get(0).getReference().size());
 		assertEquals("PMID:1234", geneID2.getGene2GO(GOtype.BP).get(0).getReference().iterator().next());
 		
 		lsList = new ArrayList<String>();
@@ -209,50 +223,76 @@ public class TestGeneID extends TestCase {
 		assertEquals("AAAA", geneID2.getGene2GO(GOtype.BP).get(0).getQualifier());
 		assertEquals(2, geneID2.getGene2GO(GOtype.BP).get(0).getEvidence().size());
 		assertEquals(3, geneID2.getGene2GO(GOtype.BP).get(0).getReference().size());
+		
+		
+		lsList = new ArrayList<String>();
+		lsList.add("PMID:34564");
+		lsList.add("PMID:45674");
+		geneID = new GeneID("Test5", taxID);		
+		geneID.addUpdateGO("GO:2000633", DBAccIDSource.EMBL, "ISA", lsList, "AA2A");
+		assertEquals(2, geneID.getGene2GO(GOtype.BP).size());
+		assertEquals("AA2A", geneID.getGene2GO(GOtype.BP).get(0).getQualifier());
+		assertEquals("AAAA", geneID.getGene2GO(GOtype.BP).get(1).getQualifier());
+		assertEquals(1, geneID.getGene2GO(GOtype.BP).get(0).getEvidence().size());
+		assertEquals(2, geneID.getGene2GO(GOtype.BP).get(0).getReference().size());
+		
+		geneID.update(false);
+		
+		geneID2 = new GeneID("Test5", taxID);
+		assertEquals(2, geneID.getGene2GO(GOtype.BP).size());
+		assertEquals("AA2A", geneID.getGene2GO(GOtype.BP).get(0).getQualifier());
+		assertEquals("AAAA", geneID.getGene2GO(GOtype.BP).get(1).getQualifier());
+		assertEquals(1, geneID.getGene2GO(GOtype.BP).get(0).getEvidence().size());
+		assertEquals(2, geneID.getGene2GO(GOtype.BP).get(0).getReference().size());
 	}
 	
 	private void testBlastInsert() {
-		GeneID geneID = new GeneID("ffff", taxID);
+		GeneID geneID = new GeneID("fsefe", taxID);
 		geneID.addUpdateRefAccID("Test2");
 		
 		geneID.addUpdateRefAccID("test1");
 		geneID.setUpdateAccID("Test5");
 		geneID.setUpdateDBinfo(DBAccIDSource.EMBL.name(), false);
+		BlastInfo blastInfo = new BlastInfo(123456, 123456, "fsef222e	test2	31.85	157	95	3	133	603	2	146	6e-23	 103");
 		geneID.addUpdateBlastInfo(blastInfo);
-		List<String> lsList = new ArrayList<String>();
-		lsList.add("PMID:1234");
-
-		assertEquals(1, geneID.getGene2GO(GOtype.BP).size());
-		assertEquals("NOT", geneID.getGene2GO(GOtype.BP).get(0).getQualifier());
-		assertEquals(1, geneID.getGene2GO(GOtype.BP).get(0).getEvidence().size());
-		assertEquals(1, geneID.getGene2GO(GOtype.BP).get(0).getReference().size());
-		assertEquals("PMID:1234", geneID.getGene2GO(GOtype.BP).get(0).getReference().iterator().next());
+		
+		assertEquals("Test5", blastInfo.getQueryID());
+		assertEquals(1, geneID.getLsBlastGeneID().size());
+		assertEquals("Test2", geneID.getLsBlastGeneID().get(0).getAccID());
+	
 		geneID.update(false);
 		
-		GeneID geneID2 = new GeneID("Test5", taxID);
-		assertEquals(1, geneID2.getGene2GO(GOtype.BP).size());
-		assertEquals("NOT", geneID2.getGene2GO(GOtype.BP).get(0).getQualifier());
-		assertEquals(1, geneID2.getGene2GO(GOtype.BP).get(0).getEvidence().size());
-		assertEquals(1, geneID2.getGene2GO(GOtype.BP).get(0).getReference().size());
-		assertEquals("PMID:1234", geneID2.getGene2GO(GOtype.BP).get(0).getReference().iterator().next());
+		assertEquals("1234567890", blastInfo.getQueryID());
+		assertEquals(1, geneID.getLsBlastGeneID().size());
+		assertEquals("Test2", geneID.getLsBlastGeneID().get(0).getAccID());
 		
-		lsList = new ArrayList<String>();
-		lsList.add("PMID:3456");
-		lsList.add("PMID:4567");
-		geneID = new GeneID("Test5", taxID);		
-		geneID.addUpdateGO("GO:0000105", DBAccIDSource.EMBL, "ISA", lsList, "AAAA");
-		assertEquals(1, geneID.getGene2GO(GOtype.BP).size());
-		assertEquals("AAAA", geneID.getGene2GO(GOtype.BP).get(0).getQualifier());
-		assertEquals(2, geneID.getGene2GO(GOtype.BP).get(0).getEvidence().size());
-		assertEquals(3, geneID.getGene2GO(GOtype.BP).get(0).getReference().size());
+		geneID = new GeneID("Test5", taxID);
+		assertEquals(1, geneID.getLsBlastGeneID().size());
+		assertEquals("12345678903", geneID.getLsBlastGeneID().get(0).getGeneUniID());
+		
+		
+		blastInfo = new BlastInfo(123456, 123456, "fsef222e	test2	31.85	159	95	3	133	603	2	146	6e-123	 103");
+		geneID.addUpdateBlastInfo(blastInfo);
+		assertEquals("1234567890", blastInfo.getQueryID());
+		assertEquals(6e-123, geneID.getLsBlastInfos().get(0).getEvalue());
+		
+		geneID.update(false);
+		geneID.addUpdateBlastInfo(blastInfo);
+		assertEquals("1234567890", blastInfo.getQueryID());
+		assertEquals(6e-123, geneID.getLsBlastInfos().get(0).getEvalue());
+		
+		
+		blastInfo = new BlastInfo(123456, 123457, "fsef222e	test6	31.85	159	95	3	133	603	2	146	6e-123	 103");
+		geneID.addUpdateBlastInfo(blastInfo);
+		assertEquals("12345678904", geneID.getLsBlastInfos().get(0).getSubjectID());
+		assertEquals(6e-123, geneID.getLsBlastInfos().get(1).getEvalue());
 		
 		geneID.update(false);
 		
-		geneID2 = new GeneID("Test5", taxID);
-		assertEquals(1, geneID2.getGene2GO(GOtype.BP).size());
-		assertEquals("AAAA", geneID2.getGene2GO(GOtype.BP).get(0).getQualifier());
-		assertEquals(2, geneID2.getGene2GO(GOtype.BP).get(0).getEvidence().size());
-		assertEquals(3, geneID2.getGene2GO(GOtype.BP).get(0).getReference().size());
+		geneID = new GeneID("Test5", taxID);
+		assertEquals("12345678904",geneID.getLsBlastInfos().get(0).getSubjectID());
+		assertEquals(6e-123, geneID.getLsBlastInfos().get(0).getEvalue());
+		
 	}
 	
 	

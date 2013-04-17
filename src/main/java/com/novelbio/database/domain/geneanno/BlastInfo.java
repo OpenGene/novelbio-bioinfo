@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import com.hg.doc.fa;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.model.modgeneid.GeneIDInt;
 
 /**
  * <b>导入数据库的时候数据库中必须已经存在了subjectID</b><br>
@@ -34,16 +35,14 @@ public class BlastInfo implements Comparable<BlastInfo> {
 
 	private double identities = 0;
 	private double evalue = 100;
-	private double score = 0;
+	private int score = 0;
 	private int alignLen = 0;
 	
 	protected int queryTax;
 	protected int queryIDtype;
 	protected int subjectTax;
 	private int subjectIDtype;
-	
-	@Transient
-	GeneID geneIDQ = null;
+
 	@Transient
 	GeneID geneIDS = null;
 	
@@ -72,6 +71,7 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	public BlastInfo(int taxIDQ, int taxIDS, boolean isgeneID, String blastStr) {
 		setDate();
 		String[] blastInfo = blastStr.split("\t");
+		GeneID geneIDQ;
 		if (!isgeneID) {
 			geneIDQ = new GeneID(blastInfo[0], taxIDQ);
 			geneIDS = new GeneID(blastInfo[1], taxIDS);
@@ -93,13 +93,30 @@ public class BlastInfo implements Comparable<BlastInfo> {
 		this.subjectTax = geneIDS.getTaxID();
 		this.subjectIDtype = geneIDS.getIDtype();
 		
-		this.alignLen = Integer.parseInt(blastInfo[3]);
-		this.evalue = Double.parseDouble(blastInfo[10]);
-		this.identities = Double.parseDouble(blastInfo[2]);
-		this.score = Integer.parseInt(blastInfo[11]);
+		this.alignLen = Integer.parseInt(blastInfo[3].trim());
+		this.evalue = Double.parseDouble(blastInfo[10].trim());
+		this.identities = Double.parseDouble(blastInfo[2].trim());
+		this.score = Integer.parseInt(blastInfo[11].trim());
 	}
 	
-	
+	/**
+	 * 
+	 * 仅仅获得geneIDQ的geneUniID, taxID ,IDtype
+	 * @param queryID
+	 * @param queryTax
+	 * @param queryIDtype
+	 */
+	public void setGeneIDQ(String queryID, int queryTax, int queryIDtype) {
+		this.queryID = queryID;
+		this.queryTax = queryTax;
+		this.queryIDtype = queryIDtype;
+	}
+	public void setGeneIDS(GeneID geneIDS) {
+		this.geneIDS = geneIDS;
+		this.subjectID = geneIDS.getGeneUniID();
+		this.subjectTax = geneIDS.getTaxID();
+		this.subjectIDtype = geneIDS.getIDtype();
+	}
 	/** mongodb中的id */
 	public void setId(String id) {
 		this.id = id;
@@ -113,19 +130,13 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	     blastDate = DateUtil.getDate(); //将日期时间格式化
 	}
 	
-	public GeneID getGeneIDQ() {
-		if (geneIDQ == null) {
-			geneIDQ = new GeneID(queryIDtype, queryID, queryTax);
-		}
-		return geneIDQ;
-	}
-	
 	public GeneID getGeneIDS() {
 		if (geneIDS == null) {
 			geneIDS = new GeneID(subjectIDtype, subjectID, subjectTax);
 		}
 		return geneIDS;
 	}
+	
 	/**
 	 * 两个一起设定比较方便
 	 * @param evalue
@@ -135,19 +146,21 @@ public class BlastInfo implements Comparable<BlastInfo> {
 		this.evalue = evalue;
 		this.identities = identities;
 	}
-	/**
-	 * 设置搜到的序列ID
-	 */
+	
+	/** 设置搜到的序列ID */
 	public String getQueryID() {
 		return this.queryID.trim();
 	}
-	/**
-	 * 设置查找序列的物种
-	 */
+	
+	/** 设置查找序列的物种 */
 	public int getQueryTax() {
 		return this.queryTax;
 	}
-
+	
+	public int getQueryIDtype() {
+		return queryIDtype;
+	}
+	
 	/**
 	 * 获得Blast搜索到的序列的ID
 	 */
@@ -161,7 +174,11 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	public int getSubjectTax() {
 		return this.subjectTax;
 	}
-
+	
+	public int getSubjectIDtype() {
+		return subjectIDtype;
+	}
+	
 	/**
 	 * 设置查找的相似度,初值为0
 	 */
@@ -201,8 +218,8 @@ public class BlastInfo implements Comparable<BlastInfo> {
 		Double evalueO = o.getEvalue();
 		Double identityThis = identities;
 		Double identityO = o.identities;
-		Double scoreThis = score;
-		Double scoreO = o.score;
+		Integer scoreThis = score;
+		Integer scoreO = o.score;
 		int result = -scoreThis.compareTo(scoreO);
 		if (result == 0) {
 			result = -identityThis.compareTo(identityO);

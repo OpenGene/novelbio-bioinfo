@@ -24,7 +24,8 @@ public class BlastList {
 	ManageBlastInfo manageBlastInfo = new ManageBlastInfo();
 
 	Map<Integer, Map<String, BlastInfo>> mapSubTaxID2_Key2BlastInfo = new HashMap<Integer, Map<String,BlastInfo>>();
-	List<BlastInfo> lsUpdate = new ArrayList<BlastInfo>();
+	/** 待升级的BlastInfo */
+	Map<String, BlastInfo> mapUpdate = new HashMap<String, BlastInfo>();
 	/** 比对到的geneID */
 	List<GeneID> lsBlastGeneID;
 	
@@ -43,7 +44,12 @@ public class BlastList {
 	public String getGenUniID() {
 		return genUniID;
 	}
-	
+	protected void setGeneInfo(int idType, String genUniID, int taxID) {
+		this.idType = idType;
+		this.genUniID = genUniID;
+		this.taxID = taxID;
+		searchBlastInfo();
+	}
 	public int getIdType() {
 		return idType;
 	}
@@ -119,6 +125,14 @@ public class BlastList {
 		return geneID;
 	}
 	
+	protected List<BlastInfo> getBlastInfoAll() {
+		List<BlastInfo> lsResult = new ArrayList<BlastInfo>();
+		for (Map<String, BlastInfo> mapKey2BlastInfo : mapSubTaxID2_Key2BlastInfo.values()) {
+			lsResult.addAll(mapKey2BlastInfo.values());
+		}
+ 		return lsResult;
+	}
+	
 	public List<BlastInfo> getBlastInfo() {
 		List<BlastInfo> lsResult = new ArrayList<BlastInfo>();
 		if (lsSTaxID.size() == 0) {
@@ -158,15 +172,19 @@ public class BlastList {
 	}
 	
 	protected void searchBlastInfo() {
+		mapSubTaxID2_Key2BlastInfo.clear();
 		List<BlastInfo> lsBlastInfos = manageBlastInfo.queryBlastInfoLs(genUniID, taxID);
-		if (lsBlastInfos == null || lsBlastInfos.size() == 0) {
-			return;
-		}
 		
 		for (BlastInfo blastInfo : lsBlastInfos) {
 			int taxID = blastInfo.getSubjectTax();
 			Map<String, BlastInfo> mapKey2BlastInfo = getMapKey2BlastInfo(taxID);
 			mapKey2BlastInfo.put(getKey(blastInfo), blastInfo);
+		}
+		//重新设定需要升级的BlastInfo
+		List<BlastInfo> lsUpdate = new ArrayList<BlastInfo>(mapUpdate.values());
+		mapUpdate.clear();
+		for (BlastInfo blastInfo : lsUpdate) {
+			addBlastInfoNew(blastInfo);
 		}
 	}
 	
@@ -189,32 +207,32 @@ public class BlastList {
 	 * 添加新的，需要升级的BlastInfo
 	 * @param blastInfo
 	 */
-	public void addBlastInfo(BlastInfo blastInfo) {
-		Map<String, BlastInfo> mapKey2BlastInfo = mapSubTaxID2_Key2BlastInfo.get(blastInfo.getQueryTax());
+	public void addBlastInfoNew(BlastInfo blastInfo) {
+		blastInfo.setGeneIDQ(genUniID, taxID, idType);
+		Map<String, BlastInfo> mapKey2BlastInfo = mapSubTaxID2_Key2BlastInfo.get(blastInfo.getSubjectTax());
 		if (mapKey2BlastInfo != null && mapKey2BlastInfo.containsKey(getKey(blastInfo))) {
 			BlastInfo blastInfoSub = mapKey2BlastInfo.get(getKey(blastInfo));
 			if (blastInfo.compareTo(blastInfoSub) == -1) {
 				blastInfo.setId(blastInfoSub.getId());
 				mapKey2BlastInfo.put(getKey(blastInfo), blastInfo);
-				lsUpdate.add(blastInfo);
+				mapUpdate.put(getKey(blastInfo), blastInfo);
 			}
 		} else {
-			mapKey2BlastInfo = getMapKey2BlastInfo(blastInfo.getQueryTax());
+			mapKey2BlastInfo = getMapKey2BlastInfo(blastInfo.getSubjectTax());
 			mapKey2BlastInfo.put(getKey(blastInfo), blastInfo);
-			lsUpdate.add(blastInfo);
+			mapUpdate.put(getKey(blastInfo), blastInfo);
 		}
 	}
 	
 	public void update() {
-		for (BlastInfo blastInfo : lsUpdate) {
+		for (BlastInfo blastInfo : mapUpdate.values()) {
 			manageBlastInfo.save(blastInfo);
 		}
-		lsUpdate.clear();
+		mapUpdate.clear();
 	}
 	
 	private static String getKey(BlastInfo blastInfo) {
-		String key = blastInfo.getQueryID() + SepSign.SEP_INFO + blastInfo.getQueryTax() + 
-				SepSign.SEP_ID + blastInfo.getSubjectID() + SepSign.SEP_INFO + blastInfo.getSubjectTax();
+		String key = blastInfo.getSubjectID() + SepSign.SEP_INFO + blastInfo.getSubjectTax();
 		return key;
 	}
 	

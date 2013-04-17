@@ -58,6 +58,11 @@ public class GeneID implements GeneIDInt{
 		geneID = geneIDfactoryInt.createGeneID(ageneUniID);
 	}
 	
+	/** 可以输入一个geneIDabs */
+	protected GeneID(GeneIDInt geneid) {
+		this.geneID = geneid;
+	}
+	
 	/**
 	 * 设定初始值，会自动去数据库查找accID并，完成填充本类。
 	 * <b>如果基因的IDtype是accID，那么该基因很可能不存在，那么看下blast的相关信息，如果blast也没有，那么就不存在了</b>
