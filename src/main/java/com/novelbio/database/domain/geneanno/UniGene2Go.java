@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "unigene2go")
 @CompoundIndexes({
-    @CompoundIndex(unique = true, name = "go_tax_idx", def = "{'goID': 1, 'taxID': -1}")
+    @CompoundIndex(unique = false, name = "go_tax_idx", def = "{'goID': 1, 'taxID': -1}")
  })
 public class UniGene2Go extends AGene2Go{
 	@Indexed

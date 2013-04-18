@@ -532,10 +532,13 @@ Example:O43526-2
 			logger.error("taxID出错：" + lineContent);
 		}
 		
+
+		
 		if (!setTaxID.contains(taxID)) {
 			return true;
 		}
 		GeneID copedID = new GeneID(ss[1], taxID);
+		
 		//找到合适的表，NCBI或UniProt，并导入UniID
 		copedID.setUpdateRefAccID(ss[1],ss[2]);
 		copedID.setUpdateDBinfo(DBAccIDSource.Uniprot, false);
@@ -551,7 +554,12 @@ Example:O43526-2
 		List<String> lsRef = new ArrayList<String>();
 		lsRef.add(ss[5]);
 		copedID.addUpdateGO(ss[4], DBAccIDSource.Uniprot, ss[6], lsRef, ss[3]);
-		return copedID.update(true);
+		try {
+			return copedID.update(true);
+		} catch (Exception e) {
+			return copedID.update(true);
+		}
+	
 	}
 	
 

@@ -16,6 +16,7 @@ import com.novelbio.database.domain.geneanno.AgeneUniID;
 import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.domain.geneanno.DBInfo;
 import com.novelbio.database.domain.geneanno.GOtype;
+import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgo.GOInfoAbs;
@@ -731,6 +732,11 @@ public class GeneIDabs implements GeneIDInt {
 			uniProtID.setGenUniID(ageneUniID.getGenUniID());
 			uniProtID.setTaxID(ageneUniID.getTaxID());
 			update = uniProtID.update(overrideUpdateDBinfo);
+			if (ageneUniID instanceof NCBIID) {
+				logger.error("出错，升级的是uniprot数据库，但是该ID是NCBIID：" +
+			ageneUniID.getGenUniID() + "\t" + ageneUniID.getAccID() + "\t" + ageneUniID.getTaxID());
+			}
+			isAccID = false;
 		} else {
 			return false;
 		}

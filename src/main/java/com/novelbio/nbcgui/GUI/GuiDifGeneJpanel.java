@@ -1,8 +1,19 @@
 package com.novelbio.nbcgui.GUI;
 
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JButton;
+import javax.swing.JTextField;
 
 import com.novelbio.analysis.diffexpress.DiffExpAbs;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
@@ -10,19 +21,6 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
-
-import java.awt.Insets;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import javax.swing.JTextField;
-import javax.swing.JLabel;
 
 public class GuiDifGeneJpanel extends JPanel {
 	JScrollPaneData scrollPaneNormData;

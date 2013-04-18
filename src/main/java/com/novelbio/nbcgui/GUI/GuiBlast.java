@@ -2,6 +2,8 @@ package com.novelbio.nbcgui.GUI;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -16,6 +18,7 @@ import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JComboBoxData;
+import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.base.gui.JTextFieldData;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.database.updatedb.database.BlastUp2DB;
@@ -28,20 +31,19 @@ public class GuiBlast extends JPanel implements GuiNeedOpenFile{
 	private JTextField textResultFile;
 	
 	private BlastNBC blastNBC = new BlastNBC();
-	private JTextField textUpDateBlast;
 	
 	GUIFileOpen fileOpen = new GUIFileOpen();
-	private JTextField textQDBinfo;
-	private JTextField textSDBinfo;
 	JCheckBox chbRefStyle = null;
-	JComboBoxData<Species> cmbQSpecies = null;
-	JComboBoxData<Species> cmbSSpecies = null;
+
 	JComboBoxData<BlastType> combBlastType = null;
 	JComboBoxData<Integer> combResultType = null;
 	
+	JCheckBox chckbxSavetodb;
+	JScrollPaneData sclPaneBlastFile;
+
 	int queryType = SeqFasta.SEQ_UNKNOWN;
 	int subjectType = SeqFasta.SEQ_UNKNOWN;
-	
+		
 	private void setCombBlastType() {
 		combBlastType.setMapItem(BlastType.getMapBlastType(queryType, subjectType));
 	}
@@ -59,7 +61,7 @@ public class GuiBlast extends JPanel implements GuiNeedOpenFile{
 		textQueryFasta.setColumns(10);
 		
 		JButton btnQueryFasta = new JButton("QueryFasta");
-		btnQueryFasta.setBounds(279, 48, 119, 24);
+		btnQueryFasta.setBounds(279, 48, 130, 24);
 		btnQueryFasta.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String path = fileOpen.openFileName("txt", "");
@@ -151,93 +153,97 @@ public class GuiBlast extends JPanel implements GuiNeedOpenFile{
 				blastNBC.setResultAlignNum(Integer.parseInt(textResultNum.getText()));
 				blastNBC.setResultSeqNum(Integer.parseInt(textResultNum.getText()));
 				blastNBC.setResultFile(textResultFile.getText());
-				blastNBC.setResultType((Integer) combResultType.getSelectedValue());
+				blastNBC.setResultType((Integer)combResultType.getSelectedValue());
 				blastNBC.blast();
 			}
 		});
 		add(btnRunblast);
 		
-		textUpDateBlast = new JTextField();
-		textUpDateBlast.setBounds(467, 46, 256, 25);
-		add(textUpDateBlast);
-		textUpDateBlast.setColumns(10);
-		
 		JButton btnNewButton = new JButton("OpenBlastFile");
-		btnNewButton.setBounds(729, 48, 134, 24);
+		btnNewButton.setBounds(446, 365, 146, 24);
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String path = fileOpen.openFileName("txt", "");
-				textUpDateBlast.setText(path);
+				sclPaneBlastFile.addItem(new String[]{path, "", ""});
 			}
 		});
 		add(btnNewButton);
 		
 		JButton btnUpdataBlast = new JButton("UpdataBlast");
-		btnUpdataBlast.setBounds(729, 365, 123, 24);
+		btnUpdataBlast.setBounds(783, 450, 123, 24);
 		btnUpdataBlast.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				BlastUp2DB blast = new BlastUp2DB();
-				if (!textSDBinfo.getText().trim().equals("")) {
-					blast.setBlastDBinfo(textSDBinfo.getText().trim());
-				}
-				if (!textQDBinfo.getText().trim().equals("")) {
-					blast.setQueryDBinfo(textQDBinfo.getText().trim());
-				}
-				blast.setIDisBlastType(chbRefStyle.isSelected());
-				blast.setSubTaxID(cmbSSpecies.getSelectedValue().getTaxID());
-				blast.setTaxID(cmbQSpecies.getSelectedValue().getTaxID());
-				blast.setTxtWriteExcep(FileOperate.changeFileSuffix(textUpDateBlast.getText(), "_cannotUpDate", null));
-				blast.updateFile(textUpDateBlast.getText());
+				addBlastInfo();
 			}
 		});
 		add(btnUpdataBlast);
 		
 		chbRefStyle = new JCheckBox("ref|NP_002932|  like style");
-		chbRefStyle.setBounds(467, 96, 207, 22);
+		chbRefStyle.setBounds(446, 410, 207, 22);
 		add(chbRefStyle);
-		
-		textQDBinfo = new JTextField();
-		textQDBinfo.setBounds(467, 160, 155, 24);
-		add(textQDBinfo);
-		textQDBinfo.setColumns(10);
-		
-		JLabel lblQuerydbinfo = new JLabel("QueryDBinfo");
-		lblQuerydbinfo.setBounds(467, 140, 92, 14);
-		add(lblQuerydbinfo);
-		
-		textSDBinfo = new JTextField();
-		textSDBinfo.setBounds(645, 160, 207, 24);
-		add(textSDBinfo);
-		textSDBinfo.setColumns(10);
-		
-		JLabel lblSubjectdbinfo = new JLabel("SubjectDBinfo");
-		lblSubjectdbinfo.setBounds(645, 140, 103, 14);
-		add(lblSubjectdbinfo);
-		
-		cmbQSpecies = new JComboBoxData<Species>();
-		cmbQSpecies.setBounds(467, 238, 320, 23);
-		cmbQSpecies.setMapItem(Species.getSpeciesName2Species(Species.ALL_SPECIES));
-		add(cmbQSpecies);
-		
-		JLabel lblQueryspecies = new JLabel("QuerySpecies");
-		lblQueryspecies.setBounds(467, 216, 100, 14);
-		add(lblQueryspecies);
-		
-		cmbSSpecies = new JComboBoxData<Species>();
-		cmbSSpecies.setBounds(467, 318, 322, 23);
-		cmbSSpecies.setMapItem(Species.getSpeciesName2Species(Species.ALL_SPECIES));
-		add(cmbSSpecies);
-		
-		JLabel lblSubjectspecies = new JLabel("SubjectSpecies");
-		lblSubjectspecies.setBounds(467, 279, 111, 14);
-		add(lblSubjectspecies);
 
 		
 		JLabel lblResulttype = new JLabel("ResultType");
 		lblResulttype.setBounds(10, 414, 91, 14);
 		add(lblResulttype);
-
+		
+		chckbxSavetodb = new JCheckBox("SaveToDB");
+		chckbxSavetodb.setBounds(775, 410, 131, 22);
+		add(chckbxSavetodb);
+		
+		sclPaneBlastFile = new JScrollPaneData();
+		sclPaneBlastFile.setBounds(446, 43, 460, 310);
+		add(sclPaneBlastFile);
+		
+		JButton btnDelfile = new JButton("DelFile");
+		btnDelfile.setBounds(760, 365, 146, 24);
+		add(btnDelfile);
+		
+		initial();
 	}
+	
+	private void initial() {
+		JComboBoxData<Species> cmbSpeciesQ  = new JComboBoxData<Species>();
+		cmbSpeciesQ.setMapItem(Species.getSpeciesName2Species(Species.ALL_SPECIES));
+		cmbSpeciesQ.setEditable(true);
+		JComboBoxData<Species> cmbSpeciesS  = new JComboBoxData<Species>();
+		cmbSpeciesS.setMapItem(Species.getSpeciesName2Species(Species.ALL_SPECIES));
+		cmbSpeciesS.setEditable(false);
+		
+		sclPaneBlastFile.setTitle(new String[]{"BlastFile","QueryTaxID", "SubTaxID"});
+		sclPaneBlastFile.setItem(1, cmbSpeciesQ);
+		sclPaneBlastFile.setItem(2, cmbSpeciesS);
+	}
+	
+	private void addBlastInfo() {
+		Map<String, Species> mapComName2Species = Species.getSpeciesName2Species(Species.ALL_SPECIES);
+		for (String[] content : sclPaneBlastFile.getLsDataInfo()) {
+			BlastUp2DB blast = new BlastUp2DB();
+			blast.setUpdate(chckbxSavetodb.isSelected());
+			blast.setIDisBlastType(chbRefStyle.isSelected());
+			
+			//设定一个默认参数
+			int taxIDQ = 1234;
+			Species speciesQ = mapComName2Species.get(content[1]);
+			if (speciesQ == null) {
+				try {
+					taxIDQ = Integer.parseInt(content[1].trim());
+				} catch (Exception e) {
+					taxIDQ = 1234;
+				}
+			} else {
+				taxIDQ = speciesQ.getTaxID();
+			}
+			int taxIDS = mapComName2Species.get(content[2]).getTaxID();
+						
+			blast.setTaxID(taxIDQ);
+			blast.setSubTaxID(taxIDS);
+			
+			blast.setTxtWriteExcep(FileOperate.changeFileSuffix(content[0].trim(), "_cannotUpDate", null));
+			blast.updateFile(content[0]);
+		}
+	}
+	
 	public void setGuiFileOpen(GUIFileOpen guiFileOpen) {
 		this.fileOpen = guiFileOpen;
 	}

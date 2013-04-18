@@ -474,9 +474,9 @@ public class Species {
 		
 		for (Integer taxID : lsTaxID) {
 			Species species = new Species(taxID);
-			if (speciesType == ALL_SPECIES) {
-			}
-			else if (speciesType == KEGGNAME_SPECIES) {
+			if (speciesType == ALL_SPECIES && species.getCommonName().equals("")) {
+				continue;
+			} else if (speciesType == KEGGNAME_SPECIES) {
 				if (species.getAbbrName().equals("")) {
 					continue;
 				}
