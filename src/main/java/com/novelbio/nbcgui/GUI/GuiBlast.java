@@ -34,10 +34,10 @@ public class GuiBlast extends JPanel implements GuiNeedOpenFile{
 	private JTextField textQDBinfo;
 	private JTextField textSDBinfo;
 	JCheckBox chbRefStyle = null;
-	JComboBoxData cmbQSpecies = null;
-	JComboBoxData cmbSSpecies = null;
+	JComboBoxData<Species> cmbQSpecies = null;
+	JComboBoxData<Species> cmbSSpecies = null;
 	JComboBoxData<BlastType> combBlastType = null;
-	JComboBoxData combResultType = null;
+	JComboBoxData<Integer> combResultType = null;
 	
 	int queryType = SeqFasta.SEQ_UNKNOWN;
 	int subjectType = SeqFasta.SEQ_UNKNOWN;
@@ -95,7 +95,7 @@ public class GuiBlast extends JPanel implements GuiNeedOpenFile{
 		combBlastType.setBounds(10, 175, 209, 23);
 		add(combBlastType);
 		
-		combResultType = new JComboBoxData();
+		combResultType = new JComboBoxData<Integer>();;
 		combResultType.setMapItem(BlastNBC.getHashResultType());
 		combResultType.setBounds(10, 440, 249, 23);
 		add(combResultType);
@@ -184,8 +184,8 @@ public class GuiBlast extends JPanel implements GuiNeedOpenFile{
 					blast.setQueryDBinfo(textQDBinfo.getText().trim());
 				}
 				blast.setIDisBlastType(chbRefStyle.isSelected());
-				blast.setSubTaxID((Integer)cmbSSpecies.getSelectedValue());
-				blast.setTaxID((Integer)cmbQSpecies.getSelectedValue());
+				blast.setSubTaxID(cmbSSpecies.getSelectedValue().getTaxID());
+				blast.setTaxID(cmbQSpecies.getSelectedValue().getTaxID());
 				blast.setTxtWriteExcep(FileOperate.changeFileSuffix(textUpDateBlast.getText(), "_cannotUpDate", null));
 				blast.updateFile(textUpDateBlast.getText());
 			}
@@ -214,18 +214,18 @@ public class GuiBlast extends JPanel implements GuiNeedOpenFile{
 		lblSubjectdbinfo.setBounds(645, 140, 103, 14);
 		add(lblSubjectdbinfo);
 		
-		cmbQSpecies = new JComboBoxData();
+		cmbQSpecies = new JComboBoxData<Species>();
 		cmbQSpecies.setBounds(467, 238, 320, 23);
-		cmbQSpecies.setMapItem(Species.getSpeciesNameTaxID(false));
+		cmbQSpecies.setMapItem(Species.getSpeciesName2Species(Species.ALL_SPECIES));
 		add(cmbQSpecies);
 		
 		JLabel lblQueryspecies = new JLabel("QuerySpecies");
 		lblQueryspecies.setBounds(467, 216, 100, 14);
 		add(lblQueryspecies);
 		
-		cmbSSpecies = new JComboBoxData();
+		cmbSSpecies = new JComboBoxData<Species>();
 		cmbSSpecies.setBounds(467, 318, 322, 23);
-		cmbSSpecies.setMapItem(Species.getSpeciesNameTaxID(false));
+		cmbSSpecies.setMapItem(Species.getSpeciesName2Species(Species.ALL_SPECIES));
 		add(cmbSSpecies);
 		
 		JLabel lblSubjectspecies = new JLabel("SubjectSpecies");

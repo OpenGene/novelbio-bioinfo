@@ -1,18 +1,12 @@
 package com.novelbio.database.service.servgeneanno;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.HashMultimap;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.geneanno.BlastInfo;
@@ -31,21 +25,33 @@ public class ManageBlastInfo {
 		repoBlastInfo = (RepoBlastInfo)SpringFactory.getFactory().getBean("repoBlastInfo");
 	}
 	
-	
 	public static void clearBlastCach() {
 		mapAccIDTaxID_2_mapAccID.clear();
 	}
 	
-	public static void readBlastFile(int taxIDQ, int taxIDS, String blastFile) {
+	/** 一行一行的添加信息*/
+	public static void addBlastLine(int taxIDQ, int taxIDS, String blastLine, boolean isBlastFormat) {
+		BlastInfo blastInfo = new BlastInfo(taxIDQ, taxIDS, blastLine, isBlastFormat);
+		addBlastInfoToCache(blastInfo);
+	}
+	
+	/**
+	 * @param taxIDQ
+	 * @param taxIDS
+	 * @param blastFile
+	 * @param isBlastFormat 如果subjecdt是accID，具体的accID是否类似 blast的结果，如：dbj|AK240418.1|，那么获得AK240418，一般都是false
+	 */
+	public static void readBlastFile(int taxIDQ, int taxIDS, String blastFile, boolean isBlastFormat) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(blastFile);
 		for (String content : txtRead.readlines()) {
-			BlastInfo blastInfo = new BlastInfo(taxIDQ, taxIDS, false, content);
+			BlastInfo blastInfo = new BlastInfo(taxIDQ, taxIDS, content, isBlastFormat);
 			addBlastInfoToCache(blastInfo);
 		}
 		txtRead.close();
 	}
 	
-	private static void addBlastInfoToCache(BlastInfo blastInfo) {
+	/** 添加单个BlastInfo进入缓存 */
+	public static void addBlastInfoToCache(BlastInfo blastInfo) {
 		String key1 = blastInfo.getQueryID() + SepSign.SEP_ID + blastInfo.getQueryTax();
 		Map<String, BlastInfo> mapAccIDTaxIDSaccIDStaxID_2_BlastInfo = mapAccIDTaxID_2_mapAccID.get(key1);
 		if (mapAccIDTaxIDSaccIDStaxID_2_BlastInfo == null) {

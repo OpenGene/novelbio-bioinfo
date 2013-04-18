@@ -49,39 +49,46 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	
 	/**
 	 * 用 <b>-m8</b> 参数跑出来的Blast程序跑出来的结果
-	 * 默认Blast的QueryID和SubjectID都为AccID
-	 * @param taxIDQ
-	 * @param taxIDS
-	 * @param blastStr blast的那一行
+	 * @param taxIDQ queryTaxID
+	 * @param taxIDS subjectTaxID
+	 * @param blastStr blast的具体ID
+	 * @param isBlastIDtype 如果subjecdt是accID，具体的accID是否类似 blast的结果，如：dbj|AK240418.1|，那么获得AK240418，一般都是false
 	 */
-	public BlastInfo(int taxIDQ, int taxIDS, String blastStr) {
-		this(taxIDQ, taxIDS, false, blastStr);
+	public BlastInfo(int taxIDQ, int taxIDS, String blastStr, boolean isBlastIDtype) {
+		this(taxIDQ, false, taxIDS, false, blastStr, isBlastIDtype);
 	}
 	
 	/**
 	 * 用 <b>-m8</b> 参数跑出来的Blast程序跑出来的结果
-	 * @param taxIDQ
-	 * @param taxIDS
-	 * @param isgeneID blast中的ID是否为geneID
-	 * @param blastStr blast的那一行
+	 * @param taxIDQ queryTaxID
+	 * @param isGeneIDQ queryID是否为accID，一般都是true
+	 * @param taxIDS subjectTaxID
+	 * @param isGeneIDS subjectID是否为accID，一般都是true
+	 * @param blastStr blast的具体ID
+	 * @param isBlastIDtype 如果subjecdt是accID，具体的accID是否类似 blast的结果，如：dbj|AK240418.1|，那么获得AK240418，一般都是false
 	 */
-	public BlastInfo(int taxIDQ, int taxIDS, boolean isgeneID, String blastStr) {
+	public BlastInfo(int taxIDQ, boolean isGeneIDQ, int taxIDS, boolean isGeneIDS, String blastStr, boolean isBlastIDtype) {
 		setDate();
 		String[] blastInfo = blastStr.split("\t");
 		GeneID geneIDQ;
-		if (!isgeneID) {
+		if (!isGeneIDQ) {
 			geneIDQ = new GeneID(blastInfo[0], taxIDQ);
-			geneIDS = new GeneID(blastInfo[1], taxIDS);
 		} else {
 			geneIDQ = new GeneID(GeneID.IDTYPE_GENEID, blastInfo[0], taxIDQ);
 			if (geneIDQ.getAccID_With_DefaultDB() == null) {
 				geneIDQ = new GeneID(GeneID.IDTYPE_UNIID, blastInfo[0], taxIDQ);
 			}
+		}
+		
+		if (!isGeneIDS) {
+			geneIDS = new GeneID(blastInfo[1], taxIDS, isBlastIDtype);
+		} else {
 			geneIDS = new GeneID(GeneID.IDTYPE_GENEID, blastInfo[1], taxIDQ);
 			if (geneIDS.getAccID_With_DefaultDB() == null) {
 				geneIDS = new GeneID(GeneID.IDTYPE_UNIID, blastInfo[1], taxIDQ);
 			}
 		}
+		
 		this.queryID = geneIDQ.getGeneUniID();
 		this.queryTax = geneIDQ.getTaxID();
 		this.queryIDtype = geneIDQ.getIDtype();

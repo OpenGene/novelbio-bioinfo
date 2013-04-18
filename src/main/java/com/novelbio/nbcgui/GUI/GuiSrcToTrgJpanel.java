@@ -31,6 +31,7 @@ import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
+import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.base.gui.JTextFieldData;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -61,17 +62,14 @@ public class GuiSrcToTrgJpanel extends JPanel{
 	private JButton jBtnFileOpenPath;
 	private JLabel jLabAccColPath;
 	private JTextFieldData jTxtAccColPath;
-	private JComboBox jCombBlastTaxPath;
+	private JComboBoxData<Species> jCombBlastTaxPath;
 	private JCheckBox jChkBlastPath;
 	private ButtonGroup btnGroupPathMethod;
 	private ButtonGroup btnGroupPathClass;
-	private JComboBox jCombSelSpePath;
+	private JComboBoxData<Species> jCombSelSpePath;
 	private JLabel jLabPathQtaxID;
 	private JScrollPaneData jScrollPaneInputPath;
-	////////////
-	static int QtaxID = 0;//查询物种ID
-	static int StaxID = 9606;//blast物种ID
-	
+	////////////	
 	
 	public GuiSrcToTrgJpanel() 
 	{
@@ -175,7 +173,8 @@ public class GuiSrcToTrgJpanel extends JPanel{
 							lsAccID.add(strings[0]);
 						}
 						Scr2Target.getGene2RelateKo("",lsAccID,FileOperate.changeFileSuffix(savefilename, "_Gene_Act_Net", null),
-								FileOperate.changeFileSuffix(savefilename, "_attr", null) , QtaxID, jChkBlastPath.isSelected(), StaxID, 1e-5);
+								FileOperate.changeFileSuffix(savefilename, "_attr", null) , jCombSelSpePath.getSelectedValue().getTaxID(),
+								jChkBlastPath.isSelected(), jCombBlastTaxPath.getSelectedValue().getTaxID(), 1e-5);
 						
 					} catch (Exception e) {
 						// TODO: handle exception
@@ -184,59 +183,16 @@ public class GuiSrcToTrgJpanel extends JPanel{
 			});
 		}
 		{
-			final HashMap<String, Integer> hashTaxID = Species.getSpeciesNameTaxID(false);
-			int i = 0;
-			ArrayList<String> keys = Species.getSpeciesName(false);
-			String[] speciesarray = new String[keys.size()+1];
-			for(String key:keys)
-			{
-				speciesarray[i] = key; i++;
-			}
-			speciesarray[i] = "all";
-			ComboBoxModel jCombSelSpePathModel = new DefaultComboBoxModel(speciesarray);
-			jCombSelSpePath = new JComboBox();
-			jCombSelSpePath.setModel(jCombSelSpePathModel);
-			jCombSelSpePath.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent evt) {
-					String species = (String) jCombSelSpePath.getSelectedItem();
-					if (hashTaxID.get(species) == null) {
-						QtaxID = 0;
-					}
-					else {
-						QtaxID =hashTaxID.get(species);
-					}
-				}
-			});
+			jCombSelSpePath = new JComboBoxData<Species>();
+			jCombSelSpePath.setMapItem(Species.getSpeciesName2Species(Species.KEGGNAME_SPECIES));
 		}
 		{
 			jChkBlastPath = new JCheckBox();
 			jChkBlastPath.setText("Blast");
 		}
 		{
-			final HashMap<String, Integer> hashTaxID = Species.getSpeciesNameTaxID(false);
-			int i = 0;
-			ArrayList<String> keys = Species.getSpeciesName(false);
-			String[] speciesarray = new String[keys.size()+1];
-			for(String key:keys)
-			{
-				speciesarray[i] = key; i++;
-			}
-			speciesarray[i] = "all";
-			ComboBoxModel jCombBlastTaxModel = 
-				new DefaultComboBoxModel(speciesarray);
-			jCombBlastTaxPath = new JComboBox();
-			jCombBlastTaxPath.setModel(jCombBlastTaxModel);
-			jCombBlastTaxPath.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent evt) {
-					String species = (String) jCombBlastTaxPath.getSelectedItem();
-					if (hashTaxID.get(species) == null) {
-						StaxID = 0;
-					}
-					else {
-						StaxID =hashTaxID.get(species);
-					}
-				}
-			});
+			jCombBlastTaxPath = new JComboBoxData<Species>();
+			jCombBlastTaxPath.setMapItem(Species.getSpeciesName2Species(Species.KEGGNAME_SPECIES));
 		}
 	}
 	

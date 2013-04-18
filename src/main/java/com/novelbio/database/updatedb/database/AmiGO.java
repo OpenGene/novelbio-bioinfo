@@ -2,6 +2,7 @@ package com.novelbio.database.updatedb.database;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -18,6 +19,20 @@ import com.novelbio.database.service.servgeneanno.ManageGo2Term;
 
 
 public class AmiGO {
+	public static void main(String[] args) {
+		
+		TxtReadandWrite txtRead = new TxtReadandWrite("/media/winE/Bioinformatics/DataBaseUpdate/gene_association.goa_uniprot.gz");
+		for (String string : txtRead.readlines()) {
+			String[] ss = string.split("\t");
+			if (ss.length < 6) {
+				continue;
+			}
+			if (ss[5].contains(",") || ss[5].contains("/") || ss[5].contains(" ")) {
+				System.out.println(string);
+			}
+		}
+		txtRead.close();
+	}
 	String taxIDfile = "";
 	String goExtObo = "";
 	
@@ -533,7 +548,9 @@ Example:O43526-2
 		geneInfo.setSymb(ss[2]);
 		geneInfo.setDescrp(ss[9]);
 		copedID.setUpdateGeneInfo(geneInfo);
-		copedID.addUpdateGO(ss[4], DBAccIDSource.Uniprot, ss[6], ss[5], ss[3]);
+		List<String> lsRef = new ArrayList<String>();
+		lsRef.add(ss[5]);
+		copedID.addUpdateGO(ss[4], DBAccIDSource.Uniprot, ss[6], lsRef, ss[3]);
 		return copedID.update(true);
 	}
 	

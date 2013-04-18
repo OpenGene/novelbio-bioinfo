@@ -899,7 +899,20 @@ public class GeneIDabs implements GeneIDInt {
 		}
 		
 		ManageNCBIUniID servGeneAnno = new ManageNCBIUniID();
-		List<AgeneUniID> lsAgeneUniIDs = servGeneAnno.findByAccID(GeneID.IDTYPE_GENEID, accID, taxID);
+		List<AgeneUniID> lsAgeneUniIDs = new ArrayList<AgeneUniID>();
+		for (int i = 0; i < 2; i++) {
+			try {
+				 lsAgeneUniIDs = servGeneAnno.findByAccID(GeneID.IDTYPE_GENEID, accID, taxID);
+			} catch (Exception e) {
+				if (i == 0) {
+					try { Thread.sleep(10); } catch (InterruptedException e1) { }
+					continue;
+				} else if (i == 1) {
+					e.printStackTrace();
+				}
+			}
+		}
+	
 		if (lsAgeneUniIDs.size() == 0) {
 			lsAgeneUniIDs = servGeneAnno.findByAccID(GeneID.IDTYPE_UNIID, accID, taxID);
 		}

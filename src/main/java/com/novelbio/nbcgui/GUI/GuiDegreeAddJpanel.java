@@ -29,6 +29,7 @@ import com.novelbio.analysis.coexp.simpCoExp.SimpCoExp;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
+import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
@@ -59,19 +60,16 @@ public class GuiDegreeAddJpanel extends JPanel{
 	private JButton jBtnFileOpenPath;
 	private ButtonGroup btnGroupPathMethod;
 	private ButtonGroup btnGroupPathClass;
-	private JComboBox jCombSelSpePath;
+	private JComboBoxData<Species> jCombSelSpePath;
 	private JLabel jLabPathQtaxID;
 	private JScrollPaneData jScrollPaneInputPath;
 	////////////
-	static int QtaxID = 0;//查询物种ID
 	static int StaxID = 9606;//blast物种ID
 	
 	
-	public GuiDegreeAddJpanel() 
-	{
+	public GuiDegreeAddJpanel() {
 		GroupLayout jPanPathLayout = new GroupLayout((JComponent)this);
 		
-
 		setPreferredSize(new java.awt.Dimension(1046, 617));
 		this.setLayout(jPanPathLayout);
 
@@ -79,6 +77,7 @@ public class GuiDegreeAddJpanel extends JPanel{
 		setComponent();
 		setGroup(jPanPathLayout);
 	}
+	
 	private void setComponent() {
 		btnGroupPathMethod = new ButtonGroup();
 		btnGroupPathClass = new ButtonGroup();
@@ -153,7 +152,7 @@ public class GuiDegreeAddJpanel extends JPanel{
 						savefilename = savefilename+".xls";
 					}
 					try {
-						SimpCoExp.getCoExpDegree(jTxtFilePathPath.getText(),QtaxID,savefilename);
+						SimpCoExp.getCoExpDegree(jTxtFilePathPath.getText(), jCombSelSpePath.getSelectedValue().getTaxID(), savefilename);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -161,29 +160,8 @@ public class GuiDegreeAddJpanel extends JPanel{
 			});
 		}
 		{
-			final HashMap<String, Integer> hashTaxID = Species.getSpeciesNameTaxID(false);
-			int i = 0;
-			ArrayList<String> keys = Species.getSpeciesName(false);
-			String[] speciesarray = new String[keys.size()+1];
-			for(String key:keys)
-			{
-				speciesarray[i] = key; i++;
-			}
-			speciesarray[i] = "all";
-			ComboBoxModel jCombSelSpePathModel = new DefaultComboBoxModel(speciesarray);
-			jCombSelSpePath = new JComboBox();
-			jCombSelSpePath.setModel(jCombSelSpePathModel);
-			jCombSelSpePath.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent evt) {
-					String species = (String) jCombSelSpePath.getSelectedItem();
-					if (hashTaxID.get(species) == null) {
-						QtaxID = 0;
-					}
-					else {
-						QtaxID =hashTaxID.get(species);
-					}
-				}
-			});
+			jCombSelSpePath = new JComboBoxData<Species>();
+			jCombSelSpePath.setMapItem(Species.getSpeciesName2Species(Species.ALL_SPECIES));
 		}
 	}
 	

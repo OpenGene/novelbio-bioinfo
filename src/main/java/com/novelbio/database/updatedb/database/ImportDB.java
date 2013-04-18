@@ -55,10 +55,10 @@ public class ImportDB {
 //		importDB.updateDBinfo(dbInfo);
 //		importDB.updateSoftInfo();
 //		importDB.updateSpecies();
-		importDB.updateGODB();
+//		importDB.updateGODB();
 		
 //		importDB.updateNCBIID();
-//		importDB.updateUniprotID();
+		importDB.updateUniprotID();
 //		importDB.updateMicroarray();
 		
 		

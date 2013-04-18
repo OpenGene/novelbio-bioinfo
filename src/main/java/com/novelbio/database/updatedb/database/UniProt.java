@@ -43,8 +43,8 @@ public class UniProt {
 //		idmappingSelected.setTxtWriteExcep(outUniIDFile+"_2");
 //		idmappingSelected.updateFile(outUniIDFile);
 //		
-		IdmappingSelectedGOPubmed idmappingSelectedGOPubmed = new IdmappingSelectedGOPubmed();
-		idmappingSelectedGOPubmed.updateFile(idmappingSelectedFile);
+//		IdmappingSelectedGOPubmed idmappingSelectedGOPubmed = new IdmappingSelectedGOPubmed();
+//		idmappingSelectedGOPubmed.updateFile(idmappingSelectedFile);
 		
 	}
 }

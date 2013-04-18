@@ -30,13 +30,12 @@ public class GuiMirnaTargetPredict  extends JPanel {
 	JButton btnMiRNAseq;
 	JButton btnOutput;
 	
-	JComboBoxData<Integer> cmbSpecies;
+	JComboBoxData<Species> cmbSpecies;
 	
 	GUIFileOpen guiFileOpen = new GUIFileOpen();
 	
 	CtrlMiRNAtargetPredict ctrlMiRNAtargetPredict = new CtrlMiRNAtargetPredict();
 	
-	Species species = new Species(); 
 	private JButton btnRun;
 	private JComboBoxData<RNAhybridClass> cmbRNAhybridSpeciesType;
 	private JLabel lblSpeciesClass;
@@ -65,7 +64,7 @@ public class GuiMirnaTargetPredict  extends JPanel {
 		btnOpenUTR3Seq.setBounds(336, 232, 118, 24);
 		add(btnOpenUTR3Seq);
 		
-		cmbSpecies = new JComboBoxData<Integer>();
+		cmbSpecies = new JComboBoxData<Species>();
 		cmbSpecies.setBounds(12, 65, 312, 23);
 		add(cmbSpecies);
 		
@@ -135,8 +134,7 @@ public class GuiMirnaTargetPredict  extends JPanel {
 		btnRun = new JButton("Run");
 		btnRun.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				species.setTaxID(cmbSpecies.getSelectedValue());
-				GffChrAbs gffChrAbs = new GffChrAbs(species);
+				GffChrAbs gffChrAbs = new GffChrAbs(cmbSpecies.getSelectedValue());
 				ctrlMiRNAtargetPredict.setMirTargetOverlap(txtOutput.getText());
 				
 				ctrlMiRNAtargetPredict.setGffChrAbs(gffChrAbs);
@@ -169,7 +167,7 @@ public class GuiMirnaTargetPredict  extends JPanel {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		cmbSpecies.setMapItem(Species.getSpeciesNameTaxID(false));
+		cmbSpecies.setMapItem(Species.getSpeciesName2Species(Species.SEQINFO_SPECIES));
 		txtEnergy.setNumOnly();
 		txtScore.setNumOnly();
 		txtPvalue.setNumOnly(5);

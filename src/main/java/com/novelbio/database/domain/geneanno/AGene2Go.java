@@ -49,6 +49,14 @@ public abstract class AGene2Go {
 		}
 		return go2Term.getGoID();
 	}
+	public String getGOTerm() {
+		Go2Term go2Term = getGO2Term();
+		if (go2Term == null) {
+			return "";
+		}
+		return go2Term.getGoTerm();
+	}
+	
 	public Go2Term getGO2Term() {
 		Go2Term go2Term = manageGo2Term.queryGo2Term(goID);
 		if (go2Term == null) {
@@ -177,7 +185,8 @@ public abstract class AGene2Go {
 		update = GeneInfo.addInfo(setDB, gene2Go.setDB) || update;
 		update = GeneInfo.addInfo(setEvid, gene2Go.setEvid) || update;
 		update = GeneInfo.addInfo(setPubID, gene2Go.setPubID) || update;
-		if (gene2Go.qualifier != null && !gene2Go.qualifier.equals("") && !qualifier.equals("-")) {
+		if ((qualifier == null || qualifier.equals("") || qualifier.equalsIgnoreCase("NOT"))
+				&& gene2Go.qualifier != null && !gene2Go.qualifier.equals("") && !qualifier.equals("-")) {
 			qualifier = gene2Go.qualifier;
 			update = true;
 		}

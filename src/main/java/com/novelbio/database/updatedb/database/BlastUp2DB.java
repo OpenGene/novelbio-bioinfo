@@ -1,21 +1,31 @@
 package com.novelbio.database.updatedb.database;
 
+import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.service.servgeneanno.ManageBlastInfo;
 
 public class BlastUp2DB extends ImportPerLine{
+
+	int subTaxID = 0;
+	/** ref|NP_002932| 这种类型的，就会用正则表达式去抓里面的ID */
+	boolean idtypeBlast = false;
+	boolean update = false;
+	
+	int queryIDType = GeneID.IDTYPE_ACCID;
+	int blastIDType = GeneID.IDTYPE_ACCID;
+
 	public  BlastUp2DB() {
 		this.readFromLine = 1;
-	}
-	int subTaxID = 0;
-	String queryDBinfo;
-	public void setQueryDBinfo(String queryDBinfo) {
-		this.queryDBinfo = queryDBinfo;
 		setReadFromLine(1);
 	}
-	/**
-	 * ref|NP_002932| 这种类型的，就会用正则表达式去抓里面的ID
+	
+	/** true 导入数据库，false导入缓存
+	 * 默认false导入缓存
 	 */
-	boolean idtypeBlast = false;
+	public void setUpdate(boolean update) {
+		this.update = update;
+	}
+	
 	/**
 	 *  ref|NP_002932| 这种类型的，就会用正则表达式去抓里面的ID
 	 *  id必须在第一个 “|” 和第二个 “|” 中间
@@ -25,6 +35,7 @@ public class BlastUp2DB extends ImportPerLine{
 	public void setIDisBlastType(boolean idtypeBlast) {
 		this.idtypeBlast = idtypeBlast;
 	}
+	
 	/**
 	 * blast到的物种ID
 	 * @param subTaxID
@@ -32,61 +43,39 @@ public class BlastUp2DB extends ImportPerLine{
 	public void setSubTaxID(int subTaxID) {
 		this.subTaxID = subTaxID;
 	}
-	String blastDBinfo= null;
-	/**
-	 * 设定blast到的ID的数据库
-	 * @param blastDBinfo
-	 */
-	public void setBlastDBinfo(String blastDBinfo) {
-		this.blastDBinfo = blastDBinfo;
-	}
 	
-	String queryIDType = GeneID.IDTYPE_ACCID;
-	String blastIDType = GeneID.IDTYPE_ACCID;
 	/**
 	 * 第一列，是accID还是geneID还是UniID
 	 * @param IDtype 默认是CopedID.IDTYPE_ACCID
 	 * @return
 	 */
-	public void setQueryID(String IDtype) {
-		this.queryIDType = IDtype;
+	public void setQueryIDType(int IDtypeQ) {
+		this.queryIDType = IDtypeQ;
 	}
 	/**
 	 * blast到的ID是accID还是geneID还是UniID
 	 * @param blastID 默认是CopedID.IDTYPE_ACCID
 	 */
-	public void setBlastID(String blastID) {
-		this.blastIDType = blastID;
+	public void setBlastIDType(int IDtypeS) {
+		this.blastIDType = IDtypeS;
 	}
+	
 	@Override
 	boolean impPerLine(String lineContent) {
-		String[] ss = lineContent.split("\t");
-		GeneID copedID = null;
-		if (!queryIDType.equals(GeneID.IDTYPE_ACCID)) {
-			copedID = new GeneID(queryIDType, ss[0], taxID);
-		} else {
-			copedID = new GeneID(ss[0], taxID);
-		}
-		
-		copedID.setUpdateDBinfo(queryDBinfo, false);
-		if (!blastIDType.equals(GeneID.IDTYPE_ACCID)) {
-			copedID.setUpdateBlastInfo(ss[1], blastIDType, blastDBinfo, subTaxID, Double.parseDouble(ss[10]), Double.parseDouble(ss[2]));
-		}
-		else {
-			String accID = ss[1];
-			if (idtypeBlast) {
-				accID = GeneID.getBlastAccID(ss[1]);
+		BlastInfo blastInfo = new BlastInfo(taxID, subTaxID, lineContent, idtypeBlast);
+		try {
+			if (update) {
+				String[] ss = lineContent.split("\t");
+				GeneID geneID = new GeneID(queryIDType, ss[0], taxID);
+				geneID.addUpdateBlastInfo(blastInfo);
+				geneID.update(false);
 			} else {
-				accID = GeneID.removeDot(accID); 
+				ManageBlastInfo.addBlastInfoToCache(blastInfo);
 			}
-			//如果没有blastDBinfo，就用已有的accID去获得该blastDBinfo
-			if (blastDBinfo == null || blastDBinfo.equals("")) {
-				GeneID copedIDBlast = new GeneID(accID, subTaxID);
-				blastDBinfo = copedIDBlast.getDBinfo();
-			}
-			copedID.setUpdateBlastInfo(accID, blastDBinfo, subTaxID, Double.parseDouble(ss[10]), Double.parseDouble(ss[2]));
+		} catch (Exception e) {
+			return true;
 		}
-		return copedID.update(false);
+		return false;
 	}
 	
 }
