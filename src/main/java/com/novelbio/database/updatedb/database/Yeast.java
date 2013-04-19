@@ -1,17 +1,9 @@
 package com.novelbio.database.updatedb.database;
 
-import java.util.ArrayList;
-
-import org.apache.commons.validator.util.Flags;
-
-import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.geneanno.AGeneInfo;
 import com.novelbio.database.domain.geneanno.Gene2Go;
 import com.novelbio.database.domain.geneanno.GeneInfo;
-import com.novelbio.database.domain.geneanno.UniGeneInfo;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.generalConf.NovelBioConst;
 
 public class Yeast {
 	String yeastDBxrefFile = "";
@@ -79,8 +71,7 @@ public class Yeast {
  * @author zong0jie
  *
  */
-class YeastDBxref extends ImportPerLine
-{
+class YeastDBxref extends ImportPerLine {
 	/**
 	 * if the ID cannot find int the database, whether insert it into UniID table
 	 */

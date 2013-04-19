@@ -1,6 +1,7 @@
 package com.novelbio.database.updatedb.database;
 
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.model.modgeneid.GeneID;
 
@@ -110,21 +111,20 @@ public class Arabidopsis {
  * ftp://ftp.arabidopsis.org/home/tair/Genes/TAIR10_genome_release/TAIR10_NCBI_mapping_files/
  * TAIR10_NCBI_GENEID_mapping
  */
-class TAIR_NCBI_GENEID_mapping extends ImportPerLine
-{
-	/**
-	 * 覆盖该方法来设定从第几行开始读取
-	 */
+class TAIR_NCBI_GENEID_mapping extends ImportPerLine {
+	int taxID = 3702;
+	
+	/** 覆盖该方法来设定从第几行开始读取 */
 	protected void setReadFromLine() {
 		this.readFromLine = 1;
 	}
-	int taxID = 3702;
+	
 	@Override
 	boolean impPerLine(String lineContent) {
 		String[] ss = lineContent.split("\t");
 		GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, ss[0], this.taxID);
 		copedID.setUpdateAccID(ss[1]);
-		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_ATH_TAIR, true);
+		copedID.setUpdateDBinfo(DBAccIDSource.TAIR_ATH, true);
 		return copedID.update(true);
 	}
 }
@@ -133,15 +133,14 @@ class TAIR_NCBI_GENEID_mapping extends ImportPerLine
  * ftp://ftp.arabidopsis.org/home/tair/Genes/TAIR10_genome_release/TAIR10_NCBI_mapping_files/
  * TAIR10_NCBI_REFSEQ_mapping_PROT/TAIR_NCBI_REFSEQ_mapping_RNA
  */
-class TAIR_NCBI_REFSEQ_mapping_PROT_RNA extends ImportPerLine
-{
-	/**
-	 * 覆盖该方法来设定从第几行开始读取
-	 */
+class TAIR_NCBI_REFSEQ_mapping_PROT_RNA extends ImportPerLine {
+	boolean Protein = false;
+	int taxID = 3702;
+	
+	/** 覆盖该方法来设定从第几行开始读取 */
 	protected void setReadFromLine() {
 		this.readFromLine = 1;
 	}
-	boolean Protein = false;
 	/**
 	 * 导入的是protein还是RNA
 	 * @param protein
@@ -149,7 +148,7 @@ class TAIR_NCBI_REFSEQ_mapping_PROT_RNA extends ImportPerLine
 	public void setProtein(boolean protein) {
 		Protein = protein;
 	}
-	int taxID = 3702;
+	
 	@Override
 	boolean impPerLine(String lineContent) {
 		if (lineContent.contains(";")) {
@@ -158,31 +157,30 @@ class TAIR_NCBI_REFSEQ_mapping_PROT_RNA extends ImportPerLine
 		String[] ss = lineContent.split("\t");
 		GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, ss[0], this.taxID);
 		copedID.setUpdateAccID(ss[2]);
-		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_ATH_TAIR, true);
+		copedID.setUpdateDBinfo(DBAccIDSource.TAIR_ATH, true);
 		copedID.setUpdateAccID(ss[1]);
-		if (Protein)
-			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_NCBI_ACC_REFSEQ_PROTEIN, false);
-		else
-			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_NCBI_ACC_REFSEQ_RNA, false);
+		if (Protein) {
+			copedID.setUpdateDBinfo(DBAccIDSource.RefSeqPro, false);
+		} else {
+			copedID.setUpdateDBinfo(DBAccIDSource.RefSeqRNA, false);
+		}
 		return copedID.update(true);
 	}
 }
-
 
 /**
  * 4：
  *ftp://ftp.arabidopsis.org/home/tair/Genes/TAIR10_genome_release/TAIR10_gene_transcript_associations/
  * TAIR10_Model_cDNA_associations
  */
-class TAIR_Model_cDNA_associations extends ImportPerLine
-{
-	/**
-	 * 覆盖该方法来设定从第几行开始读取
-	 */
+class TAIR_Model_cDNA_associations extends ImportPerLine {
+	int taxID = 3702;
+	
+	/** 覆盖该方法来设定从第几行开始读取 */
 	protected void setReadFromLine() {
 		this.readFromLine = 1;
 	}
-	int taxID = 3702;
+
 	@Override
 	boolean impPerLine(String lineContent) {
 		if (lineContent.startsWith("#") || lineContent.trim().equals("")) {
@@ -194,12 +192,12 @@ class TAIR_Model_cDNA_associations extends ImportPerLine
 		String[] ss = lineContent.split("\t");
 		GeneID copedID = new GeneID(ss[0], taxID);
 		copedID.setUpdateRefAccID(ss[0], ss[1]);
-		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_ATH_TAIR, true);
+		copedID.setUpdateDBinfo(DBAccIDSource.TAIR_ATH, true);
 		if (!copedID.update(true)) {
 			return false;
 		}
 		copedID.setUpdateAccID(ss[1]);
-		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_NCBI_ACC_GENEAC, false);
+		copedID.setUpdateDBinfo(DBAccIDSource.NCBI, false);
 		if (!copedID.update(false)) {
 			return false;
 		}
@@ -212,15 +210,13 @@ class TAIR_Model_cDNA_associations extends ImportPerLine
  * @author zong0jie
  *
  */
-class Uniprot2AGI extends ImportPerLine
-{
-	/**
-	 * 覆盖该方法来设定从第几行开始读取
-	 */
+class Uniprot2AGI extends ImportPerLine {
+	int taxID = 3702;
+
+	/** 覆盖该方法来设定从第几行开始读取 */
 	protected void setReadFromLine() {
 		this.readFromLine = 1;
 	}
-	int taxID = 3702;
 	@Override
 	boolean impPerLine(String lineContent) {
 		String[] ss = lineContent.split("\t");
@@ -229,7 +225,7 @@ class Uniprot2AGI extends ImportPerLine
 		for (String string : ssAtID) {
 			GeneID copedID = new GeneID(ss[0], taxID);
 			copedID.setUpdateRefAccID(string);
-			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_UNIPROT_GenralID, false);
+			copedID.setUpdateDBinfo(DBAccIDSource.Uniprot, false);
 			if (!copedID.update(false)) {
 				return false;
 			}
@@ -243,14 +239,14 @@ class Uniprot2AGI extends ImportPerLine
  * ftp://ftp.arabidopsis.org/home/tair/Genes/TAIR10_genome_release/
  * TAIR10_functional_descriptions
  */
-class TAIR_functional_descriptions extends ImportPerLine
-{
+class TAIR_functional_descriptions extends ImportPerLine {
 	int taxID = 3702;
+	
 	@Override
 	boolean impPerLine(String lineContent) {
 		String[] ss = lineContent.split("\t");
 		GeneID copedID = new GeneID(ss[0], taxID);
-		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_ATH_TAIR, true);
+		copedID.setUpdateDBinfo(DBAccIDSource.TAIR_ATH, true);
 
 		GeneInfo geneInfo = new GeneInfo();
 		geneInfo.setSymb(ss[0]);
@@ -258,7 +254,7 @@ class TAIR_functional_descriptions extends ImportPerLine
 		if (ss.length < 3) {
 			return false;
 		}
-		geneInfo.setFullName(ss[2]);
+		geneInfo.addFullName(ss[2]);
 		//如果没有description，那么就用fullname去代替
 		String description = "";
 		if (ss.length < 4 || ss[3] == null || ss[3].trim().equals("")) {
@@ -268,7 +264,7 @@ class TAIR_functional_descriptions extends ImportPerLine
 			description = ss[3];
 		}
 		geneInfo.setDescrp(description);
-		geneInfo.setDBinfo(NovelBioConst.DBINFO_ATH_TAIR);
+		geneInfo.setDBinfo(DBAccIDSource.TAIR_ATH.name());
 		copedID.setUpdateGeneInfo(geneInfo);
 		if (!copedID.update(true)) {
 			return false;
@@ -299,10 +295,8 @@ the object type is the prefix, followed by a unique accession number(e.g. gene:1
 14. Annotator: TAIR, TIGR or a TAIR community member
 15. Date annotated: date the annotation was made.
  */
-class ATH_GO_GOSLIM extends ImportPerLine
-{	/**
-	 * 覆盖该方法来设定从第几行开始读取
-	 */
+class ATH_GO_GOSLIM extends ImportPerLine {	
+	/** 覆盖该方法来设定从第几行开始读取 */
 	protected void setReadFromLine() {
 		this.readFromLine = 1;
 	}
@@ -310,12 +304,9 @@ class ATH_GO_GOSLIM extends ImportPerLine
 	@Override
 	boolean impPerLine(String lineContent) {
 		String[] ss = lineContent.split("\t");
-		if (ss[0].equals("AT3G18140")) {
-			System.out.println("stop");
-		}
 		GeneID copedID = new GeneID(ss[0], taxID);
-		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_ATH_TAIR, true);
-		copedID.addUpdateGO(ss[5], NovelBioConst.DBINFO_ATH_TAIR, ss[9], ss[12], ss[13]);
+		copedID.setUpdateDBinfo(DBAccIDSource.TAIR_ATH, true);
+		copedID.addUpdateGO(ss[5], DBAccIDSource.TAIR_ATH, ss[9], null, ss[13]);
 		return copedID.update(false);
 	}
 }

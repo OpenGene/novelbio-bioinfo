@@ -1,8 +1,7 @@
 package com.novelbio.database.updatedb.database;
 
 import java.util.ArrayList;
-
-import org.apache.velocity.runtime.directive.Foreach;
+import java.util.List;
 
 import com.novelbio.base.dataOperate.FtpFetch;
 import com.novelbio.base.dataOperate.HttpFetch;
@@ -20,11 +19,14 @@ public class DownloadFile {
 		downloadFile.download();
 	}
 	String saveto;
-	ArrayList<String> lsDownloadNCBI;
-	ArrayList<String> lsGO;
-	ArrayList<String> lsUniprot;
-	ArrayList<String> lsEMBL;
-		
+	List<String> lsDownloadNCBI;
+	List<String> lsGO;
+	List<String> lsUniprot;
+	List<String> lsEMBL;
+	
+	List<String> lsRice;
+	
+	
 	public DownloadFile() {
 		fillDownloadFile();
 	}
@@ -52,6 +54,12 @@ public class DownloadFile {
 		
 		lsEMBL = new ArrayList<String>();
 		lsEMBL.add("http://www.ensembl.org/info/data/ftp/index.html");
+		
+		lsRice = new ArrayList<String>();
+		lsRice.add("http://rapdb.dna.affrc.go.jp/download/archive/irgsp1/IRGSP-1.0_representative_2013-03-19.tar.gz");
+		lsRice.add("http://rapdb.dna.affrc.go.jp/download/archive/RAP-MSU.txt.gz");
+		lsRice.add("ftp://ftp.plantbiology.msu.edu/pub/data/Eukaryotic_Projects/o_sativa/annotation_dbs/pseudomolecules/version_7.0/all.dir/all.gff3");
+		lsRice.add("ftp://ftp.plantbiology.msu.edu/pub/data/Eukaryotic_Projects/o_sativa/annotation_dbs/pseudomolecules/version_7.0/all.dir/all.GOSlim_assignment");
 	}
 	
 	public void download() {
@@ -74,5 +82,13 @@ public class DownloadFile {
 			httpFetch.query();
 			httpFetch.download(saveto + fileName);
 		}
+		for (String rapDBurl : lsRice) {
+			String fileName = FileOperate.getFileName(rapDBurl);
+			HttpFetch httpFetch = HttpFetch.getInstance();
+			httpFetch.setUri(rapDBurl);
+			httpFetch.query();
+			httpFetch.download(saveto + fileName);
+		}
+		
 	}
 }

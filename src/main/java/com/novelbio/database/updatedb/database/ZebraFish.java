@@ -1,16 +1,12 @@
 package com.novelbio.database.updatedb.database;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import org.apache.ibatis.annotations.Update;
-
-import com.novelbio.analysis.seq.fasta.SeqFasta;
-import com.novelbio.analysis.seq.fasta.SeqFastaHash;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.generalConf.NovelBioConst;
 
 public class ZebraFish {
 	String ZbGeneIDFile = "";
@@ -55,11 +51,8 @@ public class ZebraFish {
  * @author zong0jie
  *
  */
-class Zb2GeneID extends ImportPerLine
-{
-	/**
-	 * 覆盖该方法来设定从第几行开始读取
-	 */
+class Zb2GeneID extends ImportPerLine {
+	/** 覆盖该方法来设定从第几行开始读取 */
 	protected void setReadFromLine() {
 		this.readFromLine = 1;
 	}
@@ -68,11 +61,11 @@ class Zb2GeneID extends ImportPerLine
 		String[] ss = lineContent.split("\t");
 		GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, ss[2], 7955);
 		copedID.setUpdateAccID(ss[0]);
-		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_DRE_ZFIN, true);
+		copedID.setUpdateDBinfo(DBAccIDSource.ZFIN_DRE, true);
 		copedID.update(true);
 		
 		copedID.setUpdateAccIDNoCoped(ss[1]);
-		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_SYMBOL, true);
+		copedID.setUpdateDBinfo(DBAccIDSource.Symbol, true);
 		return copedID.update(true);
 	}
 }
@@ -108,11 +101,11 @@ class ZbRefSeqID extends ImportPerLine
 		String[] ss = lineContent.split("\t");
 		GeneID copedID = new GeneID(ss[0], 7955);
 		copedID.setUpdateRefAccID(ss[2]);
-		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_DRE_ZFIN, true);
+		copedID.setUpdateDBinfo(DBAccIDSource.ZFIN_DRE, true);
 		copedID.update(true);
 		
 		copedID.setUpdateAccIDNoCoped(ss[1]);
-		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_SYMBOL, true);
+		copedID.setUpdateDBinfo(DBAccIDSource.Symbol, true);
 		copedID.update(true);
 		
 		copedID.setUpdateAccID(ss[2]);
@@ -125,14 +118,12 @@ class ZbRefSeqID extends ImportPerLine
  * gene_association.zfin
  * @author zong0jie
  */
-class ZBGO extends ImportPerLine
-{
-	/**
-	 * 覆盖该方法来设定从第几行开始读取
-	 */
+class ZBGO extends ImportPerLine {
+	/** 覆盖该方法来设定从第几行开始读取 */
 	protected void setReadFromLine() {
 		this.readFromLine = 1;
 	}
+	
 	@Override
 	boolean impPerLine(String lineContent) {
 		if (lineContent.startsWith("!")) {
@@ -141,22 +132,24 @@ class ZBGO extends ImportPerLine
 		String[] ss = lineContent.split("\t");
 		GeneID copedID = new GeneID(ss[1], 7955);
 		String pubmed = "";
+		List<String> lsPubmed = new ArrayList<String>();
 		if (ss[5].contains("PMID")) {
 			pubmed = ss[5].split("\\|")[1].trim();
-		}
-		else {
+		} else {
 			pubmed = null;
 		}
-		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_DRE_ZFIN, true);
+		lsPubmed.add(pubmed);
+		
+		copedID.setUpdateDBinfo(DBAccIDSource.ZFIN_DRE, true);
 		GeneInfo geneInfo = new GeneInfo();
 		geneInfo.setSymb(ss[2]);
 		geneInfo.setDescrp(ss[9]);
-		geneInfo.setDBinfo(NovelBioConst.DBINFO_DRE_ZFIN);
+		geneInfo.setDBinfo(DBAccIDSource.ZFIN_DRE.name());
 		geneInfo.setTypeOfGene(ss[11]);
 		geneInfo.setModDate(ss[13]);
 		
 		copedID.setUpdateGeneInfo(geneInfo);
-		copedID.addUpdateGO(ss[4], NovelBioConst.DBINFO_DRE_ZFIN, ss[6], pubmed, null);
+		copedID.addUpdateGO(ss[4], DBAccIDSource.ZFIN_DRE, ss[6], lsPubmed, "");
 		return copedID.update(true);
 	}
 }

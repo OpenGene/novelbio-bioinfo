@@ -1,13 +1,13 @@
 package com.novelbio.database.updatedb.database;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.model.modgeneid.GeneID;
 
 /**
@@ -17,10 +17,16 @@ import com.novelbio.database.model.modgeneid.GeneID;
  *
  */
 public class MicroArrayBlast {
-	double evalue = 1e-90;
-	double identity = 90;
+	double evalue = 1e-80;
+	double identity = 80;
+	int blastLength = 90;
+	
 	String dbInfo = "";
 	int taxID = 0;
+	/** 默认subID是accID */
+	boolean subjectIDIsGeneUniID = false;
+	boolean subIDisBlastType = false;
+	
 	public void setTaxID(int taxID) {
 		this.taxID = taxID;
 	}
@@ -45,14 +51,19 @@ public class MicroArrayBlast {
 	public void setDbInfo(String dbInfo) {
 		this.dbInfo = dbInfo;
 	}
-	
-	String geneIDType = GeneID.IDTYPE_ACCID;
 	/**
-	 * blast到的ID是accID还是geneID还是UniID
-	 * @param blastID
+	 * 默认false，即subID是accID<br>
+	 * true 表示subID是geneUniID
 	 */
-	public void setGeneID(String geneIDType) {
-		this.geneIDType = geneIDType;
+	public void setSubIDType(boolean subjectIDIsGeneUniID) {
+		this.subjectIDIsGeneUniID = subjectIDIsGeneUniID;
+	}
+	
+	/** 默认false，即subID是常规ID
+	 * true：subID是类似 dbj|AK240418.1| 这种样子
+	 */
+	public void setSubIDisBlastType(boolean subIDisBlastType) {
+		this.subIDisBlastType = subIDisBlastType;
 	}
 	
 	/**
@@ -62,61 +73,39 @@ public class MicroArrayBlast {
 	public void updateFile(String gene2AccFile) {
 		TxtReadandWrite txtGene2Acc = new TxtReadandWrite(gene2AccFile, false);
 		TxtReadandWrite txtOut = new TxtReadandWrite(FileOperate.changeFileSuffix(gene2AccFile, "_out", "txt"), true);
-
-		ArrayList<String[]> lsInfo = txtGene2Acc.ExcelRead(1, 1, -1, -1, 1);
-		//排个序，按照evalue和identity排序
-		Collections.sort(lsInfo, new Comparator<String[]>() {
-			/**
-			 * 0: queryID
-			 * 1: blastID
-			 * 2: identity
-			 * 10: evalue
-			 */
-			@Override
-			public int compare(String[] o1, String[] o2) {
-				Double evalue1 = Double.parseDouble(o1[10]);
-				Double identity1 = Double.parseDouble(o1[2]);
-				Double evalue2 = Double.parseDouble(o2[10]);
-				Double identity2 = Double.parseDouble(o2[2]);
-				//evalue越小越好
-				int result = evalue1.compareTo(evalue2);
-				if (result != 0)
-					return result;
-				//identity越大越好
-				return -identity1.compareTo(identity2);
-			}
-		});
-		//将排序后的lsInfo去重复
-		ArrayList<String[]> lsFinal = new ArrayList<String[]>();
-		Set<String> setID = new HashSet<String>();
-		for (String[] strings : lsInfo) {
-			if (setID.contains(strings[0])) {
-				continue;
-			}
-			lsFinal.add(strings);
-		}
-		//将去重复和排序的比对结果导入数据库
-		for (String[] strings : lsFinal) {
-			if(!isAddToDB(strings)) {
-				continue;
-			}
-			
-			GeneID geneID = new GeneID(strings[0], taxID);
-			//如果数据库中没有这个ID，那么就导入数据库
-			if (geneID.getIDtype().equals(GeneID.IDTYPE_ACCID)) {
-				if (!geneIDType.equals(GeneID.IDTYPE_ACCID)) {
-					geneID.setUpdateGeneID(strings[1], geneIDType);
-				} else {
-					geneID.setUpdateRefAccID(strings[1]);
-				}
-			}
-			
-			geneID.setUpdateDBinfo(dbInfo, true);
-			if (geneID.update(false)) {
-				txtOut.writefileln(strings);
-			}
+		List<BlastInfo> lsBlastInfos = new ArrayList<BlastInfo>();
+		
+		for (String blastStr : txtGene2Acc.readlines()) {
+			BlastInfo blastInfo = new BlastInfo(taxID, false, taxID, subjectIDIsGeneUniID, blastStr, subIDisBlastType);
+			lsBlastInfos.add(blastInfo);
 		}
 		
+		Set<String> setProbeID = new HashSet<String>();
+		List<BlastInfo> lsBlastInfosFinal = new ArrayList<BlastInfo>();
+		for (BlastInfo blastInfo : lsBlastInfos) {
+			if (setProbeID.contains(blastInfo.getQueryID())) {
+				continue;
+			}
+			setProbeID.add(blastInfo.getQueryID());
+			lsBlastInfosFinal.add(blastInfo);
+		}
+		
+		//将去重复和排序的比对结果导入数据库
+		for (BlastInfo blastInfo : lsBlastInfosFinal) {
+			if(!isAddToDB(blastInfo) || blastInfo.getQueryIDtype() != GeneID.IDTYPE_ACCID) {
+				continue;
+			}
+			
+			GeneID geneID = new GeneID(blastInfo.getSubjectIDtype(), blastInfo.getSubjectID(), taxID);
+			//如果数据库中有这个SubID，那么就导入数据库
+			if (geneID.getIDtype() != GeneID.IDTYPE_ACCID) {
+				geneID.setUpdateAccID(blastInfo.getQueryID());
+				geneID.setUpdateDBinfo(dbInfo, true);
+				if (geneID.update(false)) {
+					txtOut.writefileln(geneID.getAccID());
+				}
+			}
+		}
 		txtOut.close();
 		txtGene2Acc.close();
 	}
@@ -126,21 +115,13 @@ public class MicroArrayBlast {
 	 * @param inputBlastInfo blast的那一行
 	 * @return
 	 */
-	private boolean isAddToDB(String[] inputBlastInfo) {
+	private boolean isAddToDB(BlastInfo blastInfo) {
 		boolean flag = false;
-		if (Double.parseDouble(inputBlastInfo[2]) > 90//一致序列大于90%
-				&&
-		(Double.parseDouble(inputBlastInfo[10]) < 1e-90
-		||
-		  (Double.parseDouble(inputBlastInfo[3]) > 100//比对长度大于100
-				&& 
-		  Double.parseDouble(inputBlastInfo[4])+Double.parseDouble(inputBlastInfo[5]) <= Double.parseDouble(inputBlastInfo[3])*0.05//错配和gap之和小于比对长度的0.03
-		  )
-	   )
-      ) {
+		if (blastInfo.getIdentities() > identity//一致序列大于90%
+		 && blastInfo.getEvalue() < evalue
+		) {
 			flag = true;
-		}
-		else {
+		} else {
 			flag = false;
 		}
 		return flag;

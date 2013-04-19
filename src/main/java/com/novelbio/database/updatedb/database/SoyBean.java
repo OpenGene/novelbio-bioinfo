@@ -88,8 +88,7 @@ class SoyDbXref extends ImportPerLine
  * 将geneInfo表导入数据库
  * @param dbxref
  */
-class SoyGeneInfo extends ImportPerLine
-{
+class SoyGeneInfo extends ImportPerLine {
 	/**
 	 * 将soybean的annotation导入数据库
 	 * @param dbxref

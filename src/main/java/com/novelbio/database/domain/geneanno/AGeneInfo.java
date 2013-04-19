@@ -1,5 +1,6 @@
 package com.novelbio.database.domain.geneanno;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -9,6 +10,8 @@ import org.apache.log4j.Logger;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
+
+import com.novelbio.database.service.servgeneanno.ManageDBInfo;
 /**
  * ibatis在操作数据库时会自动使用类中的setter和getter给属性赋值
  * 如果不想用类中的这些方法，那么setter和getter的名字不要和属性一样就好
@@ -42,6 +45,8 @@ public abstract class AGeneInfo {
 	
 	@Transient
 	private DBInfo dbInfo;
+	@Transient
+	ManageDBInfo manageDBInfo = new ManageDBInfo();
 	
 	public abstract String getGeneUniID();
 	public abstract void setGeneUniID(String geneUniID);
@@ -66,7 +71,13 @@ public abstract class AGeneInfo {
 	public void setDBinfo(DBInfo dbInfo) {
 		this.dbInfo = dbInfo;
 	}
-	
+	/**
+	 * 必须第一时间设定，按照不同的物种
+	 * @param fromDB
+	 */
+	public void setDBinfo(String dbInfo) {
+		this.dbInfo = manageDBInfo.findByDBname(dbInfo);
+	}
 	/**
 	 * 可以连续不断的设定好几次
 	 * 有几篇文献就设定几次
@@ -77,7 +88,18 @@ public abstract class AGeneInfo {
 			setPubmedIDs.add(pubmedID.trim());
 		}
 	}
-	
+	/**
+	 * 可以连续不断的设定好几次
+	 * 有几篇文献就设定几次
+	 * @param pubmedID
+	 */
+	public void addPubID(Collection<String> colPubmedID) {
+		if (colPubmedID != null) {
+			for (String pubmedID : colPubmedID) {
+				setPubmedIDs.add(pubmedID.trim());
+			}
+		}
+	}
 	/**
 	 * 如果没有pubmedID，则返回一个空的arraylist，方便用foreach语句
 	 * @return

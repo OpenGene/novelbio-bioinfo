@@ -66,7 +66,9 @@ public class TestGeneID extends TestCase {
 	@Test
 	public void test() {
 //		testGoInsert();
-		testBlastInsert();
+//		testBlastInsert();
+		ManageDBInfo manageDBInfo = new ManageDBInfo();
+		System.out.println(manageDBInfo.findByDBname("NCBI").getDbInfoID());
 	}
 		
 	
@@ -257,7 +259,7 @@ public class TestGeneID extends TestCase {
 		geneID.addUpdateBlastInfo(blastInfo);
 		
 		assertEquals("Test5", blastInfo.getQueryID());
-		assertEquals(1, geneID.getLsBlastGeneID().size());
+		assertEquals(2, geneID.getLsBlastGeneID().size());
 		assertEquals("12345678903", geneID.getLsBlastGeneID().get(0).getGeneUniID());
 	
 		geneID.update(false);

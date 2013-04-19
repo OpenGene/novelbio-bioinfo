@@ -58,16 +58,16 @@ public class ImportDB {
 //		importDB.updateGODB();
 		
 //		importDB.updateNCBIID();
-		importDB.updateUniprotID();
-//		importDB.updateMicroarray();
+//		importDB.updateUniprotID();
+	
 		
 		
-//		updateRiceID();//只导了前两个
-//		updateTAIR();
-//		updateZB();
+		importDB.updateRiceID("/media/winE/Bioinformatics/DataBase/Rice/");//只导了前两个
+		importDB.updateTAIR("/media/winE/Bioinformatics/GenomeData/Arabidopsis/tair10DB/");
+		importDB.updateZB();
 //		updateEnsembl();
 //		updateYeast();
-//		
+//		importDB.updateMicroarray();
 
 //		updateSoyBean();
 //		updateZeaMaize();
@@ -175,12 +175,11 @@ public class ImportDB {
 		ensembl.update();
 	}
 	
-	private void updateRiceID() {
-		String riceParentPath = "/media/winE/Bioinformatics/DataBase/Rice/";
+	private void updateRiceID(String riceParentPath) {
 		String gffRapDB = riceParentPath + "RAP_genes.gff3";
 		String gffTIGR =  riceParentPath + "Tigr_all.gff3";
 		String rap2MSU =  riceParentPath + "RAP-MSU.txt";
-		String goFile = "/media/winE/Bioinformatics/GenomeData/Rice/TIGRRice/all.GOSlim_assignment";
+		String goFile = riceParentPath + "all.GOSlim_assignment";
 		String rapDBoutID = FileOperate.changeFileSuffix(gffRapDB, "_IDout", "txt");
 		String tigrDBoutID = FileOperate.changeFileSuffix(gffTIGR, "_IDout", "txt");
 		RiceID riceID = new RiceID();
@@ -420,9 +419,8 @@ public class ImportDB {
 		normAffy.updateFile(affyFile);
 	}
 	
-	private void updateTAIR() {
+	private void updateTAIR(String parentPath) {
 		Arabidopsis arabidopsis = new Arabidopsis();
-		String parentPath = "/media/winE/Bioinformatics/GenomeData/Arabidopsis/tair10DB/";
 		String athGO = parentPath + "ATH_GO_GOSLIM.txt/ATH_GO_GOSLIM2.txt";
 		String tAIR_functional_descriptions = parentPath + "TAIR10_functional_descriptions";
 		String tAIRModelcDNAAssociations = parentPath + "idconvert/TAIR10_Model_cDNA_associations";
