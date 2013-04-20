@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -34,8 +35,8 @@ public class UniProt {
 	public void update() {
 		IdmappingSelected idmappingSelected = new IdmappingSelected();
 		IdmappingSelected.setTaxIDFile(taxIDFile);
-//		idmappingSelected.setTxtWriteExcep(outUniIDFile);
-//		idmappingSelected.updateFile(idmappingSelectedFile);
+		idmappingSelected.setTxtWriteExcep(outUniIDFile);
+		idmappingSelected.updateFile(idmappingSelectedFile);
 		
 		Impgene_associationgoa_uniprot impgene_associationgoa_uniprot = new Impgene_associationgoa_uniprot();
 		impgene_associationgoa_uniprot.updateFile(impgene_associationgoa_uniprotFile);
@@ -44,8 +45,10 @@ public class UniProt {
 		idmappingSelected.updateFile(outUniIDFile);
 		
 		IdmappingSelectedGOPubmed idmappingSelectedGOPubmed = new IdmappingSelectedGOPubmed();
+		idmappingSelectedGOPubmed.setTxtWriteExcep(FileOperate.changeFileSuffix(idmappingSelectedFile, "_failed", "txt"));
 		idmappingSelectedGOPubmed.updateFile(idmappingSelectedFile);
-		
+		idmappingSelectedGOPubmed = new IdmappingSelectedGOPubmed();
+		idmappingSelectedGOPubmed.updateFile(FileOperate.changeFileSuffix(idmappingSelectedFile, "_failed", "txt"));
 	}
 }
 

@@ -426,7 +426,10 @@ public class GeneID implements GeneIDInt{
 			List<String> lsGOref, String gOQualifiy) {
 		geneID.addUpdateGO(GOID, GOdatabase, GOevidence, lsGOref, gOQualifiy);
 	}
-
+	@Override
+	public void addUpdateGO(AGene2Go aGene2Go) {
+		geneID.addUpdateGO(aGene2Go);
+	}
 	@Override
 	public void setUpdateGeneInfo(AGeneInfo geneInfo) {
 		geneID.setUpdateGeneInfo(geneInfo);

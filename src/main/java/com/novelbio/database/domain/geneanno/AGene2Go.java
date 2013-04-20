@@ -1,5 +1,6 @@
 package com.novelbio.database.domain.geneanno;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -158,7 +159,7 @@ public abstract class AGene2Go {
 			this.setDB.add(dbInfo.getDbInfoID());
 		}
 	}
-	public void addReference(List<String> lsReference) {
+	public void addReference(Collection<String> lsReference) {
 		if (lsReference == null) {
 			return;
 		}

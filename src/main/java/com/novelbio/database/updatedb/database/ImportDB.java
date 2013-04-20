@@ -44,7 +44,7 @@ public class ImportDB {
 	String GOPath = "/media/winE/Bioinformatics/DataBaseUpdate/GO/";
 	
 	public static void main(String[] args) {
-		String downloadPath = "/media/winE/Bioinformatics/DataBase/";
+		String downloadPath = "/media/winE/Bioinformatics/DataBaseUpdate/";
 		String softToolsFile = "/media/winE/NBCplatform/BioInfomaticsToolsPlatform/SoftwareInfo.txt";
 		String speciesFile = "/media/winE/NBCplatform/genome/SpeciesFileThis.txt";
 		String dbInfo = "/media/winE/NBCplatform/DBinfo.txt";
@@ -57,14 +57,12 @@ public class ImportDB {
 //		importDB.updateSpecies();
 //		importDB.updateGODB();
 		
-//		importDB.updateNCBIID();
+		importDB.updateNCBIID();
 //		importDB.updateUniprotID();
-	
 		
-		
-		importDB.updateRiceID("/media/winE/Bioinformatics/DataBase/Rice/");//只导了前两个
-		importDB.updateTAIR("/media/winE/Bioinformatics/GenomeData/Arabidopsis/tair10DB/");
-		importDB.updateZB();
+//		importDB.updateRiceID("/media/winE/Bioinformatics/DataBase/Rice/");//只导了前两个
+//		importDB.updateTAIR("/media/winE/Bioinformatics/GenomeData/Arabidopsis/tair10DB/");
+//		importDB.updateZB();
 //		updateEnsembl();
 //		updateYeast();
 //		importDB.updateMicroarray();
@@ -148,6 +146,7 @@ public class ImportDB {
 		uniProt.setImpgene_associationgoa_uniprotFile(impgene_associationgoa_uniprotFile);
 		uniProt.update();
 	}
+	
 	private void updateEnsembl() {
 		Species species;
 		species.getGffFile();
