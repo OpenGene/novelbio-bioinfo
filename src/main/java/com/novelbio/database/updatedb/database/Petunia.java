@@ -7,7 +7,6 @@ import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.generalConf.NovelBioConst;
 public class Petunia {
 	public static void main(String[] args) {
 		GeneID copedID = new GeneID("PH_TC2092", 0);
@@ -19,8 +18,7 @@ public class Petunia {
 	}
 	
 	
-	public static void getSeq()
-	{
+	public static void getSeq() {
 		String seqIn = "/home/zong0jie/桌面/矮牵牛/Petunia_x_hybrida.mRNA.PUT.fasta";
 		String regx = "PUT-159a-Petunia_x_hybrida-\\d+";
 		String seqOut = FileOperate.changeFileSuffix(seqIn, "_Coped", null);
@@ -40,8 +38,7 @@ public class Petunia {
 		}
 	}
 	
-	public static void upDateBlastInfo()
-	{
+	public static void upDateBlastInfo() {
 		String filepath = "/media/winE/Bioinformatics/BLAST/result/petunia/pet2Ath";
 		TxtReadandWrite txtBlast = new TxtReadandWrite(filepath, false);
 		for (String content : txtBlast.readlines()) {

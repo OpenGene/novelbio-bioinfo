@@ -31,8 +31,7 @@ public class Yeast {
 		this.ppa_ncbi_geneidFile = ppa_ncbi_geneidFile;
 	}
 	
-	public void update()
-	{
+	public void update() {
 		YeastDBxref yeastDBxref = new YeastDBxref();
 		yeastDBxref.setTaxID(4932);
 		String outyeastDBxrefFile = FileOperate.changeFileSuffix(yeastDBxrefFile, "out", null);
@@ -158,8 +157,7 @@ class YeastDBxref extends ImportPerLine {
  * @author zong0jie
  *
  */
-class SGD_features extends ImportPerLine
-{
+class SGD_features extends ImportPerLine {
 	/**
 	 * 覆盖该方法来设定从第几行开始读取
 	 */
@@ -327,8 +325,7 @@ class Pipas_Fun extends ImportPerLine
 	}
 }
 
-class Pipas_GO_Slim extends ImportPerLine
-{
+class Pipas_GO_Slim extends ImportPerLine {
 	/**
 	 * 覆盖该方法来设定从第几行开始读取
 	 */

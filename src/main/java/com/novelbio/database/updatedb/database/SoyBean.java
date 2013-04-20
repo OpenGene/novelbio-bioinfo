@@ -1,12 +1,10 @@
 package com.novelbio.database.updatedb.database;
 
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.generalConf.NovelBioConst;
 
 public class SoyBean {
 	public static void main(String[] args) {
@@ -39,8 +37,7 @@ public class SoyBean {
 	 * @param outFIle
 	 * @throws Exception
 	 */
-	public void update()
-	{
+	public void update() {
 		SoyDbXref soyDbXref = new SoyDbXref();
 		soyDbXref.setTaxID(taxID);
 		soyDbXref.setReadFromLine(1);
@@ -63,8 +60,7 @@ public class SoyBean {
  * 将ncbi与soybean的对照表导入数据库的ID转换表
  * @param dbxref
  */
-class SoyDbXref extends ImportPerLine
-{
+class SoyDbXref extends ImportPerLine {
 	/**
 	 * 将ncbi与soybean的对照表导入数据库的ID转换表
 	 * @param dbxref
@@ -102,8 +98,7 @@ class SoyGeneInfo extends ImportPerLine {
 		geneInfo.setSymb(GeneID.removeDot(ss[0]));
 		if (ss.length < 9) {
 			geneInfo.setDescrp("");
-		}
-		else {
+		} else {
 			geneInfo.setDescrp(ss[8]);
 		}
 		copedID.setUpdateGeneInfo(geneInfo);

@@ -9,16 +9,17 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGenePlant;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
+import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.generalConf.NovelBioConst;
 
 /**
  * 用id对应的方法，将gm的ID对应到NCBI上去
  * @author zong0jie
  */
 public class GlyMaxIDNCBI {
-
+	HashMap<String, ArrayList<ListDetailBin>> hashLsGffGene = new HashMap<String, ArrayList<ListDetailBin>>();
+			
 	public static void main(String[] args) {
 		String path = "/media/winE/Bioinformatics/GenomeData/soybean/";
 		String gbsFilePath = path + "ncbi/chrgbs";
@@ -45,8 +46,7 @@ public class GlyMaxIDNCBI {
 	}
 	
 
-	private void readNCBItxt(String gbsFile) throws Exception
-	{
+	private void readNCBItxt(String gbsFile) throws Exception {
 		String chrID = FileOperate.getFileNameSep(gbsFile)[0].toLowerCase();
 		ArrayList<ListDetailBin> lsGffGene = new ArrayList<ListDetailBin>();
 		hashLsGffGene.put(chrID, lsGffGene);
@@ -64,12 +64,10 @@ public class GlyMaxIDNCBI {
 				addGffGene(tmpGene, chrID, lsGffGene);
 			}
 		}
+		txtGBS.close();
 	}
-	
-	HashMap<String, ArrayList<ListDetailBin>> hashLsGffGene = new HashMap<String, ArrayList<ListDetailBin>>();
-	String sep = "@@";
-	private void addGffGene(String txtIn, String chrID, ArrayList<ListDetailBin> lsGffGene)
-	{
+
+	private void addGffGene(String txtIn, String chrID, ArrayList<ListDetailBin> lsGffGene) {
 		String locString = "";
 		String[] tmp = txtIn.split("\r\n");
 		String locationTmp = tmp[0].replace("gene", "").replace("complement(", "").replace(")", "").replace(">", "").replace("<", "").trim();
@@ -81,7 +79,7 @@ public class GlyMaxIDNCBI {
 				locString = string.trim().split("=")[1].replace("\"", "");
 			}
 			else if (string.trim().startsWith("/db_xref")) {
-				locString = locString + sep + string.trim().split("=")[1].replace("\"", "").replace("GeneID:", "");
+				locString = locString + SepSign.SEP_ID + string.trim().split("=")[1].replace("\"", "").replace("GeneID:", "");
 				if (!string.contains("GeneID")) {
 					System.out.println("出现未知ID："+string);
 				}
@@ -109,5 +107,6 @@ public class GlyMaxIDNCBI {
 				}
 			}
 		}
+		txtOutGene.close();
 	}
 }

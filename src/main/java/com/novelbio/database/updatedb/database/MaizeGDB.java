@@ -6,7 +6,6 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.AGeneInfo;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.generalConf.NovelBioConst;
 
 public class MaizeGDB {
 	private static Logger logger = Logger.getLogger(MaizeGDB.class);
@@ -78,9 +77,6 @@ class MaizeAccID extends ImportPerLine {
 	@Override
 	boolean impPerLine(String lineContent) {
 		String[] ss = lineContent.split("\t");
-		if (ss[0].contains("GRMZM2G353867")) {
-			logger.debug("stop");
-		}
 		GeneID copedID = null;
 		if (ss[0].startsWith("AC")) {
 			copedID = new GeneID(ss[0], taxID);

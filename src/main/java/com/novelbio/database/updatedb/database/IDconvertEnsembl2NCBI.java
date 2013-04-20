@@ -15,6 +15,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.model.modgeneid.GeneID;
 /**
  * ID转换，将ensembl的表转化为NCBI的表，以及类似功能
@@ -22,10 +23,9 @@ import com.novelbio.database.model.modgeneid.GeneID;
  *
  */
 public class IDconvertEnsembl2NCBI {
-	/**
-	 * 存储gffFile和对应的taxID
-	 */
+	/** 存储gffFile和对应的taxID */
 	LinkedHashMap<String, Integer> hashEnsemblTaxID = new LinkedHashMap<String, Integer>();
+	
 	/**
 	 * 存储对应的gff文件，现在用NCBI的似乎更合适，如果享用ucsc格式的,就在下面改
 	 * 这个的目的是，如果ensemble没找到对应的基因，就到ucsc下面来查找对应的坐标，看该坐标下有没有对应的基因，然后写入数据库
@@ -56,7 +56,7 @@ public class IDconvertEnsembl2NCBI {
 			ensembleGTF.setTaxID(taxID);
 			ensembleGTF.setGffHashGene(GffType.NCBI, lsUCSCFile.get(i));
 			ensembleGTF.setTxtWriteExcep(FileOperate.changeFileSuffix(fileName, "_NotFindInDB", null));
-			ensembleGTF.updateFile(fileName, false);
+			ensembleGTF.updateFile(fileName);
 			i ++;
 		}
 	}
@@ -81,13 +81,9 @@ class EnsembleGTF extends ImportPerLine {
 	 * 将指定的文件导入数据库，如果是重复的基因，就不导入了
 	 * 如果需要导入多行，譬如amiGO的信息，请覆盖该方法
 	 */
-	public void updateFile(String gene2AccFile, boolean gzip) {
+	public void updateFile(String gene2AccFile) {
 		setReadFromLine();
-		TxtReadandWrite txtGene2Acc;
-		if (gzip)
-			txtGene2Acc = new TxtReadandWrite(TxtReadandWrite.GZIP, gene2AccFile);
-		else 
-			txtGene2Acc = new TxtReadandWrite(gene2AccFile, false);
+		TxtReadandWrite txtGene2Acc = new TxtReadandWrite(gene2AccFile);
 		//从第二行开始读取
 		String oldContent = null;
 		int num = 0;
@@ -185,8 +181,7 @@ class EnsembleGTF extends ImportPerLine {
 		}
 		GeneID geneID = new GeneID("", taxID);
 		geneID.setUpdateRefAccID(lsRefID);
-		geneID.setUpdateRefAccIDClear(true);
-		if (geneID.getIDtype().equals(GeneID.IDTYPE_ACCID)) {
+		if (geneID.getIDtype() == GeneID.IDTYPE_ACCID) {
 			GffCodGeneDU gffCodGeneDu = gffHashGene.searchLocation("chr"+ss[0].toLowerCase().replace("chr", ""), Integer.parseInt(ss[3]),  Integer.parseInt(ss[4]));
 			if (gffCodGeneDu == null || gffCodGeneDu.getAllGffDetail().size() <= 0) {
 				return false;
@@ -194,7 +189,7 @@ class EnsembleGTF extends ImportPerLine {
 			int geneNum = gffCodGeneDu.getCoveredGffGene().size()/2;
 			List<GffDetailGene> lsGenes = new ArrayList<GffDetailGene>(gffCodGeneDu.getCoveredGffGene());
 			geneID = lsGenes.get(geneNum).getLongestSplitMrna().getGeneID();
-			if (geneID.getIDtype().equals(GeneID.IDTYPE_ACCID)) {
+			if (geneID.getIDtype() == GeneID.IDTYPE_ACCID) {
 				return false;
 			}
 		}
@@ -203,22 +198,22 @@ class EnsembleGTF extends ImportPerLine {
 		for (String string : ssID) {
 			if (string.contains("gene_id")) {
 				geneID.setUpdateAccID(string.replace("gene_id", "").replace("\"", "").trim());
-				geneID.setUpdateDBinfo(NovelBioConst.DBINFO_ENSEMBL_GENE, false);
+				geneID.setUpdateDBinfo(DBAccIDSource.Ensembl_Gene, false);
 				geneID.update(true);
 			}
 			else if (string.contains("transcript_id")) {
 				geneID.setUpdateAccID(string.replace("transcript_id", "").replace("\"", "").trim());
-				geneID.setUpdateDBinfo(NovelBioConst.DBINFO_ENSEMBL_TRS, false);
+				geneID.setUpdateDBinfo(DBAccIDSource.Ensembl_TRS, false);
 				geneID.update(true);
 			}
 			else if (string.contains("gene_name")) {
 				geneID.setUpdateAccID(string.replace("gene_name", "").replace("\"", "").trim());
-				geneID.setUpdateDBinfo(NovelBioConst.DBINFO_SYMBOL, false);
+				geneID.setUpdateDBinfo(DBAccIDSource.Symbol, false);
 				geneID.update(true);
 			}
 			else if (string.contains("protein_id")) {
 				geneID.setUpdateAccID(string.replace("protein_id", "").replace("\"", "").trim());
-				geneID.setUpdateDBinfo(NovelBioConst.DBINFO_ENSEMBL_PRO, false);
+				geneID.setUpdateDBinfo(DBAccIDSource.Ensembl_Pro, false);
 				geneID.update(true);
 			}
 		}

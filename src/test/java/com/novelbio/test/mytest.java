@@ -37,6 +37,7 @@ import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.domain.geneanno.Person;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.mongorepo.geneanno.RepoNCBIID;
+import com.novelbio.database.mongorepo.geneanno.RepoPerson;
 import com.novelbio.database.service.SpringFactory;
 import com.novelbio.nbcgui.controlseq.CtrlRNAmap;
 
@@ -45,27 +46,30 @@ public class mytest {
 	private static Logger logger = Logger.getLogger(mytest.class);
 	
 	public static void main(String[] args) throws IOException, URISyntaxException {
-		RepoNCBIID repoNCBIID = (RepoNCBIID)SpringFactory.getFactory().getBean("repoNCBIID");
-		MongoTemplate mongoTemplate = (MongoTemplate)SpringFactory.getFactory().getBean("mongoTemplate");
-        DBCollection coll = mongoTemplate.getCollection("flt_evecurrent");
+		RepoPerson repoPerson = (RepoPerson)SpringFactory.getFactory().getBean("repoPerson");
 		DateUtil dateUtil = new DateUtil();
-		List<Person> lsPersons = new ArrayList<Person>();
 		dateUtil.setStartTime();
-		for (int i = 200; i <400; i++) {
-			Person person = new Person();
-			person.setName("test" + i);
-			person.setAge(i);
-			BasicDBObject obj = new BasicDBObject();  
-            obj.put("name", "test" + i);  
-            obj.put("age", i);  
-            coll.insert(obj);  
-//			mongoTemplate.insert(person);
-//			lsPersons.add(person);
-//			repoNCBIID.save(ncbiid);
-			
-//			NCBIID ncbiid2 = repoNCBIID.findByGeneIDAndAccIDAndTaxID(1234665 + i, "testA22".toLowerCase() + i, 0);
-//			repoNCBIID.delete(ncbiid2);
+//		for (int i = 0; i <100000; i++) {
+//			Person person = new Person();
+//			person.setName("test" + i);
+//			person.setAge(i);
+//			person.addInfo("affese" + i);
+//			person.addInfo("testmm" + i);
+//			repoPerson.save(person);
+//		}
+		
+		for (int i = 90000; i <100000; i++) {
+			Person person = repoPerson.findByInfo("affese" + i);
+			if (!person.getName().equals("test" + i)) {
+				System.out.println("error");
+			}
+			if (i%1000==0) {
+				System.out.println(i);
+			}
 		}
+		
+//		Person person = repoPerson.findByInfo("testmm7");
+//		System.out.println(person.getName());
 //		mongoTemplate.insert(lsPersons, "person");
 		System.out.println(dateUtil.getEclipseTime());
 			
