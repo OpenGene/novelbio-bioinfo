@@ -41,7 +41,7 @@ public class ImportDB {
 	String downloadPath = "/media/winE/NBCplatform/genome/";
 	
 	String taxIDFile = downloadPath + "常见物种IDKEGGAll.txt";
-	String GOPath = "/media/winE/Bioinformatics/DataBaseUpdate/GO/";
+	String GOPath = "/media/winE/Bioinformatics/DataBaseUpdate/";
 	
 	public static void main(String[] args) {
 		String downloadPath = "/media/winE/Bioinformatics/DataBaseUpdate/";
@@ -55,9 +55,9 @@ public class ImportDB {
 //		importDB.updateDBinfo(dbInfo);
 //		importDB.updateSoftInfo();
 //		importDB.updateSpecies();
-//		importDB.updateGODB();
+		importDB.updateGODB();
 		
-		importDB.updateNCBIID();
+//		importDB.updateNCBIID();
 //		importDB.updateUniprotID();
 		
 //		importDB.updateRiceID("/media/winE/Bioinformatics/DataBase/Rice/");//只导了前两个

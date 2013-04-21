@@ -11,7 +11,6 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.kegg.KGIDkeg2Ko;
 import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.service.servgeneanno.ManageGeneInfo;
 import com.novelbio.database.service.servkegg.ServKEntry;
 import com.novelbio.database.service.servkegg.ServKIDKeg2Ko;
 
@@ -30,8 +29,7 @@ public class Scr2Target {
 	 * @param evalue evalue 阈值是多少
 	 * @throws Exception
 	 */
-	public static void getGene2RelateKo(String pathName, List<String> accID,String ResultFIleScr2Target, String resultFIleAttribute,int QtaxID,boolean blast,int subTaxID,double evalue) throws Exception
-	{
+	public static void getGene2RelateKo(String pathName, List<String> accID,String ResultFIleScr2Target, String resultFIleAttribute,int QtaxID,boolean blast,int subTaxID,double evalue) throws Exception {
 		GeneID geneID = null;
 		ServKIDKeg2Ko servKIDKeg2Ko = new ServKIDKeg2Ko();
 		ServKEntry servKEntry = new ServKEntry();

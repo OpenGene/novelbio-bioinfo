@@ -133,6 +133,9 @@ class ImpGOExtObo extends ImportPerLine {
 	 */
 	@Override
 	public boolean impPerLine(String lineContent) {
+		if (lineContent.contains("id: GO:1901164")) {
+			logger.error("stop");
+		}
 		if (lineContent == null || lineContent.equals("")) {
 			return true;
 		}

@@ -1,15 +1,11 @@
 package com.novelbio.analysis.annotation.functiontest;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.GOtype;
-import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.generalConf.TitleFormatNBC;
@@ -167,10 +163,10 @@ class StatisticTestGene2Path extends StatisticTestGene2Item {
 		}
 		for (KGpathway kGpathway : lsPath) {
 			ArrayList<String> lsTmpFinalNew = (ArrayList<String>) lsTmpFinal.clone();
-			if (!mapItem2StatisticTestResult.containsKey(kGpathway.getMapNum())) {
+			if (!mapItem2StatisticTestResult.containsKey(("PATH:" + kGpathway.getMapNum()).toLowerCase())) {
 				continue;
 			}
-			StatisticTestResult statisticTestResult = mapItem2StatisticTestResult.get(kGpathway.getMapNum());
+			StatisticTestResult statisticTestResult = mapItem2StatisticTestResult.get(("PATH:" + kGpathway.getMapNum()).toLowerCase());
 			
 			lsTmpFinalNew.add(kGpathway.getTitle());
 			lsTmpFinalNew.add("PATHID:" + kGpathway.getMapNum());

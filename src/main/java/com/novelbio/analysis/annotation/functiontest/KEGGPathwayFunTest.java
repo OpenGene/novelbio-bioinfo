@@ -48,6 +48,9 @@ public class KEGGPathwayFunTest extends FunctionTest {
 
 	@Override
 	protected String getItemTerm(String item) {
+		if (item.contains(":")) {
+			item = item.split(":")[1];
+		}
 		return KeggInfo.getKGpathway(item).getTitle();
 	}
  

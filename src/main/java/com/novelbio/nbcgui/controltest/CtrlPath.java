@@ -26,7 +26,7 @@ public class CtrlPath extends CtrlGOPath {
 		LinkedHashMap<String, ArrayList<String[]>> hashResult = new LinkedHashMap<String, ArrayList<String[]>>();
 
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		lsResult.add(StatisticTestResult.getTitleGo());
+		lsResult.add(StatisticTestResult.getTitlePath());
 		for (StatisticTestResult statisticTestResult : lsResultTest) {
 			lsResult.add(statisticTestResult.toStringArray());
 		}

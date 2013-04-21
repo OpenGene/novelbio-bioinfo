@@ -49,7 +49,7 @@ public class ManageGeneInfo {
 	 * @param genUniID
 	 * @param gene2Go
 	 */
-	public void updateGenInfo(int idtype, String genUniID, int taxID, AGeneInfo geneInfo) {
+	public boolean updateGenInfo(int idtype, String genUniID, int taxID, AGeneInfo geneInfo) {
 		if (taxID != 0 && geneInfo.getTaxID() != 0 && taxID != geneInfo.getTaxID()) {
 			logger.error("输入taxID和自带taxID不一致,输入taxID："+taxID + " 自带taxID：" + geneInfo.getTaxID());
 		}
@@ -72,6 +72,7 @@ public class ManageGeneInfo {
 					repoGeneInfo.save(geneInfoNew);
 				} catch (Exception e) {
 					e.printStackTrace();
+					return false;
 				}
 			} else {
 				UniGeneInfo geneInfoNew = new UniGeneInfo();
@@ -82,9 +83,11 @@ public class ManageGeneInfo {
 					repoUniGeneInfo.save(geneInfoNew);
 				} catch (Exception e) {
 					e.printStackTrace();
+					return false;
 				}
 			}
 		
 		}
+		return true;
 	}
 }

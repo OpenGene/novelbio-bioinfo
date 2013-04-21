@@ -214,7 +214,7 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 		ArrayList<KGpathway> lsKGpathways = servKPathway.queryLsKGpathways(kGpathway);
 		for (KGpathway kGpathway2 : lsKGpathways) {
 			hashKGPath.put(kGpathway2.getPathName(), kGpathway2);
-			hashKGPath.put("PATH:" + kGpathway2.getMapNum(), kGpathway2);	
+			hashKGPath.put(kGpathway2.getMapNum(), kGpathway2);	
 		}
 		return hashKGPath;
 	}

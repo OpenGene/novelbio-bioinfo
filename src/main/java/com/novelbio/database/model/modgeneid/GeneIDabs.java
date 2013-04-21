@@ -776,8 +776,11 @@ public class GeneIDabs implements GeneIDInt {
 				geneInfo.setDBinfo(getDBinfo());
 			}
 		}
+	
 		try {
-			servGeneInfo.updateGenInfo(getIDtype(), ageneUniID.getGenUniID(), getTaxID(), geneInfo);
+			if (!servGeneInfo.updateGenInfo(getIDtype(), ageneUniID.getGenUniID(), getTaxID(), geneInfo)) {
+				return false;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
@@ -978,7 +981,7 @@ public class GeneIDabs implements GeneIDInt {
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
 		
-		GeneID otherObj = (GeneID) obj;
+		GeneIDabs otherObj = (GeneIDabs) obj;
 		return ageneUniID.equals(otherObj.getAgeneUniID());
 	}
 

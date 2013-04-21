@@ -151,7 +151,7 @@ public class StatisticTestResult {
 		addTitle(lsTitle);
 		return lsTitle.toArray(new String[0]);
 	}
-	public static String[] getTitilePath() {
+	public static String[] getTitlePath() {
 		ArrayList<String> lsTitle = new ArrayList<String>();
 		lsTitle.add(TitleFormatNBC.PathwayID.toString());
 		lsTitle.add(TitleFormatNBC.PathwayTerm.toString());
