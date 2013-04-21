@@ -433,14 +433,15 @@ public class GeneIDabs implements GeneIDInt {
 	public ArrayList<KGentry> getKegEntity(boolean blast) {
 		getKeggInfo();
 		if (!blast) {
-			return keggInfo.getLsKgGentries(null);
+			return keggInfo.getKgGentries();
 		} else {
 			List<GeneID> lsGeneIDsBlast = getLsBlastGeneID();
 			ArrayList<KeggInfo> lsKeggInfos = new ArrayList<KeggInfo>();
+			lsKeggInfos.add(getKeggInfo());
 			for (GeneID copedID : lsGeneIDsBlast) {
 				lsKeggInfos.add(copedID.getKeggInfo());
 			}
-			return keggInfo.getLsKgGentries(lsKeggInfos);
+			return KeggInfo.getLsKgGentries(lsKeggInfos);
 		}
 	}
 	/**
@@ -465,11 +466,12 @@ public class GeneIDabs implements GeneIDInt {
 		getKeggInfo();
 		if (blast) {
 			ArrayList<KeggInfo> lskeggInfo = new ArrayList<KeggInfo>();
+			lskeggInfo.add(keggInfo);
 			List<GeneID> lsBlastCopedIDs = getLsBlastGeneID();
 			for (GeneID copedID : lsBlastCopedIDs) {
 				lskeggInfo.add(copedID.getKeggInfo());
 			}
-			return keggInfo.getLsKegPath(lskeggInfo);
+			return KeggInfo.getLsKegPath(lskeggInfo);
 		} else {
 			return keggInfo.getLsKegPath();
 		}

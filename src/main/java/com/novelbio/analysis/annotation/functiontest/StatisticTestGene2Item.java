@@ -167,13 +167,13 @@ class StatisticTestGene2Path extends StatisticTestGene2Item {
 		}
 		for (KGpathway kGpathway : lsPath) {
 			ArrayList<String> lsTmpFinalNew = (ArrayList<String>) lsTmpFinal.clone();
-			if (!mapItem2StatisticTestResult.containsKey("PATH:" + kGpathway.getMapNum())) {
+			if (!mapItem2StatisticTestResult.containsKey(kGpathway.getMapNum())) {
 				continue;
 			}
-			StatisticTestResult statisticTestResult = mapItem2StatisticTestResult.get("PATH:" + kGpathway.getMapNum());
+			StatisticTestResult statisticTestResult = mapItem2StatisticTestResult.get(kGpathway.getMapNum());
 			
 			lsTmpFinalNew.add(kGpathway.getTitle());
-			lsTmpFinalNew.add(kGpathway.getPathName());
+			lsTmpFinalNew.add("PATHID:" + kGpathway.getMapNum());
 			
 //			lsTmpFinalNew.add(statisticTestResult.difGeneInItemNum + "");
 //			lsTmpFinalNew.add(statisticTestResult.allDifGeneNum + "");

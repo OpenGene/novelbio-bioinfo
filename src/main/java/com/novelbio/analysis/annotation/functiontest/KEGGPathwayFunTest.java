@@ -1,19 +1,12 @@
 package com.novelbio.analysis.annotation.functiontest;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import javax.swing.plaf.BorderUIResource.TitledBorderUIResource;
-
 import com.novelbio.database.domain.geneanno.GOtype;
-import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modkegg.KeggInfo;
-import com.novelbio.generalConf.TitleFormatNBC;
 
 public class KEGGPathwayFunTest extends FunctionTest {
 

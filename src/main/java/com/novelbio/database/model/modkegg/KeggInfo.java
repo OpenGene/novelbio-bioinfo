@@ -1,7 +1,6 @@
 package com.novelbio.database.model.modkegg;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.domain.kegg.KGpathway;
@@ -51,16 +50,16 @@ public class KeggInfo implements KeggInfoInter{
 	public ArrayList<KGpathway> getLsKegPath() {
 		return keggInfoAbs.getLsKegPath();
 	}
-	@Override
-	public ArrayList<KGpathway> getLsKegPath(ArrayList<? extends KeggInfoInter> ls_keggInfo) {
-		return keggInfoAbs.getLsKegPath(ls_keggInfo);
+
+	public static ArrayList<KGpathway> getLsKegPath(ArrayList<? extends KeggInfoInter> ls_keggInfo) {
+		return KeggInfoAbs.getLsKegPath(ls_keggInfo);
 	}
-	@Override
-	public ArrayList<KGentry> getLsKgGentries(ArrayList<? extends KeggInfoInter> ls_keggInfo) {
-		return keggInfoAbs.getLsKgGentries(ls_keggInfo);
+
+	public static ArrayList<KGentry> getLsKgGentries(ArrayList<? extends KeggInfoInter> ls_keggInfo) {
+		return KeggInfoAbs.getLsKgGentries(ls_keggInfo);
 	}
-	public static KGpathway getKGpathway(String pathID)
-	{
+	
+	public static KGpathway getKGpathway(String pathID) {
 		return KeggInfoAbs.getHashKGpath().get(pathID);
 	}
 	
