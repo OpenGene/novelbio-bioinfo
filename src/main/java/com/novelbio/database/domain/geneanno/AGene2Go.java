@@ -187,7 +187,7 @@ public abstract class AGene2Go {
 		update = GeneInfo.addInfo(setEvid, gene2Go.setEvid) || update;
 		update = GeneInfo.addInfo(setPubID, gene2Go.setPubID) || update;
 		if ((qualifier == null || qualifier.equals("") || qualifier.equalsIgnoreCase("NOT"))
-				&& gene2Go.qualifier != null && !gene2Go.qualifier.equals("") && !qualifier.equals("-")) {
+				&& gene2Go.qualifier != null && !gene2Go.qualifier.equals("") && !gene2Go.qualifier.equals("-")) {
 			qualifier = gene2Go.qualifier;
 			update = true;
 		}

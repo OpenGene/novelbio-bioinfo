@@ -2,13 +2,13 @@ package com.novelbio.database.domain.geneanno;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -77,9 +77,9 @@ public class SpeciesFile {
 	 * value: 0, GffType 1:GffFile
 	 */
 	Map<String, String[]> mapDB2GffTypeAndFile = new HashMap<String, String[]>();
+	
 	/** 用来将小写的DB转化为正常的DB，使得getDB获得的字符应该是正常的DB */
-	@Transient
-	Map<String, String> mapGffDB2DB;
+	Map<String, String> mapGffDBLowCase2DBNormal = new HashMap<String, String>();
 	
 	/** mongodb的ID */
 	public void setId(String id) {
@@ -148,10 +148,10 @@ public class SpeciesFile {
 	 */
 	public Map<String, String> getMapGffDB() {
 		Map<String, String> mapStringDB = new LinkedHashMap<String, String>();
-		if (mapGffDB2DB.size() == 0) {
+		if (mapGffDBLowCase2DBNormal.size() == 0) {
 			return mapStringDB;
 		}
-		for (String gffDB : mapGffDB2DB.values()) {
+		for (String gffDB : mapGffDBLowCase2DBNormal.values()) {
 			mapStringDB.put(gffDB, gffDB);
 		}
 		return mapStringDB;
@@ -159,6 +159,7 @@ public class SpeciesFile {
 	
 	public void addGffDB2TypeFile(String gffDB, GffType gffType, String gffFile) {
 		mapDB2GffTypeAndFile.put(gffDB.toLowerCase(), new String[]{gffType.name(), gffFile});
+		mapGffDBLowCase2DBNormal.put(gffDB.toLowerCase(), gffDB);
 	}
 	
 	
@@ -226,7 +227,7 @@ public class SpeciesFile {
 		}
 		Entry<String, String[]> entyGffDB2File = mapDB2GffTypeAndFile.entrySet().iterator().next();
 		String gffDB = entyGffDB2File.getKey();
-		gffDB = mapGffDB2DB.get(gffDB);
+		gffDB = mapGffDBLowCase2DBNormal.get(gffDB);
 		String[] gffType2File = entyGffDB2File.getValue();
 		return new String[]{gffDB, gffType2File[0], gffType2File[1]};
 	}
@@ -438,8 +439,8 @@ public class SpeciesFile {
 		if (getClass() != obj.getClass()) return false;
 		SpeciesFile otherObj = (SpeciesFile)obj;
 		if (mapChrID2ChrLen.equals(otherObj.mapChrID2ChrLen)
-			&& mapDB2GffTypeAndFile.equals(otherObj.mapDB2GffTypeAndFile)
-			&& mapGffDB2DB.equals(otherObj.mapGffDB2DB)
+			&& compareMapStrArray(mapDB2GffTypeAndFile, otherObj.mapDB2GffTypeAndFile)
+			&& mapGffDBLowCase2DBNormal.equals(otherObj.mapGffDBLowCase2DBNormal)
 			&& mapSoftware2IndexChrom.equals(otherObj.mapSoftware2IndexChrom)
 			&& mapSoftware2IndexRef.equals(otherObj.mapSoftware2IndexRef)
 			&& ArrayOperate.compareString(chromPath2Regx[0], otherObj.chromPath2Regx[0])
@@ -456,6 +457,45 @@ public class SpeciesFile {
 			return true;
 		}
 		return false;
+	}
+	
+	private<T, K> boolean compareMapStrArray(Map<T, K[]> map1, Map<T, K[]> map2) {
+		if (map1 == null && map2 != null || map1 != null && map2 == null) {
+			return false;
+		}
+		if (map1 == null && map2 == null) {
+			return true;
+		}
+        if (map1.size() != map2.size())
+            return false;
+
+        try {
+            Iterator<Entry<T, K[]>> i = map1.entrySet().iterator();
+            while (i.hasNext()) {
+                Entry<T, K[]> e = i.next();
+                T key = e.getKey();
+                K[] value = e.getValue();
+                if (value == null) {
+                    if (!(map2.get(key)==null && map2.containsKey(key)))
+                        return false;
+                } else {
+                	K[] value2 = map2.get(key);
+                	if (value2.length != value.length) {
+						return false;
+					}
+                	for (int j = 0; j < value.length; j++) {
+						if (!value[j].equals(value2[j])) {
+							 return false;
+						}
+					}                       
+                }
+            }
+        } catch (ClassCastException unused) {
+            return false;
+        } catch (NullPointerException unused) {
+            return false;
+        }
+        return true;
 	}
 	
 	/** 提取小RNA的一系列序列 */

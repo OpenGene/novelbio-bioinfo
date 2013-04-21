@@ -328,7 +328,7 @@ public class Species {
 	/** 自动化升级 */
 	public void update() {
 		if (FileOperate.isFileExistAndBigThanSize(updateTaxInfoFile, 0.05))
-			updateTaxInfo(updateTaxInfoFile);
+//			updateTaxInfo(updateTaxInfoFile);
 		
 		if (FileOperate.isFileExistAndBigThanSize(updateSpeciesFile, 0.05))
 			updateSpeciesFile(updateSpeciesFile);
