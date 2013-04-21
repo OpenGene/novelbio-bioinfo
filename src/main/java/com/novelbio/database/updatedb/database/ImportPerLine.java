@@ -19,7 +19,7 @@ abstract class ImportPerLine {
 	static String taxIDfile = "";
 	int readFromLine = 1;
 	//多此一举的设定，回头慢慢修正
-	int num = 2;
+	int num = 1;
 	/**
 	 * 将无法升级的行写入该文本
 	 */

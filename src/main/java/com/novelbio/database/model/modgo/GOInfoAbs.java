@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.AGene2Go;
+import com.novelbio.database.domain.geneanno.DBInfo;
 import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -115,6 +116,35 @@ public abstract class GOInfoAbs {
 			lsResult.add(aGene2Go);
 		}
 		return lsResult;
+	}
+	
+	public void addGene2GO(AGene2Go aGene2GoIn) {
+		if (aGene2GoIn.getGOID() == null || aGene2GoIn.getGOID().equals("")) {
+			return;
+		}
+		String GOID = aGene2GoIn.getGOID().trim();
+		
+		AGene2Go gene2Go = createGene2Go();
+		gene2Go.setGOID(aGene2GoIn.getGOID());
+		gene2Go.setTaxID(taxID);
+		for (String string : aGene2GoIn.getEvidence()) {
+			gene2Go.addEvidence(string);
+		}
+		for (DBInfo dbInfo : aGene2GoIn.getDataBase()) {
+			gene2Go.addDBID(dbInfo);
+		}
+		gene2Go.addReference(aGene2GoIn.getReference());
+		
+		if (mapGene2Gos.containsKey(GOID)) {
+			AGene2Go aGene2Go = mapGene2Gos.get(GOID);
+			if (aGene2Go.addInfo(gene2Go)) {
+				setUpdate.add(aGene2Go);
+			}
+		} else {
+			gene2Go.setGeneUniID(getGenUniAccID());
+			setUpdate.add(gene2Go);
+			mapGene2Gos.put(GOID, gene2Go);
+		}
 	}
 	
 	public void addGOid(int taxID, String GOID, DBAccIDSource GOdatabase, String GOevidence,

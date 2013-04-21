@@ -33,6 +33,7 @@ public abstract class AGeneInfo {
 
 	private Set<String> setSynonyms = new HashSet<String>();
 	private Set<String> setDbXrefs = new HashSet<String>();
+	/** Symbol_from_nomenclature_authority */
 	private Set<String> setSymNome = new HashSet<String>();
 	/** 文献中的全名 */
 	private Set<String> setFullNameNome = new HashSet<String>();
@@ -139,6 +140,7 @@ public abstract class AGeneInfo {
 	public Set<String> getSynonym() {
 		return setSynonyms;
 	}
+	
 	public void addSynonym(String synonyms) {
 		if (synonyms == null || synonyms.equals("") || synonyms.equals("-")) {
 			return;
@@ -201,7 +203,7 @@ public abstract class AGeneInfo {
 	public Set<String> getSymNom() {
 		return setSymNome;
 	}
-	
+	/** Symbol_from_nomenclature_authority */
 	public void addSymNom(String symNome) {
 		if (symNome == null || symNome.equals("") || symNome.equals("-")) return;
 		this.setSymNome.add(symNome);

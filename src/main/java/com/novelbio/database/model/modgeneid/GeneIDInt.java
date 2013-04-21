@@ -159,6 +159,13 @@ GO_REF:0000004<br>
 	void addUpdateGO(String GOID, DBAccIDSource GOdatabase, String GOevidence,
 			List<String> lsGOref, String gOQualifiy);
 	/**
+	 * 依次输入需要升级的GO信息，最后升级<br>
+	 * 这里只是先获取GO的信息，最后调用升级method的时候再升级<br>
+	 * 可以连续不断的添加
+	 */
+	void addUpdateGO(AGene2Go aGene2Go);
+
+	/**
 	 * 输入需要update的geneInfo，注意不需要设定geneUniID，除非是单独升级pubmedID信息，否则
 	 * <b>务必要设定geneinfo的dbinfo</b>，dbinfo是判定该geneinfo数据库来源的信息<br>
 	 * 此外如果还需要设定synonme，并且synonme是被“|”等符号隔开<b>，则还需设定分隔符 "\\|"</b>
