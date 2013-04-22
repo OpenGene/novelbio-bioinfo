@@ -7,15 +7,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
 
 import org.apache.log4j.Logger;
+
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataOperate.TxtReadandWrite.TXTtype;
-import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.base.multithread.txtreadcopewrite.MTRecordRead;
-import com.novelbio.base.multithread.txtreadcopewrite.MTRecoreReader;
 
 /**
  * FastQ的各个指标<br>

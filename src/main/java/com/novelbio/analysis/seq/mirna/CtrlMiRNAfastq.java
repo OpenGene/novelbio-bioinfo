@@ -237,6 +237,7 @@ public class CtrlMiRNAfastq {
 		}
 		TxtReadandWrite txtWrite = new TxtReadandWrite(fileName, true);
 		txtWrite.ExcelWrite(lsInfo);
+		txtWrite.close();
 	}
 	
 	/**

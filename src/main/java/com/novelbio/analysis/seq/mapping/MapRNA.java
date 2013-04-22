@@ -1,6 +1,5 @@
 package com.novelbio.analysis.seq.mapping;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.novelbio.analysis.seq.fastq.FastQ;

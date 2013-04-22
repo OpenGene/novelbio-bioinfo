@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
-import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamFile;
-import com.novelbio.analysis.seq.sam.SamFileStatistics;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
@@ -301,9 +299,6 @@ public class MapBowtie extends MapDNA {
 			return null;
 		}
 		SamFile samFile = new SamFile(outFileName);
-		samFileStatistics = new SamFileStatistics();
-		List<AlignmentRecorder> lsAlignmentRecorders = new ArrayList<AlignmentRecorder>();
-		lsAlignmentRecorders.add(samFileStatistics);
 		SamFile bamFile = samFile.convertToBam(lsAlignmentRecorders);
 		samFile.close();
 		deleteFile(samFile.getFileName(), bamFile.getFileName());

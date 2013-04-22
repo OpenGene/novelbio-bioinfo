@@ -2,8 +2,6 @@ package com.novelbio.analysis.seq.fastq;
 
 import java.util.Map;
 
-import org.apache.commons.collections.functors.IfClosure;
-
 /**
  * 需要设定mapFastQFilter
  * @author zong0jie

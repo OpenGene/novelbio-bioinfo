@@ -1,8 +1,11 @@
 package com.novelbio.analysis.seq.mapping;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.novelbio.analysis.seq.fastq.FastQ;
+import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamFile;
-import com.novelbio.analysis.seq.sam.SamFileStatistics;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 /**
@@ -18,8 +21,15 @@ public abstract class MapDNA {
 	 */
 	static int overTime = 50000;
 	
-	SamFileStatistics samFileStatistics;
-	
+	/** 因为mapping完后会将sam文件转成bam文件，这时候就可以顺带的做一些工作 */
+	List<AlignmentRecorder> lsAlignmentRecorders = new ArrayList<AlignmentRecorder>();
+	/** 因为mapping完后会将sam文件转成bam文件，这时候就可以顺带的做一些工作 */
+	public void setLsAlignmentRecorders(List<AlignmentRecorder> lsAlignmentRecorders) {
+		this.lsAlignmentRecorders = lsAlignmentRecorders;
+	}
+	public void addAlignmentRecorder(AlignmentRecorder alignmentRecorder) {
+		this.lsAlignmentRecorders.add(alignmentRecorder);
+	}
 	/** 输入已经过滤好的fastq文件 */
 	public abstract void setFqFile(FastQ leftFq, FastQ rightFq);
 	
@@ -88,8 +98,8 @@ public abstract class MapDNA {
 		return mapSoftware;
 	}
 	
-	public SamFileStatistics getStatistics() {
-		return samFileStatistics;
+	public List<AlignmentRecorder> getLsAlignmentRecorders() {
+		return lsAlignmentRecorders;
 	}
 	
 	/**

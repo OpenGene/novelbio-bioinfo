@@ -353,7 +353,6 @@ public class SamFile implements AlignSeq {
 				try {
 					alignmentRecorder.addAlignRecord(samRecord);
 				} catch (Exception e) { }
-				
 			}
 			samFile.writeSamRecord(samRecord);
 		}

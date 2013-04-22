@@ -1,18 +1,10 @@
 package com.novelbio.analysis.seq.mirna;
 
-import net.sf.samtools.SAMFileReader;
-
-import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.AlignSeq;
-import com.novelbio.analysis.seq.bed.BedSeq;
 import com.novelbio.analysis.seq.mapping.MapBwa;
-import com.novelbio.analysis.seq.sam.AlignSamReading;
-import com.novelbio.analysis.seq.sam.AlignSeqReading;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamFileStatistics;
-import com.novelbio.analysis.seq.sam.SamReader;
 import com.novelbio.analysis.seq.sam.SamToFastq;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
@@ -193,29 +185,22 @@ public class MiRNAmapPipline {
 		mapBwa.setChrFile(chrFile);
 		mapBwa.setExePath(exePath);
 		mapBwa.setGapLength(5);
-		SamFile samFile = mapBwa.mapReads();
-		
-		try { Thread.sleep(1000); } catch (Exception e) { }
-		
-		AlignSeqReading alignSamReading = new AlignSamReading(samFile);
+				
 		SamFileStatistics samFileStatistics = new SamFileStatistics();
 		samFileStatistics.initial();
-		
-		SamToFastq samToFastq = null;
+		mapBwa.addAlignmentRecorder(samFileStatistics);
+
 		if (unMappedFq != null && !unMappedFq.equals("")) {
-			samToFastq = new SamToFastq();
+			SamToFastq samToFastq = new SamToFastq();
 			samToFastq.setFastqFile(unMappedFq);
 			samToFastq.setJustUnMapped(true);
+			mapBwa.addAlignmentRecorder(samToFastq);
 		}
 		
-		alignSamReading.addAlignmentRecorder(samToFastq);
-		alignSamReading.addAlignmentRecorder(samFileStatistics);
-		
-		alignSamReading.run();
+		SamFile samFile = mapBwa.mapReads();
 		samFile.close();
 		
 		samFileStatistics.writeToFile(FileOperate.changeFileSuffix(samFile.getFileName(), "_Statistics", "txt"));
-		
 		return samFile.getFileName();
 	}
 }

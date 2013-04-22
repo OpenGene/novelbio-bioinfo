@@ -341,10 +341,12 @@ public class CtrlFastQMapping {
 			mapSoftware.setMismatch(mismatch);
 			mapSoftware.setSampleGroup(prefix, null, null, null);
 			mapSoftware.setMapLibrary(libraryType);
-			
 			mapSoftware.setThreadNum(thread);
-			SamFile samFile = mapSoftware.mapReads();
-			ArrayList<String[]> lsStatistics = mapSoftware.getStatistics().getMappingInfo();
+			SamFileStatistics samFileStatistics = new SamFileStatistics();
+			mapSoftware.addAlignmentRecorder(samFileStatistics);
+			mapSoftware.mapReads();
+			
+			ArrayList<String[]> lsStatistics = samFileStatistics.getMappingInfo();
 			txtReport.writefileln(prefix);
 			for (String[] strings : lsStatistics) {
 				txtReport.writefileln(strings);

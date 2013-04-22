@@ -1,11 +1,18 @@
 package com.novelbio.nbcgui.GUI;
 
-import javax.jnlp.FileOpenService;
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
 import javax.swing.ButtonGroup;
-import javax.swing.JPanel;
-import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JRadioButton;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
 
 import com.novelbio.analysis.seq.genome.GffChrAbs;
@@ -15,20 +22,8 @@ import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
-import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
-import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.controlseq.CtrlMapReads;
-
-import java.awt.Color;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-
-import javax.swing.JProgressBar;
-import javax.swing.JRadioButton;
-import javax.swing.JSpinner;
-import javax.swing.JLayeredPane;
 
 /**
  * 批量注释，各种注释
