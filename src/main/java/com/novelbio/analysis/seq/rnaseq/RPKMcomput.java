@@ -5,11 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
-
-import org.apache.commons.collections.functors.IfClosure;
 
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
@@ -48,7 +44,12 @@ public class RPKMcomput implements AlignmentRecorder {
 	 * value: geneLength
 	 */
 	Map<String, Integer> mapGeneName2Length = new TreeMap<String, Integer>();
-
+	/**
+	 * key: geneName
+	 * value: geneType
+	 */
+	Map<String, String> mapGeneName2Type = new HashMap<String, String>();
+	
 	/** 样本时期 和 样本reads num 用来算rpkm */
 	Map<String, Double> mapCond2CountsNum = new LinkedHashMap<String, Double>();
 	/** 设定当前condition */

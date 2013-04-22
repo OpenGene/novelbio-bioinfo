@@ -30,8 +30,6 @@ import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.information.SoftWareInfo;
-import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 /**
  * 提取为bed文件时，仅仅考虑f-r情况
@@ -94,22 +92,32 @@ public class SamFile implements AlignSeq {
 	}
 	private void setSamFileRead(String samBamFile) {
 		String bamindex = samBamFile + ".bai";
-		if (!FileOperate.isFileExistAndBigThanSize(samBamFile, 0)) {
+		if (!FileOperate.isFileExistAndBigThanSize(bamindex, 0)) {
 			bamindex = null;
 		}
 		setSamFileRead(samBamFile, bamindex);
 //		initialSoftWare();
 	}
 	
+	public SamReader getSamReader() {
+		if (samReader != null) {
+			samReader.initial();
+		}
+		return samReader;
+	}
+	
 	private void setSamFileRead(String samFileExist, String fileIndex) {
 		FormatSeq formatSeq = isSamBamFile(samFileExist);
-		if (formatSeq == FormatSeq.UNKNOWN) {
+		if (formatSeq != FormatSeq.BAM && formatSeq != FormatSeq.SAM) {
 			return;
 		}
 		if (formatSeq == FormatSeq.BAM) {
 			bamFile = true;
+			samReader = new SamReader(samFileExist, fileIndex);
+		} else {
+			samReader = new SamReader(samFileExist);
 		}
-		samReader = new SamReader(samFileExist, fileIndex);
+		samReader.initial();
 		read = true;
 	}
 	
@@ -173,7 +181,7 @@ public class SamFile implements AlignSeq {
 	 * @param getPairedBed
 	 */
 	public boolean isPairend() {
-		return samReader.isPairend();
+		return getSamReader().isPairend();
 	}
 	
 	/** 
@@ -184,7 +192,7 @@ public class SamFile implements AlignSeq {
 	 * @return
 	 */
 	public Iterable<SamRecord> readLinesOverlap(String chrID, int start, int end) {
-		return samReader.readLinesOverlap(chrID, start, end);
+		return getSamReader().readLinesOverlap(chrID, start, end);
 	}
 	/**
 	 * each SAMRecord returned is will have its alignment completely contained in the interval of interest. 
@@ -194,14 +202,14 @@ public class SamFile implements AlignSeq {
 	 * @return
 	 */
 	public Iterable<SamRecord> readLinesContained(String chrID, int start, int end) {
-		return samReader.readLinesContained(chrID, start, end);
+		return getSamReader().readLinesContained(chrID, start, end);
 	}
 	
 	public Iterable<SamRecord> readLines() {
-		return samReader.readLines();
+		return getSamReader().readLines();
 	}
 	public Iterable<SamRecord> readLines(int num) {
-		return samReader.readLines(num);
+		return getSamReader().readLines(num);
 	}
 	/**
 	 * 读取前几行，不影响{@link #readLines()}
@@ -236,7 +244,7 @@ public class SamFile implements AlignSeq {
 	 * @return 没找到就返回null
 	 */
 	public SamRecord getReads(String ReadName) {
-		return samReader.getReads(ReadName);
+		return getSamReader().getReads(ReadName);
 	}
 	
 	/** 默认不排序 */
@@ -246,7 +254,7 @@ public class SamFile implements AlignSeq {
 	
 	/** 是否需要排序 */
 	public SAMFileHeader getHeader(boolean isNeedSort) {
-		SAMFileHeader samFileHeader = samReader.getSamFileHead();
+		SAMFileHeader samFileHeader = getSamReader().getSamFileHead();
 		if (isNeedSort) {
 			samFileHeader.setSortOrder(SAMFileHeader.SortOrder.coordinate);
 			PathDetail.setTmpDir(FileOperate.getParentPathName(getFileName()));
@@ -260,7 +268,7 @@ public class SamFile implements AlignSeq {
 	 */
 	public FastQ getUnMappedReads(boolean getNonUniq, String outFastQfile) {
 		FastQ fastQ = new FastQ(outFastQfile, true);
-		for (SamRecord samRecord : samReader.readLines()) {
+		for (SamRecord samRecord : getSamReader().readLines()) {
 			if (!samRecord.isMapped() || (getNonUniq && !samRecord.isUniqueMapping())) {
 				FastQRecord fastQRecord = samRecord.toFastQRecord();
 				fastQ.writeFastQRecord(fastQRecord);
@@ -574,6 +582,7 @@ public class SamFile implements AlignSeq {
 			return thisFormate;
 		}
 		SamReader samReader = new SamReader(samBamFile);
+		samReader.initial();
 		if (!samReader.isSamBamFile()) {
 			return thisFormate;
 		}

@@ -158,8 +158,13 @@ public class FastQ {
 	}
 	
 	public void close() {
-		fastQRead.close();
-		fastQwrite.close();
+		try {
+			fastQRead.close();
+		} catch (Exception e) { 	}
+		try {
+			fastQwrite.close();
+		} catch (Exception e) { 	}
+	
 		if (!read) {
 			try {
 				if (!FileOperate.isFileExist(fastQRead.getFileName())  && FileOperate.isFileExist(fastQwrite.getFileName())) {

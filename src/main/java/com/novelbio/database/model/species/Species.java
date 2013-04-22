@@ -328,7 +328,7 @@ public class Species {
 	/** 自动化升级 */
 	public void update() {
 		if (FileOperate.isFileExistAndBigThanSize(updateTaxInfoFile, 0.05))
-//			updateTaxInfo(updateTaxInfoFile);
+			updateTaxInfo(updateTaxInfoFile);
 		
 		if (FileOperate.isFileExistAndBigThanSize(updateSpeciesFile, 0.05))
 			updateSpeciesFile(updateSpeciesFile);
@@ -426,7 +426,7 @@ public class Species {
 			m = hashName2ColNum.get("refseqncfile");
 			speciesFile.setRefseqNCfile(info[m]);
 			try {
-				speciesFile.getHashChrID2ChrLen();
+				speciesFile.getMapChromInfo();
 			} catch (Exception e) {
 				logger.error("条目出错：" + ArrayOperate.cmbString(info, "\t"));
 			}
@@ -474,14 +474,12 @@ public class Species {
 		
 		for (Integer taxID : lsTaxID) {
 			Species species = new Species(taxID);
-			if (speciesType == ALL_SPECIES && species.getCommonName().equals("")) {
+			if (species.getCommonName().equals("")) {
 				continue;
-			} else if (speciesType == KEGGNAME_SPECIES) {
-				if (species.getAbbrName().equals("")) {
-					continue;
-				}
 			}
-			else if (speciesType == SEQINFO_SPECIES) {
+			if (speciesType == KEGGNAME_SPECIES && species.getAbbrName().equals("")) {
+				continue;
+			} else if (speciesType == SEQINFO_SPECIES) {
 				List<SpeciesFile> lsSpeciesFiles = servSpeciesFile.queryLsSpeciesFile(taxID);
 				if (lsSpeciesFiles.size() == 0) {
 					continue;

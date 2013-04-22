@@ -13,11 +13,6 @@ import com.novelbio.database.model.modgeneid.GeneID;
  *
  */
 public class UpdateGene2GO extends ImportPerLine {
-	/** 第二列为geneID，false第二列为refID并且用英文分号隔开 */
-	boolean refGeneID = true;
-	public void setRefGeneID(boolean refGeneID) {
-		this.refGeneID = refGeneID;
-	}
 	@Override
 	boolean impPerLine(String lineContent) {
 		String[] ss = lineContent.split("\t");
@@ -56,12 +51,13 @@ public class UpdateGene2GO extends ImportPerLine {
 	private GeneID generateGeneID(String ss0, String ss1) {
 		int taxID = Integer.parseInt(ss0.trim());
 		GeneID geneID = null;
-		if (refGeneID) {
+		if (ss1.toLowerCase().trim().startsWith("geneid")) {
+			ss1 = ss1.split(";")[1].trim();
 			try {
-				Integer.parseInt(ss1.trim());
-				geneID = new GeneID(GeneID.IDTYPE_GENEID, ss1.trim(), taxID);
+				Integer.parseInt(ss1);
+				geneID = new GeneID(GeneID.IDTYPE_GENEID, ss1, taxID);
 			} catch (Exception e) {
-				geneID = new GeneID(GeneID.IDTYPE_UNIID, ss1.trim(), taxID);
+				geneID = new GeneID(GeneID.IDTYPE_UNIID, ss1, taxID);
 			}
 		} else {
 			geneID = new GeneID("", taxID);

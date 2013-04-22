@@ -725,6 +725,12 @@ public class GffDetailGene extends ListDetailAbs {
 		}
 		return mapCompInfo2GeneIso.get(lsCompInfo.get(0));
 	}
+	
+	//TODO
+//	public ArrayListMultimap<String, GffGeneIsoInfo> getMapIsoGroup() {
+//		
+//	}
+//	
 	/**
 	 * 将本基因输出为gtf文件，就这个基因的几行
 	 * 基因名为getNameSingle()

@@ -6,7 +6,6 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -17,14 +16,12 @@ import com.novelbio.analysis.annotation.pathway.kegg.kGML2DB.KeggIDcvt;
 import com.novelbio.analysis.seq.genome.GffSpeciesInfo;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
-import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.database.domain.geneanno.DBInfo;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.database.updatedb.database.UpdateGene2GO;
 import com.novelbio.database.updatedb.database.UpdateGeneInfoNorm;
-import javax.swing.JScrollPane;
 
 public class GuiUpdateDB extends JPanel {
 	private static final long serialVersionUID = -7042827927643252396L;
@@ -33,10 +30,7 @@ public class GuiUpdateDB extends JPanel {
 	GffSpeciesInfo specieInformation = new GffSpeciesInfo();
 	JScrollPaneData sclUpdateGeneInfo;
 	JScrollPaneData sclUpdateGene2GO;
-	JScrollPaneData sclUpdateKegg;
-
-	UpdateGene2GO updateGene2GO = new UpdateGene2GO();
-	
+	JScrollPaneData sclUpdateKegg;	
 	
 	/**
 	 * Create the panel.
@@ -82,7 +76,7 @@ public class GuiUpdateDB extends JPanel {
 		btnUpdate.setBounds(721, 577, 118, 24);
 		add(btnUpdate);
 		
-		JLabel lblNewLabel = new JLabel("taxID \\t accID \\t geneIDgeneID(refAccID) \\t dbinfo \\t symbol \\t synoms \\t fullName \\t description \\t pubmedID(Number)");
+		JLabel lblNewLabel = new JLabel("taxID \\t accID \\t geneID(refAccID) \\t dbinfo \\t symbol \\t synoms \\t fullName \\t description \\t pubmedID(Number)");
 		lblNewLabel.setBounds(25, 23, 870, 18);
 		add(lblNewLabel);
 		
@@ -135,7 +129,7 @@ public class GuiUpdateDB extends JPanel {
 		btnImportsoftware.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String softToolsFile = guiFileOpen.openFileName("txt/xls", "");
-				if (FileOperate.isFileExistAndBigThanSize(softToolsFile, 0.1)) {
+				if (FileOperate.isFileExistAndBigThanSize(softToolsFile, 0.01)) {
 					SoftWareInfo.updateInfo(softToolsFile);
 				}
 			}
@@ -197,16 +191,8 @@ public class GuiUpdateDB extends JPanel {
 	}
 	
 	private void initial() {
-		JComboBoxData<Boolean> comboBoxData = new JComboBoxData<Boolean>();
-		Map<String, Boolean> mapBool2Bool = new HashMap<String, Boolean>();
-		mapBool2Bool.put("true", true);
-		mapBool2Bool.put("false", false);
-		comboBoxData.setMapItem(mapBool2Bool);
-		
-		sclUpdateGeneInfo.setTitle(new String[]{"file", "isGeneID"});
-		sclUpdateGeneInfo.setItem(1, comboBoxData);
-		sclUpdateGene2GO.setTitle(new String[]{"file", "isGeneID"});
-		sclUpdateGene2GO.setItem(1, comboBoxData);
+		sclUpdateGeneInfo.setTitle(new String[]{"file"});
+		sclUpdateGene2GO.setTitle(new String[]{"file"});
 		
 		sclUpdateKegg.setTitle(new String[]{"KGML_GeneID2KEGID_Path"});
 	}
@@ -217,7 +203,6 @@ public class GuiUpdateDB extends JPanel {
 		for (String[] strings : lsUpdateGeneInfo) {
 			UpdateGeneInfoNorm updateGeneInfoNorm = new UpdateGeneInfoNorm();
 			updateGeneInfoNorm.setOverlap(true);
-			updateGeneInfoNorm.setRefGeneID(strings[1].equalsIgnoreCase("true"));
 			updateGeneInfoNorm.setTxtWriteExcep(FileOperate.changeFileSuffix(strings[0], "_failedUpdate", null));
 			updateGeneInfoNorm.updateFile(strings[0]);
 		}
@@ -225,7 +210,6 @@ public class GuiUpdateDB extends JPanel {
 		List<String[]> lsUpdateGO = sclUpdateGene2GO.getLsDataInfo();
 		for (String[] strings : lsUpdateGO) {
 			UpdateGene2GO updateGene2GO = new UpdateGene2GO();
-			updateGene2GO.setRefGeneID(strings[1].equalsIgnoreCase("true"));
 			updateGene2GO.setTxtWriteExcep(FileOperate.changeFileSuffix(strings[0], "_failedUpdate", null));
 			updateGene2GO.updateFile(strings[0]);
 		}

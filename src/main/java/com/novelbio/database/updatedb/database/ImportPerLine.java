@@ -68,7 +68,9 @@ abstract class ImportPerLine {
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-				logger.error("stop");
+				if (txtWriteExcep != null) {
+					txtWriteExcep.writefileln(content);
+				}
 			}
 	
 			num++;

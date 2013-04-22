@@ -56,6 +56,7 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 	private GuiSnpFiltering guiSnpFiltering;
 	private GuiSnpFilterSimple guiSnpFilterSimple;
 	private GuiRNAautoSpliceSimple guiRNAautoSpliceSimple;
+	private GuiUpdateDB guiUpdateDB;
 	/**
 	* Auto-generated main method to display this JFrame
 	*/
@@ -187,6 +188,9 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				
 				guiRNAautoSpliceSimple = new GuiRNAautoSpliceSimple();
 				jTabbedPane1.addTab("RNAautoSplice", guiRNAautoSpliceSimple);
+				
+				guiUpdateDB = new GuiUpdateDB();
+				jTabbedPane1.addTab("UpdateDB", guiUpdateDB);
 			}
 			pack();
 			this.setSize(1150, 750);

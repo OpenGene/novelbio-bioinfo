@@ -138,6 +138,7 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 				//TODO 提取序列
 			}
 		}
+		txtRead.close();
 	}
 	
 	protected void ReadGffarrayExcepMirReap(String rnadataFile) {

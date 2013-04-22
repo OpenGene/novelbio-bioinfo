@@ -1,6 +1,10 @@
 package com.novelbio.analysis.seq.sam;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -12,6 +16,8 @@ import net.sf.samtools.SAMFormatException;
 import net.sf.samtools.SAMRecord;
 import net.sf.samtools.SAMRecordIterator;
 import net.sf.samtools.SAMSequenceRecord;
+import net.sf.samtools.util.BlockCompressedInputStream;
+import net.sf.samtools.util.BlockCompressedStreamConstants;
 
 import org.apache.log4j.Logger;
 
@@ -19,6 +25,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 
 public class SamReader {
 	private static final Logger logger = Logger.getLogger(SamReader.class);
+	boolean initial = false;
 	/**
 	 * 读取sam文件的类，最好不要直接用，用getSamFileReader()方法代替
 	 */
@@ -36,21 +43,23 @@ public class SamReader {
 		
 	public SamReader(String fileName) {
 		this.fileName = fileName;
-		initialSamHeadAndReader(null);
 	}
 	
 	public SamReader(String fileName, String fileIndex) {
 		this.fileName = fileName;
-		initialSamHeadAndReader(fileIndex);
+		this.fileIndex = fileIndex;
 	}
 	
 	public void setFileIndex(String fileIndex) {
 		this.fileIndex = fileIndex;
-		if (FileOperate.isFileExistAndBigThanSize(fileIndex, 0)) {
+	}
+	
+	public void initial() {
+		if (!initial) {
 			initialSamHeadAndReader(fileIndex);
+			initial = true;
 		}
 	}
-
 	/**
 	 * 双端数据是否获得连在一起的bed文件
 	 * 如果输入是单端数据，则将序列延长返回bed文件
@@ -91,10 +100,12 @@ public class SamReader {
 		close();
 		File file = new File(fileName);
 		File index = null;
-		if (fileIndex != null) {
+		if (fileIndex != null && FileOperate.isFileExistAndBigThanSize(fileIndex, 0)) {
 			index = new File(fileIndex);
+			samFileReader = new SAMFileReader(file, index);
+		} else {
+			samFileReader = new SAMFileReader(file);
 		}
-		samFileReader = new SAMFileReader(file, index);
 		samFileHeader = samFileReader.getFileHeader();
 		mapChrIDlowCase2ChrID = new HashMap<String, String>();
 		mapChrIDlowCase2Length = new HashMap<String, Long>();
@@ -227,10 +238,13 @@ public class SamReader {
 	}
 	
 	public void close() {
+		initial = false;
 		try {
 			samFileReader.close();
+			samFileReader = null;
 		} catch (Exception e) {  }
 	}
+	
 }
 
 class ReadSamIterable implements Iterable<SamRecord> {

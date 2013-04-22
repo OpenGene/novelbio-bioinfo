@@ -24,12 +24,7 @@ import com.novelbio.database.model.modgeneid.GeneID;
 public class UpdateGeneInfoNorm extends ImportPerLine {
 	/** 是否覆盖数据库 */
 	boolean overlap = true;	
-	/** 第二列为geneID，false第二列为refID并且用英文分号隔开 */
-	boolean refGeneID = true;
 	
-	public void setRefGeneID(boolean refGeneID) {
-		this.refGeneID = refGeneID;
-	}
 	/** 如果同一个ID在数据库中已经存在了不同的dbInfo，是否用新的代替老的信息 */
 	public void setOverlap(boolean overlap) {
 		this.overlap = overlap;
@@ -56,13 +51,13 @@ public class UpdateGeneInfoNorm extends ImportPerLine {
 			geneInfo.setSymb(ss[4]);
 		}
 		if (ss.length >= 6) {
-			String[] synoms = ss[5].split("\t");
+			String[] synoms = ss[5].split(";");
 			for (String string : synoms) {
 				geneInfo.addSynonym(string);
 			}
 		}
 		if (ss.length >= 7) {
-			String[] fullNames = ss[6].split("\t");
+			String[] fullNames = ss[6].split(";");
 			for (String string : fullNames) {
 				geneInfo.addFullName(string);
 			}
@@ -71,7 +66,7 @@ public class UpdateGeneInfoNorm extends ImportPerLine {
 			geneInfo.setDescrp(ss[7].trim());
 		}
 		if (ss.length >= 9) {
-			String[] pubmeds = ss[8].split("\t");
+			String[] pubmeds = ss[8].split(";");
 			for (String string : pubmeds) {
 				geneInfo.addPubID(string);
 			}
@@ -86,12 +81,13 @@ public class UpdateGeneInfoNorm extends ImportPerLine {
 	private GeneID generateGeneID(String ss0, String ss1, String ss2) {
 		int taxID = Integer.parseInt(ss0.trim());
 		GeneID geneID = null;
-		if (refGeneID) {
+		if (ss2.toLowerCase().startsWith("geneid")) {
+			ss2 = ss2.split(":")[1].trim();
 			try {
-				Integer.parseInt(ss2.trim());
-				geneID = new GeneID(GeneID.IDTYPE_GENEID, ss2.trim(), taxID);
+				Integer.parseInt(ss2);
+				geneID = new GeneID(GeneID.IDTYPE_GENEID, ss2, taxID);
 			} catch (Exception e) {
-				geneID = new GeneID(GeneID.IDTYPE_UNIID, ss2.trim(), taxID);
+				geneID = new GeneID(GeneID.IDTYPE_UNIID, ss2, taxID);
 			}
 			geneID.setUpdateAccID(ss1);
 		} else {

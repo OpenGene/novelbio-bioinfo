@@ -108,6 +108,10 @@ public class SpeciesFile {
 	 * value： length
 	 */
 	public Map<String, Long> getMapChromInfo() {
+		if (mapChrID2ChrLen.size() == 0) {
+			SeqHash seqHash = new SeqHash(chromPath2Regx[0], chromPath2Regx[1]);
+			mapChrID2ChrLen = seqHash.getMapChrLength();
+		}
 		return mapChrID2ChrLen;
 	}
 	public void setChromPath(String regx, String chromPath) {
@@ -424,9 +428,6 @@ public class SpeciesFile {
 		manageSpeciesFile.update(this);
 	}
 	
-	public Map<String, Long> getHashChrID2ChrLen() {
-		return mapChrID2ChrLen;
-	}
 	/**
 	 * 仔仔细细的全部比较一遍，方便用于数据库升级
 	 * @param obj

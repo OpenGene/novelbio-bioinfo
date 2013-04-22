@@ -32,7 +32,6 @@ import com.novelbio.database.service.servgeneanno.ManageNCBIUniID;
  */
 public class ImportDB {
 	String databasePath2 = "/media/winE/Bioinformatics/DataBaseUpdate/";
-
 	
 	String softToolsFile;
 	String speciesFile;
@@ -54,11 +53,11 @@ public class ImportDB {
 		importDB.setSpeciesFile(speciesFile);
 //		importDB.updateDBinfo(dbInfo);
 //		importDB.updateSoftInfo();
-//		importDB.updateSpecies();
-		importDB.updateGODB();
+		importDB.updateSpecies();
+//		importDB.updateGODB();
 		
-//		importDB.updateNCBIID();
-//		importDB.updateUniprotID();
+		importDB.updateNCBIID();
+		importDB.updateUniprotID();
 		
 //		importDB.updateRiceID("/media/winE/Bioinformatics/DataBase/Rice/");//只导了前两个
 //		importDB.updateTAIR("/media/winE/Bioinformatics/GenomeData/Arabidopsis/tair10DB/");
