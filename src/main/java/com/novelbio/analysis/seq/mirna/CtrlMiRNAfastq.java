@@ -56,6 +56,7 @@ public class CtrlMiRNAfastq {
 	
 	////// 没有mapping到的bed文件，用于预测新miRNA的 */
 	Map<AlignSeq, String> mapNovelMiRNASamFile2Prefix = new LinkedHashMap<AlignSeq, String>();
+	boolean rfamSpeciesSpecific = false;
 	
 	/** 务必首先设定 */
 	public void setSpecies(Species species) {
@@ -78,6 +79,14 @@ public class CtrlMiRNAfastq {
 		this.outPath = FileOperate.addSep(outPath);
 		FileOperate.createFolders(this.outPath);
 		this.outPathTmpMapping = this.outPath + "tmpMapping";
+	}
+	
+	/**
+	 * 是每个物种仅与本物种相关的rfam进行比较，还是与全体rfam文件进行比较
+	 * 默认序列与全体rfam数据库进行比较
+	 */
+	public void setRfamSpeciesSpecific(boolean rfamSpeciesSpecific) {
+		this.rfamSpeciesSpecific = rfamSpeciesSpecific;
 	}
 	
 	/** rfam的信息比较文件，类似一个键值表 */
@@ -114,7 +123,10 @@ public class CtrlMiRNAfastq {
 			miRNAmappingPipline.setSample(fastq2Prefix[1], fastq2Prefix[0]);
 			miRNAmappingPipline.setOutPathTmp(outPathTmpMapping);
 			miRNAmappingPipline.mappingPipeline();
-			mapNovelMiRNASamFile2Prefix.put(miRNAmappingPipline.getOutGenomeAlignSeq(), fastq2Prefix[1]);
+			AlignSeq alignSeq = miRNAmappingPipline.getOutGenomeAlignSeq();
+			if (alignSeq != null) {
+				mapNovelMiRNASamFile2Prefix.put(alignSeq, fastq2Prefix[1]);
+			}
 			countSmallRNA(outPath, fastq2Prefix[1], miRNAmappingPipline);
 		}
 	}
@@ -127,7 +139,7 @@ public class CtrlMiRNAfastq {
 		miRNAmappingPipline.setExePath(softWareInfo.getExePath());
 		miRNAmappingPipline.setMiRNApreSeq(species.getMiRNAhairpinFile());
 		miRNAmappingPipline.setNcRNAseq(species.getRefseqNCfile());
-		miRNAmappingPipline.setRfamSeq(species.getRfamFile());
+		miRNAmappingPipline.setRfamSeq(species.getRfamFile(rfamSpeciesSpecific));
 		miRNAmappingPipline.setGenome(species.getIndexChr(SoftWare.bwa));//默认bwa做mapping
 	}
 	
@@ -152,8 +164,9 @@ public class CtrlMiRNAfastq {
 	*/
 	private void countMiRNA(String outPath, String prefix, MiRNAmapPipline miRNAmappingPipline) {
 		miRNACount.setMiRNAfile(species.getMiRNAhairpinFile(), species.getMiRNAmatureFile());
-		if (FileOperate.isFileExistAndBigThanSize(miRNAmappingPipline.getOutMiRNAAlignSeq().getFileName(), 1)) {
-			miRNACount.setAlignFile(miRNAmappingPipline.getOutMiRNAAlignSeq());
+		AlignSeq alignSeq = miRNAmappingPipline.getOutMiRNAAlignSeq();
+		if (alignSeq != null) {
+			miRNACount.setAlignFile(alignSeq);
 			miRNACount.run();
 			miRNACount.writeResultToOut(outPath);
 			mapPrefix2MiRNAmature.put(prefix, miRNACount.getMapMirMature2Value());
@@ -174,8 +187,9 @@ public class CtrlMiRNAfastq {
 	 *  */
 	private void countRfam(String outPath, String prefix, MiRNAmapPipline miRNAmappingPipline) {
 		rfamStatistic.setOutputFile(outPath + "RfamStatistics.txt");
-		if (FileOperate.isFileExistAndBigThanSize(miRNAmappingPipline.getOutRfamAlignSeq().getFileName(), 10)) {
-			rfamStatistic.countRfamInfo(miRNAmappingPipline.getOutRfamAlignSeq());
+		AlignSeq alignSeq = miRNAmappingPipline.getOutRfamAlignSeq();
+		if (alignSeq != null) {
+			rfamStatistic.countRfamInfo(alignSeq);
 			mapPrefix2MiRNArfam.put(prefix, rfamStatistic.getMapRfam2Counts());
 		}
 	}
@@ -183,8 +197,9 @@ public class CtrlMiRNAfastq {
 	 * @param solo 单独计数
 	 *  */
 	private void countNCrna(String outPath, String prefix, MiRNAmapPipline miRNAmappingPipline) {
-		if (FileOperate.isFileExistAndBigThanSize(miRNAmappingPipline.getOutNCRNAAlignSeq().getFileName(), 10)) {
-			readsOnNCrna.setAlignSeq(miRNAmappingPipline.getOutNCRNAAlignSeq());
+		AlignSeq alignSeq = miRNAmappingPipline.getOutNCRNAAlignSeq();
+		if (alignSeq != null) {
+			readsOnNCrna.setAlignSeq(alignSeq);
 			readsOnNCrna.searchNCrna();
 			readsOnNCrna.writeToFile(outPath + "NCrnaStatistics.txt");
 			mapPrefix2MiRNAncrna.put(prefix, readsOnNCrna.getMapNCrnaID_2_nameDescripValue());
@@ -195,9 +210,10 @@ public class CtrlMiRNAfastq {
 	 * @param solo 单独计数
 	 *  */
 	private void countRepeatGene(String outPath, String prefix, MiRNAmapPipline miRNAmappingPipline) {
-		if (FileOperate.isFileExistAndBigThanSize(miRNAmappingPipline.getOutGenomeAlignSeq().getFileName(), 10) ) {
+		AlignSeq alignSeq = miRNAmappingPipline.getOutGenomeAlignSeq();
+		if (alignSeq != null) {
 			readRepeatGff();
-			readsOnRepeatGene.countReadsInfo(miRNAmappingPipline.getOutGenomeAlignSeq());
+			readsOnRepeatGene.countReadsInfo(alignSeq);
 			readsOnRepeatGene.writeToFileGeneProp(outPath + "geneProp.txt");
 			readsOnRepeatGene.writeToFileRepeatFamily(outPath + "RepeatFamily.txt");
 			readsOnRepeatGene.writeToFileRepeatName(outPath + "RepeatName.txt");

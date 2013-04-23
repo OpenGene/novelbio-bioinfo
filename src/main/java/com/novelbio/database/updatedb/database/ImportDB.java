@@ -53,10 +53,10 @@ public class ImportDB {
 		importDB.setSpeciesFile(speciesFile);
 //		importDB.updateDBinfo(dbInfo);
 //		importDB.updateSoftInfo();
-		importDB.updateSpecies();
+//		importDB.updateSpecies();
 //		importDB.updateGODB();
 		
-		importDB.updateNCBIID();
+//		importDB.updateNCBIID();
 		importDB.updateUniprotID();
 		
 //		importDB.updateRiceID("/media/winE/Bioinformatics/DataBase/Rice/");//只导了前两个

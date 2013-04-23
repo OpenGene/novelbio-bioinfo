@@ -27,8 +27,10 @@ import net.sf.samtools.SAMException;
 import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMFormatException;
+import net.sf.samtools.SAMReadGroupRecord;
 import net.sf.samtools.SAMRecord;
 import net.sf.samtools.SAMSequenceRecord;
+import net.sf.samtools.SAMTagUtil;
 import net.sf.samtools.SAMValidationError;
 import net.sf.samtools.util.BinaryCodec;
 import net.sf.samtools.util.DateParser;
@@ -220,7 +222,15 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 	public int getMateAlignmentStart() {
 		return samRecord.getMateAlignmentStart();
 	}
-
+	
+	public SAMReadGroupRecord getReadGroup() {
+		return samRecord.getReadGroup();
+	}
+	
+	public void setReadGroup(SAMReadGroupRecord samReadGroupRecord) {
+		samRecord.setAttribute("RG", samReadGroupRecord.getId());
+	}
+	
 	public boolean isMateCis5to3() {
 		return !samRecord.getMateNegativeStrandFlag();
 	}

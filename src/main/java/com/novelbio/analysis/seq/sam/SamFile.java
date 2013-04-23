@@ -14,6 +14,7 @@ import java.util.List;
 
 import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMFileHeader.SortOrder;
+import net.sf.samtools.SAMReadGroupRecord;
 import net.sf.samtools.SAMSequenceRecord;
 import net.sf.samtools.SAMTextHeaderCodec;
 import net.sf.samtools.util.BlockCompressedInputStream;
@@ -30,6 +31,7 @@ import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.model.species.Species;
 
 /**
  * 提取为bed文件时，仅仅考虑f-r情况
@@ -39,7 +41,35 @@ import com.novelbio.base.fileOperate.FileOperate;
  */
 public class SamFile implements AlignSeq {
 	private static final Logger logger = Logger.getLogger(SamFile.class);
+	
+	public static void main(String[] args) {
 
+		
+//		SamFile samFile = new SamFile("/home/zong0jie/Desktop/Tmp/miRNA/tmpMapping/aaaa_Genome.bam");
+//		SAMFileHeader samFileHeader = samFile.getHeader();
+//		List<SAMReadGroupRecord> lsSamReadGroupRecords = new ArrayList<SAMReadGroupRecord>();
+//		SAMReadGroupRecord samReadGroupRecord = new SAMReadGroupRecord("aaa");
+//		samReadGroupRecord.setPlatform("Illumina");
+////		samReadGroupRecord.setLibrary("aaa");
+//		samReadGroupRecord.setSample("aaa");
+//		lsSamReadGroupRecords.add(samReadGroupRecord);
+//		samFileHeader.setReadGroups(lsSamReadGroupRecords);
+//		SamFile samFile2 = new SamFile("/home/zong0jie/Desktop/Tmp/miRNA/tmpMapping/aaaa_Genome_group.bam", samFileHeader);
+//		for (SamRecord samRecord : samFile.readLines()) {
+//			samRecord.setReadGroup(samReadGroupRecord);
+//			samFile2.writeSamRecord(samRecord);
+//		}
+//		samFile2.close();
+//		samFile.close();
+		
+		
+		SamFile samFile = new SamFile("/home/zong0jie/Desktop/Tmp/miRNA/tmpMapping/A_Test_sorted.bam");
+		Species species = new Species(9606);
+		samFile.setReferenceFileName("/home/zong0jie/Desktop/Tmp/miRNA/tmpMapping/chrAll.fa");
+		samFile.realign();
+	}
+	
+	
 	public static final int MAPPING_ALLREADS = 2;
 	public static final int MAPPING_ALLMAPPEDREADS = 4;
 	public static final int MAPPING_UNMAPPED = 8;
@@ -95,7 +125,7 @@ public class SamFile implements AlignSeq {
 		if (!FileOperate.isFileExistAndBigThanSize(bamindex, 0)) {
 			bamindex = null;
 		}
-		setSamFileRead(samBamFile, bamindex);
+		setSamFileRead(FormatSeq.UNKNOWN, samBamFile, bamindex);
 //		initialSoftWare();
 	}
 	
@@ -106,8 +136,10 @@ public class SamFile implements AlignSeq {
 		return samReader;
 	}
 	
-	private void setSamFileRead(String samFileExist, String fileIndex) {
-		FormatSeq formatSeq = isSamBamFile(samFileExist);
+	private void setSamFileRead(FormatSeq formatSeq, String samFileExist, String fileIndex) {
+		if (formatSeq == null || formatSeq == FormatSeq.UNKNOWN) {
+			formatSeq = isSamBamFile(samFileExist);
+		}
 		if (formatSeq != FormatSeq.BAM && formatSeq != FormatSeq.SAM) {
 			return;
 		}
@@ -357,7 +389,6 @@ public class SamFile implements AlignSeq {
 			samFile.writeSamRecord(samRecord);
 		}
 		close();
-		samFile.setSamFileRead(samFile.getFileName());
 		samFile.close();
 		return samFile;
 	}
@@ -381,18 +412,29 @@ public class SamFile implements AlignSeq {
 	}
 	
 	/**
-	 * 待检查
+	 * 失败则返回null
+	 * @param outFile
+	 * @return
 	 */
 	public SamFile realign(String outFile) {
-		BamRealign bamRealign = new BamRealign();
-//		bamRealign.setExePath(softWareInfoGATK.getExePath());
-		bamRealign.setBamFile(getFileName());
-		bamRealign.setRefSequenceFile(referenceFileName);
-		String outSamFile = bamRealign.realign(outFile);
-		SamFile samFile = new SamFile(outSamFile);
-		setParamSamFile(samFile);
-		samFile.isRealigned = true;
-		return samFile;
+		GATKRealign gatkRealign = new GATKRealign(getFileName(), referenceFileName, outFile);
+		if (gatkRealign.realign()) {
+			SamFile samFile = new SamFile(outFile);
+			setParamSamFile(samFile);
+			samFile.isRealigned = true;
+			return samFile;
+		}
+		return null;
+		
+		
+//		BamRealign bamRealign = new BamRealign();
+//		bamRealign.setBamFile(getFileName());
+//		bamRealign.setRefSequenceFile(referenceFileName);
+//		String outSamFile = bamRealign.realign(outFile);
+//		SamFile samFile = new SamFile(outSamFile);
+//		setParamSamFile(samFile);
+//		samFile.isRealigned = true;
+//		return samFile;
 	}
 	
 	public SamFile recalibrate() {
@@ -558,7 +600,13 @@ public class SamFile implements AlignSeq {
 		if (samWriter != null) {
 			samWriter.close();
 		}
-		samReader = new SamReader(getFileName());
+		String bamFile = getFileName();
+		String bamindex = null;
+		if (bamFile.toLowerCase().endsWith("bam") && FileOperate.isFileExistAndBigThanSize(bamindex, 0)) {
+			bamindex = bamFile + ".bai";
+		}
+		
+		samReader = new SamReader(bamFile, bamindex);
 		read = true;
 	}
 

@@ -2,22 +2,20 @@ package com.novelbio.nbcgui.GUI;
 
 import java.awt.Component;
 import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.JButton;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.JLabel;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.FormatSeq;
@@ -25,28 +23,21 @@ import com.novelbio.analysis.seq.bed.BedSeq;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.mirna.CtrlMiRNAfastq;
 import com.novelbio.analysis.seq.mirna.CtrlMiRNApredict;
-import com.novelbio.analysis.seq.mirna.ListMiRNALocation;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
-import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
-import com.novelbio.database.domain.geneanno.SpeciesFile.ExtractSmallRNASeq;
 import com.novelbio.database.model.species.Species;
-import javax.swing.JComboBox;
-import javax.swing.JScrollPane;
 
 public class GuiMiRNASeq extends JPanel{
 	private static final long serialVersionUID = -5940420720636777182L;
 	private JFrame frame;
-	private JTextField txtRefseqFile;
 	private JTextField txtOutPathPrefix;
 	JCheckBox chkMapAllBedFileToGenome;
 
 	JButton btnRunning;
 	JCheckBox chkMapping;
-	JButton btnRefseqfile;
 	JButton btnOutpath;
 	JScrollPaneData sclpanFastq;
 	JCheckBox chkPredictMiRNA;
@@ -92,7 +83,7 @@ public class GuiMiRNASeq extends JPanel{
 
 		//是否将全部的bed文件mapping至基因组上，用于看基因组上的reads分布
 		chkMapAllBedFileToGenome = new JCheckBox("Mapping All To Genome");
-		chkMapAllBedFileToGenome.setBounds(227, 310, 197, 22);
+		chkMapAllBedFileToGenome.setBounds(227, 306, 197, 22);
 		add(chkMapAllBedFileToGenome);
 
 		
@@ -113,21 +104,6 @@ public class GuiMiRNASeq extends JPanel{
 		});
 		chkMapping.setBounds(79, 527, 206, 22);
 		add(chkMapping);
-		
-		txtRefseqFile = new JTextField();
-		txtRefseqFile.setBounds(437, 423, 233, 18);
-		add(txtRefseqFile);
-		txtRefseqFile.setColumns(10);
-		
-		btnRefseqfile = new JButton("RefseqFile");
-		btnRefseqfile.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String fileName = guiFileOpen.openFileName("txt", "");
-				txtRefseqFile.setText(fileName);
-			}
-		});
-		btnRefseqfile.setBounds(698, 420, 110, 24);
-		add(btnRefseqfile);
 		
 		txtOutPathPrefix = new JTextField();
 		txtOutPathPrefix.setBounds(439, 470, 233, 18);
@@ -215,8 +191,13 @@ public class GuiMiRNASeq extends JPanel{
 		add(guiSpeciesVersionGff);
 		
 		chkMapAllToRfam = new JCheckBox("Mapping All To Rfam");
+		chkMapAllToRfam.setSelected(true);
 		chkMapAllToRfam.setBounds(16, 307, 178, 22);
 		add(chkMapAllToRfam);
+		
+		JCheckBox chckbxMappingToSpecies = new JCheckBox("Mapping To Species Specific Rfam");
+		chckbxMappingToSpecies.setBounds(454, 305, 312, 22);
+		add(chckbxMappingToSpecies);
 		initialize();
 	}
 	

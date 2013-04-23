@@ -282,9 +282,9 @@ public class Species {
 		return speciesFile.getMiRNAmatureFile();
 	}
 	/** 获得本物中指定version的rfam序列 */
-	public String getRfamFile() {
+	public String getRfamFile(boolean spciesSpecific) {
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
-		return speciesFile.getRfamFile();
+		return speciesFile.getRfamFile(spciesSpecific);
 	}
 	/** 获得本物中指定version的refseq的ncRNA序列 */
 	public String getRefseqNCfile() {

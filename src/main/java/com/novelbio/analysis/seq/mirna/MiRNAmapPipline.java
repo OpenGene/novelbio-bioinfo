@@ -91,23 +91,38 @@ public class MiRNAmapPipline {
 	}
 	/** 比对miRNA的Sam文件结果 */
 	public AlignSeq getOutMiRNAAlignSeq() {
-		return new SamFile(samFileMiRNA);
+		if (FileOperate.isFileExistAndBigThanSize(samFileMiRNA, 0)) {
+			return new SamFile(samFileMiRNA);
+		}
+		return null;
 	}
 	/** 比对rfam的Sam文件结果 */
 	public AlignSeq getOutRfamAlignSeq() {
-		return new SamFile(samFileRfam);
+		if (FileOperate.isFileExistAndBigThanSize(samFileRfam, 0)) {
+			return new SamFile(samFileRfam);
+		}
+		return null;
 	}
 	/** 比对refseq中的ncRNA的Sam文件结果 */
 	public AlignSeq getOutNCRNAAlignSeq() {
-		return new SamFile(samFileNCRNA);
+		if (FileOperate.isFileExistAndBigThanSize(samFileNCRNA, 0)) {
+			return new SamFile(samFileNCRNA);
+		}
+		return null;
 	}
 	/** 比对基因组的Sam文件结果 */
 	public AlignSeq getOutGenomeAlignSeq() {
-		return new SamFile(samFileGenome);
+		if (FileOperate.isFileExistAndBigThanSize(samFileGenome, 0)) {
+			return new SamFile(samFileGenome);
+		}
+		return null;
 	}
 	/** 比对miRNA的Sam文件结果 */
 	public AlignSeq getOutGenomeAllAlignSeq() {
-		return new SamFile(samFileGenomeAll);
+		if (FileOperate.isFileExistAndBigThanSize(samFileGenomeAll, 0)) {
+			return new SamFile(samFileGenomeAll);
+		}
+		return null;
 	}
 	/** mapping的流水线 */
 	public void mappingPipeline() {

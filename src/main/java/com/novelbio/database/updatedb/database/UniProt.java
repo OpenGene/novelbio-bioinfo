@@ -3,6 +3,8 @@ package com.novelbio.database.updatedb.database;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.DBAccIDSource;
@@ -16,6 +18,8 @@ import com.novelbio.database.model.modgeneid.GeneID;
  *ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/idmapping
  */
 public class UniProt {
+	private static final Logger logger = Logger.getLogger(UniProt.class);
+	
 	String outUniIDFile = "";
 	String idmappingSelectedFile = "";
 	String taxIDFile = "";
@@ -35,20 +39,28 @@ public class UniProt {
 	public void update() {
 		IdmappingSelected idmappingSelected = new IdmappingSelected();
 		IdmappingSelected.setTaxIDFile(taxIDFile);
-		idmappingSelected.setTxtWriteExcep(outUniIDFile);
-		idmappingSelected.updateFile(idmappingSelectedFile);
+//		idmappingSelected.setTxtWriteExcep(outUniIDFile);
+//		idmappingSelected.updateFile(idmappingSelectedFile);
+//		logger.error("finished Import: " + idmappingSelectedFile);
+//		
+//		Impgene_associationgoa_uniprot impgene_associationgoa_uniprot = new Impgene_associationgoa_uniprot();
+//		impgene_associationgoa_uniprot.updateFile(impgene_associationgoa_uniprotFile);
+//		logger.error("finished Import: " + impgene_associationgoa_uniprotFile);
 		
-		Impgene_associationgoa_uniprot impgene_associationgoa_uniprot = new Impgene_associationgoa_uniprot();
-		impgene_associationgoa_uniprot.updateFile(impgene_associationgoa_uniprotFile);
+		idmappingSelected = new IdmappingSelected();
 		idmappingSelected.setUpdateUniprotID(true);
 		idmappingSelected.setTxtWriteExcep(outUniIDFile+"_2");
 		idmappingSelected.updateFile(outUniIDFile);
-		
+		logger.error("finished Import: " + outUniIDFile);
+
 		IdmappingSelectedGOPubmed idmappingSelectedGOPubmed = new IdmappingSelectedGOPubmed();
 		idmappingSelectedGOPubmed.setTxtWriteExcep(FileOperate.changeFileSuffix(idmappingSelectedFile, "_failed", "txt"));
 		idmappingSelectedGOPubmed.updateFile(idmappingSelectedFile);
+		logger.error("finished Import GO pubmed: " + idmappingSelectedFile);
+		
 		idmappingSelectedGOPubmed = new IdmappingSelectedGOPubmed();
 		idmappingSelectedGOPubmed.updateFile(FileOperate.changeFileSuffix(idmappingSelectedFile, "_failed", "txt"));
+		logger.error("finished Import GO pubmed: " + FileOperate.changeFileSuffix(idmappingSelectedFile, "_failed", "txt"));
 	}
 }
 

@@ -91,7 +91,7 @@ public class FastQ {
 	 * @return null 出错
 	 */
 	public FastQ filterReads() {
-		setFilterReadsOutName(true);
+		setFilterReadsOutName(null);
 		filterReadsRun();
 
 		FastQ fastQfileOut1 = new FastQ(fastQwrite.getFileName());
@@ -100,10 +100,9 @@ public class FastQ {
 	}
 	/** 双端reads过滤 */
 	public FastQ[] filterReads(FastQ fastQfile2) {
-		fastQRead.setFastQReadMate(fastQfile2.fastQRead);
-		fastQwrite.setFastQwriteMate(fastQfile2.fastQwrite);
+		setFilterReadsOutName(fastQfile2);
+		fastQRead.setFastQReadMate(fastQfile2.fastQRead);		
 		
-		setFilterReadsOutName(false);
 		filterReadsRun();
 		
 		FastQ fastQfileOut1 = new FastQ(fastQwrite.getFileName());
@@ -123,7 +122,7 @@ public class FastQ {
 	/** 设定过滤后的输出文件名
 	 * 同时初始化fastQwrite
 	 */
-	private void setFilterReadsOutName(boolean singleEnd) {
+	private void setFilterReadsOutName(FastQ fastQMate) {
 		if (filterOutName.equals("") ) {
 			String fileFastqRead = fastQRead.getFileName();
 			if (fileFastqRead.endsWith(".gz")) {
@@ -132,14 +131,15 @@ public class FastQ {
 			filterOutName = FileOperate.changeFileSuffix(fileFastqRead, "_filtered", "fastq");
 		}
 		
-		if (singleEnd) {
+		if (fastQMate == null) {
 			fastQwrite = new FastQwrite(filterOutName);
 		}
 		else {
 			String outFile1 = FileOperate.changeFileSuffix(filterOutName, "_1", null);
 			String outFile2 = FileOperate.changeFileSuffix(filterOutName, "_2", null);
 			fastQwrite = new FastQwrite(outFile1);
-			fastQwrite.fastQwriteMate = new FastQwrite(outFile2);
+			fastQMate.fastQwrite = new FastQwrite(outFile2);
+			fastQwrite.fastQwriteMate = fastQMate.fastQwrite;
 		}
 	}
 	
@@ -295,7 +295,7 @@ public class FastQ {
 		} else if (QUALITY == FastQ.QUALITY_LOW_PGM) {
 			mapFastQFilter.put(10, 10);
 			mapFastQFilter.put(15, 30);
-		} else if (QUALITY == FastQ.QUALITY_NONE) {
+		} else if (QUALITY == FastQ.QUALITY_NONE || QUALITY == FastQ.QUALITY_NOTFILTER) {
 			//空的就不会过滤
 		} else {
 			mapFastQFilter.put(10, 2);

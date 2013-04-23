@@ -410,13 +410,30 @@ public class SpeciesFile {
 		}
 		return refseqLongestIsoFile;
 	}
-	public String getRfamFile() {
+	
+	/**
+	 * 是否物种特异性的提取
+	 * @param speciesSpecific
+	 * @return
+	 */
+	public String getRfamFile(boolean speciesSpecific) {
 		String chromFaPath = getChromFaPath();
-		String rfamFile = FileOperate.getParentPathName(chromFaPath) + "rfam/rfamFile";
+		String rfamFile = null;
+		if (speciesSpecific) {
+			rfamFile = FileOperate.getParentPathName(chromFaPath) + "rfam/rfamFile";
+		} else {
+			rfamFile = FileOperate.getParentPathName(chromFaPath) + "rfam/rfamFileAll";
+		}
 		if (!FileOperate.isFileExistAndBigThanSize(rfamFile,10)) {
 			FileOperate.createFolders(FileOperate.getParentPathName(rfamFile));
 			ExtractSmallRNASeq extractSmallRNASeq = new ExtractSmallRNASeq();
-			extractSmallRNASeq.setRfamFile(PathDetail.getRfamSeq(), taxID);
+			//TODO 
+			//这里提取的是全体rfam序列
+			if (speciesSpecific) {
+				extractSmallRNASeq.setRfamFile(PathDetail.getRfamSeq(), taxID);
+			} else {
+				extractSmallRNASeq.setRfamFile(PathDetail.getRfamSeq(), 0);
+			}
 			extractSmallRNASeq.setOutRfamFile(rfamFile);
 			extractSmallRNASeq.getSeq();
 		}
@@ -713,13 +730,21 @@ public class SpeciesFile {
 			}
 			return finalSeq;
 		}
+		
+		private void extractRfam(String rfamFile, String outRfam, int taxIDquery) {
+			if (taxIDquery <= 0) {
+				extractRfam(rfamFile, outRfam);
+			} else {
+				extractRfamTaxID(rfamFile, outRfam, taxIDquery);
+			}
+		}
 		/**
 		 * 从rfam.txt文件中提取指定物种的ncRNA序列
 		 * @param hairpinFile
 		 * @param outNCRNA
 		 * @param regx 物种的英文，人类就是Homo sapiens
 		 */
-		private void extractRfamOld(String rfamFile, String outRfam, int taxIDquery) {
+		private void extractRfamTaxID(String rfamFile, String outRfam, int taxIDquery) {
 			TxtReadandWrite txtOut = new TxtReadandWrite(outRfam, true);
 			 SeqFastaHash seqFastaHash = new SeqFastaHash(rfamFile,null,false);
 			 seqFastaHash.setDNAseq(true);
@@ -749,7 +774,7 @@ public class SpeciesFile {
 		 * @param outNCRNA
 		 * @param regx 物种的英文，人类就是Homo sapiens
 		 */
-		private void extractRfam(String rfamFile, String outRfam, int taxIDquery) {
+		private void extractRfam(String rfamFile, String outRfam) {
 			TxtReadandWrite txtRead = new TxtReadandWrite(rfamFile, false);
 			TxtReadandWrite txtWrite = new TxtReadandWrite(outRfam, true);
 
