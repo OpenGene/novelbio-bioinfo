@@ -295,7 +295,7 @@ class ImpGene2Info extends ImportPerLine {
 		}
 		GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, ss[1], taxID);
 		GeneInfo geneInfo = new GeneInfo();
-		geneInfo.setDBinfo(manageDBInfo.findByDBname(DBAccIDSource.NCBI.name()));
+		geneInfo.setDBinfo(manageDBInfo.findByDBname(DBAccIDSource.NCBI.toString()));
 		geneInfo.setSymb(ss[2]);
 		
 		String[] syno = ss[4].split("\\|");

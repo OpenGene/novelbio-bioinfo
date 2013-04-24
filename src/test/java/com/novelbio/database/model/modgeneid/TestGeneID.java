@@ -75,14 +75,14 @@ public class TestGeneID extends TestCase {
 	private void testInsert() {
 		AgeneUniID ageneUniID = AgeneUniID.creatAgeneUniID(GeneID.IDTYPE_GENEID);
 		ageneUniID.setAccID("Test1");
-		ageneUniID.setDataBaseInfo(DBAccIDSource.EMBL.name());
+		ageneUniID.setDataBaseInfo(DBAccIDSource.EMBL.toString());
 		ageneUniID.setGenUniID("1234567890");
 		ageneUniID.setTaxID(taxID);
 		manageNCBIUniID.saveNCBIUniID(ageneUniID);
 
 		ageneUniID = AgeneUniID.creatAgeneUniID(GeneID.IDTYPE_GENEID);
 		ageneUniID.setAccID("Test2");
-		ageneUniID.setDataBaseInfo(DBAccIDSource.EMBL.name());
+		ageneUniID.setDataBaseInfo(DBAccIDSource.EMBL.toString());
 		ageneUniID.setGenUniID("12345678902");
 		ageneUniID.setTaxID(taxID);
 		manageNCBIUniID.saveNCBIUniID(ageneUniID);
@@ -127,11 +127,11 @@ public class TestGeneID extends TestCase {
 		geneID.addUpdateRefAccID("Test2");
 		geneID.addUpdateRefAccID("test1");
 		geneID.setUpdateAccID("Test4");
-		geneID.setUpdateDBinfo(DBAccIDSource.EMBL.name(), false);
+		geneID.setUpdateDBinfo(DBAccIDSource.EMBL.toString(), false);
 		geneID.update(false);
 		
 		geneID.setUpdateAccID("Test5");
-		geneID.setUpdateDBinfo(DBAccIDSource.EMBL.name(), false);
+		geneID.setUpdateDBinfo(DBAccIDSource.EMBL.toString(), false);
 		geneID.update(false);
 		
 		
@@ -150,10 +150,10 @@ public class TestGeneID extends TestCase {
 		geneID.addUpdateRefAccID("Test2");
 		geneID.addUpdateRefAccID("test1");
 		geneID.setUpdateAccID("Test5");
-		geneID.setUpdateDBinfo(DBAccIDSource.EMBL.name(), false);
+		geneID.setUpdateDBinfo(DBAccIDSource.EMBL.toString(), false);
 		
 		GeneInfo geneInfo = new GeneInfo();
-		geneInfo.setDBinfo(manageDBInfo.findByDBname(DBAccIDSource.EMBL.name()));
+		geneInfo.setDBinfo(manageDBInfo.findByDBname(DBAccIDSource.EMBL.toString()));
 		geneInfo.setDescrp("test1sefsef");
 		geneInfo.setSymb("sese");
 		geneInfo.setTaxID(taxID);
@@ -190,7 +190,7 @@ public class TestGeneID extends TestCase {
 		
 		geneID.addUpdateRefAccID("test1");
 		geneID.setUpdateAccID("Test5");
-		geneID.setUpdateDBinfo(DBAccIDSource.EMBL.name(), false);
+		geneID.setUpdateDBinfo(DBAccIDSource.EMBL.toString(), false);
 		List<String> lsList = new ArrayList<String>();
 		lsList.add("PMID:1234");
 		geneID.addUpdateGO("GO:0000105", DBAccIDSource.EMBL, "IEA", lsList, "NOT");
@@ -254,7 +254,7 @@ public class TestGeneID extends TestCase {
 		
 		geneID.addUpdateRefAccID("test1");
 		geneID.setUpdateAccID("Test5");
-		geneID.setUpdateDBinfo(DBAccIDSource.EMBL.name(), false);
+		geneID.setUpdateDBinfo(DBAccIDSource.EMBL.toString(), false);
 		BlastInfo blastInfo = new BlastInfo(123456, 123456, "fsef222e	test2	31.85	157	95	3	133	603	2	146	6e-23	 103", false);
 		geneID.addUpdateBlastInfo(blastInfo);
 		

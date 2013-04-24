@@ -144,7 +144,7 @@ class ZBGO extends ImportPerLine {
 		GeneInfo geneInfo = new GeneInfo();
 		geneInfo.setSymb(ss[2]);
 		geneInfo.setDescrp(ss[9]);
-		geneInfo.setDBinfo(DBAccIDSource.ZFIN_DRE.name());
+		geneInfo.setDBinfo(DBAccIDSource.ZFIN_DRE.toString());
 		geneInfo.setTypeOfGene(ss[11]);
 		geneInfo.setModDate(ss[13]);
 		

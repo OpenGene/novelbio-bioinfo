@@ -729,7 +729,7 @@ public class GeneIDabs implements GeneIDInt {
 			if (ageneUniID.getGeneIDtype() == GeneID.IDTYPE_GENEID) {
 				ageneUniID.setDataBaseInfo(DBAccIDSource.NCBI.toString());
 			} else {
-				ageneUniID.setDataBaseInfo(DBAccIDSource.Uniprot.name());
+				ageneUniID.setDataBaseInfo(DBAccIDSource.Uniprot.toString());
 			}
 		}
 		if (getIDtype() != GeneID.IDTYPE_ACCID) {
@@ -768,9 +768,9 @@ public class GeneIDabs implements GeneIDInt {
 		if (geneInfo.getDbInfo() == null) {
 			if (getDBinfo() == null) {
 				if (ageneUniID.getGeneIDtype() == GeneID.IDTYPE_GENEID) {
-					geneInfo.setDBinfo(manageDBInfo.findByDBname(DBAccIDSource.NCBI.name()));
+					geneInfo.setDBinfo(manageDBInfo.findByDBname(DBAccIDSource.NCBI.toString()));
 				} else {
-					geneInfo.setDBinfo(manageDBInfo.findByDBname(DBAccIDSource.Uniprot.name()));
+					geneInfo.setDBinfo(manageDBInfo.findByDBname(DBAccIDSource.Uniprot.toString()));
 				}
 			} else {
 				geneInfo.setDBinfo(getDBinfo());

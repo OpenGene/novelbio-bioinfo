@@ -145,7 +145,7 @@ class RiceRapDBID extends ImportPerLine {
 				for (int j = 0; j < tmpAcc.length; j++) {
 					String[] tmpRapID =new String[2];
 					tmpRapID[0] = tmpAcc[j];
-					tmpRapID[1] = DBAccIDSource.RapDB_rice.name();
+					tmpRapID[1] = DBAccIDSource.RapDB_rice.toString();
 					lsAccIDInfo2DB.add(tmpRapID);
 					lsRefID.add(tmpAcc[j]);
 				}
@@ -156,7 +156,7 @@ class RiceRapDBID extends ImportPerLine {
 				for (int j = 0; j < tmpAcc.length; j++) {
 					String[] tmpRapID =new String[2];
 					tmpRapID[0] = tmpAcc[j];
-					tmpRapID[1] = DBAccIDSource.RapDB_rice.name();
+					tmpRapID[1] = DBAccIDSource.RapDB_rice.toString();
 					lsAccIDInfo2DB.add(tmpRapID);
 					lsRefID.add(tmpAcc[j]);			
 				}
@@ -259,12 +259,12 @@ class RiceRap2MSU extends ImportPerLine {
 		ArrayList<String[]> lstmpLOC = new ArrayList<String[]>();
 		ArrayList<String> lsRef = new ArrayList<String>();
 		String[] tmpLOC2Info1 = new String[2];
-		tmpLOC2Info1[0] = tmpID[0]; tmpLOC2Info1[1] = DBAccIDSource.IRGSP_rice.name();
+		tmpLOC2Info1[0] = tmpID[0]; tmpLOC2Info1[1] = DBAccIDSource.IRGSP_rice.toString();
 		lstmpLOC.add(tmpLOC2Info1);
 		lsRef.add(tmpID[0]);
 		for (String string : tmpLOC) {
 			String[] tmpLOC2Info2 = new String[2];
-			tmpLOC2Info2[0] = string; tmpLOC2Info2[1] = DBAccIDSource.TIGR_rice.name();
+			tmpLOC2Info2[0] = string; tmpLOC2Info2[1] = DBAccIDSource.TIGR_rice.toString();
 			lstmpLOC.add(tmpLOC2Info2);
 			lsRef.add(tmpLOC2Info2[0]);
 		}
@@ -465,7 +465,7 @@ class RiceRapDBInfo extends ImportPerLine {
 		geneInfo.setSymb(symbol);
 		geneInfo.setDescrp(description);
 		geneInfo.addPubID(lsPubmeds);
-		geneInfo.setDBinfo(manageDBInfo.findByDBname(DBAccIDSource.RapDB_rice.name()));
+		geneInfo.setDBinfo(manageDBInfo.findByDBname(DBAccIDSource.RapDB_rice.toString()));
 		for (String string : lsGOs) {
 			copedID.addUpdateGO(string, DBAccIDSource.RapDB_rice, null, null, null);
 		}
@@ -511,7 +511,7 @@ class RiceTIGRInfo extends ImportPerLine {
 		description = HttpFetch.decode(ssLOC[1].split("=")[1]);
 		GeneInfo geneInfo = new GeneInfo();
 		geneInfo.setSymb(LOCID); geneInfo.setDescrp(description);
-		geneInfo.setDBinfo(manageDBInfo.findByDBname(DBAccIDSource.TIGR_rice.name()));
+		geneInfo.setDBinfo(manageDBInfo.findByDBname(DBAccIDSource.TIGR_rice.toString()));
 		GeneID copedID = new GeneID("", 39947);
 		copedID.setUpdateRefAccID(LOCID);
 		copedID.setUpdateGeneInfo(geneInfo);

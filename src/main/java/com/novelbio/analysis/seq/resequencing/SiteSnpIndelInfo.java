@@ -47,7 +47,7 @@ public abstract class SiteSnpIndelInfo {
 
 	SplitType splitType = SplitType.NONE;
 	SnpIndelRs snpIndelRs;
-	ServSnpIndelRs servSnpIndelRs = new ServSnpIndelRs();
+//	ServSnpIndelRs servSnpIndelRs = new ServSnpIndelRs();
 	/** 样本名对应该样本这类型snp的reads数量*/
 	Map<String, SampleSnpReadsQuality> mapSample2thisBaseNum = new HashMap<String, SampleSnpReadsQuality>();
 	/**

@@ -57,10 +57,10 @@ public class ImportDB {
 //		importDB.updateGODB();
 		
 //		importDB.updateNCBIID();
-		importDB.updateUniprotID();
+//		importDB.updateUniprotID();
 		
 //		importDB.updateRiceID("/media/winE/Bioinformatics/DataBase/Rice/");//只导了前两个
-//		importDB.updateTAIR("/media/winE/Bioinformatics/GenomeData/Arabidopsis/tair10DB/");
+		importDB.updateTAIR("/media/winE/Bioinformatics/GenomeData/Arabidopsis/tair10DB/");
 //		importDB.updateZB();
 //		updateEnsembl();
 //		updateYeast();

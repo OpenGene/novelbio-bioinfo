@@ -14,7 +14,6 @@ import java.util.List;
 
 import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMFileHeader.SortOrder;
-import net.sf.samtools.SAMReadGroupRecord;
 import net.sf.samtools.SAMSequenceRecord;
 import net.sf.samtools.SAMTextHeaderCodec;
 import net.sf.samtools.util.BlockCompressedInputStream;
@@ -63,10 +62,15 @@ public class SamFile implements AlignSeq {
 //		samFile.close();
 		
 		
-		SamFile samFile = new SamFile("/home/zong0jie/Desktop/Tmp/miRNA/tmpMapping/A_Test_sorted.bam");
+		SamFile samFile = new SamFile("/home/zong0jie/Desktop/Tmp/miRNA/tmpMapping/aaaa_Genome_group.bam");
+		samFile.sort().removeDuplicate().realign().pileup();
 		Species species = new Species(9606);
-		samFile.setReferenceFileName("/home/zong0jie/Desktop/Tmp/miRNA/tmpMapping/chrAll.fa");
-		samFile.realign();
+		samFile.setReferenceFileName(species.getChromSeq());
+//		String mpileUpfile = samFile.sort().removeDuplicate().realign().pileup();
+		String mpileUpfile = "/home/zong0jie/Desktop/Tmp/miRNA/tmpMapping/aaaapileup.gz";
+		BcfTools bcfTools = new BcfTools(mpileUpfile, "/home/zong0jie/Desktop/Tmp/miRNA/tmpMapping/aaa.vcf");
+		bcfTools.snpCalling();
+//		samFile.realign();
 	}
 	
 	
@@ -333,7 +337,7 @@ public class SamFile implements AlignSeq {
     		bamSort.setSamFile(this);
 		}
 
-    	String outSortedBamName = bamSort.sortSamtools(outFile);
+    	String outSortedBamName = bamSort.sortJava(outFile);
 		SamFile samFile = new SamFile(outSortedBamName);
 		setParamSamFile(samFile);
 		return samFile;
@@ -455,20 +459,25 @@ public class SamFile implements AlignSeq {
 		return samFile;
 	}
 	public SamFile removeDuplicate() {
-		String outFile = FileOperate.changeFileSuffix(getFileName(), "_removeDuplicate", "bam");
+		String outFile = FileOperate.changeFileSuffix(getFileName(), "_dedup", "bam");
 		return removeDuplicate(outFile);
 	}
 	/**
 	 * 待检查
 	 */
 	public SamFile removeDuplicate(String outFile) {
-		BamRemoveDuplicate bamRemoveDuplicate = new BamRemoveDuplicate();
-//		bamRemoveDuplicate.setExePath(softWareInfoSamtools.getExePath());
-		bamRemoveDuplicate.setBamFile(getFileName());
-		String outSamFile = bamRemoveDuplicate.removeDuplicate(outFile);
-		SamFile samFile = new SamFile(outSamFile);
+		GATKDuplicate gatkDuplicate = new GATKDuplicate(getFileName(), outFile);
+		gatkDuplicate.removeDuplicate();
+		SamFile samFile = new SamFile(outFile);
 		setParamSamFile(samFile);
 		return samFile;
+//		BamRemoveDuplicate bamRemoveDuplicate = new BamRemoveDuplicate();
+////		bamRemoveDuplicate.setExePath(softWareInfoSamtools.getExePath());
+//		bamRemoveDuplicate.setBamFile(getFileName());
+//		String outSamFile = bamRemoveDuplicate.removeDuplicate(outFile);
+//		SamFile samFile = new SamFile(outSamFile);
+//		setParamSamFile(samFile);
+//		return samFile;
 	}
 	/**
 	 * <b>首先设定reference</b>

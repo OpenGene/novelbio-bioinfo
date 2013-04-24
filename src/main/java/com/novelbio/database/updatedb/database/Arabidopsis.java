@@ -1,5 +1,7 @@
 package com.novelbio.database.updatedb.database;
 
+import org.apache.hadoop.mapreduce.lib.db.DBSplitter;
+
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.GeneInfo;
@@ -11,6 +13,9 @@ import com.novelbio.database.model.modgeneid.GeneID;
  *
  */
 public class Arabidopsis {
+	public static void main(String[] args) {
+		System.out.println(DBAccIDSource.TAIR_ATH.toString());
+	}
 	String TAIRNCBIGeneIDmapping = "";
 	String TAIRNCBIRefSeqMappingPROT = "";
 	String TAIRNCBIRefSeqMappingRNA = "";
@@ -249,6 +254,7 @@ class TAIR_functional_descriptions extends ImportPerLine {
 		copedID.setUpdateDBinfo(DBAccIDSource.TAIR_ATH, true);
 
 		GeneInfo geneInfo = new GeneInfo();
+		geneInfo.setDBinfo(DBAccIDSource.TAIR_ATH.toString());
 		geneInfo.setSymb(ss[0]);
 		geneInfo.setTypeOfGene(ss[1]);
 		if (ss.length < 3) {
@@ -264,7 +270,7 @@ class TAIR_functional_descriptions extends ImportPerLine {
 			description = ss[3];
 		}
 		geneInfo.setDescrp(description);
-		geneInfo.setDBinfo(DBAccIDSource.TAIR_ATH.name());
+		geneInfo.setDBinfo(DBAccIDSource.TAIR_ATH.toString());
 		copedID.setUpdateGeneInfo(geneInfo);
 		if (!copedID.update(true)) {
 			return false;

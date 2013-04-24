@@ -21,7 +21,7 @@ public class ManageSoftWareInfo {
 		return repoSoftwareInfo.findBySoftName(softName);
 	}
 	public SoftWareInfo findSoftwareByName(SoftWare softWare) {
-		return repoSoftwareInfo.findBySoftName(softWare.name());
+		return repoSoftwareInfo.findBySoftName(softWare.toString());
 	}
 	/**
 	 * 先查找有没有该项，没有就插入，有就升级

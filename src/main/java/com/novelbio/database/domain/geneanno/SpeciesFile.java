@@ -162,7 +162,7 @@ public class SpeciesFile {
 	}
 	
 	public void addGffDB2TypeFile(String gffDB, GffType gffType, String gffFile) {
-		mapDB2GffTypeAndFile.put(gffDB.toLowerCase(), new String[]{gffType.name(), gffFile});
+		mapDB2GffTypeAndFile.put(gffDB.toLowerCase(), new String[]{gffType.toString(), gffFile});
 		mapGffDBLowCase2DBNormal.put(gffDB.toLowerCase(), gffDB);
 	}
 	

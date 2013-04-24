@@ -2,19 +2,18 @@ package com.novelbio.analysis.seq.sam;
 
 import java.io.File;
 
-//import net.sf.picard.sam.SortSam;
-//import net.sf.picard.util.Log;
-import net.sf.samtools.SAMFileHeader.SortOrder;
 import net.sf.samtools.SAMFileHeader;
+import net.sf.samtools.SAMFileHeader.SortOrder;
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMFileWriter;
 import net.sf.samtools.SAMFileWriterFactory;
 import net.sf.samtools.SAMFileWriterImpl;
 import net.sf.samtools.SAMRecord;
 
-import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+//import net.sf.picard.sam.SortSam;
+//import net.sf.picard.util.Log;
 
 public class BamSort {
 	public static void main(String[] args) {
@@ -30,7 +29,7 @@ public class BamSort {
     public void setSamFile(SamFile samFile) {
 		this.samFile = samFile;
 		SAMFileWriterImpl.setDefaultMaxRecordsInRam(maxRecordsInRam);
-		PathDetail.setTmpDir(FileOperate.getParentPathName(samFile.getFileName()));
+//		PathDetail.setTmpDir(FileOperate.getParentPathName(samFile.getFileName()));
 	}
     
 	/**

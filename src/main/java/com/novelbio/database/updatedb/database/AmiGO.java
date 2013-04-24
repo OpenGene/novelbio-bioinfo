@@ -544,7 +544,7 @@ Example:O43526-2
 //		copedID.setUpdateAccID(ss[2]);
 //		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_SYMBOL, false);
 		GeneInfo geneInfo = new GeneInfo();
-		geneInfo.setDBinfo(manageDBInfo.findByDBname(DBAccIDSource.Uniprot.name()));
+		geneInfo.setDBinfo(manageDBInfo.findByDBname(DBAccIDSource.Uniprot.toString()));
 		geneInfo.setSymb(ss[2]);
 		geneInfo.setDescrp(ss[9]);
 		copedID.setUpdateGeneInfo(geneInfo);
