@@ -1,10 +1,15 @@
 package com.novelbio.analysis.seq.sam;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.broadinstitute.sting.gatk.CommandLineGATK;
 
+import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
@@ -28,46 +33,69 @@ public class GATKRecalibrate {
 	private static final Logger logger = Logger.getLogger(GATKRecalibrate.class);
 	
 	/** 输入文件路径+bam文件名 */
-	private String inputFilePath;
+	private String inBamFile;
 	/** 默认和输入文件同路径包括文件名 */
-	private String outputFilePath;
+	private String outBamFile;
 	/** 输入ref文件路径+fasta文件名 */
-	private String refFilePath;
+	private String referenceFile;
 	/** 输入文件路径+vcf文件名 */
-	private String snpDBVcfFilePath;
+	private Set<String> setSnpDBVcfFilePath = new HashSet<String>();
 	/** 临时文件路径包括文件名 */
 	private String grpPath;
 	
-	public GATKRecalibrate(String inputFilePath,String refFilePath,String snpDBVcfFilePath){
-		this.inputFilePath = inputFilePath;
-		this.refFilePath = refFilePath;
-		this.snpDBVcfFilePath = snpDBVcfFilePath;
+	public GATKRecalibrate(String inputBamFile, String refFile, String outBamFile){
+		this.inBamFile = inputBamFile;
+		this.referenceFile = refFile;
 		// 得到输入的文件名
-		String inputFileName = FileOperate.getFileNameSep(inputFilePath)[0];
 		// 临时文件路径包括文件名
-		this.grpPath = FileOperate.addSep(outputFilePath) + new Date().getTime() + "_data.grp";
+		this.grpPath = FileOperate.changeFileSuffix(outBamFile, DateUtil.getDateAndRandom(), "grp");
 		// 输出文件全路径包括文件名
-		this.outputFilePath = FileOperate.addSep(outputFilePath) + inputFileName + ".recal.bam";
+		this.outBamFile = outBamFile;
+	}
+	
+	/**
+	 * @param snpVcfFile 已知的snpdb等文件，用于校正。可以添加多个
+	 */
+	public void addSnpVcfFile(String snpVcfFile) {
+		if (FileOperate.isFileExistAndBigThanSize(snpVcfFile, 0)) {
+			setSnpDBVcfFilePath.add(snpVcfFile);
+		}
 	}
     /** 
 	 * recalibrate 重新校正
 	 * @return 输出文件路径 + 输入文件名.recal.bam
 	 */
-	public String recalibrate() {
+	public boolean recalibrate() {
 		try {
 			// 生成校验文件
-			String[] params1 = { "-R", refFilePath, "-T", "BaseRecalibrator", "-o", grpPath, "-I", inputFilePath, "-knownSites", snpDBVcfFilePath };
+			String[] params1 =  getParamBaseRecalibrator();
 			CommandLineGATK.main(params1);
 
 			// 进行校正，生成校正后的文件 *.recal.bam
-			String[] params2 = { "-R", refFilePath, "-T", "PrintReads", "-o", outputFilePath, "-I", inputFilePath, "-BQSR", grpPath };
+			String[] params2 = { "-R", referenceFile, "-T", "PrintReads", "-o", outBamFile, "-I", inBamFile, "-BQSR", grpPath };
 			CommandLineGATK.main(params2);
-			return outputFilePath;
+			return true;
 		} catch (Exception e) {
 			logger.error("recalibrate 重新校正 error!!!");
-			return null;
+			return false;
 		}
 	}
+	/**
+	 * 生成校验文件的参数
+	 * @return
+	 */
+	private String[] getParamBaseRecalibrator() {
+		List<String> lsParam = new ArrayList<String>();
+		lsParam.add("-R"); lsParam.add(referenceFile);
+		lsParam.add("-T"); lsParam.add("BaseRecalibrator");
+		lsParam.add("-o"); lsParam.add(grpPath);
+		lsParam.add("-I"); lsParam.add(inBamFile);
+		for (String string : setSnpDBVcfFilePath) {
+			lsParam.add("-knownSites"); lsParam.add(string);
+		}
+		return lsParam.toArray(new String[0]);
+	}
+	
 	
 	/**
 	 * 我们为了校正前做的一次初步的variants calling，<br>
@@ -125,11 +153,11 @@ public class GATKRecalibrate {
 	
 	/** 取得输出路径 */
 	public String getOutputFilePath() {
-		return outputFilePath;
+		return outBamFile;
 	}
 	/** 设置输出路径包括文件名*.bam */
 	public void setOutputFilePath(String outputFilePath) {
-		this.outputFilePath = outputFilePath;
+		this.outBamFile = outputFilePath;
 	}
 	/** 设置临时文件路径包括文件名 */
 	public void setGrpPathh(String grpPath) {
