@@ -257,7 +257,6 @@ public abstract class FunctionTest {
 		//////////////  先 清 空  ////////////////////////
 		HashSet<String> setAccID = new HashSet<String>();
 		mapGeneUniID2LsGeneID.clear();
-		////////////////////////////////////////////
 		for (GeneID geneID : lsCopedIDs) {
 			//去冗余，accID相同去掉
 			if (setAccID.contains(geneID.getAccID())) {
@@ -317,7 +316,6 @@ public abstract class FunctionTest {
 				mapBGGeneID2Items.put(geneID.getGeneUniID(), tmpresult);
 			}
 		}
-		
 		return tmpresult;
 	}
 	

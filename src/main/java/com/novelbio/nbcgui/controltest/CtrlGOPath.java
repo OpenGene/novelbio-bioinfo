@@ -15,6 +15,7 @@ import com.novelbio.analysis.annotation.functiontest.FunctionTest;
 import com.novelbio.analysis.annotation.functiontest.StatisticTestResult;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -98,13 +99,16 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 	 */
 	private boolean testBGfile(String fileName) {
 		boolean result = false;
-		ArrayList<String[]> lsArrayList = ExcelTxtRead.readLsExcelTxtFile(fileName, 1, 1, 100, -1);//readLsExcelTxt(fileName, 1, 100, 1, -1);
-		for (String[] strings : lsArrayList) {
-			if (strings.length > 1 && strings[1].contains(",")) {
+		TxtReadandWrite txtRead = new TxtReadandWrite(fileName);
+		for (String content : txtRead.readlines()) {
+			String[] ss = content.split("\t");
+			//TODO 判定是否为gene item,item的格式
+			if (ss.length == 2 && ss[1].contains(",") && ss[1].split(",")[0].contains(":")) {
 				result = true;
 				break;
 			}
 		}
+		txtRead.close();
 		return result;
 	}
 	
