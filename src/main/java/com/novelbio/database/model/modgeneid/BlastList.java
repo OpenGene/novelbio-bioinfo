@@ -3,8 +3,10 @@ package com.novelbio.database.model.modgeneid;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.novelbio.base.SepSign;
 import com.novelbio.database.domain.geneanno.BlastInfo;
@@ -19,7 +21,7 @@ public class BlastList {
 	/** 是否一个物种仅选取一条序列 */
 	boolean isGetOneSeqPerTaxID = true;
 	
-	List<Integer> lsSTaxID = new ArrayList<Integer>();
+	Set<Integer> lsSTaxID = new HashSet<Integer>();
 	
 	ManageBlastInfo manageBlastInfo = new ManageBlastInfo();
 
@@ -58,12 +60,12 @@ public class BlastList {
 	 * 设定需要比对到的物种，null或者不输入表示选择全体
 	 * @param taxIDfile
 	 */
-	public void setTaxID(List<Integer> lsStaxID) {
+	public void setTaxIDBlastTo(List<Integer> lsStaxID) {
 		this.lsSTaxID.clear();
 		if (lsStaxID == null || lsStaxID.size() == 0) {
 			return;
 		}
-		this.lsSTaxID = lsStaxID;
+		this.lsSTaxID = new HashSet<Integer>(lsStaxID);
 		lsBlastGeneID = null;
 	}
 	/**

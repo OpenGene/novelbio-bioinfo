@@ -42,50 +42,37 @@ public class MeDIParrayGFF {
 	double fcUp = 2;
 	double fcDown = 0.5;
 	double pvalue = 0.05;
-	int probNum = 3;
+	int probNum = 2;
 	
 	/** 从0开始 */
 	int colRatio = -1;
 	int colPvalue = -1;
 	
 	public static void main(String[] args) {
-		String path = "/media/winF/NBC/Project/methy_QYY/rawdata/";
+		String path = "/media/winF/NBC/Project/methy_QYY/rawdata/AMS/";
 		
 		MeDIParrayGFF meDIParrayGFF = new MeDIParrayGFF();
-		meDIParrayGFF.addRawGffRatioFile(path + "C4_ratio.gff");
-		meDIParrayGFF.addRawGffRatioFile(path + "FA53_ratio.gff");
-		meDIParrayGFF.addRawGffRatioFile(path + "T11_ratio.gff");
-		meDIParrayGFF.addRawGffRatioFile(path + "T33_ratio.gff");
-		meDIParrayGFF.addRawGffRatioFile(path + "T8_ratio.gff");
-		meDIParrayGFF.addRawGffRatioFile(path + "T9_ratio.gff");
-		meDIParrayGFF.preCope();
-		
-		
-		
-//		meDIParrayGFF.lsMedipGffFileRunning = new ArrayList<String>();
-//		
-//		meDIParrayGFF.lsMedipGffFileRunning.add(path + "533487A01.gff.gff");
-//		meDIParrayGFF.lsMedipGffFileRunning.add(path + "533487A02.gff.gff");
-//		meDIParrayGFF.lsMedipGffFileRunning.add(path + "533487A03.gff.gff");
-////		meDIParrayGFF.lsMedipGffFileRunning.add(path + "555423A01.gff.gff");
-////		meDIParrayGFF.lsMedipGffFileRunning.add(path + "555423A02.gff.gff");
-////		meDIParrayGFF.lsMedipGffFileRunning.add(path + "555423A03.gff.gff");
-//		meDIParrayGFF.lsMedipGffFileRunning.add(path + "555448A01.gff.gff");
-//		meDIParrayGFF.lsMedipGffFileRunning.add(path + "555448A02.gff.gff");
-//		meDIParrayGFF.lsMedipGffFileRunning.add(path + "555448A03.gff.gff");
-//
-////		meDIParrayGFF.lsMedipGffFileRunning = new ArrayList<String>();
-////		meDIParrayGFF.lsMedipGffFileRunning.add("/media/winF/NBC/Project/fmf_methylation/SignalMap_GFF_files/ams/428496A01.gff");
-////		meDIParrayGFF.lsMedipGffFileRunning.add("/media/winF/NBC/Project/fmf_methylation/SignalMap_GFF_files/ams/428496A02.gff");
-////		meDIParrayGFF.lsMedipGffFileRunning.add("/media/winF/NBC/Project/fmf_methylation/SignalMap_GFF_files/ams/428496A03.gff");
-//		meDIParrayGFF.setOutFile("/media/winF/NBC/Project/Methylation_WZYXY/ratio/ams_P0.05");
-//		meDIParrayGFF.setProbNum(3);
-//		meDIParrayGFF.setColTreat(new int[]{4 ,5, 6});
-//		meDIParrayGFF.setColControl(new int[]{1, 2, 3});
-//		meDIParrayGFF.calculateResult();
-		
+//		meDIParrayGFF.addRawGffRatioFile(path + "C4_ratio.gff");
+//		meDIParrayGFF.addRawGffRatioFile(path + "FA53_ratio.gff");
+//		meDIParrayGFF.addRawGffRatioFile(path + "T11_ratio.gff");
+//		meDIParrayGFF.addRawGffRatioFile(path + "T33_ratio.gff");
+//		meDIParrayGFF.addRawGffRatioFile(path + "T8_ratio.gff");
+//		meDIParrayGFF.addRawGffRatioFile(path + "T9_ratio.gff");
 //		meDIParrayGFF.preCope();
+		
+		meDIParrayGFF.lsMedipGffFileRunning = new ArrayList<String>();
 
+		meDIParrayGFF.lsMedipGffFileRunning.add(path + "C4_ratio_Cope.gff.gff");
+		meDIParrayGFF.lsMedipGffFileRunning.add(path + "FA53_ratio_Cope.gff.gff");
+		meDIParrayGFF.lsMedipGffFileRunning.add(path + "T11_ratio_Cope.gff.gff");
+		meDIParrayGFF.lsMedipGffFileRunning.add(path + "T33_ratio_Cope.gff.gff");
+		meDIParrayGFF.lsMedipGffFileRunning.add(path + "T8_ratio_Cope.gff.gff");
+		meDIParrayGFF.lsMedipGffFileRunning.add(path + "T9_ratio_Cope.gff.gff");
+		meDIParrayGFF.setOutFile("/media/winF/NBC/Project/methy_QYY/rawdata/AMS/ams_P0.05.txt");
+		meDIParrayGFF.setProbNum(3);
+		meDIParrayGFF.setColTreat(new int[]{3, 4 ,5, 6});
+		meDIParrayGFF.setColControl(new int[]{1, 2});
+		meDIParrayGFF.calculateResult();
 	}
 	
 	public void initial() {

@@ -59,9 +59,6 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 	JSpinner spinColThisNr;
 	JSpinner spinColRefNr;
 	
-	JComboBoxData<Species> cmbSpecies;
-	JComboBoxData<String> cmbVersion;
-	
 	JButton btnOutput;
 	
 	CtrlSnpCalling ctrlSnpCalling = new CtrlSnpCalling(this);
@@ -70,6 +67,8 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 	
 	GffChrAbs gffChrAbs = new GffChrAbs();
 	
+	GuiLayeredPaneSpeciesVersionGff guiLayeredPaneSpeciesVersionGff;
+	
 	/**
 	 * Create the panel.
 	 */
@@ -77,7 +76,7 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		setLayout(null);
 		
 		sclInputFile = new JScrollPaneData();
-		sclInputFile.setBounds(14, 38, 757, 137);
+		sclInputFile.setBounds(14, 38, 757, 130);
 		add(sclInputFile);
 		
 		btnAddPileupFile = new JButton("AddFile");
@@ -109,28 +108,28 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		add(btnDeletePileupFile);
 		
 		combSnpLevel = new JComboBoxData<SnpLevel>();
-		combSnpLevel.setBounds(14, 213, 190, 23);
+		combSnpLevel.setBounds(14, 204, 190, 23);
 		add(combSnpLevel);
 		
 		JLabel lblSnpfilterquality = new JLabel("SnpFilterQuality");
-		lblSnpfilterquality.setBounds(14, 187, 152, 14);
+		lblSnpfilterquality.setBounds(14, 178, 152, 14);
 		add(lblSnpfilterquality);
 		
 		JLabel lblHetolessinfo = new JLabel("Heto Contain Snp Reads Prop Min");
-		lblHetolessinfo.setBounds(296, 187, 279, 14);
+		lblHetolessinfo.setBounds(14, 239, 279, 14);
 		add(lblHetolessinfo);
 		
 		JLabel lblHetomorecontainreadsmin = new JLabel("Heto More Contain Snp Reads Prop Min");
-		lblHetomorecontainreadsmin.setBounds(296, 217, 324, 14);
+		lblHetomorecontainreadsmin.setBounds(12, 264, 324, 14);
 		add(lblHetomorecontainreadsmin);
 		
 		txtHetoSnpProp = new JTextField();
-		txtHetoSnpProp.setBounds(657, 185, 114, 18);
+		txtHetoSnpProp.setBounds(304, 237, 114, 18);
 		add(txtHetoSnpProp);
 		txtHetoSnpProp.setColumns(10);
 		
 		txtHetoMoreSnpProp = new JTextField();
-		txtHetoMoreSnpProp.setBounds(657, 215, 114, 18);
+		txtHetoMoreSnpProp.setBounds(304, 262, 114, 18);
 		add(txtHetoMoreSnpProp);
 		txtHetoMoreSnpProp.setColumns(10);
 		
@@ -157,7 +156,7 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		add(btnRun);
 		
 		sclSnpFile = new JScrollPaneData();
-		sclSnpFile.setBounds(19, 301, 754, 115);
+		sclSnpFile.setBounds(14, 332, 754, 115);
 		add(sclSnpFile);
 		
 		btnAddSnpfile = new JButton("AddSnpFile");
@@ -206,7 +205,7 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		add(rdbtnGetSnpDetail);
 		
 		txtOutput = new JTextField();
-		txtOutput.setBounds(18, 435, 565, 18);
+		txtOutput.setBounds(19, 456, 565, 18);
 		add(txtOutput);
 		txtOutput.setColumns(10);
 		
@@ -217,48 +216,35 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 				txtOutput.setText(fileName);
 			}
 		});
-		btnOutput.setBounds(613, 432, 118, 24);
+		btnOutput.setBounds(613, 442, 118, 24);
 		add(btnOutput);
 		
 		JLabel lblSnpsitefile = new JLabel("SnpSiteFile");
-		lblSnpsitefile.setBounds(16, 275, 93, 14);
+		lblSnpsitefile.setBounds(16, 306, 93, 14);
 		add(lblSnpsitefile);
 		
 		txtInformation = new JTextPane();
 		txtInformation.setText("Information");
 		txtInformation.setBackground(UIManager.getColor("Button.background"));
 		txtInformation.setEditable(false);
-		txtInformation.setBounds(19, 465, 537, 34);
+		txtInformation.setBounds(14, 475, 537, 34);
 		add(txtInformation);
 		
 		JLabel lblColChrid = new JLabel("Col ChrID");
-		lblColChrid.setBounds(115, 275, 69, 14);
+		lblColChrid.setBounds(115, 306, 69, 14);
 		add(lblColChrid);
 		
 		spinColChrID = new JSpinner();
-		spinColChrID.setBounds(185, 270, 43, 24);
+		spinColChrID.setBounds(185, 301, 43, 24);
 		add(spinColChrID);
 		
 		JLabel lblColSnpStart = new JLabel("Col Snp Start Site");
-		lblColSnpStart.setBounds(246, 275, 136, 14);
+		lblColSnpStart.setBounds(246, 306, 136, 14);
 		add(lblColSnpStart);
 		
 		spinColSnpStartSite = new JSpinner();
-		spinColSnpStartSite.setBounds(389, 271, 50, 23);
+		spinColSnpStartSite.setBounds(389, 302, 50, 23);
 		add(spinColSnpStartSite);
-		
-		cmbSpecies = new JComboBoxData<Species>();
-		cmbSpecies.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				cmbVersion.setMapItem(cmbSpecies.getSelectedValue().getMapVersion());
-			}
-		});
-		cmbSpecies.setBounds(468, 8, 189, 23);
-		add(cmbSpecies);
-		
-		cmbVersion = new JComboBoxData<String>();
-		cmbVersion.setBounds(669, 8, 152, 23);
-		add(cmbVersion);
 		
 		rdbtnSnpAnnotation = new JRadioButton("Snp annotation");
 		rdbtnSnpAnnotation.addActionListener(new ActionListener() {
@@ -270,20 +256,24 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		add(rdbtnSnpAnnotation);
 		
 		JLabel lblColRefnr = new JLabel("Col RefNr");
-		lblColRefnr.setBounds(457, 275, 69, 14);
+		lblColRefnr.setBounds(457, 306, 69, 14);
 		add(lblColRefnr);
 		
 		spinColRefNr = new JSpinner();
-		spinColRefNr.setBounds(528, 273, 47, 21);
+		spinColRefNr.setBounds(528, 304, 47, 21);
 		add(spinColRefNr);
 		
 		JLabel lblColThisnr = new JLabel("Col ThisNr");
-		lblColThisnr.setBounds(593, 275, 85, 14);
+		lblColThisnr.setBounds(593, 306, 85, 14);
 		add(lblColThisnr);
 		
 		spinColThisNr = new JSpinner();
-		spinColThisNr.setBounds(680, 273, 51, 21);
+		spinColThisNr.setBounds(680, 304, 51, 21);
 		add(spinColThisNr);
+		
+		guiLayeredPaneSpeciesVersionGff = new GuiLayeredPaneSpeciesVersionGff();
+		guiLayeredPaneSpeciesVersionGff.setBounds(455, 173, 276, 122);
+		add(guiLayeredPaneSpeciesVersionGff);
 
 		initial();
 	}
@@ -297,10 +287,6 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		rdbtnSnpcalling.setSelected(true);
 		
 		sclSnpFile.setTitle(new String[]{"Input Snp File"});
-
-		cmbSpecies.setMapItem(Species.getSpeciesName2Species(Species.SEQINFO_SPECIES));
-		cmbVersion.setMapItem(cmbSpecies.getSelectedValue().getMapVersion());
-		
 		setSnpCalling();
 	}
 	/** 当为snpcalling时候的界面 */
@@ -325,8 +311,7 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		txtOutput.setVisible(false);
 		btnAddPileupFile.setEnabled(true);
 		btnDeletePileupFile.setEnabled(true);
-		cmbSpecies.setVisible(false);
-		cmbVersion.setVisible(false);
+		guiLayeredPaneSpeciesVersionGff.setVisible(false);
 	}
 	
 	/** 当为获得每个snp信息的时候的界面 */
@@ -351,8 +336,7 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		btnAddPileupFile.setEnabled(true);
 		btnDeletePileupFile.setEnabled(true);
 		
-		cmbSpecies.setVisible(false);
-		cmbVersion.setVisible(false);
+		guiLayeredPaneSpeciesVersionGff.setVisible(false);
 	}
 	/** 当为获得每个snp信息的时候的界面 */
 	private void setSnpAnnotation() {
@@ -380,8 +364,7 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		btnOutput.setVisible(false);
 		txtOutput.setVisible(false);
 		
-		cmbSpecies.setVisible(true);
-		cmbVersion.setVisible(true);
+		guiLayeredPaneSpeciesVersionGff.setVisible(true);
 	}
 	private void runSnpCalling() {
 //		setGffChrAbs();
@@ -438,8 +421,7 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		ctrlSnpAnnotation.runAnnotation();
 	}
 	private void setGffChrAbs() {
-		Species species = cmbSpecies.getSelectedValue();
-		species.setVersion(cmbVersion.getSelectedValue());
+		Species species = guiLayeredPaneSpeciesVersionGff.getSelectSpecies();
 		if (species.getTaxID() == 0) {
 			return;
 		}

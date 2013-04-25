@@ -7,6 +7,8 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -35,6 +37,7 @@ import com.novelbio.analysis.annotation.functiontest.TopGO.GoAlgorithm;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.JComboBoxData;
+import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.base.gui.JTextFieldData;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.database.domain.geneanno.GOtype;
@@ -83,18 +86,17 @@ public class GuiGoJPanel extends JPanel{
 	private JLabel jLabAccColGo;
 	private JTextFieldData jTxtAccColGo;
 
-	private JCheckBox jChkBlastGo;
-
 	private JCheckBox jChkCluster;
 	private JLabel jLabGoQtaxID;
 	private JScrollPane jScrollPaneInputGo;
 	
 	JSpinner spnGOlevel;
 	
+	JScrollPaneData sclBlast;
+	
 	JComboBoxData<GoAlgorithm> cmbGoAlgorithm;
 	JComboBoxData<GOtype> cmbGOType;
 	JComboBoxData<Species> cmbSelSpeGo;
-	JComboBoxData<Species> cmbBlastTaxGo;
 	
 	JCheckBox chkGOLevel;
 	
@@ -116,7 +118,6 @@ public class GuiGoJPanel extends JPanel{
 		add(jChkCluster);
 		add(jTxtBGGo);
 		add(jLabGoQtaxID);
-		add(cmbBlastTaxGo);
 		add(cmbSelSpeGo);
 		add(jLabGoType);
 		add(jLabValueColGo);
@@ -128,7 +129,6 @@ public class GuiGoJPanel extends JPanel{
 		add(jBtnBGFileGo);
 		add(jButRunGo);
 		add(jLabPathGo);
-		add(jChkBlastGo);
 		add(jLabUpValueGo);
 		add(jLabAlgorithm);
 		add(jTxtFilePathGo);
@@ -154,17 +154,17 @@ public class GuiGoJPanel extends JPanel{
 				}
 			}
 		});
-		cmbGoAlgorithm.setBounds(12, 352, 152, 23);
+		cmbGoAlgorithm.setBounds(12, 312, 152, 23);
 		cmbGoAlgorithm.setMapItem(GoAlgorithm.getMapStr2GoAlgrithm());
 		add(cmbGoAlgorithm);
 		
 		cmbGOType = new JComboBoxData<GOtype>();
-		cmbGOType.setBounds(12, 453, 206, 23);
+		cmbGOType.setBounds(12, 391, 206, 23);
 		cmbGOType.setMapItem(GOtype.getMapStrAllGotype(false));
 		add(cmbGOType);
 		
 		spnGOlevel = new JSpinner();
-		spnGOlevel.setBounds(104, 388, 60, 18);
+		spnGOlevel.setBounds(104, 347, 60, 18);
 		add(spnGOlevel);
 		
 		chkGOLevel = new JCheckBox("GOLevel");
@@ -177,8 +177,34 @@ public class GuiGoJPanel extends JPanel{
 				}
 			}
 		});
-		chkGOLevel.setBounds(8, 386, 92, 22);
+		chkGOLevel.setBounds(12, 343, 92, 22);
 		add(chkGOLevel);
+		
+		sclBlast = new JScrollPaneData();
+		JComboBoxData<Species> cmbSpeciesBlast = new JComboBoxData<Species>();
+		cmbSpeciesBlast.setMapItem(Species.getSpeciesName2Species(Species.KEGGNAME_SPECIES));
+		sclBlast.setTitle(new String[]{"BlastSpecies"});
+		sclBlast.setItem(0, cmbSpeciesBlast);
+		sclBlast.setBounds(12, 426, 215, 118);
+		add(sclBlast);
+		
+		JButton btnAddBlast = new JButton("Add");
+		btnAddBlast.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				sclBlast.addItem(new String[]{""});
+			}
+		});
+		btnAddBlast.setBounds(236, 426, 68, 24);
+		add(btnAddBlast);
+		
+		JButton btnDelBlast = new JButton("Del");
+		btnDelBlast.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				sclBlast.deleteSelRows();
+			}
+		});
+		btnDelBlast.setBounds(237, 519, 67, 24);
+		add(btnDelBlast);
 		
 		initial();
 	}
@@ -245,7 +271,7 @@ public class GuiGoJPanel extends JPanel{
 		}
 		{
 			jLabGoType = new JLabel();
-			jLabGoType.setBounds(12, 431, 136, 13);
+			jLabGoType.setBounds(12, 377, 136, 13);
 			jLabGoType.setText("GO Type");
 		}
 		{
@@ -255,17 +281,17 @@ public class GuiGoJPanel extends JPanel{
 		}
 		{
 			jTxtUpValueGo = new JTextFieldData();
-			jTxtUpValueGo.setBounds(12, 287, 69, 22);
+			jTxtUpValueGo.setBounds(70, 264, 69, 22);
 			jTxtUpValueGo.setNumOnly(10,4);
 		}
 		{
 			jLabDownValueGo = new JLabel();
-			jLabDownValueGo.setBounds(117, 266, 87, 11);
+			jLabDownValueGo.setBounds(145, 264, 87, 11);
 			jLabDownValueGo.setText("DownValue");
 		}
 		{
 			jTxtDownValueGo = new JTextFieldData();
-			jTxtDownValueGo.setBounds(117, 287, 67, 23);
+			jTxtDownValueGo.setBounds(237, 264, 67, 23);
 			jTxtDownValueGo.setNumOnly(10,4);
 		}
 		{
@@ -353,7 +379,7 @@ public class GuiGoJPanel extends JPanel{
 		}
 		{
 			jLabAlgorithm = new JLabel();
-			jLabAlgorithm.setBounds(12, 327, 78, 15);
+			jLabAlgorithm.setBounds(12, 298, 78, 15);
 			jLabAlgorithm.setText("Algorithm");
 		}
 		{
@@ -371,16 +397,7 @@ public class GuiGoJPanel extends JPanel{
 			cmbSelSpeGo = new JComboBoxData<Species>();
 			cmbSelSpeGo.setBounds(131, 77, 173, 23);
 			cmbSelSpeGo.setMapItem(Species.getSpeciesName2Species(Species.KEGGNAME_SPECIES));
-		}
-		{
-			jChkBlastGo = new JCheckBox();
-			jChkBlastGo.setBounds(12, 512, 80, 22);
-			jChkBlastGo.setText("Blast");
-		}
-		{
-			cmbBlastTaxGo = new JComboBoxData<Species>();
-			cmbBlastTaxGo.setBounds(131, 510, 172, 26);
-			cmbBlastTaxGo.setMapItem(Species.getSpeciesName2Species(Species.KEGGNAME_SPECIES));
+			cmbSelSpeGo.setEditable(true);
 		}
 	}
 	
@@ -392,7 +409,6 @@ public class GuiGoJPanel extends JPanel{
 			chkGOLevel.setEnabled(false);
 			spnGOlevel.setEnabled(false);
 		}
-		
 		spnGOlevel.setValue(2);
 	}
 	
@@ -417,6 +433,16 @@ public class GuiGoJPanel extends JPanel{
 		String geneFileXls = jTxtFilePathGo.getText();
 		int colAccID = Integer.parseInt(jTxtAccColGo.getText());
 		int colFC = Integer.parseInt(jTxtValColGo.getText());
+		int taxID = -1;
+		Species species = cmbSelSpeGo.getSelectedValue();
+		if (species == null) {
+			try {
+				taxID = Integer.parseInt(cmbSelSpeGo.getEditor().getItem().toString());
+			} catch (Exception e) { }
+		} else {
+			taxID = species.getTaxID();
+		}
+		
 		ArrayList<String[]> lsAccID = null;
 		if (colAccID != colFC) {
 			lsAccID = ExcelTxtRead.readLsExcelTxt(geneFileXls, new int[]{colAccID, colFC}, 1, 0);
@@ -428,12 +454,21 @@ public class GuiGoJPanel extends JPanel{
 		double evalue = 1e-10;
 		ctrlGO.clearParam();
 		ctrlGO.setGoAlgorithm(cmbGoAlgorithm.getSelectedValue());
-		ctrlGO.setTaxID(cmbSelSpeGo.getSelectedValue().getTaxID());
-		if (jChkBlastGo.isSelected()) {
-			ctrlGO.setBlastInfo(evalue, cmbBlastTaxGo.getSelectedValue().getTaxID());
-		} else {
-			ctrlGO.setBlastInfo(100, -10);
+	
+
+		ctrlGO.setTaxID(taxID);
+		List<Integer> lsStaxID = new ArrayList<Integer>();
+		Map<String, Species> mapComName2Species = Species.getSpeciesName2Species(Species.ALL_SPECIES);
+		for (String[] strings : sclBlast.getLsDataInfo()) {
+			Species speciesS = mapComName2Species.get(strings[0]);
+			if (speciesS == null) {
+				continue;
+			} else {
+				lsStaxID.add(speciesS.getTaxID());
+			}
 		}
+		ctrlGO.setBlastInfo(evalue, lsStaxID);
+		
 		ctrlGO.setGOType(cmbGOType.getSelectedValue());
 		ctrlGO.setLsBG(backGroundFile);
 		if (chkGOLevel.isSelected()) {

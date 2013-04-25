@@ -28,11 +28,11 @@ public class GuiLayeredPaneSpeciesVersionGff extends JLayeredPane {
 				selectSpecies();
 			}
 		});
-		cmbSpecies.setBounds(12, 16, 196, 23);
+		cmbSpecies.setBounds(12, 14, 196, 20);
 		add(cmbSpecies);
 		
 		JLabel lblVersion = new JLabel("Version");
-		lblVersion.setBounds(13, 47, 55, 14);
+		lblVersion.setBounds(12, 36, 55, 14);
 		add(lblVersion);
 		
 		cmbVersion = new JComboBoxData<String>();
@@ -41,11 +41,11 @@ public class GuiLayeredPaneSpeciesVersionGff extends JLayeredPane {
 				selectVersion();
 			}
 		});
-		cmbVersion.setBounds(12, 62, 196, 23);
+		cmbVersion.setBounds(12, 50, 196, 20);
 		add(cmbVersion);
 		
 		JLabel lblDBtype = new JLabel("DBtype");
-		lblDBtype.setBounds(13, 94, 52, 14);
+		lblDBtype.setBounds(12, 75, 52, 14);
 		add(lblDBtype);
 		
 		cmbGffDB = new JComboBoxData<String>();
@@ -54,7 +54,7 @@ public class GuiLayeredPaneSpeciesVersionGff extends JLayeredPane {
 				selectGffDB();
 			}
 		});
-		cmbGffDB.setBounds(12, 112, 196, 23);
+		cmbGffDB.setBounds(12, 93, 196, 20);
 		add(cmbGffDB);
 		initial();
 	}

@@ -125,6 +125,11 @@ public class GeneID implements GeneIDInt{
 	public void setBlastInfo(double evalue, int... StaxID) {
 		geneID.setBlastInfo(evalue,StaxID);
 	}
+	@Override
+	public void setBlastInfo(double evalue, List<Integer> lsStaxID) {
+		geneID.setBlastInfo(evalue,lsStaxID);
+	}
+	
 	public List<BlastInfo> getLsBlastInfos() {
 		return geneID.getLsBlastInfos();
 	}
@@ -390,7 +395,7 @@ public class GeneID implements GeneIDInt{
 /////////////////////// 私有 static 方法 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	/** 查看该list是否有内容 */
-	private static boolean validateListIsEmpty(Collection col) {
+	private static<T> boolean validateListIsEmpty(Collection<T> col) {
 		if (col == null || col.size() == 0)
 			return true;
 		return false;

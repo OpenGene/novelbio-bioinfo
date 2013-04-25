@@ -87,6 +87,13 @@ public interface GeneIDInt{
 	 * @param StaxID
 	 */
 	public void setBlastInfo(double evalue, int... StaxID);
+	
+	/**
+	 * 设定多个物种进行blast
+	 * @param evalue
+	 * @param StaxID
+	 */
+	public void setBlastInfo(double evalue, List<Integer> lsStaxID);
 	/**
 	 * 返回该CopedID所对应的Gene2GOInfo <br>
 	 * GO_BP<br>
@@ -255,5 +262,6 @@ GO_REF:0000004<br>
 	 * @return
 	 */
 	String getGeneUniID();
+
 	
 }

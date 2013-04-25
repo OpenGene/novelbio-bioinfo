@@ -187,8 +187,21 @@ public class GeneIDabs implements GeneIDInt {
 		if (blastList == null) {
 			blastList = new BlastList(getIDtype(), getGeneUniID(), getTaxID());
 		}
-		
 		blastList.setTaxIDBlastTo(StaxID);
+		blastList.setEvalue_And_GetOneSeqPerTaxID(evalue, true);
+	}
+	
+	/**
+	 * 有geneUniID就用geneUniID去query
+	 * 否则就用accID去query
+	 * @param evalue 小于0就走默认 为1e-10
+	 */
+	@Override
+	public void setBlastInfo(double evalue, List<Integer> lsStaxID) {
+		if (blastList == null) {
+			blastList = new BlastList(getIDtype(), getGeneUniID(), getTaxID());
+		}
+		blastList.setTaxIDBlastTo(lsStaxID);
 		blastList.setEvalue_And_GetOneSeqPerTaxID(evalue, true);
 	}
 	
@@ -354,7 +367,9 @@ public class GeneIDabs implements GeneIDInt {
 					&& getLsBlastInfos().size() > 0) {
 				for (int i = 0; i < getLsBlastInfos().size(); i++) {
 					if (tmpAnno[2] == null || tmpAnno[2].trim().equals("")) {
-						tmpAnno[2] = Species.getSpeciesName2Species(Species.ALL_SPECIES).get(getLsBlastInfos().get(i).getSubjectTax()).getCommonName();
+						int subTaxID = getLsBlastInfos().get(i).getSubjectTax();
+						Species species = new Species(subTaxID);
+						tmpAnno[2] = species.getCommonName();
 						tmpAnno[3] = getLsBlastInfos().get(i).getEvalue() + "";
 						tmpAnno[4] = getLsBlastGeneID().get(i).getSymbol();
 						tmpAnno[5] = getLsBlastGeneID().get(i).getDescription();
@@ -888,9 +903,9 @@ public class GeneIDabs implements GeneIDInt {
 				if (!this.ageneUniID.isValidGenUniID()) {
 					this.ageneUniID.setGenUniID(this.ageneUniID.getAccID());
 				}
-				this.isAccID = true;
-				return;
 			}
+			this.isAccID = true;
+			return;
 		}
 		AgeneUniID ageneUniID = lsgeneID.get(0).get(0);
 		ageneUniID.setAccID(this.ageneUniID.getAccID());

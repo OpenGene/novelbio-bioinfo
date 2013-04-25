@@ -232,8 +232,9 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   String chrIDResult = mapID2ChrID.get(ss[0]);
 	   if (chrIDResult == null) {
 		   mapID2ChrID.put(ss[0], ss[0]);
+		   chrIDResult = ss[0];
 	   }
-	   return ss[0];
+	   return chrIDResult;
    }
    /** 当读取到gene时，就是读到了一个新的基因，那么新建一个基因
     * 并且返回string[2]<br>

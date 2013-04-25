@@ -59,8 +59,8 @@ public class ImportDB {
 //		importDB.updateNCBIID();
 //		importDB.updateUniprotID();
 		
-//		importDB.updateRiceID("/media/winE/Bioinformatics/DataBase/Rice/");//只导了前两个
-		importDB.updateTAIR("/media/winE/Bioinformatics/GenomeData/Arabidopsis/tair10DB/");
+		importDB.updateRiceID("/media/winE/Bioinformatics/DataBase/Rice/");//只导了前两个
+//		importDB.updateTAIR("/media/winE/Bioinformatics/GenomeData/Arabidopsis/tair10DB/");
 //		importDB.updateZB();
 //		updateEnsembl();
 //		updateYeast();

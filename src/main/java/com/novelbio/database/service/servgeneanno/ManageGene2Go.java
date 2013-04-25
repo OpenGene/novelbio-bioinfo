@@ -1,14 +1,15 @@
 package com.novelbio.database.service.servgeneanno;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.Gene2Go;
+import com.novelbio.database.domain.geneanno.UniGene2Go;
+import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.mongorepo.geneanno.RepoGene2Go;
 import com.novelbio.database.service.SpringFactory;
 
@@ -40,7 +41,16 @@ public class ManageGene2Go {
 	
 	/** 直接保存 */
 	public void saveGene2Go(Gene2Go gene2Go) {
+		if (!gene2Go.getGOID().startsWith("GO:")) {
+			logger.error("出现未知GOID：" + gene2Go.getGOID());
+			return;
+		}
 		repoGene2Go.save(gene2Go);
+	}
+	
+	/** 直接保存 */
+	public void deleteGene2Go(Gene2Go gene2Go) {
+		repoGene2Go.delete(gene2Go);
 	}
 	
 	/**

@@ -1,7 +1,10 @@
 package com.novelbio.nbcgui.controltest;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -98,10 +101,10 @@ public class CtrlGO extends CtrlGOPath{
 	@Override
 	String getGene2ItemFileName(String fileName) {
 		String suffix = "_GO_Item";
-		int[] blastTaxID = functionTest.getBlastTaxID();
+		List<Integer> blastTaxID = functionTest.getBlastTaxID();
 		if (functionTest.isBlast()) {
 			suffix = suffix + "_blast";
-			MathComput.sort(blastTaxID, true);//排个序
+			Collections.sort(blastTaxID);//排个序
 			for (int i : blastTaxID) {
 				suffix = suffix + "_" + i;
 			}

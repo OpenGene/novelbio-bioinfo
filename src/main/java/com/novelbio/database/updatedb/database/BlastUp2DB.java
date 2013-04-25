@@ -75,7 +75,7 @@ public class BlastUp2DB extends ImportPerLine{
 		} catch (Exception e) {
 			return true;
 		}
-		return false;
+		return true;
 	}
 	
 }

@@ -186,7 +186,7 @@ public class ManageNCBIUniID {
 	 * @param override
 	 */
 	public boolean updateNCBIUniID(AgeneUniID ncbiid, boolean override) {
-		if (ncbiid.getAccID() == null) {
+		if (ncbiid.getAccID() == null || ncbiid.getAccID().equals("")) {
 			logger.error("accID不存在，不能升级");
 			return false;
 		}

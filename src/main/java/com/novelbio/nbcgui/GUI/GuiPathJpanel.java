@@ -7,6 +7,8 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
@@ -76,8 +78,6 @@ public class GuiPathJpanel extends JPanel{
 	private JCheckBox jChkCluster;
 	private JLabel jLabAccColPath;
 	private JTextFieldData jTxtAccColPath;
-	private JComboBoxData<Species> jCombBlastTaxPath;
-	private JCheckBox jChkBlastPath;
 	private ButtonGroup btnGroupPathMethod;
 	private ButtonGroup btnGroupPathClass;
 	private JComboBoxData<Species> jCombSelSpePath;
@@ -85,106 +85,14 @@ public class GuiPathJpanel extends JPanel{
 	private JScrollPaneData jScrollPaneInputPath;
 	
 	CtrlPath ctrlPath = new CtrlPath();
+	JScrollPaneData scrollPaneBlast;
 	
 	public GuiPathJpanel() 
 	{
-		
-
 		setPreferredSize(new java.awt.Dimension(1046, 617));
 		setAlignmentX(0.0f);
 		setComponent();
-		SpringLayout springLayout = new SpringLayout();
-		springLayout.putConstraint(SpringLayout.NORTH, jProgressBarPath, 588, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, jProgressBarPath, 12, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.EAST, jProgressBarPath, 1035, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.NORTH, jLabResultReviewPath, 234, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, jLabResultReviewPath, 248, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.EAST, jLabResultReviewPath, 375, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.NORTH, jLabInputReviewPath, 14, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, jLabInputReviewPath, 241, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.EAST, jLabInputReviewPath, 338, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.NORTH, jScrollPaneInputPath, 36, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, jScrollPaneInputPath, 241, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.SOUTH, jScrollPaneInputPath, 228, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.EAST, jScrollPaneInputPath, 1035, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.NORTH, jTabbedPanePathResult, 254, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, jTabbedPanePathResult, 241, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.SOUTH, jTabbedPanePathResult, 585, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.EAST, jTabbedPanePathResult, 1035, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.NORTH, jTxtBGPath, 176, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, jTxtBGPath, 12, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.EAST, jTxtBGPath, 227, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.NORTH, jBtnBGFilePath, 200, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, jBtnBGFilePath, 130, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.SOUTH, jBtnBGFilePath, 223, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.EAST, jBtnBGFilePath, 227, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.NORTH, jBtnFileOpenPath, 60, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, jBtnFileOpenPath, 122, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.EAST, jBtnFileOpenPath, 227, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.NORTH, jTxtAccColPath, 264, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, jTxtAccColPath, 122, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.SOUTH, jTxtAccColPath, 284, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.EAST, jTxtAccColPath, 165, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.NORTH, jTxtValColPath, 331, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, jTxtValColPath, 122, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.SOUTH, jTxtValColPath, 351, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.EAST, jTxtValColPath, 166, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.NORTH, jButRunPath, 564, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, jButRunPath, 122, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.SOUTH, jButRunPath, 588, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.EAST, jButRunPath, 202, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.NORTH, jLabBGPath, 156, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, jLabBGPath, 12, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.EAST, jLabBGPath, 122, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.NORTH, jCombSelSpePath, 112, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, jCombSelSpePath, 12, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.EAST, jCombSelSpePath, 186, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.NORTH, jLabPathQtaxID, 88, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, jLabPathQtaxID, 12, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.SOUTH, jLabPathQtaxID, 106, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.EAST, jLabPathQtaxID, 141, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.NORTH, jCombBlastTaxPath, 453, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, jCombBlastTaxPath, 12, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.SOUTH, jCombBlastTaxPath, 479, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.EAST, jCombBlastTaxPath, 212, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.NORTH, jTxtUpValuePath, 373, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, jTxtUpValuePath, 105, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.SOUTH, jTxtUpValuePath, 395, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.EAST, jTxtUpValuePath, 174, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.NORTH, jTxtDownValuePath, 407, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, jTxtDownValuePath, 105, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.SOUTH, jTxtDownValuePath, 429, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.EAST, jTxtDownValuePath, 174, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.NORTH, jLabPathPath, 12, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, jLabPathPath, 12, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.SOUTH, jLabPathPath, 30, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.EAST, jLabPathPath, 97, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.NORTH, jChkBlastPath, 518, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, jChkBlastPath, 12, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.EAST, jChkBlastPath, 92, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.NORTH, jChkCluster, 309, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, jChkCluster, 12, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.EAST, jChkCluster, 101, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.NORTH, jLabAccColPath, 267, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, jLabAccColPath, 12, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.NORTH, jLabUpValuePath, 376, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, jLabUpValuePath, 12, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.SOUTH, jLabUpValuePath, 393, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.EAST, jLabUpValuePath, 84, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.NORTH, jLabDownValuePath, 413, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, jLabDownValuePath, 12, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.SOUTH, jLabDownValuePath, 424, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.EAST, jLabDownValuePath, 99, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.NORTH, jBtbSavePath, 565, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, jBtbSavePath, 12, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.SOUTH, jBtbSavePath, 588, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.EAST, jBtbSavePath, 104, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.NORTH, jLabValueColPath, 334, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, jLabValueColPath, 12, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.NORTH, jTxtFilePathPath, 36, SpringLayout.NORTH, this);
-		springLayout.putConstraint(SpringLayout.WEST, jTxtFilePathPath, 12, SpringLayout.WEST, this);
-		springLayout.putConstraint(SpringLayout.EAST, jTxtFilePathPath, 229, SpringLayout.WEST, this);
-		setLayout(springLayout);
+		setLayout(null);
 		add(jTxtFilePathPath);
 		add(jLabValueColPath);
 		add(jBtbSavePath);
@@ -192,11 +100,9 @@ public class GuiPathJpanel extends JPanel{
 		add(jLabUpValuePath);
 		add(jLabAccColPath);
 		add(jChkCluster);
-		add(jChkBlastPath);
 		add(jLabPathPath);
 		add(jTxtDownValuePath);
 		add(jTxtUpValuePath);
-		add(jCombBlastTaxPath);
 		add(jLabPathQtaxID);
 		add(jCombSelSpePath);
 		add(jLabBGPath);
@@ -211,16 +117,44 @@ public class GuiPathJpanel extends JPanel{
 		add(jLabInputReviewPath);
 		add(jLabResultReviewPath);
 		add(jProgressBarPath);
+		
+		scrollPaneBlast = new JScrollPaneData();
+		scrollPaneBlast.setBounds(12, 385, 174, 138);
+		JComboBoxData<Species> cmbSpeciesBlast = new JComboBoxData<Species>();
+		cmbSpeciesBlast.setMapItem(Species.getSpeciesName2Species(Species.KEGGNAME_SPECIES));
+		scrollPaneBlast.setTitle(new String[]{"BlastSpecies"});
+		scrollPaneBlast.setItem(0, cmbSpeciesBlast);
+		add(scrollPaneBlast);
+		
+		JButton btnAddSpecies = new JButton("Add");
+		btnAddSpecies.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				scrollPaneBlast.addItem(new String[]{""});
+			}
+		});
+		btnAddSpecies.setBounds(190, 387, 61, 24);
+		add(btnAddSpecies);
+		
+		JButton btnDel = new JButton("Del");
+		btnDel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				scrollPaneBlast.deleteSelRows();
+			}
+		});
+		btnDel.setBounds(190, 499, 61, 24);
+		add(btnDel);
 	}
 	private void setComponent() {
 		btnGroupPathMethod = new ButtonGroup();
 		btnGroupPathClass = new ButtonGroup();
 		{
 			jLabPathQtaxID = new JLabel();
+			jLabPathQtaxID.setBounds(12, 88, 129, 18);
 			jLabPathQtaxID.setText("Query Species");
 		}
 		{
 			jTxtFilePathPath = new JTextFieldData();
+			jTxtFilePathPath.setBounds(12, 36, 217, 18);
 			jTxtFilePathPath.addKeyListener(new KeyAdapter() {
 				public void keyTyped(KeyEvent evt) {
 					if (evt.getKeyChar() == KeyEvent.VK_ENTER) {
@@ -236,6 +170,7 @@ public class GuiPathJpanel extends JPanel{
 		}
 		{
 			jBtnFileOpenPath = new JButton();
+			jBtnFileOpenPath.setBounds(122, 60, 105, 22);
 			jBtnFileOpenPath.setText("LoadData");
 			jBtnFileOpenPath.setMargin(new java.awt.Insets(1, 1, 1, 1));
 			jBtnFileOpenPath.addActionListener(new ActionListener() {
@@ -254,41 +189,50 @@ public class GuiPathJpanel extends JPanel{
 		}
 		{
 			jLabPathPath = new JLabel();
+			jLabPathPath.setBounds(12, 12, 85, 18);
 			jLabPathPath.setText("InputData");
 		}
 		{
 			jTxtAccColPath = new JTextFieldData();
+			jTxtAccColPath.setBounds(122, 231, 43, 20);
 			jTxtAccColPath.setNumOnly();
 		}
 		{
 			jLabAccColPath = new JLabel();
+			jLabAccColPath.setBounds(12, 234, 92, 14);
 			jLabAccColPath.setText("AccIDColNum");
 			jLabAccColPath.setAlignmentY(0.0f);
 		}
 		{
 			jLabValueColPath = new JLabel();
+			jLabValueColPath.setBounds(11, 286, 93, 14);
 			jLabValueColPath.setText("ValueColNum");
 			jLabValueColPath.setAlignmentY(0.0f);
 		}
 		{
 			jLabUpValuePath = new JLabel();
+			jLabUpValuePath.setBounds(12, 312, 72, 17);
 			jLabUpValuePath.setText("UpValue");
 		}
 		{
 			jTxtUpValuePath = new JTextFieldData();
+			jTxtUpValuePath.setBounds(102, 312, 69, 22);
 			jTxtUpValuePath.setNumOnly(10,4);
 		}
 		{
 			jLabDownValuePath = new JLabel();
+			jLabDownValuePath.setBounds(12, 346, 87, 11);
 			jLabDownValuePath.setText("DownValue");
 		}
 		{
 			jTxtDownValuePath = new JTextFieldData();
+			jTxtDownValuePath.setBounds(102, 340, 69, 22);
 			jTxtDownValuePath.setNumOnly(10,4);
 
 		}
 		{
 			jBtnBGFilePath = new JButton();
+			jBtnBGFilePath.setBounds(130, 200, 97, 23);
 			jBtnBGFilePath.setText("BackGround");
 			jBtnBGFilePath.setMargin(new java.awt.Insets(1, 0, 1, 0));
 			jBtnBGFilePath.addActionListener(new ActionListener() {
@@ -301,25 +245,31 @@ public class GuiPathJpanel extends JPanel{
 		}
 		{
 			jTxtValColPath = new JTextFieldData();
+			jTxtValColPath.setBounds(122, 283, 44, 20);
 			jTxtValColPath.setNumOnly();
 		}
 
 		{
 			jScrollPaneInputPath = new JScrollPaneData();
+			jScrollPaneInputPath.setBounds(251, 36, 784, 192);
 		}
 		{
 			jLabInputReviewPath = new JLabel();
+			jLabInputReviewPath.setBounds(241, 14, 97, 14);
 			jLabInputReviewPath.setText("InputReview");
 		}
 		{
 			jLabResultReviewPath = new JLabel();
+			jLabResultReviewPath.setBounds(248, 234, 127, 14);
 			jLabResultReviewPath.setText("ResultReview");
 		}
 		{
 			jProgressBarPath = new JProgressBar();
+			jProgressBarPath.setBounds(12, 588, 1023, 14);
 		}
 		{
 			jChkCluster = new JCheckBox();
+			jChkCluster.setBounds(12, 256, 89, 22);
 			jChkCluster.setText("ClusterPath");
 			jChkCluster.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
@@ -336,9 +286,11 @@ public class GuiPathJpanel extends JPanel{
 		}
 		{
 			jTabbedPanePathResult = new JTabbedPane();
+			jTabbedPanePathResult.setBounds(258, 254, 777, 331);
 		}
 		{
 			jBtbSavePath = new JButton();
+			jBtbSavePath.setBounds(12, 550, 92, 23);
 			jBtbSavePath.setText("Save As");
 			jBtbSavePath.setMargin(new java.awt.Insets(1, 0, 1, 0));
 			jBtbSavePath.addActionListener(new ActionListener() {
@@ -354,6 +306,7 @@ public class GuiPathJpanel extends JPanel{
 		}
 		{
 			jButRunPath = new JButton();
+			jButRunPath.setBounds(116, 549, 80, 24);
 			jButRunPath.setText("Analysis");
 			jButRunPath.setMargin(new java.awt.Insets(1, 1, 1, 1));
 			jButRunPath.addActionListener(new ActionListener() {
@@ -364,24 +317,19 @@ public class GuiPathJpanel extends JPanel{
 		}
 		{
 			jLabBGPath = new JLabel();
+			jLabBGPath.setBounds(12, 147, 110, 14);
 			jLabBGPath.setText("BackGround");
 			jLabBGPath.setAlignmentY(0.0f);
 			jLabBGPath.setAutoscrolls(true);
 		}
 		{
 			jTxtBGPath = new JTextFieldData();
+			jTxtBGPath.setBounds(14, 170, 215, 18);
 		}
 		{
 			jCombSelSpePath = new JComboBoxData<Species>();
+			jCombSelSpePath.setBounds(12, 112, 174, 23);
 			jCombSelSpePath.setMapItem(Species.getSpeciesName2Species(Species.ALL_SPECIES));
-		}
-		{
-			jChkBlastPath = new JCheckBox();
-			jChkBlastPath.setText("Blast");
-		}
-		{
-			jCombBlastTaxPath = new JComboBoxData<Species>();
-			jCombBlastTaxPath.setMapItem(Species.getSpeciesName2Species(Species.ALL_SPECIES));
 		}
 	}
 	
@@ -404,8 +352,7 @@ public class GuiPathJpanel extends JPanel{
 	/**
 	 * analysis按下去后得到结果
 	 */
-	private void getResult()
-	{
+	private void getResult() {
 		//jScrollPaneInputPath 最外层的方框
 		//jTabbedPanePathTest 里面的标签框
 		//jPanPathTest 具体的标签
@@ -417,7 +364,6 @@ public class GuiPathJpanel extends JPanel{
 		int colFC = Integer.parseInt(jTxtValColPath.getText());
 		
 		String backGroundFile = jTxtBGPath.getText();
-		boolean blast = jChkBlastPath.isSelected();
 		double evalue = 1e-10;
 				
 		ArrayList<String[]> lsAccID = null;
@@ -428,14 +374,31 @@ public class GuiPathJpanel extends JPanel{
 		}
 		
 		ctrlPath.clearParam();
-		ctrlPath.setTaxID(jCombSelSpePath.getSelectedValue().getTaxID());
+		int taxID = -1;
+		Species species = jCombSelSpePath.getSelectedValue();
 		
-		if (blast) {
-			ctrlPath.setBlastInfo(evalue, jCombBlastTaxPath.getSelectedValue().getTaxID());
+		if (species == null) {
+			try {
+				taxID = Integer.parseInt(jCombSelSpePath.getEditor().getItem().toString());
+			} catch (Exception e) { }
+		} else {
+			taxID = species.getTaxID();
 		}
+		ctrlPath.setTaxID(taxID);
 		
+		List<Integer> lsStaxID = new ArrayList<Integer>();
+		Map<String, Species> mapComName2Species = Species.getSpeciesName2Species(Species.ALL_SPECIES);
+		for (String[] strings : scrollPaneBlast.getLsDataInfo()) {
+			Species speciesS = mapComName2Species.get(strings[0]);
+			if (speciesS == null) {
+				continue;
+			} else {
+				lsStaxID.add(speciesS.getTaxID());
+			}
+		}
+		ctrlPath.setBlastInfo(evalue, lsStaxID);
+
 		ctrlPath.setLsBG(backGroundFile);
-		
 		if (!jChkCluster.isSelected() || colAccID == colFC) {
 			double up = 0; double down = 0;
 			if ( colAccID != colFC) {

@@ -95,27 +95,27 @@ public class CtrlBlastGo extends SwingWorker<ArrayList<String[]>, ProgressDataGo
 	private List<String[]> getLsGeneGo(String accID) {
 		List<String[]> lsResult = null;
 		GeneID geneID = new GeneID(accID, taxID);
-		if (geneID.getIDtype() == GeneID.IDTYPE_ACCID) {
-			String[] result = null;
-			if (!isBlast()) {
-				result = new String[4];
-			} else {
-				result = new String[8];
-			}
-			result[0] = accID;
-			for (int i = 1; i < result.length; i++) {
-				result[i] = "";
-			}
-			lsResult = new ArrayList<String[]>();
-			lsResult.add(result);
+//		if (geneID.getIDtype() == GeneID.IDTYPE_ACCID) {
+//			String[] result = null;
+//			if (!isBlast()) {
+//				result = new String[4];
+//			} else {
+//				result = new String[8];
+//			}
+//			result[0] = accID;
+//			for (int i = 1; i < result.length; i++) {
+//				result[i] = "";
+//			}
+//			lsResult = new ArrayList<String[]>();
+//			lsResult.add(result);
+//		} else {
+//	
+//		}
+		if (!isBlast()) {
+			lsResult = getLsGOInfo(geneID);
 		} else {
-			if (!isBlast()) {
-				lsResult = getLsGOInfo(geneID);
-			} else {
-				lsResult = getLsGOInfoBlast(geneID);
-			}
+			lsResult = getLsGOInfoBlast(geneID);
 		}
-
 		return lsResult;
 	}
 	

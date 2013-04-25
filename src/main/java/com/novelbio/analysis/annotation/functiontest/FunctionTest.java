@@ -28,7 +28,7 @@ public abstract class FunctionTest {
 	public static final String FUNCTION_PATHWAY_KEGG = "pathway kegg";
 	
 	int taxID = 0;
-	int[] blastTaxID = null;
+	List<Integer> blastTaxID = null;
 	double blastEvalue = 1e-10;
 	
 	Set<GeneID> lsCopedIDsTest = null;
@@ -63,12 +63,13 @@ public abstract class FunctionTest {
 	public void setStatisticsTest(StatisticsTest statisticsTest) {
 		this.statisticsTest = statisticsTest;
 	}
-	public void setBlastInfo(double evalue, int... blastTaxID) {
-		this.blastTaxID = blastTaxID;
+	
+	public void setBlastInfo(double evalue, List<Integer> blastTaxID) {
 		this.blastEvalue = evalue;
+		this.blastTaxID = blastTaxID;
 	}
 	/** 比对到哪些物种上去了 */
-	public int[] getBlastTaxID() {
+	public List<Integer> getBlastTaxID() {
 		return blastTaxID;
 	}
 	public boolean isBlast() {

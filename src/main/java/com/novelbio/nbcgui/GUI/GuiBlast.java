@@ -2,7 +2,9 @@ package com.novelbio.nbcgui.GUI;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.JButton;
@@ -163,8 +165,12 @@ public class GuiBlast extends JPanel implements GuiNeedOpenFile{
 		btnNewButton.setBounds(446, 365, 146, 24);
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String path = fileOpen.openFileName("txt", "");
-				sclPaneBlastFile.addItem(new String[]{path, "", ""});
+				List<String> lsPath = fileOpen.openLsFileName("txt", "");
+				List<String[]> lsInput = new ArrayList<String[]>();
+				for (String path : lsPath) {
+					lsInput.add(new String[]{path, "", ""});
+				}
+				sclPaneBlastFile.addItemLs(lsInput);
 			}
 		});
 		add(btnNewButton);
@@ -196,6 +202,11 @@ public class GuiBlast extends JPanel implements GuiNeedOpenFile{
 		add(sclPaneBlastFile);
 		
 		JButton btnDelfile = new JButton("DelFile");
+		btnDelfile.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				sclPaneBlastFile.deleteSelRows();
+			}
+		});
 		btnDelfile.setBounds(760, 365, 146, 24);
 		add(btnDelfile);
 		
@@ -238,8 +249,9 @@ public class GuiBlast extends JPanel implements GuiNeedOpenFile{
 						
 			blast.setTaxID(taxIDQ);
 			blast.setSubTaxID(taxIDS);
-			
-			blast.setTxtWriteExcep(FileOperate.changeFileSuffix(content[0].trim(), "_cannotUpDate", null));
+			if (chckbxSavetodb.isSelected()) {
+				blast.setTxtWriteExcep(FileOperate.changeFileSuffix(content[0].trim(), "_cannotUpDate", null));
+			}
 			blast.updateFile(content[0]);
 		}
 	}

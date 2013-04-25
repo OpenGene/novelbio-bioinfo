@@ -1,14 +1,13 @@
 package com.novelbio.analysis.seq.sam;
 
-import java.lang.reflect.Array;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
+
+import net.sf.samtools.AlignmentBlock;
+import net.sf.samtools.Cigar;
+import net.sf.samtools.SAMFileHeader;
+import net.sf.samtools.SAMReadGroupRecord;
+import net.sf.samtools.SAMRecord;
 
 import org.apache.log4j.Logger;
 
@@ -18,24 +17,6 @@ import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.analysis.seq.mapping.Align;
-
-import net.sf.samtools.AlignmentBlock;
-import net.sf.samtools.Cigar;
-import net.sf.samtools.SAMBinaryTagAndUnsignedArrayValue;
-import net.sf.samtools.SAMBinaryTagAndValue;
-import net.sf.samtools.SAMException;
-import net.sf.samtools.SAMFileHeader;
-import net.sf.samtools.SAMFileReader;
-import net.sf.samtools.SAMFormatException;
-import net.sf.samtools.SAMReadGroupRecord;
-import net.sf.samtools.SAMRecord;
-import net.sf.samtools.SAMSequenceRecord;
-import net.sf.samtools.SAMTagUtil;
-import net.sf.samtools.SAMValidationError;
-import net.sf.samtools.util.BinaryCodec;
-import net.sf.samtools.util.DateParser;
-import net.sf.samtools.util.Iso8601Date;
-import net.sf.samtools.util.StringUtil;
 
 public class SamRecord extends SiteSeqInfo implements AlignRecord{
 	private static Logger logger = Logger.getLogger(SamRecord.class);

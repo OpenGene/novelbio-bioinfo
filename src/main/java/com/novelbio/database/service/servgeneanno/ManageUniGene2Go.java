@@ -35,7 +35,14 @@ public class ManageUniGene2Go {
 	}
 	/** 直接保存 */
 	public void saveGene2Go(UniGene2Go gene2Go) {
+		if (!gene2Go.getGOID().startsWith("GO:")) {
+			logger.error("出现未知GOID：" + gene2Go.getGOID());
+			return;
+		}
 		repoUniGene2Go.save(gene2Go);
+	}
+	public void deleteGene2Go(UniGene2Go gene2Go) {
+		repoUniGene2Go.delete(gene2Go);
 	}
 	/**
 	 * 
@@ -70,5 +77,6 @@ public class ManageUniGene2Go {
 		}
 		return true;
 	}
+
 	
 }

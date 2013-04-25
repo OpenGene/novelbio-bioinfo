@@ -16,8 +16,10 @@ import com.novelbio.database.service.SpringFactory;
 public class ManageBlastInfo {
 	static double[] lock = new double[0];
 	/** 缓存, key都为小写*/
-	static Map<String, Map<String, BlastInfo>> mapAccIDTaxID_2_mapAccID = new HashMap<String, Map<String,BlastInfo>>();
-	
+	static Map<String, Map<String, BlastInfo>> mapAccIDTaxID_2_mapAccID;
+	/** key为小写 */
+	static Map<String, Integer> mapAccID2TaxID;
+
 	@Autowired
 	RepoBlastInfo repoBlastInfo;
 
@@ -26,7 +28,9 @@ public class ManageBlastInfo {
 	}
 	
 	public static void clearBlastCach() {
-		mapAccIDTaxID_2_mapAccID.clear();
+		if (mapAccIDTaxID_2_mapAccID != null) {
+			mapAccIDTaxID_2_mapAccID.clear();
+		}
 	}
 	
 	/** 一行一行的添加信息*/
@@ -52,8 +56,16 @@ public class ManageBlastInfo {
 	
 	/** 添加单个BlastInfo进入缓存 */
 	public static void addBlastInfoToCache(BlastInfo blastInfo) {
-		String key1 = blastInfo.getQueryID() + SepSign.SEP_ID + blastInfo.getQueryTax();
+		if (mapAccID2TaxID == null) {
+			mapAccID2TaxID = new HashMap<String, Integer>();
+		}
+		if (mapAccIDTaxID_2_mapAccID == null) {
+			mapAccIDTaxID_2_mapAccID = new HashMap<String, Map<String,BlastInfo>>();
+		}
+		
+		String key1 = getKey1(blastInfo);
 		Map<String, BlastInfo> mapAccIDTaxIDSaccIDStaxID_2_BlastInfo = mapAccIDTaxID_2_mapAccID.get(key1);
+		mapAccID2TaxID.put(blastInfo.getQueryID().toLowerCase(), blastInfo.getQueryTax());
 		if (mapAccIDTaxIDSaccIDStaxID_2_BlastInfo == null) {
 			mapAccIDTaxIDSaccIDStaxID_2_BlastInfo = new HashMap<String, BlastInfo>();
 			mapAccIDTaxIDSaccIDStaxID_2_BlastInfo.put(getKey2(blastInfo), blastInfo);
@@ -116,6 +128,12 @@ public class ManageBlastInfo {
 	 */
 	public List<BlastInfo> queryBlastInfoLs(String queryID, int taxIDQ) {
 		List<BlastInfo> lsBlastInfos = repoBlastInfo.findByQueryID(queryID, taxIDQ);
+		if (taxIDQ == 0) {
+			Integer taxIDQ1 = mapAccID2TaxID.get(queryID.toLowerCase());
+			if (taxIDQ1 != null) {
+				taxIDQ = taxIDQ1;
+			}
+		}
 		String key1 = (queryID + SepSign.SEP_ID + taxIDQ).toLowerCase();
 		Map<String, BlastInfo> mapValue = mapAccIDTaxID_2_mapAccID.get(key1);
 		if (mapValue != null && mapValue.size() > 0) {

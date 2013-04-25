@@ -32,7 +32,7 @@ public class BlastInfo implements Comparable<BlastInfo> {
 
 	private double identities = 0;
 	private double evalue = 100;
-	private int score = 0;
+	private double score = 0;
 	private int alignLen = 0;
 	
 	protected int queryTax;
@@ -100,7 +100,7 @@ public class BlastInfo implements Comparable<BlastInfo> {
 		this.alignLen = Integer.parseInt(blastInfo[3].trim());
 		this.evalue = Double.parseDouble(blastInfo[10].trim());
 		this.identities = Double.parseDouble(blastInfo[2].trim());
-		this.score = Integer.parseInt(blastInfo[11].trim());
+		this.score = Double.parseDouble(blastInfo[11].trim());
 	}
 	
 	/**
@@ -222,8 +222,8 @@ public class BlastInfo implements Comparable<BlastInfo> {
 		Double evalueO = o.getEvalue();
 		Double identityThis = identities;
 		Double identityO = o.identities;
-		Integer scoreThis = score;
-		Integer scoreO = o.score;
+		Double scoreThis = score;
+		Double scoreO = o.score;
 		int result = -scoreThis.compareTo(scoreO);
 		if (result == 0) {
 			result = -identityThis.compareTo(identityO);
