@@ -470,7 +470,7 @@ public class GuiGoJPanel extends JPanel{
 		ctrlGO.setBlastInfo(evalue, lsStaxID);
 		
 		ctrlGO.setGOType(cmbGOType.getSelectedValue());
-		ctrlGO.setLsBG(backGroundFile);
+		
 		if (chkGOLevel.isSelected()) {
 			ctrlGO.setGOlevel((Integer) spnGOlevel.getValue());
 		} else {
@@ -489,6 +489,7 @@ public class GuiGoJPanel extends JPanel{
 		else {
 			ctrlGO.setIsCluster(true);
 		}
+		ctrlGO.setLsBG(backGroundFile);
 		ctrlGO.setLsAccID2Value(lsAccID);
 		ctrlGO.run();
 		setNormalGo(ctrlGO);

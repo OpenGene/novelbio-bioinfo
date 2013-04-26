@@ -207,12 +207,18 @@ public abstract class FunctionTest {
 	}
 	private Map<String, GeneID2LsItem> convert2Item(Collection<GeneID> lsGeneID) {
 		Map<String, GeneID2LsItem> mapGeneID2LsItem = new LinkedHashMap<String, GeneID2LsItem>();
+		int num = 0;
+		int numAll = lsGeneID.size();
 		for (GeneID geneID : lsGeneID) {
+			num++;
 			GeneID2LsItem geneID2LsItem = convert2Item(geneID);
 			if (geneID2LsItem == null) {
 				continue;
 			}
 			mapGeneID2LsItem.put(geneID.getGeneUniID(), geneID2LsItem);
+			if (num % 200 == 0) {
+				logger.info("总共 " + numAll + " 个基因， 已经找了" + num + "个基因" );
+			}
 		}
 		return mapGeneID2LsItem;
 	}

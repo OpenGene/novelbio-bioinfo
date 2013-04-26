@@ -105,7 +105,7 @@ public class NovelGOFunTest extends FunctionTest {
 	
 	@Override
 	protected StatisticTestGene2Item creatStatisticTestGene2Item() {
-		return new StatisticTestGene2GO();
+		return new StatisticTestGene2GO(GOlevel);
 	}
 	@Override
 	protected String getItemTerm(String item) {

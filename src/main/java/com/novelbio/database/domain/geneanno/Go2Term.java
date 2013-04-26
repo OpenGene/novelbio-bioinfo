@@ -2,9 +2,12 @@ package com.novelbio.database.domain.geneanno;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -21,6 +24,8 @@ import com.novelbio.database.service.servgeneanno.ManageGo2Term;
  */
 @Document(collection = "go2term")
 public class Go2Term implements Cloneable {
+	private static final Logger logger = Logger.getLogger(Go2Term.class);
+	
 	@Id
 	String id;
 	@Indexed(unique = true)
@@ -155,6 +160,63 @@ public class Go2Term implements Cloneable {
 	public void setGOtype(GOtype gotype) {
 		this.goType = gotype.getOneWord();
 	}
+	
+	/**
+	 * 返回第几级GO
+	 * @param level 如果level小于等于0，则返回自身
+	 * @return
+	 */
+	public Go2Term getGOlevel(int level) {
+		if (level <= 0) {
+			return this;
+		}
+		Queue<Go2Term> queueGo2Terms = new LinkedList<Go2Term>();
+		Go2Term goTermParent = this;
+		while ((goTermParent = goTermParent.getOneParentGo2Term()) != null) {
+			queueGo2Terms.add(goTermParent);
+			if (queueGo2Terms.size() > level) {
+				queueGo2Terms.poll();
+			}
+		}
+		
+		if (queueGo2Terms.size() == level) {
+			return queueGo2Terms.peek();
+		} else {
+			return null;
+		}
+	}
+	
+	/**获取一个父级的Go，根据和当前Go的关系选择，优先is，其次REGULATE，再次REGULATE_NEG或者REGULATE_POS，最后PART_OF，没有返回null；*/
+	private Go2Term getOneParentGo2Term() {
+		Set<Go2Term> setGo2Terms = getParent();
+		if (setGo2Terms.size() == 0) {
+			return null;
+		}
+		for (Go2Term go2Term2 : setGo2Terms) {
+			if (go2Term2.getRelation() == GORelation.IS) {
+				return go2Term2;
+			}
+		}
+		for (Go2Term go2Term2 : setGo2Terms) {
+			if (go2Term2.getRelation() == GORelation.REGULATE) {
+				return go2Term2;
+			}
+		}
+		for (Go2Term go2Term2 : setGo2Terms) {
+			if (go2Term2.getRelation() == GORelation.REGULATE_NEG
+					|| go2Term2.getRelation() == GORelation.REGULATE_POS) {
+				return go2Term2;
+			}
+		}
+		for (Go2Term go2Term2 : setGo2Terms) {
+			if (go2Term2.getRelation() == GORelation.PART_OF) {
+				return go2Term2;
+			}
+		}
+		logger.error("该Term的父级出现新的Relation" + getGoID());
+		return null;
+	}
+	
 	/**
 	 * 仅比较GOID
 	 * 如果两个都是null，则返回false

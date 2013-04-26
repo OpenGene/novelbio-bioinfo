@@ -128,13 +128,17 @@ public class ManageBlastInfo {
 	 */
 	public List<BlastInfo> queryBlastInfoLs(String queryID, int taxIDQ) {
 		List<BlastInfo> lsBlastInfos = repoBlastInfo.findByQueryID(queryID, taxIDQ);
-		if (taxIDQ == 0) {
+		if (taxIDQ == 0 && mapAccID2TaxID != null) {
 			Integer taxIDQ1 = mapAccID2TaxID.get(queryID.toLowerCase());
 			if (taxIDQ1 != null) {
 				taxIDQ = taxIDQ1;
 			}
 		}
 		String key1 = (queryID + SepSign.SEP_ID + taxIDQ).toLowerCase();
+		if (mapAccIDTaxID_2_mapAccID == null) {
+			return lsBlastInfos;
+		}
+		
 		Map<String, BlastInfo> mapValue = mapAccIDTaxID_2_mapAccID.get(key1);
 		if (mapValue != null && mapValue.size() > 0) {
 			lsBlastInfos.addAll(mapValue.values());

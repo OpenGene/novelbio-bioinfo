@@ -71,6 +71,7 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 	}
 	
 	/**
+	 * <b>在这之前要先设定GOlevel</b>
 	 * 简单的判断下输入的是geneID还是geneID2Item表
 	 * @param fileName
 	 */
@@ -193,7 +194,7 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 			Set<String> setAccID = mapPrefix2SetAccID.get(prefix);
 			for (String accID : setAccID) {
 				GeneID geneID = new GeneID(accID, functionTest.getTaxID());
-				if (geneID.getIDtype() != GeneID.IDTYPE_ACCID || geneID.getLsBlastGeneID().size() == 0) {
+				if (geneID.getIDtype() != GeneID.IDTYPE_ACCID || geneID.getLsBlastGeneID().size() > 0) {
 					mapPrefix2SetGeneID.put(prefix, geneID);
 				}
 			}

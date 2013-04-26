@@ -355,16 +355,20 @@ public class MapTophat implements MapRNA{
 		return "";
 	}
 	private void setGTFfile() {
-		if (gtfFile == null || !FileOperate.isFileExistAndBigThanSize(gtfFile, 0.1)) {
+		if (gtfFile == null || FileOperate.isFileExistAndBigThanSize(gtfFile, 0.1)) {
 			generateGtfFile = false;
+			logger.error("not generate GTF");
 			return;
 		}
 		if (gffChrAbs != null && gffChrAbs.getGffHashGene() != null) {
 			String path = FileOperate.getParentPathName(lsLeftFq.get(0).getReadFileName());
 			String outGTF = path + FileOperate.getFileNameSep(gffChrAbs.getGffHashGene().getGffFilename())[0] + DateUtil.getDateAndRandom() + ".GTF";
 			gffChrAbs.getGffHashGene().writeToGTF(outGTF, "novelbio");
+			logger.error("Generate GTF To:" + outGTF);
 			this.gtfFile = outGTF;
 			generateGtfFile = true;
+		} else {
+			logger.error("Error Not Generate GTF To:");
 		}
 	}
 	/**

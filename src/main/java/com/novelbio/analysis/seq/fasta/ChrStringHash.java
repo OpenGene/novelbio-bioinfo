@@ -13,18 +13,24 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.fileOperate.BufferedRandomAccessFile;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.model.species.Species;
 
 /**
  * 本类用来将染色体的名字，序列装入染色体类，并且是以Hash表形式返回 目前本类中仅仅含有静态方法 同时用来提取某段位置的序列 和提取反向重复序列
  * 作者：宗杰 20090617
  */
 public class ChrStringHash extends SeqHashAbs{
+	public static void main(String[] args) {
+		Species species = new Species(9606);
+		SeqHash seqHash = new SeqHash(species.getChromFaPath(), species.getChromFaRegex());
+		SeqFasta seqFasta = seqHash.getSeq("chr1", 12345, 12348);
+		System.out.println(seqFasta.toString());
+	}
 	private static Logger logger = Logger.getLogger(ChrStringHash.class);
 	
 	/** 以下哈希表的键是染色体名称，都是小写，格式如：chr1，chr2，chr10 */
-	HashMap<String, BufferedRandomAccessFile> mapChrID2RandomFile;
+	HashMap<String, RandomAccessFile> mapChrID2RandomFile;
 	HashMap<String, BufferedReader> mapChrID2BufReader;
 	HashMap<String, TxtReadandWrite> mapChrID2Txt;
 	HashMap<String, Integer> mapChrID2EnterType;
@@ -55,7 +61,7 @@ public class ChrStringHash extends SeqHashAbs{
 	 */
 	protected void setChrFile() throws Exception {
 		ArrayList<String> lsChrFile = initialAndGetFileList();
-		BufferedRandomAccessFile chrRAseq = null;
+		RandomAccessFile chrRAseq = null;
 		TxtReadandWrite txtChrTmp = null;
 		BufferedReader bufChrSeq = null;
 		
@@ -64,7 +70,9 @@ public class ChrStringHash extends SeqHashAbs{
 			String[] chrFileName = FileOperate.getFileNameSep(fileNam);
 			lsSeqName.add(chrFileName[0]);
 
-			chrRAseq = new BufferedRandomAccessFile(fileNam, "r");
+			//TODO
+			chrRAseq = new RandomAccessFile(fileNam, "r");
+//			chrRAseq = new BufferedRandomAccessFile(fileNam, "r");
 			txtChrTmp = new TxtReadandWrite(fileNam, false);
 			String enterType = txtChrTmp.getEnterType();
 			bufChrSeq = txtChrTmp.readfile();
@@ -93,7 +101,7 @@ public class ChrStringHash extends SeqHashAbs{
 		if (regx == null)
 			regx = "\\bchr\\w*";
 		
-		mapChrID2RandomFile = new HashMap<String, BufferedRandomAccessFile>();
+		mapChrID2RandomFile = new HashMap<String, RandomAccessFile>();
 		mapChrID2BufReader = new HashMap<String, BufferedReader>();
 		mapChrID2Txt = new HashMap<String, TxtReadandWrite>();
 		mapChrID2EnterType = new HashMap<String, Integer>();
@@ -102,7 +110,7 @@ public class ChrStringHash extends SeqHashAbs{
 	}
 	/** 设定染色体长度 */
 	private void setChrLength() throws IOException {
-		for (Entry<String, BufferedRandomAccessFile> entry : mapChrID2RandomFile.entrySet()) {
+		for (Entry<String, RandomAccessFile> entry : mapChrID2RandomFile.entrySet()) {
 			String chrID = entry.getKey();
 			RandomAccessFile chrRAfile = entry.getValue();
 			// 设定到0位

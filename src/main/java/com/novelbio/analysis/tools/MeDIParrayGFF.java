@@ -42,7 +42,7 @@ public class MeDIParrayGFF {
 	double fcUp = 2;
 	double fcDown = 0.5;
 	double pvalue = 0.05;
-	int probNum = 2;
+	int probNum = 1;
 	
 	/** 从0开始 */
 	int colRatio = -1;
@@ -69,7 +69,7 @@ public class MeDIParrayGFF {
 		meDIParrayGFF.lsMedipGffFileRunning.add(path + "T8_ratio_Cope.gff.gff");
 		meDIParrayGFF.lsMedipGffFileRunning.add(path + "T9_ratio_Cope.gff.gff");
 		meDIParrayGFF.setOutFile("/media/winF/NBC/Project/methy_QYY/rawdata/AMS/ams_P0.05.txt");
-		meDIParrayGFF.setProbNum(3);
+		meDIParrayGFF.setProbNum(1);
 		meDIParrayGFF.setColTreat(new int[]{3, 4 ,5, 6});
 		meDIParrayGFF.setColControl(new int[]{1, 2});
 		meDIParrayGFF.calculateResult();

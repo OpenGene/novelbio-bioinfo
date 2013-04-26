@@ -6,12 +6,12 @@ import java.util.Map;
 
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.GOtype;
+import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 public abstract class StatisticTestGene2Item {
-	
 	boolean blast;
 	/**
 	 * key 小写
@@ -56,7 +56,10 @@ public abstract class StatisticTestGene2Item {
 }
 
 class StatisticTestGene2GO extends StatisticTestGene2Item {
-	
+	int goLevel = -1;
+	public StatisticTestGene2GO(int goLevel) {
+		this.goLevel = goLevel;
+	}
 	@Override
 	protected ArrayList<ArrayList<String>> getInfo() {
 		ArrayList<ArrayList<String>> lsFinal = new ArrayList<ArrayList<String>>();
@@ -88,10 +91,17 @@ class StatisticTestGene2GO extends StatisticTestGene2Item {
 		}
 		for (AGene2Go aGene2Go : lsGO) {
 			ArrayList<String> lsTmpFinalNew = (ArrayList<String>) lsTmpFinal.clone();
-			if (!mapItem2StatisticTestResult.containsKey(aGene2Go.getGOID().toLowerCase()) ) {
+			Go2Term go2Term = aGene2Go.getGO2Term().getGOlevel(goLevel);
+			String goID = "";
+			if (go2Term != null) {
+				goID = go2Term.getGoID();
+			} else {
 				continue;
 			}
-			StatisticTestResult statisticTestResult = mapItem2StatisticTestResult.get(aGene2Go.getGOID().toLowerCase());
+			if (!mapItem2StatisticTestResult.containsKey(goID.toLowerCase()) ) {
+				continue;
+			}
+			StatisticTestResult statisticTestResult = mapItem2StatisticTestResult.get(goID.toLowerCase());
 			
 			lsTmpFinalNew.add(aGene2Go.getGOID());
 			lsTmpFinalNew.add(aGene2Go.getGO2Term().getGoTerm());

@@ -70,10 +70,10 @@ public class MapBowtie extends MapDNA {
 	private String getChrFile() {
 		return chrFile;
 	}
-	/** 获得没有后缀名的序列 */
+	/** 获得没有后缀名的序列，不带引号 */
 	protected String getChrNameWithoutSuffix() {
 		String chrFileName = FileOperate.getParentPathName(chrFile) + FileOperate.getFileNameSep(chrFile)[0];
-		return CmdOperate.addQuot(chrFileName);
+		return chrFileName;
 	}
 	public void setMapLibrary(MapLibrary mapLibrary) {
 		this.mapLibrary = mapLibrary;
@@ -278,7 +278,7 @@ public class MapBowtie extends MapDNA {
 		outFileName = addSamToFileName(outFileName);
 		
 		String cmd = ""; cmd = ExePathBowtie + "bowtie2 ";
-		cmd = cmd + getOptions() + " -x " + getChrNameWithoutSuffix() + getLsFqFile() + getOutFileName();
+		cmd = cmd + getOptions() + " -x " + CmdOperate.addQuot(getChrNameWithoutSuffix()) + getLsFqFile() + getOutFileName();
 		CmdOperate cmdOperate = new CmdOperate(cmd, "bwaMapping2");
 		cmdOperate.run();
 		if (cmdOperate.getRunTime() > overTime || cmdOperate.isFinishedNormal()) {
