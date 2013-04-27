@@ -178,8 +178,8 @@ class StatisticTestGene2Path extends StatisticTestGene2Item {
 			}
 			StatisticTestResult statisticTestResult = mapItem2StatisticTestResult.get(("PATH:" + kGpathway.getMapNum()).toLowerCase());
 			
-			lsTmpFinalNew.add(kGpathway.getTitle());
 			lsTmpFinalNew.add("PATHID:" + kGpathway.getMapNum());
+			lsTmpFinalNew.add(kGpathway.getTitle());
 			
 //			lsTmpFinalNew.add(statisticTestResult.difGeneInItemNum + "");
 //			lsTmpFinalNew.add(statisticTestResult.allDifGeneNum + "");

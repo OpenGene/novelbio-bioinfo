@@ -408,9 +408,8 @@ public class GuiPathJpanel extends JPanel{
 			}
 			ctrlPath.setUpDown(up, down);
 			ctrlPath.setIsCluster(false);
-		}
-		else {
-			ctrlPath.setIsCluster(false);
+		} else {
+			ctrlPath.setIsCluster(jChkCluster.isSelected());
 		}
 		ctrlPath.setLsAccID2Value(lsAccID);
 		ctrlPath.run();

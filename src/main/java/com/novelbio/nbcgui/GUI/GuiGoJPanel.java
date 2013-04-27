@@ -485,9 +485,8 @@ public class GuiGoJPanel extends JPanel{
 			}
 			ctrlGO.setUpDown(up, down);
 			ctrlGO.setIsCluster(false);
-		}
-		else {
-			ctrlGO.setIsCluster(true);
+		} else {
+			ctrlGO.setIsCluster(jChkCluster.isSelected());
 		}
 		ctrlGO.setLsBG(backGroundFile);
 		ctrlGO.setLsAccID2Value(lsAccID);
