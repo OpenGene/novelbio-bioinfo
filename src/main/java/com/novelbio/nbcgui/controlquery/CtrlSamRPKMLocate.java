@@ -132,7 +132,9 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo>, Runnable {
 		
 		writeToFile();
 		done(null);
-		
+		guiSamStatistics.getProcessBar().setValue(guiSamStatistics.getProcessBar().getMaximum());
+		guiSamStatistics.getBtnSave().setEnabled(true);
+		guiSamStatistics.getBtnRun().setEnabled(true);
 	}
 	
 	private int getFileSize() {
@@ -260,13 +262,12 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo>, Runnable {
 	@Override
 	public void setRunningInfo(GuiAnnoInfo info) {
 		guiSamStatistics.getProcessBar().setValue((int)( info.getNumDouble()/1024));
+		guiSamStatistics.getLabel().setText(info.getInfo());
 	}
 	
 	@Override
 	public void done(RunProcess<GuiAnnoInfo> runProcess) {
-		guiSamStatistics.getProcessBar().setValue(guiSamStatistics.getProcessBar().getMaximum());
-		guiSamStatistics.getBtnSave().setEnabled(true);
-		guiSamStatistics.getBtnRun().setEnabled(true);
+		//只是单个文本读取完毕，不需要做什么事情
 	}
 	
 	@Override

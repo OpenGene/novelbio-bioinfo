@@ -55,6 +55,7 @@ public class GuiSamStatistics extends JPanel {
 	private JTextField txtSaveTo;
 	private JLabel lblSaveto;
 	private JTextField txtGTF;
+	JLabel lblInfo;
 	/**
 	 * Create the panel.
 	 */
@@ -62,7 +63,7 @@ public class GuiSamStatistics extends JPanel {
 		setLayout(null);
 		
 		scrollPaneData = new JScrollPaneData();
-		scrollPaneData.setBounds(12, 30, 693, 395);
+		scrollPaneData.setBounds(12, 30, 693, 358);
 		add(scrollPaneData);
 		
 		JButton btnOpenfile = new JButton("BamSamBedFile");
@@ -92,11 +93,11 @@ public class GuiSamStatistics extends JPanel {
 				txtSaveTo.setText(fileName);
 			}
 		});
-		btnSave.setBounds(717, 518, 118, 24);
+		btnSave.setBounds(715, 467, 118, 24);
 		add(btnSave);
 		
 		progressBar = new JProgressBar();
-		progressBar.setBounds(12, 559, 957, 14);
+		progressBar.setBounds(12, 553, 957, 14);
 		add(progressBar);
 		
 		btnRun = new JButton("Run");
@@ -133,55 +134,55 @@ public class GuiSamStatistics extends JPanel {
 				btnSave.setEnabled(false);
 			}
 		});
-		btnRun.setBounds(851, 518, 118, 24);
+		btnRun.setBounds(849, 467, 118, 24);
 		add(btnRun);
 		
 		txtTssUp = new JTextField();
 		txtTssUp.setText("-1500");
-		txtTssUp.setBounds(718, 283, 52, 18);
+		txtTssUp.setBounds(729, 261, 52, 18);
 		add(txtTssUp);
 		txtTssUp.setColumns(10);
 		
 		txtTssDown = new JTextField();
 		txtTssDown.setText("1500");
-		txtTssDown.setBounds(782, 283, 52, 18);
+		txtTssDown.setBounds(793, 261, 52, 18);
 		add(txtTssDown);
 		txtTssDown.setColumns(10);
 		
 		JLabel lblTss = new JLabel("Tss");
-		lblTss.setBounds(718, 248, 69, 14);
+		lblTss.setBounds(729, 226, 69, 14);
 		add(lblTss);
 		
 		JLabel lblUp = new JLabel("Up");
-		lblUp.setBounds(716, 262, 52, 14);
+		lblUp.setBounds(727, 240, 52, 14);
 		add(lblUp);
 		
 		JLabel lblDown = new JLabel("Down");
-		lblDown.setBounds(782, 262, 52, 14);
+		lblDown.setBounds(793, 240, 52, 14);
 		add(lblDown);
 		
 		txtTesUp = new JTextField();
 		txtTesUp.setText("-200");
-		txtTesUp.setBounds(718, 354, 52, 18);
+		txtTesUp.setBounds(729, 332, 52, 18);
 		add(txtTesUp);
 		txtTesUp.setColumns(10);
 		
 		JLabel lblUp_1 = new JLabel("Up");
-		lblUp_1.setBounds(718, 328, 69, 14);
+		lblUp_1.setBounds(729, 306, 69, 14);
 		add(lblUp_1);
 		
 		txtTesDown = new JTextField();
 		txtTesDown.setText("200");
-		txtTesDown.setBounds(780, 354, 52, 18);
+		txtTesDown.setBounds(791, 332, 52, 18);
 		add(txtTesDown);
 		txtTesDown.setColumns(10);
 		
 		JLabel lblDown_1 = new JLabel("Down");
-		lblDown_1.setBounds(780, 328, 69, 14);
+		lblDown_1.setBounds(791, 306, 69, 14);
 		add(lblDown_1);
 		
 		JLabel lblTes = new JLabel("Tes");
-		lblTes.setBounds(718, 313, 69, 14);
+		lblTes.setBounds(729, 291, 69, 14);
 		add(lblTes);
 		
 		layeredPane = new GuiLayeredPaneSpeciesVersionGff();
@@ -200,20 +201,20 @@ public class GuiSamStatistics extends JPanel {
 		add(layeredPane);
 		
 		chkRpkmcount = new JCheckBox("RPKMcount");
-		chkRpkmcount.setBounds(717, 403, 131, 22);
+		chkRpkmcount.setBounds(722, 364, 131, 22);
 		add(chkRpkmcount);
 		
 		txtSaveTo = new JTextField();
-		txtSaveTo.setBounds(12, 524, 693, 18);
+		txtSaveTo.setBounds(10, 473, 693, 18);
 		add(txtSaveTo);
 		txtSaveTo.setColumns(10);
 		
 		lblSaveto = new JLabel("SaveTo");
-		lblSaveto.setBounds(12, 499, 69, 14);
+		lblSaveto.setBounds(10, 448, 69, 14);
 		add(lblSaveto);
 		
 		txtGTF = new JTextField();
-		txtGTF.setBounds(12, 458, 693, 18);
+		txtGTF.setBounds(10, 407, 693, 18);
 		add(txtGTF);
 		txtGTF.setColumns(10);
 		
@@ -222,8 +223,16 @@ public class GuiSamStatistics extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
-		btnOpenGtf.setBounds(717, 455, 118, 24);
+		btnOpenGtf.setBounds(715, 404, 118, 24);
 		add(btnOpenGtf);
+		
+		JLabel lblInformation = new JLabel("Information");
+		lblInformation.setBounds(10, 506, 102, 14);
+		add(lblInformation);
+		
+		lblInfo = new JLabel("");
+		lblInfo.setBounds(12, 527, 628, 14);
+		add(lblInfo);
 		
 		initial();
 	}
@@ -242,5 +251,9 @@ public class GuiSamStatistics extends JPanel {
 	}
 	public JButton getBtnRun() {
 		return btnRun;
+	}
+	
+	public JLabel getLabel() {
+		return lblInfo;
 	}
 }

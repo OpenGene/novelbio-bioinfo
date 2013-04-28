@@ -109,7 +109,7 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 			GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
 			guiAnnoInfo.setNum(readLines);
 			guiAnnoInfo.setDouble(readByte);
-			guiAnnoInfo.setInfo("reading " + readLines + " lines");
+			guiAnnoInfo.setInfo("File: " + alignSeqFile.getFileName() + "  reading: " + readLines + " lines");
 			setRunInfo(guiAnnoInfo);
 		}
 		samRecord = null;

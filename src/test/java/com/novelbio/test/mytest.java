@@ -6,39 +6,41 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.picard.sam.ReorderSam;
-
 import org.apache.log4j.Logger;
-import org.springframework.data.mongodb.core.MongoOperations;
-import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.Mongo;
+import com.hg.data.c;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.resequencing.SnpAnnotation;
-import com.novelbio.base.dataOperate.DateUtil;
+import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.listOperate.HistList;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.BarStyle;
 import com.novelbio.base.plot.DotStyle;
 import com.novelbio.base.plot.PlotScatter;
 import com.novelbio.database.domain.geneanno.AgeneUniID;
-import com.novelbio.database.domain.geneanno.NCBIID;
-import com.novelbio.database.domain.geneanno.Person;
+import com.novelbio.database.domain.geneanno.BlastInfo;
+import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.mongorepo.geneanno.RepoNCBIID;
-import com.novelbio.database.mongorepo.geneanno.RepoPerson;
+import com.novelbio.database.mongorepo.geneanno.RepoGo2Term;
 import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.service.servgeneanno.ManageGo2Term;
+import com.novelbio.database.service.servgeneanno.ManageNCBIUniID;
 import com.novelbio.nbcgui.controlseq.CtrlRNAmap;
 
 
@@ -46,33 +48,50 @@ public class mytest {
 	private static Logger logger = Logger.getLogger(mytest.class);
 	
 	public static void main(String[] args) throws IOException, URISyntaxException {
-		RepoPerson repoPerson = (RepoPerson)SpringFactory.getFactory().getBean("repoPerson");
-		DateUtil dateUtil = new DateUtil();
-		dateUtil.setStartTime();
-//		for (int i = 0; i <100000; i++) {
-//			Person person = new Person();
-//			person.setName("test" + i);
-//			person.setAge(i);
-//			person.addInfo("affese" + i);
-//			person.addInfo("testmm" + i);
-//			repoPerson.save(person);
+//		String in = "/media/winE/NBCplatform/genome/BLASTP_OUT/Macaca_mulatta.blastp.vs.mm10.out";
+//		TxtReadandWrite txtRead = new TxtReadandWrite(in);
+//		TxtReadandWrite txtWrite = new TxtReadandWrite(FileOperate.changeFileSuffix(in, "_Modify", null),true);
+//		HashMap<String, String[]> mapKey2Values = new LinkedHashMap<String, String[]>();
+//		for (String string : txtRead.readlines()) {
+//			String[] ss = string.split("\t");
+//			String key = ss[0];
+//			if (mapKey2Values.containsKey(key)) {
+//				String[] tmp = mapKey2Values.get(key);
+//				if (compare(tmp, ss) == -1) {
+//					continue;
+//				} else {
+//					mapKey2Values.put(key, ss);
+//				}
+//			} else {
+//				mapKey2Values.put(key, ss);
+//			}
 //		}
+//		for (String[] string : mapKey2Values.values()) {
+//			txtWrite.writefileln(string);
+//		}
+//		txtWrite.close();
 		
-		for (int i = 90000; i <100000; i++) {
-			Person person = repoPerson.findByInfo("affese" + i);
-			if (!person.getName().equals("test" + i)) {
-				System.out.println("error");
-			}
-			if (i%1000==0) {
-				System.out.println(i);
-			}
+		GffChrAbs gffChrAbs = new GffChrAbs(9606);
+		GffDetailGene gffDetailGene = gffChrAbs.getGffHashGene().searchLOC("SNRPGP6");
+		System.out.println(gffDetailGene.getRefID());
+	}
+	
+	private static int compare(String[] s1, String[] s2) {
+		Double scoreThis = Double.parseDouble(s1[11]);
+		Double scoreO = Double.parseDouble(s2[11]);
+		Double identityThis = Double.parseDouble(s1[2]);
+		Double identityO = Double.parseDouble(s2[2]);
+		Double evalueThis = Double.parseDouble(s1[10]);
+		Double evalueO = Double.parseDouble(s2[10]);
+		
+		int result = -scoreThis.compareTo(scoreO);
+		if (result == 0) {
+			result = -identityThis.compareTo(identityO);
 		}
-		
-//		Person person = repoPerson.findByInfo("testmm7");
-//		System.out.println(person.getName());
-//		mongoTemplate.insert(lsPersons, "person");
-		System.out.println(dateUtil.getEclipseTime());
-			
+		if (result == 0) {
+			result = evalueThis.compareTo(evalueO);
+		}
+		return result;
 	}
 	
 	private void testMapTophat() {
