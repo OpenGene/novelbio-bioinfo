@@ -1,9 +1,13 @@
 package com.novelbio.analysis.annotation.pathway.kegg.kGpath;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.novelbio.analysis.annotation.pathway.network.KGpathScr2Trg;
 import com.novelbio.base.dataOperate.ExcelOperate;
@@ -14,10 +18,63 @@ import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.service.servkegg.ServKEntry;
 import com.novelbio.database.service.servkegg.ServKIDKeg2Ko;
 
-public class Scr2Target {
+public class Scr2TargetNew {
+	ServKIDKeg2Ko servKIDKeg2Ko = new ServKIDKeg2Ko();
+	ServKEntry servKEntry = new ServKEntry();
+	
+	/** 指定输出某个pathway的关系,是kegg的pathwayID，类似 "path:hsa04010"，为""时输出全部 */
+	String pathName;
+	Set<GeneID> setGeneID = new LinkedHashSet<GeneID>();
+
+	/** 大于0表示会进行blast */
+	int subTaxID = -1;
+	/** blast的evalue */
+	double evalue = 1e-10;
+	
+	public void setPathName(String pathName) {
+		this.pathName = pathName;
+	}
+	
+	/** 比对到的物种
+	 * 大于0表示会进行blast
+	 */
+	public void setSubTaxID(int subTaxID) {
+		this.subTaxID = subTaxID;
+	}
+	/** blast的evalue, 默认为1e-10 */
+	public void setEvalue(double evalue) {
+		this.evalue = evalue;
+	}
+	
+	public void addGeneID(int taxID, Collection<String> colAccID) {
+		if (taxID == 0) {
+			taxID = GeneID.getTaxIDFromLsAccID(colAccID);
+		}
+		for (String accID : colAccID) {
+			setGeneID.add(new GeneID(accID, taxID));
+		}
+	}
+	
+	private boolean isBlast() {
+		if (setGeneID == null || setGeneID.size() == 0) {
+			return false;
+		}
+		return true;
+	}
+	
+	/** 将不符合要求的geneID去掉，主要是accID的geneID和没有blast到的geneID */
+	private void clearGeneID() {
+		Set<GeneID> setGeneIDnew = new HashSet<GeneID>();
+		for (GeneID geneID : setGeneID) {
+			if ((isBlast() && geneID.getLsBlastGeneID().size() == 0) || (!isBlast() && geneID.getIDtype() == GeneID.IDTYPE_ACCID)) {
+				continue;
+			}
+			setGeneIDnew.add(geneID);
+		}
+		setGeneID = setGeneIDnew;
+	}
 	
 	/**
-	 * 
 	 * @param pathName 指定输出某个pathway的关系,是kegg的pathwayID，类似 "path:hsa04010"，为""时输出全部
 	 * @param accID 输入的accID
 	 * @param ResultFIleScr2Target
@@ -27,14 +84,8 @@ public class Scr2Target {
 	 * @param evalue evalue 阈值是多少
 	 * @throws Exception
 	 */
-	public static void getGene2RelateKo(String pathName, List<String> accID,String ResultFIleScr2Target,
-			String resultFIleAttribute,int QtaxID,boolean blast,int subTaxID,double evalue) throws Exception {
-		GeneID geneID = null;
-		ServKIDKeg2Ko servKIDKeg2Ko = new ServKIDKeg2Ko();
-		ServKEntry servKEntry = new ServKEntry();
-		if (QtaxID <= 0) {
-			QtaxID = GeneID.getTaxIDFromLsAccID(accID);
-		}
+	public void getGene2RelateKo(String ResultFIleScr2Target, String resultFIleAttribute ) throws Exception {
+		clearGeneID();
 		/**
 		 * 保存关系的一个list，object[2]
 		 * 0：qGenKegInfo[7]<br>
@@ -53,6 +104,11 @@ public class Scr2Target {
 		 */
 		ArrayList<Object[]> lsRelationInfo = new ArrayList<Object[]>();
 		ArrayList<String[]> lsAccID = QKegPath.getGeneID(accID, QtaxID);
+		for (GeneID geneID : setGeneID) {
+			
+			
+			
+		}
 		//一个一个的accID去查找
 		for (int i = 0; i < lsAccID.size(); i++) 
 		{
@@ -92,10 +148,6 @@ public class Scr2Target {
 				ArrayList<KGentry> lsKGentryQuery = servKEntry.queryLsKGentries(qkGentry);
  				for (int k = 0; k < lsKGentryQuery.size(); k++)
 				{
- 					if (lsKGentryQuery.get(k).getEntryName().equals("hsa:56604")) {
- 						System.out.println("stop");
-					}
- 					
 					Hashtable<String, KGpathScr2Trg> tmpHashEntryRelation=QKegPath.getHashKGpathRelation(lsKGentryQuery.get(k));
 					Enumeration<String> keys=tmpHashEntryRelation.keys();
 					while(keys.hasMoreElements())

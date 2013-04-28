@@ -15,6 +15,7 @@ import com.novelbio.database.domain.geneanno.AgeneUniID;
 import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.domain.geneanno.DBInfo;
 import com.novelbio.database.domain.geneanno.GOtype;
+import com.novelbio.database.domain.geneanno.TaxInfo;
 import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgo.GOInfoAbs;
@@ -87,6 +88,33 @@ public class GeneID implements GeneIDInt{
 		}
 		geneID = geneIDfactoryInt.createGeneID(accID, taxID);
 	}
+	
+	/**
+	 * @param lsAccID 输入一系列的accID，返回这一串accID所对应的taxID
+	 * @return
+	 */
+	public static int getTaxIDFromLsAccID(Collection<String> lsAccID) {
+		if (lsAccID == null || lsAccID.size() == 0) {
+			return 0;
+		}
+		for (String accID : lsAccID) {
+			List<GeneID> lsGeneIDs = createLsCopedID(accID, 0);
+			//要保证找到的这一系列geneID都来源于同一物种
+			if (lsGeneIDs.size() > 0) {
+				int taxID = lsGeneIDs.get(0).getTaxID();
+				for (GeneID geneID : lsGeneIDs) {
+					if (taxID != geneID.getTaxID()) {
+						continue;
+					}
+				}
+				if (taxID != 0) {
+					return taxID;
+				}
+			}
+		}
+		return 0;
+	}
+	
 	/**
 	 * 设定初始值，会自动去数据库查找accID并完成填充本类。
 	 * @param accID 如果类似XM_002121.1类型，那么将.1去除
@@ -95,6 +123,7 @@ public class GeneID implements GeneIDInt{
 	public static ArrayList<GeneID> createLsCopedID(String accID,int taxID) {
 		return createLsCopedID(accID, taxID, false);
 	}
+	
 	/**
 	 * 设定初始值，会自动去数据库查找accID并完成填充本类。
 	 * @param accID 如果类似XM_002121.1类型，那么将.1去除
@@ -111,7 +140,7 @@ public class GeneID implements GeneIDInt{
 		
 		List<AgeneUniID> lsaccID = GeneIDabs.getNCBIUniTax(accID, taxID);
 		if (lsaccID == null) {
-			return null;
+			return new ArrayList<GeneID>();
 		}
 		for (AgeneUniID ageneUniID : lsaccID) {
 			 GeneID copedID = new GeneID(ageneUniID);

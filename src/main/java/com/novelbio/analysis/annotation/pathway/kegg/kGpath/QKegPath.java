@@ -17,12 +17,6 @@ import com.novelbio.database.service.servkegg.ServKPathRelation;
 import com.novelbio.database.service.servkegg.ServKPathway;
 import com.novelbio.database.service.servkegg.ServKRelation;
 
-
-
-
-
-
-
 /**
  * 根据需要选择Blast或不Blast，来获得pathway信息。
  * @author zong0jie
