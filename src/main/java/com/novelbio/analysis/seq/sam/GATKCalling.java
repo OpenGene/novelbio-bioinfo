@@ -16,19 +16,19 @@ import com.novelbio.base.fileOperate.FileOperate;
  * http://www.broadinstitute.org/gatk/gatkdocs/<br>
  */
 public class GATKCalling {
-
 	private static final Logger logger = Logger.getLogger(GATKCalling.class);
 	public static final String SNP = "SNP";
 	public static final String INDEL = "INDEL";
 	public static final String GENERALPLOIDYSNP = "GENERALPLOIDYSNP";
 	public static final String GENERALPLOIDYINDEL = "GENERALPLOIDYINDEL";
+	/** 同时查找snp和indel */
 	public static final String BOTH = "BOTH";
 	/** 输入文件路径+bam文件名 */
-	private String inputFilePath;
+	private String inputBam;
 	/** 默认和输入文件同路径包括文件名 */
 	private String outputFilePath;
 	/** 输入ref文件路径+fasta文件名 */
-	private String refFilePath;
+	private String refFile;
 	/** 输入文件路径+vcf文件名 */
 	private String snpDBVcfFilePath;
 	private String glm = GATKCalling.BOTH;
@@ -36,53 +36,24 @@ public class GATKCalling {
 	private double stand_call_conf = 20.0;
 	/** The minimum phred-scaled confidence threshold at which variants should be emitted (and filtered with LowQual if less than the calling threshold) */
 	private double stand_emit_conf = 0;
-
-	public GATKCalling(String inputFilePath, String refFilePath,String outputPath) {
-		this.inputFilePath = inputFilePath;
-		this.refFilePath = refFilePath;
-		this.snpDBVcfFilePath = null;
-		// 得到输入的文件名
-		String inputFileName = FileOperate.getFileNameSep(inputFilePath)[0];
-		// 输出文件全路径包括文件名
-		this.outputFilePath = FileOperate.addSep(outputPath) + inputFileName + ".gatk.raw.vcf";
-	}
-
-	/**
-	 * variants calling by GATK<br>
-	 * 
-	 * @return 输出文件路径 + 输入文件名.recal.bam
-	 * 
-	 */
-	public String callingByGATK() {
-		try {
-			if (snpDBVcfFilePath == null) {
-				String[] params1 = { "-R", refFilePath, "-T", "UnifiedGenotyper", "-o", outputFilePath, "-I", inputFilePath, "-stand_call_conf",
-						stand_call_conf + "", "-stand_emit_conf", stand_emit_conf + "", "-glm", glm, "-rf", "BadCigar" };
-				CommandLineGATK.main(params1);
-			} else {
-				String[] params1 = { "-R", refFilePath, "-T", "UnifiedGenotyper", "-o", outputFilePath, "-I", inputFilePath, "--dbsnp",
-						snpDBVcfFilePath, "-stand_call_conf", stand_call_conf + "", "-stand_emit_conf", stand_emit_conf + "", "-glm", glm, "-rf",
-						"BadCigar" };
-				CommandLineGATK.main(params1);
-			}
-			return outputFilePath;
-		} catch (Exception e) {
-			logger.error("variants calling by GATK error!!!");
-			return null;
-		}
-	}
-
-	/** 取得输出路径 */
-	public String getOutputFilePath() {
-		return outputFilePath;
+	
+	
+	public GATKCalling(String inputFilePath, String refFilePath) {
+		this.inputBam = inputFilePath;
+		this.refFile = refFilePath;
 	}
 
 	/** 设置输出路径包括文件名*.bam */
 	public void setOutputFilePath(String outputFilePath) {
 		this.outputFilePath = outputFilePath;
 	}
+	
+	/** 取得输出路径 */
+	public String getOutputFilePath() {
+		return outputFilePath;
+	}
 
-	/** 设置输入文件路径+vcf文件名 可以设为null,默认为null，只是降低准确度 */
+	/** 设置输入snpDB的文件 */
 	public void setSnpDBVcfFilePath(String snpDBVcfFilePath) {
 		this.snpDBVcfFilePath = snpDBVcfFilePath;
 	}
@@ -93,20 +64,46 @@ public class GATKCalling {
 	 * available for calling both together. The --genotype_likelihoods_model
 	 * argument is an enumerated type (Model), which can have one of the
 	 * following values:<br>
-	 * {@link #setGlm(GATKCalling.BOTH)} <br>
-	 * BOTH (default)
+	 * @param glm 默认 {@link GATKCalling#BOTH} 
 	 */
 	public void setGlm(String glm) {
 		this.glm = glm;
 	}
-	/** set the minimum phred-scaled confidence threshold at which variants should be called */
+	/** set the minimum phred-scaled confidence threshold at which variants should be called
+	 * 默认 20.0
+	 *  */
 	public void setStand_call_conf(double stand_call_conf) {
 		this.stand_call_conf = stand_call_conf;
 	}
-	/** set the minimum phred-scaled confidence threshold at which variants should be emitted (and filtered with LowQual if less than the calling threshold) */
+	/** set the minimum phred-scaled confidence threshold at which variants should be emitted 
+	 * (and filtered with LowQual if less than the calling threshold)
+	 * 默认 0
+	 */
 	public void setStand_emit_conf(double stand_emit_conf) {
 		this.stand_emit_conf = stand_emit_conf;
 	}
-	
-	
+
+	/**
+	 * variants calling by GATK<br>
+	 * @return 输出文件路径 + 输入文件名.recal.bam
+	 */
+	public boolean snpCalling() {
+		try {
+			if (snpDBVcfFilePath == null) {
+				String[] params1 = { "-R", refFile, "-T", "UnifiedGenotyper", "-o", outputFilePath, "-I", inputBam, "-stand_call_conf",
+						stand_call_conf + "", "-stand_emit_conf", stand_emit_conf + "", "-glm", glm, "-rf", "BadCigar" };
+				CommandLineGATK.main(params1);
+			} else {
+				String[] params1 = { "-R", refFile, "-T", "UnifiedGenotyper", "-o", outputFilePath, "-I", inputBam, "--dbsnp",
+						snpDBVcfFilePath, "-stand_call_conf", stand_call_conf + "", "-stand_emit_conf", stand_emit_conf + "", "-glm", glm, "-rf",
+						"BadCigar" };
+				CommandLineGATK.main(params1);
+			}
+			return true;
+		} catch (Exception e) {
+			logger.error("variants calling by GATK error!!!");
+			return false;
+		}
+	}
+
 }

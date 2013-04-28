@@ -1,7 +1,7 @@
 package com.novelbio.analysis.seq.sam;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -43,9 +43,13 @@ public class GATKRecalibrate {
 	/** 临时文件路径包括文件名 */
 	private String grpPath;
 	
-	public GATKRecalibrate(String inputBamFile, String refFile, String outBamFile){
+	public GATKRecalibrate(String inputBamFile, String refFile){
 		this.inBamFile = inputBamFile;
 		this.referenceFile = refFile;
+	}
+	
+	/** 设定输出结果 */
+	public void setOutBamFile(String outBamFile) {
 		// 得到输入的文件名
 		// 临时文件路径包括文件名
 		this.grpPath = FileOperate.changeFileSuffix(outBamFile, DateUtil.getDateAndRandom(), "grp");
@@ -61,6 +65,22 @@ public class GATKRecalibrate {
 			setSnpDBVcfFilePath.add(snpVcfFile);
 		}
 	}
+	
+	/**
+	 * @param snpVcfFile 已知的snpdb等文件，用于校正。可以添加多个
+	 */
+	public void setSnpVcfFile(Collection<String> colSnpVcfFile) {
+		if (colSnpVcfFile == null || colSnpVcfFile.size() == 0) {
+			return;
+		}
+		setSnpDBVcfFilePath.clear();
+		for (String snpVcfFile : colSnpVcfFile) {
+			if (FileOperate.isFileExistAndBigThanSize(snpVcfFile, 0)) {
+				setSnpDBVcfFilePath.add(snpVcfFile);
+			}
+		}
+	}
+	
     /** 
 	 * recalibrate 重新校正
 	 * @return 输出文件路径 + 输入文件名.recal.bam
@@ -96,54 +116,6 @@ public class GATKRecalibrate {
 		return lsParam.toArray(new String[0]);
 	}
 	
-	
-	/**
-	 * 我们为了校正前做的一次初步的variants calling，<br>
-	 * 然后筛选出我们认为最可靠的那些位点作为参考位点，<br>
-	 * 用这部分的数据再来进行校正
-	 * 
-	 * 结果设为此对象的snpDBVcfFilePath
-	 */
-
-	public String callingBeforeRecalibrate(String inputFilePath, String outputFilePath, String snpDBVcfFilePath, String refFilePath) {
-		// variants calling by GATK
-		// 这边有一个-rf参数，是用来过滤掉不符合要求的reads，这边是把包含错误的Cigar字符串的reads给排除掉，
-		// 关于Cigar字符串可以参考关于sam文件的说明(The SAM Format
-		// Speciﬁcation)，sam文件的第六行就是这边的Cigar字符串，
-		// -rf的其他参数可以参考GATK网站Read
-		// filters下面的条目http://www.broadinstitute.org/gatk/gatkdocs/
-		//TODO 最后一个路径需要改一下
-		GATKCalling gatkCalling = new GATKCalling(inputFilePath, refFilePath,"/home/novelbio/桌面");
-		gatkCalling.setSnpDBVcfFilePath(snpDBVcfFilePath);
-		String gatkVcfFilePath = gatkCalling.callingByGATK();
-
-		//TODO variants calling by samtools
-		//String samToolsVcfFilePath = callingBySamTools(inputFilePath, outputFilePath, snpDBVcfFilePath, refFilePath);
-		String samToolsVcfFilePath = null;
-		// 得到输入的文件名
-		String inputFileName = FileOperate.getFileNameSep(inputFilePath)[0];
-		// 输出文件全路径包括文件名
-		String rawOutputFilePath = FileOperate.addSep(outputFilePath) + inputFileName + ".concordance.raw.vcf";
-		String fltOutputFilePath = FileOperate.addSep(outputFilePath) + inputFileName + ".concordance.flt.vcf";
-		// 选取GATK和samtools一致的结果
-		String intersectionOutputFilePath = GATKUtils.selectUnionFrom(gatkVcfFilePath, samToolsVcfFilePath, rawOutputFilePath);
-		// TODO 筛选上面得到的结果,计算平均值
-		long meanqual = 20;
-		try {
-			// 筛选
-			String[] params = { "-R", refFilePath, "-T", "VariantFiltration", "--filterExpression",
-					"\" QD < 20.0 || ReadPosRankSum < -8.0 || FS > 10.0 || QUAL < \"" + meanqual + "\"", "--filterName", "LowQualFilter",
-					"--missingValuesInExpressionsShouldEvaluateAsFailing", "--variant", intersectionOutputFilePath, "--logging_level", "ERROR", "-o",
-					fltOutputFilePath};
-			CommandLineGATK.main(params);
-			this.snpDBVcfFilePath = fltOutputFilePath;
-			return fltOutputFilePath;
-		} catch (Exception e) {
-			logger.error("callingForRecalibrate error!!!");
-			return null;
-		}
-	}
-	
 	/**
 	 * 删除校正过程中的临时文件
 	 */
@@ -162,10 +134,6 @@ public class GATKRecalibrate {
 	/** 设置临时文件路径包括文件名 */
 	public void setGrpPathh(String grpPath) {
 		this.grpPath = grpPath;
-	}
-	/** 设置输入文件路径+vcf文件名 */
-	public void setSnpDBVcfFilePath(String snpDBVcfFilePath) {
-		this.snpDBVcfFilePath = snpDBVcfFilePath;
 	}
 	
 }

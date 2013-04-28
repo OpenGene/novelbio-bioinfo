@@ -45,6 +45,7 @@ public class GuiBlast extends JPanel implements GuiNeedOpenFile{
 
 	int queryType = SeqFasta.SEQ_UNKNOWN;
 	int subjectType = SeqFasta.SEQ_UNKNOWN;
+	private JTextField txtThreadNum;
 		
 	private void setCombBlastType() {
 		combBlastType.setMapItem(BlastType.getMapBlastType(queryType, subjectType));
@@ -148,7 +149,9 @@ public class GuiBlast extends JPanel implements GuiNeedOpenFile{
 		btnRunblast.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				blastNBC.setBlastType(combBlastType.getSelectedValue());
-				blastNBC.setCpuNum(2);
+				try {
+					blastNBC.setCpuNum(Integer.parseInt(txtThreadNum.getText()));
+				} catch (Exception e2) { }
 				blastNBC.setDatabaseSeq(textSubjectFasta.getText());
 				blastNBC.setQueryFastaFile(textQueryFasta.getText());
 				blastNBC.setEvalue(Double.parseDouble(textEvalue.getText()));
@@ -209,6 +212,16 @@ public class GuiBlast extends JPanel implements GuiNeedOpenFile{
 		});
 		btnDelfile.setBounds(760, 365, 146, 24);
 		add(btnDelfile);
+		
+		txtThreadNum = new JTextField();
+		txtThreadNum.setText("4");
+		txtThreadNum.setBounds(217, 299, 42, 18);
+		add(txtThreadNum);
+		txtThreadNum.setColumns(10);
+		
+		JLabel lblThreadnum = new JLabel("ThreadNum");
+		lblThreadnum.setBounds(218, 279, 98, 14);
+		add(lblThreadnum);
 		
 		initial();
 	}

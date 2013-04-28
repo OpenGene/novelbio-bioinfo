@@ -28,7 +28,7 @@ import com.novelbio.database.model.species.Species;
  * @author zong0jie
  *
  */
-public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatiscticsProcessInfo> implements Cloneable, AlignmentRecorder{
+public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatiscticsProcessInfo> implements Cloneable, AlignmentRecorder {
 	private static final Logger logger = Logger.getLogger(GffChrAnno.class);
 	
 	GffChrAbs gffChrAbs;

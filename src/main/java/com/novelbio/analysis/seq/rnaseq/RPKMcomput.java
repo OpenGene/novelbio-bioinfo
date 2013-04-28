@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.hg.data.a;
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
@@ -18,6 +19,7 @@ import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.database.model.modgeneid.GeneType;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 /**
@@ -48,7 +50,7 @@ public class RPKMcomput implements AlignmentRecorder {
 	 * key: geneName
 	 * value: geneType
 	 */
-	Map<String, String> mapGeneName2Type = new HashMap<String, String>();
+	Map<String, GeneType> mapGeneName2Type = new HashMap<String, GeneType>();
 	
 	/** 样本时期 和 样本reads num 用来算rpkm */
 	Map<String, Double> mapCond2CountsNum = new LinkedHashMap<String, Double>();
@@ -74,6 +76,11 @@ public class RPKMcomput implements AlignmentRecorder {
 		ArrayList<GffDetailGene> lsGffDetailGene = gffHashGene.getGffDetailAll();
 		for (GffDetailGene gffDetailGene : lsGffDetailGene) {
 			mapGeneName2Length.put(gffDetailGene.getNameSingle(), gffDetailGene.getLongestSplitMrna().getLenExon(0));
+			mapGeneName2Type.put(gffDetailGene.getNameSingle(), gffDetailGene.getGeneType());
+//			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+//				mapGeneName2Length.put(gffGeneIsoInfo.getName(), gffGeneIsoInfo.getLenExon(0));
+//				mapGeneName2Type.put(gffGeneIsoInfo.getName(), gffDetailGene.getGeneType());
+//			}
 		}
 	}
 	
@@ -95,7 +102,6 @@ public class RPKMcomput implements AlignmentRecorder {
 	@Override
 	public void addAlignRecord(AlignRecord alignRecord) {
 		boolean cis5to3 = alignRecord.isCis5to3();
-		currentReadsNum += (double)1/alignRecord.getMappedReadsWeight();
 		
 		List<Align> lsAligns = alignRecord.getAlignmentBlocks();
 		for (Align align : lsAligns) {
@@ -107,13 +113,15 @@ public class RPKMcomput implements AlignmentRecorder {
 			//找到后就可以跳出了，因为一条reads只要找到1个位置即可
 			if (geneName != null) {
 				addInMapGeneName2Cond2ReadsCounts(geneName, alignRecord.getMappedReadsWeight());
+				//只有当reads落在exon上才会计入总reads数
+				currentReadsNum += (double)1/alignRecord.getMappedReadsWeight();
 				break;
 			}
 		}
 	}
 	
 	/**
-	 * 返回落到的基因名
+	 * 返回落到的基因名和基因类型
 	 * 没有落在基因内部就返回null
 	 * @param readsCis5to3
 	 * @param gffCodGene
@@ -137,7 +145,8 @@ public class RPKMcomput implements AlignmentRecorder {
 				resultName = gffDetailGene.getNameSingle();
 				break;
 			}
-			//考虑方向
+			
+			////TODO 考虑方向的设计还不完善
 			if (readsCis5to3 != gffGeneIsoInfo.isCis5to3()) {
 				continue;
 			}
@@ -153,7 +162,6 @@ public class RPKMcomput implements AlignmentRecorder {
 				break;
 			} else {
 				resultName = gffGeneIsoInfo.getName();
-				mapGeneName2Length.put(resultName, gffGeneIsoInfo.getLenExon(0));
 				break;
 			}
 		}
@@ -193,11 +201,14 @@ public class RPKMcomput implements AlignmentRecorder {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		List<String> lsConditions = ArrayOperate.getArrayListKey(mapCond2CountsNum);
 		lsConditions.add(0, TitleFormatNBC.GeneName.toString());
+		lsConditions.add(1, TitleFormatNBC.GeneType.toString());
 		lsResult.add(lsConditions.toArray(new String[0]));
-		lsConditions.remove(0);//除去第一个geneName这项，在这个之后的才是condition
+		lsConditions.remove(0);
+		lsConditions.remove(1);
 		for (String geneName : mapGeneName2Length.keySet()) {
 			ArrayList<String> lsTmpResult = new ArrayList<String>();
 			lsTmpResult.add(geneName);
+			lsTmpResult.add(mapGeneName2Type.get(geneName).toString());
 			Map<String, double[]> mapCond2Counts = mapGeneName2Cond2ReadsCounts.get(geneName);
 			for (String conditions : lsConditions) {
 				if (mapCond2Counts == null) {
@@ -220,11 +231,14 @@ public class RPKMcomput implements AlignmentRecorder {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		List<String> lsConditions = ArrayOperate.getArrayListKey(mapCond2CountsNum);
 		lsConditions.add(0, TitleFormatNBC.GeneName.toString());
+		lsConditions.add(1, TitleFormatNBC.GeneType.toString());
 		lsResult.add(lsConditions.toArray(new String[0]));
 		lsConditions.remove(0);
+		lsConditions.remove(1);
 		for (String geneName : mapGeneName2Length.keySet()) {
 			ArrayList<String> lsTmpResult = new ArrayList<String>();
 			lsTmpResult.add(geneName);
+			lsTmpResult.add(mapGeneName2Type.get(geneName).toString());
 			Map<String, double[]> mapCond2Counts = mapGeneName2Cond2ReadsCounts.get(geneName);
 			for (String conditions : lsConditions) {
 				if (mapCond2Counts == null) {
@@ -251,11 +265,14 @@ public class RPKMcomput implements AlignmentRecorder {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		List<String> lsConditions = ArrayOperate.getArrayListKey(mapCond2CountsNum);
 		lsConditions.add(0, TitleFormatNBC.GeneName.toString());
+		lsConditions.add(1, TitleFormatNBC.GeneType.toString());
 		lsResult.add(lsConditions.toArray(new String[0]));
 		lsConditions.remove(0);
+		lsConditions.remove(1);
 		for (String geneName : mapGeneName2Length.keySet()) {
 			ArrayList<String> lsTmpResult = new ArrayList<String>();
 			lsTmpResult.add(geneName);
+			lsTmpResult.add(mapGeneName2Type.get(geneName).toString());
 			Map<String, double[]> mapCond2Counts = mapGeneName2Cond2ReadsCounts.get(geneName);
 			for (String conditions : lsConditions) {
 				if (mapCond2Counts == null) {
@@ -274,6 +291,85 @@ public class RPKMcomput implements AlignmentRecorder {
 		return lsResult;
 	}
 	
+	
+	/** 返回当前时期的rpm值 */
+	public ArrayList<String[]> getLsTPMsCurrent() {
+		ArrayList<String[]> lsResult = new ArrayList<String[]>();
+		lsResult.add(new String[]{TitleFormatNBC.GeneName.toString(), TitleFormatNBC.GeneType.toString(), currentCondition});
+		for (String geneName : mapGeneName2Length.keySet()) {
+			ArrayList<String> lsTmpResult = new ArrayList<String>();
+			lsTmpResult.add(geneName);
+			lsTmpResult.add(mapGeneName2Type.get(geneName).toString());
+			Map<String, double[]> mapCond2Counts = mapGeneName2Cond2ReadsCounts.get(geneName);
+			if (mapCond2Counts == null) {
+				lsTmpResult.add(0 + "");
+			} else {
+				double[] readsCounts = mapCond2Counts.get(currentCondition);
+				if (readsCounts == null) {
+					lsTmpResult.add(0 + "");
+				} else {
+					lsTmpResult.add(readsCounts[0]*1000000/mapCond2CountsNum.get(currentCondition) + "");
+				}
+			}
+			lsResult.add(lsTmpResult.toArray(new String[0]));
+		}
+		return lsResult;
+	}
+	/** 返回counts数量，可以拿来给DEseq继续做标准化 */
+	public ArrayList<String[]> getLsCountsCurrent() {
+		ArrayList<String[]> lsResult = new ArrayList<String[]>();
+		lsResult.add(new String[]{TitleFormatNBC.GeneName.toString(), TitleFormatNBC.GeneType.toString(), currentCondition});
+
+		for (String geneName : mapGeneName2Length.keySet()) {
+			ArrayList<String> lsTmpResult = new ArrayList<String>();
+			lsTmpResult.add(geneName);
+			lsTmpResult.add(mapGeneName2Type.get(geneName).toString());
+			Map<String, double[]> mapCond2Counts = mapGeneName2Cond2ReadsCounts.get(geneName);
+			if (mapCond2Counts == null) {
+				lsTmpResult.add(0 + "");
+			} else {
+				double[] readsCounts = mapCond2Counts.get(currentCondition);
+				if (readsCounts == null) {
+					lsTmpResult.add(0 + "");
+				} else {
+					lsTmpResult.add((int)readsCounts[0]+ "");
+				}
+			}
+			
+			lsResult.add(lsTmpResult.toArray(new String[0]));
+		}
+		return lsResult;
+	}	
+	/**
+	 * 返回计算得到的rpkm值
+	 * 其中allreadscount的单位是百万
+	 * exonlength的单位是kb
+	 */
+	public ArrayList<String[]> getLsRPKMsCurrent() {
+		ArrayList<String[]> lsResult = new ArrayList<String[]>();
+		lsResult.add(new String[]{TitleFormatNBC.GeneName.toString(), TitleFormatNBC.GeneType.toString(), currentCondition});
+
+		for (String geneName : mapGeneName2Length.keySet()) {
+			ArrayList<String> lsTmpResult = new ArrayList<String>();
+			lsTmpResult.add(geneName);
+			lsTmpResult.add(mapGeneName2Type.get(geneName).toString());
+			Map<String, double[]> mapCond2Counts = mapGeneName2Cond2ReadsCounts.get(geneName);
+			if (mapCond2Counts == null) {
+				lsTmpResult.add(0 + "");
+			} else {
+				double[] readsCounts = mapCond2Counts.get(currentCondition);
+				if (readsCounts == null) {
+					lsTmpResult.add(0 + "");
+				} else {
+					lsTmpResult.add(readsCounts[0]*1000000*1000/mapCond2CountsNum.get(currentCondition)/mapGeneName2Length.get(geneName) + "");
+				}
+			}
+			
+			lsResult.add(lsTmpResult.toArray(new String[0]));
+		}
+		return lsResult;
+	}
+	
 	/** 输入文件前缀，把所有结果写入该文件为前缀的文本中 */
 	public void writeToFile(String fileNamePrefix) {
 		TxtReadandWrite txtWriteTpm = new TxtReadandWrite(fileNamePrefix + "_TPM", true);
@@ -287,4 +383,16 @@ public class RPKMcomput implements AlignmentRecorder {
 		txtWriteTpm.close();
 	}
 	
+	/** 输入文件前缀，把所有结果写入该文件为前缀的文本中 */
+	public void writeToFileCurrent(String fileNamePrefix) {
+		TxtReadandWrite txtWriteTpm = new TxtReadandWrite(fileNamePrefix + currentCondition + "_TPM", true);
+		TxtReadandWrite txtWriteCounts = new TxtReadandWrite(fileNamePrefix + currentCondition + "_RawCounts", true);
+		TxtReadandWrite txtWriteRPKM = new TxtReadandWrite(fileNamePrefix + currentCondition + "_RPKM", true);
+		txtWriteCounts.ExcelWrite(getLsCountsCurrent());
+		txtWriteRPKM.ExcelWrite(getLsRPKMsCurrent());
+		txtWriteTpm.ExcelWrite(getLsTPMsCurrent());
+		txtWriteCounts.close();
+		txtWriteRPKM.close();
+		txtWriteTpm.close();
+	}
 }

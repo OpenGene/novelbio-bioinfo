@@ -46,17 +46,8 @@ public class SamPileUp {
 		for (SamRecord samRecord : queueSamRecord) {
 			ArrayList<Align> lsAlign = samRecord.getAlignmentBlocks();
 		}
-		
-		
 		return null;
 	}
 	
 }
 
-class BaseInfo {
-	long baseNum;
-	/** + 开头表示插入
-	 * - 开头表示删除
-	 */
-	String baseDetail;
-}

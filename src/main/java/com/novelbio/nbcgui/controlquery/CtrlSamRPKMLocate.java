@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.FormatSeq;
@@ -19,6 +21,7 @@ import com.novelbio.analysis.seq.rnaseq.RPKMcomput;
 import com.novelbio.analysis.seq.sam.AlignSeqReading;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.sam.SamFileStatistics;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunGetInfo;
@@ -28,6 +31,8 @@ import com.novelbio.nbcgui.GuiAnnoInfo;
 import com.novelbio.nbcgui.GUI.GuiSamStatistics;
 
 public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo>, Runnable {
+	private static final Logger logger = Logger.getLogger(CtrlSamRPKMLocate.class);
+	
 	GuiSamStatistics guiSamStatistics;
 	GffChrAbs gffChrAbs = new GffChrAbs();
 	
@@ -37,6 +42,7 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo>, Runnable {
 	
 	Set<String> setPrefix;
 	Map<String, GffChrStatistics> mapPrefix2LocStatistics;
+	Map<String, SamFileStatistics> mapPrefix2Statistics;
 	RPKMcomput rpkMcomput;
 	
 	int[] tss;
@@ -96,7 +102,7 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo>, Runnable {
 				rpkMcomput.setCurrentCondition(prefix);
 				lsAlignmentRecorders.add(rpkMcomput);
 			}
-			
+
 			if (isLocStatistics) {
 				GffChrStatistics gffChrStatistics = new GffChrStatistics();
 				gffChrStatistics.setGffChrAbs(gffChrAbs);
@@ -104,6 +110,10 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo>, Runnable {
 				gffChrStatistics.setTssRegion(tss);
 				lsAlignmentRecorders.add(gffChrStatistics);
 				mapPrefix2LocStatistics.put(prefix, gffChrStatistics);
+				
+				SamFileStatistics samFileStatistics = new SamFileStatistics();
+				lsAlignmentRecorders.add(samFileStatistics);
+				mapPrefix2Statistics.put(prefix, samFileStatistics);
 			}
 			
 			for (AlignSeqReading alignSeqReading : lsAlignSeqReadings) {
@@ -111,8 +121,13 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo>, Runnable {
 				alignSeqReading.addColAlignmentRecorder(lsAlignmentRecorders);
 				alignSeqReading.setRunGetInfo(this);
 				alignSeqReading.run();
+				logger.info("finish reading " + alignSeqReading.getSamFile().getFileName());
 				readByte = alignSeqReading.getReadByte();
 			}
+			
+			logger.info("finish reading " + prefix);
+			
+			writeToFileCurrent(prefix);
 		}
 		
 		writeToFile();
@@ -139,6 +154,7 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo>, Runnable {
 	private ArrayListMultimap<String, AlignSeqReading> getMapPrefix2LsAlignSeqReadings() {
 		if (isLocStatistics) {
 			mapPrefix2LocStatistics = new HashMap<String, GffChrStatistics>();
+			mapPrefix2Statistics = new HashMap<String, SamFileStatistics>();
 		}
 		if (isCountRPKM) {
 			rpkMcomput = new RPKMcomput();
@@ -197,28 +213,72 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo>, Runnable {
 				TxtReadandWrite txtWrite = new TxtReadandWrite(outStatistics, true);
 				txtWrite.ExcelWrite(gffChrStatistics.getStatisticsResult());
 				txtWrite.close();
+				
+				SamFileStatistics samFileStatistics = mapPrefix2Statistics.get(prefix);
+				String outSamStatistics = FileOperate.changeFileSuffix(resultPrefix, "_" + prefix + "_MappingStatistics", "txt");
+				TxtReadandWrite txtWriteStatistics = new TxtReadandWrite(outSamStatistics, true);
+				txtWriteStatistics.ExcelWrite(samFileStatistics.getMappingInfo());
+				txtWriteStatistics.close();
 			}
 		}
-		
 	}
+	
+	private void writeToFileCurrent(String prefix) {
+		if (isCountRPKM) {
+			String outTPM = FileOperate.changeFileSuffix(resultPrefix, prefix + "_tpm", "txt");
+			String outRPKM = FileOperate.changeFileSuffix(resultPrefix, prefix + "_rpkm", "txt");
+			String outCounts = FileOperate.changeFileSuffix(resultPrefix, prefix + "_Counts", "txt");
+			
+			List<String[]> lsTpm = rpkMcomput.getLsTPMsCurrent();
+			List<String[]> lsRpkm = rpkMcomput.getLsRPKMsCurrent();
+			List<String[]> lsCounts = rpkMcomput.getLsRPKMsCurrent();
+			TxtReadandWrite txtWriteRpm = new TxtReadandWrite(outTPM, true);
+			txtWriteRpm.ExcelWrite(lsTpm);
+			TxtReadandWrite txtWriteRpkm = new TxtReadandWrite(outRPKM, true);
+			txtWriteRpkm.ExcelWrite(lsRpkm);
+			TxtReadandWrite txtWriteCounts = new TxtReadandWrite(outCounts, true);
+			txtWriteRpkm.ExcelWrite(lsCounts);
+			txtWriteCounts.close();
+			txtWriteRpkm.close();
+			txtWriteRpm.close();
+		}
+		if (isLocStatistics) {
+			GffChrStatistics gffChrStatistics = mapPrefix2LocStatistics.get(prefix);
+			String outStatistics = FileOperate.changeFileSuffix(resultPrefix, "_" + prefix + "_GeneStructure", "txt");
+			TxtReadandWrite txtWrite = new TxtReadandWrite(outStatistics, true);
+			txtWrite.ExcelWrite(gffChrStatistics.getStatisticsResult());
+			txtWrite.close();
+			SamFileStatistics samFileStatistics = mapPrefix2Statistics.get(prefix);
+			String outSamStatistics = FileOperate.changeFileSuffix(resultPrefix, "_" + prefix + "_MappingStatistics", "txt");
+			TxtReadandWrite txtWriteStatistics = new TxtReadandWrite(outSamStatistics, true);
+			txtWriteStatistics.ExcelWrite(samFileStatistics.getMappingInfo());
+			txtWriteStatistics.close();
+
+		}
+	}
+	
 	@Override
 	public void setRunningInfo(GuiAnnoInfo info) {
 		guiSamStatistics.getProcessBar().setValue((int)( info.getNumDouble()/1024));
 	}
+	
 	@Override
 	public void done(RunProcess<GuiAnnoInfo> runProcess) {
 		guiSamStatistics.getProcessBar().setValue(guiSamStatistics.getProcessBar().getMaximum());
 		guiSamStatistics.getBtnSave().setEnabled(true);
 		guiSamStatistics.getBtnRun().setEnabled(true);
 	}
+	
 	@Override
 	public void threadSuspended(RunProcess<GuiAnnoInfo> runProcess) {
 		guiSamStatistics.getBtnRun().setEnabled(true);
 	}
+	
 	@Override
 	public void threadResumed(RunProcess<GuiAnnoInfo> runProcess) {
 		guiSamStatistics.getBtnRun().setEnabled(false);
 	}
+	
 	@Override
 	public void threadStop(RunProcess<GuiAnnoInfo> runProcess) {
 		guiSamStatistics.getBtnRun().setEnabled(true);

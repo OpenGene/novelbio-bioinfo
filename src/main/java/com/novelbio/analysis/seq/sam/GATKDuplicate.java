@@ -44,15 +44,15 @@ public class GATKDuplicate {
 	 *  duplicate  去除重复
 	 * @return 输出文件路径 + 输入文件名.dedup.bam
 	 */
-	public String removeDuplicate() {
+	public boolean removeDuplicate() {
 		try {
 			String[] params = { "MAX_FILE_HANDLES_FOR_READ_ENDS_MAP="+maxFileHandlesForReadEndsMap, "INPUT=" + inputFilePath, "OUTPUT=" + outputFilePath,
 					"METRICS_FILE=" + metricsPath };
 			MarkDuplicates.main(params);
-			return outputFilePath;
+			return true;
 		} catch (Exception e) {
 			logger.error("remove duplicate 去除重复 error!!!");
-			return null;
+			return false;
 		}
 	}
 	

@@ -31,6 +31,7 @@ public class GuiLinesStatistics extends JPanel {
 	 */
 	public GuiLinesStatistics() {
 		setLayout(null);
+		ctrlSamStatistics.setGuiLinesStatistics(this);
 		
 		chckbxSambamfile = new JCheckBox("SamBamFile");
 		chckbxSambamfile.setBounds(22, 349, 131, 22);

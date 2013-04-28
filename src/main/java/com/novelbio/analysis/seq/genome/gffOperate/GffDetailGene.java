@@ -323,6 +323,27 @@ public class GffDetailGene extends ListDetailAbs {
 		}
 		return ismRNA;
     }
+    
+    /** 遍历该基因内部全体转录本，返回该基因是什么类型
+     * 如果既有mRNA又有别的类型，优先mRNA
+     * 优先级排序为 mRNA ncRNA miRNA
+     * miRNA优先级最后
+     *  */
+    public GeneType getGeneType() {
+    	GeneType geneType = null;
+		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
+			GeneType geneTypeTmp = gffGeneIsoInfo.getGeneType();
+			if (geneTypeTmp == GeneType.mRNA) {
+				geneType = GeneType.mRNA;
+				break;
+			} else if (geneTypeTmp == GeneType.miRNA && geneType != null && geneType != GeneType.miRNA) {
+				continue;
+			} else {
+				geneType = geneTypeTmp;
+			}
+		}
+		return geneType;
+    }
     /**
      * 获得该基因中最长的一条转录本的部分区域的信息。已经考虑过开闭区间问题
      * @param type 指定为INTRON,EXON,UTR5,UTR3
