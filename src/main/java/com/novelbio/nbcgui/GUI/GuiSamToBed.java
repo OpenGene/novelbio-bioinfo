@@ -15,6 +15,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 
@@ -30,6 +31,8 @@ import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.database.model.species.Species;
 
 public class GuiSamToBed extends JPanel {
+	private static final long serialVersionUID = 2596513239050914728L;
+
 	private JTextField txtExtend;
 
 	JCheckBox chckbxExtend;
@@ -39,9 +42,14 @@ public class GuiSamToBed extends JPanel {
 	JCheckBox chckbxSortBed;
 	JCheckBox chckbxSortBam;
 	JCheckBox chckbxIndex;
-	JCheckBox chckbxRealign;
+	JCheckBox chckRecalibrate;
+	JCheckBox chckRealign;
+	JCheckBox chckRemoveduplicate;
+	
 	JButton btnSamtobed;
-
+	JButton btnAddvcf;
+	JButton btnDelvcf;
+	
 	JSpinner spinMapNumSmall;
 	JSpinner spinMapNumBig;
 	
@@ -51,6 +59,7 @@ public class GuiSamToBed extends JPanel {
 	ButtonGroup buttonGroupRad;
 	JRadioButton radGenome;
 	JRadioButton radRefRNA;
+	JScrollPaneData sclVcfFile;
 	
 	JButton btnRefseqFile;
 	
@@ -80,13 +89,13 @@ public class GuiSamToBed extends JPanel {
 				scrlSamFile.addItemLs(lsToScrlFile);
 			}
 		});
-		btnNewButton.setBounds(576, 44, 157, 24);
+		btnNewButton.setBounds(12, 166, 157, 24);
 		add(btnNewButton);
 		
 		JButton btnConvertSam = new JButton("ConvertSam");
 		btnConvertSam.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if ((chckbxRealign.isSelected() || chckbxGeneratepileupfile.isSelected()) && cmbSpecies.getSelectedValue().getTaxID() == 0) {
+				if ((chckRecalibrate.isSelected() || chckbxGeneratepileupfile.isSelected()) && cmbSpecies.getSelectedValue().getTaxID() == 0) {
 					JOptionPane.showConfirmDialog(null, "ReAlign And PileUp Need the Species Info", "Warning", JOptionPane.CLOSED_OPTION);
 					return;
 				}
@@ -117,8 +126,6 @@ public class GuiSamToBed extends JPanel {
 					List<String> lsSamFiles = mapPrefix2FileName.get(prefix);
 					convertSamFile(resultMergePath, prefix, lsSamFiles);
 				}
-				
-				
 			}
 			
 			/** 如果prefix为null或""，则返回一个全新的prefix，意思不在任何分组中 */
@@ -133,7 +140,7 @@ public class GuiSamToBed extends JPanel {
 				return i + "";
 			}
 		});
-		btnConvertSam.setBounds(576, 178, 157, 24);
+		btnConvertSam.setBounds(407, 516, 157, 24);
 		add(btnConvertSam);
 		
 		JLabel lblSamfile = new JLabel("SamToBam");
@@ -152,15 +159,15 @@ public class GuiSamToBed extends JPanel {
 					scrlBedFile.addItemLs(lsToScrlFile);
 				}
 		});
-		btnBedFile.setBounds(402, 330, 153, 24);
+		btnBedFile.setBounds(623, 169, 128, 24);
 		add(btnBedFile);
 		
 		JLabel lblBedfile = new JLabel("BedFile");
-		lblBedfile.setBounds(12, 304, 69, 14);
+		lblBedfile.setBounds(618, 25, 69, 14);
 		add(lblBedfile);
 		
 		txtExtend = new JTextField();
-		txtExtend.setBounds(137, 451, 114, 18);
+		txtExtend.setBounds(709, 208, 114, 18);
 		add(txtExtend);
 		txtExtend.setColumns(10);
 		
@@ -175,57 +182,75 @@ public class GuiSamToBed extends JPanel {
 				}
 			}
 		});
-		btnConvertBed.setBounds(370, 526, 147, 24);
+		btnConvertBed.setBounds(885, 303, 147, 24);
 		add(btnConvertBed);
 		
 		JLabel lblMappingnum = new JLabel("MappingNum");
-		lblMappingnum.setBounds(297, 481, 99, 14);
+		lblMappingnum.setBounds(627, 308, 99, 14);
 		add(lblMappingnum);
 		
 		lblTo = new JLabel("To");
-		lblTo.setBounds(453, 481, 30, 14);
+		lblTo.setBounds(776, 309, 30, 14);
 		add(lblTo);
 		
 		chckbxNonUniqueMapping = new JCheckBox("Non Unique Mapping Get Random Reads");
-		chckbxNonUniqueMapping.setBounds(12, 274, 320, 22);
+		chckbxNonUniqueMapping.setBounds(13, 553, 320, 22);
 		add(chckbxNonUniqueMapping);
 		
 		chckbxExtend = new JCheckBox("Extend");
-		chckbxExtend.setBounds(12, 449, 99, 22);
+		chckbxExtend.setBounds(621, 204, 82, 22);
 		add(chckbxExtend);
 		
 		chckbxFilterreads = new JCheckBox("FilterReads");
-		chckbxFilterreads.setBounds(12, 477, 131, 22);
+		chckbxFilterreads.setBounds(620, 233, 131, 22);
 		add(chckbxFilterreads);
 		
 		chckbxCis = new JCheckBox("Cis");
-		chckbxCis.setBounds(147, 477, 53, 22);
+		chckbxCis.setBounds(755, 233, 53, 22);
 		add(chckbxCis);
 		
 		chckbxTrans = new JCheckBox("Trans");
-		chckbxTrans.setBounds(214, 477, 69, 22);
+		chckbxTrans.setBounds(822, 233, 69, 22);
 		add(chckbxTrans);
 		
 		chckbxSortBed = new JCheckBox("SortBed");
-		chckbxSortBed.setBounds(12, 511, 131, 22);
+		chckbxSortBed.setBounds(620, 267, 131, 22);
 		add(chckbxSortBed);
 		
 		chckbxSortBam = new JCheckBox("sortBam");
-		chckbxSortBam.setBounds(14, 205, 91, 22);
+		chckbxSortBam.setBounds(13, 198, 91, 22);
 		add(chckbxSortBam);
 		
 		chckbxIndex = new JCheckBox("index");
-		chckbxIndex.setBounds(191, 204, 69, 22);
+		chckbxIndex.setBounds(123, 198, 69, 22);
 		add(chckbxIndex);
 		
-		chckbxRealign = new JCheckBox("realignRemoveDupRecalibrate");
-		chckbxRealign.addActionListener(new ActionListener() {
+		
+		chckRealign = new JCheckBox("Realign");
+		chckRealign.setBounds(173, 224, 91, 22);
+		add(chckRealign);
+		
+		chckRemoveduplicate = new JCheckBox("RemoveDuplicate");
+		chckRemoveduplicate.setBounds(12, 222, 157, 22);
+		add(chckRemoveduplicate);
+		
+		
+		chckRecalibrate = new JCheckBox("Recalibrate Need DBsnpVcf");
+		chckRecalibrate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-//				selectRealign();
+				if (chckRecalibrate.isSelected()) {
+					sclVcfFile.setEnabled(true);
+					btnAddvcf.setEnabled(true);
+					btnDelvcf.setEnabled(true);
+				} else {
+					sclVcfFile.setEnabled(false);
+					btnAddvcf.setEnabled(false);
+					btnDelvcf.setEnabled(false);
+				}
 			}
 		});
-		chckbxRealign.setBounds(12, 223, 256, 22);
-		add(chckbxRealign);
+		chckRecalibrate.setBounds(268, 224, 231, 22);
+		add(chckRecalibrate);
 		
 		btnSamtobed = new JButton("SamtoBed");
 		btnSamtobed.addActionListener(new ActionListener() {
@@ -238,19 +263,19 @@ public class GuiSamToBed extends JPanel {
 				}
 			}
 		});
-		btnSamtobed.setBounds(402, 273, 118, 24);
+		btnSamtobed.setBounds(446, 552, 118, 24);
 		add(btnSamtobed);
 		
 		spinMapNumSmall = new JSpinner();
-		spinMapNumSmall.setBounds(401, 479, 49, 18);
+		spinMapNumSmall.setBounds(724, 307, 49, 18);
 		add(spinMapNumSmall);
 		
 		spinMapNumBig = new JSpinner();
-		spinMapNumBig.setBounds(485, 479, 49, 18);
+		spinMapNumBig.setBounds(808, 307, 49, 18);
 		add(spinMapNumBig);
 		
 		scrlBedFile = new JScrollPaneData();
-		scrlBedFile.setBounds(12, 330, 384, 109);
+		scrlBedFile.setBounds(618, 44, 416, 109);
 		add(scrlBedFile);
 		
 		JButton btnDelBed = new JButton("DeleteBed");
@@ -259,7 +284,7 @@ public class GuiSamToBed extends JPanel {
 				scrlBedFile.deleteSelRows();
 			}
 		});
-		btnDelBed.setBounds(402, 415, 153, 24);
+		btnDelBed.setBounds(881, 171, 153, 24);
 		add(btnDelBed);
 		
 		scrlSamFile = new JScrollPaneData();
@@ -271,7 +296,7 @@ public class GuiSamToBed extends JPanel {
 				}
 			}
 		});
-		scrlSamFile.setBounds(12, 44, 552, 158);
+		scrlSamFile.setBounds(13, 38, 552, 116);
 		add(scrlSamFile);
 		
 		JButton btnDelScrSam = new JButton("DeleteSam");
@@ -280,7 +305,7 @@ public class GuiSamToBed extends JPanel {
 				scrlSamFile.deleteSelRows();
 			}
 		});
-		btnDelScrSam.setBounds(576, 98, 157, 24);
+		btnDelScrSam.setBounds(407, 168, 157, 24);
 		add(btnDelScrSam);
 		
 		cmbSpecies = new JComboBoxData<Species>();
@@ -289,23 +314,23 @@ public class GuiSamToBed extends JPanel {
 				selectCombSpecies();
 			}
 		});
-		cmbSpecies.setBounds(775, 64, 171, 23);
+		cmbSpecies.setBounds(14, 300, 171, 23);
 		add(cmbSpecies);
 		
 		JLabel lblSpecies = new JLabel("Species");
-		lblSpecies.setBounds(778, 43, 69, 14);
+		lblSpecies.setBounds(16, 282, 69, 14);
 		add(lblSpecies);
 		
 		cmbVersion = new JComboBoxData<String>();
-		cmbVersion.setBounds(775, 128, 171, 23);
+		cmbVersion.setBounds(14, 345, 171, 23);
 		add(cmbVersion);
 		
 		JLabel lblVersion = new JLabel("Version");
-		lblVersion.setBounds(771, 102, 69, 14);
+		lblVersion.setBounds(13, 327, 69, 14);
 		add(lblVersion);
 		
 		txtReferenceSequence = new JTextField();
-		txtReferenceSequence.setBounds(772, 246, 231, 18);
+		txtReferenceSequence.setBounds(322, 303, 231, 18);
 		add(txtReferenceSequence);
 		txtReferenceSequence.setColumns(10);
 		
@@ -315,20 +340,47 @@ public class GuiSamToBed extends JPanel {
 				txtReferenceSequence.setText(guiFileOpen.openFileName("refseq", ""));
 			}
 		});
-		btnRefseqFile.setBounds(886, 272, 118, 24);
+		btnRefseqFile.setBounds(439, 331, 118, 24);
 		add(btnRefseqFile);
 		
 		radGenome = new JRadioButton("Genome");
-		radGenome.setBounds(776, 178, 91, 22);
+		radGenome.setBounds(207, 306, 91, 22);
 		add(radGenome);
 		
 		radRefRNA = new JRadioButton("RNA");
-		radRefRNA.setBounds(871, 178, 69, 22);
+		radRefRNA.setBounds(208, 337, 69, 22);
 		add(radRefRNA);
 		
 		chckbxGeneratepileupfile = new JCheckBox("GeneratePileUpFile");
-		chckbxGeneratepileupfile.setBounds(297, 223, 187, 22);
+		chckbxGeneratepileupfile.setBounds(13, 248, 187, 22);
 		add(chckbxGeneratepileupfile);
+
+		sclVcfFile = new JScrollPaneData();
+		sclVcfFile.setBounds(16, 407, 548, 97);
+		add(sclVcfFile);
+		
+		JLabel lblVcffile = new JLabel("VCF To Help Recalibrate");
+		lblVcffile.setBounds(16, 381, 248, 14);
+		add(lblVcffile);
+		
+		btnAddvcf = new JButton("AddVcf");
+		btnAddvcf.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				List<String> lsVCFfile = guiFileOpen.openLsFileName("vcf", "vcf");
+				sclVcfFile.addItemLsSingle(lsVCFfile);
+			}
+		});
+		btnAddvcf.setBounds(15, 516, 118, 24);
+		add(btnAddvcf);
+		
+		btnDelvcf = new JButton("DelVcf");
+		btnDelvcf.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				sclVcfFile.deleteSelRows();
+			}
+		});
+		btnDelvcf.setBounds(173, 516, 118, 24);
+		add(btnDelvcf);
 		initial();
 	}
 	
@@ -348,7 +400,7 @@ public class GuiSamToBed extends JPanel {
 	}
 	
 	private void selectRealign() {
-		if (chckbxRealign.isSelected()) {
+		if (chckRecalibrate.isSelected()) {
 			chckbxSortBam.setEnabled(false);
 			chckbxIndex.setEnabled(false);
 			cmbSpecies.setEnabled(true);
@@ -406,13 +458,11 @@ public class GuiSamToBed extends JPanel {
 		
 		if (species.getTaxID() == 0) {
 			refFile = txtReferenceSequence.getText();
-		}
-		else {
+		} else {
 			species.setVersion(cmbVersion.getSelectedValue());
 			if (radGenome.isSelected()) {
 				refFile = species.getChromSeq();
-			}
-			else if (radRefRNA.isSelected()) {
+			} else if (radRefRNA.isSelected()) {
 				refFile = species.getRefseqFile();
 			}
 		}
@@ -431,8 +481,35 @@ public class GuiSamToBed extends JPanel {
 		if (chckbxIndex.isSelected()) {
 			samFileMerge.indexMake();
 		}
-		if (chckbxRealign.isSelected()) {
-			try { samFileMerge = samFileMerge.copeSamFile2Snp(); } catch (Exception e) { }
+		if (chckRemoveduplicate.isSelected()) {
+			samFileMerge = samFileMerge.removeDuplicate();
+			if (samFileMerge == null) {
+				JOptionPane.showMessageDialog(this, "Remove Duplicate Error", "Error", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+		}
+		if (chckRealign.isSelected()) {
+			samFileMerge = samFileMerge.realign();
+			if (samFileMerge == null) {
+				JOptionPane.showMessageDialog(this, "Realign Error", "Error", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+		}
+		if (chckRecalibrate.isSelected()) {
+			List<String[]> lsInfo = sclVcfFile.getLsDataInfo();
+			List<String> lsVcfFile = new ArrayList<String>();
+			for (String[] strings : lsInfo) {
+				if (FileOperate.isFileExistAndBigThanSize(strings[0], 0)) {
+					lsVcfFile.add(strings[0]);
+				}
+			}
+			if (lsVcfFile.size() != 0) {
+				samFileMerge = samFileMerge.recalibrate(lsVcfFile);
+				if (samFileMerge == null) {
+					JOptionPane.showMessageDialog(this, "Realign Error", "Error", JOptionPane.ERROR_MESSAGE);
+					return;
+				};
+			}
 		}
 		if (chckbxGeneratepileupfile.isSelected()) {
 			samFileMerge.pileup();
