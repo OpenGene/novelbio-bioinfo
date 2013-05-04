@@ -98,18 +98,20 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo>, Runnable {
 			List<AlignSeqReading> lsAlignSeqReadings = mapPrefix2AlignSeqReadings.get(prefix);
 			List<AlignmentRecorder> lsAlignmentRecorders = new ArrayList<AlignmentRecorder>();
 			
-			if (isCountRPKM) {
+			if (isCountRPKM && gffChrAbs.getTaxID() != 0) {
 				rpkMcomput.setCurrentCondition(prefix);
 				lsAlignmentRecorders.add(rpkMcomput);
 			}
 
 			if (isLocStatistics) {
-				GffChrStatistics gffChrStatistics = new GffChrStatistics();
-				gffChrStatistics.setGffChrAbs(gffChrAbs);
-				gffChrStatistics.setTesRegion(tes);
-				gffChrStatistics.setTssRegion(tss);
-				lsAlignmentRecorders.add(gffChrStatistics);
-				mapPrefix2LocStatistics.put(prefix, gffChrStatistics);
+				if (gffChrAbs.getTaxID() != 0) {
+					GffChrStatistics gffChrStatistics = new GffChrStatistics();
+					gffChrStatistics.setGffChrAbs(gffChrAbs);
+					gffChrStatistics.setTesRegion(tes);
+					gffChrStatistics.setTssRegion(tss);
+					lsAlignmentRecorders.add(gffChrStatistics);
+					mapPrefix2LocStatistics.put(prefix, gffChrStatistics);
+				}
 				
 				SamFileStatistics samFileStatistics = new SamFileStatistics();
 				lsAlignmentRecorders.add(samFileStatistics);
@@ -154,12 +156,10 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo>, Runnable {
 	 * @return
 	 */
 	private ArrayListMultimap<String, AlignSeqReading> getMapPrefix2LsAlignSeqReadings() {
-		if (isLocStatistics) {
-			mapPrefix2LocStatistics = new HashMap<String, GffChrStatistics>();
-			mapPrefix2Statistics = new HashMap<String, SamFileStatistics>();
-		}
-		if (isCountRPKM) {
-			rpkMcomput = new RPKMcomput();
+		mapPrefix2LocStatistics = new HashMap<String, GffChrStatistics>();
+		mapPrefix2Statistics = new HashMap<String, SamFileStatistics>();
+		rpkMcomput = new RPKMcomput();
+		if (gffChrAbs.getTaxID() != 0) {
 			rpkMcomput.setGffChrAbs(gffChrAbs);
 		}
 		
@@ -190,31 +190,34 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo>, Runnable {
 	}
 	
 	private void writeToFile() {
-		if (isCountRPKM) {
+		if (isCountRPKM && gffChrAbs.getTaxID() != 0) {
 			String outTPM = FileOperate.changeFileSuffix(resultPrefix, "_tpm", "txt");
 			String outRPKM = FileOperate.changeFileSuffix(resultPrefix, "_rpkm", "txt");
 			String outCounts = FileOperate.changeFileSuffix(resultPrefix, "_Counts", "txt");
 			
 			List<String[]> lsTpm = rpkMcomput.getLsTPMs();
 			List<String[]> lsRpkm = rpkMcomput.getLsRPKMs();
-			List<String[]> lsCounts = rpkMcomput.getLsRPKMs();
+			List<String[]> lsCounts = rpkMcomput.getLsCounts();
 			TxtReadandWrite txtWriteRpm = new TxtReadandWrite(outTPM, true);
 			txtWriteRpm.ExcelWrite(lsTpm);
 			TxtReadandWrite txtWriteRpkm = new TxtReadandWrite(outRPKM, true);
 			txtWriteRpkm.ExcelWrite(lsRpkm);
 			TxtReadandWrite txtWriteCounts = new TxtReadandWrite(outCounts, true);
-			txtWriteRpkm.ExcelWrite(lsCounts);
+			txtWriteCounts.ExcelWrite(lsCounts);
 			txtWriteCounts.close();
 			txtWriteRpkm.close();
 			txtWriteRpm.close();
 		}
 		if (isLocStatistics) {
 			for (String prefix : setPrefix) {
-				GffChrStatistics gffChrStatistics = mapPrefix2LocStatistics.get(prefix);
-				String outStatistics = FileOperate.changeFileSuffix(resultPrefix, "_" + prefix + "_GeneStructure", "txt");
-				TxtReadandWrite txtWrite = new TxtReadandWrite(outStatistics, true);
-				txtWrite.ExcelWrite(gffChrStatistics.getStatisticsResult());
-				txtWrite.close();
+				if (gffChrAbs.getTaxID() != 0) {
+					GffChrStatistics gffChrStatistics = mapPrefix2LocStatistics.get(prefix);
+					String outStatistics = FileOperate.changeFileSuffix(resultPrefix, "_" + prefix + "_GeneStructure", "txt");
+					TxtReadandWrite txtWrite = new TxtReadandWrite(outStatistics, true);
+					txtWrite.ExcelWrite(gffChrStatistics.getStatisticsResult());
+					txtWrite.close();
+				}
+				
 				
 				SamFileStatistics samFileStatistics = mapPrefix2Statistics.get(prefix);
 				String outSamStatistics = FileOperate.changeFileSuffix(resultPrefix, "_" + prefix + "_MappingStatistics", "txt");
@@ -226,36 +229,37 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo>, Runnable {
 	}
 	
 	private void writeToFileCurrent(String prefix) {
-		if (isCountRPKM) {
+		if (isCountRPKM && gffChrAbs.getTaxID() != 0) {
 			String outTPM = FileOperate.changeFileSuffix(resultPrefix, prefix + "_tpm", "txt");
 			String outRPKM = FileOperate.changeFileSuffix(resultPrefix, prefix + "_rpkm", "txt");
 			String outCounts = FileOperate.changeFileSuffix(resultPrefix, prefix + "_Counts", "txt");
 			
 			List<String[]> lsTpm = rpkMcomput.getLsTPMsCurrent();
 			List<String[]> lsRpkm = rpkMcomput.getLsRPKMsCurrent();
-			List<String[]> lsCounts = rpkMcomput.getLsRPKMsCurrent();
+			List<String[]> lsCounts = rpkMcomput.getLsCountsCurrent();
 			TxtReadandWrite txtWriteRpm = new TxtReadandWrite(outTPM, true);
 			txtWriteRpm.ExcelWrite(lsTpm);
 			TxtReadandWrite txtWriteRpkm = new TxtReadandWrite(outRPKM, true);
 			txtWriteRpkm.ExcelWrite(lsRpkm);
 			TxtReadandWrite txtWriteCounts = new TxtReadandWrite(outCounts, true);
-			txtWriteRpkm.ExcelWrite(lsCounts);
+			txtWriteCounts.ExcelWrite(lsCounts);
 			txtWriteCounts.close();
 			txtWriteRpkm.close();
 			txtWriteRpm.close();
 		}
 		if (isLocStatistics) {
-			GffChrStatistics gffChrStatistics = mapPrefix2LocStatistics.get(prefix);
-			String outStatistics = FileOperate.changeFileSuffix(resultPrefix, "_" + prefix + "_GeneStructure", "txt");
-			TxtReadandWrite txtWrite = new TxtReadandWrite(outStatistics, true);
-			txtWrite.ExcelWrite(gffChrStatistics.getStatisticsResult());
-			txtWrite.close();
+			if (gffChrAbs.getTaxID() != 0) {
+				GffChrStatistics gffChrStatistics = mapPrefix2LocStatistics.get(prefix);
+				String outStatistics = FileOperate.changeFileSuffix(resultPrefix, "_" + prefix + "_GeneStructure", "txt");
+				TxtReadandWrite txtWrite = new TxtReadandWrite(outStatistics, true);
+				txtWrite.ExcelWrite(gffChrStatistics.getStatisticsResult());
+				txtWrite.close();
+			}
 			SamFileStatistics samFileStatistics = mapPrefix2Statistics.get(prefix);
 			String outSamStatistics = FileOperate.changeFileSuffix(resultPrefix, "_" + prefix + "_MappingStatistics", "txt");
 			TxtReadandWrite txtWriteStatistics = new TxtReadandWrite(outSamStatistics, true);
 			txtWriteStatistics.ExcelWrite(samFileStatistics.getMappingInfo());
 			txtWriteStatistics.close();
-
 		}
 	}
 	

@@ -14,6 +14,7 @@ import java.util.List;
 
 import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMFileHeader.SortOrder;
+import net.sf.samtools.SAMReadGroupRecord;
 import net.sf.samtools.SAMSequenceRecord;
 import net.sf.samtools.SAMTextHeaderCodec;
 import net.sf.samtools.util.BlockCompressedInputStream;
@@ -25,6 +26,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.FormatSeq;
 import com.novelbio.analysis.seq.bed.BedSeq;
+import com.novelbio.analysis.seq.fasta.FastaDictMake;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.base.PathDetail;
@@ -42,32 +44,10 @@ public class SamFile implements AlignSeq {
 	private static final Logger logger = Logger.getLogger(SamFile.class);
 	
 	public static void main(String[] args) {		
-//		SamFile samFile = new SamFile("/home/zong0jie/Desktop/Tmp/miRNA/tmpMapping/aaaa_Genome.bam");
-//		SAMFileHeader samFileHeader = samFile.getHeader();
-//		List<SAMReadGroupRecord> lsSamReadGroupRecords = new ArrayList<SAMReadGroupRecord>();
-//		SAMReadGroupRecord samReadGroupRecord = new SAMReadGroupRecord("aaa");
-//		samReadGroupRecord.setPlatform("Illumina");
-////		samReadGroupRecord.setLibrary("aaa");
-//		samReadGroupRecord.setSample("aaa");
-//		lsSamReadGroupRecords.add(samReadGroupRecord);
-//		samFileHeader.setReadGroups(lsSamReadGroupRecords);
-//		SamFile samFile2 = new SamFile("/home/zong0jie/Desktop/Tmp/miRNA/tmpMapping/aaaa_Genome_group.bam", samFileHeader);
-//		for (SamRecord samRecord : samFile.readLines()) {
-//			samRecord.setReadGroup(samReadGroupRecord);
-//			samFile2.writeSamRecord(samRecord);
-//		}
-//		samFile2.close();
-//		samFile.close();
-		
-		SamFile samFile = new SamFile("/home/zong0jie/Desktop/Tmp/miRNA/tmpMapping/aaaa_Genome_group.bam");
-		samFile.sort().removeDuplicate().realign().pileup();
-		Species species = new Species(9606);
-		samFile.setReferenceFileName(species.getChromSeq());
-//		String mpileUpfile = samFile.sort().removeDuplicate().realign().pileup();
-		String mpileUpfile = "/home/zong0jie/Desktop/Tmp/miRNA/tmpMapping/aaaapileup.gz";
-		BcfTools bcfTools = new BcfTools(mpileUpfile, "/home/zong0jie/Desktop/Tmp/miRNA/tmpMapping/aaa.vcf");
-		bcfTools.snpCalling();
-//		samFile.realign();
+		SamFile samFile = new SamFile("/home/zong0jie/Desktop/FYmouse20111122/mapping/heart/aaa.bam");
+		samFile = samFile.addGroup("A", "B", "C", "ILM");
+		samFile.setReferenceFileName(new Species(10090).getChromSeq());
+		samFile.realign();
 	}
 	
 	
@@ -176,8 +156,11 @@ public class SamFile implements AlignSeq {
 	public void setReferenceFileName(String referenceFileName) {
 		this.referenceFileName = referenceFileName;
 		faidxRefsequence();
+		FastaDictMake fastadictMake = new FastaDictMake(referenceFileName, FileOperate.changeFileSuffix(referenceFileName, "", "dict"));
+		fastadictMake.makeDict();
 	}
 	
+	//TODO 把这个独立出来作为单独的类，并且用picard中的代码实现，摆脱samtools
 	private String faidxRefsequence() {
 		if (FileOperate.isFileExist(referenceFileName) && !FileOperate.isFileExist(referenceFileName+".fai")) {
 			SamIndexRefsequence samIndexRefsequence = new SamIndexRefsequence();
@@ -305,14 +288,66 @@ public class SamFile implements AlignSeq {
 		close();
 		return fastQ;
 	}
-
+	
+	/** 添加group信息，如果已经有group信息了，则返回 */
+	public SamFile addGroup(String sampleID, String LibraryName, String SampleName, String Platform) {
+		return addGroup(false, sampleID, LibraryName, SampleName, Platform);
+	}
+	 /**
+	  * 添加group信息，如果已经有group信息了，则覆盖
+	  */
+	public SamFile addGroupOverlap(String sampleID, String LibraryName, String SampleName, String Platform) {
+		return addGroup(true, sampleID, LibraryName, SampleName, Platform);
+	}
+	 /**
+	  * 添加group信息，如果已经有group信息了，则返回
+	  * @param outFile
+	  */
+	private SamFile addGroup(boolean overlap, String sampleID, String LibraryName, String SampleName, String Platform) {
+		SamRGroup samRGroup = readFirstLine().getReadGroup();
+		if (!overlap && samRGroup != null) {
+			return this;
+		}
+		samRGroup = new SamRGroup(sampleID, LibraryName, SampleName, Platform);
+		return setGroup(samRGroup);
+	}
+	 /**
+	  * 添加group信息
+	  * @param outFile
+	  */
+	private SamFile setGroup(SamRGroup samReadGroupRecord) {
+		String outFile = FileOperate.changeFileSuffix(getFileName(), "_rgroup", null);
+		return setGroup(outFile, samReadGroupRecord);
+	}
+	
+	 /**
+	  * 添加group信息
+	  * @param outFile
+	  */
+	public SamFile setGroup(String outFile, SamRGroup samRGroup) {
+		List<SAMReadGroupRecord> lsReadGroupRecords = new ArrayList<SAMReadGroupRecord>();
+		lsReadGroupRecords.add(samRGroup.getSamReadGroupRecord());
+		
+		SAMFileHeader samHeader = getHeader();
+		samHeader.setReadGroups(lsReadGroupRecords);
+		
+		SamFile samFileWrite = new SamFile(outFile, getHeader(), true);
+		for (SamRecord samRecord : readLines()) {
+			samRecord.setReadGroup(samRGroup);
+			samFileWrite.writeSamRecord(samRecord);
+		}
+		samFileWrite.close();
+		setParamSamFile(samFileWrite);
+		samFileWrite.read = true;
+		return samFileWrite;
+	}
+	
     public SamFile sort() {
-    	SamFile samFile = convertToBam();
-    	if (samFile.getFileName().endsWith("_sorted.bam")) {
-			return samFile;
+    	if (getFileName().endsWith("_sorted.bam")) {
+			return this;
 		}
     	String outName = FileOperate.changeFileSuffix(getFileName(), "_sorted", "bam");
-    	return samFile.sort(outName);
+    	return sort(outName);
     }
 	 /**
 	  * 排序，输出为bam形式
@@ -330,13 +365,15 @@ public class SamFile implements AlignSeq {
     	String outSortedBamName = bamSort.sortJava(outFile);
 		SamFile samFile = new SamFile(outSortedBamName);
 		setParamSamFile(samFile);
+		samFile.read = true;
 		return samFile;
 	}
     
     private void setParamSamFile(SamFile samFile) {
     	samFile.referenceFileName = referenceFileName;
     	samFile.isRealigned = isRealigned;
-    	samFile.referenceFileName = referenceFileName;
+    	samFile.bamFile = bamFile;
+    	samFile.read = read;
     }
 	/**
 	 * 用samtools实现了
@@ -384,6 +421,8 @@ public class SamFile implements AlignSeq {
 		}
 		close();
 		samFile.close();
+		setParamSamFile(samFile);
+		samFile.bamFile = true;
 		return samFile;
 	}
 	/**
@@ -615,7 +654,35 @@ public class SamFile implements AlignSeq {
 		samReader = new SamReader(bamFile, bamindex);
 		read = true;
 	}
-
+	
+	/**
+	 * 从含有序列的bed文件获得fastQ文件
+	 * @param outFileName fastQ文件全名（包括路径）
+	 * @throws Exception
+	 */
+	public FastQ getFastQ() {
+		String outFileName = FileOperate.changeFileSuffix(getFileName(), "", "fastq");
+		return getFastQ(outFileName);
+	}
+	/**
+	 * 从含有序列的bed文件获得fastQ文件
+	 * @param outFileName fastQ文件全名（包括路径）
+	 * @throws Exception
+	 */
+	public FastQ getFastQ(String outFileName) {
+		FastQ fastQ = new FastQ(outFileName, true);
+		for (SamRecord samRecord : readLines()) {
+			FastQRecord fastQRecord = new FastQRecord();
+			fastQRecord.setName(samRecord.getName());
+			fastQRecord.setFastaQuality(samRecord.getReadsQuality());
+			fastQRecord.setFastqOffset(FastQ.FASTQ_SANGER_OFFSET);
+			fastQRecord.setSeq(samRecord.getSeqFasta().toString());
+			fastQ.writeFastQRecord(fastQRecord);
+		}
+		fastQ.close();
+		return fastQ;
+	}
+	
 	public static SamFile mergeBamFile(String outBamFile, Collection<SamFile> lsBamFile) {
 		BamMerge bamMerge = new BamMerge();
 		ArrayList<String> lsBamFileName = new ArrayList<String>();
@@ -628,6 +695,7 @@ public class SamFile implements AlignSeq {
 		bamMerge.setLsBamFile(lsBamFileName);
 		return bamMerge.mergeSam();
 	}
+	
 	/** 返回是sam文件，bam文件还是未知文件 */
 	public static FormatSeq isSamBamFile(String samBamFile) {
 		FormatSeq thisFormate = FormatSeq.UNKNOWN;
@@ -690,34 +758,7 @@ public class SamFile implements AlignSeq {
     	}
     	return bytesRead;
     }
-	
-	/**
-	 * 从含有序列的bed文件获得fastQ文件
-	 * @param outFileName fastQ文件全名（包括路径）
-	 * @throws Exception
-	 */
-	public FastQ getFastQ() {
-		String outFileName = FileOperate.changeFileSuffix(getFileName(), "", "fastq");
-		return getFastQ(outFileName);
-	}
-	/**
-	 * 从含有序列的bed文件获得fastQ文件
-	 * @param outFileName fastQ文件全名（包括路径）
-	 * @throws Exception
-	 */
-	public FastQ getFastQ(String outFileName) {
-		FastQ fastQ = new FastQ(outFileName, true);
-		for (SamRecord samRecord : readLines()) {
-			FastQRecord fastQRecord = new FastQRecord();
-			fastQRecord.setName(samRecord.getName());
-			fastQRecord.setFastaQuality(samRecord.getReadsQuality());
-			fastQRecord.setFastqOffset(FastQ.FASTQ_SANGER_OFFSET);
-			fastQRecord.setSeq(samRecord.getSeqFasta().toString());
-			fastQ.writeFastQRecord(fastQRecord);
-		}
-		fastQ.close();
-		return fastQ;
-	}
+
 }
 /**
  * Constants used in reading & writing BAM files

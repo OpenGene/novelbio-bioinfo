@@ -15,6 +15,40 @@ public class GffCodGene extends ListCodAbs<GffDetailGene> {
 	public GffCodGene(String chrID, int Coordinate) {
 		super(chrID, Coordinate);
 	}
+	
+	/** 返回距离该位点最近的基因
+	 * 如果位点处于gffDetailGene的上游，则距离/3，意思优先选择靠tss的基因
+	 * @param range 如果上下游的基因距离 coordinate 在该range之外，则返回null
+	 * @return
+	 */
+	public GffDetailGene getNearestGffGene(int range) {
+		if (isInsideLoc()) {
+			return getGffDetailThis();
+		} else if (getGffDetailUp() == null) {
+			return getGffDetailDown();
+		} else if (getGffDetailDown() == null) {
+			return getGffDetailUp();
+		} else {
+			int upDistance = Math.abs(Coordinate - getGffDetailUp().getEndAbs());
+			if (getGffDetailUp().isCis5to3() != null && getGffDetailUp().isCis5to3() == true) {
+				upDistance = upDistance*3;
+			}
+			int downDistance = Math.abs(Coordinate - getGffDetailDown().getStartAbs());
+			if (getGffDetailDown().isCis5to3() != null && getGffDetailDown().isCis5to3() == false) {
+				downDistance = downDistance*3;
+			}
+			
+			if (upDistance <= downDistance && upDistance <= range) {
+				return getGffDetailUp();
+			} else if (downDistance <= upDistance && downDistance <= range) {
+				return getGffDetailDown();
+			} else {
+				return null;
+			}
+		}
+	}
+	
+	
 	/**
 	 * 获得cod在exon里面的iso信息，没有则返回null，首先查找最长转录本的信息
 	 * 返回第一个找到的iso信息

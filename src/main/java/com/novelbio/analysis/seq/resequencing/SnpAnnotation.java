@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -122,13 +124,19 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 			return input;
 		}
 		ArrayList<String> lsInfo = ArrayOperate.converArray2List(input.split("\t"));
-		int refStartSite = Integer.parseInt(lsInfo.get(colRefStartSite));
+		int refStartSite = Integer.parseInt(lsInfo.get(colRefStartSite).trim());
 
 		RefSiteSnpIndel refSiteSnpIndel = new RefSiteSnpIndel(gffChrAbs, lsInfo.get(colChrID), refStartSite);
 		SiteSnpIndelInfo siteSnpIndelInfo = refSiteSnpIndel.getAndAddAllenInfo(lsInfo.get(colRefNr), lsInfo.get(colThisNr));
 		GffGeneIsoInfo gffGeneIsoInfo = refSiteSnpIndel.getGffIso();
 		if (siteSnpIndelInfo == null || gffGeneIsoInfo == null) {
-			return input;
+			GffCodGene gffCodGene = gffChrAbs.getGffHashGene().searchLocation(lsInfo.get(colChrID), refStartSite);
+			//TODO 5000bp以内的基因都注释起来
+			GffDetailGene gffDetailGene = gffCodGene.getNearestGffGene(5000);
+			if (gffDetailGene == null) {
+				return input;
+			}
+			gffGeneIsoInfo = gffDetailGene.getLongestSplitMrna();
 		}
 		GeneID geneID = gffGeneIsoInfo.getGeneID();
 		if (geneID.getIDtype() != GeneID.IDTYPE_ACCID) {

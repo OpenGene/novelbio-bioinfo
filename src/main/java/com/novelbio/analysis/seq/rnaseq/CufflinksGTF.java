@@ -1,14 +1,17 @@
 package com.novelbio.analysis.seq.rnaseq;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.mapping.MapTophat;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.sam.SamFile;
-import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -17,7 +20,12 @@ public class CufflinksGTF {
 	private static Logger logger = Logger.getLogger(MapTophat.class);
 
 	StrandSpecific strandSpecifictype = StrandSpecific.NONE;
-	ArrayList<SamFile> lsSamFiles = new ArrayList<SamFile>();
+	ArrayListMultimap<String, SamFile> mapPrefix2SamFiles = ArrayListMultimap.create();
+	Set<String> setPrefix= new LinkedHashSet<String>();
+	
+	/** 如果输入多个bam文件，则将他们合并为一个 */
+	List<String> lsMergeSamFile;
+	
 	/** cufflinks所在路径 */
 	String ExePathCufflinks = "";
 	/** 用于校正的染色体 */
@@ -42,9 +50,7 @@ public class CufflinksGTF {
 	/** 输出文件路径 */
 	String outPathPrefix = "";
 	
-	/** 如果输入多个bam文件，则将他们合并为一个 */
-	String mergeSamFile;
-	
+
 	GffChrAbs gffChrAbs;
 	boolean booSetIntronMin = false;
 	boolean booSetIntronMax = false;
@@ -64,10 +70,11 @@ public class CufflinksGTF {
 	 *            单条染色体
 	 */
 	public void setExePath(String ExePathCufflinks, String chrFile) {
-		if (ExePathCufflinks == null || ExePathCufflinks.trim().equals(""))
+		if (ExePathCufflinks == null || ExePathCufflinks.trim().equals("")) {
 			this.ExePathCufflinks = "";
-		else
+		} else {
 			this.ExePathCufflinks = FileOperate.addSep(ExePathCufflinks);
+		}
 		this.chrFile = chrFile;
 	}
 
@@ -75,8 +82,14 @@ public class CufflinksGTF {
 		this.outPathPrefix = outPathPrefix;
 	}
 
-	private String getOutPathPrefix() {
-		return "-o " + CmdOperate.addQuot(outPathPrefix) + " ";
+	private String getOutPathPrefix(String prefix) {
+		String outPath = "";
+		if (outPathPrefix.endsWith("/") || outPathPrefix.endsWith("\\")) {
+			outPath = outPathPrefix + prefix;
+		} else {
+			outPath = outPathPrefix + "_" + prefix;
+		}
+		return "-o " + CmdOperate.addQuot(outPath) + " ";
 	}
 
 	/**
@@ -84,11 +97,11 @@ public class CufflinksGTF {
 	 * 输入的多个bam文件会merge成为一个然后做cufflinks的重建转录本
 	 * @param fqFile
 	 */
-	public void setBam(ArrayList<String> lsSamBamFile) {
-		lsSamFiles.clear();
-		for (String sambamFile : lsSamBamFile) {
-			SamFile samFile = new SamFile(sambamFile);
-			lsSamFiles.add(samFile);
+	public void setBam(ArrayList<String[]> lsSamfiles2Prefix) {
+		mapPrefix2SamFiles.clear();
+		for (String[] strings : lsSamfiles2Prefix) {
+			mapPrefix2SamFiles.put(strings[1].trim(), new SamFile(strings[0]));
+			setPrefix.add(strings[1].trim());
 		}
 	}
 
@@ -151,18 +164,20 @@ public class CufflinksGTF {
 		return "--max-intron-length " + intronLenMax + " ";
 	}
 
-	private String getSamFile() {
+	private String getMergedSamFile(String prefix) {
+		List<SamFile> lsSamFiles = mapPrefix2SamFiles.get(prefix);
 		String samFile = "";
 		if (lsSamFiles.size() == 1) {
 			samFile = CmdOperate.addQuot(lsSamFiles.get(0).getFileName() );
 		}
 		else {
-			mergeSamFile = outPathPrefix + "merge" + DateUtil.getDateAndRandom() + ".bam";
+			String mergeSamFile = outPathPrefix + "merge" + DateUtil.getDateAndRandom() + ".bam";
 			SamFile mergeFile = SamFile.mergeBamFile(mergeSamFile, lsSamFiles);
 			if (mergeFile != null) {
 				mergeSamFile = mergeFile.getFileName();
 				samFile = CmdOperate.addQuot(mergeSamFile);
-			}		
+				lsMergeSamFile.add(mergeSamFile);
+			}	
 		}
 		return samFile;
 	}
@@ -202,10 +217,8 @@ public class CufflinksGTF {
 			return;
 		}
 		if (gffChrAbs != null && gffChrAbs.getGffHashGene() != null) {
-			String path = FileOperate.getParentPathName(lsSamFiles.get(0)
-					.getFileName());
-			String outGTF = path + gffChrAbs.getSpecies().getAbbrName()
-					+ DateUtil.getDateAndRandom() + ".GTF";
+			String path = FileOperate.getParentPathName(mapPrefix2SamFiles.values().iterator().next().getFileName());
+			String outGTF = path + gffChrAbs.getSpecies().getAbbrName() + DateUtil.getDateAndRandom() + ".GTF";
 			gffChrAbs.getGffHashGene().writeToGTF(outGTF, "novelbio");
 			this.gtfFile = outGTF;
 		}
@@ -263,6 +276,7 @@ public class CufflinksGTF {
 	 */
 	public void runCufflinks() {
 		setIntronLen();
+		lsMergeSamFile = new ArrayList<String>();
 		// linux命令如下
 		/**
 		 * cufflinks -o
@@ -275,27 +289,32 @@ public class CufflinksGTF {
 		 * /media/winE/NBC/Project/RNASeq_GF110614
 		 * /resultTmp/tophatResult/accepted_hits.bam
 		 */
-		String cmd = "";
-		cmd = ExePathCufflinks + "cufflinks ";
-		cmd = cmd + getOutPathPrefix() + getAnchoProportion()
-				+ getIntronLenMin() + getIntronLenMax() + getGtfFile()
-				+ getStrandSpecifictype() + getThreadNum()
-				+ getCorrectChrFile();
+		for (String prefix : setPrefix) {
+			String cmd = "";
+			cmd = ExePathCufflinks + "cufflinks ";
+			cmd = cmd + getOutPathPrefix(prefix) + getAnchoProportion()
+					+ getIntronLenMin() + getIntronLenMax() + getGtfFile()
+					+ getStrandSpecifictype() + getThreadNum()
+					+ getCorrectChrFile();
+			cmd = cmd + getMergedSamFile(prefix);
 
-		cmd = cmd + getSamFile();
-
-		logger.info(cmd);
-		CmdOperate cmdOperate = new CmdOperate(cmd, "cufflinks");
-		cmdOperate.run();
+			try {
+				CmdOperate cmdOperate = new CmdOperate(cmd, "cufflinks");
+				cmdOperate.run();
+			} catch (Exception e) {
+				logger.error(prefix + " cufflinks error");
+			}
+		}
 		
 		//TODO 运行结束后考虑删除merge的bam文件
 //		deleteMergeFile();
 	}
-	private void deleteMergeFile() {
-		if (lsSamFiles.size() > 0) {
-			FileOperate.delFile(mergeSamFile);
-		}
-	}
+	
+//	private void deleteMergeFile() {
+//		if (lsSamFiles.size() > 0) {
+//			FileOperate.delFile(mergeSamFile);
+//		}
+//	}
 	public String getCufflinksGTFPath() {
 		return FileOperate.addSep(outPathPrefix) + "transcripts.gtf";
 	}

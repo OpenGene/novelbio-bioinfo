@@ -45,7 +45,7 @@ public class GuiTranscriptomeCufflinks extends JPanel {
 		
 		scrollPaneSamBamFile = new JScrollPaneData();
 		scrollPaneSamBamFile.setBounds(10, 30, 783, 188);
-		scrollPaneSamBamFile.setTitle(new String[]{"BamFileName"});
+		scrollPaneSamBamFile.setTitle(new String[]{"BamFileName", "prefix"});
 		add(scrollPaneSamBamFile);
 		
 		btnOpenFastqLeft = new JButton("Open");
@@ -112,11 +112,7 @@ public class GuiTranscriptomeCufflinks extends JPanel {
 		btnRun.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ArrayList<String[]> lsSamFileName = scrollPaneSamBamFile.getLsDataInfo();
-				ArrayList<String> lsSamFile = new ArrayList<String>();
-				for (String[] samFile : lsSamFileName) {
-					lsSamFile.add(samFile[0]);
-				}
-				cufflinksGTF.setBamFile(lsSamFile);
+				cufflinksGTF.setLsBamFile2Prefix(lsSamFileName);
 				Species species = cmbSpecies.getSelectedValue();
 				species.setVersion(cmbVersion.getSelectedValue());
 				GffChrAbs gffChrAbs = new GffChrAbs(species);
@@ -166,9 +162,10 @@ public class GuiTranscriptomeCufflinks extends JPanel {
 		
 		btnOpenFastqLeft.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ArrayList<String> lsFileLeft = guiFileOpen.openLsFileName("fastqFile","");
+				ArrayList<String> lsFileLeft = guiFileOpen.openLsFileName("samFile","");
 				for (String string : lsFileLeft) {
-					scrollPaneSamBamFile.addItem(new String[]{string});
+					String prefix = FileOperate.getFileNameSep(string)[0].split("_")[0];
+					scrollPaneSamBamFile.addItem(new String[]{string, prefix});
 				}
 			}
 		});

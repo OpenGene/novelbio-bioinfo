@@ -959,9 +959,9 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			result = result + "Intron_intron_Position_Number_is:" + Math.abs(getNumCodInEle(coord));
 		}
 		//gene end
-		if (isCodInIsoGenEnd(coord)) {
-			result = result + "Distance_to_GeneEnd: "+ getCod2Tes(coord);
-		}
+//		if (isCodInIsoGenEnd(coord)) {
+			result = result + " Distance_to_GeneEnd: "+ getCod2Tes(coord);
+//		}
 		return result;
 	}
 	/**

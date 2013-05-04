@@ -23,6 +23,9 @@ public class SamIndexRefsequence {
 		this.sequence = sequence;
 	}
 	public void indexSequence() {
+		if (FileOperate.isFileExistAndBigThanSize(sequence + ".fai", 0)) {
+			return;
+		}
 		String cmd = ExePath + "samtools faidx " + "\"" + sequence + "\"";
 		CmdOperate cmdOperate = new CmdOperate(cmd,"sortBam");
 		cmdOperate.run();

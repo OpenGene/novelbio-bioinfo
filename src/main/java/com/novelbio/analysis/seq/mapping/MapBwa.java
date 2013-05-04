@@ -4,6 +4,8 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.sam.SamRGroup;
+import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -177,27 +179,8 @@ public class MapBwa extends MapDNA {
 	 * @param Platform
 	 */
 	public void setSampleGroup(String sampleID, String LibraryName, String SampleName, String Platform) {
-		if (sampleID == null || sampleID.equals("")) {
-			sampleGroup = "";
-			return;
-		}
-		this.sampleGroup = "@RG\\tID:" + sampleID;
-		if (LibraryName != null && !LibraryName.trim().equals("")) {
-			sampleGroup = sampleGroup + "\\tLB:" + LibraryName.trim();
-		}
-		
-		if (SampleName != null && !SampleName.trim().equals("")) {
-			sampleGroup = sampleGroup + "\\tSM:" + SampleName.trim();
-		} else {
-			sampleGroup = sampleGroup + "\\tSM:" + sampleID.trim();
-		}
-		
-		if (Platform != null && !Platform.trim().equals("")) {
-			sampleGroup = sampleGroup + "\\tPL:" + Platform + "\" ";
-		} else {
-			sampleGroup = sampleGroup + "\\tPL:Illumina";
-		}
-		sampleGroup = " -r " + CmdOperate.addQuot(sampleGroup) + " ";
+		SamRGroup samRGroup = new SamRGroup(sampleID, LibraryName, SampleName, Platform);
+		sampleGroup = " -r " + CmdOperate.addQuot(samRGroup.toString()) + " ";
 	}
 	/**
 	 * 默认gap为4，如果是indel查找的话，设置到5或者6比较合适

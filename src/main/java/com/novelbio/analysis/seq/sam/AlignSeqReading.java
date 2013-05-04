@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.AlignSeq;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.nbcgui.GuiAnnoInfo;
 
@@ -35,8 +36,9 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 		return readLines;
 	}
 	
-	/** 如果读取一系列的文件，安顺序读取需要在进度条显示读取的内容，就把上一个文件的信息设定进去
-	 * 
+	/** 
+	 * 如果读取一系列的文件，安顺序读取需要在进度条显示读取的内容，就把上一个文件的信息设定进去
+	 * @param readLines
 	 * @param readByte
 	 */
 	public void setReadInfo(Long readLines, double readByte) {
@@ -105,11 +107,11 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 		}
 		readByte += samRecord.toString().getBytes().length;
 		readLines++;
-		if (readLines%5000 == 0) {
+		if (readLines%50000 == 0) {
 			GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
 			guiAnnoInfo.setNum(readLines);
 			guiAnnoInfo.setDouble(readByte);
-			guiAnnoInfo.setInfo("File: " + alignSeqFile.getFileName() + "  reading: " + readLines + " lines");
+			guiAnnoInfo.setInfo("File: " + FileOperate.getFileName(alignSeqFile.getFileName()) + "  reading: " + readLines + " lines");
 			setRunInfo(guiAnnoInfo);
 		}
 		samRecord = null;

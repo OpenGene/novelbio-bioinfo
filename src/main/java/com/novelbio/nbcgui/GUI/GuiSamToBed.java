@@ -15,7 +15,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 
@@ -451,7 +450,7 @@ public class GuiSamToBed extends JPanel {
 		BedSeq bedSeq = samToBed.getBedSeq();
 		bedSeq.close();
 	}
-	
+
 	private void convertSamFile(String resultMergePath, String prefix, List<String> lsSamFilestr) {
 		String refFile = "";
 		Species species = cmbSpecies.getSelectedValue();
@@ -489,6 +488,7 @@ public class GuiSamToBed extends JPanel {
 			}
 		}
 		if (chckRealign.isSelected()) {
+			samFileMerge = samFileMerge.addGroup(prefix, prefix, prefix, "ILLUMINA");
 			samFileMerge = samFileMerge.realign();
 			if (samFileMerge == null) {
 				JOptionPane.showMessageDialog(this, "Realign Error", "Error", JOptionPane.ERROR_MESSAGE);

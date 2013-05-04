@@ -17,6 +17,7 @@ import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.base.cmd.CmdOperate;
 
 public class SamRecord extends SiteSeqInfo implements AlignRecord{
 	private static Logger logger = Logger.getLogger(SamRecord.class);
@@ -204,12 +205,16 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 		return samRecord.getMateAlignmentStart();
 	}
 	
-	public SAMReadGroupRecord getReadGroup() {
-		return samRecord.getReadGroup();
+	public SamRGroup getReadGroup() {
+		SAMReadGroupRecord samReadGroupRecord = samRecord.getReadGroup();
+		if (samReadGroupRecord == null) {
+			return null;
+		}
+		return new SamRGroup(samReadGroupRecord);
 	}
 	
-	public void setReadGroup(SAMReadGroupRecord samReadGroupRecord) {
-		samRecord.setAttribute("RG", samReadGroupRecord.getId());
+	public void setReadGroup(SamRGroup samRGroup) {
+		samRecord.setAttribute("RG", samRGroup.getSamReadGroupRecord().getId());
 	}
 	
 	public boolean isMateCis5to3() {
@@ -321,6 +326,9 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 	public String getReadsQuality() {
 		return samRecord.getBaseQualityString();
 	}
+	
+	
+	
 	public int hashCode() {
 		return samRecord.hashCode();
 	}
@@ -341,7 +349,7 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 	public String getCIGAR() {
 		return samRecord.getCigarString();
 	}
-
+	
 	@Override
 	public FastQRecord getFastQRecord() {
 		FastQRecord fastQRecord = new FastQRecord();
@@ -350,4 +358,5 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 		fastQRecord.setFastaQuality(getReadsQuality());
 		return fastQRecord;
 	}
+
 }

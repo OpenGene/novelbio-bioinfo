@@ -62,9 +62,9 @@ public class BamSort {
 	
 	public String sortJava(String sortBamFile) {
 		File fileOut = new File(sortBamFile);
-		SAMFileReader reader = samFile.samReader.getSamFileReader();
+		SAMFileReader reader = samFile.getSamReader().getSamFileReader();
 		if (reader.getFileHeader().getSortOrder() == SortOrder.coordinate) {
-			return sortBamFile;
+			return samFile.getFileName();
 		}
         reader.getFileHeader().setSortOrder(SORT_ORDER);
         SAMFileWriter writer = new SAMFileWriterFactory().makeSAMOrBAMWriter(reader.getFileHeader(), false, fileOut);

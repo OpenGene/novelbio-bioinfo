@@ -88,9 +88,9 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	 * @param refSnpIndelStart
 	 */
 	public RefSiteSnpIndel(GffChrAbs gffChrAbs,String chrID, int refSnpIndelStart) {
-		setGffChrAbs(gffChrAbs);
 		this.chrID = chrID.toLowerCase();
 		this.refSnpIndelStart = refSnpIndelStart;
+		setGffChrAbs(gffChrAbs);
 	}
 	
 	/**
@@ -194,7 +194,7 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	 * -1表示没有该项目
 	 */
 	public double getProp() {
-		setGffIso();//TODO 本句似乎可以删掉
+//		setGffIso();//TODO 本句似乎可以删掉
 		return prop;
 	}
 	/**
@@ -216,7 +216,7 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	 * @return
 	 */
 	public GffGeneIsoInfo getGffIso() {
-		setGffIso();//TODO 本句似乎可以删掉
+//		setGffIso();//TODO 本句似乎可以删掉
 		return gffGeneIsoInfo;
 	}
 
@@ -830,7 +830,7 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	 */
 	private ArrayList<String[]> toStringLsSnp(Collection<String> lsSampleNames, boolean getGATK, boolean getGATKflag, 
 			Set<String> setMismatchInfo, boolean simple) {
-		setGffIso();
+//		setGffIso();
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		LinkedList<String> lsResultTmp = new LinkedList<String>();
 		lsResultTmp.add(chrID);//0

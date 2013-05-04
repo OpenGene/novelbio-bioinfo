@@ -86,7 +86,7 @@ public class GuiSamStatistics extends JPanel {
 		btnSave = new JButton("Save");
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String fileName = guiFileOpen.saveFileName("", "");
+				String fileName = guiFileOpen.saveFileNameAndPath("", "");
 				if (FileOperate.isFileDirectory(fileName)) {
 					fileName = FileOperate.addSep(fileName);
 				}
@@ -139,54 +139,54 @@ public class GuiSamStatistics extends JPanel {
 		
 		txtTssUp = new JTextField();
 		txtTssUp.setText("-1500");
-		txtTssUp.setBounds(729, 261, 52, 18);
+		txtTssUp.setBounds(764, 282, 52, 18);
 		add(txtTssUp);
 		txtTssUp.setColumns(10);
 		
 		txtTssDown = new JTextField();
 		txtTssDown.setText("1500");
-		txtTssDown.setBounds(793, 261, 52, 18);
+		txtTssDown.setBounds(828, 282, 52, 18);
 		add(txtTssDown);
 		txtTssDown.setColumns(10);
 		
 		JLabel lblTss = new JLabel("Tss");
-		lblTss.setBounds(729, 226, 69, 14);
+		lblTss.setBounds(715, 261, 35, 14);
 		add(lblTss);
 		
 		JLabel lblUp = new JLabel("Up");
-		lblUp.setBounds(727, 240, 52, 14);
+		lblUp.setBounds(762, 261, 52, 14);
 		add(lblUp);
 		
 		JLabel lblDown = new JLabel("Down");
-		lblDown.setBounds(793, 240, 52, 14);
+		lblDown.setBounds(828, 261, 52, 14);
 		add(lblDown);
 		
 		txtTesUp = new JTextField();
 		txtTesUp.setText("-200");
-		txtTesUp.setBounds(729, 332, 52, 18);
+		txtTesUp.setBounds(762, 338, 52, 18);
 		add(txtTesUp);
 		txtTesUp.setColumns(10);
 		
 		JLabel lblUp_1 = new JLabel("Up");
-		lblUp_1.setBounds(729, 306, 69, 14);
+		lblUp_1.setBounds(762, 312, 69, 14);
 		add(lblUp_1);
 		
 		txtTesDown = new JTextField();
 		txtTesDown.setText("200");
-		txtTesDown.setBounds(791, 332, 52, 18);
+		txtTesDown.setBounds(824, 338, 52, 18);
 		add(txtTesDown);
 		txtTesDown.setColumns(10);
 		
 		JLabel lblDown_1 = new JLabel("Down");
-		lblDown_1.setBounds(791, 306, 69, 14);
+		lblDown_1.setBounds(824, 312, 69, 14);
 		add(lblDown_1);
 		
 		JLabel lblTes = new JLabel("Tes");
-		lblTes.setBounds(729, 291, 69, 14);
+		lblTes.setBounds(715, 312, 35, 14);
 		add(lblTes);
 		
 		layeredPane = new GuiLayeredPaneSpeciesVersionGff();
-		layeredPane.setBounds(717, 66, 221, 154);
+		layeredPane.setBounds(717, 95, 221, 154);
 		layeredPane.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (layeredPane.getSelectSpecies().getTaxID() == 0) {
@@ -233,6 +233,15 @@ public class GuiSamStatistics extends JPanel {
 		lblInfo = new JLabel("");
 		lblInfo.setBounds(12, 527, 628, 14);
 		add(lblInfo);
+		
+		JButton btnDel = new JButton("Del");
+		btnDel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				scrollPaneData.deleteSelRows();
+			}
+		});
+		btnDel.setBounds(717, 66, 163, 24);
+		add(btnDel);
 		
 		initial();
 	}

@@ -23,8 +23,8 @@ public class CtrlCufflinksTranscriptome {
 		this.gffChrAbs = gffChrAbs;
 		cufflinksGTF.setGffChrAbs(gffChrAbs);
 	}
-	public void setBamFile(ArrayList<String> lsBamFile) {
-		cufflinksGTF.setBam(lsBamFile);
+	public void setLsBamFile2Prefix(ArrayList<String[]> lsBamFile2Prefix) {
+		cufflinksGTF.setBam(lsBamFile2Prefix);
 	}
 	public void setThreadNum(int threadNum) {
 		cufflinksGTF.setThreadNum(threadNum);
