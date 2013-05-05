@@ -128,11 +128,19 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo>, Runnable {
 			}
 			
 			logger.info("finish reading " + prefix);
+			try {
+				writeToFileCurrent(prefix);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			
-			writeToFileCurrent(prefix);
+		}
+		try {
+			writeToFile();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		
-		writeToFile();
 		done(null);
 		guiSamStatistics.getProcessBar().setValue(guiSamStatistics.getProcessBar().getMaximum());
 		guiSamStatistics.getBtnSave().setEnabled(true);

@@ -151,7 +151,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 				   if (geneType == null || geneType == GeneType.mRNA) {
 					   geneType = GeneType.getGeneType(ss[2]);
 				   }
-				   gffDetailLOC.addsplitlist(mRNAname, geneType);
+				   gffDetailLOC.addsplitlist(mRNAname, gffDetailLOC.getNameSingle(), geneType);
 			   } else {
 				   logger.error("GffHashPlantGeneError: 文件  "+gfffilename+"  在本行可能没有指定的基因ID  " + content);
 			   }

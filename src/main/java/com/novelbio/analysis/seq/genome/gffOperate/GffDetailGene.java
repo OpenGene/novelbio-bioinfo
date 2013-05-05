@@ -121,7 +121,7 @@ public class GffDetailGene extends ListDetailAbs {
 	/** 全体item的名字 */
 	public ArrayList<String > getName() {
 		HashSet<String> setIsoName = new LinkedHashSet<String>();
-		for (String string : this.lsItemName) {
+		for (String string : this.setItemName) {
 			setIsoName.add(string);
 		}
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
@@ -166,7 +166,7 @@ public class GffDetailGene extends ListDetailAbs {
 	 */
 	protected void addExon(int locStart,int locEnd) {
 		if (lsGffGeneIsoInfos.size() == 0) {//如果发现一个没有转录本的，则新添加一个gene设置类型为pseudo
-			addsplitlist(getName().get(0), GeneType.PSEU);
+			addsplitlist(getName().get(0), getName().get(0), GeneType.PSEU);
 		}
 		GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(lsGffGeneIsoInfos.size()-1);//include one special loc start number to end number
 		gffGeneIsoInfo.addExon(locStart, locEnd);
@@ -177,7 +177,7 @@ public class GffDetailGene extends ListDetailAbs {
 	 */
 	protected void addExonNorm(int locStart,int locEnd) {
 		if (lsGffGeneIsoInfos.size() == 0) {//如果发现一个没有转录本的，则新添加一个gene设置类型为pseudo
-			addsplitlist(getName().get(0), GeneType.PSEU);
+			addsplitlist(getName().get(0), getName().get(0), GeneType.PSEU);
 		}
 		GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(lsGffGeneIsoInfos.size()-1);//include one special loc start number to end number
 		gffGeneIsoInfo.addExonNorm(locStart, locEnd);
@@ -222,20 +222,20 @@ public class GffDetailGene extends ListDetailAbs {
 	 * 直接添加转录本，根据genedetail的信息设置cis5to3。之后用addcds()方法给该转录本添加exon
 	 * @return 返回添加的转录本 
 	 */
-	protected GffGeneIsoInfo addsplitlist(String splitName, GeneType geneTpye) {
+	protected GffGeneIsoInfo addsplitlist(String splitName, String geneParentName, GeneType geneTpye) {
 		removeDuplicateIso = false;
 		
-		GffGeneIsoInfo gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso(splitName, this, geneTpye, cis5to3);
+		GffGeneIsoInfo gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso(splitName, geneParentName, this, geneTpye, cis5to3);
 		lsGffGeneIsoInfos.add(gffGeneIsoInfo);
 		return gffGeneIsoInfo;
 	}
 	/**
 	 * 直接添加转录本，之后用addcds()方法给该转录本添加exon
 	 */
-	protected void addsplitlist(String splitName, GeneType geneTpye, boolean cis5to3) {
+	protected void addsplitlist(String splitName, String geneParentName, GeneType geneTpye, boolean cis5to3) {
 		removeDuplicateIso = false;
 		
-		GffGeneIsoInfo gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso(splitName, this, geneTpye, cis5to3);
+		GffGeneIsoInfo gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso(splitName, geneParentName, this, geneTpye, cis5to3);
 		lsGffGeneIsoInfos.add(gffGeneIsoInfo);
 	}
 	/**
@@ -252,6 +252,13 @@ public class GffDetailGene extends ListDetailAbs {
 		if (cis5to3 == null) {
 			return getLongestSplitMrna().isCis5to3();
 		}
+		return this.cis5to3;
+	}
+	/**
+	 * 转录方向
+	 * 如果为null，说明本基因中的iso方向有不相同的
+	 */
+	public Boolean isCis5to3Real() {
 		return this.cis5to3;
 	}
     /**
@@ -457,12 +464,7 @@ public class GffDetailGene extends ListDetailAbs {
 	 * @param gffDetailGene
 	 */
 	public void addIsoSimple(GffDetailGene gffDetailGene) {
-		for (String geneName : gffDetailGene.getName()) {
-			if (lsItemName.contains(geneName)) {
-				continue;
-			}
-			lsItemName.add(geneName);
-		}
+		setItemName.addAll(gffDetailGene.getName());
 		for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 			addIso(gffGeneIsoInfo);
 		}
@@ -754,28 +756,21 @@ public class GffDetailGene extends ListDetailAbs {
 //	
 	/**
 	 * 将本基因输出为gtf文件，就这个基因的几行
-	 * 基因名为getNameSingle()
-	 * @param title
-	 * @return
-	 */
-	public String toGTFformate(String title) {
-		return toGTFformate(getNameSingle(), title);
-	}
-	/**
-	 * 将本基因输出为gtf文件，就这个基因的几行
 	 * @param geneID 自定义基因名字
 	 * @param title
 	 * @return
 	 */
-	public String toGTFformate(String geneID, String title) {
+	public String toGTFformate(String title) {
 		String geneGTF = "";
 		for (GffGeneIsoInfo gffGeneIsoInfo : getLsCodSplit()) {
 			gffGeneIsoInfo.sort();
-			geneGTF = geneGTF + gffGeneIsoInfo.getGTFformat(geneID, title);
+			geneGTF = geneGTF + gffGeneIsoInfo.getGTFformat(title);
 		}
 		return geneGTF;
 	}
 
+	
+	//TODO 待修正
 	/**
 	 * 返回gff格式的信息
 	 * @param title 公司名等信息
@@ -792,6 +787,7 @@ public class GffDetailGene extends ListDetailAbs {
 		String geneGFF = getRefID() + "\t" +title + "\tgene\t" + getStartAbs()+ "\t" + getEndAbs()
         + "\t"+"."+"\t" +strand+"\t.\t"+ "ID=" + getNameSingle()
         +";Name=" + getNameSingle() + ";Name=" + getNameSingle() + " " + TxtReadandWrite.ENTER_LINUX;
+		//TODO 这里的getLsCodSplit 以后要改成获得不同的分组，这样可以将相同来源的iso放在一组
 		for (GffGeneIsoInfo gffGeneIsoInfo : getLsCodSplit()) {
 			String strandmRNA = "+";
 			if (!gffGeneIsoInfo.isCis5to3()) {
@@ -799,9 +795,9 @@ public class GffDetailGene extends ListDetailAbs {
 			}
 			geneGFF = geneGFF + getRefID() + "\t" +title + "\tmRNA\t" +gffGeneIsoInfo.getStartAbs()+ "\t" + gffGeneIsoInfo.getEndAbs()
 	        + "\t"+"."+"\t" +strandmRNA+"\t.\t"+ "ID=" + gffGeneIsoInfo.getName() 
-	        +";Name="+gffGeneIsoInfo.getName()+ ";Parent="+ getNameSingle() + " " + TxtReadandWrite.ENTER_LINUX;
+	        +";Name="+gffGeneIsoInfo.getName()+ ";Parent="+ gffGeneIsoInfo.getParentGeneName() + " " + TxtReadandWrite.ENTER_LINUX;
 			gffGeneIsoInfo.sort();
-			geneGFF = geneGFF + gffGeneIsoInfo.getGFFformat(getNameSingle(), title);
+			geneGFF = geneGFF + gffGeneIsoInfo.getGFFformat(title);
 		}
 		return geneGFF;
 	}
@@ -860,7 +856,22 @@ public class GffDetailGene extends ListDetailAbs {
 		result.lsGffGeneIsoInfos = (ArrayList<GffGeneIsoInfo>) lsGffGeneIsoInfos.clone();
 		return result;
 	}
-	
+	/**
+	 * 深度clone，lsGffGeneIsoInfos中的iso也被克隆了。
+	 * 但是每个iso没有被clone
+	 */
+	public GffDetailGene cloneDeep() {
+		GffDetailGene result = null;
+		result = (GffDetailGene) super.clone();
+		result.taxID = taxID;
+		result.lsGffGeneIsoInfos = new ArrayList<GffGeneIsoInfo>();
+		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
+			GffGeneIsoInfo gffGeneIsoInfo2 = gffGeneIsoInfo.clone();
+			gffGeneIsoInfo2.gffDetailGeneParent = result;
+			result.lsGffGeneIsoInfos.add(gffGeneIsoInfo2);
+		}
+		return result;
+	}
 	public static enum GeneStructure {
 		All("All"), ALLLENGTH("AllLength"),
 		INTRON("Intron"), CDS("CDS"), EXON("Exon"), UTR5("5-UTR"), UTR3("3-UTR"), 

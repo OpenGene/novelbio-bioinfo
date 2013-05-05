@@ -100,10 +100,10 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 				// 将本基因(转录本)的ID装入locString中
 				lastGffdetailUCSCgene.addItemName(geneInfo[0]);
 				if (Math.abs(Integer.parseInt(geneInfo[5]) - Integer.parseInt(geneInfo[6])) <= 2) {
-					lastGffdetailUCSCgene.addsplitlist(geneInfo[0], GeneType.miRNA, geneInfo[2].equals("+"));
+					lastGffdetailUCSCgene.addsplitlist(geneInfo[0], geneInfo[0], GeneType.miRNA, geneInfo[2].equals("+"));
 				}
 				else {
-					lastGffdetailUCSCgene.addsplitlist(geneInfo[0], GeneType.mRNA, geneInfo[2].equals("+"));
+					lastGffdetailUCSCgene.addsplitlist(geneInfo[0], geneInfo[0], GeneType.mRNA, geneInfo[2].equals("+"));
 				}
 				// 添加一个转录本，然后将相应信息:
 				// 第一项是该转录本的Coding region start，第二项是该转录本的Coding region
@@ -123,10 +123,10 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 			gffDetailUCSCgene.setStartAbs(geneStart);
 			gffDetailUCSCgene.setEndAbs(geneEnd);
 			if (Math.abs(Integer.parseInt(geneInfo[5]) - Integer.parseInt(geneInfo[6])) <= 1) {
-				gffDetailUCSCgene.addsplitlist(geneInfo[0], GeneType.miRNA);
+				gffDetailUCSCgene.addsplitlist(geneInfo[0], geneInfo[0], GeneType.miRNA);
 			}
 			else {
-				gffDetailUCSCgene.addsplitlist(geneInfo[0], GeneType.mRNA);
+				gffDetailUCSCgene.addsplitlist(geneInfo[0], geneInfo[0], GeneType.mRNA);
 			}
 			// 添加一个转录本，然后将相应信息:
 			// 第一项是该转录本的Coding region start，第二项是该转录本的Coding region

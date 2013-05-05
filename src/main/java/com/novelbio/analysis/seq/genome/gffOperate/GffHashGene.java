@@ -206,6 +206,10 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	public void writeToGTF(String GTFfile, String title) {
 		gffHashGene.writeToGTF(GTFfile, title);
 	}
+	
+	/**
+	 * 该方法待修正
+	 */
 	@Override
 	public void writeToGFFIsoMoreThanOne(String GTFfile, String title) {
 		gffHashGene.writeToGFFIsoMoreThanOne(GTFfile, title);

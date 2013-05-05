@@ -1,6 +1,5 @@
 package com.novelbio.analysis.seq.mapping;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,7 +50,7 @@ public class MapTophat implements MapRNA{
 	int intronLenMax = 500000;
 	/** 序列中包含的全部indel长度，默认为3 */
 	int indelLen = 15;
-	int mismatch = 8;
+	int mismatch = 3;
 	
 	int threadNum = 4;
 	

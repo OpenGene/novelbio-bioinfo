@@ -1,27 +1,20 @@
 package com.novelbio.analysis.seq.genome.gffOperate;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-
-import org.apache.commons.math.stat.descriptive.moment.ThirdMoment;
 import org.apache.log4j.Logger;
 
-import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
 import com.novelbio.database.model.modgeneid.GeneType;
 
-public class GffGeneIsoTrans extends GffGeneIsoInfo{
+public class GffGeneIsoTrans extends GffGeneIsoInfo {
 	private static final long serialVersionUID = -3187469258704218874L;
 	
 	private static final Logger logger = Logger.getLogger(GffGeneIsoTrans.class);
 	
-	public GffGeneIsoTrans(String IsoName, GeneType geneType) {
-		super(IsoName, geneType);
+	public GffGeneIsoTrans(String IsoName, String geneParentName, GeneType geneType) {
+		super(IsoName, geneParentName, geneType);
 		super.setCis5to3(false);
 	}
-	public GffGeneIsoTrans(String IsoName, GffDetailGene gffDetailGene, GeneType geneType) {
-		super(IsoName, gffDetailGene, geneType);
+	public GffGeneIsoTrans(String IsoName, String geneParentName, GffDetailGene gffDetailGene, GeneType geneType) {
+		super(IsoName, geneParentName, gffDetailGene, geneType);
 		super.setCis5to3(false);
 	}
 	@Override
@@ -37,17 +30,17 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo{
 	}
 
 	@Override
-	protected String getGTFformatExon(String geneID, String title, String strand) {
+	protected String getGTFformatExon(String title, String strand) {
 		String geneExon = "";
 		for (int i = size() - 1; i >= 0; i--) {
 			ExonInfo exons = get(i);
 			geneExon = geneExon + getRefID() + "\t" + title + "\texon\t" + exons.getEndCis() + "\t" + exons.getStartCis()
-			     + "\t" + "." + "\t" + strand + "\t.\t" + "gene_id \"" + geneID + "\"; transcript_id " + "\"" + getName() + "\"; \r\n";
+			     + "\t" + "." + "\t" + strand + "\t.\t" + "gene_id \"" + getParentGeneName() + "\"; transcript_id " + "\"" + getName() + "\"; \r\n";
 		}
 		return geneExon;
 	}
 	@Override
-	protected String getGFFformatExonMISO(String geneID, String title, String strand) {
+	protected String getGFFformatExonMISO(String title, String strand) {
 		String geneExon = "";
 		for (int i = 0;  i < size(); i++) {
 			ExonInfo exons = get(i);

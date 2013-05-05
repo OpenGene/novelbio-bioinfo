@@ -56,7 +56,8 @@ public interface GffHashGeneInf  {
 
 	void writeToGTF(String GTFfile, String title);
 	/**
-	 * 将一个染色体中的 含有不止一个转录本的 基因信息写入文本，按照GTF格式
+	 * <b>该方法待修正</b>
+	 * 将一个染色体中的 含有不止一个转录本的 基因信息写入文本，按照GFF格式
 	 * 也就是说，仅含有一个转录本的基因就不写入文本了
 	 * @param txtWrite
 	 * @param lsGffDetailGenes

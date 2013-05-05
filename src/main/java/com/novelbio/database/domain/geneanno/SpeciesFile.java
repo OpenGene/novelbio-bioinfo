@@ -1,11 +1,13 @@
 package com.novelbio.database.domain.geneanno;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 import org.springframework.data.annotation.Id;
@@ -151,7 +153,22 @@ public class SpeciesFile {
 	 * @return GffFile
 	 */
 	public Map<String, String> getMapGffDB() {
-		Map<String, String> mapStringDB = new LinkedHashMap<String, String>();
+		Map<String, String> mapStringDB = new TreeMap<String, String>(new Comparator<String>() {
+			@Override
+			public int compare(String o1, String o2) {
+				if (o1.equalsIgnoreCase("ucsc")) {
+					return 1;
+				} else if (o2.equalsIgnoreCase("ucsc")) {
+					return -1;
+				} else if (o1.equalsIgnoreCase("ncbi") && !o2.equalsIgnoreCase("ucsc")) {
+					return 1;
+				} else if (!o1.equalsIgnoreCase("ucsc") && o2.equalsIgnoreCase("ncbi")) {
+					return -1;
+				}
+				return o1.compareTo(o2);
+			}
+		});
+		
 		if (mapGffDBLowCase2DBNormal.size() == 0) {
 			return mapStringDB;
 		}

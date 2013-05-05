@@ -2,12 +2,13 @@ package com.novelbio.analysis.seq.rnaseq;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
-import com.hg.data.a;
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
@@ -28,7 +29,6 @@ import com.novelbio.generalConf.TitleFormatNBC;
  * @author zong0jie
  */
 public class RPKMcomput implements AlignmentRecorder {
-	
 	/** 默认不考虑方向 */
 	boolean considerStrand = false;
 	
@@ -75,12 +75,15 @@ public class RPKMcomput implements AlignmentRecorder {
 	private void initial() {
 		ArrayList<GffDetailGene> lsGffDetailGene = gffHashGene.getGffDetailAll();
 		for (GffDetailGene gffDetailGene : lsGffDetailGene) {
-			mapGeneName2Length.put(gffDetailGene.getNameSingle(), gffDetailGene.getLongestSplitMrna().getLenExon(0));
-			mapGeneName2Type.put(gffDetailGene.getNameSingle(), gffDetailGene.getGeneType());
-//			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-//				mapGeneName2Length.put(gffGeneIsoInfo.getName(), gffGeneIsoInfo.getLenExon(0));
-//				mapGeneName2Type.put(gffGeneIsoInfo.getName(), gffDetailGene.getGeneType());
-//			}
+			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+				String geneName = gffGeneIsoInfo.getParentGeneName();
+				int isoLength = gffGeneIsoInfo.getLenExon(0);
+				//获得一个基因中最长转录本的名字
+				if (!mapGeneName2Length.containsKey(geneName) || mapGeneName2Length.get(geneName) < isoLength) {
+					mapGeneName2Length.put(geneName, isoLength);
+					mapGeneName2Type.put(geneName, gffGeneIsoInfo.getGeneType());
+				}
+			}
 		}
 	}
 	
@@ -102,22 +105,24 @@ public class RPKMcomput implements AlignmentRecorder {
 	@Override
 	public void addAlignRecord(AlignRecord alignRecord) {
 		boolean cis5to3 = alignRecord.isCis5to3();
-		
+		//TODO 待改进，如何能够更好的区分iso的表达
 		List<Align> lsAligns = alignRecord.getAlignmentBlocks();
+		Set<String> setGeneName = new HashSet<String>(); 
 		for (Align align : lsAligns) {
 			GffCodGene gffCodGene = gffHashGene.searchLocation(align.getRefID(), align.getMidSite());
 			if (gffCodGene == null) {
 				continue;
 			}
-			String geneName = getName(cis5to3, gffCodGene);
-			//找到后就可以跳出了，因为一条reads只要找到1个位置即可
-			if (geneName != null) {
-				addInMapGeneName2Cond2ReadsCounts(geneName, alignRecord.getMappedReadsWeight());
-				//只有当reads落在exon上才会计入总reads数
-				currentReadsNum += (double)1/alignRecord.getMappedReadsWeight();
-				break;
-			}
+			setGeneName.addAll(getSetGeneName(cis5to3, gffCodGene));
 		}
+		if (setGeneName.size() == 0) {
+			return;
+		}
+		for (String geneName : setGeneName) {
+			//同时要考虑mapping至多个位置，以及两个不同的gene Overlap
+			addInMapGeneName2Cond2ReadsCounts(geneName, alignRecord.getMappedReadsWeight()*setGeneName.size());
+		}
+		currentReadsNum += (double)1/alignRecord.getMappedReadsWeight();
 	}
 	
 	/**
@@ -127,45 +132,23 @@ public class RPKMcomput implements AlignmentRecorder {
 	 * @param gffCodGene
 	 * @return
 	 */
-	private String getName(boolean readsCis5to3, GffCodGene gffCodGene) {
+	private Set<String> getSetGeneName(boolean readsCis5to3, GffCodGene gffCodGene) {
 		//判定是否落在exon里面，落在intron里面不算
 		if (!gffCodGene.isInsideLoc()) {
-			return null;
+			return new HashSet<String>();
 		}
 		
 		GffDetailGene gffDetailGene = gffCodGene.getGffDetailThis();
-		boolean isStrandSame2GffDetail = (readsCis5to3 == gffDetailGene.isCis5to3());
-		String resultName = null;
+		Set<String> setGeneName = new HashSet<String>();
 		for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-			if (gffGeneIsoInfo.getCodLoc(gffCodGene.getCoord()) != GffGeneIsoInfo.COD_LOC_EXON) {
-				continue;
-			}
-			
-			if (!considerStrand) {
-				resultName = gffDetailGene.getNameSingle();
-				break;
-			}
-			
-			////TODO 考虑方向的设计还不完善
-			if (readsCis5to3 != gffGeneIsoInfo.isCis5to3()) {
-				continue;
-			}
-			//TODO 考虑方向的时候可能不准，最好能挑选出那种最长的iso
-			//否则如果两个iso有overlap，那么在比对到非overlap区域的时候就会出现偏差
-			//譬如 1------------2
-			//                   3----------------4
-			//第一个reads比对到了2-4之间
-			//第二个reads比对到了3-2之间
-			//这时候就会出现偏差
-			if (isStrandSame2GffDetail) {
-				resultName = gffDetailGene.getNameSingle();
-				break;
-			} else {
-				resultName = gffGeneIsoInfo.getName();
-				break;
+			if (gffGeneIsoInfo.getCodLoc(gffCodGene.getCoord()) == GffGeneIsoInfo.COD_LOC_EXON) {
+				
+				if (!considerStrand || (considerStrand && readsCis5to3 == gffGeneIsoInfo.isCis5to3())) {
+					setGeneName.add(gffGeneIsoInfo.getParentGeneName());
+				}
 			}
 		}
-		return resultName;
+		return setGeneName;
 	}
 	
 	/**

@@ -1,6 +1,5 @@
 package com.novelbio.analysis.seq.genome.gffOperate;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -22,12 +21,7 @@ public class GffHashGTF extends GffHashGeneAbs{
 	String transcript = "transcript";
 
 	HashMap<String, GffGeneIsoInfo> mapID2Iso = new HashMap<String, GffGeneIsoInfo>();
-	
-	/** 记录转录本名字和基因名字的对照表，用于最后将GffDetailGene的名字换为基因名字
-	 * key为小写
-	 */
-	HashMap<String, String> mapIsoName2GeneName = new HashMap<String, String>();
-	
+
 	/**
 	 * 设定参考基因的Gff文件
 	 * @param gffHashRef
@@ -61,7 +55,6 @@ public class GffHashGTF extends GffHashGeneAbs{
 			
 			String[] isoName2GeneName = getIsoName2GeneName(ss[8]);
 			String tmpTranscriptName = isoName2GeneName[0];
-			mapIsoName2GeneName.put(tmpTranscriptName.toLowerCase(), isoName2GeneName[1]);
 			
 			if (ss[2].equals(transcript) 
 				||
@@ -70,7 +63,7 @@ public class GffHashGTF extends GffHashGeneAbs{
 					) 
 			{
 				boolean cis = getLocCis(ss[6], tmpChrID, Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
-				gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso(tmpTranscriptName, GeneType.mRNA, cis);
+				gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso(tmpTranscriptName, isoName2GeneName[1], GeneType.mRNA, cis);
 				mapID2Iso.put(tmpTranscriptName, gffGeneIsoInfo);
 				mapChrID2LsIso.put(tmpChrID, gffGeneIsoInfo);
 				if (ss[2].equals(transcript)) {
@@ -161,10 +154,7 @@ public class GffHashGTF extends GffHashGeneAbs{
 	}
 	
 	private GffDetailGene createGffDetailGene(ListGff lsParent, GffGeneIsoInfo gffGeneIsoInfo) {
-		String geneName = gffGeneIsoInfo.getName();//这里实际上是Iso Name
-		if (mapIsoName2GeneName.containsKey(geneName.toLowerCase())) {
-			geneName = mapIsoName2GeneName.get(geneName.toLowerCase());
-		}
+		String geneName = gffGeneIsoInfo.getParentGeneName();
 		GffDetailGene gffDetailGene = new GffDetailGene(lsParent, geneName, gffGeneIsoInfo.isCis5to3());
 		gffDetailGene.addIso(gffGeneIsoInfo);
 		lsParent.add(gffDetailGene);

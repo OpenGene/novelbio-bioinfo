@@ -100,7 +100,7 @@ public class FastaGetCDSFromProtein {
 		}
 	}
 	private GffGeneIsoInfo getGffGeneIsoInfoWtihOutProtein() {
-		GffGeneIsoInfo gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso(seqFasta.SeqName, GeneType.ncRNA, true);
+		GffGeneIsoInfo gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso(seqFasta.SeqName, seqFasta.SeqName, GeneType.ncRNA, true);
 		gffGeneIsoInfo.add(new ExonInfo(gffGeneIsoInfo, true, 1, seqFasta.Length()));
 		gffGeneIsoInfo.setATGUAGncRNA();
 		return gffGeneIsoInfo;
@@ -151,7 +151,7 @@ public class FastaGetCDSFromProtein {
 		atgSite = atgSite + 1;//修改为从1开始，因为GffGeneIso里面都是从1开始记数的
 		uagSite = scanUagSite(blastSeqFasta.orf, uagSite);
 		
-		GffGeneIsoInfo gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso(seqFasta.SeqName, GeneType.mRNA, blastSeqFasta.cis5to3);
+		GffGeneIsoInfo gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso(seqFasta.SeqName, seqFasta.SeqName, GeneType.mRNA, blastSeqFasta.cis5to3);
 		gffGeneIsoInfo.setATGUAG(atgSite, uagSite);
 		gffGeneIsoInfo.add(new ExonInfo(gffGeneIsoInfo, blastSeqFasta.cis5to3, atgSite, uagSite));
 		return gffGeneIsoInfo;
@@ -285,7 +285,7 @@ public class FastaGetCDSFromProtein {
 		}
 		uagSite = scanUagSite(compareInfo.orf, uagSite);
 		
-		GffGeneIsoInfo gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso(seqFasta.SeqName, GeneType.mRNA, compareInfo.cis5to3);
+		GffGeneIsoInfo gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso(seqFasta.SeqName, seqFasta.SeqName, GeneType.mRNA, compareInfo.cis5to3);
 		gffGeneIsoInfo.setATGUAG(atgSite, uagSite);
 		gffGeneIsoInfo.add(new ExonInfo(gffGeneIsoInfo, compareInfo.cis5to3, 1, seqFasta.Length()));
 		return gffGeneIsoInfo;

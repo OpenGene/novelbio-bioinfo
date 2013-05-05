@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeSet;
 
@@ -24,7 +26,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	String acc2GeneIDfile = "";
 	String gfffile = "";
 	private HashMap<String, String> mapGeneID2AccID = null;
-	HashMap<String, GffGeneIsoInfo> mapName2Iso = new HashMap<String, GffGeneIsoInfo>();
+	private HashMap<String, GffGeneIsoInfo> mapName2Iso = new HashMap<String, GffGeneIsoInfo>();
 	
 	public GffHashGeneAbs() {
 		mapChrID2ListGff = new LinkedHashMap<String, ListGff>();
@@ -198,7 +200,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 			writeAccID2GeneID(txtaccID2GeneID);
 		}
 		mapGeneID2AccID = new HashMap<String, String>();
-		TxtReadandWrite txtAcc2GenID = new TxtReadandWrite(txtaccID2GeneID, false);
+		TxtReadandWrite txtAcc2GenID = new TxtReadandWrite(txtaccID2GeneID);
 		ArrayList<String> lsAccID = txtAcc2GenID.readfileLs();
 		for (String string : lsAccID) {
 			if (string == null || string.trim().equals("")) {
@@ -212,6 +214,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 				mapGeneID2AccID.put(ss[1], ss[0]);
 			}
 		}
+		txtAcc2GenID.close();
 		return mapGeneID2AccID;
 	}
 	/**
@@ -220,8 +223,9 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	 * @param txtAccID2GeneID
 	 */
 	private void writeAccID2GeneID(String txtaccID2GeneID) {
-		TxtReadandWrite txtAccID2GeneID = new TxtReadandWrite(txtaccID2GeneID, true);
+		TxtReadandWrite txtAccID2GeneID = new TxtReadandWrite(txtaccID2GeneID);
 		txtAccID2GeneID.ExcelWrite(getGene2ID());
+		txtAccID2GeneID.close();
 	}
 	/**
 	 * 获得Gene2GeneID在数据库中的信息，并且写入文本，一般不用
@@ -255,7 +259,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		lsGffDetailGenes.add(gffDetailGene);
 	}
 	/**
-	 * 
+	 * <b>可能会出现重复ID，如同一名字的miRNA</b><br>
 	 * 将文件写入GTF中
 	 * @param GTFfile
 	 * @param title 给该GTF起个名字
@@ -276,17 +280,28 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		for (String string : treeSet) {
 			ArrayList<GffDetailGene> lsGffDetailGenes = mapChrID2ListGff.get(string);
 			for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
-				String geneID = gffDetailGene.getNameSingle();
-				String geneIDinput = getNoReplicateName(setGeneName, geneID);
+				
+				//将每个iso的parentGene名字替换成不重复的名字
+				gffDetailGene = gffDetailGene.cloneDeep();
+				Map<String, String> mapGeneName2GeneNameNew = new HashMap<String, String>();
+				for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+					mapGeneName2GeneNameNew.put(gffGeneIsoInfo.getParentGeneName(), gffGeneIsoInfo.getParentGeneName());
+				}
+				for (String geneName : mapGeneName2GeneNameNew.keySet()) {
+					String geneNameNoReplicatet = getNoReplicateName(setGeneName, geneName);
+					mapGeneName2GeneNameNew.put(geneName, geneNameNoReplicatet);
+					setGeneName.add(geneNameNoReplicatet);
+				}
+				//////////////////
 				for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 					String gffIsoName = getNoReplicateName(setTranscriptName, gffGeneIsoInfo.getName());
 					gffGeneIsoInfo.setName(gffIsoName);
+					gffGeneIsoInfo.setParentGeneName(mapGeneName2GeneNameNew.get(gffGeneIsoInfo.getParentGeneName()));
 					setTranscriptName.add(gffIsoName);
 				}
-				setGeneName.add(geneIDinput);
 				
 				gffDetailGene.removeDupliIso();
-				String geneGTF = gffDetailGene.toGTFformate(geneIDinput, title);
+				String geneGTF = gffDetailGene.toGTFformate(title);
 				txtGtf.writefileln(geneGTF.trim());
 			}
 		}

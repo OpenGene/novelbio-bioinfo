@@ -14,6 +14,10 @@ import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 public class CtrlCufflinksTranscriptome {
+	public static void main(String[] args) {
+		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.cufflinks);
+		System.out.println(softWareInfo.getExePath());
+	}
 	boolean reconstructTranscriptome = false;
 	CufflinksGTF cufflinksGTF = new CufflinksGTF();
 	GffHashMerge gffHashMerge = new GffHashMerge();
@@ -54,23 +58,27 @@ public class CtrlCufflinksTranscriptome {
 		if (!reconstructTranscriptome) {
 			return;
 		}
-		String cufGTF = cufflinksGTF.getCufflinksGTFPath();
-		gffHashMerge.setSpecies(gffChrAbs.getSpecies());
-		gffHashMerge.setGffHashGeneRef(gffChrAbs.getGffHashGene());
-		gffHashMerge.addGffHashGene(new GffHashGene(GffType.GTF, cufGTF));
-		GffHashGene gffHashGene = gffHashMerge.getGffHashGeneModifyResult();
-		gffHashGene.removeDuplicateIso();
-		gffHashGene.writeToGTF(outGtf, "novelbio");
-
 		
-		gffHashMerge = new GffHashMerge();
-		gffHashMerge.setSpecies(gffChrAbs.getSpecies());
-		gffHashMerge.setGffHashGeneRef(gffChrAbs.getGffHashGene());
-		gffHashMerge.addGffHashGene(new GffHashGene(GffType.GTF, outGtf));
-
-		TranscriptomStatistics transcriptomStatistics = gffHashMerge.getStatisticsCompareGff();
-		TxtReadandWrite txtOut = new TxtReadandWrite(outStatistics, true);
-
-		txtOut.ExcelWrite(transcriptomStatistics.getStatisticsResult());
+		//TODO 重建转录本需要重做
+		
+		
+//		String cufGTF = cufflinksGTF.getCufflinksGTFPath();
+//		gffHashMerge.setSpecies(gffChrAbs.getSpecies());
+//		gffHashMerge.setGffHashGeneRef(gffChrAbs.getGffHashGene());
+//		gffHashMerge.addGffHashGene(new GffHashGene(GffType.GTF, cufGTF));
+//		GffHashGene gffHashGene = gffHashMerge.getGffHashGeneModifyResult();
+//		gffHashGene.removeDuplicateIso();
+//		gffHashGene.writeToGTF(outGtf, "novelbio");
+//
+//		
+//		gffHashMerge = new GffHashMerge();
+//		gffHashMerge.setSpecies(gffChrAbs.getSpecies());
+//		gffHashMerge.setGffHashGeneRef(gffChrAbs.getGffHashGene());
+//		gffHashMerge.addGffHashGene(new GffHashGene(GffType.GTF, outGtf));
+//
+//		TranscriptomStatistics transcriptomStatistics = gffHashMerge.getStatisticsCompareGff();
+//		TxtReadandWrite txtOut = new TxtReadandWrite(outStatistics, true);
+//
+//		txtOut.ExcelWrite(transcriptomStatistics.getStatisticsResult());
 	}
 }

@@ -79,22 +79,30 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	protected int lengthIso = ListCodAbs.LOC_ORIGINAL;
 
 	GffDetailGene gffDetailGeneParent;
-	
+	/**
+	 * 该名字为实际上的iso所在的基因名字，不一定为其 gffDetailGeneParent 的gene name
+	 * 因为可能会有多个gffDetailGene合并为一个gffDetailGene，这时候直接用gffDetailGeneParent的名字就无法进行区分
+	 */
+	String geneParentName;
 	GeneID geneID;
 	
-	public GffGeneIsoInfo(String IsoName, GeneType geneType) {
+	public GffGeneIsoInfo(String IsoName, String geneParentName, GeneType geneType) {
 		super.listName = IsoName;
 		this.flagTypeGene = geneType;
+		this.geneParentName = geneParentName;
 	}
 	
-	public GffGeneIsoInfo(String IsoName, GffDetailGene gffDetailGene, GeneType geneType) {
+	public GffGeneIsoInfo(String IsoName, String geneParentName, GffDetailGene gffDetailGene, GeneType geneType) {
 		super.listName = IsoName;
 		this.flagTypeGene = geneType;
 		this.gffDetailGeneParent = gffDetailGene;
+		this.geneParentName = geneParentName;
 		setTssRegion(gffDetailGene.getTssRegion()[0], gffDetailGene.getTssRegion()[1]);
 		setTesRegion(gffDetailGene.getTesRegion()[0], gffDetailGene.getTesRegion()[1]);
 	}
-
+	public void setParentGeneName(String geneParentName) {
+		this.geneParentName = geneParentName;
+	}
 	/**
 	 * 返回该基因的类型
 	 * @return
@@ -113,6 +121,14 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	}
 	public GffDetailGene getParentGffDetailGene() {
 		return gffDetailGeneParent;
+	}
+	
+	/**
+	 * 该名字为实际上的iso所在的基因名字，不一定为其 gffDetailGeneParent 的gene name<br>
+	 * 因为可能会有多个gffDetailGene合并为一个gffDetailGene，这时候直接用gffDetailGeneParent的名字就无法进行区分
+	 */
+	public String getParentGeneName() {
+		return geneParentName;
 	}
 	/**
 	 * 跟随gffDetailGene的设定
@@ -780,12 +796,12 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @param title 该GTF文件的名称
 	 * @return
 	 */
-	protected String getGTFformat(String geneID, String title) {
+	protected String getGTFformat(String title) {
 		String strand = "+";
 		if (!isCis5to3()) {
 			strand = "-";
 		}
-		String genetitle = getGTFformatExon(geneID, title,strand);
+		String genetitle = getGTFformatExon(title,strand);
 		return genetitle;
 	}
 	/**
@@ -793,16 +809,16 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @param title 该GTF文件的名称
 	 * @return
 	 */
-	protected String getGFFformat(String geneID, String title) {
+	protected String getGFFformat(String title) {
 		String strand = "+";
 		if (!isCis5to3()) {
 			strand = "-";
 		}
-		String genetitle = getGFFformatExonMISO(geneID, title,strand);
+		String genetitle = getGFFformatExonMISO(title,strand);
 		return genetitle;
 	}
-	protected abstract String getGTFformatExon(String geneID, String title, String strand);
-	protected abstract String getGFFformatExonMISO(String geneID, String title, String strand);
+	protected abstract String getGTFformatExon(String title, String strand);
+	protected abstract String getGFFformatExonMISO(String title, String strand);
 
 	/**
 	 * 可能不是很精确
@@ -1003,6 +1019,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		result = (GffGeneIsoInfo) super.clone();
 		result.ATGsite = ATGsite;
 		result.gffDetailGeneParent = gffDetailGeneParent;
+		result.geneParentName = geneParentName;
 		result.downTes = downTes;
 		result.downTss = downTss;
 		result.flagTypeGene = flagTypeGene;
@@ -1026,21 +1043,21 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return result;
 	}
 	
-	public static GffGeneIsoInfo createGffGeneIso(String isoName, GffDetailGene gffDetailGene, GeneType geneType, boolean cis5to3) {
+	public static GffGeneIsoInfo createGffGeneIso(String isoName, String geneParentName, GffDetailGene gffDetailGene, GeneType geneType, boolean cis5to3) {
 		GffGeneIsoInfo gffGeneIsoInfo = null;
 		if (cis5to3) {
-			gffGeneIsoInfo = new GffGeneIsoCis(isoName, gffDetailGene, geneType);
+			gffGeneIsoInfo = new GffGeneIsoCis(isoName, geneParentName, gffDetailGene, geneType);
 		} else {
-			gffGeneIsoInfo = new GffGeneIsoTrans(isoName, gffDetailGene, geneType);
+			gffGeneIsoInfo = new GffGeneIsoTrans(isoName, geneParentName, gffDetailGene, geneType);
 		}
 		return gffGeneIsoInfo;
 	}
-	public static GffGeneIsoInfo createGffGeneIso(String isoName, GeneType geneType, boolean cis5to3) {
+	public static GffGeneIsoInfo createGffGeneIso(String isoName, String geneParentName, GeneType geneType, boolean cis5to3) {
 		GffGeneIsoInfo gffGeneIsoInfo = null;
 		if (cis5to3) {
-			gffGeneIsoInfo = new GffGeneIsoCis(isoName, geneType);
+			gffGeneIsoInfo = new GffGeneIsoCis(isoName, geneParentName, geneType);
 		} else {
-			gffGeneIsoInfo = new GffGeneIsoTrans(isoName, geneType);
+			gffGeneIsoInfo = new GffGeneIsoTrans(isoName, geneParentName, geneType);
 		}
 		return gffGeneIsoInfo;
 	}

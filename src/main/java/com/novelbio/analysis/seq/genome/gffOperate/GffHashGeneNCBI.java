@@ -277,7 +277,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		   if (geneType == null) {
 			   geneType = GeneType.getGeneType(mRNAname[1]);
 		   }
-		   GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.addsplitlist(mRNAname[0], geneType);//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
+		   GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.addsplitlist(mRNAname[0],gffDetailGene.getNameSingle(), geneType);//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
 		   mapRnaID2LsIso.put(rnaID, gffGeneIsoInfo);
 		   ExonInfo exonInfo = new ExonInfo("", true, Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
 		   mapRnaID2LsIsoLocInfo.put(rnaID, exonInfo);
@@ -512,8 +512,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   if (lsGffGeneIsoInfo.size() == 0) {
 		   mapRnaID2GeneID.put(rnaID, rnaID);
 		   GffDetailGene gffDetailGene = getGffDetailGenID(rnaID);
-		   GffGeneIsoInfo gffGeneIsoInfo = null;
-		   gffGeneIsoInfo = gffDetailGene.addsplitlist(gffDetailGene.getNameSingle(), geneType);
+		   GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.addsplitlist(gffDetailGene.getNameSingle(), gffDetailGene.getNameSingle(), geneType);
 		
 		   mapRnaID2LsIso.put(rnaID, gffGeneIsoInfo);
 		   lsGffGeneIsoInfo = mapRnaID2LsIso.get(rnaID);
@@ -546,7 +545,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 			   mapChrID2ListGff.put(gffDetailGene.getRefID().toLowerCase(), LOCList);
 		   }
 		   if (gffDetailGene.getLsCodSplit().size() == 0) {
-			   gffDetailGene.addsplitlist(gffDetailGene.getNameSingle(), GeneType.ncRNA);
+			   gffDetailGene.addsplitlist(gffDetailGene.getNameSingle(), gffDetailGene.getNameSingle(), GeneType.ncRNA);
 			   gffDetailGene.addExon(gffDetailGene.getStartAbs(), gffDetailGene.getEndAbs());
 		   }
 		   for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {

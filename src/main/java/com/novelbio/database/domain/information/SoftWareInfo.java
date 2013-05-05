@@ -166,6 +166,9 @@ public class SoftWareInfo {
 	
 	/** 将数据库搜索到的信息全部拷贝至本类 */
 	private void copyInfo(SoftWareInfo softWareInfo) {
+		if (softWareInfo == null) {
+			return;
+		}
 		this.softName = softWareInfo.softName;
 		this.descrip = softWareInfo.descrip;
 		this.installPath = softWareInfo.installPath;
