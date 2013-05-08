@@ -118,6 +118,10 @@ public abstract class GOInfoAbs {
 		return lsResult;
 	}
 	
+	/**
+	 * 不需要设定 aGene2GoIn 的geneUniID
+	 * @param aGene2GoIn
+	 */
 	public void addGene2GO(AGene2Go aGene2GoIn) {
 		if (aGene2GoIn.getGOID() == null || aGene2GoIn.getGOID().equals("")) {
 			return;

@@ -1,11 +1,14 @@
 package com.novelbio.database.domain.geneanno;
 
-import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "geneinfo")
+@CompoundIndexes({
+    @CompoundIndex(unique = true, name = "gene_tax_idx", def = "{'geneID': 1, 'taxID': -1}"),
+ })
 public class GeneInfo extends AGeneInfo {
-	@Indexed(unique = true)
 	private long geneID;
 	
 	public long getGeneID() {

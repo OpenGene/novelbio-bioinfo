@@ -71,6 +71,7 @@ public class ManageGeneInfo {
 				try {
 					repoGeneInfo.save(geneInfoNew);
 				} catch (Exception e) {
+					System.out.println();
 					e.printStackTrace();
 					return false;
 				}

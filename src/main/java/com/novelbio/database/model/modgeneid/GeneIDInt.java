@@ -168,7 +168,8 @@ GO_REF:0000004<br>
 	/**
 	 * 依次输入需要升级的GO信息，最后升级<br>
 	 * 这里只是先获取GO的信息，最后调用升级method的时候再升级<br>
-	 * 可以连续不断的添加
+	 * 可以连续不断的添加<br>
+	 * <b>不需要设定genUniID</b>
 	 */
 	void addUpdateGO(AGene2Go aGene2Go);
 

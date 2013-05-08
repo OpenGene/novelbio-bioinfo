@@ -95,7 +95,7 @@ public class CtrlMapReads implements RunGetInfo<MapReadsAbs.MapReadsProcessInfo>
 		guiRunningBarAbs.getBtnSave().setEnabled(false);
 		guiRunningBarAbs.getBtnOpen().setEnabled(false);
 		guiRunningBarAbs.getProcessBar().setMinimum(0);
-		guiRunningBarAbs.getProcessBar().setMaximum((int) (FileOperate.getFileSizeLong(bedFileName)/1000000));
+		guiRunningBarAbs.getProcessBar().setMaximum((int) (FileOperate.getFileSize(bedFileName)/1000000));
 		guiRunningBarAbs.getProcessBar().setValue(0);
 		
 		mapReads.setRunGetInfo(this);

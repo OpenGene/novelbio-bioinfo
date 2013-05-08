@@ -5,7 +5,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 
 public class BamPileup {
 
-//	samtools mpileup -EB  -C 50 -f $chrmFa -Q 13 $bamFile > $out
+//	samtools mpileup -EB  -C50 -f $chrmFa -Q 13 $bamFile > $out
 	
 	String ExePath = "";
 	String bamFile;
@@ -48,12 +48,14 @@ public class BamPileup {
 	public String pileup(String outFile) {
 		String cmd = "";
 		if (outFile.toLowerCase().endsWith("gz")) {
-			cmd = ExePath + "samtools mpileup -E -C50 " + getIsRealign() + getMapQuality() + getReferenceFile() + "\"" + bamFile + "\"" + " | gzip > " + "\"" + outFile + "\"";
+			cmd = ExePath + "samtools mpileup -E -C50 " + getIsRealign() + getMapQuality() + getReferenceFile()
+					+ CmdOperate.addQuot(bamFile) + " | gzip > " + CmdOperate.addQuot(outFile);
 		}
 		else {
-			cmd = ExePath + "samtools mpileup -E -C50 " + getIsRealign() + getMapQuality() + getReferenceFile() + "\"" + bamFile + "\"" + " > " + "\"" + outFile + "\"";
+			cmd = ExePath + "samtools mpileup -E -C50 " + getIsRealign() + getMapQuality() + getReferenceFile()
+					+ CmdOperate.addQuot(bamFile) + " > " + CmdOperate.addQuot(outFile);
 		}
-		CmdOperate cmdOperate = new CmdOperate(cmd,"samToBam");
+		CmdOperate cmdOperate = new CmdOperate(cmd,"BamPileUp");
 		cmdOperate.run();
 		return bamFile;
 	}

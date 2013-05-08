@@ -1,17 +1,25 @@
 package com.novelbio.nbcgui.GUI;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
 import javax.swing.ButtonGroup;
-import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JTextField;
+import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JRadioButton;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
+import javax.swing.JTextPane;
+import javax.swing.UIManager;
+
+import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
-import com.novelbio.analysis.seq.resequencing.SnpAnnotation;
-import com.novelbio.analysis.seq.resequencing.SnpGroupFilterInfo;
 import com.novelbio.analysis.seq.resequencing.SnpLevel;
 import com.novelbio.analysis.seq.sam.BcfTools;
 import com.novelbio.analysis.seq.sam.SamFile;
@@ -23,16 +31,6 @@ import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.controlseq.CtrlSnpAnnotation;
 import com.novelbio.nbcgui.controlseq.CtrlSnpCalling;
 import com.novelbio.nbcgui.controlseq.CtrlSnpGetInfo;
-
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import javax.swing.JSpinner;
-import javax.swing.JRadioButton;
-import javax.swing.JTextPane;
-import javax.swing.UIManager;
-
-import org.apache.log4j.Logger;
 
 /** snpCalling的界面 */
 public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
@@ -157,21 +155,21 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		btnRun.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				progressBar.setValue(progressBar.getMinimum());
-				if (rdbtnSnpcalling.isSelected()) {
-					if (rdbtnGatkBamfile.isSelected()) {
-						runSnpCallingGATK();
-					} else if (rdbtnSamtoolsPileup.isSelected()) {
-						runSnpCallingSamtools();
-					} else if (rdbtnNbcmethodPileupfile.isSelected()) {
-						runSnpCallingNBC();
-					}
-				}
-				else if (rdbtnGetSnpDetail.isSelected()) {
-					runSnpGetInfo();
-				}
-				else if (rdbtnSnpAnnotation.isSelected()) {
-					runSnpAnnotation();
-				}
+				runSnpCallingSamtools();
+				
+//				if (rdbtnSnpcalling.isSelected()) {
+//					if (rdbtnGatkBamfile.isSelected()) {
+//						runSnpCallingGATK();
+//					} else if (rdbtnSamtoolsPileup.isSelected()) {
+//						runSnpCallingSamtools();
+//					} else if (rdbtnNbcmethodPileupfile.isSelected()) {
+//						runSnpCallingNBC();
+//					}
+//				} else if (rdbtnGetSnpDetail.isSelected()) {
+//					runSnpGetInfo();
+//				} else if (rdbtnSnpAnnotation.isSelected()) {
+//					runSnpAnnotation();
+//				}
 			}
 		});
 		btnRun.setBounds(793, 501, 118, 24);
@@ -309,35 +307,37 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		guiLayeredPaneSpeciesVersionGff.setBounds(551, 170, 220, 122);
 		add(guiLayeredPaneSpeciesVersionGff);
 		
-		rdbtnSamtoolsPileup = new JRadioButton("Samtools PileUpFile");
-		rdbtnSamtoolsPileup.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				sclInputFile.setTitle(new String[]{"Input PileUp File","Output Snp File"});
-				guiLayeredPaneSpeciesVersionGff.setVisible(false);
-			}
-		});
-		rdbtnSamtoolsPileup.setBounds(13, 198, 165, 22);
-		add(rdbtnSamtoolsPileup);
 		
-		rdbtnGatkBamfile = new JRadioButton("GATK BamFile");
-		rdbtnGatkBamfile.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				sclInputFile.setTitle(new String[]{"Input Bam File","Output Snp File"});
-				guiLayeredPaneSpeciesVersionGff.setVisible(true);
-			}
-		});
-		rdbtnGatkBamfile.setBounds(14, 174, 151, 22);
-		add(rdbtnGatkBamfile);
+		//TODO
+//		rdbtnSamtoolsPileup = new JRadioButton("Samtools PileUpFile");
+//		rdbtnSamtoolsPileup.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				sclInputFile.setTitle(new String[]{"Input PileUp File","Output Snp File"});
+//				guiLayeredPaneSpeciesVersionGff.setVisible(false);
+//			}
+//		});
+//		rdbtnSamtoolsPileup.setBounds(13, 198, 165, 22);
+//		add(rdbtnSamtoolsPileup);
 		
-		rdbtnNbcmethodPileupfile = new JRadioButton("NBCtools PileupFile");
-		rdbtnNbcmethodPileupfile.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				sclInputFile.setTitle(new String[]{"Input PileUp File","Output Snp File"});
-				guiLayeredPaneSpeciesVersionGff.setVisible(false);
-			}
-		});
-		rdbtnNbcmethodPileupfile.setBounds(13, 223, 164, 22);
-		add(rdbtnNbcmethodPileupfile);
+//		rdbtnGatkBamfile = new JRadioButton("GATK BamFile");
+//		rdbtnGatkBamfile.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				sclInputFile.setTitle(new String[]{"Input Bam File","Output Snp File"});
+//				guiLayeredPaneSpeciesVersionGff.setVisible(true);
+//			}
+//		});
+//		rdbtnGatkBamfile.setBounds(14, 174, 151, 22);
+//		add(rdbtnGatkBamfile);
+		
+//		rdbtnNbcmethodPileupfile = new JRadioButton("NBCtools PileupFile");
+//		rdbtnNbcmethodPileupfile.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				sclInputFile.setTitle(new String[]{"Input PileUp File","Output Snp File"});
+//				guiLayeredPaneSpeciesVersionGff.setVisible(false);
+//			}
+//		});
+//		rdbtnNbcmethodPileupfile.setBounds(13, 223, 164, 22);
+//		add(rdbtnNbcmethodPileupfile);
 		
 		txtRefOrGTF = new JTextField();
 		txtRefOrGTF.setBounds(100, 271, 349, 18);
@@ -365,7 +365,7 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		
 		sclSnpFile.setTitle(new String[]{"Input Snp File"});
 		
-		rdbtnGatkBamfile.setSelected(true);
+//		rdbtnGatkBamfile.setSelected(true);
 		setSnpCalling();
 		
 		buttonRadioSnpCalling.add(rdbtnSamtoolsPileup);
@@ -379,9 +379,9 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		combSnpLevel.setEnabled(true);
 		txtHetoMoreSnpProp.setEnabled(true);
 		txtHetoSnpProp.setEnabled(true);
-		rdbtnGatkBamfile.setEnabled(true);
-		rdbtnSamtoolsPileup.setEnabled(true);
-		rdbtnNbcmethodPileupfile.setEnabled(true);
+//		rdbtnGatkBamfile.setEnabled(true);
+//		rdbtnSamtoolsPileup.setEnabled(true);
+//		rdbtnNbcmethodPileupfile.setEnabled(true);
 		
 		sclSnpFile.setEnabled(false);
 		spinColChrID.setEnabled(false);
@@ -398,13 +398,16 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		btnAddPileupFile.setEnabled(true);
 		btnDeletePileupFile.setEnabled(true);
 		
-		if (rdbtnGatkBamfile.isSelected()) {
-			guiLayeredPaneSpeciesVersionGff.setVisible(true);
-			sclInputFile.setTitle(new String[]{"Input Bam File","Output Snp File"});
-		} else {
-			guiLayeredPaneSpeciesVersionGff.setVisible(false);
-			sclInputFile.setTitle(new String[]{"Input PileUp File","Output Snp File"});
-		}
+		//TODO
+		guiLayeredPaneSpeciesVersionGff.setVisible(false);
+		sclInputFile.setTitle(new String[]{"Input PileUp File","Output Snp File"});
+//		if (rdbtnGatkBamfile.isSelected()) {
+//			guiLayeredPaneSpeciesVersionGff.setVisible(true);
+//			sclInputFile.setTitle(new String[]{"Input Bam File","Output Snp File"});
+//		} else {
+//			guiLayeredPaneSpeciesVersionGff.setVisible(false);
+//			sclInputFile.setTitle(new String[]{"Input PileUp File","Output Snp File"});
+//		}
 		lblRefGFF.setText("RefSeq");
 	}
 	
@@ -414,9 +417,9 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		combSnpLevel.setEnabled(false);
 		txtHetoMoreSnpProp.setEnabled(false);
 		txtHetoSnpProp.setEnabled(false);
-		rdbtnGatkBamfile.setEnabled(false);
-		rdbtnSamtoolsPileup.setEnabled(false);
-		rdbtnNbcmethodPileupfile.setEnabled(false);
+//		rdbtnGatkBamfile.setEnabled(false);
+//		rdbtnSamtoolsPileup.setEnabled(false);
+//		rdbtnNbcmethodPileupfile.setEnabled(false);
 		
 		sclSnpFile.setEnabled(true);
 		sclSnpFile.setTitle(new String[]{"Input Snp File"});
@@ -440,9 +443,9 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		sclInputFile.setEnabled(false);
 		btnAddPileupFile.setEnabled(false);
 		btnDeletePileupFile.setEnabled(false);
-		rdbtnGatkBamfile.setEnabled(false);
-		rdbtnSamtoolsPileup.setEnabled(false);
-		rdbtnNbcmethodPileupfile.setEnabled(false);
+//		rdbtnGatkBamfile.setEnabled(false);
+//		rdbtnSamtoolsPileup.setEnabled(false);
+//		rdbtnNbcmethodPileupfile.setEnabled(false);
 		
 		combSnpLevel.setEnabled(false);
 		txtHetoMoreSnpProp.setEnabled(false);

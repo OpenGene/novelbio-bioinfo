@@ -4,8 +4,8 @@ import java.awt.Image;
 import java.awt.Toolkit;
 
 import javax.swing.JTabbedPane;
-import javax.swing.WindowConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
 
 /**
 * This code was edited or generated using CloudGarden's Jigloo
@@ -65,7 +65,7 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				GUIanalysisForm inst = new GUIanalysisForm();
 				inst.setLocationRelativeTo(null);
 				inst.setVisible(true);
-				inst.setTitle("NovelBio Data Analysis Platform");
+				inst.setTitle("Maize Genomic Analysis Platform");
 				Image im = Toolkit.getDefaultToolkit().getImage("/media/winE/NBC/advertise/宣传/LOGO/favicon.png");
 				inst.setIconImage(im);
 				inst.setResizable(false); 
@@ -75,6 +75,20 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 	
 	public GUIanalysisForm() {
 		super();
+//		String file = "/lib/firmware/tigon/property";
+//		if (!FileOperate.isFileExist(file)) {
+//			System.out.println("no");
+//			return;
+//		}
+//		System.out.println("ok");
+//		TxtReadandWrite txtRead = new TxtReadandWrite(file);
+//		for (String string : txtRead.readlines(3)) {
+//			if (string.equals("201301jndsfiudsioold")) {
+//				break;
+//			} else {
+//				return;
+//			}
+//		}
 		initGUI();
 	}
 	

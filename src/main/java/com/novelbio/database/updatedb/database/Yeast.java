@@ -1,10 +1,18 @@
 package com.novelbio.database.updatedb.database;
 
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.DBAccIDSource;
+import com.novelbio.database.domain.geneanno.AgeneUniID;
 import com.novelbio.database.domain.geneanno.Gene2Go;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.model.modgeneid.GeneID;
 
+/**
+ * 酿酒酵母的网址：
+ * http://www.yeastgenome.org/download-data/curation
+ * @author zong0jie
+ *
+ */
 public class Yeast {
 	String yeastDBxrefFile = "";
 	String SGD_featuresFile = "";
@@ -32,34 +40,34 @@ public class Yeast {
 	}
 	
 	public void update() {
-		YeastDBxref yeastDBxref = new YeastDBxref();
-		yeastDBxref.setTaxID(4932);
-		String outyeastDBxrefFile = FileOperate.changeFileSuffix(yeastDBxrefFile, "out", null);
-		yeastDBxref.setTxtWriteExcep(outyeastDBxrefFile);
-		yeastDBxref.setUpdateIntoUniID(false);
-//		yeastDBxref.updateFile(yeastDBxrefFile, false);
-		yeastDBxref.setUpdateIntoUniID(true);
-//		yeastDBxref.updateFile(outyeastDBxrefFile, false);
+//		YeastDBxref yeastDBxref = new YeastDBxref();
+//		yeastDBxref.setTaxID(4932);
+//		String outyeastDBxrefFile = FileOperate.changeFileSuffix(yeastDBxrefFile, "out", null);
+//		yeastDBxref.setTxtWriteExcep(outyeastDBxrefFile);
+//		yeastDBxref.setUpdateIntoUniID(false);
+//		yeastDBxref.updateFile(yeastDBxrefFile);
+//		yeastDBxref.setUpdateIntoUniID(true);
+//		yeastDBxref.updateFile(outyeastDBxrefFile);
 		
 		SGD_features sgd_features = new SGD_features();
 		sgd_features.setTaxID(4932);
-//		sgd_features.updateFile(SGD_featuresFile, false);
+		sgd_features.updateFile(SGD_featuresFile);
 		
 		Gene_Association gene_Association = new Gene_Association();
 		gene_Association.setTaxID(4932);
-//		gene_Association.updateFile(Gene_AssociationFile, false);
+		gene_Association.updateFile(Gene_AssociationFile);
 		
-		Ppa_ncbi_geneid ppa_ncbi_geneid = new Ppa_ncbi_geneid();
-		ppa_ncbi_geneid.setTaxID(4922);
-		ppa_ncbi_geneid.updateFile(ppa_ncbi_geneidFile);
+//		Ppa_ncbi_geneid ppa_ncbi_geneid = new Ppa_ncbi_geneid();
+//		ppa_ncbi_geneid.setTaxID(4922);
+//		ppa_ncbi_geneid.updateFile(ppa_ncbi_geneidFile);
 		
-		Pipas_Fun pipas_Fun = new Pipas_Fun();
-		pipas_Fun.setTaxID(4922);
-		pipas_Fun.updateFile(Pipas_FunFile);
+//		Pipas_Fun pipas_Fun = new Pipas_Fun();
+//		pipas_Fun.setTaxID(4922);
+//		pipas_Fun.updateFile(Pipas_FunFile);
 		
-		Pipas_GO_Slim pipas_GO_Slim = new Pipas_GO_Slim();
-		pipas_GO_Slim.setTaxID(4922);
-		pipas_GO_Slim.updateFile(Pipas_GO_SlimFile);
+//		Pipas_GO_Slim pipas_GO_Slim = new Pipas_GO_Slim();
+//		pipas_GO_Slim.setTaxID(4922);
+//		pipas_GO_Slim.updateFile(Pipas_GO_SlimFile);
 	}
 }
 /**
@@ -103,28 +111,28 @@ class YeastDBxref extends ImportPerLine {
 		}
 		
 		if (ss[1].equals("NCBI") && ss[2].equals("RefSeq protein version ID")) {
-			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_NCBI_ACC_REFSEQ_PROTEIN, false);
+			copedID.setUpdateDBinfo(DBAccIDSource.RefSeqPro, false);
 		}
 		else if (ss[1].equals("GenBank/EMBL/DDBJ") && ss[2].equals("Protein version ID")) {
-			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_NCBIID, false);
+			copedID.setUpdateDBinfo(DBAccIDSource.NCBI, false);
 		}
 		else if (ss[2].equals("UniProt/Swiss-Prot ID")) {
-			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_UNIPROT_GenralID, false);
+			copedID.setUpdateDBinfo(DBAccIDSource.Uniprot, false);
 		}
 		else if (ss[2].equals("UniProt/TrEMBL ID")) {
-			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_ENSEMBL_TRS, false);
+			copedID.setUpdateDBinfo(DBAccIDSource.Ensembl_TRS, false);
 		}
 		else if (ss[2].equals("UniParc ID")) {
-			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_UNIPROT_UNIPARC, false);
+			copedID.setUpdateDBinfo(DBAccIDSource.UniprotPARC, false);
 		}
 		else if (ss[2].equals("NCBI protein GI")) {
-			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_NCBI_ACC_PROGI, false);
+			copedID.setUpdateDBinfo(DBAccIDSource.ProteinGI, false);
 		}
 		else if (ss[2].equals("RefSeq Accession")) {
-			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_NCBI_ACC_REFSEQ, false);
+			copedID.setUpdateDBinfo(DBAccIDSource.RefSeqRNA, false);
 		}
 		else if (ss[2].equals("RefSeq protein version ID")) {
-			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_NCBI_ACC_REFSEQ, false);
+			copedID.setUpdateDBinfo(DBAccIDSource.RefSeqRNA, false);
 		}
 		else {
 			return true;
@@ -138,12 +146,12 @@ class YeastDBxref extends ImportPerLine {
 		flag = copedID.update(false);
 		//there has one GenBank/EMBL/DDBJ	Protein version ID mapping to 2 ssgdID, so just using ncbi geneID and refseqID to mapping ID
 		if (ss[2].equals("RefSeq Accession") || (ss[1].equals("NCBI") && ss[2].equals("Gene ID")) || (updateIntoUniID && flag == false)) {
-			copedID.setUpdateAccID(ss[3]); copedID.setUpdateDBinfo(NovelBioConst.DBINFO_NCBI, false);
+			copedID.setUpdateAccID(ss[3]); copedID.setUpdateDBinfo(DBAccIDSource.NCBI, false);
 			copedID.update(updateIntoUniID);
-			copedID.setUpdateAccID(ss[4]); copedID.setUpdateDBinfo(NovelBioConst.DBINFO_SSC_ID, true);
+			copedID.setUpdateAccID(ss[4]); copedID.setUpdateDBinfo(DBAccIDSource.SSC_ScerID, true);
 			copedID.update(false);
 			if (ss.length == 6) {
-				copedID.setUpdateAccID(ss[5]); copedID.setUpdateDBinfo(NovelBioConst.DBINFO_SYMBOL, true);
+				copedID.setUpdateAccID(ss[5]); copedID.setUpdateDBinfo(DBAccIDSource.Symbol, true);
 				copedID.update(false);
 			}
 		}
@@ -189,31 +197,33 @@ class SGD_features extends ImportPerLine {
 			return true;
 		}
 		GeneID copedID = new GeneID(ss[0], taxID);
-		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_SSC_ID, false);
+		copedID.setUpdateDBinfo(DBAccIDSource.SSC_ScerID, false);
 		GeneInfo geneInfo = new GeneInfo();
+		geneInfo.setDBinfo(DBAccIDSource.SSC_ScerID.toString());
 		geneInfo.setTypeOfGene(ss[1]);
+
 		//set gene symbol
 		if (ss[4] != null && !ss[4].equals("")) {
 			geneInfo.setSymb(ss[4]);
-		}
-		else {
-			String symbol = copedID.getAccIDDBinfo(NovelBioConst.DBINFO_SYMBOL);
+		} else {
+			AgeneUniID symbol = copedID.getAccIDDBinfo(DBAccIDSource.Symbol.toString());
 			if (symbol != null) {
-				geneInfo.setSymb(symbol);
+				geneInfo.setSymb(symbol.getAccID());
 			}
 			else if (!ss[3].equals("") ) {
 				geneInfo.setSymb(ss[3]);
 			}
 		}
 		if (!ss[5].equals("")) {
-			geneInfo.setSynonym(ss[5]);
+			for (String string : ss[5].split("\\|")) {
+				geneInfo.addSynonym(string);
+			}
 		}
 		if (!ss[13].equals("")) {
 			geneInfo.setModDate(ss[13]);
 		}
 		geneInfo.setDescrp(ss[15]);
-		geneInfo.setDBinfo(NovelBioConst.DBINFO_SSC_ID);
-		geneInfo.setSep("\\|");
+
 		copedID.setUpdateGeneInfo(geneInfo);
 		return copedID.update(true);
 	}
@@ -224,8 +234,7 @@ class SGD_features extends ImportPerLine {
  * @author zong0jie
  *
  */
-class Gene_Association extends ImportPerLine
-{
+class Gene_Association extends ImportPerLine {
 	/**
 	 * 覆盖该方法来设定从第几行开始读取
 	 */
@@ -239,8 +248,17 @@ class Gene_Association extends ImportPerLine
 		}
 		String[] ss = lineContent.split("\t");
 		GeneID copedID = new GeneID(ss[1], taxID);
-		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_SSC_ID, false);
-		copedID.addUpdateGO(ss[4], ss[14], ss[6], ss[5], ss[0]);
+		copedID.setUpdateDBinfo(DBAccIDSource.SSC_ScerID, false);
+		Gene2Go gene2Go = new Gene2Go();
+		gene2Go.setGOID(ss[4]);
+		gene2Go.addDBName(DBAccIDSource.SSC_ScerID.toString());
+		gene2Go.addEvidence(ss[6]);
+		String[] ssRef = ss[5].split("\\|");
+		for (String string : ssRef) {
+			gene2Go.addReference(string);
+		}
+		gene2Go.setQualifier(ss[3]);
+		copedID.addUpdateGO(gene2Go);
 		return copedID.update(false);
 	}
 }
@@ -253,8 +271,7 @@ class Gene_Association extends ImportPerLine
  * @author zong0jie
  *
  */
-class Ppa_ncbi_geneid extends ImportPerLine
-{
+class Ppa_ncbi_geneid extends ImportPerLine {
 	/**
 	 * 覆盖该方法来设定从第几行开始读取
 	 */
@@ -268,7 +285,7 @@ class Ppa_ncbi_geneid extends ImportPerLine
 		String genUniID =ss[1].replace("ncbi-geneid:", "").replace("equivalent", "").trim();
 		GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, genUniID, taxID);
 		copedID.setUpdateAccID(accID);
-		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_PPA_ID, false);
+		copedID.setUpdateDBinfo(DBAccIDSource.PPA_PichiaID, false);
 		return copedID.update(true);
 	}
 }
@@ -281,8 +298,7 @@ class Ppa_ncbi_geneid extends ImportPerLine
  * @author zong0jie
  *
  */
-class Pipas_Fun extends ImportPerLine
-{
+class Pipas_Fun extends ImportPerLine {
 	/**
 	 * 覆盖该方法来设定从第几行开始读取
 	 */
@@ -301,23 +317,23 @@ class Pipas_Fun extends ImportPerLine
 		if (ss.length >= 3) {
 			copedID.addUpdateRefAccID(ss[2]);
 		}
-		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_PPA_ID, true);
+		copedID.setUpdateDBinfo(DBAccIDSource.PPA_PichiaID, true);
 		flag0 = copedID.update(true);
 		
 		if (ss.length >= 2) {
 			copedID.setUpdateAccID(ss[1]);
-			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_NCBI, false);
+			copedID.setUpdateDBinfo(DBAccIDSource.NCBI, false);
 			flag1 = copedID.update(true);
 		}
 		if (ss.length >= 3) {
 			copedID.setUpdateAccID(ss[2]);
-			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_PPA_NCBI_ID, false);
+			copedID.setUpdateDBinfo(DBAccIDSource.PPA_PichiaID, false);
 			flag2 = copedID.update(true);
 		}
 		if (ss.length >= 4) {
 			GeneInfo geneInfo = new GeneInfo();
 			geneInfo.setDescrp(ss[3]);
-			geneInfo.setDBinfo(NovelBioConst.DBINFO_PPA_ID);
+			geneInfo.setDBinfo(DBAccIDSource.PPA_PichiaID.toString());
 			copedID.setUpdateGeneInfo(geneInfo);
 			flag3 = copedID.update(false);
 		}
@@ -342,8 +358,8 @@ class Pipas_GO_Slim extends ImportPerLine {
 		for (String string2 : ssGo) {
 			Gene2Go gene2Go = new Gene2Go();
 			gene2Go.setGOID(string2);
-			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_PPA_ID, false);
-			copedID.addUpdateGO(string2, NovelBioConst.DBINFO_PPA_ID, null, null, null);
+			copedID.setUpdateDBinfo(DBAccIDSource.PPA_PichiaID, false);
+			copedID.addUpdateGO(string2, DBAccIDSource.PPA_PichiaID, null, null, null);
 		}
 		return copedID.update(false);
 	}

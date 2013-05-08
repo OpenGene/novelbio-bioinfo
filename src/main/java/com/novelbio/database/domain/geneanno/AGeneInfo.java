@@ -231,8 +231,16 @@ public abstract class AGeneInfo {
 	public boolean addInfo(AGeneInfo geneInfo) {
 		boolean update = false;
 		for (String dbInfoName : geneInfo.mapDescription.keySet()) {
-			if (!mapDescription.containsKey(dbInfoName)) {
+			//如果不含有该注释，新加入的注释信息更全面，或者两个注释不一样
+			if (!mapDescription.containsKey(dbInfoName)
+					||
+					(geneInfo.mapDescription.get(dbInfoName).toLowerCase().contains(mapDescription.get(dbInfoName).toLowerCase()) 
+							&& geneInfo.mapDescription.get(dbInfoName).length() > mapDescription.get(dbInfoName).length())
+					) {
 				mapDescription.put(dbInfoName, geneInfo.mapDescription.get(dbInfoName));
+				update = true;
+			} else if(!mapDescription.get(dbInfoName).toLowerCase().contains(geneInfo.mapDescription.get(dbInfoName).toLowerCase()) ) {
+				mapDescription.put(dbInfoName, mapDescription.get(dbInfoName) + "//" +geneInfo.mapDescription.get(dbInfoName));
 				update = true;
 			}
 		}

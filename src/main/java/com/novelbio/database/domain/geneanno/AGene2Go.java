@@ -159,6 +159,11 @@ public abstract class AGene2Go {
 			this.setDB.add(dbInfo.getDbInfoID());
 		}
 	}
+	/**
+	 * 添加的reference是全名
+	 * 譬如 PMID:11118137等
+	 * @param reference
+	 */
 	public void addReference(Collection<String> lsReference) {
 		if (lsReference == null) {
 			return;
@@ -167,6 +172,11 @@ public abstract class AGene2Go {
 			addReference(reference);
 		}
 	}
+	/**
+	 * 添加的reference是全名
+	 * 譬如 PMID:11118137等
+	 * @param reference
+	 */
 	public void addReference(String reference) {
 		if (reference != null && !reference.equals("")) {
 			setPubID.add(reference);

@@ -110,7 +110,7 @@ public class GuiUpdateDB extends JPanel {
 		btnDel_1.setBounds(721, 349, 118, 24);
 		add(btnDel_1);
 		
-		JButton btnImportspecies = new JButton("ImportSpeciesInfo");
+		JButton btnImportspecies = new JButton("ImportSpeciesFile");
 		btnImportspecies.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String speciesFile = guiFileOpen.openFileName("txt/xls", "");
@@ -122,7 +122,7 @@ public class GuiUpdateDB extends JPanel {
 			}
 		});
 		
-		btnImportspecies.setBounds(30, 577, 185, 24);
+		btnImportspecies.setBounds(172, 577, 168, 24);
 		add(btnImportspecies);
 		
 		JButton btnImportsoftware = new JButton("ImportSoftware");
@@ -134,7 +134,7 @@ public class GuiUpdateDB extends JPanel {
 				}
 			}
 		});
-		btnImportsoftware.setBounds(291, 577, 160, 24);
+		btnImportsoftware.setBounds(352, 577, 160, 24);
 		add(btnImportsoftware);
 		
 		JButton btnImportDB = new JButton("ImportDataBase");
@@ -146,7 +146,7 @@ public class GuiUpdateDB extends JPanel {
 				}
 			}
 		});
-		btnImportDB.setBounds(510, 577, 185, 24);
+		btnImportDB.setBounds(524, 577, 185, 24);
 		add(btnImportDB);
 		
 		sclUpdateKegg = new JScrollPaneData();
@@ -179,6 +179,20 @@ public class GuiUpdateDB extends JPanel {
 		JLabel lblAddKgmlfileAnd = new JLabel("One Species With Several KGMLFile And One GeneKegList In One Fold");
 		lblAddKgmlfileAnd.setBounds(30, 398, 573, 14);
 		add(lblAddKgmlfileAnd);
+		
+		JButton btnImportTaxID = new JButton("ImportTaxID");
+		btnImportTaxID.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String taxFile = guiFileOpen.openFileName("txt/xls", "");
+				if (FileOperate.isFileExistAndBigThanSize(taxFile, 0.1)) {
+					Species species = new Species();
+					species.setUpdateTaxInfo(taxFile);
+					species.update();
+				}
+			}
+		});
+		btnImportTaxID.setBounds(30, 577, 130, 24);
+		add(btnImportTaxID);
 		
 		HashMap<String, String> mapselectType = new HashMap<String, String>();
 		mapselectType.put("Exon", "Exon");

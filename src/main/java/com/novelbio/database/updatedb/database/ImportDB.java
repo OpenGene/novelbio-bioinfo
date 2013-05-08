@@ -58,12 +58,12 @@ public class ImportDB {
 		
 //		importDB.updateNCBIID();
 //		importDB.updateUniprotID();
-		
-		importDB.updateRiceID("/media/winE/Bioinformatics/DataBase/Rice/");//只导了前两个
+//		importDB.updateZeaMaize();
+//		importDB.updateRiceID("/media/winE/Bioinformatics/DataBase/Rice/");//只导了前两个
 //		importDB.updateTAIR("/media/winE/Bioinformatics/GenomeData/Arabidopsis/tair10DB/");
 //		importDB.updateZB();
 //		updateEnsembl();
-//		updateYeast();
+		importDB.updateYeast();
 //		importDB.updateMicroarray();
 
 //		updateSoyBean();
@@ -478,19 +478,20 @@ public class ImportDB {
 	}
 	
 	private void updateYeast() {
-		String yeastDBxrefFile = "/media/winE/Bioinformatics/GenomeData/yeast/dbxref.tab.txt";
-		String SGD_featuresFile = "/media/winE/Bioinformatics/GenomeData/yeast/SGD_features.tab.txt";
-		String Gene_AssociationFile ="/media/winE/Bioinformatics/GenomeData/yeast/gene_association.sgd/gene_association.sgd";
-		String Pipas_FunFile = "/media/winE/Bioinformatics/GenomeData/yeast/Pichia/pipas_function-1009.txt";
-		String Pipas_GO_SlimFile = "/media/winE/Bioinformatics/GenomeData/yeast/Pichia/Pichia_GS115.GO_0509.gz";
-		String ppa_ncbi_geneidFile = "/media/winE/Bioinformatics/GenomeData/yeast/Pichia/ppa_ncbi-geneid.list";
+		String path = "/media/winE/NBCplatform/genome/yeast/db/";
+		String yeastDBxrefFile = path + "dbxref.tab";
+		String SGD_featuresFile = path + "SGD_features.tab";
+		String Gene_AssociationFile = path + "gene_association.sgd.gz";
+//		String Pipas_FunFile = "/media/winE/Bioinformatics/GenomeData/yeast/Pichia/pipas_function-1009.txt";
+//		String Pipas_GO_SlimFile = "/media/winE/Bioinformatics/GenomeData/yeast/Pichia/Pichia_GS115.GO_0509.gz";
+//		String ppa_ncbi_geneidFile = "/media/winE/Bioinformatics/GenomeData/yeast/Pichia/ppa_ncbi-geneid.list";
 		Yeast yeast = new Yeast();
 		yeast.setGene_AssociationFile(Gene_AssociationFile);
-		yeast.setPipas_Fun(Pipas_FunFile);
-		yeast.setPipas_GO_Slim(Pipas_GO_SlimFile);
+//		yeast.setPipas_Fun(Pipas_FunFile);
+//		yeast.setPipas_GO_Slim(Pipas_GO_SlimFile);
 		yeast.setSGD_featuresFile(SGD_featuresFile);
 		yeast.setYeastDBxrefFile(yeastDBxrefFile);
-		yeast.setPpa_ncbi_geneidFile(ppa_ncbi_geneidFile);
+//		yeast.setPpa_ncbi_geneidFile(ppa_ncbi_geneidFile);
 		yeast.update();
 	}
 

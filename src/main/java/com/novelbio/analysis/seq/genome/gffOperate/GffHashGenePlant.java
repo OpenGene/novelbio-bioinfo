@@ -94,7 +94,9 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 			   LOCList = new ListGff();//新建一个LOCList并放入Chrhash
 			   LOCList.setName(chrIDtmp);
 			   mapChrID2ListGff.put(chrIDtmpLowCase, LOCList);
-		   }
+		   } else {
+			   LOCList = mapChrID2ListGff.get(chrIDtmpLowCase);
+		}
 		   /**
 		    * 当读取到gene时，就是读到了一个新的基因，那么将这个基因的起点，终点和每个CDS的长度都放入list数组中
 		    */

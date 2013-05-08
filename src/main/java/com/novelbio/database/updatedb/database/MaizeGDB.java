@@ -3,6 +3,7 @@ package com.novelbio.database.updatedb.database;
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.AGeneInfo;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -13,12 +14,9 @@ public class MaizeGDB {
 	int taxID = 4577;
 	String maizeDbxref = "";
 	String maizeGeneInfoFile = "";
-	/**
-	 * /media/winE/Bioinformatics/GenomeData/soybean/ncbi/dbxref.xls
-	 * @param soyDbxref
-	 */
-	public void setMaizeDbxref(String soyDbxref) {
-		this.maizeDbxref = soyDbxref;
+
+	public void setMaizeDbxref(String maizeDbxref) {
+		this.maizeDbxref = maizeDbxref;
 	}
 	public void setMaizeGeneInfo(String maizeGeneInfo) {
 		this.maizeGeneInfoFile = maizeGeneInfo;
@@ -65,7 +63,7 @@ public class MaizeGDB {
  * 从第二行开始读
  */
 class MaizeAccID extends ImportPerLine {
-	private static Logger logger = Logger.getLogger(MaizeAccID.class);
+	private static final Logger logger = Logger.getLogger(MaizeAccID.class);
 	boolean uniProtID = false;
 	/**
 	 * 是否将没有查到的ID导入uniProtID
@@ -84,14 +82,14 @@ class MaizeAccID extends ImportPerLine {
 			copedID = new GeneID(ss[0].split("_")[0], taxID);
 		}
 		
-		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_MAIZE_MGDB, true);
+		copedID.setUpdateDBinfo(DBAccIDSource.MaizeGDB, true);
 		//是否成功升级的标志。因为后面要升级两次
 		boolean flag = false;
 		if (ss[1].equals("EntrezGene")) {
 			copedID.setUpdateGeneID(ss[2], GeneID.IDTYPE_GENEID);
 			if (ss.length >= 4) {
 				GeneInfo geneInfo = new GeneInfo();
-				geneInfo.setDBinfo(NovelBioConst.DBINFO_MAIZE_MGDB);
+				geneInfo.setDBinfo(DBAccIDSource.MaizeGDB.toString());
 				geneInfo.setDescrp(ss[3]);
 				copedID.setUpdateGeneInfo(geneInfo);
 			}
@@ -105,7 +103,7 @@ class MaizeAccID extends ImportPerLine {
 			copedID.setUpdateRefAccID(ss[2]);
 			if (ss.length >= 4) {
 				GeneInfo geneInfo = new GeneInfo();
-				geneInfo.setDBinfo(NovelBioConst.DBINFO_MAIZE_MGDB);
+				geneInfo.setDBinfo(DBAccIDSource.MaizeGDB.toString());
 				geneInfo.setDescrp(ss[3]);
 				copedID.setUpdateGeneInfo(geneInfo);
 			}
@@ -144,15 +142,15 @@ class MaizeAccID extends ImportPerLine {
 		geneID.setUpdateAccID(ss[2]);
 		String dbInfo = null;
 		 if (ss[1].equals("RefSeq_dna")) {
-			 dbInfo = NovelBioConst.DBINFO_NCBI_ACC_REFSEQ;
+			 dbInfo = DBAccIDSource.RefSeqRNA.toString();
 		 } else if (ss[1].equals("RefSeq_peptide")) {
-			 dbInfo = NovelBioConst.DBINFO_NCBI_ACC_REFSEQ_PROTEIN;
+			 dbInfo = DBAccIDSource.RefSeqPro.toString();
 		 } else if (ss[1].equals("UniGene")) {
-			dbInfo = NovelBioConst.DBINFO_UNIPROT_UNIGENE;
+			dbInfo = DBAccIDSource.UniprotUniGene.toString();
 		 }
 		 
 		 if (dbInfo != null) {
-			 geneID.setUpdateDBinfo(NovelBioConst.DBINFO_NCBI_ACC_REFSEQ, false);
+			 geneID.setUpdateDBinfo(DBAccIDSource.RefSeqRNA.toString(), false);
 			 geneID.update(uniProtID);
 		 }
 	}
@@ -164,8 +162,7 @@ class MaizeAccID extends ImportPerLine {
  * @author zong0jie
  *
  */
-class MaizeGeneInfo extends ImportPerLine
-{
+class MaizeGeneInfo extends ImportPerLine {
 	@Override
 	boolean impPerLine(String lineContent) {
 		String[] ss = lineContent.split("\t");
@@ -174,10 +171,10 @@ class MaizeGeneInfo extends ImportPerLine
 		
 		GeneID copedID = new GeneID(ss[0], taxID);
 		AGeneInfo geneInfo = new GeneInfo();
-		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_MAIZE_MGDB, false);
+		copedID.setUpdateDBinfo(DBAccIDSource.MaizeGDB.toString(), false);
 		geneInfo.setDescrp(ss[3]);
 		geneInfo.setSymb(ss[0]);
-		geneInfo.setDBinfo(NovelBioConst.DBINFO_MAIZE_MGDB);
+		geneInfo.setDBinfo(DBAccIDSource.MaizeGDB.toString());
 		copedID.setUpdateGeneInfo(geneInfo);
 		return copedID.update(false);
 	
@@ -189,8 +186,7 @@ class MaizeGeneInfo extends ImportPerLine
  * 上的ZmB73_5a_xref.txt
  * 从第二行开始读
  */
-class MaizeGO extends ImportPerLine
-{
+class MaizeGO extends ImportPerLine {
 	@Override
 	boolean impPerLine(String lineContent) {
 		String[] ss = lineContent.split("\t");
@@ -203,7 +199,7 @@ class MaizeGO extends ImportPerLine
 		else
 			copedID = new GeneID(ss[0].split("_")[0], taxID);
 			
-		copedID.addUpdateGO(ss[2], NovelBioConst.DBINFO_MAIZE_MGDB, null, null, null);
+		copedID.addUpdateGO(ss[2], DBAccIDSource.MaizeGDB, null, null, null);
 		return copedID.update(false);
 	}
 }

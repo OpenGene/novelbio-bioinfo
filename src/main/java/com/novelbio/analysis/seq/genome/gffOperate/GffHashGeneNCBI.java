@@ -542,8 +542,11 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		   if (!mapChrID2ListGff.containsKey(chrIDlowCase)) { //新的染色体 
 			   LOCList = new ListGff();//新建一个LOCList并放入Chrhash
 			   LOCList.setName(chrIDlowCase);
-			   mapChrID2ListGff.put(gffDetailGene.getRefID().toLowerCase(), LOCList);
+			   mapChrID2ListGff.put(chrIDlowCase, LOCList);
+		   } else {
+			   LOCList = mapChrID2ListGff.get(chrIDlowCase);
 		   }
+		   
 		   if (gffDetailGene.getLsCodSplit().size() == 0) {
 			   gffDetailGene.addsplitlist(gffDetailGene.getNameSingle(), gffDetailGene.getNameSingle(), GeneType.ncRNA);
 			   gffDetailGene.addExon(gffDetailGene.getStartAbs(), gffDetailGene.getEndAbs());

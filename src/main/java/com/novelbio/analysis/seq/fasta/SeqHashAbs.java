@@ -283,7 +283,9 @@ public abstract class SeqHashAbs implements SeqHashInt{
 					if (getIntron && i > 0) {
 						result = result + sep + getSeq(myChrID,exon.getStartCis() + 1, lsInfo.get(i-1).getEndCis() - 1).toString().toLowerCase();;
 					}
-				} catch (Exception e) {e.printStackTrace();}
+				} catch (Exception e) {
+					e.printStackTrace();
+					}
 			}
 		}
 		result = result.substring(sep.length());
