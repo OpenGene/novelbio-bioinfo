@@ -1,5 +1,8 @@
 package com.novelbio.database.service.servgeneanno;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -17,32 +20,33 @@ public class ManageGo2Term {
 	 * value:GoInfo
 	 * 0:QueryGoID,1:GoID,2:GoTerm 3:GoFunction
 	 */
-//	static Map<String, Go2Term> mapGoID2GOTerm = new HashMap<String, Go2Term>();
+	static Map<String, Go2Term> mapGoIDQuery2GOTerm = new HashMap<String, Go2Term>();
 	
 	@Autowired
 	private RepoGo2Term repoGo2Term;
 
 	public ManageGo2Term() {
 		repoGo2Term = (RepoGo2Term) SpringFactory.getFactory().getBean("repoGo2Term");
-//		fillMap();
-//		logger.info("finish fill map");
+		fillMap();
+		logger.info("finish fill map");
 	}
 	
-//	private void fillMap() {
-//		synchronized (lock) {
-//			if (mapGoID2GOTerm.size() > 0) {
-//				return;
-//			}
-//			for (Go2Term go2Term : repoGo2Term.findAll()) {
-//				for (String goID : go2Term.getGoIDQuery()) {
-//					mapGoID2GOTerm.put(goID, go2Term);
-//				}
-//			}
-//		}
-//	}
+	private void fillMap() {
+		synchronized (lock) {
+			if (mapGoIDQuery2GOTerm.size() > 0) {
+				return;
+			}
+			for (Go2Term go2Term : repoGo2Term.findAll()) {
+				for (String goID : go2Term.getGoIDQuery()) {
+					mapGoIDQuery2GOTerm.put(goID.toUpperCase(), go2Term);
+				}
+			}
+		}
+	}
 	/** 全部读入内存后，hash访问。第一次速度慢，后面效率很高 */
 	public Go2Term queryGo2Term(String goID) {
-		return repoGo2Term.findByQueryGoID(goID);
+		return mapGoIDQuery2GOTerm.get(goID.toUpperCase()).clone();
+//		return repoGo2Term.findByQueryGoID(goID);
 	}
 	
 	/**
@@ -61,9 +65,9 @@ public class ManageGo2Term {
 			}
 			
 			if (update) {
-//				for (String goID : go2TermS.getGoIDQuery()) {
-//					mapGoID2GOTerm.put(goID.toUpperCase(), go2TermS);
-//				}
+				for (String goID : go2TermS.getGoIDQuery()) {
+					mapGoIDQuery2GOTerm.put(goID.toUpperCase(), go2TermS);
+				}
 				try {
 					repoGo2Term.save(go2TermS);
 				} catch (Exception e) {

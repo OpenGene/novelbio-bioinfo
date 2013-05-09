@@ -2,7 +2,6 @@ package com.novelbio.database.domain.geneanno;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -39,7 +38,8 @@ public abstract class AGene2Go {
 	ManageGo2Term manageGo2Term = new ManageGo2Term();
 	@Transient
 	ManageDBInfo manageDBInfo = new ManageDBInfo();
-	
+	@Transient
+	Go2Term go2Term;
 	public abstract String getGeneUniId();
 	public abstract void setGeneUniID(String geneUniID);
 	
@@ -59,7 +59,14 @@ public abstract class AGene2Go {
 	}
 	
 	public Go2Term getGO2Term() {
-		Go2Term go2Term = manageGo2Term.queryGo2Term(goID);
+		if (go2Term == null) {
+			try {
+				go2Term = manageGo2Term.queryGo2Term(goID);
+			} catch (Exception e) {
+				logger.error("出现未知GOID：" + goID);
+				return null;
+			}
+		}
 		if (go2Term == null) {
 			logger.error("出现未知GOID：" + goID);
 			return null;
@@ -129,12 +136,11 @@ public abstract class AGene2Go {
 	 * @return
 	 */
 	public GOtype getFunction() {
-		try {
-			return manageGo2Term.queryGo2Term(goID).getGOtype();
-		} catch (Exception e) {
-			logger.error("出现未知GOID：" + goID);
+		Go2Term go2Term = getGO2Term();
+		if (go2Term == null) {
 			return null;
 		}
+		return go2Term.getGOtype();
 	}
 
 	public Set<DBInfo> getDataBase() {
