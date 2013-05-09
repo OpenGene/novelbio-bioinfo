@@ -325,6 +325,9 @@ public class SpeciesFile {
 			indexFinalPath = IndexPath + softMapping.toString() + "_Chr_Index/";
 		
 		indexChromFinal = indexFinalPath + seqName;
+		if (FileOperate.isFileExist(indexChromFinal)) {
+			return indexChromFinal;
+		}
 		if (!FileOperate.linkFile(seqFile, indexChromFinal, true)) {
 			logger.error("创建链接出错：" + seqFile + " " + indexChromFinal);
 			return null;

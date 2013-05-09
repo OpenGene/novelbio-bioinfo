@@ -6,7 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.novelbio.database.service.servgeneanno.ManageSpeciesFile;
+import com.novelbio.database.service.servgeneanno.ManageSpeciesFileDB;
 import com.novelbio.database.service.servgeneanno.ManageTaxID;
 
 /**

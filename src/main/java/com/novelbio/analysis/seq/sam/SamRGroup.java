@@ -15,6 +15,16 @@ public class SamRGroup {
 	 * @return 返回的值可以直接用于
 	 */
 	public SamRGroup(String sampleID, String LibraryName, String SampleName, String Platform) {
+		if (LibraryName == null || LibraryName.equals("")) {
+			LibraryName = sampleID;
+		}
+		if (SampleName == null || SampleName.equals("")) {
+			SampleName = sampleID;
+		}
+		if (Platform == null || Platform.equals("")) {
+			Platform = "Illumina";
+		}
+		
 		samReadGroupRecord = new SAMReadGroupRecord(sampleID);
 		samReadGroupRecord.setAttribute(SAMReadGroupRecord.LIBRARY_TAG, LibraryName);
 		samReadGroupRecord.setAttribute(SAMReadGroupRecord.PLATFORM_TAG, Platform);

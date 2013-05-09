@@ -338,7 +338,7 @@ public class CtrlFastQMapping {
 			mapSoftware.setOutFileName(outFilePrefix + prefix);
 			mapSoftware.setGapLength(gapLen);
 			mapSoftware.setMismatch(mismatch);
-			mapSoftware.setSampleGroup(prefix, null, null, null);
+			mapSoftware.setSampleGroup(prefix, prefix, prefix, null);
 			mapSoftware.setMapLibrary(libraryType);
 			mapSoftware.setThreadNum(thread);
 			SamFileStatistics samFileStatistics = new SamFileStatistics();
