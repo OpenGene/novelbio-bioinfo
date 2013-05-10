@@ -322,6 +322,7 @@ public class GeneIDabs implements GeneIDInt {
 		if (geneInfo == null) {
 			return "";
 		}
+		geneInfo.setDBinfo(getDatabaseType(getTaxID()));
 		return geneInfo.getDescrp();
 	}
 	

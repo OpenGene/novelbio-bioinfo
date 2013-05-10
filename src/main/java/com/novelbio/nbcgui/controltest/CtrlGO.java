@@ -1,12 +1,12 @@
 package com.novelbio.nbcgui.controltest;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
 
 import com.novelbio.analysis.annotation.functiontest.ElimGOFunTest;
 import com.novelbio.analysis.annotation.functiontest.FunctionTest;
@@ -16,10 +16,10 @@ import com.novelbio.analysis.annotation.functiontest.StatisticTestItem2Gene;
 import com.novelbio.analysis.annotation.functiontest.StatisticTestResult;
 import com.novelbio.analysis.annotation.functiontest.TopGO.GoAlgorithm;
 import com.novelbio.base.PathDetail;
-import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.GOtype;
 
+@Service
 public class CtrlGO extends CtrlGOPath{
 	private static final Logger logger = Logger.getLogger(CtrlGO.class);
 	

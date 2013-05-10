@@ -80,7 +80,7 @@ public class RiceID{
 //		
 //		RiceRapDBInfo riceRapDBInfo = new RiceRapDBInfo();
 //		riceRapDBInfo.updateFile(gffRapDB);
-//		
+		
 //		RiceTIGRInfo riceTIGRInfo = new RiceTIGRInfo();
 //		riceTIGRInfo.updateFile(gffTIGR);
 		
@@ -510,8 +510,8 @@ class RiceTIGRInfo extends ImportPerLine {
 
 		description = HttpFetch.decode(ssLOC[1].split("=")[1]);
 		GeneInfo geneInfo = new GeneInfo();
-		geneInfo.setSymb(LOCID); geneInfo.setDescrp(description);
 		geneInfo.setDBinfo(manageDBInfo.findByDBname(DBAccIDSource.TIGR_rice.toString()));
+		geneInfo.setSymb(LOCID); geneInfo.setDescrp(description);
 		GeneID copedID = new GeneID("", 39947);
 		copedID.setUpdateRefAccID(LOCID);
 		copedID.setUpdateGeneInfo(geneInfo);
@@ -529,7 +529,11 @@ class RiceTIGRGO extends ImportPerLine {
 		String[] ss = lineContent.split("\t");
 		String LocID = ss[0].trim();
 		GeneID copedID = new GeneID(LocID, 39947);
-		copedID.addUpdateGO(ss[1].trim(), DBAccIDSource.TIGR_rice, ss[4], null, null);
+		List<String> lsRefInfo = new ArrayList<String>();
+		if (ss.length >= 6) {
+			lsRefInfo.add(ss[5]);
+		}
+		copedID.addUpdateGO(ss[1].trim(), DBAccIDSource.TIGR_rice, ss[4], lsRefInfo, null);
 		copedID.setUpdateDBinfo(DBAccIDSource.TIGR_rice, false);
 		return copedID.update(false);
 	}

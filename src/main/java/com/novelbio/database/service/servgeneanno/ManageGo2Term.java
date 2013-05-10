@@ -28,7 +28,6 @@ public class ManageGo2Term {
 	public ManageGo2Term() {
 		repoGo2Term = (RepoGo2Term) SpringFactory.getFactory().getBean("repoGo2Term");
 		fillMap();
-		logger.info("finish fill map");
 	}
 	
 	private void fillMap() {
@@ -41,6 +40,7 @@ public class ManageGo2Term {
 					mapGoIDQuery2GOTerm.put(goID.toUpperCase(), go2Term);
 				}
 			}
+			logger.info(this.getClass().getName() + "finish fill map");
 		}
 	}
 	/** 全部读入内存后，hash访问。第一次速度慢，后面效率很高 */

@@ -155,9 +155,7 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		btnRun.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				progressBar.setValue(progressBar.getMinimum());
-				runSnpCallingSamtools();
-				
-//				if (rdbtnSnpcalling.isSelected()) {
+				if (rdbtnSnpcalling.isSelected()) {
 //					if (rdbtnGatkBamfile.isSelected()) {
 //						runSnpCallingGATK();
 //					} else if (rdbtnSamtoolsPileup.isSelected()) {
@@ -165,11 +163,12 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 //					} else if (rdbtnNbcmethodPileupfile.isSelected()) {
 //						runSnpCallingNBC();
 //					}
-//				} else if (rdbtnGetSnpDetail.isSelected()) {
-//					runSnpGetInfo();
-//				} else if (rdbtnSnpAnnotation.isSelected()) {
-//					runSnpAnnotation();
-//				}
+					runSnpCallingNBC();
+				} else if (rdbtnGetSnpDetail.isSelected()) {
+					runSnpGetInfo();
+				} else if (rdbtnSnpAnnotation.isSelected()) {
+					runSnpAnnotation();
+				}
 			}
 		});
 		btnRun.setBounds(793, 501, 118, 24);

@@ -168,7 +168,12 @@ public abstract class AGeneInfo {
 			descrip = mapDescription.get(dbInfo.getDbNameLowcase());
 		}
 		if (descrip == null || descrip.equals("")) {
-			descrip = mapDescription.values().iterator().next();
+			int length = 0;
+			for (String descripion : mapDescription.values()) {
+				if (descripion.length() > length) {
+					descrip = descripion;
+				}
+			}
 		}
 		if (descrip != null) {
 			return descrip.replaceAll("\"", "");

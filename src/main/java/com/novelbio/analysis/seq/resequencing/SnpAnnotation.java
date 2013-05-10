@@ -140,10 +140,12 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 		}
 		GeneID geneID = gffGeneIsoInfo.getGeneID();
 		if (geneID.getIDtype() != GeneID.IDTYPE_ACCID) {
+			lsInfo.add(gffGeneIsoInfo.getName());
 			lsInfo.add(geneID.getSymbol());
 			lsInfo.add(geneID.getDescription());
 		} else {
 			lsInfo.add(gffGeneIsoInfo.getName());
+			lsInfo.add("");
 			lsInfo.add("");
 		}
 		
@@ -168,6 +170,7 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 	/** tilte和annoSnp方法中一致 */
 	public static ArrayList<String> getTitleLs() {
 		ArrayList<String> lsTitle = new ArrayList<String>();
+		lsTitle.add(TitleFormatNBC.AccID.toString());
 		lsTitle.add(TitleFormatNBC.Symbol.toString());
 		lsTitle.add(TitleFormatNBC.Description.toString());
 		lsTitle.add("LocationDescription");
