@@ -2,6 +2,7 @@ package com.novelbio.analysis.seq.sam;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.AlignSeq;
@@ -17,7 +18,7 @@ import com.novelbio.nbcgui.GuiAnnoInfo;
  */
 public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 
-	ArrayList<AlignmentRecorder> lsAlignmentRecorders = new ArrayList<AlignmentRecorder>();
+	List<AlignmentRecorder> lsAlignmentRecorders = new ArrayList<AlignmentRecorder>();
 	AlignSeq alignSeqFile;
 	long readLines;
 	double readByte;

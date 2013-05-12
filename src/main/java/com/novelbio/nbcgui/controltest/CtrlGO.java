@@ -6,6 +6,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.novelbio.analysis.annotation.functiontest.ElimGOFunTest;
@@ -19,13 +21,18 @@ import com.novelbio.base.PathDetail;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.GOtype;
 
-@Service
-public class CtrlGO extends CtrlGOPath{
+@Component
+@Scope("prototype")
+public class CtrlGO extends CtrlGOPath {
 	private static final Logger logger = Logger.getLogger(CtrlGO.class);
 	
 	GOtype GOClass = GOtype.BP;
 	GoAlgorithm goAlgorithm = GoAlgorithm.classic;
 	int goLevel = -1;
+	
+	public GOtype getGOClass() {
+		return GOClass;
+	}
 	
 	/**
 	 * 必须第一时间设定，这个就会初始化检验模块

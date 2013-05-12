@@ -71,6 +71,7 @@ public class SamFileStatistics implements AlignmentRecorder {
 	public void writeToFile(String outFileName) {
 		TxtReadandWrite txtWrite = new TxtReadandWrite(outFileName, true);
 		txtWrite.ExcelWrite(getMappingInfo());
+		txtWrite.close();
 	}
 	
 	/**

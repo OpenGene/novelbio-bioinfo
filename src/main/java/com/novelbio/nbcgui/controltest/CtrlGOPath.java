@@ -23,7 +23,7 @@ import com.novelbio.database.model.modgeneid.GeneID;
  * @author zong0jie
  *
  */
-public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
+public abstract class CtrlGOPath extends RunProcess<GoPathInfo> implements CtrlTestInt {
 	private static final Logger logger = Logger.getLogger(CtrlGOPath.class);
 
 	FunctionTest functionTest = null;
@@ -231,11 +231,12 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo>{
 	protected abstract LinkedHashMap<String, ArrayList<String[]>> calItem2GenePvalue(String prix, ArrayList<StatisticTestResult> lsResultTest);
 
 	public void saveExcel(String excelPath) {
-		if (isCluster) {
-			saveExcelCluster(excelPath);
-		} else {
-			saveExcelNorm(excelPath);
-		}
+		System.out.println(excelPath);
+//		if (isCluster) {
+//			saveExcelCluster(excelPath);
+//		} else {
+//			saveExcelNorm(excelPath);
+//		}
 	}
 	
 	private void saveExcelNorm(String excelPath) {
