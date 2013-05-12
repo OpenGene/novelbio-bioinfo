@@ -23,7 +23,7 @@ import com.novelbio.database.model.modgeneid.GeneID;
  * @author zong0jie
  *
  */
-public abstract class CtrlGOPath extends RunProcess<GoPathInfo> implements CtrlTestInt {
+public abstract class CtrlGOPath extends RunProcess<GoPathInfo> {
 	private static final Logger logger = Logger.getLogger(CtrlGOPath.class);
 
 	FunctionTest functionTest = null;

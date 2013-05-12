@@ -2,15 +2,11 @@ package com.novelbio.aoplog;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
 import com.novelbio.database.service.SpringFactory;
 import com.novelbio.nbcgui.controltest.CtrlGO;
 import com.novelbio.nbcgui.controltest.CtrlGOPath;
-import com.novelbio.nbcgui.controltest.CtrlPath;
-import com.novelbio.nbcgui.controltest.CtrlTest;
-import com.novelbio.nbcgui.controltest.CtrlTestInt;
 
 /**
  * 给GO添加日志等
@@ -24,7 +20,7 @@ public class CtrlGOPathLog {
 //		Object obj = SpringFactory.getFactory().getBean("ctrlGO");
 //		System.out.println(obj.getClass().getName());
 		
-		CtrlTestInt ctrlGO = (CtrlTestInt)SpringFactory.getFactory().getBean("ctrlGO");
+		CtrlGO ctrlGO = (CtrlGO)SpringFactory.getFactory().getBean("ctrlGO");
 		ctrlGO.clearParam();
 		
 //		ctrlGO.saveExcel("ssssssssss");
