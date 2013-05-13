@@ -1,4 +1,4 @@
-package com.novelbio.aoplog;
+package com.novelbio.nbcgui.controltest;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -13,8 +13,8 @@ import com.novelbio.nbcgui.controltest.CtrlGOPath;
  * @author zong0jie
  *
  */
-//@Component
-//@Aspect
+@Component
+@Aspect
 public class CtrlGOPathLog {
 	public static void main(String[] args) {
 //		Object obj = SpringFactory.getFactory().getBean("ctrlGO");
@@ -25,7 +25,7 @@ public class CtrlGOPathLog {
 		
 		ctrlGO.saveExcel("ssssssssss");
 	}
-//	@Before("execution (* com.novelbio.nbcgui.controltest.CtrlGOPath.saveExcel(*)) && args(excelPath) && target(ctrlGOPath)")
+	@Before("execution (* com.novelbio.nbcgui.controltest.CtrlGOPath.saveExcel(*)) && args(excelPath) && target(ctrlGOPath)")
 	 public void logRun(String excelPath, CtrlGOPath ctrlGOPath) {  
 		
 		excelPath = excelPath + "kkk";

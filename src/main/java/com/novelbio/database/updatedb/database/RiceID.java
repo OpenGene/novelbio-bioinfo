@@ -55,11 +55,11 @@ public class RiceID{
 	 * @throws Exception
 	 */
 	public void update() {
-//		RiceTIGRGFFID riceTIGRGFFID = new RiceTIGRGFFID();
-//		riceTIGRGFFID.setTxtWriteExcep(tigrDBoutID);
-//		riceTIGRGFFID.setInsertAccID(false);
-//		riceTIGRGFFID.updateFile(gffTIGR);
-//		
+		RiceTIGRGFFID riceTIGRGFFID = new RiceTIGRGFFID();
+		riceTIGRGFFID.setTxtWriteExcep(tigrDBoutID);
+		riceTIGRGFFID.setInsertAccID(false);
+		riceTIGRGFFID.updateFile(gffTIGR);
+		
 //		RiceRapDBID riceRapDBID = new RiceRapDBID();
 //		riceRapDBID.setTxtWriteExcep(rapDBoutID);
 //		riceRapDBID.setInsertAccID(false);
@@ -80,12 +80,12 @@ public class RiceID{
 //		
 //		RiceRapDBInfo riceRapDBInfo = new RiceRapDBInfo();
 //		riceRapDBInfo.updateFile(gffRapDB);
-		
+//		
 //		RiceTIGRInfo riceTIGRInfo = new RiceTIGRInfo();
 //		riceTIGRInfo.updateFile(gffTIGR);
-		
-		RiceTIGRGO riceTIGRGO = new RiceTIGRGO();
-		riceTIGRGO.updateFile(tigrGoSlim);
+//		
+//		RiceTIGRGO riceTIGRGO = new RiceTIGRGO();
+//		riceTIGRGO.updateFile(tigrGoSlim);
 	}
 	
 	

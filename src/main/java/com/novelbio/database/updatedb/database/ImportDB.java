@@ -59,17 +59,17 @@ public class ImportDB {
 //		importDB.updateNCBIID();
 //		importDB.updateUniprotID();
 //		importDB.updateZeaMaize();
-		importDB.updateRiceID("/media/winE/Bioinformatics/DataBase/Rice/");//只导了前两个
+//		importDB.updateRiceID("/media/winE/Bioinformatics/DataBase/Rice/");//只导了前两个
 //		importDB.updateTAIR("/media/winE/Bioinformatics/GenomeData/Arabidopsis/tair10DB/");
 //		importDB.updateZB();
 //		updateEnsembl();
-//		importDB.updateYeast();
+		importDB.updateYeast();
 //		importDB.updateMicroarray();
 
 //		updateSoyBean();
 //		updateZeaMaize();
 //		updateBlast();
-//		updateAffy();
+//		importDB.updateAffy();
 	}
 	
 	
@@ -320,24 +320,24 @@ public class ImportDB {
 		String outFile = "";
 		int taxID = 0;
 		NormAffy normAffy = null;
-		/////////   arabidopsis  //////////////////////////////////////////////;
-//		affyFile = "/media/winE/Bioinformatics/Affymetrix/Arabidopsis/ATH1-121501.na31.annot.csv/ATH1-121501.na31.annot_modify.csv";
-//		outFile = FileOperate.changeFileSuffix(affyFile, "_Out", "txt");
-//		taxID = 3702;
-//		normAffy = new NormAffy();
-//		normAffy.setTaxID(taxID);
-//		normAffy.setTxtWriteExcep(outFile);
-//		normAffy.setDbInfo(NovelBioConst.DBINFO_AFFY_ATH);
-//		normAffy.updateFile(affyFile, false);
-		/////////   human  //////////////////////////////////////////////;
-//		affyFile = "/media/winE/Bioinformatics/Affymetrix/Human/Human Genome U133 Plus 2.0/HG-U133_Plus_2.na31.annot.csv/HG-U133_Plus_2.na31.annot.csv";
-//		outFile = FileOperate.changeFileSuffix(affyFile, "_Out", "txt");
-//		taxID = 9606;
-//		normAffy = new NormAffy();
-//		normAffy.setTaxID(taxID);
-//		normAffy.setTxtWriteExcep(outFile);
-//		normAffy.setDbInfo(NovelBioConst.DBINFO_AFFY_HUMAN_U133_PLUS2);
-//		normAffy.updateFile(affyFile, false);
+		///////   arabidopsis  //////////////////////////////////////////////;
+		affyFile = "/media/winE/Bioinformatics/Affymetrix/Arabidopsis/ATH1-121501.na31.annot.csv/ATH1-121501.na31.annot_modify.csv";
+		outFile = FileOperate.changeFileSuffix(affyFile, "_Out", "txt");
+		taxID = 3702;
+		normAffy = new NormAffy();
+		normAffy.setTaxID(taxID);
+		normAffy.setTxtWriteExcep(outFile);
+		normAffy.setDbInfo(DBAccIDSource.Array_Affymetrix.toString());
+		normAffy.updateFile(affyFile);
+		///////   human  //////////////////////////////////////////////;
+		affyFile = "/media/winE/Bioinformatics/Affymetrix/Human/Human Genome U133 Plus 2.0/HG-U133_Plus_2.na31.annot.csv/HG-U133_Plus_2.na31.annot.csv";
+		outFile = FileOperate.changeFileSuffix(affyFile, "_Out", "txt");
+		taxID = 9606;
+		normAffy = new NormAffy();
+		normAffy.setTaxID(taxID);
+		normAffy.setTxtWriteExcep(outFile);
+		normAffy.setDbInfo(DBAccIDSource.Array_Affymetrix.toString());
+		normAffy.updateFile(affyFile);
 
 		/////////   Zebrafish  //////////////////////////////////////////////;
 //		affyFile = "/media/winE/Bioinformatics/Affymetrix/";
@@ -365,7 +365,7 @@ public class ImportDB {
 		normAffy = new NormAffy();
 		normAffy.setTaxID(taxID);
 		normAffy.setTxtWriteExcep(outFile);
-		normAffy.setDataBaseInfo(NovelBioConst.DBINFO_AFFY_RICE_31);
+		normAffy.setDbInfo(DBAccIDSource.Array_Affymetrix.toString());
 		normAffy.updateFile(affyFile);
 
 		/////////   Pig Porcine  //////////////////////////////////////////////;
@@ -407,14 +407,14 @@ public class ImportDB {
 //		normAffy.setTxtWriteExcep(outFile);
 //		normAffy.setDbInfo(NovelBioConst.DBINFO_AFFY_COW);
 //		normAffy.updateFile(affyFile, false);
-		affyFile = "/media/winE/Bioinformatics/Affymetrix/rat/Rat230_2.na32.annot.csv/Rat230_2.na32.annot.csv";
-		outFile = FileOperate.changeFileSuffix(affyFile, "_Out", "txt");
-		taxID = 10116;
-		normAffy = new NormAffy();
-		normAffy.setTaxID(taxID);
-		normAffy.setTxtWriteExcep(outFile);
-		normAffy.setDataBaseInfo(NovelBioConst.DBINFO_AFFY_MOUSE_430_2);
-		normAffy.updateFile(affyFile);
+//		affyFile = "/media/winE/Bioinformatics/Affymetrix/rat/Rat230_2.na32.annot.csv/Rat230_2.na32.annot.csv";
+//		outFile = FileOperate.changeFileSuffix(affyFile, "_Out", "txt");
+//		taxID = 10116;
+//		normAffy = new NormAffy();
+//		normAffy.setTaxID(taxID);
+//		normAffy.setTxtWriteExcep(outFile);
+//		normAffy.setDataBaseInfo(NovelBioConst.DBINFO_AFFY_MOUSE_430_2);
+//		normAffy.updateFile(affyFile);
 	}
 	
 	private void updateTAIR(String parentPath) {
@@ -455,26 +455,27 @@ public class ImportDB {
 		MicroArrayBlast microArrayBlast = null;
 		int taxID = 0;
 		////////////////////  斑马鱼  /////////////////////////////
-		zerbfishFile = "/media/winE/Bioinformatics/BLAST/result/zebrafish/affy2zerbfishRefSeq.xls";
-		zerbfishFile2 = "/media/winE/Bioinformatics/BLAST/result/zebrafish/affy2zerbfish_coped.xls";
-		microArrayBlast = new MicroArrayBlast();
-		microArrayBlast.setDataBaseInfo(NovelBioConst.DBINFO_AFFY_ZEBRAFISH);
-		microArrayBlast.setGeneID(GeneID.IDTYPE_ACCID);
+//		zerbfishFile = "/media/winE/Bioinformatics/BLAST/result/zebrafish/affy2zerbfishRefSeq.xls";
+//		zerbfishFile2 = "/media/winE/Bioinformatics/BLAST/result/zebrafish/affy2zerbfish_coped.xls";
+//		microArrayBlast = new MicroArrayBlast();
+//		microArrayBlast.setDataBaseInfo(NovelBioConst.DBINFO_AFFY_ZEBRAFISH);
+//		microArrayBlast.setGeneID(GeneID.IDTYPE_ACCID);
 //		microArrayBlast.updateFile(zerbfishFile, false);
 //		microArrayBlast.updateFile(zerbfishFile2, false);
 		////////////////////  水稻  /////////////////////////////
 		zerbfishFile = "/media/winE/Bioinformatics/Affymetrix/rice/Affy2Loc.txt";
 		microArrayBlast = new MicroArrayBlast();
-		microArrayBlast.setDataBaseInfo(NovelBioConst.DBINFO_AFFY_RICE_31);
-//		microArrayBlast.setGeneID(CopedID.IDTYPE_ACCID);
-//		microArrayBlast.updateFile(zerbfishFile, false);
+		microArrayBlast.setDbInfo(DBAccIDSource.Array_Affymetrix.toString());
+		microArrayBlast.setTaxID(39947);
+		microArrayBlast.setEvalue(1e-50);
+		microArrayBlast.updateFile(zerbfishFile);
 		////////////////////  大豆  /////////////////////////////
-		zerbfishFile = "/media/winE/Bioinformatics/Affymetrix/soybean/affy2Gly_nr.txt";
-		microArrayBlast = new MicroArrayBlast();
-		microArrayBlast.setDataBaseInfo(NovelBioConst.DBINFO_AFFY_GLMAX);
-		microArrayBlast.setGeneID(GeneID.IDTYPE_ACCID);
-		microArrayBlast.setTaxID(3847);
-		microArrayBlast.updateFile(zerbfishFile, false);
+//		zerbfishFile = "/media/winE/Bioinformatics/Affymetrix/soybean/affy2Gly_nr.txt";
+//		microArrayBlast = new MicroArrayBlast();
+//		microArrayBlast.setDataBaseInfo(NovelBioConst.DBINFO_AFFY_GLMAX);
+//		microArrayBlast.setGeneID(GeneID.IDTYPE_ACCID);
+//		microArrayBlast.setTaxID(3847);
+//		microArrayBlast.updateFile(zerbfishFile, false);
 	}
 	
 	private void updateYeast() {

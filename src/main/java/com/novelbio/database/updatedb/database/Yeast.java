@@ -40,14 +40,14 @@ public class Yeast {
 	}
 	
 	public void update() {
-//		YeastDBxref yeastDBxref = new YeastDBxref();
-//		yeastDBxref.setTaxID(4932);
-//		String outyeastDBxrefFile = FileOperate.changeFileSuffix(yeastDBxrefFile, "out", null);
-//		yeastDBxref.setTxtWriteExcep(outyeastDBxrefFile);
-//		yeastDBxref.setUpdateIntoUniID(false);
-//		yeastDBxref.updateFile(yeastDBxrefFile);
-//		yeastDBxref.setUpdateIntoUniID(true);
-//		yeastDBxref.updateFile(outyeastDBxrefFile);
+		YeastDBxref yeastDBxref = new YeastDBxref();
+		yeastDBxref.setTaxID(4932);
+		String outyeastDBxrefFile = FileOperate.changeFileSuffix(yeastDBxrefFile, "out", null);
+		yeastDBxref.setTxtWriteExcep(outyeastDBxrefFile);
+		yeastDBxref.setUpdateIntoUniID(false);
+		yeastDBxref.updateFile(yeastDBxrefFile);
+		yeastDBxref.setUpdateIntoUniID(true);
+		yeastDBxref.updateFile(outyeastDBxrefFile);
 		
 		SGD_features sgd_features = new SGD_features();
 		sgd_features.setTaxID(4932);
@@ -134,19 +134,17 @@ class YeastDBxref extends ImportPerLine {
 		else if (ss[2].equals("RefSeq protein version ID")) {
 			copedID.setUpdateDBinfo(DBAccIDSource.RefSeqRNA, false);
 		}
-		else {
-			return true;
-		}
+
 		copedID.setUpdateRefAccID(ss[3], ss[4]);
 		if (ss.length == 6) {
-			copedID.setUpdateRefAccID(ss[3], ss[4], ss[5]);
+			copedID.addUpdateRefAccID(ss[5]);
 		}
 		//whether the ID is insert in the database
 		boolean flag = true;
 		flag = copedID.update(false);
 		//there has one GenBank/EMBL/DDBJ	Protein version ID mapping to 2 ssgdID, so just using ncbi geneID and refseqID to mapping ID
-		if (ss[2].equals("RefSeq Accession") || (ss[1].equals("NCBI") && ss[2].equals("Gene ID")) || (updateIntoUniID && flag == false)) {
-			copedID.setUpdateAccID(ss[3]); copedID.setUpdateDBinfo(DBAccIDSource.NCBI, false);
+		if (flag || ss[2].equals("RefSeq Accession") || (ss[1].equals("NCBI") && ss[2].equals("Gene ID")) || (updateIntoUniID && flag == false)) {
+			copedID.setUpdateAccID(ss[3]); copedID.setUpdateDBinfo(DBAccIDSource.GeneAC, false);
 			copedID.update(updateIntoUniID);
 			copedID.setUpdateAccID(ss[4]); copedID.setUpdateDBinfo(DBAccIDSource.SSC_ScerID, true);
 			copedID.update(false);

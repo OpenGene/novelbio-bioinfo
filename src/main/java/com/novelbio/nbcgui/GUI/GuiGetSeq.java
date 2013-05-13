@@ -46,6 +46,7 @@ public class GuiGetSeq extends JPanel {
 	JScrollPaneData scrollPaneData;
 	JButton btnSave;
 	JCheckBox chckbxGenomwide;
+	JCheckBox chckbxGetalliso;
 	JComboBoxData<GffDetailGene.GeneStructure> cmbGeneStructure;
 	JButton btnOpenfile;
 	JLabel lblTssTes;
@@ -103,11 +104,11 @@ public class GuiGetSeq extends JPanel {
 		add(btnOpenfile);
 		
 		JLabel lblChridcolumn = new JLabel("ColChrID");
-		lblChridcolumn.setBounds(723, 197, 114, 14);
+		lblChridcolumn.setBounds(723, 197, 69, 14);
 		add(lblChridcolumn);
 		
 		lblPeakstartcolumn = new JLabel("Start");
-		lblPeakstartcolumn.setBounds(723, 255, 52, 14);
+		lblPeakstartcolumn.setBounds(723, 223, 52, 14);
 		add(lblPeakstartcolumn);
 		
 		cmbSpeciesVersion = new JComboBoxData<String>();
@@ -167,19 +168,19 @@ public class GuiGetSeq extends JPanel {
 		add(lblDown);
 		
 		spinColChr = new JSpinner();
-		spinColChr.setBounds(723, 223, 55, 18);
+		spinColChr.setBounds(797, 195, 55, 18);
 		add(spinColChr);
 		
 		spinStart = new JSpinner();
-		spinStart.setBounds(723, 272, 52, 18);
+		spinStart.setBounds(723, 240, 52, 18);
 		add(spinStart);
 		
 		spinEnd = new JSpinner();
-		spinEnd.setBounds(800, 272, 52, 18);
+		spinEnd.setBounds(800, 240, 52, 18);
 		add(spinEnd);
 		
 		JLabel lblEnd = new JLabel("End");
-		lblEnd.setBounds(800, 255, 69, 14);
+		lblEnd.setBounds(800, 223, 69, 14);
 		add(lblEnd);
 		
 		rdbtnRegion = new JRadioButton("Region");
@@ -228,7 +229,7 @@ public class GuiGetSeq extends JPanel {
 				selectGenomeWide(chckbxGenomwide.isSelected());
 			}
 		});
-		chckbxGenomwide.setBounds(717, 309, 131, 22);
+		chckbxGenomwide.setBounds(717, 265, 120, 22);
 		add(chckbxGenomwide);
 		
 		txtSavePath = new JTextField();
@@ -243,6 +244,10 @@ public class GuiGetSeq extends JPanel {
 		chckbxGetaminoacid = new JCheckBox("getAminoAcid");
 		chckbxGetaminoacid.setBounds(720, 392, 131, 22);
 		add(chckbxGetaminoacid);
+		
+		chckbxGetalliso = new JCheckBox("GetAllIso");
+		chckbxGetalliso.setBounds(736, 291, 131, 22);
+		add(chckbxGetalliso);
 		
 		initial();
 	}
@@ -323,11 +328,15 @@ public class GuiGetSeq extends JPanel {
 	}
 	
 	private void selectGenomeWide(boolean selected) {
-		if (selected)
+		if (selected) {
 			btnOpenfile.setEnabled(false);
-		else
+			chckbxGetalliso.setVisible(true);
+		} else {
 			btnOpenfile.setEnabled(true);
+			chckbxGetalliso.setVisible(false);
+		}
 	}
+	
 	private void changeGeneStructure() {
 		if (!cmbGeneStructure.isEnabled()) {
 			txtTssUp.setEnabled(false);
@@ -488,7 +497,7 @@ public class GuiGetSeq extends JPanel {
 		ctrlGetSeq.setOutPutFile(txtSavePath.getText());
 		ctrlGetSeq.setGetAAseq(chckbxGetaminoacid.isSelected());
 		ctrlGetSeq.setUpAndDownStream(new int[]{upstream, dowstream});
-		ctrlGetSeq.setGetAllIso(true);
+		ctrlGetSeq.setGetAllIso(chckbxGetalliso.isSelected());
 		ctrlGetSeq.setGeneStructure(cmbGeneStructure.getSelectedValue());
 		ctrlGetSeq.setGetIntron(false);
 		ctrlGetSeq.setGetSeqIsoGenomWide();

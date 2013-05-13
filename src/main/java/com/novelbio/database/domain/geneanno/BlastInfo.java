@@ -64,7 +64,7 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	 * @param isGeneIDQ queryID是否为accID，一般都是false
 	 * @param taxIDS subjectTaxID
 	 * @param isGeneIDS subjectID是否为accID，一般都是false
-	 * @param blastStr blast的具体ID
+	 * @param blastStr blast的具体某一行的内容
 	 * @param isBlastIDtype 如果subjecdt是accID，具体的accID是否类似 blast的结果，如：dbj|AK240418.1|，那么获得AK240418，一般都是false
 	 */
 	public BlastInfo(int taxIDQ, boolean isGeneIDQ, int taxIDS, boolean isGeneIDS, String blastStr, boolean isBlastIDtype) {

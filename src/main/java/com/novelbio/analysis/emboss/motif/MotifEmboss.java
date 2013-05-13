@@ -74,6 +74,10 @@ public class MotifEmboss {
 		this.motifEmbossScanAlgorithm = motifEmbossScanAlgorithm;
 	}
 	
+	/**
+	 * @param colSeq motif
+	 * @param seqHash 待扫描的序列
+	 */
 	private void addSeq(Collection<SeqFasta> colSeq, SeqHash seqHash) {
 		ArrayList<String> lsSeqName = seqHash.getLsSeqName();
 		for (String string : lsSeqName) {
@@ -82,6 +86,10 @@ public class MotifEmboss {
 		}
 	}
 	
+	/**
+	 * 返回motif分析得到的文件名
+	 * @return
+	 */
 	private String[] scanMotif() {
 		setParam();
 		String suffix = "_" +DateUtil.getDateAndRandom();

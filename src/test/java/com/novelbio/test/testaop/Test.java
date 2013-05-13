@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.novelbio.database.service.SpringFactory;
+import com.novelbio.nbcgui.controltest.CtrlGO;
 
 
 public abstract class Test {
@@ -18,6 +19,9 @@ public abstract class Test {
 //		testAop.before();
 //		Test test = new Test();
 		test2.run("b",  "mb", "kb");
+		
+//		CtrlGO test = (CtrlGO)SpringFactory.getFactory().getBean("ctrlGO");
+//		test.saveExcel("sss");
 		
 	}
 	public abstract void run(String mmm1, String mmm, String kkk);

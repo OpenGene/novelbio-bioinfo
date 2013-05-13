@@ -399,8 +399,8 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	 * 用来提取Tss和Tes周边序列的
 	 * @param cis5to3 方向
 	 * @param site 位点
-	 * @param upBp 该位点上游，考虑正反向
-	 * @param downBp 该位点下游，考虑正反向
+	 * @param upBp 该位点上游，考虑正反向 上游为负数
+	 * @param downBp 该位点下游，考虑正反向 下游为正数
 	 * @return
 	 */
 	private SeqFasta getSiteRange(GffGeneIsoInfo gffGeneIsoInfo, int site, int upBp, int downBp) {

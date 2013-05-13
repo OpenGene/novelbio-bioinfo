@@ -6,40 +6,29 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import com.hg.data.c;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffType;
+import com.novelbio.analysis.seq.genome.GffChrSeq;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.resequencing.SnpAnnotation;
-import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.dataStructure.listOperate.HistList;
-import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.BarStyle;
 import com.novelbio.base.plot.DotStyle;
 import com.novelbio.base.plot.PlotScatter;
 import com.novelbio.database.domain.geneanno.AgeneUniID;
-import com.novelbio.database.domain.geneanno.BlastInfo;
-import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.mongorepo.geneanno.RepoGo2Term;
-import com.novelbio.database.service.SpringFactory;
-import com.novelbio.database.service.servgeneanno.ManageGo2Term;
 import com.novelbio.database.service.servgeneanno.ManageNCBIUniID;
 import com.novelbio.nbcgui.controlseq.CtrlRNAmap;
 
@@ -48,32 +37,12 @@ public class mytest {
 	private static Logger logger = Logger.getLogger(mytest.class);
 	
 	public static void main(String[] args) throws IOException, URISyntaxException {
-//		String in = "/media/winE/NBCplatform/genome/BLASTP_OUT/Macaca_mulatta.blastp.vs.mm10.out";
-//		TxtReadandWrite txtRead = new TxtReadandWrite(in);
-//		TxtReadandWrite txtWrite = new TxtReadandWrite(FileOperate.changeFileSuffix(in, "_Modify", null),true);
-//		HashMap<String, String[]> mapKey2Values = new LinkedHashMap<String, String[]>();
-//		for (String string : txtRead.readlines()) {
-//			String[] ss = string.split("\t");
-//			String key = ss[0];
-//			if (mapKey2Values.containsKey(key)) {
-//				String[] tmp = mapKey2Values.get(key);
-//				if (compare(tmp, ss) == -1) {
-//					continue;
-//				} else {
-//					mapKey2Values.put(key, ss);
-//				}
-//			} else {
-//				mapKey2Values.put(key, ss);
-//			}
-//		}
-//		for (String[] string : mapKey2Values.values()) {
-//			txtWrite.writefileln(string);
-//		}
-//		txtWrite.close();
-		
-		GffChrAbs gffChrAbs = new GffChrAbs(9606);
-		GffDetailGene gffDetailGene = gffChrAbs.getGffHashGene().searchLOC("SNRPGP6");
-		System.out.println(gffDetailGene.getRefID());
+		GeneID geneID = new GeneID("nitr1n", 0);
+		ManageNCBIUniID manageNCBIUniID = new ManageNCBIUniID();
+		List<AgeneUniID> lsAgeneUniIDs = manageNCBIUniID.findByAccID(GeneID.IDTYPE_UNIID, "YAR020C", 0);
+		for (AgeneUniID ageneUniID : lsAgeneUniIDs) {
+			System.out.println(ageneUniID.getAccID() + "\t" + ageneUniID.getGenUniID() + "\t" + ageneUniID.getTaxID());
+		}
 	}
 	
 	private static int compare(String[] s1, String[] s2) {

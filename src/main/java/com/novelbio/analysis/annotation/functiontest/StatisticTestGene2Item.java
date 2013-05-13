@@ -161,7 +161,7 @@ class StatisticTestGene2Path extends StatisticTestGene2Item {
 		lsTmpFinal.add(geneID.getAccID());
 		lsTmpFinal.add(geneID.getSymbol());
 		lsTmpFinal.add(geneID.getDescription());
-		if (blast) {
+		if (blast && geneID.getLsBlastInfos().size() > 0) {
 			lsTmpFinal.add(geneID.getLsBlastInfos().get(0).getEvalue() + "");
 			lsTmpFinal.add(geneID.getLsBlastGeneID().get(0).getSymbol());
 			lsTmpFinal.add(geneID.getLsBlastGeneID().get(0).getDescription());

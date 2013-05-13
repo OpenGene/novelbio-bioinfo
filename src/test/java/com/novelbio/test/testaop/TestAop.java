@@ -7,6 +7,8 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
+
+import com.novelbio.base.fileOperate.FileOperate;
 @Component 
 @Aspect 
 public class TestAop {
@@ -16,6 +18,7 @@ public class TestAop {
 	 
 	 @Before("logRun( mmm1,  mmm,  bean)")  
 	    public void before(String mmm1, String mmm, Test bean) {  
+		 FileOperate.isFileExist(fileName)
 		 mmm1 = mmm1 + "ssssseee";
 	        System.out.println("before");
 	        System.out.println(mmm1 + "aop");

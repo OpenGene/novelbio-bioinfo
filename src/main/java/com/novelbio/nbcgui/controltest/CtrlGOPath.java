@@ -173,7 +173,7 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo> {
 	 * @return
 	 * @throws Exception
 	 */
-	public void runCluster() {
+	private void runCluster() {
 		isCluster = true;
 		hashResultGene.clear();
 		HashMultimap<String, String> mapCluster2SetAccID = HashMultimap.create();
@@ -231,12 +231,11 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo> {
 	protected abstract LinkedHashMap<String, ArrayList<String[]>> calItem2GenePvalue(String prix, ArrayList<StatisticTestResult> lsResultTest);
 
 	public void saveExcel(String excelPath) {
-		System.out.println(excelPath);
-//		if (isCluster) {
-//			saveExcelCluster(excelPath);
-//		} else {
-//			saveExcelNorm(excelPath);
-//		}
+		if (isCluster) {
+			saveExcelCluster(excelPath);
+		} else {
+			saveExcelNorm(excelPath);
+		}
 	}
 	
 	private void saveExcelNorm(String excelPath) {

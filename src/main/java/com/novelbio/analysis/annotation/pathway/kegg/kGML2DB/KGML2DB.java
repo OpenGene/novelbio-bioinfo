@@ -194,7 +194,7 @@ public class KGML2DB
 					}
 					for (int j2 = 0; j2 < ss2.length; j2++) {
 						kGentry.setEntryName(ss[j]);kGentry.setReaction(ss2[j2]);
-						if (servKEntry.queryKGentry(kGentry)==null) 
+						if (servKEntry.queryLsKGentries(kGentry) == null || servKEntry.queryLsKGentries(kGentry).size() == 0) 
 						{
 							servKEntry.insertKGentry(kGentry);
 						}
