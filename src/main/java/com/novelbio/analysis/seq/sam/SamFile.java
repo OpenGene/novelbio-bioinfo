@@ -23,13 +23,13 @@ import net.sf.samtools.util.StringLineReader;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.PathNBCDetail;
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.FormatSeq;
 import com.novelbio.analysis.seq.bed.BedSeq;
 import com.novelbio.analysis.seq.fasta.FastaDictMake;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
-import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.species.Species;
@@ -266,7 +266,7 @@ public class SamFile implements AlignSeq {
 		SAMFileHeader samFileHeader = getSamReader().getSamFileHead();
 		if (isNeedSort) {
 			samFileHeader.setSortOrder(SAMFileHeader.SortOrder.coordinate);
-			PathDetail.setTmpDir(FileOperate.getParentPathName(getFileName()));
+			PathNBCDetail.setTmpDir(FileOperate.getParentPathName(getFileName()));
 		}
 		return samFileHeader;
 	}
@@ -418,6 +418,9 @@ public class SamFile implements AlignSeq {
 				} catch (Exception e) { }
 			}
 			samFile.writeSamRecord(samRecord);
+		}
+		for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {
+			alignmentRecorder.summary();
 		}
 		close();
 		samFile.close();

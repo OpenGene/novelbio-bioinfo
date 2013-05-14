@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
-import com.novelbio.base.PathDetail;
+import com.novelbio.PathNBCDetail;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
@@ -22,7 +22,7 @@ public class DiffExpDEGseq extends DiffExpAbs {
 	String outPutSuffix = "_Path";
 	public DiffExpDEGseq() {
 //		rawScript = "/media/winE/Bioinformatics/R/Protocol/DEGseqJava.txt";
-		rawScript = PathDetail.getRworkspace().replace("\\", "/") + "DEGseqJava.txt";
+		rawScript = PathNBCDetail.getRworkspace().replace("\\", "/") + "DEGseqJava.txt";
 
 	}
 	/** 基因标记列，实际列，用在R里面，所以不需要减1 */

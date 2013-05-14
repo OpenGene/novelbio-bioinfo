@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map.Entry;
 
-import com.novelbio.base.PathDetail;
+import com.novelbio.PathNBCDetail;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
@@ -27,7 +27,7 @@ public class DiffExpDESeq extends DiffExpAbs {
 	boolean isRepeatExp = false;
 	
 	public DiffExpDESeq() {
-		rawScript = PathDetail.getRworkspace() + "DESeqJava.txt";
+		rawScript = PathNBCDetail.getRworkspace() + "DESeqJava.txt";
 	}
 	
 	/** 仅供测试 */

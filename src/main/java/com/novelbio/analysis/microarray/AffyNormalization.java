@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-import com.novelbio.base.PathDetail;
+import com.novelbio.PathNBCDetail;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
@@ -33,16 +33,16 @@ public class AffyNormalization {
 	ArrayList<String> lsRawCelFile = new ArrayList<String>();
 	
 	public AffyNormalization() {
-		rawScript = PathDetail.getRworkspace() + "Affymetirx芯片分析Java.txt";
+		rawScript = PathNBCDetail.getRworkspace() + "Affymetirx芯片分析Java.txt";
 		setWorkSpace();
 		setOutScriptPath();
 	}
 
 	private void setWorkSpace() {
-		workSpace = PathDetail.getRworkspaceTmp();
+		workSpace = PathNBCDetail.getRworkspaceTmp();
 	}
 	private void setOutScriptPath() {
-		outScript = PathDetail.getRworkspaceTmp() + "AffyNorm_" + DateUtil.getDateAndRandom() + ".R";
+		outScript = PathNBCDetail.getRworkspaceTmp() + "AffyNorm_" + DateUtil.getDateAndRandom() + ".R";
 	}
 	public void setLsRawCelFile(ArrayList<String> lsRawCelFile) {
 		this.lsRawCelFile = lsRawCelFile;
@@ -128,7 +128,7 @@ public class AffyNormalization {
 		clean();
 	}
 	protected void Rrunning(String cmdName) {
-		String cmd = PathDetail.getRscript() + outScript.replace("\\", "/");
+		String cmd = PathNBCDetail.getRscript() + outScript.replace("\\", "/");
 		CmdOperate cmdOperate = new CmdOperate(cmd);
 		cmdOperate.run();
 	}

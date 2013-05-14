@@ -142,7 +142,7 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo> {
 	 * @param up
 	 * @param down
 	 */
-	public void runNorm() {
+	private void runNorm() {
 		isCluster = false;
 		hashResultGene.clear();
 		HashMultimap<String, String> mapPrefix2AccID = HashMultimap.create();

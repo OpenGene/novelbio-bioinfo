@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.novelbio.base.PathDetail;
+import com.novelbio.PathNBCDetail;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
@@ -43,7 +43,7 @@ public class TopGO {
 	ArrayList<String[]> lsResult;
 	ArrayListMultimap<String, String> mapGOID2LsGeneID;
 	public TopGO() {
-		tmplateScript = PathDetail.getRworkspace() + "topGOJava.txt";
+		tmplateScript = PathNBCDetail.getRworkspace() + "topGOJava.txt";
 		setWorkSpace();
 		setExeScriptPath();
 		setRawGoResultFile();
@@ -51,10 +51,10 @@ public class TopGO {
 		setCalGeneIDFilePath();
 	}
 	private void setWorkSpace() {
-		workSpace = PathDetail.getRworkspaceTmp();
+		workSpace = PathNBCDetail.getRworkspaceTmp();
 	}
 	private void setExeScriptPath() {
-		exeScript = PathDetail.getRworkspaceTmp() + "TopGO_" + DateUtil.getDateAndRandom() + ".R";
+		exeScript = PathNBCDetail.getRworkspaceTmp() + "TopGO_" + DateUtil.getDateAndRandom() + ".R";
 	}
 	/** 输入文件 */
 	private void setRawGoResultFile() {
@@ -66,7 +66,7 @@ public class TopGO {
 		this.BGGeneFile = workSpace + "TopGOBG_" + DateUtil.getDateAndRandom() + ".txt";
 	}
 	private void setCalGeneIDFilePath() {
-		CalGeneIDFile = PathDetail.getRworkspaceTmp() + "TopGO_CalGeneIDFile" + DateUtil.getDateAndRandom() + ".txt";
+		CalGeneIDFile = PathNBCDetail.getRworkspaceTmp() + "TopGO_CalGeneIDFile" + DateUtil.getDateAndRandom() + ".txt";
 	}
 	
 	/** 待检验的基因 */
@@ -206,7 +206,7 @@ public class TopGO {
 		clean();
 	}
 	protected void Rrunning(String cmdName) {
-		String cmd = PathDetail.getRscript() + exeScript.replace("\\", "/");
+		String cmd = PathNBCDetail.getRscript() + exeScript.replace("\\", "/");
 		CmdOperate cmdOperate = new CmdOperate(cmd);
 		Thread threadCmd = new Thread(cmdOperate);
 		threadCmd.start();

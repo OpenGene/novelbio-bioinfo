@@ -42,16 +42,44 @@ public class FQrecordFilterQC extends FQrecordFilter {
 	 * @return
 	 */
 	public boolean filter(FastQRecord fastQRecord) {
+		makeSureSeqLenEqualQualityLen(fastQRecord);
 		if (fastQRecord.seqFasta.toString().length() < readsMinLen) {
 			return false;
 		}
 		if (this.fastqOffset == FastQ.FASTQ_ILLUMINA_OFFSET && fastQRecord.seqQuality.endsWith("BBBBBBBBBB") ) {
 			return false;
 		}
+		if (fastQRecord.seqFasta.Length() != fastQRecord.getSeqQuality().length()) {
+			return false;
+		}
 		/** 就看Q10，Q13和Q20就行了 */
 		int[][] seqQC1 = copeFastQ(fastQRecord, 2, 10, 13, 20);
 		return filterFastQ(seqQC1);
 	}
+	
+	/** 保证序列长度和质量长度一致 */
+	private void makeSureSeqLenEqualQualityLen(FastQRecord fastQRecord) {
+		int seqLen = fastQRecord.seqFasta.Length();
+		int qualityLen = fastQRecord.getSeqQuality().length();
+		if (seqLen == qualityLen) {
+			return;
+		} else if (seqLen < qualityLen) {
+			fastQRecord.seqQuality = fastQRecord.seqQuality.substring(0, seqLen);
+		} else if (seqLen > qualityLen) {
+			char[] qualityAppend = new char[seqLen - qualityLen];
+			if (fastqOffset == FastQ.FASTQ_ILLUMINA_OFFSET) {
+				for (int i = 0; i < qualityAppend.length; i++) {
+					qualityAppend[i] = 'd';
+				}
+			} else {
+				for (int i = 0; i < qualityAppend.length; i++) {
+					qualityAppend[i] = 'F';
+				}
+			}
+			fastQRecord.seqQuality = fastQRecord.seqQuality + String.copyValueOf(qualityAppend);
+		}
+	}
+	
 	/**
 	 * 给定一行fastQ的ascII码，同时指定一系列的Q值，返回asc||小于该Q值的char有多少
 	 * 按照Qvalue输入的顺序，输出就是相应的int[]

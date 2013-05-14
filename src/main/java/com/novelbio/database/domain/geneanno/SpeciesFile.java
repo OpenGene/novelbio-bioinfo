@@ -15,6 +15,7 @@ import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.novelbio.PathNBCDetail;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fasta.SeqHash;
@@ -25,7 +26,6 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
-import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -358,7 +358,7 @@ public class SpeciesFile {
 			extractSmallRNASeq.setOutMatureRNA(miRNAfile);
 			extractSmallRNASeq.setOutHairpinRNA(miRNAhairpinFile);
 			Species species = new Species(taxID);
-			extractSmallRNASeq.setRNAdata(PathDetail.getMiRNADat(), species.getAbbrName());
+			extractSmallRNASeq.setRNAdata(PathNBCDetail.getMiRNADat(), species.getAbbrName());
 			extractSmallRNASeq.getSeq();
 		}
 		return new String[]{miRNAfile, miRNAhairpinFile};
@@ -450,9 +450,9 @@ public class SpeciesFile {
 			//TODO 
 			//这里提取的是全体rfam序列
 			if (speciesSpecific) {
-				extractSmallRNASeq.setRfamFile(PathDetail.getRfamSeq(), taxID);
+				extractSmallRNASeq.setRfamFile(PathNBCDetail.getRfamSeq(), taxID);
 			} else {
-				extractSmallRNASeq.setRfamFile(PathDetail.getRfamSeq(), 0);
+				extractSmallRNASeq.setRfamFile(PathNBCDetail.getRfamSeq(), 0);
 			}
 			extractSmallRNASeq.setOutRfamFile(rfamFile);
 			extractSmallRNASeq.getSeq();

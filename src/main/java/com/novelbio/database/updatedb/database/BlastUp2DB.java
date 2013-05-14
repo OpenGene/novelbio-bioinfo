@@ -7,8 +7,6 @@ import com.novelbio.database.service.servgeneanno.ManageBlastInfo;
 public class BlastUp2DB extends ImportPerLine{
 
 	int subTaxID = 0;
-	/** ref|NP_002932| 这种类型的，就会用正则表达式去抓里面的ID */
-	boolean idtypeBlast = false;
 	boolean update = false;
 	
 	int queryIDType = GeneID.IDTYPE_ACCID;
@@ -24,16 +22,6 @@ public class BlastUp2DB extends ImportPerLine{
 	 */
 	public void setUpdate(boolean update) {
 		this.update = update;
-	}
-	
-	/**
-	 *  ref|NP_002932| 这种类型的，就会用正则表达式去抓里面的ID
-	 *  id必须在第一个 “|” 和第二个 “|” 中间
-	 *  这时候就要将其设定为true。否则的话会将blast的第二列全部导入
-	 * @param idtypeBlast 默认是false
-	 */
-	public void setIDisBlastType(boolean idtypeBlast) {
-		this.idtypeBlast = idtypeBlast;
 	}
 	
 	/**
@@ -62,7 +50,7 @@ public class BlastUp2DB extends ImportPerLine{
 	
 	@Override
 	boolean impPerLine(String lineContent) {
-		BlastInfo blastInfo = new BlastInfo(taxID, subTaxID, lineContent, idtypeBlast);
+		BlastInfo blastInfo = new BlastInfo(taxID, subTaxID, lineContent);
 		try {
 			if (update) {
 				String[] ss = lineContent.split("\t");

@@ -76,7 +76,7 @@ public class MicroArrayBlast {
 		List<BlastInfo> lsBlastInfos = new ArrayList<BlastInfo>();
 		
 		for (String blastStr : txtGene2Acc.readlines()) {
-			BlastInfo blastInfo = new BlastInfo(taxID, false, taxID, subjectIDIsGeneUniID, blastStr, subIDisBlastType);
+			BlastInfo blastInfo = new BlastInfo(true, taxID, false, taxID, subjectIDIsGeneUniID, blastStr);
 			lsBlastInfos.add(blastInfo);
 		}
 		

@@ -34,8 +34,8 @@ public class ManageBlastInfo {
 	}
 	
 	/** 一行一行的添加信息*/
-	public static void addBlastLine(int taxIDQ, int taxIDS, String blastLine, boolean isBlastFormat) {
-		BlastInfo blastInfo = new BlastInfo(taxIDQ, taxIDS, blastLine, isBlastFormat);
+	public static void addBlastLine(int taxIDQ, int taxIDS, String blastLine) {
+		BlastInfo blastInfo = new BlastInfo(taxIDQ, taxIDS, blastLine);
 		addBlastInfoToCache(blastInfo);
 	}
 	
@@ -45,10 +45,10 @@ public class ManageBlastInfo {
 	 * @param blastFile
 	 * @param isBlastFormat 如果subjecdt是accID，具体的accID是否类似 blast的结果，如：dbj|AK240418.1|，那么获得AK240418，一般都是false
 	 */
-	public static void readBlastFile(int taxIDQ, int taxIDS, String blastFile, boolean isBlastFormat) {
+	public static void readBlastFile(int taxIDQ, int taxIDS, String blastFile) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(blastFile);
 		for (String content : txtRead.readlines()) {
-			BlastInfo blastInfo = new BlastInfo(taxIDQ, taxIDS, content, isBlastFormat);
+			BlastInfo blastInfo = new BlastInfo(taxIDQ, taxIDS, content);
 			addBlastInfoToCache(blastInfo);
 		}
 		txtRead.close();

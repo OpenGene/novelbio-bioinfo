@@ -66,9 +66,11 @@ public class FastQrecordFilterRun implements Callable<FastQrecordFilterRun> {
 		return filterSucess;
 	}
 	
+	/** 如果reads有问题，则会返回null */
 	public String getFastQRecord1Filtered() {
 		return fastqResult1;
 	}
+	/** 如果reads有问题，则会返回null */
 	public String getFastQRecord2Filtered() {
 		return fastqResult2;
 	}

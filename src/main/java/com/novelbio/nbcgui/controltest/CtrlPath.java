@@ -12,11 +12,13 @@ import org.springframework.stereotype.Service;
 import com.novelbio.analysis.annotation.functiontest.FunctionTest;
 import com.novelbio.analysis.annotation.functiontest.StatisticTestGene2Item;
 import com.novelbio.analysis.annotation.functiontest.StatisticTestResult;
+import com.novelbio.analysis.annotation.functiontest.TopGO.GoAlgorithm;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.geneanno.GOtype;
 @Service
 @Scope("prototype")
-public class CtrlPath extends CtrlGOPath {
+public class CtrlPath extends CtrlGOPath implements CtrlTestInt {
 	private static final Logger logger = Logger.getLogger(CtrlPath.class);
 
 	/**
@@ -69,5 +71,21 @@ public class CtrlPath extends CtrlGOPath {
 	protected void clear() {
 		functionTest = FunctionTest.getInstance(FunctionTest.FUNCTION_PATHWAY_KEGG);
 	}
+
+	@Override
+	public GOtype getGOClass() {
+		return null;
+	}
+
+	@Override
+	public void setGoAlgorithm(GoAlgorithm goAlgorithm) {}
+
+	@Override
+	public void setGOlevel(int levelNum) {
+		//TODO 考虑加入pathway的层级
+	}
+
+	@Override
+	public void setGOType(GOtype goType) {}
 	
 }

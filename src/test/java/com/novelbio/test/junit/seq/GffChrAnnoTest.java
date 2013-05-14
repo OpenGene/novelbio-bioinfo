@@ -3,7 +3,6 @@ package com.novelbio.test.junit.seq;
 import java.util.ArrayList;
 
 import com.novelbio.analysis.seq.genome.GffChrAnno;
-import com.novelbio.generalConf.NovelBioConst;
 
 public class GffChrAnnoTest {
 	public static void main(String[] args) {

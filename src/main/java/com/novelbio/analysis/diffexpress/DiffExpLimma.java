@@ -3,7 +3,7 @@ package com.novelbio.analysis.diffexpress;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.novelbio.base.PathDetail;
+import com.novelbio.PathNBCDetail;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
@@ -24,7 +24,7 @@ public class DiffExpLimma extends DiffExpAbs{
 	HashMap<Integer, String> mapID2Sample = new HashMap<Integer, String>();
 	
 	public static void main(String[] args) {
-		System.out.println(PathDetail.getProjectPath());
+		System.out.println(PathNBCDetail.getProjectPath());
 //		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt("/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/miRNA并集Deseq.txt", 1);
 //		DiffExpLimma deSeq = new DiffExpLimma();
 //		ArrayList<String[]> lsSampleColumn2GroupName = new ArrayList<String[]>();
@@ -44,7 +44,7 @@ public class DiffExpLimma extends DiffExpAbs{
 	}
 	public DiffExpLimma() {
 //		rawScript = "/media/winE/Bioinformatics/R/Protocol/Microarray/limmaSimpleJava.txt";
-		rawScript = PathDetail.getRworkspace() + "limmaSimpleJava.txt";
+		rawScript = PathNBCDetail.getRworkspace() + "limmaSimpleJava.txt";
 	}
 	
 	@Override

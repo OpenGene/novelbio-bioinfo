@@ -1,17 +1,12 @@
 package com.novelbio.test.junit;
 
+import junit.framework.TestCase;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import junit.framework.TestCase;
-
-
-import com.novelbio.analysis.seq.genomeNew2.GffChrHanYanChrom;
-import com.novelbio.analysis.seq.genomeNew2.gffOperate.GffCodGene;
-import com.novelbio.analysis.seq.genomeNew2.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genomeNew2.gffOperate.GffHashGeneUCSC;
-import com.novelbio.generalConf.NovelBioConst;
+import com.novelbio.analysis.seq.genome.GffChrHanYanChrom;
 
 public class TestGffChrUnion extends TestCase {
 	double[] input;

@@ -138,6 +138,7 @@ public class SamFileStatistics implements AlignmentRecorder {
 		for (SamRecord samRecord : samFile.readLines()) {
 			addAlignRecord(samRecord);
 		}
+		summary();
 		samFile.close();
 	}
 

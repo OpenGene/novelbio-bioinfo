@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.novelbio.analysis.annotation.functiontest.TopGO.GoAlgorithm;
+import com.novelbio.database.domain.geneanno.GOtype;
+
 public interface CtrlTestInt {
 	public void setTaxID(int taxID);
 	
@@ -35,24 +38,6 @@ public interface CtrlTestInt {
 	public HashMap<String, LinkedHashMap<String,ArrayList<String[]>>> getHashResult();
 	
 	public void running();
-	
-	/**
-	 * 给定文件，和文件分割符，以及第几列，获得该列的基因ID
-	 * @param lsAccID2Value  arraylist-string[] 如果 string[2],则第二个为上下调关系，判断上下调
-	 * 如果string[1]则不判断上下调
-	 * @param up
-	 * @param down
-	 */
-	public void runNorm();
-	
-	/**
-	 * 给定文件，和文件分割符，以及第几列，获得该列的基因ID
-	 * 
-	 * @param showMessage
-	 * @return
-	 * @throws Exception
-	 */
-	public void runCluster();
 
 	public void saveExcel(String excelPath);
 		
@@ -61,4 +46,20 @@ public interface CtrlTestInt {
 	 */
 	public void clearParam();
 	
+	/** GO用到 */
+	public GOtype getGOClass();
+	
+	/**
+	 * <b>GO用到</b>
+	 * 必须第一时间设定，这个就会初始化检验模块
+	 * 如果重新设定了该算法，则所有参数都会清空
+	 * @param goAlgorithm
+	 */
+	public void setGoAlgorithm(GoAlgorithm goAlgorithm);
+	
+	/** GO的层级分析，只有当算法为NovelGO时才能使用 */
+	public void setGOlevel(int levelNum);
+	
+	/** GO用到 */
+	public void setGOType(GOtype goType);
 }

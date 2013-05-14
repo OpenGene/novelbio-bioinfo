@@ -17,6 +17,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import com.novelbio.PathNBCDetail;
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.FormatSeq;
 import com.novelbio.analysis.seq.bed.BedSeq;
@@ -24,7 +25,6 @@ import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.mirna.CtrlMiRNAfastq;
 import com.novelbio.analysis.seq.mirna.CtrlMiRNApredict;
 import com.novelbio.analysis.seq.sam.SamFile;
-import com.novelbio.base.PathDetail;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JScrollPaneData;
@@ -301,8 +301,8 @@ public class GuiMiRNASeq extends JPanel{
 		ctrlMiRNAfastq.setOutPath(txtOutPathPrefix.getText());
 		ctrlMiRNAfastq.setGffChrAbs(gffChrAbs);
 		ctrlMiRNAfastq.setLsFastqFile(lsfastqFile2Prefix);
-		ctrlMiRNAfastq.setMiRNAinfo(PathDetail.getMiRNADat());
-		ctrlMiRNAfastq.setRfamFile(PathDetail.getRfamTab());
+		ctrlMiRNAfastq.setMiRNAinfo(PathNBCDetail.getMiRNADat());
+		ctrlMiRNAfastq.setRfamFile(PathNBCDetail.getRfamTab());
 		ctrlMiRNAfastq.setMapAll2Rfam(chkMapAllToRfam.isSelected());
 		ctrlMiRNAfastq.mappingAndCounting();
 		ctrlMiRNAfastq.writeToFile();

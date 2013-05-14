@@ -1,6 +1,6 @@
 package com.novelbio.analysis.seq.sam;
 
-import com.novelbio.base.PathDetail;
+import com.novelbio.PathNBCDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -68,7 +68,7 @@ public class BamRealign {
 	}
 
 	private String getTmpPath() {
-		return "-Djava.io.tmpdir=" + "\""+PathDetail.getTmpPath() +"\" ";
+		return "-Djava.io.tmpdir=" + "\""+PathNBCDetail.getTmpPath() +"\" ";
 	}
 	private String getInIntervalFile() {
 		return "-targetIntervals " + "\"" + FileOperate.changeFileSuffix(bamSortedFile, "", "intervals") + "\" ";

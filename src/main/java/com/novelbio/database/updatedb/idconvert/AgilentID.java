@@ -18,12 +18,10 @@ public class AgilentID {
 	 *
 	 */
 	public static void getInfo(int taxID,String agilentInput,int rowstart, String output,String agilentDBID) throws Exception {
-		TxtReadandWrite txtexcelAgilent=new TxtReadandWrite();
-		txtexcelAgilent.setParameter(agilentInput, false, true);
+		TxtReadandWrite txtexcelAgilent=new TxtReadandWrite(agilentInput);
 
 		
-		TxtReadandWrite txtAgilent=new TxtReadandWrite();
-		txtAgilent.setParameter(output, true,false);
+		TxtReadandWrite txtAgilent=new TxtReadandWrite(output, true);
 		ArrayList<String[]> result=new ArrayList<String[]>();
 		String[][] agilentInfo = txtexcelAgilent.ExcelRead("\t", rowstart, 1, txtexcelAgilent.ExcelRows(), txtexcelAgilent.ExcelColumns(2, "\t"));
 		

@@ -1,11 +1,7 @@
 package com.novelbio.test.junit;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
 import java.util.Set;
 
 import junit.framework.TestCase;
@@ -14,17 +10,14 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffType;
+import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
-import com.novelbio.database.domain.geneanno.SepSign;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.generalConf.NovelBioConst;
 
 public class TestGffUCSCInfo extends TestCase{
 	GffHashGene gffHashUCSC;

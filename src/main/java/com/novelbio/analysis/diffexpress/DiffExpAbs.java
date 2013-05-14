@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
-import com.novelbio.base.PathDetail;
+import com.novelbio.PathNBCDetail;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -104,7 +104,7 @@ public abstract class DiffExpAbs {
 	protected abstract void setFileNameRawdata();
 	
 	protected void setRworkspace() {
-		workSpace = PathDetail.getRworkspaceTmp();
+		workSpace = PathNBCDetail.getRworkspaceTmp();
 	}
 	/** 仅供测试 */
 	public String getOutScript() {
@@ -253,7 +253,7 @@ public abstract class DiffExpAbs {
 	 */
 	protected abstract void run();
 	protected void Rrunning(String cmdName) {
-		String cmd = PathDetail.getRscript() + outScript.replace("\\", "/");
+		String cmd = PathNBCDetail.getRscript() + outScript.replace("\\", "/");
 		CmdOperate cmdOperate = new CmdOperate(cmd);
 		cmdOperate.run();
 	}

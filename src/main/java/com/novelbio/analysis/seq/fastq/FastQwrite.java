@@ -37,6 +37,9 @@ class FastQwrite {
 	 * @param bedRecord
 	 */
 	protected void writeFastQRecordString(String fastQRecord1, String fastQRecord2) {
+		if (fastQRecord1 == null || fastQRecord1.equals("")) {
+			return;
+		}
 		txtSeqFile.writefileln(fastQRecord1);
 		if (fastQwriteMate != null) {
 			fastQwriteMate.writeFastQRecordString(fastQRecord2);
@@ -49,6 +52,9 @@ class FastQwrite {
 	 * @param bedRecord
 	 */
 	public void writeFastQRecordString(String fastQRecord) {
+		if (fastQRecord == null || fastQRecord.equals("")) {
+			return;
+		}
 		txtSeqFile.writefileln(fastQRecord);
 	}
 	
@@ -58,7 +64,10 @@ class FastQwrite {
 	 * @param bedRecord
 	 */
 	public void writeFastQRecord(FastQRecord fastQRecord) {
-		txtSeqFile.writefileln(fastQRecord.toString());
+		String seq = fastQRecord.toString();
+		if (seq != null) {
+			txtSeqFile.writefileln(seq);
+		}
 	}
 	/**
 	 * 不关闭
@@ -66,7 +75,7 @@ class FastQwrite {
 	 */
 	public void wirteFastqRecord(List<FastQRecord> lsFastQRecords) {
 		for (FastQRecord fastQRecord : lsFastQRecords) {
-			txtSeqFile.writefileln(fastQRecord.toString());
+			writeFastQRecord(fastQRecord);
 		}
 	}
 	

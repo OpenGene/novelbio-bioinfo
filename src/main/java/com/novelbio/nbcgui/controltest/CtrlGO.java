@@ -8,8 +8,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
+import com.novelbio.PathNBCDetail;
 import com.novelbio.analysis.annotation.functiontest.ElimGOFunTest;
 import com.novelbio.analysis.annotation.functiontest.FunctionTest;
 import com.novelbio.analysis.annotation.functiontest.NovelGOFunTest;
@@ -17,13 +17,12 @@ import com.novelbio.analysis.annotation.functiontest.StatisticTestGene2Item;
 import com.novelbio.analysis.annotation.functiontest.StatisticTestItem2Gene;
 import com.novelbio.analysis.annotation.functiontest.StatisticTestResult;
 import com.novelbio.analysis.annotation.functiontest.TopGO.GoAlgorithm;
-import com.novelbio.base.PathDetail;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.GOtype;
 
 @Component
 @Scope("prototype")
-public class CtrlGO extends CtrlGOPath {
+public class CtrlGO extends CtrlGOPath implements CtrlTestInt {
 	private static final Logger logger = Logger.getLogger(CtrlGO.class);
 	
 	GOtype GOClass = GOtype.BP;
@@ -63,7 +62,7 @@ public class CtrlGO extends CtrlGOPath {
 	@Override
 	protected void copeFile(String prix, String excelPath) {
 		if (goAlgorithm != GoAlgorithm.novelgo) {
-			String goMapFileSource = FileOperate.changeFileSuffix(PathDetail.getRworkspace() + "topGO/tGOall_elim_10_def.pdf", "_"+prix, null);
+			String goMapFileSource = FileOperate.changeFileSuffix(PathNBCDetail.getRworkspace() + "topGO/tGOall_elim_10_def.pdf", "_"+prix, null);
 			String goMapFileTargetName = FileOperate.getFileNameSep(excelPath)[0] + prix + "GoMap.pdf";
 			FileOperate.moveFile(goMapFileSource, FileOperate.getParentPathName(excelPath), goMapFileTargetName, true);
 		}
@@ -92,7 +91,7 @@ public class CtrlGO extends CtrlGOPath {
 //			}
 			
 			if (goAlgorithm != GoAlgorithm.novelgo) {
-				FileOperate.changeFileSuffixReal(PathDetail.getRworkspace() + "topGO/tGOall_elim_10_def.pdf", "_"+prix, null);
+				FileOperate.changeFileSuffixReal(PathNBCDetail.getRworkspace() + "topGO/tGOall_elim_10_def.pdf", "_"+prix, null);
 			}
 			ArrayList<StatisticTestItem2Gene> lsGO2Gene = functionTest.getItem2GenePvalue();
 			ArrayList<String[]> lsGo2GeneResult = new ArrayList<String[]>();

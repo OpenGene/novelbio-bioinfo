@@ -3,7 +3,6 @@ package com.novelbio.nbcgui.GUI;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -187,11 +186,6 @@ public class GuiBlast extends JPanel implements GuiNeedOpenFile{
 		});
 		add(btnUpdataBlast);
 		
-		chbRefStyle = new JCheckBox("ref|NP_002932|  like style");
-		chbRefStyle.setBounds(446, 410, 207, 22);
-		add(chbRefStyle);
-
-		
 		JLabel lblResulttype = new JLabel("ResultType");
 		lblResulttype.setBounds(10, 414, 91, 14);
 		add(lblResulttype);
@@ -244,7 +238,6 @@ public class GuiBlast extends JPanel implements GuiNeedOpenFile{
 		for (String[] content : sclPaneBlastFile.getLsDataInfo()) {
 			BlastUp2DB blast = new BlastUp2DB();
 			blast.setUpdate(chckbxSavetodb.isSelected());
-			blast.setIDisBlastType(chbRefStyle.isSelected());
 			
 			//设定一个默认参数
 			int taxIDQ = 1234;

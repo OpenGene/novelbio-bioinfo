@@ -133,7 +133,7 @@ public class FastQRecord implements Cloneable {
 	 * @return
 	 */
 	public String toString() {
-		if (seqQuality.length() != seqFasta.Length() || modifyQuality) {
+		if (modifyQuality) {
 			char[] quality = new char[seqFasta.Length()];
 			if (fastqOffset == FastQ.FASTQ_ILLUMINA_OFFSET) {
 				for (int i = 0; i < quality.length; i++) {
@@ -146,7 +146,36 @@ public class FastQRecord implements Cloneable {
 			}
 			seqQuality = String.copyValueOf(quality);
 		}
+		int seqLen = seqFasta.Length();
+		int qualityLen = seqQuality.length();
+		if (seqLen != qualityLen) {
+			if (seqLen < qualityLen) {
+				seqQuality = seqQuality.substring(0, seqLen);
+			} else if (seqLen > qualityLen) {
+				char[] qualityAppend = new char[seqLen - qualityLen];
+				if (fastqOffset == FastQ.FASTQ_ILLUMINA_OFFSET) {
+					for (int i = 0; i < qualityAppend.length; i++) {
+						qualityAppend[i] = 'd';
+					}
+				} else {
+					for (int i = 0; i < qualityAppend.length; i++) {
+						qualityAppend[i] = 'F';
+					}
+				}
+				seqQuality = seqQuality + String.copyValueOf(qualityAppend);
+			}
+		}
+		if (!isValidate()) {
+			return null;
+		}
 		return "@" + seqFasta.getSeqName() + TxtReadandWrite.ENTER_LINUX + seqFasta.toString() + TxtReadandWrite.ENTER_LINUX + "+" + TxtReadandWrite.ENTER_LINUX + seqQuality;
+	}
+	
+	public boolean isValidate() {
+		if (seqFasta == null || seqFasta.getSeqName() == null || seqFasta.Length() < 10) {
+			return false;
+		}
+		return true;
 	}
 	
 	/**

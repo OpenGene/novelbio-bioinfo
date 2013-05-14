@@ -187,7 +187,7 @@ public class RPKMcomput implements AlignmentRecorder {
 		lsConditions.add(1, TitleFormatNBC.GeneType.toString());
 		lsResult.add(lsConditions.toArray(new String[0]));
 		lsConditions.remove(0);
-		lsConditions.remove(1);
+		lsConditions.remove(0);
 		for (String geneName : mapGeneName2Length.keySet()) {
 			ArrayList<String> lsTmpResult = new ArrayList<String>();
 			lsTmpResult.add(geneName);
@@ -217,7 +217,7 @@ public class RPKMcomput implements AlignmentRecorder {
 		lsConditions.add(1, TitleFormatNBC.GeneType.toString());
 		lsResult.add(lsConditions.toArray(new String[0]));
 		lsConditions.remove(0);
-		lsConditions.remove(1);
+		lsConditions.remove(0);
 		for (String geneName : mapGeneName2Length.keySet()) {
 			ArrayList<String> lsTmpResult = new ArrayList<String>();
 			lsTmpResult.add(geneName);
@@ -251,7 +251,7 @@ public class RPKMcomput implements AlignmentRecorder {
 		lsConditions.add(1, TitleFormatNBC.GeneType.toString());
 		lsResult.add(lsConditions.toArray(new String[0]));
 		lsConditions.remove(0);
-		lsConditions.remove(1);
+		lsConditions.remove(0);
 		for (String geneName : mapGeneName2Length.keySet()) {
 			ArrayList<String> lsTmpResult = new ArrayList<String>();
 			lsTmpResult.add(geneName);

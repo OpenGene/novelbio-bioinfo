@@ -1,11 +1,14 @@
 package com.novelbio.analysis.seq.sam;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class SamToFastq implements AlignmentRecorder {
+	private static final Logger logger = Logger.getLogger(SamToFastq.class);
 	/** 是否仅挑选没有mapping上的reads */
 	boolean justUnMapped = false;
 	FastQ fastQ;
@@ -38,6 +41,9 @@ public class SamToFastq implements AlignmentRecorder {
 	public void addAlignRecord(AlignRecord alignRecord) {
 		if (!justUnMapped || (justUnMapped && !alignRecord.isMapped())) {
 			FastQRecord fastQRecord = alignRecord.getFastQRecord();
+			if (!fastQRecord.isValidate()) {
+				logger.error("出错" + alignRecord.toString());
+			}
 			fastQ.writeFastQRecord(fastQRecord);
 			fastQRecord = null;
 		}

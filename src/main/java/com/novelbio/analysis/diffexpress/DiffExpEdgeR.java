@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
 
-import com.novelbio.base.PathDetail;
+import com.novelbio.PathNBCDetail;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
@@ -46,7 +46,7 @@ public class DiffExpEdgeR extends DiffExpAbs {
 	HashMap<Integer, Double> mapColNum2NormalizeNum = new HashMap<Integer, Double>();
 	
 	public DiffExpEdgeR() {
-		rawScript = PathDetail.getRworkspace() + "edgeRJava.txt";
+		rawScript = PathNBCDetail.getRworkspace() + "edgeRJava.txt";
 	}
 	/**
 	 * 获得每个样本所需要乘以的修正系数

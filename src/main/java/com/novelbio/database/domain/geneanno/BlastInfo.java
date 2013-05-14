@@ -48,14 +48,38 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	}
 	
 	/**
-	 * 用 <b>-m8</b> 参数跑出来的Blast程序跑出来的结果
+	 * 用 <b>-m8</b> 参数跑出来的Blast程序跑出来的结果<br>
+	 * 默认<b>读取</b>数据库并初始化
 	 * @param taxIDQ queryTaxID
 	 * @param taxIDS subjectTaxID
 	 * @param blastStr blast的具体ID
 	 * @param isBlastIDtype 如果subjecdt是accID，具体的accID是否类似 blast的结果，如：dbj|AK240418.1|，那么获得AK240418，一般都是false
 	 */
-	public BlastInfo(int taxIDQ, int taxIDS, String blastStr, boolean isBlastIDtype) {
-		this(taxIDQ, false, taxIDS, false, blastStr, isBlastIDtype);
+	public BlastInfo( int taxIDQ, int taxIDS, String blastStr) {
+		this(true, taxIDQ, false, taxIDS, false, blastStr);
+	}
+	
+	/**
+	 * 用 <b>-m8</b> 参数跑出来的Blast程序跑出来的结果<br>
+	 * 默认<b>不</b>读取数据库<b>不进行</b>初始化
+	 * @param taxIDQ queryTaxID
+	 * @param taxIDS subjectTaxID
+	 * @param blastStr blast的具体ID
+	 * @param isBlastIDtype 如果subjecdt是accID，具体的accID是否类似 blast的结果，如：dbj|AK240418.1|，那么获得AK240418，一般都是false
+	 */
+	public BlastInfo(String blastStr) {
+		this(false, 0, false, 0, false, blastStr);
+	}
+	
+	/**
+	 * 用 <b>-m8</b> 参数跑出来的Blast程序跑出来的结果
+	 * @param queryDB 是否读取数据库并初始化
+	 * @param taxIDQ queryTaxID
+	 * @param taxIDS subjectTaxID
+	 * @param blastStr blast的具体ID
+	 */
+	public BlastInfo(boolean queryDB, int taxIDQ, int taxIDS, String blastStr) {
+		this(queryDB, taxIDQ, false, taxIDS, false, blastStr);
 	}
 	
 	/**
@@ -67,9 +91,29 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	 * @param blastStr blast的具体某一行的内容
 	 * @param isBlastIDtype 如果subjecdt是accID，具体的accID是否类似 blast的结果，如：dbj|AK240418.1|，那么获得AK240418，一般都是false
 	 */
-	public BlastInfo(int taxIDQ, boolean isGeneIDQ, int taxIDS, boolean isGeneIDS, String blastStr, boolean isBlastIDtype) {
+	public BlastInfo(boolean queryDB, int taxIDQ, boolean isGeneIDQ, int taxIDS, boolean isGeneIDS, String blastStr) {
 		setDate();
 		String[] blastInfo = blastStr.split("\t");
+		if (queryDB) {
+			query(taxIDQ, isGeneIDQ, taxIDS, isGeneIDS, blastInfo);
+		} else {
+			queryID = GeneID.removeDot(blastInfo[0]);
+			if (blastInfo[1].contains("|")) {
+				subjectID = GeneID.getBlastAccID(blastInfo[1]);
+			} else {
+				subjectID = GeneID.removeDot(blastInfo[1]);
+			}
+			
+			this.queryTax = taxIDQ;
+			this.subjectTax = taxIDS;
+		}
+		this.alignLen = Integer.parseInt(blastInfo[3].trim());
+		this.evalue = Double.parseDouble(blastInfo[10].trim());
+		this.identities = Double.parseDouble(blastInfo[2].trim());
+		this.score = Double.parseDouble(blastInfo[11].trim());
+	}
+	
+	private void query(int taxIDQ, boolean isGeneIDQ, int taxIDS, boolean isGeneIDS, String[] blastInfo) {
 		GeneID geneIDQ;
 		if (!isGeneIDQ) {
 			geneIDQ = new GeneID(blastInfo[0], taxIDQ);
@@ -81,11 +125,11 @@ public class BlastInfo implements Comparable<BlastInfo> {
 		}
 		
 		if (!isGeneIDS) {
-			geneIDS = new GeneID(blastInfo[1], taxIDS, isBlastIDtype);
+			geneIDS = new GeneID(blastInfo[1], taxIDS, blastInfo[1].contains("|"));
 		} else {
-			geneIDS = new GeneID(GeneID.IDTYPE_GENEID, blastInfo[1], taxIDQ);
+			geneIDS = new GeneID(GeneID.IDTYPE_GENEID, blastInfo[1], taxIDS);
 			if (geneIDS.getAccID_With_DefaultDB() == null) {
-				geneIDS = new GeneID(GeneID.IDTYPE_UNIID, blastInfo[1], taxIDQ);
+				geneIDS = new GeneID(GeneID.IDTYPE_UNIID, blastInfo[1], taxIDS);
 			}
 		}
 		
@@ -96,11 +140,6 @@ public class BlastInfo implements Comparable<BlastInfo> {
 		this.subjectID = geneIDS.getGeneUniID();
 		this.subjectTax = geneIDS.getTaxID();
 		this.subjectIDtype = geneIDS.getIDtype();
-		
-		this.alignLen = Integer.parseInt(blastInfo[3].trim());
-		this.evalue = Double.parseDouble(blastInfo[10].trim());
-		this.identities = Double.parseDouble(blastInfo[2].trim());
-		this.score = Double.parseDouble(blastInfo[11].trim());
 	}
 	
 	/**

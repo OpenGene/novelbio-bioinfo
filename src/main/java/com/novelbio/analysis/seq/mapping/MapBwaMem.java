@@ -8,12 +8,8 @@ import com.novelbio.analysis.seq.sam.SamRGroup;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
-/**
- * 在set里面有很多参数可以设定，不设定就用默认
- * @author zong0jie
- *
- */
-public class MapBwa extends MapDNA {
+public class MapBwaMem extends MapDNA {
+
 	public static void main(String[] args) {
 		MapBwa mapBwa = new MapBwa();
 		mapBwa.setSampleGroup("asa", null, null, null);
@@ -43,9 +39,10 @@ public class MapBwa extends MapDNA {
 	/** 含有几个gap */
 	int gapNum = 1;
 	/** gap的长度 */
-	int gapLength = 20;
+	int gapLength = 100;
 	/** 线程数量 */
 	int threadNum = 4;
+	int seedLength = 19;
 	/**
 	 * Maximum edit distance if the value is INT, or the fraction of missing alignments given 2% uniform
 	 *  base error rate if FLOAT. In the latter case, the maximum edit distance is automatically chosen 
@@ -56,13 +53,13 @@ public class MapBwa extends MapDNA {
 	/** 是否将index读入内存，仅对双端有效 */
 	boolean readInMemory = true;
 	
-	public MapBwa() {}
+	public MapBwaMem() {}
 	/**
 	 * @param fastQ
 	 * @param outFileName 结果文件名，后缀自动改为sam
 	 * @param uniqMapping 是否uniqmapping，单端才有的参数
 	 */
-	public MapBwa(FastQ fastQ, String outFileName) {
+	public MapBwaMem(FastQ fastQ, String outFileName) {
 		this.outFileName = outFileName;
 		leftFq = fastQ.getReadFileName();
 	}
@@ -72,7 +69,7 @@ public class MapBwa extends MapDNA {
 	 * @param seqFile2 没有就写null
 	 * @param outFileName 结果文件名，后缀自动改为sam
 	 */
-	public MapBwa(String seqFile1, String seqFile2, String outFileName) {
+	public MapBwaMem(String seqFile1, String seqFile2, String outFileName) {
 		leftFq = seqFile1;
 		rightFq = seqFile2;
 		this.outFileName = outFileName;
@@ -82,7 +79,7 @@ public class MapBwa extends MapDNA {
 	 * @param outFileName 结果文件名，后缀自动改为sam
 	 * @param uniqMapping 是否unique mapping
 	 */
-	public MapBwa(String seqFile,String outFileName) {
+	public MapBwaMem(String seqFile,String outFileName) {
 		leftFq = seqFile;
 		this.outFileName = outFileName;
 	}
@@ -179,13 +176,16 @@ public class MapBwa extends MapDNA {
 	 */
 	public void setSampleGroup(String sampleID, String LibraryName, String SampleName, String Platform) {
 		SamRGroup samRGroup = new SamRGroup(sampleID, LibraryName, SampleName, Platform);
-		sampleGroup = " -r " + CmdOperate.addQuot(samRGroup.toString()) + " ";
+		sampleGroup = " -R " + CmdOperate.addQuot(samRGroup.toString()) + " ";
 	}
 	/**
-	 * 默认gap为4，如果是indel查找的话，设置到5或者6比较合适
+	 * 默认gap为100，走默认即可
 	 * @param gapLength
 	 */
 	public void setGapLength(int gapLength) {
+		if (gapLength < 100) {
+			return;
+		}
 		this.gapLength = gapLength;
 	}
 	/**
@@ -225,14 +225,14 @@ public class MapBwa extends MapDNA {
 	}
 	/** 种子长度 */
 	private String getSeedSize() {
-		return " -l 25 ";
+		return " -k " + seedLength;
 	}
 	/**
-	 * gap罚分
+	 * gap罚分, 走默认，为6
 	 * @return
 	 */
 	private String getOpenPanalty() {
-		return " -O 10 ";
+		return " -O 6 ";
 	}
 	/**
 	 * 是illumina32标准还是64标准
@@ -407,4 +407,5 @@ public class MapBwa extends MapDNA {
 	public void suspend() {
 		
 	}
+
 }

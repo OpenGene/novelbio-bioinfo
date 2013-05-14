@@ -22,7 +22,7 @@ public class CopeDBSnp132 {
 	
 	
 	public void readSnp132(String filePathIn, String filePathOut, int taxID) {
-		TxtReadandWrite txtRead = new TxtReadandWrite(TxtReadandWrite.GZIP, filePathIn);
+		TxtReadandWrite txtRead = new TxtReadandWrite(filePathIn);
 		TxtReadandWrite txtOut = new TxtReadandWrite(filePathOut, true);
 		for (String string : txtRead.readlines()) {
 			String[] ssout = string.split("\t");

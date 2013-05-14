@@ -7,25 +7,24 @@ import org.springframework.stereotype.Component;
 import com.novelbio.database.service.SpringFactory;
 import com.novelbio.nbcgui.controltest.CtrlGO;
 import com.novelbio.nbcgui.controltest.CtrlGOPath;
+import com.novelbio.nbcgui.controltest.CtrlTestInt;
 
 /**
  * 给GO添加日志等
  * @author zong0jie
  *
  */
-//@Component
-//@Aspect
+@Component
+@Aspect
 public class CtrlGOPathLog {
 	public static void main(String[] args) {
 //		Object obj = SpringFactory.getFactory().getBean("ctrlGO");
 //		System.out.println(obj.getClass().getName());
 		
-		CtrlGO ctrlGO = (CtrlGO)SpringFactory.getFactory().getBean("ctrlGO");
-		ctrlGO.clearParam();
-		
-		ctrlGO.saveExcel("ssssssssss");
+		CtrlTestInt ctrlTestInt = (CtrlTestInt)SpringFactory.getFactory().getBean("ctrlGO");
+		ctrlTestInt.saveExcel("ssssssssss");
 	}
-//	@Before("execution (* com.novelbio.nbcgui.controltest.CtrlGOPath.saveExcel(*)) && args(excelPath) && target(ctrlGOPath)")
+	@Before("execution (* com.novelbio.nbcgui.controltest.CtrlGOPath.saveExcel(*)) && args(excelPath) && target(ctrlGOPath)")
 	 public void logRun(String excelPath, CtrlGOPath ctrlGOPath) {  
 		
 		excelPath = excelPath + "kkk";

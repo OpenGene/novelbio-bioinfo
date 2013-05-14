@@ -7,9 +7,9 @@ import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.novelbio.analysis.diffexpress.DiffExpDEGseq;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoCis;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoTrans;
 import com.novelbio.base.dataStructure.listOperate.ListAbs;
 import com.novelbio.database.model.modgeneid.GeneType;
@@ -32,8 +32,8 @@ public class TestListAbs extends TestCase {
 	 */
 	@Test
 	public void testTransIsoNorm() {
-		GffGeneIsoTrans isoTrans1 = new GffGeneIsoTrans("Iso1", GeneType.mRNA);
-		GffGeneIsoTrans isoTrans2 = new GffGeneIsoTrans("Iso2", GeneType.mRNA);
+		GffGeneIsoInfo isoTrans1 = GffGeneIsoInfo.createGffGeneIso("Iso1", "Iso1", GeneType.mRNA, false);
+		GffGeneIsoInfo isoTrans2 = GffGeneIsoInfo.createGffGeneIso("Iso2", "Iso2", GeneType.mRNA, false);
 		//<----------20--30--------------40-50------------------60-70--------------80-90---<
 		//<----------20---33--------------------------------------55-69---------------80--92---<
 		isoTrans1.add(new ExonInfo(isoTrans1, false, 80, 90));
@@ -44,7 +44,7 @@ public class TestListAbs extends TestCase {
 		isoTrans2.add(new ExonInfo(isoTrans2, false, 80, 92));
 		isoTrans2.add(new ExonInfo(isoTrans2, false, 55, 69));
 		isoTrans2.add(new ExonInfo(isoTrans2, false, 20, 33));
-		ArrayList<GffGeneIsoTrans> lsIso = new ArrayList<GffGeneIsoTrans>();
+		ArrayList<GffGeneIsoInfo> lsIso = new ArrayList<GffGeneIsoInfo>();
 		lsIso.add(isoTrans1); lsIso.add(isoTrans2);
 		
 		ArrayList<int[]> lsSep = ListAbs.getCombSep(false, lsIso, false);
@@ -66,8 +66,8 @@ public class TestListAbs extends TestCase {
 	 */
 	@Test
 	public void testTransIsoCasstteDouble() {
-		GffGeneIsoTrans isoTrans1 = new GffGeneIsoTrans("Iso1", GeneType.mRNA);
-		GffGeneIsoTrans isoTrans2 = new GffGeneIsoTrans("Iso2", GeneType.mRNA);
+		GffGeneIsoInfo isoTrans1 = GffGeneIsoInfo.createGffGeneIso("Iso1", "Iso1", GeneType.mRNA, false);
+		GffGeneIsoInfo isoTrans2 = GffGeneIsoInfo.createGffGeneIso("Iso2", "Iso2", GeneType.mRNA, false);
 		//<----------20--30--------------40-50----52-54--------------60-70--------------80-90---<
 		//<----------20---33-----------------------------------------------55-69---------------80--92---<
 		isoTrans1.add(new ExonInfo(isoTrans1, false, 80, 90));
@@ -79,7 +79,7 @@ public class TestListAbs extends TestCase {
 		isoTrans2.add(new ExonInfo(isoTrans2, false, 80, 92));
 		isoTrans2.add(new ExonInfo(isoTrans2, false, 55, 69));
 		isoTrans2.add(new ExonInfo(isoTrans2, false, 20, 33));
-		ArrayList<GffGeneIsoTrans> lsIso = new ArrayList<GffGeneIsoTrans>();
+		ArrayList<GffGeneIsoInfo> lsIso = new ArrayList<GffGeneIsoInfo>();
 		lsIso.add(isoTrans1); lsIso.add(isoTrans2);
 		
 		ArrayList<int[]> lsSep = ListAbs.getCombSep(false, lsIso, false);
@@ -102,8 +102,8 @@ public class TestListAbs extends TestCase {
 	 */
 	@Test
 	public void testCisIsoCasstteDouble() {
-		GffGeneIsoCis isoTrans1 = new GffGeneIsoCis("Iso1", GeneType.mRNA);
-		GffGeneIsoCis isoTrans2 = new GffGeneIsoCis("Iso2", GeneType.mRNA);
+		GffGeneIsoInfo isoTrans1 = GffGeneIsoInfo.createGffGeneIso("Iso1", "Iso1", GeneType.mRNA, true);
+		GffGeneIsoInfo isoTrans2 = GffGeneIsoInfo.createGffGeneIso("Iso2", "Iso2", GeneType.mRNA, true);
 		//<----------20--30-----------------40-50----52-54--------------60----70----------80-------90---<
 		//<----------20---33----35-36----------------------------------55------69-------71---82---84--92---<
 		isoTrans1.add(new ExonInfo(isoTrans1, false, 20, 30));
@@ -118,7 +118,7 @@ public class TestListAbs extends TestCase {
 		isoTrans2.add(new ExonInfo(isoTrans2, false, 71, 82));
 		isoTrans2.add(new ExonInfo(isoTrans2, false, 84, 92));
 		
-		ArrayList<GffGeneIsoCis> lsIso = new ArrayList<GffGeneIsoCis>();
+		ArrayList<GffGeneIsoInfo> lsIso = new ArrayList<GffGeneIsoInfo>();
 		lsIso.add(isoTrans1); lsIso.add(isoTrans2);
 		
 		ArrayList<int[]> lsSep = ListAbs.getCombSep(true, lsIso, false);

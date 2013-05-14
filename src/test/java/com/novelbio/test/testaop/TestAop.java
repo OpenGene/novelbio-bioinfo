@@ -18,7 +18,7 @@ public class TestAop {
 	 
 	 @Before("logRun( mmm1,  mmm,  bean)")  
 	    public void before(String mmm1, String mmm, Test bean) {  
-		 FileOperate.isFileExist(fileName)
+		 FileOperate.isFileExist(mmm1);
 		 mmm1 = mmm1 + "ssssseee";
 	        System.out.println("before");
 	        System.out.println(mmm1 + "aop");

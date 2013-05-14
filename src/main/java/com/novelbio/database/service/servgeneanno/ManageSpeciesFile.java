@@ -7,8 +7,8 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.PathNBCDetail;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
-import com.novelbio.base.PathDetail;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -25,7 +25,7 @@ public class ManageSpeciesFile {
 	public ManageSpeciesFile() {
 		if (mapTaxID_2_version2SpeciesFile == null) {
 			 mapTaxID_2_version2SpeciesFile = new HashMap<Integer, Map<String,SpeciesFile>>();
-			readSpeciesFile(PathDetail.getSpeciesFile());
+			readSpeciesFile(PathNBCDetail.getSpeciesFile());
 		}
 	}
 	
