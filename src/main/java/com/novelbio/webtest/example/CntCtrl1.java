@@ -1,23 +1,23 @@
-   package com.novelbio.web.example;  
+   package com.novelbio.webtest.example;  
      
    import org.apache.catalina.Session;
 import org.springframework.beans.factory.annotation.Autowired;  
 import org.springframework.stereotype.Component;
-   import org.springframework.stereotype.Controller;  
+import org.springframework.stereotype.Controller;  
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
-   import org.springframework.validation.BindingResult;  
+import org.springframework.validation.BindingResult;  
 import org.springframework.web.bind.ServletRequestUtils;
-   import org.springframework.web.bind.annotation.ModelAttribute;  
+import org.springframework.web.bind.annotation.ModelAttribute;  
 import org.springframework.web.bind.annotation.RequestBody;
-   import org.springframework.web.bind.annotation.RequestMapping;  
+import org.springframework.web.bind.annotation.RequestMapping;  
 import org.springframework.web.bind.annotation.RequestMethod;  
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-import com.novelbio.web.model.User;
-import com.novelbio.web.validator.UserValidator;
+import com.novelbio.webtest.model.User;
+import com.novelbio.webtest.validator.UserValidator;
      
 //   @Component
 //   @RequestMapping(value = "test")

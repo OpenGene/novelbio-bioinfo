@@ -1,4 +1,4 @@
-package com.novelbio.web.velocityexp;
+package com.novelbio.webtest.velocityexp;
 
 import java.util.ArrayList;
 import java.util.Date;

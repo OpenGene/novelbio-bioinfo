@@ -1,4 +1,4 @@
-package com.novelbio.web;
+package com.novelbio.webtest;
 
 import java.io.BufferedReader;
 

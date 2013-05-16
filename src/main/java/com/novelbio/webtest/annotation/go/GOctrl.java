@@ -1,4 +1,4 @@
-package com.novelbio.web.annotation.go;
+package com.novelbio.webtest.annotation.go;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -22,7 +22,7 @@ import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.database.service.servgeneanno.ServNCBIID;
-import com.novelbio.web.model.User;
+import com.novelbio.webtest.model.User;
 
 @Controller
 @SessionAttributes("goparam")

@@ -1,4 +1,4 @@
-package com.novelbio.web.annotation.go;
+package com.novelbio.webtest.annotation.go;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;

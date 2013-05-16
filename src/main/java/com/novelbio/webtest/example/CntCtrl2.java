@@ -1,4 +1,4 @@
-package com.novelbio.web.example;
+package com.novelbio.webtest.example;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,8 +22,8 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.web.model.User;
-import com.novelbio.web.validator.UserValidator;
+import com.novelbio.webtest.model.User;
+import com.novelbio.webtest.validator.UserValidator;
 @SessionAttributes("currUser")
 @Controller
 @RequestMapping("/test")

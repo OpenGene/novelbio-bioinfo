@@ -1,4 +1,4 @@
-package com.novelbio.web.velocityexp;
+package com.novelbio.webtest.velocityexp;
 public class Instructor{  
 	private String firstName;  
 	private String lastName;  

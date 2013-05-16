@@ -1,4 +1,4 @@
-package com.novelbio.web.model;  
+package com.novelbio.webtest.model;  
  
   
 public final class UserMessage {  

@@ -1,4 +1,4 @@
-package com.novelbio.web;
+package com.novelbio.webtest;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;

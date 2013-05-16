@@ -1,4 +1,4 @@
-package com.novelbio.web.velocityexp;
+package com.novelbio.webtest.velocityexp;
 
 import java.util.List;  
 
@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;  
 
-import com.novelbio.web.model.User;
-import com.novelbio.web.validator.UserValidator;
+import com.novelbio.webtest.model.User;
+import com.novelbio.webtest.validator.UserValidator;
  @Controller
 @RequestMapping("/test222")
 public class ListCourse{
