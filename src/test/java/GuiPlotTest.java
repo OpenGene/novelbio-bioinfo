@@ -16,6 +16,7 @@ import com.novelbio.base.plot.BarStyle;
 import com.novelbio.base.plot.DotStyle;
 import com.novelbio.base.plot.JpanelPlot;
 import com.novelbio.base.plot.PlotBar;
+import com.novelbio.base.plot.PlotBar.BarInfo;
 import com.novelbio.base.plot.PlotScatter;
 
 import de.erichseifert.gral.data.DataTable;
@@ -107,8 +108,8 @@ public class GuiPlotTest {
 		frame.getContentPane().add(jPanel,BorderLayout.CENTER);
 	}
 	PlotBar plotBar = new PlotBar();
-	PlotScatter plotHist = new PlotScatter();
-	PlotScatter plotScatter = new PlotScatter();
+	PlotScatter plotHist = new PlotScatter(PlotScatter.PLOT_TYPE_BARPLOT);
+	PlotScatter plotScatter = new PlotScatter(PlotScatter.PLOT_TYPE_BARPLOT);
     /** Instance to generate random data values. */
     private static final Random random = new Random();
 	private PlotScatter getXYplot(int num) {
@@ -125,7 +126,7 @@ public class GuiPlotTest {
                 data.add(random.nextGaussian());
         }
         
-        plotScatter = new PlotScatter();
+        plotScatter = new PlotScatter(PlotScatter.PLOT_TYPE_BARPLOT);
 		plotScatter.setAxisX(-5, 5);
 		plotScatter.setAxisY(0, 0.3);
 		BarStyle dotStyle2 = new BarStyle();
@@ -168,11 +169,11 @@ public class GuiPlotTest {
                 data.add(random.nextGaussian());
         }
         
-        plotHist = new PlotScatter();
+        plotHist = new PlotScatter(PlotScatter.PLOT_TYPE_BARPLOT);
         plotHist.setAxisX(-5, 5);
         plotHist.setAxisY(0, 0.3);
 		BarStyle dotStyle2 = new BarStyle();
-		dotStyle2.setBasicStroke(new BasicStroke(2f));
+		dotStyle2.setBasicStroke(2f);
 		dotStyle2.setColor(DotStyle.getGridentColor(Color.red, GraphicsUtils.deriveBrighter(Color.red)));
 		dotStyle2.setColorEdge(DotStyle.getGridentColor( GraphicsUtils.deriveBrighter(Color.red),Color.red));
 		dotStyle2.setValueVisible(true);
@@ -202,7 +203,7 @@ public class GuiPlotTest {
 		lsBarInfos.add(barInfo); lsBarInfos.add(barInfo2);
 		BarStyle barStyle = new BarStyle();
 		barStyle.setBarWidth(0.5);
-		barStyle.setBasicStroke(new BasicStroke(0.5f));
+		barStyle.setBasicStroke(0.5f);
 		barStyle.setColor(BarStyle.getGridentColorBrighter(Color.BLUE));
 		barStyle.setColorEdge(BarStyle.getGridentColorDarker(Color.BLUE));
 		plotBar.addBarPlot(lsBarInfos, barStyle);

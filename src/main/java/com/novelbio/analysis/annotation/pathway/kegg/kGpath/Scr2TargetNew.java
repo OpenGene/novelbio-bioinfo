@@ -103,7 +103,7 @@ public class Scr2TargetNew {
 	KGpathRelation ： 具体信息 
 		 */
 		ArrayList<Object[]> lsRelationInfo = new ArrayList<Object[]>();
-		ArrayList<String[]> lsAccID = QKegPath.getGeneID(accID, QtaxID);
+		ArrayList<String[]> lsAccID = null;// QKegPath.getGeneID("", "");
 		for (GeneID geneID : setGeneID) {
 			
 			
@@ -114,7 +114,7 @@ public class Scr2TargetNew {
 		{
 			Hashtable<String, KGpathScr2Trg> hashEntryRelation = new Hashtable<String, KGpathScr2Trg>();
 			
-			String[] qGenKegInfo=QKegPath.getKeggID(QtaxID, lsAccID.get(i), blast, subTaxID, evalue);
+			String[] qGenKegInfo=null;//QKegPath.getKeggID("", lsAccID.get(i), "", subTaxID, evalue);
 			if (qGenKegInfo[3]==null&&qGenKegInfo[7]==null) {
 				continue;
 			}
@@ -130,7 +130,7 @@ public class Scr2TargetNew {
 				{
 					////////////////如果geneBlast到了人类，并且得到了相应的KO，那么尝试获得该KO所对应本物种的KeggID，并用KeggID直接mapping回本基因。如果没有KeggID，则用KO去mapping////////////////////////////////////////////////////////////////
 					KGIDkeg2Ko kgiDkeg2Ko = new KGIDkeg2Ko();
-					kgiDkeg2Ko.setKo(ko[j]); kgiDkeg2Ko.setTaxID(QtaxID);
+//					kgiDkeg2Ko.setKo(ko[j]); kgiDkeg2Ko.setTaxID(124);
 					ArrayList<KGIDkeg2Ko> lsKgiDkeg2Kos2 = servKIDKeg2Ko.queryLsKGIDkeg2Ko(kgiDkeg2Ko);
 					if (lsKgiDkeg2Kos2 != null && lsKgiDkeg2Kos2.size()>0) 
 					{
@@ -144,7 +144,7 @@ public class Scr2TargetNew {
 			for (int j = 0; j < ko.length; j++)
 			{
 				KGentry qkGentry=new KGentry();
-				qkGentry.setEntryName(ko[j]);qkGentry.setTaxID(QtaxID);
+//				qkGentry.setEntryName(ko[j]);qkGentry.setTaxID(QtaxID);
 				ArrayList<KGentry> lsKGentryQuery = servKEntry.queryLsKGentries(qkGentry);
  				for (int k = 0; k < lsKGentryQuery.size(); k++)
 				{
@@ -173,7 +173,7 @@ public class Scr2TargetNew {
 			lsRelationInfo.add(tmpRelation);
 		}
 		
-		getRelation(pathName,lsRelationInfo,QtaxID,ResultFIleScr2Target, resultFIleAttribute);
+//		getRelation(pathName,lsRelationInfo,1234,ResultFIleScr2Target, resultFIleAttribute);
 	}
 	
 	/**

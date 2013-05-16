@@ -23,7 +23,8 @@ public class AgilentID {
 		
 		TxtReadandWrite txtAgilent=new TxtReadandWrite(output, true);
 		ArrayList<String[]> result=new ArrayList<String[]>();
-		String[][] agilentInfo = txtexcelAgilent.ExcelRead("\t", rowstart, 1, txtexcelAgilent.ExcelRows(), txtexcelAgilent.ExcelColumns(2, "\t"));
+		//TODO
+		String[][] agilentInfo = null;//txtexcelAgilent.ExcelRead(rowstart, 1, txtexcelAgilent.ExcelRows(), txtexcelAgilent.ExcelColumns(2, "\t"));
 		
 		Pattern patgbTransMambrance =Pattern.compile("([A-Z_]+?\\d+)(\\.\\d){0,1}", Pattern.CASE_INSENSITIVE);  
 	    //Pattern patgbIRP =Pattern.compile("([A-Za-z_]|\\d)+", Pattern.CASE_INSENSITIVE);  

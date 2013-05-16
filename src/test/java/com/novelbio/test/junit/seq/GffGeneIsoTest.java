@@ -13,13 +13,14 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoTrans;
 import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
 import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
+import com.novelbio.database.model.modgeneid.GeneType;
 
 public class GffGeneIsoTest extends TestCase {
 	@Test
 	public void testGffGeneIsoCis()
 	{
 		GffDetailGene gffDetailGene = new GffDetailGene("chr1","sefes", true);
-		GffGeneIsoCis gffGeneIsoCis = new GffGeneIsoCis("aaa",gffDetailGene, GffGeneIsoInfo.TYPE_GENE_MRNA);
+		GffGeneIsoInfo gffGeneIsoCis = GffGeneIsoInfo.createGffGeneIso("aaa",gffDetailGene.getNameSingle(), gffDetailGene, GeneType.mRNA, true);
 		gffGeneIsoCis.add(new ExonInfo("", true, 0, 3));
 		gffGeneIsoCis.add(new ExonInfo("",true,5, 10));
 		gffGeneIsoCis.add(new ExonInfo("",true,20, 30));
@@ -61,10 +62,10 @@ public class GffGeneIsoTest extends TestCase {
 	}
 	
 	@Test
-	public void testGffGeneIsoTrans()
-	{
+	public void testGffGeneIsoTrans() {
 		GffDetailGene gffDetailGene = new GffDetailGene("chr1","sefes", true);
-		GffGeneIsoTrans gffGeneIsoCis = new GffGeneIsoTrans("aaa",gffDetailGene, GffGeneIsoInfo.TYPE_GENE_MRNA);
+		GffGeneIsoInfo gffGeneIsoCis = GffGeneIsoInfo.createGffGeneIso("aaa",gffDetailGene.getNameSingle(), gffDetailGene, GeneType.mRNA, false);
+
 		gffGeneIsoCis.add(new ExonInfo("", false, 50, 40));
 		gffGeneIsoCis.add(new ExonInfo("", false, 30, 10));
 		gffGeneIsoCis.add(new ExonInfo("", false, 10, 5));

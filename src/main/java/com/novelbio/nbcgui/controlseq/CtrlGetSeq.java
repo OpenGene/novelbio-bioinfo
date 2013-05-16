@@ -99,6 +99,10 @@ public class CtrlGetSeq implements RunGetInfo<GffChrSeq.GffChrSeqProcessInfo>{
 		thread.start();
 	}
 	
+	public void reset() {
+		gffChrSeq.reset();
+	}
+	
 	@Override
 	public void setRunningInfo(GffChrSeqProcessInfo info) {
 		guiGetSeq.getProgressBar().setValue(info.getNumber());

@@ -3,6 +3,7 @@ package com.novelbio.database.updatedb.database;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.model.modgeneid.GeneID;
 
@@ -67,14 +68,15 @@ class SoyDbXref extends ImportPerLine {
 	 */
 	@Override
 	boolean impPerLine(String lineContent) {
+		//TODO
 		//第一个glmaxID，第二个 ncbiID，第三个geneID
 		String[] ss = lineContent.split("\t");
 		GeneID copedID = new GeneID(ss[0], taxID);
-		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_GLYMAX_SOYBASE, true);
+		copedID.setUpdateDBinfo(DBAccIDSource.SOYBASE, true);
 		copedID.setUpdateGeneID(ss[2], GeneID.IDTYPE_GENEID);
 		copedID.update(true);
 		copedID = new GeneID(ss[1], taxID);
-		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_NCBI_ACC_GENEAC, true);
+		copedID.setUpdateDBinfo(DBAccIDSource.SOYBASE, true);
 		copedID.setUpdateGeneID(ss[2], GeneID.IDTYPE_GENEID);
 		return copedID.update(true);
 	}
@@ -93,7 +95,7 @@ class SoyGeneInfo extends ImportPerLine {
 	boolean impPerLine(String lineContent) {
 		String[] ss = lineContent.split("\t");
 		GeneID copedID = new GeneID(ss[0], taxID);
-		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_GLYMAX_SOYBASE, true);
+		copedID.setUpdateDBinfo(DBAccIDSource.SOYBASE, true);
 		GeneInfo geneInfo = new GeneInfo();
 		geneInfo.setSymb(GeneID.removeDot(ss[0]));
 		if (ss.length < 9) {

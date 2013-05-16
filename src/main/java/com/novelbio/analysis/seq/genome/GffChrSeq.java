@@ -138,28 +138,11 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	public void setGetSeqGenomWide() {
 		getGenomWide = true;
 	}
-	/**
-	 * 输入名字提取序列，内部会去除重复基因
-	 * @param lsListGffName
-	 */
-	private void getSeqIsoGenomWide() {
-		setIsoToGetSeq.clear();
-		ArrayList<String> lsID = gffChrAbs.getGffHashGene().getLsNameNoRedundent();
-		GffDetailGene gffDetailGene = null;
-		for (String geneID : lsID) {
-			gffDetailGene = gffChrAbs.getGffHashGene().searchLOC(geneID);
-			if (getOnlyMRNA && !gffDetailGene.isMRNA()) {
-				continue;
-			}
-			if (getAllIso) {
-				setIsoToGetSeq.addAll(getGeneSeqAllIso(gffDetailGene));
-			} else {
-				setIsoToGetSeq.addAll(getGeneSeqLongestIso(gffDetailGene));
-			}
-		}
-		booGetIsoSeq = true;
-	}
+
 	public int getNumOfQuerySeq() {
+		if (getGenomWide) {
+			getSeqIsoGenomWide();
+		}
 		if (booGetIsoSeq) {
 			return setIsoToGetSeq.size();
 		} else {
@@ -265,6 +248,28 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		if (saveToFile)
 			txtOutFile.close();
 	}
+	/**
+	 * 输入名字提取序列，内部会去除重复基因
+	 * @param lsListGffName
+	 */
+	private void getSeqIsoGenomWide() {
+		setIsoToGetSeq.clear();
+		ArrayList<String> lsID = gffChrAbs.getGffHashGene().getLsNameNoRedundent();
+		GffDetailGene gffDetailGene = null;
+		for (String geneID : lsID) {
+			gffDetailGene = gffChrAbs.getGffHashGene().searchLOC(geneID);
+			if (getOnlyMRNA && !gffDetailGene.isMRNA()) {
+				continue;
+			}
+			if (getAllIso) {
+				setIsoToGetSeq.addAll(getGeneSeqAllIso(gffDetailGene));
+			} else {
+				setIsoToGetSeq.addAll(getGeneSeqLongestIso(gffDetailGene));
+			}
+		}
+		booGetIsoSeq = true;
+	}
+	
 	/** 设定中间参数 */
 	private void setTmpInfo(boolean isGetSeq, SeqFasta seqFasta, int number) {
 		if (!isGetSeq) {
@@ -450,6 +455,31 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		txtFasta.close();
 	}
 	
+	public void reset() {
+		geneStructure = GeneStructure.ALLLENGTH;
+		/** 是否提取内含子 */
+		getIntron = true;
+		/** 提取全基因组序列的时候，是每个LOC提取一条序列还是提取全部 */
+		getAllIso = true;
+		/** 是否提取氨基酸 */
+		getAAseq = false;
+		/** 是否仅提取mRNA序列 */
+		getOnlyMRNA = false;
+		getGenomWide = false;
+		/** 是提取位点还是提取基因 */
+		booGetIsoSeq = false;
+		setIsoToGetSeq = new LinkedHashSet<GffGeneIsoInfo>();
+		lsSiteInfos = new ArrayList<SiteSeqInfo>();
+		
+		/** 默认存入文件，否则返回一个listSeqFasta */
+		saveToFile = true;
+		lsResult = new ArrayList<SeqFasta>();
+		txtOutFile = null;
+		outFile = "";
+		
+		tssRange = null;
+		tesRange = null;
+	}
 	public static class GffChrSeqProcessInfo {
 		int number;
 		ArrayList<String> lsTmpInfo = new ArrayList<String>();

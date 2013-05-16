@@ -12,24 +12,25 @@ public class NumberOfSdAndNd {
 	}
 
 	public Vector getCodonAndAA(File filename) {
-		vectorAll = new ArrayList<ArrayList<String>>();
-		try {
-			BufferedReader in = new BufferedReader(new FileReader(filename));
-			ArrayList<String> lsInfo = new ArrayList<String>();
-			Vector codon = new Vector(1);
-			String str;
-
-			while ((str = in.readLine()) != null) {
-				String[] temp = str.split("\\t");
-				codon.add(temp[0]);
-				aa.add(temp[1]);
-			}
-			all.add(aa);
-			all.add(codon);
-			in.close();
-		} catch (IOException e) {
-		}
-		return all;
+//		vectorAll = new ArrayList<ArrayList<String>>();
+//		try {
+//			BufferedReader in = new BufferedReader(new FileReader(filename));
+//			ArrayList<String> lsInfo = new ArrayList<String>();
+//			Vector codon = new Vector(1);
+//			String str;
+//
+//			while ((str = in.readLine()) != null) {
+//				String[] temp = str.split("\\t");
+//				codon.add(temp[0]);
+//				aa.add(temp[1]);
+//			}
+//			all.add(aa);
+//			all.add(codon);
+//			in.close();
+//		} catch (IOException e) {
+//		}
+//		return all;
+		return null;
 	}
 
 	public static boolean isSynonymous(String codon1, String codon2,

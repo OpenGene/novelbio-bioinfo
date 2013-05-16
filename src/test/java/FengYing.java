@@ -1,31 +1,18 @@
 import java.util.ArrayList;
 import java.util.List;
 
-import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.rnaseq.ExonJunction;
-import com.novelbio.analysis.seq.rnaseq.GffHashMerge;
 import com.novelbio.analysis.seq.rnaseq.TophatJunction;
-import com.novelbio.analysis.seq.rnaseq.TranscriptomStatistics;
-import com.novelbio.analysis.seq.sam.SamFile;
-import com.novelbio.analysis.seq.sam.AlignSeqReading;
-import com.novelbio.analysis.seq.sam.SamRecord;
-import com.novelbio.base.cmd.CmdOperate;
-import com.novelbio.base.dataOperate.DateTime;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.generalConf.NovelBioConst;
 
 public class FengYing {
 	public static void main(String[] args) {
-		DateTime dateTime = new DateTime();
 //		chicken();
 		mouse();
-		dateTime.setStartTime();
 //		topJunctionTest();
 //		System.out.println(dateTime.getEclipseTime());
 //		String parentFile = "C:/Users/jie/Desktop/paper/";
@@ -63,7 +50,7 @@ public class FengYing {
 		
 //		String parentFile = "C:/Users/jie/Desktop/paper/";
 		
-		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
+		GffHashGene gffHashGene = new GffHashGene(GffType.GTF, 
 				parentFile + "mm10-ensemble-modified.gtf");
 //		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
 //				parentFile + "mm10-ensemble-modified.gtf");
@@ -104,7 +91,7 @@ public class FengYing {
 	public static void chicken() {
 		String parentFile = "/home/zong0jie/Desktop/paper/chicken/";
 		GffChrAbs gffChrAbs = new GffChrAbs(new Species(9031));
-		GffHashGene gffHashGene = new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, 
+		GffHashGene gffHashGene = new GffHashGene(GffType.GTF, 
 				parentFile + "gal4-merged.gtf");
 		
 		ExonJunction exonJunction = new ExonJunction();

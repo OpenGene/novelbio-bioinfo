@@ -2,24 +2,14 @@
 
 import java.util.ArrayList;
 
-import javax.jnlp.FileOpenService;
-
-import org.apache.ibatis.annotations.Select;
-
-import net.sf.picard.annotation.Gene;
-
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.resequencing.GeneFilter;
 import com.novelbio.analysis.seq.resequencing.RefSiteSnpIndel;
-import com.novelbio.analysis.seq.resequencing.SnpFilter;
-import com.novelbio.analysis.seq.resequencing.SnpSomaticFilter;
 import com.novelbio.analysis.seq.resequencing.SnpGroupFilterInfo;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.analysis.seq.resequencing.SnpSomaticFilter;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.generalConf.NovelBioConst;
 
-public class SnpFilterScript {
+public class SnpFilterScript {/*
 	public static void main(String[] args) {
 //		snpFilterAllSample();
 //		
@@ -324,4 +314,4 @@ public class SnpFilterScript {
 		snpgatKcope.filterSnp();
 		snpgatKcope.writeToFile(parentFile + "9522snpvs"+sampleName+"_Filtered.xls");
 	}
-}
+*/}

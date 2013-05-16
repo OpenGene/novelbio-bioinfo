@@ -147,7 +147,7 @@ public class ImportDB {
 	}
 	
 	private void updateEnsembl() {
-		Species species;
+		Species species = null;
 		species.getGffFile();
 //		String ensemblFileMouse = "/media/winE/Bioinformatics/DataBase/Mus_musculus.NCBIM37.65.gtf"; 
 //		String ucscGffFileMouse = "/media/winE/Bioinformatics/GenomeData/mouse/ucsc_mm9/refseqSortUsing.txt";
@@ -190,130 +190,130 @@ public class ImportDB {
 		riceID.update();
 	}
 	
-	private void updateBlast() {
-		String blastFile = "/media/winE/Bioinformatics/BLAST/result/chicken/ensemblNr2HumAA";
-		String outFIle = "/media/winE/Bioinformatics/BLAST/result/chicken/ensemblNr2HumAA_out";
-		int queryTaxID = 0;
-		BlastUp2DB blast = new BlastUp2DB();
-		blast.setQueryID(GeneID.IDTYPE_ACCID);
-		blast.setBlastID(GeneID.IDTYPE_GENEID);
-		blast.setQueryDBinfo(NovelBioConst.DBINFO_ENSEMBL);
-		blast.setBlastDBinfo(NovelBioConst.DBINFO_NCBI_ACC_REFSEQ);
-		blast.setSubTaxID(9606);
-		blast.setTaxID(queryTaxID);
-		blast.setTxtWriteExcep(outFIle);
-//		blast.updateFile(blastFile, false);
-		/////////////////  arabidopsis   //////////////////////////////////
-		blastFile = "/media/winE/Bioinformatics/BLAST/result/rice/tigrrice2tairath";
-		outFIle = FileOperate.changeFileSuffix(blastFile, "_out", null);
-		queryTaxID = 39947;
-		blast = new BlastUp2DB();
-		blast.setQueryID(GeneID.IDTYPE_ACCID);
-		blast.setBlastID(GeneID.IDTYPE_ACCID);
-		blast.setQueryDBinfo(NovelBioConst.DBINFO_RICE_TIGR);
-		blast.setBlastDBinfo(NovelBioConst.DBINFO_ATH_TAIR);
-		blast.setSubTaxID(3702);
-		blast.setTaxID(queryTaxID);
-		blast.setTxtWriteExcep(outFIle);
-//		blast.updateFile(blastFile, false);
-		/////////////////   zebrafish   /////////////////////////
-		blastFile = "/media/winE/Bioinformatics/BLAST/result/zebrafish/dre_nr2hsa_refseq";
-		outFIle = FileOperate.changeFileSuffix(blastFile, "_out", null);
-		queryTaxID = 7955;
-		blast = new BlastUp2DB();
-		blast.setQueryID(GeneID.IDTYPE_GENEID);
-		blast.setBlastID(GeneID.IDTYPE_GENEID);
-		blast.setQueryDBinfo(NovelBioConst.DBINFO_NCBI);
-		blast.setBlastDBinfo(NovelBioConst.DBINFO_NCBI_ACC_REFSEQ);
-		blast.setSubTaxID(9606);
-		blast.setTaxID(queryTaxID);
-		blast.setTxtWriteExcep(outFIle);
-//		blast.updateFile(blastFile, false);		
-		/////////////////   pichia   /////////////////////////
-		blastFile = "/media/winE/Bioinformatics/BLAST/result/Pichia/pichia2SSC.txt";
-		outFIle = FileOperate.changeFileSuffix(blastFile, "_out", null);
-		queryTaxID = 4922;
-		blast = new BlastUp2DB();
-		blast.setQueryID(GeneID.IDTYPE_ACCID);
-		blast.setBlastID(GeneID.IDTYPE_ACCID);
-		blast.setQueryDBinfo(NovelBioConst.DBINFO_PPA_ID);
-		blast.setBlastDBinfo(NovelBioConst.DBINFO_SSC_ID);
-		blast.setSubTaxID(4932);
-		blast.setTaxID(queryTaxID);
-		blast.setTxtWriteExcep(outFIle);
-//		blast.updateFile(blastFile, false);
-		/////////////////   zeamaize   /////////////////////////
-		blastFile = "/media/winE/Bioinformatics/BLAST/result/maize/maize2AthFinal5b.txt";
-		outFIle = FileOperate.changeFileSuffix(blastFile, "_out", null);
-		queryTaxID = 4577;
-		blast = new BlastUp2DB();
-		blast.setQueryID(GeneID.IDTYPE_ACCID);
-		blast.setBlastID(GeneID.IDTYPE_ACCID);
-		blast.setQueryDBinfo(NovelBioConst.DBINFO_MAIZE_MGDB);
-		blast.setBlastDBinfo(NovelBioConst.DBINFO_ATH_TAIR);
-		blast.setSubTaxID(3702);
-		blast.setTaxID(queryTaxID);
-		blast.setTxtWriteExcep(outFIle);
-//		blast.updateFile(blastFile, false);
-		/////////////////   soybean   /////////////////////////
-		blastFile = "/media/winE/Bioinformatics/BLAST/result/soybean/soybean2Ath.xls";
-		outFIle = FileOperate.changeFileSuffix(blastFile, "_out", null);
-		queryTaxID = 3847;
-		blast = new BlastUp2DB();
-		blast.setQueryID(GeneID.IDTYPE_ACCID);
-		blast.setBlastID(GeneID.IDTYPE_ACCID);
-		blast.setQueryDBinfo(NovelBioConst.DBINFO_GLYMAX_SOYBASE);
-		blast.setBlastDBinfo(NovelBioConst.DBINFO_ATH_TAIR);
-		blast.setSubTaxID(3702);
-		blast.setTaxID(queryTaxID);
-		blast.setTxtWriteExcep(outFIle);
-//		blast.updateFile(blastFile, false);
-		
-		/////////////////   pig   /////////////////////////
-		blastFile = "/media/winE/Bioinformatics/GenomeData/pig/ncbiRef2Human";
-		outFIle = FileOperate.changeFileSuffix(blastFile, "_out", null);
-		queryTaxID = 9823;
-		blast = new BlastUp2DB();
-		blast.setQueryID(GeneID.IDTYPE_ACCID);
-		blast.setBlastID(GeneID.IDTYPE_ACCID);
-		blast.setQueryDBinfo(NovelBioConst.DBINFO_NCBI);
-		blast.setBlastDBinfo(NovelBioConst.DBINFO_NCBI);
-		blast.setSubTaxID(9606);
-		blast.setTaxID(queryTaxID);
-		blast.setTxtWriteExcep(outFIle);
-		blast.setIDisBlastType(true);
-//		blast.updateFile(blastFile, false);
-		
-		/////////////////   cow   /////////////////////////
-		blastFile = "/media/winE/Bioinformatics/BLAST/result/cow/cowRefPro2humRefPro";
-		outFIle = FileOperate.changeFileSuffix(blastFile, "_out", null);
-		queryTaxID = 9913;
-		blast = new BlastUp2DB();
-		blast.setQueryID(GeneID.IDTYPE_GENEID);
-		blast.setBlastID(GeneID.IDTYPE_GENEID);
-		blast.setQueryDBinfo(NovelBioConst.DBINFO_NCBI);
-		blast.setBlastDBinfo(NovelBioConst.DBINFO_NCBI);
-		blast.setSubTaxID(9606);
-		blast.setTaxID(queryTaxID);
-		blast.setTxtWriteExcep(outFIle);
-		blast.setIDisBlastType(true);
-//		blast.updateFile(blastFile, false);
-		
-		////////////////////  Maize ////////////////////////////////////
-		blastFile = "/media/winE/NBCplatform/genome/maize/blast/zmb73_p_To_athTair10_p";
-		outFIle = FileOperate.changeFileSuffix(blastFile, "_out", null);
-		queryTaxID = 4577;
-		blast = new BlastUp2DB();
-		blast.setQueryID(GeneID.IDTYPE_ACCID);
-		blast.setBlastID(GeneID.IDTYPE_ACCID);
-		blast.setQueryDBinfo(NovelBioConst.DBINFO_MAIZE_MGDB);
-		blast.setBlastDBinfo(NovelBioConst.DBINFO_ATH_TAIR);
-		blast.setSubTaxID(3702);
-		blast.setTaxID(queryTaxID);
-		blast.setTxtWriteExcep(outFIle);
-		blast.setIDisBlastType(false);
-		blast.updateFile(blastFile);
-	}
+//	private void updateBlast() {
+//		String blastFile = "/media/winE/Bioinformatics/BLAST/result/chicken/ensemblNr2HumAA";
+//		String outFIle = "/media/winE/Bioinformatics/BLAST/result/chicken/ensemblNr2HumAA_out";
+//		int queryTaxID = 0;
+//		BlastUp2DB blast = new BlastUp2DB();
+//		blast.setQueryID(GeneID.IDTYPE_ACCID);
+//		blast.setBlastID(GeneID.IDTYPE_GENEID);
+//		blast.setQueryDBinfo(NovelBioConst.DBINFO_ENSEMBL);
+//		blast.setBlastDBinfo(NovelBioConst.DBINFO_NCBI_ACC_REFSEQ);
+//		blast.setSubTaxID(9606);
+//		blast.setTaxID(queryTaxID);
+//		blast.setTxtWriteExcep(outFIle);
+////		blast.updateFile(blastFile, false);
+//		/////////////////  arabidopsis   //////////////////////////////////
+//		blastFile = "/media/winE/Bioinformatics/BLAST/result/rice/tigrrice2tairath";
+//		outFIle = FileOperate.changeFileSuffix(blastFile, "_out", null);
+//		queryTaxID = 39947;
+//		blast = new BlastUp2DB();
+//		blast.setQueryID(GeneID.IDTYPE_ACCID);
+//		blast.setBlastID(GeneID.IDTYPE_ACCID);
+//		blast.setQueryDBinfo(NovelBioConst.DBINFO_RICE_TIGR);
+//		blast.setBlastDBinfo(NovelBioConst.DBINFO_ATH_TAIR);
+//		blast.setSubTaxID(3702);
+//		blast.setTaxID(queryTaxID);
+//		blast.setTxtWriteExcep(outFIle);
+////		blast.updateFile(blastFile, false);
+//		/////////////////   zebrafish   /////////////////////////
+//		blastFile = "/media/winE/Bioinformatics/BLAST/result/zebrafish/dre_nr2hsa_refseq";
+//		outFIle = FileOperate.changeFileSuffix(blastFile, "_out", null);
+//		queryTaxID = 7955;
+//		blast = new BlastUp2DB();
+//		blast.setQueryID(GeneID.IDTYPE_GENEID);
+//		blast.setBlastID(GeneID.IDTYPE_GENEID);
+//		blast.setQueryDBinfo(NovelBioConst.DBINFO_NCBI);
+//		blast.setBlastDBinfo(NovelBioConst.DBINFO_NCBI_ACC_REFSEQ);
+//		blast.setSubTaxID(9606);
+//		blast.setTaxID(queryTaxID);
+//		blast.setTxtWriteExcep(outFIle);
+////		blast.updateFile(blastFile, false);		
+//		/////////////////   pichia   /////////////////////////
+//		blastFile = "/media/winE/Bioinformatics/BLAST/result/Pichia/pichia2SSC.txt";
+//		outFIle = FileOperate.changeFileSuffix(blastFile, "_out", null);
+//		queryTaxID = 4922;
+//		blast = new BlastUp2DB();
+//		blast.setQueryID(GeneID.IDTYPE_ACCID);
+//		blast.setBlastID(GeneID.IDTYPE_ACCID);
+//		blast.setQueryDBinfo(NovelBioConst.DBINFO_PPA_ID);
+//		blast.setBlastDBinfo(NovelBioConst.DBINFO_SSC_ID);
+//		blast.setSubTaxID(4932);
+//		blast.setTaxID(queryTaxID);
+//		blast.setTxtWriteExcep(outFIle);
+////		blast.updateFile(blastFile, false);
+//		/////////////////   zeamaize   /////////////////////////
+//		blastFile = "/media/winE/Bioinformatics/BLAST/result/maize/maize2AthFinal5b.txt";
+//		outFIle = FileOperate.changeFileSuffix(blastFile, "_out", null);
+//		queryTaxID = 4577;
+//		blast = new BlastUp2DB();
+//		blast.setQueryID(GeneID.IDTYPE_ACCID);
+//		blast.setBlastID(GeneID.IDTYPE_ACCID);
+//		blast.setQueryDBinfo(NovelBioConst.DBINFO_MAIZE_MGDB);
+//		blast.setBlastDBinfo(NovelBioConst.DBINFO_ATH_TAIR);
+//		blast.setSubTaxID(3702);
+//		blast.setTaxID(queryTaxID);
+//		blast.setTxtWriteExcep(outFIle);
+////		blast.updateFile(blastFile, false);
+//		/////////////////   soybean   /////////////////////////
+//		blastFile = "/media/winE/Bioinformatics/BLAST/result/soybean/soybean2Ath.xls";
+//		outFIle = FileOperate.changeFileSuffix(blastFile, "_out", null);
+//		queryTaxID = 3847;
+//		blast = new BlastUp2DB();
+//		blast.setQueryID(GeneID.IDTYPE_ACCID);
+//		blast.setBlastID(GeneID.IDTYPE_ACCID);
+//		blast.setQueryDBinfo(NovelBioConst.DBINFO_GLYMAX_SOYBASE);
+//		blast.setBlastDBinfo(NovelBioConst.DBINFO_ATH_TAIR);
+//		blast.setSubTaxID(3702);
+//		blast.setTaxID(queryTaxID);
+//		blast.setTxtWriteExcep(outFIle);
+////		blast.updateFile(blastFile, false);
+//		
+//		/////////////////   pig   /////////////////////////
+//		blastFile = "/media/winE/Bioinformatics/GenomeData/pig/ncbiRef2Human";
+//		outFIle = FileOperate.changeFileSuffix(blastFile, "_out", null);
+//		queryTaxID = 9823;
+//		blast = new BlastUp2DB();
+//		blast.setQueryID(GeneID.IDTYPE_ACCID);
+//		blast.setBlastID(GeneID.IDTYPE_ACCID);
+//		blast.setQueryDBinfo(NovelBioConst.DBINFO_NCBI);
+//		blast.setBlastDBinfo(NovelBioConst.DBINFO_NCBI);
+//		blast.setSubTaxID(9606);
+//		blast.setTaxID(queryTaxID);
+//		blast.setTxtWriteExcep(outFIle);
+//		blast.setIDisBlastType(true);
+////		blast.updateFile(blastFile, false);
+//		
+//		/////////////////   cow   /////////////////////////
+//		blastFile = "/media/winE/Bioinformatics/BLAST/result/cow/cowRefPro2humRefPro";
+//		outFIle = FileOperate.changeFileSuffix(blastFile, "_out", null);
+//		queryTaxID = 9913;
+//		blast = new BlastUp2DB();
+//		blast.setQueryID(GeneID.IDTYPE_GENEID);
+//		blast.setBlastID(GeneID.IDTYPE_GENEID);
+//		blast.setQueryDBinfo(NovelBioConst.DBINFO_NCBI);
+//		blast.setBlastDBinfo(NovelBioConst.DBINFO_NCBI);
+//		blast.setSubTaxID(9606);
+//		blast.setTaxID(queryTaxID);
+//		blast.setTxtWriteExcep(outFIle);
+//		blast.setIDisBlastType(true);
+////		blast.updateFile(blastFile, false);
+//		
+//		////////////////////  Maize ////////////////////////////////////
+//		blastFile = "/media/winE/NBCplatform/genome/maize/blast/zmb73_p_To_athTair10_p";
+//		outFIle = FileOperate.changeFileSuffix(blastFile, "_out", null);
+//		queryTaxID = 4577;
+//		blast = new BlastUp2DB();
+//		blast.setQueryID(GeneID.IDTYPE_ACCID);
+//		blast.setBlastID(GeneID.IDTYPE_ACCID);
+//		blast.setQueryDBinfo(NovelBioConst.DBINFO_MAIZE_MGDB);
+//		blast.setBlastDBinfo(NovelBioConst.DBINFO_ATH_TAIR);
+//		blast.setSubTaxID(3702);
+//		blast.setTaxID(queryTaxID);
+//		blast.setTxtWriteExcep(outFIle);
+//		blast.setIDisBlastType(false);
+//		blast.updateFile(blastFile);
+//	}
 	
 	private void updateAffy() {
 		String affyFile = "";

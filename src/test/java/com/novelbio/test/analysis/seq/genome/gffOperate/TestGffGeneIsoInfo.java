@@ -30,8 +30,8 @@ public class TestGffGeneIsoInfo extends TestCase{
 	 */
 	@Test
 	public void testTransIsoNorm() {
-		GffGeneIsoTrans isoTrans1 = new GffGeneIsoTrans("Iso1", GeneType.mRNA);
-		GffGeneIsoTrans isoTrans2 = new GffGeneIsoTrans("Iso2", GeneType.mRNA);
+		GffGeneIsoInfo isoTrans1 = GffGeneIsoInfo.createGffGeneIso("Iso1", "Iso1", GeneType.mRNA, false);
+		GffGeneIsoInfo isoTrans2 = GffGeneIsoInfo.createGffGeneIso("Iso2", "Iso2", GeneType.mRNA, false);
 		//<----------20--30--------------40-50------------------60-70--------------80-90---<
 		//<----------20---33--------------------------------------55-69---------------80--92---<
 		isoTrans1.add(new ExonInfo(isoTrans1, false, 80, 90));
@@ -69,8 +69,8 @@ public class TestGffGeneIsoInfo extends TestCase{
 	 */
 	@Test
 	public void testTransIsoCasstteDouble() {
-		GffGeneIsoTrans isoTrans1 = new GffGeneIsoTrans("Iso1", GeneType.mRNA);
-		GffGeneIsoTrans isoTrans2 = new GffGeneIsoTrans("Iso2", GeneType.mRNA);
+		GffGeneIsoInfo isoTrans1 = GffGeneIsoInfo.createGffGeneIso("Iso1", "Iso1", GeneType.mRNA, false);
+		GffGeneIsoInfo isoTrans2 = GffGeneIsoInfo.createGffGeneIso("Iso2", "Iso2", GeneType.mRNA, false);
 		//<----------20--30--------------40-50----52-54--------------60-70--------------80-90---<
 		//<----------20---33-----------------------------------------------55-69---------------80--92---<
 		isoTrans1.add(new ExonInfo(isoTrans1, false, 80, 90));
@@ -111,8 +111,8 @@ public class TestGffGeneIsoInfo extends TestCase{
 	 */
 	@Test
 	public void testCisIsoCasstteDouble() {
-		GffGeneIsoCis isoTrans1 = new GffGeneIsoCis("Iso1", GeneType.mRNA);
-		GffGeneIsoCis isoTrans2 = new GffGeneIsoCis("Iso2", GeneType.mRNA);
+		GffGeneIsoInfo isoTrans1 = GffGeneIsoInfo.createGffGeneIso("Iso1", "Iso1", GeneType.mRNA, true);
+		GffGeneIsoInfo isoTrans2 = GffGeneIsoInfo.createGffGeneIso("Iso2", "Iso2", GeneType.mRNA, true);
 		//>--1-3-4-5-----------20--30-----------------40-50----52-54--------------60----70----------80-------90--->
 		//>---------------7-8---20---33----35-36----------------------------------55------69-------71---82---84--92--->
 		isoTrans1.add(new ExonInfo(isoTrans1, true, 1, 3));

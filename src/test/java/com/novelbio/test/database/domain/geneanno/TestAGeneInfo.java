@@ -16,24 +16,19 @@ public class TestAGeneInfo extends TestCase {
 	@Before
 	public void setUp() {
 		aGeneInfoInDB.setDBinfo("NCBI");
-		aGeneInfoInDB.setChrm("1234-5678");
 		aGeneInfoInDB.setDescrp("test raw gene info");
-		aGeneInfoInDB.setFullName("full name test1");
-		aGeneInfoInDB.setChrm("chr1");
 		aGeneInfoInDB.setGeneUniID("12345");
 		aGeneInfoInDB.setSymb("symbol Test1");
-		aGeneInfoInDB.setSymNom("Nomsy Test1");
-		aGeneInfoInDB.setSynonym("NonSy Test1");
+		aGeneInfoInDB.addSymNom("Nomsy Test1");
+		aGeneInfoInDB.addSynonym("NonSy Test1");
 		
 		aGeneInfoInAddSamDB.setDBinfo("NCBI");
-		aGeneInfoInAddSamDB.setChrm("1234-5678");
 		aGeneInfoInAddSamDB.setDescrp("test raw gene info Anoter");
-		aGeneInfoInAddSamDB.setFullName("full name test2");
-		aGeneInfoInAddSamDB.setChrm("chr1");
+		aGeneInfoInAddSamDB.addFullName("full name test2");
 		aGeneInfoInAddSamDB.setGeneUniID("12345");
 		aGeneInfoInAddSamDB.setSymb("symbol Test2");
-		aGeneInfoInAddSamDB.setSymNom("Nomsy Test1");
-		aGeneInfoInAddSamDB.setSynonym("NonSy Test1");
+		aGeneInfoInAddSamDB.addSymNom("Nomsy Test1");
+		aGeneInfoInAddSamDB.addSynonym("NonSy Test1");
 	}
 	@Override
 	protected void tearDown() throws Exception {

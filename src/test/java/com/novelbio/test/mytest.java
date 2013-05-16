@@ -10,11 +10,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.sf.picard.fastq.FastqReader;
+import net.sf.picard.fastq.FastqRecord;
+
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
+import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.GffChrSeq;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
@@ -28,6 +32,7 @@ import com.novelbio.base.plot.BarStyle;
 import com.novelbio.base.plot.DotStyle;
 import com.novelbio.base.plot.PlotScatter;
 import com.novelbio.database.domain.geneanno.AgeneUniID;
+import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.service.servgeneanno.ManageNCBIUniID;
 import com.novelbio.nbcgui.controlseq.CtrlRNAmap;
@@ -37,12 +42,8 @@ public class mytest {
 	private static Logger logger = Logger.getLogger(mytest.class);
 	
 	public static void main(String[] args) throws IOException, URISyntaxException {
-		GeneID geneID = new GeneID("nitr1n", 0);
-		ManageNCBIUniID manageNCBIUniID = new ManageNCBIUniID();
-		List<AgeneUniID> lsAgeneUniIDs = manageNCBIUniID.findByAccID(GeneID.IDTYPE_UNIID, "YAR020C", 0);
-		for (AgeneUniID ageneUniID : lsAgeneUniIDs) {
-			System.out.println(ageneUniID.getAccID() + "\t" + ageneUniID.getGenUniID() + "\t" + ageneUniID.getTaxID());
-		}
+		
+		
 	}
 	
 	private static int compare(String[] s1, String[] s2) {
@@ -155,40 +156,5 @@ public class mytest {
 		}
 		return result + append + suffix;
     }
-	private void plotHist() {
-		HistList histList = HistList.creatHistList(true);
-		histList.setStartBin(1, "", 0, 1);
-		for (int i = 2; i < 10; i++) {
-			histList.addHistBin(i, "", i);
-		}
-		
-		histList.addNum(5, 50);
-		histList.addNum(6, 55);
-		histList.addNum(7, 34);
-		histList.addNum(8, 28);
-		histList.addNum(9, 10);
-		
-		BarStyle dotStyle = new BarStyle();
-		dotStyle.setColor(DotStyle.getGridentColorBrighter(Color.gray));
-		dotStyle.setColorEdge(DotStyle.getGridentColorBrighterTrans(Color.blue));
-//		dotStyle.setBasicStroke(new BasicStroke(5f));
-		
-		PlotScatter plotScatter = histList.getPlotHistBar(dotStyle);
-		plotScatter.setBg(Color.white);
-		plotScatter.saveToFile("/home/zong0jie/Desktop/test/aaa3.png", 1000, 1000);
-	}
-	
-	private static void HG18() {
-		SnpAnnotation snpAnnotation = new SnpAnnotation();
-		GffChrAbs gffChrAbs = new GffChrAbs();
-		gffChrAbs.setChrFile("/media/winE/Bioinformatics/genome/rice/tigr6.0/all.con", null);
-		gffChrAbs.setGffFile(39947, NovelBioConst.GENOME_GFF_TYPE_TIGR, "/media/winE/Bioinformatics/genome/rice/tigr6.0/all.gff3");
-		
 
-		snpAnnotation.setGffChrAbs(gffChrAbs);
-		snpAnnotation.addTxtSnpFile("/home/zong0jie/锟斤拷锟斤拷/geneID.txt", "/home/zong0jie/锟斤拷锟斤拷/geneID_Anno");
-		snpAnnotation.setCol(1, 2, 3, 4);
-		snpAnnotation.run();
-//		
-	}
 }

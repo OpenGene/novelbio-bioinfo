@@ -255,7 +255,7 @@ public class TestGeneID extends TestCase {
 		geneID.addUpdateRefAccID("test1");
 		geneID.setUpdateAccID("Test5");
 		geneID.setUpdateDBinfo(DBAccIDSource.EMBL.toString(), false);
-		BlastInfo blastInfo = new BlastInfo(123456, 123456, "fsef222e	test2	31.85	157	95	3	133	603	2	146	6e-23	 103", false);
+		BlastInfo blastInfo = new BlastInfo(123456, 123456, "fsef222e	test2	31.85	157	95	3	133	603	2	146	6e-23	 103");
 		geneID.addUpdateBlastInfo(blastInfo);
 		
 		assertEquals("Test5", blastInfo.getQueryID());
@@ -273,7 +273,7 @@ public class TestGeneID extends TestCase {
 		assertEquals("12345678903", geneID.getLsBlastGeneID().get(0).getGeneUniID());
 		
 		
-		blastInfo = new BlastInfo(123456, 123456, "fsef222e	test2	31.85	159	95	3	133	603	2	146	6e-123	 103", false);
+		blastInfo = new BlastInfo(123456, 123456, "fsef222e	test2	31.85	159	95	3	133	603	2	146	6e-123	 103");
 		geneID.addUpdateBlastInfo(blastInfo);
 		assertEquals("1234567890", blastInfo.getQueryID());
 		assertEquals(6e-123, geneID.getLsBlastInfos().get(0).getEvalue());
@@ -284,7 +284,7 @@ public class TestGeneID extends TestCase {
 		assertEquals(6e-123, geneID.getLsBlastInfos().get(0).getEvalue());
 		
 		
-		blastInfo = new BlastInfo(123456, 123457, "fsef222e	test6	31.85	159	95	3	133	603	2	146	6e-123	 103", false);
+		blastInfo = new BlastInfo(123456, 123457, "fsef222e	test6	31.85	159	95	3	133	603	2	146	6e-123	 103");
 		geneID.addUpdateBlastInfo(blastInfo);
 		
 		assertEquals("12345678904", geneID.getLsBlastInfos().get(0).getSubjectID());

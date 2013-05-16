@@ -15,6 +15,7 @@ import com.novelbio.database.model.modgeneid.GeneID;
  * @author zong0jie
  *
  */
+//TODO
 public class RsemBlastCope {
 	public static void main(String[] args) {
 		String blastFile = "/media/winF/NBC/Project/Project_WH/rnatBlastx2Ath";
@@ -63,9 +64,9 @@ public class RsemBlastCope {
 	 */
 	private void modifyBlastInfo(BlastInfoHash blastInfoHashModify, BlastInfoHash blastInfoHashSample) {
 		if (blastInfoHashModify.getEvalue() > blastInfoHashSample.getEvalue()) {
-			blastInfoHashModify.setSubjectID(blastInfoHashSample.getSubjectID());
-			blastInfoHashModify.setEvalue(blastInfoHashSample.getEvalue());
-			blastInfoHashModify.setIdentities(blastInfoHashSample.getIdentities());
+//			blastInfoHashModify.setSubjectID(blastInfoHashSample.getSubjectID());
+//			blastInfoHashModify.setEvalue(blastInfoHashSample.getEvalue());
+//			blastInfoHashModify.setIdentities(blastInfoHashSample.getIdentities());
 		}
 	}
 	
@@ -89,19 +90,20 @@ class BlastInfoHash extends BlastInfo {
 	}
 	public BlastInfoHash(String blastInfoLine) {
 		String[] ss = blastInfoLine.split("\t");
-		super.evalue = Double.parseDouble(ss[10]);
-		super.identities = Double.parseDouble(ss[2]);
-		String queryID = GeneID.removeDot(ss[0]);
-		super.queryID = rsemGetGene2Iso.getGeneName(queryID);
-		super.subjectID = GeneID.removeDot(ss[1]);
+//		super.evalue = Double.parseDouble(ss[10]);
+//		super.identities = Double.parseDouble(ss[2]);
+//		String queryID = GeneID.removeDot(ss[0]);
+//		super.queryID = rsemGetGene2Iso.getGeneName(queryID);
+//		super.subjectID = GeneID.removeDot(ss[1]);
 		score = Double.parseDouble(ss[11]);
 		blastStr = ss;
-		blastStr[0] = super.queryID;
+//		blastStr[0] = super.queryID;
 	}
 	/** 仅比较queryID，subjectID */
 	public int hashCode() {
-		String blastString = queryID;
-		return blastString.hashCode();
+//		String blastString = queryID;
+//		return blastString.hashCode();
+		return 0;
 	}
 	/** 仅比较queryID */
 	public boolean equals(Object obj) {
@@ -111,8 +113,8 @@ class BlastInfoHash extends BlastInfo {
 		if (getClass() != obj.getClass()) return false;
 		BlastInfoHash otherObj = (BlastInfoHash)obj;
 		if (
-		 queryID.equals(otherObj.queryID)
-
+//		 queryID.equals(otherObj.queryID)
+				true
 		)
 		{
 			return true;

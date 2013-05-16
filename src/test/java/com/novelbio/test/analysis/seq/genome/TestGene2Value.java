@@ -17,7 +17,7 @@ import junit.framework.TestCase;
  */
 public class TestGene2Value extends TestCase {
 	Gene2Value gene2Value = new Gene2Value(null);
-	GffGeneIsoInfo gffGeneIsoInfoCis = new GffGeneIsoCis("test", GeneType.mRNA);
+	GffGeneIsoInfo gffGeneIsoInfoCis = GffGeneIsoInfo.createGffGeneIso("test", "test", GeneType.mRNA, true);
 
 	public void testNorm() {
 		setUpNorm();
@@ -31,7 +31,7 @@ public class TestGene2Value extends TestCase {
 		removeOverlapTest();
 	}
 	protected void setUpNorm() {
-		gffGeneIsoInfoCis = new GffGeneIsoCis("test", GeneType.mRNA);
+		gffGeneIsoInfoCis = GffGeneIsoInfo.createGffGeneIso("test", "test", GeneType.mRNA, true);
 		gffGeneIsoInfoCis.add(new ExonInfo(gffGeneIsoInfoCis, true, 100, 200));
 		gffGeneIsoInfoCis.add(new ExonInfo(gffGeneIsoInfoCis, true, 300, 400));
 		gffGeneIsoInfoCis.add(new ExonInfo(gffGeneIsoInfoCis, true, 500, 600));

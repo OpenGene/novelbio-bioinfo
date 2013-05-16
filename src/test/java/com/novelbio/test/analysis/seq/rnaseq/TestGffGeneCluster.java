@@ -26,11 +26,11 @@ public class TestGffGeneCluster extends TestCase{
 	GffDetailGene gffDetailGeneCis = new GffDetailGene("chr1", "test", true);
 	GffDetailGene gffDetailGeneTrans = new GffDetailGene("chr1", "test", false);
 	
-	GffGeneIsoInfo gffGeneIsoInfoRefCis = new GffGeneIsoCis("CisRef", gffDetailGeneCis, GeneType.mRNA);
-	GffGeneIsoInfo gffGeneIsoInfoThisCis = new GffGeneIsoCis("CisThis", gffDetailGeneCis, GeneType.mRNA);
-	
-	GffGeneIsoInfo gffGeneIsoInfoRefTrans = new GffGeneIsoTrans("TransRef", gffDetailGeneTrans, GeneType.mRNA);
-	GffGeneIsoInfo gffGeneIsoInfoThisTrans = new GffGeneIsoTrans("TransThis", gffDetailGeneTrans, GeneType.mRNA);
+	GffGeneIsoInfo gffGeneIsoInfoRefCis = GffGeneIsoInfo.createGffGeneIso("CisRef", gffDetailGeneCis.getNameSingle(), gffDetailGeneCis, GeneType.mRNA, true);
+	GffGeneIsoInfo gffGeneIsoInfoThisCis = GffGeneIsoInfo.createGffGeneIso("CisThis", gffDetailGeneCis.getNameSingle(), gffDetailGeneCis, GeneType.mRNA, true);
+
+	GffGeneIsoInfo gffGeneIsoInfoRefTrans = GffGeneIsoInfo.createGffGeneIso("CisRef", gffDetailGeneTrans.getNameSingle(), gffDetailGeneTrans, GeneType.mRNA, false);
+	GffGeneIsoInfo gffGeneIsoInfoThisTrans = GffGeneIsoInfo.createGffGeneIso("CisThis", gffDetailGeneTrans.getNameSingle(), gffDetailGeneTrans, GeneType.mRNA, false);
 	
 	@Override
 	protected void setUp() throws Exception {
@@ -90,7 +90,7 @@ public class TestGffGeneCluster extends TestCase{
 		boolean cis = true;
 		gffGeneIsoInfoRefCis.clear();
 		gffGeneIsoInfoThisCis.clear();
-		gffGeneIsoInfoThisCis = new GffGeneIsoCis("CisThis", gffDetailGeneCis, GeneType.mRNA);
+		gffGeneIsoInfoThisCis = GffGeneIsoInfo.createGffGeneIso("CisThis", gffDetailGeneCis.getNameSingle(), gffDetailGeneCis, GeneType.mRNA, true);
 		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 10, 20));
 		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 30, 40));
 		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 50, 60));

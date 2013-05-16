@@ -7,6 +7,9 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.FileOperate;
+
 /**
 * This code was edited or generated using CloudGarden's Jigloo
 * SWT/Swing GUI Builder, which is free for non-commercial
@@ -89,6 +92,7 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 //				return;
 //			}
 //		}
+//		txtRead.close();
 		initGUI();
 	}
 	
@@ -149,7 +153,10 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				jTabbedPane1.addTab("RNAseqMap", guiRNASeqMapping);
 				
 				guiTranscriptomeCufflinks = new GuiTranscriptomeCufflinks();
-				jTabbedPane1.addTab("TranscriptomReconstruct", guiTranscriptomeCufflinks);
+				jTabbedPane1.addTab("cufflinks", guiTranscriptomeCufflinks);
+				
+				guiCuffdiff = new GuiCuffdiff();
+				jTabbedPane1.addTab("CuffDiff", null, guiCuffdiff, null);
 				
 				guiSamStatistics = new GuiSamStatistics();
 				jTabbedPane1.addTab("SamStatisticsAndRPKM", guiSamStatistics);
@@ -181,8 +188,6 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				guiFilterDifGene = new GuiFilterDifGene();
 				jTabbedPane1.addTab("filterGene", null, guiFilterDifGene, null);
 				
-				guiCuffdiff = new GuiCuffdiff();
-				jTabbedPane1.addTab("CuffDiff", null, guiCuffdiff, null);
 				
 				guiPeakCalling = new GuiPeakCalling();
 				jTabbedPane1.addTab("PeakCalling", guiPeakCalling);

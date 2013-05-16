@@ -85,7 +85,7 @@ public class KGprepare {
 			String accID = GeneID.removeDot(geneID[i]);
 			ageneUniID.setAccID(accID); 
 			ageneUniID.setTaxID(taxID);
-			ArrayList<? extends AgeneUniID> lsNcbiids=servNCBIID.queryLsAgeneUniID(ageneUniID);
+			ArrayList<? extends AgeneUniID> lsNcbiids=null;//rvNCBIID.queryLsAgeneUniID(ageneUniID);
 			//先查找NCBIID表
 			if (lsNcbiids != null && lsNcbiids.size() > 0) {
 				String tmpGeneID = lsNcbiids.get(0).getGenUniID();
@@ -98,7 +98,7 @@ public class KGprepare {
 				ageneUniID = AgeneUniID.creatAgeneUniID(GeneID.IDTYPE_UNIID);
 				ageneUniID.setAccID(accID); 
 				ageneUniID.setTaxID(taxID);
-				ArrayList<? extends AgeneUniID> lsUniProtIDs = servNCBIID.queryLsAgeneUniID(ageneUniID);
+				ArrayList<? extends AgeneUniID> lsUniProtIDs = null;//servNCBIID.queryLsAgeneUniID(ageneUniID);
 				if (lsUniProtIDs != null && lsUniProtIDs.size() > 0) {
 					String tmpGeneID = lsUniProtIDs.get(0).getGenUniID();
 					if (Sep) {

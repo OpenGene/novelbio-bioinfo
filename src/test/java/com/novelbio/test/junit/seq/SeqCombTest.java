@@ -1,14 +1,12 @@
 package com.novelbio.test.junit.seq;
 
+import junit.framework.TestCase;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.novelbio.analysis.seq.SeqComb;
-
-import junit.framework.TestCase;
-
-public class SeqCombTest extends TestCase{
+public class SeqCombTest extends TestCase{/*
 	String seqIn = "";
 	@Before
 	public void setUp() throws Exception
@@ -76,4 +74,4 @@ public class SeqCombTest extends TestCase{
 	}
 	
 	
-}
+*/}

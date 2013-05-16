@@ -62,16 +62,17 @@ public class MeDIParrayGFF {
 		
 		meDIParrayGFF.lsMedipGffFileRunning = new ArrayList<String>();
 
-		meDIParrayGFF.lsMedipGffFileRunning.add(path + "C4_ratio_Cope.gff.gff");
-		meDIParrayGFF.lsMedipGffFileRunning.add(path + "FA53_ratio_Cope.gff.gff");
+
 		meDIParrayGFF.lsMedipGffFileRunning.add(path + "T11_ratio_Cope.gff.gff");
 		meDIParrayGFF.lsMedipGffFileRunning.add(path + "T33_ratio_Cope.gff.gff");
 		meDIParrayGFF.lsMedipGffFileRunning.add(path + "T8_ratio_Cope.gff.gff");
 		meDIParrayGFF.lsMedipGffFileRunning.add(path + "T9_ratio_Cope.gff.gff");
+		meDIParrayGFF.lsMedipGffFileRunning.add(path + "C4_ratio_Cope.gff.gff");
+		meDIParrayGFF.lsMedipGffFileRunning.add(path + "FA53_ratio_Cope.gff.gff");
 		meDIParrayGFF.setOutFile("/media/winF/NBC/Project/methy_QYY/rawdata/AMS/ams_P0.05.txt");
 		meDIParrayGFF.setProbNum(1);
-		meDIParrayGFF.setColTreat(new int[]{3, 4 ,5, 6});
-		meDIParrayGFF.setColControl(new int[]{1, 2});
+		meDIParrayGFF.setColTreat(new int[]{1, 2 ,3, 4});
+		meDIParrayGFF.setColControl(new int[]{5, 6});
 		meDIParrayGFF.calculateResult();
 	}
 	
@@ -276,15 +277,12 @@ public class MeDIParrayGFF {
 			for (int j = 0; j < sample2.length; j++) {
 				sample2[j] = Double.parseDouble(lsStrings.get(colSample2[j] - 1));
 			}
-			if (lsStrings.get(2).equals("10375235")) {
-				System.out.println("stop");
-			}
 			addPvalue(lsStrings, sample1, sample2);
 			double medS1 = MathComput.median(sample1);
 			double medS2 = MathComput.median(sample2);
 			lsStrings.add(medS1/medS2 + "");
-			lsStrings.add(medS2 + "");
 			lsStrings.add(medS1 + "");
+			lsStrings.add(medS2 + "");
 		}
 	}
 	

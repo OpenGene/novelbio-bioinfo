@@ -7,11 +7,10 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.AlignRecord;
+import com.novelbio.PathNBCDetail;
 import com.novelbio.analysis.seq.AlignSeq;
-
 import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.base.PathDetail;
+import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
@@ -23,6 +22,17 @@ import com.novelbio.database.model.species.Species;
  * @author zong0jie
  */
 public class CtrlMiRNAfastq {
+	public static void main(String[] args) {
+		Species species = new Species(7955);
+		MiRNACount miRNACount = new MiRNACount();
+		miRNACount.setMiRNAinfo(ListMiRNALocation.TYPE_RNA_DATA, species, PathNBCDetail.getMiRNADat());
+
+		miRNACount.setMiRNAfile(species.getMiRNAhairpinFile(), species.getMiRNAmatureFile());
+		miRNACount.setAlignFile(new SamFile("/media/winE/NBC/Project/Test/miRNA/jws/tmpMapping/G56_miRNA.bam"));
+		miRNACount.run();
+		miRNACount.writeResultToOut("/media/winE/NBC/Project/Test/miRNA/jws/tmpMapping/G56_miRNA_result.txt");
+	
+	}
 	private static final Logger logger = Logger.getLogger(CtrlMiRNAfastq.class);
 	
 	Species species;

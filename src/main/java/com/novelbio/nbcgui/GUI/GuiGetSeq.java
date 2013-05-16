@@ -395,6 +395,7 @@ public class GuiGetSeq extends JPanel {
 	}
 	
 	private void runGetSeqRegion(ArrayList<String[]> lsInfo, int colChrID, int colStart, int colEnd) {
+		ctrlGetSeq.reset();
 		Species species = cmbSpecies.getSelectedValue();
 		species.setVersion(cmbSpeciesVersion.getSelectedValue());
 		ctrlGetSeq.setSpecies(species);
@@ -429,6 +430,7 @@ public class GuiGetSeq extends JPanel {
 	 * @param dowstream 下游为正数
 	 */
 	private void runGetSeqSite(ArrayList<String[]> lsInfo, int colChrID, int colSummit, int upstream, int dowstream) {
+		ctrlGetSeq.reset();
 		Species species = cmbSpecies.getSelectedValue();
 		species.setVersion(cmbSpeciesVersion.getSelectedValue());
 		ctrlGetSeq.setSpecies(species);
@@ -465,6 +467,7 @@ public class GuiGetSeq extends JPanel {
 	 * @param dowstream 下游为正数
 	 */
 	private void runGetSeqGene(ArrayList<String[]> lsInfo, int colGeneID, int upstream, int dowstream) {
+		ctrlGetSeq.reset();
 		Species species = cmbSpecies.getSelectedValue();
 		species.setVersion(cmbSpeciesVersion.getSelectedValue());
 		ctrlGetSeq.setSpecies(species);
@@ -491,6 +494,7 @@ public class GuiGetSeq extends JPanel {
 	 * @param dowstream 下游为正数
 	 */
 	private void runGetSeqGeneGenomeWide(int upstream, int dowstream) {
+		ctrlGetSeq.reset();
  		Species species = cmbSpecies.getSelectedValue();
 		species.setVersion(cmbSpeciesVersion.getSelectedValue());
 		ctrlGetSeq.setSpecies(species);
