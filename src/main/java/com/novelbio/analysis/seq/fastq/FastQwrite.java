@@ -84,7 +84,10 @@ class FastQwrite {
 	 * 关闭输入流，并将fastQ写入转化为fastQ读取
 	 */
 	public void close() {
-		try { txtSeqFile.close(); } catch (Exception e) { }
+		try { 
+			txtSeqFile.flash();
+			txtSeqFile.close(); 
+		} catch (Exception e) { }
 	
 		if (fastQwriteMate != null) {
 			fastQwriteMate.close();

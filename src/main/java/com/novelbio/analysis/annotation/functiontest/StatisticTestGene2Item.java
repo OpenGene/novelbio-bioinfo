@@ -53,6 +53,19 @@ public abstract class StatisticTestGene2Item {
 	}
 	
 	public abstract String[] getTitle();
+	
+	
+	public static List<String[]> getLsInfo(List<StatisticTestGene2Item> lsStatisticTestGene2Items) {
+		if (lsStatisticTestGene2Items == null || lsStatisticTestGene2Items.size() == 0) {
+			return new ArrayList<String[]>();
+		}
+		List<String[]> lsGene2GoInfo = new ArrayList<String[]>();
+		lsGene2GoInfo.add(lsStatisticTestGene2Items.get(0).getTitle());
+		for (StatisticTestGene2Item statisticTestGene2Item : lsStatisticTestGene2Items) {
+			lsGene2GoInfo.addAll(statisticTestGene2Item.toStringLs());
+		}
+		return lsGene2GoInfo;
+	}
 }
 
 class StatisticTestGene2GO extends StatisticTestGene2Item {
@@ -121,7 +134,6 @@ class StatisticTestGene2GO extends StatisticTestGene2Item {
 	}
 	
 	public String[] getTitle() {
-
 		ArrayList<String> lsTitle = new ArrayList<String>();
 		lsTitle.add(TitleFormatNBC.QueryID.toString());
 		lsTitle.add("QuerySymbol");
@@ -221,4 +233,5 @@ class StatisticTestGene2Path extends StatisticTestGene2Item {
 		
 		return lsTitle.toArray(new String[0]);
 	}
+	
 }

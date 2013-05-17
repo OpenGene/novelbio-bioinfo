@@ -273,7 +273,7 @@ public class MapTophat implements MapRNA{
 	}
 	private String getIndelLen() {
 		String param = "--max-insertion-length " + indelLen + " --max-deletion-length " + 
-				indelLen + " " + "--read-gap-length " + (int)(indelLen * 1.2) + " --read-edit-dist " + (indelLen*1.5 + mismatch) + " ";
+				indelLen + " " + "--read-gap-length " + (int)(indelLen * 1.2) + " --read-edit-dist " + (int)(indelLen*1.5 + mismatch) + " ";
 		return param;
 	}
 

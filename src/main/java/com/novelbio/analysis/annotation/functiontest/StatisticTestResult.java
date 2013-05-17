@@ -2,6 +2,7 @@ package com.novelbio.analysis.annotation.functiontest;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.StatisticsTest;
@@ -169,5 +170,27 @@ public class StatisticTestResult {
 		lsTitle.add(TitleFormatNBC.FDR.toString());
 		lsTitle.add(TitleFormatNBC.Enrichment.toString());
 		lsTitle.add(TitleFormatNBC.Log2Pnegative.toString());		
+	}
+	
+	/**
+	 * 将lsStatisticTestResults转化为可以写入excel的形式
+	 * @param go true：用go的title false：用pathway的title
+	 * @param lsStatisticTestResults
+	 */
+	public static List<String[]> getLsInfo(boolean go, List<StatisticTestResult> lsStatisticTestResults) {
+		if (lsStatisticTestResults == null || lsStatisticTestResults.size() == 0) {
+			return new ArrayList<String[]>();
+		}
+		List<String[]> lsResult = new ArrayList<String[]>();
+		if (go) {
+			lsResult.add(StatisticTestResult.getTitleGo());
+		} else {
+			lsResult.add(StatisticTestResult.getTitlePath());
+		}
+		
+		for (StatisticTestResult statisticTestResult : lsStatisticTestResults) {
+			lsResult.add(statisticTestResult.toStringArray());
+		}
+		return lsResult;
 	}
 }

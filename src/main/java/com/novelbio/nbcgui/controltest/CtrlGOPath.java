@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -47,7 +48,10 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo> {
 	 * key: gene2Go, resultTable等
 	 * value：相应的结果
 	 */
-	LinkedHashMap<String, LinkedHashMap<String,ArrayList<String[]>>> hashResultGene = new LinkedHashMap<String, LinkedHashMap<String,ArrayList<String[]>>>();
+//	LinkedHashMap<String, LinkedHashMap<String,ArrayList<String[]>>> hashResultGene = new LinkedHashMap<String, LinkedHashMap<String,ArrayList<String[]>>>();
+	
+	Map<String, FunctionTest> mapPrefix2FunTest = new LinkedHashMap<String, FunctionTest>();
+	
 	
 	public void setTaxID(int taxID) {
 		functionTest.setTaxID(taxID);
@@ -123,8 +127,18 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo> {
 	 * key: gene2Go, resultTable等<br>
 	 * value：相应的结果
 	 */
-	public HashMap<String, LinkedHashMap<String,ArrayList<String[]>>> getHashResult() {
-		return hashResultGene;
+	public Map<String, FunctionTest> getHashResult() {
+		return mapPrefix2FunTest;
+	}
+	/**
+	 * 运行完后获得结果<br>
+	 * 结果,key： 时期等<br>
+	 * value：具体的结果<br>
+	 * key: gene2Go, resultTable等<br>
+	 * value：相应的结果
+	 */
+	public Map<String, FunctionTest> getMapResult() {
+		return mapPrefix2FunTest;
 	}
 	
 	public void running() {
@@ -144,7 +158,7 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo> {
 	 */
 	private void runNorm() {
 		isCluster = false;
-		hashResultGene.clear();
+		mapPrefix2FunTest.clear();
 		HashMultimap<String, String> mapPrefix2AccID = HashMultimap.create();
 		for (String[] strings : lsAccID2Value) {
 			if (strings[0] == null || strings[0].trim().equals("")) {
@@ -175,7 +189,7 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo> {
 	 */
 	private void runCluster() {
 		isCluster = true;
-		hashResultGene.clear();
+		mapPrefix2FunTest.clear();
 		HashMultimap<String, String> mapCluster2SetAccID = HashMultimap.create();
 		for (String[] accID2prefix : lsAccID2Value) {
 			mapCluster2SetAccID.put(accID2prefix[1], accID2prefix[0]);
@@ -197,9 +211,9 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo> {
 					mapPrefix2SetGeneID.put(prefix, geneID);
 				}
 			}
-		}
+		}//*1
 		//以下是打算将输入的testID补充进入BG，不过我觉得没必要了
-		//我们只要将BG尽可能做到全面即可，不用想太多
+		//我sfesa们只要将BG尽可能做到全面即可，不用想太多
 //		for (String prefix : mapPrefix2SetGeneID.keySet()) {
 //			Set<GeneID> setGeneIDs = mapPrefix2SetGeneID.get(prefix);
 //			functionTest.addBGGeneID(setGeneIDs);
@@ -209,10 +223,14 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo> {
 	/**
 	 * 用这个计算，算完后才能save等
 	 * @param functionTest
-	 * @param prix
+	 * @param prixz1
 	 * @param lsCopedIDs
 	 * @return
-	 * 没有就返回null
+	 * 没有就返回null   
+	 * 
+	 * 
+	 * 
+	 * 
 	 */
 	private void getResult(String prix, Collection<GeneID>lsCopedIDs) {
 		functionTest.setLsTestGeneID(lsCopedIDs);
@@ -220,15 +238,8 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo> {
 		if (lsResultTest == null || lsResultTest.size() == 0) {
 			return;
 		}
-		LinkedHashMap<String, ArrayList<String[]>> hashResult = calItem2GenePvalue(prix, lsResultTest);
-		hashResultGene.put(prix, hashResult);
+		mapPrefix2FunTest.put(prix, functionTest.clone());
 	}
-	/**
-	 * 返回该检验所对应返回的几个时期的信息，也就是几个sheet
-	 * @param lsResultTest 将检验结果装入hash表
-	 * @return
-	 */
-	protected abstract LinkedHashMap<String, ArrayList<String[]>> calItem2GenePvalue(String prix, ArrayList<StatisticTestResult> lsResultTest);
 
 	public void saveExcel(String excelPath) {
 		if (isCluster) {
@@ -241,6 +252,13 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo> {
 	private void saveExcelNorm(String excelPath) {
 		ExcelOperate excelResult = new ExcelOperate();
 		excelResult.openExcel(excelPath);
+		for (String prefix : mapPrefix2FunTest.keySet()) {
+			FunctionTest functionTest = mapPrefix2FunTest.get(prefix);
+			Map<String,   List<String[]>> mapSheetName2LsInfo = functionTest.getMapWriteToExcel();
+			for (String sheetName : mapSheetName2LsInfo.keySet()) {
+				List<String[]> lsInfo = mapSheetName2LsInfo.get(sheetName);
+			}
+		}
 		for (Entry<String, LinkedHashMap<String, ArrayList<String[]>>> entry : hashResultGene.entrySet()) {
 			String prix = entry.getKey();
 			HashMap<String, ArrayList<String[]>> hashValue = entry.getValue();
@@ -280,7 +298,7 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo> {
 		down = -1;
 		isCluster = false;
 		lsAccID2Value = null;
-		hashResultGene = new LinkedHashMap<String, LinkedHashMap<String,ArrayList<String[]>>>();
+		mapPrefix2FunTest = new LinkedHashMap<String, FunctionTest>();
 		clear();
 	}
 	

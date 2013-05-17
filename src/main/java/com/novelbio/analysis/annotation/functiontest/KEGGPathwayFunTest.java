@@ -1,7 +1,9 @@
 package com.novelbio.analysis.annotation.functiontest;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.novelbio.database.domain.geneanno.GOtype;
@@ -20,9 +22,7 @@ public class KEGGPathwayFunTest extends FunctionTest {
 		return geneID2LsItem;
 	}
 	
-	/**
-	 * 暂时没用
-	 */
+	/** 暂时没用 */
 	@Override
 	public void setDetailType(GOtype GOtype) {}
 
@@ -53,6 +53,15 @@ public class KEGGPathwayFunTest extends FunctionTest {
 		}
 		return KeggInfo.getKGpathway(item).getTitle();
 	}
- 
+
+	@Override
+	public Map<String, List<String[]>> getMapWriteToExcel() {
+		Map<String, List<String[]>> mapResult = new LinkedHashMap<String, List<String[]>>();
+		List<String[]> lsStatisticTestResults = StatisticTestResult.getLsInfo(false, getTestResult());
+		mapResult.put("Pathway_Result", lsStatisticTestResults);
+		List<String[]> lsGene2PathPvalue = StatisticTestGene2Item.getLsInfo(getGene2ItemPvalue());
+		mapResult.put("Gene2Path", lsGene2PathPvalue);
+		return mapResult;
+	}
 
 }

@@ -2,6 +2,7 @@ package com.novelbio.analysis.annotation.functiontest;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -110,6 +111,17 @@ public class NovelGOFunTest extends FunctionTest {
 	@Override
 	protected String getItemTerm(String item) {
 		return servGo2Term.queryGo2Term(item).getGoTerm();
+	}
+	@Override
+	public Map<String, List<String[]>> getMapWriteToExcel() {
+		Map<String, List<String[]>> mapResult = new HashMap<String, List<String[]>>();
+		List<String[]> lsStatisticTestResults = StatisticTestResult.getLsInfo(true, getTestResult());
+		mapResult.put("GO_Result", lsStatisticTestResults);
+		List<String[]> lsGene2PathPvalue = StatisticTestGene2Item.getLsInfo(getGene2ItemPvalue());
+		mapResult.put("Gene2GO", lsGene2PathPvalue);
+		List<String[]> lsItem2Gene = StatisticTestItem2Gene.getLsInfo(true, getItem2GenePvalue());
+		mapResult.put("GO2Gene", lsItem2Gene);
+		return mapResult;
 	}
 
 }

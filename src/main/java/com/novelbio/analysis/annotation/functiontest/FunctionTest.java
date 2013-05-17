@@ -12,6 +12,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.FisherTest;
@@ -20,7 +21,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.model.modgeneid.GeneID;
 
-public abstract class FunctionTest {
+public abstract class FunctionTest implements Cloneable {
 	private static final Logger logger = Logger.getLogger(FunctionTest.class);
 	
 	public static final String FUNCTION_GO_NOVELBIO = "gene ontology";
@@ -31,8 +32,8 @@ public abstract class FunctionTest {
 	List<Integer> blastTaxID = null;
 	double blastEvalue = 1e-10;
 	
-	Set<GeneID> lsCopedIDsTest = null;
-	Set<GeneID> lsCopedIDsBG = null;
+	Set<GeneID> setGeneIDsTest = null;
+	Set<GeneID> setGeneIDsBG = null;
 	/** genUniID item,item格式  */
 	List<GeneID2LsItem> lsTest = null;
 	/** genUniID item,item格式
@@ -51,12 +52,6 @@ public abstract class FunctionTest {
 	 */
 	ArrayListMultimap<String, GeneID> mapGeneUniID2LsGeneID = ArrayListMultimap.create();
 	ArrayList<StatisticTestResult> lsTestResult = new ArrayList<StatisticTestResult>();
-	
-	/**
-	 * Gene2GO或者Gene2Path的信息
-	 * 每次设置新的LsCopedTest后必须重置
-	 */
-	ArrayList<String[]> lsGene2GOPath = null;
 	
 	StatisticsTest statisticsTest;
 		
@@ -144,10 +139,10 @@ public abstract class FunctionTest {
 	 */
 	public void setLsBGAccID(String fileName, int colNum) {
 		lsTestResult = new ArrayList<StatisticTestResult>();
-		if (lsCopedIDsBG == null) {
-			lsCopedIDsBG = new HashSet<GeneID>();
+		if (setGeneIDsBG == null) {
+			setGeneIDsBG = new HashSet<GeneID>();
 		}
-		lsCopedIDsBG.clear();
+		setGeneIDsBG.clear();
 		
 		if (!FileOperate.isFileExist(fileName)) {
 			logger.error("no FIle exist: "+ fileName);
@@ -163,9 +158,9 @@ public abstract class FunctionTest {
 			if (isBlast()) {
 				copedID.setBlastInfo(blastEvalue, blastTaxID);
 			}
-			lsCopedIDsBG.add(copedID);
+			setGeneIDsBG.add(copedID);
 		}
-		mapBGGeneID2Items = convert2Item(lsCopedIDsBG);
+		mapBGGeneID2Items = convert2Item(setGeneIDsBG);
 		BGnum = mapBGGeneID2Items.size();
 	}
 	/**
@@ -178,8 +173,8 @@ public abstract class FunctionTest {
 		for (GeneID copedID : lsBGaccID) {
 			copedID.setBlastInfo(blastEvalue, blastTaxID);
 		}
-		lsCopedIDsBG = new HashSet<GeneID>(lsBGaccID);
-		mapBGGeneID2Items = convert2Item(lsCopedIDsBG);
+		setGeneIDsBG = new HashSet<GeneID>(lsBGaccID);
+		mapBGGeneID2Items = convert2Item(setGeneIDsBG);
 		BGnum = mapBGGeneID2Items.size();
 	}
 	/**
@@ -236,23 +231,22 @@ public abstract class FunctionTest {
 	}
 	
 	public void setLsTestAccID(Collection<String> lsCopedID) {
-		lsCopedIDsTest = new HashSet<GeneID>();		
+		setGeneIDsTest = new HashSet<GeneID>();		
 		for (String string : lsCopedID) {
 			GeneID copedID = new GeneID(string, taxID, false);
-			lsCopedIDsTest.add(copedID);
+			setGeneIDsTest.add(copedID);
 		}
 		initial();
 	}
 	
 	public void setLsTestGeneID(Collection<GeneID> lsCopedIDs) {
-		this.lsCopedIDsTest = new HashSet<GeneID>(lsCopedIDs);
+		this.setGeneIDsTest = new HashSet<GeneID>(lsCopedIDs);
 		initial();
 	}
 	
 	private void initial() {
-		lsGene2GOPath = null;
-		fillCopedIDInfo(lsCopedIDsTest);
-		lsTest = getLsTestFromLsBG(lsCopedIDsTest);
+		fillCopedIDInfo(setGeneIDsTest);
+		lsTest = getLsTestFromLsBG(setGeneIDsTest);
 		lsTestResult = new ArrayList<StatisticTestResult>();
 	}
 	/**
@@ -343,7 +337,7 @@ public abstract class FunctionTest {
 	public ArrayList<StatisticTestGene2Item> getGene2ItemPvalue() {
 		ArrayList<StatisticTestGene2Item> lsTestResult = new ArrayList<StatisticTestGene2Item>();
 		Map<String, StatisticTestResult> mapItem2StatictResult = getMapItemID2StatisticsResult();
-		for (GeneID geneID : lsCopedIDsTest) {
+		for (GeneID geneID : setGeneIDsTest) {
 			StatisticTestGene2Item statisticTestGene2Item = creatStatisticTestGene2Item();
 			statisticTestGene2Item.setGeneID(geneID, isBlast());
 			statisticTestGene2Item.setStatisticTestResult(mapItem2StatictResult);
@@ -424,6 +418,35 @@ public abstract class FunctionTest {
 			txtOut.writefileln(geneID2LsGO.toString());
 		}
 		txtOut.close();
+	}
+	
+	/** 获得可以写入excel的map，其中key为sheet名，value为list */
+	public abstract Map<String, List<String[]>> getMapWriteToExcel();
+	
+	/** 浅层克隆
+	 * 其中与背景相关的mapBGGeneID2Items和setGeneIDsBG仅引用传递
+	 * */
+	public FunctionTest clone() {
+		FunctionTest functionTest = null;
+		try {
+			functionTest = (FunctionTest)super.clone();
+			functionTest.setGeneIDsBG = setGeneIDsBG;
+			functionTest.setGeneIDsTest = new HashSet<GeneID>(setGeneIDsTest);
+			functionTest.BGfile = BGfile;
+			functionTest.BGnum = BGnum;
+			functionTest.blastEvalue = blastEvalue;
+			functionTest.blastTaxID = new ArrayList<Integer>(blastTaxID);
+			functionTest.lsTest = new ArrayList<GeneID2LsItem>(lsTest);
+			functionTest.lsTestResult = new ArrayList<StatisticTestResult>(lsTestResult);
+			functionTest.mapBGGeneID2Items = mapBGGeneID2Items;
+			functionTest.mapGeneUniID2LsGeneID = ArrayListMultimap.create(mapGeneUniID2LsGeneID);
+			functionTest.taxID = taxID;
+			
+		} catch (CloneNotSupportedException e) {
+			return null;
+		}
+		
+		return functionTest;
 	}
 	
 	/**

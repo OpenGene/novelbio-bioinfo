@@ -87,4 +87,26 @@ public class StatisticTestItem2Gene {
 		
 		return lsTitle.toArray(new String[0]);
 	}
+	
+	/**
+	 * @param go 是否为GO，true： 采用GO的title， false：采用pathway的title
+	 * @param lsItem2Gene
+	 * @return
+	 */
+	public static List<String[]> getLsInfo(boolean go, List<StatisticTestItem2Gene> lsItem2Gene) {
+		if (lsItem2Gene == null || lsItem2Gene.size() == 0) {
+			return new ArrayList<String[]>();
+		}
+		List<String[]> lsGo2GeneResult = new ArrayList<String[]>();
+		if (go) {
+			lsGo2GeneResult.add(StatisticTestItem2Gene.getTitleGO());
+		} else {
+			lsGo2GeneResult.add(StatisticTestItem2Gene.getTitlePath());
+		}
+	
+		for (StatisticTestItem2Gene statisticTestItem2GeneElimGo : lsItem2Gene) {
+			lsGo2GeneResult.addAll(statisticTestItem2GeneElimGo.toStringsLs());
+		}
+		return lsGo2GeneResult;
+	}
 }

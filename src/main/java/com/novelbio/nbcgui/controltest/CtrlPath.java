@@ -21,33 +21,9 @@ import com.novelbio.database.domain.geneanno.GOtype;
 public class CtrlPath extends CtrlGOPath implements CtrlTestInt {
 	private static final Logger logger = Logger.getLogger(CtrlPath.class);
 
-	/**
-	 * @param QtaxID
-	 */
+	/** @param QtaxID */
 	public CtrlPath() {
 		functionTest = FunctionTest.getInstance(FunctionTest.FUNCTION_PATHWAY_KEGG);
-	}
-
-	@Override
-	protected LinkedHashMap<String, ArrayList<String[]>> calItem2GenePvalue(String prix, ArrayList<StatisticTestResult> lsResultTest) {
-		LinkedHashMap<String, ArrayList<String[]>> hashResult = new LinkedHashMap<String, ArrayList<String[]>>();
-
-		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		lsResult.add(StatisticTestResult.getTitlePath());
-		for (StatisticTestResult statisticTestResult : lsResultTest) {
-			lsResult.add(statisticTestResult.toStringArray());
-		}
-		hashResult.put("Pathway_Result", lsResult);
-
-		ArrayList<StatisticTestGene2Item> lsGene2PathPvalue = functionTest.getGene2ItemPvalue();
-		ArrayList<String[]> lsGene2GoInfo = new ArrayList<String[]>();
-		lsGene2GoInfo.add(lsGene2PathPvalue.get(0).getTitle());
-		for (StatisticTestGene2Item statisticTestGene2Item : lsGene2PathPvalue) {
-			lsGene2GoInfo.addAll(statisticTestGene2Item.toStringLs());
-		}
-		hashResult.put("Gene2Path", lsGene2GoInfo);
-
-		return hashResult;
 	}
 	
 	@Override

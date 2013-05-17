@@ -249,8 +249,7 @@ public class CtrlFastQMapping {
 		if (filter) {
 			if (fastq2 != null) {
 				fasQFiltered = fastq1.filterReads(fastq2);
-			}
-			else {
+			} else {
 				fasQFiltered[0] = fastq1.filterReads();
 			}
 		}

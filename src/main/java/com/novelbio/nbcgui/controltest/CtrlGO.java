@@ -69,42 +69,6 @@ public class CtrlGO extends CtrlGOPath implements CtrlTestInt {
 	}
 	
 	@Override
-	protected LinkedHashMap<String, ArrayList<String[]>> calItem2GenePvalue(String prix, ArrayList<StatisticTestResult> lsResultTest) {
-			LinkedHashMap<String, ArrayList<String[]>> hashResult = new LinkedHashMap<String, ArrayList<String[]>>();
-			////////////////////////
-			ArrayList<String[]> lsResult = new ArrayList<String[]>();
-			lsResult.add(StatisticTestResult.getTitleGo());
-			for (StatisticTestResult statisticTestResult : lsResultTest) {
-				lsResult.add(statisticTestResult.toStringArray());
-			}
-			hashResult.put("GO_Result", lsResult);
-			////////////////////////
-			ArrayList<StatisticTestGene2Item> lsGene2GO = functionTest.getGene2ItemPvalue();
-			ArrayList<String[]> lsGene2GoInfo = new ArrayList<String[]>();
-			lsGene2GoInfo.add(lsGene2GO.get(0).getTitle());
-			for (StatisticTestGene2Item statisticTestGene2Item : lsGene2GO) {
-				lsGene2GoInfo.addAll(statisticTestGene2Item.toStringLs());
-			}
-			
-//			if (goAlgorithm != GoAlgorithm.novelgo) {
-				hashResult.put("Gene2GO", lsGene2GoInfo);
-//			}
-			
-			if (goAlgorithm != GoAlgorithm.novelgo) {
-				FileOperate.changeFileSuffixReal(PathNBCDetail.getRworkspace() + "topGO/tGOall_elim_10_def.pdf", "_"+prix, null);
-			}
-			ArrayList<StatisticTestItem2Gene> lsGO2Gene = functionTest.getItem2GenePvalue();
-			ArrayList<String[]> lsGo2GeneResult = new ArrayList<String[]>();
-			lsGo2GeneResult.add(StatisticTestItem2Gene.getTitleGO());
-			for (StatisticTestItem2Gene statisticTestItem2GeneElimGo : lsGO2Gene) {
-				lsGo2GeneResult.addAll(statisticTestItem2GeneElimGo.toStringsLs());
-			}
-			hashResult.put("GO2Gene", lsGo2GeneResult);
-			
-		return hashResult;
-	}
-	
-	@Override
 	String getGene2ItemFileName(String fileName) {
 		String suffix = "_GO_Item";
 		List<Integer> blastTaxID = functionTest.getBlastTaxID();

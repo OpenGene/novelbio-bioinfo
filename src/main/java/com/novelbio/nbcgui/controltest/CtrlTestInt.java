@@ -28,15 +28,6 @@ public interface CtrlTestInt {
 	
 	public void setIsCluster(boolean isCluster);
 	
-	/**
-	 * 运行完后获得结果<br>
-	 * 结果,key： 时期等<br>
-	 * value：具体的结果<br>
-	 * key: gene2Go, resultTable等<br>
-	 * value：相应的结果
-	 */
-	public HashMap<String, LinkedHashMap<String,ArrayList<String[]>>> getHashResult();
-	
 	public void running();
 
 	public void saveExcel(String excelPath);
