@@ -2,11 +2,9 @@ package com.novelbio.nbcgui.controltest;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -44,12 +42,8 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo> {
 	
 	/**
 	 * 结果,key： 时期等
-	 * value：具体的结果
-	 * key: gene2Go, resultTable等
 	 * value：相应的结果
-	 */
-//	LinkedHashMap<String, LinkedHashMap<String,ArrayList<String[]>>> hashResultGene = new LinkedHashMap<String, LinkedHashMap<String,ArrayList<String[]>>>();
-	
+	 */	
 	Map<String, FunctionTest> mapPrefix2FunTest = new LinkedHashMap<String, FunctionTest>();
 	
 	
@@ -227,10 +221,6 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo> {
 	 * @param lsCopedIDs
 	 * @return
 	 * 没有就返回null   
-	 * 
-	 * 
-	 * 
-	 * 
 	 */
 	private void getResult(String prix, Collection<GeneID>lsCopedIDs) {
 		functionTest.setLsTestGeneID(lsCopedIDs);
@@ -255,33 +245,24 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo> {
 		for (String prefix : mapPrefix2FunTest.keySet()) {
 			FunctionTest functionTest = mapPrefix2FunTest.get(prefix);
 			Map<String,   List<String[]>> mapSheetName2LsInfo = functionTest.getMapWriteToExcel();
+			
 			for (String sheetName : mapSheetName2LsInfo.keySet()) {
-				List<String[]> lsInfo = mapSheetName2LsInfo.get(sheetName);
+				excelResult.WriteExcel(prefix + sheetName, 1, 1, mapSheetName2LsInfo.get(sheetName));
 			}
-		}
-		for (Entry<String, LinkedHashMap<String, ArrayList<String[]>>> entry : hashResultGene.entrySet()) {
-			String prix = entry.getKey();
-			HashMap<String, ArrayList<String[]>> hashValue = entry.getValue();
-			for (Entry<String,ArrayList<String[]>> entry2 : hashValue.entrySet()) {
-				excelResult.WriteExcel(prix + entry2.getKey(), 1, 1, entry2.getValue());
-			}
-			copeFile(prix, excelPath);
+			copeFile(prefix, excelPath);
 		}
 	}
 	
 	private void saveExcelCluster(String excelPath) {
-		for (Entry<String, LinkedHashMap<String, ArrayList<String[]>>> entry : hashResultGene.entrySet()) {
+		for (String prefix : mapPrefix2FunTest.keySet()) {
 			ExcelOperate excelResult = new ExcelOperate();
-			String prix = entry.getKey();
-
-			String excelPathOut = FileOperate.changeFileSuffix(excelPath, "_" + prix, null);
+			String excelPathOut = FileOperate.changeFileSuffix(excelPath, "_" + prefix, null);
 			excelResult.openExcel(excelPathOut);
-			
-			HashMap<String, ArrayList<String[]>> hashValue = entry.getValue();
-			for (Entry<String,ArrayList<String[]>> entry2 : hashValue.entrySet()) {
-				excelResult.WriteExcel(entry2.getKey(), 1, 1, entry2.getValue());
+			Map<String, List<String[]>> mapSheetName2LsInfo = mapPrefix2FunTest.get(prefix).getMapWriteToExcel();
+			for (String sheetName : mapSheetName2LsInfo.keySet()) {
+				excelResult.WriteExcel(sheetName, 1, 1, mapSheetName2LsInfo.get(sheetName));
 			}
-			copeFile(prix, excelPath);
+			copeFile(prefix, excelPath);
 		}
 	}
 	/**

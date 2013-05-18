@@ -145,7 +145,7 @@ public abstract class FunctionTest implements Cloneable {
 		setGeneIDsBG.clear();
 		
 		if (!FileOperate.isFileExist(fileName)) {
-			logger.error("no FIle exist: "+ fileName);
+			logger.error("no File exist: "+ fileName);
 		}
 		ArrayList<String[]> accID = null;
 		try {
