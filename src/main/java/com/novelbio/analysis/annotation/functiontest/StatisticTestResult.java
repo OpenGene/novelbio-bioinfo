@@ -13,6 +13,9 @@ import com.novelbio.generalConf.TitleFormatNBC;
  * 检验的结果
  */
 public class StatisticTestResult {
+	public static final String titlePath = "Pathway_Result";
+	public static final String titleGO = "Pathway_Result";
+	
 	static int logBaseNum = 2;
 	
 	String itemName;
@@ -87,6 +90,7 @@ public class StatisticTestResult {
 	public double getLog2Pnegative() {
 		return -Math.log(pvalue)/Math.log(logBaseNum);
 	}
+	
 	private void setFDR(double fdr) {
 		this.fdr = fdr;
 	}

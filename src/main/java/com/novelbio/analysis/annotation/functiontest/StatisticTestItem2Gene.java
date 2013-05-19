@@ -13,6 +13,8 @@ import com.novelbio.generalConf.TitleFormatNBC;
  *
  */
 public class StatisticTestItem2Gene {
+	public static final String titleGO = "GO2Gene";
+	
 	StatisticTestResult statisticTestResult;
 	List<GeneID> lsGeneIDs;
 	

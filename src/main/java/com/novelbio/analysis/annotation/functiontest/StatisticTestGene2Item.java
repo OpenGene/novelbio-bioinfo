@@ -12,6 +12,9 @@ import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 public abstract class StatisticTestGene2Item {
+	public static final String titleGO = "Gene2GO";
+	public static final String titlePath = "Gene2Path";
+	
 	boolean blast;
 	/**
 	 * key 小写

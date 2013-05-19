@@ -12,7 +12,6 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.FisherTest;
@@ -218,6 +217,10 @@ public abstract class FunctionTest implements Cloneable {
 		return mapGeneID2LsItem;
 	}
 	
+	/**
+	 * 这个目前只有GO有，pathway没有该项目
+	 * @return
+	 */
 	public ArrayList<StatisticTestItem2Gene> getItem2GenePvalue() {
 		return new ArrayList<StatisticTestItem2Gene>();
 	}
@@ -420,7 +423,14 @@ public abstract class FunctionTest implements Cloneable {
 		txtOut.close();
 	}
 	
-	/** 获得可以写入excel的map，其中key为sheet名，value为list */
+	/**
+	 * 获得可以写入excel的map<br>
+	 * key为sheet名，是{@link StatisticTestResult#titleGO}, {@link StatisticTestGene2Item#titleGO}, {@link StatisticTestItem2Gene#titleGO} 等，<br>
+	 * 注意pathway没有{@link StatisticTestItem2Gene#titlePath}这一个sheet
+	 * <br><br>
+	 * value为list
+	 * @return
+	 */
 	public abstract Map<String, List<String[]>> getMapWriteToExcel();
 	
 	/** 浅层克隆

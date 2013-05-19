@@ -22,6 +22,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import com.novelbio.analysis.annotation.functiontest.FunctionTest;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
@@ -411,21 +412,22 @@ public class GuiPathJpanel extends JPanel{
 		// jScrollPaneGOtest 标签里面的方框
 		// jTabFInputGo 方框里面的数据框
 		// jTabInputGo 具体数据
-		HashMap<String, LinkedHashMap<String, ArrayList<String[]>>> hashResult = ctrlPath.getHashResult();
+		Map<String, FunctionTest> hashResult = ctrlPath.getHashResult();
 		jTabbedPanePathResult.removeAll();
 		int i = 0;
-		for (Entry<String, LinkedHashMap<String, ArrayList<String[]>>> entry : hashResult.entrySet()) {
+		for (Entry<String, FunctionTest> entry : hashResult.entrySet()) {
 			if (i > 2) {
 				break;
 			}
-			for (Entry<String, ArrayList<String[]>> entryTable : entry.getValue().entrySet()) {
-				settab(jTabbedPanePathResult, entry.getKey()+entryTable.getKey(), entryTable.getValue());
+			Map<String, List<String[]>> mapSheetName2LsInfo = entry.getValue().getMapWriteToExcel();
+			for (String sheetName : mapSheetName2LsInfo.keySet()) {
+				settab(jTabbedPanePathResult, entry.getKey() + sheetName, mapSheetName2LsInfo.get(sheetName));
 			}
 			i++;
 		}
 	}
 	
-	private void settab(JTabbedPane jTabbedPaneGoResult, String tabName , ArrayList<String[]> lsResult) {
+	private void settab(JTabbedPane jTabbedPaneGoResult, String tabName , List<String[]> lsResult) {
 		//里层
 		String[][] tableValue = null;
 		DefaultTableModel jTabResult = new DefaultTableModel(tableValue,lsResult.get(0));
