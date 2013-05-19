@@ -30,7 +30,9 @@ import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.base.gui.JTextFieldData;
 import com.novelbio.database.model.species.Species;
+import com.novelbio.database.service.SpringFactory;
 import com.novelbio.nbcgui.controltest.CtrlPath;
+import com.novelbio.nbcgui.controltest.CtrlTestInt;
 
 
 /**
@@ -46,7 +48,8 @@ import com.novelbio.nbcgui.controltest.CtrlPath;
 * LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
 */
 public class GuiPathJpanel extends JPanel{
-
+	private static final long serialVersionUID = -1785031773572897544L;
+	
 	private JTabbedPane jTabbedPanePathResult;
 	private JButton jBtbSavePath;
 	private JButton jButRunPath;
@@ -74,11 +77,10 @@ public class GuiPathJpanel extends JPanel{
 	private JLabel jLabPathQtaxID;
 	private JScrollPaneData jScrollPaneInputPath;
 	
-	CtrlPath ctrlPath = new CtrlPath();
+	CtrlTestInt ctrlPath;
 	JScrollPaneData scrollPaneBlast;
 	
-	public GuiPathJpanel() 
-	{
+	public GuiPathJpanel() {
 		setPreferredSize(new java.awt.Dimension(1046, 617));
 		setAlignmentX(0.0f);
 		setComponent();
@@ -290,7 +292,9 @@ public class GuiPathJpanel extends JPanel{
 					if (!FileOperate.getFileNameSep(savefilename)[1].equals("xls")) {
 						savefilename = savefilename+".xls";
 					}
-					ctrlPath.saveExcel(savefilename);
+					if (ctrlPath != null) {
+						ctrlPath.saveExcel(savefilename);
+					}
 				}
 			});
 		}
@@ -386,6 +390,7 @@ public class GuiPathJpanel extends JPanel{
 				lsStaxID.add(speciesS.getTaxID());
 			}
 		}
+		ctrlPath = (CtrlTestInt)SpringFactory.getFactory().getBean("ctrlPath");
 		ctrlPath.setBlastInfo(evalue, lsStaxID);
 
 		ctrlPath.setLsBG(backGroundFile);
@@ -405,14 +410,14 @@ public class GuiPathJpanel extends JPanel{
 		setNormalGo(ctrlPath);
 	}
 	
-	private void setNormalGo(CtrlPath ctrlPath) {
+	private void setNormalGo(CtrlTestInt ctrlPath) {
 		//jScrollPaneInputGo 最外层的方框
 		//jTabbedPaneGOTest 里面的标签框
 		//jPanGoTest 具体的标签
 		// jScrollPaneGOtest 标签里面的方框
 		// jTabFInputGo 方框里面的数据框
 		// jTabInputGo 具体数据
-		Map<String, FunctionTest> hashResult = ctrlPath.getHashResult();
+		Map<String, FunctionTest> hashResult = ctrlPath.getMapResult_Prefix2FunTest();
 		jTabbedPanePathResult.removeAll();
 		int i = 0;
 		for (Entry<String, FunctionTest> entry : hashResult.entrySet()) {

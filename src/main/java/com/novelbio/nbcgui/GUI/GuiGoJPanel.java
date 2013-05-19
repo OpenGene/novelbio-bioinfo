@@ -5,50 +5,33 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
-import javax.swing.ButtonGroup;
-import javax.swing.ComboBoxModel;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.LayoutStyle;
 import javax.swing.table.DefaultTableModel;
-
-import cern.colt.matrix.linalg.Algebra;
 
 import com.novelbio.analysis.annotation.functiontest.FunctionTest;
 import com.novelbio.analysis.annotation.functiontest.TopGO.GoAlgorithm;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.base.gui.JTextFieldData;
-import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.database.domain.geneanno.GOtype;
-import com.novelbio.database.domain.geneanno.Go2Term;
-import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.nbcgui.controltest.CtrlGO;
-import javax.swing.SpringLayout;
-import javax.swing.JSpinner;
+import com.novelbio.database.service.SpringFactory;
+import com.novelbio.nbcgui.controltest.CtrlTestInt;
 
 
 /**
@@ -64,6 +47,8 @@ import javax.swing.JSpinner;
 * LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
 */
 public class GuiGoJPanel extends JPanel{
+	private static final long serialVersionUID = 6495245480771910297L;
+	
 	private JTabbedPane jTabbedPaneGoResult;
 	private JButton jBtbSaveGo;
 	private JButton jButRunGo;
@@ -104,7 +89,7 @@ public class GuiGoJPanel extends JPanel{
 	String GoClass = "";
 	
 	GUIFileOpen guiFileOpen = new GUIFileOpen();
-	CtrlGO ctrlGO = new CtrlGO();
+	CtrlTestInt ctrlGO;
 	public GuiGoJPanel() {
 	
 
@@ -363,7 +348,9 @@ public class GuiGoJPanel extends JPanel{
 					if (!FileOperate.getFileNameSep(savefilename)[1].equals("xls")) {
 						savefilename = savefilename+".xls";
 					}
-					ctrlGO.saveExcel(savefilename);
+					if (ctrlGO != null) {
+						ctrlGO.saveExcel(savefilename);
+					}
 				}
 			});
 		}
@@ -453,6 +440,7 @@ public class GuiGoJPanel extends JPanel{
 		
 		String backGroundFile = jTxtBGGo.getText();
 		double evalue = 1e-10;
+		ctrlGO = (CtrlTestInt)SpringFactory.getFactory().getBean("ctrlGO");
 		ctrlGO.clearParam();
 		ctrlGO.setGoAlgorithm(cmbGoAlgorithm.getSelectedValue());
 	
@@ -495,14 +483,14 @@ public class GuiGoJPanel extends JPanel{
 		setNormalGo(ctrlGO);
 	}
 	
-	private void setNormalGo(CtrlGO ctrlGO) {
+	private void setNormalGo(CtrlTestInt ctrlGO) {
 		//jScrollPaneInputGo 最外层的方框
 		//jTabbedPaneGOTest 里面的标签框
 		//jPanGoTest 具体的标签
 		// jScrollPaneGOtest 标签里面的方框
 		// jTabFInputGo 方框里面的数据框
 		// jTabInputGo 具体数据
-		Map<String, FunctionTest> hashResult = ctrlGO.getHashResult();
+		Map<String, FunctionTest> hashResult = ctrlGO.getMapResult_Prefix2FunTest();
 		jTabbedPaneGoResult.removeAll();
 		int i = 0;
 		for (Entry<String, FunctionTest> entry : hashResult.entrySet()) {

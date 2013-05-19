@@ -51,6 +51,13 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo> {
 		functionTest.setTaxID(taxID);
 	}
 	
+	public int getTaxID() {
+		return functionTest.getTaxID();
+	}
+	public List<Integer> getBlastTaxID() {
+		return functionTest.getBlastTaxID();
+	}
+	
 	/** lsAccID2Value  arraylist-string[] 若为string[2],则第二个为上下调关系，判断上下调
 	 * 若为string[1] 则跑全部基因作分析
 	 */
@@ -118,20 +125,8 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo> {
 	 * 运行完后获得结果<br>
 	 * 结果,key： 时期等<br>
 	 * value：具体的结果<br>
-	 * key: gene2Go, resultTable等<br>
-	 * value：相应的结果
 	 */
-	public Map<String, FunctionTest> getHashResult() {
-		return mapPrefix2FunTest;
-	}
-	/**
-	 * 运行完后获得结果<br>
-	 * 结果,key： 时期等<br>
-	 * value：具体的结果<br>
-	 * key: gene2Go, resultTable等<br>
-	 * value：相应的结果
-	 */
-	public Map<String, FunctionTest> getMapResult() {
+	public Map<String, FunctionTest> getMapResult_Prefix2FunTest() {
 		return mapPrefix2FunTest;
 	}
 	
