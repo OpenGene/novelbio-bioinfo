@@ -281,7 +281,7 @@ public class GeneID implements GeneIDInt{
 			return null;
 		}
 		String[] ss = blastGenID.split("\\|");
-		return removeDot(ss[1]);
+		return ss[1];
 	}
 	/**
 	 *  首先除去空格，如果为""或“-”

@@ -43,7 +43,6 @@ public class GeneIDfactory implements GeneIDfactoryInt {
 		GeneIDabs geneID = null;
 		if (accID != null) {
 			accID = accID.replace("\"", "").trim();
-			accID = GeneID.removeDot(accID);
 			if (accID == null || accID.equals("")) {
 				accID = null;
 			}

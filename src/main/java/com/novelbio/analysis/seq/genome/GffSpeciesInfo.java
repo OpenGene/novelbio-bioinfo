@@ -88,8 +88,8 @@ public class GffSpeciesInfo {
 		for (ListGff listGff : mapChrID2LsGff.values()) {
 			for (GffDetailGene gffDetailGene : listGff) {
 				for (GffGeneIsoInfo geneIsoInfo : gffDetailGene.getLsCodSplit()) {
-					setGeneID.add(GeneID.removeDot(geneIsoInfo.getName()));
-					System.out.println(GeneID.removeDot(geneIsoInfo.getName()));
+					setGeneID.add(geneIsoInfo.getName());
+					System.out.println(geneIsoInfo.getName());
 				}
 			}
 		}

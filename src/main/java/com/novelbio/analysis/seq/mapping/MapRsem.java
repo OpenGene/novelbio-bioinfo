@@ -161,16 +161,13 @@ public class MapRsem implements MapRNA{
 			SeqFastaHash seqFastaHash = new SeqFastaHash(refFile, null, false);
 			//先找gff文件里面有没有对应的geneName，没有再找数据库，再没有就直接贴上基因名
 			for (String geneIDstr : seqFastaHash.getLsSeqName()) {
-				if (geneIDstr.contains("16860")) {
-					logger.error("stop");
-				}
 				GffDetailGene gffDetailGene = gffChrAbs.getGffHashGene().searchLOC(geneIDstr);
 				String symbol = null;
 				if (gffDetailGene != null) {
 					symbol = GeneID.removeDot(gffDetailGene.getNameSingle());
 				} else {
 					GeneID geneID = new GeneID(geneIDstr, species.getTaxID());
-					symbol = GeneID.removeDot(geneID.getSymbol());
+					symbol = geneID.getSymbol();
 				}
 				if (symbol == null || symbol.equals("")) {
 					symbol = GeneID.removeDot(geneIDstr);

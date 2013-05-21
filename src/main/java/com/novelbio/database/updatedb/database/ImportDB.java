@@ -43,10 +43,10 @@ public class ImportDB {
 	String GOPath = "/media/winE/Bioinformatics/DataBaseUpdate/";
 	
 	public static void main(String[] args) {
-		String downloadPath = "/media/winE/Bioinformatics/DataBaseUpdate/";
-		String softToolsFile = "/media/winE/NBCplatform/BioInfomaticsToolsPlatform/SoftwareInfo.txt";
-		String speciesFile = "/media/winE/NBCplatform/genome/SpeciesFileThis.txt";
-		String dbInfo = "/media/winE/NBCplatform/DBinfo.txt";
+		String downloadPath = "/media/winD/Bioinfor/database/";
+		String softToolsFile = "/media/winD/NBCplatform/BioInfomaticsToolsPlatform/SoftwareInfo.txt";
+		String speciesFile = "/media/winE/NBCplatform/genome/常见物种IDKEGGAll.txt";
+		String dbInfo = "/media/winD/NBCplatform/DBinfo.txt";
 		ImportDB importDB = new ImportDB();
 		importDB.setDownloadPath(downloadPath);
 		importDB.setSoftToolsFile(softToolsFile);
@@ -60,10 +60,10 @@ public class ImportDB {
 //		importDB.updateUniprotID();
 //		importDB.updateZeaMaize();
 //		importDB.updateRiceID("/media/winE/Bioinformatics/DataBase/Rice/");//只导了前两个
-//		importDB.updateTAIR("/media/winE/Bioinformatics/GenomeData/Arabidopsis/tair10DB/");
+		importDB.updateTAIR("/media/winD/NBCplatform/genome/arabidopsis/tair10/db/");
 //		importDB.updateZB();
 //		updateEnsembl();
-		importDB.updateYeast();
+//		importDB.updateYeast();
 //		importDB.updateMicroarray();
 
 //		updateSoyBean();

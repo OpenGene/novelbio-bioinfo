@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.broad.tribble.Tribble;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.novelbio.database.domain.geneanno.AgeneUniID;
@@ -86,7 +87,12 @@ public class ManageNCBIUniID {
 	}
 	
 	public ArrayList<AgeneUniID> findByAccID(int geneType, String accID, int taxID) {
+		boolean removeDot = false;
 		accID =  accID.toLowerCase();
+		if (accID.contains("_")) {
+			removeDot = true;
+			accID = GeneID.removeDot(accID);
+		}
 		List<? extends AgeneUniID> lsResult = new ArrayList<AgeneUniID>();
 		if (geneType == GeneID.IDTYPE_GENEID) {
 			if (taxID > 0) {
@@ -101,6 +107,25 @@ public class ManageNCBIUniID {
 				lsResult = repoUniID.findByAccID(accID);
 			}
 		}
+		
+		if ((lsResult == null || lsResult.size() == 0) && removeDot == false && accID.contains(".")) {
+			accID = GeneID.removeDot(accID);
+			
+			if (geneType == GeneID.IDTYPE_GENEID) {
+				if (taxID > 0) {
+					lsResult = repoNCBIID.findByAccIDAndTaxID(accID, taxID);
+				} else {
+					lsResult = repoNCBIID.findByAccID(accID);
+				}
+			} else if (geneType == GeneID.IDTYPE_UNIID) {
+				if (taxID > 0) {
+					lsResult = repoUniID.findByAccIDAndTaxID(accID, taxID);
+				} else {
+					lsResult = repoUniID.findByAccID(accID);
+				}
+			}
+		}
+		
 		return new ArrayList<AgeneUniID>(lsResult);
 	}
 

@@ -384,7 +384,6 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		} else {
 			symbol = gffDetailGene.getNameSingle();
 		}
-		symbol = GeneID.removeDot(symbol);
 		return symbol;
 	}
 	private boolean isNotRedundent(HashSet<String> setRemoveRedundentID, String symbol, String geneID) {

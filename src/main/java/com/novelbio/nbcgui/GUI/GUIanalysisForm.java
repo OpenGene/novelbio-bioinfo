@@ -7,6 +7,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+import com.novelbio.nbcgui.GUI.volcanoPlot.GuiVolcanoPlot;
+
 /**
 * This code was edited or generated using CloudGarden's Jigloo
 * SWT/Swing GUI Builder, which is free for non-commercial
@@ -56,6 +58,8 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 	private GuiSnpFilterSimple guiSnpFilterSimple;
 	private GuiRNAautoSpliceSimple guiRNAautoSpliceSimple;
 	private GuiUpdateDB guiUpdateDB;
+	private GuiVolcanoPlot guiVolcanoPlot;
+	
 	/**
 	* Auto-generated main method to display this JFrame
 	*/
@@ -121,6 +125,9 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				
 				guiDifGene = new GuiDifGeneJpanel();
 				jTabbedPane1.addTab("DifGene", null, guiDifGene, null);
+				
+				guiVolcanoPlot = new GuiVolcanoPlot();
+				jTabbedPane1.addTab("Volcano", guiVolcanoPlot);
 				
 				guiAnnoPeak = new GuiAnnoPeak();
 				jTabbedPane1.addTab("PeakAnno", null, guiAnnoPeak, null);

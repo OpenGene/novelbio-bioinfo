@@ -153,7 +153,6 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	}
 
 	public GffDetailGene searchLOC(String LOCID) {
-		LOCID = GeneID.removeDot(LOCID);
 		return gffHashGene.searchLOC(LOCID);
 	}
 	@Override
@@ -234,7 +233,7 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 		for (ListGff listGff : mapChrID2LsGff.values()) {
 			for (GffDetailGene gffDetailGene : listGff) {
 				for (GffGeneIsoInfo geneIsoInfo : gffDetailGene.getLsCodSplit()) {
-					setGeneID.add(GeneID.removeDot(geneIsoInfo.getName()));
+					setGeneID.add(geneIsoInfo.getName());
 				}
 			}
 		}

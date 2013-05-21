@@ -346,7 +346,7 @@ public class GuiBlastJpanel extends JPanel {
 					}
 					List<String> lsGenID2 = new ArrayList<String>();
 					for (String string : lsGenID) {
-						lsGenID2.add(GeneID.removeDot(string));
+						lsGenID2.add(string);
 					}
 					
 					

@@ -1,7 +1,6 @@
 package com.novelbio.database.updatedb.database;
 
-import org.apache.hadoop.mapreduce.lib.db.DBSplitter;
-
+import com.novelbio.base.SepSign;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.GeneInfo;
@@ -81,34 +80,34 @@ public class Arabidopsis {
 	}
 	
 	public void update() {
-		TAIR_NCBI_GENEID_mapping tair_NCBI_GENEID_mapping = new TAIR_NCBI_GENEID_mapping();
-		tair_NCBI_GENEID_mapping.setTxtWriteExcep(FileOperate.changeFileSuffix(TAIRNCBIGeneIDmapping, "_out", "txt"));
-		tair_NCBI_GENEID_mapping.updateFile(TAIRNCBIGeneIDmapping);
-		
-		TAIR_NCBI_REFSEQ_mapping_PROT_RNA tair_NCBI_REFSEQ_mapping_PROT_RNA = new TAIR_NCBI_REFSEQ_mapping_PROT_RNA();
-		tair_NCBI_REFSEQ_mapping_PROT_RNA.setTxtWriteExcep(FileOperate.changeFileSuffix(TAIRNCBIRefSeqMappingPROT, "_out", "txt"));
-		tair_NCBI_REFSEQ_mapping_PROT_RNA.setProtein(true);
-		tair_NCBI_REFSEQ_mapping_PROT_RNA.updateFile(TAIRNCBIRefSeqMappingPROT);
-		
-		tair_NCBI_REFSEQ_mapping_PROT_RNA.setProtein(false);
-		tair_NCBI_REFSEQ_mapping_PROT_RNA.setTxtWriteExcep(FileOperate.changeFileSuffix(TAIRNCBIRefSeqMappingRNA, "_out", "txt"));
-		tair_NCBI_REFSEQ_mapping_PROT_RNA.updateFile(TAIRNCBIRefSeqMappingRNA);
-		
-		TAIR_Model_cDNA_associations tair_Model_cDNA_associations = new TAIR_Model_cDNA_associations();
-		tair_Model_cDNA_associations.setTxtWriteExcep(FileOperate.changeFileSuffix(TAIRModelcDNAAssociations, "_out", "txt"));
-		tair_Model_cDNA_associations.updateFile(TAIRModelcDNAAssociations);
-
-		Uniprot2AGI uniprot2agi = new Uniprot2AGI();
-		uniprot2agi.setTxtWriteExcep(FileOperate.changeFileSuffix(Uniprot2AGIFile, "_out", "txt"));
-		uniprot2agi.updateFile(Uniprot2AGIFile);
+//		TAIR_NCBI_GENEID_mapping tair_NCBI_GENEID_mapping = new TAIR_NCBI_GENEID_mapping();
+//		tair_NCBI_GENEID_mapping.setTxtWriteExcep(FileOperate.changeFileSuffix(TAIRNCBIGeneIDmapping, "_out", "txt"));
+//		tair_NCBI_GENEID_mapping.updateFile(TAIRNCBIGeneIDmapping);
+//		
+//		TAIR_NCBI_REFSEQ_mapping_PROT_RNA tair_NCBI_REFSEQ_mapping_PROT_RNA = new TAIR_NCBI_REFSEQ_mapping_PROT_RNA();
+//		tair_NCBI_REFSEQ_mapping_PROT_RNA.setTxtWriteExcep(FileOperate.changeFileSuffix(TAIRNCBIRefSeqMappingPROT, "_out", "txt"));
+//		tair_NCBI_REFSEQ_mapping_PROT_RNA.setProtein(true);
+//		tair_NCBI_REFSEQ_mapping_PROT_RNA.updateFile(TAIRNCBIRefSeqMappingPROT);
+//		
+//		tair_NCBI_REFSEQ_mapping_PROT_RNA.setProtein(false);
+//		tair_NCBI_REFSEQ_mapping_PROT_RNA.setTxtWriteExcep(FileOperate.changeFileSuffix(TAIRNCBIRefSeqMappingRNA, "_out", "txt"));
+//		tair_NCBI_REFSEQ_mapping_PROT_RNA.updateFile(TAIRNCBIRefSeqMappingRNA);
+//		
+//		TAIR_Model_cDNA_associations tair_Model_cDNA_associations = new TAIR_Model_cDNA_associations();
+//		tair_Model_cDNA_associations.setTxtWriteExcep(FileOperate.changeFileSuffix(TAIRModelcDNAAssociations, "_out", "txt"));
+//		tair_Model_cDNA_associations.updateFile(TAIRModelcDNAAssociations);
+//
+//		Uniprot2AGI uniprot2agi = new Uniprot2AGI();
+//		uniprot2agi.setTxtWriteExcep(FileOperate.changeFileSuffix(Uniprot2AGIFile, "_out", "txt"));
+//		uniprot2agi.updateFile(Uniprot2AGIFile);
 		
 		TAIR_functional_descriptions tair_functional_descriptions = new TAIR_functional_descriptions();
 		tair_functional_descriptions.setTxtWriteExcep(FileOperate.changeFileSuffix(TAIRFunctionalDescriptions, "_out", "txt"));
 		tair_functional_descriptions.updateFile(TAIRFunctionalDescriptions);
 		
-		ATH_GO_GOSLIM ath_GO_GOSLIM = new ATH_GO_GOSLIM();
-		ath_GO_GOSLIM.setTxtWriteExcep(FileOperate.changeFileSuffix(AthGO, "_out", "txt"));
-		ath_GO_GOSLIM.updateFile(AthGO);
+//		ATH_GO_GOSLIM ath_GO_GOSLIM = new ATH_GO_GOSLIM();
+//		ath_GO_GOSLIM.setTxtWriteExcep(FileOperate.changeFileSuffix(AthGO, "_out", "txt"));
+//		ath_GO_GOSLIM.updateFile(AthGO);
 	}
 }
 /**
@@ -262,12 +261,12 @@ class TAIR_functional_descriptions extends ImportPerLine {
 		}
 		geneInfo.addFullName(ss[2]);
 		//如果没有description，那么就用fullname去代替
-		String description = "";
-		if (ss.length < 4 || ss[3] == null || ss[3].trim().equals("")) {
-			description = ss[2];
+		String description = ss[2];
+		if (ss.length >= 4 && ss[3] != null && !ss[3].trim().equals("")) {
+			description = description + SepSign.SEP_INFO + ss[3];
 		}
-		else {
-			description = ss[3];
+		if (ss.length >= 5 && ss[4] != null && !ss[4].trim().equals("")) {
+			description = description + SepSign.SEP_INFO + ss[4];
 		}
 		geneInfo.setDescrp(description);
 		geneInfo.setDBinfo(DBAccIDSource.TAIR_ATH.toString());
