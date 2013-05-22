@@ -233,6 +233,7 @@ public abstract class AGeneInfo {
 		this.modDate = modDate;
 	}
 	
+	/** 如果是同一个数据库，则覆盖式的保存 */
 	public boolean addInfo(AGeneInfo geneInfo) {
 		boolean update = false;
 		for (String dbInfoName : geneInfo.mapDescription.keySet()) {
@@ -244,8 +245,8 @@ public abstract class AGeneInfo {
 					) {
 				mapDescription.put(dbInfoName, geneInfo.mapDescription.get(dbInfoName));
 				update = true;
-			} else if(!mapDescription.get(dbInfoName).toLowerCase().contains(geneInfo.mapDescription.get(dbInfoName).toLowerCase()) ) {
-				mapDescription.put(dbInfoName, mapDescription.get(dbInfoName) + "//" +geneInfo.mapDescription.get(dbInfoName));
+			} else if(!mapDescription.get(dbInfoName).toLowerCase().equals(geneInfo.mapDescription.get(dbInfoName).toLowerCase()) ) {
+				mapDescription.put(dbInfoName, geneInfo.mapDescription.get(dbInfoName));
 				update = true;
 			}
 		}
@@ -253,6 +254,15 @@ public abstract class AGeneInfo {
 			if (!mapSymbol.containsKey(dbInfoName)) {
 				mapSymbol.put(dbInfoName, geneInfo.mapSymbol.get(dbInfoName));
 				update = true;
+			} else {
+				String symbolOld = mapSymbol.get(dbInfoName);
+				String symbolThis = geneInfo.mapSymbol.get(dbInfoName);
+				if (symbolThis != null && !symbolThis.equals("")) {
+					if (symbolOld == null || !symbolThis.equals(symbolOld)) {
+						mapSymbol.put(dbInfoName, symbolThis);
+						update = true;
+					}
+				}
 			}
 		}
 		update = addInfo(setDbXrefs, geneInfo.setDbXrefs) || update;

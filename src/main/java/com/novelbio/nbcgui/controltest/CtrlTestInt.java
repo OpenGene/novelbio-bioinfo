@@ -36,7 +36,10 @@ public interface CtrlTestInt {
 	 * @param goAlgorithm
 	 */
 	public void setGoAlgorithm(GoAlgorithm goAlgorithm);
-	
+	/**
+	 * <b>GO用到</b>
+	 */
+	public GoAlgorithm getGoAlgorithm();
 	/** 
 	 *  <b>GO用到</b><br>
 	 *  GO的层级分析，只有当算法为NovelGO时才能使用 

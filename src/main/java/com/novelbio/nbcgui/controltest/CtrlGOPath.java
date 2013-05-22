@@ -156,10 +156,10 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo> {
 			try {
 				if (strings.length == 1) {
 					mapPrefix2AccID.put("All", strings[0]);
-				} else if (strings.length > 1 && Double.parseDouble(strings[1]) <= down ) {
-					mapPrefix2AccID.put("Down", strings[0]);
-				} else if (strings.length > 1 && Double.parseDouble(strings[1]) >= up) {
+				} else if (strings.length > 1 && Double.parseDouble(strings[1]) >= up ) {
 					mapPrefix2AccID.put("Up", strings[0]);
+				} else if (strings.length > 1 && Double.parseDouble(strings[1]) <= down) {
+					mapPrefix2AccID.put("Down", strings[0]);
 				}
 			} catch (Exception e) { }
 		}

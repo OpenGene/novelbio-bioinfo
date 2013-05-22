@@ -1,28 +1,10 @@
 package com.novelbio.database.updatedb.database;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.w3c.dom.ls.LSResourceResolver;
-
-import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffType;
-import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.DBAccIDSource;
-import com.novelbio.database.domain.geneanno.AgeneUniID;
 import com.novelbio.database.domain.geneanno.DBInfo;
-import com.novelbio.database.domain.geneanno.Go2Term;
-import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.domain.information.SoftWareInfo;
-import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.database.service.servgeneanno.ManageDBInfo;
-import com.novelbio.database.service.servgeneanno.ManageGo2Term;
-import com.novelbio.database.service.servgeneanno.ManageNCBIUniID;
 
 /**
  * 

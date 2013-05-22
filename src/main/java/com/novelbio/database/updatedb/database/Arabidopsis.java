@@ -263,10 +263,18 @@ class TAIR_functional_descriptions extends ImportPerLine {
 		//如果没有description，那么就用fullname去代替
 		String description = ss[2];
 		if (ss.length >= 4 && ss[3] != null && !ss[3].trim().equals("")) {
-			description = description + SepSign.SEP_INFO + ss[3];
+			if (description.equals("")) {
+				description = ss[3];
+			} else {
+				description = description + SepSign.SEP_INFO + ss[3];
+			}
 		}
 		if (ss.length >= 5 && ss[4] != null && !ss[4].trim().equals("")) {
-			description = description + SepSign.SEP_INFO + ss[4];
+			if (description.equals("")) {
+				description = ss[4];
+			} else {
+				description = description + SepSign.SEP_INFO + ss[4];
+			}
 		}
 		geneInfo.setDescrp(description);
 		geneInfo.setDBinfo(DBAccIDSource.TAIR_ATH.toString());

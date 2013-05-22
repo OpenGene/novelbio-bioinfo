@@ -54,7 +54,12 @@ public class StatisticTestResult {
 		this.GeneInItemIDNum = geneInItemIDNum;
 		this.AllGeneNum = AllGeneNum;
 	}
-	
+	public int getAllDifGeneNum() {
+		return allDifGeneNum;
+	}
+	public int getAllGeneNum() {
+		return AllGeneNum;
+	}
 	/** 只有elimGo才用 */
 	protected void setPvalue(double pvalue) {
 		this.pvalue = pvalue;

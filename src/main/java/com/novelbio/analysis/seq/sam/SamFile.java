@@ -10,13 +10,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMFileHeader.SortOrder;
+import net.sf.samtools.SAMFileReader.ValidationStringency;
+import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMReadGroupRecord;
 import net.sf.samtools.SAMSequenceRecord;
 import net.sf.samtools.SAMTextHeaderCodec;
+import net.sf.samtools.SAMTools;
 import net.sf.samtools.util.BlockCompressedInputStream;
 import net.sf.samtools.util.BlockCompressedStreamConstants;
 import net.sf.samtools.util.StringLineReader;
@@ -42,7 +47,9 @@ import com.novelbio.database.model.species.Species;
  */
 public class SamFile implements AlignSeq {
 	private static final Logger logger = Logger.getLogger(SamFile.class);
-	
+	static {
+		SAMFileReader.setDefaultValidationStringency(ValidationStringency.SILENT);
+	}
 	public static void main(String[] args) {		
 		SamFile samFile = new SamFile("/home/zong0jie/Desktop/FYmouse20111122/mapping/heart/aaa.bam");
 		samFile = samFile.addGroup("A", "B", "C", "ILM");
@@ -304,11 +311,31 @@ public class SamFile implements AlignSeq {
 	  * @param outFile
 	  */
 	private SamFile addGroup(boolean overlap, String sampleID, String LibraryName, String SampleName, String Platform) {
-		SamRGroup samRGroup = readFirstLine().getReadGroup();
-		if (!overlap && samRGroup != null) {
+		boolean isAddGroup = false;
+		if (overlap) {
+			isAddGroup = true;
+		} else {
+			List<SAMReadGroupRecord> lSamRGroups = getHeader().getReadGroups();
+			Set<String> setGroupID = new HashSet<String>();
+			for (SAMReadGroupRecord samReadGroupRecord : lSamRGroups) {
+				setGroupID.add(samReadGroupRecord.getId());
+			}
+			int i = 0;
+			for (SamRecord samRecord : readLines()) {
+				if (i > 100000) {
+					break;
+				}
+				if (samRecord.getReadGroup() == null || !setGroupID.contains(samRecord.getReadGroup().getID())) {
+					isAddGroup = true;
+					break;
+				}
+				i++;
+			}
+		}
+		if (!isAddGroup) {
 			return this;
 		}
-		samRGroup = new SamRGroup(sampleID, LibraryName, SampleName, Platform);
+		SamRGroup samRGroup = new SamRGroup(sampleID, LibraryName, SampleName, Platform);
 		return setGroup(samRGroup);
 	}
 	 /**

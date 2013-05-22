@@ -34,6 +34,15 @@ public class SamRGroup {
 	public SamRGroup(SAMReadGroupRecord samReadGroupRecord) {
 		this.samReadGroupRecord = samReadGroupRecord;
 	}
+	
+	/** 没有则返回null */
+	public String getID() {
+		if (samReadGroupRecord == null) {
+			return null;
+		}
+		return samReadGroupRecord.getId();
+	}
+	
 	/**
 	 * 本次mapping的组，所有参数都不能有空格
 	 * @param sampleID 

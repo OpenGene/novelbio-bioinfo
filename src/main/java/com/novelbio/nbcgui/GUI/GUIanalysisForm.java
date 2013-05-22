@@ -203,7 +203,7 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				jTabbedPane1.addTab("snpFilter", guiSnpFiltering);
 				
 				guiSnpFilterSimple = new GuiSnpFilterSimple();
-				jTabbedPane1.addTab("snpFilterSample", guiSnpFilterSimple);
+				jTabbedPane1.addTab("snpFilterSimple", guiSnpFilterSimple);
 				
 				guiRNAautoSpliceSimple = new GuiRNAautoSpliceSimple();
 				jTabbedPane1.addTab("RNAautoSplice", guiRNAautoSpliceSimple);

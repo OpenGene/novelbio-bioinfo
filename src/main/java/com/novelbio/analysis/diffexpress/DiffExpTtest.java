@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import org.apache.commons.math.stat.inference.TestUtils;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
@@ -14,6 +16,8 @@ import com.novelbio.generalConf.TitleFormatNBC;
  * 
  * @author zong0jie
  */
+@Component
+@Scope("prototype")
 public class DiffExpTtest extends DiffExpAbs {
 	/** 比较矩阵设计好后需要将每个ID对应到试验名上 <br>
 	 * 譬如：<br>
@@ -38,7 +42,7 @@ public class DiffExpTtest extends DiffExpAbs {
 		
 	}
 	protected void writeToGeneFile() { }
-	protected void  modifyResult(){}
+	public void  modifyResult(){}
 	public void clean(){};
 	@Override
 	protected void run() {

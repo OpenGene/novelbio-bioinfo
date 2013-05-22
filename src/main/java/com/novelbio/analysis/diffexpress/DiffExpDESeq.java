@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map.Entry;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import com.novelbio.PathNBCDetail;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.DateUtil;
@@ -20,8 +23,9 @@ import com.novelbio.generalConf.TitleFormatNBC;
  * 5. 自动生成DEseq脚本，然后送DEseq分析
  * 调用DEseq算法，适用于数reads的试验，譬如miRNAseq或DGE
  * @author zong0jie
- *
  */
+@Component
+@Scope("prototype")
 public class DiffExpDESeq extends DiffExpAbs {
 	/** 实验是否有重复，貌似有一次重复就算有重复了 */
 	boolean isRepeatExp = false;

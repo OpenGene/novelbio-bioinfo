@@ -21,8 +21,8 @@ import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
 
-public class CtrlFastQMapping {
-	private static Logger logger = Logger.getLogger(CtrlFastQMapping.class);
+public class CtrlDNAMapping {
+	private static Logger logger = Logger.getLogger(CtrlDNAMapping.class);
 	
 	public static final int LIBRARY_SINGLE_END = 128;
 	public static final int LIBRARY_PAIR_END = 256;

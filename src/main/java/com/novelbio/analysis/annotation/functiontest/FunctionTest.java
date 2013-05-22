@@ -364,6 +364,13 @@ public abstract class FunctionTest implements Cloneable {
 		}
 		return mapItem2StatisticsResult;
 	}
+	
+	public int getAllDifGeneNum() {
+		return getTestResult().get(0).getAllDifGeneNum();
+	}
+	public int getAllGeneNum() {
+		return getTestResult().get(0).getAllGeneNum();
+	}
 	/**
 	 * booRun 新跑一次 返回最后的结果，ElimGO需要覆盖该方法 对结果排个序
 	 * 返回最后的结果，ElimGO需要覆盖该方法
@@ -441,17 +448,26 @@ public abstract class FunctionTest implements Cloneable {
 		try {
 			functionTest = (FunctionTest)super.clone();
 			functionTest.setGeneIDsBG = setGeneIDsBG;
-			functionTest.setGeneIDsTest = new HashSet<GeneID>(setGeneIDsTest);
+			if (setGeneIDsTest != null) {
+				functionTest.setGeneIDsTest = new HashSet<GeneID>(setGeneIDsTest);
+			}
 			functionTest.BGfile = BGfile;
 			functionTest.BGnum = BGnum;
 			functionTest.blastEvalue = blastEvalue;
-			functionTest.blastTaxID = new ArrayList<Integer>(blastTaxID);
-			functionTest.lsTest = new ArrayList<GeneID2LsItem>(lsTest);
-			functionTest.lsTestResult = new ArrayList<StatisticTestResult>(lsTestResult);
+			if (blastTaxID != null) {
+				functionTest.blastTaxID = new ArrayList<Integer>(blastTaxID);
+			}
+			if (lsTest != null) {
+				functionTest.lsTest = new ArrayList<GeneID2LsItem>(lsTest);
+			}
+			if (lsTestResult != null) {
+				functionTest.lsTestResult = new ArrayList<StatisticTestResult>(lsTestResult);
+			}
+			if (mapGeneUniID2LsGeneID != null) {
+				functionTest.mapGeneUniID2LsGeneID = ArrayListMultimap.create(mapGeneUniID2LsGeneID);
+			}
 			functionTest.mapBGGeneID2Items = mapBGGeneID2Items;
-			functionTest.mapGeneUniID2LsGeneID = ArrayListMultimap.create(mapGeneUniID2LsGeneID);
 			functionTest.taxID = taxID;
-			
 		} catch (CloneNotSupportedException e) {
 			return null;
 		}

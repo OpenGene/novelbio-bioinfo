@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import com.novelbio.PathNBCDetail;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.DateUtil;
@@ -18,18 +21,21 @@ import com.novelbio.generalConf.TitleFormatNBC;
  * 调用DEGseq算法，适用于RPKM的试验，譬如mRNAseq
  * @author zong0jie
  */
+@Component
+@Scope("prototype")
 public class DiffExpDEGseq extends DiffExpAbs {
 	String outPutSuffix = "_Path";
 	public DiffExpDEGseq() {
 //		rawScript = "/media/winE/Bioinformatics/R/Protocol/DEGseqJava.txt";
 		rawScript = PathNBCDetail.getRworkspace().replace("\\", "/") + "DEGseqJava.txt";
-
 	}
+	
 	/** 基因标记列，实际列，用在R里面，所以不需要减1 */
 	public void setColID(int colID) {
 		this.colAccID = colID;
 		calculate = false;
 	}
+	
 	protected void generateScript() {
 		TxtReadandWrite txtReadScript = new TxtReadandWrite(rawScript, false);
 		TxtReadandWrite txtOutScript = new TxtReadandWrite(outScript, true);
@@ -43,17 +49,16 @@ public class DiffExpDEGseq extends DiffExpAbs {
 				for (String string : readFileAndCol) {
 					txtOutScript.writefileln(string);
 				}
-			} 
-			else if (content.startsWith("#Compare")) {
+			} else if (content.startsWith("#Compare")) {
 				String[] compareAndOut = getCompareAndOutput(content);
 				for (String string : compareAndOut) {
 					txtOutScript.writefileln(string);
 				}
-			} 
-			else {
+			} else {
 				txtOutScript.writefileln(content);
 			}
 		}
+		txtReadScript.close();
 		txtOutScript.close();
 	}
 
@@ -151,6 +156,7 @@ public class DiffExpDEGseq extends DiffExpAbs {
 	protected void writeToGeneFile() {
 		TxtReadandWrite txtWrite = new TxtReadandWrite(fileNameRawdata, true);
 		txtWrite.ExcelWrite(lsGeneInfo);
+		txtWrite.close();
 	}
 
 	@Override

@@ -3,6 +3,9 @@ package com.novelbio.analysis.diffexpress;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import com.novelbio.PathNBCDetail;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.DateUtil;
@@ -11,7 +14,8 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.generalConf.TitleFormatNBC;
-
+@Component
+@Scope("prototype")
 public class DiffExpLimma extends DiffExpAbs{
 	/** 比较矩阵设计好后需要将每个ID对应到试验名上 <br>
 	 * 譬如：<br>

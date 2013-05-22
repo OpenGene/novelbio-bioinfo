@@ -41,7 +41,9 @@ public class CtrlGO extends CtrlGOPath implements CtrlTestInt {
 			functionTest = FunctionTest.getInstance(FunctionTest.FUNCTION_GO_NOVELBIO);
 		}
 	}
-	
+	public GoAlgorithm getGoAlgorithm() {
+		return goAlgorithm;
+	}
 	/** GO的层级分析，只有当算法为NovelGO时才能使用 */
 	public void setGOlevel(int levelNum) {
 		if (functionTest instanceof NovelGOFunTest) {

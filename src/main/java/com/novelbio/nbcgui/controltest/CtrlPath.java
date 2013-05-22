@@ -20,7 +20,10 @@ public class CtrlPath extends CtrlGOPath implements CtrlTestInt {
 	public CtrlPath() {
 		functionTest = FunctionTest.getInstance(FunctionTest.FUNCTION_PATHWAY_KEGG);
 	}
-	
+	/** 不需要该参数 */
+	public GoAlgorithm getGoAlgorithm() {
+		return GoAlgorithm.novelgo;
+	}
 	@Override
 	protected void copeFile(String prix, String excelPath) {
 	}

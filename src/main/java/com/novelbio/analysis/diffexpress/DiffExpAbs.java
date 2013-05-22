@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import com.novelbio.PathNBCDetail;
@@ -14,8 +15,9 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.service.SpringFactory;
 
-public abstract class DiffExpAbs {
+public abstract class DiffExpAbs implements DiffExpInt {
 	public static final int LIMMA = 10;
 	public static final int DESEQ = 20;
 	public static final int DEGSEQ = 30;
@@ -68,7 +70,6 @@ public abstract class DiffExpAbs {
 	 * 1: SampleGroupName
 	 */
 	public void setCol2Sample(ArrayList<String[]> lsSampleColumn2GroupName) {
-		this.lsSampleColumn2GroupName = lsSampleColumn2GroupName;
 		//按列进行排序
 		Collections.sort(lsSampleColumn2GroupName, new Comparator<String[]>() {
 			public int compare(String[] o1, String[] o2) {
@@ -77,6 +78,7 @@ public abstract class DiffExpAbs {
 				return col1.compareTo(col2);
 			}
 		});
+		this.lsSampleColumn2GroupName = lsSampleColumn2GroupName;
 		calculate = false;
 	}
 	/**
@@ -137,10 +139,19 @@ public abstract class DiffExpAbs {
 		}
 	}
 	
+	/**
+	 * 返回文件名，以及对应的比较<br>
+	 * key：文件全名<br>
+	 * value：对应的比较。譬如 String[]{Treat, Control}
+	 * @return
+	 */
+	public Map<String, String[]> getMapOutFileName2Compare() {
+		calculateResult();
+		return mapOutFileName2Compare;
+	}
+	
+	
 	public ArrayList<String> getResultFileName() {
-		for (String fileName : mapOutFileName2Compare.keySet()) {
-			FileOperate.DeleteFileFolder(fileName);
-		}
 		calculateResult();
 		return ArrayOperate.getArrayListKey(mapOutFileName2Compare);
 	}
@@ -150,6 +161,10 @@ public abstract class DiffExpAbs {
 			return;
 		}
 		calculate = true;
+		//清空文件
+		for (String fileName : mapOutFileName2Compare.keySet()) {
+			FileOperate.DeleteFileFolder(fileName);
+		}
 		writeToGeneFile();
 		setMapSample_2_time2value();
 		generateScript();
@@ -163,6 +178,7 @@ public abstract class DiffExpAbs {
 	protected void writeToGeneFile() {
 		TxtReadandWrite txtWrite = new TxtReadandWrite(fileNameRawdata, true);
 		txtWrite.ExcelWrite(getAnalysisGeneInfo());
+		txtWrite.close();
 	}
 	/**
 	 * 获得选定的基因ID和具体值
@@ -258,7 +274,10 @@ public abstract class DiffExpAbs {
 		cmdOperate.run();
 	}
 	
-	private void modifyResult() {
+	/** 仅供AOP拦截使用，外界不要调用
+	 * 拦截在其完成之后
+	 */
+	public void modifyResult() {
 		for (Entry<String, String[]> entry : mapOutFileName2Compare.entrySet()) {
 			String fileName = entry.getKey();
 			String[] groupPaire = entry.getValue();
@@ -286,19 +305,19 @@ public abstract class DiffExpAbs {
 		return mapMethod2ID;
 	}
 	
-	public static DiffExpAbs createDiffExp(int DiffExpID) {
+	public static DiffExpInt createDiffExp(int DiffExpID) {
+		DiffExpInt diffExpInt = null;
 		if (DiffExpID == LIMMA) {
-			return new DiffExpLimma();
+			diffExpInt = (DiffExpInt)SpringFactory.getFactory().getBean("diffExpLimma");
 		} else if (DiffExpID == DESEQ) {
-			return new DiffExpDESeq();
+			diffExpInt = (DiffExpInt)SpringFactory.getFactory().getBean("diffExpDESeq");
 		} else if (DiffExpID == DEGSEQ) {
-			return new DiffExpDEGseq();
+			diffExpInt = (DiffExpInt)SpringFactory.getFactory().getBean("diffExpDEGseq");
 		} else if (DiffExpID == TTest) {
-			return new DiffExpTtest();
+			diffExpInt = (DiffExpInt)SpringFactory.getFactory().getBean("diffExpTtest");
 		} else if (DiffExpID == EDEGR) {
-			return new DiffExpEdgeR();
-		} else {
-			return null;
+			diffExpInt = (DiffExpInt)SpringFactory.getFactory().getBean("diffExpEdgeR");
 		}
+		return diffExpInt;
 	}
 }

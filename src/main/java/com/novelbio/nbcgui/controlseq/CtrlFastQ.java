@@ -21,16 +21,8 @@ import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
 
-public class CtrlFastQMapping {
-	private static Logger logger = Logger.getLogger(CtrlFastQMapping.class);
-	
-	public static final int LIBRARY_SINGLE_END = 128;
-	public static final int LIBRARY_PAIR_END = 256;
-	public static final int LIBRARY_MATE_PAIR = 512;
-	
-	public static final int MAP_TO_CHROM = 8;
-	public static final int MAP_TO_REFSEQ = 4;
-	public static final int MAP_TO_REFSEQ_LONGEST_ISO = 2;
+public class CtrlFastQ {
+	private static Logger logger = Logger.getLogger(CtrlFastQ.class);
 	
 	boolean filter = true;
 	boolean trimNNN = false;
@@ -59,14 +51,6 @@ public class CtrlFastQMapping {
 	int gapLen = 5;
 	double mismatch = 2;
 	int thread = 4;
-	
-	String chrIndexFile;
-	Species species;
-	int map2Index = MAP_TO_CHROM;
-	
-	SoftWare softMapping = SoftWare.bwa;
-	
-	SoftWareInfo softWareInfo = new SoftWareInfo();
 	
 	TxtReadandWrite txtReport;
 	public void setAdaptorLeft(String adaptorLeft) {
