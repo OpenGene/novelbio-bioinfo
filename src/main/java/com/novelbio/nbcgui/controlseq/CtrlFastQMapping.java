@@ -49,6 +49,7 @@ public class CtrlFastQMapping {
 	ArrayList<String> lsFastQfileLeft = new ArrayList<String>();
 	ArrayList<String> lsFastQfileRight = new ArrayList<String>();
 	
+	/** 输出文件的前缀 */
 	String outFilePrefix = "";
 	
 	//以下为开始过滤和过滤后的文件
