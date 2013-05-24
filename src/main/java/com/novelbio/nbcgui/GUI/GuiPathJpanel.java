@@ -366,7 +366,7 @@ public class GuiPathJpanel extends JPanel{
 		} else {
 			lsAccID = ExcelTxtRead.readLsExcelTxt(geneFileXls, new int[]{colAccID}, 1, 0);
 		}
-		
+		ctrlPath = (CtrlTestInt)SpringFactory.getFactory().getBean("ctrlPath");
 		ctrlPath.clearParam();
 		int taxID = -1;
 		Species species = jCombSelSpePath.getSelectedValue();

@@ -78,7 +78,7 @@ public class SamFileStatistics implements AlignmentRecorder {
 	 * 首先要运行 statistics
 	 * @return
 	 */
-	public ArrayList<String[]> getMappingInfo() {		
+	public ArrayList<String[]> getMappingInfo() {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		lsResult.add(new String[]{"allReadsNum", (long)allReadsNum + ""});
 		lsResult.add(new String[]{"mappedReadsNum", (long)mappedReadsNum + ""});

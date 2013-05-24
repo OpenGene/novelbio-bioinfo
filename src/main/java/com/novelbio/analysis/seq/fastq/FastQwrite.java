@@ -40,9 +40,15 @@ class FastQwrite {
 		if (fastQRecord1 == null || fastQRecord1.equals("")) {
 			return;
 		}
-		txtSeqFile.writefileln(fastQRecord1);
-		if (fastQwriteMate != null) {
-			fastQwriteMate.writeFastQRecordString(fastQRecord2);
+		
+		if (fastQwriteMate == null) {
+			txtSeqFile.writefileln(fastQRecord1);
+		} else {
+			if (fastQRecord2 == null || fastQRecord2.equals("")) {
+				return;
+			}
+			txtSeqFile.writefileln(fastQRecord1);
+			fastQwriteMate.txtSeqFile.writefileln(fastQRecord2);
 		}
 	}
 	/**

@@ -21,7 +21,7 @@ public class CtrlGO extends CtrlGOPath implements CtrlTestInt {
 	private static final Logger logger = Logger.getLogger(CtrlGO.class);
 	
 	GOtype GOClass = GOtype.BP;
-	GoAlgorithm goAlgorithm = GoAlgorithm.classic;
+	GoAlgorithm goAlgorithm = GoAlgorithm.novelgo;
 	int goLevel = -1;
 	
 	public GOtype getGOClass() {

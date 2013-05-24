@@ -49,7 +49,7 @@ public class BamRealign {
 		CmdOperate cmdOperate = new CmdOperate(cmdInertval,"samToBam");
 		cmdOperate.run();
 		
-		String cmdRealign = "java -Xmx10g -jar " + getTmpPath() + ExePath + "GenomeAnalysisTK.jar " +  "-T IndelRealigner " 
+		String cmdRealign = "java -Xmx10g -jar " + getTmpPath() + ExePath + "GenomeAnalysisTK.jar " +  "-T IndelRealigner " + "--consensusDeterminationModel USE_SW " 
 				+ getRefSequenceFile() + getSortedBam() + getInIntervalFile() + getOutRealignBam(outFile);
 		cmdOperate = new CmdOperate(cmdRealign,"samToBam");
 		cmdOperate.run();

@@ -276,8 +276,8 @@ public class MapBowtie extends MapDNA {
 	
 	public boolean mapping() {
 		outFileName = addSamToFileName(outFileName);
-		
-		String cmd = ""; cmd = ExePathBowtie + "bowtie2 ";
+		cmd = ""; 
+		cmd = ExePathBowtie + "bowtie2 ";
 		cmd = cmd + getOptions() + " -x " + CmdOperate.addQuot(getChrNameWithoutSuffix()) + getLsFqFile() + getOutFileName();
 		CmdOperate cmdOperate = new CmdOperate(cmd, "bwaMapping2");
 		cmdOperate.run();

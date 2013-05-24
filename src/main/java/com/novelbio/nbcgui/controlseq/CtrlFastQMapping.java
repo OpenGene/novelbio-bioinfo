@@ -24,10 +24,6 @@ import com.novelbio.database.model.species.Species;
 public class CtrlFastQMapping {
 	private static Logger logger = Logger.getLogger(CtrlFastQMapping.class);
 	
-	public static final int LIBRARY_SINGLE_END = 128;
-	public static final int LIBRARY_PAIR_END = 256;
-	public static final int LIBRARY_MATE_PAIR = 512;
-	
 	public static final int MAP_TO_CHROM = 8;
 	public static final int MAP_TO_REFSEQ = 4;
 	public static final int MAP_TO_REFSEQ_LONGEST_ISO = 2;

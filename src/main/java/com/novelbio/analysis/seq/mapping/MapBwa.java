@@ -6,6 +6,7 @@ import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRGroup;
 import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
@@ -299,11 +300,14 @@ public class MapBwa extends MapDNA {
 				+ getSeedSize() + getOpenPanalty() + getFastQoffset();
 		
 		String cmd1 = cmd + CmdOperate.addQuot(chrFile) + " " + CmdOperate.addQuot(leftFq) + " > " + CmdOperate.addQuot(getSai(1));
+		
+		this.cmd = cmd1;
 		cmdOperate = new CmdOperate(cmd1,"bwaMapping1");
 		cmdOperate.run();
 		
 		if (isPairEnd()) {
 			String cmd2 = cmd + CmdOperate.addQuot(chrFile) + " " + CmdOperate.addQuot(rightFq) + " > " + CmdOperate.addQuot(getSai(2));
+			this.cmd = this.cmd + TxtReadandWrite.ENTER_LINUX + cmd2;
 			cmdOperate = new CmdOperate(cmd2,"bwaMapping2");
 			cmdOperate.run();
 		}
@@ -333,6 +337,7 @@ public class MapBwa extends MapDNA {
 			cmd = cmd + CmdOperate.addQuot(chrFile) + " " + CmdOperate.addQuot(getSai(1)) + " "  + CmdOperate.addQuot(leftFq);
 			cmd = cmd + " > " +  CmdOperate.addQuot(outFileName);
 		}
+		this.cmd = this.cmd + TxtReadandWrite.ENTER_LINUX + cmd;
 		cmdOperate = new CmdOperate(cmd,"bwaMappingSAI");
 		cmdOperate.run();
 	}

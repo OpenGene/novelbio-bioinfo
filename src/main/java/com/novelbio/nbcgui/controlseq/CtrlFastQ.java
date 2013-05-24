@@ -55,6 +55,7 @@ public class CtrlFastQ {
 	public void setFastqQuality(int fastqQuality) {
 		this.fastqQuality = fastqQuality;
 	}
+	/** 是否过滤，如果不过滤则直接合并 */
 	public void setFilter(boolean filter) {
 		this.filter = filter;
 	}
@@ -91,13 +92,13 @@ public class CtrlFastQ {
 	}
 	
 	public void running() {
-		txtReport = new TxtReadandWrite(outFilePrefix + "reportInfo", true);
-		
 		setMapCondition2LsFastQLR();
-		txtReport.writefileln("Sample\tAllReads\tFilteredReads");
-		txtReport.writefile("", true);
-		filteredReads();
-		
+		if (filter) {
+			txtReport = new TxtReadandWrite(outFilePrefix + "reportFastQFilter", true);
+			txtReport.writefileln("Sample\tAllReads\tFilteredReads");
+			txtReport.writefile("", true);
+			filteredReads();
+		}
 		combineAllFastqFile();
 	}
 	/** 将输入文件整理成
@@ -235,6 +236,7 @@ public class CtrlFastQ {
 		
 		mapCondition2CombFastQLRFiltered.put(condition, new FastQ[]{fastQL, fastQR});
 	}
+	
 	private void setFastQParameter(FastQ fastQ) {
 		FastQRecordFilter fastQfilterRecord = new FastQRecordFilter();
 		fastQfilterRecord.setFilterParamAdaptorLeft(adaptorLeft.trim());

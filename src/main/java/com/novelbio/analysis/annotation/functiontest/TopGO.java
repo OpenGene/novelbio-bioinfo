@@ -184,7 +184,7 @@ public class TopGO {
 			i ++;
 		}
 		txtWrite.Rwritefile(tmpOut);
-		
+		txtWrite.close();
 		TxtReadandWrite txtTopGoBG = new TxtReadandWrite(BGGeneFile, true);
 		for (String string : lsBG) {
 			txtTopGoBG.writefileln(string);

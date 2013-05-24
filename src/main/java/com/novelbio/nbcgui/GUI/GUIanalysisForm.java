@@ -7,6 +7,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.nbcgui.GUI.volcanoPlot.GuiVolcanoPlot;
 
 /**
@@ -79,21 +81,22 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 	
 	public GUIanalysisForm() {
 		super();
-//		String file = "/lib/firmware/tigon/property";
-//		if (!FileOperate.isFileExist(file)) {
-//			System.out.println("no");
-//			return;
-//		}
-//		System.out.println("ok");
-//		TxtReadandWrite txtRead = new TxtReadandWrite(file);
-//		for (String string : txtRead.readlines(3)) {
-//			if (string.equals("201301jndsfiudsioold")) {
-//				break;
-//			} else {
-//				return;
-//			}
-//		}
-//		txtRead.close();
+		String file = "/lib/firmware/tigon/property";
+		if (!FileOperate.isFileExist(file)) {
+			System.out.println("no");
+			return;
+		}				
+
+		System.out.println("ok");
+		TxtReadandWrite txtRead = new TxtReadandWrite(file);
+		for (String string : txtRead.readlines(3)) {
+			if (string.equals("201301jndsfiudsioold")) {
+				break;
+			} else {
+				return;
+			}
+		}
+		txtRead.close();
 		initGUI();
 	}
 	
@@ -191,7 +194,6 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				
 				guiFilterDifGene = new GuiFilterDifGene();
 				jTabbedPane1.addTab("filterGene", null, guiFilterDifGene, null);
-				
 				
 				guiPeakCalling = new GuiPeakCalling();
 				jTabbedPane1.addTab("PeakCalling", guiPeakCalling);

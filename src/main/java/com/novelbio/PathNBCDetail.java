@@ -8,6 +8,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class PathNBCDetail {
+	static String workSpace;
 	static HashMap<String, String> mapID2Path = new HashMap<String, String>();
 	static {
 		initial();
@@ -17,6 +18,8 @@ public class PathNBCDetail {
 		if (!FileOperate.isFileExist(pathFile)) {
 			return;
 		}
+		
+		mapID2Path.clear();
 		TxtReadandWrite txtRead = new TxtReadandWrite(getRworkspace() + "NBCPath.txt", false);		
 		for (String string : txtRead.readlines()) {
 			string = string.trim();
@@ -34,18 +37,28 @@ public class PathNBCDetail {
 		}
 		txtRead.close();
 	}
+	
+	public static void setWorkSpace(String workSpace) {
+		PathNBCDetail.workSpace = workSpace;
+		initial();
+	}
+	
 	/** 返回jar所在的路径 */
 	public static String getProjectPath() {
-		java.net.URL url = PathNBCDetail.class.getProtectionDomain().getCodeSource().getLocation();
-		String filePath = null;
-		try {
-			filePath = HttpFetch.decode(url.getPath());
-		} catch (Exception e) {
-			e.printStackTrace();
+		if (workSpace == null || workSpace.equals("")) {
+			java.net.URL url = PathNBCDetail.class.getProtectionDomain().getCodeSource().getLocation();
+			String filePath = null;
+			try {
+				filePath = HttpFetch.decode(url.getPath());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			workSpace = FileOperate.getParentPathName(filePath);
 		}
-		filePath = FileOperate.getParentPathName(filePath);
-		return FileOperate.addSep(filePath);
+		workSpace = FileOperate.addSep(workSpace);
+		return workSpace;
 	}
+	
 	/** 返回jar内部路径 */
 	public static String getProjectPathInside() {
 		java.net.URL url = PathNBCDetail.class.getProtectionDomain().getCodeSource().getLocation();

@@ -22,6 +22,14 @@ import com.novelbio.base.fileOperate.FileOperate;
  * 
  */
 public class GATKRealign {
+	public static void main(String[] args) {
+		String[] params2 = { "-R", "/media/winD/Bioinfor/genome/rice/tigr7/ChromFa/all/chrAll.fa", "-T", "IndelRealigner", 
+				"-targetIntervals", "/media/winE/NBC/Project/Project_ZDB_Lab/QXL/Project_ZDB/NewCombine/realignTest/9522_realign2013-05-23083530445.intervals",
+				"-o", "/media/winE/NBC/Project/Project_ZDB_Lab/QXL/Project_ZDB/NewCombine/realignTest/AF18-1_sorted_subNew.bam", 
+				"--consensusDeterminationModel","USE_SW", //表示用'Smith-Waterman'的比对方法来产生最佳名参数有：USE_READS
+				"-I", "/media/winE/NBC/Project/Project_ZDB_Lab/QXL/Project_ZDB/NewCombine/realignTest/AF18-1_sorted_sub.bam", "--unsafe", ALL }; //, "--filter_mismatching_base_and_quals"
+		CommandLineGATK.main(params2);
+	}
 	private static final Logger logger = Logger.getLogger(GATKRealign.class);
 	
 	public static final String ALLOW_UNINDEXED_BAM = "ALLOW_UNINDEXED_BAM";
@@ -59,10 +67,13 @@ public class GATKRealign {
 	 */
 	public boolean realign() {
 		try {
+			
+//			intervalsPath = "/media/winE/NBC/Project/Project_ZDB_Lab/QXL/Project_ZDB/NewCombine/realignTest/AF18_realign2013-05-23013331150.intervals";
 			String[] params1 = { "-I", inputFilePath, "-R", refFilePath, "-T", "RealignerTargetCreator", "-o", intervalsPath ,"--unsafe", unsafe};
 			CommandLineGATK.main(params1);
-			String[] params2 = { "-R", refFilePath, "-T", "IndelRealigner", "-targetIntervals", intervalsPath, "-o", outputFilePath, "-I",
-					inputFilePath, "--unsafe", unsafe, "--filter_mismatching_base_and_quals" };
+			String[] params2 = { "-R", refFilePath, "-T", "IndelRealigner", "-targetIntervals", intervalsPath, "-o", outputFilePath, 
+					"--consensusDeterminationModel","USE_READS", //表示用'Smith-Waterman'的比对方法来产生最佳名参数有：USE_READS
+					"-I", inputFilePath, "--unsafe", unsafe }; //, "--filter_mismatching_base_and_quals"
 			CommandLineGATK.main(params2);
 			return true;
 		} catch (Exception e) {
