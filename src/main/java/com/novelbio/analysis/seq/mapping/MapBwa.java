@@ -10,6 +10,7 @@ import com.novelbio.analysis.seq.sam.SamRGroup;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 /**
  * 在set里面有很多参数可以设定，不设定就用默认
@@ -414,6 +415,11 @@ public class MapBwa extends MapDNA {
 		}
 	}
 	public void suspend() {
+		
+	}
+	@Override
+	public void setSubVersion(SoftWare bowtieVersion) {
+		// TODO Auto-generated method stub
 		
 	}
 }

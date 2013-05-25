@@ -41,13 +41,6 @@ public class MapBowtie extends MapDNA {
 	 */
 	MapLibrary mapLibrary = MapLibrary.PairEnd;
 	
-	public MapBowtie() {
-		// TODO Auto-generated constructor stub
-	}
-	/** mapping功能只能由bowtie2实现 */
-	public MapBowtie(SoftWare bowtieVersion) {
-		setBowtieVersion(bowtieVersion);
-	}
 	/**
 	 * 设定tophat所在的文件夹以及待比对的路径
 	 * @param exePath 如果在根目录下则设置为""或null
@@ -66,7 +59,7 @@ public class MapBowtie extends MapDNA {
 		this.chrFile = chrFile;
 	}
 	/** 设定是bowtie还是bowtie2 */
-	public void setBowtieVersion(SoftWare bowtieVersion) {
+	public void setSubVersion(SoftWare bowtieVersion) {
 		this.bowtieVersion = bowtieVersion;
 	}
 	public void setOutFileName(String outFileName) {

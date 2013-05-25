@@ -13,6 +13,7 @@ import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.fastq.FastQRecordFilter;
 import com.novelbio.analysis.seq.mapping.MapDNA;
+import com.novelbio.analysis.seq.mapping.MapDNAint;
 import com.novelbio.analysis.seq.mapping.MapLibrary;
 import com.novelbio.analysis.seq.sam.SamFileStatistics;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -310,7 +311,7 @@ public class CtrlFastQMapping {
 		for (Entry<String, FastQ[]> entry : mapCondition2CombFastQLRFiltered.entrySet()) {
 			String prefix = entry.getKey();
 			FastQ[] fastQs = entry.getValue();
-			MapDNA mapSoftware = MapDNA.creatMapDNA(softMapping);
+			MapDNAint mapSoftware = MapDNA.creatMapDNA(softMapping);
 			
 			if (species.getTaxID() == 0) {
 				mapSoftware.setExePath(softWareInfo.getExePath());

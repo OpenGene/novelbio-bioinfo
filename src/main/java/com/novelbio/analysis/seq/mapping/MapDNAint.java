@@ -5,6 +5,7 @@ import java.util.List;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 public interface MapDNAint {
 	public void setLsAlignmentRecorders(List<AlignmentRecorder> lsAlignmentRecorders);
@@ -59,4 +60,9 @@ public interface MapDNAint {
 
 	public List<AlignmentRecorder> getLsAlignmentRecorders();
 	
+	/**
+	 * 设定次级版本，如bowtie，bowtie2等
+	 * @param bowtieVersion
+	 */
+	public void setSubVersion(SoftWare bowtieVersion);
 }

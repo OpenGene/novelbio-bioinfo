@@ -7,6 +7,7 @@ import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRGroup;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 //TODO 还没写好
 public class MapBwaMem extends MapDNA {
 
@@ -405,6 +406,11 @@ public class MapBwaMem extends MapDNA {
 		}
 	}
 	public void suspend() {
+		
+	}
+	@Override
+	public void setSubVersion(SoftWare bowtieVersion) {
+		// TODO Auto-generated method stub
 		
 	}
 

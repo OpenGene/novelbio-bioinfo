@@ -30,7 +30,7 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
  * @author zong0jie
  * 
  */
-public class MapTophat implements MapRNA{
+public class MapTophat implements MapRNA {
 	private static Logger logger = Logger.getLogger(MapTophat.class);
 
 	StrandSpecific strandSpecifictype = StrandSpecific.NONE;
@@ -391,7 +391,7 @@ public class MapTophat implements MapRNA{
 	public void mapReads() {
 		setIntronLen();
 		setGTFfile();
-		mapBowtie.setBowtieVersion(bowtieVersion);
+		mapBowtie.setSubVersion(bowtieVersion);
 		mapBowtie.IndexMake(false);
 		
 		String cmd = getCmd();

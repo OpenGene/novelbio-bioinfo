@@ -7,6 +7,7 @@ import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
+import com.novelbio.database.service.SpringFactory;
 
 /**
  * 设定了自动化建索引的方法，并且在mapping失败后会再次建索引
@@ -134,10 +135,10 @@ public abstract class MapDNA implements MapDNAint {
 	public static MapDNAint creatMapDNA(SoftWare softMapping) {
 		MapDNAint mapSoftware = null;
 		if (softMapping == SoftWare.bwa) {
-			mapd
-			mapSoftware = new MapBwa();
-		} else if (softMapping == SoftWare.bowtie2) {
-			mapSoftware = new MapBowtie(softMapping);
+			mapSoftware = (MapDNAint)SpringFactory.getFactory().getBean("mapBwa");
+		} else if (softMapping == SoftWare.bowtie || softMapping == SoftWare.bowtie2) {
+			mapSoftware = (MapDNAint)SpringFactory.getFactory().getBean("mapBowtie");
+			mapSoftware.setSubVersion(softMapping);
 		}
 		return mapSoftware;
 	}
