@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.mapping.MapDNA;
+import com.novelbio.analysis.seq.mapping.MapDNAint;
 import com.novelbio.analysis.seq.mapping.MapLibrary;
 import com.novelbio.analysis.seq.sam.SamFileStatistics;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -94,19 +95,36 @@ public class CtrlDNAMapping {
 	}
 	
 	private void mapping() {
-		softWareInfo.setName(softMapping);
 		for (Entry<String, FastQ[]> entry : mapCondition2CombFastQLRFiltered.entrySet()) {
 			mapping(entry.getKey(), entry.getValue());
 		}
 	}
 	
 	/**
-	 *  仅供AOP使用
+	 * 使用方法：<br>
+	 * for (Entry<String, FastQ[]> entry : getMapCondition2CombFastQLRFiltered().entrySet()) {<br>
+			mapping(entry.getKey(), entry.getValue());<br>
+		}<br>
+	 * <br>
+	 * @return
+	 */
+	public HashMap<String, FastQ[]> getMapCondition2CombFastQLRFiltered() {
+		return mapCondition2CombFastQLRFiltered;
+	}
+	/**
+	 * 外部调用使用，
+	 * 使用方法：<br>
+	 * for (Entry<String, FastQ[]> entry : mapCondition2CombFastQLRFiltered.entrySet()) {<br>
+			mapping(entry.getKey(), entry.getValue());<br>
+		}<br>
+	 * <br>
+	 *  供AOP使用
 	 * @param prefix 文件前缀，实际输出文本为{@link #outFilePrefix} + prefix +.txt
 	 * @param fastQs
 	 */
 	public String mapping(String prefix, FastQ[] fastQs) {
-		MapDNA mapSoftware = MapDNA.creatMapDNA(softMapping);		
+		softWareInfo.setName(softMapping);
+		MapDNAint mapSoftware = MapDNA.creatMapDNA(softMapping);		
 		mapSoftware.setExePath(softWareInfo.getExePath());
 
 		if (species.getTaxID() == 0) {

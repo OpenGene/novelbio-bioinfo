@@ -3,8 +3,6 @@ package com.novelbio.analysis.seq.mapping;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.requeue;
-
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamFile;
@@ -17,7 +15,7 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
  * @author zong0jie
  *
  */
-public abstract class MapDNA {
+public abstract class MapDNA implements MapDNAint {
 	/**
 	 * 超时时间，意思如果mapping时间大于该时间，index就不太会出错了
 	 */
@@ -92,21 +90,6 @@ public abstract class MapDNA {
 		return cmd; 
 	}
 	
-	/**
-	 * 目前只有bwa和bowtie2两种
-	 * @param softMapping
-	 * @return
-	 */
-	public static MapDNA creatMapDNA(SoftWare softMapping) {
-		MapDNA mapSoftware = null;
-		if (softMapping == SoftWare.bwa) {
-			mapSoftware = new MapBwa();
-		} else if (softMapping == SoftWare.bowtie2) {
-			mapSoftware = new MapBowtie(softMapping);
-		}
-		return mapSoftware;
-	}
-	
 	public List<AlignmentRecorder> getLsAlignmentRecorders() {
 		return lsAlignmentRecorders;
 	}
@@ -141,5 +124,21 @@ public abstract class MapDNA {
 		} else {
 			return outFileName + ".sam";
 		}
+	}
+	
+	/**
+	 * 目前只有bwa和bowtie2两种
+	 * @param softMapping
+	 * @return
+	 */
+	public static MapDNAint creatMapDNA(SoftWare softMapping) {
+		MapDNAint mapSoftware = null;
+		if (softMapping == SoftWare.bwa) {
+			mapd
+			mapSoftware = new MapBwa();
+		} else if (softMapping == SoftWare.bowtie2) {
+			mapSoftware = new MapBowtie(softMapping);
+		}
+		return mapSoftware;
 	}
 }

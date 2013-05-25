@@ -1,6 +1,8 @@
 package com.novelbio.analysis.seq.mapping;
 
 import org.apache.log4j.Logger;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.sam.SamFile;
@@ -14,6 +16,8 @@ import com.novelbio.base.fileOperate.FileOperate;
  * @author zong0jie
  *
  */
+@Component
+@Scope("prototype")
 public class MapBwa extends MapDNA {
 	public static void main(String[] args) {
 		MapBwa mapBwa = new MapBwa();
