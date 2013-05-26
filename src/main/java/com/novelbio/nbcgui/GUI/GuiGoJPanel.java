@@ -140,9 +140,9 @@ public class GuiGoJPanel extends JPanel{
 				}
 			}
 		});
-		cmbGoAlgorithm.setBounds(12, 312, 152, 23);
-		cmbGoAlgorithm.setMapItem(GoAlgorithm.getMapStr2GoAlgrithm());
-		add(cmbGoAlgorithm);
+//		cmbGoAlgorithm.setBounds(12, 312, 152, 23);
+//		cmbGoAlgorithm.setMapItem(GoAlgorithm.getMapStr2GoAlgrithm());
+//		add(cmbGoAlgorithm);
 		
 		cmbGOType = new JComboBoxData<GOtype>();
 		cmbGOType.setBounds(12, 391, 206, 23);
@@ -150,21 +150,21 @@ public class GuiGoJPanel extends JPanel{
 		add(cmbGOType);
 		
 		spnGOlevel = new JSpinner();
-		spnGOlevel.setBounds(104, 347, 60, 18);
-		add(spnGOlevel);
+//		spnGOlevel.setBounds(104, 347, 60, 18);
+//		add(spnGOlevel);
 		
 		chkGOLevel = new JCheckBox("GOLevel");
-		chkGOLevel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (chkGOLevel.isSelected()) {
-					spnGOlevel.setEnabled(true);
-				} else {
-					spnGOlevel.setEnabled(false);
-				}
-			}
-		});
-		chkGOLevel.setBounds(12, 343, 92, 22);
-		add(chkGOLevel);
+//		chkGOLevel.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				if (chkGOLevel.isSelected()) {
+//					spnGOlevel.setEnabled(true);
+//				} else {
+//					spnGOlevel.setEnabled(false);
+//				}
+//			}
+//		});
+//		chkGOLevel.setBounds(12, 343, 92, 22);
+//		add(chkGOLevel);
 		
 		sclBlast = new JScrollPaneData();
 		JComboBoxData<Species> cmbSpeciesBlast = new JComboBoxData<Species>();
@@ -367,8 +367,8 @@ public class GuiGoJPanel extends JPanel{
 		}
 		{
 			jLabAlgorithm = new JLabel();
-			jLabAlgorithm.setBounds(12, 298, 78, 15);
-			jLabAlgorithm.setText("Algorithm");
+//			jLabAlgorithm.setBounds(12, 298, 78, 15);
+//			jLabAlgorithm.setText("Algorithm");
 		}
 		{
 			jLabBGGo = new JLabel();
@@ -385,7 +385,7 @@ public class GuiGoJPanel extends JPanel{
 			cmbSelSpeGo = new JComboBoxData<Species>();
 			cmbSelSpeGo.setBounds(131, 77, 173, 23);
 			cmbSelSpeGo.setMapItem(Species.getSpeciesName2Species(Species.KEGGNAME_SPECIES));
-			cmbSelSpeGo.setEditable(true);
+			cmbSelSpeGo.setEditable(false);
 		}
 	}
 	
@@ -442,8 +442,8 @@ public class GuiGoJPanel extends JPanel{
 		double evalue = 1e-10;
 		ctrlGO = (CtrlTestInt)SpringFactory.getFactory().getBean("ctrlGO");
 		ctrlGO.clearParam();
-		ctrlGO.setGoAlgorithm(cmbGoAlgorithm.getSelectedValue());
-	
+//		ctrlGO.setGoAlgorithm(cmbGoAlgorithm.getSelectedValue());
+		ctrlGO.setGoAlgorithm(GoAlgorithm.novelgo);
 
 		ctrlGO.setTaxID(taxID);
 		List<Integer> lsStaxID = new ArrayList<Integer>();
