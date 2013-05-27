@@ -83,7 +83,26 @@ public class BedRead {
 		cmdOperate.run();
 		return sortBedFile;
 	}
- 
+	
+	/** 读取的具体长度，出错返回 -1 */
+	public long getReadByte() {
+		if (txtRead != null) {
+			return txtRead.getReadByte();
+		}
+		return -1;
+	}
+	
+	/**
+	 * 获得读取的百分比
+	 * @return 结果在0-1之间，小于0表示出错
+	 */
+	public double getReadPercentage() {
+		if (txtRead != null) {
+			return txtRead.getReadPercentage();
+		}
+		return -1;
+	}
+	
 	/**
 	 * 读取前几行，不影响{@link #readLines()}
 	 * @param num

@@ -116,7 +116,7 @@ public class GuiVolcanoPlot extends JPanel {
 				volcano.setLogFC2Pvalue(lsInfo, comboBoxLogFC.getSelectedValue(), comboBoxP_Value.getSelectedValue());
 				volcano.setLogFCBorder(Double.parseDouble(txtFCborder.getText()));
 				volcano.setLogPvalueBorder(Double.parseDouble(txtPValue.getText()));
-				PlotScatter plotScatter = volcano.drawVolimage(LogFCColNum, P_ValueColNum,comboBoxP_Value.getSelectedItem().toString());
+				PlotScatter plotScatter = volcano.drawVolimage(comboBoxP_Value.getSelectedItem().toString());
 				GuiVolcanoPlotShow guiVolcanoPlotShow = new GuiVolcanoPlotShow(plotScatter); 
 			}
 		});

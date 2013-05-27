@@ -1,21 +1,13 @@
 package com.novelbio.analysis.diffexpress;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import com.novelbio.PathNBCDetail;
-import com.novelbio.base.SepSign;
-import com.novelbio.base.cmd.CmdOperate;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.base.dataStructure.MathComput;
-import com.novelbio.base.fileOperate.FileOperate;
-
+/**
+ * 用方法{@link #calculateResult()}来计算
+ * @author zong0jie
+ *
+ */
 public interface DiffExpInt {
 	public void setRawScript(String rawScript);
 	/**
@@ -62,7 +54,7 @@ public interface DiffExpInt {
 	/** 仅供AOP拦截使用，外界不要调用
 	 * 拦截在其完成之后
 	 */
-	public void modifyResult();
+	public void calculateResult();
 		
 	/** 删除中间文件 */
 	public void clean();

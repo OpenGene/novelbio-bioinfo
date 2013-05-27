@@ -106,12 +106,11 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 			}
 			alignmentRecorder.addAlignRecord(samRecord);
 		}
-		readByte += samRecord.toString().getBytes().length;
 		readLines++;
 		if (readLines%50000 == 0) {
 			GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
 			guiAnnoInfo.setNum(readLines);
-			guiAnnoInfo.setDouble(readByte);
+			guiAnnoInfo.setDouble(readByte + alignSeqFile.getReadByte());
 			guiAnnoInfo.setInfo("File: " + FileOperate.getFileName(alignSeqFile.getFileName()) + "  reading: " + readLines + " lines");
 			setRunInfo(guiAnnoInfo);
 		}

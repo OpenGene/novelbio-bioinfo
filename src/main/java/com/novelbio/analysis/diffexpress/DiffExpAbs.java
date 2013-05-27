@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -140,23 +141,24 @@ public abstract class DiffExpAbs implements DiffExpInt {
 	}
 	
 	/**
+	 * <b>调用{@link #calculateResult()} 后才能调用</b><br>
 	 * 返回文件名，以及对应的比较<br>
 	 * key：文件全名<br>
 	 * value：对应的比较。譬如 String[]{Treat, Control}
 	 * @return
 	 */
 	public Map<String, String[]> getMapOutFileName2Compare() {
-		calculateResult();
 		return mapOutFileName2Compare;
 	}
 	
-	
+	/**
+	 * 调用{@link #calculateResult()} 后才能调用
+	 */
 	public ArrayList<String> getResultFileName() {
-		calculateResult();
 		return ArrayOperate.getArrayListKey(mapOutFileName2Compare);
 	}
 	/** 计算差异 */
-	protected void calculateResult() {
+	public void calculateResult() {
 		if (calculate) {
 			return;
 		}
@@ -177,6 +179,10 @@ public abstract class DiffExpAbs implements DiffExpInt {
 	 */
 	protected void writeToGeneFile() {
 		TxtReadandWrite txtWrite = new TxtReadandWrite(fileNameRawdata, true);
+		ArrayList<String[]> lsAnalysisGeneInfo = getAnalysisGeneInfo();
+		String[] title = lsAnalysisGeneInfo.get(0);
+		lsAnalysisGeneInfo = removeDuplicate(lsAnalysisGeneInfo.subList(1, lsAnalysisGeneInfo.size()));
+		lsAnalysisGeneInfo.add(0, title);
 		txtWrite.ExcelWrite(getAnalysisGeneInfo());
 		txtWrite.close();
 	}
@@ -189,17 +195,37 @@ public abstract class DiffExpAbs implements DiffExpInt {
 	 */
 	protected  ArrayList<String[]> getAnalysisGeneInfo() {
 		ArrayList<String[]> lsResultGeneInfo = new ArrayList<String[]>();
-		for (String[] strings : lsGeneInfo) {
+		for (int m = 0; m < lsGeneInfo.size(); m++) {
+			String[] strings = lsGeneInfo.get(m);
+			
 			String[] tmpResult = new String[lsSampleColumn2GroupName.size() + 1];
 			tmpResult[0] = strings[colAccID];
 			for (int i = 0; i < lsSampleColumn2GroupName.size(); i++) {
 				int colNum = Integer.parseInt(lsSampleColumn2GroupName.get(i)[0]) - 1;
-				tmpResult[i + 1] = strings[colNum];
+				//title
+				if (m == 0) {
+					tmpResult[i + 1] = strings[colNum];
+					continue;
+				}
+				try {
+					tmpResult[i + 1] = Double.parseDouble(strings[colNum].trim()) + "";
+				} catch (Exception e) {
+					tmpResult[i + 1] = 0 + "";
+				}
 			}
 			lsResultGeneInfo.add(tmpResult);
 		}
 		return lsResultGeneInfo;
 	}
+	
+	protected ArrayList<String[]> removeDuplicate(List<String[]> lsGeneInfo) {
+		ArrayList<Integer> lsColID = new ArrayList<Integer>();
+		for (int i = 2; i <= lsGeneInfo.size(); i++) {
+			lsColID.add(i);
+		}
+		return MathComput.getMedian(lsGeneInfo, 1, lsColID);
+	}
+	
 	private void setMapSample_2_time2value() {
 		mapGeneID_2_Sample2MeanValue = new HashMap<String, HashMap<String,Double>>();
 		for (String[] geneID2Info : lsGeneInfo) {

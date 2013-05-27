@@ -23,7 +23,7 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
 
 public class CtrlFastQMapping {
-	private static Logger logger = Logger.getLogger(CtrlFastQMapping.class);
+	private static final Logger logger = Logger.getLogger(CtrlFastQMapping.class);
 	
 	public static final int MAP_TO_CHROM = 8;
 	public static final int MAP_TO_REFSEQ = 4;

@@ -374,7 +374,7 @@ public class MapBwaMem extends MapDNA {
 	 * @return true仅表示是否运行了建索引程序，不代表建索引成功
 	 */
 	@Override
-	protected boolean IndexMake(boolean force) {
+	public boolean IndexMake(boolean force) {
 //		linux命令如下 
 //	 	bwa index -p prefix -a algoType -c  chrFile
 //		-c 是solid用

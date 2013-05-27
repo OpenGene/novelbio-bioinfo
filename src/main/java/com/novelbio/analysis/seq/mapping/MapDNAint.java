@@ -48,7 +48,13 @@ public interface MapDNAint {
 	 * @param gapLength
 	 */
 	public void setGapLength(int gapLength);
-
+	/**
+	 * 构建索引
+	 * @param force 默认会检查是否已经构建了索引，是的话则返回。
+	 * 如果face为true，则强制构建索引
+	 * @return
+	 */
+	public boolean IndexMake(boolean force);
 	/**
 	 * mapping
 	 * @return

@@ -108,7 +108,7 @@ public abstract class MapDNA implements MapDNAint {
 	 * 如果face为true，则强制构建索引
 	 * @return
 	 */
-	protected abstract boolean IndexMake(boolean force);
+	public abstract boolean IndexMake(boolean force);
 
 	protected abstract SamFile copeAfterMapping();
 	

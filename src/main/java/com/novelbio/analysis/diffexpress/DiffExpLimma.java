@@ -26,26 +26,7 @@ public class DiffExpLimma extends DiffExpAbs{
 	 * 3 = Norm<br>
 	 * */
 	HashMap<Integer, String> mapID2Sample = new HashMap<Integer, String>();
-	
-	public static void main(String[] args) {
-		System.out.println(PathNBCDetail.getProjectPath());
-//		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt("/media/winF/NBC/Project/Project_XSQ_Lab/miRNA/novelbio/miRNA并集Deseq.txt", 1);
-//		DiffExpLimma deSeq = new DiffExpLimma();
-//		ArrayList<String[]> lsSampleColumn2GroupName = new ArrayList<String[]>();
-//		lsSampleColumn2GroupName.add(new String[] {"2","A"});
-//		lsSampleColumn2GroupName.add(new String[] {"3","A"});
-//		lsSampleColumn2GroupName.add(new String[] {"4","B"});
-//		lsSampleColumn2GroupName.add(new String[] {"5","B"});
-//		lsSampleColumn2GroupName.add(new String[] {"6","C"});
-//		lsSampleColumn2GroupName.add(new String[] {"7","C"});
-//		deSeq.setCol2Sample(lsSampleColumn2GroupName);
-//		deSeq.setColID(1);
-//		deSeq.addFileName2Compare(FileOperate.getProjectPath() + "Tmp/AvsB.xls", new String[]{"A","B"});
-//		deSeq.addFileName2Compare(FileOperate.getProjectPath() + "Tmp/AvsC.xls", new String[]{"A","C"});
-//		deSeq.addFileName2Compare(FileOperate.getProjectPath() + "Tmp/CvsB.xls", new String[]{"C","B"});
-//		deSeq.setGeneInfo(lsInfo);
-//		deSeq.getResultFileName();
-	}
+
 	public DiffExpLimma() {
 //		rawScript = "/media/winE/Bioinformatics/R/Protocol/Microarray/limmaSimpleJava.txt";
 		rawScript = PathNBCDetail.getRworkspace() + "limmaSimpleJava.txt";

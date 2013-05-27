@@ -71,8 +71,8 @@ class FastQfilter extends RunProcess<FastQrecordFilterRun> {
 		}
 		allFilteredReadsNum = fastQthreadWrite.getFilteredNum();
 		executorPool.shutdown();
-		logger.error(executorPool.getPoolSize());
-		logger.error(executorPool.getQueue().size());
+//		logger.error(executorPool.getPoolSize());
+//		logger.error(executorPool.getQueue().size());
 		fastQReader.close();
 		fastQthreadWrite.close();
 	}

@@ -24,8 +24,10 @@ public class FastQ {
 	public static final int QUALITY_HIGM = 50;
 	public static final int QUALITY_LOW_454 = 60;
 	public static final int QUALITY_LOW_PGM = 70;
+	/** 不过滤 */
 	public static final int QUALITY_NONE = 80;
-	public static final int QUALITY_NOTFILTER = 90;
+	/** 将quality值变成最高 */
+	public static final int QUALITY_CHANGE_TO_BEST = 90;
 	
 	private int threadNum_FilterFastqRecord = 10;
 	
@@ -61,7 +63,26 @@ public class FastQ {
 	public void setFilter(FastQRecordFilter fastQfilterRecord) {
 		fastQfilter.setFilter(fastQfilterRecord);
 	}
-
+	
+	/** 读取的具体长度，出错返回 -1 */
+	public long getReadByte() {
+		if (fastQRead != null) {
+			return fastQRead.getReadByte();
+		}
+		return -1;
+	}
+	
+	/**
+	 * 获得读取的百分比
+	 * @return 结果在0-1之间，小于0表示出错
+	 */
+	public double getReadPercentage() {
+		if (fastQRead != null) {
+			return fastQRead.getReadPercentage();
+		}
+		return -1;
+	}
+	
 	public Iterable<FastQRecord> readlines() {
 		return fastQRead.readlines(true);
 	}
@@ -167,7 +188,7 @@ public class FastQ {
 	
 		if (!read) {
 			try {
-				if (!FileOperate.isFileExist(fastQRead.getFileName())  && FileOperate.isFileExist(fastQwrite.getFileName())) {
+				if ((fastQRead == null || !FileOperate.isFileExist(fastQRead.getFileName()))  && FileOperate.isFileExist(fastQwrite.getFileName())) {
 					fastQRead = new FastQReader(fastQwrite.getFileName());
 					if (fastQRead.fastQReadMate != null) {
 						fastQRead.fastQReadMate = new FastQReader(fastQwrite.fastQwriteMate.getFileName());
@@ -175,6 +196,7 @@ public class FastQ {
 					read = true;
 				}
 			} catch (Exception e) {
+				e.printStackTrace();
 				// TODO: handle exception
 			}
 
@@ -265,37 +287,36 @@ public class FastQ {
 		mapReadsQualtiy.put("LowQuality", QUALITY_LOW);
 		mapReadsQualtiy.put("LowQuality454", QUALITY_LOW_454);
 		mapReadsQualtiy.put("LowQualityPGM", QUALITY_LOW_PGM);
-		mapReadsQualtiy.put("None", QUALITY_NONE);
-		mapReadsQualtiy.put("NotFilter", QUALITY_NOTFILTER);
+		mapReadsQualtiy.put("NotFilter", QUALITY_NONE);
+		mapReadsQualtiy.put("Change_Q_ToBest", QUALITY_CHANGE_TO_BEST);
 		return mapReadsQualtiy;
 	}
 	
 	public static HashMap<Integer, Integer> getMapFastQFilter(int QUALITY) {
 		HashMap<Integer, Integer> mapFastQFilter = new HashMap<Integer, Integer>();
 		if (QUALITY == FastQ.QUALITY_HIGM) {
-			mapFastQFilter.put(10, 1);
+			mapFastQFilter.put(10, 3);
 			mapFastQFilter.put(13, 3);
-			mapFastQFilter.put(20, 5);
+			mapFastQFilter.put(20, 10);
 		} else if (QUALITY == FastQ.QUALITY_LOW) {
 			// hashFastQFilter.put(2, 1);
-			mapFastQFilter.put(10, 4);
+			mapFastQFilter.put(10, 5);
 			mapFastQFilter.put(13, 10);
-			mapFastQFilter.put(20, 20);
+			mapFastQFilter.put(20, 30);
 		} else if (QUALITY == FastQ.QUALITY_MIDIAN
 				|| QUALITY == FastQ.QUALITY_MIDIAN_PAIREND) {
 			// hashFastQFilter.put(2, 1);
-			mapFastQFilter.put(10, 2);
-			mapFastQFilter.put(13, 6);
-			mapFastQFilter.put(20, 10);
+			mapFastQFilter.put(10, 4);
+			mapFastQFilter.put(13, 7);
+			mapFastQFilter.put(20, 20);
 		} else if (QUALITY == FastQ.QUALITY_LOW_454) {
 			// hashFastQFilter.put(2, 1);
-			mapFastQFilter.put(10, 6);
-			mapFastQFilter.put(13, 15);
-			mapFastQFilter.put(20, 40);
+			mapFastQFilter.put(10, 8);
+			mapFastQFilter.put(15, 15);
 		} else if (QUALITY == FastQ.QUALITY_LOW_PGM) {
 			mapFastQFilter.put(10, 10);
-			mapFastQFilter.put(15, 30);
-		} else if (QUALITY == FastQ.QUALITY_NONE || QUALITY == FastQ.QUALITY_NOTFILTER) {
+			mapFastQFilter.put(13, 30);
+		} else if (QUALITY == FastQ.QUALITY_NONE || QUALITY == FastQ.QUALITY_CHANGE_TO_BEST) {
 			//空的就不会过滤
 		} else {
 			mapFastQFilter.put(10, 2);

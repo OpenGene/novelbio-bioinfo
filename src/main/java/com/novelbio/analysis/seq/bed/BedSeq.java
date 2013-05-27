@@ -27,7 +27,7 @@ import com.novelbio.base.fileOperate.FileOperate;
  * 6: mappingNum. 1 means unique mapping
  * @author zong0jie
  */
-public class BedSeq implements AlignSeq{
+public class BedSeq implements AlignSeq {
 	private static Logger logger = Logger.getLogger(BedSeq.class);  	
 	
 	boolean read = true;
@@ -83,6 +83,25 @@ public class BedSeq implements AlignSeq{
 		close();
 	}
 	
+	/** 读取的具体长度，出错返回 -1 */
+	public long getReadByte() {
+		if (bedRead != null) {
+			return bedRead.getReadByte();
+		}
+		return -1;
+	}
+	
+	/**
+	 * 获得读取的百分比
+	 * @return 结果在0-1之间，小于0表示出错
+	 */
+	public double getReadPercentage() {
+		if (bedRead != null) {
+			return bedRead.getReadPercentage();
+		}
+		return -1;
+	}
+	
 	/**
 	 * 读取前几行，不影响{@link #readLines()}
 	 * @param num
@@ -99,7 +118,7 @@ public class BedSeq implements AlignSeq{
 	public BedRecord readFirstLine() {
 		return bedRead.readFirstLine();
 	}
-
+	
 	public Iterable<BedRecord> readLines() {
 		return bedRead.readLines();
 	}

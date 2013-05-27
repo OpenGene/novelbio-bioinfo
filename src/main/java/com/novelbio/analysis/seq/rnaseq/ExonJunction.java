@@ -251,11 +251,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		for (String condition : mapCond2SamReader.keySet()) {
 			List<AlignSamReading> lsSamFileReadings = mapCond2SamReader.get(condition);
 			for (AlignSamReading samFileReading : lsSamFileReadings) {
-				long thisFileLength = (long) (FileOperate.getFileSize(samFileReading.getSamFile().getFileName()) * 1024);
-				if (samFileReading.getSamFile().getFileName().endsWith("bam")) {
-					thisFileLength = thisFileLength * 8;
-				}
-				fileLength += thisFileLength;
+				fileLength = fileLength + FileOperate.getFileSizeLong(samFileReading.getSamFile().getFileName());
 			}
 		}
 		return fileLength;

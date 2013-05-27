@@ -3,6 +3,7 @@ package com.novelbio.analysis.diffexpress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map.Entry;
 
 import org.springframework.context.annotation.Scope;
@@ -85,11 +86,20 @@ public class DiffExpEdgeR extends DiffExpAbs {
 			double tmpAllCounts = mapColNum2NormalizeNum.get(integer);
 			mapColNum2NormalizeNum.put(integer, maxSampleCount/tmpAllCounts);
 		}
-		
 	}
 	
-	@Override
-	protected void calculateResult() {
+	protected ArrayList<String[]> removeDuplicate(List<String[]> lsGeneInfo) {
+		ArrayList<String[]> lsResult = super.removeDuplicate(lsGeneInfo);
+		for (int i = 1; i < lsResult.size(); i++) {
+			String[] strings = lsResult.get(i);
+			for (int j = 1; i < strings.length; i++) {
+				strings[j] = (int)Double.parseDouble(strings[j]) + "";
+			}
+		}
+		return lsResult;
+	}
+	
+	public void calculateResult() {
 		setNormalizeCoef();
 		super.calculateResult();
 	}
@@ -141,7 +151,7 @@ public class DiffExpEdgeR extends DiffExpAbs {
 	
 	@Override
 	protected void generateScript() {
-		TxtReadandWrite txtReadScript = new TxtReadandWrite(rawScript, false);
+		TxtReadandWrite txtReadScript = new TxtReadandWrite(rawScript);
 		TxtReadandWrite txtOutScript = new TxtReadandWrite(outScript, true);
 		for (String content : txtReadScript.readlines()) {
 			if (content.startsWith("#workspace"))
@@ -162,6 +172,7 @@ public class DiffExpEdgeR extends DiffExpAbs {
 				txtOutScript.writefileln(content);
 			}
 		}
+		txtReadScript.close();
 		txtOutScript.close();
 	}
 	/**
@@ -265,6 +276,7 @@ public class DiffExpEdgeR extends DiffExpAbs {
 		
 		TxtReadandWrite txtOutFinal = new TxtReadandWrite(outFileName, true);
 		txtOutFinal.ExcelWrite(lsResult);
+		txtOutFinal.close();
 	}
 	
 	private void setLogFC(String[] resultInfo) {

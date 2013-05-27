@@ -2,6 +2,7 @@ package com.novelbio.analysis.diffexpress;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map.Entry;
 
 import org.springframework.context.annotation.Scope;
@@ -13,6 +14,7 @@ import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 /**
@@ -148,14 +150,32 @@ public class DiffExpDESeq extends DiffExpAbs {
 					continue;
 				}
 				
-				double value = Double.parseDouble(strings[colNum]);
-				int valueInt = (int)(value + 1);
-				tmpResult[i + 1] = valueInt + "";
+				try {
+					double value = Double.parseDouble(strings[colNum]);
+					int valueInt = (int)(value + 1);
+					tmpResult[i + 1] = valueInt + "";
+				} catch (Exception e) {
+					tmpResult[i + 1] = 0 + "";
+				}
+				
+			
 			}
 			lsResultGeneInfo.add(tmpResult);
 		}
 		return lsResultGeneInfo;
 	}
+	
+	protected ArrayList<String[]> removeDuplicate(List<String[]> lsGeneInfo) {
+		ArrayList<String[]> lsResult = super.removeDuplicate(lsGeneInfo);
+		for (int i = 1; i < lsResult.size(); i++) {
+			String[] strings = lsResult.get(i);
+			for (int j = 1; i < strings.length; i++) {
+				strings[j] = (int)Double.parseDouble(strings[j]) + "";
+			}
+		}
+		return lsResult;
+	}
+	
 	@Override
 	protected void run() {
 		Rrunning("DEseq");

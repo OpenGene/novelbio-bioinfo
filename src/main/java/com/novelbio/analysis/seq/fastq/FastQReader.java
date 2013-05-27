@@ -84,6 +84,26 @@ class FastQReader implements Closeable {
 		close();
 		return lsResult;
 	}
+	
+	/** 读取的具体长度，出错返回 -1 */
+	public long getReadByte() {
+		if (txtSeqFile != null) {
+			return txtSeqFile.getReadByte();
+		}
+		return -1;
+	}
+	
+	/**
+	 * 获得读取的百分比
+	 * @return 结果在0-1之间，小于0表示出错
+	 */
+	public double getReadPercentage() {
+		if (txtSeqFile != null) {
+			return txtSeqFile.getReadPercentage();
+		}
+		return -1;
+	}
+	
 	/**
 	 * 从第几行开始读，是实际行
 	 * @param lines 如果lines小于1，则从头开始读取

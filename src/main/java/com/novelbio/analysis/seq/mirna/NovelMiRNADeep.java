@@ -6,22 +6,17 @@ import java.util.Random;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.omg.CosNaming._BindingIteratorImplBase;
 
 import com.novelbio.analysis.seq.bed.BedRecord;
 import com.novelbio.analysis.seq.bed.BedSeq;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
-import com.novelbio.analysis.seq.fastq.FastQ;
-import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.mapping.MapBowtie;
-import com.novelbio.analysis.tools.compare.runCompSimple;
+import com.novelbio.analysis.seq.mapping.MapDNA;
+import com.novelbio.analysis.seq.mapping.MapDNAint;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
-import com.novelbio.database.model.species.Species;
 //TODO 移动文件还不够好
 /**
  * 新的miRNA的预测，基于mirDeep的算法
@@ -31,7 +26,7 @@ import com.novelbio.database.model.species.Species;
 public class NovelMiRNADeep extends NovelMiRNApredict {
 	Logger logger = Logger.getLogger(NovelMiRNADeep.class);
 	
-	MapBowtie mapBowtie = new MapBowtie(SoftWare.bowtie);
+	MapDNAint mapBowtie = MapDNA.creatMapDNA(SoftWare.bowtie);
 	int miRNAminLen = 18;
 	String mirDeepPath = "";
 	/** 输入的fasta格式，从bed文件转变而来，也可直接设定 */

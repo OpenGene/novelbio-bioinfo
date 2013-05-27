@@ -29,7 +29,7 @@ public class FastQRecordFilter {
 	 * @param QUALITY
 	 */
 	public void setQualityFilter(int QUALITY) {
-		if (QUALITY == FastQ.QUALITY_NOTFILTER) {
+		if (QUALITY == FastQ.QUALITY_CHANGE_TO_BEST) {
 			isModifyQuality = true;
 			return;
 		}

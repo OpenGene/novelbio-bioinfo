@@ -35,6 +35,7 @@ import com.novelbio.analysis.seq.bed.BedSeq;
 import com.novelbio.analysis.seq.fasta.FastaDictMake;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
+import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.species.Species;
@@ -50,11 +51,21 @@ public class SamFile implements AlignSeq {
 	static {
 		SAMFileReader.setDefaultValidationStringency(ValidationStringency.SILENT);
 	}
-	public static void main(String[] args) {		
-		SamFile samFile = new SamFile("/home/zong0jie/Desktop/FYmouse20111122/mapping/heart/aaa.bam");
-		samFile = samFile.addGroup("A", "B", "C", "ILM");
-		samFile.setReferenceFileName(new Species(10090).getChromSeq());
-		samFile.realign();
+	public static void main(String[] args) {
+		DateUtil dateUtil = new DateUtil();
+		dateUtil.setStartTime();
+		SamFile samFile = new SamFile("/media/winE/NBC/Project/Project_FY/20120920/tophat/RKOcon_accepted_hits.bam");
+		int i = 0;
+		for (SamRecord samRecord : samFile.readLines()) {
+			i++;
+			if (i%2000000 == 0) {
+				System.out.println(dateUtil.getEclipseTime());
+				System.out.println(samFile.getReadPercentage());
+			}
+			
+		}
+		
+		
 	}
 	
 	
@@ -219,6 +230,26 @@ public class SamFile implements AlignSeq {
 	 */
 	public Iterable<SamRecord> readLinesContained(String chrID, int start, int end) {
 		return getSamReader().readLinesContained(chrID, start, end);
+	}
+	
+	
+	/** 读取的具体长度，出错返回 -1 */
+	public long getReadByte() {
+		if (samReader != null) {
+			return samReader.getReadByte();
+		}
+		return -1;
+	}
+	
+	/**
+	 * 获得读取的百分比
+	 * @return 结果在0-1之间，小于0表示出错
+	 */
+	public double getReadPercentage() {
+		if (samReader != null) {
+			return samReader.getReadPercentage();
+		}
+		return -1;
 	}
 	
 	public Iterable<SamRecord> readLines() {

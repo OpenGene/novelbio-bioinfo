@@ -1,6 +1,9 @@
 package com.novelbio.analysis.seq.sam;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -12,6 +15,8 @@ import net.sf.samtools.SAMFormatException;
 import net.sf.samtools.SAMRecord;
 import net.sf.samtools.SAMRecordIterator;
 import net.sf.samtools.SAMSequenceRecord;
+import net.sf.samtools.seekablestream.SeekableFileStream;
+import net.sf.samtools.seekablestream.SeekableStream;
 
 import org.apache.log4j.Logger;
 
@@ -20,6 +25,11 @@ import com.novelbio.base.fileOperate.FileOperate;
 public class SamReader {
 	private static final Logger logger = Logger.getLogger(SamReader.class);
 	boolean initial = false;
+	
+	long filesize = 0;
+	
+	/** 仅用来计算读取进度 */
+	InputStream inputStream;
 	/**
 	 * 读取sam文件的类，最好不要直接用，用getSamFileReader()方法代替
 	 */
@@ -34,7 +44,8 @@ public class SamReader {
 	String fileIndex;
 	
 	Boolean pairend;
-		
+	boolean isIndexed = false;
+	
 	public SamReader(String fileName) {
 		this.fileName = fileName;
 	}
@@ -50,8 +61,10 @@ public class SamReader {
 	
 	public void initial() {
 		if (!initial) {
-			initialSamHeadAndReader(fileIndex);
-			initial = true;
+			try {
+				initialSamHeadAndReader(fileIndex);
+				initial = true;
+			} catch (Exception e) { }
 		}
 	}
 	/**
@@ -80,7 +93,7 @@ public class SamReader {
 		return pairend;
 	}
 	
-	private void initialSamHeadAndReader(String fileIndex) {
+	private void initialSamHeadAndReader(String fileIndex) throws FileNotFoundException {
 		if (samFileHeader != null && samFileReader != null
 				&& 
 				(
@@ -92,13 +105,19 @@ public class SamReader {
 			return;
 		}
 		close();
+		filesize = FileOperate.getFileSizeLong(fileName);
 		File file = new File(fileName);
 		File index = null;
 		if (fileIndex != null && FileOperate.isFileExistAndBigThanSize(fileIndex, 0)) {
+			isIndexed = true;
 			index = new File(fileIndex);
-			samFileReader = new SAMFileReader(file, index);
+			inputStream = new SeekableFileStream(file);
+			samFileReader = new SAMFileReader((SeekableFileStream)inputStream, index, false);
 		} else {
-			samFileReader = new SAMFileReader(file);
+			//内部会自动包装成 bufferedStream
+			isIndexed = false;
+			inputStream = new FileInputStream(file);
+			samFileReader = new SAMFileReader(inputStream);
 		}
 		samFileHeader = samFileReader.getFileHeader();
 		mapChrIDlowCase2ChrID = new HashMap<String, String>();
@@ -140,6 +159,40 @@ public class SamReader {
 		}
 		return null;
 	}
+	
+	/**
+	 * 获得读取的百分比
+	 * @return 结果在0-1之间，小于0表示出错
+	 */
+	public double getReadPercentage() {
+		long readByte = getReadByte();
+		if (readByte < 0 || filesize < 0) {
+			return -1;
+		} else {
+			return readByte/filesize;
+		}
+	}
+	
+	/**
+	 * 获得读取的百分比
+	 * @return 结果在0-1之间，小于0表示出错
+	 */
+	public long getReadByte() {
+		long position = 0;
+		try {
+			if (isIndexed) {
+				SeekableStream seekableStream = (SeekableStream)inputStream;
+				position = seekableStream.position();
+			} else {
+				FileInputStream fileInputStream = (FileInputStream)inputStream;
+				position = fileInputStream.getChannel().position();
+			}
+		} catch (Exception e) {
+			return -1;
+		}
+		return position;
+	}
+	
 	/**
 	 * 从第几行开始读，是实际行
 	 * @param lines 如果lines小于1，则从头开始读取
@@ -237,6 +290,12 @@ public class SamReader {
 			samFileReader.close();
 			samFileReader = null;
 		} catch (Exception e) {  }
+		try {
+			inputStream.close();
+			inputStream = null;
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 	}
 	
 }

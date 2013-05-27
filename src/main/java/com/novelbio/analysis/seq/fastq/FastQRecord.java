@@ -1,8 +1,13 @@
 package com.novelbio.analysis.seq.fastq;
 
+import java.io.File;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
+
+import uk.ac.babraham.FastQC.Sequence.Sequence;
+import uk.ac.babraham.FastQC.Sequence.SequenceFile;
+import uk.ac.babraham.FastQC.Sequence.SequenceFormatException;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -179,6 +184,46 @@ public class FastQRecord implements Cloneable {
 	}
 	
 	/**
+	 * 转换成fastqc的序列，方便其进行处理
+	 * @param fileName 输入文件名，最后统计时候用到
+	 * @return
+	 */
+	public Sequence toFastQCsequence(String fileName) {
+		SequenceFile sequenceFile = new FastqFileForFastqc(fileName);
+		Sequence sequence = new Sequence(sequenceFile, seqFasta.toString(), seqQuality, "@" + seqFasta.getSeqName());
+		sequence.setIsFiltered(true);
+		return sequence;
+	}
+	
+	class FastqFileForFastqc implements SequenceFile {
+		String name;
+		FastqFileForFastqc(String fileName) {
+			this.name = fileName;
+		}
+		public boolean hasNext() {
+			return false;
+		}
+		public Sequence next() throws SequenceFormatException {
+			return null;
+		}
+		public boolean isColorspace() {
+			return false;
+		}
+		public String name() {
+			return name;
+		}
+		@Override
+		public int getPercentComplete() {
+			return 0;
+		}
+		@Override
+		public File getFile() {
+			return null;
+		}
+		
+	}
+	
+	/**
 	 * 克隆序列
 	 */
 	public FastQRecord clone() {
@@ -193,5 +238,5 @@ public class FastQRecord implements Cloneable {
 		seqFasta.mapFastQFilter = mapFastQFilter;
 		return seqFasta;
 	}
-
+	
 }
