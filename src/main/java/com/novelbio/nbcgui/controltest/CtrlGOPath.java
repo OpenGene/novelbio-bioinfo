@@ -57,7 +57,9 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo> {
 	public List<Integer> getBlastTaxID() {
 		return functionTest.getBlastTaxID();
 	}
-	
+	public boolean isCluster() {
+		return isCluster;
+	}
 	/** lsAccID2Value  arraylist-string[] 若为string[2],则第二个为上下调关系，判断上下调
 	 * 若为string[1] 则跑全部基因作分析
 	 */

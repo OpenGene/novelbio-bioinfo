@@ -43,7 +43,7 @@ public class GffHashGTF extends GffHashGeneAbs{
 			if (content.charAt(0) == '#') {
 				continue;
 			}
-			if (content.contains("NM_001253689")) {
+			if (content.contains("ENSG00000178591.5")) {
 				logger.debug("stop");
 			}
 			String[] ss = content.split("\t");// 按照tab分开
@@ -55,6 +55,10 @@ public class GffHashGTF extends GffHashGeneAbs{
 			
 			String[] isoName2GeneName = getIsoName2GeneName(ss[8]);
 			String tmpTranscriptName = isoName2GeneName[0];
+			
+			if (ss[2].equalsIgnoreCase("gene")) {
+				continue;
+			}
 			
 			if (ss[2].equals(transcript) 
 				||

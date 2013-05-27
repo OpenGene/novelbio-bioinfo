@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.novelbio.FastQC;
+
 /** 实际上是过滤的类，不过可以用其来设定过滤的参数
  * 过滤前要先设定{@link #setLsfFQrecordFilters()}}
  *  */
@@ -21,6 +23,8 @@ public class FastQRecordFilter {
 	FQrecordFilterLowcase fQrecordFilterLowcase = new FQrecordFilterLowcase();
 	
 	List<FQrecordFilter> lsFQrecordFilters;
+	FastQC fastQCLeft;
+	FastQC fastQCRight;
 	
 	boolean isModifyQuality = false;
 	

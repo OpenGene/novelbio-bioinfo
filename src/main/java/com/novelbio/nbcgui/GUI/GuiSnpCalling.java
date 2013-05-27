@@ -31,6 +31,8 @@ import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.controlseq.CtrlSnpAnnotation;
 import com.novelbio.nbcgui.controlseq.CtrlSnpCalling;
 import com.novelbio.nbcgui.controlseq.CtrlSnpGetInfo;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /** snpCalling的界面 */
 public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
@@ -290,8 +292,9 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 		add(spinColThisNr);
 		
 		guiLayeredPaneSpeciesVersionGff = new GuiLayeredPaneSpeciesVersionGff();
-		guiLayeredPaneSpeciesVersionGff.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		guiLayeredPaneSpeciesVersionGff.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
 				if (guiLayeredPaneSpeciesVersionGff.getSelectSpecies().getTaxID() == 0) {
 					txtRefOrGTF.setVisible(true);
 					btnOpenRefOrGFF.setVisible(true);
@@ -303,6 +306,19 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 				}
 			}
 		});
+//		guiLayeredPaneSpeciesVersionGff.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				if (guiLayeredPaneSpeciesVersionGff.getSelectSpecies().getTaxID() == 0) {
+//					txtRefOrGTF.setVisible(true);
+//					btnOpenRefOrGFF.setVisible(true);
+//					lblRefGFF.setVisible(true);
+//				} else {
+//					txtRefOrGTF.setVisible(false);
+//					btnOpenRefOrGFF.setVisible(false);
+//					lblRefGFF.setVisible(false);
+//				}
+//			}
+//		});
 		guiLayeredPaneSpeciesVersionGff.setBounds(551, 170, 220, 122);
 		add(guiLayeredPaneSpeciesVersionGff);
 		

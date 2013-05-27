@@ -461,7 +461,7 @@ public class Species {
 	 */
 	public static HashMap<String, Species> getSpeciesName2Species(int speciesType) {
 		HashMap<String, Species> mapName2Species = new LinkedHashMap<String, Species>();
-//		mapName2Species.put("UnKnown Species", new Species());
+		mapName2Species.put("UnKnown Species", new Species());
 		//按照物种名进行排序
 		TreeMap<String, Species> treemapName2Species = new TreeMap<String, Species>();
 		

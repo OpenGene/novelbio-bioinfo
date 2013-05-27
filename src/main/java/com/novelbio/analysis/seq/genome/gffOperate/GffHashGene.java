@@ -3,7 +3,9 @@ package com.novelbio.analysis.seq.genome.gffOperate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
+import com.novelbio.analysis.seq.mapping.MapDNAint;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
@@ -15,6 +17,16 @@ import com.novelbio.database.model.modgeneid.GeneID;
  * @author zong0jie
  */
 public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
+	public static void main(String[] args) {
+		GffHashGene gffHashGene = new GffHashGene(GffType.GTF, "/home/zong0jie/desktop/hg19-gencode.v16.gtf");
+		Map<String, Long> mapChrID2Len = gffHashGene.getChrID2LengthForRNAseq();
+		for (String chrID : mapChrID2Len.keySet()) {
+			System.out.println(chrID + "\t" + mapChrID2Len.get(chrID));
+		}
+		System.out.println(gffHashGene.searchISO("DEFB125").getStart());
+		System.out.println(gffHashGene.searchISO("ENST00000382410.2").getStart());
+		System.out.println(gffHashGene.searchISO("ENST00000382410").getStart());
+	}
 	GffHashGeneAbs gffHashGene = null;
 	GffType gffType;
 	String gffFile;

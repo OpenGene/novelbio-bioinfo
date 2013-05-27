@@ -7,8 +7,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
-import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.nbcgui.GUI.volcanoPlot.GuiVolcanoPlot;
 
 /**
@@ -71,8 +69,8 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				GUIanalysisForm inst = new GUIanalysisForm();
 				inst.setLocationRelativeTo(null);
 				inst.setVisible(true);
-				inst.setTitle("Maize Genomic Analysis Platform");
-				Image im = Toolkit.getDefaultToolkit().getImage("/media/winE/NBC/advertise/宣传/LOGO/favicon.png");
+				inst.setTitle("NovelBio Analysis Platform");
+				Image im = Toolkit.getDefaultToolkit().getImage("/home/zong0jie/desktop/logo.png");
 				inst.setIconImage(im);
 				inst.setResizable(false); 
 			}
@@ -208,7 +206,7 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				jTabbedPane1.addTab("snpFilterSimple", guiSnpFilterSimple);
 				
 				guiRNAautoSpliceSimple = new GuiRNAautoSpliceSimple();
-				jTabbedPane1.addTab("RNAautoSplice", guiRNAautoSpliceSimple);
+				jTabbedPane1.addTab("PASH", guiRNAautoSpliceSimple);
 				
 				guiUpdateDB = new GuiUpdateDB();
 				jTabbedPane1.addTab("UpdateDB", guiUpdateDB);

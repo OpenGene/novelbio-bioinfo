@@ -2,8 +2,12 @@ package com.novelbio.analysis.seq.fastq;
 
 import java.util.concurrent.Callable;
 
-
-public class FastQrecordFilterRun implements Callable<FastQrecordFilterRun> {
+/**
+ * 放在线程池里面的每一个运行单元
+ * @author zong0jie
+ *
+ */
+public class FastQrecordCopeUnit implements Callable<FastQrecordCopeUnit> {
 	FastQRecordFilter fastQRecordFilter;
 	FastQRecord fastQRecord1;
 	FastQRecord fastQRecord2;
@@ -32,7 +36,7 @@ public class FastQrecordFilterRun implements Callable<FastQrecordFilterRun> {
 	}
 	/** 内部会对fastqRecord进行初始化 */
 	@Override
-	public FastQrecordFilterRun call() throws Exception {
+	public FastQrecordCopeUnit call() throws Exception {
 		try {
 			fastQRecord1.initialReadRecord();
 			if (fastQRecord2 == null) {

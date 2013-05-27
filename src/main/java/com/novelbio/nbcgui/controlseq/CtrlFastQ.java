@@ -111,8 +111,7 @@ public class CtrlFastQ {
 			ArrayList<FastQ[]> lsPrefixFastQLR = new ArrayList<FastQ[]>();
 			if (mapCondition2LsFastQLR.containsKey(prefix)) {
 				lsPrefixFastQLR = mapCondition2LsFastQLR.get(prefix);
-			}
-			else {
+			} else {
 				mapCondition2LsFastQLR.put(prefix, lsPrefixFastQLR);
 			}
 			FastQ[] tmpFastQLR = new FastQ[2];
@@ -134,6 +133,7 @@ public class CtrlFastQ {
 		}
 		return null;
 	}
+	
 	/**
 	 * @param tmpFastQLR
 	 * @param lsFastqL

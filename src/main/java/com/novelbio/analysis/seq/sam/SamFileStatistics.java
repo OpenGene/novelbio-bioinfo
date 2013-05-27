@@ -3,12 +3,15 @@ package com.novelbio.analysis.seq.sam;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.mapping.MappingReadsType;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.PatternOperate;
 
 /** <>仅用于分析sambam文件<>
  * 根据需求判定是否需要执行{@link #initial()}
@@ -25,7 +28,20 @@ public class SamFileStatistics implements AlignmentRecorder {
 	double junctionUniReads = 0;
 	double junctionAllReads = 0;
 	
-	HashMap<String, double[]> mapChrID2ReadsNum = new HashMap<String, double[]>();
+	Map<String, double[]> mapChrID2ReadsNum = new TreeMap<String, double[]>(new Comparator<String>() {
+		PatternOperate patternOperate = new PatternOperate("\\d+", false);
+		@Override
+		public int compare(String arg0, String arg1) {
+			String str1 = patternOperate.getPatFirst(arg0);
+			String str2 = patternOperate.getPatFirst(arg1);
+			if (str1 == null || str1.equals("") || str2 == null || str2.equals("")) {
+				 return arg0.compareTo(arg1);
+			}
+			Integer num1 = Integer.parseInt(str1);
+			Integer num2 = Integer.parseInt(str2);
+			return num1.compareTo(num2);
+		}
+	});
 	
 	public SamFileStatistics() { }
 	
@@ -39,7 +55,6 @@ public class SamFileStatistics implements AlignmentRecorder {
 	 * @return -1表示错误
 	 */
 	public long getReadsNum(MappingReadsType mappingType) {
-		statistics();
 		if (mappingType == MappingReadsType.allReads) {
 			return (long)allReadsNum;
 		}
@@ -74,6 +89,17 @@ public class SamFileStatistics implements AlignmentRecorder {
 		txtWrite.close();
 	}
 	
+	/**
+	 * 获取每条染色体所对应的reads数量
+	 * @return
+	 */
+	public Map<String, Long> getMapChrID2Len() {
+		Map<String, Long> mapChrID2Len = new LinkedHashMap<String, Long>();
+		for (String chrID : mapChrID2ReadsNum.keySet()) {
+			mapChrID2Len.put(chrID, (long)mapChrID2ReadsNum.get(chrID)[0]);
+		}
+		return mapChrID2Len;
+	}
 	/**
 	 * 首先要运行 statistics
 	 * @return

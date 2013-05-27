@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.base.multithread.RunProcess;
 
-class FastQfilter extends RunProcess<FastQrecordFilterRun> {
+class FastQReadingChannel extends RunProcess<FastQrecordCopeUnit> {
 	public static void main(String[] args) {
 		FastQ fastQ1 = new FastQ("/media/winF/NBC/Project/Project_HXW/20121018/中山医院 蒋家好/10A 10B/test/10B_1.fq");
 		FastQ fastQ2 = new FastQ("/media/winF/NBC/Project/Project_HXW/20121018/中山医院 蒋家好/10A 10B/test/10B_2.fq");
@@ -19,10 +19,10 @@ class FastQfilter extends RunProcess<FastQrecordFilterRun> {
 		fastQ1.setFilter(fastQfilterRecord);
 		fastQ1.filterReads(fastQ2);
 	}
-	Logger logger = Logger.getLogger(FastQfilter.class);
+	Logger logger = Logger.getLogger(FastQReadingChannel.class);
 	
 	FastQReader fastQReader;
-	FastQthreadWrite fastQthreadWrite = new FastQthreadWrite();
+	FastQwriter fastQwrite;
 	
 	int allFilteredReadsNum;
 	
@@ -32,11 +32,11 @@ class FastQfilter extends RunProcess<FastQrecordFilterRun> {
 	/** 队列最大数量 */
 	int maxNumReadInLs = 5000;
 	ThreadPoolExecutor executorPool;
-	ArrayBlockingQueue<Future<FastQrecordFilterRun>> queueResult;
+	ArrayBlockingQueue<Future<FastQrecordCopeUnit>> queueResult;
 	
-	public void setFastQReadAndWrite(FastQReader fastQReader, FastQwrite fastqWrite) {
+	public void setFastQReadAndWrite(FastQReader fastQReader, FastQwriter fastqWrite) {
 		this.fastQReader = fastQReader;
-		fastQthreadWrite.setFastQwrite(fastqWrite);
+		this.fastQwrite = fastqWrite;
 	}
 	
 	public void setFilter(FastQRecordFilter fastQRecordFilter) {
@@ -51,30 +51,30 @@ class FastQfilter extends RunProcess<FastQrecordFilterRun> {
 			threadFilterNum = 1;
 		}
 		executorPool = new ThreadPoolExecutor(threadFilterNum, (int)(threadFilterNum*1.5), 5000, TimeUnit.MICROSECONDS, new ArrayBlockingQueue<Runnable>(maxNumReadInLs));
-		queueResult = new ArrayBlockingQueue<Future<FastQrecordFilterRun>>(maxNumReadInLs);
-		fastQthreadWrite.setQueue(queueResult);
+		queueResult = new ArrayBlockingQueue<Future<FastQrecordCopeUnit>>(maxNumReadInLs);
+		fastQwrite.setQueue(queueResult);
 	}
 	
-	public void filtering() {
+	public void runChannel() {
 		fastQRecordFilter.setPhredOffset(fastQReader.getOffset());
-		fastQthreadWrite.setFinishedRead(false);
-		Thread thread = new Thread(fastQthreadWrite);
+		fastQwrite.setFinishedRead(false);
+		Thread thread = new Thread(fastQwrite);
 		thread.start();
 		if (fastQReader.isPairEnd()) {
 			readPE();
 		} else {
 			readSE();
 		}
-		fastQthreadWrite.setFinishedRead(true);
-		while (fastQthreadWrite.isRunning()) {
+		fastQwrite.setFinishedRead(true);
+		while (fastQwrite.isRunning()) {
 			try { Thread.sleep(100); 	} catch (InterruptedException e) { e.printStackTrace(); }
 		}
-		allFilteredReadsNum = fastQthreadWrite.getFilteredNum();
+		allFilteredReadsNum = fastQwrite.getFilteredNum();
 		executorPool.shutdown();
 //		logger.error(executorPool.getPoolSize());
 //		logger.error(executorPool.getQueue().size());
 		fastQReader.close();
-		fastQthreadWrite.close();
+		fastQwrite.close();
 	}
 	
 	private void readSE() {
@@ -84,10 +84,10 @@ class FastQfilter extends RunProcess<FastQrecordFilterRun> {
 			if (flagStop) {
 				break;
 			}
-			FastQrecordFilterRun fastQrecordFilterRun = new FastQrecordFilterRun();
+			FastQrecordCopeUnit fastQrecordFilterRun = new FastQrecordCopeUnit();
 			fastQrecordFilterRun.setFastQRecordFilter(fastQRecordFilter);
 			fastQrecordFilterRun.setFastQRecordSE(fastQRecord);
-			Future<FastQrecordFilterRun> future = executorPool.submit(fastQrecordFilterRun);
+			Future<FastQrecordCopeUnit> future = executorPool.submit(fastQrecordFilterRun);
 			queueResult.add(future);
 			
 			if (fastQReader.readsNum % 50000 == 0) {
@@ -108,10 +108,10 @@ class FastQfilter extends RunProcess<FastQrecordFilterRun> {
 			if (flagStop) {
 				break;
 			}
-			FastQrecordFilterRun fastQrecordFilterRun = new FastQrecordFilterRun();
+			FastQrecordCopeUnit fastQrecordFilterRun = new FastQrecordCopeUnit();
 			fastQrecordFilterRun.setFastQRecordFilter(fastQRecordFilter);
 			fastQrecordFilterRun.setFastQRecordPE(fastQRecord[0], fastQRecord[1]);
-			Future<FastQrecordFilterRun> future = executorPool.submit(fastQrecordFilterRun);
+			Future<FastQrecordCopeUnit> future = executorPool.submit(fastQrecordFilterRun);
 			queueResult.add(future);
 			if (fastQReader.readsNum % 50000 == 0) {
 				setRunInfo(fastQrecordFilterRun);
@@ -129,7 +129,7 @@ class FastQfilter extends RunProcess<FastQrecordFilterRun> {
 	
 	@Override
 	protected void running() {
-		filtering();
+		runChannel();
 	}
 	
 }

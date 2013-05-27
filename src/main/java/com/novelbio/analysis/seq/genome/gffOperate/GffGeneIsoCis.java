@@ -18,9 +18,6 @@ import com.novelbio.database.model.modgeneid.GeneType;
  *
  */
 public class GffGeneIsoCis extends GffGeneIsoInfo {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 8473636267008365629L;
 	private static final Logger logger = Logger.getLogger(GffGeneIsoCis.class);
 
@@ -35,7 +32,12 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 	
 	@Override
 	public int getStartAbs() {
-		return get(0).getStartCis();
+		try {
+			return get(0).getStartCis();
+		} catch (Exception e) {
+			return get(0).getStartCis();
+		}
+		
 	}
 	@Override
 	public int getEndAbs() {

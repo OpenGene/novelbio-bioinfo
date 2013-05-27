@@ -1,13 +1,14 @@
 package com.novelbio.nbcgui.GUI;
 
-import javax.swing.JLayeredPane;
-import javax.swing.JLabel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 
-import com.novelbio.analysis.seq.genome.gffOperate.GffType;
+import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
+
 import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.database.model.species.Species;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 public class GuiLayeredPaneSpeciesVersionGff extends JLayeredPane {
 	Species species;
@@ -58,7 +59,9 @@ public class GuiLayeredPaneSpeciesVersionGff extends JLayeredPane {
 		add(cmbGffDB);
 		initial();
 	}
-	
+	public void addMouseListener(MouseAdapter mouseAdapter) {
+		cmbSpecies.addMouseListener(mouseAdapter);
+	}
 	public void addActionListener(ActionListener actionListener) {
 		cmbSpecies.addActionListener(actionListener);
 	}

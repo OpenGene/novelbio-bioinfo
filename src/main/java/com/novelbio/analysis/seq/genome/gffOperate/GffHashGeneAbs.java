@@ -131,7 +131,6 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		if (gffGeneIsoInfo != null) {
 			return gffGeneIsoInfo;
 		}
-		
 		GffDetailGene gffdetail = searchLOC(accID);
 		if (gffdetail == null) {
     		logger.info("cannotFind the ID: "+ accID);
