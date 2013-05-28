@@ -91,5 +91,8 @@ public class CtrlGO extends CtrlGOPath implements CtrlTestInt {
 		functionTest = null;
 	}
 	
-	
+	/** 返回文件的名字，用于excel和画图 */
+	public String getResultBaseTitle() {
+		return "GO-Analysis";
+	}
 }

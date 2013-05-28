@@ -140,6 +140,9 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo> {
 		}
 	}
 	
+	/** 返回文件的名字，用于excel和画图 */
+	public abstract String getResultBaseTitle();
+	
 	/**
 	 * 给定文件，和文件分割符，以及第几列，获得该列的基因ID
 	 * @param lsAccID2Value  arraylist-string[] 如果 string[2],则第二个为上下调关系，判断上下调
@@ -229,6 +232,7 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo> {
 	}
 
 	public void saveExcel(String excelPath) {
+		excelPath = FileOperate.changeFilePrefix(excelPath, getResultBaseTitle() + "_", null);
 		if (isCluster) {
 			saveExcelCluster(excelPath);
 		} else {

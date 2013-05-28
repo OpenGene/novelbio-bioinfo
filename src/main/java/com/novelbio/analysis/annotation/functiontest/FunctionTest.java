@@ -26,7 +26,7 @@ public abstract class FunctionTest implements Cloneable {
 	public static final String FUNCTION_GO_NOVELBIO = "gene ontology";
 	public static final String FUNCTION_GO_ELIM = "gene ontology elim";
 	public static final String FUNCTION_PATHWAY_KEGG = "pathway kegg";
-	
+		
 	int taxID = 0;
 	List<Integer> blastTaxID = null;
 	double blastEvalue = 1e-10;

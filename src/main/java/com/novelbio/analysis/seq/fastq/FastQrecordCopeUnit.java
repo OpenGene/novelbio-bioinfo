@@ -9,6 +9,9 @@ import java.util.concurrent.Callable;
  */
 public class FastQrecordCopeUnit implements Callable<FastQrecordCopeUnit> {
 	FastQRecordFilter fastQRecordFilter;
+	
+	
+	
 	FastQRecord fastQRecord1;
 	FastQRecord fastQRecord2;
 	

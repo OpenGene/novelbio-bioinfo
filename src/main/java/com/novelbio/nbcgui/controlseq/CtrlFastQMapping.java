@@ -3,9 +3,12 @@ package com.novelbio.nbcgui.controlseq;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map.Entry;
+
+import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
 
@@ -256,6 +259,7 @@ public class CtrlFastQMapping {
 		}
 		return fasQFiltered;
 	}
+	
 	private void combineAllFastqFile() {
 		for (Entry<String, ArrayList<FastQ[]>> entry : mapCondition2LsFastQLR.entrySet()) {
 			combineFastqFile(entry.getKey(), entry.getValue());
@@ -267,7 +271,7 @@ public class CtrlFastQMapping {
 			return;
 		}
 		
-		FastQ fastQL, fastQR;
+		FastQ fastQL = null, fastQR = null;
 		boolean PairEnd = false;
 		if (filter) condition = condition + "_filtered";
 		
@@ -277,15 +281,23 @@ public class CtrlFastQMapping {
 		else {
 			fastQL = new FastQ(outFilePrefix + condition + "_Combine_1.fq", true);
 			PairEnd = true;
+			fastQR = new FastQ(outFilePrefix + condition + "_Combine_2.fq", true);
 		}
-		fastQR = new FastQ(outFilePrefix + condition + "_Combine_2.fq", true);
+
 		for (FastQ[] fastQs : lsFastq) {
+			Iterator<FastQRecord> itFastq2 = null;
+			if (PairEnd) {
+				itFastq2 = fastQs[0].readlines().iterator();
+			}
 			for (FastQRecord fastQRecord : fastQs[0].readlines()) {
 				fastQL.writeFastQRecord(fastQRecord);
-			}
-			if (PairEnd) {
-				for (FastQRecord fastQRecord : fastQs[1].readlines()) {
-					fastQR.writeFastQRecord(fastQRecord);
+				if (PairEnd) {
+					FastQRecord fastQRecord2 = itFastq2.next();
+					if (!fastQRecord.getSeqFasta().getSeqName().equals(fastQRecord2.getSeqFasta().getSeqName())) {
+						JOptionPane.showConfirmDialog(null, "FastQfileError:" + fastQs[0].getReadFileName(), "error", JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+					fastQR.writeFastQRecord(itFastq2.next());
 				}
 			}
 		}

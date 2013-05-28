@@ -74,4 +74,6 @@ public interface CtrlTestInt {
 	 * value：具体的结果<br>
 	 */
 	public Map<String, FunctionTest> getMapResult_Prefix2FunTest();
+	
+	public String getResultBaseTitle();
 }

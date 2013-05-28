@@ -62,4 +62,8 @@ public class CtrlPath extends CtrlGOPath implements CtrlTestInt {
 	@Override
 	public void setGOType(GOtype goType) {}
 	
+	/** 返回文件的名字，用于excel和画图 */
+	public String getResultBaseTitle() {
+		return "Pathway-Analysis";
+	}
 }

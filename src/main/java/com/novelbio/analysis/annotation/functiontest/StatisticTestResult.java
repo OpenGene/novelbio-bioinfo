@@ -14,7 +14,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
  */
 public class StatisticTestResult {
 	public static final String titlePath = "Pathway_Result";
-	public static final String titleGO = "Pathway_Result";
+	public static final String titleGO = "GO_Result";
 	
 	static int logBaseNum = 2;
 	
