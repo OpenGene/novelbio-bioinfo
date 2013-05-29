@@ -283,22 +283,30 @@ public class CtrlFastQMapping {
 			PairEnd = true;
 			fastQR = new FastQ(outFilePrefix + condition + "_Combine_2.fq", true);
 		}
-
+		boolean ignore = false;
 		for (FastQ[] fastQs : lsFastq) {
 			Iterator<FastQRecord> itFastq2 = null;
 			if (PairEnd) {
-				itFastq2 = fastQs[0].readlines().iterator();
+				itFastq2 = fastQs[1].readlines().iterator();
 			}
 			for (FastQRecord fastQRecord : fastQs[0].readlines()) {
-				fastQL.writeFastQRecord(fastQRecord);
 				if (PairEnd) {
 					FastQRecord fastQRecord2 = itFastq2.next();
-					if (!fastQRecord.getSeqFasta().getSeqName().equals(fastQRecord2.getSeqFasta().getSeqName())) {
-						JOptionPane.showConfirmDialog(null, "FastQfileError:" + fastQs[0].getReadFileName(), "error", JOptionPane.ERROR_MESSAGE);
-						return;
+					String name1 = fastQRecord.getSeqFasta().getSeqName().split(" ")[0];
+					String name2 = fastQRecord2.getSeqFasta().getSeqName().split(" ")[0];
+					if (!ignore && !name1.equals(name2)) {
+						int select = JOptionPane.showConfirmDialog(null, "FastQfileError:" + fastQs[0].getReadFileName(), "\ncontinue To Next File? \nselect yes to ignore\nselect no to combine next file\nselect cancel to stop", JOptionPane.YES_NO_CANCEL_OPTION);
+						if (select == JOptionPane.CANCEL_OPTION) {
+							return; 
+						} else if(select == JOptionPane.YES_OPTION) {
+							ignore = true;
+						} else {
+							break;
+						}
 					}
-					fastQR.writeFastQRecord(itFastq2.next());
+					fastQR.writeFastQRecord(fastQRecord2);
 				}
+				fastQL.writeFastQRecord(fastQRecord);
 			}
 		}
 		

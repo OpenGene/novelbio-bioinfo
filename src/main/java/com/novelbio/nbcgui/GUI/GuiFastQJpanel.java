@@ -111,10 +111,12 @@ public class GuiFastQJpanel extends JPanel {
 		add(chckbxFilterreads);
 		
 		chckbxTrimEnd = new JCheckBox("TrimEnd");
+		chckbxTrimEnd.setSelected(true);
 		chckbxTrimEnd.setBounds(347, 226, 95, 22);
 		add(chckbxTrimEnd);
 		
 		txtMinReadsLen = new JTextField();
+		txtMinReadsLen.setText("50");
 		txtMinReadsLen.setBounds(96, 287, 76, 18);
 		add(txtMinReadsLen);
 		txtMinReadsLen.setColumns(10);
@@ -304,6 +306,7 @@ public class GuiFastQJpanel extends JPanel {
 		add(lblMismatch);
 		
 		txtMisMatch = new JTextField();
+		txtMisMatch.setText("5");
 		txtMisMatch.setBounds(417, 348, 68, 18);
 		add(txtMisMatch);
 		txtMisMatch.setColumns(10);
@@ -313,6 +316,7 @@ public class GuiFastQJpanel extends JPanel {
 		add(lblGaplength);
 		
 		txtGapLength = new JTextField();
+		txtGapLength.setText("30");
 		txtGapLength.setBounds(604, 348, 114, 18);
 		add(txtGapLength);
 		txtGapLength.setColumns(10);
