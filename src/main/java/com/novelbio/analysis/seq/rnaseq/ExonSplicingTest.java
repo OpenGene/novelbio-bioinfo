@@ -492,7 +492,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			}	
 		}
 		
-		seqFasta = seqHash.getSeq(exonCluster.getRefID(), lsGetExon, true);
+		seqFasta = seqHash.getSeq(exonCluster.isCis5to3(), exonCluster.getRefID(), lsGetExon, true);
 		lsSeqFastas.add(seqFasta);
 		
 		return lsSeqFastas;

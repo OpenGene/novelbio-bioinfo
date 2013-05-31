@@ -291,14 +291,14 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @return
 	 */
 	public int getTSSsite() {
-		return (int)get(0).getStartCis();
+		return super.getStart();
 	}
 	/**
 	 * 该转录本的Coding region end的最后一个字符坐标，从1开始计数，是闭区间
 	 * @return
 	 */
 	public int getTESsite() {
-		return get(size() -1).getEndCis();
+		return super.getEnd();
 	}
 	public int getExonNum() {
 		return size();
@@ -1043,21 +1043,21 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return result;
 	}
 	
-	public static GffGeneIsoInfo createGffGeneIso(String isoName, String geneParentName, GffDetailGene gffDetailGene, GeneType geneType, boolean cis5to3) {
+	public static GffGeneIsoInfo createGffGeneIso(String isoName, String parentName, GffDetailGene gffDetailGene, GeneType geneType, boolean cis5to3) {
 		GffGeneIsoInfo gffGeneIsoInfo = null;
 		if (cis5to3) {
-			gffGeneIsoInfo = new GffGeneIsoCis(isoName, geneParentName, gffDetailGene, geneType);
+			gffGeneIsoInfo = new GffGeneIsoCis(isoName, parentName, gffDetailGene, geneType);
 		} else {
-			gffGeneIsoInfo = new GffGeneIsoTrans(isoName, geneParentName, gffDetailGene, geneType);
+			gffGeneIsoInfo = new GffGeneIsoTrans(isoName, parentName, gffDetailGene, geneType);
 		}
 		return gffGeneIsoInfo;
 	}
-	public static GffGeneIsoInfo createGffGeneIso(String isoName, String geneParentName, GeneType geneType, boolean cis5to3) {
+	public static GffGeneIsoInfo createGffGeneIso(String isoName, String parentName, GeneType geneType, boolean cis5to3) {
 		GffGeneIsoInfo gffGeneIsoInfo = null;
 		if (cis5to3) {
-			gffGeneIsoInfo = new GffGeneIsoCis(isoName, geneParentName, geneType);
+			gffGeneIsoInfo = new GffGeneIsoCis(isoName, parentName, geneType);
 		} else {
-			gffGeneIsoInfo = new GffGeneIsoTrans(isoName, geneParentName, geneType);
+			gffGeneIsoInfo = new GffGeneIsoTrans(isoName, parentName, geneType);
 		}
 		return gffGeneIsoInfo;
 	}

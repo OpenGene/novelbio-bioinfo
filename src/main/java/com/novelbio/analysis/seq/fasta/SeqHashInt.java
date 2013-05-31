@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 
 public interface SeqHashInt {
@@ -90,28 +91,31 @@ public interface SeqHashInt {
 	public SeqFasta getSeq(String chr, int peaklocation, int region, boolean cisseq);
 
 	/**
+	 * 
 	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基<br>
 	 * <b>按照List-ExonInfo中的方向，自动提取相对于基因转录方向的序列</b>
-	 * @param lsInfo ArrayList-int[] 给定的转录本，每一对是一个外显子
+	 * @param cis5to3All  正反向，输入的转录本的方向，null则使用第一个exon的方向
+	 * @param chrID
+	 * @param lsInfo 给定的转录本，每一对是一个外显子
 	 * @param getIntron 是否提取内含子区域，True，内含子小写，外显子大写。False，只提取外显子
-	 * 没有染色体或序列超出范围则返回null
+	 * @return 没有染色体或序列超出范围则返回null
 	 */
-	public SeqFasta getSeq(String chrID, List<ExonInfo> lsInfo, boolean getIntron);
+	public SeqFasta getSeq(Boolean cis5to3Iso, String chrID, List<ExonInfo> lsInfo, boolean getIntron);
 	/**
+	 * 
 	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基<br>
 	 * 按照GffGeneIsoInfo转录本给定的情况，自动提取相对于基因转录方向的序列
-	 * @param cisseq 正反向，在提出的正向转录本的基础上，是否需要反向互补。
-	 * @param lsInfo ArrayList-int[] 给定的转录本，每一对是一个外显子
-	 * @param getIntron 是否提取内含子区域，True，内含子小写，外显子大写。False，只提取外显子
+	 * @param cis5to3All  正反向，输入的转录本的方向，null则使用第一个exon的方向
 	 * @param chrID
-	 * @param cisseq 正反向
 	 * @param start 实际第几个exon
 	 * @param end 实际第几个exon
 	 * @param lsInfo
 	 * @param getIntron 是否获取内含子，内含子自动小写
 	 * @return
 	 */
-	SeqFasta getSeq(String chrID, int start, int end, List<ExonInfo> lsInfo, boolean getIntron);
+	SeqFasta getSeq(Boolean cis5to3Iso, String chrID, int start, int end, List<ExonInfo> lsInfo, boolean getIntron);
+	
+	public SeqFasta getSeq(GffGeneIsoInfo gffGeneIsoInfo, boolean getIntron);
 	/**
 	 * 外显子之间用什么分割
 	 * @param sep

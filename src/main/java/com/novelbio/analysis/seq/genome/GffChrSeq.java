@@ -16,6 +16,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.multithread.RunProcess;
+import com.novelbio.database.model.modgeneid.GeneType;
 import com.novelbio.database.model.species.Species;
 /**
  * 在GffChrAbs中设定Tss和Tes的范围
@@ -345,7 +346,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	 */
 	public SeqFasta getSeq(String IsoName, int startExon, int endExon, boolean getIntron) {
 		GffGeneIsoInfo gffGeneIsoInfo = getIso(IsoName);
-		SeqFasta seqFasta = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.getRefID(), startExon, endExon, gffGeneIsoInfo, getIntron);
+		SeqFasta seqFasta = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.isCis5to3(), gffGeneIsoInfo.getRefID(), startExon, endExon, gffGeneIsoInfo, getIntron);
 		if (seqFasta == null) {
 			return null;
 		}
@@ -392,7 +393,9 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		if (lsExonInfos.size() == 0) {
 			return null;
 		}
-		SeqFasta seqFastaResult = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.getRefID(), lsExonInfos, getIntron);
+		GffGeneIsoInfo gffGeneIsoInfoSearch = GffGeneIsoInfo.createGffGeneIso("", "", GeneType.mRNA, gffGeneIsoInfo.isCis5to3());
+		gffGeneIsoInfoSearch.addAll(lsExonInfos);
+		SeqFasta seqFastaResult = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfoSearch, getIntron);
 		if (seqFastaResult == null) {
 			return null;
 		}
@@ -444,7 +447,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 					continue;
 				}
 				setRemoveRedundent.add(gffGeneIsoInfo.getName());
-				SeqFasta seq = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.getRefID(), gffGeneIsoInfo, false);
+				SeqFasta seq = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo, false);
 				if (seq == null) {
 					continue;
 				}

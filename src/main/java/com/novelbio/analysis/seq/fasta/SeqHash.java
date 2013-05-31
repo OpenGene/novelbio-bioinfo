@@ -195,16 +195,16 @@ public class SeqHash implements SeqHashInt{
 		return seqFasta;
 	}
 	@Override
-	public SeqFasta getSeq(String chrID, List<ExonInfo> lsInfo, boolean getIntron) {
-		SeqFasta seqFasta = seqHashAbs.getSeq(chrID, lsInfo, getIntron);
+	public SeqFasta getSeq(Boolean cis5to3All, String chrID, List<ExonInfo> lsInfo, boolean getIntron) {
+		SeqFasta seqFasta = seqHashAbs.getSeq(cis5to3All, chrID, lsInfo, getIntron);
 		if (seqFasta != null) {
 			seqFasta.setTOLOWCASE(TOLOWCASE);
 		}
 		return seqFasta;
 	}
 	@Override
-	public SeqFasta getSeq(String chrID, int start, int end, List<ExonInfo> lsInfo, boolean getIntron) {
-		SeqFasta seqFasta = seqHashAbs.getSeq(chrID, start, end, lsInfo, getIntron);
+	public SeqFasta getSeq(Boolean cis5to3All, String chrID, int start, int end, List<ExonInfo> lsInfo, boolean getIntron) {
+		SeqFasta seqFasta = seqHashAbs.getSeq(cis5to3All, chrID, start, end, lsInfo, getIntron);
 		if (seqFasta != null) {
 			seqFasta.setTOLOWCASE(TOLOWCASE);
 		}
@@ -281,6 +281,7 @@ public class SeqHash implements SeqHashInt{
 			}
 		}
 		SeqFasta seqFasta = new SeqFasta("test", stringBuilder.toString());
+		txtRead.close();
 		return seqFasta.getSeqType();		
 	}
 	

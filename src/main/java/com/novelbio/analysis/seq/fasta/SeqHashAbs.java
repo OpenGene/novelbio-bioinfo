@@ -249,12 +249,15 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基
 	 * <b>不管转录本的方向，总是从基因组的5‘向3’提取。</b>
 	 * 方向需要人工设定cisseq
+	 * @param cis5to3All 全局的方向是正向还是反向，如果为null，则取第一个exonInfo的方向
 	 * @param cisseq 正反向，是否需要反向互补。正向永远是5to3
 	 * @param chrID 无所谓大小写
 	 * @param lsInfo ArrayList-int[] 给定的转录本，每一对是一个外显子
 	 * @param getIntron 是否提取内含子区域，True，内含子小写，外显子大写。False，只提取外显子
 	 */
-	private SeqFasta getSeq(boolean cisseq, String chrID, List<ExonInfo> lsInfo, String sep, boolean getIntron) {
+	private SeqFasta getSeq(Boolean cis5to3All, SeqType seqType, String chrID, List<ExonInfo> lsInfo, String sep, boolean getIntron) {
+		if (cis5to3All == null) cis5to3All = lsInfo.get(0).isCis5to3();
+		
 		SeqFasta seqFasta = new SeqFasta();
 		seqFasta.setName(chrID + "_" + lsInfo.get(0).getName() + "_");
 		String myChrID = chrID.toLowerCase();
@@ -265,36 +268,53 @@ public abstract class SeqHashAbs implements SeqHashInt{
 		}
 		
 		String result = "";
-		ExonInfo exon1 = lsInfo.get(0);
-		if (exon1.isCis5to3()) {
+		if (cis5to3All) {
 			for (int i = 0; i < lsInfo.size(); i++) {
 				ExonInfo exon = lsInfo.get(i);
-				result = result + sep + getSeq(myChrID, exon.getStartAbs(), exon.getEndAbs()).toString().toUpperCase(); 
+				Boolean cis5to3 = exon.isCis5to3();
+				if (cis5to3 == null) cis5to3 = true;
+				
+				SeqFasta seqfastaTmp =  getSeq(myChrID, exon.getStartAbs(), exon.getEndAbs());
+				if (seqType == SeqType.isoForward && !cis5to3) {
+					seqfastaTmp = seqfastaTmp.reservecom();
+				}
+				result = addSep(result, sep) + seqfastaTmp.toString().toUpperCase(); 
 				if (getIntron && i < lsInfo.size()-1) {
-					result = result + sep + getSeq(myChrID,exon.getEndCis()+1, lsInfo.get(i+1).getStartCis()-1).toString().toLowerCase();
+					SeqFasta seqfastaTmpIntron =  getSeq(myChrID, exon.getEndAbs()+1, lsInfo.get(i+1).getStartAbs()-1);
+					result = addSep(result, sep) + seqfastaTmpIntron.toString().toLowerCase();
 				}
 			}
 		}
 		else {
 			for (int i = lsInfo.size() - 1; i >= 0; i--) {
 				ExonInfo exon = lsInfo.get(i);
-				try {	
-					result = result + sep + getSeq(myChrID, exon.getStartAbs(), exon.getEndAbs()).toString().toUpperCase();
-					if (getIntron && i > 0) {
-						result = result + sep + getSeq(myChrID,exon.getStartCis() + 1, lsInfo.get(i-1).getEndCis() - 1).toString().toLowerCase();;
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-					}
+				Boolean cis5to3 = exon.isCis5to3();
+				if (cis5to3 == null) cis5to3 = false;
+				SeqFasta seqfastaTmp = getSeq(myChrID, exon.getStartAbs(), exon.getEndAbs());
+				if (seqType == SeqType.isoForward && cis5to3) {
+					seqfastaTmp = seqfastaTmp.reservecom();
+				}
+				result = addSep(result, sep) + seqfastaTmp.toString().toUpperCase();
+				if (getIntron && i > 0) {
+					SeqFasta seqfastaTmpIntron =  getSeq(myChrID, exon.getEndAbs() + 1, lsInfo.get(i-1).getStartAbs() - 1);			
+					result = addSep(result, sep) + seqfastaTmpIntron.toString().toLowerCase();;
+				}
 			}
 		}
-		result = result.substring(sep.length());
 		seqFasta.setSeq(result);
-		if (cisseq) {
+		if (seqType == SeqType.trans || (seqType == SeqType.isoForward && !cis5to3All)) {
+			return seqFasta.reservecom();
+		} else {
 			return seqFasta;
 		}
-		else {
-			return seqFasta.reservecom();
+	}
+	
+	/** 在输入的result后添加sep */
+	private String addSep(String result, String sep) {
+		if (result.trim().equals("")) {
+			return "";
+		} else {
+			return result + sep;
 		}
 	}
 	/**
@@ -304,7 +324,7 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	 * @param getIntron 是否提取内含子区域，True，内含子小写，外显子大写。False，只提取外显子
 	 */
 	public SeqFasta getSeq(GffGeneIsoInfo gffGeneIsoInfo, boolean getIntron) {
-		 SeqFasta seqFasta = getSeq(gffGeneIsoInfo.getRefID(), gffGeneIsoInfo, getIntron);
+		 SeqFasta seqFasta = getSeq(gffGeneIsoInfo.isCis5to3(), SeqType.isoForward, gffGeneIsoInfo.getRefID(), gffGeneIsoInfo, sep, getIntron);
 		 seqFasta.setName(gffGeneIsoInfo.getName());
 		 return seqFasta;
 	}
@@ -317,13 +337,12 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	 * @param getIntron 是否提取内含子区域，True，内含子小写，外显子大写。False，只提取外显子
 	 */
 	@Override
-	public SeqFasta getSeq(String chrID,List<ExonInfo> lsInfo, boolean getIntron) {
+	public SeqFasta getSeq(Boolean cis5To3Iso, String chrID,List<ExonInfo> lsInfo, boolean getIntron) {
 		if (lsInfo.size() == 0) {
 			return new SeqFasta("", "");
 		}
-		 ExonInfo exon1 = lsInfo.get(0);
 		 try {
-			 return this.getSeq(exon1.isCis5to3(), chrID, lsInfo, sep,getIntron);
+			 return this.getSeq(cis5To3Iso, SeqType.isoForward, chrID, lsInfo, sep,getIntron);
 		} catch (Exception e) {
 			return null;
 		}
@@ -344,16 +363,15 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	 * @return
 	 */
 	@Override
-	public SeqFasta getSeq(String chrID, int start, int end, List<ExonInfo> lsInfo, boolean getIntron) {
+	public SeqFasta getSeq(Boolean cis5to3Iso, String chrID, int start, int end, List<ExonInfo> lsInfo, boolean getIntron) {
 		start--;
 		if (start < 0) start = 0;
 		
 		if (end <= 0 || end > lsInfo.size()) 
 			end = lsInfo.size();
 		
-		ExonInfo exon1 = lsInfo.get(0);
 		List<ExonInfo> lsExon = lsInfo.subList(start, end);
-		SeqFasta seq = getSeq(exon1.isCis5to3(), chrID, lsExon,sep, getIntron);
+		SeqFasta seq = getSeq(cis5to3Iso, SeqType.isoForward, chrID, lsExon,sep, getIntron);
 		return seq;
 	}
 	/**
@@ -384,3 +402,11 @@ public abstract class SeqHashAbs implements SeqHashInt{
 		siteInfo.setSeq(seqFasta, true);
 	}
 }
+ enum SeqType {
+	 /** 转录本特有的方向，不同的exon有不同的方向 */
+	 isoForward, 
+	 /** 一直正向 */
+	 cis, 
+	 /** 一直反向 */
+	 trans;
+ }

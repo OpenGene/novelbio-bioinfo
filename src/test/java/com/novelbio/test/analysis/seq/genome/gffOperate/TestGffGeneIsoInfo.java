@@ -8,11 +8,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoCis;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoTrans;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster;
-import com.novelbio.base.dataStructure.listOperate.ListAbs;
 import com.novelbio.database.model.modgeneid.GeneType;
 
 public class TestGffGeneIsoInfo extends TestCase{
@@ -138,7 +135,7 @@ public class TestGffGeneIsoInfo extends TestCase{
 		ExonCluster exonCluster = lsSep.get(num);
 		assertEquals(new ExonInfo(isoTrans1, true, 1, 3), exonCluster.getMapIso2LsExon().get(isoTrans1).get(0));
 		assertEquals(new ExonInfo(isoTrans1, true, 4, 5), exonCluster.getMapIso2LsExon().get(isoTrans1).get(1));
-		assertEquals(0, exonCluster.getMapIso2LsExon().get(isoTrans2).size());
+		assertEquals(null, exonCluster.getMapIso2LsExon().get(isoTrans2));
 		num++;
 		exonCluster = lsSep.get(num);
 		assertEquals(0, exonCluster.getMapIso2LsExon().get(isoTrans1).size());

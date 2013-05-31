@@ -529,9 +529,9 @@ class SiteSnpIndelInfoInsert extends SiteSnpIndelInfo{
 		}
 		else {
 			try {
-				NR = gffChrAbs.getSeqHash().getSeq(refSiteSnpIndelParent.getRefID(), lsTmp, false);
+				NR = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.isCis5to3(), refSiteSnpIndelParent.getRefID(), lsTmp, false);
 			} catch (Exception e) {
-				NR = gffChrAbs.getSeqHash().getSeq(refSiteSnpIndelParent.getRefID(), lsTmp, false);
+				NR = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.isCis5to3(), refSiteSnpIndelParent.getRefID(), lsTmp, false);
 			}
 		}
 		refSeqIntactAA.setCis5to3(gffGeneIsoInfo.isCis5to3());
@@ -663,7 +663,7 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 				return;
 			}
 			setOrfShiftAndReplaceSite(gffGeneIsoInfo, refStartCis, refEndCis);
-			SeqFasta NR = gffChrAbs.getSeqHash().getSeq(refSeqIntactAA.getRefID(), lsTmp, false);
+			SeqFasta NR = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.isCis5to3(), refSeqIntactAA.getRefID(), lsTmp, false);
 			refSeqIntactAA.setSeq(NR,false);//因为上面已经反向过了
 		}
 		
