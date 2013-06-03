@@ -2,14 +2,21 @@ package com.novelbio.analysis.seq.fastq;
 
 import java.util.concurrent.Callable;
 
+import com.novelbio.FastQC;
+import com.novelbio.base.dataOperate.HttpFetch;
+
 /**
  * 放在线程池里面的每一个运行单元
  * @author zong0jie
  *
  */
 public class FastQrecordCopeUnit implements Callable<FastQrecordCopeUnit> {
+	public static void main(String[] args) {
+		HttpFetch.getInstance();
+		System.out.println("aaa");
+	}
 	FastQRecordFilter fastQRecordFilter;
-	
+	FastQC fastQC;
 	
 	
 	FastQRecord fastQRecord1;
@@ -60,6 +67,41 @@ public class FastQrecordCopeUnit implements Callable<FastQrecordCopeUnit> {
 		}
 		
 		return this;
+	}
+	
+	/** 没有通过过滤就返回false */
+	public boolean filterFastQRecordSE(FastQRecord fastQRecord) {
+		if (fastQRecord == null) {
+			return false;
+		}
+		fastQRecord.setModifyQuality(isModifyQuality);
+		boolean filtered = true;
+		for (FQrecordFilter fQrecordFilter : lsFQrecordFilters) {
+			if (!fQrecordFilter.copeReads(fastQRecord)) {
+				filtered = false;
+				break;
+			}
+		}
+		
+		return filtered;
+	}
+	/** 没有通过过滤就返回false */
+	public boolean filterFastQRecordPE(FastQRecord fastQRecord1, FastQRecord fastQRecord2) {
+		if (fastQRecord1 == null || fastQRecord2 == null) {
+			return false;
+		}
+		fastQRecord1.setModifyQuality(isModifyQuality);
+		fastQRecord2.setModifyQuality(isModifyQuality);
+		boolean filtered = true;
+		for (FQrecordFilter fQrecordFilter : lsFQrecordFilters) {
+			boolean filter1 = fQrecordFilter.copeReads(fastQRecord1);
+			boolean filter2 = fQrecordFilter.copeReads(fastQRecord2);
+			if (!filter1 || !filter2) {
+				filtered = false;
+				break;
+			}
+		}
+		return filtered;
 	}
 	
 	public boolean isPairEnd() {

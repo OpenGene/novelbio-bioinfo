@@ -77,7 +77,13 @@ public class GffHashGTF extends GffHashGeneAbs{
 			}
 			if (ss[2].equals("exon")) {
 				gffGeneIsoInfo = mapID2Iso.get(tmpTranscriptName);
-				gffGeneIsoInfo.addExon( Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
+				Boolean cisExon = null;
+				if (ss[6].equals("+")) {
+					cisExon = true;
+				} else if (ss[6].equals("-")) {
+					cisExon = false;
+				}
+				gffGeneIsoInfo.addExon(cisExon, Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
 			}
 		}
 		CopeChrIso(mapChrID2LsIso);

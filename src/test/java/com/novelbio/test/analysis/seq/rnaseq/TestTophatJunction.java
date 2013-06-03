@@ -1,14 +1,8 @@
 package com.novelbio.test.analysis.seq.rnaseq;
 
-import java.io.File;
-import java.util.ArrayList;
-
 import junit.framework.TestCase;
 
 import com.novelbio.analysis.seq.rnaseq.TophatJunction;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.fileOperate.FileOperate;
-import com.sun.tools.javah.resources.l10n;
 //TODO 还没写完
 public class TestTophatJunction extends TestCase {
 	TophatJunction tophatJunction = new TophatJunction();

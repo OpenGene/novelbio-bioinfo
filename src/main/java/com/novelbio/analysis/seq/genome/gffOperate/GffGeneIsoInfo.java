@@ -86,6 +86,14 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	String geneParentName;
 	GeneID geneID;
 	
+	//TODO 考虑兼容这种特性的exon
+	/**
+	 * 是否为错乱的exon
+	 * 目前只看到叶绿体的基因是错乱的exon
+	 */
+	private boolean isUnorderedExon = false;
+	
+	
 	public GffGeneIsoInfo(String IsoName, String geneParentName, GeneType geneType) {
 		super.listName = IsoName;
 		this.flagTypeGene = geneType;
@@ -205,31 +213,6 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 */
 	public boolean ismRNA() {
 		return Math.abs(ATGsite - UAGsite) > 10 ?  true : false;
-	}
-	/**
-	 * 只能用于排序好的水稻和拟南芥GFF文件中
-	 * 这个要确认
-	 * 给转录本添加exon坐标，GFF3的exon的格式是 <br>
-	 * 当gene为反方向时，exon是从大到小排列的<br>
-	 * 在添加exon的时候，如果本CDS与UTR之间是连着的，那么就将本CDS和UTR连在一起，放在一个exon中
-	 * 如果不连，就按原来的来
-	 */
-	protected void addExonGFFCDSUTR(int locStart, int locEnd) {
-		/**
-		 * 添加外显子，添加在末尾
-		 * 添加的时候必须按照基因方向添加，
-		 * 正向从小到大添加 且 int0<int1
-		 * 反向从大到小添加 且 int0>int1
-		 */
-		ExonInfo tmpexon = new ExonInfo(this, isCis5to3(), locStart, locEnd);
-		if (size() > 0) {
-			ExonInfo exon = get(size() - 1);
-			if (Math.abs(exon.getEndCis() - tmpexon.getStartCis()) == 1) {
-				exon.setEndCis(tmpexon.getEndCis());
-				return;
-			}
-		}
-		add(tmpexon);
 	}
 	/**
 	 * 给该转录本添加ATG和UAG坐标，<br>
@@ -425,8 +408,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	public int getCod2Tss(int coord) {
 		if (isCis5to3()) {
 			return coord - getTSSsite();
-		} 
-		else {
+		} else {
 			return -(coord - getTSSsite());
 		}
 	}
@@ -438,8 +420,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	public int getCod2Tes(int coord) {
 		if (isCis5to3()) {
 			return coord - getTESsite();
-		} 
-		else {
+		} else {
 			return -(coord - getTESsite());
 		}
 	}
@@ -451,8 +432,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	public int getCod2ATG(int coord) {
 		if (isCis5to3()) {
 			return coord - getATGsite();
-		} 
-		else {
+		} else {
 			return -(coord - getATGsite());
 		}
 	}
@@ -464,8 +444,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	public int getCod2UAG(int coord) {
 		if (isCis5to3()) {
 			return coord - getUAGsite();
-		} 
-		else {
+		} else {
 			return -(coord - getUAGsite());
 		}
 	}
@@ -477,8 +456,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		int location = getCodLocUTRCDS(coord);
 		if (location == COD_LOCUTR_5UTR) {
 			return getLocDistmRNA(getTSSsite(), coord);
-		} 
-		else if (location == COD_LOCUTR_3UTR) {
+		} else if (location == COD_LOCUTR_3UTR) {
 			return getLocDistmRNA(getUAGsite(), coord);
 		}
 		logger.error("不在UTR中");
@@ -661,49 +639,52 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			boolean filterGeneBody,boolean filter5UTR, boolean filter3UTR,boolean filterExon, boolean filterIntron) {
 		boolean filter = false;
 		if (filterTss == true) {
-			if (isCodInIsoTss(coord)) {
-				filter = true;
-			}
+			if (isCodInIsoTss(coord)) filter = true;
 		}
 		if (filterGenEnd == true) {
-			if (isCodInIsoGenEnd(coord)) {
-				filter = true;
-			}
+			if (isCodInIsoGenEnd(coord)) filter = true;
 		}
+		
 		if (filterGeneBody && getCodLoc(coord) != COD_LOC_OUT) {
 			filter = true;
-		}
-		else if (filter5UTR && getCodLocUTRCDS(coord) == COD_LOCUTR_5UTR) {
+		} else if (filter5UTR && getCodLocUTRCDS(coord) == COD_LOCUTR_5UTR) {
 			filter = true;
-		}
-		else if (filter3UTR && getCodLocUTRCDS(coord) == COD_LOCUTR_3UTR) {
+		} else if (filter3UTR && getCodLocUTRCDS(coord) == COD_LOCUTR_3UTR) {
 			filter = true;
-		}
-		else if (filterExon && getCodLoc(coord) == COD_LOC_EXON) {
+		} else if (filterExon && getCodLoc(coord) == COD_LOC_EXON) {
 			filter = true;
-		}
-		else if (filterIntron && getCodLoc(coord) == COD_LOC_INTRON) {
+		} else if (filterIntron && getCodLoc(coord) == COD_LOC_INTRON) {
 			filter = true;
 		}
 		return filter;
 	}
 	
 	/** 最常规的添加exon，不做任何判定 */
-	protected void addExonNorm(int locStart, int locEnd) {
-		ExonInfo exonInfo = new ExonInfo(this,isCis5to3(), locStart, locEnd);
+	protected void addExonNorm(Boolean cis5to3, int locStart, int locEnd) {
+		boolean mycis5to3 = getExonCis5To3(cis5to3);
+		
+		ExonInfo exonInfo = new ExonInfo(this, mycis5to3, locStart, locEnd);
 		add(exonInfo);
 	}
 	
 	/**
 	 * 假设是安顺序添加的ID
-	 * 这个要确认
 	 * 给转录本添加exon坐标，GFF3的exon的格式是 <br>
 	 * 当gene为反方向时，exon是从大到小排列的<br>
 	 * 只需要注意按照次序装，也就是说如果正向要从小到大的加，反向从大到小的加 <br>
 	 * 然而具体加入这一对坐标的时候，并不需要分别大小，程序会根据gene方向自动判定 <br>
+	 * @param cis5to3 exon的方向，null表示选取和iso一样的方向
+	 * @param locStart exon的起点，程序会将其与locEnd中自动选择起点
+	 * @param locEnd exon的终点，程序会将其与locStart中自动选择起点
 	 */
-	protected void addExon(int locStart, int locEnd) {
-		ExonInfo exonInfo = new ExonInfo(this,isCis5to3(), locStart, locEnd);
+	protected void addExon(Boolean cis5to3, int locStart, int locEnd) {
+		boolean mycis5to3 = getExonCis5To3(cis5to3);
+		if (cis5to3 != null) {
+			mycis5to3 = cis5to3;
+		} else {
+			mycis5to3 = this.isCis5to3();
+		}
+		ExonInfo exonInfo = new ExonInfo(this, mycis5to3, locStart, locEnd);
 		if (size() == 0) {
 			add(exonInfo);
 			return;
@@ -713,22 +694,46 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		(!isCis5to3() && exonInfo.getEndAbs() <= get(size() - 1).getStartAbs())
 		) {
 			add(exonInfo);
-		}
-		else if ((isCis5to3() && exonInfo.getEndAbs() <= get(0).getStartAbs())
+		} else if ((isCis5to3() && exonInfo.getEndAbs() <= get(0).getStartAbs())
 				|| 
 				(!isCis5to3() && exonInfo.getStartAbs() >= get(size() - 1).getEndAbs())
 		){
 			add(0,exonInfo);
-		}
-		else {
+		} else {
 			logger.error("NCBI的Gff文件有问题，其exon会窜位，本次添加exon出错，请check: " + locStart + " " + locEnd);
 		}
 	}
-	protected void addFirstExon(int locStart, int locEnd) {
-		ExonInfo exonInfo = new ExonInfo(this,isCis5to3(), locStart, locEnd);
+	/**
+	 * @param cis5to3 exon的方向
+	 * @param locStart
+	 * @param locEnd
+	 */
+	protected void addFirstExon(Boolean cis5to3, int locStart, int locEnd) {
+		boolean mycis5to3 = getExonCis5To3(cis5to3);
+		ExonInfo exonInfo = new ExonInfo(this, mycis5to3, locStart, locEnd);
 		clear();
 		add(exonInfo);
 	}
+	
+	/**
+	 * 获得该exon的方向
+	 * @param cis5to3 该exon的方向，如果为null，则需要返回该iso的方向，如果iso的方向也为null，则返回true
+	 * @return
+	 */
+	private boolean getExonCis5To3(Boolean cis5to3) {
+		boolean mycis5to3 = true;
+		if (cis5to3 != null) {
+			mycis5to3 = cis5to3;
+		} else if (this.isCis5to3() != null) {
+			mycis5to3 = this.isCis5to3();
+		} else if (getParentGffDetailGene() != null && getParentGffDetailGene().isCis5to3Real() != null) {
+			mycis5to3 = getParentGffDetailGene().isCis5to3Real();
+		} else {
+			mycis5to3 = true;
+		}
+		return mycis5to3;
+	}
+	
 	/**
 	 * 获得该转录本的起点，不考虑方向
 	 * @return

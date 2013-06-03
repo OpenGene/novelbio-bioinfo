@@ -78,12 +78,12 @@ public class NovelGOFunTest extends FunctionTest {
 		ArrayListMultimap<String, GeneID> hashGo2LsGene = ArrayListMultimap.create();
 		ArrayList<StatisticTestGene2Item> lsStatisticTestGene2Items = getGene2ItemPvalue();
 		for (StatisticTestGene2Item statisticTestGene2Item : lsStatisticTestGene2Items) {
-			GeneID2LsItem geneID2LsItem = convert2ItemFromBG(statisticTestGene2Item.geneID, false);
+			GeneID2LsItem geneID2LsItem = convert2ItemFromBG(statisticTestGene2Item.getGeneID(), false);
 			if (geneID2LsItem == null) {
 				continue;
 			}
 			for (String goid : geneID2LsItem.getSetItemID()) {
-				hashGo2LsGene.put(goid, statisticTestGene2Item.geneID);
+				hashGo2LsGene.put(goid, statisticTestGene2Item.getGeneID());
 			}
 		}
 		return hashGo2LsGene;

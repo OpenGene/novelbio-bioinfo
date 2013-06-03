@@ -58,12 +58,17 @@ public class GffDetailGene extends ListDetailAbs {
 	Boolean ismRNA = null;
 	/**
 	 * @param chrID 内部小写
-	 * @param locString
+	 * @param locString 没名字就写null
 	 * @param cis5to3
 	 */
 	public GffDetailGene(String chrID, String locString, boolean cis5to3) {
 		super(chrID, locString, cis5to3);
 	}
+	/**
+	 * @param listGff
+	 * @param locString 没名字就写null
+	 * @param cis5to3
+	 */
 	public GffDetailGene(ListGff listGff, String locString, boolean cis5to3) {
 		super(listGff, locString, cis5to3);
 	}
@@ -163,36 +168,27 @@ public class GffDetailGene extends ListDetailAbs {
 	 * 只需要注意按照次序装，也就是说如果正向要从小到大的加，反向从大到小的加
 	 * 然而具体加入这一对坐标的时候，并不需要分别大小，程序会根据gene方向自动判定
 	 * <b>如果发现一个没有转录本的，则新添加一个gene设置类型为pseudo</b>
+	 * @param cis5to3 exon的方向
 	 */
-	protected void addExon(int locStart,int locEnd) {
+	protected void addExon(Boolean cis5to3, int locStart,int locEnd) {
 		if (lsGffGeneIsoInfos.size() == 0) {//如果发现一个没有转录本的，则新添加一个gene设置类型为pseudo
 			addsplitlist(getName().get(0), getName().get(0), GeneType.PSEU);
 		}
 		GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(lsGffGeneIsoInfos.size()-1);//include one special loc start number to end number
-		gffGeneIsoInfo.addExon(locStart, locEnd);
+		gffGeneIsoInfo.addExon(cis5to3, locStart, locEnd);
 	}
 	/**
 	 * 添加exon坐标，不考虑排序的问题<br>
 	 * <b>如果发现一个没有转录本的，则新添加一个gene设置类型为pseudo</b>
 	 */
-	protected void addExonNorm(int locStart,int locEnd) {
+	protected void addExonNorm(Boolean cis5to3, int locStart,int locEnd) {
 		if (lsGffGeneIsoInfos.size() == 0) {//如果发现一个没有转录本的，则新添加一个gene设置类型为pseudo
 			addsplitlist(getName().get(0), getName().get(0), GeneType.PSEU);
 		}
 		GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(lsGffGeneIsoInfos.size()-1);//include one special loc start number to end number
-		gffGeneIsoInfo.addExonNorm(locStart, locEnd);
+		gffGeneIsoInfo.addExonNorm(cis5to3, locStart, locEnd);
 	}
 	
-	/**
-	 * 针对水稻拟南芥的GFF文件
-	 * 给转录本添加exon坐标，GFF3的exon的格式是
-	 * 当gene为反方向时，exon是从大到小排列的
-	 * 在添加exon的时候，如果本CDS与UTR之间是连着的，那么就将本CDS和UTR连在一起，放在一个exon中 如果不连，就按原来的来
-	 */
-	protected void addExonGFFCDSUTR(int locStart,int locEnd) {
-		GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(lsGffGeneIsoInfos.size()-1);//include one special loc start number to end number
-		gffGeneIsoInfo.addExonGFFCDSUTR(locStart, locEnd);
-	}
 	/**
 	 * 给最后一个转录本添加ATG和UAG坐标，<br>
 	 * 加入这一对坐标的时候，并不需要分别大小，程序会根据gene方向自动判定
@@ -231,12 +227,14 @@ public class GffDetailGene extends ListDetailAbs {
 	}
 	/**
 	 * 直接添加转录本，之后用addcds()方法给该转录本添加exon
+	 * @return 
 	 */
-	protected void addsplitlist(String splitName, String geneParentName, GeneType geneTpye, boolean cis5to3) {
+	protected GffGeneIsoInfo addsplitlist(String splitName, String geneParentName, GeneType geneTpye, boolean cis5to3) {
 		removeDuplicateIso = false;
 		
 		GffGeneIsoInfo gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso(splitName, geneParentName, this, geneTpye, cis5to3);
 		lsGffGeneIsoInfos.add(gffGeneIsoInfo);
+		return gffGeneIsoInfo;
 	}
 	/**
 	 * @return 返回转录本的数目
@@ -474,7 +472,7 @@ public class GffDetailGene extends ListDetailAbs {
 	 * 添加新的转录本
 	 * 没有删除重复的iso
 	 * 同时重新设定该基因的numberstart和numberend
-	 * @param gffDetailGeneParent
+	 * @param gffGeneIsoInfo 输入的iso必须不能为null，并且要有exon信息的存在
 	 */
 	public void addIso(GffGeneIsoInfo gffGeneIsoInfo) {
 		if (gffGeneIsoInfo == null || gffGeneIsoInfo.size() == 0) {

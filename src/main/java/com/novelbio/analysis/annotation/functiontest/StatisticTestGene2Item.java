@@ -11,24 +11,30 @@ import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.generalConf.TitleFormatNBC;
 
+import freemarker.log.Logger;
+
 public abstract class StatisticTestGene2Item {
 	public static final String titleGO = "Gene2GO";
 	public static final String titlePath = "Gene2Path";
 	
 	boolean blast;
+	boolean isUpdateBG = false;
 	/**
 	 * key 小写
 	 */
 	Map<String, StatisticTestResult> mapItem2StatisticTestResult;
-	GeneID geneID;
+	GeneID2LsItem geneID2LsItem;
 	
 	/**
 	 * blast什么属性都要设定好再传递进来
 	 * @param geneID
 	 */
-	public void setGeneID(GeneID geneID, boolean blast) {
-		this.geneID = geneID;
+	public void setGeneID(GeneID2LsItem geneID2LsItem, boolean blast) {
+		this.geneID2LsItem = geneID2LsItem;
 		this.blast = blast;
+	}
+	public GeneID getGeneID() {
+		return geneID2LsItem.geneID;
 	}
 	/**
 	 * 输入全体有pvalue的item信息
@@ -82,10 +88,11 @@ class StatisticTestGene2GO extends StatisticTestGene2Item {
 		ArrayList<String> lsTmpFinal = new ArrayList<String>();
 
 		// GO前面的常规信息的填充,Symbol和description等
-		lsTmpFinal.add(geneID.getAccID());
-		lsTmpFinal.add(geneID.getSymbol());
-		lsTmpFinal.add(geneID.getDescription());
-		if (blast) {
+		lsTmpFinal.add(geneID2LsItem.geneID.getAccID());
+		lsTmpFinal.add(geneID2LsItem.geneID.getSymbol());
+		lsTmpFinal.add(geneID2LsItem.geneID.getDescription());
+		GeneID geneID = geneID2LsItem.geneID;
+		if (geneID2LsItem.blast) {
 			if (geneID.getLsBlastInfos().size() > 0) {
 				lsTmpFinal.add(geneID.getLsBlastInfos().get(0).getEvalue() + "");
 				lsTmpFinal.add(geneID.getLsBlastGeneID().get(0).getSymbol());
@@ -114,9 +121,13 @@ class StatisticTestGene2GO extends StatisticTestGene2Item {
 			} else {
 				continue;
 			}
-			if (!mapItem2StatisticTestResult.containsKey(goID.toLowerCase()) ) {
+			
+			if (!mapItem2StatisticTestResult.containsKey(goID.toLowerCase()) ) continue;
+			if (!geneID2LsItem.setItemID.contains(goID.toUpperCase()) ) {
+				isUpdateBG = true;
 				continue;
 			}
+			
 			StatisticTestResult statisticTestResult = mapItem2StatisticTestResult.get(goID.toLowerCase());
 			
 			lsTmpFinalNew.add(aGene2Go.getGOID());
@@ -171,15 +182,21 @@ class StatisticTestGene2Path extends StatisticTestGene2Item {
 	protected ArrayList<ArrayList<String>> getInfo() {
 		ArrayList<ArrayList<String>> lsFinal = new ArrayList<ArrayList<String>>();
 		ArrayList<String> lsTmpFinal = new ArrayList<String>();
-
+		GeneID geneID = geneID2LsItem.geneID;
 		// GO前面的常规信息的填充,Symbol和description等
 		lsTmpFinal.add(geneID.getAccID());
 		lsTmpFinal.add(geneID.getSymbol());
 		lsTmpFinal.add(geneID.getDescription());
 		if (blast && geneID.getLsBlastInfos().size() > 0) {
-			lsTmpFinal.add(geneID.getLsBlastInfos().get(0).getEvalue() + "");
-			lsTmpFinal.add(geneID.getLsBlastGeneID().get(0).getSymbol());
-			lsTmpFinal.add(geneID.getLsBlastGeneID().get(0).getDescription());
+			if (geneID.getLsBlastGeneID().size() > 0) {
+				lsTmpFinal.add(geneID.getLsBlastInfos().get(0).getEvalue() + "");
+				lsTmpFinal.add(geneID.getLsBlastGeneID().get(0).getSymbol());
+				lsTmpFinal.add(geneID.getLsBlastGeneID().get(0).getDescription());
+			} else {
+				lsTmpFinal.add("");
+				lsTmpFinal.add("");
+				lsTmpFinal.add("");
+			}
 		}
 
 		ArrayList<KGpathway> lsPath = geneID.getKegPath(blast);
@@ -189,6 +206,10 @@ class StatisticTestGene2Path extends StatisticTestGene2Item {
 		for (KGpathway kGpathway : lsPath) {
 			ArrayList<String> lsTmpFinalNew = (ArrayList<String>) lsTmpFinal.clone();
 			if (!mapItem2StatisticTestResult.containsKey(("PATH:" + kGpathway.getMapNum()).toLowerCase())) {
+				continue;
+			}
+			if (!geneID2LsItem.setItemID.contains(("PATH:" + kGpathway.getMapNum()).toUpperCase()) ) {
+				isUpdateBG = true;
 				continue;
 			}
 			StatisticTestResult statisticTestResult = mapItem2StatisticTestResult.get(("PATH:" + kGpathway.getMapNum()).toLowerCase());

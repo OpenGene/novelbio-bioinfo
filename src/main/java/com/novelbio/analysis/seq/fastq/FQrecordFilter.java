@@ -27,7 +27,7 @@ public abstract class FQrecordFilter {
 	 * reads质量太差或过滤失败则返回false
 	 * @return
 	 */
-	public boolean filter(FastQRecord fastQRecord) {
+	public boolean copeReads(FastQRecord fastQRecord) {
 		return trimSeq(fastQRecord, readsMinLen, trimLeft(fastQRecord), trimRight(fastQRecord));
 	}
 	

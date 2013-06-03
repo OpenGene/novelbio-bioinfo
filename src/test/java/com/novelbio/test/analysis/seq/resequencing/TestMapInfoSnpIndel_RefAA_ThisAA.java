@@ -5,6 +5,7 @@ import org.junit.Test;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.resequencing.RefSiteSnpIndel;
 import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo;
+import com.novelbio.database.model.species.Species;
 
 import junit.framework.TestCase;
 
@@ -16,7 +17,9 @@ public class TestMapInfoSnpIndel_RefAA_ThisAA extends TestCase{
 	String thisSeq = "G";
 	@Override
 	protected void setUp() throws Exception {
-		gffChrAbs = new GffChrAbs(9606);
+		Species species = new Species(9606);
+//		species.setGffDB("ucsc");
+		gffChrAbs = new GffChrAbs(species);
 	}
 	@Override
 	protected void tearDown() throws Exception {

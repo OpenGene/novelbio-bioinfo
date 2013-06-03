@@ -50,6 +50,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 			listGff.sort();
 			for (int i = 0; i < listGff.size(); i++) {
 				GffDetailGene gffDetailGene = listGff.get(i);
+				gffDetailGene.setParentListAbs(listGff);
 				for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 					gffGeneIsoInfo.sort();
 					try {
@@ -87,6 +88,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	}
 	
 	protected abstract void ReadGffarrayExcepTmp(String gfffilename) throws Exception;
+	
 	public int getTaxID() {
 		return taxID;
 	}

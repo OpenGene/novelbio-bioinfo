@@ -151,7 +151,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
    protected void ReadGffarrayExcepTmp(String gfffilename) throws Exception {
 	   setHashName();
 	   setPattern();
-	   TxtReadandWrite txtgff=new TxtReadandWrite(gfffilename, false);
+	   TxtReadandWrite txtgff = new TxtReadandWrite(gfffilename, false);
 	   
 	   //当前的geneID，主要是给tRNA和miRNA用的，因为别的mRNA都有parent geneID可以通过这个ID回溯geneName
 	   //但是tRNA和miRNA就没有这个parent geneID，所以就记载下来给他们用
@@ -159,16 +159,15 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   String[] thisRnaIDandName = null;	   
 	   
 	   for (String content : txtgff.readlines()) {
-		   if(content.charAt(0)=='#') continue;
+		   if(content.charAt(0) == '#') continue;
 		   String[] ss = content.split("\t");//按照tab分开
 		   if (ss[2].equals("match") || ss[2].toLowerCase().equals("chromosome") || ss[2].toLowerCase().equals("intron") || ss[0].startsWith("NW_") || ss[0].startsWith("NT_")) {
 			   continue;
 		   }
 		   
 		   ss[0] = getChrID(ss);
-		   if (ss[2].equals("region")) {
-			   continue;
-		   }
+		   if (ss[2].equals("region")) continue;
+		   
 		   //读取到gene
 		   if (setIsGene.contains(ss[2])) {
 			   thisGeneIDandName = addNewGene(ss);
@@ -249,7 +248,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   GffDetailGene gffDetailLOC = mapGenID2GffDetail.get(geneID);
 	   mapGeneID2GeneType.put(geneID, GeneType.getGeneType(ss[2]));
 	   if (gffDetailLOC == null) {
-		   gffDetailLOC=new GffDetailGene(ss[0], geneName, ss[6].equals("+"));//新建一个基因类
+		   gffDetailLOC=new GffDetailGene(ss[0], geneName, ss[6].equals("+") || ss[6].equals("."));//新建一个基因类
 	   }
 	   gffDetailLOC.setTaxID(taxID);
 	   gffDetailLOC.setStartAbs( Integer.parseInt(ss[3])); gffDetailLOC.setEndAbs( Integer.parseInt(ss[4]));//基因起止
@@ -277,7 +276,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		   if (geneType == null) {
 			   geneType = GeneType.getGeneType(mRNAname[1]);
 		   }
-		   GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.addsplitlist(mRNAname[0],gffDetailGene.getNameSingle(), geneType);//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
+		   GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.addsplitlist(mRNAname[0],gffDetailGene.getNameSingle(), geneType, ss[6].equals("+") || ss[6].equals("."));//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
 		   mapRnaID2LsIso.put(rnaID, gffGeneIsoInfo);
 		   ExonInfo exonInfo = new ExonInfo("", true, Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
 		   mapRnaID2LsIsoLocInfo.put(rnaID, exonInfo);
@@ -329,10 +328,10 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		   logger.error("没有找到相应的GeneID:" + geneID);
 	   }
 	   if (mapGeneName2IsHaveExon.get(geneID) == false) {
-		   gffGeneIsoInfo.addFirstExon(exonStart, exonEnd);
+		   gffGeneIsoInfo.addFirstExon(ss[6].equals("+") || ss[6].equals("."), exonStart, exonEnd);
 		   mapGeneName2IsHaveExon.put(geneID, true);
 	   } else {
-		   gffGeneIsoInfo.addExon(exonStart, exonEnd);
+		   gffGeneIsoInfo.addExon(ss[6].equals("+") || ss[6].equals("."), exonStart, exonEnd);
 	   }
 	   
 	   return true;
@@ -349,7 +348,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		   logger.error("没有找到相应的GeneID:" + geneID);
 	   }
 	   if (!mapGeneName2IsHaveExon.get(geneID)) {
-		   gffGeneIsoInfo.addExon(Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
+		   gffGeneIsoInfo.addExon(ss[6].equals("+") || ss[6].equals("."), Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
 	   }
    }
    
@@ -452,12 +451,12 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		   return;
 	   }
 	   if (taxID == 0 && numCopedIDsearch < 20) {
-		   ArrayList<GeneID> lsCopedIDs = null;
+//		   ArrayList<GeneID> lsCopedIDs = null;
 //		   try {  lsCopedIDs = GeneID.createLsCopedID(geneName, taxID, false); } catch (Exception e) {   }
 		   
-		   	if (lsCopedIDs != null && lsCopedIDs.size() == 1) {
-		   		taxID = lsCopedIDs.get(0).getTaxID();
-		   	}
+//		   	if (lsCopedIDs != null && lsCopedIDs.size() == 1) {
+//		   		taxID = lsCopedIDs.get(0).getTaxID();
+//		   	}
 		   	numCopedIDsearch ++;
 	   }
    }
@@ -549,11 +548,11 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		   
 		   if (gffDetailGene.getLsCodSplit().size() == 0) {
 			   gffDetailGene.addsplitlist(gffDetailGene.getNameSingle(), gffDetailGene.getNameSingle(), GeneType.ncRNA);
-			   gffDetailGene.addExon(gffDetailGene.getStartAbs(), gffDetailGene.getEndAbs());
+			   gffDetailGene.addExon(null, gffDetailGene.getStartAbs(), gffDetailGene.getEndAbs());
 		   }
 		   for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 			   if (gffGeneIsoInfo.size() == 0) {
-				   gffGeneIsoInfo.addExon(gffDetailGene.getStartCis(), gffDetailGene.getEndCis());
+				   gffGeneIsoInfo.addExon(null, gffDetailGene.getStartCis(), gffDetailGene.getEndCis());
 			   }
 		   }
 		   LOCList.add(gffDetailGene);

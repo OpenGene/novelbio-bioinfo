@@ -106,7 +106,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 			   if (gffDetailLOC != null) {
 				   for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailLOC.getLsCodSplit()) {
 					   if (gffGeneIsoInfo.isEmpty()) {
-						   gffGeneIsoInfo.addExonNorm(gffDetailLOC.getStartCis(), gffDetailLOC.getEndCis());
+						   gffGeneIsoInfo.addExonNorm(ss[6].equals("+") || ss[6].equals("."), gffDetailLOC.getStartCis(), gffDetailLOC.getEndCis());
 						   logger.error("该基因没有exon，设定其exon为基因长度：" + gffGeneIsoInfo.getName());
 					   }
 				   }
@@ -118,7 +118,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 			   
 			   String geneName = patGeneName.getPatFirst(content);//查找基因名字
 			   if(geneName != null) {
-				   gffDetailLOC = new GffDetailGene(LOCList, geneName, ss[6].equals("+"));//新建一个基因类
+				   gffDetailLOC = new GffDetailGene(LOCList, geneName, ss[6].equals("+") || ss[6].equals("."));//新建一个基因类
 				   gffDetailLOC.setTaxID(taxID);
 				   gffDetailLOC.setStartAbs(  Integer.parseInt(ss[3].toLowerCase()) ); gffDetailLOC.setEndAbs( Integer.parseInt(ss[4]));//基因起止      		
 				   LOCList.add(gffDetailLOC);//添加进入LOClist
@@ -162,11 +162,11 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 		   //遇到5UTR
 		   else if (ss[2].equals("five_prime_UTR") || ss[2].equals("5'-UTR") || ss[2].equals("three_prime_UTR") || ss[2].equals("3'-UTR")) {
 			   int start = Integer.parseInt(ss[3]), end = Integer.parseInt(ss[4]);
-			   gffDetailLOC.addExonNorm(start, end);
+			   gffDetailLOC.addExonNorm(ss[6].equals("+") || ss[6].equals("."), start, end);
 			   mRNAconclusion = true;
 		   } else if (ss[2].equals("CDS")) {
 			   int start = Integer.parseInt(ss[3]), end = Integer.parseInt(ss[4]);
-			   gffDetailLOC.addExonNorm(start, end);
+			   gffDetailLOC.addExonNorm(ss[6].equals("+") || ss[6].equals("."), start, end);
 			   gffDetailLOC.setATGUAG(start, end);
 			   mRNAconclusion = true;
 		   } else if (!ss[2].equals("protein") && !ss[2].equals("exon") && !ss[2].equals("intron")) {
@@ -176,7 +176,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 	   if (gffDetailLOC != null) {
 		   for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailLOC.getLsCodSplit()) {
 			   if (gffGeneIsoInfo.isEmpty()) {
-				   gffGeneIsoInfo.addExonNorm(gffDetailLOC.getStartCis(), gffDetailLOC.getEndCis());
+				   gffGeneIsoInfo.addExonNorm(null, gffDetailLOC.getStartCis(), gffDetailLOC.getEndCis());
 				   logger.error("该基因没有exon，设定其exon为基因长度：" + gffGeneIsoInfo.getName());
 			   }
 			   gffDetailLOC.combineExon();

@@ -45,10 +45,10 @@ public class GffHashGeneBacterium extends GffHashGeneAbs {
 			}
 			String geneName = getGeneName(ss[8]);
 			
-			boolean cis = ss[6].equals("+");
+			boolean cis = ss[6].equals("+") || ss[6].equals(".");
 			gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso(geneName, geneName, getGeneType(ss[2]), cis);
 			gffGeneIsoInfo.setATGUAG( Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
-			gffGeneIsoInfo.addExon( Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
+			gffGeneIsoInfo.addExon(cis, Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
 			mapID2Iso.put(geneName, gffGeneIsoInfo);
 			mapChrID2LsIso.put(tmpChrID, gffGeneIsoInfo);
 		}
@@ -56,6 +56,7 @@ public class GffHashGeneBacterium extends GffHashGeneAbs {
 		txtgff.close();
 		mapID2Iso = null;
 	}
+
 	
 	private String getGeneName(String ss8) {
 		String geneNameFlag = "gene_name";

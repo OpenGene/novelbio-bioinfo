@@ -144,7 +144,7 @@ public class FastQRecordFilter {
 		fastQRecord.setModifyQuality(isModifyQuality);
 		boolean filtered = true;
 		for (FQrecordFilter fQrecordFilter : lsFQrecordFilters) {
-			if (!fQrecordFilter.filter(fastQRecord)) {
+			if (!fQrecordFilter.copeReads(fastQRecord)) {
 				filtered = false;
 				break;
 			}
@@ -161,8 +161,8 @@ public class FastQRecordFilter {
 		fastQRecord2.setModifyQuality(isModifyQuality);
 		boolean filtered = true;
 		for (FQrecordFilter fQrecordFilter : lsFQrecordFilters) {
-			boolean filter1 = fQrecordFilter.filter(fastQRecord1);
-			boolean filter2 = fQrecordFilter.filter(fastQRecord2);
+			boolean filter1 = fQrecordFilter.copeReads(fastQRecord1);
+			boolean filter2 = fQrecordFilter.copeReads(fastQRecord2);
 			if (!filter1 || !filter2) {
 				filtered = false;
 				break;

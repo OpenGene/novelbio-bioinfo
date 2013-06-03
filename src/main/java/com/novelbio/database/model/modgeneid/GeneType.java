@@ -32,6 +32,7 @@ public enum GeneType {
 			
 			mapMRNA2GeneType.put("transcript".toLowerCase(),miscRNA);
 			mapMRNA2GeneType.put("miscRNA".toLowerCase(),miscRNA);
+			mapMRNA2GeneType.put("misc_RNA".toLowerCase(),miscRNA);
 			
 			mapMRNA2GeneType.put("mRNA_TE_gene".toLowerCase(),mRNA_TE);
 			mapMRNA2GeneType.put("transposon_fragment".toLowerCase(),mRNA_TE);

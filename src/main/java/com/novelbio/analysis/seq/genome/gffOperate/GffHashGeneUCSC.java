@@ -112,7 +112,7 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 				
 				int exonCount = Integer.parseInt(geneInfo[7]);
 				for (int i = 0; i < exonCount; i++) {
-					lastGffdetailUCSCgene.addExon(Integer.parseInt(exonStarts[i]) + 1, Integer.parseInt(exonEnds[i]));
+					lastGffdetailUCSCgene.addExon(geneInfo[2].equals("+"), Integer.parseInt(exonStarts[i]) + 1, Integer.parseInt(exonEnds[i]));
 				}
 				continue;
 			}
@@ -134,7 +134,7 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 			gffDetailUCSCgene.setATGUAG(Integer.parseInt(geneInfo[5]) + 1, Integer.parseInt(geneInfo[6]));
 			int exonCount = Integer.parseInt(geneInfo[7]);
 			for (int i = 0; i < exonCount; i++) {
-				gffDetailUCSCgene.addExon(Integer.parseInt(exonStarts[i]) + 1, Integer.parseInt(exonEnds[i]));
+				gffDetailUCSCgene.addExon(geneInfo[2].equals("+"), Integer.parseInt(exonStarts[i]) + 1, Integer.parseInt(exonEnds[i]));
 			}
 			lsChromGene.add(gffDetailUCSCgene);
 		}

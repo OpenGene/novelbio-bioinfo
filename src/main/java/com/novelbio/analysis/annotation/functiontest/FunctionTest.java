@@ -31,7 +31,6 @@ public abstract class FunctionTest implements Cloneable {
 	List<Integer> blastTaxID = null;
 	double blastEvalue = 1e-10;
 	
-	Set<GeneID> setGeneIDsTest = null;
 	Set<GeneID> setGeneIDsBG = null;
 	/** genUniID item,item格式  */
 	List<GeneID2LsItem> lsTest = null;
@@ -234,20 +233,20 @@ public abstract class FunctionTest implements Cloneable {
 	}
 	
 	public void setLsTestAccID(Collection<String> lsCopedID) {
-		setGeneIDsTest = new HashSet<GeneID>();		
+		Set<GeneID> setGeneIDsTest = new HashSet<GeneID>();		
 		for (String string : lsCopedID) {
 			GeneID copedID = new GeneID(string, taxID, false);
 			setGeneIDsTest.add(copedID);
 		}
-		initial();
+		initial(setGeneIDsTest);
 	}
 	
 	public void setLsTestGeneID(Collection<GeneID> lsCopedIDs) {
-		this.setGeneIDsTest = new HashSet<GeneID>(lsCopedIDs);
-		initial();
+		Set<GeneID> setGeneIDsTest = new HashSet<GeneID>(lsCopedIDs);
+		initial(setGeneIDsTest);
 	}
 	
-	private void initial() {
+	private void initial(Set<GeneID> setGeneIDsTest) {
 		fillCopedIDInfo(setGeneIDsTest);
 		lsTest = getLsTestFromLsBG(setGeneIDsTest);
 		lsTestResult = new ArrayList<StatisticTestResult>();
@@ -340,9 +339,9 @@ public abstract class FunctionTest implements Cloneable {
 	public ArrayList<StatisticTestGene2Item> getGene2ItemPvalue() {
 		ArrayList<StatisticTestGene2Item> lsTestResult = new ArrayList<StatisticTestGene2Item>();
 		Map<String, StatisticTestResult> mapItem2StatictResult = getMapItemID2StatisticsResult();
-		for (GeneID geneID : setGeneIDsTest) {
+		for (GeneID2LsItem geneID2LsItem : lsTest) {
 			StatisticTestGene2Item statisticTestGene2Item = creatStatisticTestGene2Item();
-			statisticTestGene2Item.setGeneID(geneID, isBlast());
+			statisticTestGene2Item.setGeneID(geneID2LsItem, isBlast());
 			statisticTestGene2Item.setStatisticTestResult(mapItem2StatictResult);
 			lsTestResult.add(statisticTestGene2Item);
 		}
@@ -448,9 +447,6 @@ public abstract class FunctionTest implements Cloneable {
 		try {
 			functionTest = (FunctionTest)super.clone();
 			functionTest.setGeneIDsBG = setGeneIDsBG;
-			if (setGeneIDsTest != null) {
-				functionTest.setGeneIDsTest = new HashSet<GeneID>(setGeneIDsTest);
-			}
 			functionTest.BGfile = BGfile;
 			functionTest.BGnum = BGnum;
 			functionTest.blastEvalue = blastEvalue;

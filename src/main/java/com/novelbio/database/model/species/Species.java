@@ -165,6 +165,10 @@ public class Species {
 		return taxInfo.getComName();
 	}
 	/** 常用名 */
+	public String getNameLatin() {
+		return taxInfo.getLatin();
+	}
+	/** KEGG上的缩写 */
 	public String getAbbrName() {
 		return taxInfo.getAbbr();
 	}
