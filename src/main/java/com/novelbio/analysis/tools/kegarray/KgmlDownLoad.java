@@ -1,5 +1,4 @@
 package com.novelbio.analysis.tools.kegarray;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,12 +12,13 @@ import com.novelbio.database.model.species.Species;
 
 public class KgmlDownLoad {
 	private static final Logger logger = Logger.getLogger(KgmlDownLoad.class);
-
-	public static String keggHomeURL = "www.genome.jp/";
-	public static String pathWayHome = "www.genome.jp/kegg/pathway.html";
+	
+	private static final String ncbiKeggIDurl = "http://www.genome.jp/dbget-bin/get_linkdb_list";
+	private static final String keggHomeURL = "www.genome.jp/";
+	private static final String pathWayHome = "www.genome.jp/kegg/pathway.html";
 	/**一个链接，上面有全部物种，用来创建文件夹*/
 	public static String speciseURL = "http://www.genome.jp/kegg-bin/get_htext?htext=br08601_map00600.keg&hier=5";
-	
+
 	//TODO 文件路径宗博设定
 	public static String KGML_PATH = "/home/zong0jie/desktop/kgml/KGML.init";
 	public String outPath = "";
@@ -83,7 +83,8 @@ public class KgmlDownLoad {
 						}
 					}
 				}
-			}
+			 }
+			 downloadGeneID2KeggID(keggName, outSpeciesPath);
 		}
 	}
 	
@@ -128,7 +129,9 @@ public class KgmlDownLoad {
 			try {
 				if(FileOperate.createFolders(FileOperate.getParentPathName(txtFileName))) {
 					TxtReadandWrite txtWrite = new TxtReadandWrite(txtFileName, true);
-					txtWrite.writefileln(lsKGMLurl);
+					for (String href : lsKGMLurl) {
+						txtWrite.writefileln(href);
+					}
 					txtWrite.close();
 				}
 			} catch (Exception e) {}
@@ -162,7 +165,12 @@ public class KgmlDownLoad {
 		httpFetch.query();
 		for (String lines : httpFetch.readResponse()) {
 			if (lines.contains("Organism menu")) {
-				String organismURL =  lines.split("\">")[0].split("\"/")[1];
+				String organismURL = null;
+				try {
+					organismURL = lines.split("\">")[0].split("\"/")[1];
+				} catch (Exception e) {
+					continue;
+				}
 				organismURL = keggHomeURL + organismURL;
 				System.out.println(organismURL);
 				lsOrganismURL.add(organismURL);
@@ -209,5 +217,34 @@ public class KgmlDownLoad {
 		}
 		return KGMLdownLoad;
 	}
-
+	
+	/**
+	 * 下载所有的有机体
+	 * @param savePath 保存的目录
+	 */
+	private void downloadGeneID2KeggID(String keggName, String savePath) {
+		List<String[]> lsParam = generateParam(keggName);
+		HttpFetch httpFetch = HttpFetch.getInstance();
+		httpFetch.setUri(ncbiKeggIDurl);
+		httpFetch.setPostParam(lsParam);
+		String filePath = FileOperate.addSep(savePath) + keggName + "_ncbi-geneid.list";
+		if (httpFetch.query()) {
+			if(httpFetch.download(filePath)){
+				logger.info("下载" + filePath + "成功!");
+			}else {
+				logger.error("下载" + filePath + "失败!");
+			}
+		}
+	}
+	
+	/** 用于post提交的信息 */
+	private List<String[]> generateParam(String keggName) {
+		List<String[]> lsKey2Value = new ArrayList<String[]>(); 
+		lsKey2Value.add(new String[] { "page", "download" });
+		lsKey2Value.add(new String[] { "u", "uniq" });
+		lsKey2Value.add(new String[] { "t", "ncbi-geneid" });
+		lsKey2Value.add(new String[] { "targetformat", "" });
+		lsKey2Value.add(new String[] { "m", keggName});
+		return lsKey2Value;
+	}
 }

@@ -17,6 +17,7 @@ import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.domain.geneanno.DBInfo;
 import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.domain.geneanno.NCBIID;
+import com.novelbio.database.domain.geneanno.TaxInfo;
 import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgo.GOInfoAbs;
@@ -487,7 +488,7 @@ public class GeneIDabs implements GeneIDInt {
 			for (GeneID copedID : lsBlastCopedIDs) {
 				lskeggInfo.add(copedID.getKeggInfo());
 			}
-			return KeggInfo.getLsKegPath(lskeggInfo);
+			return KeggInfo.getLsKegPath(lskeggInfo, getTaxID());
 		} else {
 			return keggInfo.getLsKegPath();
 		}

@@ -2,8 +2,8 @@ package com.novelbio.analysis.seq.fastq;
 
 import org.apache.log4j.Logger;
 
-public abstract class FQrecordFilter {
-	private static Logger logger = Logger.getLogger(FQrecordFilter.class);
+public abstract class FQrecordFilter implements FQrecordCopeInt {
+	private static final Logger logger = Logger.getLogger(FQrecordFilter.class);
 	
 	int readsMinLen = 20;
 	int fastqOffset;
@@ -28,16 +28,26 @@ public abstract class FQrecordFilter {
 	 * @return
 	 */
 	public boolean copeReads(FastQRecord fastQRecord) {
-		return trimSeq(fastQRecord, readsMinLen, trimLeft(fastQRecord), trimRight(fastQRecord));
+		int start = trimLeft(fastQRecord);
+		int end = trimRight(fastQRecord);
+		
+		if (start < 0 && end < 0) {
+			return true;
+		}
+		
+		return trimSeq(fastQRecord, readsMinLen, start, end);
 	}
 	
 	/**
-	 * 获得过滤左端的Num，可以用substring截取
+	 * 获得过滤左端的Num，可以用substring截取<br>
+	 * 如果trimLeft和trimRight的结果都小于0，则说明不用trim
 	 * @return
 	 */
 	protected abstract int trimLeft(FastQRecord fastQRecord);
+	
 	/**
-	 * 获得过滤左端的Num，可以用substring截取
+	 * 获得过滤左端的Num，可以用substring截取<br>
+	 * 如果trimLeft和trimRight的结果都小于0，则说明不用trim
 	 * @return
 	 */
 	protected abstract int trimRight(FastQRecord fastQRecord);
@@ -47,6 +57,7 @@ public abstract class FQrecordFilter {
 	 * @return
 	 */
 	public abstract boolean isUsing();
+	
 	/**
 	 * 给定左右的坐标，然后将seqfasta截短
 	 * 如果start为0，end为seqLength，则直接返回true，表示不过滤

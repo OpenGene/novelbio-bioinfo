@@ -22,12 +22,11 @@ public abstract class GeneID2LsItem {
 	private static final Logger logger = Logger.getLogger(GeneID2LsItem.class);
 	
 	String geneUniID;
-	/** 内部为GO:00001 或 PATH:00001
+	/** 内部为GO:00001 或 PATHID:00001
 	 * 均为大写
 	 * */
 	Set<String> setItemID = new HashSet<String>();
 	GeneID geneID;
-	boolean blast;
 	
 	public abstract void setGeneID(GeneID geneID, boolean blast);
 	

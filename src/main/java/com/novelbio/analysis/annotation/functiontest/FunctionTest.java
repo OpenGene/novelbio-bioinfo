@@ -339,11 +339,17 @@ public abstract class FunctionTest implements Cloneable {
 	public ArrayList<StatisticTestGene2Item> getGene2ItemPvalue() {
 		ArrayList<StatisticTestGene2Item> lsTestResult = new ArrayList<StatisticTestGene2Item>();
 		Map<String, StatisticTestResult> mapItem2StatictResult = getMapItemID2StatisticsResult();
+		Set<String> setAccID = new HashSet<String>();//用来去重复的
 		for (GeneID2LsItem geneID2LsItem : lsTest) {
-			StatisticTestGene2Item statisticTestGene2Item = creatStatisticTestGene2Item();
-			statisticTestGene2Item.setGeneID(geneID2LsItem, isBlast());
-			statisticTestGene2Item.setStatisticTestResult(mapItem2StatictResult);
-			lsTestResult.add(statisticTestGene2Item);
+			for (GeneID geneID : mapGeneUniID2LsGeneID.get(geneID2LsItem.getGeneUniID())) {
+				if (setAccID.contains(geneID.getAccID())) continue;
+				
+				setAccID.add(geneID.getAccID());
+				StatisticTestGene2Item statisticTestGene2Item = creatStatisticTestGene2Item();
+				statisticTestGene2Item.setGeneID(geneID2LsItem, geneID, isBlast());
+				statisticTestGene2Item.setStatisticTestResult(mapItem2StatictResult);
+				lsTestResult.add(statisticTestGene2Item);
+			}
 		}
 		return lsTestResult;
 	}

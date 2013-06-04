@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.novelbio.base.SepSign;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.domain.kegg.KGIDkeg2Ko;
 import com.novelbio.database.domain.kegg.KGentry;
@@ -130,7 +131,7 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 	 */
 	public ArrayList<KGpathway> getLsKegPath() {
 		 getKgGentries();
-		ArrayList<KGpathway> lsKGpathways = getLsKegPath(lskGentries);
+		ArrayList<KGpathway> lsKGpathways = getLsKegPath(lskGentries, taxID);
 		return lsKGpathways;
 	}
 	
@@ -150,37 +151,40 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 	}
 	
 	/**
-	 * 输入blast到的copedIDs，可以是多个
-	 * 返回最后的KGentry结果，包括没有blast的结果
-	 * @param lscopedIDs 如果没有blast，就不输入该项，设置为null即可
+	 * 输入blast到的copedIDs，可以是多个<br>
+	 * 如果Sub物种含有Query物种所不存在的pathway，则该pathway会以Sub物种的形式返回<br>
 	 * @return
 	 */
-	public static ArrayList<KGpathway> getLsKegPath(ArrayList<? extends KeggInfoInter> ls_keggInfo) {
+	public static ArrayList<KGpathway> getLsKegPath(ArrayList<? extends KeggInfoInter> ls_keggInfo, int taxID) {
 		List<KGentry> lsKGentries = new ArrayList<KGentry>();
 		if (ls_keggInfo != null && ls_keggInfo.size() > 0) {
 			for (KeggInfoInter keggInfo : ls_keggInfo) {
 				lsKGentries.addAll(keggInfo.getKgGentries());
 			}
 		}
-		ArrayList<KGpathway> lsKGpathways = getLsKegPath(lsKGentries);
+		ArrayList<KGpathway> lsKGpathways = getLsKegPath(lsKGentries, taxID);
 		return lsKGpathways;
 	}
 
 	/**
-	 * 仅按照带物种标签的pathName去冗余，所以会存在两个不同的物种相同的pathway
+	 * 如果Sub物种含有Query物种所不存在的pathway，则该pathway会以Sub物种的形式返回
 	 * @param lsKGentries
 	 * @return
 	 */
-	private static ArrayList<KGpathway> getLsKegPath(Collection<KGentry> lsKGentries) {
+	private static ArrayList<KGpathway> getLsKegPath(Collection<KGentry> lsKGentries, int taxID) {
 		if (lsKGentries == null) {
 			return null;
 		}
 		//用来去冗余，根据pathName进行去冗余
 		HashMap<String, KGpathway> hashPath = new HashMap<String, KGpathway>();
 		for (KGentry kGentry : lsKGentries) {
-			KGpathway kGpathwayQ = new KGpathway(); kGpathwayQ.setPathName(kGentry.getPathName());
 			KGpathway kGpathway = getHashKGpath().get(kGentry.getPathName());//DaoKPathway.queryKGpathway(kGpathwayQ);
-			hashPath.put(kGpathway.getPathName(), kGpathway);
+			KGpathway kGpathwayResult = getKGpath(kGpathway.getMapNum(), taxID);
+			if (kGpathwayResult == null) {
+				kGpathwayResult = kGpathway;
+			}
+			
+			hashPath.put(kGpathwayResult.getMapNum(), kGpathwayResult);
 		}
 		return ArrayOperate.getArrayListValue(hashPath);
 	}
@@ -215,8 +219,20 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 		for (KGpathway kGpathway2 : lsKGpathways) {
 			hashKGPath.put(kGpathway2.getPathName(), kGpathway2);
 			hashKGPath.put(kGpathway2.getMapNum(), kGpathway2);	
+			hashKGPath.put(kGpathway2.getMapNum() + SepSign.SEP_ID + kGpathway2.getTaxID(), kGpathway2);
 		}
 		return hashKGPath;
 	}
 	
+	/**
+	 * 将所有pathway信息提取出来放入hash表中，方便查找
+	 * 存储pathway2Term的信息
+	 * key:GoID
+	 * value:GoInfo
+	 * 0:QueryGoID,1:GoID,2:GoTerm 3:GoFunction
+	 * 如果已经查过了一次，自动返回
+	 */
+	public static KGpathway getKGpath(String MapNum, int taxID) {
+		return getHashKGpath().get(MapNum + SepSign.SEP_ID + taxID);
+	}
 }

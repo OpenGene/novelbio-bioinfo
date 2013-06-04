@@ -26,8 +26,8 @@ import com.novelbio.database.model.modkegg.KeggInfo;
  * 
  * 这只是一个代理类 专门对基因的ID做一些处理的类<br>
  * <b>如果基因的IDtype是accID，那么该基因很可能不存在，那么看下blast的相关信息，如果blast也没有，那么就不存在了</b><br>
- * 可以将输入的ID合并起来，并且将分散的ID存储在一个Hashmap中
- * 当genUniID存在时，类是否想等只比较genUniID、taxID，idType是否相等
+ * 可以将输入的ID合并起来，并且将分散的ID存储在一个Hashmap中<br>
+ * 当genUniID存在时，类是否相等只比较<b>genUniID、taxID，idType</b>是否相等<br>
  * 当genUniID不存在，accID存在时，比较accID、taxID，idType是否相等 当都不存在时，认为相同 HashCode的设定和这个类似
  * 
  * @author zong0jie
@@ -446,7 +446,7 @@ public class GeneID implements GeneIDInt{
 	/**
 	 * 重写hashcode
 	 */
-	public int hashCode(){
+	public int hashCode() {
 		return geneID.hashCode();
 	}
 

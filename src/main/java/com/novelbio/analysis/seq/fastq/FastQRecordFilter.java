@@ -21,20 +21,19 @@ public class FastQRecordFilter {
 	FQrecordFilterPloyAT fQrecordFilterPloyAT = new FQrecordFilterPloyAT();
 	FQrecordFilterQC fQrecordFilterQC = new FQrecordFilterQC();
 	FQrecordFilterLowcase fQrecordFilterLowcase = new FQrecordFilterLowcase();
+	FQrecordFilterModifyQuality fQrecordFilterModifyQuality = new FQrecordFilterModifyQuality();
 	
-	List<FQrecordFilter> lsFQrecordFilters;
+	List<FQrecordCopeInt> lsFQrecordFilters;
 	FastQC fastQCLeft;
 	FastQC fastQCRight;
-	
-	boolean isModifyQuality = false;
-	
+		
 	/**
 	 * 设定全局过滤指标
 	 * @param QUALITY
 	 */
 	public void setQualityFilter(int QUALITY) {
 		if (QUALITY == FastQ.QUALITY_CHANGE_TO_BEST) {
-			isModifyQuality = true;
+			fQrecordFilterModifyQuality.setModifyQuality(true);
 			return;
 		}
 		mapFastQFilter = FastQ.getMapFastQFilter(QUALITY);
@@ -109,7 +108,7 @@ public class FastQRecordFilter {
 	}
 	
 	/**
-	 * 初始化过滤器
+	 * 初始化过滤器，在过滤之前再开始初始化
 	 * 本方法内部确定过滤器的顺序 
 	 */
 	protected void fillLsfFQrecordFilters() {
@@ -125,7 +124,7 @@ public class FastQRecordFilter {
 		
 		fQrecordFilterQC.setMapFastQFilter(mapFastQFilter);
 		
-		lsFQrecordFilters = new ArrayList<FQrecordFilter>();
+		lsFQrecordFilters = new ArrayList<FQrecordCopeInt>();
 		for (FQrecordFilter fQrecordFilter : lsFQrecordFilterTmp) {
 			if (fQrecordFilter.isUsing()) {
 				fQrecordFilter.setFastqOffset(phredOffset);
@@ -135,39 +134,10 @@ public class FastQRecordFilter {
 		}
 		return;
 	}
+	
+	public List<FQrecordCopeInt> getLsFQfilter() {
+		fillLsfFQrecordFilters();
+		return lsFQrecordFilters;
+	}
 
-	/** 没有通过过滤就返回false */
-	public boolean filterFastQRecordSE(FastQRecord fastQRecord) {
-		if (fastQRecord == null) {
-			return false;
-		}
-		fastQRecord.setModifyQuality(isModifyQuality);
-		boolean filtered = true;
-		for (FQrecordFilter fQrecordFilter : lsFQrecordFilters) {
-			if (!fQrecordFilter.copeReads(fastQRecord)) {
-				filtered = false;
-				break;
-			}
-		}
-		
-		return filtered;
-	}
-	/** 没有通过过滤就返回false */
-	public boolean filterFastQRecordPE(FastQRecord fastQRecord1, FastQRecord fastQRecord2) {
-		if (fastQRecord1 == null || fastQRecord2 == null) {
-			return false;
-		}
-		fastQRecord1.setModifyQuality(isModifyQuality);
-		fastQRecord2.setModifyQuality(isModifyQuality);
-		boolean filtered = true;
-		for (FQrecordFilter fQrecordFilter : lsFQrecordFilters) {
-			boolean filter1 = fQrecordFilter.copeReads(fastQRecord1);
-			boolean filter2 = fQrecordFilter.copeReads(fastQRecord2);
-			if (!filter1 || !filter2) {
-				filtered = false;
-				break;
-			}
-		}
-		return filtered;
-	}
 }

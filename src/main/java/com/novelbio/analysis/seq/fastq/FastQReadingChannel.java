@@ -1,5 +1,6 @@
 package com.novelbio.analysis.seq.fastq;
 
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -34,13 +35,20 @@ class FastQReadingChannel extends RunProcess<FastQrecordCopeUnit> {
 	ThreadPoolExecutor executorPool;
 	ArrayBlockingQueue<Future<FastQrecordCopeUnit>> queueResult;
 	
+	/** 过滤器 */
+	List<FQrecordCopeInt> lsFQrecordCopeLeft;
+	List<FQrecordCopeInt> lsFQrecordCopeRight;
+	
 	public void setFastQReadAndWrite(FastQReader fastQReader, FastQwriter fastqWrite) {
 		this.fastQReader = fastQReader;
 		this.fastQwrite = fastqWrite;
 	}
-	
+		
 	public void setFilter(FastQRecordFilter fastQRecordFilter) {
 		this.fastQRecordFilter = fastQRecordFilter;
+		fastQRecordFilter.fillLsfFQrecordFilters();
+		lsFQrecordCopeLeft.addAll(fastQRecordFilter.getLsFQfilter());
+		lsFQrecordCopeRight.addAll(fastQRecordFilter.getLsFQfilter());
 	}
 	
 	public void setThreadNum(int threadFilterNum) {
@@ -85,7 +93,7 @@ class FastQReadingChannel extends RunProcess<FastQrecordCopeUnit> {
 				break;
 			}
 			FastQrecordCopeUnit fastQrecordFilterRun = new FastQrecordCopeUnit();
-			fastQrecordFilterRun.setFastQRecordFilter(fastQRecordFilter);
+			fastQrecordFilterRun.setFastQRecordFilter(lsFQrecordCopeLeft, lsFQrecordCopeRight);
 			fastQrecordFilterRun.setFastQRecordSE(fastQRecord);
 			Future<FastQrecordCopeUnit> future = executorPool.submit(fastQrecordFilterRun);
 			queueResult.add(future);
@@ -109,7 +117,7 @@ class FastQReadingChannel extends RunProcess<FastQrecordCopeUnit> {
 				break;
 			}
 			FastQrecordCopeUnit fastQrecordFilterRun = new FastQrecordCopeUnit();
-			fastQrecordFilterRun.setFastQRecordFilter(fastQRecordFilter);
+			fastQrecordFilterRun.setFastQRecordFilter(lsFQrecordCopeLeft, lsFQrecordCopeRight);
 			fastQrecordFilterRun.setFastQRecordPE(fastQRecord[0], fastQRecord[1]);
 			Future<FastQrecordCopeUnit> future = executorPool.submit(fastQrecordFilterRun);
 			queueResult.add(future);

@@ -1,5 +1,7 @@
 package com.novelbio.analysis.seq.fastq;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import com.novelbio.FastQC;
@@ -15,9 +17,11 @@ public class FastQrecordCopeUnit implements Callable<FastQrecordCopeUnit> {
 		HttpFetch.getInstance();
 		System.out.println("aaa");
 	}
-	FastQRecordFilter fastQRecordFilter;
 	FastQC fastQC;
 	
+	/** 左右是一样的，所以最后就是左边拷贝给右边 */
+	List<FQrecordCopeInt> lsFQrecordCopeLeft;
+	List<FQrecordCopeInt> lsFQrecordCopeRight;
 	
 	FastQRecord fastQRecord1;
 	FastQRecord fastQRecord2;
@@ -27,14 +31,15 @@ public class FastQrecordCopeUnit implements Callable<FastQrecordCopeUnit> {
 	
 	boolean filterSucess = false;
 	
-	/**
-	 * 将设定好参数的fastQRecordFilter放进来
-	 * @param fastQRecordFilter
+	
+	/** 设定过滤器，左右的过滤器顺序必须一致<br>
+	 * 过滤器中先加Fastqc还是先加过滤，需要考虑一下
 	 */
-	public void setFastQRecordFilter(FastQRecordFilter fastQRecordFilter) {
-		this.fastQRecordFilter = fastQRecordFilter;
-		fastQRecordFilter.fillLsfFQrecordFilters();
+	public void setFastQRecordFilter(List<FQrecordCopeInt> lsFQrecordCopeLeft, List<FQrecordCopeInt> lsFQrecordCopeRight) {
+		this.lsFQrecordCopeLeft = lsFQrecordCopeLeft;
+		this.lsFQrecordCopeRight = lsFQrecordCopeRight;
 	}
+
 	/** 这里最好导入没有经过初始化的fastqRecord */
 	public void setFastQRecordSE(FastQRecord fastQRecord1) {
 		this.fastQRecord1 = fastQRecord1;
@@ -50,10 +55,10 @@ public class FastQrecordCopeUnit implements Callable<FastQrecordCopeUnit> {
 		try {
 			fastQRecord1.initialReadRecord();
 			if (fastQRecord2 == null) {
-				filterSucess = fastQRecordFilter.filterFastQRecordSE(fastQRecord1);
+				filterSucess = copeFastQRecordSE(fastQRecord1);
 			} else {
 				fastQRecord2.initialReadRecord();
-				filterSucess = fastQRecordFilter.filterFastQRecordPE(fastQRecord1, fastQRecord2);
+				filterSucess = copeFastQRecordPE(fastQRecord1, fastQRecord2);
 			}
 			if (filterSucess) {
 				fastqResult1 = fastQRecord1.toString();
@@ -70,13 +75,13 @@ public class FastQrecordCopeUnit implements Callable<FastQrecordCopeUnit> {
 	}
 	
 	/** 没有通过过滤就返回false */
-	public boolean filterFastQRecordSE(FastQRecord fastQRecord) {
+	public boolean copeFastQRecordSE(FastQRecord fastQRecord) {
 		if (fastQRecord == null) {
 			return false;
 		}
-		fastQRecord.setModifyQuality(isModifyQuality);
+		
 		boolean filtered = true;
-		for (FQrecordFilter fQrecordFilter : lsFQrecordFilters) {
+		for (FQrecordCopeInt fQrecordFilter : lsFQrecordCopeLeft) {
 			if (!fQrecordFilter.copeReads(fastQRecord)) {
 				filtered = false;
 				break;
@@ -85,17 +90,17 @@ public class FastQrecordCopeUnit implements Callable<FastQrecordCopeUnit> {
 		
 		return filtered;
 	}
+	
 	/** 没有通过过滤就返回false */
-	public boolean filterFastQRecordPE(FastQRecord fastQRecord1, FastQRecord fastQRecord2) {
+	public boolean copeFastQRecordPE(FastQRecord fastQRecord1, FastQRecord fastQRecord2) {
 		if (fastQRecord1 == null || fastQRecord2 == null) {
 			return false;
 		}
-		fastQRecord1.setModifyQuality(isModifyQuality);
-		fastQRecord2.setModifyQuality(isModifyQuality);
 		boolean filtered = true;
-		for (FQrecordFilter fQrecordFilter : lsFQrecordFilters) {
+		Iterator<FQrecordCopeInt> itFqCoper = lsFQrecordCopeRight.iterator();
+		for (FQrecordCopeInt fQrecordFilter : lsFQrecordCopeLeft) {
 			boolean filter1 = fQrecordFilter.copeReads(fastQRecord1);
-			boolean filter2 = fQrecordFilter.copeReads(fastQRecord2);
+			boolean filter2 = itFqCoper.next().copeReads(fastQRecord2);
 			if (!filter1 || !filter2) {
 				filtered = false;
 				break;

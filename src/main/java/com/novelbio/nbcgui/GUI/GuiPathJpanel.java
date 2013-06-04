@@ -5,13 +5,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -31,7 +28,6 @@ import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.base.gui.JTextFieldData;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.database.service.SpringFactory;
-import com.novelbio.nbcgui.controltest.CtrlPath;
 import com.novelbio.nbcgui.controltest.CtrlTestInt;
 
 
@@ -71,14 +67,13 @@ public class GuiPathJpanel extends JPanel{
 	private JCheckBox jChkCluster;
 	private JLabel jLabAccColPath;
 	private JTextFieldData jTxtAccColPath;
-	private ButtonGroup btnGroupPathMethod;
-	private ButtonGroup btnGroupPathClass;
 	private JComboBoxData<Species> jCombSelSpePath;
 	private JLabel jLabPathQtaxID;
 	private JScrollPaneData jScrollPaneInputPath;
 	
 	CtrlTestInt ctrlPath;
 	JScrollPaneData scrollPaneBlast;
+	GUIFileOpen guiFileOpen = new GUIFileOpen();;
 	
 	public GuiPathJpanel() {
 		setPreferredSize(new java.awt.Dimension(1046, 617));
@@ -137,8 +132,6 @@ public class GuiPathJpanel extends JPanel{
 		add(btnDel);
 	}
 	private void setComponent() {
-		btnGroupPathMethod = new ButtonGroup();
-		btnGroupPathClass = new ButtonGroup();
 		{
 			jLabPathQtaxID = new JLabel();
 			jLabPathQtaxID.setBounds(12, 88, 129, 18);
@@ -167,7 +160,6 @@ public class GuiPathJpanel extends JPanel{
 			jBtnFileOpenPath.setMargin(new java.awt.Insets(1, 1, 1, 1));
 			jBtnFileOpenPath.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
-					GUIFileOpen guiFileOpen = new GUIFileOpen();
 					String filename = guiFileOpen.openFileName("txt/excel2003", "txt","xls");
 					jTxtFilePathPath.setText(filename);
 					try {
@@ -229,7 +221,6 @@ public class GuiPathJpanel extends JPanel{
 			jBtnBGFilePath.setMargin(new java.awt.Insets(1, 0, 1, 0));
 			jBtnBGFilePath.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
-					GUIFileOpen guiFileOpen = new GUIFileOpen();
 					String filename = guiFileOpen.openFileName("txt/excel2003", "txt","xls");
 					jTxtBGPath.setText(filename);
 				}
@@ -287,7 +278,6 @@ public class GuiPathJpanel extends JPanel{
 			jBtbSavePath.setMargin(new java.awt.Insets(1, 0, 1, 0));
 			jBtbSavePath.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
-					GUIFileOpen guiFileOpen = new GUIFileOpen();
 					String savefilename = guiFileOpen.saveFileName("excel2003", "xls");
 					if (!FileOperate.getFileNameSep(savefilename)[1].equals("xls")) {
 						savefilename = savefilename+".xls";
