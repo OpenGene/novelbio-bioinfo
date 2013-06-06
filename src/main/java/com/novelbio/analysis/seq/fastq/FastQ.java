@@ -4,13 +4,51 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class FastQ {
+	public static void main(String[] args) {
+		FastQReadingChannel fastQReadingChannel = new FastQReadingChannel();
+		ArrayList<FastQ[]> lsFastQs = new ArrayList<FastQ[]>();
+		FastQ fastq1 = new FastQ("/media/winD/NBC/Project/Test/aaa.fq");
+		FastQ[] fasatqQs = new FastQ[]{fastq1, new FastQ("/media/winD/NBC/Project/Test/aaa2.fq")};
+		lsFastQs.add(fasatqQs);
+//		fasatqQs = new FastQ[]{new FastQ("/media/winD/NBC/Project/Test/shnc_GGCTAC_L004_R1_002.fastq.gz"), new FastQ("/media/winD/NBC/Project/Test/shnc_GGCTAC_L004_R2_002.fastq.gz")};
+//		lsFastQs.add(fasatqQs);
+//		fasatqQs = new FastQ[]{new FastQ("/media/winD/NBC/Project/Test/shnc_GGCTAC_L004_R1_003.fastq.gz"), new FastQ("/media/winD/NBC/Project/Test/shnc_GGCTAC_L004_R2_003.fastq.gz")};
+//		lsFastQs.add(fasatqQs);
+		
+		FastQRecordFilter fastQRecordFilter = new FastQRecordFilter();
+		fastQRecordFilter.setFilterParamTrimNNN(true);
+		fastQReadingChannel.setFastQRead(lsFastQs);
+		FastQC fastQCLeftBefore = new FastQC("/media/winD/NBC/Project/Test/shnc_com1Before.fq", true);
+		FastQC fastQCRightBefore = new FastQC("/media/winD/NBC/Project/Test/shnc_com2Before.fq", true);
+		FastQC fastQCLeftAfter = new FastQC("/media/winD/NBC/Project/Test/shnc_com1After.fq", true);
+		FastQC fastQCRightAfter = new FastQC("/media/winD/NBC/Project/Test/shnc_com2After.fq", true);
+		
+		fastQReadingChannel.setFastQC(fastQCLeftBefore, fastQCRightBefore);
+		fastQReadingChannel.setFilter(fastQRecordFilter, fastq1.getOffset());
+		fastQReadingChannel.setFastQC(fastQCLeftAfter, fastQCRightAfter);
+		
+		FastQ fastqWrite1 = new FastQ("/media/winD/NBC/Project/Test/shnc_com1.fq", true);
+		FastQ fastqWrite2 = new FastQ("/media/winD/NBC/Project/Test/shnc_com2.fq", true);
+		fastQReadingChannel.setFastQWrite(fastqWrite1, fastqWrite2);
+		fastQReadingChannel.setThreadNum(4);
+		DateUtil dateUtil = new DateUtil();
+		dateUtil.setStartTime();
+		fastQReadingChannel.run();
+		System.out.println(dateUtil.getEclipseTime());
+		fastQCLeftAfter.saveToPath("/media/winD/NBC/Project/Test/QC/LeftAfter");
+		fastQCLeftBefore.saveToPath("/media/winD/NBC/Project/Test/QC/LeftBefore");
+		fastQCRightAfter.saveToPath("/media/winD/NBC/Project/Test/QC/RightAfter");
+		fastQCRightBefore.saveToPath("/media/winD/NBC/Project/Test/QC/RightBefore");
+	}
 	private static final Logger logger = Logger.getLogger(FastQ.class);
 	
 	public static final int FASTQ_SANGER_OFFSET = 33;
@@ -29,17 +67,17 @@ public class FastQ {
 	/** 将quality值变成最高 */
 	public static final int QUALITY_CHANGE_TO_BEST = 90;
 	
+	//=======================================================================
 	private int threadNum_FilterFastqRecord = 10;
 	
 	FastQReader fastQRead;
 	FastQwriter fastQwrite;
 	FastQReadingChannel fastqReadingChannel = new FastQReadingChannel();
-	
+		
 	/** 过滤后的文件名 */
 	String filterOutName = "";
 	
 	boolean read = true;
-	
 	
 	/** 默认是读取 */
 	public FastQ(String fastqFile) {
@@ -61,7 +99,7 @@ public class FastQ {
 	}
 	
 	public void setFilter(FastQRecordFilter fastQfilterRecord) {
-		fastqReadingChannel.setFilter(fastQfilterRecord);
+		fastqReadingChannel.setFilter(fastQfilterRecord, getOffset());
 	}
 	
 	/** 读取的具体长度，出错返回 -1 */
@@ -101,36 +139,42 @@ public class FastQ {
 	public String getReadFileName() {
 		return fastQRead.getFileName();
 	}
+	/**
+	 * 获得前1000条reads的平均长度，返回负数说明出错
+	 * @return
+	 */
 	public int getReadsLenAvg() {
 		return fastQRead.getReadsLenAvg();
 	}
-	/** 过滤完之后才能获得的值 */
-	public long getSeqNum() {
-		return fastQRead.readsNum;
-	}
+
 	/**
 	 * @return null 出错
 	 */
 	public FastQ filterReads() {
-		setFilterReadsOutName(null);
-		filterReadsRun();
-
-		FastQ fastQfileOut1 = new FastQ(fastQwrite.getFileName());
-		fastQfileOut1.fastQRead.readsNum = fastqReadingChannel.allFilteredReadsNum;
-		return fastQfileOut1;
+		FastQ[] fastQs = new FastQ[1];
+		fastQs[0] = this;
+		List<FastQ[]> lsFastQs = new ArrayList<FastQ[]>();
+		lsFastQs.add(fastQs);
+		
+		FastQ[] fastqFilter = filterReadsRun(lsFastQs);
+		return fastqFilter[0];
 	}
-	/** 双端reads过滤 */
+	
+	/** 双端reads过滤/
+	 * @param fastQfile2 不能为null，为null会报错
+	 * @return
+	 */
 	public FastQ[] filterReads(FastQ fastQfile2) {
-		setFilterReadsOutName(fastQfile2);
-		fastQRead.setFastQReadMate(fastQfile2.fastQRead);		
+		if (fastQfile2 == null) {
+			throw new RuntimeException();
+		}
+		FastQ[] fastQs = new FastQ[2];
+		fastQs[0] = this; fastQs[1] = fastQfile2;
+		List<FastQ[]> lsFastQs = new ArrayList<FastQ[]>();
+		lsFastQs.add(fastQs);
 		
-		filterReadsRun();
-		
-		FastQ fastQfileOut1 = new FastQ(fastQwrite.getFileName());
-		fastQfileOut1.fastQRead.readsNum = fastqReadingChannel.allFilteredReadsNum;
-		FastQ fastQfileOut2 = new FastQ(fastQfile2.fastQwrite.getFileName());
-		fastQfileOut2.fastQRead.readsNum = fastqReadingChannel.allFilteredReadsNum;
-		return new FastQ[]{fastQfileOut1, fastQfileOut2};
+		FastQ[] fastQsFilter = filterReadsRun(lsFastQs);
+		return fastQsFilter;
 	}
 	
 	/** 设定过滤后的文件名
@@ -140,34 +184,47 @@ public class FastQ {
 		this.filterOutName = outFileName;
 	}
 
+	/** 过滤并返回过滤后的结果 */
+	private FastQ[] filterReadsRun(List<FastQ[]> lsFastQs) {
+		FastQ fastQfile2 = null;
+		if (lsFastQs.get(0).length == 2) {
+			fastQfile2 = lsFastQs.get(0)[1];
+		}
+				
+		String[] writeFileName = getFilterReadsOutName(fastQfile2);
+		FastQ fastqWrite1 = new FastQ(writeFileName[0], true);
+		FastQ fastqWrite2 = null;
+		if (writeFileName[1] != null) {
+			fastqWrite2 = new FastQ(writeFileName[1], true);
+		}
+	
+		fastqReadingChannel.setFastQWrite(fastqWrite1, fastqWrite2);		
+		fastqReadingChannel.setFastQRead(lsFastQs);
+		fastqReadingChannel.setThreadNum(threadNum_FilterFastqRecord);
+		fastqReadingChannel.run();
+		return fastqReadingChannel.getFqWrite();
+	}
+	
 	/** 设定过滤后的输出文件名
-	 * 同时初始化fastQwrite
+	 * @param fastQMate 双端的另一端，根据该对象是否为null，返回过滤后的文件名
 	 */
-	private void setFilterReadsOutName(FastQ fastQMate) {
-		if (filterOutName.equals("") ) {
+	private String[] getFilterReadsOutName(FastQ fastQMate) {
+		String[] filteredFileName = new String[2];
+		if (filterOutName == null || filterOutName.equals("") ) {
 			String fileFastqRead = fastQRead.getFileName();
 			if (fileFastqRead.endsWith(".gz")) {
 				fileFastqRead = fileFastqRead.substring(0, fileFastqRead.length() - 3);//remove the ".gz"
 			}
 			filterOutName = FileOperate.changeFileSuffix(fileFastqRead, "_filtered", "fastq");
 		}
-		
-		if (fastQMate == null) {
-			fastQwrite = new FastQwriter(filterOutName);
-		}
-		else {
+		filteredFileName[0] = filterOutName;
+		if (fastQMate != null) {
 			String outFile1 = FileOperate.changeFileSuffix(filterOutName, "_1", null);
 			String outFile2 = FileOperate.changeFileSuffix(filterOutName, "_2", null);
-			fastQwrite = new FastQwriter(outFile1);
-			fastQMate.fastQwrite = new FastQwriter(outFile2);
-			fastQwrite.fastQwriteMate = fastQMate.fastQwrite;
+			filteredFileName[0] = outFile1;
+			filteredFileName[1] = outFile2;
 		}
-	}
-	
-	private void filterReadsRun() {
-		fastqReadingChannel.setFastQReadAndWrite(fastQRead, fastQwrite);
-		fastqReadingChannel.setThreadNum(threadNum_FilterFastqRecord);
-		fastqReadingChannel.run();
+		return filteredFileName;
 	}
 	
 	/** 在进行filter的时候也可以导入gui进行操作吧 */
@@ -199,10 +256,9 @@ public class FastQ {
 				e.printStackTrace();
 				// TODO: handle exception
 			}
-
 		}
-	
 	}
+	
 	/**
 	 * 将fastq文件转化为fasta文件<br>
 	 * 产生的文件为单端： fastaFile<br>

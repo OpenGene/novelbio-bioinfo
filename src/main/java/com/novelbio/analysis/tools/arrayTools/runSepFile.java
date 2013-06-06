@@ -1,9 +1,5 @@
 package com.novelbio.analysis.tools.arrayTools;
 
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-
-import com.novelbio.base.fileOperate.FileOperate;
 
 
 public class runSepFile {
@@ -27,8 +23,8 @@ public class runSepFile {
 //		String excelFile=lsFileName.get(0)[0]+"."+lsFileName.get(0)[1];
 //		System.out.println(lsFileName.get(0)[0]+"."+lsFileName.get(0)[1]);
 		
-		String thisFilePath = "/home/zong0jie/桌面/";
-		String excelFile = "信号值.xls";
+		String thisFilePath = "/home/zong0jie/desktop/";
+		String excelFile = "aa.xls";
 		try {
 			ArrayTools.seperateFile(thisFilePath,excelFile,"ArrayToolsInput");
 		} catch (Exception e) {

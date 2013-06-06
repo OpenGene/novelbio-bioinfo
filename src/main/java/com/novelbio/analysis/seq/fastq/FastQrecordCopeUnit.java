@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import com.novelbio.FastQC;
 import com.novelbio.base.dataOperate.HttpFetch;
 
 /**
@@ -45,8 +44,7 @@ public class FastQrecordCopeUnit implements Callable<FastQrecordCopeUnit> {
 		this.fastQRecord1 = fastQRecord1;
 	}
 	/** 这里最好导入没有经过初始化的fastqRecord */
-	public void setFastQRecordPE(FastQRecord fastQRecord1, FastQRecord fastQRecord2) {
-		this.fastQRecord1 = fastQRecord1;
+	public void setFastQRecordPE(FastQRecord fastQRecord2) {
 		this.fastQRecord2 = fastQRecord2;
 	}
 	/** 内部会对fastqRecord进行初始化 */
@@ -93,6 +91,7 @@ public class FastQrecordCopeUnit implements Callable<FastQrecordCopeUnit> {
 	
 	/** 没有通过过滤就返回false */
 	public boolean copeFastQRecordPE(FastQRecord fastQRecord1, FastQRecord fastQRecord2) {
+		//TODO 考虑判定左右端序列的名字是否一致
 		if (fastQRecord1 == null || fastQRecord2 == null) {
 			return false;
 		}

@@ -228,8 +228,8 @@ public class CtrlFastQMapping {
 			ArrayList<FastQ[]> lsFiltered = new ArrayList<FastQ[]>();
 			for (FastQ[] fastq : lsFastQLR) {
 				FastQ[] fastQFiltered = filteredFastQFile(fastq[0], fastq[1]);
-				allReads = allReads + fastq[0].getSeqNum();
-				filteredReads = filteredReads + fastQFiltered[0].getSeqNum();
+//				allReads = allReads + fastq[0].getSeqNum();
+//				filteredReads = filteredReads + fastQFiltered[0].getSeqNum();
 				lsFiltered.add(fastQFiltered);
 			}
 			mapCondition2LsFastQLR.put(prefix, lsFiltered);

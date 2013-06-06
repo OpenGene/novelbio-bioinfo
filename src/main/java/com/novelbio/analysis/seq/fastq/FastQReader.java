@@ -29,9 +29,7 @@ class FastQReader implements Closeable {
 	public static int FASTQ_ILLUMINA_OFFSET = 64;
 	
 	private int offset = 0;
-	
-	long readsNum = 0;
-	
+		
 	protected TxtReadandWrite txtSeqFile;
 	
 	/** 另一端的读取文件，双端读取的时候才有用，两端是对应的读 */
@@ -41,7 +39,6 @@ class FastQReader implements Closeable {
 
 	/** 标准文件名的话，自动判断是否为gz压缩 */
 	public FastQReader(String seqFile) {
-		readsNum = 0;
 		txtSeqFile = new TxtReadandWrite(seqFile, false);
 		getOffset();
 	}
@@ -174,7 +171,6 @@ class FastQReader implements Closeable {
 								linestr = linestr + TxtReadandWrite.ENTER_LINUX + lineTmp;
 							}
 							fastQRecord = new FastQRecord(linestr, offset, initial);
-							readsNum++;
 						} catch (IOException ioEx) {
 							fastQRecord = null;
 						}
@@ -272,7 +268,7 @@ class FastQReader implements Closeable {
 	}
 	
 	/**
-	 * 获得第一条reads的长度，返回负数说明出错
+	 * 获得前1000条reads的平均长度，返回负数说明出错
 	 * @return
 	 */
 	public int getReadsLenAvg() {

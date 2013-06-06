@@ -4,15 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.novelbio.FastQC;
-
 /** 实际上是过滤的类，不过可以用其来设定过滤的参数
  * 过滤前要先设定{@link #setLsfFQrecordFilters()}}
  *  */
 public class FastQRecordFilter {
 	int phredOffset;
 	int readsLenMin = 18;
-
+	boolean isFiltered = true;
 	/** fastQ里面asc||码的指标与个数 */
 	HashMap<Integer, Integer> mapFastQFilter;
 	
@@ -39,6 +37,10 @@ public class FastQRecordFilter {
 		mapFastQFilter = FastQ.getMapFastQFilter(QUALITY);
 	}
 	///////////////////////////////////////////  参数设置  ///////////////////////////////////////////////////////////////////////
+	/** 设定是否过滤，false表示不过滤直接跳过 */
+	public void setIsFiltered(boolean isFiltered) {
+		this.isFiltered = isFiltered;
+	}
 	/** 序列最短多少 */
 	public void setFilterParamReadsLenMin(int readsLenMin) {
 		this.readsLenMin = readsLenMin;
@@ -136,6 +138,9 @@ public class FastQRecordFilter {
 	}
 	
 	public List<FQrecordCopeInt> getLsFQfilter() {
+		if (!isFiltered) {
+			return new ArrayList<FQrecordCopeInt>();
+		}
 		fillLsfFQrecordFilters();
 		return lsFQrecordFilters;
 	}

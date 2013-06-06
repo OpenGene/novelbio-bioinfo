@@ -308,9 +308,9 @@
 			<version>6.8</version>
 		</dependency>
 		<dependency>
-  			<groupId>com.novelbio</groupId>
- 			<artifactId>FastQC</artifactId>
-  			<version>0.0.1-SNAPSHOT</version>
+			<groupId>com.novelbio</groupId>
+			<artifactId>jbzip2</artifactId>
+			<version>0.9</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jfree</groupId>

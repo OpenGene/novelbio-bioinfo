@@ -95,6 +95,18 @@ class FastQwriter extends RunProcess<Integer> {
 	}
 	
 	/**
+	 * 如果有mate，也一起flash
+	 */
+	public void flash() {
+		if (txtSeqFile != null) {
+			txtSeqFile.flash();
+		}
+		if (fastQwriteMate != null) {
+			fastQwriteMate.flash();
+		}
+	}
+	
+	/**
 	 * 写完后务必用此方法关闭
 	 * 关闭输入流，并将fastQ写入转化为fastQ读取
 	 */
@@ -113,7 +125,7 @@ class FastQwriter extends RunProcess<Integer> {
 	public void setQueue(Queue<Future<FastQrecordCopeUnit>> queue) {
 		this.queue = queue;
 	}
-	/** 等读取结束后设定 */
+	/** 等读取结束后设定为true */
 	public void setFinishedRead(boolean finishedRead) {
 		this.finishedRead = finishedRead;
 	}

@@ -23,7 +23,7 @@ public class FastQRecord implements Cloneable {
 	
 	/** 读入的文本，仅仅用于初始化 */
 	String fastqStringReadIn;
-
+	
 	SeqFasta seqFasta = new SeqFasta();
 	protected int fastqOffset = FastQ.FASTQ_SANGER_OFFSET;
 	protected String seqQuality = "";
@@ -188,9 +188,8 @@ public class FastQRecord implements Cloneable {
 	 * @param fileName 输入文件名，最后统计时候用到
 	 * @return
 	 */
-	public Sequence toFastQCsequence(String fileName) {
-		SequenceFile sequenceFile = new FastqFileForFastqc(fileName);
-		Sequence sequence = new Sequence(sequenceFile, seqFasta.toString(), seqQuality, "@" + seqFasta.getSeqName());
+	public Sequence toFastQCsequence() {
+		Sequence sequence = new Sequence(null, seqFasta.toString(), seqQuality, "@" + seqFasta.getSeqName());
 		sequence.setIsFiltered(true);
 		return sequence;
 	}

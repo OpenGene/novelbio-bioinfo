@@ -40,14 +40,16 @@ public abstract class FQrecordFilter implements FQrecordCopeInt {
 	
 	/**
 	 * 获得过滤左端的Num，可以用substring截取<br>
-	 * 如果trimLeft和trimRight的结果都小于0，则说明不用trim
+	 * 如果trimLeft和trimRight的结果都小于0，则说明不用trim<br>
+	 * 如果trimLeft和trimRight的结果都等于0，则说明没有通过过滤
 	 * @return
 	 */
 	protected abstract int trimLeft(FastQRecord fastQRecord);
 	
 	/**
 	 * 获得过滤左端的Num，可以用substring截取<br>
-	 * 如果trimLeft和trimRight的结果都小于0，则说明不用trim
+	 * 如果trimLeft和trimRight的结果都小于0，则说明不用trim<br>
+	 * 如果trimLeft和trimRight的结果都等于0，则说明没有通过过滤
 	 * @return
 	 */
 	protected abstract int trimRight(FastQRecord fastQRecord);

@@ -2,9 +2,13 @@ package com.novelbio.nbcgui.controlseq;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.mapping.MapDNA;
@@ -16,6 +20,8 @@ import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
 
+@Component
+@Scope("prototype")
 public class CtrlDNAMapping {
 	private static final Logger logger = Logger.getLogger(CtrlDNAMapping.class);
 	public static final int MAP_TO_CHROM = 8;
@@ -24,7 +30,7 @@ public class CtrlDNAMapping {
 	
 	private String outFilePrefix = "";
 	
-	private HashMap<String, FastQ[]> mapCondition2CombFastQLRFiltered = new LinkedHashMap<String, FastQ[]>();
+	private Map<String, List<FastQ[]>> mapCondition2CombFastQLRFiltered = new LinkedHashMap<String, List<FastQ[]>>();
 	MapLibrary libraryType = MapLibrary.SingleEnd;
 
 	int gapLen = 5;
@@ -49,10 +55,19 @@ public class CtrlDNAMapping {
 		this.map2Index = map2Index;
 	}
 	
+	/** 设定输入文件 */
+	public void setMapCondition2CombFastQLRFiltered(
+			Map<String, List<FastQ[]>> mapCondition2CombFastQLRFiltered) {
+		this.mapCondition2CombFastQLRFiltered = mapCondition2CombFastQLRFiltered;
+	}
+	
 	public SamFileStatistics getSamFileStatistics() {
 		return samFileStatistics;
 	}
-	
+
+	public void setLibraryType(MapLibrary selectedValue) {
+		this.libraryType = selectedValue;
+	}
 	public void setChrIndexFile(String chrIndexFile) {
 		if (FileOperate.isFileExistAndBigThanSize(chrIndexFile, 10)) {
 			this.chrIndexFile = chrIndexFile;
@@ -95,22 +110,19 @@ public class CtrlDNAMapping {
 	}
 	
 	private void mapping() {
-		for (Entry<String, FastQ[]> entry : mapCondition2CombFastQLRFiltered.entrySet()) {
-			mapping(entry.getKey(), entry.getValue());
+		for (Entry<String, List<FastQ[]>> entry : mapCondition2CombFastQLRFiltered.entrySet()) {
+			List<FastQ[]> lsFastQs = entry.getValue();
+			if (lsFastQs.size() == 1) {
+				mapping(entry.getKey(), lsFastQs.get(0));
+			} else {
+				for (int i = 0; i < lsFastQs.size(); i++) {
+					FastQ[] fastQs = lsFastQs.get(i);
+					mapping(entry.getKey() + "_" + i, fastQs);
+				}
+			}
 		}
 	}
 	
-	/**
-	 * 使用方法：<br>
-	 * for (Entry<String, FastQ[]> entry : getMapCondition2CombFastQLRFiltered().entrySet()) {<br>
-			mapping(entry.getKey(), entry.getValue());<br>
-		}<br>
-	 * <br>
-	 * @return
-	 */
-	public HashMap<String, FastQ[]> getMapCondition2CombFastQLRFiltered() {
-		return mapCondition2CombFastQLRFiltered;
-	}
 	/**
 	 * 外部调用使用，
 	 * 使用方法：<br>
@@ -161,4 +173,5 @@ public class CtrlDNAMapping {
 		mapStr2Index.put("refseq Longest Iso", MAP_TO_REFSEQ_LONGEST_ISO);
 		return mapStr2Index;
 	}
+
 }

@@ -57,7 +57,7 @@ public class ManageTaxID {
 	 * @return
 	 */
 	public TaxInfo queryTaxInfo(int taxID) {
-		return mapTaxID2TaxInfo.get(taxID);
+		return mapTaxID2TaxInfo.get(taxID).clone();
 	}
 	/**
 	 * @param taxIDfile 0 则返回null

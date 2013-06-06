@@ -12,8 +12,8 @@ public class FQrecordFilterNNN extends FQrecordFilter {
 	
 	boolean isFilterNNN = true;
 	/** 几个好的序列，就是说NNNCNNN这种，坏的中间夹一个好的 一般为1 */
-	int numGoodBp;
-	int cutoffQuality;
+	int numGoodBp = 1;
+	int cutoffQuality = 14;
 
 	public void setTrimNNN(boolean isFilterNNN) {
 		this.isFilterNNN = isFilterNNN;

@@ -1,39 +1,39 @@
 package com.novelbio.nbcgui.GUI;
 
-import javax.swing.JPanel;
-import java.awt.CardLayout;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
-import javax.swing.JTextField;
-import javax.swing.SpringLayout;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JRadioButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.mapping.MapLibrary;
-import com.novelbio.analysis.seq.mirna.MiRNAtargetRNAhybrid;
+import com.novelbio.aoplog.AopFastQ;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
+import com.novelbio.database.service.SpringFactory;
 import com.novelbio.nbcgui.GUI.GuiLayeredPanSpeciesVersion.SpeciesSelect;
+import com.novelbio.nbcgui.controlseq.CtrlDNAMapping;
+import com.novelbio.nbcgui.controlseq.CtrlFastQ;
 import com.novelbio.nbcgui.controlseq.CtrlFastQMapping;
 
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import javax.swing.ButtonGroup;
-import javax.swing.JLayeredPane;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-
 public class GuiFastQJpanel extends JPanel {
+	public static void main(String[] args) {
+		AopFastQ aopFastQ = (AopFastQ)SpringFactory.getFactory().getBean("aopFastQ");
+		aopFastQ.fastQPoint(null);
+		System.out.println("ok");
+	}
+	
 	private JTextField txtMinReadsLen;
 	private JTextField txtMappingIndex;
 	private JTextField txtSavePathAndPrefix;
@@ -50,6 +50,8 @@ public class GuiFastQJpanel extends JPanel {
 	JCheckBox chckbxTrimEnd;
 	
 	JCheckBox chckbxMapping;
+	JCheckBox chckbxQcbeforefilter;
+	JCheckBox chckbxQcafterFilter;
 	
 	JComboBoxData<Integer> cmbReadsQuality;
 	JComboBoxData<Integer> cmbMaptoIndex;
@@ -66,7 +68,11 @@ public class GuiFastQJpanel extends JPanel {
 	ButtonGroup buttonGroupMappingTo = new ButtonGroup();
 	
 	JCheckBox chckbxLowcaseAdaptor;
-	CtrlFastQMapping ctrlFastQMapping = new CtrlFastQMapping();
+//	CtrlFastQMapping ctrlFastQMapping = new CtrlFastQMapping();
+	CtrlFastQ ctrlFastQ;
+	CtrlDNAMapping ctrlDNAMapping;
+	
+	
 	JComboBoxData<SoftWare> cmbMappingSoftware;
 	ArrayList<Component> lsComponentsMapping = new ArrayList<Component>();
 	ArrayList<Component> lsComponentsFiltering = new ArrayList<Component>();
@@ -117,7 +123,7 @@ public class GuiFastQJpanel extends JPanel {
 		
 		txtMinReadsLen = new JTextField();
 		txtMinReadsLen.setText("50");
-		txtMinReadsLen.setBounds(96, 287, 76, 18);
+		txtMinReadsLen.setBounds(96, 282, 76, 18);
 		add(txtMinReadsLen);
 		txtMinReadsLen.setColumns(10);
 		
@@ -131,7 +137,7 @@ public class GuiFastQJpanel extends JPanel {
 		add(lblReadsQuality);
 		
 		JLabel lblRetainBp = new JLabel("Retain Bp");
-		lblRetainBp.setBounds(10, 289, 69, 14);
+		lblRetainBp.setBounds(10, 284, 69, 14);
 		add(lblRetainBp);
 		
 		chckbxMapping = new JCheckBox("Mapping");
@@ -212,7 +218,7 @@ public class GuiFastQJpanel extends JPanel {
 		btnRun.setBounds(653, 556, 118, 24);
 		btnRun.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ctrlFastQMapping = new CtrlFastQMapping();
+				ctrlFastQ = (CtrlFastQ)SpringFactory.getFactory().getBean("ctrlFastQ");
 				ArrayList<String[]> lsInfoLeftAndPrefix = scrollPaneFastqLeft.getLsDataInfo();
 				ArrayList<String[]> lsInfoRight = scrollPaneFastqRight.getLsDataInfo();
 				ArrayList<String> lsLeftFq = new ArrayList<String>();
@@ -225,35 +231,39 @@ public class GuiFastQJpanel extends JPanel {
 				for (String[] string : lsInfoRight) {
 					lsRightFq.add(string[0]);	
 				}
-				ctrlFastQMapping.setLsFastQfileLeft(lsLeftFq);
-				ctrlFastQMapping.setLsFastQfileRight(lsRightFq);
-				ctrlFastQMapping.setLsPrefix(lsPrefix);
-				ctrlFastQMapping.setFilter(false);
-				ctrlFastQMapping.setMapping(false);
+				ctrlFastQ.setLsFastQfileLeft(lsLeftFq);
+				ctrlFastQ.setLsFastQfileRight(lsRightFq);
+				ctrlFastQ.setLsPrefix(lsPrefix);
+				ctrlFastQ.setFilter(false);
 				if (chckbxFilterreads.isSelected()) {
-					ctrlFastQMapping.setFilter(true);
-					ctrlFastQMapping.setAdaptorLeft(txtLeftAdaptor.getText());
-					ctrlFastQMapping.setAdaptorRight(txtRightAdaptor.getText());
-					ctrlFastQMapping.setAdaptorLowercase(chckbxLowcaseAdaptor.isSelected());
-					ctrlFastQMapping.setFastqQuality(cmbReadsQuality.getSelectedValue());
-					ctrlFastQMapping.setTrimNNN(chckbxTrimEnd.isSelected());
-					try { ctrlFastQMapping.setReadsLenMin(Integer.parseInt(txtMinReadsLen.getText())); } catch (Exception e2) { }
-					
+					ctrlFastQ.setFilter(true);
+					ctrlFastQ.setAdaptorLeft(txtLeftAdaptor.getText());
+					ctrlFastQ.setAdaptorRight(txtRightAdaptor.getText());
+					ctrlFastQ.setAdaptorLowercase(chckbxLowcaseAdaptor.isSelected());
+					ctrlFastQ.setFastqQuality(cmbReadsQuality.getSelectedValue());
+					ctrlFastQ.setTrimNNN(chckbxTrimEnd.isSelected());
+					ctrlFastQ.setOutFilePrefix(txtSavePathAndPrefix.getText());
+					ctrlFastQ.setFastQC(chckbxQcbeforefilter.isSelected(), chckbxQcafterFilter.isSelected());
+					try { ctrlFastQ.setReadsLenMin(Integer.parseInt(txtMinReadsLen.getText())); } catch (Exception e2) { }
+					ctrlFastQ.running();
 				}
+
 				if (chckbxMapping.isSelected()) {
-					ctrlFastQMapping.setMapping(true);					
-					try { ctrlFastQMapping.setGapLen(Integer.parseInt(txtGapLength.getText())); } catch (Exception e2) { 	}
-					try { ctrlFastQMapping.setMismatch(Double.parseDouble(txtMisMatch.getText())); } catch (Exception e2) {}
-					try { ctrlFastQMapping.setThread(Integer.parseInt(txtThreadNum.getText())); } catch (Exception e2) { 	}
-					ctrlFastQMapping.setChrIndexFile(txtMappingIndex.getText());
+					ctrlDNAMapping = new CtrlDNAMapping();
+					ctrlDNAMapping.setMapCondition2CombFastQLRFiltered(ctrlFastQ.getFilteredMap());
+					try { ctrlDNAMapping.setGapLen(Integer.parseInt(txtGapLength.getText())); } catch (Exception e2) { 	}
+					try { ctrlDNAMapping.setMismatch(Double.parseDouble(txtMisMatch.getText())); } catch (Exception e2) {}
+					try { ctrlDNAMapping.setThread(Integer.parseInt(txtThreadNum.getText())); } catch (Exception e2) { 	}
+					ctrlDNAMapping.setChrIndexFile(txtMappingIndex.getText());
 					//TODO
-					ctrlFastQMapping.setLibraryType(cmbLibrary.getSelectedValue());
-					ctrlFastQMapping.setSoftMapping(cmbMappingSoftware.getSelectedValue());
+					ctrlDNAMapping.setLibraryType(cmbLibrary.getSelectedValue());
+					ctrlDNAMapping.setSoftMapping(cmbMappingSoftware.getSelectedValue());
 					Species species = speciesLayOut.getSelectSpecies();
-					ctrlFastQMapping.setSpecies(species, cmbMaptoIndex.getSelectedValue());
+					ctrlDNAMapping.setSpecies(species, cmbMaptoIndex.getSelectedValue());
+					ctrlDNAMapping.setOutFilePrefix(txtSavePathAndPrefix.getText());
+					ctrlDNAMapping.running();
 				}
-				ctrlFastQMapping.setOutFilePrefix(txtSavePathAndPrefix.getText());
-				ctrlFastQMapping.running();
+				
 			}
 		});
 		add(btnRun);
@@ -378,6 +388,15 @@ public class GuiFastQJpanel extends JPanel {
 		cmbMappingSoftware.setBounds(10, 390, 153, 23);
 		add(cmbMappingSoftware);
 		
+		chckbxQcbeforefilter = new JCheckBox("QC before Filter");
+		chckbxQcbeforefilter.setSelected(true);
+		chckbxQcbeforefilter.setBounds(10, 308, 162, 23);
+		add(chckbxQcbeforefilter);
+		
+		chckbxQcafterFilter = new JCheckBox("QC after Filter");
+		chckbxQcafterFilter.setBounds(175, 308, 140, 23);
+		add(chckbxQcafterFilter);
+		
 		
 		btnOpenFastqLeft.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -414,6 +433,9 @@ public class GuiFastQJpanel extends JPanel {
 		lsComponentsFiltering.add(txtMinReadsLen);
 		lsComponentsFiltering.add(cmbReadsQuality);
 		lsComponentsFiltering.add(chckbxLowcaseAdaptor);
+		lsComponentsFiltering.add(chckbxQcbeforefilter);
+		lsComponentsFiltering.add(chckbxQcafterFilter);
+		
 		
 		lsComponentsMapping.add(txtGapLength);
 		lsComponentsMapping.add(txtMappingIndex);

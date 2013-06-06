@@ -14,7 +14,7 @@ import com.novelbio.database.service.servgeneanno.ManageTaxID;
  * @author zong0jie
  */
 @Document(collection = "taxinfo")
-public class TaxInfo {
+public class TaxInfo implements Cloneable {
 	/** NCBI的物种ID */
 	@Id
 	private int taxID;
@@ -144,5 +144,15 @@ public class TaxInfo {
 			return true;
 		}
 		return false;
+	}
+	
+	public TaxInfo clone() {
+		try {
+			return (TaxInfo) super.clone();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

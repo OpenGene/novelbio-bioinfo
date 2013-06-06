@@ -23,10 +23,13 @@ public class FQrecordFilterQC extends FQrecordFilter {
 	protected int trimLeft(FastQRecord fastQRecord) {
 		return 0;
 	}
-	/** 没用 */
 	@Override
 	protected int trimRight(FastQRecord fastQRecord) {
-		return 0;
+		if (filter(fastQRecord)) {
+			return fastQRecord.seqQuality.length();
+		} else {
+			return 0;
+		}
 	}
 
 	@Override
