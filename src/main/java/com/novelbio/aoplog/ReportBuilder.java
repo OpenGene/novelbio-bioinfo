@@ -59,11 +59,15 @@ public abstract class ReportBuilder {
 		String paramsTxtPath = null;
 		// 判断这些参数是放在本地还是hdfs上
 		Boolean isHdfs = savePath.substring(0, 3).equalsIgnoreCase("HDFS");
-		paramsTxtPath = FileOperate.getParentPathName(savePath) + "params.txt";
+		if (savePath.endsWith("/") || savePath.endsWith("\\")) {
+			paramsTxtPath = savePath + "params.txt";
+		} else {
+			paramsTxtPath = FileOperate.getParentPathName(savePath) + "params.txt";
+		}
+		
 		TxtReadandWrite txtReadandWrite = null;
 		if (isHdfs) {
-			//TODO 这里可能会有问题
-			txtReadandWrite = new TxtReadandWrite(new FileHadoop(SpringFactory.getFactory().getBean(FileSystem.class), paramsTxtPath), true, true);
+			txtReadandWrite = new TxtReadandWrite(new FileHadoop((FileSystem)SpringFactory.getFactory().getBean("fsHadoop"), paramsTxtPath), true, true);
 		} else {
 			txtReadandWrite = new TxtReadandWrite(paramsTxtPath, true, true);
 		}

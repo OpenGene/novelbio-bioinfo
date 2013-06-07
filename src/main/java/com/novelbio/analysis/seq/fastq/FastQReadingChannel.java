@@ -107,6 +107,9 @@ public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
 		executorPool = null;
 		queueResult = null;
 		fqWrite[0].close();
+		if (fqWrite[1] != null) {
+			fqWrite[1].close();
+		}
 	}
 	
 	private void readSE() {

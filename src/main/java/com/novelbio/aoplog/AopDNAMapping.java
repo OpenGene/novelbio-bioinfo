@@ -65,7 +65,7 @@ public class AopDNAMapping {
 	 * @author novelbio
 	 *
 	 */
-	private class MappingBuilder extends ReportBuilder{
+	private class MappingBuilder extends ReportBuilder {
 		/** 拦截到的返回值sam文件 */
 		private SamFile samFile;
 		/** 拦截到的对象 */
@@ -224,7 +224,7 @@ public class AopDNAMapping {
 			FileOutputStream fosPng = null;
 			try {
 				fosPng = new FileOutputStream(picName);
-				ChartUtilities.writeChartAsPNG(fosPng, chart, 1000, 1000);
+				ChartUtilities.writeChartAsPNG(fosPng, chart, 800, 1500);
 			} catch (Exception e) {
 				logger.error(e.getMessage());
 				return false;

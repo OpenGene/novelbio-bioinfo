@@ -100,6 +100,30 @@ public class SamFileStatistics implements AlignmentRecorder {
 		}
 		return mapChrID2Len;
 	}
+	
+	/**
+	 * 获取每条染色体所对应的readsb比例
+	 * @return
+	 */
+	public Map<String, Double> getMapChrID2LenPropAndBG() {
+		Map<String, Double> mapChrID2LenAndProp = new LinkedHashMap<String, Double>();
+		Map<String, Long> mapChrID2Len = samFile.getChrID2LengthMap();
+		long readsNumAll = 0;
+		long chrLenAll = 0;
+		for (String chrID : mapChrID2Len.keySet()) {
+			readsNumAll += mapChrID2ReadsNum.get(chrID)[0];
+			chrLenAll += mapChrID2Len.get(chrID);
+		}
+		for (String chrID : mapChrID2Len.keySet()) {
+			double propReads = (double)mapChrID2ReadsNum.get(chrID)[0] / readsNumAll;
+			double propChrLen = (double)mapChrID2Len.get(chrID) / chrLenAll;
+			
+			mapChrID2LenAndProp.put(chrID+"_Reads", propReads);
+			mapChrID2LenAndProp.put(chrID+"_Length", propChrLen);
+		}
+		return mapChrID2LenAndProp;
+	}
+	
 	/**
 	 * 首先要运行 statistics
 	 * @return

@@ -241,7 +241,7 @@ public class CtrlFastQ {
 			fastQReadingChannel.setFastQC(fastQCsAfter[0], fastQCsAfter[1]);
 			mapCond2FastQCAfter.put(prefix, fastQCsAfter);
 			
-			FastQ[] fastqWrite = getCombineFastq(prefix, lsFastQLR);
+			FastQ[] fastqWrite = createCombineFastq(prefix, lsFastQLR);
 			fastQReadingChannel.setFastQWrite(fastqWrite[0], fastqWrite[1]);
 			fastQReadingChannel.setThreadNum(8);
 			fastQReadingChannel.run();
@@ -251,7 +251,7 @@ public class CtrlFastQ {
 		}
 	}
 	
-	private FastQ[] getCombineFastq(String condition, List<FastQ[]> lsFastq) {
+	private FastQ[] createCombineFastq(String condition, List<FastQ[]> lsFastq) {
 		FastQ[] fastQs = new FastQ[2];
 		if (filter) condition = condition + "_filtered";
 		if (lsFastq.size() > 1) condition = condition + "_Combine";
