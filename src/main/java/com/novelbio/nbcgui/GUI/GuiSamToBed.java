@@ -442,8 +442,9 @@ public class GuiSamToBed extends JPanel {
 		}
 	}
 	private void samToBed(String samFilestr) {
-		AlignSamReading alignSamReading = new AlignSamReading(new SamFile(samFilestr));
-		SamToBed samToBed = new SamToBed(samFilestr);
+		SamFile samFile = new SamFile(samFilestr);
+		AlignSamReading alignSamReading = new AlignSamReading(samFile);
+		SamToBed samToBed = new SamToBed(samFile);
 		samToBed.setUniqueRandomSelectOneRead(chckbxNonUniqueMapping.isSelected());
 		alignSamReading.addAlignmentRecorder(samToBed);
 		alignSamReading.run();
