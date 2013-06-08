@@ -49,7 +49,7 @@ public class BamSort {
 	 * @return
 	 */
 	public String sortSamtools(String outFile) {
-		SAMFileReader reader = samFile.samReader.getSamFileReader();
+		SAMFileReader reader = samFile.getSamReader().getSamFileReader();
 		if (reader.getFileHeader().getSortOrder() == SortOrder.coordinate) {
 			return samFile.getFileName();
 		}

@@ -22,7 +22,10 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarPainter;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
-import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.chart.title.LegendTitle;
+import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.general.DatasetUtilities;
+import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
 import org.springframework.stereotype.Component;
 
@@ -38,7 +41,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 @Aspect
 public class AopDNAMapping {
 	private static Logger logger = Logger.getLogger(AopDNAMapping.class);
-
+	
 	@Around("execution (* com.novelbio.analysis.seq.mapping.MapDNAint.mapReads(..)) && target(mapDNAint)")
 	public void aroundMapping(ProceedingJoinPoint pjp, MapDNAint mapDNAint) {
 		SamFile samFile = null;
@@ -66,6 +69,8 @@ public class AopDNAMapping {
 	 *
 	 */
 	private class MappingBuilder extends ReportBuilder {
+		private final Color barColor1 = new Color(23, 200, 200); 
+		private final Color barColor2 = new Color(100, 100, 100); 
 		/** 拦截到的返回值sam文件 */
 		private SamFile samFile;
 		/** 拦截到的对象 */
@@ -141,7 +146,7 @@ public class AopDNAMapping {
 					if (alignmentRecorder instanceof SamFileStatistics) {
 						SamFileStatistics samFileStatistics = (SamFileStatistics) alignmentRecorder;
 						String picName = pathAndName + ".png";
-						if (drawMappingImage(picName, samFileStatistics.getMapChrID2Len())) {
+						if (drawMappingImage(picName, samFileStatistics.getMapChrID2Len(), samFile.getChrID2LengthMap())) {
 							picParam += FileOperate.getFileName(picName) + ";";
 						}
 					}
@@ -174,6 +179,7 @@ public class AopDNAMapping {
 			
 			return true;
 		}
+		
 		/**
 		 * 画mapping的结果图
 		 * 
@@ -183,13 +189,28 @@ public class AopDNAMapping {
 		 *            作图的数据
 		 * @return 是否成功
 		 */
-		private boolean drawMappingImage(String picName, Map<String, Long> data) {
-			DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-			for (String key : data.keySet()) {
-				dataset.addValue(data.get(key), "", key);
+		private boolean drawMappingImage(String picName, Map<String, Long> resultData, Map<String, Long> standardData) {
+			double[][] allData = new double[2][standardData.size()];
+			String[] rowkeys = {"结果","标准"};
+			
+			String[] columnKeys = new String[standardData.size()];
+			int i = 0;
+			for (String key : standardData.keySet()) {
+				allData[0][i] = standardData.get(key);
+				allData[1][i] = resultData.get(key)==null? 0.1 : resultData.get(key);
+				columnKeys[i] = key;
+				i++;
 			}
-			JFreeChart chart = ChartFactory.createBarChart("Mapping Result", null, null, dataset, PlotOrientation.VERTICAL, false, false, false);
+			CategoryDataset dataset = DatasetUtilities.createCategoryDataset( rowkeys,columnKeys,allData);
+			JFreeChart chart = ChartFactory.createBarChart("Mapping Result", null, null, dataset, PlotOrientation.VERTICAL, true, false, false);
 			// chart.getRenderingHints().put(RenderingHints.KEY_TEXT_ANTIALIASING,RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+			//设置图例的位置
+			LegendTitle legend = chart.getLegend();
+			legend.setItemFont(new Font("宋体", Font.PLAIN, 20));
+			legend.setPadding(20, 20, 20, 20);
+			legend.setPosition(RectangleEdge.RIGHT);
+			legend.setMargin(0, 0, 0, 50);
+			
 			// 设置图标题的字体
 			Font font = new Font("黑体", Font.BOLD, 30);
 			chart.getTitle().setFont(font);
@@ -199,19 +220,20 @@ public class AopDNAMapping {
 			CategoryPlot plot = (CategoryPlot) chart.getPlot();
 			plot.setBackgroundPaint(Color.white);
 			CategoryAxis cateaxis = plot.getDomainAxis();
+			
 			BarRenderer renderer = new BarRenderer();// 设置柱子的相关属性
+			// 分类柱子之间的宽度
+			renderer.setItemMargin(0.02);
 			// 设置柱子宽度
-			renderer.setMaximumBarWidth(0.05);
-			renderer.setMinimumBarLength(0.01000000000000001D); // 宽度
-			// 设置柱子高度
-			renderer.setMinimumBarLength(0.1);
+			renderer.setMaximumBarWidth(0.03);
+			renderer.setMinimumBarLength(0.1); //最短的BAR长度
 			// 设置柱子类型
 			BarPainter barPainter = new StandardBarPainter();
 			renderer.setBarPainter(barPainter);
-			renderer.setSeriesPaint(0, new Color(23, 200, 200));
+			renderer.setSeriesPaint(0, barColor1);
+			renderer.setSeriesPaint(1, barColor2);
 			// 是否显示阴影
 			renderer.setShadowVisible(false);
-			renderer.setItemMargin(0.2);
 
 			plot.setRenderer(renderer);
 			// 设置横轴的标题
@@ -224,9 +246,8 @@ public class AopDNAMapping {
 			FileOutputStream fosPng = null;
 			try {
 				fosPng = new FileOutputStream(picName);
-				ChartUtilities.writeChartAsPNG(fosPng, chart, 800, 1500);
+				ChartUtilities.writeChartAsPNG(fosPng, chart,1500, 700);
 			} catch (Exception e) {
-				logger.error(e.getMessage());
 				return false;
 			} finally {
 				try {

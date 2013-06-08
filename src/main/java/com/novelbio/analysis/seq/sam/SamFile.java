@@ -684,7 +684,7 @@ public class SamFile implements AlignSeq {
 	 * @return
 	 */
 	public HashMap<String, Long> getChrID2LengthMap() {
-		return samReader.getMapChrIDlowCase2Length();
+		return getSamReader().getMapChrIDlowCase2Length();
 	}
 	/**
 	 * tobe checked
