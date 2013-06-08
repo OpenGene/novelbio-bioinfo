@@ -238,14 +238,16 @@ public class GffChrMap {
 	 * @param outPathPrefix 输出文件夹+前缀
 	 * @throws Exception
 	 */
-	public void plotAllChrDist(String outPathPrefix) {
+	public void plotAllChrDist(String outPathPrefix, double yHeight) {
 		ArrayList<String[]> chrlengthInfo = gffChrAbs.getSeqHash().getChrLengthInfo();
 		//find the longest chromosome's density
 		double[] chrReads = getChrDensity(chrlengthInfo.get(chrlengthInfo.size() - 1)[0], maxresolution);
-		double axisY = MathComput.median(chrReads, 95)*4;
+		if (yHeight <= 0) {
+			yHeight = MathComput.median(chrReads, 95)*4;
+		}
 		for (int i = chrlengthInfo.size() - 1; i >= 0; i--) {
 			try {
-				plotChrDist(chrlengthInfo.get(i)[0], maxresolution, axisY, FileOperate.changeFileSuffix(outPathPrefix, "_"+chrlengthInfo.get(i)[0], "png"));
+				plotChrDist(chrlengthInfo.get(i)[0], maxresolution, yHeight, FileOperate.changeFileSuffix(outPathPrefix, "_"+chrlengthInfo.get(i)[0], "png"));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

@@ -603,7 +603,11 @@ class MapReadsAddAlignRecord {
 	 * 本位点的信息，用于下一次判断是否是同一位点
 	 */
 	protected int[] addLoc(AlignRecord alignRecord, int[] tmpOld, int[] chrBpReads, ChrMapReadsInfo chrMapReadsInfo) {
-		boolean cis5to3This = alignRecord.isCis5to3();
+		Boolean cis5to3This = alignRecord.isCis5to3();
+		if (cis5to3This == null) {
+			cis5to3This = true;
+		}
+		
 		if ((mapReads.FilteredStrand != null && alignRecord.isCis5to3() != mapReads.FilteredStrand)
 				|| (mapReads.isUniqueMapping() && !alignRecord.isUniqueMapping())
 				) {

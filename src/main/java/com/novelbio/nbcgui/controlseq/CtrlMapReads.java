@@ -57,7 +57,9 @@ public class CtrlMapReads implements RunGetInfo<MapReadsAbs.MapReadsProcessInfo>
 	  * @param normalType
 	  */
 	public void setNormalType(int normalType) {
-		mapReads.setNormalType(normalType);
+		if (mapReads != null) {
+			mapReads.setNormalType(normalType);
+		}
 	}
 	@Override
 	public void setRunningInfo(MapReadsProcessInfo info) {

@@ -19,6 +19,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
+import com.novelbio.nbcgui.FoldeCreate;
 
 @Component
 @Scope("prototype")
@@ -27,6 +28,9 @@ public class CtrlDNAMapping {
 	public static final int MAP_TO_CHROM = 8;
 	public static final int MAP_TO_REFSEQ = 4;
 	public static final int MAP_TO_REFSEQ_LONGEST_ISO = 2;
+	
+	private static final String pathSaveTo = "Mapping_result";
+
 	
 	private String outFilePrefix = "";
 	
@@ -74,7 +78,7 @@ public class CtrlDNAMapping {
 		}
 	}
 	public void setOutFilePrefix(String outFilePrefix) {
-		this.outFilePrefix = outFilePrefix + "MappingInfo";
+		this.outFilePrefix = FoldeCreate.createAndInFold(outFilePrefix, pathSaveTo);
 	}
 	public String getOutFilePrefix() {
 		return outFilePrefix;

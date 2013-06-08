@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections.list.SetUniqueList;
 import org.apache.commons.math.stat.descriptive.moment.Mean;
 import org.apache.log4j.Logger;
 
@@ -22,7 +22,7 @@ import com.novelbio.database.model.species.Species;
  * 不考虑内存限制的编
  * T: 本次running打算输出的中间信息用MapReadsProcessInfo来保存
  * 进度条多线程，需要以下操作 <br>
- * 1. 在循环中添加 suspendCheck()  来挂起线程<br>
+ * 1. 在循环中添加 suspendCheck()  来挂起线程<br>z
  * 2. 在循环中检查 flagRun 来终止循环<br>
  * 3: 在循环中添加 setRunInfo() 方法来获取运行时出现的信息
  * @author zong0jie
@@ -453,6 +453,14 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 		public long getReadsize() {
 			return readsize;
 		}
+	}
+	
+	public static Map<String, Integer> getMapNormalizedType() {
+		Map<String, Integer> mapNormalizedType = new LinkedHashMap<String, Integer>();
+		mapNormalizedType.put("Normalization_All_Reads", NORMALIZATION_ALL_READS);
+		mapNormalizedType.put("Normalization_No", NORMALIZATION_NO);
+		mapNormalizedType.put("Normalization_Per_Gene", NORMALIZATION_PER_GENE);
+		return mapNormalizedType;
 	}
 }
 

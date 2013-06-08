@@ -108,6 +108,7 @@ public class AopFastQ {
 		 * @throws Exception
 		 */
 		private void readFastQC(FastQC[] fastQCs, String prefix, boolean isBefore, boolean isQc) throws Exception{
+			int sepPic = 20;//两张图合并起来后，中间的空隙
 			BufferedImage[] qualityScoreImages = new BufferedImage[2];
 			BufferedImage[] sequenceGCContentImages = new BufferedImage[2];
 			for (int i = 0; i < fastQCs.length; i++) {
@@ -153,7 +154,7 @@ public class AopFastQ {
 							if (fastQCs.length > 1) {
 								qualityScoreImages[i] = ((PerBaseQualityScores)fQrecordCopeInt).getBufferedImage(smallPicSize, smallPicSize);
 								if ((i+1) == fastQCs.length) {
-									mapPath2Image.put(savePath + "QualityScore_" + reportKey +".png",GraphicCope.combineBfImage(true, 5, qualityScoreImages));
+									mapPath2Image.put(savePath + "QualityScore_" + reportKey +".png",GraphicCope.combineBfImage(true, sepPic, qualityScoreImages));
 								}
 							}else {
 								mapPath2Image.put(savePath + "QualityScore_" + reportKey +".png",((PerBaseQualityScores)fQrecordCopeInt).getBufferedImage(smallPicSize, smallPicSize));
@@ -177,7 +178,7 @@ public class AopFastQ {
 							if (fastQCs.length > 1) {
 								sequenceGCContentImages[i] = ((PerSequenceGCContent)fQrecordCopeInt).getBufferedImage(smallPicSize, smallPicSize);
 								if ((i+1) == fastQCs.length) {
-									mapPath2Image.put(savePath + "SequenceGCContent_" + reportKey +".png",GraphicCope.combineBfImage(true, 5, qualityScoreImages));
+									mapPath2Image.put(savePath + "SequenceGCContent_" + reportKey +".png",GraphicCope.combineBfImage(true, sepPic, sequenceGCContentImages));
 								}
 							}else {
 								mapPath2Image.put(savePath + "SequenceGCContent_" + reportKey +".png",((PerSequenceGCContent)fQrecordCopeInt).getBufferedImage(smallPicSize, smallPicSize));

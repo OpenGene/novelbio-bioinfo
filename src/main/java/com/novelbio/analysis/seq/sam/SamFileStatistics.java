@@ -91,37 +91,15 @@ public class SamFileStatistics implements AlignmentRecorder {
 	
 	/**
 	 * 获取每条染色体所对应的reads数量
+	 * key都为小写
 	 * @return
 	 */
 	public Map<String, Long> getMapChrID2Len() {
 		Map<String, Long> mapChrID2Len = new LinkedHashMap<String, Long>();
 		for (String chrID : mapChrID2ReadsNum.keySet()) {
-			mapChrID2Len.put(chrID, (long)mapChrID2ReadsNum.get(chrID)[0]);
+			mapChrID2Len.put(chrID.toLowerCase(), (long)mapChrID2ReadsNum.get(chrID)[0]);
 		}
 		return mapChrID2Len;
-	}
-	
-	/**
-	 * 获取每条染色体所对应的readsb比例
-	 * @return
-	 */
-	public Map<String, Double> getMapChrID2LenPropAndBG() {
-		Map<String, Double> mapChrID2LenAndProp = new LinkedHashMap<String, Double>();
-		Map<String, Long> mapChrID2Len = samFile.getChrID2LengthMap();
-		long readsNumAll = 0;
-		long chrLenAll = 0;
-		for (String chrID : mapChrID2Len.keySet()) {
-			readsNumAll += mapChrID2ReadsNum.get(chrID)[0];
-			chrLenAll += mapChrID2Len.get(chrID);
-		}
-		for (String chrID : mapChrID2Len.keySet()) {
-			double propReads = (double)mapChrID2ReadsNum.get(chrID)[0] / readsNumAll;
-			double propChrLen = (double)mapChrID2Len.get(chrID) / chrLenAll;
-			
-			mapChrID2LenAndProp.put(chrID+"_Reads", propReads);
-			mapChrID2LenAndProp.put(chrID+"_Length", propChrLen);
-		}
-		return mapChrID2LenAndProp;
 	}
 	
 	/**

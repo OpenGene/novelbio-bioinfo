@@ -16,11 +16,14 @@ import com.novelbio.analysis.seq.fastq.FastQC;
 import com.novelbio.analysis.seq.fastq.FastQReadingChannel;
 import com.novelbio.analysis.seq.fastq.FastQRecordFilter;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.nbcgui.FoldeCreate;
 
 @Component
 @Scope("prototype")
 public class CtrlFastQ {
 	private static Logger logger = Logger.getLogger(CtrlFastQ.class);
+	private static final String pathSaveTo = "Quality-Control_result";
+	
 	
 	boolean filter = true;
 	boolean trimNNN = false;
@@ -81,7 +84,7 @@ public class CtrlFastQ {
 	}
 	
 	public void setOutFilePrefix(String outFilePrefix) {
-		this.outFilePrefix = outFilePrefix;
+		this.outFilePrefix = FoldeCreate.createAndInFold(outFilePrefix, pathSaveTo);
 	}
 	
 	public String getOutFilePrefix() {

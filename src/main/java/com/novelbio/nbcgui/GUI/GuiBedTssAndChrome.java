@@ -22,8 +22,10 @@ import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
+import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.nbcgui.controlseq.CtrlMapReads;
+import javax.swing.JComboBox;
 
 /**
  * 批量注释，各种注释
@@ -79,7 +81,8 @@ public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs, GuiN
 	JRadioButton rdbtnReadgene;
 	private GuiLayeredPaneSpeciesVersionGff layeredPaneSpecies;
 
-	
+	JComboBoxData<Integer> cmbNormalizedType;
+	private JTextField txtChromHight;
 	/**
 	 * Create the panel.
 	 */
@@ -126,11 +129,11 @@ public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs, GuiN
 				txtSaveTo.setText(fileName);
 			}
 		});
-		btnSave.setBounds(544, 542, 118, 24);
+		btnSave.setBounds(543, 564, 118, 24);
 		add(btnSave);
 		
 		progressBar = new JProgressBar();
-		progressBar.setBounds(12, 590, 693, 14);
+		progressBar.setBounds(12, 600, 693, 14);
 		add(progressBar);
 		
 		btnRunTss = new JButton("RunTss");
@@ -214,7 +217,7 @@ public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs, GuiN
 		add(chckSortBig2Small);
 		
 		txtSaveTo = new JTextField();
-		txtSaveTo.setBounds(12, 545, 485, 18);
+		txtSaveTo.setBounds(12, 570, 485, 18);
 		add(txtSaveTo);
 		txtSaveTo.setColumns(10);
 		
@@ -328,8 +331,32 @@ public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs, GuiN
 		add(btnRunchrome);
 		
 		layeredPaneSpecies = new GuiLayeredPaneSpeciesVersionGff();
-		layeredPaneSpecies.setBounds(713, 54, 198, 158);
+		layeredPaneSpecies.setBounds(713, 54, 222, 158);
 		add(layeredPaneSpecies);
+		
+		cmbNormalizedType = new JComboBoxData<Integer>();
+		cmbNormalizedType.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				ctrlMapReads.setNormalType(cmbNormalizedType.getSelectedValue());
+				System.out.println("Normalized Type Is" + cmbNormalizedType.getSelectedItem().toString());
+			}
+		});
+		cmbNormalizedType.setBounds(333, 493, 238, 24);
+		add(cmbNormalizedType);
+		cmbNormalizedType.setMapItem(MapReadsAbs.getMapNormalizedType());
+		
+		JLabel lblNormalizedtype = new JLabel("NormalizedType");
+		lblNormalizedtype.setBounds(333, 472, 136, 15);
+		add(lblNormalizedtype);
+		
+		txtChromHight = new JTextField();
+		txtChromHight.setBounds(150, 529, 69, 19);
+		add(txtChromHight);
+		txtChromHight.setColumns(10);
+		
+		JLabel lblChromPicHeight = new JLabel("ChromPicHeight");
+		lblChromPicHeight.setBounds(12, 531, 127, 15);
+		add(lblChromPicHeight);
 		
 		initial();
 	}
@@ -395,8 +422,13 @@ public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs, GuiN
 	}
 	
 	private void plotChrome() {
-		String save =  txtSaveTo.getText();		
-		gffChrMap.plotAllChrDist(save);
+		String save =  txtSaveTo.getText();
+		int chromHeight = -1;
+		try {
+			chromHeight = Integer.parseInt(txtChromHight.getText().trim());
+		} catch (Exception e) {}
+		
+		gffChrMap.plotAllChrDist(save, chromHeight);
 	}
 	
 	public void setGuiFileOpen(GUIFileOpen guiFileOpen) {

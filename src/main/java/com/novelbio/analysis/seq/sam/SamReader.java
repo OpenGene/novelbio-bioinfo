@@ -120,8 +120,8 @@ public class SamReader {
 			samFileReader = new SAMFileReader(inputStream);
 		}
 		samFileHeader = samFileReader.getFileHeader();
-		mapChrIDlowCase2ChrID = new HashMap<String, String>();
-		mapChrIDlowCase2Length = new HashMap<String, Long>();
+		mapChrIDlowCase2ChrID = new LinkedHashMap<String, String>();
+		mapChrIDlowCase2Length = new LinkedHashMap<String, Long>();
 		//获得reference的序列信息
 		List<SAMSequenceRecord> lsSamSequenceRecords = samFileHeader.getSequenceDictionary().getSequences();
 		for (SAMSequenceRecord samSequenceRecord : lsSamSequenceRecords) {
