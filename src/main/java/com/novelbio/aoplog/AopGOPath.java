@@ -47,7 +47,6 @@ public class AopGOPath {
 
 	/**
 	 * 用来拦截GOPath的生成excel的方法，在生成excel之前，先画一幅图，并向配置文件params.txt中加入生成报告所需的参数
-	 * 
 	 * @param excelPath
 	 * @param ctrlGOPath
 	 */
@@ -154,7 +153,7 @@ public class AopGOPath {
 
 					// 赋值picture
 					// excel中testResult对应的sheet的名字，将作为画的图的名字
-					String picName = FileOperate.addSep(FileOperate.getParentPathName(excelPath)) + title + "_" + prix + ".png";
+					String picName = FileOperate.changeFilePrefix(excelPath, "GO-Analysis_" + prix + "_", "png");
 					// 画一张testResult的图
 					if (drawPicture(picName, lsTestResults, title)) {
 						if (isCluster) {
@@ -181,14 +180,14 @@ public class AopGOPath {
 			try {
 				txtReadandWrite = getParamsTxt(excelPath);
 				// 把参数写入到params.txt
-				txtReadandWrite.writefileln(picParam);
-				txtReadandWrite.writefileln(excelParam);
-				txtReadandWrite.writefileln(picParam1);
-				txtReadandWrite.writefileln(excelParam1);
-				txtReadandWrite.writefileln(testMethodParam);
-				txtReadandWrite.writefileln(finderConditionParam);
-				txtReadandWrite.writefileln(upRegulationParam);
-				txtReadandWrite.writefileln(downRegulationParam);
+				writeParam(txtReadandWrite, picParam);
+				writeParam(txtReadandWrite, excelParam);
+				writeParam(txtReadandWrite, picParam1);
+				writeParam(txtReadandWrite, excelParam1);
+				writeParam(txtReadandWrite, testMethodParam);
+				writeParam(txtReadandWrite, finderConditionParam);
+				writeParam(txtReadandWrite, upRegulationParam);
+				writeParam(txtReadandWrite, downRegulationParam);
 				txtReadandWrite.flash();
 			} catch (Exception e) {
 				logger.error("GOPath生成自动化报告参数文件param.txt出错！");
@@ -203,7 +202,13 @@ public class AopGOPath {
 			}
 			return true;
 		}
-
+		
+		private void writeParam(TxtReadandWrite txtWrite, String param) {
+			if (param.split(SepSign.SEP_INFO).length > 1) {
+				txtWrite.writefileln(param);
+			}
+		}
+		
 		/**
 		 * 统计结果，返回筛选条件
 		 * 
@@ -278,7 +283,7 @@ public class AopGOPath {
 			// plot.setRenderer(render);
 			BarRenderer renderer = new BarRenderer();// 设置柱子的相关属性
 			// 设置柱子宽度
-			renderer.setMaximumBarWidth(0.02);
+			renderer.setMaximumBarWidth(0.03);
 			renderer.setMinimumBarLength(0.01000000000000001D); // 宽度
 			// 设置柱子高度
 			renderer.setMinimumBarLength(0.1);
@@ -304,9 +309,9 @@ public class AopGOPath {
 			// 设置横轴的标题
 			// cateaxis.setLabelFont(new Font("粗体", Font.BOLD, 16));
 			// 设置横轴的标尺
-			cateaxis.setTickLabelFont(new Font("粗体", Font.BOLD, 16));
+			cateaxis.setTickLabelFont(new Font("粗体", Font.BOLD, 14));
 			// 让标尺以30度倾斜
-			cateaxis.setCategoryLabelPositions(CategoryLabelPositions.createUpRotationLabelPositions(Math.PI / 4.0));
+			cateaxis.setCategoryLabelPositions(CategoryLabelPositions.createUpRotationLabelPositions(Math.PI / 3.0));
 			// 纵轴
 			NumberAxis numaxis = (NumberAxis) plot.getRangeAxis();
 			numaxis.setLabelFont(new Font("宋体", Font.BOLD, 20));

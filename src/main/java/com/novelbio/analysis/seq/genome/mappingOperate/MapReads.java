@@ -40,8 +40,6 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	 Boolean FilteredStrand = null;
 	 Species species;
 	 
-	 long readsSize = 0;
-
 	 AlignSeq alignSeqReader;
 	 
 	 HashMap<String, ChrMapReadsInfo> mapChrID2ReadsInfo = new HashMap<String, ChrMapReadsInfo>();
@@ -501,9 +499,8 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 			if (flagStop) {
 				break;
 			}
-			readsSize = readsSize + alignRecord.getRawStringInfo().getBytes().length;
 			if (allReadsNum%1000 == 0) {
-				MapReadsProcessInfo mapReadsProcessInfo = new MapReadsProcessInfo(readsSize);
+				MapReadsProcessInfo mapReadsProcessInfo = new MapReadsProcessInfo(alignSeqReader.getReadByte());
 				setRunInfo(mapReadsProcessInfo);
 			}
 		}

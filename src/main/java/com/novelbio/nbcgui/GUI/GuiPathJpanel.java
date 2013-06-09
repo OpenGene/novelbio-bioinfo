@@ -380,7 +380,7 @@ public class GuiPathJpanel extends JPanel{
 				lsStaxID.add(speciesS.getTaxID());
 			}
 		}
-		ctrlPath = (CtrlTestInt)SpringFactory.getFactory().getBean("ctrlPath");
+//		ctrlPath = (CtrlTestInt)SpringFactory.getFactory().getBean("ctrlPath");
 		ctrlPath.setBlastInfo(evalue, lsStaxID);
 
 		ctrlPath.setLsBG(backGroundFile);

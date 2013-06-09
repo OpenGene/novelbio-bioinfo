@@ -299,7 +299,7 @@ public class SiteSeqInfo implements Comparable<SiteSeqInfo>, Alignment {
 	}
 	@Override
 	public int getStartCis() {
-		if (isCis5to3()) {
+		if (isCis5to3() == null || isCis5to3()) {
 			return getStartAbs();
 		}
 		else {
@@ -308,7 +308,7 @@ public class SiteSeqInfo implements Comparable<SiteSeqInfo>, Alignment {
 	}
 	@Override
 	public int getEndCis() {
-		if (isCis5to3()) {
+		if (isCis5to3() == null || isCis5to3()) {
 			return getEndAbs();
 		}
 		else {

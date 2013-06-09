@@ -1,6 +1,7 @@
 package com.novelbio.analysis.seq.genome;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Paint;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,6 +38,7 @@ import com.novelbio.database.model.modgeneid.GeneType;
 import com.novelbio.database.model.species.Species;
 
 import de.erichseifert.gral.util.GraphicsUtils;
+import de.erichseifert.gral.util.Location;
 
 /**
  * 给定基因的区域，画出各种统计图
@@ -45,7 +47,62 @@ import de.erichseifert.gral.util.GraphicsUtils;
  * 
  */
 public class GffChrMap {
-	
+	public static void main(String[] args) {
+		GffChrMap gffChrMap = new GffChrMap();
+		int[] resolution = new int[10000];
+		
+		/////////////////////   plotScatter can only accept double data   //////////////////////////////
+		double[] resolutionDoub = new double[10000];
+		for (int i = 0; i < resolution.length; i++) {
+			resolutionDoub[i] = i;
+		}
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		double[] chrReads = new double[100];
+		for (int i = 0; i < chrReads.length; i++) {
+			chrReads[i] = 1000* Math.random();
+		}
+		double[] resolutionDoub2 = new double[100];
+		for (int i = 0; i < resolutionDoub2.length; i++) {
+			resolutionDoub2[i] = i;
+		}
+		
+		PlotScatter plotScatter = new PlotScatter(PlotScatter.PLOT_TYPE_SCATTERPLOT);
+		plotScatter.setAxisX(0, 10000);
+		plotScatter.setAxisY(0, 1000);
+//		plotScatter.setMapNum2ChangeX(0, 0, resolution.length, chrLength, interval);
+
+		DotStyle dotStyle = new DotStyle();
+		Paint colorGradient = DotStyle.getGridentColor(GraphicsUtils.deriveDarker(Color.blue), Color.blue);
+		dotStyle.setColor(colorGradient);
+		dotStyle.setStyle(DotStyle.STYLE_AREA);
+		plotScatter.addXY(resolutionDoub2, chrReads, dotStyle);
+		
+		//////////////////添加边框///////////////////////////////
+		DotStyle dotStyleBroad = new DotStyle();
+		dotStyleBroad.setStyle(DotStyle.STYLE_LINE);
+		dotStyleBroad.setColor(Color.RED);
+		dotStyleBroad.setSize(DotStyle.SIZE_B);
+		double[] xstart = new double[]{0,0}; double[] xend= new double[]{resolutionDoub[resolutionDoub.length-1], resolutionDoub[resolutionDoub.length-1]};
+		double[] y = new double[]{0, 1000};
+		plotScatter.addXY(xend, y, dotStyleBroad);
+		plotScatter.addXY(xstart, y, dotStyleBroad.clone());
+		//////////////////////////////////////////////////////////////
+		
+		plotScatter.setBg(Color.WHITE);
+		plotScatter.setAlpha(false);
+		//坐标轴mapping
+//		plotScatter.setMapNum2ChangeY(0, 0, axisY, 500, 100);
+		plotScatter.setTitle("chr1 Reads Density",  new Font(Font.SANS_SERIF, Font.BOLD, 30), Location.CENTER, 100);
+//		plotScatter.setTitle("chr1 Reads Density", null);
+		plotScatter.setTitleX("Chromosome Length",  new Font(Font.SANS_SERIF, Font.BOLD, 20), 3, 0);
+		plotScatter.setTitleY("Normalized Reads Counts", new Font(Font.SANS_SERIF, Font.BOLD, 22), 3.5, 90);
+		plotScatter.setAxisTicksXFont(new Font(Font.SANS_SERIF, Font.PLAIN, 18), 0, 0);
+		plotScatter.setAxisTicksYFont(new Font(Font.SANS_SERIF, Font.PLAIN, 18), gffChrMap.getSpace(1120, 5), 0);
+		plotScatter.setInsets(170, 100, 50, 150);
+		
+		plotScatter.saveToFile("/home/zong0jie/desktop/test.png", 10000, 1000);
+
+	}
 	GffChrAbs gffChrAbs = new GffChrAbs();
 	
 	Logger logger = Logger.getLogger(GffChrMap.class);
@@ -312,16 +369,57 @@ public class GffChrMap {
 		plotScatter.setBg(Color.WHITE);
 		plotScatter.setAlpha(false);
 		//坐标轴mapping
-//		plotScatter.setMapNum2ChangeY(0, 0, axisY, 500, 100);
-		plotScatter.setTitle(chrID + " Reads Density", null);
-		plotScatter.setTitleX("Chromosome Length", null, 0);
-		plotScatter.setTitleY("Normalized Reads Counts", null, (int)axisY/5);
 		
-		plotScatter.setInsets(PlotScatter.INSETS_SIZE_ML);
+		//坐标轴mappin
+		plotScatter.setTitle(chrID + " Reads Density",  new Font(Font.SANS_SERIF, Font.BOLD, 30), Location.CENTER, 100);
+//		plotScatter.setTitle("chr1 Reads Density", null);
+		plotScatter.setTitleX("Chromosome Length",  new Font(Font.SANS_SERIF, Font.BOLD, 20), 3, 0);
+		plotScatter.setTitleY("Normalized Reads Counts", new Font(Font.SANS_SERIF, Font.BOLD, 22), 3.5, 90);
+		plotScatter.setAxisTicksXFont(new Font(Font.SANS_SERIF, Font.PLAIN, 19), 0, 0);
+		plotScatter.setAxisTicksYFont(new Font(Font.SANS_SERIF, Font.PLAIN, 19),  getSpace(axisY, 5), 0);
+		plotScatter.setInsets(170, 100, 50, 150);
+		
+		
+		
 		
 		plotScatter.saveToFile(outFileName, 10000, 1000);
 	}
-
+	
+	/** 给定Y轴大小，返回Y的间隔
+	 * 要把间隔凑个整数。
+	 * 譬如Y轴为1120，分割为5份的时候是224
+	 * 凑成整数就是200，其他类推  
+	 * @param axis 输入的坐标轴长度
+	 * @param sepNum 要分成几份
+	 */
+	private double getSpace(double axis, int sepNum) {
+		double sep = axis/5;
+		double septmp = sep;
+		double fold = 1;
+		boolean multip = false;
+		if (sep >= 10) {
+			multip = true;
+			while (septmp >= 10) {
+				septmp = septmp/10;
+				fold = fold * 10;
+			}
+		} else {
+			while (septmp < 1) {
+				septmp = septmp*10;
+				fold = fold * 10;
+			}
+		}
+		double sepResult = (int)(septmp + 0.5);
+		if (multip) {
+			sepResult = sepResult * fold;
+		} else {
+			sepResult = sepResult / fold;
+		}
+		
+		return sepResult;
+		
+	}
+	
 	/**
 	 * 返回某条染色体上的reads情况，是密度图 主要用于基因组上，一条染色体上的reads情况
 	 * 

@@ -422,12 +422,13 @@ public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs, GuiN
 	}
 	
 	private void plotChrome() {
+		gffChrAbs.setSpecies(layeredPaneSpecies.getSelectSpecies());
 		String save =  txtSaveTo.getText();
 		int chromHeight = -1;
 		try {
 			chromHeight = Integer.parseInt(txtChromHight.getText().trim());
 		} catch (Exception e) {}
-		
+		gffChrMap.setGffChrAbs(gffChrAbs);
 		gffChrMap.plotAllChrDist(save, chromHeight);
 	}
 	

@@ -152,6 +152,28 @@ public class AopDNAMapping {
 			}
 		}
 		
+
+		@Override
+		public boolean buildDescFile() {
+			TxtReadandWrite txtReadandWrite = null;
+			try {
+				txtReadandWrite = getParamsTxt(samFile.getFileName());
+				// 把参数写入到params.txt
+				txtReadandWrite.writefileln(picParam);
+				txtReadandWrite.writefileln(excelParam);
+			} catch (Exception e) {
+				logger.error("aopRNAMapping生成参数文件出错啦！");
+				return false;
+			} finally{
+				try {
+					txtReadandWrite.close();
+				} catch (Exception e2) {
+				}
+			}
+			return true;
+		}
+		
+		
 		public boolean saveCmdMapping() {
 			// TODO 把命令持久化起来
 			System.out.println(cmdMapping);
@@ -164,7 +186,10 @@ public class AopDNAMapping {
 				return true;
 			}
 			boolean samReprot = writeSamReport();
-			boolean chrReport = writeChrInfo();
+			boolean chrReport = true;
+			if (mapChrID2LenProp.size() <= chrNumMax) {
+				chrReport = writeChrInfo();
+			}
 			return samReprot && chrReport;
 		}
 
@@ -193,8 +218,9 @@ public class AopDNAMapping {
 					lsReport.add(new String[] { "junctionUniqueMapping", junctionUniqueMapping + "" });
 				}
 				
-				excelParam += FileOperate.getFileName(pathAndName) + "_MappingReport.xls;";
-				TxtReadandWrite txtReadandWrite = new TxtReadandWrite(pathAndName + "_MappingReport.xls", true);
+				String pathMapReport = FileOperate.changeFilePrefix(pathAndName, "MappingReport_", "xls");
+				excelParam += FileOperate.getFileName(pathMapReport) + ";";
+				TxtReadandWrite txtReadandWrite = new TxtReadandWrite(pathMapReport, true);
 				txtReadandWrite.ExcelWrite(lsReport);
 				txtReadandWrite.close();
 			} catch (Exception e) {
@@ -207,7 +233,8 @@ public class AopDNAMapping {
 		/** 写每条染色体上 reads的覆盖度等数据 */
 		private boolean writeChrInfo() {
 			try {
-				TxtReadandWrite txtWrite = new TxtReadandWrite(pathAndName + "_ChrReport.xls", true);
+				String pathChrReport = FileOperate.changeFilePrefix(pathAndName, "ChrDistribution_", "xls");
+				TxtReadandWrite txtWrite = new TxtReadandWrite(pathChrReport, true);
 				txtWrite.writefileln("ChrID\tMappedReadsNum\tMappedReadsProp\tChrLen\tChrLenProp");
 				for (String chrID : mapChrID2LenProp.keySet()) {
 					String[] info = new String[5];
@@ -228,36 +255,19 @@ public class AopDNAMapping {
 		}
 		@Override
 		public boolean buildImages() {
+			if (mapChrID2LenProp.size() > chrNumMax) {
+				return true;
+			}
 			try {
-				String picName = pathAndName + ".png";
-				picParam += FileOperate.getFileName(picName) + ";";
-				return drawMappingImage(picName);
+				String pathChrPic = FileOperate.changeFilePrefix(pathAndName, "ChrDistribution_", "png");
+				picParam += FileOperate.getFileName(pathChrPic) + ";";
+				return drawMappingImage(pathChrPic);
 			} catch (Exception e) {
 				logger.error("aopRNAMapping画图表出错啦！");
 				return false;
 			}
 		}
 
-		@Override
-		public boolean buildDescFile() {
-			TxtReadandWrite txtReadandWrite = null;
-			try {
-				txtReadandWrite = getParamsTxt(samFile.getFileName());
-				// 把参数写入到params.txt
-				txtReadandWrite.writefileln(picParam);
-				txtReadandWrite.writefileln(excelParam);
-			} catch (Exception e) {
-				logger.error("aopRNAMapping生成参数文件出错啦！");
-				return false;
-			} finally{
-				try {
-					txtReadandWrite.close();
-				} catch (Exception e2) {
-				}
-			}
-			return true;
-		}
-		
 		/**
 		 * 画mapping的结果图
 		 * 
@@ -268,10 +278,6 @@ public class AopDNAMapping {
 		 * @return 是否成功
 		 */
 		private boolean drawMappingImage(String picName) {
-			if (mapChrID2LenProp.size() > chrNumMax) {
-				return true;
-			}
-			
 			double[][] allData = getResultProp();
 			String[] rowkeys = {"Sequencing","Genome"};
 			String[] columnKeys = mapChrID2LenProp.keySet().toArray(new String[0]);

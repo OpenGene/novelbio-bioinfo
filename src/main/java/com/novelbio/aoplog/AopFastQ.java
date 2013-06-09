@@ -115,11 +115,11 @@ public class AopFastQ {
 				String key = prefix;
 				String reportKey = prefix;
 				if (fastQCs.length == 1) {
-					key += isBefore?"_before":"_after";
-				}else {
-					key += isBefore?"_before_"+(i+1):"_after_"+(i+1);
+					key += isBefore?"_BeforeFilter":"_AfterFilter";
+				} else {
+					key += isBefore?"_BeforeFilter_"+(i+1):"_AfterFilter_"+(i+1);
 				}
-				reportKey += isBefore?"_before":"_after";
+				reportKey += isBefore?"_BeforeFilter":"_AfterFilter";
 				FastQC fastQC = fastQCs[i];
 				for (FQrecordCopeInt fQrecordCopeInt : fastQC.getLsModules()) {
 					if (fQrecordCopeInt instanceof BasicStats) {

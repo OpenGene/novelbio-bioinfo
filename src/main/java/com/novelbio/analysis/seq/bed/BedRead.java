@@ -5,12 +5,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataOperate.TxtReadandWrite.TXTtype;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class BedRead {
+	private static final Logger logger = Logger.getLogger(BedRead.class);
+	
 	TxtReadandWrite txtRead;
 	
 	BedRead(String bedFile) {
@@ -182,17 +186,22 @@ public class BedRead {
 						throw new UnsupportedOperationException();
 					}
 					BedRecord getLine() {
+						String linestr = null;
 						BedRecord bedRecord = null;
 						try {
-							String linestr = bufread.readLine();
-							if (linestr == null) {
-								return null;
+							while ((linestr = bufread.readLine()) != null) {
+								try {
+									bedRecord = new BedRecord(linestr);
+									return bedRecord;
+								} catch (Exception e) {
+									logger.error("error:" + linestr);
+								}
 							}
-							bedRecord = new BedRecord(linestr);
-						} catch (IOException ioEx) {
-							bedRecord = null;
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
 						}
-						return bedRecord;
+						return null;
 					}
 					BedRecord bedRecord = getLine();
 				};
