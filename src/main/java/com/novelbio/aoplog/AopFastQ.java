@@ -14,6 +14,18 @@ import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 
+import uk.ac.babraham.FastQC.Modules.BasicStats;
+import uk.ac.babraham.FastQC.Modules.DuplicationLevel;
+import uk.ac.babraham.FastQC.Modules.KmerContent;
+import uk.ac.babraham.FastQC.Modules.NContent;
+import uk.ac.babraham.FastQC.Modules.OverRepresentedSeqs;
+import uk.ac.babraham.FastQC.Modules.PerBaseGCContent;
+import uk.ac.babraham.FastQC.Modules.PerBaseQualityScores;
+import uk.ac.babraham.FastQC.Modules.PerBaseSequenceContent;
+import uk.ac.babraham.FastQC.Modules.PerSequenceGCContent;
+import uk.ac.babraham.FastQC.Modules.PerSequenceQualityScores;
+import uk.ac.babraham.FastQC.Modules.SequenceLengthDistribution;
+
 import com.novelbio.analysis.seq.fastq.FQrecordCopeInt;
 import com.novelbio.analysis.seq.fastq.FastQC;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -61,7 +73,7 @@ public class AopFastQ {
 			this.ctrlFastQ = ctrlFastQ;
 			String outFilePrefix = ctrlFastQ.getOutFilePrefix();
 			this.savePath = outFilePrefix.endsWith(FileOperate.getSepPath()) ? outFilePrefix : FileOperate.getParentPathName(outFilePrefix);
-			getParamsTxt(savePath);
+			setParamPath(savePath);
 		}
 		
 		@Override
@@ -139,7 +151,7 @@ public class AopFastQ {
 						}
 						else if (fQrecordCopeInt instanceof PerBaseQualityScores) {
 							mapPath2Image.put(savePath + "QCImages" + FileOperate.getSepPath() + "QualityScore_" + key +".png",((PerBaseQualityScores)fQrecordCopeInt).getBufferedImage(bigPicSize, bigPicSize));
-							super.picParam += "QualityScore_" + reportKey +".png;";
+							addParamInfo(Param.picParam, "QualityScore_" + reportKey +".png");
 							if (fastQCs.length > 1) {
 								qualityScoreImages[i] = ((PerBaseQualityScores)fQrecordCopeInt).getBufferedImage(smallPicSize, smallPicSize);
 								if ((i+1) == fastQCs.length) {
@@ -163,7 +175,7 @@ public class AopFastQ {
 						}
 						else if (fQrecordCopeInt instanceof PerSequenceGCContent) {
 							mapPath2Image.put(savePath + "QCImages" + FileOperate.getSepPath() + "SequenceGCContent_" + key +".png",((PerSequenceGCContent)fQrecordCopeInt).getBufferedImage(bigPicSize, bigPicSize));
-							super.picParam += "SequenceGCContent_" + reportKey +".png;";
+							addParamInfo(Param.picParam, "SequenceGCContent_" + reportKey +".png");
 							if (fastQCs.length > 1) {
 								sequenceGCContentImages[i] = ((PerSequenceGCContent)fQrecordCopeInt).getBufferedImage(smallPicSize, smallPicSize);
 								if ((i+1) == fastQCs.length) {

@@ -49,6 +49,7 @@ public class CtrlGO extends CtrlGOPath {
 	}
 	
 	public void setGOType(GOtype goType) {
+		this.GOClass = goType;
 		functionTest.setDetailType(goType);
 	}
 

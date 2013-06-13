@@ -49,4 +49,6 @@ public interface CtrlTestPathInt {
 	public Map<String, FunctionTest> getMapResult_Prefix2FunTest();
 	
 	public String getResultBaseTitle();
+	
+	 public String getSaveExcelPrefix();
 }

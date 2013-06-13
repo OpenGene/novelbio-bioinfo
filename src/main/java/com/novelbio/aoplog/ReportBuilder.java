@@ -43,7 +43,7 @@ public abstract class ReportBuilder {
 		this.paramPath = paramPath;
 	}
 	public void writeInfo() {
-		if (buildExcels() && buildImages() && writeDescFile(paramPath))
+		if (buildExcels() && buildImages() && writeDescFile())
 			return;
 		logger.error("aopFastQ生成报告图表参数出现异常！");
 	}
@@ -66,10 +66,10 @@ public abstract class ReportBuilder {
 	protected abstract boolean fillDescFile();
 	
 	/** 写参数 */
-	protected boolean writeDescFile(String savePath) {
+	private boolean writeDescFile() {
 		TxtReadandWrite txtReadandWrite = null;
 		try {
-			txtReadandWrite = getParamsTxt(savePath);
+			txtReadandWrite = getParamsTxt(paramPath);
 			for (String param : mapParam2Detail.keySet()) {
 				Set<String> setValue = mapParam2Detail.get(param);
 				if (setValue == null) {
@@ -87,12 +87,14 @@ public abstract class ReportBuilder {
 			}
 			txtReadandWrite.flash();
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error("GOPath生成自动化报告参数文件param.txt出错！");
 			return false;
 		} finally {
 			try {
 				txtReadandWrite.close();
 			} catch (Exception e2) {
+				e2.printStackTrace();
 				logger.error("GOPath生成自动化报告参数文件param.txt出错！");
 				return false;
 			}
@@ -106,7 +108,7 @@ public abstract class ReportBuilder {
 	 * @param savePath
 	 * @return
 	 */
-	protected TxtReadandWrite getParamsTxt(String savePath) {
+	private TxtReadandWrite getParamsTxt(String savePath) {
 		String paramsTxtPath = null;
 		// 判断这些参数是放在本地还是hdfs上
 		Boolean isHdfs = savePath.substring(0, 3).equalsIgnoreCase("HDFS");
@@ -144,5 +146,10 @@ enum Param {
 
 	Param(String paramKey) {
 		this.paramKey = paramKey;
+	}
+	
+	@Override
+	public String toString() {
+		return paramKey;
 	}
 }

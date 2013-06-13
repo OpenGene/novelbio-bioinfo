@@ -23,8 +23,8 @@ import com.novelbio.database.model.modgeneid.GeneID;
 /**
  * 考虑添加进度条
  * @author zong0jie
- *
  */
+
 public abstract class CtrlGOPath extends RunProcess<GoPathInfo> {
 	private static final Logger logger = Logger.getLogger(CtrlGOPath.class);
 	private static ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1, 8, 1000, TimeUnit.MICROSECONDS, new ArrayBlockingQueue<Runnable>(5000));
@@ -243,19 +243,20 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo> {
 	}
 
 	public void saveExcel(String excelPath) {
-		saveExcelPrefix = FileOperate.changeFilePrefix(excelPath, getResultBaseTitle() + "_", null);
+		saveExcelPrefix = excelPath;
 		if (isCluster) {
-			saveExcelCluster(saveExcelPrefix);
+			saveExcelCluster(excelPath);
 		} else {
-			saveExcelNorm(saveExcelPrefix);
+			saveExcelNorm(excelPath);
 		}
 	}
+	
 	/** 返回 保存的路径，注意如果是cluster，则返回的是前缀 */
 	public String getSaveExcelPrefix() {
 		return saveExcelPrefix;
 	}
 	
-	private void saveExcelNorm(String excelPath) {
+	protected void saveExcelNorm(String excelPath) {
 		ExcelOperate excelResult = new ExcelOperate();
 		excelResult.openExcel(excelPath);
 		ExcelOperate excelResultAll = new ExcelOperate();
@@ -276,7 +277,7 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo> {
 		}
 	}
 	
-	private void saveExcelCluster(String excelPath) {
+	protected void saveExcelCluster(String excelPath) {
 		for (String prefix : mapPrefix2FunTest.keySet()) {
 			ExcelOperate excelResult = new ExcelOperate();
 			String excelPathOut = FileOperate.changeFileSuffix(excelPath, "_" + prefix, null);

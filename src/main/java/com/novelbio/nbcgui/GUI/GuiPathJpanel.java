@@ -28,7 +28,7 @@ import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.base.gui.JTextFieldData;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.database.service.SpringFactory;
-import com.novelbio.nbcgui.controltest.CtrlTestInt;
+import com.novelbio.nbcgui.controltest.CtrlTestPathInt;
 
 
 /**
@@ -71,7 +71,7 @@ public class GuiPathJpanel extends JPanel{
 	private JLabel jLabPathQtaxID;
 	private JScrollPaneData jScrollPaneInputPath;
 	
-	CtrlTestInt ctrlPath;
+	CtrlTestPathInt ctrlPath;
 	JScrollPaneData scrollPaneBlast;
 	GUIFileOpen guiFileOpen = new GUIFileOpen();;
 	
@@ -278,10 +278,7 @@ public class GuiPathJpanel extends JPanel{
 			jBtbSavePath.setMargin(new java.awt.Insets(1, 0, 1, 0));
 			jBtbSavePath.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
-					String savefilename = guiFileOpen.saveFileName("excel2003", "xls");
-					if (!FileOperate.getFileNameSep(savefilename)[1].equals("xls")) {
-						savefilename = savefilename+".xls";
-					}
+					String savefilename = guiFileOpen.saveFileNameAndPath("excel2003", "");
 					if (ctrlPath != null) {
 						ctrlPath.saveExcel(savefilename);
 					}
@@ -356,7 +353,7 @@ public class GuiPathJpanel extends JPanel{
 		} else {
 			lsAccID = ExcelTxtRead.readLsExcelTxt(geneFileXls, new int[]{colAccID}, 1, 0);
 		}
-		ctrlPath = (CtrlTestInt)SpringFactory.getFactory().getBean("ctrlPath");
+		ctrlPath = (CtrlTestPathInt)SpringFactory.getFactory().getBean("ctrlPath");
 		ctrlPath.clearParam();
 		int taxID = -1;
 		Species species = jCombSelSpePath.getSelectedValue();
@@ -400,7 +397,7 @@ public class GuiPathJpanel extends JPanel{
 		setNormalGo(ctrlPath);
 	}
 	
-	private void setNormalGo(CtrlTestInt ctrlPath) {
+	private void setNormalGo(CtrlTestPathInt ctrlPath) {
 		//jScrollPaneInputGo 最外层的方框
 		//jTabbedPaneGOTest 里面的标签框
 		//jPanGoTest 具体的标签

@@ -1,9 +1,11 @@
 package com.novelbio.nbcgui.controltest;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -23,18 +25,9 @@ public class CtrlGOall implements CtrlTestGOInt {
 	GoAlgorithm goAlgorithm;
 	int taxID = 0;
 	List<Integer> lsBlastTaxID = new ArrayList<Integer>();
+	boolean isCluster = false;
+	String saveParentPath = "";
 	
-	public CtrlGOall() {
-		CtrlGO ctrlGO = new CtrlGO();
-		ctrlGO.setGOType(GOtype.BP);
-		mapGOtype2CtrlGO.put(GOtype.BP, ctrlGO);
-		ctrlGO = new CtrlGO();
-		ctrlGO.setGOType(GOtype.MF);
-		mapGOtype2CtrlGO.put(GOtype.MF, ctrlGO);
-		ctrlGO = new CtrlGO();
-		ctrlGO.setGOType(GOtype.CC);
-		mapGOtype2CtrlGO.put(GOtype.CC, ctrlGO);
-	}
 	@Override
 	public void setTaxID(int taxID) {
 		for (CtrlGO ctrlGO : mapGOtype2CtrlGO.values()) {
@@ -42,7 +35,7 @@ public class CtrlGOall implements CtrlTestGOInt {
 		}
 		this.taxID = taxID;
 	}
-
+	
 	@Override
 	public void setLsAccID2Value(ArrayList<String[]> lsAccID2Value) {
 		for (CtrlGO ctrlGO : mapGOtype2CtrlGO.values()) {
@@ -75,15 +68,26 @@ public class CtrlGOall implements CtrlTestGOInt {
 
 	@Override
 	public void setIsCluster(boolean isCluster) {
+		this.isCluster = isCluster;
 		for (CtrlGO ctrlGO : mapGOtype2CtrlGO.values()) {
 			ctrlGO.setIsCluster(isCluster);
 		}
 	}
 	
 	@Override
+	public boolean isCluster() {
+		return isCluster;
+	}
+	
+	@Override
 	public void saveExcel(String excelPath) {
 		String saveExcelPrefix = FoldeCreate.createAndInFold(excelPath, pathSaveTo);
-
+		if (saveExcelPrefix.endsWith("\\") || saveExcelPrefix.endsWith("/")) {
+			saveParentPath = saveExcelPrefix;
+		} else {
+			saveParentPath = FileOperate.getParentPathName(saveExcelPrefix);
+		}
+		
 		for (CtrlGO ctrlGO : mapGOtype2CtrlGO.values()) {
 			String saveName;
 			if (saveExcelPrefix.endsWith("\\") || saveExcelPrefix.endsWith("/")) {
@@ -95,11 +99,29 @@ public class CtrlGOall implements CtrlTestGOInt {
 		}
 	}
 	
+	/** 获得保存到的文件夹路径 */
+	@Override
+	public String getSaveParentPath() {
+		return saveParentPath;
+	}
+	
 	@Override
 	public void setGoAlgorithm(GoAlgorithm goAlgorithm) {
-		for (CtrlGO ctrlGO : mapGOtype2CtrlGO.values()) {
-			ctrlGO.setGoAlgorithm(goAlgorithm);
-		}
+		CtrlGO ctrlGO = new CtrlGO();
+		ctrlGO.setGoAlgorithm(goAlgorithm);
+		ctrlGO.setGOType(GOtype.BP);
+		mapGOtype2CtrlGO.put(GOtype.BP, ctrlGO);
+		
+		ctrlGO = new CtrlGO();
+		ctrlGO.setGoAlgorithm(goAlgorithm);
+		ctrlGO.setGOType(GOtype.MF);
+		mapGOtype2CtrlGO.put(GOtype.MF, ctrlGO);
+		
+		ctrlGO = new CtrlGO();
+		ctrlGO.setGoAlgorithm(goAlgorithm);
+		ctrlGO.setGOType(GOtype.CC);
+		mapGOtype2CtrlGO.put(GOtype.CC, ctrlGO);
+
 		this.goAlgorithm = goAlgorithm;
 	}
 
@@ -124,23 +146,33 @@ public class CtrlGOall implements CtrlTestGOInt {
 
 	@Override
 	public void run() {
+		List<Thread> lsThreads = new ArrayList<Thread>();
 		for (CtrlGO ctrlGO : mapGOtype2CtrlGO.values()) {
 			Thread thread = new Thread(ctrlGO);
 			thread.start();
+			lsThreads.add(thread);
 		}
-		while (true) {
-			boolean isfinish = true;
-			for (CtrlGO ctrlGO : mapGOtype2CtrlGO.values()) {
-				if (ctrlGO.isRunning()) {
-					isfinish = false;
-					try { Thread.sleep(1000); } catch (InterruptedException e) { }
-					break;
-				}
-			}
-			if (isfinish) {
-				break;
+		for (Thread thread : lsThreads) {
+			try {
+				thread.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 		}
+		
+//		while (true) {
+//			boolean isfinish = true;
+//			for (CtrlGO ctrlGO : mapGOtype2CtrlGO.values()) {
+//				if (ctrlGO.isRunning()) {
+//					isfinish = false;
+//					try { Thread.sleep(1000); } catch (InterruptedException e) { }
+//					break;
+//				}
+//			}
+//			if (isfinish) {
+//				break;
+//			}
+//		}
 	}
 
 	@Override
@@ -162,5 +194,4 @@ public class CtrlGOall implements CtrlTestGOInt {
 	public String getResultBaseTitle() {
 		return "GO-Analysis";
 	}
-
 }

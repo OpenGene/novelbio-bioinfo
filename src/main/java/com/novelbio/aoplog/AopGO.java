@@ -1,10 +1,7 @@
 package com.novelbio.aoplog;
 
-import java.awt.Color;
-import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -14,37 +11,19 @@ import java.util.Set;
 
 import javax.imageio.ImageIO;
 
-import org.apache.batik.ext.awt.g2d.GraphicContext;
 import org.apache.log4j.Logger;
+import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtilities;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.CategoryAxis;
-import org.jfree.chart.axis.CategoryLabelPositions;
-import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.plot.CategoryPlot;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.renderer.category.BarPainter;
-import org.jfree.chart.renderer.category.BarRenderer;
-import org.jfree.chart.renderer.category.StandardBarPainter;
-import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.ui.RectangleInsets;
 import org.springframework.stereotype.Component;
 
-import com.hg.doc.c.s;
 import com.novelbio.analysis.annotation.functiontest.FunctionTest;
 import com.novelbio.analysis.annotation.functiontest.StatisticTestResult;
 import com.novelbio.aoplog.AopPath.PathBuilder;
 import com.novelbio.base.SepSign;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.GraphicCope;
 import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.nbcgui.controltest.CtrlGO;
-import com.novelbio.nbcgui.controltest.CtrlGOPath;
-import com.novelbio.nbcgui.controltest.CtrlPath;
 import com.novelbio.nbcgui.controltest.CtrlTestGOInt;
 
 /**
@@ -56,14 +35,14 @@ import com.novelbio.nbcgui.controltest.CtrlTestGOInt;
 @Component
 @Aspect
 public class AopGO {
-	private static Logger logger = Logger.getLogger(AopGO.class);
+	private static final Logger logger = Logger.getLogger(AopGO.class);
 
 	/**
 	 * 用来拦截GOPath的生成excel的方法，在生成excel之前，先画一幅图，并向配置文件params.txt中加入生成报告所需的参数
 	 * @param excelPath
-	 * @param ctrlGOPath
+	 * @param ctrlTestGOInt
 	 */
-	@Before("execution (* com.novelbio.nbcgui.controltest.CtrlTestGOInt.saveExcel(*)) && target(ctrlGOPath)")
+	@After("execution (* com.novelbio.nbcgui.controltest.CtrlTestGOInt.saveExcel(*)) && target(ctrlTestGOInt)")
 	public void goPathPoint(CtrlTestGOInt ctrlTestGOInt) {
 		ReportBuilder goPathBuilder = new GoBuilder(ctrlTestGOInt);
 		goPathBuilder.writeInfo();
@@ -84,22 +63,17 @@ public class AopGO {
 		private CtrlTestGOInt ctrlTestGOInt;
 		/** 筛选条件 */
 		private String finderCondition = null;
-		/** 是否是cluster */
-		private boolean isCluster = false;
-		/** 结果标题 */
-		private String title = "";
 		
 		/**
 		 * 
 		 * @param excelPath
 		 *            拦截的excel的存放路径
-		 * @param ctrlGOPath
+		 * @param ctrlTestGOInt
 		 *            拦截的对象
 		 */
 		public GoBuilder(CtrlTestGOInt ctrlTestGOInt) {
 			this.ctrlTestGOInt = ctrlTestGOInt;
-			this.isCluster = ctrlTestGOInt.isCluster();
-			this.title = ctrlTestGOInt.getResultBaseTitle();
+			setParamPath(ctrlTestGOInt.getSaveParentPath());
 			addParamInfo(Param.testMethodParam, ctrlTestGOInt.getGoAlgorithm().toString());
 		}
 
@@ -153,6 +127,7 @@ public class AopGO {
 					}
 				}
 			} catch (Exception e) {
+				e.printStackTrace();
 				logger.error("aopGoPath生成excel出错！");
 				return false;
 			}
@@ -164,67 +139,23 @@ public class AopGO {
 			try {
 				for (String prefix : getPrefix(ctrlTestGOInt)) {
 					List<BufferedImage> lsGOimage = new ArrayList<BufferedImage>();
+					String excelSavePath = "";
 					for (CtrlGO ctrlGO : ctrlTestGOInt.getMapResult_Prefix2FunTest().values()) {
 						FunctionTest functionTest = ctrlGO.getMapResult_Prefix2FunTest().get(prefix);
 						lsGOimage.add(PathBuilder.drawLog2PvaluePicture(functionTest.getTestResult(), ctrlGO.getResultBaseTitle()));
+						excelSavePath = FileOperate.getParentPathName(ctrlGO.getSaveExcelPrefix());
 					}
 					BufferedImage bfImageCombine = GraphicCope.combineBfImage(true, 30, lsGOimage);
-					String picNameLog2P = FileOperate.changeFilePrefix(, "GO-Analysis-Log2P_" + prefix + "_", "png");
-
-					String picNameLog2P = FileOperate.changeFilePrefix(excelPath, "GO-Analysis-Log2P_" + prix + "_", "png");
-					BufferedImage bfImageLog2Pic = drawLog2PvaluePicture(lsTestResults, ctrlTestPathInt.getResultBaseTitle());
-					if (bfImageLog2Pic == null) return false;
-					ImageIO.write(bfImageLog2Pic, "png", new File(picNameLog2P));
-					if (isCluster) {
+					String picNameLog2P = excelSavePath +  "GO-Analysis-Log2P_" + prefix + ".png";
+					ImageIO.write(bfImageCombine, "png", new File(picNameLog2P));
+					if (ctrlTestGOInt.isCluster()) {
 						addParamInfo(Param.picParam1, FileOperate.getFileName(picNameLog2P));
 					} else {
 						addParamInfo(Param.picParam, FileOperate.getFileName(picNameLog2P));
 					}
-			
-				}
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				for (CtrlGO ctrlGO : ctrlTestGOInt.getMapResult_Prefix2FunTest().values()) {
-					Map<String, FunctionTest> map = ctrlGO.getMapResult_Prefix2FunTest();
-					for (String prefix : map.keySet()) {
-						List<StatisticTestResult> lsTestResults = map.get(prefix).getTestResult();
-						
-						
-					}
-
-					
-				}
-				// 拦截到对象中的结果集
-				
-				for (Entry<String, FunctionTest> entry : map.entrySet()) {
-					// excel中的testResult对象结果集
-					List<StatisticTestResult> lsTestResults = entry.getValue().getTestResult();
-					String prix = entry.getKey();
-
-					// 赋值picture
-					// excel中testResult对应的sheet的名字，将作为画的图的名字
-					String picName = FileOperate.changeFilePrefix(excelPath, "GO-Analysis_" + prix + "_", "png");
-					// 画一张testResult的图
-					if (drawPicture(picName, lsTestResults, title)) {
-						if (isCluster) {
-							picParam1 += FileOperate.getFileName(picName) + ";";
-						} else {
-							picParam += FileOperate.getFileName(picName) + ";";
-						}
-					}
-					// TODO image的说明文件在这里写
-					// String descFile = FileOperate.changeFileSuffix(picName,
-					// "_pic", "txt");
 				}
 			} catch (Exception e) {
+				e.printStackTrace();
 				logger.error("aopGoPath生成图表出错！");
 				return false;
 			}
@@ -243,41 +174,9 @@ public class AopGO {
 			return setPrefix;
 		}
 		
-		
 		@Override
-		public boolean buildDescFile() {
-			finderConditionParam += finderCondition;
-			TxtReadandWrite txtReadandWrite = null;
-			try {
-				txtReadandWrite = getParamsTxt(excelPath);
-				// 把参数写入到params.txt
-				writeParam(txtReadandWrite, picParam);
-				writeParam(txtReadandWrite, excelParam);
-				writeParam(txtReadandWrite, picParam1);
-				writeParam(txtReadandWrite, excelParam1);
-				writeParam(txtReadandWrite, testMethodParam);
-				writeParam(txtReadandWrite, finderConditionParam);
-				writeParam(txtReadandWrite, upRegulationParam);
-				writeParam(txtReadandWrite, downRegulationParam);
-				txtReadandWrite.flash();
-			} catch (Exception e) {
-				logger.error("GOPath生成自动化报告参数文件param.txt出错！");
-				return false;
-			} finally {
-				try {
-					txtReadandWrite.close();
-				} catch (Exception e2) {
-					logger.error("GOPath生成自动化报告参数文件param.txt出错！");
-					return false;
-				}
-			}
+		protected boolean fillDescFile() {
 			return true;
-		}
-		
-		private void writeParam(TxtReadandWrite txtWrite, String param) {
-			if (param.split(SepSign.SEP_INFO).length > 1) {
-				txtWrite.writefileln(param);
-			}
 		}
 		
 		/**
@@ -318,11 +217,6 @@ public class AopGO {
 			return result[conditionNum];
 		}
 
-		@Override
-		protected boolean fillDescFile() {
-			// TODO Auto-generated method stub
-			return false;
-		}
 	}
 
 }

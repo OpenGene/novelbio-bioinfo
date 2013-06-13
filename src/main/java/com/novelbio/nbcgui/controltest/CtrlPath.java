@@ -10,11 +10,14 @@ import org.springframework.stereotype.Service;
 import com.novelbio.analysis.annotation.functiontest.FunctionTest;
 import com.novelbio.analysis.annotation.functiontest.TopGO.GoAlgorithm;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.nbcgui.FoldeCreate;
 @Service
 @Scope("prototype")
 public class CtrlPath extends CtrlGOPath implements CtrlTestPathInt {
 	private static final Logger logger = Logger.getLogger(CtrlPath.class);
-
+	private static final String pathSaveTo = "Path-Analysis_result";
+	String saveParentPath = "";
+	
 	/** @param QtaxID */
 	public CtrlPath() {
 		functionTest = FunctionTest.getInstance(FunctionTest.FUNCTION_PATHWAY_KEGG);
@@ -38,6 +41,26 @@ public class CtrlPath extends CtrlGOPath implements CtrlTestPathInt {
 			}
 		}
 		return FileOperate.changeFileSuffix(fileName, suffix, "txt");
+	}
+	
+	public void saveExcel(String excelPath) {
+		String excelPrefix = FoldeCreate.createAndInFold(excelPath, pathSaveTo);
+		if (excelPrefix.endsWith("\\") || excelPrefix.endsWith("/")) {
+			saveParentPath = excelPrefix;
+		} else {
+			saveParentPath = FileOperate.getParentPathName(excelPrefix);
+		}
+		
+		if (excelPrefix.endsWith("\\") || excelPrefix.endsWith("/")) {
+			saveExcelPrefix = excelPrefix + getResultBaseTitle() + ".xls";
+		} else {
+			saveExcelPrefix = FileOperate.changeFilePrefix(excelPrefix, getResultBaseTitle() + "_", "xls");
+		}
+		if (isCluster) {
+			saveExcelCluster(saveExcelPrefix);
+		} else {
+			saveExcelNorm(saveExcelPrefix);
+		}
 	}
 
 	@Override

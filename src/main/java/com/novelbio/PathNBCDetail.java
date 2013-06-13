@@ -1,7 +1,8 @@
 package com.novelbio;
 
 import java.io.File;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -9,7 +10,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 
 public class PathNBCDetail {
 	static String workSpace;
-	static HashMap<String, String> mapID2Path = new HashMap<String, String>();
+	static Map<String, String> mapID2Path = new LinkedHashMap<String, String>();
 	static {
 		initial();
 	}
@@ -120,6 +121,11 @@ public class PathNBCDetail {
 	
 	public static String getMiRNADat() {
 		return mapID2Path.get("miRNAdat");
+	}
+	
+	/** NCBI的基因互作表 */
+	public static String getNCBIinteract() {
+		return mapID2Path.get("NCBIinteract");
 	}
 	/** 一个大的能容纳一些中间过程的文件夹 */
 	public static String getTmpPath() {

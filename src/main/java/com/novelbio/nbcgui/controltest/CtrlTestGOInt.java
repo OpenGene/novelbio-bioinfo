@@ -46,6 +46,8 @@ public interface CtrlTestGOInt {
 	 */
 	public void setGOlevel(int levelNum);
 	
+	public boolean isCluster();
+	
 	/**
 	 * 清空参数，每次调用之前先清空参数
 	 */
@@ -67,4 +69,7 @@ public interface CtrlTestGOInt {
 	public Map<GOtype, CtrlGO> getMapResult_Prefix2FunTest();
 	
 	public String getResultBaseTitle();
+	
+	/** 获得保存到的文件夹路径 */
+	public String getSaveParentPath();
 }

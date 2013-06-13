@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -12,10 +11,9 @@ import java.util.Map.Entry;
 import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
+import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.CategoryLabelPositions;
@@ -30,7 +28,6 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.ui.RectangleInsets;
 import org.springframework.stereotype.Component;
 
-import com.hg.data.a;
 import com.novelbio.analysis.annotation.functiontest.FunctionTest;
 import com.novelbio.analysis.annotation.functiontest.StatisticTestResult;
 import com.novelbio.base.SepSign;
@@ -52,11 +49,11 @@ public class AopPath {
 	/**
 	 * 用来拦截GOPath的生成excel的方法，在生成excel之前，先画一幅图，并向配置文件params.txt中加入生成报告所需的参数
 	 * @param excelPath
-	 * @param ctrlGOPath
+	 * @param ctrlTestPathInt
 	 */
-	@Before("execution (* com.novelbio.nbcgui.controltest.CtrlTestPathInt.saveExcel(*)) && args(excelPath) && target(CtrlTestPathInt)")
-	public void goPathPoint(String excelPath, CtrlTestPathInt ctrlGOPath) {
-		ReportBuilder goPathBuilder = new PathBuilder(excelPath, ctrlGOPath);
+	@After("execution (* com.novelbio.nbcgui.controltest.CtrlTestPathInt.saveExcel(*)) && target(ctrlTestPathInt)")
+	public void goPathPoint(CtrlTestPathInt ctrlTestPathInt) {
+		ReportBuilder goPathBuilder = new PathBuilder(ctrlTestPathInt);
 		goPathBuilder.writeInfo();
 	}
 
@@ -71,26 +68,20 @@ public class AopPath {
 		private static final int barMaxNumVertical = 25;
 		/** 画的柱状图的柱的数量上限 */
 		private static final int barMaxNumHorizon = 15;
-		/** 拦截的excel的存放路径 */
-		private String excelPath;
 		/** 拦截的对象 */
 		private CtrlTestPathInt ctrlTestPathInt;
 		/** 筛选条件 */
 		private String finderCondition = null;
-		/** 是否是cluster */
-		private boolean isCluster = false;
 
 		/**
 		 * 
 		 * @param excelPath
 		 *            拦截的excel的存放路径
-		 * @param ctrlGOPath
+		 * @param ctrlTestPathInt
 		 *            拦截的对象
 		 */
-		public PathBuilder(String excelPath, CtrlTestPathInt ctrlTestPathInt) {
-			this.excelPath = excelPath;
+		public PathBuilder( CtrlTestPathInt ctrlTestPathInt) {
 			this.ctrlTestPathInt = ctrlTestPathInt;
-			this.isCluster = ctrlTestPathInt.isCluster();
 		}
 
 		@Override
@@ -116,11 +107,11 @@ public class AopPath {
 					// 赋值excel
 					Map<String, List<String[]>> mapSheetName2LsInfo = functionTest.getMapWriteToExcel();
 					// 加上前缀名
-					String excelPathOut = FileOperate.changeFilePrefixReal(excelPath, ctrlTestPathInt.getResultBaseTitle() + "_", null);
+					String excelPathOut = ctrlTestPathInt.getSaveExcelPrefix();
 
 					for (String sheetName : mapSheetName2LsInfo.keySet()) {
-						if (isCluster) {
-							addParamInfo(Param.excelParam1, FileOperate.getFileName(excelPathOut) + SepSign.SEP_INFO_SAMEDB + prix + sheetName);
+						if (ctrlTestPathInt.isCluster()) {
+							addParamInfo(Param.excelParam1, FileOperate.getFileName(excelPathOut) + "_" + prix + SepSign.SEP_INFO_SAMEDB + sheetName);
 						} else {
 							addParamInfo(Param.excelParam, FileOperate.getFileName(excelPathOut) + SepSign.SEP_INFO_SAMEDB + prix + sheetName);
 						}
@@ -142,12 +133,12 @@ public class AopPath {
 				for (Entry<String, FunctionTest> entry : map.entrySet()) {
 					List<StatisticTestResult> lsTestResults = entry.getValue().getTestResult();
 					String prix = entry.getKey();
-					
+					String excelPath = FileOperate.getParentPathName(ctrlTestPathInt.getSaveExcelPrefix());
 					String picNameLog2P = FileOperate.changeFilePrefix(excelPath, "GO-Analysis-Log2P_" + prix + "_", "png");
 					BufferedImage bfImageLog2Pic = drawLog2PvaluePicture(lsTestResults, ctrlTestPathInt.getResultBaseTitle());
 					if (bfImageLog2Pic == null) return false;
 					ImageIO.write(bfImageLog2Pic, "png", new File(picNameLog2P));
-					if (isCluster) {
+					if (ctrlTestPathInt.isCluster()) {
 						addParamInfo(Param.picParam1, FileOperate.getFileName(picNameLog2P));
 					} else {
 						addParamInfo(Param.picParam, FileOperate.getFileName(picNameLog2P));
@@ -157,7 +148,7 @@ public class AopPath {
 					BufferedImage bfImageEnrichment = drawEnrichmentPicture(lsTestResults, ctrlTestPathInt.getResultBaseTitle());
 					if (bfImageEnrichment != null) return false;
 					ImageIO.write(bfImageEnrichment, "png", new File(picNameEnrichment));
-					if (isCluster) {
+					if (ctrlTestPathInt.isCluster()) {
 						addParamInfo(Param.picParam1, FileOperate.getFileName(picNameEnrichment));
 					} else {
 						addParamInfo(Param.picParam, FileOperate.getFileName(picNameEnrichment));
@@ -231,8 +222,7 @@ public class AopPath {
 			JFreeChart chart = ChartFactory.createBarChart(title, null, "-Log2P", dataset, PlotOrientation.HORIZONTAL, false, false, false);
 			// chart.getRenderingHints().put(RenderingHints.KEY_TEXT_ANTIALIASING,RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 			// 设置图标题的字体
-			Font font = new Font("黑体", Font.BOLD, 30);
-			chart.getTitle().setFont(font);
+			chart.getTitle().setFont(new Font("黑体", Font.BOLD, 30));
 			/** title永远是居中的，但是我们想要让title靠上或者靠边怎么办呢，
 			 * 就要将title包装成一个矩形，然后jfreechart会将这个矩形居中
 			 * 所以第一个就是矩形的上边，这样上边设置越大，title与上边框的距离就越大
@@ -284,14 +274,15 @@ public class AopPath {
 			// 设置横轴的标题
 			// cateaxis.setLabelFont(new Font("粗体", Font.BOLD, 16));
 			// 设置横轴的标尺
-			cateaxis.setTickLabelFont(new Font("粗体", Font.BOLD, 14));
+			cateaxis.setTickLabelFont(new Font(Font.SERIF, Font.BOLD, 22));
+			cateaxis.setMaximumCategoryLabelWidthRatio(0.45f);
 			// 让标尺以30度倾斜
 //			cateaxis.setCategoryLabelPositions(CategoryLabelPositions.createUpRotationLabelPositions(Math.PI / 3.0));
 			// 纵轴
 			NumberAxis numaxis = (NumberAxis) plot.getRangeAxis();
 			numaxis.setTickUnit(new NumberTickUnit(PlotBar.getSpace(numaxis.getRange().getUpperBound(), 10)));
-			numaxis.setLabelFont(new Font("宋体", Font.BOLD, 20));
-			numaxis.setLabelInsets(new RectangleInsets(0, 0, 10, 0));
+			numaxis.setLabelFont(new Font("宋体", Font.BOLD, 25));
+			numaxis.setLabelInsets(new RectangleInsets(0, 500, 10, 0));
 			return chart.createBufferedImage(1000, 1000);
 			
 			
@@ -347,7 +338,7 @@ public class AopPath {
 			renderer.setItemMargin(0.4);
 			plot.setRenderer(renderer);
 			// 设置横轴的标尺
-			cateaxis.setTickLabelFont(new Font("粗体", Font.BOLD, 14));
+			cateaxis.setTickLabelFont(new Font(Font.SERIF, Font.PLAIN, 18));
 			// 让标尺以30度倾斜
 			cateaxis.setCategoryLabelPositions(CategoryLabelPositions.createUpRotationLabelPositions(Math.PI / 3.0));
 			// 纵轴

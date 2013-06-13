@@ -28,7 +28,7 @@ public class FoldeCreate {
 		}
 		lastParentFoldName = FileOperate.getFileName(lastParentFoldPath);
 
-		if (lastParentFoldName.equals(foldName)) {
+		if (lastParentFoldName.contains(foldName)) {
 			return pathPrefix;
 		}
 		String pathFold = FileOperate.addSep(lastParentFoldPath) + foldName + FileOperate.getSepPath();

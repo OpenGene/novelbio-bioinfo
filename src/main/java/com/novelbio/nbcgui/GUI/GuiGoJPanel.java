@@ -21,9 +21,9 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import com.novelbio.analysis.annotation.functiontest.FunctionTest;
+import com.novelbio.analysis.annotation.functiontest.StatisticTestResult;
 import com.novelbio.analysis.annotation.functiontest.TopGO.GoAlgorithm;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
-import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
@@ -31,7 +31,8 @@ import com.novelbio.base.gui.JTextFieldData;
 import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.database.service.SpringFactory;
-import com.novelbio.nbcgui.controltest.CtrlTestInt;
+import com.novelbio.nbcgui.controltest.CtrlGO;
+import com.novelbio.nbcgui.controltest.CtrlTestGOInt;
 
 
 /**
@@ -89,7 +90,7 @@ public class GuiGoJPanel extends JPanel{
 	String GoClass = "";
 	
 	GUIFileOpen guiFileOpen = new GUIFileOpen();
-	CtrlTestInt ctrlGO;
+	CtrlTestGOInt ctrlGO;
 	public GuiGoJPanel() {
 	
 
@@ -344,10 +345,7 @@ public class GuiGoJPanel extends JPanel{
 			jBtbSaveGo.setMargin(new java.awt.Insets(1, 0, 1, 0));
 			jBtbSaveGo.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
-					String savefilename = guiFileOpen.saveFileName("excel2007", "xls");
-					if (!FileOperate.getFileNameSep(savefilename)[1].equals("xls")) {
-						savefilename = savefilename+".xls";
-					}
+					String savefilename = guiFileOpen.saveFileNameAndPath("excel2007", "");
 					if (ctrlGO != null) {
 						ctrlGO.saveExcel(savefilename);
 					}
@@ -440,7 +438,7 @@ public class GuiGoJPanel extends JPanel{
 		
 		String backGroundFile = jTxtBGGo.getText();
 		double evalue = 1e-10;
-		ctrlGO = (CtrlTestInt)SpringFactory.getFactory().getBean("ctrlGO");
+		ctrlGO = (CtrlTestGOInt)SpringFactory.getFactory().getBean("ctrlGOall");
 		ctrlGO.clearParam();
 		ctrlGO.setGoAlgorithm(cmbGoAlgorithm.getSelectedValue());
 //		ctrlGO.setGoAlgorithm(GoAlgorithm.novelgo);
@@ -457,9 +455,7 @@ public class GuiGoJPanel extends JPanel{
 			}
 		}
 		ctrlGO.setBlastInfo(evalue, lsStaxID);
-		
-		ctrlGO.setGOType(cmbGOType.getSelectedValue());
-		
+				
 		if (chkGOLevel.isSelected()) {
 			ctrlGO.setGOlevel((Integer) spnGOlevel.getValue());
 		} else {
@@ -483,32 +479,28 @@ public class GuiGoJPanel extends JPanel{
 		setNormalGo(ctrlGO);
 	}
 	
-	private void setNormalGo(CtrlTestInt ctrlGO) {
+	private void setNormalGo(CtrlTestGOInt ctrlGO) {
 		//jScrollPaneInputGo 最外层的方框
 		//jTabbedPaneGOTest 里面的标签框
 		//jPanGoTest 具体的标签
 		// jScrollPaneGOtest 标签里面的方框
 		// jTabFInputGo 方框里面的数据框
 		// jTabInputGo 具体数据
-		Map<String, FunctionTest> hashResult = ctrlGO.getMapResult_Prefix2FunTest();
+		Map<GOtype, CtrlGO> hashResult = ctrlGO.getMapResult_Prefix2FunTest();
 		jTabbedPaneGoResult.removeAll();
-		int i = 0;
-		for (Entry<String, FunctionTest> entry : hashResult.entrySet()) {
-			if (i > 2) {
-				break;
+		for (CtrlGO ctrlGOResult : hashResult.values()) {
+			for (Entry<String, FunctionTest> entry : ctrlGOResult.getMapResult_Prefix2FunTest().entrySet()) {
+				settab(jTabbedPaneGoResult, entry.getKey() + ctrlGOResult.getGOClass().toString(), entry.getValue().getTestResult());
 			}
-			Map<String, List<String[]>> mapSheetName2LsInfo = entry.getValue().getMapWriteToExcel();
-			for (String sheetName : mapSheetName2LsInfo.keySet()) {
-				settab(jTabbedPaneGoResult, entry.getKey() + sheetName, mapSheetName2LsInfo.get(sheetName));
-			}
-			i++;
 		}
 	}
 	
-	private void settab(JTabbedPane jTabbedPaneGoResult, String tabName , List<String[]> lsResult) {
+	private void settab(JTabbedPane jTabbedPaneGoResult, String tabName , List<StatisticTestResult> lsResultTest) {
 		//里层
 		String[][] tableValue = null;
-		DefaultTableModel jTabResult = new DefaultTableModel(tableValue,lsResult.get(0));
+		List<String[]> lsStatisticTestResults = StatisticTestResult.getLsInfo(true, lsResultTest);
+		
+		DefaultTableModel jTabResult = new DefaultTableModel(tableValue,lsStatisticTestResults.get(0));
 		//中层
 		JTable jTabFResult = new JTable();
 		jTabFResult.setModel(jTabResult);
@@ -518,8 +510,8 @@ public class GuiGoJPanel extends JPanel{
 		jScrollPanelResult.setViewportView(jTabFResult);
 		//最外层
 		jTabbedPaneGoResult.addTab(tabName, null, jScrollPanelResult, null);
-		for (int i = 1; i < lsResult.size(); i++) {
-			jTabResult.addRow(lsResult.get(i));
+		for (int i = 1; i < lsStatisticTestResults.size(); i++) {
+			jTabResult.addRow(lsStatisticTestResults.get(i));
 		}
 	}
 }

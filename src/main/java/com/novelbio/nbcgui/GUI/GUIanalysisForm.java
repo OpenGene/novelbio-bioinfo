@@ -59,7 +59,7 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 	private GuiRNAautoSpliceSimple guiRNAautoSpliceSimple;
 	private GuiUpdateDB guiUpdateDB;
 	private GuiVolcanoPlot guiVolcanoPlot;
-	
+	private GuiGeneNetWork guiGeneNetWork;
 	/**
 	* Auto-generated main method to display this JFrame
 	*/
@@ -139,6 +139,9 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				guiSrcToTrg = new GuiSrcToTrgJpanel();
 				jTabbedPane1.addTab("GeneAct", null, guiSrcToTrg, null);
 			
+				guiGeneNetWork = new GuiGeneNetWork();
+				jTabbedPane1.addTab("NCBIinteract", null, guiGeneNetWork, null);
+
 				guiPearson = new GuiPearsonJpanel();
 				jTabbedPane1.addTab("CoExp", null, guiPearson, null);
 				
