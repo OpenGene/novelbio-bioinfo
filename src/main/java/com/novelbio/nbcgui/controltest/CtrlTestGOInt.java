@@ -8,7 +8,7 @@ import com.novelbio.analysis.annotation.functiontest.FunctionTest;
 import com.novelbio.analysis.annotation.functiontest.TopGO.GoAlgorithm;
 import com.novelbio.database.domain.geneanno.GOtype;
 
-public interface CtrlTestInt {
+public interface CtrlTestGOInt {
 	public void setTaxID(int taxID);
 	/** lsAccID2Value  arraylist-string[] 若为string[2],则第二个为上下调关系，判断上下调
 	 * 若为string[1] 则跑全部基因作分析
@@ -46,19 +46,10 @@ public interface CtrlTestInt {
 	 */
 	public void setGOlevel(int levelNum);
 	
-	/** 
-	 * <b>GO用到</b><br>
-	 * GO用到
-	 */
-	public void setGOType(GOtype goType);
-	
 	/**
 	 * 清空参数，每次调用之前先清空参数
 	 */
 	public void clearParam();
-
-	/** GO用到 */
-	public GOtype getGOClass();
 
 	/** 运行 */
 	public void run();
@@ -73,7 +64,7 @@ public interface CtrlTestInt {
 	 * 结果,key： 时期等<br>
 	 * value：具体的结果<br>
 	 */
-	public Map<String, FunctionTest> getMapResult_Prefix2FunTest();
+	public Map<GOtype, CtrlGO> getMapResult_Prefix2FunTest();
 	
 	public String getResultBaseTitle();
 }

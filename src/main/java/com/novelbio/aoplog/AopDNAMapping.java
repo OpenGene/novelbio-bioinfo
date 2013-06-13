@@ -40,6 +40,7 @@ import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamFileStatistics;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.plot.PlotBar;
 
 @Component
 @Aspect
@@ -61,8 +62,7 @@ public class AopDNAMapping {
 		}
 		
 		MappingBuilder mappingBuilder = new MappingBuilder(samFile,mapDNAint);
-		if (!(mappingBuilder.buildExcels() && mappingBuilder.buildImages() && mappingBuilder.buildDescFile())) 
-			logger.error("AopDNAMapping拦截不成功，有部分内容没有成功生成！");
+		mappingBuilder.writeInfo();
 		
 		//TODO 保存执行的命令
 		mappingBuilder.saveCmdMapping();
@@ -76,8 +76,7 @@ public class AopDNAMapping {
 		}
 		
 		MappingBuilder mappingBuilder = new MappingBuilder(samFile,mapDNAint);
-		if (!(mappingBuilder.buildExcels() && mappingBuilder.buildImages() && mappingBuilder.buildDescFile())) 
-			logger.error("AopDNAMapping拦截不成功，有部分内容没有成功生成！");
+		mappingBuilder.writeInfo();
 		
 		//TODO 保存执行的命令
 		mappingBuilder.saveCmdMapping();
@@ -108,9 +107,9 @@ public class AopDNAMapping {
 		 */
 		private Map<String, double[]> mapChrID2LenProp = new LinkedHashMap<String, double[]>();
 		
-		
 		public MappingBuilder(SamFile samFile, MapDNAint mapDNAint) {
 			this.samFile = samFile;
+			setParamPath(samFile.getFileName());
 			for (AlignmentRecorder alignmentRecorder : mapDNAint.getLsAlignmentRecorders()) {
 				if (alignmentRecorder instanceof SamFileStatistics) {
 					samFileStatistics = (SamFileStatistics) alignmentRecorder;
@@ -152,36 +151,19 @@ public class AopDNAMapping {
 			}
 		}
 		
-
-		@Override
-		public boolean buildDescFile() {
-			TxtReadandWrite txtReadandWrite = null;
-			try {
-				txtReadandWrite = getParamsTxt(samFile.getFileName());
-				// 把参数写入到params.txt
-				txtReadandWrite.writefileln(picParam);
-				txtReadandWrite.writefileln(excelParam);
-			} catch (Exception e) {
-				logger.error("aopRNAMapping生成参数文件出错啦！");
-				return false;
-			} finally{
-				try {
-					txtReadandWrite.close();
-				} catch (Exception e2) {
-				}
-			}
-			return true;
-		}
-		
-		
 		public boolean saveCmdMapping() {
 			// TODO 把命令持久化起来
 			System.out.println(cmdMapping);
 			return true;
 		}
+
+		@Override
+		protected boolean fillDescFile() {
+			return true;
+		}
 		
 		@Override
-		public boolean buildExcels() {
+		protected boolean buildExcels() {
 			if (mapChrID2LenProp == null || mapChrID2LenProp.size() == 0) {
 				return true;
 			}
@@ -219,7 +201,7 @@ public class AopDNAMapping {
 				}
 				
 				String pathMapReport = FileOperate.changeFilePrefix(pathAndName, "MappingReport_", "xls");
-				excelParam += FileOperate.getFileName(pathMapReport) + ";";
+				addParamInfo(Param.excelParam,  FileOperate.getFileName(pathMapReport));
 				TxtReadandWrite txtReadandWrite = new TxtReadandWrite(pathMapReport, true);
 				txtReadandWrite.ExcelWrite(lsReport);
 				txtReadandWrite.close();
@@ -254,13 +236,13 @@ public class AopDNAMapping {
 			return true;
 		}
 		@Override
-		public boolean buildImages() {
+		protected boolean buildImages() {
 			if (mapChrID2LenProp.size() > chrNumMax) {
 				return true;
 			}
 			try {
 				String pathChrPic = FileOperate.changeFilePrefix(pathAndName, "ChrDistribution_", "png");
-				picParam += FileOperate.getFileName(pathChrPic) + ";";
+				addParamInfo(Param.picParam, FileOperate.getFileName(pathChrPic));
 				return drawMappingImage(pathChrPic);
 			} catch (Exception e) {
 				logger.error("aopRNAMapping画图表出错啦！");
@@ -329,7 +311,8 @@ public class AopDNAMapping {
 			// 纵轴
 			NumberAxis numaxis = (NumberAxis) plot.getRangeAxis();
 			numaxis.setTickLabelFont(new Font("宋体", Font.BOLD, 10));
-			numaxis.setTickUnit(new NumberTickUnit(0.02));
+			//纵轴标尺的间距
+			numaxis.setTickUnit(new NumberTickUnit(PlotBar.getSpace(numaxis.getRange().getUpperBound(), 5)));
 			numaxis.setLabelFont(new Font("粗体", Font.BOLD, 20));
 			numaxis.setLabel("Proportion");
 			//20表示左边marge，10表示lable与y轴的距离
@@ -350,7 +333,6 @@ public class AopDNAMapping {
 			return true;
 		}
 		
-		
 		/**
 		 * 返回染色体高度的数据用于画图，染色体根据染色体编号进行排序
 		 * @param resultData 实际reads在染色体上分布的map
@@ -367,6 +349,7 @@ public class AopDNAMapping {
 			}
 			return dataInfo;
 		}
+
 		
 	}
 

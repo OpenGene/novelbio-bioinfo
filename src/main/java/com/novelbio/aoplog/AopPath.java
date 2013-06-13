@@ -2,10 +2,14 @@ package com.novelbio.aoplog;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
 import org.aspectj.lang.annotation.Aspect;
@@ -16,6 +20,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.CategoryLabelPositions;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarPainter;
@@ -25,14 +30,13 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.ui.RectangleInsets;
 import org.springframework.stereotype.Component;
 
+import com.hg.data.a;
 import com.novelbio.analysis.annotation.functiontest.FunctionTest;
 import com.novelbio.analysis.annotation.functiontest.StatisticTestResult;
 import com.novelbio.base.SepSign;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.nbcgui.controltest.CtrlGO;
-import com.novelbio.nbcgui.controltest.CtrlGOPath;
-import com.novelbio.nbcgui.controltest.CtrlPath;
+import com.novelbio.base.plot.PlotBar;
+import com.novelbio.nbcgui.controltest.CtrlTestPathInt;
 
 /**
  * 给GOPath添加report相关的参数说明
@@ -42,20 +46,18 @@ import com.novelbio.nbcgui.controltest.CtrlPath;
  */
 @Component
 @Aspect
-public class AopGOPath {
-	private static Logger logger = Logger.getLogger(AopGOPath.class);
+public class AopPath {
+	private static Logger logger = Logger.getLogger(AopPath.class);
 
 	/**
 	 * 用来拦截GOPath的生成excel的方法，在生成excel之前，先画一幅图，并向配置文件params.txt中加入生成报告所需的参数
 	 * @param excelPath
 	 * @param ctrlGOPath
 	 */
-	@Before("execution (* com.novelbio.nbcgui.controltest.CtrlGOPath.saveExcel(*)) && args(excelPath) && target(ctrlGOPath)")
-	public void goPathPoint(String excelPath, CtrlGOPath ctrlGOPath) {
-		ReportBuilder goPathBuilder = new GoPathBuilder(excelPath, ctrlGOPath);
-		if (goPathBuilder.buildExcels() && goPathBuilder.buildImages() && goPathBuilder.buildDescFile())
-			return;
-		logger.error("aopGoPath生成报告图表参数出现异常！");
+	@Before("execution (* com.novelbio.nbcgui.controltest.CtrlTestPathInt.saveExcel(*)) && args(excelPath) && target(CtrlTestPathInt)")
+	public void goPathPoint(String excelPath, CtrlTestPathInt ctrlGOPath) {
+		ReportBuilder goPathBuilder = new PathBuilder(excelPath, ctrlGOPath);
+		goPathBuilder.writeInfo();
 	}
 
 	/**
@@ -64,21 +66,19 @@ public class AopGOPath {
 	 * @author novelbio
 	 * 
 	 */
-	private class GoPathBuilder extends ReportBuilder {
+	public static class PathBuilder extends ReportBuilder {
 		/** 画的柱状图的柱的数量上限 */
-		private static final int barMaxNum = 20;
+		private static final int barMaxNumVertical = 25;
+		/** 画的柱状图的柱的数量上限 */
+		private static final int barMaxNumHorizon = 15;
 		/** 拦截的excel的存放路径 */
 		private String excelPath;
 		/** 拦截的对象 */
-		private CtrlGOPath ctrlGOPath;
+		private CtrlTestPathInt ctrlTestPathInt;
 		/** 筛选条件 */
 		private String finderCondition = null;
 		/** 是否是cluster */
 		private boolean isCluster = false;
-		/** 是否是pathway */
-		private boolean isPathway = false;
-		/** 结果标题 */
-		private String title = "";
 
 		/**
 		 * 
@@ -87,22 +87,17 @@ public class AopGOPath {
 		 * @param ctrlGOPath
 		 *            拦截的对象
 		 */
-		public GoPathBuilder(String excelPath, CtrlGOPath ctrlGOPath) {
+		public PathBuilder(String excelPath, CtrlTestPathInt ctrlTestPathInt) {
 			this.excelPath = excelPath;
-			this.ctrlGOPath = ctrlGOPath;
-			this.isCluster = ctrlGOPath.isCluster();
-			this.isPathway = ctrlGOPath instanceof CtrlPath;
-			this.title = ctrlGOPath.getResultBaseTitle();
-			if (!isPathway) {
-				testMethodParam += ((CtrlGO) ctrlGOPath).getGoAlgorithm();
-			}
+			this.ctrlTestPathInt = ctrlTestPathInt;
+			this.isCluster = ctrlTestPathInt.isCluster();
 		}
 
 		@Override
 		public boolean buildExcels() {
 			try {
 				// 拦截到对象中的结果集
-				Map<String, FunctionTest> map = ctrlGOPath.getMapResult_Prefix2FunTest();
+				Map<String, FunctionTest> map = ctrlTestPathInt.getMapResult_Prefix2FunTest();
 				for (Entry<String, FunctionTest> entry : map.entrySet()) {
 					// excel中的testResult对象结果集
 					List<StatisticTestResult> lsTestResults = entry.getValue().getTestResult();
@@ -112,22 +107,22 @@ public class AopGOPath {
 
 					// 参数开始赋值
 					if (prix.equalsIgnoreCase("up")) {
-						upRegulationParam += functionTest.getAllDifGeneNum();
+						addParamInfo(Param.upRegulationParam, functionTest.getAllDifGeneNum() + "");
 					}
 					if (prix.equalsIgnoreCase("down")) {
-						downRegulationParam += functionTest.getAllGeneNum();
+						addParamInfo(Param.downRegulationParam, functionTest.getAllDifGeneNum() + "");
 					}
 
 					// 赋值excel
 					Map<String, List<String[]>> mapSheetName2LsInfo = functionTest.getMapWriteToExcel();
 					// 加上前缀名
-					String excelPathOut = FileOperate.changeFilePrefixReal(excelPath, title + "_", null);
+					String excelPathOut = FileOperate.changeFilePrefixReal(excelPath, ctrlTestPathInt.getResultBaseTitle() + "_", null);
 
 					for (String sheetName : mapSheetName2LsInfo.keySet()) {
 						if (isCluster) {
-							excelParam1 += FileOperate.getFileName(excelPathOut) + SepSign.SEP_INFO_SAMEDB + prix + sheetName + ";";
+							addParamInfo(Param.excelParam1, FileOperate.getFileName(excelPathOut) + SepSign.SEP_INFO_SAMEDB + prix + sheetName);
 						} else {
-							excelParam += FileOperate.getFileName(excelPathOut) + SepSign.SEP_INFO_SAMEDB + prix + sheetName + ";";
+							addParamInfo(Param.excelParam, FileOperate.getFileName(excelPathOut) + SepSign.SEP_INFO_SAMEDB + prix + sheetName);
 						}
 						// TODO excel的说明文件在这里写
 						//String descFile = FileOperate.changeFileSuffix(excelPathOut, "_" + prix + sheetName + "_xls", ".txt");
@@ -137,31 +132,37 @@ public class AopGOPath {
 				logger.error("aopGoPath生成excel出错！");
 				return false;
 			}
-
 			return true;
 		}
 
 		@Override
 		public boolean buildImages() {
 			try {
-				// 拦截到对象中的结果集
-				Map<String, FunctionTest> map = ctrlGOPath.getMapResult_Prefix2FunTest();
+				Map<String, FunctionTest> map = ctrlTestPathInt.getMapResult_Prefix2FunTest();
 				for (Entry<String, FunctionTest> entry : map.entrySet()) {
-					// excel中的testResult对象结果集
 					List<StatisticTestResult> lsTestResults = entry.getValue().getTestResult();
 					String prix = entry.getKey();
-
-					// 赋值picture
-					// excel中testResult对应的sheet的名字，将作为画的图的名字
-					String picName = FileOperate.changeFilePrefix(excelPath, "GO-Analysis_" + prix + "_", "png");
-					// 画一张testResult的图
-					if (drawPicture(picName, lsTestResults, title)) {
-						if (isCluster) {
-							picParam1 += FileOperate.getFileName(picName) + ";";
-						} else {
-							picParam += FileOperate.getFileName(picName) + ";";
-						}
+					
+					String picNameLog2P = FileOperate.changeFilePrefix(excelPath, "GO-Analysis-Log2P_" + prix + "_", "png");
+					BufferedImage bfImageLog2Pic = drawLog2PvaluePicture(lsTestResults, ctrlTestPathInt.getResultBaseTitle());
+					if (bfImageLog2Pic == null) return false;
+					ImageIO.write(bfImageLog2Pic, "png", new File(picNameLog2P));
+					if (isCluster) {
+						addParamInfo(Param.picParam1, FileOperate.getFileName(picNameLog2P));
+					} else {
+						addParamInfo(Param.picParam, FileOperate.getFileName(picNameLog2P));
 					}
+					
+					String picNameEnrichment = FileOperate.changeFilePrefix(excelPath, "GO-Analysis-Enrichment_" + prix + "_", "png");
+					BufferedImage bfImageEnrichment = drawEnrichmentPicture(lsTestResults, ctrlTestPathInt.getResultBaseTitle());
+					if (bfImageEnrichment != null) return false;
+					ImageIO.write(bfImageEnrichment, "png", new File(picNameEnrichment));
+					if (isCluster) {
+						addParamInfo(Param.picParam1, FileOperate.getFileName(picNameEnrichment));
+					} else {
+						addParamInfo(Param.picParam, FileOperate.getFileName(picNameEnrichment));
+					}
+					
 					// TODO image的说明文件在这里写
 					// String descFile = FileOperate.changeFileSuffix(picName,
 					// "_pic", "txt");
@@ -174,39 +175,8 @@ public class AopGOPath {
 		}
 
 		@Override
-		public boolean buildDescFile() {
-			finderConditionParam += finderCondition;
-			TxtReadandWrite txtReadandWrite = null;
-			try {
-				txtReadandWrite = getParamsTxt(excelPath);
-				// 把参数写入到params.txt
-				writeParam(txtReadandWrite, picParam);
-				writeParam(txtReadandWrite, excelParam);
-				writeParam(txtReadandWrite, picParam1);
-				writeParam(txtReadandWrite, excelParam1);
-				writeParam(txtReadandWrite, testMethodParam);
-				writeParam(txtReadandWrite, finderConditionParam);
-				writeParam(txtReadandWrite, upRegulationParam);
-				writeParam(txtReadandWrite, downRegulationParam);
-				txtReadandWrite.flash();
-			} catch (Exception e) {
-				logger.error("GOPath生成自动化报告参数文件param.txt出错！");
-				return false;
-			} finally {
-				try {
-					txtReadandWrite.close();
-				} catch (Exception e2) {
-					logger.error("GOPath生成自动化报告参数文件param.txt出错！");
-					return false;
-				}
-			}
+		protected boolean fillDescFile() {
 			return true;
-		}
-		
-		private void writeParam(TxtReadandWrite txtWrite, String param) {
-			if (param.split(SepSign.SEP_INFO).length > 1) {
-				txtWrite.writefileln(param);
-			}
 		}
 		
 		/**
@@ -252,19 +222,24 @@ public class AopGOPath {
 		 * 
 		 * @return　是否成功
 		 */
-		private boolean drawPicture(String picName, List<StatisticTestResult> lsTestResults, String title) throws Exception {
+		public static BufferedImage drawLog2PvaluePicture(List<StatisticTestResult> lsTestResults, String title) throws Exception {
 			DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-			for (int i = 0; i < barMaxNum; i++) {
+			for (int i = 0; i < barMaxNumHorizon; i++) {
 				if (i < lsTestResults.size())
 					dataset.addValue(lsTestResults.get(i).getLog2Pnegative(), "", lsTestResults.get(i).getItemTerm());
 			}
-			JFreeChart chart = ChartFactory.createBarChart(title, null, "-Log2P", dataset, PlotOrientation.VERTICAL, false, false, false);
+			JFreeChart chart = ChartFactory.createBarChart(title, null, "-Log2P", dataset, PlotOrientation.HORIZONTAL, false, false, false);
 			// chart.getRenderingHints().put(RenderingHints.KEY_TEXT_ANTIALIASING,RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 			// 设置图标题的字体
 			Font font = new Font("黑体", Font.BOLD, 30);
 			chart.getTitle().setFont(font);
-			RectangleInsets titlePosition = chart.getTitle().getPadding();
-			chart.getTitle().setPadding(titlePosition.getTop() + 60, titlePosition.getLeft(), titlePosition.getBottom(), titlePosition.getRight());
+			/** title永远是居中的，但是我们想要让title靠上或者靠边怎么办呢，
+			 * 就要将title包装成一个矩形，然后jfreechart会将这个矩形居中
+			 * 所以第一个就是矩形的上边，这样上边设置越大，title与上边框的距离就越大
+			 * 第二个是左边，左边设置越大，title与左边界的距离也就越大
+			 * 第三个是下边，下边越大，title与下边图片的距离也越大
+			 */
+			chart.getTitle().setPadding(20,0,20,0);
 			// TextTitle title = new TextTitle("直方图测试");
 			// 设置图例中的字体
 			// LegendTitle legend = chart.getLegend();
@@ -311,28 +286,93 @@ public class AopGOPath {
 			// 设置横轴的标尺
 			cateaxis.setTickLabelFont(new Font("粗体", Font.BOLD, 14));
 			// 让标尺以30度倾斜
+//			cateaxis.setCategoryLabelPositions(CategoryLabelPositions.createUpRotationLabelPositions(Math.PI / 3.0));
+			// 纵轴
+			NumberAxis numaxis = (NumberAxis) plot.getRangeAxis();
+			numaxis.setTickUnit(new NumberTickUnit(PlotBar.getSpace(numaxis.getRange().getUpperBound(), 10)));
+			numaxis.setLabelFont(new Font("宋体", Font.BOLD, 20));
+			numaxis.setLabelInsets(new RectangleInsets(0, 0, 10, 0));
+			return chart.createBufferedImage(1000, 1000);
+			
+			
+//			FileOutputStream fosPng = null;
+//			try {
+//				fosPng = new FileOutputStream(picName);
+//				ChartUtilities.writeChartAsPNG(fosPng, chart, 1200, 1000);
+//			} catch (Exception e) {
+//				logger.error(e.getMessage());
+//				return false;
+//			} finally {
+//				try {
+//					fosPng.close();
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//			return true;
+		}
+		/**
+		 * 根据参数画gopath的柱状图
+		 * 
+		 * @return　是否成功
+		 */
+		public static BufferedImage drawEnrichmentPicture(List<StatisticTestResult> lsTestResults, String title) throws Exception {
+			DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+			for (int i = 0; i < barMaxNumVertical; i++) {
+				if (i < lsTestResults.size())
+					dataset.addValue(lsTestResults.get(i).getEnrichment(), "", lsTestResults.get(i).getItemTerm());
+			}
+			JFreeChart chart = ChartFactory.createBarChart(title, null, "Gene Number", dataset, PlotOrientation.VERTICAL, false, false, false);
+			// 设置图标题的字体
+			chart.getTitle().setFont(new Font("黑体", Font.BOLD, 30));
+			chart.getTitle().setPadding(20,0,20,0);
+			chart.setBorderVisible(true);
+			CategoryPlot plot = (CategoryPlot) chart.getPlot();
+			plot.setBackgroundPaint(Color.white);
+			plot.setOutlinePaint(Color.WHITE);
+			CategoryAxis cateaxis = plot.getDomainAxis();
+			BarRenderer renderer = new BarRenderer();// 设置柱子的相关属性
+			// 设置柱子宽度
+			renderer.setMaximumBarWidth(0.03);
+			renderer.setMinimumBarLength(0.01000000000000001D); // 宽度
+			// 设置柱子高度
+			renderer.setMinimumBarLength(0.1);
+			// 设置柱子类型
+			BarPainter barPainter = new StandardBarPainter();
+			renderer.setBarPainter(barPainter);
+			renderer.setSeriesPaint(0, new Color(51, 102, 153));
+			// 是否显示阴影
+			renderer.setShadowVisible(false);
+			// 设置每个地区所包含的平行柱的之间距离，数值越大则间隔越大，图片大小一定的情况下会影响柱子的宽度，可以为负数
+			renderer.setItemMargin(0.4);
+			plot.setRenderer(renderer);
+			// 设置横轴的标尺
+			cateaxis.setTickLabelFont(new Font("粗体", Font.BOLD, 14));
+			// 让标尺以30度倾斜
 			cateaxis.setCategoryLabelPositions(CategoryLabelPositions.createUpRotationLabelPositions(Math.PI / 3.0));
 			// 纵轴
 			NumberAxis numaxis = (NumberAxis) plot.getRangeAxis();
 			numaxis.setLabelFont(new Font("宋体", Font.BOLD, 20));
-			RectangleInsets titleYPosition = numaxis.getLabelInsets();
-			numaxis.setLabelInsets(new RectangleInsets(titleYPosition.getTop() + 80, titleYPosition.getLeft(), titleYPosition.getBottom(), titleYPosition.getRight()));
-			FileOutputStream fosPng = null;
-			try {
-				fosPng = new FileOutputStream(picName);
-				ChartUtilities.writeChartAsPNG(fosPng, chart, 1000, 1000);
-			} catch (Exception e) {
-				logger.error(e.getMessage());
-				return false;
-			} finally {
-				try {
-					fosPng.close();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			return true;
+			numaxis.setTickUnit(new NumberTickUnit(PlotBar.getSpace(numaxis.getRange().getUpperBound(), 10)));
+			numaxis.setLabelInsets(new RectangleInsets(0, 0, 0, 10));
+			return chart.createBufferedImage(1000, 1000);
+			
+//			FileOutputStream fosPng = null;
+//			try {
+//				fosPng = new FileOutputStream(picName);
+//				ChartUtilities.writeChartAsPNG(fosPng, chart, 1000, 1000);
+//			} catch (Exception e) {
+//				logger.error(e.getMessage());
+//			} finally {
+//				try {
+//					fosPng.close();
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//			return true;
 		}
 	}
+	
 
 }

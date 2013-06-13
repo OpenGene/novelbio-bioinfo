@@ -6,6 +6,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
@@ -24,7 +27,8 @@ import com.novelbio.database.model.modgeneid.GeneID;
  */
 public abstract class CtrlGOPath extends RunProcess<GoPathInfo> {
 	private static final Logger logger = Logger.getLogger(CtrlGOPath.class);
-
+	private static ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1, 8, 1000, TimeUnit.MICROSECONDS, new ArrayBlockingQueue<Runnable>(5000));
+	
 	FunctionTest functionTest = null;
 	
 	double up = -1;
@@ -45,7 +49,8 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo> {
 	 * value：相应的结果
 	 */	
 	Map<String, FunctionTest> mapPrefix2FunTest = new LinkedHashMap<String, FunctionTest>();
-	
+	String bgFile = "";
+	String saveExcelPrefix;
 	
 	public void setTaxID(int taxID) {
 		functionTest.setTaxID(taxID);
@@ -82,14 +87,17 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo> {
 	 * @param fileName
 	 */
 	public void setLsBG(String fileName) {
-		boolean flagGeneID = testBGfile(fileName);
+		this.bgFile = fileName;
+	}
+	private void setBG() {
+		boolean flagGeneID = testBGfile(bgFile);
 		if (flagGeneID) {
-			functionTest.setLsBGItem(fileName);
+			functionTest.setLsBGItem(bgFile);
 		} else {
-			if (FileOperate.isFileExist( getGene2ItemFileName(fileName))) {
-				functionTest.setLsBGItem(getGene2ItemFileName(fileName));
+			if (FileOperate.isFileExist( getGene2ItemFileName(bgFile))) {
+				functionTest.setLsBGItem(getGene2ItemFileName(bgFile));
 			} else {
-				functionTest.setLsBGAccID(fileName, 1, getGene2ItemFileName(fileName));
+				functionTest.setLsBGAccID(bgFile, 1, getGene2ItemFileName(bgFile));
 			}
 		}
 	}
@@ -133,6 +141,7 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo> {
 	}
 	
 	public void running() {
+		setBG();
 		if (isCluster) {
 			runCluster();
 		} else {
@@ -163,8 +172,10 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo> {
 					mapPrefix2AccID.put("All", strings[0]);
 				} else if (strings.length > 1 && Double.parseDouble(strings[1]) >= up ) {
 					mapPrefix2AccID.put("Up", strings[0]);
+					mapPrefix2AccID.put("All", strings[0]);
 				} else if (strings.length > 1 && Double.parseDouble(strings[1]) <= down) {
 					mapPrefix2AccID.put("Down", strings[0]);
+					mapPrefix2AccID.put("All", strings[0]);
 				}
 			} catch (Exception e) { }
 		}
@@ -232,23 +243,34 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo> {
 	}
 
 	public void saveExcel(String excelPath) {
-		excelPath = FileOperate.changeFilePrefix(excelPath, getResultBaseTitle() + "_", null);
+		saveExcelPrefix = FileOperate.changeFilePrefix(excelPath, getResultBaseTitle() + "_", null);
 		if (isCluster) {
-			saveExcelCluster(excelPath);
+			saveExcelCluster(saveExcelPrefix);
 		} else {
-			saveExcelNorm(excelPath);
+			saveExcelNorm(saveExcelPrefix);
 		}
+	}
+	/** 返回 保存的路径，注意如果是cluster，则返回的是前缀 */
+	public String getSaveExcelPrefix() {
+		return saveExcelPrefix;
 	}
 	
 	private void saveExcelNorm(String excelPath) {
 		ExcelOperate excelResult = new ExcelOperate();
 		excelResult.openExcel(excelPath);
+		ExcelOperate excelResultAll = new ExcelOperate();
+		excelResultAll.openExcel(FileOperate.changeFileSuffix(excelPath, "_All", null));
 		for (String prefix : mapPrefix2FunTest.keySet()) {
 			FunctionTest functionTest = mapPrefix2FunTest.get(prefix);
 			Map<String,   List<String[]>> mapSheetName2LsInfo = functionTest.getMapWriteToExcel();
-			
-			for (String sheetName : mapSheetName2LsInfo.keySet()) {
-				excelResult.WriteExcel(prefix + sheetName, 1, 1, mapSheetName2LsInfo.get(sheetName));
+			if (mapPrefix2FunTest.size() > 1 && prefix.equals("All")) {
+				for (String sheetName : mapSheetName2LsInfo.keySet()) {
+					excelResultAll.WriteExcel(prefix + sheetName, 1, 1, mapSheetName2LsInfo.get(sheetName));
+				}
+			} else {
+				for (String sheetName : mapSheetName2LsInfo.keySet()) {
+					excelResult.WriteExcel(prefix + sheetName, 1, 1, mapSheetName2LsInfo.get(sheetName));
+				}
 			}
 			copeFile(prefix, excelPath);
 		}
@@ -285,6 +307,11 @@ public abstract class CtrlGOPath extends RunProcess<GoPathInfo> {
 	}
 	
 	protected abstract void clear();
+	
+	/** 获得做GO的线程池，线程池最大容量5000 */
+	public static ThreadPoolExecutor getThreadPoolExecutor() {
+		return threadPoolExecutor;
+	}
 }
 
 class GoPathInfo {

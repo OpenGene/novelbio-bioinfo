@@ -4,8 +4,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import com.novelbio.PathNBCDetail;
 import com.novelbio.analysis.annotation.functiontest.ElimGOFunTest;
@@ -15,9 +13,7 @@ import com.novelbio.analysis.annotation.functiontest.TopGO.GoAlgorithm;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.GOtype;
 
-@Component
-@Scope("prototype")
-public class CtrlGO extends CtrlGOPath implements CtrlTestInt {
+public class CtrlGO extends CtrlGOPath {
 	private static final Logger logger = Logger.getLogger(CtrlGO.class);
 	
 	GOtype GOClass = GOtype.BP;
@@ -93,6 +89,6 @@ public class CtrlGO extends CtrlGOPath implements CtrlTestInt {
 	
 	/** 返回文件的名字，用于excel和画图 */
 	public String getResultBaseTitle() {
-		return "GO-Analysis";
+		return "GO-Analysis_"+getGOClass().getTwoWord();
 	}
 }

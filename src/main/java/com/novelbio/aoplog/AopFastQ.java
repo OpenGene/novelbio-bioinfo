@@ -14,18 +14,6 @@ import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 
-import uk.ac.babraham.FastQC.Modules.BasicStats;
-import uk.ac.babraham.FastQC.Modules.DuplicationLevel;
-import uk.ac.babraham.FastQC.Modules.KmerContent;
-import uk.ac.babraham.FastQC.Modules.NContent;
-import uk.ac.babraham.FastQC.Modules.OverRepresentedSeqs;
-import uk.ac.babraham.FastQC.Modules.PerBaseGCContent;
-import uk.ac.babraham.FastQC.Modules.PerBaseQualityScores;
-import uk.ac.babraham.FastQC.Modules.PerBaseSequenceContent;
-import uk.ac.babraham.FastQC.Modules.PerSequenceGCContent;
-import uk.ac.babraham.FastQC.Modules.PerSequenceQualityScores;
-import uk.ac.babraham.FastQC.Modules.SequenceLengthDistribution;
-
 import com.novelbio.analysis.seq.fastq.FQrecordCopeInt;
 import com.novelbio.analysis.seq.fastq.FastQC;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -49,8 +37,7 @@ public class AopFastQ {
 	@After("execution (* com.novelbio.nbcgui.controlseq.CtrlFastQ.running(..)) && target(ctrlFastQ)")
 	public void fastQPoint(CtrlFastQ ctrlFastQ) {
 		ReportBuilder fastQBuilder = new FastQBuilder(ctrlFastQ);
-		if (fastQBuilder.buildExcels() && fastQBuilder.buildImages() && fastQBuilder.buildDescFile())
-			return;
+		fastQBuilder.writeInfo();
 		logger.error("aopFastQ生成报告图表参数出现异常！");
 	}
 
@@ -74,10 +61,11 @@ public class AopFastQ {
 			this.ctrlFastQ = ctrlFastQ;
 			String outFilePrefix = ctrlFastQ.getOutFilePrefix();
 			this.savePath = outFilePrefix.endsWith(FileOperate.getSepPath()) ? outFilePrefix : FileOperate.getParentPathName(outFilePrefix);
+			getParamsTxt(savePath);
 		}
 		
 		@Override
-		public boolean buildExcels() {
+		protected boolean buildExcels() {
 			try {
 				for (String key : ctrlFastQ.getMapCond2FastQCBefore().keySet()) {
 					FastQC[] fastQCs = ctrlFastQ.getMapCond2FastQCBefore().get(key);
@@ -88,9 +76,10 @@ public class AopFastQ {
 					readFastQC(fastQCs,key,false,ctrlFastQ.isQcAfter());
 				}
 				TxtReadandWrite txtWrite = new TxtReadandWrite(savePath + "basicStats_all.xls", true);
-				excelParam += "basicStats_all.xls;";
 				txtWrite.writefileln(lsBaseTableLines);
 				txtWrite.close();
+				
+				addParamInfo(Param.excelParam, "basicStats_all.xls");
 			} catch (Exception e) {
 				logger.error("aopFastQ生成excel出错！");
 				e.printStackTrace();
@@ -124,9 +113,10 @@ public class AopFastQ {
 				for (FQrecordCopeInt fQrecordCopeInt : fastQC.getLsModules()) {
 					if (fQrecordCopeInt instanceof BasicStats) {
 						Map<String, String> mapTable = ((BasicStats)fQrecordCopeInt).getResult();
-						TxtReadandWrite txtWrite = new TxtReadandWrite(savePath + key + "basicStats"+i+".xls", true);
+						TxtReadandWrite txtWrite = new TxtReadandWrite(savePath + "BasicStats_" + key + ".xls", true);
 						writeTable(txtWrite, mapTable);
 						txtWrite.close();
+						addToTotalTableList(key,mapTable);
 						if (!isQc) {
 							break;
 						}
@@ -137,7 +127,6 @@ public class AopFastQ {
 							TxtReadandWrite txtWrite = new TxtReadandWrite(savePath + "KmerContent" + key +".xls", true);
 							writeTable(txtWrite, mapTable);
 							txtWrite.close();
-							addToTotalTableList(key,mapTable);
 							mapPath2Image.put(savePath + "QCImages" + FileOperate.getSepPath() + "KmerContent_" + key +".png", ((KmerContent)fQrecordCopeInt).getBufferedImage(bigPicSize, bigPicSize));
 						}
 						else if (fQrecordCopeInt instanceof OverRepresentedSeqs) {
@@ -218,26 +207,7 @@ public class AopFastQ {
 		}
 
 		@Override
-		public boolean buildDescFile() {
-			TxtReadandWrite txtReadandWrite = null;
-			try {
-				txtReadandWrite = getParamsTxt(savePath);
-				// 把参数写入到params.txt
-				txtReadandWrite.writefileln(excelParam);
-				txtReadandWrite.writefileln(picParam);
-				txtReadandWrite.writefileln(picParam1);
-				txtReadandWrite.flash();
-			} catch (Exception e) {
-				logger.error("aopFastQ生成自动化报告参数文件param.txt出错！");
-				return false;
-			} finally {
-				try {
-					txtReadandWrite.close();
-				} catch (Exception e2) {
-					logger.error("aopFastQ生成自动化报告参数文件param.txt出错！");
-					return false;
-				}
-			}
+		protected boolean fillDescFile() {
 			return true;
 		}
 		
@@ -249,7 +219,7 @@ public class AopFastQ {
 		
 		private void addToTotalTableList(String key,Map<String, String> mapTable){
 			if (lsBaseTableLines.size() == 0) {
-				String allTitles = "name";
+				String allTitles = "SampleName";
 				for (String title : mapTable.keySet()) {
 					allTitles += "\t" + title;
 				}

@@ -10,10 +10,9 @@ import org.springframework.stereotype.Service;
 import com.novelbio.analysis.annotation.functiontest.FunctionTest;
 import com.novelbio.analysis.annotation.functiontest.TopGO.GoAlgorithm;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.geneanno.GOtype;
 @Service
 @Scope("prototype")
-public class CtrlPath extends CtrlGOPath implements CtrlTestInt {
+public class CtrlPath extends CtrlGOPath implements CtrlTestPathInt {
 	private static final Logger logger = Logger.getLogger(CtrlPath.class);
 
 	/** @param QtaxID */
@@ -45,22 +44,6 @@ public class CtrlPath extends CtrlGOPath implements CtrlTestInt {
 	protected void clear() {
 		functionTest = FunctionTest.getInstance(FunctionTest.FUNCTION_PATHWAY_KEGG);
 	}
-
-	@Override
-	public GOtype getGOClass() {
-		return null;
-	}
-
-	@Override
-	public void setGoAlgorithm(GoAlgorithm goAlgorithm) {}
-
-	@Override
-	public void setGOlevel(int levelNum) {
-		//TODO 考虑加入pathway的层级
-	}
-
-	@Override
-	public void setGOType(GOtype goType) {}
 	
 	/** 返回文件的名字，用于excel和画图 */
 	public String getResultBaseTitle() {

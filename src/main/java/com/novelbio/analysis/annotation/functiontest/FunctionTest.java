@@ -106,6 +106,7 @@ public abstract class FunctionTest implements Cloneable {
 		mapBGGeneID2Items = readFromBGfile(lsTmpGeneID2LsItem);
 		BGnum = mapBGGeneID2Items.size();
 	}
+	
 	/**
 	 * 将输入的geneID item,item list
 	 * 导入
@@ -113,6 +114,14 @@ public abstract class FunctionTest implements Cloneable {
 	 * @return
 	 */
 	protected abstract Map<String, GeneID2LsItem> readFromBGfile(Collection<String[]> lsTmpGeneID2LsItem);
+	
+	/** 直接设定背景，效果类似 {@link #setLsBGItem(String)} */
+	public void setMapBGGeneID2Items(Map<String, GeneID2LsItem> mapBGGeneID2Items) {
+			//清空Test
+		lsTestResult = new ArrayList<StatisticTestResult>();
+		this.mapBGGeneID2Items = mapBGGeneID2Items;
+		BGnum = mapBGGeneID2Items.size();
+	}
 	
 	/**
 	 * 读取AccID文件，然后将Item保存至相应的文件夹中
@@ -175,6 +184,7 @@ public abstract class FunctionTest implements Cloneable {
 		mapBGGeneID2Items = convert2Item(setGeneIDsBG);
 		BGnum = mapBGGeneID2Items.size();
 	}
+	
 	/**
 	 * 补充BG的基因，因为BG可能没有cover 输入的testGene
 	 * 不过我觉得没必要这样做

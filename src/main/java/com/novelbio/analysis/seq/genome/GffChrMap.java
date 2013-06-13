@@ -30,6 +30,7 @@ import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.DotStyle;
+import com.novelbio.base.plot.PlotBar;
 import com.novelbio.base.plot.PlotScatter;
 import com.novelbio.base.plot.heatmap.Gradient;
 import com.novelbio.base.plot.heatmap.PlotHeatMap;
@@ -376,48 +377,10 @@ public class GffChrMap {
 		plotScatter.setTitleX("Chromosome Length",  new Font(Font.SANS_SERIF, Font.BOLD, 20), 3, 0);
 		plotScatter.setTitleY("Normalized Reads Counts", new Font(Font.SANS_SERIF, Font.BOLD, 22), 3.5, 90);
 		plotScatter.setAxisTicksXFont(new Font(Font.SANS_SERIF, Font.PLAIN, 19), 0, 0);
-		plotScatter.setAxisTicksYFont(new Font(Font.SANS_SERIF, Font.PLAIN, 19),  getSpace(axisY, 5), 0);
+		plotScatter.setAxisTicksYFont(new Font(Font.SANS_SERIF, Font.PLAIN, 19),  PlotBar.getSpace(axisY, 5), 0);
 		plotScatter.setInsets(170, 100, 50, 150);
 		
-		
-		
-		
 		plotScatter.saveToFile(outFileName, 10000, 1000);
-	}
-	
-	/** 给定Y轴大小，返回Y的间隔
-	 * 要把间隔凑个整数。
-	 * 譬如Y轴为1120，分割为5份的时候是224
-	 * 凑成整数就是200，其他类推  
-	 * @param axis 输入的坐标轴长度
-	 * @param sepNum 要分成几份
-	 */
-	private double getSpace(double axis, int sepNum) {
-		double sep = axis/5;
-		double septmp = sep;
-		double fold = 1;
-		boolean multip = false;
-		if (sep >= 10) {
-			multip = true;
-			while (septmp >= 10) {
-				septmp = septmp/10;
-				fold = fold * 10;
-			}
-		} else {
-			while (septmp < 1) {
-				septmp = septmp*10;
-				fold = fold * 10;
-			}
-		}
-		double sepResult = (int)(septmp + 0.5);
-		if (multip) {
-			sepResult = sepResult * fold;
-		} else {
-			sepResult = sepResult / fold;
-		}
-		
-		return sepResult;
-		
 	}
 	
 	/**
