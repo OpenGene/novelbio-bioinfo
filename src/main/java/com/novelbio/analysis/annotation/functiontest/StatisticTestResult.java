@@ -142,6 +142,7 @@ public class StatisticTestResult {
 			lsPvalue.add(statisticTestResult.getPvalue());
 		}
 		int i = 0;
+		//TODO fdr的计算需要重写，主要是考虑能否降低fdr的值
 		ArrayList<Double> lsFDR = MathComput.pvalue2Fdr(lsPvalue);
 		for (StatisticTestResult statisticTestResult : colTestResult) {
 			statisticTestResult.setFDR(lsFDR.get(i));

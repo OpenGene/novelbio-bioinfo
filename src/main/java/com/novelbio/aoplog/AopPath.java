@@ -4,9 +4,11 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 
@@ -30,6 +32,7 @@ import org.springframework.stereotype.Component;
 
 import com.novelbio.analysis.annotation.functiontest.FunctionTest;
 import com.novelbio.analysis.annotation.functiontest.StatisticTestResult;
+import com.novelbio.aoplog.JFreeChartBarRender.BarColor;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.PlotBar;
@@ -105,11 +108,10 @@ public class AopPath {
 					}
 
 					// 赋值excel
-					Map<String, List<String[]>> mapSheetName2LsInfo = functionTest.getMapWriteToExcel();
-					// 加上前缀名
+					Set<String> setSheetName = functionTest.getMapWriteToExcel().keySet();
 					String excelPathOut = ctrlTestPathInt.getSaveExcelPrefix();
 
-					for (String sheetName : mapSheetName2LsInfo.keySet()) {
+					for (String sheetName : setSheetName) {
 						if (ctrlTestPathInt.isCluster()) {
 							addParamInfo(Param.excelParam1, FileOperate.getFileName(excelPathOut) + "_" + prix + SepSign.SEP_INFO_SAMEDB + sheetName);
 						} else {
@@ -134,9 +136,10 @@ public class AopPath {
 					List<StatisticTestResult> lsTestResults = entry.getValue().getTestResult();
 					String prix = entry.getKey();
 					String excelPath = FileOperate.getParentPathName(ctrlTestPathInt.getSaveExcelPrefix());
-					String picNameLog2P = FileOperate.changeFilePrefix(excelPath, "GO-Analysis-Log2P_" + prix + "_", "png");
+					String picNameLog2P = FileOperate.changeFilePrefix(excelPath, "Path-Analysis-Log2P_" + prix + "_", "png");
 					BufferedImage bfImageLog2Pic = drawLog2PvaluePicture(lsTestResults, ctrlTestPathInt.getResultBaseTitle());
 					if (bfImageLog2Pic == null) return false;
+					
 					ImageIO.write(bfImageLog2Pic, "png", new File(picNameLog2P));
 					if (ctrlTestPathInt.isCluster()) {
 						addParamInfo(Param.picParam1, FileOperate.getFileName(picNameLog2P));
@@ -144,9 +147,10 @@ public class AopPath {
 						addParamInfo(Param.picParam, FileOperate.getFileName(picNameLog2P));
 					}
 					
-					String picNameEnrichment = FileOperate.changeFilePrefix(excelPath, "GO-Analysis-Enrichment_" + prix + "_", "png");
+					String picNameEnrichment = FileOperate.changeFilePrefix(excelPath, "Path-Analysis-Enrichment_" + prix + "_", "png");
 					BufferedImage bfImageEnrichment = drawEnrichmentPicture(lsTestResults, ctrlTestPathInt.getResultBaseTitle());
 					if (bfImageEnrichment != null) return false;
+					
 					ImageIO.write(bfImageEnrichment, "png", new File(picNameEnrichment));
 					if (ctrlTestPathInt.isCluster()) {
 						addParamInfo(Param.picParam1, FileOperate.getFileName(picNameEnrichment));
@@ -246,7 +250,8 @@ public class AopPath {
 			// BarRenderer render = new BarRenderer();
 			// render.setBaseFillPaint(Color.pink);
 			// plot.setRenderer(render);
-			BarRenderer renderer = new BarRenderer();// 设置柱子的相关属性
+			
+			JFreeChartBarRender renderer = getJfreechartBarRender(lsTestResults);
 			// 设置柱子宽度
 			renderer.setMaximumBarWidth(0.03);
 			renderer.setMinimumBarLength(0.01000000000000001D); // 宽度
@@ -255,7 +260,13 @@ public class AopPath {
 			// 设置柱子类型
 			BarPainter barPainter = new StandardBarPainter();
 			renderer.setBarPainter(barPainter);
-			renderer.setSeriesPaint(0, new Color(51, 102, 153));
+			
+			
+			
+			
+			
+			
+//			renderer.setSeriesPaint(0, new Color(51, 102, 153));
 			// 是否显示阴影
 			renderer.setShadowVisible(false);
 			// 阴影颜色
@@ -322,7 +333,8 @@ public class AopPath {
 			plot.setBackgroundPaint(Color.white);
 			plot.setOutlinePaint(Color.WHITE);
 			CategoryAxis cateaxis = plot.getDomainAxis();
-			BarRenderer renderer = new BarRenderer();// 设置柱子的相关属性
+			
+			BarRenderer renderer =getJfreechartBarRender(lsTestResults);
 			// 设置柱子宽度
 			renderer.setMaximumBarWidth(0.03);
 			renderer.setMinimumBarLength(0.01000000000000001D); // 宽度
@@ -331,7 +343,6 @@ public class AopPath {
 			// 设置柱子类型
 			BarPainter barPainter = new StandardBarPainter();
 			renderer.setBarPainter(barPainter);
-			renderer.setSeriesPaint(0, new Color(51, 102, 153));
 			// 是否显示阴影
 			renderer.setShadowVisible(false);
 			// 设置每个地区所包含的平行柱的之间距离，数值越大则间隔越大，图片大小一定的情况下会影响柱子的宽度，可以为负数
@@ -365,5 +376,29 @@ public class AopPath {
 		}
 	}
 	
+	/**
+	 * 根据fdr的值，来对bar进行染色
+	 * @param lsTestResults
+	 * @return
+	 */
+	private static JFreeChartBarRender getJfreechartBarRender(List<StatisticTestResult> lsTestResults) {
+		JFreeChartBarRender jFreeChartBarRender = new JFreeChartBarRender();
+		BarColor barColorRed = new BarColor(new Color(228, 55, 18));
+		BarColor barColorBlue = new BarColor(new Color(51, 102, 153));
 
+		int i = 0;
+		for (StatisticTestResult statisticTestResult : lsTestResults) {
+			if (statisticTestResult.getFdr() < 0.05) {
+				barColorRed.addBarNum(i);
+			} else {
+				barColorBlue.addBarNum(i);
+			}
+			i++;
+		}
+		
+		jFreeChartBarRender.addBarColor(barColorRed);
+		jFreeChartBarRender.addBarColor(barColorBlue);
+		return jFreeChartBarRender;
+	}
+	
 }

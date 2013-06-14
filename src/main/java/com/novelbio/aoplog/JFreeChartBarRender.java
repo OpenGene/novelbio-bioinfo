@@ -27,6 +27,8 @@ public class JFreeChartBarRender extends BarRenderer {
 			}
 		}
 	}
+    
+    /** 输入的barColor必须已经设定好了column信息 */
     public void addBarColor(BarColor barColor) {
     	for (Integer num : barColor.lsBarNum) {
 			mapNum2Paint.put(num, barColor.paint);
