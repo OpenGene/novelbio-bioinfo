@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -85,6 +84,7 @@ public class AopPath {
 		 */
 		public PathBuilder( CtrlTestPathInt ctrlTestPathInt) {
 			this.ctrlTestPathInt = ctrlTestPathInt;
+			setParamPath(FileOperate.getParentPathName(ctrlTestPathInt.getSaveExcelPrefix()));
 		}
 
 		@Override
@@ -149,7 +149,7 @@ public class AopPath {
 					
 					String picNameEnrichment = FileOperate.changeFilePrefix(excelPath, "Path-Analysis-Enrichment_" + prix + "_", "png");
 					BufferedImage bfImageEnrichment = drawEnrichmentPicture(lsTestResults, ctrlTestPathInt.getResultBaseTitle());
-					if (bfImageEnrichment != null) return false;
+					if (bfImageEnrichment == null) return false;
 					
 					ImageIO.write(bfImageEnrichment, "png", new File(picNameEnrichment));
 					if (ctrlTestPathInt.isCluster()) {
@@ -324,7 +324,7 @@ public class AopPath {
 				if (i < lsTestResults.size())
 					dataset.addValue(lsTestResults.get(i).getEnrichment(), "", lsTestResults.get(i).getItemTerm());
 			}
-			JFreeChart chart = ChartFactory.createBarChart(title, null, "Gene Number", dataset, PlotOrientation.VERTICAL, false, false, false);
+			JFreeChart chart = ChartFactory.createBarChart(title, null, "Enrichment", dataset, PlotOrientation.VERTICAL, false, false, false);
 			// 设置图标题的字体
 			chart.getTitle().setFont(new Font("黑体", Font.BOLD, 30));
 			chart.getTitle().setPadding(20,0,20,0);
@@ -332,11 +332,21 @@ public class AopPath {
 			CategoryPlot plot = (CategoryPlot) chart.getPlot();
 			plot.setBackgroundPaint(Color.white);
 			plot.setOutlinePaint(Color.WHITE);
+			
+			NumberAxis numaxis = (NumberAxis) plot.getRangeAxis();
+			numaxis.setLabelFont(new Font("宋体", Font.BOLD, 25));
+			numaxis.setTickUnit(new NumberTickUnit(PlotBar.getSpace(numaxis.getRange().getUpperBound(), 10)));
+			numaxis.setLabelInsets(new RectangleInsets(60, 15, 0, 30));
+			
 			CategoryAxis cateaxis = plot.getDomainAxis();
+			cateaxis.setTickLabelFont(new Font(Font.SERIF, Font.BOLD, 22));
+			cateaxis.setCategoryLabelPositions(CategoryLabelPositions.createUpRotationLabelPositions(Math.PI / 3.0));// 让标尺以30度倾斜
 			
 			BarRenderer renderer =getJfreechartBarRender(lsTestResults);
+			// 分类柱子之间的宽度
+			renderer.setItemMargin(0.02);
 			// 设置柱子宽度
-			renderer.setMaximumBarWidth(0.03);
+			renderer.setMaximumBarWidth(0.028);
 			renderer.setMinimumBarLength(0.01000000000000001D); // 宽度
 			// 设置柱子高度
 			renderer.setMinimumBarLength(0.1);
@@ -348,16 +358,8 @@ public class AopPath {
 			// 设置每个地区所包含的平行柱的之间距离，数值越大则间隔越大，图片大小一定的情况下会影响柱子的宽度，可以为负数
 			renderer.setItemMargin(0.4);
 			plot.setRenderer(renderer);
-			// 设置横轴的标尺
-			cateaxis.setTickLabelFont(new Font(Font.SERIF, Font.PLAIN, 18));
-			// 让标尺以30度倾斜
-			cateaxis.setCategoryLabelPositions(CategoryLabelPositions.createUpRotationLabelPositions(Math.PI / 3.0));
-			// 纵轴
-			NumberAxis numaxis = (NumberAxis) plot.getRangeAxis();
-			numaxis.setLabelFont(new Font("宋体", Font.BOLD, 20));
-			numaxis.setTickUnit(new NumberTickUnit(PlotBar.getSpace(numaxis.getRange().getUpperBound(), 10)));
-			numaxis.setLabelInsets(new RectangleInsets(0, 0, 0, 10));
-			return chart.createBufferedImage(1000, 1000);
+
+			return chart.createBufferedImage(1200, 1000);
 			
 //			FileOutputStream fosPng = null;
 //			try {
@@ -388,7 +390,7 @@ public class AopPath {
 
 		int i = 0;
 		for (StatisticTestResult statisticTestResult : lsTestResults) {
-			if (statisticTestResult.getFdr() < 0.05) {
+			if (statisticTestResult.getPvalue() < 0.05) {
 				barColorRed.addBarNum(i);
 			} else {
 				barColorBlue.addBarNum(i);

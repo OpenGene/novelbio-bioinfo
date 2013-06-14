@@ -36,11 +36,13 @@ public class ChrStringHash extends SeqHashAbs{
 	HashMap<String, BufferedReader> mapChrID2BufReader;
 	HashMap<String, TxtReadandWrite> mapChrID2Txt;
 	HashMap<String, Integer> mapChrID2EnterType;
-	/**
-	 * Seq文件第二行的长度，也就是每行序列的长度+1，1是回车 现在是假设Seq文件第一行都是>ChrID,第二行开始都是Seq序列信息
-	 * 并且每一行的序列都等长
+
+	/** 每个文本所对应的单行长度
+	 *  Seq文件第二行的长度，也就是每行序列的长度+1，1是回车 
+	 *  现在是假设Seq文件第一行都是>ChrID,第二行开始都是Seq序列信息
+	 *  并且每一行的序列都等长
 	 */
-	int lengthRow = 0;
+	Map<String, Integer> mapChrFile2LengthRow = new HashMap<String, Integer>();
 	
 	int maxExtractSeqLength = 2000000;
 	/**
@@ -66,9 +68,8 @@ public class ChrStringHash extends SeqHashAbs{
 		RandomAccessFile chrRAseq = null;
 		TxtReadandWrite txtChrTmp = null;
 		BufferedReader bufChrSeq = null;
-		
-		for (int i = 0; i < lsChrFile.size(); i++) {
-			String fileNam = lsChrFile.get(i);
+		mapChrFile2LengthRow.clear();
+		for (String fileNam : lsChrFile) {
 			String[] chrFileName = FileOperate.getFileNameSep(fileNam);
 			lsSeqName.add(chrFileName[0]);
 
@@ -78,12 +79,11 @@ public class ChrStringHash extends SeqHashAbs{
 			txtChrTmp = new TxtReadandWrite(fileNam, false);
 			String enterType = txtChrTmp.getEnterType();
 			bufChrSeq = txtChrTmp.readfile();
-			// 假设每一个文件的每一行Seq都相等
-			if (i == 0) {
-				String seqRow = txtChrTmp.readFirstLines(3).get(2);
-				lengthRow = seqRow.length();// 每行几个碱基
-			}
 			String chrID = chrFileName[0].toLowerCase();
+			// 假设每一个文件的每一行Seq都相等
+			String seqRow = txtChrTmp.readFirstLines(3).get(2);
+			mapChrFile2LengthRow.put(chrID, seqRow.length());
+			
 			mapChrID2RandomFile.put(chrID, chrRAseq);
 			mapChrID2BufReader.put(chrID, bufChrSeq);
 			mapChrID2Txt.put(chrID, txtChrTmp);
@@ -92,7 +92,6 @@ public class ChrStringHash extends SeqHashAbs{
 			} else if (enterType.equals(TxtReadandWrite.ENTER_WINDOWS)) {
 				mapChrID2EnterType.put(chrID, 2);
 			}
-			
 		}
 		setChrLength();
 	}
@@ -114,6 +113,7 @@ public class ChrStringHash extends SeqHashAbs{
 	private void setChrLength() throws IOException {
 		for (Entry<String, RandomAccessFile> entry : mapChrID2RandomFile.entrySet()) {
 			String chrID = entry.getKey();
+			int lengthRow = mapChrFile2LengthRow.get(chrID);
 			RandomAccessFile chrRAfile = entry.getValue();
 			// 设定到0位
 			chrRAfile.seek(0);
@@ -122,7 +122,7 @@ public class ChrStringHash extends SeqHashAbs{
 			int lengthChrID = -1;
 			if (fastaID.contains(">"))
 				lengthChrID = fastaID.length();// 第一行，有>号的长度
-
+			
 			long lengthChrSeq = chrRAfile.length();
 			long tmpChrLength = (lengthChrSeq - lengthChrID - 1) / (lengthRow + 1) * lengthRow + (lengthChrSeq - lengthChrID - 1) % (lengthRow + 1);
 			hashChrLength.put(chrID, tmpChrLength);
@@ -146,15 +146,17 @@ public class ChrStringHash extends SeqHashAbs{
 	 * @throws IOException
 	 */
 	private SeqFasta getSeqInfoExp(String chrID, long startlocation, long endlocation) throws IOException {
+		chrID = chrID.toLowerCase();
+		
+		int lengthRow = mapChrFile2LengthRow.get(chrID);
 		if (startlocation <= 0) {
 			startlocation = 1;
 		}
 		if (endlocation <= 0) {
 			endlocation = getChrLength(chrID);
 		}
-		
 		startlocation--;
-		chrID = chrID.toLowerCase();
+	
 		RandomAccessFile chrRASeqFile = mapChrID2RandomFile.get(chrID);// 判断文件是否存在
 		int entryNum = mapChrID2EnterType.get(chrID);
 		if (chrRASeqFile == null) {
