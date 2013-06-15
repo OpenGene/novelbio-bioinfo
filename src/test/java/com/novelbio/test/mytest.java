@@ -1,6 +1,7 @@
 package com.novelbio.test;
 
-import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -10,40 +11,62 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.picard.fastq.FastqReader;
-import net.sf.picard.fastq.FastqRecord;
+import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
+import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
-import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.GffChrSeq;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
-import com.novelbio.analysis.seq.resequencing.SnpAnnotation;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.PatternOperate;
-import com.novelbio.base.dataStructure.listOperate.HistList;
-import com.novelbio.base.plot.BarStyle;
-import com.novelbio.base.plot.DotStyle;
-import com.novelbio.base.plot.PlotScatter;
-import com.novelbio.database.domain.geneanno.AgeneUniID;
-import com.novelbio.database.domain.geneanno.BlastInfo;
-import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.service.servgeneanno.ManageNCBIUniID;
+import com.novelbio.base.plot.GraphicCope;
+import com.novelbio.database.service.SpringFactory;
 import com.novelbio.nbcgui.controlseq.CtrlRNAmap;
+import com.novelbio.nbcgui.controltest.CtrlTestGOInt;
 
 
 public class mytest {
 	private static Logger logger = Logger.getLogger(mytest.class);
 	
 	public static void main(String[] args) throws IOException, URISyntaxException {
+		GffHashGene gffHashGene = new GffHashGene(GffType.NCBI, "/home/zong0jie/desktop/chr.gff");
+		SeqHash seqHash = new SeqHash("/home/zong0jie/desktop/goatChrome");
+		GffChrAbs gffChrAbs = new GffChrAbs();
+		gffChrAbs.setSeqHash(seqHash);
+		gffChrAbs.setGffHash(gffHashGene);
+		int num = 0;
+		TxtReadandWrite txtWrite = new TxtReadandWrite("/home/zong0jie/desktop/goatChrome/3utr", true);
+		for (GffDetailGene gffDetailGene : gffHashGene.getGffDetailAll()) {
+			GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplitMrna();
+			SeqFasta seqFasta;
+			if (gffGeneIsoInfo.isCis5to3()) {
+				seqFasta = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.getRefID(), gffGeneIsoInfo.getEnd(), gffGeneIsoInfo.getEnd() + 500);
+			} else {
+				seqFasta = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.getRefID(), gffGeneIsoInfo.getEnd() - 500, gffGeneIsoInfo.getEnd());
+				if (seqFasta != null) {
+					seqFasta = seqFasta.reservecom();
+				}
+			}
+			if (seqFasta != null) {
+				seqFasta.setName(gffGeneIsoInfo.getName());
+				txtWrite.writefileln(seqFasta.toStringNRfasta());
+			}
 		
-		
+			num++;
+			System.out.println(num);
+			if (num == 3830) {
+				System.out.println();
+			}
+		}
+		txtWrite.close();
 	}
 	
 	private static int compare(String[] s1, String[] s2) {

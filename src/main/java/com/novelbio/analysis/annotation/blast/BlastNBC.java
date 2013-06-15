@@ -3,7 +3,6 @@ package com.novelbio.analysis.annotation.blast;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-import org.apache.ibatis.migration.commands.NewCommand;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;

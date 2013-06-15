@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.mapping.MappingReadsType;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -17,6 +19,7 @@ import com.novelbio.base.dataStructure.PatternOperate;
  * 根据需求判定是否需要执行{@link #initial()}
  *  */
 public class SamFileStatistics implements AlignmentRecorder {
+	private static final Logger logger = Logger.getLogger(SamFileStatistics.class);
 	SamFile samFile;
 	boolean countReadsNum;
 	
@@ -160,6 +163,7 @@ public class SamFileStatistics implements AlignmentRecorder {
 		repeatMappedReadsNum = 0;
 		junctionAllReads = 0;
 		junctionUniReads = 0;
+		mapChrID2ReadsNum.clear();
 	}
 	
 	private void readSamFile() {
@@ -210,5 +214,56 @@ public class SamFileStatistics implements AlignmentRecorder {
 	}
 
 	@Override
-	public void summary() {	}
+	public void summary() {
+		summeryReadsNum();
+		modifyChrReadsNum();
+	}
+	
+	/** 将所有reads数量四舍五入转变为long，同时矫正由double转换为long时候可能存在的偏差 */
+	private void summeryReadsNum() {
+		allReadsNum = Math.round(allReadsNum);
+		unmappedReadsNum = Math.round(unmappedReadsNum);
+		mappedReadsNum = Math.round(mappedReadsNum);
+		//double 转换可能会有1的误差
+		if (allReadsNum != mappedReadsNum + unmappedReadsNum) {
+			if (Math.abs(mappedReadsNum + unmappedReadsNum - allReadsNum) > 10) {
+				logger.error("统计出错，mappedReadsNum:" + mappedReadsNum + " unmappedReadsNum:" + unmappedReadsNum + " allReadsNum:" + allReadsNum );
+			}
+			unmappedReadsNum = allReadsNum - mappedReadsNum;
+		}
+		
+		uniqMappedReadsNum = Math.round(uniqMappedReadsNum);
+		repeatMappedReadsNum = Math.round(repeatMappedReadsNum);
+		if (mappedReadsNum != uniqMappedReadsNum + repeatMappedReadsNum) {
+			if (Math.abs(mappedReadsNum - uniqMappedReadsNum - repeatMappedReadsNum) > 10) {
+				logger.error("统计出错，mappedReadsNum:" + mappedReadsNum + " uniqMappedReadsNum:" + uniqMappedReadsNum + " repeatMappedReadsNum:" + repeatMappedReadsNum );
+			}
+			repeatMappedReadsNum = mappedReadsNum - uniqMappedReadsNum;
+		}
+		
+		junctionAllReads = Math.round(junctionAllReads);
+		junctionUniReads = Math.round(junctionUniReads);
+		for (double[] readsNum : mapChrID2ReadsNum.values()) {
+			readsNum[0] = Math.round(readsNum[0]);
+		}
+	}
+	/** 因为用double来统计reads数量，
+	 * 所以最后所有染色体上的reads之
+	 * 和与总reads数相比会有一点点的差距 */
+	private void modifyChrReadsNum() {
+		long numAllChrReads = 0;
+		for (double[] readsNum : mapChrID2ReadsNum.values()) {
+			numAllChrReads += (long)readsNum[0];
+		}
+		long numLess = (long)allReadsNum - numAllChrReads;
+		long numAddAVG = numLess/mapChrID2ReadsNum.size();
+		long numAddSub = numLess%mapChrID2ReadsNum.size();
+		for (double[] readsNum : mapChrID2ReadsNum.values()) {
+			readsNum[0] = readsNum[0] + numAddAVG;
+			if (numAddSub > 0) {
+				readsNum[0] = readsNum[0] + 1;
+				numAddSub --;
+			}
+		}
+	}
 }

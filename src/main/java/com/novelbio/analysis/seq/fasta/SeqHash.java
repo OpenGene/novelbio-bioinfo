@@ -269,7 +269,7 @@ public class SeqHash implements SeqHashInt{
 	 */
 	public static int getSeqType(String fastaFile) {
 		int readBp = 1000;//读取前1000个碱基来判断
-		TxtReadandWrite txtRead = new TxtReadandWrite(fastaFile, false);
+		TxtReadandWrite txtRead = new TxtReadandWrite(fastaFile);
 		StringBuilder stringBuilder = new StringBuilder();
 		for (String string : txtRead.readlines()) {
 			if (string.trim().startsWith(">")) {

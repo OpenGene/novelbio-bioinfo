@@ -21,6 +21,8 @@ import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.controlseq.CtrlCufflinksTranscriptome;
 
 public class GuiTranscriptomeCufflinks extends JPanel {
+	private static final long serialVersionUID = 1567894018870622166L;
+	
 	private JTextField txtSavePathAndPrefix;
 	GUIFileOpen guiFileOpen = new GUIFileOpen();
 	

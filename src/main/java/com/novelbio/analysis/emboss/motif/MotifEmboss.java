@@ -3,8 +3,6 @@ package com.novelbio.analysis.emboss.motif;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import junit.framework.Protectable;
-
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.base.dataOperate.DateUtil;
@@ -38,8 +36,12 @@ public class MotifEmboss {
 	
 	/** 连配好的motif */
 	Collection<SeqFasta> colAlignmentMotif;
-	/** 要扫描的序列 */
+	
+	/** 要扫描的序列，与seqFilePath二选一 */
 	Collection<SeqFasta> colSeqFasta;
+	/** 要扫描的序列，与colSeqFasta二选一 */
+	String seqFilePath;
+	
 	/** motif分析所在的临时文件夹 */
 	String motifPath;
 	
@@ -57,6 +59,7 @@ public class MotifEmboss {
 	public void setAlignedMotifSeqHash(SeqHash seqHash) {
 		colAlignmentMotif = new ArrayList<SeqFasta>();
 		addSeq(colAlignmentMotif, seqHash);
+		seqFilePath = null;
 	}
 	
 	/** 输入要扫描的序列 */
@@ -68,6 +71,14 @@ public class MotifEmboss {
 	public void setSeqHash(SeqHash seqHash) {
 		colSeqFasta = new ArrayList<SeqFasta>();
 		addSeq(colSeqFasta, seqHash);
+		seqFilePath = null;
+	}
+	/** 输入要扫描的序列的文件名，务必是fasta格式，
+	 * 与{@link #setColSeqFasta(Collection)} 只能选一个
+	 */
+	public void setSeqFilePath(String seqFilePath) {
+		this.seqFilePath = seqFilePath;
+		colSeqFasta = new ArrayList<SeqFasta>();
 	}
 	
 	public void setMotifEmbossScanAlgorithm(MotifEmbossScanAlgorithm motifEmbossScanAlgorithm) {
@@ -118,38 +129,24 @@ public class MotifEmboss {
 		return resultFile;
 	}
 	
-	/**
-	 * 将待扫描的文件写入文本，并返回文件名
-	 * @param suffix 时间日期随机数
-	 * @return
-	 */
-	private String writeSeqfastaNeedScan(String suffix) {
-		String resultFile = FileOperate.addSep(motifPath) + "Sequence" + suffix + ".fa";
-		TxtReadandWrite txtWrite = new TxtReadandWrite(resultFile, true);
-		for (SeqFasta seqFasta : colSeqFasta) {
-			txtWrite.writefileln(seqFasta.toStringNRfasta());
-		}
-		txtWrite.close();
-		return resultFile;
-	}
-	
-	/** 生成打分矩阵，并返回结果 */
-	private String[] generateWeightMatrix(String alignedMotif, String suffix) {
-		prophecy.setExePath(softWareInfo.getExePath());
-		prophecy.setInAlignment(alignedMotif);
-		prophecy.setMatrixAlgorithm(motifEmbossScanAlgorithm);
-		String resultFile = FileOperate.addSep(motifPath) + "weightedMatrix" + suffix + ".fa";
-		return prophecy.generateProfit(resultFile);
-	}
-	
 	private void setParam() {
+		if (colSeqFasta != null && colSeqFasta.size() > 0) {
+			setParamSeqFasta();
+		} else {
+			int seqType = SeqHash.getSeqType(seqFilePath);
+			boolean isNR = (seqType == SeqFasta.SEQ_DNA);
+			prophecy = new Prophecy(isNR);
+			profit = new Profit(isNR);
+		}
+	}
+	
+	private void setParamSeqFasta() {
 		boolean isNr = true;
 		int i = 100;
 		for (SeqFasta seqFasta : colSeqFasta) {
 			//判定前100条序列看是核酸还是蛋白
-			if (i >= 100) {
-				break;
-			}
+			if (i >= 100) break;
+			
 			if (seqFasta.getSeqType() == SeqFasta.SEQ_PRO) {
 				isNr = false;
 				break;
@@ -160,6 +157,33 @@ public class MotifEmboss {
 		profit = new Profit(isNr);
 	}
 	
+	/**
+	 * 将待扫描的文件写入文本，并返回文件名
+	 * @param suffix 时间日期随机数
+	 * @return
+	 */
+	private String writeSeqfastaNeedScan(String suffix) {
+		if (colSeqFasta == null || colSeqFasta.size() == 0) {
+			return seqFilePath;
+		}
+		String resultFile = FileOperate.addSep(motifPath) + "Sequence" + suffix + ".fa";
+		TxtReadandWrite txtWrite = new TxtReadandWrite(resultFile, true);
+		for (SeqFasta seqFasta : colSeqFasta) {
+			txtWrite.writefileln(seqFasta.toStringNRfasta());
+		}
+		txtWrite.close();
+		return resultFile;
+	}
+
+	/** 生成打分矩阵，并返回结果 */
+	private String[] generateWeightMatrix(String alignedMotif, String suffix) {
+		prophecy.setExePath(softWareInfo.getExePath());
+		prophecy.setInAlignment(alignedMotif);
+		prophecy.setMatrixAlgorithm(motifEmbossScanAlgorithm);
+		String resultFile = FileOperate.addSep(motifPath) + "weightedMatrix" + suffix + ".fa";
+		return prophecy.generateProfit(resultFile);
+	}
+	
 	private String scanAndGetResult(String weightMatrix, String seqFile, String suffix) {
 		profit.setExePath(softWareInfo.getExePath());
 		profit.setInProfit(weightMatrix);
@@ -168,7 +192,6 @@ public class MotifEmboss {
 		profit.scaning(resultFile);
 		return resultFile;
 	}
-	
 	
 	/** emboss的prophecy软件用来产生权重矩阵的算法 */
 	public static enum MotifEmbossScanAlgorithm {
