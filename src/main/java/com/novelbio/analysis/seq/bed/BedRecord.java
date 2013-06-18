@@ -28,21 +28,19 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord{
 	static final int COL_STRAND = 5;
 	static final int COL_CIGAR = 6;
 	public static final int COL_MAPNUM = 7;
-	
-	/** 该reads的权重，意思就是本reads在本文件中出现了几次，出现一次就是1 */
-	public static final int COL_MAPWEIGHT = 13;
-	
 	static final int COL_SEQ = 8;
 	/** 是否为unique mapping的列 */
 	static final int COL_MAPQ = 9;
 	static final int COL_SPLIT_READS_LEN = 10;
 	static final int COL_SPLIT_READS_START = 11;
 	static final int COL_READSNUM = 12;
-
+	/** 该reads的权重，意思就是本reads在本文件中出现了几次，出现一次就是1 */
+	public static final int COL_MAPWEIGHT = 13;
+	
 	/**
 	 * 对上面总共列的计数，上面如果增加或者删减了列，这里要相应的修正
 	 */
-	static final int ALL_COLNUM = 13;
+	static final int ALL_COLNUM = 14;
 	
 	/** mapping到了几个上去 */
 	Integer mappingNum = null;

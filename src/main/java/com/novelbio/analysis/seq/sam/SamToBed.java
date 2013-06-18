@@ -25,7 +25,7 @@ public class SamToBed implements AlignmentRecorder {
 	 * @param samFile
 	 */
 	public SamToBed(SamFile samFile) {
-		this.bedSeq = new BedSeq(FileOperate.changeFileSuffix(samFile.getFileName(), "", "bed"));
+		this.bedSeq = new BedSeq(FileOperate.changeFileSuffix(samFile.getFileName(), "", "bed"), true);
 	}
 	public SamToBed(String bedFile) {
 		this.bedSeq = new BedSeq(bedFile, true);

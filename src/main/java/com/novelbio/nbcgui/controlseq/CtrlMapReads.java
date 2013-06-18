@@ -1,8 +1,12 @@
 package com.novelbio.nbcgui.controlseq;
 
+import com.novelbio.analysis.seq.AlignSeq;
+import com.novelbio.analysis.seq.FormatSeq;
+import com.novelbio.analysis.seq.bed.BedSeq;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs.MapReadsProcessInfo;
+import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataStructure.Equations;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunGetInfo;
@@ -21,10 +25,18 @@ public class CtrlMapReads implements RunGetInfo<MapReadsAbs.MapReadsProcessInfo>
 		mapReads = new MapReads();
 		mapReads.setRunGetInfo(this);
 	}
-	public void setBedFile(String bedFileName) {
+	public void setBamBedFile(String bedFileName) {
 		this.bedFileName = bedFileName;
-		mapReads.setBedSeq(bedFileName);
+		FormatSeq formatSeq = FormatSeq.getFileType(bedFileName);
+		AlignSeq alignSeq = null;
+		if (formatSeq == FormatSeq.BED) {
+			alignSeq = new BedSeq(bedFileName);
+		} else if (formatSeq == FormatSeq.SAM || formatSeq == FormatSeq.BAM) {
+			alignSeq = new SamFile(bedFileName);
+		}
+		mapReads.setAlignSeqReader(alignSeq);
 	}
+	
 	public void setInvNum(int invNum) {
 		mapReads.setInvNum(invNum);
 	}
@@ -63,7 +75,7 @@ public class CtrlMapReads implements RunGetInfo<MapReadsAbs.MapReadsProcessInfo>
 	}
 	@Override
 	public void setRunningInfo(MapReadsProcessInfo info) {
-		guiRunningBarAbs.getProcessBar().setValue((int) (info.getReadsize()/1000000));
+		guiRunningBarAbs.getProcessBar().setValue((int) (info.getReadsize()/1024));
 	}
 
 	@Override
@@ -97,7 +109,7 @@ public class CtrlMapReads implements RunGetInfo<MapReadsAbs.MapReadsProcessInfo>
 		guiRunningBarAbs.getBtnSave().setEnabled(false);
 		guiRunningBarAbs.getBtnOpen().setEnabled(false);
 		guiRunningBarAbs.getProcessBar().setMinimum(0);
-		guiRunningBarAbs.getProcessBar().setMaximum((int) (FileOperate.getFileSizeLong(bedFileName)/1000000));
+		guiRunningBarAbs.getProcessBar().setMaximum((int) (FileOperate.getFileSizeLong(bedFileName)/1024));
 		guiRunningBarAbs.getProcessBar().setValue(0);
 		
 		mapReads.setRunGetInfo(this);

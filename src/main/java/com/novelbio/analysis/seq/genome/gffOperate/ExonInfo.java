@@ -1,12 +1,5 @@
 package com.novelbio.analysis.seq.genome.gffOperate;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-
-import org.apache.commons.math.stat.descriptive.moment.ThirdMoment;
-
-import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
 /**
  * 本类重写了equal代码，用于比较两个loc是否一致

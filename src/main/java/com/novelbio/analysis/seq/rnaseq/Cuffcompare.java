@@ -1,12 +1,10 @@
 package com.novelbio.analysis.seq.rnaseq;
 
 import java.util.ArrayList;
-
-import javax.print.attribute.SetOfIntegerSyntax;
+import java.util.List;
 
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.model.species.Species;
 
 public class Cuffcompare {
 	//cuffcompare 的参数
@@ -14,7 +12,7 @@ public class Cuffcompare {
 	
 	String seqFasta = "";
 	String refGtfFile = "";
-	ArrayList<String> lsInputGtfFile = new ArrayList<String>();
+	List<String> lsInputGtfFile = new ArrayList<String>();
 	String outPath = "";
 	/** 是否删除一些未知文件 */
 	boolean clearFile = false;
@@ -30,6 +28,8 @@ public class Cuffcompare {
 			this.ExePath = FileOperate.addSep(ExePath);
 		}
 	}
+	
+	/** 是否删除结果中的一些未知文件 */
 	public void setClearFile(boolean clearFile) {
 		this.clearFile = clearFile;
 	}
@@ -41,7 +41,13 @@ public class Cuffcompare {
 			this.refGtfFile = refGtfFile;
 		}
 	}
-	public void setLsInputGtfFile(ArrayList<String> lsInputGtfFile) {
+	
+	/**
+	 * <b>直接添加GTF文件会出错</b><br>
+	 * 添加的务必是从cufflinks或者cuffcompare所得到的GTF文件
+	 * @param lsInputGtfFile
+	 */
+	public void setLsInputGtfFile(List<String> lsInputGtfFile) {
 		this.lsInputGtfFile = lsInputGtfFile;
 	}
 	public void setOutPath(String outPath) {
@@ -73,7 +79,7 @@ public class Cuffcompare {
 	private String getLsInputGtf() {
 		String out = CmdOperate.addQuot(lsInputGtfFile.get(0));
 		for (int i = 1; i < lsInputGtfFile.size(); i++) {
-			out = out + "," + CmdOperate.addQuot(lsInputGtfFile.get(i));
+			out = out + " " + CmdOperate.addQuot(lsInputGtfFile.get(i));
 		}
 		return " " + out;
 	}

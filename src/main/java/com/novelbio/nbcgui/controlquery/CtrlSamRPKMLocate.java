@@ -37,7 +37,11 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo>, Runnable {
 	GffChrAbs gffChrAbs = new GffChrAbs();
 	
 	List<String[]> lsReadFile;
-	boolean isCountRPKM = true;
+	boolean isCountExpression = true;
+	boolean isCalculateFPKM = true;
+	/** 目前只对proton的strand优化 */
+	boolean isConsiderProtonStrand = true;
+	
 	boolean isLocStatistics = true;
 	
 	Set<String> setPrefix;
@@ -72,8 +76,10 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo>, Runnable {
 	public void setQueryFile(List<String[]> lsReadFile) {
 		this.lsReadFile = lsReadFile;
 	}
-	public void setIsCountRPKM(boolean isCountRPKM) {
-		this.isCountRPKM = isCountRPKM;
+	public void setIsCountRPKM(boolean isCountExpression, boolean isConsiderProtonStrand, boolean isCountFPKM) {
+		this.isCountExpression = isCountExpression;
+		this.isConsiderProtonStrand = isConsiderProtonStrand;
+		this.isCalculateFPKM = isCountFPKM;
 	}
 	public void setTssRange(int[] tss) {
 		this.tss = tss;
@@ -86,11 +92,12 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo>, Runnable {
 		this.resultPrefix = resultPrefix;
 	}
 	public void run() {
+		rpkMcomput = new RPKMcomput();
 		int fileSize = getFileSize();		
 		guiSamStatistics.getProcessBar().setMaximum(fileSize);
 		
 		ArrayListMultimap<String, AlignSeqReading> mapPrefix2AlignSeqReadings = getMapPrefix2LsAlignSeqReadings();
-		if (!isCountRPKM && !isLocStatistics) {
+		if (!isCountExpression && !isLocStatistics) {
 			return;
 		}
 		double readByte = 0;
@@ -98,8 +105,10 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo>, Runnable {
 			List<AlignSeqReading> lsAlignSeqReadings = mapPrefix2AlignSeqReadings.get(prefix);
 			List<AlignmentRecorder> lsAlignmentRecorders = new ArrayList<AlignmentRecorder>();
 			
-			if (isCountRPKM && gffChrAbs.getTaxID() != 0) {
+			if (isCountExpression && gffChrAbs.getTaxID() != 0) {
 				rpkMcomput.setCurrentCondition(prefix);
+				rpkMcomput.setConsiderStrand(isConsiderProtonStrand);
+				rpkMcomput.setCalculateFPKM(isCalculateFPKM);
 				lsAlignmentRecorders.add(rpkMcomput);
 			}
 
@@ -121,6 +130,9 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo>, Runnable {
 			for (AlignSeqReading alignSeqReading : lsAlignSeqReadings) {
 				alignSeqReading.setReadInfo(0L, readByte);
 				alignSeqReading.addColAlignmentRecorder(lsAlignmentRecorders);
+				if (alignSeqReading.getSamFile() instanceof SamFile) {
+					rpkMcomput.setIsPairend(((SamFile)alignSeqReading.getSamFile()).isPairend());
+				}
 				alignSeqReading.setRunGetInfo(this);
 				alignSeqReading.run();
 				logger.info("finish reading " + alignSeqReading.getSamFile().getFileName());
@@ -148,15 +160,11 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo>, Runnable {
 	}
 	
 	private int getFileSize() {
-		int fileSizeLong = 0;
+		long fileSizeLong = 0;
 		for (String[] fileName : lsReadFile) {
-			long thisFileSize = (long) FileOperate.getFileSize(fileName[0]);
-			if (fileName[0].endsWith("bam") || fileName[0].endsWith("gz")) {
-				thisFileSize = thisFileSize * 8;
-			}
-			fileSizeLong += thisFileSize;
+			fileSizeLong += (long) FileOperate.getFileSizeLong(fileName[0]);
 		}
-		return fileSizeLong;
+		return (int)(fileSizeLong/1024);
 	}
 	
 	/**
@@ -166,7 +174,7 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo>, Runnable {
 	private ArrayListMultimap<String, AlignSeqReading> getMapPrefix2LsAlignSeqReadings() {
 		mapPrefix2LocStatistics = new HashMap<String, GffChrStatistics>();
 		mapPrefix2Statistics = new HashMap<String, SamFileStatistics>();
-		rpkMcomput = new RPKMcomput();
+		
 		if (gffChrAbs.getTaxID() != 0) {
 			rpkMcomput.setGffChrAbs(gffChrAbs);
 		}
@@ -198,7 +206,7 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo>, Runnable {
 	}
 	
 	private void writeToFile() {
-		if (isCountRPKM && gffChrAbs.getTaxID() != 0) {
+		if (isCountExpression && gffChrAbs.getTaxID() != 0) {
 			String outTPM = FileOperate.changeFileSuffix(resultPrefix, "_tpm", "txt");
 			String outRPKM = FileOperate.changeFileSuffix(resultPrefix, "_rpkm", "txt");
 			String outCounts = FileOperate.changeFileSuffix(resultPrefix, "_Counts", "txt");
@@ -237,7 +245,7 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo>, Runnable {
 	}
 	
 	private void writeToFileCurrent(String prefix) {
-		if (isCountRPKM && gffChrAbs.getTaxID() != 0) {
+		if (isCountExpression && gffChrAbs.getTaxID() != 0) {
 			String outTPM = FileOperate.changeFileSuffix(resultPrefix, prefix + "_tpm", "txt");
 			String outRPKM = FileOperate.changeFileSuffix(resultPrefix, prefix + "_rpkm", "txt");
 			String outCounts = FileOperate.changeFileSuffix(resultPrefix, prefix + "_Counts", "txt");

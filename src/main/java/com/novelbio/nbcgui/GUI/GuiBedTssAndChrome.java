@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -25,7 +27,6 @@ import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.nbcgui.controlseq.CtrlMapReads;
-import javax.swing.JComboBox;
 
 /**
  * 批量注释，各种注释
@@ -54,10 +55,8 @@ public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs, GuiN
 	private JTextField txtBedFile;
 	private JCheckBox chckSortBig2Small;
 	private JTextField txtSaveTo;
-	private JCheckBox chckbxOnlycisreads;
-	private JCheckBox chckbxOnlytransreads;
 	JButton btnOpenfile;
-	JButton btnOpenBedFile;
+	JButton btnOpenBamBedFile;
 	JSpinner spinInvNum;
 	JSpinner spinLoadFirstBp;
 	ButtonGroup buttonGroupPlotType = new ButtonGroup();
@@ -82,6 +81,8 @@ public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs, GuiN
 	private GuiLayeredPaneSpeciesVersionGff layeredPaneSpecies;
 
 	JComboBoxData<Integer> cmbNormalizedType;
+	JComboBoxData<Boolean> cmbReadsFilter;
+	
 	private JTextField txtChromHight;
 	/**
 	 * Create the panel.
@@ -90,7 +91,7 @@ public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs, GuiN
 		setLayout(null);
 		
 		scrollPaneData = new JScrollPaneData();
-		scrollPaneData.setBounds(12, 55, 693, 236);
+		scrollPaneData.setBounds(12, 101, 693, 190);
 		add(scrollPaneData);
 		
 		btnOpenfile = new JButton("OpenGeneFile");
@@ -180,27 +181,21 @@ public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs, GuiN
 		add(txtBedFile);
 		txtBedFile.setColumns(10);
 		
-		btnOpenBedFile = new JButton("OpenBedFile");
-		btnOpenBedFile.addActionListener(new ActionListener() {
+		btnOpenBamBedFile = new JButton("OpenBamBedFile");
+		btnOpenBamBedFile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String bedFile = guiFileOpen.openFileName("bed", "");
 				txtBedFile.setText(bedFile);
 			}
 		});
-		btnOpenBedFile.setBounds(449, 9, 136, 24);
-		add(btnOpenBedFile);
+		btnOpenBamBedFile.setBounds(449, 9, 164, 24);
+		add(btnOpenBamBedFile);
 		
 		btnLoading = new JButton("Loading");
 		btnLoading.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ctrlMapReads.setBedFile(txtBedFile.getText());
-				Boolean FilteredStrand = null;
-				if (chckbxOnlycisreads.isSelected()) {
-					FilteredStrand = true;
-				}
-				else if (chckbxOnlytransreads.isSelected()) {
-					FilteredStrand = false;
-				}
+				ctrlMapReads.setBamBedFile(txtBedFile.getText());
+				Boolean FilteredStrand = cmbReadsFilter.getSelectedValue();
 				ctrlMapReads.setFilter(chckOneSiteOneReads.isSelected(), (Integer)spinLoadFirstBp.getValue(), chckUniqueMapping.isSelected(), FilteredStrand);
 				ctrlMapReads.setInvNum((Integer)spinInvNum.getValue());
 				ctrlMapReads.setNormalType(MapReadsAbs.SUM_TYPE_MEAN);
@@ -209,7 +204,7 @@ public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs, GuiN
 				ctrlMapReads.execute();
 			}
 		});
-		btnLoading.setBounds(610, 9, 118, 24);
+		btnLoading.setBounds(641, 9, 118, 24);
 		add(btnLoading);
 		
 		chckSortBig2Small = new JCheckBox("SortBig2Small");
@@ -221,8 +216,8 @@ public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs, GuiN
 		add(txtSaveTo);
 		txtSaveTo.setColumns(10);
 		
-		JLabel lblJustRead = new JLabel("Just Load First Bp of The Bed");
-		lblJustRead.setBounds(12, 328, 269, 14);
+		JLabel lblJustRead = new JLabel("ExtendBP");
+		lblJustRead.setBounds(12, 45, 78, 14);
 		add(lblJustRead);
 		
 		JLabel lblAdvancedSetup = new JLabel("Advanced Setup");
@@ -230,46 +225,24 @@ public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs, GuiN
 		add(lblAdvancedSetup);
 		
 		chckUniqueMapping = new JCheckBox("UniqeMapping");
-		chckUniqueMapping.setBounds(8, 385, 131, 22);
+		chckUniqueMapping.setBounds(260, 71, 131, 22);
 		add(chckUniqueMapping);
 		
 		chckOneSiteOneReads = new JCheckBox("OneSiteOneReads");
-		chckOneSiteOneReads.setBounds(8, 413, 157, 22);
+		chckOneSiteOneReads.setBounds(395, 71, 157, 22);
 		add(chckOneSiteOneReads);
 		
-		chckbxOnlycisreads = new JCheckBox("OnlyCisReads");
-		chckbxOnlycisreads.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (chckbxOnlycisreads.isSelected()) {
-					chckbxOnlytransreads.setSelected(false);
-				}
-			}
-		});
-		chckbxOnlycisreads.setBounds(8, 487, 131, 22);
-		add(chckbxOnlycisreads);
-		
-		chckbxOnlytransreads = new JCheckBox("OnlyTransReads");
-		chckbxOnlytransreads.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (chckbxOnlytransreads.isSelected()) {
-					chckbxOnlycisreads.setSelected(false);
-				}
-			}
-		});
-		chckbxOnlytransreads.setBounds(150, 487, 164, 22);
-		add(chckbxOnlytransreads);
-		
 		lblInvnum = new JLabel("InvNum");
-		lblInvnum.setBounds(286, 328, 69, 14);
+		lblInvnum.setBounds(573, 45, 69, 14);
 		add(lblInvnum);
 		
 		spinInvNum = new JSpinner();
 		spinInvNum.setToolTipText("");
-		spinInvNum.setBounds(286, 354, 58, 18);
+		spinInvNum.setBounds(573, 73, 58, 18);
 		add(spinInvNum);
 		
 		spinLoadFirstBp = new JSpinner();
-		spinLoadFirstBp.setBounds(12, 354, 92, 18);
+		spinLoadFirstBp.setBounds(12, 73, 69, 18);
 		add(spinLoadFirstBp);
 		
 		txtResultBinNum = new JTextField();
@@ -358,12 +331,18 @@ public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs, GuiN
 		lblChromPicHeight.setBounds(12, 531, 127, 15);
 		add(lblChromPicHeight);
 		
+		cmbReadsFilter = new JComboBoxData<Boolean>();
+		cmbReadsFilter.setBounds(93, 70, 137, 24);
+		add(cmbReadsFilter);
+		
+		JLabel lblReadsfilter = new JLabel("ReadsFilter");
+		lblReadsfilter.setBounds(102, 45, 102, 15);
+		add(lblReadsfilter);
+		
 		initial();
 	}
 	
 	private void initial() {
-		chckbxOnlycisreads.setSelected(false);
-		chckbxOnlytransreads.setSelected(false);
 		chckOneSiteOneReads.setSelected(false);
 		chckUniqueMapping.setSelected(true);
 		spinInvNum.setValue(10);
@@ -371,6 +350,12 @@ public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs, GuiN
 		buttonGroupPlotType.add(rdbtnAllgene);
 		buttonGroupPlotType.add(rdbtnPeakcovered);
 		buttonGroupPlotType.add(rdbtnReadgene);
+		
+		Map<String, Boolean> mapReadsFilter = new HashMap<String, Boolean>();
+		mapReadsFilter.put("NotFilter", null);
+		mapReadsFilter.put("CisReads", true);
+		mapReadsFilter.put("TransReads", false);
+		cmbReadsFilter.setMapItem(mapReadsFilter);
 	}
 	
 	private void plotAllTssTes() {
@@ -446,7 +431,7 @@ public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs, GuiN
 	}
 	@Override
 	public JButton getBtnOpen() {
-		return btnOpenBedFile;
+		return btnOpenBamBedFile;
 	}
 	@Override
 	public JScrollPaneData getScrollPaneData() {

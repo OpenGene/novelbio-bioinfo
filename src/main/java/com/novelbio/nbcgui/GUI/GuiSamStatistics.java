@@ -56,6 +56,8 @@ public class GuiSamStatistics extends JPanel {
 	private JLabel lblSaveto;
 	private JTextField txtGTF;
 	JLabel lblInfo;
+	private JCheckBox chckCalculateFPKM;
+	private JCheckBox chckProtonStrand;
 	/**
 	 * Create the panel.
 	 */
@@ -63,7 +65,7 @@ public class GuiSamStatistics extends JPanel {
 		setLayout(null);
 		
 		scrollPaneData = new JScrollPaneData();
-		scrollPaneData.setBounds(12, 30, 693, 358);
+		scrollPaneData.setBounds(12, 34, 693, 372);
 		add(scrollPaneData);
 		
 		JButton btnOpenfile = new JButton("BamSamBedFile");
@@ -108,7 +110,7 @@ public class GuiSamStatistics extends JPanel {
 				
 				btnRun.setEnabled(false);
 				ctrlSamRPKMLocate.setQueryFile(scrollPaneData.getLsDataInfo());
-				ctrlSamRPKMLocate.setIsCountRPKM(chkRpkmcount.isSelected());
+				ctrlSamRPKMLocate.setIsCountRPKM(chkRpkmcount.isSelected(), chckProtonStrand.isSelected(), chckCalculateFPKM.isSelected());
  				int[] tss = new int[]{0,0};
 				int[] tes = new int[]{0,0};
 				try { tss[0] = Integer.parseInt(txtTssUp.getText()); } catch (Exception e2) { }
@@ -200,8 +202,20 @@ public class GuiSamStatistics extends JPanel {
 		});
 		add(layeredPane);
 		
-		chkRpkmcount = new JCheckBox("RPKMcount");
-		chkRpkmcount.setBounds(722, 364, 131, 22);
+		chkRpkmcount = new JCheckBox("ExpressCount");
+		chkRpkmcount.setSelected(true);
+		chkRpkmcount.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (chkRpkmcount.isSelected()) {
+					chckCalculateFPKM.setEnabled(true);
+					chckProtonStrand.setEnabled(true);
+				} else {
+					chckCalculateFPKM.setEnabled(false);
+					chckProtonStrand.setEnabled(false);
+				}
+			}
+		});
+		chkRpkmcount.setBounds(713, 364, 118, 22);
 		add(chkRpkmcount);
 		
 		txtSaveTo = new JTextField();
@@ -214,7 +228,7 @@ public class GuiSamStatistics extends JPanel {
 		add(lblSaveto);
 		
 		txtGTF = new JTextField();
-		txtGTF.setBounds(10, 407, 693, 18);
+		txtGTF.setBounds(12, 418, 693, 18);
 		add(txtGTF);
 		txtGTF.setColumns(10);
 		
@@ -223,7 +237,7 @@ public class GuiSamStatistics extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
-		btnOpenGtf.setBounds(715, 404, 118, 24);
+		btnOpenGtf.setBounds(715, 415, 118, 24);
 		add(btnOpenGtf);
 		
 		JLabel lblInformation = new JLabel("Information");
@@ -242,6 +256,15 @@ public class GuiSamStatistics extends JPanel {
 		});
 		btnDel.setBounds(717, 66, 163, 24);
 		add(btnDel);
+		
+		chckCalculateFPKM = new JCheckBox("CalculateFPKM");
+		chckCalculateFPKM.setSelected(true);
+		chckCalculateFPKM.setBounds(845, 364, 124, 23);
+		add(chckCalculateFPKM);
+		
+		chckProtonStrand = new JCheckBox("ProtonStrand");
+		chckProtonStrand.setBounds(845, 391, 124, 23);
+		add(chckProtonStrand);
 		
 		initial();
 	}

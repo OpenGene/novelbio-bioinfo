@@ -44,6 +44,7 @@ public class GuiSamToBed extends JPanel {
 	JCheckBox chckRecalibrate;
 	JCheckBox chckRealign;
 	JCheckBox chckRemoveduplicate;
+	JCheckBox chckbxMergebyprefix;
 	
 	JButton btnSamtobed;
 	JButton btnAddvcf;
@@ -217,11 +218,11 @@ public class GuiSamToBed extends JPanel {
 		add(chckbxSortBed);
 		
 		chckbxSortBam = new JCheckBox("sortBam");
-		chckbxSortBam.setBounds(13, 198, 91, 22);
+		chckbxSortBam.setBounds(12, 198, 91, 22);
 		add(chckbxSortBam);
 		
 		chckbxIndex = new JCheckBox("index");
-		chckbxIndex.setBounds(123, 198, 69, 22);
+		chckbxIndex.setBounds(107, 198, 69, 22);
 		add(chckbxIndex);
 		
 		
@@ -380,6 +381,11 @@ public class GuiSamToBed extends JPanel {
 		});
 		btnDelvcf.setBounds(173, 516, 118, 24);
 		add(btnDelvcf);
+		
+		chckbxMergebyprefix = new JCheckBox("MergeByPrefix");
+		chckbxMergebyprefix.setSelected(true);
+		chckbxMergebyprefix.setBounds(180, 198, 140, 23);
+		add(chckbxMergebyprefix);
 		initial();
 	}
 	
@@ -473,8 +479,46 @@ public class GuiSamToBed extends JPanel {
 			samFile.setReferenceFileName(refFile);
 			lsSamFiles.add(samFile);
 		}
+		List<SamFile> lsBamFile = new ArrayList<SamFile>();
+		for (SamFile samFile : lsSamFiles) {
+			lsBamFile.add(samFile.convertToBam());
+		}
 		
-		SamFile samFileMerge = mergeSamFile(resultMergePath, prefix, lsSamFiles);
+		if (chckbxMergebyprefix.isSelected()) {
+			SamFile samFileMerge = mergeSamFile(resultMergePath, prefix, lsBamFile);
+			lsBamFile.clear();
+			lsBamFile.add(samFileMerge);
+		}
+		for (int i = 0; i < lsBamFile.size(); i++) {
+			SamFile samFileMerge = lsBamFile.get(i);
+			if (lsBamFile.size() == 1) {
+				copeSamBamFile(prefix, samFileMerge);
+			} else {
+				copeSamBamFile(prefix + "_" + (i+1), samFileMerge);
+			}
+		}
+	}
+	
+	/**
+	 * 将输入的文件转化为bam文件，并合并
+	 * @param prefix
+	 * @param lsSamFile
+	 * @return
+	 */
+	private SamFile mergeSamFile(String resultPath, String prefix, List<SamFile> lsSamFile) {
+		if (lsSamFile.size() == 1) {
+			return lsSamFile.get(0);
+		}
+		
+		String resultName = resultPath + prefix;
+		resultName = FileOperate.changeFileSuffix(resultName, "_merge", "bam");
+		SamFile samFileMerge = SamFile.mergeBamFile(resultName , lsSamFile);
+		return samFileMerge;
+	}
+	
+	
+	
+	private void copeSamBamFile(String prefix, SamFile samFileMerge) {
 		if (chckbxSortBam.isSelected()) {
 			samFileMerge = samFileMerge.sort();
 		}
@@ -517,26 +561,9 @@ public class GuiSamToBed extends JPanel {
 		}
 	}
 	
-	/**
-	 * 将输入的文件转化为bam文件，并合并
-	 * @param prefix
-	 * @param lsSamFile
-	 * @return
-	 */
-	private SamFile mergeSamFile(String resultPath, String prefix, List<SamFile> lsSamFile) {
-		if (lsSamFile.size() == 1) {
-			return lsSamFile.get(0).convertToBam();
-		}
-		List<SamFile> lsBamFile = new ArrayList<SamFile>();
-		for (SamFile samFile : lsSamFile) {
-			lsBamFile.add(samFile.convertToBam());
-		}
-		
-		String resultName = resultPath + prefix;
-		resultName = FileOperate.changeFileSuffix(resultName, "_merge", "bam");
-		SamFile samFileMerge = SamFile.mergeBamFile(resultName , lsBamFile);
-		return samFileMerge;
-	}
+	
+	
+	
 	
 	private void convertBedFile(String bedFile) {
 		BedSeq bedSeq = new BedSeq(bedFile);
