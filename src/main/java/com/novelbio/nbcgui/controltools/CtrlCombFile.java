@@ -2,10 +2,7 @@ package com.novelbio.nbcgui.controltools;
 
 import java.util.ArrayList;
 
-import javax.swing.JOptionPane;
-
 import com.novelbio.analysis.tools.compare.CombineTab;
-import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -50,7 +47,7 @@ public class CtrlCombFile {
 		for (int i = 0; i < colDetail.length; i++) {
 			colDetail[i] = Integer.parseInt(lsResult.get(i)[0]);
 		}
-		combineTab.setColExtractDetai(condTxt, codName, colDetail);
+		combineTab.setColExtractDetail(condTxt, codName, colDetail);
 	}
 	
 	public void output() {
@@ -59,6 +56,14 @@ public class CtrlCombFile {
 //			JOptionPane.showMessageDialog(null, "Result num is bigger than 60000, so save to txt file", "alert", JOptionPane.INFORMATION_MESSAGE);
 			TxtReadandWrite txtWrite = new TxtReadandWrite(oufFile, true);
 			txtWrite.ExcelWrite(lsOut);
+			txtWrite.close();
+			
+			TxtReadandWrite txtWriteOneLine = new TxtReadandWrite(FileOperate.changeFileSuffix(oufFile, "_OneLine", "xls"), true);
+			txtWriteOneLine.ExcelWrite(combineTab.getLsResultFromImage());
+			txtWriteOneLine.close();
+			
+			combineTab.renderScriptAndDrawImage(FileOperate.changeFileSuffix(oufFile, null, "png"), 1200, 1200);
+			
 			return;
 //		}
 //		ExcelOperate excelOperate = new ExcelOperate();

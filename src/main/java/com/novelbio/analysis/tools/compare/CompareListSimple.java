@@ -1,16 +1,12 @@
 package com.novelbio.analysis.tools.compare;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.fileOperate.FileOperate;
 
 public class CompareListSimple {
 	/**
@@ -36,8 +32,7 @@ public class CompareListSimple {
 	 * 4: ls1mult
 	 * 5: ls2mult
 	 */
-	private static ArrayList<ArrayList<String[]>> compareList(List<String[]> ls1,List<String[]> ls2,boolean considerCase) 
-	{
+	private static ArrayList<ArrayList<String[]>> compareList(List<String[]> ls1,List<String[]> ls2,boolean considerCase) {
 		Hashtable<String, String[]> hs1=new Hashtable<String, String[]>();
 		Hashtable<String, String[]> hs2=new Hashtable<String, String[]>();
 		////////返回结果/////////////////////////////////

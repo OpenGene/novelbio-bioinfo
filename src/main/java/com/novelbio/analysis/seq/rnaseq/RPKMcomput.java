@@ -71,7 +71,12 @@ public class RPKMcomput implements AlignmentRecorder {
 	
 	/** 计数器，获得当前样本的总体 reads数， 用来算rpkm的 */
 	double currentReadsNum = 0;
-
+	
+	/** 是否计算FPKM，同时有FPKM和pairend才算是FPKM */
+	public boolean isCalculateFPKM() {
+		return isPairend && calculateFPKM;
+	}
+	
 	public void setGffHashGene(GffHashGene gffHashGene) {
 		this.gffHashGene = gffHashGene;
 		initial();
@@ -137,7 +142,6 @@ public class RPKMcomput implements AlignmentRecorder {
 			logger.error("error:" + alignRecord.toString());
 		}
 		addAlignRecord(lSamRecords);
-
 	}
 	
 	private void addAlignRecord(List<SamRecord> lsSamRecords) {

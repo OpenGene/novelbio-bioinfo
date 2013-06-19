@@ -100,7 +100,7 @@
             <list>
                 <!-- 表示在com.hoo.resultmap包或以下所有目录中，以-resultmap.xml结尾所有文件 -->
                 <!-- <value>classpath:XML/IdMapper/*.xml</value> -->
-                <value>classpath:XML/KeggMapper/*.xml</value>
+                <value>/KeggMapper/*.xml</value>
                 <!-- <value>classpath:XML/ReactMapper/*.xml</value> -->
                	<!-- <value>classpath:XML/InformationMapper/*.xml</value> -->
             </list>
@@ -135,5 +135,13 @@
     <context:component-scan base-package="com.novelbio.analysis.diffexpress" />
     <context:component-scan base-package="com.novelbio.aoplog" />
     <context:component-scan base-package="com.novelbio.analysis.seq.mapping" />
-    
+   
+   	 <bean id="freemarkNBC" class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">  
+        <property name="templateLoaderPath" value="classpath:FreemarkerTmplt" />  
+         <property name="freemarkerSettings">  
+            <props>
+                <prop key="defaultEncoding">UTF-8</prop>         
+            </props>
+        </property>  
+    </bean>  
 </beans>

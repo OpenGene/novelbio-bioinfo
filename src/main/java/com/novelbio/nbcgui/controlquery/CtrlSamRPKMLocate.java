@@ -207,9 +207,14 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo>, Runnable {
 	
 	private void writeToFile() {
 		if (isCountExpression && gffChrAbs.getTaxID() != 0) {
+			String suffixRPKM = "_RPKM", suffixCounts = "_Counts";
+			if (rpkMcomput.isCalculateFPKM()) {
+				suffixRPKM = "_FPKM";
+				suffixCounts = "_Fragments";
+			}
 			String outTPM = FileOperate.changeFileSuffix(resultPrefix, "_tpm", "txt");
-			String outRPKM = FileOperate.changeFileSuffix(resultPrefix, "_rpkm", "txt");
-			String outCounts = FileOperate.changeFileSuffix(resultPrefix, "_Counts", "txt");
+			String outRPKM = FileOperate.changeFileSuffix(resultPrefix, suffixRPKM, "txt");
+			String outCounts = FileOperate.changeFileSuffix(resultPrefix, suffixCounts, "txt");
 			
 			List<String[]> lsTpm = rpkMcomput.getLsTPMs();
 			List<String[]> lsRpkm = rpkMcomput.getLsRPKMs();
@@ -246,9 +251,14 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo>, Runnable {
 	
 	private void writeToFileCurrent(String prefix) {
 		if (isCountExpression && gffChrAbs.getTaxID() != 0) {
+			String suffixRPKM = "_RPKM", suffixCounts = "_Counts";
+			if (rpkMcomput.isCalculateFPKM()) {
+				suffixRPKM = "_FPKM";
+				suffixCounts = "_Fragments";
+			}
 			String outTPM = FileOperate.changeFileSuffix(resultPrefix, prefix + "_tpm", "txt");
-			String outRPKM = FileOperate.changeFileSuffix(resultPrefix, prefix + "_rpkm", "txt");
-			String outCounts = FileOperate.changeFileSuffix(resultPrefix, prefix + "_Counts", "txt");
+			String outRPKM = FileOperate.changeFileSuffix(resultPrefix, prefix + suffixRPKM, "txt");
+			String outCounts = FileOperate.changeFileSuffix(resultPrefix, prefix + suffixCounts, "txt");
 			
 			List<String[]> lsTpm = rpkMcomput.getLsTPMsCurrent();
 			List<String[]> lsRpkm = rpkMcomput.getLsRPKMsCurrent();

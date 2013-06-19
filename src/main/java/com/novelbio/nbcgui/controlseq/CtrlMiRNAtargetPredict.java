@@ -101,8 +101,8 @@ public class CtrlMiRNAtargetPredict {
 	private ArrayList<String[]> overLap(String txtInputFileMiranda, String txtInputFileMiRNAhybrid) {
 		CombineTab combineTab = new CombineTab();
 		combineTab.setStrNull(null);
-		combineTab.setColExtractDetai(txtInputFileMiranda, "mirnada", 2,3,4);
-		combineTab.setColExtractDetai(txtInputFileMiRNAhybrid, "rnaHybrid", 3,4);
+		combineTab.setColExtractDetail(txtInputFileMiranda, "mirnada", 2,3,4);
+		combineTab.setColExtractDetail(txtInputFileMiRNAhybrid, "rnaHybrid", 3,4);
 		combineTab.setColCompareOverlapID(1, 2);
 		ArrayList<String[]> lsCombine = combineTab.getResultLsIntersection();
 		return lsCombine;

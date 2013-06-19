@@ -1,21 +1,17 @@
 package com.novelbio.nbcgui.GUI;
 
-import javax.swing.JPanel;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.JToolBar;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import java.awt.GridLayout;
-import java.awt.FlowLayout;
-import java.awt.BorderLayout;
-import javax.swing.SpringLayout;
-import java.awt.CardLayout;
-import javax.swing.BoxLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
 import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSeparator;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import com.novelbio.base.MD5generate;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
@@ -26,24 +22,13 @@ import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.controltools.CtrlCombFile;
 import com.novelbio.nbcgui.controltools.CtrlMedian;
 
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
-import javax.swing.table.DefaultTableModel;
-
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import javax.swing.JSeparator;
-import javax.swing.SwingConstants;
-
 public class GuiToolsJpanel extends JPanel {
+	private static final long serialVersionUID = -6252286036589241467L;
 	private JTextField jtxtFileNameMedian;
 	private JTextFieldData jtxtAccID;
 	private JTextField jtxtColNum;
 	private JTextField jtxtAccIDComp;
 	GUIFileOpen guiFileOpenComb = new GUIFileOpen();
-	GUIFileOpen guiFileOpenMed = new GUIFileOpen();
 	JScrollPaneData scrollPane;
 	
 	JScrollPaneData scrlFileName;
@@ -64,8 +49,7 @@ public class GuiToolsJpanel extends JPanel {
 		//选择待取中位数的文件
 		btnOpenfileMedian.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				GUIFileOpen guiFileOpen = new GUIFileOpen();
-				String filename = guiFileOpen.openFileName("txt/excel2003", "txt","xls");
+				String filename = guiFileOpenComb.openFileName("txt/excel2003", "txt","xls");
 				jtxtFileNameMedian.setText(filename);
 			}
 		});
@@ -98,7 +82,7 @@ public class GuiToolsJpanel extends JPanel {
 		btnSaveasMedian.setBounds(385, 95, 97, 24);
 		btnSaveasMedian.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String filename = guiFileOpenMed.saveFileName("txt/excel2003", "txt","xls");
+				String filename = guiFileOpenComb.saveFileName("txt/excel2003", "txt","xls");
 				String inFile = jtxtFileNameMedian.getText();
 				String txtAccID = jtxtAccID.getText();
 				String txtColID = jtxtColNum.getText();
@@ -130,8 +114,7 @@ public class GuiToolsJpanel extends JPanel {
 		btnSaveasCompare.setHorizontalAlignment(SwingConstants.LEFT);
 		btnSaveasCompare.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				GUIFileOpen guiFileOpen = new GUIFileOpen();
-				String filename = guiFileOpen.saveFileName("txt/excel2003", "txt","xls");
+				String filename = guiFileOpenComb.saveFileName("txt/excel2003", "txt","xls");
 				CtrlCombFile ctrlCombFile = new CtrlCombFile();
 				String colAccID = jtxtAccIDComp.getText();
 				ctrlCombFile.setCompareCol(colAccID);

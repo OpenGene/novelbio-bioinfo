@@ -1,15 +1,12 @@
 package com.novelbio.analysis.tools.compare;
 
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.base.fileOperate.FileOperate;
 
 /**
  * 有的时候待比较的项目有这样的特点，每一个项目用“: \ ”等符号隔开，
@@ -20,7 +17,6 @@ import com.novelbio.base.fileOperate.FileOperate;
  */
 public class ComTxt {
 	/**
-	 * 
 	 * 有的时候待比较的项目有这样的特点，每一个项目用“: \ ”等符号隔开，
 	 * 譬如一个基因有多个refID，这样两列直接没法进行比较，
 	 * 那么将第一个文本的多个refID分成多行装入hashTable，第二个文本不分开装入list，然后遍历list获得交集
@@ -147,7 +143,7 @@ public class ComTxt {
 		txtOutFile.writefileln("interactNum\t"+interactNum);
 		txtOutFile.writefileln(file1Name+"\t"+Aonly+"\t"+(double)interactNum/(Aonly+interactNum));
 		txtOutFile.writefileln(file2Name+"\t"+Bonly+"\t"+(double)interactNum/(Bonly+interactNum));
-		
+		txtOutFile.close();
 		String[] title1 = strFile1.get(0);String[] title2 = strFile2.get(0);
 		String[] title = ArrayOperate.combArray(title1, title2, 0);
 		lsInteract.add(0,title);
