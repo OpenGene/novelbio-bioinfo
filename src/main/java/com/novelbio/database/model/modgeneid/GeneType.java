@@ -23,14 +23,15 @@ public enum GeneType {
 			mapMRNA2GeneType.put("tRNA".toLowerCase(),tRNA);
 			mapMRNA2GeneType.put("rRNA".toLowerCase(), rRNA);
 			mapMRNA2GeneType.put("snoRNA".toLowerCase(), snoRNA);
-			mapMRNA2GeneType.put("snRNA".toLowerCase(), snRNA);
-			
+			mapMRNA2GeneType.put("snRNA".toLowerCase(), snRNA);			
 			mapMRNA2GeneType.put("ncRNA".toLowerCase(), ncRNA);
 			
 			mapMRNA2GeneType.put("pseudogene".toLowerCase(),PSEU);
 			mapMRNA2GeneType.put("pseudogenic_transcript".toLowerCase(), PSEU);
 			
+			//TODO
 			mapMRNA2GeneType.put("transcript".toLowerCase(),miscRNA);
+			
 			mapMRNA2GeneType.put("miscRNA".toLowerCase(),miscRNA);
 			mapMRNA2GeneType.put("misc_RNA".toLowerCase(),miscRNA);
 			

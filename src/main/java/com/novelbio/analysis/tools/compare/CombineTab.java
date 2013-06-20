@@ -23,6 +23,7 @@ import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.plot.VennImage;
 import com.novelbio.database.service.SpringFactory;
 
 import freemarker.template.Configuration;
@@ -37,16 +38,6 @@ import freemarker.template.Template;
 public class CombineTab {
 	
 	public static void main(String[] args) {
-//		Configuration freeMarkerConfiguration = (Configuration)SpringFactory.getFactory().getBean("freemarkNBC");
-//		try {
-//			freeMarkerConfiguration.getTemplate("Venn.ftl");
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		
-		
-		
 		String parentFile = "/home/novelbio/桌面/";
 		String file1 = parentFile + "A.xls";
 		String file2 = parentFile + "B.xls";
@@ -63,10 +54,13 @@ public class CombineTab {
 			}
 			System.out.println("");
 		}
-		if (comb.renderScriptAndDrawImage("/home/novelbio/桌面/testR.png",800,600) != null) {
+		VennImage vennImage = new VennImage("/home/novelbio/桌面/testR.tiff",3000,3000);
+		vennImage.setMain("use VennDiagram to make a Venn plot");
+		vennImage.setSub("by GaoZhu");
+		if (comb.renderScriptAndDrawImage(vennImage) != null) {
 			System.out.println("生成图片成功");
 		}
-		comb.deleteAllTempFile();
+		//comb.deleteAllTempFile();
 	}
 	private static Logger logger = Logger.getLogger(CombineTab.class);
 	public static String tempFolder = PathNBCDetail.getRworkspaceTmp();
@@ -316,19 +310,23 @@ public class CombineTab {
 		return true;
 	}
 	
+	public BufferedImage renderScriptAndDrawImage(String savePath, String title, String subTitle) {
+		VennImage vennImage = new VennImage(savePath,3000,3000);
+		vennImage.setMain(title);
+		vennImage.setSub(subTitle);
+		return renderScriptAndDrawImage(vennImage);
+	}
+	
 	/**
 	 * 渲染R脚本并画图
-	 * @param savePath 只能是PNG格式的
+	 * @param savePath 只能是tiff格式的
 	 * @return
 	 */
-	public BufferedImage renderScriptAndDrawImage(String savePath, Integer width, Integer height){
-//		tempFiles.add(savePath);
+	public BufferedImage renderScriptAndDrawImage(VennImage vennImage){
+		tempFiles.add(vennImage.getSavePath());
 		//提供给freemarker的渲染数据集 
 		Map<String,Object> mapData = new HashMap<String, Object>();
 		Map<String,String> mapShortName2PathName = new HashMap<String, String>();
-		mapData.put("savePath", savePath);
-		mapData.put("width", width + "");
-		mapData.put("height", height + "");
 		TxtReadandWrite txtReadandWrite = null;
 		String fileName = null;
 		for (String key : mapFileName2ConditionAbbr.keySet()) {
@@ -343,7 +341,9 @@ public class CombineTab {
 			txtReadandWrite.flash();
 			tempFiles.add(fileName);
 		}
+		vennImage.setDataSize(mapShortName2PathName.size());
 		mapData.put("data", mapShortName2PathName);
+		mapData.put("vennImage", vennImage);
 //		// 加载模板
 //		Configuration cf = new Configuration();
 //		// 模板存放路径
@@ -356,7 +356,6 @@ public class CombineTab {
 //		cf.setEncoding(Locale.getDefault(), "UTF-8");
 		String scriptName = null;
 		try {
-//			freeMarkerConfiguration.setEncoding(locale, encoding);
 			Template template = freeMarkerConfiguration.getTemplate("Venn.ftl");
 			StringWriter sw = new StringWriter();
 			// 处理并把结果输出到字符串中
@@ -383,7 +382,7 @@ public class CombineTab {
 			return null;
 		}
 		try {
-			return ImageIO.read(new File(savePath));
+			return ImageIO.read(new File(vennImage.getSavePath()));
 		} catch (IOException e) {
 			logger.error("读取图片流出错! " + e.getMessage());
 			deleteAllTempFile();
@@ -394,7 +393,7 @@ public class CombineTab {
 	/**
 	 * 删除除所有的临时文件
 	 */
-	private void  deleteAllTempFile() {
+	public void  deleteAllTempFile() {
 		for (String fileName : tempFiles) {
 			if (!FileOperate.isFileExist(fileName))
 				continue;
@@ -410,6 +409,7 @@ public class CombineTab {
 		exeToFile();
 		return lsResultUnion;
 	}
+	
 	/**
 	 * 得到不同GeneID的分布<br>
 	 * 如　Gbp1   A_B_AB（表示在A B AB中都出现过）   Pkdcc   A_AB（表示在A AB中出现的）  

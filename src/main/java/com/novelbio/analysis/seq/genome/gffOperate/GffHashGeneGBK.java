@@ -173,7 +173,7 @@ public class GffHashGeneGBK extends GffHashGeneAbs {
 		for (String cdsInfoTmp : cdsInfo) {
 			String[] cdsLoc = cdsInfoTmp.split("\\.\\.");
 			int start = Integer.parseInt(cdsLoc[0]); int end = Integer.parseInt(cdsLoc[1]);
-			gffGeneIsoInfo.setATGUAG(start, end);
+			gffGeneIsoInfo.setATGUAGauto(start, end);
 		}
 	}
 	

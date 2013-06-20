@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -52,9 +53,9 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	protected static String regParentID = "(?<=Parent\\=)[\\w\\.\\-%]+";
 
 	/** gene类似名 */
-	private static HashSet<String> setIsGene = new HashSet<String>();
+	private static Set<String> setIsGene = new HashSet<String>();
 	/** gene类似名 */
-	private static HashSet<String> setIsChromosome = new HashSet<String>();
+	private static Set<String> setIsChromosome = new HashSet<String>();
 	
 	/** "(?<=gene\\=)\\w+" */
 	PatternOperate patGeneName = null;
@@ -104,10 +105,8 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	int numCopedIDsearch = 0;//查找taxID的次数最多10次
 	/** 默认连上数据库 */
 	boolean database = true;
-	/**
-	 * 设定mRNA和gene的类似名，在gff文件里面出现的
-	 */
-	private void setHashName() {
+	/** 设定mRNA和gene的类似名，在gff文件里面出现的 */
+	private void setGeneName() {
 		if (setIsGene.isEmpty()) {
 			setIsGene.add("gene");
 			setIsGene.add("transposable_element_gene");
@@ -147,7 +146,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	 * @throws Exception 
 	 */
    protected void ReadGffarrayExcepTmp(String gfffilename) throws Exception {
-	   setHashName();
+	   setGeneName();
 	   setPattern();
 	   TxtReadandWrite txtgff = new TxtReadandWrite(gfffilename, false);
 	   
@@ -341,7 +340,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   String rnaID = getRNAID(lastGeneID2Name, lastRnaID2Name, ss);
 	   String geneID = getGeneID(rnaID);
 	   GffGeneIsoInfo gffGeneIsoInfo = getGffIso(rnaID, cdsStart, cdsEnd, GeneType.mRNA);
-	   gffGeneIsoInfo.setATGUAG(Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
+	   gffGeneIsoInfo.setATGUAGauto(cdsStart, cdsEnd);
 	   if (mapGeneName2IsHaveExon.get(geneID) == null) {
 		   logger.error("没有找到相应的GeneID:" + geneID);
 	   }

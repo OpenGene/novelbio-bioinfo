@@ -62,7 +62,7 @@ public class CtrlCombFile {
 			txtWriteOneLine.ExcelWrite(combineTab.getLsResultFromImage());
 			txtWriteOneLine.close();
 			
-			combineTab.renderScriptAndDrawImage(FileOperate.changeFileSuffix(oufFile, null, "png"), 1200, 1200);
+			combineTab.renderScriptAndDrawImage(FileOperate.changeFileSuffix(oufFile, null, "tiff"),"","");
 			
 			return;
 //		}

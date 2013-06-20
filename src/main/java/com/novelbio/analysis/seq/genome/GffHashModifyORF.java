@@ -44,7 +44,7 @@ public class GffHashModifyORF {
 		
 		for (GffGeneIsoInfo gffIso : gffDetailGeneThis.getLsCodSplit()) {
 			GffGeneIsoInfo gffRef = getSimilarIso(gffIso, gffDetailGeneRef);
-			gffIso.setATGUAG(gffRef.getATGsite(), gffIso.getUAGsite());
+			gffIso.setATGUAGauto(gffRef.getATGsite(), gffIso.getUAGsite());
 		}
 	}
 	

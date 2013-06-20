@@ -135,8 +135,8 @@ public class AopPath {
 				for (Entry<String, FunctionTest> entry : map.entrySet()) {
 					List<StatisticTestResult> lsTestResults = entry.getValue().getTestResult();
 					String prix = entry.getKey();
-					String excelPath = FileOperate.getParentPathName(ctrlTestPathInt.getSaveExcelPrefix());
-					String picNameLog2P = FileOperate.changeFilePrefix(excelPath, "Path-Analysis-Log2P_" + prix + "_", "png");
+					String excelPath = ctrlTestPathInt.getSaveParentPath();
+					String picNameLog2P = FileOperate.changeFilePrefix(excelPath, "Path-Analysis-Log2P_" + prix + "_" + ctrlTestPathInt.getSavePrefix() + "_", "png");
 					BufferedImage bfImageLog2Pic = drawLog2PvaluePicture(lsTestResults, ctrlTestPathInt.getResultBaseTitle());
 					if (bfImageLog2Pic == null) return false;
 					
@@ -147,7 +147,7 @@ public class AopPath {
 						addParamInfo(Param.picParam, FileOperate.getFileName(picNameLog2P));
 					}
 					
-					String picNameEnrichment = FileOperate.changeFilePrefix(excelPath, "Path-Analysis-Enrichment_" + prix + "_", "png");
+					String picNameEnrichment = FileOperate.changeFilePrefix(excelPath, "Path-Analysis-Enrichment_" + prix + "_" + ctrlTestPathInt.getSavePrefix() + "_", "png");
 					BufferedImage bfImageEnrichment = drawEnrichmentPicture(lsTestResults, ctrlTestPathInt.getResultBaseTitle());
 					if (bfImageEnrichment == null) return false;
 					

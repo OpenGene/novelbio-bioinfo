@@ -1,11 +1,9 @@
 package com.novelbio.nbcgui.controltest;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -27,6 +25,7 @@ public class CtrlGOall implements CtrlTestGOInt {
 	List<Integer> lsBlastTaxID = new ArrayList<Integer>();
 	boolean isCluster = false;
 	String saveParentPath = "";
+	String savePathPrefix = "";
 	
 	@Override
 	public void setTaxID(int taxID) {
@@ -86,6 +85,7 @@ public class CtrlGOall implements CtrlTestGOInt {
 			saveParentPath = saveExcelPrefix;
 		} else {
 			saveParentPath = FileOperate.getParentPathName(saveExcelPrefix);
+			savePathPrefix = FileOperate.getFileName(saveExcelPrefix);
 		}
 		
 		for (CtrlGO ctrlGO : mapGOtype2CtrlGO.values()) {
@@ -103,6 +103,12 @@ public class CtrlGOall implements CtrlTestGOInt {
 	@Override
 	public String getSaveParentPath() {
 		return saveParentPath;
+	}
+	
+	/** 获得保存到文件夹的前缀，譬如保存到/home/zong0jie/stage10，那么前缀就是stage10 */
+	@Override
+	public String getSavePrefix() {
+		return savePathPrefix;
 	}
 	
 	@Override
