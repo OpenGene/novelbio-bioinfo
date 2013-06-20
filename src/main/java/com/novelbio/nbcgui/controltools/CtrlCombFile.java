@@ -40,9 +40,6 @@ public class CtrlCombFile {
 	 */
 	public void setColDetail(String condTxt, String codName, String colStrDetail) {
 		ArrayList<String[]> lsResult = PatternOperate.getPatLoc(colStrDetail, "\\d+", false);
-		if (lsResult.size() == 0) {
-			return;
-		}
 		int[] colDetail = new int[lsResult.size()];
 		for (int i = 0; i < colDetail.length; i++) {
 			colDetail[i] = Integer.parseInt(lsResult.get(i)[0]);
