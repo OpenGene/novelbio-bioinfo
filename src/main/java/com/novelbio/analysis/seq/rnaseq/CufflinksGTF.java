@@ -51,7 +51,8 @@ public class CufflinksGTF {
 	String gtfFile = "";
 	/** 输出文件路径 */
 	String outPathPrefix = "";
-	
+	/** 是否用上四分之一位点标准化 */
+	boolean isUpQuartileNormalized = true;
 
 	GffChrAbs gffChrAbs;
 	boolean booSetIntronMin = false;
@@ -84,11 +85,15 @@ public class CufflinksGTF {
 		}
 		this.chrFile = chrFile;
 	}
-
+	
 	public void setOutPathPrefix(String outPathPrefix) {
 		this.outPathPrefix = outPathPrefix;
 	}
-
+	/** 是否用上四分之一位点标准化 */
+	public void setUpQuartileNormalized(boolean isUpQuartileNormalized) {
+		this.isUpQuartileNormalized = isUpQuartileNormalized;
+	}
+	
 	/** 用于CMD */
 	private String getOutPathPrefixCmd(String prefix) {
 		return "-o " + CmdOperate.addQuot(getOutPathPrefix(prefix)) + " ";
@@ -174,7 +179,14 @@ public class CufflinksGTF {
 	private String getIntronLenMax() {
 		return "--max-intron-length " + intronLenMax + " ";
 	}
-
+	/** 内含子最短多少，默认50，需根据不同物种进行设置 */
+	private String getIsUpQuartile() {
+		if (isUpQuartileNormalized) {
+			return " -N ";
+		} else {
+			return "";
+		}
+	}
 	private String getSamFileMerged(String prefix) {
 		List<SamFile> lsSamFiles = mapPrefix2SamFiles.get(prefix);
 		String samFile = "";
@@ -330,7 +342,7 @@ public class CufflinksGTF {
 		cmd = ExePathCufflinks + "cufflinks ";
 		cmd = cmd + getOutPathPrefixCmd(prefix) + getAnchoProportion()
 				+ getIntronLenMin() + getIntronLenMax() + getGtfFile()
-				+ getStrandSpecifictype() + getThreadNum()
+				+ getStrandSpecifictype() + getIsUpQuartile() + getThreadNum()
 				+ getCorrectChrFile();
 		String cmdRun = cmd + getSamFileMerged(prefix);
 		try {
@@ -356,7 +368,7 @@ public class CufflinksGTF {
 			cmd = ExePathCufflinks + "cufflinks ";
 			cmd = cmd + getOutPathPrefixCmd(prefixThis) + getAnchoProportion()
 					+ getIntronLenMin() + getIntronLenMax() + getGtfFile()
-					+ getStrandSpecifictype() + getThreadNum()
+					+ getStrandSpecifictype() + getIsUpQuartile() + getThreadNum()
 					+ getCorrectChrFile();
 			String cmdRun = cmd + string;
 			try {

@@ -207,26 +207,33 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo>, Runnable {
 	
 	private void writeToFile() {
 		if (isCountExpression && gffChrAbs.getTaxID() != 0) {
-			String suffixRPKM = "_RPKM", suffixCounts = "_Counts";
+			String suffixRPKM = "_RPKM", suffixUQRPKM = "_UQRPKM", suffixCounts = "_Counts";
 			if (rpkMcomput.isCalculateFPKM()) {
 				suffixRPKM = "_FPKM";
+				suffixUQRPKM = "_UQFPKM";
 				suffixCounts = "_Fragments";
 			}
 			String outTPM = FileOperate.changeFileSuffix(resultPrefix, "_tpm", "txt");
 			String outRPKM = FileOperate.changeFileSuffix(resultPrefix, suffixRPKM, "txt");
 			String outCounts = FileOperate.changeFileSuffix(resultPrefix, suffixCounts, "txt");
+			String outUQRPKM = FileOperate.changeFileSuffix(resultPrefix, suffixUQRPKM, "txt");
 			
 			List<String[]> lsTpm = rpkMcomput.getLsTPMs();
 			List<String[]> lsRpkm = rpkMcomput.getLsRPKMs();
+			List<String[]> lsUQRpkm = rpkMcomput.getLsUQRPKMs();
 			List<String[]> lsCounts = rpkMcomput.getLsCounts();
+			
 			TxtReadandWrite txtWriteRpm = new TxtReadandWrite(outTPM, true);
 			txtWriteRpm.ExcelWrite(lsTpm);
 			TxtReadandWrite txtWriteRpkm = new TxtReadandWrite(outRPKM, true);
 			txtWriteRpkm.ExcelWrite(lsRpkm);
+			TxtReadandWrite txtWriteUQRpkm = new TxtReadandWrite(outUQRPKM, true);
+			txtWriteUQRpkm.ExcelWrite(lsUQRpkm);
 			TxtReadandWrite txtWriteCounts = new TxtReadandWrite(outCounts, true);
 			txtWriteCounts.ExcelWrite(lsCounts);
 			txtWriteCounts.close();
 			txtWriteRpkm.close();
+			txtWriteUQRpkm.close();
 			txtWriteRpm.close();
 		}
 		if (isLocStatistics) {
@@ -251,26 +258,32 @@ public class CtrlSamRPKMLocate implements RunGetInfo<GuiAnnoInfo>, Runnable {
 	
 	private void writeToFileCurrent(String prefix) {
 		if (isCountExpression && gffChrAbs.getTaxID() != 0) {
-			String suffixRPKM = "_RPKM", suffixCounts = "_Counts";
+			String suffixRPKM = "_RPKM", suffixUQRPKM = "_UQRPKM", suffixCounts = "_Counts";
 			if (rpkMcomput.isCalculateFPKM()) {
 				suffixRPKM = "_FPKM";
+				suffixUQRPKM = "_UQFPKM";
 				suffixCounts = "_Fragments";
 			}
 			String outTPM = FileOperate.changeFileSuffix(resultPrefix, prefix + "_tpm", "txt");
 			String outRPKM = FileOperate.changeFileSuffix(resultPrefix, prefix + suffixRPKM, "txt");
+			String outUQRPKM = FileOperate.changeFileSuffix(resultPrefix, prefix + suffixUQRPKM, "txt");
 			String outCounts = FileOperate.changeFileSuffix(resultPrefix, prefix + suffixCounts, "txt");
 			
 			List<String[]> lsTpm = rpkMcomput.getLsTPMsCurrent();
 			List<String[]> lsRpkm = rpkMcomput.getLsRPKMsCurrent();
+			List<String[]> lsUQRpkm = rpkMcomput.getLsUQRPKMsCurrent();
 			List<String[]> lsCounts = rpkMcomput.getLsCountsCurrent();
 			TxtReadandWrite txtWriteRpm = new TxtReadandWrite(outTPM, true);
 			txtWriteRpm.ExcelWrite(lsTpm);
 			TxtReadandWrite txtWriteRpkm = new TxtReadandWrite(outRPKM, true);
 			txtWriteRpkm.ExcelWrite(lsRpkm);
+			TxtReadandWrite txtWriteUQRpkm = new TxtReadandWrite(outUQRPKM, true);
+			txtWriteUQRpkm.ExcelWrite(lsUQRpkm);
 			TxtReadandWrite txtWriteCounts = new TxtReadandWrite(outCounts, true);
 			txtWriteCounts.ExcelWrite(lsCounts);
 			txtWriteCounts.close();
 			txtWriteRpkm.close();
+			txtWriteUQRpkm.close();
 			txtWriteRpm.close();
 		}
 		if (isLocStatistics) {

@@ -11,6 +11,7 @@ import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 
+import com.hg.doc.fo;
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
@@ -24,6 +25,7 @@ import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.database.model.modgeneid.GeneType;
 import com.novelbio.generalConf.TitleFormatNBC;
 
@@ -34,12 +36,20 @@ import com.novelbio.generalConf.TitleFormatNBC;
  * @author zong0jie
  */
 public class RPKMcomput implements AlignmentRecorder {
+	public static void main(String[] args) {
+		List<Double> lsResult = new ArrayList<Double>();
+		for (int i = 0; i < 100; i++) {
+			lsResult.add((double) i);
+		}
+		System.out.println(MathComput.median(lsResult, 75));
+	}
 	private static final Logger logger = Logger.getLogger(RPKMcomput.class);
 	private static int numForFragment = 200000;
 	/** 默认不考虑方向 */
 	boolean considerStrand = false;
 	boolean isPairend = false;
 	boolean calculateFPKM = true;
+	boolean upQuartile = false;
 	
 	GffHashGene gffHashGene;
 	/**
@@ -62,8 +72,12 @@ public class RPKMcomput implements AlignmentRecorder {
 	
 	/** 双端测序用来配对 */
 	HashMap<String, SamRecord> mapKey2SamRecord = new HashMap<String, SamRecord>((int)(numForFragment*1.5));
-	/** 样本时期 和 样本reads num 用来算rpkm */
-	Map<String, Double> mapCond2CountsNum = new LinkedHashMap<String, Double>();
+	/** 样本时期 和 样本reads num信息<br>
+	 * key: 样本时期<br>
+	 *  value: double[2] 0: allReadsNum 1: upQuartile的reads number<br>
+	 *  用来算rpkm
+	 */
+	Map<String, double[]> mapCond2CountsNum = new LinkedHashMap<String, double[]>();
 	/** 设定当前condition */
 	String currentCondition;
 	
@@ -332,7 +346,24 @@ public class RPKMcomput implements AlignmentRecorder {
 				addAlignRecord(lsSamRecords);
 			}
 		}
-		mapCond2CountsNum.put(currentCondition, currentReadsNum);
+		double[] currentReadsNumInfo = new double[2];
+		currentReadsNumInfo[0] = currentReadsNum;
+		List<Double> lsReadsInfo = new ArrayList<Double>();
+		for (String geneName : mapGeneName2Length.keySet()) {
+			Map<String, double[]> mapCond2Counts = mapGeneName2Cond2ReadsCounts.get(geneName);
+			if (mapCond2Counts == null) {
+				lsReadsInfo.add(0.0);
+			} else {
+				double[] readsCounts = mapCond2Counts.get(currentCondition);
+				if (readsCounts == null) {
+					lsReadsInfo.add(0.0);
+				} else {
+					lsReadsInfo.add(readsCounts[0]);
+				}
+			}
+		}
+		currentReadsNumInfo[1] = MathComput.median(lsReadsInfo, 75);
+		mapCond2CountsNum.put(currentCondition, currentReadsNumInfo);
 	}
 	
 	/** 返回计算得到的rpm值 */
@@ -357,7 +388,7 @@ public class RPKMcomput implements AlignmentRecorder {
 					if (readsCounts == null) {
 						lsTmpResult.add(0 + "");
 					} else {
-						lsTmpResult.add(readsCounts[0]*1000000/mapCond2CountsNum.get(conditions) + "");
+						lsTmpResult.add(readsCounts[0]*1000000/mapCond2CountsNum.get(conditions)[0] + "");
 					}
 				}
 			}
@@ -421,7 +452,7 @@ public class RPKMcomput implements AlignmentRecorder {
 					if (readsCounts == null) {
 						lsTmpResult.add(0 + "");
 					} else {
-						lsTmpResult.add(readsCounts[0]*1000000*1000/mapCond2CountsNum.get(conditions)/mapGeneName2Length.get(geneName) + "");
+						lsTmpResult.add(readsCounts[0]*1000000*1000/mapCond2CountsNum.get(conditions)[0]/mapGeneName2Length.get(geneName) + "");
 					}
 				}
 			}
@@ -429,7 +460,40 @@ public class RPKMcomput implements AlignmentRecorder {
 		}
 		return lsResult;
 	}
-	
+	/**
+	 * 返回用Upper Quartile计算得到的rpkm值
+	 * 其中Upper Quartile的单位是1/100
+	 * exonlength的单位是kb
+	 */
+	public ArrayList<String[]> getLsUQRPKMs() {
+		ArrayList<String[]> lsResult = new ArrayList<String[]>();
+		List<String> lsConditions = ArrayOperate.getArrayListKey(mapCond2CountsNum);
+		lsConditions.add(0, TitleFormatNBC.GeneName.toString());
+		lsConditions.add(1, TitleFormatNBC.GeneType.toString());
+		lsResult.add(lsConditions.toArray(new String[0]));
+		lsConditions.remove(0);
+		lsConditions.remove(0);
+		for (String geneName : mapGeneName2Length.keySet()) {
+			ArrayList<String> lsTmpResult = new ArrayList<String>();
+			lsTmpResult.add(geneName);
+			lsTmpResult.add(mapGeneName2Type.get(geneName).toString());
+			Map<String, double[]> mapCond2Counts = mapGeneName2Cond2ReadsCounts.get(geneName);
+			for (String conditions : lsConditions) {
+				if (mapCond2Counts == null) {
+					lsTmpResult.add(0 + "");
+				} else {
+					double[] readsCounts = mapCond2Counts.get(conditions);
+					if (readsCounts == null) {
+						lsTmpResult.add(0 + "");
+					} else {
+						lsTmpResult.add(readsCounts[0]*100*1000/mapCond2CountsNum.get(conditions)[1]/mapGeneName2Length.get(geneName) + "");
+					}
+				}
+			}
+			lsResult.add(lsTmpResult.toArray(new String[0]));
+		}
+		return lsResult;
+	}
 	
 	/** 返回当前时期的rpm值 */
 	public ArrayList<String[]> getLsTPMsCurrent() {
@@ -447,7 +511,7 @@ public class RPKMcomput implements AlignmentRecorder {
 				if (readsCounts == null) {
 					lsTmpResult.add(0 + "");
 				} else {
-					lsTmpResult.add(readsCounts[0]*1000000/mapCond2CountsNum.get(currentCondition) + "");
+					lsTmpResult.add(readsCounts[0]*1000000/mapCond2CountsNum.get(currentCondition)[0] + "");
 				}
 			}
 			lsResult.add(lsTmpResult.toArray(new String[0]));
@@ -500,7 +564,7 @@ public class RPKMcomput implements AlignmentRecorder {
 				if (readsCounts == null) {
 					lsTmpResult.add(0 + "");
 				} else {
-					lsTmpResult.add(readsCounts[0]*1000000*1000/mapCond2CountsNum.get(currentCondition)/mapGeneName2Length.get(geneName) + "");
+					lsTmpResult.add(readsCounts[0]*1000000*1000/mapCond2CountsNum.get(currentCondition)[1]/mapGeneName2Length.get(geneName) + "");
 				}
 			}
 			
@@ -508,7 +572,35 @@ public class RPKMcomput implements AlignmentRecorder {
 		}
 		return lsResult;
 	}
-	
+	/**
+	 * 返回用Upper Quartile计算得到的rpkm值
+	 * 其中Upper Quartile的单位是1/100
+	 * exonlength的单位是kb
+	 */
+	public ArrayList<String[]> getLsUQRPKMsCurrent() {
+		ArrayList<String[]> lsResult = new ArrayList<String[]>();
+		lsResult.add(new String[]{TitleFormatNBC.GeneName.toString(), TitleFormatNBC.GeneType.toString(), currentCondition});
+
+		for (String geneName : mapGeneName2Length.keySet()) {
+			ArrayList<String> lsTmpResult = new ArrayList<String>();
+			lsTmpResult.add(geneName);
+			lsTmpResult.add(mapGeneName2Type.get(geneName).toString());
+			Map<String, double[]> mapCond2Counts = mapGeneName2Cond2ReadsCounts.get(geneName);
+			if (mapCond2Counts == null) {
+				lsTmpResult.add(0 + "");
+			} else {
+				double[] readsCounts = mapCond2Counts.get(currentCondition);
+				if (readsCounts == null) {
+					lsTmpResult.add(0 + "");
+				} else {
+					lsTmpResult.add(readsCounts[0]*100*1000/mapCond2CountsNum.get(currentCondition)[0]/mapGeneName2Length.get(geneName) + "");
+				}
+			}
+			
+			lsResult.add(lsTmpResult.toArray(new String[0]));
+		}
+		return lsResult;
+	}
 	/** 输入文件前缀，把所有结果写入该文件为前缀的文本中 */
 	public void writeToFile(String fileNamePrefix) {
 		TxtReadandWrite txtWriteTpm = new TxtReadandWrite(fileNamePrefix + "_TPM", true);
