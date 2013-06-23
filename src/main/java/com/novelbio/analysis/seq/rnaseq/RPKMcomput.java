@@ -11,9 +11,9 @@ import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 
-import com.hg.doc.fo;
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
@@ -37,11 +37,11 @@ import com.novelbio.generalConf.TitleFormatNBC;
  */
 public class RPKMcomput implements AlignmentRecorder {
 	public static void main(String[] args) {
-		List<Double> lsResult = new ArrayList<Double>();
-		for (int i = 0; i < 100; i++) {
-			lsResult.add((double) i);
+		GffChrAbs gffChrAbs = new GffChrAbs(9606);
+		GffGeneIsoInfo gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO("bcyrn1");
+		for (ExonInfo exonInfo : gffGeneIsoInfo) {
+			System.out.println(gffGeneIsoInfo.getRefID() + "\t" + exonInfo.getRefID() + "\t" + exonInfo.getStartAbs() + "\t" + exonInfo.getEndAbs());
 		}
-		System.out.println(MathComput.median(lsResult, 75));
 	}
 	private static final Logger logger = Logger.getLogger(RPKMcomput.class);
 	private static int numForFragment = 200000;

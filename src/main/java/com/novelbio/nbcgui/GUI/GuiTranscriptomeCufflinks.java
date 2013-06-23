@@ -38,6 +38,7 @@ public class GuiTranscriptomeCufflinks extends JPanel {
 	private JLabel lblStrandtype;
 	JCheckBox chckbxReconstructtrancsriptome;
 	JSpinner spinThreadNum;
+	private JCheckBox chkCalculateUQfpkm;
 	public GuiTranscriptomeCufflinks() {
 		setLayout(null);
 		
@@ -150,7 +151,7 @@ public class GuiTranscriptomeCufflinks extends JPanel {
 		add(lblStrandtype);
 		
 		chckbxReconstructtrancsriptome = new JCheckBox("reconstructTrancsriptome");
-		chckbxReconstructtrancsriptome.setBounds(293, 319, 231, 22);
+		chckbxReconstructtrancsriptome.setBounds(293, 319, 195, 22);
 		add(chckbxReconstructtrancsriptome);
 		
 		JLabel lblThreadNum = new JLabel("ThreadNum");
@@ -160,6 +161,10 @@ public class GuiTranscriptomeCufflinks extends JPanel {
 		spinThreadNum = new JSpinner();
 		spinThreadNum.setBounds(591, 254, 53, 18);
 		add(spinThreadNum);
+		
+		chkCalculateUQfpkm = new JCheckBox("Upper Quartile FPKM");
+		chkCalculateUQfpkm.setBounds(293, 292, 118, 23);
+		add(chkCalculateUQfpkm);
 
 		
 		btnOpenFastqLeft.addActionListener(new ActionListener() {

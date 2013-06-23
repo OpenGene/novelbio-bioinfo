@@ -2,9 +2,7 @@ package com.novelbio.aoplog;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
@@ -31,31 +29,29 @@ import com.novelbio.analysis.seq.fastq.FastQC;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.GraphicCope;
-import com.novelbio.nbcgui.controlseq.CtrlFastQ;
+import com.novelbio.nbcgui.controlseq.CtrlFastQfilter;
 
 /**
  * 给FastQ添加report相关的参数说明
  */
 @Component
 @Aspect
-public class AopFastQ {
-	private static Logger logger = Logger.getLogger(AopFastQ.class);
+public class AopFastQFilter {
+	private static Logger logger = Logger.getLogger(AopFastQFilter.class);
 	private static int smallPicSize = 1000;
 	private static int bigPicSize = 1000;
 	/**
 	 * 用来拦截CtrlFastQ的running方法
 	 * @param CtrlFastQ
 	 */
-	@After("execution (* com.novelbio.nbcgui.controlseq.CtrlFastQ.running(..)) && target(ctrlFastQ)")
-	public void fastQPoint(CtrlFastQ ctrlFastQ) {
-		ReportBuilder fastQBuilder = new FastQBuilder(ctrlFastQ);
+	@After("execution (* com.novelbio.nbcgui.controlseq.CtrlFastQfilter.filteredAndCombineReads(..)) && target(ctrlFastQfilter)")
+	public void fastQPoint(CtrlFastQfilter ctrlFastQfilter) {
+		ReportBuilder fastQBuilder = new FastQBuilder(ctrlFastQfilter);
 		fastQBuilder.writeInfo();
-		logger.error("aopFastQ生成报告图表参数出现异常！");
 	}
 
 	/**
 	 * fastQ报告参数生成器
-	 * 
 	 * @author novelbio
 	 * 
 	 */
@@ -63,15 +59,13 @@ public class AopFastQ {
 		/** 结果的存放路径 */
 		private String savePath;
 		/** 拦截的对象 */
-		private CtrlFastQ ctrlFastQ;
+		private CtrlFastQfilter ctrlFastQfilter;
 		/** 图片流集合 */
 		private Map<String, BufferedImage> mapPath2Image = new LinkedHashMap<String, BufferedImage>();
-		/** 所有basicStats表格数据集合 */
-		private List<String> lsBaseTableLines = new ArrayList<String>();
 
-		public FastQBuilder(CtrlFastQ ctrlFastQ) {
-			this.ctrlFastQ = ctrlFastQ;
-			String outFilePrefix = ctrlFastQ.getOutFilePrefix();
+		public FastQBuilder(CtrlFastQfilter ctrlFastQfilter) {
+			this.ctrlFastQfilter = ctrlFastQfilter;
+			String outFilePrefix = ctrlFastQfilter.getOutFilePrefix();
 			this.savePath = outFilePrefix.endsWith(FileOperate.getSepPath()) ? outFilePrefix : FileOperate.getParentPathName(outFilePrefix);
 			setParamPath(savePath);
 		}
@@ -79,19 +73,11 @@ public class AopFastQ {
 		@Override
 		protected boolean buildExcels() {
 			try {
-				for (String key : ctrlFastQ.getMapCond2FastQCBefore().keySet()) {
-					FastQC[] fastQCs = ctrlFastQ.getMapCond2FastQCBefore().get(key);
-					readFastQC(fastQCs,key,true,ctrlFastQ.isQcBefore());
-				}
-				for (String key : ctrlFastQ.getMapCond2FastQCAfter().keySet()) {
-					FastQC[] fastQCs = ctrlFastQ.getMapCond2FastQCAfter().get(key);
-					readFastQC(fastQCs,key,false,ctrlFastQ.isQcAfter());
-				}
-				TxtReadandWrite txtWrite = new TxtReadandWrite(savePath + "basicStats_all.xls", true);
-				txtWrite.writefileln(lsBaseTableLines);
-				txtWrite.close();
+				FastQC[] fastQCsBefore = ctrlFastQfilter.getFastQCbefore();
+				readFastQC(fastQCsBefore, ctrlFastQfilter.getPrefix(), true);
 				
-				addParamInfo(Param.excelParam, "basicStats_all.xls");
+				FastQC[] fastQCsAfter = ctrlFastQfilter.getFastQCbefore();
+				readFastQC(fastQCsAfter, ctrlFastQfilter.getPrefix(), true);
 			} catch (Exception e) {
 				logger.error("aopFastQ生成excel出错！");
 				e.printStackTrace();
@@ -108,7 +94,7 @@ public class AopFastQ {
 		 * @param isQc
 		 * @throws Exception
 		 */
-		private void readFastQC(FastQC[] fastQCs, String prefix, boolean isBefore, boolean isQc) throws Exception{
+		private void readFastQC(FastQC[] fastQCs, String prefix, boolean isBefore) throws Exception{
 			int sepPic = 20;//两张图合并起来后，中间的空隙
 			BufferedImage[] qualityScoreImages = new BufferedImage[2];
 			BufferedImage[] sequenceGCContentImages = new BufferedImage[2];
@@ -128,12 +114,11 @@ public class AopFastQ {
 						TxtReadandWrite txtWrite = new TxtReadandWrite(savePath + "BasicStats_" + key + ".xls", true);
 						writeTable(txtWrite, mapTable);
 						txtWrite.close();
-						addToTotalTableList(key,mapTable);
-						if (!isQc) {
+						if (!fastQC.isQC()) {
 							break;
 						}
 					} else {
-						if (!isQc) continue;
+						if (!fastQC.isQC()) continue;
 						if (fQrecordCopeInt instanceof KmerContent) {
 							Map<String, String> mapTable = ((KmerContent)fQrecordCopeInt).getResult();
 							TxtReadandWrite txtWrite = new TxtReadandWrite(savePath + "KmerContent" + key +".xls", true);
@@ -228,21 +213,6 @@ public class AopFastQ {
 				txtWrite.writefileln(column + "\t" + mapTable.get(column));
 			}
 		}
-		
-		private void addToTotalTableList(String key,Map<String, String> mapTable){
-			if (lsBaseTableLines.size() == 0) {
-				String allTitles = "SampleName";
-				for (String title : mapTable.keySet()) {
-					allTitles += "\t" + title;
-				}
-				lsBaseTableLines.add(allTitles);
-			}
-			for (String title : mapTable.keySet()) {
-				key += "\t" + mapTable.get(title);
-			}
-			lsBaseTableLines.add(key);
-		}
-
 	}
 
 }

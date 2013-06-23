@@ -8,13 +8,15 @@ import java.util.ArrayList;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.mapping.MapLibrary;
-import com.novelbio.aoplog.AopFastQ;
+import com.novelbio.aoplog.AopFastQFilter;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JComboBoxData;
@@ -29,7 +31,7 @@ import com.novelbio.nbcgui.controlseq.CtrlFastQMapping;
 
 public class GuiFastQJpanel extends JPanel {
 	public static void main(String[] args) {
-		AopFastQ aopFastQ = (AopFastQ)SpringFactory.getFactory().getBean("aopFastQ");
+		AopFastQFilter aopFastQ = (AopFastQFilter)SpringFactory.getFactory().getBean("aopFastQ");
 		aopFastQ.fastQPoint(null);
 		System.out.println("ok");
 	}
@@ -263,7 +265,7 @@ public class GuiFastQJpanel extends JPanel {
 					ctrlDNAMapping.setOutFilePrefix(txtSavePathAndPrefix.getText());
 					ctrlDNAMapping.running();
 				}
-				
+				JOptionPane.showConfirmDialog(null, "Finished", "ok", JOptionPane.CLOSED_OPTION);
 			}
 		});
 		add(btnRun);
