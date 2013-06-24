@@ -119,7 +119,7 @@ public class AopDiffExp {
  class DifResultInfo {
 	 
 	 /**给出图中的比例*/
-		public static final double  PRE = 0.99;
+		public static final double  PRE = 0.999;
 		
 	// 满足条件的差异基因数量,默认是1000，在构造方法里面设定，数量的10/1
 	public static  int QUANUM = 1000;
@@ -151,7 +151,7 @@ public class AopDiffExp {
 	/**画图的Pvalue的所用的纵坐标值，99%，上面的值确定*/
 	double max99Pvalue;
 	/**画图的LogFC的所用的横坐标值，99%，上面的值确定*/
-	double maxLogFC;
+	double max99LogFC;
 	
 	/** 画图的时候用pvalue还是fdr做阈值 */
 	TitleFormatNBC titlePvalueFDR = TitleFormatNBC.FDR;
@@ -178,22 +178,21 @@ public class AopDiffExp {
 		logfcCol = findColNum(lsTitle, TitleFormatNBC.Log2FC.toString());
 		
 		List<List<String>> lsInfoWithoutTitle = lslsInfo.subList(1, lslsInfo.size());
-		lsFDR = readListListCol(lsInfoWithoutTitle, fdrCol);
+		lsFDR = readListListCol(lsInfoWithoutTitle, fdrCol, 0,1);
 		List<Double> lsFDR2 = readListListColOut_0(lsInfoWithoutTitle, fdrCol);
 		Collections.sort(lsFDR2);
 		max99FDR = -Math.log10(lsFDR2.get((int)(lsFDR2.size()*(1- PRE))));
-		lsPvalue = readListListCol(lsInfoWithoutTitle, pvalueCol);
+		lsPvalue = readListListCol(lsInfoWithoutTitle, pvalueCol, 0, 1);
 		List<Double>  lsPvalueOut_0 = readListListColOut_0(lsInfoWithoutTitle,pvalueCol);
 		Collections.sort(lsPvalueOut_0);
 		max99Pvalue = -Math.log10(lsPvalueOut_0.get((int)(lsPvalueOut_0.size()*(1- PRE))));
-		lsLogFC = readListListCol(lsInfoWithoutTitle, logfcCol);
+		lsLogFC = readListListCol(lsInfoWithoutTitle, logfcCol, 10, 0);
 		List<Double> lsLogFC2 = new ArrayList<Double>();
 		lsLogFC2.addAll(lsLogFC);
 		Collections.sort(lsLogFC2);
-		maxLogFC = lsLogFC2.get((int)(lsLogFC2.size()*PRE));
+		max99LogFC = lsLogFC2.get((int)(lsLogFC2.size()*PRE));
 		this.compare = compare;
 	}
-	
 	
 	/**
 	 *  根据title名字获取的列号
@@ -215,19 +214,30 @@ public class AopDiffExp {
 	 * 读取excel的某一列
 	 * @param lsls 注意输入的lsls不包含title
 	 * @param colNum 从0开始的计数
+	 * @param inf inf的数值
+	 * @param naValue 如果是NA，那么用什么值来填充
 	 * @return
 	 */
-	public static List<Double> readListListCol(List<List<String>> lsls, int colNum) {
+	public static List<Double> readListListCol(List<List<String>> lsls, int colNum, double inf, double naValue) {
 		List<Double> lsCol = new ArrayList<Double>();
 		for (List<String> list : lsls) {
 			String str = list.get(colNum);
 			double value;
 			//TODO 尚未考虑NA等情况
-			try {
-				value = Double.parseDouble(str);
-			} catch (Exception e) {
-				value = 0;
+			if (str.trim().equalsIgnoreCase("inf")) {
+				value = inf;
+			} else if (str.trim().equalsIgnoreCase("-inf")) {
+				value = -inf;
+			} else if (str.trim().equalsIgnoreCase("na")) {
+				value = naValue;
+			} else {
+				try {
+					value = Double.parseDouble(str);
+				} catch (Exception e) {
+					value = naValue;
+				}
 			}
+			
 			lsCol.add(value);
 		}
 		return lsCol;
@@ -337,8 +347,8 @@ public class AopDiffExp {
 	public PlotScatter plotVolcano() {
 		double pValueBorder = -Math.log10(pvalueFDRthreshold);
 		Volcano volcano = new Volcano();
-		volcano.setMaxX(maxLogFC);
-		volcano.setMinX(-maxLogFC);
+		volcano.setMaxX(max99LogFC);
+		volcano.setMinX(-max99LogFC);
 		if (titlePvalueFDR == TitleFormatNBC.Pvalue) {
 			volcano.setMaxY(max99Pvalue);
 			volcano.setLogFC2Pvalue(lslsInfo, logfcCol, pvalueCol);
@@ -397,16 +407,24 @@ public class AopDiffExp {
 		if (fdrUpThresh1 >= thresholdNum) {
 			title = TitleFormatNBC.FDR;
 			threshold = THRESHOLD1;
-		} else if (fdrUpThresh2 >= thresholdNum) {
+		} else {
 			title = TitleFormatNBC.FDR;
 			threshold = THRESHOLD2;
-		} else if (pvalueUpThresh1 >= thresholdNum) {
-			title = TitleFormatNBC.Pvalue;
-			threshold = THRESHOLD1;
-		} else if (pvalueUpThresh2 >= thresholdNum) {
-			title = TitleFormatNBC.Pvalue;
-			threshold = THRESHOLD2;
 		}
+		
+//		if (fdrUpThresh1 >= thresholdNum) {
+//			title = TitleFormatNBC.FDR;
+//			threshold = THRESHOLD1;
+//		} else if (fdrUpThresh2 >= thresholdNum) {
+//			title = TitleFormatNBC.FDR;
+//			threshold = THRESHOLD2;
+//		} else if (pvalueUpThresh1 >= thresholdNum) {
+//			title = TitleFormatNBC.Pvalue;
+//			threshold = THRESHOLD1;
+//		} else if (pvalueUpThresh2 >= thresholdNum) {
+//			title = TitleFormatNBC.Pvalue;
+//			threshold = THRESHOLD2;
+//		}
 		
 		for (DifResultInfo difResultInfo : lslspValue) {
 			difResultInfo.setThreshold(title, threshold);

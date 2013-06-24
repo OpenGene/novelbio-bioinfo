@@ -30,11 +30,6 @@ import com.novelbio.nbcgui.controlseq.CtrlFastQ;
 import com.novelbio.nbcgui.controlseq.CtrlFastQMapping;
 
 public class GuiFastQJpanel extends JPanel {
-	public static void main(String[] args) {
-		AopFastQFilter aopFastQ = (AopFastQFilter)SpringFactory.getFactory().getBean("aopFastQ");
-		aopFastQ.fastQPoint(null);
-		System.out.println("ok");
-	}
 	
 	private JTextField txtMinReadsLen;
 	private JTextField txtMappingIndex;

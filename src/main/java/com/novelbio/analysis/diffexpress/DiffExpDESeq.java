@@ -14,7 +14,6 @@ import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 /**
@@ -71,6 +70,7 @@ public class DiffExpDESeq extends DiffExpAbs {
 				txtOutScript.writefileln(content);
 			}
 		}
+		txtReadScript.close();
 		txtOutScript.close();
 	}
 
@@ -146,18 +146,17 @@ public class DiffExpDESeq extends DiffExpAbs {
 				}
 				
 				if (strings[colNum].equalsIgnoreCase("NA")) {
-					tmpResult[i + 1] = 1 + "";
+					tmpResult[i + 1] = 0 + "";
 					continue;
 				}
 				
 				try {
 					double value = Double.parseDouble(strings[colNum]);
-					int valueInt = (int)(value + 1);
+					int valueInt = (int)(value);
 					tmpResult[i + 1] = valueInt + "";
 				} catch (Exception e) {
 					tmpResult[i + 1] = 0 + "";
 				}
-				
 			
 			}
 			lsResultGeneInfo.add(tmpResult);
@@ -207,5 +206,6 @@ public class DiffExpDESeq extends DiffExpAbs {
 		
 		TxtReadandWrite txtOutFinal = new TxtReadandWrite(outFileName, true);
 		txtOutFinal.ExcelWrite(lsResult);
+		txtOutFinal.close();
 	}
  }

@@ -79,22 +79,6 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 	
 	public GUIanalysisForm() {
 		super();
-//		String file = "/lib/firmware/tigon/property";
-//		if (!FileOperate.isFileExist(file)) {
-//			System.out.println("no");
-//			return;
-//		}				
-//
-//		System.out.println("ok");
-//		TxtReadandWrite txtRead = new TxtReadandWrite(file);
-//		for (String string : txtRead.readlines(3)) {
-//			if (string.equals("201301jndsfiudsioold")) {
-//				break;
-//			} else {
-//				return;
-//			}
-//		}
-//		txtRead.close();
 		initGUI();
 	}
 	

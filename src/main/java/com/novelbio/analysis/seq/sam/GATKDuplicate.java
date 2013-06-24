@@ -51,6 +51,7 @@ public class GATKDuplicate {
 			MarkDuplicates.main(params);
 			return true;
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error("remove duplicate 去除重复 error!!!");
 			return false;
 		}
@@ -79,6 +80,5 @@ public class GATKDuplicate {
 	public void setMaxFileHandlesForReadEndsMap(int maxFileHandlesForReadEndsMap) {
 		this.maxFileHandlesForReadEndsMap = maxFileHandlesForReadEndsMap;
 	}
-	
 	
 }

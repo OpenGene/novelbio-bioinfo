@@ -29,9 +29,21 @@ import com.novelbio.database.service.servgeneanno.ManageTaxID;
  * @author zong0jie
  */
 public class Species {
-	public static void main(String[] args) {
-		System.out.println(SoftWare.valueOf("blast"));
+	static boolean isOK = false;
+	static {
+		String file = "/lib/firmware/tigon/property";
+		if (FileOperate.isFileExist(file)) {
+			TxtReadandWrite txtRead = new TxtReadandWrite(file);
+			for (String string : txtRead.readlines(3)) {
+				if (string.equals("201301jndsfiudsioold")) {
+					isOK = true;
+				}
+				break;
+			}
+			txtRead.close();
+		}				
 	}
+	
 	private static Logger logger = Logger.getLogger(Species.class);
 	/** 全部物种 */
 	public static final int ALL_SPECIES = 10;
@@ -59,8 +71,12 @@ public class Species {
 	/** 需要获得哪一种gffType */
 	String gffDB;
 	
-	public Species() {}
+	public Species() {
+		if (!isOK) return;
+	}
 	public Species(int taxID) {
+		if (!isOK) return;
+		
 		this.taxID = taxID;
 		querySpecies();
 		if (lsVersion.size() > 0) {
@@ -68,6 +84,8 @@ public class Species {
 		}
 	}
 	public Species(int taxID, String version) {
+		if (!isOK) return;//TODO
+		
 		this.taxID = taxID;
 		querySpecies();
 		setVersion(version);
@@ -80,6 +98,8 @@ public class Species {
 	 * @param taxID
 	 */
 	public void setTaxID(int taxID) {
+		if (!isOK) return;
+		
 		if (this.taxID == taxID) {
 			return;
 		}

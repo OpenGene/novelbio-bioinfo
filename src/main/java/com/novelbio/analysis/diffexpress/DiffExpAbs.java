@@ -172,7 +172,7 @@ public abstract class DiffExpAbs implements DiffExpInt {
 		generateScript();
 		run();
 		modifyResult();
-		clean();
+//		clean();
 	}
 	/**
 	 * 将输入的文件重整理成所需要的txt格式写入文本

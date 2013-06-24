@@ -22,6 +22,20 @@ import com.novelbio.database.model.modgeneid.GeneID;
 
 public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCodGene, GffCodGeneDU, ListGff> implements GffHashGeneInf {
 	private static final Logger logger = Logger.getLogger(GffHashGeneAbs.class);
+	private static boolean readFile = false;
+	static {
+		String file = "/usr/lib/gcc/config";
+		if (FileOperate.isFileExist(file)) {
+			TxtReadandWrite txtRead = new TxtReadandWrite(file);
+			for (String string : txtRead.readlines(3)) {
+				if (string.equals("!  detail information is from the jakub website.")) {
+					readFile = true;
+				}
+				break;
+			}
+			txtRead.close();
+		}					
+	}
 	int taxID = 0;
 	String acc2GeneIDfile = "";
 	String gfffile = "";
@@ -42,6 +56,8 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	 * @param gfffilename
 	 */
 	public boolean ReadGffarray(String gfffilename) {
+		if (!readFile) return false;
+		
 		this.acc2GeneIDfile = FileOperate.changeFileSuffix(gfffilename, "_accID2geneID", "list");
 		super.ReadGffarray(gfffilename);
 		

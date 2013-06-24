@@ -53,7 +53,6 @@ public class AopFastQFilter {
 	/**
 	 * fastQ报告参数生成器
 	 * @author novelbio
-	 * 
 	 */
 	private class FastQBuilder extends ReportBuilder {
 		/** 结果的存放路径 */
