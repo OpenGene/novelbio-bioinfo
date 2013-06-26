@@ -7,13 +7,13 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.PathNBCDetail;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.domain.geneanno.SpeciesFile;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
+import com.novelbio.generalConf.PathNBCDetail;
 
 public class ManageSpeciesFile {
 	private static final Logger logger = Logger.getLogger(ManageSpeciesFile.class);

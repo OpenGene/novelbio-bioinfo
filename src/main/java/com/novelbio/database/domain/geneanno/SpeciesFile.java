@@ -15,7 +15,6 @@ import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.novelbio.PathNBCDetail;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fasta.SeqHash;
@@ -32,6 +31,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.database.service.servgeneanno.ManageSpeciesFile;
+import com.novelbio.generalConf.PathNBCDetail;
 
 /**
  * 保存某个物种的各种文件信息，譬如mapping位置等等

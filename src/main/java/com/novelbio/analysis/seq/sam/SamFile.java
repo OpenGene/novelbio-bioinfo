@@ -28,7 +28,6 @@ import net.sf.samtools.util.StringLineReader;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.PathNBCDetail;
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.FormatSeq;
 import com.novelbio.analysis.seq.bed.BedSeq;
@@ -39,6 +38,7 @@ import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.species.Species;
+import com.novelbio.generalConf.PathNBCDetail;
 
 /**
  * 提取为bed文件时，仅仅考虑f-r情况
@@ -95,12 +95,14 @@ public class SamFile implements AlignSeq {
 	 * 如果有索引会自动读取索引
 	 */
 	public SamFile(String samBamFile) {
+		SAMFileReader.setDefaultValidationStringency(ValidationStringency.SILENT);
 		setSamFileRead(samBamFile);
 	}
 	/** 创建新的sambam文件，根据文件名
 	 * 根据samFileHeader来定义默认输入的序列是否已经经过排序。
 	 */
 	public SamFile(String samBamFile, SAMFileHeader samFileHeader) {
+		SAMFileReader.setDefaultValidationStringency(ValidationStringency.SILENT);
 		if (samFileHeader.getSortOrder() != SortOrder.unsorted) {
 			setSamFileNew(samFileHeader, samBamFile, false);
 		} else {
@@ -114,6 +116,7 @@ public class SamFile implements AlignSeq {
 	 * @param preSorted 输入的文件是否已经排序了
 	 */
 	public SamFile(String samBamFile, SAMFileHeader samFileHeader, boolean preSorted) {
+		SAMFileReader.setDefaultValidationStringency(ValidationStringency.SILENT);
 		setSamFileNew(samFileHeader, samBamFile, preSorted);
 //		initialSoftWare();
 	}
@@ -552,6 +555,14 @@ public class SamFile implements AlignSeq {
 			SamFile samFile = new SamFile(outFile);
 			setParamSamFile(samFile);
 			return samFile;
+		} else {
+			BamRemoveDuplicate bamRemoveDuplicate = new BamRemoveDuplicate();
+			bamRemoveDuplicate.setBamFile(getFileName());
+			if (bamRemoveDuplicate.removeDuplicate(outFile)) {
+				SamFile samFile = new SamFile(outFile);
+				setParamSamFile(samFile);
+				return samFile;
+			}
 		}
 		return null;
 	}

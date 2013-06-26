@@ -5,13 +5,13 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.PathNBCDetail;
 import com.novelbio.analysis.annotation.functiontest.ElimGOFunTest;
 import com.novelbio.analysis.annotation.functiontest.FunctionTest;
 import com.novelbio.analysis.annotation.functiontest.NovelGOFunTest;
 import com.novelbio.analysis.annotation.functiontest.TopGO.GoAlgorithm;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.GOtype;
+import com.novelbio.generalConf.PathNBCDetail;
 
 public class CtrlGO extends CtrlGOPath {
 	private static final Logger logger = Logger.getLogger(CtrlGO.class);

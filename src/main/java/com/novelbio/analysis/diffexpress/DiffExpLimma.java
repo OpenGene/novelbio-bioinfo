@@ -1,22 +1,27 @@
 package com.novelbio.analysis.diffexpress;
 
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.novelbio.PathNBCDetail;
-import com.novelbio.base.SepSign;
+import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.generalConf.TitleFormatNBC;
+
+import freemarker.template.Template;
 @Component
 @Scope("prototype")
 public class DiffExpLimma extends DiffExpAbs{
+	private static final Logger logger = Logger.getLogger(DiffExpLimma.class);
 	/** 比较矩阵设计好后需要将每个ID对应到试验名上 <br>
 	 * 譬如：<br>
 	 * design = model.matrix(~ -1+factor (c(1,1,2,2,3,3))) <br>
@@ -27,11 +32,6 @@ public class DiffExpLimma extends DiffExpAbs{
 	 * */
 	HashMap<Integer, String> mapID2Sample = new HashMap<Integer, String>();
 
-	public DiffExpLimma() {
-//		rawScript = "/media/winE/Bioinformatics/R/Protocol/Microarray/limmaSimpleJava.txt";
-		rawScript = PathNBCDetail.getRworkspace() + "limmaSimpleJava.txt";
-	}
-	
 	@Override
 	protected void setOutScriptPath() {
 		outScript = workSpace + "Limma_" + DateUtil.getDateAndRandom() + ".R";
@@ -43,55 +43,37 @@ public class DiffExpLimma extends DiffExpAbs{
 	}
 	@Override
 	protected void generateScript() {
-		TxtReadandWrite txtReadScript = new TxtReadandWrite(rawScript, false);
-		TxtReadandWrite txtOutScript = new TxtReadandWrite(outScript, true);
-		for (String content : txtReadScript.readlines()) {
-			if (content.startsWith("#workspace"))
-				txtOutScript.writefileln(getWorkSpace(content));
-			else if (content.startsWith("#filename"))
-				txtOutScript.writefileln(getFileName(content));
-			else if (content.startsWith("#IsLog"))
-				txtOutScript.writefileln(isLog2TransForm(content));
-			else if (content.startsWith("#DesignMatrix"))
-				txtOutScript.writefileln(getDesignMatrixAndFillMapID2Sample(content));
-			else if (content.startsWith("#SampleName"))
-				txtOutScript.writefileln(getSampleName(content));
-			else if (content.startsWith("#ContrastMatrix"))
-				txtOutScript.writefileln(getContrastMatrix(content));
-			else if (content.startsWith("#WriteToFile")) {
-				String[] readFileAndCol = getWriteToFile(content);
-				for (String string : readFileAndCol) {
-					txtOutScript.writefileln(string);
-				}
-			}
-			else {
-				txtOutScript.writefileln(content);
-			}
+		Map<String,Object> mapData = new HashMap<String, Object>();
+		mapData.put("workspace", getWorkSpace());
+		mapData.put("filename", getFileName());
+		mapData.put("islog2", isLogValue());
+		mapData.put("design", getDesignMatrixAndFillMapID2Sample());
+		mapData.put("SampleName", getSampleName());
+		mapData.put("PairedInfo", getContrastMatrix());
+		mapData.put("pair2filename", getMapCoef2FileName());
+		try {
+			Template template = freeMarkerConfiguration.getTemplate("/R/diffgene/limma.ftl");
+			StringWriter sw = new StringWriter();
+			TxtReadandWrite txtReadandWrite = new TxtReadandWrite(outScript, true);
+			// 处理并把结果输出到字符串中
+			template.process(mapData, sw);
+			txtReadandWrite.writefile(sw.toString());
+			txtReadandWrite.close();
+		} catch (Exception e) {
+			logger.error("渲染出错啦! " + e.getMessage());
 		}
-		txtOutScript.close();
 	}
-	/**
-	 * 看是否需要log转换
-	 * @param content
-	 * @return
-	 */
-	private String isLog2TransForm(String content) {
-		String logScript = content.split(SepSign.SEP_ID)[1];
-		if (isLogValue()) {
-			return "";
-		}
-		return logScript;
-	}
+
 	/**
 	 * 设计矩阵，并填充MapID2Sample<br>
 	 * 之前 :
-	 * design = model.matrix(~ -1+factor (c({$design})))<br>
+	 * ${design}<br>
 	 * 之后：
-	 * design = model.matrix(~ -1+factor (c(1,1,2,2,3,3)))
+	 * 1,1,2,2,3,3
 	 * @param content
 	 * @return
 	 */
-	private String getDesignMatrixAndFillMapID2Sample(String content) {
+	private String getDesignMatrixAndFillMapID2Sample() {
 		String result = "1";
 		mapID2Sample.clear();
 		
@@ -111,40 +93,34 @@ public class DiffExpLimma extends DiffExpAbs{
 			}
 			result = result + ", " + mapSample2ID.get(sample[1]);
 		}
-		
-		String designScript = content.split(SepSign.SEP_ID)[1];
-		designScript = designScript.replace("{$design}", result);
-		return designScript;
+		return result;
 	}
 	/**
 	 * 添加样本名字<br>
 	 * 之前 :
-	 * colnames(design) = c({$SampleName})<br>
+	 * colnames(design) = c(${SampleName})<br>
 	 * 之后 :
 	 * colnames(design) = c("Patient","Treat","Norm")<br>
 	 * @param content
 	 * @return
 	 */
-	private String getSampleName(String content) {
-		String Result = "\"" + mapID2Sample.get(1) + "\"";
+	private String getSampleName() {
+		String Result = CmdOperate.addQuot(mapID2Sample.get(1));
 		for (int i = 2; i <= mapID2Sample.size(); i++) {
-			Result = Result + ", \"" + mapID2Sample.get(i) + "\"";
+			Result = Result + ", " + CmdOperate.addQuot(mapID2Sample.get(i));
 		}
-		
-		String SampleScript = content.split(SepSign.SEP_ID)[1];
-		SampleScript = SampleScript.replace("{$SampleName}", Result);
-		return SampleScript;
+		return Result;
 	}
 	/**
 	 * 比较矩阵<br>
 	 * 之前 :<br>
-	 * contrast.matrix = makeContrasts( {$PairedInfo},levels=design)<br>
+	 * contrast.matrix = makeContrasts( ${PairedInfo},levels=design)<br>
 	 * 之后：<br>
 	 * contrast.matrix = makeContrasts( PatientvsNorm = Patient - Norm,TreatvsNorm = Treat - Norm,levels=design)<br>
 	 * @param content
 	 * @return
 	 */
-	private String getContrastMatrix(String content) {
+	private String getContrastMatrix() {
 		ArrayList<String> lsFileName = ArrayOperate.getArrayListKey(mapOutFileName2Compare);
 		String result = "";
 		
@@ -152,10 +128,7 @@ public class DiffExpLimma extends DiffExpAbs{
 			String[] pair = mapOutFileName2Compare.get(fileName);
 			result = result + getCompare(pair) + ", ";
 		}
-		
-		String CompareScript = content.split(SepSign.SEP_ID)[1];
-		CompareScript = CompareScript.replace("{$PairedInfo}", result);
-		return CompareScript;
+		return result;
 	}
 	/**
 	 * 产生一个 PatientvsNorm = Patient - Norm
@@ -166,10 +139,7 @@ public class DiffExpLimma extends DiffExpAbs{
 		pair[1] = pair[1].replace(" ", "");
 		return getCoef(pair) + " = " + pair[0] + " - " + pair[1];
 	}
-	/** 给定一对信息，返回该对信息所产生的前缀 */
-	private String getCoef(String[] pair) {
-		return pair[0] +"_vs_" +pair[1];
-	}
+
 	/**
 	 * 写入结果<br>
 	 * 之前 :<br>
@@ -180,17 +150,17 @@ public class DiffExpLimma extends DiffExpAbs{
 	 * @param content
 	 * @return
 	 */
-	private String[] getWriteToFile(String content) {
-		String writeToFileScript = content.split(SepSign.SEP_ID)[1];
-		ArrayList<String> lsFileName = ArrayOperate.getArrayListKey(mapOutFileName2Compare);
-		String[] result = new String[lsFileName.size()];
-		for (int i = 0; i < lsFileName.size(); i++) {
-			String outFileName = lsFileName.get(i);
+	private Map<String, String> getMapCoef2FileName() {
+		Map<String, String> mapCoef2FileName = new HashMap<String, String>();
+		for (String outFileName : mapOutFileName2Compare.keySet()) {
 			String[] pair = mapOutFileName2Compare.get(outFileName);
-			String coef = getCoef(pair);
-			result[i] = writeToFileScript.replace("{$Pair}", coef).replace("{$OutFileName}", outFileName.replace("\\", "/"));
+			mapCoef2FileName.put(getCoef(pair), outFileName);
 		}
-		return result;
+		return mapCoef2FileName;
+	}
+	/** 给定一对信息，返回该对信息所产生的前缀 */
+	private String getCoef(String[] pair) {
+		return pair[0] +"_vs_" +pair[1];
 	}
 	@Override
 	protected void run() {
@@ -228,6 +198,7 @@ public class DiffExpLimma extends DiffExpAbs{
 		
 		TxtReadandWrite txtOutFinal = new TxtReadandWrite(outFileName, true);
 		txtOutFinal.ExcelWrite(lsResult);
+		txtOutFinal.close();
 	}
 
 }

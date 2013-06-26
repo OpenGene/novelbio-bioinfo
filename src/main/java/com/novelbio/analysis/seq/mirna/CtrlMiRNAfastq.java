@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.PathNBCDetail;
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.sam.SamFile;
@@ -16,6 +15,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
+import com.novelbio.generalConf.PathNBCDetail;
 
 /** 
  * 给定一系列fastq文件，获得miRNA的bed文件

@@ -215,7 +215,7 @@ public class GuiSamStatistics extends JPanel {
 				}
 			}
 		});
-		chkRpkmcount.setBounds(713, 364, 118, 22);
+		chkRpkmcount.setBounds(713, 364, 147, 22);
 		add(chkRpkmcount);
 		
 		txtSaveTo = new JTextField();
@@ -259,11 +259,11 @@ public class GuiSamStatistics extends JPanel {
 		
 		chckCalculateFPKM = new JCheckBox("CalculateFPKM");
 		chckCalculateFPKM.setSelected(true);
-		chckCalculateFPKM.setBounds(845, 364, 124, 23);
+		chckCalculateFPKM.setBounds(713, 390, 147, 23);
 		add(chckCalculateFPKM);
 		
 		chckProtonStrand = new JCheckBox("ProtonStrand");
-		chckProtonStrand.setBounds(845, 391, 124, 23);
+		chckProtonStrand.setBounds(898, 364, 135, 23);
 		add(chckProtonStrand);
 		
 		initial();

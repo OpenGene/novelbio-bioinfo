@@ -1,14 +1,17 @@
-package com.novelbio;
+package com.novelbio.generalConf;
 
 import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class PathNBCDetail {
+	private static final Logger logger = Logger.getLogger(PathNBCDetail.class);
 	static String workSpace;
 	static Map<String, String> mapID2Path = new LinkedHashMap<String, String>();
 	static {
@@ -17,6 +20,7 @@ public class PathNBCDetail {
 	private static void initial() {
 		String pathFile = getRworkspace() + "NBCPath.txt";
 		if (!FileOperate.isFileExist(pathFile)) {
+			logger.error(pathFile);
 			return;
 		}
 		
@@ -106,7 +110,9 @@ public class PathNBCDetail {
 	}
 
 	public static String getRworkspaceTmp() {
-		return getRworkspace() + "tmp"  + FileOperate.getSepPath();
+		String fileName = getRworkspace() + "tmp"  + FileOperate.getSepPath();
+		FileOperate.createFolders(fileName);
+		return fileName;
 	}
 	
 	/** 内部自动加空格 */

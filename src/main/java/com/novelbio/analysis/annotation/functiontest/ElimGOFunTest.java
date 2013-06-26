@@ -17,14 +17,16 @@ public class ElimGOFunTest extends NovelGOFunTest{
 	/** 和strGeneID一样的东西 */
 	Set<String> setTestGeneUniID = null;
 	
-	TopGO topGO = new TopGO();
+	GoAlgorithm goAlgorithm;
+	int numGOid = 300;
+	TopGO topGO;
 	
 	public void setAlgorithm(GoAlgorithm goAlgorithm) {
-		topGO.setGoAlgrithm(goAlgorithm);
+		this.goAlgorithm = goAlgorithm;
 	}
 	/** 设定展示多少个GO */
 	public void setDisplayGoNum(int NumGOID) {
-		topGO.setDisplayGoNum(NumGOID);
+		this.numGOid = NumGOID;
 	}
 	
 	/**
@@ -67,7 +69,8 @@ public class ElimGOFunTest extends NovelGOFunTest{
 	}
 	
 	private ArrayList<String[]> doTest() {
-		topGO.setGoType(GoType);
+		topGO = new TopGO(goAlgorithm, GoType);
+		topGO.setDisplayGoNum(numGOid);
 		ArrayList<String> lsBG = new ArrayList<String>();
 		for (GeneID2LsItem geneID2LsItem : mapBGGeneID2Items.values()) {
 			lsBG.add(geneID2LsItem.toString());

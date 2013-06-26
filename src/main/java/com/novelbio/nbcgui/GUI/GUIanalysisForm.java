@@ -60,6 +60,9 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 	private GuiUpdateDB guiUpdateDB;
 	private GuiVolcanoPlot guiVolcanoPlot;
 	private GuiGeneNetWork guiGeneNetWork;
+	private GuilncLocation guilncLocation;
+	
+	
 	/**
 	* Auto-generated main method to display this JFrame
 	*/
@@ -116,6 +119,9 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				
 				guiAnnoPeak = new GuiAnnoPeak();
 				jTabbedPane1.addTab("PeakAnno", null, guiAnnoPeak, null);
+				
+				guilncLocation = new GuilncLocation();
+				jTabbedPane1.addTab("LncLocation", guilncLocation);
 				
 				guiPeakStatistics = new GuiPeakStatistics();
 				jTabbedPane1.addTab("PeakStatistics", guiPeakStatistics);

@@ -16,7 +16,6 @@ import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.PathNBCDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
@@ -25,6 +24,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.VennImage;
 import com.novelbio.database.service.SpringFactory;
+import com.novelbio.generalConf.PathNBCDetail;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -356,7 +356,7 @@ public class CombineTab {
 //		cf.setEncoding(Locale.getDefault(), "UTF-8");
 		String scriptName = null;
 		try {
-			Template template = freeMarkerConfiguration.getTemplate("Venn.ftl");
+			Template template = freeMarkerConfiguration.getTemplate("/R/Venn.ftl");
 			StringWriter sw = new StringWriter();
 			// 处理并把结果输出到字符串中
 			template.process(mapData, sw);

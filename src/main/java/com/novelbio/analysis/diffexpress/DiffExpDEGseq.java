@@ -1,21 +1,25 @@
 package com.novelbio.analysis.diffexpress;
 
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.novelbio.PathNBCDetail;
-import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.generalConf.TitleFormatNBC;
+
+import freemarker.template.Template;
 
 /**
  * 调用DEGseq算法，适用于RPKM的试验，譬如mRNAseq
@@ -24,11 +28,8 @@ import com.novelbio.generalConf.TitleFormatNBC;
 @Component
 @Scope("prototype")
 public class DiffExpDEGseq extends DiffExpAbs {
+	private static final Logger logger = Logger.getLogger(DiffExpDEGseq.class);
 	String outPutSuffix = "_Path";
-	public DiffExpDEGseq() {
-//		rawScript = "/media/winE/Bioinformatics/R/Protocol/DEGseqJava.txt";
-		rawScript = PathNBCDetail.getRworkspace().replace("\\", "/") + "DEGseqJava.txt";
-	}
 	
 	/** 基因标记列，实际列，用在R里面，所以不需要减1 */
 	public void setColID(int colID) {
@@ -37,45 +38,36 @@ public class DiffExpDEGseq extends DiffExpAbs {
 	}
 	
 	protected void generateScript() {
-		TxtReadandWrite txtReadScript = new TxtReadandWrite(rawScript, false);
-		TxtReadandWrite txtOutScript = new TxtReadandWrite(outScript, true);
-		for (String content : txtReadScript.readlines()) {
-			if (content.startsWith("#workspace"))
-				txtOutScript.writefileln(getWorkSpace(content));
-			else if (content.startsWith("#filename"))
-				txtOutScript.writefileln(getFileName(content));
-			else if (content.startsWith("#ReadFileAndColumn")) {
-				String[] readFileAndCol = getReadFileAndColumn(content);
-				for (String string : readFileAndCol) {
-					txtOutScript.writefileln(string);
-				}
-			} else if (content.startsWith("#Compare")) {
-				String[] compareAndOut = getCompareAndOutput(content);
-				for (String string : compareAndOut) {
-					txtOutScript.writefileln(string);
-				}
-			} else {
-				txtOutScript.writefileln(content);
-			}
+		Map<String,Object> mapData = new HashMap<String, Object>();
+		mapData.put("workspace", getWorkSpace());
+		mapData.put("filename", getFileName());
+		mapData.put("mapSample2LsCol", getMapReadFileAndColumn());
+		mapData.put("lsOutFileInfo", getLsCompareAndOutput());
+		
+		try {
+			Template template = freeMarkerConfiguration.getTemplate("/R/diffgene/DEGseq.ftl");
+			StringWriter sw = new StringWriter();
+			TxtReadandWrite txtReadandWrite = new TxtReadandWrite(outScript, true);
+			// 处理并把结果输出到字符串中
+			template.process(mapData, sw);
+			txtReadandWrite.writefile(sw.toString());
+			txtReadandWrite.close();
+		} catch (Exception e) {
+			logger.error("渲染出错啦! " + e.getMessage());
 		}
-		txtReadScript.close();
-		txtOutScript.close();
 	}
 
-	private String[] getReadFileAndColumn(String content) {
-		HashMap<String, ArrayList<Integer>> mapSample2LsCol = getMapSample2LsCol();
-		String[] resultSample = new String[mapSample2LsCol.size()];
-		int resultSampleNum = 0;
 
-		String SampleScipt = content.split(SepSign.SEP_ID)[1];
+	private Map<String, String[]> getMapReadFileAndColumn() {
+		Map<String, String[]> mapSampleName2ColInfo = new LinkedHashMap<String, String[]>();
+		HashMap<String, ArrayList<Integer>> mapSample2LsCol = getMapSample2LsCol();
 		for (Entry<String, ArrayList<Integer>> entry : mapSample2LsCol.entrySet()) {
-			String tmpScript = SampleScipt.replace("{$SampleName}", entry.getKey().replace("\\", "/"));
-			tmpScript = tmpScript.replace("{$colGeneID}", colAccID + "");
-			tmpScript = tmpScript.replace("{$colvalueID}", getRformatSampleVector(entry.getValue()));
-			resultSample[resultSampleNum] = tmpScript;
-			resultSampleNum++;
+			String[] colInfo = new String[2];
+			colInfo[0] = colAccID + "";
+			colInfo[1] = getRformatSampleVector(entry.getValue()) + "";
+			mapSampleName2ColInfo.put( entry.getKey(), colInfo);
 		}
-		return resultSample;
+		return mapSampleName2ColInfo;
 	}
 
 	/**
@@ -85,6 +77,7 @@ public class DiffExpDEGseq extends DiffExpAbs {
 	private HashMap<String, ArrayList<Integer>> getMapSample2LsCol() {
 		HashMap<String, ArrayList<Integer>> mapSample2LsCol = new LinkedHashMap<String, ArrayList<Integer>>();
 		for (String[] strings : lsSampleColumn2GroupName) {
+			strings[1] = strings[1].replace("\\", "/");
 			ArrayList<Integer> lsColNum = null;
 			if (mapSample2LsCol.containsKey(strings[1])) {
 				lsColNum = mapSample2LsCol.get(strings[1]);
@@ -110,26 +103,37 @@ public class DiffExpDEGseq extends DiffExpAbs {
 		}
 		return result;
 	}
-
-	private String[] getCompareAndOutput(String content) {
-		String[] result = new String[mapOutFileName2Compare.size()];
-		
+	
+	/**
+SampleTreat=0<br>
+SampleTreatNum=1<br>
+SampleTreatName=2<br>
+SampleControl=3<br>
+SampleControlNum=4<br>
+SampleControlName=5<br>
+OutDir=6
+	 * @param content
+	 * @return
+	 */
+	private List<String[]> getLsCompareAndOutput() {
+		List<String[]> lsResult = new ArrayList<String[]>();
 		HashMap<String, ArrayList<Integer>> mapSample2LsCol = getMapSample2LsCol();
-		ArrayList<String> lsFileName = ArrayOperate.getArrayListKey(mapOutFileName2Compare);
-		String sampleScript = content.split(SepSign.SEP_ID)[1];
-		
-		int compareNum = 0;
+		ArrayList<String> lsFileName = ArrayOperate.getArrayListKey(mapOutFileName2Compare);		
 		for (String fileName : lsFileName) {
-			String tmpScript = sampleScript.replace("{$OutDir}", fileName.replace("\\", "/") + outPutSuffix);
 			String[] comparePair = mapOutFileName2Compare.get(fileName);
-			tmpScript = tmpScript.replace("{$SampleTreat}", comparePair[0]).replace("{$SampleTreatName}", comparePair[0]);
-			tmpScript = tmpScript.replace("{$SampleControl}", comparePair[1]).replace("{$SampleControlName}", comparePair[1]);
-			tmpScript = tmpScript.replace("{$SampleTreatNum}", getSampleCol(mapSample2LsCol.get(comparePair[0]).size()));
-			tmpScript = tmpScript.replace("{$SampleControlNum}", getSampleCol(mapSample2LsCol.get(comparePair[1]).size()));
-			result[compareNum] = tmpScript;
-			compareNum++;
+			String[] tmpResult = new String[7];
+			tmpResult[0] = comparePair[0];//SampleTreat
+			tmpResult[1] =  getSampleCol(mapSample2LsCol.get(comparePair[0]).size());//SampleTreatNum
+			tmpResult[2] = comparePair[0];//SampleTreatName
+			
+			tmpResult[3] = comparePair[1];//SampleControl
+			tmpResult[4] = getSampleCol(mapSample2LsCol.get(comparePair[1]).size());//SampleControlNum
+			tmpResult[5] = comparePair[1];//SampleControlName
+			
+			tmpResult[6] = fileName.replace("\\", "/") + outPutSuffix;//OutDir
+			lsResult.add(tmpResult);
 		}
-		return result;
+		return lsResult;
 	}
 	/** 比较的列，直接返回类似1，2，3，4这个样子的文本即可 */
 	private String getSampleCol(int sampleNum) {
@@ -190,6 +194,7 @@ public class DiffExpDEGseq extends DiffExpAbs {
 		
 		TxtReadandWrite txtOutFinal = new TxtReadandWrite(outFileName, true);
 		txtOutFinal.ExcelWrite(lsResult);
+		txtOutFinal.close();
 	}
 	/** A除以B，中间处理了一些异常 */
 	private String division(String A, String B) {

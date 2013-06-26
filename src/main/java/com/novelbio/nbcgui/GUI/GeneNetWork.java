@@ -40,7 +40,7 @@ public class GeneNetWork {
 		if (mapTaxID_2_mapGene2NetWork.size() > 0) {
 			return;
 		}
-		
+		System.out.println(loadingFile);
 		TxtReadandWrite txtReadInteract = new TxtReadandWrite(loadingFile);
 		for (String content : txtReadInteract.readlines()) {
 			if (content.startsWith("#")) {

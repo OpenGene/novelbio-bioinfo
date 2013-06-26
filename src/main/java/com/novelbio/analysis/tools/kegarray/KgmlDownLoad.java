@@ -4,11 +4,11 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.PathNBCDetail;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.species.Species;
+import com.novelbio.generalConf.PathNBCDetail;
 
 public class KgmlDownLoad {
 	private static final Logger logger = Logger.getLogger(KgmlDownLoad.class);

@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-import com.novelbio.PathNBCDetail;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.generalConf.PathNBCDetail;
 
 public class AffyNormalization {
 	public static final int NORM_RMA = 10;

@@ -528,7 +528,6 @@ public class GuiSamToBed extends JPanel {
 		if (chckRemoveduplicate.isSelected()) {
 			samFileMerge = samFileMerge.removeDuplicate();
 			if (samFileMerge == null) {
-				JOptionPane.showMessageDialog(this, "Remove Duplicate Error", "Error", JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 		}
@@ -536,7 +535,6 @@ public class GuiSamToBed extends JPanel {
 			samFileMerge = samFileMerge.addGroup(prefix, prefix, prefix, "ILLUMINA");
 			samFileMerge = samFileMerge.realign();
 			if (samFileMerge == null) {
-				JOptionPane.showMessageDialog(this, "Realign Error", "Error", JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 		}
@@ -551,7 +549,6 @@ public class GuiSamToBed extends JPanel {
 			if (lsVcfFile.size() != 0) {
 				samFileMerge = samFileMerge.recalibrate(lsVcfFile);
 				if (samFileMerge == null) {
-					JOptionPane.showMessageDialog(this, "Realign Error", "Error", JOptionPane.ERROR_MESSAGE);
 					return;
 				};
 			}
@@ -560,10 +557,6 @@ public class GuiSamToBed extends JPanel {
 			samFileMerge.pileup();
 		}
 	}
-	
-	
-	
-	
 	
 	private void convertBedFile(String bedFile) {
 		BedSeq bedSeq = new BedSeq(bedFile);

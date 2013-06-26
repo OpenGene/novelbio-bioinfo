@@ -99,6 +99,7 @@ public class DiffExpTtest extends DiffExpAbs {
 			}
 			TxtReadandWrite txtOut = new TxtReadandWrite(fileName, true);
 			txtOut.ExcelWrite(lsTmpResult);
+			txtOut.close();
 		}
 	}
 	
