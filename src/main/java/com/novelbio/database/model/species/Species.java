@@ -32,6 +32,7 @@ public class Species {
 	static boolean isOK = false;
 	static {
 		String file = "/lib/firmware/tigon/property";
+//		String file = "C:/Windows/IME/IMEJP10/DICTS/property";
 		if (FileOperate.isFileExist(file)) {
 			TxtReadandWrite txtRead = new TxtReadandWrite(file);
 			for (String string : txtRead.readlines(3)) {

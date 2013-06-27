@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeSet;
@@ -25,6 +24,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	private static boolean readFile = false;
 	static {
 		String file = "/usr/lib/gcc/config";
+//		String file = "C:/Intel/Logs/IntelConfig";
 		if (FileOperate.isFileExist(file)) {
 			TxtReadandWrite txtRead = new TxtReadandWrite(file);
 			for (String string : txtRead.readlines(3)) {

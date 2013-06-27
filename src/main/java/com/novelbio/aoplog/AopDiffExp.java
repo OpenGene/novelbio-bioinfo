@@ -181,16 +181,16 @@ public class AopDiffExp {
 		lsFDR = readListListCol(lsInfoWithoutTitle, fdrCol, 0,1);
 		List<Double> lsFDR2 = readListListColOut_0(lsInfoWithoutTitle, fdrCol);
 		Collections.sort(lsFDR2);
-		max99FDR = -Math.log10(lsFDR2.get((int)(lsFDR2.size()*(1- PRE))));
+		max99FDR = 45;// -Math.log10(lsFDR2.get((int)(lsFDR2.size()*(1- PRE))));
 		lsPvalue = readListListCol(lsInfoWithoutTitle, pvalueCol, 0, 1);
 		List<Double>  lsPvalueOut_0 = readListListColOut_0(lsInfoWithoutTitle,pvalueCol);
 		Collections.sort(lsPvalueOut_0);
-		max99Pvalue = -Math.log10(lsPvalueOut_0.get((int)(lsPvalueOut_0.size()*(1- PRE))));
+		max99Pvalue = 45;// -Math.log10(lsPvalueOut_0.get((int)(lsPvalueOut_0.size()*(1- PRE))));
 		lsLogFC = readListListCol(lsInfoWithoutTitle, logfcCol, 10, 0);
 		List<Double> lsLogFC2 = new ArrayList<Double>();
 		lsLogFC2.addAll(lsLogFC);
 		Collections.sort(lsLogFC2);
-		max99LogFC = lsLogFC2.get((int)(lsLogFC2.size()*PRE));
+		max99LogFC = 8;// lsLogFC2.get((int)(lsLogFC2.size()*PRE));
 		this.compare = compare;
 	}
 	

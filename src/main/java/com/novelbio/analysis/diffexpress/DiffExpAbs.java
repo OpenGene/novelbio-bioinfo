@@ -25,7 +25,8 @@ public abstract class DiffExpAbs implements DiffExpInt {
 	public static final int DEGSEQ = 30;
 	public static final int EDEGR = 40;
 	public static final int TTest = 50;
-	
+	public static final int EBSeq = 60;
+
 	Configuration freeMarkerConfiguration = (Configuration)SpringFactory.getFactory().getBean("freemarkNBC");
 	String workSpace;
 	String fileNameRawdata = "";
@@ -323,6 +324,7 @@ public abstract class DiffExpAbs implements DiffExpInt {
 		mapMethod2ID.put("DEGseq--RPKM/Counts(recommand)", DEGSEQ);
 		mapMethod2ID.put("EdegR--Counts(Needs Replication)", EDEGR);
 		mapMethod2ID.put("DESeq--Counts(Needs Replication)", DESEQ);
+		mapMethod2ID.put("EBSeq--Counts", EBSeq);
 		mapMethod2ID.put("Ttest", TTest);
 		return mapMethod2ID;
 	}
@@ -339,6 +341,8 @@ public abstract class DiffExpAbs implements DiffExpInt {
 			diffExpInt = (DiffExpInt)SpringFactory.getFactory().getBean("diffExpTtest");
 		} else if (DiffExpID == EDEGR) {
 			diffExpInt = (DiffExpInt)SpringFactory.getFactory().getBean("diffExpEdgeR");
+		} else if (DiffExpID == EBSeq) {
+			diffExpInt = (DiffExpInt)SpringFactory.getFactory().getBean("diffExpEBSeq");
 		}
 		return diffExpInt;
 	}

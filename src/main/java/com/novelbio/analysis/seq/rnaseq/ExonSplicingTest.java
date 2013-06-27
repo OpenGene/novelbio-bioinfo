@@ -79,6 +79,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	public void setCompareCondition(String condition1, String condition2) {
 		this.condition1 = condition1;
 		this.condition2 = condition2;
+		pvalue = -1.0;
 	}
 	
 	/** 测序长度，根据这个长度来判定pvalue的比例 */
