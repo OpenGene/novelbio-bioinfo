@@ -57,6 +57,9 @@ public class ManageTaxID {
 	 * @return
 	 */
 	public TaxInfo queryTaxInfo(int taxID) {
+		if (!mapTaxID2TaxInfo.containsKey(taxID)) {
+			return null;
+		}
 		return mapTaxID2TaxInfo.get(taxID).clone();
 	}
 	/**

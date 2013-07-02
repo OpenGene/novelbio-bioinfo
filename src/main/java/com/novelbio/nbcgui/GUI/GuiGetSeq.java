@@ -1,39 +1,31 @@
 package com.novelbio.nbcgui.GUI;
 
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
 import javax.swing.ButtonGroup;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JRadioButton;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
 
-import com.novelbio.analysis.seq.fasta.SeqFasta;
-import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.GffChrSeq;
-import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.controlquery.CtrlPeakStatistics;
 import com.novelbio.nbcgui.controlseq.CtrlGetSeq;
-
-import java.awt.Component;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-
-import javax.swing.JProgressBar;
-import javax.swing.JSpinner;
-import javax.swing.JRadioButton;
-
-import org.omg.CosNaming._BindingIteratorImplBase;
 
 /**
  * 批量注释，各种注释
@@ -355,11 +347,11 @@ public class GuiGetSeq extends JPanel {
 			txtTssDown.setEnabled(true);
 		}
 		else {
-			if (cmbGeneStructure.getSelectedValue().equals(GeneStructure.CDS) 
-					|| cmbGeneStructure.getSelectedValue().equals(GeneStructure.EXON)
-					|| cmbGeneStructure.getSelectedValue().equals(GeneStructure.ALLLENGTH))
-			{
+			if (cmbGeneStructure.getSelectedValue().equals(GeneStructure.CDS) ) {
 				chckbxGetaminoacid.setEnabled(true);
+			} else {
+				chckbxGetaminoacid.setEnabled(false);
+				chckbxGetaminoacid.setSelected(false);
 			}
 			txtTssUp.setEnabled(false);
 			txtTssDown.setEnabled(false);

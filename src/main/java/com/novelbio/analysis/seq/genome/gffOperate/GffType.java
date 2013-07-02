@@ -36,7 +36,8 @@ public enum GffType {
 		}
 		mapName2Type = new HashMap<String, GffType>();
 		mapName2Type.put("GFF_CUFFLINK_GTF".toLowerCase(), GTF);
-		mapName2Type.put("GTF".toLowerCase(), GTF);
+		mapName2Type.put("GFF_GTF".toLowerCase(), GTF);
+		mapName2Type.put("FASTA".toLowerCase(), Fasta);
 		mapName2Type.put("GFF_UCSC".toLowerCase(), UCSC);
 		mapName2Type.put("GFF_TIGR".toLowerCase(), TIGR);
 		mapName2Type.put("GFF_PLANT".toLowerCase(), Plant);
@@ -62,12 +63,12 @@ public enum GffType {
 			return mapName2TypeSimple;
 		}
 		mapName2TypeSimple = new HashMap<String, GffType>();
-		mapName2TypeSimple.put("GTF".toLowerCase(), GTF);
-		mapName2TypeSimple.put("UCSC".toLowerCase(), UCSC);
-		mapName2TypeSimple.put("TIGR".toLowerCase(), TIGR);
-		mapName2TypeSimple.put("PLANT".toLowerCase(), Plant);
-		mapName2TypeSimple.put("NCBI".toLowerCase(), NCBI);
-		mapName2TypeSimple.put("FASTA".toLowerCase(), Fasta);
-		return mapName2Type;
+		mapName2TypeSimple.put("GFF_GTF".toLowerCase(), GTF);
+		mapName2TypeSimple.put("GFF_UCSC".toLowerCase(), UCSC);
+		mapName2TypeSimple.put("GFF_TIGR".toLowerCase(), TIGR);
+		mapName2TypeSimple.put("GFF_PLANT".toLowerCase(), Plant);
+		mapName2TypeSimple.put("GFF_NCBI".toLowerCase(), NCBI);
+		mapName2TypeSimple.put("GFF_FASTA".toLowerCase(), Fasta);
+		return mapName2TypeSimple;
 	}
 }

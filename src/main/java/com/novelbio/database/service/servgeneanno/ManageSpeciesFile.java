@@ -94,6 +94,10 @@ public class ManageSpeciesFile {
 		}
 	}
 	
+	/** 返回所有有基因组的物种 */
+	public List<Integer> getLsTaxID() {
+		return new ArrayList<Integer>(mapTaxID_2_version2SpeciesFile.keySet());
+	}
 	
 	/**
 	 * @param taxID 必须选项，没这个就不用选了

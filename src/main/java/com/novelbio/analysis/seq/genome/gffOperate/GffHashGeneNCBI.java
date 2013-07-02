@@ -46,7 +46,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	/** geneID的正则 */
 	protected static String regGeneID = "(?<=Dbxref\\=GeneID\\:)\\d+";
 	/** Name的正则 */
-	protected static String regName = "(?<=Name\\=)[\\w\\-%]+";
+	protected static String regName = "(?<=Name\\=)[\\w\\-%\\.]+";
 	/** ID的正则 */
 	protected static String regID = "(?<=ID\\=)[\\w\\-\\.]+";
 	/** parentID的正则 */
@@ -82,9 +82,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	
 	/** 将第一列换算为chrID */
 	private Map<String, String> mapID2ChrID = new HashMap<String, String>();
-	
-	private Map<String, GeneType> mapGeneID2GeneType = new HashMap<String, GeneType>();
-	
+		
 	/** 
 	 * 一般的转录本都会先出现exon，然后出现CDS，如下<br>
 	 * hr3	RefSeq	mRNA	59958839	59959481<br>
@@ -243,7 +241,6 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   String geneName = getGeneName(ss[8]); setTaxID(ss, geneName);
 	   
 	   GffDetailGene gffDetailLOC = mapGenID2GffDetail.get(geneID);
-	   mapGeneID2GeneType.put(geneID, GeneType.getGeneType(ss[2]));
 	   if (gffDetailLOC == null) {
 		   gffDetailLOC=new GffDetailGene(ss[0], geneName, ss[6].equals("+") || ss[6].equals("."));//新建一个基因类
 	   }
@@ -269,10 +266,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   
 	   String[] mRNAname = getMrnaName(rnaName, ss);
 	   try {
-		   GeneType geneType = mapGeneID2GeneType.get(mapRnaID2GeneID.get(rnaID));
-		   if (geneType == null) {
-			   geneType = GeneType.getGeneType(mRNAname[1]);
-		   }
+		   GeneType geneType = GeneType.getGeneType(mRNAname[1]);
 		   GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.addsplitlist(mRNAname[0],gffDetailGene.getNameSingle(), geneType, ss[6].equals("+") || ss[6].equals("."));//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
 		   mapRnaID2LsIso.put(rnaID, gffGeneIsoInfo);
 		   ExonInfo exonInfo = new ExonInfo("", true, Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));

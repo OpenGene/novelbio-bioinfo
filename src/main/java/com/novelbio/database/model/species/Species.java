@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
@@ -183,14 +185,23 @@ public class Species implements Cloneable {
 	}
 	/** 常用名 */
 	public String getCommonName() {
+		if (taxInfo == null) {
+			return taxID + "";
+		}
 		return taxInfo.getComName();
 	}
 	/** 常用名 */
 	public String getNameLatin() {
+		if (taxInfo == null) {
+			return taxID + "";
+		}
 		return taxInfo.getLatin();
 	}
 	/** KEGG上的缩写 */
 	public String getAbbrName() {
+		if (taxInfo == null) {
+			return taxID + "";
+		}
 		return taxInfo.getAbbr();
 	}
 	/**
@@ -497,6 +508,7 @@ public class Species implements Cloneable {
 			lsTaxID = servTaxID.getLsAllTaxID();
 		} catch (Exception e) { }
 		
+		Set<Integer> setTaxID = new HashSet<Integer>();
 		for (Integer taxID : lsTaxID) {
 			Species species = new Species(taxID);
 			if (species.getCommonName().equals("")) {
@@ -510,8 +522,20 @@ public class Species implements Cloneable {
 					continue;
 				}
 			}
+			setTaxID.add(taxID);
 			treemapName2Species.put(species.getCommonName().toLowerCase(), species);
 		}
+		
+		if (speciesType == SEQINFO_SPECIES) {
+			for (Integer integer : servSpeciesFile.getLsTaxID()) {
+				if (setTaxID.contains(integer)) {
+					continue;
+				}
+				Species species = new Species(integer);
+				treemapName2Species.put(species.getTaxID() + "", species);
+			}
+		}
+
 		
 		for (String name : treemapName2Species.keySet()) {
 			Species species = treemapName2Species.get(name);
