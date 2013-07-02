@@ -186,6 +186,12 @@ OutDir=6
 				tmpResult[j] = tmpResult[j].replace("\"", "");
 			}
 			tmpResult[3] = division(tmpResult[1], tmpResult[2]);
+			if (!tmpResult[3].equals("NA") && !tmpResult[3].equals("Inf") && !tmpResult[3].equals("None") && !tmpResult[3].equals("0")) {
+				try {
+					tmpResult[4] = Math.log(Double.parseDouble(tmpResult[3]))/ Math.log(2) + "";
+				} catch (Exception e) {
+				}
+			}
 			lsResult.add(tmpResult);
 		}
 //		FileOperate.DeleteFileFolder(outFileName + outPutSuffix);

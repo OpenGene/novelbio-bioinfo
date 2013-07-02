@@ -1,5 +1,7 @@
 package com.novelbio.nbcgui.GUI;
 
+import java.util.List;
+
 import javax.swing.JButton;
 import javax.swing.JProgressBar;
 
@@ -12,10 +14,6 @@ public interface GuiRunningBarAbs {
 	
 	public JScrollPaneData getScrollPaneData();
 	/** 导入文件 */
-	public JButton getBtnOpen();
-	/** 启动 */
-	public JButton getBtnRun();
-	/** 保存 */
-	public JButton getBtnSave();
+	public List<JButton> getLsBtn();
 
 }

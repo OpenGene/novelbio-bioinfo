@@ -56,7 +56,13 @@ public class SamReader {
 	}
 	
 	public void setFileIndex(String fileIndex) {
+		if (!FileOperate.isFileExistAndBigThanSize(fileIndex, 0)) return;
+		
 		this.fileIndex = fileIndex;
+		try {
+			initialSamHeadAndReader(fileIndex);
+			initial = true;
+		} catch (Exception e) { }
 	}
 	
 	public void initial() {

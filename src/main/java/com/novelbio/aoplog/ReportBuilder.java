@@ -103,7 +103,7 @@ public abstract class ReportBuilder {
 	/**
 	 * 取得参数文件
 	 * 
-	 * @param savePath
+	 * @param savePath 输入与param在同一文件夹下的文件
 	 * @return
 	 */
 	private TxtReadandWrite getParamsTxt(String savePath) {

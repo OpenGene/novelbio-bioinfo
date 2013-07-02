@@ -201,7 +201,7 @@ public class AopDiffExp {
 	 * @return 返回从0开始的计数
 	 */
 	private int findColNum(List<String> lsTitle, String colName) {
-		int colNum = 0;
+		int colNum = -1;
 		for (int i = 0; i < lsTitle.size(); i++) {
 			if (lsTitle.get(i).equalsIgnoreCase(colName)) {
 				colNum = i;
@@ -219,6 +219,9 @@ public class AopDiffExp {
 	 * @return
 	 */
 	public static List<Double> readListListCol(List<List<String>> lsls, int colNum, double inf, double naValue) {
+		if (colNum < 0) {
+			return new ArrayList<Double>();
+		}
 		List<Double> lsCol = new ArrayList<Double>();
 		for (List<String> list : lsls) {
 			String str = list.get(colNum);
@@ -249,6 +252,9 @@ public class AopDiffExp {
 	 * @return
 	 */
 	public static List<Double> readListListColOut_0(List<List<String>> lsls, int colNum) {
+		if (colNum < 0) {
+			return new ArrayList<Double>();
+		}
 		List<Double> lsCol = new ArrayList<Double>();
 		for (List<String> list : lsls) {
 			String str = list.get(colNum);

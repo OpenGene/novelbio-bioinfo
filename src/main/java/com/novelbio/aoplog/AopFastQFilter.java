@@ -100,13 +100,15 @@ public class AopFastQFilter {
 			for (int i = 0; i < fastQCs.length; i++) {
 				String key = prefix;
 				String reportKey = prefix;
-				if (fastQCs.length == 1) {
+				if (fastQCs.length == 1 || fastQCs[1] == null) {
 					key += isBefore?"_BeforeFilter":"_AfterFilter";
 				} else {
 					key += isBefore?"_BeforeFilter_"+(i+1):"_AfterFilter_"+(i+1);
 				}
 				reportKey += isBefore?"_BeforeFilter":"_AfterFilter";
 				FastQC fastQC = fastQCs[i];
+				if (fastQC == null) continue;
+				
 				for (FQrecordCopeInt fQrecordCopeInt : fastQC.getLsModules()) {
 					if (fQrecordCopeInt instanceof BasicStats) {
 						Map<String, String> mapTable = ((BasicStats)fQrecordCopeInt).getResult();
@@ -119,30 +121,42 @@ public class AopFastQFilter {
 					} else {
 						if (!fastQC.isQC()) continue;
 						if (fQrecordCopeInt instanceof KmerContent) {
-							Map<String, String> mapTable = ((KmerContent)fQrecordCopeInt).getResult();
-							TxtReadandWrite txtWrite = new TxtReadandWrite(savePath + "KmerContent" + key +".xls", true);
-							writeTable(txtWrite, mapTable);
-							txtWrite.close();
-							mapPath2Image.put(savePath + "QCImages" + FileOperate.getSepPath() + "KmerContent_" + key +".png", ((KmerContent)fQrecordCopeInt).getBufferedImage(bigPicSize, bigPicSize));
-						}
-						else if (fQrecordCopeInt instanceof OverRepresentedSeqs) {
-							Map<String, String> mapTable = ((OverRepresentedSeqs)fQrecordCopeInt).getResult();
-							if (mapTable.size() > 0) {
-								TxtReadandWrite txtWrite = new TxtReadandWrite(savePath + "OverRepresentedSeqs" + key +".xls", true);
+							try {
+								Map<String, String> mapTable = ((KmerContent)fQrecordCopeInt).getResult();
+								TxtReadandWrite txtWrite = new TxtReadandWrite(savePath + "KmerContent" + key +".xls", true);
 								writeTable(txtWrite, mapTable);
 								txtWrite.close();
+								mapPath2Image.put(savePath + "QCImages" + FileOperate.getSepPath() + "KmerContent_" + key +".png", ((KmerContent)fQrecordCopeInt).getBufferedImage(bigPicSize, bigPicSize));
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+						else if (fQrecordCopeInt instanceof OverRepresentedSeqs) {
+							try {
+								Map<String, String> mapTable = ((OverRepresentedSeqs)fQrecordCopeInt).getResult();
+								if (mapTable.size() > 0) {
+									TxtReadandWrite txtWrite = new TxtReadandWrite(savePath + "OverRepresentedSeqs" + key +".xls", true);
+									writeTable(txtWrite, mapTable);
+									txtWrite.close();
+								}
+							} catch (Exception e) {
+								e.printStackTrace();
 							}
 						}
 						else if (fQrecordCopeInt instanceof PerBaseQualityScores) {
-							mapPath2Image.put(savePath + "QCImages" + FileOperate.getSepPath() + "QualityScore_" + key +".png",((PerBaseQualityScores)fQrecordCopeInt).getBufferedImage(bigPicSize, bigPicSize));
-							addParamInfo(Param.picParam, "QualityScore_" + reportKey +".png");
-							if (fastQCs.length > 1) {
-								qualityScoreImages[i] = ((PerBaseQualityScores)fQrecordCopeInt).getBufferedImage(smallPicSize, smallPicSize);
-								if ((i+1) == fastQCs.length) {
-									mapPath2Image.put(savePath + "QualityScore_" + reportKey +".png",GraphicCope.combineBfImage(true, sepPic, qualityScoreImages));
+							try {
+								mapPath2Image.put(savePath + "QCImages" + FileOperate.getSepPath() + "QualityScore_" + key +".png",((PerBaseQualityScores)fQrecordCopeInt).getBufferedImage(bigPicSize, bigPicSize));
+								addParamInfo(Param.picParam, "QualityScore_" + reportKey +".png");
+								if (fastQCs.length > 1) {
+									qualityScoreImages[i] = ((PerBaseQualityScores)fQrecordCopeInt).getBufferedImage(smallPicSize, smallPicSize);
+									if ((i+1) == fastQCs.length) {
+										mapPath2Image.put(savePath + "QualityScore_" + reportKey +".png",GraphicCope.combineBfImage(true, sepPic, qualityScoreImages));
+									}
+								}else {
+									mapPath2Image.put(savePath + "QualityScore_" + reportKey +".png",((PerBaseQualityScores)fQrecordCopeInt).getBufferedImage(smallPicSize, smallPicSize));
 								}
-							}else {
-								mapPath2Image.put(savePath + "QualityScore_" + reportKey +".png",((PerBaseQualityScores)fQrecordCopeInt).getBufferedImage(smallPicSize, smallPicSize));
+							} catch (Exception e) {
+								e.printStackTrace();
 							}
 						}
 						else if (fQrecordCopeInt instanceof PerSequenceQualityScores) {
@@ -158,15 +172,19 @@ public class AopFastQFilter {
 							mapPath2Image.put(savePath + "QCImages" + FileOperate.getSepPath() + "DuplicationLevel_" + key +".png",((DuplicationLevel)fQrecordCopeInt).getBufferedImage(bigPicSize, bigPicSize));
 						}
 						else if (fQrecordCopeInt instanceof PerSequenceGCContent) {
-							mapPath2Image.put(savePath + "QCImages" + FileOperate.getSepPath() + "SequenceGCContent_" + key +".png",((PerSequenceGCContent)fQrecordCopeInt).getBufferedImage(bigPicSize, bigPicSize));
-							addParamInfo(Param.picParam, "SequenceGCContent_" + reportKey +".png");
-							if (fastQCs.length > 1) {
-								sequenceGCContentImages[i] = ((PerSequenceGCContent)fQrecordCopeInt).getBufferedImage(smallPicSize, smallPicSize);
-								if ((i+1) == fastQCs.length) {
-									mapPath2Image.put(savePath + "SequenceGCContent_" + reportKey +".png",GraphicCope.combineBfImage(true, sepPic, sequenceGCContentImages));
+							try {
+								mapPath2Image.put(savePath + "QCImages" + FileOperate.getSepPath() + "SequenceGCContent_" + key +".png",((PerSequenceGCContent)fQrecordCopeInt).getBufferedImage(bigPicSize, bigPicSize));
+								addParamInfo(Param.picParam, "SequenceGCContent_" + reportKey +".png");
+								if (fastQCs.length > 1) {
+									sequenceGCContentImages[i] = ((PerSequenceGCContent)fQrecordCopeInt).getBufferedImage(smallPicSize, smallPicSize);
+									if ((i+1) == fastQCs.length) {
+										mapPath2Image.put(savePath + "SequenceGCContent_" + reportKey +".png",GraphicCope.combineBfImage(true, sepPic, sequenceGCContentImages));
+									}
+								}else {
+									mapPath2Image.put(savePath + "SequenceGCContent_" + reportKey +".png",((PerSequenceGCContent)fQrecordCopeInt).getBufferedImage(smallPicSize, smallPicSize));
 								}
-							}else {
-								mapPath2Image.put(savePath + "SequenceGCContent_" + reportKey +".png",((PerSequenceGCContent)fQrecordCopeInt).getBufferedImage(smallPicSize, smallPicSize));
+							} catch (Exception e) {
+								e.printStackTrace();
 							}
 						}
 						else if (fQrecordCopeInt instanceof NContent) {

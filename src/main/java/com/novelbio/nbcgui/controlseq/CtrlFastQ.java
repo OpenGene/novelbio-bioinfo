@@ -250,7 +250,7 @@ public class CtrlFastQ {
 		if (fastQfilterRecord.isFiltered()) condition = condition + "_filtered";
 		if (lsFastq.size() > 1) condition = condition + "_Combine";
 		
-		if (lsFastq.get(0)[1] == null) {
+		if (lsFastq.get(0).length == 1 || lsFastq.get(0)[1] == null) {
 			fastQs[0] = new FastQ(outFilePrefix + condition + ".fq", true);
 		} else {
 			fastQs[0] = new FastQ(outFilePrefix + condition + "_1.fq", true);

@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -34,7 +35,9 @@ import com.novelbio.analysis.annotation.functiontest.StatisticTestResult;
 import com.novelbio.aoplog.JFreeChartBarRender.BarColor;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.plot.GraphicCope;
 import com.novelbio.base.plot.PlotBar;
+import com.novelbio.nbcgui.controltest.CtrlGO;
 import com.novelbio.nbcgui.controltest.CtrlTestPathInt;
 
 /**
@@ -136,7 +139,7 @@ public class AopPath {
 					List<StatisticTestResult> lsTestResults = entry.getValue().getTestResult();
 					String prix = entry.getKey();
 					String excelPath = ctrlTestPathInt.getSaveParentPath();
-					String picNameLog2P = FileOperate.changeFilePrefix(excelPath, "Path-Analysis-Log2P_" + prix + "_" + ctrlTestPathInt.getSavePrefix() + "_", "png");
+					String picNameLog2P = FileOperate.addSep(excelPath) + "Path-Analysis-Log2P_" + prix + "_" + ctrlTestPathInt.getSavePrefix() + ".png";
 					BufferedImage bfImageLog2Pic = drawLog2PvaluePicture(lsTestResults, ctrlTestPathInt.getResultBaseTitle());
 					if (bfImageLog2Pic == null) return false;
 					
@@ -147,7 +150,7 @@ public class AopPath {
 						addParamInfo(Param.picParam, FileOperate.getFileName(picNameLog2P));
 					}
 					
-					String picNameEnrichment = FileOperate.changeFilePrefix(excelPath, "Path-Analysis-Enrichment_" + prix + "_" + ctrlTestPathInt.getSavePrefix() + "_", "png");
+					String picNameEnrichment = FileOperate.addSep(excelPath) + "Path-Analysis-Enrichment_" + prix + "_" + ctrlTestPathInt.getSavePrefix() + ".png";
 					BufferedImage bfImageEnrichment = drawEnrichmentPicture(lsTestResults, ctrlTestPathInt.getResultBaseTitle());
 					if (bfImageEnrichment == null) return false;
 					

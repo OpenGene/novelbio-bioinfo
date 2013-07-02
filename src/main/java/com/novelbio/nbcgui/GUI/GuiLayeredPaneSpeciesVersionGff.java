@@ -93,6 +93,6 @@ public class GuiLayeredPaneSpeciesVersionGff extends JLayeredPane {
 		}
 	}
 	public Species getSelectSpecies() {
-		return species;
+		return species.clone();
 	}
 }

@@ -577,9 +577,7 @@ public class GuiSnpCalling extends JPanel implements GuiNeedOpenFile {
 			gffChrAbs.setGffHash(new GffHashGene(GffType.NCBI, txtRefOrGTF.getText()));
 			return;
 		}
-		if (gffChrAbs.getTaxID() == 0 || !gffChrAbs.getSpecies().equals(species)) {
-			gffChrAbs.setSpecies(species);
-		}
+		gffChrAbs.setSpecies(species);
 	}
 	
 	public void setGuiFileOpen(GUIFileOpen guiFileOpen) {

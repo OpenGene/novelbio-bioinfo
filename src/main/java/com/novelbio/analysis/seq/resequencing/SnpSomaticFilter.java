@@ -133,6 +133,7 @@ public class SnpSomaticFilter {
 			
 			addSnp_2_mapSiteInfo2RefSiteSnpIndel(refSiteSnpIndel);
 		}
+		txtRead.close();
 	}
 	
 	/**
@@ -150,6 +151,7 @@ public class SnpSomaticFilter {
 			refSiteSnpIndel.setNBCLines(sampleName, vcfLines);
 			addSnp_2_mapSiteInfo2RefSiteSnpIndel(refSiteSnpIndel);
 		}
+		txtRead.close();
 	}
 	
 	private void addSnp_2_mapSiteInfo2RefSiteSnpIndel(RefSiteSnpIndel refSiteSnpIndel) {

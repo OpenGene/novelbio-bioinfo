@@ -157,7 +157,7 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 			}
 			refSiteSnpIndel = null;
 		}
-		
+		txtReadPileUp.close();
 		if (txtSnpOut != null) {
 			txtSnpOut.close();
 		}
@@ -192,7 +192,6 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 		if (txtSnpOut == null) {
 			return true;
 		}
-		
 		refSiteSnpIndel.setGffChrAbs(gffChrAbs);
 		ArrayList<String[]> lsInfo = null;
 		try {
@@ -205,11 +204,14 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 		if (lsInfo.size() == 0) {
 			logger.error("error");
 		}
-		for (String[] strings : lsInfo) {
-			txtSnpOut.writefileln(strings);
+		try {
+			for (String[] strings : lsInfo) {
+				txtSnpOut.writefileln(strings);
+			}
 			return true;
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
-		
 		return false;
 	}
 

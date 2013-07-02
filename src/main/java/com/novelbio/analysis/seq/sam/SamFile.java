@@ -162,6 +162,11 @@ public class SamFile implements AlignSeq {
 	private void setSamFileNew(SAMFileHeader samFileHeader, String samFileCreate, boolean preSorted) {
 		read = false;
 		samWriter = new SamWriter(preSorted, samFileHeader, samFileCreate);
+		if (samFileCreate.toLowerCase().endsWith("sam")) {
+			bamFile = false;
+		} else {
+			bamFile = true;
+		}
 	}
 	
 //	private static void initialSoftWare() {
@@ -500,7 +505,11 @@ public class SamFile implements AlignSeq {
 //		bamIndex.setExePath(softWareInfoSamtools.getExePath());
 		bamIndex.setBamFile(getFileName());
 		String index = bamIndex.index();
-		samReader.setFileIndex(index);
+		FormatSeq formatSeq = FormatSeq.BAM;
+		if (!bamFile) {
+			formatSeq = FormatSeq.SAM;
+		}
+		setSamFileRead(formatSeq, getFileName(), index);
 		bamIndex = null;
 	}
 	public SamFile realign() {

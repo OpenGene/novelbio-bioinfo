@@ -1,5 +1,9 @@
 package com.novelbio.nbcgui.controlseq;
 
+import java.util.List;
+
+import javax.swing.JButton;
+
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.FormatSeq;
 import com.novelbio.analysis.seq.bed.BedSeq;
@@ -81,33 +85,42 @@ public class CtrlMapReads implements RunGetInfo<MapReadsAbs.MapReadsProcessInfo>
 	@Override
 	public void done(RunProcess<MapReadsProcessInfo> runProcess) {
 		guiRunningBarAbs.getProcessBar().setValue(guiRunningBarAbs.getProcessBar().getMaximum());
-		guiRunningBarAbs.getBtnRun().setEnabled(true);
-		guiRunningBarAbs.getBtnSave().setEnabled(true);
-		guiRunningBarAbs.getBtnOpen().setEnabled(true);
+		List<JButton> lsJButtons = guiRunningBarAbs.getLsBtn();
+		for (JButton jButton : lsJButtons) {
+			jButton.setEnabled(true);
+		}
 	}
 
 	@Override
 	public void threadSuspended(RunProcess<MapReadsProcessInfo> runProcess) {
-		guiRunningBarAbs.getBtnRun().setEnabled(true);
+		List<JButton> lsJButtons = guiRunningBarAbs.getLsBtn();
+		for (JButton jButton : lsJButtons) {
+			jButton.setEnabled(true);
+		}
 		
 	}
 
 	@Override
 	public void threadResumed(RunProcess<MapReadsProcessInfo> runProcess) {
-		guiRunningBarAbs.getBtnRun().setEnabled(false);
+		List<JButton> lsJButtons = guiRunningBarAbs.getLsBtn();
+		for (JButton jButton : lsJButtons) {
+			jButton.setEnabled(false);
+		}
 	}
 
 	@Override
 	public void threadStop(RunProcess<MapReadsProcessInfo> runProcess) {
-		guiRunningBarAbs.getBtnRun().setEnabled(true);
-		guiRunningBarAbs.getBtnSave().setEnabled(true);
-		guiRunningBarAbs.getBtnOpen().setEnabled(true);
+		List<JButton> lsJButtons = guiRunningBarAbs.getLsBtn();
+		for (JButton jButton : lsJButtons) {
+			jButton.setEnabled(true);
+		}
 	}
 
 	public void execute() {
-		guiRunningBarAbs.getBtnRun().setEnabled(false);
-		guiRunningBarAbs.getBtnSave().setEnabled(false);
-		guiRunningBarAbs.getBtnOpen().setEnabled(false);
+		List<JButton> lsJButtons = guiRunningBarAbs.getLsBtn();
+		for (JButton jButton : lsJButtons) {
+			jButton.setEnabled(false);
+		}
 		guiRunningBarAbs.getProcessBar().setMinimum(0);
 		guiRunningBarAbs.getProcessBar().setMaximum((int) (FileOperate.getFileSizeLong(bedFileName)/1024));
 		guiRunningBarAbs.getProcessBar().setValue(0);

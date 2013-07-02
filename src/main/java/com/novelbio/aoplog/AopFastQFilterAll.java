@@ -90,7 +90,7 @@ public class AopFastQFilterAll {
 			for (int i = 0; i < fastQCs.length; i++) {
 				String key = prefix;
 				if (isFiltered) {
-					if (fastQCs.length == 1) {
+					if (fastQCs.length == 1 || fastQCs[1] == null) {
 						key += isBefore?"_BeforeFilter":"_AfterFilter";
 					} else {
 						key += isBefore?"_BeforeFilter_"+(i+1):"_AfterFilter_"+(i+1);
@@ -98,6 +98,7 @@ public class AopFastQFilterAll {
 				}
 
 				FastQC fastQC = fastQCs[i];
+				if (fastQC == null) continue;
 				for (FQrecordCopeInt fQrecordCopeInt : fastQC.getLsModules()) {
 					if (fQrecordCopeInt instanceof BasicStats) {
 						Map<String, String> mapTable = ((BasicStats)fQrecordCopeInt).getResult();

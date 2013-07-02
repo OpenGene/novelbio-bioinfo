@@ -131,11 +131,12 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 		for (Entry<String, String> entry : mapSample2PileupFile.entrySet()) {
 			String sampleName = entry.getKey();
 			String pileupFile = entry.getValue();
+
+			getSiteInfo_FromPileUp(sampleName, pileupFile);
 			
 			////表示读取完一个文件/////
 			setThreadInfo(readLines, readByte, "reading file " + FileOperate.getFileName(pileupFile));
 			//////////////////////////////////////
-			getSiteInfo_FromPileUp(sampleName, pileupFile);
 		}
 		if (outFile != null) {
 			writeToFile(outFile);
@@ -199,7 +200,6 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 			
 			String[] ss = samtoolsLine.split("\t");
 			int loc = Integer.parseInt(ss[1]);
-			
 			if (!ss[0].trim().toLowerCase().equals(tmpChrID)) {
 				
 				tmpChrID = ss[0].toLowerCase();
@@ -234,6 +234,7 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 				}
 			}
 		}
+		txtReadSam.close();
 		logger.info("readOverFile:" + samToolsPleUpFile);
 	}
 	

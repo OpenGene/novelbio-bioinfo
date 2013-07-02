@@ -127,7 +127,15 @@ public class LncInfo {
 		if (gffGeneIsoInfoLnc == null) {
 			lsResult.add("");
 		} else {
-			lsResult.add(gffGeneIsoInfoLnc.getGeneType().toString());
+			GeneID geneID = gffGeneIsoInfoLnc.getGeneID();
+			String geneType = gffGeneIsoInfoLnc.getGeneType().toString();
+			if (geneID != null && geneID.getGeneInfo() != null && geneID.getGeneInfo().getTypeOfGene() != null) {
+				String geneTypeGeneID = geneID.getGeneInfo().getTypeOfGene();
+				if (!geneTypeGeneID.equals("") && !geneTypeGeneID.equalsIgnoreCase("mrna") && !geneTypeGeneID.toLowerCase().contains("protein")) {
+					geneType = geneTypeGeneID;
+				}
+			}
+			lsResult.add(geneType);
 		}
 	
 		if (mRna != null && !mRna.equals("")) {

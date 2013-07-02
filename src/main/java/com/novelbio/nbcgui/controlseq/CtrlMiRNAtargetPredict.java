@@ -39,6 +39,7 @@ public class CtrlMiRNAtargetPredict {
 	MiRNAtargetMiranda miranda = new MiRNAtargetMiranda();
 	MiRNAtargetRNAhybrid miRNAtargetRNAhybrid = new MiRNAtargetRNAhybrid();
 	String txtMirTargetOverlap;
+	CombineTab combineTab;
 	/** 本方法和setInputUTR3File二选一 */
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		miranda.setGffChrAbs(gffChrAbs);
@@ -60,8 +61,8 @@ public class CtrlMiRNAtargetPredict {
 	 */
 	public void setMirTargetOverlap(String txtMirTargetOverlap) {
 		this.txtMirTargetOverlap = txtMirTargetOverlap;
-		miranda.setOutFile(FileOperate.changeFilePrefix(txtMirTargetOverlap, "miranda_", null));
-		miRNAtargetRNAhybrid.setOutFile(FileOperate.changeFilePrefix(txtMirTargetOverlap, "miRNAtarget_", null));
+		miranda.setOutFile(FileOperate.changeFilePrefix(txtMirTargetOverlap, "tmp_miranda_", null));
+		miRNAtargetRNAhybrid.setOutFile(FileOperate.changeFilePrefix(txtMirTargetOverlap, "tmp_RNAhybrid_", null));
 	}
 	/** RNAhybrid的物种类型 */
 	public void setSpeciesType(RNAhybridClass rAhybridClass) {
@@ -96,15 +97,20 @@ public class CtrlMiRNAtargetPredict {
 		ArrayList<String[]> lsOverlapTarget = overLap(miranda.getPredictResultFinal(), miRNAtargetRNAhybrid.getPredictResultFinal());
 		TxtReadandWrite txtOut = new TxtReadandWrite(txtMirTargetOverlap, true);
 		txtOut.ExcelWrite(lsOverlapTarget);
+		txtOut.close();
+		try {
+			combineTab.renderScriptAndDrawImage(FileOperate.changeFileSuffix(txtMirTargetOverlap, "_Ven", "tiff"), "", "");
+		} catch (Exception e) {}
 	}
 	
 	private ArrayList<String[]> overLap(String txtInputFileMiranda, String txtInputFileMiRNAhybrid) {
-		CombineTab combineTab = new CombineTab();
+		combineTab = new CombineTab();
 		combineTab.setStrNull(null);
 		combineTab.setColExtractDetail(txtInputFileMiranda, "mirnada", 2,3,4);
 		combineTab.setColExtractDetail(txtInputFileMiRNAhybrid, "rnaHybrid", 3,4);
 		combineTab.setColCompareOverlapID(1, 2);
 		ArrayList<String[]> lsCombine = combineTab.getResultLsIntersection();
+		
 		return lsCombine;
 	}
 }

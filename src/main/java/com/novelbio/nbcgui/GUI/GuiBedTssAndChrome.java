@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.ButtonGroup;
@@ -41,6 +42,7 @@ public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs, GuiN
 	JProgressBar progressBar;
 	JScrollPaneData scrollPaneData;
 	JButton btnSave;
+	JButton btnRunchrome;
 	
 	GUIFileOpen guiFileOpen = new GUIFileOpen();
 	GffChrAbs gffChrAbs = new GffChrAbs();
@@ -294,7 +296,7 @@ public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs, GuiN
 		add(txtHeatmapBig);
 		txtHeatmapBig.setColumns(10);
 		
-		JButton btnRunchrome = new JButton("RunChrome");
+		btnRunchrome = new JButton("RunChrome");
 		btnRunchrome.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				plotChrome();
@@ -423,16 +425,16 @@ public class GuiBedTssAndChrome extends JPanel implements GuiRunningBarAbs, GuiN
 	public JProgressBar getProcessBar() {
 		return progressBar;
 	}
-	public JButton getBtnSave() {
-		return btnSave;
+	public List<JButton> getLsBtn() {
+		List<JButton> lsButtons = new ArrayList<JButton>();
+		lsButtons.add(btnSave);
+		lsButtons.add(btnOpenBamBedFile);
+		lsButtons.add(btnRunTss);
+		lsButtons.add(btnLoading);
+		lsButtons.add(btnRunchrome);
+		return lsButtons;
 	}
-	public JButton getBtnRun() {
-		return btnLoading;
-	}
-	@Override
-	public JButton getBtnOpen() {
-		return btnOpenBamBedFile;
-	}
+
 	@Override
 	public JScrollPaneData getScrollPaneData() {
 		return null;

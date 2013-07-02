@@ -28,7 +28,7 @@ import com.novelbio.database.service.servgeneanno.ManageTaxID;
  * 物种信息，包括名字，以及各个文件所在路径
  * @author zong0jie
  */
-public class Species {
+public class Species implements Cloneable {
 	static boolean isOK = false;
 	static {
 		String file = "/lib/firmware/tigon/property";
@@ -536,5 +536,19 @@ public class Species {
 			return true;
 		}
 		return false;
+	}
+	
+	public Species clone() {
+		Species speciesClone = null;
+		try {
+			speciesClone = (Species)super.clone();
+			speciesClone.taxInfo = taxInfo;
+			speciesClone.lsVersion = new ArrayList<String[]>(lsVersion);
+			speciesClone.mapVersion2Species = new HashMap<String, SpeciesFile>(mapVersion2Species);			
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return speciesClone;
 	}
 }

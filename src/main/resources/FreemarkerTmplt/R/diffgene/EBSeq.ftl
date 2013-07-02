@@ -10,10 +10,15 @@ size = MedianNorm(data)
 	dataRun=data[,c(${mapOut2Compare_vector[outFile][0]})]
 	sizeRun = size[c(${mapOut2Compare_vector[outFile][0]})]
 	EBOutRun<- EBTest(Data=dataRun, Conditions=as.factor(c(${mapOut2Compare_vector[outFile][1]})),sizeFactors=sizeRun, maxround=15)
-	PP.norep=GetPPMat(EBOutRun)
+	GenePP1=GetPPMat(EBOutRun)
+	FDR<-GenePP1[,1]
+	
 	${mapOut2sample[outFile][0]}<- unlist(EBOutRun$C1Mean)
 	${mapOut2sample[outFile][1]}<- unlist(EBOutRun$C2Mean)
-	LogFC<- log(EBOutRun$C2Mean/EBOutRun$C1Mean)
-	colnames(out1)<-c("${mapOut2sample[outFile][0]}","${mapOut2sample[outFile][1]}","LogFC", "FDR")
-	write.table(out1, file="${outFile}", row.names=TRUE,col.names=TRUE,sep="\t")
+	LogFC=PostFC(EBOutRun)$RealFC
+	
+	out<-cbind(${mapOut2sample[outFile][0]},${mapOut2sample[outFile][1]}, LogFC,FDR )	
+	colnames(out)<-c("${mapOut2sample[outFile][0]}","${mapOut2sample[outFile][1]}","LogFC", "FDR")
+	write.table(out, file="${outFile}", row.names=TRUE,col.names=TRUE,sep="\t")
+	
 </#list>

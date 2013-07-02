@@ -92,32 +92,21 @@ public class DiffExpEBSeq extends DiffExpAbs{
 	
 	@Override
 	protected void run() {
-		Rrunning("Limma");
+		Rrunning("EBSeq");
 	}
 
 	@Override
 	protected void modifySingleResultFile(String outFileName, String treatName, String controlName) {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		ArrayList<String[]> lsDifGene = ExcelTxtRead.readLsExcelTxt(outFileName, 1);
-		String[] title = new String[]{TitleFormatNBC.AccID.toString(), treatName + "_logValue", controlName + "_logValue", TitleFormatNBC.Log2FC.toString(), TitleFormatNBC.Pvalue.toString(), TitleFormatNBC.FDR.toString(), "Bvalue"};
+		String[] title = new String[]{TitleFormatNBC.AccID.toString(), treatName , controlName, TitleFormatNBC.Log2FC.toString(), TitleFormatNBC.FDR.toString()};
 		lsResult.add(title);
 
-		ArrayList<int[]> lsIndelItem = new ArrayList<int[]>();
-		lsIndelItem.add(new int[]{1, 2});//"treat" and control
-		lsIndelItem.add(new int[]{2, -1});//"AveExpr"
-		if (lsDifGene.get(0).length == 7) {
-			lsIndelItem.add(new int[]{3, -1});//"t" 有时候不会有avg出现
-		}
 		for (int i = 1; i < lsDifGene.size(); i++) {
-			String[] tmpResult = ArrayOperate.indelElement(lsDifGene.get(i), lsIndelItem, "");
-			String geneID = tmpResult[0].replace("\"", "");
-			tmpResult[1] = mapGeneID_2_Sample2MeanValue.get(geneID).get(treatName) + "";
-			tmpResult[2] = mapGeneID_2_Sample2MeanValue.get(geneID).get(controlName) + "";
-
+			String[] tmpResult = lsDifGene.get(i);
 			for (int j = 0; j < tmpResult.length; j++) {
 				tmpResult[j] = tmpResult[j].replace("\"", "");
 			}
-			
 			lsResult.add(tmpResult);
 		}
 		FileOperate.DeleteFileFolder(outFileName);
