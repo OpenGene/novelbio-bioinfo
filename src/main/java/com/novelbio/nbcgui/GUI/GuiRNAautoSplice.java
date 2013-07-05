@@ -40,6 +40,8 @@ public class GuiRNAautoSplice extends JPanel implements GUIinfo {
 	JButton btnRun;
 	JButton btnOpengtf;
 	JCheckBox chckbxDisplayAllSplicing;
+	JCheckBox chkUseExternalGTF;
+	
 	GUIFileOpen guiFileOpen = new GUIFileOpen();
 	private JTextField txtSaveTo;
 	
@@ -101,6 +103,7 @@ public class GuiRNAautoSplice extends JPanel implements GUIinfo {
 		add(btnDelbam);
 		
 		txtGff = new JTextField();
+		txtGff.setEnabled(false);
 		txtGff.setBounds(644, 170, 258, 18);
 		add(txtGff);
 		txtGff.setColumns(10);
@@ -115,6 +118,7 @@ public class GuiRNAautoSplice extends JPanel implements GUIinfo {
 		add(btnRun);
 		
 		btnOpengtf = new JButton("OpenGTF");
+		btnOpengtf.setEnabled(false);
 		btnOpengtf.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				txtGff.setText(guiFileOpen.openFileName("GTFfile", ""));
@@ -176,18 +180,29 @@ public class GuiRNAautoSplice extends JPanel implements GUIinfo {
 		add(progressBar);
 		
 		lblInformation = new JLabel("");
-		lblInformation.setBounds(20, 460, 217, 14);
+		lblInformation.setBounds(20, 460, 223, 14);
 		add(lblInformation);
 		
 		lblDetailInfo = new JLabel("");
-		lblDetailInfo.setBounds(255, 460, 260, 14);
+		lblDetailInfo.setBounds(255, 461, 467, 14);
 		add(lblDetailInfo);
 		
 		guiLayeredPaneSpeciesVersionGff = new GuiLayeredPaneSpeciesVersionGff();
 		guiLayeredPaneSpeciesVersionGff.setBounds(644, 34, 258, 130);
 		add(guiLayeredPaneSpeciesVersionGff);
 		
-		JCheckBox chkUseExternalGTF = new JCheckBox("Use External GTF");
+		chkUseExternalGTF = new JCheckBox("Use External GTF");
+		chkUseExternalGTF.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (chkUseExternalGTF.isSelected()) {
+					txtGff.setEnabled(true);
+					btnOpengtf.setEnabled(true);
+				} else {
+					txtGff.setEnabled(false);
+					btnOpengtf.setEnabled(false);
+				}
+			}
+		});
 		chkUseExternalGTF.setBounds(644, 12, 223, 27);
 		add(chkUseExternalGTF);
 		
@@ -220,7 +235,7 @@ public class GuiRNAautoSplice extends JPanel implements GUIinfo {
 		GffHashGene gffHashGeneResult = null;
 
 		String gtfFile = txtGff.getText();
-		if (FileOperate.isFileExist(gtfFile)) {
+		if (chkUseExternalGTF.isSelected() && FileOperate.isFileExist(gtfFile)) {
 			gffHashGeneResult = new GffHashGene(GffType.GTF, txtGff.getText());
 		} else {
 			Species species = guiLayeredPaneSpeciesVersionGff.getSelectSpecies();

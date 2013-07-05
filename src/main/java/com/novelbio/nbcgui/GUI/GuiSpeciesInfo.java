@@ -173,7 +173,7 @@ public class GuiSpeciesInfo extends JPanel {
 		btnSaveGTF.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String out = guiFileOpen.openFileName("", "");
-				GffHashGene gffHashGene = new GffHashGene(cmbGTFtype.getSelectedValue(), txtGTFfile.getSelectedText());
+				GffHashGene gffHashGene = new GffHashGene(cmbGTFtype.getSelectedValue(), txtGTFfile.getText());
 				gffHashGene.writeToGTF(FileOperate.changeFileSuffix(out, "", "gtf"));
 			}
 		});

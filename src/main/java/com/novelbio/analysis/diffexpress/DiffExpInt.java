@@ -9,7 +9,6 @@ import java.util.Map;
  *
  */
 public interface DiffExpInt {
-	public void setRawScript(String rawScript);
 	/**
 	 * 一系列的表示基因分组的列<br>
 	 * 0: colNum, 实际number<br>

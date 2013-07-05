@@ -2,6 +2,7 @@ package com.novelbio.analysis.seq.sam;
 
 
 import net.sf.picard.sam.MarkDuplicates;
+import net.sf.samtools.SAMFileReader.ValidationStringency;
 
 import org.apache.log4j.Logger;
 
@@ -29,6 +30,8 @@ public class GATKDuplicate {
 	private String metricsPath;
 	private int maxFileHandlesForReadEndsMap = 8000;
 	
+	private String VALIDATION_STRINGENCY = ValidationStringency.LENIENT.toString();
+	
 	/**
 	 * @param inputFile 输入文件路径+bam文件名
 	 * @param outputFile 一般起名为 文件名 + ".dedup.bam";
@@ -47,10 +50,11 @@ public class GATKDuplicate {
 	public boolean removeDuplicate() {
 		try {
 			String[] params = { "MAX_FILE_HANDLES_FOR_READ_ENDS_MAP="+maxFileHandlesForReadEndsMap, "INPUT=" + inputFilePath, "OUTPUT=" + outputFilePath,
-					"METRICS_FILE=" + metricsPath };
+					"METRICS_FILE=" + metricsPath, "VALIDATION_STRINGENCY=" + VALIDATION_STRINGENCY };
 			MarkDuplicates.main(params);
 			return true;
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error("remove duplicate 去除重复 error!!!");
 			return false;
 		}
@@ -79,6 +83,5 @@ public class GATKDuplicate {
 	public void setMaxFileHandlesForReadEndsMap(int maxFileHandlesForReadEndsMap) {
 		this.maxFileHandlesForReadEndsMap = maxFileHandlesForReadEndsMap;
 	}
-	
 	
 }

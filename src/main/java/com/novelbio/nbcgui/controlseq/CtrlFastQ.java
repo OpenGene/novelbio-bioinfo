@@ -13,9 +13,9 @@ import org.springframework.stereotype.Component;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQC;
-import com.novelbio.analysis.seq.fastq.FastQReadingChannel;
 import com.novelbio.analysis.seq.fastq.FastQRecordFilter;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.service.SpringFactory;
 import com.novelbio.nbcgui.FoldeCreate;
 
 @Component
@@ -23,15 +23,7 @@ import com.novelbio.nbcgui.FoldeCreate;
 public class CtrlFastQ {
 	private static Logger logger = Logger.getLogger(CtrlFastQ.class);
 	private static final String pathSaveTo = "Quality-Control_result";
-	
-	
-	boolean filter = true;
-	boolean trimNNN = false;
-	int fastqQuality = FastQ.QUALITY_MIDIAN;
-	int readsLenMin = 18;
-	String adaptorLeft = "";
-	String adaptorRight = "";
-	boolean adaptorLowercase =false;
+	FastQRecordFilter fastQfilterRecord = new FastQRecordFilter();
 	
 	//以下为输入文件
 	/** 排列顺序与lsFastQfileLeft和lsFastQfileRight相同 
@@ -61,30 +53,35 @@ public class CtrlFastQ {
 	boolean qcAfter = true;
 	
 	public void setAdaptorLeft(String adaptorLeft) {
-		this.adaptorLeft = adaptorLeft;
-	}
-	public void setAdaptorLowercase(boolean adaptorLowercase) {
-		this.adaptorLowercase = adaptorLowercase;
+		fastQfilterRecord.setFilterParamAdaptorLeft(adaptorLeft.trim());
 	}
 	public void setAdaptorRight(String adaptorRight) {
-		this.adaptorRight = adaptorRight;
+		fastQfilterRecord.setFilterParamAdaptorRight(adaptorRight.trim());
 	}
+	public void setAdaptorLowercase(boolean adaptorLowercase) {
+		fastQfilterRecord.setFilterParamAdaptorLowercase(adaptorLowercase);
+	}
+
 	public void setFastqQuality(int fastqQuality) {
-		this.fastqQuality = fastqQuality;
+		fastQfilterRecord.setQualityFilter(fastqQuality);
 	}
 	/** 是否过滤，如果不过滤则直接合并 */
 	public void setFilter(boolean filter) {
-		this.filter = filter;
+		fastQfilterRecord.setIsFiltered(filter);
 	}
 	public void setReadsLenMin(int readsLenMin) {
-		this.readsLenMin = readsLenMin;
+		fastQfilterRecord.setFilterParamReadsLenMin(readsLenMin);
 	}
 	public void setTrimNNN(boolean trimNNN) {
-		this.trimNNN = trimNNN;
+		fastQfilterRecord.setFilterParamTrimNNN(trimNNN);
 	}
 	
 	public void setOutFilePrefix(String outFilePrefix) {
 		this.outFilePrefix = FoldeCreate.createAndInFold(outFilePrefix, pathSaveTo);
+	}
+	
+	public boolean isFiltered() {
+		return fastQfilterRecord.isFiltered();
 	}
 	
 	public String getOutFilePrefix() {
@@ -226,40 +223,34 @@ public class CtrlFastQ {
 		}
 		for (String prefix : setPrefix) {
 			List<FastQ[]> lsFastQLR = mapCondition2LsFastQLR.get(prefix);
-			if (!filter && lsFastQLR.size() < 2) {
+			if (!fastQfilterRecord.isFiltered() && lsFastQLR.size() < 2) {
 				mapCondition2LRFiltered.put(prefix, lsFastQLR);
 				continue;
 			}
-
-			FastQReadingChannel fastQReadingChannel = new FastQReadingChannel();
-			fastQReadingChannel.setFastQRead(lsFastQLR);
-			//QC before Filter
-			FastQC[] fastQCsBefore = getFastQC(lsFastQLR, prefix, qcBefore);
-			fastQReadingChannel.setFastQC(fastQCsBefore[0], fastQCsBefore[1]);
-			mapCond2FastQCBefore.put(prefix, fastQCsBefore);
-			//Filter
-			fastQReadingChannel.setFilter(getFastQParameter(), lsFastQLR.get(0)[0].getOffset());
-			//QC after Filter
-			FastQC[] fastQCsAfter = getFastQC(lsFastQLR, prefix, qcAfter);				
-			fastQReadingChannel.setFastQC(fastQCsAfter[0], fastQCsAfter[1]);
-			mapCond2FastQCAfter.put(prefix, fastQCsAfter);
+			CtrlFastQfilter ctrlFastQfilter = (CtrlFastQfilter)SpringFactory.getFactory().getBean("ctrlFastQfilter");
+			ctrlFastQfilter.setFastQfilterParam(fastQfilterRecord);
+			ctrlFastQfilter.setOutFilePrefix(outFilePrefix);
+			ctrlFastQfilter.setPrefix(prefix);
+			ctrlFastQfilter.setLsFastQLR(lsFastQLR);
 			
-			FastQ[] fastqWrite = createCombineFastq(prefix, lsFastQLR);
-			fastQReadingChannel.setFastQWrite(fastqWrite[0], fastqWrite[1]);
-			fastQReadingChannel.setThreadNum(8);
-			fastQReadingChannel.run();
-			List<FastQ[]> lsFastQs = new ArrayList<FastQ[]>();
-			lsFastQs.add(fastqWrite);
-			mapCondition2LRFiltered.put(prefix, lsFastQs);
+			FastQC[] fastQCsBefore = getFastQC(lsFastQLR, prefix, qcBefore);
+			mapCond2FastQCBefore.put(prefix, fastQCsBefore);
+			ctrlFastQfilter.setFastQCbefore(fastQCsBefore);
+			FastQC[] fastQCsAfter = getFastQC(lsFastQLR, prefix, qcAfter);
+			mapCond2FastQCAfter.put(prefix, fastQCsAfter);
+			ctrlFastQfilter.setFastQCafter(fastQCsAfter);
+			
+			ctrlFastQfilter.setFastQLRfiltered(createCombineFastq(prefix, lsFastQLR));
+			ctrlFastQfilter.filteredAndCombineReads();
 		}
 	}
 	
 	private FastQ[] createCombineFastq(String condition, List<FastQ[]> lsFastq) {
 		FastQ[] fastQs = new FastQ[2];
-		if (filter) condition = condition + "_filtered";
+		if (fastQfilterRecord.isFiltered()) condition = condition + "_filtered";
 		if (lsFastq.size() > 1) condition = condition + "_Combine";
 		
-		if (lsFastq.get(0)[1] == null) {
+		if (lsFastq.get(0).length == 1 || lsFastq.get(0)[1] == null) {
 			fastQs[0] = new FastQ(outFilePrefix + condition + ".fq", true);
 		} else {
 			fastQs[0] = new FastQ(outFilePrefix + condition + "_1.fq", true);
@@ -277,21 +268,5 @@ public class CtrlFastQ {
 			fastQCs[1] = new FastQC(prefix + "_Right", qc);
 		}
 		return fastQCs;
-	}
-
-	private FastQRecordFilter getFastQParameter() {
-		FastQRecordFilter fastQfilterRecord = new FastQRecordFilter();
-		if (filter) {
-			fastQfilterRecord.setFilterParamAdaptorLeft(adaptorLeft.trim());
-			fastQfilterRecord.setFilterParamAdaptorRight(adaptorRight.trim());
-			fastQfilterRecord.setFilterParamAdaptorLowercase(adaptorLowercase);
-			fastQfilterRecord.setFilterParamReadsLenMin(readsLenMin);
-			fastQfilterRecord.setQualityFilter(this.fastqQuality);
-			fastQfilterRecord.setFilterParamTrimNNN(trimNNN);
-		} else {
-			fastQfilterRecord.setIsFiltered(false);
-		}
-
-		return fastQfilterRecord;
 	}
 }

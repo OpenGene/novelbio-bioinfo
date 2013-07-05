@@ -146,7 +146,7 @@ public class AopGO {
 						excelSavePath = FileOperate.getParentPathName(ctrlGO.getSaveExcelPrefix());
 					}
 					BufferedImage bfImageCombine = GraphicCope.combineBfImage(true, 30, lsGOimage);
-					String picNameLog2P = excelSavePath +  "GO-Analysis-Log2P_" + prefix + ".png";
+					String picNameLog2P = excelSavePath +  "GO-Analysis-Log2P_" + prefix + "_" + ctrlTestGOInt.getSavePrefix() + ".png";
 					ImageIO.write(bfImageCombine, "png", new File(picNameLog2P));
 					if (ctrlTestGOInt.isCluster()) {
 						addParamInfo(Param.picParam1, FileOperate.getFileName(picNameLog2P));

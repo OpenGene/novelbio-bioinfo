@@ -222,11 +222,12 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @param atg 从1开始记数
 	 * @param uag 从1开始记数
 	 */
-	public void setATGUAG(int atg, int uag) {
+	public void setATGUAGauto(int atg, int uag) {
 		if (Math.abs(atg - uag)<=1) {
 			atg = Math.min(atg, uag);
 			uag = Math.min(atg, uag);
 		}
+		flagTypeGene = GeneType.mRNA;
 		if (isCis5to3()) {
 			if (ATGsite < 0 || ATGsite > Math.min(atg, uag)) {
 				ATGsite = Math.min(atg, uag);
@@ -243,6 +244,15 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			}
 		}
 	}
+	/** 如果是GTF文件指定了atg位点，就用这个设定，是ATG的第一个位点 */
+	public void setATG(int atg) {
+		ATGsite = atg;
+	}
+	/** 如果是GTF文件指定了uag位点，就用这个设定，是UAG的最后一个位点 */
+	public void setUAG(int uag) {
+		UAGsite = uag;
+	}
+	
 	/**
 	 * <b>必须先设定exon</b>
 	 * 如果ATGsite < 0 && UAGsite < 0，则认为是非编吗RNA

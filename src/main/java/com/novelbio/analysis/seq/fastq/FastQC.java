@@ -43,6 +43,7 @@ public class FastQC {
 	 * @param qc true 全面质检 false 仅计算reads数量
 	 */
 	public FastQC(String fileName, boolean qc) {
+		this.qc = qc;
 		basicStats.setName(fileName);
 		lsModules.add(basicStats);
 		if (qc) {
@@ -57,6 +58,10 @@ public class FastQC {
 			lsModules.add(os);
 			lsModules.add(kmerContent);
 		}
+	}
+	
+	public boolean isQC() {
+		return qc;
 	}
 	
 	public void setFileName(String fileName) {

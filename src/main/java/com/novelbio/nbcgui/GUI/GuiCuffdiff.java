@@ -10,7 +10,7 @@ import javax.swing.JLabel;
 
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.rnaseq.Cuffcompare;
-import com.novelbio.analysis.seq.rnaseq.Cuffdiff;
+import com.novelbio.analysis.seq.rnaseq.CuffDiff;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JScrollPaneData;
@@ -38,7 +38,7 @@ public class GuiCuffdiff extends JPanel {
 	
 	GUIFileOpen guiFileOpen = new GUIFileOpen();
 	
-	Cuffdiff cuffdiff = new Cuffdiff();
+	CuffDiff cuffdiff = new CuffDiff();
 	Cuffcompare cuffcompare = new Cuffcompare();
 	private JTextField txtSaveTo;
 	private JButton btnSaveto;

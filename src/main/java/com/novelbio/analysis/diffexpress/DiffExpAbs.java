@@ -9,14 +9,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.novelbio.PathNBCDetail;
-import com.novelbio.base.SepSign;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.service.SpringFactory;
+import com.novelbio.generalConf.PathNBCDetail;
+
+import freemarker.template.Configuration;
 
 public abstract class DiffExpAbs implements DiffExpInt {
 	public static final int LIMMA = 10;
@@ -24,7 +25,9 @@ public abstract class DiffExpAbs implements DiffExpInt {
 	public static final int DEGSEQ = 30;
 	public static final int EDEGR = 40;
 	public static final int TTest = 50;
-	
+	public static final int EBSeq = 60;
+
+	Configuration freeMarkerConfiguration = (Configuration)SpringFactory.getFactory().getBean("freemarkNBC");
 	String workSpace;
 	String fileNameRawdata = "";
 	String outScript = "";
@@ -54,17 +57,13 @@ public abstract class DiffExpAbs implements DiffExpInt {
 	HashMap<String, String[]> mapOutFileName2Compare = new LinkedHashMap<String, String[]>();
 	
 	boolean calculate = false;
-	
-	String rawScript = "";
-	
+
 	public DiffExpAbs() {
 		setRworkspace();
 		setOutScriptPath();
 		setFileNameRawdata();
 	}
-	public void setRawScript(String rawScript) {
-		this.rawScript = rawScript;
-	}
+	
 	/**
 	 * 一系列的表示基因分组的列<br>
 	 * 0: colNum, 实际number<br>
@@ -172,7 +171,7 @@ public abstract class DiffExpAbs implements DiffExpInt {
 		generateScript();
 		run();
 		modifyResult();
-		clean();
+//		clean();
 	}
 	/**
 	 * 将输入的文件重整理成所需要的txt格式写入文本
@@ -278,15 +277,12 @@ public abstract class DiffExpAbs implements DiffExpInt {
 	
 	protected abstract void generateScript();
 	
-	protected String getWorkSpace(String content) {
-		String RworkSpace = content.split(SepSign.SEP_ID)[1];
-		RworkSpace = RworkSpace.replace("{$workspace}", workSpace.replace("\\", "/"));
-		return RworkSpace;
+	protected String getWorkSpace() {
+		return workSpace.replace("\\", "/");
 	}
-	protected String getFileName(String content) {
-		String fileRawdata = content.split(SepSign.SEP_ID)[1];
-		fileRawdata = fileRawdata.replace("{$filename}", fileNameRawdata.replace("\\", "/"));
-		return fileRawdata;
+	
+	protected String getFileName() {
+		return fileNameRawdata.replace("\\", "/");
 	}
 	/**
 	 * 调用Rrunning并写入Cmd的名字,
@@ -298,6 +294,7 @@ public abstract class DiffExpAbs implements DiffExpInt {
 		String cmd = PathNBCDetail.getRscript() + outScript.replace("\\", "/");
 		CmdOperate cmdOperate = new CmdOperate(cmd);
 		cmdOperate.run();
+		try { Thread.sleep(2000); } catch (Exception e) {}
 	}
 	
 	/** 仅供AOP拦截使用，外界不要调用
@@ -327,6 +324,7 @@ public abstract class DiffExpAbs implements DiffExpInt {
 		mapMethod2ID.put("DEGseq--RPKM/Counts(recommand)", DEGSEQ);
 		mapMethod2ID.put("EdegR--Counts(Needs Replication)", EDEGR);
 		mapMethod2ID.put("DESeq--Counts(Needs Replication)", DESEQ);
+		mapMethod2ID.put("EBSeq--Counts", EBSeq);
 		mapMethod2ID.put("Ttest", TTest);
 		return mapMethod2ID;
 	}
@@ -343,6 +341,8 @@ public abstract class DiffExpAbs implements DiffExpInt {
 			diffExpInt = (DiffExpInt)SpringFactory.getFactory().getBean("diffExpTtest");
 		} else if (DiffExpID == EDEGR) {
 			diffExpInt = (DiffExpInt)SpringFactory.getFactory().getBean("diffExpEdgeR");
+		} else if (DiffExpID == EBSeq) {
+			diffExpInt = (DiffExpInt)SpringFactory.getFactory().getBean("diffExpEBSeq");
 		}
 		return diffExpInt;
 	}

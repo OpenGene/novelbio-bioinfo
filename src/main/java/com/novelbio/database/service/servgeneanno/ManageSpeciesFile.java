@@ -6,17 +6,23 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import com.novelbio.PathNBCDetail;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.SpeciesFile;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
+import com.novelbio.database.mongorepo.geneanno.RepoSpeciesFile;
+import com.novelbio.database.service.SpringFactory;
+import com.novelbio.generalConf.PathNBCDetail;
 
 public class ManageSpeciesFile {
 	private static final Logger logger = Logger.getLogger(ManageSpeciesFile.class);
+	@Autowired
+	private RepoSpeciesFile repoSpeciesFile;
 	/**
 	 * version 必须为小写
 	 */
@@ -25,11 +31,23 @@ public class ManageSpeciesFile {
 	public ManageSpeciesFile() {
 		if (mapTaxID_2_version2SpeciesFile == null) {
 			 mapTaxID_2_version2SpeciesFile = new HashMap<Integer, Map<String,SpeciesFile>>();
-			readSpeciesFile(PathNBCDetail.getSpeciesFile());
+			 readDBinfo();
+		}
+	}
+	
+	private void readDBinfo() {
+		String speciesFile = PathNBCDetail.getSpeciesFile();
+		if (FileOperate.isFileExistAndBigThanSize(speciesFile, 0)) {
+			readSpeciesFile(speciesFile);
+		} else {
+			readFromDB();
+			logger.error("文本无法读取，只能读取数据库");
 		}
 	}
 	
 	private void readSpeciesFile(String speciesFileInput) {
+		if (!FileOperate.isFileExistAndBigThanSize(speciesFileInput, 0)) return;
+		
 		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(speciesFileInput, 0);
 		String[] title = lsInfo.get(0);
 		HashMap<String, Integer> hashName2ColNum = new HashMap<String, Integer>();
@@ -94,6 +112,17 @@ public class ManageSpeciesFile {
 		}
 	}
 	
+	private void readFromDB() {
+		repoSpeciesFile = (RepoSpeciesFile)SpringFactory.getFactory().getBean("repoSpeciesFile");
+		for (SpeciesFile speciesFile : repoSpeciesFile.findAll()) {
+			save(speciesFile);
+		}
+	}
+	
+	/** 返回所有有基因组的物种 */
+	public List<Integer> getLsTaxID() {
+		return new ArrayList<Integer>(mapTaxID_2_version2SpeciesFile.keySet());
+	}
 	
 	/**
 	 * @param taxID 必须选项，没这个就不用选了

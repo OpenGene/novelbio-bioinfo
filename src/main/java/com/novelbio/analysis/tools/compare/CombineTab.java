@@ -1,18 +1,33 @@
 package com.novelbio.analysis.tools.compare;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.base.SepSign;
+import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.plot.VennImage;
+import com.novelbio.database.service.SpringFactory;
+import com.novelbio.generalConf.PathNBCDetail;
+
+import freemarker.template.Configuration;
+import freemarker.template.Template;
 
 /**
  * 选定多个表，
@@ -23,39 +38,57 @@ import com.novelbio.base.fileOperate.FileOperate;
 public class CombineTab {
 	
 	public static void main(String[] args) {
-		String parentFile = "/media/winE/NBC/Project/Project_CDG_Lab/ChIPSeq_CDG110921/rawdata/all/peakcalling/";
-		String file1 = parentFile + "K4all_SE-W200-G600-E100_anno_-2k+2k.xls";
-		String file2 = parentFile + "KEall_SE-W200-G600-E100_anno_-2k+2k.xls";
-		String file3 = parentFile + "W4all_SE-W200-G600-E100_anno_-2k+2k.xls";
-		String file4 = parentFile + "WEall_SE-W200-G600-E100_anno_-2k+2k.xls";
+		String parentFile = "/home/novelbio/桌面/";
+		String file1 = parentFile + "A.xls";
+		String file2 = parentFile + "B.xls";
+		String file3 = parentFile + "AB.xls";
 		CombineTab comb = new CombineTab();
-		comb.setColExtractDetai(file1, "K4", 4,6,7);
-		comb.setColExtractDetai(file2, "KE", 4,6,7);
-		comb.setColExtractDetai(file3, "W4", 4,6,7);
-		comb.setColExtractDetai(file4, "WE", 4,6,7);
-		comb.setColCompareOverlapID(5);
+		comb.setColExtractDetail(file1, "A");
+		comb.setColExtractDetail(file2, "B");
+		comb.setColExtractDetail(file3, "AB");
+		comb.setColCompareOverlapID(1);
+		comb.exeToFile();
+		for (String[] result : comb.getLsResultFromImage()) {
+			for (int i = 0; i < result.length; i++) {
+				System.out.print(result[i]+"   ");
+			}
+			System.out.println("");
+		}
+		VennImage vennImage = new VennImage("/home/novelbio/桌面/testR.tiff",3000,3000);
+		vennImage.setMain("use VennDiagram to make a Venn plot");
+		vennImage.setSub("by GaoZhu");
+		if (comb.renderScriptAndDrawImage(vennImage) != null) {
+			System.out.println("生成图片成功");
+		}
+		//comb.deleteAllTempFile();
 	}
 	private static Logger logger = Logger.getLogger(CombineTab.class);
+	public static String tempFolder = PathNBCDetail.getRworkspaceTmp();
+	private List<String> tempFiles = new ArrayList<String>();
 	
 	LinkedHashMap<String, String> mapFileName2ConditionAbbr = new LinkedHashMap<String, String>();
 	/** ColCompareComb：将待查找的列合并起来，用"_"连接<br>
 	 * ColCompareSep：分开的待查找的列
 	 * */
 	LinkedHashMap<String, String[]> mapColCompareComb_To_ColCompareSep = new LinkedHashMap<String,String[]>();
-	
+	Configuration freeMarkerConfiguration = (Configuration)SpringFactory.getFactory().getBean("freemarkNBC");
+
 	HashMap<String, LinkedHashMap<String, String[]>> mapFileName_To_ColCompareComb2ExtractCol = new LinkedHashMap<String, LinkedHashMap<String,String[]>>();
 	/**
 	 * 文件名---具体要包含哪几列，不含比较列
 	 */
 	LinkedHashMap<String, int[]> mapFileName2ExtractColNum = new LinkedHashMap<String, int[]>();
-
+	Map<String, Map<String,Boolean>> mapKey2mapShortName2Exist = new LinkedHashMap<String, Map<String,Boolean>>();
+	Map<String, ArrayList<String>> mapShortName2lsGeneID = new LinkedHashMap<String, ArrayList<String>>();
 	/** 需要比较那几列 */
 	int[] colCompareOverlapID;
 	/** 并集里面的空格填充什么 */
-	String strNull = "";
+	String strNull = null;
 	
 	ArrayList<String[]> lsResultUnion = new ArrayList<String[]>();
 	ArrayList<String[]> lsResultIntersection = new ArrayList<String[]>();
+	BufferedImage bufferedImage = null;
+	ArrayList<String[]> lsResultFromImage = new ArrayList<String[]>();
 	boolean runningFlag = true;
 	/**
 	 * 空格用什么字符串填充，默认为"";
@@ -92,7 +125,7 @@ public class CombineTab {
 	 * @param codName 该文本的简称
 	 * @param colDetail 该文本具体获取哪几列
 	 */
-	public void setColExtractDetai(String condTxt, String codName, int... colDetail) {
+	public void setColExtractDetail(String condTxt, String codName, int... colDetail) {
 		for (int i = 0; i < colDetail.length; i++) {
 			colDetail[i] = colDetail[i] - 1;
 		}
@@ -189,8 +222,12 @@ public class CombineTab {
 			String colIDcombineStr = ""; String[] colIDarray = new String[colCompareOverlapID.length];
 			//flag列的信息
 			for (int i = 0; i < colCompareOverlapID.length; i++) {
-				colIDcombineStr = colIDcombineStr + SepSign.SEP_ID + strings[i];
 				colIDarray[i] = strings[i];
+				if (i == 0) {
+					colIDcombineStr += strings[i];
+				}else{
+					colIDcombineStr += "__" + strings[i];
+				}
 			}
 			//删除flag列的信息
 			String[] tmpExtractColInfo = new String[strings.length - colCompareOverlapID.length];
@@ -213,10 +250,13 @@ public class CombineTab {
 	private void combInfo() {
 		lsResultUnion = new ArrayList<String[]>();
 		lsResultIntersection = new ArrayList<String[]>();
-		
 		for (String colCompareComb : mapColCompareComb_To_ColCompareSep.keySet()) {
 			String[] colCompareSep = mapColCompareComb_To_ColCompareSep.get(colCompareComb);
 			boolean flagInterSection = true;
+			
+			Map<String,Boolean> mapShortName2isExist = new LinkedHashMap<String,Boolean>();
+			mapKey2mapShortName2Exist.put(colCompareComb, mapShortName2isExist);
+			
 			//每个ID在所有多个表中全部查找一遍
 			for (String fileName : mapFileName2ConditionAbbr.keySet()) {
 				LinkedHashMap<String, String[]> mapColCompareComb2ExtractCol = mapFileName_To_ColCompareComb2ExtractCol.get(fileName);
@@ -228,6 +268,9 @@ public class CombineTab {
 					for (int i = 0; i < extractCol.length; i++) {
 						extractCol[i] = strNull;
 					}
+					mapShortName2isExist.put(mapFileName2ConditionAbbr.get(fileName),false);
+				} else {
+					mapShortName2isExist.put(mapFileName2ConditionAbbr.get(fileName),true);
 				}
 				//合并列
 				colCompareSep = ArrayOperate.combArray(colCompareSep, extractCol, 0);
@@ -236,6 +279,125 @@ public class CombineTab {
 			if (flagInterSection) {
 				lsResultIntersection.add(colCompareSep);
 			}
+		}
+		writeResult();
+	}
+	
+	private boolean writeResult() {
+		for (String geneId : mapKey2mapShortName2Exist.keySet()) {
+			String newName = "";
+			int i = 0;
+			for(String shortName : mapKey2mapShortName2Exist.get(geneId).keySet()){
+				if(mapKey2mapShortName2Exist.get(geneId).get(shortName)){
+					if(i == 0){
+						newName += shortName;
+						i++;
+					}else {
+						newName += "_"+shortName;
+					}
+				}
+				if(mapShortName2lsGeneID.get(shortName) == null){
+					ArrayList<String> lsGeneIds = new ArrayList<String>();
+					lsGeneIds.add(geneId);
+					mapShortName2lsGeneID.put(shortName, lsGeneIds);
+				}else {
+					mapShortName2lsGeneID.get(shortName).add(geneId);
+				}
+			}
+			
+			lsResultFromImage.add(new String[]{geneId,newName});
+		}
+		return true;
+	}
+	
+	public BufferedImage renderScriptAndDrawImage(String savePath, String title, String subTitle) {
+		VennImage vennImage = new VennImage(savePath,3000,3000);
+		vennImage.setMain(title);
+		vennImage.setSub(subTitle);
+		return renderScriptAndDrawImage(vennImage);
+	}
+	
+	/**
+	 * 渲染R脚本并画图
+	 * @param savePath 只能是tiff格式的
+	 * @return
+	 */
+	public BufferedImage renderScriptAndDrawImage(VennImage vennImage){
+		tempFiles.add(vennImage.getSavePath());
+		//提供给freemarker的渲染数据集 
+		Map<String,Object> mapData = new HashMap<String, Object>();
+		Map<String,String> mapShortName2PathName = new HashMap<String, String>();
+		TxtReadandWrite txtReadandWrite = null;
+		String fileName = null;
+		for (String key : mapFileName2ConditionAbbr.keySet()) {
+			if (!FileOperate.isFileExistAndBigThanSize(key, 0))
+				return null;
+			fileName = tempFolder + mapFileName2ConditionAbbr.get(key) + DateUtil.getDateAndRandom() + ".txt";
+			txtReadandWrite = new TxtReadandWrite(fileName,true);
+			for (String[] content : ExcelTxtRead.readLsExcelTxt(key, 2)) {
+				txtReadandWrite.writefileln(content[0]);
+			}
+			mapShortName2PathName.put(mapFileName2ConditionAbbr.get(key), fileName);
+			txtReadandWrite.flash();
+			tempFiles.add(fileName);
+		}
+		vennImage.setDataSize(mapShortName2PathName.size());
+		mapData.put("data", mapShortName2PathName);
+		mapData.put("vennImage", vennImage);
+//		// 加载模板
+//		Configuration cf = new Configuration();
+//		// 模板存放路径
+//		try {
+//			cf.setDirectoryForTemplateLoading(new File(rootTemp));
+//		} catch (IOException e1) {
+//			e1.printStackTrace();
+//		}
+//		cf.setClassicCompatible(true);
+//		cf.setEncoding(Locale.getDefault(), "UTF-8");
+		String scriptName = null;
+		try {
+			Template template = freeMarkerConfiguration.getTemplate("/R/Venn.ftl");
+			StringWriter sw = new StringWriter();
+			// 处理并把结果输出到字符串中
+			template.process(mapData, sw);
+			scriptName = tempFolder + "script" + DateUtil.getDateAndRandom()+".txt";
+			txtReadandWrite = new TxtReadandWrite(scriptName,true);
+			txtReadandWrite.writefile(sw.toString());
+			tempFiles.add(scriptName);
+		} catch (Exception e) {
+			logger.error("渲染出错啦! " + e.getMessage());
+			deleteAllTempFile();
+			return null;
+		} finally{
+			txtReadandWrite.close();
+		}
+		//TODO		String cmd = PathNBCDetail.getRscript() + scriptName.replace("\\", "/");
+		try {
+			String cmd = PathNBCDetail.getRscript() + scriptName.replace("\\", "/");
+			CmdOperate cmdOperate = new CmdOperate(cmd);
+			cmdOperate.run();
+		} catch (Exception e) {
+			logger.error("R运行脚本出错啦! " + e.getMessage());
+			deleteAllTempFile();
+			return null;
+		}
+		try {
+			return ImageIO.read(new File(vennImage.getSavePath()));
+		} catch (IOException e) {
+			logger.error("读取图片流出错! " + e.getMessage());
+			deleteAllTempFile();
+			return null;
+		}
+	}
+	
+	/**
+	 * 删除除所有的临时文件
+	 */
+	public void  deleteAllTempFile() {
+		for (String fileName : tempFiles) {
+			if (!FileOperate.isFileExist(fileName))
+				continue;
+			FileOperate.delFile(fileName);
 		}
 	}
 	
@@ -246,5 +408,14 @@ public class CombineTab {
 	public ArrayList<String[]> getResultLsUnion() {
 		exeToFile();
 		return lsResultUnion;
+	}
+	
+	/**
+	 * 得到不同GeneID的分布<br>
+	 * 如　Gbp1   A_B_AB（表示在A B AB中都出现过）   Pkdcc   A_AB（表示在A AB中出现的）  
+	 * @return
+	 */
+	public ArrayList<String[]> getLsResultFromImage() {
+		return lsResultFromImage;
 	}
 }

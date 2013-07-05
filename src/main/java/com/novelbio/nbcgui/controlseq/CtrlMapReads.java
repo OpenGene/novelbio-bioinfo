@@ -1,8 +1,16 @@
 package com.novelbio.nbcgui.controlseq;
 
+import java.util.List;
+
+import javax.swing.JButton;
+
+import com.novelbio.analysis.seq.AlignSeq;
+import com.novelbio.analysis.seq.FormatSeq;
+import com.novelbio.analysis.seq.bed.BedSeq;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs.MapReadsProcessInfo;
+import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataStructure.Equations;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunGetInfo;
@@ -21,10 +29,18 @@ public class CtrlMapReads implements RunGetInfo<MapReadsAbs.MapReadsProcessInfo>
 		mapReads = new MapReads();
 		mapReads.setRunGetInfo(this);
 	}
-	public void setBedFile(String bedFileName) {
+	public void setBamBedFile(String bedFileName) {
 		this.bedFileName = bedFileName;
-		mapReads.setBedSeq(bedFileName);
+		FormatSeq formatSeq = FormatSeq.getFileType(bedFileName);
+		AlignSeq alignSeq = null;
+		if (formatSeq == FormatSeq.BED) {
+			alignSeq = new BedSeq(bedFileName);
+		} else if (formatSeq == FormatSeq.SAM || formatSeq == FormatSeq.BAM) {
+			alignSeq = new SamFile(bedFileName);
+		}
+		mapReads.setAlignSeqReader(alignSeq);
 	}
+	
 	public void setInvNum(int invNum) {
 		mapReads.setInvNum(invNum);
 	}
@@ -63,41 +79,50 @@ public class CtrlMapReads implements RunGetInfo<MapReadsAbs.MapReadsProcessInfo>
 	}
 	@Override
 	public void setRunningInfo(MapReadsProcessInfo info) {
-		guiRunningBarAbs.getProcessBar().setValue((int) (info.getReadsize()/1000000));
+		guiRunningBarAbs.getProcessBar().setValue((int) (info.getReadsize()/1024));
 	}
 
 	@Override
 	public void done(RunProcess<MapReadsProcessInfo> runProcess) {
 		guiRunningBarAbs.getProcessBar().setValue(guiRunningBarAbs.getProcessBar().getMaximum());
-		guiRunningBarAbs.getBtnRun().setEnabled(true);
-		guiRunningBarAbs.getBtnSave().setEnabled(true);
-		guiRunningBarAbs.getBtnOpen().setEnabled(true);
+		List<JButton> lsJButtons = guiRunningBarAbs.getLsBtn();
+		for (JButton jButton : lsJButtons) {
+			jButton.setEnabled(true);
+		}
 	}
 
 	@Override
 	public void threadSuspended(RunProcess<MapReadsProcessInfo> runProcess) {
-		guiRunningBarAbs.getBtnRun().setEnabled(true);
+		List<JButton> lsJButtons = guiRunningBarAbs.getLsBtn();
+		for (JButton jButton : lsJButtons) {
+			jButton.setEnabled(true);
+		}
 		
 	}
 
 	@Override
 	public void threadResumed(RunProcess<MapReadsProcessInfo> runProcess) {
-		guiRunningBarAbs.getBtnRun().setEnabled(false);
+		List<JButton> lsJButtons = guiRunningBarAbs.getLsBtn();
+		for (JButton jButton : lsJButtons) {
+			jButton.setEnabled(false);
+		}
 	}
 
 	@Override
 	public void threadStop(RunProcess<MapReadsProcessInfo> runProcess) {
-		guiRunningBarAbs.getBtnRun().setEnabled(true);
-		guiRunningBarAbs.getBtnSave().setEnabled(true);
-		guiRunningBarAbs.getBtnOpen().setEnabled(true);
+		List<JButton> lsJButtons = guiRunningBarAbs.getLsBtn();
+		for (JButton jButton : lsJButtons) {
+			jButton.setEnabled(true);
+		}
 	}
 
 	public void execute() {
-		guiRunningBarAbs.getBtnRun().setEnabled(false);
-		guiRunningBarAbs.getBtnSave().setEnabled(false);
-		guiRunningBarAbs.getBtnOpen().setEnabled(false);
+		List<JButton> lsJButtons = guiRunningBarAbs.getLsBtn();
+		for (JButton jButton : lsJButtons) {
+			jButton.setEnabled(false);
+		}
 		guiRunningBarAbs.getProcessBar().setMinimum(0);
-		guiRunningBarAbs.getProcessBar().setMaximum((int) (FileOperate.getFileSizeLong(bedFileName)/1000000));
+		guiRunningBarAbs.getProcessBar().setMaximum((int) (FileOperate.getFileSizeLong(bedFileName)/1024));
 		guiRunningBarAbs.getProcessBar().setValue(0);
 		
 		mapReads.setRunGetInfo(this);

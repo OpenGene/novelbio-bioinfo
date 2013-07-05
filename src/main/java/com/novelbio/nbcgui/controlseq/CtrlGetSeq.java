@@ -15,7 +15,7 @@ import com.novelbio.nbcgui.GUI.GuiGetSeq;
 
 public class CtrlGetSeq implements RunGetInfo<GffChrSeq.GffChrSeqProcessInfo>{
 	int[] upAndDownStream = new int[2];
-	GffChrAbs gffChrAbs;
+	GffChrAbs gffChrAbs = new GffChrAbs();
 	GuiGetSeq guiGetSeq;
 	GffChrSeq gffChrSeq = new GffChrSeq();
 	
@@ -29,7 +29,7 @@ public class CtrlGetSeq implements RunGetInfo<GffChrSeq.GffChrSeqProcessInfo>{
 		gffChrSeq.setGffChrAbs(this.gffChrAbs);
 	}
 	public void setSpecies(Species species) {
-		gffChrAbs = new GffChrAbs(species);
+		gffChrAbs.setSpecies(species);
 		gffChrSeq.setGffChrAbs(gffChrAbs);
 	}
 	public void setUpAndDownStream(int[] upAndDownStream) {

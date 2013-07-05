@@ -50,5 +50,10 @@ public interface CtrlTestPathInt {
 	
 	public String getResultBaseTitle();
 	
-	 public String getSaveExcelPrefix();
+	public String getSaveExcelPrefix();
+
+	/** 获得保存到的文件夹路径 */
+	public String getSaveParentPath();
+	 /** 获得保存到文件夹的前缀，譬如保存到/home/zong0jie/stage10，那么前缀就是stage10 */
+	 public String getSavePrefix();
 }

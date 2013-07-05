@@ -23,7 +23,9 @@ public class CufflinksGTF {
 	ArrayListMultimap<String, SamFile> mapPrefix2SamFiles = ArrayListMultimap.create();
 	Set<String> setPrefix= new LinkedHashSet<String>();
 	
-	/** 如果输入多个bam文件，则将他们合并为一个 */
+	/** 如果输入多个bam文件，则将他们合并为一个
+	 * 用来最后删除mergedbam文件用的
+	 *  */
 	List<String> lsMergeSamFile;
 	
 	/** cufflinks所在路径 */
@@ -49,12 +51,18 @@ public class CufflinksGTF {
 	String gtfFile = "";
 	/** 输出文件路径 */
 	String outPathPrefix = "";
-	
+	/** 是否用上四分之一位点标准化 */
+	boolean isUpQuartileNormalized = true;
 
 	GffChrAbs gffChrAbs;
 	boolean booSetIntronMin = false;
 	boolean booSetIntronMax = false;
-
+	
+	boolean mergeBamFileByPrefix = false;
+	
+	/** 最后获得的结果 */
+	List<String> lsCufflinksResult = new ArrayList<String>();
+	
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 		booSetIntronMin = false;
@@ -77,11 +85,20 @@ public class CufflinksGTF {
 		}
 		this.chrFile = chrFile;
 	}
-
+	
 	public void setOutPathPrefix(String outPathPrefix) {
 		this.outPathPrefix = outPathPrefix;
 	}
-
+	/** 是否用上四分之一位点标准化 */
+	public void setUpQuartileNormalized(boolean isUpQuartileNormalized) {
+		this.isUpQuartileNormalized = isUpQuartileNormalized;
+	}
+	
+	/** 用于CMD */
+	private String getOutPathPrefixCmd(String prefix) {
+		return "-o " + CmdOperate.addQuot(getOutPathPrefix(prefix)) + " ";
+	}
+	/** 输出文件名 */
 	private String getOutPathPrefix(String prefix) {
 		String outPath = "";
 		if (outPathPrefix.endsWith("/") || outPathPrefix.endsWith("\\")) {
@@ -89,9 +106,8 @@ public class CufflinksGTF {
 		} else {
 			outPath = outPathPrefix + "_" + prefix;
 		}
-		return "-o " + CmdOperate.addQuot(outPath) + " ";
+		return outPath;
 	}
-
 	/**
 	 * 设置左端的序列，设置会把以前的清空
 	 * 输入的多个bam文件会merge成为一个然后做cufflinks的重建转录本
@@ -163,8 +179,15 @@ public class CufflinksGTF {
 	private String getIntronLenMax() {
 		return "--max-intron-length " + intronLenMax + " ";
 	}
-
-	private String getMergedSamFile(String prefix) {
+	/** 内含子最短多少，默认50，需根据不同物种进行设置 */
+	private String getIsUpQuartile() {
+		if (isUpQuartileNormalized) {
+			return " -N ";
+		} else {
+			return "";
+		}
+	}
+	private String getSamFileMerged(String prefix) {
 		List<SamFile> lsSamFiles = mapPrefix2SamFiles.get(prefix);
 		String samFile = "";
 		if (lsSamFiles.size() == 1) {
@@ -181,7 +204,15 @@ public class CufflinksGTF {
 		}
 		return samFile;
 	}
-
+	
+	private List<String> getSamFileSeperate(String prefix) {
+		List<SamFile> lsSamFiles = mapPrefix2SamFiles.get(prefix);
+		List<String> lsResult = new ArrayList<String>();
+		for (SamFile samFile : lsSamFiles) {
+			lsResult.add(CmdOperate.addQuot(samFile.getFileName()));
+		}
+		return lsResult;
+	}
 	/** 线程数量，默认4线程 */
 	public void setThreadNum(int threadNum) {
 		if (threadNum <= 0) {
@@ -277,6 +308,7 @@ public class CufflinksGTF {
 	public void runCufflinks() {
 		setIntronLen();
 		lsMergeSamFile = new ArrayList<String>();
+		lsCufflinksResult.clear();
 		// linux命令如下
 		/**
 		 * cufflinks -o
@@ -290,24 +322,75 @@ public class CufflinksGTF {
 		 * /resultTmp/tophatResult/accepted_hits.bam
 		 */
 		for (String prefix : setPrefix) {
-			String cmd = "";
-			cmd = ExePathCufflinks + "cufflinks ";
-			cmd = cmd + getOutPathPrefix(prefix) + getAnchoProportion()
-					+ getIntronLenMin() + getIntronLenMax() + getGtfFile()
-					+ getStrandSpecifictype() + getThreadNum()
-					+ getCorrectChrFile();
-			cmd = cmd + getMergedSamFile(prefix);
-
-			try {
-				CmdOperate cmdOperate = new CmdOperate(cmd, "cufflinks");
-				cmdOperate.run();
-			} catch (Exception e) {
-				logger.error(prefix + " cufflinks error");
+			if (mergeBamFileByPrefix) {
+				String cufResultTmp = runCufflinksMergedBam(prefix);
+				if (cufResultTmp != null) {
+					lsCufflinksResult.add(cufResultTmp);
+				}
+			} else {
+				lsCufflinksResult.addAll(runCufflinksSepBam(prefix));
 			}
 		}
 		
 		//TODO 运行结束后考虑删除merge的bam文件
 //		deleteMergeFile();
+	}
+	
+	private String runCufflinksMergedBam(String prefix) {
+		String outGTF = getOutPathPrefix(prefix);
+		String cmd = "";
+		cmd = ExePathCufflinks + "cufflinks ";
+		cmd = cmd + getOutPathPrefixCmd(prefix) + getAnchoProportion()
+				+ getIntronLenMin() + getIntronLenMax() + getGtfFile()
+				+ getStrandSpecifictype() + getIsUpQuartile() + getThreadNum()
+				+ getCorrectChrFile();
+		String cmdRun = cmd + getSamFileMerged(prefix);
+		try {
+			CmdOperate cmdOperate = new CmdOperate(cmdRun, "cufflinks");
+			cmdOperate.run();
+			if (cmdOperate.isFinished()) {
+				return outGTF;
+			}
+		} catch (Exception e) {
+			logger.error(prefix + " cufflinks error");
+		}
+		return null;
+	}
+	
+	private List<String> runCufflinksSepBam(String prefix) {
+		List<String> lsResult  = new ArrayList<String>();
+		List<String> lsSamfiles = getSamFileSeperate(prefix);
+		int i = 0;
+		for (String string : lsSamfiles) {
+			i++;
+			String prefixThis = prefix + "i";
+			String cmd = "";
+			cmd = ExePathCufflinks + "cufflinks ";
+			cmd = cmd + getOutPathPrefixCmd(prefixThis) + getAnchoProportion()
+					+ getIntronLenMin() + getIntronLenMax() + getGtfFile()
+					+ getStrandSpecifictype() + getIsUpQuartile() + getThreadNum()
+					+ getCorrectChrFile();
+			String cmdRun = cmd + string;
+			try {
+				CmdOperate cmdOperate = new CmdOperate(cmdRun, "cufflinks");
+				cmdOperate.run();
+				if (cmdOperate.isFinished()) {
+					lsResult.add(getOutPathPrefix(prefixThis));
+				}
+			} catch (Exception e) {
+				logger.error(prefixThis + " cufflinks error");
+			}
+		}
+		if (lsResult.size() > 0) {
+			return lsResult;
+		} else {
+			return null;
+		}
+	}
+	
+	/** 获得结果 */
+	public List<String> getLsCufflinksResult() {
+		return lsCufflinksResult;
 	}
 	
 //	private void deleteMergeFile() {

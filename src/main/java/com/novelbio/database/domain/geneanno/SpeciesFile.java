@@ -15,7 +15,6 @@ import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.novelbio.PathNBCDetail;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fasta.SeqHash;
@@ -32,6 +31,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.database.service.servgeneanno.ManageSpeciesFile;
+import com.novelbio.generalConf.PathNBCDetail;
 
 /**
  * 保存某个物种的各种文件信息，譬如mapping位置等等
@@ -58,16 +58,14 @@ public class SpeciesFile {
 	String[] chromPath2Regx = new String[2];
 	/** 染色体的单文件序列 */
 	String chromSeq = "";
-	/** 保存不同mapping软件所对应的索引
-	 */
+	/** 保存不同mapping软件所对应的索引 */
 	Map<SoftWare, String> mapSoftware2IndexChrom = new HashMap<SoftWare, String>();
 
 	/** gff的repeat文件，从ucsc下载 */
 	String gffRepeatFile = "";
 	/** refseq文件 */
 	String refseqFile = "";
-	/** 保存不同mapping软件所对应的索引
-	 */
+	/** 保存不同mapping软件所对应的索引 */
 	Map<SoftWare, String> mapSoftware2IndexRef = new HashMap<SoftWare, String>();
 	/** refseq中的NCRNA文件 */
 	String refseqNCfile = "";
@@ -78,10 +76,10 @@ public class SpeciesFile {
 	 * key: DBname, 为小写<br>
 	 * value: 0, GffType 1:GffFile
 	 */
-	Map<String, String[]> mapDB2GffTypeAndFile = new HashMap<String, String[]>();
+	Map<String, String[]> mapDB2GffTypeAndFile = new TreeMap<String, String[]>(new CompGffDB());
 	
 	/** 用来将小写的DB转化为正常的DB，使得getDB获得的字符应该是正常的DB */
-	Map<String, String> mapGffDBLowCase2DBNormal = new HashMap<String, String>();
+	Map<String, String> mapGffDBLowCase2DBNormal = new TreeMap<String, String>(new CompGffDB());
 	
 	/** mongodb的ID */
 	public void setId(String id) {
@@ -153,21 +151,7 @@ public class SpeciesFile {
 	 * @return GffFile
 	 */
 	public Map<String, String> getMapGffDB() {
-		Map<String, String> mapStringDB = new TreeMap<String, String>(new Comparator<String>() {
-			@Override
-			public int compare(String o1, String o2) {
-				if (o1.equalsIgnoreCase("ucsc")) {
-					return 1;
-				} else if (o2.equalsIgnoreCase("ucsc")) {
-					return -1;
-				} else if (o1.equalsIgnoreCase("ncbi") && !o2.equalsIgnoreCase("ucsc")) {
-					return 1;
-				} else if (!o1.equalsIgnoreCase("ucsc") && o2.equalsIgnoreCase("ncbi")) {
-					return -1;
-				}
-				return o1.compareTo(o2);
-			}
-		});
+		Map<String, String> mapStringDB = new LinkedHashMap<String, String>();
 		
 		if (mapGffDBLowCase2DBNormal.size() == 0) {
 			return mapStringDB;
@@ -827,3 +811,21 @@ public class SpeciesFile {
 	
 }
 
+/** 比较GFFDB的比较器 */
+class CompGffDB implements Comparator<String> {
+	public int compare(String o1, String o2) {
+		if (o1.equalsIgnoreCase(o2)) {
+			return 0;
+		}
+		if (o1.equalsIgnoreCase("ucsc")) {
+			return 1;
+		} else if (o2.equalsIgnoreCase("ucsc")) {
+			return -1;
+		} else if (o1.equalsIgnoreCase("ncbi") && !o2.equalsIgnoreCase("ucsc")) {
+			return 1;
+		} else if (!o1.equalsIgnoreCase("ucsc") && o2.equalsIgnoreCase("ncbi")) {
+			return -1;
+		}
+		return o1.compareTo(o2);
+	}
+}

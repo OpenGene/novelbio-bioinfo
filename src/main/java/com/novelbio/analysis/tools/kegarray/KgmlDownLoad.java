@@ -4,11 +4,11 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.PathNBCDetail;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.species.Species;
+import com.novelbio.generalConf.PathNBCDetail;
 
 public class KgmlDownLoad {
 	private static final Logger logger = Logger.getLogger(KgmlDownLoad.class);
@@ -17,10 +17,10 @@ public class KgmlDownLoad {
 	private static final String keggHomeURL = "www.genome.jp/";
 	private static final String pathWayHome = "www.genome.jp/kegg/pathway.html";
 	/**一个链接，上面有全部物种，用来创建文件夹*/
-	public static String speciseURL = "http://www.genome.jp/kegg-bin/get_htext?htext=br08601_map00600.keg&hier=5";
+//	public static String speciseURL = "http://www.genome.jp/kegg-bin/get_htext?htext=br08601_map00600.keg&hier=5";
 
 	//TODO 文件路径宗博设定
-	public static String KGML_PATH = "/home/zong0jie/desktop/kgml/KGML.init";
+//	public static String KGML_PATH = "/home/zong0jie/desktop/kgml/KGML.init";
 	public String outPath = "";
 	/** 装每个pathway的url的list */
 	List<String> lsKGMLurl = new ArrayList<String>();
@@ -28,25 +28,24 @@ public class KgmlDownLoad {
 	
 	
 	public static void main(String[] args) {
-		PathNBCDetail.setWorkSpace("/home/novelbio/桌面/project/database");
-		KgmlDownLoad kgmlDownLoad = new KgmlDownLoad();
-//		ArrayList<String> lsList = new ArrayList<String>();
-//		lsList.add("ssc");
-//		lsList.add("bta");
-//		lsList.add("dre");
-//		lsList.add("gga");
-//		lsList.add("hiv");
-//		lsList.add("pop");
-//		lsList.add("osa");
-//		lsList.add("sce");		
-//		for (String string : lsList) {
-//			kgmlDownLoad.kgmlMain(false, string);
-//		}
+		KgmlDownLoad kgmlDownLoad = new KgmlDownLoad();	
 		List<Species> lsSpecies = new ArrayList<Species>();
 		lsSpecies.add(new Species(9606));
 		kgmlDownLoad.setSpecies(lsSpecies);
-		kgmlDownLoad.loadPathNameAndSpecies("/home/novelbio/桌面/project/KGML/kgmlModify", true);
+		kgmlDownLoad.setOutPath("/media/winD/Bioinfor/genome/kgml");
+		kgmlDownLoad.loadPathNameAndSpecies("/media/winD/Bioinfor/genome/kgml/kgmlModify", false);
 		kgmlDownLoad.download();
+
+//		HttpFetch httpFetch = HttpFetch.getInstance();
+//		httpFetch.setUri("www.genome.jp/kegg-bin/show_pathway?map=map00053&show_description=show");
+//		httpFetch.query();
+//		for (String string : httpFetch.readResponse()) {
+//			System.out.println(string);
+//		}
+	}
+	
+	public void setOutPath(String outPath) {
+		this.outPath = outPath;
 	}
 	
 	/**
@@ -70,19 +69,25 @@ public class KgmlDownLoad {
 							try {
 								speciseURL = lines.split("<a href=\"")[1].split("\">")[0];
 							} catch (Exception e) {
+								e.printStackTrace();
 								continue;
 							}
 							speciseURL = keggHomeURL + speciseURL;
 							String KGMLdownLoad =  kgmlURL(speciseURL);
 							HttpFetch httpFetch2 = HttpFetch.getInstance();
+							if (KGMLdownLoad == null) {
+								continue;
+							}
 							httpFetch2.setUri(KGMLdownLoad);
 							if (httpFetch2.query(10)) {
 								String  fileName = speciseURL.split("\\?")[1] + ".xml";
 								httpFetch2.download(outSpeciesPath + fileName);
 							}
+							httpFetch2.close();
 						}
 					}
 				}
+				httpFetch.close();
 			 }
 			 downloadGeneID2KeggID(keggName, outSpeciesPath);
 		}
@@ -107,7 +112,6 @@ public class KgmlDownLoad {
 	 */
 	public void loadPathNameAndSpecies(String txtFileName, boolean update) {
 		lsKGMLurl = new ArrayList<String>();
-		txtFileName = txtFileName + "/KGML.init";
 		if (update) {
 			if (FileOperate.isFileExist(txtFileName)) {
 				FileOperate.delFile(txtFileName);
@@ -153,6 +157,7 @@ public class KgmlDownLoad {
 				}
 			}
 		}
+		httpFetch.close();
 	}
 	
 	/** 根据首页点击进去的url，查找到KEGG Organisms的链接，也就是所有物种的链接，写入一个文件，避免以后继续下载的时候花费太长的时间
@@ -174,32 +179,11 @@ public class KgmlDownLoad {
 				organismURL = keggHomeURL + organismURL;
 				System.out.println(organismURL);
 				lsOrganismURL.add(organismURL);
+				break;
 			}
 		}
+		httpFetch.close();
 		return lsOrganismURL;
-	}
-
-	/**初始化文件夹，把所有物种的文件夹都建好
-	 * 已经存在就不需要创建
-	 * */
-	private void mkdirFolder() {
-		String KGML_XMLPath = KGML_PATH + "KGML_XML";
-		FileOperate.createFolders(KGML_XMLPath);
-		HttpFetch httpFetch = HttpFetch.getInstance();
-		httpFetch.setUri(speciseURL);
-		httpFetch.query();
-		for (String lines : httpFetch.readResponse()) {
-			if (lines.contains("<img src=\'/Fig/get_htext/whiteSP.png\'>")) {
-				String speciseF; 
-				if (lines.contains("</a>")) {
-					speciseF  = lines.split("<img src=\'/Fig/get_htext/whiteSP.png\'>")[1].split("</a>")[0].split("\">")[1];
-				}else {
-					speciseF = lines.split("<img src=\'/Fig/get_htext/whiteSP.png\'>")[1].split("  ")[0];
-				}
-				FileOperate.createFolders(KGML_XMLPath + "/" + speciseF);
-				System.out.println(speciseF);
-			}
-		}
 	}
 	
 	/**获取最后下载链接*/
@@ -211,10 +195,14 @@ public class KgmlDownLoad {
 			for(String  lines : httpFetch.readResponse()){
 				if (lines.contains("Download KGML")) {
 					KGMLdownLoad = lines.split("<a href=\"")[1].split("\">")[0];
-					continue;
+					break;
+				}
+				if (lines.contains("form name=\"selmenu\" method=\"get\"")) {
+					break;
 				}
 			}
 		}
+		httpFetch.close();
 		return KGMLdownLoad;
 	}
 	

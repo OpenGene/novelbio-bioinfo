@@ -135,5 +135,13 @@
     <context:component-scan base-package="com.novelbio.analysis.diffexpress" />
     <context:component-scan base-package="com.novelbio.aoplog" />
     <context:component-scan base-package="com.novelbio.analysis.seq.mapping" />
-    
+   
+   	 <bean id="freemarkNBC" class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">  
+        <property name="templateLoaderPath" value="classpath:FreemarkerTmplt" />  
+         <property name="freemarkerSettings">  
+            <props>
+                <prop key="defaultEncoding">UTF-8</prop>         
+            </props>
+        </property>  
+    </bean>  
 </beans>

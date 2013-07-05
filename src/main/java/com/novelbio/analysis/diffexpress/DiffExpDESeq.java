@@ -1,21 +1,25 @@
 package com.novelbio.analysis.diffexpress;
 
+import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.novelbio.PathNBCDetail;
-import com.novelbio.base.SepSign;
+import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.generalConf.TitleFormatNBC;
+
+import freemarker.template.Template;
 
 /**
  * 1. 输入一个文本，并设定geneID列，该列没有重复
@@ -29,12 +33,9 @@ import com.novelbio.generalConf.TitleFormatNBC;
 @Component
 @Scope("prototype")
 public class DiffExpDESeq extends DiffExpAbs {
+	private static final Logger logger = Logger.getLogger(DiffExpDESeq.class);
 	/** 实验是否有重复，貌似有一次重复就算有重复了 */
 	boolean isRepeatExp = false;
-	
-	public DiffExpDESeq() {
-		rawScript = PathNBCDetail.getRworkspace() + "DESeqJava.txt";
-	}
 	
 	/** 仅供测试 */
 	public boolean isRepeatExp() {
@@ -46,39 +47,29 @@ public class DiffExpDESeq extends DiffExpAbs {
 	protected void setFileNameRawdata() {
 		fileNameRawdata = workSpace + "deseqGeneInfo_"+ DateUtil.getDateAndRandom() + ".txt";
 	}
+	
 	protected void generateScript() {
-		TxtReadandWrite txtReadScript = new TxtReadandWrite(rawScript, false);
-		TxtReadandWrite txtOutScript = new TxtReadandWrite(outScript, true);
-		for (String content : txtReadScript.readlines()) {
-			if (content.startsWith("#workspace"))
-				txtOutScript.writefileln(getWorkSpace(content));
-			else if (content.startsWith("#filename"))
-				txtOutScript.writefileln(getFileName(content));
-			else if (content.startsWith("#compare_group")) {
-				txtOutScript.writefileln(getGroupFactorAndSetIsRepeatExp(content));
-			}
-			else if (content.startsWith("#DuplicateExp")) {
-				txtOutScript.writefileln(getIsDuplicateDate(content));
-			}
-			else if (content.startsWith("#CompareAndWriteInFile")) {
-				for (Entry<String, String[]> entry : mapOutFileName2Compare.entrySet()) {
-					String[] writeInfo = getCompareAndWriteToFile(content, entry.getValue(), entry.getKey());
-					txtOutScript.writefileln(writeInfo[0]);
-					txtOutScript.writefileln(writeInfo[1]);
-				}
-			}
-			else {
-				txtOutScript.writefileln(content);
-			}
-		}
-		txtOutScript.close();
-	}
+		Map<String,Object> mapData = new HashMap<String, Object>();
+		mapData.put("workspace", getWorkSpace());
+		mapData.put("filename", getFileName());
+		mapData.put("Group", getGroupFactorAndSetRepeatExp());
+		mapData.put("isRepeatExp", isRepeatExp);
+		mapData.put("mapGroup2Out", getCompareAndWriteToFile());
 
-	private String getGroupFactorAndSetIsRepeatExp(String content) {
-		String Group = content.split(SepSign.SEP_ID)[1];
-		Group = Group.replace("{$Group}", getGroupFactorAndSetRepeatExp());
-		return Group;
+		try {
+			Template template = freeMarkerConfiguration.getTemplate("/R/diffgene/DESeq.ftl");
+			StringWriter sw = new StringWriter();
+			TxtReadandWrite txtReadandWrite = new TxtReadandWrite(outScript, true);
+			// 处理并把结果输出到字符串中
+			template.process(mapData, sw);
+			txtReadandWrite.writefile(sw.toString());
+			txtReadandWrite.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("渲染出错啦! " + e.getMessage());
+		}
 	}
+	
 	/**
 	 * 返回这种东西factor( c("A", "A", "B", "B", "C", "C") )
 	 * 同时设定是否有重复项
@@ -87,7 +78,7 @@ public class DiffExpDESeq extends DiffExpAbs {
 	private String getGroupFactorAndSetRepeatExp() {
 		HashSet<String> setSearchDuplicateGroup = new HashSet<String>();
 		String result = "";
-		result = "\"" + lsSampleColumn2GroupName.get(0)[1] + "\"";
+		result = CmdOperate.addQuot(lsSampleColumn2GroupName.get(0)[1]);
 		setSearchDuplicateGroup.add(lsSampleColumn2GroupName.get(0)[1]);
 		
 		for (int i = 1; i < lsSampleColumn2GroupName.size(); i++) {
@@ -95,33 +86,21 @@ public class DiffExpDESeq extends DiffExpAbs {
 			if (setSearchDuplicateGroup.contains(group)) {
 				isRepeatExp = true;
 			}
-			result = result + ", " + "\"" + group + "\"";
+			result = result + ", " + CmdOperate.addQuot(group);
 			setSearchDuplicateGroup.add(group);
 		}
 		return result;
 	}
 	
-	/**
-	 * 根据是否重复，选择不同的代码
-	 * @param content
-	 * @return
-	 */
-	private String getIsDuplicateDate(String content) {
-		String[] tmpResult = content.split(SepSign.SEP_ID);
-		if (isRepeatExp) {
-			return tmpResult[1];
-		} else {
-			return tmpResult[3];
-		}
-	}
 	
-	private String[] getCompareAndWriteToFile(String content, String[] compareGroup, String outFileName) {
-		String[] writeFinal = new String[2];
-		String compareGroupWrite = "\"" + compareGroup[1] + "\", \"" + compareGroup[0] + "\"";//先输入control再输入treatment
-		String[] write = content.split(SepSign.SEP_ID);
-		writeFinal[0] = write[1].replace("{$CompareGroup}", compareGroupWrite);
-		writeFinal[1] = write[2].replace("{$OutFileName}", outFileName.replace("\\", "/"));
-		return writeFinal;
+	private Map<String, String> getCompareAndWriteToFile() {
+		Map<String, String> mapGroup2Out = new LinkedHashMap<String, String>();
+		for (String outFileName : mapOutFileName2Compare.keySet()) {
+			String[] compareGroup = mapOutFileName2Compare.get(outFileName);
+			String compareGroupStr = CmdOperate.addQuot(compareGroup[1]) + ", " + CmdOperate.addQuot(compareGroup[0]);
+			mapGroup2Out.put(compareGroupStr, outFileName.replace("\\", "/"));
+		}
+		return mapGroup2Out;
 	}
 	/**
 	 * 获得选定的基因ID和具体值
@@ -146,18 +125,17 @@ public class DiffExpDESeq extends DiffExpAbs {
 				}
 				
 				if (strings[colNum].equalsIgnoreCase("NA")) {
-					tmpResult[i + 1] = 1 + "";
+					tmpResult[i + 1] = 0 + "";
 					continue;
 				}
 				
 				try {
 					double value = Double.parseDouble(strings[colNum]);
-					int valueInt = (int)(value + 1);
+					int valueInt = (int)(value);
 					tmpResult[i + 1] = valueInt + "";
 				} catch (Exception e) {
 					tmpResult[i + 1] = 0 + "";
 				}
-				
 			
 			}
 			lsResultGeneInfo.add(tmpResult);
@@ -207,5 +185,6 @@ public class DiffExpDESeq extends DiffExpAbs {
 		
 		TxtReadandWrite txtOutFinal = new TxtReadandWrite(outFileName, true);
 		txtOutFinal.ExcelWrite(lsResult);
+		txtOutFinal.close();
 	}
  }

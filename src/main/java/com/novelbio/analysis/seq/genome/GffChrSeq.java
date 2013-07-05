@@ -393,7 +393,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		if (lsExonInfos.size() == 0) {
 			return null;
 		}
-		GffGeneIsoInfo gffGeneIsoInfoSearch = GffGeneIsoInfo.createGffGeneIso("", "", GeneType.mRNA, gffGeneIsoInfo.isCis5to3());
+		GffGeneIsoInfo gffGeneIsoInfoSearch = GffGeneIsoInfo.createGffGeneIso("", "", gffGeneIsoInfo.getParentGffDetailGene(), GeneType.mRNA, gffGeneIsoInfo.isCis5to3());
 		gffGeneIsoInfoSearch.addAll(lsExonInfos);
 		SeqFasta seqFastaResult = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfoSearch, getIntron);
 		if (seqFastaResult == null) {

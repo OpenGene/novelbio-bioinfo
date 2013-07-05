@@ -52,6 +52,9 @@ public class SamFileStatistics implements AlignmentRecorder {
 		this.samFile = samFile;
 		countReadsNum = false;
 	}
+	public SamFile getSamFile() {
+		return samFile;
+	}
 	/**
 	 * 返回readsNum
 	 * @param mappingType MAPPING_ALLREADS等

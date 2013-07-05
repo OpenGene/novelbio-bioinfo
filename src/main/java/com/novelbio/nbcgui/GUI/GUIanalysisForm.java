@@ -60,6 +60,9 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 	private GuiUpdateDB guiUpdateDB;
 	private GuiVolcanoPlot guiVolcanoPlot;
 	private GuiGeneNetWork guiGeneNetWork;
+	private GuilncLocation guilncLocation;
+	private GuiGoMultiJPanel guiGoMultiJPanel;
+	
 	/**
 	* Auto-generated main method to display this JFrame
 	*/
@@ -79,22 +82,6 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 	
 	public GUIanalysisForm() {
 		super();
-//		String file = "/lib/firmware/tigon/property";
-//		if (!FileOperate.isFileExist(file)) {
-//			System.out.println("no");
-//			return;
-//		}				
-//
-//		System.out.println("ok");
-//		TxtReadandWrite txtRead = new TxtReadandWrite(file);
-//		for (String string : txtRead.readlines(3)) {
-//			if (string.equals("201301jndsfiudsioold")) {
-//				break;
-//			} else {
-//				return;
-//			}
-//		}
-//		txtRead.close();
 		initGUI();
 	}
 	
@@ -118,6 +105,9 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				guiPathJpanel = new GuiPathJpanel();
 				jTabbedPane1.addTab("Path", null, guiPathJpanel, null);
 				
+				guiGoMultiJPanel = new GuiGoMultiJPanel();
+				jTabbedPane1.addTab("GO_Path", guiGoMultiJPanel);
+				
 				guiKegArrayDownload = new GuiKegArrayDownload();
 				jTabbedPane1.addTab("KegArrayDownload", guiKegArrayDownload);
 				
@@ -132,6 +122,9 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				
 				guiAnnoPeak = new GuiAnnoPeak();
 				jTabbedPane1.addTab("PeakAnno", null, guiAnnoPeak, null);
+				
+				guilncLocation = new GuilncLocation();
+				jTabbedPane1.addTab("LncLocation", guilncLocation);
 				
 				guiPeakStatistics = new GuiPeakStatistics();
 				jTabbedPane1.addTab("PeakStatistics", guiPeakStatistics);

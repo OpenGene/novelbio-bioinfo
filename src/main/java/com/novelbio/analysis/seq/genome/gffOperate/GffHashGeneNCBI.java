@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -37,7 +38,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	private static final Logger logger = Logger.getLogger(GffHashGeneNCBI.class);
 	
 	/** 基因名字的正则，可以改成识别人类或者其他,这里是拟南芥，默认  NCBI的ID  */
-	protected static String regGeneName = "(?<=gene\\=)[\\w\\-%]+";
+	protected static String regGeneName = "(?<=gene\\=)[\\w\\-%\\:\\.]+";
 	/**  可变剪接mRNA的正则，默认 NCBI的ID */
 	protected static String regSplitmRNA = "(?<=transcript_id\\=)[\\w\\-\\.]+|(?<=stable_id\\=)[\\w\\-\\.]+";
 	/**  可变剪接mRNA的产物的正则，默认 NCBI的symbol */
@@ -45,16 +46,16 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	/** geneID的正则 */
 	protected static String regGeneID = "(?<=Dbxref\\=GeneID\\:)\\d+";
 	/** Name的正则 */
-	protected static String regName = "(?<=Name\\=)[\\w\\-%]+";
+	protected static String regName = "(?<=Name\\=)[\\w\\-%\\.\\:]+";
 	/** ID的正则 */
 	protected static String regID = "(?<=ID\\=)[\\w\\-\\.]+";
 	/** parentID的正则 */
 	protected static String regParentID = "(?<=Parent\\=)[\\w\\.\\-%]+";
 
 	/** gene类似名 */
-	private static HashSet<String> setIsGene = new HashSet<String>();
+	private static Set<String> setIsGene = new HashSet<String>();
 	/** gene类似名 */
-	private static HashSet<String> setIsChromosome = new HashSet<String>();
+	private static Set<String> setIsChromosome = new HashSet<String>();
 	
 	/** "(?<=gene\\=)\\w+" */
 	PatternOperate patGeneName = null;
@@ -81,9 +82,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	
 	/** 将第一列换算为chrID */
 	private Map<String, String> mapID2ChrID = new HashMap<String, String>();
-	
-	private Map<String, GeneType> mapGeneID2GeneType = new HashMap<String, GeneType>();
-	
+		
 	/** 
 	 * 一般的转录本都会先出现exon，然后出现CDS，如下<br>
 	 * hr3	RefSeq	mRNA	59958839	59959481<br>
@@ -104,10 +103,8 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	int numCopedIDsearch = 0;//查找taxID的次数最多10次
 	/** 默认连上数据库 */
 	boolean database = true;
-	/**
-	 * 设定mRNA和gene的类似名，在gff文件里面出现的
-	 */
-	private void setHashName() {
+	/** 设定mRNA和gene的类似名，在gff文件里面出现的 */
+	private void setGeneName() {
 		if (setIsGene.isEmpty()) {
 			setIsGene.add("gene");
 			setIsGene.add("transposable_element_gene");
@@ -147,7 +144,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	 * @throws Exception 
 	 */
    protected void ReadGffarrayExcepTmp(String gfffilename) throws Exception {
-	   setHashName();
+	   setGeneName();
 	   setPattern();
 	   TxtReadandWrite txtgff = new TxtReadandWrite(gfffilename, false);
 	   
@@ -157,6 +154,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   String[] thisRnaIDandName = null;	   
 	   
 	   for (String content : txtgff.readlines()) {
+		   
 		   if(content.charAt(0) == '#') continue;
 		   String[] ss = content.split("\t");//按照tab分开
 		   if (ss[2].equals("match") || ss[2].toLowerCase().equals("chromosome") || ss[2].toLowerCase().equals("intron") || ss[0].startsWith("NW_") || ss[0].startsWith("NT_")) {
@@ -244,7 +242,6 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   String geneName = getGeneName(ss[8]); setTaxID(ss, geneName);
 	   
 	   GffDetailGene gffDetailLOC = mapGenID2GffDetail.get(geneID);
-	   mapGeneID2GeneType.put(geneID, GeneType.getGeneType(ss[2]));
 	   if (gffDetailLOC == null) {
 		   gffDetailLOC=new GffDetailGene(ss[0], geneName, ss[6].equals("+") || ss[6].equals("."));//新建一个基因类
 	   }
@@ -270,10 +267,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   
 	   String[] mRNAname = getMrnaName(rnaName, ss);
 	   try {
-		   GeneType geneType = mapGeneID2GeneType.get(mapRnaID2GeneID.get(rnaID));
-		   if (geneType == null) {
-			   geneType = GeneType.getGeneType(mRNAname[1]);
-		   }
+		   GeneType geneType = GeneType.getGeneType(mRNAname[1]);
 		   GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.addsplitlist(mRNAname[0],gffDetailGene.getNameSingle(), geneType, ss[6].equals("+") || ss[6].equals("."));//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
 		   mapRnaID2LsIso.put(rnaID, gffGeneIsoInfo);
 		   ExonInfo exonInfo = new ExonInfo("", true, Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
@@ -341,7 +335,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   String rnaID = getRNAID(lastGeneID2Name, lastRnaID2Name, ss);
 	   String geneID = getGeneID(rnaID);
 	   GffGeneIsoInfo gffGeneIsoInfo = getGffIso(rnaID, cdsStart, cdsEnd, GeneType.mRNA);
-	   gffGeneIsoInfo.setATGUAG(Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
+	   gffGeneIsoInfo.setATGUAGauto(cdsStart, cdsEnd);
 	   if (mapGeneName2IsHaveExon.get(geneID) == null) {
 		   logger.error("没有找到相应的GeneID:" + geneID);
 	   }

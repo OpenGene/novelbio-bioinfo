@@ -100,7 +100,7 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	
 	/**
 	 * @param uniqReads 当reads mapping至同一个位置时，是否仅保留一个reads 默认false
-	 * @param startCod 从起点开始读取该reads的几个bp，韩燕用到 小于0表示全部读取 大于reads长度的则忽略该参数，默认-1
+	 * @param startCod 从起点开始读取该reads的几个bp，韩燕用到 小于0表示全部读取 大于reads长度的则延长，默认-1
 	 * @param booUniqueMapping 重复的reads是否只选择一条 默认为true
 	 * @param FilteredStrand 是否仅选取某一方向的reads，null不考虑 默认为null
 	 */
@@ -648,10 +648,15 @@ class MapReadsAddAlignRecord {
 			for (int i = 0; i < lsStartEnd.size(); i++) {
 				Alignment alignment = lsStartEnd.get(i);
 				if (StartCodLen - lsStartEnd.get(i).getLength() > 0) {
-					Align align = new Align(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs());
-					align.setCis5to3(alignment.isCis5to3());
-					lsResult.add(align);
-					StartCodLen = StartCodLen - alignment.getLength();
+					if (i == lsStartEnd.size() - 1) {
+						Align lastAlign = new Align(alignment.getRefID(), alignment.getStartAbs(), alignment.getStartAbs() + StartCodLen - 1);
+						lsResult.add(lastAlign);
+					} else {
+						Align align = new Align(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs());
+						align.setCis5to3(alignment.isCis5to3());
+						lsResult.add(align);
+						StartCodLen = StartCodLen - alignment.getLength();
+					}
 				}
 				else {
 					Align lastAlign = new Align(alignment.getRefID(), alignment.getStartAbs(), alignment.getStartAbs() + StartCodLen - 1);
@@ -664,11 +669,15 @@ class MapReadsAddAlignRecord {
 			for (int i = lsStartEnd.size() - 1; i >= 0; i--) {
 				Alignment alignment = lsStartEnd.get(i);
 				if (StartCodLen - alignment.getLength() > 0) {
-					Align align = new Align(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs());
-					align.setCis5to3(alignment.isCis5to3());
-					
-					lsResult.add(0,align);
-					StartCodLen = StartCodLen - alignment.getLength();
+					if (i == 0) {
+						Align align = new Align(alignment.getRefID(), alignment.getEndAbs() - StartCodLen + 1, alignment.getEndAbs());
+						align.setCis5to3(alignment.isCis5to3());
+					} else {						
+						Align align = new Align(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs());
+						align.setCis5to3(alignment.isCis5to3());
+						lsResult.add(0,align);
+						StartCodLen = StartCodLen - alignment.getLength();
+					}
 				}
 				else {
 					Align align = new Align(alignment.getRefID(), alignment.getEndAbs() - StartCodLen + 1, alignment.getEndAbs());

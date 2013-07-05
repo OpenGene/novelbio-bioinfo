@@ -197,7 +197,7 @@ public class GffDetailGene extends ListDetailAbs {
 	 */
 	protected void setATGUAG(int atg, int uag) {
 		GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(lsGffGeneIsoInfos.size()-1);//include one special loc start number to end number
-		gffGeneIsoInfo.setATGUAG(atg, uag);
+		gffGeneIsoInfo.setATGUAGauto(atg, uag);
 	}
 	/** 如果是非编码RNA，则将atg和uag设置为最后一位 */
 	protected void setATGUAGncRNA() {

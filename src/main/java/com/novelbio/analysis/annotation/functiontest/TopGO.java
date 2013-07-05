@@ -1,24 +1,31 @@
 package com.novelbio.analysis.annotation.functiontest;
 
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.novelbio.PathNBCDetail;
-import com.novelbio.base.SepSign;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.GOtype;
+import com.novelbio.database.service.SpringFactory;
+import com.novelbio.generalConf.PathNBCDetail;
+
+import freemarker.template.Configuration;
+import freemarker.template.Template;
 
 public class TopGO {
-
+	private static final Logger logger = Logger.getLogger(TopGO.class);
+	Configuration freeMarkerConfiguration = (Configuration)SpringFactory.getFactory().getBean("freemarkNBC");
 	
 	String workSpace;
-	String tmplateScript = "";
 	String exeScript = "";
 	
 	/** topgo的信息 */
@@ -42,8 +49,9 @@ public class TopGO {
 	
 	ArrayList<String[]> lsResult;
 	ArrayListMultimap<String, String> mapGOID2LsGeneID;
-	public TopGO() {
-		tmplateScript = PathNBCDetail.getRworkspace() + "topGOJava.txt";
+	public TopGO(GoAlgorithm goAlgorithm, GOtype goType) {
+		this.goAlgorithm = goAlgorithm;
+		this.goType = goType;
 		setWorkSpace();
 		setExeScriptPath();
 		setRawGoResultFile();
@@ -54,19 +62,19 @@ public class TopGO {
 		workSpace = PathNBCDetail.getRworkspaceTmp();
 	}
 	private void setExeScriptPath() {
-		exeScript = PathNBCDetail.getRworkspaceTmp() + "TopGO_" + DateUtil.getDateAndRandom() + ".R";
+		exeScript = PathNBCDetail.getRworkspaceTmp() + "TopGO_" + goType.getOneWord() + "_" + goAlgorithm.toString() + "_"  + DateUtil.getDateAndRandom() + ".R";
 	}
 	/** 输入文件 */
 	private void setRawGoResultFile() {
-		this.rawGoResultFile = workSpace + "TopGOResult_" + DateUtil.getDateAndRandom() + ".txt";
+		this.rawGoResultFile = workSpace + "TopGOResult_"  + goType.getOneWord() + "_" + goAlgorithm.toString() + "_" + DateUtil.getDateAndRandom() + ".txt";
 	}
 	/** 输入文件 */
 	private void setGOInfoFile() {
-		this.GOInfoFile = workSpace + "TopGOInfo_" + DateUtil.getDateAndRandom() + ".txt";
-		this.BGGeneFile = workSpace + "TopGOBG_" + DateUtil.getDateAndRandom() + ".txt";
+		this.GOInfoFile = workSpace + "TopGOInfo_"  + goType.getOneWord() + "_" + goAlgorithm.toString() + "_" + DateUtil.getDateAndRandom() + ".txt";
+		this.BGGeneFile = workSpace + "TopGOBG_"  + goType.getOneWord() + "_" + goAlgorithm.toString() + "_" + DateUtil.getDateAndRandom() + ".txt";
 	}
 	private void setCalGeneIDFilePath() {
-		CalGeneIDFile = PathNBCDetail.getRworkspaceTmp() + "TopGO_CalGeneIDFile" + DateUtil.getDateAndRandom() + ".txt";
+		CalGeneIDFile = PathNBCDetail.getRworkspaceTmp() + "TopGO_CalGeneIDFile_" + goType.getOneWord() + "_" + goAlgorithm.toString() + "_" + DateUtil.getDateAndRandom() + ".txt";
 	}
 	
 	/** 待检验的基因 */
@@ -87,9 +95,7 @@ public class TopGO {
 		}
 		this.goType = goType;
 	}
-	public void setGoAlgrithm(GoAlgorithm goAlgorithm) {
-		this.goAlgorithm = goAlgorithm;
-	}
+	
 	/** 仅供测试 */
 	public String getOutScript() {
 		generateScript();
@@ -98,81 +104,39 @@ public class TopGO {
 		return exeScript;
 	}
 	protected void generateScript() {
-		TxtReadandWrite txtReadScript = new TxtReadandWrite(tmplateScript, false);
-		TxtReadandWrite txtOutScript = new TxtReadandWrite(exeScript, true);
-		for (String content : txtReadScript.readlines()) {
-			if (content.startsWith("#workspace")) {
-				txtOutScript.writefileln(getWorkSpace(content));
-			} else if (content.startsWith("#GOtype")) {
-				txtOutScript.writefileln(getGOtype(content));
-			} else if (content.startsWith("#GONum")) {
-				txtOutScript.writefileln(getGONum(content));
-			} else if (content.startsWith("#GoResult")) {
-				txtOutScript.writefileln(getGoResult(content));
-			} else if (content.startsWith("#GOInfoFile")) {
-				txtOutScript.writefileln(getGOInfoFile(content));
-			} else if (content.startsWith("#CalculateGeneID")) {
-				txtOutScript.writefileln(getCalculateGeneID(content));
-			} else if (content.startsWith("#BGGeneID")) {
-				txtOutScript.writefileln(getBGGeneFile(content));
-			} else if (content.startsWith("#Algorithm")) {
-				txtOutScript.writefileln(getAlgrithm(content));
-			} else {
-				txtOutScript.writefileln(content);
-			}
+		Map<String,Object> mapData = new HashMap<String, Object>();
+		mapData.put("workspace", workSpace.replace("\\", "/"));
+		mapData.put("GOtype", goType.getTwoWord());
+		mapData.put("GONum",  displayGoNum + "");
+		
+		mapData.put("GoResultFile",  rawGoResultFile.replace("\\", "/"));
+		mapData.put("GOInfoFile",  GOInfoFile.replace("\\", "/"));
+		
+		mapData.put("CalGeneIDFile", CalGeneIDFile.replace("\\", "/"));
+		
+		mapData.put("BGGeneFile", BGGeneFile.replace("\\", "/"));
+		mapData.put("GOAlgorithm", getAlgorithm());
+		
+		try {
+			Template template = freeMarkerConfiguration.getTemplate("/R/TopGO.ftl");
+			StringWriter sw = new StringWriter();
+			TxtReadandWrite txtReadandWrite = new TxtReadandWrite(exeScript, true);
+			// 处理并把结果输出到字符串中
+			template.process(mapData, sw);
+			txtReadandWrite.writefile(sw.toString());
+			txtReadandWrite.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("渲染出错啦! " + e.getMessage());
 		}
-		txtOutScript.close();
-	}
-
-	private String getWorkSpace(String content) {
-		String RworkSpace = content.split(SepSign.SEP_ID)[1];
-		RworkSpace = RworkSpace.replace("{$workspace}", workSpace.replace("\\", "/"));
-		return RworkSpace;
 	}
 	
-	private String getGOtype(String content) {
-		String gotype = content.split(SepSign.SEP_ID)[1];
-		gotype = gotype.replace("{$GOType}", goType.getTwoWord());
-		return gotype;
-	}
-	private String getGONum(String content) {
-		String GONum = content.split(SepSign.SEP_ID)[1];
-		GONum = GONum.replace("{$GONum}", displayGoNum + "");
-		return GONum;
-	}
-	
-	private String getGoResult(String content) {
-		String GoResultFile = content.split(SepSign.SEP_ID)[1];
-		GoResultFile = GoResultFile.replace("{$GoResultFile}", rawGoResultFile.replace("\\", "/"));
-		return GoResultFile;
-	}
-	
-	private String getGOInfoFile(String content) {
-		String GOInfo = content.split(SepSign.SEP_ID)[1];
-		GOInfo = GOInfo.replace("{$GOInfoFile}", GOInfoFile.replace("\\", "/"));
-		return GOInfo;
-	}
-	
-	private String getCalculateGeneID(String content) {
-		String GOInfo = content.split(SepSign.SEP_ID)[1];
-		GOInfo = GOInfo.replace("{$CalGeneIDFile}", CalGeneIDFile.replace("\\", "/"));
-		return GOInfo;
-	}
-	
-	private String getBGGeneFile(String content) {
-		String GOInfo = content.split(SepSign.SEP_ID)[1];
-		GOInfo = GOInfo.replace("{$BGGeneFile}", BGGeneFile.replace("\\", "/"));
-		return GOInfo;
-	}
-	
-	private String getAlgrithm(String content) {
-		String GOInfo = content.split(SepSign.SEP_ID)[1];
-		if (goAlgorithm == null) {
-			GOInfo = GOInfo.replace("{$GOAlgorithm}", GoAlgorithm.elim.toString());
-		} else {
-			GOInfo = GOInfo.replace("{$GOAlgorithm}", goAlgorithm.toString());
+	private String getAlgorithm() {
+		String resultAlgorithm = GoAlgorithm.elim.toString();
+		if (goAlgorithm != null) {
+			resultAlgorithm = goAlgorithm.toString();
 		}
-		return GOInfo;
+		return resultAlgorithm;
 	}
 	
 	private void fillCalGeneID_And_BG_File() {
@@ -185,6 +149,7 @@ public class TopGO {
 		}
 		txtWrite.Rwritefile(tmpOut);
 		txtWrite.close();
+		
 		TxtReadandWrite txtTopGoBG = new TxtReadandWrite(BGGeneFile, true);
 		for (String string : lsBG) {
 			txtTopGoBG.writefileln(string);
@@ -208,13 +173,7 @@ public class TopGO {
 	protected void Rrunning(String cmdName) {
 		String cmd = PathNBCDetail.getRscript() + exeScript.replace("\\", "/");
 		CmdOperate cmdOperate = new CmdOperate(cmd);
-		Thread threadCmd = new Thread(cmdOperate);
-		threadCmd.start();
-		while (cmdOperate.isRunning()) {
-			try { Thread.sleep(100); } catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
+		cmdOperate.run();
 	}
 	private void readResult() {
 		TxtReadandWrite txtRGo2Gene = new TxtReadandWrite(rawGoResultFile, false);
@@ -225,6 +184,7 @@ public class TopGO {
 				strings[i] = strings[i].replace("\"", "");
 			}
 		}
+		txtRGo2Gene.close();
 	}
 	/** 返回获得的Go2Gene列表 */
 	private void readGo2GeneAll() {
@@ -262,6 +222,7 @@ public class TopGO {
 			}
 			mapGOID2LsGeneID.put(goID, content);
 		}
+		txtRGo2Gene.close();
 	}
 	/** 删除中间文件 */
 	private void clean() {

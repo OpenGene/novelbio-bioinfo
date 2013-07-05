@@ -39,12 +39,12 @@ public class BamIndex {
 	 */
 	public String index() {
 		if (FileOperate.isFileExistAndBigThanSize(bamFile + ".bai", 1000)) {
-			return bamFile;
+			return bamFile + ".bai";
 		}
 		String cmd = ExePath + "samtools index " + "\"" + bamFile + "\"";
 		CmdOperate cmdOperate = new CmdOperate(cmd, "samIndex");
 		cmdOperate.run();
-		return bamFile;
+		return bamFile + ".bai";
 	}
 	
 	/**

@@ -1,29 +1,24 @@
 package com.novelbio.nbcgui.GUI;
 
-import javax.swing.JPanel;
-import javax.swing.JLabel;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JTextField;
-
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
-import com.novelbio.base.dataOperate.ExcelTxtRead;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.base.gui.GUIFileOpen;
-import com.novelbio.base.gui.JComboBoxData;
-import com.novelbio.base.gui.JScrollPaneData;
-import com.novelbio.database.model.species.Species;
-import com.novelbio.nbcgui.controlquery.CtrlPeakStatistics;
-import com.novelbio.nbcgui.controlquery.CtrlSamRPKMLocate;
-
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.JLayeredPane;
+import javax.swing.JTextField;
+
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.gui.GUIFileOpen;
+import com.novelbio.base.gui.JScrollPaneData;
+import com.novelbio.database.model.species.Species;
+import com.novelbio.database.service.SpringFactory;
+import com.novelbio.nbcgui.controlseq.CtrlSamPPKMint;
 
 /**
  * 批量注释，各种注释
@@ -37,7 +32,7 @@ public class GuiSamStatistics extends JPanel {
 	JCheckBox chkRpkmcount;
 	GUIFileOpen guiFileOpen = new GUIFileOpen();
 	
-	CtrlSamRPKMLocate ctrlSamRPKMLocate;
+	CtrlSamPPKMint ctrlSamRPKMLocate;
 	private JButton btnRun;
 	
 	ArrayList<String[]> lsGeneInfo;
@@ -56,6 +51,8 @@ public class GuiSamStatistics extends JPanel {
 	private JLabel lblSaveto;
 	private JTextField txtGTF;
 	JLabel lblInfo;
+	private JCheckBox chckCalculateFPKM;
+	private JCheckBox chckProtonStrand;
 	/**
 	 * Create the panel.
 	 */
@@ -63,7 +60,7 @@ public class GuiSamStatistics extends JPanel {
 		setLayout(null);
 		
 		scrollPaneData = new JScrollPaneData();
-		scrollPaneData.setBounds(12, 30, 693, 358);
+		scrollPaneData.setBounds(12, 34, 693, 372);
 		add(scrollPaneData);
 		
 		JButton btnOpenfile = new JButton("BamSamBedFile");
@@ -107,8 +104,9 @@ public class GuiSamStatistics extends JPanel {
 				progressBar.setValue(0);
 				
 				btnRun.setEnabled(false);
+				ctrlSamRPKMLocate.clear();
 				ctrlSamRPKMLocate.setQueryFile(scrollPaneData.getLsDataInfo());
-				ctrlSamRPKMLocate.setIsCountRPKM(chkRpkmcount.isSelected());
+				ctrlSamRPKMLocate.setIsCountRPKM(chkRpkmcount.isSelected(), chckProtonStrand.isSelected(), chckCalculateFPKM.isSelected());
  				int[] tss = new int[]{0,0};
 				int[] tes = new int[]{0,0};
 				try { tss[0] = Integer.parseInt(txtTssUp.getText()); } catch (Exception e2) { }
@@ -200,8 +198,20 @@ public class GuiSamStatistics extends JPanel {
 		});
 		add(layeredPane);
 		
-		chkRpkmcount = new JCheckBox("RPKMcount");
-		chkRpkmcount.setBounds(722, 364, 131, 22);
+		chkRpkmcount = new JCheckBox("ExpressCount");
+		chkRpkmcount.setSelected(true);
+		chkRpkmcount.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (chkRpkmcount.isSelected()) {
+					chckCalculateFPKM.setEnabled(true);
+					chckProtonStrand.setEnabled(true);
+				} else {
+					chckCalculateFPKM.setEnabled(false);
+					chckProtonStrand.setEnabled(false);
+				}
+			}
+		});
+		chkRpkmcount.setBounds(713, 364, 147, 22);
 		add(chkRpkmcount);
 		
 		txtSaveTo = new JTextField();
@@ -214,7 +224,7 @@ public class GuiSamStatistics extends JPanel {
 		add(lblSaveto);
 		
 		txtGTF = new JTextField();
-		txtGTF.setBounds(10, 407, 693, 18);
+		txtGTF.setBounds(12, 418, 693, 18);
 		add(txtGTF);
 		txtGTF.setColumns(10);
 		
@@ -223,7 +233,7 @@ public class GuiSamStatistics extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
-		btnOpenGtf.setBounds(715, 404, 118, 24);
+		btnOpenGtf.setBounds(715, 415, 118, 24);
 		add(btnOpenGtf);
 		
 		JLabel lblInformation = new JLabel("Information");
@@ -243,11 +253,21 @@ public class GuiSamStatistics extends JPanel {
 		btnDel.setBounds(717, 66, 163, 24);
 		add(btnDel);
 		
+		chckCalculateFPKM = new JCheckBox("CalculateFPKM");
+		chckCalculateFPKM.setSelected(true);
+		chckCalculateFPKM.setBounds(713, 390, 147, 23);
+		add(chckCalculateFPKM);
+		
+		chckProtonStrand = new JCheckBox("ProtonStrand");
+		chckProtonStrand.setBounds(898, 364, 135, 23);
+		add(chckProtonStrand);
+		
 		initial();
 	}
 	
 	private void initial() {
-		ctrlSamRPKMLocate = new CtrlSamRPKMLocate(this);
+		ctrlSamRPKMLocate = (CtrlSamPPKMint)SpringFactory.getFactory().getBean("ctrlSamRPKMLocate");
+		ctrlSamRPKMLocate.setGUI(this);
 		scrollPaneData.setTitle(new String[]{"FileName", "Prefix"});
 	}
 	
@@ -264,5 +284,9 @@ public class GuiSamStatistics extends JPanel {
 	
 	public JLabel getLabel() {
 		return lblInfo;
+	}
+	
+	public void done() {
+		ctrlSamRPKMLocate.aop();
 	}
 }

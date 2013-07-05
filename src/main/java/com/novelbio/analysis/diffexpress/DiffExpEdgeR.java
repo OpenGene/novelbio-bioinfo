@@ -1,16 +1,18 @@
 package com.novelbio.analysis.diffexpress;
 
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.novelbio.PathNBCDetail;
-import com.novelbio.base.SepSign;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
@@ -19,27 +21,12 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.generalConf.TitleFormatNBC;
+
+import freemarker.template.Template;
 @Component
 @Scope("prototype")
 public class DiffExpEdgeR extends DiffExpAbs {
-	public static void main(String[] args) {
-		String rawScript = "/media/winD/fedora/rscript/edgeRJava.txt";
-		
-		ArrayList<String[]> lsGeneInfo = ExcelTxtRead.readLsExcelTxt("/media/winF/NBC/Project/RNA-Seq_CR_20111201/crNew.txt", 1);
-		ArrayList<String[]> lsSampleColumn2GroupName = new ArrayList<String[]>();
-		lsSampleColumn2GroupName.add(new String[]{"3", "Ns6d"});
-		lsSampleColumn2GroupName.add(new String[]{"4", "E6d"});
-		lsSampleColumn2GroupName.add(new String[]{"5", "E6d"});
-		
-		DiffExpEdgeR diffExpEdgeR = new DiffExpEdgeR();
-		diffExpEdgeR.setCol2Sample(lsSampleColumn2GroupName);
-		diffExpEdgeR.setColID(1);
-		diffExpEdgeR.setGeneInfo(lsGeneInfo);
-		diffExpEdgeR.setRawScript(rawScript);
-		diffExpEdgeR.addFileName2Compare("/media/winD/fedora/rscript/out1", new String[]{"Ns6d", "E6d"});
-		diffExpEdgeR.getResultFileName();
-	}
-	
+	private static final Logger logger = Logger.getLogger(DiffExpEdgeR.class);
 	/**
 	 * lslsGeneInfo中每一列样本所对应的标准化的值
 	 * 首先获得reads数最多的样本 m，其reads数为 mNum，
@@ -49,10 +36,7 @@ public class DiffExpEdgeR extends DiffExpAbs {
 	 * 即为 geneCountNumModify = geneCountNum * normalizeNum
 	 */
 	HashMap<Integer, Double> mapColNum2NormalizeNum = new HashMap<Integer, Double>();
-	
-	public DiffExpEdgeR() {
-		rawScript = PathNBCDetail.getRworkspace() + "edgeRJava.txt";
-	}
+
 	/**
 	 * 获得每个样本所需要乘以的修正系数
 	 * @return
@@ -148,61 +132,42 @@ public class DiffExpEdgeR extends DiffExpAbs {
 		Rrunning("EdgeR");
 	}
 	
-	
 	@Override
 	protected void generateScript() {
-		TxtReadandWrite txtReadScript = new TxtReadandWrite(rawScript);
-		TxtReadandWrite txtOutScript = new TxtReadandWrite(outScript, true);
-		for (String content : txtReadScript.readlines()) {
-			if (content.startsWith("#workspace"))
-				txtOutScript.writefileln(getWorkSpace(content));
-			else if (content.startsWith("#filename"))
-				txtOutScript.writefileln(getFileName(content));
-			else if (content.startsWith("#compare_group"))
-				txtOutScript.writefileln(getGroupInfo(content));
-			else if (content.startsWith("#DuplicateExpEstimate"))
-				txtOutScript.writefileln(duplicateEstimate(content));
-			else if (content.startsWith("#DuplicateExpResult")) {
-				String[] readFileAndCol = getResultScript(content);
-				for (String string : readFileAndCol) {
-					txtOutScript.writefileln(string);
-				}
-			}
-			else {
-				txtOutScript.writefileln(content);
-			}
+		Map<String,Object> mapData = new HashMap<String, Object>();
+		mapData.put("workspace", getWorkSpace());
+		mapData.put("filename", getFileName());
+		mapData.put("Group", getGroupInfo());
+		mapData.put("isReplicate", isHaveReplicate());
+		mapData.put("mapCompare2Outfile", getMapCompare2Outfile());
+		try {
+			Template template = freeMarkerConfiguration.getTemplate("/R/diffgene/EdgeR.ftl");
+			StringWriter sw = new StringWriter();
+			TxtReadandWrite txtReadandWrite = new TxtReadandWrite(outScript, true);
+			// 处理并把结果输出到字符串中
+			template.process(mapData, sw);
+			txtReadandWrite.writefile(sw.toString());
+			txtReadandWrite.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("渲染出错啦! " + e.getMessage());
 		}
-		txtReadScript.close();
-		txtOutScript.close();
 	}
+	
 	/**
 	 * group = factor( c("Patient", "Patient","Treat","Treat")) )
 	 * @param content
 	 * @return
 	 */
-	private String getGroupInfo(String content) {
+	private String getGroupInfo() {
 		String result = CmdOperate.addQuot(lsSampleColumn2GroupName.get(0)[1]);
 		for (int i = 1; i < lsSampleColumn2GroupName.size(); i++) {
 			String[] sampleCol2GroupName = lsSampleColumn2GroupName.get(i);
 			result = result + ", " + CmdOperate.addQuot(sampleCol2GroupName[1]);
 		}
-		String designScript = content.split(SepSign.SEP_ID)[1];
-		designScript = designScript.replace("{$Group}", result);
-		return designScript;
+		return result;
 	}
-	/**
-	 * group = factor( c("Patient", "Patient","Treat","Treat")) )
-	 * @param content
-	 * @return
-	 */
-	private String duplicateEstimate(String content) {
-		String estimate = "";
-		if (isHaveReplicate()) {
-			estimate = content.split(SepSign.SEP_ID)[1];
-		}		
-		return estimate;
-	}
-	
+
 	/** 是否有重复 */
 	private boolean isHaveReplicate() {
 		boolean haveReplicate = false;
@@ -225,29 +190,25 @@ public class DiffExpEdgeR extends DiffExpAbs {
 	 * @param content
 	 * @return
 	 */
-	private String[] getResultScript(String content) {
-		String writeToFileScript = "";
-		if (isHaveReplicate()) {
-			writeToFileScript = content.split(SepSign.SEP_ID)[1];
-		} else {
-			writeToFileScript = content.split(SepSign.SEP_ID)[3];
-		}
-		
+	private Map<String, String> getMapCompare2Outfile() {
+		Map<String, String> mapCompare2Outfile = new LinkedHashMap<String, String>();
 		ArrayList<String> lsFileName = ArrayOperate.getArrayListKey(mapOutFileName2Compare);
-		String[] result = new String[lsFileName.size()];
 		for (int i = 0; i < lsFileName.size(); i++) {
 			String outFileName = lsFileName.get(i);
 			String[] pair = mapOutFileName2Compare.get(outFileName);
 			String compare = CmdOperate.addQuot(pair[1]) + "," + CmdOperate.addQuot(pair[0]);
-			result[i] = writeToFileScript.replace("{$Compare}", compare).replace("{$OutFileName}", outFileName.replace("\\", "/"));
+			mapCompare2Outfile.put(compare, outFileName.replace("\\", "/"));
 		}
-		
-		return result;
+		return mapCompare2Outfile;
 	}
  
 	
 	@Override
 	protected void modifySingleResultFile(String outFileName, String treatName, String controlName) {
+		if (!FileOperate.isFileExistAndBigThanSize(outFileName, 0)) {
+			logger.error("没产生结果文件" + outFileName);
+			return;
+		}
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		ArrayList<String[]> lsDifGene = ExcelTxtRead.readLsExcelTxt(outFileName, 1);
 		String[] title = new String[]{TitleFormatNBC.AccID.toString(), treatName, controlName, TitleFormatNBC.Log2FC.toString(), TitleFormatNBC.Pvalue.toString(), TitleFormatNBC.FDR.toString()};

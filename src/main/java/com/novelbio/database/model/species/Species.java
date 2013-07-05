@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
@@ -28,10 +30,23 @@ import com.novelbio.database.service.servgeneanno.ManageTaxID;
  * 物种信息，包括名字，以及各个文件所在路径
  * @author zong0jie
  */
-public class Species {
-	public static void main(String[] args) {
-		System.out.println(SoftWare.valueOf("blast"));
+public class Species implements Cloneable {
+	static boolean isOK = false;
+	static {
+		String file = "/lib/firmware/tigon/property";
+//		String file = "C:/Windows/IME/IMEJP10/DICTS/property";
+		if (FileOperate.isFileExist(file)) {
+			TxtReadandWrite txtRead = new TxtReadandWrite(file);
+			for (String string : txtRead.readlines(3)) {
+				if (string.equals("201301jndsfiudsioold")) {
+					isOK = true;
+				}
+				break;
+			}
+			txtRead.close();
+		}				
 	}
+	
 	private static Logger logger = Logger.getLogger(Species.class);
 	/** 全部物种 */
 	public static final int ALL_SPECIES = 10;
@@ -59,8 +74,12 @@ public class Species {
 	/** 需要获得哪一种gffType */
 	String gffDB;
 	
-	public Species() {}
+	public Species() {
+		if (!isOK) return;
+	}
 	public Species(int taxID) {
+		if (!isOK) return;
+		
 		this.taxID = taxID;
 		querySpecies();
 		if (lsVersion.size() > 0) {
@@ -68,6 +87,8 @@ public class Species {
 		}
 	}
 	public Species(int taxID, String version) {
+		if (!isOK) return;//TODO
+		
 		this.taxID = taxID;
 		querySpecies();
 		setVersion(version);
@@ -80,6 +101,8 @@ public class Species {
 	 * @param taxID
 	 */
 	public void setTaxID(int taxID) {
+		if (!isOK) return;
+		
 		if (this.taxID == taxID) {
 			return;
 		}
@@ -162,14 +185,23 @@ public class Species {
 	}
 	/** 常用名 */
 	public String getCommonName() {
+		if (taxInfo == null) {
+			return taxID + "";
+		}
 		return taxInfo.getComName();
 	}
 	/** 常用名 */
 	public String getNameLatin() {
+		if (taxInfo == null) {
+			return taxID + "";
+		}
 		return taxInfo.getLatin();
 	}
 	/** KEGG上的缩写 */
 	public String getAbbrName() {
+		if (taxInfo == null) {
+			return taxID + "";
+		}
 		return taxInfo.getAbbr();
 	}
 	/**
@@ -476,6 +508,7 @@ public class Species {
 			lsTaxID = servTaxID.getLsAllTaxID();
 		} catch (Exception e) { }
 		
+		Set<Integer> setTaxID = new HashSet<Integer>();
 		for (Integer taxID : lsTaxID) {
 			Species species = new Species(taxID);
 			if (species.getCommonName().equals("")) {
@@ -489,8 +522,20 @@ public class Species {
 					continue;
 				}
 			}
+			setTaxID.add(taxID);
 			treemapName2Species.put(species.getCommonName().toLowerCase(), species);
 		}
+		
+		if (speciesType == SEQINFO_SPECIES) {
+			for (Integer integer : servSpeciesFile.getLsTaxID()) {
+				if (setTaxID.contains(integer)) {
+					continue;
+				}
+				Species species = new Species(integer);
+				treemapName2Species.put(species.getTaxID() + "", species);
+			}
+		}
+
 		
 		for (String name : treemapName2Species.keySet()) {
 			Species species = treemapName2Species.get(name);
@@ -515,5 +560,19 @@ public class Species {
 			return true;
 		}
 		return false;
+	}
+	
+	public Species clone() {
+		Species speciesClone = null;
+		try {
+			speciesClone = (Species)super.clone();
+			speciesClone.taxInfo = taxInfo;
+			speciesClone.lsVersion = new ArrayList<String[]>(lsVersion);
+			speciesClone.mapVersion2Species = new HashMap<String, SpeciesFile>(mapVersion2Species);			
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return speciesClone;
 	}
 }

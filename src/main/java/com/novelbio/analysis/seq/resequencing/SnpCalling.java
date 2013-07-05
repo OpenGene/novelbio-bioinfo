@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
@@ -24,6 +25,7 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 	
 	/** 用于多个样本的snp去冗余的，其中key表示该snp所在的起点信息，value就是该位点具体的snp情况 */
 	Map<String, RefSiteSnpIndel> mapSiteInfo2RefSiteSnpIndel = null;
+	Map<String, Align> mapSiteInfo2RefAlign = null;
 	
 	/** 用来过滤样本的 */
 	SnpFilter snpFilter = new SnpFilter();
@@ -40,7 +42,10 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 	public void setMapSiteInfo2RefSiteSnpIndel(Map<String, RefSiteSnpIndel> mapSiteInfo2RefSiteSnpIndel) {
 		this.mapSiteInfo2RefSiteSnpIndel = mapSiteInfo2RefSiteSnpIndel;
 	}
-	
+	/** 找到的snp与名字会装到这个里面 */
+	public void setMapSiteInfo2RefSiteAlign(Map<String, Align> mapSiteInfo2Align) {
+		this.mapSiteInfo2RefAlign = mapSiteInfo2Align;
+	}
 	/** snp过滤等级 */
 	public void setSnpLevel(SnpLevel snpLevel) {
 		this.snpLevel = snpLevel;
@@ -151,13 +156,14 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 				
 				if (mapSiteInfo2RefSiteSnpIndel != null) {
 					addSnp_2_mapSiteInfo2RefSiteSnpIndel(refSiteSnpIndel);
-				} else {
-					refSiteSnpIndel.clear();
+				}
+				if (mapSiteInfo2RefAlign != null) {
+					addSnp_2_mapSiteInfo2RefAlign(refSiteSnpIndel);
 				}
 			}
 			refSiteSnpIndel = null;
 		}
-		
+		txtReadPileUp.close();
 		if (txtSnpOut != null) {
 			txtSnpOut.close();
 		}
@@ -188,11 +194,23 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 		}
 	}
 	
+	/** 将结果装入哈希表里面 */
+	private void addSnp_2_mapSiteInfo2RefAlign(RefSiteSnpIndel refSiteSnpIndel) {
+		String key = refSiteSnpIndel.getKeySiteInfo();
+		if (mapSiteInfo2RefAlign.containsKey(key)) return;
+		
+		Align align = new Align(refSiteSnpIndel.getRefID(), refSiteSnpIndel.refSnpIndelStart, refSiteSnpIndel.refSnpIndelStart);
+		mapSiteInfo2RefAlign.put(key, align);
+		int snpNum = mapSiteInfo2RefAlign.size();
+		if (snpNum % 10000 == 0) {
+			logger.info("tree map size: "+ snpNum);
+		}
+	}
+	
 	private boolean writeInFile(RefSiteSnpIndel refSiteSnpIndel, ArrayList<SiteSnpIndelInfo> lsFilteredSnp) {
 		if (txtSnpOut == null) {
 			return true;
 		}
-		
 		refSiteSnpIndel.setGffChrAbs(gffChrAbs);
 		ArrayList<String[]> lsInfo = null;
 		try {
@@ -205,11 +223,14 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 		if (lsInfo.size() == 0) {
 			logger.error("error");
 		}
-		for (String[] strings : lsInfo) {
-			txtSnpOut.writefileln(strings);
+		try {
+			for (String[] strings : lsInfo) {
+				txtSnpOut.writefileln(strings);
+			}
 			return true;
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
-		
 		return false;
 	}
 

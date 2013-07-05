@@ -110,6 +110,7 @@ public class SnpSomaticFinder {
 	 * 1: Prefix
 	 */
 	public void setSnpFile(List<String[]> lsSnpFile2Prefix) {
+		snpSomaticFilter = new SnpSomaticFilter();
 		for (String[] strings : lsSnpFile2Prefix) {
 			snpSomaticFilter.addSnpFromNBCfile(strings[1], strings[0]);
 		}

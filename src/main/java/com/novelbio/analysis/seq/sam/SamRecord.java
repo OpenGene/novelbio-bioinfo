@@ -196,8 +196,8 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 		boolean result = !samRecord.getMateUnmappedFlag();
 		return result;
 	}
-
-	public String getMateReferenceName() {
+	
+	public String getMateRefID() {
 		return samRecord.getMateReferenceName();
 	}
 
@@ -326,8 +326,6 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 	public String getReadsQuality() {
 		return samRecord.getBaseQualityString();
 	}
-	
-	
 	
 	public int hashCode() {
 		return samRecord.hashCode();

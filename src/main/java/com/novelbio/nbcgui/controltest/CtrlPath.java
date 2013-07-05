@@ -17,6 +17,7 @@ public class CtrlPath extends CtrlGOPath implements CtrlTestPathInt {
 	private static final Logger logger = Logger.getLogger(CtrlPath.class);
 	private static final String pathSaveTo = "Path-Analysis_result";
 	String saveParentPath = "";
+	String savePrefix = "";
 	
 	/** @param QtaxID */
 	public CtrlPath() {
@@ -49,6 +50,7 @@ public class CtrlPath extends CtrlGOPath implements CtrlTestPathInt {
 			saveParentPath = excelPrefix;
 		} else {
 			saveParentPath = FileOperate.getParentPathName(excelPrefix);
+			savePrefix = FileOperate.getFileName(excelPath);
 		}
 		
 		if (excelPrefix.endsWith("\\") || excelPrefix.endsWith("/")) {
@@ -67,7 +69,15 @@ public class CtrlPath extends CtrlGOPath implements CtrlTestPathInt {
 	protected void clear() {
 		functionTest = FunctionTest.getInstance(FunctionTest.FUNCTION_PATHWAY_KEGG);
 	}
-	
+
+	/** 获得保存到文件夹的前缀，譬如保存到/home/zong0jie/stage10，那么前缀就是stage10 */
+	public String getSavePrefix() {
+		return savePrefix;
+	}
+	/** 获得保存到的文件夹路径 */
+	public String getSaveParentPath() {
+		return saveParentPath;
+	}
 	/** 返回文件的名字，用于excel和画图 */
 	public String getResultBaseTitle() {
 		return "Pathway-Analysis";

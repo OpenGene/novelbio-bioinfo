@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
@@ -35,7 +36,7 @@ public class SnpSomaticFilter {
 	/** 用于多个样本的snp去冗余的，其中key表示该snp所在的起点信息，value就是该位点具体的snp情况
 	 * key小写
 	 *  */
-	Map<String, RefSiteSnpIndel> mapSiteInfo2RefSiteSnpIndel = new TreeMap<String, RefSiteSnpIndel>();
+	Map<String, RefSiteSnpIndel> mapSiteInfo2RefSiteSnpIndel = new ConcurrentHashMap<String, RefSiteSnpIndel>();
 	
 	/** 过滤后的snpSite，包含某个位点的所有信息 */
 	ArrayList<RefSiteSnpIndel> lsFilteredRefSite = new ArrayList<RefSiteSnpIndel>();
@@ -133,6 +134,7 @@ public class SnpSomaticFilter {
 			
 			addSnp_2_mapSiteInfo2RefSiteSnpIndel(refSiteSnpIndel);
 		}
+		txtRead.close();
 	}
 	
 	/**
@@ -150,6 +152,7 @@ public class SnpSomaticFilter {
 			refSiteSnpIndel.setNBCLines(sampleName, vcfLines);
 			addSnp_2_mapSiteInfo2RefSiteSnpIndel(refSiteSnpIndel);
 		}
+		txtRead.close();
 	}
 	
 	private void addSnp_2_mapSiteInfo2RefSiteSnpIndel(RefSiteSnpIndel refSiteSnpIndel) {

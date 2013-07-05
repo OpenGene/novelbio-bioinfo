@@ -604,6 +604,7 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		for (SiteSnpIndelInfo siteSnpIndelInfoInput : colSiteSnpIndelInfosInput) {
 			SiteSnpIndelInfo siteSnpIndelInfoThis = mapAllen2Num.get(siteSnpIndelInfoInput.getMismatchInfo());
 			if (siteSnpIndelInfoThis == null) {
+				siteSnpIndelInfoInput.refSiteSnpIndelParent = this;
 				mapAllen2Num.put(siteSnpIndelInfoInput.getMismatchInfo(), siteSnpIndelInfoInput);
 			}
 			else {
@@ -796,13 +797,13 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	 * @return
 	 */
 	public ArrayList<String[]> toStringLsSnp(Collection<String> lsSampleNames, boolean getGATKflag, ArrayList<SiteSnpIndelInfo> lsMismatchInfo, boolean simple) {
-		HashSet<String> setSnpSite = new HashSet<String>();
-		for (SiteSnpIndelInfo siteSnpIndelInfo : lsMismatchInfo) {
-			setSnpSite.add(siteSnpIndelInfo.getMismatchInfo());
-		}
 		if (simple) {
 			return toStringLsSnpSimple(lsSampleNames, getGATKflag, lsMismatchInfo);
 		} else {
+			HashSet<String> setSnpSite = new HashSet<String>();
+			for (SiteSnpIndelInfo siteSnpIndelInfo : lsMismatchInfo) {
+				setSnpSite.add(siteSnpIndelInfo.getMismatchInfo());
+			}
 			return toStringLsSnp(lsSampleNames, false, getGATKflag, setSnpSite, false);
 		}
 	}

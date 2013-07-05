@@ -43,7 +43,7 @@ public class GffChrAbs {
 	}
 
 	public void setSpecies(Species species) {
-		if (this.species != null && this.species.equals(species)) {
+		if (this.species != null && this.species.equals(species) && this.species.getGffDB().equals(species.getGffDB())) {
 			return;
 		}
 		if (species == null || species.getTaxID() == 0) {

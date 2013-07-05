@@ -1,8 +1,8 @@
 package com.novelbio.analysis.seq.sam;
 
-import com.novelbio.PathNBCDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.generalConf.PathNBCDetail;
 
 public class BamRealign {
 //	java -Xmx4g -jar $GATK \
