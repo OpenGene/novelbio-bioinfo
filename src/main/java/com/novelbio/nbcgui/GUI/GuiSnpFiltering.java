@@ -1,33 +1,27 @@
 package com.novelbio.nbcgui.GUI;
 
-import javax.swing.JPanel;
-import javax.swing.JButton;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import com.novelbio.analysis.seq.genome.GffChrAbs;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
+
 import com.novelbio.analysis.seq.resequencing.SnpLevel;
 import com.novelbio.analysis.seq.resequencing.SnpSomaticFinder;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
-
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import javax.swing.JScrollPane;
-import javax.swing.JComboBox;
-import javax.swing.JTextField;
-import javax.swing.JCheckBox;
-import javax.swing.JSpinner;
-import javax.swing.JLabel;
 
 public class GuiSnpFiltering extends JPanel {
 	JScrollPaneData sclSnpFile;
@@ -250,7 +244,7 @@ public class GuiSnpFiltering extends JPanel {
 	}
 	
 	private void changeSclComparePrefix() {
-		ArrayList<String[]> lsSnp2Prefix = sclSnpFile.getLsDataInfo();
+		ArrayList<String[]> lsSnp2Prefix = sclSnpPileUp.getLsDataInfo();
 		Map<String, String> mapString2Value = new HashMap<String, String>();
 		for (String[] snp2prefix : lsSnp2Prefix) {
 			mapString2Value.put(snp2prefix[1], snp2prefix[1]);

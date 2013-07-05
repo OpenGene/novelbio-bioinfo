@@ -4,7 +4,7 @@ setwd(filePath)
 library(EBSeq)
 data = read.table(fileName, he=T, sep="\t", row.names=1)
 data = as.matrix(data)
-size = MedianNorm(data)
+size = QuantileNorm(data, 0.75)
 
 <#list mapOut2Compare_vector?keys as outFile >
 	dataRun=data[,c(${mapOut2Compare_vector[outFile][0]})]

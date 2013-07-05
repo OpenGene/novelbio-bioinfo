@@ -160,13 +160,11 @@ public class SnpFilter {
 	/** 输入之前要指定样本名，
 	 * 返回指定的snpindel的信息 */
 	private SnpIndelHomoHetoType getSnpIndelType(SiteSnpIndelInfo siteSnpIndelInfo) {
+		//TODO 这种合适吗？
 		int numSnpIndel = siteSnpIndelInfo.getReadsNum();
 		int numAll = siteSnpIndelInfo.getRefSiteSnpIndelParent().getReadsNumAll();
-		
-		//TODO 这种合适吗？
-		//因为可能有别的基因型，所以用这种方式，将所有非本snp的位点都忽略为ref位点。
-		int numRef = numAll - numSnpIndel;//refSiteSnpIndel.getReadsNumRef();
-		return getSnpIndelType(siteSnpIndelInfo.getSnpIndelType(), numSnpIndel, numRef, numAll);
+		int numRef = siteSnpIndelInfo.getRefSiteSnpIndelParent().getReadsNumRef();
+		return getSnpIndelType(siteSnpIndelInfo.getSnpIndelType(), numAll - numRef, numRef, numAll);
 	}
 	/**
 	 * public 仅供Junit测试 

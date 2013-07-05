@@ -38,7 +38,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	private static final Logger logger = Logger.getLogger(GffHashGeneNCBI.class);
 	
 	/** 基因名字的正则，可以改成识别人类或者其他,这里是拟南芥，默认  NCBI的ID  */
-	protected static String regGeneName = "(?<=gene\\=)[\\w\\-%]+";
+	protected static String regGeneName = "(?<=gene\\=)[\\w\\-%\\:\\.]+";
 	/**  可变剪接mRNA的正则，默认 NCBI的ID */
 	protected static String regSplitmRNA = "(?<=transcript_id\\=)[\\w\\-\\.]+|(?<=stable_id\\=)[\\w\\-\\.]+";
 	/**  可变剪接mRNA的产物的正则，默认 NCBI的symbol */
@@ -46,7 +46,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	/** geneID的正则 */
 	protected static String regGeneID = "(?<=Dbxref\\=GeneID\\:)\\d+";
 	/** Name的正则 */
-	protected static String regName = "(?<=Name\\=)[\\w\\-%\\.]+";
+	protected static String regName = "(?<=Name\\=)[\\w\\-%\\.\\:]+";
 	/** ID的正则 */
 	protected static String regID = "(?<=ID\\=)[\\w\\-\\.]+";
 	/** parentID的正则 */
@@ -154,6 +154,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   String[] thisRnaIDandName = null;	   
 	   
 	   for (String content : txtgff.readlines()) {
+		   
 		   if(content.charAt(0) == '#') continue;
 		   String[] ss = content.split("\t");//按照tab分开
 		   if (ss[2].equals("match") || ss[2].toLowerCase().equals("chromosome") || ss[2].toLowerCase().equals("intron") || ss[0].startsWith("NW_") || ss[0].startsWith("NT_")) {

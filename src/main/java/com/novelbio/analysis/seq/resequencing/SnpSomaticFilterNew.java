@@ -2,14 +2,15 @@ package com.novelbio.analysis.seq.resequencing;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -18,10 +19,10 @@ import com.novelbio.base.fileOperate.FileOperate;
  * 读取几个GATK的vcf结果文件，然后获得并集snp，并标记每个snp的信息，所在基因等等
  * @author zong0jie
  */
-public class SnpSomaticFilter {
-	private static final Logger logger = Logger.getLogger(SnpSomaticFilter.class);
+public class SnpSomaticFilterNew {
+	private static final Logger logger = Logger.getLogger(SnpSomaticFilterNew.class);
 //	GffChrAbs gffChrAbs;
-
+	Map<String, Align> mapSite2Align = new HashMap<String, Align>();
 	/** vcf的列 */
 	VcfCols vcfCols = new VcfCols();
 	/** 以下三个，都是从这些文本中获取snp的信息 */
@@ -69,7 +70,7 @@ public class SnpSomaticFilter {
 	
 	public void addSnpFromPileUpFile(String sampleName, SnpLevel snpLevel, String pileUpfile) {
 		SnpCalling snpCalling = new SnpCalling();
-		snpCalling.setMapSiteInfo2RefSiteSnpIndel(mapSiteInfo2RefSiteSnpIndel);
+		snpCalling.setMapSiteInfo2RefSiteAlign(mapSite2Align);
 		snpCalling.setSnpLevel(snpLevel);
 		snpCalling.addSnpFromPileUpFile(sampleName, pileUpfile, FileOperate.changeFileSuffix(pileUpfile, "_outSnp", "txt"));
 		lsSample2PileUpFiles.add(snpCalling);
