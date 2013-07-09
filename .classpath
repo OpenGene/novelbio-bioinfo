@@ -19,6 +19,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry excluding="views/" kind="src" path="src/main/webapp"/>
+	<classpathentry kind="src" path="other"/>
 	<classpathentry exported="true" kind="con" path="org.maven.ide.eclipse.MAVEN2_CLASSPATH_CONTAINER">
 		<attributes>
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="D:/zongjie/maven"/>
