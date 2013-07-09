@@ -7,16 +7,20 @@ import org.apache.log4j.Logger;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.HashMultimap;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQC;
 import com.novelbio.analysis.seq.fastq.FastQReadingChannel;
 import com.novelbio.analysis.seq.fastq.FastQRecordFilter;
+import com.novelbio.base.fileOperate.FileOperate;
 
 /** 单独的fq过滤模块 */
 @Component
 @Scope("prototype")
 public class CtrlFastQfilter {
-	private static final Logger logger = Logger.getLogger(CtrlFastQ.class);	
+	private static final Logger logger = Logger.getLogger(CtrlFastQ.class);
+	public static String FOLDER_NAME = "QCImages" + FileOperate.getSepPath();
+	
 	FastQRecordFilter fastQfilterRecord;
 
 	String outFilePrefix = "";
@@ -84,6 +88,37 @@ public class CtrlFastQfilter {
 		fastQReadingChannel.setFastQWrite(fastQLRfiltered[0], fastQLRfiltered[1]);
 		fastQReadingChannel.setThreadNum(8);
 		fastQReadingChannel.run();
+	}
+	
+	/**
+	 * 读取fastQC并生成excel表格，并遍历图片,以及对应的参数
+	 * @param fastQCs
+	 * @param isBefore
+	 * @return 返回需要保存的参数文件
+	 */
+	public HashMultimap<String, String> saveFastQC(String savePathAndPrefix) {
+		String fileName = FileOperate.getParentPathName(savePathAndPrefix) + "QCimage/" + FileOperate.getFileName(savePathAndPrefix);
+		FileOperate.createFolders(FileOperate.getParentPathName(fileName) );
+		HashMultimap<String, String> mapParam = HashMultimap.create();
+		try {
+			if (fastQCbefore.length <= 1 || fastQCbefore[1] == null) {
+				fastQCbefore[0].saveToPath(savePathAndPrefix + "_BeforeFilter");
+			} else {
+				fastQCbefore[0].saveToPath(30, fastQCbefore[1], fileName + "_BeforeFilter");
+			}
+			mapParam.putAll(fastQCbefore[0].getMapParam(fileName + "_BeforeFilter"));
+
+			if (fastQCafter.length <= 1 || fastQCafter[1] == null) {
+				fastQCafter[0].saveToPath(savePathAndPrefix + "_AfterFilter");
+			} else {
+				fastQCafter[0].saveToPath(30, fastQCafter[1], fileName + "_AfterFilter");
+			}
+			mapParam.putAll(fastQCafter[0].getMapParam(fileName + "_AfterFilter"));
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("获取报告生成器出错！");
+		}
+		return mapParam;
 	}
 
 }

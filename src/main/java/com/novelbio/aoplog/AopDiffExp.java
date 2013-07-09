@@ -18,8 +18,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.PlotScatter;
 import com.novelbio.base.plot.Volcano;
 import com.novelbio.generalConf.TitleFormatNBC;
-@Component 
-@Aspect
+
 public class AopDiffExp {
 	// 满足条件的差异基因的最少数量
 //	public static final int QUANUM = 1000;

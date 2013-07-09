@@ -48,7 +48,7 @@ public class CtrlSamStatistics implements RunGetInfo<GuiAnnoInfo> {
 	
 	public void writeSamStatistics() {
 		AlignSamReading alignSamReading = new AlignSamReading(samFile);
-		samFileStatistics = new SamFileStatistics();
+		samFileStatistics = new SamFileStatistics("");
 		alignSamReading.addAlignmentRecorder(samFileStatistics);
 		Thread thread = new Thread(alignSamReading);
 		thread.start();

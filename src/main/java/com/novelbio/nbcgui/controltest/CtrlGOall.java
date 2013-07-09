@@ -1,15 +1,24 @@
 package com.novelbio.nbcgui.controltest;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import javax.imageio.ImageIO;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.novelbio.analysis.annotation.functiontest.FunctionTest;
 import com.novelbio.analysis.annotation.functiontest.TopGO.GoAlgorithm;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.plot.GraphicCope;
 import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.nbcgui.FoldeCreate;
 
@@ -97,6 +106,7 @@ public class CtrlGOall implements CtrlTestGOInt {
 			}
 			ctrlGO.saveExcel(saveName);
 		}
+		savePic();
 	}
 	
 	/** 获得保存到的文件夹路径 */
@@ -165,20 +175,35 @@ public class CtrlGOall implements CtrlTestGOInt {
 				e.printStackTrace();
 			}
 		}
-		
-//		while (true) {
-//			boolean isfinish = true;
-//			for (CtrlGO ctrlGO : mapGOtype2CtrlGO.values()) {
-//				if (ctrlGO.isRunning()) {
-//					isfinish = false;
-//					try { Thread.sleep(1000); } catch (InterruptedException e) { }
-//					break;
-//				}
-//			}
-//			if (isfinish) {
-//				break;
-//			}
-//		}
+	}
+	
+	public void savePic() {
+		for (String prefix : getPrefix()) {
+			List<BufferedImage> lsGOimage = new ArrayList<BufferedImage>();
+			String excelSavePath = "";
+			for (CtrlGO ctrlGO : getMapResult_Prefix2FunTest().values()) {
+				BufferedImage bufferedImage = ctrlGO.getMapResult_Prefix2FunTest().get(prefix).getImagePvalue();
+				lsGOimage.add(bufferedImage);
+				excelSavePath = FileOperate.getParentPathName(ctrlGO.getSaveExcelPrefix());
+			}
+			BufferedImage bfImageCombine = GraphicCope.combineBfImage(true, 30, lsGOimage);
+			String picNameLog2P = excelSavePath +  "GO-Analysis-Log2P_" + prefix + "_" + getSavePrefix() + ".png";
+			try {
+				ImageIO.write(bfImageCombine, "png", new File(picNameLog2P));
+			} catch (IOException e) {e.printStackTrace();}
+		}
+	}
+	
+	/** 将本次GO分析的前缀全部抓出来，方便画图 */
+	private Set<String> getPrefix() {
+		Set<String> setPrefix = new LinkedHashSet<String>();
+		for (CtrlGO ctrlGO : getMapResult_Prefix2FunTest().values()) {
+			Map<String, FunctionTest> map = ctrlGO.getMapResult_Prefix2FunTest();
+			for (String prefix : map.keySet()) {
+				setPrefix.add(prefix);
+			}
+		}
+		return setPrefix;
 	}
 
 	@Override

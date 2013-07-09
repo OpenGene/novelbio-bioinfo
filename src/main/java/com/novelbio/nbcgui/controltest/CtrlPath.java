@@ -1,7 +1,13 @@
 package com.novelbio.nbcgui.controltest;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
+
+import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
 import org.springframework.context.annotation.Scope;
@@ -63,13 +69,37 @@ public class CtrlPath extends CtrlGOPath implements CtrlTestPathInt {
 		} else {
 			saveExcelNorm(saveExcelPrefix);
 		}
+		savePic();
 	}
-
+	
+	public void savePic() {
+		for (Entry<String, FunctionTest> entry : getMapResult_Prefix2FunTest().entrySet()) {
+			String prix = entry.getKey();
+			BufferedImage bfImageLog2Pic = entry.getValue().getImagePvalue();;
+			if (bfImageLog2Pic == null) continue;
+			try {
+				ImageIO.write(bfImageLog2Pic, "png", new File(getSavePicPvalueName(prix)));
+			} catch (IOException e) {e.printStackTrace();}
+			
+			BufferedImage bfImageEnrichment = entry.getValue().getImageEnrichment();
+			if (bfImageEnrichment == null) continue;
+			try {
+				ImageIO.write(bfImageEnrichment, "png", new File(getSavePicEnrichmentName(prix)));
+			} catch (IOException e) {e.printStackTrace();}
+		}
+	}
+	
+	public String getSavePicPvalueName(String prefix) {
+		return FileOperate.addSep(getSaveParentPath()) + "Path-Analysis-Log2P_" + prefix + "_" + getSavePrefix() + ".png";
+	}
+	public String getSavePicEnrichmentName(String prefix) {
+		return FileOperate.addSep(getSaveParentPath()) + "Path-Analysis-Enrichment_" + prefix + "_" + getSavePrefix() + ".png";
+	}
 	@Override
 	protected void clear() {
 		functionTest = FunctionTest.getInstance(FunctionTest.FUNCTION_PATHWAY_KEGG);
 	}
-
+	
 	/** 获得保存到文件夹的前缀，譬如保存到/home/zong0jie/stage10，那么前缀就是stage10 */
 	public String getSavePrefix() {
 		return savePrefix;

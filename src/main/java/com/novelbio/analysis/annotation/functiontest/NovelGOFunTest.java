@@ -123,5 +123,10 @@ public class NovelGOFunTest extends FunctionTest {
 		mapResult.put(StatisticTestItem2Gene.titleGO, lsItem2Gene);
 		return mapResult;
 	}
+	
+	@Override
+	protected String getTitle() {
+		return "GO-Analysis_" + GoType.getTwoWord();
+	}
 
 }

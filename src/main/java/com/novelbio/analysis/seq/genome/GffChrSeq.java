@@ -30,7 +30,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	
 	GeneStructure geneStructure = GeneStructure.ALLLENGTH;
 	/** 是否提取内含子 */
-	boolean getIntron;
+	boolean getIntron = false;
 	/** 提取全基因组序列的时候，是每个LOC提取一条序列还是提取全部 */
 	boolean getAllIso;
 	/** 是否提取氨基酸 */
@@ -95,7 +95,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	}
 	/**
 	 * 提取基因的时候遇到内含子，是提取出来还是跳过去
-	 * @param getIntron
+	 * @param getIntron 默认false
 	 */
 	public void setGetIntron(boolean getIntron) {
 		this.getIntron = getIntron;

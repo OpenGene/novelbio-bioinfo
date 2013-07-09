@@ -123,7 +123,7 @@ public class CtrlSamRPKMLocate implements CtrlSamPPKMint {
 		for (String prefix : mapPrefix2AlignSeqReadings.keySet()) {
 			List<AlignSeqReading> lsAlignSeqReadings = mapPrefix2AlignSeqReadings.get(prefix);
 			List<AlignmentRecorder> lsAlignmentRecorders = new ArrayList<AlignmentRecorder>();
-			
+			SamFileStatistics samFileStatistics = null;
 			if (isCountExpression && gffChrAbs.getTaxID() != 0) {
 				rpkMcomput.setCurrentCondition(prefix);
 				rpkMcomput.setConsiderStrand(isConsiderProtonStrand);
@@ -140,9 +140,15 @@ public class CtrlSamRPKMLocate implements CtrlSamPPKMint {
 					lsAlignmentRecorders.add(gffChrStatistics);
 					mapPrefix2LocStatistics.put(prefix, gffChrStatistics);
 				}
-				
-				SamFileStatistics samFileStatistics = new SamFileStatistics();
+				samFileStatistics = new SamFileStatistics(prefix);
 				lsAlignmentRecorders.add(samFileStatistics);
+				try {
+					Map<String, Long> mapChrID2Len = ((SamFile)lsAlignSeqReadings.get(0).getSamFile()).getChrID2LengthMap();
+					samFileStatistics.setStandardData(mapChrID2Len);
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+
 				mapPrefix2Statistics.put(prefix, samFileStatistics);
 			}
 			
@@ -157,7 +163,9 @@ public class CtrlSamRPKMLocate implements CtrlSamPPKMint {
 				logger.info("finish reading " + alignSeqReading.getSamFile().getFileName());
 				readByte = alignSeqReading.getReadByte();
 			}
-			
+			if (samFileStatistics != null) {
+				SamFileStatistics.saveInfo(resultPrefix+ prefix, samFileStatistics);
+			}
 			logger.info("finish reading " + prefix);
 			try {
 				writeToFileCurrent(prefix);

@@ -12,8 +12,6 @@ import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamFileStatistics;
 import com.novelbio.base.fileOperate.FileOperate;
 
-@Component
-@Aspect
 public class AopDNAMapping {
 	private static final Logger logger = Logger.getLogger(AopDNAMapping.class);
 	/** 超过50条染色体就不画这个图了 */

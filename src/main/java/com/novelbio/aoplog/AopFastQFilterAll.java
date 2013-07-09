@@ -18,8 +18,6 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.nbcgui.controlseq.CtrlFastQ;
 
 /** 全体reads过滤完后再拦截一次，产生汇总报告 */
-@Component
-@Aspect
 public class AopFastQFilterAll {
 	private static Logger logger = Logger.getLogger(AopFastQFilter.class);
 	/**

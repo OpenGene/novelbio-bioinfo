@@ -34,8 +34,6 @@ import com.novelbio.nbcgui.controlseq.CtrlFastQfilter;
 /**
  * 给FastQ添加report相关的参数说明
  */
-@Component
-@Aspect
 public class AopFastQFilter {
 	private static Logger logger = Logger.getLogger(AopFastQFilter.class);
 	private static int smallPicSize = 1000;

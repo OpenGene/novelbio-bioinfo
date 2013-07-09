@@ -32,8 +32,6 @@ import com.novelbio.nbcgui.controltest.CtrlTestGOInt;
  * @author zong0jie
  * 
  */
-@Component
-@Aspect
 public class AopGO {
 	private static final Logger logger = Logger.getLogger(AopGO.class);
 

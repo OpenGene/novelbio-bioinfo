@@ -21,16 +21,31 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
  *
  */
 public class BlastNBC {
+	public static final int ResultType_Simple = 6;
+	public static final int ResultType_Normal = 0;
+	SoftWareInfo softWareInfo;
+	
 	private static Logger logger = Logger.getLogger(BlastNBC.class);
-	String blastAll = "blastall ";
-	String formatDB = "formatdb ";
-	String blastInputType = "-p ";
+	String formatDB = "makeblastdb ";
 	String queryFasta = "";
 	/**待比对的数据库，如果是fasta文件，则会自动建索引*/
 	String databaseSeq = "";
 	BlastType blastType = BlastType.tblastn;
+	/** query的序列是否很短，一般在探针序列blast的时候才使用，目前只能用于blastp和blastn */
+	boolean isShortQuerySeq = false;
 	
-	SoftWareInfo softWareInfo;
+	String resultFile = "";
+	int cpuNum = 2;
+	int resultType = ResultType_Simple;
+	/** @param evalue 最低相似度，越小相似度越高。最好是0到1之间，默认0.1。一般不用改  */
+	double evalue = 0.1;
+	/** 显示几个比对结果 */
+	int resultAlignNum = 2;
+	
+	/**
+	 * 显示几个结果
+	 */
+	int resultSeqNum = 2;
 	
 	public BlastNBC() {
 		softWareInfo = new SoftWareInfo(SoftWare.blast);
@@ -42,10 +57,10 @@ public class BlastNBC {
 	 */
 	public static HashMap<String, Integer> getHashResultType() {
 		HashMap<String, Integer> hashBlastType = new LinkedHashMap<String, Integer>();
-		hashBlastType.put("Simple Table", 8);
-		hashBlastType.put("Normal Type With Alignment", 0);
+		hashBlastType.put("Simple Table", BlastNBC.ResultType_Simple);
+		hashBlastType.put("Normal Type With Alignment", BlastNBC.ResultType_Normal);
 		return hashBlastType;
-	}	
+	}
 	
 	/**
 	 * 设定blast的模式
@@ -69,7 +84,7 @@ public class BlastNBC {
 	public void setDatabaseSeq(String databaseSeq) {
 		this.databaseSeq = databaseSeq;
 	}
-	String resultFile = "";
+
 	/**
 	 * 输出文件
 	 * @param resultFile
@@ -77,7 +92,7 @@ public class BlastNBC {
 	public void setResultFile(String resultFile) {
 		this.resultFile = resultFile;
 	}
-	int cpuNum = 2;
+
 	/**
 	 * 设定cpu使用数量，感觉设定了没用
 	 * 默认为2
@@ -86,7 +101,7 @@ public class BlastNBC {
 	public void setCpuNum(int cpuNum) {
 		this.cpuNum = cpuNum;
 	}
-	int resultType = 8;
+
 	/**
 	 * 常规模式为0
 	 * 精简模式为8
@@ -96,20 +111,14 @@ public class BlastNBC {
 	public void setResultType(int resultType) {
 		this.resultType = resultType;
 	}
-	/**
-	 * 显示几个结果
-	 */
-	int resultSeqNum = 2;
+
 	/**
 	 * @param resultSeqNum 显示几个结果
 	 */
 	public void setResultSeqNum(int resultSeqNum) {
 		this.resultSeqNum = resultSeqNum;
 	}
-	/**
-	 * 显示几个比对结果
-	 */
-	int resultAlignNum = 2;
+
 	/**
 	 * 输出几个比对结果，当setResultType为8的时候好像不起作用
 	 * @param resultAlignNum
@@ -117,8 +126,7 @@ public class BlastNBC {
 	public void setResultAlignNum(int resultAlignNum) {
 		this.resultAlignNum = resultAlignNum;
 	}
-	/** @param evalue 最低相似度，越小相似度越高。最好是0到1之间，默认0.1。一般不用改  */
-	double evalue = 0.1;
+
 	/** @param evalue 最低相似度，越小相似度越高。最好是0到1之间，默认0.1。一般不用改 */
 	public void setEvalue(double evalue) {
 		this.evalue = evalue;
@@ -139,13 +147,59 @@ public class BlastNBC {
 				return false;
 			}
 		}
-		String cmd = "perl " + FileOperate.addSep(softWareInfo.getInstallPath()) + "legacy_blast.pl " + blastAll + blastInputType + blastType.toString()
-				+ " -i " + CmdOperate.addQuot(queryFasta) + " -d " + CmdOperate.addQuot(databaseSeq) + " -o " + CmdOperate.addQuot(resultFile)
-				+ " -a " + cpuNum + getFilter() + " -e " + evalue + " -m " + resultType + " -v "+resultSeqNum 
-				+ " -b " + resultAlignNum + " --path " + FileOperate.addSep(softWareInfo.getInstallPath());
+		String cmd = softWareInfo.getExePath() + blastType.toString() + getDB() + getQuery() + getOut() + 
+				getThread() + getEvalue() + getBlastTask() + getResultType() + getBlastNum();
+		
 		CmdOperate cmdOperate = new CmdOperate(cmd,"blast");
 		cmdOperate.run();
 		return true;
+	}
+	
+	/** 只有当blastp和blastn时才有用，用于特别短序列的blast
+	 * @param nr 是否为blastn
+	 * @return
+	 */
+	private String getBlastTask() {
+		if (blastType != BlastType.blastn && blastType != BlastType.blastp) {
+			return "";
+		}
+		
+		if (isShortQuerySeq) {
+			if (blastType == BlastType.blastn) {
+				return " -task blastn-short ";
+			} else {
+				return " -task blastp-short ";
+			}
+		}
+		return "";
+	}
+	
+	private String getDB() {
+		return " -db " + CmdOperate.addQuot(databaseSeq) + " ";
+	}
+	private String getQuery() {
+		return " -query " + CmdOperate.addQuot(queryFasta) + " ";
+	}
+	private String getOut() {
+		return " -out " + CmdOperate.addQuot(resultFile) + " ";
+	}
+	private String getThread() {
+		return " -num_threads " + cpuNum + " ";
+	}
+	private String getEvalue() {
+		return " -evalue " + evalue + " ";
+	}
+	private String getResultType() {
+		String resultFormat = "0";
+		if (resultType == ResultType_Normal) {
+			resultFormat = "0";
+		} else if (resultType == ResultType_Simple) {
+			resultFormat = "6";
+		}
+		return " -outfmt " + resultFormat + " ";
+	}
+	private String getBlastNum() {
+		return " -num_descriptions  " + resultSeqNum + " -num_alignments " + resultAlignNum + " ";
 	}
 	/**
 	 * database序列是核酸还是蛋白
@@ -156,9 +210,9 @@ public class BlastNBC {
 		int seqTypeFlag = SeqHash.getSeqType(databaseSeq);
 		
 		if (seqTypeFlag == SeqFasta.SEQ_PRO)
-			seqTypePro = "T ";
+			seqTypePro = "prot ";
 		else if(seqTypeFlag == SeqFasta.SEQ_DNA)
-			seqTypePro = "F ";
+			seqTypePro = "nucl ";
 		else {
 			logger.error("databaseSeq 序列出现未知字符");
 		}
@@ -174,8 +228,7 @@ public class BlastNBC {
 		if (seqTypePro == null) {
 			return false;
 		}
-		String cmd = "perl " + FileOperate.addSep(softWareInfo.getInstallPath()) + "legacy_blast.pl " + formatDB + " -i " + databaseSeq + " -p "+ seqTypePro + " -o T " 
-				+ "--path " + FileOperate.addSep(softWareInfo.getInstallPath());
+		String cmd = softWareInfo.getExePath() + formatDB + " -in " + databaseSeq + " -dbtype "+ seqTypePro + " -parse_seqids";
 		CmdOperate cmdOperate = new CmdOperate(cmd,"blastFormatDB");
 		cmdOperate.run();
 		return true;

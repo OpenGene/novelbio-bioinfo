@@ -1,6 +1,7 @@
 package com.novelbio.nbcgui.controlquery;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.analysis.annotation.genAnno.AnnoQuery.AnnoQueryDisplayInfo;
@@ -11,10 +12,10 @@ import com.novelbio.nbcgui.GUI.GuiAnnoGene;
 
 public class CtrlBatchAnnoGene implements RunGetInfo<AnnoQuery.AnnoQueryDisplayInfo> {
 	GuiAnnoGene guiAnnoBatch;	
-
+	List<String[]> lsIn2Out;
 	AnnoQuery annoQuery = new AnnoQuery();
 	Species species;
-
+	int colAccID = 1;
 	public CtrlBatchAnnoGene(GuiAnnoGene guiBatchAnno) {
 		this.guiAnnoBatch = guiBatchAnno;
 		annoQuery.setRunGetInfo(this);
@@ -27,11 +28,10 @@ public class CtrlBatchAnnoGene implements RunGetInfo<AnnoQuery.AnnoQueryDisplayI
 		this.species = new Species(taxID);
 		annoQuery.setTaxIDthis(taxID);
 	}
-	public void setListQuery(ArrayList<String[]> lsGeneInfo) {
+	public void setListQuery(List<String[]> lsIn2Out) {
 		guiAnnoBatch.getProcessBar().setMinimum(0);
-		guiAnnoBatch.getProcessBar().setMaximum(lsGeneInfo.size() - 1);
-		annoQuery.setLsGeneID(lsGeneInfo);
-		annoQuery.setFirstLineFrom1(2);
+		guiAnnoBatch.getProcessBar().setMaximum(1000);
+		this.lsIn2Out = lsIn2Out;
 	}
 	public void setColumnAccIDFrom1(int colAccID) {
 		annoQuery.setColAccIDFrom1(colAccID);
@@ -40,13 +40,15 @@ public class CtrlBatchAnnoGene implements RunGetInfo<AnnoQuery.AnnoQueryDisplayI
 		annoQuery.setBlast(blast);
 		annoQuery.setTaxIDblastTo(subjectID);
 	}
-	
-	public String[] getTitle() {
-		return annoQuery.getTitle();
-	}
+
 	public void execute() {
-		Thread thread = new Thread(annoQuery);
-		thread.start();
+		for (String[] fileIn2Out : lsIn2Out) {
+			annoQuery.setColAccIDFrom1(colAccID);
+			annoQuery.setFirstLineFrom1(2);
+			annoQuery.setGeneIDFile(fileIn2Out[0]);
+			annoQuery.run();
+			annoQuery.writeTo(fileIn2Out[1]);
+		}
 	}
 	public ArrayList<String[]> getResult() {
 		return annoQuery.getLsResult();
@@ -55,7 +57,6 @@ public class CtrlBatchAnnoGene implements RunGetInfo<AnnoQuery.AnnoQueryDisplayI
 	@Override
 	public void setRunningInfo(AnnoQueryDisplayInfo info) {
 		guiAnnoBatch.getProcessBar().setValue((int) info.getCountNum());
-		guiAnnoBatch.getJScrollPaneDataResult().addItem(info.getTmpInfo());
 	}
 	
 	@Override

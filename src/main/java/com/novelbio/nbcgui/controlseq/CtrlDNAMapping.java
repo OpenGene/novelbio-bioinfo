@@ -1,10 +1,15 @@
 package com.novelbio.nbcgui.controlseq;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
 import org.springframework.context.annotation.Scope;
@@ -15,6 +20,7 @@ import com.novelbio.analysis.seq.mapping.MapDNA;
 import com.novelbio.analysis.seq.mapping.MapDNAint;
 import com.novelbio.analysis.seq.mapping.MapLibrary;
 import com.novelbio.analysis.seq.sam.SamFileStatistics;
+import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
@@ -118,10 +124,12 @@ public class CtrlDNAMapping {
 			List<FastQ[]> lsFastQs = entry.getValue();
 			if (lsFastQs.size() == 1) {
 				mapping(entry.getKey(), lsFastQs.get(0));
+				SamFileStatistics.saveInfo(outFilePrefix + entry.getKey(), samFileStatistics);
 			} else {
 				for (int i = 0; i < lsFastQs.size(); i++) {
 					FastQ[] fastQs = lsFastQs.get(i);
 					mapping(entry.getKey() + "_" + i, fastQs);
+					SamFileStatistics.saveInfo(entry.getKey() + "_" + i, samFileStatistics);
 				}
 			}
 		}
@@ -154,21 +162,23 @@ public class CtrlDNAMapping {
 				mapSoftware.setChrFile(species.getRefseqLongestIsoNrFile());
 			}
 		}
-
-		mapSoftware.setFqFile(fastQs[0], fastQs[1]);
+		if (fastQs.length == 1) {
+			mapSoftware.setFqFile(fastQs[0], null);
+		} else {
+			mapSoftware.setFqFile(fastQs[0], fastQs[1]);
+		}
+		
 		mapSoftware.setOutFileName(outFilePrefix + prefix);
 		mapSoftware.setGapLength(gapLen);
 		mapSoftware.setMismatch(mismatch);
 		mapSoftware.setSampleGroup(prefix, prefix, prefix, null);
 		mapSoftware.setMapLibrary(libraryType);
 		mapSoftware.setThreadNum(thread);
-		samFileStatistics = new SamFileStatistics();
+		samFileStatistics = new SamFileStatistics(prefix);
 		mapSoftware.addAlignmentRecorder(samFileStatistics);
 		mapSoftware.mapReads();
-		
 		return mapSoftware.getCmdMapping();
 	}
-	
 	
 	public static HashMap<String, Integer> getMapStr2Index() {
 		HashMap<String, Integer> mapStr2Index = new HashMap<String, Integer>();

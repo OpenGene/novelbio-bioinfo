@@ -1,7 +1,5 @@
 package com.novelbio.test;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -11,62 +9,48 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.imageio.ImageIO;
-
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
-import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.GffChrSeq;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.plot.GraphicCope;
-import com.novelbio.database.service.SpringFactory;
 import com.novelbio.nbcgui.controlseq.CtrlRNAmap;
-import com.novelbio.nbcgui.controltest.CtrlTestGOInt;
 
 
 public class mytest {
 	private static Logger logger = Logger.getLogger(mytest.class);
 	
 	public static void main(String[] args) throws IOException, URISyntaxException {
-		GffHashGene gffHashGene = new GffHashGene(GffType.NCBI, "/home/zong0jie/desktop/chr.gff");
-		SeqHash seqHash = new SeqHash("/home/zong0jie/desktop/goatChrome");
 		GffChrAbs gffChrAbs = new GffChrAbs();
-		gffChrAbs.setSeqHash(seqHash);
-		gffChrAbs.setGffHash(gffHashGene);
-		int num = 0;
-		TxtReadandWrite txtWrite = new TxtReadandWrite("/home/zong0jie/desktop/goatChrome/3utr", true);
-		for (GffDetailGene gffDetailGene : gffHashGene.getGffDetailAll()) {
-			GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplitMrna();
-			SeqFasta seqFasta;
-			if (gffGeneIsoInfo.isCis5to3()) {
-				seqFasta = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.getRefID(), gffGeneIsoInfo.getEnd(), gffGeneIsoInfo.getEnd() + 500);
-			} else {
-				seqFasta = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.getRefID(), gffGeneIsoInfo.getEnd() - 500, gffGeneIsoInfo.getEnd());
-				if (seqFasta != null) {
-					seqFasta = seqFasta.reservecom();
-				}
-			}
-			if (seqFasta != null) {
-				seqFasta.setName(gffGeneIsoInfo.getName());
-				txtWrite.writefileln(seqFasta.toStringNRfasta());
-			}
-		
-			num++;
-			System.out.println(num);
-			if (num == 3830) {
-				System.out.println();
-			}
-		}
-		txtWrite.close();
+		gffChrAbs.setGffFile(123, GffType.GTF, "/home/zong0jie/Test/GTF/aaegypti.BASEFEATURES_Liverpool-AaegL1.3_modify.gtf");
+		gffChrAbs.setChrFile("/home/zong0jie/Test/GTF/Aedes-aegypti-Liverpool_SCAFFOLDS_AaegL1_modify.fa", "supercont.+");
+		GffChrSeq gffChrSeq = new GffChrSeq(gffChrAbs);
+		gffChrSeq.setGeneStructure(GeneStructure.CDS);
+		gffChrSeq.setGetIntron(false);
+		gffChrSeq.setGetAAseq(true);
+		gffChrSeq.setGetSeqGenomWide();
+		gffChrSeq.setOutPutFile("/home/zong0jie/Test/GTF/aa.fa");
+		gffChrSeq.run();
+//		String filePath = "/home/zong0jie/Test/GTF/ChromFa/";
+//		TxtReadandWrite txtRead = new TxtReadandWrite(filePath + "Aedes-aegypti-Liverpool_SCAFFOLDS_AaegL1_modify.fa");
+//		TxtReadandWrite txtwrite = new TxtReadandWrite("");
+//		for (String string : txtRead.readlines()) {
+//			if (string.startsWith(">")) {
+//				txtwrite.close();
+//				txtwrite = new TxtReadandWrite(filePath + string.replace(">", ""), true);
+//				txtwrite.writefileln(string);
+//			}
+//			txtwrite.writefileln(string);
+//		}
+//		txtwrite.close();
+//		txtRead.close();
 	}
 	
 	private static int compare(String[] s1, String[] s2) {

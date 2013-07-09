@@ -16,12 +16,11 @@ import java.util.Set;
 
 import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMFileHeader.SortOrder;
-import net.sf.samtools.SAMFileReader.ValidationStringency;
 import net.sf.samtools.SAMFileReader;
+import net.sf.samtools.SAMFileReader.ValidationStringency;
 import net.sf.samtools.SAMReadGroupRecord;
 import net.sf.samtools.SAMSequenceRecord;
 import net.sf.samtools.SAMTextHeaderCodec;
-import net.sf.samtools.SAMTools;
 import net.sf.samtools.util.BlockCompressedInputStream;
 import net.sf.samtools.util.BlockCompressedStreamConstants;
 import net.sf.samtools.util.StringLineReader;
@@ -37,7 +36,6 @@ import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.PathNBCDetail;
 
 /**
@@ -475,7 +473,11 @@ public class SamFile implements AlignSeq {
 		if (!outFile.endsWith(".bam")) {
 			FileOperate.changeFileSuffix(outFile, "", ".bam");
 		}
-		
+		for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {
+			if (alignmentRecorder instanceof SamFileStatistics) {
+				((SamFileStatistics)alignmentRecorder).setStandardData(getChrID2LengthMap());
+			}
+		}
 		SamFile samFile = new SamFile(outFile, getHeader());
 		for (SamRecord samRecord : readLines()) {
 			for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {

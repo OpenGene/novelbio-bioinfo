@@ -1,5 +1,6 @@
 package com.novelbio.analysis.annotation.functiontest;
 
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -19,6 +20,7 @@ import com.novelbio.base.dataStructure.StatisticsTest;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.nbcgui.controltest.GoPathBarPlot;
 
 public abstract class FunctionTest implements Cloneable {
 	private static final Logger logger = Logger.getLogger(FunctionTest.class);
@@ -486,6 +488,32 @@ public abstract class FunctionTest implements Cloneable {
 		
 		return functionTest;
 	}
+	
+	public BufferedImage getImagePvalue() {
+		List<StatisticTestResult> lsTestResults = getTestResult();
+		if (lsTestResults == null || lsTestResults.size() == 0) {
+			return null;
+		}
+		try {
+			BufferedImage bfImageLog2Pic = GoPathBarPlot.drawLog2PvaluePicture(lsTestResults, getTitle());
+			return bfImageLog2Pic;
+		} catch (Exception e) { e.printStackTrace(); }
+		return null;
+	}
+	
+	public BufferedImage getImageEnrichment() {
+		List<StatisticTestResult> lsTestResults = getTestResult();
+		if (lsTestResults == null || lsTestResults.size() == 0) {
+			return null;
+		}
+		try {
+			BufferedImage bfImageLog2Pic = GoPathBarPlot.drawEnrichmentPicture(lsTestResults, getTitle());
+			return bfImageLog2Pic;
+		} catch (Exception e) { e.printStackTrace(); }
+		return null;
+	}
+	
+	protected abstract String getTitle();
 	
 	/**
 	 * 选择一种检验方式FUNCTION_GO_NOVELBIO等

@@ -48,62 +48,6 @@ import de.erichseifert.gral.util.Location;
  * 
  */
 public class GffChrMap {
-	public static void main(String[] args) {
-		GffChrMap gffChrMap = new GffChrMap();
-		int[] resolution = new int[10000];
-		
-		/////////////////////   plotScatter can only accept double data   //////////////////////////////
-		double[] resolutionDoub = new double[10000];
-		for (int i = 0; i < resolution.length; i++) {
-			resolutionDoub[i] = i;
-		}
-		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		double[] chrReads = new double[100];
-		for (int i = 0; i < chrReads.length; i++) {
-			chrReads[i] = 1000* Math.random();
-		}
-		double[] resolutionDoub2 = new double[100];
-		for (int i = 0; i < resolutionDoub2.length; i++) {
-			resolutionDoub2[i] = i;
-		}
-		
-		PlotScatter plotScatter = new PlotScatter(PlotScatter.PLOT_TYPE_SCATTERPLOT);
-		plotScatter.setAxisX(0, 10000);
-		plotScatter.setAxisY(0, 1000);
-//		plotScatter.setMapNum2ChangeX(0, 0, resolution.length, chrLength, interval);
-
-		DotStyle dotStyle = new DotStyle();
-		Paint colorGradient = DotStyle.getGridentColor(GraphicsUtils.deriveDarker(Color.blue), Color.blue);
-		dotStyle.setColor(colorGradient);
-		dotStyle.setStyle(DotStyle.STYLE_AREA);
-		plotScatter.addXY(resolutionDoub2, chrReads, dotStyle);
-		
-		//////////////////添加边框///////////////////////////////
-		DotStyle dotStyleBroad = new DotStyle();
-		dotStyleBroad.setStyle(DotStyle.STYLE_LINE);
-		dotStyleBroad.setColor(Color.RED);
-		dotStyleBroad.setSize(DotStyle.SIZE_B);
-		double[] xstart = new double[]{0,0}; double[] xend= new double[]{resolutionDoub[resolutionDoub.length-1], resolutionDoub[resolutionDoub.length-1]};
-		double[] y = new double[]{0, 1000};
-		plotScatter.addXY(xend, y, dotStyleBroad);
-		plotScatter.addXY(xstart, y, dotStyleBroad.clone());
-		//////////////////////////////////////////////////////////////
-		
-		plotScatter.setBg(Color.WHITE);
-		plotScatter.setAlpha(false);
-		//坐标轴mapping
-//		plotScatter.setMapNum2ChangeY(0, 0, axisY, 500, 100);
-		plotScatter.setTitle("chr1 Reads Density",  new Font(Font.SANS_SERIF, Font.BOLD, 30), Location.CENTER, 100);
-//		plotScatter.setTitle("chr1 Reads Density", null);
-		plotScatter.setTitleX("Chromosome Length",  new Font(Font.SANS_SERIF, Font.BOLD, 20), 3, 0);
-		plotScatter.setTitleY("Normalized Reads Counts", new Font(Font.SANS_SERIF, Font.BOLD, 22), 3.5, 90);
-		plotScatter.setAxisTicksXFont(new Font(Font.SANS_SERIF, Font.PLAIN, 18), 0, 0);
-		plotScatter.setAxisTicksYFont(new Font(Font.SANS_SERIF, Font.PLAIN, 18), gffChrMap.getSpace(1120, 5), 0);
-		plotScatter.setInsets(170, 100, 50, 150);
-		
-		plotScatter.saveToFile("/home/zong0jie/desktop/test.png", 10000, 1000);
-
-	}
 	GffChrAbs gffChrAbs = new GffChrAbs();
 	
 	Logger logger = Logger.getLogger(GffChrMap.class);

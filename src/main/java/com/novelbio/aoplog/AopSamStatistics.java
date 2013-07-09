@@ -40,8 +40,6 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.PlotBar;
 import com.novelbio.nbcgui.controlseq.CtrlSamPPKMint;
 
-@Component
-@Aspect
 public class AopSamStatistics {
 	private static final Logger logger = Logger.getLogger(AopDNAMapping.class);
 	/** 超过50条染色体就不画这个图了 */

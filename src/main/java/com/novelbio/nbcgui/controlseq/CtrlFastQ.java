@@ -11,9 +11,12 @@ import org.apache.log4j.Logger;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.HashMultimap;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQC;
 import com.novelbio.analysis.seq.fastq.FastQRecordFilter;
+import com.novelbio.aoplog.ReportBuilder;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.service.SpringFactory;
 import com.novelbio.nbcgui.FoldeCreate;
@@ -34,7 +37,6 @@ public class CtrlFastQ {
 	ArrayList<String> lsFastQfileRight = new ArrayList<String>();
 	
 	String outFilePrefix = "";
-	
 	/**
 	 * 前缀和该前缀所对应的一系列fastq文件。
 	 * 如果是单端，则Fastq[]长度为1，如果是双端，则Fastq[]长度为2
@@ -51,6 +53,7 @@ public class CtrlFastQ {
 	Map<String, FastQC[]> mapCond2FastQCAfter;
 	/** 过滤后是否要QC，不要就只计数 */
 	boolean qcAfter = true;
+
 	
 	public void setAdaptorLeft(String adaptorLeft) {
 		fastQfilterRecord.setFilterParamAdaptorLeft(adaptorLeft.trim());
@@ -242,7 +245,33 @@ public class CtrlFastQ {
 			
 			ctrlFastQfilter.setFastQLRfiltered(createCombineFastq(prefix, lsFastQLR));
 			ctrlFastQfilter.filteredAndCombineReads();
+			
+			HashMultimap<String, String> mapParam = ctrlFastQfilter.saveFastQC(outFilePrefix + prefix);
+			saveFastQCfilterParamSingle(mapParam);
 		}
+		Map<String, FastQC[]> mapParam2FastqcLR = new LinkedHashMap<String, FastQC[]>();
+		for (String prefix : mapCond2FastQCBefore.keySet()) {
+			FastQC[] fastqcBefore = mapCond2FastQCBefore.get(prefix);
+			FastQC[] fastqAfter = mapCond2FastQCAfter.get(prefix);
+			mapParam2FastqcLR.put(prefix, fastqcBefore);
+			mapParam2FastqcLR.put(prefix, fastqAfter);
+		}
+		List<String[]> lsSummary = FastQC.combineFastQCbaseStatistics(mapParam2FastqcLR);
+		TxtReadandWrite txtWrite = new TxtReadandWrite(outFilePrefix + "basicStatsAll.xls", true);
+		txtWrite.ExcelWrite(lsSummary);
+		txtWrite.close();
+		
+	}
+	
+	private FastQC[] getFastQC(List<FastQ[]> lsFastQLR, String prefix, boolean qc) {
+		FastQC[] fastQCs = new FastQC[2];
+		if (lsFastQLR.get(0).length == 1) {
+			fastQCs[0] = new FastQC(prefix, qc);
+		} else {
+			fastQCs[0] = new FastQC(prefix + "_Left", qc);
+			fastQCs[1] = new FastQC(prefix + "_Right", qc);
+		}
+		return fastQCs;
 	}
 	
 	private FastQ[] createCombineFastq(String condition, List<FastQ[]> lsFastq) {
@@ -258,15 +287,11 @@ public class CtrlFastQ {
 		}
 		return fastQs;
 	}
-	
-	private FastQC[] getFastQC(List<FastQ[]> lsFastQLR, String prefix, boolean qc) {
-		FastQC[] fastQCs = new FastQC[2];
-		if (lsFastQLR.get(0).length == 1) {
-			fastQCs[0] = new FastQC(prefix, qc);
-		} else {
-			fastQCs[0] = new FastQC(prefix + "_Left", qc);
-			fastQCs[1] = new FastQC(prefix + "_Right", qc);
-		}
-		return fastQCs;
+
+	/** 单个过滤写入文本 */
+	private void saveFastQCfilterParamSingle(HashMultimap<String, String> mapParam) {
+		String savePath = FileOperate.getPathName(outFilePrefix);
+		ReportBuilder.writeDescFile(savePath, mapParam);
 	}
+	
 }

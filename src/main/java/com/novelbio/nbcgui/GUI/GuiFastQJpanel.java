@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -16,7 +15,6 @@ import javax.swing.JTextField;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.mapping.MapLibrary;
-import com.novelbio.aoplog.AopFastQFilter;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JComboBoxData;
@@ -27,7 +25,6 @@ import com.novelbio.database.service.SpringFactory;
 import com.novelbio.nbcgui.GUI.GuiLayeredPanSpeciesVersion.SpeciesSelect;
 import com.novelbio.nbcgui.controlseq.CtrlDNAMapping;
 import com.novelbio.nbcgui.controlseq.CtrlFastQ;
-import com.novelbio.nbcgui.controlseq.CtrlFastQMapping;
 
 public class GuiFastQJpanel extends JPanel {
 	
@@ -368,7 +365,7 @@ public class GuiFastQJpanel extends JPanel {
 		
 		cmbMaptoIndex = new JComboBoxData<Integer>();
 		cmbMaptoIndex.sortValue(true);
-		cmbMaptoIndex.setMapItem(CtrlFastQMapping.getMapStr2Index());
+		cmbMaptoIndex.setMapItem(CtrlDNAMapping.getMapStr2Index());
 		cmbMaptoIndex.setBounds(448, 446, 161, 23);
 		add(cmbMaptoIndex);
 		

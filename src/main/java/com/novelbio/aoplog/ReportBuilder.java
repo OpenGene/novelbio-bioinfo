@@ -17,7 +17,7 @@ import com.novelbio.database.service.SpringFactory;
  * @author novelbio
  *
  */
-public abstract class ReportBuilder {
+public class ReportBuilder {
 	private static final Logger logger = Logger.getLogger(ReportBuilder.class);
 	// 定义所有需要的参数
 	HashMultimap<String, String> mapParam2Detail = HashMultimap.create();
@@ -40,31 +40,9 @@ public abstract class ReportBuilder {
 	public void setParamPath(String paramPath) {
 		this.paramPath = paramPath;
 	}
-	public void writeInfo() {
-		if (buildExcels() && buildImages() && writeDescFile())
-			return;
-		logger.error("aopFastQ生成报告图表参数出现异常！");
-	}
-
-	/**
-	 * 创建excel文件以及excel文件的说明
-	 * @return 是否成功
-	 */
-	protected abstract boolean buildExcels();
-	
-	/**
-	 * 创建图表文件及其说明
-	 * @return 是否成功
-	 */
-	protected abstract boolean buildImages();
-	/**
-	 * 创建描述文件param.txt
-	 * @return 是否成功
-	 */
-	protected abstract boolean fillDescFile();
 	
 	/** 写参数 */
-	private boolean writeDescFile() {
+	public static boolean writeDescFile(String paramPath, HashMultimap<String, String> mapParam2Detail) {
 		TxtReadandWrite txtReadandWrite = null;
 		try {
 			txtReadandWrite = getParamsTxt(paramPath);
@@ -106,7 +84,7 @@ public abstract class ReportBuilder {
 	 * @param savePath 输入与param在同一文件夹下的文件
 	 * @return
 	 */
-	private TxtReadandWrite getParamsTxt(String savePath) {
+	public static TxtReadandWrite getParamsTxt(String savePath) {
 		String paramsTxtPath = null;
 		// 判断这些参数是放在本地还是hdfs上
 		Boolean isHdfs = savePath.substring(0, 3).equalsIgnoreCase("HDFS");

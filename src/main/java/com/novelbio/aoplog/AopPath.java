@@ -32,7 +32,6 @@ import org.springframework.stereotype.Component;
 
 import com.novelbio.analysis.annotation.functiontest.FunctionTest;
 import com.novelbio.analysis.annotation.functiontest.StatisticTestResult;
-import com.novelbio.aoplog.JFreeChartBarRender.BarColor;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.GraphicCope;
@@ -46,8 +45,6 @@ import com.novelbio.nbcgui.controltest.CtrlTestPathInt;
  * @author zong0jie
  * 
  */
-@Component
-@Aspect
 public class AopPath {
 	private static Logger logger = Logger.getLogger(AopPath.class);
 

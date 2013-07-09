@@ -1,32 +1,19 @@
 package com.novelbio.nbcgui.GUI;
 
-import javax.swing.JPanel;
-import java.awt.CardLayout;
-import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
-import javax.swing.JTextField;
-import javax.swing.SpringLayout;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JRadioButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import com.novelbio.analysis.microarray.AffyNormalization;
-import com.novelbio.analysis.seq.fastq.FastQ;
-import com.novelbio.analysis.seq.mirna.MiRNAtargetRNAhybrid;
-import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
-import com.novelbio.database.model.species.Species;
-import com.novelbio.nbcgui.controlseq.CtrlFastQMapping;
-
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import javax.swing.ButtonGroup;
 
 public class GuiAffyCelNormJpanel extends JPanel {
 	private JTextField txtSavePathAndPrefix;

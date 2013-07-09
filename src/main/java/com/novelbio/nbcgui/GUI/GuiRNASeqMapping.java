@@ -1,47 +1,31 @@
 package com.novelbio.nbcgui.GUI;
 
-import javax.swing.JPanel;
-import java.awt.CardLayout;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 
-import javax.swing.JTextField;
-import javax.swing.SpringLayout;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JTextField;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.mapping.MapLibrary;
-import com.novelbio.analysis.seq.mapping.MapRsem;
-import com.novelbio.analysis.seq.mapping.MapTophat;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
-import com.novelbio.analysis.seq.mirna.MiRNAtargetRNAhybrid;
-import com.novelbio.analysis.seq.resequencing.RefSiteSnpIndel;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
-import com.novelbio.database.domain.information.SoftWareInfo;
-import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.nbcgui.controlseq.CtrlFastQMapping;
 import com.novelbio.nbcgui.controlseq.CtrlRNAmap;
-
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map.Entry;
-
-import javax.swing.ButtonGroup;
-
-import org.springframework.context.annotation.Primary;
 
 public class GuiRNASeqMapping extends JPanel {
 	/**

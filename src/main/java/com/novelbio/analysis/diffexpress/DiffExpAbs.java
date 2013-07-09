@@ -27,6 +27,17 @@ public abstract class DiffExpAbs implements DiffExpInt {
 	public static final int TTest = 50;
 	public static final int EBSeq = 60;
 
+	// 满足条件的差异基因的最少数量
+//	public static final int QUANUM = 1000;
+	public static final double THRESHOLD1 = 0.01;
+	public static final double THRESHOLD2 = 0.05;
+	//火山图的长宽
+	public static final int PLOT_WIDTH = 1024;
+	public static final int PLOT_HEIGTH = 1024;
+	
+	//TODO这个值要改，需要在数据库里获取，前台表单填写到数据库中
+	public static final String sequencingType = "表达谱芯片";
+	
 	Configuration freeMarkerConfiguration = (Configuration)SpringFactory.getFactory().getBean("freemarkNBC");
 	String workSpace;
 	String fileNameRawdata = "";
@@ -172,6 +183,7 @@ public abstract class DiffExpAbs implements DiffExpInt {
 		run();
 		modifyResult();
 //		clean();
+		plotDifParams();
 	}
 	/**
 	 * 将输入的文件重整理成所需要的txt格式写入文本
@@ -290,6 +302,7 @@ public abstract class DiffExpAbs implements DiffExpInt {
 	 * Rrunning("DEseq")
 	 */
 	protected abstract void run();
+	
 	protected void Rrunning(String cmdName) {
 		String cmd = PathNBCDetail.getRscript() + outScript.replace("\\", "/");
 		CmdOperate cmdOperate = new CmdOperate(cmd);
@@ -314,6 +327,83 @@ public abstract class DiffExpAbs implements DiffExpInt {
 		FileOperate.DeleteFileFolder(outScript);
 		FileOperate.DeleteFileFolder(fileNameRawdata);
 	}
+	
+	public void plotDifParams() {
+		Map<String, String[]> mapExcelName2Compare = getMapOutFileName2Compare();
+		Map<String, DiffGeneFilter> mapExcelName2DifResultInfo= new LinkedHashMap<String, DiffGeneFilter>();
+		
+		String outFolder = FileOperate.addSep(FileOperate.getParentPathName(getResultFileName().get(0)));
+		
+		int i = 0;
+		//excel和火山图的总体描述，写在最前面。
+		for (String excelName : mapExcelName2Compare.keySet()) {
+			i++;
+			if (i == 1) {
+				//写表格描述
+				String outEXCLECon = FileOperate.changeFileSuffix(excelName, "_xls", "txt");
+				TxtReadandWrite txtReadandWrite = new TxtReadandWrite(outEXCLECon, true);
+				txtReadandWrite.writefileln("﻿upCompare@@下表是差异基因筛选结果的截图展示，附带差异基因筛选表格说明，下图是差异基因火山图的展示。");
+				txtReadandWrite.close();
+			}
+			mapExcelName2DifResultInfo.put(excelName, new DiffGeneFilter(excelName, mapExcelName2Compare.get(excelName)));
+		}
+		
+		String[] threshold = DiffGeneFilter.setThreshold(mapExcelName2DifResultInfo.values());
+		
+		//画图，出差异基因的表格
+		for (String excelFileName : mapExcelName2DifResultInfo.keySet()) {
+			DiffGeneFilter difResultInfo = mapExcelName2DifResultInfo.get(excelFileName);
+			difResultInfo.writeDifGene();
+			difResultInfo.plotVolcanAndWriteParam(PLOT_WIDTH, PLOT_HEIGTH);
+		}
+		
+		//写params.txt文件
+		writeParam(outFolder, threshold, mapExcelName2DifResultInfo);
+	}
+	
+	private void writeParam(String outFolder, String[] threshold, Map<String, DiffGeneFilter> mapExcelName2DifResultInfo) {
+		//写params.txt文件
+		String paramsFile = outFolder + "params.txt";
+		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(paramsFile, true);
+		txtReadandWrite.writefileln("transcript@@" + sequencingType);
+		txtReadandWrite.writefileln("finderCondition@@" +  threshold[0] + "=" + threshold[1]);
+		for (DiffGeneFilter difResultInfo : mapExcelName2DifResultInfo.values()) {
+			String tmplsExcels = "lsExcels@@EXCEL::";
+			String fileName = FileOperate.getFileName(difResultInfo.getDifGeneFileName());
+			if (tmplsExcels.equals("lsExcels@@EXCEL::")) {
+				tmplsExcels = tmplsExcels  + fileName;
+			}else {
+				tmplsExcels = tmplsExcels + ";" + fileName ;
+			}
+			txtReadandWrite.writefileln(tmplsExcels);
+		}
+		
+		for (DiffGeneFilter difResultInfo : mapExcelName2DifResultInfo.values()) {
+			String tmplsPicture = "lsPictures@@PICTURE::";
+			String pictureName = FileOperate.getFileName(difResultInfo.getVolcanoFileName());
+			if (tmplsPicture.equals("lsPictures@@PICTURE::")) {
+				tmplsPicture = tmplsPicture + pictureName;
+			}else {
+				tmplsPicture = tmplsPicture + ";" +  pictureName ;
+			}
+			txtReadandWrite.writefileln(tmplsPicture);
+		}
+		String resultStr = "result@@";
+		for (String filename : mapExcelName2DifResultInfo.keySet()) {
+			DiffGeneFilter difResultInfo = mapExcelName2DifResultInfo.get(filename);
+			String groupName = difResultInfo.compare[0] + "vs" + difResultInfo.compare[1];
+			String tmp = groupName + "组共得到" + difResultInfo.getDifGeneNum() + "个差异基因用于后续分析";
+			if (resultStr.equals("result@@")) {
+				resultStr = resultStr + tmp;
+			}else {
+				resultStr = resultStr + ";" + tmp ;
+			}
+			
+		}
+		txtReadandWrite.writefileln(resultStr);
+		txtReadandWrite.close();
+	}
+
 	/**
 	 * 返回method的文字与其ID对照表
 	 * ID就是本类的常量

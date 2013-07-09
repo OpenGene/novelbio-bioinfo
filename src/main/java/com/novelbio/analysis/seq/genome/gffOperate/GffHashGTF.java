@@ -11,6 +11,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -22,6 +23,8 @@ public class GffHashGTF extends GffHashGeneAbs{
 	double likelyhood = 0.4;//相似度在0.4以内的转录本都算为同一个基因
 	/** gene类似名 */
 	private static Set<String> setIsGene = new HashSet<String>();
+	/** 需要跳过contig等 */
+	private static Set<String> setContig = new HashSet<String>();
 	
 	ArrayListMultimap<String, GffGeneIsoInfo> mapID2Iso = ArrayListMultimap.create();
 	private HashMap<String, Boolean> mapIso2IsHaveExon = new HashMap<String, Boolean>();
@@ -41,9 +44,16 @@ public class GffHashGTF extends GffHashGeneAbs{
 			setIsGene.add("pseudogene");
 		}
 	}
+	/** 设定mRNA和gene的类似名，在gff文件里面出现的 */
+	private void setContig() {
+		if (setContig.isEmpty()) {
+			setContig.add("contig");
+			setIsGene.add("chromosome");
+		}
+	}
 	@Override
 	protected void ReadGffarrayExcepTmp(String gfffilename) throws Exception {
-		setGeneName();
+		setGeneName(); setContig();
 		mapChrID2ListGff = new LinkedHashMap<String, ListGff>();
 		ArrayListMultimap<String, GffGeneIsoInfo> mapChrID2LsIso = ArrayListMultimap.create();
 		TxtReadandWrite txtgff = new TxtReadandWrite(gfffilename);
@@ -54,6 +64,9 @@ public class GffHashGTF extends GffHashGeneAbs{
 		for (String content : txtgff.readlines() ) {
 			if (content.charAt(0) == '#') continue;
 			String[] ss = content.split("\t");// 按照tab分开
+			
+			if (setContig.contains(ss[2].toLowerCase())) continue;
+			
 			int exonStart = Integer.parseInt(ss[3]), exonEnd = Integer.parseInt(ss[4]);
 			Boolean cisExon = null;
 			if (ss[6].equals("+")) {
@@ -68,7 +81,7 @@ public class GffHashGTF extends GffHashGeneAbs{
 			}
 			
 			String[] isoName2GeneName = getIsoName2GeneName(ss[8]);
-			String tmpTranscriptName = isoName2GeneName[0];
+			String tmpTranscriptName = isoName2GeneName[0], tmpGeneName = isoName2GeneName[1];
 			
 			if (setIsGene.contains(ss[2].toLowerCase())) continue;
 			
@@ -78,12 +91,15 @@ public class GffHashGTF extends GffHashGeneAbs{
 			if (GeneType.getMapMRNA2GeneType().containsKey(ss[2].toLowerCase())
 				||
 				(!tmpTranscriptName.equals(tmpTranscriptNameLast) 
-						&& getGffIso(tmpTranscriptName, exonStart, exonEnd) == null)
+						&& getGffIso(tmpGeneName, tmpTranscriptName, exonStart, exonEnd) == null)
 					) 
 			{
+				GeneType geneType = GeneType.getMapMRNA2GeneType().get(ss[2].toLowerCase());
+				if (geneType == null) geneType = GeneType.miRNA;
+					
 				boolean cis = getLocCis(ss[6], tmpChrID, exonStart, exonEnd);
-				gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso(tmpTranscriptName, isoName2GeneName[1], GeneType.mRNA, cis);
-				mapID2Iso.put(tmpTranscriptName, gffGeneIsoInfo);
+				gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso(tmpTranscriptName, tmpGeneName, geneType, cis);
+				addGffIso(tmpGeneName, gffGeneIsoInfo);
 				mapChrID2LsIso.put(tmpChrID, gffGeneIsoInfo);
 				tmpTranscriptNameLast = tmpTranscriptName;
 				mapIso2IsHaveExon.put(tmpTranscriptName, false);
@@ -92,8 +108,8 @@ public class GffHashGTF extends GffHashGeneAbs{
 				}
 			}
 
-			gffGeneIsoInfo = getGffIso(tmpTranscriptName, exonStart, exonEnd);
-			if (gffGeneIsoInfo == null) {
+			gffGeneIsoInfo = getGffIso(tmpGeneName, tmpTranscriptName, exonStart, exonEnd);
+			if (gffGeneIsoInfo == null && !ss[2].toLowerCase().contains("utr")) {
 				logger.error("没找到其对应的转录本：" + content);
 				continue;
 			}
@@ -137,20 +153,27 @@ public class GffHashGTF extends GffHashGeneAbs{
 			geneNameFlag = "gene_id";
 		} else if (!ss8.contains(geneNameFlag) && !ss8.contains("gene_id") && ss8.contains("Name")) {
 			geneNameFlag = "Name";
+		} else if (ss8.contains("Parent")) {
+			geneNameFlag = "Parent";
 		}
 		
 		String[] iso2geneName = new String[2];
 		 String[] info = ss8.split(";");
 		 for (String name : info) {
 			if (name.contains("transcript_id")) {
-				iso2geneName[0] = name.replace("transcript_id", "").replace("\"", "").trim();
+				iso2geneName[0] = name.replace("transcript_id", "").replace("=", "").replace("\"", "").trim();
 			} else if (name.contains(geneNameFlag)) {
-				iso2geneName[1] = name.replace(geneNameFlag, "").replace("\"", "").trim();
+				iso2geneName[1] = name.replace(geneNameFlag, "").replace("=", "").replace("\"", "").trim();
+			} else if (name.contains("ID")) {
+				iso2geneName[0] = name.replace("ID", "").replace("=", "").replace("\"", "").trim();
 			}
 		}
 		 return iso2geneName;
 	}
-	
+
+	private void addGffIso(String geneName, GffGeneIsoInfo gffGeneIsoInfo) {
+		mapID2Iso.put(geneName, gffGeneIsoInfo);
+	}
 	   /**
 	    * 
 	    * 从hashRnaID2RnaName中获得该RNA的GffGeneIsoInfo
@@ -168,11 +191,16 @@ public class GffHashGTF extends GffHashGeneAbs{
 	    * @param geneType 如果没有找到iso，则新建的iso是什么类型
 	    * @return
 	    */
-	private GffGeneIsoInfo getGffIso(String isoName, int startExon, int endExon) {
+	private GffGeneIsoInfo getGffIso(String geneName, String isoName, int startExon, int endExon) {
 		int start = Math.min(startExon, endExon), end = Math.max(startExon, startExon);
-		List<GffGeneIsoInfo> lsIsos = mapID2Iso.get(isoName);
+		List<GffGeneIsoInfo> lsIsos = mapID2Iso.get(geneName);
 		if (lsIsos == null || lsIsos.size() == 0) {
 			return null;
+		}
+		for (GffGeneIsoInfo gffGeneIsoInfo : lsIsos) {
+			if (gffGeneIsoInfo.getName().toLowerCase().equals(isoName.toLowerCase())) {
+				return gffGeneIsoInfo;
+			}
 		}
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsIsos) {
 			if (gffGeneIsoInfo.size() == 0 || start <= gffGeneIsoInfo.getEndAbs() && end >= gffGeneIsoInfo.getStartAbs()) {
@@ -190,7 +218,7 @@ public class GffHashGTF extends GffHashGeneAbs{
 		}
 		return gffGeneIsoInfoFinal;
 	}
-	
+
 	private void CopeChrIso(ArrayListMultimap<String, GffGeneIsoInfo> hashChrIso) {
 		for (String chrID : hashChrIso.keySet()) {
 			List<GffGeneIsoInfo> listIso = hashChrIso.get(chrID);

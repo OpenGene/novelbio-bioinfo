@@ -64,4 +64,9 @@ public class KEGGPathwayFunTest extends FunctionTest {
 		return mapResult;
 	}
 
+	@Override
+	protected String getTitle() {
+		return "Pathway-Analysis";
+	}
+
 }

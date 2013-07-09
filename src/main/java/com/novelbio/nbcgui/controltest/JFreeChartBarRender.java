@@ -1,4 +1,4 @@
-package com.novelbio.aoplog;
+package com.novelbio.nbcgui.controltest;
 
 import java.awt.Color;
 import java.awt.Paint;

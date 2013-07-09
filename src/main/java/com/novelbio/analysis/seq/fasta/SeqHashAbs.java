@@ -325,6 +325,9 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	 */
 	public SeqFasta getSeq(GffGeneIsoInfo gffGeneIsoInfo, boolean getIntron) {
 		 SeqFasta seqFasta = getSeq(gffGeneIsoInfo.isCis5to3(), SeqType.isoForward, gffGeneIsoInfo.getRefID(), gffGeneIsoInfo, sep, getIntron);
+		 if (seqFasta == null) {
+			return null;
+		}
 		 seqFasta.setName(gffGeneIsoInfo.getName());
 		 return seqFasta;
 	}
