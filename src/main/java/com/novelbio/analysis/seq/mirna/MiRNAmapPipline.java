@@ -201,7 +201,7 @@ public class MiRNAmapPipline {
 		mapBwa.setExePath(exePath);
 		mapBwa.setGapLength(5);
 				
-		SamFileStatistics samFileStatistics = new SamFileStatistics();
+		SamFileStatistics samFileStatistics = new SamFileStatistics(FileOperate.getFileNameSep(samFileName)[0]);
 		samFileStatistics.initial();
 		mapBwa.addAlignmentRecorder(samFileStatistics);
 

@@ -30,6 +30,8 @@ public abstract class MapDNA implements MapDNAint {
 	public void setLsAlignmentRecorders(List<AlignmentRecorder> lsAlignmentRecorders) {
 		this.lsAlignmentRecorders = lsAlignmentRecorders;
 	}
+	
+	/** 加入的samStatistics在samToBam的时候会自动加上染色体长度等信息 */
 	public void addAlignmentRecorder(AlignmentRecorder alignmentRecorder) {
 		this.lsAlignmentRecorders.add(alignmentRecorder);
 	}

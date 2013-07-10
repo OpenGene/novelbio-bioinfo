@@ -1,28 +1,27 @@
 package com.novelbio.nbcgui.GUI;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
 import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.JButton;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
-import javax.swing.JLabel;
 
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.rnaseq.Cuffcompare;
-import com.novelbio.analysis.seq.rnaseq.CuffDiff;
+import com.novelbio.analysis.seq.rnaseq.Cuffdiff;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
-
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import javax.swing.JSpinner;
-import javax.swing.JCheckBox;
 
 public class GuiCuffdiff extends JPanel {
 	private static final long serialVersionUID = 54835174459034502L;
@@ -38,7 +37,7 @@ public class GuiCuffdiff extends JPanel {
 	
 	GUIFileOpen guiFileOpen = new GUIFileOpen();
 	
-	CuffDiff cuffdiff = new CuffDiff();
+	Cuffdiff cuffdiff = new Cuffdiff();
 	Cuffcompare cuffcompare = new Cuffcompare();
 	private JTextField txtSaveTo;
 	private JButton btnSaveto;
