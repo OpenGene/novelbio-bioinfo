@@ -24,6 +24,7 @@ import com.novelbio.analysis.seq.sam.AlignSamReading;
 import com.novelbio.analysis.seq.sam.AlignSeqReading;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamMapReads;
+import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -183,9 +184,19 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	
 	public void addBamSorted(String condition, String sortedBamFile) {
 		setCondition.add(condition);
-		AlignSamReading samFileReading = new AlignSamReading(new SamFile(sortedBamFile));
+		SamFile samFile = new SamFile(sortedBamFile); 
+		AlignSamReading samFileReading = new AlignSamReading(samFile);
 		mapCond2SamReader.put(condition, samFileReading);
-		mapCond2SamFile.put(condition, new SamFile(sortedBamFile));
+		mapCond2SamFile.put(condition, samFile);
+		
+		int i = 0;
+		for (SamRecord samRecord : samFile.readLinesOverlap("chr2", 23456, 34567)) {
+				System.out.println(samRecord.toString());
+				if (i > 100) {
+					break;
+				}
+				i++;
+		}
 	}
 	
 	public void running() {

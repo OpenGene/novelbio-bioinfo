@@ -181,7 +181,7 @@ public class GuiRNAautoSpliceSimple extends JPanel implements GUIinfo {
 		add(lblInformation);
 		
 		lblDetailInfo = new JLabel("");
-		lblDetailInfo.setBounds(253, 484, 260, 14);
+		lblDetailInfo.setBounds(253, 484, 496, 14);
 		add(lblDetailInfo);
 		
 		txtChromFaPath = new JTextField();
