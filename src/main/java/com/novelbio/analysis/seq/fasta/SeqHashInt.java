@@ -134,4 +134,7 @@ public interface SeqHashInt {
 	/** 从头到尾遍历某条序列上的碱基 */
 	Iterable<Character> readBase(String refID);
 	
+	/** 设定最长可以读取的序列长度 */
+	void setMaxExtractSeqLength(int maxSeqLen);
+	
 }

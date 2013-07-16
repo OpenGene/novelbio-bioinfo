@@ -36,7 +36,7 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	public ArrayList<String> lsSeqName;
 	/** 外显子之间用什么来分割，默认为"" */
 	String sep = "";
-	
+	int getLongestSeqLen = 2000000;
 	/**
 	 * @param chrFile
 	 * @param regx 序列名的正则表达式，null和"   "都不设定
@@ -48,6 +48,9 @@ public abstract class SeqHashAbs implements SeqHashInt{
 			this.regx = regx;
 		}
 	}
+	
+	public abstract void setMaxExtractSeqLength(int maxSeqLen);
+	
 	public String getChrFile() {
 		return chrFile;
 	}
@@ -404,6 +407,7 @@ public abstract class SeqHashAbs implements SeqHashInt{
 		SeqFasta seqFasta = getSeq(siteInfo.getRefID(), siteInfo.getStartAbs(), siteInfo.getEndAbs());
 		siteInfo.setSeq(seqFasta, true);
 	}
+
 }
  enum SeqType {
 	 /** 转录本特有的方向，不同的exon有不同的方向 */

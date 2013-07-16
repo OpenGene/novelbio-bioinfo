@@ -63,7 +63,7 @@ public class LncSiteInfo {
 		GffGeneIsoInfo gffiso = gffChrAbs.getGffHashGene().searchISO(lncName);
 		if (gffiso == null) return lncInfo;
 		
-		GffDetailGene detailGene= gffiso.getParentGffDetailGene();
+		GffDetailGene detailGene = gffiso.getParentGffDetailGene();
 
 		if (gffiso.getGeneType() == GeneType.mRNA || gffiso.getGeneType() == GeneType.miRNA) {
 			gffiso = getOppLnc(detailGene);

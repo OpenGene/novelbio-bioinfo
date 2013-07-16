@@ -219,6 +219,10 @@ public class SeqHash implements SeqHashInt{
 	public void setDNAseq(boolean isDNAseq) {
 		seqHashAbs.setDNAseq(isDNAseq);
 	}
+	@Override
+	public void setMaxExtractSeqLength(int maxSeqLen) {
+		seqHashAbs.setMaxExtractSeqLength(maxSeqLen);
+	}
 	//////////////////////  static method  ////////////////////////////////////////////////////////////////////////////////}
 
 	/**

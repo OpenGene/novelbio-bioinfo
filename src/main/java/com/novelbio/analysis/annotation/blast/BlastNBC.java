@@ -275,6 +275,6 @@ public class BlastNBC {
 	public static void getFasta(String fastaFile) {
 		SeqFastaHash seqFastaHash = new SeqFastaHash(fastaFile, "\\w+_\\d+", false, false, false);
 		seqFastaHash.writeToFile(FileOperate.changeFileSuffix(fastaFile, "_cleanID", null));
-	}	
+	}
 	
 }

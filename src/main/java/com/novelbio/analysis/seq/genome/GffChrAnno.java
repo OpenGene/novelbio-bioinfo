@@ -25,16 +25,6 @@ import com.novelbio.database.model.species.Species;
 public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 	private static final Logger logger = Logger.getLogger(GffChrAnno.class);
 	
-	public static void main(String[] args) {
-		Species species = new Species(39947);
-		GffChrAbs gffChrAbs = new GffChrAbs(species);
-		GffChrAnno gffChrAnno = new GffChrAnno(gffChrAbs);
-		gffChrAnno.setColChrID(1);
-		gffChrAnno.setColStartEnd(2, 3);
-		gffChrAnno.annoFile("/home/zong0jie/Desktop/PApeak_peaks_filtered1.txt", "/home/zong0jie/Desktop/PApeak_peaks_filteredannoates.txt");
-	}
-	
-	
 	GffChrAbs gffChrAbs;
 	/** true查找peak的最高点，也就是找单个点，
 	 * false查找peak两端，看夹住了什么基因
@@ -56,6 +46,8 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 	boolean intronFilter = false;
 	boolean filtertss = false;
 	boolean filtertes = false;
+	/** 是否仅提取lnc */
+	boolean isOnlyGetLnc = false;
 	
 	ArrayList<String[]> lsGeneInfo = new ArrayList<String[]>();
 	ArrayList<String[]> lsResult = new ArrayList<String[]>();

@@ -22,6 +22,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 public class SeqFastaHash extends SeqHashAbs {
 	private static Logger logger = Logger.getLogger(SeqFastaHash.class);  
 	Boolean TOLOWCASE = null;
+	int maxSeqLen = 2000000;
 	/**
 	 * 将序列信息读入哈希表并返回<br>
 	 * 哈希表的键是序列名，小写
@@ -67,6 +68,12 @@ public class SeqFastaHash extends SeqHashAbs {
 		this.TOLOWCASE = TOLOWCASE;
 		setFile();
 	}
+
+	@Override
+	public void setMaxExtractSeqLength(int maxSeqLen) {
+		this.maxSeqLen = maxSeqLen;
+	}
+	
 	/**
 	 * 读取序列文件，将序列保存入Seqhash哈希表<br/>
 	 * 读取完毕后，生成<br/>
@@ -359,5 +366,6 @@ public class SeqFastaHash extends SeqHashAbs {
 		SeqFasta seqFasta = hashSeq.get(refID);
 		return seqFasta.readBase();
 	}
+	
 }
 

@@ -1,5 +1,7 @@
 package com.novelbio.database.domain.geneanno;
 
+import java.util.List;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
@@ -7,7 +9,9 @@ import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.novelbio.analysis.annotation.blast.BlastStatistics;
 import com.novelbio.base.dataOperate.DateUtil;
+import com.novelbio.base.dataStructure.listOperate.HistList;
 import com.novelbio.database.model.modgeneid.GeneID;
 
 /**
@@ -272,5 +276,10 @@ public class BlastInfo implements Comparable<BlastInfo> {
 		}
 		return result;
 	}
-
+	
+	public static BlastStatistics getHistEvalue(List<BlastInfo> lsBlastinfos) {
+		BlastStatistics blastStatistics = new BlastStatistics();
+		blastStatistics.setLsBlastinfos(lsBlastinfos);
+		return blastStatistics;
+	}
 }

@@ -34,7 +34,7 @@ public class GuilncLocation extends JPanel {
 		setLayout(null);
 		
 		scrollPane = new JScrollPaneData();
-		scrollPane.setBounds(12, 51, 572, 313);
+		scrollPane.setBounds(12, 51, 572, 385);
 		add(scrollPane);
 		
 		JButton btnAddfile = new JButton("addFile");
@@ -86,11 +86,11 @@ public class GuilncLocation extends JPanel {
 				}
 			}
 		});
-		btnRun.setBounds(596, 338, 107, 25);
+		btnRun.setBounds(596, 411, 107, 25);
 		add(btnRun);
 		
 		spinner = new JSpinner();
-		spinner.setBounds(596, 311, 92, 20);
+		spinner.setBounds(596, 306, 92, 20);
 		spinner.setValue(1);
 		add(spinner);
 		

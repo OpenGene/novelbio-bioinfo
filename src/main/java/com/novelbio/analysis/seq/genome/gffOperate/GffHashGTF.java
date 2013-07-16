@@ -91,7 +91,7 @@ public class GffHashGTF extends GffHashGeneAbs{
 			if (GeneType.getMapMRNA2GeneType().containsKey(ss[2].toLowerCase())
 				||
 				(!tmpTranscriptName.equals(tmpTranscriptNameLast) 
-						&& getGffIso(tmpGeneName, tmpTranscriptName, exonStart, exonEnd) == null)
+						&& !isHaveIso(tmpGeneName, tmpTranscriptName))
 					) 
 			{
 				GeneType geneType = GeneType.getMapMRNA2GeneType().get(ss[2].toLowerCase());
@@ -114,12 +114,22 @@ public class GffHashGTF extends GffHashGeneAbs{
 				continue;
 			}
 			if (ss[2].equals("exon")) {
-				if (mapIso2IsHaveExon.get(tmpTranscriptName) == false) {
-					gffGeneIsoInfo.addExon(cisExon, exonStart, exonEnd);
-					mapIso2IsHaveExon.put(tmpTranscriptName, true);
-				} else {
-					gffGeneIsoInfo.addExon(cisExon, exonStart, exonEnd);
+				try {
+					if (mapIso2IsHaveExon.get(tmpTranscriptName) == false) {
+						gffGeneIsoInfo.addExon(cisExon, exonStart, exonEnd);
+						mapIso2IsHaveExon.put(tmpTranscriptName, true);
+					} else {
+						gffGeneIsoInfo.addExon(cisExon, exonStart, exonEnd);
+					}
+				} catch (Exception e) {
+					if (mapIso2IsHaveExon.get(tmpTranscriptName) == false) {
+						gffGeneIsoInfo.addExon(cisExon, exonStart, exonEnd);
+						mapIso2IsHaveExon.put(tmpTranscriptName, true);
+					} else {
+						gffGeneIsoInfo.addExon(cisExon, exonStart, exonEnd);
+					}
 				}
+				
 			} else if (ss[2].toLowerCase().equals("cds")) {
 				gffGeneIsoInfo.setATGUAGauto(exonStart, exonEnd);
 				if (mapIso2IsHaveExon.get(tmpTranscriptName) == null) {
@@ -174,8 +184,21 @@ public class GffHashGTF extends GffHashGeneAbs{
 	private void addGffIso(String geneName, GffGeneIsoInfo gffGeneIsoInfo) {
 		mapID2Iso.put(geneName, gffGeneIsoInfo);
 	}
-	   /**
-	    * 
+	
+	private boolean isHaveIso(String geneName, String isoName) {
+		List<GffGeneIsoInfo> lsIsos = mapID2Iso.get(geneName);
+		if (lsIsos == null || lsIsos.size() == 0) {
+			return false;
+		}
+		for (GffGeneIsoInfo gffGeneIsoInfo : lsIsos) {
+			if (gffGeneIsoInfo.getName().toLowerCase().equals(isoName.toLowerCase())) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
 	    * 从hashRnaID2RnaName中获得该RNA的GffGeneIsoInfo
 	    * 这里的genID不是我们数据库里面的geneID，而是NCBI gff所特有的ID
 	    * @param rnaID 输入的rnaID
@@ -190,7 +213,7 @@ public class GffHashGTF extends GffHashGeneAbs{
 	    * @param endExon 如果startExon和endExon中有一个小于0，则直接返回listIso的第一个ISO
 	    * @param geneType 如果没有找到iso，则新建的iso是什么类型
 	    * @return
-	    */
+	    */  
 	private GffGeneIsoInfo getGffIso(String geneName, String isoName, int startExon, int endExon) {
 		int start = Math.min(startExon, endExon), end = Math.max(startExon, startExon);
 		List<GffGeneIsoInfo> lsIsos = mapID2Iso.get(geneName);

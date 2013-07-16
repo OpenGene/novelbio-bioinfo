@@ -58,7 +58,12 @@ public class ChrStringHash extends SeqHashAbs{
 		super(chrFilePath, regx);
 		setFile();
 	}
-
+	
+	/** 设定最长读取的sequence长度 */
+	public void setMaxExtractSeqLength(int maxExtractSeqLength) {
+		this.maxExtractSeqLength = maxExtractSeqLength;
+	}
+	
 	/**
 	 * 设定序列文件夹
 	 * @throws FileNotFoundException 
@@ -287,6 +292,7 @@ public class ChrStringHash extends SeqHashAbs{
 		}
 		
 	}
+
 }
 
 
