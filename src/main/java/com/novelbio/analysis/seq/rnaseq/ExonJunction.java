@@ -188,15 +188,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		AlignSamReading samFileReading = new AlignSamReading(samFile);
 		mapCond2SamReader.put(condition, samFileReading);
 		mapCond2SamFile.put(condition, samFile);
-		
-		int i = 0;
-		for (SamRecord samRecord : samFile.readLinesOverlap("chr2", 23456, 34567)) {
-				System.out.println(samRecord.toString());
-				if (i > 100) {
-					break;
-				}
-				i++;
-		}
 	}
 	
 	public void running() {
