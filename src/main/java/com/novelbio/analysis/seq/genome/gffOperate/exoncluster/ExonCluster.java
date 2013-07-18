@@ -177,8 +177,8 @@ public class ExonCluster implements Alignment {
 	 * 有时候会出现这种情况，两个iso不是同一个tss，但结尾相同
 	 * 这种情况不是我们想要的，不做差异可变剪接分析
 	 * 譬如:<br>
-	 *4----5-----------<br>
-	 *  -4'-5'----------<br>
+	 *1-------2-----------<br>
+	 *    1'--2'----------<br>
 	 *  这两个exon就不是我们想要的东西，返回true<br>
 	 * @return
 	 */
@@ -220,6 +220,81 @@ public class ExonCluster implements Alignment {
 		return false;
 	}
 	
+	/**
+	 * <b>只能比较两组</b><br>
+	 * 几种情况<br>
+	 * 1. 两个exon都在iso的最边界，两头不同<br>
+	 * this            10---20-----<br>
+	 * ref可以是     15--20------<br>
+	 * ref可以是   8------20------<br><br>
+	 * 2. 一个exon在iso边界，该exon的靠边端长度小于另一个的长度
+	 * @return
+	 */
+	public boolean isEdgeSmaller(GffGeneIsoInfo gffRef) {
+		for (ArrayList<ExonInfo> lsexons : mapIso2LsExon.values()) {
+			if (lsexons.size() > 2 || lsexons.size() == 0) {
+				return false;
+			}
+		}
+
+		if (mapIso2LsExon.size() <= 1) {
+			return false;
+		}
+
+		
+		ExonInfo exonInfoRef = mapIso2LsExon.get(gffRef).get(0);
+		ExonInfo exonInfoThis = null;
+		for (List<ExonInfo> lsExonInfos : mapIso2LsExon.values()) {
+			if (exonInfoRef != lsExonInfos.get(0)) {
+				exonInfoThis = lsExonInfos.get(0);
+				break;
+			}
+		}
+		
+		if (exonClusterBefore == null && exonClusterAfter != null) {
+			if (exonInfoRef.getStartCis() != exonInfoThis.getStartCis() && exonInfoRef.getEndCis() == exonInfoThis.getEndCis()
+					) {
+				return true;
+			}
+		}
+		if (exonClusterBefore != null && exonClusterAfter == null) {
+			if (exonInfoRef.getStartCis() == exonInfoThis.getStartCis() && exonInfoRef.getEndCis() != exonInfoThis.getEndCis()
+					) {
+				return true;
+			}
+		}
+		if (exonClusterBefore == null && exonClusterAfter == null) {
+			if (exonInfoRef.getStartCis() != exonInfoThis.getStartCis() || exonInfoRef.getEndCis() != exonInfoThis.getEndCis()
+					) {
+				return true;
+			}
+		}
+		
+		
+		if (exonClusterBefore != null && exonClusterBefore.mapIso2LsExon.get(gffRef) == null) {
+			if ((isCis5to3() && exonInfoRef.getStartCis() > exonInfoThis.getStartCis()
+					||
+					!isCis5to3() && exonInfoRef.getStartCis() < exonInfoThis.getStartCis())
+					&&
+					exonInfoRef.getEndCis() == exonInfoThis.getEndCis()
+					) {
+				return true;
+			}
+		}
+		
+		if (exonClusterAfter != null && exonClusterAfter.mapIso2LsExon.get(gffRef) == null) {
+			if ((isCis5to3() && exonInfoRef.getEndCis() < exonInfoThis.getEndCis()
+					||
+					!isCis5to3() && exonInfoRef.getEndCis() > exonInfoThis.getEndCis())
+										&&
+					exonInfoRef.getStartCis() == exonInfoThis.getStartCis()
+					) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
 	/**
 	 * 在已经存在的iso中是否是一致的
 	 * 那么如果iso不在这个exoncluster范围内，就不进行统计

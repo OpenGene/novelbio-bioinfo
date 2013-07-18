@@ -1113,6 +1113,35 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 		return new int[]{sameBounds, lsExonClusters.size()*2, gffGeneIsoInfo1.size()*2, gffGeneIsoInfo2.size()*2};
 	}
+	
+	//TODO 该方法待测试
+	/**
+	 * 返回两个iso比较的信息
+	 * 看是否除了头尾边界外，其他边界都相同。
+	 * 头尾边界一致也返回true
+	 */
+	public static boolean isExonEdgeSame_NotConsiderBound(GffGeneIsoInfo gffGeneIsoInfo1, GffGeneIsoInfo gffGeneIsoInfo2) {
+		//完全没有交集
+		if (!gffGeneIsoInfo1.isCis5to3().equals(gffGeneIsoInfo2.isCis5to3()) 
+				|| gffGeneIsoInfo1.getEndAbs() <= gffGeneIsoInfo2.getStartAbs() 
+				|| gffGeneIsoInfo1.getStartAbs() >= gffGeneIsoInfo2.getEndAbs()) {
+			return false;
+		}
+		ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfos = new ArrayList<GffGeneIsoInfo>();
+		lsGffGeneIsoInfos.add(gffGeneIsoInfo1); lsGffGeneIsoInfos.add(gffGeneIsoInfo2);
+		ArrayList<ExonCluster> lsExonClusters = getExonCluster(gffGeneIsoInfo1.isCis5to3(), lsGffGeneIsoInfos);
+		//相同的边界数量，一个外显子有两个相同边界
+		//第一个overlap的exon
+		for (ExonCluster exonCluster : lsExonClusters) {
+			if (exonCluster.getLsIsoExon().size() == 1) {
+				continue;
+			}
+			if (!exonCluster.isSameExon() && !exonCluster.isEdgeSmaller(gffGeneIsoInfo1)) {
+				return false;
+			}
+		}
+		return true;
+	}
 	/**
 	 * 当exoncluster中的exon不一样时，查看具体有几条边是相同的。
 	 * 因为一致的exon也仅有2条相同边，所以返回的值为0，1，2

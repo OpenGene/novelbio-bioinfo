@@ -16,7 +16,7 @@ import com.novelbio.base.dataStructure.listOperate.ListAbs;
 import com.novelbio.database.model.species.Species;
 /** 重建转录本 */
 public class GffHashMerge {
-	private static Logger logger = Logger.getLogger(GffHashMerge.class);
+	private static final Logger logger = Logger.getLogger(GffHashMerge.class);
 	
 	public static void main(String[] args) {
 		human();
@@ -94,10 +94,7 @@ public class GffHashMerge {
 		TxtReadandWrite txtOut = new TxtReadandWrite(gffFinalStatistics, true);
 		txtOut.ExcelWrite(transcriptomStatistics.getStatisticsResult());
 	}
-	
-	
-	
-	
+
 	GffHashGene gffHashGeneRef = new GffHashGene();
 	ArrayList<GffHashGene> lsGffHashGenes = new ArrayList<GffHashGene>();
 	/** key小写 */
@@ -107,7 +104,7 @@ public class GffHashMerge {
 	/**统计转录本信息时用到 */
 	Species species;
 	/**新的转录本如果长度小于1000，并且没有内含子，就有可能是假基因，就删除 */
-	int minGeneLen = 1000;
+	int minGeneLen = 300;
 	
 	boolean calculate = false;
 	
@@ -196,7 +193,10 @@ public class GffHashMerge {
 	}
 	/**
 	 * 	看gffCodGene上，头部基因的indexNum和尾部基因的indexNum
-	 * @param start 是否看
+	 * @param start 如果该cod没有落在一个GffDetail基因中，那么当start为true，则返回该cod的下一个基因
+	 * 否则返回该cod的上一个基因<br>
+	 * 如 start 为true：-----*------gene---------
+	 * 如 start 为false：-----------gene---*----
 	 * @param gffCodGene
 	 * @return
 	 */
@@ -219,8 +219,8 @@ public class GffHashMerge {
 	 * 将指定范围内的gffGene装入cluster中
 	 * @param gffHashGeneBed
 	 * @param chrID
-	 * @param startLoc 从0开始
-	 * @param endLoc 从0开始
+	 * @param startID 本GffDetailGene的序号，如果本GffDetailGene不存在，则返回上一个gffDetailGene的序号
+	 * @param endID 
 	 */
 	private void addGffGene_Into_GffCluster(GffGeneCluster gffGeneCluster, GffHashGene gffHashGene, String chrID, int startID, int endID) {
 		ListGff lsGff = gffHashGene.getMapChrID2LsGff().get(chrID);
@@ -243,9 +243,9 @@ public class GffHashMerge {
 	private void modifyAndAddChrIDlist( ArrayList<GffGeneCluster> lsGeneCluster) {
 		ListGff listGff = new ListGff();
 		for (GffGeneCluster gffGeneCluster : lsGeneCluster) {
-			if (gffGeneCluster.getRefGffGene() != null && gffGeneCluster.getRefGffGene().size() > 0 && gffGeneCluster.getRefGffGene().get(0).getName().contains("PARK2")) {
-				logger.error("stop");
-			}
+//			if (gffGeneCluster.getRefGffGene() != null && gffGeneCluster.getRefGffGene().size() > 0 && gffGeneCluster.getRefGffGene().get(0).getName().contains("PARK2")) {
+//				logger.error("stop");
+//			}
 			ArrayList<GffDetailGene> lsGene = gffGeneCluster.getCombinedGffGene();
 	
 			boolean shortGene = true;

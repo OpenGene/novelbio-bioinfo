@@ -176,6 +176,9 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 				this.pvalue = pvalue;
 			}
 		}
+		if (this.pvalue < 0) {
+			this.pvalue = 1.0;
+		}
 		return this.pvalue;
 	}
 	
@@ -609,7 +612,9 @@ class SpliceType2Value {
 		ArrayList<Double> lsExp = new ArrayList<Double>();
 		Align siteInfo = spliceTypePredict.getDifSite();
 		double[] info = mapReads.getRangeInfo(siteInfo.getRefID(), siteInfo.getStartAbs(), siteInfo.getEndAbs(), 0);
-
+		if (info == null || BGinfo == null) {
+			return;
+		}
 		lsExp.add((double) (getMean(info) + 1));
 		lsExp.add((double) (getMean(BGinfo) + 1));
 

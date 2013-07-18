@@ -747,6 +747,34 @@ public class GffDetailGene extends ListDetailAbs {
 		return mapCompInfo2GeneIso.get(lsCompInfo.get(0));
 	}
 	
+	/**
+	 * 给定一个转录本，返回与之最接近的转录本，相似度必须在指定范围内
+	 * 所谓最接近，就是除了首位边界可以不同，其他边界必须相同
+	 * @param gffGeneIsoInfo
+	 * @param likelyhood 相似度必须高于该值
+	 * @return 没有则返回null
+	 */
+	public GffGeneIsoInfo getAlmostSameIso(GffGeneIsoInfo gffGeneIsoInfo) {
+		HashMap<int[], GffGeneIsoInfo> mapCompInfo2GeneIso = new HashMap<int[], GffGeneIsoInfo>();
+		ArrayList<int[]> lsCompInfo = new ArrayList<int[]>();
+		for (GffGeneIsoInfo gffGeneIsoInfoRef : lsGffGeneIsoInfos) {
+			if (GffGeneIsoInfo.isExonEdgeSame_NotConsiderBound(gffGeneIsoInfoRef, gffGeneIsoInfo)) {
+				int[] compareInfo = GffGeneIsoInfo.compareIso(gffGeneIsoInfoRef, gffGeneIsoInfo);
+				mapCompInfo2GeneIso.put(compareInfo, gffGeneIsoInfoRef);
+				lsCompInfo.add(compareInfo);
+			}
+		}
+		//排序，挑选出最相似的转录本
+		Collections.sort(lsCompInfo, new Comparator<int[]>() {
+			public int compare(int[] o1, int[] o2) {
+				Double int1 = (double)o1[0]/o1[1];
+				Double int2 = (double)o2[0]/o2[1];
+				return -int1.compareTo(int2);
+			}
+		});
+		return mapCompInfo2GeneIso.get(lsCompInfo.get(0));
+	}
+	
 	//TODO
 //	public ArrayListMultimap<String, GffGeneIsoInfo> getMapIsoGroup() {
 //		

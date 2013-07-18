@@ -226,7 +226,9 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 */
 	protected double[] getRangeInfo(String chrID, List<? extends Alignment> lsLoc, int binNum, int type) {
 		List<double[]> lstmp = getRangeInfoLs(chrID, lsLoc, type);
-				
+		if (lstmp == null) {
+			return null;
+		}
 		int len = 0;
 		for (double[] ds : lstmp) {
 			len = len + ds.length;

@@ -1,12 +1,16 @@
 package com.novelbio.database.domain.geneanno;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
@@ -555,6 +559,15 @@ public class SpeciesFile {
 		/** 从RefSeq中提取的ncRNA序列 */
 		String outNcRNA;
 		
+		/**  需要提取的miRNA的名字 */
+		Set<String> setMiRNAname;
+		
+		public void setLsMiRNAname(Collection<String> lsMiRNAname) {
+			setMiRNAname = new LinkedHashSet<String>();
+			for (String string : lsMiRNAname) {
+				setMiRNAname.add(string.toLowerCase());
+			}
+		}
 		/**
 		 * 设定输出文件夹和前缀，这个设定了就不用设定别的了
 		 * @param outPathPrefix
@@ -630,16 +643,23 @@ public class SpeciesFile {
 		 * @param regx 类似 "NR_\\d+|XR_\\d+";
 		 */
 		private void extractNCRNA(String refseqFile, String outNCRNA, String regx) {
-			 SeqFastaHash seqFastaHash = new SeqFastaHash(refseqFile,regx,false);
-			 seqFastaHash.writeToFile( regx ,outNCRNA );
+			if (!FileOperate.isFileExistAndBigThanSize(refseqFile, 0)) {
+				return;
+			}
+			SeqFastaHash seqFastaHash = new SeqFastaHash(refseqFile,regx,false);
+			seqFastaHash.writeToFile( regx ,outNCRNA );
 		}
 		/**
+		 * 如果设定了lsMiRNAName，则直接写入rnaMatureOut这个文本
 		 * 从miRBase的RNAdata文件中提取miRNA序列
 		 * @param hairpinFile
 		 * @param outNCRNA
 		 * @param regx 物种的英文，人类就是hsa
 		 */
 		private void extractMiRNASeqFromRNAdata(String rnaDataFile, String rnaDataRegx, String rnaHairpinOut, String rnaMatureOut) {
+			if (!FileOperate.isFileExistAndBigThanSize(rnaDataFile, 0)) {
+				return;
+			}
 			TxtReadandWrite txtRead = new TxtReadandWrite(rnaDataFile, false);
 			TxtReadandWrite txtHairpin = new TxtReadandWrite(rnaHairpinOut, true);
 			TxtReadandWrite txtMature = new TxtReadandWrite(rnaMatureOut, true);
@@ -648,14 +668,24 @@ public class SpeciesFile {
 			for (String string : txtRead.readlines()) {
 				if (string.startsWith("//")) {
 					ArrayList<SeqFasta> lsseqFastas = getSeqFromRNAdata(block.toString(), rnaDataRegx);
+
 					if (lsseqFastas.size() == 0) {
 						block = new StringBuilder();
 						continue;
 					}
-					txtHairpin.writefileln(lsseqFastas.get(0).toStringNRfasta());
-					for (int i = 1; i < lsseqFastas.size(); i++) {
-						txtMature.writefileln(lsseqFastas.get(i).toStringNRfasta());
+					if (setMiRNAname != null && setMiRNAname.size() > 0) {
+						for (SeqFasta seqFasta : lsseqFastas) {
+							if (setMiRNAname.contains(seqFasta.getSeqName().toLowerCase())) {
+								txtMature.writefileln(seqFasta.toStringNRfasta());
+							}
+						}
+					} else {
+						txtHairpin.writefileln(lsseqFastas.get(0).toStringNRfasta());
+						for (int i = 1; i < lsseqFastas.size(); i++) {
+							txtMature.writefileln(lsseqFastas.get(i).toStringNRfasta());
+						}
 					}
+				
 					block = new StringBuilder();
 					continue;
 				}
@@ -736,6 +766,9 @@ public class SpeciesFile {
 		}
 		
 		private void extractRfam(String rfamFile, String outRfam, int taxIDquery) {
+			if (!FileOperate.isFileExistAndBigThanSize(rfamFile, 0)) {
+				return;
+			}
 			if (taxIDquery <= 0) {
 				extractRfam(rfamFile, outRfam);
 			} else {

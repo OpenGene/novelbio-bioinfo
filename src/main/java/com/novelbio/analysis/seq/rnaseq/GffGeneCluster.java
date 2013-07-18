@@ -11,8 +11,6 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.base.dataStructure.listOperate.ListAbs;
-import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
 
 public class GffGeneCluster {
 	private static Logger logger = Logger.getLogger(GffGeneCluster.class);
@@ -69,9 +67,13 @@ public class GffGeneCluster {
 	public void setIsContainsRef(boolean isContainsRef) {
 		this.isContainsRef = isContainsRef;
 	}
-	public void addLsGffDetailGene(String isoName, ArrayList<GffDetailGene> lsGffDetailGenes) {
+	/**
+	 * @param gffFileName 仅仅用来记录Gff文件名
+	 * @param lsGffDetailGenes
+	 */
+	public void addLsGffDetailGene(String gffFileName, ArrayList<GffDetailGene> lsGffDetailGenes) {
 		lsGeneCluster.add(lsGffDetailGenes);
-		lsListGffName.add(isoName);
+		lsListGffName.add(gffFileName);
 	}
 	/** 当输入了Ref和This两个GffHash的时候才能用 */
 	public ArrayList<GffDetailGene> getThisGffGene() {
@@ -121,7 +123,7 @@ public class GffGeneCluster {
 	public ArrayList<GffDetailGene> getCombinedGffGene() {
 		if (lsCombGenesResult == null) {
 			setRefGffGene();
-			lsCombGenesResult = compareAndModify_GffGene();
+			lsCombGenesResult = compareAndModify_GffGeneNew();
 		}
 		return lsCombGenesResult;
 	}
@@ -165,25 +167,70 @@ public class GffGeneCluster {
 		ListGff lsGffDetailGenes = new ListGff();
 		for (GffDetailGene gffDetailGeneRefRaw : lsGenesRef) {//遍历每个GffDetail
 			if (gffDetailGeneRefRaw.getName().contains("NM_001044603")) {
-				logger.error("stop");
+				logger.error("stop");//TODO
 			}
 			GffDetailGene gffDetailGeneRef = gffDetailGeneRefRaw.clone();
 			GffDetailGene gffDetailGeneResult = gffDetailGeneRefRaw.clone();
 			gffDetailGeneResult.clearIso();
 			
 			HashSet<String> setGffIsoRefSelectName = new HashSet<String>();//所有选中的Iso的名字，也就是与cufflink预测的转录本相似的转录本
-
+			//这里的lsGeneCluster已经去除了refGff
 			for (ArrayList<GffDetailGene> lsgffArrayList : lsGeneCluster) {//获得GffCluster里面每个GffHash的list，这个一般只有一个GffHash
 				for (GffDetailGene gffDetailGeneCalculate : lsgffArrayList) {//获得另一个GffHash里面的GffDetailGene
 					for (GffGeneIsoInfo gffIsoThis : gffDetailGeneCalculate.getLsCodSplit()) {//遍历该GffDetailGene的转录本，并挑选出最接近的进行比较	
 						GffGeneIsoInfo gffIsoRef = gffDetailGeneRef.getSimilarIso(gffIsoThis, likelyhood);
 						
-						if (gffIsoRef == null) 
+						if (gffIsoRef == null) {
+							gffDetailGeneResult.addIso(gffIsoThis);
 							continue;
+						}
 						
 						setGffIsoRefSelectName.add(gffIsoRef.getName());
 						GffGeneIsoInfo gffIsoTmpResult = compareIso(gffIsoRef, gffIsoThis);
 						gffDetailGeneResult.addIso(gffIsoTmpResult);
+					}
+				}
+			}
+			
+			for (String isoName : setGffIsoRefSelectName) {
+				gffDetailGeneRef.removeIso(isoName);
+			}
+			gffDetailGeneResult.addIsoSimple(gffDetailGeneRef);
+			lsGffDetailGenes.add(gffDetailGeneResult);
+		}
+		lsGffDetailGenes = lsGffDetailGenes.combineOverlapGene();
+		return lsGffDetailGenes;
+	}
+	
+	//TODO
+	private ArrayList<GffDetailGene> compareAndModify_GffGeneNew() {
+		ListGff lsGffDetailGenes = new ListGff();
+		for (GffDetailGene gffDetailGeneRefRaw : lsGenesRef) {//遍历每个GffDetail
+			GffDetailGene gffDetailGeneRef = gffDetailGeneRefRaw.clone();
+			GffDetailGene gffDetailGeneResult = gffDetailGeneRefRaw.clone();
+			gffDetailGeneResult.clearIso();
+			
+			HashSet<String> setGffIsoRefSelectName = new HashSet<String>();//所有选中的Iso的名字，也就是与cufflink预测的转录本相似的转录本
+			//这里的lsGeneCluster已经去除了refGff
+			for (ArrayList<GffDetailGene> lsgffArrayList : lsGeneCluster) {//获得GffCluster里面每个GffHash的list，这个一般只有一个GffHash
+				for (GffDetailGene gffDetailGeneCalculate : lsgffArrayList) {//获得另一个GffHash里面的GffDetailGene
+					for (GffGeneIsoInfo gffIsoThis : gffDetailGeneCalculate.getLsCodSplit()) {//遍历该GffDetailGene的转录本，并挑选出最接近的进行比较	
+						//选择了仅仅是起点和终点不同的exon，方便修正
+						GffGeneIsoInfo gffIsoRef = gffDetailGeneRef.getAlmostSameIso(gffIsoThis);
+						//TODO 开始做修正工作
+						if (gffIsoRef == null) {
+							gffDetailGeneResult.addIso(gffIsoThis);
+							continue;
+						}
+						
+						GffGeneIsoInfo gffIsoTmpResult = compareIso(gffIsoRef, gffIsoThis);
+						if (gffIsoTmpResult == null) {
+							gffDetailGeneResult.addIso(gffIsoThis);
+						} else {
+							setGffIsoRefSelectName.add(gffIsoRef.getName());
+							gffDetailGeneResult.addIso(gffIsoTmpResult);
+						}
+				
 					}
 				}
 			}
@@ -219,13 +266,14 @@ public class GffGeneCluster {
 		int[] tailBoundInfo = getBothStartNumEndNum(lsExonClusters);
 		ArrayList<ExonClusterBoundInfo> lsExonBoundInfoStatistics = new ArrayList<ExonClusterBoundInfo>();//用于统计exon修正数量的
 		
+		/** 上一个位点 */
 		ExonClusterBoundInfo lastExonClusterBoundInfo = new ExonClusterBoundInfo(gffGeneIsoInfoRef, gffGeneIsoInfoThis, boundMaxFalseGapBp);
 		lastExonClusterBoundInfo.booStartUnify = true;
 		lastExonClusterBoundInfo.booEndUnify = true;
 
 		for (int exonClusterNum = 0; exonClusterNum < lsExonClusters.size(); exonClusterNum++) {
 			ExonClusterBoundInfo exonClusterBoundInfo = new ExonClusterBoundInfo(gffGeneIsoInfoRef, gffGeneIsoInfoThis, boundMaxFalseGapBp);
-			exonClusterBoundInfo.setLasteExonClusterBoundInfo(lastExonClusterBoundInfo);
+			exonClusterBoundInfo.setLastExonClusterBoundInfo(lastExonClusterBoundInfo);
 			exonClusterBoundInfo.setLsExonClustersAndNum(lsExonClusters, exonClusterNum);
 			exonClusterBoundInfo.setTailBoundInfo(tailBoundInfo);
 			
@@ -251,38 +299,14 @@ public class GffGeneCluster {
 	 */
 	private int[] getBothStartNumEndNum(ArrayList<ExonCluster> lsExonClusters) {
 		int start = -1, end = -1;
-		boolean start1 = false; boolean start2 = false;
-		boolean end1 = false; boolean end2 = false;
 		for (int i = 0; i < lsExonClusters.size(); i++) {
 			ExonCluster exonCluster = lsExonClusters.get(i);
-			ArrayList<ArrayList<ExonInfo>> lsLsExonInfo = ArrayOperate.getArrayListValue(exonCluster.getMapIso2LsExon());
-			ArrayList<ExonInfo> lsExonInfo1 = lsLsExonInfo.get(0);
-			ArrayList<ExonInfo> lsExonInfo2 = lsLsExonInfo.get(1);
-			if (lsExonInfo1.size() > 0) {
-				start1 = true;
-			}
-			if (lsExonInfo2.size() > 0) {
-				start2 = true;
-			}
-			if (start1 && start2) {
+			if (start < 0 && exonCluster.getMapIso2LsExon().size() > 1) {
 				start = i;
-				break;
-			}
-		}
-		for (int i = lsExonClusters.size() - 1; i >= 0; i--) {
-			ExonCluster exonCluster = lsExonClusters.get(i);
-			ArrayList<ArrayList<ExonInfo>> lsLsExonInfo = ArrayOperate.getArrayListValue(exonCluster.getMapIso2LsExon());
-			ArrayList<ExonInfo> lsExonInfo1 = lsLsExonInfo.get(0);
-			ArrayList<ExonInfo> lsExonInfo2 = lsLsExonInfo.get(1);
-			if (lsExonInfo1.size() > 0) {
-				end1 = true;
-			}
-			if (lsExonInfo2.size() > 0) {
-				end2 = true;
-			}
-			if (end1 && end2) {
 				end = i;
-				break;
+			}
+			if (start > 0 && exonCluster.getMapIso2LsExon().size() > 1 ) {
+				end = i;
 			}
 		}
 		return new int[]{start, end};
@@ -330,7 +354,7 @@ class ExonClusterBoundInfo {
 		 * 注意只修正一个端点，也就是靠近内侧的，如括弧所标注
 		 *差距是小于但不等于 所以设定为10表示10以下的差距才会修正，但是不会修正10
 	 */
-	int boundMaxFalseGapBp = 1;
+	int boundMaxFalseGapBp = 10;
 	
 	/**
 	 * 当ref和this的exon都在两端时，如果两个外显子的边界差距在指定bp以内(譬如50bp以内)，就不修正
@@ -341,7 +365,7 @@ class ExonClusterBoundInfo {
 		 * 注意只修正一个端点，也就是靠近内侧的，如括弧所标注
 		 *差距是小于但不等于 所以设定为10表示10以下的差距才会修正，但是不会修正10
 	 */
-	int boundMaxFalseGapBpTail = 150;
+	int boundMaxFalseGapBpTail = 10;
 	
 	public ExonClusterBoundInfo(GffGeneIsoInfo gffGeneIsoInfoRef, GffGeneIsoInfo gffGeneIsoInfoThis, int boundMaxFalseGapBp) {
 		this.gffGeneIsoInfoRef = gffGeneIsoInfoRef;
@@ -351,7 +375,7 @@ class ExonClusterBoundInfo {
 	public void setTailBoundInfo(int[] tailBoundInfo) {
 		this.tailBoundInfo = tailBoundInfo;
 	}
-	public void setLasteExonClusterBoundInfo(ExonClusterBoundInfo lastExonClusterBoundInfo) {
+	public void setLastExonClusterBoundInfo(ExonClusterBoundInfo lastExonClusterBoundInfo) {
 		this.lastExonClusterBoundInfo = lastExonClusterBoundInfo;
 	}
 	/**
@@ -401,7 +425,7 @@ class ExonClusterBoundInfo {
 	/** 计算所需选择的边界 */
 	private void calSelectBounds(ExonCluster exonCluster, ArrayList<ExonInfo> lsExonInfosRef, ArrayList<ExonInfo> lsExonInfosThis) {
 		if (tailBoundInfo[0] > thisExonClusterNum || tailBoundInfo[1] < thisExonClusterNum) {
-			if (lsExonInfosRef.size() == 1) {
+			if (lsExonInfosRef != null && lsExonInfosRef.size() == 1) {
 				selectRefStart = true; selectRefEnd = true;
 			}
 			else {
@@ -645,9 +669,9 @@ class ExonClusterBoundInfo {
 			selectRefStart = (refBound >= thisBound - boundMaxFalseGapBp ? true:false);
 	}
 	/**
+	 * @param start 是否选择的是起点位点
 	 * @param lsExonInfosRef size必须大于0
 	 * @param lsExonInfosThis size必须大于0
-	 * @param start 是否选择的是起点位点
 	 * @return
 	 * 0：refBound
 	 * 1：thisBound
@@ -687,6 +711,10 @@ class ExonClusterBoundInfo {
 		booStartUnify = false; booEndUnify = false;
 		
 		ExonCluster exonCluster = lsExonClusters.get(thisExonClusterNum);
+		if (exonCluster.getMapIso2LsExon().size() <= 1) {
+			return;
+		}
+		
 		ArrayList<ArrayList<ExonInfo>> lsLsExonInfo = ArrayOperate.getArrayListValue(exonCluster.getMapIso2LsExon());
 		ArrayList<ExonInfo> lsExonInfos0 = lsLsExonInfo.get(0);
 		ArrayList<ExonInfo> lsExonInfos1 = lsLsExonInfo.get(1);
@@ -732,6 +760,7 @@ class ExonClusterBoundInfo {
 					exonInfo.setCis5to3(lsExonInfosThis.get(0).isCis5to3());
 					exonInfo.setStartCis(lsExonInfosRef.get(0).getStartCis());
 					exonInfo.setEndCis(lsExonInfosThis.get(0).getEndCis());
+					exonInfo.setParentListAbs(gffGeneIsoInfoRef);
 					lsResult.add(exonInfo);
 					for (int i = 1; i < lsExonInfosThis.size(); i++) {
 						lsResult.add(lsExonInfosThis.get(i));
@@ -755,6 +784,7 @@ class ExonClusterBoundInfo {
 				exonInfo.setCis5to3(lsExonInfosThis.get(0).isCis5to3());
 				exonInfo.setStartCis(lsExonInfosThis.get(lsExonInfosThis.size() - 1).getStartCis());
 				exonInfo.setEndCis(lsExonInfosRef.get(lsExonInfosRef.size() - 1).getEndCis());
+				exonInfo.setParentListAbs(gffGeneIsoInfoRef);
 				lsResult.add(exonInfo);
 			}
 		}

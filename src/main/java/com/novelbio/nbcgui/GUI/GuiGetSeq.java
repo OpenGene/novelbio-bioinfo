@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -20,10 +21,13 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
+import com.novelbio.database.domain.geneanno.SpeciesFile.ExtractSmallRNASeq;
 import com.novelbio.database.model.species.Species;
+import com.novelbio.generalConf.PathNBCDetail;
 import com.novelbio.nbcgui.controlquery.CtrlPeakStatistics;
 import com.novelbio.nbcgui.controlseq.CtrlGetSeq;
 
@@ -70,6 +74,7 @@ public class GuiGetSeq extends JPanel {
 	
 	ButtonGroup btnGroupRand;
 	private JTextField txtSavePath;
+	JCheckBox chckbxGetMirna;
 	
 	CtrlGetSeq ctrlGetSeq = new CtrlGetSeq(this);
 	
@@ -241,6 +246,10 @@ public class GuiGetSeq extends JPanel {
 		chckbxGetalliso.setBounds(736, 291, 131, 22);
 		add(chckbxGetalliso);
 		
+		chckbxGetMirna = new JCheckBox("get miRNA");
+		chckbxGetMirna.setBounds(766, 497, 118, 23);
+		add(chckbxGetMirna);
+		
 		initial();
 	}
 	
@@ -359,6 +368,17 @@ public class GuiGetSeq extends JPanel {
 	}
 	
 	private void running() {
+		if (chckbxGetMirna.isSelected()) {
+			if (!chckbxGenomwide.isSelected()) {
+				int colChrID = (Integer) spinColChr.getValue() - 1;
+				runGetMiRNA(lsGeneInfo, colChrID);
+			} else {
+				runGetMiRNA(null, 0);
+			}
+			return;
+		}
+		
+		
 		if (rdbtnSite.isSelected()) {
 			int colChrID = (Integer) spinColChr.getValue() - 1;
 			int colSite = (Integer) spinStart.getValue() - 1;
@@ -414,6 +434,25 @@ public class GuiGetSeq extends JPanel {
 		ctrlGetSeq.setGetSeqSite(lsSiteInfo);
 		ctrlGetSeq.execute();
 	}
+	
+	private void runGetMiRNA(ArrayList<String[]> lsInfo, int colMiRNAname) {
+		List<String> lsMiRNAname = new ArrayList<String>();
+		if (lsInfo != null) {
+			for (String[] string : lsInfo) {
+				String miRNA = string[colMiRNAname];
+				lsMiRNAname.add(miRNA);
+			}
+		}
+		ExtractSmallRNASeq extractSmallRNASeq = new ExtractSmallRNASeq();
+		extractSmallRNASeq.setLsMiRNAname(lsMiRNAname);
+		extractSmallRNASeq.setOutMatureRNA(txtSavePath.getText());
+		extractSmallRNASeq.setRNAdata(PathNBCDetail.getMiRNADat(), cmbSpecies.getSelectedValue().getAbbrName());
+		if (chckbxGenomwide.isSelected()) {
+			extractSmallRNASeq.setOutHairpinRNA(FileOperate.changeFileSuffix(txtSavePath.getText(), "_pre", null));
+		}
+		extractSmallRNASeq.getSeq();
+	}
+	
 	/**
 	 * @param lsInfo
 	 * @param colChrID
