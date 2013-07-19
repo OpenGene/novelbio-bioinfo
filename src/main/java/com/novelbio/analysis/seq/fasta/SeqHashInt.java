@@ -137,4 +137,7 @@ public interface SeqHashInt {
 	/** 设定最长可以读取的序列长度 */
 	void setMaxExtractSeqLength(int maxSeqLen);
 	
+	/** 给定名字获得序列 */
+	SeqFasta getSeq(String seqName);
+	
 }

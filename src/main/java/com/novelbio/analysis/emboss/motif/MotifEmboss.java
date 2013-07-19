@@ -5,11 +5,13 @@ import java.util.Collection;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqHash;
+import com.novelbio.analysis.seq.fasta.SeqHashInt;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
+import com.novelbio.generalConf.PathNBCDetail;
 
 /**
  * 输入连配好的fasta文件，或序列
@@ -18,19 +20,19 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
  *
  */
 public class MotifEmboss {
-	public static void main(String[] args) {
-		String fileName = "TSS_36_UP.fasta";
-		SeqHash seqHashMotif = new SeqHash("/home/zong0jie/桌面/20121224/motif.fasta");
-		SeqHash seqHash = new SeqHash("/home/zong0jie/桌面/20121224/Tss/" + fileName);
-		MotifEmboss motifEmboss = new MotifEmboss();
-		motifEmboss.motifPath = "/home/zong0jie/Desktop/test/";
-		motifEmboss.setAlignedMotifSeqHash(seqHashMotif);
-		motifEmboss.setSeqHash(seqHash);
-		motifEmboss.setMotifEmbossScanAlgorithm(MotifEmbossScanAlgorithm.Frequency);
-		String[] result = motifEmboss.scanMotif();
-		FileOperate.moveFile(result[0], "/home/zong0jie/桌面/20121224/motifResult", fileName + "motif.txt", true);
-		FileOperate.moveFile(result[1], "/home/zong0jie/桌面/20121224/motifResult", fileName + "motif_reverse.txt", true);
-	}
+//	public static void main(String[] args) {
+//		String fileName = "TSS_36_UP.fasta";
+//		SeqHash seqHashMotif = new SeqHash("/home/zong0jie/桌面/20121224/motif.fasta");
+//		SeqHash seqHash = new SeqHash("/home/zong0jie/桌面/20121224/Tss/" + fileName);
+//		MotifEmboss motifEmboss = new MotifEmboss();
+//		motifEmboss.motifPath = "/home/zong0jie/Desktop/test/";
+//		motifEmboss.setAlignedMotifSeqHash(seqHashMotif);
+//		motifEmboss.setSeqHash(seqHash);
+//		motifEmboss.setMotifEmbossScanAlgorithm(MotifEmbossScanAlgorithm.Frequency);
+//		String[] result = motifEmboss.scanMotif();
+//		FileOperate.moveFile(result[0], "/home/zong0jie/桌面/20121224/motifResult", fileName + "motif.txt", true);
+//		FileOperate.moveFile(result[1], "/home/zong0jie/桌面/20121224/motifResult", fileName + "motif_reverse.txt", true);
+//	}
 	
 	SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.emboss);
 	
@@ -43,20 +45,34 @@ public class MotifEmboss {
 	String seqFilePath;
 	
 	/** motif分析所在的临时文件夹 */
-	String motifPath;
+	String motifPath = PathNBCDetail.getRworkspaceTmp();
 	
 	Prophecy prophecy;
 	Profit profit;
 	
 	MotifEmbossScanAlgorithm motifEmbossScanAlgorithm = MotifEmbossScanAlgorithm.Gribskov;
+	/** 需要扫描的文件 */
+	String seqfastaNeedScan;
+	
+	/** 产生的权重矩阵的文件路径 */
+	private String[] weightMatrixFile;
+	private  Boolean isNR = null;
 	
 	/** 输入连配好的motif */
 	public void setColAlignedMotifFasta(Collection<SeqFasta> colAlignmentMotif) {
 		this.colAlignmentMotif = colAlignmentMotif;
 	}
 	
+	/** true是，false否
+	 * null表示根据序列自动判定
+	 * @param isNR
+	 */
+	public void setIsNR(Boolean isNR) {
+		this.isNR = isNR;
+	}
+	
 	/** 输入连配好的motif */
-	public void setAlignedMotifSeqHash(SeqHash seqHash) {
+	public void setAlignedMotifSeqHash(SeqHashInt seqHash) {
 		colAlignmentMotif = new ArrayList<SeqFasta>();
 		addSeq(colAlignmentMotif, seqHash);
 		seqFilePath = null;
@@ -68,7 +84,7 @@ public class MotifEmboss {
 	}
 	
 	/** 输入要扫描的序列 */
-	public void setSeqHash(SeqHash seqHash) {
+	public void setSeqHash(SeqHashInt seqHash) {
 		colSeqFasta = new ArrayList<SeqFasta>();
 		addSeq(colSeqFasta, seqHash);
 		seqFilePath = null;
@@ -89,7 +105,7 @@ public class MotifEmboss {
 	 * @param colSeq motif
 	 * @param seqHash 待扫描的序列
 	 */
-	private void addSeq(Collection<SeqFasta> colSeq, SeqHash seqHash) {
+	private void addSeq(Collection<SeqFasta> colSeq, SeqHashInt seqHash) {
 		ArrayList<String> lsSeqName = seqHash.getLsSeqName();
 		for (String string : lsSeqName) {
 			SeqFasta seqFasta = seqHash.getSeq(string);
@@ -97,16 +113,21 @@ public class MotifEmboss {
 		}
 	}
 	
-	/**
-	 * 返回motif分析得到的文件名
-	 * @return
-	 */
-	private String[] scanMotif() {
+	public void generateMatrix() {
 		setParam();
 		String suffix = "_" +DateUtil.getDateAndRandom();
 		String alignedMotif = writeAlignedMotif(suffix);
-		String seqfastaNeedScan = writeSeqfastaNeedScan(suffix);
-		String[] weightMatrixFile = generateWeightMatrix(alignedMotif, suffix);
+		weightMatrixFile = generateWeightMatrix(alignedMotif, suffix);
+	}
+	/**
+	 * <b>之前务必要运行{@link #generateMatrix()}</b><br>
+	 * @return 返回 string[2]<br>
+	 * 0: 正链扫描结果<br>
+	 * 1: 负链扫描结果
+	 */
+	public String[] scanMotif() {
+		String suffix = "_" +DateUtil.getDateAndRandom();
+		seqfastaNeedScan = writeSeqfastaNeedScan(suffix);
 		String[] resultMotif = new String[weightMatrixFile.length];
 		resultMotif[0] = scanAndGetResult(weightMatrixFile[0], seqfastaNeedScan, suffix);
 		if (resultMotif.length > 1) {
@@ -130,31 +151,33 @@ public class MotifEmboss {
 	}
 	
 	private void setParam() {
-		if (colSeqFasta != null && colSeqFasta.size() > 0) {
-			setParamSeqFasta();
-		} else {
-			int seqType = SeqHash.getSeqType(seqFilePath);
-			boolean isNR = (seqType == SeqFasta.SEQ_DNA);
-			prophecy = new Prophecy(isNR);
-			profit = new Profit(isNR);
+		if (isNR == null) {
+			isNR = getIsNR();
 		}
+		prophecy = new Prophecy(isNR);
+		profit = new Profit(isNR);
 	}
 	
-	private void setParamSeqFasta() {
+	/** 设定是DNA还是Protein */
+	private boolean getIsNR() {
 		boolean isNr = true;
-		int i = 100;
-		for (SeqFasta seqFasta : colSeqFasta) {
-			//判定前100条序列看是核酸还是蛋白
-			if (i >= 100) break;
-			
-			if (seqFasta.getSeqType() == SeqFasta.SEQ_PRO) {
-				isNr = false;
-				break;
+		if (colSeqFasta != null && colSeqFasta.size() > 0) {
+			int i = 100;
+			for (SeqFasta seqFasta : colSeqFasta) {
+				//判定前100条序列看是核酸还是蛋白
+				if (i >= 100) break;
+				
+				if (seqFasta.getSeqType() == SeqFasta.SEQ_PRO) {
+					isNr = false;
+					break;
+				}
+				i++;
 			}
-			i++;
+		} else {
+			int seqType = SeqHash.getSeqType(seqFilePath);
+			isNr = (seqType == SeqFasta.SEQ_DNA);
 		}
-		prophecy = new Prophecy(isNr);
-		profit = new Profit(isNr);
+		return isNr;
 	}
 	
 	/**

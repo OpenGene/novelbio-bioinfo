@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict.SplicingAlternativeType;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
@@ -441,20 +442,32 @@ public class GffDetailGene extends ListDetailAbs {
 
 	/**
 	 * 去除重复Isoform
+	 * 如果里面含有以"tcons"开头的基因，会被替换掉，为的就是防止cufflinks的iso替换ref的iso
 	 */
 	public void removeDupliIso() {
 		if (removeDuplicateIso) {
 			return;
 		}
 		removeDuplicateIso = true;
-		HashSet<GffGeneIsoInfo> hashIso = new HashSet<GffGeneIsoInfo>();
+		HashMap<String, GffGeneIsoInfo> mapIso = new HashMap<String, GffGeneIsoInfo>();
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
-			if (hashIso.contains(gffGeneIsoInfo) && !gffGeneIsoInfo.ismRNA()) {
-				continue;
+			String key = getRefID();
+			for (ExonInfo exonInfo : gffGeneIsoInfo) {
+				key = key + SepSign.SEP_INFO + exonInfo.getStartAbs() + SepSign.SEP_ID + exonInfo.getEndAbs();
 			}
-			hashIso.add(gffGeneIsoInfo);
+			if (mapIso.containsKey(key)) {
+				GffGeneIsoInfo gffGeneIsoInfoOld = mapIso.get(key);
+				if (gffGeneIsoInfoOld.getName().toLowerCase().startsWith("tcons") && !gffGeneIsoInfo.getName().toLowerCase().startsWith("tcons")) {
+					gffGeneIsoInfoOld.setName(gffGeneIsoInfo.getName());
+				}
+				if (gffGeneIsoInfoOld.getATGsite() < 0 && gffGeneIsoInfo.getATGsite() > 0) {
+					gffGeneIsoInfoOld.setATGUAGauto(gffGeneIsoInfo.getATGsite(), gffGeneIsoInfo.getUAGsite());
+				}
+			} else {
+				mapIso.put(key, gffGeneIsoInfo);
+			}
 		}
-		this.lsGffGeneIsoInfos = ArrayOperate.getArrayListValue(hashIso);
+		this.lsGffGeneIsoInfos = new ArrayList<GffGeneIsoInfo>(mapIso.values());
 	}
 	/**
 	 * 将gffDetailGene中含有新的名字的iso添加入本类
@@ -764,6 +777,13 @@ public class GffDetailGene extends ListDetailAbs {
 				lsCompInfo.add(compareInfo);
 			}
 		}
+		
+		if (lsCompInfo.size() == 0) {
+			return null;
+		} else if (lsCompInfo.size() == 1) {
+			return mapCompInfo2GeneIso.get(lsCompInfo.get(0));
+		}
+		
 		//排序，挑选出最相似的转录本
 		Collections.sort(lsCompInfo, new Comparator<int[]>() {
 			public int compare(int[] o1, int[] o2) {

@@ -212,6 +212,9 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @return
 	 */
 	public boolean ismRNA() {
+		if (ATGsite < 0 || UAGsite < 0) {
+			return false;
+		}
 		return Math.abs(ATGsite - UAGsite) > 10 ?  true : false;
 	}
 	/**
@@ -1022,7 +1025,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	public int hashCode() {
 		String info = this.getTaxID() + "//" + this.getRefID() + "//" + this.getATGsite() + "//" + this.getUAGsite() + "//" + this.getTSSsite() + "//" + this.getListLen();
 		for (ExonInfo exonInfo : this) {
-			info = info + SepSign.SEP_INFO + exonInfo.getName();
+			info = info + SepSign.SEP_INFO + exonInfo.getStartAbs() + SepSign.SEP_ID + exonInfo.getEndAbs();
 		}
 		return   info.hashCode();
 	}

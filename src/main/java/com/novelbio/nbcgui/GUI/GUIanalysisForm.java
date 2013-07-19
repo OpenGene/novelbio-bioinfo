@@ -62,7 +62,7 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 	private GuiGeneNetWork guiGeneNetWork;
 	private GuilncLocation guilncLocation;
 	private GuiGoMultiJPanel guiGoMultiJPanel;
-	
+	private GuiMotif guiMotif;
 	/**
 	* Auto-generated main method to display this JFrame
 	*/
@@ -191,6 +191,9 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				
 				guiPeakCalling = new GuiPeakCalling();
 				jTabbedPane1.addTab("PeakCalling", guiPeakCalling);
+				
+				guiMotif = new GuiMotif();
+				jTabbedPane1.addTab("MotifScan", guiMotif);
 				
 				guiSpeciesInfo = new GuiSpeciesInfo();
 				jTabbedPane1.addTab("SpeciesInfo", guiSpeciesInfo);

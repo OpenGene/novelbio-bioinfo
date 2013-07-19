@@ -33,7 +33,9 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	/**
 	 * 新建一个GffHashGeneUCSC的类，需要readGffFile
 	 */
-	public GffHashGene() { }
+	public GffHashGene() {
+		gffHashGene =  new GffHashGTF();
+	}
 	public GffHashGene(GffHashGeneAbs gffHashGene) {
 		this.gffHashGene = gffHashGene;
 	}

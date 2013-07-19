@@ -138,6 +138,7 @@ public class SeqHash implements SeqHashInt{
 	}
 	/////////////////////  提 取 序 列  /////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	@Override
 	public SeqFasta getSeq(String seqName) {
 		return seqHashAbs.getSeq(seqName, 0 , 0);
 	}

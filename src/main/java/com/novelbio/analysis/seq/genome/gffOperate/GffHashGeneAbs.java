@@ -295,7 +295,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		HashSet<String> setGeneName = new HashSet<String>();
 		HashSet<String> setTranscriptName = new HashSet<String>();
 		for (String string : treeSet) {
-			ArrayList<GffDetailGene> lsGffDetailGenes = mapChrID2ListGff.get(string);
+			ListGff lsGffDetailGenes = mapChrID2ListGff.get(string);
 			for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 				
 				//将每个iso的parentGene名字替换成不重复的名字

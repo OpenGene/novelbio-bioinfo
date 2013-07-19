@@ -2,26 +2,31 @@ package com.novelbio.analysis.seq.rnaseq;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.SeqHash;
+import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.listOperate.ListAbs;
+import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
 /** 重建转录本 */
 public class GffHashMerge {
 	private static final Logger logger = Logger.getLogger(GffHashMerge.class);
 	
 	public static void main(String[] args) {
-		human();
+//		human();
 //		mouse();
-//		checken();
+		checken();
 	}
 	public static void mouse() {
 		String gffhashGeneCuf = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/novelbioTranscriptome/transcripts.gtf";
@@ -72,27 +77,28 @@ public class GffHashMerge {
 	}
 	public static void checken() {
 		String gffHashGeneRef = "/media/winF/NBC/Project/Project_FY/chicken/chicken_ensembl_Gtf";
-		String gffhashGeneCuf = "/media/winF/NBC/Project/Project_FY/chicken/Result/cufflinkAll/cufflink/transcripts.gtf";
-		String gffFinal = "/media/winF/NBC/Project/Project_FY/chicken/Result/cufflinkAll/cufflink/finalTranscript.gtf";
+		String gffhashGeneCuf = "/media/winE/NBC/Project/Project_FY/paper/chicken/gal4-merged.gtf";
+		String gffFinal = "/media/winE/NBC/Project/Project_FY/paper/chicken/finalTranscript.gtf";
 		String gffFinalStatistics = "/media/winF/NBC/Project/Project_FY/chicken/Result/cufflinkAll/cufflink/transcriptomeStatistics.txt";
 		
 		GffHashMerge gffHashMerge = new GffHashMerge();
-		gffHashMerge.setSpecies(new Species(9013));
-		gffHashMerge.setGffHashGeneRef(new GffHashGene(GffType.GTF, gffHashGeneRef));
+		gffHashMerge.setSpecies(new Species(9031));
+		GffChrAbs gffChrAbs = new GffChrAbs(9031);
+		gffHashMerge.setGffHashGeneRef(gffChrAbs.getGffHashGene());
 		gffHashMerge.addGffHashGene(new GffHashGene(GffType.GTF, gffhashGeneCuf));
 		
 		GffHashGene gffHashGene = gffHashMerge.getGffHashGeneModifyResult();
-		gffHashGene.removeDuplicateIso();
+//		gffHashGene.removeDuplicateIso();
 		gffHashGene.writeToGTF(gffFinal, "novelbio");
 		
-		gffHashMerge = new GffHashMerge();
-		gffHashMerge.setSpecies(new Species(9013));
-		gffHashMerge.setGffHashGeneRef(new GffHashGene(GffType.GTF, gffHashGeneRef));
-		gffHashMerge.addGffHashGene(new GffHashGene(GffType.GTF, gffFinal));
-		
-		TranscriptomStatistics transcriptomStatistics = gffHashMerge.getStatisticsCompareGff();
-		TxtReadandWrite txtOut = new TxtReadandWrite(gffFinalStatistics, true);
-		txtOut.ExcelWrite(transcriptomStatistics.getStatisticsResult());
+//		gffHashMerge = new GffHashMerge();
+//		gffHashMerge.setSpecies(new Species(9013));
+//		gffHashMerge.setGffHashGeneRef(new GffHashGene(GffType.GTF, gffHashGeneRef));
+//		gffHashMerge.addGffHashGene(new GffHashGene(GffType.GTF, gffFinal));
+//		
+//		TranscriptomStatistics transcriptomStatistics = gffHashMerge.getStatisticsCompareGff();
+//		TxtReadandWrite txtOut = new TxtReadandWrite(gffFinalStatistics, true);
+//		txtOut.ExcelWrite(transcriptomStatistics.getStatisticsResult());
 	}
 
 	GffHashGene gffHashGeneRef = new GffHashGene();
@@ -134,6 +140,7 @@ public class GffHashMerge {
 	}
 	public TranscriptomStatistics getStatisticsCompareGff() {
 		fillGffHashGeneResult();
+		modifyGff();
 		return statisticTranscriptome();
 	}
 	/**
@@ -237,6 +244,30 @@ public class GffHashMerge {
 	private void modifyGff() {
 		for (ArrayList<GffGeneCluster> listGffGeneClusters : mapChrID2LsGffCluster.values()) {
 			modifyAndAddChrIDlist(listGffGeneClusters);
+		}
+		HashSet<String> setChrID = new HashSet<String>(gffHashGeneResult.getMapChrID2LsGff().keySet());
+		for (String chrID : setChrID) {
+			ListGff listGff = gffHashGeneResult.getMapChrID2LsGff().get(chrID);
+			listGff.sort();
+//			if (chrID.equals("chr1")) {
+//				int i  = 0 ;
+//				for (GffDetailGene gffDetailGene : listGff) {
+//					i++;
+//					for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+//						if (gffGeneIsoInfo.getName().contains("NM_001030791")) {
+//							System.out.println();
+//						}
+//					}
+//				}
+//			}
+			
+			
+			ListGff listGffNew = listGff.combineOverlapGene();
+			gffHashGeneResult.getMapChrID2LsGff().put(chrID, listGffNew);
+			//装入hash表
+			for (GffDetailGene gffDetailGene : listGffNew) {
+				gffDetailGene.removeDupliIso();
+			}
 		}
 	}
 	

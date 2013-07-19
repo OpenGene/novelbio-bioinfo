@@ -210,6 +210,13 @@ public class GffGeneCluster {
 			GffDetailGene gffDetailGeneResult = gffDetailGeneRefRaw.clone();
 			gffDetailGeneResult.clearIso();
 			
+//			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGeneRef.getLsCodSplit()) {
+//				if (gffGeneIsoInfo.getName().contains("NM_001030791")) {
+//					System.out.println();
+//				}
+//			}
+			
+			
 			HashSet<String> setGffIsoRefSelectName = new HashSet<String>();//所有选中的Iso的名字，也就是与cufflink预测的转录本相似的转录本
 			//这里的lsGeneCluster已经去除了refGff
 			for (ArrayList<GffDetailGene> lsgffArrayList : lsGeneCluster) {//获得GffCluster里面每个GffHash的list，这个一般只有一个GffHash
@@ -277,8 +284,14 @@ public class GffGeneCluster {
 			exonClusterBoundInfo.setLsExonClustersAndNum(lsExonClusters, exonClusterNum);
 			exonClusterBoundInfo.setTailBoundInfo(tailBoundInfo);
 			
-			ArrayList<ExonInfo> lsExonInfos = exonClusterBoundInfo.calculate();
-			gffGeneIsoInfoResult.addAll(lsExonInfos);
+			try {
+				ArrayList<ExonInfo> lsExonInfos = exonClusterBoundInfo.calculate();
+				gffGeneIsoInfoResult.addAll(lsExonInfos);
+			} catch (Exception e) {
+				ArrayList<ExonInfo> lsExonInfos = exonClusterBoundInfo.calculate();
+				gffGeneIsoInfoResult.addAll(lsExonInfos);
+			}
+
 			
 			lsExonBoundInfoStatistics.add(exonClusterBoundInfo);
 			lastExonClusterBoundInfo = exonClusterBoundInfo;
@@ -409,7 +422,11 @@ class ExonClusterBoundInfo {
 		ExonCluster exonCluster = lsExonClusters.get(thisExonClusterNum);
 		ArrayList<ExonInfo> lsExonInfosRef = exonCluster.getMapIso2LsExon().get(gffGeneIsoInfoRef);
 		ArrayList<ExonInfo> lsExonInfosThis = exonCluster.getMapIso2LsExon().get(gffGeneIsoInfoThis);
-		
+		if (lsExonInfosRef == null) {
+			return lsExonInfosThis;
+		} else if (lsExonInfosThis == null) {
+			return lsExonInfosRef;
+		}
 		if (exonCluster.isSameExon()) {
 			booStartUnify = true;
 			booEndUnify = true;

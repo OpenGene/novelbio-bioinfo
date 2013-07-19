@@ -407,7 +407,10 @@ public abstract class SeqHashAbs implements SeqHashInt{
 		SeqFasta seqFasta = getSeq(siteInfo.getRefID(), siteInfo.getStartAbs(), siteInfo.getEndAbs());
 		siteInfo.setSeq(seqFasta, true);
 	}
-
+	
+	public SeqFasta getSeq(String seqName) {
+		return getSeq(seqName, 0 , 0);
+	}
 }
  enum SeqType {
 	 /** 转录本特有的方向，不同的exon有不同的方向 */
