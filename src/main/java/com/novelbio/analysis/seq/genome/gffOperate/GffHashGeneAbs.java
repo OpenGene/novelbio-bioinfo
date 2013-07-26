@@ -240,7 +240,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	 * @param txtAccID2GeneID
 	 */
 	private void writeAccID2GeneID(String txtaccID2GeneID) {
-		TxtReadandWrite txtAccID2GeneID = new TxtReadandWrite(txtaccID2GeneID);
+		TxtReadandWrite txtAccID2GeneID = new TxtReadandWrite(txtaccID2GeneID, true);
 		txtAccID2GeneID.ExcelWrite(getGene2ID());
 		txtAccID2GeneID.close();
 	}

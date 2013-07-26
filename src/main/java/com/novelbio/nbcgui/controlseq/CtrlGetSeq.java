@@ -39,7 +39,7 @@ public class CtrlGetSeq implements RunGetInfo<GffChrSeq.GffChrSeqProcessInfo>{
 	public void setSaveToFile(boolean saveToFile) {
 		gffChrSeq.setIsSaveToFile(saveToFile);
 	}
-	/** 提取全基因组序列的时候，是每个LOC提取一条序列还是提取全部 */
+	/** 是每个LOC提取一条序列还是提取全部 */
 	public void setGetAllIso(boolean getAllIso) {
 		gffChrSeq.setGetAllIso(getAllIso);
 	}

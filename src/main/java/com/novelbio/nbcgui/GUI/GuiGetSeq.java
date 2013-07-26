@@ -226,7 +226,7 @@ public class GuiGetSeq extends JPanel {
 				selectGenomeWide(chckbxGenomwide.isSelected());
 			}
 		});
-		chckbxGenomwide.setBounds(717, 265, 120, 22);
+		chckbxGenomwide.setBounds(713, 292, 120, 22);
 		add(chckbxGenomwide);
 		
 		txtSavePath = new JTextField();
@@ -243,7 +243,7 @@ public class GuiGetSeq extends JPanel {
 		add(chckbxGetaminoacid);
 		
 		chckbxGetalliso = new JCheckBox("GetAllIso");
-		chckbxGetalliso.setBounds(736, 291, 131, 22);
+		chckbxGetalliso.setBounds(713, 266, 131, 22);
 		add(chckbxGetalliso);
 		
 		chckbxGetMirna = new JCheckBox("get miRNA");
@@ -331,10 +331,8 @@ public class GuiGetSeq extends JPanel {
 	private void selectGenomeWide(boolean selected) {
 		if (selected) {
 			btnOpenfile.setEnabled(false);
-			chckbxGetalliso.setVisible(true);
 		} else {
 			btnOpenfile.setEnabled(true);
-			chckbxGetalliso.setVisible(false);
 		}
 	}
 	
