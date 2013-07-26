@@ -11,6 +11,7 @@ import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
@@ -165,17 +166,12 @@ public class RPKMcomput implements AlignmentRecorder {
 		
 		boolean cis5to3 = lsSamRecords.get(0).isCis5to3();
 		//TODO 待改进，如何能够更好的区分iso的表达
-		List<Align> lsAligns = lsSamRecords.get(0).getAlignmentBlocks();
+		List<List<Align>> lslsAligns = new ArrayList<>();
+		lslsAligns.add(lsSamRecords.get(0).getAlignmentBlocks());
 		if (lsSamRecords.size() > 1) {
-			lsAligns.addAll(lsSamRecords.get(1).getAlignmentBlocks());
+			lslsAligns.add(lsSamRecords.get(1).getAlignmentBlocks());
 		}
-		Set<String> setGeneName = new HashSet<String>(); 
-		for (Align align : lsAligns) {
-			GffCodGene gffCodGene = gffHashGene.searchLocation(align.getRefID(), align.getMidSite());
-			if (gffCodGene == null) continue;
-			
-			setGeneName.addAll(getSetGeneName(cis5to3, gffCodGene));
-		}
+		Set<String> setGeneName = getSetGeneName(lslsAligns, cis5to3);
 		if (setGeneName.size() == 0) {
 			return;
 		}
@@ -223,7 +219,7 @@ public class RPKMcomput implements AlignmentRecorder {
 			lsResult.add(samRecord);
 			return lsResult;
 		}
-		
+		//判断两条reads是否在同一个基因内，或者说离的比较近
 		GffCodGene gffCodGeneStart = gffHashGene.searchLocation(samRecord.getRefID(), samRecord.getStartAbs());
 		GffCodGene gffCodGeneEnd = gffHashGene.searchLocation(samRecord.getRefID(), samRecord.getMateAlignmentStart());
 		if (gffCodGeneStart == null || gffCodGeneEnd == null) {
@@ -240,7 +236,7 @@ public class RPKMcomput implements AlignmentRecorder {
 			lsResult.add(samRecord);
 			return lsResult;
 		}
-		
+		/////////////////////////////////
 		mapKey2SamRecord.put(samRecord.getName() + SepSign.SEP_ID + samRecord.getStartAbs(), samRecord);
 		return new ArrayList<SamRecord>();
 	}
@@ -287,31 +283,143 @@ public class RPKMcomput implements AlignmentRecorder {
 //			logger
 //		}
 	}
-	
-	/**
-	 * 返回落到的基因名
-	 * 没有落在基因内部就返回null
-	 * @param readsCis5to3
-	 * @param gffCodGene
-	 * @return
-	 */
-	private Set<String> getSetGeneName(boolean readsCis5to3, GffCodGene gffCodGene) {
-		//判定是否落在exon里面，落在intron里面不算
-		if (!gffCodGene.isInsideLoc()) {
-			return new HashSet<String>();
+	private Set<String> getSetGeneName(List<List<Align>> lslsAligns, boolean readsCis5to3) {
+		Set<String> setGeneName = new HashSet<>();
+		Set<String> setGeneNameTmp = new HashSet<>();
+		for (List<Align> lsAligns : lslsAligns) {
+			if (setGeneName.size() == 0) {
+				setGeneName = getSetGeneNameSingleReads(lsAligns, readsCis5to3);
+			} else {
+				Set<String> setGeneNameThis = getSetGeneNameSingleReads(lsAligns, readsCis5to3);
+				if (setGeneNameThis.size() == 0) {
+					continue;
+				}
+				setGeneNameTmp = new HashSet<>();
+				for (String string : setGeneName) {
+					if (setGeneNameThis.contains(string)) {
+						setGeneNameTmp.add(string);
+					}
+				}
+				setGeneName = setGeneNameTmp;
+				setGeneNameTmp = setGeneNameThis;
+			}
 		}
+		if (setGeneName.size() == 0) {
+			setGeneName = setGeneNameTmp;
+		}
+		return setGeneName;
+	}
+	
+	/** 根据序列比对情况，获得该序列到底mapping到哪个基因上 */
+	private Set<String> getSetGeneNameSingleReads(List<Align> lsAligns, boolean readsCis5to3) {
+		Set<GffGeneIsoInfo> setIso = new HashSet<>();
+		for (Align align : lsAligns) {
+			GffCodGene gffCodGene = gffHashGene.searchLocation(align.getRefID(), align.getMidSite());
+			if (gffCodGene == null) continue;
+			
+			setIso.addAll(getSetGeneIso(readsCis5to3, gffCodGene));
+		}
+		Set<String> setGeneName = new HashSet<>();
 		
-		GffDetailGene gffDetailGene = gffCodGene.getGffDetailThis();
-		Set<String> setGeneName = new HashSet<String>();
-		for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-			if (gffGeneIsoInfo.getCodLoc(gffCodGene.getCoord()) == GffGeneIsoInfo.COD_LOC_EXON) {
-				
-				if (!considerStrand || (considerStrand && readsCis5to3 == gffGeneIsoInfo.isCis5to3())) {
+		if (lsAligns.size() == 1) {
+			for (GffGeneIsoInfo gffGeneIsoInfo : setIso) {
+				Align align = lsAligns.get(0);
+				int start = gffGeneIsoInfo.getNumCodInEle(align.getStartAbs()+3);
+				int end = gffGeneIsoInfo.getNumCodInEle(align.getEndAbs() - 3);
+				if (start == end || Math.abs(Math.abs(start) - Math.abs(end)) <= 2) {
 					setGeneName.add(gffGeneIsoInfo.getParentGeneName());
+					continue;
+				}
+				if (gffGeneIsoInfo.isCis5to3()) {
+					if (start == 0 && Math.abs(end) <= 2
+						|| end == 0 && Math.abs(start) >= gffGeneIsoInfo.size()-1 ) 
+					{
+						setGeneName.add(gffGeneIsoInfo.getParentGeneName());
+					}
+				} else {
+					if ( start == 0 && Math.abs(end) >= gffGeneIsoInfo.size()-1
+					|| end == 0 && Math.abs(start) <= 2 ) 
+					{
+						setGeneName.add(gffGeneIsoInfo.getParentGeneName());
+					}
+				}
+			}
+			if (setGeneName.size() == 0) {
+				for (GffGeneIsoInfo gffGeneIsoInfo : setIso) {
+					setGeneName.add(gffGeneIsoInfo.getParentGeneName());
+				}
+			}
+		} else {
+			ArrayListMultimap<Integer, GffGeneIsoInfo> mapNotMatchNum2Iso = ArrayListMultimap.create();
+			for (GffGeneIsoInfo gffGeneIsoInfo : setIso) {
+				int notMatch = 0;
+				for (int i = 0; i < lsAligns.size()-1; i++) {
+					int beforeEnd = lsAligns.get(i).getEndAbs();//第一个exon的结尾
+					int nextStart = lsAligns.get(i + 1).getStartAbs();//第二个exon的开头
+					int beforeNum = gffGeneIsoInfo.getNumCodInEle(beforeEnd);
+					int nextNum = gffGeneIsoInfo.getNumCodInEle(nextStart);
+					if (beforeNum == 0 || nextNum == 0) {
+						notMatch++;
+						continue;
+					}
+					int beforeNum2Edge = 0, nextNum2Edge = 0;
+					if (gffGeneIsoInfo.isCis5to3()) {
+						beforeNum2Edge = gffGeneIsoInfo.getCod2ExInEnd(beforeEnd);
+						nextNum2Edge = gffGeneIsoInfo.getCod2ExInStart(nextStart);
+					} else {
+						beforeNum2Edge = gffGeneIsoInfo.getCod2ExInEnd(nextStart);
+						nextNum2Edge = gffGeneIsoInfo.getCod2ExInStart(beforeEnd);
+					}
+					if (beforeNum2Edge >= 5 || nextNum2Edge >= 5 || Math.abs((Math.abs(beforeNum) - Math.abs(nextNum))) > 1) {
+						notMatch++;
+					}
+				}
+				if (notMatch == 0) {
+					setGeneName.add(gffGeneIsoInfo.getParentGeneName());
+				} else {
+					mapNotMatchNum2Iso.put(notMatch, gffGeneIsoInfo);
+				}
+			}
+			if (setGeneName.size() == 0) {
+				int notMatchMin = 10000;
+				for (Integer num : mapNotMatchNum2Iso.keySet()) {
+					if (num < notMatchMin) {
+						notMatchMin = num;
+					}
+				}
+				for (GffGeneIsoInfo iso : mapNotMatchNum2Iso.get(notMatchMin)) {
+					setGeneName.add(iso.getParentGeneName());
 				}
 			}
 		}
 		return setGeneName;
+		
+	}
+	
+	/**
+	 * 返回落到的基因Iso
+	 * 没有落在基因内部就返回null
+	 * @param readsCis5to3 考虑了方向
+	 * @param gffCodGene
+	 * @return
+	 */
+	private Set<GffGeneIsoInfo> getSetGeneIso(boolean readsCis5to3, GffCodGene gffCodGene) {
+		//判定是否落在exon里面，落在intron里面不算
+		if (!gffCodGene.isInsideLoc()) {
+			return new HashSet<>();
+		}
+		
+		GffDetailGene gffDetailGene = gffCodGene.getGffDetailThis();
+		Set<GffGeneIsoInfo> setIso = new HashSet<>();
+		for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+			if (gffGeneIsoInfo.getCodLoc(gffCodGene.getCoord()) == GffGeneIsoInfo.COD_LOC_EXON) {
+				
+				if (!considerStrand || (considerStrand && readsCis5to3 == gffGeneIsoInfo.isCis5to3())) {
+					setIso.add(gffGeneIsoInfo);
+				}
+			}
+		}
+		return setIso;
 	}
 	
 	/**

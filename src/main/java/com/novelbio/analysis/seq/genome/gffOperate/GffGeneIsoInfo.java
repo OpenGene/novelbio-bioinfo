@@ -1143,7 +1143,13 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 				return false;
 			}
 		}
-		return true;
+		int[] compareInfo = GffGeneIsoInfo.compareIso(gffGeneIsoInfo1, gffGeneIsoInfo2);
+		double ratio = (double)compareInfo[0]/Math.min(compareInfo[2], compareInfo[3]);
+		int exonNumSmall = Math.min(gffGeneIsoInfo1.size(), gffGeneIsoInfo2.size()), exonNumBig = Math.min(gffGeneIsoInfo1.size(), gffGeneIsoInfo2.size());
+		if (ratio > 0.75 && exonNumSmall/exonNumBig > 0.75) {
+			return true;
+		}
+		return false;
 	}
 	/**
 	 * 当exoncluster中的exon不一样时，查看具体有几条边是相同的。

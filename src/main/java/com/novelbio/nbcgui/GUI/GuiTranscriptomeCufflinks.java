@@ -12,6 +12,7 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
@@ -33,12 +34,16 @@ public class GuiTranscriptomeCufflinks extends JPanel {
 	JButton btnOpenFastqLeft;
 	JButton btnDelFastqLeft;
 	JButton btnRun;
+	JButton btnRefgtf;
+	JCheckBox chckbxModifythisRefGtf;
+	
 	CtrlCufflinksTranscriptome cufflinksGTF = new CtrlCufflinksTranscriptome();
 	private JComboBoxData<StrandSpecific> cmbStrandSpecific;
 	private JLabel lblStrandtype;
 	JCheckBox chckbxReconstructtrancsriptome;
 	JSpinner spinThreadNum;
 	private JCheckBox chkCalculateUQfpkm;
+	private JTextField txtRefGTF;
 	public GuiTranscriptomeCufflinks() {
 		setLayout(null);
 		
@@ -82,16 +87,21 @@ public class GuiTranscriptomeCufflinks extends JPanel {
 		add(lblExtendto);
 		
 		txtSavePathAndPrefix = new JTextField();
-		txtSavePathAndPrefix.setBounds(10, 388, 783, 24);
+		txtSavePathAndPrefix.setBounds(10, 484, 783, 24);
 		add(txtSavePathAndPrefix);
 		txtSavePathAndPrefix.setColumns(10);
 		
 		JLabel lblResultpath = new JLabel("ResultPath");
-		lblResultpath.setBounds(10, 369, 80, 14);
+		lblResultpath.setBounds(10, 458, 80, 14);
 		add(lblResultpath);
 		
+		txtRefGTF = new JTextField();
+		txtRefGTF.setBounds(10, 397, 783, 22);
+		add(txtRefGTF);
+		txtRefGTF.setColumns(10);
+		
 		btnSaveto = new JButton("SaveTo");
-		btnSaveto.setBounds(805, 388, 88, 24);
+		btnSaveto.setBounds(805, 484, 88, 24);
 		btnSaveto.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String filePathName = guiFileOpen.openFilePathName("", "");
@@ -111,7 +121,7 @@ public class GuiTranscriptomeCufflinks extends JPanel {
 		add(btnDelFastqLeft);
 		
 		btnRun = new JButton("Run");
-		btnRun.setBounds(775, 469, 118, 24);
+		btnRun.setBounds(775, 523, 118, 24);
 		btnRun.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ArrayList<String[]> lsSamFileName = scrollPaneSamBamFile.getLsDataInfo();
@@ -119,8 +129,11 @@ public class GuiTranscriptomeCufflinks extends JPanel {
 				Species species = cmbSpecies.getSelectedValue();
 				species.setVersion(cmbVersion.getSelectedValue());
 				GffChrAbs gffChrAbs = new GffChrAbs(species);
-				
 				cufflinksGTF.setGffChrAbs(gffChrAbs);
+				if (chckbxModifythisRefGtf.isSelected() && FileOperate.isFileExist(txtRefGTF.getText())) {
+					cufflinksGTF.setGTFfile(txtRefGTF.getText());
+				}
+			
 				cufflinksGTF.setStrandSpecifictype(cmbStrandSpecific.getSelectedValue());
 				String outPathPrefix = txtSavePathAndPrefix.getText();
 				if (FileOperate.isFileDirectory(outPathPrefix)) {
@@ -163,8 +176,28 @@ public class GuiTranscriptomeCufflinks extends JPanel {
 		add(spinThreadNum);
 		
 		chkCalculateUQfpkm = new JCheckBox("Upper Quartile FPKM");
-		chkCalculateUQfpkm.setBounds(293, 292, 118, 23);
+		chkCalculateUQfpkm.setBounds(293, 292, 177, 23);
 		add(chkCalculateUQfpkm);
+
+		
+		btnRefgtf = new JButton("RefGTF");
+		btnRefgtf.setBounds(805, 394, 102, 28);
+		add(btnRefgtf);
+		
+		chckbxModifythisRefGtf = new JCheckBox("ModifyThis Ref Gtf instead of Database GFF");
+		chckbxModifythisRefGtf.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (chckbxModifythisRefGtf.isSelected()) {
+					txtRefGTF.setEnabled(true);
+					btnRefgtf.setEnabled(true);
+				} else {
+					txtRefGTF.setEnabled(false);
+					btnRefgtf.setEnabled(false);
+				}
+			}
+		});
+		chckbxModifythisRefGtf.setBounds(10, 367, 389, 26);
+		add(chckbxModifythisRefGtf);
 
 		
 		btnOpenFastqLeft.addActionListener(new ActionListener() {
@@ -186,5 +219,4 @@ public class GuiTranscriptomeCufflinks extends JPanel {
 		cmbStrandSpecific.setMapItem(StrandSpecific.getMapStrandLibrary());
 		spinThreadNum.setValue(4);
 	}
-	
 }

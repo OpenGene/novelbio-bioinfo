@@ -2,6 +2,8 @@ package com.novelbio.analysis.seq.rnaseq;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -81,12 +83,10 @@ public class GffGeneCluster {
 		if (isContainsRef) {
 			if (lsGeneCluster.size() == 0) {
 				return new ArrayList<GffDetailGene>();
-			}
-			else {
+			} else {
 				return lsGeneCluster.get(0);
 			}
-		}
-		else {
+		} else {
 			return lsGenesRef;
 		}
 	}
@@ -166,10 +166,8 @@ public class GffGeneCluster {
 	private ArrayList<GffDetailGene> compareAndModify_GffGene() {
 		ListGff lsGffDetailGenes = new ListGff();
 		for (GffDetailGene gffDetailGeneRefRaw : lsGenesRef) {//遍历每个GffDetail
-			if (gffDetailGeneRefRaw.getName().contains("NM_001044603")) {
-				logger.error("stop");//TODO
-			}
 			GffDetailGene gffDetailGeneRef = gffDetailGeneRefRaw.clone();
+
 			GffDetailGene gffDetailGeneResult = gffDetailGeneRefRaw.clone();
 			gffDetailGeneResult.clearIso();
 			
@@ -201,56 +199,73 @@ public class GffGeneCluster {
 		lsGffDetailGenes = lsGffDetailGenes.combineOverlapGene();
 		return lsGffDetailGenes;
 	}
-	
 	//TODO
 	private ArrayList<GffDetailGene> compareAndModify_GffGeneNew() {
 		ListGff lsGffDetailGenes = new ListGff();
-		for (GffDetailGene gffDetailGeneRefRaw : lsGenesRef) {//遍历每个GffDetail
-			GffDetailGene gffDetailGeneRef = gffDetailGeneRefRaw.clone();
-			GffDetailGene gffDetailGeneResult = gffDetailGeneRefRaw.clone();
-			gffDetailGeneResult.clearIso();
-			
-//			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGeneRef.getLsCodSplit()) {
-//				if (gffGeneIsoInfo.getName().contains("NM_001030791")) {
-//					System.out.println();
-//				}
-//			}
-			
-			
-			HashSet<String> setGffIsoRefSelectName = new HashSet<String>();//所有选中的Iso的名字，也就是与cufflink预测的转录本相似的转录本
-			//这里的lsGeneCluster已经去除了refGff
-			for (ArrayList<GffDetailGene> lsgffArrayList : lsGeneCluster) {//获得GffCluster里面每个GffHash的list，这个一般只有一个GffHash
-				for (GffDetailGene gffDetailGeneCalculate : lsgffArrayList) {//获得另一个GffHash里面的GffDetailGene
-					for (GffGeneIsoInfo gffIsoThis : gffDetailGeneCalculate.getLsCodSplit()) {//遍历该GffDetailGene的转录本，并挑选出最接近的进行比较	
-						//选择了仅仅是起点和终点不同的exon，方便修正
-						GffGeneIsoInfo gffIsoRef = gffDetailGeneRef.getAlmostSameIso(gffIsoThis);
-						//TODO 开始做修正工作
-						if (gffIsoRef == null) {
-							gffDetailGeneResult.addIso(gffIsoThis);
-							continue;
-						}
-						
-						GffGeneIsoInfo gffIsoTmpResult = compareIso(gffIsoRef, gffIsoThis);
-						if (gffIsoTmpResult == null) {
-							gffDetailGeneResult.addIso(gffIsoThis);
-						} else {
-							setGffIsoRefSelectName.add(gffIsoRef.getName());
-							gffDetailGeneResult.addIso(gffIsoTmpResult);
-						}
-				
-					}
-				}
-			}
-			
-			for (String isoName : setGffIsoRefSelectName) {
-				gffDetailGeneRef.removeIso(isoName);
-			}
-			gffDetailGeneResult.addIsoSimple(gffDetailGeneRef);
-			lsGffDetailGenes.add(gffDetailGeneResult);
+		GffDetailGene gffDetailGeneRef = getGffDetailGene(lsGenesRef);
+		GffDetailGene gffDetailGeneResult = gffDetailGeneRef.clone();
+		gffDetailGeneResult.clearIso();
+		if (gffDetailGeneRef.getName().contains("AT1G01040")) {
+			System.out.println();
 		}
-		lsGffDetailGenes = lsGffDetailGenes.combineOverlapGene();
+		HashSet<String> setGffIsoRefSelectName = new HashSet<String>();//所有选中的Iso的名字，也就是与cufflink预测的转录本相似的转录本
+		//这里的lsGeneCluster已经去除了refGff
+		for (ArrayList<GffDetailGene> lsgffArrayList : lsGeneCluster) {//获得GffCluster里面每个GffHash的list，这个一般只有一个GffHash
+			GffDetailGene gffDetailGeneCalculate = getGffDetailGene(lsgffArrayList);				
+			Set<String> setRefIsoNameTmp = modifyGffRef(gffDetailGeneResult, gffDetailGeneRef, gffDetailGeneCalculate);
+			setGffIsoRefSelectName.addAll(setRefIsoNameTmp);
+		}
+		
+		for (String isoName : setGffIsoRefSelectName) {
+			gffDetailGeneRef.removeIso(isoName);
+		}
+		gffDetailGeneResult.addIsoSimple(gffDetailGeneRef);
+		lsGffDetailGenes.add(gffDetailGeneResult);
 		return lsGffDetailGenes;
 	}
+	
+	/** 把若干gffDetailGene合并为1个,克隆的方法获得 */
+	private GffDetailGene getGffDetailGene(List<GffDetailGene> lsGffDetailGenes) {
+		GffDetailGene gffDetailGene = lsGffDetailGenes.get(0).clone();
+		for (int i = 1; i < lsGffDetailGenes.size(); i++) {
+			GffDetailGene gffDetailGene2 = lsGffDetailGenes.get(i);
+			gffDetailGene.addIsoSimple(gffDetailGene2);
+		}
+		return gffDetailGene;
+	}
+	/**
+	 * 用gffDetailGeneCalculate去修正gffDetailGeneRef，结果放入gffDetailGeneResult中
+	 * @param gffDetailGeneResult 
+	 * @param gffDetailGeneRef
+	 * @param gffDetailGeneCalculate
+	 * @return 返回被修正的gffRefIso的名字，以后就不会添加这些iso进入结果了
+	 */
+	private Set<String> modifyGffRef(GffDetailGene gffDetailGeneResult, GffDetailGene gffDetailGeneRef, GffDetailGene gffDetailGeneCalculate) {
+		Set<String> setGffIsoRefSelectName = new HashSet<>();
+		for (GffGeneIsoInfo gffIsoThis : gffDetailGeneCalculate.getLsCodSplit()) {//遍历该GffDetailGene的转录本，并挑选出最接近的进行比较	
+			//选择了仅仅是起点和终点不同的exon，方便修正
+			GffGeneIsoInfo gffIsoRef = gffDetailGeneRef.getAlmostSameIso(gffIsoThis);
+			//TODO 开始做修正工作
+			if (gffIsoRef == null) {
+				GffGeneIsoInfo gffIsoSimilar = gffDetailGeneRef.getSimilarIso(gffIsoThis, 0.5);
+				if (gffIsoSimilar != null) {
+					gffIsoThis.setParentGeneName(gffIsoSimilar.getParentGeneName());
+				}
+				gffDetailGeneResult.addIso(gffIsoThis);
+				continue;
+			}
+			
+			GffGeneIsoInfo gffIsoTmpResult = compareIso(gffIsoRef, gffIsoThis);
+			if (gffIsoTmpResult == null) {
+				gffDetailGeneResult.addIso(gffIsoThis);
+			} else {
+				setGffIsoRefSelectName.add(gffIsoRef.getName());
+				gffDetailGeneResult.addIso(gffIsoTmpResult);
+			}
+		}
+		return setGffIsoRefSelectName;
+	}
+	
 	/**
 	 * public出来仅仅是提供给Junit测试使用
 	 * 比较两个方向相同，有交集的GffGeneIso的信息，修正gffGeneIsoInfoRef

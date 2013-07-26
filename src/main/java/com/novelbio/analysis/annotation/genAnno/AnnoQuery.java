@@ -1,11 +1,13 @@
 package com.novelbio.analysis.annotation.genAnno;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.multithread.RunProcess;
+import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.model.modgeneid.GeneID;
 /**
  * 批量注释
@@ -28,10 +30,12 @@ public class AnnoQuery extends RunProcess<AnnoQuery.AnnoQueryDisplayInfo>{
 	int colAccID = 0;
 	String regex = "";
 	boolean blast = false;
+	double evalue = 1e-10;
 	int taxIDthis = 0;
 	int taxIDblastTo = 0;
 	
 	int firstLine = 0;
+	AnnoAbs annoAbs;
 	/**
 	 * 可以输入txt或excel
 	 * @param geneIDfile
@@ -52,13 +56,6 @@ public class AnnoQuery extends RunProcess<AnnoQuery.AnnoQueryDisplayInfo>{
 	public void setColAccIDFrom1(int colAccID) {
 		this.colAccID = colAccID - 1;
 	}
-	public ArrayList<String[]> getLsResult() {
-		return lsResult;
-	}
-	public void writeTo(String txtFile) {
-		TxtReadandWrite txtWrite = new TxtReadandWrite(txtFile, true);
-		txtWrite.ExcelWrite(lsResult);
-	}
 	public void setTaxIDthis(int taxIDthis) {
 		this.taxIDthis = taxIDthis;
 	}
@@ -68,111 +65,77 @@ public class AnnoQuery extends RunProcess<AnnoQuery.AnnoQueryDisplayInfo>{
 	public void setBlast(boolean blast) {
 		this.blast = blast;
 	}
+	/**
+	 * 设定annotation的种类
+	 * @param annoType 主要是{@link AnnoAbs#ANNOTATION} {@link AnnoAbs#GO} 等
+	 */
+	public void setAnnoType(int annoType) {
+		annoAbs = AnnoAbs.createAnnoAbs(annoType);
+	}
+	/** 只有当annoType为 {@link AnnoAbs#GO} 时，才有设置的必要 */
+	public void setGOtype(GOtype gOtype) {
+		if (annoAbs instanceof AnnoGO) {
+			((AnnoGO) annoAbs).setgOtype(gOtype);
+		}
+	}
+	public ArrayList<String[]> getLsResult() {
+		return lsResult;
+	}
+	public void writeTo(String txtFile) {
+		TxtReadandWrite txtWrite = new TxtReadandWrite(txtFile, true);
+		txtWrite.ExcelWrite(lsResult);
+		txtWrite.close();
+	}
+
 	@Override
 	protected void running() {
 		anno();
 	}
 	
 	private void anno() {
+		annoAbs.setBlastToTaxID(taxIDblastTo, evalue);
+		annoAbs.setTaxIDquery(taxIDthis);
+		annoAbs.setBlast(blast);
+		
 		lsResult = new ArrayList<String[]>();
 		if (firstLine >= 1) {
-			lsResult.add(getTitle(lsGeneID.get(firstLine - 1), blast));
+			lsResult.add(getTitle());
 		}
 		for (int i = firstLine; i < lsGeneID.size(); i++) {
 			String accID = lsGeneID.get(i)[colAccID];
 			if (regex != null && !regex.equals("")) {
 				accID = accID.split(regex)[0];
 			}
-			String[] tmpResult = null;
-			if (blast) {
-				tmpResult = getInfoBlast(lsGeneID.get(i), taxIDthis, taxIDblastTo, 1e-10, accID);
+			List<String[]> lsTmpResult = null;
+			try {
+				lsTmpResult = annoAbs.getInfo(lsGeneID.get(i), accID);
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-			else {
-				tmpResult = getInfo(lsGeneID.get(i), taxIDthis, accID);
+			if (lsTmpResult != null) {
+				lsResult.addAll(lsTmpResult);
+				setRunInfo(i, lsTmpResult);
 			}
-			lsResult.add(tmpResult);
 			
 			suspendCheck();
-			setRunInfo(i, tmpResult);
+	
 			if (flagStop) {
 				break;
 			}
 		}
 	}
 	
-	private void setRunInfo(int num, String[] tmpInfo) {
-		AnnoQueryDisplayInfo annoQueryDisplayInfo = new AnnoQueryDisplayInfo();
-		annoQueryDisplayInfo.countNum = num;
-		annoQueryDisplayInfo.tmpInfo = tmpInfo;
-		runGetInfo.setRunningInfo(annoQueryDisplayInfo);
+	private void setRunInfo(int num, List<String[]> lsTmpInfo) {
+		for (String[] tmpInfo : lsTmpInfo) {
+			AnnoQueryDisplayInfo annoQueryDisplayInfo = new AnnoQueryDisplayInfo();
+			annoQueryDisplayInfo.countNum = num;
+			annoQueryDisplayInfo.tmpInfo = tmpInfo;
+			runGetInfo.setRunningInfo(annoQueryDisplayInfo);
+		}
 	}
 	
 	public String[] getTitle() {
-		return getTitle(lsGeneID.get(firstLine - 1), blast);
-	}
-	private static String[] getTitle(String[] title, boolean blast) {
-		if (!blast) {
-			title = ArrayOperate.copyArray(title, title.length + 2);
-			title[title.length - 1] = "Description";
-			title[title.length - 2] = "Symbol";
-		}
-		else {
-			title = ArrayOperate.copyArray(title,  title.length + 5);
-			title[title.length - 5] = "Symbol";
-			title[title.length - 4] = "Description";
-			title[title.length - 3] = "Blast_evalue";
-			title[title.length - 2] = "Blast_Symbol";
-			title[title.length - 1] = "Blast_Description";
-		}
-		return title;
-	}
-	/**
-	 * 注释数据，不需要blast
-	 * @param info 给定一行信息
-	 * @param taxID 物种
-	 * @param accColNum 具体该info的哪个column，实际column
-	 * @return
-	 */
-	private static String[] getInfo(String[] info, int taxID, String accID) {
-		String[] result = ArrayOperate.copyArray(info, info.length + 2);
-		result[result.length - 1] = "";
-		result[result.length - 2] = "";
-		GeneID copedID = new GeneID(accID, taxID);
-		if (copedID.getIDtype() == GeneID.IDTYPE_ACCID) {
-			return result;
-		}
-		else {
-			result[result.length - 2] = copedID.getSymbol();
-			result[result.length - 1] = copedID.getDescription();
-		}
-		return result;
-	}
-	/**
-	 * 注释数据，需要blast
-	 * @param info 给定一行信息
-	 * @param taxID 物种
-	 * @param accColNum 具体该info的哪个column，实际column
-	 * @return
-	 */
-	private static String[] getInfoBlast(String[] info, int taxID, int subTaxID, double evalue, String accID) {
-		String[] result = ArrayOperate.copyArray(info, info.length + 5);
-		result[result.length - 1] = "";result[result.length - 2] = "";
-		result[result.length - 3] = "";result[result.length - 4] = "";
-		result[result.length - 5] = "";
-		GeneID copedID = new GeneID(accID, taxID);
-		if (copedID.getIDtype() == GeneID.IDTYPE_ACCID) {
-			return result;
-		}
-		else {
-			copedID.setBlastInfo(evalue, subTaxID);
-			String[] anno = copedID.getAnno(true);
-			result[result.length - 5] = anno[0];
-			result[result.length - 4] = anno[1];
-			result[result.length - 3] = anno[3];
-			result[result.length - 2] = anno[4];
-			result[result.length - 1] = anno[5];
-		}
-		return result;
+		return annoAbs.getTitle(lsGeneID.get(firstLine - 1));
 	}
 	
 	public static void addGeneID(String geneFile, String out, int colGeneID, int taxID) {

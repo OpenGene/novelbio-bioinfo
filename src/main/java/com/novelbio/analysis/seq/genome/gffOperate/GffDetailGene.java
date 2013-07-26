@@ -777,7 +777,6 @@ public class GffDetailGene extends ListDetailAbs {
 				lsCompInfo.add(compareInfo);
 			}
 		}
-		
 		if (lsCompInfo.size() == 0) {
 			return null;
 		} else if (lsCompInfo.size() == 1) {

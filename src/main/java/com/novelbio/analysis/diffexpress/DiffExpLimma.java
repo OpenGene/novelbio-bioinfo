@@ -175,11 +175,23 @@ public class DiffExpLimma extends DiffExpAbs{
 		lsResult.add(title);
 
 		ArrayList<int[]> lsIndelItem = new ArrayList<int[]>();
-		lsIndelItem.add(new int[]{1, 2});//"treat" and control
-		lsIndelItem.add(new int[]{2, -1});//"AveExpr"
-		if (lsDifGene.get(0).length == 7) {
-			lsIndelItem.add(new int[]{3, -1});//"t" 有时候不会有avg出现
+		String[] titleOld = lsDifGene.get(0);
+		String[] firstLine = lsDifGene.get(1);
+		if (firstLine.length == 8 || (firstLine.length == 7 && !titleOld[3].replace("\"", "").equals("t"))) {
+			lsIndelItem.add(new int[]{0, -1});
+			lsIndelItem.add(new int[]{2, 2});//"treat" and control
+			lsIndelItem.add(new int[]{3, -1});//"AveExpr"
+			if (titleOld[3].replace("\"", "").equals("t")) {
+				lsIndelItem.add(new int[]{4, -1});//"t" 有时候不会有t出现
+			}
+		} else {
+			lsIndelItem.add(new int[]{1, 2});//"treat" and control
+			lsIndelItem.add(new int[]{2, -1});//"AveExpr"
+			if (titleOld[3].replace("\"", "").equals("t")) {
+				lsIndelItem.add(new int[]{3, -1});//"t" 有时候不会有t出现
+			}
 		}
+
 		for (int i = 1; i < lsDifGene.size(); i++) {
 			String[] tmpResult = ArrayOperate.indelElement(lsDifGene.get(i), lsIndelItem, "");
 			String geneID = tmpResult[0].replace("\"", "");

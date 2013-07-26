@@ -6,12 +6,11 @@ import java.util.HashSet;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
-import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fasta.SeqfastaStatisticsCDS;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.base.dataStructure.ArrayOperate;
 
 /**
  * 重建转录本的统计
@@ -28,10 +27,6 @@ public class TranscriptomStatistics {
 	int allGeneNewNum = 0;
 	/** 新转录本的数量 */
 	int allIsoNewNum = 0;
-	/** 修饰的exon的数量 */
-	int allExonModifiedNum = 0;
-	/** 新的非编码基因的数量 */
-	int allNewNunCodingGeneNum = 0;
 
 	/** 新的有CDS的基因数量 */
 	int allNewCDSGeneNum = 0;
@@ -52,9 +47,6 @@ public class TranscriptomStatistics {
 	public int getAllCompleteCDSGeneNum() {
 		return allNewCompleteCDSGeneNum;
 	}
-	public int getAllExonModifiedNum() {
-		return allExonModifiedNum;
-	}
 	public int getAllGeneNewNum() {
 		return allGeneNewNum;
 	}
@@ -64,24 +56,19 @@ public class TranscriptomStatistics {
 	public int getAllModifiedIso() {
 		return allModifiedIso;
 	}
-	public int getAllNunCodingGeneNum() {
-		return allNewNunCodingGeneNum;
-	}
 	
 	public void setSeqFastaHash(SeqHash seqFastaHash) {
 		this.seqFastaHash = seqFastaHash;
 	}
 
-	
 	public void addGeneCluster(GffGeneCluster gffGeneCluster) {
+		totalGenes += gffGeneCluster.getThisGffGene().size();
 		//全新的转录本
 		if (!gffGeneCluster.isContainsRef) {
 			ArrayList<GffDetailGene> lsGene = gffGeneCluster.getThisGffGene();
 			allGeneNewNum = allGeneNewNum + lsGene.size();
-			totalGenes = totalGenes + lsGene.size();
 			for (GffDetailGene gffDetailGene : lsGene) {
 				allIsoNewNum = allIsoNewNum + gffDetailGene.getLsCodSplit().size();
-			
 			}
 			addCodingGeneNum(gffGeneCluster);
 		}
@@ -95,25 +82,19 @@ public class TranscriptomStatistics {
 	
 	private void addCodingGeneNum(GffGeneCluster gffGeneCluster) {
 		ArrayList<GffDetailGene> lsGeneThis = gffGeneCluster.getThisGffGene();
-		for (GffDetailGene gffDetailGene : lsGeneThis) {
-			boolean mRNAgene = false;
-			
+		for (GffDetailGene gffDetailGene : lsGeneThis) {			
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 				SeqFasta seqFasta = seqFastaHash.getSeq(gffGeneIsoInfo, false);
 				SeqfastaStatisticsCDS seqfastaStatisticsCDS = seqFasta.statisticsCDS();
 				seqfastaStatisticsCDS.calculateAAseqInfo();
 				if (seqfastaStatisticsCDS.getMstartAAlen() > minAAlen) {
 					allNewCDSGeneNum++;
-					mRNAgene = true;
 					if (seqfastaStatisticsCDS.isFullCds()) {
 						allNewCompleteCDSGeneNum++;
 					}
 					break;
 				}
 			}
-			
-			if (!mRNAgene)
-				allNewNunCodingGeneNum++;
 		}
 	}
 	
@@ -121,6 +102,11 @@ public class TranscriptomStatistics {
 	private void addNewIsoNum(GffGeneCluster gffGeneCluster) {
 		ArrayList<GffDetailGene> lsGeneThis = gffGeneCluster.getThisGffGene();
 		ArrayList<GffDetailGene> lsGeneRef = gffGeneCluster.getRefGffGene();
+		int newGeneNum = lsGeneThis.size() - lsGeneRef.size();
+		if (newGeneNum > 0) {
+			allGeneNewNum = allGeneNewNum + newGeneNum;
+		}
+		
 		int refIsoNum = 0, thisIsoNum = 0;
 		for (GffDetailGene gffDetailGene : lsGeneRef) {
 			refIsoNum = refIsoNum + gffDetailGene.getLsCodSplit().size();
@@ -133,31 +119,36 @@ public class TranscriptomStatistics {
 		}
 		allIsoNewNum = allIsoNewNum + (thisIsoNum - refIsoNum);
 	}
+	
 	/** 没有修饰的基因数量 */
 	private void noModifiedGene(GffGeneCluster gffGeneCluster) {
 		ArrayList<GffDetailGene> lsGeneThis = gffGeneCluster.getThisGffGene();
 		ArrayList<GffDetailGene> lsGeneRef = gffGeneCluster.getRefGffGene();
-		boolean sameGene = false;
-		if (lsGeneRef.size() == 1 && lsGeneRef.size() == 1) {
-			GffDetailGene gffDetailGeneRef = lsGeneRef.get(0);
-			GffDetailGene gffDetailGeneThis = lsGeneThis.get(0);
-			if (gffDetailGeneRef.getLsCodSplit().size() == gffDetailGeneThis.getLsCodSplit().size()) {
-				for (GffGeneIsoInfo gffIsoThis : gffDetailGeneThis.getLsCodSplit()) {
-					GffGeneIsoInfo gffIsoRef = gffDetailGeneRef.getSimilarIso(gffIsoThis, gffGeneCluster.likelyhood);
-					if (gffIsoRef != null && !gffIsoRef.equalsIso(gffIsoThis)) {
-						sameGene = false;
-						break;
+	
+		for (GffDetailGene gffDetailGeneRef : lsGeneRef) {
+			double[] regionRef = {gffDetailGeneRef.getStartAbs(), gffDetailGeneRef.getEndAbs()};
+			boolean sameGene = false;
+			for (GffDetailGene gffDetailGeneThis : lsGeneThis) {
+				double[] regionThis = {gffDetailGeneThis.getStartAbs(), gffDetailGeneThis.getEndAbs()};
+				double[] compare = ArrayOperate.cmpArray(regionRef, regionThis);
+				if (compare[2] > 0.5 || compare[3] > 0.5) {
+					for (GffGeneIsoInfo gffIsoThis : gffDetailGeneThis.getLsCodSplit()) {
+						GffGeneIsoInfo gffIsoRef = gffDetailGeneRef.getSimilarIso(gffIsoThis, gffGeneCluster.likelyhood);
+						if (gffIsoRef != null && !gffIsoRef.equalsIso(gffIsoThis)) {
+							sameGene = false;
+							break;
+						}
+						sameGene = true;
 					}
-					sameGene = true;
 				}
 			}
-		}
-		if (sameGene) {
-			allNoModifiedGene++;
-			totalGenes++;
+			if (sameGene) {
+				allNoModifiedGene++;
+			}
 		}
 	}
-	/** 修饰的转录本和修饰的exon */
+	
+	/** 修饰的转录本 */
 	private void addModifiedIsoAndExon(GffGeneCluster gffGeneCluster) {
 		for (GffDetailGene gffDetailGeneRefRaw : gffGeneCluster.getRefGffGene()) {//遍历每个GffDetail
 			GffDetailGene gffDetailGeneRef = gffDetailGeneRefRaw.clone();
@@ -171,46 +162,24 @@ public class TranscriptomStatistics {
 						continue;
 					}
 					setGffIsoRefSelect.add(gffIsoRef);
-					gffGeneCluster.compareIso(gffIsoRef, gffIsoThis);
 				}
 			}
 			allModifiedIso = allModifiedIso + setGffIsoRefSelect.size();
 			if (setGffIsoRefSelect.size() > 0) {
 				allModifiedGene ++;
-				totalGenes++;
 			}
 		}
-		
-		for (ArrayList<ExonClusterBoundInfo> lsexonClusterBound : gffGeneCluster.lsIso2ExonBoundInfoStatistics) {
-			addTranscriptomStatistics(lsexonClusterBound);
-		}
 	}
-	
-	/**
-	 * 添加一个exon组的比较组
-	 * @param lsSelectExonStatistics
-	 */
-	private boolean addTranscriptomStatistics(ArrayList<ExonClusterBoundInfo> lsSelectExonStatistics) {
-		boolean modified = false;
-		for (ExonClusterBoundInfo exonClusterBoundInfo : lsSelectExonStatistics) {
-			if (!exonClusterBoundInfo.isStartUnify() || !exonClusterBoundInfo.isEndUnify() ) {
-				modified = true;
-				allExonModifiedNum++;
-			}
-		}
-		return modified;
-	}
+
 	
 	public ArrayList<String[]> getStatisticsResult() {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		lsResult.add(new String[]{"allExonModifiedNum", allExonModifiedNum + ""});
 		lsResult.add(new String[]{"allGeneNewNum", allGeneNewNum + ""});
 		lsResult.add(new String[]{"allIsoNewNum", allIsoNewNum + ""});
 		lsResult.add(new String[]{"allModifiedIso", allModifiedIso + ""});
 		lsResult.add(new String[]{"allModifiedGene", allModifiedGene + ""});
 		lsResult.add(new String[]{"allNewCDSGeneNum", allNewCDSGeneNum + ""});
 		lsResult.add(new String[]{"allNewCompleteCDSGeneNum", allNewCompleteCDSGeneNum + ""});
-		lsResult.add(new String[]{"allNewNunCodingGeneNum", allNewNunCodingGeneNum + ""});
 		lsResult.add(new String[]{"allNoModifiedGene", allNoModifiedGene + ""});
 		lsResult.add(new String[]{"totalGenes", totalGenes + ""});
 		return lsResult;

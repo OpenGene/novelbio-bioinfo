@@ -231,6 +231,7 @@ public class GuiSamStatistics extends JPanel {
 		btnOpenGtf = new JButton("OpenGTF");
 		btnOpenGtf.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				txtGTF.setText(guiFileOpen.openFileName("", ""));
 			}
 		});
 		btnOpenGtf.setBounds(715, 415, 118, 24);

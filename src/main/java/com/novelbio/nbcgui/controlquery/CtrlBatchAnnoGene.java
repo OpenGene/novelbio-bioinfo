@@ -7,18 +7,30 @@ import com.novelbio.analysis.annotation.genAnno.AnnoQuery;
 import com.novelbio.analysis.annotation.genAnno.AnnoQuery.AnnoQueryDisplayInfo;
 import com.novelbio.base.multithread.RunGetInfo;
 import com.novelbio.base.multithread.RunProcess;
+import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.GUI.GuiAnnoGene;
 
 public class CtrlBatchAnnoGene implements RunGetInfo<AnnoQuery.AnnoQueryDisplayInfo> {
+		
+	/** 如果选定的是GO，则需要返回GO的信息 */
+	GOtype gOtype;
+	
 	GuiAnnoGene guiAnnoBatch;	
 	List<String[]> lsIn2Out;
 	AnnoQuery annoQuery = new AnnoQuery();
-	Species species;
-	int colAccID = 1;
+	Species species;	
+	
 	public CtrlBatchAnnoGene(GuiAnnoGene guiBatchAnno) {
 		this.guiAnnoBatch = guiBatchAnno;
 		annoQuery.setRunGetInfo(this);
+	}
+	public void setAnnotationType(int annotationType) {
+		annoQuery.setAnnoType(annotationType);
+	}
+	/** GOtype */
+	public void setGOtype(GOtype gOtype) {
+		annoQuery.setGOtype(gOtype);
 	}
 	public void setSpecies(Species species) {
 		this.species = species;
@@ -43,7 +55,6 @@ public class CtrlBatchAnnoGene implements RunGetInfo<AnnoQuery.AnnoQueryDisplayI
 
 	public void execute() {
 		for (String[] fileIn2Out : lsIn2Out) {
-			annoQuery.setColAccIDFrom1(colAccID);
 			annoQuery.setFirstLineFrom1(2);
 			annoQuery.setGeneIDFile(fileIn2Out[0]);
 			annoQuery.run();

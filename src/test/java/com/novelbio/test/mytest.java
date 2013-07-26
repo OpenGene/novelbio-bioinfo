@@ -20,7 +20,11 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
+import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
+import com.novelbio.analysis.seq.rnaseq.RPKMcomput;
+import com.novelbio.analysis.seq.sam.AlignSamReading;
+import com.novelbio.analysis.seq.sam.AlignSeqReading;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.dataOperate.HttpFetch;
@@ -35,60 +39,29 @@ public class mytest {
 	private static Logger logger = Logger.getLogger(mytest.class);
 	
 	public static void main(String[] args) throws IOException, URISyntaxException {
-		SamFile samFile = new SamFile("/media/hdfs/novelbio/w41_accepted_hits.bam");
-//		samFile.close();
-		System.out.println("tsetset");
-		for (SamRecord samRecord : samFile.readLinesOverlap("chr2", 12345, 67890)) {
-			System.out.println(samRecord.toString());
-		}
-//		for (SamRecord samRecord : samFile.readLinesOverlap("chr3", 22222, 133333)) {
+//		SamFile samFile = new SamFile("/home/zong0jie/Test/rnaseq/w51_accepted_hits.bam");
+//		for (SamRecord samRecord : samFile.readLinesContained("chr1", 28520, 28717)) {
 //			System.out.println(samRecord.toString());
+//			System.out.println(samRecord.getMateRefID() + "\t" + samRecord.getMateAlignmentStart());
+//			System.out.println();
 //		}
-//		List<String[]> lsN50info = n50AndSeqLen.getLsNinfo();
-//		TxtReadandWrite txtWrite2 = new TxtReadandWrite("/media/winD/Bioinfor/genome/human/hg19_GRCh37/refrna/trinityLenN50", true);
-//		txtWrite2.ExcelWrite(lsN50info);
-//		txtWrite2.close();
 		
 		
-//		TxtReadandWrite txtReadBlast = new TxtReadandWrite("/media/winE/NBC/Project/Project_WH/rnatBlast2DB_cope");
-//		List<BlastInfo> lsBlastInfos = new ArrayList<BlastInfo>();
-//		for (String string : txtReadBlast.readlines()) {
-//			if (string.equals("")) {
-//				continue;
-//			}
-//			BlastInfo blastInfo = new BlastInfo(string);
-//			lsBlastInfos.add(blastInfo);
-//		}
-//		BlastStatistics blastStatistics = BlastInfo.getHistEvalue(lsBlastInfos);
-//		blastStatistics.setQueryFastaFile("/media/winE/NBC/Project/Project_WH/Trinity_cope_To_blast.fasta");
-//		HistList hList = blastStatistics.getHistEvalue();
-//		Map<String, HistBin> mapKey2Value = hList.getMapName2DetailAbs();
-//		TxtReadandWrite txtRead = new TxtReadandWrite("/media/winE/NBC/Project/Project_WH/rnatBlast2DB_cope_statistics", true);
-//		for (HistBin histBin : hList) {
-//			txtRead.writefileln(histBin.getNameSingle() + "\t" + histBin.getCountNumber());
-//		}
-//		txtRead.close();
-//		txtReadBlast.close();
-//		
-//		hList = blastStatistics.getHistIdentity();
-//		txtRead = new TxtReadandWrite("/media/winE/NBC/Project/Project_WH/rnatBlast2DB_cope_statisticsIdentity", true);
-//		for (HistBin histBin : hList) {
-//			txtRead.writefileln(histBin.getNameSingle() + "\t" + histBin.getCountNumber());
-//		}
-//		txtRead.close();
-//		txtReadBlast.close();
 		
-//		BarStyle barStyle = new BarStyle();
-//		barStyle.setColor(Color.blue);
-//		barStyle.setColorEdge(Color.white);
-//		PlotScatter plotScatter = hList.getPlotHistBar(barStyle);
-//		Font font = new Font(Font.SANS_SERIF, Font.PLAIN, 20);
-//		plotScatter.setTitleX("Evalue", font, 5.0, 0);
-//		plotScatter.setInsets(90, 20, 20, 90);
-//		plotScatter.setTitleY("Gene Number", font, 5.0, 90);
-//		plotScatter.setBg(Color.white);
-//		plotScatter.saveToFile("/media/winE/NBC/Project/Project_WH/blastHist.png", 1000, 1000);
-//		System.out.println(Math.log10(10E-180));
+		List<Align> lsAlignment = new ArrayList<>();
+		Align align = new Align("chr1", 28420, 28622);
+		lsAlignment.add(align);
+		
+		RPKMcomput rpkMcomput = new RPKMcomput();
+		rpkMcomput.setGffHashGene(new GffHashGene("/home/zong0jie/Test/rnaseq/cufflinks/novelTranscriptom.gtf"));
+		rpkMcomput.setIsPairend(true);
+		AlignSamReading alignSamReading = new AlignSamReading(new SamFile("/home/zong0jie/Test/rnaseq/w51_accepted_hits.bam"));
+		alignSamReading.setLsAlignments(lsAlignment);
+		rpkMcomput.setCurrentCondition("w51");
+		alignSamReading.addAlignmentRecorder(rpkMcomput);
+		alignSamReading.run();
+		rpkMcomput.writeToFileCurrent("/home/zong0jie/Test/rnaseq/cufflinks/exp_w51.txt");
+
 		
 	}
 	

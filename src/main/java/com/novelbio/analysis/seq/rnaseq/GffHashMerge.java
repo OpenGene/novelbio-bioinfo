@@ -3,21 +3,17 @@ package com.novelbio.analysis.seq.rnaseq;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.SeqHash;
-import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.listOperate.ListAbs;
-import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
 /** 重建转录本 */
 public class GffHashMerge {
@@ -76,15 +72,14 @@ public class GffHashMerge {
 		txtOut.ExcelWrite(transcriptomStatistics.getStatisticsResult());
 	}
 	public static void checken() {
-		String gffHashGeneRef = "/media/winF/NBC/Project/Project_FY/chicken/chicken_ensembl_Gtf";
-		String gffhashGeneCuf = "/media/winE/NBC/Project/Project_FY/paper/chicken/gal4-merged.gtf";
-		String gffFinal = "/media/winE/NBC/Project/Project_FY/paper/chicken/finalTranscript.gtf";
+		String gffHashGeneRef = "/home/zong0jie/Test/rnaseq/ath2013-07-24013425388.GTF";
+		String gffhashGeneCuf = "/home/zong0jie/Test/rnaseq/cufflinks/cufflinksMerged.gff/merged.gtf";
+		String gffFinal = "/home/zong0jie/Test/rnaseq/cufflinks/nbcNew.gtf";
 		String gffFinalStatistics = "/media/winF/NBC/Project/Project_FY/chicken/Result/cufflinkAll/cufflink/transcriptomeStatistics.txt";
 		
 		GffHashMerge gffHashMerge = new GffHashMerge();
-		gffHashMerge.setSpecies(new Species(9031));
-		GffChrAbs gffChrAbs = new GffChrAbs(9031);
-		gffHashMerge.setGffHashGeneRef(gffChrAbs.getGffHashGene());
+		gffHashMerge.setSpecies(new Species());
+		gffHashMerge.setGffHashGeneRef(new GffHashGene(GffType.GTF, gffHashGeneRef));
 		gffHashMerge.addGffHashGene(new GffHashGene(GffType.GTF, gffhashGeneCuf));
 		
 		GffHashGene gffHashGene = gffHashMerge.getGffHashGeneModifyResult();

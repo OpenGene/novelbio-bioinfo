@@ -3,7 +3,9 @@ package com.novelbio.nbcgui.GUI;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -13,10 +15,12 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 
+import com.novelbio.analysis.annotation.genAnno.AnnoAbs;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
+import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.controlquery.CtrlBatchAnnoGene;
 /**
@@ -39,6 +43,10 @@ public class GuiAnnoGene extends JPanel implements GuiNeedOpenFile {
 	private JCheckBox chckbxBlastto;
 	JComboBoxData<Species> cmbBlastSpecies;
 	JComboBoxData<Species> cmbSpecies;
+	
+	JComboBoxData<Integer> cmbAnnoType;
+	JComboBoxData<GOtype> cmbGOtype;
+	
 	/**
 	 * Create the panel.
 	 */
@@ -67,12 +75,12 @@ public class GuiAnnoGene extends JPanel implements GuiNeedOpenFile {
 		add(btnOpenfile);
 		
 		txtColAccID = new JTextField();
-		txtColAccID.setBounds(717, 292, 114, 18);
+		txtColAccID.setBounds(717, 121, 114, 18);
 		add(txtColAccID);
 		txtColAccID.setColumns(10);
 		
 		JLabel lblAccidcolumn = new JLabel("AccIDColumn");
-		lblAccidcolumn.setBounds(717, 266, 118, 14);
+		lblAccidcolumn.setBounds(717, 102, 118, 14);
 		add(lblAccidcolumn);
 		
 		btnDel = new JButton("DelFile");
@@ -88,11 +96,47 @@ public class GuiAnnoGene extends JPanel implements GuiNeedOpenFile {
 		progressBar.setBounds(12, 571, 693, 14);
 		add(progressBar);
 		
+		chckbxBlastto = new JCheckBox("BlastTo");
+		chckbxBlastto.setBounds(717, 445, 131, 22);
+		add(chckbxBlastto);
+		
+		cmbBlastSpecies = new JComboBoxData<Species>();
+		cmbBlastSpecies.setBounds(717, 490, 118, 23);
+		add(cmbBlastSpecies);
+		
+		cmbSpecies = new JComboBoxData<Species>();
+		cmbSpecies.setBounds(717, 394, 118, 23);
+		add(cmbSpecies);
+		
+
+		cmbAnnoType = new JComboBoxData<>();
+		cmbAnnoType.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (cmbAnnoType.getSelectedValue() == AnnoAbs.GO) {
+					cmbGOtype.setVisible(true);
+				} else {
+					cmbGOtype.setVisible(false);
+				}
+			}
+		});
+		cmbAnnoType.setBounds(717, 164, 118, 27);
+		add(cmbAnnoType);
+		
+		cmbGOtype = new JComboBoxData<>();
+		cmbGOtype.setBounds(717, 245, 118, 27);
+		add(cmbGOtype);
+		
 		btnRun = new JButton("Run");
 		btnRun.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				btnRun.setEnabled(false);
-				ctrlBatchAnno.setListQuery(scrollPaneData.getLsDataInfo());				
+				ctrlBatchAnno.setAnnotationType(cmbAnnoType.getSelectedValue());
+				ctrlBatchAnno.setGOtype(cmbGOtype.getSelectedValue());
+				ctrlBatchAnno.setListQuery(scrollPaneData.getLsDataInfo());
+				try {
+					ctrlBatchAnno.setColumnAccIDFrom1(Integer.parseInt(txtColAccID.getText()));
+				} catch (Exception e2) { }
+				
 				try {
 					ctrlBatchAnno.setColumnAccIDFrom1(Integer.parseInt(txtColAccID.getText()));
 				} catch (Exception e2) { }
@@ -109,17 +153,7 @@ public class GuiAnnoGene extends JPanel implements GuiNeedOpenFile {
 		btnRun.setBounds(717, 561, 118, 24);
 		add(btnRun);
 		
-		chckbxBlastto = new JCheckBox("BlastTo");
-		chckbxBlastto.setBounds(717, 445, 131, 22);
-		add(chckbxBlastto);
-		
-		cmbBlastSpecies = new JComboBoxData<Species>();
-		cmbBlastSpecies.setBounds(717, 490, 118, 23);
-		add(cmbBlastSpecies);
-		
-		cmbSpecies = new JComboBoxData<Species>();
-		cmbSpecies.setBounds(717, 394, 118, 23);
-		add(cmbSpecies);
+
 		initial();
 	}
 	
@@ -129,6 +163,14 @@ public class GuiAnnoGene extends JPanel implements GuiNeedOpenFile {
 		cmbSpecies.setMapItem(Species.getSpeciesName2Species(Species.KEGGNAME_SPECIES));
 		btnDel.setEnabled(true);
 		scrollPaneData.setTitle(new String[]{"InFile", "OutFile"});
+		Map<String, Integer> mapAnno2Anno = new LinkedHashMap<>();
+		mapAnno2Anno.put("Annotation", AnnoAbs.ANNOTATION);
+		mapAnno2Anno.put("GO", AnnoAbs.GO);
+		mapAnno2Anno.put("KEGGpath", AnnoAbs.PATH);
+		cmbAnnoType.setMapItem(mapAnno2Anno);
+		
+		cmbGOtype.setMapItem(GOtype.getMapStr2Gotype());
+		cmbGOtype.setVisible(false);
 	}
 	
 	private void selectRadAnno() {
