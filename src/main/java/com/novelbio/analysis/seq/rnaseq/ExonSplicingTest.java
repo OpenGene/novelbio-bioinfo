@@ -61,7 +61,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	/** 设置一个负数的初始值 */
 	Double pvalue= -1.0;
 	double fdr = 1.0;
-	
+	Set<String> setCondition;
 	/** readsLength越长，juncReadsPvalue所占的比例就越大 */
 	int readsLength = 100;
 	
@@ -74,7 +74,10 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	public void setGetSeq(SeqHash seqHash) {
 		this.seqHash = seqHash;
 	}
-	
+	/** 必须设定，总统的condition数 */
+	public void setSetCondition(Set<String> setCondition) {
+		this.setCondition = setCondition;
+	}
 	/** 必须设定 */
 	public void setCompareCondition(String condition1, String condition2) {
 		this.condition1 = condition1;
@@ -110,7 +113,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			if (spliceTypePredict instanceof PredictRetainIntron) {
 				((PredictRetainIntron)spliceTypePredict).setMapCond2Samfile(mapCond2Samfile);
 			}
-			for (String condition : tophatJunction.getConditionSet()) {
+			for (String condition : setCondition) {
 				SpliceType2Value spliceType2Value = getAndCreatSpliceType2Value(condition);
 				spliceType2Value.addJunction(condition, spliceTypePredict);
 			}

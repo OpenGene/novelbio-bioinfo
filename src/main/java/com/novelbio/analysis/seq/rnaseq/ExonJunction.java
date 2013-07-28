@@ -356,6 +356,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 
 				ExonSplicingTest exonSplicingTest = new ExonSplicingTest(exonCluster);
 				//获得junction信息
+				exonSplicingTest.setSetCondition(setCondition);
 				exonSplicingTest.setJunctionInfo(mapCond2SamFile, tophatJunction);
 				lsExonSplicingTestResult.add(exonSplicingTest);
 			}

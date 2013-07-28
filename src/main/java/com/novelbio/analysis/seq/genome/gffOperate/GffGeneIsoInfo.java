@@ -1030,7 +1030,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return   info.hashCode();
 	}
 	/**
-	 * 它的父级，也就是gffDetailGene，并不复制
+	 * 它的父级，也就是gffDetailGene，只是地址传递
 	 */
 	public GffGeneIsoInfo clone() {
 		GffGeneIsoInfo result = null;

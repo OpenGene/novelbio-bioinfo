@@ -40,16 +40,14 @@ public class ExonInfo extends ListDetailAbs {
 	public void setStartCis(int startLoc) {
 		if (cis5to3) {
 			numberstart = startLoc;
-		}
-		else {
+		} else {
 			numberend = startLoc;
 		}
 	}
 	public void setEndCis(int endLoc) {
 		if (cis5to3) {
 			numberend = endLoc;
-		}
-		else {
+		} else {
 			numberstart = endLoc;
 		}
 	}
@@ -89,6 +87,10 @@ public class ExonInfo extends ListDetailAbs {
 			i = -1;
 		}
 		return numberstart * 100000 + numberend * i + getParent().getRefID().hashCode();
+	}
+	
+	public String toString() {
+		return getRefID() + "\t" + getStartCis() + "\t" + getEndCis();
 	}
 }
 

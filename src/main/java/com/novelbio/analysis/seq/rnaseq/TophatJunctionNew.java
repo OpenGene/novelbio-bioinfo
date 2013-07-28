@@ -2,30 +2,22 @@ package com.novelbio.analysis.seq.rnaseq;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.HashMultimap;
 import com.novelbio.analysis.seq.AlignRecord;
-import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailCG;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
-import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.analysis.seq.rnaseq.JunctionInfo.JunctionUnit;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
+import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
 import com.novelbio.base.dataStructure.listOperate.ListBin;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 import com.novelbio.base.dataStructure.listOperate.ListHashSearch;
-import com.novelbio.base.multithread.RunProcess;
 
 public class TophatJunctionNew extends ListHashSearch<JunctionInfo, ListCodAbs<JunctionInfo>, 
 ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> implements AlignmentRecorder {
@@ -46,13 +38,15 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 		}
 		int size = lsAlign.size();
 		String chrID = alignRecord.getRefID();
+		List<JunctionUnit> lsJun = new ArrayList<>();
 		for (int i = 0; i < size - 1; i++) {
 			Align alignThis = lsAlign.get(i);
 			Align alignNext = lsAlign.get(i + 1);
 			int junStart = alignThis.getEndAbs();
 			int junEnd = alignNext.getStartAbs();
-			addJunctionInfo(chrID, junStart, junEnd, 1);
+			lsJun.add(new JunctionUnit(chrID, junStart, junEnd));
 		}
+		addJunctionInfo(lsJun, 1);
 	}
 
 	/**
@@ -60,10 +54,11 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	 * @param condition
 	 * @param junctionFile
 	 */
+	@Deprecated
 	public void setJunFile(String condition, String junctionFile) {
 		mapCond2JuncFile.put(condition, junctionFile);
 	}
-	
+	@Deprecated
 	public void readJuncFile() {
 		for (String condition : mapCond2JuncFile.keySet()) {
 			List<String> lsFileName = mapCond2JuncFile.get(condition);
@@ -79,6 +74,7 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	 * @param condition
 	 * @param junctionFile
 	 */
+	@Deprecated
 	private void readJuncFile(String junctionFile) {
 		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(junctionFile);
 		for (String string : txtReadandWrite.readfileLs()) {
@@ -96,6 +92,37 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 		}
 		txtReadandWrite.close();
 	}
+	
+	/** 
+	 * 添加一系列的junctionUnit，都是来源于同一条reads的
+	 */
+	private void addJunctionInfo(List<JunctionUnit> lsJun, int junctionNum) {
+		JunctionUnit junBefore = null, junThis = null,  junAfter = null;
+		for (int i = 1; i < lsJun.size(); i++) {
+			junAfter = lsJun.get(i);
+			if (junThis == null) junThis = lsJun.get(i-1);
+			
+			String juncUnitKey = JunctionUnit.getKey(junThis.getRefID(), junThis.getStartAbs(), junThis.getEndAbs());
+			
+			if (mapJunUnitKey2Unit.containsKey(juncUnitKey)) {
+				junThis = mapJunUnitKey2Unit.get(juncUnitKey);
+				junThis.addReadsNum(condition, junctionNum);
+				//TODO 感觉有问题，就是before和after的引用是否正确
+				junThis.addJunBeforeAbs(junBefore);
+				junThis.addJunAfterAbs(junAfter);
+			} else {
+				junThis.addJunBeforeAbs(junBefore); junThis.addJunAfterAbs(junAfter);
+				JunctionInfo juncInfo = new JunctionInfo(junThis);
+				ListBin<JunctionInfo> lsJunctionInfos = mapChrID2ListGff.get(junThis.getRefID());
+				lsJunctionInfos.add(juncInfo);
+				mapJunUnitKey2Unit.put(junThis.key(), junThis);
+				mapJunSite2JunUnit.put(junThis.getRefID() + SepSign.SEP_ID + junThis.getStartAbs(), junThis);
+			}
+			junBefore = junThis;
+			junThis = junAfter;
+		}
+	}
+	
 	
 	/** 
 	 * 添加单个剪接位点reads
@@ -161,11 +188,10 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	 * @return
 	 */
 	public int getJunctionSite(String condition, String chrID, int locSite) {
-		setCondition(condition);
-		String junc = chrID.toLowerCase() + SepSign.SEP_INFO_SAMEDB + locSite;
-		Integer num = mapJuncOne2AllNum.get(junc);
-		if (num == null) {
-			num = 0;
+		int num = 0;
+		List<JunctionUnit> lsJunctionUnits = mapJunSite2JunUnit.get(chrID + SepSign.SEP_ID + locSite);
+		for (JunctionUnit junctionUnit : lsJunctionUnits) {
+			num += junctionUnit.getReadsNum(condition);
 		}
 		return num;
 	}
@@ -177,26 +203,26 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	 * @return
 	 */
 	public int getJunctionSite(String condition, String chrID, int locStartSite, int locEndSite) {
-		setCondition(condition);
-		chrID = chrID.toLowerCase();
-		int locS = Math.min(locStartSite, locEndSite);
-		int locE = Math.max(locStartSite, locEndSite);
-		String key = chrID + SepSign.SEP_INFO_SAMEDB + locS + SepSign.SEP_INFO +chrID + SepSign.SEP_INFO_SAMEDB + locE;
-		int resultNum = 0;
-		if (mapJuncPair2ReadsNum.containsKey(key)) {
-			resultNum = mapJuncPair2ReadsNum.get(key);
+		int start = Math.min(locStartSite, locEndSite), end = Math.max(locStartSite, locEndSite);
+		JunctionUnit junctionUnit = mapJunUnitKey2Unit.get(JunctionUnit.getKey(chrID, start, end));
+		if (junctionUnit == null) {
+			return 0;
+		} else {
+			return junctionUnit.getReadsNum(condition);
 		}
-		return resultNum;
 	}
 
 	@Override
 	public void summary() {
-		//NOTHING TO DO
 	}
+	
+	/** 这里读取的是sam，bam文件 */
 	@Override
 	protected void ReadGffarrayExcep(String gfffilename) throws Exception {
-		// TODO Auto-generated method stub
-		
+		SamFile samFile = new SamFile(gfffilename);
+		for (SamRecord samRecord : samFile.readLines()) {
+			addAlignRecord(samRecord);
+		}
 	}
 
 }

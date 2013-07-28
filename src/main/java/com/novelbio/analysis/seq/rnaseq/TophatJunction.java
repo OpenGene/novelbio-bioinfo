@@ -44,9 +44,7 @@ public class TophatJunction extends RunProcess<Integer> implements AlignmentReco
 		mapJuncOne2AllNum = getMapJuncOneToAllNum(condition);
 		mapJuncPair2ReadsNum = getMapJuncPair2ReadsNum(condition);
 	}
-	public Set<String> getConditionSet() {
-		return mapCond_To_JuncOne2AllNum.keySet();
-	}
+
 	/**
 	 * 获得剪接位点1对应的所有剪接位点2的map
 	 * @param condition
