@@ -120,7 +120,7 @@ public class GffChrMap {
 	/**
 	 * 主要用于全基因组做图的，所以结果不按照基因方向进行颠倒
 	 * @param geneStructure
-	 * @param gffDetailGene
+	 * @param gffDetailGene1
 	 * @param num 具体第几个，譬如马红就想看第一个内含子或者第一个外显子 小于等于0表示看全体
 	 * @return
 	 */

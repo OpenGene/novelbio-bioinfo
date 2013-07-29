@@ -4,97 +4,45 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.HashMultimap;
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.analysis.seq.rnaseq.JunctionInfo.JunctionUnit;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
+import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.SepSign;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.multithread.RunProcess;
+import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.dataStructure.listOperate.ListBin;
+import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
+import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
+import com.novelbio.base.dataStructure.listOperate.ListHashSearch;
 
-public class TophatJunction extends RunProcess<Integer> implements AlignmentRecorder {
+public class TophatJunction extends ListHashSearch<JunctionInfo, ListCodAbs<JunctionInfo>, 
+ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> implements AlignmentRecorder {
+	private static final Logger logger = Logger.getLogger(TophatJunction.class);
+	
+	private static int intronMinLen = 25;
+	
 	ArrayListMultimap<String, String> mapCond2JuncFile = ArrayListMultimap.create();
+	Map<String, JunctionUnit> mapJunUnitKey2Unit = new HashMap<String, JunctionUnit>();
+	ArrayListMultimap<String, JunctionUnit> mapJunSite2JunUnit = ArrayListMultimap.create();
+	String condition;
 	
-	/**
-	 * key condition
-	 * value: 某个junction与别的junction之间的对应关系
-	 */
-	HashMap<String, HashMultimap<String, String>> mapCond_To_mapJun1ToSetJun2 = new LinkedHashMap<String, HashMultimap<String,String>>();
-	HashMultimap<String, String> mapJun1ToSetJun2;
-	/**
-	 * key condition--
-	 * key：junction
-	 * value：该junction所对应的总reads数
-	 */
-	HashMap<String, LinkedHashMap<String, Integer>> mapCond_To_JuncOne2AllNum = new LinkedHashMap<String, LinkedHashMap<String,Integer>>();
-	LinkedHashMap<String, Integer> mapJuncOne2AllNum;
-	/**
-	 * key condition
-	 * value: 某一对junction与其对应的reads总数
-	 */
-	HashMap<String, LinkedHashMap<String,Integer>>  mapCond_To_JuncPair2ReadsNum = new LinkedHashMap<String, LinkedHashMap<String,Integer>>();
-	LinkedHashMap<String, Integer> mapJuncPair2ReadsNum;	
-	
-	/** 设定当前时期 */
+	public TophatJunction() {
+		mapChrID2ListGff = new LinkedHashMap<>();
+		mapName2DetailAbs = new LinkedHashMap<>();
+		mapName2DetailNum = new LinkedHashMap<>();
+		lsNameAll = new ArrayList<>();
+		lsNameNoRedundent = new ArrayList<>();
+	}
 	public void setCondition(String condition) {
-		mapJun1ToSetJun2 = getMapJunc1ToJunc2(condition);
-		mapJuncOne2AllNum = getMapJuncOneToAllNum(condition);
-		mapJuncPair2ReadsNum = getMapJuncPair2ReadsNum(condition);
-	}
-
-	/**
-	 * 获得剪接位点1对应的所有剪接位点2的map
-	 * @param condition
-	 * @return
-	 */
-	private HashMultimap<String, String> getMapJunc1ToJunc2(String condition) {
-		//获得对应的hash表
-		HashMultimap<String, String> tmpMapJunc1ToJunc2 = null;
-		if (mapCond_To_mapJun1ToSetJun2.containsKey(condition)) {
-			tmpMapJunc1ToJunc2 = mapCond_To_mapJun1ToSetJun2.get(condition);
-		} else {
-			tmpMapJunc1ToJunc2 = HashMultimap.create();
-			mapCond_To_mapJun1ToSetJun2.put(condition, tmpMapJunc1ToJunc2);
-		}
-		return tmpMapJunc1ToJunc2;
-	}
-	
-	/**	 * @param locEndSite
-
-	 * 获得剪接位点1对应的全部readsnum
-	 * @param condition
-	 * @return
-	 */
-	private LinkedHashMap<String, Integer> getMapJuncOneToAllNum(String condition) {
-		//获得对应的hash表
-		LinkedHashMap<String, Integer> tmpMapJuncOne2AllNum = null;
-		if (mapCond_To_JuncOne2AllNum.containsKey(condition)) {
-			tmpMapJuncOne2AllNum = mapCond_To_JuncOne2AllNum.get(condition);
-		} else {
-			tmpMapJuncOne2AllNum = new LinkedHashMap<String, Integer>();
-			mapCond_To_JuncOne2AllNum.put(condition, tmpMapJuncOne2AllNum);
-		}
-		return tmpMapJuncOne2AllNum;
-	}
-	
-	/**
-	 * 获得一对剪接位点所对应的全部readsnum
-	 * @param condition
-	 * @return
-	 */
-	private LinkedHashMap<String, Integer> getMapJuncPair2ReadsNum(String condition) {
-		//获得对应的hash表
-		LinkedHashMap<String, Integer> tmpMapJuncPair2ReadsNum = null;
-		if (mapCond_To_JuncPair2ReadsNum.containsKey(condition)) {
-			tmpMapJuncPair2ReadsNum = mapCond_To_JuncPair2ReadsNum.get(condition);
-		} else {
-			tmpMapJuncPair2ReadsNum = new LinkedHashMap<String, Integer>();
-			mapCond_To_JuncPair2ReadsNum.put(condition, tmpMapJuncPair2ReadsNum);
-		}
-		return tmpMapJuncPair2ReadsNum;
+		this.condition = condition;
 	}
 	
 	/**添加samBam的文件用来获得信息 */
@@ -103,63 +51,125 @@ public class TophatJunction extends RunProcess<Integer> implements AlignmentReco
 		if (lsAlign.size() <= 1) {
 			return;
 		}
-		int size = lsAlign.size();
+		//消除intron的影响
+		List<Align> lsAlignNew = new ArrayList<>();
+		for (Align align : lsAlign) {
+			if (lsAlignNew.size() == 0) {
+				lsAlignNew.add(align);
+			} else {
+				Align alignlast = lsAlignNew.get(lsAlignNew.size() - 1);
+				if (align.getStartAbs() - alignlast.getEndAbs() <= intronMinLen) {
+					alignlast.setEnd(align.getEndAbs());
+				} else {
+					lsAlignNew.add(align);
+				}
+			}
+		}
+		int size = lsAlignNew.size();
+		if (size <= 1) {
+			return;
+		}
 		String chrID = alignRecord.getRefID();
+		List<JunctionUnit> lsJun = new ArrayList<>();
 		for (int i = 0; i < size - 1; i++) {
-			Align alignThis = lsAlign.get(i);
-			Align alignNext = lsAlign.get(i + 1);
+			Align alignThis = lsAlignNew.get(i);
+			Align alignNext = lsAlignNew.get(i + 1);
 			int junStart = alignThis.getEndAbs();
 			int junEnd = alignNext.getStartAbs();
-			addJunctionInfo(chrID, junStart, junEnd, 1);
+			JunctionUnit jun = new JunctionUnit(chrID, junStart, junEnd);
+			jun.addReadsNum1(condition);
+			lsJun.add(jun);
 		}
+		addJunctionInfo(lsJun);
 	}
-
-	/**
-	 * 读取junction文件，文件中每个剪接位点只能出现一次\
-	 * @param condition
-	 * @param junctionFile
+//
+//	/**
+//	 * 读取junction文件，文件中每个剪接位点只能出现一次\
+//	 * @param condition
+//	 * @param junctionFile
+//	 */
+//	@Deprecated
+//	public void setJunFile(String condition, String junctionFile) {
+//		mapCond2JuncFile.put(condition, junctionFile);
+//	}
+//	@Deprecated
+//	public void readJuncFile() {
+//		for (String condition : mapCond2JuncFile.keySet()) {
+//			List<String> lsFileName = mapCond2JuncFile.get(condition);
+//			for (String junctionFile : lsFileName) {
+//				readJuncFile(junctionFile);
+//			}
+//		}
+//	}
+//	
+//	/**
+//	 * 读取之前先设定{@link #setCondition(String)}
+//	 * 读取junction文件，文件中每个剪接位点只能出现一次\
+//	 * @param condition
+//	 * @param junctionFile
+//	 */
+//	@Deprecated
+//	private void readJuncFile(String junctionFile) {
+//		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(junctionFile);
+//		for (String string : txtReadandWrite.readfileLs()) {
+//			if (string.startsWith("track")) {
+//				continue;
+//			}
+//			String[] ss = string.split("\t");
+//			String chrID = ss[0];
+//			
+//			//junction位点都设定在exon上
+//			int junct1 = Integer.parseInt(ss[1]) + Integer.parseInt(ss[10].split(",")[0]);
+//			int junct2 = Integer.parseInt(ss[2]) - Integer.parseInt(ss[10].split(",")[1]) + 1;
+//			int junctionNum = Integer.parseInt(ss[4]);
+//			addJunctionInfo(chrID, junct1, junct2, junctionNum);
+//		}
+//		txtReadandWrite.close();
+//	}
+	
+	/** 
+	 * 添加一系列的junctionUnit，都是来源于同一条reads的
 	 */
-	public void setJunFile(String condition, String junctionFile) {
-		mapCond2JuncFile.put(condition, junctionFile);
+	private void addJunctionInfo(List<JunctionUnit> lsJun) {
+		JunctionUnit junBefore = null, junThis = null,  junAfter = null;
+		if (lsJun.size() == 1) {
+			junThis = lsJun.get(0);
+			addJun(junThis, junBefore, junAfter);
+			return;
+		}
+		for (int i = 1; i < lsJun.size(); i++) {
+			junAfter = lsJun.get(i);
+			if (junThis == null) junThis = lsJun.get(i-1);			
+			addJun(junThis, junBefore, junAfter);
+			junBefore = junThis;
+			junThis = junAfter;
+		}
+		addJun(junThis, junBefore, null);
+		
 	}
 	
-	@Override
-	protected void running() {
-		readJuncFile();
-	}
-	
-	public void readJuncFile() {
-		for (String condition : mapCond2JuncFile.keySet()) {
-			List<String> lsFileName = mapCond2JuncFile.get(condition);
-			for (String junctionFile : lsFileName) {
-				readJuncFile(condition, junctionFile);
+	private void addJun(JunctionUnit junThis, JunctionUnit junBefore, JunctionUnit junAfter) {
+		String juncUnitKey = JunctionUnit.getKey(junThis.getRefID(), junThis.getStartAbs(), junThis.getEndAbs());
+		if (mapJunUnitKey2Unit.containsKey(juncUnitKey)) {
+			JunctionUnit junThisExist = mapJunUnitKey2Unit.get(juncUnitKey);
+			junThisExist.addReadsNum(junThis);
+			//TODO 感觉有问题，就是before和after的引用是否正确
+			junThisExist.addJunBeforeAbs(junBefore);
+			junThisExist.addJunAfterAbs(junAfter);
+		} else {
+			junThis.addJunBeforeAbs(junBefore); junThis.addJunAfterAbs(junAfter);
+			JunctionInfo juncInfo = new JunctionInfo(junThis);
+			ListBin<JunctionInfo> lsJunctionInfos = mapChrID2ListGff.get(junThis.getRefID());
+			if (lsJunctionInfos == null) {
+				lsJunctionInfos = new ListBin<>();
+				mapChrID2ListGff.put(junThis.getRefID(), lsJunctionInfos);
 			}
+			lsJunctionInfos.add(juncInfo);
+			mapJunUnitKey2Unit.put(junThis.key(), junThis);
+			mapJunSite2JunUnit.put(junThis.getRefID().toLowerCase() + SepSign.SEP_ID + junThis.getStartAbs(), junThis);
+			mapJunSite2JunUnit.put(junThis.getRefID().toLowerCase() + SepSign.SEP_ID + junThis.getEndAbs(), junThis);
 		}
 	}
-	
-	/**
-	 * 读取junction文件，文件中每个剪接位点只能出现一次\
-	 * @param condition
-	 * @param junctionFile
-	 */
-	private void readJuncFile(String condition, String junctionFile) {
-		setCondition(condition);
-		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(junctionFile, false);
-		for (String string : txtReadandWrite.readfileLs()) {
-			if (string.startsWith("track")) {
-				continue;
-			}
-			String[] ss = string.split("\t");
-			String chrID = ss[0];
-			
-			//junction位点都设定在exon上
-			int junct1 = Integer.parseInt(ss[1]) + Integer.parseInt(ss[10].split(",")[0]);
-			int junct2 = Integer.parseInt(ss[2]) - Integer.parseInt(ss[10].split(",")[1]) + 1;
-			int junctionNum = Integer.parseInt(ss[4]);
-			addJunctionInfo(chrID, junct1, junct2, junctionNum);
-		}
-	}
-	
 	/** 
 	 * 添加单个剪接位点reads
 	 * @param chrID 染色体
@@ -168,27 +178,20 @@ public class TophatJunction extends RunProcess<Integer> implements AlignmentReco
 	 * @param junctionNum 剪接reads的数量
 	 */
 	private void addJunctionInfo(String chrID, int junctionStart, int junctionEnd, int junctionNum) {
-		chrID = chrID.toLowerCase();
+		chrID = chrID.trim().toLowerCase();
 		int junctionStartmin = Math.min(junctionStart, junctionEnd);
 		int junctionEndmax = Math.max(junctionStart, junctionEnd);
-		String strjunct1 = chrID + SepSign.SEP_INFO_SAMEDB + junctionStartmin;
-		String strjunct2 = chrID + SepSign.SEP_INFO_SAMEDB + junctionEndmax;
-		String strJunBoth = strjunct1 + SepSign.SEP_INFO + strjunct2;
-		
-		mapJun1ToSetJun2.put(strjunct1, strjunct2);
-		addJunctionNum(mapJuncOne2AllNum, strjunct1, junctionNum);
-		addJunctionNum(mapJuncOne2AllNum, strjunct2, junctionNum);
-		addJunctionNum(mapJuncPair2ReadsNum, strJunBoth, junctionNum);
-	}
-	
-	/** 向指定的map中添加junction reads */
-	private void addJunctionNum(HashMap<String, Integer> mapJunc2Num, String junc, int junctionNum) {
-		if (mapJunc2Num.containsKey(junc)) {
-			int juncAllNum = mapJunc2Num.get(junc);
-			juncAllNum = juncAllNum + junctionNum;
-			mapJunc2Num.put(junc, juncAllNum);
+		String juncUnitKey = JunctionUnit.getKey(chrID, junctionStartmin, junctionEndmax);
+		if (mapJunUnitKey2Unit.containsKey(juncUnitKey)) {
+			mapJunUnitKey2Unit.get(juncUnitKey).addReadsNum(condition, junctionNum);
 		} else {
-			mapJunc2Num.put(junc, junctionNum);
+			JunctionUnit juncUnit = new JunctionUnit(chrID, junctionStartmin, junctionEndmax);
+			JunctionInfo juncInfo = new JunctionInfo(juncUnit);
+			ListBin<JunctionInfo> lsJunctionInfos = mapChrID2ListGff.get(chrID);
+			lsJunctionInfos.add(juncInfo);
+			mapJunUnitKey2Unit.put(juncUnit.key(), juncUnit);
+			mapJunSite2JunUnit.put(chrID + SepSign.SEP_ID + juncUnit.getStartAbs(), juncUnit);
+			mapJunSite2JunUnit.put(chrID + SepSign.SEP_ID + juncUnit.getEndAbs(), juncUnit);
 		}
 	}
 	
@@ -201,8 +204,9 @@ public class TophatJunction extends RunProcess<Integer> implements AlignmentReco
 	 */
 	public int getJunctionSite(String chrID, int locSite) {
 		int num = 0;
-		for (String condition : mapCond_To_JuncOne2AllNum.keySet()) {
-			num = num + getJunctionSite(condition, chrID, locSite);
+		List<JunctionUnit> lsJunctionUnits = mapJunSite2JunUnit.get(chrID + SepSign.SEP_ID + locSite);
+		for (JunctionUnit junctionUnit : lsJunctionUnits) {
+			num += junctionUnit.getReadsNumAll();
 		}
 		return num;
 	}
@@ -214,11 +218,13 @@ public class TophatJunction extends RunProcess<Integer> implements AlignmentReco
 	 * @return
 	 */
 	public int getJunctionSite(String chrID, int locStart, int locEnd) {
-		int num = 0;
-		for (String condition : mapCond_To_JuncOne2AllNum.keySet()) {
-			num = num + getJunctionSite(condition, chrID, locStart, locEnd);
+		int start = Math.min(locStart, locEnd), end = Math.max(locStart, locEnd);
+		JunctionUnit junctionUnit = mapJunUnitKey2Unit.get(JunctionUnit.getKey(chrID, start, end));
+		if (junctionUnit == null) {
+			return 0;
+		} else {
+			return junctionUnit.getReadsNumAll();
 		}
-		return num;
 	}
 	/**
 	 * 给定坐标和位点，找出locsite,以及总共有多少reads支持
@@ -228,11 +234,10 @@ public class TophatJunction extends RunProcess<Integer> implements AlignmentReco
 	 * @return
 	 */
 	public int getJunctionSite(String condition, String chrID, int locSite) {
-		setCondition(condition);
-		String junc = chrID.toLowerCase() + SepSign.SEP_INFO_SAMEDB + locSite;
-		Integer num = mapJuncOne2AllNum.get(junc);
-		if (num == null) {
-			num = 0;
+		int num = 0;
+		List<JunctionUnit> lsJunctionUnits = mapJunSite2JunUnit.get(chrID + SepSign.SEP_ID + locSite);
+		for (JunctionUnit junctionUnit : lsJunctionUnits) {
+			num += junctionUnit.getReadsNum(condition);
 		}
 		return num;
 	}
@@ -244,48 +249,69 @@ public class TophatJunction extends RunProcess<Integer> implements AlignmentReco
 	 * @return
 	 */
 	public int getJunctionSite(String condition, String chrID, int locStartSite, int locEndSite) {
-		setCondition(condition);
-		chrID = chrID.toLowerCase();
-		int locS = Math.min(locStartSite, locEndSite);
-		int locE = Math.max(locStartSite, locEndSite);
-		String key = chrID + SepSign.SEP_INFO_SAMEDB + locS + SepSign.SEP_INFO +chrID + SepSign.SEP_INFO_SAMEDB + locE;
-		int resultNum = 0;
-		if (mapJuncPair2ReadsNum.containsKey(key)) {
-			resultNum = mapJuncPair2ReadsNum.get(key);
+		int start = Math.min(locStartSite, locEndSite), end = Math.max(locStartSite, locEndSite);
+		JunctionUnit junctionUnit = mapJunUnitKey2Unit.get(JunctionUnit.getKey(chrID, start, end));
+		if (junctionUnit == null) {
+			return 0;
+		} else {
+			return junctionUnit.getReadsNum(condition);
 		}
-		return resultNum;
-	}
-	
-	public void writeTo(String condition, String outPathPrefix) {
-		setCondition(condition);
-		TxtReadandWrite txtJuncPair = new TxtReadandWrite(outPathPrefix+"junctionPair.txt", true);
-		TxtReadandWrite txtJunc2Num = new TxtReadandWrite(outPathPrefix + "Junc2Num", true);
-		TxtReadandWrite txtJuncPair2Num = new TxtReadandWrite(outPathPrefix + "JuncPair2Num", true);
-
-		
-		for (String string : mapJun1ToSetJun2.keySet()) {
-			Set<String> setJunc2 = mapJun1ToSetJun2.get(string);
-			for (String string2 : setJunc2) {
-				txtJuncPair.writefile(string + "\t" + string2);
-			}
-		}
-		
-		for (String junc : mapJuncOne2AllNum.keySet()) {
-			txtJunc2Num.writefileln(junc + "\t" + mapJuncOne2AllNum.get(junc));
-		}
-		
-		for (String juncPair : mapJuncPair2ReadsNum.keySet()) {
-			txtJuncPair2Num.writefileln(juncPair + "\t" + mapJuncPair2ReadsNum.get(juncPair));
-		}
-		
-		txtJunc2Num.close();
-		txtJuncPair.close();
-		txtJuncPair2Num.close();
 	}
 
 	@Override
 	public void summary() {
-		//NOTHING TO DO
+	}
+	
+	/** 读取完bam文件后必须调用该方法进行总结 */
+	public void conclusion() {
+		for (Entry<String, ListBin<JunctionInfo>> entry : mapChrID2ListGff.entrySet()) {
+			String chrID = entry.getKey();
+			ListBin<JunctionInfo> listGff = entry.getValue();
+			ListBin<JunctionInfo> listGffNew = combineOverlapGene(listGff);
+			mapChrID2ListGff.put(chrID, listGffNew);
+			listGff = null;
+		}
+		
+		try {
+			setItemDistance();
+			setOther();
+			getMapName2DetailNum();
+			getMapName2Detail();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/** 这里读取的是sam，bam文件 */
+	@Override
+	protected void ReadGffarrayExcep(String gfffilename) throws Exception {
+		SamFile samFile = new SamFile(gfffilename);
+		for (SamRecord samRecord : samFile.readLines()) {
+			addAlignRecord(samRecord);
+		}
 	}
 
+	/**
+	 * 合并重复的GffDetailGene
+	 * @return
+	 */
+	private static ListBin<JunctionInfo> combineOverlapGene(ListBin<JunctionInfo> lsInput) {
+		ListBin<JunctionInfo> listGffNew = new ListBin<>();
+		JunctionInfo gffDetailGeneLast = null;
+		//合并两个重叠的基因
+		for (JunctionInfo gffDetailGene : lsInput) {
+			if (gffDetailGeneLast != null && gffDetailGene.getRefID().equals(gffDetailGeneLast.getRefID())) {
+				double[] regionLast = new double[]{gffDetailGeneLast.getStartAbs(), gffDetailGeneLast.getEndAbs()};
+				double[] regionThis = new double[]{gffDetailGene.getStartAbs(), gffDetailGene.getEndAbs() };
+				double[]  overlapInfo = ArrayOperate.cmpArray(regionLast, regionThis);
+				if ((overlapInfo[2] > 0.5 || overlapInfo[3] > 0.5)) {
+					gffDetailGeneLast.addJuncInfo(gffDetailGene);
+					continue;
+				}
+			}
+			listGffNew.add(gffDetailGene);
+			gffDetailGeneLast = gffDetailGene;
+		}
+		return listGffNew;
+	}
 }

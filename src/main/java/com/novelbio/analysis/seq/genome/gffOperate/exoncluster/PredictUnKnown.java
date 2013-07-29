@@ -41,7 +41,7 @@ public class PredictUnKnown extends SpliceTypePredict {
 	}
 	/**
 	 * 获得跳过该exonCluster组的readsNum
-	 * @param gffDetailGene
+	 * @param gffDetailGene1
 	 * @param exonCluster
 	 * @param condition
 	 * @return

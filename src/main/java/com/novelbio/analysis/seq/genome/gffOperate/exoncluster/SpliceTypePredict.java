@@ -59,7 +59,7 @@ public abstract class SpliceTypePredict {
 	public abstract List<? extends Alignment> getBGSite();
 	/**
 	 * 获得跳过该exonCluster组的readsNum
-	 * @param gffDetailGene
+	 * @param gffDetailGene1
 	 * @param exonCluster
 	 * @param condition
 	 * @return

@@ -170,18 +170,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		this.lsCondCompare = lsConditions;
 	}
 	
-	/**
-	 * 设定junction文件以及所对应的时期
-	 * 一旦设定该项目，则不会从bam文件中获取junction信息
-	 * @param condition
-	 * @param junctionFile
-	 */
-	public void setIsoJunFile(String condition,String junctionFile) {
-		tophatJunction.setJunFile(condition,junctionFile);
-		setCondition.add(condition);
-		readFromJunctionFile = true;
-	}
-	
 	public void addBamSorted(String condition, String sortedBamFile) {
 		setCondition.add(condition);
 		SamFile samFile = new SamFile(sortedBamFile); 
@@ -207,8 +195,10 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		ctrlSplicing.setProgressBarLevelLs(lsLevels);
 		if (!readFromJunctionFile) {
 			loadJunctionBam();
+			tophatJunction.conclusion();
 		} else {
 			readJuncFile();
+			logger.error("Not Support Now");
 		}
 		
 		suspendCheck();
@@ -287,11 +277,11 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	private void readJuncFile() {
-		Thread thread = new Thread(tophatJunction);
-		thread.start();
-		while (tophatJunction.isRunning()) {
-			try { Thread.sleep(200); } catch (InterruptedException e) { }
-		}
+//		Thread thread = new Thread(tophatJunction);
+//		thread.start();
+//		while (tophatJunction.isRunning()) {
+//			try { Thread.sleep(200); } catch (InterruptedException e) { }
+//		}
 	}
 	
 	/** 从全基因组中获取差异的可变剪接事件，放入lsSplicingTest中 */
@@ -341,9 +331,9 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	 */
 	private ArrayList<ExonSplicingTest> getGeneDifExon(GffDetailGene gffDetailGene) {
 		//TODO 设置断点
-//		if (gffDetailGene.getName().contains("CLASP2")) {
-//			logger.debug("stop");
-//		}
+		if (gffDetailGene.getName().contains("Foxp1")) {
+			logger.debug("stop");
+		}
 		
 		ArrayList<ExonSplicingTest> lsExonSplicingTestResult = new ArrayList<ExonSplicingTest>();
 		Collection<ExonCluster> mapLoc2ExonCluster = gffDetailGene.getDifExonMapLoc2Cluster();

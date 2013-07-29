@@ -40,6 +40,12 @@ public class JunctionInfo extends ListDetailAbs {
 		mapJunSite2Unit.put(junctionUnit.key(), junctionUnit);
 	}
 	
+	public void addJuncInfo(JunctionInfo junctionInfo) {
+		for (JunctionUnit junctionUnit : junctionInfo.lsJunctionUnits) {
+			addJuncUnit(junctionUnit);
+		}
+	}
+	
 	public void addJuncUnit(JunctionUnit junctionUnit) {
 		if (mapJunSite2Unit.containsKey(junctionUnit.key())) {
 			JunctionUnit junctionUnit2 = mapJunSite2Unit.get(junctionUnit.key());
@@ -143,7 +149,7 @@ public class JunctionInfo extends ListDetailAbs {
 		/** readsNum+1 */
 		public void addReadsNum(JunctionUnit junctionUnit) {
 			for (String condition : junctionUnit.mapCond2JunNum.keySet()) {
-				int[] numAdd = junctionUnit.mapCond2JunNum.get(junctionUnit);
+				int[] numAdd = junctionUnit.mapCond2JunNum.get(condition);
 				if (mapCond2JunNum.containsKey(condition)) {
 					int[] num = mapCond2JunNum.get(condition);
 					num[0] = num[0] + numAdd[0];
@@ -226,7 +232,7 @@ public class JunctionInfo extends ListDetailAbs {
 		
 		/** 指定坐标，返回key */
 		protected static String getKey(String chrID, int startAbs, int endAbs) {
-			return chrID + startAbs + SepSign.SEP_INFO + endAbs;
+			return chrID.toLowerCase() + SepSign.SEP_INFO +  startAbs + SepSign.SEP_INFO + endAbs;
 		}
 	}
 

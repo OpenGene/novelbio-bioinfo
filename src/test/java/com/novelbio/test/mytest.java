@@ -23,10 +23,13 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput;
+import com.novelbio.analysis.seq.rnaseq.TophatJunction;
+import com.novelbio.analysis.seq.rnaseq.TophatJunctionOld;
 import com.novelbio.analysis.seq.sam.AlignSamReading;
 import com.novelbio.analysis.seq.sam.AlignSeqReading;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
+import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -39,29 +42,39 @@ public class mytest {
 	private static Logger logger = Logger.getLogger(mytest.class);
 	
 	public static void main(String[] args) throws IOException, URISyntaxException {
-//		SamFile samFile = new SamFile("/home/zong0jie/Test/rnaseq/w51_accepted_hits.bam");
-//		for (SamRecord samRecord : samFile.readLinesContained("chr1", 28520, 28717)) {
-//			System.out.println(samRecord.toString());
-//			System.out.println(samRecord.getMateRefID() + "\t" + samRecord.getMateAlignmentStart());
-//			System.out.println();
-//		}
+		AlignSamReading alignSamReading = new AlignSamReading(new SamFile("/media/winE/NBC/Project/Project_FY/paper/KOod.bam"));
+		List<Align> lsAlignments = new ArrayList<>();
+		lsAlignments.add(new Align("chrX", 159840368, 159840811));
+		alignSamReading.setLsAlignments(lsAlignments);
 		
+		TophatJunctionOld tophatJunctionOld = new TophatJunctionOld();
+		tophatJunctionOld.setCondition("test1");
+		alignSamReading.addAlignmentRecorder(tophatJunctionOld);
 		
-		
-		List<Align> lsAlignment = new ArrayList<>();
-		Align align = new Align("chr1", 28420, 28622);
-		lsAlignment.add(align);
-		
-		RPKMcomput rpkMcomput = new RPKMcomput();
-		rpkMcomput.setGffHashGene(new GffHashGene("/home/zong0jie/Test/rnaseq/cufflinks/novelTranscriptom.gtf"));
-		rpkMcomput.setIsPairend(true);
-		AlignSamReading alignSamReading = new AlignSamReading(new SamFile("/home/zong0jie/Test/rnaseq/w51_accepted_hits.bam"));
-		alignSamReading.setLsAlignments(lsAlignment);
-		rpkMcomput.setCurrentCondition("w51");
-		alignSamReading.addAlignmentRecorder(rpkMcomput);
-		alignSamReading.run();
-		rpkMcomput.writeToFileCurrent("/home/zong0jie/Test/rnaseq/cufflinks/exp_w51.txt");
+		TophatJunction tophatJunction = new TophatJunction();
+		tophatJunction.setCondition("test1");
+		alignSamReading.addAlignmentRecorder(tophatJunction);
 
+		alignSamReading.run();
+		tophatJunction.conclusion();
+		
+		for (String string : tophatJunctionOld.getMapCond_To_JuncPair2ReadsNum().get("test1").keySet()) {
+			String[] ss = string.split(SepSign.SEP_INFO);
+			String chrID = ss[0].split(SepSign.SEP_INFO_SAMEDB)[0];
+			int locStartSite = Integer.parseInt(ss[0].split(SepSign.SEP_INFO_SAMEDB)[1]);
+			int locEndSite =  Integer.parseInt(ss[1].split(SepSign.SEP_INFO_SAMEDB)[1]);
+			int numOld = tophatJunctionOld.getJunctionSite("test1", chrID, locStartSite, locEndSite);
+			int numOld2 = tophatJunction.getJunctionSite("test1", chrID, locStartSite);
+			int numOld3 = tophatJunction.getJunctionSite("test1", chrID, locEndSite);
+			
+			int numNew = tophatJunction.getJunctionSite("test1", chrID, locStartSite, locEndSite);
+			int numNew2 = tophatJunction.getJunctionSite("test1", chrID, locStartSite);
+			int numNew3 = tophatJunction.getJunctionSite("test1", chrID, locEndSite);
+			System.out.println();
+			numOld = tophatJunctionOld.getJunctionSite("test1", chrID, locStartSite, locEndSite);
+			numNew = tophatJunction.getJunctionSite("test1", chrID, locStartSite, locEndSite);
+		}
+		
 		
 	}
 	

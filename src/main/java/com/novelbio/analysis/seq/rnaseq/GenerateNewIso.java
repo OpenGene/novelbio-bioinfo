@@ -20,10 +20,10 @@ import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 public class GenerateNewIso {
 	private static final Logger logger = Logger.getLogger(GenerateNewIso.class);
 	int newIsoReadsNum = 20;
-	TophatJunctionNew tophatJunctionNew;
+	TophatJunction tophatJunctionNew;
 	GffDetailGene gffDetailGene;
 	
-	public void setTophatJunctionNew(TophatJunctionNew tophatJunctionNew) {
+	public void setTophatJunctionNew(TophatJunction tophatJunctionNew) {
 		this.tophatJunctionNew = tophatJunctionNew;
 	}
 	
@@ -82,14 +82,17 @@ public class GenerateNewIso {
 			GffGeneIsoInfo gffGeneIsoInfoNew = getReconstructIso(junctionUnit, gffGeneIsoInfo);
 			if (gffGeneIsoInfoNew != null ) {
 				gffDetailGene.addIso(gffGeneIsoInfoNew);
+				break;
 			}
-			break;
 		}
 	}
 	
 	/** 建立新的转录本 */
 	//TODO 似乎只对cis有效果
 	private GffGeneIsoInfo getReconstructIso(JunctionUnit junctionUnit, GffGeneIsoInfo gffGeneIsoInfo) {
+		if (junctionUnit.getStartAbs() < gffGeneIsoInfo.getStartAbs() || junctionUnit.getEndAbs() > gffGeneIsoInfo.getEndAbs()) {
+			return null;
+		}
 		int exonStart = 0, exonEnd = 0;
 		List<JunctionUnit> lsJun = new ArrayList<>();
 		Set<String> setJunInfo = new HashSet<>();
@@ -97,16 +100,24 @@ public class GenerateNewIso {
 			lsJun.add(junctionUnit);
 			setJunInfo.add(junctionUnit.key());
 		}
-		if (isEdgeInExon(true, junctionUnit, gffGeneIsoInfo)) {			
-			exonStart = gffGeneIsoInfo.getNumCodInEle(junctionUnit.getStartAbs());
+		if (isEdgeInExon(true, junctionUnit, gffGeneIsoInfo)) {
+			if (gffGeneIsoInfo.isCis5to3()) {
+				exonStart = gffGeneIsoInfo.getNumCodInEle(junctionUnit.getStartAbs());
+			} else {
+				exonStart = gffGeneIsoInfo.getNumCodInEle(junctionUnit.getEndAbs());
+			}
 		} else {
-			exonStart = getExonSiteAndAddLsJunCis(true, junctionUnit, lsJun, setJunInfo, gffGeneIsoInfo);
+			exonStart = getExonSiteAndAddLsJun(true, junctionUnit, lsJun, setJunInfo, gffGeneIsoInfo);
 		}
 	
 		if (isEdgeInExon(false, junctionUnit, gffGeneIsoInfo)) {
-			exonEnd = gffGeneIsoInfo.getNumCodInEle(junctionUnit.getEndAbs());
+			if (gffGeneIsoInfo.isCis5to3()) {
+				exonEnd = gffGeneIsoInfo.getNumCodInEle(junctionUnit.getEndAbs());
+			} else {
+				exonEnd = gffGeneIsoInfo.getNumCodInEle(junctionUnit.getStartAbs());
+			}
 		} else {
-			exonEnd = getExonSiteAndAddLsJunCis(true, junctionUnit, lsJun, setJunInfo, gffGeneIsoInfo);
+			exonEnd = getExonSiteAndAddLsJun(false, junctionUnit, lsJun, setJunInfo, gffGeneIsoInfo);
 		}
 		if (exonStart < 0 && exonEnd < 0) {
 			return null;
@@ -157,62 +168,66 @@ public class GenerateNewIso {
 	 * @param gffGeneIsoInfo
 	 * @return 如果输入的iso不满足则返回-100
 	 */
-	private int getExonSiteAndAddLsJunCis(boolean beforExon, JunctionUnit junThis, List<JunctionUnit> lsJun, 
+	private int getExonSiteAndAddLsJun(boolean beforExon, JunctionUnit junThis, List<JunctionUnit> lsJun, 
 			Set<String> setJunInfo, GffGeneIsoInfo gffGeneIsoInfo) {
 		int exonNum = -100;
-		JunctionUnit  junPrevAfter = junThis;
 		boolean search = true;
 		while (search) {
-			List<JunctionUnit> lsJunPrevAfter = getJunPrevAfter(beforExon&&gffGeneIsoInfo.isCis5to3(), junPrevAfter);
+			List<JunctionUnit> lsJunPrevAfter = getJunPrevAfter(beforExon&&gffGeneIsoInfo.isCis5to3(), junThis);
 			if (lsJunPrevAfter.size() == 0) {
-				if (beforExon) {
-					if (gffGeneIsoInfo.isCis5to3()) {
-						exonNum = Math.abs(gffGeneIsoInfo.getNumCodInEle(junPrevAfter.getStartAbs()));
-					} else {
-						exonNum = Math.abs(gffGeneIsoInfo.getNumCodInEle(junPrevAfter.getEndAbs()));
-					}
-					if (!setJunInfo.contains(junPrevAfter.key())) {
-						lsJun.add(0, junPrevAfter);
-						setJunInfo.add(junPrevAfter.key());
-					}
-				
-				} else {
-					if (gffGeneIsoInfo.isCis5to3()) {
-						exonNum = gffGeneIsoInfo.getNumCodInEle(junPrevAfter.getEndAbs());
-					} else {
-						exonNum = gffGeneIsoInfo.getNumCodInEle(junPrevAfter.getStartAbs());
-					}
-					if (exonNum < 0) {
-						exonNum = Math.abs(exonNum) + 1;
-					}
-					if (!setJunInfo.contains(junPrevAfter.key())) {
-						lsJun.add(junPrevAfter);
-						setJunInfo.add(junPrevAfter.key());
-					}
-				}
+				exonNum = getExonNum(beforExon, gffGeneIsoInfo, junThis, lsJun, setJunInfo);
 				break;
 			}
 			
 			for (JunctionUnit junPrevTmp : lsJunPrevAfter) {
 				if (beforExon) {
-					if (!setJunInfo.contains(junPrevAfter.key())) {
-						lsJun.add(0, junPrevAfter);
-						setJunInfo.add(junPrevAfter.key());
+					if (!setJunInfo.contains(junThis.key())) {
+						lsJun.add(0, junThis);
+						setJunInfo.add(junThis.key());
 					}
 				} else {
-					if (!setJunInfo.contains(junPrevAfter.key())) {
-						lsJun.add(junPrevAfter);
-						setJunInfo.add(junPrevAfter.key());
+					if (!setJunInfo.contains(junThis.key())) {
+						lsJun.add(junThis);
+						setJunInfo.add(junThis.key());
 					}
 				}
-				if (isEdgeInExon(beforExon, junPrevTmp, gffGeneIsoInfo)) {
-
-					exonNum =gffGeneIsoInfo.getNumCodInEle(junPrevTmp.getStartAbs());
+				if (isEdgeInExon(beforExon,junThis, junPrevTmp, gffGeneIsoInfo)) {
+					exonNum = getExonNum(beforExon, gffGeneIsoInfo, junThis, lsJun, setJunInfo);
 					search = false;
 					break;
 				}
 			}
-			junPrevAfter = lsJunPrevAfter.get(0);
+			junThis = lsJunPrevAfter.get(0);
+		}
+		return exonNum;
+	}
+	
+	private int getExonNum(boolean beforExon, GffGeneIsoInfo gffGeneIsoInfo, JunctionUnit junThis, 
+			List<JunctionUnit> lsJun, Set<String> setJunInfo) {
+		int exonNum = 0;
+		if (beforExon) {
+			if (gffGeneIsoInfo.isCis5to3()) {
+				exonNum = Math.abs(gffGeneIsoInfo.getNumCodInEle(junThis.getStartAbs()));
+			} else {
+				exonNum = Math.abs(gffGeneIsoInfo.getNumCodInEle(junThis.getEndAbs()));
+			}
+			if (!setJunInfo.contains(junThis.key())) {
+				lsJun.add(0, junThis);
+				setJunInfo.add(junThis.key());
+			}
+		} else {
+			if (gffGeneIsoInfo.isCis5to3()) {
+				exonNum = gffGeneIsoInfo.getNumCodInEle(junThis.getEndAbs());
+			} else {
+				exonNum = gffGeneIsoInfo.getNumCodInEle(junThis.getStartAbs());
+			}
+			if (exonNum < 0) {
+				exonNum = Math.abs(exonNum) + 1;
+			}
+			if (!setJunInfo.contains(junThis.key())) {
+				lsJun.add(junThis);
+				setJunInfo.add(junThis.key());
+			}
 		}
 		return exonNum;
 	}
@@ -228,6 +243,47 @@ public class GenerateNewIso {
 			return new ArrayList<>();
 		}
 
+	}
+	
+	/**
+	 * 指定的junction是否在exon中
+	 * @param beforExon 是靠前的exon靠后的exon<br>
+	 * 0---1------------------2----3 <br>
+	 * ----|---------------------| <br>
+	 * @param junctionUnit
+	 * @param gffGeneIsoInfo
+	 * @return
+	 */
+	private boolean isEdgeInExon(boolean beforExon, JunctionUnit junctionUnit, JunctionUnit junBeforeAfter, GffGeneIsoInfo gffGeneIsoInfo) {
+		int edgeLoc = 0, edgeLocBeforeAfter = 0;
+		int exonLessNum = 10;//exon最短10bp
+		if (beforExon) {
+			if (gffGeneIsoInfo.isCis5to3()) {
+				edgeLoc = junctionUnit.getStartAbs();
+				edgeLocBeforeAfter = junBeforeAfter.getEndAbs();
+			} else {
+				edgeLoc = junctionUnit.getEndAbs();
+				edgeLocBeforeAfter = junBeforeAfter.getStartAbs();
+			}
+			int edgNum = gffGeneIsoInfo.getNumCodInEle(edgeLoc);
+			int edgBeforeAfterNum = gffGeneIsoInfo.getNumCodInEle(edgeLocBeforeAfter);
+			return (gffGeneIsoInfo.getCodLoc(edgeLoc) == GffGeneIsoInfo.COD_LOC_EXON 
+					&& gffGeneIsoInfo.getCod2ExInStart(edgeLoc) > exonLessNum)
+					|| (edgNum != 0 && edgBeforeAfterNum !=0 && edgNum != edgBeforeAfterNum);
+		} else {
+			if (gffGeneIsoInfo.isCis5to3()) {
+				edgeLoc = junctionUnit.getEndAbs();
+				edgeLocBeforeAfter = junBeforeAfter.getStartAbs();
+			} else {
+				edgeLoc = junctionUnit.getStartAbs();
+				edgeLocBeforeAfter = junBeforeAfter.getEndAbs();
+			}
+			int edgNum = gffGeneIsoInfo.getNumCodInEle(edgeLoc);
+			int edgBeforeAfterNum = gffGeneIsoInfo.getNumCodInEle(edgeLocBeforeAfter);
+			return (gffGeneIsoInfo.getCodLoc(edgeLoc) == GffGeneIsoInfo.COD_LOC_EXON
+					&& gffGeneIsoInfo.getCod2ExInEnd(edgeLoc) > exonLessNum)
+					|| (edgNum != 0 && edgBeforeAfterNum !=0 && edgNum != edgBeforeAfterNum);
+		}
 	}
 	
 	/**
