@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.apache.xpath.operations.Bool;
 
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
@@ -173,7 +174,7 @@ public class GenerateNewIso {
 		int exonNum = -100;
 		boolean search = true;
 		while (search) {
-			List<JunctionUnit> lsJunPrevAfter = getJunPrevAfter(beforExon&&gffGeneIsoInfo.isCis5to3(), junThis);
+			List<JunctionUnit> lsJunPrevAfter = getJunPrevAfter(beforExon, gffGeneIsoInfo.isCis5to3(), junThis);
 			if (lsJunPrevAfter.size() == 0) {
 				exonNum = getExonNum(beforExon, gffGeneIsoInfo, junThis, lsJun, setJunInfo);
 				break;
@@ -232,9 +233,9 @@ public class GenerateNewIso {
 		return exonNum;
 	}
 	
-	private List<JunctionUnit> getJunPrevAfter(boolean prev, JunctionUnit junctionUnit) {
+	private List<JunctionUnit> getJunPrevAfter(boolean prev, boolean cis5to3, JunctionUnit junctionUnit) {
 		try {
-			if (prev) {
+			if ((prev && cis5to3) || (!prev && !cis5to3)) {
 				return getJunPrev(junctionUnit);
 			} else {
 				return getJunAfter(junctionUnit);
