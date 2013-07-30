@@ -80,10 +80,10 @@ public class TestGenerateNewIso  extends TestCase {
 		JunctionUnit junctionUnit2 = new JunctionUnit("chr1", 450, 720);
 		JunctionUnit junctionUnit3 = new JunctionUnit("chr1", 810, 910);
 		JunctionUnit junctionUnit4 = new JunctionUnit("chr1", 950, 1100);
-		junctionUnit1.addJunBeforeAbs(null); junctionUnit1.addJunAfterAbs(junctionUnit2);
-		junctionUnit2.addJunBeforeAbs(junctionUnit1); junctionUnit2.addJunAfterAbs(junctionUnit3);
-		junctionUnit3.addJunBeforeAbs(junctionUnit2); junctionUnit3.addJunAfterAbs(junctionUnit4);
-		junctionUnit4.addJunBeforeAbs(junctionUnit3); junctionUnit4.addJunAfterAbs(null);
+//		junctionUnit1.addJunBeforeAbs(null); junctionUnit1.addJunAfterAbs(junctionUnit2);
+//		junctionUnit2.addJunBeforeAbs(junctionUnit1); junctionUnit2.addJunAfterAbs(junctionUnit3);
+//		junctionUnit3.addJunBeforeAbs(junctionUnit2); junctionUnit3.addJunAfterAbs(junctionUnit4);
+//		junctionUnit4.addJunBeforeAbs(junctionUnit3); junctionUnit4.addJunAfterAbs(null);
 		lsJun1Cis.add(junctionUnit1); lsJun1Cis.add(junctionUnit2); lsJun1Cis.add(junctionUnit3); lsJun1Cis.add(junctionUnit4);
 	}
 	
@@ -124,10 +124,10 @@ public class TestGenerateNewIso  extends TestCase {
 		JunctionUnit junctionUnit2 = new JunctionUnit("chr1", 450, 720);
 		JunctionUnit junctionUnit3 = new JunctionUnit("chr1", 810, 910);
 		JunctionUnit junctionUnit4 = new JunctionUnit("chr1", 950, 1100);
-		junctionUnit1.addJunBeforeAbs(null); junctionUnit1.addJunAfterAbs(junctionUnit2);
-		junctionUnit2.addJunBeforeAbs(junctionUnit1); junctionUnit2.addJunAfterAbs(junctionUnit3);
-		junctionUnit3.addJunBeforeAbs(junctionUnit2); junctionUnit3.addJunAfterAbs(junctionUnit4);
-		junctionUnit4.addJunBeforeAbs(junctionUnit3); junctionUnit4.addJunAfterAbs(null);
+//		junctionUnit1.addJunBeforeAbs(null); junctionUnit1.addJunAfterAbs(junctionUnit2);
+//		junctionUnit2.addJunBeforeAbs(junctionUnit1); junctionUnit2.addJunAfterAbs(junctionUnit3);
+//		junctionUnit3.addJunBeforeAbs(junctionUnit2); junctionUnit3.addJunAfterAbs(junctionUnit4);
+//		junctionUnit4.addJunBeforeAbs(junctionUnit3); junctionUnit4.addJunAfterAbs(null);
 		lsJun1Trans.add(junctionUnit1); lsJun1Trans.add(junctionUnit2); lsJun1Trans.add(junctionUnit3); lsJun1Trans.add(junctionUnit4);
 	}
 
@@ -167,11 +167,11 @@ public class TestGenerateNewIso  extends TestCase {
 		JunctionUnit junctionUnit4 = new JunctionUnit("chr1", 700, 750);
 		JunctionUnit junctionUnit5 = new JunctionUnit("chr1", 810, 910);
 		JunctionUnit junctionUnit6 = new JunctionUnit("chr1", 950, 1100);
-		junctionUnit1.addJunBeforeAbs(null); junctionUnit1.addJunAfterAbs(junctionUnit2);
-		junctionUnit2.addJunBeforeAbs(junctionUnit1); junctionUnit2.addJunAfterAbs(junctionUnit3);
-		junctionUnit3.addJunBeforeAbs(junctionUnit2); junctionUnit3.addJunAfterAbs(junctionUnit4);
-		junctionUnit4.addJunBeforeAbs(junctionUnit3); junctionUnit4.addJunAfterAbs(junctionUnit5);
-		junctionUnit5.addJunBeforeAbs(junctionUnit4); junctionUnit5.addJunAfterAbs(junctionUnit6);
+//		junctionUnit1.addJunBeforeAbs(null); junctionUnit1.addJunAfterAbs(junctionUnit2);
+//		junctionUnit2.addJunBeforeAbs(junctionUnit1); junctionUnit2.addJunAfterAbs(junctionUnit3);
+//		junctionUnit3.addJunBeforeAbs(junctionUnit2); junctionUnit3.addJunAfterAbs(junctionUnit4);
+//		junctionUnit4.addJunBeforeAbs(junctionUnit3); junctionUnit4.addJunAfterAbs(junctionUnit5);
+//		junctionUnit5.addJunBeforeAbs(junctionUnit4); junctionUnit5.addJunAfterAbs(junctionUnit6);
 		junctionUnit6.addJunBeforeAbs(junctionUnit5); junctionUnit6.addJunAfterAbs(null);
 		lsJun2Cis.add(junctionUnit1); lsJun2Cis.add(junctionUnit2); lsJun2Cis.add(junctionUnit3); lsJun2Cis.add(junctionUnit4);
 		lsJun2Cis.add(junctionUnit5);lsJun2Cis.add(junctionUnit6);
@@ -215,12 +215,12 @@ public class TestGenerateNewIso  extends TestCase {
 		JunctionUnit junctionUnit4 = new JunctionUnit("chr1", 700, 750);
 		JunctionUnit junctionUnit5 = new JunctionUnit("chr1", 810, 910);
 		JunctionUnit junctionUnit6 = new JunctionUnit("chr1", 950, 1100);
-		junctionUnit1.addJunBeforeAbs(null); junctionUnit1.addJunAfterAbs(junctionUnit2);
-		junctionUnit2.addJunBeforeAbs(junctionUnit1); junctionUnit2.addJunAfterAbs(junctionUnit3);
-		junctionUnit3.addJunBeforeAbs(junctionUnit2); junctionUnit3.addJunAfterAbs(junctionUnit4);
-		junctionUnit4.addJunBeforeAbs(junctionUnit3); junctionUnit4.addJunAfterAbs(junctionUnit5);
-		junctionUnit5.addJunBeforeAbs(junctionUnit4); junctionUnit5.addJunAfterAbs(junctionUnit6);
-		junctionUnit6.addJunBeforeAbs(junctionUnit5); junctionUnit6.addJunAfterAbs(null);
+//		junctionUnit1.addJunBeforeAbs(null); junctionUnit1.addJunAfterAbs(junctionUnit2);
+//		junctionUnit2.addJunBeforeAbs(junctionUnit1); junctionUnit2.addJunAfterAbs(junctionUnit3);
+//		junctionUnit3.addJunBeforeAbs(junctionUnit2); junctionUnit3.addJunAfterAbs(junctionUnit4);
+//		junctionUnit4.addJunBeforeAbs(junctionUnit3); junctionUnit4.addJunAfterAbs(junctionUnit5);
+//		junctionUnit5.addJunBeforeAbs(junctionUnit4); junctionUnit5.addJunAfterAbs(junctionUnit6);
+//		junctionUnit6.addJunBeforeAbs(junctionUnit5); junctionUnit6.addJunAfterAbs(null);
 		lsJun2Trans.add(junctionUnit1); lsJun2Trans.add(junctionUnit2); lsJun2Trans.add(junctionUnit3); lsJun2Trans.add(junctionUnit4);
 		lsJun2Trans.add(junctionUnit5);lsJun2Trans.add(junctionUnit6);
 	}

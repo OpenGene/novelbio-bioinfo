@@ -304,7 +304,7 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 				double[] regionLast = new double[]{gffDetailGeneLast.getStartAbs(), gffDetailGeneLast.getEndAbs()};
 				double[] regionThis = new double[]{gffDetailGene.getStartAbs(), gffDetailGene.getEndAbs() };
 				double[]  overlapInfo = ArrayOperate.cmpArray(regionLast, regionThis);
-				if ((overlapInfo[2] > 0.5 || overlapInfo[3] > 0.5)) {
+				if ((overlapInfo[2] > 0.2 || overlapInfo[3] > 0.2)) {
 					gffDetailGeneLast.addJuncInfo(gffDetailGene);
 					continue;
 				}

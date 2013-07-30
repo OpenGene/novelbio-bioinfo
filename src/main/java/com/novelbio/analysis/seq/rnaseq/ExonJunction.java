@@ -289,6 +289,11 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		ArrayList<GffDetailGene> lsGffDetailGenes = gffHashGene.getGffDetailAll();
 		int i = 0;
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
+			GenerateNewIso generateNewIso = new GenerateNewIso();
+			generateNewIso.setGffDetailGene(gffDetailGene);
+			generateNewIso.setTophatJunctionNew(tophatJunction);
+			generateNewIso.reconstructGffDetailGene();
+			
 			gffDetailGene.removeDupliIso();
 			if (gffDetailGene.getLsCodSplit().size() <= 1 || isOnlyOneIso(gffDetailGene)) {
 				continue;
@@ -523,7 +528,12 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 //				logger.error("stop");
 //			}
 			chisqTest.setGetSeq(seqHash);
-			txtOut.writefileln(chisqTest.toStringArray());
+			try {
+				txtOut.writefileln(chisqTest.toStringArray());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		
 			if (isGetSeq) {
 				txtOutSeq.writefileln(chisqTest.toStringSeq());
 			}

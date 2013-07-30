@@ -637,7 +637,13 @@ class SpliceType2Value {
 	 */
 	public void addJunction(String condition, SpliceTypePredict spliceTypePredict) {
 		SplicingAlternativeType splicingAlternativeType = spliceTypePredict.getType();
-		ArrayList<Double> lsCounts = spliceTypePredict.getJuncCounts(condition);
+		ArrayList<Double> lsCounts = null;
+		try {
+			lsCounts = spliceTypePredict.getJuncCounts(condition);
+		} catch (Exception e) {
+			lsCounts = spliceTypePredict.getJuncCounts(condition);
+		}
+		
 		
 		addLsDouble(mapSplicingType2LsJunctionReads, splicingAlternativeType, lsCounts);
 		setExonSplicingTypes.add(spliceTypePredict.getType());
