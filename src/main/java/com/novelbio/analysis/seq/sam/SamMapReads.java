@@ -83,7 +83,6 @@ public class SamMapReads extends MapReadsAbs {
 		} else {
 			result = MathComput.mySpline(value, binNum, 0, 0, type);
 		}
-		
 		normDouble(NormalType, result, allReadsNum);
 		return result;
 	}

@@ -52,6 +52,7 @@ public class JunctionInfo extends ListDetailAbs {
 			junctionUnit2.addReadsJuncUnit(junctionUnit);
 		} else {
 			mapJunSite2Unit.put(junctionUnit.key(), junctionUnit);
+			lsJunctionUnits.add(junctionUnit);
 		}
 		if (numberstart > junctionUnit.getStartAbs())
 			numberstart = junctionUnit.getStartAbs();
@@ -234,6 +235,18 @@ public class JunctionInfo extends ListDetailAbs {
 		protected static String getKey(String chrID, int startAbs, int endAbs) {
 			return chrID.toLowerCase() + SepSign.SEP_INFO +  startAbs + SepSign.SEP_INFO + endAbs;
 		}
+		
+		public String toString() {
+			return getRefID() + " " + getStartAbs() + " " + getEndAbs();
+		}
+	}
+	
+	public String toString() {
+		String result = "";
+		for (JunctionUnit junctionUnit : lsJunctionUnits) {
+			result = result + junctionUnit.toString() + "   ";
+		}
+		return result;
 	}
 
 }

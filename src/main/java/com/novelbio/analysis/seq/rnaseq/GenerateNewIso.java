@@ -1,6 +1,7 @@
 package com.novelbio.analysis.seq.rnaseq;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -10,7 +11,11 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.rnaseq.JunctionInfo.JunctionUnit;
+import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.sam.SamMapReads;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 
@@ -19,12 +24,15 @@ import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
  *  */
 public class GenerateNewIso {
 	private static final Logger logger = Logger.getLogger(GenerateNewIso.class);
-	int newIsoReadsNum = 20;
+	int newIsoReadsNum = 5;//至少有5条reads支持的junction才会用于重建转录本
+	int blankNum = 40;//至少超过50bp的没有reads堆叠的区域，才被认为是intron
+	int longExon = 200;//超过100bp就认为是比较长的exon，就需要做判定了
 	TophatJunction tophatJunctionNew;
 	GffDetailGene gffDetailGene;
-	
-	public void setTophatJunctionNew(TophatJunction tophatJunctionNew) {
+	Collection<SamFile> colSamFiles; 
+	public GenerateNewIso(TophatJunction tophatJunctionNew, Collection<SamFile> colSamFiles) {
 		this.tophatJunctionNew = tophatJunctionNew;
+		this.colSamFiles = colSamFiles;
 	}
 	
 	public void setGffDetailGene(GffDetailGene gffDetailGene) {
@@ -96,7 +104,8 @@ public class GenerateNewIso {
 	/** 建立新的转录本 */
 	//TODO 似乎只对cis有效果
 	private GffGeneIsoInfo getReconstructIso(JunctionUnit junctionUnit, GffGeneIsoInfo gffGeneIsoInfo) {
-		if (junctionUnit.getStartAbs() < gffGeneIsoInfo.getStartAbs() || junctionUnit.getEndAbs() > gffGeneIsoInfo.getEndAbs()) {
+		int startEndExonLen = 80;//如果是AltStart或者AltEnd，直接设定该exon长度为startEndExonLen的长度;
+		if (junctionUnit.getEndAbs() < gffGeneIsoInfo.getStartAbs() || junctionUnit.getStartAbs() > gffGeneIsoInfo.getEndAbs()) {
 			return null;
 		}
 		int exonStart = 0, exonEnd = 0;
@@ -125,22 +134,30 @@ public class GenerateNewIso {
 		} else {
 			exonEnd = getExonSiteAndAddLsJun(false, junctionUnit, lsJun, setJunInfo, gffGeneIsoInfo);
 		}
-		if (exonStart <= 0 || exonEnd <= 0) {
+		if (exonStart < 0 || exonEnd < 0 || (exonStart == 0 && exonEnd == 0)) {
 			logger.error("could not reconstruct iso:" + gffGeneIsoInfo.getName());
 			return null;
 		}
+		
 		/////////////   根据指定的startexon和endexon，还有listJun的信息，新建转录本 /////////////////////////////////////////
 		GffGeneIsoInfo gffGeneIsoInfoNew = gffGeneIsoInfo.clone();
 		gffGeneIsoInfoNew.clear();
-		for (int i = 0; i < exonStart; i++) {
-			gffGeneIsoInfoNew.add(gffGeneIsoInfo.get(i).clone());
-		}
 		JunctionUnit junStart = lsJun.get(0);
-		int endEdge = junStart.getStartAbs();
+		//如果是altstart和altend，现在设定边界exon的长度
+		int start_endEdge = junStart.getStartAbs(), start_startEdge = start_endEdge - startEndExonLen;
 		if (!gffGeneIsoInfo.isCis5to3()) {
-			endEdge = junStart.getEndAbs();
+			start_endEdge = junStart.getEndAbs(); start_startEdge = start_endEdge + startEndExonLen;
 		}
-		gffGeneIsoInfoNew.get(gffGeneIsoInfoNew.size() - 1).setEndCis(endEdge);
+		
+		if (exonStart > 0) {
+			for (int i = 0; i < exonStart; i++) {
+				gffGeneIsoInfoNew.add(gffGeneIsoInfo.get(i).clone());
+			}
+			gffGeneIsoInfoNew.get(gffGeneIsoInfoNew.size() - 1).setEndCis(start_endEdge);
+		} else {
+			gffGeneIsoInfoNew.add(new ExonInfo(gffGeneIsoInfoNew, gffGeneIsoInfoNew.isCis5to3(), start_startEdge, start_endEdge));
+		}
+
 		for (int i = 1; i < lsJun.size(); i++) {
 			ExonInfo exonInfo = new ExonInfo(gffGeneIsoInfoNew, gffGeneIsoInfoNew.isCis5to3(), 0, 0);
 			if (gffGeneIsoInfoNew.isCis5to3()) {
@@ -154,16 +171,22 @@ public class GenerateNewIso {
 		}
 		
 		JunctionUnit junEnd = lsJun.get(lsJun.size() - 1);
-		int startEdge = junEnd.getEndAbs();
+		int end_startEdge = junEnd.getEndAbs(), end_endEdge = end_startEdge + startEndExonLen;
 		if (!gffGeneIsoInfo.isCis5to3()) {
-			startEdge = junEnd.getStartAbs();
+			end_startEdge = junEnd.getStartAbs(); end_endEdge = end_startEdge - startEndExonLen;
 		}
-		ExonInfo exonInfo = gffGeneIsoInfo.get(exonEnd - 1).clone();
-		exonInfo.setStartCis(startEdge);
-		gffGeneIsoInfoNew.add(exonInfo);
-		for (int i = exonEnd; i < gffGeneIsoInfo.size(); i++) {
-			gffGeneIsoInfoNew.add(gffGeneIsoInfo.get(i).clone());
+		
+		if (exonEnd > 0) {
+			ExonInfo exonInfo = gffGeneIsoInfo.get(exonEnd - 1).clone();
+			exonInfo.setStartCis(end_startEdge);
+			gffGeneIsoInfoNew.add(exonInfo);
+			for (int i = exonEnd; i < gffGeneIsoInfo.size(); i++) {
+				gffGeneIsoInfoNew.add(gffGeneIsoInfo.get(i).clone());
+			}
+		} else {
+			gffGeneIsoInfoNew.add(new ExonInfo(gffGeneIsoInfoNew, gffGeneIsoInfoNew.isCis5to3(), end_startEdge, end_endEdge));
 		}
+		
 		
 		for (ExonInfo exonInfoNew : gffGeneIsoInfoNew) {
 			exonInfoNew.setParentListAbs(gffGeneIsoInfoNew);
@@ -186,7 +209,7 @@ public class GenerateNewIso {
 		while (search) {
 			List<JunctionUnit> lsJunPrevAfter = getJunPrevAfter(beforExon, gffGeneIsoInfo.isCis5to3(), junThis);
 			if (lsJunPrevAfter.size() == 0) {
-				exonNum = getExonNum(beforExon, gffGeneIsoInfo, junThis, lsJun, setJunInfo);
+				exonNum = getExonNum(beforExon, false, gffGeneIsoInfo, junThis, lsJun, setJunInfo);
 				break;
 			}
 			
@@ -203,7 +226,7 @@ public class GenerateNewIso {
 					}
 				}
 				if (isEdgeInExon(beforExon,junThis, junPrevTmp, gffGeneIsoInfo)) {
-					exonNum = getExonNum(beforExon, gffGeneIsoInfo, junThis, lsJun, setJunInfo);
+					exonNum = getExonNum(beforExon, true, gffGeneIsoInfo, junThis, lsJun, setJunInfo);
 					search = false;
 					break;
 				}
@@ -213,47 +236,118 @@ public class GenerateNewIso {
 		return exonNum;
 	}
 	
-	private int getExonNum(boolean beforExon, GffGeneIsoInfo gffGeneIsoInfo, JunctionUnit junThis, 
+	/** 返回0表示超出了范围 */
+	private int getExonNum(boolean beforExon, boolean isHavePrevJun, GffGeneIsoInfo gffGeneIsoInfo, JunctionUnit junThis, 
 			List<JunctionUnit> lsJun, Set<String> setJunInfo) {
-		int exonNum = 0;
+		int exonNumReal = 0, exonNum = 0;
+		int junEdge = 0;
 		if (beforExon) {
 			if (gffGeneIsoInfo.isCis5to3()) {
-				exonNum = Math.abs(gffGeneIsoInfo.getNumCodInEle(junThis.getStartAbs()));
+				junEdge = junThis.getStartAbs();
+				exonNumReal = gffGeneIsoInfo.getNumCodInEle(junEdge);
 			} else {
-				exonNum = Math.abs(gffGeneIsoInfo.getNumCodInEle(junThis.getEndAbs()));
+				junEdge = junThis.getEndAbs();
+				exonNumReal = gffGeneIsoInfo.getNumCodInEle(junEdge);
 			}
+			exonNum = Math.abs(exonNumReal);
 			if (!setJunInfo.contains(junThis.key())) {
 				lsJun.add(0, junThis);
 				setJunInfo.add(junThis.key());
 			}
 		} else {
 			if (gffGeneIsoInfo.isCis5to3()) {
-				exonNum = gffGeneIsoInfo.getNumCodInEle(junThis.getEndAbs());
+				junEdge = junThis.getEndAbs();
+				exonNumReal = gffGeneIsoInfo.getNumCodInEle(junEdge);
 			} else {
-				exonNum = gffGeneIsoInfo.getNumCodInEle(junThis.getStartAbs());
+				junEdge = junThis.getStartAbs();
+				exonNumReal = gffGeneIsoInfo.getNumCodInEle(junEdge);
 			}
-			if (exonNum < 0) {
-				exonNum = Math.abs(exonNum) + 1;
+			exonNum = exonNumReal;
+			if (exonNumReal < 0) {
+				exonNum = Math.abs(exonNumReal) + 1;
 			}
 			if (!setJunInfo.contains(junThis.key())) {
 				lsJun.add(junThis);
 				setJunInfo.add(junThis.key());
 			}
 		}
+		
+		if (!isHavePrevJun && exonNum > 0 && exonNumReal < 0) {
+			if (beforExon && Math.abs(gffGeneIsoInfo.get(exonNum-1).getEndCis() - junEdge) >= longExon) {
+				if (isContinuousExon(gffGeneIsoInfo.getRefID(), gffGeneIsoInfo.get(exonNum-1).getEndCis(), junEdge)) {
+					return exonNum;
+				}
+			} else if (!beforExon && Math.abs(gffGeneIsoInfo.get(exonNum-1).getStartCis() - junEdge) >= longExon) {
+				if (isContinuousExon(gffGeneIsoInfo.getRefID(), gffGeneIsoInfo.get(exonNum-1).getStartCis(), junEdge)) {
+					return exonNum;
+				}
+			}
+			return 0;
+		}
 		return exonNum;
 	}
+	
+	/** 是否为连续的exon，意思中间不得有超过numBlankBp的空余
+	 * @param chrID
+	 * @param startLoc 会根据大小自动设定起点和终点
+	 * @param endLoc 会根据大小自动设定起点和终点
+	 * @return
+	 */
+	private boolean isContinuousExon(String chrID, int startLoc, int endLoc) {
+		int start = Math.min(startLoc, endLoc), end = Math.max(startLoc, endLoc);
+		List<double[]> lsRegion = new ArrayList<>();
+		for (SamFile samFile : colSamFiles) {
+			SamMapReads samMapReads = new SamMapReads(samFile);
+			double[] region = samMapReads.getRangeInfo(1, chrID, start, end, 0);
+			lsRegion.add(region);
+		}
+		double[] regionFinal = ArrayOperate.getSumList(lsRegion);
+		int blankNumFinal = 0, blankNum = 0;
+		for (double d : regionFinal) {
+			if (d == 0) {
+				blankNum++;
+			} else if (d > 0) {
+				if (blankNum > blankNumFinal) {
+					blankNumFinal = blankNum;
+				}
+				blankNum = 0;
+			}
+		}
+		if (blankNum > blankNumFinal) {
+			blankNumFinal = blankNum;
+		}
+		if (blankNumFinal >= this.blankNum) {
+			return false;
+		}
+		return true;
+	}
+	
 	
 	private List<JunctionUnit> getJunPrevAfter(boolean prev, boolean cis5to3, JunctionUnit junctionUnit) {
 		try {
 			if ((prev && cis5to3) || (!prev && !cis5to3)) {
-				return getJunPrev(junctionUnit);
+				List<JunctionUnit> lsJunPrev = getJunPrev(junctionUnit);
+				if (lsJunPrev.size() > 0) {
+					JunctionUnit junPrev = lsJunPrev.get(0);
+					if (Math.abs(junPrev.getEndAbs() - junctionUnit.getStartAbs()) > longExon && !isContinuousExon(junPrev.getRefID(), junPrev.getEndAbs(), junctionUnit.getStartAbs())) {
+						return new ArrayList<>();
+					}
+				}
+				return lsJunPrev;
 			} else {
-				return getJunAfter(junctionUnit);
+				List<JunctionUnit> lsJunAfter = getJunAfter(junctionUnit);
+				if (lsJunAfter.size() > 0) {
+					JunctionUnit junAfter = lsJunAfter.get(0);
+					if (Math.abs(junctionUnit.getEndAbs() - junAfter.getStartAbs()) > longExon && !isContinuousExon(junAfter.getRefID(), junctionUnit.getEndAbs(), junAfter.getStartAbs())) {
+						return new ArrayList<>();
+					}
+				}
+				return lsJunAfter;
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new ArrayList<>();
 		}
-
 	}
 	
 	/**
@@ -330,7 +424,7 @@ public class GenerateNewIso {
 	
 	/** 选择前一个Junction Site */
 	private List<JunctionUnit> getJunPrev(JunctionUnit junctionUnit) {
-		List<JunctionUnit> lsJunctionUnits= junctionUnit.getLsJunBeforeAbs();
+		List<JunctionUnit> lsJunctionUnits = junctionUnit.getLsJunBeforeAbs();
 		//TODO 如果前面没有jun，是否要到tophatJunctionNew中去查找Jun
 		if (lsJunctionUnits.size() == 0) {
 			int start = gffDetailGene.getStartAbs();

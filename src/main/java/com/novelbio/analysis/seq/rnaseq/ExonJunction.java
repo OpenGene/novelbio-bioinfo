@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.fasta.SeqHash;
+import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
@@ -24,7 +25,6 @@ import com.novelbio.analysis.seq.sam.AlignSamReading;
 import com.novelbio.analysis.seq.sam.AlignSeqReading;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamMapReads;
-import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -38,6 +38,32 @@ import com.novelbio.nbcgui.GuiAnnoInfo;
  * @author zong0jie
  */
 public class ExonJunction extends RunProcess<GuiAnnoInfo> {
+	public static void main(String[] args) {
+		//TODO
+		List<Align> lsAligns = new ArrayList<>();
+//		lsAligns.add(new Align("chr13", 113834688, 113853827));
+//		lsAligns.add(new Align("chr12", 4647587, 4669830));
+		lsAligns.add(new Align("chrX", 48779231, 48817543));
+		lsAligns.add(new Align("chrX", 148573976, 148586877));
+//		lsAligns.add(new Align("chr15", 42468140, 42502218));
+//		lsAligns.add(new Align("chr2", 191834371, 191854578));
+//		lsAligns.add(new Align("chr1", 65549980, 65715670));
+//		lsAligns.add(new Align("chr9", 128118727, 128494218));
+		
+		ExonJunction exonJunction = new ExonJunction();
+		exonJunction.setIsLessMemory(false);
+		GffChrAbs gffHashGene = new GffChrAbs(9606);
+		exonJunction.setGffHashGene(gffHashGene.getGffHashGene());
+		exonJunction.setLsReadRegion(lsAligns);
+		exonJunction.setOneGeneOneSpliceEvent(false);
+		exonJunction.addBamSorted("RKOcon", "/media/winE/NBC/Project/Project_FY/20120920_human/tophat/RKOcon_accepted_hits.bam");
+		exonJunction.addBamSorted("RKOkd", "/media/winE/NBC/Project/Project_FY/20120920_human/tophat/RKOkd_accepted_hits.bam");
+		exonJunction.setCompareGroups("RKOkd", "RKOcon");
+
+		exonJunction.setResultFile("/media/winE/NBC/Project/Project_FY/20120920_human/tophat/difftest/test2");
+		exonJunction.run();
+	}
+	
 	private static Logger logger = Logger.getLogger(ExonJunction.class);
 	GffHashGene gffHashGene = null;
 	/** 全体差异基因的外显子
@@ -80,7 +106,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	
 	/** 是否提取序列 */
 	SeqHash seqHash;
-	
+	//TODO 默认设置为false
 	boolean isLessMemory = false;
 	/** 是否读取表达
 	 * 默认true
@@ -92,6 +118,12 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	 * 读取区域，调试用。设定之后就只会读取这个区域的reads
 	 */
 	List<Align> lsReadReagion;
+	
+	public ExonJunction() {
+
+		/////
+	}
+	
 	/**
 	 * 表示差异可变剪接的事件的pvalue阈值，仅用于统计差异可变剪接事件的数量，不用于可变剪接的筛选
 	 * @param pvalue
@@ -124,7 +156,9 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	public void setLsReadRegion(List<Align> lsAligns) {
-		lsReadReagion = lsAligns;
+		if (lsAligns != null && lsAligns.size() > 0) {
+			lsReadReagion = lsAligns;
+		}
 	}
 	/** 
 	 * 一个基因可能有多个可变剪接事件，但是我们可以只挑选其中最显著的那个可变剪接事件
@@ -174,6 +208,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		setCondition.add(condition);
 		SamFile samFile = new SamFile(sortedBamFile); 
 		AlignSamReading samFileReading = new AlignSamReading(samFile);
+		
 		mapCond2SamReader.put(condition, samFileReading);
 		mapCond2SamFile.put(condition, samFile);
 	}
@@ -289,9 +324,12 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		ArrayList<GffDetailGene> lsGffDetailGenes = gffHashGene.getGffDetailAll();
 		int i = 0;
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
-			GenerateNewIso generateNewIso = new GenerateNewIso();
+			//TODO 设置断点
+			if (gffDetailGene.getName().contains("IDS")) {
+				logger.debug("stop");
+			}
+			GenerateNewIso generateNewIso = new GenerateNewIso(tophatJunction, mapCond2SamFile.values());
 			generateNewIso.setGffDetailGene(gffDetailGene);
-			generateNewIso.setTophatJunctionNew(tophatJunction);
 			generateNewIso.reconstructGffDetailGene();
 			
 			gffDetailGene.removeDupliIso();
@@ -336,7 +374,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	 */
 	private ArrayList<ExonSplicingTest> getGeneDifExon(GffDetailGene gffDetailGene) {
 		//TODO 设置断点
-		if (gffDetailGene.getName().contains("Foxp1")) {
+		if (gffDetailGene.getName().contains("IDS")) {
 			logger.debug("stop");
 		}
 		

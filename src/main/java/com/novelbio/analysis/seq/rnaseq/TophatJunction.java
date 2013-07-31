@@ -159,10 +159,10 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 		} else {
 			junThis.addJunBeforeAbs(junBefore); junThis.addJunAfterAbs(junAfter);
 			JunctionInfo juncInfo = new JunctionInfo(junThis);
-			ListBin<JunctionInfo> lsJunctionInfos = mapChrID2ListGff.get(junThis.getRefID());
+			ListBin<JunctionInfo> lsJunctionInfos = mapChrID2ListGff.get(junThis.getRefID().toLowerCase());
 			if (lsJunctionInfos == null) {
 				lsJunctionInfos = new ListBin<>();
-				mapChrID2ListGff.put(junThis.getRefID(), lsJunctionInfos);
+				mapChrID2ListGff.put(junThis.getRefID().toLowerCase(), lsJunctionInfos);
 			}
 			lsJunctionInfos.add(juncInfo);
 			mapJunUnitKey2Unit.put(junThis.key(), junThis);
@@ -265,8 +265,9 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	/** 读取完bam文件后必须调用该方法进行总结 */
 	public void conclusion() {
 		for (Entry<String, ListBin<JunctionInfo>> entry : mapChrID2ListGff.entrySet()) {
-			String chrID = entry.getKey();
+			String chrID = entry.getKey().toLowerCase();
 			ListBin<JunctionInfo> listGff = entry.getValue();
+			listGff.sort();
 			ListBin<JunctionInfo> listGffNew = combineOverlapGene(listGff);
 			mapChrID2ListGff.put(chrID, listGffNew);
 			listGff = null;

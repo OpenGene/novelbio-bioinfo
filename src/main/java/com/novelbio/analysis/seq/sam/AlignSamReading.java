@@ -1,5 +1,6 @@
 package com.novelbio.analysis.seq.sam;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -76,7 +77,7 @@ public class AlignSamReading extends AlignSeqReading {
 	public void clear() {
 		super.clear();
 		try {
-			lsAlignments.clear();
+			lsAlignments = new ArrayList<>();
 		} catch (Exception e) { }
 	}
 }

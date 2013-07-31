@@ -21,7 +21,6 @@ import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster;
-import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.PredictAltStart;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.PredictRetainIntron;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict.SplicingAlternativeType;

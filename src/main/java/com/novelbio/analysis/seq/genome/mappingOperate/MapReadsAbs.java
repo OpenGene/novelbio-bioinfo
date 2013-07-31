@@ -431,7 +431,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 		if (doubleInfo == null) {
 			return;
 		}
-		if ((allReadsNum == 0 && NormalType != NORMALIZATION_ALL_READS)|| NormalType == NORMALIZATION_NO) {
+		if ((allReadsNum == 0 && NormalType == NORMALIZATION_ALL_READS)|| NormalType == NORMALIZATION_NO) {
 			return;
 		}
 		else if (NormalType == NORMALIZATION_ALL_READS) {
