@@ -52,7 +52,7 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	 /**每隔多少位计数，如果设定为1，则算法会变化，然后会很精确*/
 	 int invNum = 10;
 	 /** 因为想加入小数，但是double比较占内存，所以就将数据乘以fold，然后最后除掉它就好 */
-	 int fold = 10000;
+	 int fold = 100;
 	 /**添加samBam的文件用来获得信息
 	  * 注意在添加之前要先执行{@link #prepareAlignRecord(AlignRecord)}
 	  */

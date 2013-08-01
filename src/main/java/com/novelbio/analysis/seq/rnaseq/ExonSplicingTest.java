@@ -156,7 +156,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			return pvalue;
 		}
 		//TODO 可以设置断点
-		if (exonCluster.getParentGene().getName().contains("Foxp1")) {
+		if (exonCluster.getParentGene().getName().contains("RPL27")) {
 			logger.debug("stop");
 		}
 		
@@ -330,7 +330,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	private double getPvaluePropExp() {
 		double prop = 0.5;
 		//TODO 将ratio换掉，把exonCluster.getLength()换成difSite.Length();
-		double ratio = exonCluster.getLength()/(readsLength * 3);
+		double ratio = (double)exonCluster.getLength()/(readsLength * 1.5);
 		if (ratio > 1) {
 			prop = Math.pow(0.5, 1/ratio);
 		} else {
@@ -533,6 +533,10 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		
 		ArrayList<Double> lsPvalue = new ArrayList<Double>();
 		for (ExonSplicingTest exonSplicingTest : colExonSplicingTests) {
+			//TODO
+			if (exonSplicingTest.getExonCluster().getParentGene().getName().contains("RPL27")) {
+				logger.error("stop");
+			}
 			if (exonSplicingTest.getAndCalculatePvalue() > 0.5) {
 				break;
 			}
@@ -637,11 +641,7 @@ class SpliceType2Value {
 	public void addJunction(String condition, SpliceTypePredict spliceTypePredict) {
 		SplicingAlternativeType splicingAlternativeType = spliceTypePredict.getType();
 		ArrayList<Double> lsCounts = null;
-		try {
-			lsCounts = spliceTypePredict.getJuncCounts(condition);
-		} catch (Exception e) {
-			lsCounts = spliceTypePredict.getJuncCounts(condition);
-		}
+		lsCounts = spliceTypePredict.getJuncCounts(condition);
 		
 		
 		addLsDouble(mapSplicingType2LsJunctionReads, splicingAlternativeType, lsCounts);

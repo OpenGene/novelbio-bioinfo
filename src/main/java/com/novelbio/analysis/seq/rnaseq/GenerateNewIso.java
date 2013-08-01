@@ -28,11 +28,16 @@ public class GenerateNewIso {
 	int blankNum = 40;//至少超过50bp的没有reads堆叠的区域，才被认为是intron
 	int longExon = 200;//超过100bp就认为是比较长的exon，就需要做判定了
 	TophatJunction tophatJunctionNew;
+	List<SamMapReads> lsSamFiles; 
+
 	GffDetailGene gffDetailGene;
-	Collection<SamFile> colSamFiles; 
 	public GenerateNewIso(TophatJunction tophatJunctionNew, Collection<SamFile> colSamFiles) {
 		this.tophatJunctionNew = tophatJunctionNew;
-		this.colSamFiles = colSamFiles;
+		lsSamFiles = new ArrayList<>();
+		for (SamFile samFile : colSamFiles) {
+			SamMapReads samMapReads = new SamMapReads(samFile);
+			lsSamFiles.add(samMapReads);
+		}
 	}
 	
 	public void setGffDetailGene(GffDetailGene gffDetailGene) {
@@ -296,8 +301,7 @@ public class GenerateNewIso {
 	private boolean isContinuousExon(String chrID, int startLoc, int endLoc) {
 		int start = Math.min(startLoc, endLoc), end = Math.max(startLoc, endLoc);
 		List<double[]> lsRegion = new ArrayList<>();
-		for (SamFile samFile : colSamFiles) {
-			SamMapReads samMapReads = new SamMapReads(samFile);
+		for (SamMapReads samMapReads : lsSamFiles) {
 			double[] region = samMapReads.getRangeInfo(1, chrID, start, end, 0);
 			lsRegion.add(region);
 		}

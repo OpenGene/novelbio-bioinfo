@@ -43,28 +43,31 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		List<Align> lsAligns = new ArrayList<>();
 //		lsAligns.add(new Align("chr13", 113834688, 113853827));
 //		lsAligns.add(new Align("chr12", 4647587, 4669830));
-		lsAligns.add(new Align("chrX", 48779231, 48817543));
-		lsAligns.add(new Align("chrX", 148573976, 148586877));
+//		lsAligns.add(new Align("chrX", 48779231, 48817543));
+//		lsAligns.add(new Align("chrX", 148573976, 148586877));
 //		lsAligns.add(new Align("chr15", 42468140, 42502218));
 //		lsAligns.add(new Align("chr2", 191834371, 191854578));
 //		lsAligns.add(new Align("chr1", 65549980, 65715670));
 //		lsAligns.add(new Align("chr9", 128118727, 128494218));
-		
+//		lsAligns.add(new Align("chr17", 41149494, 41155620));
+		lsAligns.add(new Align("chr9", 9545347, 9601693));
 		ExonJunction exonJunction = new ExonJunction();
 		exonJunction.setIsLessMemory(false);
-		GffChrAbs gffHashGene = new GffChrAbs(9606);
+		GffChrAbs gffHashGene = new GffChrAbs(9031);
 		exonJunction.setGffHashGene(gffHashGene.getGffHashGene());
 		exonJunction.setLsReadRegion(lsAligns);
 		exonJunction.setOneGeneOneSpliceEvent(false);
-		exonJunction.addBamSorted("RKOcon", "/media/winE/NBC/Project/Project_FY/20120920_human/tophat/RKOcon_accepted_hits.bam");
-		exonJunction.addBamSorted("RKOkd", "/media/winE/NBC/Project/Project_FY/20120920_human/tophat/RKOkd_accepted_hits.bam");
-		exonJunction.setCompareGroups("RKOkd", "RKOcon");
+		exonJunction.addBamSorted("WT", "/home/zong0jie/Test/paper/chicken/DT40WT.bam");
+		exonJunction.addBamSorted("KO", "/home/zong0jie/Test/paper/chicken/DT40KO.bam");
+		exonJunction.setCompareGroups("KO", "WT");
 
-		exonJunction.setResultFile("/media/winE/NBC/Project/Project_FY/20120920_human/tophat/difftest/test2");
+		exonJunction.setResultFile("/home/zong0jie/Test/paper/chicken/testNewIso");
 		exonJunction.run();
 	}
 	
 	private static Logger logger = Logger.getLogger(ExonJunction.class);
+	private static String stopGeneName = "TRIP12";
+	
 	GffHashGene gffHashGene = null;
 	/** 全体差异基因的外显子
 	 * ls--
@@ -323,12 +326,12 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	private void fillLsAll_Dif_Iso_Exon() {
 		ArrayList<GffDetailGene> lsGffDetailGenes = gffHashGene.getGffDetailAll();
 		int i = 0;
+		GenerateNewIso generateNewIso = new GenerateNewIso(tophatJunction, mapCond2SamFile.values());
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 			//TODO 设置断点
-			if (gffDetailGene.getName().contains("IDS")) {
+			if (gffDetailGene.getName().contains(stopGeneName)) {
 				logger.debug("stop");
 			}
-			GenerateNewIso generateNewIso = new GenerateNewIso(tophatJunction, mapCond2SamFile.values());
 			generateNewIso.setGffDetailGene(gffDetailGene);
 			generateNewIso.reconstructGffDetailGene();
 			
@@ -347,7 +350,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				guiAnnoInfo.setDouble(i);
 				guiAnnoInfo.setInfo("Get " + i + " Junction Event");
 				setRunInfo(guiAnnoInfo);
-				logger.debug(i);
+				logger.error(i);
 			}
 			i++;
 		}
@@ -374,7 +377,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	 */
 	private ArrayList<ExonSplicingTest> getGeneDifExon(GffDetailGene gffDetailGene) {
 		//TODO 设置断点
-		if (gffDetailGene.getName().contains("IDS")) {
+		if (gffDetailGene.getName().contains(stopGeneName)) {
 			logger.debug("stop");
 		}
 		
@@ -451,6 +454,10 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		int num = 0;
 		for (ArrayList<ExonSplicingTest> lsExonTest : lsSplicingTests) {
 			for (ExonSplicingTest exonSplicingTest : lsExonTest) {
+				//TODO
+				if (exonSplicingTest.getExonCluster().getParentGene().getName().contains(stopGeneName)) {
+					logger.error("");
+				}
 				exonSplicingTest.addMapCondition2MapReads(condition, mapReads);
 			}
 			if (num % 100 == 0) {
@@ -517,6 +524,9 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	 */
 	private void doTest_And_StatisticSplicingEvent(ArrayList<ExonSplicingTest> lsExonSplicingTest) {
 		for (ExonSplicingTest exonSplicingTest : lsExonSplicingTest) {
+			if (exonSplicingTest.getExonCluster().getParentGene().getName().contains(stopGeneName)) {
+				logger.error("");
+			}
 			exonSplicingTest.setCompareCondition(condition1, condition2);
 		}
 		//按照pvalue从小到大排序
@@ -562,7 +572,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		txtOut.writefileln(ExonSplicingTest.getTitle(condition1, condition2));
 		for (ExonSplicingTest chisqTest : lsResult) {
 			//TODO 设定断点
-//			if (chisqTest.getExonCluster().getParentGene().getName().contains("KTN1")) {
+//			if (chisqTest.getExonCluster().getParentGene().getName().contains(stopGeneName)) {
 //				logger.error("stop");
 //			}
 			chisqTest.setGetSeq(seqHash);

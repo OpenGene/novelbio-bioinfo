@@ -20,14 +20,27 @@ import com.novelbio.base.dataStructure.MathComput;
  *
  */
 public class SamMapReads extends MapReadsAbs {
+	int catchNum = 500000;
 	Map<String, Long> mapChrIDlowcase2Length;
 	
 	SamFile samFile;
 	
+	/** 缓存 */
+	double[] catchValue;
+	int start = 0, end = 0;
 	/** 输入的samFile必须是排序并且有索引的 */
 	public SamMapReads(SamFile samFile) {
 		this.samFile = samFile;
 		mapChrIDlowcase2Length = samFile.getChrID2LengthMap();
+		catchValue = new double[catchNum];
+	}
+	
+	/** catchNum不能大于50000000 */
+	public void setCatchNum(int catchNum) {
+		if (catchNum > 5000000) return;
+		
+		this.catchNum = catchNum;
+		catchValue = new double[catchNum];
 	}
 	
 	/**
@@ -93,15 +106,41 @@ public class SamMapReads extends MapReadsAbs {
 			return null;
 		}
 		double[] result = new double[startEnd[1] - startEnd[0] + 1];
-
-		for (SamRecord samRecord : samFile.readLinesOverlap(chrID, startEnd[0], startEnd[1])) {
+		if (startEnd[1] > end || startEnd[0] < start) {
+			catchValue = new double[catchNum];
+			if (startEnd[1] - startEnd[0] < catchNum - 100) {
+				int media = (startEnd[1] + startEnd[0])/2;
+				int range = catchNum/2;
+				int[] startEndFinal = MapReadsAbs.correctStartEnd(mapChrIDlowcase2Length, chrID,  media - range, media + range);
+				start = startEndFinal[0]; end = startEndFinal[1];
+				catchValue = getRangeValueFromSam(chrID, start, end);
+			} else {
+				return getRangeValueFromSam(chrID, startEnd[0], startEnd[1]);
+			}
+		}
+		int startReal = startEnd[0] - start;
+		int endReal = startEnd[1] - start;
+		int m = 0;
+		for (int i = startReal; i <= endReal; i++) {
+			result[m] = catchValue[i];
+			m++;
+		}
+		return result;
+	}
+	
+	/** 从文件中读取，而不是缓存 */
+	private double[] getRangeValueFromSam(String chrID, int startNum, int endNum) {
+		double[] result = new double[endNum - startNum + 1];
+		int[] startEnd = new int[]{startNum, endNum};
+		for (SamRecord samRecord : samFile.readLinesOverlap(chrID, startNum, endNum)) {
 			try {
 				addReadsInfo(samRecord, startEnd, result);
 			} catch (Exception e) { }
 		}
-		
 		return result;
 	}
+	
+	
 	/** 将samRecord的信息添加至 result上 */
 	private void addReadsInfo(SamRecord samRecord, int[] startEnd, double[] result) {
 		if (booUniqueMapping && samRecord.getMappingNum() > 1) {
