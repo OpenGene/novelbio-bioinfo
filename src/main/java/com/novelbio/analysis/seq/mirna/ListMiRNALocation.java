@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.mirna;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -266,7 +267,7 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 			logger.error("出现未知miRNA名字：" + mirName);
 			return null;
 		}
-		ArrayList<ListDetailBin> lsResult = lsDu.getAllGffDetail();
+		List<ListDetailBin> lsResult = lsDu.getAllGffDetail();
 		if (lsResult.size() == 0) {
 			return null;
 		}

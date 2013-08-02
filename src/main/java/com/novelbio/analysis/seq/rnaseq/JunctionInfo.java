@@ -23,19 +23,19 @@ public class JunctionInfo extends ListDetailAbs {
 	List<JunctionUnit> lsJunctionUnits = new ArrayList<JunctionUnit>();
 	/** key是junctionUnit.getKey() */
 	Map<String, JunctionUnit> mapJunSite2Unit = new HashMap<String, JunctionUnit>();
+	boolean considerStrand = false;
 	
 	/**
-	 * 根据正反向自动设定起点和终点
-	 * @param start 从1开始记数
-	 * @param end 从1开始记数
-	 * @param cis
+	 * @param considerStrand 是否考虑junction方向
+	 * @param junctionUnit
 	 */
-	public JunctionInfo(JunctionUnit junctionUnit) {
-		super(junctionUnit.getRefID(), junctionUnit.key(), true);
+	public JunctionInfo(boolean considerStrand, JunctionUnit junctionUnit) {
+		super(junctionUnit.getRefID(), junctionUnit.key(false), true);
+		this.considerStrand = considerStrand;
 		numberstart = junctionUnit.getStartAbs();
 		numberend = junctionUnit.getEndAbs();
 		lsJunctionUnits.add(junctionUnit);
-		mapJunSite2Unit.put(junctionUnit.key(), junctionUnit);
+		mapJunSite2Unit.put(junctionUnit.key(considerStrand), junctionUnit);
 	}
 	
 	public void addJuncInfo(JunctionInfo junctionInfo) {
@@ -45,11 +45,11 @@ public class JunctionInfo extends ListDetailAbs {
 	}
 	
 	public void addJuncUnit(JunctionUnit junctionUnit) {
-		if (mapJunSite2Unit.containsKey(junctionUnit.key())) {
-			JunctionUnit junctionUnit2 = mapJunSite2Unit.get(junctionUnit.key());
+		if (mapJunSite2Unit.containsKey(junctionUnit.key(considerStrand))) {
+			JunctionUnit junctionUnit2 = mapJunSite2Unit.get(junctionUnit.key(considerStrand));
 			junctionUnit2.addReadsJuncUnit(junctionUnit);
 		} else {
-			mapJunSite2Unit.put(junctionUnit.key(), junctionUnit);
+			mapJunSite2Unit.put(junctionUnit.key(considerStrand), junctionUnit);
 			lsJunctionUnits.add(junctionUnit);
 		}
 		if (numberstart > junctionUnit.getStartAbs())
@@ -112,7 +112,7 @@ public class JunctionInfo extends ListDetailAbs {
 		public void addJunBeforeAbs(JunctionUnit junBefore) {
 			if (junBefore == null) return;
 			
-			String key = getKey(junBefore.getRefID(), junBefore.getStartAbs(), junBefore.getEndAbs());
+			String key = junBefore.key(true);
 			JunctionUnit junBeforeExist = mapJunBefore.get(key);
 			if (junBeforeExist == null) {
 				mapJunBefore.put(key, junBefore);
@@ -124,7 +124,7 @@ public class JunctionInfo extends ListDetailAbs {
 		public void addJunAfterAbs(JunctionUnit junAfter) {
 			if (junAfter == null) return;
 			
-			String key = getKey(junAfter.getRefID(), junAfter.getStartAbs(), junAfter.getEndAbs());
+			String key = junAfter.key(true);
 			JunctionUnit junAfterExist = mapJunAfter.get(key);
 			if (junAfterExist == null) {
 				mapJunAfter.put(key, junAfter);
@@ -195,8 +195,18 @@ public class JunctionInfo extends ListDetailAbs {
 			return numAll;
 		}
 		
-		protected String key() {
-			return getKey(getRefID(), getStartAbs(), getEndAbs());
+		/**
+		 * @param considerStrand 是否考虑方向
+		 * @return
+		 */
+		protected String key(boolean considerStrand) {
+			String key = "";
+			if (considerStrand) {
+				key = getKey(isCis5to3(), getRefID(), getStartAbs(), getEndAbs());
+			} else {
+				key = getKey(null, getRefID(), getStartAbs(), getEndAbs());
+			}
+			return key;
 		}
 		/**
 		 * 不能判断不同染色体上相同的坐标位点
@@ -230,8 +240,12 @@ public class JunctionInfo extends ListDetailAbs {
 		}
 		
 		/** 指定坐标，返回key */
-		protected static String getKey(String chrID, int startAbs, int endAbs) {
-			return chrID.toLowerCase() + SepSign.SEP_INFO +  startAbs + SepSign.SEP_INFO + endAbs;
+		protected static String getKey(Boolean cis5to3, String chrID, int startAbs, int endAbs) {
+			String key = chrID.toLowerCase() + SepSign.SEP_INFO +  startAbs + SepSign.SEP_INFO + endAbs;
+			if (cis5to3 != null) {
+				key = cis5to3 + SepSign.SEP_ID + key;
+			}
+			return key;
 		}
 		
 		public String toString() {

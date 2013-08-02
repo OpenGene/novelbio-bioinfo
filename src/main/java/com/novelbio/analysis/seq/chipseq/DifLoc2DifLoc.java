@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.chipseq;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -476,7 +477,7 @@ public class DifLoc2DifLoc {
 		int end = Math.max(startTmp, gffGeneIsoInfo.getTESsite());
 
 		ListCodAbsDu<ListDetailBin, ListCodAbs<ListDetailBin>> lsDu = mapPrefix2listHashBin.get(prefix).searchLocation(gffGeneIsoInfo.getRefID(), start, end);
-		ArrayList<ListDetailBin> lsBin = lsDu.getAllGffDetail();
+		List<ListDetailBin> lsBin = lsDu.getAllGffDetail();
 		if (lsBin.size() == 0) {
 			return 1.0;
 		}
@@ -508,7 +509,7 @@ public class DifLoc2DifLoc {
 		end = gffGeneIsoInfo.getTESsite();
 		
 		ListCodAbsDu<ListDetailBin, ListCodAbs<ListDetailBin>> lsDu = mapPrefix2listHashBin.get(prefix).searchLocation(gffGeneIsoInfo.getRefID(), Math.min(start, end), Math.max(start, end));
-		ArrayList<ListDetailBin> lsBin = lsDu.getAllGffDetail();
+		List<ListDetailBin> lsBin = lsDu.getAllGffDetail();
 		if (lsBin.size() == 0) {
 			return 1.0;
 		}
@@ -538,7 +539,7 @@ public class DifLoc2DifLoc {
 			end = gffGeneIsoInfo.getTSSsite() - tssRegion[1];
 		}
 		ListCodAbsDu<ListDetailBin, ListCodAbs<ListDetailBin>> lsDu = mapPrefix2listHashBin.get(prefix).searchLocation(gffGeneIsoInfo.getRefID(), start, end);
-		ArrayList<ListDetailBin> lsBin = lsDu.getAllGffDetail();
+		List<ListDetailBin> lsBin = lsDu.getAllGffDetail();
 		if (lsBin.size() == 0) {
 			return 1.0;
 		}

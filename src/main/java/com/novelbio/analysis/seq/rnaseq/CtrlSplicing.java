@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.base.multithread.RunGetInfo;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.nbcgui.GUIinfo;
@@ -19,6 +20,7 @@ public class CtrlSplicing implements RunGetInfo<GuiAnnoInfo> , Runnable{
 	String outFile;
 	List<String[]> lsBam2Prefix;
 	List<String[]> lsCompareGroup;
+	StrandSpecific strandSpecific = StrandSpecific.NONE;
 	boolean memoryLow = false;
 	
 	public void setGuiRNAautoSplice(GUIinfo guiRNAautoSplice) {
@@ -34,6 +36,9 @@ public class CtrlSplicing implements RunGetInfo<GuiAnnoInfo> , Runnable{
 		this.lsCompareGroup = lsCompareGroup;
 	}
 	
+	public void setStrandSpecific(StrandSpecific strandSpecific) {
+		this.strandSpecific = strandSpecific;
+	}
 	@Override
 	public void setRunningInfo(GuiAnnoInfo info) {
 		guiRNAautoSplice.setRunningInfo(info);
@@ -84,6 +89,7 @@ public class CtrlSplicing implements RunGetInfo<GuiAnnoInfo> , Runnable{
 	@Override
 	public void run() {
 		ExonJunction exonJunction = new ExonJunction();
+		exonJunction.setStrandSpecific(strandSpecific);
 		exonJunction.setGffHashGene(gffHashGene);
 		exonJunction.setOneGeneOneSpliceEvent(!isDisplayAllEvent);
 		exonJunction.setRunGetInfo(this);

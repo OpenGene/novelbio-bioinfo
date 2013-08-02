@@ -143,7 +143,7 @@ public class CtrlSamRPKMLocate implements CtrlSamPPKMint {
 				samFileStatistics = new SamFileStatistics(prefix);
 				lsAlignmentRecorders.add(samFileStatistics);
 				try {
-					Map<String, Long> mapChrID2Len = ((SamFile)lsAlignSeqReadings.get(0).getSamFile()).getChrID2LengthMap();
+					Map<String, Long> mapChrID2Len = ((SamFile)lsAlignSeqReadings.get(0).getSamFile()).getMapChrIDLowcase2Length();
 					samFileStatistics.setStandardData(mapChrID2Len);
 				} catch (Exception e) {
 					// TODO: handle exception

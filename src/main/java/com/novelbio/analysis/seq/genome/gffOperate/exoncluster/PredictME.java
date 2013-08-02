@@ -107,11 +107,13 @@ public class PredictME extends SpliceTypePredict {
 		int exonIndexBefore = lsExonInfos.get(0).getItemNum() - 1;
 		int beforeStart = gffGeneIsoInfo.get(exonIndexBefore).getEndCis();
 		alignBefore = new Align(gffGeneIsoInfo.getRefID(), beforeStart, beforeEnd);
+		alignBefore.setCis5to3(gffGeneIsoInfo.isCis5to3());
 		
 		int afterStart = lsExonInfos.get(lsExonInfos.size() - 1).getEndCis();
 		int exonIndexAfter = lsExonInfos.get(lsExonInfos.size() - 1).getItemNum() + 1;
 		int afterEnd = gffGeneIsoInfo.get(exonIndexAfter).getStartCis();
 		alignAfter = new Align(gffGeneIsoInfo.getRefID(), afterStart, afterEnd);
+		alignAfter.setCis5to3(gffGeneIsoInfo.isCis5to3());
 		
 		aligns[0] = alignBefore;
 		aligns[1] = alignAfter;
@@ -251,9 +253,9 @@ public class PredictME extends SpliceTypePredict {
 		int num = 0;
 		for (Align[] aligns : lsAligns) {
 			if (before) {
-				num = tophatJunction.getJunctionSite(condition,aligns[0].getRefID(), aligns[0].getStartAbs(), aligns[0].getEndAbs());
+				num = tophatJunction.getJunctionSite(condition, aligns[0].isCis5to3(), aligns[0].getRefID(), aligns[0].getStartAbs(), aligns[0].getEndAbs());
 			} else {
-				num = tophatJunction.getJunctionSite(condition,aligns[1].getRefID(), aligns[1].getStartAbs(), aligns[1].getEndAbs());
+				num = tophatJunction.getJunctionSite(condition, aligns[1].isCis5to3(), aligns[1].getRefID(), aligns[1].getStartAbs(), aligns[1].getEndAbs());
 			}
 		}
 		return num;

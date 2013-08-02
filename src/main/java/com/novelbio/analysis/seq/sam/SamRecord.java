@@ -327,6 +327,11 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 		return samRecord.getBaseQualityString();
 	}
 	
+	/** 双端测序的话，是否为第一条reads */
+	public boolean isFirstRead() {
+		return samRecord.getFirstOfPairFlag();
+	}
+	
 	public int hashCode() {
 		return samRecord.hashCode();
 	}

@@ -77,7 +77,7 @@ public class PredictAltEnd extends PredictAltStartEnd {
 		});
 		
 		for (ArrayList<ExonInfo> lsExonInfos : lslsExonInfos) {
-			int juncReads = tophatJunction.getJunctionSite(exonCluster.getRefID(), lsExonInfos.get(lsExonInfos.size() - 1).getStartCis());
+			int juncReads = tophatJunction.getJunctionSite(exonCluster.isCis5to3(), exonCluster.getRefID(), lsExonInfos.get(lsExonInfos.size() - 1).getStartCis());
 			mapJuncNum2Exon.put(juncReads, lsExonInfos);
 		}
 		//获得第一个

@@ -3,6 +3,7 @@ package com.novelbio.database.updatedb.database;
 import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
@@ -29,6 +30,7 @@ public class GlyMaxIDNCBI {
 		gmidncbi.readNCBI(gbsFilePath);
 		gmidncbi.readGFFFile(gffFile, txtOut);
 	}
+	
 	/**
 	 * 给定大豆的GBS文件名，
 	 * @param gbsFilePath
@@ -44,7 +46,6 @@ public class GlyMaxIDNCBI {
 			}
 		}
 	}
-	
 
 	private void readNCBItxt(String gbsFile) throws Exception {
 		String chrID = FileOperate.getFileNameSep(gbsFile)[0].toLowerCase();
@@ -98,7 +99,7 @@ public class GlyMaxIDNCBI {
 		for (ArrayList<ListDetailBin> lsGffGene : hashLsGffGene.values()) {
 			for (ListDetailBin gffDetailGene : lsGffGene) {
 				GffCodGeneDU gffCodGeneDU = gffHashGene.searchLocation(gffDetailGene.getRefID(), (int)gffDetailGene.getStartAbs(), (int)gffDetailGene.getEndAbs());
-				ArrayList<GffDetailGene> lsOverlapGffGene = gffCodGeneDU.getAllGffDetail();
+				List<GffDetailGene> lsOverlapGffGene = gffCodGeneDU.getAllGffDetail();
 				if (lsOverlapGffGene.size() > 3) {
 					lsOverlapGffGene = gffCodGeneDU.getLsGffDetailMid();
 				}

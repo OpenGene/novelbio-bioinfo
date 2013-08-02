@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.rnaseq.JunctionInfo.JunctionUnit;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamFile;
@@ -33,6 +34,7 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	Map<String, JunctionUnit> mapJunUnitKey2Unit = new HashMap<String, JunctionUnit>();
 	ArrayListMultimap<String, JunctionUnit> mapJunSite2JunUnit = ArrayListMultimap.create();
 	String condition;
+	StrandSpecific strandSpecific = StrandSpecific.NONE;
 	
 	public TophatJunction() {
 		mapChrID2ListGff = new LinkedHashMap<>();
@@ -41,12 +43,17 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 		lsNameAll = new ArrayList<>();
 		lsNameNoRedundent = new ArrayList<>();
 	}
+	/** 设定测序连特异性的方向 */
+	public void setStrandSpecific(StrandSpecific strandSpecific) {
+		this.strandSpecific = strandSpecific;
+	}
 	public void setCondition(String condition) {
 		this.condition = condition;
 	}
 	
 	/**添加samBam的文件用来获得信息 */
 	public void addAlignRecord(AlignRecord alignRecord) {
+		Boolean cis5to3 = getCis5to3(alignRecord);
 		ArrayList<Align> lsAlign = alignRecord.getAlignmentBlocks();
 		if (lsAlign.size() <= 1) {
 			return;
@@ -77,55 +84,34 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 			int junStart = alignThis.getEndAbs();
 			int junEnd = alignNext.getStartAbs();
 			JunctionUnit jun = new JunctionUnit(chrID, junStart, junEnd);
+			if (cis5to3 != null) {
+				jun.setCis5to3(cis5to3);
+			}
 			jun.addReadsNum1(condition);
 			lsJun.add(jun);
 		}
 		addJunctionInfo(lsJun);
 	}
-//
-//	/**
-//	 * 读取junction文件，文件中每个剪接位点只能出现一次\
-//	 * @param condition
-//	 * @param junctionFile
-//	 */
-//	@Deprecated
-//	public void setJunFile(String condition, String junctionFile) {
-//		mapCond2JuncFile.put(condition, junctionFile);
-//	}
-//	@Deprecated
-//	public void readJuncFile() {
-//		for (String condition : mapCond2JuncFile.keySet()) {
-//			List<String> lsFileName = mapCond2JuncFile.get(condition);
-//			for (String junctionFile : lsFileName) {
-//				readJuncFile(junctionFile);
-//			}
-//		}
-//	}
-//	
-//	/**
-//	 * 读取之前先设定{@link #setCondition(String)}
-//	 * 读取junction文件，文件中每个剪接位点只能出现一次\
-//	 * @param condition
-//	 * @param junctionFile
-//	 */
-//	@Deprecated
-//	private void readJuncFile(String junctionFile) {
-//		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(junctionFile);
-//		for (String string : txtReadandWrite.readfileLs()) {
-//			if (string.startsWith("track")) {
-//				continue;
-//			}
-//			String[] ss = string.split("\t");
-//			String chrID = ss[0];
-//			
-//			//junction位点都设定在exon上
-//			int junct1 = Integer.parseInt(ss[1]) + Integer.parseInt(ss[10].split(",")[0]);
-//			int junct2 = Integer.parseInt(ss[2]) - Integer.parseInt(ss[10].split(",")[1]) + 1;
-//			int junctionNum = Integer.parseInt(ss[4]);
-//			addJunctionInfo(chrID, junct1, junct2, junctionNum);
-//		}
-//		txtReadandWrite.close();
-//	}
+	
+	private Boolean getCis5to3(AlignRecord alignRecord) {
+		if (strandSpecific == StrandSpecific.NONE || !(alignRecord instanceof SamRecord)) {
+			return null;
+		}
+		SamRecord samRecord = (SamRecord)alignRecord;
+		if (strandSpecific == StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND) {
+			if (samRecord.isFirstRead()) {
+				return samRecord.isCis5to3();
+			} else {
+				return !samRecord.isCis5to3();
+			}
+		} else {
+			if (samRecord.isFirstRead()) {
+				return !samRecord.isCis5to3();
+			} else {
+				return samRecord.isCis5to3();
+			}
+		}
+	}
 	
 	/** 
 	 * 添加一系列的junctionUnit，都是来源于同一条reads的
@@ -149,7 +135,7 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	}
 	
 	private void addJun(JunctionUnit junThis, JunctionUnit junBefore, JunctionUnit junAfter) {
-		String juncUnitKey = JunctionUnit.getKey(junThis.getRefID(), junThis.getStartAbs(), junThis.getEndAbs());
+		String juncUnitKey = junThis.key(strandSpecific != StrandSpecific.NONE);
 		if (mapJunUnitKey2Unit.containsKey(juncUnitKey)) {
 			JunctionUnit junThisExist = mapJunUnitKey2Unit.get(juncUnitKey);
 			junThisExist.addReadsNum(junThis);
@@ -158,40 +144,16 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 			junThisExist.addJunAfterAbs(junAfter);
 		} else {
 			junThis.addJunBeforeAbs(junBefore); junThis.addJunAfterAbs(junAfter);
-			JunctionInfo juncInfo = new JunctionInfo(junThis);
+			JunctionInfo juncInfo = new JunctionInfo(strandSpecific != StrandSpecific.NONE, junThis);
 			ListBin<JunctionInfo> lsJunctionInfos = mapChrID2ListGff.get(junThis.getRefID().toLowerCase());
 			if (lsJunctionInfos == null) {
 				lsJunctionInfos = new ListBin<>();
 				mapChrID2ListGff.put(junThis.getRefID().toLowerCase(), lsJunctionInfos);
 			}
 			lsJunctionInfos.add(juncInfo);
-			mapJunUnitKey2Unit.put(junThis.key(), junThis);
+			mapJunUnitKey2Unit.put(juncUnitKey, junThis);
 			mapJunSite2JunUnit.put(junThis.getRefID().toLowerCase() + SepSign.SEP_ID + junThis.getStartAbs(), junThis);
 			mapJunSite2JunUnit.put(junThis.getRefID().toLowerCase() + SepSign.SEP_ID + junThis.getEndAbs(), junThis);
-		}
-	}
-	/** 
-	 * 添加单个剪接位点reads
-	 * @param chrID 染色体
-	 * @param junctionStart 剪接起点
-	 * @param junctionEnd 剪接终点
-	 * @param junctionNum 剪接reads的数量
-	 */
-	private void addJunctionInfo(String chrID, int junctionStart, int junctionEnd, int junctionNum) {
-		chrID = chrID.trim().toLowerCase();
-		int junctionStartmin = Math.min(junctionStart, junctionEnd);
-		int junctionEndmax = Math.max(junctionStart, junctionEnd);
-		String juncUnitKey = JunctionUnit.getKey(chrID, junctionStartmin, junctionEndmax);
-		if (mapJunUnitKey2Unit.containsKey(juncUnitKey)) {
-			mapJunUnitKey2Unit.get(juncUnitKey).addReadsNum(condition, junctionNum);
-		} else {
-			JunctionUnit juncUnit = new JunctionUnit(chrID, junctionStartmin, junctionEndmax);
-			JunctionInfo juncInfo = new JunctionInfo(juncUnit);
-			ListBin<JunctionInfo> lsJunctionInfos = mapChrID2ListGff.get(chrID);
-			lsJunctionInfos.add(juncInfo);
-			mapJunUnitKey2Unit.put(juncUnit.key(), juncUnit);
-			mapJunSite2JunUnit.put(chrID + SepSign.SEP_ID + juncUnit.getStartAbs(), juncUnit);
-			mapJunSite2JunUnit.put(chrID + SepSign.SEP_ID + juncUnit.getEndAbs(), juncUnit);
 		}
 	}
 	
@@ -202,10 +164,13 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	 * @param locSite
 	 * @return
 	 */
-	public int getJunctionSite(String chrID, int locSite) {
+	public int getJunctionSite(boolean cis5to3, String chrID, int locSite) {
 		int num = 0;
 		List<JunctionUnit> lsJunctionUnits = mapJunSite2JunUnit.get(chrID + SepSign.SEP_ID + locSite);
 		for (JunctionUnit junctionUnit : lsJunctionUnits) {
+			if (strandSpecific != StrandSpecific.NONE && cis5to3 != junctionUnit.isCis5to3()) {
+				continue;
+			}
 			num += junctionUnit.getReadsNumAll();
 		}
 		return num;
@@ -217,9 +182,13 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	 * @param locSite
 	 * @return
 	 */
-	public int getJunctionSite(String chrID, int locStart, int locEnd) {
+	public int getJunctionSite(boolean cis5to3, String chrID, int locStart, int locEnd) {
 		int start = Math.min(locStart, locEnd), end = Math.max(locStart, locEnd);
-		JunctionUnit junctionUnit = mapJunUnitKey2Unit.get(JunctionUnit.getKey(chrID, start, end));
+		Boolean cis5to3Final = null;
+		if (strandSpecific != StrandSpecific.NONE) {
+			cis5to3Final = cis5to3;
+		}
+		JunctionUnit junctionUnit = mapJunUnitKey2Unit.get(JunctionUnit.getKey(cis5to3Final, chrID, start, end));
 		if (junctionUnit == null) {
 			return 0;
 		} else {
@@ -244,13 +213,18 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	/**
 	 * 给定坐标和位点，找出locsite
 	 * @param chrID
+	 * @param cis5to3 junction的方向，会根据内部的建库方法自动选择
 	 * @param locStartSite 无所谓前后，内部自动判断
 	 * @param locEndSite
 	 * @return
 	 */
-	public int getJunctionSite(String condition, String chrID, int locStartSite, int locEndSite) {
+	public int getJunctionSite(String condition, boolean cis5to3, String chrID, int locStartSite, int locEndSite) {
 		int start = Math.min(locStartSite, locEndSite), end = Math.max(locStartSite, locEndSite);
-		JunctionUnit junctionUnit = mapJunUnitKey2Unit.get(JunctionUnit.getKey(chrID, start, end));
+		Boolean cis5to3Final = null;
+		if (strandSpecific != StrandSpecific.NONE) {
+			cis5to3Final = cis5to3;
+		}
+		JunctionUnit junctionUnit = mapJunUnitKey2Unit.get(JunctionUnit.getKey(cis5to3Final, chrID, start, end));
 		if (junctionUnit == null) {
 			return 0;
 		} else {

@@ -73,10 +73,9 @@ public abstract class SpliceTypePredict {
 		
 		for (String string : setLocation) {
 			String[] ss = string.split(SepSign.SEP_ID);
-			result = result + tophatJunction.getJunctionSite(condition, gffDetailGene.getRefID(),
+			result = result + tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), gffDetailGene.getRefID(),
 					Integer.parseInt(ss[0]), Integer.parseInt(ss[1]));
 		}
-		
 		return result;
 	}
 	

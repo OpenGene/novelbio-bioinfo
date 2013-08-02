@@ -13,9 +13,9 @@ public enum StrandSpecific {
 	
 	public static HashMap<String, StrandSpecific> getMapStrandLibrary() {
 		LinkedHashMap<String, StrandSpecific> mapReadsQualtiy = new LinkedHashMap<String, StrandSpecific>();
-		mapReadsQualtiy.put("None", NONE);
-		mapReadsQualtiy.put("FIRST_READ_TRANSCRIPTION_STRAND", FIRST_READ_TRANSCRIPTION_STRAND);
-		mapReadsQualtiy.put("SECOND_READ_TRANSCRIPTION_STRAND", SECOND_READ_TRANSCRIPTION_STRAND);
+		mapReadsQualtiy.put("Not Consider Strand", NONE);
+		mapReadsQualtiy.put("First Read is Strand", FIRST_READ_TRANSCRIPTION_STRAND);
+		mapReadsQualtiy.put("Second Read is Strand", SECOND_READ_TRANSCRIPTION_STRAND);
 		return mapReadsQualtiy;
 	}
 }

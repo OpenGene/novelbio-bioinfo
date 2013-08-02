@@ -21,6 +21,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.sam.AlignSamReading;
 import com.novelbio.analysis.seq.sam.AlignSeqReading;
 import com.novelbio.analysis.seq.sam.SamFile;
@@ -69,6 +70,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	private static String stopGeneName = "TRIP12";
 	
 	GffHashGene gffHashGene = null;
+	StrandSpecific strandSpecific = StrandSpecific.NONE;
 	/** 全体差异基因的外显子
 	 * ls--
 	 * ls：gene
@@ -144,6 +146,12 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	public void setIsLessMemory(boolean isLessMemory) {
 		this.isLessMemory = isLessMemory;
 	}
+	
+	/** 设定建库的方式 */
+	public void setStrandSpecific(StrandSpecific strandSpecific) {
+		this.strandSpecific = strandSpecific;
+	}
+	
 	/** 是否读取表达
 	 * 默认true
 	*/
@@ -289,7 +297,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	
 	private void loadJunctionBam() {
 		AlignSeqReading samFileReadingLast = null;
-		
+		tophatJunction.setStrandSpecific(strandSpecific);
 //		List<Align> lsDifIsoGene = new ArrayList<Align>();//getLsDifIsoGene();
 		for (String condition : mapCond2SamReader.keySet()) {
 			ctrlSplicing.setInfo("Reading Junction " + condition);
@@ -308,7 +316,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				samFileReading.addAlignmentRecorder(tophatJunction);
 				samFileReading.run();
 				samFileReadingLast = samFileReading;
-
 			}
 		}
 		samFileReadingLast = null;
@@ -326,7 +333,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	private void fillLsAll_Dif_Iso_Exon() {
 		ArrayList<GffDetailGene> lsGffDetailGenes = gffHashGene.getGffDetailAll();
 		int i = 0;
-		GenerateNewIso generateNewIso = new GenerateNewIso(tophatJunction, mapCond2SamFile.values());
+		GenerateNewIso generateNewIso = new GenerateNewIso(tophatJunction, mapCond2SamFile.values(), strandSpecific != StrandSpecific.NONE);
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 			//TODO 设置断点
 			if (gffDetailGene.getName().contains(stopGeneName)) {

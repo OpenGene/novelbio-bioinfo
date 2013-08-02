@@ -76,10 +76,10 @@ public class PredictCassette extends SpliceTypePredict {
 		int skip = 0;
 		int exist = 0;
 		for (Align align : setAlignSkip) {
-			skip += tophatJunction.getJunctionSite(condition, exonCluster.getRefID(), align.getStartAbs(), align.getEndAbs());
+			skip += tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getStartAbs(), align.getEndAbs());
 		}
 		for (Align align : setAlignExist) {
-			exist += tophatJunction.getJunctionSite(condition, exonCluster.getRefID(), align.getStartAbs(), align.getEndAbs());
+			exist += tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getStartAbs(), align.getEndAbs());
 		}
 		lsCounts.add((double) skip);
 		lsCounts.add((double) exist);

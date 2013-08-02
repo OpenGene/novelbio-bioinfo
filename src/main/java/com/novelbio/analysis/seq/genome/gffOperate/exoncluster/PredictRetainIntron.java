@@ -36,7 +36,7 @@ public class PredictRetainIntron extends SpliceTypePredict {
 		ArrayList<Double> lsCounts = new ArrayList<Double>();
 		getJunctionSite();
 		
-		lsCounts.add((double) tophatJunction.getJunctionSite(condition, exonCluster.getRefID(), alignRetain.getStartCis(), alignRetain.getEndCis()));
+		lsCounts.add((double) tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), alignRetain.getStartCis(), alignRetain.getEndCis()));
 		List<SamFile> lsSamFile = mapCond2Samfile.get(condition);
 		int throughStart = 0, throughEnd = 0;
 		for (SamFile samFile : lsSamFile) {
@@ -59,7 +59,7 @@ public class PredictRetainIntron extends SpliceTypePredict {
 				for (int i = 0; i < lsExonInfo.size() - 1; i++) {
 					int startLoc =  lsExonInfo.get(i).getEndCis();
 					int endLoc = lsExonInfo.get(i+1).getStartCis();
-					int readsNum = tophatJunction.getJunctionSite(exonCluster.getRefID(), startLoc, endLoc);
+					int readsNum = tophatJunction.getJunctionSite(exonCluster.isCis5to3(), exonCluster.getRefID(), startLoc, endLoc);
 					if (readsNum > maxReadsNum) {
 						maxReadsNum = readsNum;
 						alignRetain = new Align(exonCluster.getRefID(), startLoc, endLoc);

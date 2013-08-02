@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.sf.samtools.SAMFileHeader;
@@ -475,7 +476,7 @@ public class SamFile implements AlignSeq {
 		}
 		for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {
 			if (alignmentRecorder instanceof SamFileStatistics) {
-				((SamFileStatistics)alignmentRecorder).setStandardData(getChrID2LengthMap());
+				((SamFileStatistics)alignmentRecorder).setStandardData(getMapChrIDLowcase2Length());
 			}
 		}
 		SamFile samFile = new SamFile(outFile, getHeader());
@@ -705,8 +706,11 @@ public class SamFile implements AlignSeq {
 	 * 获得该bam文件中染色体的长度信息，注意key都为小写
 	 * @return
 	 */
-	public HashMap<String, Long> getChrID2LengthMap() {
+	public HashMap<String, Long> getMapChrIDLowcase2Length() {
 		return getSamReader().getMapChrIDlowCase2Length();
+	}
+	public Map<String, Long> getMapChrID2Length() {
+		return getSamReader().getMapChrID2Length();
 	}
 	/**
 	 * tobe checked

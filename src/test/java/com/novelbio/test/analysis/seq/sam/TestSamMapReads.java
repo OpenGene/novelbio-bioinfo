@@ -33,7 +33,7 @@ public class TestSamMapReads extends TestCase {
 		List<GffDetailGene> lsGffDetailGenes = gffHashGene.getGffDetailAll();
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-				if (!samFile.getChrID2LengthMap().containsKey(gffGeneIsoInfo.getRefID().toLowerCase())) {
+				if (!samFile.getMapChrIDLowcase2Length().containsKey(gffGeneIsoInfo.getRefID().toLowerCase())) {
 					continue;
 				}
 				List<double[]> lsInfoOld = samMapReads.getRangeInfoLsOld(gffGeneIsoInfo.getRefID(), gffGeneIsoInfo);

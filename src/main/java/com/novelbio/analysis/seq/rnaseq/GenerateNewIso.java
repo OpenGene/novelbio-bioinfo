@@ -29,10 +29,12 @@ public class GenerateNewIso {
 	int longExon = 200;//超过100bp就认为是比较长的exon，就需要做判定了
 	TophatJunction tophatJunctionNew;
 	List<SamMapReads> lsSamFiles; 
-
+	boolean considerStrand = false;
 	GffDetailGene gffDetailGene;
-	public GenerateNewIso(TophatJunction tophatJunctionNew, Collection<SamFile> colSamFiles) {
+	
+	public GenerateNewIso(TophatJunction tophatJunctionNew, Collection<SamFile> colSamFiles, boolean considerStrand) {
 		this.tophatJunctionNew = tophatJunctionNew;
+		this.considerStrand = considerStrand;
 		lsSamFiles = new ArrayList<>();
 		for (SamFile samFile : colSamFiles) {
 			SamMapReads samMapReads = new SamMapReads(samFile);
@@ -113,12 +115,16 @@ public class GenerateNewIso {
 		if (junctionUnit.getEndAbs() < gffGeneIsoInfo.getStartAbs() || junctionUnit.getStartAbs() > gffGeneIsoInfo.getEndAbs()) {
 			return null;
 		}
+		if (considerStrand && junctionUnit.isCis5to3() != gffGeneIsoInfo.isCis5to3()) {
+			return null;
+		}
+		
 		int exonStart = 0, exonEnd = 0;
 		List<JunctionUnit> lsJun = new ArrayList<>();
 		Set<String> setJunInfo = new HashSet<>();
 		if (isEdgeInExon(true, junctionUnit, gffGeneIsoInfo) || isEdgeInExon(false, junctionUnit, gffGeneIsoInfo)) {
 			lsJun.add(junctionUnit);
-			setJunInfo.add(junctionUnit.key());
+			setJunInfo.add(junctionUnit.key(false));
 		}
 		if (isEdgeInExon(true, junctionUnit, gffGeneIsoInfo)) {
 			if (gffGeneIsoInfo.isCis5to3()) {
@@ -220,14 +226,14 @@ public class GenerateNewIso {
 			
 			for (JunctionUnit junPrevTmp : lsJunPrevAfter) {
 				if (beforExon) {
-					if (!setJunInfo.contains(junThis.key())) {
+					if (!setJunInfo.contains(junThis.key(false))) {
 						lsJun.add(0, junThis);
-						setJunInfo.add(junThis.key());
+						setJunInfo.add(junThis.key(false));
 					}
 				} else {
-					if (!setJunInfo.contains(junThis.key())) {
+					if (!setJunInfo.contains(junThis.key(false))) {
 						lsJun.add(junThis);
-						setJunInfo.add(junThis.key());
+						setJunInfo.add(junThis.key(false));
 					}
 				}
 				if (isEdgeInExon(beforExon,junThis, junPrevTmp, gffGeneIsoInfo)) {
@@ -255,9 +261,9 @@ public class GenerateNewIso {
 				exonNumReal = gffGeneIsoInfo.getNumCodInEle(junEdge);
 			}
 			exonNum = Math.abs(exonNumReal);
-			if (!setJunInfo.contains(junThis.key())) {
+			if (!setJunInfo.contains(junThis.key(false))) {
 				lsJun.add(0, junThis);
-				setJunInfo.add(junThis.key());
+				setJunInfo.add(junThis.key(false));
 			}
 		} else {
 			if (gffGeneIsoInfo.isCis5to3()) {
@@ -271,9 +277,9 @@ public class GenerateNewIso {
 			if (exonNumReal < 0) {
 				exonNum = Math.abs(exonNumReal) + 1;
 			}
-			if (!setJunInfo.contains(junThis.key())) {
+			if (!setJunInfo.contains(junThis.key(false))) {
 				lsJun.add(junThis);
-				setJunInfo.add(junThis.key());
+				setJunInfo.add(junThis.key(false));
 			}
 		}
 		
@@ -439,6 +445,8 @@ public class GenerateNewIso {
 			int lastEnd = 0;
 			for (JunctionInfo junctionInfo : lsJunctionInfos) {
 				for (JunctionUnit junction : junctionInfo.lsJunctionUnits) {
+					if (considerStrand && junction.isCis5to3() != junctionUnit.isCis5to3()) continue;
+					
 					if (junction.getEndAbs() < junctionUnit.getStartAbs() && junction.getEndAbs() > lastEnd ) {
 						lastEnd = junction.getEndAbs();
 						junctionUnitPrev = junction;
@@ -452,7 +460,7 @@ public class GenerateNewIso {
 		return lsJunctionUnits;
 	}
 	
-	/** 选择后一个Junction Site */
+	/** 选择后一个Junction Site，返回只有一个元素的list */
 	private List<JunctionUnit> getJunAfter(JunctionUnit junctionUnit) {
 		List<JunctionUnit> lsJunctionUnits= junctionUnit.getLsJunAfterAbs();
 		//TODO 如果后面没有jun，是否要到tophatJunctionNew中去查找Jun
@@ -465,6 +473,8 @@ public class GenerateNewIso {
 			int nextStart = Integer.MAX_VALUE;
 			for (JunctionInfo junctionInfo : lsJunctionInfos) {
 				for (JunctionUnit junction : junctionInfo.lsJunctionUnits) {
+					if (considerStrand && junction.isCis5to3() != junctionUnit.isCis5to3()) continue;
+					
 					if (junction.getStartAbs() > junctionUnit.getEndAbs() && junction.getStartAbs() > nextStart ) {
 						nextStart = junction.getStartAbs();
 						junctionUnitNext = junction;

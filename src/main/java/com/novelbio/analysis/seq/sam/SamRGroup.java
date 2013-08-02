@@ -11,7 +11,7 @@ public class SamRGroup {
 	 * @param sampleID 务必要有东西
 	 * @param LibraryName
 	 * @param SampleName
-	 * @param Platform
+	 * @param Platform 默认是Illumina
 	 * @return 返回的值可以直接用于
 	 */
 	public SamRGroup(String sampleID, String LibraryName, String SampleName, String Platform) {

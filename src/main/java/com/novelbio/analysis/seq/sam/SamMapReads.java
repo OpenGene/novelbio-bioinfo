@@ -31,7 +31,7 @@ public class SamMapReads extends MapReadsAbs {
 	/** 输入的samFile必须是排序并且有索引的 */
 	public SamMapReads(SamFile samFile) {
 		this.samFile = samFile;
-		mapChrIDlowcase2Length = samFile.getChrID2LengthMap();
+		mapChrIDlowcase2Length = samFile.getMapChrIDLowcase2Length();
 		catchValue = new double[catchNum];
 	}
 	

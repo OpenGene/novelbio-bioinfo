@@ -20,6 +20,7 @@ import javax.swing.JTextField;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
+import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.rnaseq.CtrlSplicing;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
@@ -29,6 +30,7 @@ import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.GUIinfo;
 import com.novelbio.nbcgui.GuiAnnoInfo;
+import javax.swing.JComboBox;
 
 public class GuiRNAautoSplice extends JPanel implements GUIinfo {
 	static final int progressLength = 10000;
@@ -41,6 +43,7 @@ public class GuiRNAautoSplice extends JPanel implements GUIinfo {
 	JButton btnOpengtf;
 	JCheckBox chckbxDisplayAllSplicing;
 	JCheckBox chkUseExternalGTF;
+	JComboBoxData<StrandSpecific> cmbStrand;
 	
 	GUIFileOpen guiFileOpen = new GUIFileOpen();
 	private JTextField txtSaveTo;
@@ -146,11 +149,11 @@ public class GuiRNAautoSplice extends JPanel implements GUIinfo {
 		add(btnSaveto);
 		
 		scrlCompare = new JScrollPaneData();
-		scrlCompare.setBounds(642, 239, 260, 76);
+		scrlCompare.setBounds(642, 291, 260, 76);
 		add(scrlCompare);
 		
 		JLabel lblCompare = new JLabel("Compare");
-		lblCompare.setBounds(642, 214, 69, 14);
+		lblCompare.setBounds(642, 266, 69, 14);
 		add(lblCompare);
 		
 		JButton btnAddCompare = new JButton("AddCompare");
@@ -159,7 +162,7 @@ public class GuiRNAautoSplice extends JPanel implements GUIinfo {
 				scrlCompare.addItem(new String[]{"",""});
 			}
 		});
-		btnAddCompare.setBounds(642, 327, 115, 24);
+		btnAddCompare.setBounds(642, 379, 115, 24);
 		add(btnAddCompare);
 		
 		JButton btnDeleteCompare = new JButton("DelCompare");
@@ -168,7 +171,7 @@ public class GuiRNAautoSplice extends JPanel implements GUIinfo {
 				scrlCompare.deleteSelRows();
 			}
 		});
-		btnDeleteCompare.setBounds(784, 327, 118, 24);
+		btnDeleteCompare.setBounds(784, 379, 118, 24);
 		add(btnDeleteCompare);
 		
 		chckbxDisplayAllSplicing = new JCheckBox("Display All Splicing Events");
@@ -206,6 +209,10 @@ public class GuiRNAautoSplice extends JPanel implements GUIinfo {
 		chkUseExternalGTF.setBounds(644, 12, 223, 27);
 		add(chkUseExternalGTF);
 		
+		cmbStrand = new JComboBoxData<>();
+		cmbStrand.setBounds(642, 226, 198, 24);
+		add(cmbStrand);
+		
 		initial();
 	}
 	private void initial() {
@@ -225,6 +232,7 @@ public class GuiRNAautoSplice extends JPanel implements GUIinfo {
 		
 		progressBar.setMinimum(0);
 		progressBar.setMaximum(progressLength);
+		cmbStrand.setMapItem(StrandSpecific.getMapStrandLibrary());
 	}
 	private void selectSpecies() {
 //		Species species = combSpecies.getSelectedValue();

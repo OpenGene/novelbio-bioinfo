@@ -104,7 +104,7 @@ class SamStatisticsBuilder extends ReportBuilder {
 		this.samFileStatistics = samFileStatistics;
 		this.fileName = samFile.getFileName();
 		setParamPath(fileName);
-		setMapChrID2PropAndLen(samFileStatistics.getMapChrID2Len(), samFile.getChrID2LengthMap());
+		setMapChrID2PropAndLen(samFileStatistics.getMapChrID2Len(), samFile.getMapChrIDLowcase2Length());
 		pathAndName = FileOperate.getParentPathName(samFile.getFileName()) + FileOperate.getFileNameSep(samFile.getFileName())[0];
 	}
 	

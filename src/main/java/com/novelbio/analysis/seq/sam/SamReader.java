@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMFileReader;
@@ -150,6 +151,19 @@ public class SamReader {
 	 */
 	public HashMap<String, Long> getMapChrIDlowCase2Length() {
 		return mapChrIDlowCase2Length;
+	}
+	/**
+	 * 获得该bam文件中染色体的长度信息，注意key为实际key
+	 * @return
+	 */
+	public Map<String, Long> getMapChrID2Length() {
+		Map<String, Long> mapChrID2Length = new HashMap<>();
+		for (String chrID : mapChrIDlowCase2Length.keySet()) {
+			long length = mapChrIDlowCase2Length.get(chrID);
+			String chrIDNorm = mapChrIDlowCase2ChrID.get(chrID);
+			mapChrID2Length.put(chrIDNorm, length);
+		}
+		return mapChrID2Length;
 	}
 	/**
 	 * 注意大小写区分
