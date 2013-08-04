@@ -1187,7 +1187,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * 划分好的ExonCluster里面每组的lsExon都是考虑
 	 * 了方向然后按照方向顺序装进去的 
 	 */
-	public static ArrayList<ExonCluster> getExonCluster(Boolean cis5To3,  ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfos) {
+	public static ArrayList<ExonCluster> getExonCluster(Boolean cis5To3,  List<GffGeneIsoInfo> lsGffGeneIsoInfos) {
 		String chrID = lsGffGeneIsoInfos.get(0).getRefID();
 		ArrayList<ExonCluster> lsResult = new ArrayList<ExonCluster>();
 		ArrayList<int[]> lsExonBound = ListAbs.getCombSep(cis5To3, lsGffGeneIsoInfos, false);

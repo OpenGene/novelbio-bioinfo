@@ -3,6 +3,12 @@ package com.novelbio.analysis.seq.mapping;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+/**
+ * 
+ * @author zomg0jie
+ *
+ */
+//TODO 到底FR和RF是哪种建库方式，还有待考证
 public enum StrandSpecific {
 	/** 可能是表示有方向的测序，无方向 */
 	NONE,

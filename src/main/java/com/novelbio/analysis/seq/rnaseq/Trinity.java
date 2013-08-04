@@ -1,5 +1,11 @@
 package com.novelbio.analysis.seq.rnaseq;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.xpath.operations.Bool;
+
+import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.base.cmd.CmdOperate;
 
 
@@ -10,32 +16,27 @@ import com.novelbio.base.cmd.CmdOperate;
  */
 public class Trinity {
 	//TODO宗博设定
-	String trinityPlPath="";
+	String trinityPlPath="trinity.pl";
 	
 	/**
 	 * type of reads: ( cfa, cfq, fa, or fq )
 	 */
-	String seqType;
+	String seqType = "fq";
 	
 	/**
 	 * (Jellyfish Memory) number of GB of system memory to use for   k-mer counting by jellyfish  (eg. 10G) *include the 'G' char
 	 */
-	String JellyfishMemory;
+	int JellyfishMemory = 60;
 	
 	/**
 	 * left reads, one or more (separated by space),Fq文件
 	 */
-	String leftFq;
+	List<String> lsLeftFq;
 	
 	/**
 	 * right reads, one or more (separated by space),Fq文件
 	 */
-	String rightFq;
-	
-	/**
-	 * if unpaired reads,single reads, one or more (note, if single file contains pairs, can use flag: --run_as_paired )
-	 */
-	String singleFq;
+	List<String> lsRightFq;
 	
 	/**
 	  *Strand-specific RNA-Seq read orientation.
@@ -43,23 +44,18 @@ public class Trinity {
 	  *        if single: F or R.   (dUTP method = RF)
 	  *        See web documentation.
 	 */
-	String SS_lib_type;
+	StrandSpecific strandSpecific = StrandSpecific.NONE;
 	
-	/**
-	 * name of directory for output (will be created if it doesn't already exist)
-	 */
+	/** name of directory for output (will be created if it doesn't already exist) */
 	String output;
 	
-	/**
-	 * number of CPUs to use, default: 2
+	/** number of CPUs to use, default: 2
+	 * 我这里设置成20
 	 */
-	String CPU;
+	int threadNum = 20;
 	
-	/**
-	 * minimum assembled contig length to report  (def=200)
-	 */
-	String min_contig_length;
-	
+	/** minimum assembled contig length to report  (def=200) */
+	int min_contig_length = 0;
 	
 	/**
 	 * option, set if you have paired reads and
@@ -71,66 +67,46 @@ public class Trinity {
 	 * necessary due to finding excessive fusion
 	 *  transcripts w/o it.)
 	 */
-	String jaccard_clip;
+	boolean isJaccard_clip = false;
 	
-	/**
-	 * Only prepare files (high I/O usage) and stop before kmer counting.
-	 */
-	String prep;
+	/** Only prepare files (high I/O usage) and stop before kmer counting. */
+	boolean isJustPrep = false;
 	
-	/**
-	 * retain all intermediate input files.
-	 */
-	String no_cleanup;
+	/** 是否删除中间文件 */
+	boolean isCleanup = true;
 	
-	/**
-	 * only retain the Trinity fasta file, rename as ${output_dir}.Trinity.fasta
-	 */
-	String full_cleanup;
+	/** only retain the Trinity fasta file, rename as ${output_dir}.Trinity.fasta */
+	boolean isFull_cleanup = false;
 	
-	/**
-	 * get the Trinity literature citation and those of tools leveraged within.
-	 */
-	String cite;
+	/** min count for K-mers to be assembled by  Inchworm (default: 1) */
+	int min_kmer_cov;
 	
-	/**
-	 * reports Trinity version (trinityrnaseq-r2013-02-25) and exits.
-	 */
-	String version;
-	
-	/**
-	 * min count for K-mers to be assembled by  Inchworm (default: 1)
-	 */
-	String min_kmer_cov;
-	
-	/**
-	 * number of CPUs to use for Inchworm, default is min(6, --CPU option)
-	 */
-	String inchworm_cpu;
+//	/** number of CPUs to use for Inchworm, default is min(6, --CPU option) */
+//	int inchworm_cpu;
 	
 	/**
 	 * maximum number of reads to anchor within   a single graph (default: 200000)
 	 */
-	String max_reads_per_graph;
+	int max_reads_per_graph = 0;
 	
 	/**
 	 *stop Trinity after Inchworm and before running Chrysalis 
 	 */
-	String no_run_chrysalis;
+	boolean no_run_chrysalis = false;
 	
-	/**
-	 * stop Trinity just before running the
-	 *  parallel QuantifyGraph computes, to
-	 *  leverage a compute farm and massively
-	 *  parallel execution..
-	 */
-	String no_run_quantifygraph;
+//	/**
+//	 * stop Trinity just before running the
+//	 *  parallel QuantifyGraph computes, to
+//	 *  leverage a compute farm and massively
+//	 *  parallel execution..
+//	 */
+//	String no_run_quantifygraph;
 	
-	/**
-	 * name of directory for chrysalis output (will be created if it doesn't already exist) 
-	 * default( "chrysalis" )
-	 */
-	String chrysalis_output;
+//	/**
+//	 * name of directory for chrysalis output (will be created if it doesn't already exist) 
+//	 * default( "chrysalis" )
+//	 */
+//	String chrysalis_output;
 	
 	/**
 	 * additional parameters to pass through to butterfly
@@ -140,64 +116,35 @@ public class Trinity {
 	/**
 	 * only most supported (N) paths are extended from node A->B,  mitigating combinatoric path explorations. (default: 10)
 	 */
-	String max_number_of_paths_per_node ;
+	int max_number_of_paths_per_node ;
 	
 	
 	/**
 	 * maximum length expected between fragment pairs (default: 500)
 	 *     (reads outside this distance are treated as single-end)
 	 */
-	String group_pairs_distance;
+	int group_pairs_distance = 500;
 	
 	/**
 	 * minimum overlap of reads with growing transcript 
 	 * 	path (default: PE: 75, SE: 25)
 	 */
-	String path_reinforcement_distance;
+	int path_reinforcement_distance = 0;
 	
-	/**
-	 * do not lock triplet-supported nodes
-	 */
-	String no_triplet_lock;
+	/** do not lock triplet-supported nodes */
+	boolean isNo_triplet_lock = false;
 	
 	/**
 	 * java max heap space setting for butterfly
 	 * 	(default: 20G) => yields command
 	 */
-	String bflyHeapSpaceMax;
+	int bflyHeapSpaceMax = 50;
 	
 	/**
 	 * java initial hap space settings for
 	 *	butterfly (default: 1G) => yields command
 	 */
-	String bflyHeapSpaceInit;
-	
-	/**
-	 * threads for garbage collection
-	 * (default, not specified, so java decides)
-	 */
-	String bflyGCThreads;
-	
-	/**
-	 * CPUs to use (default will be normal   number of CPUs; e.g., 2)
-	 */
-	String bflyCPU;
-	
-	/**
-	 * Calculate CPUs based on 80% of max_memory
-	 * divided by maxbflyHeapSpaceMax
-	 */
-	String bflyCalculateCPU;
-	
-	/**
-	 * stops after the Chrysalis stage. You'll
-	 *      need to run the Butterfly computes
-	 *      separately, such as on a computing grid.
-	 *      Then, concatenate all the Butterfly assemblies by running:
-	 *        'find trinity_out_dir/ -name "*allProbPaths.fasta" 
-	 *         -exec cat {} + > trinity_out_dir/Trinity.fasta'
-	 */
-	String no_run_butterfly;
+	int bflyHeapSpaceInit = 0;
 	
 	/**
 	 * Perl module in /home/zong0jie/下载/trinityrnaseq_r2013-02-25/PerlLibAdaptors/ 
@@ -212,64 +159,105 @@ public class Trinity {
 		}
 		return " --seqType " +  seqType;
 	}
-
+	/** 这几种 cfa, cfq, fa, or fq，默认fq */
 	public void setSeqType(String seqType) {
+		if (seqType == null || seqType.equals("")) {
+			return;
+		}
+		seqType = seqType.trim().toLowerCase();
+		if (!seqType.equals("cfa") && !seqType.equals("cfq") && !seqType.equals("fa") && !seqType.equals("fq")) {
+			return;
+		}
 		this.seqType = seqType;
 	}
 
 	private String getJellyfishMemory() {
-		if (JellyfishMemory == null) {
+		if (JellyfishMemory <= 0) {
 			return "";
 		}
-		return " --JM " +  JellyfishMemory;
+		return " --JM " +  JellyfishMemory + "G";
 	}
-
-	public void setJellyfishMemory(String jellyfishMemory) {
+	/**
+	 * (Jellyfish Memory) number of GB of system memory to use for k-mer counting by jellyfish (eg. 10G)
+	 * 默认60G
+	 */
+	public void setJellyfishMemory(int jellyfishMemory) {
 		JellyfishMemory = jellyfishMemory;
 	}
+	
+	/** 务必先设定Left再设定Right */
+	public void setLeftFq(List<String> lsLeftFq) {
+		this.lsLeftFq = lsLeftFq;
+	}
+	/** 务必先设定Left再设定Right */
+	public void setRightFq(List<String> lsRightFq) {
+		this.lsRightFq = lsRightFq;
+	}
 
-	private String getLeftFq() {
-		if (leftFq == null) {
-			return "";
+	private String getFastQ() {
+		String resultFq = "";
+		if ((lsLeftFq == null || lsLeftFq.size() == 0)//单端
+				|| lsRightFq == null || lsRightFq.size() == 0
+				) {
+			List<String> lsSingle = new ArrayList<>();
+			if (lsLeftFq != null) lsSingle.addAll(lsLeftFq);
+			if (lsRightFq != null) lsSingle.addAll(lsRightFq);
+			String resultSingle = "";
+			for (String string : lsSingle) {
+				resultSingle = resultSingle + CmdOperate.addQuot(string) + " ";
+			}
+			resultFq = " --single " + resultSingle;
+		} else {//双端
+			String resultLeft = "", resultRight = "";
+			for (String leftFq : lsLeftFq) {
+				resultLeft = resultLeft + CmdOperate.addQuot(leftFq) + " ";
+			}
+			for (String rightFq : lsRightFq) {
+				resultRight = resultRight + CmdOperate.addQuot(rightFq) + " ";
+			}
+			resultFq = " --left " + resultLeft + " -- right " + resultRight;
 		}
-		return " --left " + leftFq;
+		return resultFq;
 	}
-
-	public void setLeftFq(String leftFq) {
-		this.leftFq = leftFq;
-	}
-
-	private String getRightFq() {
-		if (rightFq == null) {
-			return "";
+	
+	private boolean isSingleEnd() {
+		if ((lsLeftFq == null || lsLeftFq.size() == 0)//单端
+				|| lsRightFq == null || lsRightFq.size() == 0
+				) {
+			return true;
 		}
-		return " --right " +  rightFq;
+		return false;
 	}
-
-	public void setRightFq(String rightFq) {
-		this.rightFq = rightFq;
-	}
-
-	private String getSingleFq() {
-		if (singleFq == null) {
-			return "";
-		}
-		return " --single " + singleFq;
-	}
-
-	public void setSingleFq(String singleFq) {
-		this.singleFq = singleFq;
-	}
-
+	
 	private String getSS_lib_type() {
-		if (SS_lib_type == null) {
+		if (strandSpecific == StrandSpecific.NONE) {
 			return "";
+		} else {
+			if (isSingleEnd()) {
+				if (strandSpecific == StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND) {
+					return " --SS_lib_type F ";
+				} else {
+					return " --SS_lib_type R ";
+				}
+			} else {
+				if (strandSpecific == StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND) {
+					return " --SS_lib_type FR ";
+				} else {
+					return " --SS_lib_type RF ";
+				}
+			}
 		}
-		return " SS_lib_type " + SS_lib_type;
 	}
 
-	public void setSS_lib_type(String sS_lib_type) {
-		SS_lib_type = sS_lib_type;
+	public void setSS_lib_type(StrandSpecific strandSpecific) {
+		if (strandSpecific != null) {
+			this.strandSpecific = strandSpecific;
+		}
+	}
+	
+	/** 设定输出文件夹 必选 */
+	public void setOutputPath(String output) {
+		this.output = output;
 	}
 
 	private String getOutput() {
@@ -279,287 +267,240 @@ public class Trinity {
 		return " --output " +  output;
 	}
 
-	public void setOutput(String output) {
-		this.output = output;
+	/**线程数，默认20线程 */
+	public void setThreadNum(int threadNum) {
+		if (threadNum > 0) {
+			this.threadNum = threadNum;
+		}
 	}
 
 	private String getCPU() {
-		if (CPU == null) {
+		if (threadNum <= 0) {
 			return "";
 		}
-		return " --CPU " +  CPU;
+		return " --CPU " +  threadNum + " ";
 	}
-
-	public void setCPU(String cPU) {
-		CPU = cPU;
+	
+	/** 最短contig的长度，默认200 */
+	public void setMin_contig_length(int min_contig_length) {
+		this.min_contig_length = min_contig_length;
 	}
 
 	private String getMin_contig_length() {
-		if (min_contig_length == null) {
+		if (min_contig_length <= 0) {
 			return "";
 		}
 		return " --min_contig_length " +  min_contig_length;
 	}
 
-	public void setMin_contig_length(String min_contig_length) {
-		this.min_contig_length = min_contig_length;
-	}
-
 	private String getJaccard_clip() {
-		if (jaccard_clip == null) {
+		if (isJaccard_clip) {
+			return " --jaccard_clip ";
+		} else {
 			return "";
 		}
-		return " --jaccard_clip " + jaccard_clip;
 	}
-
-	public void setJaccard_clip(String jaccard_clip) {
-		this.jaccard_clip = jaccard_clip;
+	
+	/**
+	 * option, set if you have paired reads and you expect high gene density with
+	 *  UTR overlap (use FASTQ input file format for reads). (note: jaccard_clip is an
+	 *  expensive operation, so avoid using it unless necessary due to finding 
+	 *  excessive fusion transcripts w/o it.)
+	 * @param jaccard_clip 默认false，一般不要修改它。真菌的考虑设置为true，问王俊宁确认
+	 */
+	public void setIsJaccard_clip(Boolean jaccard_clip) {
+		this.isJaccard_clip = jaccard_clip;
 	}
 
 	private String getPrep() {
-		if (prep == null) {
-			return "";
+		if (isJustPrep) {
+			return " --prep ";
 		}
-		return " --prep " + prep;
+		return "";
 	}
-
-	public void setPrep(String prep) {
-		this.prep = prep;
+	
+	/** Only prepare files (high I/O usage) and stop before kmer counting.
+	 * 默认false
+	 */
+	public void setIsJustPrep(boolean prep) {
+		this.isJustPrep = prep;
 	}
 
 	private String getNo_cleanup() {
-		if (no_cleanup == null) {
-			return "";
+		if (!isCleanup) {
+			return " --no_cleanup ";
 		}
-		return" --no_cleanup " + no_cleanup;
+		return"";
 	}
-
-	public void setNo_cleanup(String no_cleanup) {
-		this.no_cleanup = no_cleanup;
+	/** 是否删除中间文件 
+	 * @param isCleanUp 默认为true
+	 */
+	public void setIsCleanUp(boolean isCleanUp) {
+		this.isCleanup = isCleanUp;
 	}
 
 	private String getFull_cleanup() {
-		if (full_cleanup == null) {
+		if (!isFull_cleanup) {
 			return "";
+		} else {
+			return " --full_cleanup ";
 		}
-		return " --full_cleanup " + full_cleanup;
 	}
-
-	public void setFull_cleanup(String full_cleanup) {
-		this.full_cleanup = full_cleanup;
-	}
-
-	private String getCite() {
-		if (cite == null) {
-			return "";
-		}
-		return " --cite " + cite;
-	}
-
-	public void setCite(String cite) {
-		this.cite = cite;
-	}
-
-	private String getVersion() {
-		if (version == null) {
-			return "";
-		}
-		return " --version " + version;
-	}
-
-	public void setVersion(String version) {
-		this.version = version;
+	
+	/**
+	 * 是否删光所有临时文件
+	 * @param full_cleanup 默认false
+	 */
+	public void setIsFull_cleanup(boolean full_cleanup) {
+		this.isFull_cleanup = full_cleanup;
 	}
 
 	private String getMin_kmer_cov() {
-		if (min_kmer_cov == null) {
+		if (min_kmer_cov <= 0) {
 			return "";
 		}
 		return " --min_kmer_cov " +  min_kmer_cov;
 	}
-
-	public void setMin_kmer_cov(String min_kmer_cov) {
+	/** min count for K-mers to be assembled by Inchworm (default: 1)<br> 
+	 * 就走默认吧
+	 */
+	public void setMin_kmer_cov(int min_kmer_cov) {
 		this.min_kmer_cov = min_kmer_cov;
 	}
 
 	private String getInchworm_cpu() {
-		if (inchworm_cpu == null) {
-			return "";
-		}
-		return" --inchworm_cpu " + inchworm_cpu;
-	}
-
-	public void setInchworm_cpu(String inchworm_cpu) {
-		this.inchworm_cpu = inchworm_cpu;
+		return" --inchworm_cpu " + threadNum;
 	}
 
 	private String getMax_reads_per_graph() {
-		if (max_reads_per_graph == null) {
+		if (max_reads_per_graph <= 0) {
 			return "";
 		}
 		return" --max_reads_per_graph " + max_reads_per_graph;
 	}
-
-	public void setMax_reads_per_graph(String max_reads_per_graph) {
+	
+	/** 每张图里面有多少条reads，走默认就好 */
+	public void setMax_reads_per_graph(int max_reads_per_graph) {
 		this.max_reads_per_graph = max_reads_per_graph;
 	}
 
 	private String getNo_run_chrysalis() {
-		if (no_run_chrysalis == null) {
+		if (no_run_chrysalis) {
+			return " --no_run_chrysalis ";
+		} else {
 			return "";
 		}
-		return " --no_run_chrysalis " + no_run_chrysalis;
 	}
-
-	public void setNo_run_chrysalis(String no_run_chrysalis) {
+	/** stop Trinity after Inchworm and before running Chrysalis，默认false不用设定 */
+	public void setNo_run_chrysalis(boolean no_run_chrysalis) {
 		this.no_run_chrysalis = no_run_chrysalis;
 	}
 
-	private String getNo_run_quantifygraph() {
-		if (no_run_quantifygraph == null) {
-			return "";
-		}
-		return" --no_run_quantifygraph " + no_run_quantifygraph;
-	}
-
-	public void setNo_run_quantifygraph(String no_run_quantifygraph) {
-		this.no_run_quantifygraph = no_run_quantifygraph;
-	}
-
-	private String getChrysalis_output() {
-		if (chrysalis_output == null) {
-			return "";
-		}
-		return " --chrysalis_output " + chrysalis_output;
-	}
-
-	public void setChrysalis_output(String chrysalis_output) {
-		this.chrysalis_output = chrysalis_output;
-	}
-
 	private String getBfly_opts() {
-		if (bfly_opts == null) {
+		if (bfly_opts == null || bfly_opts.trim().equals("")) {
 			return "";
 		}
 		return " --bfly_opts " + bfly_opts;
 	}
-
+	/** additional parameters to pass through to butterfly
+	 * 一般不设定
+	 *  */
 	public void setBfly_opts(String bfly_opts) {
+		if (bfly_opts == null || bfly_opts.trim().equals("")) {
+			return;
+		}
 		this.bfly_opts = bfly_opts;
 	}
-
+	
 	private String getMax_number_of_paths_per_node() {
-		if (max_number_of_paths_per_node == null) {
+		if (max_number_of_paths_per_node < 0) {
 			return "";
 		}
 		return " --max_number_of_paths_per_node " + max_number_of_paths_per_node;
 	}
-
-	public void setMax_number_of_paths_per_node(String max_number_of_paths_per_node) {
+	/** only most supported (N) paths are extended from node A->B, 
+	 * mitigating combinatoric path explorations. (default: 10)<br>
+	 * 大概是每个节点能有多少分支的意思，这个一般不要设置，走默认就好
+	 *  */
+	public void setMax_number_of_paths_per_node(int max_number_of_paths_per_node) {
 		this.max_number_of_paths_per_node = max_number_of_paths_per_node;
 	}
 
-	private String getGroup_pairs_distance() {
-		if (group_pairs_distance == null) {
+	private String getPairs_distance() {
+		if (isSingleEnd() || group_pairs_distance <= 0) {
 			return "";
 		}
 		return " --group_pairs_distance " + group_pairs_distance;
 	}
-
-	public void setGroup_pairs_distance(String group_pairs_distance) {
+	
+	/** 双端测序的建库长度，默认500 */
+	public void setPairs_distance(int group_pairs_distance) {
 		this.group_pairs_distance = group_pairs_distance;
 	}
 
 	private String getPath_reinforcement_distance() {
-		if (path_reinforcement_distance == null) {
+		if (path_reinforcement_distance <= 0) {
 			return "";
 		}
 		return " --path_reinforcement_distance " + path_reinforcement_distance;
 	}
-
-	public void setPath_reinforcement_distance(String path_reinforcement_distance) {
+	/** minimum overlap of reads with growing transcript path (default: PE: 75, SE: 25)，一般不用设定 */
+	public void setPath_reinforcement_distance(int path_reinforcement_distance) {
 		this.path_reinforcement_distance = path_reinforcement_distance;
 	}
 
 	private String getNo_triplet_lock() {
-		if (no_triplet_lock == null) {
+		if (isNo_triplet_lock) {
+			return " --no_triplet_lock ";
+		} else {
 			return "";
 		}
-		return " --no_triplet_lock " + no_triplet_lock;
 	}
-
-	public void setNo_triplet_lock(String no_triplet_lock) {
-		this.no_triplet_lock = no_triplet_lock;
+	/**
+	 * do not lock triplet-supported nodes 
+	 *  默认false，一般不修改 */
+	public void setNo_triplet_lock(boolean no_triplet_lock) {
+		this.isNo_triplet_lock = no_triplet_lock;
 	}
 
 	private String getBflyHeapSpaceMax() {
-		if (bflyHeapSpaceMax == null) {
+		if (bflyHeapSpaceMax <= 0) {
 			return "";
 		}
-		return " --bflyHeapSpaceMax " + bflyHeapSpaceMax;
+		return " --bflyHeapSpaceMax " + bflyHeapSpaceMax + "G";
 	}
-
-	public void setBflyHeapSpaceMax(String bflyHeapSpaceMax) {
+	/** java max heap space setting for butterfly (default: 50G) => yields command */
+	public void setBflyHeapSpaceMax(int bflyHeapSpaceMax) {
 		this.bflyHeapSpaceMax = bflyHeapSpaceMax;
 	}
 
 	private String getBflyHeapSpaceInit() {
-		if (bflyHeapSpaceInit == null) {
+		if (bflyHeapSpaceInit <= 0) {
 			return "";
 		}
-		return" --bflyHeapSpaceInit " + bflyHeapSpaceInit;
+		return" --bflyHeapSpaceInit " + bflyHeapSpaceInit + "G";
 	}
 
-	public void setBflyHeapSpaceInit(String bflyHeapSpaceInit) {
+	public void setBflyHeapSpaceInit(int bflyHeapSpaceInit) {
 		this.bflyHeapSpaceInit = bflyHeapSpaceInit;
 	}
-
-	private String getBflyGCThreads() {
-		if (bflyGCThreads == null) {
-			return "";
-		}
-		return " --bflyGCThreads " +  bflyGCThreads;
-	}
-
-	public void setBflyGCThreads(String bflyGCThreads) {
-		this.bflyGCThreads = bflyGCThreads;
-	}
-
+	
 	private String getBflyCPU() {
-		if (bflyCPU == null) {
+		if (threadNum <= 0) {
 			return "";
 		}
-		return " --bflyCPU " + bflyCPU;
-	}
-
-	public void setBflyCPU(String bflyCPU) {
-		this.bflyCPU = bflyCPU;
+		return " --bflyCPU " + threadNum;
 	}
 
 	private String getBflyCalculateCPU() {
-		if (bflyCalculateCPU == null) {
+		if (threadNum <= 0) {
 			return "";
 		}
-		return "  --bflyCalculateCPU " + bflyCalculateCPU;
-	}
-
-	public void setBflyCalculateCPU(String bflyCalculateCPU) {
-		this.bflyCalculateCPU = bflyCalculateCPU;
-	}
-
-	private String getNo_run_butterfly() {
-		if (no_run_butterfly == null) {
-			return "";
-		}
-		return " --no_run_butterfly " +  no_run_butterfly;
-	}
-
-	public void setNo_run_butterfly(String no_run_butterfly) {
-		this.no_run_butterfly = no_run_butterfly;
+		return "  --bflyCalculateCPU " + threadNum;
 	}
 
 	private String getGrid_computing_module() {
-		if (grid_computing_module == null) {
+		if (grid_computing_module == null || grid_computing_module.trim().equals("")) {
 			return "";
 		}
 		return " --grid_computing_module " + grid_computing_module;
@@ -569,17 +510,20 @@ public class Trinity {
 		this.grid_computing_module = grid_computing_module;
 	}
 	
-	
 	public void runTrinity() {
-		String cmdScript = trinityPlPath + getSeqType() + getJellyfishMemory() + getLeftFq() + getRightFq() + getSingleFq() + getSS_lib_type() + getOutput() + getCPU() + getMin_contig_length() 
-												+ getJaccard_clip() + getPrep() + getNo_cleanup() + getFull_cleanup() + getCite() + getVersion() + getMin_kmer_cov() + getInchworm_cpu() + getMax_reads_per_graph() 
-												+ getNo_run_chrysalis() + getNo_run_quantifygraph() + getChrysalis_output() + getBfly_opts() + getMax_number_of_paths_per_node() + getGroup_pairs_distance() 
-												+ getPath_reinforcement_distance() + getNo_triplet_lock() + getBflyHeapSpaceInit() + getBflyHeapSpaceMax() + getBflyGCThreads() + getBflyCPU() + getBflyCalculateCPU()
-												+ getNo_run_butterfly() + getGrid_computing_module();
-		
-	CmdOperate cmdOperate = new CmdOperate(cmdScript);
-	cmdOperate.run();
+		String cmdScript = trinityPlPath + getSeqType() + getJellyfishMemory() + getFastQ() + getSS_lib_type() + getOutput()
+					+ getCPU() + getMin_contig_length() + getJaccard_clip() + getPrep() + getNo_cleanup()
+					+ getFull_cleanup() + getMin_kmer_cov() + getInchworm_cpu() + getMax_reads_per_graph() 
+					+ getNo_run_chrysalis() + getBfly_opts() + getMax_number_of_paths_per_node() + getPairs_distance() 
+					+ getPath_reinforcement_distance() + getNo_triplet_lock() + getBflyHeapSpaceInit()
+					+ getBflyHeapSpaceMax() + getBflyCPU() + getBflyCalculateCPU() + getGrid_computing_module();
+			
+		CmdOperate cmdOperate = new CmdOperate(cmdScript);
+		cmdOperate.run();
 	}
 	
-	
+	public String getResultPath() {
+		//TODO 返回拼接好的文件的路径
+		return "";
+	}
 }

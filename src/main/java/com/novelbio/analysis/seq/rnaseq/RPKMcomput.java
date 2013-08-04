@@ -21,6 +21,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.SepSign;
@@ -47,7 +48,7 @@ public class RPKMcomput implements AlignmentRecorder {
 	private static final Logger logger = Logger.getLogger(RPKMcomput.class);
 	private static int numForFragment = 200000;
 	/** 默认不考虑方向 */
-	boolean considerStrand = false;
+	StrandSpecific strandSpecific = StrandSpecific.NONE;
 	boolean isPairend = false;
 	boolean calculateFPKM = true;
 	boolean upQuartile = false;
@@ -127,8 +128,8 @@ public class RPKMcomput implements AlignmentRecorder {
 	}
 	
 	/** 是否考虑reads方向，只有链特异性测序才使用 */
-	public void setConsiderStrand(boolean considerStrand) {
-		this.considerStrand = considerStrand;
+	public void setConsiderStrand(StrandSpecific strandSpecific) {
+		this.strandSpecific = strandSpecific;
 	}
 	/** 双端数据是否计算FPKM，单端设置该参数无效 */
 	public void setCalculateFPKM(boolean calculateFPKM) {
@@ -165,6 +166,10 @@ public class RPKMcomput implements AlignmentRecorder {
 		}
 		
 		boolean cis5to3 = lsSamRecords.get(0).isCis5to3();
+		if (strandSpecific == StrandSpecific.SECOND_READ_TRANSCRIPTION_STRAND) {
+			cis5to3 = !cis5to3;
+		}
+		
 		//TODO 待改进，如何能够更好的区分iso的表达
 		List<List<Align>> lslsAligns = new ArrayList<>();
 		lslsAligns.add(lsSamRecords.get(0).getAlignmentBlocks());
@@ -177,6 +182,10 @@ public class RPKMcomput implements AlignmentRecorder {
 		}
 		for (String geneName : setGeneName) {
 			//同时要考虑mapping至多个位置，以及两个不同的gene Overlap
+			int weight =lsSamRecords.get(0).getMappedReadsWeight();
+			if (lsSamRecords.size() > 1) {
+				weight = Math.min(weight, lsSamRecords.get(1).getMappedReadsWeight());
+			}
 			addInMapGeneName2Cond2ReadsCounts(geneName, lsSamRecords.get(0).getMappedReadsWeight()*setGeneName.size());
 		}
 		currentReadsNum += (double)1/lsSamRecords.get(0).getMappedReadsWeight();
@@ -414,7 +423,7 @@ public class RPKMcomput implements AlignmentRecorder {
 		for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 			if (gffGeneIsoInfo.getCodLoc(gffCodGene.getCoord()) == GffGeneIsoInfo.COD_LOC_EXON) {
 				
-				if (!considerStrand || (considerStrand && readsCis5to3 == gffGeneIsoInfo.isCis5to3())) {
+				if (strandSpecific == StrandSpecific.NONE || (readsCis5to3 == gffGeneIsoInfo.isCis5to3())) {
 					setIso.add(gffGeneIsoInfo);
 				}
 			}
