@@ -19,6 +19,7 @@ import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.GffChrStatistics;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
+import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput;
 import com.novelbio.analysis.seq.sam.AlignSeqReading;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
@@ -42,8 +43,8 @@ public class CtrlSamRPKMLocate implements CtrlSamPPKMint {
 	List<String[]> lsReadFile;
 	boolean isCountExpression = true;
 	boolean isCalculateFPKM = true;
-	/** 目前只对proton的strand优化 */
-	boolean isConsiderProtonStrand = true;
+	
+	StrandSpecific strandSpecific = StrandSpecific.NONE;
 	
 	boolean isLocStatistics = true;
 	
@@ -76,8 +77,7 @@ public class CtrlSamRPKMLocate implements CtrlSamPPKMint {
 		lsReadFile = null;
 		isCountExpression = true;
 		isCalculateFPKM = true;
-		/** 目前只对proton的strand优化 */
-		isConsiderProtonStrand = true;
+		strandSpecific = StrandSpecific.NONE;
 		
 		isLocStatistics = true;
 		
@@ -95,9 +95,9 @@ public class CtrlSamRPKMLocate implements CtrlSamPPKMint {
 	public void setQueryFile(List<String[]> lsReadFile) {
 		this.lsReadFile = lsReadFile;
 	}
-	public void setIsCountRPKM(boolean isCountExpression, boolean isConsiderProtonStrand, boolean isCountFPKM) {
+	public void setIsCountRPKM(boolean isCountExpression, StrandSpecific strandSpecific, boolean isCountFPKM) {
 		this.isCountExpression = isCountExpression;
-		this.isConsiderProtonStrand = isConsiderProtonStrand;
+		this.strandSpecific = strandSpecific;
 		this.isCalculateFPKM = isCountFPKM;
 	}
 	public void setTssRange(int[] tss) {
@@ -126,7 +126,7 @@ public class CtrlSamRPKMLocate implements CtrlSamPPKMint {
 			SamFileStatistics samFileStatistics = null;
 			if (isCountExpression && gffChrAbs.getTaxID() != 0) {
 				rpkMcomput.setCurrentCondition(prefix);
-				rpkMcomput.setConsiderStrand(isConsiderProtonStrand);
+				rpkMcomput.setConsiderStrand(strandSpecific);
 				rpkMcomput.setCalculateFPKM(isCalculateFPKM);
 				lsAlignmentRecorders.add(rpkMcomput);
 			}

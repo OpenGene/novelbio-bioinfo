@@ -13,12 +13,15 @@ import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
+import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.database.service.SpringFactory;
 import com.novelbio.nbcgui.controlseq.CtrlSamPPKMint;
+import javax.swing.JComboBox;
 
 /**
  * 批量注释，各种注释
@@ -52,7 +55,7 @@ public class GuiSamStatistics extends JPanel {
 	private JTextField txtGTF;
 	JLabel lblInfo;
 	private JCheckBox chckCalculateFPKM;
-	private JCheckBox chckProtonStrand;
+	JComboBoxData<StrandSpecific> cmbStrandSpecific;
 	/**
 	 * Create the panel.
 	 */
@@ -106,7 +109,7 @@ public class GuiSamStatistics extends JPanel {
 				btnRun.setEnabled(false);
 				ctrlSamRPKMLocate.clear();
 				ctrlSamRPKMLocate.setQueryFile(scrollPaneData.getLsDataInfo());
-				ctrlSamRPKMLocate.setIsCountRPKM(chkRpkmcount.isSelected(), chckProtonStrand.isSelected(), chckCalculateFPKM.isSelected());
+				ctrlSamRPKMLocate.setIsCountRPKM(chkRpkmcount.isSelected(), cmbStrandSpecific.getSelectedValue(), chckCalculateFPKM.isSelected());
  				int[] tss = new int[]{0,0};
 				int[] tes = new int[]{0,0};
 				try { tss[0] = Integer.parseInt(txtTssUp.getText()); } catch (Exception e2) { }
@@ -137,54 +140,54 @@ public class GuiSamStatistics extends JPanel {
 		
 		txtTssUp = new JTextField();
 		txtTssUp.setText("-1500");
-		txtTssUp.setBounds(764, 282, 52, 18);
+		txtTssUp.setBounds(766, 257, 52, 18);
 		add(txtTssUp);
 		txtTssUp.setColumns(10);
 		
 		txtTssDown = new JTextField();
 		txtTssDown.setText("1500");
-		txtTssDown.setBounds(828, 282, 52, 18);
+		txtTssDown.setBounds(830, 257, 52, 18);
 		add(txtTssDown);
 		txtTssDown.setColumns(10);
 		
 		JLabel lblTss = new JLabel("Tss");
-		lblTss.setBounds(715, 261, 35, 14);
+		lblTss.setBounds(717, 236, 35, 14);
 		add(lblTss);
 		
 		JLabel lblUp = new JLabel("Up");
-		lblUp.setBounds(762, 261, 52, 14);
+		lblUp.setBounds(764, 236, 52, 14);
 		add(lblUp);
 		
 		JLabel lblDown = new JLabel("Down");
-		lblDown.setBounds(828, 261, 52, 14);
+		lblDown.setBounds(830, 236, 52, 14);
 		add(lblDown);
 		
 		txtTesUp = new JTextField();
 		txtTesUp.setText("-200");
-		txtTesUp.setBounds(762, 338, 52, 18);
+		txtTesUp.setBounds(764, 313, 52, 18);
 		add(txtTesUp);
 		txtTesUp.setColumns(10);
 		
 		JLabel lblUp_1 = new JLabel("Up");
-		lblUp_1.setBounds(762, 312, 69, 14);
+		lblUp_1.setBounds(764, 287, 69, 14);
 		add(lblUp_1);
 		
 		txtTesDown = new JTextField();
 		txtTesDown.setText("200");
-		txtTesDown.setBounds(824, 338, 52, 18);
+		txtTesDown.setBounds(826, 313, 52, 18);
 		add(txtTesDown);
 		txtTesDown.setColumns(10);
 		
 		JLabel lblDown_1 = new JLabel("Down");
-		lblDown_1.setBounds(824, 312, 69, 14);
+		lblDown_1.setBounds(826, 287, 69, 14);
 		add(lblDown_1);
 		
 		JLabel lblTes = new JLabel("Tes");
-		lblTes.setBounds(715, 312, 35, 14);
+		lblTes.setBounds(717, 287, 35, 14);
 		add(lblTes);
 		
 		layeredPane = new GuiLayeredPaneSpeciesVersionGff();
-		layeredPane.setBounds(717, 95, 221, 154);
+		layeredPane.setBounds(717, 95, 221, 129);
 		layeredPane.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (layeredPane.getSelectSpecies().getTaxID() == 0) {
@@ -204,14 +207,14 @@ public class GuiSamStatistics extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				if (chkRpkmcount.isSelected()) {
 					chckCalculateFPKM.setEnabled(true);
-					chckProtonStrand.setEnabled(true);
+					cmbStrandSpecific.setEnabled(true);
 				} else {
 					chckCalculateFPKM.setEnabled(false);
-					chckProtonStrand.setEnabled(false);
+					cmbStrandSpecific.setEnabled(false);
 				}
 			}
 		});
-		chkRpkmcount.setBounds(713, 364, 147, 22);
+		chkRpkmcount.setBounds(717, 378, 128, 22);
 		add(chkRpkmcount);
 		
 		txtSaveTo = new JTextField();
@@ -256,12 +259,13 @@ public class GuiSamStatistics extends JPanel {
 		
 		chckCalculateFPKM = new JCheckBox("CalculateFPKM");
 		chckCalculateFPKM.setSelected(true);
-		chckCalculateFPKM.setBounds(713, 390, 147, 23);
+		chckCalculateFPKM.setBounds(849, 378, 147, 23);
 		add(chckCalculateFPKM);
 		
-		chckProtonStrand = new JCheckBox("ProtonStrand");
-		chckProtonStrand.setBounds(898, 364, 135, 23);
-		add(chckProtonStrand);
+		cmbStrandSpecific = new JComboBoxData<>();
+		cmbStrandSpecific.setBounds(715, 343, 223, 27);
+		cmbStrandSpecific.setMapItem(StrandSpecific.getMapStrandLibrary());
+		add(cmbStrandSpecific);
 		
 		initial();
 	}

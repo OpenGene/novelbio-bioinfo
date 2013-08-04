@@ -18,6 +18,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneInf;
 import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.rnaseq.JunctionInfo.JunctionUnit;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamMapReads;
@@ -39,14 +40,14 @@ public class GenerateNewIso {
 	boolean considerStrand = false;
 	GffDetailGene gffDetailGene;
 	
-	public GenerateNewIso(TophatJunction tophatJunctionNew, Collection<SamFile> colSamFiles, boolean considerStrand) {
+	public GenerateNewIso(TophatJunction tophatJunctionNew, Collection<SamFile> colSamFiles, StrandSpecific considerStrand) {
 		this.tophatJunctionNew = tophatJunctionNew;
-		this.considerStrand = considerStrand;
+		this.considerStrand = (considerStrand != StrandSpecific.NONE);
 		lsSamFiles = new ArrayList<>();
 		if (colSamFiles == null) return;
 		
 		for (SamFile samFile : colSamFiles) {
-			SamMapReads samMapReads = new SamMapReads(samFile);
+			SamMapReads samMapReads = new SamMapReads(samFile, considerStrand);
 			samMapReads.setCatchNum(5000000);
 			lsSamFiles.add(samMapReads);
 		}

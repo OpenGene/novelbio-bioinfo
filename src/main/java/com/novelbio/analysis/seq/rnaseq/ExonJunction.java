@@ -51,8 +51,8 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 //		lsAligns.add(new Align("chr1", 65549980, 65715670));
 //		lsAligns.add(new Align("chr9", 128118727, 128494218));
 //		lsAligns.add(new Align("chr17", 41149494, 41155620));
-//		lsAligns.add(new Align("chr8", 4713317, 4782464));
-		
+		lsAligns.add(new Align("chr23", 5566516, 5580272));
+//		chr23:5566516-5580272
 		ExonJunction exonJunction = new ExonJunction();
 		exonJunction.setIsLessMemory(false);
 		GffChrAbs gffHashGene = new GffChrAbs(9031);
@@ -68,7 +68,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	private static Logger logger = Logger.getLogger(ExonJunction.class);
-	private static String stopGeneName = "PRRC2C";
+	private static String stopGeneName = "SRSF10";
 	
 	GffHashGene gffHashGene = null;
 	StrandSpecific strandSpecific = StrandSpecific.NONE;
@@ -333,7 +333,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	private void fillLsAll_Dif_Iso_Exon() {
 		ArrayList<GffDetailGene> lsGffDetailGenes = gffHashGene.getGffDetailAll();
 		int i = 0;
-		GenerateNewIso generateNewIso = new GenerateNewIso(tophatJunction, mapCond2SamFile.values(), strandSpecific != StrandSpecific.NONE);
+		GenerateNewIso generateNewIso = new GenerateNewIso(tophatJunction, mapCond2SamFile.values(), strandSpecific);
 		generateNewIso.setGffHash(gffHashGene);
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 			//TODO 设置断点
@@ -437,7 +437,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	private MapReadsAbs getSamMapReads(AlignSamReading samFileReading) {
-		SamMapReads samMapReads = new SamMapReads(samFileReading.getSamFile());
+		SamMapReads samMapReads = new SamMapReads(samFileReading.getSamFile(), strandSpecific);
 		samMapReads.setisUniqueMapping(true);
 		samMapReads.setNormalType(MapReadsAbs.NORMALIZATION_NO);
 		return samMapReads;

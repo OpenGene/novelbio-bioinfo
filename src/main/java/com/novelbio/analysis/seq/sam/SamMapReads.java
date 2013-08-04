@@ -1,13 +1,12 @@
 package com.novelbio.analysis.seq.sam;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.MathComput;
 
@@ -17,22 +16,26 @@ import com.novelbio.base.dataStructure.MathComput;
  * 不适合提取全基因组的信息
  * 不适合提取RNA-Seq的全基因信息
  * @author zong0jie
- *
  */
+//TODO 还没考虑链特异性
 public class SamMapReads extends MapReadsAbs {
 	int catchNum = 500000;
 	Map<String, Long> mapChrIDlowcase2Length;
 	
 	SamFile samFile;
-	
+	StrandSpecific strandSpecific = StrandSpecific.NONE;
 	/** 缓存 */
-	double[] catchValue;
+	double[] catchValueCis5to3;
+	double[] catchValueTrans;
 	int start = 0, end = 0;
 	/** 输入的samFile必须是排序并且有索引的 */
-	public SamMapReads(SamFile samFile) {
+	public SamMapReads(SamFile samFile, StrandSpecific strandSpecific) {
 		this.samFile = samFile;
 		mapChrIDlowcase2Length = samFile.getMapChrIDLowcase2Length();
-		catchValue = new double[catchNum];
+		catchValueCis5to3 = new double[catchNum];
+		if (strandSpecific != StrandSpecific.NONE) {
+			catchValueTrans = new double[catchNum];
+		}
 	}
 	
 	/** catchNum不能大于5000000 */
@@ -40,7 +43,10 @@ public class SamMapReads extends MapReadsAbs {
 		if (catchNum > 5000000) return;
 		
 		this.catchNum = catchNum;
-		catchValue = new double[catchNum];
+		catchValueCis5to3 = new double[catchNum];
+		if (strandSpecific != StrandSpecific.NONE) {
+			catchValueTrans = new double[catchNum];
+		}
 	}
 	
 	/**
@@ -107,13 +113,13 @@ public class SamMapReads extends MapReadsAbs {
 		}
 		double[] result = new double[startEnd[1] - startEnd[0] + 1];
 		if (startEnd[1] > end || startEnd[0] < start) {
-			catchValue = new double[catchNum];
+			catchValueCis5to3 = new double[catchNum];
 			if (startEnd[1] - startEnd[0] < catchNum - 100) {
 				int media = (startEnd[1] + startEnd[0])/2;
 				int range = catchNum/2;
 				int[] startEndFinal = MapReadsAbs.correctStartEnd(mapChrIDlowcase2Length, chrID,  media - range, media + range);
 				start = startEndFinal[0]; end = startEndFinal[1];
-				catchValue = getRangeValueFromSam(chrID, start, end);
+				catchValueCis5to3 = getRangeValueFromSam(chrID, start, end);
 			} else {
 				return getRangeValueFromSam(chrID, startEnd[0], startEnd[1]);
 			}
@@ -122,7 +128,7 @@ public class SamMapReads extends MapReadsAbs {
 		int endReal = startEnd[1] - start;
 		int m = 0;
 		for (int i = startReal; i <= endReal; i++) {
-			result[m] = catchValue[i];
+			result[m] = catchValueCis5to3[i];
 			m++;
 		}
 		return result;

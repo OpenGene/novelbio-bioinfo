@@ -6,6 +6,7 @@ import java.util.Map;
 import com.novelbio.analysis.seq.FormatSeq;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
+import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.sam.SamFileStatistics;
 import com.novelbio.base.multithread.RunGetInfo;
 import com.novelbio.database.model.species.Species;
@@ -24,7 +25,7 @@ public interface CtrlSamPPKMint extends RunGetInfo<GuiAnnoInfo>, Runnable {
 	public void setGffHash(GffHashGeneAbs gffHashGene);
 	
 	public void setQueryFile(List<String[]> lsReadFile);
-	public void setIsCountRPKM(boolean isCountExpression, boolean isConsiderProtonStrand, boolean isCountFPKM);
+	public void setIsCountRPKM(boolean isCountExpression, StrandSpecific strandSpecific, boolean isCountFPKM);
 	public void setTssRange(int[] tss);
 	public void setTesRange(int[] tes);
 	public Map<String, SamFileStatistics> getMapPrefix2Statistics();

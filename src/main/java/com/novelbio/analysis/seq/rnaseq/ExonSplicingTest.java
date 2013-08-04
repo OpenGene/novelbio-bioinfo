@@ -156,7 +156,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			return pvalue;
 		}
 		//TODO 可以设置断点
-		if (exonCluster.getParentGene().getName().contains("CD3D")) {
+		if (exonCluster.getParentGene().getName().contains("SRSF10")) {
 			logger.debug("stop");
 		}
 		
@@ -534,7 +534,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		ArrayList<Double> lsPvalue = new ArrayList<Double>();
 		for (ExonSplicingTest exonSplicingTest : colExonSplicingTests) {
 			//TODO
-			if (exonSplicingTest.getExonCluster().getParentGene().getName().contains("RPL27")) {
+			if (exonSplicingTest.getExonCluster().getParentGene().getName().contains("SRSF10")) {
 				logger.error("stop");
 			}
 			if (exonSplicingTest.getAndCalculatePvalue() > 0.5) {
