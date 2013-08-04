@@ -156,7 +156,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			return pvalue;
 		}
 		//TODO 可以设置断点
-		if (exonCluster.getParentGene().getName().contains("RPL27")) {
+		if (exonCluster.getParentGene().getName().contains("CD3D")) {
 			logger.debug("stop");
 		}
 		

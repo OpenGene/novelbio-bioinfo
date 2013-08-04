@@ -35,7 +35,7 @@ public class SamMapReads extends MapReadsAbs {
 		catchValue = new double[catchNum];
 	}
 	
-	/** catchNum不能大于50000000 */
+	/** catchNum不能大于5000000 */
 	public void setCatchNum(int catchNum) {
 		if (catchNum > 5000000) return;
 		

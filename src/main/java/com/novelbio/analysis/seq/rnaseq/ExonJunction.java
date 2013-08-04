@@ -51,23 +51,24 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 //		lsAligns.add(new Align("chr1", 65549980, 65715670));
 //		lsAligns.add(new Align("chr9", 128118727, 128494218));
 //		lsAligns.add(new Align("chr17", 41149494, 41155620));
-		lsAligns.add(new Align("chr9", 9545347, 9601693));
+//		lsAligns.add(new Align("chr8", 4713317, 4782464));
+		
 		ExonJunction exonJunction = new ExonJunction();
 		exonJunction.setIsLessMemory(false);
 		GffChrAbs gffHashGene = new GffChrAbs(9031);
 		exonJunction.setGffHashGene(gffHashGene.getGffHashGene());
 		exonJunction.setLsReadRegion(lsAligns);
 		exonJunction.setOneGeneOneSpliceEvent(false);
-		exonJunction.addBamSorted("WT", "/home/zong0jie/Test/paper/chicken/DT40WT.bam");
-		exonJunction.addBamSorted("KO", "/home/zong0jie/Test/paper/chicken/DT40KO.bam");
+		exonJunction.addBamSorted("WT", "/home/zong0jie/Test/rnaseq/paper/chicken/DT40WT.bam");
+		exonJunction.addBamSorted("KO", "/home/zong0jie/Test/rnaseq/paper/chicken/DT40KO.bam");
 		exonJunction.setCompareGroups("KO", "WT");
 
-		exonJunction.setResultFile("/home/zong0jie/Test/paper/chicken/testNewIso");
+		exonJunction.setResultFile("/home/zong0jie/Test/rnaseq/paper/chicken/testNewIso2");
 		exonJunction.run();
 	}
 	
 	private static Logger logger = Logger.getLogger(ExonJunction.class);
-	private static String stopGeneName = "TRIP12";
+	private static String stopGeneName = "PRRC2C";
 	
 	GffHashGene gffHashGene = null;
 	StrandSpecific strandSpecific = StrandSpecific.NONE;
@@ -219,7 +220,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		setCondition.add(condition);
 		SamFile samFile = new SamFile(sortedBamFile); 
 		AlignSamReading samFileReading = new AlignSamReading(samFile);
-		
 		mapCond2SamReader.put(condition, samFileReading);
 		mapCond2SamFile.put(condition, samFile);
 	}
@@ -334,6 +334,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		ArrayList<GffDetailGene> lsGffDetailGenes = gffHashGene.getGffDetailAll();
 		int i = 0;
 		GenerateNewIso generateNewIso = new GenerateNewIso(tophatJunction, mapCond2SamFile.values(), strandSpecific != StrandSpecific.NONE);
+		generateNewIso.setGffHash(gffHashGene);
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 			//TODO 设置断点
 			if (gffDetailGene.getName().contains(stopGeneName)) {
