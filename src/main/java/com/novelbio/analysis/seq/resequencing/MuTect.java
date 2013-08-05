@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.novelbio.analysis.seq.fasta.SeqFasta;
+import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.database.model.species.Species;
 
@@ -13,19 +16,20 @@ public class MuTect {
 	public static void main(String[] args) {
 		MuTect muTect = new MuTect();
 		muTect.setJarFile("/media/winD/NBCplatform/BioInfomaticsToolsPlatform/bioinfo/GATK/muTect.jar");
-//		SamFile samFile9A = new SamFile("/home/zong0jie/Test/paper/9A_accepted_hits.bam");
+		SamFile samFile9A = new SamFile("/home/zong0jie/Test/rnaseq/paper/9A_accepted_hits_rgroup.bam");
 //		samFile9A = samFile9A.addGroup("9A", "9A", "9A", null);
-		Species species = new Species(10090);
-		species.getChromSeq();
-		SamFile samFileCKP = new SamFile("/home/zong0jie/Test/paper/CKP_accepted_hits.bam");
-		samFileCKP = samFileCKP.addGroup("CKP", "CKP", "CKP", null);
-		
-//		muTect.setInputNormalFile(samFile9A.getFileName());
-//		muTect.setInputTumorFile(samFileCKP.getFileName());
-//		muTect.setOutFile("/home/zong0jie/Test/paper/difSnp.txt");
-//		Species species = new Species(10090);
-//		muTect.setReferenceSequence(species.getRefseqFile());
-//		muTect.run();
+		Species species = new Species(9931);
+		SamFile samFileCKP = new SamFile("/home/zong0jie/Test/rnaseq/paper/CKP_accepted_hits_rgroup.bam");
+		muTect.setInputNormalFile(samFile9A.getFileName());
+		muTect.setInputTumorFile(samFileCKP.getFileName());
+		muTect.setOutFile("/home/zong0jie/Test/rnaseq/paper/difSnp.txt");
+		muTect.setReferenceSequence(species.getChromSeq());
+		muTect.run();
+//		SamFile samFile = new SamFile("/home/zong0jie/Test/rnaseq/paper/CKP_accepted_hits.bam");
+//		SamFile samFileWrite = new SamFile("/home/zong0jie/Test/rnaseq/paper/CKP_accepted_hits.bam", samFile.getHeader());
+//		for (SamRecord samRecord : samFile.readLines()) {
+//			System.out.println(samRecord.toString());
+//		}
 	}
 	//TODO 软件jar包路径和名字，宗博指定
 	String jarPathAndName = "muTect.jar";

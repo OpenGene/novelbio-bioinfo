@@ -27,7 +27,7 @@ public class SamMapReads extends MapReadsAbs {
 	/** 缓存 */
 	double[] catchValueCis5to3;
 	double[] catchValueTrans;
-	int start = 0, end = 0;
+	String chrIDCach= ""; int start = 0, end = 0;
 	/** 输入的samFile必须是排序并且有索引的 */
 	public SamMapReads(SamFile samFile, StrandSpecific strandSpecific) {
 		this.samFile = samFile;
@@ -112,12 +112,13 @@ public class SamMapReads extends MapReadsAbs {
 			return null;
 		}
 		double[] result = new double[startEnd[1] - startEnd[0] + 1];
-		if (startEnd[1] > end || startEnd[0] < start) {
+		if (!chrID.toLowerCase().equals(chrIDCach) || startEnd[1] > end || startEnd[0] < start) {
 			catchValueCis5to3 = new double[catchNum];
 			if (startEnd[1] - startEnd[0] < catchNum - 100) {
 				int media = (startEnd[1] + startEnd[0])/2;
 				int range = catchNum/2;
 				int[] startEndFinal = MapReadsAbs.correctStartEnd(mapChrIDlowcase2Length, chrID,  media - range, media + range);
+				chrIDCach = chrID.toLowerCase();
 				start = startEndFinal[0]; end = startEndFinal[1];
 				catchValueCis5to3 = getRangeValueFromSam(chrID, start, end);
 			} else {

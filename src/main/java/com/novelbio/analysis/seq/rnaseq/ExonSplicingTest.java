@@ -156,7 +156,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			return pvalue;
 		}
 		//TODO 可以设置断点
-		if (exonCluster.getParentGene().getName().contains("SRSF10")) {
+		if (exonCluster.getParentGene().getName().contains("MT-CO3")) {
 			logger.debug("stop");
 		}
 		
@@ -306,7 +306,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	private double getPvalueCombine(double pvalueExp, double pvalueCounts) {
 		double pvalue = 1.0;
 		if (pvalueExp < 0) {
-			pvalue = pvalueCounts;
+			pvalue = 1.0;
 			return pvalue;
 		}
 		if (pvalueCounts == 1) {

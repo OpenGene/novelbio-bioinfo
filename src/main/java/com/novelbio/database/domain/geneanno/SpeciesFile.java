@@ -29,6 +29,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
+import com.novelbio.analysis.seq.sam.SamIndexRefsequence;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -140,6 +141,9 @@ public class SpeciesFile {
 		
 		if (!FileOperate.isFileExistAndBigThanSize(chromSeq, 10)) {
 			String path = getChromFaPath();
+			if (!FileOperate.isFileDirectory(path)) {
+				return "";
+			}
 			FileOperate.createFolders(FileOperate.getParentPathName(chromSeq));
 			NCBIchromFaChangeFormat ncbIchromFaChangeFormat = new NCBIchromFaChangeFormat();
 			ncbIchromFaChangeFormat.setChromFaPath(path, getChromFaRegx());
@@ -147,6 +151,12 @@ public class SpeciesFile {
 			//将自动生成的chromSeq导入数据库
 			update();
 		}
+		if (FileOperate.isFileExistAndBigThanSize(chromSeq, 0)) {
+			SamIndexRefsequence samIndexRefsequence = new SamIndexRefsequence();
+			samIndexRefsequence.setRefsequence(chromSeq);
+			samIndexRefsequence.indexSequence();
+		}
+		
 		return chromSeq;
 	}
 

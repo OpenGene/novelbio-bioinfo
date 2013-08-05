@@ -1,7 +1,7 @@
 package com.novelbio.analysis.seq.fastq;
 
 import java.util.Map;
-
+//TODO 序列文件有问题该如何处理
 /**
  * 需要设定mapFastQFilter
  * @author zong0jie

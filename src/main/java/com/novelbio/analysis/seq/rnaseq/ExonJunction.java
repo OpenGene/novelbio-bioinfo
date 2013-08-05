@@ -16,6 +16,7 @@ import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict.SplicingAlternativeType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
@@ -51,24 +52,23 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 //		lsAligns.add(new Align("chr1", 65549980, 65715670));
 //		lsAligns.add(new Align("chr9", 128118727, 128494218));
 //		lsAligns.add(new Align("chr17", 41149494, 41155620));
-		lsAligns.add(new Align("chr23", 5566516, 5580272));
-//		chr23:5566516-5580272
+//		lsAligns.add(new Align("mt", 0, 5000));
+//		chr23:5566516-5580272	mt:2956-2956
 		ExonJunction exonJunction = new ExonJunction();
 		exonJunction.setIsLessMemory(false);
-		GffChrAbs gffHashGene = new GffChrAbs(9031);
-		exonJunction.setGffHashGene(gffHashGene.getGffHashGene());
+		exonJunction.setGffHashGene(new GffHashGene(GffType.GTF, "/home/zong0jie/Test/rnaseq/paper/chicken/raw_ensembl_genes/chicken_ensemble_KO-WT-merged.gtf"));
 		exonJunction.setLsReadRegion(lsAligns);
 		exonJunction.setOneGeneOneSpliceEvent(false);
-		exonJunction.addBamSorted("WT", "/home/zong0jie/Test/rnaseq/paper/chicken/DT40WT.bam");
-		exonJunction.addBamSorted("KO", "/home/zong0jie/Test/rnaseq/paper/chicken/DT40KO.bam");
+		exonJunction.addBamSorted("WT", "/home/zong0jie/Test/rnaseq/paper/chicken/DT40WT0h.bam");
+		exonJunction.addBamSorted("KO", "/home/zong0jie/Test/rnaseq/paper/chicken/DT40KO0h.bam");
 		exonJunction.setCompareGroups("KO", "WT");
 
-		exonJunction.setResultFile("/home/zong0jie/Test/rnaseq/paper/chicken/testNewIso2");
+		exonJunction.setResultFile("/home/zong0jie/Test/rnaseq/paper/chicken/ensemble_Merged_Iso");
 		exonJunction.run();
 	}
 	
 	private static Logger logger = Logger.getLogger(ExonJunction.class);
-	private static String stopGeneName = "SRSF10";
+	private static String stopGeneName = "MT-CO3";
 	
 	GffHashGene gffHashGene = null;
 	StrandSpecific strandSpecific = StrandSpecific.NONE;
@@ -356,11 +356,14 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
 				guiAnnoInfo.setNum(i);
 				guiAnnoInfo.setDouble(i);
-				guiAnnoInfo.setInfo("Get " + i + " Junction Event");
-				setRunInfo(guiAnnoInfo);
+				guiAnnoInfo.setInfo("Get " + i + " Junction Gene");
 				logger.error(i);
+				setRunInfo(guiAnnoInfo);
 			}
 			i++;
+
+		
+			
 		}
 		logger.debug("finish");
 	}

@@ -3,8 +3,6 @@ package com.novelbio.analysis.seq.rnaseq;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.xpath.operations.Bool;
-
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.base.cmd.CmdOperate;
 

@@ -34,6 +34,7 @@ public class GenerateNewIso {
 	int newIsoReadsNum = 5;//至少有5条reads支持的junction才会用于重建转录本
 	int blankNum = 40;//至少超过50bp的没有reads堆叠的区域，才被认为是intron
 	int longExon = 200;//超过100bp就认为是比较长的exon，就需要做判定了
+	int catchNum = 50000;
 	TophatJunction tophatJunctionNew;
 	List<SamMapReads> lsSamFiles = new ArrayList<>();
 	GffHashGene gffHashGene;
@@ -48,7 +49,7 @@ public class GenerateNewIso {
 		
 		for (SamFile samFile : colSamFiles) {
 			SamMapReads samMapReads = new SamMapReads(samFile, considerStrand);
-			samMapReads.setCatchNum(5000000);
+			samMapReads.setCatchNum(catchNum);
 			lsSamFiles.add(samMapReads);
 		}
 	}

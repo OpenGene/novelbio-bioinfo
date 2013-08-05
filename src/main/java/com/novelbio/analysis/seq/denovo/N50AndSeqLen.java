@@ -72,6 +72,7 @@ public class N50AndSeqLen {
 				summaryInfo(tmpName, tmpSeq);
 				tmpName = string.replace(">", "").trim();
 				tmpSeq = "";
+				continue;
 			}
 			tmpSeq = tmpSeq + string.trim().replace(" ", "").replace("\t", "");
 		}
@@ -84,6 +85,9 @@ public class N50AndSeqLen {
 		
 		if (seqDetail.length() < 400) {
 			System.out.println(seqName + " " +seqDetail.length());
+		}
+		while (mapContigName2Length.containsKey(seqName)) {
+			seqName = seqName + "<";
 		}
 		mapContigName2Length.put(seqName, seqDetail.length());
 	}

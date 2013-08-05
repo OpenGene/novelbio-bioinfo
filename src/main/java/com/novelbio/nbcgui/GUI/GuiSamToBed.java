@@ -45,6 +45,7 @@ public class GuiSamToBed extends JPanel {
 	JCheckBox chckRealign;
 	JCheckBox chckRemoveduplicate;
 	JCheckBox chckbxMergebyprefix;
+	JCheckBox chckbxAddGroupInfo;
 	
 	JButton btnSamtobed;
 	JButton btnAddvcf;
@@ -218,20 +219,20 @@ public class GuiSamToBed extends JPanel {
 		add(chckbxSortBed);
 		
 		chckbxSortBam = new JCheckBox("sortBam");
-		chckbxSortBam.setBounds(12, 198, 91, 22);
+		chckbxSortBam.setBounds(295, 198, 91, 22);
 		add(chckbxSortBam);
 		
 		chckbxIndex = new JCheckBox("index");
-		chckbxIndex.setBounds(107, 198, 69, 22);
+		chckbxIndex.setBounds(393, 198, 69, 22);
 		add(chckbxIndex);
 		
 		
 		chckRealign = new JCheckBox("Realign");
-		chckRealign.setBounds(173, 224, 91, 22);
+		chckRealign.setBounds(161, 224, 91, 22);
 		add(chckRealign);
 		
 		chckRemoveduplicate = new JCheckBox("RemoveDuplicate");
-		chckRemoveduplicate.setBounds(12, 222, 157, 22);
+		chckRemoveduplicate.setBounds(12, 224, 147, 22);
 		add(chckRemoveduplicate);
 		
 		
@@ -249,7 +250,7 @@ public class GuiSamToBed extends JPanel {
 				}
 			}
 		});
-		chckRecalibrate.setBounds(268, 224, 231, 22);
+		chckRecalibrate.setBounds(295, 224, 231, 22);
 		add(chckRecalibrate);
 		
 		btnSamtobed = new JButton("SamtoBed");
@@ -352,7 +353,7 @@ public class GuiSamToBed extends JPanel {
 		add(radRefRNA);
 		
 		chckbxGeneratepileupfile = new JCheckBox("GeneratePileUpFile");
-		chckbxGeneratepileupfile.setBounds(13, 248, 187, 22);
+		chckbxGeneratepileupfile.setBounds(12, 250, 187, 22);
 		add(chckbxGeneratepileupfile);
 
 		sclVcfFile = new JScrollPaneData();
@@ -384,8 +385,12 @@ public class GuiSamToBed extends JPanel {
 		
 		chckbxMergebyprefix = new JCheckBox("MergeByPrefix");
 		chckbxMergebyprefix.setSelected(true);
-		chckbxMergebyprefix.setBounds(180, 198, 140, 23);
+		chckbxMergebyprefix.setBounds(12, 198, 140, 23);
 		add(chckbxMergebyprefix);
+		
+		chckbxAddGroupInfo = new JCheckBox("add Group Info");
+		chckbxAddGroupInfo.setBounds(161, 198, 128, 26);
+		add(chckbxAddGroupInfo);
 		initial();
 	}
 	
@@ -519,6 +524,9 @@ public class GuiSamToBed extends JPanel {
 	
 	
 	private void copeSamBamFile(String prefix, SamFile samFileMerge) {
+		if (chckbxAddGroupInfo.isSelected()) {
+			samFileMerge = samFileMerge.addGroup(prefix, prefix, prefix, null);
+		}
 		if (chckbxSortBam.isSelected()) {
 			samFileMerge = samFileMerge.sort();
 		}
