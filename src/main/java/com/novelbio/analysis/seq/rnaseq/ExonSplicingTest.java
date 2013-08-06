@@ -156,7 +156,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			return pvalue;
 		}
 		//TODO 可以设置断点
-		if (exonCluster.getParentGene().getName().contains("MT-CO3")) {
+		if (exonCluster.getParentGene().getName().contains("IMMT")) {
 			logger.debug("stop");
 		}
 		

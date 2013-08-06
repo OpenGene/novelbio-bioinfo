@@ -127,9 +127,10 @@ public class PredictCassette extends SpliceTypePredict {
 	 */
 	private ArrayListMultimap<String, GffGeneIsoInfo> getIsoHaveBeforeAndAfterExon(int initialNum, Collection<GffGeneIsoInfo> lsIso_ExonExist) {
 		ArrayListMultimap<String, GffGeneIsoInfo> setBeforeAfter = ArrayListMultimap.create();
-		ExonCluster clusterBefore = exonCluster.exonClusterBefore;
-		ExonCluster clusterAfter = exonCluster.exonClusterAfter;
+
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsIso_ExonExist) {
+			ExonCluster clusterBefore = exonCluster.exonClusterBefore;
+			ExonCluster clusterAfter = exonCluster.exonClusterAfter;
 			int[] beforeAfter = new int[]{initialNum, initialNum};//初始化为负数
 			int numBefore = 0, numAfter = 0;//直接上一位的exon标记为0，再向上一位标记为-1
 			while (clusterBefore != null) {

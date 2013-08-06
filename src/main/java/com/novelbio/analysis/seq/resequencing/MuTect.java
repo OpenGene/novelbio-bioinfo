@@ -16,10 +16,10 @@ public class MuTect {
 	public static void main(String[] args) {
 		MuTect muTect = new MuTect();
 		muTect.setJarFile("/media/winD/NBCplatform/BioInfomaticsToolsPlatform/bioinfo/GATK/muTect.jar");
-		SamFile samFile9A = new SamFile("/home/zong0jie/Test/rnaseq/paper/9A_accepted_hits_rgroup.bam");
+		SamFile samFile9A = new SamFile("/media/winD/NBC/Project/test/CK_accepted_hits_dedup_rgroup.bam");
 //		samFile9A = samFile9A.addGroup("9A", "9A", "9A", null);
-		Species species = new Species(9931);
-		SamFile samFileCKP = new SamFile("/home/zong0jie/Test/rnaseq/paper/CKP_accepted_hits_rgroup.bam");
+		Species species = new Species(3947);
+		SamFile samFileCKP = new SamFile("/media/winD/NBC/Project/test/320_accepted_hits_dedup_rgroup.bam");
 		muTect.setInputNormalFile(samFile9A.getFileName());
 		muTect.setInputTumorFile(samFileCKP.getFileName());
 		muTect.setOutFile("/home/zong0jie/Test/rnaseq/paper/difSnp.txt");

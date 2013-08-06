@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
@@ -71,12 +72,12 @@ public class GenerateNewIso {
 			}
 		}
 		//再反着来
-		for (int i = lsJunUnit.size() - 1; i >= 0; i--) {
-			JunctionUnit junctionUnit = lsJunUnit.get(i);
-			if (junctionUnit.getReadsNumAll() >= newIsoReadsNum && !isJunInGene(junctionUnit)) {
-				reconstructIso(junctionUnit);
-			}
-		}
+//		for (int i = lsJunUnit.size() - 1; i >= 0; i--) {
+//			JunctionUnit junctionUnit = lsJunUnit.get(i);
+//			if (junctionUnit.getReadsNumAll() >= newIsoReadsNum && !isJunInGene(junctionUnit)) {
+//				reconstructIso(junctionUnit);
+//			}
+//		}
 		//最后可以构建出比较长的iso
 	}
 	
@@ -98,6 +99,11 @@ public class GenerateNewIso {
 						) {
 					continue;
 				}
+				if(isJunctionCoverTwoGene(gffDetailGene, junctionUnit)) {
+					continue;
+				}
+				
+			
 				lsJunUnit.add(junctionUnit);
 			}
 		}
@@ -112,6 +118,50 @@ public class GenerateNewIso {
 		return lsJunUnit;
 	}
 	
+	/**
+	 * 该junction是否cover了超过两个基因，这种情况下，该junction就要舍弃不能用了
+	 * @param junctionUnit
+	 * @return
+	 */
+	//TODO 没有考虑链特异性
+	private boolean isJunctionCoverTwoGene(GffDetailGene gffDetailGene, JunctionUnit junctionUnit) {
+		int isoExtend = 600;
+		GffCodGeneDU gffCodGeneDU = gffHashGene.searchLocation(junctionUnit.getRefID(), junctionUnit.getStartAbs(), junctionUnit.getEndAbs());
+		if (gffCodGeneDU.getLsGffDetailMid().size() > 0) return true;
+		//TODO
+		GffCodGene gffCodGeneStart = gffCodGeneDU.getGffCod1();
+		GffCodGene gffCodGeneEnd = gffCodGeneDU.getGffCod2();
+		if (!gffCodGeneStart.isInsideLoc() || !gffCodGeneEnd.isInsideLoc()) {
+			return false;
+		}
+		
+		Set<GffDetailGene> setGeneUp = gffCodGeneStart.getSetGeneCodIn();
+		Set<GffDetailGene> setGeneDown = gffCodGeneEnd.getSetGeneCodIn();
+		boolean isInUp = false, isInDown = false;
+		for (GffDetailGene gffDetailGeneUpcod : setGeneUp) {
+			if (gffDetailGeneUpcod.equals(gffDetailGene)) {
+				isInUp = true;
+				break;
+			}
+		}
+		for (GffDetailGene gffDetailGeneDowncod : setGeneDown) {
+			if (gffDetailGeneDowncod.equals(gffDetailGene)) {
+				isInDown = true;
+				break;
+			}
+		}
+		if (isInUp && isInDown) {
+			return false;	
+		}
+		if (!isInUp && gffDetailGene.getStartAbs() - junctionUnit.getStartAbs() > isoExtend) {
+			return true;
+		}
+		if (!isInDown && junctionUnit.getEndAbs() - gffDetailGene.getEndAbs() > isoExtend) {
+			return true;
+		}
+		return false;
+	}
+		
 	//TODO 
 	private boolean isJunInGene(JunctionUnit junctionUnit) {
 		boolean findJun = false;

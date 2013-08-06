@@ -51,24 +51,25 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 //		lsAligns.add(new Align("chr2", 191834371, 191854578));
 //		lsAligns.add(new Align("chr1", 65549980, 65715670));
 //		lsAligns.add(new Align("chr9", 128118727, 128494218));
-//		lsAligns.add(new Align("chr17", 41149494, 41155620));
+//		lsAligns.add(new Align("4", 85040428, 85067534));
 //		lsAligns.add(new Align("mt", 0, 5000));
 //		chr23:5566516-5580272	mt:2956-2956
+		System.out.println("start");
 		ExonJunction exonJunction = new ExonJunction();
 		exonJunction.setIsLessMemory(false);
-		exonJunction.setGffHashGene(new GffHashGene(GffType.GTF, "/home/zong0jie/Test/rnaseq/paper/chicken/raw_ensembl_genes/chicken_ensemble_KO-WT-merged.gtf"));
+		exonJunction.setGffHashGene(new GffHashGene(GffType.GTF, "/home/zong0jie/Test/rnaseq/paper/chicken/raw_ensembl_genes/chicken_ensemble.gtf"));
 		exonJunction.setLsReadRegion(lsAligns);
 		exonJunction.setOneGeneOneSpliceEvent(false);
 		exonJunction.addBamSorted("WT", "/home/zong0jie/Test/rnaseq/paper/chicken/DT40WT0h.bam");
 		exonJunction.addBamSorted("KO", "/home/zong0jie/Test/rnaseq/paper/chicken/DT40KO0h.bam");
 		exonJunction.setCompareGroups("KO", "WT");
 
-		exonJunction.setResultFile("/home/zong0jie/Test/rnaseq/paper/chicken/ensemble_Merged_Iso");
+		exonJunction.setResultFile("/home/zong0jie/Test/rnaseq/paper/chicken/ensemble_Iso2");
 		exonJunction.run();
 	}
 	
 	private static Logger logger = Logger.getLogger(ExonJunction.class);
-	private static String stopGeneName = "MT-CO3";
+	private static String stopGeneName = "IMMT";
 	
 	GffHashGene gffHashGene = null;
 	StrandSpecific strandSpecific = StrandSpecific.NONE;
@@ -393,8 +394,8 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		}
 		
 		ArrayList<ExonSplicingTest> lsExonSplicingTestResult = new ArrayList<ExonSplicingTest>();
-		Collection<ExonCluster> mapLoc2ExonCluster = gffDetailGene.getDifExonMapLoc2Cluster();
-
+		List<ExonCluster> mapLoc2ExonCluster = new ArrayList<>(gffDetailGene.getDifExonMapLoc2Cluster());
+		
 		if (!mapLoc2ExonCluster.isEmpty()) {
 			for (ExonCluster exonCluster : mapLoc2ExonCluster) {
 				if (exonCluster.getLsIsoExon().size() == 1 || exonCluster.isAtEdge() || exonCluster.isNotSameTss_But_SameEnd()) {

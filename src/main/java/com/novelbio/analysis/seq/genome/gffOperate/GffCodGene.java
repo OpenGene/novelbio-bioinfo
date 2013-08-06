@@ -1,5 +1,8 @@
 package com.novelbio.analysis.seq.genome.gffOperate;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 
 /**
@@ -48,6 +51,20 @@ public class GffCodGene extends ListCodAbs<GffDetailGene> {
 		}
 	}
 	
+	/** 返回该cod所在的gene，从前到后依次装入 */
+	public Set<GffDetailGene> getSetGeneCodIn() {
+		Set<GffDetailGene> setGene = new HashSet<>();
+		if (isInsideUp()) {
+			setGene.add(getGffDetailUp());
+		}
+		if (isInsideLoc()) {
+			setGene.add(getGffDetailThis());
+		}
+		if (isInsideDown()) {
+			setGene.add(getGffDetailDown());
+		}
+		return setGene;
+	}
 	
 	/**
 	 * 获得cod在exon里面的iso信息，没有则返回null，首先查找最长转录本的信息
