@@ -103,10 +103,10 @@ public class BlastNBC {
 	}
 
 	/**
-	 * 常规模式为0
-	 * 精简模式为8
+	 * 常规模式为{@link #ResultType_Normal}
+	 * 精简模式为{@link #ResultType_Simple}
 	 * 具体看文档
-	 * @param resultType 默认为8
+	 * @param resultType 默认为{@link #ResultType_Simple}
 	 */
 	public void setResultType(int resultType) {
 		this.resultType = resultType;

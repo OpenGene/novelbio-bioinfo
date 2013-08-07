@@ -196,9 +196,8 @@ public class RPKMcomput implements AlignmentRecorder {
 	
 	/** 挑选出配对的samRecord，如果不满足配对条件，则返回单条SamRecord */
 	private List<SamRecord> isSelectedReads(AlignRecord alignRecord) {
-		if (alignRecord instanceof SamRecord != true) {
-			return new ArrayList<SamRecord>();
-		}
+		if (alignRecord instanceof SamRecord != true) return new ArrayList<SamRecord>();
+		
 		List<SamRecord> lsResult = new ArrayList<SamRecord>();
 		SamRecord samRecord = (SamRecord)alignRecord;
 		//是否计算RPKM
@@ -223,7 +222,7 @@ public class RPKMcomput implements AlignmentRecorder {
 			parNum++;
 			return lsResult;
 		}
-		
+		//意思在map中没有找到他的mate，而靠前的reads一般都要进入map的
 		if (samRecord.getStartAbs() > samRecord.getMateAlignmentStart()) {
 			lsResult.add(samRecord);
 			return lsResult;
@@ -277,7 +276,7 @@ public class RPKMcomput implements AlignmentRecorder {
 	 */
 	private void removeSetOverDue() {
 		if (isPairend && calculateFPKM && mapKey2SamRecord.size() > 100) {
-			logger.error(mapKey2SamRecord.size() + "\t" +parNum);
+			logger.debug(mapKey2SamRecord.size() + "\t" +parNum);
 		}
 //		if (isPairend && setSamReads.size() <= numForFragment) return;
 //		List<String> lsReadsInfo = new ArrayList<String>();
@@ -333,6 +332,12 @@ public class RPKMcomput implements AlignmentRecorder {
 		if (lsAligns.size() == 1) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : setIso) {
 				Align align = lsAligns.get(0);
+				if (align.getStartAbs() > gffGeneIsoInfo.getEndAbs() || align.getEndAbs() < gffGeneIsoInfo.getStartAbs()) continue;
+				if (align.getStartAbs() <= gffGeneIsoInfo.getStartAbs() && align.getEndAbs() >= gffGeneIsoInfo.getEndAbs()) {
+					setGeneName.add(gffGeneIsoInfo.getParentGeneName());
+					continue;
+				}
+				
 				int start = gffGeneIsoInfo.getNumCodInEle(align.getStartAbs()+3);
 				int end = gffGeneIsoInfo.getNumCodInEle(align.getEndAbs() - 3);
 				if (start == end || Math.abs(Math.abs(start) - Math.abs(end)) <= 2) {
@@ -402,7 +407,6 @@ public class RPKMcomput implements AlignmentRecorder {
 			}
 		}
 		return setGeneName;
-		
 	}
 	
 	/**

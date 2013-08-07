@@ -1,11 +1,16 @@
 package com.novelbio.analysis.seq.resequencing;
 
-import javax.tools.FileObject;
-
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class SomaticIndel {
+	public static void main(String[] args) {
+		SomaticIndel somaticIndel = new SomaticIndel();
+		somaticIndel.setBamFileNormal("");
+		somaticIndel.setBamFileTumor("");
+		somaticIndel.setOutIndelsVcfFile("");
+		somaticIndel.run();
+	}
 	/** 虚拟机内存 */
 	String jvmMemory = "4000m";
 	String jarPathAndName = "GenomeAnalysisTK.jar";
@@ -34,18 +39,18 @@ public class SomaticIndel {
 		this.jvmMemory = jvmMemory;
 	}
 
-	/** ef的fasta文件 */
+	/** ref的fasta文件 */
 	public void setRefFastaFile(String refFastaFile) {
 		this.refFastaFile = refFastaFile;
 	}
 	
 	/** 正常bam文件 */
-	public void setNormalBamFile(String normalBamFile) {
+	public void setBamFileNormal(String normalBamFile) {
 		this.normalBamFile = normalBamFile;
 	}
 	
 	/** 疾病bam文件 */
-	public void setTumorBamFile(String tumorBamFile) {
+	public void setBamFileTumor(String tumorBamFile) {
 		this.tumorBamFile = tumorBamFile;
 	}
 	
@@ -60,7 +65,7 @@ public class SomaticIndel {
 	}
 	
 	private String getType() {
-		return  "-T " + type;
+		return  " -T " + type;
 	}
 	private String getJvmMemory() {
 		return jvmMemory;
@@ -74,48 +79,45 @@ public class SomaticIndel {
 		if (tumorBamFile == null) {
 			return "";
 		}
-		return "-I:tumor " + tumorBamFile;
+		return " -I:tumor " + tumorBamFile;
 	}
 	private String getNormalBamFile() {
 		if (normalBamFile == null) {
 			return "";
 		}
-		return  "-I:normal " + normalBamFile;
+		return  " -I:normal " + normalBamFile;
 	}
 
 	private String getOutIndelVerboseFile() {
-		if (outIindelsVerboseFile == null) {
-			return "";
+		if (outIindelsVerboseFile != null && !outIindelsVerboseFile.trim().equals("")) {
+			return " -verbose " + outIindelsVerboseFile;
 		}
-		return "-verbose " + outIindelsVerboseFile;
+		return "";
 	}
+	
 	private String getOutIndelsVcfFile() {
 		if (outIndelsVcfFile == null) {
 			return "";
 		}
-		return "-o " + outIndelsVcfFile;
+		return " -o " + outIndelsVcfFile;
 	}
 	private String getRefFastaFile() {
 		if (refFastaFile == null || refFastaFile.equals("")) {
 			return "";
 		}
-		return "--refseq " + refFastaFile;
+		return " --refseq " + refFastaFile;
 	}
 	
 	private String getOutBedAndMetrics() {
 		String outBed = FileOperate.changeFileSuffix(outIndelsVcfFile, "", "bed");
 		String outMetrics = FileOperate.changeFileSuffix(outIndelsVcfFile, "", "matrix");
-		return "--bedOutput " + outBed + " " + " -metrics " + outMetrics + " ";
+		return " --bedOutput " + outBed + " " + " -metrics " + outMetrics + " ";
 	}
-
 	
-/**
- * 主运行方法
- */
 	public void run() {
-		String cmdScript = "java -Xmx" + getJvmMemory() + " -jar " + getJarPathAndName() + " "  +  getType() + " " +
-												getNormalBamFile() + " " + getTumorBamFile() + " " +
-												getRefFastaFile() + " " + getOutIndelVerboseFile() + " " + getOutIndelsVcfFile() + " " + getOutBedAndMetrics();
+		String cmdScript = "java -Xmx" + getJvmMemory() + " -jar " + getJarPathAndName() +  getType() 
+				+ getNormalBamFile() + getTumorBamFile() + getRefFastaFile() + getOutIndelVerboseFile()
+				+ getOutIndelsVcfFile() + getOutBedAndMetrics();
 		CmdOperate cmdOperate = new CmdOperate(cmdScript);
 		cmdOperate.run();
 	}
