@@ -135,7 +135,7 @@ public class PathNBCDetail {
 	}
 	/** 一个大的能容纳一些中间过程的文件夹 */
 	public static String getTmpPath() {
-		return mapID2Path.get("TMPpath");
+		return FileOperate.addSep(mapID2Path.get("TMPpath"));
 	}
 	/** rfam的对照表文件<br>
 	 * 这个样子的<br>

@@ -1,20 +1,28 @@
 package com.novelbio.analysis.seq.rnaseq.lnc;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.model.modgeneid.GeneType;
 
 public class LncInfo {
 	int taxID = 0;
+	GffHashGene gffHashGene;
+	/** 找出上下游该区域内的旁临基因 */
+	int upDownExtend = 0;
 	/**基因名称*/
 	String lncName;
+	Align align;
 	GffGeneIsoInfo gffGeneIsoInfoLnc;
-
 	/**重叠区域的mRna*/
 	String mRna;
 	/**前面最长转录本的基因*/
@@ -27,13 +35,22 @@ public class LncInfo {
 	
 	boolean cis5to3;
 	
-	public LncInfo(int taxID) {
+	public LncInfo(int taxID, GffHashGene gffHashGene, int upDownExtend) {
 		this.taxID = taxID;
+		this.gffHashGene = gffHashGene;
 	}
-	/** 本lnc的方向 */
-	public void setCis5to3(boolean cis5to3) {
-		this.cis5to3 = cis5to3;
+
+	/**基因名称*/
+	public void setLncName(String lncName) {
+		if (lncName != null && !lncName.trim().equals("")) {
+			this.lncName = lncName;
+		}
 	}
+	
+	public void setLncCoord(Align align) {
+		this.align = align;
+	}
+	
 	public boolean isCis5to3() {
 		return cis5to3;
 	}
@@ -41,33 +58,119 @@ public class LncInfo {
 	public String getLncName() {
 		return lncName;
 	}
-	/**基因名称*/
-	public void setLncName(String lncName) {
-		this.lncName = lncName;
-	}
-	
-	public void setLncIso(GffGeneIsoInfo gffGeneIsoInfoLnc) {
-		this.gffGeneIsoInfoLnc = gffGeneIsoInfoLnc;
-	}
-
 	/**重叠区域的mRna*/
 	public String getmRna() {
 		return mRna;
 	}
-	/**重叠区域的mRna*/
-	public void setmRna(String mRna) {
-		this.mRna = mRna;
-	}
+	
 	/**前面最长转录本的基因*/
 	public String getUpGene() {
 		return upGene;
 	}
 	
-	public void setUpDownGeneInfo(int upDownExtend, GffChrAbs gffChrAbs) {
-		setUpGffDetailGene(upDownExtend, gffChrAbs);
-		setDownGffDetailGene(upDownExtend, gffChrAbs);
+	public void searchLnc() {
+		if (lncName != null ) {
+			searchByGeneName();
+		}
+		if (align != null && gffGeneIsoInfoLnc == null) {
+			searchByAlign();
+		}
 	}
 	
+	private void searchByAlign() {
+		GffCodGeneDU gffCodGeneDU = gffHashGene.searchLocation(align.getRefID(), align.getStartAbs(), align.getEndAbs());
+		if (gffCodGeneDU == null) return;
+		
+		Set<GffDetailGene> setGffDetailGenes = gffCodGeneDU.getCoveredGffGene();
+		if (setGffDetailGenes.size() == 0) return;
+		
+		Set<GffGeneIsoInfo> setLncIso = new HashSet<>();
+		for (GffDetailGene gffDetailGene : setGffDetailGenes) {
+			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+				if (!gffGeneIsoInfo.ismRNA() && gffGeneIsoInfo.getGeneType() != GeneType.miRNA) {
+					setLncIso.add(gffGeneIsoInfo);
+				}
+			}
+		}
+		if (setLncIso.isEmpty()) return;
+		
+		gffGeneIsoInfoLnc = null;
+		if (setLncIso.size() == 1) {
+			gffGeneIsoInfoLnc = setLncIso.iterator().next();
+		} else {
+			double overlap = 0;
+			for (GffGeneIsoInfo gffGeneIsoInfo : setLncIso) {
+				double[] region1 = new double[]{align.getStartAbs(), align.getEndAbs()};
+				double[] region2 = new double[]{gffGeneIsoInfo.getStartAbs(), gffGeneIsoInfo.getEndAbs()};
+				if (ArrayOperate.cmpArray(region1, region2)[1] > overlap) {
+					gffGeneIsoInfoLnc = gffGeneIsoInfo;
+				}
+			}
+		}
+		searchIso(gffGeneIsoInfoLnc);
+	}
+	
+	private void searchByGeneName() {
+		GffGeneIsoInfo gffiso = gffHashGene.searchISO(lncName);
+		if (gffiso == null) return;
+		
+		GffDetailGene detailGene = gffiso.getParentGffDetailGene();
+		if (gffiso.getGeneType() == GeneType.mRNA || gffiso.getGeneType() == GeneType.miRNA) {
+			gffiso = getOppLnc(detailGene);
+			if (gffiso == null) return;
+		}
+		gffGeneIsoInfoLnc = gffiso;
+		cis5to3 = gffGeneIsoInfoLnc.isCis5to3();
+		searchIso(gffGeneIsoInfoLnc);
+	}
+	
+	private void searchIso(GffGeneIsoInfo gffLncIso) {
+		if (gffLncIso == null) return;
+		
+		if (lncName == null || lncName.trim().equals("")) {
+			lncName = gffLncIso.getParentGeneName();
+		}
+		GffDetailGene gffDetailGene = gffLncIso.getParentGffDetailGene();
+		for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+			if (gffGeneIsoInfo.getGeneType() == GeneType.mRNA && gffGeneIsoInfo.isCis5to3() != isCis5to3()) {
+				mRna = gffGeneIsoInfo.getName();
+				break;
+			}
+		}
+		setUpDownGeneInfo();
+	}
+	
+	/**
+	 * 获得与mRNA反向的lnc，如果没有mRNA，则随便返回一个lnc
+	 * 如果没有与mRNA反向的lnc，则返回null
+	 * @param gffDetailGene
+	 * @return
+	 */
+	private GffGeneIsoInfo getOppLnc(GffDetailGene gffDetailGene) {
+		Boolean mRNAstrand = null;
+		for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+			if (gffGeneIsoInfo.getGeneType() == GeneType.mRNA) {
+				mRNAstrand = gffGeneIsoInfo.isCis5to3();
+				break;
+			}
+		}
+		if (mRNAstrand == null) {
+			return gffDetailGene.getLsCodSplit().get(0);
+		}
+		else {
+			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+				if (gffGeneIsoInfo.getGeneType() != GeneType.mRNA && gffGeneIsoInfo.getGeneType() != GeneType.miRNA && gffGeneIsoInfo.isCis5to3() != mRNAstrand) {
+					return gffGeneIsoInfo;
+				}
+			}
+		}
+		return null;
+	}
+	
+	private void setUpDownGeneInfo() {
+		setUpGffDetailGene(upDownExtend);
+		setDownGffDetailGene(upDownExtend);
+	}
 	
 	/**
 	 * 获取 前一个转录本信息
@@ -75,12 +178,12 @@ public class LncInfo {
 	 * @param detailGene
 	 * @return
 	 */
-	private void setUpGffDetailGene(int upDownExtend, GffChrAbs gffChrAbs) {
+	private void setUpGffDetailGene(int upDownExtend) {
 		int num = gffGeneIsoInfoLnc.getParentGffDetailGene().getItemNum();
 		if (num != 0) {
 			GffDetailGene detailGeneUp;
 			try {
-				detailGeneUp = gffChrAbs.getGffHashGene().getMapChrID2LsGff().get(gffGeneIsoInfoLnc.getRefID()).get(num - 1);
+				detailGeneUp = gffHashGene.getMapChrID2LsGff().get(gffGeneIsoInfoLnc.getRefID()).get(num - 1);
 			} catch (Exception e) {
 				return;
 			}
@@ -101,11 +204,11 @@ public class LncInfo {
 	 * @param detailGene
 	 * @return
 	 */
-	private void setDownGffDetailGene(int upDownExtend, GffChrAbs gffChrAbs) {
+	private void setDownGffDetailGene(int upDownExtend) {
 		int num = gffGeneIsoInfoLnc.getParentGffDetailGene().getItemNum();
 		GffDetailGene detailGeneDown = null;
 		try {
-			detailGeneDown = gffChrAbs.getGffHashGene().getMapChrID2LsGff().get(gffGeneIsoInfoLnc.getRefID()).get(num + 1);
+			detailGeneDown = gffHashGene.getMapChrID2LsGff().get(gffGeneIsoInfoLnc.getRefID()).get(num + 1);
 		} catch (Exception e) {
 			return;
 		}
@@ -117,6 +220,7 @@ public class LncInfo {
 			return;
 		}
 	}
+	
 	/**
 	 * 方便写入EXCEL
 	 */

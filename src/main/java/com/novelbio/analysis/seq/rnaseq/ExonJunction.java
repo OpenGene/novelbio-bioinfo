@@ -125,7 +125,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	 * 读取区域，调试用。设定之后就只会读取这个区域的reads
 	 */
 	List<Align> lsReadReagion;
-	
+	GenerateNewIso generateNewIso;
 	public ExonJunction() {
 
 		/////
@@ -137,6 +137,11 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	 */
 	public void setPvalue(double pvalue) {
 		this.pvalue = pvalue;
+	}
+	/** 是否重建转录本，调用一下就重建了 */
+	public void generateNewIso() {
+		generateNewIso = new GenerateNewIso(tophatJunction, mapCond2SamFile.values(), strandSpecific);
+		generateNewIso.setGffHash(gffHashGene);
 	}
 	/**
 	 * 是否采用节省内存模式
@@ -334,8 +339,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	private void fillLsAll_Dif_Iso_Exon() {
 		ArrayList<GffDetailGene> lsGffDetailGenes = gffHashGene.getGffDetailAll();
 		int i = 0;
-		GenerateNewIso generateNewIso = new GenerateNewIso(tophatJunction, mapCond2SamFile.values(), strandSpecific);
-		generateNewIso.setGffHash(gffHashGene);
+
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 			//TODO 设置断点
 			if (gffDetailGene.getName().contains(stopGeneName)) {

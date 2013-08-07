@@ -10,9 +10,13 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.broadinstitute.sting.gatk.CommandLineGATK;
 
+import com.hg.doc.fa;
+import com.novelbio.analysis.seq.denovo.N50AndSeqLen;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
+import com.novelbio.analysis.seq.fasta.format.NCBIchromFaChangeFormat;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
@@ -22,9 +26,11 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
+import com.novelbio.analysis.seq.resequencing.MuTect;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput;
 import com.novelbio.analysis.seq.rnaseq.TophatJunction;
 import com.novelbio.analysis.seq.rnaseq.TophatJunctionOld;
+import com.novelbio.analysis.seq.rnaseq.TrinityModify;
 import com.novelbio.analysis.seq.sam.AlignSamReading;
 import com.novelbio.analysis.seq.sam.AlignSeqReading;
 import com.novelbio.analysis.seq.sam.SamFile;
@@ -33,6 +39,11 @@ import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.dataStructure.MathComput;
+import com.novelbio.base.dataStructure.listOperate.HistBin;
+import com.novelbio.database.domain.geneanno.AGene2Go;
+import com.novelbio.database.domain.geneanno.GOtype;
+import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modgeneid.GeneType;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.nbcgui.controlseq.CtrlRNAmap;
@@ -42,40 +53,7 @@ public class mytest {
 	private static Logger logger = Logger.getLogger(mytest.class);
 	
 	public static void main(String[] args) throws IOException, URISyntaxException {
-		AlignSamReading alignSamReading = new AlignSamReading(new SamFile("/media/winE/NBC/Project/Project_FY/paper/KOod.bam"));
-		List<Align> lsAlignments = new ArrayList<>();
-		lsAlignments.add(new Align("chrX", 159840368, 159840811));
-		alignSamReading.setLsAlignments(lsAlignments);
-		
-		TophatJunctionOld tophatJunctionOld = new TophatJunctionOld();
-		tophatJunctionOld.setCondition("test1");
-		alignSamReading.addAlignmentRecorder(tophatJunctionOld);
-		
-		TophatJunction tophatJunction = new TophatJunction();
-		tophatJunction.setCondition("test1");
-		alignSamReading.addAlignmentRecorder(tophatJunction);
-
-		alignSamReading.run();
-		tophatJunction.conclusion();
-		
-		for (String string : tophatJunctionOld.getMapCond_To_JuncPair2ReadsNum().get("test1").keySet()) {
-			String[] ss = string.split(SepSign.SEP_INFO);
-			String chrID = ss[0].split(SepSign.SEP_INFO_SAMEDB)[0];
-			int locStartSite = Integer.parseInt(ss[0].split(SepSign.SEP_INFO_SAMEDB)[1]);
-			int locEndSite =  Integer.parseInt(ss[1].split(SepSign.SEP_INFO_SAMEDB)[1]);
-			int numOld = tophatJunctionOld.getJunctionSite("test1", chrID, locStartSite, locEndSite);
-			int numOld2 = tophatJunction.getJunctionSite("test1", chrID, locStartSite);
-			int numOld3 = tophatJunction.getJunctionSite("test1", chrID, locEndSite);
-			
-			int numNew = tophatJunction.getJunctionSite("test1", chrID, locStartSite, locEndSite);
-			int numNew2 = tophatJunction.getJunctionSite("test1", chrID, locStartSite);
-			int numNew3 = tophatJunction.getJunctionSite("test1", chrID, locEndSite);
-			System.out.println();
-			numOld = tophatJunctionOld.getJunctionSite("test1", chrID, locStartSite, locEndSite);
-			numNew = tophatJunction.getJunctionSite("test1", chrID, locStartSite, locEndSite);
-		}
-		
-		
+		CommandLineGATK
 	}
 	
 	private static int compare(String[] s1, String[] s2) {

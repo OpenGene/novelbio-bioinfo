@@ -90,6 +90,7 @@ public class CommandLineGATK extends CommandLineExecutable {
      * Required main method implementation.
      */
     public static void main(String[] argv) {
+    	System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");
         try {
             CommandLineGATK instance = new CommandLineGATK();
             start(instance, argv);

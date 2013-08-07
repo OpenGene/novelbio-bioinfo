@@ -9,8 +9,12 @@ import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.dataOperate.DateUtil;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.model.species.Species;
+import com.novelbio.generalConf.PathNBCDetail;
 
 public class MuTect {
 	public static void main(String[] args) {
@@ -18,7 +22,7 @@ public class MuTect {
 		muTect.setJarFile("/media/winD/NBCplatform/BioInfomaticsToolsPlatform/bioinfo/GATK/muTect.jar");
 		SamFile samFile9A = new SamFile("/media/winD/NBC/Project/test/CK_accepted_hits_dedup_rgroup.bam");
 //		samFile9A = samFile9A.addGroup("9A", "9A", "9A", null);
-		Species species = new Species(3947);
+		Species species = new Species(39947);
 		SamFile samFileCKP = new SamFile("/media/winD/NBC/Project/test/320_accepted_hits_dedup_rgroup.bam");
 		muTect.setInputNormalFile(samFile9A.getFileName());
 		muTect.setInputTumorFile(samFileCKP.getFileName());
@@ -228,17 +232,15 @@ public class MuTect {
 	
 	/** 根据chrID产生的intervals */
 	private String getIntervalsFromChr() {
-		String intervals = "";
+		String outFile = PathNBCDetail.getTmpPath() + "snp_intervals" + DateUtil.getDateAndRandom();
+		TxtReadandWrite txtWrite = new TxtReadandWrite(outFile);
 		SamFile samFile = new SamFile(inputNormalFile);
 		Map<String, Long> mapChrID2Long = samFile.getMapChrID2Length();
-		//chr1:1500-2500; chr2:2500-3500
-		List<String> lsChrID = new ArrayList<>(mapChrID2Long.keySet());
-		intervals = lsChrID.get(0) + ":" + 100 + "-" + (mapChrID2Long.get(lsChrID.get(0)) - 10);
-		for (int i = 1; i < lsChrID.size(); i++) {
-			String chrID = lsChrID.get(i);
-			intervals = intervals + "; " + chrID + ":" + 100 + "-" + (mapChrID2Long.get(chrID)-10);
+		for (String chrID : mapChrID2Long.keySet()) {
+			txtWrite.writefileln(chrID + ":" + 10 + "-" + (mapChrID2Long.get(chrID) - 10));
 		}
-		return intervals;
+		txtWrite.close();
+		return outFile;
 	}
 	
 	/**
