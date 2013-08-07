@@ -21,7 +21,7 @@ import com.novelbio.analysis.annotation.functiontest.StatisticTestResult;
 import com.novelbio.aoplog.AopPath.PathBuilder;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.base.plot.GraphicCope;
+import com.novelbio.base.plot.ImageUtils;
 import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.nbcgui.controltest.CtrlGO;
 import com.novelbio.nbcgui.controltest.CtrlTestGOInt;
@@ -143,7 +143,7 @@ public class AopGO {
 						lsGOimage.add(PathBuilder.drawLog2PvaluePicture(functionTest.getTestResult(), ctrlGO.getResultBaseTitle()));
 						excelSavePath = FileOperate.getParentPathName(ctrlGO.getSaveExcelPrefix());
 					}
-					BufferedImage bfImageCombine = GraphicCope.combineBfImage(true, 30, lsGOimage);
+					BufferedImage bfImageCombine = ImageUtils.combineBfImage(true, 30, lsGOimage);
 					String picNameLog2P = excelSavePath +  "GO-Analysis-Log2P_" + prefix + "_" + ctrlTestGOInt.getSavePrefix() + ".png";
 					ImageIO.write(bfImageCombine, "png", new File(picNameLog2P));
 					if (ctrlTestGOInt.isCluster()) {

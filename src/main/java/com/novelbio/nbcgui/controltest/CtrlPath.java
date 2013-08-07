@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import com.novelbio.analysis.annotation.functiontest.FunctionTest;
 import com.novelbio.analysis.annotation.functiontest.TopGO.GoAlgorithm;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.plot.ImageUtils;
 import com.novelbio.nbcgui.FoldeCreate;
 @Service
 @Scope("prototype")
@@ -77,15 +78,11 @@ public class CtrlPath extends CtrlGOPath implements CtrlTestPathInt {
 			String prix = entry.getKey();
 			BufferedImage bfImageLog2Pic = entry.getValue().getImagePvalue();;
 			if (bfImageLog2Pic == null) continue;
-			try {
-				ImageIO.write(bfImageLog2Pic, "png", new File(getSavePicPvalueName(prix)));
-			} catch (IOException e) {e.printStackTrace();}
+			ImageUtils.saveBufferedImage(bfImageLog2Pic, getSavePicPvalueName(prix));
 			
 			BufferedImage bfImageEnrichment = entry.getValue().getImageEnrichment();
 			if (bfImageEnrichment == null) continue;
-			try {
-				ImageIO.write(bfImageEnrichment, "png", new File(getSavePicEnrichmentName(prix)));
-			} catch (IOException e) {e.printStackTrace();}
+			ImageUtils.saveBufferedImage(bfImageEnrichment, getSavePicEnrichmentName(prix));
 		}
 	}
 	

@@ -28,7 +28,7 @@ import com.novelbio.analysis.seq.fastq.FQrecordCopeInt;
 import com.novelbio.analysis.seq.fastq.FastQC;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.base.plot.GraphicCope;
+import com.novelbio.base.plot.ImageUtils;
 import com.novelbio.nbcgui.controlseq.CtrlFastQfilter;
 
 /**
@@ -148,7 +148,7 @@ public class AopFastQFilter {
 								if (fastQCs.length > 1) {
 									qualityScoreImages[i] = ((PerBaseQualityScores)fQrecordCopeInt).getBufferedImage(smallPicSize, smallPicSize);
 									if ((i+1) == fastQCs.length) {
-										mapPath2Image.put(savePath + "QualityScore_" + reportKey +".png",GraphicCope.combineBfImage(true, sepPic, qualityScoreImages));
+										mapPath2Image.put(savePath + "QualityScore_" + reportKey +".png",ImageUtils.combineBfImage(true, sepPic, qualityScoreImages));
 									}
 								}else {
 									mapPath2Image.put(savePath + "QualityScore_" + reportKey +".png",((PerBaseQualityScores)fQrecordCopeInt).getBufferedImage(smallPicSize, smallPicSize));
@@ -176,7 +176,7 @@ public class AopFastQFilter {
 								if (fastQCs.length > 1) {
 									sequenceGCContentImages[i] = ((PerSequenceGCContent)fQrecordCopeInt).getBufferedImage(smallPicSize, smallPicSize);
 									if ((i+1) == fastQCs.length) {
-										mapPath2Image.put(savePath + "SequenceGCContent_" + reportKey +".png",GraphicCope.combineBfImage(true, sepPic, sequenceGCContentImages));
+										mapPath2Image.put(savePath + "SequenceGCContent_" + reportKey +".png",ImageUtils.combineBfImage(true, sepPic, sequenceGCContentImages));
 									}
 								}else {
 									mapPath2Image.put(savePath + "SequenceGCContent_" + reportKey +".png",((PerSequenceGCContent)fQrecordCopeInt).getBufferedImage(smallPicSize, smallPicSize));

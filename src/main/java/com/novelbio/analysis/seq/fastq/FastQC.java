@@ -24,7 +24,7 @@ import uk.ac.babraham.FastQC.Modules.SequenceLengthDistribution;
 import com.google.common.collect.HashMultimap;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.base.plot.GraphicCope;
+import com.novelbio.base.plot.ImageUtils;
 import com.novelbio.generalConf.Param;
 
 public class FastQC {
@@ -90,43 +90,43 @@ public class FastQC {
 			return;
 		}
 		BufferedImage bufferedImage = null;
-		File file = null;
+		String outName = "";
 		try {
 			bufferedImage = perBaseQualityScores.getBufferedImage(1000, 1000);
-			file = new File(outPathPrefix + "QualityScore.png");
-			ImageIO.write(bufferedImage, "png", file); } catch (IOException e) { e.printStackTrace(); }
+			outName = outPathPrefix + "QualityScore.png";
+			ImageUtils.saveBufferedImage(bufferedImage, outName); } catch (Exception e) { e.printStackTrace(); }
 		try {
 			bufferedImage = perSequenceQualityScores.getBufferedImage(1000, 1000);
-			file = new File(outPathPrefix + "SequenceQuality.png");
-			ImageIO.write(bufferedImage, "png", file); } catch (IOException e) { e.printStackTrace(); }
+			outName = outPathPrefix + "SequenceQuality.png";
+			ImageUtils.saveBufferedImage(bufferedImage, outName); } catch (Exception e) { e.printStackTrace(); }
 		try {
 			bufferedImage = perBaseSequenceContent.getBufferedImage(1000, 1000);
-			file = new File(outPathPrefix + "BaseSequence.png");
-			ImageIO.write(bufferedImage, "png", file); } catch (IOException e) { e.printStackTrace(); }
+			outName = outPathPrefix + "BaseSequence.png";
+			ImageUtils.saveBufferedImage(bufferedImage, outName);} catch (Exception e) { e.printStackTrace(); }
 		try {
 			bufferedImage = perBaseGCContent.getBufferedImage(1000, 1000);
-			file = new File(outPathPrefix + "BaseGCContent.png");
-			ImageIO.write(bufferedImage, "png", file); } catch (IOException e) { e.printStackTrace(); }
+			outName = outPathPrefix + "BaseGCContent.png";
+			ImageUtils.saveBufferedImage(bufferedImage, outName); } catch (Exception e) { e.printStackTrace(); }
 		try {
 			bufferedImage = perSequenceGCContent.getBufferedImage(1000, 1000);
-			file = new File(outPathPrefix + "SequenceGCContent.png");
-			ImageIO.write(bufferedImage, "png", file); } catch (IOException e) { e.printStackTrace(); }
+			outName = outPathPrefix + "SequenceGCContent.png";
+			ImageUtils.saveBufferedImage(bufferedImage, outName); } catch (Exception e) { e.printStackTrace(); }
 		try {
 			bufferedImage = nContent.getBufferedImage(1000, 1000);
-			file = new File(outPathPrefix + "nContent.png");
-			ImageIO.write(bufferedImage, "png", file); } catch (IOException e) { e.printStackTrace(); }
-		
-		bufferedImage = sequenceLengthDistribution.getBufferedImage(1000, 1000);
-		file = new File(outPathPrefix + "LengthDistribution.png");
-		try { ImageIO.write(bufferedImage, "png", file); } catch (IOException e) { e.printStackTrace(); }
+			outName = outPathPrefix + "nContent.png";
+			ImageUtils.saveBufferedImage(bufferedImage, outName); } catch (Exception e) { e.printStackTrace(); }
+		try {
+			bufferedImage = sequenceLengthDistribution.getBufferedImage(1000, 1000);
+			outName = outPathPrefix + "LengthDistribution.png";
+			ImageUtils.saveBufferedImage(bufferedImage, outName); } catch (Exception e) { e.printStackTrace(); }
 		try {
 			bufferedImage = os.duplicationLevelModule().getBufferedImage(1000, 1000);
-			file = new File(outPathPrefix + "DuplicationLevel.png");
-			ImageIO.write(bufferedImage, "png", file); } catch (IOException e) { e.printStackTrace(); }
+			outName = outPathPrefix + "DuplicationLevel.png";
+			ImageUtils.saveBufferedImage(bufferedImage, outName); } catch (Exception e) { e.printStackTrace(); }
 		try {
 			bufferedImage = kmerContent.getBufferedImage(1000, 1000);
-			file = new File(outPathPrefix + "KmerContent.png");
-			ImageIO.write(bufferedImage, "png", file); } catch (IOException e) { e.printStackTrace(); }
+			outName = outPathPrefix + "KmerContent.png";
+			ImageUtils.saveBufferedImage(bufferedImage, outName); } catch (Exception e) { e.printStackTrace(); }
 		
 		saveTable(outPathPrefix, this, null);
 	}
@@ -215,9 +215,8 @@ public class FastQC {
 	}
 	
 	private void savePic(String outPathPrefix, int sepPic, BufferedImage bufferedImageFirst, BufferedImage bufferedImageSecond) {
-		BufferedImage bufferedImageCombine = GraphicCope.combineBfImage(true, sepPic, bufferedImageFirst, bufferedImageSecond);
-		File file = new File(outPathPrefix);
-		try { ImageIO.write(bufferedImageCombine, "png", file); } catch (IOException e) { e.printStackTrace(); }
+		BufferedImage bufferedImageCombine = ImageUtils.combineBfImage(true, sepPic, bufferedImageFirst, bufferedImageSecond);
+		ImageUtils.saveBufferedImage(bufferedImageCombine, outPathPrefix);
 	}
 	
 	/**

@@ -16,7 +16,7 @@ import javax.imageio.ImageIO;
 
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.base.plot.GraphicCope;
+import com.novelbio.base.plot.ImageUtils;
 import com.novelbio.other.downloadpicture.pixiv.PixivOperate;
 
 public class UrlPictureDownLoad implements Callable<UrlPictureDownLoad> {
@@ -111,22 +111,22 @@ public class UrlPictureDownLoad implements Callable<UrlPictureDownLoad> {
 			}
 		}
     	if (sucess && savePath.endsWith(".png")) {
-			BufferedImage bufferedImage = ImageIO.read(new File(savePath));
+			BufferedImage bufferedImage = ImageUtils.read(savePath);
 			if (bufferedImage == null) {
 				return false;
 			}
 			if (bufferedImage.getWidth() > 5000) {
 				int w = (int) (bufferedImage.getWidth() * 0.6); 
 				int h = (int) (bufferedImage.getHeight() * 0.6);
-				bufferedImage = GraphicCope.resizeImage(bufferedImage, w, h);
+				bufferedImage = ImageUtils.resizeImage(bufferedImage, w, h);
 			} else if (bufferedImage.getWidth() > 4000) {
 				int w = (int) (bufferedImage.getWidth() * 0.7); 
 				int h = (int) (bufferedImage.getHeight() * 0.7);
-				bufferedImage = GraphicCope.resizeImage(bufferedImage, w, h);
+				bufferedImage = ImageUtils.resizeImage(bufferedImage, w, h);
 			} else if (bufferedImage.getWidth() > 3000) {
 				int w = (int) (bufferedImage.getWidth() * 0.9); 
 				int h = (int) (bufferedImage.getHeight() * 0.9);
-				bufferedImage = GraphicCope.resizeImage(bufferedImage, w, h);
+				bufferedImage = ImageUtils.resizeImage(bufferedImage, w, h);
 			}
 			String outSavePath = FileOperate.changeFileSuffix(savePath, null, "jpg");
 			ImageIO.write(bufferedImage, "jpg", new File(outSavePath));

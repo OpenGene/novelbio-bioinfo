@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 import com.novelbio.analysis.annotation.functiontest.FunctionTest;
 import com.novelbio.analysis.annotation.functiontest.TopGO.GoAlgorithm;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.base.plot.GraphicCope;
+import com.novelbio.base.plot.ImageUtils;
 import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.nbcgui.FoldeCreate;
 
@@ -186,11 +186,11 @@ public class CtrlGOall implements CtrlTestGOInt {
 				lsGOimage.add(bufferedImage);
 				excelSavePath = FileOperate.getParentPathName(ctrlGO.getSaveExcelPrefix());
 			}
-			BufferedImage bfImageCombine = GraphicCope.combineBfImage(true, 30, lsGOimage);
+			BufferedImage bfImageCombine = ImageUtils.combineBfImage(true, 30, lsGOimage);
 			String picNameLog2P = excelSavePath +  "GO-Analysis-Log2P_" + prefix + "_" + getSavePrefix() + ".png";
 			try {
-				ImageIO.write(bfImageCombine, "png", new File(picNameLog2P));
-			} catch (IOException e) {e.printStackTrace();}
+				ImageUtils.saveBufferedImage(bfImageCombine, picNameLog2P);
+			} catch (Exception e) {e.printStackTrace();}
 		}
 	}
 	

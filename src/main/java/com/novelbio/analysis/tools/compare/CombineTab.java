@@ -22,6 +22,7 @@ import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.plot.ImageUtils;
 import com.novelbio.base.plot.VennImage;
 import com.novelbio.database.service.SpringFactory;
 import com.novelbio.generalConf.PathNBCDetail;
@@ -381,13 +382,7 @@ public class CombineTab {
 			deleteAllTempFile();
 			return null;
 		}
-		try {
-			return ImageIO.read(new File(vennImage.getSavePath()));
-		} catch (IOException e) {
-			logger.error("读取图片流出错! " + e.getMessage());
-			deleteAllTempFile();
-			return null;
-		}
+		return ImageUtils.read(vennImage.getSavePath());
 	}
 	
 	/**

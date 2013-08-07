@@ -57,14 +57,14 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		System.out.println("start");
 		ExonJunction exonJunction = new ExonJunction();
 		exonJunction.setIsLessMemory(false);
-		exonJunction.setGffHashGene(new GffHashGene(GffType.GTF, "/home/zong0jie/Test/rnaseq/paper/chicken/raw_ensembl_genes/chicken_ensemble.gtf"));
+		exonJunction.setGffHashGene(new GffHashGene(GffType.GTF, "/home/zong0jie/Test/rnaseq/paper/chicken/raw_ensembl_genes/chicken_ensemble_KO-WT-merged.gtf"));
 		exonJunction.setLsReadRegion(lsAligns);
 		exonJunction.setOneGeneOneSpliceEvent(false);
 		exonJunction.addBamSorted("WT", "/home/zong0jie/Test/rnaseq/paper/chicken/DT40WT0h.bam");
 		exonJunction.addBamSorted("KO", "/home/zong0jie/Test/rnaseq/paper/chicken/DT40KO0h.bam");
 		exonJunction.setCompareGroups("KO", "WT");
 
-		exonJunction.setResultFile("/home/zong0jie/Test/rnaseq/paper/chicken/ensemble_Iso2");
+		exonJunction.setResultFile("/home/zong0jie/Test/rnaseq/paper/chicken/ensemble_Iso2_merge");
 		exonJunction.run();
 	}
 	

@@ -330,7 +330,7 @@ public abstract class DiffExpAbs implements DiffExpInt {
 	
 	public void plotDifParams() {
 		Map<String, String[]> mapExcelName2Compare = getMapOutFileName2Compare();
-		Map<String, DiffGeneFilter> mapExcelName2DifResultInfo= new LinkedHashMap<String, DiffGeneFilter>();
+		Map<String, DiffGeneVocalno> mapExcelName2DifResultInfo= new LinkedHashMap<String, DiffGeneVocalno>();
 		
 		String outFolder = FileOperate.addSep(FileOperate.getParentPathName(getResultFileName().get(0)));
 		
@@ -345,14 +345,14 @@ public abstract class DiffExpAbs implements DiffExpInt {
 				txtReadandWrite.writefileln("﻿upCompare@@下表是差异基因筛选结果的截图展示，附带差异基因筛选表格说明，下图是差异基因火山图的展示。");
 				txtReadandWrite.close();
 			}
-			mapExcelName2DifResultInfo.put(excelName, new DiffGeneFilter(excelName, mapExcelName2Compare.get(excelName)));
+			mapExcelName2DifResultInfo.put(excelName, new DiffGeneVocalno(excelName, mapExcelName2Compare.get(excelName)));
 		}
 		
-		String[] threshold = DiffGeneFilter.setThreshold(mapExcelName2DifResultInfo.values());
+		String[] threshold = DiffGeneVocalno.setThreshold(mapExcelName2DifResultInfo.values());
 		
 		//画图，出差异基因的表格
 		for (String excelFileName : mapExcelName2DifResultInfo.keySet()) {
-			DiffGeneFilter difResultInfo = mapExcelName2DifResultInfo.get(excelFileName);
+			DiffGeneVocalno difResultInfo = mapExcelName2DifResultInfo.get(excelFileName);
 			difResultInfo.writeDifGene();
 			difResultInfo.plotVolcanAndWriteParam(PLOT_WIDTH, PLOT_HEIGTH);
 		}
@@ -361,13 +361,13 @@ public abstract class DiffExpAbs implements DiffExpInt {
 		writeParam(outFolder, threshold, mapExcelName2DifResultInfo);
 	}
 	
-	private void writeParam(String outFolder, String[] threshold, Map<String, DiffGeneFilter> mapExcelName2DifResultInfo) {
+	private void writeParam(String outFolder, String[] threshold, Map<String, DiffGeneVocalno> mapExcelName2DifResultInfo) {
 		//写params.txt文件
 		String paramsFile = outFolder + "params.txt";
 		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(paramsFile, true);
 		txtReadandWrite.writefileln("transcript@@" + sequencingType);
 		txtReadandWrite.writefileln("finderCondition@@" +  threshold[0] + "=" + threshold[1]);
-		for (DiffGeneFilter difResultInfo : mapExcelName2DifResultInfo.values()) {
+		for (DiffGeneVocalno difResultInfo : mapExcelName2DifResultInfo.values()) {
 			String tmplsExcels = "lsExcels@@EXCEL::";
 			String fileName = FileOperate.getFileName(difResultInfo.getDifGeneFileName());
 			if (tmplsExcels.equals("lsExcels@@EXCEL::")) {
@@ -378,7 +378,7 @@ public abstract class DiffExpAbs implements DiffExpInt {
 			txtReadandWrite.writefileln(tmplsExcels);
 		}
 		
-		for (DiffGeneFilter difResultInfo : mapExcelName2DifResultInfo.values()) {
+		for (DiffGeneVocalno difResultInfo : mapExcelName2DifResultInfo.values()) {
 			String tmplsPicture = "lsPictures@@PICTURE::";
 			String pictureName = FileOperate.getFileName(difResultInfo.getVolcanoFileName());
 			if (tmplsPicture.equals("lsPictures@@PICTURE::")) {
@@ -390,7 +390,7 @@ public abstract class DiffExpAbs implements DiffExpInt {
 		}
 		String resultStr = "result@@";
 		for (String filename : mapExcelName2DifResultInfo.keySet()) {
-			DiffGeneFilter difResultInfo = mapExcelName2DifResultInfo.get(filename);
+			DiffGeneVocalno difResultInfo = mapExcelName2DifResultInfo.get(filename);
 			String groupName = difResultInfo.compare[0] + "vs" + difResultInfo.compare[1];
 			String tmp = groupName + "组共得到" + difResultInfo.getDifGeneNum() + "个差异基因用于后续分析";
 			if (resultStr.equals("result@@")) {

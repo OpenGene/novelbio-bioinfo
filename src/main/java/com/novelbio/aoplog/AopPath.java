@@ -34,7 +34,7 @@ import com.novelbio.analysis.annotation.functiontest.FunctionTest;
 import com.novelbio.analysis.annotation.functiontest.StatisticTestResult;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.base.plot.GraphicCope;
+import com.novelbio.base.plot.ImageUtils;
 import com.novelbio.base.plot.PlotBar;
 import com.novelbio.nbcgui.controltest.CtrlGO;
 import com.novelbio.nbcgui.controltest.CtrlTestPathInt;

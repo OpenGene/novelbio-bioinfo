@@ -42,6 +42,7 @@ import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.plot.ImageUtils;
 import com.novelbio.base.plot.PlotBar;
 
 /** <>仅用于分析sambam文件<>
@@ -535,11 +536,7 @@ public class SamFileStatistics implements AlignmentRecorder {
 		} else {
 			pathChrPic = FileOperate.changeFilePrefix(pathAndName, "ChrDistribution_", "png");
 		}
-		try {
-			ImageIO.write(samFileStatistics.getBufferedImages(), "png", new File(pathChrPic));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		ImageUtils.saveBufferedImage(samFileStatistics.getBufferedImages(), pathChrPic);
 		
 		ExcelOperate excelOperate = new ExcelOperate(FileOperate.changeFileSuffix(pathAndName, "_MappingStatistic", "xls"));
 		Map<String, List<String[]>> mapSheetName2Info = samFileStatistics.getMapSheetName2Data();
