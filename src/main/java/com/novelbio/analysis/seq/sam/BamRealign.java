@@ -1,5 +1,6 @@
 package com.novelbio.analysis.seq.sam;
 
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.generalConf.PathNBCDetail;
@@ -58,23 +59,23 @@ public class BamRealign {
 	}
 	
 	private String getRefSequenceFile() {
-		return "-R " + "\"" + refSequenceFile + "\" ";
+		return "-R " + CmdOperate.addQuot(refSequenceFile);
 	}
 	private String getSortedBam() {
-		return "-I " + "\"" + bamSortedFile + "\" ";
+		return "-I " + CmdOperate.addQuot(bamSortedFile);
 	}
 	private String getOutIntervalFile() {
-		return "-o " + "\"" + FileOperate.changeFileSuffix(bamSortedFile, "", "intervals") + "\" ";
+		return "-o " + CmdOperate.addQuot(FileOperate.changeFileSuffix(bamSortedFile, "", "intervals"));
 	}
 
 	private String getTmpPath() {
-		return "-Djava.io.tmpdir=" + "\""+PathNBCDetail.getTmpPath() +"\" ";
+		return "-Djava.io.tmpdir=" + CmdOperate.addQuot(PathDetail.getTmpPath());
 	}
 	private String getInIntervalFile() {
-		return "-targetIntervals " + "\"" + FileOperate.changeFileSuffix(bamSortedFile, "", "intervals") + "\" ";
+		return "-targetIntervals " + CmdOperate.addQuot(FileOperate.changeFileSuffix(bamSortedFile, "", "intervals"));
 	}
 	private String getOutRealignBam(String outFile) {
-		return "-o " + "\"" + FileOperate.changeFileSuffix(outFile, "", "bam") + "\" ";
+		return "-o " + CmdOperate.addQuot(FileOperate.changeFileSuffix(outFile, "", "bam"));
 	}
 	
 }

@@ -1,8 +1,6 @@
 package com.novelbio.analysis.tools.compare;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,10 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.imageio.ImageIO;
-
 import org.apache.log4j.Logger;
 
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
@@ -25,7 +22,6 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.ImageUtils;
 import com.novelbio.base.plot.VennImage;
 import com.novelbio.database.service.SpringFactory;
-import com.novelbio.generalConf.PathNBCDetail;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -64,7 +60,7 @@ public class CombineTab {
 		//comb.deleteAllTempFile();
 	}
 	private static Logger logger = Logger.getLogger(CombineTab.class);
-	public static String tempFolder = PathNBCDetail.getRworkspaceTmp();
+	public static String tempFolder = PathDetail.getRworkspaceTmp();
 	private List<String> tempFiles = new ArrayList<String>();
 	
 	LinkedHashMap<String, String> mapFileName2ConditionAbbr = new LinkedHashMap<String, String>();
@@ -374,7 +370,7 @@ public class CombineTab {
 		}
 		//TODO		String cmd = PathNBCDetail.getRscript() + scriptName.replace("\\", "/");
 		try {
-			String cmd = PathNBCDetail.getRscript() + scriptName.replace("\\", "/");
+			String cmd = PathDetail.getRscript() + scriptName.replace("\\", "/");
 			CmdOperate cmdOperate = new CmdOperate(cmd);
 			cmdOperate.run();
 		} catch (Exception e) {

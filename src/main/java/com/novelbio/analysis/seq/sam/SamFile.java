@@ -311,7 +311,7 @@ public class SamFile implements AlignSeq {
 		SAMFileHeader samFileHeader = getSamReader().getSamFileHead();
 		if (isNeedSort) {
 			samFileHeader.setSortOrder(SAMFileHeader.SortOrder.coordinate);
-			PathNBCDetail.setTmpDir(FileOperate.getParentPathName(getFileName()));
+//			PathDetail.setTmpDir(FileOperate.getParentPathName(getFileName()));
 		}
 		return samFileHeader;
 	}

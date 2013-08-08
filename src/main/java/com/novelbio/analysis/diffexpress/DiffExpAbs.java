@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -117,7 +118,7 @@ public abstract class DiffExpAbs implements DiffExpInt {
 	protected abstract void setFileNameRawdata();
 	
 	protected void setRworkspace() {
-		workSpace = PathNBCDetail.getRworkspaceTmp();
+		workSpace = PathDetail.getRworkspaceTmp();
 	}
 	/** 仅供测试 */
 	public String getOutScript() {
@@ -304,7 +305,7 @@ public abstract class DiffExpAbs implements DiffExpInt {
 	protected abstract void run();
 	
 	protected void Rrunning(String cmdName) {
-		String cmd = PathNBCDetail.getRscript() + outScript.replace("\\", "/");
+		String cmd = PathDetail.getRscript() + outScript.replace("\\", "/");
 		CmdOperate cmdOperate = new CmdOperate(cmd);
 		cmdOperate.run();
 		try { Thread.sleep(2000); } catch (Exception e) {}

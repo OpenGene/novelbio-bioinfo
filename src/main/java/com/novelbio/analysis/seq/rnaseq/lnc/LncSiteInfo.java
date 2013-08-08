@@ -11,8 +11,8 @@ public class LncSiteInfo {
 	/** 输入的一列Lnc */
 	List<String> lsLncName;
 	List<Align> lsLncAligns;
-	/** 向前后扩展 ,默认2000*/
-	int upDownExtend = 2000;
+	/** 向前后扩展 ,默认10000*/
+	int upDownExtend = 10000;
 	/** 物种对应的Gene信息 */
 	GffChrAbs gffChrAbs = new GffChrAbs();
 

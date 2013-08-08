@@ -6,6 +6,7 @@ import java.util.Collection;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fasta.SeqHashInt;
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -45,7 +46,7 @@ public class MotifEmboss {
 	String seqFilePath;
 	
 	/** motif分析所在的临时文件夹 */
-	String motifPath = PathNBCDetail.getRworkspaceTmp();
+	String motifPath = PathDetail.getTmpPath();
 	
 	Prophecy prophecy;
 	Profit profit;

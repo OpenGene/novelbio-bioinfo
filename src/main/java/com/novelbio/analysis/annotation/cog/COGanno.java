@@ -30,7 +30,7 @@ public class COGanno {
 	
 	private String blastSeqToCOG() {
 		if (blastTmpFile == null || blastTmpFile.trim().equals("")) {
-			blastTmpFile = PathNBCDetail.getTmpPath() + "blastToCOG" + DateUtil.getDateAndRandom();
+			blastTmpFile = PathDetail.getTmpPath() + "blastToCOG" + DateUtil.getDateAndRandom();
 		}
 		
 		BlastType blastType = BlastType.blastp;

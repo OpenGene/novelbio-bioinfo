@@ -188,9 +188,7 @@ public class CtrlGOall implements CtrlTestGOInt {
 			}
 			BufferedImage bfImageCombine = ImageUtils.combineBfImage(true, 30, lsGOimage);
 			String picNameLog2P = excelSavePath +  "GO-Analysis-Log2P_" + prefix + "_" + getSavePrefix() + ".png";
-			try {
-				ImageUtils.saveBufferedImage(bfImageCombine, picNameLog2P);
-			} catch (Exception e) {e.printStackTrace();}
+			ImageUtils.saveBufferedImage(bfImageCombine, picNameLog2P);
 		}
 	}
 	

@@ -9,9 +9,10 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
+import javax.swing.JTextField;
 
-import com.hg.doc.fa;
 import com.novelbio.analysis.seq.rnaseq.lnc.LncInfo;
 import com.novelbio.analysis.seq.rnaseq.lnc.LncSiteInfo;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
@@ -19,7 +20,6 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JScrollPaneData;
-import javax.swing.JRadioButton;
 
 public class GuilncLocation extends JPanel {
 	JScrollPaneData scrollPane;
@@ -38,6 +38,8 @@ public class GuilncLocation extends JPanel {
 	
 	JLabel lblStartcol;
 	JLabel lblEndcol;
+	private JLabel lblDistancetoupdowngene;
+	private JTextField txtUpDownDistance;
 	
 	/**
 	 * Create the panel.
@@ -89,6 +91,11 @@ public class GuilncLocation extends JPanel {
 					colStart = (Integer)spinStart.getValue() - 1;
 					colEnd = (Integer)spinEnd.getValue() - 1;
 				}
+				try {
+					lncSiteInfo.setUpDownExtend(Integer.parseInt(txtUpDownDistance.getText()));
+				} catch (Exception e2) {
+					// TODO: handle exception
+				}
 				
 				for (String[] file2Result : scrollPane.getLsDataInfo()) {
 					List<List<String>> lsInfo = ExcelTxtRead.readLsExcelTxtls(file2Result[0], 1);
@@ -114,12 +121,12 @@ public class GuilncLocation extends JPanel {
 		add(btnRun);
 		
 		spinner = new JSpinner();
-		spinner.setBounds(596, 324, 67, 20);
+		spinner.setBounds(596, 379, 67, 20);
 		spinner.setValue(1);
 		add(spinner);
 		
 		lblLncidcol = new JLabel("LncIDCol");
-		lblLncidcol.setBounds(596, 305, 92, 15);
+		lblLncidcol.setBounds(596, 358, 92, 15);
 		add(lblLncidcol);
 		
 		rdbtnByname = new JRadioButton("ByName");
@@ -142,20 +149,30 @@ public class GuilncLocation extends JPanel {
 		add(rdbtnByloc);
 		
 		spinStart = new JSpinner();
-		spinStart.setBounds(596, 377, 59, 22);
+		spinStart.setBounds(707, 377, 59, 22);
 		add(spinStart);
 		
 		lblStartcol = new JLabel("StartCol");
-		lblStartcol.setBounds(596, 356, 59, 18);
+		lblStartcol.setBounds(707, 356, 59, 18);
 		add(lblStartcol);
 		
 		spinEnd = new JSpinner();
-		spinEnd.setBounds(690, 377, 52, 22);
+		spinEnd.setBounds(778, 377, 52, 22);
 		add(spinEnd);
 		
 		lblEndcol = new JLabel("EndCol");
-		lblEndcol.setBounds(690, 356, 59, 18);
+		lblEndcol.setBounds(778, 356, 59, 18);
 		add(lblEndcol);
+		
+		lblDistancetoupdowngene = new JLabel("DistanceToUpDownGene");
+		lblDistancetoupdowngene.setBounds(602, 305, 208, 18);
+		add(lblDistancetoupdowngene);
+		
+		txtUpDownDistance = new JTextField();
+		txtUpDownDistance.setText("10000");
+		txtUpDownDistance.setBounds(599, 324, 67, 22);
+		add(txtUpDownDistance);
+		txtUpDownDistance.setColumns(10);
 		
 		initial();
 	}

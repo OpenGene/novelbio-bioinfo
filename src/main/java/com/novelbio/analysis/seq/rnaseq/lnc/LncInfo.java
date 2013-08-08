@@ -38,6 +38,7 @@ public class LncInfo {
 	public LncInfo(int taxID, GffHashGene gffHashGene, int upDownExtend) {
 		this.taxID = taxID;
 		this.gffHashGene = gffHashGene;
+		this.upDownExtend = upDownExtend;
 	}
 
 	/**基因名称*/
@@ -187,8 +188,8 @@ public class LncInfo {
 			} catch (Exception e) {
 				return;
 			}
-			int space = detailGeneUp.getEndAbs() - gffGeneIsoInfoLnc.getStartAbs();
-			if (space <= upDownExtend) {
+			int space = Math.abs(detailGeneUp.getEndAbs() - gffGeneIsoInfoLnc.getStartAbs());
+			if (Math.abs(space) <= upDownExtend) {
 				upGene = detailGeneUp.getLongestSplitMrna().getName();
 				upDistance = space;
 			} else {
@@ -212,8 +213,8 @@ public class LncInfo {
 		} catch (Exception e) {
 			return;
 		}
-		int space = gffGeneIsoInfoLnc.getEndAbs() - detailGeneDown.getStartAbs();
-		if (space <= upDownExtend) {
+		int space = Math.abs(gffGeneIsoInfoLnc.getEndAbs() - detailGeneDown.getStartAbs());
+		if (Math.abs(space) <= upDownExtend) {
 			downGene = detailGeneDown.getLongestSplitMrna().getName();
 			downDistance = space;
 		} else {

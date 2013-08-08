@@ -1,15 +1,22 @@
 package com.novelbio.analysis.microarray;
 
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.service.SpringFactory;
 import com.novelbio.generalConf.PathNBCDetail;
+
+import freemarker.template.Configuration;
+import freemarker.template.Template;
 
 public class AffyNormalization {
 	public static final int NORM_RMA = 10;
@@ -21,6 +28,7 @@ public class AffyNormalization {
 	/** 外显子芯片等 */
 	public static final String arrayType_exonAffy = "exonaffy";
 	
+	Configuration freeMarkerConfiguration = (Configuration)SpringFactory.getFactory().getBean("freemarkNBC");
 	
 	String workSpace;
 	String rawScript = "";
@@ -33,16 +41,11 @@ public class AffyNormalization {
 	ArrayList<String> lsRawCelFile = new ArrayList<String>();
 	
 	public AffyNormalization() {
-		rawScript = PathNBCDetail.getRworkspace() + "Affymetirx芯片分析Java.txt";
-		setWorkSpace();
 		setOutScriptPath();
 	}
 
-	private void setWorkSpace() {
-		workSpace = PathNBCDetail.getRworkspaceTmp();
-	}
 	private void setOutScriptPath() {
-		outScript = PathNBCDetail.getRworkspaceTmp() + "AffyNorm_" + DateUtil.getDateAndRandom() + ".R";
+		outScript = PathDetail.getRworkspaceTmp() + "AffyNorm_" + DateUtil.getDateAndRandom() + ".R";
 	}
 	public void setLsRawCelFile(ArrayList<String> lsRawCelFile) {
 		this.lsRawCelFile = lsRawCelFile;
@@ -64,59 +67,55 @@ public class AffyNormalization {
 		return outScript;
 	}
 	protected void generateScript() {
-		TxtReadandWrite txtReadScript = new TxtReadandWrite(rawScript, false);
-		TxtReadandWrite txtOutScript = new TxtReadandWrite(outScript, true);
-		for (String content : txtReadScript.readlines()) {
-			if (content.startsWith("#workspace"))
-				txtOutScript.writefileln(getWorkSpace(content));
-			else if (content.startsWith("#filename"))
-				txtOutScript.writefileln(getFileName(content));
-			else if (content.startsWith("#NormalizedMethod"))
-				txtOutScript.writefileln(getMethodType(content));
-			else if (content.startsWith("#readCelFile"))
-				txtOutScript.writefileln(getRawDataFile(content));
-			else {
-				txtOutScript.writefileln(content);
-			}
-		}
-		txtOutScript.close();
-	}
+		Map<String,Object> mapData = new HashMap<String, Object>();
+		mapData.put("workspace", PathDetail.getRworkspaceTmp());
+		mapData.put("fileOutName", outFileName);
+		mapData.put("isNorm", isNormType());
+		mapData.put("RawCelFile", getRawDataFile());
+		mapData.put("normalizedType", getMethodType());
 
-	private String getWorkSpace(String content) {
-		String RworkSpace = content.split(SepSign.SEP_ID)[1];
-		RworkSpace = RworkSpace.replace("{$workspace}", workSpace.replace("\\", "/"));
-		return RworkSpace;
+		try {
+			Template template = freeMarkerConfiguration.getTemplate("/R/AffyCellNormalize.ftl");
+			StringWriter sw = new StringWriter();
+			TxtReadandWrite txtReadandWrite = new TxtReadandWrite(outScript, true);
+			// 处理并把结果输出到字符串中
+			template.process(mapData, sw);
+			txtReadandWrite.writefile(sw.toString());
+			txtReadandWrite.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
-	private String getFileName(String content) {
-		String fileRawdata = content.split(SepSign.SEP_ID)[1];
-		fileRawdata = fileRawdata.replace("{$filename}", outFileName.replace("\\", "/"));
-		return fileRawdata;
+	
+	private boolean isNormType() {
+		if (arrayType == arrayType_normAffy) {
+			return true;
+		} else {
+			return false;
+		}
 	}
-	private String getRawDataFile(String content) {
+	
+	private String getRawDataFile() {
 		String celFileName = CmdOperate.addQuot(lsRawCelFile.get(0));
 		for (int i = 1; i < lsRawCelFile.size(); i++) {
 			celFileName = celFileName + "," + CmdOperate.addQuot(lsRawCelFile.get(i));
 		}
-		
-		String[] arrayType = content.split(SepSign.SEP_ID)[1].split(SepSign.SEP_INFO);
-		HashMap<String, String> mapAffayType2Script = new HashMap<String, String>();
-		for (String string : arrayType) {
-			String[] tmpArray = string.split(SepSign.SEP_INFO_SAMEDB);
-			mapAffayType2Script.put(tmpArray[0], tmpArray[1]);
-		}		
-		String fileRawdata = mapAffayType2Script.get(this.arrayType);
-		fileRawdata = fileRawdata.replace("{$RawCelFile}", celFileName.replace("\\", "/"));
-		return fileRawdata;
+		celFileName = celFileName.replace("\\", "/");
+		return celFileName;
 	}
-	private String getMethodType(String content) {
-		String[] methodType = content.split(SepSign.SEP_ID)[1].split(SepSign.SEP_INFO);
-		HashMap<Integer, String> mapMethodID2Script = new HashMap<Integer, String>();
-		for (String string : methodType) {
-			String[] tmpMethod = string.split(SepSign.SEP_INFO_SAMEDB);
-			mapMethodID2Script.put(Integer.parseInt(tmpMethod[0]), tmpMethod[1]);
+	
+	private String getMethodType() {
+		String normType = "";
+		if (normalizedType == NORM_GCRMA) {
+			normType = "gcrma";
+		} else if (normalizedType == NORM_MAS5) {
+			normType = "mas5";
+		} else if (normalizedType == NORM_RMA) {
+			normType = "rma";
 		}
-		return mapMethodID2Script.get(normalizedType);
+		return normType;
 	}
+	
 	/**
 	 * 调用Rrunning并写入Cmd的名字,
 	 * 例如：
@@ -128,7 +127,7 @@ public class AffyNormalization {
 		clean();
 	}
 	protected void Rrunning(String cmdName) {
-		String cmd = PathNBCDetail.getRscript() + outScript.replace("\\", "/");
+		String cmd = PathDetail.getRscript() + outScript.replace("\\", "/");
 		CmdOperate cmdOperate = new CmdOperate(cmd);
 		cmdOperate.run();
 	}

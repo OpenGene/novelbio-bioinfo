@@ -6,9 +6,11 @@ import com.novelbio.base.fileOperate.FileOperate;
 public class SomaticIndel {
 	public static void main(String[] args) {
 		SomaticIndel somaticIndel = new SomaticIndel();
-		somaticIndel.setBamFileNormal("");
-		somaticIndel.setBamFileTumor("");
-		somaticIndel.setOutIndelsVcfFile("");
+		somaticIndel.setJarPathAndName("/media/winD/NBCplatform/BioInfomaticsToolsPlatform/bioinfo/GATK/GenomeAnalysisTK.jar");
+		somaticIndel.setBamFileNormal("/media/winD/NBC/Project/test/CK_accepted_hits_dedup_rgroup.bam");
+		somaticIndel.setBamFileTumor("/media/winD/NBC/Project/test/320_accepted_hits_dedup_rgroup.bam");
+		somaticIndel.setRefFastaFile("/media/winD/NBC/Project/test/chrAllOld.fa");
+		somaticIndel.setOutIndelsVcfFile("/home/zong0jie/Test/rnaseq/paper/difIndel.vcf");
 		somaticIndel.run();
 	}
 	/** 虚拟机内存 */
@@ -118,7 +120,7 @@ public class SomaticIndel {
 		String cmdScript = "java -Xmx" + getJvmMemory() + " -jar " + getJarPathAndName() +  getType() 
 				+ getNormalBamFile() + getTumorBamFile() + getRefFastaFile() + getOutIndelVerboseFile()
 				+ getOutIndelsVcfFile() + getOutBedAndMetrics();
-		CmdOperate cmdOperate = new CmdOperate(cmdScript);
+		CmdOperate cmdOperate = new CmdOperate(cmdScript, "SomaticIndel");
 		cmdOperate.run();
 	}
 	

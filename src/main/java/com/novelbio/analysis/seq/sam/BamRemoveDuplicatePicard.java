@@ -1,8 +1,8 @@
 package com.novelbio.analysis.seq.sam;
 
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.generalConf.PathNBCDetail;
 
 /**
  * 用picard来去除pcr duplicate
@@ -55,7 +55,7 @@ public class BamRemoveDuplicatePicard {
 		return "REMOVE_DUPLICATES=true VALIDATION_STRINGENCY=LENIENT  AS=true ";
 	}
 	private String getTmpPath() {
-		return "-Djava.io.tmpdir=" + "\""+PathNBCDetail.getTmpPath() +"\" ";
+		return "-Djava.io.tmpdir=" + "\""+PathDetail.getTmpPath() +"\" ";
 	}
 	/** duplicate的矩阵 */
 	private String getMETRICS() {

@@ -387,7 +387,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 		map.setHighValueColour(colorHigh);
 		map.setLowValueColour(colorDown);
 		try {
-			map.saveToFile(new File(resultFilePath+prefix+"Atg.png"));
+			map.saveToFile(resultFilePath+prefix+"Atg.png");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

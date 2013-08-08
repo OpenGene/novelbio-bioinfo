@@ -1,33 +1,26 @@
 package com.novelbio.analysis.seq.resequencing;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.novelbio.analysis.seq.fasta.SeqFasta;
-import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.SamFile;
-import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.model.species.Species;
-import com.novelbio.generalConf.PathNBCDetail;
 
 public class MuTect {
 	public static void main(String[] args) {
 		MuTect muTect = new MuTect();
-		muTect.setJarFile("/media/winD/NBCplatform/BioInfomaticsToolsPlatform/bioinfo/GATK/muTect.jar");
+		muTect.setJarFile("/media/winD/NBCplatform/BioInfomaticsToolsPlatform/bioinfo/GATK/muTect-1.1.4.jar");
 		SamFile samFile9A = new SamFile("/media/winD/NBC/Project/test/CK_accepted_hits_dedup_rgroup.bam");
 //		samFile9A = samFile9A.addGroup("9A", "9A", "9A", null);
-		Species species = new Species(39947);
 		SamFile samFileCKP = new SamFile("/media/winD/NBC/Project/test/320_accepted_hits_dedup_rgroup.bam");
 		muTect.setInputNormalFile(samFile9A.getFileName());
 		muTect.setInputTumorFile(samFileCKP.getFileName());
 		muTect.setOutFile("/home/zong0jie/Test/rnaseq/paper/difSnp.txt");
-		muTect.setReferenceSequence(species.getChromSeq());
+		muTect.setReferenceSequence("/media/winD/NBC/Project/test/chrAllOld.fa");
 		muTect.run();
 //		SamFile samFile = new SamFile("/home/zong0jie/Test/rnaseq/paper/CKP_accepted_hits.bam");
 //		SamFile samFileWrite = new SamFile("/home/zong0jie/Test/rnaseq/paper/CKP_accepted_hits.bam", samFile.getHeader());
@@ -232,8 +225,8 @@ public class MuTect {
 	
 	/** 根据chrID产生的intervals */
 	private String getIntervalsFromChr() {
-		String outFile = PathNBCDetail.getTmpPath() + "snp_intervals" + DateUtil.getDateAndRandom();
-		TxtReadandWrite txtWrite = new TxtReadandWrite(outFile);
+		String outFile = PathDetail.getTmpPath() + "snp_intervals" + DateUtil.getDateAndRandom() + ".list";
+		TxtReadandWrite txtWrite = new TxtReadandWrite(outFile, true);
 		SamFile samFile = new SamFile(inputNormalFile);
 		Map<String, Long> mapChrID2Long = samFile.getMapChrID2Length();
 		for (String chrID : mapChrID2Long.keySet()) {
@@ -250,9 +243,8 @@ public class MuTect {
 		String  cmdScript = "java -Xmx" + getJvmRunMemory() + " -jar " + getJarPathAndName() + " " + getAnalysisType() + " "
 											 + getCosmic() + " " + getDbsnp() + " "  + getInputNormalFile() + " " + getInputTumorFile() + " " + getIntervals() + " "
 											 + getReferenceSequence() + " " + getOutFile() + " " +getCoverageFile();
-		CmdOperate cmdOperate = new CmdOperate(cmdScript);
+		CmdOperate cmdOperate = new CmdOperate(cmdScript, "muTect");
 		cmdOperate.run();
-
 	}
 	
 }
