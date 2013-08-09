@@ -333,7 +333,7 @@ public class GuiRNAautoSpliceSimple extends JPanel implements GUIinfo {
 		btnRun.setEnabled(true);
 	}
 	public void setMessage(String string) {
-		JOptionPane.showMessageDialog(null, string, "Info", JOptionPane.INFORMATION_MESSAGE);
+		JOptionPane.showMessageDialog(null, string, "Thanks using ASD", JOptionPane.INFORMATION_MESSAGE);
 	}
 	
 	private void changeSclCompareGroup() {

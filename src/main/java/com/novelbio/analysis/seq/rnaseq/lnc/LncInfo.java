@@ -231,6 +231,7 @@ public class LncInfo {
 		lsResult.add(lncName);
 		if (gffGeneIsoInfoLnc == null) {
 			lsResult.add("");
+			lsResult.add("");
 		} else {
 			GeneID geneID = gffGeneIsoInfoLnc.getGeneID();
 			String geneType = gffGeneIsoInfoLnc.getGeneType().toString();
@@ -240,6 +241,7 @@ public class LncInfo {
 					geneType = geneTypeGeneID;
 				}
 			}
+			lsResult.add(gffGeneIsoInfoLnc.getRefID() + ":" + gffGeneIsoInfoLnc.getStartAbs() + "-" + gffGeneIsoInfoLnc.getEndAbs());
 			lsResult.add(geneType);
 		}
 	
@@ -283,6 +285,7 @@ public class LncInfo {
 	public static String[] getTitle() {
 		List<String> lsTitle = new ArrayList<String>();
 		lsTitle.add("LncName");
+		lsTitle.add("Location");
 		lsTitle.add("LncGeneType");
 		lsTitle.add("mRNA_AccID");
 		lsTitle.add("mRNA_Symbol");

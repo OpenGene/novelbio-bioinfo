@@ -89,6 +89,7 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 		try {
 			setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			{
+				
 				jTabbedPane1 = new JTabbedPane();
 				getContentPane().add(jTabbedPane1, BorderLayout.CENTER);
 				jTabbedPane1.setPreferredSize(new java.awt.Dimension(1035, 682));
@@ -205,7 +206,7 @@ public class GUIanalysisForm extends javax.swing.JFrame {
 				jTabbedPane1.addTab("snpFilterSimple", guiSnpFilterSimple);
 				
 				guiRNAautoSpliceSimple = new GuiRNAautoSpliceSimple();
-				jTabbedPane1.addTab("PASH", guiRNAautoSpliceSimple);
+				jTabbedPane1.addTab("ASD", guiRNAautoSpliceSimple);
 				
 				guiUpdateDB = new GuiUpdateDB();
 				jTabbedPane1.addTab("UpdateDB", guiUpdateDB);
