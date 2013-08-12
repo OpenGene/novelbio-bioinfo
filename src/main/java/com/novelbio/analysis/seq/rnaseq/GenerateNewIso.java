@@ -32,7 +32,7 @@ import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
  *  */
 public class GenerateNewIso {
 	private static final Logger logger = Logger.getLogger(GenerateNewIso.class);
-	int newIsoReadsNum = 5;//至少有5条reads支持的junction才会用于重建转录本
+	int newIsoReadsNum = 8;//至少有8条reads支持的junction才会用于重建转录本
 	int blankNum = 40;//至少超过50bp的没有reads堆叠的区域，才被认为是intron
 	int longExon = 200;//超过100bp就认为是比较长的exon，就需要做判定了
 	int catchNum = 50000;
@@ -323,7 +323,7 @@ public class GenerateNewIso {
 				exonNum = getExonNum(beforExon, false, gffGeneIsoInfo, junThis, lsJun, setJunInfo);
 				break;
 			}
-			
+
 			for (JunctionUnit junPrevTmp : lsJunPrevAfter) {
 				if (beforExon) {
 					if (!setJunInfo.contains(junThis.key(false))) {
@@ -599,7 +599,7 @@ public class GenerateNewIso {
 				for (JunctionUnit junction : junctionInfo.lsJunctionUnits) {
 					if (considerStrand && junction.isCis5to3() != junctionUnit.isCis5to3()) continue;
 					
-					if (junction.getStartAbs() > junctionUnit.getEndAbs() && junction.getStartAbs() > nextStart ) {
+					if (junction.getStartAbs() > junctionUnit.getEndAbs() && junction.getStartAbs() < nextStart ) {
 						nextStart = junction.getStartAbs();
 						junctionUnitNext = junction;
 					}

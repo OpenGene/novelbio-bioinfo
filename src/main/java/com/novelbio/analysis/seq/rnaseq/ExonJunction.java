@@ -1,7 +1,6 @@
 package com.novelbio.analysis.seq.rnaseq;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -12,7 +11,6 @@ import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.fasta.SeqHash;
-import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
@@ -51,25 +49,29 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 //		lsAligns.add(new Align("chr2", 191834371, 191854578));
 //		lsAligns.add(new Align("chr1", 65549980, 65715670));
 //		lsAligns.add(new Align("chr9", 128118727, 128494218));
-//		lsAligns.add(new Align("4", 85040428, 85067534));
+		lsAligns.add(new Align("1", 33715442, 33774115));
 //		lsAligns.add(new Align("mt", 0, 5000));
-//		chr23:5566516-5580272	mt:2956-2956
+//		chr1:33715442-33774115
 		System.out.println("start");
 		ExonJunction exonJunction = new ExonJunction();
 		exonJunction.setIsLessMemory(false);
 		exonJunction.setGffHashGene(new GffHashGene(GffType.GTF, "/home/zong0jie/Test/rnaseq/paper/chicken/raw_ensembl_genes/chicken_ensemble_KO-WT-merged.gtf"));
+//		exonJunction.setGffHashGene(new GffHashGene(GffType.GTF, "/home/zong0jie/Test/rnaseq/paper/chicken/raw_ensembl_genes/chicken_ensemble.gtf"));
+		exonJunction.setgenerateNewIso();
 		exonJunction.setLsReadRegion(lsAligns);
 		exonJunction.setOneGeneOneSpliceEvent(false);
 		exonJunction.addBamSorted("WT", "/home/zong0jie/Test/rnaseq/paper/chicken/DT40WT0h.bam");
 		exonJunction.addBamSorted("KO", "/home/zong0jie/Test/rnaseq/paper/chicken/DT40KO0h.bam");
 		exonJunction.setCompareGroups("KO", "WT");
 
-		exonJunction.setResultFile("/home/zong0jie/Test/rnaseq/paper/chicken/ensemble_Iso2_merge");
+		exonJunction.setResultFile("/home/zong0jie/Test/rnaseq/paper/chicken/ensemble_Iso2_merge_test");
+		exonJunction.setgenerateNewIso();
+
 		exonJunction.run();
 	}
 	
 	private static Logger logger = Logger.getLogger(ExonJunction.class);
-	private static String stopGeneName = "IMMT";
+	private static String stopGeneName = "CYTH1";
 	
 	GffHashGene gffHashGene = null;
 	StrandSpecific strandSpecific = StrandSpecific.NONE;
@@ -138,8 +140,10 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	public void setPvalue(double pvalue) {
 		this.pvalue = pvalue;
 	}
-	/** 是否重建转录本，调用一下就重建了 */
-	public void generateNewIso() {
+	/** 是否重建转录本，调用一下就重建<br>
+	 * 在run之前最后一个设定
+	 */
+	public void setgenerateNewIso() {
 		generateNewIso = new GenerateNewIso(tophatJunction, mapCond2SamFile.values(), strandSpecific);
 		generateNewIso.setGffHash(gffHashGene);
 	}
@@ -345,10 +349,9 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			if (gffDetailGene.getName().contains(stopGeneName)) {
 				logger.debug("stop");
 			}
-			generateNewIso.setGffDetailGene(gffDetailGene);
-			generateNewIso.reconstructGffDetailGene();
-			
+			reconstructIso(gffDetailGene);
 			gffDetailGene.removeDupliIso();
+			
 			if (gffDetailGene.getLsCodSplit().size() <= 1 || isOnlyOneIso(gffDetailGene)) {
 				continue;
 			}
@@ -366,12 +369,17 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				setRunInfo(guiAnnoInfo);
 			}
 			i++;
-
-		
-			
 		}
 		logger.debug("finish");
 	}
+	
+	private void reconstructIso(GffDetailGene gffDetailGene) {
+		if (gffDetailGene != null && generateNewIso != null) {
+			generateNewIso.setGffDetailGene(gffDetailGene);
+			generateNewIso.reconstructGffDetailGene();
+		}
+	}
+	
 	/**
 	 * 计数，看有多少iso与gffDetailGene同方向，如果只有一个，则跳过该基因
 	 * @param gffDetailGene

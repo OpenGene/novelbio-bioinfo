@@ -48,7 +48,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
  */
 public class GffDetailGene extends ListDetailAbs {
 	private final static Logger logger = Logger.getLogger(GffDetailGene.class);
-	/** 两个转录本的交集必须大于0.6才算是一个基因 */
+	/** 两个转录本的overlap 覆盖 必须大于0.6才算是一个基因 */
 	public final static double OVERLAP_RATIO = 0.6;
 	/** 顺序存储每个转录本的的坐标情况 */
 	private ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfos = new ArrayList<GffGeneIsoInfo>();//存储可变剪接的mRNA
@@ -726,13 +726,13 @@ public class GffDetailGene extends ListDetailAbs {
 				if (flagGetNexIso)
 					break;
 				
-				GffGeneIsoInfo gffGeneIsoInfoExist = lsIso.get(0);
-				if (GffGeneIsoInfo.compareIsoRatio(gffGeneIsoInfo, gffGeneIsoInfoExist) >= prop) {
-					lsIso.add(gffGeneIsoInfo);
-					flagGetNexIso = true;
-//					break;
+				for (GffGeneIsoInfo gffGeneIsoInfoExist : lsIso) {
+					if (GffGeneIsoInfo.compareIsoRatio(gffGeneIsoInfo, gffGeneIsoInfoExist) >= prop) {
+						lsIso.add(gffGeneIsoInfo);
+						flagGetNexIso = true;
+						break;
+					}
 				}
-				
 			}
 			//没找到最接近的iso，就新建一个list把这个iso加进去
 			if (!flagGetNexIso) {
@@ -779,7 +779,7 @@ public class GffDetailGene extends ListDetailAbs {
 		if (exonNum1 <= 3) {
 			return 0.3;
 		} else if (exonNum2 > 3) {
-			return 0.6;
+			return 0.5;
 		} else {
 			return 0.5;
 		}

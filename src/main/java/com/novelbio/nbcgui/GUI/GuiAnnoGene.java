@@ -163,11 +163,7 @@ public class GuiAnnoGene extends JPanel implements GuiNeedOpenFile {
 		cmbSpecies.setMapItem(Species.getSpeciesName2Species(Species.KEGGNAME_SPECIES));
 		btnDel.setEnabled(true);
 		scrollPaneData.setTitle(new String[]{"InFile", "OutFile"});
-		Map<String, Integer> mapAnno2Anno = new LinkedHashMap<>();
-		mapAnno2Anno.put("Annotation", AnnoAbs.ANNOTATION);
-		mapAnno2Anno.put("GO", AnnoAbs.GO);
-		mapAnno2Anno.put("KEGGpath", AnnoAbs.PATH);
-		cmbAnnoType.setMapItem(mapAnno2Anno);
+		cmbAnnoType.setMapItem(AnnoAbs.getMapAnnoType());
 		
 		cmbGOtype.setMapItem(GOtype.getMapStr2Gotype());
 		cmbGOtype.setVisible(false);

@@ -1,9 +1,12 @@
 package com.novelbio.analysis.annotation.genAnno;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.database.domain.geneanno.GOtype;
 
 public abstract class AnnoAbs {
 	public static final int ANNOTATION = 1234;
@@ -82,5 +85,18 @@ public abstract class AnnoAbs {
 			return new AnnoPath();
 		}
 		return null;
+	}
+	
+	/**
+	 * key是mapping的内容<br>
+	 * value是mapping的int代号
+	 * @return
+	 */
+	public static Map<String, Integer> getMapAnnoType() {
+		Map<String, Integer> mapAnno2Anno = new LinkedHashMap<>();
+		mapAnno2Anno.put("Annotation", AnnoAbs.ANNOTATION);
+		mapAnno2Anno.put("GO", AnnoAbs.GO);
+		mapAnno2Anno.put("KEGGpath", AnnoAbs.PATH);
+		return mapAnno2Anno;
 	}
 }
