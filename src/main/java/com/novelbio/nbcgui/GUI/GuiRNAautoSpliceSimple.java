@@ -39,6 +39,7 @@ public class GuiRNAautoSpliceSimple extends JPanel implements GUIinfo {
 	JButton btnRun;
 	JButton btnOpengtf;
 	JCheckBox chckbxDisplayAllSplicing;
+	JCheckBox chckbxReconstructIso;
 	GUIFileOpen guiFileOpen = new GUIFileOpen();
 	private JTextField txtSaveTo;
 	
@@ -210,6 +211,10 @@ public class GuiRNAautoSpliceSimple extends JPanel implements GUIinfo {
 		lblNewLabel.setBounds(642, 35, 115, 14);
 		add(lblNewLabel);
 		
+		chckbxReconstructIso = new JCheckBox("reconstructISO--slow");
+		chckbxReconstructIso.setBounds(180, 341, 185, 26);
+		add(chckbxReconstructIso);
+		
 		initial();
 	}
 	private void initial() {
@@ -265,6 +270,7 @@ public class GuiRNAautoSpliceSimple extends JPanel implements GUIinfo {
 		ctrlSplicing.setLsBam2Prefix(scrlBam.getLsDataInfo());
 		ctrlSplicing.setLsCompareGroup(scrlCompare.getLsDataInfo());
 		ctrlSplicing.setMemoryLow(chckbxLowMemoryUse.isSelected());
+		ctrlSplicing.setReconstructIso(chckbxReconstructIso.isSelected());
 		//TODO
 		btnRun.setEnabled(false);
 		Thread thread = new Thread(ctrlSplicing);

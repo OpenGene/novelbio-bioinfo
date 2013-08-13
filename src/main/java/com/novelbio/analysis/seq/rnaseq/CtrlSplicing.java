@@ -22,6 +22,7 @@ public class CtrlSplicing implements RunGetInfo<GuiAnnoInfo> , Runnable{
 	List<String[]> lsCompareGroup;
 	StrandSpecific strandSpecific = StrandSpecific.NONE;
 	boolean memoryLow = false;
+	boolean isReconstruceIso = false;
 	
 	public void setGuiRNAautoSplice(GUIinfo guiRNAautoSplice) {
 		this.guiRNAautoSplice = guiRNAautoSplice;
@@ -34,6 +35,9 @@ public class CtrlSplicing implements RunGetInfo<GuiAnnoInfo> , Runnable{
 	}
 	public void setLsCompareGroup(List<String[]> lsCompareGroup) {
 		this.lsCompareGroup = lsCompareGroup;
+	}
+	public void setReconstructIso(boolean isReconstructIso) {
+		this.isReconstruceIso = isReconstructIso;
 	}
 	
 	public void setStrandSpecific(StrandSpecific strandSpecific) {
@@ -94,6 +98,7 @@ public class CtrlSplicing implements RunGetInfo<GuiAnnoInfo> , Runnable{
 		exonJunction.setOneGeneOneSpliceEvent(!isDisplayAllEvent);
 		exonJunction.setRunGetInfo(this);
 		exonJunction.setIsLessMemory(memoryLow);
+
 		for (String[] strings : lsBam2Prefix) {
 			//TODO 暂时没有多对多比较
 			exonJunction.addBamSorted(strings[2], strings[0]);
@@ -103,6 +108,9 @@ public class CtrlSplicing implements RunGetInfo<GuiAnnoInfo> , Runnable{
 		exonJunction.setResultFile(outFile);
 		exonJunction.setRunGetInfo(this);
 		exonJunction.setSeqHash(seqHash);
+		if (isReconstruceIso) {
+			exonJunction.setgenerateNewIso();
+		}
 		Thread thread = new Thread(exonJunction);
 		thread.start();
 		

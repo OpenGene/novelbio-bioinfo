@@ -779,7 +779,7 @@ public class GffDetailGene extends ListDetailAbs {
 		if (exonNum1 <= 3) {
 			return 0.3;
 		} else if (exonNum2 > 3) {
-			return 0.5;
+			return 0.6;
 		} else {
 			return 0.5;
 		}
