@@ -94,6 +94,12 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 			//装入hash表
 			for (GffDetailGene gffDetailGene : listGff) {
 				for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+					if (mapName2Iso.containsKey(gffGeneIsoInfo.getName().toLowerCase())) {
+						GffGeneIsoInfo gffGeneIsoInfoOld = mapName2Iso.get(gffGeneIsoInfo.getName().toLowerCase());
+						if (gffGeneIsoInfoOld.getRefID().toLowerCase().startsWith("chr") && !gffGeneIsoInfo.getRefID().toLowerCase().startsWith("chr")) {
+							continue;
+						}
+					}
 					mapName2Iso.put(GeneID.removeDot(gffGeneIsoInfo.getName().toLowerCase()), gffGeneIsoInfo);
 					mapName2Iso.put(gffGeneIsoInfo.getName().toLowerCase(), gffGeneIsoInfo);
 				}

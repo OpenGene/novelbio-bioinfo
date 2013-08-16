@@ -130,7 +130,10 @@ public class AnnoQuery extends RunProcess<AnnoQuery.AnnoQueryDisplayInfo>{
 			AnnoQueryDisplayInfo annoQueryDisplayInfo = new AnnoQueryDisplayInfo();
 			annoQueryDisplayInfo.countNum = num;
 			annoQueryDisplayInfo.tmpInfo = tmpInfo;
-			runGetInfo.setRunningInfo(annoQueryDisplayInfo);
+			if (runGetInfo != null) {
+				runGetInfo.setRunningInfo(annoQueryDisplayInfo);
+			}
+			
 		}
 	}
 	

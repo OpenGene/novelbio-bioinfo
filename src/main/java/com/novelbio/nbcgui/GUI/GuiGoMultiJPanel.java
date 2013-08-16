@@ -158,6 +158,11 @@ public class GuiGoMultiJPanel extends JPanel{
 		add(btnDelBlast);
 		
 		JButton btnDeldata = new JButton("DelData");
+		btnDeldata.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				jScrollPaneInput.deleteSelRows();
+			}
+		});
 		btnDeldata.setBounds(932, 530, 107, 25);
 		add(btnDeldata);
 		

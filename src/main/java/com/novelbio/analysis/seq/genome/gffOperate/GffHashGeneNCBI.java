@@ -10,6 +10,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
@@ -79,7 +80,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	 * 另一个这个存储ISO对应的坐标 */
 	private ArrayListMultimap<String, GffGeneIsoInfo> mapRnaID2LsIso = ArrayListMultimap.create();
 	private ArrayListMultimap<String, ExonInfo> mapRnaID2LsIsoLocInfo = ArrayListMultimap.create();
-	
+	private Map<String, Align> mapGeneID2Region = new HashMap<>();
 	/** 将第一列换算为chrID */
 	private Map<String, String> mapID2ChrID = new HashMap<String, String>();
 		
@@ -154,13 +155,14 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   String[] thisRnaIDandName = null;	   
 	   
 	   for (String content : txtgff.readlines()) {
-		   
 		   if(content.charAt(0) == '#') continue;
 		   String[] ss = content.split("\t");//按照tab分开
-		   if (ss[2].equals("match") || ss[2].toLowerCase().equals("chromosome") || ss[2].toLowerCase().equals("intron") || ss[0].startsWith("NW_") || ss[0].startsWith("NT_")) {
+		   if (ss[2].equals("match") || ss[2].toLowerCase().equals("chromosome") || ss[2].toLowerCase().equals("intron") || ss[0].startsWith("NT_")) {
 			   continue;
 		   }
-		   
+//		   if (ss[2].equals("match") || ss[2].toLowerCase().equals("chromosome") || ss[2].toLowerCase().equals("intron") || ss[0].startsWith("NW_") || ss[0].startsWith("NT_")) {
+//			   continue;
+//		   }
 		   ss[0] = getChrID(ss);
 		   if (ss[2].equals("region")) continue;
 		   
@@ -174,6 +176,17 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
       	    * 一旦出现了mRNA，就要开始指定5UTR，3UTR，CDS的起点和终止
       	    */
 		   else if (GeneType.getMapMRNA2GeneType().containsKey(ss[2].toLowerCase())) {
+			   Align alignRegion = new Align(ss[0], Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
+			  double[] compareRegion = null;
+			   if (thisGeneIDandName != null) {
+				   Align alignGeneRegion = mapGeneID2Region.get(thisGeneIDandName[0]);
+				   compareRegion = ArrayOperate.cmpArray(new double[]{alignRegion.getStartAbs(), alignRegion.getEndAbs()}, 
+						   new double[]{alignGeneRegion.getStartAbs(), alignGeneRegion.getEndAbs()});
+			   }
+			   if (thisGeneIDandName == null || compareRegion[2] < 0.5) {
+				   thisGeneIDandName = addNewGene(ss);
+			   }
+			   
 			   thisRnaIDandName = addMRNA(thisGeneIDandName, ss);
 		   }
 		   else if (ss[2].contains("exon")) {
@@ -208,11 +221,13 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		   if (ss[2].equals("region")) {
 			   String regxChrID = "(?<=chromosome\\=)\\w+";
 			   if (ss[8].contains("genome=genomic")) {
-				   return null;
+				   chrID = GeneID.removeDot(ss[0]);
 			   } else if (ss[8].contains("genome=mitochondrion")) {
 				   chrID = "chrm";
 			   } else if (ss[8].contains("genome=chloroplast")) {
 				   chrID = "chrc";
+			   }  else if (ss[8].contains("genome=Unknown")) {
+				   chrID = GeneID.removeDot(ss[0]);
 			   } else {
 				   try {
 					   chrID = "chr" + PatternOperate.getPatLoc(ss[8], regxChrID, false).get(0)[0];
@@ -250,6 +265,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   mapGenID2GffDetail.put(geneID, gffDetailLOC);
 	   
 	   mapGeneName2IsHaveExon.put(geneID, false);
+	   mapGeneID2Region.put(geneID, new Align(ss[0], Integer.parseInt(ss[3]), Integer.parseInt(ss[4])));
 	   return new String[]{geneID, geneName};
    }
    /**
@@ -380,6 +396,9 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   }
 	   if (geneName == null) {
 		   geneName = patName.getPatFirst(content);
+		}
+	   if (geneName == null) {
+		   geneName = patProduct.getPatFirst(content);
 		}
 		if (geneName == null) {
 			if (geneID == null && ID == null) {
