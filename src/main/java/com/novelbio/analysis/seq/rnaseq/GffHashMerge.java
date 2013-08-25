@@ -20,9 +20,7 @@ public class GffHashMerge {
 	private static final Logger logger = Logger.getLogger(GffHashMerge.class);
 	
 	public static void main(String[] args) {
-//		human();
 //		mouse();
-		checken();
 	}
 	public static void mouse() {
 		String gffhashGeneCuf = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/novelbioTranscriptome/transcripts.gtf";
@@ -46,54 +44,6 @@ public class GffHashMerge {
 		TxtReadandWrite txtOut = new TxtReadandWrite(gffFinalStatistics, true);
 
 		txtOut.ExcelWrite(transcriptomStatistics.getStatisticsResult());
-	}
-	//TODO 这个运行了会出错，等待修正
-	public static void human() {
-		String gffhashGeneCuf = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/novelbioTranscriptome/transcripts.gtf";
-		String gffFinal = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/novelbioTranscriptome/finalTranscript.gtf";
-		String gffFinalStatistics = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/novelbioTranscriptome/transcriptomeStatistics.txt";
-		Species species = new Species(10090);
-		GffHashMerge gffHashMerge = new GffHashMerge();
-//		gffHashMerge.setSpecies(species);
-//		gffHashMerge.setGffHashGeneRef(new GffHashGene(species.getGffFileType(), species.getGffFile()));
-//		gffHashMerge.addGffHashGene(new GffHashGene(NovelBioConst.GENOME_GFF_TYPE_CUFFLINK_GTF, gffhashGeneCuf));
-//		GffHashGene gffHashGene = gffHashMerge.getGffHashGeneModifyResult();
-//		gffHashGene.removeDuplicateIso();
-//		gffHashGene.writeToGTF(gffFinal, "novelbio");
-
-		gffHashMerge = new GffHashMerge();
-		gffHashMerge.setSpecies(species);
-		gffHashMerge.setGffHashGeneRef(new GffHashGene(species.getGffType(), species.getGffFile()));
-		gffHashMerge.addGffHashGene(new GffHashGene(GffType.GTF, gffFinal));
-	
-		TranscriptomStatistics transcriptomStatistics = gffHashMerge.getStatisticsCompareGff();
-		TxtReadandWrite txtOut = new TxtReadandWrite(gffFinalStatistics, true);
-
-		txtOut.ExcelWrite(transcriptomStatistics.getStatisticsResult());
-	}
-	public static void checken() {
-		String gffHashGeneRef = "/home/zong0jie/Test/rnaseq/ath2013-07-24013425388.GTF";
-		String gffhashGeneCuf = "/home/zong0jie/Test/rnaseq/cufflinks/cufflinksMerged.gff/merged.gtf";
-		String gffFinal = "/home/zong0jie/Test/rnaseq/cufflinks/nbcNew.gtf";
-		String gffFinalStatistics = "/media/winF/NBC/Project/Project_FY/chicken/Result/cufflinkAll/cufflink/transcriptomeStatistics.txt";
-		
-		GffHashMerge gffHashMerge = new GffHashMerge();
-		gffHashMerge.setSpecies(new Species());
-		gffHashMerge.setGffHashGeneRef(new GffHashGene(GffType.GTF, gffHashGeneRef));
-		gffHashMerge.addGffHashGene(new GffHashGene(GffType.GTF, gffhashGeneCuf));
-		
-		GffHashGene gffHashGene = gffHashMerge.getGffHashGeneModifyResult();
-//		gffHashGene.removeDuplicateIso();
-		gffHashGene.writeToGTF(gffFinal, "novelbio");
-		
-//		gffHashMerge = new GffHashMerge();
-//		gffHashMerge.setSpecies(new Species(9013));
-//		gffHashMerge.setGffHashGeneRef(new GffHashGene(GffType.GTF, gffHashGeneRef));
-//		gffHashMerge.addGffHashGene(new GffHashGene(GffType.GTF, gffFinal));
-//		
-//		TranscriptomStatistics transcriptomStatistics = gffHashMerge.getStatisticsCompareGff();
-//		TxtReadandWrite txtOut = new TxtReadandWrite(gffFinalStatistics, true);
-//		txtOut.ExcelWrite(transcriptomStatistics.getStatisticsResult());
 	}
 
 	GffHashGene gffHashGeneRef = new GffHashGene();

@@ -58,6 +58,9 @@ public class ManageSpeciesFile {
 		for (int i = 1; i < lsInfo.size(); i++) {
 			SpeciesFile speciesFile = new SpeciesFile();
 			String[] info = lsInfo.get(i);
+			if (info[0].startsWith("#")) {
+				continue;
+			}
 			info = ArrayOperate.copyArray(info, title.length);
 			int m = hashName2ColNum.get("taxid");
 			speciesFile.setTaxID((int)Double.parseDouble(info[m]));

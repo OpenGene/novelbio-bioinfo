@@ -86,7 +86,14 @@ public class ChrStringHash extends SeqHashAbs{
 			bufChrSeq = txtChrTmp.readfile();
 			String chrID = chrFileName[0].toLowerCase();
 			// 假设每一个文件的每一行Seq都相等
-			String seqRow = txtChrTmp.readFirstLines(3).get(2);
+			String seqRow = "";
+			try {
+				seqRow = txtChrTmp.readFirstLines(3).get(2);
+
+			} catch (Exception e) {
+				seqRow = txtChrTmp.readFirstLines(3).get(2);
+
+			}
 			mapChrFile2LengthRow.put(chrID, seqRow.length());
 			
 			mapChrID2RandomFile.put(chrID, chrRAseq);

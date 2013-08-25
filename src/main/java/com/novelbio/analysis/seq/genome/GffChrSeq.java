@@ -32,7 +32,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	/** 是否提取内含子 */
 	boolean getIntron = false;
 	/** 提取全基因组序列的时候，是每个LOC提取一条序列还是提取全部 */
-	boolean getAllIso;
+	boolean getAllIso = false;
 	/** 是否提取氨基酸 */
 	boolean getAAseq = false;
 	/** 是否仅提取mRNA序列 */
@@ -85,6 +85,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	/** 提取全基因组序列的时候，是每个Gene提取一条Iso还是提取全部Iso <br>
 	 * true：提取该基因对应的转录本<br>
 	 * false 提取该基因所在基因的最长转录本<br>
+	 * 默认false
 	 */
 	public void setGetAllIso(boolean getAllIso) {
 		this.getAllIso = getAllIso;
@@ -411,7 +412,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 			return getSiteRange(gffGeneIsoInfo, gffGeneIsoInfo.getTSSsite(),tssRange[0], tssRange[1]);
 		}
 		else if (geneStructure.equals(GeneStructure.TES)) {
-			return getSiteRange(gffGeneIsoInfo, gffGeneIsoInfo.getTSSsite(),tesRange[0], tesRange[1]);
+			return getSiteRange(gffGeneIsoInfo, gffGeneIsoInfo.getTESsite(),tesRange[0], tesRange[1]);
 		}
 		if (lsExonInfos.size() == 0) {
 			return null;

@@ -11,7 +11,6 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -19,6 +18,8 @@ import com.novelbio.database.model.modgeneid.GeneType;
 
 public class GffHashGTF extends GffHashGeneAbs{
 	private final static Logger logger = Logger.getLogger(GffHashGTF.class);
+	final static String startCodeFlag = "start_codon";
+	final static String stopCodeFlag = "stop_codon";
 	GffHashGene gffHashRef;
 	double likelyhood = 0.4;//相似度在0.4以内的转录本都算为同一个基因
 	/** gene类似名 */
@@ -138,13 +139,13 @@ public class GffHashGTF extends GffHashGeneAbs{
 				if (!mapIso2IsHaveExon.get(tmpTranscriptName)) {
 					gffGeneIsoInfo.addExon(cisExon, exonStart, exonEnd);
 				}
-			} else if (ss[2].toLowerCase().equals("start_codon")) {
+			} else if (ss[2].toLowerCase().equals(startCodeFlag)) {
 				if (cisExon == null || cisExon) {
 					gffGeneIsoInfo.setATG(exonStart);
 				} else {
 					gffGeneIsoInfo.setATG(exonEnd);
 				}
-			} else if (ss[2].toLowerCase().equals("stop_codon")) {
+			} else if (ss[2].toLowerCase().equals(stopCodeFlag)) {
 				if (cisExon == null || cisExon) {
 					gffGeneIsoInfo.setUAG(exonEnd);
 				} else {

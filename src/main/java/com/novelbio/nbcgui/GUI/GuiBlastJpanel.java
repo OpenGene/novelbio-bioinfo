@@ -500,6 +500,7 @@ public class GuiBlastJpanel extends JPanel {
 			jCobTaxSelect = new JComboBoxData<Species>();
 			jCobTaxSelect.setBounds(800, 2, 228, 23);
 			jCobTaxSelect.setMapItem(Species.getSpeciesName2Species(Species.KEGGNAME_SPECIES));
+			jCobTaxSelect.setEditable(true);
 		}
 		return jCobTaxSelect;
 	}
@@ -547,7 +548,7 @@ public class GuiBlastJpanel extends JPanel {
 		return jComGOClassSelect;
 	}
 	
-	private JComboBox getJCmbSpeciesBlast() {
+	private JComboBoxData<Species> getJCmbSpeciesBlast() {
 		if(jCmbSpeciesBlast == null) {
 			jCmbSpeciesBlast = new JComboBoxData<Species>();
 			jCmbSpeciesBlast.setBounds(283, 269, 229, 23);

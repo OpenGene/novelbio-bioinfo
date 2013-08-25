@@ -47,9 +47,20 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 	@Override
 	protected String getGTFformatExon(String title, String strand) {
 		String geneExon = "";
+		String prefixInfo = getRefID() + "\t" + title + "\t";
+		String suffixInfo = "\t" + "." + "\t" + strand + "\t.\t" + "gene_id \"" + getParentGeneName() + "\"; transcript_id " + "\"" + getName()+"\"; " + TxtReadandWrite.ENTER_LINUX;
+		int[] atg = getATGLoc();
+		int[] uag = getUAGLoc();
+		
 		for (ExonInfo exons : this) {
+			if (atg != null && ATGsite >= exons.getStartAbs() && ATGsite <= exons.getEndAbs()) {
+				geneExon = geneExon + prefixInfo + GffHashGTF.startCodeFlag + "\t" + atg[0] + "\t" + atg[1] + suffixInfo;
+			}
 			geneExon = geneExon + getRefID() + "\t" +title + "\texon\t" + exons.getStartAbs()  + "\t" + exons.getEndAbs() 
-		         + "\t" + "." + "\t" + strand + "\t.\t" + "gene_id \"" + getParentGeneName() + "\"; transcript_id " + "\"" + getName()+"\"; " + TxtReadandWrite.ENTER_LINUX;
+		         + suffixInfo;
+			if (uag != null && UAGsite >= exons.getStartAbs() && UAGsite <= exons.getEndAbs()) {
+				geneExon = geneExon + prefixInfo + GffHashGTF.stopCodeFlag + "\t" + uag[0] + "\t" + uag[1] + suffixInfo;
+			}
 		}
 		return geneExon;
 	}
@@ -63,6 +74,36 @@ public class GffGeneIsoCis extends GffGeneIsoInfo {
 		}
 		return geneExon;
 	}
+	
+	private int[] getATGLoc() {
+		int[] atginfo = null;
+		if (ATGsite > 0) {
+			atginfo = new int[2];
+			if (isCis5to3()) {
+				atginfo[0] = ATGsite;
+				atginfo[1] = ATGsite + 2;
+			} else {
+				atginfo[0] = ATGsite - 2;
+				atginfo[1] = ATGsite;
+			}
+		}
+		return atginfo;
+	}
+	private int[] getUAGLoc() {
+		int[] atginfo = null;
+		if (UAGsite > 0) {
+			atginfo = new int[2];
+			if (isCis5to3()) {
+				atginfo[0] = UAGsite;
+				atginfo[1] = UAGsite + 2;
+			} else {
+				atginfo[0] = UAGsite - 2;
+				atginfo[1] = UAGsite;
+			}
+		}
+		return atginfo;
+	}
+	
 	@Override
 	public GffGeneIsoCis clone() {
 		GffGeneIsoCis result = null;

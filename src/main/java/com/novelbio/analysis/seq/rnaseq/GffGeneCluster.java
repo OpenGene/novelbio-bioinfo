@@ -205,9 +205,6 @@ public class GffGeneCluster {
 		GffDetailGene gffDetailGeneRef = getGffDetailGene(lsGenesRef);
 		GffDetailGene gffDetailGeneResult = gffDetailGeneRef.clone();
 		gffDetailGeneResult.clearIso();
-		if (gffDetailGeneRef.getName().contains("AT1G01040")) {
-			System.out.println();
-		}
 		HashSet<String> setGffIsoRefSelectName = new HashSet<String>();//所有选中的Iso的名字，也就是与cufflink预测的转录本相似的转录本
 		//这里的lsGeneCluster已经去除了refGff
 		for (ArrayList<GffDetailGene> lsgffArrayList : lsGeneCluster) {//获得GffCluster里面每个GffHash的list，这个一般只有一个GffHash
@@ -237,7 +234,7 @@ public class GffGeneCluster {
 	 * 用gffDetailGeneCalculate去修正gffDetailGeneRef，结果放入gffDetailGeneResult中
 	 * @param gffDetailGeneResult 
 	 * @param gffDetailGeneRef
-	 * @param gffDetailGeneCalculate
+	 * @param gffDetailGeneCalculate 含有全部iso的gffDetailGene
 	 * @return 返回被修正的gffRefIso的名字，以后就不会添加这些iso进入结果了
 	 */
 	private Set<String> modifyGffRef(GffDetailGene gffDetailGeneResult, GffDetailGene gffDetailGeneRef, GffDetailGene gffDetailGeneCalculate) {
@@ -250,6 +247,9 @@ public class GffGeneCluster {
 				GffGeneIsoInfo gffIsoSimilar = gffDetailGeneRef.getSimilarIso(gffIsoThis, 0.5);
 				if (gffIsoSimilar != null) {
 					gffIsoThis.setParentGeneName(gffIsoSimilar.getParentGeneName());
+					if (gffIsoSimilar.ismRNA() && !gffIsoThis.ismRNA()) {
+						gffIsoThis.setATGUAGauto(gffIsoSimilar.getATGsite(), gffIsoSimilar.getUAGsite());
+					}
 				}
 				gffDetailGeneResult.addIso(gffIsoThis);
 				continue;
@@ -257,9 +257,20 @@ public class GffGeneCluster {
 			
 			GffGeneIsoInfo gffIsoTmpResult = compareIso(gffIsoRef, gffIsoThis);
 			if (gffIsoTmpResult == null) {
+				if (gffIsoRef.ismRNA() && !gffIsoRef.ismRNA()) {
+					gffIsoThis.setATGUAGauto(gffIsoRef.getATGsite(), gffIsoRef.getUAGsite());
+				}
 				gffDetailGeneResult.addIso(gffIsoThis);
 			} else {
 				setGffIsoRefSelectName.add(gffIsoRef.getName());
+				//添加ATG UAG信息
+				if (!gffIsoTmpResult.ismRNA()) {
+					if (gffIsoRef.ismRNA()) {
+						gffIsoTmpResult.setATGUAGauto(gffIsoRef.getATGsite(), gffIsoRef.getUAGsite());
+					} else if (gffIsoThis.ismRNA()) {
+						gffIsoTmpResult.setATGUAGauto(gffIsoThis.getATGsite(), gffIsoThis.getUAGsite());
+					}
+				}
 				gffDetailGeneResult.addIso(gffIsoTmpResult);
 			}
 		}

@@ -238,7 +238,7 @@ public class CtrlBlastGo extends SwingWorker<ArrayList<String[]>, ProgressDataGo
 	
 	@Override
 	public void process(List<ProgressDataGo> data) {
-		if (isCancelled()) {
+		if (isCancelled() || guiBlast == null) {
 			return;
 		}
 		for (ProgressDataGo progressDataGo : data) {
@@ -252,6 +252,9 @@ public class CtrlBlastGo extends SwingWorker<ArrayList<String[]>, ProgressDataGo
 	}
 	
 	public void done() {
+		if (guiBlast == null) {
+			return;
+		}
 		int maxValue = guiBlast.getJProgressBar1().getMaximum();
 		guiBlast.getJProgressBar1().setValue(maxValue);
 		guiBlast.getJBtnGoPath().setEnabled(true);

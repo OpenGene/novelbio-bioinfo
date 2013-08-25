@@ -497,7 +497,8 @@ public class Species implements Cloneable {
 	 */
 	public static HashMap<String, Species> getSpeciesName2Species(int speciesType) {
 		HashMap<String, Species> mapName2Species = new LinkedHashMap<String, Species>();
-		mapName2Species.put("UnKnown Species", new Species());
+		Species speciesUnKnown = new Species();
+		mapName2Species.put("UnKnown Species", speciesUnKnown);
 		//按照物种名进行排序
 		TreeMap<String, Species> treemapName2Species = new TreeMap<String, Species>();
 		
