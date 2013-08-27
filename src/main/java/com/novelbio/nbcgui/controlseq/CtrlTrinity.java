@@ -15,27 +15,40 @@ public class CtrlTrinity {
 	int threadNum = 20;
 	StrandSpecific strandSpecific = StrandSpecific.NONE;
 	boolean jaccard_clip = false;
+	int insertSize = 500;
 	String outPrefix;
+	
 	/** 单位是G，默认50G */
 	public void setHeapSpaceMax(int heapSpaceMax) {
+		if (heapSpaceMax < 0 || heapSpaceMax > 100) {
+			return;
+		}
 		this.heapSpaceMax = heapSpaceMax;
 	}
 	/**默认20线程 */
 	public void setThreadNum(int threadNum) {
+		if (threadNum < 0 || threadNum > 100) {
+			return;
+		}
 		this.threadNum = threadNum;
 	}
 	/** 默认没有链特异性 */
 	public void setStrandSpecific(StrandSpecific strandSpecific) {
 		this.strandSpecific = strandSpecific;
 	}
+	public void setInsertSize(int insertSize) {
+		this.insertSize = insertSize;
+	}
 	/**只需将copeFastq设定好fastq等信息即可，不需要调用其{@link copeFastq#setMapCondition2LsFastQLR()}方法*/
 	public void setCopeFastq(CopeFastq copeFastq) {
 		this.copeFastq = copeFastq;
 	}
+	
 	/** 输出文件夹 */
 	public void setOutPrefix(String outPrefix) {
 		this.outPrefix = outPrefix;
 	}
+
 	/**
 	 * option, set if you have paired reads and you expect high gene density with
 	 *  UTR overlap (use FASTQ input file format for reads). (note: jaccard_clip is an
@@ -64,6 +77,7 @@ public class CtrlTrinity {
 			trinity.setThreadNum(threadNum);
 			trinity.setSS_lib_type(strandSpecific);
 			trinity.setIsJaccard_clip(jaccard_clip);
+			trinity.setPairs_distance(insertSize);
 			trinity.setOutputPath(outPrefix + prefix);
 			trinity.setLsLeftFq(lsFqLeft);
 			if (lsFqRight.size() > 0) {

@@ -2,6 +2,7 @@ package com.novelbio.nbcgui.GUI;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -15,6 +16,8 @@ import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
+import com.novelbio.nbcgui.controlseq.CopeFastq;
+import com.novelbio.nbcgui.controlseq.CtrlTrinity;
 
 public class GuiRNAAssembly extends JPanel {
 	private JTextField txtSaveTo;
@@ -25,6 +28,7 @@ public class GuiRNAAssembly extends JPanel {
 	JSpinner spnMemNum;
 	JSpinner spnInsertSize;
 	JSpinner spnThreadNum;
+	JCheckBox chckbxHighGeneDensity;
 	
 	/**
 	 * Create the panel.
@@ -106,7 +110,7 @@ public class GuiRNAAssembly extends JPanel {
 		lblInsertSize.setBounds(460, 341, 84, 18);
 		add(lblInsertSize);
 		
-		JCheckBox chckbxHighGeneDensity = new JCheckBox("high gene density with UTR overlap(Fungi only and ask Dr. Wang)");
+		chckbxHighGeneDensity = new JCheckBox("high gene density with UTR overlap(Fungi only and ask Dr. Wang)");
 		chckbxHighGeneDensity.setBounds(12, 389, 441, 26);
 		add(chckbxHighGeneDensity);
 		
@@ -144,7 +148,31 @@ public class GuiRNAAssembly extends JPanel {
 	}
 	
 	private void run() {
+		CopeFastq copeFastq = new CopeFastq();
+		List<String> lsLeftFq = new ArrayList<>();
+		List<String> lsPrefix = new ArrayList<>();
+		List<String> lsRight = new ArrayList<>();
 		
+		List<String[]> lsLeft2Prefix = sclLeftFq.getLsDataInfo();
+		for (String[] strings : lsLeft2Prefix) {
+			lsLeftFq.add(strings[0]);
+			lsPrefix.add(strings[1]);
+		}
+		for (String[] strings : sclRightFq.getLsDataInfo()) {
+			lsRight.add(strings[0]);
+		}
+		copeFastq.setLsCondition(lsPrefix);
+		copeFastq.setLsFastQfileLeft(lsLeftFq);
+		copeFastq.setLsFastQfileRight(lsRight);
+		
+		CtrlTrinity ctrlTrinity = new CtrlTrinity();
+		ctrlTrinity.setCopeFastq(copeFastq);
+		ctrlTrinity.setHeapSpaceMax((int) spnMemNum.getValue());
+		ctrlTrinity.setJaccard_clip(chckbxHighGeneDensity.isSelected());
+		ctrlTrinity.setOutPrefix(txtSaveTo.getText());
+		ctrlTrinity.setInsertSize((int) spnInsertSize.getValue());
+		ctrlTrinity.setStrandSpecific(cmbStrandInfo.getSelectedValue());
+		ctrlTrinity.setThreadNum((int) spnThreadNum.getValue());
 	}
 	
 }
