@@ -184,11 +184,11 @@ public class Trinity {
 	}
 	
 	/** 务必先设定Left再设定Right */
-	public void setLeftFq(List<String> lsLeftFq) {
+	public void setLsLeftFq(List<String> lsLeftFq) {
 		this.lsLeftFq = lsLeftFq;
 	}
 	/** 务必先设定Left再设定Right */
-	public void setRightFq(List<String> lsRightFq) {
+	public void setLsRightFq(List<String> lsRightFq) {
 		this.lsRightFq = lsRightFq;
 	}
 
