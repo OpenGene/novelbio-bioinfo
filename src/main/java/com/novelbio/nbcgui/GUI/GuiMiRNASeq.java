@@ -28,7 +28,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.generalConf.PathNBCDetail;
+import com.novelbio.generalConf.PathDetailNBC;
 
 public class GuiMiRNASeq extends JPanel{
 	private static final long serialVersionUID = -5940420720636777182L;
@@ -301,8 +301,8 @@ public class GuiMiRNASeq extends JPanel{
 		ctrlMiRNAfastq.setOutPath(txtOutPathPrefix.getText());
 		ctrlMiRNAfastq.setGffChrAbs(gffChrAbs);
 		ctrlMiRNAfastq.setLsFastqFile(lsfastqFile2Prefix);
-		ctrlMiRNAfastq.setMiRNAinfo(PathNBCDetail.getMiRNADat());
-		ctrlMiRNAfastq.setRfamFile(PathNBCDetail.getRfamTab());
+		ctrlMiRNAfastq.setMiRNAinfo(PathDetailNBC.getMiRNADat());
+		ctrlMiRNAfastq.setRfamFile(PathDetailNBC.getRfamTab());
 		ctrlMiRNAfastq.setMapAll2Rfam(chkMapAllToRfam.isSelected());
 		ctrlMiRNAfastq.mappingAndCounting();
 		ctrlMiRNAfastq.writeToFile();

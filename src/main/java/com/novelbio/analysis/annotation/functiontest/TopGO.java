@@ -17,7 +17,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.service.SpringFactory;
-import com.novelbio.generalConf.PathNBCDetail;
+import com.novelbio.generalConf.PathDetailNBC;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;

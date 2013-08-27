@@ -15,7 +15,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.generalConf.PathNBCDetail;
+import com.novelbio.generalConf.PathDetailNBC;
 
 /** 
  * 给定一系列fastq文件，获得miRNA的bed文件
@@ -25,7 +25,7 @@ public class CtrlMiRNAfastq {
 	public static void main(String[] args) {
 		Species species = new Species(7955);
 		MiRNACount miRNACount = new MiRNACount();
-		miRNACount.setMiRNAinfo(ListMiRNALocation.TYPE_RNA_DATA, species, PathNBCDetail.getMiRNADat());
+		miRNACount.setMiRNAinfo(ListMiRNALocation.TYPE_RNA_DATA, species, PathDetailNBC.getMiRNADat());
 
 		miRNACount.setMiRNAfile(species.getMiRNAhairpinFile(), species.getMiRNAmatureFile());
 		miRNACount.setAlignFile(new SamFile("/media/winE/NBC/Project/Test/miRNA/jws/tmpMapping/G56_miRNA.bam"));

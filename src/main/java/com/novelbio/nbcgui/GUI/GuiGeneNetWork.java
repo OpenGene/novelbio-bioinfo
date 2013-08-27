@@ -15,7 +15,7 @@ import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.generalConf.PathNBCDetail;
+import com.novelbio.generalConf.PathDetailNBC;
 
 public class GuiGeneNetWork extends JPanel {
 	private static final long serialVersionUID = -5762081843879739918L;
@@ -28,7 +28,7 @@ public class GuiGeneNetWork extends JPanel {
 	GuiLayeredPanSpeciesVersion guiLayeredPanSpeciesVersion = new GuiLayeredPanSpeciesVersion();
 	//TODO loading路径可能有变
 //	String loadingFile =  MyPath.getRealPath() + "/GeneNetwork/interactions.txt" ;
-	String loadingFile = PathNBCDetail.getNCBIinteract();
+	String loadingFile = PathDetailNBC.getNCBIinteract();
 	
 	/**
 	 * Create the panel.

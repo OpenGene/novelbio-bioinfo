@@ -7,7 +7,7 @@ import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataOperate.DateUtil;
-import com.novelbio.generalConf.PathNBCDetail;
+import com.novelbio.generalConf.PathDetailNBC;
 
 public class COGanno {
 	BlastNBC blastNBC = new BlastNBC();

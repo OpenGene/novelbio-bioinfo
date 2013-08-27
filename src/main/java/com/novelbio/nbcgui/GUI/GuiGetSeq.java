@@ -27,7 +27,7 @@ import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.database.domain.geneanno.SpeciesFile.ExtractSmallRNASeq;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.generalConf.PathNBCDetail;
+import com.novelbio.generalConf.PathDetailNBC;
 import com.novelbio.nbcgui.controlquery.CtrlPeakStatistics;
 import com.novelbio.nbcgui.controlseq.CtrlGetSeq;
 
@@ -444,7 +444,7 @@ public class GuiGetSeq extends JPanel {
 		ExtractSmallRNASeq extractSmallRNASeq = new ExtractSmallRNASeq();
 		extractSmallRNASeq.setLsMiRNAname(lsMiRNAname);
 		extractSmallRNASeq.setOutMatureRNA(txtSavePath.getText());
-		extractSmallRNASeq.setRNAdata(PathNBCDetail.getMiRNADat(), cmbSpecies.getSelectedValue().getAbbrName());
+		extractSmallRNASeq.setRNAdata(PathDetailNBC.getMiRNADat(), cmbSpecies.getSelectedValue().getAbbrName());
 		if (chckbxGenomwide.isSelected()) {
 			extractSmallRNASeq.setOutHairpinRNA(FileOperate.changeFileSuffix(txtSavePath.getText(), "_pre", null));
 		}

@@ -8,8 +8,8 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.base.PathDetail;
 
-public class PathNBCDetail {
-	private static final Logger logger = Logger.getLogger(PathNBCDetail.class);
+public class PathDetailNBC {
+	private static final Logger logger = Logger.getLogger(PathDetailNBC.class);
 	static Properties properties;
 	static {
 		initial();
@@ -47,6 +47,11 @@ public class PathNBCDetail {
 	/** COGfasta文件的路径 */
 	public static String getCOGfastaFile() {
 		return properties.getProperty("COGfasta");
+	}
+	
+	/** software配置文件的路径 */
+	public static String getSoftwareInfo() {
+		return properties.getProperty("Software");
 	}
 	
 	/** rfam的对照表文件<br>

@@ -34,7 +34,7 @@ public class Species implements Cloneable {
 	static boolean isOK = false;
 	static {
 		String file = "/lib/firmware/tigon/property";
-//		String file = "C:/Windows/IME/IMEJP10/DICTS/property";
+		String filewin = "C:/Windows/IME/IMEJP10/DICTS/property";
 		if (FileOperate.isFileExist(file)) {
 			TxtReadandWrite txtRead = new TxtReadandWrite(file);
 			for (String string : txtRead.readlines(3)) {
@@ -44,7 +44,16 @@ public class Species implements Cloneable {
 				break;
 			}
 			txtRead.close();
-		}				
+		} else if (FileOperate.isFileExist(filewin)) {
+			TxtReadandWrite txtRead = new TxtReadandWrite(filewin);
+			for (String string : txtRead.readlines(3)) {
+				if (string.equals("201301jndsfiudsioold")) {
+					isOK = true;
+				}
+				break;
+			}
+			txtRead.close();
+		}		
 	}
 	
 	private static Logger logger = Logger.getLogger(Species.class);

@@ -70,7 +70,7 @@ public class ImportDB {
 	}
 	
 	private void updateSoftInfo() {
-		SoftWareInfo.updateInfo(softToolsFile);
+		SoftWareInfo.updateInfo(true, softToolsFile);
 	}
 	
 	private void updateGODB() {

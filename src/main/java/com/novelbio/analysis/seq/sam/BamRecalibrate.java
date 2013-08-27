@@ -1,5 +1,9 @@
 package com.novelbio.analysis.seq.sam;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -33,6 +37,8 @@ public class BamRecalibrate {
 	String refSequenceFile;
 	String bamSortedFile;
 	int threadNum = 4;
+	/** 输入文件路径+vcf文件名 */
+	private Set<String> setSnpDBVcfFilePath = new HashSet<String>();
 	/**
 	 * 设定samtools所在的文件夹以及待比对的路径
 	 * @param exePath 如果在根目录下则设置为""或null
@@ -49,22 +55,49 @@ public class BamRecalibrate {
 	public void setBamFile(String bamFile) {
 		this.bamSortedFile = bamFile;
 	}
+	/**
+	 * @param snpVcfFile 已知的snpdb等文件，用于校正。可以添加多个
+	 */
+	public void addSnpVcfFile(String snpVcfFile) {
+		if (FileOperate.isFileExistAndBigThanSize(snpVcfFile, 0)) {
+			setSnpDBVcfFilePath.add(snpVcfFile);
+		}
+	}
+	
+	/**
+	 * @param snpVcfFile 已知的snpdb等文件，用于校正。可以添加多个
+	 */
+	public void setSnpVcfFile(Collection<String> colSnpVcfFile) {
+		if (colSnpVcfFile == null || colSnpVcfFile.size() == 0) {
+			return;
+		}
+		setSnpDBVcfFilePath.clear();
+		for (String snpVcfFile : colSnpVcfFile) {
+			if (FileOperate.isFileExistAndBigThanSize(snpVcfFile, 0)) {
+				setSnpDBVcfFilePath.add(snpVcfFile);
+			}
+		}
+	}
+	
 	public String reCalibrate() {
 		String bamRealignFile = FileOperate.changeFileSuffix(bamSortedFile, "_Recalibrate", "bam");
 		return reCalibrate(bamRealignFile);
 	}
 	public String reCalibrate(String outFile) {
-		String cmdCountCovariates ="java -Xmx4g -jar " + ExePath + "GenomeAnalysisTK.jar " +  "-T CountCovariates " 
-				+ getRefSequenceFile() + getSortedBam() + getThreadNum() + getParamCountCovariates() + getOutRecalCsv();
+		String cmdCountCovariates ="java -Xmx4g -jar " + ExePath + "GenomeAnalysisTK.jar " +  "-T BaseRecalibrator " 
+				+ getRefSequenceFile() + getSortedBam() + getThreadNum() + " -o "+ getRecalTableName() + getKnownSite();
 		CmdOperate cmdOperate = new CmdOperate(cmdCountCovariates, "CountCovariates");
 		cmdOperate.run();
 		
-		String cmdRealign = "java -Xmx10g " + ExePath + "GenomeAnalysisTK.jar " +  "-T TableRecalibration " 
-				+ getRefSequenceFile() + getSortedBam() + getOutRecalCsv() + getParamRecalibrate() + getOutRecalibrateBam(outFile);
+		outFile = FileOperate.changeFileSuffix(outFile, "", "bam");
+		String cmdRealign = "java -Xmx10g " + ExePath + "GenomeAnalysisTK.jar " +  "-T PrintReads " 
+				+ getRefSequenceFile() + getSortedBam() + " -BQSR " + getRecalTableName() + " -o " + CmdOperate.addQuot(outFile) + " ";
 		cmdOperate = new CmdOperate(cmdRealign,"samToBam");
 		cmdOperate.run();
-		
-		return FileOperate.changeFileSuffix(outFile, "", "bam");
+		if (FileOperate.isFileExistAndBigThanSize(outFile, 0)) {
+			return outFile;
+		}
+		return null;
 	}
 	
 	private String getRefSequenceFile() {
@@ -76,18 +109,21 @@ public class BamRecalibrate {
 	private String getThreadNum() {
 		return "-nt " + threadNum + " ";
 	}
-	private String getParamCountCovariates() {
-		return "--default_platform ILLUMINA -l INFO -cov ReadGroupCovariate -cov QualityScoreCovariate -cov CycleCovariate -cov DinucCovariate ";
+	private String getKnownSite() {
+		String knownSite = "";
+		for (String string : setSnpDBVcfFilePath) {
+			knownSite = knownSite + " -knownSites " + CmdOperate.addQuot(string);
+		}
+		return knownSite + " ";
 	}
-	private String getOutRecalCsv() {
-		return "-recalFile " + "\""+ FileOperate.changeFilePrefix(bamSortedFile, "_recal_data", "csv") + "\" ";
+
+	
+	private String getRecalTableName() {
+		return CmdOperate.addQuot(FileOperate.changeFilePrefix(bamSortedFile, "_recal_data", "grp"));
 	}
-	private String getParamRecalibrate() {
-		return "-l INFO --default_platform ILLUMINA ";
-	}
+
 	private String getOutRecalibrateBam(String outFile) {
-		return "-o " + "\"" + FileOperate.changeFileSuffix(outFile, "", "bam") + "\" ";
+		return " -o " + CmdOperate.addQuot(FileOperate.changeFileSuffix(outFile, "", "bam"));
 	}
 	
-
 }

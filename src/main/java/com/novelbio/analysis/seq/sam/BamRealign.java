@@ -3,7 +3,7 @@ package com.novelbio.analysis.seq.sam;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.generalConf.PathNBCDetail;
+import com.novelbio.generalConf.PathDetailNBC;
 
 public class BamRealign {
 //	java -Xmx4g -jar $GATK \
@@ -24,6 +24,7 @@ public class BamRealign {
 	String ExePath = "";
 	String refSequenceFile;
 	String bamSortedFile;
+	private String unsafe = GATKRealign.ALL;
 	/**
 	 * 设定samtools所在的文件夹以及待比对的路径
 	 * @param exePath 如果在根目录下则设置为""或null
@@ -51,31 +52,35 @@ public class BamRealign {
 		cmdOperate.run();
 		
 		String cmdRealign = "java -Xmx10g -jar " + getTmpPath() + ExePath + "GenomeAnalysisTK.jar " +  "-T IndelRealigner " + "--consensusDeterminationModel USE_SW " 
-				+ getRefSequenceFile() + getSortedBam() + getInIntervalFile() + getOutRealignBam(outFile);
+				+ getRefSequenceFile() + getSortedBam() + getInIntervalFile() + getOutRealignBam(outFile) + getUnsafe();
 		cmdOperate = new CmdOperate(cmdRealign,"samToBam");
 		cmdOperate.run();
-		
-		return FileOperate.changeFileSuffix(outFile, "", "bam");
+		if (cmdOperate.isFinished()) {
+			return FileOperate.changeFileSuffix(outFile, "", "bam");
+		}
+		return null;
 	}
 	
 	private String getRefSequenceFile() {
-		return "-R " + CmdOperate.addQuot(refSequenceFile);
+		return " -R " + CmdOperate.addQuot(refSequenceFile);
 	}
 	private String getSortedBam() {
-		return "-I " + CmdOperate.addQuot(bamSortedFile);
+		return " -I " + CmdOperate.addQuot(bamSortedFile);
 	}
 	private String getOutIntervalFile() {
-		return "-o " + CmdOperate.addQuot(FileOperate.changeFileSuffix(bamSortedFile, "", "intervals"));
+		return " -o " + CmdOperate.addQuot(FileOperate.changeFileSuffix(bamSortedFile, "", "intervals"));
 	}
 
 	private String getTmpPath() {
-		return "-Djava.io.tmpdir=" + CmdOperate.addQuot(PathDetail.getTmpPath());
+		return " -Djava.io.tmpdir=" + CmdOperate.addQuot(PathDetail.getTmpPath()) + " ";
 	}
 	private String getInIntervalFile() {
-		return "-targetIntervals " + CmdOperate.addQuot(FileOperate.changeFileSuffix(bamSortedFile, "", "intervals"));
+		return " -targetIntervals " + CmdOperate.addQuot(FileOperate.changeFileSuffix(bamSortedFile, "", "intervals")) + " ";
 	}
 	private String getOutRealignBam(String outFile) {
-		return "-o " + CmdOperate.addQuot(FileOperate.changeFileSuffix(outFile, "", "bam"));
+		return " -o " + CmdOperate.addQuot(FileOperate.changeFileSuffix(outFile, "", "bam")) + " ";
 	}
-	
+	private String getUnsafe() {
+		return " --unsafe " + unsafe + " ";
+	}
 }

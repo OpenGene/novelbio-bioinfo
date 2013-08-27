@@ -37,7 +37,9 @@ import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.generalConf.PathNBCDetail;
+import com.novelbio.database.domain.information.SoftWareInfo;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
+import com.novelbio.database.model.species.Species;
 
 /**
  * 提取为bed文件时，仅仅考虑f-r情况
@@ -53,18 +55,10 @@ public class SamFile implements AlignSeq {
 	public static void main(String[] args) {
 		DateUtil dateUtil = new DateUtil();
 		dateUtil.setStartTime();
-		SamFile samFile = new SamFile("/media/winE/NBC/Project/Project_FY/20120920/tophat/RKOcon_accepted_hits.bam");
-		int i = 0;
-		for (SamRecord samRecord : samFile.readLines()) {
-			i++;
-			if (i%2000000 == 0) {
-				System.out.println(dateUtil.getEclipseTime());
-				System.out.println(samFile.getReadPercentage());
-			}
-			
-		}
-		
-		
+		SamFile samFile = new SamFile("/home/zong0jie/Test/fastq/rice/Mapping_result/9522-E.bam");
+		Species species = new Species(39947);
+		samFile.setReferenceFileName(species.getChromSeq());
+		samFile.removeDuplicate().realign();
 	}
 	
 	
@@ -80,7 +74,6 @@ public class SamFile implements AlignSeq {
 
 	SamReader samReader;
 	SamWriter samWriter;
-	
 	public SAMFileHeader.SortOrder SORT_ORDER;
 	
 	/** 是否为bam文件 */
@@ -526,8 +519,14 @@ public class SamFile implements AlignSeq {
 	 * @return
 	 */
 	public SamFile realign(String outFile) {
-		GATKRealign gatkRealign = new GATKRealign(getFileName(), referenceFileName, outFile);
-		if (gatkRealign.realign()) {
+//		GATKRealign gatkRealign = new GATKRealign(getFileName(), referenceFileName, outFile);
+		BamRealign bamRealign = new BamRealign();
+		bamRealign.setBamFile(getFileName());
+		bamRealign.setRefSequenceFile(referenceFileName);
+		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.GATK);
+		bamRealign.setExePath(softWareInfo.getExePath());
+		outFile = bamRealign.realign(outFile);
+		if (FileOperate.isFileExistAndBigThanSize(outFile, 0)) {
 			SamFile samFile = new SamFile(outFile);
 			setParamSamFile(samFile);
 			samFile.isRealigned = true;
@@ -544,10 +543,15 @@ public class SamFile implements AlignSeq {
 	 * 待检查
 	 */
 	public SamFile recalibrate(List<String> lsVcfFile, String outFile) {
-		GATKRecalibrate gatkRecalibrate = new GATKRecalibrate(getFileName(), referenceFileName);
-		gatkRecalibrate.setSnpVcfFile(lsVcfFile);
-		gatkRecalibrate.setOutBamFile(outFile);
-		if (gatkRecalibrate.recalibrate()) {
+//		GATKRecalibrate gatkRecalibrate = new GATKRecalibrate(getFileName(), referenceFileName);
+		BamRecalibrate bamRecalibrate = new BamRecalibrate();
+		bamRecalibrate.setBamFile(getFileName());
+		bamRecalibrate.setRefSequenceFile(referenceFileName);
+		bamRecalibrate.setSnpVcfFile(lsVcfFile);
+		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.GATK);
+		bamRecalibrate.setExePath(softWareInfo.getExePath());
+		outFile = bamRecalibrate.reCalibrate(outFile);
+		if (FileOperate.isFileExistAndBigThanSize(outFile, 0)) {
 			SamFile samFile = new SamFile(outFile);
 			setParamSamFile(samFile);
 			return samFile;
@@ -558,26 +562,23 @@ public class SamFile implements AlignSeq {
 		String outFile = FileOperate.changeFileSuffix(getFileName(), "_dedup", "bam");
 		return removeDuplicate(outFile);
 	}
-	/**
-	 * 出错就返回null
-	 */
+	
+	/** 出错就返回null */
 	public SamFile removeDuplicate(String outFile) {
-		GATKDuplicate gatkDuplicate = new GATKDuplicate(getFileName(), outFile);
-		if (gatkDuplicate.removeDuplicate()) {
+//		GATKDuplicate gatkDuplicate = new GATKDuplicate(getFileName(), outFile);
+		BamRemoveDuplicate bamRemoveDuplicate = new BamRemoveDuplicate();
+		bamRemoveDuplicate.setBamFile(getFileName());
+		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.samtools);
+		bamRemoveDuplicate.setExePath(softWareInfo.getExePath());
+		outFile = bamRemoveDuplicate.removeDuplicate(outFile);
+		if (FileOperate.isFileExistAndBigThanSize(outFile, 0)) {
 			SamFile samFile = new SamFile(outFile);
 			setParamSamFile(samFile);
 			return samFile;
-		} else {
-			BamRemoveDuplicate bamRemoveDuplicate = new BamRemoveDuplicate();
-			bamRemoveDuplicate.setBamFile(getFileName());
-			if (bamRemoveDuplicate.removeDuplicate(outFile)) {
-				SamFile samFile = new SamFile(outFile);
-				setParamSamFile(samFile);
-				return samFile;
-			}
 		}
 		return null;
 	}
+	
 	/**
 	 * <b>首先设定reference</b>
 	 * snp calling需要的一系列处理<br>
@@ -653,15 +654,12 @@ public class SamFile implements AlignSeq {
 	 * @param dbSnpFile dbsnp的vcf文件
 	 */
 	public String snpCalling(String dbSnpFile, String outSnpVcf) {
+		outSnpVcf = FileOperate.changeFileSuffix(outSnpVcf, "", "vcf");
 		GATKCalling gatkCalling = new GATKCalling(getFileName(), referenceFileName);
 		gatkCalling.setOutputFilePath(outSnpVcf);
 		gatkCalling.setSnpDBVcfFilePath(dbSnpFile);
-		if (gatkCalling.snpCalling()) {
-			return outSnpVcf;
-		} else {
-			return null;
-		}
-		
+		outSnpVcf = gatkCalling.callingByGATK();
+		return outSnpVcf;
 	}
 	/**
 	 * 把该samfile的refID都修正为小写字母

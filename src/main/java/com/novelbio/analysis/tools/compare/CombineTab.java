@@ -179,7 +179,6 @@ public class CombineTab {
 		runningFlag = true;
 	}
 	
-	
 	/**
 	 * 读取指定文本的信息
 	 * 包含标题列
@@ -334,6 +333,7 @@ public class CombineTab {
 			for (String[] content : ExcelTxtRead.readLsExcelTxt(key, 2)) {
 				txtReadandWrite.writefileln(content[0]);
 			}
+			fileName = fileName.replace("\\", "/");
 			mapShortName2PathName.put(mapFileName2ConditionAbbr.get(key), fileName);
 			txtReadandWrite.flash();
 			tempFiles.add(fileName);

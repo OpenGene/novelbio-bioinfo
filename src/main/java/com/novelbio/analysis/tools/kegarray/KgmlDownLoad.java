@@ -8,7 +8,7 @@ import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.generalConf.PathNBCDetail;
+import com.novelbio.generalConf.PathDetailNBC;
 
 public class KgmlDownLoad {
 	private static final Logger logger = Logger.getLogger(KgmlDownLoad.class);

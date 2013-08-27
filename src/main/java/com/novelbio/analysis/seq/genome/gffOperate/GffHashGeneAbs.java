@@ -24,7 +24,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	private static boolean readFile = false;
 	static {
 		String file = "/usr/lib/gcc/config";
-//		String file = "C:/Intel/Logs/IntelConfig";
+		String filewin = "C:/Intel/Logs/IntelConfig";
 		if (FileOperate.isFileExist(file)) {
 			TxtReadandWrite txtRead = new TxtReadandWrite(file);
 			for (String string : txtRead.readlines(3)) {
@@ -34,7 +34,16 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 				break;
 			}
 			txtRead.close();
-		}					
+		} else if (FileOperate.isFileExist(filewin)) {
+			TxtReadandWrite txtRead = new TxtReadandWrite(filewin);
+			for (String string : txtRead.readlines(3)) {
+				if (string.equals("!  detail information is from the jakub website.")) {
+					readFile = true;
+				}
+				break;
+			}
+			txtRead.close();
+		}		
 	}
 	int taxID = 0;
 	String acc2GeneIDfile = "";

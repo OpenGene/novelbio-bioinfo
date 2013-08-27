@@ -17,7 +17,7 @@ import com.novelbio.database.domain.geneanno.SpeciesFile;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.mongorepo.geneanno.RepoSpeciesFile;
 import com.novelbio.database.service.SpringFactory;
-import com.novelbio.generalConf.PathNBCDetail;
+import com.novelbio.generalConf.PathDetailNBC;
 
 public class ManageSpeciesFile {
 	private static final Logger logger = Logger.getLogger(ManageSpeciesFile.class);
@@ -36,7 +36,7 @@ public class ManageSpeciesFile {
 	}
 	
 	private void readDBinfo() {
-		String speciesFile = PathNBCDetail.getSpeciesFile();
+		String speciesFile = PathDetailNBC.getSpeciesFile();
 		if (FileOperate.isFileExistAndBigThanSize(speciesFile, 0)) {
 			readSpeciesFile(speciesFile);
 		} else {

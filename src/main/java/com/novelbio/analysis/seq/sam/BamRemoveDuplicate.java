@@ -37,27 +37,23 @@ public class BamRemoveDuplicate {
 	}
 	public String removeDuplicate() {
 		String bamNoDuplicateFile = FileOperate.changeFileSuffix(bamSortedFile, "_NoDuplicate", "bam");
-		boolean isFinish = removeDuplicate(bamNoDuplicateFile);
-		if (isFinish) {
-			return bamNoDuplicateFile;
+		return removeDuplicate(bamNoDuplicateFile);
+	}
+	
+	public String removeDuplicate(String outFile) {
+		outFile = FileOperate.changeFileSuffix(outFile, "", "bam");
+		String cmdInertval = ExePath + "samtools rmdup " + getInputBam() + CmdOperate.addQuot(outFile);
+		CmdOperate cmdOperate = new CmdOperate(cmdInertval, "removePcrDuplicate");
+		cmdOperate.run();
+		if (cmdOperate.isFinished()) {
+			return outFile;
 		} else {
 			return null;
 		}
 	}
-	public boolean removeDuplicate(String outFile) {
-		String cmdInertval = ExePath + "samtools rmdup " + getInputBam() + getOutFile(outFile);
-		CmdOperate cmdOperate = new CmdOperate(cmdInertval,"removePcrDuplicate");
-		cmdOperate.run();
-		
-		return  cmdOperate.isFinished();
-	}
 	
 	private String getInputBam() {
 		return  " " + CmdOperate.addQuot(bamSortedFile) + " ";
-	}
-
-	private String getOutFile(String outFile) {
-		return  FileOperate.changeFileSuffix(outFile, "", "bam");
 	}
 
 }

@@ -130,7 +130,7 @@ public class GuiUpdateDB extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				String softToolsFile = guiFileOpen.openFileName("txt/xls", "");
 				if (FileOperate.isFileExistAndBigThanSize(softToolsFile, 0.01)) {
-					SoftWareInfo.updateInfo(softToolsFile);
+					SoftWareInfo.updateInfo(true, softToolsFile);
 				}
 			}
 		});

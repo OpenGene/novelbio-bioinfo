@@ -36,7 +36,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.database.service.servgeneanno.ManageSpeciesFile;
-import com.novelbio.generalConf.PathNBCDetail;
+import com.novelbio.generalConf.PathDetailNBC;
 
 /**
  * 保存某个物种的各种文件信息，譬如mapping位置等等
@@ -356,7 +356,7 @@ public class SpeciesFile {
 			extractSmallRNASeq.setOutMatureRNA(miRNAfile);
 			extractSmallRNASeq.setOutHairpinRNA(miRNAhairpinFile);
 			Species species = new Species(taxID);
-			extractSmallRNASeq.setRNAdata(PathNBCDetail.getMiRNADat(), species.getAbbrName());
+			extractSmallRNASeq.setRNAdata(PathDetailNBC.getMiRNADat(), species.getAbbrName());
 			extractSmallRNASeq.getSeq();
 		}
 		return new String[]{miRNAfile, miRNAhairpinFile};
@@ -448,9 +448,9 @@ public class SpeciesFile {
 			//TODO 
 			//这里提取的是全体rfam序列
 			if (speciesSpecific) {
-				extractSmallRNASeq.setRfamFile(PathNBCDetail.getRfamSeq(), taxID);
+				extractSmallRNASeq.setRfamFile(PathDetailNBC.getRfamSeq(), taxID);
 			} else {
-				extractSmallRNASeq.setRfamFile(PathNBCDetail.getRfamSeq(), 0);
+				extractSmallRNASeq.setRfamFile(PathDetailNBC.getRfamSeq(), 0);
 			}
 			extractSmallRNASeq.setOutRfamFile(rfamFile);
 			extractSmallRNASeq.getSeq();
