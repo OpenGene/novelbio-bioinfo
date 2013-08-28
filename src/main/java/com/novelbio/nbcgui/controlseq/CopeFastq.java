@@ -1,6 +1,7 @@
 package com.novelbio.nbcgui.controlseq;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +23,11 @@ public class CopeFastq {
 	 * 前缀和该前缀所对应的一系列fastq文件。
 	 * 如果是单端，则Fastq[]长度为1，如果是双端，则Fastq[]长度为2
 	 */
-	Map<String, List<FastQ[]>> mapCondition2LsFastQLR = new LinkedHashMap<String, List<FastQ[]>>();
+	Map<String, List<String[]>> mapCondition2LsFastQLR = new LinkedHashMap<>();
+	/** 前缀和该前缀所对应的一系列fastq文件。
+	 * 一个prefix对应两个list，分别是左端fq文件名的list 和 右端fq文件名的list
+	 */
+	Map<String, List<List<String>>> mapCondition2LslsFastq = new LinkedHashMap<>();
 	
 	public void setLsCondition(List<String> lsCondition) {
 		this.lsCondition = lsCondition;
@@ -38,8 +43,16 @@ public class CopeFastq {
 	 * 返回整理好的结果
 	 * @return null 表示没有东西
 	 */
-	public Map<String, List<FastQ[]>> getMapCondition2LsFastQLR() {
+	public Map<String, List<String[]>> getMapCondition2LsFastQLR() {
 		return mapCondition2LsFastQLR;
+	}
+	/**
+	 * <b>先运行{@link #setMapCondition2LsFastQLR()}</b>
+	 * 返回整理好的结果
+	 * @return null 表示没有东西
+	 */
+	public Map<String, List<List<String>>> getMapCondition2LslsFastq() {
+		return mapCondition2LslsFastq;
 	}
 	/** 返回去重复后的prefix */
 	public List<String> getLsPrefix() {
@@ -53,24 +66,55 @@ public class CopeFastq {
 	 */
 	public boolean setMapCondition2LsFastQLR() {
 		mapCondition2LsFastQLR.clear();
+		mapCondition2LslsFastq.clear();
+		
 		for (int i = 0; i < lsCondition.size(); i++) {
 			String prefix = lsCondition.get(i);
-			List<FastQ[]> lsPrefixFastQLR = new ArrayList<FastQ[]>();
-			if (mapCondition2LsFastQLR.containsKey(prefix)) {
-				lsPrefixFastQLR = mapCondition2LsFastQLR.get(prefix);
-			} else {
-				mapCondition2LsFastQLR.put(prefix, lsPrefixFastQLR);
-			}
-			FastQ[] tmpFastQLR = null;
+			List<String[]> lsPrefixFastQsLR = getLsPrefixFastqLR(mapCondition2LsFastQLR, prefix);
+			String[] tmpFastQLR = null;
 			String fastqL = getFastqFile(lsFastQfileLeft, i);
 			String fastqR = getFastqFile(lsFastQfileRight, i);
-			if (!setFastqLR(lsPrefixFastQLR, tmpFastQLR, fastqL, fastqR)) {
+			if (!setFastqLR(lsPrefixFastQsLR, tmpFastQLR, fastqL, fastqR)) {
 				return false;
+			}
+			
+			List<List<String>> lsLsFastQLR = getLsFastqLR(mapCondition2LslsFastq, prefix);
+			if (FileOperate.isFileExistAndBigThanSize(fastqL, 1)) {
+				lsLsFastQLR.get(0).add(fastqL);
+			}
+			
+			if (lsFastQfileRight.size() > i) {
+				if (FileOperate.isFileExistAndBigThanSize(fastqR, 1)) {
+					lsLsFastQLR.get(1).add(fastqR);
+				}
 			}
 		}
 		return true;
 	}
 	
+	private List<String[]> getLsPrefixFastqLR(Map<String, List<String[]>> mapCondition2LsFastQLR, String prefix) {
+		List<String[]> lsPrefixFastQLR = new ArrayList<String[]>();
+		if (mapCondition2LsFastQLR.containsKey(prefix)) {
+			lsPrefixFastQLR = mapCondition2LsFastQLR.get(prefix);
+		} else {
+			mapCondition2LsFastQLR.put(prefix, lsPrefixFastQLR);
+		}
+		return lsPrefixFastQLR;
+	}
+	
+	private List<List<String>> getLsFastqLR(Map<String, List<List<String>>> mapCondition2LslsFastq, String prefix) {
+		List<List<String>> lsFastqLR = null;
+		if (mapCondition2LslsFastq.containsKey(prefix)) {
+			lsFastqLR = mapCondition2LslsFastq.get(prefix);
+		}
+		else {
+			lsFastqLR = new ArrayList<>();
+			lsFastqLR.add(new ArrayList<String>());
+			lsFastqLR.add(new ArrayList<String>());
+			mapCondition2LslsFastq.put(prefix, lsFastqLR);
+		}
+		return lsFastqLR;
+	}
 	/**
 	 * 主要是怕lsFastqRight可能没东西
 	 * @param lsFastq
@@ -93,19 +137,19 @@ public class CopeFastq {
 	 * @param fastqR
 	 * @return
 	 */
-	private boolean setFastqLR(List<FastQ[]> lsPrefixFastQLR, FastQ[] tmpFastQLR, String fastqL, String fastqR) {
-		if (FileOperate.isFileExistAndBigThanSize(fastqL, 1) && FileOperate.isFileExistAndBigThanSize(fastqR, 1)) {
-			tmpFastQLR = new FastQ[2];
-			tmpFastQLR[0] = new FastQ(fastqL);
-			tmpFastQLR[1] = new FastQ(fastqR);;
+	private boolean setFastqLR(List<String[]> lsPrefixFastQLR, String[] tmpFastQLR, String fastqL, String fastqR) {
+		if (FileOperate.isFileExistAndBigThanSize(fastqL, 1.0) && FileOperate.isFileExistAndBigThanSize(fastqR, 1.0)) {
+			tmpFastQLR = new String[2];
+			tmpFastQLR[0] = fastqL;
+			tmpFastQLR[1] = fastqR;
 		}
 		else if (FileOperate.isFileExistAndBigThanSize(fastqL, 1)) {
-			tmpFastQLR = new FastQ[1];
-			tmpFastQLR[0] = new FastQ(fastqL);
+			tmpFastQLR = new String[1];
+			tmpFastQLR[0] = fastqL;
 		}
 		else if (FileOperate.isFileExistAndBigThanSize(fastqR, 1)) {
-			tmpFastQLR = new FastQ[1];
-			tmpFastQLR[0] = new FastQ(fastqR);
+			tmpFastQLR = new String[1];
+			tmpFastQLR[0] = fastqR;
 		}
 		if (lsPrefixFastQLR.size() > 0 && lsPrefixFastQLR.get(0).length != tmpFastQLR.length) {
 			return false;
@@ -113,6 +157,25 @@ public class CopeFastq {
 		lsPrefixFastQLR.add(tmpFastQLR);
 		return true;
 	}
-	
 
+	/** 将输入的文件数组转化为FastQ数组 */
+	public static FastQ[] convertFastqFile(String[] fastqFile) {
+		if (fastqFile == null) return null;
+		
+		FastQ[] fastQs = new FastQ[fastqFile.length];
+		for (int i = 0; i < fastqFile.length; i++) {
+			fastQs[i] = new FastQ(fastqFile[i]);
+		}
+		return fastQs;
+	}
+	/** 将输入的文件数组转化为FastQ数组 */
+	public static List<FastQ> convertFastqFile(List<String> lsFastqFileName) {
+		if (lsFastqFileName == null) return null;
+		
+		List<FastQ> lsFastQs = new ArrayList<>();
+		for (String string : lsFastqFileName) {
+			lsFastQs.add(new FastQ(string));
+		}
+		return lsFastQs;
+	}
 }

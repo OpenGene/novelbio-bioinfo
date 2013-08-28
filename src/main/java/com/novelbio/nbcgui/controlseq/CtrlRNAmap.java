@@ -24,7 +24,7 @@ public class CtrlRNAmap {
 	StrandSpecific strandSpecific;
 	
 	int threadNum = 4;
-	Map<String, ArrayList<ArrayList<FastQ>>> mapPrefix2LsFastq;
+	Map<String, List<List<String>>> mapPrefix2LsFastq;
 	
 	MapRNA mapRNA;
 	
@@ -40,12 +40,12 @@ public class CtrlRNAmap {
 	 * 第一行为标题
 	 * 之后每一行为基因表达情况
 	 *  */
-	ArrayList<ArrayList<String>> lsExpResultRsemRPKM = new ArrayList<ArrayList<String>>();
+	List<List<String>> lsExpResultRsemRPKM = new ArrayList<>();
 	/** 保存最终结果，只有rsem才会有
 	 * 第一行为标题
 	 * 之后每一行为基因表达情况
 	 *  */
-	ArrayList<ArrayList<String>> lsExpResultRsemCounts = new ArrayList<ArrayList<String>>();
+	List<List<String>> lsExpResultRsemCounts = new ArrayList<>();
 	
 	public CtrlRNAmap(int mapType) {
 		if (mapType == TOP_HAT) {
@@ -55,11 +55,16 @@ public class CtrlRNAmap {
 			this.mapType = RSEM;
 		}	
 	}
-	public void setMapPrefix2LsFastq(Map<String, ArrayList<ArrayList<FastQ>>> mapPrefix2LsFastq) {
-		this.mapPrefix2LsFastq = mapPrefix2LsFastq;
+	public void setMapPrefix2LsFastq(CopeFastq copeFastq) {
+		copeFastq.setMapCondition2LsFastQLR();
+		this.mapPrefix2LsFastq = copeFastq.getMapCondition2LslsFastq();
 	}
 	
-
+	/** 输入CopeFastq的对象，该对象设定完后直接传入本方法，即可完成项目配置 */
+	public void setCopeFastq(CopeFastq copeFastq) {
+		
+	}
+	
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 	}
@@ -92,19 +97,19 @@ public class CtrlRNAmap {
 	}
 	
 	public void mapping() {
-		lsExpResultRsemRPKM = new ArrayList<ArrayList<String>>();
-		lsExpResultRsemCounts = new ArrayList<ArrayList<String>>();
-		for (Entry<String, ArrayList<ArrayList<FastQ>>> entry : mapPrefix2LsFastq.entrySet()) {
+		lsExpResultRsemRPKM = new ArrayList<>();
+		lsExpResultRsemCounts = new ArrayList<>();
+		for (Entry<String, List<List<String>>> entry : mapPrefix2LsFastq.entrySet()) {
 			if (!creatMapRNA()) {
 				return;
 			}
 			mapRNA.setGffChrAbs(gffChrAbs);
 			setRefFile();
 			String prefix = entry.getKey();
-			ArrayList<ArrayList<FastQ>> lsFastqFR = entry.getValue();
+			List<List<String>> lsFastqFR = entry.getValue();
 		
-			mapRNA.setLeftFq(lsFastqFR.get(0));
-			mapRNA.setRightFq(lsFastqFR.get(1));
+			mapRNA.setLeftFq(CopeFastq.convertFastqFile(lsFastqFR.get(0)));
+			mapRNA.setRightFq(CopeFastq.convertFastqFile(lsFastqFR.get(1)));
 			setMapLibrary(mapLibrary);
 			mapRNA.setStrandSpecifictype(strandSpecific);
 			mapRNA.setThreadNum(threadNum);
@@ -184,7 +189,7 @@ public class CtrlRNAmap {
 		else {
 			lsExpResultRsemRPKM.get(0).add(prefix + "_RPKM");
 			for (int i = 1; i < lsExpResultRsemRPKM.size(); i++) {
-				ArrayList<String> lsDetail = lsExpResultRsemRPKM.get(i);
+				List<String> lsDetail = lsExpResultRsemRPKM.get(i);
 				List<Double> lsValue = mapGeneID2LsExp.get(lsDetail.get(0));
 				lsDetail.add(MathComput.mean(lsValue) + "");
 			}
@@ -215,7 +220,7 @@ public class CtrlRNAmap {
 		else {
 			lsExpResultRsemCounts.get(0).add(prefix + "_Counts");
 			for (int i = 1; i < lsExpResultRsemCounts.size(); i++) {
-				ArrayList<String> lsDetail = lsExpResultRsemCounts.get(i);
+				List<String> lsDetail = lsExpResultRsemCounts.get(i);
 				List<Integer> lsValue = mapGeneID2LsCounts.get(lsDetail.get(0));
 				lsDetail.add((int)MathComput.mean(lsValue) + "");
 			}
@@ -224,7 +229,7 @@ public class CtrlRNAmap {
 	
 	public ArrayList<String[]> getLsExpRsemRPKM() {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		for (ArrayList<String> lsTmpResult : lsExpResultRsemRPKM) {
+		for (List<String> lsTmpResult : lsExpResultRsemRPKM) {
 			String[] tmpResult = new String[lsTmpResult.size()];
 			for (int i = 0; i < tmpResult.length; i++) {
 				tmpResult[i] = lsTmpResult.get(i);
@@ -236,7 +241,7 @@ public class CtrlRNAmap {
 	
 	public ArrayList<String[]> getLsExpRsemCounts() {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		for (ArrayList<String> lsTmpResult : lsExpResultRsemCounts) {
+		for (List<String> lsTmpResult : lsExpResultRsemCounts) {
 			String[] tmpResult = new String[lsTmpResult.size()];
 			for (int i = 0; i < tmpResult.length; i++) {
 				tmpResult[i] = lsTmpResult.get(i);

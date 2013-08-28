@@ -187,6 +187,7 @@ public class MapTophat implements MapRNA {
 	 * @param fqFile
 	 */
 	public void setLeftFq(List<FastQ> lsLeftFastQs) {
+		if (lsLeftFastQs == null) return;
 		this.lsLeftFq = lsLeftFastQs;
 	}
 	/**
@@ -194,6 +195,8 @@ public class MapTophat implements MapRNA {
 	 * @param fqFile
 	 */
 	public void setRightFq(List<FastQ> lsRightFastQs) {
+		if (lsRightFastQs == null) return;
+		
 		this.lsRightFq = lsRightFastQs;
 	}
 	

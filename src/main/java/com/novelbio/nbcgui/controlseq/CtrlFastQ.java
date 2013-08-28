@@ -31,7 +31,7 @@ public class CtrlFastQ {
 	String outFilePrefix = "";
 	
 	/** 过滤好的结果 */
-	Map<String, List<FastQ[]>> mapCondition2LRFiltered = new LinkedHashMap<String, List<FastQ[]>>();
+	Map<String, List<String[]>> mapCondition2LRFiltered = new LinkedHashMap<>();
 		
 	/** 过滤前质控 */
 	Map<String, FastQC[]> mapCond2FastQCBefore;
@@ -125,7 +125,7 @@ public class CtrlFastQ {
 	/** 当设定好lsCondition和lsLeft和lsRight后，可以不filter直接获得该项目<br>
 	 * 这时候获得的就是所有没过滤的fastq文件
 	 */
-	public Map<String, List<FastQ[]>> getFilteredMap() {
+	public Map<String, List<String[]>> getFilteredMap() {
 		if (mapCondition2LRFiltered.size() == 0) {
 			if (copeFastq.getMapCondition2LsFastQLR().size() == 0) {
 				copeFastq.setMapCondition2LsFastQLR();
@@ -140,7 +140,7 @@ public class CtrlFastQ {
 		mapCond2FastQCBefore = new LinkedHashMap<String, FastQC[]>();
 		mapCond2FastQCAfter = new LinkedHashMap<String, FastQC[]>();
 		for (String prefix : copeFastq.getLsPrefix()) {
-			List<FastQ[]> lsFastQLR = copeFastq.getMapCondition2LsFastQLR().get(prefix);
+			List<String[]> lsFastQLR = copeFastq.getMapCondition2LsFastQLR().get(prefix);
 			if (!fastQfilterRecord.isFiltered() && lsFastQLR.size() < 2) {
 				mapCondition2LRFiltered.put(prefix, lsFastQLR);
 				continue;
@@ -164,12 +164,12 @@ public class CtrlFastQ {
 			HashMultimap<String, String> mapParam = ctrlFastQfilter.saveFastQC(outFilePrefix + prefix);
 			saveFastQCfilterParamSingle(mapParam);
 		}
-		Map<String, FastQC[]> mapParam2FastqcLR = new LinkedHashMap<String, FastQC[]>();
+		Map<String, FastQC[]> mapParam2FastqcLR = new LinkedHashMap<>();
 		for (String prefix : mapCond2FastQCBefore.keySet()) {
 			FastQC[] fastqcBefore = mapCond2FastQCBefore.get(prefix);
-			FastQC[] fastqAfter = mapCond2FastQCAfter.get(prefix);
+			FastQC[] fastqcAfter = mapCond2FastQCAfter.get(prefix);
 			mapParam2FastqcLR.put(prefix, fastqcBefore);
-			mapParam2FastqcLR.put(prefix, fastqAfter);
+			mapParam2FastqcLR.put(prefix, fastqcAfter);
 		}
 		List<String[]> lsSummary = FastQC.combineFastQCbaseStatistics(mapParam2FastqcLR);
 		TxtReadandWrite txtWrite = new TxtReadandWrite(outFilePrefix + "basicStatsAll.xls", true);
@@ -178,7 +178,7 @@ public class CtrlFastQ {
 		
 	}
 	
-	private FastQC[] getFastQC(List<FastQ[]> lsFastQLR, String prefix, boolean qc) {
+	private FastQC[] getFastQC(List<String[]> lsFastQLR, String prefix, boolean qc) {
 		FastQC[] fastQCs = new FastQC[2];
 		if (lsFastQLR.get(0).length == 1) {
 			fastQCs[0] = new FastQC(prefix, qc);
@@ -189,7 +189,7 @@ public class CtrlFastQ {
 		return fastQCs;
 	}
 	
-	private FastQ[] createCombineFastq(String condition, List<FastQ[]> lsFastq) {
+	private FastQ[] createCombineFastq(String condition, List<String[]> lsFastq) {
 		FastQ[] fastQs = new FastQ[2];
 		if (fastQfilterRecord.isFiltered()) condition = condition + "_filtered";
 		if (lsFastq.size() > 1) condition = condition + "_Combine";

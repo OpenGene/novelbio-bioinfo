@@ -49,9 +49,22 @@ public class CtrlFastQfilter {
 	public void setPrefix(String prefix) {
 		this.prefix = prefix;
 	}
-	public void setLsFastQLR(List<FastQ[]> lsFastQLR) {
-		this.lsFastQLR = lsFastQLR;
+	
+	/**
+	 * 前缀和该前缀所对应的一系列fastq文件。
+	 * 如果是单端，则Fastq[]长度为1，如果是双端，则Fastq[]长度为2
+	 */
+	public void setLsFastQLR(List<String[]> lsFastQLR) {
+		if (lsFastQLR == null) {
+			this.lsFastQLR = null;
+		}
+		this.lsFastQLR = new ArrayList<>();
+		for (String[] strings : lsFastQLR) {
+			FastQ[] fastQs = CopeFastq.convertFastqFile(strings);
+			this.lsFastQLR.add(fastQs);
+		}
 	}
+	
 	public String getOutFilePrefix() {
 		return outFilePrefix;
 	}

@@ -1,15 +1,10 @@
 package com.novelbio.nbcgui.controlseq;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
 import org.springframework.context.annotation.Scope;
@@ -20,7 +15,6 @@ import com.novelbio.analysis.seq.mapping.MapDNA;
 import com.novelbio.analysis.seq.mapping.MapDNAint;
 import com.novelbio.analysis.seq.mapping.MapLibrary;
 import com.novelbio.analysis.seq.sam.SamFileStatistics;
-import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
@@ -40,7 +34,7 @@ public class CtrlDNAMapping {
 	
 	private String outFilePrefix = "";
 	
-	private Map<String, List<FastQ[]>> mapCondition2CombFastQLRFiltered = new LinkedHashMap<String, List<FastQ[]>>();
+	private Map<String, List<String[]>> mapCondition2CombFastQLRFiltered = new LinkedHashMap<>();
 	MapLibrary libraryType = MapLibrary.SingleEnd;
 
 	int gapLen = 5;
@@ -66,9 +60,13 @@ public class CtrlDNAMapping {
 	}
 	
 	/** 设定输入文件 */
-	public void setMapCondition2CombFastQLRFiltered(
-			Map<String, List<FastQ[]>> mapCondition2CombFastQLRFiltered) {
+	public void setMapCondition2CombFastQLRFiltered(Map<String, List<String[]>> mapCondition2CombFastQLRFiltered) {
 		this.mapCondition2CombFastQLRFiltered = mapCondition2CombFastQLRFiltered;
+	}
+	
+	public void setCopeFastq(CopeFastq copeFastq) {
+		copeFastq.setMapCondition2LsFastQLR();
+		this.mapCondition2CombFastQLRFiltered = copeFastq.getMapCondition2LsFastQLR();
 	}
 	
 	public SamFileStatistics getSamFileStatistics() {
@@ -120,14 +118,14 @@ public class CtrlDNAMapping {
 	}
 	
 	private void mapping() {
-		for (Entry<String, List<FastQ[]>> entry : mapCondition2CombFastQLRFiltered.entrySet()) {
-			List<FastQ[]> lsFastQs = entry.getValue();
+		for (Entry<String, List<String[]>> entry : mapCondition2CombFastQLRFiltered.entrySet()) {
+			List<String[]> lsFastQs = entry.getValue();
 			if (lsFastQs.size() == 1) {
 				mapping(entry.getKey(), lsFastQs.get(0));
 				SamFileStatistics.saveInfo(outFilePrefix + entry.getKey(), samFileStatistics);
 			} else {
 				for (int i = 0; i < lsFastQs.size(); i++) {
-					FastQ[] fastQs = lsFastQs.get(i);
+					String[] fastQs = lsFastQs.get(i);
 					mapping(entry.getKey() + "_" + i, fastQs);
 					SamFileStatistics.saveInfo(entry.getKey() + "_" + i, samFileStatistics);
 				}
@@ -146,7 +144,8 @@ public class CtrlDNAMapping {
 	 * @param prefix 文件前缀，实际输出文本为{@link #outFilePrefix} + prefix +.txt
 	 * @param fastQs
 	 */
-	public String mapping(String prefix, FastQ[] fastQs) {
+	public String mapping(String prefix, String[] fastQsFile) {
+		FastQ[] fastQs = CopeFastq.convertFastqFile(fastQsFile);
 		softWareInfo.setName(softMapping);
 		MapDNAint mapSoftware = MapDNA.creatMapDNA(softMapping);		
 		mapSoftware.setExePath(softWareInfo.getExePath());

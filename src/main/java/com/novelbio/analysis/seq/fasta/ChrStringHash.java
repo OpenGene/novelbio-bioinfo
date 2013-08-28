@@ -16,25 +16,17 @@ import org.apache.log4j.Logger;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.model.species.Species;
 
 /**
  * 本类用来将染色体的名字，序列装入染色体类，并且是以Hash表形式返回 目前本类中仅仅含有静态方法 同时用来提取某段位置的序列 和提取反向重复序列
  * 作者：宗杰 20090617
  */
 public class ChrStringHash extends SeqHashAbs{
-	public static void main(String[] args) {
-		Species species = new Species(9606);
-		SeqHash seqHash = new SeqHash(species.getChromFaPath(), species.getChromFaRegex());
-		SeqFasta seqFasta = seqHash.getSeq("chr1", 12345, 12348);
-		System.out.println(seqFasta.toString());
-	}
 	private static Logger logger = Logger.getLogger(ChrStringHash.class);
 	
 	/** 以下哈希表的键是染色体名称，都是小写，格式如：chr1，chr2，chr10 */
+	HashMap<String, String> mapChrID2FileName;
 	HashMap<String, RandomAccessFile> mapChrID2RandomFile;
-	HashMap<String, BufferedReader> mapChrID2BufReader;
-	HashMap<String, TxtReadandWrite> mapChrID2Txt;
 	HashMap<String, Integer> mapChrID2EnterType;
 
 	/** 每个文本所对应的单行长度
@@ -45,6 +37,9 @@ public class ChrStringHash extends SeqHashAbs{
 	Map<String, Integer> mapChrFile2LengthRow = new HashMap<String, Integer>();
 	
 	int maxExtractSeqLength = 2000000;
+	
+	/** 独立文本的数量不能超过1000，不超过就在开始的时候初始化RandomFile类，超过就在提取序列时初始化 */
+	int maxSeqNum = 500;
 	/**
 	 * 随机硬盘读取染色体文件的方法，貌似很伤硬盘，考虑用固态硬盘 注意
 	 * 给定一个文件夹，这个文件夹里面保存了某个物种的所有染色体序列信息，<b>文件夹最后无所谓加不加"/"或"\\"</b>
@@ -70,35 +65,27 @@ public class ChrStringHash extends SeqHashAbs{
 	 */
 	protected void setChrFile() throws Exception {
 		ArrayList<String> lsChrFile = initialAndGetFileList();
-		RandomAccessFile chrRAseq = null;
-		TxtReadandWrite txtChrTmp = null;
-		BufferedReader bufChrSeq = null;
 		mapChrFile2LengthRow.clear();
-		for (String fileNam : lsChrFile) {
-			String[] chrFileName = FileOperate.getFileNameSep(fileNam);
+		String enterType = null, seqRow = null;
+		for (String fileName : lsChrFile) {
+			String[] chrFileName = FileOperate.getFileNameSep(fileName);
 			lsSeqName.add(chrFileName[0]);
 
 			//TODO
-			chrRAseq = new RandomAccessFile(fileNam, "r");
-//			chrRAseq = new BufferedRandomAccessFile(fileNam, "r");
-			txtChrTmp = new TxtReadandWrite(fileNam, false);
-			String enterType = txtChrTmp.getEnterType();
-			bufChrSeq = txtChrTmp.readfile();
-			String chrID = chrFileName[0].toLowerCase();
-			// 假设每一个文件的每一行Seq都相等
-			String seqRow = "";
-			try {
-				seqRow = txtChrTmp.readFirstLines(3).get(2);
-
-			} catch (Exception e) {
-				seqRow = txtChrTmp.readFirstLines(3).get(2);
-
+			if (enterType == null || lsChrFile.size() <= maxSeqNum) {
+				String[] info = getEnterSymbolAndRow(fileName);
+				enterType = info[0];
+				seqRow = info[1];
 			}
+			String chrID = chrFileName[0].toLowerCase();
+
 			mapChrFile2LengthRow.put(chrID, seqRow.length());
+			mapChrID2FileName.put(chrID, fileName);
+			if (lsChrFile.size() <= maxSeqNum) {
+				RandomAccessFile randomAccessFile = new RandomAccessFile(fileName, "r");
+				mapChrID2RandomFile.put(chrID, randomAccessFile);
+			}
 			
-			mapChrID2RandomFile.put(chrID, chrRAseq);
-			mapChrID2BufReader.put(chrID, bufChrSeq);
-			mapChrID2Txt.put(chrID, txtChrTmp);
 			if (enterType.equals(TxtReadandWrite.ENTER_LINUX)) {
 				mapChrID2EnterType.put(chrID, 1);
 			} else if (enterType.equals(TxtReadandWrite.ENTER_WINDOWS)) {
@@ -108,25 +95,39 @@ public class ChrStringHash extends SeqHashAbs{
 		setChrLength();
 	}
 	
+	/** 获得换行符 */
+	private String[] getEnterSymbolAndRow(String fileName) {
+		TxtReadandWrite txtChrTmp = new TxtReadandWrite(fileName);
+		String enterType = txtChrTmp.getEnterType();
+		String seqRow = txtChrTmp.readFirstLines(3).get(2);
+		txtChrTmp.close();
+		return new String[]{enterType, seqRow};
+	}
+	
 	/** 初始化并返回文件夹中的所有符合正则表达式的文本名 */
 	private ArrayList<String> initialAndGetFileList() {
 		chrFile = FileOperate.addSep(chrFile);
 		if (regx == null)
 			regx = "\\bchr\\w*";
 		
-		mapChrID2RandomFile = new HashMap<String, RandomAccessFile>();
-		mapChrID2BufReader = new HashMap<String, BufferedReader>();
-		mapChrID2Txt = new HashMap<String, TxtReadandWrite>();
-		mapChrID2EnterType = new HashMap<String, Integer>();
+		mapChrID2FileName = new HashMap<>();
+		mapChrID2EnterType = new HashMap<>();
+		mapChrID2RandomFile = new HashMap<>();
+		
 		lsSeqName = new ArrayList<String>();
 		return FileOperate.getFoldFileNameLs(chrFile,regx, "*");
 	}
 	/** 设定染色体长度 */
 	private void setChrLength() throws IOException {
-		for (Entry<String, RandomAccessFile> entry : mapChrID2RandomFile.entrySet()) {
+		int i = 0;
+		for (Entry<String, String> entry : mapChrID2FileName.entrySet()) {
+			if (i > maxSeqNum) {
+				break;
+			}
+			i++;
 			String chrID = entry.getKey();
 			int lengthRow = mapChrFile2LengthRow.get(chrID);
-			RandomAccessFile chrRAfile = entry.getValue();
+			RandomAccessFile chrRAfile = new RandomAccessFile(entry.getValue(), "r");
 			// 设定到0位
 			chrRAfile.seek(0);
 			// 获得每条染色体的长度，文件长度-第一行的
@@ -138,6 +139,7 @@ public class ChrStringHash extends SeqHashAbs{
 			long lengthChrSeq = chrRAfile.length();
 			long tmpChrLength = (lengthChrSeq - lengthChrID - 1) / (lengthRow + 1) * lengthRow + (lengthChrSeq - lengthChrID - 1) % (lengthRow + 1);
 			hashChrLength.put(chrID, tmpChrLength);
+			chrRAfile.close();
 		}
 	}
 	protected SeqFasta getSeqInfo(String chrID, long startlocation, long endlocation) {
@@ -168,13 +170,15 @@ public class ChrStringHash extends SeqHashAbs{
 			endlocation = getChrLength(chrID);
 		}
 		startlocation--;
-	
-		RandomAccessFile chrRASeqFile = mapChrID2RandomFile.get(chrID);// 判断文件是否存在
-		int entryNum = mapChrID2EnterType.get(chrID);
+		
+		RandomAccessFile chrRASeqFile = getRandomAccessFile(chrID);
 		if (chrRASeqFile == null) {
 			logger.error( "无该染色体: "+ chrID);
 			return null;
 		}
+		
+		int entryNum = mapChrID2EnterType.get(chrID);
+
 		int startrowBias = 0, endrowBias = 0;
 		// 设定到0位
 		chrRASeqFile.seek(0);
@@ -223,44 +227,31 @@ public class ChrStringHash extends SeqHashAbs{
 			sequence.append(endline);
 			seqFasta.setSeq(sequence.toString());
 		}
+		
+		//一次性产生的随机文件，用完后要关闭
+		if (mapChrID2RandomFile.size() == 0) {
+			try { chrRASeqFile.close(); } catch (Exception e) { }
+		}
 		return seqFasta;
 	}
-	/**
-	 * 获得每条染色体对应的bufferedreader类，方便从头读取
-	 * @param chrID
-	 * @return
-	 */
-	public BufferedReader getBufChrSeq(String chrID) {
-		return mapChrID2BufReader.get(chrID.toLowerCase());
-	}
-	/**
-	 * 获得每条染色体对应的bufferedreader类，方便从头读取
-	 * @param refID
-	 * @return
-	 */
-	public HashMap<String, BufferedReader> getBufChrSeq() {
-		return mapChrID2BufReader;
-	}
-	/**
-	 * 返回有意义的碱基数量
-	 * @return
-	 * @throws IOException
-	 */
-	public long getEffGenomeSize() throws IOException {
-		long effGenomSize = 0;
-		for (Map.Entry<String, BufferedReader> entry : mapChrID2BufReader.entrySet()) {
-			BufferedReader chrReader = entry.getValue();
-			String content = "";
-			while ((content = chrReader.readLine()) != null) {
-				if (content.startsWith(">")) {
-					continue;
-				}
-				String tmp = content.trim().replace("N", "").replace("n", "");
-				effGenomSize = effGenomSize + tmp.length();
+	
+	/** 输入小写的ChrID 
+	 * @throws FileNotFoundException */
+	private RandomAccessFile getRandomAccessFile(String chrID) throws FileNotFoundException {
+		RandomAccessFile chrRASeqFile = null;
+		if (mapChrID2FileName.size() > 1000) {
+			String fileName = mapChrID2FileName.get(chrID);
+			if (fileName == null) {
+				logger.error( "无该染色体: "+ chrID);
+				return null;
 			}
+			chrRASeqFile = new RandomAccessFile(fileName, "r");
+		} else {
+			chrRASeqFile = mapChrID2RandomFile.get(chrID);
 		}
-		return effGenomSize;
+		return chrRASeqFile;
 	}
+	
 	@Override
 	public Iterable<Character> readBase(String refID) {
 		final String myRefID = refID.toLowerCase();
@@ -268,7 +259,8 @@ public class ChrStringHash extends SeqHashAbs{
 			@Override
 			public Iterator<Character> iterator() {
 				IteratorBase iteratorBase = new IteratorBase();
-				iteratorBase.setReader(mapChrID2Txt.get(myRefID));
+				TxtReadandWrite txtRead = new TxtReadandWrite(mapChrID2FileName.get(myRefID));
+				iteratorBase.setReader(txtRead);
 				return iteratorBase;
 			}
 		};
@@ -299,7 +291,20 @@ public class ChrStringHash extends SeqHashAbs{
 		}
 		
 	}
-
+	
+	public void close() {
+		if (mapChrID2RandomFile.size() > 0) {
+			for (RandomAccessFile randomAccessFile : mapChrID2RandomFile.values()) {
+				try {
+					randomAccessFile.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
 }
 
 

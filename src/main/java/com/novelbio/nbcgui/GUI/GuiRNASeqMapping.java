@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -25,6 +26,7 @@ import com.novelbio.base.gui.GUIFileOpen;
 import com.novelbio.base.gui.JComboBoxData;
 import com.novelbio.base.gui.JScrollPaneData;
 import com.novelbio.database.model.species.Species;
+import com.novelbio.nbcgui.controlseq.CopeFastq;
 import com.novelbio.nbcgui.controlseq.CtrlRNAmap;
 
 public class GuiRNASeqMapping extends JPanel {
@@ -197,7 +199,7 @@ public class GuiRNASeqMapping extends JPanel {
 				
 		
 				
-				ctrlRNAmap.setMapPrefix2LsFastq(getMapPrefix2LsFastq());
+				ctrlRNAmap.setMapPrefix2LsFastq(getCopeFastq());
 				if (species == null || species.getTaxID() == 0) {
 					ctrlRNAmap.setGtfAndGene2Iso(txtGtfGene2Iso.getText());
 					ctrlRNAmap.setIndexFile(txtMappingIndex.getText());
@@ -354,41 +356,24 @@ public class GuiRNASeqMapping extends JPanel {
 	 * value: arraylist-0:lsLeft 1:lsRigth
 	 * @return
 	 */
-	private HashMap<String, ArrayList<ArrayList<FastQ>>> getMapPrefix2LsFastq() {
-		HashMap<String, ArrayList<ArrayList<FastQ>>> mapPrefix2LsFastq = new LinkedHashMap<String, ArrayList<ArrayList<FastQ>>>();
+	private CopeFastq getCopeFastq() {
+		List<String> lsCondition = new ArrayList<>();
+		List<String> lsLeftFq = new ArrayList<>();
+		List<String> lsRightFq = new ArrayList<>();
 		
 		ArrayList<String[]> lsInfoLeftAndPrefix = scrollPaneFastqLeft.getLsDataInfo();
-		ArrayList<String[]> lsInfoRight = scrollPaneFastqRight.getLsDataInfo();
-		for (int i = 0; i < lsInfoLeftAndPrefix.size(); i++) {
-			String[] leftAndPrefix = lsInfoLeftAndPrefix.get(i);
-			String prefix = leftAndPrefix[1];
-			ArrayList<ArrayList<FastQ>> lsFastQLR = getLsFastqLR(mapPrefix2LsFastq, prefix);
-			if (FileOperate.isFileExistAndBigThanSize(leftAndPrefix[0], 100)) {
-				lsFastQLR.get(0).add(new FastQ(leftAndPrefix[0]));
-			}
-			
-			if (lsInfoRight.size() > i) {
-				String[] right = lsInfoRight.get(i);
-				if (FileOperate.isFileExistAndBigThanSize(right[0], 100)) {
-					lsFastQLR.get(1).add(new FastQ(right[0]));
-				}
-			}
+		for (String[] strings : lsInfoLeftAndPrefix) {
+			lsLeftFq.add(strings[0]);
+			lsCondition.add(strings[1]);
 		}
-		return mapPrefix2LsFastq;
-	}
-	
-	private ArrayList<ArrayList<FastQ>> getLsFastqLR(HashMap<String, ArrayList<ArrayList<FastQ>>> mapPrefix2LsFastq, String prefix) {
-		ArrayList<ArrayList<FastQ>> lsFastqLR = null;
-		if (mapPrefix2LsFastq.containsKey(prefix)) {
-			lsFastqLR = mapPrefix2LsFastq.get(prefix);
+		for (String[] strings : scrollPaneFastqRight.getLsDataInfo()) {
+			lsRightFq.add(strings[0]);
 		}
-		else {
-			lsFastqLR = new ArrayList<ArrayList<FastQ>>();
-			lsFastqLR.add(new ArrayList<FastQ>());
-			lsFastqLR.add(new ArrayList<FastQ>());
-			mapPrefix2LsFastq.put(prefix, lsFastqLR);
-		}
-		return lsFastqLR;
+		CopeFastq copeFastq = new CopeFastq();
+		copeFastq.setLsCondition(lsCondition);
+		copeFastq.setLsFastQfileLeft(lsLeftFq);
+		copeFastq.setLsFastQfileRight(lsRightFq);
+		return copeFastq;
 	}
 	
 	/**

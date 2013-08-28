@@ -49,9 +49,9 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	/** Name的正则 */
 	protected static String regName = "(?<=Name\\=)[\\w\\-%\\.\\:]+";
 	/** ID的正则 */
-	protected static String regID = "(?<=ID\\=)[\\w\\-\\.]+";
+	protected static String regID = "(?<=ID\\=)[\\w\\.\\-%\\:]+";
 	/** parentID的正则 */
-	protected static String regParentID = "(?<=Parent\\=)[\\w\\.\\-%]+";
+	protected static String regParentID = "(?<=Parent\\=)[\\w\\.\\-%\\:]+";
 
 	/** gene类似名 */
 	private static Set<String> setIsGene = new HashSet<String>();
@@ -304,6 +304,9 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
     */
    private String add_MapRnaID2RnaName_And_MapRnaID2GeneID(String[] lastGeneIDandName, String rnaID, String[] ss) {
 	   String rnaName = patmRNAName.getPatFirst(ss[8]);
+	   if (rnaName == null) {
+		   rnaName = patName.getPatFirst(ss[8]);
+	   }
 	   if (rnaName == null) {
 		   rnaName = lastGeneIDandName[1];
 	   }

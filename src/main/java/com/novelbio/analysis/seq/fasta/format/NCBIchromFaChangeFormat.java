@@ -29,6 +29,27 @@ public class NCBIchromFaChangeFormat {
 		this.chrFile = chromFaPath;
 		this.regx = regx;
 	}
+	
+	/** 将一个染色体文件按照染色体的名称分成若干染色体文件 */
+	public void writeToSepFile(String outFilePrefix) {
+		TxtReadandWrite txtRead = new TxtReadandWrite(chrFile);
+		TxtReadandWrite txtWrite = null;
+		for (String content : txtRead.readlines()) {
+			if (content.startsWith(">")) {
+				if (txtWrite != null) {
+					txtWrite.close();
+				}
+				content = content.split(" ")[0];
+				String fileName = FileOperate.changeFileSuffix(outFilePrefix + content.replace(">", ""), "", "fa");
+				txtWrite = new TxtReadandWrite(fileName , true);
+			}
+			txtWrite.writefileln(content);
+		}
+		txtWrite.close();
+		txtRead.close();
+	}
+	
+	/** 将多个文件合并成一个单一文本 */
 	public void writeToSingleFile(String outFile) {
 		TxtReadandWrite txtWrite = new TxtReadandWrite(outFile, true);
 		for (String chrFileName : initialAndGetFileList()) {

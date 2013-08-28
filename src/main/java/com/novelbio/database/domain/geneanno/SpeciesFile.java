@@ -114,7 +114,7 @@ public class SpeciesFile {
 	 */
 	public Map<String, Long> getMapChromInfo() {
 		if (mapChrID2ChrLen.size() == 0) {
-			SeqHash seqHash = new SeqHash(chromPath2Regx[0], chromPath2Regx[1]);
+			SeqHash seqHash = new SeqHash(getChromFaPath(), getChromFaRegx());
 			mapChrID2ChrLen = seqHash.getMapChrLength();
 		}
 		return mapChrID2ChrLen;
@@ -125,7 +125,14 @@ public class SpeciesFile {
 	}
 	/** 获得chromeFa的路径 */
 	public String getChromFaPath() {
-		return chromPath2Regx[0];
+		String chrPath = chromPath2Regx[0];
+		List<String> lsChrFile = FileOperate.getFoldFileNameLs(chrPath, chromPath2Regx[1], "*");
+		if (lsChrFile.size() < 1 && FileOperate.isFileExistAndBigThanSize(chromSeq, 1)) {
+			NCBIchromFaChangeFormat ncbIchromFaChangeFormat = new NCBIchromFaChangeFormat();
+			ncbIchromFaChangeFormat.setChromFaPath(chromSeq, chromPath2Regx[1]);
+			ncbIchromFaChangeFormat.writeToSepFile(FileOperate.addSep(chrPath));
+		}
+		return chrPath;
 	}
 	/** 获得chromeFa的正则 */
 	public String getChromFaRegx() {

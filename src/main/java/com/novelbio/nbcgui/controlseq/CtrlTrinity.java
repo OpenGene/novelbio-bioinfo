@@ -62,13 +62,13 @@ public class CtrlTrinity {
 	public void runTrinity() {
 		copeFastq.setMapCondition2LsFastQLR();
 		for (String prefix : copeFastq.getLsPrefix()) {
-			List<FastQ[]> lsFastQs = copeFastq.getMapCondition2LsFastQLR().get(prefix);
+			List<String[]> lsFastQs = copeFastq.getMapCondition2LsFastQLR().get(prefix);
 			List<String> lsFqLeft = new ArrayList<>();
 			List<String> lsFqRight = new ArrayList<>();
-			for (FastQ[] fastQ : lsFastQs) {
-				lsFqLeft.add(fastQ[0].getReadFileName());
+			for (String[] fastQ : lsFastQs) {
+				lsFqLeft.add(fastQ[0]);
 				if (fastQ.length > 1) {
-					lsFqRight.add(fastQ[1].getReadFileName());
+					lsFqRight.add(fastQ[1]);
 				}
 			}
 			
