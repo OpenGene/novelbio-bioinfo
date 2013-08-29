@@ -17,7 +17,6 @@ import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.modgeneid.GeneType;
-import com.novelbio.database.model.species.Species;
 /**
  * 在GffChrAbs中设定Tss和Tes的范围
  * setGetSeqIso 和 setGetSeqSite，谁后设定就提取谁
@@ -26,7 +25,7 @@ import com.novelbio.database.model.species.Species;
  */
 public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	private static Logger logger = Logger.getLogger(GffChrSeq.class);
-	GffChrAbs gffChrAbs = new GffChrAbs();
+	GffChrAbs gffChrAbs;
 	
 	GeneStructure geneStructure = GeneStructure.ALLLENGTH;
 	/** 是否提取内含子 */
@@ -64,9 +63,6 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	}
 	public void setTesRange(int[] tesRange) {
 		this.tesRange = tesRange;
-	}
-	public void setSpecies(Species species) {
-		gffChrAbs.setSpecies(species);
 	}
 	/** 默认是ture，表示存入output文件
 	 * 否则结果保存在lsResult中

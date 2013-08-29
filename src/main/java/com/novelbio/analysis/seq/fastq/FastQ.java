@@ -217,12 +217,12 @@ public class FastQ {
 			}
 			filterOutName = FileOperate.changeFileSuffix(fileFastqRead, "_filtered", "fastq");
 		}
-		filteredFileName[0] = filterOutName;
+		filteredFileName[0] = filterOutName + ".gz";
 		if (fastQMate != null) {
 			String outFile1 = FileOperate.changeFileSuffix(filterOutName, "_1", null);
 			String outFile2 = FileOperate.changeFileSuffix(filterOutName, "_2", null);
-			filteredFileName[0] = outFile1;
-			filteredFileName[1] = outFile2;
+			filteredFileName[0] = outFile1 + ".gz";
+			filteredFileName[1] = outFile2 + ".gz";
 		}
 		return filteredFileName;
 	}
@@ -238,10 +238,13 @@ public class FastQ {
 	public void close() {
 		try {
 			fastQRead.close();
-		} catch (Exception e) { 	}
+		} catch (Exception e) { 
+		}
 		try {
 			fastQwrite.close();
-		} catch (Exception e) { 	}
+		} catch (Exception e) { 
+//			e.printStackTrace();
+		}
 	
 		if (!read) {
 			try {

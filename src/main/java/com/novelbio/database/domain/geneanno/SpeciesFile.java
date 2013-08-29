@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
+import org.broadinstitute.sting.jna.lsf.v7_0_6.LibLsf.lsSharedResourceInfo;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
@@ -116,6 +117,7 @@ public class SpeciesFile {
 		if (mapChrID2ChrLen.size() == 0) {
 			SeqHash seqHash = new SeqHash(getChromFaPath(), getChromFaRegx());
 			mapChrID2ChrLen = seqHash.getMapChrLength();
+			seqHash.close();
 		}
 		return mapChrID2ChrLen;
 	}
@@ -363,7 +365,7 @@ public class SpeciesFile {
 			extractSmallRNASeq.setOutMatureRNA(miRNAfile);
 			extractSmallRNASeq.setOutHairpinRNA(miRNAhairpinFile);
 			Species species = new Species(taxID);
-			extractSmallRNASeq.setRNAdata(PathDetailNBC.getMiRNADat(), species.getAbbrName());
+			extractSmallRNASeq.setMiRNAdata(PathDetailNBC.getMiRNADat(), species.getNameLatin());
 			extractSmallRNASeq.getSeq();
 		}
 		return new String[]{miRNAfile, miRNAhairpinFile};
@@ -398,6 +400,7 @@ public class SpeciesFile {
 			gffChrSeq.setOutPutFile(refseqFile);
 			gffChrSeq.run();
 			update();
+			gffChrAbs.close();
 		} catch (Exception e) {
 			logger.error("生成 RefRNA序列出错");
 		}
@@ -419,8 +422,9 @@ public class SpeciesFile {
 			try {
 				Species species = new Species(taxID);
 				species.setVersion(version);
+				GffChrAbs gffChrAbs = new GffChrAbs(species);
 				GffChrSeq gffChrSeq = new GffChrSeq();
-				gffChrSeq.setSpecies(species);
+				gffChrSeq.setGffChrAbs(gffChrAbs);
 				gffChrSeq.setGeneStructure(GeneStructure.ALLLENGTH);
 				gffChrSeq.setGetIntron(false);
 				gffChrSeq.setGetAAseq(false);
@@ -545,14 +549,16 @@ public class SpeciesFile {
 	static public class ExtractSmallRNASeq {
 		public static void main(String[] args) {
 			ExtractSmallRNASeq extractSmallRNASeq = new ExtractSmallRNASeq();
-			extractSmallRNASeq.extractRfam("/media/winE/Bioinformatics/genome/sRNA/Rfam2_1.fasta", 
-					"/media/winE/Bioinformatics/genome/sRNA/Rfam_test.fasta", 0);
+			Species species = new Species(10090);
+			extractSmallRNASeq.setMiRNAdata("/media/winE/NBCplatform/genome/otherResource/sRNA/miRNA.dat", species.getNameLatin());
+			extractSmallRNASeq.setOutPathPrefix("/media/winE/NBCplatform/genome/otherResource/sRNA/poplar");
+			extractSmallRNASeq.getSeq();
 			
 		}
 		
 		String RNAdataFile = "";
-		/** 类似 hsa */
-		String RNAdataRegx = "";
+		/** 用于在mir.dat文件中查找miRNA的物种名 */
+		String miRNAdataSpeciesName = "";
 		
 		/** 提取ncRNA的正则表达式 */
 		String regxNCrna  = "NR_\\d+|XR_\\d+";
@@ -607,11 +613,16 @@ public class SpeciesFile {
 		}
 		/**
 		 * @param rnaDataFile
-		 * @param rnaDataRegx 自动转换为小写
+		 * @param speciesName 物种的拉丁名
 		 */
-		public void setRNAdata(String rnaDataFile, String rnaDataRegx) {
+		public void setMiRNAdata(String rnaDataFile, String speciesName) {
 			this.RNAdataFile = rnaDataFile;
-			this.RNAdataRegx = rnaDataRegx.toLowerCase();
+			String[] names = speciesName.split(" ");
+			if (names.length > 1) {
+				this.miRNAdataSpeciesName = (names[0] + " " + names[1]).toLowerCase();
+			} else {
+				this.miRNAdataSpeciesName = speciesName.toLowerCase();
+			}
 		}
 		/**
 		 * 待提取的NCBI上下载的refseq文件
@@ -644,7 +655,7 @@ public class SpeciesFile {
 					outHairpinRNA = outPathPrefix + "_hairpin.fa";
 				if (outMatureRNA == null)
 					outMatureRNA = outPathPrefix + "_mature.fa";
-				extractMiRNASeqFromRNAdata(RNAdataFile, RNAdataRegx, outHairpinRNA, outMatureRNA);
+				extractMiRNASeqFromRNAdata(RNAdataFile, miRNAdataSpeciesName, outHairpinRNA, outMatureRNA);
 			}
 			
 			if (FileOperate.isFileExist(rfamFile)) {
@@ -724,9 +735,10 @@ public class SpeciesFile {
 			
 			String[] ss = rnaDataBlock.split(TxtReadandWrite.ENTER_LINUX);
 			String[] ssID = ss[0].split(" +");
-			if (!ss[0].startsWith("ID") || !ssID[4].toLowerCase().contains(regex)) {
+			if (!isFindSpecies(ss, regex)) {
 				return lSeqFastas;
 			}
+			
 			String miRNAhairpinName = ssID[1]; //ID   cel-lin-4         standard; RNA; CEL; 94 BP.
 			ArrayList<ListDetailBin> lsSeqLocation = getLsMatureMirnaLocation(ss);
 			String finalSeq = getHairpinSeq(ss);
@@ -744,6 +756,24 @@ public class SpeciesFile {
 			}
 			return lsResult;
 		}
+		
+		private boolean isFindSpecies(String[] mirBlock, String speciesName) {
+			if (!mirBlock[0].startsWith("ID")) {
+				return false;
+			}
+			boolean findSpecies = false;
+			for (String string : mirBlock) {
+				string = string.toLowerCase();
+				if (string.startsWith("de")) {
+					if (string.contains(speciesName)) {
+						findSpecies = true;
+						break;
+					}
+				}
+			}
+			return findSpecies;
+		}
+		
 		private ArrayList<ListDetailBin> getLsMatureMirnaLocation(String[] block) {
 			ArrayList<ListDetailBin> lsResult = new ArrayList<ListDetailBin>();
 			ListDetailBin lsMiRNAhairpin = null;

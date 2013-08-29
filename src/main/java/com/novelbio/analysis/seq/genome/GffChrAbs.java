@@ -1,5 +1,6 @@
 package com.novelbio.analysis.seq.genome;
 
+import java.io.Closeable;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
@@ -18,7 +19,7 @@ import com.novelbio.database.model.species.Species;
  * @author zong0jie
  *
  */
-public class GffChrAbs {
+public class GffChrAbs implements Closeable {
 	private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	
 	private int distanceMapInfo = 3000;
@@ -41,9 +42,17 @@ public class GffChrAbs {
 		setGffFile(species.getTaxID(), species.getGffType(), species.getGffFile());
 		setChrFile(species.getChromFaPath(), species.getChromFaRegex());
 	}
-
+	
+	/**
+	 * 如果本GffChrAbs已经close过了，可以重置species来打开，并且效率较高
+	 * @param species
+	 */
 	public void setSpecies(Species species) {
+		close();
 		if (this.species != null && this.species.equals(species) && this.species.getGffDB().equals(species.getGffDB())) {
+			if (FileOperate.isFileDirectory(species.getChromFaPath())) {
+				setChrFile(species.getChromFaPath(), species.getChromFaRegex());
+			}
 			return;
 		}
 		if (species == null || species.getTaxID() == 0) {
@@ -64,6 +73,7 @@ public class GffChrAbs {
 		this.gffHashGene = gffHashGene;
 	}
 	public void setSeqHash(SeqHash seqHash) {
+		close();
 		this.seqHash = seqHash;
 	}
 
@@ -104,6 +114,7 @@ public class GffChrAbs {
 	 * @param regx null和""都走默认
 	 */
 	public void setChrFile(String chrFile, String regx) {
+		close();
 		if (FileOperate.isFileExist(chrFile)
 				|| FileOperate.isFileDirectory(chrFile)) {
 			seqHash = new SeqHash(chrFile, regx);
@@ -190,5 +201,14 @@ public class GffChrAbs {
 		MapInfo.sortLsMapInfo(lsMapInfos, distanceMapInfo);
 		return lsMapInfos;
 	}
-
+	
+	/**
+	 * 将seqHash关闭掉
+	 */
+	public void close() {
+		try {
+			seqHash.close();
+		} catch (Exception e) {
+		}
+	}
 }

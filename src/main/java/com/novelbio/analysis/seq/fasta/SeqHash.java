@@ -1,5 +1,6 @@
 package com.novelbio.analysis.seq.fasta;
 
+import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -12,7 +13,7 @@ import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
-public class SeqHash implements SeqHashInt{
+public class SeqHash implements SeqHashInt, Closeable {
 	private static Logger logger = Logger.getLogger(SeqHash.class);
 	
 	SeqHashAbs seqHashAbs = null;
@@ -295,6 +296,8 @@ public class SeqHash implements SeqHashInt{
 		return seqHashAbs.readBase(refID);
 	}
 	
-
+	public void close() {
+		seqHashAbs.close();
+	}
 	
 }

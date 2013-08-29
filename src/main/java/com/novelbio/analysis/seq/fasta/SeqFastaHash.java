@@ -366,6 +366,8 @@ public class SeqFastaHash extends SeqHashAbs {
 		SeqFasta seqFasta = hashSeq.get(refID);
 		return seqFasta.readBase();
 	}
+	@Override
+	public void close() {}
 	
 }
 

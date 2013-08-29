@@ -195,10 +195,10 @@ public class CtrlFastQ {
 		if (lsFastq.size() > 1) condition = condition + "_Combine";
 		
 		if (lsFastq.get(0).length == 1 || lsFastq.get(0)[1] == null) {
-			fastQs[0] = new FastQ(outFilePrefix + condition + ".fq", true);
+			fastQs[0] = new FastQ(outFilePrefix + condition + ".fq.gz", true);
 		} else {
-			fastQs[0] = new FastQ(outFilePrefix + condition + "_1.fq", true);
-			fastQs[1] = new FastQ(outFilePrefix + condition + "_2.fq", true);
+			fastQs[0] = new FastQ(outFilePrefix + condition + "_1.fq.gz", true);
+			fastQs[1] = new FastQ(outFilePrefix + condition + "_2.fq.gz", true);
 		}
 		return fastQs;
 	}
@@ -206,7 +206,7 @@ public class CtrlFastQ {
 	/** 单个过滤写入文本 */
 	private void saveFastQCfilterParamSingle(HashMultimap<String, String> mapParam) {
 		String savePath = FileOperate.getPathName(outFilePrefix);
-		ReportBuilder.writeDescFile(savePath, mapParam);
+//		ReportBuilder.writeDescFile(savePath, mapParam);
 	}
 	
 }

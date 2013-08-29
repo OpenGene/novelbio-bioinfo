@@ -132,6 +132,7 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 		ArrayList<String[]> lsResult = getAnno();
 		TxtReadandWrite txtOut = new TxtReadandWrite(outTxtFile, true);
 		txtOut.ExcelWrite(lsResult);
+		txtOut.close();
 	}
 	
 	@Override

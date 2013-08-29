@@ -20,7 +20,9 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
 /**
- * 还没返回结果的bam文件
+ * 还没返回结果的bam文件<p>
+ * 
+ * <b>每次mapping都new一个新的对象</b>
  * @author zong0jie
  *
  */
@@ -176,6 +178,7 @@ public class MapRsem implements MapRNA{
 			}
 			txtGene2Iso.close();
 		}
+		gffChrAbs.close();
 	}
 	private String getThreadNum() {
 		return "-p " + threadNum + " ";

@@ -124,6 +124,7 @@ public class ManageSpeciesFile {
 	
 	/** 返回所有有基因组的物种 */
 	public List<Integer> getLsTaxID() {
+//		readDBinfo();
 		return new ArrayList<Integer>(mapTaxID_2_version2SpeciesFile.keySet());
 	}
 	

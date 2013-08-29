@@ -1,7 +1,6 @@
 package com.novelbio.nbcgui.controlseq;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,7 +8,11 @@ import java.util.Map;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.base.fileOperate.FileOperate;
 
-/** 将输入的fastq的list按照prefix整理起来，最后返回map */
+/** 将输入的fastq的list按照prefix整理起来，最后返回map<br>
+ * 要么全是双端数据，要么全是单端数据
+ * @author zong0jie
+ *
+ */
 public class CopeFastq {
 
 	//以下为输入文件
@@ -151,7 +154,7 @@ public class CopeFastq {
 			tmpFastQLR = new String[1];
 			tmpFastQLR[0] = fastqR;
 		}
-		if (lsPrefixFastQLR.size() > 0 && lsPrefixFastQLR.get(0).length != tmpFastQLR.length) {
+		if (lsPrefixFastQLR.size() > 0 && (tmpFastQLR == null ||  lsPrefixFastQLR.get(0).length != tmpFastQLR.length)) {
 			return false;
 		}
 		lsPrefixFastQLR.add(tmpFastQLR);

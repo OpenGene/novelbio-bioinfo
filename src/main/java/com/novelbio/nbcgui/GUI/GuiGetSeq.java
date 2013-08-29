@@ -444,7 +444,7 @@ public class GuiGetSeq extends JPanel {
 		ExtractSmallRNASeq extractSmallRNASeq = new ExtractSmallRNASeq();
 		extractSmallRNASeq.setLsMiRNAname(lsMiRNAname);
 		extractSmallRNASeq.setOutMatureRNA(txtSavePath.getText());
-		extractSmallRNASeq.setRNAdata(PathDetailNBC.getMiRNADat(), cmbSpecies.getSelectedValue().getAbbrName());
+		extractSmallRNASeq.setMiRNAdata(PathDetailNBC.getMiRNADat(), cmbSpecies.getSelectedValue().getAbbrName());
 		if (chckbxGenomwide.isSelected()) {
 			extractSmallRNASeq.setOutHairpinRNA(FileOperate.changeFileSuffix(txtSavePath.getText(), "_pre", null));
 		}

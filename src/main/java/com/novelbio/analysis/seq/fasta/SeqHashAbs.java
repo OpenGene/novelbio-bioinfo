@@ -1,5 +1,6 @@
 package com.novelbio.analysis.seq.fasta;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,7 +16,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
-public abstract class SeqHashAbs implements SeqHashInt{
+public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 	private static Logger logger = Logger.getLogger(SeqHashAbs.class);
 	/** 保存chrID和chrLength的对应关系
 	 * key小写
@@ -186,6 +187,7 @@ public abstract class SeqHashAbs implements SeqHashInt{
 			logger.error("输出文件出错："+outFile);
 			e.printStackTrace();
 		}
+		txtChrLength.close();
 	}
 	/**
 	 * @param chrID 染色体编号或序列名
@@ -407,6 +409,8 @@ public abstract class SeqHashAbs implements SeqHashInt{
 	public SeqFasta getSeq(String seqName) {
 		return getSeq(seqName, 0 , 0);
 	}
+	
+	public abstract void close();
 }
  enum SeqType {
 	 /** 转录本特有的方向，不同的exon有不同的方向 */
