@@ -9,8 +9,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.GuiAnnoInfo;
 import com.novelbio.base.multithread.RunProcess;
-import com.novelbio.nbcgui.GuiAnnoInfo;
 
 public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
 	Logger logger = Logger.getLogger(FastQReadingChannel.class);

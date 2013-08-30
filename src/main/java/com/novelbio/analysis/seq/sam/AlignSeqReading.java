@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.novelbio.GuiAnnoInfo;
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
-import com.novelbio.nbcgui.GuiAnnoInfo;
 
 /**
  * 输入一系列的AlignmentRecorder，然后读取指定的sambam文件

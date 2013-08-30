@@ -1,4 +1,4 @@
-package com.novelbio.nbcgui.controltest;
+package com.novelbio.analysis.annotation.functiontest;
 
 import java.awt.Color;
 import java.awt.Paint;

@@ -21,7 +21,7 @@ public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 	/** 保存chrID和chrLength的对应关系
 	 * key小写
 	 *  */
-	LinkedHashMap<String, Long> hashChrLength = new LinkedHashMap<String, Long>();
+	LinkedHashMap<String, Long> mapChrID2Length = new LinkedHashMap<String, Long>();
 	/** 从小到大排列chrLength的list */
 	ArrayList<String[]> lsChrLen = null;
 	/** 是否要设定为DNA，也就是将序列中的U全部转化为T */
@@ -80,7 +80,7 @@ public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 	 * @return
 	 */
 	public LinkedHashMap<String, Long> getMapChrLength() {
-		return hashChrLength;
+		return mapChrID2Length;
 	}
 	/**
 	 * 在读取chr长度文件后，可以通过此获得每条chr的长度
@@ -117,7 +117,7 @@ public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 			return lsChrLen;
 		}
 		lsChrLen = new ArrayList<String[]>();
-		for (Entry<String, Long> entry : hashChrLength.entrySet()) {
+		for (Entry<String, Long> entry : mapChrID2Length.entrySet()) {
 			String[] tmpResult = new String[2];
 			tmpResult[0] = entry.getKey();
 			tmpResult[1] = entry.getValue() + "";
@@ -143,8 +143,8 @@ public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 		chrID = chrID.toLowerCase();
 		ArrayList<String[]> chrLengthArrayList = getChrLengthInfo();
 		int binLen = Integer.parseInt(chrLengthArrayList.get(chrLengthArrayList.size() - 1)[1]) / maxresolution;
-		int resolution = (int) (hashChrLength.get(chrID) / binLen);
-		Long chrLength = hashChrLength.get(chrID.toLowerCase());
+		int resolution = (int) (mapChrID2Length.get(chrID) / binLen);
+		Long chrLength = mapChrID2Length.get(chrID.toLowerCase());
 		double binLength = (double) chrLength / resolution;
 		int[] chrLengtharray = new int[resolution];
 		for (int i = 0; i < resolution; i++) {
@@ -174,7 +174,7 @@ public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 	 */
 	public void saveChrLengthToFile(String outFile) {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();// 存放最后结果
-		for (Entry<String, Long> entry : hashChrLength.entrySet()) {
+		for (Entry<String, Long> entry : mapChrID2Length.entrySet()) {
 			String[] tmpResult = new String[2];
 			tmpResult[0] = entry.getKey();
 			tmpResult[1] = entry.getValue() + "";
@@ -263,7 +263,7 @@ public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 		seqFasta.setName(chrID + "_" + lsInfo.get(0).getName() + "_");
 		String myChrID = chrID.toLowerCase();
 		
-		if (!hashChrLength.containsKey(myChrID)) {
+		if (!mapChrID2Length.containsKey(myChrID)) {
 			logger.error("没有该染色体： "+chrID);
 			return null;
 		}
@@ -391,7 +391,7 @@ public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 			String myChrID = locInfo.getChrID();
 			myChrID = myChrID.toLowerCase();
 			
-			if (!hashChrLength.containsKey(myChrID)) {
+			if (!mapChrID2Length.containsKey(myChrID)) {
 				logger.error("没有该染色体： "+ locInfo.getChrID());
 				return null;
 			}

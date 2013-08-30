@@ -1,4 +1,4 @@
-package com.novelbio.nbcgui.controltest;
+package com.novelbio.analysis.annotation.functiontest;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -19,7 +19,6 @@ import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.ui.RectangleInsets;
 
-import com.novelbio.analysis.annotation.functiontest.StatisticTestResult;
 import com.novelbio.base.plot.PlotBar;
 
 public class GoPathBarPlot {

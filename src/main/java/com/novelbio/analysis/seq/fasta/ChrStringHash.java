@@ -21,7 +21,7 @@ import com.novelbio.base.fileOperate.FileOperate;
  * 本类用来将染色体的名字，序列装入染色体类，并且是以Hash表形式返回 目前本类中仅仅含有静态方法 同时用来提取某段位置的序列 和提取反向重复序列
  * 作者：宗杰 20090617
  */
-public class ChrStringHash extends SeqHashAbs{
+public class ChrStringHash extends SeqHashAbs {
 	private static Logger logger = Logger.getLogger(ChrStringHash.class);
 	
 	/** 以下哈希表的键是染色体名称，都是小写，格式如：chr1，chr2，chr10 */
@@ -138,7 +138,7 @@ public class ChrStringHash extends SeqHashAbs{
 			
 			long lengthChrSeq = chrRAfile.length();
 			long tmpChrLength = (lengthChrSeq - lengthChrID - 1) / (lengthRow + 1) * lengthRow + (lengthChrSeq - lengthChrID - 1) % (lengthRow + 1);
-			hashChrLength.put(chrID, tmpChrLength);
+			mapChrID2Length.put(chrID, tmpChrLength);
 			chrRAfile.close();
 		}
 	}

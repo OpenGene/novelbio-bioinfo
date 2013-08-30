@@ -316,7 +316,9 @@ public class SamFileStatistics implements AlignmentRecorder {
 		List<String[]> lsSamTable = writeSamTable();
 		List<String[]> lsChrReports = writeChrInfoTable();
 		Map<String, List<String[]>> mapSheetName2Data = new LinkedHashMap<String, List<String[]>>();
-		mapSheetName2Data.put("statisticsTerm", lsSamTable);
+		if (lsSamTable.size() > 0) {
+			mapSheetName2Data.put("statisticsTerm", lsSamTable);
+		}
 		mapSheetName2Data.put("chrDistribution", lsChrReports);
 		return mapSheetName2Data;
 	}

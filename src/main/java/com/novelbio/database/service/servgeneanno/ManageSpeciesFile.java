@@ -111,7 +111,7 @@ public class ManageSpeciesFile {
 			}
 		
 			//升级
-			speciesFile.update();
+			update(speciesFile);
 		}
 	}
 	

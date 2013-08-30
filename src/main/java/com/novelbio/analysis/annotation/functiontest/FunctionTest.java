@@ -20,7 +20,6 @@ import com.novelbio.base.dataStructure.StatisticsTest;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.nbcgui.controltest.GoPathBarPlot;
 
 public abstract class FunctionTest implements Cloneable {
 	private static final Logger logger = Logger.getLogger(FunctionTest.class);
