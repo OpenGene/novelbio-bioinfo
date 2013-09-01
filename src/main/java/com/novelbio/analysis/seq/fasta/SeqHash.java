@@ -25,15 +25,15 @@ public class SeqHash implements SeqHashInt, Closeable {
 	Boolean TOLOWCASE = null;
 	
 	/**
+	 * 适合小文件，直接读入内存，不建立索引
+	 * <b>不会建立文件夹</b><p>
 	 * 重名文件就返回，认为一样的东西
 	 * @param chrFile 序列文件或序列文件夹
-	 * @param regx 如果是序列文件，则用该正则表达式提取每个序列的名字，如果是序列文件夹，则用该正则表达式提取含有该文件名的文件
-	 * 单文件默认为"";文件夹默认为"\\bchr\\w*"；
 	 * @param TOLOWCASE 是否将最后结果的序列转化为小写 True：小写，False：大写，null不变 默认为null
 	 * 默认为false
 	 */
 	public SeqHash(String chrFile) {
-		if (FileOperate.isFileExistAndBigThanSize(chrFile,0.001)) {
+		if (FileOperate.isFileExistAndBigThanSize(chrFile, 0)) {
 			seqHashAbs =new SeqFastaHash(chrFile, "", true);
 		}
 		if (FileOperate.isFileDirectory(chrFile)) {
@@ -41,62 +41,30 @@ public class SeqHash implements SeqHashInt, Closeable {
 		}
 	}
 	/**
+	 * 适合无重复ID的大文件<br>
+	 * <b>如果是单个fasta文件，就会建立索引</b><p>
+	 * @param chrFile 序列文件或序列文件夹
+	 * @param regx 序列名的正则表达式，会用该正则表达式把序列名字过滤，如果没有符合该正则表达式，则返回全名。单文件默认为"";文件夹默认为"\\bchr\\w*"；
+	 */
+	public SeqHash(String chrFile, String regx) {
+		if (FileOperate.isFileExistAndBigThanSize(chrFile,1)) {
+			seqHashAbs =new ChrSeqHash(chrFile, regx);
+		}
+		if (FileOperate.isFileDirectory(chrFile)) {
+			seqHashAbs = new ChrStringHash(chrFile, regx);
+		}
+	}
+	
+	
+	
+	/**
 	 * 返回文件名 
 	 * @return
 	 */
 	public String getChrFile() {
 		return seqHashAbs.getChrFile();
 	}
-	/**
-	 * @param chrFile 序列文件或序列文件夹
-	 * @param regx 如果是序列文件，则用该正则表达式提取每个序列的名字，如果是序列文件夹，则用该正则表达式提取含有该文件名的文件
-	 * 单文件默认为"";文件夹默认为"\\bchr\\w*"；
-	 */
-	public SeqHash(String chrFile, String regx) {
-		if (FileOperate.isFileExistAndBigThanSize(chrFile,1)) {
-			seqHashAbs =new SeqFastaHash(chrFile, regx, true);
-		}
-		if (FileOperate.isFileDirectory(chrFile)) {
-			seqHashAbs = new ChrStringHash(chrFile, regx);
-		}
-	}
-	
-	/**
-	 * @param chrFile 序列文件或序列文件夹
-	 * @param regx 如果是序列文件，则用该正则表达式提取每个序列的名字，如果是序列文件夹，则用该正则表达式提取含有该文件名的文件
-	 * 单文件默认为"";文件夹默认为"\\bchr\\w*"；
-	 * @param TOLOWCASE 是否将最后结果的序列转化为小写 True：小写，False：大写，null不变 默认为null
-	 * 默认为false
-	 */
-	public SeqHash(String chrFile, String regx,Boolean TOLOWCASE) {
-		if (FileOperate.isFileExistAndBigThanSize(chrFile,1)) {
-			seqHashAbs =new SeqFastaHash(chrFile, regx, true);
-		}
-		if (FileOperate.isFileDirectory(chrFile)) {
-			seqHashAbs = new ChrStringHash(chrFile, regx);
-		}
-		this.TOLOWCASE = TOLOWCASE;
-	}
-	
-	/**
-	 * @param chrFile 序列文件或序列文件夹
-	 * @param regx 如果是序列文件，则用该正则表达式提取每个序列的名字，如果是序列文件夹，则用该正则表达式提取含有该文件名的文件
-	 * 单文件默认为"";文件夹默认为"\\bchr\\w*"；
-	 * @param CaseChange 是否将序列名小写 默认小写
-	 * @param TOLOWCASE 是否将最后结果的序列转化为小写 True：小写，False：大写，null不变 默认为null
-	 * @param append <b>仅针对单个文本的序列</b>对于相同名称序列的处理，
-	 * true：如果出现重名序列，则在第二条名字后加上"<"作为标记 false：如果出现重名序列，则用长的序列去替换短的序列
-	 * 默认为false
-	 */
-	public SeqHash(String chrFile, String regx,Boolean TOLOWCASE, boolean append) {
-		if (FileOperate.isFileExistAndBigThanSize(chrFile,1)) {
-			seqHashAbs =new SeqFastaHash(chrFile, regx, append);
-		}
-		if (FileOperate.isFileDirectory(chrFile)) {
-			seqHashAbs = new ChrStringHash(chrFile, regx);
-		}
-		this.TOLOWCASE = TOLOWCASE;
-	}
+
 
 	@Override
 	public LinkedHashMap<String, Long> getMapChrLength() {

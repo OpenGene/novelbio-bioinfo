@@ -2,17 +2,10 @@ package com.novelbio.analysis.seq.sam.seekablestream;
 
 import java.io.IOException;
 
-import net.sf.samtools.SAMFileReader;
-import net.sf.samtools.SAMRecord;
-import net.sf.samtools.SAMRecordIterator;
 import net.sf.samtools.seekablestream.SeekableStream;
 
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
-import org.aspectj.apache.bcel.generic.RET;
 
 import com.novelbio.base.fileOperate.FileHadoop;
 
@@ -22,27 +15,6 @@ import com.novelbio.base.fileOperate.FileHadoop;
  *
  */
 public class SeekableHDFSstream extends SeekableStream {
-	public static void main(String[] args) throws IOException {
-		Configuration conf = new Configuration();
-		// 在你的文件地址前自动添加：hdfs://192.168.0.188:9000/
-		conf.set("fs.default.name", "hdfs://192.168.0.188:9000/");
-		// 指定用户名
-		conf.set("hadoop.job.user", "novelbio");
-		
-		String hdfsFileName = "/user/aaa.bam";
-		String hdfsFileIndex = "/user/aaa.bam.bai";
-		
-		FileSystem hdfs = FileSystem.get(conf);
-		
-		String fileName = "/home/zong0jie/Desktop/paper/aaa.bam";
-		String fileIndex = "/home/zong0jie/Desktop/paper/aaa.bam.bai";
-		
-		FileHadoop fileHadoop = new FileHadoop(hdfs, hdfsFileName);
-		
-		System.out.println(fileHadoop.getFileNameHdfs());
-		
-	}
-	
 	
 	private static final Logger logger = Logger.getLogger(SeekableHDFSstream.class);
 	
@@ -67,7 +39,6 @@ public class SeekableHDFSstream extends SeekableStream {
 
 	@Override
 	public void seek(long position) throws IOException {
-		logger.error("seek " + position);
 		fsDataInputStream.seek(position);
 	}
 
@@ -91,7 +62,7 @@ public class SeekableHDFSstream extends SeekableStream {
 	 */
 	@Override
 	public String getSource() {
-		return fileHadoop.getFileNameHdfs();
+		return fileHadoop.getName();
 	}
 
 	@Override

@@ -18,6 +18,8 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
+import com.hg.doc.ch;
+import com.novelbio.analysis.seq.fasta.RandomChrFileInt.RandomChrFileFactory;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -31,7 +33,7 @@ public class ChrSeqHash extends SeqHashAbs {
 	
 	/** 以下哈希表的键是染色体名称，都是小写，格式如：chr1，chr2，chr10 */
 	Map<String, Long> mapChrID2Start = new LinkedHashMap<>();
-	RandomAccessFile randomAccessFile;
+	RandomChrFileInt randomChrFileInt;
 	
 	/** 每个文本所对应的单行长度
 	 *  Seq文件第二行的长度，也就是每行序列的长度+1，1是回车 
@@ -82,7 +84,7 @@ public class ChrSeqHash extends SeqHashAbs {
 			indexFile = getChrIndexFileName();
 		}
 		readIndex(indexFile);
-		randomAccessFile = new RandomAccessFile(chrFile, "r");
+		randomChrFileInt = RandomChrFileFactory.createInstance(chrFile);
 	}
 	
 	protected SeqFasta getSeqInfo(String chrID, long startlocation, long endlocation) {
@@ -103,56 +105,60 @@ public class ChrSeqHash extends SeqHashAbs {
 	 * @throws IOException
 	 */
 	private SeqFasta getSeqInfoExp(String chrID, long startlocation, long endlocation) throws IOException {
+		if (randomChrFileInt == null) {
+			logger.error("没有该文件：" + chrFile);
+			return null;
+		}
+		
 		chrID = chrID.toLowerCase();
-		long[] startEnd = getStartEnd(chrID, startlocation, endlocation);
-		if (startEnd == null) return null;
+		long[] startEndReal = getStartEndReal(chrID, startlocation, endlocation);
+		if (startEndReal == null) return null;
+		long startReal = startEndReal[0]; long endReal = startEndReal[1];
 		
-		startlocation = startEnd[0]; endlocation = startEnd[1];
+		if (endReal > FileOperate.getFileSizeLong(chrFile)) {
+			logger.error("文件出错");
+			return null;
+		}
 		
-		int lengthRow = mapChrID2LenRow.get(chrID);
-		long startChr = mapChrID2Start.get(chrID);
-		
-		randomAccessFile.seek(getRealSite(startChr, startlocation, lengthRow, mapChrID2LenRowEnter.get(chrID)));
+		byte[] readInfo = new byte[(int) (endReal - startReal)];
+		randomChrFileInt.seek(startReal);
+		randomChrFileInt.read(readInfo);
 		SeqFasta seqFasta = new SeqFasta();
 		seqFasta.setName(chrID + "_" + startlocation + "_" + endlocation);
-
 		StringBuilder sequence = new StringBuilder();
-		
-		long rowCoverNum = getRowNum(endlocation, lengthRow) - getRowNum(startlocation, lengthRow);
-		if (rowCoverNum == 0) {
-			String seqResult = randomAccessFile.readLine();
-			seqResult = seqResult.substring(0, getBias(endlocation, lengthRow) - getBias(startlocation, lengthRow));
-			seqFasta.setSeq(seqResult);
-		} else {
-			for (int i = 0; i < rowCoverNum; i++) {
-				sequence.append(randomAccessFile.readLine());
+		for (byte b : readInfo) {
+			if ((int)b <= 0) {
+				logger.error("error: " + chrID + " " + startlocation + " " + endlocation );
+				return null;
 			}
-			String endline = randomAccessFile.readLine();
-			endline = endline.substring(0, getBias(endlocation, lengthRow));
-			sequence.append(endline);
-			seqFasta.setSeq(sequence.toString());
+			char seq = (char)b;
+			if (seq == '\r' || seq == '\n' || seq == ' ') {
+				continue;
+			} else if (seq == '>') {
+				logger.error("error: " + chrID + " " + startlocation + " " + endlocation );
+				return null;
+			}
+			sequence.append(seq);
 		}
-
+		seqFasta.setSeq(sequence.toString());
 		return seqFasta;
 	}
-	
+
 	/**
-	 * 修正输入的start和end的坐标
+	 * 修正输入的start和end的坐标为随机文本的实际坐标
 	 * @return null表示失败
+	 * @throws IOException 
 	 */
-	private long[] getStartEnd(String chrID, long start, long end) {
+	private long[] getStartEndReal(String chrID, long start, long end) {
 		chrID = chrID.toLowerCase();
 		if (!mapChrID2Length.containsKey(chrID)) {
 			logger.error( "无该染色体: "+ chrID);
 			return null;
 		}
 		long chrLength = getChrLength(chrID);
-		if (start <= 0) {
-			start = 1;
-		}
-		if (end <= 0) {
-			end = getChrLength(chrID);
-		}
+		if (start <= 0) start = 1;
+		if (end <= 0) end = chrLength;
+		
 		start--;
 		//如果位点超过了范围，那么修正位点
 		if (start < 0 || start >= chrLength || end < 1 || end >= chrLength || end < start) {
@@ -163,7 +169,18 @@ public class ChrSeqHash extends SeqHashAbs {
 			logger.error(chrID + " " + start + " " + end + " 最多提取" + maxExtractSeqLength + "bp");
 			return null;
 		}
-		return new long[]{start, end};
+		
+		long startChr = mapChrID2Start.get(chrID);
+		int lengthRow = mapChrID2LenRow.get(chrID);
+		int lenRowEnter = mapChrID2LenRowEnter.get(chrID);
+		try {
+			long startReal = getRealSite(startChr, start, lengthRow, lenRowEnter);
+			long endReal = getRealSite(startChr, end, lengthRow, lenRowEnter);
+			return new long[]{startReal, endReal};
+		} catch (Exception e) {
+			logger.error("文件出错：" + chrFile + "\t" + chrID + " " + start + " " + end);
+			return null;
+		}
 	}
 	
 	@Override
@@ -181,17 +198,17 @@ public class ChrSeqHash extends SeqHashAbs {
 	}
 	
 	/**
-	 * @param start 该染色体起点在文本中的未知
+	 * @param chrStart 该染色体起点在文本中的位置
 	 * @param site 想转换的某个染色体坐标
 	 * @param rowLen 每行有多少碱基
 	 * @return
 	 * @throws IOException 
 	 */
-	private long getRealSite(long start, long site, int rowLen, int rowEnterLen) throws IOException {
+	private long getRealSite(long chrStart, long site, int rowLen, int rowEnterLen) throws IOException {
 		// 设定到0位
-		randomAccessFile.seek(0);
+		randomChrFileInt.seek(0);
 		// 实际序列在文件中的起点
-		long siteReal = start + rowEnterLen * getRowNum(site, rowLen) + getBias(site, rowLen);
+		long siteReal = chrStart + rowEnterLen * getRowNum(site, rowLen) + getBias(site, rowLen);
 		return siteReal;
 	}
 	
@@ -206,7 +223,7 @@ public class ChrSeqHash extends SeqHashAbs {
 	
 	public void close() {
 		try {
-			randomAccessFile.close();
+			randomChrFileInt.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -269,7 +286,7 @@ public class ChrSeqHash extends SeqHashAbs {
 		bfreader.read(mychar);
 		bfreader.reset();
 		if (mychar[mychar.length - 2] == 13 && mychar[mychar.length - 1] == 10) {
-			return 2;
+			return 2;//windows 的 \r\n
 		} else {
 			return 1;
 		}
@@ -282,6 +299,8 @@ public class ChrSeqHash extends SeqHashAbs {
 	private void readIndex(String indexFile) {
 		mapChrID2Start.clear();
 		mapChrID2Length.clear();
+		mapChrID2LenRow.clear();
+		mapChrID2LenRowEnter.clear();
 		PatternOperate patternOperate = null;
 		if (regx != null && !regx.equals("")) {
 			patternOperate = new PatternOperate(regx, false);
@@ -290,9 +309,14 @@ public class ChrSeqHash extends SeqHashAbs {
 		TxtReadandWrite txtRead = new TxtReadandWrite(indexFile);
 		for (String string : txtRead.readlines()) {
 			String[] ss = string.split("\t");
-			String chrID = ss[0];
+			String chrID =ss[0].toLowerCase();
 			if (patternOperate != null) {
-				chrID = patternOperate.getPatFirst(ss[0]).toLowerCase();
+				chrID = patternOperate.getPatFirst(ss[0]);
+				if (chrID != null) {
+					chrID = chrID.toLowerCase();
+				} else {
+					chrID = ss[0].toLowerCase();
+				}
 			}
 			long length = Long.parseLong(ss[1].trim());
 			long start = Long.parseLong(ss[2].trim());

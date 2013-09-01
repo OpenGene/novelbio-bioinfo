@@ -37,6 +37,7 @@ public class GetProteinFastaFromGff {
 			seqFasta.setName(sequinGene.toTitle());
 			txtWritePro.writefileln(seqFasta.toStringAAfasta());
 		}
+		seqFastaHash.close();
 		txtReadGff.close();
 		txtWritePro.close();
 	}
