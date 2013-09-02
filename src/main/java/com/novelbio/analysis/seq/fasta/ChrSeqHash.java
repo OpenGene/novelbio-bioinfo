@@ -50,18 +50,15 @@ public class ChrSeqHash extends SeqHashAbs {
 	int maxSeqNum = 500;
 	/**
 	 * 随机硬盘读取染色体文件的方法，貌似很伤硬盘，考虑用固态硬盘 注意
-	 * 给定一个文件夹，这个文件夹里面保存了某个物种的所有染色体序列信息，<b>文件夹最后无所谓加不加"/"或"\\"</b>
-	 * 一个文本保存一条染色体，以fasta格式保存，每个文本以">"开头，然后接下来每行固定的碱基数(如UCSC为50个，TIGRRice为60个)
-	 * 文本文件名(不考虑后缀名，当然没有后缀名也行)应该是待查找的chrID
-	 * @param chrFilePath
-	 * @param regx null走默认，默认为"\\bchr\\w*"， 用该正则表达式去查找文件名中含有Chr的文件，每一个文件就认为是一个染色体
+	 * @param chrFileName 染色体文件路径，单个文件
+	 * @param regx null和""：选择序列全名<br>
+	 *  输入 " "表示选择第一个空格前的序列名，如">chr1 ater ddddd" 则截取”chr1“
 	 * @param CaseChange 是否将序列名转化为小写，一般转为小写
 	 */
-	public ChrSeqHash(String chrFilePath,String regx) {
-		super(chrFilePath, regx);
+	public ChrSeqHash(String chrFileName,String regx) {
+		super(chrFileName, regx);
 		setFile();
 	}
-	
 	/** 设定最长读取的sequence长度 */
 	public void setMaxExtractSeqLength(int maxExtractSeqLength) {
 		this.maxExtractSeqLength = maxExtractSeqLength;
@@ -80,7 +77,7 @@ public class ChrSeqHash extends SeqHashAbs {
 				FileOperate.getLastModifyTime(getChrIndexFileNameFaidx()) > FileOperate.getLastModifyTime(chrFile)) {
 			indexFile = getChrIndexFileNameFaidx();
 		} else {
-			createIndex();
+			createIndex(chrFile, getChrIndexFileName());
 			indexFile = getChrIndexFileName();
 		}
 		readIndex(indexFile);
@@ -229,15 +226,20 @@ public class ChrSeqHash extends SeqHashAbs {
 		}
 	}
 	
-	/** index 文件格式如下
+	/**
+	 * 
+	 * 建索引
+	 * index 文件格式如下
 	 * chrID chrLength start   rowLength rowLenWithEnter
-	 * @throws IOException 
+	 * @param chrFile 染色体序列，必须每一行等长
+	 * @param indexFile 输出的index文件夹
+	 * @throws IOException
 	 */
-	private void createIndex() throws IOException {
-		mapChrID2Start.clear();
-		mapChrID2Length.clear();
-		mapChrID2LenRow.clear();
-		mapChrID2LenRowEnter.clear();
+	public static void createIndex(String chrFile, String indexFile) throws IOException {
+		Map<String, Long> mapChrID2Start = new LinkedHashMap<>();
+		Map<String, Long> mapChrID2Length = new LinkedHashMap<>();
+		Map<String, Integer> mapChrID2LenRow = new LinkedHashMap<>();
+		Map<String, Integer> mapChrID2LenRowEnter = new LinkedHashMap<>();
 		TxtReadandWrite txtRead = new TxtReadandWrite(chrFile);
 		long start = 0, length = 0;
 		int enterLen = -1;
@@ -266,7 +268,7 @@ public class ChrSeqHash extends SeqHashAbs {
 		if (chrID != null) {
 			mapChrID2Length.put(chrID, length);
 		}
-		TxtReadandWrite txtIndex = new TxtReadandWrite(getChrIndexFileName(), true);
+		TxtReadandWrite txtIndex = new TxtReadandWrite(indexFile, true);
 		for (String chr : mapChrID2LenRow.keySet()) {
 			String[] out = new String[]{chr + "\t" + mapChrID2Length.get(chr) + "\t" + mapChrID2Start.get(chr)
 					+ "\t" + mapChrID2LenRow.get(chr) + "\t" + mapChrID2LenRowEnter.get(chr)};
@@ -278,7 +280,7 @@ public class ChrSeqHash extends SeqHashAbs {
 	
 	/** 给定 bfReader，返回换行的格式 
 	 * @throws IOException */
-	private int getEnterLen(BufferedReader bfreader, int contentLen) throws IOException {
+	private static int getEnterLen(BufferedReader bfreader, int contentLen) throws IOException {
 		bfreader.mark(contentLen * 2);
 		int lineByteNum = bfreader.readLine().length();
 		bfreader.reset();
@@ -302,21 +304,24 @@ public class ChrSeqHash extends SeqHashAbs {
 		mapChrID2LenRow.clear();
 		mapChrID2LenRowEnter.clear();
 		PatternOperate patternOperate = null;
-		if (regx != null && !regx.equals("")) {
+		if (regx != null && !regx.equals("") && !regx.equals(" ")) {
 			patternOperate = new PatternOperate(regx, false);
 		}
 		
 		TxtReadandWrite txtRead = new TxtReadandWrite(indexFile);
 		for (String string : txtRead.readlines()) {
 			String[] ss = string.split("\t");
-			String chrID =ss[0].toLowerCase();
-			if (patternOperate != null) {
+			ss[0] =ss[0].toLowerCase();
+			String chrID = null;
+			if (regx != null && regx.equals(" ")) {
+				chrID = ss[0].split(" ")[0];
+			} else if (patternOperate != null) {
 				chrID = patternOperate.getPatFirst(ss[0]);
-				if (chrID != null) {
-					chrID = chrID.toLowerCase();
-				} else {
-					chrID = ss[0].toLowerCase();
+				if (chrID == null) {
+					chrID = ss[0];
 				}
+			} else {
+				chrID = ss[0];
 			}
 			long length = Long.parseLong(ss[1].trim());
 			long start = Long.parseLong(ss[2].trim());

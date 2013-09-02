@@ -194,56 +194,9 @@
 			<version>1.2.2</version>
 		</dependency>
 		<dependency>
-			<groupId>com.novelbio</groupId>
-			<artifactId>base</artifactId>
-			<version>1.0.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-hadoop</artifactId>
-			<version>1.0.0.RELEASE</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.hadoop</groupId>
-			<artifactId>hadoop-core</artifactId>
-			<version>1.0.4</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>jetty</artifactId>
-					<groupId>org.mortbay.jetty</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>jsp-api-2.1</artifactId>
-					<groupId>org.mortbay.jetty</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>jasper-runtime</artifactId>
-					<groupId>tomcat</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>jasper-compiler</artifactId>
-					<groupId>tomcat</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>jsp-2.1</artifactId>
-					<groupId>org.mortbay.jetty</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.apache</groupId>
-			<artifactId>mina-core</artifactId>
-			<version>2.0.7</version>
-		</dependency>
-		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>1.6.6</version>
-		</dependency>
-		<dependency>
-			<groupId>com.novelbio</groupId>
-			<artifactId>netty</artifactId>
-			<version>3.2.7</version>
 		</dependency>
 		<dependency>
 			<groupId>antlr</groupId>
@@ -283,11 +236,6 @@
 		</dependency>
 		<dependency>
 			<groupId>com.novelbio</groupId>
-			<artifactId>GATK</artifactId>
-			<version>2.5</version>
-		</dependency>
-		<dependency>
-			<groupId>com.novelbio</groupId>
 			<artifactId>picard-markDuplicates</artifactId>
 			<version>1.8.7</version>
 		</dependency>
@@ -301,6 +249,12 @@
 			<groupId>com.novelbio</groupId>
 			<artifactId>base</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>netty</artifactId>
+					<groupId>com.novelbio</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.testng</groupId>
@@ -322,6 +276,16 @@
 					<groupId>bouncycastle</groupId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.curator</groupId>
+			<artifactId>curator-recipes</artifactId>
+			<version>2.1.0-incubating</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.curator</groupId>
+			<artifactId>curator-examples</artifactId>
+			<version>2.1.0-incubating</version>
 		</dependency>
 	</dependencies>
 	<distributionManagement>

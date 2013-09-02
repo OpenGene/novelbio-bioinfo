@@ -28,7 +28,7 @@ public class Align2DGEvalue {
 	public void setSpecies(Species species) {
 		mapAccID2GeneID = new HashMap<String, String>();
 		if (species != null && species.getTaxID() != 0) {
-			String gene2IsoFile = species.getGene2IsoFileFromDB();
+			String gene2IsoFile = species.getGene2IsoFileFromRefSeq();
 			TxtReadandWrite txtGene2Iso = new TxtReadandWrite(gene2IsoFile, false);
 			for (String content : txtGene2Iso.readlines()) {
 				String[] ss = content.split("\t");

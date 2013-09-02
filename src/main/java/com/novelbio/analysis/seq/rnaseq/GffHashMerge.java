@@ -251,7 +251,7 @@ public class GffHashMerge {
 		return transcriptomStatistics;
 	}
 	private void prepareStatistics(TranscriptomStatistics transcriptomStatistics) {
-		SeqHash seqFastaHash = new SeqHash(species.getChromFaPath(), species.getChromFaRegex());
+		SeqHash seqFastaHash = new SeqHash(species.getChromSeq(), " ");
 		transcriptomStatistics.setSeqFastaHash(seqFastaHash);
 	}
 	private void statisticsLsGffGeneCluster(TranscriptomStatistics transcriptomStatistics, ArrayList<GffGeneCluster> lsGeneCluster) {

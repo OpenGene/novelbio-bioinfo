@@ -9,6 +9,7 @@ import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.database.model.modgeneid.GeneType;
 import com.novelbio.database.model.species.Species;
 
@@ -19,7 +20,7 @@ public class TestSeqHash extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		Species species = new Species(9606);
-		seqHash = new SeqHash(species.getChromFaPath(), species.getChromFaRegex());
+		seqHash = new SeqHash(FileHadoop.getHdfsHeadSymbol("/nbCloud/nbcplatform/genome/human/hg19_GRCh37/ChromFa/chrAll.fa"), " ");
 		gffDetailGene = new GffDetailGene("chr1", "test", true);
 	}
 	

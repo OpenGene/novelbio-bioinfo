@@ -28,7 +28,16 @@ public class ManageSpeciesFile {
 	 */
 	static Map<Integer, Map<String, SpeciesFile>> mapTaxID_2_version2SpeciesFile;
 	
-	public ManageSpeciesFile() {
+	private static ManageSpeciesFile manageSpeciesFile;
+	
+	public static ManageSpeciesFile getInstance() {
+		if (manageSpeciesFile == null) {
+			manageSpeciesFile = new ManageSpeciesFile();
+		}
+		return manageSpeciesFile;
+	}
+	
+	private ManageSpeciesFile() {
 		if (mapTaxID_2_version2SpeciesFile == null) {
 			 mapTaxID_2_version2SpeciesFile = new HashMap<Integer, Map<String,SpeciesFile>>();
 			 readDBinfo();
@@ -44,23 +53,31 @@ public class ManageSpeciesFile {
 			logger.error("文本无法读取，只能读取数据库");
 		}
 	}
-	
-	private void readSpeciesFile(String speciesFileInput) {
-		if (!FileOperate.isFileExistAndBigThanSize(speciesFileInput, 0)) return;
 		
+	public void readSpeciesFile(String speciesFileInput) {
+		if (!FileOperate.isFileExistAndBigThanSize(speciesFileInput, 0)) return;
 		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(speciesFileInput, 0);
-		String[] title = lsInfo.get(0);
+		String[] title = null;
+		for (String[] strings : lsInfo) {
+			if (strings[0].trim().startsWith("#title")) {
+				strings[0] = strings[0].trim().replace("#title_", "");
+				title = strings;
+				break;
+			}
+		}
+		if (title == null) return;
+		
 		HashMap<String, Integer> hashName2ColNum = new HashMap<String, Integer>();
 		for (int i = 0; i < title.length; i++) {
 			hashName2ColNum.put(title[i].trim().toLowerCase(), i);
 		}
-		
-		for (int i = 1; i < lsInfo.size(); i++) {
+		title[0] = "#" + title[0];//下面就可以把title忽略
+		 
+		for (int i = 0; i < lsInfo.size(); i++) {
+			if (lsInfo.get(i)[0].startsWith("#")) continue;
+			
 			SpeciesFile speciesFile = new SpeciesFile();
 			String[] info = lsInfo.get(i);
-			if (info[0].startsWith("#")) {
-				continue;
-			}
 			info = ArrayOperate.copyArray(info, title.length);
 			int m = hashName2ColNum.get("taxid");
 			speciesFile.setTaxID((int)Double.parseDouble(info[m]));
@@ -71,21 +88,8 @@ public class ManageSpeciesFile {
 			m = hashName2ColNum.get("publishyear");
 			speciesFile.setPublishYear((int)Double.parseDouble(info[m]));
 			
-			m = hashName2ColNum.get("chrompath");
-			String[] chromInfo = info[m].split(SepSign.SEP_ID);
-			speciesFile.setChromPath(chromInfo[0], chromInfo[1]);
-			
 			m = hashName2ColNum.get("chromseq");
 			speciesFile.setChromSeq(info[m]);
-			//TODO 看下分隔符对不对
-			m = hashName2ColNum.get("indexchr");
-			if (!info[m].equals("")) {
-				String[] indexChrInfo = info[m].split(SepSign.SEP_ID);
-				for (String indexChrDetail : indexChrInfo) {
-					String[] indexDetail = indexChrDetail.split(SepSign.SEP_INFO);
-					speciesFile.addIndexChrom(SoftWare.valueOf(indexDetail[0]), indexDetail[1]);
-				}
-			}
 						
 			m = hashName2ColNum.get("gffgenefile");
 			if (!info[m].equals("")) {
@@ -109,12 +113,11 @@ public class ManageSpeciesFile {
 			} catch (Exception e) {
 				logger.error("条目出错：" + ArrayOperate.cmbString(info, "\t"));
 			}
-		
 			//升级
-			update(speciesFile);
+			speciesFile.update();
 		}
-	}
 	
+	}
 	private void readFromDB() {
 		repoSpeciesFile = (RepoSpeciesFile)SpringFactory.getFactory().getBean("repoSpeciesFile");
 		for (SpeciesFile speciesFile : repoSpeciesFile.findAll()) {

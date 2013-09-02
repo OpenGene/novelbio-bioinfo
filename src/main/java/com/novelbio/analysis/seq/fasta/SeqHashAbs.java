@@ -41,7 +41,7 @@ public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 	 */
 	public SeqHashAbs(String chrFile, String regx) {
 		this.chrFile = chrFile;
-		if (regx != null && !regx.trim().equals("")) {
+		if (regx != null && !regx.equals("")) {
 			this.regx = regx;
 		}
 	}

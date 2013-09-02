@@ -15,7 +15,6 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
-import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -73,7 +72,6 @@ public class Species implements Cloneable {
 	ArrayList<String[]> lsVersion = new ArrayList<String[]>();
 	/** key：版本ID,通通小写  value：具体的信息 */
 	HashMap<String, SpeciesFile> mapVersion2Species = new HashMap<String, SpeciesFile>();
-	ManageSpeciesFile servSpeciesFile = new ManageSpeciesFile();
 	ManageTaxID servTaxID = new ManageTaxID();
 	
 	String updateTaxInfoFile = "";
@@ -178,7 +176,7 @@ public class Species implements Cloneable {
 			e.printStackTrace();
 			return;
 		}
-		List<SpeciesFile> lsSpeciesFile = servSpeciesFile.queryLsSpeciesFile(taxID);
+		List<SpeciesFile> lsSpeciesFile = ManageSpeciesFile.getInstance().queryLsSpeciesFile(taxID);
 		for (SpeciesFile speciesFile : lsSpeciesFile) {
 			lsVersion.add(new String[]{speciesFile.getVersion(), speciesFile.getPublishYear() + ""});
 			mapVersion2Species.put(speciesFile.getVersion().toLowerCase(), speciesFile);
@@ -232,16 +230,6 @@ public class Species implements Cloneable {
 			len = len + chrLen;
 		}
 		return len;
-	}
-	/** 获得chr文件的path */
-	public String getChromFaPath() {
-		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
-		return speciesFile.getChromFaPath();
-	}
-	/** 获得chr文件的regex */
-	public String getChromFaRegex() {
-		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
-		return speciesFile.getChromFaRegx();
 	}
 	public String getChromSeq() {
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
@@ -417,71 +405,11 @@ public class Species implements Cloneable {
 	 * @param txtFile 	 配置信息：第一行，item名称
 	 */
 	private void updateSpeciesFile(String speciesFileInput) {
-		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(speciesFileInput, 0);
-		String[] title = lsInfo.get(0);
-		HashMap<String, Integer> hashName2ColNum = new HashMap<String, Integer>();
-		for (int i = 0; i < title.length; i++) {
-			hashName2ColNum.put(title[i].trim().toLowerCase(), i);
-		}
-		
-		for (int i = 1; i < lsInfo.size(); i++) {
-			SpeciesFile speciesFile = new SpeciesFile();
-			String[] info = lsInfo.get(i);
-			info = ArrayOperate.copyArray(info, title.length);
-			int m = hashName2ColNum.get("taxid");
-			speciesFile.setTaxID((int)Double.parseDouble(info[m]));
-			
-			m = hashName2ColNum.get("version");
-			speciesFile.setVersion(info[m]);
-			
-			m = hashName2ColNum.get("publishyear");
-			speciesFile.setPublishYear((int)Double.parseDouble(info[m]));
-			
-			m = hashName2ColNum.get("chrompath");
-			String[] chromInfo = info[m].split(SepSign.SEP_ID);
-			speciesFile.setChromPath(chromInfo[0], chromInfo[1]);
-			
-			m = hashName2ColNum.get("chromseq");
-			speciesFile.setChromSeq(info[m]);
-			//TODO 看下分隔符对不对
-			m = hashName2ColNum.get("indexchr");
-			if (!info[m].equals("")) {
-				String[] indexChrInfo = info[m].split(SepSign.SEP_ID);
-				for (String indexChrDetail : indexChrInfo) {
-					String[] indexDetail = indexChrDetail.split(SepSign.SEP_INFO);
-					speciesFile.addIndexChrom(SoftWare.valueOf(indexDetail[0]), indexDetail[1]);
-				}
-			}
-						
-			m = hashName2ColNum.get("gffgenefile");
-			if (!info[m].equals("")) {
-				String[] gffUnit = info[m].split(SepSign.SEP_ID);
-				for (String gffInfo : gffUnit) {
-					String[] gffDB2TypeFile = gffInfo.split(SepSign.SEP_INFO);
-					speciesFile.addGffDB2TypeFile(gffDB2TypeFile[0], GffType.getType(gffDB2TypeFile[1]), gffDB2TypeFile[2]);
-				}
-			}
-			
-			m = hashName2ColNum.get("gffrepeatfile");
-			speciesFile.setGffRepeatFile(info[m]);
-			
-			m = hashName2ColNum.get("refseqfile");
-			speciesFile.setRefseqFile(info[m]);
-			
-			m = hashName2ColNum.get("refseqncfile");
-			speciesFile.setRefseqNCfile(info[m]);
-			try {
-				speciesFile.getMapChromInfo();
-			} catch (Exception e) {
-				logger.error("条目出错：" + ArrayOperate.cmbString(info, "\t"));
-			}
-		
-			//升级
-			speciesFile.update();
-		}
+		ManageSpeciesFile.getInstance().readSpeciesFile(speciesFileInput);
 	}
+	
 	/** 用数据库查找的方式，遍历refseq文件，然后获得gene2iso的表 */
-	public String getGene2IsoFileFromDB() {
+	public String getGene2IsoFileFromRefSeq() {
 		String gene2IsoFile = FileOperate.changeFileSuffix(getRefseqFile(), "_Gene2Iso", "txt");
 		if (!FileOperate.isFileExist(gene2IsoFile)) {
 			TxtReadandWrite txtGene2Iso = new TxtReadandWrite(gene2IsoFile, true);
@@ -494,6 +422,7 @@ public class Species implements Cloneable {
 				}
 				txtGene2Iso.writefileln(symbol + "\t" + geneIDstr);
 			}
+			seqFastaHash.close();
 			txtGene2Iso.close();
 		}
 		return gene2IsoFile;
@@ -512,7 +441,7 @@ public class Species implements Cloneable {
 		TreeMap<String, Species> treemapName2Species = new TreeMap<String, Species>();
 		
 		ManageTaxID servTaxID = new ManageTaxID();
-		ManageSpeciesFile servSpeciesFile = new ManageSpeciesFile();
+		ManageSpeciesFile servSpeciesFile = ManageSpeciesFile.getInstance();
 		List<Integer> lsTaxID = new ArrayList<Integer>();
 		try {
 			lsTaxID = servTaxID.getLsAllTaxID();

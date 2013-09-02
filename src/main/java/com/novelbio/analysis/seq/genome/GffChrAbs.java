@@ -40,7 +40,7 @@ public class GffChrAbs implements Closeable {
 	public void setTaxID(int taxID) {
 		this.species = new Species(taxID);
 		setGffFile(species.getTaxID(), species.getGffType(), species.getGffFile());
-		setChrFile(species.getChromFaPath(), species.getChromFaRegex());
+		setChrFile(species.getChromSeq(), " ");
 	}
 	
 	/**
@@ -50,8 +50,8 @@ public class GffChrAbs implements Closeable {
 	public void setSpecies(Species species) {
 		close();
 		if (this.species != null && this.species.equals(species) && this.species.getGffDB().equals(species.getGffDB())) {
-			if (FileOperate.isFileDirectory(species.getChromFaPath())) {
-				setChrFile(species.getChromFaPath(), species.getChromFaRegex());
+			if (FileOperate.isFileExistAndBigThanSize(species.getChromSeq(), 0)) {
+				setChrFile(species.getChromSeq(), " ");
 			}
 			return;
 		}
@@ -61,7 +61,7 @@ public class GffChrAbs implements Closeable {
 
 		this.species = species;
 		setGffFile(species.getTaxID(), species.getGffType(), species.getGffFile());
-		setChrFile(species.getChromFaPath(), species.getChromFaRegex());
+		setChrFile(species.getChromSeq(), " ");
 	}
 
 	public void setGffHash(GffHashGene gffHashGene) {
@@ -111,7 +111,7 @@ public class GffChrAbs implements Closeable {
 	 * 则用该正则表达式提取含有该文件名的文件 单文件默认为"";文件夹默认为"\\bchr\\w*"；
 	 * 
 	 * @param chrFile
-	 * @param regx null和""都走默认
+	 * @param regx null和""都走默认 如果是" "，表示截取">chr1 mouse test" 为"chr1"
 	 */
 	public void setChrFile(String chrFile, String regx) {
 		close();

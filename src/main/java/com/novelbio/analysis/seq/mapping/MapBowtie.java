@@ -319,4 +319,19 @@ public class MapBowtie extends MapDNA {
 
 	/** 没用 */
 	public void setGapLength(int gapLength) {}
+	
+	public String getVersion() {
+		String bowtie = "";
+		if (bowtieVersion == SoftWare.bowtie) {
+			bowtie = "bowtie";
+		} else if (bowtieVersion == SoftWare.bowtie2) {
+			bowtie = "bowtie2";
+		}
+		CmdOperate cmdOperate = new CmdOperate(this.ExePathBowtie + bowtie + " --version");
+		cmdOperate.setGetStdError();
+		
+		List<String> lsInfo = cmdOperate.getLsOutInfo();
+		String version = lsInfo.get(0).toLowerCase().split("version")[1].trim();
+		return version;
+	}
 }

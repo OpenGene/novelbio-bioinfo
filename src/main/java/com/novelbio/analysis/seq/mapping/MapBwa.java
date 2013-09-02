@@ -1,5 +1,7 @@
 package com.novelbio.analysis.seq.mapping;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -21,9 +23,14 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 @Scope("prototype")
 public class MapBwa extends MapDNA {
 	public static void main(String[] args) {
-		MapBwa mapBwa = new MapBwa();
-		mapBwa.setSampleGroup("asa", null, null, null);
-		System.out.println(mapBwa.sampleGroup);
+		CmdOperate cmdOperate = new CmdOperate("bowtie --version");
+		cmdOperate.setGetStdOut();
+		cmdOperate.setGetStdError();
+		cmdOperate.run();
+		
+		List<String> lsInfo = cmdOperate.getLsOutInfo();
+		String version = lsInfo.get(0).split("version")[1];
+		System.out.println(version);
 	}
 	
 	
@@ -35,7 +42,6 @@ public class MapBwa extends MapDNA {
 	 */
 	private static final int GENOME_SIZE_IN_MEMORY = 500000;
 	
-	CmdOperate cmdOperate = null;
 	/** bwa所在路径 */
 	String ExePath = "";
 	String chrFile;
@@ -307,7 +313,7 @@ public class MapBwa extends MapDNA {
 		String cmd1 = cmd + CmdOperate.addQuot(chrFile) + " " + CmdOperate.addQuot(leftFq) + " > " + CmdOperate.addQuot(getSai(1));
 		
 		this.cmd = cmd1;
-		cmdOperate = new CmdOperate(cmd1,"bwaMapping1");
+		CmdOperate cmdOperate = new CmdOperate(cmd1,"bwaMapping1");
 		cmdOperate.run();
 		
 		if (isPairEnd()) {
@@ -343,7 +349,7 @@ public class MapBwa extends MapDNA {
 			cmd = cmd + " > " +  CmdOperate.addQuot(outFileName);
 		}
 		this.cmd = this.cmd + TxtReadandWrite.ENTER_LINUX + cmd;
-		cmdOperate = new CmdOperate(cmd,"bwaMappingSAI");
+		CmdOperate cmdOperate = new CmdOperate(cmd,"bwaMappingSAI");
 		cmdOperate.run();
 	}
 	
@@ -421,5 +427,14 @@ public class MapBwa extends MapDNA {
 	public void setSubVersion(SoftWare bowtieVersion) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public String getVersion() {
+		CmdOperate cmdOperate = new CmdOperate(this.ExePath + "bwa");
+		cmdOperate.setGetStdError();
+		
+		List<String> lsInfo = cmdOperate.getLsErrorInfo();
+		String version = lsInfo.get(2).toLowerCase().replace("version:", "").trim();
+		return version;
 	}
 }

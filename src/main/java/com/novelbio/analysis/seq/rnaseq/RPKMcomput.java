@@ -14,8 +14,8 @@ import org.apache.log4j.Logger;
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
@@ -38,13 +38,6 @@ import com.novelbio.generalConf.TitleFormatNBC;
  * @author zong0jie
  */
 public class RPKMcomput implements AlignmentRecorder {
-	public static void main(String[] args) {
-		GffChrAbs gffChrAbs = new GffChrAbs(9606);
-		GffGeneIsoInfo gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO("bcyrn1");
-		for (ExonInfo exonInfo : gffGeneIsoInfo) {
-			System.out.println(gffGeneIsoInfo.getRefID() + "\t" + exonInfo.getRefID() + "\t" + exonInfo.getStartAbs() + "\t" + exonInfo.getEndAbs());
-		}
-	}
 	private static final Logger logger = Logger.getLogger(RPKMcomput.class);
 	private static int numForFragment = 200000;
 	/** 默认不考虑方向 */
@@ -155,6 +148,7 @@ public class RPKMcomput implements AlignmentRecorder {
 		try {
 			lSamRecords = isSelectedReads(alignRecord);
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error("error:" + alignRecord.toString());
 		}
 		addAlignRecord(lSamRecords);
@@ -322,10 +316,16 @@ public class RPKMcomput implements AlignmentRecorder {
 	private Set<String> getSetGeneNameSingleReads(List<Align> lsAligns, boolean readsCis5to3) {
 		Set<GffGeneIsoInfo> setIso = new HashSet<>();
 		for (Align align : lsAligns) {
+			if (!gffHashGene.isContainChrID(align.getRefID())) continue;
+			
 			GffCodGene gffCodGene = gffHashGene.searchLocation(align.getRefID(), align.getMidSite());
 			if (gffCodGene == null) continue;
-			
-			setIso.addAll(getSetGeneIso(readsCis5to3, gffCodGene));
+			Set<GffGeneIsoInfo> setIsoCod = getSetGeneIso(readsCis5to3, gffCodGene);
+			if (setIsoCod.size() == 0) {
+				GffCodGeneDU gffCodGeneDu = gffHashGene.searchLocation(align.getRefID(), align.getStartAbs(), align.getEndAbs());
+				setIsoCod = getSetGeneIso(readsCis5to3, gffCodGeneDu);
+			}
+			setIso.addAll(setIsoCod);
 		}
 		Set<String> setGeneName = new HashSet<>();
 		
@@ -427,6 +427,28 @@ public class RPKMcomput implements AlignmentRecorder {
 		for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 			if (gffGeneIsoInfo.getCodLoc(gffCodGene.getCoord()) == GffGeneIsoInfo.COD_LOC_EXON) {
 				
+				if (strandSpecific == StrandSpecific.NONE || (readsCis5to3 == gffGeneIsoInfo.isCis5to3())) {
+					setIso.add(gffGeneIsoInfo);
+				}
+			}
+		}
+		return setIso;
+	}
+	
+	/**
+	 * 返回落到的基因Iso
+	 * 没有落在基因内部就返回null
+	 * @param readsCis5to3 考虑了方向
+	 * @param gffCodGene
+	 * @return
+	 */
+	private Set<GffGeneIsoInfo> getSetGeneIso(boolean readsCis5to3, GffCodGeneDU gffCodGeneDu) {
+		Set<GffGeneIsoInfo> setIso = new HashSet<>();
+		gffCodGeneDu.setGeneBody(false);
+		gffCodGeneDu.setExon(true);
+		Set<GffDetailGene> setGffGene = gffCodGeneDu.getCoveredGffGene();
+		for (GffDetailGene gffDetailGene : setGffGene) {
+			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 				if (strandSpecific == StrandSpecific.NONE || (readsCis5to3 == gffGeneIsoInfo.isCis5to3())) {
 					setIso.add(gffGeneIsoInfo);
 				}

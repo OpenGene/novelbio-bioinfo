@@ -1,10 +1,13 @@
 package com.novelbio.analysis.seq.mapping;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.beust.jcommander.internal.Maps;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.base.cmd.CmdOperate;
@@ -32,7 +35,12 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
  */
 public class MapTophat implements MapRNA {
 	private static Logger logger = Logger.getLogger(MapTophat.class);
-
+	
+	public static final int Sensitive_Very_Fast = 11;
+	public static final int Sensitive_Fast = 11;
+	public static final int Sensitive_Sensitive = 11;
+	public static final int Sensitive_Very_Sensitive = 11;
+	
 	StrandSpecific strandSpecifictype = StrandSpecific.NONE;
 	List<FastQ> lsLeftFq = new ArrayList<FastQ>();
 	List<FastQ> lsRightFq = new ArrayList<FastQ>();
@@ -71,6 +79,8 @@ public class MapTophat implements MapRNA {
 	boolean booSetIntronMin = false;
 	boolean booSetIntronMax = false;
 	
+	int sensitiveLevel = Sensitive_Sensitive;
+	
 	/** 输入的gffChrAbs中只需要含有GffHashGene即可 */
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
@@ -91,6 +101,13 @@ public class MapTophat implements MapRNA {
 	}
 	public void setFileRef(String chrFile) {
 		mapBowtie.setChrFile(chrFile);
+	}
+	
+	/** 设定reads的敏感性，越敏感速度越慢
+	 * {@link #Sensitive_Sensitive}这种
+	 *  */
+	public void setSensitiveLevel(int sensitiveLevel) {
+		this.sensitiveLevel = sensitiveLevel;
 	}
 	
 	/**
@@ -314,7 +331,20 @@ public class MapTophat implements MapRNA {
 	private String getMismatch() {
 		return "--read-mismatches " + mismatch + " ";
 	}
-
+	
+	private String getSensitive() {
+		if (sensitiveLevel == Sensitive_Fast) {
+			return " --b2-fast ";
+		} else if (sensitiveLevel == Sensitive_Very_Fast) {
+			return " --b2-very-fast ";
+		} else if (sensitiveLevel == Sensitive_Sensitive) {
+			return " --b2-sensitive ";
+		} else if (sensitiveLevel == Sensitive_Very_Sensitive) {
+			return " --b2-very-sensitive ";
+		}
+		return "";
+	}
+	
 	private String getMinCoverageIntron() {
 		if (intronLenMin < 50) {
 			return "--min-coverage-intron " + intronLenMin
@@ -435,7 +465,7 @@ public class MapTophat implements MapRNA {
 //		//本步很慢，一般不使用
 //		cmd = cmd + "--coverage-search ";
 		if (bowtieVersion == SoftWare.bowtie2) {
-			cmd = cmd + getMismatch() + getIndelLen();
+			cmd = cmd + getMismatch() + getIndelLen() + getSensitive();
 		}
 		cmd = cmd + getOffset() + getThreadNum();
 		cmd = cmd + getStrandSpecifictype();
@@ -455,5 +485,14 @@ public class MapTophat implements MapRNA {
 		String parentPath = FileOperate.getParentPathName(outPathPrefix);
 		FileOperate.moveFile(FileOperate.addSep(outPathPrefix) + "accepted_hits.bam", parentPath, prefix + "_accepted_hits.bam",false);
 		FileOperate.moveFile(FileOperate.addSep(outPathPrefix) + "junctions.bed", parentPath, prefix + "_junctions.bed",false);
+	}
+	
+	public static Map<String, Integer> getMapSensitive() {
+		Map<String, Integer> mapSensitive = new LinkedHashMap<>();
+		mapSensitive.put("Sensitive", Sensitive_Sensitive);
+		mapSensitive.put("Very Sensitive", Sensitive_Very_Sensitive);
+		mapSensitive.put("Fast", Sensitive_Fast);
+		mapSensitive.put("VeryFast", Sensitive_Very_Fast);
+		return mapSensitive;
 	}
 }

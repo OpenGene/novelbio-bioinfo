@@ -97,6 +97,7 @@ public class SamReader {
 				break;
 			}
 		}
+		close();
 		return pairend;
 	}
 	

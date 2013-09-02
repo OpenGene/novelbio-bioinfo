@@ -14,7 +14,7 @@ import com.novelbio.base.cmd.CmdOperate;
  */
 public class Trinity {
 	//TODO宗博设定
-	String trinityPlPath="trinity.pl";
+	String trinityPlPath="Trinity.pl";
 	
 	/**
 	 * type of reads: ( cfa, cfq, fa, or fq )
@@ -490,12 +490,9 @@ public class Trinity {
 		return " --bflyCPU " + threadNum;
 	}
 
-	private String getBflyCalculateCPU() {
-		if (threadNum <= 0) {
-			return "";
-		}
-		return "  --bflyCalculateCPU " + threadNum;
-	}
+//	private String getBflyCalculateCPU() {
+//		return "  --bflyCalculateCPU ";
+//	}
 
 	private String getGrid_computing_module() {
 		if (grid_computing_module == null || grid_computing_module.trim().equals("")) {
@@ -514,7 +511,7 @@ public class Trinity {
 					+ getFull_cleanup() + getMin_kmer_cov() + getInchworm_cpu() + getMax_reads_per_graph() 
 					+ getNo_run_chrysalis() + getBfly_opts() + getMax_number_of_paths_per_node() + getPairs_distance() 
 					+ getPath_reinforcement_distance() + getNo_triplet_lock() + getBflyHeapSpaceInit()
-					+ getBflyHeapSpaceMax() + getBflyCPU() + getBflyCalculateCPU() + getGrid_computing_module();
+					+ getBflyHeapSpaceMax() + getBflyCPU() + getGrid_computing_module();
 			
 		CmdOperate cmdOperate = new CmdOperate(cmdScript);
 		cmdOperate.run();

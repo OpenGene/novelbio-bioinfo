@@ -26,7 +26,7 @@ import com.novelbio.database.model.species.Species;
  * @author zong0jie
  *
  */
-public class MapRsem implements MapRNA{
+public class MapRsem implements MapRNA {
 	private static Logger logger = Logger.getLogger(MapRsem.class);
 	
 	Species species;

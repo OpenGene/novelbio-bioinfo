@@ -44,10 +44,17 @@ public class FastQ {
 		dateUtil.setStartTime();
 		fastQReadingChannel.run();
 		System.out.println(dateUtil.getEclipseTime());
-		fastQCLeftAfter.saveToPath("/media/winD/NBC/Project/Test/QC/LeftAfter");
-		fastQCLeftBefore.saveToPath("/media/winD/NBC/Project/Test/QC/LeftBefore");
-		fastQCRightAfter.saveToPath("/media/winD/NBC/Project/Test/QC/RightAfter");
-		fastQCRightBefore.saveToPath("/media/winD/NBC/Project/Test/QC/RightBefore");
+		fastQCLeftAfter.saveToPathPic("/media/winD/NBC/Project/Test/QC/LeftAfter");
+		fastQCLeftAfter.saveToPathTable("/media/winD/NBC/Project/Test/QC/LeftAfter");
+		
+		fastQCLeftBefore.saveToPathPic("/media/winD/NBC/Project/Test/QC/LeftBefore");
+		fastQCLeftBefore.saveToPathTable("/media/winD/NBC/Project/Test/QC/LeftBefore");
+		
+		fastQCRightAfter.saveToPathPic("/media/winD/NBC/Project/Test/QC/RightAfter");
+		fastQCRightAfter.saveToPathTable("/media/winD/NBC/Project/Test/QC/RightAfter");
+		
+		fastQCRightBefore.saveToPathPic("/media/winD/NBC/Project/Test/QC/RightBefore");
+		fastQCRightBefore.saveToPathTable("/media/winD/NBC/Project/Test/QC/RightBefore");
 	}
 	private static final Logger logger = Logger.getLogger(FastQ.class);
 	

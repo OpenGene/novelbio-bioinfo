@@ -1,6 +1,10 @@
 package com.novelbio.analysis.seq.sam;
 
+import java.io.IOException;
+
+import com.novelbio.analysis.seq.fasta.ChrSeqHash;
 import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.dataOperate.HdfsBase;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class SamIndexRefsequence {
@@ -20,13 +24,27 @@ public class SamIndexRefsequence {
 	public void setRefsequence(String sequence) {
 		this.sequence = sequence;
 	}
+	
+	/** 如果有索引并且索引比文件新，则直接返回 */
 	public void indexSequence() {
-		if (FileOperate.isFileExistAndBigThanSize(sequence + ".fai", 0)) {
-			return;
+		String faidx = sequence + ".fai";
+		if (FileOperate.isFileExistAndBigThanSize(faidx, 0)) {
+			if (FileOperate.getLastModifyTime(sequence) < FileOperate.getLastModifyTime(faidx)) {
+				return;
+			}
 		}
-		String cmd = ExePath + "samtools faidx " + "\"" + sequence + "\"";
-		CmdOperate cmdOperate = new CmdOperate(cmd,"sortBam");
-		cmdOperate.run();
+		if (HdfsBase.isHdfs(sequence)) {
+			try {
+				ChrSeqHash.createIndex(sequence, faidx);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			String cmd = ExePath + "samtools faidx " + "\"" + sequence + "\"";
+			CmdOperate cmdOperate = new CmdOperate(cmd,"sortBam");
+			cmdOperate.run();
+		}
 	}
 
 }

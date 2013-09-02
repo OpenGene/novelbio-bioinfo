@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
+import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -45,6 +46,8 @@ public class SeqHash implements SeqHashInt, Closeable {
 	 * <b>如果是单个fasta文件，就会建立索引</b><p>
 	 * @param chrFile 序列文件或序列文件夹
 	 * @param regx 序列名的正则表达式，会用该正则表达式把序列名字过滤，如果没有符合该正则表达式，则返回全名。单文件默认为"";文件夹默认为"\\bchr\\w*"；
+	 * <br>
+	 * 单文件如果为" "表示序列名仅选择空格前面的字段，如">chr1 mouse test" 仅截取"chr1"
 	 */
 	public SeqHash(String chrFile, String regx) {
 		if (FileOperate.isFileExistAndBigThanSize(chrFile,1)) {
@@ -120,7 +123,17 @@ public class SeqHash implements SeqHashInt, Closeable {
 		}
 		return seqFasta;
 	}
-
+	
+	public SeqFasta getSeq(Align align) {
+		if (align == null) {
+			return null;
+		}
+		SeqFasta seqFasta = seqHashAbs.getSeq(align.getRefID(), align.getStartAbs(), align.getEndAbs());
+		if (seqFasta != null) {
+			seqFasta.setTOLOWCASE(TOLOWCASE);
+		}
+		return seqFasta;
+	}
 	@Override
 	public SeqFasta getSeq(Boolean cisseq, String chrID, long startlocation, long endlocation) {
 		SeqFasta seqFasta = seqHashAbs.getSeq(cisseq, chrID, startlocation, endlocation);

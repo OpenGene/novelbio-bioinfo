@@ -10,10 +10,12 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
@@ -384,7 +386,7 @@ public class SamFileStatistics implements AlignmentRecorder {
 	private List<String[]> writeSamTable() {
 		List<String[]> lsTable = new ArrayList<String[]>();
 		try {
-			lsTable.add(new String[] { "Statistics Term", "Result(" + FileOperate.getFileNameSep(samFile.getFileName())[0] + ")" });
+			lsTable.add(new String[] { "Statistics Term", "Result(" + prefix + ")" });
 			long allReads = getReadsNum(MappingReadsType.allReads);
 			long unMapped = getReadsNum(MappingReadsType.unMapped);
 			long allMappedReads = getReadsNum(MappingReadsType.allMappedReads);
@@ -406,6 +408,7 @@ public class SamFileStatistics implements AlignmentRecorder {
 				lsTable.add(new String[] { "junctionUniqueMapping", junctionUniqueMapping + "" });
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error("mapping生成表格出错啦！");
 			return new ArrayList<String[]>();
 		}
@@ -431,9 +434,9 @@ public class SamFileStatistics implements AlignmentRecorder {
 	 * @return 是否成功
 	 */
 	public static BufferedImage drawMappingImage(List<SamFileStatistics> lsSamFileStatistics) {
-		if (lsSamFileStatistics.get(0).getMapChrID2PropAndLen().size() > chrNumMax) {
-			logger.error("大于最大chr数量,不支持生成图片");
-			return null;
+		if (lsSamFileStatistics.get(0).getMapChrID2PropAndLen().size() > chrNumMax) {			
+			logger.error("大于最大chr数量,只画前" + chrNumMax + "条");
+//			return null;
 		}
 		Color barColor1 = new Color(23, 200, 200); 
 		Color barColor2 = new Color(100, 100, 100);
@@ -444,7 +447,7 @@ public class SamFileStatistics implements AlignmentRecorder {
 		}
 		lsRowkeys.add("Genome");
 		String [] rowkeys = lsRowkeys.toArray(new String[lsRowkeys.size()]);
-		String[] columnKeys = lsSamFileStatistics.get(0).getMapChrID2PropAndLen().keySet().toArray(new String[0]);
+		String[] columnKeys = getColumnKey(lsSamFileStatistics);
 //		int width = 50 * (lsSamFileStatistics.get(0).getMapChrID2PropAndLen().size() * (lsSamFileStatistics.size() + 1));
 //		float rate = width/1500-1;
 		CategoryDataset dataset = DatasetUtilities.createCategoryDataset(rowkeys,columnKeys, allData);
@@ -510,21 +513,57 @@ public class SamFileStatistics implements AlignmentRecorder {
 	 * @return
 	 */
 	private static double[][] getResultProp(List<SamFileStatistics> lsSamFileStatistics) {
-		double[][] dataInfo = new double[lsSamFileStatistics.size()+1][lsSamFileStatistics.get(0).getMapChrID2PropAndLen().size()];
+		int chrNum = lsSamFileStatistics.get(0).getMapChrID2PropAndLen().size();
+		if (chrNum > chrNumMax) {
+			chrNum = chrNumMax;
+		}
+		
+		double[][] dataInfo = new double[lsSamFileStatistics.size()+1][chrNum];
 		
 		for (int j = 0; j < lsSamFileStatistics.size(); j++) {
 			int i = 0;
 			for (String key : lsSamFileStatistics.get(0).getMapChrID2PropAndLen().keySet()) {
+				if (i >= chrNumMax) {
+					break;
+				}
 				dataInfo[j][i] = lsSamFileStatistics.get(j).getMapChrID2PropAndLen().get(key)[1];
 				i++;
 			}
 		}
 		int k = 0;
 		for (String key : lsSamFileStatistics.get(0).getMapChrID2PropAndLen().keySet()) {
+			if (k >= chrNumMax) {
+				break;
+			}
 			dataInfo[lsSamFileStatistics.size()][k] = lsSamFileStatistics.get(0).getMapChrID2PropAndLen().get(key)[3];
 			k++;
 		}
 		return dataInfo;
+	}
+	
+	/**
+	 * 返回染色体高度的数据用于画图，染色体根据染色体编号进行排序
+	 * @param resultData 实际reads在染色体上分布的map
+	 * @param standardData 染色体长度的map
+	 * @return
+	 */
+	private static String[] getColumnKey(List<SamFileStatistics> lsSamFileStatistics) {
+		Set<String> setChrID = lsSamFileStatistics.get(0).getMapChrID2PropAndLen().keySet();
+		String[] columnKeys = null;
+		if (setChrID.size() > chrNumMax) {
+			columnKeys = new String[chrNumMax];
+		} else {
+			columnKeys = new String[setChrID.size()];
+		}
+			
+		int i = 0;
+		for (String chrID : setChrID) {
+			if (i >= columnKeys.length) break;
+			
+			columnKeys[i] = chrID;
+			i++;
+		}
+		return columnKeys;
 	}
 	
 	public static void saveInfo(String pathAndName, SamFileStatistics samFileStatistics) {

@@ -33,7 +33,7 @@ public class AnnoQuery extends RunProcess<AnnoQuery.AnnoQueryDisplayInfo>{
 	double evalue = 1e-10;
 	int taxIDthis = 0;
 	int taxIDblastTo = 0;
-	
+	String savePath;
 	int firstLine = 0;
 	AnnoAbs annoAbs;
 	/**
@@ -65,6 +65,12 @@ public class AnnoQuery extends RunProcess<AnnoQuery.AnnoQueryDisplayInfo>{
 	public void setBlast(boolean blast) {
 		this.blast = blast;
 	}
+	/** 保存到的路径，每保存一次结束后就会清空
+	 * 设定了这个就不会往lsResult中保存了
+	 *  */
+	public void setSavePath(String savePath) {
+		this.savePath = savePath;
+	}
 	/**
 	 * 设定annotation的种类
 	 * @param annoType 主要是{@link AnnoAbs#ANNOTATION} {@link AnnoAbs#GO} 等
@@ -81,6 +87,8 @@ public class AnnoQuery extends RunProcess<AnnoQuery.AnnoQueryDisplayInfo>{
 	public ArrayList<String[]> getLsResult() {
 		return lsResult;
 	}
+	
+	/** 如果前面设定了SavePath，这里就不能用了 */
 	public void writeTo(String txtFile) {
 		TxtReadandWrite txtWrite = new TxtReadandWrite(txtFile, true);
 		txtWrite.ExcelWrite(lsResult);
@@ -96,10 +104,19 @@ public class AnnoQuery extends RunProcess<AnnoQuery.AnnoQueryDisplayInfo>{
 		annoAbs.setBlastToTaxID(taxIDblastTo, evalue);
 		annoAbs.setTaxIDquery(taxIDthis);
 		annoAbs.setBlast(blast);
+		TxtReadandWrite txtWrite = null;
+		if (savePath != null && !savePath.equals("")) {
+			txtWrite = new TxtReadandWrite(savePath, true);
+		} else {
+			lsResult = new ArrayList<String[]>();
+		}
 		
-		lsResult = new ArrayList<String[]>();
 		if (firstLine >= 1) {
-			lsResult.add(getTitle());
+			if (txtWrite != null) {
+				txtWrite.writefileln(getTitle());
+			} else {
+				lsResult.add(getTitle());
+			}
 		}
 		for (int i = firstLine; i < lsGeneID.size(); i++) {
 			String accID = lsGeneID.get(i)[colAccID];
@@ -113,7 +130,13 @@ public class AnnoQuery extends RunProcess<AnnoQuery.AnnoQueryDisplayInfo>{
 				e.printStackTrace();
 			}
 			if (lsTmpResult != null) {
-				lsResult.addAll(lsTmpResult);
+				if (txtWrite != null) {
+					for (String[] strings : lsTmpResult) {
+						txtWrite.writefileln(strings);
+					}
+				} else {
+					lsResult.addAll(lsTmpResult);
+				}
 				setRunInfo(i, lsTmpResult);
 			}
 			
@@ -122,6 +145,10 @@ public class AnnoQuery extends RunProcess<AnnoQuery.AnnoQueryDisplayInfo>{
 			if (flagStop) {
 				break;
 			}
+		}
+		savePath = null;
+		if (txtWrite != null) {
+			txtWrite.close();
 		}
 	}
 	

@@ -236,6 +236,18 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 		gffHashGene.getMapChrID2LsGff().put(chrID.toLowerCase(), listGff);
 	}
 	
+	/** 是否包含指定的chrID
+	 * 输入ID会自动转化为小写
+	 *  */
+	public boolean isContainChrID(String chrID) {
+		if (chrID == null) return false;
+		
+		if (gffHashGene.getMapChrID2LsGff().containsKey(chrID.toLowerCase())) {
+			return true;
+		}
+		return false;
+	}
+	
 	/**
 	 * 返回全体iso的set，用于做背景，这个是比较全面的背景
 	 * @return
