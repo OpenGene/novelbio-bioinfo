@@ -96,7 +96,7 @@ public class GffHashGTF extends GffHashGeneAbs{
 					) 
 			{
 				GeneType geneType = GeneType.getMapMRNA2GeneType().get(ss[2].toLowerCase());
-				if (geneType == null) geneType = GeneType.miRNA;
+				if (geneType == null) geneType = GeneType.mRNA;
 					
 				boolean cis = getLocCis(ss[6], tmpChrID, exonStart, exonEnd);
 				gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso(tmpTranscriptName, tmpGeneName, geneType, cis);

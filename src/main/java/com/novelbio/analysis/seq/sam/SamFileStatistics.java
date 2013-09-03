@@ -222,7 +222,7 @@ public class SamFileStatistics implements AlignmentRecorder {
 		int readsMappedWeight = samRecord.getMappedReadsWeight();
 		allReadsNum = allReadsNum + (double)1/readsMappedWeight;
 		if (samRecord.isMapped()) {
-			mappedReadsNum = mappedReadsNum + (double)1/readsMappedWeight;
+//			mappedReadsNum = mappedReadsNum + (double)1/readsMappedWeight;
 			setChrReads(readsMappedWeight, samRecord);
 			if (samRecord.isUniqueMapping()) {
 				uniqMappedReadsNum ++;
@@ -266,7 +266,7 @@ public class SamFileStatistics implements AlignmentRecorder {
 	private void summeryReadsNum() {
 		allReadsNum = Math.round(allReadsNum);
 		unmappedReadsNum = Math.round(unmappedReadsNum);
-		mappedReadsNum = Math.round(mappedReadsNum);
+		mappedReadsNum = Math.round(allReadsNum - unmappedReadsNum);
 		//double 转换可能会有1的误差
 		if (allReadsNum != mappedReadsNum + unmappedReadsNum) {
 			if (Math.abs(mappedReadsNum + unmappedReadsNum - allReadsNum) > 10) {
@@ -298,7 +298,7 @@ public class SamFileStatistics implements AlignmentRecorder {
 		for (double[] readsNum : mapChrID2ReadsNum.values()) {
 			numAllChrReads += (long)readsNum[0];
 		}
-		long numLess = (long)allReadsNum - numAllChrReads;
+		long numLess = (long)mappedReadsNum - numAllChrReads;
 		long numAddAVG = numLess/mapChrID2ReadsNum.size();
 		long numAddSub = numLess%mapChrID2ReadsNum.size();
 		for (double[] readsNum : mapChrID2ReadsNum.values()) {
@@ -566,20 +566,26 @@ public class SamFileStatistics implements AlignmentRecorder {
 		return columnKeys;
 	}
 	
-	public static void saveInfo(String pathAndName, SamFileStatistics samFileStatistics) {
+	public static List<String> saveInfo(String pathAndName, SamFileStatistics samFileStatistics) {
+		List<String> lsResultFileName = new ArrayList<>();
 		String pathChrPic = "";
 		if (pathAndName.endsWith("/") || pathAndName.endsWith("\\")) {
 			pathChrPic = pathAndName + "ChrDistribution.png";
 		} else {
 			pathChrPic = FileOperate.changeFilePrefix(pathAndName, "ChrDistribution_", "png");
 		}
-		ImageUtils.saveBufferedImage(samFileStatistics.getBufferedImages(), pathChrPic);
-		
-		ExcelOperate excelOperate = new ExcelOperate(FileOperate.changeFileSuffix(pathAndName, "_MappingStatistic", "xls"));
+		pathChrPic = ImageUtils.saveBufferedImage(samFileStatistics.getBufferedImages(), pathChrPic);
+		if (pathChrPic != null) {
+			lsResultFileName.add(pathChrPic);
+		}
+		String excelName = FileOperate.changeFileSuffix(pathAndName, "_MappingStatistic", "xls");
+		ExcelOperate excelOperate = new ExcelOperate(excelName);
 		Map<String, List<String[]>> mapSheetName2Info = samFileStatistics.getMapSheetName2Data();
 		for (String sheetName : mapSheetName2Info.keySet()) {
 			excelOperate.WriteExcel(sheetName, 1, 1, mapSheetName2Info.get(sheetName));
 		}
 		excelOperate.Close();
+		lsResultFileName.add(excelName);
+		return lsResultFileName;
 	}
 }

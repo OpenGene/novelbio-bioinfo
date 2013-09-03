@@ -1,12 +1,17 @@
 package com.novelbio.analysis.seq.denovo;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqHash;
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.FileOperate;
 
 
 /** 用CD-Hit来对序列进行去重复工作
@@ -34,7 +39,7 @@ public class ClusterSeq {
 	private boolean accurateMode = false;
 	
 	private int threadNum = 2;
-	
+	Set<String> setTmpFile = new HashSet<>();
 	List<List<String>> lsCluster = new ArrayList<List<String>>();
 	/** 
 	 * 设定100以内的数字
@@ -61,16 +66,52 @@ public class ClusterSeq {
 	public void setThreadNum(int threadNum) {
 		this.threadNum = threadNum;
 	}
+	/** 本方法和{@link #setSeqHash(SeqHash)}两者只能取一 */
 	public void setInFileName(String inFileName) {
 		this.inFileName = inFileName;
 		try {
 			this.isProtein = (SeqHash.getSeqType(inFileName) == SeqFasta.SEQ_PRO);
 		} catch (Exception e) {}
 	}
+	
+	/** 只能输入少量的序列
+	 * 本方法和{@link #setInFileName(inFileName)}两者只能取一
+	 */
+	public void setSeqHash(SeqHash seqHash) {
+		inFileName = PathDetail.getRworkspaceTmp() + "";
+		setTmpFile.add(inFileName);
+		TxtReadandWrite txtWrite = new TxtReadandWrite(inFileName, true);
+		for (String seqName : seqHash.getLsSeqName()) {
+			SeqFasta seqFasta = seqHash.getSeq(seqName);
+			txtWrite.writefileln(seqFasta.toStringNRfasta());
+		}
+		txtWrite.close();
+	}
+	/** 只能输入少量的序列
+	 * 本方法和{@link #setInFileName(inFileName)}两者只能取一
+	 */
+	public void setSeqHash(List<SeqFasta> seqHash) {
+		inFileName = PathDetail.getRworkspaceTmp() + "cluster" + DateUtil.getDateAndRandom();
+		setTmpFile.add(inFileName);
+		TxtReadandWrite txtWrite = new TxtReadandWrite(inFileName, true);
+		for (SeqFasta seqFasta : seqHash) {
+			txtWrite.writefileln(seqFasta.toStringNRfasta());
+		}
+		txtWrite.close();
+	}
+	
 	public void setOutFileName(String outFileName) {
 		this.outFileName = outFileName;
 	}
 	
+	/** 返回聚类后合并的一个文本 */
+	public String getOutClusterSeq() {
+		return outFileName;
+	}
+	/** 返回聚类后合并的一个文本 */
+	public String getOutClusterInfo() {
+		return outFileName + ".clstr";
+	}
 	/**
 	 * -n 和 -c 有联系<br>
 	 * aa时<br>
@@ -135,7 +176,7 @@ nr时<br>
 	private String getInFileName() {
 		return " -i " + inFileName + " ";
 	}
-	private String getOutFileName() {
+	private String getOutFileNameStr() {
 		return " -o " + outFileName + " ";
 	}
 	private String isAccurate() {
@@ -152,7 +193,7 @@ nr时<br>
 		} else {
 			cmd = "cd-hit-est";
 		}
-		cmd = cmd + getBigData() + getInFileName() + getMemoryUse() + getOutFileName() + getThreshold() + getTreadNum() + isAccurate();
+		cmd = cmd + getBigData() + getInFileName() + getMemoryUse() + getOutFileNameStr() + getThreshold() + getTreadNum() + isAccurate();
 		CmdOperate cmdOperate = new CmdOperate(cmd, "cd-hit");
 		cmdOperate.run();
 		lsCluster.clear();
@@ -169,7 +210,7 @@ nr时<br>
 	private void loadResult() {
 		lsCluster = new ArrayList<List<String>>();
 		List<String> lsTmpCluster = null;
-		TxtReadandWrite txtRead = new TxtReadandWrite(outFileName);
+		TxtReadandWrite txtRead = new TxtReadandWrite(outFileName + ".clstr");
 		for (String content : txtRead.readlines()) {
 			if (content.startsWith(">")) {
 				if (lsTmpCluster != null && lsTmpCluster.size() > 0) {
@@ -189,6 +230,14 @@ nr时<br>
 		
 		if (lsTmpCluster != null && lsTmpCluster.size() > 0) {
 			lsCluster.add(lsTmpCluster);
+		}
+	}
+	
+	/** 清空临时文件 */
+	public void clearTmpFile() {
+		for (String tmpFile : setTmpFile) {
+			FileOperate.DeleteFileFolder(tmpFile);
+			setTmpFile.remove(tmpFile);
 		}
 	}
 }
