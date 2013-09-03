@@ -16,8 +16,12 @@ import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
-/** 修正Trinity之后的结果 */
-public class TrinityModify {
+/** 修正Trinity之后的结果
+ * 把trinity的结果整理成iso和单独基因的，并且基因名用我们的id
+ * @author zong0jie
+ *
+ */
+public class TrinityCopeIso {
 	public static final String geneNamePrefix = "NovelBio";
 	/** trinity得到的fasta文件 */
 	String inTrinityFile;
@@ -36,7 +40,7 @@ public class TrinityModify {
 	int geneNum = 0;
 	
 	public static void main(String[] args) {
-		TrinityModify trinityModify = new TrinityModify();
+		TrinityCopeIso trinityModify = new TrinityCopeIso();
 		trinityModify.setInFileName("/media/winE/NBC/Project/Project_WH/Trinity_tmp2013-07-150307-18080.fasta");
 		trinityModify.setOutTrinityGeneFile("/media/winE/NBC/Project/Project_WH/Trinity_Out_Gene.fasta");
 		trinityModify.setOutTrinityIsoFile("/media/winE/NBC/Project/Project_WH/Trinity_Out_Iso.fasta");
