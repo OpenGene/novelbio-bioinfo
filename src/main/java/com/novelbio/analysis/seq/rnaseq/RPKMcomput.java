@@ -707,7 +707,7 @@ public class RPKMcomput implements AlignmentRecorder {
 				if (readsCounts == null) {
 					lsTmpResult.add(0 + "");
 				} else {
-					lsTmpResult.add(readsCounts[0]*1000000*1000/mapCond2CountsNum.get(currentCondition)[1]/mapGeneName2Length.get(geneName) + "");
+					lsTmpResult.add(readsCounts[0]*1000000*1000/mapCond2CountsNum.get(currentCondition)[0]/mapGeneName2Length.get(geneName) + "");
 				}
 			}
 			
@@ -736,7 +736,7 @@ public class RPKMcomput implements AlignmentRecorder {
 				if (readsCounts == null) {
 					lsTmpResult.add(0 + "");
 				} else {
-					lsTmpResult.add(readsCounts[0]*100*1000/mapCond2CountsNum.get(currentCondition)[0]/mapGeneName2Length.get(geneName) + "");
+					lsTmpResult.add(readsCounts[0]*100*1000/mapCond2CountsNum.get(currentCondition)[1]/mapGeneName2Length.get(geneName) + "");
 				}
 			}
 			
