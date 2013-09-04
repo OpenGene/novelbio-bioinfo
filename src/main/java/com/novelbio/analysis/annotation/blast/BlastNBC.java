@@ -21,12 +21,13 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
  *
  */
 public class BlastNBC {
+	private static final Logger logger = Logger.getLogger(BlastNBC.class);
 	public static final int ResultType_Simple = 6;
 	public static final int ResultType_Normal = 0;
-	SoftWareInfo softWareInfo;
 	
-	private static Logger logger = Logger.getLogger(BlastNBC.class);
-	String formatDB = "makeblastdb ";
+	SoftWareInfo softWareInfo;
+	final String formatDB = "makeblastdb ";
+	
 	String queryFasta = "";
 	/**待比对的数据库，如果是fasta文件，则会自动建索引*/
 	String databaseSeq = "";
@@ -101,7 +102,9 @@ public class BlastNBC {
 	public void setCpuNum(int cpuNum) {
 		this.cpuNum = cpuNum;
 	}
-
+	public void setShortQuerySeq(boolean isShortQuerySeq) {
+		this.isShortQuerySeq = isShortQuerySeq;
+	}
 	/**
 	 * 常规模式为{@link #ResultType_Normal}
 	 * 精简模式为{@link #ResultType_Simple}
@@ -131,6 +134,13 @@ public class BlastNBC {
 	public void setEvalue(double evalue) {
 		this.evalue = evalue;
 	}
+	/** 返回blast得到的结果文件 */
+	public String getResultFile() {
+		return resultFile;
+	}
+	public int getResultType() {
+		return resultType;
+	}
 	/**
 	 * 将指定的序列对目标序列进行blast
 	 * @return false blast失败
@@ -148,7 +158,7 @@ public class BlastNBC {
 			}
 		}
 		String cmd = softWareInfo.getExePath() + blastType.toString() + getDB() + getQuery() + getOut() + 
-				getThread() + getEvalue() + getBlastTask() + getResultType() + getBlastNum();
+				getThread() + getEvalue() + getBlastTask() + getResultTypeCmd() + getBlastNum();
 		
 		CmdOperate cmdOperate = new CmdOperate(cmd,"blast");
 		cmdOperate.run();
@@ -189,7 +199,7 @@ public class BlastNBC {
 	private String getEvalue() {
 		return " -evalue " + evalue + " ";
 	}
-	private String getResultType() {
+	private String getResultTypeCmd() {
 		String resultFormat = "0";
 		if (resultType == ResultType_Normal) {
 			resultFormat = "0";

@@ -193,18 +193,6 @@ public class TrinityCopeIso {
 		return seqFastaMaxLen;
 	}
 	
-	public void removeTmpFile() {
-		for (String fileName : lsTmpFileName) {
-			FileOperate.DeleteFileFolder(fileName);
-		}
-	}
-	
-	/** 返回计算好的N50等信息 */
-	public N50AndSeqLen getN50info() {
-		N50AndSeqLen n50AndSeqLen = new N50AndSeqLen(inTrinityFile);
-		return n50AndSeqLen;
-	}
-	
 	/** 给定geneNum，返回该基因的名字 */
 	private String getGeneName(int geneNum) {
 		String geneNumFinal = geneNum + "";
@@ -215,6 +203,12 @@ public class TrinityCopeIso {
 			}
 		}
 		return prefix + geneNumFinal;
+	}
+	
+	public void removeTmpFile() {
+		for (String fileName : lsTmpFileName) {
+			FileOperate.DeleteFileFolder(fileName);
+		}
 	}
 	
 }

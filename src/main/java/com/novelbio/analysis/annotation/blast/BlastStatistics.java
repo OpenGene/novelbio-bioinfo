@@ -38,6 +38,17 @@ public class BlastStatistics {
 		}
 	}
 	
+	/** 必须是simple版本的blast才能被读取 */
+	public void setBlastResultFile(String blastFile) {
+		List<BlastInfo> lsBlastInfo = new ArrayList<>();
+		TxtReadandWrite txtRead = new TxtReadandWrite(blastFile);
+		for (String string : txtRead.readlines()) {
+			BlastInfo blastInfo = new BlastInfo(string);
+			lsBlastInfo.add(blastInfo);
+		}
+		setLsBlastinfos(lsBlastInfo);
+	}
+	
 	public void setQueryFastaFile(String queryFastaFile) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(queryFastaFile);
 		for (String string : txtRead.readlines()) {
