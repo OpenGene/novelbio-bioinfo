@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import net.sf.samtools.SAMFileHeader;
 
 import com.novelbio.analysis.seq.AlignRecord;
+import com.novelbio.analysis.seq.mapping.Align;
 
 /**
  * <b>仅能用于SamBam文件</b>
@@ -83,6 +84,11 @@ public class SamOnePairMapReads2Sam implements AlignmentRecorder {
 	 */
 	public SamFile getSamFileWrite() {
 		return samFileWrite;
+	}
+
+	@Override
+	public Align getReadingRegion() {
+		return null;
 	}
 
 }

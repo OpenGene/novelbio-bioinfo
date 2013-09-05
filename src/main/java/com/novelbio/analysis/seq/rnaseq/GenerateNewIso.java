@@ -18,6 +18,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneInf;
 import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.rnaseq.JunctionInfo.JunctionUnit;
@@ -33,26 +34,20 @@ import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 public class GenerateNewIso {
 	private static final Logger logger = Logger.getLogger(GenerateNewIso.class);
 	int newIsoReadsNum = 8;//至少有8条reads支持的junction才会用于重建转录本
-	int blankNum = 40;//至少超过50bp的没有reads堆叠的区域，才被认为是intron
+	int blankNum = 30;//至少超过50bp的没有reads堆叠的区域，才被认为是intron
 	int longExon = 200;//超过100bp就认为是比较长的exon，就需要做判定了
 	int catchNum = 50000;
 	TophatJunction tophatJunctionNew;
-	List<SamMapReads> lsSamFiles = new ArrayList<>();
+
 	GffHashGene gffHashGene;
 	boolean considerStrand = false;
 	GffDetailGene gffDetailGene;
+	MapReads mapReads;
 	
-	public GenerateNewIso(TophatJunction tophatJunctionNew, Collection<SamFile> colSamFiles, StrandSpecific considerStrand) {
+	public GenerateNewIso(TophatJunction tophatJunctionNew, MapReads mapReads, StrandSpecific considerStrand) {
 		this.tophatJunctionNew = tophatJunctionNew;
 		this.considerStrand = (considerStrand != StrandSpecific.NONE);
-		lsSamFiles = new ArrayList<>();
-		if (colSamFiles == null) return;
-		
-		for (SamFile samFile : colSamFiles) {
-			SamMapReads samMapReads = new SamMapReads(samFile, considerStrand);
-			samMapReads.setCatchNum(catchNum);
-			lsSamFiles.add(samMapReads);
-		}
+		this.mapReads = mapReads;
 	}
 	
 	public void setGffHash(GffHashGene gffHashGene) {
@@ -406,13 +401,12 @@ public class GenerateNewIso {
 	 */
 	private boolean isContinuousExon(String chrID, int startLoc, int endLoc) {
 		int start = Math.min(startLoc, endLoc), end = Math.max(startLoc, endLoc);
-		List<double[]> lsRegion = new ArrayList<>();
-		for (SamMapReads samMapReads : lsSamFiles) {
-			double[] region = samMapReads.getRangeInfo(1, chrID, start, end, 0);
-			lsRegion.add(region);
+		double[] regionFinal = mapReads.getRangeInfo(1, chrID, start, end, 0);
+		if (regionFinal == null) {
+			return false;
 		}
-		double[] regionFinal = ArrayOperate.getSumList(lsRegion);
 		int blankNumFinal = 0, blankNum = 0;
+		
 		for (double d : regionFinal) {
 			if (d == 0) {
 				blankNum++;

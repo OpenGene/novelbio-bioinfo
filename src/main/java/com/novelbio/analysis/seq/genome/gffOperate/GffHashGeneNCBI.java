@@ -221,19 +221,19 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		   if (ss[2].equals("region")) {
 			   String regxChrID = "(?<=chromosome\\=)\\w+";
 			   if (ss[8].contains("genome=genomic")) {
-				   chrID = GeneID.removeDot(ss[0]);
+				   chrID = ss[0];
 			   } else if (ss[8].contains("genome=mitochondrion")) {
 				   chrID = "chrm";
 			   } else if (ss[8].contains("genome=chloroplast")) {
 				   chrID = "chrc";
 			   }  else if (ss[8].contains("genome=Unknown")) {
-				   chrID = GeneID.removeDot(ss[0]);
+				   chrID = ss[0];
 			   } else {
 				   try {
 					   chrID = "chr" + PatternOperate.getPatLoc(ss[8], regxChrID, false).get(0)[0];
 				   } catch (Exception e) {
 					   logger.error("本位置出错，错误的region，本来一个region应该是一个染色体，这里不知道是什么 " + ArrayOperate.cmbString(ss, "\t"));
-					   chrID = GeneID.removeDot(ss[0]);
+					   chrID = ss[0];
 				   }
 			   }
 			   mapID2ChrID.put(ss[0], chrID);

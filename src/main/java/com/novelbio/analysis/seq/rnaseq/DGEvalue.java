@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.novelbio.analysis.seq.AlignRecord;
+import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.generalConf.TitleFormatNBC;
 
@@ -186,5 +187,10 @@ public class DGEvalue implements AlignmentRecorder  {
 		lsSample = new ArrayList<String>();
 		ls_MapAccID2Value = new ArrayList<Map<String,Integer>>();
 		allTags = false;
+	}
+
+	@Override
+	public Align getReadingRegion() {
+		return null;
 	}
 }

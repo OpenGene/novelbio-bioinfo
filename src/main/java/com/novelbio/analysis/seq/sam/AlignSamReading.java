@@ -25,6 +25,7 @@ public class AlignSamReading extends AlignSeqReading {
 	 * 如果输入的是null，则清空<br>
 	 * 如果输入的是size为0的list，则不改变原有设定
 	 * @param lsAlignments 输入Align的chrID无所谓大小写
+	 * 输入的alignment务必不要首尾overlap
 	 */
 	public void setLsAlignments(List<? extends Alignment> lsAlignments) {
 		if (lsAlignments == null || lsAlignments.size() == 0) {
@@ -62,8 +63,23 @@ public class AlignSamReading extends AlignSeqReading {
 	
 	private void readSelectLines() {
 		SamFile samFile = (SamFile)super.alignSeqFile;
+		Collections.sort(lsAlignments, new Comparator<Alignment>() {
+			@Override
+			public int compare(Alignment o1, Alignment o2) {
+				Integer loc1 = o1.getStartAbs();
+				Integer loc2 = o2.getStartAbs();
+				return loc1.compareTo(loc2);
+			}
+		});
+		
+		long num = 0;
+		
 		for (Alignment alignment : lsAlignments) {
 			for (AlignRecord samRecord : samFile.readLinesOverlap(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs())) {
+				num++;
+				if (num % 100000 == 0) {
+					System.out.println(num);
+				}
 				suspendCheck();
 				if (suspendFlag) {
 					break;

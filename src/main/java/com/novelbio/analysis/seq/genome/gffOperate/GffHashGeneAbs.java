@@ -21,30 +21,8 @@ import com.novelbio.database.model.modgeneid.GeneID;
 
 public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCodGene, GffCodGeneDU, ListGff> implements GffHashGeneInf {
 	private static final Logger logger = Logger.getLogger(GffHashGeneAbs.class);
-	private static boolean readFile = false;
-	static {
-		String file = "/usr/lib/gcc/config";
-		String filewin = "C:/Intel/Logs/IntelConfig";
-		if (FileOperate.isFileExist(file)) {
-			TxtReadandWrite txtRead = new TxtReadandWrite(file);
-			for (String string : txtRead.readlines(3)) {
-				if (string.equals("!  detail information is from the jakub website.")) {
-					readFile = true;
-				}
-				break;
-			}
-			txtRead.close();
-		} else if (FileOperate.isFileExist(filewin)) {
-			TxtReadandWrite txtRead = new TxtReadandWrite(filewin);
-			for (String string : txtRead.readlines(3)) {
-				if (string.equals("!  detail information is from the jakub website.")) {
-					readFile = true;
-				}
-				break;
-			}
-			txtRead.close();
-		}		
-	}
+
+
 	int taxID = 0;
 	String acc2GeneIDfile = "";
 	String gfffile = "";
@@ -405,6 +383,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		}
 		txtGtf.close();
 	}
+	
 	private String getGeneSymbol(GffDetailGene gffDetailGene) {
 		GeneID copedID = gffDetailGene.getLongestSplitMrna().getGeneID();
 		String symbol = null;
@@ -427,5 +406,27 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 			return true;
 		}
 	}
-
+	
+	private static boolean readFile = true;
+//	static {
+//		if (FileOperate.isFileExist("/usr/lib/gcc/config")) {
+//			TxtReadandWrite txtRead = new TxtReadandWrite("/usr/lib/gcc/config");
+//			for (String string : txtRead.readlines(3)) {
+//				if (string.equals("!  detail information is from the jakub website.")) {
+//					readFile = true;
+//				}
+//				break;
+//			}
+//			txtRead.close();
+//		} else if (FileOperate.isFileExist("C:/Intel/Logs/IntelConfig")) {
+//			TxtReadandWrite txtRead = new TxtReadandWrite("C:/Intel/Logs/IntelConfig");
+//			for (String string : txtRead.readlines(3)) {
+//				if (string.equals("!  detail information is from the jakub website.")) {
+//					readFile = true;
+//				}
+//				break;
+//			}
+//			txtRead.close();
+//		}
+//	}
 }

@@ -289,4 +289,8 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 		}
 		return listGffNew;
 	}
+	@Override
+	public Align getReadingRegion() {
+		return null;
+	}
 }

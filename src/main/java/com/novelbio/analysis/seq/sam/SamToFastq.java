@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
+import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class SamToFastq implements AlignmentRecorder {
@@ -56,6 +57,10 @@ public class SamToFastq implements AlignmentRecorder {
 	@Override
 	public void summary() {
 		fastQ.close();
+	}
+	@Override
+	public Align getReadingRegion() {
+		return null;
 	}
 
 }

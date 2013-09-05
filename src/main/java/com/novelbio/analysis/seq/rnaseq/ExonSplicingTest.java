@@ -26,7 +26,6 @@ import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict.SplicingAlternativeType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.mapping.Align;
-import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.FisherTest;
 import com.novelbio.base.dataStructure.MathComput;
@@ -102,23 +101,38 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	 * @param mapCond2Samfile 在校正retainIntron时使用
 	 * @param tophatJunction
 	 */
-	public void setJunctionInfo(ArrayListMultimap<String, SamFile> mapCond2Samfile, TophatJunction tophatJunction) {
-		List<SpliceTypePredict> lsSpliceTypePredicts = exonCluster.getSplicingTypeLs();
-		if (lsSpliceTypePredicts.size() == 0) {
-			return;
-		}
-		for (SpliceTypePredict spliceTypePredict : lsSpliceTypePredicts) {
+	public void setJunctionInfo(TophatJunction tophatJunction) {
+		for (SpliceTypePredict spliceTypePredict : exonCluster.getSplicingTypeLs()) {
 			spliceTypePredict.setTophatJunction(tophatJunction);
+		}
+	}
+	
+	/** 拿出来专门设定readsCounts的 */
+	public List<PredictRetainIntron> getLsRetainIntron() {
+		List<PredictRetainIntron> lsRetainIntrons = new ArrayList<>();
+		for (SpliceTypePredict spliceTypePredict : exonCluster.getSplicingTypeLs()) {
 			if (spliceTypePredict instanceof PredictRetainIntron) {
-				((PredictRetainIntron)spliceTypePredict).setMapCond2Samfile(mapCond2Samfile);
+				lsRetainIntrons.add((PredictRetainIntron) spliceTypePredict);
 			}
+		}
+		return lsRetainIntrons;
+	}
+	
+	/**
+	 * <b>因为涉及到junction reads的信息</b><br>
+	 * 设定具体剪接位点的readsCount数，必须在读取完sam文件之后再设定
+	 * 
+	 * 
+	 */
+	public void setSpliceType2Value() {
+		for (SpliceTypePredict spliceTypePredict : exonCluster.getSplicingTypeLs()) {
 			for (String condition : setCondition) {
 				SpliceType2Value spliceType2Value = getAndCreatSpliceType2Value(condition);
 				spliceType2Value.addJunction(condition, spliceTypePredict);
 			}
 		}
 	}
-
+	
 	/**
 	 * <b>在此之前必须设定{@link #setJunctionInfo(TophatJunction)}</b><br>
 	 * 添加每个condition以及其对应的reads堆积
@@ -550,7 +564,6 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			} else {
 				exonSplicingTest.setFdr(1);
 			}
-
 			i++;
 		}
 	}
@@ -639,9 +652,7 @@ class SpliceType2Value {
 	 */
 	public void addJunction(String condition, SpliceTypePredict spliceTypePredict) {
 		SplicingAlternativeType splicingAlternativeType = spliceTypePredict.getType();
-		ArrayList<Double> lsCounts = null;
-		lsCounts = spliceTypePredict.getJuncCounts(condition);
-		
+		List<Double> lsCounts = spliceTypePredict.getJuncCounts(condition);
 		
 		addLsDouble(mapSplicingType2LsJunctionReads, splicingAlternativeType, lsCounts);
 		setExonSplicingTypes.add(spliceTypePredict.getType());

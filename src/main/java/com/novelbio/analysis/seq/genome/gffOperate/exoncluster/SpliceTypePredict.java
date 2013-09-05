@@ -29,7 +29,7 @@ public abstract class SpliceTypePredict {
 		this.tophatJunction = tophatJunction;
 	}
 	/** 获得用于检验的junction reads */
-	public abstract ArrayList<Double> getJuncCounts(String condition);
+	public abstract List<Double> getJuncCounts(String condition);
 	/** 是否为该种剪接类型 */
 	public boolean isSpliceType() {
 		if (isType != null) {

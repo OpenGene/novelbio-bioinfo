@@ -2,11 +2,20 @@ package com.novelbio.analysis.seq.sam;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 
 import com.novelbio.GuiAnnoInfo;
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.AlignSeq;
+import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
 
@@ -18,7 +27,11 @@ import com.novelbio.base.multithread.RunProcess;
  */
 public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 
-	List<AlignmentRecorder> lsAlignmentRecorders = new ArrayList<AlignmentRecorder>();
+	List<AlignmentRecorder> lsAlignmentRecorders = new ArrayList<>();
+	/** 正在用的recorder */
+	Set<AlignmentRecorder> setRecorderRun = new LinkedHashSet<>(); 
+	Map<String, Queue<AlignmentRecorder>>  mapChrID2RecorderTodo = new HashMap<>();
+	
 	AlignSeq alignSeqFile;
 	long readLines;
 	double readByte;
@@ -51,8 +64,8 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 	 * 设定记录器，也就是记录该sam文件Record的信息
 	 * @param lsAlignmentRecorders
 	 */
-	public void setLsAlignmentRecorders(ArrayList<AlignmentRecorder> lsAlignmentRecorders) {
-		this.lsAlignmentRecorders = lsAlignmentRecorders;
+	public void setLsAlignmentRecorders(Collection<? extends AlignmentRecorder> lsAlignmentRecorders) {
+		this.lsAlignmentRecorders = new ArrayList<>(lsAlignmentRecorders);
 	}
 	/**
 	 * 添加记录器，也就是记录该sam文件Record的信息
@@ -65,7 +78,7 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 	 * 添加记录器，也就是记录该sam文件Record的信息
 	 * @param colAlignmentRecorders
 	 */
-	public void addColAlignmentRecorder(Collection<AlignmentRecorder> colAlignmentRecorders) {
+	public void addColAlignmentRecorder(Collection<? extends AlignmentRecorder> colAlignmentRecorders) {
 		lsAlignmentRecorders.addAll(colAlignmentRecorders);
 	}
 	/** 清空AlignmentRecorder和readByte和readLines，但不清除samFile */
@@ -81,6 +94,8 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 	
 	@Override
 	protected void running() {
+		sortRecorders();
+		InitialRecorders();
 		reading();
 	}
 	
@@ -90,19 +105,32 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 		alignSeqFile.close();
 	}
 	protected void readAllLines() {
+		long num = 0;
 		for (AlignRecord samRecord : alignSeqFile.readLines()) {
 			suspendCheck();
 			if (suspendFlag) {
 				break;
+			}
+			num++;
+			if (num % 100000 == 0) {
+				System.out.println(num);
 			}
 			addOneSeq(samRecord);
 		}
 	}
 	
 	protected void addOneSeq(AlignRecord samRecord) {
-		for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {
+		removeRecord(samRecord);
+		addTodoRecord_2_RunList(samRecord);
+		
+		for (AlignmentRecorder alignmentRecorder : setRecorderRun) {
 			if (alignmentRecorder == null) {
 				continue;
+			} else if (alignmentRecorder.getReadingRegion() != null) {
+				Align align = alignmentRecorder.getReadingRegion();
+				if (align.getStartAbs() > samRecord.getEndAbs() || align.getEndAbs() < samRecord.getStartAbs()) {
+					continue;
+				}
 			}
 			alignmentRecorder.addAlignRecord(samRecord);
 		}
@@ -116,6 +144,80 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 		}
 		samRecord = null;
 	}
+	
+	protected void sortRecorders() {
+		Collections.sort(lsAlignmentRecorders, new Comparator<AlignmentRecorder>() {
+			@Override
+			public int compare(AlignmentRecorder o1, AlignmentRecorder o2) {
+				if (o1.getReadingRegion() == null && o2.getReadingRegion() == null) {
+					return 0;
+				} else if (o1.getReadingRegion() == null) {
+					return -1;
+				} else if (o2.getReadingRegion() == null) {
+					return 1;
+				} else {
+					Integer loc1 = o1.getReadingRegion().getStartAbs();
+					Integer loc2 = o2.getReadingRegion().getStartAbs();
+					return loc1.compareTo(loc2);
+				}
+			}
+		});
+	}
+	
+	protected void InitialRecorders() {
+		setRecorderRun.clear();
+		mapChrID2RecorderTodo.clear();
+		for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {
+			if (alignmentRecorder.getReadingRegion() == null) {
+				setRecorderRun.add(alignmentRecorder);
+			} else {
+				Queue<AlignmentRecorder> queueRecorder = null;
+				String chrID = alignmentRecorder.getReadingRegion().getRefID().toLowerCase();
+				if (mapChrID2RecorderTodo.containsKey(chrID)) {
+					queueRecorder = mapChrID2RecorderTodo.get(chrID);
+				} else {
+					queueRecorder = new LinkedList<>();
+					mapChrID2RecorderTodo.put(chrID, queueRecorder);
+				}
+				queueRecorder.add(alignmentRecorder);
+			}
+		}
+	}
+	
+	/** 删除执行队列中过时的Recorder */
+	private void removeRecord(AlignRecord alignRecord) {
+		List<AlignmentRecorder> lsRecorderTobeRemove = new ArrayList<>();
+		for (AlignmentRecorder alignmentRecorder : setRecorderRun) {
+			if (alignmentRecorder.getReadingRegion() == null) continue;
+			if (!alignmentRecorder.getReadingRegion().getRefID().toLowerCase().equals(alignRecord.getRefID().toLowerCase()) ||
+					alignmentRecorder.getReadingRegion().getEndAbs() < alignRecord.getStartAbs()) {
+				lsRecorderTobeRemove.add(alignmentRecorder);
+			}
+		}
+		if (lsRecorderTobeRemove.size() > 0) {
+			for (AlignmentRecorder alignmentRecorder : lsRecorderTobeRemove) {
+				setRecorderRun.remove(alignmentRecorder);
+			}
+		}
+	}
+	
+	/** 把todo队列中的record放到执行队列中 */
+	private void addTodoRecord_2_RunList(AlignRecord alignRecord) {
+		while (true) {
+			Queue<AlignmentRecorder> queueRecord = mapChrID2RecorderTodo.get(alignRecord.getRefID().toLowerCase());
+			if (queueRecord == null || queueRecord.isEmpty()) {
+				break;
+			}
+			AlignmentRecorder alignmentRecorder = queueRecord.peek();
+			if (alignmentRecorder.getReadingRegion().getStartAbs() < alignRecord.getEndAbs()) {
+				setRecorderRun.add(alignmentRecorder);
+				queueRecord.poll();
+			} else {
+				break;
+			}
+		}
+	}
+	
 	
 	protected void summaryRecorder() {
 		for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {

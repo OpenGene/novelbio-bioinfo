@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.bed.BedRecord;
 import com.novelbio.analysis.seq.bed.BedSeq;
+import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class SamToBed implements AlignmentRecorder {
@@ -82,6 +83,10 @@ public class SamToBed implements AlignmentRecorder {
 	@Override
 	public void summary() {
 		
+	}
+	@Override
+	public Align getReadingRegion() {
+		return null;
 	}
 
 }

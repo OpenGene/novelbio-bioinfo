@@ -785,4 +785,9 @@ public class RPKMcomput implements AlignmentRecorder {
 		txtWriteRPKM.close();
 		txtWriteTpm.close();
 	}
+
+	@Override
+	public Align getReadingRegion() {
+		return null;
+	}
 }

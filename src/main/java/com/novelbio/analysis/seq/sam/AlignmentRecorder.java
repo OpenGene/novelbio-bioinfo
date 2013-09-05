@@ -2,6 +2,7 @@ package com.novelbio.analysis.seq.sam;
 
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
+import com.novelbio.analysis.seq.mapping.Align;
 /** 
  * 待读取的samFile必须排过序
  * 这是类似监听器的东西
@@ -11,6 +12,11 @@ import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
  *
  */
 public interface AlignmentRecorder {
+	
+	/** 返回本Recorder所记录的区域，超过这个区域就不理会了
+	 * 返回null表示全程记录
+	 *  */
+	public Align getReadingRegion();
 	
 	public void addAlignRecord(AlignRecord alignRecord);
 	/**

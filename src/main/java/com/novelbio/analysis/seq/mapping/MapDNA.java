@@ -82,8 +82,8 @@ public abstract class MapDNA implements MapDNAint {
 		boolean isIndexMake = IndexMake(false);
 		boolean isMappingSucess = mapping();
 		if (!isMappingSucess && !isIndexMake) {
-			IndexMake(true);
-			mapping();
+//			IndexMake(true);
+//			mapping();
 		}
 		return copeAfterMapping();
 	}

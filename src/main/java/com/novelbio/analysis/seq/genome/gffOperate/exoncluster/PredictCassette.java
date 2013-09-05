@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -16,6 +17,7 @@ import com.novelbio.base.dataStructure.Alignment;
 public class PredictCassette extends SpliceTypePredict {
 	HashSet<GffGeneIsoInfo> setExistExonIso;
 	HashSet<GffGeneIsoInfo> setSkipExonIso;
+	boolean isMulitCassette = false;
 	
 	public PredictCassette(ExonCluster exonCluster) {
 		super(exonCluster);
@@ -92,15 +94,20 @@ public class PredictCassette extends SpliceTypePredict {
 		setSkipExonIso = new HashSet<GffGeneIsoInfo>();
 		boolean isType = false;
 		int initialNum = -1000;
-		ArrayList<GffGeneIsoInfo> lsGeneIsoInfosExist = new ArrayList<GffGeneIsoInfo>();
+		Set<GffGeneIsoInfo> lsIsoExist = new HashSet<>();
+		Set<GffGeneIsoInfo> lsIsoSkip = new HashSet<>();
 		for (GffGeneIsoInfo gffGeneIsoInfo : exonCluster.getMapIso2LsExon().keySet()) {
 			if (exonCluster.getMapIso2LsExon().get(gffGeneIsoInfo).size() == 0) {
-				continue;
+				lsIsoSkip.add(gffGeneIsoInfo);
+			} else {
+				lsIsoExist.add(gffGeneIsoInfo);
 			}
-			lsGeneIsoInfosExist.add(gffGeneIsoInfo);
 		}
-		ArrayListMultimap<String, GffGeneIsoInfo> setBeforAfterExist = getIsoHaveBeforeAndAfterExon(initialNum, lsGeneIsoInfosExist);
-		ArrayListMultimap<String, GffGeneIsoInfo> setBeforAfterSkip = getIsoHaveBeforeAndAfterExon(initialNum, exonCluster.getMapIso2ExonIndexSkipTheCluster().keySet());
+		if (lsIsoSkip.size() == 0) {
+			return false;
+		}
+		ArrayListMultimap<String, GffGeneIsoInfo> setBeforAfterExist = getIsoExistHaveBeforeAndAfterExon(initialNum, lsIsoExist, lsIsoSkip);
+		ArrayListMultimap<String, GffGeneIsoInfo> setBeforAfterSkip = getIsoSkipHaveBeforeAndAfterExon(initialNum, lsIsoSkip);
 		//判定是否前后的exon相同
 		for (String string : setBeforAfterExist.keySet()) {
 			if (string.contains(initialNum + "")) {
@@ -114,6 +121,7 @@ public class PredictCassette extends SpliceTypePredict {
 		}
 		return isType;
 	}
+	
 	/** 
 	 * 获得某个iso的前后的 exon的相对位置
 	 * 譬如某个iso在前面有一个exon，后面有一个exon
@@ -125,10 +133,79 @@ public class PredictCassette extends SpliceTypePredict {
 	 * @param lsIso_ExonExist
 	 * @return
 	 */
-	private ArrayListMultimap<String, GffGeneIsoInfo> getIsoHaveBeforeAndAfterExon(int initialNum, Collection<GffGeneIsoInfo> lsIso_ExonExist) {
+	private ArrayListMultimap<String, GffGeneIsoInfo> getIsoExistHaveBeforeAndAfterExon(int initialNum, 
+			Set<GffGeneIsoInfo> lsIso_ExonExist, Set<GffGeneIsoInfo> lsIso_ExonSkip) {
+		
 		ArrayListMultimap<String, GffGeneIsoInfo> setBeforeAfter = ArrayListMultimap.create();
 
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsIso_ExonExist) {
+			ExonCluster clusterBefore = exonCluster.exonClusterBefore;
+			ExonCluster clusterAfter = exonCluster.exonClusterAfter;
+			int[] beforeAfter = new int[]{initialNum, initialNum};//初始化为负数
+			int numBefore = 0, numAfter = 0;//直接上一位的exon标记为0，再向上一位标记为-1
+			boolean cancel = false;
+			while (clusterBefore != null) {
+				if (clusterBefore.isIsoHaveExon(gffGeneIsoInfo)) {
+					for (Entry<GffGeneIsoInfo, ArrayList<ExonInfo>> entryIso2Lsexon : clusterBefore.getMapIso2LsExon().entrySet()) {
+						//上一个exoncluster中，存在 没有本exon的iso
+						if (entryIso2Lsexon.getValue().size() > 0 && lsIso_ExonSkip.contains(entryIso2Lsexon.getKey()) ) {
+							beforeAfter[0] = numBefore;
+							cancel = true;
+							break;
+						}
+					}
+					if (cancel) break;
+				} else {
+					break;
+				}
+				clusterBefore = clusterBefore.exonClusterBefore;
+				numBefore--;
+			}
+			cancel = false;
+			while (clusterAfter != null) {
+				if (clusterAfter.isIsoHaveExon(gffGeneIsoInfo)) {
+					for (Entry<GffGeneIsoInfo, ArrayList<ExonInfo>> entryIso2Lsexon : clusterAfter.getMapIso2LsExon().entrySet()) {
+						//下一个exoncluster中，存在 没有本exon的iso
+						if (entryIso2Lsexon.getValue().size() > 0 && lsIso_ExonSkip.contains(entryIso2Lsexon.getKey())) {
+							beforeAfter[1] = numAfter;
+							cancel = true;
+							break;
+						}
+					}
+					if (cancel) break;
+				} else {
+					break;
+				}
+				clusterAfter = clusterAfter.exonClusterAfter;
+				numAfter++;
+			}
+			if (numAfter -  numBefore >= 1) {
+				isMulitCassette = true;
+			}
+			
+			String tmpBeforeAfter = beforeAfter[0] + SepSign.SEP_ID + beforeAfter[1];
+			setBeforeAfter.put(tmpBeforeAfter, gffGeneIsoInfo);
+		}
+		return setBeforeAfter;
+	}
+	
+	/** 
+	 * 获得某个iso的前后的 exon的相对位置
+	 * 譬如某个iso在前面有一个exon，后面有一个exon
+	 * 则统计为0sepsign0
+	 * 如果前面的前面有一个exon，后面的后面的后面有一个exon
+	 * 则统计为
+	 * -1sepSign2
+	 * @param initialNum 初始化数字，设定为一个比较大的负数就好，随便设定，譬如-1000
+	 * @param lsIso_ExonExist
+	 * @return
+	 */
+	private ArrayListMultimap<String, GffGeneIsoInfo> getIsoSkipHaveBeforeAndAfterExon(int initialNum, 
+			Collection<GffGeneIsoInfo> lsIso_ExonSkip) {
+		
+		ArrayListMultimap<String, GffGeneIsoInfo> setBeforeAfter = ArrayListMultimap.create();
+
+		for (GffGeneIsoInfo gffGeneIsoInfo : lsIso_ExonSkip) {
 			ExonCluster clusterBefore = exonCluster.exonClusterBefore;
 			ExonCluster clusterAfter = exonCluster.exonClusterAfter;
 			int[] beforeAfter = new int[]{initialNum, initialNum};//初始化为负数
@@ -155,11 +232,12 @@ public class PredictCassette extends SpliceTypePredict {
 		return setBeforeAfter;
 	}
 	
+	
 	@Override
 	public SplicingAlternativeType getType() {
 		for (GffGeneIsoInfo gffGeneIsoInfo : setExistExonIso) {
 			ArrayList<ExonInfo> lsExons = exonCluster.getIsoExon(gffGeneIsoInfo);
-			if (lsExons.size() > 1) {
+			if (lsExons.size() > 1 || isMulitCassette) {
 				return SplicingAlternativeType.cassette_multi;
 			}
 		}

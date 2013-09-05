@@ -69,13 +69,16 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 		
 	 /**
 	  * 将长的单碱基精度的一条染色体压缩为短的每个inv大约10-20bp的序列，那么压缩方法选择为20bp中的数值的中位数或平均数<br>
-	  * SUM_TYPE_MEDIAN，SUM_TYPE_MEAN
+	  * SUM_TYPE_MEDIAN，SUM_TYPE_MEAN<br>
+	  * <b>默认为SUM_TYPE_MEAN</b>
 	  */
 	 public void setSummeryType(int summeryType) {
 		this.summeryType = summeryType;
 	}
 	 
-	 /**每隔多少位计数，如果设定为1，则算法会变化，然后会很精确*/
+	 /**每隔多少位计数，如果设定为1，则算法会变化，然后会很精确
+	  * 默认为10
+	  * */
 	 public void setInvNum(int invNum) {
 		this.invNum = invNum;
 	}
@@ -462,7 +465,7 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 			tmp = tmpRegReads;
 		} else {
 			try {
-				tmp =  MathComput.mySpline(tmpRegReads, binNum,leftBias,rightBias,type);
+				tmp = MathComput.mySpline(tmpRegReads, binNum,leftBias,rightBias,type);
 			} catch (Exception e) {
 				return null;
 			}
@@ -527,12 +530,9 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 		mapReadsAddAlignRecord.summary();
 	}
 	
-	/**
-	 * 四舍五入
-	 * @return
-	 */
-	private static int get4to5(double num) {
-		return (int)(num + 0.5);
+	@Override
+	public Align getReadingRegion() {
+		return null;
 	}
 }
 
@@ -574,12 +574,20 @@ class MapReadsAddAlignRecord {
 
 			chrBpReads = new int[(int) (chrLength + 1)];// 同样为方便，0位记录总长度。这样实际bp就是实际长度
 			chrBpReads[0] = chrLength.intValue();
-			chrMapReadsInfo = new ChrMapReadsInfo(lastChr, mapReads);
+			chrMapReadsInfo = mapReads.mapChrID2ReadsInfo.get(lastChr);
+			if (chrMapReadsInfo == null) {
+				chrMapReadsInfo = new ChrMapReadsInfo(lastChr, mapReads);
+			}
 			mapReads.mapChrID2ReadsInfo.put(lastChr, chrMapReadsInfo);
 		}
 		//没有该染色体则跳过
 		if (flag == false) return;
-		tmpOld = addLoc(alignRecord, tmpOld, chrBpReads, chrMapReadsInfo);
+		try {
+			tmpOld = addLoc(alignRecord, tmpOld, chrBpReads, chrMapReadsInfo);
+		} catch (Exception e) {
+			tmpOld = addLoc(alignRecord, tmpOld, chrBpReads, chrMapReadsInfo);
+		}
+	
 		chrMapReadsInfo.addReadsAllNum(1);
 	}
 	
@@ -587,6 +595,7 @@ class MapReadsAddAlignRecord {
 		if (!lastChr.equals("") && flag) {
 			chrMapReadsInfo.sumChrBp(chrBpReads, fold);
 			chrBpReads = null;
+			lastChr = "";
 		}
 	}
 	/**
@@ -776,18 +785,20 @@ class ChrMapReadsInfo {
 		// //////////SumChrBpReads设定//////////////////////////////////
 		// 这个不是很精确，最后一位可能不准，但是实际应用中无所谓了,为方便，0位记录总长度。这样实际bp就是实际长度
 		int SumLength = chrBpReads.length / invNum + 1;// 保证不会溢出，这里是要让SumChrBpReads长一点
-		SumChrBpReads = new int[SumLength];// 直接从0开始记录，1代表第二个invNum,也和实际相同
+		if (SumChrBpReads == null) {
+			SumChrBpReads = new int[SumLength];// 直接从0开始记录，1代表第二个invNum,也和实际相同
+		}
 		
 		if (invNum == 1) {
 			for (int i = 0; i < SumLength - 2; i++) {
-				SumChrBpReads[i] = chrBpReads[i+1];
+				SumChrBpReads[i] += chrBpReads[i+1];
 				readsAllPipNum = readsAllPipNum + (double)chrBpReads[i+1]/fold;
 			}
 			return;
 		 }
 		 for (int i = 0; i < SumLength - 2; i++) {
-			 int[] tmpSumReads=new int[invNum];//将总的chrBpReads里的每一段提取出来
-			 int sumStart=i*invNum + 1; int k=0;//k是里面tmpSumReads的下标，实际下标就行，不用-1
+			 int[] tmpSumReads = new int[invNum];//将总的chrBpReads里的每一段提取出来
+			 int sumStart = i*invNum + 1; int k=0;//k是里面tmpSumReads的下标，实际下标就行，不用-1
 			 for (int j = sumStart; j < sumStart + invNum; j++) {
 				 int thisNum = chrBpReads[j];
 				 tmpSumReads[k] = thisNum;
@@ -800,13 +811,13 @@ class ChrMapReadsInfo {
 	
 	private void samplingSite(int siteNum, int[] tmpSumReads) {
 		 if (type == MapReadsAbs.SUM_TYPE_MEDIAN) { //每隔一段区域取样，建议每隔10bp取样，取中位数
-			 SumChrBpReads[siteNum] = (int) MathComput.median(tmpSumReads);
+			 SumChrBpReads[siteNum] += (int) MathComput.median(tmpSumReads);
 		 } else if (type == MapReadsAbs.SUM_TYPE_MEAN) { 
-			 SumChrBpReads[siteNum] = (int) MathComput.mean(tmpSumReads);
+			 SumChrBpReads[siteNum] += (int) MathComput.mean(tmpSumReads);
 		 } else if (type == MapReadsAbs.SUM_TYPE_SUM) {
-			SumChrBpReads[siteNum] = MathComput.sum(tmpSumReads);
+			SumChrBpReads[siteNum] += MathComput.sum(tmpSumReads);
 		}else {//默认取中位数 
-			 SumChrBpReads[siteNum] = (int) MathComput.median(tmpSumReads);
+			 SumChrBpReads[siteNum] += (int) MathComput.median(tmpSumReads);
 		 }
 	}
 

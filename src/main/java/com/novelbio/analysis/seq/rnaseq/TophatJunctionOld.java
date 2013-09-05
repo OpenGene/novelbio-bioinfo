@@ -307,5 +307,9 @@ public class TophatJunctionOld extends RunProcess<Integer> implements AlignmentR
 	public void summary() {
 		//NOTHING TO DO
 	}
+	@Override
+	public Align getReadingRegion() {
+		return null;
+	}
 
 }

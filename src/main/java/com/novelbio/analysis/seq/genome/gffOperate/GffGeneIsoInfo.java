@@ -1247,6 +1247,9 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 				if (junc && beforeExonNum < gffGeneIsoInfo.size()-1) {
 					exonCluster.setIso2ExonNumSkipTheCluster(gffGeneIsoInfo, beforeExonNum);
 				}
+				if (junc && beforeExonNum >= gffGeneIsoInfo.size()-1) {
+					logger.error("出错拉，请检查该基因：" + gffGeneIsoInfo.getName() );
+				}
 			}
 			lsResult.add(exonCluster);
 			exonClusterBefore = exonCluster;

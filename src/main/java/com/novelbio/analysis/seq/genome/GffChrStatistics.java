@@ -447,5 +447,9 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	public void summary() {
 		//Nothing to do 
 	}
+	@Override
+	public Align getReadingRegion() {
+		return null;
+	}
 }
 

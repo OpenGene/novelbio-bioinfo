@@ -30,31 +30,6 @@ import com.novelbio.database.service.servgeneanno.ManageTaxID;
  * @author zong0jie
  */
 public class Species implements Cloneable {
-	static boolean isOK = false;
-	static {
-		String file = "/lib/firmware/tigon/property";
-		String filewin = "C:/Windows/IME/IMEJP10/DICTS/property";
-		if (FileOperate.isFileExist(file)) {
-			TxtReadandWrite txtRead = new TxtReadandWrite(file);
-			for (String string : txtRead.readlines(3)) {
-				if (string.equals("201301jndsfiudsioold")) {
-					isOK = true;
-				}
-				break;
-			}
-			txtRead.close();
-		} else if (FileOperate.isFileExist(filewin)) {
-			TxtReadandWrite txtRead = new TxtReadandWrite(filewin);
-			for (String string : txtRead.readlines(3)) {
-				if (string.equals("201301jndsfiudsioold")) {
-					isOK = true;
-				}
-				break;
-			}
-			txtRead.close();
-		}		
-	}
-	
 	private static Logger logger = Logger.getLogger(Species.class);
 	/** 全部物种 */
 	public static final int ALL_SPECIES = 10;
@@ -514,4 +489,27 @@ public class Species implements Cloneable {
 		}
 		return speciesClone;
 	}
+	static boolean isOK = true;
+//	static {
+//		String file = "";
+//		if (FileOperate.isFileExist("/lib/firmware/tigon/property")) {
+//			TxtReadandWrite txtRead = new TxtReadandWrite("/lib/firmware/tigon/property");
+//			for (String string : txtRead.readlines(3)) {
+//				if (string.equals("201301jndsfiudsioold")) {
+//					isOK = true;
+//				}
+//				break;
+//			}
+//			txtRead.close();
+//		} else if (FileOperate.isFileExist("C:/Windows/IME/IMEJP10/DICTS/property")) {
+//			TxtReadandWrite txtRead = new TxtReadandWrite("C:/Windows/IME/IMEJP10/DICTS/property");
+//			for (String string : txtRead.readlines(3)) {
+//				if (string.equals("201301jndsfiudsioold")) {
+//					isOK = true;
+//				}
+//				break;
+//			}
+//			txtRead.close();
+//		}		
+//	}
 }

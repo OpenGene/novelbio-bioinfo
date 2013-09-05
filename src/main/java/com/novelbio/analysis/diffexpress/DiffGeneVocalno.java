@@ -43,7 +43,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
 	/** 具体的值 */
 	List<List<String>> lslsDifGene;
 	/** 谁跟谁比 */
-	String[] compare;
+	public String[] compare;
 	
 	
 	
