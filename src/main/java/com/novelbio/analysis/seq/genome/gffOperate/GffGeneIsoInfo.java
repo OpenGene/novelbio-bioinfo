@@ -6,6 +6,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.apache.tools.ant.types.resources.comparators.Size;
+import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.sigactLog;
 
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster;
 import com.novelbio.base.SepSign;
@@ -617,16 +619,19 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 		
 		if (exonNumStart == exonNumEnd) {
-			ExonInfo exonInfo = new ExonInfo(this, isCis5to3(), start, end);
+			ExonInfo exonInfo = new ExonInfo(isCis5to3(), start, end);
+			exonInfo.setParentListAbs(this);
 			lsresult.add(exonInfo);
 			return lsresult;
 		}
-		ExonInfo exonInfoStart = new ExonInfo(this, isCis5to3(), start, get(exonNumStart).getEndCis());
+		ExonInfo exonInfoStart = new ExonInfo(isCis5to3(), start, get(exonNumStart).getEndCis());
+		exonInfoStart.setParentListAbs(this);
 		lsresult.add(exonInfoStart);
 		for (int i = exonNumStart+1; i < exonNumEnd; i++) {
 			lsresult.add(get(i));
 		}
-		ExonInfo exonInfo2 = new ExonInfo(this, isCis5to3(), get(exonNumEnd).getStartCis(), end);
+		ExonInfo exonInfo2 = new ExonInfo(isCis5to3(), get(exonNumEnd).getStartCis(), end);
+		exonInfo2.setParentListAbs(this);
 		lsresult.add(exonInfo2);
 		return lsresult;
 	}
@@ -676,7 +681,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	protected void addExonNorm(Boolean cis5to3, int locStart, int locEnd) {
 		boolean mycis5to3 = getExonCis5To3(cis5to3);
 		
-		ExonInfo exonInfo = new ExonInfo(this, mycis5to3, locStart, locEnd);
+		ExonInfo exonInfo = new ExonInfo(mycis5to3, locStart, locEnd);
 		add(exonInfo);
 	}
 	
@@ -697,7 +702,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		} else {
 			mycis5to3 = this.isCis5to3();
 		}
-		ExonInfo exonInfo = new ExonInfo(this, mycis5to3, locStart, locEnd);
+		ExonInfo exonInfo = new ExonInfo(mycis5to3, locStart, locEnd);
 		if (size() == 0) {
 			add(exonInfo);
 			return;
@@ -723,7 +728,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 */
 	protected void addFirstExon(Boolean cis5to3, int locStart, int locEnd) {
 		boolean mycis5to3 = getExonCis5To3(cis5to3);
-		ExonInfo exonInfo = new ExonInfo(this, mycis5to3, locStart, locEnd);
+		ExonInfo exonInfo = new ExonInfo(mycis5to3, locStart, locEnd);
 		clear();
 		add(exonInfo);
 	}
@@ -997,6 +1002,30 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			result = result + " Distance_to_GeneEnd: "+ getCod2Tes(coord);
 //		}
 		return result;
+	}
+	
+	public boolean add(ExonInfo exonInfo) {
+		exonInfo.setParentListAbs(this);
+		return super.add(exonInfo);
+	}
+	public void add(int index, ExonInfo exonInfo) {
+		exonInfo.setParentListAbs(this);
+		super.add(index, exonInfo);
+	}
+	public boolean addAll(Collection<? extends ExonInfo> colExonInfo) {
+		for (ExonInfo exonInfo : colExonInfo) {
+			exonInfo.setParentListAbs(this);
+		}
+		return super.addAll(colExonInfo);
+	}
+	public boolean addAll(int index, Collection<? extends ExonInfo> colExonInfo) {
+		for (ExonInfo exonInfo : colExonInfo) {
+			exonInfo.setParentListAbs(this);
+		}
+		return super.addAll(index, colExonInfo);
+	}
+	public ExonInfo set(int index, ExonInfo element) {
+		return super.set(index, element);
 	}
 	/**
 	 * 重写equal

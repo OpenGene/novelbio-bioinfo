@@ -286,7 +286,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		   GeneType geneType = GeneType.getGeneType(mRNAname[1]);
 		   GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.addsplitlist(mRNAname[0],gffDetailGene.getNameSingle(), geneType, ss[6].equals("+") || ss[6].equals("."));//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
 		   mapRnaID2LsIso.put(rnaID, gffGeneIsoInfo);
-		   ExonInfo exonInfo = new ExonInfo("", true, Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
+		   ExonInfo exonInfo = new ExonInfo(true, Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
 		   mapRnaID2LsIsoLocInfo.put(rnaID, exonInfo);
 	   } catch (Exception e) {
 //		   gffDetailGene = getGffDetailRnaID(rnaID);

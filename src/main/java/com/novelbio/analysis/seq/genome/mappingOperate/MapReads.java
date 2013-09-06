@@ -525,7 +525,7 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 		}
 		return true;
 	}
-	@Override
+	@Override 
 	public void summary() {
 		mapReadsAddAlignRecord.summary();
 	}
@@ -533,6 +533,25 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	@Override
 	public Align getReadingRegion() {
 		return null;
+	}
+	
+	/** 释放内存 */
+	public void clear() {
+		//TODO
+		alignSeqReader = null;
+		try {
+			for (ChrMapReadsInfo chrMapReadsInfo : mapChrID2ReadsInfo.values()) {
+				chrMapReadsInfo.clear();
+			}
+			mapChrID2ReadsInfo.clear();
+		} catch (Exception e) { }
+		try {
+			mapChrID2LsAlignmentFilter.clear();
+		} catch (Exception e) { }
+		try {
+			mapChrID2Len.clear();
+		} catch (Exception e) { }
+		
 	}
 }
 
@@ -718,7 +737,13 @@ class MapReadsAddAlignRecord {
 			}
 		}
 	}
-
+	
+	public void clear() {
+		chrBpReads = null;
+		chrMapReadsInfo.clear();
+		chrMapReadsInfo = null;
+		tmpOld = null;
+	}
 }
 
 
@@ -820,5 +845,9 @@ class ChrMapReadsInfo {
 			 SumChrBpReads[siteNum] += (int) MathComput.median(tmpSumReads);
 		 }
 	}
-
+	
+	public void clear() {
+		FormulatToCorrectReads = null;
+		SumChrBpReads = null;
+	}
 }

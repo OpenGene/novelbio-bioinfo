@@ -101,7 +101,7 @@ public class FastaGetCDSFromProtein {
 	}
 	private GffGeneIsoInfo getGffGeneIsoInfoWtihOutProtein() {
 		GffGeneIsoInfo gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso(seqFasta.SeqName, seqFasta.SeqName, GeneType.ncRNA, true);
-		gffGeneIsoInfo.add(new ExonInfo(gffGeneIsoInfo, true, 1, seqFasta.Length()));
+		gffGeneIsoInfo.add(new ExonInfo(true, 1, seqFasta.Length()));
 		gffGeneIsoInfo.setATGUAGncRNA();
 		return gffGeneIsoInfo;
 	}
@@ -153,7 +153,7 @@ public class FastaGetCDSFromProtein {
 		
 		GffGeneIsoInfo gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso(seqFasta.SeqName, seqFasta.SeqName, GeneType.mRNA, blastSeqFasta.cis5to3);
 		gffGeneIsoInfo.setATGUAGauto(atgSite, uagSite);
-		gffGeneIsoInfo.add(new ExonInfo(gffGeneIsoInfo, blastSeqFasta.cis5to3, atgSite, uagSite));
+		gffGeneIsoInfo.add(new ExonInfo(blastSeqFasta.cis5to3, atgSite, uagSite));
 		return gffGeneIsoInfo;
 	}
 	
@@ -287,7 +287,7 @@ public class FastaGetCDSFromProtein {
 		
 		GffGeneIsoInfo gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso(seqFasta.SeqName, seqFasta.SeqName, GeneType.mRNA, compareInfo.cis5to3);
 		gffGeneIsoInfo.setATGUAGauto(atgSite, uagSite);
-		gffGeneIsoInfo.add(new ExonInfo(gffGeneIsoInfo, compareInfo.cis5to3, 1, seqFasta.Length()));
+		gffGeneIsoInfo.add(new ExonInfo(compareInfo.cis5to3, 1, seqFasta.Length()));
 		return gffGeneIsoInfo;
 	}
 	

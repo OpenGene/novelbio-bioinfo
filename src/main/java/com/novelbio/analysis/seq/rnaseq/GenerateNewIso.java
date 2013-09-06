@@ -1,7 +1,6 @@
 package com.novelbio.analysis.seq.rnaseq;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -16,15 +15,9 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneInf;
-import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
-import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.rnaseq.JunctionInfo.JunctionUnit;
-import com.novelbio.analysis.seq.sam.SamFile;
-import com.novelbio.analysis.seq.sam.SamMapReads;
-import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
 
@@ -261,11 +254,11 @@ public class GenerateNewIso {
 			}
 			gffGeneIsoInfoNew.get(gffGeneIsoInfoNew.size() - 1).setEndCis(start_endEdge);
 		} else {
-			gffGeneIsoInfoNew.add(new ExonInfo(gffGeneIsoInfoNew, gffGeneIsoInfoNew.isCis5to3(), start_startEdge, start_endEdge));
+			gffGeneIsoInfoNew.add(new ExonInfo( gffGeneIsoInfoNew.isCis5to3(), start_startEdge, start_endEdge));
 		}
 
 		for (int i = 1; i < lsJun.size(); i++) {
-			ExonInfo exonInfo = new ExonInfo(gffGeneIsoInfoNew, gffGeneIsoInfoNew.isCis5to3(), 0, 0);
+			ExonInfo exonInfo = new ExonInfo(gffGeneIsoInfoNew.isCis5to3(), 0, 0);
 			if (gffGeneIsoInfoNew.isCis5to3()) {
 				exonInfo.setStartAbs(lsJun.get(i-1).getEndAbs());
 				exonInfo.setEndAbs(lsJun.get(i).getStartAbs());
@@ -290,7 +283,7 @@ public class GenerateNewIso {
 				gffGeneIsoInfoNew.add(gffGeneIsoInfo.get(i).clone());
 			}
 		} else {
-			gffGeneIsoInfoNew.add(new ExonInfo(gffGeneIsoInfoNew, gffGeneIsoInfoNew.isCis5to3(), end_startEdge, end_endEdge));
+			gffGeneIsoInfoNew.add(new ExonInfo(gffGeneIsoInfoNew.isCis5to3(), end_startEdge, end_endEdge));
 		}
 		
 		
@@ -625,5 +618,11 @@ public class GenerateNewIso {
 			end = end + extend;
 		}
 		return end;
+	}
+	
+	public void clear() {
+		gffDetailGene = null;
+		gffHashGene = null;
+		mapReads = null;
 	}
 }

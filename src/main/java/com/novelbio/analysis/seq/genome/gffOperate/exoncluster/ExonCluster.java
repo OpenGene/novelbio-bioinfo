@@ -35,9 +35,7 @@ public class ExonCluster implements Alignment {
 	 *  如果该iso根本不在这个范围内,则里面就没有这个list
 	 */
 	Map<GffGeneIsoInfo, ArrayList<ExonInfo>> mapIso2LsExon = new LinkedHashMap<GffGeneIsoInfo, ArrayList<ExonInfo>>();
-	/**
-	 * 记录跳过该exoncluster的Iso，和跨过该exoncluster的那对exon的，前一个exon的编号<br>
-	 */
+	/** 记录跳过该exoncluster的Iso，和跨过该exoncluster的那对exon的，前一个exon的编号 */
 	Map<GffGeneIsoInfo, Integer> mapIso2ExonNumSkipTheCluster = new HashMap<GffGeneIsoInfo, Integer>();
 	
 	List<SpliceTypePredict> lsSpliceTypePredicts;

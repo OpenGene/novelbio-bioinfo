@@ -81,9 +81,17 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 	public void addColAlignmentRecorder(Collection<? extends AlignmentRecorder> colAlignmentRecorders) {
 		lsAlignmentRecorders.addAll(colAlignmentRecorders);
 	}
+	
+	/** 清空AlignmentRecorder */
+	public void clearRecorder() {
+		lsAlignmentRecorders.clear();
+		lsAlignmentRecorders = new ArrayList<>();
+	}
+	
 	/** 清空AlignmentRecorder和readByte和readLines，但不清除samFile */
 	public void clear() {
 		lsAlignmentRecorders.clear();
+		lsAlignmentRecorders = new ArrayList<>();
 		readByte = 0;
 		readLines = 0;
 	}

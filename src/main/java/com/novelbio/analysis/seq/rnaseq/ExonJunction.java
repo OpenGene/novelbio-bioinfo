@@ -2,10 +2,12 @@ package com.novelbio.analysis.seq.rnaseq;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -32,6 +34,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
+import com.novelbio.database.domain.geneanno.TaxInfo;
 
 /**
  * 得到每个gene的Junction后，开始计算其可变剪接的差异
@@ -53,9 +56,11 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 //		lsAligns.add(new Align("1", 47916959,	47937428));
 //		lsAligns.add(new Align("7",30050239,30137766));
 //		lsAligns.add(new Align("7",30121258, 30123992));
-
+//		lsAligns.add(new Align("9",9556875, 9613483));
 //		lsAligns.add(new Align("mt", 0, 5000));
 //		chr1:33715442-33774115
+		DateUtil dateUtil = new DateUtil();
+		dateUtil.setStartTime();
 		System.out.println("start");
 		ExonJunction exonJunction = new ExonJunction();
 		exonJunction.setIsLessMemory(false);
@@ -72,10 +77,18 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		exonJunction.setgenerateNewIso();
 
 		exonJunction.run();
+		exonJunction = null;
+		Set<TaxInfo> setTax = new HashSet<>();
+		for (int i = 0; i < 1000; i++) {
+			TaxInfo taxInfo = new TaxInfo();
+			taxInfo.setLatin("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+			setTax.add(taxInfo);
+		}
+		System.out.println(dateUtil.getEclipseTime());
 	}
 	
 	private static Logger logger = Logger.getLogger(ExonJunction.class);
-	private static String stopGeneName = "R3HDM1";
+	private static String stopGeneName = "TRIP12";
 	
 	GffHashGene gffHashGene = null;
 	StrandSpecific strandSpecific = StrandSpecific.NONE;
@@ -120,22 +133,14 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	//TODO 默认设置为false
 	boolean isLessMemory = false;
 	boolean isReconstructIso = false;
-//	/** 是否读取表达
-//	 * 默认true
-//	*/
-//	boolean readExp = true;
-//	CtrlSplicing ctrlSplicing;
-	
+		
 	/**
 	 * 读取区域，调试用。设定之后就只会读取这个区域的reads
 	 */
 	List<Align> lsReadReagion;
-	GenerateNewIso generateNewIso;
-	public ExonJunction() {
 
-		/////
+	public ExonJunction() {
 	}
-	
 	/**
 	 * 表示差异可变剪接的事件的pvalue阈值，仅用于统计差异可变剪接事件的数量，不用于可变剪接的筛选
 	 * @param pvalue
@@ -166,12 +171,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		this.strandSpecific = strandSpecific;
 	}
 	
-//	/** 是否读取表达
-//	 * 默认true
-//	*/
-//	public void setReadExp(boolean readExp) {
-//		this.readExp = readExp;
-//	}
 	/**
 	 * 设定输出
 	 * @param resultFile
@@ -238,20 +237,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	public void running() {
-		if (runGetInfo != null && runGetInfo instanceof CtrlSplicing) {
-//			ctrlSplicing = (CtrlSplicing) runGetInfo;
-		}
-
-		ArrayList<Double> lsLevels = new ArrayList<Double>();
-		lsLevels.add(0.3);
-		lsLevels.add(0.4);
-		lsLevels.add(0.7);
-		lsLevels.add(1.0);
-		long fileLength = getFileLength();
-		if (runGetInfo != null) {
-//			ctrlSplicing.setProcessBarStartEndBarNum("Reading Junction", 0, 0, fileLength);
-//			ctrlSplicing.setProgressBarLevelLs(lsLevels);
-		}
 		MapReads mapReads = null;
 		if (isReconstructIso) {
 			mapReads = getMapReads(mapCond2SamReader.values().iterator().next());
@@ -263,21 +248,40 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		suspendCheck();
 		logger.error("finish junction reads");
 		if (runGetInfo != null) {
-//			ctrlSplicing.setProcessBarStartEndBarNum("Get Junction Event", 1, 0, gffHashGene.getGffDetailAll().size());
+			GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
+			guiAnnoInfo.setInfo2("Get Junction Event");
+			List<Double> lsRegion = new ArrayList<>();
+			lsRegion.add(1.0);
+			lsRegion.add(0.0);
+			lsRegion.add((double) gffHashGene.getGffDetailAll().size());
+			guiAnnoInfo.setLsNumInfo(lsRegion);
+			runGetInfo.setRunningInfo(guiAnnoInfo);
 		}
 		
+		GenerateNewIso generateNewIso = null;
 		if (isReconstructIso) {
-			generateNewIso(mapReads);
+			generateNewIso = new GenerateNewIso(tophatJunction, mapReads, strandSpecific);
+			generateNewIso.setGffHash(gffHashGene);
 		}
-		fillLsAll_Dif_Iso_Exon();
+		fillLsAll_Dif_Iso_Exon(generateNewIso);
 		if (isReconstructIso) {
+			generateNewIso.clear();
 			generateNewIso = null;
+			mapReads.clear();
 			mapReads = null;
+			System.gc();
 		}
 		
 		
 		if (runGetInfo != null) {
-//			ctrlSplicing.setProcessBarStartEndBarNum("Reading Exp", 2, 0, fileLength);
+			GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
+			List<Double> lsRegion = new ArrayList<>();
+			lsRegion.add(1.0);
+			lsRegion.add(0.0);
+			lsRegion.add((double) gffHashGene.getGffDetailAll().size());
+			guiAnnoInfo.setLsNumInfo(lsRegion);
+			guiAnnoInfo.setInfo2("Reading Exp");
+			runGetInfo.setRunningInfo(guiAnnoInfo);
 		}
 		
 		loadExp();
@@ -288,7 +292,14 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		}
 		
 		if (runGetInfo != null) {
-//			ctrlSplicing.setProcessBarStartEndBarNum("Doing Test", 2, 0, lsSplicingTests.size() * lsCondCompare.size());
+			GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
+			List<Double> lsRegion = new ArrayList<>();
+			lsRegion.add(2.0);
+			lsRegion.add(0.0);
+			lsRegion.add((double) (lsSplicingTests.size() * lsCondCompare.size()));
+			guiAnnoInfo.setLsNumInfo(lsRegion);
+			guiAnnoInfo.setInfo2("Doing Test");
+			runGetInfo.setRunningInfo(guiAnnoInfo);
 		}
 		
 		int num = 0;
@@ -311,7 +322,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	 * 获得文件长度
 	 * @return
 	 */
-	private long getFileLength() {
+	public long getFileLength() {
 		long fileLength = 0;
 		for (String condition : mapCond2SamReader.keySet()) {
 			List<AlignSamReading> lsSamFileReadings = mapCond2SamReader.get(condition);
@@ -325,11 +336,11 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	private void loadJunctionBam(MapReads mapReads) {
 		AlignSeqReading samFileReadingLast = null;
 		tophatJunction.setStrandSpecific(strandSpecific);
-//		List<Align> lsDifIsoGene = new ArrayList<Align>();//getLsDifIsoGene();
 		for (String condition : mapCond2SamReader.keySet()) {
 			if (runGetInfo != null) {
-//				runGetInfo.setRunningInfo(info);
-//				ctrlSplicing.setInfo("Reading Junction " + condition);
+				GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
+				guiAnnoInfo.setInfo2("Reading Junction " + condition);
+				runGetInfo.setRunningInfo(guiAnnoInfo);
 			}
 			tophatJunction.setCondition(condition);
 			List<AlignSamReading> lsSamFileReadings = mapCond2SamReader.get(condition);
@@ -348,19 +359,15 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 					samFileReading.addAlignmentRecorder(mapReads);
 				}
 				samFileReading.run();
+				samFileReading.clearRecorder();
 				samFileReadingLast = samFileReading;
 			}
 		}
 		samFileReadingLast = null;
 	}
 	
-	private void generateNewIso(MapReads mapReads) {
-		generateNewIso = new GenerateNewIso(tophatJunction, mapReads, strandSpecific);
-		generateNewIso.setGffHash(gffHashGene);
-	}
-	
 	/** 从全基因组中获取差异的可变剪接事件，放入lsSplicingTest中 */
-	private void fillLsAll_Dif_Iso_Exon() {
+	private void fillLsAll_Dif_Iso_Exon(GenerateNewIso generateNewIso) {
 		ArrayList<GffDetailGene> lsGffDetailGenes = gffHashGene.getGffDetailAll();
 		int i = 0;
 
@@ -370,7 +377,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				logger.debug("stop");
 			}
 //			logger.error(gffDetailGene.getNameSingle());
-			reconstructIso(gffDetailGene);
+			reconstructIso(generateNewIso, gffDetailGene);
 			gffDetailGene.removeDupliIso();
 			
 			if (gffDetailGene.getLsCodSplit().size() <= 1 || isOnlyOneIso(gffDetailGene)) {
@@ -394,7 +401,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		logger.debug("finish");
 	}
 	
-	private void reconstructIso(GffDetailGene gffDetailGene) {
+	private void reconstructIso(GenerateNewIso generateNewIso, GffDetailGene gffDetailGene) {
 		if (gffDetailGene != null && generateNewIso != null) {
 			generateNewIso.setGffDetailGene(gffDetailGene);
 			generateNewIso.reconstructGffDetailGene();
@@ -448,8 +455,11 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	private void loadExp() {
 		AlignSamReading samFileReadingLast = null;
 		for (String condition : mapCond2SamReader.keySet()) {
-//			ctrlSplicing.setInfo("Reading Exp " + condition);
-			
+			if (runGetInfo != null) {
+				GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
+				guiAnnoInfo.setInfo2("Reading Exp " + condition);
+				runGetInfo.setRunningInfo(guiAnnoInfo);
+			}
 			List<AlignSamReading> lsSamFileReadings = mapCond2SamReader.get(condition);
 			for (AlignSamReading samFileReading : lsSamFileReadings) {
 				samFileReading.clear();
@@ -465,8 +475,11 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 					mapReadsAbs = getSamMapReads(samFileReading);
 				} else {
 					mapReadsAbs = getMapReads(samFileReading);
+					samFileReading.addAlignmentRecorder((MapReads)mapReadsAbs);
 				}
+				
 				samFileReading.run();
+				samFileReading.clearRecorder();
 				addMapReadsInfo(condition, mapReadsAbs);
 			}
 		}
@@ -500,7 +513,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		mapReads.prepareAlignRecord(samFileReading.getSamFile().readFirstLine());
 		//TODO 可以考虑从gtf文件中获取基因组长度然后给MapReads使用
 		mapReads.setMapChrID2Len(((SamFile)samFileReading.getSamFile()).getMapChrID2Length());
-		samFileReading.addAlignmentRecorder(mapReads);
 		return mapReads;
 	}
 	
@@ -519,7 +531,11 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			}
 			if (num % 100 == 0) {
 				logger.error(num);
-//				ctrlSplicing.setDetailInfo("reading " + condition + " exp gene num" + num);
+				if (runGetInfo != null) {
+					GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
+					guiAnnoInfo.setInfo("reading " + condition + " exp gene num" + num);
+					runGetInfo.setRunningInfo(guiAnnoInfo);
+				}
 				logger.error(dateTime.getEclipseTime());
 			}
 			num ++;
@@ -671,7 +687,11 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	public void threadStop() {
 		super.threadStop();
 		for (String condition : mapCond2SamReader.keySet()) {
-//			ctrlSplicing.setInfo("Reading Junction " + condition);
+			if (runGetInfo != null) {
+				GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
+				guiAnnoInfo.setInfo2("Reading Junction " + condition);
+				runGetInfo.setRunningInfo(guiAnnoInfo);
+			}
 			tophatJunction.setCondition(condition);
 			List<AlignSamReading> lsSamFileReadings = mapCond2SamReader.get(condition);
 			for (AlignSamReading samFileReading : lsSamFileReadings) {
@@ -685,7 +705,11 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	public void threadSuspend() {
 		super.threadSuspend();
 		for (String condition : mapCond2SamReader.keySet()) {
-//			ctrlSplicing.setInfo("Reading Junction " + condition);
+			if (runGetInfo != null) {
+				GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
+				guiAnnoInfo.setInfo2("Reading Junction " + condition);
+				runGetInfo.setRunningInfo(guiAnnoInfo);
+			}
 			tophatJunction.setCondition(condition);
 			List<AlignSamReading> lsSamFileReadings = mapCond2SamReader.get(condition);
 			for (AlignSamReading samFileReading : lsSamFileReadings) {
@@ -699,7 +723,11 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	public void threadResume() {
 		super.threadResume();
 		for (String condition : mapCond2SamReader.keySet()) {
-//			ctrlSplicing.setInfo("Reading Junction " + condition);
+			if (runGetInfo != null) {
+				GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
+				guiAnnoInfo.setInfo2("Reading Junction " + condition);
+				runGetInfo.setRunningInfo(guiAnnoInfo);
+			}
 			tophatJunction.setCondition(condition);
 			List<AlignSamReading> lsSamFileReadings = mapCond2SamReader.get(condition);
 			for (AlignSamReading samFileReading : lsSamFileReadings) {

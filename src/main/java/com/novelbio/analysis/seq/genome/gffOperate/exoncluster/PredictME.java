@@ -2,6 +2,7 @@ package com.novelbio.analysis.seq.genome.gffOperate.exoncluster;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
@@ -12,10 +13,14 @@ import com.novelbio.base.dataStructure.Alignment;
 
 /** 判定本exonCluster是否为mutually exclusive */
 public class PredictME extends SpliceTypePredict {	
-	ArrayList<ArrayList<ExonInfo>> lsExonBefore;
-	ArrayList<ArrayList<ExonInfo>> lsExonThisBefore;//可以和前面组成mutually exclusive的exon
-	ArrayList<ArrayList<ExonInfo>> lsExonThisAfter;//可以和后面组成mutually exclusive的exon
-	ArrayList<ArrayList<ExonInfo>> lsExonAfter;
+	List<List<ExonInfo>> lsExonBefore;
+	
+	/** 可以和前面组成mutually exclusive的exon */
+	List<List<ExonInfo>> lsExonThisBefore;
+	/** 可以和后面组成mutually exclusive的exon */
+	List<List<ExonInfo>> lsExonThisAfter;
+	
+	List<List<ExonInfo>> lsExonAfter;
 			
 	public PredictME(ExonCluster exonCluster) {
 		super(exonCluster);
@@ -24,30 +29,30 @@ public class PredictME extends SpliceTypePredict {
 	public SplicingAlternativeType getType() {
 		return SplicingAlternativeType.mutually_exclusive;
 	}
-	public ArrayList<ArrayList<ExonInfo>> getLsExonBefore() {
+	public List<List<ExonInfo>> getLsExonBefore() {
 		return lsExonBefore;
 	}
-	public ArrayList<ArrayList<ExonInfo>> getLsExonAfter() {
+	public List<List<ExonInfo>> getLsExonAfter() {
 		return lsExonAfter;
 	}
 	/**
 	 * 可以和后面组成mutually exclusive的exon
 	 * @return
 	 */
-	public ArrayList<ArrayList<ExonInfo>> getLsExonThisAfter() {
+	public List<List<ExonInfo>> getLsExonThisAfter() {
 		return lsExonThisAfter;
 	}
 	/**
 	 * 可以和前面组成mutually exclusive的exon
 	 * @return
 	 */
-	public ArrayList<ArrayList<ExonInfo>> getLsExonThisBefore() {
+	public List<List<ExonInfo>> getLsExonThisBefore() {
 		return lsExonThisBefore;
 	}
-	public ArrayList<Align[]> getSiteInfoBefore() {
+	public List<Align[]> getSiteInfoBefore() {
 		return getSiteInfoMutually(lsExonBefore);
 	}
-	public ArrayList<Align[]> getSiteInfoAfter() {
+	public List<Align[]> getSiteInfoAfter() {
 		return getSiteInfoMutually(lsExonAfter);
 	}
 	/**
@@ -58,7 +63,7 @@ public class PredictME extends SpliceTypePredict {
 	 * 返回 4-7和8-11<br>
 	 * @return
 	 */
-	public ArrayList<Align[]> getSiteInfoThisBefore() {
+	public List<Align[]> getSiteInfoThisBefore() {
 		return getSiteInfoMutually(lsExonThisBefore);
 	}
 	/**
@@ -69,7 +74,7 @@ public class PredictME extends SpliceTypePredict {
 	 * 返回 4-5和6-9<br>
 	 * @return
 	 */
-	public ArrayList<Align[]> getSiteInfoThisAfter() {
+	public List<Align[]> getSiteInfoThisAfter() {
 		return getSiteInfoMutually(lsExonThisAfter);
 	}
 	/**
@@ -81,13 +86,13 @@ public class PredictME extends SpliceTypePredict {
 	 * 返回 4-5和6-9<br>
 	 * @return
 	 */
-	public ArrayList<Align[]> getSiteInfoMutually(ArrayList<ArrayList<ExonInfo>> lsExonThis) {
-		ArrayList<Align[]> lsSiteInfo = new ArrayList<Align[]>();
+	public List<Align[]> getSiteInfoMutually(List<List<ExonInfo>> lsExonThis) {
+		List<Align[]> lsSiteInfo = new ArrayList<Align[]>();
 		isType();
 		if (lsExonThis.size() == 0) {
 			return lsSiteInfo;
 		}
-		for (ArrayList<ExonInfo> lsExonInfos : lsExonThis) {
+		for (List<ExonInfo> lsExonInfos : lsExonThis) {
 			lsSiteInfo.add(getExonBeforeAndAfter(lsExonInfos));
 		}
 		return lsSiteInfo;
@@ -98,7 +103,7 @@ public class PredictME extends SpliceTypePredict {
 	 * @return
 	 */
 	//TODO 检查是否正确
-	private Align[] getExonBeforeAndAfter(ArrayList<ExonInfo> lsExonInfos) {
+	private Align[] getExonBeforeAndAfter(List<ExonInfo> lsExonInfos) {
 		Align[] aligns = new Align[2];
 		Align alignBefore = null;
 		Align alignAfter = null;
@@ -180,8 +185,8 @@ public class PredictME extends SpliceTypePredict {
 		}
 	}
 	
-	private ArrayList<ArrayList<ExonInfo>> getLsExonsBeforeAfter(ExonCluster exonClusterBeforeOrAfter ) {
-		ArrayList<ArrayList<ExonInfo>> lsExonBeforeOrAfter = new ArrayList<ArrayList<ExonInfo>>();
+	private List<List<ExonInfo>> getLsExonsBeforeAfter(ExonCluster exonClusterBeforeOrAfter ) {
+		List<List<ExonInfo>> lsExonBeforeOrAfter = new ArrayList<>();
 		
 		for (GffGeneIsoInfo gffGeneIsoInfo : exonCluster.getMapIso2ExonIndexSkipTheCluster().keySet()) {
 			ArrayList<ExonInfo> lsExons = exonClusterBeforeOrAfter.getMapIso2LsExon().get(gffGeneIsoInfo);
@@ -200,16 +205,18 @@ public class PredictME extends SpliceTypePredict {
 	 * 主要就是在本位点存在exon，而在上一个exoncluster或下一个exoncluster不存在exon
 	 * @return
 	 */
-	private ArrayList<ArrayList<ExonInfo>> getLsExonThis(ExonCluster exonClusterBeforeOrAfter) {
-		ArrayList<ArrayList<ExonInfo>> lsExonThis = new ArrayList<ArrayList<ExonInfo>>();
+	private ArrayList<List<ExonInfo>> getLsExonThis(ExonCluster exonClusterBeforeOrAfter) {
+		ArrayList<List<ExonInfo>> lsExonThis = new ArrayList<>();
 		
-		for (ArrayList<ExonInfo> lsExonInfo : exonCluster.getLsIsoExon()) {
+		for (Entry<GffGeneIsoInfo, ArrayList<ExonInfo>> entry: exonCluster.getMapIso2LsExon().entrySet()) {
+			GffGeneIsoInfo gffGeneIsoInfo = entry.getKey();
+			List<ExonInfo> lsExonInfo = entry.getValue();
+			
 			if (lsExonInfo.size() == 0) {
 				continue;
 			}
-			GffGeneIsoInfo gffGeneIsoInfo = lsExonInfo.get(0).getParent();
-			if (lsExonInfo.get(0).getItemNum() == 0 
-					|| lsExonInfo.get(lsExonInfo.size() - 1).getItemNum() == gffGeneIsoInfo.size() - 1) {
+			if (gffGeneIsoInfo.indexOf(lsExonInfo.get(0)) == 0 
+					|| gffGeneIsoInfo.indexOf(lsExonInfo.get(lsExonInfo.size() - 1)) == gffGeneIsoInfo.size() - 1) {
 				continue;
 			}
 			
@@ -228,8 +235,8 @@ public class PredictME extends SpliceTypePredict {
 	 * @param tophatJunction
 	 * @return
 	 */
-	public ArrayList<Double> getJuncCounts(String condition) {
-		ArrayList<Double> lsCounts = new ArrayList<Double>();
+	public List<Double> getJuncCounts(String condition) {
+		List<Double> lsCounts = new ArrayList<Double>();
 		if (lsExonThisBefore != null && lsExonThisBefore.size() > 0) {
 			lsCounts.add((double) getJuncNum(true, getSiteInfoThisBefore(), condition, tophatJunction));
 			lsCounts.add((double) getJuncNum(false, getSiteInfoBefore(), condition, tophatJunction));
@@ -249,7 +256,7 @@ public class PredictME extends SpliceTypePredict {
 	 * @param before true选取4-5，false选取6-9
 	 * 
 	 */
-	private static int getJuncNum(boolean before, ArrayList<Align[]> lsAligns, String condition, TophatJunction tophatJunction) {
+	private static int getJuncNum(boolean before, List<Align[]> lsAligns, String condition, TophatJunction tophatJunction) {
 		int num = 0;
 		for (Align[] aligns : lsAligns) {
 			if (before) {

@@ -488,7 +488,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		while (flag && exonClusterBefore != null) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : exonCluster.getMapIso2LsExon().keySet()) {
 				if (exonClusterBefore.getMapIso2LsExon().containsKey(gffGeneIsoInfo) && exonClusterBefore.getMapIso2LsExon().get(gffGeneIsoInfo).size() > 0) {
-					lsGetExon.add(new ExonInfo("exonCluster", exonCluster.isCis5to3(), exonClusterBefore.getStartCis(), exonClusterBefore.getEndCis()));
+					lsGetExon.add(new ExonInfo(exonCluster.isCis5to3(), exonClusterBefore.getStartCis(), exonClusterBefore.getEndCis()));
 					flag = false;
 					break;
 				}
@@ -496,14 +496,14 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			}	
 		}
 		
-		lsGetExon.add(new ExonInfo("exonCluster", exonCluster.isCis5to3(), exonCluster.getStartCis(), exonCluster.getEndCis()));
+		lsGetExon.add(new ExonInfo(exonCluster.isCis5to3(), exonCluster.getStartCis(), exonCluster.getEndCis()));
 		
 		ExonCluster exonClusterAfter = exonCluster.getExonClusterAfter();
 		flag = true;
 		while (flag && exonClusterAfter != null) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : exonCluster.getMapIso2LsExon().keySet()) {
 				if (exonClusterAfter.getMapIso2LsExon().containsKey(gffGeneIsoInfo) && exonClusterAfter.getMapIso2LsExon().get(gffGeneIsoInfo).size() > 0) {
-					lsGetExon.add(new ExonInfo("exonCluster", exonCluster.isCis5to3(), exonClusterAfter.getStartCis(), exonClusterAfter.getEndCis()));
+					lsGetExon.add(new ExonInfo( exonCluster.isCis5to3(), exonClusterAfter.getStartCis(), exonClusterAfter.getEndCis()));
 					flag = false;
 					break;
 				}
