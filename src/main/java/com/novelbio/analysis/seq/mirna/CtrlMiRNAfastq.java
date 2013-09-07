@@ -233,6 +233,7 @@ public class CtrlMiRNAfastq {
 			mapPrefix2GeneInfo.put(prefix, readsOnRepeatGene.getMapGeneStructure2Value());
 		}
 	}
+	
 	/** 将汇总结果写入文本 */
 	public void writeToFile() {
 		ArrayList<String[]> lsMirPre = miRNACount.combMapMir2Value(mapPrefix2MiRNAPre);

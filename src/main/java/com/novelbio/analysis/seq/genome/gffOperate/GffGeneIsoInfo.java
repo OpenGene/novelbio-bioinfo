@@ -6,8 +6,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.apache.tools.ant.types.resources.comparators.Size;
-import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.sigactLog;
 
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster;
 import com.novelbio.base.SepSign;
