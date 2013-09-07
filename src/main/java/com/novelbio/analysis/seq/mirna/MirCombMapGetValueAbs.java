@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Map;
 
 public abstract class MirCombMapGetValueAbs {
 	
 	/** 将给定的几组miRNA的值合并起来 */
-	public ArrayList<String[]> combValue(HashMap<String, HashMap<String, Double>> mapPrefix_2_ID2Value) {
+	public ArrayList<String[]> combValue(Map<String, Map<String, Double>> mapPrefix_2_ID2Value) {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		//前几行是序列信息，后面开始是prefix
 		ArrayList<String> lstitle = getTitlePre(mapPrefix_2_ID2Value);
@@ -21,7 +22,7 @@ public abstract class MirCombMapGetValueAbs {
 			fillMataInfo(id, lsTmpResult);
 			for (int i = getTitleIDAndInfo().length; i < lstitle.size(); i++) {
 				String prefix = lstitle.get(i);
-				HashMap<String, Double> mapMirna2Value = mapPrefix_2_ID2Value.get(prefix);
+				Map<String, Double> mapMirna2Value = mapPrefix_2_ID2Value.get(prefix);
 				Double value = mapMirna2Value.get(id);
 				if (value == null) {
 					lsTmpResult.add(0 + "");
@@ -35,7 +36,7 @@ public abstract class MirCombMapGetValueAbs {
 	}
 	
 	/** 返回涉及到的所有miRNA的名字 */
-	private ArrayList<String> getTitlePre(HashMap<String, ? extends Object> mapPrefix2Info) {
+	private ArrayList<String> getTitlePre(Map<String, ? extends Object> mapPrefix2Info) {
 		ArrayList<String> lsTitle = new ArrayList<String>();
 		for (String string : getTitleIDAndInfo()) {
 			lsTitle.add(string);
@@ -53,9 +54,9 @@ public abstract class MirCombMapGetValueAbs {
 	protected abstract void fillMataInfo(String id, ArrayList<String> lsTmpResult);
 	
 	/** 返回涉及到的所有miRNA的名字 */
-	private HashSet<String> getAllName(HashMap<String, HashMap<String, Double>> mapPrefix2_mapMiRNA2Value) {
+	private HashSet<String> getAllName(Map<String, Map<String, Double>> mapPrefix2_mapMiRNA2Value) {
 		LinkedHashSet<String> setMirNameAll = new LinkedHashSet<String>();
-		for (HashMap<String, Double> mapMiRNA2Value : mapPrefix2_mapMiRNA2Value.values()) {
+		for (Map<String, Double> mapMiRNA2Value : mapPrefix2_mapMiRNA2Value.values()) {
 			for (String miRNAname : mapMiRNA2Value.keySet()) {
 				setMirNameAll.add(miRNAname);
 			}

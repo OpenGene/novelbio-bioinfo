@@ -1,7 +1,7 @@
 package com.novelbio.analysis.seq.mirna;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -26,8 +26,8 @@ public class CtrlMiRNApredict {
 	NovelMiRNADeep novelMiRNADeep = new NovelMiRNADeep();
 	SoftWareInfo softWareInfo = new SoftWareInfo();
 	MiRNACount miRNACount = new MiRNACount();
-	HashMap<String, HashMap<String, Double>> mapPrefix2MapMature = new HashMap<String, HashMap<String,Double>>();
-	HashMap<String, HashMap<String, Double>> mapPrefix2MapPre= new HashMap<String, HashMap<String,Double>>();
+	Map<String, Map<String, Double>> mapPrefix2MapMature = new LinkedHashMap<>();
+	Map<String, Map<String, Double>> mapPrefix2MapPre= new LinkedHashMap<>();
 
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		if (this.gffChrAbs != null && gffChrAbs != null && this.gffChrAbs.getSpecies().equals(gffChrAbs.getSpecies())) {

@@ -2,6 +2,7 @@ package com.novelbio.analysis.seq.mirna;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import com.novelbio.analysis.seq.AlignRecord;
@@ -70,7 +71,7 @@ public class ReadsOnNCrna {
 	}
 	
 	/** 将给定的几组miRNA的值合并起来 */
-	public ArrayList<String[]> combValue(HashMap<String, HashMap<String, Double>> mapPrefix2NcRNAValue) {
+	public ArrayList<String[]> combValue(Map<String, Map<String, Double>> mapPrefix2NcRNAValue) {
 		CombMapNcRNA combMapNcRNA = new CombMapNcRNA();
 		return combMapNcRNA.combValue(mapPrefix2NcRNAValue);
 	}

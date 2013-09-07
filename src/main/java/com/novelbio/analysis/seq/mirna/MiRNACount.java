@@ -2,6 +2,7 @@ package com.novelbio.analysis.seq.mirna;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -59,9 +60,9 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 	 * 成熟体, 用于结果中<br>
 	 * key: Pre_Mature
 	 */
-	HashMap<String, Double> mapMirPre_Mature2Value;
+	Map<String, Double> mapMirPre_Mature2Value;
 	/** 前体 */
-	HashMap<String, Double> mapMiRNApre2Value;
+	Map<String, Double> mapMiRNApre2Value;
 	
 	/** 成熟体到前体的名字 */
 	Map<String, String> mapMirMatureName2Pre = new HashMap<>();
@@ -111,16 +112,16 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 		for (Entry<String, Double> miRNApre2Value : mapMiRNApre2Value.entrySet()) {
 			txtMirValue.writefileln(miRNApre2Value.getKey() + "\t" + miRNApre2Value.getValue().intValue() + "\t" + seqFastaHashPreMiRNA.getSeqFasta(miRNApre2Value.getKey() ));
 		}
-		for (String miRNApreName : mapMirPre2LsMature_Value.keySet()) {
-			List<String[]> lsMirMature2value = mapMirPre2LsMature_Value.get(miRNApreName);
-			for (String[] mature2Value : lsMirMature2value) {
-				String mirMatureSeq = getMiRNAmatureSeq(miRNApreName, mature2Value[0]);
-				if (mirMatureSeq == null) {
-					continue;
-				}
-				double valueCountNum = Double.parseDouble(mature2Value[1]);
-				txtMirMatureValue.writefileln(miRNApreName + "\t" + mature2Value[0] + "\t" + (int)valueCountNum + "\t"+ mirMatureSeq);
+		for (String miRNAName : mapMirPre_Mature2Value.keySet()) {
+			String[] ss = miRNAName.split(SepSign.SEP_ID);
+			String miRNApre = ss[0], miRNAmature = ss[1];
+			Double value = mapMirPre_Mature2Value.get(miRNAName);
+		
+			String mirMatureSeq = getMiRNAmatureSeq(miRNApre, miRNAmature);
+			if (value == null || mirMatureSeq == null) {
+				continue;
 			}
+			txtMirMatureValue.writefileln(miRNApre + "\t" + mirMatureSeq + "\t" + value.intValue() + "\t"+ mirMatureSeq);
 		}
 		txtMirValue.close();
 		txtMirMatureValue.close();
@@ -168,8 +169,8 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 	 */
 	private void initialMap() {
 		mapMirPre2LsMature_Value = ArrayListMultimap.create();
-		mapMiRNApre2Value = new HashMap<String, Double>();
-		mapMirPre_Mature2Value = new HashMap<String, Double>();
+		mapMiRNApre2Value = new LinkedHashMap<String, Double>();
+		mapMirPre_Mature2Value = new LinkedHashMap<String, Double>();
 		mapMirMatureName2Pre.clear();
 		
 		for (ListDetailBin lsMiRNA : listMiRNALocation.getGffDetailAll()) {
@@ -309,20 +310,20 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 	}
 	
 	
-	public HashMap<String, Double> getMapMirMature2Value() {
+	public Map<String, Double> getMapMirMature2Value() {
 		return mapMirPre_Mature2Value;
 	}
-	public HashMap<String, Double> getMapMiRNApre2Value() {
+	public Map<String, Double> getMapMiRNApre2Value() {
 		return mapMiRNApre2Value;
 	}
 	
 	/** 将给定的几组miRNA的值合并起来 */
-	public ArrayList<String[]> combMapMir2Value(HashMap<String, HashMap<String, Double>> mapPrefix2_mapMiRNA2Value) {
+	public ArrayList<String[]> combMapMir2Value(Map<String, Map<String, Double>> mapPrefix2_mapMiRNA2Value) {
 		CombMapMirPre2Value combMapMirPre2Value = new CombMapMirPre2Value(seqFastaHashPreMiRNA);
 		return combMapMirPre2Value.combValue(mapPrefix2_mapMiRNA2Value);
 	}
 	/** 将给定的几组miRNA的值合并起来 */
-	public ArrayList<String[]> combMapMir2MatureValue(HashMap<String, HashMap<String, Double>> mapPrefix2_mapMiRNAMature2Value) {
+	public ArrayList<String[]> combMapMir2MatureValue(Map<String, Map<String, Double>> mapPrefix2_mapMiRNAMature2Value) {
 		CombMapMirMature2Value combMapMirMature2Value = new CombMapMirMature2Value(this);
 		return combMapMirMature2Value.combValue(mapPrefix2_mapMiRNAMature2Value);
 	}
