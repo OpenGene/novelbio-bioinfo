@@ -191,8 +191,8 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 				} else {
 					parentName = parentNameOld;
 				}
-				mapMirMatureName2Pre.put(matureName, parentName);
 			}
+			mapMirMatureName2Pre.put(matureName, parentName);
 			mapMiRNApre2Value.put(parentName, 0.0);
 		}
 	}

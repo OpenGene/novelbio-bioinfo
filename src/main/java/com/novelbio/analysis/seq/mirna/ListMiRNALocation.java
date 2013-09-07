@@ -22,7 +22,7 @@ import com.novelbio.database.model.species.Species;
  * @author zong0jie
  *
  */
-public class ListMiRNALocation extends ListHashBin{
+public class ListMiRNALocation extends ListHashBin {
 	Logger logger = Logger.getLogger(ListMiRNALocation.class);
 	
 	public static int TYPE_RNA_DATA = 10;
@@ -228,10 +228,10 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 		}
 		ListBin<ListDetailBin> lsMiRNA = new ListBin<>();
 		String[] sepInfo = lsMirnaBlock.get(0).split(" +");
-		lsMiRNA.setName(sepInfo[1].toLowerCase());
+		lsMiRNA.setName(sepInfo[1]);
 		lsMiRNA.setCis5to3(true);
 		//装入chrHash
-		getMapChrID2LsGff().put(lsMiRNA.getName(), lsMiRNA);
+		getMapChrID2LsGff().put(lsMiRNA.getName().toLowerCase(), lsMiRNA);
 		List<ListDetailBin> lsMiRNABin = getLsMatureMirnaLocation(lsMirnaBlock);
 		for (ListDetailBin miRNAbin : lsMiRNABin) {
 			mapName2DetailAbs.put(miRNAbin.getNameSingle(), miRNAbin);
