@@ -55,7 +55,7 @@ public abstract class NovelMiRNApredict {
 	}
 	/**
 	 * 遍历输入的文件，获得reads不在基因上的序列
-	 * @param outFileName reads不在基因上的序列的文件名
+	 * @param outFileName 将不在基因上的reads写入该文本
 	 */
 	protected BedSeq getReadsNotOnCDS(String outFileName) {
 		boolean search = true;

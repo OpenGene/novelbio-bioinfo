@@ -6,10 +6,6 @@ import java.util.HashSet;
 import com.novelbio.analysis.seq.bed.BedRecord;
 import com.novelbio.analysis.seq.bed.BedSeq;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
-import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -17,7 +13,7 @@ import com.novelbio.base.fileOperate.FileOperate;
  * 新的miRNA的预测，基于miReap的算法
  * @author zong0jie
  */
-public class NovelMiRNAReap extends NovelMiRNApredict{
+public class NovelMiRNAReap extends NovelMiRNApredict {
 	/** 读取mireap的gff和aln文件，将其装入listmirna，方便后面算表达 */
 	ListMiRNALocation listMiRNALocation = new ListMiRNALocation();
 	/** 给mireap准备的文件 */
