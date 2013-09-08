@@ -2,6 +2,7 @@ package com.novelbio.analysis.seq.mirna;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
@@ -121,7 +122,7 @@ public class RfamStatistic {
 	}
 	
 	/** 将给定的几组miRNA的值合并起来 */
-	public ArrayList<String[]> combValue(HashMap<String, HashMap<String, Double>> mapPrefix2_RfamID2Value) {
+	public ArrayList<String[]> combValue(Map<String, Map<String, Double>> mapPrefix2_RfamID2Value) {
 		CombRfamMap combRfamMap = new CombRfamMap(mapRfamID2Info);
 		return combRfamMap.combValue(mapPrefix2_RfamID2Value);
 	}

@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.mirna;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.AlignSeq;
@@ -221,17 +222,17 @@ public class ReadsOnRepeatGene {
 	}
 	
 	/** 将给定的几组MapGeneStructure2Value的值合并起来 */
-	public ArrayList<String[]> combMapGeneStructure2Value(HashMap<String, HashMap<String, Double>> mapPrefix2_mapMiRNA2Value) {
+	public ArrayList<String[]> combMapGeneStructure2Value(Map<String, Map<String, Double>> mapPrefix2_mapMiRNA2Value) {
 		CombMapGeneInfo combMapGeneInfo = new CombMapGeneInfo();
 		return combMapGeneInfo.combValue(mapPrefix2_mapMiRNA2Value);
 	}
 	/** 将给定的几组MapRepatName的值合并起来 */
-	public ArrayList<String[]> combMapRepatName(HashMap<String, HashMap<String, Double>> mapPrefix2_mapMiRNAMature2Value) {
+	public ArrayList<String[]> combMapRepatName(Map<String, Map<String, Double>> mapPrefix2_mapMiRNAMature2Value) {
 		CombMapRepeatName combMapRepeatName = new CombMapRepeatName();
 		return combMapRepeatName.combValue(mapPrefix2_mapMiRNAMature2Value);
 	}
 	/** 将给定的几组MapRepatFamily的值合并起来 */
-	public ArrayList<String[]> combMapRepatFamily(HashMap<String, HashMap<String, Double>> mapPrefix2_mapMiRNAMature2Value) {
+	public ArrayList<String[]> combMapRepatFamily(Map<String, Map<String, Double>> mapPrefix2_mapMiRNAMature2Value) {
 		CombMapRepeatFamily combMapRepeatFamily = new CombMapRepeatFamily();
 		return combMapRepeatFamily.combValue(mapPrefix2_mapMiRNAMature2Value);
 	}

@@ -54,15 +54,15 @@ public class CtrlMiRNAfastq {
 	String outPath;
 	String outPathTmpMapping;
 	///////输出数量 ///////////
-	HashMap<String, HashMap<String, Double>> mapPrefix2MiRNAPre = new HashMap<String, HashMap<String,Double>>();
-	HashMap<String, HashMap<String, Double>> mapPrefix2MiRNAmature = new HashMap<String, HashMap<String,Double>>();
+	Map<String, Map<String, Double>> mapPrefix2MiRNAPre = new LinkedHashMap<>();
+	Map<String, Map<String, Double>> mapPrefix2MiRNAmature = new LinkedHashMap<>();
 	
-	HashMap<String, HashMap<String, Double>> mapPrefix2MiRNArfam = new HashMap<String, HashMap<String,Double>>();
-	HashMap<String, HashMap<String, Double>> mapPrefix2MiRNAncrna = new HashMap<String, HashMap<String,Double>>();
+	Map<String, Map<String, Double>> mapPrefix2MiRNArfam = new LinkedHashMap<>();
+	Map<String, Map<String, Double>> mapPrefix2MiRNAncrna = new LinkedHashMap<>();
 	
-	HashMap<String, HashMap<String, Double>> mapPrefix2RepeatName = new HashMap<String, HashMap<String,Double>>();
-	HashMap<String, HashMap<String, Double>> mapPrefix2RepeatFamily = new HashMap<String, HashMap<String,Double>>();
-	HashMap<String, HashMap<String, Double>> mapPrefix2GeneInfo = new HashMap<String, HashMap<String,Double>>();
+	Map<String, Map<String, Double>> mapPrefix2RepeatName = new LinkedHashMap<>();
+	Map<String, Map<String, Double>> mapPrefix2RepeatFamily = new LinkedHashMap<>();
+	Map<String, Map<String, Double>> mapPrefix2GeneInfo = new LinkedHashMap<>();
 	
 	////// 没有mapping到的bed文件，用于预测新miRNA的 */
 	Map<AlignSeq, String> mapNovelMiRNASamFile2Prefix = new LinkedHashMap<AlignSeq, String>();
@@ -233,6 +233,7 @@ public class CtrlMiRNAfastq {
 			mapPrefix2GeneInfo.put(prefix, readsOnRepeatGene.getMapGeneStructure2Value());
 		}
 	}
+	
 	/** 将汇总结果写入文本 */
 	public void writeToFile() {
 		ArrayList<String[]> lsMirPre = miRNACount.combMapMir2Value(mapPrefix2MiRNAPre);
