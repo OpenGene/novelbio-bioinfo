@@ -25,42 +25,42 @@ public abstract class DownloadOperate {
 	private static Logger logger = Logger.getLogger(DownloadOperate.class);
 	
 	public static void main(String[] args) throws InterruptedException {
-		PixivOperate pixivOperate = new PixivOperate();
-		pixivOperate.setDownloadFast(true);
-		pixivOperate.getcookies();
-		Set<String> setUrl = new LinkedHashSet<String>();
-		TxtReadandWrite txtReadUrl = new TxtReadandWrite("D:/zongjie/Desktop/pixiv.txt", false);
-		for (String urlID : txtReadUrl.readlines()) {
-			urlID = urlID.trim();
-			if (urlID.equals("")) {
-				continue;
-			}
-			setUrl.add(urlID);
-		}
-		for (String urlID : setUrl) {
-			pixivOperate.setUrlAuther(urlID);
-			pixivOperate.setSavePath("D:\\Picture\\pixiv");
-			pixivOperate.run();
-//			HttpFetch.ressetCM();
-			Thread.sleep(100);
-			logger.error("finished url:" + urlID);
-		}
-		txtReadUrl.close();
+//		PixivOperate pixivOperate = new PixivOperate();
+//		pixivOperate.setDownloadFast(true);
+//		pixivOperate.getcookies();
+//		Set<String> setUrl = new LinkedHashSet<String>();
+//		TxtReadandWrite txtReadUrl = new TxtReadandWrite("D:/zongjie/Desktop/pixiv.txt", false);
+//		for (String urlID : txtReadUrl.readlines()) {
+//			urlID = urlID.trim();
+//			if (urlID.equals("")) {
+//				continue;
+//			}
+//			setUrl.add(urlID);
+//		}
+//		for (String urlID : setUrl) {
+//			pixivOperate.setUrlAuther(urlID);
+//			pixivOperate.setSavePath("D:\\Picture\\pixiv");
+//			pixivOperate.run();
+////			HttpFetch.ressetCM();
+//			Thread.sleep(100);
+//			logger.error("finished url:" + urlID);
+//		}
+//		txtReadUrl.close();
 		
 //		PixivOperate pixivOperate = new PixivOperate();
 //		pixivOperate.getcookies();
-//		pixivOperate.setUrlAuther("1641495");
+//		pixivOperate.setUrlAuther("248818");
 //		pixivOperate.setDownloadFast(true);
 //		pixivOperate.setSavePath("D:/Picture/pixiv");
 //		pixivOperate.run();
 		
 		
-//		DonmaiOperate donmaiOperate = new DonmaiOperate();
-//		donmaiOperate.getcookies();
-//		donmaiOperate.setUrlAuther("cunnilingus");
-//		donmaiOperate.setDownloadFast(true);
-//		donmaiOperate.setSavePath("D:/Picture/donmai");
-//		donmaiOperate.run();
+		DonmaiOperate donmaiOperate = new DonmaiOperate();
+		donmaiOperate.getcookies();
+		donmaiOperate.setUrlAuther("misaki_kurehito");
+		donmaiOperate.setDownloadFast(true);
+		donmaiOperate.setSavePath("D:/Picture/donmai");
+		donmaiOperate.run();
 		
 	}
 	

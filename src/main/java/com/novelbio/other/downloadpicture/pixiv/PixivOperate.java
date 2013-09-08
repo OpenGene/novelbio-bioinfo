@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -92,8 +93,8 @@ public class PixivOperate extends DownloadOperate{
 			parser = new Parser(pixivAutherInfo);
 			NodeFilter filterName = new AndFilter(new TagNameFilter("h1"), new HasAttributeFilter("class", "user"));
 			NodeList nodeAutherName = parser.parse(filterName);
-			autherName = getAuterName(nodeAutherName) + "_" + autherID;
-			savePath = FileOperate.addSep(savePath) + UrlPictureDownLoad.generateoutName(autherName) + FileOperate.getSepPath();
+			autherName = getAuterName(nodeAutherName);
+			savePath = getSavePath(autherName, autherID);
 			allPages = (int) Math.ceil((double)allPictureNum/20);
 			webFetch.readResponse();
 			return true;
@@ -102,7 +103,29 @@ public class PixivOperate extends DownloadOperate{
 		}
 		return false;
 	}
-
+	
+	/** 先在已有的文件夹里面找是否存在相同authorID的文件夹，如果有，就将savePath改成那个文件夹
+	 * 没有再用新的文件夹名
+	 * @return
+	 */
+	private String getSavePath(String autherName, String autherID) {
+		//TODO　每次都要读取一遍文件夹，效率不高
+		String outPath = null;
+		List<String> lsFileExist = FileOperate.getFoldFileNameLs(savePath, "*", "*");
+		Map<String, String> mapID2Path = new HashMap<>();
+		for (String path : lsFileExist) {
+			String[] ss = path.split("_");
+			String autherIDExist = ss[ss.length - 1];
+			mapID2Path.put(autherIDExist, path);
+		}
+		if (mapID2Path.containsKey(autherID)) {
+			outPath = FileOperate.addSep(mapID2Path.get(autherID));
+		} else {
+			outPath = FileOperate.addSep(savePath) + UrlPictureDownLoad.generateoutName(autherName + "_" + autherID) + FileOperate.getSepPath();
+		}
+		return outPath;
+	}
+	
 	/**
 	 * @param nodeNumLsBefore
 	 * @return
