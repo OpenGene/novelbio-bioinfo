@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.sam;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,6 +22,9 @@ import net.sf.samtools.seekablestream.SeekableStream;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.sam.seekablestream.SeekableHDFSstream;
+import com.novelbio.base.dataOperate.HdfsBase;
+import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class SamReader {
@@ -101,7 +105,7 @@ public class SamReader {
 		return pairend;
 	}
 	
-	private void initialSamHeadAndReader(String fileIndex) throws FileNotFoundException {
+	private void initialSamHeadAndReader(String fileIndex) throws IOException {
 		if (samFileHeader != null && samFileReader != null
 				&& 
 				(
@@ -113,20 +117,40 @@ public class SamReader {
 			return;
 		}
 		close();
-		filesize = FileOperate.getFileSizeLong(fileName);
-		File file = new File(fileName);
-		File index = null;
+		
+		isIndexed = false;
 		if (fileIndex != null && FileOperate.isFileExistAndBigThanSize(fileIndex, 0)) {
 			isIndexed = true;
-			index = new File(fileIndex);
-			inputStream = new SeekableFileStream(file);
-			samFileReader = new SAMFileReader((SeekableFileStream)inputStream, index, false);
+		}
+		
+		if (HdfsBase.isHdfs(fileName)) {
+			FileHadoop fileHadoop = new FileHadoop(fileIndex);
+			if (isIndexed) {
+				inputStream = new SeekableHDFSstream(fileHadoop);
+			} else {
+				inputStream = fileHadoop.getInputStream();
+			}
 		} else {
-			//内部会自动包装成 bufferedStream
-			isIndexed = false;
-			inputStream = new FileInputStream(file);
+			File file = new File(fileName);
+			if (isIndexed) {
+				inputStream = new SeekableFileStream(file);
+			} else {
+				inputStream = new FileInputStream(file);
+			}
+		}
+		
+		if (isIndexed) {
+			if (HdfsBase.isHdfs(fileIndex)) {
+				FileHadoop fileHadoopIndex = new FileHadoop(fileIndex);
+				SeekableHDFSstream seekableIndex = new SeekableHDFSstream(fileHadoopIndex);
+				samFileReader = new SAMFileReader((SeekableStream)inputStream, seekableIndex, false);
+			} else {
+				samFileReader = new SAMFileReader((SeekableStream)inputStream, new File(fileIndex), false);
+			}
+		} else {
 			samFileReader = new SAMFileReader(inputStream);
 		}
+	
 		samFileHeader = samFileReader.getFileHeader();
 		mapChrIDlowCase2ChrID = new LinkedHashMap<String, String>();
 		mapChrIDlowCase2Length = new LinkedHashMap<String, Long>();

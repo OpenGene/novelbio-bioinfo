@@ -271,6 +271,7 @@ public class Species implements Cloneable {
 		return gffDB;
 	}
 	/**
+	 * <b>注意要判定文件是否存在</b>
 	 * 返回UCSC的gffRepeat
 	 * @param version
 	 * @return
@@ -289,7 +290,11 @@ public class Species implements Cloneable {
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getMiRNAmatureFile();
 	}
-	/** 获得本物中指定version的rfam序列 */
+	/**
+	 *  获得rfam序列
+	 * @param spciesSpecific 是否只获取当前物种的rfam序列
+	 * @return
+	 */
 	public String getRfamFile(boolean spciesSpecific) {
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getRfamFile(spciesSpecific);
@@ -299,15 +304,12 @@ public class Species implements Cloneable {
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getRefseqNCfile();
 	}
-	/** 获得本物中指定version的refseq的序列 */
-	public String getRefseqFile() {
+	/** 获得本物中指定version的refseq的序列
+	 * @param isAllIso 是否需要全体iso
+	 *  */
+	public String getRefseqFile(boolean isAllIso) {
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
-		return speciesFile.getRefRNAFile();
-	}
-	/** 获取仅含有最长转录本的refseq文件，是核酸序列，没有就返回null */
-	public String getRefseqLongestIsoNrFile() {
-		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
-		return speciesFile.getRefseqLongestIsoNrFile();
+		return speciesFile.getRefSeqFile(isAllIso);
 	}
 	/** 指定mapping的软件，获得该软件所对应的索引文件
 	 * 没有就新建一个，格式<br>
@@ -321,9 +323,9 @@ public class Species implements Cloneable {
 	 * 没有就新建一个，格式<br>
 	 * softMapping.toString() + "_Ref_Index/" 
 	 *  */
-	public String getIndexRef(SoftWare softMapping) {
+	public String getIndexRef(SoftWare softMapping, boolean isAllIso) {
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
-		return speciesFile.getIndexRefseq(softMapping);
+		return speciesFile.getIndexRefseq(softMapping, isAllIso);
 	}
 	////////////////////////    升级   //////////////////////////////////////////////////////////////////////////////////////
 	/** 输入taxinfo的文本 */
@@ -385,10 +387,10 @@ public class Species implements Cloneable {
 	
 	/** 用数据库查找的方式，遍历refseq文件，然后获得gene2iso的表 */
 	public String getGene2IsoFileFromRefSeq() {
-		String gene2IsoFile = FileOperate.changeFileSuffix(getRefseqFile(), "_Gene2Iso", "txt");
+		String gene2IsoFile = FileOperate.changeFileSuffix(getRefseqFile(true), "_Gene2Iso", "txt");
 		if (!FileOperate.isFileExist(gene2IsoFile)) {
 			TxtReadandWrite txtGene2Iso = new TxtReadandWrite(gene2IsoFile, true);
-			SeqFastaHash seqFastaHash = new SeqFastaHash(getRefseqFile(), null, false);
+			SeqFastaHash seqFastaHash = new SeqFastaHash(getRefseqFile(true), null, false);
 			for (String geneIDstr : seqFastaHash.getLsSeqName()) {
 				GeneID geneID = new GeneID(geneIDstr, getTaxID());
 				String symbol = geneID.getSymbol();
@@ -403,6 +405,89 @@ public class Species implements Cloneable {
 		return gene2IsoFile;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		
+		if (getClass() != obj.getClass()) return false;
+		Species otherObj = (Species)obj;
+		if (
+				getTaxID() == otherObj.getTaxID() 
+				&& version.equals(otherObj.version)
+				)
+		{
+			return true;
+		}
+		return false;
+	}
+	
+	public Species clone() {
+		Species speciesClone = null;
+		try {
+			speciesClone = (Species)super.clone();
+			speciesClone.taxInfo = taxInfo;
+			speciesClone.lsVersion = new ArrayList<String[]>(lsVersion);
+			speciesClone.mapVersion2Species = new HashMap<String, SpeciesFile>(mapVersion2Species);			
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return speciesClone;
+	}
+	
+	/** 根据指定的SeqType，返回相应的序列 */
+	public String getSeqFile(SeqType seqType) {
+		if (seqType == SeqType.genome) {
+			return getChromSeq();
+		} else if (seqType == SeqType.refseqAllIso) {
+			return getRefseqFile(true);
+		} else if (seqType == SeqType.refseqOneIso) {
+			return getRefseqFile(false);
+		} else {
+			return "";
+		}
+	}
+	
+	public String getSeqIndex(SeqType seqType, SoftWare softMapping) {
+		if (seqType == SeqType.genome) {
+			return getIndexChr(softMapping);
+		} else if (seqType == SeqType.refseqAllIso) {
+			return getIndexRef(softMapping, true);
+		} else if (seqType == SeqType.refseqOneIso) {
+			return getIndexRef(softMapping, false);
+		} else {
+			return "";
+		}
+	}
+	
+	/**
+	 * 返回该版本物种所含有的Genome，RefSeqAllIso，RefSeqOneIso
+	 * 的信息
+	 * @return
+	 */
+	public Map<String, SeqType> getMapSeq2Type() {
+		Map<String, SeqType> mapType2Detail = new LinkedHashMap<>();
+		String chrFile = getChromSeq();
+		if (FileOperate.isFileExistAndBigThanSize(chrFile, 0)) {
+			mapType2Detail.put("genome", SeqType.genome);
+		}
+		String refseqAllIso = getRefseqFile(true);
+		if (FileOperate.isFileExistAndBigThanSize(refseqAllIso, 0)) {
+			mapType2Detail.put("refseqAllIso", SeqType.refseqAllIso);
+		}
+		String refseqOneIso = getRefseqFile(false);
+		if (FileOperate.isFileExistAndBigThanSize(refseqOneIso, 0)) {
+			mapType2Detail.put("refseqOneIso", SeqType.refseqOneIso);
+		}		
+		return mapType2Detail;
+	}
+	
+	public static enum SeqType {
+		genome, refseqAllIso, refseqOneIso
+//		, rfamAll, rfamSpecies, miRNAmature, miRNAhairpin
+	}
+	
 	/**
 	 * 返回常用名对taxID
 	 * @param speciesType 根据不同的
@@ -458,37 +543,7 @@ public class Species implements Cloneable {
 		
 		return mapName2Species;
 	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		
-		if (getClass() != obj.getClass()) return false;
-		Species otherObj = (Species)obj;
-		if (
-				getTaxID() == otherObj.getTaxID() 
-				&& version.equals(otherObj.version)
-				)
-		{
-			return true;
-		}
-		return false;
-	}
 	
-	public Species clone() {
-		Species speciesClone = null;
-		try {
-			speciesClone = (Species)super.clone();
-			speciesClone.taxInfo = taxInfo;
-			speciesClone.lsVersion = new ArrayList<String[]>(lsVersion);
-			speciesClone.mapVersion2Species = new HashMap<String, SpeciesFile>(mapVersion2Species);			
-		} catch (CloneNotSupportedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return speciesClone;
-	}
 	static boolean isOK = true;
 //	static {
 //		String file = "";
@@ -512,4 +567,5 @@ public class Species implements Cloneable {
 //			txtRead.close();
 //		}		
 //	}
+	
 }
