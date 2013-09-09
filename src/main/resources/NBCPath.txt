@@ -1,5 +1,0 @@
-#PathName PathDetail
-R_SCRIPT	Rscript
-
-#R_WORKSPACE	D:/Library/R/
-#R_SCRIPT	D:/tools/R2_14/bin/Rscript

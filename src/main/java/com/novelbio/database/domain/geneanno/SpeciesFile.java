@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -15,6 +14,7 @@ import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -27,7 +27,6 @@ import com.novelbio.analysis.seq.genome.GffChrSeq;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
-import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
 import com.novelbio.analysis.seq.mirna.ListMiRNALocation;
 import com.novelbio.analysis.seq.sam.SamIndexRefsequence;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -60,14 +59,23 @@ public class SpeciesFile {
 	/** 染色体的单文件序列 */
 	String chromSeq = "";
 	/** 保存不同mapping软件所对应的索引 */
-	Map<SoftWare, String> mapSoftware2IndexChrom = new HashMap<SoftWare, String>();
-
-	/** gff的repeat文件，从ucsc下载 */
+	Map<SoftWare, String> mapSoftware2IndexChrom = new HashMap<>();
+	
+	/** 相对路径 gff的repeat文件，从ucsc下载 */
 	String gffRepeatFile = "";
-	/** refseq文件 */
-	String refseqFile = "";
-	/** 保存不同mapping软件所对应的索引 */
-	Map<SoftWare, String> mapSoftware2IndexRef = new HashMap<SoftWare, String>();
+	/** 相对路径 refseq文件，全体Iso */
+	String refseqFileAllIso = "";
+	/** 相对路径 refseq文件，一个gene一个Iso */
+	String refseqFileOneIso = "";
+	
+	/** 相对路径 保存不同mapping软件所对应的RefSeq索引
+	 * 主要是全体Iso的RefSeq
+	 *  */
+	Map<SoftWare, String> mapSoftware2IndexRefAllIso = new HashMap<>();
+	/** 相对路径 保存不同mapping软件所对应的索引
+	 * 主要是全体gene，每个基因一个iso
+	 *  */
+	Map<SoftWare, String> mapSoftware2IndexRefOneIso = new HashMap<>();
 	/** refseq中的NCRNA文件 */
 	String refseqNCfile = "";
 	/** key: chrID，为小写    value: chrLen */
@@ -81,6 +89,17 @@ public class SpeciesFile {
 	
 	/** 用来将小写的DB转化为正常的DB，使得getDB获得的字符应该是正常的DB */
 	Map<String, String> mapGffDBLowCase2DBNormal = new TreeMap<String, String>(new CompGffDB());
+	
+	/** 相对路径，类似 /media/hdfs/nbCloud/public/nbcplatform/ ，注意不要把genome写进去<br>
+	 * 然后以后把speciesFile写在 /media/hdfs/nbCloud/public/nbcplatform/这个文件夹下就行
+	 */
+	@Transient
+	String pathParent;
+	
+	/** genome文件夹所在的路径 */
+	public SpeciesFile(String pathParent) {
+		this.pathParent = FileOperate.addSep(pathParent);
+	}
 	
 	/** mongodb的ID */
 	public void setId(String id) {
@@ -121,12 +140,13 @@ public class SpeciesFile {
 		this.chromSeq = chromSeq;
 	}
 	public String getChromSeqFile() {
-		if (FileOperate.isFileExistAndBigThanSize(chromSeq, 0)) {
+		String chromeSeq = pathParent + chromSeq;
+		if (FileOperate.isFileExistAndBigThanSize(chromeSeq, 0)) {
 			SamIndexRefsequence samIndexRefsequence = new SamIndexRefsequence();
-			samIndexRefsequence.setRefsequence(chromSeq);
+			samIndexRefsequence.setRefsequence(chromeSeq);
 			samIndexRefsequence.indexSequence();
 		}
-		return chromSeq;
+		return chromeSeq;
 	}
 
 	/**
@@ -150,7 +170,6 @@ public class SpeciesFile {
 		mapGffDBLowCase2DBNormal.put(gffDB.toLowerCase(), gffDB);
 	}
 	
-	
 	/**
 	 * 获得某个Type的Gff文件，如果没有则返回null
 	 * @param gffDB 指定gffDB 如果为null，表示不指定，则返回默认
@@ -160,7 +179,7 @@ public class SpeciesFile {
 		if (gffDB == null) {
 			return getGffFile();
 		}
-		return mapDB2GffTypeAndFile.get(gffDB.toLowerCase())[1];
+		return pathParent + mapDB2GffTypeAndFile.get(gffDB.toLowerCase())[1];
 	}
 	/**
 	 * 获得某个Type的GffType，如果没有则返回null
@@ -190,7 +209,7 @@ public class SpeciesFile {
 	 */
 	public String getGffFile() {
 		String[] gffInfo = getGffDB2GffTypeFile();
-		return gffInfo[2];
+		return pathParent + gffInfo[2];
 	}
 	/**
 	 * 按照优先级返回gff类型，优先级由GffDB来决定
@@ -207,7 +226,7 @@ public class SpeciesFile {
 	 * @return string[2]<br>
 	 * 0: gffDB<br>
 	 * 1: GffType<br>
-	 * 2: GffFile
+	 * 2: GffFile 相对路径
 	 */
 	private String[] getGffDB2GffTypeFile() {
 		if (mapDB2GffTypeAndFile.size() == 0) {
@@ -225,8 +244,17 @@ public class SpeciesFile {
 	}
 	
 	public String getGffRepeatFile() {
-		return gffRepeatFile;
+		if (gffRepeatFile == null || gffRepeatFile.equals("")) {
+			return "";
+		}
+		return pathParent + gffRepeatFile;
 	}
+	
+	/**
+	 * 添加相对路径
+	 * @param softWare
+	 * @param indexChrom
+	 */
 	public void addIndexChrom(SoftWare softWare, String indexChrom) {
 		mapSoftware2IndexChrom.put(softWare, indexChrom);
 	}
@@ -236,26 +264,36 @@ public class SpeciesFile {
 	 * softMapping.toString() + "_Chr_Index/"
 	 */
 	public String getIndexChromFa(SoftWare softMapping) {
-		String indexChromFa = mapSoftware2IndexChrom.get(softMapping);
+		String indexChromFa = pathParent + mapSoftware2IndexChrom.get(softMapping);
 		if (!FileOperate.isFileExist(indexChromFa)) {
 			indexChromFa = creatAndGetSeqIndex(false, softMapping, getChromSeqFile(), mapSoftware2IndexChrom);
 			update();
 		}
 		return indexChromFa;
 	}
-	
-	public void addIndexRefseq(SoftWare softWare, String indexRefseq) {
-		mapSoftware2IndexRef.put(softWare, indexRefseq);
-	}
+
 	/** 返回该mapping软件所对应的index的文件
 	 * 没有就新建一个
 	 * 格式如下：softMapping.toString() + "_Ref_Index/"
 	 */
-	public String getIndexRefseq(SoftWare softMapping) {
-		String indexRefseqThis =  mapSoftware2IndexRef.get(softMapping);
+	public String getIndexRefseq(SoftWare softMapping, boolean isAllIso) {
+		String indexRefseqThis = null;
+		if (isAllIso) {
+			indexRefseqThis = mapSoftware2IndexRefAllIso.get(softMapping);
+		} else {
+			indexRefseqThis = mapSoftware2IndexRefOneIso.get(softMapping);
+		}
 		if (!FileOperate.isFileExist(indexRefseqThis)) {
-			indexRefseqThis = creatAndGetSeqIndex(true, softMapping, getRefRNAFile(), mapSoftware2IndexRef);
-			update();
+			Map<SoftWare, String> mapSoft2Seq = null;
+			if (isAllIso) {
+				mapSoft2Seq = mapSoftware2IndexRefAllIso;
+			} else {
+				mapSoft2Seq = mapSoftware2IndexRefOneIso;
+			}
+			indexRefseqThis = creatAndGetSeqIndex(true, softMapping, getRefSeqFile(isAllIso), mapSoft2Seq);
+			if (indexRefseqThis != null && !indexRefseqThis.equals("")) {
+				update();
+			}
 		}
 		return indexRefseqThis;
 	}
@@ -263,6 +301,7 @@ public class SpeciesFile {
 	/**
 	 * 如果不存在该index，那么就新创建一个index并且保存入数据库 
 	 * @param refseq 是否为refseq
+	 * @param isAllIso 是否提取全体iso
 	 * @param softMapping mapping的软件
 	 * @param seqIndex 该index所对应的保存在数据库中的值，譬如indexChr
 	 * @param seqFile 该index所对应的序列，用getChromSeq()获得
@@ -283,13 +322,13 @@ public class SpeciesFile {
 		else {
 			///media/winE/Bioinformatics/GenomeData/mouse/ucsc_mm9/ChromFa/all/mm9.fasta
 			seqName = FileOperate.getFileName(seqFile);
-			IndexPath = FileOperate.getParentPathName(FileOperate.getParentPathName(getChromSeqFile())) + "index/";
+			IndexPath = FileOperate.addSep(pathParent + "index/" +softMapping.toString() + "/" + getSpeciesPathWithoutRoot());
 		}
 		
 		if (refseq)
-			indexFinalPath = IndexPath + softMapping.toString() + "_Ref_Index/";
+			indexFinalPath = IndexPath + "Ref_Index/";
 		else
-			indexFinalPath = IndexPath + softMapping.toString() + "_Chr_Index/";
+			indexFinalPath = IndexPath + "Chr_Index/";
 		
 		indexChromFinal = indexFinalPath + seqName;
 		if (FileOperate.isFileExist(indexChromFinal)) {
@@ -303,27 +342,60 @@ public class SpeciesFile {
 		
 		return indexChromFinal;
 	}
-
+	
+	/**
+	 * 返回本version的物种的目录，类似cangshu_hamsters/CriGri_1.0
+	 * 没有genome
+	 *  是相对路径<p>
+	 *  结尾带"/"
+	 */
+	private String getSpeciesPathWithoutRoot() {
+		String path = getSpeciesPath();
+		StringBuilder start = new StringBuilder();
+		String beginSep = "";//Path开头的反斜杠，一般只有1-2个
+		String name = null;
+		char[] pathChar = path.toCharArray();
+		
+		for (char c : pathChar) {
+			if (c == '/' || c == '\\') {
+				if (start.length() == 0) {
+					beginSep = beginSep + c;
+					continue;
+				} else {
+					start.append(c);
+					name = start.toString();
+					break;
+				}
+			}
+			start.append(c);
+		}
+		String root = beginSep + name;
+		String result = path.replace(root, "");
+		return FileOperate.addSep(result);
+	}
+	
 	public String getMiRNAmatureFile() {
-		return getMiRNAseq()[0];
+		return pathParent + getMiRNAseq()[0];
 	}
 	public String getMiRNAhairpinFile() {
-		return getMiRNAseq()[1];
+		return pathParent + getMiRNAseq()[1];
 	}
 	/**
+	 * 返回相对路径
 	 * @return
 	 * 0: miRNAfile<br>
 	 * 1: miRNAhairpinFile
 	 */
 	private String[] getMiRNAseq() {
-		String genomePath = getSpeciesPath();
-		String miRNAfile = genomePath + "miRNA/miRNA.fa";
-		String miRNAhairpinFile = genomePath + "miRNA/miRNAhairpin.fa";
-		if (!FileOperate.isFileExistAndBigThanSize(miRNAfile,10) || !FileOperate.isFileExistAndBigThanSize(miRNAhairpinFile,10)) {
-			FileOperate.createFolders(FileOperate.getParentPathName(miRNAfile));
+		String node = "miRNA/";
+		String genomePath = node + getSpeciesPathWithoutRoot();
+		String miRNAfile = genomePath + "miRNA.fa";
+		String miRNAhairpinFile = genomePath + "miRNAhairpin.fa";
+		if (!FileOperate.isFileExistAndBigThanSize(pathParent + miRNAfile,10) || !FileOperate.isFileExistAndBigThanSize(pathParent + miRNAhairpinFile,10)) {
+			FileOperate.createFolders(FileOperate.getParentPathName(pathParent + miRNAfile));
 			ExtractSmallRNASeq extractSmallRNASeq = new ExtractSmallRNASeq();
-			extractSmallRNASeq.setOutMatureRNA(miRNAfile);
-			extractSmallRNASeq.setOutHairpinRNA(miRNAhairpinFile);
+			extractSmallRNASeq.setOutMatureRNA(pathParent + miRNAfile);
+			extractSmallRNASeq.setOutHairpinRNA(pathParent + miRNAhairpinFile);
 			Species species = new Species(taxID);
 			extractSmallRNASeq.setMiRNAdata(PathDetailNBC.getMiRNADat(), species.getNameLatin());
 			extractSmallRNASeq.getSeq();
@@ -337,27 +409,60 @@ public class SpeciesFile {
 	public int getPublishYear() {
 		return publishYear;
 	}
-	public void setRefseqFile(String refseqFile) {
-		this.refseqFile = refseqFile;
+	/** 设定相对路径 */
+	public void setRefseqFileAllIso(String refseqFileAllIso) {
+		this.refseqFileAllIso = refseqFileAllIso;
 	}
-	public String getRefRNAFile() {
-		if (refseqFile == null || refseqFile.trim().equals("")) {
-			refseqFile = getSpeciesPath() + "refrna/rna.fa";
+	/** 设定相对路径 */
+	public void setRefseqFileOneIso(String refseqFileOneIso) {
+		this.refseqFileOneIso = refseqFileOneIso;
+	}
+	
+	/**
+	 *  返回绝对路径
+	 * @param isAllIso 是否获取含有全部iso的序列
+	 * @return
+	 */
+	public String getRefSeqFile(boolean isAllIso) {
+		return pathParent + getRefSeqFileRlt(isAllIso);
+	}
+	
+	/**
+	 * 获得refSeq的相对路径
+	 * @return
+	 */
+	private String getRefSeqFileRlt(boolean isAllIso) {
+		String refseq = null;
+		if (isAllIso) {
+			if (refseqFileAllIso == null || refseqFileAllIso.trim().equals("")) {
+				refseqFileAllIso = getSpeciesPath() + "refrna/rnaAllIso.fa";
+			}
+			refseq = refseqFileAllIso;
+		} else {
+			if (refseqFileOneIso == null || refseqFileOneIso.trim().equals("")) {
+				refseqFileOneIso = getSpeciesPath() + "refrna/rnaOneIso.fa";
+			}
+			refseq = refseqFileOneIso;
 		}
-		if (FileOperate.isFileExistAndBigThanSize(refseqFile, 0.2)) {
-			return refseqFile;
+		if (FileOperate.isFileExistAndBigThanSize(pathParent + refseq, 0.2)) {
+			return refseq;
+		}
+		//说明没有序列
+		if (!FileOperate.isFileExistAndBigThanSize(getGffFile(), 0) || !FileOperate.isFileExistAndBigThanSize(getChromSeqFile(), 0)) {
+			return "";
 		}
 		try {
+			FileOperate.createFolders(FileOperate.getParentPathName(pathParent + refseq));
 			GffChrAbs gffChrAbs = new GffChrAbs();
 			gffChrAbs.setGffHash(new GffHashGene(getGffType(), getGffFile()));
 			gffChrAbs.setSeqHash(new SeqHash(getChromSeqFile(), " "));
 			GffChrSeq gffChrSeq = new GffChrSeq(gffChrAbs);
 			gffChrSeq.setGeneStructure(GeneStructure.ALLLENGTH);
 			gffChrSeq.setGetAAseq(false);
-			gffChrSeq.setGetAllIso(true);
+			gffChrSeq.setGetAllIso(isAllIso);
 			gffChrSeq.setGetIntron(false);
 			gffChrSeq.setGetSeqGenomWide();
-			gffChrSeq.setOutPutFile(refseqFile);
+			gffChrSeq.setOutPutFile(pathParent + refseq);
 			gffChrSeq.run();
 			update();
 			gffChrAbs.close();
@@ -365,39 +470,14 @@ public class SpeciesFile {
 			logger.error("生成 RefRNA序列出错");
 		}
 	
-		return refseqFile;
+		return refseq;
 	}
+	/** 设定相对路径 */
 	public void setRefseqNCfile(String refseqNCfile) {
 		this.refseqNCfile = refseqNCfile;
 	}
 	public String getRefseqNCfile() {
-		return refseqNCfile;
-	}
-	/** 获取仅含有最长转录本的refseq文件，是核酸序列，没有就返回null */
-	public String getRefseqLongestIsoNrFile() {
-		String speciesPath = getSpeciesPath();
-		String refseqLongestIsoFile = speciesPath + "refrna/refseqLongestIsoNr.fa";
-		if (!FileOperate.isFileExistAndBigThanSize(refseqLongestIsoFile,10)) {
-			FileOperate.createFolders(FileOperate.getParentPathName(refseqLongestIsoFile));
-			try {
-				Species species = new Species(taxID);
-				species.setVersion(version);
-				GffChrAbs gffChrAbs = new GffChrAbs(species);
-				GffChrSeq gffChrSeq = new GffChrSeq();
-				gffChrSeq.setGffChrAbs(gffChrAbs);
-				gffChrSeq.setGeneStructure(GeneStructure.ALLLENGTH);
-				gffChrSeq.setGetIntron(false);
-				gffChrSeq.setGetAAseq(false);
-				gffChrSeq.setGetAllIso(false);
-				gffChrSeq.setIsGetOnlyMRNA(true);
-				gffChrSeq.setGetSeqGenomWide();
-				gffChrSeq.setOutPutFile(refseqLongestIsoFile);
-				gffChrSeq.run();
-			} catch (Exception e) {
-				return null;
-			}
-		}
-		return refseqLongestIsoFile;
+		return pathParent + refseqNCfile;
 	}
 	
 	/**
@@ -406,12 +486,13 @@ public class SpeciesFile {
 	 * @return
 	 */
 	public String getRfamFile(boolean speciesSpecific) {
-		String speciesPath = getSpeciesPath();
+		String node = "rfam/";
+		String speciesPath = pathParent + node + getSpeciesPathWithoutRoot();
 		String rfamFile = null;
 		if (speciesSpecific) {
-			rfamFile = speciesPath + "rfam/rfamFile";
+			rfamFile = speciesPath + "rfamFile";
 		} else {
-			rfamFile = speciesPath + "rfam/rfamFileAll";
+			rfamFile = speciesPath + "rfamFileAll";
 		}
 		if (!FileOperate.isFileExistAndBigThanSize(rfamFile,10)) {
 			FileOperate.createFolders(FileOperate.getParentPathName(rfamFile));
@@ -448,11 +529,13 @@ public class SpeciesFile {
 			&& compareMapStrArray(mapDB2GffTypeAndFile, otherObj.mapDB2GffTypeAndFile)
 			&& mapGffDBLowCase2DBNormal.equals(otherObj.mapGffDBLowCase2DBNormal)
 			&& mapSoftware2IndexChrom.equals(otherObj.mapSoftware2IndexChrom)
-			&& mapSoftware2IndexRef.equals(otherObj.mapSoftware2IndexRef)
+			&& mapSoftware2IndexRefAllIso.equals(otherObj.mapSoftware2IndexRefAllIso)
+			&& mapSoftware2IndexRefOneIso.equals(otherObj.mapSoftware2IndexRefOneIso)
 			&& ArrayOperate.compareString(chromSeq, otherObj.chromSeq)
 			&& ArrayOperate.compareString(gffRepeatFile, otherObj.gffRepeatFile)
 			&& this.publishYear == otherObj.publishYear
-			&& ArrayOperate.compareString(this.refseqFile, otherObj.refseqFile)
+			&& ArrayOperate.compareString(this.refseqFileOneIso, otherObj.refseqFileOneIso)
+			&& ArrayOperate.compareString(this.refseqFileAllIso, otherObj.refseqFileAllIso)
 			&&ArrayOperate.compareString( this.refseqNCfile, otherObj.refseqNCfile)
 			&& this.taxID == otherObj.taxID
 			&& ArrayOperate.compareString(this.version, otherObj.version)
@@ -463,13 +546,16 @@ public class SpeciesFile {
 		return false;
 	}
 	
-	/** 返回本version的物种的根目录，类似genome/cangshu_hamsters/CriGri_1.0
+	/** 返回本version的物种的目录，类似genome/cangshu_hamsters/CriGri_1.0/
+	 * 结尾带"/"
+	 * 是相对路径
 	 * @return
 	 */
 	private String getSpeciesPath() {
-		String file = getChromSeqFile();
-		if (file == null || file.equals("")) file = getGffFile();
-		if (file == null || file.equals("")) file = getRefRNAFile();
+		String file = chromSeq;
+		if (file == null || file.equals("")) file = getGffDB2GffTypeFile()[2];
+		if (file == null || file.equals("")) file = refseqFileAllIso;
+		if (file == null || file.equals("")) file = refseqFileOneIso;
 		if (file == null || file.equals("")) return null;
 		
 		return FileOperate.getParentPathName(FileOperate.getParentPathName(file));
@@ -523,7 +609,6 @@ public class SpeciesFile {
 			extractSmallRNASeq.setMiRNAdata("/media/winE/NBCplatform/genome/otherResource/sRNA/miRNA.dat", species.getNameLatin());
 			extractSmallRNASeq.setOutPathPrefix("/media/winE/NBCplatform/genome/otherResource/sRNA/poplar");
 			extractSmallRNASeq.getSeq();
-			
 		}
 		
 		String RNAdataFile = "";
@@ -617,7 +702,12 @@ public class SpeciesFile {
 			if (FileOperate.isFileExist(refseqFile)) {
 				if (outNcRNA == null)
 					outNcRNA = outPathPrefix + "_ncRNA.fa";
-				extractNCRNA(refseqFile, outNcRNA, regxNCrna);
+				try {
+					extractNCRNA(refseqFile, outNcRNA, regxNCrna);
+				} catch (Exception e) {
+					e.printStackTrace();
+					logger.error("提取ncRNA出错：" + refseqFile);
+				}
 			}
 			
 			if (FileOperate.isFileExist(RNAdataFile)) {
@@ -627,14 +717,26 @@ public class SpeciesFile {
 					outMatureRNA = outPathPrefix + "_mature.fa";
 				
 				ListMiRNALocation listMiRNALocation = new ListMiRNALocation();
-				listMiRNALocation.extractMiRNASeqFromRNAdata(setMiRNAname, miRNAdataSpeciesName, RNAdataFile, outHairpinRNA, outMatureRNA);
+				try {
+					listMiRNALocation.extractMiRNASeqFromRNAdata(setMiRNAname, miRNAdataSpeciesName, RNAdataFile, outHairpinRNA, outMatureRNA);
+				} catch (Exception e) {
+					e.printStackTrace();
+					logger.error("提取miNRA出错：" + miRNAdataSpeciesName + " " + RNAdataFile);
+				}
 				listMiRNALocation = null;
 			}
 			
 			if (FileOperate.isFileExist(rfamFile)) {
 				if (outRfamFile == null)
-					outRfamFile = outPathPrefix + "_rfam.fa"; 
-				extractRfam(rfamFile, outRfamFile, taxIDfram);
+					outRfamFile = outPathPrefix + "_rfam.fa";
+					
+				try {
+					extractRfam(rfamFile, outRfamFile, taxIDfram);
+				} catch (Exception e) {
+					e.printStackTrace();
+					logger.error("提取rfam出错：" + taxIDfram + " " + rfamFile);
+				}
+				
 			}
 		}
 		/**

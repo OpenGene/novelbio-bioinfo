@@ -48,13 +48,15 @@ public class ManageSpeciesFile {
 		if (FileOperate.isFileExistAndBigThanSize(speciesFile, 0)) {
 			readSpeciesFile(speciesFile);
 		} else {
-			readFromDB();
-			logger.error("文本无法读取，只能读取数据库");
+//			readFromDB();
+			logger.error("文本无法读取:" + speciesFile);
 		}
 	}
 		
 	public void readSpeciesFile(String speciesFileInput) {
 		if (!FileOperate.isFileExistAndBigThanSize(speciesFileInput, 0)) return;
+		
+		String parentPath = FileOperate.getParentPathName(FileOperate.getParentPathName(speciesFileInput));
 		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(speciesFileInput, 0);
 		String[] title = null;
 		for (String[] strings : lsInfo) {
@@ -75,7 +77,7 @@ public class ManageSpeciesFile {
 		for (int i = 0; i < lsInfo.size(); i++) {
 			if (lsInfo.get(i)[0].startsWith("#")) continue;
 			
-			SpeciesFile speciesFile = new SpeciesFile();
+			SpeciesFile speciesFile = new SpeciesFile(parentPath);
 			String[] info = lsInfo.get(i);
 			info = ArrayOperate.copyArray(info, title.length);
 			int m = hashName2ColNum.get("taxid");
@@ -102,8 +104,11 @@ public class ManageSpeciesFile {
 			m = hashName2ColNum.get("gffrepeatfile");
 			speciesFile.setGffRepeatFile(info[m]);
 			
-			m = hashName2ColNum.get("refseqfile");
-			speciesFile.setRefseqFile(info[m]);
+			m = hashName2ColNum.get("refseq_all_iso");
+			speciesFile.setRefseqFileAllIso(info[m]);
+			
+			m = hashName2ColNum.get("refseq_one_iso");
+			speciesFile.setRefseqFileOneIso(info[m]);
 			
 			m = hashName2ColNum.get("refseqncfile");
 			speciesFile.setRefseqNCfile(info[m]);
@@ -165,7 +170,7 @@ public class ManageSpeciesFile {
 	
 	/**
 	 * Version大小写敏感
-	 * 没有就插入，有就升级
+	 * 没有就插入，有就覆盖
 	 * @param taxInfo
 	 */
 	public void update(SpeciesFile speciesFile) {

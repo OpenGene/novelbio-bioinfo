@@ -79,13 +79,19 @@ public class SamFileStatistics implements AlignmentRecorder {
 			}
 			Integer num1 = Integer.parseInt(str1);
 			Integer num2 = Integer.parseInt(str2);
-			return num1.compareTo(num2);
+			if (num1.equals( num2)) {
+				return arg0.compareTo(arg1);
+			} else {
+				return num1.compareTo(num2);
+			}
 		}
 	});
 	
 	public SamFileStatistics(String prefix) {
 		this.prefix = prefix;
 	}
+	
+	/** 染色体长度的map */
 	public void setStandardData(Map<String, Long> standardData) {
 		this.standardData = standardData;
 	}

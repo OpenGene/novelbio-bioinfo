@@ -5,6 +5,10 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
+import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.objectives;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
+import org.springframework.web.context.ContextLoader;
 
 import com.novelbio.base.PathDetail;
 
@@ -15,19 +19,27 @@ public class PathDetailNBC {
 		initial();
 	}
 	private static void initial() {
-		InputStream in = PathDetail.class.getClassLoader().getResourceAsStream("path.properties");
-		properties = new Properties();
+		ClassPathResource resource = new ClassPathResource("path.properties", PathDetailNBC.class);
 		try {
-			properties.load(in);
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		} finally{
-			try {
-				in.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			properties = PropertiesLoaderUtils.loadProperties(resource);
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
 		}
+
+//		InputStream in = PathDetailNBC.class.getClassLoader().getResourceAsStream("path.properties");
+//		properties = new Properties();
+//		try {
+//			properties.load(in);
+//		} catch (IOException e1) {
+//			e1.printStackTrace();
+//		} finally{
+//			try {
+//				in.close();
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//		}
 	}
 	
 	/** 内部自动加空格 */
