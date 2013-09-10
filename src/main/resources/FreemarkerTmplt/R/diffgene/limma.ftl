@@ -3,7 +3,7 @@ fileName = "${filename}"
 setwd(filePath)
 library(limma)
 eset=read.table(file=fileName,he=T,sep="\t",row.names=1)
-<#if islog2>
+<#if !islog2>
   eset = log2(eset)
 </#if>
 design = model.matrix(~ -1+factor (c(${design})))

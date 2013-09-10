@@ -1,12 +1,10 @@
 package com.novelbio.analysis.seq.sam;
 
-import java.io.File;
-
-import org.apache.log4j.Logger;
-
 import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMFileWriter;
 import net.sf.samtools.SAMFileWriterFactory;
+
+import org.apache.log4j.Logger;
 
 public class SamWriter {
 	private static final Logger logger = Logger.getLogger(SamWriter.class);
@@ -20,22 +18,19 @@ public class SamWriter {
 		if (outSamFile.endsWith(".sam")) {
 			writeToBam = false;
 		}
-		File samFile = new File(outSamFile);
 		if (writeToBam) {
-			samFileWriter = samFileWriterFactory.makeBAMWriter(samFileHeader, presorted, samFile, 7);
+			samFileWriter = samFileWriterFactory.makeBAMWriter(samFileHeader, presorted, outSamFile, 7);
 		} else {
-			samFileWriter = samFileWriterFactory.makeSAMWriter(samFileHeader, presorted, samFile);
+			samFileWriter = samFileWriterFactory.makeSAMWriter(samFileHeader, presorted, outSamFile);
 		}
 	}
 	
 	/** 默认写入bam文件 */
 	public SamWriter(boolean presorted, SAMFileHeader samFileHeader, String outSamFile, boolean writeToBam) {
-		this.fileName = outSamFile;
-		File samFile = new File(outSamFile);
 		if (writeToBam) {
-			samFileWriter = samFileWriterFactory.makeBAMWriter(samFileHeader, presorted, samFile, 7);
+			samFileWriter = samFileWriterFactory.makeBAMWriter(samFileHeader, presorted, outSamFile, 7);
 		} else {
-			samFileWriter = samFileWriterFactory.makeSAMWriter(samFileHeader, presorted, samFile);
+			samFileWriter = samFileWriterFactory.makeSAMWriter(samFileHeader, presorted, outSamFile);
 		}
 	}
 	

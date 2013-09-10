@@ -61,13 +61,12 @@ public class BamSort {
 	}
 	
 	public String sortJava(String sortBamFile) {
-		File fileOut = new File(sortBamFile);
 		SAMFileReader reader = samFile.getSamReader().getSamFileReader();
 		if (reader.getFileHeader().getSortOrder() == SortOrder.coordinate) {
 			return samFile.getFileName();
 		}
         reader.getFileHeader().setSortOrder(SORT_ORDER);
-        SAMFileWriter writer = new SAMFileWriterFactory().makeSAMOrBAMWriter(reader.getFileHeader(), false, fileOut);
+        SAMFileWriter writer = new SAMFileWriterFactory().makeSAMOrBAMWriter(reader.getFileHeader(), false, sortBamFile);
 
 //        ProgressLogger progress = new ProgressLogger(log, (int) 1e7, "Read");
         for (final SAMRecord rec: reader) {

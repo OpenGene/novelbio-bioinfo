@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import com.novelbio.base.FoldeCreate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -12,15 +13,13 @@ import com.novelbio.base.plot.PlotScatter;
 import com.novelbio.base.plot.Volcano;
 import com.novelbio.generalConf.TitleFormatNBC;
 
-
 /**
  * 用来筛选差异基因，画火山图的类
  * @author zong0jie
  */
  public class DiffGeneVocalno {
-	 
 	 /**给出图中的比例*/
-		public static final double  PRE = 0.999;
+	 public static final double  PRE = 0.999;
 		
 	// 满足条件的差异基因数量,默认是1000，在构造方法里面设定，数量的10/1
 	public static  int QUANUM = 1000;
@@ -68,6 +67,20 @@ import com.novelbio.generalConf.TitleFormatNBC;
 	 * @param excelName 含有结果的excle的名字
 	 * @param compare 谁跟谁比，譬如 string[]{treat, control}
 	 */
+	
+	public double getPvalueFDRthreshold() {
+		return pvalueFDRthreshold;
+	}
+	
+	public TitleFormatNBC getTitlePvalueFDR() {
+		return titlePvalueFDR;
+	}
+	
+	public static double getUpfc() {
+		return upfc;
+	}
+	
+	
 	public DiffGeneVocalno(String excelName, String[] compare) {
 		this.excelFileName = excelName;
 		
@@ -193,8 +206,10 @@ import com.novelbio.generalConf.TitleFormatNBC;
 	 * @param excelFileName
 	 * @return
 	 */
-	public void writeDifGene() {
-		TxtReadandWrite txtWriteDifGene = new TxtReadandWrite(getDifGeneFileName(), true);
+	public void writeDifGene(String fold) {
+		String outFile = getDifGeneFileName();
+		outFile = FoldeCreate.createAndInFold(outFile, fold);
+		TxtReadandWrite txtWriteDifGene = new TxtReadandWrite(outFile, true);
 		txtWriteDifGene.writefilelnls(getLsDifGene());
 		txtWriteDifGene.close();
 	}

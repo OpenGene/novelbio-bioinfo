@@ -36,7 +36,7 @@ import java.io.OutputStream;
 /**
  * Create a SAMFileWriter for writing SAM or BAM.
  */
-public class SAMFileWriterFactory {
+public class SAMFileWriterFactory2 {
     private static boolean defaultCreateIndexWhileWriting = Defaults.CREATE_INDEX;
     private boolean createIndex = defaultCreateIndexWhileWriting ;
     private static boolean defaultCreateMd5File = Defaults.CREATE_MD5;
@@ -54,7 +54,7 @@ public class SAMFileWriterFactory {
     }
 
     /** Sets whether to create md5Files for BAMs from this factory. */
-    public SAMFileWriterFactory setCreateMd5File(final boolean createMd5File) {
+    public SAMFileWriterFactory2 setCreateMd5File(final boolean createMd5File) {
         this.createMd5File = createMd5File;
         return this;
     }
@@ -80,7 +80,7 @@ public class SAMFileWriterFactory {
      * @param setting whether to attempt to create a BAM index while creating the BAM file.
      * @return this factory object
      */
-    public SAMFileWriterFactory setCreateIndex(final boolean setting){
+    public SAMFileWriterFactory2 setCreateIndex(final boolean setting){
         this.createIndex = setting;
         return this;
     }
@@ -96,7 +96,7 @@ public class SAMFileWriterFactory {
      * @param maxRecordsInRam Number of records to store in RAM before spilling to temporary file when
      * creating a sorted SAM or BAM file.
      */
-    public SAMFileWriterFactory setMaxRecordsInRam(int maxRecordsInRam) {
+    public SAMFileWriterFactory2 setMaxRecordsInRam(int maxRecordsInRam) {
         this.maxRecordsInRam = maxRecordsInRam;
         return this;
     }
@@ -121,7 +121,7 @@ public class SAMFileWriterFactory {
      * Set the temporary directory to use when sort data.
      * @param tmpDir Path to the temporary directory
      */
-    public SAMFileWriterFactory setTempDirectory(final File tmpDir) {
+    public SAMFileWriterFactory2 setTempDirectory(final File tmpDir) {
         this.tmpDir = tmpDir;
         return this;
     }

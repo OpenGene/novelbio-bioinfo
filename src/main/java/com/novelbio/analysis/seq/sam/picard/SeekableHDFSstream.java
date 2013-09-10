@@ -1,4 +1,4 @@
-package com.novelbio.analysis.seq.sam.seekablestream;
+package com.novelbio.analysis.seq.sam.picard;
 
 import java.io.IOException;
 
@@ -23,6 +23,7 @@ public class SeekableHDFSstream extends SeekableStream {
 	long fileLength;
 	
 	public SeekableHDFSstream(FileHadoop fileHadoop) {
+		this.fileHadoop = fileHadoop;
 		this.fsDataInputStream = fileHadoop.getInputStream();
 		fileLength = fileHadoop.getContentSummary().getLength();
 	}
@@ -41,12 +42,16 @@ public class SeekableHDFSstream extends SeekableStream {
 	public void seek(long position) throws IOException {
 		fsDataInputStream.seek(position);
 	}
-
+	
 	@Override
 	public int read(byte[] buffer, int offset, int length) throws IOException {
 		return fsDataInputStream.read(buffer, offset, length);
 	}
-
+	
+	public void readFully(byte[] buffer) throws IOException {
+		fsDataInputStream.readFully(buffer);
+	}
+	
 	@Override
 	public void close() throws IOException {
 		fsDataInputStream.close();

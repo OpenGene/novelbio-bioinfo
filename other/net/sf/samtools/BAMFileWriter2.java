@@ -33,32 +33,32 @@ import java.io.OutputStream;
 /**
  * Concrete implementation of SAMFileWriter for writing gzipped BAM files.
  */
-public class BAMFileWriter extends SAMFileWriterImpl {
+public class BAMFileWriter2 extends SAMFileWriterImpl {
 
     private final BinaryCodec outputBinaryCodec;
     private BAMRecordCodec bamRecordCodec = null;
     private final BlockCompressedOutputStream blockCompressedOutputStream;
     private BAMIndexer bamIndexer = null;
 
-    public BAMFileWriter(final File path) {
+    public BAMFileWriter2(final File path) {
         blockCompressedOutputStream = new BlockCompressedOutputStream(path);
         outputBinaryCodec = new BinaryCodec(new DataOutputStream(blockCompressedOutputStream));
         outputBinaryCodec.setOutputFileName(path.getAbsolutePath());
     }
 
-    public BAMFileWriter(final File path, final int compressionLevel) {
+    public BAMFileWriter2(final File path, final int compressionLevel) {
         blockCompressedOutputStream = new BlockCompressedOutputStream(path, compressionLevel);
         outputBinaryCodec = new BinaryCodec(new DataOutputStream(blockCompressedOutputStream));
         outputBinaryCodec.setOutputFileName(path.getAbsolutePath());
     }
 
-    public BAMFileWriter(final OutputStream os, final File file) {
+    public BAMFileWriter2(final OutputStream os, final File file) {
         blockCompressedOutputStream = new BlockCompressedOutputStream(os, file);
         outputBinaryCodec = new BinaryCodec(new DataOutputStream(blockCompressedOutputStream));
         outputBinaryCodec.setOutputFileName(getPathString(file));
     }
 
-    public BAMFileWriter(final OutputStream os, final File file, final int compressionLevel) {
+    public BAMFileWriter2(final OutputStream os, final File file, final int compressionLevel) {
         blockCompressedOutputStream = new BlockCompressedOutputStream(os, file, compressionLevel);
         outputBinaryCodec = new BinaryCodec(new DataOutputStream(blockCompressedOutputStream));
         outputBinaryCodec.setOutputFileName(getPathString(file));

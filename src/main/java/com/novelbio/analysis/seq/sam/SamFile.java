@@ -792,25 +792,10 @@ public class SamFile implements AlignSeq {
 		if (!samReader.isSamBamFile()) {
 			return thisFormate;
 		}
-		samReader.close();
 		thisFormate = FormatSeq.SAM;
-		File file = new File(samBamFile);
-		BufferedInputStream bufferedStream = null;
-		InputStream instream = null;
-		if (file != null) {
-			try {
-				instream = new FileInputStream(file);
-				bufferedStream = new BufferedInputStream(instream);
-				if(isBAMFile(bufferedStream)) {
-					thisFormate = FormatSeq.BAM;
-				}
-				bufferedStream.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+		if (samBamFile.endsWith("bam")) {
+			thisFormate = FormatSeq.BAM;
 		}
-		try { instream.close(); } catch (IOException e) { }
-		try { bufferedStream.close(); } catch (IOException e) { }
 		return thisFormate;
 	}
     /**

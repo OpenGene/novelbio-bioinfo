@@ -93,10 +93,13 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 }
 
 	 /** 用species里面来设定
-	  * key务必小写
+	  * key内部会转化为小写
 	  *  */
 	 public void setMapChrID2Len(Map<String, Long> mapChrID2Len) {
-		 this.mapChrID2Len = mapChrID2Len;
+		 this.mapChrID2Len = new HashMap<>();
+		 for (String chrID : mapChrID2Len.keySet()) {
+			 this.mapChrID2Len.put(chrID.toLowerCase(), mapChrID2Len.get(chrID));
+		}
 	 }
 	 public Map<String, Long> getMapChrID2Len() {
 		return mapChrID2Len;

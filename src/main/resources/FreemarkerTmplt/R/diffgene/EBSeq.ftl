@@ -15,7 +15,7 @@ size = QuantileNorm(data, 0.75)
 	
 	${mapOut2sample[outFile][0]}<- unlist(EBOutRun$C1Mean)
 	${mapOut2sample[outFile][1]}<- unlist(EBOutRun$C2Mean)
-	LogFC=PostFC(EBOutRun)$RealFC
+	LogFC=log2(PostFC(EBOutRun)$RealFC)
 	
 	out<-cbind(${mapOut2sample[outFile][0]},${mapOut2sample[outFile][1]}, LogFC,FDR )	
 	colnames(out)<-c("${mapOut2sample[outFile][0]}","${mapOut2sample[outFile][1]}","LogFC", "FDR")

@@ -83,9 +83,9 @@ public class DiffExpEdgeR extends DiffExpAbs {
 		return lsResult;
 	}
 	
-	public void calculateResult() {
+	public void calculateResult(String fold) {
 		setNormalizeCoef();
-		super.calculateResult();
+		super.calculateResult(fold);
 	}
 	/**
 	 * 获得 

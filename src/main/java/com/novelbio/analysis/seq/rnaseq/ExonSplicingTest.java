@@ -147,7 +147,6 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 				lsSiteInfoBG = spliceTypePredict.getBGSite();
 				BG = mapReads.getRangeInfo(spliceTypePredict.getDifSite().getRefID(), lsSiteInfoBG);
 			}
-			
 			spliceType2Value.addExp(exonCluster.getParentGene(), spliceTypePredict, mapReads, BG);
 		}
 	}
@@ -170,7 +169,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			return pvalue;
 		}
 		//TODO 可以设置断点
-		if (exonCluster.getParentGene().getName().contains("REXO1")) {
+		if (exonCluster.getParentGene().getName().contains("KIF2A")) {
 			logger.debug("stop");
 		}
 		if (!mapCondition2SpliceInfo.containsKey(condition1) || !mapCondition2SpliceInfo.containsKey(condition2)) {

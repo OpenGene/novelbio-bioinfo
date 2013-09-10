@@ -2,7 +2,6 @@ package com.novelbio.analysis.seq.sam;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -22,7 +21,7 @@ import net.sf.samtools.seekablestream.SeekableStream;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.sam.seekablestream.SeekableHDFSstream;
+import com.novelbio.analysis.seq.sam.picard.SeekableHDFSstream;
 import com.novelbio.base.dataOperate.HdfsBase;
 import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -67,7 +66,9 @@ public class SamReader {
 		try {
 			initialSamHeadAndReader(fileIndex);
 			initial = true;
-		} catch (Exception e) { }
+		} catch (Exception e) { 
+			e.printStackTrace();
+		}
 	}
 	
 	public void initial() {
@@ -75,7 +76,9 @@ public class SamReader {
 			try {
 				initialSamHeadAndReader(fileIndex);
 				initial = true;
-			} catch (Exception e) { }
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	/**
@@ -124,7 +127,7 @@ public class SamReader {
 		}
 		
 		if (HdfsBase.isHdfs(fileName)) {
-			FileHadoop fileHadoop = new FileHadoop(fileIndex);
+			FileHadoop fileHadoop = new FileHadoop(fileName);
 			if (isIndexed) {
 				inputStream = new SeekableHDFSstream(fileHadoop);
 			} else {
@@ -218,6 +221,10 @@ public class SamReader {
 		}
 	}
 	
+	protected InputStream getInputStream() {
+		return inputStream;
+	}
+	
 	/**
 	 * 获得读取的百分比
 	 * @return 结果在0-1之间，小于0表示出错
@@ -253,6 +260,8 @@ public class SamReader {
 		}
 		return itContent;
 	}
+	
+	/** 内部关闭流 */
 	protected boolean isSamBamFile() {
 		int num = 0;
 		int allNum = 100;
