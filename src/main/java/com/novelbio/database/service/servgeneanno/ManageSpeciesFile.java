@@ -14,7 +14,6 @@ import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.SpeciesFile;
-import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.mongorepo.geneanno.RepoSpeciesFile;
 import com.novelbio.database.service.SpringFactory;
 import com.novelbio.generalConf.PathDetailNBC;

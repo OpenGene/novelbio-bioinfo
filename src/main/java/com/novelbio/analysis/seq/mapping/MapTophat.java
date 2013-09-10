@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.beust.jcommander.internal.Maps;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.base.cmd.CmdOperate;
@@ -382,25 +381,32 @@ public class MapTophat implements MapRNA {
 	 */
 	private String getGtfFile() {
 		if (FileOperate.isFileExist(gtfFile)) {
-			return "-G \"" + gtfFile + "\" ";
+			String index = mapBowtie.getChrNameWithoutSuffix();
+			String gtfName = FileOperate.getFileNameSep(gtfFile)[0];
+			String indexTranscriptome = index + "_" + gtfName;
+			FileOperate.createFolders(FileOperate.getParentPathName(indexTranscriptome));
+			return "-G " + CmdOperate.addQuot(gtfFile) 
+			+ " --transcriptome-index=" + CmdOperate.addQuot(indexTranscriptome) + " ";
 		}
 		return "";
 	}
 	private void setGTFfile() {
 		if (gtfFile == null || FileOperate.isFileExistAndBigThanSize(gtfFile, 0.1)) {
 			generateGtfFile = false;
-			logger.error("not generate GTF");
+			logger.info("not generate GTF");
 			return;
 		}
 		if (gffChrAbs != null && gffChrAbs.getGffHashGene() != null) {
-			String path = FileOperate.getParentPathName(lsLeftFq.get(0).getReadFileName());
-			String outGTF = path + FileOperate.getFileNameSep(gffChrAbs.getGffHashGene().getGffFilename())[0] + DateUtil.getDateAndRandom() + ".GTF";
-			gffChrAbs.getGffHashGene().writeToGTF(outGTF, "novelbio");
-			logger.error("Generate GTF To:" + outGTF);
+			String pathGFF = gffChrAbs.getGffHashGene().getGffFilename();
+			String outGTF = FileOperate.changeFileSuffix(pathGFF, "_tophat", "gtf");
+			if (!FileOperate.isFileExistAndBigThanSize(outGTF, 0)) {
+				gffChrAbs.getGffHashGene().writeToGTF(outGTF, "novelbio");
+			}			
+			logger.info("Generate GTF To:" + outGTF);
 			this.gtfFile = outGTF;
 			generateGtfFile = true;
 		} else {
-			logger.error("Error Not Generate GTF To:");
+			logger.info("Error Not Generate GTF");
 		}
 	}
 	/**
