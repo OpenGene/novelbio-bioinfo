@@ -58,7 +58,7 @@ public class DiffExpTtest extends DiffExpAbs {
 			lsColumn.add(Integer.parseInt(col2Sample[0]));
 		}
 		
-		ArrayList<String[]> lsValues = getAnalysisGeneInfo();
+//		ArrayList<String[]> lsValues = getAnalysisGeneInfo();
 		//遍历每个比较
 		for (Entry<String, String[]> entry : mapOutFileName2Compare.entrySet()) {
 			String fileName = entry.getKey();
@@ -67,8 +67,8 @@ public class DiffExpTtest extends DiffExpAbs {
 			ArrayList<String[]> lsTmpResult = new ArrayList<String[]>();
 			lsTmpResult.add(new String[]{TitleFormatNBC.QueryID.toString(), treat2col[0], treat2col[1], TitleFormatNBC.Log2FC.toString(),TitleFormatNBC.Pvalue.toString(), TitleFormatNBC.FDR.toString()});
 			ArrayList<Double> lsPvalue = new ArrayList<Double>();
-			for (int i = 1; i < lsValues.size(); i++) {
-				String[] strings = lsValues.get(i);
+			for (int i = 1; i < lsGeneInfo.size(); i++) {
+				String[] strings = lsGeneInfo.get(i);
 	
 				ArrayList<Integer> lsColumn1 = mapSample2ColNum.get(treat2col[0]);
 				double[] sample1 = new double[lsColumn1.size()];

@@ -38,6 +38,7 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	
 	double UTR5num = 0;
 	double UTR3num = 0;
+	double CDSnum = 0;
 	double exonNum = 0;
 	double intronNum = 0;
 	double tssNum = 0;
@@ -120,6 +121,7 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 		UTR5num = 0;
 		UTR3num = 0;
 		exonNum = 0;
+		CDSnum = 0;
 		intronNum = 0;
 		tssNum = 0;	
 		tesNum = 0;
@@ -190,6 +192,7 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 			i++;
 			if (flagStop) break;
 		}
+		txtRead.close();
 	}
 	
 	/**
@@ -240,9 +243,9 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 			flagIntraGenic = setStatisticsNum(prop, gffCodGene.getGffDetailUp(), gffCodGene.getGffDetailDown(), align.getMidSite());
 		}
 		if (flagIntraGenic) {
-			intraGenic += 1*prop;
+			intraGenic += prop*1;
 		} else {
-			interGenic += 1*prop;
+			interGenic += prop*1;
 		}
 	}
 	/**
@@ -258,10 +261,10 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 		boolean flagIntraGenic = true;
 		//Tss Tes
 		if (gffGeneIsoInfo.isCodInIsoTss(coord) ) {
-			tssNum += 1*prop;
+			tssNum += prop*1;
 		}
 		else if (gffGeneIsoInfo.isCodInIsoGenEnd(coord) ) {
-			tesNum += 1*prop;
+			tesNum += prop*1;
 		}
 		
 		boolean isInExon = false;
@@ -271,21 +274,27 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 		// 每个转录本都查一遍
 		for (GffGeneIsoInfo gffGeneIsoInfo2 : lsIso) {
 			if (gffGeneIsoInfo2.getCodLoc(coord) == GffGeneIsoInfo.COD_LOC_EXON) {
-				exonNum += 1*prop;
+				exonNum += prop*1;
 				isInExon = true;
 				break;
 			}
 		}
 		if (!isInExon && gffGeneIsoInfo.getCodLoc(coord) == GffGeneIsoInfo.COD_LOC_INTRON) {
-			intronNum += 1*prop;
+			intronNum += prop*1;
 		}
 		
-		//UTR
-		if (gffGeneIsoInfo.getCodLocUTRCDS(coord) == GffGeneIsoInfo.COD_LOCUTR_5UTR) {
-			UTR5num += 1*prop;
-		} else if (gffGeneIsoInfo.getCodLocUTRCDS(coord) == GffGeneIsoInfo.COD_LOCUTR_3UTR) {
-			UTR3num += 1*prop;
+		if (gffGeneIsoInfo.ismRNA()) {
+			int codInfo = gffGeneIsoInfo.getCodLocUTRCDS(coord);
+			//UTR
+			if (codInfo == GffGeneIsoInfo.COD_LOCUTR_5UTR) {
+				UTR5num += prop*1;
+			} else if (codInfo == GffGeneIsoInfo.COD_LOCUTR_3UTR) {
+				UTR3num += prop*1;
+			} else if (codInfo == GffGeneIsoInfo.COD_LOCUTR_CDS) {
+				CDSnum += prop*1;
+			}
 		}
+	
 		return flagIntraGenic;
 	}
 	
@@ -311,14 +320,14 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 		if ( ( gffGeneIsoInfoUp != null && gffGeneIsoInfoUp.isCodInIsoTss(coord) ) 
 				|| ( gffGeneIsoInfoDown != null && gffGeneIsoInfoDown.isCodInIsoTss(coord) )
 			) {
-			tssNum += 1*prop;
+			tssNum += prop*1;
 			flagIntraGenic =true;
 		}
 		//GeneEnd
 		if ( (gffGeneIsoInfoUp != null && gffGeneIsoInfoUp.isCodInIsoGenEnd(coord) )
 				|| ( gffGeneIsoInfoDown != null && gffGeneIsoInfoDown.isCodInIsoGenEnd(coord) )
 			) {
-			tesNum += 1*prop;
+			tesNum += prop*1;
 			flagIntraGenic =true;
 		}
 		return flagIntraGenic;
@@ -330,6 +339,7 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 		lsTitle.add(new String[]{"Item", "Number", "BackGround"});
 		lsTitle.add(new String[]{"UTR5", (long)UTR5num + "", (long)gffChrStatistics.UTR5num + ""});
 		lsTitle.add(new String[]{"UTR3", (long)UTR3num + "", (long)gffChrStatistics.UTR3num + ""});
+		lsTitle.add(new String[]{"CDS", (long)CDSnum + "", (long)gffChrStatistics.CDSnum + ""});//
 		lsTitle.add(new String[]{"Exon", (long)exonNum + "", (long)gffChrStatistics.exonNum + ""});
 		lsTitle.add(new String[]{"Intron", (long)intronNum + "", (long)gffChrStatistics.intronNum + ""});
 		lsTitle.add(new String[]{"Tss", (long)tssNum + "", (long)gffChrStatistics.tssNum + ""});
@@ -358,11 +368,17 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 						|| (!tmpUCSCgene.isCis5to3() && gffGeneIsoInfoLong.getTSSsite() < tmpUCSCgene.getEndAbs())) {
 					errorNum++;
 				}
-				gffChrStatistics.UTR5num = gffChrStatistics.UTR5num + gffGeneIsoInfoLong.getLenUTR5();
-				gffChrStatistics.UTR3num = gffChrStatistics.UTR3num + gffGeneIsoInfoLong.getLenUTR3();
+				if (gffGeneIsoInfoLong.ismRNA()) {
+					gffChrStatistics.UTR5num = gffChrStatistics.UTR5num + gffGeneIsoInfoLong.getLenUTR5();
+					gffChrStatistics.UTR3num = gffChrStatistics.UTR3num + gffGeneIsoInfoLong.getLenUTR3();
+					double cdsLen = gffGeneIsoInfoLong.getLenExon(0) - gffGeneIsoInfoLong.getLenUTR5() - gffGeneIsoInfoLong.getLenUTR3();
+					if (cdsLen > 0) {
+						gffChrStatistics.CDSnum = gffChrStatistics.CDSnum + cdsLen;
+					}
+				}
 				gffChrStatistics.exonNum = gffChrStatistics.exonNum + gffGeneIsoInfoLong.getLenExon(0);
 				gffChrStatistics.intronNum = gffChrStatistics.intronNum + gffGeneIsoInfoLong.getLenIntron(0);
-				
+
 				if (i > 0) {
 					gffChrStatistics.interGenic = gffChrStatistics.interGenic + getIntergenic(gffGeneIsoInfoLong, listGff.get(i - 1).getLongestSplitMrna());
 				}

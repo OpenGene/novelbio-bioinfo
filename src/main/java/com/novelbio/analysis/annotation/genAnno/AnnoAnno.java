@@ -49,19 +49,13 @@ public class AnnoAnno extends AnnoAbs {
 		List<String[]> lsResult = new ArrayList<>();
 		List<String> lsResultTmp = new ArrayList<>();
 		GeneID geneID = new GeneID(accID, taxID);
-		if (geneID.getIDtype() != GeneID.IDTYPE_ACCID) {
-			geneID.setBlastInfo(evalue, subTaxID);
-			String[] anno = geneID.getAnno(true);
-			lsResultTmp.add(anno[0]);
-			lsResultTmp.add(anno[1]);
-			lsResultTmp.add(anno[3]);
-			lsResultTmp.add(anno[4]);
-			lsResultTmp.add(anno[5]);
-		} else {
-			for (int i = 0; i < 5; i++) {
-				lsResultTmp.add("");
-			}
-		}
+		geneID.setBlastInfo(evalue, subTaxID);
+		String[] anno = geneID.getAnno(true);
+		lsResultTmp.add(anno[0]);
+		lsResultTmp.add(anno[1]);
+		lsResultTmp.add(anno[3]);
+		lsResultTmp.add(anno[4]);
+		lsResultTmp.add(anno[5]);
 		lsResult.add(lsResultTmp.toArray(new String[0]));
 		return lsResult;
 	}

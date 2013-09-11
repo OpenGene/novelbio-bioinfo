@@ -43,23 +43,23 @@ public class AnnoPath extends AnnoAbs {
 	private static ArrayList<String[]> getGenPath(String accID,int taxID,boolean blast,int subTaxID,double evalue) {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		GeneID copedID = new GeneID(accID, taxID);
-		if (copedID.getIDtype() == GeneID.IDTYPE_ACCID) {
-			int resultNum = 2;
-			if (blast) {
-				resultNum = 4;
-			}
-			List<String> lsTmpResult = new ArrayList<>();
-			lsTmpResult.add(copedID.getSymbol());
-			for (int i = 1; i < resultNum; i++) {
-				lsTmpResult.add("");
-			}
-			lsResult.add(lsTmpResult.toArray(new String[0]));
-			return lsResult;
-		}
+//		if (copedID.getIDtype() == GeneID.IDTYPE_ACCID) {
+//			int resultNum = 2;
+//			if (blast) {
+//				resultNum = 4;
+//			}
+//			List<String> lsTmpResult = new ArrayList<>();
+//			lsTmpResult.add(copedID.getSymbol());
+//			for (int i = 1; i < resultNum; i++) {
+//				lsTmpResult.add("");
+//			}
+//			lsResult.add(lsTmpResult.toArray(new String[0]));
+//			return lsResult;
+//		}
 		
 		copedID.setBlastInfo(evalue, subTaxID);
 		// 本基因的Path信息
-		ArrayList<KGpathway> lsKGentrythis = copedID.getKegPath(blast);
+		ArrayList<KGpathway> lsKGentrythis = copedID.getKegPath(false);
 		if (lsKGentrythis.size() == 0) {
 			List<String> lsAccIDinfo = new ArrayList<>();
 			lsAccIDinfo.add(copedID.getSymbol());

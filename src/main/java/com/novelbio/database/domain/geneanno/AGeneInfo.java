@@ -11,6 +11,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 
+import com.novelbio.base.SepSign;
 import com.novelbio.database.service.servgeneanno.ManageDBInfo;
 /**
  * ibatis在操作数据库时会自动使用类中的setter和getter给属性赋值
@@ -176,7 +177,9 @@ public abstract class AGeneInfo {
 			}
 		}
 		if (descrip != null) {
-			return descrip.replaceAll("\"", "");
+			descrip = descrip.replaceAll("\"", "");
+			descrip = descrip.replaceAll("@@", " \\\\\\\\ ");
+			return descrip;
 		}
 		return "";
 	}
