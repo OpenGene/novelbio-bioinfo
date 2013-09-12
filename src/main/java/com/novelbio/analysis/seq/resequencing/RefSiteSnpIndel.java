@@ -381,6 +381,9 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 			return;
 
 		GffCodGene gffCodGene = gffChrAbs.getGffHashGene().searchLocation(chrID, refSnpIndelStart);
+		if (gffCodGene == null) {
+			return;
+		}
 		this.gffGeneIsoInfo = gffCodGene.getCodInCDSIso();
 		if (gffGeneIsoInfo == null && gffCodGene.isInsideLoc()) {
 			gffGeneIsoInfo = gffCodGene.getGffDetailThis().getLongestSplitMrna();

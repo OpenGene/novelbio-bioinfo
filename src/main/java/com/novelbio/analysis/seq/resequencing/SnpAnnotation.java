@@ -131,6 +131,9 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 		GffGeneIsoInfo gffGeneIsoInfo = refSiteSnpIndel.getGffIso();
 		if (siteSnpIndelInfo == null || gffGeneIsoInfo == null) {
 			GffCodGene gffCodGene = gffChrAbs.getGffHashGene().searchLocation(lsInfo.get(colChrID), refStartSite);
+			if (gffCodGene == null) {
+				return input;
+			}
 			//TODO 5000bp以内的基因都注释起来
 			GffDetailGene gffDetailGene = gffCodGene.getNearestGffGene(5000);
 			if (gffDetailGene == null) {

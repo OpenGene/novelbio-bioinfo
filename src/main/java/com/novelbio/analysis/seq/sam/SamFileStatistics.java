@@ -68,6 +68,21 @@ public class SamFileStatistics implements AlignmentRecorder {
 	private static int chrNumMax = 50;
 	String prefix = "";
 	
+	/**
+	 * 由于非unique mapped reads的存在，为了精确统计reads在染色体上的分布，每个染色体上的reads数量用double来记数<br>
+	 * 这样如果一个reads在bam文本中出现多次--也就是mapping至多个位置，就会将每个记录(reads)除以其mapping number,<br>
+	 * 从而变成一个小数，然后加到染色体上。
+	 * 
+	 *  因为用double来统计reads数量，所以最后所有染色体上的reads之和与总reads数相比会有一点点的差距<br>
+	 * 选择correct就会将这个误差消除。意思就是将所有染色体上的reads凑出总reads的数量。<br>
+	 * 算法是  每条染色体reads(结果) = 每条染色体reads数量(原始)  + (总mapped reads数 - 染色体总reads数)/染色体数量<p>
+	 * 
+	 *  Because change double to long will lose some accuracy, for example double 1.2 convert to int will be 1,<br> 
+	 *   so the result "All Chr Reads Number" will not equal to "All Map Reads Number",
+		so we make a correction here.
+	 */
+	boolean correctChrReadsNum = false;
+	
 	Map<String, double[]> mapChrID2ReadsNum = new TreeMap<String, double[]>(new Comparator<String>() {
 		PatternOperate patternOperate = new PatternOperate("\\d+", false);
 		@Override
@@ -91,6 +106,22 @@ public class SamFileStatistics implements AlignmentRecorder {
 		this.prefix = prefix;
 	}
 	
+	/**
+	 * 由于非unique mapped reads的存在，为了精确统计reads在染色体上的分布，每个染色体上的reads数量用double来记数<br>
+	 * 这样如果一个reads在bam文本中出现多次--也就是mapping至多个位置，就会将每个记录(reads)除以其mapping number,<br>
+	 * 从而变成一个小数，然后加到染色体上。
+	 * 
+	 *  因为用double来统计reads数量，所以最后所有染色体上的reads之和与总reads数相比会有一点点的差距<br>
+	 * 选择correct就会将这个误差消除。意思就是将所有染色体上的reads凑出总reads的数量。<br>
+	 * 算法是  每条染色体reads(结果) = 每条染色体reads数量(原始)  + (总mapped reads数 - 染色体总reads数)/染色体数量<p>
+	 * 
+	 *  Because change double to long will lose some accuracy, for example double 1.2 convert to int will be 1,<br> 
+	 *   so the result "All Chr Reads Number" will not equal to "All Map Reads Number",
+		so we make a correction here.
+	 */
+	public void setCorrectChrReadsNum(boolean correctChrReadsNum) {
+		this.correctChrReadsNum = correctChrReadsNum;
+	}
 	/** 染色体长度的map */
 	public void setStandardData(Map<String, Long> standardData) {
 		this.standardData = standardData;
@@ -266,7 +297,9 @@ public class SamFileStatistics implements AlignmentRecorder {
 	@Override
 	public void summary() {
 		summeryReadsNum();
-		modifyChrReadsNum();
+		if (correctChrReadsNum) {
+			modifyChrReadsNum();
+		}
 	}
 	
 	/** 将所有reads数量四舍五入转变为long，同时矫正由double转换为long时候可能存在的偏差 */
@@ -299,13 +332,22 @@ public class SamFileStatistics implements AlignmentRecorder {
 	}
 	/** 因为用double来统计reads数量，
 	 * 所以最后所有染色体上的reads之
-	 * 和与总reads数相比会有一点点的差距 */
+	 * 和与总reads数相比会有一点点的差距<p>
+	 * 
+	 *  Because change double to long will lose some accuracy and the result "All Chr Reads Number" will not equal to "All Map Reads Number"
+		so we make a correction here.
+	 *  */
 	private void modifyChrReadsNum() {
 		long numAllChrReads = 0;
 		for (double[] readsNum : mapChrID2ReadsNum.values()) {
 			numAllChrReads += (long)readsNum[0];
 		}
 		long numLess = (long)mappedReadsNum - numAllChrReads;
+		if (numLess > 0.0001 * numAllChrReads && numLess > 100) {
+			logger.error("statistic error: ChrReadsNum:" + numAllChrReads + " is not equal to MappedReadsNum:"  + (long)mappedReadsNum);
+		}
+		//Because change double to long will lose some accuracy and the result "All Chr Reads Number" will not equal to "All Map Reads Number"
+		//so we make a correction here.
 		long numAddAVG = numLess/mapChrID2ReadsNum.size();
 		long numAddSub = numLess%mapChrID2ReadsNum.size();
 		for (double[] readsNum : mapChrID2ReadsNum.values()) {

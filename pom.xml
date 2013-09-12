@@ -287,6 +287,11 @@
 			<artifactId>curator-examples</artifactId>
 			<version>2.1.0-incubating</version>
 		</dependency>
+		<dependency>
+			<groupId>com.sun.jna</groupId>
+			<artifactId>jna</artifactId>
+			<version>3.0.9</version>
+		</dependency>
 	</dependencies>
 	<distributionManagement>
 		<!-- use the following if you're not using a snapshot version. -->
