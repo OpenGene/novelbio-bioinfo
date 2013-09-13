@@ -16,12 +16,12 @@ import net.sf.samtools.SAMFormatException;
 import net.sf.samtools.SAMRecord;
 import net.sf.samtools.SAMRecordIterator;
 import net.sf.samtools.SAMSequenceRecord;
+import net.sf.samtools.SeekableHDFSstream;
 import net.sf.samtools.seekablestream.SeekableFileStream;
 import net.sf.samtools.seekablestream.SeekableStream;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.sam.picard.SeekableHDFSstream;
 import com.novelbio.base.dataOperate.HdfsBase;
 import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.base.fileOperate.FileOperate;

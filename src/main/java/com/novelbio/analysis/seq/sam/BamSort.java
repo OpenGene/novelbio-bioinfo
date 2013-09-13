@@ -1,7 +1,5 @@
 package com.novelbio.analysis.seq.sam;
 
-import java.io.File;
-
 import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMFileHeader.SortOrder;
 import net.sf.samtools.SAMFileReader;

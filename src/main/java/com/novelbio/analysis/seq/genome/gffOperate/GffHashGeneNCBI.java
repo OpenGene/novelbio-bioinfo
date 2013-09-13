@@ -216,7 +216,9 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
     * @return
     */
    private String getChrID(String[] ss) {
-	   String chrID;
+	   String chrID = mapID2ChrID.get(ss[0]);
+	   if (chrID != null) return chrID;
+	   
 	   try {
 		   if (ss[2].equals("region")) {
 			   String regxChrID = "(?<=chromosome\\=)\\w+";
