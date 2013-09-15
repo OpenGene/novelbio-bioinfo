@@ -129,7 +129,7 @@ public class UrlPictureDownLoad implements Callable<UrlPictureDownLoad> {
 				bufferedImage = ImageUtils.resizeImage(bufferedImage, w, h);
 			}
 			String outSavePath = FileOperate.changeFileSuffix(savePath, null, "jpg");
-			ImageIO.write(bufferedImage, "jpg", new File(outSavePath));
+			ImageUtils.saveBufferedImage(bufferedImage, outSavePath);
 			FileOperate.delFile(savePath);
 		}
     	

@@ -49,7 +49,7 @@ public abstract class DownloadOperate {
 		
 //		PixivOperate pixivOperate = new PixivOperate();
 //		pixivOperate.getcookies();
-//		pixivOperate.setUrlAuther("248818");
+//		pixivOperate.setUrlAuther("24392");
 //		pixivOperate.setDownloadFast(true);
 //		pixivOperate.setSavePath("D:/Picture/pixiv");
 //		pixivOperate.run();
@@ -57,7 +57,7 @@ public abstract class DownloadOperate {
 		
 		DonmaiOperate donmaiOperate = new DonmaiOperate();
 		donmaiOperate.getcookies();
-		donmaiOperate.setUrlAuther("misaki_kurehito");
+		donmaiOperate.setUrlAuther("koyama_hirokazu");
 		donmaiOperate.setDownloadFast(true);
 		donmaiOperate.setSavePath("D:/Picture/donmai");
 		donmaiOperate.run();
