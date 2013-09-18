@@ -112,11 +112,14 @@ public abstract class FunctionTest implements Cloneable {
 	 * 将输入的geneID item,item list
 	 * 导入
 	 * @param lsTmpGeneID2LsItem
-	 * @return
+	 * @return key为小写
 	 */
 	protected abstract Map<String, GeneID2LsItem> readFromBGfile(Collection<String[]> lsTmpGeneID2LsItem);
 	
-	/** 直接设定背景，效果类似 {@link #setLsBGItem(String)} */
+	/** 直接设定背景，效果类似 {@link #setLsBGItem(String)}
+	 * @param mapBGGeneID2Items
+	 * key务必为小写
+	 *  */
 	public void setMapBGGeneID2Items(Map<String, GeneID2LsItem> mapBGGeneID2Items) {
 			//清空Test
 		lsTestResult = new ArrayList<StatisticTestResult>();
@@ -209,6 +212,11 @@ public abstract class FunctionTest implements Cloneable {
 		}
 		BGnum = mapBGGeneID2Items.size();
 	}
+	
+	/**
+	 * @param lsGeneID
+	 * @return key 自动转换为小写
+	 */
 	private Map<String, GeneID2LsItem> convert2Item(Collection<GeneID> lsGeneID) {
 		Map<String, GeneID2LsItem> mapGeneID2LsItem = new LinkedHashMap<String, GeneID2LsItem>();
 		int num = 0;
@@ -219,7 +227,7 @@ public abstract class FunctionTest implements Cloneable {
 			if (geneID2LsItem == null) {
 				continue;
 			}
-			mapGeneID2LsItem.put(geneID.getGeneUniID(), geneID2LsItem);
+			mapGeneID2LsItem.put(geneID.getGeneUniID().toLowerCase(), geneID2LsItem);
 			if (num % 200 == 0) {
 				logger.info("总共 " + numAll + " 个基因， 已经找了" + num + "个基因" );
 			}
@@ -322,11 +330,11 @@ public abstract class FunctionTest implements Cloneable {
 	 * false 不添加入BG
 	 */
 	protected GeneID2LsItem convert2ItemFromBG(GeneID geneID, boolean addToBG) {
-		GeneID2LsItem tmpresult = mapBGGeneID2Items.get(geneID.getGeneUniID());
+		GeneID2LsItem tmpresult = mapBGGeneID2Items.get(geneID.getGeneUniID().toLowerCase());
 		if (tmpresult == null && addToBG) {
 			tmpresult = convert2Item(geneID);
 			if (tmpresult != null) {
-				mapBGGeneID2Items.put(geneID.getGeneUniID(), tmpresult);
+				mapBGGeneID2Items.put(geneID.getGeneUniID().toLowerCase(), tmpresult);
 			}
 		}
 		return tmpresult;

@@ -36,7 +36,7 @@ public class KEGGPathwayFunTest extends FunctionTest {
 			for (String item : items) {
 				geneID2LsPath.addItemID(item);
 			}
-			lsGeneID2LsItem.put(strings[0], geneID2LsPath);
+			lsGeneID2LsItem.put(strings[0].toLowerCase(), geneID2LsPath);
 		}
 		return lsGeneID2LsItem;
 	}

@@ -976,7 +976,7 @@ public class GffDetailGene extends ListDetailAbs {
 	public static enum GeneStructure {
 		All("All"), ALLLENGTH("AllLength"),
 		INTRON("Intron"), CDS("CDS"), EXON("Exon"), UTR5("5-UTR"), UTR3("3-UTR"), 
-		TSS("Tss"), TES("Tes");
+		TSS("Tss"), TES("Tes"), ATG("Atg"), UAG("Uag");
 		String name;
 		private GeneStructure(String name) {
 			this.name = name;
@@ -998,6 +998,8 @@ public class GffDetailGene extends ListDetailAbs {
 			mapStr2GeneStructure.put("3-UTR", UTR3);
 			mapStr2GeneStructure.put("Tss", TSS);
 			mapStr2GeneStructure.put("Tes", TES);
+			mapStr2GeneStructure.put("Atg", ATG);
+			mapStr2GeneStructure.put("Uag", UAG);
 			return mapStr2GeneStructure;
 		}
 		/**

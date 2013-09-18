@@ -123,7 +123,7 @@ class FastQReader implements Closeable {
 	
 	/**
 	 * 从第几行开始读，是实际行
-	 * @param lines 如果lines小于1，则从头开始读取
+	 * @param initial 是否进行初始化
 	 * @return
 	 */
 	public Iterable<FastQRecord> readlines(boolean initial) {

@@ -46,7 +46,7 @@ public class Species implements Cloneable {
 	 */
 	ArrayList<String[]> lsVersion = new ArrayList<String[]>();
 	/** key：版本ID,通通小写  value：具体的信息 */
-	HashMap<String, SpeciesFile> mapVersion2Species = new HashMap<String, SpeciesFile>();
+	HashMap<String, SpeciesFile> mapVersion2Species = new LinkedHashMap<String, SpeciesFile>();
 	ManageTaxID servTaxID = new ManageTaxID();
 	
 	String updateTaxInfoFile = "";
@@ -157,13 +157,13 @@ public class Species implements Cloneable {
 			mapVersion2Species.put(speciesFile.getVersion().toLowerCase(), speciesFile);
 		}
 		//年代从大到小排序
-		Collections.sort(lsVersion, new Comparator<String[]>() {
-			public int compare(String[] o1, String[] o2) {
-				Integer o1int = Integer.parseInt(o1[1]);
-				Integer o2int = Integer.parseInt(o2[1]);
-				return -o1int.compareTo(o2int);
-			}
-		});
+//		Collections.sort(lsVersion, new Comparator<String[]>() {
+//			public int compare(String[] o1, String[] o2) {
+//				Integer o1int = Integer.parseInt(o1[1]);
+//				Integer o2int = Integer.parseInt(o2[1]);
+//				return -o1int.compareTo(o2int);
+//			}
+//		});
 	}
 	/** 常用名 */
 	public String getCommonName() {

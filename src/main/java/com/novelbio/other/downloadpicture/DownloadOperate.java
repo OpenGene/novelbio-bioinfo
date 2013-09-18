@@ -1,9 +1,7 @@
 package com.novelbio.other.downloadpicture;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -12,14 +10,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.FormatSeq;
 import com.novelbio.base.dataOperate.HttpFetch;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.model.species.Species;
 import com.novelbio.other.downloadpicture.donmai.DonmaiOperate;
 import com.novelbio.other.downloadpicture.pixiv.PixivGetPathExistPic;
-import com.novelbio.other.downloadpicture.pixiv.PixivGetPictureUrlToDownload;
-import com.novelbio.other.downloadpicture.pixiv.PixivOperate;
 
 public abstract class DownloadOperate {
 	private static Logger logger = Logger.getLogger(DownloadOperate.class);

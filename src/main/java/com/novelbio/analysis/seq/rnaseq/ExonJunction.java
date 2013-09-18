@@ -56,7 +56,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 //		lsAligns.add(new Align("1", 47916959,	47937428));
 //		lsAligns.add(new Align("7",30050239,30137766));
 //		lsAligns.add(new Align("7",30121258, 30123992));
-//		lsAligns.add(new Align("4", 5683249, 6116963));
+		lsAligns.add(new Align("12", 15871677, 16254293));
 //		lsAligns.add(new Align("mt", 0, 5000));
 //		chr1:33715442-33774115
 		DateUtil dateUtil = new DateUtil();
@@ -73,22 +73,16 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		exonJunction.addBamSorted("KO", "/home/zong0jie/Test/rnaseq/paper/chicken/DT40KO0h.bam");
 		exonJunction.setCompareGroups("KO", "WT");
 
-		exonJunction.setResultFile("/home/zong0jie/Test/rnaseq/paper/chicken/ensemble_Iso2_merge_testl");
+		exonJunction.setResultFile("/home/zong0jie/Test/rnaseq/paper/chicken/ensemble_Iso2_Small_test");
 		exonJunction.setgenerateNewIso();
 
 		exonJunction.run();
 		exonJunction = null;
-		Set<TaxInfo> setTax = new HashSet<>();
-		for (int i = 0; i < 1000; i++) {
-			TaxInfo taxInfo = new TaxInfo();
-			taxInfo.setLatin("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-			setTax.add(taxInfo);
-		}
 		System.out.println(dateUtil.getEclipseTime());
 	}
 	
 	private static Logger logger = Logger.getLogger(ExonJunction.class);
-	private static String stopGeneName = "DIAPH1";
+	private static String stopGeneName = "FOXP1";
 	
 	GffHashGene gffHashGene = null;
 	StrandSpecific strandSpecific = StrandSpecific.NONE;

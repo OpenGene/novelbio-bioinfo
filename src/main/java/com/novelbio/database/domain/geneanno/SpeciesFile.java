@@ -85,10 +85,11 @@ public class SpeciesFile {
 	 * key: DBname, 为小写<br>
 	 * value: 0, GffType 1:GffFile
 	 */
-	Map<String, String[]> mapDB2GffTypeAndFile = new TreeMap<String, String[]>(new CompGffDB());
-	
+//	Map<String, String[]> mapDB2GffTypeAndFile = new TreeMap<String, String[]>(new CompGffDB());
+	Map<String, String[]> mapDB2GffTypeAndFile = new LinkedHashMap<>();
 	/** 用来将小写的DB转化为正常的DB，使得getDB获得的字符应该是正常的DB */
-	Map<String, String> mapGffDBLowCase2DBNormal = new TreeMap<String, String>(new CompGffDB());
+//	Map<String, String> mapGffDBLowCase2DBNormal = new TreeMap<String, String>(new CompGffDB());
+	Map<String, String> mapGffDBLowCase2DBNormal = new LinkedHashMap<>();
 	
 	/** 相对路径，类似 /media/hdfs/nbCloud/public/nbcplatform/ ，注意不要把genome写进去<br>
 	 * 然后以后把speciesFile写在 /media/hdfs/nbCloud/public/nbcplatform/这个文件夹下就行

@@ -50,19 +50,19 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	TxtReadandWrite txtOutFile;
 	String outFile = "";
 	
-	int[] tssRange;
-	int[] tesRange; 
+	int[] tssAtgRange;
+	int[] tesUagRange; 
 	
 	public GffChrSeq() {}
 	
 	public GffChrSeq(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 	}
-	public void setTssRange(int[] tssRange) {
-		this.tssRange = tssRange;
+	public void setTssAtgRange(int[] tssRange) {
+		this.tssAtgRange = tssRange;
 	}
-	public void setTesRange(int[] tesRange) {
-		this.tesRange = tesRange;
+	public void setTesUagRange(int[] tesRange) {
+		this.tesUagRange = tesRange;
 	}
 	/** 默认是ture，表示存入output文件
 	 * 否则结果保存在lsResult中
@@ -391,24 +391,22 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		ArrayList<ExonInfo> lsExonInfos = null;
 		if (geneStructure.equals(GeneStructure.ALLLENGTH) || geneStructure.equals(GeneStructure.EXON)) {
 			lsExonInfos = gffGeneIsoInfo;
-		}
-		else if (geneStructure.equals(GeneStructure.CDS)) {
+		} else if (geneStructure.equals(GeneStructure.CDS)) {
 			lsExonInfos = gffGeneIsoInfo.getIsoInfoCDS();
-		}
-		else if (geneStructure.equals(GeneStructure.INTRON)) {
+		} else if (geneStructure.equals(GeneStructure.INTRON)) {
 			lsExonInfos = gffGeneIsoInfo.getLsIntron();
-		}
-		else if (geneStructure.equals(GeneStructure.UTR3)) {
+		} else if (geneStructure.equals(GeneStructure.UTR3)) {
 			lsExonInfos = gffGeneIsoInfo.getUTR3seq();
-		}
-		else if (geneStructure.equals(GeneStructure.UTR5)) {
+		} else if (geneStructure.equals(GeneStructure.UTR5)) {
 			lsExonInfos = gffGeneIsoInfo.getUTR5seq();
-		}
-		else if (geneStructure.equals(GeneStructure.TSS)) {
-			return getSiteRange(gffGeneIsoInfo, gffGeneIsoInfo.getTSSsite(),tssRange[0], tssRange[1]);
-		}
-		else if (geneStructure.equals(GeneStructure.TES)) {
-			return getSiteRange(gffGeneIsoInfo, gffGeneIsoInfo.getTESsite(),tesRange[0], tesRange[1]);
+		} else if (geneStructure.equals(GeneStructure.TSS)) {
+			return getSiteRange(gffGeneIsoInfo, gffGeneIsoInfo.getTSSsite(),tssAtgRange[0], tssAtgRange[1]);
+		} else if (geneStructure.equals(GeneStructure.TES)) {
+			return getSiteRange(gffGeneIsoInfo, gffGeneIsoInfo.getTESsite(),tesUagRange[0], tesUagRange[1]);
+		} else if (geneStructure.equals(GeneStructure.ATG)) {
+			return getSiteRange(gffGeneIsoInfo, gffGeneIsoInfo.getATGsite(), tssAtgRange[0], tssAtgRange[1]);
+		} else if (geneStructure.equals(GeneStructure.UAG)) {
+			return getSiteRange(gffGeneIsoInfo, gffGeneIsoInfo.getUAGsite(), tesUagRange[0], tesUagRange[1]);
 		}
 		if (lsExonInfos.size() == 0) {
 			return null;
@@ -500,8 +498,8 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		txtOutFile = null;
 		outFile = "";
 		
-		tssRange = null;
-		tesRange = null;
+		tssAtgRange = null;
+		tesUagRange = null;
 	}
 	public static class GffChrSeqProcessInfo {
 		int number;

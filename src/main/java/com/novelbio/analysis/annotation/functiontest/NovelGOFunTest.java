@@ -99,7 +99,7 @@ public class NovelGOFunTest extends FunctionTest {
 			for (String item : items) {
 				geneID2LsGo.addItemID(item);
 			}
-			mapGeneID2LsItem.put(strings[0], geneID2LsGo);
+			mapGeneID2LsItem.put(strings[0].toLowerCase(), geneID2LsGo);
 		}
 		return mapGeneID2LsItem;
 	}

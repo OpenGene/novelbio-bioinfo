@@ -2,6 +2,7 @@ package com.novelbio.database.service.servgeneanno;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +26,7 @@ public class ManageSpeciesFile {
 	/**
 	 * version 必须为小写
 	 */
-	static Map<Integer, Map<String, SpeciesFile>> mapTaxID_2_version2SpeciesFile;
+	static LinkedHashMap<Integer, LinkedHashMap<String, SpeciesFile>> mapTaxID_2_version2SpeciesFile;
 	
 	private static ManageSpeciesFile manageSpeciesFile;
 	
@@ -38,7 +39,7 @@ public class ManageSpeciesFile {
 	
 	private ManageSpeciesFile() {
 		if (mapTaxID_2_version2SpeciesFile == null) {
-			 mapTaxID_2_version2SpeciesFile = new HashMap<Integer, Map<String,SpeciesFile>>();
+			 mapTaxID_2_version2SpeciesFile = new LinkedHashMap<>();
 			 readDBinfo();
 		}
 	}
@@ -190,9 +191,9 @@ public class ManageSpeciesFile {
 	}
 	
 	private void save(SpeciesFile speciesFileS) {
-		Map<String, SpeciesFile> mapVersion2Species = mapTaxID_2_version2SpeciesFile.get(speciesFileS.getTaxID());
+		LinkedHashMap<String, SpeciesFile> mapVersion2Species = mapTaxID_2_version2SpeciesFile.get(speciesFileS.getTaxID());
 		if (mapVersion2Species == null) {
-			mapVersion2Species = new HashMap<String, SpeciesFile>();
+			mapVersion2Species = new LinkedHashMap<>();
 			mapTaxID_2_version2SpeciesFile.put(speciesFileS.getTaxID(), mapVersion2Species);
 		}
 		mapVersion2Species.put(speciesFileS.getVersion().toLowerCase(), speciesFileS);
