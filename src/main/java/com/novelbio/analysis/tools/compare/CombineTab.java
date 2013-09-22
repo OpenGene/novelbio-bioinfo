@@ -370,7 +370,7 @@ public class CombineTab {
 		}
 		//TODO		String cmd = PathNBCDetail.getRscript() + scriptName.replace("\\", "/");
 		try {
-			String cmd = PathDetail.getRscript() + scriptName.replace("\\", "/");
+			String cmd = PathDetail.getRscriptWithSpace() + scriptName.replace("\\", "/");
 			CmdOperate cmdOperate = new CmdOperate(cmd);
 			cmdOperate.run();
 		} catch (Exception e) {

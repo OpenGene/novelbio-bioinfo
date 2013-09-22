@@ -37,9 +37,8 @@ public class DiffExpTtest extends DiffExpAbs {
 	}
 
 	@Override
-	protected void generateScript() {
-		// TODO Auto-generated method stub
-		
+	protected String generateScript() {
+		return "";
 	}
 	protected void writeToGeneFile() { }
 	public void  modifyResult(){}

@@ -42,7 +42,7 @@ public class DiffExpLimma extends DiffExpAbs{
 		fileNameRawdata = workSpace + "LimmaGeneInfo_" + DateUtil.getDateAndRandom() + ".txt";
 	}
 	@Override
-	protected void generateScript() {
+	protected String generateScript() {
 		Map<String,Object> mapData = new HashMap<String, Object>();
 		mapData.put("workspace", getWorkSpace());
 		mapData.put("filename", getFileName());
@@ -51,17 +51,20 @@ public class DiffExpLimma extends DiffExpAbs{
 		mapData.put("SampleName", getSampleName());
 		mapData.put("PairedInfo", getContrastMatrix());
 		mapData.put("pair2filename", getMapCoef2FileName());
+		String scriptContent = null;
 		try {
 			Template template = freeMarkerConfiguration.getTemplate("/R/diffgene/limma.ftl");
 			StringWriter sw = new StringWriter();
 			TxtReadandWrite txtReadandWrite = new TxtReadandWrite(outScript, true);
 			// 处理并把结果输出到字符串中
 			template.process(mapData, sw);
-			txtReadandWrite.writefile(sw.toString());
+			scriptContent = sw.toString();
+			txtReadandWrite.writefile(scriptContent);
 			txtReadandWrite.close();
 		} catch (Exception e) {
 			logger.error("渲染出错啦! " + e.getMessage());
 		}
+		return scriptContent;
 	}
 
 	/**

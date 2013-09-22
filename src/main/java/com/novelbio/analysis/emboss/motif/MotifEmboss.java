@@ -12,7 +12,6 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
-import com.novelbio.generalConf.PathDetailNBC;
 
 /**
  * 输入连配好的fasta文件，或序列
@@ -205,7 +204,8 @@ public class MotifEmboss {
 		prophecy.setInAlignment(alignedMotif);
 		prophecy.setMatrixAlgorithm(motifEmbossScanAlgorithm);
 		String resultFile = FileOperate.addSep(motifPath) + "weightedMatrix" + suffix + ".fa";
-		return prophecy.generateProfit(resultFile);
+		prophecy.setOutFile(resultFile);
+		return prophecy.generateProfit();
 	}
 	
 	private String scanAndGetResult(String weightMatrix, String seqFile, String suffix) {
@@ -213,7 +213,8 @@ public class MotifEmboss {
 		profit.setInProfit(weightMatrix);
 		profit.setSeqFile(seqFile);
 		String resultFile = FileOperate.addSep(motifPath) + "MotifScaningResult" + suffix + ".fa";
-		profit.scaning(resultFile);
+		profit.setOutFile(resultFile);
+		profit.scaning();
 		return resultFile;
 	}
 	

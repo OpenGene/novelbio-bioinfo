@@ -1,6 +1,11 @@
 package com.novelbio.analysis.emboss.motif;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
@@ -15,13 +20,13 @@ import com.novelbio.base.fileOperate.FileOperate;
  * @author zong0jie
  *
  */
-public class Profit {
+public class Profit implements IntCmdSoft {
 //	profit  -infile $infile -sequence $sequence -outfile $outfile -sreverse2  -snucleotide2  -sprotein2 -slower2	
 	
 	String ExePath = "";
 	String inProfit;
 	String seqFile;
-	
+	String outFile;
 	/** true:Nr false:AA */
 	boolean isNr;
 	
@@ -54,29 +59,49 @@ public class Profit {
 		this.seqFile = seqFile;
 	}
 	
+	public void setOutFile(String outFile) {
+		this.outFile = outFile;
+	}
+	
 	/** 获得打分矩阵的路径 */
-	private String getInProfit() {
-		return " -infile " + CmdOperate.addQuot(inProfit) + " ";
+	private String[] getInProfit() {
+		return new String[]{"-infile", inProfit};
 	}
 	
 	/** 获得要扫描的序列信息 */
-	private String getSeqFile() {
-		return " -sequence " + CmdOperate.addQuot(seqFile) + " ";
+	private String[] getSeqFile() {
+		return new String[]{"-sequence", seqFile};
 	}
 	
 	/** 是核酸还是蛋白 */
 	private String getSeqType() {
 		if (isNr) {
-			return " -snucleotide2 ";
+			return "-snucleotide2";
 		} else {
-			return " -sprotein2 ";
+			return "-sprotein2";
 		}
 	}
 	
-	public void scaning(String outFile) {
-		String cmd = ExePath + "profit -slower2 " + getInProfit() + getSeqFile() + getSeqType() + " -outfile " + CmdOperate.addQuot(outFile);
-		CmdOperate cmdOperate = new CmdOperate(cmd,"emboss_profit");
+	/** 返回cmd命令的命令行 */
+	public List<String> getCmdExeStr() {
+		List<String> lsCmd = new ArrayList<>();
+		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
+		lsCmd.add(cmdOperate.getCmdExeStr());
+		return lsCmd;
+	}
+	
+	public void scaning() {
+		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
 		cmdOperate.run();
 	}
-
+	
+	private List<String> getLsCmd() {
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add(ExePath); lsCmd.add("profit"); lsCmd.add("-slower2");//变小写
+		ArrayOperate.addArrayToList(lsCmd, getInProfit());
+		ArrayOperate.addArrayToList(lsCmd, getSeqFile());
+		lsCmd.add(getSeqType());
+		lsCmd.add("-outfile"); lsCmd.add(outFile);
+		return lsCmd;
+	}
 }

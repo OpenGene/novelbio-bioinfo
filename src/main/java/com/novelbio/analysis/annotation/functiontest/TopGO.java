@@ -5,11 +5,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
@@ -17,12 +19,11 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.service.SpringFactory;
-import com.novelbio.generalConf.PathDetailNBC;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 
-public class TopGO {
+public class TopGO implements IntCmdSoft {
 	private static final Logger logger = Logger.getLogger(TopGO.class);
 	Configuration freeMarkerConfiguration = (Configuration)SpringFactory.getFactory().getBean("freemarkNBC");
 	
@@ -47,6 +48,8 @@ public class TopGO {
 	Collection<String> lsGeneID;
 	ArrayList<String> lsBG;
 	
+	/** R脚本的具体内容 */
+	String scriptContent;
 	
 	ArrayList<String[]> lsResult;
 	ArrayListMultimap<String, String> mapGOID2LsGeneID;
@@ -124,7 +127,8 @@ public class TopGO {
 			TxtReadandWrite txtReadandWrite = new TxtReadandWrite(exeScript, true);
 			// 处理并把结果输出到字符串中
 			template.process(mapData, sw);
-			txtReadandWrite.writefile(sw.toString());
+			scriptContent = sw.toString();
+			txtReadandWrite.writefile(scriptContent);
 			txtReadandWrite.close();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -172,8 +176,10 @@ public class TopGO {
 		clean();
 	}
 	protected void Rrunning(String cmdName) {
-		String cmd = PathDetail.getRscript() + exeScript.replace("\\", "/");
-		CmdOperate cmdOperate = new CmdOperate(cmd);
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add(PathDetail.getRscript());
+		lsCmd.add(exeScript);
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.run();
 	}
 	private void readResult() {
@@ -258,4 +264,13 @@ public class TopGO {
 			return mapStr2GoAlgrithm;
 		}
 	}
+	
+	/** 务必要run完之后才能获得 */
+	@Override
+	public List<String> getCmdExeStr() {
+		List<String> lsScript = new ArrayList<>();
+		lsScript.add(scriptContent);
+		return lsScript;
+	}
+	
 }

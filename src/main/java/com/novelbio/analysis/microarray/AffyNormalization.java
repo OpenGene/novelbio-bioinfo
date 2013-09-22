@@ -4,21 +4,21 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
+import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.base.PathDetail;
-import com.novelbio.base.SepSign;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.service.SpringFactory;
-import com.novelbio.generalConf.PathDetailNBC;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 
-public class AffyNormalization {
+public class AffyNormalization implements IntCmdSoft {
 	public static final int NORM_RMA = 10;
 	public static final int NORM_GCRMA = 20;
 	public static final int NORM_MAS5 =30;
@@ -39,6 +39,8 @@ public class AffyNormalization {
 	String arrayType = arrayType_normAffy;
 	String readFile = "";
 	ArrayList<String> lsRawCelFile = new ArrayList<String>();
+	
+	String scriptContent;
 	
 	public AffyNormalization() {
 		setOutScriptPath();
@@ -80,7 +82,8 @@ public class AffyNormalization {
 			TxtReadandWrite txtReadandWrite = new TxtReadandWrite(outScript, true);
 			// 处理并把结果输出到字符串中
 			template.process(mapData, sw);
-			txtReadandWrite.writefile(sw.toString());
+			scriptContent = sw.toString();
+			txtReadandWrite.writefile(scriptContent);
 			txtReadandWrite.close();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -127,7 +130,7 @@ public class AffyNormalization {
 		clean();
 	}
 	protected void Rrunning(String cmdName) {
-		String cmd = PathDetail.getRscript() + outScript.replace("\\", "/");
+		String cmd = PathDetail.getRscriptWithSpace() + outScript.replace("\\", "/");
 		CmdOperate cmdOperate = new CmdOperate(cmd);
 		cmdOperate.run();
 	}
@@ -148,5 +151,12 @@ public class AffyNormalization {
 	/** 删除中间文件 */
 	private void clean() {
 		FileOperate.DeleteFileFolder(outScript);
+	}
+
+	@Override
+	public List<String> getCmdExeStr() {
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add(scriptContent);
+		return lsCmd;
 	}
 }

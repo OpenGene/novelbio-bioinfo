@@ -1,14 +1,19 @@
 package com.novelbio.analysis.annotation.blast;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.newDebugLog;
 
+import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
@@ -20,17 +25,19 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
  * @author zong0jie
  *
  */
-public class BlastNBC {
+public class BlastNBC implements IntCmdSoft {
 	private static final Logger logger = Logger.getLogger(BlastNBC.class);
 	public static final int ResultType_Simple = 6;
 	public static final int ResultType_Normal = 0;
 	
 	SoftWareInfo softWareInfo;
-	final String formatDB = "makeblastdb ";
+	final String formatDB = "makeblastdb";
 	
 	String queryFasta = "";
 	/**待比对的数据库，如果是fasta文件，则会自动建索引*/
 	String databaseSeq = "";
+	/** 数据库是nr还是pro */
+	String seqTypePro;
 	BlastType blastType = BlastType.tblastn;
 	/** query的序列是否很短，一般在探针序列blast的时候才使用，目前只能用于blastp和blastn */
 	boolean isShortQuerySeq = false;
@@ -84,8 +91,25 @@ public class BlastNBC {
 	 */
 	public void setDatabaseSeq(String databaseSeq) {
 		this.databaseSeq = databaseSeq;
+		seqTypePro = getSeqTypePro();
 	}
-
+	/**
+	 * database序列是核酸还是蛋白
+	 * @return
+	 */
+	private String getSeqTypePro() {
+		String seqTypePro = null;
+		int seqTypeFlag = SeqHash.getSeqType(databaseSeq);
+		
+		if (seqTypeFlag == SeqFasta.SEQ_PRO)
+			seqTypePro = "prot";
+		else if(seqTypeFlag == SeqFasta.SEQ_DNA)
+			seqTypePro = "nucl";
+		else {
+			logger.error("databaseSeq 序列出现未知字符");
+		}
+		return seqTypePro;
+	}
 	/**
 	 * 输出文件
 	 * @param resultFile
@@ -157,92 +181,95 @@ public class BlastNBC {
 				return false;
 			}
 		}
-		String cmd = softWareInfo.getExePath() + blastType.toString() + getDB() + getQuery() + getOut() + 
-				getThread() + getEvalue() + getBlastTask() + getResultTypeCmd() + getBlastNum();
-		
-		CmdOperate cmdOperate = new CmdOperate(cmd,"blast");
+		CmdOperate cmdOperate = new CmdOperate(getLsCmdBlast());
 		cmdOperate.run();
 		return true;
+	}
+	
+	private List<String> getLsCmdBlast() {
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add(softWareInfo.getExePath().trim() + blastType.toString());
+		ArrayOperate.addArrayToList(lsCmd, getDB());
+		ArrayOperate.addArrayToList(lsCmd, getQuery());
+		ArrayOperate.addArrayToList(lsCmd, getOut());
+		ArrayOperate.addArrayToList(lsCmd, getThread());
+		ArrayOperate.addArrayToList(lsCmd, getEvalue());
+		ArrayOperate.addArrayToList(lsCmd, getBlastTask());
+		ArrayOperate.addArrayToList(lsCmd, getResultTypeCmd());
+		ArrayOperate.addArrayToList(lsCmd, getBlastNum());
+		return lsCmd;
 	}
 	
 	/** 只有当blastp和blastn时才有用，用于特别短序列的blast
 	 * @param nr 是否为blastn
 	 * @return
 	 */
-	private String getBlastTask() {
+	private String[] getBlastTask() {
 		if (blastType != BlastType.blastn && blastType != BlastType.blastp) {
-			return "";
+			return new String[0];
 		}
 		
 		if (isShortQuerySeq) {
 			if (blastType == BlastType.blastn) {
-				return " -task blastn-short ";
+				return new String[]{"-task blastn-short"};
 			} else {
-				return " -task blastp-short ";
+				return new String[]{"-task blastp-short"};
 			}
 		}
-		return "";
+		return new String[0];
 	}
 	
-	private String getDB() {
-		return " -db " + CmdOperate.addQuot(databaseSeq) + " ";
+	private 	String[] getDB() {
+		return new String[]{ "-db", databaseSeq};
 	}
-	private String getQuery() {
-		return " -query " + CmdOperate.addQuot(queryFasta) + " ";
+	private String[] getQuery() {
+		return new String[]{"-query", queryFasta};
 	}
-	private String getOut() {
-		return " -out " + CmdOperate.addQuot(resultFile) + " ";
+	private String[] getOut() {
+		return new String[]{"-out", resultFile};
 	}
-	private String getThread() {
-		return " -num_threads " + cpuNum + " ";
+	private String[] getThread() {
+		return new String[]{"-num_threads", cpuNum+""};
 	}
-	private String getEvalue() {
-		return " -evalue " + evalue + " ";
+	private String[] getEvalue() {
+		return new String[]{"-evalue", evalue+""};
 	}
-	private String getResultTypeCmd() {
+	private String[] getResultTypeCmd() {
 		String resultFormat = "0";
 		if (resultType == ResultType_Normal) {
 			resultFormat = "0";
 		} else if (resultType == ResultType_Simple) {
 			resultFormat = "6";
 		}
-		return " -outfmt " + resultFormat + " ";
+		return new String[]{"-outfmt", resultFormat};
 	}
-	private String getBlastNum() {
-		return " -num_descriptions  " + resultSeqNum + " -num_alignments " + resultAlignNum + " ";
+	private String[] getBlastNum() {
+		return new String[]{"-num_descriptions", resultSeqNum+"", "-num_alignments", resultAlignNum+""};
 	}
-	/**
-	 * database序列是核酸还是蛋白
-	 * @return
-	 */
-	private String getSeqTypePro() {
-		String seqTypePro = "";
-		int seqTypeFlag = SeqHash.getSeqType(databaseSeq);
-		
-		if (seqTypeFlag == SeqFasta.SEQ_PRO)
-			seqTypePro = "prot ";
-		else if(seqTypeFlag == SeqFasta.SEQ_DNA)
-			seqTypePro = "nucl ";
-		else {
-			logger.error("databaseSeq 序列出现未知字符");
-		}
-		return seqTypePro;
-	}
+
 	/**
 	 * 对目标序列建索引
 	 * 如果索引不存在，一般会自动建索引。
 	 * 如果索引建错了，才需要用其重建
 	 */
 	private boolean formatDB() {
-		String seqTypePro = getSeqTypePro();
 		if (seqTypePro == null) {
 			return false;
 		}
-		String cmd = softWareInfo.getExePath() + formatDB + " -in " + databaseSeq + " -dbtype "+ seqTypePro + " -parse_seqids";
-		CmdOperate cmdOperate = new CmdOperate(cmd,"blastFormatDB");
+		CmdOperate cmdOperate = new CmdOperate(getLsCmdFormatDB());
 		cmdOperate.run();
 		return true;
 	}
+	
+	private List<String> getLsCmdFormatDB() {
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add(softWareInfo.getExePath() + formatDB);
+		lsCmd.add("-in"); lsCmd.add(databaseSeq);
+		lsCmd.add("-dbtype"); lsCmd.add(seqTypePro);
+		lsCmd.add("-parse_seqids");
+		return lsCmd;
+	}
+	
 	/**
 	 * 看索引是否存在
 	 * @return true 存在， false 不存在 null 序列有问题
@@ -285,6 +312,21 @@ public class BlastNBC {
 	public static void getFasta(String fastaFile) {
 		SeqFastaHash seqFastaHash = new SeqFastaHash(fastaFile, "\\w+_\\d+", false, false, false);
 		seqFastaHash.writeToFile(FileOperate.changeFileSuffix(fastaFile, "_cleanID", null));
+		seqFastaHash.close();
+	}
+	
+	@Override
+	public List<String> getCmdExeStr() {
+		List<String> lsCmds = new ArrayList<>();
+		//索引是否存在
+		if (!indexExisted()) {
+			CmdOperate cmdOperate = new CmdOperate(getLsCmdFormatDB());
+			lsCmds.add(cmdOperate.getCmdExeStr());
+		}
+		CmdOperate cmdOperate = new CmdOperate(getLsCmdBlast());
+		lsCmds.add(cmdOperate.getCmdExeStr());
+		// TODO Auto-generated method stub
+		return lsCmds;
 	}
 	
 }

@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.broadinstitute.sting.jna.lsf.v7_0_6.LibLsf.lsConf;
+
+import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -19,7 +22,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
 
 import freemarker.template.Configuration;
 
-public abstract class DiffExpAbs implements DiffExpInt {
+public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	public static final int LIMMA = 10;
 	public static final int DESEQ = 20;
 	public static final int DEGSEQ = 30;
@@ -77,6 +80,8 @@ public abstract class DiffExpAbs implements DiffExpInt {
 	boolean calculate = false;
 	
 	boolean isLog2Value = false;
+	
+	String scriptContent;
 	
 	public DiffExpAbs() {
 		setRworkspace();
@@ -193,7 +198,7 @@ public abstract class DiffExpAbs implements DiffExpInt {
 		}
 		writeToGeneFile();
 		setMapSample_2_time2value();
-		generateScript();
+		scriptContent = generateScript();
 		run();
 		modifyResult();
 //		clean();
@@ -301,7 +306,11 @@ public abstract class DiffExpAbs implements DiffExpInt {
 		return lsValue;
 	}
 	
-	protected abstract void generateScript();
+	/**
+	 * 产生脚本文件，并返回脚本内容
+	 * @return
+	 */
+	protected abstract String generateScript();
 	
 	protected String getWorkSpace() {
 		return workSpace.replace("\\", "/");
@@ -318,8 +327,10 @@ public abstract class DiffExpAbs implements DiffExpInt {
 	protected abstract void run();
 	
 	protected void Rrunning(String cmdName) {
-		String cmd = PathDetail.getRscript() + outScript.replace("\\", "/");
-		CmdOperate cmdOperate = new CmdOperate(cmd);
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add(PathDetail.getRscript());
+		lsCmd.add(outScript.replace("\\", "/"));
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.run();
 		try { Thread.sleep(2000); } catch (Exception e) {}
 	}
@@ -407,4 +418,12 @@ public abstract class DiffExpAbs implements DiffExpInt {
 		}
 		return diffExpInt;
 	}
+	
+	/** 务必在run完之后调用 */
+	public List<String> getCmdExeStr() {
+		List<String> lsScript = new ArrayList<>();
+		lsScript.add(scriptContent);
+		return lsScript;
+	}
+	
 }
