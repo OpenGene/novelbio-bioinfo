@@ -1,7 +1,6 @@
 package com.novelbio.analysis.seq.chipseq.peakcalling;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import com.novelbio.base.cmd.CmdOperate;
@@ -209,6 +208,8 @@ public class PeakCallingSicer {
 	}
 	
 	public String sicerCmd(PeakCallingSicerType sicerType) {
+		
+		
 		String strsicerCmd = null;
 		String tmpCmd = getInputDir() + getKoBedFile()  + getKoControlFile()  + getOutputDir() + getSpecies() + getRedundancyThreshold()
 				+ getWindowSize() + getFragmentSize() + getEffectiveGenomeSize() + getGapSize() + getFDR() + getPathTo();

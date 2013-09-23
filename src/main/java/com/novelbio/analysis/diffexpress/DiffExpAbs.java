@@ -9,9 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.broadinstitute.sting.jna.lsf.v7_0_6.LibLsf.lsConf;
-
 import com.novelbio.analysis.IntCmdSoft;
+import com.novelbio.analysis.diffexpress.DiffExpInt;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;

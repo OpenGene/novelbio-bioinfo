@@ -1,10 +1,15 @@
 package com.novelbio.analysis.seq.chipseq.peakcalling;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.FormatSeq;
 import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
-public class PeakCallingMacs {
+public class PeakCallingMacs implements IntCmdSoft {
 	private String pathInput;
 	private String pathInputCol;
 	private String outFileName;
@@ -61,55 +66,61 @@ public class PeakCallingMacs {
 	/**
 	 * 判定输入文件
 	 */
-	private String getFileType() {
-		String result = "";
+	private String[] getFileType() {
+		String[] result = new String[2];
+		result[0] = "-f";
 		if (FileType == FormatSeq.BAM) {
-			result = "-f BAM"; 
+			result[1] = "BAM"; 
 		} else if (FileType == FormatSeq.BED) {
-			result = "-f BED"; 
+			result[1] = "BED";
 		} else if (FileType == FormatSeq.SAM) {
-			result = "-f SAM"; 
+			result[1] = "SAM";
+		} else {
+			result = null;
 		}
 		return result;
 	}
-	private String getControl() {
+	private String[] getControl() {
 		if (FileOperate.isFileExist(pathInputCol)) {
-			return " -c " + CmdOperate.addQuot(pathInputCol);
+			return new String[]{"-c", pathInputCol};
 		}
-		return "";
+		return null;
 	}
-	private String getGenomeLength() {
-		return " -g " +genomeLength;
+	private String[] getGenomeLength() {
+		return new String[]{"-g", genomeLength + ""};
 	}
-	private String getPathinput() {
-		return " -t " + CmdOperate.addQuot(pathInput);
+	private String[] getPathinput() {
+		return new String[]{"-t", pathInput};
 	}
-	private String getPathoutput() {
-		return " -n " + CmdOperate.addQuot(outFileName);
+	private String[] getPathoutput() {
+		return new String[]{"-n", outFileName};
 	}
-	private String getPvalue() {
-		return " -p " + pvalue;
+	private String[] getPvalue() {
+		return new String[]{"-p", pvalue+""};
 	}
-	private String getTsize() {
-		return " -s " + tsize;
+	private String[] getTsize() {
+		return new String[]{"-s", tsize+""};
 	}
-	public String getMfoldMin() {
-		return " -m " + mfoldMin;
-	}
-	public String getMfoldMax() {
-		return "," + mfoldMax;
+	public String[] getMfold() {
+		return new String[]{"-m", mfoldMin+"," + mfoldMax};
 	}
 	
-	private String getCmd() {
-		String cmd = "macs14 " + getFileType() + getGenomeLength() + getPathinput() + getControl()
-				+ getPathoutput() + getPvalue() + getTsize() +  getMfoldMin() + getMfoldMax();
-		return cmd;
+	private List<String> getLsCmd() {
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add("macs14");
+		ArrayOperate.addArrayToList(lsCmd, getFileType());
+		ArrayOperate.addArrayToList(lsCmd, getGenomeLength());
+		ArrayOperate.addArrayToList(lsCmd, getPathinput());
+		ArrayOperate.addArrayToList(lsCmd, getControl());
+		ArrayOperate.addArrayToList(lsCmd, getPathoutput());
+		ArrayOperate.addArrayToList(lsCmd, getPvalue());
+		ArrayOperate.addArrayToList(lsCmd, getTsize());
+		ArrayOperate.addArrayToList(lsCmd, getMfold());
+		return lsCmd;
 	}
 	
 	public void runPeakCalling() {
-		String cmd = getCmd();
-		System.out.println(cmd);
-		CmdOperate cmdOperate = new CmdOperate(cmd, "macsPeakCalling");
+		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
 		cmdOperate.run();
 	}
 	
@@ -124,4 +135,13 @@ public class PeakCallingMacs {
 		mfoldMax = 300	;
 		FileType = FormatSeq.BED;
 	}
+
+	@Override
+	public List<String> getCmdExeStr() {
+		List<String> lsCmd = new ArrayList<>();
+		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
+		lsCmd.add(cmdOperate.getCmdExeStr());
+		return lsCmd;
+	}
+	
 }

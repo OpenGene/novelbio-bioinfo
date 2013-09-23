@@ -1,6 +1,5 @@
 package com.novelbio.analysis.seq.chipseq.peakcalling;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
