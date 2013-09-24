@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.cmd.CmdOperate;
@@ -15,7 +16,7 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 @Component
 @Scope("prototype")
-public class MapBowtie extends MapDNA {
+public class MapBowtie extends MapDNA implements IntCmdSoft {
 	/** 默认bowtie2 */
 	SoftWare bowtieVersion = SoftWare.bowtie2;
 	/** 待比对的染色体 */
@@ -136,21 +137,21 @@ public class MapBowtie extends MapDNA {
 	
 	private String getOffset() {
 		if (lsLeftFq.get(0).getOffset() == FastQ.FASTQ_ILLUMINA_OFFSET) {
-			return " --phred64 ";
+			return "--phred64";
 		}
-		return " --phred33 ";
+		return "--phred33";
 	}
 	/** 非unique mapping，最多可以比对到多少地方上去，设定为10比较合适把 */
-	private String getMappingNum() {
+	private String[] getMappingNum() {
 		if (mappingNum <= 0) {
-			return "";
+			return null;
 		}
-		return " -k " + mappingNum + " ";
+		return new String[]{"-k", mappingNum + ""};
 	}
 	
 	private String getMapLibrary() {
-		if (isPairEnd()) {
-			return "";
+		if (!isPairEnd()) {
+			return null;
 		} else if (mapLibrary == MapLibrary.SingleEnd || mapLibrary == MapLibrary.PairEnd) {
 			return " --fr ";
 		} else if (mapLibrary == MapLibrary.MatePair) {
@@ -256,20 +257,23 @@ public class MapBowtie extends MapDNA {
 				return false;
 		}
 
-		String cmd = "";
-		softWareInfo.setName(bowtieVersion);
-		
-		if (bowtieVersion == SoftWare.bowtie) {
-			cmd = softWareInfo.getExePath() + "bowtie-build ";
-		}
-		else if (bowtieVersion == SoftWare.bowtie2) {
-			cmd = softWareInfo.getExePath() + "bowtie2-build ";
-		}
-		
-		cmd = cmd + CmdOperate.addQuot(getChrFile()) + " " + CmdOperate.addQuot(getChrNameWithoutSuffix());
-		CmdOperate cmdOperate = new CmdOperate(cmd, "bwaMakeIndex");
+		List<String> lsCmd = getLsCmdIndex();
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.run();
 		return true;
+	}
+	
+	private List<String> getLsCmdIndex() {
+		List<String> lsCmd = new ArrayList<>();
+		SoftWareInfo softWareInfo = new SoftWareInfo(bowtieVersion);
+		if (bowtieVersion == SoftWare.bowtie) {
+			lsCmd.add(softWareInfo.getExePath() + "bowtie-build");
+		} else if (bowtieVersion == SoftWare.bowtie2) {
+			lsCmd.add(softWareInfo.getExePath() + "bowtie2-build");
+		}
+		lsCmd.add(getChrFile());
+		lsCmd.add(getChrNameWithoutSuffix());
+		return lsCmd;
 	}
 	
 	public boolean mapping() {
@@ -284,6 +288,20 @@ public class MapBowtie extends MapDNA {
 		} else {
 			return false;
 		}
+	}
+	
+	/** 目前只能做bowtie2的mapping */
+	private List<String> getLsCmdMapping() {
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add(ExePathBowtie + "bowtie2");
+		
+		lsCmd.add("--local --sensitive-local");
+		lsCmd.add(e);
+		
+		
+		String options = " --local --sensitive-local";
+		options = options + getOffset() + getMappingNum() + getMapLibrary() + getSampleGroup() + getThreadNum() + getInsertSize();
+		lsCmd.add(e);
 	}
 	
 	/**

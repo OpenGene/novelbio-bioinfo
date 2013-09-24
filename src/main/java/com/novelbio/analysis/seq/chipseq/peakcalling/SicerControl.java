@@ -192,7 +192,7 @@ public class SicerControl {
 	 * E-value is not p-value. Suggestion for first try on histone modification data: 
 	 * E-value=100. If you find ~10000 islands using this evalue, an empirical estimate of FDR
 	 * is 1E-2.
-	 * @param evalue 榛��100
+	 * @param evalue
 	 */
 	public void setEvalue(int evalue) {
 		peakCallingSicer.setEvalue(evalue);
@@ -202,8 +202,8 @@ public class SicerControl {
 		modifyGenomePy();
 		
 		try {Thread.sleep(1000);} catch (InterruptedException e) {}
-		
-		ArrayList<String> lsOutFile = peakCallingSicer.peakCallingAndGetResultFile(peakCallingSicerType);
+		peakCallingSicer.setPeakCallingType(peakCallingSicerType);
+		ArrayList<String> lsOutFile = peakCallingSicer.peakCallingAndGetResultFile();
 		dealResult(peakCallingSicerType, lsOutFile, peakCallingSicer.getOutDir(), prefixKO, prefixWT);
 	}
 	

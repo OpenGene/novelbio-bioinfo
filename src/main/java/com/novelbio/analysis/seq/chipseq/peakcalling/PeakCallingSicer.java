@@ -2,12 +2,14 @@ package com.novelbio.analysis.seq.chipseq.peakcalling;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 
+import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
 
-public class PeakCallingSicer {
+public class PeakCallingSicer implements IntCmdSoft {
 	public static void main(String[] args) {
 		System.out.println(		PeakCallingSicerType.SICERrb.toString());
 
@@ -32,6 +34,7 @@ public class PeakCallingSicer {
 	private String koControlFile;
 	private String wtBedFile;
 	private String wtControlFile;
+	PeakCallingSicerType sicerType;
 	/**
 	 * 后面自动加上"/"
 	 */
@@ -53,7 +56,9 @@ public class PeakCallingSicer {
 	public void setInputDir(String inputDir) {
 		this.InputDir = inputDir;
 	}
-	
+	public void setPeakCallingType(PeakCallingSicerType sicerType) {
+		this.sicerType = sicerType;
+	}
 	public void setoutputDir(String outputDir) {
 		this.outputDir = outputDir;
 	}
@@ -118,98 +123,92 @@ public class PeakCallingSicer {
 	
 	private String getInputDir() {
 		if (InputDir == null) {
-			return "";
+			return null;
 		}
-		else {
-			return " " + InputDir;
-		}
+		return InputDir;
 	}
 	
 	private String getOutputDir() {
-		if (outputDir ==null ) {
-			return "";
+		if (outputDir == null ) {
+			return null;
 		}
-		else {
-			return " " + outputDir;
-		}
+		return outputDir;
 	}
 	
 	private String getSpecies() {
-		return " " + speciesString;
+		return speciesString;
 	}
 	
 	private String getRedundancyThreshold() {
-		return " " + redundancyThreshold;
+		return redundancyThreshold + "";
 	}
 	
 	private String getWindowSize() {
-		return " " + windowSize;
+		return windowSize + "";
 	}
 	
 	private String getFragmentSize() {
-		return " " + fragmentSize;
+		return fragmentSize + "";
 	}
 	
 	private String getEffectiveGenomeSize() {
-		return " " + effectiveGenomeSize;
+		return effectiveGenomeSize + "";
 	}
 	
 	private String getGapSize() {
-		return " " + gapSize;
+		return gapSize + "";
 	}
 	
 	private String getKoBedFile() {
 		if (koBedFile == null ) {
-			return "";
+			return null;
 		}
-		return " " + koBedFile;
+		return koBedFile;
 	}
 	
 	private String getKoControlFile() {
 		if (koControlFile == null) {
-			return "";
+			return null;
 		}
-		return " " + koControlFile;
+		return koControlFile;
 	}
 	
 	private String getKoThreshold() {
-		return " " + koThreshold;
+		return koThreshold + "";
 	}
 	
 	private String getWtBedFile() {
 		if (wtBedFile == null) {
-			return "";
+			return null;
 		}
-		return " " + wtBedFile;
+		return wtBedFile;
 	}
 	
 	private String getWtControlFile() {
 		if (wtControlFile == null) {
-			return "";
+			return null;
 		}
-		return " " + wtControlFile;
+		return wtControlFile;
 	}
 	
 	private String getWtThreshold() {
-		return " " + wtThreshold;
+		return wtThreshold + "";
 	}
 	
 	
 	private String getEvalue() {
-		return " " + Evalue;
+		return Evalue + "";
 	}
 	
 	private String getFDR() {
-		return " " + FDR;
+		return FDR + "";
 	}
 	
 	private String getPathTo() {
-		return " " + PathTo;
+		return PathTo + "";
 	}
 	
-	public String sicerCmd(PeakCallingSicerType sicerType) {
-		
-		
+	public String sicerCmd() {
 		String strsicerCmd = null;
 		String tmpCmd = getInputDir() + getKoBedFile()  + getKoControlFile()  + getOutputDir() + getSpecies() + getRedundancyThreshold()
 				+ getWindowSize() + getFragmentSize() + getEffectiveGenomeSize() + getGapSize() + getFDR() + getPathTo();
@@ -232,15 +231,92 @@ public class PeakCallingSicer {
 		}
 		return strsicerCmd;
 	}
+	
+	private List<String> getLsCmd(PeakCallingSicerType sicerType) {
+		List<String> lsCmd = null;
+		if (sicerType.equals(PeakCallingSicerType.SICER )){
+			lsCmd = getLsCmd();
+			lsCmd.add(0, exePath + "SICER.sh");
+		} else if (sicerType.equals(PeakCallingSicerType.SICERrb)) {
+			lsCmd = getLsCmdrb();
+			lsCmd.add(0, exePath + "SICER-rb.sh");
+		} else if (sicerType.equals(PeakCallingSicerType.SICERdf)) {
+			lsCmd = getLsCmd2();
+			lsCmd.add(0, exePath + "SICER-df.sh");
+		} else if (sicerType.equals(PeakCallingSicerType.SICERdfrb)) {
+			lsCmd = getLsCmd2();
+			lsCmd.add(0, exePath + "SICER-df-rb.sh");
+		}
+		lsCmd.add(0, "sh");
+		return lsCmd;
+	}
+	
+	private List<String> getLsCmd2() {
+		List<String> lsCmd = new ArrayList<>();
+		addListStr(lsCmd, getKoBedFile());
+		addListStr(lsCmd, getKoControlFile());
+		addListStr(lsCmd, getWtBedFile());
+		addListStr(lsCmd, getWtControlFile());
+		addListStr(lsCmd, getWindowSize());
+		addListStr(lsCmd, getGapSize());
+		addListStr(lsCmd, getEvalue());
+		addListStr(lsCmd, getFDR());
+		addListStr(lsCmd, getSpecies());
+		addListStr(lsCmd, getEffectiveGenomeSize());
+		addListStr(lsCmd, getFragmentSize());
+		addListStr(lsCmd, getKoThreshold());
+		addListStr(lsCmd, getWtThreshold());
+		addListStr(lsCmd, getInputDir());
+		addListStr(lsCmd, getOutDir());
+		addListStr(lsCmd, getPathTo());
+		return lsCmd;
+	}
+	
+	private List<String> getLsCmdrb() {
+		List<String> lsCmd = new ArrayList<>();
+		addListStr(lsCmd, getInputDir());
+		addListStr(lsCmd, getKoBedFile());
+		addListStr(lsCmd, getOutputDir());
+		addListStr(lsCmd, getSpecies());
+		addListStr(lsCmd, getRedundancyThreshold());
+		addListStr(lsCmd, getWindowSize());
+		addListStr(lsCmd, getFragmentSize());
+		addListStr(lsCmd, getEffectiveGenomeSize());
+		addListStr(lsCmd, getGapSize());
+		addListStr(lsCmd, getEvalue());
+		addListStr(lsCmd, getPathTo());
+		return lsCmd;
+	}
+	private List<String> getLsCmd() {
+		List<String> lsCmd = new ArrayList<>();
+		addListStr(lsCmd, getInputDir());
+		addListStr(lsCmd, getKoBedFile());
+		addListStr(lsCmd, getKoControlFile());
+		addListStr(lsCmd, getOutputDir());
+		addListStr(lsCmd, getSpecies());
+		addListStr(lsCmd, getRedundancyThreshold());
+		addListStr(lsCmd, getWindowSize());
+		addListStr(lsCmd, getFragmentSize());
+		addListStr(lsCmd, getEffectiveGenomeSize());
+		addListStr(lsCmd, getGapSize());
+		addListStr(lsCmd, getFDR());
+		addListStr(lsCmd, getPathTo());
+		return lsCmd;
+	}
+	
+	private void addListStr(List<String> lsCmd, String tmpCmd) {
+		if(tmpCmd == null) return;
+		lsCmd.add(tmpCmd);
+	}
 	/**
 	 * peakCalling，然后返回结果文件
 	 * @param sicerType
 	 * @return
 	 */
-	public ArrayList<String> peakCallingAndGetResultFile(PeakCallingSicerType sicerType) {
+	public ArrayList<String> peakCallingAndGetResultFile() {
 		ArrayList<String> lsOutFile = new ArrayList<String>();;
-		String cmd = sicerCmd(sicerType);
-		CmdOperate cmdOperate = new CmdOperate(cmd, "macsPeakCalling");
+		List<String> lsCmd = getLsCmd(sicerType);
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.run();
 		if (sicerType == PeakCallingSicerType.SICERrb) {
 			String resultPathAndFile = outputDir + koBedFile.split("\\.")[0] + "-W" + windowSize + "-G" + gapSize + "-E" + Evalue + ".scoreisland";
@@ -265,6 +341,14 @@ public class PeakCallingSicer {
 		return null;
 	}
 	
+
+	@Override
+	public List<String> getCmdExeStr() {
+		List<String> lsCmd = getLsCmd(sicerType);
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
+		lsCmd.add(cmdOperate.getCmdExeStr());
+		return lsCmd;
+	}
 	
 	public static  enum PeakCallingSicerType{
 		SICER,SICERrb,SICERdf,SICERdfrb;
