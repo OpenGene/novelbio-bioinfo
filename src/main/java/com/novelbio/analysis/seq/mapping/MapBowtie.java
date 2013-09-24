@@ -1,7 +1,9 @@
 package com.novelbio.analysis.seq.mapping;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -10,6 +12,7 @@ import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
@@ -17,6 +20,11 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 @Component
 @Scope("prototype")
 public class MapBowtie extends MapDNA implements IntCmdSoft {
+	public static final int Sensitive_Very_Fast = 11;
+	public static final int Sensitive_Fast = 12;
+	public static final int Sensitive_Sensitive = 13;
+	public static final int Sensitive_Very_Sensitive = 14;
+	
 	/** 默认bowtie2 */
 	SoftWare bowtieVersion = SoftWare.bowtie2;
 	/** 待比对的染色体 */
@@ -28,7 +36,7 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 	List<FastQ> lsRightFq = new ArrayList<FastQ>();
 	
 	String outFileName = "";
-	String sampleGroup = "";
+	List<String> lsSampleGroup = null;
 	/** 非unique mapping的话，取几个 */
 	int mappingNum = 0;
 	
@@ -36,6 +44,7 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 	int insertMax = 500;
 	
 	int threadNum = 4;
+	int sensitive = Sensitive_Sensitive;
 	/**
 	 * pe -fr
 	 * mp -rf
@@ -66,6 +75,11 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 	public void setOutFileName(String outFileName) {
 		this.outFileName = outFileName;
 	}
+	
+	public void setSensitive(int sensitive) {
+		this.sensitive = sensitive;
+	}
+	
 	private String getChrFile() {
 		return chrFile;
 	}
@@ -110,29 +124,35 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 	 * 返回输入的文件，根据是否为pairend，调整返回的结果
 	 * @return
 	 */
-	private String getLsFqFile() {
-		String lsFileName = CmdOperate.addQuot(lsLeftFq.get(0).getReadFileName());
+	private List<String> getLsFqFile() {
+		List<String> lsCmd = new ArrayList<>();
+		String lsFileName = lsLeftFq.get(0).getReadFileName();
 		for (int i = 1; i < lsLeftFq.size(); i++) {
-			lsFileName = lsFileName + "," + CmdOperate.addQuot(lsLeftFq.get(i).getReadFileName());
+			lsFileName = lsFileName + "," + lsLeftFq.get(i).getReadFileName();
 		}
-		if (isPairEnd()) {
-			lsFileName = lsFileName + " -2 " + CmdOperate.addQuot(lsRightFq.get(0).getReadFileName());
-			for (int i = 1; i < lsRightFq.size(); i++) {
-				lsFileName = lsFileName + "," + CmdOperate.addQuot(lsRightFq.get(i).getReadFileName());
-			}
-			lsFileName = " -1 " + lsFileName;
+		if (!isPairEnd()) {
+			lsCmd.add("-U");
+			lsCmd.add(lsFileName);
 		} else {
-			lsFileName = " -U " + lsFileName;
+			lsCmd.add("-1");
+			lsCmd.add(lsFileName);
+			lsCmd.add("-2");
+			String lsFileName2 = lsRightFq.get(0).getReadFileName();
+			for (int i = 1; i < lsLeftFq.size(); i++) {
+				lsFileName2 = lsFileName2 + "," + lsRightFq.get(i).getReadFileName();
+			}
+			lsCmd.add(lsFileName2);
 		}
-		return lsFileName + " ";
+		return lsCmd;
 	}
 	
-	private String getOutFileName() {
+	private String[] getOutFileName() {
+		outFileName = addSamToFileName(outFileName);
 		if (outFileName.equals("")) {
 			outFileName = FileOperate.changeFileSuffix(lsLeftFq.get(0).getReadFileName(), "_result", "sam");
 		}
 		String outName = MapBwa.addSamToFileName(outFileName);
-		return " -S " + CmdOperate.addQuot(outName);
+		return new String[]{"-S", outName};
 	}
 	
 	private String getOffset() {
@@ -153,14 +173,14 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 		if (!isPairEnd()) {
 			return null;
 		} else if (mapLibrary == MapLibrary.SingleEnd || mapLibrary == MapLibrary.PairEnd) {
-			return " --fr ";
+			return "--fr";
 		} else if (mapLibrary == MapLibrary.MatePair) {
-			return " --rf ";
+			return "--rf";
 		}
-		return "";
+		return null;
 	}
 	
-	private String getInsertSize() {
+	private String[] getInsertSize() {
 		if (isPairEnd()) {
 			if (mapLibrary == MapLibrary.SingleEnd || mapLibrary == MapLibrary.PairEnd) {
 				insertMax = 500;
@@ -169,9 +189,9 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 			} else if (mapLibrary == MapLibrary.MatePairLong) {
 				insertMax = 25000;
 			}
-			return " -X " + insertMax + " ";
+			return new String[]{"-X", insertMax + ""};
 		}
-		return "";
+		return null;
 	}
 	
 	/**
@@ -182,52 +202,41 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 	 * @param Platform
 	 */
 	public void setSampleGroup(String sampleID, String LibraryName, String SampleName, String Platform) {
-		sampleGroup = "";
 		if (sampleID == null || sampleID.equals("")) {
 			return;
 		}
-		this.sampleGroup = " --rg-id " +  sampleID + " ";
-		
-		ArrayList<String> lsSampleDetail = new ArrayList<String>();
-
+		lsSampleGroup = new ArrayList<>();
+		lsSampleGroup.add("--rg-id"); lsSampleGroup.add(sampleID);
 		if (SampleName != null && !SampleName.trim().equals("")) {
-			lsSampleDetail.add("SM:" + SampleName.trim());
+			lsSampleGroup.add("--rg");
+			lsSampleGroup.add("SM:" + SampleName.trim());
 		} else {
-			lsSampleDetail.add("SM:" + sampleID.trim());
+			lsSampleGroup.add("--rg");
+			lsSampleGroup.add("SM:" + sampleID.trim());
 		}
-		
 		if (LibraryName != null && !LibraryName.trim().equals("")) {
-			lsSampleDetail.add("LB:" + LibraryName.trim());
+			lsSampleGroup.add("--rg");
+			lsSampleGroup.add("LB:" + LibraryName.trim());
 		}
 		
 		if (Platform != null && !Platform.trim().equals("")) {
-			lsSampleDetail.add("PL:" + Platform);
+			lsSampleGroup.add("--rg");
+			lsSampleGroup.add("PL:" + Platform);
 		} else {
+			lsSampleGroup.add("--rg");
 			if (mapLibrary == MapLibrary.MatePair) {
-				lsSampleDetail.add("PL:IonProton");
+				lsSampleGroup.add("PL:IonProton");
 			} else {
-				lsSampleDetail.add("PL:Illumina");
+				lsSampleGroup.add("PL:Illumina");
 			}
-		}
-		if (lsSampleDetail.size() == 0) {
-			return;
-		}
-		
-		for (String string : lsSampleDetail) {
-			sampleGroup = sampleGroup + " --rg " + string + " ";
 		}
 	}
 	
-	private String getSampleGroup() {
-		return sampleGroup;
+	private List<String> getSampleGroup() {
+		return lsSampleGroup;
 	}
-	private String getThreadNum() {
-		return " -p " + threadNum + " ";
-	}
-	private String getOptions() {
-		String options = " --local --sensitive-local";
-		options = options + getOffset() + getMappingNum() + getMapLibrary() + getSampleGroup() + getThreadNum() + getInsertSize();
-		return options;
+	private String[] getThreadNum() {
+		return new String[]{"-p", threadNum + ""};
 	}
 	
 	private boolean isPairEnd() {
@@ -244,7 +253,6 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 	 * @return true：表示运行了建索引程序，不代表成功建立了索引
 	 */
 	public boolean IndexMake(boolean forceMakeIndex) {
-		SoftWareInfo softWareInfo = new SoftWareInfo();
 //		linux命令如下 
 //	 	bwa index -p prefix -a algoType -c  chrFile
 //		-c 是solid用
@@ -277,11 +285,8 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 	}
 	
 	public boolean mapping() {
-		outFileName = addSamToFileName(outFileName);
-		cmd = ""; 
-		cmd = ExePathBowtie + "bowtie2 ";
-		cmd = cmd + getOptions() + " -x " + CmdOperate.addQuot(getChrNameWithoutSuffix()) + getLsFqFile() + getOutFileName();
-		CmdOperate cmdOperate = new CmdOperate(cmd, "bwaMapping2");
+		List<String> lsCmd = getLsCmdMapping();
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.run();
 		if (cmdOperate.getRunTime() > overTime || cmdOperate.isFinishedNormal()) {
 			return true;
@@ -294,14 +299,43 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 	private List<String> getLsCmdMapping() {
 		List<String> lsCmd = new ArrayList<>();
 		lsCmd.add(ExePathBowtie + "bowtie2");
+		lsCmd.add("--local");
+		if (sensitive == Sensitive_Very_Fast) {
+			lsCmd.add("--very-fast-local");
+		} else if (sensitive == Sensitive_Fast) {
+			lsCmd.add("--fast-local");
+		} else if (sensitive == Sensitive_Sensitive) {
+			lsCmd.add("--sensitive-local");
+		} else if (sensitive == Sensitive_Very_Sensitive) {
+			lsCmd.add("--very-sensitive-local");
+		} else {
+			lsCmd.add("--sensitive-local");
+		}		
+		lsCmd.add(getOffset());
+		ArrayOperate.addArrayToList(lsCmd, getMappingNum());
+		addListStr(lsCmd, getMapLibrary());
+		lsCmd.addAll(getSampleGroup());
+		ArrayOperate.addArrayToList(lsCmd, getThreadNum());
+		ArrayOperate.addArrayToList(lsCmd, getInsertSize());
 		
-		lsCmd.add("--local --sensitive-local");
-		lsCmd.add(e);
-		
-		
-		String options = " --local --sensitive-local";
-		options = options + getOffset() + getMappingNum() + getMapLibrary() + getSampleGroup() + getThreadNum() + getInsertSize();
-		lsCmd.add(e);
+		lsCmd.add("-x");
+		lsCmd.add(getChrNameWithoutSuffix());
+		lsCmd.addAll(getLsFqFile());
+		ArrayOperate.addArrayToList(lsCmd, getOutFileName());
+		return lsCmd;
+	}
+	
+	private void addListStr(List<String> lsCmd, String param) {
+		if (param == null) return;
+		lsCmd.add(param);
+	}
+	
+	@Override
+	public List<String> getCmdExeStr() {
+		List<String> lsCmd = getLsCmdMapping();
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
+		lsCmd.add(cmdOperate.getCmdExeStr());
+		return lsCmd;
 	}
 	
 	/**
@@ -352,4 +386,15 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 		String version = lsInfo.get(0).toLowerCase().split("version")[1].trim();
 		return version;
 	}
+	
+	
+	public static Map<String, Integer> getMapSensitive() {
+		Map<String, Integer> mapSensitive = new LinkedHashMap<>();
+		mapSensitive.put("Sensitive", Sensitive_Sensitive);
+		mapSensitive.put("Very Sensitive", Sensitive_Very_Sensitive);
+		mapSensitive.put("Fast", Sensitive_Fast);
+		mapSensitive.put("VeryFast", Sensitive_Very_Fast);
+		return mapSensitive;
+	}
+
 }

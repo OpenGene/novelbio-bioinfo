@@ -35,11 +35,6 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 public class MapTophat implements MapRNA {
 	private static Logger logger = Logger.getLogger(MapTophat.class);
 	
-	public static final int Sensitive_Very_Fast = 11;
-	public static final int Sensitive_Fast = 11;
-	public static final int Sensitive_Sensitive = 11;
-	public static final int Sensitive_Very_Sensitive = 11;
-	
 	StrandSpecific strandSpecifictype = StrandSpecific.NONE;
 	List<FastQ> lsLeftFq = new ArrayList<FastQ>();
 	List<FastQ> lsRightFq = new ArrayList<FastQ>();
@@ -78,7 +73,7 @@ public class MapTophat implements MapRNA {
 	boolean booSetIntronMin = false;
 	boolean booSetIntronMax = false;
 	
-	int sensitiveLevel = Sensitive_Sensitive;
+	int sensitiveLevel = MapBowtie.Sensitive_Sensitive;
 	
 	/** 输入的gffChrAbs中只需要含有GffHashGene即可 */
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
@@ -332,13 +327,13 @@ public class MapTophat implements MapRNA {
 	}
 	
 	private String getSensitive() {
-		if (sensitiveLevel == Sensitive_Fast) {
+		if (sensitiveLevel == MapBowtie.Sensitive_Fast) {
 			return " --b2-fast ";
-		} else if (sensitiveLevel == Sensitive_Very_Fast) {
+		} else if (sensitiveLevel == MapBowtie.Sensitive_Very_Fast) {
 			return " --b2-very-fast ";
-		} else if (sensitiveLevel == Sensitive_Sensitive) {
+		} else if (sensitiveLevel == MapBowtie.Sensitive_Sensitive) {
 			return " --b2-sensitive ";
-		} else if (sensitiveLevel == Sensitive_Very_Sensitive) {
+		} else if (sensitiveLevel == MapBowtie.Sensitive_Very_Sensitive) {
 			return " --b2-very-sensitive ";
 		}
 		return "";
@@ -492,13 +487,5 @@ public class MapTophat implements MapRNA {
 		FileOperate.moveFile(FileOperate.addSep(outPathPrefix) + "accepted_hits.bam", parentPath, prefix + "_accepted_hits.bam",false);
 		FileOperate.moveFile(FileOperate.addSep(outPathPrefix) + "junctions.bed", parentPath, prefix + "_junctions.bed",false);
 	}
-	
-	public static Map<String, Integer> getMapSensitive() {
-		Map<String, Integer> mapSensitive = new LinkedHashMap<>();
-		mapSensitive.put("Sensitive", Sensitive_Sensitive);
-		mapSensitive.put("Very Sensitive", Sensitive_Very_Sensitive);
-		mapSensitive.put("Fast", Sensitive_Fast);
-		mapSensitive.put("VeryFast", Sensitive_Very_Fast);
-		return mapSensitive;
-	}
+
 }

@@ -232,6 +232,18 @@ public class DiffExpEdgeR extends DiffExpAbs {
 			for (int j = 0; j < tmpResult.length; j++) {
 				tmpResult[j] = tmpResult[j].replace("\"", "");
 			}
+			try {
+				Double.parseDouble(tmpResult[3]);
+			} catch (Exception e) {
+				if ((tmpResult[1].equals("0") || tmpResult[1].equalsIgnoreCase("NA") || tmpResult[1].equalsIgnoreCase("none") ) 
+						&& (tmpResult[2].equals("0") || tmpResult[2].equalsIgnoreCase("NA") || tmpResult[2].equalsIgnoreCase("none") )) {
+					tmpResult[3] = "0";
+				} else if (tmpResult[1].equals("0")) {
+					tmpResult[3] = "-20";
+				} else if (tmpResult[2].equals("0")) {
+					tmpResult[3] = "20";
+				}
+			}
 			lsResult.add(tmpResult);
 		}
 		FileOperate.DeleteFileFolder(outFileName);

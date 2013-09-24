@@ -193,6 +193,12 @@ OutDir=6
 					tmpResult[4] = Math.log(Double.parseDouble(tmpResult[3]))/ Math.log(2) + "";
 				} catch (Exception e) {
 				}
+			} else if (tmpResult[3].equals("0")) {
+				tmpResult[4] = -20 + "";
+			} else if (tmpResult[3].equals("Inf")) {
+				tmpResult[4] = 20 + "";
+			} else if (tmpResult[3].equals("NA") || tmpResult[3].equals("None")) {
+				tmpResult[4] = 0 + "";
 			}
 			lsResult.add(tmpResult);
 		}
