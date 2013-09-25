@@ -3,6 +3,8 @@ package com.novelbio.analysis.seq.mapping;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamFile;
@@ -17,13 +19,12 @@ import com.novelbio.database.service.SpringFactory;
  *
  */
 public abstract class MapDNA implements MapDNAint {
+	private static final Logger logger = Logger.getLogger(MapDNA.class);
 	/**
 	 * 超时时间，意思如果mapping时间大于该时间，index就不太会出错了
 	 */
 	static int overTime = 50000;
-	
-	String cmd;
-	
+		
 	/** 因为mapping完后会将sam文件转成bam文件，这时候就可以顺带的做一些工作 */
 	List<AlignmentRecorder> lsAlignmentRecorders = new ArrayList<AlignmentRecorder>();
 	/** 因为mapping完后会将sam文件转成bam文件，这时候就可以顺带的做一些工作 */
@@ -85,12 +86,8 @@ public abstract class MapDNA implements MapDNAint {
 //			IndexMake(true);
 //			mapping();
 		}
+		logger.error("mapping 结束");
 		return copeAfterMapping();
-	}
-	
-	/** 返回mapping时所跑的参数 */
-	public String getCmdMapping() {
-		return cmd; 
 	}
 	
 	public List<AlignmentRecorder> getLsAlignmentRecorders() {

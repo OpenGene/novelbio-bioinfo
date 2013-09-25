@@ -1,14 +1,20 @@
 package com.novelbio.analysis.seq.bed;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
+import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataOperate.TxtReadandWrite.TXTtype;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
@@ -23,12 +29,11 @@ import com.novelbio.base.fileOperate.FileOperate;
  * 6: mappingNum. 1 means unique mapping
  * @author zong0jie
  */
-public class BedSeq implements AlignSeq {
+public class BedSeq implements AlignSeq, IntCmdSoft {
 	private static Logger logger = Logger.getLogger(BedSeq.class);  	
-	
+	CmdOperate cmdOperate;
 	boolean read = true;
-	BedRead bedRead;
-	BedWrite bedWrite;
+	TxtReadandWrite txtReadandWrite;
 	
 	/**
 	 * 默认为读取bed文件
@@ -44,22 +49,12 @@ public class BedSeq implements AlignSeq {
 	 * @param creatBed
 	 */
 	public BedSeq(String bedFile, boolean creatBed) {
-		if (creatBed) {
-			bedWrite = new BedWrite(bedFile);
-			read = false;
-		} else {
-			bedRead = new BedRead(bedFile);
-			read = true;
-		}
+		txtReadandWrite = new TxtReadandWrite(bedFile, creatBed);
 	}
 	
 	@Override
 	public String getFileName() {
-		if (read) {
-			return bedRead.getFileName();
-		} else {
-			return bedWrite.getFileName();
-		}
+		return txtReadandWrite.getFileName();
 	}
 	
 	/**
@@ -68,21 +63,24 @@ public class BedSeq implements AlignSeq {
 	 * @param bedRecord
 	 */
 	public void writeBedRecord(BedRecord bedRecord) {
-		bedWrite.writeBedRecord(bedRecord);
+		if (bedRecord == null) return;
+		txtReadandWrite.writefileln(bedRecord.toString());
 	}
 	/**
 	 * 内部关闭
 	 * @param lsBedRecord
 	 */
 	public void wirteBedRecord(List<BedRecord> lsBedRecord) {
-		bedWrite.writeBedRecord(lsBedRecord);
+		for (BedRecord bedRecord : lsBedRecord) {
+			txtReadandWrite.writefileln(bedRecord.toString());
+		}
 		close();
 	}
 	
 	/** 读取的具体长度，出错返回 -1 */
 	public long getReadByte() {
-		if (bedRead != null) {
-			return bedRead.getReadByte();
+		if (txtReadandWrite != null) {
+			return txtReadandWrite.getReadByte();
 		}
 		return -1;
 	}
@@ -92,8 +90,8 @@ public class BedSeq implements AlignSeq {
 	 * @return 结果在0-1之间，小于0表示出错
 	 */
 	public double getReadPercentage() {
-		if (bedRead != null) {
-			return bedRead.getReadPercentage();
+		if (txtReadandWrite != null) {
+			return txtReadandWrite.getReadPercentage();
 		}
 		return -1;
 	}
@@ -104,7 +102,15 @@ public class BedSeq implements AlignSeq {
 	 * @return
 	 */
 	public ArrayList<BedRecord> readHeadLines(int num) {
-		return bedRead.readHeadLines(num);
+		ArrayList<BedRecord> lsResult = new ArrayList<BedRecord>();
+		int i = 0;
+		for (BedRecord bedRecord : readLines()) {
+			if (i >= num) {
+				break;
+			}
+			lsResult.add(bedRecord);
+		}
+		return lsResult;
 	}
 	/**
 	 * 读取前几行，不影响{@link #readLines()}
@@ -112,11 +118,17 @@ public class BedSeq implements AlignSeq {
 	 * @return
 	 */
 	public BedRecord readFirstLine() {
-		return bedRead.readFirstLine();
+		BedRecord bedRecord = readLines().iterator().next();
+		close();
+		return bedRecord;
 	}
 	
 	public Iterable<BedRecord> readLines() {
-		return bedRead.readLines();
+		try {
+			return readPerlines();
+		} catch (Exception e) {
+			return null;
+		}
 	}
 	/**
 	 * 从第几行开始读，是实际行
@@ -124,29 +136,65 @@ public class BedSeq implements AlignSeq {
 	 * @return
 	 */
 	public Iterable<BedRecord> readLines(int lines) {
-		return bedRead.readLines(lines);
+		lines = lines - 1;
+		try {
+			Iterable<BedRecord> itContent = readPerlines();
+			if (lines > 0) {
+				for (int i = 0; i < lines; i++) {
+					itContent.iterator().hasNext();
+				}
+			}
+			return itContent;
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
-
 	/**
-	 * 指定bed文件，以及需要排序的列数，产生排序结果
-	 * @param chrID ChrID所在的列，从1开始记数，按照字母数字排序
-	 * @param sortBedFile 排序后的文件全名
-	 * @param arg 除ChrID外，其他需要排序的列，按照数字排序，实际列
-	 * @throws Exception
+	 * 迭代读取文件
+	 * @param filename
+	 * @return
+	 * @throws Exception 
+	 * @throws IOException
 	 */
-	public BedSeq sortBedFile(int chrID, String sortBedFile,int...arg)  {
-		String outBedFile = bedRead.sortBedFile(chrID, sortBedFile, arg);
-		return new BedSeq(outBedFile);
-	}
-	
-	/**
-	 * 指定bed文件，按照chrID和坐标进行排序
-	 * @param sortBedFile 排序后的文件全名
-	 */
-	public BedSeq sort(String sortBedFile)  {
-		String bedSeqSorted = bedRead.sort(sortBedFile);
-		return new BedSeq(bedSeqSorted);
+	private Iterable<BedRecord> readPerlines() throws Exception {
+		final BufferedReader bufread =  txtReadandWrite.readfile(); 
+		return new Iterable<BedRecord>() {
+			public Iterator<BedRecord> iterator() {
+				return new Iterator<BedRecord>() {
+					public boolean hasNext() {
+						return bedRecord != null;
+					}
+					public BedRecord next() {
+						BedRecord retval = bedRecord;
+						bedRecord = getLine();
+						return retval;
+					}
+					public void remove() {
+						throw new UnsupportedOperationException();
+					}
+					BedRecord getLine() {
+						String linestr = null;
+						BedRecord bedRecord = null;
+						try {
+							while ((linestr = bufread.readLine()) != null) {
+								try {
+									bedRecord = new BedRecord(linestr);
+									return bedRecord;
+								} catch (Exception e) {
+									logger.error("error:" + linestr);
+								}
+							}
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						return null;
+					}
+					BedRecord bedRecord = getLine();
+				};
+			}
+		};
 	}
 	/**
 	 * 指定bed文件，按照chrID和坐标进行排序<br>
@@ -154,8 +202,58 @@ public class BedSeq implements AlignSeq {
 	 * 返回名字为FileOperate.changeFileSuffix(getFileName(), "_sorted", null);
 	 */
 	public BedSeq sort()  {
-		String bedSeqSorted = bedRead.sort();
-		return new BedSeq(bedSeqSorted);
+		String fileName = txtReadandWrite.getFileName();		
+		fileName = FileOperate.changeFileSuffix(fileName, "_sorted", "bed", null);
+		//sort -k1,1 -k2,2n -k3,3n FT5.bed > FT5sort.bed #第一列起第一列终止排序，第二列起第二列终止按数字排序,第三列起第三列终止按数字排序
+		return sort(fileName);
+	}
+	
+	/**
+	 * 指定bed文件，按照chrID和坐标进行排序
+	 * @param sortBedFile 排序后的文件全名
+	 */
+	public BedSeq sort(String sortBedFile)  {
+		String fileName = sortBedFile(1, sortBedFile, 2,3);
+		return new BedSeq(fileName);
+	}
+	
+	/**
+	 * 指定bed文件，以及需要排序的列数，产生排序结果
+	 * @param chrID ChrID所在的列，从1开始记数，按照字母数字排序
+	 * @param sortBedFile 排序后的文件全名
+	 * @param arg 除ChrID外，其他需要排序的列，按照数字排序，实际列
+	 * @throws Exception
+	 */
+	public String sortBedFile(int chrID, String sortBedFile, int...arg)  {
+		//sort -k1,1 -k2,2n -k3,3n FT5.bed > FT5sort.bed #第一列起第一列终止排序，
+		//第二列起第二列终止按数字排序,第三列起第三列终止按数字排序
+		String tmpTxt = txtReadandWrite.getFileName();
+		
+		TXTtype txtTtypeThis = TXTtype.getTxtType(txtReadandWrite.getFileName());
+		if (txtTtypeThis != TXTtype.Txt) {
+			tmpTxt = FileOperate.changeFileSuffix(txtReadandWrite.getFileName(), "_unzip", "txt");
+			txtReadandWrite.unZipFile(tmpTxt);
+		}
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add("sort");
+				
+		if (chrID != 0) {
+			lsCmd.add("-k" + chrID + "," + chrID);
+		}
+		for (int i : arg) {
+			lsCmd.add("-k" + i + "," + i + "n");
+		}
+		lsCmd.add(tmpTxt);
+		lsCmd.add(">");
+		lsCmd.add(sortBedFile);
+		
+		cmdOperate = new CmdOperate(lsCmd);
+		cmdOperate.run();
+		return sortBedFile;
+	}
+	
+	public List<String> getCmdExeStr() {
+		return new ArrayList<>();
 	}
 	
 	/**
@@ -166,7 +264,7 @@ public class BedSeq implements AlignSeq {
 	 * @throws Exception 
 	 */
 	public BedSeq extend(int extendTo) {
-		String outFile = FileOperate.changeFileSuffix(getFileName(), "_extend", null);
+		String outFile = FileOperate.changeFileSuffix(getFileName(), "_extend", "bed", null);
 		return extend(extendTo, outFile);
 	}
 	/**
@@ -235,7 +333,7 @@ public class BedSeq implements AlignSeq {
 			mappingNumBig = mappingNumSmall;
 		}
 		
-		String bedFileFiltered = FileOperate.changeFileSuffix(getFileName(), "_filtered", null);		
+		String bedFileFiltered = FileOperate.changeFileSuffix(getFileName(), "_filtered", "bed", null);		
 		BedSeq bedSeqFiltered = new BedSeq(bedFileFiltered, true);
 		for (BedRecord bedRecord : readLines()) {
 			if (strand != null && bedRecord.isCis5to3() != strand) {
@@ -418,9 +516,7 @@ public class BedSeq implements AlignSeq {
 	}
 	
 	public void close() {
-		try { bedRead.close(); } catch (Exception e) { }
-		read = true;
-		//TODO
+		txtReadandWrite.close();
 	}
 	
 	/**

@@ -60,9 +60,6 @@ public interface MapDNAint {
 	 * @return
 	 */
 	public SamFile mapReads();
-	
-	/** 返回mapping时所跑的参数 */
-	public String getCmdMapping();
 
 	public List<AlignmentRecorder> getLsAlignmentRecorders();
 	

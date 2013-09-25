@@ -22,8 +22,14 @@ public class ManageSoftWareInfo {
 	@Autowired
 	RepoSoftwareInfo repoSoftwareInfo;
 	static Map<String, SoftWareInfo> mapKey2Info;
+	static ManageSoftWareInfo manageSoftWareInfo;
 	
-	private static void fillMap() {
+	private ManageSoftWareInfo() {
+		fillMap();
+		repoSoftwareInfo = (RepoSoftwareInfo)SpringFactory.getFactory().getBean("repoSoftwareInfo");
+	}
+	
+	private void fillMap() {
 		if (mapKey2Info != null) return;
 		
 		mapKey2Info = new HashMap<>();
@@ -38,7 +44,7 @@ public class ManageSoftWareInfo {
 	 * 将配置信息导入数据库
 	 * @param txtFile 	 配置信息：第一行，item名称
 	 */
-	public static void updateInfo(boolean updateToDB, String txtFile) {
+	public void updateInfo(boolean updateToDB, String txtFile) {
 		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(txtFile, 0);
 		String[] title = lsInfo.get(0);
 		HashMap<String, Integer> hashName2ColNum = new HashMap<String, Integer>();
@@ -74,14 +80,10 @@ public class ManageSoftWareInfo {
 			m = hashName2ColNum.get("ispath");
 			softWareInfo.setInPath(info[m].trim().toLowerCase().equals("true"));
 			//升级
-			softWareInfo.update(updateToDB);
+			update(updateToDB, softWareInfo);
 		}
 	}
-	
-	public ManageSoftWareInfo() {
-		fillMap();
-		repoSoftwareInfo = (RepoSoftwareInfo)SpringFactory.getFactory().getBean("repoSoftwareInfo");
-	}
+
 	public SoftWareInfo findSoftwareByName(String softName) {
 		SoftWareInfo softWareInfo = mapKey2Info.get(softName.toLowerCase());
 		if (softWareInfo != null) {
@@ -109,5 +111,12 @@ public class ManageSoftWareInfo {
 			}
 		}
 		mapKey2Info.put(softWareInfo.getName().toLowerCase(), softWareInfo);
+	}
+	
+	public static ManageSoftWareInfo getInstance() {
+		if (manageSoftWareInfo == null) {
+			manageSoftWareInfo = new ManageSoftWareInfo();
+		}
+		return manageSoftWareInfo;
 	}
 }

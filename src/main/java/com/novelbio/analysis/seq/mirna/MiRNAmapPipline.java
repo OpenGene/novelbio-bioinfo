@@ -1,5 +1,7 @@
 package com.novelbio.analysis.seq.mirna;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.mapping.MapBwa;
 import com.novelbio.analysis.seq.sam.SamFile;
@@ -13,6 +15,7 @@ import com.novelbio.base.fileOperate.FileOperate;
  *
  */
 public class MiRNAmapPipline {
+	private static final Logger logger = Logger.getLogger(MiRNAmapPipline.class);
 	/** 序列文件 */
 	String seqFile = "";
 	/** 输出的临时文件夹，主要保存mapping的中间文件 */
@@ -45,7 +48,11 @@ public class MiRNAmapPipline {
 	/** 全部reads mapping至全基因组上后产生的bed文件 */
 	String samFileGenomeAll = null;
 	
-
+	int threadNum = 3;
+	
+	public void setThreadNum(int threadNum) {
+		this.threadNum = threadNum;
+	}
 	
 	/** 是否全部mapping至genome上，默认为true */
 	public void setMappingAll2Genome(boolean mappingAll2Genome) {
@@ -139,7 +146,7 @@ public class MiRNAmapPipline {
 		String unMappedFq = "";
 		String unMappedMiRNA = "";
 		if (FileOperate.isFileExist(miRNApreSeq)) {
-			unMappedFq = outputTmpFinal + "unMap2miRNA.fq";
+			unMappedFq = outputTmpFinal + "unMap2miRNA.fq.gz";
 			samFileMiRNA = mapping(fqFile, miRNApreSeq, samFileMiRNA, unMappedFq);
 			unMappedMiRNA = unMappedFq;
 			if (!mappingAll2Rfam) {
@@ -148,25 +155,25 @@ public class MiRNAmapPipline {
 		}
 	
 		if (FileOperate.isFileExist(rfamSeq)) {
-			unMappedFq = outputTmpFinal + "unMap2rfam.fq";
+			unMappedFq = outputTmpFinal + "unMap2rfam.fq.gz";
 			samFileRfam = mapping(fqFile, rfamSeq, samFileRfam, unMappedFq);
 			fqFile = unMappedFq;
 		}
 		
 		if (FileOperate.isFileExist(ncRNAseq)) {
-			unMappedFq = outputTmpFinal + "unMap2ncRna.fq";
+			unMappedFq = outputTmpFinal + "unMap2ncRna.fq.gz";
 			samFileNCRNA = mapping(fqFile, ncRNAseq, samFileNCRNA, unMappedFq);
 			fqFile = unMappedFq;
 		}
 		
 		if (FileOperate.isFileExist(genome)) {
-			unMappedFq = outputTmpFinal + "unMapped.fq";
+			unMappedFq = outputTmpFinal + "unMapped.fq.gz";
 			samFileGenome = mapping(unMappedMiRNA, genome, samFileGenome, unMappedFq);
 		}
 		
 		if (mappingAll2Genome && FileOperate.isFileExist(genome)) {
 			fqFile = seqFile;
-			unMappedFq = outputTmpFinal + "unMapped.fq";
+			unMappedFq = outputTmpFinal + "unMapped.fq.gz";
 			samFileGenomeAll = mapping(fqFile, genome, samFileGenomeAll, unMappedFq);
 		}
 	}
@@ -183,7 +190,7 @@ public class MiRNAmapPipline {
 		String fqFile = seqFile;
 		String unMappedFq = "";
 		if (FileOperate.isFileExist(miRNApreSeq)) {
-			unMappedFq = outputTmpFinal + "unMap2miRNA.fq";
+			unMappedFq = outputTmpFinal + "unMap2miRNA.fq.gz";
 			samFileMiRNA = mapping(fqFile, miRNApreSeq, samFileMiRNA, unMappedFq);
 			fqFile = unMappedFq;
 		}
@@ -199,8 +206,9 @@ public class MiRNAmapPipline {
 		MapBwa mapBwa = new MapBwa(fqFile, samFileName);
 		mapBwa.setChrFile(chrFile);
 		mapBwa.setExePath(exePath);
-		mapBwa.setGapLength(5);
-				
+		mapBwa.setGapLength(3);
+		mapBwa.setThreadNum(threadNum);
+		
 		SamFileStatistics samFileStatistics = new SamFileStatistics(FileOperate.getFileNameSep(samFileName)[0]);
 		samFileStatistics.setCorrectChrReadsNum(true);
 		samFileStatistics.initial();
@@ -212,10 +220,9 @@ public class MiRNAmapPipline {
 			samToFastq.setJustUnMapped(true);
 			mapBwa.addAlignmentRecorder(samToFastq);
 		}
-		
+		logger.error("开始33mapping");
 		SamFile samFile = mapBwa.mapReads();
-		samFile.close();
-		
+		logger.error("mapping结束miRNA");
 		samFileStatistics.writeToFile(FileOperate.changeFileSuffix(samFile.getFileName(), "_Statistics", "txt"));
 		return samFile.getFileName();
 	}

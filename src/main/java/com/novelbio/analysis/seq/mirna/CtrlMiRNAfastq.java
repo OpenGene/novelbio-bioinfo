@@ -67,10 +67,14 @@ public class CtrlMiRNAfastq {
 	////// 没有mapping到的bed文件，用于预测新miRNA的 */
 	Map<AlignSeq, String> mapNovelMiRNASamFile2Prefix = new LinkedHashMap<AlignSeq, String>();
 	boolean rfamSpeciesSpecific = false;
-	
+		
 	/** 务必首先设定 */
 	public void setSpecies(Species species) {
 		this.species = species;
+	}
+	
+	public void setThreadNumMiRNAmap(int mapThreadNum) {
+		miRNAmappingPipline.setThreadNum(mapThreadNum);
 	}
 	/** 首先会判断两个gffChrAbs的species是否一致 */
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {

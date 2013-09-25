@@ -11,7 +11,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.novelbio.analysis.annotation.blast.BlastStatistics;
 import com.novelbio.base.dataOperate.DateUtil;
-import com.novelbio.base.dataStructure.listOperate.HistList;
 import com.novelbio.database.model.modgeneid.GeneID;
 
 /**

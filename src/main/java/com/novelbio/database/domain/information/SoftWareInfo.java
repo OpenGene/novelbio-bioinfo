@@ -1,6 +1,5 @@
 package com.novelbio.database.domain.information;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
@@ -9,9 +8,7 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.service.servinformation.ManageSoftWareInfo;
 
 /**
@@ -39,7 +36,7 @@ public class SoftWareInfo {
 	@Transient
 	boolean searched = false;
 	@Transient
-	ManageSoftWareInfo manageSoftWareInfo = new ManageSoftWareInfo();
+	static ManageSoftWareInfo manageSoftWareInfo = ManageSoftWareInfo.getInstance();
 	
 	public SoftWareInfo() { }
 	public SoftWareInfo(SoftWare softName) { 
@@ -210,7 +207,7 @@ public class SoftWareInfo {
 	 * @param txtFile 	 配置信息：第一行，item名称
 	 */
 	public static void updateInfo(boolean updateToDB, String txtFile) {
-		ManageSoftWareInfo.updateInfo(updateToDB, txtFile);
+		manageSoftWareInfo.updateInfo(updateToDB, txtFile);
 	}
 	public static enum SoftWare {
 		blast,

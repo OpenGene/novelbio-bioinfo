@@ -1,16 +1,19 @@
 package com.novelbio.analysis.seq.mapping;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRGroup;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
@@ -21,7 +24,7 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
  */
 @Component
 @Scope("prototype")
-public class MapBwa extends MapDNA {
+public class MapBwa extends MapDNA implements IntCmdSoft {
 	public static void main(String[] args) {
 		CmdOperate cmdOperate = new CmdOperate("bowtie --version");
 		cmdOperate.setGetStdOut();
@@ -45,7 +48,7 @@ public class MapBwa extends MapDNA {
 	/** bwa所在路径 */
 	String ExePath = "";
 	String chrFile;
-	String sampleGroup = "";
+	String[] sampleGroup;
 	String outFileName = "";
 	String leftFq = "";
 	String rightFq = "";
@@ -147,8 +150,8 @@ public class MapBwa extends MapDNA {
 	 * 百分之多少的mismatch，或者几个mismatch
 	 * @param mismatchScore
 	 */
-	private String getMismatch() {
-		return "-n " + mismatch + " ";
+	private String[] getMismatch() {
+		return new String[]{"-n", mismatch + ""};
 	}
 	public void setChrFile(String chrFile) {
 		this.chrFile = chrFile;
@@ -169,8 +172,8 @@ public class MapBwa extends MapDNA {
 	public void setThreadNum(int threadNum) {
 		this.threadNum = threadNum;
 	}
-	private String getThreadNum() {
-		return "-t " + threadNum + " ";
+	private String[] getThreadNum() {
+		return new String[]{"-t", threadNum + ""};
 	}
 	/**
 	 * 是否将index读入内存，仅对双端测序有用
@@ -191,7 +194,7 @@ public class MapBwa extends MapDNA {
 	 */
 	public void setSampleGroup(String sampleID, String LibraryName, String SampleName, String Platform) {
 		SamRGroup samRGroup = new SamRGroup(sampleID, LibraryName, SampleName, Platform);
-		sampleGroup = " -r " + CmdOperate.addQuot(samRGroup.toString()) + " ";
+		sampleGroup = new String[]{"-r", samRGroup.toString()};
 	}
 	/**
 	 * 默认gap为4，如果是indel查找的话，设置到5或者6比较合适
@@ -204,18 +207,18 @@ public class MapBwa extends MapDNA {
 	 * 默认gap为4，如果是indel查找的话，设置到5或者6比较合适
 	 * @param gapLength
 	 */
-	private String getGapLen() {
-		return "-e "+gapLength + " ";
+	private String[] getGapLen() {
+		return new String[]{"-e", gapLength + ""};
 	}
 	/** 比对的时候容忍最多几个gap 默认为1，1个就够了，除非长度特别长或者是454*/
 	public void setGapNum(int gapnum) {
 		this.gapNum = gapnum;
 	}
 	/** 比对的时候容忍最多几个gap 默认为1，1个就够了，除非长度特别长或者是454*/
-	private String getGapNum() {
-		return "-o " + gapNum + " ";
+	private String[] getGapNum() {
+		return new String[]{"-o", gapNum + ""};
 	}
-	private String getInsertSize() {
+	private String[] getInsertSize() {
 		int insertMax = 500;
 		if (isPairEnd()) {
 			if (mapLibrary == MapLibrary.SingleEnd || mapLibrary == MapLibrary.PairEnd) {
@@ -225,9 +228,9 @@ public class MapBwa extends MapDNA {
 			} else if (mapLibrary == MapLibrary.MatePairLong) {
 				insertMax = 25000;
 			}
-			return " -a " + insertMax + " ";
+			return new String[]{" -a", insertMax + ""};
 		}
-		return "";
+		return null;
 	}
 	private boolean isPairEnd() {
 		if (!FileOperate.isFileExist(leftFq) || !FileOperate.isFileExist(rightFq)) {
@@ -236,27 +239,27 @@ public class MapBwa extends MapDNA {
 		return true;
 	}
 	/** 种子长度 */
-	private String getSeedSize() {
-		return " -l 25 ";
+	private String[] getSeedSize() {
+		return new String[]{"-l", 25 + ""};
 	}
 	/**
 	 * gap罚分
 	 * @return
 	 */
-	private String getOpenPanalty() {
-		return " -O 10 ";
+	private String[] getOpenPanalty() {
+		return new String[]{"-O", 10 +""};
 	}
 	/**
 	 * 是illumina32标准还是64标准
-	 * @return
+	 * @return 64标准返回"-l", 32标准返回null
 	 */
 	private String getFastQoffset() {
 		FastQ fastQ = new FastQ(leftFq);
 		int offset = fastQ.getOffset();
 		if (offset == FastQ.FASTQ_ILLUMINA_OFFSET) {
-			return  " -I ";
+			return  "-I";
 		}
-		return "";
+		return null;
 	}
 	/**
 	 * 返回sai的信息, <b>不加引号</b>
@@ -279,22 +282,25 @@ public class MapBwa extends MapDNA {
 	
 	/**
 	 * 根据基因组大小，考虑将基因组读入内存
-	 * @return
+	 * @return 没有则返回null
 	 */
 	private String readInMemory() {
 		if (FileOperate.getFileSize(chrFile) < GENOME_SIZE_IN_MEMORY || readInMemory) {
 			return " -P ";
 		}
-		return "";
+		return null;
 	}
 	
 	@Override
 	protected boolean mapping() {
 		outFileName = addSamToFileName(outFileName);
+		logger.error("test");
 		if (!bwaAln()) {
 			return false;
 		}
+		logger.error("test2");
 		bwaSamPeSe();
+		logger.error("test3");
 		return true;
 	}
 	/**
@@ -306,20 +312,13 @@ public class MapBwa extends MapDNA {
 	 * @return 是否成功运行
 	 */
 	private boolean bwaAln() {
-		String cmd = ""; cmd = ExePath + "bwa aln ";
-		cmd = cmd + getMismatch() + getGapNum() + getGapLen() + getThreadNum()
-				+ getSeedSize() + getOpenPanalty() + getFastQoffset();
-		
-		String cmd1 = cmd + CmdOperate.addQuot(chrFile) + " " + CmdOperate.addQuot(leftFq) + " > " + CmdOperate.addQuot(getSai(1));
-		
-		this.cmd = cmd1;
-		CmdOperate cmdOperate = new CmdOperate(cmd1,"bwaMapping1");
+		List<String> lsCmdLeft = getLsCmdAln(true);
+		CmdOperate cmdOperate = new CmdOperate(lsCmdLeft);
 		cmdOperate.run();
 		
 		if (isPairEnd()) {
-			String cmd2 = cmd + CmdOperate.addQuot(chrFile) + " " + CmdOperate.addQuot(rightFq) + " > " + CmdOperate.addQuot(getSai(2));
-			this.cmd = this.cmd + TxtReadandWrite.ENTER_LINUX + cmd2;
-			cmdOperate = new CmdOperate(cmd2,"bwaMapping2");
+			List<String> lsCmdRight = getLsCmdAln(false);
+			cmdOperate = new CmdOperate(lsCmdRight);
 			cmdOperate.run();
 		}
 		
@@ -329,41 +328,92 @@ public class MapBwa extends MapDNA {
 			return false;
 		}
 	}
+	
+	private List<String> getLsCmdAln(boolean firstOrSecond) {
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add(ExePath + "bwa");
+		lsCmd.add("aln");
+		ArrayOperate.addArrayToList(lsCmd, getMismatch());
+		ArrayOperate.addArrayToList(lsCmd, getGapNum());
+		ArrayOperate.addArrayToList(lsCmd, getGapLen());
+		ArrayOperate.addArrayToList(lsCmd, getThreadNum());
+		ArrayOperate.addArrayToList(lsCmd, getSeedSize());
+		ArrayOperate.addArrayToList(lsCmd, getOpenPanalty());
+		addLsCmd(lsCmd, getFastQoffset());
+		lsCmd.add(chrFile);
+		if (firstOrSecond) {
+			lsCmd.add(leftFq);
+			lsCmd.add(">");
+			lsCmd.add(getSai(1));
+		} else {
+			lsCmd.add(rightFq);
+			lsCmd.add(">");
+			lsCmd.add(getSai(2));	
+		}
+		return lsCmd;
+	}
+	
+	/**
+	 * @param lsCmd
+	 * @param param null则不添加入lsCmd
+	 */
+	private void addLsCmd(List<String> lsCmd, String param) {
+		if (param == null) return;
+		lsCmd.add(param);
+	}
+	
 	/**
 	 * 这里设定了将基因组读入内存的限制
 	 * bwa sampe -P -n 4 /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna TGACT.sai 
 	 * TGACT2.sai barcod_TGACT.fastq barcod_TGACT2.fastq > TGACT.sam
 	 */
 	private void bwaSamPeSe() {
-		String cmd = "";
-		if (isPairEnd()) {
-			cmd = this.ExePath + "bwa sampe " + sampleGroup + getInsertSize() + readInMemory();
-			cmd = cmd + " -n 10 -N 10 ";
-			cmd = cmd + CmdOperate.addQuot(chrFile) + " " + CmdOperate.addQuot(getSai(1)) + " "  + CmdOperate.addQuot(getSai(2)) + " "  + CmdOperate.addQuot(leftFq) + " "  + CmdOperate.addQuot(rightFq);
-			cmd = cmd + " > " + CmdOperate.addQuot(outFileName);
-		}
-		//这里可能不需要，unique mapping不是在sam文件中设定的
-		else {
-			cmd = this.ExePath + "bwa samse " + sampleGroup + "-n 50 ";
-			cmd = cmd + CmdOperate.addQuot(chrFile) + " " + CmdOperate.addQuot(getSai(1)) + " "  + CmdOperate.addQuot(leftFq);
-			cmd = cmd + " > " +  CmdOperate.addQuot(outFileName);
-		}
-		this.cmd = this.cmd + TxtReadandWrite.ENTER_LINUX + cmd;
-		CmdOperate cmdOperate = new CmdOperate(cmd,"bwaMappingSAI");
+		List<String> lsCmd = getLsCmdSam();
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.run();
 	}
 	
+	private List<String> getLsCmdSam() {
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add(this.ExePath + "bwa");
+		if (isPairEnd()) {
+			lsCmd.add("sampe");
+			ArrayOperate.addArrayToList(lsCmd, sampleGroup);
+			ArrayOperate.addArrayToList(lsCmd, getInsertSize());
+			addLsCmd(lsCmd, readInMemory());
+			lsCmd.add("-n"); lsCmd.add(10+"");
+			lsCmd.add("-N"); lsCmd.add(10+"");
+			lsCmd.add(chrFile);
+			lsCmd.add(getSai(1));
+			lsCmd.add(getSai(2));
+			lsCmd.add(leftFq);
+			lsCmd.add(rightFq);
+		} else {
+			lsCmd.add("samse");
+			ArrayOperate.addArrayToList(lsCmd, sampleGroup);
+			lsCmd.add("-n"); lsCmd.add(50+"");
+			lsCmd.add(chrFile);
+			lsCmd.add(getSai(1));
+			lsCmd.add(leftFq);
+		}
+		lsCmd.add(">");
+		lsCmd.add(outFileName);
+		return lsCmd;
+	}
+		
 	/**
 	 * 将sam文件压缩成bam文件，然后做好统计并返回
 	 * @param outSamFile
 	 * @return
 	 */
 	protected SamFile copeAfterMapping() {
-		if (!FileOperate.isFileExistAndBigThanSize(outFileName, 1)) {
+		if (!FileOperate.isFileExistAndBigThanSize(outFileName, 0)) {
+			logger.error("没有该文件：" + outFileName);
 			return null;
 		}
 		SamFile samFile = new SamFile(outFileName);
-		SamFile bamFile = samFile.convertToBam(lsAlignmentRecorders);
+		SamFile bamFile =  null;
+		bamFile = samFile.convertToBam(lsAlignmentRecorders);
 		samFile.close();
 		deleteFile(samFile.getFileName(), bamFile.getFileName());
 		return bamFile;
@@ -390,39 +440,43 @@ public class MapBwa extends MapDNA {
 	 */
 	@Override
 	public boolean IndexMake(boolean force) {
-//		linux命令如下 
-//	 	bwa index -p prefix -a algoType -c  chrFile
-//		-c 是solid用
 		if (!force && FileOperate.isFileExist(chrFile + ".bwt") == true) {
 			return false;
 		}
-		String cmd = this.ExePath + "bwa index ";
-		cmd = cmd + getChrLen();//用哪种算法
-		//TODO :考虑是否自动判断为solid
-		cmd = cmd + CmdOperate.addQuot(chrFile);
-		logger.info(cmd);
-		CmdOperate cmdOperate = new CmdOperate(cmd,"bwaMakeIndex");
+		List<String> lsCmd = getLsCmdIndex();
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.run();
 		return true;
 	}
+	
+	private List<String> getLsCmdIndex() {
+//		linux命令如下 
+//	 	bwa index -p prefix -a algoType -c  chrFile
+//		-c 是solid用
+
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add(this.ExePath + "bwa");
+		lsCmd.add("index");
+		ArrayOperate.addArrayToList(lsCmd, getChrLen());
+		lsCmd.add(chrFile);
+		return lsCmd;
+	}
+	
 	/**
 	 * 根据基因组大小判断采用哪种编码方式
 	 * @return 已经在前后预留空格，直接添加上idex就好
 	 * 小于500MB的用 -a is
 	 * 大于500MB的用 -a bwtsw
 	 */
-	private String getChrLen() {
+	private String[] getChrLen() {
 		long size = (long) FileOperate.getFileSize(chrFile);
 		if (size/1024 > 500) {
-			return " -a bwtsw ";
-		}
-		else {
-			return " -a is ";
+			return new String[]{"-a", "bwtsw"};
+		} else {
+			return new String[]{"-a", "is"};
 		}
 	}
-	public void suspend() {
-		
-	}
+
 	@Override
 	public void setSubVersion(SoftWare bowtieVersion) {
 		// TODO Auto-generated method stub
@@ -436,5 +490,21 @@ public class MapBwa extends MapDNA {
 		List<String> lsInfo = cmdOperate.getLsErrorInfo();
 		String version = lsInfo.get(2).toLowerCase().replace("version:", "").trim();
 		return version;
+	}
+	@Override
+	public List<String> getCmdExeStr() {
+		List<String> lsCmdResult = new ArrayList<>();
+		List<String> lsCmd = getLsCmdAln(true);
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
+		lsCmdResult.add(cmdOperate.getCmdExeStr());
+		if (isPairEnd()) {
+			lsCmd = getLsCmdAln(false);
+			cmdOperate = new CmdOperate(lsCmd);
+			lsCmdResult.add(cmdOperate.getCmdExeStr());
+		}
+		lsCmd = getLsCmdSam();
+		cmdOperate = new CmdOperate(lsCmd);
+		lsCmdResult.add(cmdOperate.getCmdExeStr());
+		return lsCmdResult;
 	}
 }

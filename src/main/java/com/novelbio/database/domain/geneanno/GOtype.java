@@ -3,7 +3,6 @@ package com.novelbio.database.domain.geneanno;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.LinkedBlockingDeque;
 
 public enum GOtype {
 	BP("Biological Process", "BP", "P"), CC("Cellular Component", "CC", "C"), MF("Molecular Function", "MF", "F"), ALL("All", "ALL", "A");
