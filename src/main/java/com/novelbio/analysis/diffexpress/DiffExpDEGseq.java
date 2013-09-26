@@ -171,7 +171,7 @@ OutDir=6
 	}
 
 	@Override
-	protected void modifySingleResultFile(String outFileName, String treatName, String controlName) {
+	protected List<String[]> modifySingleResultFile(String outFileName, String treatName, String controlName) {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		ArrayList<String[]> lsDifGene = ExcelTxtRead.readLsExcelTxt(FileOperate.addSep(outFileName + outPutSuffix) + "output_score.txt", 1);
 		String[] title = new String[]{TitleFormatNBC.AccID.toString() , treatName, controlName, TitleFormatNBC.FoldChange.toString(),
@@ -202,13 +202,7 @@ OutDir=6
 			}
 			lsResult.add(tmpResult);
 		}
-//		FileOperate.DeleteFileFolder(outFileName + outPutSuffix);
-		//防止R还没输出结果就去读取
-		try { Thread.sleep(50); } catch (Exception e) { }
-		
-		TxtReadandWrite txtOutFinal = new TxtReadandWrite(outFileName, true);
-		txtOutFinal.ExcelWrite(lsResult);
-		txtOutFinal.close();
+		return lsResult;
 	}
 	/** A除以B，中间处理了一些异常 */
 	private String division(String A, String B) {

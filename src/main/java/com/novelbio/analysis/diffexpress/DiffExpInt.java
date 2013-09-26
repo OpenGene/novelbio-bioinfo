@@ -18,11 +18,12 @@ public interface DiffExpInt {
 	/**
 	 * 设定输出文件夹和比较组
 	 * @param fileName
+	 * @param fold 需要新建的标准文件夹，在 {@link EnumReport.DiffExp.getResultFolder()} 中获得
 	 * @param comparePair <br>
 	 * 0: treatment<br>
 	 * 1: control
 	 */
-	public void addFileName2Compare(String fileName, String[] comparePair);
+	public void addFileName2Compare(String fileName, String fold, String[] comparePair);
 	
 	public void setGeneInfo(ArrayList<String[]> lsGeneInfo);
 	
@@ -55,7 +56,7 @@ public interface DiffExpInt {
 	/** 仅供AOP拦截使用，外界不要调用
 	 * 拦截在其完成之后
 	 */
-	public void calculateResult(String fold);
+	public void calculateResult();
 		
 	/** 删除中间文件 */
 	public void clean();

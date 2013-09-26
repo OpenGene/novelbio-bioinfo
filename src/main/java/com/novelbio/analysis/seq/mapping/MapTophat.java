@@ -1,16 +1,15 @@
 package com.novelbio.analysis.seq.mapping;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.base.cmd.CmdOperate;
-import com.novelbio.base.dataOperate.DateUtil;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
@@ -32,7 +31,7 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
  * @author zong0jie
  * 
  */
-public class MapTophat implements MapRNA {
+public class MapTophat implements MapRNA, IntCmdSoft {
 	private static Logger logger = Logger.getLogger(MapTophat.class);
 	
 	StrandSpecific strandSpecifictype = StrandSpecific.NONE;
@@ -182,8 +181,8 @@ public class MapTophat implements MapRNA {
 		this.bowtieVersion = bowtieVersion;
 	}
 	
-	private String getOutPathPrefix() {
-		return "-o " + CmdOperate.addQuot(outPathPrefix) + " ";
+	private String[] getOutPathPrefix() {
+		return new String[]{"-o", outPathPrefix};
 	}
 	/**
 	 * 插入长度，默认是illumina：450
@@ -211,18 +210,21 @@ public class MapTophat implements MapRNA {
 		this.lsRightFq = lsRightFastQs;
 	}
 	
-	private String getLsFqFile() {
-		String lsFileName = CmdOperate.addQuot(lsLeftFq.get(0).getReadFileName());
+	private List<String> getLsFqFile() {
+		List<String> lsCmd = new ArrayList<>();
+		String lsFileName = lsLeftFq.get(0).getReadFileName();
 		for (int i = 1; i < lsLeftFq.size(); i++) {
-			lsFileName = lsFileName + "," + CmdOperate.addQuot(lsLeftFq.get(i).getReadFileName());
+			lsFileName = lsFileName + "," + lsLeftFq.get(i).getReadFileName();
 		}
+		lsCmd.add(lsFileName);
 		if (lsRightFq.size() > 0) {
-			lsFileName = lsFileName + " " + CmdOperate.addQuot(lsRightFq.get(0).getReadFileName());
+			lsFileName = lsRightFq.get(0).getReadFileName();
 			for (int i = 1; i < lsRightFq.size(); i++) {
-				lsFileName = lsFileName + "," + CmdOperate.addQuot(lsRightFq.get(i).getReadFileName());
+				lsFileName = lsFileName + "," + lsRightFq.get(i).getReadFileName();
 			}
+			lsCmd.add(lsFileName);
 		}
-		return lsFileName;
+		return lsCmd;
 	}
 	
 	private boolean isPairend() {
@@ -238,18 +240,18 @@ public class MapTophat implements MapRNA {
 	 * -r 150等，表示pairend中间的长度
 	 * @return
 	 */
-	private String getInsert() {
+	private String[] getInsert() {
 		FastQ fastQ = lsLeftFq.get(0);
 		int len = fastQ.getReadsLenAvg();
-		return "-r " + (maxInsert - len * 2) + " ";
+		return new String[]{"-r", (maxInsert - len * 2) + ""};
 	}
 
 	/** 在junction 的一头上至少要搭到多少bp的碱基 */
-	private String getAnchoLen() {
-		return "-a " + anchorLength + " ";
+	private String[] getAnchoLen() {
+		return new String[]{"-a", anchorLength + ""};
 	}
-	private String getAnchorMismatch() {
-		return "-m " + anchorMismatch + " ";
+	private String[] getAnchorMismatch() {
+		return new String[]{"-m", anchorMismatch + ""};
 	}
 	private void setIntronLen() {
 		if (booSetIntronMax && booSetIntronMin) {
@@ -277,40 +279,43 @@ public class MapTophat implements MapRNA {
 	}
 	
 	/** 内含子最短多少，默认50，需根据不同物种进行设置 */
-	private String getIntronLenMin() {
-		return "-i " + intronLenMin + " ";
+	private String[] getIntronLenMin() {
+		return new String[]{"-i", intronLenMin + ""};
 	}
 
 	/** 内含子最长多少，默认500000，需根据不同物种进行设置 */
-	private String getIntronLenMax() {
-		return "-I " + intronLenMax + " ";
+	private String[] getIntronLenMax() {
+		return new String[]{"-I", intronLenMax + ""};
 	}
-	private String getIndelLen() {
-		String param = "--max-insertion-length " + indelLen + " --max-deletion-length " + 
-				indelLen + " " + "--read-gap-length " + (int)(indelLen * 1.2) + " --read-edit-dist " + (int)(indelLen*1.5 + mismatch) + " ";
-		return param;
+	private List<String> getIndelLen() {
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add("--max-insertion-length"); lsCmd.add(indelLen + "");
+		lsCmd.add("--max-deletion-length"); lsCmd.add(indelLen + "");
+		lsCmd.add("--read-gap-length"); lsCmd.add((int)(indelLen * 1.2) + "");
+		lsCmd.add("--read-edit-dist"); lsCmd.add((int)(indelLen*1.5 + mismatch) + "");
+		return lsCmd;
 	}
 
-	private String getThreadNum() {
-		return "-p " + threadNum + " ";
+	private String[] getThreadNum() {
+		return new String[]{"-p", threadNum + ""};
 	}
 
 	/** 是否使用bowtie2进行分析 */
 	private String getBowtie() {
 		if (bowtieVersion == SoftWare.bowtie) {
-			return " --bowtie1 ";
+			return "--bowtie1";
 		}
 		else if (bowtieVersion == SoftWare.bowtie2) {
-			return "";
+			return null;
 		}
-		return "";
+		return null;
 	}
 
 	private String getOffset() {
 		if (lsLeftFq.get(0).getOffset() == FastQ.FASTQ_ILLUMINA_OFFSET) {
-			return " --solexa1.3-quals ";
+			return "--solexa1.3-quals";
 		}
-		return "";
+		return null;
 	}
 
 	/** 错配，这个走默认比较好，默认为2 */
@@ -322,43 +327,44 @@ public class MapTophat implements MapRNA {
 	}
 
 	/** 错配，这个走默认比较好，默认为2 */
-	private String getMismatch() {
-		return "--read-mismatches " + mismatch + " ";
+	private String[] getMismatch() {
+		return new String[]{"--read-mismatches", mismatch + ""};
 	}
 	
 	private String getSensitive() {
 		if (sensitiveLevel == MapBowtie.Sensitive_Fast) {
-			return " --b2-fast ";
+			return "--b2-fast";
 		} else if (sensitiveLevel == MapBowtie.Sensitive_Very_Fast) {
-			return " --b2-very-fast ";
+			return "--b2-very-fast";
 		} else if (sensitiveLevel == MapBowtie.Sensitive_Sensitive) {
-			return " --b2-sensitive ";
+			return "--b2-sensitive";
 		} else if (sensitiveLevel == MapBowtie.Sensitive_Very_Sensitive) {
-			return " --b2-very-sensitive ";
+			return "--b2-very-sensitive";
 		}
-		return "";
+		return null;
 	}
 	
-	private String getMinCoverageIntron() {
+	private List<String> getMinCoverageIntron() {
+		List<String> lsCmd = new ArrayList<>();
 		if (intronLenMin < 50) {
-			return "--min-coverage-intron " + intronLenMin
-					+ " --min-segment-intron " + intronLenMin + " ";
+			lsCmd.add("--min-coverage-intron"); lsCmd.add(intronLenMin + "");
+			lsCmd.add("--min-segment-intron"); lsCmd.add(intronLenMin + "");
 		}
-		return "";
+		return lsCmd;
 	}
 
-	private String getMaxCoverageIntron() {
+	private String[] getMaxCoverageIntron() {
 		if (intronLenMax < 20000) {
-			return "--max-coverage-intron " + intronLenMax + " ";
+			return new String[]{"--max-coverage-intron", intronLenMax + ""};
 		}
-		return "";
+		return null;
 	}
 
-	private String getMaxSegmentIntron() {
+	private String[] getMaxSegmentIntron() {
 		if (intronLenMax < 500000) {
-			return "--max-segment-intron " + intronLenMax + " ";
+			return new String[]{"--max-segment-intron", intronLenMax + ""};
 		}
-		return "";
+		return null;
 	}
 	/**
 	 * 用gtf文件辅助mapping
@@ -374,16 +380,18 @@ public class MapTophat implements MapRNA {
 	 * 先不设定，考虑集成--transcriptome-index那个选项
 	 * @return
 	 */
-	private String getGtfFile() {
+	private List<String> getGtfFile() {
+		List<String> lsCmd = new ArrayList<>();
 		if (FileOperate.isFileExist(gtfFile)) {
 			String index = mapBowtie.getChrNameWithoutSuffix();
 			String gtfName = FileOperate.getFileNameSep(gtfFile)[0];
 			String indexTranscriptome = index + "_" + gtfName;
 			FileOperate.createFolders(FileOperate.getParentPathName(indexTranscriptome));
-			return "-G " + CmdOperate.addQuot(gtfFile) 
-			+ " --transcriptome-index=" + CmdOperate.addQuot(indexTranscriptome) + " ";
+			
+			lsCmd.add("-G"); lsCmd.add(gtfFile);
+			lsCmd.add("--transcriptome-index="); lsCmd.add(indexTranscriptome);
 		}
-		return "";
+		return lsCmd;
 	}
 	private void setGTFfile() {
 		if (gtfFile == null || FileOperate.isFileExistAndBigThanSize(gtfFile, 0.1)) {
@@ -408,15 +416,16 @@ public class MapTophat implements MapRNA {
 	 * 返回链的方向
 	 * @return
 	 */
-	private String getStrandSpecifictype() {
+	private String[] getStrandSpecifictype() {
+		String[] cmd = null;
 		if (strandSpecifictype == StrandSpecific.NONE) {
-			return "";
+			
 		} else if (strandSpecifictype == StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND) {
-			return "--library-type fr-firststrand ";
+			cmd = new String[]{"--library-type", "fr-firststrand"};
 		} else if (strandSpecifictype == StrandSpecific.SECOND_READ_TRANSCRIPTION_STRAND) {
-			return "--library-type fr-secondstrand ";
+			cmd = new String[]{"--library-type", "fr-secondstrand"};
 		}
-		return "";
+		return cmd;
 	}
 
 	/**
@@ -428,9 +437,8 @@ public class MapTophat implements MapRNA {
 		mapBowtie.setSubVersion(bowtieVersion);
 		mapBowtie.IndexMake(false);
 		
-		String cmd = getCmd();
-		logger.info(cmd);
-		CmdOperate cmdOperate = new CmdOperate(cmd, "bwaMapping");
+		List<String> lsCmd = getLsCmd();
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.run();
 		
 		if (generateGtfFile) {
@@ -438,8 +446,9 @@ public class MapTophat implements MapRNA {
 		}
 		changeFileName();
 	}
+
 	
-	private String getCmd() {
+	private List<String> getLsCmd() {
 		// linux命令如下
 		/**
 		 * tophat -r 120 -a 10 -m 1 -i 20 -I 6000 --solexa1.3-quals -F 0.15 -p 4
@@ -457,25 +466,45 @@ public class MapTophat implements MapRNA {
 		 * /NBC/Project/RNASeq_GF110614/rawdata/data/Col_L1_2.fq,/media
 		 * /winE/NBC/Project/RNASeq_GF110614/rawdata/data/Col_L2_2.fq
 		 */
-		String cmd = "";
-		cmd = ExePathTophat + "tophat " + getBowtie();
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add(ExePathTophat + "tophat"); addLsCmdParam(lsCmd, getBowtie());
 		if (isPairend()) {
-			cmd = cmd + getInsert(); // 插入长度
+			ArrayOperate.addArrayToList(lsCmd, getInsert());
 		}
-		cmd = cmd + getAnchoLen() + getAnchorMismatch() + getIntronLenMin() + getIntronLenMax() + getGtfFile();
-//		//本步很慢，一般不使用
-//		cmd = cmd + "--coverage-search ";
+		ArrayOperate.addArrayToList(lsCmd, getAnchoLen());
+		ArrayOperate.addArrayToList(lsCmd, getAnchorMismatch());
+		ArrayOperate.addArrayToList(lsCmd, getIntronLenMin());
+		ArrayOperate.addArrayToList(lsCmd, getIntronLenMax());
+		lsCmd.addAll(getGtfFile());
 		if (bowtieVersion == SoftWare.bowtie2) {
-			cmd = cmd + getMismatch() + getIndelLen() + getSensitive();
+			ArrayOperate.addArrayToList(lsCmd, getMismatch());
+			lsCmd.addAll(getIndelLen());
+			addLsCmdParam(lsCmd, getSensitive());
 		}
-		cmd = cmd + getOffset() + getThreadNum();
-		cmd = cmd + getStrandSpecifictype();
-		cmd = cmd + getMinCoverageIntron() + getMaxCoverageIntron() + getMaxSegmentIntron();
-		cmd = cmd + getOutPathPrefix();
-
-		cmd = cmd + " " + mapBowtie.getChrNameWithoutSuffix() + " ";
-		cmd = cmd + " " + getLsFqFile();
-		return cmd;
+		addLsCmdParam(lsCmd, getOffset());
+		ArrayOperate.addArrayToList(lsCmd, getThreadNum());
+		ArrayOperate.addArrayToList(lsCmd, getStrandSpecifictype());
+		lsCmd.addAll(getMinCoverageIntron());
+		ArrayOperate.addArrayToList(lsCmd, getMaxCoverageIntron());
+		ArrayOperate.addArrayToList(lsCmd, getMaxSegmentIntron());
+		ArrayOperate.addArrayToList(lsCmd, getOutPathPrefix());
+		lsCmd.add(mapBowtie.getChrNameWithoutSuffix());
+		lsCmd.addAll(getLsFqFile());
+		return lsCmd;
+	}
+	
+	private void addLsCmdParam(List<String> lsCmd, String param) {
+		if(param == null) return;
+		lsCmd.add(param);
+	}
+	
+	@Override
+	public List<String> getCmdExeStr() {
+		List<String> lsCmd = new ArrayList<>();
+		List<String> lsSubCmd = getLsCmd();
+		CmdOperate cmdOperate = new CmdOperate(lsSubCmd);
+		lsCmd.add(cmdOperate.getCmdExeStr());
+		return lsCmd;
 	}
 	
 	private void changeFileName() {

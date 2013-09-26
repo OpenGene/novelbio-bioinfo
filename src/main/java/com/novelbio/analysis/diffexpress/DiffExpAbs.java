@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 
 import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.diffexpress.DiffExpInt;
+import com.novelbio.base.FoldeCreate;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -112,11 +113,13 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	/**
 	 * 设定输出文件夹和比较组
 	 * @param fileName
+	 * @param fold 需要新建的标准文件加，如
 	 * @param comparePair <br>
 	 * 0: treatment<br>
 	 * 1: control
 	 */
-	public void addFileName2Compare(String fileName, String[] comparePair) {
+	public void addFileName2Compare(String fileName, String fold, String[] comparePair) {
+		fileName = FoldeCreate.createAndInFold(fileName, fold);
 		mapOutFileName2Compare.put(fileName, comparePair);
 		calculate = false;
 	}
@@ -186,7 +189,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		return lsOutFile;
 	}
 	/** 计算差异 */
-	public void calculateResult(String fold) {
+	public void calculateResult() {
 		if (calculate) {
 			return;
 		}
@@ -201,7 +204,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		run();
 		modifyResult();
 //		clean();
-		lsOutFile = plotDifParams(fold);
+		lsOutFile = plotDifParams();
 	}
 	/**
 	 * 将输入的文件重整理成所需要的txt格式写入文本
@@ -341,10 +344,19 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		for (Entry<String, String[]> entry : mapOutFileName2Compare.entrySet()) {
 			String fileName = entry.getKey();
 			String[] groupPaire = entry.getValue();
-			modifySingleResultFile(fileName, groupPaire[0], groupPaire[1]);
+			List<String[]> lsResult = modifySingleResultFile(fileName, groupPaire[0], groupPaire[1]);
+//			FileOperate.DeleteFileFolder(outFileName + outPutSuffix);
+			//防止R还没输出结果就去读取
+			FileOperate.DeleteFileFolder(fileName);
+			//防止R还没输出结果就去读取
+			try { Thread.sleep(50); } catch (Exception e) { }
+			
+			TxtReadandWrite txtOutFinal = new TxtReadandWrite(fileName, true);
+			txtOutFinal.ExcelWrite(lsResult);
+			txtOutFinal.close();
 		}
 	}
-	protected abstract void modifySingleResultFile(String outFileName, String treatName, String controlName);
+	protected abstract List<String[]> modifySingleResultFile(String outFileName, String treatName, String controlName);
 	
 	/** 删除中间文件 */
 	public void clean() {
@@ -352,7 +364,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		FileOperate.DeleteFileFolder(fileNameRawdata);
 	}
 	
-	public ArrayList<String> plotDifParams(String fold) {
+	public ArrayList<String> plotDifParams() {
 		ArrayList<String> lsOutFile = new ArrayList<>(); 
 		Map<String, String[]> mapExcelName2Compare = getMapOutFileName2Compare();
 		Map<String, DiffGeneVocalno> mapExcelName2DifResultInfo= new LinkedHashMap<String, DiffGeneVocalno>();
@@ -364,10 +376,10 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		//画图，出差异基因的表格
 		for (String excelFileName : mapExcelName2DifResultInfo.keySet()) {
 			DiffGeneVocalno difResultInfo = mapExcelName2DifResultInfo.get(excelFileName);
-			String outFile = difResultInfo.writeDifGene(fold);
+			String outFile = difResultInfo.writeDifGene();
 			lsOutFile.add(outFile);
 			titleFormatNBC= difResultInfo.getTitlePvalueFDR();
-			logFCcutoff =  difResultInfo.getUpfc();
+			logFCcutoff = DiffGeneVocalno.getUpfc();
 			pValueOrFDRcutoff = difResultInfo.getPvalueFDRthreshold();
 		}
 		return lsOutFile;

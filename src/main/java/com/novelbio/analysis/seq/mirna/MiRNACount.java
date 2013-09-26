@@ -61,13 +61,21 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 	 * key: Pre_Mature
 	 */
 	Map<String, Double> mapMirPre_Mature2Value;
-	/** 前体 */
+	/** 前体，相同产物的前体会合在一起，并用{@link #sepMirPreID} 分割 */
 	Map<String, Double> mapMiRNApre2Value;
 	
-	/** 成熟体到前体的名字 */
+	/** 成熟体到前体的名字，相同产物的前体会合在一起，并用{@link #sepMirPreID} 分割 */
 	Map<String, String> mapMirMatureName2Pre = new HashMap<>();
 	
 	boolean countMiRNA = false;
+	
+	/**
+	 * 如果出现相同的mirMature Name，但是mirPre Name不同的
+	 * 用该ID来分隔两个mirPre Name<p>
+	 * 如hsa-miR-548aj-3p有两个前体，hsa-mir-548aj-1/hsa-mir-548aj-2
+	 */
+	String sepMirPreID = "/";
+	
 	/**
 	 * 设定miRNA的前体序列和成熟序列
 	 * @param hairpairMirna
@@ -110,7 +118,7 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 		TxtReadandWrite txtMirValue = new TxtReadandWrite(outMirValue, true);
 		TxtReadandWrite txtMirMatureValue = new TxtReadandWrite(outMirMatureValue, true);
 		for (Entry<String, Double> miRNApre2Value : mapMiRNApre2Value.entrySet()) {
-			txtMirValue.writefileln(miRNApre2Value.getKey() + "\t" + miRNApre2Value.getValue().intValue() + "\t" + seqFastaHashPreMiRNA.getSeqFasta(miRNApre2Value.getKey() ));
+			txtMirValue.writefileln(miRNApre2Value.getKey() + "\t" + miRNApre2Value.getValue().intValue() + "\t" + seqFastaHashPreMiRNA.getSeqFasta(miRNApre2Value.getKey().split(sepMirPreID)[0] ));
 		}
 		for (String miRNAName : mapMirPre_Mature2Value.keySet()) {
 			String[] ss = miRNAName.split(SepSign.SEP_ID);
@@ -121,7 +129,7 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 			if (value == null || mirMatureSeq == null) {
 				continue;
 			}
-			txtMirMatureValue.writefileln(miRNApre + "\t" + mirMatureSeq + "\t" + value.intValue() + "\t"+ mirMatureSeq);
+			txtMirMatureValue.writefileln(miRNAmature + "\t" + miRNApre + "\t" + mirMatureSeq + "\t" + value.intValue() + "\t"+ mirMatureSeq);
 		}
 		txtMirValue.close();
 		txtMirMatureValue.close();
@@ -149,7 +157,7 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 				return null;
 			}
 		}
-		SeqFasta seqFasta = seqFastaHashPreMiRNA.getSeq(mirID.toLowerCase(), listDetailBin.getStartAbs(), listDetailBin.getEndAbs());
+		SeqFasta seqFasta = seqFastaHashPreMiRNA.getSeq(mirID.split(sepMirPreID)[0].toLowerCase(), listDetailBin.getStartAbs(), listDetailBin.getEndAbs());
 		if (listDetailBin.getStartAbs() > 40) {
 			return seqFasta.reservecom().toString();
 		}
@@ -181,14 +189,14 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 			if (mapMirMatureName2Pre.containsKey(matureName)) {
 				String parentNameOld = mapMirMatureName2Pre.get(matureName);
 				boolean addParentName = true;
-				for (String name : parentNameOld.split("/")) {
+				for (String name : parentNameOld.split(sepMirPreID)) {
 					if (name.equals(parentName)) {
 						addParentName = false;
 						break;
 					}
 				}
 				if (addParentName) {
-					parentName = parentNameOld + "/" + parentName;
+					parentName = parentNameOld + sepMirPreID + parentName;
 				} else {
 					parentName = parentNameOld;
 				}
@@ -319,7 +327,7 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 	
 	/** 将给定的几组miRNA的值合并起来 */
 	public ArrayList<String[]> combMapMir2Value(Map<String, Map<String, Double>> mapPrefix2_mapMiRNA2Value) {
-		CombMapMirPre2Value combMapMirPre2Value = new CombMapMirPre2Value(seqFastaHashPreMiRNA);
+		CombMapMirPre2Value combMapMirPre2Value = new CombMapMirPre2Value(seqFastaHashPreMiRNA, sepMirPreID);
 		return combMapMirPre2Value.combValue(mapPrefix2_mapMiRNA2Value);
 	}
 	/** 将给定的几组miRNA的值合并起来 */
@@ -341,8 +349,15 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 
 class CombMapMirPre2Value extends MirCombMapGetValueAbs {
 	SeqFastaHash seqFastaHashPreMiRNA;
-	CombMapMirPre2Value(SeqFastaHash seqFastaHashPreMiRNA) {
+	String sepID;
+	
+	/**
+	 * @param miRNACount
+	 * @param sepID 用于分割多个连在一起的miRNApreName的分隔符
+	 */
+	CombMapMirPre2Value(SeqFastaHash seqFastaHashPreMiRNA, String sepID) {
 		this.seqFastaHashPreMiRNA = seqFastaHashPreMiRNA;
+		this.sepID = sepID;
 	}
 	
 	@Override
@@ -356,12 +371,13 @@ class CombMapMirPre2Value extends MirCombMapGetValueAbs {
 	@Override
 	protected void fillMataInfo(String id, ArrayList<String> lsTmpResult) {
 		lsTmpResult.add(id);
-		lsTmpResult.add(seqFastaHashPreMiRNA.getSeqFasta(id).toString());
+		lsTmpResult.add(seqFastaHashPreMiRNA.getSeqFasta(id.split(sepID)[0]).toString());
 	}
 }
 
 class CombMapMirMature2Value extends MirCombMapGetValueAbs {
 	MiRNACount miRNACount;
+
 	CombMapMirMature2Value(MiRNACount miRNACount) {
 		this.miRNACount = miRNACount;
 	}
@@ -369,8 +385,8 @@ class CombMapMirMature2Value extends MirCombMapGetValueAbs {
 	@Override
 	protected String[] getTitleIDAndInfo() {	/** 返回涉及到的所有miRNA的名字 */
 		String[] titleStart = new String[3];
-		titleStart[0] = TitleFormatNBC.miRNApreName.toString();
 		titleStart[1] = TitleFormatNBC.miRNAName.toString();
+		titleStart[0] = TitleFormatNBC.miRNApreName.toString();
 		titleStart[2] = TitleFormatNBC.mirSequence.toString();
 		return titleStart;
 	}
@@ -378,8 +394,8 @@ class CombMapMirMature2Value extends MirCombMapGetValueAbs {
 	@Override
 	protected void fillMataInfo(String id, ArrayList<String> lsTmpResult) {
 		String[] seqName = id.split(SepSign.SEP_ID);
-		lsTmpResult.add(seqName[0]);
 		lsTmpResult.add(seqName[1]);
+		lsTmpResult.add(seqName[0]);
 		lsTmpResult.add(miRNACount.getMiRNAmatureSeq(seqName[0], seqName[1]));
 	}
 }

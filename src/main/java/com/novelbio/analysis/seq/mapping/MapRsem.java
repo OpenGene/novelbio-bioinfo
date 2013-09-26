@@ -1,19 +1,20 @@
 package com.novelbio.analysis.seq.mapping;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.LinkedHashMultimap;
+import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.GffChrSeq;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
-import com.novelbio.base.HashMapLsValue;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
@@ -26,8 +27,8 @@ import com.novelbio.database.model.species.Species;
  * @author zong0jie
  *
  */
-public class MapRsem implements MapRNA {
-	private static Logger logger = Logger.getLogger(MapRsem.class);
+public class MapRsem implements MapRNA, IntCmdSoft {
+	private static final Logger logger = Logger.getLogger(MapRsem.class);
 	
 	Species species;
 	GffChrSeq gffChrSeq = null;
@@ -136,52 +137,37 @@ public class MapRsem implements MapRNA {
 	}
 	/** 产生全新的reference */
 	private void createGene2IsoAndRefSeq() {
-		if (FileOperate.isFileExistAndBigThanSize(refFile, 0.01) && FileOperate.isFileExistAndBigThanSize(gene2isoFile, 0.01)) {
+		if (FileOperate.isFileExistAndBigThanSize(gene2isoFile, 0)) {
 			return;
 		}
 		if (gffChrAbs == null) {
 			return;
 		}
-		
-		String pathRsemIndex = FileOperate.getParentPathName(gffChrAbs.getSeqHash().getChrFile()) + "index/rsemRef_Index_" + species.getVersion().replace(" ", "") + FileOperate.getSepPath();
-		String refFileRsem = pathRsemIndex +  "RefGene.fa";
-
-		if (!FileOperate.isFileExist(refFileRsem)) {
-			FileOperate.createFolders(pathRsemIndex);
-			if (!FileOperate.isFileExist(refFile)) {
-				gffChrSeq.writeIsoFasta(refFileRsem);
-				gffChrAbs.getGffHashGene().writeGene2Iso(gene2isoFile);
+		gene2isoFile = FileOperate.changeFileSuffix(refFile, "_gene2Iso", "txt");
+		TxtReadandWrite txtGene2Iso = new TxtReadandWrite(gene2isoFile, true);
+		SeqFastaHash seqFastaHash = new SeqFastaHash(refFile, null, false);
+		//先找gff文件里面有没有对应的geneName，没有再找数据库，再没有就直接贴上基因名
+		for (String geneIDstr : seqFastaHash.getLsSeqName()) {
+			GffGeneIsoInfo gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO(geneIDstr);
+			String symbol = null;
+			if (gffGeneIsoInfo != null) {
+				//TODO 可能会出错
+				symbol = gffGeneIsoInfo.getParentGeneName();
 			} else {
-				FileOperate.copyFile(refFile, refFileRsem, true);
+				GeneID geneID = new GeneID(geneIDstr, species.getTaxID());
+				symbol = geneID.getSymbol();
 			}
-		}
-		refFile = refFileRsem;//将rsem的reffile替换给reffile，因为后面都是用reffile来做索引
-		
-		if (!FileOperate.isFileExist(gene2isoFile)) {
-			gene2isoFile = pathRsemIndex +  "RefGene_gene2iso.txt";
-			TxtReadandWrite txtGene2Iso = new TxtReadandWrite(gene2isoFile, true);
-			SeqFastaHash seqFastaHash = new SeqFastaHash(refFile, null, false);
-			//先找gff文件里面有没有对应的geneName，没有再找数据库，再没有就直接贴上基因名
-			for (String geneIDstr : seqFastaHash.getLsSeqName()) {
-				GffDetailGene gffDetailGene = gffChrAbs.getGffHashGene().searchLOC(geneIDstr);
-				String symbol = null;
-				if (gffDetailGene != null) {
-					symbol = GeneID.removeDot(gffDetailGene.getNameSingle());
-				} else {
-					GeneID geneID = new GeneID(geneIDstr, species.getTaxID());
-					symbol = geneID.getSymbol();
-				}
-				if (symbol == null || symbol.equals("")) {
-					symbol = GeneID.removeDot(geneIDstr);
-				}
-				txtGene2Iso.writefileln(symbol + "\t" + geneIDstr);
+			if (symbol == null || symbol.equals("")) {
+				symbol = geneIDstr;
 			}
-			txtGene2Iso.close();
+			txtGene2Iso.writefileln(symbol + "\t" + geneIDstr);
 		}
+		seqFastaHash.close();
+		txtGene2Iso.close();
 		gffChrAbs.close();
 	}
-	private String getThreadNum() {
-		return "-p " + threadNum + " ";
+	private String[] getThreadNum() {
+		return new String[]{"-p", threadNum + ""};
 	}
 	/**
 	 * 设置左端的序列，设置会把以前的清空
@@ -210,23 +196,32 @@ public class MapRsem implements MapRNA {
 		rsemIndex = FileOperate.changeFileSuffix(refFile, "_rsemIndex", "");
 		if (FileOperate.isFileExist(rsemIndex + ".3.ebwt") == true)
 			return;
-		String cmd = exePathRsem + "rsem-prepare-reference  --transcript-to-gene-map ";
-		//TODO :考虑是否自动判断为solid
-		cmd = cmd + gene2isoFile + " " + refFile + " " + rsemIndex;
-		CmdOperate cmdOperate = new CmdOperate(cmd,"RsemMakeIndex");
+		List<String> lsCmd = getLsCmdIndex();
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.run();
 	}
+	
+	private List<String> getLsCmdIndex() {
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add(exePathRsem+"rsem-prepare-reference");
+		lsCmd.add("--transcript-to-gene-map");
+		lsCmd.add(gene2isoFile);
+		lsCmd.add(refFile);
+		lsCmd.add(rsemIndex);
+		return lsCmd;
+	}
+	
 	private String getOffset() {
 		if (lsLeftFq.get(0).getOffset() == FastQ.FASTQ_ILLUMINA_OFFSET) {
-			return " --phred64-quals ";
+			return "--phred64-quals";
 		}
-		return " --phred33-quals ";
+		return "--phred33-quals";
 	}
-	private String getBowtiePath() {
+	private String[] getBowtiePath() {
 		if (exePathBowtie != null && !exePathBowtie.equals("")) {
-			return "--bowtie-path " + exePathBowtie + "bowtie ";
+			return new String[]{"--bowtie-path", exePathBowtie + "bowtie"};
 		}
-		return "";
+		return null;
 	}
 	private String getPairend() {
 		if (lsLeftFq.size() > 0 && lsRightFq.size() > 0)
@@ -235,9 +230,9 @@ public class MapRsem implements MapRNA {
 			pairend = false;
 		
 		if (pairend) {
-			return "--paired-end ";
+			return "--paired-end";
 		}
-		return "";
+		return null;
 	}
 	/**
 	 * 比对序列并计算表达
@@ -245,24 +240,48 @@ public class MapRsem implements MapRNA {
 	 */
 	public void mapReads() {
 		IndexMakeBowtie();
-		String cmd = exePathRsem + "rsem-calculate-expression " + getBowtiePath();
-		cmd = cmd + getOffset() + getPairend() + getThreadNum();
-		
-		cmd = cmd + " " + CmdOperate.addQuot(lsLeftFq.get(0).getReadFileName());
-		for (int i = 1; i < lsLeftFq.size(); i++) {
-			cmd = cmd + "," + CmdOperate.addQuot(lsLeftFq.get(i).getReadFileName());
-		}
-		if (lsRightFq.size() > 0) {
-			cmd = cmd + " " + CmdOperate.addQuot(lsRightFq.get(0).getReadFileName()) ;
-			for (int i = 1; i < lsRightFq.size(); i++) {
-				cmd = cmd + "," + CmdOperate.addQuot(lsRightFq.get(i).getReadFileName());
-			}
-		}
-		cmd = cmd + " " + rsemIndex + " " + CmdOperate.addQuot(outPathPrefix);
-		logger.info(cmd);
-		CmdOperate cmdOperate = new CmdOperate(cmd,"bwaMapping");
+		List<String> lsCmd = getLsCmdMapping();
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.run();
 		copeResult();
+	}
+	
+	private List<String> getLsCmdMapping() {
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add(exePathRsem + "rsem-calculate-expression");
+		ArrayOperate.addArrayToList(lsCmd, getBowtiePath());
+		addLsCmdStr(lsCmd, getOffset());
+		addLsCmdStr(lsCmd, getPairend());
+		ArrayOperate.addArrayToList(lsCmd, getThreadNum());
+		String left = lsLeftFq.get(0).getReadFileName();
+		for (int i = 1; i < lsLeftFq.size(); i++) {
+			left += "," + lsLeftFq.get(i);
+		}
+		lsCmd.add(left);
+		if (lsRightFq.size() > 0) {
+			String right = lsRightFq.get(0).getReadFileName();
+			for (int i = 1; i < lsRightFq.size(); i++) {
+				right += "," + lsRightFq.get(i);
+			}
+			lsCmd.add(right);
+		}
+		lsCmd.add(rsemIndex);
+		lsCmd.add(outPathPrefix);
+		return lsCmd;
+	}
+	
+	private void addLsCmdStr(List<String> lsCmd, String param) {
+		if(param == null) return;
+		lsCmd.add(param);
+	}
+	
+	@Override
+	public List<String> getCmdExeStr() {
+		List<String> lsCmd = new ArrayList<>();
+		List<String> lsInfo = getLsCmdMapping();
+		CmdOperate cmdOperate = new CmdOperate(lsInfo);
+		lsCmd.add(cmdOperate.getCmdExeStr());
+		return lsCmd;
 	}
 	
 	/** 整理结果文件，主要是整理gene.result,整理成gene list */
@@ -283,6 +302,7 @@ public class MapRsem implements MapRNA {
 			mapGeneID2LsExp.put(ss[0], valueRPKM * foldRsem2RPKM);
 			mapGeneID2LsCounts.put(ss[1], valueCounts);
 		}
+		txtReadGeneExp.close();
 	}
 	
 	/** 设定Gene2Iso文件，如果有文件就用这个文件。

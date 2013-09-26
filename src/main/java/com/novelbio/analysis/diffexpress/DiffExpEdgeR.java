@@ -83,9 +83,9 @@ public class DiffExpEdgeR extends DiffExpAbs {
 		return lsResult;
 	}
 	
-	public void calculateResult(String fold) {
+	public void calculateResult() {
 		setNormalizeCoef();
-		super.calculateResult(fold);
+		super.calculateResult();
 	}
 	/**
 	 * 获得 
@@ -207,11 +207,7 @@ public class DiffExpEdgeR extends DiffExpAbs {
  
 	
 	@Override
-	protected void modifySingleResultFile(String outFileName, String treatName, String controlName) {
-		if (!FileOperate.isFileExistAndBigThanSize(outFileName, 0)) {
-			logger.error("没产生结果文件" + outFileName);
-			return;
-		}
+	protected List<String[]> modifySingleResultFile(String outFileName, String treatName, String controlName) {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		ArrayList<String[]> lsDifGene = ExcelTxtRead.readLsExcelTxt(outFileName, 1);
 		String[] title = new String[]{TitleFormatNBC.AccID.toString(), treatName, controlName, TitleFormatNBC.Log2FC.toString(), TitleFormatNBC.Pvalue.toString(), TitleFormatNBC.FDR.toString()};
@@ -246,13 +242,7 @@ public class DiffExpEdgeR extends DiffExpAbs {
 			}
 			lsResult.add(tmpResult);
 		}
-		FileOperate.DeleteFileFolder(outFileName);
-		//防止R还没输出结果就去读取
-		try { Thread.sleep(50); } catch (Exception e) { }
-		
-		TxtReadandWrite txtOutFinal = new TxtReadandWrite(outFileName, true);
-		txtOutFinal.ExcelWrite(lsResult);
-		txtOutFinal.close();
+		return lsResult;
 	}
 	
 	private void setLogFC(String[] resultInfo) {

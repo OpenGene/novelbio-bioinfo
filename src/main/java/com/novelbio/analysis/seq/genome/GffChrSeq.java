@@ -145,7 +145,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 
 	public int getNumOfQuerySeq() {
 		if (getGenomWide) {
-			getSeqIsoGenomWide();
+			fillSetNameGenomWide();
 		}
 		if (booGetIsoSeq) {
 			return setIsoToGetSeq.size();
@@ -214,7 +214,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	 */
 	public void getSeq() {
 		if (getGenomWide) {
-			getSeqIsoGenomWide();
+			fillSetNameGenomWide();
 		}
 		if (saveToFile)
 			txtOutFile = new TxtReadandWrite(outFile, true);
@@ -256,7 +256,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	 * 输入名字提取序列，内部会去除重复基因
 	 * @param lsListGffName
 	 */
-	private void getSeqIsoGenomWide() {
+	private void fillSetNameGenomWide() {
 		setIsoToGetSeq.clear();
 		ArrayList<String> lsID = gffChrAbs.getGffHashGene().getLsNameNoRedundent();
 		GffDetailGene gffDetailGene = null;

@@ -160,7 +160,7 @@ public class DiffExpDESeq extends DiffExpAbs {
 	protected void run() {
 		Rrunning("DEseq");
 	}
-	protected void modifySingleResultFile(String outFileName, String treatName, String controlName) {
+	protected List<String[]> modifySingleResultFile(String outFileName, String treatName, String controlName) {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		ArrayList<String[]> lsDifGene = ExcelTxtRead.readLsExcelTxt(outFileName, 1);
 		String[] title = new String[]{TitleFormatNBC.AccID.toString() , treatName, controlName, TitleFormatNBC.FoldChange.toString(),
@@ -194,11 +194,6 @@ public class DiffExpDESeq extends DiffExpAbs {
 			//
 			lsResult.add(tmpResult);
 		}
-		//防止R还没输出结果就去读取
-		try { Thread.sleep(50); } catch (Exception e) { }
-		
-		TxtReadandWrite txtOutFinal = new TxtReadandWrite(outFileName, true);
-		txtOutFinal.ExcelWrite(lsResult);
-		txtOutFinal.close();
+		return lsResult;
 	}
  }

@@ -3,6 +3,7 @@ package com.novelbio.analysis.diffexpress;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -171,7 +172,7 @@ public class DiffExpLimma extends DiffExpAbs{
 	}
 
 	@Override
-	protected void modifySingleResultFile(String outFileName, String treatName, String controlName) {
+	protected List<String[]> modifySingleResultFile(String outFileName, String treatName, String controlName) {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		ArrayList<String[]> lsDifGene = ExcelTxtRead.readLsExcelTxt(outFileName, 1);
 		String[] title = new String[]{TitleFormatNBC.AccID.toString(), treatName + "_logValue", controlName + "_logValue", TitleFormatNBC.Log2FC.toString(), TitleFormatNBC.Pvalue.toString(), TitleFormatNBC.FDR.toString(), "Bvalue"};
@@ -207,13 +208,7 @@ public class DiffExpLimma extends DiffExpAbs{
 			
 			lsResult.add(tmpResult);
 		}
-		FileOperate.DeleteFileFolder(outFileName);
-		//防止R还没输出结果就去读取
-		try { Thread.sleep(50); } catch (Exception e) { }
-		
-		TxtReadandWrite txtOutFinal = new TxtReadandWrite(outFileName, true);
-		txtOutFinal.ExcelWrite(lsResult);
-		txtOutFinal.close();
+		return lsResult;
 	}
 
 }

@@ -206,9 +206,8 @@ import com.novelbio.generalConf.TitleFormatNBC;
 	 * @param excelFileName
 	 * @return
 	 */
-	public String writeDifGene(String fold) {
+	public String writeDifGene() {
 		String outFile = getDifGeneFileName();
-		outFile = FoldeCreate.createAndInFold(outFile, fold);
 		TxtReadandWrite txtWriteDifGene = new TxtReadandWrite(outFile, true);
 		txtWriteDifGene.writefilelnls(getLsDifGene());
 		txtWriteDifGene.close();

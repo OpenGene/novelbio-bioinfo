@@ -2,6 +2,8 @@ package com.novelbio.analysis.diffexpress;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.math.stat.inference.TestUtils;
@@ -19,6 +21,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
 @Component
 @Scope("prototype")
 public class DiffExpTtest extends DiffExpAbs {
+	Map<String, List<String[]>> mapKey2Result;
 	/** 比较矩阵设计好后需要将每个ID对应到试验名上 <br>
 	 * 譬如：<br>
 	 * design = model.matrix(~ -1+factor (c(1,1,2,2,3,3))) <br>
@@ -41,10 +44,10 @@ public class DiffExpTtest extends DiffExpAbs {
 		return "";
 	}
 	protected void writeToGeneFile() { }
-	public void  modifyResult(){}
 	public void clean(){};
 	@Override
 	protected void run() {
+		mapKey2Result = new HashMap<>();
 		/** col是实际col */
 		HashMap<String, ArrayList<Integer>> mapSample2ColNum = new HashMap<String, ArrayList<Integer>>();
 		for (String[] col2Sample : lsSampleColumn2GroupName) {
@@ -62,8 +65,9 @@ public class DiffExpTtest extends DiffExpAbs {
 		for (Entry<String, String[]> entry : mapOutFileName2Compare.entrySet()) {
 			String fileName = entry.getKey();
 			String[] treat2col = entry.getValue();
-			
 			ArrayList<String[]> lsTmpResult = new ArrayList<String[]>();
+			mapKey2Result.put(fileName, lsTmpResult);
+
 			lsTmpResult.add(new String[]{TitleFormatNBC.QueryID.toString(), treat2col[0], treat2col[1], TitleFormatNBC.Log2FC.toString(),TitleFormatNBC.Pvalue.toString(), TitleFormatNBC.FDR.toString()});
 			ArrayList<Double> lsPvalue = new ArrayList<Double>();
 			for (int i = 1; i < lsGeneInfo.size(); i++) {
@@ -96,17 +100,13 @@ public class DiffExpTtest extends DiffExpAbs {
 				String[] tmp = lsTmpResult.get(i);
 				tmp[tmp.length - 1] = lsfdr.get(i-1) + "";
 			}
-			TxtReadandWrite txtOut = new TxtReadandWrite(fileName, true);
-			txtOut.ExcelWrite(lsTmpResult);
-			txtOut.close();
 		}
 	}
 	
 	@Override
-	protected void modifySingleResultFile(String outFileName, String treatName,
+	protected List<String[]> modifySingleResultFile(String outFileName, String treatName,
 			String controlName) {
-		// TODO Auto-generated method stub
-		
+		return mapKey2Result.get(outFileName);
 	}
 
 }
