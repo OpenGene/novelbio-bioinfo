@@ -15,7 +15,6 @@ import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 import freemarker.template.Template;
@@ -42,12 +41,48 @@ public class DiffExpLimma extends DiffExpAbs{
 	protected void setFileNameRawdata() {
 		fileNameRawdata = workSpace + "LimmaGeneInfo_" + DateUtil.getDateAndRandom() + ".txt";
 	}
+	
+	/**
+	 * 将输入的文件重整理成所需要的txt格式写入文本
+	 */
+	protected void writeToGeneFile() {
+		TxtReadandWrite txtWrite = new TxtReadandWrite(fileNameRawdata, true);
+		ArrayList<String[]> lsAnalysisGeneInfo = getAnalysisGeneInfo();
+		String[] title = lsAnalysisGeneInfo.get(0);
+		lsAnalysisGeneInfo = removeDuplicate(lsAnalysisGeneInfo.subList(1, lsAnalysisGeneInfo.size()));
+		lsAnalysisGeneInfo.add(0, title);
+		//在这里取log
+		if (!isLogValue()) {
+			for (int i = 1; i < lsAnalysisGeneInfo.size(); i++) {
+				String[] tmpValue = lsAnalysisGeneInfo.get(i);
+				for (int j = 1; j < tmpValue.length; j++) {
+					if (tmpValue[j].equalsIgnoreCase("na") || tmpValue[j].equalsIgnoreCase("nan") || tmpValue[j].equals("null") || tmpValue[j].equals("none")) {
+						tmpValue[j] = 0 + "";
+					} else {
+						try {
+							double value = Double.parseDouble(tmpValue[j]);
+							if (value <= 1) {
+								tmpValue[j] = 0 + "";
+							} else {
+								tmpValue[j] = Math.log(value)/Math.log(2) + "";
+							}
+						} catch (Exception e) {
+							tmpValue[j] = 0 + "";
+						}
+					}
+				}
+			}
+		}
+		txtWrite.ExcelWrite(lsAnalysisGeneInfo);
+		txtWrite.close();
+	}
+	
 	@Override
 	protected String generateScript() {
 		Map<String,Object> mapData = new HashMap<String, Object>();
 		mapData.put("workspace", getWorkSpace());
 		mapData.put("filename", getFileName());
-		mapData.put("islog2", isLogValue());
+		mapData.put("islog2", true);
 		mapData.put("design", getDesignMatrixAndFillMapID2Sample());
 		mapData.put("SampleName", getSampleName());
 		mapData.put("PairedInfo", getContrastMatrix());

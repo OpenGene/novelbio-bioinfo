@@ -227,7 +227,7 @@ public class MapBwa extends MapDNA implements IntCmdSoft {
 			} else if (mapLibrary == MapLibrary.MatePairLong) {
 				insertMax = 25000;
 			}
-			return new String[]{" -a", insertMax + ""};
+			return new String[]{"-a", insertMax + ""};
 		}
 		return null;
 	}
@@ -285,7 +285,7 @@ public class MapBwa extends MapDNA implements IntCmdSoft {
 	 */
 	private String readInMemory() {
 		if (FileOperate.getFileSize(chrFile) < GENOME_SIZE_IN_MEMORY || readInMemory) {
-			return " -P ";
+			return "-P";
 		}
 		return null;
 	}
@@ -412,7 +412,7 @@ public class MapBwa extends MapDNA implements IntCmdSoft {
 		}
 		SamFile samFile = new SamFile(outFileName);
 		SamFile bamFile =  null;
-		bamFile = samFile.convertToBam(lsAlignmentRecorders);
+		bamFile = samFile.convertToBam(lsAlignmentRecorders, false);
 		samFile.close();
 		deleteFile(samFile.getFileName(), bamFile.getFileName());
 		return bamFile;

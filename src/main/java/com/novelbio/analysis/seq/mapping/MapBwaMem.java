@@ -348,7 +348,7 @@ public class MapBwaMem extends MapDNA {
 			return null;
 		}
 		SamFile samFile = new SamFile(outFileName);
-		SamFile bamFile = samFile.convertToBam(lsAlignmentRecorders);
+		SamFile bamFile = samFile.convertToBam(lsAlignmentRecorders, false);
 		samFile.close();
 		deleteFile(samFile.getFileName(), bamFile.getFileName());
 		return bamFile;

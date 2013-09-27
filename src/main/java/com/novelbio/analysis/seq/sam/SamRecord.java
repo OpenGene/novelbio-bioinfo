@@ -165,6 +165,15 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 		return numMappedReadsInFile;
 	}
 	
+	/** 设定本reads在sam文件中出现了几次，也就是比对到基因组的几个位置去了
+	 * 就是修改NH标签
+	 * @param multiHitNum 出现了几次，如果小于等于0就不设定
+	 */
+	public void setMultiHitNum(int multiHitNum) {
+		if (multiHitNum < 1) return;
+		samRecord.setAttribute("NH", multiHitNum);
+	}
+	
 	/**
 	 * 是否为双端或者说有令一端 返回null：表示不知道到底有没有另一端，那么就要根据输入的文件进行判断
 	 * */
@@ -361,5 +370,13 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 		fastQRecord.setFastaQuality(getReadsQuality());
 		return fastQRecord;
 	}
-
+	
+	/** 返回唯一名字和序列时使用 */
+	public String getNameAndSeq() {
+		SeqFasta seqFasta = getSeqFasta();
+		if (isMapped() && !isCis5to3()) {
+			seqFasta = seqFasta.reservecom();
+		}
+		return getName() + seqFasta.toString();
+	}
 }

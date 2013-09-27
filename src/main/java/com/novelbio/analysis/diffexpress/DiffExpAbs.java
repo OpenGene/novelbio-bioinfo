@@ -10,12 +10,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.novelbio.analysis.IntCmdSoft;
-import com.novelbio.analysis.diffexpress.DiffExpInt;
 import com.novelbio.base.FoldeCreate;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
+import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.service.SpringFactory;
 import com.novelbio.generalConf.TitleFormatNBC;
@@ -119,7 +119,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	 * 1: control
 	 */
 	public void addFileName2Compare(String fileName, String fold, String[] comparePair) {
-		fileName = FoldeCreate.createAndInFold(fileName, fold);
+		fileName = FileHadoop.convertToLocalPath(FoldeCreate.createAndInFold(fileName, fold));
 		mapOutFileName2Compare.put(fileName, comparePair);
 		calculate = false;
 	}
@@ -215,7 +215,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		String[] title = lsAnalysisGeneInfo.get(0);
 		lsAnalysisGeneInfo = removeDuplicate(lsAnalysisGeneInfo.subList(1, lsAnalysisGeneInfo.size()));
 		lsAnalysisGeneInfo.add(0, title);
-		txtWrite.ExcelWrite(getAnalysisGeneInfo());
+		txtWrite.ExcelWrite(lsAnalysisGeneInfo);
 		txtWrite.close();
 	}
 	/**
@@ -318,8 +318,9 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		return workSpace.replace("\\", "/");
 	}
 	
+	/** 仅用于产生script中，会将hdfs的文件名转化为本地路径 */
 	protected String getFileName() {
-		return fileNameRawdata.replace("\\", "/");
+		return FileHadoop.convertToLocalPath(fileNameRawdata.replace("\\", "/"));
 	}
 	/**
 	 * 调用Rrunning并写入Cmd的名字,
@@ -372,7 +373,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		for (String excelName : mapExcelName2Compare.keySet()) {
 			mapExcelName2DifResultInfo.put(excelName, new DiffGeneVocalno(excelName, mapExcelName2Compare.get(excelName)));
 		}
-		String[] threshold = DiffGeneVocalno.setThreshold(mapExcelName2DifResultInfo.values());
+//		String[] threshold = DiffGeneVocalno.setThreshold(mapExcelName2DifResultInfo.values());
 		//画图，出差异基因的表格
 		for (String excelFileName : mapExcelName2DifResultInfo.keySet()) {
 			DiffGeneVocalno difResultInfo = mapExcelName2DifResultInfo.get(excelFileName);

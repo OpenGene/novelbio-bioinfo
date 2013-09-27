@@ -414,7 +414,7 @@ public class SamFile implements AlignSeq {
     public SamFile sort(String outFile) {
 		BamSort bamSort = new BamSort();
     	if (!bamFile) {
-    		SamFile bamFile = convertToBam();
+    		SamFile bamFile = convertToBam(false);
     		bamSort.setSamFile(bamFile);
     	} else {
     		bamSort.setSamFile(this);
@@ -427,7 +427,7 @@ public class SamFile implements AlignSeq {
 		return samFile;
 	}
     
-    private void setParamSamFile(SamFile samFile) {
+    protected void setParamSamFile(SamFile samFile) {
     	samFile.referenceFileName = referenceFileName;
     	samFile.isRealigned = isRealigned;
     	samFile.bamFile = bamFile;
@@ -437,9 +437,10 @@ public class SamFile implements AlignSeq {
 	 * 用samtools实现了
 	 * 将sam文件压缩为bam文件
 	 * 如果是bam文件，则返回
+	 * @param addMultiHitFlag 是否添加比对到多个位置的flag，目前仅bowtie2需要该功能
 	 */
-	public SamFile convertToBam() {
-		return convertToBam(new ArrayList<AlignmentRecorder>());
+	public SamFile convertToBam(boolean addMultiHitFlag) {
+		return convertToBam(new ArrayList<AlignmentRecorder>(), addMultiHitFlag);
 	}
 	
 	/**
@@ -447,11 +448,12 @@ public class SamFile implements AlignSeq {
 	 * 将sam文件压缩为bam文件
 	 * 如果是bam文件，则返回
 	 * @param lsAlignmentRecorders
+	 * @param addMultiHitFlag 是否添加比对到多个位置的flag，目前仅bowtie2需要该功能
 	 * 因为convertToBam的时候会遍历Bam文件，所以可以添加一系列这种监听器，同时进行一系列的统计工作
 	 */
-	public SamFile convertToBam(List<AlignmentRecorder> lsAlignmentRecorders) {
+	public SamFile convertToBam(List<AlignmentRecorder> lsAlignmentRecorders, boolean addMultiHitFlag) {
 		String outName = FileOperate.changeFilePrefix(getFileName(), "", "bam");
-		return convertToBam(lsAlignmentRecorders, outName);
+		return convertToBam(lsAlignmentRecorders, outName, addMultiHitFlag);
 	}
 	/**
 	 * 用samtools实现了
@@ -459,36 +461,21 @@ public class SamFile implements AlignSeq {
 	 * 如果是bam文件，则返回
 	 * @param lsAlignmentRecorders 因为convertToBam的时候会遍历Bam文件，所以可以添加一系列这种监听器，同时进行一系列的统计工作
 	 * @param outFile 输出文件
+	 * @param addMultiHitFlag 是否添加比对到多个位置的flag，目前仅bowtie2需要该功能
 	 */
-	public SamFile convertToBam(List<AlignmentRecorder> lsAlignmentRecorders, String outFile) {
+	public SamFile convertToBam(List<AlignmentRecorder> lsAlignmentRecorders, String outFile, boolean addMultiHitFlag) {
 		if (bamFile) {
 			return this;
 		}
 		if (!outFile.endsWith(".bam")) {
 			FileOperate.changeFileSuffix(outFile, "", ".bam");
 		}
-		for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {
-			if (alignmentRecorder instanceof SamFileStatistics) {
-				((SamFileStatistics)alignmentRecorder).setStandardData(getMapChrIDLowcase2Length());
-			}
-		}
-		SamFile samFile = new SamFile(outFile, getHeader());
-		for (SamRecord samRecord : readLines()) {
-			for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {
-				try {
-					alignmentRecorder.addAlignRecord(samRecord);
-				} catch (Exception e) { }
-			}
-			samFile.writeSamRecord(samRecord);
-		}
-		for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {
-			alignmentRecorder.summary();
-		}
+		SamToBam samToBam = new SamToBam(outFile, this);
+		samToBam.setAddMultiHitFlag(addMultiHitFlag);
+		samToBam.setLsAlignmentRecorders(lsAlignmentRecorders);
+		samToBam.convert();
 		close();
-		samFile.close();
-		setParamSamFile(samFile);
-		samFile.bamFile = true;
-		return samFile;
+		return samToBam.getSamFileBam();
 	}
 	/**
 	 * 待检查
@@ -593,7 +580,7 @@ public class SamFile implements AlignSeq {
 	 * @return
 	 */
 	public SamFile copeSamFile2Snp() {
-		SamFile samFile = convertToBam();
+		SamFile samFile = convertToBam(false);
 //		FileOperate.delFile(getFileName());
 		
 		SamFile samFileSort = null;
@@ -634,7 +621,7 @@ public class SamFile implements AlignSeq {
 		pileup(pileupFile, 10);
 	}
 	public void pileup(String outPileUpFile, int mapQualityFilter) {
-		SamFile bamFile = convertToBam();
+		SamFile bamFile = convertToBam(false);
 		BamPileup bamPileup = new BamPileup();
 		bamPileup.setBamFile(bamFile.getFileName());
 		bamPileup.setMapQuality(mapQualityFilter);

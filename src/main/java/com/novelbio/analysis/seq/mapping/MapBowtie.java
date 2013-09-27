@@ -43,7 +43,11 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 	/** 插入片段 pairend是500， mate pair就要很大了 */
 	int insertMax = 500;
 	
-	int threadNum = 4;
+	int threadNum = 5;
+	
+	/** 一条reads最多比对到8个不同的位置上去 */
+	int maxMultipHit = 4;
+	
 	int sensitive = Sensitive_Sensitive;
 	/**
 	 * pe -fr
@@ -194,6 +198,10 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 		return null;
 	}
 	
+	private String[] getMultiHit() {
+		return new String[]{"-k", maxMultipHit + ""};
+	}
+	
 	/**
 	 * 本次mapping的组，所有参数都不能有空格
 	 * @param sampleID 
@@ -317,9 +325,8 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 		lsCmd.addAll(getSampleGroup());
 		ArrayOperate.addArrayToList(lsCmd, getThreadNum());
 		ArrayOperate.addArrayToList(lsCmd, getInsertSize());
-		
-		lsCmd.add("-x");
-		lsCmd.add(getChrNameWithoutSuffix());
+		ArrayOperate.addArrayToList(lsCmd, getMultiHit());
+		lsCmd.add("-x"); lsCmd.add(getChrNameWithoutSuffix());
 		lsCmd.addAll(getLsFqFile());
 		ArrayOperate.addArrayToList(lsCmd, getOutFileName());
 		return lsCmd;
@@ -349,7 +356,7 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 			return null;
 		}
 		SamFile samFile = new SamFile(outFileName);
-		SamFile bamFile = samFile.convertToBam(lsAlignmentRecorders);
+		SamFile bamFile = samFile.convertToBam(lsAlignmentRecorders, true);
 		samFile.close();
 		deleteFile(samFile.getFileName(), bamFile.getFileName());
 		return bamFile;

@@ -324,7 +324,9 @@ class FastQReader implements Closeable {
 			}
 		}
 		Collections.sort(lsQuality);
- 
+		if (lsQuality.size() <= 0) {
+			return FASTQ_SANGER_OFFSET;
+		}
 		if (getPercentage(lsQuality, 5) < 59) {
 			return FASTQ_SANGER_OFFSET;
 		}
