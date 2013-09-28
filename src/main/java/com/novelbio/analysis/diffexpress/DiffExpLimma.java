@@ -216,18 +216,18 @@ public class DiffExpLimma extends DiffExpAbs{
 		ArrayList<int[]> lsIndelItem = new ArrayList<int[]>();
 		String[] titleOld = lsDifGene.get(0);
 		String[] firstLine = lsDifGene.get(1);
-		if (firstLine.length == 8 || (firstLine.length == 7 && !titleOld[3].replace("\"", "").equals("t"))) {
+		if (firstLine.length == 8 || (firstLine.length == 7 && titleOld[0].replace("\"", "").equalsIgnoreCase("id"))) {
 			lsIndelItem.add(new int[]{0, -1});
 			lsIndelItem.add(new int[]{2, 2});//"treat" and control
-			lsIndelItem.add(new int[]{3, -1});//"AveExpr"
-			if (titleOld[3].replace("\"", "").equals("t")) {
-				lsIndelItem.add(new int[]{4, -1});//"t" 有时候不会有t出现
-			}
-		} else {
-			lsIndelItem.add(new int[]{1, 2});//"treat" and control
 			lsIndelItem.add(new int[]{2, -1});//"AveExpr"
 			if (titleOld[3].replace("\"", "").equals("t")) {
 				lsIndelItem.add(new int[]{3, -1});//"t" 有时候不会有t出现
+			}
+		} else {
+			lsIndelItem.add(new int[]{1, 2});//"treat" and control
+			lsIndelItem.add(new int[]{1, -1});//"AveExpr"
+			if (titleOld[2].replace("\"", "").equals("t")) {
+				lsIndelItem.add(new int[]{2, -1});//"t" 有时候不会有t出现
 			}
 		}
 
