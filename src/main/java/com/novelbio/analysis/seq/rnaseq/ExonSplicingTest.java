@@ -404,9 +404,22 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		lsResult.add(mapCondition2SpliceInfo.get(condition1).getSpliceTypePredict(splicingType).getDifSite().toStringNoCis());
 		lsResult.add(getConditionInt(lsJunc1));
 		lsResult.add(getConditionInt(lsJunc2));
-		
+		double logfcJun = getLogFC(lsJunc1, lsJunc2);
+		double logfcJunNew = getLogFCnew(lsJunc1, lsJunc2);
 		lsResult.add(getCondition(lsExp1));
 		lsResult.add(getCondition(lsExp2));
+		double logfcExp = getLogFC(lsExp1, lsExp2);
+		double logfcExpNew = getLogFCnew(lsExp1, lsExp2);
+		
+		lsResult.add(logfcExp + "");
+		lsResult.add(logfcExpNew + "");
+		
+		lsResult.add((logfcJun + logfcExp)/2 + "");
+		lsResult.add((logfcJunNew + logfcExpNew)/2 + "");
+		
+		
+		
+		
 		
 		lsResult.add(getAndCalculatePvalue() + "");
 		lsResult.add(fdr + "");
@@ -431,6 +444,25 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 //		}
 		return lsResult.toArray(new String[0]);
 	}
+		
+	private double getLogFC(List<? extends Number> lsInfo1, List<? extends Number> lsInfo2) {
+		if (lsInfo1.size() < 2 || lsInfo2.size() < 2) return 0;
+		
+		double a1 = lsInfo1.get(0).doubleValue(), b1 = lsInfo1.get(1).doubleValue();
+		double a2 = lsInfo2.get(0).doubleValue(), b2 = lsInfo2.get(1).doubleValue();
+		double result = Math.log((a1*b2 + 1)/(a2*b1+1))/Math.log(2);
+		return Math.abs(result);
+	}
+	
+	private double getLogFCnew(List<? extends Number> lsInfo1, List<? extends Number> lsInfo2) {
+		if (lsInfo1.size() < 2 || lsInfo2.size() < 2) return 0;
+		
+		double a1 = lsInfo1.get(0).doubleValue(), b1 = lsInfo1.get(1).doubleValue();
+		double a2 = lsInfo2.get(0).doubleValue(), b2 = lsInfo2.get(1).doubleValue();
+		double result = Math.log(a2-a1*b2/b1);
+		return Math.abs(result);
+	}
+	
 	
 	public String[] toStringSeq() {
 		if (seqHash == null) {
@@ -576,6 +608,12 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		lsTitle.add(condition2 + "_Skip::Others");
 		lsTitle.add(condition1 + "Exp");
 		lsTitle.add(condition2 + "Exp");
+		lsTitle.add("LogFoldChange_Exp_Type1");
+		lsTitle.add("LogFoldChange_Exp_Type2");
+		
+		lsTitle.add("LogFoldChange_Type1");
+		lsTitle.add("LogFoldChange_Type2");
+
 		lsTitle.add(TitleFormatNBC.Pvalue.toString());
 		lsTitle.add(TitleFormatNBC.FDR.toString());
 		lsTitle.add("SplicingType");

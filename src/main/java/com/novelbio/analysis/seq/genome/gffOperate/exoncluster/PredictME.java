@@ -240,8 +240,7 @@ public class PredictME extends SpliceTypePredict {
 		if (lsExonThisBefore != null && lsExonThisBefore.size() > 0) {
 			lsCounts.add((double) getJuncNum(true, getSiteInfoThisBefore(), condition, tophatJunction));
 			lsCounts.add((double) getJuncNum(false, getSiteInfoBefore(), condition, tophatJunction));
-		}
-		if (lsExonThisAfter != null && lsExonThisAfter.size() > 0) {
+		} else if (lsExonThisAfter != null && lsExonThisAfter.size() > 0) {
 			lsCounts.add((double) getJuncNum(false, getSiteInfoThisAfter(), condition, tophatJunction));
 			lsCounts.add((double) getJuncNum(true, getSiteInfoAfter(), condition, tophatJunction));
 		}
