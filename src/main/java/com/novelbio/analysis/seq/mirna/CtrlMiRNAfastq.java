@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.mirna;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -48,7 +49,7 @@ public class CtrlMiRNAfastq {
 	ReadsOnNCrna readsOnNCrna = new ReadsOnNCrna();
 
 	/** fastqFile--prefix */
-	ArrayList<String[]> lsFastqFile2Prefix;
+	List<String[]> lsFastqFile2Prefix;
 	
 	///////输出文件夹 //////////
 	String outPath;
@@ -84,7 +85,7 @@ public class CtrlMiRNAfastq {
 		this.gffChrAbs = gffChrAbs;
 	}
 	
-	public void setLsFastqFile(ArrayList<String[]> lsFastqFile2Prefix) {
+	public void setLsFastqFile(List<String[]> lsFastqFile2Prefix) {
 		this.lsFastqFile2Prefix = lsFastqFile2Prefix;
 	}
 	

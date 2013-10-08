@@ -214,7 +214,7 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	/**
 	 * 给定坐标和位点，找出locsite
 	 * @param chrID
-	 * @param cis5to3 junction的方向，会根据内部的建库方法自动选择
+	 * @param cis5to3 junction的方向，只有当StrandSpecific不为NONE时才会起作用
 	 * @param locStartSite 无所谓前后，内部自动判断
 	 * @param locEndSite
 	 * @return

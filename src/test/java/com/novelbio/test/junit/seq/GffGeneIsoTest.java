@@ -21,10 +21,10 @@ public class GffGeneIsoTest extends TestCase {
 	{
 		GffDetailGene gffDetailGene = new GffDetailGene("chr1","sefes", true);
 		GffGeneIsoInfo gffGeneIsoCis = GffGeneIsoInfo.createGffGeneIso("aaa",gffDetailGene.getNameSingle(), gffDetailGene, GeneType.mRNA, true);
-		gffGeneIsoCis.add(new ExonInfo("", true, 0, 3));
-		gffGeneIsoCis.add(new ExonInfo("",true,5, 10));
-		gffGeneIsoCis.add(new ExonInfo("",true,20, 30));
-		gffGeneIsoCis.add(new ExonInfo("",true,40, 50));
+		gffGeneIsoCis.add(new ExonInfo(true, 0, 3));
+		gffGeneIsoCis.add(new ExonInfo(true,5, 10));
+		gffGeneIsoCis.add(new ExonInfo(true,20, 30));
+		gffGeneIsoCis.add(new ExonInfo(true,40, 50));
 		int aa = 0;
 		aa = gffGeneIsoCis.getCod2ExInEnd(37);
 		assertEquals(2, aa);
@@ -66,10 +66,10 @@ public class GffGeneIsoTest extends TestCase {
 		GffDetailGene gffDetailGene = new GffDetailGene("chr1","sefes", true);
 		GffGeneIsoInfo gffGeneIsoCis = GffGeneIsoInfo.createGffGeneIso("aaa",gffDetailGene.getNameSingle(), gffDetailGene, GeneType.mRNA, false);
 
-		gffGeneIsoCis.add(new ExonInfo("", false, 50, 40));
-		gffGeneIsoCis.add(new ExonInfo("", false, 30, 10));
-		gffGeneIsoCis.add(new ExonInfo("", false, 10, 5));
-		gffGeneIsoCis.add(new ExonInfo("", false, 3, 0));
+		gffGeneIsoCis.add(new ExonInfo(false, 50, 40));
+		gffGeneIsoCis.add(new ExonInfo(false, 30, 10));
+		gffGeneIsoCis.add(new ExonInfo(false, 10, 5));
+		gffGeneIsoCis.add(new ExonInfo(false, 3, 0));
 		int aa = 0;
 				aa = gffGeneIsoCis.getCod2ExInEnd(37);
 		assertEquals(6, aa);

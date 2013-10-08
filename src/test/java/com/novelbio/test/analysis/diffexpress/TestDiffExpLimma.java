@@ -36,9 +36,9 @@ public class TestDiffExpLimma extends TestCase{
 		lsSampleColumn2GroupName.add(new String[] {"7","C"});
 		limma.setCol2Sample(lsSampleColumn2GroupName);
 		limma.setColID(1);
-		limma.addFileName2Compare(PathDetail.getProjectPath() + "AvsB.xls", new String[]{"A","B"});
-		limma.addFileName2Compare(PathDetail.getProjectPath() + "AvsC.xls", new String[]{"A","C"});
-		limma.addFileName2Compare(PathDetail.getProjectPath() + "CvsB.xls", new String[]{"C","B"});
+		limma.addFileName2Compare(PathDetail.getProjectPath() + "AvsB.xls", "DiffGene", new String[]{"A","B"});
+		limma.addFileName2Compare(PathDetail.getProjectPath() + "AvsC.xls", "DiffGene", new String[]{"A","C"});
+		limma.addFileName2Compare(PathDetail.getProjectPath() + "CvsB.xls", "DiffGene", new String[]{"C","B"});
 		String DEseqScript = limma.getOutScript();
 		txtScript = new TxtReadandWrite(DEseqScript, false);
 		return txtScript.readfileLs();

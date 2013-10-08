@@ -8,6 +8,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
+import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamMapReads;
 
@@ -19,7 +20,7 @@ public class TestSamMapReads extends TestCase {
 	protected void setUp() {
 		samFile = new SamFile("/home/zong0jie/Desktop/paper/chicken/DT40KO.bam");
 		gffHashGene = new GffHashGene(GffType.GTF, "/home/zong0jie/Desktop/paper/chicken/gal4-merged.gtf");
-		samMapReads = new SamMapReads(samFile);
+		samMapReads = new SamMapReads(samFile, StrandSpecific.NONE);
 	}
 	
 	@Override

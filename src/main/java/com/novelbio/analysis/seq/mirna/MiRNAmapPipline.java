@@ -204,7 +204,7 @@ public class MiRNAmapPipline {
 	 */
 	private String mapping(String fqFile, String chrFile, String samFileName, String unMappedFq) {
 		MapBwa mapBwa = new MapBwa(fqFile, samFileName);
-		mapBwa.setChrFile(chrFile);
+		mapBwa.setChrIndex(chrFile);
 		mapBwa.setExePath(exePath);
 		mapBwa.setGapLength(3);
 		mapBwa.setThreadNum(threadNum);

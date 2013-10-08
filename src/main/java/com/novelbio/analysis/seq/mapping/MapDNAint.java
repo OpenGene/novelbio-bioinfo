@@ -23,7 +23,9 @@ public interface MapDNAint {
 	 */
 	public void setMismatch(double mismatch);
 	
-	public void setChrFile(String chrFile);
+	public void setChrIndex(String chrFile);
+	
+	public void setSortNeed(boolean isNeedSort);
 	/**
 	 * 设定bwa所在的文件夹以及待比对的路径
 	 * @param exePath 如果在根目录下则设置为""或null

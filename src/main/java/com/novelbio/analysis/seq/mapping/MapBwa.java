@@ -146,7 +146,7 @@ public class MapBwa extends MapDNA implements IntCmdSoft {
 	private String[] getMismatch() {
 		return new String[]{"-n", mismatch + ""};
 	}
-	public void setChrFile(String chrFile) {
+	public void setChrIndex(String chrFile) {
 		this.chrFile = chrFile;
 	}
 	/**
@@ -225,7 +225,7 @@ public class MapBwa extends MapDNA implements IntCmdSoft {
 		}
 		return null;
 	}
-	private boolean isPairEnd() {
+	protected boolean isPairEnd() {
 		if (!FileOperate.isFileExist(leftFq) || !FileOperate.isFileExist(rightFq)) {
 			return false;
 		}

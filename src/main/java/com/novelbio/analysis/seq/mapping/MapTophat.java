@@ -93,7 +93,7 @@ public class MapTophat implements MapRNA, IntCmdSoft {
 		mapBowtie.setExePathBowtie(exePathBowtie);
 	}
 	public void setRefIndex(String chrFile) {
-		mapBowtie.setChrFile(chrFile);
+		mapBowtie.setChrIndex(chrFile);
 	}
 	
 	/** 设定reads的敏感性，越敏感速度越慢

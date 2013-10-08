@@ -46,7 +46,7 @@ public abstract class MapDNA implements MapDNAint {
 	}
 	
 	/** 输出的bam文件是否需要排序 */
-	public void setNeedSort(boolean isNeedSort) {
+	public void setSortNeed(boolean isNeedSort) {
 		this.isNeedSort = isNeedSort;
 	}
 	
@@ -63,7 +63,7 @@ public abstract class MapDNA implements MapDNAint {
 	 */
 	public abstract void setMismatch(double mismatch);
 	
-	public abstract void setChrFile(String chrFile);
+	public abstract void setChrIndex(String chrFile);
 	/**
 	 * 设定bwa所在的文件夹以及待比对的路径
 	 * @param exePath 如果在根目录下则设置为""或null
@@ -88,7 +88,8 @@ public abstract class MapDNA implements MapDNAint {
 	 * @param gapLength
 	 */
 	public abstract void setGapLength(int gapLength);
-
+	
+	protected abstract boolean isPairEnd();
 	/**
 	 * mapping
 	 * @return
@@ -124,7 +125,7 @@ public abstract class MapDNA implements MapDNAint {
 	 */
 	protected SamFile copeSamStream(InputStream inputStream, boolean isNeedSort) {
 		SamFile samFileIn = new SamFile(inputStream);
-		SamToBamSort samToBamSort = new SamToBamSort(getOutNameCope(), samFileIn);
+		SamToBamSort samToBamSort = new SamToBamSort(getOutNameCope(), samFileIn, isPairEnd());
 		if (isNeedSort) {
 			samToBamSort.setNeedSort(true);
 		}
@@ -161,7 +162,7 @@ public abstract class MapDNA implements MapDNAint {
 	 */
 	public abstract boolean IndexMake(boolean force);
 
-	protected abstract SamFile copeAfterMapping();
+//	protected abstract SamFile copeAfterMapping();
 	
 	/**
 	 * 如果文件后缀名不是.sam，则在文件末尾添加.sam

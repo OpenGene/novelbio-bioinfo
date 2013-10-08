@@ -54,12 +54,12 @@ public class TestTophatJunction extends TestCase {
 			int numOld2 = tophatJunction.getJunctionSite("test1", chrID, locStartSite);
 			int numOld3 = tophatJunction.getJunctionSite("test1", chrID, locEndSite);
 			
-			int numNew = tophatJunction.getJunctionSite("test1", chrID, locStartSite, locEndSite);
+			int numNew = tophatJunction.getJunctionSite("test1", true, chrID, locStartSite, locEndSite);
 			int numNew2 = tophatJunction.getJunctionSite("test1", chrID, locStartSite);
 			int numNew3 = tophatJunction.getJunctionSite("test1", chrID, locEndSite);
 			System.out.println();
 			numOld = tophatJunctionOld.getJunctionSite("test1", chrID, locStartSite, locEndSite);
-			numNew = tophatJunction.getJunctionSite("test1", chrID, locStartSite, locEndSite);
+			numNew = tophatJunction.getJunctionSite("test1", true, chrID, locStartSite, locEndSite);
 		}
 		
 		

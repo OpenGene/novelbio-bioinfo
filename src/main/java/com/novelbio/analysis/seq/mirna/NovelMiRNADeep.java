@@ -130,7 +130,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 		}
 		this.chromFaIndexBowtie = chromFaIndexBowtie;
 		mapBowtie.setExePath("");
-		mapBowtie.setChrFile(chromFaIndexBowtie);
+		mapBowtie.setChrIndex(chromFaIndexBowtie);
 	}
 	private String getChromFaSeq() {
 		return chromFaIndexBowtie + " ";

@@ -98,7 +98,7 @@ public class DiffExpDEGseq extends DiffExpAbs {
 	 * @param lsSample
 	 * @return
 	 */
-	private String getRformatSampleVector(ArrayList<Integer> lsSample) {
+	private String getRformatSampleVector(List<Integer> lsSample) {
 		String result = lsSample.get(0) + "";
 		for (int i = 1; i < lsSample.size(); i++) {
 			result = result + ", " + lsSample.get(i);
@@ -226,4 +226,5 @@ OutDir=6
 			return "None";
 		}
 	}
+
 }

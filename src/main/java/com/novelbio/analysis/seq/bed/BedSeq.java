@@ -324,14 +324,19 @@ public class BedSeq implements AlignSeq, IntCmdSoft {
 		return String.copyValueOf(qualityChar);
 	}
 	
-	/** 过滤reads */
+	/**
+	 *  过滤reads
+	 * @param mappingNumSmall 小于0表示不过滤 smallNum
+	 * @param mappingNumBig 小于0表示不过滤 bigNum
+	 * @param strand null表示不过滤方向
+	 * @return
+	 */
 	public BedSeq filterSeq(int mappingNumSmall, int mappingNumBig, Boolean strand) {
-		if (mappingNumSmall < 1) {
-			mappingNumSmall = 1;
+		boolean isFilterMapNum = false;
+		if (mappingNumSmall > 0 || mappingNumBig > 0) {
+			isFilterMapNum = true;
 		}
-		if (mappingNumBig < mappingNumSmall) {
-			mappingNumBig = mappingNumSmall;
-		}
+		if (mappingNumBig <= 0) mappingNumBig = Integer.MAX_VALUE;
 		
 		String bedFileFiltered = FileOperate.changeFileSuffix(getFileName(), "_filtered", "bed", null);		
 		BedSeq bedSeqFiltered = new BedSeq(bedFileFiltered, true);
@@ -339,7 +344,9 @@ public class BedSeq implements AlignSeq, IntCmdSoft {
 			if (strand != null && bedRecord.isCis5to3() != strand) {
 				continue;
 			}
-			if (bedRecord.getMappingNum() >= mappingNumSmall && bedRecord.getMappingNum() <= mappingNumBig) {
+			
+			if (!isFilterMapNum 
+					|| (bedRecord.getMappingNum() >= mappingNumSmall && bedRecord.getMappingNum() <= mappingNumBig)) {
 				bedSeqFiltered.writeBedRecord(bedRecord);
 			}
 		}

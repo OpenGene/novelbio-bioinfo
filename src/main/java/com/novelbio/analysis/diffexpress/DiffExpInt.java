@@ -1,6 +1,7 @@
 package com.novelbio.analysis.diffexpress;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -14,7 +15,7 @@ public interface DiffExpInt {
 	 * 0: colNum, 实际number<br>
 	 * 1: SampleGroupName
 	 */
-	public void setCol2Sample(ArrayList<String[]> lsSampleColumn2GroupName);
+	public void setCol2Sample(List<String[]> lsSampleColumn2GroupName);
 	/**
 	 * 设定输出文件夹和比较组
 	 * @param fileName
@@ -25,7 +26,7 @@ public interface DiffExpInt {
 	 */
 	public void addFileName2Compare(String fileName, String fold, String[] comparePair);
 	
-	public void setGeneInfo(ArrayList<String[]> lsGeneInfo);
+	public void setGeneInfo(List<String[]> lsGeneInfo);
 	
 	/** 基因标记列，实际列 */
 	public void setColID(int colID);
@@ -51,7 +52,7 @@ public interface DiffExpInt {
 	 */
 	public Map<String, String[]> getMapOutFileName2Compare();
 	
-	public ArrayList<String> getResultFileName();
+	public List<String> getResultFileName();
 	
 	/** 仅供AOP拦截使用，外界不要调用
 	 * 拦截在其完成之后

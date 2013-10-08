@@ -47,7 +47,7 @@ public class DiffExpLimma extends DiffExpAbs{
 	 */
 	protected void writeToGeneFile() {
 		TxtReadandWrite txtWrite = new TxtReadandWrite(fileNameRawdata, true);
-		ArrayList<String[]> lsAnalysisGeneInfo = getAnalysisGeneInfo();
+		List<String[]> lsAnalysisGeneInfo = getAnalysisGeneInfo();
 		String[] title = lsAnalysisGeneInfo.get(0);
 		lsAnalysisGeneInfo = removeDuplicate(lsAnalysisGeneInfo.subList(1, lsAnalysisGeneInfo.size()));
 		lsAnalysisGeneInfo.add(0, title);

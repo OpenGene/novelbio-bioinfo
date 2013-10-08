@@ -36,7 +36,7 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 	List<FastQ> lsLeftFq = new ArrayList<FastQ>();
 	List<FastQ> lsRightFq = new ArrayList<FastQ>();
 	
-	List<String> lsSampleGroup = null;
+	List<String> lsSampleGroup = new ArrayList<>();
 	/** 非unique mapping的话，取几个 */
 	int mappingNum = 0;
 	
@@ -69,7 +69,7 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 	public void setExePathBowtie(String exePathBowtie) {
 		ExePathBowtie = exePathBowtie;
 	}
-	public void setChrFile(String chrFile) {
+	public void setChrIndex(String chrFile) {
 		this.chrFile = chrFile;
 	}
 	/** 设定是bowtie还是bowtie2 */
@@ -147,14 +147,14 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 		return lsCmd;
 	}
 	
-	private String[] getOutFileName() {
-		outFileName = addSamToFileName(outFileName);
-		if (outFileName.equals("")) {
-			outFileName = FileOperate.changeFileSuffix(lsLeftFq.get(0).getReadFileName(), "_result", "sam");
-		}
-		String outName = MapBwa.addSamToFileName(outFileName);
-		return new String[]{"-S", outName};
-	}
+//	private String[] getOutFileName() {
+//		outFileName = addSamToFileName(outFileName);
+//		if (outFileName.equals("")) {
+//			outFileName = FileOperate.changeFileSuffix(lsLeftFq.get(0).getReadFileName(), "_result", "sam");
+//		}
+//		String outName = MapBwa.addSamToFileName(outFileName);
+//		return new String[]{"-S", outName};
+//	}
 
 	private String getOffset() {
 		if (lsLeftFq.get(0).getOffset() == FastQ.FASTQ_ILLUMINA_OFFSET) {
@@ -210,7 +210,7 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 		if (sampleID == null || sampleID.equals("")) {
 			return;
 		}
-		lsSampleGroup = new ArrayList<>();
+		lsSampleGroup.clear();
 		lsSampleGroup.add("--rg-id"); lsSampleGroup.add(sampleID);
 		if (SampleName != null && !SampleName.trim().equals("")) {
 			lsSampleGroup.add("--rg");
@@ -244,7 +244,7 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 		return new String[]{"-p", threadNum + ""};
 	}
 	
-	private boolean isPairEnd() {
+	protected boolean isPairEnd() {
 		if (lsLeftFq.size() == 0|| lsRightFq.size() == 0) {
 			return false;
 		}
@@ -330,7 +330,7 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 		ArrayOperate.addArrayToList(lsCmd, getMultiHit());
 		lsCmd.add("-x"); lsCmd.add(getChrNameWithoutSuffix());
 		lsCmd.addAll(getLsFqFile());
-		ArrayOperate.addArrayToList(lsCmd, getOutFileName());
+//		ArrayOperate.addArrayToList(lsCmd, getOutFileName());
 		return lsCmd;
 	}
 	
@@ -346,33 +346,33 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 		lsCmd.add(cmdOperate.getCmdExeStr());
 		return lsCmd;
 	}
-	/**
-	 * 将sam文件压缩成bam文件，然后做好统计并返回
-	 * @param outSamFile
-	 * @return
-	 */
-	@Override
-	protected SamFile copeAfterMapping() {
-		if (!FileOperate.isFileExistAndBigThanSize(outFileName, 1)) {
-			return null;
-		}
-		SamFile samFile = new SamFile(outFileName);
-		SamFile bamFile = samFile.convertToBam(lsAlignmentRecorders, true);
-		samFile.close();
-		deleteFile(samFile.getFileName(), bamFile.getFileName());
-		return bamFile;
-	}
-	
-	/**
-	 * 删除sai文件
-	 * @param samFileName
-	 */
-	private void deleteFile(String samFile, String bamFile) {
-		double samFileSize = FileOperate.getFileSize(samFile);
-		if (FileOperate.isFileExistAndBigThanSize(bamFile, samFileSize/15)) {
-			FileOperate.delFile(samFile);
-		}
-	}
+//	/**
+//	 * 将sam文件压缩成bam文件，然后做好统计并返回
+//	 * @param outSamFile
+//	 * @return
+//	 */
+//	@Override
+//	protected SamFile copeAfterMapping() {
+//		if (!FileOperate.isFileExistAndBigThanSize(outFileName, 1)) {
+//			return null;
+//		}
+//		SamFile samFile = new SamFile(outFileName);
+//		SamFile bamFile = samFile.convertToBam(lsAlignmentRecorders, true);
+//		samFile.close();
+//		deleteFile(samFile.getFileName(), bamFile.getFileName());
+//		return bamFile;
+//	}
+//	
+//	/**
+//	 * 删除sai文件
+//	 * @param samFileName
+//	 */
+//	private void deleteFile(String samFile, String bamFile) {
+//		double samFileSize = FileOperate.getFileSize(samFile);
+//		if (FileOperate.isFileExistAndBigThanSize(bamFile, samFileSize/15)) {
+//			FileOperate.delFile(samFile);
+//		}
+//	}
 	
 	/** 没用 */
 	public void setMismatch(double mismatch) { }

@@ -728,9 +728,12 @@ public class SamFile implements AlignSeq {
 			samWriter.close();
 		}
 		String bamFile = getFileName();
+		if (bamFile == null) {
+			return;
+		}
 		String bamindex = bamFile + ".bai";
-		if (bamFile.toLowerCase().endsWith("bam") && FileOperate.isFileExistAndBigThanSize(bamindex, 0)) {
-			bamindex = bamFile + ".bai";
+		if (!bamFile.toLowerCase().endsWith("bam") || !FileOperate.isFileExistAndBigThanSize(bamindex, 0)) {
+			bamindex = null;
 		}
 		
 		samReader = new SamReader(bamFile, bamindex);

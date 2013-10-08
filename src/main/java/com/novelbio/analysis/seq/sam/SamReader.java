@@ -65,6 +65,7 @@ public class SamReader {
 	public SamReader(InputStream inputStream) {
 		samFileReader = new SAMFileReader(inputStream);
 		setSamHeader(inputStream);
+		initial = true;
 	}
 	
 	public void setFileIndex(String fileIndex) {
@@ -134,6 +135,23 @@ public class SamReader {
 			isIndexed = true;
 		}
 		
+		if (fileName != null) initialStream();
+		
+		if (isIndexed) {
+			if (HdfsBase.isHdfs(fileIndex)) {
+				FileHadoop fileHadoopIndex = new FileHadoop(fileIndex);
+				SeekableHDFSstream seekableIndex = new SeekableHDFSstream(fileHadoopIndex);
+				samFileReader = new SAMFileReader((SeekableStream)inputStream, seekableIndex, false);
+			} else {
+				samFileReader = new SAMFileReader((SeekableStream)inputStream, new File(fileIndex), false);
+			}
+		} else {
+			samFileReader = new SAMFileReader(inputStream);
+		}
+		setSamHeader(inputStream);
+	}
+	
+	private void initialStream() throws IOException {
 		if (HdfsBase.isHdfs(fileName)) {
 			FileHadoop fileHadoop = new FileHadoop(fileName);
 			if (isIndexed) {
@@ -149,19 +167,6 @@ public class SamReader {
 				inputStream = new FileInputStream(file);
 			}
 		}
-		
-		if (isIndexed) {
-			if (HdfsBase.isHdfs(fileIndex)) {
-				FileHadoop fileHadoopIndex = new FileHadoop(fileIndex);
-				SeekableHDFSstream seekableIndex = new SeekableHDFSstream(fileHadoopIndex);
-				samFileReader = new SAMFileReader((SeekableStream)inputStream, seekableIndex, false);
-			} else {
-				samFileReader = new SAMFileReader((SeekableStream)inputStream, new File(fileIndex), false);
-			}
-		} else {
-			samFileReader = new SAMFileReader(inputStream);
-		}
-		setSamHeader(inputStream);
 	}
 	
 	private void setSamHeader(InputStream inputStream) {

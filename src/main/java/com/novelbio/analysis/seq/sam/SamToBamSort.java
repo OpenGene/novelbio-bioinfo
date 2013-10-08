@@ -24,11 +24,20 @@ public class SamToBamSort {
 	/** 默认不排序 */
 	boolean isNeedSort = false;
 	
-	/** 需要转化成的bam文件名 */
+	/** 需要转化成的bam文件名，自动从sam文件判定是否为双端，会关闭Sam流
+	 * @param outFileName
+	 * @param samFileSam
+	 */
 	public SamToBamSort(String outFileName, SamFile samFileSam) {
 		this.outFileName = outFileName;
 		this.samFileSam = samFileSam;
 		this.isPairend = samFileSam.isPairend();
+	}
+	/** 需要转化成的bam文件名 */
+	public SamToBamSort(String outFileName, SamFile samFileSam, boolean isPairend) {
+		this.outFileName = outFileName;
+		this.samFileSam = samFileSam;
+		this.isPairend = isPairend;
 	}
 	/** 是否需要排序，默认false */
 	public void setNeedSort(boolean isNeedSort) {

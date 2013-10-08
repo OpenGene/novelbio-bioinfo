@@ -39,9 +39,9 @@ public class TestDiffExpDESeq extends TestCase {
 		lsSampleColumn2GroupName.add(new String[] {"7","C"});
 		deSeq.setCol2Sample(lsSampleColumn2GroupName);
 		deSeq.setColID(1);
-		deSeq.addFileName2Compare(PathDetail.getProjectPath() + "AvsB.xls", new String[]{"A","B"});
-		deSeq.addFileName2Compare(PathDetail.getProjectPath() + "AvsC.xls", new String[]{"A","C"});
-		deSeq.addFileName2Compare(PathDetail.getProjectPath() + "CvsB.xls", new String[]{"C","B"});
+		deSeq.addFileName2Compare(PathDetail.getProjectPath() + "AvsB.xls", "DiffGene", new String[]{"A","B"});
+		deSeq.addFileName2Compare(PathDetail.getProjectPath() + "AvsC.xls", "DiffGene", new String[]{"A","C"});
+		deSeq.addFileName2Compare(PathDetail.getProjectPath() + "CvsB.xls", "DiffGene", new String[]{"C","B"});
 		String DEseqScript = deSeq.getOutScript();
 		txtScript = new TxtReadandWrite(DEseqScript, false);
 		return txtScript.readfileLs();
@@ -85,9 +85,9 @@ public class TestDiffExpDESeq extends TestCase {
 		lsSampleColumn2GroupName.add(new String[] {"7","G"});
 		deSeq.setCol2Sample(lsSampleColumn2GroupName);
 		deSeq.setColID(1);
-		deSeq.addFileName2Compare(PathDetail.getProjectPath() + "AvsB.xls", new String[]{"A","B"});
-		deSeq.addFileName2Compare(PathDetail.getProjectPath() + "AvsC.xls", new String[]{"A","C"});
-		deSeq.addFileName2Compare(PathDetail.getProjectPath() + "CvsB.xls", new String[]{"C","B"});
+		deSeq.addFileName2Compare(PathDetail.getProjectPath() + "AvsB.xls", "DiffGene", new String[]{"A","B"});
+		deSeq.addFileName2Compare(PathDetail.getProjectPath() + "AvsC.xls", "DiffGene", new String[]{"A","C"});
+		deSeq.addFileName2Compare(PathDetail.getProjectPath() + "CvsB.xls", "DiffGene", new String[]{"C","B"});
 		String DEseqScript = deSeq.getOutScript();
 		txtScript = new TxtReadandWrite(DEseqScript, false);
 		return txtScript.readfileLs();

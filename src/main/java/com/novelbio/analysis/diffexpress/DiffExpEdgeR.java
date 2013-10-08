@@ -71,8 +71,8 @@ public class DiffExpEdgeR extends DiffExpAbs {
 		}
 	}
 	
-	protected ArrayList<String[]> removeDuplicate(List<String[]> lsGeneInfo) {
-		ArrayList<String[]> lsResult = super.removeDuplicate(lsGeneInfo);
+	protected List<String[]> removeDuplicate(List<String[]> lsGeneInfo) {
+		List<String[]> lsResult = super.removeDuplicate(lsGeneInfo);
 		for (int i = 1; i < lsResult.size(); i++) {
 			String[] strings = lsResult.get(i);
 			for (int j = 1; i < strings.length; i++) {
@@ -94,20 +94,20 @@ public class DiffExpEdgeR extends DiffExpAbs {
 	 * @param info
 	 * @return
 	 */
-	protected HashMap<String, Double> mapTime2AvgValue(String[] info) {
-		HashMap<String, ArrayList<Double>> mapTime2LsValue = new HashMap<String, ArrayList<Double>>();
+	protected Map<String, Double> mapTime2AvgValue(String[] info) {
+		Map<String, List<Double>> mapTime2LsValue = new HashMap<>();
 		
 		for (int i = 0; i < lsSampleColumn2GroupName.size(); i++) {
 			int colNum = Integer.parseInt(lsSampleColumn2GroupName.get(i)[0]) - 1;
 			//每个值都乘以修正系数
 			double value = Double.parseDouble(info[colNum]) * mapColNum2NormalizeNum.get(colNum);
 			String timeInfo = lsSampleColumn2GroupName.get(i)[1];//时期
-			ArrayList<Double> lsValue = add_and_get_LsValue(timeInfo, mapTime2LsValue);
+			List<Double> lsValue = add_and_get_LsValue(timeInfo, mapTime2LsValue);
 			lsValue.add(value);
 		}
 		
-		HashMap<String, Double> mapTime2AvgValue = new HashMap<String, Double>();
-		for (Entry<String, ArrayList<Double>> entry : mapTime2LsValue.entrySet()) {
+		Map<String, Double> mapTime2AvgValue = new HashMap<>();
+		for (Entry<String, List<Double>> entry : mapTime2LsValue.entrySet()) {
 			Double avgValue = MathComput.mean(entry.getValue());
 			mapTime2AvgValue.put(entry.getKey(), avgValue);
 		}

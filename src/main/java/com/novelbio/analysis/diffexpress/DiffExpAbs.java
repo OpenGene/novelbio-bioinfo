@@ -52,18 +52,18 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	
 	double pValueOrFDRcutoff;
 	
-	ArrayList<String[]> lsGeneInfo = new ArrayList<String[]>();
+	List<String[]> lsGeneInfo = new ArrayList<String[]>();
 	/**
 	 * 一系列的表示基因分组的列，输入的时候就按照col进行了排序<br>
 	 * 0: colNum, 实际number<br>
 	 * 1: SampleGroupName
 	 */
-	ArrayList<String[]> lsSampleColumn2GroupName;
+	List<String[]> lsSampleColumn2GroupName;
 	/** 基因名
 	 * 对应样本名
 	 * 对应平均表达值
 	 */
-	HashMap<String, HashMap<String, Double>> mapGeneID_2_Sample2MeanValue;
+	Map<String, Map<String, Double>> mapGeneID_2_Sample2MeanValue;
 	/**基因唯一ID，必须没有重复 */
 	int colAccID = 0;
 	/**
@@ -76,7 +76,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	 */
 	HashMap<String, String[]> mapOutFileName2Compare = new LinkedHashMap<String, String[]>();
 	
-	ArrayList<String> lsOutFile = new ArrayList<>();
+	List<String> lsOutFile = new ArrayList<>();
 	boolean calculate = false;
 	
 	boolean isLog2Value = false;
@@ -98,7 +98,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	 * 0: colNum, 实际number<br>
 	 * 1: SampleGroupName
 	 */
-	public void setCol2Sample(ArrayList<String[]> lsSampleColumn2GroupName) {
+	public void setCol2Sample(List<String[]> lsSampleColumn2GroupName) {
 		//按列进行排序
 		Collections.sort(lsSampleColumn2GroupName, new Comparator<String[]>() {
 			public int compare(String[] o1, String[] o2) {
@@ -113,7 +113,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	/**
 	 * 设定输出文件夹和比较组
 	 * @param fileName
-	 * @param fold 需要新建的标准文件夹，如
+	 * @param fold 需要新建的标准文件夹，如 "GOanalysis"
 	 * @param comparePair <br>
 	 * 0: treatment<br>
 	 * 1: control
@@ -123,7 +123,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		mapOutFileName2Compare.put(fileName, comparePair);
 		calculate = false;
 	}
-	public void setGeneInfo(ArrayList<String[]> lsGeneInfo) {
+	public void setGeneInfo(List<String[]> lsGeneInfo) {
 		this.lsGeneInfo = lsGeneInfo;
 		calculate = false;
 	}
@@ -185,7 +185,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	/**
 	 * 调用{@link #calculateResult()} 后才能调用
 	 */
-	public ArrayList<String> getResultFileName() {
+	public List<String> getResultFileName() {
 		return lsOutFile;
 	}
 	/** 计算差异 */
@@ -211,7 +211,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	 */
 	protected void writeToGeneFile() {
 		TxtReadandWrite txtWrite = new TxtReadandWrite(fileNameRawdata, true);
-		ArrayList<String[]> lsAnalysisGeneInfo = getAnalysisGeneInfo();
+		List<String[]> lsAnalysisGeneInfo = getAnalysisGeneInfo();
 		String[] title = lsAnalysisGeneInfo.get(0);
 		lsAnalysisGeneInfo = removeDuplicate(lsAnalysisGeneInfo.subList(1, lsAnalysisGeneInfo.size()));
 		lsAnalysisGeneInfo.add(0, title);
@@ -225,7 +225,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	 * 0： geneID
 	 * 1-n：value
 	 */
-	protected  ArrayList<String[]> getAnalysisGeneInfo() {
+	protected List<String[]> getAnalysisGeneInfo() {
 		ArrayList<String[]> lsResultGeneInfo = new ArrayList<String[]>();
 		for (int m = 0; m < lsGeneInfo.size(); m++) {
 			String[] strings = lsGeneInfo.get(m);
@@ -250,7 +250,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		return lsResultGeneInfo;
 	}
 	
-	protected ArrayList<String[]> removeDuplicate(List<String[]> lsGeneInfo) {
+	protected List<String[]> removeDuplicate(List<String[]> lsGeneInfo) {
 		ArrayList<Integer> lsColID = new ArrayList<Integer>();
 		for (int i = 2; i <= lsGeneInfo.size(); i++) {
 			lsColID.add(i);
@@ -259,11 +259,11 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	}
 	
 	private void setMapSample_2_time2value() {
-		mapGeneID_2_Sample2MeanValue = new HashMap<String, HashMap<String,Double>>();
+		mapGeneID_2_Sample2MeanValue = new HashMap<>();
 		for (String[] geneID2Info : lsGeneInfo) {
 			String geneName = geneID2Info[colAccID];
 			try {
-				HashMap<String, Double> mapTime2value = mapTime2AvgValue(geneID2Info);
+				Map<String, Double> mapTime2value = mapTime2AvgValue(geneID2Info);
 				mapGeneID_2_Sample2MeanValue.put(geneName, mapTime2value);
 			} catch (Exception e) {
 				// TODO: handle exception
@@ -278,18 +278,18 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	 * @param info
 	 * @return
 	 */
-	protected HashMap<String, Double> mapTime2AvgValue(String[] info) {
-		HashMap<String, ArrayList<Double>> mapTime2LsValue = new HashMap<String, ArrayList<Double>>();
+	protected Map<String, Double> mapTime2AvgValue(String[] info) {
+		Map<String, List<Double>> mapTime2LsValue = new HashMap<>();
 		
 		for (int i = 0; i < lsSampleColumn2GroupName.size(); i++) {
 			int colNum = Integer.parseInt(lsSampleColumn2GroupName.get(i)[0]) - 1;
 			double value = Double.parseDouble(info[colNum]);
 			String timeInfo = lsSampleColumn2GroupName.get(i)[1];//时期
-			ArrayList<Double> lsValue = add_and_get_LsValue(timeInfo, mapTime2LsValue);
+			List<Double> lsValue = add_and_get_LsValue(timeInfo, mapTime2LsValue);
 			lsValue.add(value);
 		}
 		HashMap<String, Double> mapTime2AvgValue = new HashMap<String, Double>();
-		for (Entry<String, ArrayList<Double>> entry : mapTime2LsValue.entrySet()) {
+		for (Entry<String, List<Double>> entry : mapTime2LsValue.entrySet()) {
 			Double avgValue = MathComput.mean(entry.getValue());
 			mapTime2AvgValue.put(entry.getKey(), avgValue);
 		}
@@ -299,8 +299,8 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	 * 设定样本时期到具体值的信息。
 	 * 没有该timeInfo就产生个新的list，有的话就获得原来的list 
 	 */
-	protected ArrayList<Double> add_and_get_LsValue(String timeInfo, HashMap<String, ArrayList<Double>> mapTime2value) {
-		ArrayList<Double> lsValue = mapTime2value.get(timeInfo);
+	protected List<Double> add_and_get_LsValue(String timeInfo, Map<String, List<Double>> mapTime2value) {
+		List<Double> lsValue = mapTime2value.get(timeInfo);
 		if (lsValue == null) {
 			lsValue = new ArrayList<Double>();
 			mapTime2value.put(timeInfo, lsValue);
@@ -365,7 +365,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		FileOperate.DeleteFileFolder(fileNameRawdata);
 	}
 	
-	public ArrayList<String> plotDifParams() {
+	public List<String> plotDifParams() {
 		ArrayList<String> lsOutFile = new ArrayList<>(); 
 		Map<String, String[]> mapExcelName2Compare = getMapOutFileName2Compare();
 		Map<String, DiffGeneVocalno> mapExcelName2DifResultInfo= new LinkedHashMap<String, DiffGeneVocalno>();

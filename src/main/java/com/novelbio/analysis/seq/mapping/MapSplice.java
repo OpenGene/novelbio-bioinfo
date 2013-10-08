@@ -44,7 +44,7 @@ public class MapSplice implements MapRNA {
 	/** 这个输入的应该是一个包含分割Chr文件的文件夹 */
 	@Override
 	public void setRefIndex(String index) {
-		mapBowtie.setChrFile(index);
+		mapBowtie.setChrIndex(index);
 	}
 	
 	@Override
