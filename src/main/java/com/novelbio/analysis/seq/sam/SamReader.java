@@ -59,6 +59,14 @@ public class SamReader {
 		this.fileIndex = fileIndex;
 	}
 	
+	/** 不设定文件名，也不支持索引<br>
+	 * <b>不需要初始化</b>
+	 */
+	public SamReader(InputStream inputStream) {
+		samFileReader = new SAMFileReader(inputStream);
+		setSamHeader(inputStream);
+	}
+	
 	public void setFileIndex(String fileIndex) {
 		if (!FileOperate.isFileExistAndBigThanSize(fileIndex, 0)) return;
 		
@@ -153,7 +161,10 @@ public class SamReader {
 		} else {
 			samFileReader = new SAMFileReader(inputStream);
 		}
+		setSamHeader(inputStream);
+	}
 	
+	private void setSamHeader(InputStream inputStream) {
 		samFileHeader = samFileReader.getFileHeader();
 		mapChrIDlowCase2ChrID = new LinkedHashMap<String, String>();
 		mapChrIDlowCase2Length = new LinkedHashMap<String, Long>();
@@ -164,6 +175,7 @@ public class SamReader {
 			mapChrIDlowCase2Length.put(samSequenceRecord.getSequenceName().toLowerCase(), (long) samSequenceRecord.getSequenceLength());
 		}
 	}
+	
 	
 	protected SAMFileHeader getSamFileHead() {
 		return samFileHeader;

@@ -113,7 +113,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	/**
 	 * 设定输出文件夹和比较组
 	 * @param fileName
-	 * @param fold 需要新建的标准文件加，如
+	 * @param fold 需要新建的标准文件夹，如
 	 * @param comparePair <br>
 	 * 0: treatment<br>
 	 * 1: control

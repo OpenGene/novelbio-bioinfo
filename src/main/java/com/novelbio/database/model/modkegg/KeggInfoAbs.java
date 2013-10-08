@@ -24,7 +24,7 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 	 */
 	static HashMap<String, KGpathway> hashKGPath = new HashMap<String, KGpathway>();
 	
-	ServKIDKeg2Ko servKIDKeg2Ko = new ServKIDKeg2Ko();
+	static ServKIDKeg2Ko servKIDKeg2Ko = new ServKIDKeg2Ko();
 	/**
 	 * geneID或UniID或AccID
 	 * 如果是AccID，那么一定是没有GeneID和UniID的

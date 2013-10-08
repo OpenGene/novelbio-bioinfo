@@ -90,15 +90,20 @@ public class SamFile implements AlignSeq {
 		SAMFileReader.setDefaultValidationStringency(ValidationStringency.SILENT);
 		setSamFileRead(samBamFile);
 	}
+	/**直接读取流，不支持判定文件格式，不支持索引 */
+	public SamFile(InputStream inputStream) {
+		SAMFileReader.setDefaultValidationStringency(ValidationStringency.SILENT);
+		setSamRead(inputStream);
+	}
 	/** 创建新的sambam文件，根据文件名
 	 * 根据samFileHeader来定义默认输入的序列是否已经经过排序。
 	 */
 	public SamFile(String samBamFile, SAMFileHeader samFileHeader) {
 		SAMFileReader.setDefaultValidationStringency(ValidationStringency.SILENT);
 		if (samFileHeader.getSortOrder() != SortOrder.unsorted) {
-			setSamFileNew(samFileHeader, samBamFile, false);
-		} else {
 			setSamFileNew(samFileHeader, samBamFile, true);
+		} else {
+			setSamFileNew(samFileHeader, samBamFile, false);
 		}
 //		initialSoftWare();
 	}
@@ -126,6 +131,11 @@ public class SamFile implements AlignSeq {
 			samReader.initial();
 		}
 		return samReader;
+	}
+	
+	private void setSamRead(InputStream inputStream) {
+		samReader = new SamReader(inputStream);
+		read = true;
 	}
 	
 	private void setSamFileRead(FormatSeq formatSeq, String samFileExist, String fileIndex) {
@@ -389,7 +399,7 @@ public class SamFile implements AlignSeq {
 		SAMFileHeader samHeader = getHeader();
 		samHeader.setReadGroups(lsReadGroupRecords);
 		
-		SamFile samFileWrite = new SamFile(outFile, getHeader(), true);
+		SamFile samFileWrite = new SamFile(outFile, getHeader());
 		for (SamRecord samRecord : readLines()) {
 			samRecord.setReadGroup(samRGroup);
 			samFileWrite.writeSamRecord(samRecord);
@@ -470,7 +480,7 @@ public class SamFile implements AlignSeq {
 		if (!outFile.endsWith(".bam")) {
 			FileOperate.changeFileSuffix(outFile, "", ".bam");
 		}
-		SamToBam samToBam = new SamToBam(outFile, this);
+		SamToBamSort samToBam = new SamToBamSort(outFile, this);
 		samToBam.setAddMultiHitFlag(addMultiHitFlag);
 		samToBam.setLsAlignmentRecorders(lsAlignmentRecorders);
 		samToBam.convert();

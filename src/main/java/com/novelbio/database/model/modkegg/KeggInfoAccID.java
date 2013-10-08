@@ -6,7 +6,7 @@ import com.novelbio.database.domain.kegg.noGene.KGNIdKeg;
 import com.novelbio.database.service.servkegg.ServKNIdKeg;
 
 public class KeggInfoAccID extends KeggInfoAbs{
-	ServKNIdKeg servKNIdKeg = new ServKNIdKeg();
+	static ServKNIdKeg servKNIdKeg = new ServKNIdKeg();
 	public KeggInfoAccID(String genUniAccID, int taxID) {
 		super(genUniAccID, taxID);
 		// TODO Auto-generated constructor stub

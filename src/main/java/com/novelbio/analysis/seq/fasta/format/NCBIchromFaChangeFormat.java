@@ -25,6 +25,10 @@ public class NCBIchromFaChangeFormat {
 	
 	String chrFile = ""; String regx = "\\bchr\\w*";
 	
+	/**
+	 * @param chromFaPath 染色体所在位置
+	 * @param regx ""表示全部抓出，null表示默认正则表达式 "\\bchr\\w*"
+	 */
 	public void setChromFaPath(String chromFaPath, String regx) {
 		this.chrFile = chromFaPath;
 		this.regx = regx;
@@ -63,9 +67,8 @@ public class NCBIchromFaChangeFormat {
 	 * string[2] 1:文件名 2：后缀 */
 	private ArrayList<String> initialAndGetFileList() {
 		chrFile = FileOperate.addSep(chrFile);
-		if (regx.equals("") || regx == null) {
-			regx = "\\bchr\\w*";
-		}
+		if (regx == null) regx = "\\bchr\\w*";
+		if (regx.equals("")) regx = "*";
 		
 		final PatternOperate patNum = new PatternOperate("\\d+", false);
 		ArrayList<String> lsFileName = FileOperate.getFoldFileNameLs(chrFile,regx, "*");

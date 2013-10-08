@@ -11,7 +11,7 @@ import com.novelbio.database.service.servgeneanno.ManageUniGene2Go;
 
 public class GOInfoUniID extends GOInfoAbs {
 	private static Logger logger = Logger.getLogger(GOInfoUniID.class);
-	ManageUniGene2Go servUniGene2Go = new ManageUniGene2Go();
+	static ManageUniGene2Go servUniGene2Go = new ManageUniGene2Go();
 	
 	public GOInfoUniID(String genUniAccID, int taxID) {
 		super(genUniAccID, taxID);

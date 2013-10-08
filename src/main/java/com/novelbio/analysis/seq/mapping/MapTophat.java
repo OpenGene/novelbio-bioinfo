@@ -92,7 +92,7 @@ public class MapTophat implements MapRNA, IntCmdSoft {
 			this.ExePathTophat = FileOperate.addSep(exePathTophat);
 		mapBowtie.setExePathBowtie(exePathBowtie);
 	}
-	public void setFileRef(String chrFile) {
+	public void setRefIndex(String chrFile) {
 		mapBowtie.setChrFile(chrFile);
 	}
 	

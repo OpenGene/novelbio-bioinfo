@@ -62,26 +62,26 @@ public class TestGffGeneCluster extends TestCase{
 		gffGeneIsoInfoRefCis.clear();
 		gffGeneIsoInfoThisCis.clear();
 		
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 10, 20));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 30, 40));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 50, 60));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 70, 80));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 90, 95));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 10, 20));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 30, 40));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 90, 95));
 		
-//		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 10, 20));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 35, 40));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 50, 60));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 70, 80));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 90, 120));
+//		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 10, 20));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 35, 40));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 90, 120));
 
 		GffGeneIsoInfo gffGeneIsoInfoResult = gffGeneCluster.compareIso( gffGeneIsoInfoRefCis, gffGeneIsoInfoThisCis);
 		assertEquals(5, gffGeneIsoInfoResult.size());
 		
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 10, 20), gffGeneIsoInfoResult.get(0));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 30, 40), gffGeneIsoInfoResult.get(1));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 50, 60), gffGeneIsoInfoResult.get(2));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 70, 80), gffGeneIsoInfoResult.get(3));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 90, 120), gffGeneIsoInfoResult.get(4));
+		assertEquals(new ExonInfo(cis, 10, 20), gffGeneIsoInfoResult.get(0));
+		assertEquals(new ExonInfo(cis, 30, 40), gffGeneIsoInfoResult.get(1));
+		assertEquals(new ExonInfo(cis, 50, 60), gffGeneIsoInfoResult.get(2));
+		assertEquals(new ExonInfo(cis, 70, 80), gffGeneIsoInfoResult.get(3));
+		assertEquals(new ExonInfo(cis, 90, 120), gffGeneIsoInfoResult.get(4));
 	}
 	/**
 	 * 装载gffGeneIsoInfoRefCis和gffGeneIsoInfoThisCis
@@ -91,29 +91,29 @@ public class TestGffGeneCluster extends TestCase{
 		gffGeneIsoInfoRefCis.clear();
 		gffGeneIsoInfoThisCis.clear();
 		gffGeneIsoInfoThisCis = GffGeneIsoInfo.createGffGeneIso("CisThis", gffDetailGeneCis.getNameSingle(), gffDetailGeneCis, GeneType.mRNA, true);
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 10, 20));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 30, 40));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 50, 60));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 70, 80));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 90, 100));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 10, 20));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 30, 40));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 90, 100));
 
 		GffGeneIsoInfo gffGeneIsoInfoResult = gffGeneCluster.compareIso( gffGeneIsoInfoRefCis, gffGeneIsoInfoThisCis);
 		assertEquals(5, gffGeneIsoInfoResult.size());
 		
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 10, 20), gffGeneIsoInfoResult.get(0));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 30, 40), gffGeneIsoInfoResult.get(1));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 50, 60), gffGeneIsoInfoResult.get(2));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 70, 80), gffGeneIsoInfoResult.get(3));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 90, 100), gffGeneIsoInfoResult.get(4));
+		assertEquals(new ExonInfo(cis, 10, 20), gffGeneIsoInfoResult.get(0));
+		assertEquals(new ExonInfo(cis, 30, 40), gffGeneIsoInfoResult.get(1));
+		assertEquals(new ExonInfo(cis, 50, 60), gffGeneIsoInfoResult.get(2));
+		assertEquals(new ExonInfo(cis, 70, 80), gffGeneIsoInfoResult.get(3));
+		assertEquals(new ExonInfo(cis, 90, 100), gffGeneIsoInfoResult.get(4));
 		
 		gffGeneIsoInfoResult = gffGeneCluster.compareIso( gffGeneIsoInfoRefCis, null);
 		assertEquals(5, gffGeneIsoInfoResult.size());
 		
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 10, 20), gffGeneIsoInfoResult.get(0));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 30, 40), gffGeneIsoInfoResult.get(1));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 50, 60), gffGeneIsoInfoResult.get(2));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 70, 80), gffGeneIsoInfoResult.get(3));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 90, 100), gffGeneIsoInfoResult.get(4));
+		assertEquals(new ExonInfo(cis, 10, 20), gffGeneIsoInfoResult.get(0));
+		assertEquals(new ExonInfo(cis, 30, 40), gffGeneIsoInfoResult.get(1));
+		assertEquals(new ExonInfo(cis, 50, 60), gffGeneIsoInfoResult.get(2));
+		assertEquals(new ExonInfo(cis, 70, 80), gffGeneIsoInfoResult.get(3));
+		assertEquals(new ExonInfo(cis, 90, 100), gffGeneIsoInfoResult.get(4));
 	}
 	/**
 	 * 装载gffGeneIsoInfoRefCis和gffGeneIsoInfoThisCis
@@ -126,25 +126,25 @@ public class TestGffGeneCluster extends TestCase{
 		gffGeneIsoInfoRefCis.clear();
 		gffGeneIsoInfoThisCis.clear();
 		
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 35, 40));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 50, 60));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 70, 80));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 90, 100));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 35, 40));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 90, 100));
 		
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 15, 20));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 30, 40));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 50, 60));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 70, 80));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 90, 120));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 15, 20));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 30, 40));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 90, 120));
 
 		GffGeneIsoInfo gffGeneIsoInfoResult = gffGeneCluster.compareIso( gffGeneIsoInfoRefCis, gffGeneIsoInfoThisCis);
 		assertEquals(5, gffGeneIsoInfoResult.size());
 		
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 15, 20), gffGeneIsoInfoResult.get(0));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 30, 40), gffGeneIsoInfoResult.get(1));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 50, 60), gffGeneIsoInfoResult.get(2));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 70, 80), gffGeneIsoInfoResult.get(3));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 90, 120), gffGeneIsoInfoResult.get(4));
+		assertEquals(new ExonInfo(cis, 15, 20), gffGeneIsoInfoResult.get(0));
+		assertEquals(new ExonInfo(cis, 30, 40), gffGeneIsoInfoResult.get(1));
+		assertEquals(new ExonInfo(cis, 50, 60), gffGeneIsoInfoResult.get(2));
+		assertEquals(new ExonInfo(cis, 70, 80), gffGeneIsoInfoResult.get(3));
+		assertEquals(new ExonInfo(cis, 90, 120), gffGeneIsoInfoResult.get(4));
 		
 
 		//--------10-----20-------------30-----40----------------50-----60-----------------------70-----80-------------------90-----100---------------
@@ -154,25 +154,25 @@ public class TestGffGeneCluster extends TestCase{
 		gffGeneIsoInfoThisCis.clear();
 		
 
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 50, 60));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 70, 79));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 70, 79));
 		
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 5, 20));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 30, 35));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 45, 60));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 70, 80));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 90, 95));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 100, 125));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 5, 20));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 30, 35));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 45, 60));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 90, 95));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 100, 125));
 		
 		gffGeneIsoInfoResult = gffGeneCluster.compareIso( gffGeneIsoInfoRefCis, gffGeneIsoInfoThisCis);
 		assertEquals(6, gffGeneIsoInfoResult.size());
 		
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 5, 20), gffGeneIsoInfoResult.get(0));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 30, 35), gffGeneIsoInfoResult.get(1));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 45, 60), gffGeneIsoInfoResult.get(2));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 70, 80), gffGeneIsoInfoResult.get(3));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 90, 95), gffGeneIsoInfoResult.get(4));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 100, 125), gffGeneIsoInfoResult.get(5));
+		assertEquals(new ExonInfo(cis, 5, 20), gffGeneIsoInfoResult.get(0));
+		assertEquals(new ExonInfo(cis, 30, 35), gffGeneIsoInfoResult.get(1));
+		assertEquals(new ExonInfo(cis, 45, 60), gffGeneIsoInfoResult.get(2));
+		assertEquals(new ExonInfo(cis, 70, 80), gffGeneIsoInfoResult.get(3));
+		assertEquals(new ExonInfo(cis, 90, 95), gffGeneIsoInfoResult.get(4));
+		assertEquals(new ExonInfo(cis, 100, 125), gffGeneIsoInfoResult.get(5));
 		
 		//--------10-----20-------------30-----40----------------50-----60-----------------------70-----80-------------------90------100---------------
 		//-----5----------20-------------30---35--------------- 45-------60-----------------------70---75---------------------90----95---------------
@@ -180,25 +180,25 @@ public class TestGffGeneCluster extends TestCase{
 		gffGeneIsoInfoRefCis.clear();
 		gffGeneIsoInfoThisCis.clear();
 		
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 10, 20));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 30, 40));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 50, 60));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 70, 80));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 90, 100));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 10, 20));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 30, 40));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 90, 100));
 		
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 30, 40));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 50, 60));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 70, 80));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 90, 120));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 30, 40));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 90, 120));
 
 		gffGeneIsoInfoResult = gffGeneCluster.compareIso( gffGeneIsoInfoRefCis, gffGeneIsoInfoThisCis);
 		assertEquals(5, gffGeneIsoInfoResult.size());
 		
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 10, 20), gffGeneIsoInfoResult.get(0));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 30, 40), gffGeneIsoInfoResult.get(1));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 50, 60), gffGeneIsoInfoResult.get(2));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 70, 80), gffGeneIsoInfoResult.get(3));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 90, 120), gffGeneIsoInfoResult.get(4));
+		assertEquals(new ExonInfo(cis, 10, 20), gffGeneIsoInfoResult.get(0));
+		assertEquals(new ExonInfo(cis, 30, 40), gffGeneIsoInfoResult.get(1));
+		assertEquals(new ExonInfo(cis, 50, 60), gffGeneIsoInfoResult.get(2));
+		assertEquals(new ExonInfo(cis, 70, 80), gffGeneIsoInfoResult.get(3));
+		assertEquals(new ExonInfo(cis, 90, 120), gffGeneIsoInfoResult.get(4));
 	}
 	/**
 	 * 装载gffGeneIsoInfoRefCis和gffGeneIsoInfoThisCis
@@ -211,28 +211,28 @@ public class TestGffGeneCluster extends TestCase{
 		gffGeneIsoInfoRefCis.clear();
 		gffGeneIsoInfoThisCis.clear();
 		
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 10, 20));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 30, 40));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 50, 60));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 70, 80));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 90, 100));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 10, 20));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 30, 40));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 90, 100));
 		
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 25, 26));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 30, 35));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 45, 60));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 70, 80));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 83, 84));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 25, 26));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 30, 35));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 45, 60));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 83, 84));
 
 		GffGeneIsoInfo gffGeneIsoInfoResult = gffGeneCluster.compareIso( gffGeneIsoInfoRefCis, gffGeneIsoInfoThisCis);
 		assertEquals(7, gffGeneIsoInfoResult.size());
 		
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 10, 20), gffGeneIsoInfoResult.get(0));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 25, 26), gffGeneIsoInfoResult.get(1));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 30, 35), gffGeneIsoInfoResult.get(2));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 45, 60), gffGeneIsoInfoResult.get(3));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 70, 80), gffGeneIsoInfoResult.get(4));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 83, 84), gffGeneIsoInfoResult.get(5));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 90, 100), gffGeneIsoInfoResult.get(6));
+		assertEquals(new ExonInfo(cis, 10, 20), gffGeneIsoInfoResult.get(0));
+		assertEquals(new ExonInfo(cis, 25, 26), gffGeneIsoInfoResult.get(1));
+		assertEquals(new ExonInfo(cis, 30, 35), gffGeneIsoInfoResult.get(2));
+		assertEquals(new ExonInfo(cis, 45, 60), gffGeneIsoInfoResult.get(3));
+		assertEquals(new ExonInfo(cis, 70, 80), gffGeneIsoInfoResult.get(4));
+		assertEquals(new ExonInfo(cis, 83, 84), gffGeneIsoInfoResult.get(5));
+		assertEquals(new ExonInfo(cis, 90, 100), gffGeneIsoInfoResult.get(6));
 		
 
 		//-----------10-----20-------------30-----40----------------50-----60-----------------------70-----80-------------------90-----100---------------
@@ -241,26 +241,26 @@ public class TestGffGeneCluster extends TestCase{
 		gffGeneIsoInfoRefCis.clear();
 		gffGeneIsoInfoThisCis.clear();
 		
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 10, 20));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 30, 40));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 50, 60));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 70, 80));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 90, 100));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 10, 20));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 30, 40));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 90, 100));
 		
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 5, 6));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 30, 35));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 45, 60));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 70, 80));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 110, 120));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 5, 6));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 30, 35));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 45, 60));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 110, 120));
 
 		gffGeneIsoInfoResult = gffGeneCluster.compareIso( gffGeneIsoInfoRefCis, gffGeneIsoInfoThisCis);
 		assertEquals(5, gffGeneIsoInfoResult.size());
 		
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 5, 6), gffGeneIsoInfoResult.get(0));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 30, 35), gffGeneIsoInfoResult.get(1));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 45, 60), gffGeneIsoInfoResult.get(2));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 70, 80), gffGeneIsoInfoResult.get(3));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 110, 120), gffGeneIsoInfoResult.get(4));
+		assertEquals(new ExonInfo(cis, 5, 6), gffGeneIsoInfoResult.get(0));
+		assertEquals(new ExonInfo(cis, 30, 35), gffGeneIsoInfoResult.get(1));
+		assertEquals(new ExonInfo(cis, 45, 60), gffGeneIsoInfoResult.get(2));
+		assertEquals(new ExonInfo(cis, 70, 80), gffGeneIsoInfoResult.get(3));
+		assertEquals(new ExonInfo(cis, 110, 120), gffGeneIsoInfoResult.get(4));
 		
 	}
 	/**
@@ -274,24 +274,24 @@ public class TestGffGeneCluster extends TestCase{
 		gffGeneIsoInfoRefCis.clear();
 		gffGeneIsoInfoThisCis.clear();
 		
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 10, 20));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 30, 40));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 50, 60));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 70, 80));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 90, 100));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 10, 20));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 30, 40));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 90, 100));
 		
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 30, 35));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 45, 60));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 70, 80));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 30, 35));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 45, 60));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 70, 80));
 
 		GffGeneIsoInfo gffGeneIsoInfoResult = gffGeneCluster.compareIso( gffGeneIsoInfoRefCis, gffGeneIsoInfoThisCis);
 		assertEquals(5, gffGeneIsoInfoResult.size());
 		
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 10, 20), gffGeneIsoInfoResult.get(0));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 30, 35), gffGeneIsoInfoResult.get(1));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 45, 60), gffGeneIsoInfoResult.get(2));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 70, 80), gffGeneIsoInfoResult.get(3));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 90, 100), gffGeneIsoInfoResult.get(4));
+		assertEquals(new ExonInfo(cis, 10, 20), gffGeneIsoInfoResult.get(0));
+		assertEquals(new ExonInfo(cis, 30, 35), gffGeneIsoInfoResult.get(1));
+		assertEquals(new ExonInfo(cis, 45, 60), gffGeneIsoInfoResult.get(2));
+		assertEquals(new ExonInfo(cis, 70, 80), gffGeneIsoInfoResult.get(3));
+		assertEquals(new ExonInfo(cis, 90, 100), gffGeneIsoInfoResult.get(4));
 		
 
 		//--------10-----20-------------30-----40-------------------50----60---------------------70---------80--------------------------------------------------
@@ -300,24 +300,24 @@ public class TestGffGeneCluster extends TestCase{
 		gffGeneIsoInfoRefCis.clear();
 		gffGeneIsoInfoThisCis.clear();
 		
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 10, 20));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 30, 40));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 50, 60));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 70, 80));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 10, 20));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 30, 40));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 70, 80));
 		
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 35, 36));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 45, 60));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 72, 79));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 90, 100));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 35, 36));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 45, 60));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 72, 79));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 90, 100));
 
 		gffGeneIsoInfoResult = gffGeneCluster.compareIso( gffGeneIsoInfoRefCis, gffGeneIsoInfoThisCis);
 		assertEquals(5, gffGeneIsoInfoResult.size());
 		
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 10, 20), gffGeneIsoInfoResult.get(0));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 30, 36), gffGeneIsoInfoResult.get(1));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 45, 60), gffGeneIsoInfoResult.get(2));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 72, 79), gffGeneIsoInfoResult.get(3));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 90, 100), gffGeneIsoInfoResult.get(4));
+		assertEquals(new ExonInfo(cis, 10, 20), gffGeneIsoInfoResult.get(0));
+		assertEquals(new ExonInfo(cis, 30, 36), gffGeneIsoInfoResult.get(1));
+		assertEquals(new ExonInfo(cis, 45, 60), gffGeneIsoInfoResult.get(2));
+		assertEquals(new ExonInfo(cis, 72, 79), gffGeneIsoInfoResult.get(3));
+		assertEquals(new ExonInfo(cis, 90, 100), gffGeneIsoInfoResult.get(4));
 		
 		
 		//--------10-----20-------------30-----40-------------------50----60---------------------70-------80--------------------90-----100---------------------
@@ -326,24 +326,24 @@ public class TestGffGeneCluster extends TestCase{
 		gffGeneIsoInfoRefCis.clear();
 		gffGeneIsoInfoThisCis.clear();
 		
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 10, 20));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 30, 40));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 50, 60));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 70, 80));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 90, 100));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 10, 20));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 30, 40));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 90, 100));
 
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 35, 36));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 45, 60));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 75, 77));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 35, 36));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 45, 60));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 75, 77));
 
 		gffGeneIsoInfoResult = gffGeneCluster.compareIso( gffGeneIsoInfoRefCis, gffGeneIsoInfoThisCis);
 		assertEquals(5, gffGeneIsoInfoResult.size());
 		
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 10, 20), gffGeneIsoInfoResult.get(0));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 30, 36), gffGeneIsoInfoResult.get(1));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 45, 60), gffGeneIsoInfoResult.get(2));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 75, 80), gffGeneIsoInfoResult.get(3));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefCis, cis, 90, 100), gffGeneIsoInfoResult.get(4));
+		assertEquals(new ExonInfo(cis, 10, 20), gffGeneIsoInfoResult.get(0));
+		assertEquals(new ExonInfo(cis, 30, 36), gffGeneIsoInfoResult.get(1));
+		assertEquals(new ExonInfo(cis, 45, 60), gffGeneIsoInfoResult.get(2));
+		assertEquals(new ExonInfo(cis, 75, 80), gffGeneIsoInfoResult.get(3));
+		assertEquals(new ExonInfo(cis, 90, 100), gffGeneIsoInfoResult.get(4));
 	}
 	
 	
@@ -358,17 +358,17 @@ public class TestGffGeneCluster extends TestCase{
 		gffGeneIsoInfoRefTrans.clear();
 		gffGeneIsoInfoThisTrans.clear();
 		
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 10, 20));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 30, 40));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 50, 60));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 70, 80));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 90, 100));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 10, 20));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 30, 40));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 90, 100));
 		
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 10, 20));
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 25, 35));
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 45, 55));
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 70, 75));
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 90, 100));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 10, 20));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 25, 35));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 45, 55));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 70, 75));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 90, 100));
 		gffGeneIsoInfoThisTrans.sort();
 		gffGeneIsoInfoRefTrans.sort();
 		
@@ -376,11 +376,11 @@ public class TestGffGeneCluster extends TestCase{
 		
 		assertEquals(5, gffGeneIsoInfoResult.size());
 		
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 90, 100), gffGeneIsoInfoResult.get(0));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 70, 75), gffGeneIsoInfoResult.get(1));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 45, 55), gffGeneIsoInfoResult.get(2));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 25, 35), gffGeneIsoInfoResult.get(3));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 10, 20), gffGeneIsoInfoResult.get(4));
+		assertEquals(new ExonInfo(cis, 90, 100), gffGeneIsoInfoResult.get(0));
+		assertEquals(new ExonInfo(cis, 70, 75), gffGeneIsoInfoResult.get(1));
+		assertEquals(new ExonInfo(cis, 45, 55), gffGeneIsoInfoResult.get(2));
+		assertEquals(new ExonInfo(cis, 25, 35), gffGeneIsoInfoResult.get(3));
+		assertEquals(new ExonInfo(cis, 10, 20), gffGeneIsoInfoResult.get(4));
 		
 		
 		//--------10-----20-------------30-----40----------------50-----60-----------------------70-----80-------------------90-----100---------------
@@ -389,17 +389,17 @@ public class TestGffGeneCluster extends TestCase{
 		gffGeneIsoInfoRefTrans.clear();
 		gffGeneIsoInfoThisTrans.clear();
 		
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 10, 20));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 30, 40));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 50, 60));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 70, 80));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 90, 100));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 10, 20));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 30, 40));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 90, 100));
 		
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 10, 20));
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 25, 39));
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 49, 55));
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 70, 75));
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 90, 100));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 10, 20));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 25, 39));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 49, 55));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 70, 75));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 90, 100));
 		gffGeneIsoInfoThisTrans.sort();
 		gffGeneIsoInfoRefTrans.sort();
 		
@@ -407,11 +407,11 @@ public class TestGffGeneCluster extends TestCase{
 		
 		assertEquals(5, gffGeneIsoInfoResult.size());
 		
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 90, 100), gffGeneIsoInfoResult.get(0));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 70, 75), gffGeneIsoInfoResult.get(1));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 50, 55), gffGeneIsoInfoResult.get(2));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 25, 40), gffGeneIsoInfoResult.get(3));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 10, 20), gffGeneIsoInfoResult.get(4));
+		assertEquals(new ExonInfo(cis, 90, 100), gffGeneIsoInfoResult.get(0));
+		assertEquals(new ExonInfo(cis, 70, 75), gffGeneIsoInfoResult.get(1));
+		assertEquals(new ExonInfo(cis, 50, 55), gffGeneIsoInfoResult.get(2));
+		assertEquals(new ExonInfo(cis, 25, 40), gffGeneIsoInfoResult.get(3));
+		assertEquals(new ExonInfo(cis, 10, 20), gffGeneIsoInfoResult.get(4));
 		
 		
 		//--------10-----20-------------30-----40----------------50-----60-----------------------70-----80-------------------90-----100---------------
@@ -420,17 +420,17 @@ public class TestGffGeneCluster extends TestCase{
 		gffGeneIsoInfoRefTrans.clear();
 		gffGeneIsoInfoThisTrans.clear();
 		
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 10, 20));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 30, 40));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 50, 60));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 70, 80));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 90, 100));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 10, 20));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 30, 40));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 90, 100));
 		
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 10, 20));
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 25, 35));
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 49, 55));
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 70, 75));
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 90, 100));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 10, 20));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 25, 35));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 49, 55));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 70, 75));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 90, 100));
 		gffGeneIsoInfoThisTrans.sort();
 		gffGeneIsoInfoRefTrans.sort();
 		
@@ -438,11 +438,11 @@ public class TestGffGeneCluster extends TestCase{
 		
 		assertEquals(5, gffGeneIsoInfoResult.size());
 		
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 90, 100), gffGeneIsoInfoResult.get(0));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 70, 75), gffGeneIsoInfoResult.get(1));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 50, 55), gffGeneIsoInfoResult.get(2));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 25, 35), gffGeneIsoInfoResult.get(3));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 10, 20), gffGeneIsoInfoResult.get(4));
+		assertEquals(new ExonInfo(cis, 90, 100), gffGeneIsoInfoResult.get(0));
+		assertEquals(new ExonInfo(cis, 70, 75), gffGeneIsoInfoResult.get(1));
+		assertEquals(new ExonInfo(cis, 50, 55), gffGeneIsoInfoResult.get(2));
+		assertEquals(new ExonInfo(cis, 25, 35), gffGeneIsoInfoResult.get(3));
+		assertEquals(new ExonInfo(cis, 10, 20), gffGeneIsoInfoResult.get(4));
 	}
 	/**
 	 * 装载gffGeneIsoInfoRefTrans和gffGeneIsoInfoThisTrans
@@ -455,28 +455,28 @@ public class TestGffGeneCluster extends TestCase{
 		gffGeneIsoInfoRefTrans.clear();
 		gffGeneIsoInfoThisTrans.clear();
 		
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 10, 20));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 30, 40));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 50, 60));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 70, 80));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 90, 100));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 10, 20));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 30, 40));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 90, 100));
 		
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 15, 20));
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 30, 35));
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 45, 60));
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 70, 80));
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 90, 110));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 15, 20));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 30, 35));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 45, 60));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 90, 110));
 		gffGeneIsoInfoThisTrans.sort();
 		gffGeneIsoInfoRefTrans.sort();
 		
 		GffGeneIsoInfo gffGeneIsoInfoResult = gffGeneCluster.compareIso( gffGeneIsoInfoRefTrans, gffGeneIsoInfoThisTrans);
 		assertEquals(5, gffGeneIsoInfoResult.size());
 		
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 10, 20), gffGeneIsoInfoResult.get(4));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 30, 35), gffGeneIsoInfoResult.get(3));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 45, 60), gffGeneIsoInfoResult.get(2));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 70, 80), gffGeneIsoInfoResult.get(1));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 90, 110), gffGeneIsoInfoResult.get(0));
+		assertEquals(new ExonInfo(cis, 10, 20), gffGeneIsoInfoResult.get(4));
+		assertEquals(new ExonInfo(cis, 30, 35), gffGeneIsoInfoResult.get(3));
+		assertEquals(new ExonInfo(cis, 45, 60), gffGeneIsoInfoResult.get(2));
+		assertEquals(new ExonInfo(cis, 70, 80), gffGeneIsoInfoResult.get(1));
+		assertEquals(new ExonInfo(cis, 90, 110), gffGeneIsoInfoResult.get(0));
 		
 
 		//--------10-----20-------------30-----40----------------50-----60-----------------------70-----80-------------------90-----100---------------
@@ -485,28 +485,28 @@ public class TestGffGeneCluster extends TestCase{
 		gffGeneIsoInfoRefTrans.clear();
 		gffGeneIsoInfoThisTrans.clear();
 		
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 10, 20));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 30, 40));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 50, 60));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 70, 80));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 90, 100));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 10, 20));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 30, 40));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 90, 100));
 		
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 5, 20));
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 30, 35));
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 45, 60));
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 70, 80));
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 90, 95));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 5, 20));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 30, 35));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 45, 60));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 90, 95));
 		gffGeneIsoInfoThisTrans.sort();
 		gffGeneIsoInfoRefTrans.sort();
 		
 		gffGeneIsoInfoResult = gffGeneCluster.compareIso( gffGeneIsoInfoRefTrans, gffGeneIsoInfoThisTrans);
 		assertEquals(5, gffGeneIsoInfoResult.size());
 		
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 5, 20), gffGeneIsoInfoResult.get(4));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 30, 35), gffGeneIsoInfoResult.get(3));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 45, 60), gffGeneIsoInfoResult.get(2));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 70, 80), gffGeneIsoInfoResult.get(1));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 90, 100), gffGeneIsoInfoResult.get(0));
+		assertEquals(new ExonInfo(cis, 5, 20), gffGeneIsoInfoResult.get(4));
+		assertEquals(new ExonInfo(cis, 30, 35), gffGeneIsoInfoResult.get(3));
+		assertEquals(new ExonInfo(cis, 45, 60), gffGeneIsoInfoResult.get(2));
+		assertEquals(new ExonInfo(cis, 70, 80), gffGeneIsoInfoResult.get(1));
+		assertEquals(new ExonInfo(cis, 90, 100), gffGeneIsoInfoResult.get(0));
 		
 		
 		//--------10-----20-------------30-----40----------------50-----60-----------------------70-----80-------------------90------100---------------
@@ -515,28 +515,28 @@ public class TestGffGeneCluster extends TestCase{
 		gffGeneIsoInfoRefTrans.clear();
 		gffGeneIsoInfoThisTrans.clear();
 		
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 10, 20));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 30, 40));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 50, 60));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 70, 80));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 90, 100));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 10, 20));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 30, 40));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 90, 100));
 		
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 5, 20));
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 30, 35));
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 45, 60));
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 70, 75));
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 90, 95));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 5, 20));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 30, 35));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 45, 60));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 70, 75));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 90, 95));
 		gffGeneIsoInfoThisTrans.sort();
 		gffGeneIsoInfoRefTrans.sort();
 		
 		gffGeneIsoInfoResult = gffGeneCluster.compareIso( gffGeneIsoInfoRefTrans, gffGeneIsoInfoThisTrans);
 		assertEquals(5, gffGeneIsoInfoResult.size());
 		
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 5, 20), gffGeneIsoInfoResult.get(4));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 30, 35), gffGeneIsoInfoResult.get(3));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 45, 60), gffGeneIsoInfoResult.get(2));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 70, 75), gffGeneIsoInfoResult.get(1));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 90, 100), gffGeneIsoInfoResult.get(0));
+		assertEquals(new ExonInfo(cis, 5, 20), gffGeneIsoInfoResult.get(4));
+		assertEquals(new ExonInfo(cis, 30, 35), gffGeneIsoInfoResult.get(3));
+		assertEquals(new ExonInfo(cis, 45, 60), gffGeneIsoInfoResult.get(2));
+		assertEquals(new ExonInfo(cis, 70, 75), gffGeneIsoInfoResult.get(1));
+		assertEquals(new ExonInfo(cis, 90, 100), gffGeneIsoInfoResult.get(0));
 	}
 	
 	/**
@@ -550,26 +550,26 @@ public class TestGffGeneCluster extends TestCase{
 		gffGeneIsoInfoRefTrans.clear();
 		gffGeneIsoInfoThisTrans.clear();
 		
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 10, 20));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 30, 40));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 50, 60));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 70, 80));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 90, 100));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 10, 20));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 30, 40));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 90, 100));
 		
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 30, 35));
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 45, 60));
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 70, 80));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 30, 35));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 45, 60));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 70, 80));
 		gffGeneIsoInfoThisTrans.sort();
 		gffGeneIsoInfoRefTrans.sort();
 		
 		GffGeneIsoInfo gffGeneIsoInfoResult = gffGeneCluster.compareIso( gffGeneIsoInfoRefTrans, gffGeneIsoInfoThisTrans);
 		assertEquals(5, gffGeneIsoInfoResult.size());
 		
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 10, 20), gffGeneIsoInfoResult.get(4));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 30, 35), gffGeneIsoInfoResult.get(3));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 45, 60), gffGeneIsoInfoResult.get(2));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 70, 80), gffGeneIsoInfoResult.get(1));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 90, 100), gffGeneIsoInfoResult.get(0));
+		assertEquals(new ExonInfo(cis, 10, 20), gffGeneIsoInfoResult.get(4));
+		assertEquals(new ExonInfo(cis, 30, 35), gffGeneIsoInfoResult.get(3));
+		assertEquals(new ExonInfo(cis, 45, 60), gffGeneIsoInfoResult.get(2));
+		assertEquals(new ExonInfo(cis, 70, 80), gffGeneIsoInfoResult.get(1));
+		assertEquals(new ExonInfo(cis, 90, 100), gffGeneIsoInfoResult.get(0));
 		
 
 		//--------10-----20----------30-----------40-------------------50----60---------------------70-------80-------------------90-----100---------------
@@ -578,26 +578,26 @@ public class TestGffGeneCluster extends TestCase{
 		gffGeneIsoInfoRefTrans.clear();
 		gffGeneIsoInfoThisTrans.clear();
 		
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 10, 20));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 30, 40));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 50, 60));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 70, 80));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 90, 100));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 10, 20));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 30, 40));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 90, 100));
 		
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 35, 36));
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 45, 60));
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 72, 79));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 35, 36));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 45, 60));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 72, 79));
 		gffGeneIsoInfoThisTrans.sort();
 		gffGeneIsoInfoRefTrans.sort();
 		
 		gffGeneIsoInfoResult = gffGeneCluster.compareIso( gffGeneIsoInfoRefTrans, gffGeneIsoInfoThisTrans);
 		assertEquals(5, gffGeneIsoInfoResult.size());
 		
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 10, 20), gffGeneIsoInfoResult.get(4));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 30, 36), gffGeneIsoInfoResult.get(3));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 45, 60), gffGeneIsoInfoResult.get(2));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 72, 80), gffGeneIsoInfoResult.get(1));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 90, 100), gffGeneIsoInfoResult.get(0));
+		assertEquals(new ExonInfo(cis, 10, 20), gffGeneIsoInfoResult.get(4));
+		assertEquals(new ExonInfo(cis, 30, 36), gffGeneIsoInfoResult.get(3));
+		assertEquals(new ExonInfo(cis, 45, 60), gffGeneIsoInfoResult.get(2));
+		assertEquals(new ExonInfo(cis, 72, 80), gffGeneIsoInfoResult.get(1));
+		assertEquals(new ExonInfo(cis, 90, 100), gffGeneIsoInfoResult.get(0));
 		
 		
 		//--------10-----20-----------------30------40-------------------50----60---------------------70-------80-------------------90-----100---------------
@@ -606,28 +606,28 @@ public class TestGffGeneCluster extends TestCase{
 		gffGeneIsoInfoRefTrans.clear();
 		gffGeneIsoInfoThisTrans.clear();
 		
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 10, 20));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 30, 40));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 50, 60));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 70, 80));
-		gffGeneIsoInfoRefTrans.add(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 90, 100));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 10, 20));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 30, 40));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 90, 100));
 		
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 25, 26));
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 35, 36));
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 45, 60));
-		gffGeneIsoInfoThisTrans.add(new ExonInfo(gffGeneIsoInfoThisTrans, cis, 72, 79));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 25, 26));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 35, 36));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 45, 60));
+		gffGeneIsoInfoThisTrans.add(new ExonInfo(cis, 72, 79));
 		gffGeneIsoInfoThisTrans.sort();
 		gffGeneIsoInfoRefTrans.sort();
 		
 		gffGeneIsoInfoResult = gffGeneCluster.compareIso( gffGeneIsoInfoRefTrans, gffGeneIsoInfoThisTrans);
 		assertEquals(6, gffGeneIsoInfoResult.size());
 		
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 10, 20), gffGeneIsoInfoResult.get(5));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 25, 26), gffGeneIsoInfoResult.get(4));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 35, 36), gffGeneIsoInfoResult.get(3));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 45, 60), gffGeneIsoInfoResult.get(2));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 72, 80), gffGeneIsoInfoResult.get(1));
-		assertEquals(new ExonInfo(gffGeneIsoInfoRefTrans, cis, 90, 100), gffGeneIsoInfoResult.get(0));
+		assertEquals(new ExonInfo(cis, 10, 20), gffGeneIsoInfoResult.get(5));
+		assertEquals(new ExonInfo(cis, 25, 26), gffGeneIsoInfoResult.get(4));
+		assertEquals(new ExonInfo(cis, 35, 36), gffGeneIsoInfoResult.get(3));
+		assertEquals(new ExonInfo(cis, 45, 60), gffGeneIsoInfoResult.get(2));
+		assertEquals(new ExonInfo(cis, 72, 80), gffGeneIsoInfoResult.get(1));
+		assertEquals(new ExonInfo(cis, 90, 100), gffGeneIsoInfoResult.get(0));
 	}
 	
 	

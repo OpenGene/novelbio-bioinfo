@@ -36,6 +36,7 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	String condition;
 	StrandSpecific strandSpecific = StrandSpecific.NONE;
 	
+	/** 针对链特异性进行了优化 */
 	public TophatJunction() {
 		mapChrID2ListGff = new LinkedHashMap<>();
 		mapName2DetailAbs = new LinkedHashMap<>();

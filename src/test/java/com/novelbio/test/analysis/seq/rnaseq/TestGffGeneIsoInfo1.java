@@ -53,17 +53,17 @@ public class TestGffGeneIsoInfo1 extends TestCase {
 		gffGeneIsoInfoRefCis.clear();
 		gffGeneIsoInfoThisCis.clear();
 		
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 10, 20));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 30, 40));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 50, 60));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 70, 80));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 90, 100));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 10, 20));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 30, 40));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 90, 100));
 		
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 10, 20));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 30, 40));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 45, 55));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 70, 80));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 90, 110));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 10, 20));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 30, 40));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 45, 55));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 90, 110));
 
 		assertEquals(false,  GffGeneIsoInfo.isExonEdgeSame_NotConsiderBound( gffGeneIsoInfoRefCis, gffGeneIsoInfoThisCis));
 	}
@@ -77,17 +77,17 @@ public class TestGffGeneIsoInfo1 extends TestCase {
 		gffGeneIsoInfoRefCis.clear();
 		gffGeneIsoInfoThisCis.clear();
 		
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 10, 20));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 30, 40));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 50, 60));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 70, 80));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 90, 100));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 10, 20));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 30, 40));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 90, 100));
 		
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 10, 20));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 30, 40));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 50, 60));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 70, 80));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 89, 110));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 10, 20));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 30, 40));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 89, 110));
 
 		assertEquals(false,  GffGeneIsoInfo.isExonEdgeSame_NotConsiderBound( gffGeneIsoInfoRefCis, gffGeneIsoInfoThisCis));
 	}
@@ -101,17 +101,17 @@ public class TestGffGeneIsoInfo1 extends TestCase {
 		gffGeneIsoInfoRefCis.clear();
 		gffGeneIsoInfoThisCis.clear();
 		
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 10, 20));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 30, 40));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 50, 60));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 70, 80));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 90, 100));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 10, 20));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 30, 40));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 90, 100));
 		
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 5, 20));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 30, 40));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 50, 60));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 70, 81));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 90, 100));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 5, 20));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 30, 40));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 70, 81));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 90, 100));
 
 		assertEquals(false,  GffGeneIsoInfo.isExonEdgeSame_NotConsiderBound( gffGeneIsoInfoRefCis, gffGeneIsoInfoThisCis));
 	}
@@ -126,17 +126,17 @@ public class TestGffGeneIsoInfo1 extends TestCase {
 		gffGeneIsoInfoRefCis.clear();
 		gffGeneIsoInfoThisCis.clear();
 		
-//		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 10, 20));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 35, 40));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 50, 60));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 70, 80));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 90, 99));
+//		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 10, 20));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 35, 40));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 90, 99));
 		
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 10, 20));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 30, 40));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 50, 60));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 70, 80));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 90, 100));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 10, 20));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 30, 40));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 90, 100));
 
 		assertEquals(true,  GffGeneIsoInfo.isExonEdgeSame_NotConsiderBound( gffGeneIsoInfoRefCis, gffGeneIsoInfoThisCis));
 	}
@@ -151,16 +151,16 @@ public class TestGffGeneIsoInfo1 extends TestCase {
 		gffGeneIsoInfoRefCis.clear();
 		gffGeneIsoInfoThisCis.clear();
 		
-//		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 10, 20));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 30, 40));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 50, 60));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 70, 80));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 90, 100));
+//		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 10, 20));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 30, 40));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 90, 100));
 		
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 10, 20));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 30, 40));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 50, 60));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 70, 80));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 10, 20));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 30, 40));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 70, 80));
 
 		assertEquals(true,  GffGeneIsoInfo.isExonEdgeSame_NotConsiderBound( gffGeneIsoInfoRefCis, gffGeneIsoInfoThisCis));
 	}
@@ -175,17 +175,17 @@ public class TestGffGeneIsoInfo1 extends TestCase {
 		gffGeneIsoInfoRefCis.clear();
 		gffGeneIsoInfoThisCis.clear();
 		
-//		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 10, 20));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 30, 40));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 50, 60));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 70, 80));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 90, 100));
+//		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 10, 20));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 30, 40));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 90, 100));
 		
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 10, 20));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 30, 40));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 50, 60));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 70, 80));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 90, 100));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 10, 20));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 30, 40));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 90, 100));
 
 		assertEquals(true,  GffGeneIsoInfo.isExonEdgeSame_NotConsiderBound( gffGeneIsoInfoRefCis, gffGeneIsoInfoThisCis));
 	}
@@ -200,17 +200,17 @@ public class TestGffGeneIsoInfo1 extends TestCase {
 		gffGeneIsoInfoRefCis.clear();
 		gffGeneIsoInfoThisCis.clear();
 		
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 10, 20));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 30, 40));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 50, 60));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 70, 80));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 90, 110));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 10, 20));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 30, 40));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 90, 110));
 		
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 10, 20));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 30, 40));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 50, 60));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 70, 80));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 90, 100));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 10, 20));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 30, 40));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 90, 100));
 
 		assertEquals(true,  GffGeneIsoInfo.isExonEdgeSame_NotConsiderBound( gffGeneIsoInfoRefCis, gffGeneIsoInfoThisCis));
 	}
@@ -224,17 +224,17 @@ public class TestGffGeneIsoInfo1 extends TestCase {
 		gffGeneIsoInfoRefCis.clear();
 		gffGeneIsoInfoThisCis.clear();
 		
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 5, 20));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 30, 40));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 50, 60));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 70, 80));
-		gffGeneIsoInfoRefCis.add(new ExonInfo(gffGeneIsoInfoRefCis, cis, 90, 110));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 5, 20));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 30, 40));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 90, 110));
 		
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 10, 20));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 30, 40));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 50, 60));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 70, 80));
-		gffGeneIsoInfoThisCis.add(new ExonInfo(gffGeneIsoInfoThisCis, cis, 90, 100));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 10, 20));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 30, 40));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 50, 60));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 70, 80));
+		gffGeneIsoInfoThisCis.add(new ExonInfo(cis, 90, 100));
 
 		assertEquals(true,  GffGeneIsoInfo.isExonEdgeSame_NotConsiderBound( gffGeneIsoInfoRefCis, gffGeneIsoInfoThisCis));
 	}

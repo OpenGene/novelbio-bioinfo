@@ -5,11 +5,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import net.sf.samtools.SAMFileHeader.SortOrder;
+
 /** 将sam文件转化为bam文件
  * 其中添加multiHit的功能仅适用于bowtie
  *  */
-class SamToBam {
+public class SamToBamSort {
 	SamFile samFileBam;//需要转化成的bam文件
+	String outFileName;
 	SamFile samFileSam;//输入的sam文件
 	List<AlignmentRecorder> lsAlignmentRecorders = new ArrayList<>();
 	
@@ -18,13 +21,19 @@ class SamToBam {
 	boolean addMultiHitFlag = false;
 	boolean isPairend = false;
 	
+	/** 默认不排序 */
+	boolean isNeedSort = false;
+	
 	/** 需要转化成的bam文件名 */
-	public SamToBam(String fileName, SamFile samFileSam) {
-		this.samFileBam = new SamFile(fileName, samFileSam.getHeader());
+	public SamToBamSort(String outFileName, SamFile samFileSam) {
+		this.outFileName = outFileName;
 		this.samFileSam = samFileSam;
 		this.isPairend = samFileSam.isPairend();
 	}
-	
+	/** 是否需要排序，默认false */
+	public void setNeedSort(boolean isNeedSort) {
+		this.isNeedSort = isNeedSort;
+	}
 	/**
 	 * 设定是否添加比对到多处的标签，暂时仅适用于bowtie2
 	 * bwa不需要设定该参数
@@ -45,11 +54,23 @@ class SamToBam {
 		}
 	}
 	
+	/**
+	 * 转换结束后，关闭输出的bam文件，但是不关闭输入的sam文件
+	 */
 	public void convert() {
+		setBamWriteFile();
 		if (addMultiHitFlag) {
 			convertAndAddMultiFlag();
 		} else {
 			convertNotAddMultiFlag();
+		}
+	}
+	
+	private void setBamWriteFile() {
+		if (isNeedSort && samFileSam.getHeader().getSortOrder()== SortOrder.unsorted) {
+			samFileBam = new SamFile(outFileName, samFileSam.getHeader(true), false);
+		} else {
+			samFileBam = new SamFile(outFileName, samFileSam.getHeader());
 		}
 	}
 	
@@ -93,7 +114,7 @@ class SamToBam {
 	 */
 	private void addLsSamRecord(List<SamRecord> lsSamRecords) {
 		int mapHitNum = lsSamRecords.size();
-		if (isPairend) mapHitNum = mapHitNum/2;//
+		if (isPairend) mapHitNum = mapHitNum/2;
 		for (SamRecord samRecord : lsSamRecords) {
 			samRecord.setMultiHitNum(mapHitNum);
 			for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {

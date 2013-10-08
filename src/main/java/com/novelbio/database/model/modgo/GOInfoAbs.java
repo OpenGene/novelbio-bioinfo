@@ -22,6 +22,7 @@ import com.novelbio.database.service.servgeneanno.ManageGo2Term;
 /** 该类内部没有进行延迟初始，所以需要在外部延迟初始该类 */
 public abstract class GOInfoAbs {
 	private static final Logger logger = Logger.getLogger(GOInfoAbs.class);
+	static ManageGo2Term servGo2Term = new ManageGo2Term();
 
 	String genUniAccID = null;
 	int taxID = 0;
@@ -194,7 +195,6 @@ public abstract class GOInfoAbs {
 	 * @return
 	 */
 	public static Go2Term getGO2Term(String GOID) {
-		ManageGo2Term servGo2Term = new ManageGo2Term();
 		return servGo2Term.queryGo2Term(GOID);
 	}
 	

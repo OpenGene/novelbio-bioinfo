@@ -32,13 +32,13 @@ public class TestGene2Value extends TestCase {
 	}
 	protected void setUpNorm() {
 		gffGeneIsoInfoCis = GffGeneIsoInfo.createGffGeneIso("test", "test", GeneType.mRNA, true);
-		gffGeneIsoInfoCis.add(new ExonInfo(gffGeneIsoInfoCis, true, 100, 200));
-		gffGeneIsoInfoCis.add(new ExonInfo(gffGeneIsoInfoCis, true, 300, 400));
-		gffGeneIsoInfoCis.add(new ExonInfo(gffGeneIsoInfoCis, true, 500, 600));
-		gffGeneIsoInfoCis.add(new ExonInfo(gffGeneIsoInfoCis, true, 700, 800));
-		gffGeneIsoInfoCis.add(new ExonInfo(gffGeneIsoInfoCis, true, 900, 1000));
-		gffGeneIsoInfoCis.add(new ExonInfo(gffGeneIsoInfoCis, true, 1100, 1200));
-		gffGeneIsoInfoCis.add(new ExonInfo(gffGeneIsoInfoCis, true, 1300, 1400));
+		gffGeneIsoInfoCis.add(new ExonInfo(true, 100, 200));
+		gffGeneIsoInfoCis.add(new ExonInfo(true, 300, 400));
+		gffGeneIsoInfoCis.add(new ExonInfo(true, 500, 600));
+		gffGeneIsoInfoCis.add(new ExonInfo(true, 700, 800));
+		gffGeneIsoInfoCis.add(new ExonInfo(true, 900, 1000));
+		gffGeneIsoInfoCis.add(new ExonInfo(true, 1100, 1200));
+		gffGeneIsoInfoCis.add(new ExonInfo(true, 1300, 1400));
 		gene2Value = new Gene2Value(gffGeneIsoInfoCis);
 	}
 	

@@ -21,6 +21,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fasta.SeqHash;
+import com.novelbio.analysis.seq.fasta.format.NCBIchromFaChangeFormat;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.GffChrSeq;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
@@ -139,6 +140,7 @@ public class SpeciesFile {
 	public void setChromSeq(String chromSeq) {
 		this.chromSeq = chromSeq;
 	}
+	/** 获得总体的文件 */
 	public String getChromSeqFile() {
 		String chromeSeq = pathParent + chromSeq;
 		if (FileOperate.isFileExistAndBigThanSize(chromeSeq, 0)) {
@@ -148,7 +150,16 @@ public class SpeciesFile {
 		}
 		return chromeSeq;
 	}
-
+	/** 获得分割的文件夹 */
+	public String getChromSeqFileSep() {
+		String chromeSeq = FileOperate.addSep(FileOperate.changeFileSuffix(pathParent + chromSeq, "_sep", null));
+		if (!FileOperate.isFileFoldExist(chromeSeq)) {
+			NCBIchromFaChangeFormat ncbIchromFaChangeFormat = new NCBIchromFaChangeFormat();
+			ncbIchromFaChangeFormat.setChromFaPath(getChromSeqFile(), "");
+			ncbIchromFaChangeFormat.writeToSepFile(chromeSeq);
+		}
+		return chromeSeq;
+	}
 	/**
 	 * 给GUI的下拉框用的，一般用不到
 	 * @return GffFile

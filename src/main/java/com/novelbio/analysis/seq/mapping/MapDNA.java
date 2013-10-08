@@ -1,5 +1,6 @@
 package com.novelbio.analysis.seq.mapping;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +9,8 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.sam.SamToBamSort;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.service.SpringFactory;
 
@@ -27,6 +30,11 @@ public abstract class MapDNA implements MapDNAint {
 		
 	/** 因为mapping完后会将sam文件转成bam文件，这时候就可以顺带的做一些工作 */
 	List<AlignmentRecorder> lsAlignmentRecorders = new ArrayList<AlignmentRecorder>();
+	/** 是否需要设定非unique mapping的标签，目前 只有bowtie2需要 */
+	boolean isSetMulitFlag = false;
+	/** 结果是否需要排序 */
+	boolean isNeedSort = false;
+	String outFileName = "";
 	/** 因为mapping完后会将sam文件转成bam文件，这时候就可以顺带的做一些工作 */
 	public void setLsAlignmentRecorders(List<AlignmentRecorder> lsAlignmentRecorders) {
 		this.lsAlignmentRecorders = lsAlignmentRecorders;
@@ -36,13 +44,19 @@ public abstract class MapDNA implements MapDNAint {
 	public void addAlignmentRecorder(AlignmentRecorder alignmentRecorder) {
 		this.lsAlignmentRecorders.add(alignmentRecorder);
 	}
+	
+	/** 输出的bam文件是否需要排序 */
+	public void setNeedSort(boolean isNeedSort) {
+		this.isNeedSort = isNeedSort;
+	}
+	
 	/** 输入已经过滤好的fastq文件 */
 	public abstract void setFqFile(FastQ leftFq, FastQ rightFq);
 	
-	/**
-	 * @param outFileName 结果文件名，后缀自动改为sam
-	 */
-	public abstract void setOutFileName(String outFileName);
+	public void setOutFileName(String outFileName) {
+		this.outFileName = outFileName;
+	}
+	
 	/**
 	 * 百分之多少的mismatch，或者几个mismatch
 	 * @param mismatch
@@ -81,13 +95,13 @@ public abstract class MapDNA implements MapDNAint {
 	 */
 	public SamFile mapReads() {
 		boolean isIndexMake = IndexMake(false);
-		boolean isMappingSucess = mapping();
-		if (!isMappingSucess && !isIndexMake) {
+		SamFile samFile = mapping();
+		if (samFile == null && !isIndexMake) {
 //			IndexMake(true);
 //			mapping();
 		}
 		logger.error("mapping 结束");
-		return copeAfterMapping();
+		return samFile;
 	}
 	
 	public List<AlignmentRecorder> getLsAlignmentRecorders() {
@@ -97,13 +111,51 @@ public abstract class MapDNA implements MapDNAint {
 	/**
 	 * 是否顺利执行
 	 * 实际上只要mapping能执行起来，譬如运行个10s没出错，就说明索引没问题了
-	 * @return
+	 * @return SamFile
+	 * null 表示运行失败
 	 */
-	protected abstract boolean mapping();
+	protected abstract SamFile mapping();
+	
+	/**
+	 * 将mapping得到的sam流转化为bam文件并排序
+	 * @param inputStream 内部关闭流
+	 * @param isNeedSort 看是否需要排序
+	 * @param result null表示运行失败，失败了也不删除文件
+	 */
+	protected SamFile copeSamStream(InputStream inputStream, boolean isNeedSort) {
+		SamFile samFileIn = new SamFile(inputStream);
+		SamToBamSort samToBamSort = new SamToBamSort(getOutNameCope(), samFileIn);
+		if (isNeedSort) {
+			samToBamSort.setNeedSort(true);
+		}
+		if (isSetMulitFlag) {
+			samToBamSort.setAddMultiHitFlag(isSetMulitFlag);
+		}
+		samToBamSort.setLsAlignmentRecorders(lsAlignmentRecorders);
+		samToBamSort.convert();
+		samFileIn.close();
+		if (FileOperate.isFileExistAndBigThanSize(getOutNameCope(), 0)) {
+			return samToBamSort.getSamFileBam();
+		} else {
+			return null;
+		}
+	}
+	/** 运行失败后删除文件 */
+	protected void deleteFailFile() {
+		FileOperate.DeleteFileFolder(getOutNameCope());
+	}
+	/** 根据是否转化为bam文件以及是否排序，返回相应的文件名 */
+	private String getOutNameCope() {
+		String resultSamName = FileOperate.changeFileSuffix(outFileName, "", "bam");
+		if (isNeedSort) {
+			resultSamName = FileOperate.changeFileSuffix(resultSamName, "_sorted", null);
+		}
+		return resultSamName;
+	}
 	
 	/**
 	 * 构建索引
-	 * @param force 默认会检查是否已经构建了索引，是的话则返回。
+	 * @parcam force 默认会检查是否已经构建了索引，是的话则返回。
 	 * 如果face为true，则强制构建索引
 	 * @return
 	 */

@@ -4,7 +4,7 @@ import com.novelbio.database.domain.kegg.KGIDgen2Keg;
 import com.novelbio.database.service.servkegg.ServKIDgen2Keg;
 
 public class KeggInfoGenID extends KeggInfoAbs{
-	ServKIDgen2Keg servKIDgen2Keg = new ServKIDgen2Keg();
+	static ServKIDgen2Keg servKIDgen2Keg = new ServKIDgen2Keg();
 	public KeggInfoGenID(String genUniAccID, int taxID) {
 		super(genUniAccID, taxID);
 		// TODO Auto-generated constructor stub

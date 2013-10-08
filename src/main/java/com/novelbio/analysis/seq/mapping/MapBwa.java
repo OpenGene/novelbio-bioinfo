@@ -1,5 +1,6 @@
 package com.novelbio.analysis.seq.mapping;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,11 +27,11 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 public class MapBwa extends MapDNA implements IntCmdSoft {
 	public static void main(String[] args) {
 		CmdOperate cmdOperate = new CmdOperate("bowtie --version");
-		cmdOperate.setGetStdOut();
-		cmdOperate.setGetStdError();
+		cmdOperate.setGetLsStdOut();
+		cmdOperate.setGetLsErrOut();
 		cmdOperate.run();
 		
-		List<String> lsInfo = cmdOperate.getLsOutInfo();
+		List<String> lsInfo = cmdOperate.getLsStdOut();
 		String version = lsInfo.get(0).split("version")[1];
 		System.out.println(version);
 	}
@@ -48,7 +49,6 @@ public class MapBwa extends MapDNA implements IntCmdSoft {
 	String ExePath = "";
 	String chrFile;
 	String[] sampleGroup;
-	String outFileName = "";
 	String leftFq = "";
 	String rightFq = "";
 
@@ -126,12 +126,6 @@ public class MapBwa extends MapDNA implements IntCmdSoft {
 			rightFqFile = rightFq.getReadFileName();
 		}
 		setFqFile(leftFqFile, rightFqFile);
-	}
-	/**
-	 * @param outFileName 结果文件名，后缀自动改为sam
-	 */
-	public void setOutFileName(String outFileName) {
-		this.outFileName = outFileName;
 	}
 	/**
 	 * 百分之多少的mismatch，或者几个mismatch
@@ -291,16 +285,12 @@ public class MapBwa extends MapDNA implements IntCmdSoft {
 	}
 	
 	@Override
-	protected boolean mapping() {
+	protected SamFile mapping() {
 		outFileName = addSamToFileName(outFileName);
-		logger.error("test");
 		if (!bwaAln()) {
-			return false;
+			return null;
 		}
-		logger.error("test2");
-		bwaSamPeSe();
-		logger.error("test3");
-		return true;
+		return bwaSamPeSe();
 	}
 	/**
 	 * linux命令如下<br>
@@ -366,10 +356,20 @@ public class MapBwa extends MapDNA implements IntCmdSoft {
 	 * bwa sampe -P -n 4 /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna TGACT.sai 
 	 * TGACT2.sai barcod_TGACT.fastq barcod_TGACT2.fastq > TGACT.sam
 	 */
-	private void bwaSamPeSe() {
+	private SamFile bwaSamPeSe() {
 		List<String> lsCmd = getLsCmdSam();
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
-		cmdOperate.run();
+		cmdOperate.setGetCmdInStdStream(true);
+		Thread thread = new Thread(cmdOperate);
+		thread.start();
+		InputStream inputStream = cmdOperate.getStdStream();
+		SamFile samResult = copeSamStream(inputStream, isNeedSort);
+		if (samResult != null && !cmdOperate.isRunning() && cmdOperate.isFinishedNormal()) {
+			return samResult;
+		} else {
+			deleteFailFile();
+			return null;
+		}
 	}
 	
 	private List<String> getLsCmdSam() {
@@ -484,9 +484,9 @@ public class MapBwa extends MapDNA implements IntCmdSoft {
 	
 	public String getVersion() {
 		CmdOperate cmdOperate = new CmdOperate(this.ExePath + "bwa");
-		cmdOperate.setGetStdError();
+		cmdOperate.setGetLsErrOut();
 		
-		List<String> lsInfo = cmdOperate.getLsErrorInfo();
+		List<String> lsInfo = cmdOperate.getLsErrOut();
 		String version = lsInfo.get(2).toLowerCase().replace("version:", "").trim();
 		return version;
 	}
@@ -506,4 +506,5 @@ public class MapBwa extends MapDNA implements IntCmdSoft {
 		lsCmdResult.add(cmdOperate.getCmdExeStr());
 		return lsCmdResult;
 	}
+
 }

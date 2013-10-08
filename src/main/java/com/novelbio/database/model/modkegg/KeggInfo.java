@@ -7,8 +7,7 @@ import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgeneid.GeneID;
 
 public class KeggInfo implements KeggInfoInter{
-
-	KeggInfoAbs keggInfoAbs;
+	static KeggInfoAbs keggInfoAbs;
 	
 	public KeggInfo(int idType, String genUniAccID, int taxID) {
 		if (idType == GeneID.IDTYPE_UNIID) {

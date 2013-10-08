@@ -1,5 +1,6 @@
 package com.novelbio.analysis.seq.mapping;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -35,7 +36,6 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 	List<FastQ> lsLeftFq = new ArrayList<FastQ>();
 	List<FastQ> lsRightFq = new ArrayList<FastQ>();
 	
-	String outFileName = "";
 	List<String> lsSampleGroup = null;
 	/** 非unique mapping的话，取几个 */
 	int mappingNum = 0;
@@ -76,10 +76,7 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 	public void setSubVersion(SoftWare bowtieVersion) {
 		this.bowtieVersion = bowtieVersion;
 	}
-	public void setOutFileName(String outFileName) {
-		this.outFileName = outFileName;
-	}
-	
+
 	public void setSensitive(int sensitive) {
 		this.sensitive = sensitive;
 	}
@@ -158,7 +155,7 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 		String outName = MapBwa.addSamToFileName(outFileName);
 		return new String[]{"-S", outName};
 	}
-	
+
 	private String getOffset() {
 		if (lsLeftFq.get(0).getOffset() == FastQ.FASTQ_ILLUMINA_OFFSET) {
 			return "--phred64";
@@ -292,14 +289,19 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 		return lsCmd;
 	}
 	
-	public boolean mapping() {
+	protected SamFile mapping() {
 		List<String> lsCmd = getLsCmdMapping();
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
-		cmdOperate.run();
-		if (cmdOperate.getRunTime() > overTime || cmdOperate.isFinishedNormal()) {
-			return true;
+		cmdOperate.setGetCmdInStdStream(true);
+		Thread thread = new Thread(cmdOperate);
+		thread.start();
+		InputStream inputStream = cmdOperate.getStdStream();
+		SamFile samResult = copeSamStream(inputStream, isNeedSort);
+		if (samResult != null && !cmdOperate.isRunning() && cmdOperate.isFinishedNormal()) {
+			return samResult;
 		} else {
-			return false;
+			deleteFailFile();
+			return null;
 		}
 	}
 	
@@ -344,7 +346,6 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 		lsCmd.add(cmdOperate.getCmdExeStr());
 		return lsCmd;
 	}
-	
 	/**
 	 * 将sam文件压缩成bam文件，然后做好统计并返回
 	 * @param outSamFile
@@ -387,9 +388,9 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 			bowtie = "bowtie2";
 		}
 		CmdOperate cmdOperate = new CmdOperate(this.ExePathBowtie + bowtie + " --version");
-		cmdOperate.setGetStdError();
+		cmdOperate.setGetLsErrOut();
 		
-		List<String> lsInfo = cmdOperate.getLsOutInfo();
+		List<String> lsInfo = cmdOperate.getLsStdOut();
 		String version = lsInfo.get(0).toLowerCase().split("version")[1].trim();
 		return version;
 	}
@@ -403,5 +404,6 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 		mapSensitive.put("VeryFast", Sensitive_Very_Fast);
 		return mapSensitive;
 	}
+
 
 }

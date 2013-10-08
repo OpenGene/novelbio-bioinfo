@@ -1,8 +1,6 @@
 package com.novelbio.database.model.species;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -46,7 +44,7 @@ public class Species implements Cloneable {
 	 */
 	ArrayList<String[]> lsVersion = new ArrayList<String[]>();
 	/** key：版本ID,通通小写  value：具体的信息 */
-	HashMap<String, SpeciesFile> mapVersion2Species = new LinkedHashMap<String, SpeciesFile>();
+	Map<String, SpeciesFile> mapVersion2Species = new LinkedHashMap<String, SpeciesFile>();
 	ManageTaxID servTaxID = new ManageTaxID();
 	
 	String updateTaxInfoFile = "";
@@ -209,6 +207,10 @@ public class Species implements Cloneable {
 	public String getChromSeq() {
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getChromSeqFile();
+	}
+	public String getChromSeqSep() {
+		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
+		return speciesFile.getChromSeqFileSep();
 	}
 	/** 获得这个species在本version下的全体GffDB */
 	public Map<String, String> getMapGffDBAll() {

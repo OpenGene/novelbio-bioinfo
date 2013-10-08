@@ -15,7 +15,8 @@ public interface MapRNA {
 	 */
 	public void setExePath(String exePath, String exePathBowtie);
 	
-	public void setFileRef(String chrFile);
+	/** 设定index或与index相关的ref */
+	public void setRefIndex(String chrFile);
 	
 	public void setOutPathPrefix(String outPathPrefix);
 	/** 设定indel */
@@ -64,13 +65,16 @@ public interface MapRNA {
 	SoftWare getBowtieVersion();
 	
 	/**
-	 * 用gtf文件辅助mapping
+	 * Tophat:<br>用gtf文件辅助mapping
 	 * 如果设定为null，则表示不使用gtf文件
 	 * 如果设定为“”等不存在文件的，则使用GffChrAbs中的Gff文件
-	 * 
+	 * <p>
+	 * RSEM<br>
 	 * 设定Gene2Iso文件，如果有文件就用这个文件。
 	 * 如果文件不存在，则从GffChrAbs中生成这个文件
-	 * 
+	 * <p>
+	 * MapSplicer<br>
+	 * 设定含有全体ref序列的文件夹
 	 * @param gtfFile
 	 */
 	public void setGtf_Gene2Iso(String gtfFile);

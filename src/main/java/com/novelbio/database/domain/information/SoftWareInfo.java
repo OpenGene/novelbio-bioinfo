@@ -211,7 +211,9 @@ public class SoftWareInfo {
 	}
 	public static enum SoftWare {
 		blast,
-		bwa, bowtie, bowtie2, tophat, rsem,miranada, RNAhybrid, mirDeep, miReap,
+		bwa, bowtie, bowtie2, 
+		tophat, rsem, mapsplice,
+		miranada, RNAhybrid, mirDeep, miReap,
 		samtools, picard, GATK, cufflinks,
 		macs, sicer,
 		emboss;

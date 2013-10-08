@@ -3,6 +3,7 @@ package com.novelbio.test;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import com.novelbio.database.model.modgeneid.GeneID;
 
@@ -17,12 +18,12 @@ public class HashTest {
 	
 	public static void main(String[] args) {
 		Testclass testclass1 = new Testclass("sfe", 100);
-		Testclass testclass2 = new Testclass("sfe", 200);
-		HashMap<Testclass, Integer> hashtest = new HashMap<Testclass, Integer>();
-		hashtest.put(testclass1, 1000);
-		hashtest.put(testclass2, 2000);
-		for (Entry<Testclass, Integer> entry : hashtest.entrySet()) {
-			System.out.println("hash " + entry.getKey().toString() + " " +entry.getValue());
+		Test2 testclass2 = new Test2("sfe", 200);
+		Set<Testclass> hashtest = new HashSet<Testclass>();
+		hashtest.add(testclass1);
+		hashtest.add(testclass2);
+		for (Testclass testclass : hashtest) {
+			System.out.println(testclass.toString());
 		}
 		System.out.println(testclass1.equals(testclass2));
 	}
@@ -39,25 +40,25 @@ class Testclass
 	int bb = 100;
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		
-		if (obj == null) return false;
-		
-		if (getClass() != obj.getClass()) return false;
-		Testclass otherObj = (Testclass)obj;
-//		if (aa.equals(otherObj.aa) && bb == otherObj.bb) {
-//			return true;
-//		}
-		if (   aa.equals(otherObj.aa) ) {
-			return true;
-		}
-		return false;
+		return true;
 	}
 	
 	public int hashCode() {
 		return bb;
 	}
+	
 	public String toString() {
 		return aa + " " + bb;
+	}
+}
+
+class Test2 extends Testclass {
+
+	public Test2(String aa, int bb) {
+		super(aa, bb);
+		// TODO Auto-generated constructor stub
+	}
+	public int hashCode() {
+		return bb;
 	}
 }

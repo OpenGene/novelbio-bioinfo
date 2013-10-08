@@ -102,7 +102,7 @@ public class MapRsem implements MapRNA, IntCmdSoft {
 	 * 设定refFile
 	 * @param refFile
 	 */
-	public void setFileRef(String refFile) {
+	public void setRefIndex(String refFile) {
 		this.refFile = refFile;
 	}
 	public void setThreadNum(int threadNum) {

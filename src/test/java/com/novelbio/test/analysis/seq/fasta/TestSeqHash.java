@@ -28,9 +28,9 @@ public class TestSeqHash extends TestCase {
 	public void testGetSeqCis() {
 		
 		GffGeneIsoInfo gffGeneIsoInfoCis = GffGeneIsoInfo.createGffGeneIso("", "test", gffDetailGene, GeneType.mRNA, true);
-		gffGeneIsoInfoCis.add(new ExonInfo("", true, 50000, 50006));
-		gffGeneIsoInfoCis.add(new ExonInfo("", true, 50012, 50018));
-		gffGeneIsoInfoCis.add(new ExonInfo("", true, 50024, 50028));
+		gffGeneIsoInfoCis.add(new ExonInfo(true, 50000, 50006));
+		gffGeneIsoInfoCis.add(new ExonInfo(true, 50012, 50018));
+		gffGeneIsoInfoCis.add(new ExonInfo(true, 50024, 50028));
 		SeqFasta seqFasta = seqHash.getSeq(gffGeneIsoInfoCis, true);
 		assertEquals("TAAACAGgttaaTCGCCACgacatAGTAG", seqFasta.toString());
 		seqFasta = seqHash.getSeq(gffGeneIsoInfoCis, false);
@@ -43,9 +43,9 @@ public class TestSeqHash extends TestCase {
 	@Test
 	public void testGetSeqTrans() {
 		GffGeneIsoInfo gffGeneIsoInfoTrans = GffGeneIsoInfo.createGffGeneIso("", "test", gffDetailGene, GeneType.mRNA, false);
-		gffGeneIsoInfoTrans.add(new ExonInfo("", false, 50024, 50028));
-		gffGeneIsoInfoTrans.add(new ExonInfo("", false, 50012, 50018));
-		gffGeneIsoInfoTrans.add(new ExonInfo("", false, 50000, 50006));
+		gffGeneIsoInfoTrans.add(new ExonInfo(false, 50024, 50028));
+		gffGeneIsoInfoTrans.add(new ExonInfo(false, 50012, 50018));
+		gffGeneIsoInfoTrans.add(new ExonInfo(false, 50000, 50006));
 		
 		SeqFasta seqFasta = seqHash.getSeq(gffGeneIsoInfoTrans, true);
 		assertEquals("CTACTatgtcGTGGCGAttaacCTGTTTA", seqFasta.toString());
@@ -60,9 +60,9 @@ public class TestSeqHash extends TestCase {
 	@Test
 	public void testGetSeqCisUnNormal() {
 		GffGeneIsoInfo gffGeneIsoInfoCis = GffGeneIsoInfo.createGffGeneIso("", "test", gffDetailGene, GeneType.mRNA, true);
-		gffGeneIsoInfoCis.add(new ExonInfo("", true, 50000, 50006));
-		gffGeneIsoInfoCis.add(new ExonInfo("", false, 50012, 50018));
-		gffGeneIsoInfoCis.add(new ExonInfo("", true, 50024, 50028));
+		gffGeneIsoInfoCis.add(new ExonInfo(true, 50000, 50006));
+		gffGeneIsoInfoCis.add(new ExonInfo(false, 50012, 50018));
+		gffGeneIsoInfoCis.add(new ExonInfo(true, 50024, 50028));
 		SeqFasta seqFasta = seqHash.getSeq(gffGeneIsoInfoCis, true);
 		assertEquals("TAAACAGgttaaGTGGCGAgacatAGTAG", seqFasta.toString());
 		seqFasta = seqHash.getSeq(gffGeneIsoInfoCis, false);
@@ -73,9 +73,9 @@ public class TestSeqHash extends TestCase {
 		
 		
 		gffGeneIsoInfoCis = GffGeneIsoInfo.createGffGeneIso("", "test", gffDetailGene, GeneType.mRNA, true);
-		gffGeneIsoInfoCis.add(new ExonInfo("", true, 50000, 50006));
-		gffGeneIsoInfoCis.add(new ExonInfo("", false, 50012, 50018));
-		gffGeneIsoInfoCis.add(new ExonInfo("", false, 50024, 50028));
+		gffGeneIsoInfoCis.add(new ExonInfo(true, 50000, 50006));
+		gffGeneIsoInfoCis.add(new ExonInfo(false, 50012, 50018));
+		gffGeneIsoInfoCis.add(new ExonInfo(false, 50024, 50028));
 		seqFasta = seqHash.getSeq(gffGeneIsoInfoCis, true);
 		assertEquals("TAAACAGgttaaGTGGCGAgacatCTACT", seqFasta.toString());
 		seqFasta = seqHash.getSeq(gffGeneIsoInfoCis, false);
@@ -91,9 +91,9 @@ public class TestSeqHash extends TestCase {
 	@Test
 	public void testGetSeqTransUnNormal() {
 		GffGeneIsoInfo gffGeneIsoInfoTrans = GffGeneIsoInfo.createGffGeneIso("", "test", gffDetailGene, GeneType.mRNA, false);
-		gffGeneIsoInfoTrans.add(new ExonInfo("", false, 50024, 50028));
-		gffGeneIsoInfoTrans.add(new ExonInfo("", true, 50012, 50018));
-		gffGeneIsoInfoTrans.add(new ExonInfo("", false, 50000, 50006));
+		gffGeneIsoInfoTrans.add(new ExonInfo(false, 50024, 50028));
+		gffGeneIsoInfoTrans.add(new ExonInfo(true, 50012, 50018));
+		gffGeneIsoInfoTrans.add(new ExonInfo(false, 50000, 50006));
 		
 		SeqFasta seqFasta = seqHash.getSeq(gffGeneIsoInfoTrans, true);
 		assertEquals("CTACTatgtcTCGCCACttaacCTGTTTA", seqFasta.toString());
@@ -106,9 +106,9 @@ public class TestSeqHash extends TestCase {
 		System.out.println("testGetSeqTransUnNormal");
 		
 		gffGeneIsoInfoTrans = GffGeneIsoInfo.createGffGeneIso("", "test", gffDetailGene, GeneType.mRNA, false);
-		gffGeneIsoInfoTrans.add(new ExonInfo("", false, 50024, 50028));
-		gffGeneIsoInfoTrans.add(new ExonInfo("", true, 50012, 50018));
-		gffGeneIsoInfoTrans.add(new ExonInfo("", true, 50000, 50006));
+		gffGeneIsoInfoTrans.add(new ExonInfo(false, 50024, 50028));
+		gffGeneIsoInfoTrans.add(new ExonInfo(true, 50012, 50018));
+		gffGeneIsoInfoTrans.add(new ExonInfo(true, 50000, 50006));
 		
 		seqFasta = seqHash.getSeq(gffGeneIsoInfoTrans, true);
 		assertEquals("CTACTatgtcTCGCCACttaacTAAACAG", seqFasta.toString());
