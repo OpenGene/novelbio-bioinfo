@@ -89,7 +89,7 @@ public class BlastNBC implements IntCmdSoft {
 	 * 待比对的数据库，如果是fasta文件，则会自动建索引
 	 * @param databaseSeq
 	 */
-	public void setDatabaseSeq(String databaseSeq) {
+	public void setSubjectSeq(String databaseSeq) {
 		this.databaseSeq = databaseSeq;
 		seqTypePro = getSeqTypePro();
 	}
@@ -211,9 +211,9 @@ public class BlastNBC implements IntCmdSoft {
 		
 		if (isShortQuerySeq) {
 			if (blastType == BlastType.blastn) {
-				return new String[]{"-task blastn-short"};
+				return new String[]{"-task", "blastn-short"};
 			} else {
-				return new String[]{"-task blastp-short"};
+				return new String[]{"-task", "blastp-short"};
 			}
 		}
 		return new String[0];

@@ -1,7 +1,12 @@
 package com.novelbio.database.domain.geneanno;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.xpath.operations.Bool;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
@@ -11,6 +16,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.novelbio.analysis.annotation.blast.BlastStatistics;
 import com.novelbio.base.dataOperate.DateUtil;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.model.modgeneid.GeneID;
 
 /**
@@ -281,4 +287,30 @@ public class BlastInfo implements Comparable<BlastInfo> {
 		blastStatistics.setLsBlastinfos(lsBlastinfos);
 		return blastStatistics;
 	}
+	
+	/** 从blast文件中读取blast信息，不查数据库 */
+	public static List<BlastInfo> readBlastFile(String blastFile) {
+		List<BlastInfo> lsBlastInfos = new ArrayList<>();
+		TxtReadandWrite txtRead = new TxtReadandWrite(blastFile);
+		for (String content : txtRead.readlines()) {
+			lsBlastInfos.add(new BlastInfo(content));
+		}
+		txtRead.close();
+		return lsBlastInfos;
+	}
+	
+	/** 将一系列blastInfo的结果去重复，一个geneID仅挑选evalue最小的那个blastTo */
+	public static List<BlastInfo> removeDuplicate(Collection<BlastInfo> colBlastInfos) {
+		 Map<String, BlastInfo> mapQuery2Evalue = new HashMap<>();
+		for (BlastInfo blastInfo : colBlastInfos) {
+			String queryID = blastInfo.getQueryID().toLowerCase();
+			double evalue = blastInfo.getEvalue();
+			if (mapQuery2Evalue.containsKey(queryID) && mapQuery2Evalue.get(queryID).getEvalue() <= evalue) {
+				continue;
+			}
+			mapQuery2Evalue.put(queryID, blastInfo);
+		}
+		return new ArrayList<>(mapQuery2Evalue.values());
+	}
+	
 }

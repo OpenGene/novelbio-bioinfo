@@ -77,6 +77,12 @@ public class CtrlMiRNApredict {
 		}
 	}
 	
+	/** 新miRNA的注释 */
+	private void annoMiRNA() {
+		
+	}
+	
+	
 	private void getMirPredictCount(AlignSeq alignSeq, String prefix) {
 		FastQ fastQ = alignSeq.getFastQ();
 		alignSeq.close();

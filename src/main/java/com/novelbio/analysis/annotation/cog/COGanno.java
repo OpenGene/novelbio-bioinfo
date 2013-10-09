@@ -43,7 +43,7 @@ public class COGanno {
 		blastNBC.setEvalue(1e-10);
 		blastNBC.setCpuNum(threadNum);
 		blastNBC.setQueryFastaFile(seqFastaFile);
-		blastNBC.setDatabaseSeq(cogFastaFile);
+		blastNBC.setSubjectSeq(cogFastaFile);
 		blastNBC.setResultSeqNum(1);
 		boolean isSucess = blastNBC.blast();
 		if (isSucess) {

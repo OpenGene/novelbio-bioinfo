@@ -1,6 +1,7 @@
 package com.novelbio.analysis.seq.mirna;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -110,6 +111,7 @@ public class MiRNAtargetRNAhybrid extends MiRNAtargetAbs{
 	
 	public static enum RNAhybridClass {
 		worm("3utr_worm"), fly("3utr_fly"), human("3utr_human");
+		static Map<String, RNAhybridClass> map = new HashMap<>();
 		private final String detailClassName;
 		private RNAhybridClass(String detailClassName) {
 			this.detailClassName = detailClassName;
@@ -119,6 +121,14 @@ public class MiRNAtargetRNAhybrid extends MiRNAtargetAbs{
 		}
 		public String toString() {
 			return detailClassName;
+		}
+		public static Map<String, RNAhybridClass> getMapStr2Value() {
+			if (map.size() == 0) {
+				map.put("worm", worm);
+				map.put("fly", fly);
+				map.put("human", human);
+			}
+			return map;
 		}
 	}
 }

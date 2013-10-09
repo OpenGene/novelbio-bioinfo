@@ -382,14 +382,14 @@ public class MapTophat implements MapRNA, IntCmdSoft {
 	 */
 	private List<String> getGtfFile() {
 		List<String> lsCmd = new ArrayList<>();
-		if (FileOperate.isFileExist(gtfFile)) {
+		if (FileOperate.isFileExistAndBigThanSize(gtfFile, 0)) {
 			String index = mapBowtie.getChrNameWithoutSuffix();
 			String gtfName = FileOperate.getFileNameSep(gtfFile)[0];
 			String indexTranscriptome = index + "_" + gtfName;
 			FileOperate.createFolders(FileOperate.getParentPathName(indexTranscriptome));
 			
 			lsCmd.add("-G"); lsCmd.add(gtfFile);
-			lsCmd.add("--transcriptome-index="); lsCmd.add(indexTranscriptome);
+			lsCmd.add("--transcriptome-index=" + indexTranscriptome);
 		}
 		return lsCmd;
 	}
@@ -441,9 +441,9 @@ public class MapTophat implements MapRNA, IntCmdSoft {
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.run();
 		
-		if (generateGtfFile) {
-			FileOperate.delFile(gtfFile);
-		}
+//		if (generateGtfFile) {
+//			FileOperate.delFile(gtfFile);
+//		}
 		changeFileName();
 	}
 

@@ -152,8 +152,9 @@ public class SpeciesFile {
 	}
 	/** 获得分割的文件夹 */
 	public String getChromSeqFileSep() {
-		String chromeSeq = FileOperate.addSep(FileOperate.changeFileSuffix(pathParent + chromSeq, "_sep", null));
+		String chromeSeq = FileOperate.addSep(FileOperate.changeFileSuffix(pathParent + chromSeq, "_sep", ""));
 		if (!FileOperate.isFileFoldExist(chromeSeq)) {
+			FileOperate.createFolders(chromeSeq);
 			NCBIchromFaChangeFormat ncbIchromFaChangeFormat = new NCBIchromFaChangeFormat();
 			ncbIchromFaChangeFormat.setChromFaPath(getChromSeqFile(), "");
 			ncbIchromFaChangeFormat.writeToSepFile(chromeSeq);
