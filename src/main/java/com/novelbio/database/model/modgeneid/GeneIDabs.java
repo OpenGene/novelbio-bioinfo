@@ -416,8 +416,16 @@ public class GeneIDabs implements GeneIDInt {
 	}
 
 	private GOInfoAbs initGoInfoAbs() {
-		int idtype = isAccID? GeneID.IDTYPE_ACCID: ageneUniID.getGeneIDtype();
-		return GOInfoAbs.createGOInfoAbs(idtype, ageneUniID.getAccID(), ageneUniID.getTaxID());
+		int idtype;
+		String genUniID;
+		if (isAccID) {
+			idtype = GeneID.IDTYPE_ACCID;
+			genUniID = ageneUniID.getAccID();
+		} else {
+			idtype = ageneUniID.getGeneIDtype();
+			genUniID = ageneUniID.getGenUniID();
+		}		
+		return GOInfoAbs.createGOInfoAbs(idtype, genUniID, ageneUniID.getTaxID());
 	}
 
 	/**
@@ -431,7 +439,12 @@ public class GeneIDabs implements GeneIDInt {
 	 * @return
 	 */
 	public List<AGene2Go> getGene2GO(GOtype GOType) {
-		return getGOInfo().getLsGene2Go(GOType);
+		try {
+			return getGOInfo().getLsGene2Go(GOType);
+		} catch (Exception e) {
+			return getGOInfo().getLsGene2Go(GOType);
+		}
+		
 	}
 
 	/**

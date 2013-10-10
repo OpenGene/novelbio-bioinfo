@@ -10,9 +10,9 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
+import com.novelbio.analysis.seq.genome.mappingOperate.EnumMapNormalizeType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
-import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
@@ -35,7 +35,7 @@ public class GffChrPlotTss {
 	GeneStructure geneStructure = GeneStructure.TSS;
 
 	MapReads mapReads;
-	int mapNormType = MapReads.NORMALIZATION_ALL_READS;
+	EnumMapNormalizeType mapNormType = EnumMapNormalizeType.allreads;
 
 	/** 绘制图片的区域 */
 	ArrayList<MapInfo> lsMapInfos;

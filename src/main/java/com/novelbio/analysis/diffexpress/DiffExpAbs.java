@@ -23,12 +23,6 @@ import com.novelbio.generalConf.TitleFormatNBC;
 import freemarker.template.Configuration;
 
 public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
-	public static final int LIMMA = 10;
-	public static final int DESEQ = 20;
-	public static final int DEGSEQ = 30;
-	public static final int EDEGR = 40;
-	public static final int TTest = 50;
-	public static final int EBSeq = 60;
 
 	// 满足条件的差异基因的最少数量
 //	public static final int QUANUM = 1000;
@@ -402,35 +396,35 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	 * 返回method的文字与其ID对照表
 	 * ID就是本类的常量
 	 */
-	public static HashMap<String, Integer> getMapMethod2ID() {
-		HashMap<String, Integer> mapMethod2ID = new LinkedHashMap<String, Integer>();
-		mapMethod2ID.put("Limma--Microarray", LIMMA);
-		mapMethod2ID.put("DEGseq--RPKM/Counts(recommand)", DEGSEQ);
-		mapMethod2ID.put("EdegR--Counts(Needs Replication)", EDEGR);
-		mapMethod2ID.put("DESeq--Counts(Needs Replication)", DESEQ);
-		mapMethod2ID.put("EBSeq--Counts", EBSeq);
-		mapMethod2ID.put("Ttest", TTest);
+	public static HashMap<String, EnumDifGene> getMapMethod2ID() {
+		HashMap<String, EnumDifGene> mapMethod2ID = new LinkedHashMap<>();
+		mapMethod2ID.put("Limma--Microarray", EnumDifGene.Limma);
+		mapMethod2ID.put("DEGseq--RPKM/Counts(recommand)", EnumDifGene.DEGSeq);
+		mapMethod2ID.put("EdegR--Counts(Needs Replication)", EnumDifGene.EdgeR);
+		mapMethod2ID.put("DESeq--Counts(Needs Replication)", EnumDifGene.DESeq);
+		mapMethod2ID.put("EBSeq--Counts", EnumDifGene.EBSeq);
+		mapMethod2ID.put("Ttest", EnumDifGene.Ttest);
 		return mapMethod2ID;
 	}
 	
-	public static DiffExpInt createDiffExp(int DiffExpID) {
+	public static DiffExpInt createDiffExp(EnumDifGene DiffExpID) {
 		DiffExpInt diffExpInt = null;
-		if (DiffExpID == LIMMA) {
+		if (DiffExpID == EnumDifGene.Limma) {
 			diffExpInt = (DiffExpInt)SpringFactory.getFactory().getBean("diffExpLimma");
-		} else if (DiffExpID == DESEQ) {
+		} else if (DiffExpID == EnumDifGene.DESeq) {
 			diffExpInt = (DiffExpInt)SpringFactory.getFactory().getBean("diffExpDESeq");
-		} else if (DiffExpID == DEGSEQ) {
+		} else if (DiffExpID == EnumDifGene.DEGSeq) {
 			diffExpInt = (DiffExpInt)SpringFactory.getFactory().getBean("diffExpDEGseq");
-		} else if (DiffExpID == TTest) {
+		} else if (DiffExpID == EnumDifGene.Ttest) {
 			diffExpInt = (DiffExpInt)SpringFactory.getFactory().getBean("diffExpTtest");
-		} else if (DiffExpID == EDEGR) {
+		} else if (DiffExpID == EnumDifGene.EdgeR) {
 			diffExpInt = (DiffExpInt)SpringFactory.getFactory().getBean("diffExpEdgeR");
-		} else if (DiffExpID == EBSeq) {
+		} else if (DiffExpID == EnumDifGene.EBSeq) {
 			diffExpInt = (DiffExpInt)SpringFactory.getFactory().getBean("diffExpEBSeq");
 		}
 		return diffExpInt;
 	}
-	
+
 	/** 务必在run完之后调用 */
 	public List<String> getCmdExeStr() {
 		List<String> lsScript = new ArrayList<>();

@@ -43,15 +43,9 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	/**将长的单碱基精度的一条染色体压缩为短的每个inv大约10-20bp的序列，那么压缩方法选择为20bp中的数值的总和 */
 	public static final int SUM_TYPE_SUM = 4;
 	
-	/** 将每个double[]求和/double.length 也就是将每个点除以该gene的平均测序深度 */
-	public static final int NORMALIZATION_PER_GENE = 128;
-	/** 将每个double[]*1million/AllReadsNum 也就是将每个点除以测序深度 */
-	public static final int NORMALIZATION_ALL_READS = 256;
-	/** 不标准化 */
-	public static final int NORMALIZATION_NO = 64;
 
 	/** 对于结果的标准化方法 */
-	protected int NormalType = NORMALIZATION_ALL_READS;
+	protected EnumMapNormalizeType NormalType = EnumMapNormalizeType.allreads;
 
 	 /** 序列信息,名字都为小写 */
 	 Map<String, Long> mapChrID2Len = new HashMap<String, Long>();
@@ -81,7 +75,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	  * 默认是NORMALIZATION_ALL_READS
 	  * @param normalType
 	  */
-	 public void setNormalType(int normalType) {
+	 public void setNormalType(EnumMapNormalizeType normalType) {
 		NormalType = normalType;
 	}
 	 /**
@@ -430,19 +424,19 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @param doubleInfo 提取得到的原始value
 	 * @return 
 	 */
-	public static void normDouble(int NormalType, double[] doubleInfo, long allReadsNum) {
+	public static void normDouble(EnumMapNormalizeType NormalType, double[] doubleInfo, long allReadsNum) {
 		if (doubleInfo == null) {
 			return;
 		}
-		if ((allReadsNum == 0 && NormalType == NORMALIZATION_ALL_READS)|| NormalType == NORMALIZATION_NO) {
+		if ((allReadsNum == 0 && NormalType == EnumMapNormalizeType.allreads)|| NormalType == EnumMapNormalizeType.no_normalization) {
 			return;
 		}
-		else if (NormalType == NORMALIZATION_ALL_READS) {
+		else if (NormalType == EnumMapNormalizeType.allreads) {
 			for (int i = 0; i < doubleInfo.length; i++) {
 				doubleInfo[i] = doubleInfo[i]*mulNum/allReadsNum;
 			}
 		}
-		else if (NormalType == NORMALIZATION_PER_GENE) {
+		else if (NormalType == EnumMapNormalizeType.per_gene) {
 			double avgSite = MathComput.mean(doubleInfo);
 			if (avgSite != 0) {
 				for (int i = 0; i < doubleInfo.length; i++) {
@@ -462,12 +456,8 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 		}
 	}
 	
-	public static Map<String, Integer> getMapNormalizedType() {
-		Map<String, Integer> mapNormalizedType = new LinkedHashMap<String, Integer>();
-		mapNormalizedType.put("Normalization_All_Reads", NORMALIZATION_ALL_READS);
-		mapNormalizedType.put("Normalization_No", NORMALIZATION_NO);
-		mapNormalizedType.put("Normalization_Per_Gene", NORMALIZATION_PER_GENE);
-		return mapNormalizedType;
+	public static Map<String, EnumMapNormalizeType> getMapNormalizedType() {
+		return EnumMapNormalizeType.getMapNormalizedType();
 	}
 }
 

@@ -15,6 +15,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
+import com.novelbio.analysis.seq.genome.mappingOperate.EnumMapNormalizeType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.base.dataStructure.Alignment;
@@ -38,7 +39,7 @@ public class GffChrPlotChrome {
 	String fileName = "";
 	int maxresolution = 10000;
 	MapReads mapReads;
-	int mapNormType = MapReads.NORMALIZATION_ALL_READS;
+	EnumMapNormalizeType mapNormType = EnumMapNormalizeType.allreads;
 	
 	int[] tssRegion;
 	

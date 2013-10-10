@@ -385,8 +385,8 @@ class CombMapMirMature2Value extends MirCombMapGetValueAbs {
 	@Override
 	protected String[] getTitleIDAndInfo() {	/** 返回涉及到的所有miRNA的名字 */
 		String[] titleStart = new String[3];
-		titleStart[1] = TitleFormatNBC.miRNAName.toString();
-		titleStart[0] = TitleFormatNBC.miRNApreName.toString();
+		titleStart[0] = TitleFormatNBC.miRNAName.toString();
+		titleStart[1] = TitleFormatNBC.miRNApreName.toString();
 		titleStart[2] = TitleFormatNBC.mirSequence.toString();
 		return titleStart;
 	}
@@ -394,8 +394,8 @@ class CombMapMirMature2Value extends MirCombMapGetValueAbs {
 	@Override
 	protected void fillMataInfo(String id, ArrayList<String> lsTmpResult) {
 		String[] seqName = id.split(SepSign.SEP_ID);
-		lsTmpResult.add(seqName[1]);
-		lsTmpResult.add(seqName[0]);
+		lsTmpResult.add(seqName[1]);//先放mature miRNA
+		lsTmpResult.add(seqName[0]);//再放pre miRNA
 		lsTmpResult.add(miRNACount.getMiRNAmatureSeq(seqName[0], seqName[1]));
 	}
 }

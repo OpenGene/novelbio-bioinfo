@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.mappingOperate.EnumMapNormalizeType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
@@ -124,7 +125,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 	}
-	public void setNormType(int normalType) {
+	public void setNormType(EnumMapNormalizeType normalType) {
 		mapReads.setNormalType(normalType);
 	}
 	/** 默认获取atg上游300bp的位点 */

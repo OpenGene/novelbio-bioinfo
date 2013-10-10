@@ -20,6 +20,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
+import com.novelbio.analysis.seq.genome.mappingOperate.EnumMapNormalizeType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
@@ -56,7 +57,7 @@ public class GffChrMap {
 	/** 绘图区域，也用于tss和tes的范围 */
 	int[] plotRange;
 	MapReads mapReads;
-	int mapNormType = MapReads.NORMALIZATION_ALL_READS;
+	EnumMapNormalizeType mapNormType = EnumMapNormalizeType.allreads;
 	
 	
 	public GffChrMap() {
@@ -732,7 +733,7 @@ public class GffChrMap {
 		ArrayList<String> lsChrID = mapReads.getChrIDLs();
 		ArrayList<MapInfo> lsMapInfo = new ArrayList<MapInfo>();
 		for (String string : lsChrID) {
-			mapReads.setNormalType(MapReads.NORMALIZATION_NO);
+			mapReads.setNormalType(EnumMapNormalizeType.no_normalization);
 			GffGeneIsoInfo gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO(string);
 			if (gffGeneIsoInfo.getGeneType() != GeneType.mRNA
 					&& gffGeneIsoInfo.getGeneType() != GeneType.mRNA_TE) {

@@ -4,14 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
+import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
 
 public class MapSplice implements MapRNA {
-	String exePath;
+	String exePath = "";
 	/** bowtie就是用来做索引的 */
 	MapBowtie mapBowtie = new MapBowtie();
 	String fileRefSep;
@@ -19,8 +21,15 @@ public class MapSplice implements MapRNA {
 	String outFile;
 	int indelLen = 6;
 	int threadNum = 10;
+	//输入的fastq
 	List<FastQ> lsLeftFq = new ArrayList<FastQ>();
 	List<FastQ> lsRightFq = new ArrayList<FastQ>();
+	//将输入的fastq.gz转换成常规fastq
+	List<FastQ> lsLeftRun = new ArrayList<>();
+	List<FastQ> lsRightRun = new ArrayList<>();
+	//转换的文件放在这个里面，最后要被删掉
+	List<String> lsTmp = new ArrayList<>();
+	
 	int mismatch = 3;
 	boolean fusion = false;
 	int seedLen = 22;
@@ -34,7 +43,9 @@ public class MapSplice implements MapRNA {
 
 	@Override
 	public void setExePath(String exePath, String exePathBowtie) {
-		this.exePath = exePath;
+		if (exePath != null && !exePath.equals("")) {
+			this.exePath = FileOperate.addSep(exePath);
+		}
 		mapBowtie.setExePathBowtie(exePathBowtie);
 	}
 	/** 是否检测fusion gene，检测fusion gene会获得比较少的junction reads */
@@ -103,12 +114,56 @@ public class MapSplice implements MapRNA {
 
 	@Override
 	public void mapReads() {
+		prepareReads();
 		mapBowtie.setSubVersion(getBowtieVersion());
 		mapBowtie.IndexMake(false);
 		
 		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
 		cmdOperate.run();
+		clearTmpReads();
 	}
+	
+	private void prepareReads() {
+		lsLeftRun.clear();
+		lsRightRun.clear();
+		lsTmp.clear();
+		for (FastQ fastQ : lsLeftFq) {
+			if (fastQ.getReadFileName().endsWith("gz")) {
+				fastQ = deCompressFq(fastQ);
+				lsTmp.add(fastQ.getReadFileName());
+			}
+			lsLeftRun.add(fastQ);
+		}
+		for (FastQ fastQ : lsRightFq) {
+			if (fastQ.getReadFileName().endsWith("gz")) {
+				fastQ = deCompressFq(fastQ);
+				lsTmp.add(fastQ.getReadFileName());
+			}
+			lsRightRun.add(fastQ);
+		}
+	}
+	
+	private void clearTmpReads() {
+		lsLeftRun.clear();
+		lsRightRun.clear();
+		for (String fastQname : lsTmp) {
+			FileOperate.delFile(fastQname);
+		}
+	}
+	
+	private FastQ deCompressFq(FastQ fastQ) {
+		String fileName = fastQ.getReadFileName();
+		fileName = fileName.replace("fastq.gz", "fastq").replace("fq.gz", "fastq");
+		String newFastqName = FileOperate.changeFileSuffix(fileName, "_decompress", null);
+		FastQ fastQdecompress = new FastQ(newFastqName, true);
+		for (FastQRecord fastQRecord : fastQ.readlines()) {
+			fastQdecompress.writeFastQRecord(fastQRecord);
+		}
+		fastQ.close();
+		fastQdecompress.close();
+		return fastQdecompress;
+	}
+	
 	private String[] getRefseq() {
 		if (species != null) {
 			fileRefSep = species.getChromSeqSep();
@@ -138,26 +193,26 @@ public class MapSplice implements MapRNA {
 	private List<String> getFqFile() {
 		List<String> lsFqFileInfo = new ArrayList<>();
 		lsFqFileInfo.add("-1");
-		String fqLeft = lsLeftFq.get(0).getReadFileName();
-		for (int i = 1; i < lsLeftFq.size(); i++) {
-			fqLeft = fqLeft + "," + lsLeftFq.get(i);
+		String fqLeft = lsLeftRun.get(0).getReadFileName();
+		for (int i = 1; i < lsLeftRun.size(); i++) {
+			fqLeft = fqLeft + "," + lsLeftRun.get(i);
 		}
 		lsFqFileInfo.add(fqLeft);
-		if (lsRightFq.size() == 0)
+		if (lsRightRun.size() == 0)
 			return lsFqFileInfo;
 		
 		lsFqFileInfo.add("-2");
-		String fqRight = lsRightFq.get(0).getReadFileName();
-		for (int i = 1; i < lsRightFq.size(); i++) {
-			fqRight = fqRight + "," + lsRightFq.get(i);
+		String fqRight = lsRightRun.get(0).getReadFileName();
+		for (int i = 1; i < lsRightRun.size(); i++) {
+			fqRight = fqRight + "," + lsRightRun.get(i);
 		}
 		lsFqFileInfo.add(fqRight);
 		return lsFqFileInfo;
 	}
 	private List<String> getLsCmd() {
 		List<String> lsCmd = new ArrayList<>();
-		lsCmd.add("Python");
-		lsCmd.add(exePath + "MapSplice1.py");
+		lsCmd.add("python");
+		lsCmd.add(exePath + "mapsplice.py");
 		ArrayOperate.addArrayToList(lsCmd, getRefseq());
 		ArrayOperate.addArrayToList(lsCmd, getIndex());
 		lsCmd.addAll(getFqFile());

@@ -14,8 +14,6 @@ import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
 
-import junit.framework.TestCase;
-
 public class TestMapRNA {
 	MapRNA mapRNA;
 	List<FastQ> lsLeftFq = new ArrayList<>();
@@ -25,7 +23,7 @@ public class TestMapRNA {
 	public void testRsem() {
 		
 	}
-//	@Test
+	@Test
 	public void testMapSplice() {
 		lsLeftFq.add(new FastQ("/media/hdfs/nbCloud/public/test/RNASeqMap/MouseRNA_KO_L1_1_Small.fq.gz"));
 		lsRightFq.add(new FastQ("/media/hdfs/nbCloud/public/test/RNASeqMap/MouseRNA_KO_L1_2_Small.fq.gz"));
@@ -40,12 +38,13 @@ public class TestMapRNA {
 		mapRNA.setLeftFq(lsLeftFq);
 		mapRNA.setRightFq(lsRightFq);
 		mapRNA.setThreadNum(3);
+		mapRNA.setOutPathPrefix("/media/hdfs/nbCloud/public/test/RNASeqMap/mapsplice_");
 		mapRNA.mapReads();
 		lsLeftFq.clear();
 		lsRightFq.clear();
 	}
 	
-	@Test
+//	@Test
 	public void testTophat() {
 		lsLeftFq.add(new FastQ("/media/hdfs/nbCloud/public/test/RNASeqMap/MouseRNA_KO_L1_1_Small.fq.gz"));
 		lsRightFq.add(new FastQ("/media/hdfs/nbCloud/public/test/RNASeqMap/MouseRNA_KO_L1_2_Small.fq.gz"));

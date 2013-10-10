@@ -14,6 +14,7 @@ import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
+import com.novelbio.analysis.seq.genome.mappingOperate.EnumMapNormalizeType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsHanyanChrom;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -60,7 +61,7 @@ public class GffChrUnionHanYanRefSeq extends GffChrHanYan{
 		mapReads.setMapChrID2Len(seqFastaHash.getMapChrLength());
 		mapReads.setBedSeq(mapFile);
 		mapReads.setInvNum(1);
-		mapReads.setNormalType(MapReads.NORMALIZATION_PER_GENE);
+		mapReads.setNormalType(EnumMapNormalizeType.per_gene);
 		mapReads.setFilter(uniqReads, startCod, uniqMapping, cis5To3);
 		if (tagLength > 20) {
 			mapReads.setTagLength(tagLength);

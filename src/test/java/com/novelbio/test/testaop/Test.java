@@ -4,7 +4,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.novelbio.database.service.SpringFactory;
-import com.novelbio.nbcgui.controltest.CtrlGO;
 
 
 public abstract class Test {

@@ -19,6 +19,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.PredictRetainIntron;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict.SplicingAlternativeType;
+import com.novelbio.analysis.seq.genome.mappingOperate.EnumMapNormalizeType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.mapping.Align;
@@ -491,14 +492,14 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	private MapReadsAbs getSamMapReads(AlignSamReading samFileReading) {
 		SamMapReads samMapReads = new SamMapReads(samFileReading.getSamFile(), strandSpecific);
 		samMapReads.setisUniqueMapping(true);
-		samMapReads.setNormalType(MapReadsAbs.NORMALIZATION_NO);
+		samMapReads.setNormalType(EnumMapNormalizeType.no_normalization);
 		return samMapReads;
 	}
 	
 	private MapReads getMapReads(AlignSeqReading samFileReading) {
 		MapReads mapReads = new MapReads();
 		mapReads.setInvNum(15);
-		mapReads.setNormalType(MapReads.NORMALIZATION_NO);
+		mapReads.setNormalType(EnumMapNormalizeType.no_normalization);
 		mapReads.setisUniqueMapping(true);
 		mapReads.prepareAlignRecord(samFileReading.getSamFile().readFirstLine());
 		//TODO 可以考虑从gtf文件中获取基因组长度然后给MapReads使用
