@@ -26,6 +26,8 @@ public class ListGff extends ListAbsSearch<GffDetailGene, GffCodGene, GffCodGene
 	 */
 	public ListGff combineOverlapGene() {
 		ListGff listGffNew = new ListGff();
+		listGffNew.setCis5to3(this.isCis5to3());
+		listGffNew.setName(this.getName());
 		GffDetailGene gffDetailGeneLast = null;
 		//合并两个重叠的基因
 		for (GffDetailGene gffDetailGene : this) {

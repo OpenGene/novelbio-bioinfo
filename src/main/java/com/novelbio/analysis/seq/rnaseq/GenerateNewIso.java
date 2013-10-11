@@ -60,6 +60,7 @@ public class GenerateNewIso {
 		for (;;) {
 			for (JunctionUnit junctionUnit : lsJunUnit) {
 				if (junctionUnit.getReadsNumAll() >= newIsoReadsNum && !isJunInGene(junctionUnit)) {
+//					logger.debug(junctionUnit.toString());
 					reconstructIso(junctionUnit);
 				}
 			}
@@ -417,7 +418,7 @@ public class GenerateNewIso {
 	 */
 	private boolean isContinuousExon(String chrID, int startLoc, int endLoc) {
 		int start = Math.min(startLoc, endLoc), end = Math.max(startLoc, endLoc);
-		double[] regionFinal = mapReads.getRangeInfo(1, chrID, start, end, 0);
+		double[] regionFinal = mapReads.getRangeInfo(chrID, start, end, 0);
 		if (regionFinal == null) {
 			return false;
 		}
@@ -436,6 +437,7 @@ public class GenerateNewIso {
 		if (blankNum > blankNumFinal) {
 			blankNumFinal = blankNum;
 		}
+		blankNumFinal = blankNumFinal * mapReads.getBinNum();
 		if (blankNumFinal >= this.blankNum) {
 			return false;
 		}
