@@ -21,6 +21,7 @@ public class MiRNAnovelAnnotaion {
 	String miRNAcope;
 	List<Species> lsBlastToSpecies = new ArrayList<>();
 	List<String> lsTmpBlastResult = new ArrayList<>();
+	Map<String, String> mapID2Blast;
 	/** 设定需要比对到的物种 */
 	public void setLsMiRNAblastTo(List<Species> lsBlastToSpecies) {
 		this.lsBlastToSpecies = lsBlastToSpecies;
@@ -31,14 +32,24 @@ public class MiRNAnovelAnnotaion {
 		this.miRNAcope = FileOperate.changeFileSuffix(miRNAthis, "_anno", null);
 	}
 	
+	/** 会将输入的miRNA序列的名字进行修正 */
 	public void annotation() {
 		blast();
-		Map<String, String> mapID2Blast = getMapGeneID2Info();
+		mapID2Blast = getMapGeneID2Info();
 		copeSeqFile(mapID2Blast);
 	}
 	
-	public String getResult() {
+	/** 返回修正过名字的miRNA */
+	public String getMiRNAmatureCope() {
 		return miRNAcope;
+	}
+	
+	/** 获得注释好的对照表
+	 * key: 本miRNA name
+	 * value: BlastTo miRNA name
+	 *  */
+	public Map<String, String> getMapID2Blast() {
+		return mapID2Blast;
 	}
 	
 	private void blast() {
@@ -46,6 +57,9 @@ public class MiRNAnovelAnnotaion {
 		lsTmpBlastResult.clear();
 		blastNBC.setQueryFastaFile(miRNAthis);
 		for (Species species : lsBlastToSpecies) {
+			if (species == null || species.getTaxID() == 0) {
+				continue;
+			}
 			blastNBC.setSubjectSeq(species.getMiRNAmatureFile());
 			blastNBC.setShortQuerySeq(true);
 			blastNBC.setBlastType(BlastType.blastn);
@@ -78,7 +92,11 @@ public class MiRNAnovelAnnotaion {
 		for (String content : txtRead.readlines()) {
 			if (content.startsWith(">")) {
 				content = content.replace(">", "").trim();
-				content = ">" + content + SepSign.SEP_INFO + mapID2Blast.get(content);
+				if (mapID2Blast.containsKey(content)) {
+					content = ">" + content + SepSign.SEP_INFO + mapID2Blast.get(content);
+				} else {
+					content = ">" + content;
+				}
 			}
 			txtWrite.writefileln(content);
 		}

@@ -1,7 +1,6 @@
 package com.novelbio.analysis.seq.mirna;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -27,7 +26,8 @@ public abstract class MirCombMapGetValueAbs {
 				if (value == null) {
 					lsTmpResult.add(0 + "");
 				} else {
-					lsTmpResult.add(value.intValue() + "");
+					Number valueThis = getExpValue(prefix, value);
+					lsTmpResult.add(valueThis + "");
 				}
 			}
 			lsResult.add(lsTmpResult.toArray(new String[1]));
@@ -35,13 +35,14 @@ public abstract class MirCombMapGetValueAbs {
 		return lsResult;
 	}
 	
+	protected abstract Number getExpValue(String condition, Double readsCount);
+	
 	/** 返回涉及到的所有miRNA的名字 */
 	private ArrayList<String> getTitlePre(Map<String, ? extends Object> mapPrefix2Info) {
 		ArrayList<String> lsTitle = new ArrayList<String>();
 		for (String string : getTitleIDAndInfo()) {
 			lsTitle.add(string);
 		}
-		int i = 1;
 		for (String prefix : mapPrefix2Info.keySet()) {
 			lsTitle.add(prefix);
 		}

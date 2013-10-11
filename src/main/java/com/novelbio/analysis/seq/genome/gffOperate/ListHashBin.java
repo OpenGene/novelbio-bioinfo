@@ -3,19 +3,14 @@ package com.novelbio.analysis.seq.genome.gffOperate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
 import com.novelbio.base.dataStructure.listOperate.ListBin;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
-import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
 import com.novelbio.base.dataStructure.listOperate.ListHashSearch;
 
 

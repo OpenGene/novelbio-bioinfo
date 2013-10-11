@@ -158,5 +158,9 @@ class CombRfamMap extends MirCombMapGetValueAbs {
 		lsTmpResult.add(rfamInfo[0].replace("\\N", ""));
 		lsTmpResult.add(rfamInfo[3].replace("\\N", ""));
 	}
+	@Override
+	protected Integer getExpValue(String condition, Double readsCount) {
+		return readsCount.intValue();
+	}
 	
 }

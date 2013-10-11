@@ -15,7 +15,7 @@ import com.novelbio.base.fileOperate.FileOperate;
  */
 public class NovelMiRNAReap extends NovelMiRNApredict {
 	/** 读取mireap的gff和aln文件，将其装入listmirna，方便后面算表达 */
-	ListMiRNALocation listMiRNALocation = new ListMiRNALocation();
+	ListMiRNAdate listMiRNALocation = new ListMiRNAdate();
 	/** 给mireap准备的文件 */
 	String outMapFile = "";
 	/** 给mireap准备的文件 */

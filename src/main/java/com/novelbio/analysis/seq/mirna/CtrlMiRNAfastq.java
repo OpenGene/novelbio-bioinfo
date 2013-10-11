@@ -23,17 +23,6 @@ import com.novelbio.generalConf.PathDetailNBC;
  * @author zong0jie
  */
 public class CtrlMiRNAfastq {
-	public static void main(String[] args) {
-		Species species = new Species(7955);
-		MiRNACount miRNACount = new MiRNACount();
-		miRNACount.setMiRNAinfo(ListMiRNALocation.TYPE_RNA_DATA, species, PathDetailNBC.getMiRNADat());
-
-		miRNACount.setMiRNAfile(species.getMiRNAhairpinFile(), species.getMiRNAmatureFile());
-		miRNACount.setAlignFile(new SamFile("/media/winE/NBC/Project/Test/miRNA/jws/tmpMapping/G56_miRNA.bam"));
-		miRNACount.run();
-		miRNACount.writeResultToOut("/media/winE/NBC/Project/Test/miRNA/jws/tmpMapping/G56_miRNA_result.txt");
-	
-	}
 	private static final Logger logger = Logger.getLogger(CtrlMiRNAfastq.class);
 	
 	Species species;
@@ -56,7 +45,9 @@ public class CtrlMiRNAfastq {
 	String outPathTmpMapping;
 	///////输出数量 ///////////
 	Map<String, Map<String, Double>> mapPrefix2MiRNAPre = new LinkedHashMap<>();
+	Map<String, double[]> mapPrefix2CountsPre = new HashMap<>();
 	Map<String, Map<String, Double>> mapPrefix2MiRNAmature = new LinkedHashMap<>();
+	Map<String, double[]> mapPrefix2CountsMature = new HashMap<>();
 	
 	Map<String, Map<String, Double>> mapPrefix2MiRNArfam = new LinkedHashMap<>();
 	Map<String, Map<String, Double>> mapPrefix2MiRNAncrna = new LinkedHashMap<>();
@@ -121,12 +112,17 @@ public class CtrlMiRNAfastq {
 	 */
 	public void setMiRNAinfo(String rnadatFile) {
 		logger.error("读取的文件为：" + rnadatFile);
-		miRNACount.setMiRNAinfo(ListMiRNALocation.TYPE_RNA_DATA, species, rnadatFile);
+		ListMiRNAdate listMiRNAdate = new ListMiRNAdate();
+		listMiRNAdate.setSpecies(species);
+		listMiRNAdate.ReadGffarray(rnadatFile);
+		miRNACount.setListMiRNALocation(listMiRNAdate);
 	}
 	
 	/** 比对和计数，每比对一次就计数。主要是为了防止出错 */
 	public void mappingAndCounting() {
 		mapPrefix2MiRNAPre.clear();
+		mapPrefix2CountsPre.clear();
+		mapPrefix2CountsMature.clear();
 		mapPrefix2MiRNAmature.clear();
 		mapPrefix2MiRNArfam.clear();
 		mapPrefix2MiRNAncrna.clear();
@@ -186,6 +182,8 @@ public class CtrlMiRNAfastq {
 			miRNACount.writeResultToOut(outPath);
 			mapPrefix2MiRNAmature.put(prefix, miRNACount.getMapMirMature2Value());
 			mapPrefix2MiRNAPre.put(prefix, miRNACount.getMapMiRNApre2Value());
+			mapPrefix2CountsMature.put(prefix, miRNACount.getCountMature());
+			mapPrefix2CountsPre.put(prefix, miRNACount.getCountPre());
 		}
 	}
 	
@@ -241,11 +239,17 @@ public class CtrlMiRNAfastq {
 	
 	/** 将汇总结果写入文本 */
 	public void writeToFile() {
-		ArrayList<String[]> lsMirPre = miRNACount.combMapMir2Value(mapPrefix2MiRNAPre);
-		writeFile(outPath + "mirPreAll.txt", lsMirPre);
+		List<String[]> lsMirPreCounts = miRNACount.combMapMir2ValueCounts(mapPrefix2MiRNAPre, mapPrefix2CountsPre);
+		writeFile(outPath + "mirPreAll_Counts.txt", lsMirPreCounts);
 		
-		ArrayList<String[]> lsMirMature = miRNACount.combMapMir2MatureValue(mapPrefix2MiRNAmature);
-		writeFile(outPath + "mirMatureAll.txt", lsMirMature);
+		List<String[]> lsMirMatureCounts = miRNACount.combMapMir2MatureValueCounts(mapPrefix2MiRNAmature, mapPrefix2CountsMature);
+		writeFile(outPath + "mirMatureAll_Counts.txt", lsMirMatureCounts);
+		
+		List<String[]> lsMirPreUQ = miRNACount.combMapMir2ValueCounts(mapPrefix2MiRNAPre, mapPrefix2CountsPre);
+		writeFile(outPath + "mirPreAll_UQTPM.txt", lsMirPreUQ);
+		
+		List<String[]> lsMirMatureUQ = miRNACount.combMapMir2MatureValueCounts(mapPrefix2MiRNAmature, mapPrefix2CountsMature);
+		writeFile(outPath + "mirMatureAll_UQTPM.txt", lsMirMatureUQ);
 		
 		ArrayList<String[]> lsGeneInfo = readsOnRepeatGene.combMapGeneStructure2Value(mapPrefix2GeneInfo);
 		writeFile(outPath + "GeneStructureAll.txt", lsGeneInfo);
@@ -263,7 +267,7 @@ public class CtrlMiRNAfastq {
 		writeFile(outPath + "RfamAll.txt", lsRfamRNA);
 	}
 	
-	private void writeFile(String fileName, ArrayList<String[]> lsInfo) {
+	private void writeFile(String fileName, List<String[]> lsInfo) {
 		if (lsInfo == null || lsInfo.size() == 0) {
 			return;
 		}

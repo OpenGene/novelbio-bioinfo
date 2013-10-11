@@ -3,7 +3,7 @@ package com.novelbio.test.database.domain.geneanno;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.novelbio.analysis.seq.mirna.ListMiRNALocation;
+import com.novelbio.analysis.seq.mirna.ListMiRNAdate;
 import com.novelbio.analysis.seq.mirna.MiRNACount;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.domain.geneanno.GOtype.GORelation;

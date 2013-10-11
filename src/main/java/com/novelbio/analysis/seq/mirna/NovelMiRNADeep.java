@@ -385,8 +385,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 	 * @param novelMiRNAmature
 	 * @param novelMiRNAdeepMrdFile
 	 */
-	@Deprecated
-	public void setCalNovelMiRNACountNovelMiRNASeq(String novelMiRNAhairpin, String novelMiRNAmature, String novelMiRNAdeepMrdFile) {
+	protected void setCalNovelMiRNACountNovelMiRNASeq(String novelMiRNAhairpin, String novelMiRNAmature, String novelMiRNAdeepMrdFile) {
 		this.novelMiRNAhairpin = novelMiRNAhairpin;
 		this.novelMiRNAmature = novelMiRNAmature;
 		this.novelMiRNAdeepMrdFile = novelMiRNAdeepMrdFile;

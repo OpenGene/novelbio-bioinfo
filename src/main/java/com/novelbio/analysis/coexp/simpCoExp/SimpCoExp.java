@@ -51,11 +51,8 @@ public class SimpCoExp {
 	 * @param outFile
 	 * @throws Exception
 	 */
-	public static void getCoExpDegree(String inFile,int taxID,String outFile) throws Exception
-	{
-		ExcelOperate excelOperate = new ExcelOperate();
-		excelOperate.openExcel(inFile);
-		ArrayList<String[]> lsinfo = excelOperate.ReadLsExcel(2, 1, excelOperate.getRowCount(), excelOperate.getColCount(1));
+	public static void getCoExpDegree(String inFile,int taxID,String outFile) throws Exception {
+		ArrayList<String[]> lsinfo = ExcelTxtRead.readLsExcelTxt(inFile, 2);
 		Object[] obj = annotationScr2Trg(lsinfo, taxID);
 		ArrayList<String[]> lsScr2Trg = (ArrayList<String[]>) obj[0];
 		ArrayList<String[]> lsResult = (ArrayList<String[]>) obj[1];
@@ -87,11 +84,8 @@ public class SimpCoExp {
 	 * @param outFile
 	 * @throws Exception
 	 */
-	public static void getCoExpDegreeNormal(String inFile,int taxID,String outFile) throws Exception
-	{
-		ExcelOperate excelOperate = new ExcelOperate();
-		excelOperate.openExcel(inFile);
-		ArrayList<String[]> lsinfo = excelOperate.ReadLsExcel(2, 1, excelOperate.getRowCount(), excelOperate.getColCount(1));
+	public static void getCoExpDegreeNormal(String inFile,int taxID,String outFile) throws Exception {
+		ArrayList<String[]> lsinfo = ExcelTxtRead.readLsExcelTxt(inFile, 2);
 		Object[] obj = annotationScr2Trg(lsinfo, taxID);
 		 ArrayList<String[]> lsScr2Trg = (ArrayList<String[]>) obj[0];
 		 ArrayList<String[]> lsResult = (ArrayList<String[]>) obj[1];

@@ -252,6 +252,11 @@ class CombMapGeneInfo extends MirCombMapGetValueAbs {
 	protected void fillMataInfo(String id, ArrayList<String> lsTmpResult) {
 		lsTmpResult.add(id);
 	}
+
+	@Override
+	protected Integer getExpValue(String condition, Double readsCount) {
+		return readsCount.intValue();
+	}
 }
 
 class CombMapRepeatName extends MirCombMapGetValueAbs {
@@ -267,6 +272,11 @@ class CombMapRepeatName extends MirCombMapGetValueAbs {
 	protected void fillMataInfo(String id, ArrayList<String> lsTmpResult) {
 		lsTmpResult.add(id);
 	}
+
+	@Override
+	protected Integer getExpValue(String condition, Double readsCount) {
+		return readsCount.intValue();
+	}
 }
 
 class CombMapRepeatFamily extends MirCombMapGetValueAbs {
@@ -281,6 +291,11 @@ class CombMapRepeatFamily extends MirCombMapGetValueAbs {
 	@Override
 	protected void fillMataInfo(String id, ArrayList<String> lsTmpResult) {
 		lsTmpResult.add(id);
+	}
+
+	@Override
+	protected Integer getExpValue(String condition, Double readsCount) {
+		return readsCount.intValue();
 	}
 }
 

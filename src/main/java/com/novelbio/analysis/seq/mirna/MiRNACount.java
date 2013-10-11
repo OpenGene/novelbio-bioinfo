@@ -15,9 +15,12 @@ import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
+import com.novelbio.analysis.seq.rnaseq.RPKMcomput;
+import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.listOperate.ListBin;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.species.Species;
@@ -30,18 +33,10 @@ import com.novelbio.generalConf.TitleFormatNBC;
  *
  */
 public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
-	public static void main(String[] args) {
-		MiRNACount miRNACount = new MiRNACount();
-		miRNACount.setAlignFile(new SamFile("/media/hdfs/nbCloud/public/customer/chengshiping0829/microRNA/filter/test0903/tmpMapping/1_miRNA.bam"));
-		miRNACount.setMiRNAfile( new Species(3694).getMiRNAhairpinFile(), new Species(3694).getMiRNAmatureFile());
-		miRNACount.setMiRNAinfo(ListMiRNALocation.TYPE_RNA_DATA, new Species(3694), PathDetailNBC.getMiRNADat());
-		miRNACount.run();
-		miRNACount.writeResultToOut("/media/hdfs/nbCloud/public/customer/chengshiping0829/microRNA/filter/test0903/tmpMappingNew");
-	}
 	private static final Logger logger = Logger.getLogger(MiRNACount.class);
 	
 	/** 获得miRNA定位信息 */
-	ListMiRNALocation listMiRNALocation = new ListMiRNALocation();
+	ListMiRNAInt listMiRNALocation;
 	/** miRNA前体 */
 	SeqFastaHash seqFastaHashPreMiRNA = null;
 	/** miRNA成熟体 */
@@ -67,6 +62,11 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 	/** 成熟体到前体的名字，相同产物的前体会合在一起，并用{@link #sepMirPreID} 分割 */
 	Map<String, String> mapMirMatureName2Pre = new HashMap<>();
 	
+	/** double[2] 0: allReadsNum 1: upQuartile的reads number */
+	double[] CountsNumPre = new double[2];
+	/** double[2] 0: allReadsNum 1: upQuartile的reads number<br> */
+	double[] CountsNumMature = new double[2];
+	
 	boolean countMiRNA = false;
 	
 	/**
@@ -86,16 +86,10 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 		seqFastaHashPreMiRNA = new SeqFastaHash(hairpairMirna);
 		countMiRNA = false;
 	}
-	/**
-	 * 给定miRNA文件和物种名
-	 * @param fileType 读取的是miReap的文件还是RNA.dat ListMiRNALocation.TYPE_RNA_DATA 或 ListMiRNALocation.TYPE_MIREAP
-	 * @param Species 为miRNA.dat中的物种名，如果文件不是miRNA.dat，那就不用写了
-	 * @param rnadatFile
-	 */
-	public void setMiRNAinfo(int fileType, Species species, String rnadatFile) {
-		listMiRNALocation.setSpecies(species);
-		listMiRNALocation.setReadFileType(fileType);
-		listMiRNALocation.ReadGffarray(rnadatFile);
+	
+	/** 设定自定义ListMiRNALocation */
+	public void setListMiRNALocation(ListMiRNAInt listMiRNALocation) {
+		this.listMiRNALocation = listMiRNALocation;
 		countMiRNA = false;
 	}
 	/** 设定需要计算表达值的bed文件 */
@@ -129,7 +123,7 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 			if (value == null || mirMatureSeq == null) {
 				continue;
 			}
-			txtMirMatureValue.writefileln(miRNAmature + "\t" + miRNApre + "\t" + mirMatureSeq + "\t" + value.intValue() + "\t"+ mirMatureSeq);
+			txtMirMatureValue.writefileln(miRNAmature + "\t" + miRNApre + "\t" + mirMatureSeq + "\t" + value.intValue());
 		}
 		txtMirValue.close();
 		txtMirMatureValue.close();
@@ -235,6 +229,8 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 //			}
 		}
 		setMapMirPre2Mature_Value();
+		summaryMature();
+		summaryPre();
 	}
 	/** 一行一行处理
 	 * 并填充hashmap
@@ -243,10 +239,10 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 		if (alignRecord.getRefID() == null) {
 			System.out.println();
 		}
-		String subName = listMiRNALocation.searchMirName(alignRecord.getRefID(), alignRecord.getStartAbs(), alignRecord.getEndAbs());
-
 		double value = (double)1/alignRecord.getMappedReadsWeight();
 		addMiRNACountPre(alignRecord.getRefID(), value);
+		
+		String subName = listMiRNALocation.searchMirName(alignRecord.getRefID(), alignRecord.getStartAbs(), alignRecord.getEndAbs());
 		//找不到名字的就不写如miRNA成熟体列表
 		if (subName != null) {
 			addMiRNACountPre2Mature(alignRecord.getRefID(), subName, value);
@@ -317,25 +313,82 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 		}
 	}
 	
+	private void summaryMature() {
+		List<Double> lsReadsInfo = new ArrayList<Double>();
+		for (String geneName : mapMirPre_Mature2Value.keySet()) {
+			Double counts = mapMirPre_Mature2Value.get(geneName);
+			if (counts != null) {
+				CountsNumMature[0] += counts;
+				lsReadsInfo.add(counts);
+			}
+		}
+		CountsNumMature[1] = MathComput.median(lsReadsInfo, 75);
+	}
+	private void summaryPre() {
+		List<Double> lsReadsInfo = new ArrayList<Double>();
+		for (String geneName : mapMiRNApre2Value.keySet()) {
+			Double counts = mapMiRNApre2Value.get(geneName);
+			if (counts != null) {
+				CountsNumPre[0] += counts;
+				lsReadsInfo.add(counts);
+			}
+		}
+		CountsNumPre[1] = MathComput.median(lsReadsInfo, 75);
+	}
 	
+	/**
+	 * @return
+	 * key: mirPreName + {@link SepSign#SEP_ID} + mirMatureName
+	 */
 	public Map<String, Double> getMapMirMature2Value() {
 		return mapMirPre_Mature2Value;
 	}
 	public Map<String, Double> getMapMiRNApre2Value() {
 		return mapMiRNApre2Value;
 	}
+	/** 0: allreads
+	 * 1: UQreads
+	 * @return
+	 */
+	public double[] getCountPre() {
+		return CountsNumPre;
+	}
+	/** 0: allreads
+	 * 1: UQreads
+	 * @return
+	 */
+	public double[] getCountMature() {
+		return CountsNumMature;
+	}
 	
 	/** 将给定的几组miRNA的值合并起来 */
-	public ArrayList<String[]> combMapMir2Value(Map<String, Map<String, Double>> mapPrefix2_mapMiRNA2Value) {
-		CombMapMirPre2Value combMapMirPre2Value = new CombMapMirPre2Value(seqFastaHashPreMiRNA, sepMirPreID);
+	public ArrayList<String[]> combMapMir2ValueCounts(Map<String, Map<String, Double>> mapPrefix2_mapMiRNA2Value, 
+			Map<String, double[]> mapPrefix2CountsPre) {
+		CombMapMirPre2Value combMapMirPre2Value = new CombMapMirPre2Value(seqFastaHashPreMiRNA, sepMirPreID, EnumExpression.Counts);
+		combMapMirPre2Value.setMapPrefix2Counts(mapPrefix2CountsPre);
 		return combMapMirPre2Value.combValue(mapPrefix2_mapMiRNA2Value);
 	}
 	/** 将给定的几组miRNA的值合并起来 */
-	public ArrayList<String[]> combMapMir2MatureValue(Map<String, Map<String, Double>> mapPrefix2_mapMiRNAMature2Value) {
-		CombMapMirMature2Value combMapMirMature2Value = new CombMapMirMature2Value(this);
+	public ArrayList<String[]> combMapMir2MatureValueCounts(Map<String, Map<String, Double>> mapPrefix2_mapMiRNAMature2Value,
+			Map<String, double[]> mapPrefix2CountsMature) {
+		CombMapMirMature2Value combMapMirMature2Value = new CombMapMirMature2Value(this, EnumExpression.Counts);
+		combMapMirMature2Value.setMapPrefix2Counts(mapPrefix2CountsMature);
 		return combMapMirMature2Value.combValue(mapPrefix2_mapMiRNAMature2Value);
 	}
-
+	/** 将给定的几组miRNA的值合并起来 */
+	public ArrayList<String[]> combMapMir2ValueUQPM(Map<String, Map<String, Double>> mapPrefix2_mapMiRNA2Value,
+			Map<String, double[]> mapPrefix2CountsPre) {
+		CombMapMirPre2Value combMapMirPre2Value = new CombMapMirPre2Value(seqFastaHashPreMiRNA, sepMirPreID, EnumExpression.UQPM);
+		combMapMirPre2Value.setMapPrefix2Counts(mapPrefix2CountsPre);
+		return combMapMirPre2Value.combValue(mapPrefix2_mapMiRNA2Value);
+	}
+	/** 将给定的几组miRNA的值合并起来 */
+	public ArrayList<String[]> combMapMir2MatureValueUQPM(Map<String, Map<String, Double>> mapPrefix2_mapMiRNAMature2Value,
+			Map<String, double[]> mapPrefix2CountsMature) {
+		CombMapMirMature2Value combMapMirMature2Value = new CombMapMirMature2Value(this, EnumExpression.UQPM);
+		combMapMirMature2Value.setMapPrefix2Counts(mapPrefix2CountsMature);
+		return combMapMirMature2Value.combValue(mapPrefix2_mapMiRNAMature2Value);
+	}
 	public static class MiRNAcountProcess {
 		long readsNum;
 		public void setReadsNum(long readsNum) {
@@ -350,16 +403,20 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 class CombMapMirPre2Value extends MirCombMapGetValueAbs {
 	SeqFastaHash seqFastaHashPreMiRNA;
 	String sepID;
-	
+	Map<String, double[]> mapPrefix2Counts;
+	EnumExpression enumExpression;
 	/**
 	 * @param miRNACount
 	 * @param sepID 用于分割多个连在一起的miRNApreName的分隔符
 	 */
-	CombMapMirPre2Value(SeqFastaHash seqFastaHashPreMiRNA, String sepID) {
+	CombMapMirPre2Value(SeqFastaHash seqFastaHashPreMiRNA, String sepID, EnumExpression enumExpression) {
 		this.seqFastaHashPreMiRNA = seqFastaHashPreMiRNA;
 		this.sepID = sepID;
+		this.enumExpression = enumExpression;
 	}
-	
+	public void setMapPrefix2Counts(Map<String, double[]> mapPrefix2Counts) {
+		this.mapPrefix2Counts = mapPrefix2Counts;
+	}
 	@Override
 	protected String[] getTitleIDAndInfo() {	/** 返回涉及到的所有miRNA的名字 */
 		String[] titleStart = new String[2];
@@ -373,13 +430,29 @@ class CombMapMirPre2Value extends MirCombMapGetValueAbs {
 		lsTmpResult.add(id);
 		lsTmpResult.add(seqFastaHashPreMiRNA.getSeqFasta(id.split(sepID)[0]).toString());
 	}
+
+	@Override
+	protected Number getExpValue(String condition, Double readsCount) {
+		if (enumExpression == enumExpression.Counts) {
+			return readsCount.intValue();
+		} else {
+			double[] count = mapPrefix2Counts.get(condition);
+			double value = RPKMcomput.getValue(enumExpression, readsCount, count[0], count[1], 0);
+			return value;
+		}
+	}
 }
 
 class CombMapMirMature2Value extends MirCombMapGetValueAbs {
 	MiRNACount miRNACount;
-
-	CombMapMirMature2Value(MiRNACount miRNACount) {
+	Map<String, double[]> mapPrefix2Counts;
+	EnumExpression enumExpression;
+	CombMapMirMature2Value(MiRNACount miRNACount, EnumExpression enumExpression) {
 		this.miRNACount = miRNACount;
+		this.enumExpression = enumExpression;
+	}
+	public void setMapPrefix2Counts(Map<String, double[]> mapPrefix2Counts) {
+		this.mapPrefix2Counts = mapPrefix2Counts;
 	}
 	
 	@Override
@@ -397,5 +470,15 @@ class CombMapMirMature2Value extends MirCombMapGetValueAbs {
 		lsTmpResult.add(seqName[1]);//先放mature miRNA
 		lsTmpResult.add(seqName[0]);//再放pre miRNA
 		lsTmpResult.add(miRNACount.getMiRNAmatureSeq(seqName[0], seqName[1]));
+	}
+	@Override
+	protected Number getExpValue(String condition, Double readsCount) {
+		if (enumExpression == enumExpression.Counts) {
+			return readsCount.intValue();
+		} else {
+			double[] count = mapPrefix2Counts.get(condition);
+			double value = RPKMcomput.getValue(enumExpression, readsCount, count[0], count[1], 0);
+			return value;
+		}
 	}
 }

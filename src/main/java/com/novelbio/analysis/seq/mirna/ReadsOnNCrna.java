@@ -95,5 +95,10 @@ class CombMapNcRNA extends MirCombMapGetValueAbs {
 		lsTmpResult.add(geneID.getSymbol());
 		lsTmpResult.add(geneID.getDescription());
 	}
+
+	@Override
+	protected Integer getExpValue(String condition, Double readsCount) {
+		return readsCount.intValue();
+	}
 	
 }

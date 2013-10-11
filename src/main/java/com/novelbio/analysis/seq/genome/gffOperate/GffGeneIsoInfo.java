@@ -1002,29 +1002,6 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return result;
 	}
 	
-	public boolean add(ExonInfo exonInfo) {
-		exonInfo.setParentListAbs(this);
-		return super.add(exonInfo);
-	}
-	public void add(int index, ExonInfo exonInfo) {
-		exonInfo.setParentListAbs(this);
-		super.add(index, exonInfo);
-	}
-	public boolean addAll(Collection<? extends ExonInfo> colExonInfo) {
-		for (ExonInfo exonInfo : colExonInfo) {
-			exonInfo.setParentListAbs(this);
-		}
-		return super.addAll(colExonInfo);
-	}
-	public boolean addAll(int index, Collection<? extends ExonInfo> colExonInfo) {
-		for (ExonInfo exonInfo : colExonInfo) {
-			exonInfo.setParentListAbs(this);
-		}
-		return super.addAll(index, colExonInfo);
-	}
-	public ExonInfo set(int index, ExonInfo element) {
-		return super.set(index, element);
-	}
 	/**
 	 * 重写equal
 	 * 比较是否为同一个转录本

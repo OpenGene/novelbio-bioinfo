@@ -1,6 +1,7 @@
 package com.novelbio.analysis.seq.rnaseq;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -509,128 +510,51 @@ public class RPKMcomput implements AlignmentRecorder {
 		mapCond2CountsNum.put(currentCondition, currentReadsNumInfo);
 	}
 	
-	/** 返回计算得到的rpm值 */
-	public ArrayList<String[]> getLsTPMs() {
-		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		List<String> lsConditions = ArrayOperate.getArrayListKey(mapCond2CountsNum);
-		lsConditions.add(0, TitleFormatNBC.GeneName.toString());
-		lsConditions.add(1, TitleFormatNBC.GeneType.toString());
-		lsResult.add(lsConditions.toArray(new String[0]));
-		lsConditions.remove(0);
-		lsConditions.remove(0);
-		for (String geneName : mapGeneName2Length.keySet()) {
-			ArrayList<String> lsTmpResult = new ArrayList<String>();
-			lsTmpResult.add(geneName);
-			lsTmpResult.add(mapGeneName2Type.get(geneName).toString());
-			Map<String, double[]> mapCond2Counts = mapGeneName2Cond2ReadsCounts.get(geneName);
-			for (String conditions : lsConditions) {
-				if (mapCond2Counts == null) {
-					lsTmpResult.add(0 + "");
-				} else {
-					double[] readsCounts = mapCond2Counts.get(conditions);
-					if (readsCounts == null) {
-						lsTmpResult.add(0 + "");
-					} else {
-						lsTmpResult.add(readsCounts[0]*1000000/mapCond2CountsNum.get(conditions)[0] + "");
-					}
-				}
-			}
-			lsResult.add(lsTmpResult.toArray(new String[0]));
-		}
-		return lsResult;
-	}
-	/** 返回counts数量，可以拿来给DEseq继续做标准化 */
-	public ArrayList<String[]> getLsCounts() {
-		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		List<String> lsConditions = ArrayOperate.getArrayListKey(mapCond2CountsNum);
-		lsConditions.add(0, TitleFormatNBC.GeneName.toString());
-		lsConditions.add(1, TitleFormatNBC.GeneType.toString());
-		lsResult.add(lsConditions.toArray(new String[0]));
-		lsConditions.remove(0);
-		lsConditions.remove(0);
-		for (String geneName : mapGeneName2Length.keySet()) {
-			ArrayList<String> lsTmpResult = new ArrayList<String>();
-			lsTmpResult.add(geneName);
-			lsTmpResult.add(mapGeneName2Type.get(geneName).toString());
-			Map<String, double[]> mapCond2Counts = mapGeneName2Cond2ReadsCounts.get(geneName);
-			for (String conditions : lsConditions) {
-				if (mapCond2Counts == null) {
-					lsTmpResult.add(0 + "");
-				} else {
-					double[] readsCounts = mapCond2Counts.get(conditions);
-					if (readsCounts == null) {
-						lsTmpResult.add(0 + "");
-					} else {
-						lsTmpResult.add((int)readsCounts[0]+ "");
-					}
-				}
-			}
-			lsResult.add(lsTmpResult.toArray(new String[0]));
-		}
-		return lsResult;
-	}	
 	/**
-	 * 返回计算得到的rpkm值
-	 * 其中allreadscount的单位是百万
-	 * exonlength的单位是kb
+	 * @param enumExpression
+	 * @param colGeneName
+	 * @param lsConditions 按照指定的condition
+	 * @param mapGeneName2Type 每个基因所对应的类型，如果存在则会装到最后的结果中，null表示没这个东西
+	 * @param mapGeneName2Cond2ReadsCounts
+	 * key：基因名<br>
+	 * value：<br>
+	 * key:condiiton<br>
+	 *         value: 0 counts<br>
+	 * @param mapCond2CountsNum
+	 * 样本时期 和 样本reads num信息<br>
+	 * key: 样本时期<br>
+	 *  value: double[2] 0: allReadsNum 1: upQuartile的reads number<br>
+	 *  用来算rpkm
+	 *  @param mapGeneName2Length
+	 *  
+	 *  @return 返回按照 lsConditions顺序的基因表达list
 	 */
-	public ArrayList<String[]> getLsRPKMs() {
-		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		List<String> lsConditions = ArrayOperate.getArrayListKey(mapCond2CountsNum);
-		lsConditions.add(0, TitleFormatNBC.GeneName.toString());
-		lsConditions.add(1, TitleFormatNBC.GeneType.toString());
-		lsResult.add(lsConditions.toArray(new String[0]));
-		lsConditions.remove(0);
-		lsConditions.remove(0);
-		for (String geneName : mapGeneName2Length.keySet()) {
-			ArrayList<String> lsTmpResult = new ArrayList<String>();
+	public static List<String[]> getLsCond2CountsNum(EnumExpression enumExpression, Collection<String> colGeneName,
+			List<String> lsConditions,
+			Map<String, ? extends Object> mapGeneName2Type,
+			Map<String, Map<String, double[]>> mapGeneName2Cond2ReadsCounts,
+			Map<String, double[]> mapCond2CountsNum, Map<String, Integer> mapGeneName2Length) {
+		List<String[]> lsResult = new ArrayList<>();
+		for (String geneName : colGeneName) {
+			List<String> lsTmpResult = new ArrayList<String>();
 			lsTmpResult.add(geneName);
-			lsTmpResult.add(mapGeneName2Type.get(geneName).toString());
-			Map<String, double[]> mapCond2Counts = mapGeneName2Cond2ReadsCounts.get(geneName);
-			for (String conditions : lsConditions) {
-				if (mapCond2Counts == null) {
-					lsTmpResult.add(0 + "");
-				} else {
-					double[] readsCounts = mapCond2Counts.get(conditions);
-					if (readsCounts == null) {
-						lsTmpResult.add(0 + "");
-					} else {
-						lsTmpResult.add(readsCounts[0]*1000000*1000/mapCond2CountsNum.get(conditions)[0]/mapGeneName2Length.get(geneName) + "");
-					}
-				}
+			if (mapGeneName2Type != null) {
+				lsTmpResult.add(mapGeneName2Type.get(geneName).toString());
 			}
-			lsResult.add(lsTmpResult.toArray(new String[0]));
-		}
-		return lsResult;
-	}
-	/**
-	 * 返回用Upper Quartile计算得到的rpkm值
-	 * 其中Upper Quartile的单位是1/100
-	 * exonlength的单位是kb
-	 */
-	public ArrayList<String[]> getLsUQRPKMs() {
-		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		List<String> lsConditions = ArrayOperate.getArrayListKey(mapCond2CountsNum);
-		lsConditions.add(0, TitleFormatNBC.GeneName.toString());
-		lsConditions.add(1, TitleFormatNBC.GeneType.toString());
-		lsResult.add(lsConditions.toArray(new String[0]));
-		lsConditions.remove(0);
-		lsConditions.remove(0);
-		for (String geneName : mapGeneName2Length.keySet()) {
-			ArrayList<String> lsTmpResult = new ArrayList<String>();
-			lsTmpResult.add(geneName);
-			lsTmpResult.add(mapGeneName2Type.get(geneName).toString());
+			
 			Map<String, double[]> mapCond2Counts = mapGeneName2Cond2ReadsCounts.get(geneName);
 			for (String conditions : lsConditions) {
 				if (mapCond2Counts == null) {
 					lsTmpResult.add(0 + "");
+					continue;
+				}
+				double[] readsCounts = mapCond2Counts.get(conditions);
+				if (readsCounts == null) {
+					lsTmpResult.add(0 + "");
 				} else {
-					double[] readsCounts = mapCond2Counts.get(conditions);
-					if (readsCounts == null) {
-						lsTmpResult.add(0 + "");
-					} else {
-						lsTmpResult.add(readsCounts[0]*100*1000/mapCond2CountsNum.get(conditions)[1]/mapGeneName2Length.get(geneName) + "");
-					}
+					double[] allReads2UQreads = mapCond2CountsNum.get(conditions);
+					lsTmpResult.add(getValue(enumExpression, readsCounts[0], allReads2UQreads[0], 
+							allReads2UQreads[1], mapGeneName2Length.get(geneName)) + "");
 				}
 			}
 			lsResult.add(lsTmpResult.toArray(new String[0]));
@@ -638,111 +562,102 @@ public class RPKMcomput implements AlignmentRecorder {
 		return lsResult;
 	}
 	
-	/** 返回当前时期的rpm值 */
-	public ArrayList<String[]> getLsTPMsCurrent() {
-		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		lsResult.add(new String[]{TitleFormatNBC.GeneName.toString(), TitleFormatNBC.GeneType.toString(), currentCondition});
-		for (String geneName : mapGeneName2Length.keySet()) {
-			ArrayList<String> lsTmpResult = new ArrayList<String>();
-			lsTmpResult.add(geneName);
-			lsTmpResult.add(mapGeneName2Type.get(geneName).toString());
-			Map<String, double[]> mapCond2Counts = mapGeneName2Cond2ReadsCounts.get(geneName);
-			if (mapCond2Counts == null) {
-				lsTmpResult.add(0 + "");
-			} else {
-				double[] readsCounts = mapCond2Counts.get(currentCondition);
-				if (readsCounts == null) {
-					lsTmpResult.add(0 + "");
-				} else {
-					lsTmpResult.add(readsCounts[0]*1000000/mapCond2CountsNum.get(currentCondition)[0] + "");
-				}
-			}
-			lsResult.add(lsTmpResult.toArray(new String[0]));
+	/** 计算单个基因的表达值 */
+	public static double getValue(EnumExpression enumExpression, double readsCount, double allReadsNum, double upQuerterNum, int geneLen) {
+		if (enumExpression == EnumExpression.Counts) {
+			return readsCount;
+		} else if (enumExpression == EnumExpression.TPM) {
+			return readsCount*1000000/allReadsNum;
+		} else if (enumExpression == EnumExpression.RPKM) {
+			return readsCount*1000000*1000/allReadsNum/geneLen;
+		} else if (enumExpression == EnumExpression.UQRPKM) {
+			return readsCount*100*1000/upQuerterNum/geneLen;
+		} else if (enumExpression == EnumExpression.UQPM) {
+			return readsCount*10/upQuerterNum;
 		}
+		return 0;
+	}
+	
+	private List<String> getLsConditions() {
+		return ArrayOperate.getArrayListKey(mapCond2CountsNum);
+	}
+	
+	/**
+	 * 返回表达值
+	 * @param enumExpression
+	 * @param condition 指定的时期，null表示返回全体时期
+	 * @return
+	 */
+	private List<String[]> getLsExp(EnumExpression enumExpression, String condition) {
+		List<String[]> lsResult = new ArrayList<String[]>();
+		List<String> lsConditions = null;
+		if (condition == null) {
+			lsConditions = getLsConditions();
+		} else {
+			lsConditions = new ArrayList<>();
+			lsConditions.add(condition);
+		}
+			
+		lsResult = getLsCond2CountsNum(enumExpression, mapGeneName2Length.keySet(),
+				lsConditions, mapGeneName2Type, mapGeneName2Cond2ReadsCounts, mapCond2CountsNum, mapGeneName2Length);
+		lsConditions.add(0, TitleFormatNBC.GeneName.toString());
+		lsConditions.add(1, TitleFormatNBC.GeneType.toString());
+		lsResult.add(lsConditions.toArray(new String[0]));
+		
 		return lsResult;
+	}
+	
+	
+	/** 返回计算得到的rpm值 */
+	public List<String[]> getLsTPMs() {
+		return getLsExp(EnumExpression.TPM, null);
 	}
 	/** 返回counts数量，可以拿来给DEseq继续做标准化 */
-	public ArrayList<String[]> getLsCountsCurrent() {
-		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		lsResult.add(new String[]{TitleFormatNBC.GeneName.toString(), TitleFormatNBC.GeneType.toString(), currentCondition});
-
-		for (String geneName : mapGeneName2Length.keySet()) {
-			ArrayList<String> lsTmpResult = new ArrayList<String>();
-			lsTmpResult.add(geneName);
-			lsTmpResult.add(mapGeneName2Type.get(geneName).toString());
-			Map<String, double[]> mapCond2Counts = mapGeneName2Cond2ReadsCounts.get(geneName);
-			if (mapCond2Counts == null) {
-				lsTmpResult.add(0 + "");
-			} else {
-				double[] readsCounts = mapCond2Counts.get(currentCondition);
-				if (readsCounts == null) {
-					lsTmpResult.add(0 + "");
-				} else {
-					lsTmpResult.add((int)readsCounts[0]+ "");
-				}
-			}
-			
-			lsResult.add(lsTmpResult.toArray(new String[0]));
-		}
-		return lsResult;
-	}
+	public List<String[]> getLsCounts() {
+		return getLsExp(EnumExpression.Counts, null);
+	}	
 	/**
 	 * 返回计算得到的rpkm值
 	 * 其中allreadscount的单位是百万
 	 * exonlength的单位是kb
 	 */
-	public ArrayList<String[]> getLsRPKMsCurrent() {
-		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		lsResult.add(new String[]{TitleFormatNBC.GeneName.toString(), TitleFormatNBC.GeneType.toString(), currentCondition});
-
-		for (String geneName : mapGeneName2Length.keySet()) {
-			ArrayList<String> lsTmpResult = new ArrayList<String>();
-			lsTmpResult.add(geneName);
-			lsTmpResult.add(mapGeneName2Type.get(geneName).toString());
-			Map<String, double[]> mapCond2Counts = mapGeneName2Cond2ReadsCounts.get(geneName);
-			if (mapCond2Counts == null) {
-				lsTmpResult.add(0 + "");
-			} else {
-				double[] readsCounts = mapCond2Counts.get(currentCondition);
-				if (readsCounts == null) {
-					lsTmpResult.add(0 + "");
-				} else {
-					lsTmpResult.add(readsCounts[0]*1000000*1000/mapCond2CountsNum.get(currentCondition)[0]/mapGeneName2Length.get(geneName) + "");
-				}
-			}
-			
-			lsResult.add(lsTmpResult.toArray(new String[0]));
-		}
-		return lsResult;
+	public List<String[]> getLsRPKMs() {
+		return getLsExp(EnumExpression.RPKM, null);
 	}
 	/**
 	 * 返回用Upper Quartile计算得到的rpkm值
 	 * 其中Upper Quartile的单位是1/100
 	 * exonlength的单位是kb
 	 */
-	public ArrayList<String[]> getLsUQRPKMsCurrent() {
-		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		lsResult.add(new String[]{TitleFormatNBC.GeneName.toString(), TitleFormatNBC.GeneType.toString(), currentCondition});
-
-		for (String geneName : mapGeneName2Length.keySet()) {
-			ArrayList<String> lsTmpResult = new ArrayList<String>();
-			lsTmpResult.add(geneName);
-			lsTmpResult.add(mapGeneName2Type.get(geneName).toString());
-			Map<String, double[]> mapCond2Counts = mapGeneName2Cond2ReadsCounts.get(geneName);
-			if (mapCond2Counts == null) {
-				lsTmpResult.add(0 + "");
-			} else {
-				double[] readsCounts = mapCond2Counts.get(currentCondition);
-				if (readsCounts == null) {
-					lsTmpResult.add(0 + "");
-				} else {
-					lsTmpResult.add(readsCounts[0]*100*1000/mapCond2CountsNum.get(currentCondition)[1]/mapGeneName2Length.get(geneName) + "");
-				}
-			}
-			
-			lsResult.add(lsTmpResult.toArray(new String[0]));
-		}
-		return lsResult;
+	public List<String[]> getLsUQRPKMs() {
+		return getLsExp(EnumExpression.UQRPKM, null);
+	}
+	
+	/** 返回当前时期的rpm值 */
+	public List<String[]> getLsTPMsCurrent() {
+		return getLsExp(EnumExpression.TPM, currentCondition);
+	}
+	/** 返回counts数量，可以拿来给DEseq继续做标准化 */
+	public List<String[]> getLsCountsCurrent() {
+		return getLsExp(EnumExpression.Counts, currentCondition);
+	}
+	
+	/**
+	 * 返回计算得到的rpkm值
+	 * 其中allreadscount的单位是百万
+	 * exonlength的单位是kb
+	 */
+	public List<String[]> getLsRPKMsCurrent() {
+		return getLsExp(EnumExpression.RPKM, currentCondition);
+	}
+	
+	/**
+	 * 返回用Upper Quartile计算得到的rpkm值
+	 * 其中Upper Quartile的单位是1/100
+	 * exonlength的单位是kb
+	 */
+	public List<String[]> getLsUQRPKMsCurrent() {
+		return getLsExp(EnumExpression.UQRPKM, currentCondition);
 	}
 	/** 输入文件前缀，把所有结果写入该文件为前缀的文本中 */
 	public void writeToFile(String fileNamePrefix) {
@@ -789,5 +704,9 @@ public class RPKMcomput implements AlignmentRecorder {
 	@Override
 	public Align getReadingRegion() {
 		return null;
+	}
+	
+	public static enum EnumExpression {
+		TPM, RPKM, UQRPKM, UQPM, Counts
 	}
 }

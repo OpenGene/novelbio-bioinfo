@@ -1,15 +1,20 @@
 package com.novelbio.analysis.seq.mirna;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.swing.JOptionPane;
 
 import com.novelbio.analysis.seq.AlignSeq;
+import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
@@ -21,14 +26,19 @@ public class CtrlMiRNApredict {
 	Species species;
 	String outPath;
 	
-	Map<AlignSeq, String> lsSamFile2Prefix;
+	Map<? extends AlignSeq, String> lsSamFile2Prefix;
 	
 	NovelMiRNADeep novelMiRNADeep = new NovelMiRNADeep();
 	SoftWareInfo softWareInfo = new SoftWareInfo();
 	MiRNACount miRNACount = new MiRNACount();
 	Map<String, Map<String, Double>> mapPrefix2MapMature = new LinkedHashMap<>();
+	Map<String, double[]> mapPrefix2CountsMature = new LinkedHashMap<>();
 	Map<String, Map<String, Double>> mapPrefix2MapPre= new LinkedHashMap<>();
-
+	Map<String, double[]> mapPrefix2CountsPre = new LinkedHashMap<>();
+	
+	/** 新miRNA的注释，比对到哪些物种上去 */
+	List<Species> lsBlastTo = new ArrayList<>();
+	
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		if (this.gffChrAbs != null && gffChrAbs != null && this.gffChrAbs.getSpecies().equals(gffChrAbs.getSpecies())) {
 			return;
@@ -39,17 +49,23 @@ public class CtrlMiRNApredict {
 	public void setSpecies(Species species) {
 		this.species = species;
 	}
+	/** 新miRNA的注释，比对到哪些物种上去 */
+	public void setLsSpeciesBlastTo(List<Species> lsBlastTo) {
+		this.lsBlastTo = lsBlastTo;
+	}
 	/** 输出文件夹 */
 	public void setOutPath(String outPath) {
 		this.outPath = FileOperate.addSep(outPath);
 	}
-	public void setLsSamFile2Prefix(Map<AlignSeq, String> lsSamFile2Prefix) {
+	public void setLsSamFile2Prefix(Map<? extends AlignSeq, String> lsSamFile2Prefix) {
 		this.lsSamFile2Prefix = lsSamFile2Prefix;
 	}
 
 	public void runMiRNApredict() {
 		mapPrefix2MapMature.clear();
 		mapPrefix2MapPre.clear();
+		mapPrefix2CountsMature.clear();
+		mapPrefix2CountsPre.clear();
 		
 		if (gffChrAbs == null) {
 			gffChrAbs = new GffChrAbs(species);
@@ -72,16 +88,14 @@ public class CtrlMiRNApredict {
 		novelMiRNADeep.setOutPath(novelMiRNAPathDeep);
 		novelMiRNADeep.predict();
 		
-		for (Entry<AlignSeq, String> seq2Prefix : lsSamFile2Prefix.entrySet()) {
+		calculateExp();
+	}
+	
+	protected void calculateExp() {
+		for (Entry<? extends AlignSeq, String> seq2Prefix : lsSamFile2Prefix.entrySet()) {
 			getMirPredictCount(seq2Prefix.getKey(), seq2Prefix.getValue());
 		}
 	}
-	
-	/** 新miRNA的注释 */
-	private void annoMiRNA() {
-		
-	}
-	
 	
 	private void getMirPredictCount(AlignSeq alignSeq, String prefix) {
 		FastQ fastQ = alignSeq.getFastQ();
@@ -97,31 +111,84 @@ public class CtrlMiRNApredict {
 		miRNAmapPipline.setSample(prefix, fastQ.getReadFileName());
 		miRNAmapPipline.mappingMiRNA();
 		
+		setMiRNACount_And_Anno();
 		miRNACount.setAlignFile(miRNAmapPipline.getOutMiRNAAlignSeq());
-		miRNACount.setMiRNAfile(novelMiRNADeep.getNovelMiRNAhairpin(), novelMiRNADeep.getNovelMiRNAmature());
-		miRNACount.setMiRNAinfo(ListMiRNALocation.TYPE_MIRDEEP, new Species(), novelMiRNADeep.getNovelMiRNAdeepMrdFile());
+
 		String outPathNovel = outPath + prefix + FileOperate.getSepPath();
 		FileOperate.createFolders(outPathNovel);
+		miRNACount.run();
 		miRNACount.writeResultToOut(outPathNovel + "NovelmiRNA");
 		
 		mapPrefix2MapMature.put(prefix, miRNACount.getMapMirMature2Value());
 		mapPrefix2MapPre.put(prefix, miRNACount.getMapMiRNApre2Value());
+		mapPrefix2CountsPre.put(prefix, miRNACount.getCountPre());
+		mapPrefix2CountsMature.put(prefix, miRNACount.getCountMature());
+		
 	}
 	
 	public void writeToFile() {
-		String outFilePre = outPath + "NovelMirPreAll.txt";
-		String outFileMature = outPath + "NovelMirMatureAll.txt";
-		ArrayList<String[]> lsMirPre = miRNACount.combMapMir2Value(mapPrefix2MapPre);
-		ArrayList<String[]> lsMirMature = miRNACount.combMapMir2MatureValue(mapPrefix2MapMature);
-		writeFile(outFilePre, lsMirPre);
-		writeFile(outFileMature, lsMirMature);
+		ArrayList<String[]> lsMirPreCounts = miRNACount.combMapMir2ValueCounts(mapPrefix2MapPre, mapPrefix2CountsPre);
+		ArrayList<String[]> lsMirMatureCounts = miRNACount.combMapMir2MatureValueCounts(mapPrefix2MapMature, mapPrefix2CountsMature);
+		
+		ArrayList<String[]> lsMirPreUQTM = miRNACount.combMapMir2ValueUQPM(mapPrefix2MapPre, mapPrefix2CountsPre);
+		ArrayList<String[]> lsMirMatureUQTM = miRNACount.combMapMir2MatureValueUQPM(mapPrefix2MapMature, mapPrefix2CountsMature);
+//		annoMiRNA(novelMiRNADeep, lsMirMature);
+		writeFile(outPath + "NovelMirPreAll_Counts.txt", lsMirPreCounts);
+		writeFile(outPath + "NovelMirMatureAll_Counts.txt", lsMirMatureCounts);
+		writeFile(outPath + "NovelMirPreAll_UQTPM.txt", lsMirPreUQTM);
+		writeFile(outPath + "NovelMirMatureAll_UQTPM.txt", lsMirMatureUQTM);
 	}
+	
+	private void setMiRNACount_And_Anno() {
+		SeqHash seqHash = new SeqHash(novelMiRNADeep.getNovelMiRNAmature());
+		Set<String> setMiRNAName = new HashSet<>(seqHash.getLsSeqName());
+		seqHash.close();
+		Map<String, String> mapID2Blast = null;
+		MiRNAnovelAnnotaion miRNAnovelAnnotaion = null;
+		if (lsBlastTo != null && lsBlastTo.size() > 0) {
+			miRNAnovelAnnotaion = new MiRNAnovelAnnotaion();
+			miRNAnovelAnnotaion.setMiRNAthis(novelMiRNADeep.getNovelMiRNAmature());
+			miRNAnovelAnnotaion.setLsMiRNAblastTo(lsBlastTo);
+			miRNAnovelAnnotaion.annotation();
+			mapID2Blast = miRNAnovelAnnotaion.getMapID2Blast();
+		}
 
+		ListMiRNAdeep listMiRNAdeep = new ListMiRNAdeep();
+		listMiRNAdeep.setBlastMap(mapID2Blast);
+		listMiRNAdeep.setSetMiRNApredict(setMiRNAName);
+		listMiRNAdeep.ReadGffarray(novelMiRNADeep.getNovelMiRNAdeepMrdFile());
+		
+		miRNACount.setListMiRNALocation(listMiRNAdeep);
+		if (lsBlastTo != null && lsBlastTo.size() > 0) {
+			miRNACount.setMiRNAfile(novelMiRNADeep.getNovelMiRNAhairpin(), miRNAnovelAnnotaion.getMiRNAmatureCope());		
+		} else {
+			miRNACount.setMiRNAfile(novelMiRNADeep.getNovelMiRNAhairpin(), novelMiRNADeep.getNovelMiRNAmature());		
+		}
+	}
+	
+	/** 新miRNA添上blast到的miRNA名字 */
+	private void annoMiRNA(NovelMiRNADeep novelMiRNADeep, List<String[]> lsMirMature) {
+		if (lsBlastTo == null || lsBlastTo.size() == 0) return;
+		
+		MiRNAnovelAnnotaion miRNAnovelAnnotaion = new MiRNAnovelAnnotaion();
+		miRNAnovelAnnotaion.setMiRNAthis(novelMiRNADeep.getNovelMiRNAmature());
+		miRNAnovelAnnotaion.setLsMiRNAblastTo(lsBlastTo);
+		miRNAnovelAnnotaion.annotation();
+		Map<String, String> mapID2Blast = miRNAnovelAnnotaion.getMapID2Blast();
+		for (String[] strings : lsMirMature) {
+			String miRNAblast = mapID2Blast.get(strings[0]);
+			if (miRNAblast != null) {
+				strings[0] += SepSign.SEP_INFO + miRNAblast;
+			}
+		}
+	}
+	
 	private void writeFile(String fileName, ArrayList<String[]> lsInfo) {
 		if (lsInfo == null || lsInfo.size() == 0) {
 			return;
 		}
 		TxtReadandWrite txtWrite = new TxtReadandWrite(fileName, true);
 		txtWrite.ExcelWrite(lsInfo);
+		txtWrite.close();
 	}
 }
