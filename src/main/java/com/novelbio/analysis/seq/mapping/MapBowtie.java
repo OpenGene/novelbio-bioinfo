@@ -320,7 +320,8 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 			lsCmd.add("--very-sensitive-local");
 		} else {
 			lsCmd.add("--sensitive-local");
-		}		
+		}
+		lsCmd.add("--mm");
 		lsCmd.add(getOffset());
 		ArrayOperate.addArrayToList(lsCmd, getMappingNum());
 		addListStr(lsCmd, getMapLibrary());

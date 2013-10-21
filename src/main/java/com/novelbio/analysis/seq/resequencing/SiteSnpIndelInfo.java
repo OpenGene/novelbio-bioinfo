@@ -229,7 +229,7 @@ public abstract class SiteSnpIndelInfo {
 	public SeqFasta getThisAAnr() {
 		String seq = thisSeq;
 		if ( refSeqIntactAA.isCis5to3() != null && !refSeqIntactAA.isCis5to3()) {
-			seq = SeqFasta.reservecom(seq);
+			seq = SeqFasta.reverseComplement(seq);
 		}
 		if (refSiteSnpIndelParent.getGffIso() == null)
 			return new SeqFasta();

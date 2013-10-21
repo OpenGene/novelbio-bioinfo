@@ -197,7 +197,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		   else if (ss[2].equals("CDS")) {
 			   addCDS(thisGeneIDandName, thisRnaIDandName, ss);
 		   }
-		   else if (ss[2].equals("STS") || ss[2].contains("gene_segment") || ss[2].contains("contig")) {
+		   else if (ss[2].equals("STS") || ss[2].contains("gene_segment") || ss[2].contains("contig") || ss[2].contains("match")) {
 			   continue;
 		   } else {
 			   logger.debug("出现未知exon：" +  ArrayOperate.cmbString(ss, "\t"));
@@ -278,22 +278,19 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
     * 0: rnaID<br>
     * 1: rnaName
     */
-   private String[]  addMRNA(String[] lastGeneIDandName, String[] ss) {
+   private String[] addMRNA(String[] lastGeneIDandName, String[] ss) {
 	   String rnaID = ss[0] + patID.getPatFirst(ss[8]);
 	   String rnaName = add_MapRnaID2RnaName_And_MapRnaID2GeneID(lastGeneIDandName, rnaID, ss);
 	   GffDetailGene gffDetailGene = getGffDetailRnaID(rnaID);
 	   
-	   String[] mRNAname = getMrnaName(rnaName, ss);
+	  GeneType mRNAtype = getMrnaName(ss);
 	   try {
-		   GeneType geneType = GeneType.getGeneType(mRNAname[1]);
-		   GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.addsplitlist(mRNAname[0],gffDetailGene.getNameSingle(), geneType, ss[6].equals("+") || ss[6].equals("."));//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
+		   GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.addsplitlist(rnaName,gffDetailGene.getNameSingle(), mRNAtype, ss[6].equals("+") || ss[6].equals("."));//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
 		   mapRnaID2LsIso.put(rnaID, gffGeneIsoInfo);
 		   ExonInfo exonInfo = new ExonInfo(true, Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
 		   mapRnaID2LsIsoLocInfo.put(rnaID, exonInfo);
 	   } catch (Exception e) {
-//		   gffDetailGene = getGffDetailRnaID(rnaID);
-//		   gffDetailGene.addsplitlist(mRNAname[0], mapMRNA2GeneType.get(mRNAname[1]));//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
-		   logger.error("错误，需要检查：" + mRNAname[0] + " " + mRNAname[1]);
+		   logger.error("error, need check: " + rnaName, e);
 	   }
 	   return new String[]{rnaID, rnaName};
 	   
@@ -426,32 +423,35 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
     * 0: geneName
     * 1: NCBI读取的type
     */
-   private String[] getMrnaName(String thisMRNAname, String[] content) {
-	   String[] result = new String[2];
-	   result[0] = thisMRNAname;
-	   result[1] = content[2];//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
-	   return result;
-//	   
-//	   String mRNAname = patmRNAName.getPatFirst(content[8]);//mRNApattern.matcher(content);
-//	   if (mRNAname == null) {
-//		   mRNAname = thisMRNAname;
-//	   }
-//	   if(mRNAname != null) {
-//		   result[0] = mRNAname;
-//		   result[1] = content[2];//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
-//	   }
-//	   else {
-//		   try {
-//			   String geneID = patGeneID.getPatFirst(content[8]);
-//			   GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, geneID, taxID);
-//			   result[0] = copedID.getSymbol();//这里有问题
-//			   result[1] = content[2];//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
-//		   } catch (Exception e) {
-//			   System.out.println("GffHashPlantGeneError: 文件  "+getGffFilename()+"  在本行可能没有指定的基因ID  " +content);
-//			   return null;
-//		   }
-//	   }
-//	   return result;
+   private GeneType getMrnaName(String[] content) {
+	   String result = content[2];//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
+	   Map<String, String> mapID2value = new HashMap<>();
+	   for (String string : content[8].split(";")) {
+		   String[] info = string.trim().split("=");
+		   mapID2value.put(info[0], info[1]);
+	   }
+	   String gbkey = mapID2value.get("gbkey");
+	   String ncRNAclass = null;
+	   if (gbkey.equals("ncRNA")) {
+		   ncRNAclass = mapID2value.get("ncrna_class");
+	   } else if (gbkey.equals("precursor_RNA")) {
+		   String product = mapID2value.get("product");
+		   if (product != null && product.contains("microRNA")) {
+			   gbkey = GeneType.Precursor_miRNA.toString();
+		   }
+	   }
+	   
+	   if (ncRNAclass != null) {
+		   result = ncRNAclass;
+	   } else if (gbkey != null) {
+		   result = gbkey;
+	   }
+	   
+	   GeneType geneType = GeneType.getGeneType(result);
+	   if (geneType == null) {
+		   logger.error("UnKnown RNA Type: please check: " + ArrayOperate.cmbString(content, "\t"));
+	   }
+	   return geneType;
    }
    /**
     * 设定taxID

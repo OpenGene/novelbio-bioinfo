@@ -2,15 +2,50 @@ package com.novelbio.database.model.modgeneid;
 
 import java.util.HashMap;
 
-import org.springframework.context.expression.MapAccessor;
-
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-
 public enum GeneType {
-	 mRNA, miRNA, PSEU, mRNA_TE,
-	 tRNA, snoRNA, snRNA,
-	 rRNA, ncRNA, miscRNA;
+	 mRNA,
+	 PSEU, 
+	 mRNA_TE,
+	 miRNA,  
+	 Precursor_RNA, 
+	 Precursor_miRNA,
+	 tRNA, 
+	 snoRNA, 
+	 snRNA,
+	 /** small cytoplasmic RNA; any one of several small cytoplasmic RNA molecules present in 
+	  * the cytoplasm and (sometimes) nucleus of a eukaryote; */
+	 scRNA,
+	 rRNA, 
+	 /**
+	  * 
+	  * Miscellaneous RNA或MiscRNA，Misc RNA并不仅指小RNA分子，数据库中也能查到几千个bp的MiscRNA。
+	  * MiscRNA含包括编码基因和非编码基因，正如其名Miscellaneous。
+	  * 按entrez，是一些尚未进行基因数据分类的RNA，或不确定其编码方式。
+	  * <p>
+	  * miscrna (misc_rna, miscellaneous RNA) is assigned to any gene that encodes an RNA product not included in the other specifics. 
+	  * The genetype other property is applied to loci of known type, but a specific category has not yet been applied in the Entrezgene data model (i.e.named fragile sites). 
+	  * The genetype unknown property is applied to probable genes for which the type is still under review. This category is frequently used when the defining sequence has uncertain coding propensity.
+	  * http://www.ncbi.nlm.nih.gov/books/NBK3841/
+	  */
+	 miscRNA,
+	 ncRNA, 
+	 /** mRNA的反义链上的ncRNA */
+	 antisense_RNA, 
+	 /** 端粒RNA */
+	 telomerase_RNA,
+	 /** RNase_P_RNA
+	  * RNA component of Ribonuclease P (RNase P), a ubiquitous endoribonuclease.
+	  */
+	 RNase_P_RNA,
 	 
+	 /**
+	  * RNA molecule essential for the catalytic activity of RNase MRP, an enzymatically
+	  *  active ribonucleoprotein with two distinct roles in eukaryotes. In mitochondria 
+	  *  it plays a direct role in the initiation of mitochondrial DNA replication, while in 
+	  *  the nucleus it is involved in precursor rRNA processing.
+	  */
+	 RNase_MRP_RNA
+	 ;
 	 static HashMap<String, GeneType> mapMRNA2GeneType = new HashMap<String, GeneType>();
 	/**
 	 * 设定mRNA和gene的类似名，在gff文件里面出现的
@@ -25,6 +60,14 @@ public enum GeneType {
 			mapMRNA2GeneType.put("snoRNA".toLowerCase(), snoRNA);
 			mapMRNA2GeneType.put("snRNA".toLowerCase(), snRNA);			
 			mapMRNA2GeneType.put("ncRNA".toLowerCase(), ncRNA);
+			mapMRNA2GeneType.put("primary_transcript".toLowerCase(), ncRNA);
+			mapMRNA2GeneType.put("precursor_RNA".toLowerCase(), Precursor_RNA);
+			mapMRNA2GeneType.put("Precursor_miRNA".toLowerCase(), Precursor_miRNA);
+			mapMRNA2GeneType.put("antisense_RNA".toLowerCase(), antisense_RNA);
+			mapMRNA2GeneType.put("telomerase_RNA".toLowerCase(), telomerase_RNA);
+			mapMRNA2GeneType.put("RNase_P_RNA".toLowerCase(), RNase_P_RNA);
+			mapMRNA2GeneType.put("RNase_MRP_RNA".toLowerCase(), RNase_MRP_RNA);
+			mapMRNA2GeneType.put("scRNA".toLowerCase(), scRNA);
 			
 			mapMRNA2GeneType.put("pseudogene".toLowerCase(),PSEU);
 			mapMRNA2GeneType.put("pseudogenic_transcript".toLowerCase(), PSEU);

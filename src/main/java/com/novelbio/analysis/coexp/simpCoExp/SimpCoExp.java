@@ -4,8 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.math.MathException;
 import org.apache.commons.math.stat.correlation.PearsonsCorrelation;
@@ -21,13 +25,12 @@ public class SimpCoExp {
 	private static Logger logger = Logger.getLogger(SimpCoExp.class);
 	/**
 	 * 
-	 * @param inFile 读取excel文件
-	 * @param columnID 读取哪几列
+	 * @param inFile
+	 * @param columnID
 	 * @param taxID
-	 * @param pearsonCutOff
 	 * @param pvalueCutOff
 	 * @param outFile
-	 * @param filterNoDB 
+	 * @param filterNoDB
 	 * @throws Exception
 	 */
 	public static void getCoExpInfo(String inFile,int[] columnID,int taxID,double pvalueCutOff,String outFile, boolean filterNoDB) throws Exception
@@ -181,7 +184,6 @@ public class SimpCoExp {
 	private static ArrayList<String[]> calCoExp(List<CoexpGenInfo> lsCoexpGenInfos , double pvalueFilter,boolean filterNoDB) {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		CoexPair.setFirst(lsCoexpGenInfos);
-		int k = 0;
 		for (int i = 0; i < lsCoexpGenInfos.size() -1 ; i++) {
 			for (int j = i+1 ; j < lsCoexpGenInfos.size(); j++) {
 				CoexPair coexPair = new CoexPair(lsCoexpGenInfos.get(i), lsCoexpGenInfos.get(j));
@@ -335,105 +337,5 @@ public class SimpCoExp {
 		return obj;
 	}
 	
-	
-}
-
-/**
- * 仅比较两个对象的accID是否一致
- */
-class CoexpGenInfo
-{
-	GeneID copedID;
-	double[] expValue;
-	
-	public CoexpGenInfo(String accID, int taxID,double[] expValue) {
-		copedID = new GeneID(accID, taxID, false);
-		this.expValue = expValue;
-	}
-	
-	public GeneID getCopedID() {
-		return copedID;
-	}
-	
-	public String getGeneSymbol() {
-		return copedID.getSymbol();
-	}
-	/**
-	 * 获得表达值
-	 * @return
-	 */
-	public double[] getExpValue() {
-		return expValue;
-	}
-	
-	/**
-	 * 仅比较两个对象的accID是否一致
-	 */
-	@Override
-	public boolean equals(Object obj) {
-
-		if (this == obj) return true;
-		
-		if (obj == null) return false;
-		
-		if (getClass() != obj.getClass()) return false;
-		
-		CoexpGenInfo otherObj = (CoexpGenInfo)obj;
-		return copedID.getAccID().equals(otherObj.getCopedID().getAccID());
-	}
-}
-/**
- * 首先用setFirst()设定coexp的情况和数据矩阵
- * @author zong0jie
- *
- */
-class CoexPair {
-	private static Logger logger = Logger.getLogger(SimpCoExp.class);
-	static List<CoexpGenInfo> lsGenInfos = null;
-	static double[][] exp = null;
-	static double[][] corInfo = null;
-	static double[][] corPvalue = null;
-
-	CoexpGenInfo coexpGenInfo1 = null;
-	CoexpGenInfo coexpGenInfo2 = null;
-	double corValue = -1;
-	double Pvalue = -1;
-	
-	public double getCorValue() {
-		return corValue;
-	}
-	public double getPvalue() {
-		return Pvalue;
-	}
-	/**
-	 * 首先用setFirst()设定coexp的情况和数据矩阵
-	 * @param coexpGenInfo1
-	 * @param coexpGenInfo2
-	 */
-	public CoexPair(CoexpGenInfo coexpGenInfo1, CoexpGenInfo coexpGenInfo2) {
-		this.coexpGenInfo1 = coexpGenInfo1;
-		this.coexpGenInfo2 = coexpGenInfo2;
-		int i = lsGenInfos.indexOf(coexpGenInfo1);
-		int j = lsGenInfos.indexOf(coexpGenInfo2);
-		corValue = corInfo[i][j];
-		Pvalue = corPvalue[i][j];
-	}
-	public static void setFirst(List<CoexpGenInfo> mylsGenInfos) {
-		lsGenInfos = mylsGenInfos;
-		exp = new double[lsGenInfos.get(0).getExpValue().length][lsGenInfos.size()];
-		for (int i = 0; i < lsGenInfos.size(); i++) {
-			for (int j = 0; j < lsGenInfos.get(0).getExpValue().length ; j++) {
-				exp[j][i] = lsGenInfos.get(i).getExpValue()[j];
-			}
-		}
-		PearsonsCorrelation pearson = new PearsonsCorrelation(exp);
-		corInfo = pearson.getCorrelationMatrix().getData();
-		try {
-			corPvalue = pearson.getCorrelationPValues().getData();
-		} catch (MathException e) {
-			logger.error("pearson 系数计算错误" + e.toString());
-			e.printStackTrace();
-		}
-	}
 	
 }

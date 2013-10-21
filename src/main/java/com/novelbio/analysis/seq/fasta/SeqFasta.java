@@ -160,15 +160,19 @@ public class SeqFasta implements Cloneable {
 	 * 出错则返回null;
 	 */
 	private String reservecomplement(String sequence) {
-		String[] revSeq = CodeInfo.reservecomInfo(sequence);
+		String[] revSeq = CodeInfo.reverseComplement(sequence);
 		if (revSeq[1] != null) {
 			logger.error(SeqName + " 含有未知碱基 " + revSeq[1]);
 		}
 		return revSeq[0];
 	}
 	/** 输入序列，互补对照表 获得反向互补序列 */
-	public static String reservecom(String sequence) {
-		return CodeInfo.reservecom(sequence);
+	public static String reverseComplement(String sequence) {
+		return CodeInfo.revComplement(sequence);
+	}
+	/** 输入序列，互补对照表 获得反向序列，一般用来颠倒FastQ文件的quality序列 */
+	public static String reverse(String sequence) {
+		return CodeInfo.reverse(sequence);
 	}
 	/**
 	 * 输入序列，互补对照表 获得反向互补序列
@@ -290,7 +294,7 @@ public class SeqFasta implements Cloneable {
 		}
 		char[] nrChar = null;
 		if (!cis) {
-			nrChar = reservecom(SeqSequence).toCharArray();
+			nrChar = reverseComplement(SeqSequence).toCharArray();
 		}
 		else {
 			nrChar = SeqSequence.toCharArray();

@@ -6,6 +6,7 @@ import java.util.List;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -230,6 +231,11 @@ public class MapSplice implements MapRNA {
 	public SoftWare getBowtieVersion() {
 		return SoftWare.bowtie;
 	}
-
-
+	
+	/** 二次mapping，用bowtie2做最敏感的mapping */
+	public void mapSecond() {
+		SamFile samFile = null;//获得mapping好的bam文件
+		String outFastQfile = FileOperate.changeFileSuffix(samFile.getFileName(), "_Unmapped", "fq.gz");
+		samFile.getUnMappedReads(false, outFastQfile);
+	}
 }

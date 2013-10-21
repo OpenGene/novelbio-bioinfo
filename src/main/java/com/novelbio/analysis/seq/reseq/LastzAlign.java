@@ -147,7 +147,7 @@ public class LastzAlign {
 	public ModifyInfo getModifyInfo(String seq) {
 		
 		if (cis5to3 != null && !cis5to3) {
-			seq = SeqFasta.reservecom(seq);
+			seq = SeqFasta.reverseComplement(seq);
 		}
 		if (!booStartConfirm || !booEndConfirm) {
 			seq = seq.substring(startSeq2-1,endSeq2);

@@ -292,7 +292,7 @@ class CodeInfo {
 	 * 0：seq 出错则返回null
 	 * 1：如果出错，记录出错位置
 	 */
-	static String[] reservecomInfo(String sequence) {
+	static String[] reverseComplement(String sequence) {
 		String[] result = new String[2];
 		CodeInfo.getCompMap();
 		StringBuilder recomseq = new StringBuilder();
@@ -304,17 +304,30 @@ class CodeInfo {
 				result[1] = i + "";
 				base = sequence.charAt(i);
 			}
-			recomseq.append(compmap.get(sequence.charAt(i)));
+			recomseq.append(base);
 		}
 		result[0] = recomseq.toString();
 		return result;
 	}
-	
+	/**
+	 * @param sequence
+	 * @return
+	 * 0：seq 出错则返回null
+	 * 1：如果出错，记录出错位置
+	 */
+	public static String reverse(String sequence) {
+		StringBuilder reseq = new StringBuilder();
+		int length = sequence.length();
+		for (int i = length - 1; i >= 0; i--) {
+			reseq.append(sequence.charAt(i));
+		}
+		return reseq.toString();
+	}
 	/**
 	 * 输入序列，互补对照表 获得反向互补序列
 	 */
-	public static String reservecom(String sequence) {
-		String[] revSeq = reservecomInfo(sequence);
+	public static String revComplement(String sequence) {
+		String[] revSeq = reverseComplement(sequence);
 		return revSeq[0];
 	}
 	

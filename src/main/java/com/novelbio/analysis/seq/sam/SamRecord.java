@@ -252,14 +252,24 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 			return false;
 		}
 	}
+	public String getReadString() {
+		return samRecord.getReadString();
+	}
 	/**
 	 * 返回第一个记载的bedrecord 没有mapping上就返回null
 	 * */
 	public FastQRecord toFastQRecord() {
 		FastQRecord fastQRecord = new FastQRecord();
-		fastQRecord.setFastaQuality(samRecord.getBaseQualityString());
 		fastQRecord.setName(getName());
-		fastQRecord.setSeq(samRecord.getReadString());
+		if (isMapped() && !isCis5to3()) {
+			//TODO 确定到底对不对
+			fastQRecord.setSeq(SeqFasta.reverseComplement(samRecord.getReadString()));
+			fastQRecord.setFastaQuality(SeqFasta.reverse(samRecord.getBaseQualityString()));
+		} else {
+			fastQRecord.setSeq(samRecord.getReadString());
+			fastQRecord.setFastaQuality(samRecord.getBaseQualityString());
+		}
+		
 		return fastQRecord;
 	}
 	/**
