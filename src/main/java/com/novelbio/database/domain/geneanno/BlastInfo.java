@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.xpath.operations.Bool;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
@@ -48,7 +47,10 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	protected int queryIDtype;
 	protected int subjectTax;
 	private int subjectIDtype;
-
+	
+	@Indexed
+	private BlastFileInfo blastFileInfo;
+	
 	@Transient
 	GeneID geneIDS = null;
 	
@@ -93,18 +95,18 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	
 	/**
 	 * 用 <b>-m8</b> 参数跑出来的Blast程序跑出来的结果
+	 * @param queryDB 是否读取数据库并初始化
 	 * @param taxIDQ queryTaxID
-	 * @param isGeneIDQ queryID是否为accID，一般都是false
+	 * @param isAccIDQ queryID是否为accID，一般都是false
 	 * @param taxIDS subjectTaxID
-	 * @param isGeneIDS subjectID是否为accID，一般都是false
+	 * @param isAccIDS subjectID是否为accID，一般都是false
 	 * @param blastStr blast的具体某一行的内容
-	 * @param isBlastIDtype 如果subjecdt是accID，具体的accID是否类似 blast的结果，如：dbj|AK240418.1|，那么获得AK240418，一般都是false
 	 */
-	public BlastInfo(boolean queryDB, int taxIDQ, boolean isGeneIDQ, int taxIDS, boolean isGeneIDS, String blastStr) {
+	public BlastInfo(boolean queryDB, int taxIDQ, boolean isAccIDQ, int taxIDS, boolean isAccIDS, String blastStr) {
 		setDate();
 		String[] blastInfo = blastStr.split("\t");
 		if (queryDB) {
-			query(taxIDQ, isGeneIDQ, taxIDS, isGeneIDS, blastInfo);
+			query(taxIDQ, isAccIDQ, taxIDS, isAccIDS, blastInfo);
 		} else {
 			queryID = GeneID.removeDot(blastInfo[0]);
 			if (blastInfo[1].contains("|")) {
@@ -122,9 +124,9 @@ public class BlastInfo implements Comparable<BlastInfo> {
 		this.score = Double.parseDouble(blastInfo[11].trim());
 	}
 	
-	private void query(int taxIDQ, boolean isGeneIDQ, int taxIDS, boolean isGeneIDS, String[] blastInfo) {
+	private void query(int taxIDQ, boolean isAccIDQ, int taxIDS, boolean isAccIDS, String[] blastInfo) {
 		GeneID geneIDQ;
-		if (!isGeneIDQ) {
+		if (!isAccIDQ) {
 			geneIDQ = new GeneID(blastInfo[0], taxIDQ);
 		} else {
 			geneIDQ = new GeneID(GeneID.IDTYPE_GENEID, blastInfo[0], taxIDQ);
@@ -133,7 +135,7 @@ public class BlastInfo implements Comparable<BlastInfo> {
 			}
 		}
 		
-		if (!isGeneIDS) {
+		if (!isAccIDS) {
 			geneIDS = new GeneID(blastInfo[1], taxIDS, blastInfo[1].contains("|"));
 		} else {
 			geneIDS = new GeneID(GeneID.IDTYPE_GENEID, blastInfo[1], taxIDS);
@@ -152,11 +154,10 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	}
 	
 	/**
-	 * 
 	 * 仅仅获得geneIDQ的geneUniID, taxID ,IDtype
 	 * @param queryID
 	 * @param queryTax
-	 * @param queryIDtype
+	 * @param queryIDtype {@link GeneID#IDTYPE_ACCID} 等
 	 */
 	public void setGeneIDQ(String queryID, int queryTax, int queryIDtype) {
 		this.queryID = queryID;
@@ -189,6 +190,10 @@ public class BlastInfo implements Comparable<BlastInfo> {
 		return geneIDS;
 	}
 	
+	public void setBlastFileInfo(BlastFileInfo blastFileInfo) {
+		this.blastFileInfo = blastFileInfo;
+	}
+	
 	/**
 	 * 两个一起设定比较方便
 	 * @param evalue
@@ -219,7 +224,9 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	public String getSubjectID() {
 		return this.subjectID;
 	}
-
+	public BlastFileInfo getBlastFileInfo() {
+		return blastFileInfo;
+	}
 	/**
 	 * 获得Blast搜索到的序列的物种
 	 */
@@ -259,7 +266,7 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	public double getScore() {
 		return score;
 	}
-
+	
 	/**
 	 * 按照相似度排序
 	 * -1 表示更可信

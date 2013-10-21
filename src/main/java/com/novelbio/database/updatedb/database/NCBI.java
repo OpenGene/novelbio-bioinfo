@@ -285,7 +285,7 @@ class ImpGeneRef2UniID extends ImportPerLine {
  * @param content
  */
 class ImpGene2Info extends ImportPerLine {
-	ManageDBInfo manageDBInfo = new ManageDBInfo();
+	ManageDBInfo manageDBInfo = ManageDBInfo.getInstance();
 	@Override
 	protected boolean impPerLine(String content) {
 		String[] ss = content.split("\t");

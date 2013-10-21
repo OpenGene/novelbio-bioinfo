@@ -107,7 +107,7 @@ public class Go2Term implements Cloneable {
 	 * @return
 	 */
 	private HashSet<Go2Term> getParentChild(Map<String, GORelation> mapParentChildGO2Relation) {
-		ManageGo2Term manageGo2Term = new ManageGo2Term();
+		ManageGo2Term manageGo2Term = ManageGo2Term.getInstance();
 		HashSet<Go2Term> hashResult = new HashSet<Go2Term>();
 		if (mapParentChildGO2Relation == null) {
 			return hashResult;

@@ -17,22 +17,20 @@ public class ManageDBInfo {
 	@Autowired
 	RepoDBinfo repoDBinfo;
 		
-	public ManageDBInfo() {
+	private ManageDBInfo() {
 		repoDBinfo = (RepoDBinfo)SpringFactory.getFactory().getBean("repoDBinfo");
 		fillMap();
 	}
 	
 	private void fillMap() {
-		synchronized (lock) {
-			if (mapDBid2DBinfo != null) {
-				return;
-			}
-			mapDBid2DBinfo = new ConcurrentHashMap<String, DBInfo>();
-			mapDBName2DBinfo = new ConcurrentHashMap<String, DBInfo>();
-			for (DBInfo dbInfo : repoDBinfo.findAll()) {
-				mapDBid2DBinfo.put(dbInfo.getDbInfoID(), dbInfo);
-				mapDBName2DBinfo.put(dbInfo.getDbNameLowcase(), dbInfo);
-			}
+		if (mapDBid2DBinfo != null) {
+			return;
+		}
+		mapDBid2DBinfo = new ConcurrentHashMap<String, DBInfo>();
+		mapDBName2DBinfo = new ConcurrentHashMap<String, DBInfo>();
+		for (DBInfo dbInfo : repoDBinfo.findAll()) {
+			mapDBid2DBinfo.put(dbInfo.getDbInfoID(), dbInfo);
+			mapDBName2DBinfo.put(dbInfo.getDbNameLowcase(), dbInfo);
 		}
 	}
 	/**
@@ -76,5 +74,11 @@ public class ManageDBInfo {
 		}
 	}
 	
+	static class ManageHolder {
+		static ManageDBInfo manageDBInfo = new ManageDBInfo();
+	}
 	
+	public static ManageDBInfo getInstance() {
+		return ManageHolder.manageDBInfo;
+	}
 }

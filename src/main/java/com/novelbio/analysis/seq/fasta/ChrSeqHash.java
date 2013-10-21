@@ -71,10 +71,10 @@ public class ChrSeqHash extends SeqHashAbs {
 	protected void setChrFile() throws Exception {
 		String indexFile = null;
 		if (FileOperate.isFileExist(getChrIndexFileName()) &&
-				FileOperate.getLastModifyTime(getChrIndexFileName()) > FileOperate.getLastModifyTime(chrFile)) {
+				FileOperate.getTimeLastModify(getChrIndexFileName()) > FileOperate.getTimeLastModify(chrFile)) {
 			indexFile = getChrIndexFileName();
 		} else if (FileOperate.isFileExist(getChrIndexFileNameFaidx()) &&
-				FileOperate.getLastModifyTime(getChrIndexFileNameFaidx()) > FileOperate.getLastModifyTime(chrFile)) {
+				FileOperate.getTimeLastModify(getChrIndexFileNameFaidx()) > FileOperate.getTimeLastModify(chrFile)) {
 			indexFile = getChrIndexFileNameFaidx();
 		} else {
 			createIndex(chrFile, getChrIndexFileName());

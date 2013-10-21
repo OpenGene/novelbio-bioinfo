@@ -35,9 +35,9 @@ public abstract class AGene2Go {
 	private Set<String> setDB = new HashSet<String>();
 	
 	@Transient
-	ManageGo2Term manageGo2Term = new ManageGo2Term();
+	ManageGo2Term manageGo2Term = ManageGo2Term.getInstance();
 	@Transient
-	ManageDBInfo manageDBInfo = new ManageDBInfo();
+	ManageDBInfo manageDBInfo = ManageDBInfo.getInstance();
 	@Transient
 	Go2Term go2Term;
 	public abstract String getGeneUniId();

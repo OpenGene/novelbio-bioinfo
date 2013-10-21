@@ -25,23 +25,21 @@ public class ManageGo2Term {
 	@Autowired
 	private RepoGo2Term repoGo2Term;
 
-	public ManageGo2Term() {
+	private ManageGo2Term() {
 		repoGo2Term = (RepoGo2Term) SpringFactory.getFactory().getBean("repoGo2Term");
 		fillMap();
 	}
 	
 	private void fillMap() {
-		synchronized (lock) {
-			if (mapGoIDQuery2GOTerm.size() > 0) {
-				return;
-			}
-			for (Go2Term go2Term : repoGo2Term.findAll()) {
-				for (String goID : go2Term.getGoIDQuery()) {
-					mapGoIDQuery2GOTerm.put(goID.toUpperCase(), go2Term);
-				}
-			}
-			logger.info(this.getClass().getName() + "finish fill map");
+		if (mapGoIDQuery2GOTerm.size() > 0) {
+			return;
 		}
+		for (Go2Term go2Term : repoGo2Term.findAll()) {
+			for (String goID : go2Term.getGoIDQuery()) {
+				mapGoIDQuery2GOTerm.put(goID.toUpperCase(), go2Term);
+			}
+		}
+		logger.info(this.getClass().getName() + "finish fill map");
 	}
 	/** 全部读入内存后，hash访问。第一次速度慢，后面效率很高 */
 	public Go2Term queryGo2Term(String goID) {
@@ -49,43 +47,46 @@ public class ManageGo2Term {
 //		return repoGo2Term.findByQueryGoID(goID);
 	}
 	
+	public void saveGo2Term(Go2Term go2Term) {
+		try {
+			saveGo2TermExp(go2Term);
+		} catch (Exception e) {
+			logger.error("save GOterm error", e);
+		}
+	}
+	
 	/**
 	 * 升级，先在map里面找，找到相同的就不升级，没找到才升级
 	 * @param go2Term
 	 */
-	public void saveGo2Term(Go2Term go2Term) {
-		synchronized (lock) {
-			boolean update = false;
-			Go2Term go2TermS = queryGo2Term(go2Term.getGoID());
-			if (go2TermS == null) {
-				go2TermS = go2Term;
-				update = true;
-			} else if (go2TermS.addInfo(go2Term)) {
-				update = true;
+	private void saveGo2TermExp(Go2Term go2Term) throws Exception {
+		boolean update = false;
+		Go2Term go2TermS = queryGo2Term(go2Term.getGoID());
+		if (go2TermS == null) {
+			go2TermS = go2Term;
+			update = true;
+		} else if (go2TermS.addInfo(go2Term)) {
+			update = true;
+		}
+
+		if (update) {
+			for (String goID : go2TermS.getGoIDQuery()) {
+				mapGoIDQuery2GOTerm.put(goID.toUpperCase(), go2TermS);
 			}
-			
-			if (update) {
-				for (String goID : go2TermS.getGoIDQuery()) {
-					mapGoIDQuery2GOTerm.put(goID.toUpperCase(), go2TermS);
-				}
-				try {
-					repoGo2Term.save(go2TermS);
-				} catch (Exception e) {
-					try {
-						Thread.sleep(100);
-					} catch (InterruptedException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					try {
-						repoGo2Term.save(go2TermS);
-					} catch (Exception e2) {
-						e2.printStackTrace();
-					}
-					
-				}
+			try {
+				repoGo2Term.save(go2TermS);
+			} catch (Exception e) {
+				Thread.sleep(100);
+				repoGo2Term.save(go2TermS);
 			}
 		}
 	}
 	
+	static class ManageHolder {
+		static ManageGo2Term manageGo2Term = new ManageGo2Term();
+	}
+	
+	public static ManageGo2Term getInstance() {
+		return ManageHolder.manageGo2Term;
+	}
 }

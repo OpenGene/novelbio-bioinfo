@@ -5,6 +5,7 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import com.novelbio.database.domain.geneanno.AGene2Go;
+import com.novelbio.database.domain.geneanno.BlastFileInfo;
 import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.service.servgeneanno.ManageBlastInfo;
 
@@ -20,6 +21,8 @@ public class TestManageBlast extends TestCase {
 	}
 	
 	public void test() {
+		ManageBlastInfo manageBlastInfo = ManageBlastInfo.getInstance();
+		String blastFileName = "/home/zong0jie/桌面/blastInfoTest.txt";
 		ManageBlastInfo.readBlastFile(456, 123456, "/home/zong0jie/桌面/blastInfoTest.txt");
 		GeneID geneID = new GeneID("other1", 456);
 		assertEquals("12345678903", geneID.getLsBlastGeneID().get(0).getGeneUniID());
@@ -30,6 +33,9 @@ public class TestManageBlast extends TestCase {
 		geneID.setBlastInfo(1e-5, 123456);
 		List<AGene2Go> lsAGene2Gos = geneID.getGene2GOBlast(GOtype.BP);
 		assertEquals(2, lsAGene2Gos.size());
+		manageBlastInfo.getFileInfoAll();
+		List<BlastFileInfo> ls = manageBlastInfo.queryBlastFile(blastFileName, 456, 123456);
+		manageBlastInfo.removeBlastFile(ls.get(0));
 	}
 	
 }

@@ -29,7 +29,7 @@ public class SamIndexRefsequence {
 	public void indexSequence() {
 		String faidx = sequence + ".fai";
 		if (FileOperate.isFileExistAndBigThanSize(faidx, 0)) {
-			if (FileOperate.getLastModifyTime(sequence) < FileOperate.getLastModifyTime(faidx)) {
+			if (FileOperate.getTimeLastModify(sequence) < FileOperate.getTimeLastModify(faidx)) {
 				return;
 			}
 		}

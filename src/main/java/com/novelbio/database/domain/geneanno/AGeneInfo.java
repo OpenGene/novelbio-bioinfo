@@ -47,7 +47,7 @@ public abstract class AGeneInfo {
 	@Transient
 	private DBInfo dbInfo;
 	@Transient
-	ManageDBInfo manageDBInfo = new ManageDBInfo();
+	ManageDBInfo manageDBInfo = ManageDBInfo.getInstance();
 	
 	public abstract String getGeneUniID();
 	public abstract void setGeneUniID(String geneUniID);

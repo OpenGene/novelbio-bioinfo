@@ -3,11 +3,9 @@ package com.novelbio.test.nbcgui.controlseq;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-
-import com.novelbio.nbcgui.controlseq.CopeFastq;
-
 import junit.framework.TestCase;
+
+import org.junit.Test;
 
 public class TestCopeFastq extends TestCase {
 	CopeFastq copeFastq;

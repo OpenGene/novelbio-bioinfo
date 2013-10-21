@@ -29,7 +29,7 @@ public abstract class AgeneUniID {
 	DBInfo databaseInfo;
 	
 	@Transient
-	ManageDBInfo manageDBInfo = new ManageDBInfo();
+	ManageDBInfo manageDBInfo = ManageDBInfo.getInstance();
 
 	public void setId(String id) {
 		this.id = id;

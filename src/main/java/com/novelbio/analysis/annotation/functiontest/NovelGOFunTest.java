@@ -17,7 +17,7 @@ import com.novelbio.database.service.servgeneanno.ManageGo2Term;
 public class NovelGOFunTest extends FunctionTest {
 	private static final Logger logger = Logger.getLogger(NovelGOFunTest.class); 
 	GOtype GoType = GOtype.BP;
-	ManageGo2Term servGo2Term = new ManageGo2Term();
+	ManageGo2Term servGo2Term = ManageGo2Term.getInstance();
 	
 	/**
 	 * 如果大于0，则做层级GO

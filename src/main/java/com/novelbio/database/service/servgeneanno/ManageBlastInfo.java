@@ -1,42 +1,31 @@
 package com.novelbio.database.service.servgeneanno;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 
-import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.database.domain.geneanno.BlastFileInfo;
 import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.mongorepo.geneanno.RepoBlastInfo;
 import com.novelbio.database.service.SpringFactory;
 
 public class ManageBlastInfo {
 	static double[] lock = new double[0];
-	/** 缓存, key都为小写*/
-	static Map<String, Map<String, BlastInfo>> mapAccIDTaxID_2_mapAccID;
-	/** key为小写 */
-	static Map<String, Integer> mapAccID2TaxID;
-
+//	/** 缓存, key都为小写*/
+//	static Map<String, Map<String, BlastInfo>> mapAccIDTaxID_2_mapAccID;
+//	/** key为小写 */
+//	static Map<String, Integer> mapAccID2TaxID;
+	MongoTemplate mongoTemplate;
 	@Autowired
 	RepoBlastInfo repoBlastInfo;
-
-	public ManageBlastInfo() {
+	
+	private ManageBlastInfo() {
 		repoBlastInfo = (RepoBlastInfo)SpringFactory.getFactory().getBean("repoBlastInfo");
-	}
-	
-	public static void clearBlastCach() {
-		if (mapAccIDTaxID_2_mapAccID != null) {
-			mapAccIDTaxID_2_mapAccID.clear();
-		}
-	}
-	
-	/** 一行一行的添加信息*/
-	public static void addBlastLine(int taxIDQ, int taxIDS, String blastLine) {
-		BlastInfo blastInfo = new BlastInfo(taxIDQ, taxIDS, blastLine);
-		addBlastInfoToCache(blastInfo);
+		mongoTemplate = (MongoTemplate)SpringFactory.getFactory().getBean("mongoTemplate");
 	}
 	
 	/**
@@ -46,46 +35,19 @@ public class ManageBlastInfo {
 	 * @param isBlastFormat 如果subjecdt是accID，具体的accID是否类似 blast的结果，如：dbj|AK240418.1|，那么获得AK240418，一般都是false
 	 */
 	public static void readBlastFile(int taxIDQ, int taxIDS, String blastFile) {
+		ManageBlastInfo manageBlastInfo = ManageBlastInfo.getInstance();
 		TxtReadandWrite txtRead = new TxtReadandWrite(blastFile);
 		for (String content : txtRead.readlines()) {
 			BlastInfo blastInfo = new BlastInfo(taxIDQ, taxIDS, content);
-			addBlastInfoToCache(blastInfo);
+			BlastFileInfo blastFileInfo = new BlastFileInfo();
+			blastFileInfo.setFileName(blastFile);
+			blastFileInfo.setTmp(true);
+			blastFileInfo.setQueryTaxID(taxIDQ);
+			blastFileInfo.setSubjectTaxID(taxIDS);
+			manageBlastInfo.saveBlastFile(blastFileInfo);
+			manageBlastInfo.save(blastInfo);
 		}
 		txtRead.close();
-	}
-	
-	/** 添加单个BlastInfo进入缓存 */
-	public static void addBlastInfoToCache(BlastInfo blastInfo) {
-		if (mapAccID2TaxID == null) {
-			mapAccID2TaxID = new HashMap<String, Integer>();
-		}
-		if (mapAccIDTaxID_2_mapAccID == null) {
-			mapAccIDTaxID_2_mapAccID = new HashMap<String, Map<String,BlastInfo>>();
-		}
-		
-		String key1 = getKey1(blastInfo);
-		Map<String, BlastInfo> mapAccIDTaxIDSaccIDStaxID_2_BlastInfo = mapAccIDTaxID_2_mapAccID.get(key1);
-		mapAccID2TaxID.put(blastInfo.getQueryID().toLowerCase(), blastInfo.getQueryTax());
-		if (mapAccIDTaxIDSaccIDStaxID_2_BlastInfo == null) {
-			mapAccIDTaxIDSaccIDStaxID_2_BlastInfo = new HashMap<String, BlastInfo>();
-			mapAccIDTaxIDSaccIDStaxID_2_BlastInfo.put(getKey2(blastInfo), blastInfo);
-			mapAccIDTaxID_2_mapAccID.put(getKey1(blastInfo), mapAccIDTaxIDSaccIDStaxID_2_BlastInfo);
-		} else {
-			BlastInfo blastInfoS = mapAccIDTaxIDSaccIDStaxID_2_BlastInfo.get(getKey2(blastInfo));
-			if (blastInfoS == null || blastInfoS.compareTo(blastInfo) == 1) {
-				mapAccIDTaxIDSaccIDStaxID_2_BlastInfo.put(getKey2(blastInfo), blastInfo);
-			}
-		}
-	}
-	
-	private static String getKey1(BlastInfo blastInfo) {
-		return (blastInfo.getQueryID() + SepSign.SEP_ID + blastInfo.getQueryTax()).toLowerCase();
-	}
-	
-	private static String getKey2(BlastInfo blastInfo) {
-		return (blastInfo.getQueryID() + SepSign.SEP_ID + blastInfo.getQueryTax() 
-				+ SepSign.SEP_ID + blastInfo.getSubjectID()
-				+ SepSign.SEP_ID + blastInfo.getSubjectTax()).toLowerCase();
 	}
 	
 //	/**
@@ -127,40 +89,49 @@ public class ManageBlastInfo {
 	 * @return
 	 */
 	public List<BlastInfo> queryBlastInfoLs(String queryID, int taxIDQ) {
-		List<BlastInfo> lsBlastInfos = repoBlastInfo.findByQueryID(queryID, taxIDQ);
-		if (taxIDQ == 0 && mapAccID2TaxID != null) {
-			Integer taxIDQ1 = mapAccID2TaxID.get(queryID.toLowerCase());
-			if (taxIDQ1 != null) {
-				taxIDQ = taxIDQ1;
-			}
-		}
-		String key1 = (queryID + SepSign.SEP_ID + taxIDQ).toLowerCase();
-		if (mapAccIDTaxID_2_mapAccID == null) {
-			return lsBlastInfos;
-		}
-		
-		Map<String, BlastInfo> mapValue = mapAccIDTaxID_2_mapAccID.get(key1);
-		if (mapValue != null && mapValue.size() > 0) {
-			lsBlastInfos.addAll(mapValue.values());
-		}
-		if (mapValue != null) {
-			Map<String, BlastInfo> mapRemoveDuplicate = new HashMap<String, BlastInfo>();
-			for (BlastInfo blastInfo : lsBlastInfos) {
-				String key = getKey2(blastInfo);
-				if (!mapRemoveDuplicate.containsKey(key) 
-						|| (mapRemoveDuplicate.containsKey(key) && mapRemoveDuplicate.get(key).compareTo(blastInfo) == 1)) {
-					mapRemoveDuplicate.put(key, blastInfo);
-				}
-			}
-			lsBlastInfos = new ArrayList<BlastInfo>(mapRemoveDuplicate.values());
-		}
-		return lsBlastInfos;
+		return repoBlastInfo.findByQueryID(queryID, taxIDQ);
 	}
 	
 	public void save(BlastInfo blastInfo) {		
 		if (blastInfo != null) {
-		repoBlastInfo.save(blastInfo);
+			repoBlastInfo.save(blastInfo);
 		}
+	}
+	
+	public void saveBlastFile(BlastFileInfo blastFileInfo) {		
+		if (blastFileInfo != null) {
+			mongoTemplate.save(blastFileInfo);
+		}
+	}
+	
+	public List<BlastFileInfo> getFileInfoAll() {
+		return mongoTemplate.findAll(BlastFileInfo.class);
+	}
+	public List<BlastFileInfo> queryBlastFile(String fileName) {
+		return mongoTemplate.find(new Query(Criteria.where("fileName").is(fileName)), BlastFileInfo.class);
+	}
+	
+	/**
+	 * @param fileName
+	 * @param queryTaxID 小于0则不考虑
+	 * @param subjectTaxID 小于0则不考虑
+	 * @return
+	 */
+	public List<BlastFileInfo> queryBlastFile(String fileName, int queryTaxID, int subjectTaxID) {
+		Criteria criteria = Criteria.where("fileName").is(fileName);
+		if (queryTaxID > 0) {
+			criteria = criteria.and("queryTaxID").is(queryTaxID);
+		}
+		if (subjectTaxID > 0) {
+			criteria = criteria.and("subjectTaxID").is(subjectTaxID);
+		}
+		return mongoTemplate.find(new Query(criteria), BlastFileInfo.class);
+	}
+	
+	/** 删除某个blastFile以及与之相关的blast信息 */
+	public void removeBlastFile(BlastFileInfo blastFileInfo) {
+		mongoTemplate.remove(new Query(Criteria.where("blastFileInfo").is(blastFileInfo)), BlastInfo.class);
+		mongoTemplate.remove(blastFileInfo);
 	}
 	
 	/**
@@ -179,5 +150,13 @@ public class ManageBlastInfo {
 				repoBlastInfo.save(blastInfo);
 			}
 		}
+	}
+	
+	static class ManageHolder {
+		static ManageBlastInfo manageBlastInfo = new ManageBlastInfo();
+	}
+	
+	public static ManageBlastInfo getInstance() {
+		return ManageHolder.manageBlastInfo;
 	}
 }

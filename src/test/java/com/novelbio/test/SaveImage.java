@@ -31,14 +31,29 @@ package com.novelbio.test;
 	 */
 	 
 	 
-	import java.io.*;
-	import java.util.TreeSet;
-	import java.awt.*;
-	import java.awt.event.*;
-	import java.awt.geom.AffineTransform;
-	import java.awt.image.*;
-	import javax.imageio.*;
-	import javax.swing.*;
+	import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImageOp;
+import java.awt.image.ByteLookupTable;
+import java.awt.image.ConvolveOp;
+import java.awt.image.Kernel;
+import java.awt.image.LookupOp;
+import java.io.File;
+import java.io.IOException;
+import java.util.TreeSet;
+
+import javax.imageio.ImageIO;
+import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 	 
 	public class SaveImage extends Component implements ActionListener {
 	 

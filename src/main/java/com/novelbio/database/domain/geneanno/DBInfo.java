@@ -53,7 +53,7 @@ public class DBInfo {
 	}
 	
 	public static void updateDBinfo(String dbInfoFile) {
-		ManageDBInfo servDBInfo = new ManageDBInfo();
+		ManageDBInfo servDBInfo = ManageDBInfo.getInstance();
 		TxtReadandWrite txtRead = new TxtReadandWrite(dbInfoFile, false);
 		for (String content : txtRead.readlines()) {
 			content = content.trim();

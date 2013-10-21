@@ -64,7 +64,7 @@ public class AmiGO {
 class ImpGOExtObo extends ImportPerLine {
 	private static Logger logger = Logger.getLogger(ImpGOExtObo.class);
 	
-	ManageGo2Term manageGo2Term = new ManageGo2Term();
+	ManageGo2Term manageGo2Term = ManageGo2Term.getInstance();
 	/** queryID和实际ID */
 	HashMap<String, String> mapGOquery2GOID = new HashMap<String, String>();
 	
@@ -382,7 +382,7 @@ class ImpGOExtObo extends ImportPerLine {
  */
 class Impgene_associationgoa_uniprot extends ImportPerLine {
 	private static Logger logger = Logger.getLogger(Impgene_associationgoa_uniprot.class);
-	ManageDBInfo manageDBInfo = new ManageDBInfo();
+	ManageDBInfo manageDBInfo = ManageDBInfo.getInstance();
 	/**
 	 * 从第5行开始读取
 	 */

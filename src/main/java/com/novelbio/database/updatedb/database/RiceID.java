@@ -371,7 +371,7 @@ class RiceTIGRGFFID extends ImportPerLine {
  * @throws Exception
  */
 class RiceRapDBInfo extends ImportPerLine {
-	ManageDBInfo manageDBInfo = new ManageDBInfo();
+	ManageDBInfo manageDBInfo = ManageDBInfo.getInstance();
 	protected void setReadFromLine() {
 		this.readFromLine = 1;
 	}
@@ -490,7 +490,7 @@ class RiceRapDBInfo extends ImportPerLine {
  * @throws Exception  
  */
 class RiceTIGRInfo extends ImportPerLine {
-	ManageDBInfo manageDBInfo = new ManageDBInfo();
+	ManageDBInfo manageDBInfo = ManageDBInfo.getInstance();
 	@Override
 	boolean impPerLine(String lineContent) {
 		if (lineContent.startsWith("#")) {

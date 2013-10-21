@@ -33,7 +33,7 @@ public class GeneIDabs implements GeneIDInt {
 	// //////////////////// service 层
 	static ManageNCBIUniID servNCBIUniID = new ManageNCBIUniID();
 	static ManageGeneInfo servGeneInfo = new ManageGeneInfo();
-	static ManageDBInfo manageDBInfo = new ManageDBInfo();
+	static ManageDBInfo manageDBInfo = ManageDBInfo.getInstance();
 	
 	/** 是否没有在数据库中查询到 */
 	boolean isAccID = false;

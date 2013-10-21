@@ -20,6 +20,7 @@ abstract class ImportPerLine {
 	int readFromLine = 1;
 	//多此一举的设定，回头慢慢修正
 	int num = 1;
+	int taxID = 0;
 	/**
 	 * 将无法升级的行写入该文本
 	 */
@@ -43,7 +44,7 @@ abstract class ImportPerLine {
 	protected void setReadFromLine(int num) {
 		this.num = num;
 	}
-	int taxID = 0;
+
 	/**
 	 * 将指定的文件导入数据库，必须是每一行都能单独导入的表
 	 * 如果需要导入多行，譬如amiGO的信息，请覆盖该方法
@@ -121,8 +122,7 @@ abstract class ImportPerLine {
 	 * 导入单个文件时，设定taxID
 	 * @param taxID
 	 */
-	public void setTaxID(int taxID)
-	{
+	public void setTaxID(int taxID) {
 		this.taxID = taxID;
 	}
 	/**

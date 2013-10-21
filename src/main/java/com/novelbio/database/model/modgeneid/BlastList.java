@@ -23,7 +23,7 @@ public class BlastList {
 	
 	Set<Integer> lsSTaxID = new HashSet<Integer>();
 	
-	ManageBlastInfo manageBlastInfo = new ManageBlastInfo();
+	ManageBlastInfo manageBlastInfo = ManageBlastInfo.getInstance();
 
 	Map<Integer, Map<String, BlastInfo>> mapSubTaxID2_Key2BlastInfo = new HashMap<Integer, Map<String,BlastInfo>>();
 	/** 待升级的BlastInfo */
