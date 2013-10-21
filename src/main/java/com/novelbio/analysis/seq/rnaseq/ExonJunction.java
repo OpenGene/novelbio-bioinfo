@@ -54,7 +54,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 //		lsAligns.add(new Align("1", 47916959,	47937428));
 //		lsAligns.add(new Align("7",30050239,30137766));
 //		lsAligns.add(new Align("7",30121258, 30123992));
-//		lsAligns.add(new Align("5", 27145505, 27288719));
+//		lsAligns.add(new Align("24", 5495310, 5695313));
 //		lsAligns.add(new Align("mt", 0, 5000));
 		DateUtil dateUtil = new DateUtil();
 		dateUtil.setStartTime();
@@ -79,7 +79,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	private static Logger logger = Logger.getLogger(ExonJunction.class);
-	private static String stopGeneName = "KIAA0247";
+	private static String stopGeneName = "CXCR5";
 	
 	GffHashGene gffHashGene = null;
 	StrandSpecific strandSpecific = StrandSpecific.NONE;
@@ -363,6 +363,8 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		int i = 0;
 
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
+			logger.debug(gffDetailGene.getNameSingle());
+			logger.info(i);
 			//TODO 设置断点
 			if (gffDetailGene.getName().contains(stopGeneName)) {
 				logger.debug("stop");
@@ -384,7 +386,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				guiAnnoInfo.setNum(i);
 				guiAnnoInfo.setDouble(i);
 				guiAnnoInfo.setInfo("Get " + i + " Junction Gene");
-				logger.error(i);
+				logger.info(i);
 				setRunInfo(guiAnnoInfo);
 			}
 			i++;

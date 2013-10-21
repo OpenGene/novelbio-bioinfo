@@ -224,7 +224,7 @@ public class PredictCassette extends SpliceTypePredict {
 				clusterAfter = clusterAfter.exonClusterAfter;
 				numAfter++;
 			}
-			if (numAfter -  numBefore >= 1 && muti == true) {
+			if (numAfter -  numBefore >= 1 && numAfter - numBefore <=3 && muti == true) {
 				isMulitCassette = true;
 			}
 			
@@ -276,7 +276,6 @@ public class PredictCassette extends SpliceTypePredict {
 		}
 		return setBeforeAfter;
 	}
-	
 	
 	@Override
 	public SplicingAlternativeType getType() {

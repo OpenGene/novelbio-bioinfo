@@ -196,7 +196,7 @@ public class MapSplice implements MapRNA {
 		lsFqFileInfo.add("-1");
 		String fqLeft = lsLeftRun.get(0).getReadFileName();
 		for (int i = 1; i < lsLeftRun.size(); i++) {
-			fqLeft = fqLeft + "," + lsLeftRun.get(i);
+			fqLeft = fqLeft + "," + lsLeftRun.get(i).getReadFileName();
 		}
 		lsFqFileInfo.add(fqLeft);
 		if (lsRightRun.size() == 0)
@@ -205,7 +205,7 @@ public class MapSplice implements MapRNA {
 		lsFqFileInfo.add("-2");
 		String fqRight = lsRightRun.get(0).getReadFileName();
 		for (int i = 1; i < lsRightRun.size(); i++) {
-			fqRight = fqRight + "," + lsRightRun.get(i);
+			fqRight = fqRight + "," + lsRightRun.get(i).getReadFileName();
 		}
 		lsFqFileInfo.add(fqRight);
 		return lsFqFileInfo;
@@ -224,6 +224,7 @@ public class MapSplice implements MapRNA {
 		if (fusion) {
 			lsCmd.add("--fusion");
 		}
+		lsCmd.add("--bam");
 		ArrayOperate.addArrayToList(lsCmd, getOutPath());
 		return lsCmd;
 	}
