@@ -1,11 +1,10 @@
 package com.novelbio.generalConf;
 
-import java.util.HashMap;
 
 public enum TitleFormatNBC {
 	/** 公司名缩写 */
 	CompanyNameAbbr("NovelBio"),
-	
+	GeneID("GeneID"), MirName("MirName"),
 	QueryID("QueryID"), AccID("AccID"), Symbol("Symbol"), Pvalue("P-Value"), Log2Pnegative("(-log2P)"),
 	GeneName("GeneName"), GeneType("GeneType"),
 	
