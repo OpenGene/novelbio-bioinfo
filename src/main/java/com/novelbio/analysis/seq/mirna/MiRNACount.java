@@ -2,10 +2,12 @@ package com.novelbio.analysis.seq.mirna;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -45,30 +47,22 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 	AlignSeq alignSeqMiRNA = null;
 	/** Mapping至前体但是没到成熟体的序列的后缀 */
 	String flag_MapTo_PreMirna_NotTo_MatureMirna_Suffix = "_pre";
-	/**
-	 * 成熟体
-	 * key: mirName
-	 * value: mirMatureList
-	 */
-	ArrayListMultimap<String, String[]> mapMirPre2LsMature_Value;
+
 	/**
 	 * 成熟体, 用于结果中<br>
 	 * key: Pre_Mature
 	 */
-	Map<String, Double> mapMirPre_Mature2Value;
-	/** 前体，相同产物的前体会合在一起，并用{@link #sepMirPreID} 分割 */
+	Map<String, Double> mapMirMature2Value;
+	/** 前体 */
 	Map<String, Double> mapMiRNApre2Value;
-	
-	/** 成熟体到前体的名字，相同产物的前体会合在一起，并用{@link #sepMirPreID} 分割 */
-	Map<String, String> mapMirMatureName2Pre = new HashMap<>();
+	Map<String, String> mapMirPre2Seq = new HashMap<>();
+	Map<String, String> mapMirMature2Seq = new HashMap<>();
 	
 	/** double[2] 0: allReadsNum 1: upQuartile的reads number */
-	double[] CountsNumPre = new double[2];
+	double countsPreAll = 0;
 	/** double[2] 0: allReadsNum 1: upQuartile的reads number<br> */
-	double[] CountsNumMature = new double[2];
-	
-	boolean countMiRNA = false;
-	
+	double countsMatureAll = 0;
+		
 	/**
 	 * 如果出现相同的mirMature Name，但是mirPre Name不同的
 	 * 用该ID来分隔两个mirPre Name<p>
@@ -84,18 +78,73 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 	public void setMiRNAfile(String hairpairMirna, String matureMirna) {
 		seqFastaHashMatureMiRNA = new SeqFastaHash(matureMirna);
 		seqFastaHashPreMiRNA = new SeqFastaHash(hairpairMirna);
-		countMiRNA = false;
 	}
 	
 	/** 设定自定义ListMiRNALocation */
 	public void setListMiRNALocation(ListMiRNAInt listMiRNALocation) {
 		this.listMiRNALocation = listMiRNALocation;
-		countMiRNA = false;
 	}
-	/** 设定需要计算表达值的bed文件 */
-	public void setAlignFile(AlignSeq alignSeq) {
-		alignSeqMiRNA =alignSeq;
-		countMiRNA = false;
+	public List<String> getLsMirNameMature() {
+		List<String> lsMirName = new ArrayList<>();
+		for (ListDetailBin listDetailBin : listMiRNALocation.getGffDetailAll()) {
+			lsMirName.add(listDetailBin.getNameSingle());
+		}
+		return lsMirName;
+	}
+	public Map<String, String> getMapPre2Seq() {
+		Map<String, String> mapPre2Seq = new HashMap<>();
+		for (ListDetailBin lsMiRNA : listMiRNALocation.getGffDetailAll()) {
+			String parentName = lsMiRNA.getParent().getName();
+			mapPre2Seq.put(parentName, getMiRNApreSeq(parentName));
+		}
+		return mapPre2Seq;
+	}
+	
+	public Map<String, String> getMapMature2Seq() {
+		Map<String, String> mapMature2Seq = new HashMap<>();
+		for (ListDetailBin lsMiRNA : listMiRNALocation.getGffDetailAll()) {
+			String matureName = lsMiRNA.getNameSingle();
+			String parentName = lsMiRNA.getParent().getName();
+			mapMature2Seq.put(matureName, getMiRNAmatureSeq(matureName, parentName));
+		}
+		return mapMature2Seq;
+	}
+	public List<String> getLsMirNamePre() {
+		Set<String> setMirName = new HashSet<>();
+		for (ListDetailBin listDetailBin : listMiRNALocation.getGffDetailAll()) {
+			setMirName.add(listDetailBin.getParent().getName());
+		}
+		return new ArrayList<>(setMirName);
+	}
+	/**
+	 * 成熟体名称到前体名称的对照表
+	 * 	//如果出现了两个相同的matureRNA，但是它们的前体名字不一样
+			//则格式调整为 mir-163-5p   mir-163-1/mir-163-2
+	 * @return
+	 */
+	public Map<String, String> getMapMature2Pre() {
+		Map<String, String> mapMature2Pre = new HashMap<>();
+		for (ListDetailBin lsMiRNA : listMiRNALocation.getGffDetailAll()) {
+			String matureName = lsMiRNA.getNameSingle();
+			String parentName = lsMiRNA.getParent().getName();
+			if (mapMature2Pre.containsKey(matureName)) {
+				String parentNameOld = mapMature2Pre.get(matureName);
+				boolean addParentName = true;
+				for (String name : parentNameOld.split(sepMirPreID)) {
+					if (name.equals(parentName)) {
+						addParentName = false;
+						break;
+					}
+				}
+				if (addParentName) {
+					parentName = parentNameOld + sepMirPreID + parentName;
+				} else {
+					parentName = parentNameOld;
+				}
+			}
+			mapMature2Pre.put(matureName, parentName);
+		}
+		return mapMature2Pre;
 	}
 
 	/**
@@ -129,13 +178,22 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 		txtMirMatureValue.close();
 	}
 	
+	/** 初始化表<p>
+	 * 其中mapMirMatureName2Pre表<br>：
+	 * 如果出现了两个相同的matureRNA，但是它们的前体名字不一样<br>
+	 * 则格式调整为 mir-163-5p  --> mir-163-1/mir-163-2
+	 */
+	private void initialMap() {
+		mapMiRNApre2Value = new LinkedHashMap<String, Double>();
+		mapMirMature2Value = new LinkedHashMap<String, Double>();
+	}
 	/**
 	 * 给定miRNA成熟体名字，从前体中获得序列
 	 * @param mirID miRNA前体名字
 	 * @param matureID miRNA成熟体名字
 	 * @return
 	 */
-	protected String getMiRNAmatureSeq(String mirID, String matureID) {
+	private String getMiRNAmatureSeq(String mirID, String matureID) {
 		if (seqFastaHashMatureMiRNA.getSeqFasta(matureID) != null) {
 			return seqFastaHashMatureMiRNA.getSeqFasta(matureID).toString();
 		}
@@ -157,6 +215,19 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 		}
 		return seqFasta.toString();
 	}
+	/**
+	 * 给定miRNA成熟体名字，从前体中获得序列
+	 * @param mirID miRNA前体名字
+	 * @param matureID miRNA成熟体名字
+	 * @return
+	 */
+	private String getMiRNApreSeq(String matureID) {
+		return seqFastaHashPreMiRNA.getSeq(matureID).toString();
+	}
+	/** 设定需要计算表达值的bed文件 */
+	public void setAlignFile(AlignSeq alignSeq) {
+		alignSeqMiRNA =alignSeq;
+	}
 	
 	@Override
 	protected void running() {
@@ -164,41 +235,7 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 		countMiRNA();
 	}
 	
-	/** 初始化表<p>
-	 * 其中mapMirMatureName2Pre表<br>：
-	 * 如果出现了两个相同的matureRNA，但是它们的前体名字不一样<br>
-	 * 则格式调整为 mir-163-5p  --> mir-163-1/mir-163-2
-	 */
-	private void initialMap() {
-		mapMirPre2LsMature_Value = ArrayListMultimap.create();
-		mapMiRNApre2Value = new LinkedHashMap<String, Double>();
-		mapMirPre_Mature2Value = new LinkedHashMap<String, Double>();
-		mapMirMatureName2Pre.clear();
-		
-		for (ListDetailBin lsMiRNA : listMiRNALocation.getGffDetailAll()) {
-			String matureName = lsMiRNA.getNameSingle();
-			String parentName = lsMiRNA.getParent().getName();
-			//如果出现了两个相同的matureRNA，但是它们的前体名字不一样
-			//则格式调整为 mir-163-5p   mir-163-1/mir-163-2
-			if (mapMirMatureName2Pre.containsKey(matureName)) {
-				String parentNameOld = mapMirMatureName2Pre.get(matureName);
-				boolean addParentName = true;
-				for (String name : parentNameOld.split(sepMirPreID)) {
-					if (name.equals(parentName)) {
-						addParentName = false;
-						break;
-					}
-				}
-				if (addParentName) {
-					parentName = parentNameOld + sepMirPreID + parentName;
-				} else {
-					parentName = parentNameOld;
-				}
-			}
-			mapMirMatureName2Pre.put(matureName, parentName);
-			mapMiRNApre2Value.put(parentName, 0.0);
-		}
-	}
+
 	
 	/**
 	 * 无所谓排不排序
@@ -206,10 +243,6 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 	 * @param outTxt
 	 */
 	private void countMiRNA() {
-		if (countMiRNA)
-			return;
-		
-		countMiRNA = true;
 		int countLoop = 0;
 		for (AlignRecord alignRecord : alignSeqMiRNA.readLines()) {
 			if (!alignRecord.isMapped()) {

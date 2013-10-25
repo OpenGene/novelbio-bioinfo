@@ -155,7 +155,7 @@ public class CtrlMiRNApredict {
 
 		ListMiRNAdeep listMiRNAdeep = new ListMiRNAdeep();
 		listMiRNAdeep.setBlastMap(mapID2Blast);
-		listMiRNAdeep.setSetMiRNApredict(setMiRNAName);
+//		listMiRNAdeep.setSetMiRNApredict(setMiRNAName);
 		listMiRNAdeep.ReadGffarray(novelMiRNADeep.getNovelMiRNAdeepMrdFile());
 		
 		miRNACount.setListMiRNALocation(listMiRNAdeep);

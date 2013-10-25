@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
@@ -24,7 +26,7 @@ public class GeneExpTable {
 	/** 基因名和注释的对照表 */
 	ArrayListMultimap<String, String> mapGene2Anno = ArrayListMultimap.create();
 	/** 时期信息 */
-	List<String> lsCondition = new ArrayList<>();
+	Set<String> setCondition = new LinkedHashSet<>();
 	/** 具体存储表达信息的表 */
 	Map<String, Map<String, Double>> mapGene_2_Cond2Exp = new LinkedHashMap<>();
 	/** 大致测序量，譬如rna-seq就是百万级别，小RNAseq就是可能就要变成十万级别 */
@@ -63,13 +65,9 @@ public class GeneExpTable {
 	public void setGeneExp(int geneExp) {
 		this.geneExp = geneExp;
 	}
-	/** 设定当前时期，同时将该时期添加入List */
-	public void setAndAddCondition(String currentCondition) {
-		this.currentCondition = currentCondition;
-		lsCondition.add(currentCondition);
-	}
 	public void setCurrentCondition(String currentCondition) {
 		this.currentCondition = currentCondition;
+		setCondition.add(currentCondition);
 	}
 	public String getCurrentCondition() {
 		return currentCondition;
@@ -191,7 +189,7 @@ public class GeneExpTable {
 	/** @return 返回每个时期的UQreads */
 	private Map<String, Double> getMapCond2UQ() {
 		Map<String, Double> mapGene2UQ = new HashMap<>();
-		for (String condition : lsCondition) {
+		for (String condition : setCondition) {
 			mapGene2UQ.put(condition, getUQ(condition));
 		}
 		return mapGene2UQ;
@@ -221,7 +219,7 @@ public class GeneExpTable {
 	private List<String> getLsValue(String geneName, EnumExpression enumExpression, Map<String, Double> mapCondition2UQ) {
 		List<String> lsValue = new ArrayList<>();
 		Map<String, Double> mapCond2Exp = mapGene_2_Cond2Exp.get(geneName);
-		for (String condition : lsCondition) {
+		for (String condition : setCondition) {
 			Double value = mapCond2Exp.get(condition);			
 			double uq = (mapCondition2UQ != null) ? mapCondition2UQ.get(condition) : 0;
 			
@@ -274,7 +272,7 @@ public class GeneExpTable {
 		for (String annoTitle : lsGeneAnnoTitle) {
 			lsTitle.add(annoTitle);
 		}
-		for (String condition : lsCondition) {
+		for (String condition : setCondition) {
 			lsTitle.add(condition);
 		}
 		return lsTitle.toArray(new String[0]);

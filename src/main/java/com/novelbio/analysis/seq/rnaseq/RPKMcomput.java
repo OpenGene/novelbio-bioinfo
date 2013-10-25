@@ -119,7 +119,7 @@ public class RPKMcomput implements AlignmentRecorder {
 	 * @param currentCondition
 	 */
 	public void setAndAddCurrentCondition(String currentCondition) {
-		geneExpTable.setAndAddCondition(currentCondition);
+		geneExpTable.setCurrentCondition(currentCondition);
 		this.currentReadsNum = 0;
 	}
 	

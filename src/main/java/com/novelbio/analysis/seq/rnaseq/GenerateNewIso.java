@@ -3,8 +3,10 @@ package com.novelbio.analysis.seq.rnaseq;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -38,6 +40,7 @@ public class GenerateNewIso {
 	boolean considerStrand = false;
 	GffDetailGene gffDetailGene;
 	MapReads mapReads;
+	Map<String, Boolean> mapLoc2IsCovered = new HashMap<>();
 	
 	public GenerateNewIso(TophatJunction tophatJunctionNew, MapReads mapReads, StrandSpecific considerStrand) {
 		this.tophatJunctionNew = tophatJunctionNew;
@@ -418,8 +421,13 @@ public class GenerateNewIso {
 	 */
 	private boolean isContinuousExon(String chrID, int startLoc, int endLoc) {
 		int start = Math.min(startLoc, endLoc), end = Math.max(startLoc, endLoc);
+		String keySite = (chrID+SepSign.SEP_ID+start + SepSign.SEP_ID+end).toLowerCase();
+		if (mapLoc2IsCovered.containsKey(keySite)) {
+			return mapLoc2IsCovered.get(keySite);
+		}
 		double[] regionFinal = mapReads.getRangeInfo(chrID, start, end, 0);
 		if (regionFinal == null) {
+			mapLoc2IsCovered.put(keySite, false);
 			return false;
 		}
 		int blankNumFinal = 0, blankNum = 0;
@@ -439,8 +447,10 @@ public class GenerateNewIso {
 		}
 		blankNumFinal = blankNumFinal * mapReads.getBinNum();
 		if (blankNumFinal >= this.blankNum) {
+			mapLoc2IsCovered.put(keySite, false);
 			return false;
 		}
+		mapLoc2IsCovered.put(keySite, true);
 		return true;
 	}
 	

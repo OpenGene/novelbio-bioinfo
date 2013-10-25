@@ -20,7 +20,7 @@ public class BlastFileInfo {
 	String fileName;
 	@Indexed
 	boolean isTmp;
-	
+	String userName;
 	@Indexed
 	int queryTaxID;
 	@Indexed
@@ -34,6 +34,10 @@ public class BlastFileInfo {
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
 		dateBlastFile = FileOperate.getTimeLastModifyStr(fileName);
+	}
+	/** 上传人 */
+	public void setUserID(String userName) {
+		this.userName = userName;
 	}
 	public void setTmp(boolean isTmp) {
 		this.isTmp = isTmp;

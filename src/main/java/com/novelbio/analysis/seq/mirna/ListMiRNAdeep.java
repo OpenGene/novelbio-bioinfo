@@ -19,7 +19,7 @@ import com.novelbio.base.dataStructure.listOperate.ListBin;
  */
 public class ListMiRNAdeep extends ListHashBin implements ListMiRNAInt {
 	private static final Logger logger = Logger.getLogger(ListMiRNAdeep.class);
-	Set<String> setMiRNApredict;
+//	Set<String> setMiRNApredict;
 	Map<String, String> mapID2Blast;
 	/**
 	 * 读取miRNA.data文件，同时读取和它一起的整理好的taxID2species文件
@@ -32,10 +32,10 @@ public class ListMiRNAdeep extends ListHashBin implements ListMiRNAInt {
 	public void setBlastMap(Map<String, String> mapID2Blast) {
 		this.mapID2Blast = mapID2Blast;
 	}
-	/** 设定预测出来的miRNA */
-	public void setSetMiRNApredict(Set<String> setMiRNApredict) {
-		this.setMiRNApredict = setMiRNApredict;
-	}
+//	/** 设定预测出来的miRNA */
+//	public void setSetMiRNApredict(Set<String> setMiRNApredict) {
+//		this.setMiRNApredict = setMiRNApredict;
+//	}
 	
 	/**
 	 * 读取mirdeep文件夹下的run_26_06_2012_t_12_25_36/output.mrd
@@ -87,9 +87,9 @@ public class ListMiRNAdeep extends ListHashBin implements ListMiRNAInt {
 				if (!MstartFlag) {
 					listDetailBin = new ListDetailBin();
 					String name = lsMirnaMautre.getName() + "_mature";
-					if (setMiRNApredict != null && setMiRNApredict.size() > 0 && !setMiRNApredict.contains(name)) {
-						continue;
-					}
+//					if (setMiRNApredict != null && setMiRNApredict.size() > 0 && !setMiRNApredict.contains(name)) {
+//						continue;
+//					}
 					if (mapID2Blast != null && mapID2Blast.size() > 0 && mapID2Blast.containsKey(name)) {
 						name += SepSign.SEP_INFO + mapID2Blast.get(name);
 					}
@@ -104,9 +104,9 @@ public class ListMiRNAdeep extends ListHashBin implements ListMiRNAInt {
 				if (!SstartFlag) {
 					listDetailBin = new ListDetailBin();
 					String name = lsMirnaMautre.getName() + "_star";
-					if (setMiRNApredict != null && setMiRNApredict.size() > 0 && !setMiRNApredict.contains(name)) {
-						continue;
-					}
+//					if (setMiRNApredict != null && setMiRNApredict.size() > 0 && !setMiRNApredict.contains(name)) {
+//						continue;
+//					}
 					if (mapID2Blast != null && mapID2Blast.size() > 0 && mapID2Blast.containsKey(name)) {
 						name += SepSign.SEP_INFO + mapID2Blast.get(name);
 					}

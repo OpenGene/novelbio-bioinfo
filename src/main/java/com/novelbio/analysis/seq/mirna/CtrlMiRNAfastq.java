@@ -15,6 +15,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
+import com.novelbio.generalConf.TitleFormatNBC;
 
 /** 
  * 给定一系列fastq文件，获得miRNA的bed文件
@@ -42,17 +43,21 @@ public class CtrlMiRNAfastq {
 	String outPath;
 	String outPathTmpMapping;
 	///////输出数量 ///////////
-	Map<String, Map<String, Double>> mapPrefix2MiRNAPre = new LinkedHashMap<>();
-	Map<String, double[]> mapPrefix2CountsPre = new HashMap<>();
-	Map<String, Map<String, Double>> mapPrefix2MiRNAmature = new LinkedHashMap<>();
-	Map<String, double[]> mapPrefix2CountsMature = new HashMap<>();
+	GeneExpTable expMirPre = new GeneExpTable(TitleFormatNBC.miRNApreName);
+	GeneExpTable expMirMature = new GeneExpTable(TitleFormatNBC.miRNAName);
 	
-	Map<String, Map<String, Double>> mapPrefix2MiRNArfam = new LinkedHashMap<>();
-	Map<String, Map<String, Double>> mapPrefix2MiRNAncrna = new LinkedHashMap<>();
+	GeneExpTable expRfam = new GeneExpTable(TitleFormatNBC.RfamID);
+	GeneExpTable expNcRNA = new GeneExpTable(TitleFormatNBC.GeneID);
+	GeneExpTable expRepeatName = new GeneExpTable(TitleFormatNBC.RepeatName);
+	GeneExpTable expRepeatFamily = new GeneExpTable(TitleFormatNBC.RepeatFamily);
+	GeneExpTable expGeneStructure = new GeneExpTable(TitleFormatNBC.GeneStructure);
 	
-	Map<String, Map<String, Double>> mapPrefix2RepeatName = new LinkedHashMap<>();
-	Map<String, Map<String, Double>> mapPrefix2RepeatFamily = new LinkedHashMap<>();
-	Map<String, Map<String, Double>> mapPrefix2GeneInfo = new LinkedHashMap<>();
+//	Map<String, Map<String, Double>> mapPrefix2MiRNArfam = new LinkedHashMap<>();
+//	Map<String, Map<String, Double>> mapPrefix2MiRNAncrna = new LinkedHashMap<>();
+	
+//	Map<String, Map<String, Double>> mapPrefix2RepeatName = new LinkedHashMap<>();
+//	Map<String, Map<String, Double>> mapPrefix2RepeatFamily = new LinkedHashMap<>();
+//	Map<String, Map<String, Double>> mapPrefix2GeneInfo = new LinkedHashMap<>();
 	
 	////// 没有mapping到的bed文件，用于预测新miRNA的 */
 	Map<AlignSeq, String> mapNovelMiRNASamFile2Prefix = new LinkedHashMap<AlignSeq, String>();
@@ -118,13 +123,6 @@ public class CtrlMiRNAfastq {
 	
 	/** 比对和计数，每比对一次就计数。主要是为了防止出错 */
 	public void mappingAndCounting() {
-		mapPrefix2MiRNAPre.clear();
-		mapPrefix2CountsPre.clear();
-		mapPrefix2CountsMature.clear();
-		mapPrefix2MiRNAmature.clear();
-		mapPrefix2MiRNArfam.clear();
-		mapPrefix2MiRNAncrna.clear();
-		
 		FileOperate.createFolders(outPathTmpMapping);
 		setConfigFile();
 		for (String[] fastq2Prefix : lsFastqFile2Prefix) {
@@ -139,6 +137,17 @@ public class CtrlMiRNAfastq {
 			countSmallRNA(outPath, fastq2Prefix[1], miRNAmappingPipline);
 		}
 	}
+	
+//	private void initial() {
+//		expMirPre.addLsGeneName(colGeneName);
+//		 expMirMature
+//		
+//		 expRfam
+//		 expNcRN
+//		 expRepeatName
+//		 expRepeatFamily
+//		 expGeneStructure
+//	}
 	
 	/** 设定待比对的序列 */
 	private void setConfigFile() {
@@ -178,6 +187,7 @@ public class CtrlMiRNAfastq {
 			miRNACount.setAlignFile(alignSeq);
 			miRNACount.run();
 			miRNACount.writeResultToOut(outPath);
+			
 			mapPrefix2MiRNAmature.put(prefix, miRNACount.getMapMirMature2Value());
 			mapPrefix2MiRNAPre.put(prefix, miRNACount.getMapMiRNApre2Value());
 			mapPrefix2CountsMature.put(prefix, miRNACount.getCountMature());

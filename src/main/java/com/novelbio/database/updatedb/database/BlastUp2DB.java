@@ -1,7 +1,6 @@
 package com.novelbio.database.updatedb.database;
 
 import org.apache.log4j.Logger;
-import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.submig;
 
 import com.novelbio.database.domain.geneanno.BlastFileInfo;
 import com.novelbio.database.domain.geneanno.BlastInfo;
@@ -12,7 +11,7 @@ public class BlastUp2DB extends ImportPerLine {
 	private static final Logger logger = Logger.getLogger(BlastUp2DB.class);
 	
 	int queryIDType = GeneID.IDTYPE_ACCID;
-	int blastIDType = GeneID.IDTYPE_ACCID;	
+	int blastIDType = GeneID.IDTYPE_ACCID;
 	BlastFileInfo blastFileInfo = new BlastFileInfo();
 	ManageBlastInfo manageBlastInfo = ManageBlastInfo.getInstance();
 	
@@ -51,6 +50,9 @@ public class BlastUp2DB extends ImportPerLine {
 	 */
 	public void setQueryIDType(int IDtypeQ) {
 		this.queryIDType = IDtypeQ;
+	}
+	public void setUserID(String userID) {
+		blastFileInfo.setUserID(userID);
 	}
 	/**
 	 * blast到的ID是accID还是geneID还是UniID
