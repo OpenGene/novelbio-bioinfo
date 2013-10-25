@@ -23,6 +23,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
+import com.novelbio.analysis.seq.mirna.GeneExpTable;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.SepSign;
@@ -48,34 +49,9 @@ public class RPKMcomput implements AlignmentRecorder {
 	boolean upQuartile = false;
 	
 	GffHashGene gffHashGene;
-	/**
-	 * key：基因名<br>
-	 * value：<br>
-	 * key:condiiton<br>
-	 *         value: 0 counts<br>
-	 */
-	Map<String, Map<String, double[]>> mapGeneName2Cond2ReadsCounts = new HashMap<String, Map<String,double[]>>();
-	/**
-	 * key: geneName
-	 * value: geneLength
-	 */
-	Map<String, Integer> mapGeneName2Length = new TreeMap<String, Integer>();
-	/**
-	 * key: geneName
-	 * value: geneType
-	 */
-	Map<String, GeneType> mapGeneName2Type = new HashMap<String, GeneType>();
-	
+	GeneExpTable geneExpTable = new GeneExpTable(TitleFormatNBC.GeneID);
 	/** 双端测序用来配对 */
 	HashMap<String, SamRecord> mapKey2SamRecord = new HashMap<String, SamRecord>((int)(numForFragment*1.5));
-	/** 样本时期 和 样本reads num信息<br>
-	 * key: 样本时期<br>
-	 *  value: double[2] 0: allReadsNum 1: upQuartile的reads number<br>
-	 *  用来算rpkm
-	 */
-	Map<String, double[]> mapCond2CountsNum = new LinkedHashMap<String, double[]>();
-	/** 设定当前condition */
-	String currentCondition;
 	
 	int parNum = 0;
 	
@@ -102,17 +78,22 @@ public class RPKMcomput implements AlignmentRecorder {
 	
 	private void initial() {
 		ArrayList<GffDetailGene> lsGffDetailGene = gffHashGene.getGffDetailAll();
+		Map<String, Integer> mapGene2Len = new HashMap<>();
+		Map<String, String> mapGene2Type = new HashMap<>();
 		for (GffDetailGene gffDetailGene : lsGffDetailGene) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 				String geneName = gffGeneIsoInfo.getParentGeneName();
 				int isoLength = gffGeneIsoInfo.getLenExon(0);
 				//获得一个基因中最长转录本的名字
-				if (!mapGeneName2Length.containsKey(geneName) || mapGeneName2Length.get(geneName) < isoLength) {
-					mapGeneName2Length.put(geneName, isoLength);
-					mapGeneName2Type.put(geneName, gffGeneIsoInfo.getGeneType());
+				if (!mapGene2Len.containsKey(geneName) || mapGene2Len.get(geneName) < isoLength) {
+					mapGene2Len.put(geneName, isoLength);
+					mapGene2Type.put(geneName, gffGeneIsoInfo.getGeneType().toString());
 				}
 			}
 		}
+		geneExpTable.addLsGeneName(mapGene2Len.keySet());
+		geneExpTable.setMapGene2Len(mapGene2Len);
+		geneExpTable.addAnnotation(mapGene2Type);
 	}
 	
 	/** 设定是否为双端测序，同时会清空双端的hash表 */
@@ -137,8 +118,8 @@ public class RPKMcomput implements AlignmentRecorder {
 	 * 区分大小写
 	 * @param currentCondition
 	 */
-	public void setCurrentCondition(String currentCondition) {
-		this.currentCondition = currentCondition;
+	public void setAndAddCurrentCondition(String currentCondition) {
+		geneExpTable.setAndAddCondition(currentCondition);
 		this.currentReadsNum = 0;
 	}
 	
@@ -463,22 +444,7 @@ public class RPKMcomput implements AlignmentRecorder {
 	 * @param mapNum 如果是非unique mapping，那么mapping到几个位置上
 	 */
 	private void addInMapGeneName2Cond2ReadsCounts(String geneName, int mapNum) {
-		Map<String, double[]>mapCond2ReadsCounts = null;
-		if (mapGeneName2Cond2ReadsCounts.containsKey(geneName)) {
-			mapCond2ReadsCounts = mapGeneName2Cond2ReadsCounts.get(geneName);
-		} else {
-			mapCond2ReadsCounts = new LinkedHashMap<String, double[]>();
-			mapGeneName2Cond2ReadsCounts.put(geneName, mapCond2ReadsCounts);
-		}
-		
-		double[] countsNum = null;
-		if (mapCond2ReadsCounts.containsKey(currentCondition)) {
-			countsNum = mapCond2ReadsCounts.get(currentCondition);
-		} else {
-			countsNum = new double[1];
-			mapCond2ReadsCounts.put(currentCondition, countsNum);
-		}
-		countsNum[0] += (double)1/mapNum;
+		geneExpTable.addGeneExp(geneName,  (double)1/mapNum);
 	}
 	
 	@Override
@@ -490,131 +456,17 @@ public class RPKMcomput implements AlignmentRecorder {
 				addAlignRecord(lsSamRecords);
 			}
 		}
-		double[] currentReadsNumInfo = new double[2];
-		currentReadsNumInfo[0] = currentReadsNum;
-		List<Double> lsReadsInfo = new ArrayList<Double>();
-		for (String geneName : mapGeneName2Length.keySet()) {
-			Map<String, double[]> mapCond2Counts = mapGeneName2Cond2ReadsCounts.get(geneName);
-			if (mapCond2Counts == null) {
-				lsReadsInfo.add(0.0);
-			} else {
-				double[] readsCounts = mapCond2Counts.get(currentCondition);
-				if (readsCounts == null) {
-					lsReadsInfo.add(0.0);
-				} else {
-					lsReadsInfo.add(readsCounts[0]);
-				}
-			}
-		}
-		currentReadsNumInfo[1] = MathComput.median(lsReadsInfo, 75);
-		mapCond2CountsNum.put(currentCondition, currentReadsNumInfo);
-	}
-	
-	/**
-	 * @param enumExpression
-	 * @param colGeneName
-	 * @param lsConditions 按照指定的condition
-	 * @param mapGeneName2Type 每个基因所对应的类型，如果存在则会装到最后的结果中，null表示没这个东西
-	 * @param mapGeneName2Cond2ReadsCounts
-	 * key：基因名<br>
-	 * value：<br>
-	 * key:condiiton<br>
-	 *         value: 0 counts<br>
-	 * @param mapCond2CountsNum
-	 * 样本时期 和 样本reads num信息<br>
-	 * key: 样本时期<br>
-	 *  value: double[2] 0: allReadsNum 1: upQuartile的reads number<br>
-	 *  用来算rpkm
-	 *  @param mapGeneName2Length
-	 *  
-	 *  @return 返回按照 lsConditions顺序的基因表达list
-	 */
-	public static List<String[]> getLsCond2CountsNum(EnumExpression enumExpression, Collection<String> colGeneName,
-			List<String> lsConditions,
-			Map<String, ? extends Object> mapGeneName2Type,
-			Map<String, Map<String, double[]>> mapGeneName2Cond2ReadsCounts,
-			Map<String, double[]> mapCond2CountsNum, Map<String, Integer> mapGeneName2Length) {
-		List<String[]> lsResult = new ArrayList<>();
-		for (String geneName : colGeneName) {
-			List<String> lsTmpResult = new ArrayList<String>();
-			lsTmpResult.add(geneName);
-			if (mapGeneName2Type != null) {
-				lsTmpResult.add(mapGeneName2Type.get(geneName).toString());
-			}
-			
-			Map<String, double[]> mapCond2Counts = mapGeneName2Cond2ReadsCounts.get(geneName);
-			for (String conditions : lsConditions) {
-				if (mapCond2Counts == null) {
-					lsTmpResult.add(0 + "");
-					continue;
-				}
-				double[] readsCounts = mapCond2Counts.get(conditions);
-				if (readsCounts == null) {
-					lsTmpResult.add(0 + "");
-				} else {
-					double[] allReads2UQreads = mapCond2CountsNum.get(conditions);
-					lsTmpResult.add(getValue(enumExpression, readsCounts[0], allReads2UQreads[0], 
-							allReads2UQreads[1], mapGeneName2Length.get(geneName)) + "");
-				}
-			}
-			lsResult.add(lsTmpResult.toArray(new String[0]));
-		}
-		return lsResult;
-	}
-	
-	/** 计算单个基因的表达值 */
-	public static double getValue(EnumExpression enumExpression, double readsCount, double allReadsNum, double upQuerterNum, int geneLen) {
-		if (enumExpression == EnumExpression.Counts) {
-			return readsCount;
-		} else if (enumExpression == EnumExpression.TPM) {
-			return readsCount*1000000/allReadsNum;
-		} else if (enumExpression == EnumExpression.RPKM) {
-			return readsCount*1000000*1000/allReadsNum/geneLen;
-		} else if (enumExpression == EnumExpression.UQRPKM) {
-			return readsCount*100*1000/upQuerterNum/geneLen;
-		} else if (enumExpression == EnumExpression.UQPM) {
-			return readsCount*10/upQuerterNum;
-		}
-		return 0;
-	}
-	
-	private List<String> getLsConditions() {
-		return ArrayOperate.getArrayListKey(mapCond2CountsNum);
-	}
-	
-	/**
-	 * 返回表达值
-	 * @param enumExpression
-	 * @param condition 指定的时期，null表示返回全体时期
-	 * @return
-	 */
-	private List<String[]> getLsExp(EnumExpression enumExpression, String condition) {
-		List<String[]> lsResult = new ArrayList<String[]>();
-		List<String> lsConditions = null;
-		if (condition == null) {
-			lsConditions = getLsConditions();
-		} else {
-			lsConditions = new ArrayList<>();
-			lsConditions.add(condition);
-		}
-			
-		lsResult = getLsCond2CountsNum(enumExpression, mapGeneName2Length.keySet(),
-				lsConditions, mapGeneName2Type, mapGeneName2Cond2ReadsCounts, mapCond2CountsNum, mapGeneName2Length);
-		lsConditions.add(0, TitleFormatNBC.GeneName.toString());
-		lsConditions.add(1, TitleFormatNBC.GeneType.toString());
-		lsResult.add(lsConditions.toArray(new String[0]));
-		
-		return lsResult;
+		geneExpTable.addAllReads((long)currentReadsNum);
 	}
 	
 	
 	/** 返回计算得到的rpm值 */
 	public List<String[]> getLsTPMs() {
-		return getLsExp(EnumExpression.TPM, null);
+		return geneExpTable.getLsCond2CountsNum(EnumExpression.TPM);
 	}
 	/** 返回counts数量，可以拿来给DEseq继续做标准化 */
 	public List<String[]> getLsCounts() {
-		return getLsExp(EnumExpression.Counts, null);
+		return geneExpTable.getLsCond2CountsNum(EnumExpression.Counts);
 	}	
 	/**
 	 * 返回计算得到的rpkm值
@@ -622,7 +474,7 @@ public class RPKMcomput implements AlignmentRecorder {
 	 * exonlength的单位是kb
 	 */
 	public List<String[]> getLsRPKMs() {
-		return getLsExp(EnumExpression.RPKM, null);
+		return geneExpTable.getLsCond2CountsNum(EnumExpression.RPKM);
 	}
 	/**
 	 * 返回用Upper Quartile计算得到的rpkm值
@@ -630,16 +482,16 @@ public class RPKMcomput implements AlignmentRecorder {
 	 * exonlength的单位是kb
 	 */
 	public List<String[]> getLsUQRPKMs() {
-		return getLsExp(EnumExpression.UQRPKM, null);
+		return geneExpTable.getLsCond2CountsNum(EnumExpression.UQRPKM);
 	}
 	
 	/** 返回当前时期的rpm值 */
 	public List<String[]> getLsTPMsCurrent() {
-		return getLsExp(EnumExpression.TPM, currentCondition);
+		return geneExpTable.getLsCountsNum(EnumExpression.TPM);
 	}
 	/** 返回counts数量，可以拿来给DEseq继续做标准化 */
 	public List<String[]> getLsCountsCurrent() {
-		return getLsExp(EnumExpression.Counts, currentCondition);
+		return geneExpTable.getLsCountsNum(EnumExpression.Counts);
 	}
 	
 	/**
@@ -648,7 +500,7 @@ public class RPKMcomput implements AlignmentRecorder {
 	 * exonlength的单位是kb
 	 */
 	public List<String[]> getLsRPKMsCurrent() {
-		return getLsExp(EnumExpression.RPKM, currentCondition);
+		return geneExpTable.getLsCountsNum(EnumExpression.RPKM);
 	}
 	
 	/**
@@ -657,7 +509,7 @@ public class RPKMcomput implements AlignmentRecorder {
 	 * exonlength的单位是kb
 	 */
 	public List<String[]> getLsUQRPKMsCurrent() {
-		return getLsExp(EnumExpression.UQRPKM, currentCondition);
+		return geneExpTable.getLsCountsNum(EnumExpression.UQRPKM);
 	}
 	/** 输入文件前缀，把所有结果写入该文件为前缀的文本中 */
 	public void writeToFile(String fileNamePrefix) {
@@ -682,17 +534,17 @@ public class RPKMcomput implements AlignmentRecorder {
 	
 	/** 输入文件前缀，把所有结果写入该文件为前缀的文本中 */
 	public void writeToFileCurrent(String fileNamePrefix) {
-		TxtReadandWrite txtWriteTpm = new TxtReadandWrite(fileNamePrefix + currentCondition + "_TPM", true);
+		TxtReadandWrite txtWriteTpm = new TxtReadandWrite(fileNamePrefix + geneExpTable.getCurrentCondition() + "_TPM", true);
 		String suffix = "_RawCounts";
 		if (isPairend && calculateFPKM) {
 			suffix = "_RawFragments";
 		}
-		TxtReadandWrite txtWriteCounts = new TxtReadandWrite(fileNamePrefix + currentCondition + suffix, true);
+		TxtReadandWrite txtWriteCounts = new TxtReadandWrite(fileNamePrefix + geneExpTable.getCurrentCondition() + suffix, true);
 		suffix = "_RPKM";
 		if (isPairend && calculateFPKM) {
 			suffix = "_FPKM";
 		}
-		TxtReadandWrite txtWriteRPKM = new TxtReadandWrite(fileNamePrefix + currentCondition + suffix, true);
+		TxtReadandWrite txtWriteRPKM = new TxtReadandWrite(fileNamePrefix + geneExpTable.getCurrentCondition() + suffix, true);
 		txtWriteCounts.ExcelWrite(getLsCountsCurrent());
 		txtWriteRPKM.ExcelWrite(getLsRPKMsCurrent());
 		txtWriteTpm.ExcelWrite(getLsTPMsCurrent());

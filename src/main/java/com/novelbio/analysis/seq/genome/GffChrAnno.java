@@ -74,15 +74,14 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 	public void setColStartEnd(int colStart, int colEnd) {
 		this.colStart = colStart - 1;
 		this.colEnd = colEnd - 1;
-		searchSummit = false;
 	}
-	
+	/** 实际列 */
 	public void setColChrID(int colChrID) {
 		this.colChrID = colChrID - 1;
 	}
+	/** 实际列 */
 	public void setColSummit(int colSummit) {
 		this.colSummit = colSummit - 1;
-		searchSummit = true;
 	}
 	/** true查找peak的最高点，也就是找单个点，
 	 * false查找peak两端，看夹住了什么基因
@@ -94,6 +93,9 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 	public void setLsGeneInfo(ArrayList<String[]> lsGeneInfo) {
 		this.lsGeneInfo = lsGeneInfo;
 	}
+	/**
+	 * @param tss 默认 -1500 到 1500
+	 */
 	public void setTss(int[] tss) {
 		this.filtertss = true;
 		this.tss = tss;
@@ -102,6 +104,11 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 		this.filtertes = true;
 		this.tes = tes;
 	}
+	/**
+	 * @param genebody 是否注释genebody，默认是false
+	 * @param exonFilter 当genebody为false时起作用，表示是否注释exon
+	 * @param intronFilter 当genebody为false时起作用，表示是否注释intron
+	 */
 	public void setFilterGeneBody(boolean genebody, boolean exonFilter, boolean intronFilter) {
 		this.genebody = genebody;
 		this.exonFilter = exonFilter;
@@ -111,9 +118,11 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 		this.UTR5 = utr5;
 		this.UTR3 = utr3;
 	}
+	/** 默认false */
 	public void setFiltertss(boolean filtertss) {
 		this.filtertss = filtertss;
 	}
+	/** 默认false */
 	public void setFiltertes(boolean filtertes) {
 		this.filtertes = filtertes;
 	}
@@ -128,11 +137,13 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 	 * @param outTxtFile
 	 */
 	public void annoFile(String txtFile, String outTxtFile) {
+		this.flagStop = false;
 		this.lsGeneInfo = ExcelTxtRead.readLsExcelTxt(txtFile, 1);
 		ArrayList<String[]> lsResult = getAnno();
 		TxtReadandWrite txtOut = new TxtReadandWrite(outTxtFile, true);
 		txtOut.ExcelWrite(lsResult);
 		txtOut.close();
+		this.flagStop = true;
 	}
 	
 	@Override
@@ -185,11 +196,17 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 		try {
 			start =  (int)Double.parseDouble(geneLocInfo[colStart]);
 			end =  (int)Double.parseDouble(geneLocInfo[colEnd]);
-		} catch (Exception e) { 	}
+			
+		} catch (Exception e) { 	
+			logger.warn("summit col contains wrong value, omit this line:" + geneLocInfo[colStart] + " " + geneLocInfo[colEnd]);
+			return lsResult;
+		}
 		try {
-			summit =  (int)Double.parseDouble(geneLocInfo[colSummit]);
+			summit = colSummit >= 0 ?  (int)Double.parseDouble(geneLocInfo[colSummit]) : ((start + end)/2);
 		} catch (Exception e) {
 			summit = (start + end)/2;
+			logger.warn("summit col contains wrong value, omit this line:" + geneLocInfo[colSummit]);
+			return lsResult;
 		}
 		ArrayList<String[]> lsanno = null;
 		if (searchSummit) {
@@ -233,9 +250,6 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 	 * 3：两端是具体信息，中间是covered
 	 */
 	private ArrayList<String[]> getGenInfoFilterPeakSingle(String chrID, int startCod, int endCod) {
-		if (startCod == 5943970) {
-			logger.error("stop");
-		}
 		GffCodGeneDU gffCodGeneDu = gffChrAbs.getGffHashGene().searchLocation(chrID, startCod, endCod);
 
 		if (gffCodGeneDu == null) {
@@ -253,7 +267,7 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 			lsAnno = gffCodGeneDu.getAnno();
 
 		} catch (Exception e) {
-			logger.error(chrID + " " + startCod);
+			logger.error(chrID + " " + startCod, e);
 		}
 		return lsAnno;
 	}
