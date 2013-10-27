@@ -101,7 +101,7 @@ public abstract class MapDNA implements MapDNAint {
 //			IndexMake(true);
 //			mapping();
 		}
-		logger.error("mapping 结束");
+		logger.info("mapping 结束");
 		return samFile;
 	}
 	

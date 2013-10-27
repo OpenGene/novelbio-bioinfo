@@ -78,6 +78,22 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 		seqFastaHashPreMiRNA = new SeqFastaHash(hairpairMirna);
 	}
 	
+	/**
+	 * 通过设定物种来设定
+	 * {@link #setListMiRNALocation(ListMiRNAInt)}
+	 * {@link #setMiRNAfile(String, String)}
+	 * 这两个方法
+	 * @param species
+	 * @param rnadatFile
+	 */
+	public void setSpecies(Species species, String rnadatFile) {
+		ListMiRNAdate listMiRNAdate = new ListMiRNAdate();
+		listMiRNAdate.setSpecies(species);
+		listMiRNAdate.ReadGffarray(rnadatFile);
+		listMiRNALocation = listMiRNAdate;
+		setMiRNAfile(species.getMiRNAhairpinFile(), species.getMiRNAmatureFile());
+	}
+	
 	/** 设定自定义ListMiRNALocation */
 	public void setListMiRNALocation(ListMiRNAInt listMiRNALocation) {
 		this.listMiRNALocation = listMiRNALocation;
@@ -143,34 +159,6 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 			mapMature2Pre.put(matureName, parentName);
 		}
 		return mapMature2Pre;
-	}
-
-	/**
-	 * 输出文件前缀，就是miRNA的计数
-	 * @param outFilePrefix
-	 */
-	public void writeResultToOut(String outFilePrefix) {
-		String outMirValue = outFilePrefix + "MirValue";
-		String outMirMatureValue = outFilePrefix + "MirMatureValue";
-		
-		TxtReadandWrite txtMirValue = new TxtReadandWrite(outMirValue, true);
-		TxtReadandWrite txtMirMatureValue = new TxtReadandWrite(outMirMatureValue, true);
-		for (Entry<String, Double> miRNApre2Value : mapMiRNApre2Value.entrySet()) {
-			txtMirValue.writefileln(miRNApre2Value.getKey() + "\t" + miRNApre2Value.getValue().intValue() + "\t" + seqFastaHashPreMiRNA.getSeqFasta(miRNApre2Value.getKey().split(sepMirPreID)[0] ));
-		}
-		for (String miRNAName : mapMirPre_Mature2Value.keySet()) {
-			String[] ss = miRNAName.split(SepSign.SEP_ID);
-			String miRNApre = ss[0], miRNAmature = ss[1];
-			Double value = mapMirPre_Mature2Value.get(miRNAName);
-		
-			String mirMatureSeq = getMiRNAmatureSeq(miRNApre, miRNAmature);
-			if (value == null || mirMatureSeq == null) {
-				continue;
-			}
-			txtMirMatureValue.writefileln(miRNAmature + "\t" + miRNApre + "\t" + mirMatureSeq + "\t" + value.intValue());
-		}
-		txtMirValue.close();
-		txtMirMatureValue.close();
 	}
 
 	/**
@@ -338,6 +326,26 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 		return countsMatureAll;
 	}
 	
+	public void setExpTable(GeneExpTable expMirPre, GeneExpTable expMirMature) {
+		expMirPre.addLsGeneName(getLsMirNamePre());
+		expMirPre.addAnnotation(getMapPre2Seq());
+		expMirPre.addLsTitle(MiRNACount.getLsTitleAnnoPre());
+		
+		expMirMature.addLsGeneName(getLsMirNameMature());
+		expMirMature.addAnnotation(getMapMature2Pre());
+		expMirMature.addAnnotation(getMapMature2Seq());
+		expMirMature.addLsTitle(MiRNACount.getLsTitleAnnoMature());
+	}
+	/** 不设定lsGeneName */
+	public void setExpTableWithoutLsGeneName(GeneExpTable expMirPre, GeneExpTable expMirMature) {
+		expMirPre.addAnnotation(getMapPre2Seq());
+		expMirPre.addLsTitle(MiRNACount.getLsTitleAnnoPre());
+		
+		expMirMature.addAnnotation(getMapMature2Pre());
+		expMirMature.addAnnotation(getMapMature2Seq());
+		expMirMature.addLsTitle(MiRNACount.getLsTitleAnnoMature());
+	}
+	/** MiRNACount的输出，给GUI使用 */
 	public static class MiRNAcountProcess {
 		long readsNum;
 		public void setReadsNum(long readsNum) {

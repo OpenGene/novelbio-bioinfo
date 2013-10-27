@@ -213,7 +213,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 		
 		createReportFile = false;
 	}
-
+	
 	/**
 	 * 将结果文件移动到指定位置
 	 * 同时处理结果文件为指定格式

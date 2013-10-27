@@ -37,7 +37,7 @@ public class MapBwa extends MapDNA implements IntCmdSoft {
 	}
 	
 	
-	private static Logger logger = Logger.getLogger(MapBwa.class);
+	private static final Logger logger = Logger.getLogger(MapBwa.class);
 	/**
 	 * 在此大小以下的genome直接读入内存以帮助快速mapping
 	 * 单位，KB
@@ -365,6 +365,7 @@ public class MapBwa extends MapDNA implements IntCmdSoft {
 		InputStream inputStream = cmdOperate.getStdStream();
 		SamFile samResult = copeSamStream(inputStream, isNeedSort);
 		if (samResult != null && !cmdOperate.isRunning() && cmdOperate.isFinishedNormal()) {
+			deleteFile();
 			return samResult;
 		} else {
 			deleteFailFile();
@@ -399,37 +400,15 @@ public class MapBwa extends MapDNA implements IntCmdSoft {
 		lsCmd.add(outFileName);
 		return lsCmd;
 	}
-		
-	/**
-	 * 将sam文件压缩成bam文件，然后做好统计并返回
-	 * @param outSamFile
-	 * @return
-	 */
-	protected SamFile copeAfterMapping() {
-		if (!FileOperate.isFileExistAndBigThanSize(outFileName, 0)) {
-			logger.error("没有该文件：" + outFileName);
-			return null;
-		}
-		SamFile samFile = new SamFile(outFileName);
-		SamFile bamFile =  null;
-		bamFile = samFile.convertToBam(lsAlignmentRecorders, false);
-		samFile.close();
-		deleteFile(samFile.getFileName(), bamFile.getFileName());
-		return bamFile;
-	}
 	
 	/**
 	 * 删除sai文件
 	 * @param samFileName
 	 */
-	private void deleteFile(String samFile, String bamFile) {
+	private void deleteFile() {
 		FileOperate.DeleteFileFolder(getSai(1));
 		if (isPairEnd()) {
 			FileOperate.DeleteFileFolder(getSai(2));
-		}
-		double samFileSize = FileOperate.getFileSize(samFile);
-		if (FileOperate.isFileExistAndBigThanSize(bamFile, samFileSize/15)) {
-			FileOperate.delFile(samFile);
 		}
 	}
 	

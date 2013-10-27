@@ -1,12 +1,9 @@
 package com.novelbio.analysis.seq.mirna;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.swing.JOptionPane;
 
@@ -14,8 +11,7 @@ import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.base.SepSign;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
@@ -31,10 +27,8 @@ public class CtrlMiRNApredict {
 	NovelMiRNADeep novelMiRNADeep = new NovelMiRNADeep();
 	SoftWareInfo softWareInfo = new SoftWareInfo();
 	MiRNACount miRNACount = new MiRNACount();
-	Map<String, Map<String, Double>> mapPrefix2MapMature = new LinkedHashMap<>();
-	Map<String, double[]> mapPrefix2CountsMature = new LinkedHashMap<>();
-	Map<String, Map<String, Double>> mapPrefix2MapPre= new LinkedHashMap<>();
-	Map<String, double[]> mapPrefix2CountsPre = new LinkedHashMap<>();
+	GeneExpTable expMirMature;
+	GeneExpTable expMirPre;
 	
 	/** 新miRNA的注释，比对到哪些物种上去 */
 	List<Species> lsBlastTo = new ArrayList<>();
@@ -49,6 +43,10 @@ public class CtrlMiRNApredict {
 	public void setSpecies(Species species) {
 		this.species = species;
 	}
+	public void setExpMir(GeneExpTable expMirPre, GeneExpTable expMirMature) {
+		this.expMirPre = expMirPre;
+		this.expMirMature = expMirMature;
+	}
 	/** 新miRNA的注释，比对到哪些物种上去 */
 	public void setLsSpeciesBlastTo(List<Species> lsBlastTo) {
 		this.lsBlastTo = lsBlastTo;
@@ -62,11 +60,6 @@ public class CtrlMiRNApredict {
 	}
 
 	public void runMiRNApredict() {
-		mapPrefix2MapMature.clear();
-		mapPrefix2MapPre.clear();
-		mapPrefix2CountsMature.clear();
-		mapPrefix2CountsPre.clear();
-		
 		if (gffChrAbs == null) {
 			gffChrAbs = new GffChrAbs(species);
 		}
@@ -87,11 +80,20 @@ public class CtrlMiRNApredict {
 		novelMiRNADeep.setSpecies(species.getCommonName());
 		novelMiRNADeep.setOutPath(novelMiRNAPathDeep);
 		novelMiRNADeep.predict();
-		
+		setMiRNACount_And_Anno();
 		calculateExp();
 	}
 	
 	protected void calculateExp() {
+		expMirPre.addLsGeneName(miRNACount.getLsMirNamePre());
+		expMirPre.addAnnotation(miRNACount.getMapPre2Seq());
+		expMirPre.addLsTitle(MiRNACount.getLsTitleAnnoPre());
+		
+		expMirMature.addLsGeneName(miRNACount.getLsMirNameMature());
+		expMirMature.addAnnotation(miRNACount.getMapMature2Pre());
+		expMirMature.addAnnotation(miRNACount.getMapMature2Seq());
+		expMirMature.addLsTitle(MiRNACount.getLsTitleAnnoMature());
+		 
 		for (Entry<? extends AlignSeq, String> seq2Prefix : lsSamFile2Prefix.entrySet()) {
 			getMirPredictCount(seq2Prefix.getKey(), seq2Prefix.getValue());
 		}
@@ -111,37 +113,28 @@ public class CtrlMiRNApredict {
 		miRNAmapPipline.setSample(prefix, fastQ.getReadFileName());
 		miRNAmapPipline.mappingMiRNA();
 		
-		setMiRNACount_And_Anno();
 		miRNACount.setAlignFile(miRNAmapPipline.getOutMiRNAAlignSeq());
 
 		String outPathNovel = outPath + prefix + FileOperate.getSepPath();
 		FileOperate.createFolders(outPathNovel);
 		miRNACount.run();
-		miRNACount.writeResultToOut(outPathNovel + "NovelmiRNA");
+		expMirMature.setCurrentCondition(prefix);
+		expMirMature.addAllReads(miRNACount.getCountMatureAll());
+		expMirMature.addGeneExp(miRNACount.getMapMirMature2Value());
 		
-		mapPrefix2MapMature.put(prefix, miRNACount.getMapMirMature2Value());
-		mapPrefix2MapPre.put(prefix, miRNACount.getMapMiRNApre2Value());
-		mapPrefix2CountsPre.put(prefix, miRNACount.getCountPre());
-		mapPrefix2CountsMature.put(prefix, miRNACount.getCountMature());
-		
+		expMirPre.addAllReads(miRNACount.getCountPreAll());
+		expMirPre.addGeneExp(miRNACount.getMapMiRNApre2Value());
 	}
 	
 	public void writeToFile() {
-		ArrayList<String[]> lsMirPreCounts = miRNACount.combMapMir2ValueCounts(mapPrefix2MapPre, mapPrefix2CountsPre);
-		ArrayList<String[]> lsMirMatureCounts = miRNACount.combMapMir2MatureValueCounts(mapPrefix2MapMature, mapPrefix2CountsMature);
-		
-		ArrayList<String[]> lsMirPreUQTM = miRNACount.combMapMir2ValueUQPM(mapPrefix2MapPre, mapPrefix2CountsPre);
-		ArrayList<String[]> lsMirMatureUQTM = miRNACount.combMapMir2MatureValueUQPM(mapPrefix2MapMature, mapPrefix2CountsMature);
-//		annoMiRNA(novelMiRNADeep, lsMirMature);
-		writeFile(outPath + "NovelMirPreAll_Counts.txt", lsMirPreCounts);
-		writeFile(outPath + "NovelMirMatureAll_Counts.txt", lsMirMatureCounts);
-		writeFile(outPath + "NovelMirPreAll_UQTPM.txt", lsMirPreUQTM);
-		writeFile(outPath + "NovelMirMatureAll_UQTPM.txt", lsMirMatureUQTM);
+		CtrlMiRNAfastq.writeFile(outPath + "NovelMirPreAll_Counts.txt", expMirPre, EnumExpression.Counts);
+		CtrlMiRNAfastq.writeFile(outPath + "NovelMirMatureAll_Counts.txt", expMirMature, EnumExpression.Counts);
+		CtrlMiRNAfastq.writeFile(outPath + "NovelMirPreAll_UQTPM.txt", expMirPre, EnumExpression.UQPM);
+		CtrlMiRNAfastq.writeFile(outPath + "NovelMirMatureAll_UQTPM.txt", expMirMature, EnumExpression.UQPM);
 	}
 	
 	private void setMiRNACount_And_Anno() {
 		SeqHash seqHash = new SeqHash(novelMiRNADeep.getNovelMiRNAmature());
-		Set<String> setMiRNAName = new HashSet<>(seqHash.getLsSeqName());
 		seqHash.close();
 		Map<String, String> mapID2Blast = null;
 		MiRNAnovelAnnotaion miRNAnovelAnnotaion = null;
@@ -166,29 +159,4 @@ public class CtrlMiRNApredict {
 		}
 	}
 	
-	/** 新miRNA添上blast到的miRNA名字 */
-	private void annoMiRNA(NovelMiRNADeep novelMiRNADeep, List<String[]> lsMirMature) {
-		if (lsBlastTo == null || lsBlastTo.size() == 0) return;
-		
-		MiRNAnovelAnnotaion miRNAnovelAnnotaion = new MiRNAnovelAnnotaion();
-		miRNAnovelAnnotaion.setMiRNAthis(novelMiRNADeep.getNovelMiRNAmature());
-		miRNAnovelAnnotaion.setLsMiRNAblastTo(lsBlastTo);
-		miRNAnovelAnnotaion.annotation();
-		Map<String, String> mapID2Blast = miRNAnovelAnnotaion.getMapID2Blast();
-		for (String[] strings : lsMirMature) {
-			String miRNAblast = mapID2Blast.get(strings[0]);
-			if (miRNAblast != null) {
-				strings[0] += SepSign.SEP_INFO + miRNAblast;
-			}
-		}
-	}
-	
-	private void writeFile(String fileName, ArrayList<String[]> lsInfo) {
-		if (lsInfo == null || lsInfo.size() == 0) {
-			return;
-		}
-		TxtReadandWrite txtWrite = new TxtReadandWrite(fileName, true);
-		txtWrite.ExcelWrite(lsInfo);
-		txtWrite.close();
-	}
 }

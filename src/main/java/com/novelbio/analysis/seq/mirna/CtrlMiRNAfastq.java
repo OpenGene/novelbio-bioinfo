@@ -1,7 +1,5 @@
 package com.novelbio.analysis.seq.mirna;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +9,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -18,7 +17,6 @@ import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.TitleFormatNBC;
-import com.sun.jersey.server.impl.uri.rules.automata.TrieNode;
 
 /** 
  * 给定一系列fastq文件，获得miRNA的bed文件
@@ -113,11 +111,7 @@ public class CtrlMiRNAfastq {
 	 * @param rnadatFile miRNA.dat文件
 	 */
 	public void setMiRNAinfo(String rnadatFile) {
-		logger.error("读取的文件为：" + rnadatFile);
-		ListMiRNAdate listMiRNAdate = new ListMiRNAdate();
-		listMiRNAdate.setSpecies(species);
-		listMiRNAdate.ReadGffarray(rnadatFile);
-		miRNACount.setListMiRNALocation(listMiRNAdate);
+		miRNACount.setSpecies(species, rnadatFile);
 	}
 	
 	/** 比对和计数，每比对一次就计数。主要是为了防止出错 */
@@ -153,14 +147,7 @@ public class CtrlMiRNAfastq {
 	
 	/** 没有初始化repeat */
 	private void initial() {
-		expMirPre.addLsGeneName(miRNACount.getLsMirNamePre());
-		expMirPre.addAnnotation(miRNACount.getMapPre2Seq());
-		expMirPre.addLsTitle(MiRNACount.getLsTitleAnnoPre());
-		
-		 expMirMature.addLsGeneName(miRNACount.getLsMirNameMature());
-		 expMirMature.addAnnotation(miRNACount.getMapMature2Pre());
-		 expMirMature.addAnnotation(miRNACount.getMapMature2Seq());
-		 expMirMature.addLsTitle(MiRNACount.getLsTitleAnnoMature());
+		miRNACount.setExpTable(expMirPre, expMirMature);
 		
 		 List<String> lsRfamNameRaw = SeqHash.getLsSeqName(species.getRfamFile(rfamSpeciesSpecific));
 		 expRfamID.addLsGeneName(rfamStatistic.getLsRfamID(lsRfamNameRaw));
@@ -206,7 +193,6 @@ public class CtrlMiRNAfastq {
 	* @param miRNAmappingPipline
 	*/
 	private void countMiRNA(String outPath, String prefix, MiRNAmapPipline miRNAmappingPipline) {
-		miRNACount.setMiRNAfile(species.getMiRNAhairpinFile(), species.getMiRNAmatureFile());
 		AlignSeq alignSeq = miRNAmappingPipline.getOutMiRNAAlignSeq();
 		if (alignSeq != null) {
 			miRNACount.setAlignFile(alignSeq);
@@ -280,40 +266,24 @@ public class CtrlMiRNAfastq {
 	
 	/** 将汇总结果写入文本 */
 	public void writeToFile() {
-		List<String[]> lsMirPreCounts = miRNACount.combMapMir2ValueCounts(mapPrefix2MiRNAPre, mapPrefix2CountsPre);
-		writeFile(outPath + "mirPreAll_Counts.txt", lsMirPreCounts);
-		
-		List<String[]> lsMirMatureCounts = miRNACount.combMapMir2MatureValueCounts(mapPrefix2MiRNAmature, mapPrefix2CountsMature);
-		writeFile(outPath + "mirMatureAll_Counts.txt", lsMirMatureCounts);
-		
-		List<String[]> lsMirPreUQ = miRNACount.combMapMir2ValueCounts(mapPrefix2MiRNAPre, mapPrefix2CountsPre);
-		writeFile(outPath + "mirPreAll_UQTPM.txt", lsMirPreUQ);
-		
-		List<String[]> lsMirMatureUQ = miRNACount.combMapMir2MatureValueCounts(mapPrefix2MiRNAmature, mapPrefix2CountsMature);
-		writeFile(outPath + "mirMatureAll_UQTPM.txt", lsMirMatureUQ);
-		
-		ArrayList<String[]> lsGeneInfo = readsOnRepeatGene.combMapGeneStructure2Value(mapPrefix2GeneInfo);
-		writeFile(outPath + "GeneStructureAll.txt", lsGeneInfo);
-		
-		ArrayList<String[]> lsRepeatFamily = readsOnRepeatGene.combMapRepatFamily(mapPrefix2RepeatFamily);
-		writeFile(outPath + "RepeatFamilyAll.txt", lsRepeatFamily);
-		
-		ArrayList<String[]> lsRepeatName = readsOnRepeatGene.combMapRepatName(mapPrefix2RepeatName);
-		writeFile(outPath + "RepeatNameAll.txt", lsRepeatName);
-		
-		ArrayList<String[]> lsNcRNA = readsOnNCrna.combValue(mapPrefix2MiRNAncrna);
-		writeFile(outPath + "NCRNAAll.txt", lsNcRNA);
-		
-		ArrayList<String[]> lsRfamRNA = rfamStatistic.combValue(mapPrefix2MiRNArfam);
-		writeFile(outPath + "RfamAll.txt", lsRfamRNA);
+		writeFile(outPath + "mirPreAll_Counts.txt", expMirPre, EnumExpression.Counts);
+		writeFile(outPath + "mirMatureAll_Counts.txt", expMirMature, EnumExpression.Counts);
+		writeFile(outPath + "mirPreAll_UQTPM.txt", expMirPre, EnumExpression.UQPM);
+		writeFile(outPath + "mirMatureAll_UQTPM.txt", expMirMature, EnumExpression.UQPM);
+		writeFile(outPath + "GeneStructureAll.txt", expGeneStructure, EnumExpression.Counts);
+		writeFile(outPath + "RepeatFamilyAll.txt", expRepeatFamily, EnumExpression.Counts);
+		writeFile(outPath + "NCRNAAll.txt", expNcRNA, EnumExpression.Counts);
+		writeFile(outPath + "RfamClassAll.txt", expRfamClass, EnumExpression.Counts);
+		writeFile(outPath + "RfamIDAll.txt", expRfamID, EnumExpression.Counts);
 	}
 	
-	private void writeFile(String fileName, List<String[]> lsInfo) {
-		if (lsInfo == null || lsInfo.size() == 0) {
+	public static void writeFile(String fileName, GeneExpTable expTable, EnumExpression enumExpression) {
+		List<String[]> lsValues = expTable.getLsCond2CountsNum(enumExpression);
+		if (lsValues == null || lsValues.size() == 0) {
 			return;
 		}
 		TxtReadandWrite txtWrite = new TxtReadandWrite(fileName, true);
-		txtWrite.ExcelWrite(lsInfo);
+		txtWrite.ExcelWrite(lsValues);
 		txtWrite.close();
 	}
 	
@@ -321,8 +291,7 @@ public class CtrlMiRNAfastq {
 	 * 返回mapping至基因组上的bed文件
 	 * 必须要等mapping完后才能获取
 	 */
-	public Map<AlignSeq, String> 
-() {
+	public Map<AlignSeq, String> getMapGenomeBed2Prefix() {
 		return mapNovelMiRNASamFile2Prefix;
 	}
 	

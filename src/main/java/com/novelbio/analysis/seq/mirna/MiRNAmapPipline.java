@@ -2,7 +2,6 @@ package com.novelbio.analysis.seq.mirna;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.mapping.MapBwa;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamFileStatistics;
@@ -147,7 +146,7 @@ public class MiRNAmapPipline {
 		String unMappedMiRNA = "";
 		if (FileOperate.isFileExist(miRNApreSeq)) {
 			unMappedFq = outputTmpFinal + "unMap2miRNA.fq.gz";
-			samFileMiRNA = mapping(fqFile, miRNApreSeq, samFileMiRNA, unMappedFq);
+			samFileMiRNA = mapping(exePath, threadNum, fqFile, miRNApreSeq, samFileMiRNA, unMappedFq);
 			unMappedMiRNA = unMappedFq;
 			if (!mappingAll2Rfam) {
 				fqFile = unMappedFq;
@@ -156,25 +155,25 @@ public class MiRNAmapPipline {
 	
 		if (FileOperate.isFileExist(rfamSeq)) {
 			unMappedFq = outputTmpFinal + "unMap2rfam.fq.gz";
-			samFileRfam = mapping(fqFile, rfamSeq, samFileRfam, unMappedFq);
+			samFileRfam = mapping(exePath, threadNum, fqFile, rfamSeq, samFileRfam, unMappedFq);
 			fqFile = unMappedFq;
 		}
 		
 		if (FileOperate.isFileExist(ncRNAseq)) {
 			unMappedFq = outputTmpFinal + "unMap2ncRna.fq.gz";
-			samFileNCRNA = mapping(fqFile, ncRNAseq, samFileNCRNA, unMappedFq);
+			samFileNCRNA = mapping(exePath, threadNum, fqFile, ncRNAseq, samFileNCRNA, unMappedFq);
 			fqFile = unMappedFq;
 		}
 		
 		if (FileOperate.isFileExist(genome)) {
 			unMappedFq = outputTmpFinal + "unMapped.fq.gz";
-			samFileGenome = mapping(unMappedMiRNA, genome, samFileGenome, unMappedFq);
+			samFileGenome = mapping(exePath, threadNum, unMappedMiRNA, genome, samFileGenome, unMappedFq);
 		}
 		
 		if (mappingAll2Genome && FileOperate.isFileExist(genome)) {
 			fqFile = seqFile;
 			unMappedFq = outputTmpFinal + "unMapped.fq.gz";
-			samFileGenomeAll = mapping(fqFile, genome, samFileGenomeAll, unMappedFq);
+			samFileGenomeAll = mapping(exePath, threadNum, fqFile, genome, samFileGenomeAll, unMappedFq);
 		}
 	}
 	/** 仅mapping至MiRNA上 */
@@ -191,7 +190,7 @@ public class MiRNAmapPipline {
 		String unMappedFq = "";
 		if (FileOperate.isFileExist(miRNApreSeq)) {
 			unMappedFq = outputTmpFinal + "unMap2miRNA.fq.gz";
-			samFileMiRNA = mapping(fqFile, miRNApreSeq, samFileMiRNA, unMappedFq);
+			samFileMiRNA = mapping(exePath, threadNum, fqFile, miRNApreSeq, samFileMiRNA, unMappedFq);
 			fqFile = unMappedFq;
 		}
 	}
@@ -200,9 +199,9 @@ public class MiRNAmapPipline {
 	 * @param chrFile
 	 * @param samFileName 输出sam文件名
 	 * @param unMappedFq 没有mapping上的文件输出为fq
-	 * @return 实际的输出文件名
+	 * @return 实际的sam输出文件名
 	 */
-	private String mapping(String fqFile, String chrFile, String samFileName, String unMappedFq) {
+	public static String mapping(String exePath, int threadNum, String fqFile, String chrFile, String samFileName, String unMappedFq) {
 		MapBwa mapBwa = new MapBwa(fqFile, samFileName);
 		mapBwa.setChrIndex(chrFile);
 		mapBwa.setExePath(exePath);
@@ -220,9 +219,9 @@ public class MiRNAmapPipline {
 			samToFastq.setJustUnMapped(true);
 			mapBwa.addAlignmentRecorder(samToFastq);
 		}
-		logger.error("开始33mapping");
+		logger.info("start mapping miRNA");
 		SamFile samFile = mapBwa.mapReads();
-		logger.error("mapping结束miRNA");
+		logger.info("finish mapping miRNA");
 		samFileStatistics.writeToFile(FileOperate.changeFileSuffix(samFile.getFileName(), "_Statistics", "txt"));
 		return samFile.getFileName();
 	}
