@@ -2,13 +2,15 @@ package com.novelbio.analysis.seq.mirna;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.AlignSeq;
+import com.novelbio.analysis.seq.fasta.SeqHash;
+import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.generalConf.TitleFormatNBC;
 
@@ -25,35 +27,23 @@ public class RfamStatistic {
 	 * 1 rfamAnno<br>
 	 * 2 rfam description<br>
 	 * 3 rfam class<br>
-	 *  
-	 *  */
-	HashMap<String, String[]> mapRfamID2Info = new HashMap<String, String[]>();	
-	/** 具体看每个RfamID的counts */
-	HashMap<String, Double> mapRfamID2Counts;
-	String outputFile = "";
-	public void setOutputFile(String outputFile) {
-		this.outputFile = outputFile;
-	}
-	public void readRfamTab(String rfamFile) {
-		readRfamFile(rfamFile);
-	}
-	/**
-	 * @param rfamFile rfam的数据库
-	 * @param mapBedFile mapping至Rfam序列的bed文件
-	 * @param outFile 输出文件
 	 */
-	public void countRfamInfo(AlignSeq alignSeq) {
-		mapRfamID2Counts = new HashMap<String, Double>();
-		readRfamBam(alignSeq);
-		ArrayList<String[]> lsResult = getInfo();
-		TxtReadandWrite txtOut = new TxtReadandWrite(outputFile, true);
-		txtOut.ExcelWrite(lsResult);
+	Map<String, String[]> mapRfamID2Info = new HashMap<String, String[]>();	
+	/** 具体看每个RfamID的counts */
+	Map<String, Double> mapRfamID2Counts;
+	Map<String, Double> mapRfamType2Counts;
+	Map<String, Double> mapRfamClass2Counts;
+	
+	AlignSeq samFile;
+	
+	public void setSamFile(SamFile samFile) {
+		this.samFile = samFile;
 	}
 	/**
 	 * 输入rfam文件，读取Rfam的信息进入hash表
 	 * @param rfamFile
 	 */
-	private void readRfamFile(String rfamFile) {
+	public void readRfamTab(String rfamFile) {
 		if (mapRfamID2Info.size() > 0) {
 			return;
 		}
@@ -66,6 +56,45 @@ public class RfamStatistic {
 			value[0] = ss[3]; value[1] = ss[4]; value[2] = ss[11]; value[3] = ss[18];
 			mapRfamID2Info.put(key, value);
 		}
+		txtRead.close();
+	}
+	public List<String> getLsRfamID(List<String> lsRfamIDraw) {
+		List<String> lsRfamID = new ArrayList<>();
+		for (String rfamInfo : lsRfamIDraw) {
+			String rfamID = rfamInfo.split("//")[0];
+			lsRfamID.add(rfamID);
+		}
+		return lsRfamID;
+	}
+	public List<String> getLsRfamType(List<String> lsRfamIDraw) {
+		List<String> lsRfamType = new ArrayList<>();
+		for (String rfamInfo : lsRfamIDraw) {
+			String rfamID = rfamInfo.split("//")[0];
+			String rfamType = mapRfamID2Info.get(rfamID)[0];
+			lsRfamType.add(rfamType);
+		}
+		return lsRfamType;
+	}
+	public List<String> getLsRfamClass(List<String> lsRfamIDraw) {
+		List<String> lsRfamClass = new ArrayList<>();
+		for (String rfamInfo : lsRfamIDraw) {
+			String rfamID = rfamInfo.split("//")[0];
+			String rfamClass = mapRfamID2Info.get(rfamID)[3];
+			lsRfamClass.add(rfamClass);
+		}
+		return lsRfamClass;
+	}
+	
+	/** RfamID2Info的信息
+	 * key: RfamID
+	 * value 有 <br>
+	 * 0 rfamType<br>
+	 * 1 rfamAnno<br>
+	 * 2 rfam description<br>
+	 * 3 rfam class<br>
+	 */
+	public Map<String, String[]> getMapRfamID2Info() {
+		return mapRfamID2Info;
 	}
 	
 	/**
@@ -77,90 +106,49 @@ public class RfamStatistic {
 	 * mapping 至 rfam 的 bed 文件
 	 * @param bedFile
 	 */
-	private void readRfamBam(AlignSeq alignSeq) {
-		for (AlignRecord samRecord : alignSeq.readLines()) {
+	public void countRfamBam() {
+		for (AlignRecord samRecord : samFile.readLines()) {
 			if (!samRecord.isMapped()) {
 				continue;
 			}
 			String RfamID = samRecord.getRefID().split("//")[0];
+			String rfamType = mapRfamID2Info.get(RfamID)[0];
+			String rfamClass = mapRfamID2Info.get(RfamID)[3];
 			Double thisCount = (double)1/samRecord.getMappedReadsWeight();
-			if (mapRfamID2Counts.containsKey(RfamID)) {
-				double newCounts = mapRfamID2Counts.get(RfamID) + thisCount;
-				mapRfamID2Counts.put(RfamID, newCounts);
-				continue;
-			}
-			mapRfamID2Counts.put(RfamID, thisCount);
+			
+			addCounts(RfamID, mapRfamID2Counts, thisCount);
+			addCounts(rfamClass, mapRfamClass2Counts, thisCount);
+			addCounts(rfamType, mapRfamType2Counts, thisCount);
 		}
-		alignSeq.close();
+		samFile.close();
 	}
 	
-	/**
-	 * 获得每个RfamID对应的count信息和具体信息
-	 * 得到的信息可以直接写入文本中
-	 */
-	private ArrayList<String[]> getInfo() {
-		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		for (Entry<String, Double> entry : mapRfamID2Counts.entrySet()) {
-			String[] rfamInfo = mapRfamID2Info.get(entry.getKey());
-			if (rfamInfo == null) {
-				logger.error("出现未知ID" + entry.getKey());
-				continue;
-			}
-			String[] tmpResult = new String[rfamInfo.length + 2];
-			tmpResult[0] = entry.getKey();
-			tmpResult[1] = entry.getValue() + "";
-			for (int i = 2; i < tmpResult.length; i++) {
-				tmpResult[i] = rfamInfo[i - 2];
-			}
-			lsResult.add(tmpResult);
+	private void addCounts(String id, Map<String, Double> mapId2Value, double value) {
+		if (mapId2Value.containsKey(id)) {
+			double newCounts = mapId2Value.get(id) + value;
+			mapId2Value.put(id, newCounts);
+		} else {
+			mapId2Value.put(id, value);
 		}
-		return lsResult;
 	}
 	
-	public HashMap<String, Double> getMapRfam2Counts() {
+	public Map<String, Double> getMapRfamID2Counts() {
 		return mapRfamID2Counts;
 	}
-	
-	/** 将给定的几组miRNA的值合并起来 */
-	public ArrayList<String[]> combValue(Map<String, Map<String, Double>> mapPrefix2_RfamID2Value) {
-		CombRfamMap combRfamMap = new CombRfamMap(mapRfamID2Info);
-		return combRfamMap.combValue(mapPrefix2_RfamID2Value);
+	public Map<String, Double> getMapRfamClass2Counts() {
+		return mapRfamClass2Counts;
+	}
+	public Map<String, Double> getMapRfamType2Counts() {
+		return mapRfamType2Counts;
 	}
 	
-}
-
-class CombRfamMap extends MirCombMapGetValueAbs {
-	/** RfamID2Info的信息
-	 * key: RfamID
-	 * value 有 <br>
-	 * 0 rfamType<br>
-	 * 1 rfamAnno<br>
-	 * 2 rfam description<br>
-	 * 3 rfam class<br>
-	 *  */
-	HashMap<String, String[]> mapRfamID2Info;
-	public CombRfamMap(HashMap<String, String[]> mapRfamID2Info) {
-		this.mapRfamID2Info = mapRfamID2Info;
-	}
-	@Override
-	protected String[] getTitleIDAndInfo() {
-		String[] titleStart = new String[3];
-		titleStart[0] = TitleFormatNBC.RfamID.toString();
-		titleStart[1] = TitleFormatNBC.RfamType.toString();
-		titleStart[2] = TitleFormatNBC.RfamClass.toString();
-		return titleStart;
-	}
-
-	@Override
-	protected void fillMataInfo(String id, ArrayList<String> lsTmpResult) {
-		String[] rfamInfo = mapRfamID2Info.get(id);
-		lsTmpResult.add(id);
-		lsTmpResult.add(rfamInfo[0].replace("\\N", ""));
-		lsTmpResult.add(rfamInfo[3].replace("\\N", ""));
-	}
-	@Override
-	protected Integer getExpValue(String condition, Double readsCount) {
-		return readsCount.intValue();
+	public static List<String> getLsTitleRfamIDAnno() {
+		List<String> lsTitle = new ArrayList<>();
+		lsTitle.add(TitleFormatNBC.RfamType.toString());
+		lsTitle.add(TitleFormatNBC.RfamAnnotaion.toString());
+		lsTitle.add(TitleFormatNBC.RfamDescription.toString());
+		lsTitle.add(TitleFormatNBC.RfamClass.toString());
+		return lsTitle;
 	}
 	
 }

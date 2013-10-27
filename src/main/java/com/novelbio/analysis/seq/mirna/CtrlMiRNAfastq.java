@@ -9,13 +9,16 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.AlignSeq;
+import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.TitleFormatNBC;
+import com.sun.jersey.server.impl.uri.rules.automata.TrieNode;
 
 /** 
  * 给定一系列fastq文件，获得miRNA的bed文件
@@ -46,23 +49,19 @@ public class CtrlMiRNAfastq {
 	GeneExpTable expMirPre = new GeneExpTable(TitleFormatNBC.miRNApreName);
 	GeneExpTable expMirMature = new GeneExpTable(TitleFormatNBC.miRNAName);
 	
-	GeneExpTable expRfam = new GeneExpTable(TitleFormatNBC.RfamID);
+	GeneExpTable expRfamID = new GeneExpTable(TitleFormatNBC.RfamID);
+	GeneExpTable expRfamClass = new GeneExpTable(TitleFormatNBC.RfamClass);
+	
 	GeneExpTable expNcRNA = new GeneExpTable(TitleFormatNBC.GeneID);
 	GeneExpTable expRepeatName = new GeneExpTable(TitleFormatNBC.RepeatName);
 	GeneExpTable expRepeatFamily = new GeneExpTable(TitleFormatNBC.RepeatFamily);
 	GeneExpTable expGeneStructure = new GeneExpTable(TitleFormatNBC.GeneStructure);
 	
-//	Map<String, Map<String, Double>> mapPrefix2MiRNArfam = new LinkedHashMap<>();
-//	Map<String, Map<String, Double>> mapPrefix2MiRNAncrna = new LinkedHashMap<>();
-	
-//	Map<String, Map<String, Double>> mapPrefix2RepeatName = new LinkedHashMap<>();
-//	Map<String, Map<String, Double>> mapPrefix2RepeatFamily = new LinkedHashMap<>();
-//	Map<String, Map<String, Double>> mapPrefix2GeneInfo = new LinkedHashMap<>();
-	
 	////// 没有mapping到的bed文件，用于预测新miRNA的 */
 	Map<AlignSeq, String> mapNovelMiRNASamFile2Prefix = new LinkedHashMap<AlignSeq, String>();
 	boolean rfamSpeciesSpecific = false;
-		
+	
+	boolean countRepeat = false;
 	/** 务必首先设定 */
 	public void setSpecies(Species species) {
 		this.species = species;
@@ -125,6 +124,7 @@ public class CtrlMiRNAfastq {
 	public void mappingAndCounting() {
 		FileOperate.createFolders(outPathTmpMapping);
 		setConfigFile();
+		initial();
 		for (String[] fastq2Prefix : lsFastqFile2Prefix) {
 			//文件名为输出文件夹+文件前缀
 			miRNAmappingPipline.setSample(fastq2Prefix[1], fastq2Prefix[0]);
@@ -134,20 +134,10 @@ public class CtrlMiRNAfastq {
 			if (alignSeq != null) {
 				mapNovelMiRNASamFile2Prefix.put(alignSeq, fastq2Prefix[1]);
 			}
+			setCurrentCondition(fastq2Prefix[1]);
 			countSmallRNA(outPath, fastq2Prefix[1], miRNAmappingPipline);
 		}
 	}
-	
-//	private void initial() {
-//		expMirPre.addLsGeneName(colGeneName);
-//		 expMirMature
-//		
-//		 expRfam
-//		 expNcRN
-//		 expRepeatName
-//		 expRepeatFamily
-//		 expGeneStructure
-//	}
 	
 	/** 设定待比对的序列 */
 	private void setConfigFile() {
@@ -161,6 +151,41 @@ public class CtrlMiRNAfastq {
 		miRNAmappingPipline.setGenome(species.getIndexChr(SoftWare.bwa));//默认bwa做mapping
 	}
 	
+	/** 没有初始化repeat */
+	private void initial() {
+		expMirPre.addLsGeneName(miRNACount.getLsMirNamePre());
+		expMirPre.addAnnotation(miRNACount.getMapPre2Seq());
+		expMirPre.addLsTitle(MiRNACount.getLsTitleAnnoPre());
+		
+		 expMirMature.addLsGeneName(miRNACount.getLsMirNameMature());
+		 expMirMature.addAnnotation(miRNACount.getMapMature2Pre());
+		 expMirMature.addAnnotation(miRNACount.getMapMature2Seq());
+		 expMirMature.addLsTitle(MiRNACount.getLsTitleAnnoMature());
+		
+		 List<String> lsRfamNameRaw = SeqHash.getLsSeqName(species.getRfamFile(rfamSpeciesSpecific));
+		 expRfamID.addLsGeneName(rfamStatistic.getLsRfamID(lsRfamNameRaw));
+		 expRfamID.addAnnotationArray(rfamStatistic.getMapRfamID2Info());
+		 expRfamID.addLsTitle(RfamStatistic.getLsTitleRfamIDAnno());
+		 expRfamClass.addLsGeneName(rfamStatistic.getLsRfamClass(lsRfamNameRaw));
+		 
+		 List<String> lsNCrnaName = SeqHash.getLsSeqName(species.getRefseqNCfile());
+		 expNcRNA.addLsGeneName(lsNCrnaName);
+		 expNcRNA.addAnnotationArray(readsOnNCrna.getLsMapGene2Anno(lsNCrnaName));
+		 expNcRNA.addLsTitle(ReadsOnNCrna.getLsTitleAnno());
+
+		 expGeneStructure.addLsGeneName(readsOnRepeatGene.getLsGeneStructure());
+	}
+
+	private void setCurrentCondition(String currentCondition) {
+		expGeneStructure.setCurrentCondition(currentCondition);
+		expMirMature.setCurrentCondition(currentCondition);
+		expMirPre.setCurrentCondition(currentCondition);
+		expNcRNA.setCurrentCondition(currentCondition);
+		expRepeatFamily.setCurrentCondition(currentCondition);
+		expRepeatName.setCurrentCondition(currentCondition);
+		expRfamClass.setCurrentCondition(currentCondition);
+		expRfamID.setCurrentCondition(currentCondition);
+	}
 	
 	/** 计算miRNA表达
 	 * @param solo 前面是否有mapping
@@ -186,44 +211,56 @@ public class CtrlMiRNAfastq {
 		if (alignSeq != null) {
 			miRNACount.setAlignFile(alignSeq);
 			miRNACount.run();
-			miRNACount.writeResultToOut(outPath);
 			
-			mapPrefix2MiRNAmature.put(prefix, miRNACount.getMapMirMature2Value());
-			mapPrefix2MiRNAPre.put(prefix, miRNACount.getMapMiRNApre2Value());
-			mapPrefix2CountsMature.put(prefix, miRNACount.getCountMature());
-			mapPrefix2CountsPre.put(prefix, miRNACount.getCountPre());
+			expMirMature.addAllReads(miRNACount.getCountMatureAll());
+			expMirMature.addGeneExp(miRNACount.getMapMirMature2Value());
+
+			expMirPre.addAllReads(miRNACount.getCountPreAll());
+			expMirPre.addGeneExp(miRNACount.getMapMiRNApre2Value());
 		}
 	}
 	
 	private void readRepeatGff() {
+		if (countRepeat) {
+			return;
+		}
+		
 		if (gffChrAbs == null) {
 			gffChrAbs = new GffChrAbs(species);
 		}
+		if (!FileOperate.isFileExistAndBigThanSize(species.getGffRepeat(), 0)) {
+			return;
+		}
 		readsOnRepeatGene.setGffGene(gffChrAbs);
 		readsOnRepeatGene.readGffRepeat(species.getGffRepeat());
+		 
+		 expRepeatName.addLsGeneName(readsOnRepeatGene.getLsRepeatName());
+		 expRepeatFamily.addLsGeneName(readsOnRepeatGene.getLsRepeatFamily());
+		 countRepeat = true;
 	}
 
 	/** 读取rfam信息并计数
 	 * @param solo 单独计数
 	 *  */
 	private void countRfam(String outPath, String prefix, MiRNAmapPipline miRNAmappingPipline) {
-		rfamStatistic.setOutputFile(outPath + "RfamStatistics.txt");
-		AlignSeq alignSeq = miRNAmappingPipline.getOutRfamAlignSeq();
+		SamFile alignSeq = miRNAmappingPipline.getOutRfamAlignSeq();
+		rfamStatistic.setSamFile(alignSeq);
 		if (alignSeq != null) {
-			rfamStatistic.countRfamInfo(alignSeq);
-			mapPrefix2MiRNArfam.put(prefix, rfamStatistic.getMapRfam2Counts());
+			rfamStatistic.countRfamBam();
+			expRfamClass.addGeneExp(rfamStatistic.getMapRfamClass2Counts());
+			expRfamID.addGeneExp(rfamStatistic.getMapRfamID2Counts());
 		}
 	}
 	/** 读取ncRNA的信息并计数
 	 * @param solo 单独计数
 	 *  */
 	private void countNCrna(String outPath, String prefix, MiRNAmapPipline miRNAmappingPipline) {
-		AlignSeq alignSeq = miRNAmappingPipline.getOutNCRNAAlignSeq();
+		SamFile alignSeq = miRNAmappingPipline.getOutNCRNAAlignSeq();
 		if (alignSeq != null) {
-			readsOnNCrna.setAlignSeq(alignSeq);
+			readsOnNCrna.setSamFile(alignSeq);
 			readsOnNCrna.searchNCrna();
 			readsOnNCrna.writeToFile(outPath + "NCrnaStatistics.txt");
-			mapPrefix2MiRNAncrna.put(prefix, readsOnNCrna.getMapNCrnaID_2_nameDescripValue());
+			expNcRNA.addGeneExp(readsOnNCrna.getMapNCrnaID2Value());
 		}
 	}
 	
@@ -235,13 +272,9 @@ public class CtrlMiRNAfastq {
 		if (alignSeq != null) {
 			readRepeatGff();
 			readsOnRepeatGene.countReadsInfo(alignSeq);
-			readsOnRepeatGene.writeToFileGeneProp(outPath + "geneProp.txt");
-			readsOnRepeatGene.writeToFileRepeatFamily(outPath + "RepeatFamily.txt");
-			readsOnRepeatGene.writeToFileRepeatName(outPath + "RepeatName.txt");
-			
-			mapPrefix2RepeatFamily.put(prefix, readsOnRepeatGene.getMapRepeatFamily2Value());
-			mapPrefix2RepeatName.put(prefix, readsOnRepeatGene.getMapRepeatName2Value());
-			mapPrefix2GeneInfo.put(prefix, readsOnRepeatGene.getMapGeneStructure2Value());
+			expRepeatFamily.addGeneExp(readsOnRepeatGene.getMapRepeatFamily2Value());
+			expRepeatName.addGeneExp(readsOnRepeatGene.getMapRepeatName2Value());
+			expGeneStructure.addGeneExp(readsOnRepeatGene.getMapGeneStructure2Value());
 		}
 	}
 	
@@ -288,20 +321,9 @@ public class CtrlMiRNAfastq {
 	 * 返回mapping至基因组上的bed文件
 	 * 必须要等mapping完后才能获取
 	 */
-	public Map<AlignSeq, String> getMapGenomeBed2Prefix() {
+	public Map<AlignSeq, String> 
+() {
 		return mapNovelMiRNASamFile2Prefix;
 	}
 	
-	/** 清空存储的信息 */
-	public void clear() {
-		 mapPrefix2MiRNAPre.clear();
-		 mapPrefix2MiRNAmature.clear();
-		
-		 mapPrefix2MiRNArfam.clear();
-		 mapPrefix2MiRNAncrna.clear();
-		
-		 mapPrefix2RepeatName.clear();
-		 mapPrefix2RepeatFamily.clear();
-		 mapPrefix2GeneInfo.clear();
-	}
 }

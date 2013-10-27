@@ -206,6 +206,15 @@ public class SeqHash implements SeqHashInt, Closeable {
 	public void setMaxExtractSeqLength(int maxSeqLen) {
 		seqHashAbs.setMaxExtractSeqLength(maxSeqLen);
 	}
+	
+	@Override
+	public Iterable<Character> readBase(String refID) {
+		return seqHashAbs.readBase(refID);
+	}
+	
+	public void close() {
+		seqHashAbs.close();
+	}
 	//////////////////////  static method  ////////////////////////////////////////////////////////////////////////////////}
 
 	/**
@@ -271,14 +280,22 @@ public class SeqHash implements SeqHashInt, Closeable {
 		txtRead.close();
 		return seqFasta.getSeqType();		
 	}
-	
-	@Override
-	public Iterable<Character> readBase(String refID) {
-		return seqHashAbs.readBase(refID);
-	}
-	
-	public void close() {
-		seqHashAbs.close();
+
+	/** 不占内存的读取文件中所有序列名 */
+	public static List<String> getLsSeqName(String fastaFile) {
+		List<String> lsName = new ArrayList<>();
+		if (!FileOperate.isFileExistAndBigThanSize(fastaFile, 0)) {
+			return lsName;
+		}
+		TxtReadandWrite txtRead = new TxtReadandWrite(fastaFile);
+		for (String content : txtRead.readlines()) {
+			content = content.trim();
+			if (content.startsWith(">")) {
+				lsName.add(content.replace(">", "").trim());
+			}
+		}
+		txtRead.close();
+		return lsName;
 	}
 	
 }

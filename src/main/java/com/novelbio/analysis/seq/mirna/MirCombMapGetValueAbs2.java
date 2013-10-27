@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
-public abstract class MirCombMapGetValueAbs {
+public abstract class MirCombMapGetValueAbs2 {
 	
 	/** 将给定的几组miRNA的值合并起来 */
 	public ArrayList<String[]> combValue(Map<String, Map<String, Double>> mapPrefix_2_ID2Value) {

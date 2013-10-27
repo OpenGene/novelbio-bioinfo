@@ -72,9 +72,7 @@ public class GeneExpTable {
 	public String getCurrentCondition() {
 		return currentCondition;
 	}
-	/**
-	 * @param mapGene2Anno 如果某个基因没有anno，也要标记为null，否则后面会出错
-	 */
+	/** mapGene2Anno中务必含有全体geneName */
 	public void addAnnotation(Map<String, String> mapGene2Anno) {
 		for (String geneName : mapGene2Anno.keySet()) {
 			String anno = mapGene2Anno.get(geneName);
@@ -82,7 +80,19 @@ public class GeneExpTable {
 			this.mapGene2Anno.put(geneName, anno);
 		}
 	}
-	
+	/** mapGene2Anno中务必含有全体geneName */
+	public void addAnnotationArray(Map<String, String[]> mapGene2Anno) {
+		for (String geneName : mapGene2Anno.keySet()) {
+			String[] anno = mapGene2Anno.get(geneName);
+			for (String string : anno) {
+				if (string == null) string = "";
+				this.mapGene2Anno.put(geneName, string);
+			}
+		}
+	}
+	public void addLsTitle(Collection<String> colTitle) {
+		lsGeneAnnoTitle.addAll(colTitle);
+	}
 	/** 初始化基因列表 */
 	private void setLsGeneName(Collection<String> lsGeneName) {
 		for (String geneName : lsGeneName) {
@@ -94,11 +104,11 @@ public class GeneExpTable {
 	}
 	
 	/** 设置当前时期所有mapping上的reads */
-	public void addAllReads(long allReads) {
+	public void addAllReads(double allReads) {
 		if (mapCond2AllReads.containsKey(currentCondition)) {
 			allReads += mapCond2AllReads.get(currentCondition);
 		}
-		mapCond2AllReads.put(currentCondition, allReads);
+		mapCond2AllReads.put(currentCondition, (long)allReads);
 	}
 	
 	/** 设置基因长度信息 */
@@ -269,21 +279,18 @@ public class GeneExpTable {
 	private String[] getTitle() {
 		List<String> lsTitle = new ArrayList<>();
 		lsTitle.add(geneTitleName);
-		for (String annoTitle : lsGeneAnnoTitle) {
-			lsTitle.add(annoTitle);
-		}
-		for (String condition : setCondition) {
-			lsTitle.add(condition);
-		}
+		lsTitle.addAll(lsGeneAnnoTitle);
+
+		lsTitle.addAll(setCondition);
+		
 		return lsTitle.toArray(new String[0]);
 	}
 	
 	private String[] getCurrentTitle() {
 		List<String> lsTitle = new ArrayList<>();
 		lsTitle.add(geneTitleName);
-		for (String annoTitle : lsGeneAnnoTitle) {
-			lsTitle.add(annoTitle);
-		}
+		lsTitle.addAll(lsGeneAnnoTitle);
+
 		lsTitle.add(currentCondition);
 		return lsTitle.toArray(new String[0]);
 	}

@@ -97,35 +97,35 @@ public class MiRNAmapPipline {
 		this.outPathTmpMapping = FileOperate.addSep(outPathTmpMapping);
 	}
 	/** 比对miRNA的Sam文件结果 */
-	public AlignSeq getOutMiRNAAlignSeq() {
+	public SamFile getOutMiRNAAlignSeq() {
 		if (FileOperate.isFileExistAndBigThanSize(samFileMiRNA, 0)) {
 			return new SamFile(samFileMiRNA);
 		}
 		return null;
 	}
 	/** 比对rfam的Sam文件结果 */
-	public AlignSeq getOutRfamAlignSeq() {
+	public SamFile getOutRfamAlignSeq() {
 		if (FileOperate.isFileExistAndBigThanSize(samFileRfam, 0)) {
 			return new SamFile(samFileRfam);
 		}
 		return null;
 	}
 	/** 比对refseq中的ncRNA的Sam文件结果 */
-	public AlignSeq getOutNCRNAAlignSeq() {
+	public SamFile getOutNCRNAAlignSeq() {
 		if (FileOperate.isFileExistAndBigThanSize(samFileNCRNA, 0)) {
 			return new SamFile(samFileNCRNA);
 		}
 		return null;
 	}
 	/** 比对基因组的Sam文件结果 */
-	public AlignSeq getOutGenomeAlignSeq() {
+	public SamFile getOutGenomeAlignSeq() {
 		if (FileOperate.isFileExistAndBigThanSize(samFileGenome, 0)) {
 			return new SamFile(samFileGenome);
 		}
 		return null;
 	}
 	/** 比对miRNA的Sam文件结果 */
-	public AlignSeq getOutGenomeAllAlignSeq() {
+	public SamFile getOutGenomeAllAlignSeq() {
 		if (FileOperate.isFileExistAndBigThanSize(samFileGenomeAll, 0)) {
 			return new SamFile(samFileGenomeAll);
 		}

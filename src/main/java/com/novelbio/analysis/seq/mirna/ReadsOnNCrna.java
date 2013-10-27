@@ -2,15 +2,16 @@ package com.novelbio.analysis.seq.mirna;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import com.novelbio.analysis.seq.AlignRecord;
-import com.novelbio.analysis.seq.AlignSeq;
-import com.novelbio.analysis.seq.bed.BedRecord;
-import com.novelbio.analysis.seq.bed.BedSeq;
+import com.novelbio.analysis.seq.fasta.SeqFastaHash;
+import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.generalConf.TitleFormatNBC;
 /**
@@ -25,26 +26,35 @@ public class ReadsOnNCrna {
 	 * 1: ncrnaDescription
 	 * 2: num
 	 */
-	HashMap<String, Double> mapNCrnaID_2_nameDescripValue;
-	AlignSeq alignSeq;
+	Map<String, Double> mapNCrnaID2Value;
+	SamFile samFile;
 	
-	public void setAlignSeq(AlignSeq alignSeq) {
-		this.alignSeq = alignSeq;
+	public void setSamFile(SamFile alignSeq) {
+		this.samFile = alignSeq;
+	}
+	
+	public Map<String, String[]> getLsMapGene2Anno(List<String> lsName) {
+		Map<String, String[]> mapGene2Anno = new HashMap<>();
+		for (String geneName : lsName) {
+			GeneID geneID= new GeneID(geneName, 0);
+			mapGene2Anno.put(geneName, new String[]{geneID.getSymbol(), geneID.getDescription()});
+		}
+		return mapGene2Anno;
 	}
 	
 	public void searchNCrna() {
-		mapNCrnaID_2_nameDescripValue = new HashMap<String, Double>();
-		for (AlignRecord alignRecord : alignSeq.readLines()) {
+		mapNCrnaID2Value = new HashMap<String, Double>();
+		for (AlignRecord alignRecord : samFile.readLines()) {
 			if (!alignRecord.isMapped()) {
 				continue;
 			}
-			if (mapNCrnaID_2_nameDescripValue.containsKey(alignRecord.getRefID())) {
-				double info = mapNCrnaID_2_nameDescripValue.get(alignRecord.getRefID());
+			if (mapNCrnaID2Value.containsKey(alignRecord.getRefID())) {
+				double info = mapNCrnaID2Value.get(alignRecord.getRefID());
 				info = (double)1/alignRecord.getMappedReadsWeight() + info;
-				mapNCrnaID_2_nameDescripValue.put(alignRecord.getRefID(), info);
+				mapNCrnaID2Value.put(alignRecord.getRefID(), info);
 			}
 			else {
-				mapNCrnaID_2_nameDescripValue.put(alignRecord.getRefID(), (double)1/alignRecord.getMappedReadsWeight() );
+				mapNCrnaID2Value.put(alignRecord.getRefID(), (double)1/alignRecord.getMappedReadsWeight() );
 			}
 		}
 	}
@@ -54,7 +64,7 @@ public class ReadsOnNCrna {
 	 */
 	public void writeToFile(String outTxt) {
 		TxtReadandWrite txtOut = new TxtReadandWrite(outTxt, true);
-		for (Entry<String, Double> entry : mapNCrnaID_2_nameDescripValue.entrySet()) {
+		for (Entry<String, Double> entry : mapNCrnaID2Value.entrySet()) {
 			GeneID geneID = new GeneID(entry.getKey(), 0);
 			String[] result = new String[3];
 			result[0] = entry.getKey();
@@ -66,39 +76,14 @@ public class ReadsOnNCrna {
 		txtOut.close();
 	}
 	
-	public HashMap<String, Double> getMapNCrnaID_2_nameDescripValue() {
-		return mapNCrnaID_2_nameDescripValue;
-	}
-	
-	/** 将给定的几组miRNA的值合并起来 */
-	public ArrayList<String[]> combValue(Map<String, Map<String, Double>> mapPrefix2NcRNAValue) {
-		CombMapNcRNA combMapNcRNA = new CombMapNcRNA();
-		return combMapNcRNA.combValue(mapPrefix2NcRNAValue);
-	}
-}
-
-class CombMapNcRNA extends MirCombMapGetValueAbs {
-
-	@Override
-	protected String[] getTitleIDAndInfo() {
-		String[] title = new String[3];
-		title[0] = TitleFormatNBC.NCRNAID.toString();
-		title[1] = TitleFormatNBC.Symbol.toString();
-		title[2] = TitleFormatNBC.Description.toString();
-		return title;
+	public Map<String, Double> getMapNCrnaID2Value() {
+		return mapNCrnaID2Value;
 	}
 
-	@Override
-	protected void fillMataInfo(String id, ArrayList<String> lsTmpResult) {
-		GeneID geneID = new GeneID(id, 0);
-		lsTmpResult.add(id);
-		lsTmpResult.add(geneID.getSymbol());
-		lsTmpResult.add(geneID.getDescription());
+	public static List<String> getLsTitleAnno() {
+		List<String> lsTitle = new ArrayList<>();
+		lsTitle.add(TitleFormatNBC.Symbol.toString());
+		lsTitle.add(TitleFormatNBC.Description.toString());
+		return lsTitle;
 	}
-
-	@Override
-	protected Integer getExpValue(String condition, Double readsCount) {
-		return readsCount.intValue();
-	}
-	
 }
