@@ -85,7 +85,7 @@ public abstract class SpliceTypePredict {
 	 */
 	private HashSet<String> getSkipExonLoc_From_IsoHaveExon() {
 		HashSet<String> setLocation = new HashSet<String>();
-		for (ArrayList<ExonInfo> lsExonInfos : exonCluster.getLsIsoExon()) {
+		for (List<ExonInfo> lsExonInfos : exonCluster.getLsIsoExon()) {
 			if (lsExonInfos.size() == 0) {
 				continue;
 			}

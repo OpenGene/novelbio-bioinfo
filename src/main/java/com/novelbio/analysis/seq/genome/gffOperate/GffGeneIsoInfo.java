@@ -2,6 +2,7 @@ package com.novelbio.analysis.seq.genome.gffOperate;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -1166,12 +1167,12 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			return 2;
 		}
 
-		ArrayList<ArrayList<ExonInfo>> lsExon = exonCluster.getLsIsoExon();
+		List<List<ExonInfo>> lsExon = exonCluster.getLsIsoExon();
 		if (lsExon.size() < 2) {
 			return 0;
 		}
-		ArrayList<ExonInfo> lsExon1 = lsExon.get(0);
-		ArrayList<ExonInfo> lsExon2 = lsExon.get(1);
+		List<ExonInfo> lsExon1 = lsExon.get(0);
+		List<ExonInfo> lsExon2 = lsExon.get(1);
 		if (lsExon1.size() == 0 || lsExon2.size() == 0) {
 			return 0;
 		}
@@ -1211,43 +1212,17 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 					) {
 					continue;
 				}
-				
-				ArrayList<ExonInfo> lsExonClusterTmp = new ArrayList<ExonInfo>();
-				int beforeExonNum = 0;//如果本isoform正好没有落在bounder组中的exon，那么就要记录该isoform的前后两个exon的位置，用于查找跨过和没有跨过的exon
+				ListCodAbsDu<ExonInfo, ListCodAbs<ExonInfo>> lsDu = gffGeneIsoInfo.searchLocationDu(exonBound[0], exonBound[1]);
+				List<ExonInfo> lsExon = lsDu.getCoveredElement();
+				Collections.sort(lsExon);
 				boolean junc = false;//如果本isoform正好没有落在bounder组中的exon，那么就需要记录跳过的exon的位置，就将这个flag设置为true
-				for (int i = 0; i < gffGeneIsoInfo.size(); i++) {
-					ExonInfo exon = gffGeneIsoInfo.get(i);
-					if (cis5To3) {
-						if (exon.getEndAbs() < exonBound[0]) {
-							junc = true;
-							beforeExonNum = i;
-							continue;
-						}
-						else if (exon.getStartAbs() >= exonBound[0] && exon.getEndAbs() <= exonBound[1]) {
-							lsExonClusterTmp.add(exon);
-							junc = false;
-						}
-						else if (exon.getStartAbs() > exonBound[1]) {
-							break;
-						}
-					}
-					else {
-						if (exon.getStartAbs() > exonBound[1]) {
-							junc = true;
-							beforeExonNum = i;
-							continue;
-						}
-						else if (exon.getEndAbs() <= exonBound[1] && exon.getStartAbs() >= exonBound[0]) {
-							lsExonClusterTmp.add(exon);
-							junc = false;
-						}
-						else if (exon.getEndAbs() < exonBound[0]) {
-							break;
-						}
-					}
-				}
+				int beforeExonNum = 0;//如果本isoform正好没有落在bounder组中的exon，那么就要记录该isoform的前后两个exon的位置，用于查找跨过和没有跨过的exon
 
-				exonCluster.addExonCluster(gffGeneIsoInfo, lsExonClusterTmp);
+				if (lsExon.size() == 0) junc = true;
+				ListCodAbs<ExonInfo> codBefore = gffGeneIsoInfo.isCis5to3() ? lsDu.getGffCod1() : lsDu.getGffCod2();
+				beforeExonNum = codBefore.getItemNumUp();
+
+				exonCluster.addExonCluster(gffGeneIsoInfo, lsExon);
 				if (junc && beforeExonNum < gffGeneIsoInfo.size()-1) {
 					exonCluster.setIso2ExonNumSkipTheCluster(gffGeneIsoInfo, beforeExonNum);
 				}

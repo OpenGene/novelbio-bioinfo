@@ -11,6 +11,7 @@ import java.util.Set;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.generalConf.TitleFormatNBC;
 
@@ -44,6 +45,65 @@ public class GeneExpTable {
 	public GeneExpTable(TitleFormatNBC geneAccIDName) {
 		this.geneTitleName = geneAccIDName.toString();
 	}
+	/** 添加counts文本，将其加入mapGene_2_Cond2Exp中 */
+	public void read(String file) {
+		TxtReadandWrite txtRead = new TxtReadandWrite(file);
+		List<String> lsFirst3Lines = txtRead.readFirstLines(3);
+		Map<Integer, String> mapCol2Sample = getMapCol2Sample(lsFirst3Lines);
+		if (mapCol2Sample == null) {
+			txtRead.close();
+			return;
+		}
+		geneTitleName = lsFirst3Lines.get(0).split("\t")[0];
+		
+		for (String content : txtRead.readlines(2)) {
+			String[] data = content.split("\t");
+			String geneName = data[0];
+			Map<String, Double> mapSample2Value = null;
+			if (mapGene_2_Cond2Exp.containsKey(geneName)) {
+				mapSample2Value = mapGene_2_Cond2Exp.get(geneName);
+			} else {
+				mapSample2Value = new HashMap<>();
+				mapGene_2_Cond2Exp.put(geneName, mapSample2Value);
+			}
+			
+			for (Integer col : mapCol2Sample.keySet()) {
+				String sampleName = mapCol2Sample.get(col);
+				Double value = Double.parseDouble(data[col]);
+				mapSample2Value.put(sampleName, value);
+			}
+		}
+		txtRead.close();
+	}
+	
+	/**
+	 * @param lsFirst3Lines 前三行
+	 * @return 从0开始计算的col --- sampleName
+	 */
+	private Map<Integer, String> getMapCol2Sample(List<String> lsFirst3Lines) {
+		if (lsFirst3Lines.size() < 2) {
+			return null;
+		}
+		Map<Integer, String> mapCol2Sample = new HashMap<>();
+		String[] titleArray = lsFirst3Lines.get(0).split("\t");
+		String[] dataArray1 = lsFirst3Lines.get(1).split("\t");
+		String[] dataArray2 = null;
+		if (lsFirst3Lines.size() > 2) {
+			dataArray2 = lsFirst3Lines.get(2).split("\t");
+		}
+		for (int i = 1; i < dataArray1.length; i++) {
+			try {
+				Double.parseDouble(dataArray1[i]);
+				if (dataArray2 != null) {
+					Double.parseDouble(dataArray2[i]);
+				}
+				mapCol2Sample.put(i, titleArray[i]);
+			} catch (Exception e) {
+			}
+		}
+		return mapCol2Sample;
+	}
+	
 	/**  最早就要设定 */
 	public void addLsGeneName(Collection<String> colGeneName) {
 		setLsGeneName(colGeneName);
@@ -52,7 +112,7 @@ public class GeneExpTable {
 	/**
 	 * 大致测序量，譬如rna-seq就是百万级别，小RNAseq就是可能就要变成十万级别
 	 * 就是tpm和rpkm那块，要乘的测序量
-	 * @param mapreadsNum 默认为1百万
+	 * @param mapreadsNum 默认为1百万 
 	 */
 	public void setMapreadsNum(int mapreadsNum) {
 		this.mapreadsNum = mapreadsNum;
@@ -129,7 +189,7 @@ public class GeneExpTable {
 	public void addGeneExp(Map<String, ? extends Number> mapGene2Exp) {
 		for (String geneName : mapGene2Exp.keySet()) {
 			Map<String, Double> mapCond2Exp = mapGene_2_Cond2Exp.get(geneName);
-			mapCond2Exp.put(currentCondition, mapCond2Exp.get(geneName).doubleValue());
+			mapCond2Exp.put(currentCondition, mapGene2Exp.get(geneName).doubleValue());
 		}
 	}
 	/** 在添加表达信息之前，先添加 {@link #addLsGeneName(Map)}
@@ -152,6 +212,7 @@ public class GeneExpTable {
 	 *  @return 返回按照 lsConditions顺序的基因表达list
 	 */
 	public List<String[]> getLsCountsNum(EnumExpression enumExpression) {
+		setAllreadsPerConditon();
 		List<String[]> lsResult = new ArrayList<>();
 		lsResult.add(getCurrentTitle());
 		double uq = 0;
@@ -165,7 +226,7 @@ public class GeneExpTable {
 				lsTmpResult.addAll(mapGene2Anno.get(geneName));
 			}
 			
-			lsTmpResult.add(getValue(geneName, enumExpression, uq));
+			lsTmpResult.add(getValueCondition(geneName, enumExpression, uq));
 			lsResult.add(lsTmpResult.toArray(new String[0]));
 		}
 		return lsResult;
@@ -177,6 +238,7 @@ public class GeneExpTable {
 	 *  @return 返回按照 lsConditions顺序的基因表达list
 	 */
 	public List<String[]> getLsCond2CountsNum(EnumExpression enumExpression) {
+		setAllreads(currentCondition);
 		List<String[]> lsResult = new ArrayList<>();
 		lsResult.add(getTitle());
 		Map<String, Double> mapCondition2UQ = null; 
@@ -233,35 +295,57 @@ public class GeneExpTable {
 			Double value = mapCond2Exp.get(condition);			
 			double uq = (mapCondition2UQ != null) ? mapCondition2UQ.get(condition) : 0;
 			
-			double allReadsNum = mapCond2AllReads.get(condition);
-			int geneLen = mapGene2Len.get(geneName);
+			Long allReadsNum = mapCond2AllReads.get(condition);
+			Integer geneLen = mapGene2Len == null ? 0 : mapGene2Len.get(geneName);
 			String geneValue = getValue(enumExpression, value, allReadsNum, uq, geneLen);
 			lsValue.add(geneValue);
 		}
 		return lsValue;
 	}
 	
+	/** 如果allReads没有设定，则设定每个时期的allReads数量为该时期counts数加和 */
+	private void setAllreadsPerConditon() {
+		for (String condition : setCondition) {
+			setAllreads(condition);
+		}
+	}
+	/** 如果allReads没有设定，则设定每个时期的allReads数量为该时期counts数加和 */
+	private void setAllreads(String condition) {
+		if (mapCond2AllReads.containsKey(condition)) {
+			return;
+		}
+		double number = 0;
+		for (String geneName : mapGene_2_Cond2Exp.keySet()) {
+			Map<String, Double> mapCond2Exp = mapGene_2_Cond2Exp.get(geneName);
+			Double value = mapCond2Exp.get(condition);
+			if (value == null) value = 0.0;
+			number += value;
+		}
+		mapCond2AllReads.put(condition, (long) number);
+	}
 	/**
 	 * 获得单个时期的基因表达情况
 	 * @param geneName
 	 * @param enumExpression
 	 * @return
 	 */
-	private String getValue(String geneName, EnumExpression enumExpression, double uq) {
+	private String getValueCondition(String geneName, EnumExpression enumExpression, double uq) {
 		Map<String, Double> mapCond2Exp = mapGene_2_Cond2Exp.get(geneName);
 		Double value = mapCond2Exp.get(currentCondition);
-		double allReadsNum = mapCond2AllReads.get(currentCondition);
-		int geneLen = mapGene2Len.get(geneName);
+		Long allReadsNum = mapCond2AllReads.get(currentCondition);
+		Integer geneLen = mapGene2Len == null ? 0 : mapGene2Len.get(geneName);
 		String geneValue = getValue(enumExpression, value, allReadsNum, uq, geneLen);
 		return geneValue;
 	}
 	
 	/** 计算单个基因的表达值 */
-	private String getValue(EnumExpression enumExpression, Double readsCount, double allReadsNum, double upQuerterNum, int geneLen) {
+	private String getValue(EnumExpression enumExpression, Double readsCount, Long allReadsNum, double upQuerterNum, Integer geneLen) {
 		String resultValue = null;
-		if (readsCount == null) {
-			return "0";
-		}
+		if (geneLen == null) geneLen = 1000;
+		if (allReadsNum == null) allReadsNum = (long) mapreadsNum;
+		
+		if (readsCount == null) return "0";
+		
 		if (enumExpression == EnumExpression.Counts) {
 			resultValue = readsCount.intValue() + "";
 		} else if (enumExpression == EnumExpression.TPM) {

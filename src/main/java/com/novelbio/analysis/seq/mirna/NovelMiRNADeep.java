@@ -2,6 +2,7 @@ package com.novelbio.analysis.seq.mirna;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
@@ -15,6 +16,7 @@ import com.novelbio.analysis.seq.mapping.MapDNAint;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 //TODO 移动文件还不够好
@@ -122,7 +124,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 	/**
 	 * 设定bowtie所在的文件夹以及待比对的路径
 	 * @param exePath 如果在根目录下则设置为""或null
-	 * @param chromFaIndexBowtie 某物种序列的bowtie索引
+	 * @param chromFaIndexBowtie 某物种序列的bowtie1索引
 	 */
 	public void setExePath(String exePath, String chromFaIndexBowtie) {
 		if (exePath != null && !exePath.trim().equals("")) {
@@ -217,8 +219,9 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 	/**
 	 * 将结果文件移动到指定位置
 	 * 同时处理结果文件为指定格式
+	 * 仅用于测试
 	 */
-	private void moveAndCopeFile() {
+	protected void moveAndCopeFile() {
 		ArrayList<String> lsFileName = new ArrayList<String>();
 		String suffix = getResultFileSuffixFromReportLog();
 		
@@ -252,8 +255,8 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 		novelMiRNAdeepMrdFile = outFinal + "run" + "/output.mrd";
 		novelMiRNAhairpin = outFinal + "novelMiRNA/hairpin.fa";
 		novelMiRNAmature = outFinal + "novelMiRNA/mature.fa";
-		HashSet<String> setMirPredictName = getSetMirPredictName(outFinal + "result.csv");
-		extractHairpinSeqMatureSeq(setMirPredictName, novelMiRNAdeepMrdFile, novelMiRNAmature, novelMiRNAhairpin);
+//		HashSet<String> setMirPredictName = getSetMirPredictName(outFinal + "result.csv");
+		extractHairpinSeqMatureSeq(novelMiRNAdeepMrdFile, novelMiRNAmature, novelMiRNAhairpin);
 	}
 	
 	/** 查看reportlog，返回结果的后缀 */
@@ -305,7 +308,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 	 * @param outMatureSeq 输出
 	 * @param outPreSeq 输出
 	 */
-	private void extractHairpinSeqMatureSeq(Set<String> setMirPredictName, String run_output_mrd, String outMatureSeq, String outPreSeq) {
+	private void extractHairpinSeqMatureSeq(String run_output_mrd, String outMatureSeq, String outPreSeq) {
 		FileOperate.createFolders(FileOperate.getParentPathName(outMatureSeq));
 		FileOperate.createFolders(FileOperate.getParentPathName(outPreSeq));
 		
@@ -313,32 +316,58 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 		TxtReadandWrite txtWriteMature = new TxtReadandWrite(outMatureSeq, true);
 		TxtReadandWrite txtWritePre = new TxtReadandWrite(outPreSeq, true);
 		
-		boolean flagFindMiRNA = false;
-		String mirName ="", mirSeq = "", mirModel = "";
-		for (String string : txtReadMrd.readlines()) {
+		List<String> lsBlock = new ArrayList<>();
+ 		for (String string : txtReadMrd.readlines()) {
 			if (string.startsWith(">")) {
-				flagFindMiRNA = false;
-				mirName = string.substring(1).trim();
-				if (setMirPredictName.contains(mirName)) {
-					flagFindMiRNA = true;
+				List<SeqFasta> lsMiRNA = getLsMirna(lsBlock);
+				for (int i = 0; i < lsMiRNA.size(); i++) {
+					if (i == 0) {
+						txtWritePre.writefileln(lsMiRNA.get(i).toStringNRfasta());
+					} else {
+						txtWriteMature.writefileln(lsMiRNA.get(i).toStringNRfasta());
+					}
 				}
+				lsBlock.clear();
 			}
-			if (flagFindMiRNA && string.startsWith("exp")) {
-				mirModel = string.replace("exp", "").trim();
-			}
-			if (flagFindMiRNA && string.startsWith("pri_seq ")) {
-				mirSeq = string.replace("pri_seq ", "").trim();
-				ArrayList<SeqFasta> lSeqFastas = getMirDeepSeq(mirName, mirModel, mirSeq);
-				txtWritePre.writefileln(lSeqFastas.get(0).toStringNRfasta());
-				txtWriteMature.writefileln(lSeqFastas.get(1).toStringNRfasta());
-				txtWriteMature.writefileln(lSeqFastas.get(2).toStringNRfasta());
-			}
-		}
+			lsBlock.add(string);
+ 		}
 		txtReadMrd.close();
 		txtWriteMature.close();
 		txtWritePre.close();
 	}
-
+	
+	private List<SeqFasta> getLsMirna(List<String> lsMirInfo) {
+		if (lsMirInfo.size() == 0) {
+			return new ArrayList<>();
+		}
+		
+		String mirName = lsMirInfo.get(0).substring(1).trim();
+		String mirModel = "", mirSeq = "";
+		List<SeqFasta> lsMirna = null;
+		PatternOperate patternOperate = new PatternOperate("\\bseq_\\d+", false);
+		boolean readDetail = false;
+		boolean isExistMiRNA = false;
+		for (String string : lsMirInfo) {
+			if (string.startsWith("exp")) {
+				mirModel = string.replace("exp", "").trim();
+			} else if (string.startsWith("pri_seq ")) {
+				mirSeq = string.replace("pri_seq ", "").trim();
+				lsMirna = getMirDeepSeq(mirName, mirModel, mirSeq);
+			} else if (string.startsWith("pri_struct ")) {
+				readDetail = true;
+				continue;
+			}
+			
+			if (readDetail && patternOperate.getPatFirst(string.split(" ")[0]) != null) {
+				isExistMiRNA = true;
+			}
+		}
+		if (isExistMiRNA) {
+			return new ArrayList<>();
+		}
+		return lsMirna;
+	}
+	
 	/**
 	 * 给定RNAdeep的结果文件，从里面提取序列
 	 * @param seqName

@@ -213,7 +213,9 @@ public class SeqHash implements SeqHashInt, Closeable {
 	}
 	
 	public void close() {
-		seqHashAbs.close();
+		if (seqHashAbs != null) {
+			seqHashAbs.close();
+		}
 	}
 	//////////////////////  static method  ////////////////////////////////////////////////////////////////////////////////}
 

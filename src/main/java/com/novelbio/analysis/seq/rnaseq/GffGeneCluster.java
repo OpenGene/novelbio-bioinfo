@@ -311,10 +311,10 @@ public class GffGeneCluster {
 			exonClusterBoundInfo.setTailBoundInfo(tailBoundInfo);
 			
 			try {
-				ArrayList<ExonInfo> lsExonInfos = exonClusterBoundInfo.calculate();
+				List<ExonInfo> lsExonInfos = exonClusterBoundInfo.calculate();
 				gffGeneIsoInfoResult.addAll(lsExonInfos);
 			} catch (Exception e) {
-				ArrayList<ExonInfo> lsExonInfos = exonClusterBoundInfo.calculate();
+				List<ExonInfo> lsExonInfos = exonClusterBoundInfo.calculate();
 				gffGeneIsoInfoResult.addAll(lsExonInfos);
 			}
 
@@ -444,10 +444,10 @@ class ExonClusterBoundInfo {
 		return selectRefEnd;
 	}
 	/** 获得最后选定的exon */
-	public ArrayList<ExonInfo> calculate() {
+	public List<ExonInfo> calculate() {
 		ExonCluster exonCluster = lsExonClusters.get(thisExonClusterNum);
-		ArrayList<ExonInfo> lsExonInfosRef = exonCluster.getMapIso2LsExon().get(gffGeneIsoInfoRef);
-		ArrayList<ExonInfo> lsExonInfosThis = exonCluster.getMapIso2LsExon().get(gffGeneIsoInfoThis);
+		List<ExonInfo> lsExonInfosRef = exonCluster.getMapIso2LsExon().get(gffGeneIsoInfoRef);
+		List<ExonInfo> lsExonInfosThis = exonCluster.getMapIso2LsExon().get(gffGeneIsoInfoThis);
 		if (lsExonInfosRef == null) {
 			return lsExonInfosThis;
 		} else if (lsExonInfosThis == null) {
@@ -466,7 +466,7 @@ class ExonClusterBoundInfo {
 		return getLsExonInfo(lsExonInfosRef, lsExonInfosThis);
 	}
 	/** 计算所需选择的边界 */
-	private void calSelectBounds(ExonCluster exonCluster, ArrayList<ExonInfo> lsExonInfosRef, ArrayList<ExonInfo> lsExonInfosThis) {
+	private void calSelectBounds(ExonCluster exonCluster, List<ExonInfo> lsExonInfosRef, List<ExonInfo> lsExonInfosThis) {
 		if (tailBoundInfo[0] > thisExonClusterNum || tailBoundInfo[1] < thisExonClusterNum) {
 			if (lsExonInfosRef != null && lsExonInfosRef.size() == 1) {
 				selectRefStart = true; selectRefEnd = true;
@@ -498,7 +498,7 @@ class ExonClusterBoundInfo {
 	 * 1：0 ref终点边界 1 this终点边界
 	 * @return
 	 */
-	private void compExonMidSelect(ArrayList<ExonInfo> lsExonInfosRef, ArrayList<ExonInfo> lsExonInfosThis) {
+	private void compExonMidSelect(List<ExonInfo> lsExonInfosRef, List<ExonInfo> lsExonInfosThis) {
 		selectRefStart = false; selectRefEnd = false;
 		//*表示上次选择，括弧表示本次选择
 		//--------10-----20*-------------(30)-----40
@@ -545,7 +545,7 @@ class ExonClusterBoundInfo {
 	 * 0：0 ref起点边界 1 this起点边界
 	 * 1：0 ref终点边界 1 this终点边界
 	 */
-	private void compareExonStart(ArrayList<ExonInfo> lsExonInfosRef, ArrayList<ExonInfo> lsExonInfosThis) {
+	private void compareExonStart(List<ExonInfo> lsExonInfosRef, List<ExonInfo> lsExonInfosThis) {
 		selectRefStart = false; selectRefEnd = false;
 		if (lsExonInfosRef.size() == 0 || lsExonInfosThis.size() == 0) {
 			return;
@@ -583,7 +583,7 @@ class ExonClusterBoundInfo {
 	 * 1：0 ref终点边界 1 this终点边界<br>
 	 * @return
 	 */
-	private void compareExonEnd(ArrayList<ExonInfo> lsExonInfosRef, ArrayList<ExonInfo> lsExonInfosThis) {
+	private void compareExonEnd(List<ExonInfo> lsExonInfosRef, List<ExonInfo> lsExonInfosThis) {
 		selectRefStart = false; selectRefEnd = false;
 		//*表示上次选择，括弧表示本次选择
 		//--------10-----20*-------------(30)-----40
@@ -663,7 +663,7 @@ class ExonClusterBoundInfo {
 	 * @param lsExonInfosThis
 	 * @return 	
 	 */
-	private void setMarginBoundOutSide(boolean cis, boolean start, ArrayList<ExonInfo> lsExonInfosRef, ArrayList<ExonInfo> lsExonInfosThis) {		
+	private void setMarginBoundOutSide(boolean cis, boolean start, List<ExonInfo> lsExonInfosRef, List<ExonInfo> lsExonInfosThis) {		
 		int refBound = 0, thisBound = 0;
 		int tmp[] = getExonBound(start, lsExonInfosRef, lsExonInfosThis);
 		refBound = tmp[0]; thisBound = tmp[1];
@@ -697,7 +697,7 @@ class ExonClusterBoundInfo {
 	 * @param lsExonInfosThis
 	 * @return 	
 	 */
-	private void setMarginBoundInSide(boolean cis, boolean start, ArrayList<ExonInfo> lsExonInfosRef, ArrayList<ExonInfo> lsExonInfosThis) {		
+	private void setMarginBoundInSide(boolean cis, boolean start, List<ExonInfo> lsExonInfosRef, List<ExonInfo> lsExonInfosThis) {		
 		int refBound = 0, thisBound = 0;
 		int tmp[] = getExonBound(!start, lsExonInfosRef, lsExonInfosThis);
 		refBound = tmp[0]; thisBound = tmp[1];
@@ -719,7 +719,7 @@ class ExonClusterBoundInfo {
 	 * 0：refBound
 	 * 1：thisBound
 	 */
-	private int[] getExonBound(boolean start, ArrayList<ExonInfo> lsExonInfosRef, ArrayList<ExonInfo> lsExonInfosThis) {
+	private int[] getExonBound(boolean start, List<ExonInfo> lsExonInfosRef, List<ExonInfo> lsExonInfosThis) {
 		boolean cis = lsExonInfosRef.get(0).isCis5to3();
 		int[] result = new int[2];
 		if (start) {
@@ -758,9 +758,9 @@ class ExonClusterBoundInfo {
 			return;
 		}
 		
-		ArrayList<ArrayList<ExonInfo>> lsLsExonInfo = ArrayOperate.getArrayListValue(exonCluster.getMapIso2LsExon());
-		ArrayList<ExonInfo> lsExonInfos0 = lsLsExonInfo.get(0);
-		ArrayList<ExonInfo> lsExonInfos1 = lsLsExonInfo.get(1);
+		List<List<ExonInfo>> lsLsExonInfo = ArrayOperate.getArrayListValue(exonCluster.getMapIso2LsExon());
+		List<ExonInfo> lsExonInfos0 = lsLsExonInfo.get(0);
+		List<ExonInfo> lsExonInfos1 = lsLsExonInfo.get(1);
 		if (lsExonInfos0.size() == 0 || lsExonInfos1.size() == 0) {
 			return;
 		}
@@ -782,7 +782,7 @@ class ExonClusterBoundInfo {
 	 * @param lsExonInfosThis
 	 * @return
 	 */
-	private ArrayList<ExonInfo> getLsExonInfo(ArrayList<ExonInfo> lsExonInfosRef, ArrayList<ExonInfo> lsExonInfosThis) {
+	private List<ExonInfo> getLsExonInfo(List<ExonInfo> lsExonInfosRef, List<ExonInfo> lsExonInfosThis) {
 		ArrayList<ExonInfo> lsResult = new ArrayList<ExonInfo>();
 		if (selectRefStart == true) {
 			if (selectRefEnd == true) {

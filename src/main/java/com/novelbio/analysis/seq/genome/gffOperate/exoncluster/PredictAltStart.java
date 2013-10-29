@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.genome.gffOperate.exoncluster;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.TreeMap;
 
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
@@ -42,11 +43,11 @@ public class PredictAltStart extends PredictAltStartEnd {
 	
 	protected void find() {
 		lsSite = new ArrayList<Align>();
-		lslsExonInfos = new ArrayList<ArrayList<ExonInfo>>();
+		lslsExonInfos = new ArrayList<>();
 		if (exonCluster.getMapIso2ExonIndexSkipTheCluster().size() <= 0) {
 			return;
 		}
-		for (ArrayList<ExonInfo> lsExonInfo : exonCluster.getLsIsoExon()) {
+		for (List<ExonInfo> lsExonInfo : exonCluster.getLsIsoExon()) {
 			if (lsExonInfo.size() > 0 && lsExonInfo.get(0).getItemNum() == 0) {
 				int start = lsExonInfo.get(0).getStartCis();
 				int end = lsExonInfo.get(lsExonInfo.size() - 1).getEndCis();
@@ -61,20 +62,20 @@ public class PredictAltStart extends PredictAltStartEnd {
 	public Align getDifSite() {
 		isType();
 		//倒序，获得junction最多的reads
-		TreeMap<Integer, ArrayList<ExonInfo>> mapJuncNum2Exon = new TreeMap<Integer, ArrayList<ExonInfo>>(new Comparator<Integer>() {
+		TreeMap<Integer, List<ExonInfo>> mapJuncNum2Exon = new TreeMap<>(new Comparator<Integer>() {
 			public int compare(Integer o1, Integer o2) {
 				return -o1.compareTo(o2);
 			}
 		});
 		
-		for (ArrayList<ExonInfo> lsExonInfos : lslsExonInfos) {
+		for (List<ExonInfo> lsExonInfos : lslsExonInfos) {
 			int juncReads = tophatJunction.getJunctionSite(exonCluster.isCis5to3(), exonCluster.getRefID(), lsExonInfos.get(lsExonInfos.size() - 1).getEndCis());
 			mapJuncNum2Exon.put(juncReads, lsExonInfos);
 		}
 		//获得第一个
 		Align align = null;
 		for (Integer juncNum : mapJuncNum2Exon.keySet()) {
-			ArrayList<ExonInfo> lsExonInfos = mapJuncNum2Exon.get(juncNum);
+			List<ExonInfo> lsExonInfos = mapJuncNum2Exon.get(juncNum);
 			align = new Align(exonCluster.getRefID(), lsExonInfos.get(0).getStartCis(), lsExonInfos.get(lsExonInfos.size() - 1).getEndCis());
 			break;
 		}		

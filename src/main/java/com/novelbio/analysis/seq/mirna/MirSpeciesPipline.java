@@ -7,8 +7,11 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.information.SoftWareInfo;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
 
 /**
@@ -24,7 +27,6 @@ public class MirSpeciesPipline {
 	String outPathTmpMapping;
 	List<Species> lsSpecies;
 	/** bwa所在的路径 */
-	String exePath = "";
 	GeneExpTable expMirMature;
 	GeneExpTable expMirPre;
 	////////////////////// 输出文件名 /////////////////////////////
@@ -39,10 +41,7 @@ public class MirSpeciesPipline {
 	public void setLsSpecies(List<Species> lsSpecies) {
 		this.lsSpecies = lsSpecies;
 	}
-	/** bwa所在的路径，默认为""，也就是在系统路径下 */
-	public void setExePath(String exePath) {
-		this.exePath = exePath;
-	}
+ 
 	/**
 	 * @param prefix 前缀
 	 * @param seqFile 输入的fastq文件
@@ -60,7 +59,7 @@ public class MirSpeciesPipline {
 	}
 	/** 设定输出临时文件夹，必须是文件夹 */
 	public void setOutPathTmp(String outPathTmpMapping) {
-		this.outPathTmpMapping = FileOperate.addSep(outPathTmpMapping);
+		this.outPathTmpMapping = FileOperate.addSep(outPathTmpMapping) + "mapToBlastSpecies/";
 	}
 	public void setExpMir(GeneExpTable expMirPre, GeneExpTable expMirMature) {
 		this.expMirPre = expMirPre;
@@ -76,6 +75,8 @@ public class MirSpeciesPipline {
 
 	/** mapping的流水线 */
 	public void mappingPipeline(String rnadatFile) {
+		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.bowtie2);
+		
 		for (Species species : lsSpecies) {
 			MiRNACount miRNACount = new MiRNACount();
 			miRNACount.setSpecies(species, rnadatFile);
@@ -86,7 +87,7 @@ public class MirSpeciesPipline {
 				String fastqFile = mapPrefix2Fastq.get(prefix);
 				String outFastq = outPathTmpMapping + outputPrefix + "unmapped_" + species.getCommonName() + ".fq";
 				samFileOut = outPathTmpMapping + outputPrefix + species.getCommonName() + ".bam";
-				samFileOut = MiRNAmapPipline.mapping(exePath, threadNum, fastqFile, species.getMiRNAhairpinFile(), samFileOut, outFastq);
+				samFileOut = MiRNAmapPipline.mappingBowtie2(softWareInfo.getExePath(), threadNum, fastqFile, species.getMiRNAhairpinFile(), samFileOut, outFastq);
 				miRNACount.setAlignFile(new SamFile(samFileOut));
 				miRNACount.run();
 				expMirMature.addLsGeneName(getLsGeneNot0(miRNACount.getMapMirMature2Value()));
@@ -98,7 +99,7 @@ public class MirSpeciesPipline {
 			}
 		}
 	}
-
+	
 	/** 获得所有不为0的geneName */
 	private List<String> getLsGeneNot0(Map<String, Double> mapGeneName2Value) {
 		List<String> lsName = new ArrayList<>();
@@ -117,4 +118,10 @@ public class MirSpeciesPipline {
 		return mapPrefix2Fastq;
 	}
 	
+	public void writeToFile(String outPath) {
+		CtrlMiRNAfastq.writeFile(outPath + "blastMirPreAll_Counts.txt", expMirPre, EnumExpression.Counts);
+		CtrlMiRNAfastq.writeFile(outPath + "blastMirMatureAll_Counts.txt", expMirMature, EnumExpression.Counts);
+		CtrlMiRNAfastq.writeFile(outPath + "blastMirPreAll_UQTPM.txt", expMirPre, EnumExpression.UQPM);
+		CtrlMiRNAfastq.writeFile(outPath + "blastMirMatureAll_UQTPM.txt", expMirMature, EnumExpression.UQPM);
+	}
 }

@@ -29,12 +29,12 @@ public class ExonCluster implements Alignment {
 	String chrID;
 	int startLoc = 0;
 	int endLoc = 0;
-	ArrayList<ExonInfo> lsCombExon;
+	List<ExonInfo> lsCombExon;
 
 	/** 该iso跳过了这个exon，则里面装空的list
 	 *  如果该iso根本不在这个范围内,则里面就没有这个list
 	 */
-	Map<GffGeneIsoInfo, ArrayList<ExonInfo>> mapIso2LsExon = new LinkedHashMap<GffGeneIsoInfo, ArrayList<ExonInfo>>();
+	Map<GffGeneIsoInfo, List<ExonInfo>> mapIso2LsExon = new LinkedHashMap<GffGeneIsoInfo, List<ExonInfo>>();
 	/** 记录跳过该exoncluster的Iso，和跨过该exoncluster的那对exon的，前一个exon的编号 */
 	Map<GffGeneIsoInfo, Integer> mapIso2ExonNumSkipTheCluster = new HashMap<GffGeneIsoInfo, Integer>();
 	
@@ -72,7 +72,7 @@ public class ExonCluster implements Alignment {
 	}
 	
 	public Boolean isCis5to3() {
-		for (ArrayList<ExonInfo> lsExonInfos : mapIso2LsExon.values()) {
+		for (List<ExonInfo> lsExonInfos : mapIso2LsExon.values()) {
 			if (lsExonInfos.size() > 0) {
 				return lsExonInfos.get(0).isCis5to3();
 			}
@@ -100,7 +100,7 @@ public class ExonCluster implements Alignment {
 	}
 	/** 返回其所在的GffGene */
 	public GffDetailGene getParentGene() {
-		for (ArrayList<ExonInfo> lsExonInfos : mapIso2LsExon.values()) {
+		for (List<ExonInfo> lsExonInfos : mapIso2LsExon.values()) {
 			if (lsExonInfos.size() > 0) {
 				return lsExonInfos.get(0).getParent().getParentGffDetailGene();
 			}
@@ -111,7 +111,7 @@ public class ExonCluster implements Alignment {
 	/** 该iso跳过了这个exon，则里面装空的list
 	 * 如果该iso根本不在这个范围内,则里面就没有这个list
 	 */
-	public Map<GffGeneIsoInfo, ArrayList<ExonInfo>> getMapIso2LsExon() {
+	public Map<GffGeneIsoInfo, List<ExonInfo>> getMapIso2LsExon() {
 		return mapIso2LsExon;
 	}
 	/**
@@ -119,7 +119,7 @@ public class ExonCluster implements Alignment {
 	 * list--每个isoform中该组的所有exon
 	 * 如果该iso跳过了这个exon，则里面装空的list
 	 */
-	public ArrayList<ArrayList<ExonInfo>> getLsIsoExon() {
+	public List<List<ExonInfo>> getLsIsoExon() {
 		return ArrayOperate.getArrayListValue(mapIso2LsExon);
 	}
 	/** 
@@ -133,7 +133,7 @@ public class ExonCluster implements Alignment {
 		return false;
 	}
 	/** 返回某个iso所对应的exon */
-	public ArrayList<ExonInfo> getIsoExon(GffGeneIsoInfo gffGeneIsoInfo) {
+	public List<ExonInfo> getIsoExon(GffGeneIsoInfo gffGeneIsoInfo) {
 		return mapIso2LsExon.get(gffGeneIsoInfo);
 	}
 	
@@ -143,7 +143,7 @@ public class ExonCluster implements Alignment {
 	 * @param gffGeneIsoInfo
 	 * @param lsExon
 	 */
-	public void addExonCluster(GffGeneIsoInfo gffGeneIsoInfo, ArrayList<ExonInfo> lsExon) {
+	public void addExonCluster(GffGeneIsoInfo gffGeneIsoInfo, List<ExonInfo> lsExon) {
 		mapIso2LsExon.put(gffGeneIsoInfo, lsExon);
 	}
 
@@ -159,7 +159,7 @@ public class ExonCluster implements Alignment {
 	public boolean isAtEdge() {
 		if (exonClusterBefore == null || exonClusterAfter == null ) {
 			int thisExistIso = 0;
-			for (ArrayList<ExonInfo> lsexons : mapIso2LsExon.values()) {
+			for (List<ExonInfo> lsexons : mapIso2LsExon.values()) {
 				if (lsexons.size() > 0) {
 					thisExistIso++;
 				}
@@ -181,11 +181,11 @@ public class ExonCluster implements Alignment {
 	 * @return
 	 */
 	public boolean isNotSameTss_But_SameEnd() {
-		ArrayList<ExonInfo> lsExonEdge = new ArrayList<ExonInfo>();
+		List<ExonInfo> lsExonEdge = new ArrayList<ExonInfo>();
 		if (exonClusterBefore != null && exonClusterAfter != null) {
 			return false;
 		}
-		for (ArrayList<ExonInfo> lsexons : mapIso2LsExon.values()) {
+		for (List<ExonInfo> lsexons : mapIso2LsExon.values()) {
 			if (lsexons.size() > 2) {
 				return false;
 			}
@@ -229,7 +229,7 @@ public class ExonCluster implements Alignment {
 	 * @return
 	 */
 	public boolean isEdgeSmaller(GffGeneIsoInfo gffRef) {
-		for (ArrayList<ExonInfo> lsexons : mapIso2LsExon.values()) {
+		for (List<ExonInfo> lsexons : mapIso2LsExon.values()) {
 			if (lsexons.size() > 2 || lsexons.size() == 0) {
 				return false;
 			}
@@ -311,7 +311,7 @@ public class ExonCluster implements Alignment {
 	}
 	
 	private boolean isSameExon(boolean considerIsoNotInRegion) {
-		List<ArrayList<ExonInfo>> lsIsoExon = ArrayOperate.getArrayListValue(mapIso2LsExon);
+		List<List<ExonInfo>> lsIsoExon = ArrayOperate.getArrayListValue(mapIso2LsExon);
 		//如果本组中有不止一个exon的转录本，并且还有跨越的junction，说明本组有可变的exon
 		if (lsIsoExon.size() >= 1 && mapIso2ExonNumSkipTheCluster.size() >= 1	) {
 			return false;
@@ -340,7 +340,7 @@ public class ExonCluster implements Alignment {
 	}
 	
 	/** 返回该exonCluster中的所有exon */
-	public ArrayList<ExonInfo> getAllExons() {
+	public List<ExonInfo> getAllExons() {
 		if (lsCombExon != null) {
 			return lsCombExon;
 		}
@@ -352,7 +352,7 @@ public class ExonCluster implements Alignment {
 		lsCombExon = new ArrayList<ExonInfo>();
 		//用来去重复的hash表
 		HashSet<ExonInfo> hashExon = new HashSet<ExonInfo>();
-		for (ArrayList<ExonInfo> lsExon : mapIso2LsExon.values()) {
+		for (List<ExonInfo> lsExon : mapIso2LsExon.values()) {
 			for (ExonInfo is : lsExon) {
 				hashExon.add( is);
 			}
@@ -396,12 +396,12 @@ public class ExonCluster implements Alignment {
 	 * 如果是连续两个exon，就合并为一个
 	 * 如果iso在该位点没有exon，就不加入list
 	 */
-	public ArrayList<ExonInfo> getExonInfoSingleLs() {
+	public List<ExonInfo> getExonInfoSingleLs() {
 		//仅保存该位置每个iso只有一个exon的那种信息，就是说不保存 retain intron这种含有两个exon的信息
 		//用来判断cassette和alt5，alt3这几类
-		ArrayList<ExonInfo> lsExonTmp = new ArrayList<ExonInfo>();
+		List<ExonInfo> lsExonTmp = new ArrayList<ExonInfo>();
 		HashSet<ExonInfo> setRemoveSameExon = new HashSet<ExonInfo>();
-		for (ArrayList<ExonInfo> lsExon : mapIso2LsExon.values()) {
+		for (List<ExonInfo> lsExon : mapIso2LsExon.values()) {
 			if (lsExon.size() == 0) {
 				continue;
 			}

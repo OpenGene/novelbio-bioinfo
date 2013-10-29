@@ -124,7 +124,7 @@ public class CtrlMiRNAfastq {
 			miRNAmappingPipline.setSample(fastq2Prefix[1], fastq2Prefix[0]);
 			miRNAmappingPipline.setOutPathTmp(outPathTmpMapping);
 			miRNAmappingPipline.mappingPipeline();
-			AlignSeq alignSeq = miRNAmappingPipline.getOutGenomeAlignSeq();
+			SamFile alignSeq = miRNAmappingPipline.getOutGenomeAlignSeq();
 			if (alignSeq != null) {
 				mapNovelMiRNASamFile2Prefix.put(alignSeq, fastq2Prefix[1]);
 			}
@@ -136,13 +136,13 @@ public class CtrlMiRNAfastq {
 	/** 设定待比对的序列 */
 	private void setConfigFile() {
 		SoftWareInfo softWareInfo = new SoftWareInfo();
-		softWareInfo.setName(SoftWare.bwa.toString());
+		softWareInfo.setName(SoftWare.bowtie2.toString());
 		
 		miRNAmappingPipline.setExePath(softWareInfo.getExePath());
 		miRNAmappingPipline.setMiRNApreSeq(species.getMiRNAhairpinFile());
 		miRNAmappingPipline.setNcRNAseq(species.getRefseqNCfile());
 		miRNAmappingPipline.setRfamSeq(species.getRfamFile(rfamSpeciesSpecific));
-		miRNAmappingPipline.setGenome(species.getIndexChr(SoftWare.bwa));//默认bwa做mapping
+		miRNAmappingPipline.setGenome(species.getIndexChr(SoftWare.bowtie2));//默认bwa做mapping
 	}
 	
 	/** 没有初始化repeat */
@@ -286,12 +286,17 @@ public class CtrlMiRNAfastq {
 		txtWrite.ExcelWrite(lsValues);
 		txtWrite.close();
 	}
-	
+	public GeneExpTable getExpMirPre() {
+		return expMirPre;
+	}
+	public GeneExpTable getExpMirMature() {
+		return expMirMature;
+	}
 	/**
 	 * 返回mapping至基因组上的bed文件
 	 * 必须要等mapping完后才能获取
 	 */
-	public Map<AlignSeq, String> getMapGenomeBed2Prefix() {
+	public Map<AlignSeq, String> getMapGenomeSam2Prefix() {
 		return mapNovelMiRNASamFile2Prefix;
 	}
 	

@@ -55,14 +55,14 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 //		lsAligns.add(new Align("7",30050239,30137766));
 //		lsAligns.add(new Align("7",30121258, 30123992));
 //		lsAligns.add(new Align("24", 5495310, 5695313));
-//		lsAligns.add(new Align("mt", 0, 5000));
+		lsAligns.add(new Align("mt", 0, 6000));
 		DateUtil dateUtil = new DateUtil();
 		dateUtil.setStartTime();
 		System.out.println("start");
 		ExonJunction exonJunction = new ExonJunction();
 		exonJunction.setIsLessMemory(false);
 //		exonJunction.setGffHashGene(new GffHashGene(GffType.GTF, "/home/zong0jie/Test/rnaseq/paper/chicken/raw_ensembl_genes/chicken_ensemble_KO-WT-merged.gtf"));
-		exonJunction.setGffHashGene(new GffHashGene(GffType.GTF, "/home/zong0jie/Test/rnaseq/paper/chicken/raw_ensembl_genes/chicken_ensemble.gtf"));
+		exonJunction.setGffHashGene(new GffHashGene(GffType.GTF, "/home/zong0jie/Test/rnaseq/paper/chicken/raw_ensembl_genes/genes.gtf"));
 		exonJunction.setgenerateNewIso();
 		exonJunction.setLsReadRegion(lsAligns);
 		exonJunction.setOneGeneOneSpliceEvent(false);
@@ -79,7 +79,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	private static Logger logger = Logger.getLogger(ExonJunction.class);
-	private static String stopGeneName = "CXCR5";
+	private static String stopGeneName = "MT-ND2";
 	
 	GffHashGene gffHashGene = null;
 	StrandSpecific strandSpecific = StrandSpecific.NONE;

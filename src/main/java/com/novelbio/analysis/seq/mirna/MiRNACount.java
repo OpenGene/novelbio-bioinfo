@@ -74,8 +74,8 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 	 * @param matureMirna
 	 */
 	public void setMiRNAfile(String hairpairMirna, String matureMirna) {
-		seqFastaHashMatureMiRNA = new SeqFastaHash(matureMirna);
 		seqFastaHashPreMiRNA = new SeqFastaHash(hairpairMirna);
+		seqFastaHashMatureMiRNA = new SeqFastaHash(matureMirna);
 	}
 	
 	/**
@@ -119,7 +119,7 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 		for (ListDetailBin lsMiRNA : listMiRNALocation.getGffDetailAll()) {
 			String matureName = lsMiRNA.getNameSingle();
 			String parentName = lsMiRNA.getParent().getName();
-			mapMature2Seq.put(matureName, getMiRNAmatureSeq(matureName, parentName));
+			mapMature2Seq.put(matureName, getMiRNAmatureSeq(parentName, matureName));
 		}
 		return mapMature2Seq;
 	}

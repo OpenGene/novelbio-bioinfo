@@ -67,7 +67,7 @@ public class TestGeneID extends TestCase {
 	public void test() {
 //		testGoInsert();
 //		testBlastInsert();
-		ManageDBInfo manageDBInfo = new ManageDBInfo();
+		ManageDBInfo manageDBInfo = ManageDBInfo.getInstance();
 		System.out.println(manageDBInfo.findByDBname("NCBI").getDbInfoID());
 	}
 		
@@ -145,7 +145,7 @@ public class TestGeneID extends TestCase {
 	}
 	
 	private void testGeneInfoInsert() {
-		ManageDBInfo manageDBInfo = new ManageDBInfo();
+		ManageDBInfo manageDBInfo = ManageDBInfo.getInstance();
 		GeneID geneID = new GeneID("", taxID);
 		geneID.addUpdateRefAccID("Test2");
 		geneID.addUpdateRefAccID("test1");

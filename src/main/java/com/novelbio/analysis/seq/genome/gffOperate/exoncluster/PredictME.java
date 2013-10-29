@@ -189,7 +189,7 @@ public class PredictME extends SpliceTypePredict {
 		List<List<ExonInfo>> lsExonBeforeOrAfter = new ArrayList<>();
 		
 		for (GffGeneIsoInfo gffGeneIsoInfo : exonCluster.getMapIso2ExonIndexSkipTheCluster().keySet()) {
-			ArrayList<ExonInfo> lsExons = exonClusterBeforeOrAfter.getMapIso2LsExon().get(gffGeneIsoInfo);
+			List<ExonInfo> lsExons = exonClusterBeforeOrAfter.getMapIso2LsExon().get(gffGeneIsoInfo);
 			if (lsExons != null && lsExons.size() > 0) {
 				//并且不是本iso的最后一个exon
 				if (lsExons.get(lsExons.size() - 1).getItemNum() != gffGeneIsoInfo.size() - 1 && lsExons.get(0).getItemNum() != 0)  {
@@ -208,7 +208,7 @@ public class PredictME extends SpliceTypePredict {
 	private ArrayList<List<ExonInfo>> getLsExonThis(ExonCluster exonClusterBeforeOrAfter) {
 		ArrayList<List<ExonInfo>> lsExonThis = new ArrayList<>();
 		
-		for (Entry<GffGeneIsoInfo, ArrayList<ExonInfo>> entry: exonCluster.getMapIso2LsExon().entrySet()) {
+		for (Entry<GffGeneIsoInfo, List<ExonInfo>> entry: exonCluster.getMapIso2LsExon().entrySet()) {
 			GffGeneIsoInfo gffGeneIsoInfo = entry.getKey();
 			List<ExonInfo> lsExonInfo = entry.getValue();
 			
@@ -220,7 +220,7 @@ public class PredictME extends SpliceTypePredict {
 				continue;
 			}
 			
-			ArrayList<ExonInfo> lsExons = exonClusterBeforeOrAfter.getMapIso2LsExon().get(gffGeneIsoInfo);
+			List<ExonInfo> lsExons = exonClusterBeforeOrAfter.getMapIso2LsExon().get(gffGeneIsoInfo);
 			if (lsExons != null && lsExons.size() == 0 ) {
 				lsExonThis.add(lsExonInfo);
 			}

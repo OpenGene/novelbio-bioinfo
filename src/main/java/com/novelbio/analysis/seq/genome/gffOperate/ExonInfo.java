@@ -21,6 +21,18 @@ public class ExonInfo extends ListDetailAbs {
 	 * @param end 从1开始记数
 	 * @param cis
 	 */
+	public ExonInfo(GffGeneIsoInfo gffGeneIsoInfo, boolean cis, int start, int end) {
+		super("", start + "_" +end, cis);
+		super.setParentListAbs(gffGeneIsoInfo);
+		numberstart = Math.min(start, end);
+		numberend = Math.max(start, end);
+	}
+	/**
+	 * 根据正反向自动设定起点和终点
+	 * @param start 从1开始记数
+	 * @param end 从1开始记数
+	 * @param cis
+	 */
 	public ExonInfo(boolean cis, int start, int end) {
 		super("", start + "_" +end, cis);
 		numberstart = Math.min(start, end);

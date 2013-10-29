@@ -41,7 +41,7 @@ public class PredictEndDifStop extends SpliceTypePredict {
 		ls_lsExonInfos = new ArrayList<List<ExonInfo>>();
 		ArrayListMultimap<Integer, ExonInfo> mapEdge2LsExons = ArrayListMultimap.create();
 		
-		for (ArrayList<ExonInfo> lsExonInfo : exonCluster.getLsIsoExon()) {
+		for (List<ExonInfo> lsExonInfo : exonCluster.getLsIsoExon()) {
 			if (lsExonInfo.size() == 0 || lsExonInfo.size() > 1) {
 				continue;
 			}

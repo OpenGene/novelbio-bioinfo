@@ -12,7 +12,7 @@ public abstract class PredictAltStartEnd extends SpliceTypePredict {
 	ArrayList<Align> lsSite;
 
 	/** 判定为altStartEnd的listexon */
-	ArrayList<ArrayList<ExonInfo>> lslsExonInfos;
+	List<List<ExonInfo>> lslsExonInfos;
 	
 	public PredictAltStartEnd(ExonCluster exonCluster) {
 		super(exonCluster);

@@ -86,7 +86,7 @@ public class TestGeneExpTable {
 	public void readGeneExp1(String sampleName, int colNum) {
 		colNum--;
 		TxtReadandWrite txtRead = new TxtReadandWrite(geneExpTestFile);
-		geneExpTable.setAndAddCondition(sampleName);
+		geneExpTable.setCurrentCondition(sampleName);
 		int i = 0;
 		for (String content : txtRead.readlines(2)) {
 			i++;

@@ -1,8 +1,7 @@
 package com.novelbio.analysis.seq.genome.gffOperate.exoncluster;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
@@ -27,7 +26,7 @@ public class PredictAlt3 extends PredictAlt5Or3 {
 		if (exonCluster.exonClusterBefore == null) {
 			return;
 		}
-		for (ArrayList<ExonInfo> lsExonInfo : exonCluster.getLsIsoExon()) {
+		for (List<ExonInfo> lsExonInfo : exonCluster.getLsIsoExon()) {
 			if (lsExonInfo.size() == 0) {
 				continue;
 			}

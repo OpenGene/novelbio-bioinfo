@@ -33,7 +33,7 @@ public class PredictCassette extends SpliceTypePredict {
 		lsCounts.add((double) getJunReadsNum(condition));
 		Set<Integer> setAlignExist = new HashSet<Integer>();
 		for (GffGeneIsoInfo gffGeneIsoInfo : setExistExonIso) {
-			ArrayList<ExonInfo> lsExon = exonCluster.getIsoExon(gffGeneIsoInfo);
+			List<ExonInfo> lsExon = exonCluster.getIsoExon(gffGeneIsoInfo);
 			setAlignExist.add(lsExon.get(0).getStartCis());
 			setAlignExist.add(lsExon.get(lsExon.size() - 1).getEndCis());
 		}
@@ -61,7 +61,7 @@ public class PredictCassette extends SpliceTypePredict {
 		}
 		
 		for (GffGeneIsoInfo gffGeneIsoInfo : setExistExonIso) {
-			ArrayList<ExonInfo> lsExon = exonCluster.getIsoExon(gffGeneIsoInfo);
+			List<ExonInfo> lsExon = exonCluster.getIsoExon(gffGeneIsoInfo);
 			if (lsExon.size() == 0) {
 				continue;
 			}
@@ -151,7 +151,7 @@ public class PredictCassette extends SpliceTypePredict {
 					if (gffGeneIsoInfo.indexOf(lsExon.get(0)) != 0) {
 						before = true;
 					}
-					for (Entry<GffGeneIsoInfo, ArrayList<ExonInfo>> entryIso2Lsexon : clusterBefore.getMapIso2LsExon().entrySet()) {
+					for (Entry<GffGeneIsoInfo, List<ExonInfo>> entryIso2Lsexon : clusterBefore.getMapIso2LsExon().entrySet()) {
 						//上一个exoncluster中，存在 没有本exon的iso
 						if (entryIso2Lsexon.getValue().size() > 0 && lsIso_ExonSkip.contains(entryIso2Lsexon.getKey()) ) {
 							beforeAfter[0] = numBefore;
@@ -191,7 +191,7 @@ public class PredictCassette extends SpliceTypePredict {
 					if (gffGeneIsoInfo.indexOf(lsExon.get(lsExon.size() - 1)) != gffGeneIsoInfo.size() - 1) {
 						after = true;
 					}
-					for (Entry<GffGeneIsoInfo, ArrayList<ExonInfo>> entryIso2Lsexon : clusterAfter.getMapIso2LsExon().entrySet()) {
+					for (Entry<GffGeneIsoInfo, List<ExonInfo>> entryIso2Lsexon : clusterAfter.getMapIso2LsExon().entrySet()) {
 						//下一个exoncluster中，存在 没有本exon的iso
 						if (entryIso2Lsexon.getValue().size() > 0 && lsIso_ExonSkip.contains(entryIso2Lsexon.getKey())) {
 							beforeAfter[1] = numAfter;
@@ -280,7 +280,7 @@ public class PredictCassette extends SpliceTypePredict {
 	@Override
 	public SplicingAlternativeType getType() {
 		for (GffGeneIsoInfo gffGeneIsoInfo : setExistExonIso) {
-			ArrayList<ExonInfo> lsExons = exonCluster.getIsoExon(gffGeneIsoInfo);
+			List<ExonInfo> lsExons = exonCluster.getIsoExon(gffGeneIsoInfo);
 			if (lsExons.size() > 1 || isMulitCassette) {
 				return SplicingAlternativeType.cassette_multi;
 			}

@@ -204,7 +204,8 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 	public String searchMirName(String mirName, int start, int end) {
 		ListDetailBin element = searchElement(mirName, start, end);
 		if (element == null) {
-			logger.error("出现未知miRNA前体名字，是否需要更新miRNA.dat文件：" + mirName);
+			logger.warn("cannot find miRNA on：" + mirName + " " + start + " " + end);
+
 			return null;
 		}
 		return element.getNameSingle();

@@ -120,7 +120,7 @@ public class PredictRetainIntron extends SpliceTypePredict implements AlignmentR
 		if (alignRetain != null) return;
 		
 		int maxReadsNum = -1;
-		for (ArrayList<ExonInfo> lsExonInfo : exonCluster.getLsIsoExon()) {
+		for (List<ExonInfo> lsExonInfo : exonCluster.getLsIsoExon()) {
 			if (lsExonInfo.size() > 1) {
 				for (int i = 0; i < lsExonInfo.size() - 1; i++) {
 					int startLoc =  lsExonInfo.get(i).getEndCis();
@@ -155,7 +155,7 @@ public class PredictRetainIntron extends SpliceTypePredict implements AlignmentR
 		//判定是否为retain intron
 		boolean twoExon = false;
 		boolean oneExon = false;
-		for (ArrayList<ExonInfo> lsExon : exonCluster.getLsIsoExon()) {
+		for (List<ExonInfo> lsExon : exonCluster.getLsIsoExon()) {
 			if (lsExon.size() > 1) {
 				twoExon = true;
 			} else if (lsExon.size() == 1) {

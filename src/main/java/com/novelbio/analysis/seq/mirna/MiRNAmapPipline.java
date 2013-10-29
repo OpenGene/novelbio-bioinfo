@@ -2,6 +2,8 @@ package com.novelbio.analysis.seq.mirna;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.fastq.FastQ;
+import com.novelbio.analysis.seq.mapping.MapBowtie;
 import com.novelbio.analysis.seq.mapping.MapBwa;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamFileStatistics;
@@ -146,7 +148,7 @@ public class MiRNAmapPipline {
 		String unMappedMiRNA = "";
 		if (FileOperate.isFileExist(miRNApreSeq)) {
 			unMappedFq = outputTmpFinal + "unMap2miRNA.fq.gz";
-			samFileMiRNA = mapping(exePath, threadNum, fqFile, miRNApreSeq, samFileMiRNA, unMappedFq);
+			samFileMiRNA = mappingBowtie2(exePath, threadNum, fqFile, miRNApreSeq, samFileMiRNA, unMappedFq);
 			unMappedMiRNA = unMappedFq;
 			if (!mappingAll2Rfam) {
 				fqFile = unMappedFq;
@@ -155,25 +157,25 @@ public class MiRNAmapPipline {
 	
 		if (FileOperate.isFileExist(rfamSeq)) {
 			unMappedFq = outputTmpFinal + "unMap2rfam.fq.gz";
-			samFileRfam = mapping(exePath, threadNum, fqFile, rfamSeq, samFileRfam, unMappedFq);
+			samFileRfam = mappingBowtie2(exePath, threadNum, fqFile, rfamSeq, samFileRfam, unMappedFq);
 			fqFile = unMappedFq;
 		}
 		
 		if (FileOperate.isFileExist(ncRNAseq)) {
 			unMappedFq = outputTmpFinal + "unMap2ncRna.fq.gz";
-			samFileNCRNA = mapping(exePath, threadNum, fqFile, ncRNAseq, samFileNCRNA, unMappedFq);
+			samFileNCRNA = mappingBowtie2(exePath, threadNum, fqFile, ncRNAseq, samFileNCRNA, unMappedFq);
 			fqFile = unMappedFq;
 		}
 		
 		if (FileOperate.isFileExist(genome)) {
 			unMappedFq = outputTmpFinal + "unMapped.fq.gz";
-			samFileGenome = mapping(exePath, threadNum, unMappedMiRNA, genome, samFileGenome, unMappedFq);
+			samFileGenome = mappingBowtie2(exePath, threadNum, unMappedMiRNA, genome, samFileGenome, unMappedFq);
 		}
 		
 		if (mappingAll2Genome && FileOperate.isFileExist(genome)) {
 			fqFile = seqFile;
 			unMappedFq = outputTmpFinal + "unMapped.fq.gz";
-			samFileGenomeAll = mapping(exePath, threadNum, fqFile, genome, samFileGenomeAll, unMappedFq);
+			samFileGenomeAll = mappingBowtie2(exePath, threadNum, fqFile, genome, samFileGenomeAll, unMappedFq);
 		}
 	}
 	/** 仅mapping至MiRNA上 */
@@ -190,37 +192,40 @@ public class MiRNAmapPipline {
 		String unMappedFq = "";
 		if (FileOperate.isFileExist(miRNApreSeq)) {
 			unMappedFq = outputTmpFinal + "unMap2miRNA.fq.gz";
-			samFileMiRNA = mapping(exePath, threadNum, fqFile, miRNApreSeq, samFileMiRNA, unMappedFq);
+			samFileMiRNA = mappingBowtie2(exePath, threadNum, fqFile, miRNApreSeq, samFileMiRNA, unMappedFq);
 			fqFile = unMappedFq;
 		}
 	}
 	/**
+	 * @param exePath
+	 * @param threadNum
 	 * @param fqFile
 	 * @param chrFile
 	 * @param samFileName 输出sam文件名
 	 * @param unMappedFq 没有mapping上的文件输出为fq
 	 * @return 实际的sam输出文件名
 	 */
-	public static String mapping(String exePath, int threadNum, String fqFile, String chrFile, String samFileName, String unMappedFq) {
-		MapBwa mapBwa = new MapBwa(fqFile, samFileName);
-		mapBwa.setChrIndex(chrFile);
-		mapBwa.setExePath(exePath);
-		mapBwa.setGapLength(3);
-		mapBwa.setThreadNum(threadNum);
-		
+	public static String mappingBowtie2(String exePath, int threadNum, String fqFile, String chrFile, String samFileName, String unMappedFq) {
+		MapBowtie mapBowtie = new MapBowtie();
+		mapBowtie.setFqFile(new FastQ(fqFile), null);
+		mapBowtie.setOutFileName(samFileName);
+		mapBowtie.setChrIndex(chrFile);
+		mapBowtie.setExePath(exePath);
+		mapBowtie.setGapLength(3);
+		mapBowtie.setThreadNum(threadNum);
 		SamFileStatistics samFileStatistics = new SamFileStatistics(FileOperate.getFileNameSep(samFileName)[0]);
 		samFileStatistics.setCorrectChrReadsNum(true);
 		samFileStatistics.initial();
-		mapBwa.addAlignmentRecorder(samFileStatistics);
+		mapBowtie.addAlignmentRecorder(samFileStatistics);
 
 		if (unMappedFq != null && !unMappedFq.equals("")) {
 			SamToFastq samToFastq = new SamToFastq();
 			samToFastq.setFastqFile(unMappedFq);
 			samToFastq.setJustUnMapped(true);
-			mapBwa.addAlignmentRecorder(samToFastq);
+			mapBowtie.addAlignmentRecorder(samToFastq);
 		}
 		logger.info("start mapping miRNA");
-		SamFile samFile = mapBwa.mapReads();
+		SamFile samFile = mapBowtie.mapReads();
 		logger.info("finish mapping miRNA");
 		samFileStatistics.writeToFile(FileOperate.changeFileSuffix(samFile.getFileName(), "_Statistics", "txt"));
 		return samFile.getFileName();

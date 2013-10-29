@@ -47,7 +47,7 @@ public class MapSplice implements MapRNA {
 		if (exePath != null && !exePath.equals("")) {
 			this.exePath = FileOperate.addSep(exePath);
 		}
-		mapBowtie.setExePathBowtie(exePathBowtie);
+		mapBowtie.setExePath(exePathBowtie);
 	}
 	/** 是否检测fusion gene，检测fusion gene会获得比较少的junction reads */
 	public void setFusion(boolean fusion) {

@@ -81,16 +81,16 @@ public class MapTophat implements MapRNA, IntCmdSoft {
 	/**
 	 * 设定tophat所在的文件夹以及待比对的路径
 	 * 
-	 * @param exePath
+	 * @param exePathTophat
 	 *            如果在根目录下则设置为""或null
-	 * @param chrFile
+	 * @param exePathBowtie
 	 */
 	public void setExePath(String exePathTophat, String exePathBowtie) {
 		if (exePathTophat == null || exePathTophat.trim().equals(""))
 			this.ExePathTophat = "";
 		else
 			this.ExePathTophat = FileOperate.addSep(exePathTophat);
-		mapBowtie.setExePathBowtie(exePathBowtie);
+		mapBowtie.setExePath(exePathBowtie);
 	}
 	public void setRefIndex(String chrFile) {
 		mapBowtie.setChrIndex(chrFile);

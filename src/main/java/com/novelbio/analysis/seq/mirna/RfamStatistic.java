@@ -107,6 +107,10 @@ public class RfamStatistic {
 	 * @param bedFile
 	 */
 	public void countRfamBam() {
+		mapRfamID2Counts = new HashMap<>();
+		mapRfamType2Counts = new HashMap<>();
+		mapRfamClass2Counts = new HashMap<>();
+		
 		for (AlignRecord samRecord : samFile.readLines()) {
 			if (!samRecord.isMapped()) {
 				continue;

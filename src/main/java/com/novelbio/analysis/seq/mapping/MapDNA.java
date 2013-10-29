@@ -30,8 +30,6 @@ public abstract class MapDNA implements MapDNAint {
 		
 	/** 因为mapping完后会将sam文件转成bam文件，这时候就可以顺带的做一些工作 */
 	List<AlignmentRecorder> lsAlignmentRecorders = new ArrayList<AlignmentRecorder>();
-	/** 是否需要设定非unique mapping的标签，目前 只有bowtie2需要 */
-	boolean isSetMulitFlag = false;
 	/** 结果是否需要排序 */
 	boolean isNeedSort = false;
 	String outFileName = "";
@@ -118,12 +116,12 @@ public abstract class MapDNA implements MapDNAint {
 	protected abstract SamFile mapping();
 	
 	/**
-	 * 将mapping得到的sam流转化为bam文件并排序
+	 * @param isSetMulitFlag 是否需要设定非unique mapping的标签，目前 只有bowtie2需要
 	 * @param inputStream 内部关闭流
 	 * @param isNeedSort 看是否需要排序
-	 * @param result null表示运行失败，失败了也不删除文件
+	 * @return null表示运行失败，失败了也不删除文件
 	 */
-	protected SamFile copeSamStream(InputStream inputStream, boolean isNeedSort) {
+	protected SamFile copeSamStream(boolean isSetMulitFlag, InputStream inputStream, boolean isNeedSort) {
 		SamFile samFileIn = new SamFile(inputStream);
 		SamToBamSort samToBamSort = new SamToBamSort(getOutNameCope(), samFileIn, isPairEnd());
 		if (isNeedSort) {

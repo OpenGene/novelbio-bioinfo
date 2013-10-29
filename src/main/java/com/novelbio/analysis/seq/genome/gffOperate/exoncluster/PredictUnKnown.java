@@ -21,7 +21,7 @@ public class PredictUnKnown extends SpliceTypePredict {
 
 	@Override
 	public ArrayList<Double> getJuncCounts(String condition) {
-		ArrayList<ExonInfo> lsExon = exonCluster.getAllExons();
+		List<ExonInfo> lsExon = exonCluster.getAllExons();
 		ArrayList<Double> lsCounts = new ArrayList<Double>();
 		if (exonCluster.getMapIso2ExonIndexSkipTheCluster().size() > 0) {
 			lsCounts.add((double) getJunReadsNum(condition));
@@ -68,7 +68,7 @@ public class PredictUnKnown extends SpliceTypePredict {
 	 */
 	private HashSet<String> getSkipExonLoc_From_IsoHaveExon() {
 		HashSet<String> setLocation = new HashSet<String>();
-		for (ArrayList<ExonInfo> lsExonInfos : exonCluster.getLsIsoExon()) {
+		for (List<ExonInfo> lsExonInfos : exonCluster.getLsIsoExon()) {
 			if (lsExonInfos.size() == 0) {
 				continue;
 			}

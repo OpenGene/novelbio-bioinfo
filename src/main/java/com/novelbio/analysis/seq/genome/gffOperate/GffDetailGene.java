@@ -534,7 +534,7 @@ public class GffDetailGene extends ListDetailAbs {
 	 * @return
 	 */
 	public ArrayList<ExonCluster> getDifExonCluster() {
-		ArrayList<GffGeneIsoInfo> lsSameGroupIso = getLsGffGeneIsoSameGroup();
+		List<GffGeneIsoInfo> lsSameGroupIso = getLsGffGeneIsoSameGroup();
 		/**
 		 * 一个基因如果有不止一个的转录本，那么这些转录本的同一区域的exon就可以提取出来，并放入该list
 		 * 也就是每个exoncluster就是一个exon类，表示 
@@ -605,7 +605,7 @@ public class GffDetailGene extends ListDetailAbs {
 	 * @return
 	 */
 	public Collection<ExonCluster> getDifExonMapLoc2Cluster() {
-		ArrayList<GffGeneIsoInfo> lsSameGroupIso = getLsGffGeneIsoSameGroup();
+		List<GffGeneIsoInfo> lsSameGroupIso = getLsGffGeneIsoSameGroup();
 		/**
 		 * 一个基因如果有不止一个的转录本，那么这些转录本的同一区域的exon就可以提取出来，并放入该list
 		 * 也就是每个exoncluster就是一个exon类，表示 
@@ -653,7 +653,7 @@ public class GffDetailGene extends ListDetailAbs {
 		if (lsSameGroupIso.size() <= 1) {
 			return lsResult;
 		}
-		ArrayList<ExonCluster> lsExonClusters = GffGeneIsoInfo.getExonCluster(cis5to3, lsSameGroupIso);
+		List<ExonCluster> lsExonClusters = GffGeneIsoInfo.getExonCluster(cis5to3, lsSameGroupIso);
 		for (ExonCluster exonClusters : lsExonClusters) {
 			if (align != null && (exonClusters.getStartAbs() > align.getEndAbs() || exonClusters.getEndAbs() < align.getStartAbs() )) {
 				continue;
@@ -678,14 +678,14 @@ public class GffDetailGene extends ListDetailAbs {
 		//里面的连续两个exon中间的intron
 		//如果发现有转录本覆盖了该intron，那么就是造成retain intron的那个转录本，把它去除就好
 		Align alignIntron = null;
-		for (ArrayList<ExonInfo> lsexoninfo : exonCluster.getLsIsoExon()) {
+		for (List<ExonInfo> lsexoninfo : exonCluster.getLsIsoExon()) {
 			if (lsexoninfo.size() > 1) {
 				alignIntron = new Align(exonCluster.getRefID(), lsexoninfo.get(0).getEndCis(), lsexoninfo.get(1).getStartCis());
 			}
 		}
 		//获得这种长的iso
 		HashSet<GffGeneIsoInfo> setGeneIsoWithLongExon = new HashSet<GffGeneIsoInfo>();
-		for (ArrayList<ExonInfo> lsexoninfo : exonCluster.getLsIsoExon()) {
+		for (List<ExonInfo> lsexoninfo : exonCluster.getLsIsoExon()) {
 			if (lsexoninfo.size() > 0
 					&& lsexoninfo.get(0).getStartAbs() < alignIntron.getStartAbs()
 					&& lsexoninfo.get(0).getEndAbs() > alignIntron.getEndAbs())
@@ -707,9 +707,9 @@ public class GffDetailGene extends ListDetailAbs {
 	/** 返回iso基本接近的一组做可变剪接分析
 	 * 只有当几个iso中只有少数几个exon的差距，才能做可变剪接的分析
 	 *  */
-	private ArrayList<GffGeneIsoInfo> getLsGffGeneIsoSameGroup() {
+	private List<GffGeneIsoInfo> getLsGffGeneIsoSameGroup() {
 		//存放lsiso组，每次输入的iso在组内查找最接近的组，然后放进去
-		ArrayList<ArrayList<GffGeneIsoInfo>> ls_lsIso = new ArrayList<ArrayList<GffGeneIsoInfo>>();
+		List<IsoGroup> lsIsoGroup = new ArrayList<IsoGroup>();
 		boolean flagGetNexIso = false;
 		double prop = getSimilarProp();
 		if (lsGffGeneIsoInfos.size() <= 3) {
@@ -722,36 +722,28 @@ public class GffDetailGene extends ListDetailAbs {
 		
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
 			flagGetNexIso = false;
-			for (ArrayList<GffGeneIsoInfo> lsIso : ls_lsIso) {
-				if (flagGetNexIso)
+			for (IsoGroup isoGroup : lsIsoGroup) {
+				if (isoGroup.getSameEdgeProp(gffGeneIsoInfo) >= prop) {
+					isoGroup.addIso(gffGeneIsoInfo);
+					flagGetNexIso = true;
 					break;
-				
-				for (GffGeneIsoInfo gffGeneIsoInfoExist : lsIso) {
-					if (GffGeneIsoInfo.compareIsoRatio(gffGeneIsoInfo, gffGeneIsoInfoExist) >= prop) {
-						lsIso.add(gffGeneIsoInfo);
-						flagGetNexIso = true;
-						break;
-					}
 				}
 			}
 			//没找到最接近的iso，就新建一个list把这个iso加进去
 			if (!flagGetNexIso) {
-				ArrayList<GffGeneIsoInfo> lsIsoNew = new ArrayList<GffGeneIsoInfo>();
-				lsIsoNew.add(gffGeneIsoInfo);
-				ls_lsIso.add(lsIsoNew);
+				IsoGroup isoGroup = new IsoGroup();
+				isoGroup.addIso(gffGeneIsoInfo);
+				lsIsoGroup.add(isoGroup);
 			}
 		}
 		//找出含有iso最多的组
-		int maxIsoIndex = 0; int maxNum = 0;
-		for (int i = 0; i < ls_lsIso.size(); i++) {
-			ArrayList<GffGeneIsoInfo> lsIso = ls_lsIso.get(i);
-			if (lsIso.size() > maxNum) {
-				maxIsoIndex = i;
-				maxNum = lsIso.size();
+		IsoGroup isoGroupMax = new IsoGroup();
+		for (IsoGroup isoGroup : lsIsoGroup) {
+			if (isoGroupMax.getIsoNum() < isoGroup.getIsoNum()) {
+				isoGroupMax = isoGroup;
 			}
 		}
-		
-		return ls_lsIso.get(maxIsoIndex);
+		return isoGroupMax.lsGffGeneIsoInfos;
 	}
 	
 	//TODO
@@ -1015,4 +1007,44 @@ public class GffDetailGene extends ListDetailAbs {
 			return mapGeneStructure2Str;
 		}
 	}
+}
+
+class IsoGroup {
+	List<GffGeneIsoInfo> lsGffGeneIsoInfos = new ArrayList<>();
+	Set<Integer> setEdge = new HashSet<>();
+	
+	public int getSameEdge(GffGeneIsoInfo gffGeneIsoInfo) {
+		int i = 0;
+		for (ExonInfo exonInfo : gffGeneIsoInfo) {
+			if (setEdge.contains(exonInfo.getStartAbs())) {
+				i++;
+			}
+			if (setEdge.contains(exonInfo.getEndAbs())) {
+				i++;
+			}
+		}
+		return i;
+	}
+	
+	public double getSameEdgeProp(GffGeneIsoInfo gffGeneIsoInfo) {
+		int samEdge = getSameEdge(gffGeneIsoInfo);
+		double edgePropThis = samEdge/gffGeneIsoInfo.size();
+		double edgeSet = samEdge/setEdge.size();
+		return Math.max(edgeSet, edgePropThis);
+	}
+	
+	public boolean isEmpty() {
+		return setEdge.size() == 0;
+	}
+	public int getIsoNum() {
+		return lsGffGeneIsoInfos.size();
+	}
+	public void addIso(GffGeneIsoInfo gffGeneIsoInfo) {
+		lsGffGeneIsoInfos.add(gffGeneIsoInfo);
+		for (ExonInfo exonInfo : gffGeneIsoInfo) {
+			setEdge.add(exonInfo.getStartAbs());
+			setEdge.add(exonInfo.getEndAbs());
+		}
+	}
+	
 }

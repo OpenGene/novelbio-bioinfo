@@ -62,6 +62,10 @@ public class GenerateNewIso {
 		//循环直至找不到新的junction reads
 		for (;;) {
 			for (JunctionUnit junctionUnit : lsJunUnit) {
+				logger.error(junctionUnit.toString());
+				if (junctionUnit.toString().equals("MT 15869 15920")) {
+					logger.error("stop");
+				}
 				if (junctionUnit.getReadsNumAll() >= newIsoReadsNum && !isJunInGene(junctionUnit)) {
 //					logger.debug(junctionUnit.toString());
 					reconstructIso(junctionUnit);
@@ -313,10 +317,6 @@ public class GenerateNewIso {
 			gffGeneIsoInfoNew.add(new ExonInfo(gffGeneIsoInfoNew.isCis5to3(), end_startEdge, end_endEdge));
 		}
 		
-		
-		for (ExonInfo exonInfoNew : gffGeneIsoInfoNew) {
-			exonInfoNew.setParentListAbs(gffGeneIsoInfoNew);
-		}
 		return gffGeneIsoInfoNew;
 	}
 	

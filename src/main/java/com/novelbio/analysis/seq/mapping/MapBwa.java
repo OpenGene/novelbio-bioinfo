@@ -363,7 +363,7 @@ public class MapBwa extends MapDNA implements IntCmdSoft {
 		Thread thread = new Thread(cmdOperate);
 		thread.start();
 		InputStream inputStream = cmdOperate.getStdStream();
-		SamFile samResult = copeSamStream(inputStream, isNeedSort);
+		SamFile samResult = copeSamStream(false, inputStream, isNeedSort);
 		if (samResult != null && !cmdOperate.isRunning() && cmdOperate.isFinishedNormal()) {
 			deleteFile();
 			return samResult;
