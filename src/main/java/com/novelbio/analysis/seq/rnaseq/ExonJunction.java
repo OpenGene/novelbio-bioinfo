@@ -55,7 +55,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 //		lsAligns.add(new Align("7",30050239,30137766));
 //		lsAligns.add(new Align("7",30121258, 30123992));
 //		lsAligns.add(new Align("24", 5495310, 5695313));
-		lsAligns.add(new Align("mt", 0, 6000));
+//		lsAligns.add(new Align("mt", 0, 6000));
 		DateUtil dateUtil = new DateUtil();
 		dateUtil.setStartTime();
 		System.out.println("start");

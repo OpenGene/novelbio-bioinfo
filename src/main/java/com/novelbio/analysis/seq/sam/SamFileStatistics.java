@@ -185,7 +185,12 @@ public class SamFileStatistics implements AlignmentRecorder {
 		}
 		return mapChrID2Len;
 	}
-	
+	public double getMappedReadsNum() {
+		return mappedReadsNum;
+	}
+	public double getAllReadsNum() {
+		return allReadsNum;
+	}
 	/**
 	 * 首先要运行 statistics
 	 * @return

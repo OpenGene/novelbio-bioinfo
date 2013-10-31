@@ -228,6 +228,7 @@ public class MiRNAmapPipline {
 		SamFile samFile = mapBowtie.mapReads();
 		logger.info("finish mapping miRNA");
 		samFileStatistics.writeToFile(FileOperate.changeFileSuffix(samFile.getFileName(), "_Statistics", "txt"));
+		System.out.println();
 		return samFile.getFileName();
 	}
 }

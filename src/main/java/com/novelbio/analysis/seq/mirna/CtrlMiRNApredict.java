@@ -9,9 +9,11 @@ import java.util.Map.Entry;
 import javax.swing.JOptionPane;
 
 import com.novelbio.analysis.seq.AlignSeq;
+import com.novelbio.analysis.seq.GeneExpTable;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -25,7 +27,7 @@ public class CtrlMiRNApredict {
 	Species species;
 	String outPath;
 	
-	Map<? extends AlignSeq, String> lsSamFile2Prefix;
+	Map<String, ? extends AlignSeq> mapPrefix2SamFile;
 	Map<String, String> mapPrefix2UnmapFq = new HashMap<>();
 	
 	NovelMiRNADeep novelMiRNADeep = new NovelMiRNADeep();
@@ -60,15 +62,15 @@ public class CtrlMiRNApredict {
 	public void setOutPath(String outPath) {
 		this.outPath = FileOperate.addSep(outPath);
 	}
-	public void setLsSamFile2Prefix(Map<? extends AlignSeq, String> lsSamFile2Prefix) {
-		this.lsSamFile2Prefix = lsSamFile2Prefix;
+	public void setMapPrefix2GenomeSamFile(Map<String, ? extends AlignSeq> mapPrefix2SamFile) {
+		this.mapPrefix2SamFile = mapPrefix2SamFile;
 	}
 
 	public void runMiRNApredict() {
 		if (gffChrAbs == null) {
 			gffChrAbs = new GffChrAbs(species);
 		}
-		if (lsSamFile2Prefix.size() <= 0) {
+		if (mapPrefix2SamFile.size() <= 0) {
 			return;
 		}
 		String novelMiRNAPathDeep = outPath + "miRNApredictDeep/";
@@ -77,7 +79,7 @@ public class CtrlMiRNApredict {
 			return;
 		}
 		
-		novelMiRNADeep.setSeqInput(lsSamFile2Prefix.keySet());
+		novelMiRNADeep.setSeqInput(mapPrefix2SamFile.values());
 		softWareInfo.setName(SoftWare.mirDeep);
 		novelMiRNADeep.setExePath(softWareInfo.getExePath(), species.getIndexChr(SoftWare.bowtie));
 		novelMiRNADeep.setGffChrAbs(gffChrAbs);
@@ -94,33 +96,27 @@ public class CtrlMiRNApredict {
 	 */
 	protected void predictAndCalculate() {
 		novelMiRNADeep.setOutPath(outPath + "miRNApredictDeep/");
-		novelMiRNADeep.moveAndCopeFile();
+		novelMiRNADeep.readExistMrd();
 		setMiRNACount_And_Anno();
 		calculateExp();
 	}
 	
 	protected void calculateExp() {
-		expMirPre.addLsGeneName(miRNACount.getLsMirNamePre());
-		expMirPre.addAnnotation(miRNACount.getMapPre2Seq());
-		expMirPre.addLsTitle(MiRNACount.getLsTitleAnnoPre());
-		
-		expMirMature.addLsGeneName(miRNACount.getLsMirNameMature());
-		expMirMature.addAnnotation(miRNACount.getMapMature2Pre());
-		expMirMature.addAnnotation(miRNACount.getMapMature2Seq());
-		expMirMature.addLsTitle(MiRNACount.getLsTitleAnnoMature());
-		 
-		for (Entry<? extends AlignSeq, String> seq2Prefix : lsSamFile2Prefix.entrySet()) {
-			getMirPredictCount(seq2Prefix.getKey(), seq2Prefix.getValue());
+		miRNACount.setExpTable(expMirPre, expMirMature);
+		 for (String prefix : mapPrefix2SamFile.keySet()) {
+			 getMirPredictCount(prefix, mapPrefix2SamFile.get(prefix));
 		}
 	}
 	
-	private void getMirPredictCount(AlignSeq alignSeq, String prefix) {
+	private void getMirPredictCount(String prefix, AlignSeq alignSeq) {
 		FastQ fastQ = alignSeq.getFastQ();
 		alignSeq.close();
 		SoftWareInfo softWareInfo = new SoftWareInfo();
 		softWareInfo.setName(SoftWare.bowtie2);
-		String novelMiRNAsam = outPath + prefix + "novelMiRNAmapping.sam";
-		String unmappedFq = outPath + prefix + "novelMiRNAunmapped.fq.gz";
+		String outPathMap = outPath + "tmpMapping/";
+		FileOperate.createFolders(outPathMap);
+		String novelMiRNAsam = outPathMap + prefix + "novelMiRNAmapping.sam";
+		String unmappedFq = outPathMap + prefix + "novelMiRNAunmapped.fq.gz";
 		novelMiRNAsam = MiRNAmapPipline.mappingBowtie2(softWareInfo.getExePath(), 3, fastQ.getReadFileName(), 
 				novelMiRNADeep.getNovelMiRNAhairpin(), novelMiRNAsam, unmappedFq);
 		miRNACount.setAlignFile(new SamFile(novelMiRNAsam));
@@ -132,6 +128,7 @@ public class CtrlMiRNApredict {
 		expMirMature.addAllReads(miRNACount.getCountMatureAll());
 		expMirMature.addGeneExp(miRNACount.getMapMirMature2Value());
 		
+		expMirPre.setCurrentCondition(prefix);
 		expMirPre.addAllReads(miRNACount.getCountPreAll());
 		expMirPre.addGeneExp(miRNACount.getMapMiRNApre2Value());
 	}
@@ -155,8 +152,6 @@ public class CtrlMiRNApredict {
 	}
 	
 	private void setMiRNACount_And_Anno() {
-		SeqHash seqHash = new SeqHash(novelMiRNADeep.getNovelMiRNAmature());
-		seqHash.close();
 		Map<String, String> mapID2Blast = null;
 		MiRNAnovelAnnotaion miRNAnovelAnnotaion = null;
 		if (lsBlastTo != null && lsBlastTo.size() > 0) {

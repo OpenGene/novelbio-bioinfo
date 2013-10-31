@@ -219,9 +219,8 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 	/**
 	 * 将结果文件移动到指定位置
 	 * 同时处理结果文件为指定格式
-	 * 仅用于测试
 	 */
-	protected void moveAndCopeFile() {
+	private void moveAndCopeFile() {
 		ArrayList<String> lsFileName = new ArrayList<String>();
 		String suffix = getResultFileSuffixFromReportLog();
 		
@@ -256,7 +255,19 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 		novelMiRNAhairpin = outFinal + "novelMiRNA/hairpin.fa";
 		novelMiRNAmature = outFinal + "novelMiRNA/mature.fa";
 //		HashSet<String> setMirPredictName = getSetMirPredictName(outFinal + "result.csv");
-		extractHairpinSeqMatureSeq(novelMiRNAdeepMrdFile, novelMiRNAmature, novelMiRNAhairpin);
+		ListMiRNAdeep.extractHairpinSeqMatureSeq(novelMiRNAdeepMrdFile, novelMiRNAmature, novelMiRNAhairpin);
+	}
+	/**
+	 * 读取已有的mrd文件
+	 * 仅用于测试
+	 */
+	protected void readExistMrd() {
+		String outFinal = outPath + outPrefix;
+		novelMiRNAdeepMrdFile = outFinal + "run" + "/output.mrd";
+		novelMiRNAhairpin = outFinal + "novelMiRNA/hairpin.fa";
+		novelMiRNAmature = outFinal + "novelMiRNA/mature.fa";
+//		HashSet<String> setMirPredictName = getSetMirPredictName(outFinal + "result.csv");
+		ListMiRNAdeep.extractHairpinSeqMatureSeq(novelMiRNAdeepMrdFile, novelMiRNAmature, novelMiRNAhairpin);
 	}
 	
 	/** 查看reportlog，返回结果的后缀 */
@@ -302,101 +313,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 		return setMirPredictName;
 	}
 	
-	/**
-	 * @param setMirPredictName 新miRNA的名字
-	 * @param run_output_mrd 待提取的文件
-	 * @param outMatureSeq 输出
-	 * @param outPreSeq 输出
-	 */
-	private void extractHairpinSeqMatureSeq(String run_output_mrd, String outMatureSeq, String outPreSeq) {
-		FileOperate.createFolders(FileOperate.getParentPathName(outMatureSeq));
-		FileOperate.createFolders(FileOperate.getParentPathName(outPreSeq));
-		
-		TxtReadandWrite txtReadMrd = new TxtReadandWrite(run_output_mrd, false);
-		TxtReadandWrite txtWriteMature = new TxtReadandWrite(outMatureSeq, true);
-		TxtReadandWrite txtWritePre = new TxtReadandWrite(outPreSeq, true);
-		
-		List<String> lsBlock = new ArrayList<>();
- 		for (String string : txtReadMrd.readlines()) {
-			if (string.startsWith(">")) {
-				List<SeqFasta> lsMiRNA = getLsMirna(lsBlock);
-				for (int i = 0; i < lsMiRNA.size(); i++) {
-					if (i == 0) {
-						txtWritePre.writefileln(lsMiRNA.get(i).toStringNRfasta());
-					} else {
-						txtWriteMature.writefileln(lsMiRNA.get(i).toStringNRfasta());
-					}
-				}
-				lsBlock.clear();
-			}
-			lsBlock.add(string);
- 		}
-		txtReadMrd.close();
-		txtWriteMature.close();
-		txtWritePre.close();
-	}
-	
-	private List<SeqFasta> getLsMirna(List<String> lsMirInfo) {
-		if (lsMirInfo.size() == 0) {
-			return new ArrayList<>();
-		}
-		
-		String mirName = lsMirInfo.get(0).substring(1).trim();
-		String mirModel = "", mirSeq = "";
-		List<SeqFasta> lsMirna = null;
-		PatternOperate patternOperate = new PatternOperate("\\bseq_\\d+", false);
-		boolean readDetail = false;
-		boolean isExistMiRNA = false;
-		for (String string : lsMirInfo) {
-			if (string.startsWith("exp")) {
-				mirModel = string.replace("exp", "").trim();
-			} else if (string.startsWith("pri_seq ")) {
-				mirSeq = string.replace("pri_seq ", "").trim();
-				lsMirna = getMirDeepSeq(mirName, mirModel, mirSeq);
-			} else if (string.startsWith("pri_struct ")) {
-				readDetail = true;
-				continue;
-			}
-			
-			if (readDetail && patternOperate.getPatFirst(string.split(" ")[0]) != null) {
-				isExistMiRNA = true;
-			}
-		}
-		if (isExistMiRNA) {
-			return new ArrayList<>();
-		}
-		return lsMirna;
-	}
-	
-	/**
-	 * 给定RNAdeep的结果文件，从里面提取序列
-	 * @param seqName
-	 * @param mirModel
-	 * @param mirSeq
-	 * @return
-	 * 0: precess
-	 * 1: mature
-	 * 2: star
-	 */
-	private ArrayList<SeqFasta> getMirDeepSeq(String seqName, String mirModel, String mirSeq) {
-		ArrayList<SeqFasta> lsResult = new ArrayList<SeqFasta>();
-		
-		SeqFasta seqFasta = new SeqFasta(seqName, mirSeq);
-		seqFasta.setDNA(true);
-		
-		int startS = mirModel.indexOf("S"); int endS = mirModel.lastIndexOf("S");
-		int startM = mirModel.indexOf("M"); int endM = mirModel.lastIndexOf("M");
-		
-		SeqFasta seqFastaMature = new SeqFasta(seqName + "_mature", mirSeq.substring(startM, endM));
-		seqFastaMature.setDNA(true);
-		SeqFasta seqFastaStar = new SeqFasta(seqName + "_star", mirSeq.substring(startS, endS));
-		seqFastaStar.setDNA(true);
-		
-		lsResult.add(seqFasta);
-		lsResult.add(seqFastaMature);
-		lsResult.add(seqFastaStar);
-		return lsResult;
-	}
+
 	
 	public String getNovelMiRNAhairpin() {
 		return novelMiRNAhairpin;

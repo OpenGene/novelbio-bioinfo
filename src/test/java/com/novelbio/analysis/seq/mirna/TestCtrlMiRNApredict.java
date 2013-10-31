@@ -18,10 +18,10 @@ public class TestCtrlMiRNApredict {
 		ctrlMiRNApredict.novelMiRNADeep.novelMiRNAhairpin = parentPath + "test/miRNApredictDeep/novelMiRNA/hairpin.fa";
 		ctrlMiRNApredict.novelMiRNADeep.novelMiRNAmature = parentPath + "test/miRNApredictDeep/novelMiRNA/mature.fa";
 		
-		Map<SamFile, String> map = new HashMap<>();
-		map.put(new SamFile(parentPath + "H_Genome.bam"), "H");
-		map.put(new SamFile(parentPath + "Q_Genome.bam"), "Q");
-		ctrlMiRNApredict.setLsSamFile2Prefix(map);
+		Map<String, SamFile> map = new HashMap<>();
+		map.put("H", new SamFile(parentPath + "H_Genome.bam"));
+		map.put("Q", new SamFile(parentPath + "Q_Genome.bam"));
+		ctrlMiRNApredict.setMapPrefix2GenomeSamFile(map);
 		
 		List<Species> lsSpecies = new ArrayList<>();
 		lsSpecies.add(new Species(9606));

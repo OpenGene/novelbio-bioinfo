@@ -1,4 +1,4 @@
-package com.novelbio.analysis.seq.mirna;
+package com.novelbio.analysis.seq;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,7 +22,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
 public class GeneExpTable {
 	String geneTitleName;
 	/** 基因annotation的title */
-	List<String> lsGeneAnnoTitle = new ArrayList<>();
+	Set<String> setGeneAnnoTitle = new LinkedHashSet<>();
 	List<String> lsGeneName = new ArrayList<>();
 	/** 基因名和注释的对照表 */
 	ArrayListMultimap<String, String> mapGene2Anno = ArrayListMultimap.create();
@@ -45,8 +45,13 @@ public class GeneExpTable {
 	public GeneExpTable(TitleFormatNBC geneAccIDName) {
 		this.geneTitleName = geneAccIDName.toString();
 	}
-	/** 添加counts文本，将其加入mapGene_2_Cond2Exp中 */
-	public void read(String file) {
+	public GeneExpTable(String geneAccIDName) {
+		this.geneTitleName = geneAccIDName;
+	}
+	/** 添加counts文本，将其加入mapGene_2_Cond2Exp中
+	 * 同时添加注释信息并设定allCountsNumber为全体reads的累加
+	 */
+	public void read(String file, boolean addAnno) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(file);
 		List<String> lsFirst3Lines = txtRead.readFirstLines(3);
 		Map<Integer, String> mapCol2Sample = getMapCol2Sample(lsFirst3Lines);
@@ -54,8 +59,15 @@ public class GeneExpTable {
 			txtRead.close();
 			return;
 		}
-		geneTitleName = lsFirst3Lines.get(0).split("\t")[0];
-		
+		for (String string : mapCol2Sample.values()) {
+			setCondition.add(string);
+		}
+		String[] title = lsFirst3Lines.get(0).split("\t");
+		geneTitleName = title[0];
+		if (addAnno) {
+			setLsAnnoTitle(title, mapCol2Sample.keySet());
+		}
+	
 		for (String content : txtRead.readlines(2)) {
 			String[] data = content.split("\t");
 			String geneName = data[0];
@@ -66,13 +78,17 @@ public class GeneExpTable {
 				mapSample2Value = new HashMap<>();
 				mapGene_2_Cond2Exp.put(geneName, mapSample2Value);
 			}
-			
-			for (Integer col : mapCol2Sample.keySet()) {
-				String sampleName = mapCol2Sample.get(col);
-				Double value = Double.parseDouble(data[col]);
-				mapSample2Value.put(sampleName, value);
+			for (int i = 1; i < data.length; i++) {
+				if (mapCol2Sample.containsKey(i)) {
+					String sampleName = mapCol2Sample.get(i);
+					Double value = Double.parseDouble(data[i]);
+					mapSample2Value.put(sampleName, value);
+				} else if (addAnno) {
+					mapGene2Anno.put(geneName, data[i]);
+				}
 			}
 		}
+		setAllreadsPerConditon();
 		txtRead.close();
 	}
 	
@@ -84,7 +100,7 @@ public class GeneExpTable {
 		if (lsFirst3Lines.size() < 2) {
 			return null;
 		}
-		Map<Integer, String> mapCol2Sample = new HashMap<>();
+		Map<Integer, String> mapCol2Sample = new LinkedHashMap<>();
 		String[] titleArray = lsFirst3Lines.get(0).split("\t");
 		String[] dataArray1 = lsFirst3Lines.get(1).split("\t");
 		String[] dataArray2 = null;
@@ -102,6 +118,18 @@ public class GeneExpTable {
 			}
 		}
 		return mapCol2Sample;
+	}
+	
+	private void setLsAnnoTitle(String[] title, Set<Integer> colCol) {
+		if (setGeneAnnoTitle.size() > 0) {
+			return;
+		}
+		for (int i = 1; i < title.length; i++) {
+			if (colCol.contains(i)) {
+				continue;
+			}
+			setGeneAnnoTitle.add(title[i]);
+		}
 	}
 	
 	/**  最早就要设定 */
@@ -132,6 +160,14 @@ public class GeneExpTable {
 	public String getCurrentCondition() {
 		return currentCondition;
 	}
+	/** 返回全体condition */
+	public Set<String> getSetCondition() {
+		return setCondition;
+	}
+	/** 返回全体condition和对应的allReads */
+	public Map<String, Long> getMapCond2AllReads() {
+		return mapCond2AllReads;
+	}
 	/** mapGene2Anno中务必含有全体geneName */
 	public void addAnnotation(Map<String, String> mapGene2Anno) {
 		for (String geneName : mapGene2Anno.keySet()) {
@@ -150,8 +186,9 @@ public class GeneExpTable {
 			}
 		}
 	}
+	/** 会自动去重复 */
 	public void addLsTitle(Collection<String> colTitle) {
-		lsGeneAnnoTitle.addAll(colTitle);
+		setGeneAnnoTitle.addAll(colTitle);
 	}
 	/** 初始化基因列表 */
 	private void setLsGeneName(Collection<String> lsGeneName) {
@@ -184,12 +221,11 @@ public class GeneExpTable {
 		}
 	}
 	/**
-	 * 设定某个时期的全体表达值
+	 * 累加某个时期的全体表达值
 	 * 在添加表达信息之前，先添加 {@link #addLsGeneName(Map)}*/
 	public void addGeneExp(Map<String, ? extends Number> mapGene2Exp) {
 		for (String geneName : mapGene2Exp.keySet()) {
-			Map<String, Double> mapCond2Exp = mapGene_2_Cond2Exp.get(geneName);
-			mapCond2Exp.put(currentCondition, mapGene2Exp.get(geneName).doubleValue());
+			addGeneExp(geneName, mapGene2Exp.get(geneName).doubleValue());
 		}
 	}
 	/** 在添加表达信息之前，先添加 {@link #addLsGeneName(Map)}
@@ -212,7 +248,8 @@ public class GeneExpTable {
 	 *  @return 返回按照 lsConditions顺序的基因表达list
 	 */
 	public List<String[]> getLsCountsNum(EnumExpression enumExpression) {
-		setAllreadsPerConditon();
+		setConditionAllreads(currentCondition);
+
 		List<String[]> lsResult = new ArrayList<>();
 		lsResult.add(getCurrentTitle());
 		double uq = 0;
@@ -237,8 +274,9 @@ public class GeneExpTable {
 	 * @param enumExpression
 	 *  @return 返回按照 lsConditions顺序的基因表达list
 	 */
-	public List<String[]> getLsCond2CountsNum(EnumExpression enumExpression) {
-		setAllreads(currentCondition);
+	public List<String[]> getLsAllCountsNum(EnumExpression enumExpression) {
+		setAllreadsPerConditon();
+
 		List<String[]> lsResult = new ArrayList<>();
 		lsResult.add(getTitle());
 		Map<String, Double> mapCondition2UQ = null; 
@@ -306,11 +344,11 @@ public class GeneExpTable {
 	/** 如果allReads没有设定，则设定每个时期的allReads数量为该时期counts数加和 */
 	private void setAllreadsPerConditon() {
 		for (String condition : setCondition) {
-			setAllreads(condition);
+			setConditionAllreads(condition);
 		}
 	}
 	/** 如果allReads没有设定，则设定每个时期的allReads数量为该时期counts数加和 */
-	private void setAllreads(String condition) {
+	private void setConditionAllreads(String condition) {
 		if (mapCond2AllReads.containsKey(condition)) {
 			return;
 		}
@@ -363,7 +401,7 @@ public class GeneExpTable {
 	private String[] getTitle() {
 		List<String> lsTitle = new ArrayList<>();
 		lsTitle.add(geneTitleName);
-		lsTitle.addAll(lsGeneAnnoTitle);
+		lsTitle.addAll(setGeneAnnoTitle);
 
 		lsTitle.addAll(setCondition);
 		
@@ -373,7 +411,7 @@ public class GeneExpTable {
 	private String[] getCurrentTitle() {
 		List<String> lsTitle = new ArrayList<>();
 		lsTitle.add(geneTitleName);
-		lsTitle.addAll(lsGeneAnnoTitle);
+		lsTitle.addAll(setGeneAnnoTitle);
 
 		lsTitle.add(currentCondition);
 		return lsTitle.toArray(new String[0]);

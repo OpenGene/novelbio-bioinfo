@@ -144,16 +144,16 @@ public class PredictCassette extends SpliceTypePredict {
 			int[] beforeAfter = new int[]{initialNum, initialNum};//初始化为负数
 			int numBefore = 0, numAfter = 0;//直接上一位的exon标记为0，再向上一位标记为-1
 			boolean cancel = false;
-			boolean muti = false, before = false, after = false;
+			boolean muti_maybe = false, before = false, after = false;
 			while (clusterBefore != null) {
 				if (clusterBefore.isIsoHaveExon(gffGeneIsoInfo)) {
 					List<ExonInfo> lsExon = clusterBefore.getMapIso2LsExon().get(gffGeneIsoInfo);
-					if (gffGeneIsoInfo.indexOf(lsExon.get(0)) != 0) {
+					if (!gffGeneIsoInfo.get(0).equals(lsExon.get(0))) {
 						before = true;
 					}
-					for (Entry<GffGeneIsoInfo, List<ExonInfo>> entryIso2Lsexon : clusterBefore.getMapIso2LsExon().entrySet()) {
-						//上一个exoncluster中，存在 没有本exon的iso
-						if (entryIso2Lsexon.getValue().size() > 0 && lsIso_ExonSkip.contains(entryIso2Lsexon.getKey()) ) {
+					for (GffGeneIsoInfo gffIsoSkip : lsIso_ExonSkip) {
+						List<ExonInfo> lsExonBefore = clusterBefore.getMapIso2LsExon().get(gffIsoSkip);
+						if (lsExonBefore != null && lsExonBefore.size() > 0) {
 							beforeAfter[0] = numBefore;
 							cancel = true;
 							break;
@@ -162,24 +162,25 @@ public class PredictCassette extends SpliceTypePredict {
 					if (cancel) break;
 				} else {
 					//如果本exoncluster中含有 跳过当前exon的iso，并且在beforecluster中也跳过exon，那么就继续检查上一个exoncluster
+					//如果beforecluster的跳过iso中不含有该iso，说明该iso就不存在
 					//         beforeCluster     当前Cluster
 					// 1--2--------3--4--------------------------------------7--8
 					//  1--2--------------------------------5--6-------------7--8
 					// 1--2----------------------------------------------------7--8 //这就是 跳过当前cluster，还跳过 before cluster的 iso
 					Set<GffGeneIsoInfo> setIsoSkipBeforExon = clusterBefore.getMapIso2ExonIndexSkipTheCluster().keySet();
-					boolean out = true;
+					boolean iso_No_Before = true;
 					for (GffGeneIsoInfo gffSkipBefore : setIsoSkipBeforExon) {
 						if (lsIso_ExonSkip.contains(gffSkipBefore)) {
-							out = false;
+							iso_No_Before = false;
 							break;
 						}
 					}
-					if (out) {
+					if (iso_No_Before) {
 						break;
 					}
 				}
 				if (before) {
-					muti = true;
+					muti_maybe = true;
 				}
 				clusterBefore = clusterBefore.exonClusterBefore;
 				numBefore--;
@@ -188,12 +189,12 @@ public class PredictCassette extends SpliceTypePredict {
 			while (clusterAfter != null) {
 				if (clusterAfter.isIsoHaveExon(gffGeneIsoInfo)) {
 					List<ExonInfo> lsExon = clusterAfter.getMapIso2LsExon().get(gffGeneIsoInfo);
-					if (gffGeneIsoInfo.indexOf(lsExon.get(lsExon.size() - 1)) != gffGeneIsoInfo.size() - 1) {
+					if (!gffGeneIsoInfo.get(gffGeneIsoInfo.size() - 1).equals(lsExon.get(lsExon.size() - 1))) {
 						after = true;
 					}
-					for (Entry<GffGeneIsoInfo, List<ExonInfo>> entryIso2Lsexon : clusterAfter.getMapIso2LsExon().entrySet()) {
-						//下一个exoncluster中，存在 没有本exon的iso
-						if (entryIso2Lsexon.getValue().size() > 0 && lsIso_ExonSkip.contains(entryIso2Lsexon.getKey())) {
+					for (GffGeneIsoInfo gffIsoSkip : lsIso_ExonSkip) {
+						List<ExonInfo> lsExonAfter = clusterAfter.getMapIso2LsExon().get(gffIsoSkip);
+						if (lsExonAfter != null && lsExonAfter.size() > 0) {
 							beforeAfter[1] = numAfter;
 							cancel = true;
 							break;
@@ -219,12 +220,12 @@ public class PredictCassette extends SpliceTypePredict {
 					}
 				}
 				if (after) {
-					muti = true;
+					muti_maybe = true;
 				}
 				clusterAfter = clusterAfter.exonClusterAfter;
 				numAfter++;
 			}
-			if (numAfter -  numBefore >= 1 && numAfter - numBefore <=3 && muti == true) {
+			if (numAfter -  numBefore >= 1 && numAfter - numBefore <=3 && muti_maybe == true) {
 				isMulitCassette = true;
 			}
 			

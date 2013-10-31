@@ -54,10 +54,13 @@ public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
 		return fqWrite;
 	}
 	
+	/** 不设定或如果fastQRecordFilter 为null，表示不过滤 */
 	public void setFilter(FastQRecordFilter fastQRecordFilter, int phredOffset) {
-		fastQRecordFilter.setPhredOffset(phredOffset);
-		lsFQrecordCopeLeft.addAll(fastQRecordFilter.getLsFQfilter());
-		lsFQrecordCopeRight.addAll(fastQRecordFilter.getLsFQfilter());
+		if (fastQRecordFilter != null) {
+			fastQRecordFilter.setPhredOffset(phredOffset);
+			lsFQrecordCopeLeft.addAll(fastQRecordFilter.getLsFQfilter());
+			lsFQrecordCopeRight.addAll(fastQRecordFilter.getLsFQfilter());
+		}
 	}
 	
 	/** 设定质检

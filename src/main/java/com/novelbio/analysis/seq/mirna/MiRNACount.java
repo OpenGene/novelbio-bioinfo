@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.AlignSeq;
+import com.novelbio.analysis.seq.GeneExpTable;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
@@ -326,6 +327,11 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 		return countsMatureAll;
 	}
 	
+	/**
+	 * 设定Title, LsGeneName, Annotation
+	 * @param expMirPre
+	 * @param expMirMature
+	 */
 	public void setExpTable(GeneExpTable expMirPre, GeneExpTable expMirMature) {
 		expMirPre.addLsGeneName(getLsMirNamePre());
 		expMirPre.addAnnotation(getMapPre2Seq());
@@ -336,7 +342,7 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 		expMirMature.addAnnotation(getMapMature2Seq());
 		expMirMature.addLsTitle(MiRNACount.getLsTitleAnnoMature());
 	}
-	/** 不设定lsGeneName */
+	/** 设定Title, Annotation */
 	public void setExpTableWithoutLsGeneName(GeneExpTable expMirPre, GeneExpTable expMirMature) {
 		expMirPre.addAnnotation(getMapPre2Seq());
 		expMirPre.addLsTitle(MiRNACount.getLsTitleAnnoPre());

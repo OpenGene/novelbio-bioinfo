@@ -1,13 +1,16 @@
 package com.novelbio.analysis.seq.mirna;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.AlignSeq;
+import com.novelbio.analysis.seq.GeneExpTable;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.PathDetailNBC;
 import com.novelbio.generalConf.TitleFormatNBC;
@@ -26,7 +29,7 @@ public class TestMirPipelineAfterPredict {
 	List<Species> lsSpeciesBlastTo;
 	String outPath;
 	
-	Map<AlignSeq, String> mapBedFile2Prefix;
+	Map<String, AlignSeq> mapBedFile2Prefix;
 
 	public static void main(String[] args) {
 		TestMirPipelineAfterPredict testMirPipeline = new TestMirPipelineAfterPredict();
@@ -41,12 +44,18 @@ public class TestMirPipelineAfterPredict {
 		lsfastqFile2Prefix.add(new String[]{ "/media/hdfs/nbCloud/public/customer/gaohongmei_IASCAAS_sheep_RNA_20130925/miRNA" +
 				"-Data/Sheep_Q/Sheep_Q.clean.fa.fastq", "H2"});
 		
+		mapBedFile2Prefix = new HashMap<>();
+		mapBedFile2Prefix.put("H1", new SamFile("/media/hdfs/nbCloud/public/customer/gaohongmei_IASCA" +
+				"AS_sheep_RNA_20130925/miRNAtest/tmpMapping/H1_Genome.bam"));
+		mapBedFile2Prefix.put("H2", new SamFile("/media/hdfs/nbCloud/public/customer/gaohongmei_IASCAA" +
+				"S_sheep_RNA_20130925/miRNAtest/tmpMapping/H2_Genome.bam"));
+		
 		lsSpeciesBlastTo = new ArrayList<>();
 		lsSpeciesBlastTo.add(new Species(9913));
 		lsSpeciesBlastTo.add(new Species(9606));
 		
-		expMirPre.read("/media/hdfs/nbCloud/public/customer/gaohongmei_IASCAAS_sheep_RNA_20130925/miRNAtest/mirPreAll_Counts.txt");
-		expMirMature.read("/media/hdfs/nbCloud/public/customer/gaohongmei_IASCAAS_sheep_RNA_20130925/miRNAtest/mirMatureAll_Counts.txt");
+		expMirPre.read("/media/hdfs/nbCloud/public/customer/gaohongmei_IASCAAS_sheep_RNA_20130925/miRNAtest/mirPreAll_Counts.txt", true);
+		expMirMature.read("/media/hdfs/nbCloud/public/customer/gaohongmei_IASCAAS_sheep_RNA_20130925/miRNAtest/mirMatureAll_Counts.txt", true);
 		
 		outPath = "/media/hdfs/nbCloud/public/customer/gaohongmei_IASCAAS_sheep_RNA_20130925/miRNAtest/";
 	}
@@ -56,11 +65,14 @@ public class TestMirPipelineAfterPredict {
 			runPredictAlready(mapBedFile2Prefix, expMirPre, expMirMature);
 		}
 		blastToOtherSpecies();
+		for (String condition : expMirPre.getSetCondition()) {
+			System.out.println("pre:" + expMirPre.getMapCond2AllReads().get(condition) + "   mature:" + expMirMature.getMapCond2AllReads().get(condition));
+		}
 	}
 	
 	/** 已经预测好了算下表达就行了 */
-	private void runPredictAlready(Map<AlignSeq, String> mapBedFile2Prefix, GeneExpTable expMirPre, GeneExpTable expMirMature) {
-		ctrlMiRNApredict.setLsSamFile2Prefix(mapBedFile2Prefix);
+	private void runPredictAlready(Map<String, AlignSeq> mapBedFile2Prefix, GeneExpTable expMirPre, GeneExpTable expMirMature) {
+		ctrlMiRNApredict.setMapPrefix2GenomeSamFile(mapBedFile2Prefix);
 		ctrlMiRNApredict.setOutPath(outPath);
 		ctrlMiRNApredict.setLsSpeciesBlastTo(lsSpeciesBlastTo);
 		if (mapMirna) {
@@ -75,15 +87,15 @@ public class TestMirPipelineAfterPredict {
 			return;
 		}
 		MirSpeciesPipline mirSpeciesPipline = new MirSpeciesPipline();
-		if (predictMirna) {
-			mirSpeciesPipline.setExpMir(ctrlMiRNApredict.getExpMirPre(), ctrlMiRNApredict.getExpMirMature());
-		} else {
-			mirSpeciesPipline.setExpMir(ctrlMiRNAfastq.getExpMirPre(), ctrlMiRNApredict.getExpMirMature());
+		for (String prefix : ctrlMiRNApredict.getMapPrefix2UnmapFq().keySet()) {
+			mirSpeciesPipline.addSample(prefix, ctrlMiRNApredict.getMapPrefix2UnmapFq().get(prefix));
 		}
+		mirSpeciesPipline.setExpMir(ctrlMiRNApredict.getExpMirPre(), ctrlMiRNApredict.getExpMirMature());
 		mirSpeciesPipline.setLsSpecies(lsSpeciesBlastTo); 
 		mirSpeciesPipline.setOutPathTmp(outPath);
 		mirSpeciesPipline.setThreadNum(4);
 		mirSpeciesPipline.mappingPipeline(PathDetailNBC.getMiRNADat());
 		mirSpeciesPipline.writeToFile(outPath);
 	}
+	
 }

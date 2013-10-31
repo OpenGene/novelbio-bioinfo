@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.AlignSeq;
+import com.novelbio.analysis.seq.GeneExpTable;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
@@ -38,7 +39,7 @@ public class CtrlMiRNAfastq {
 	ReadsOnNCrna readsOnNCrna = new ReadsOnNCrna();
 
 	/** fastqFile--prefix */
-	List<String[]> lsFastqFile2Prefix;
+	Map<String, String> mapPrefix2Fastq;
 	
 	///////输出文件夹 //////////
 	String outPath;
@@ -56,7 +57,7 @@ public class CtrlMiRNAfastq {
 	GeneExpTable expGeneStructure = new GeneExpTable(TitleFormatNBC.GeneStructure);
 	
 	////// 没有mapping到的bed文件，用于预测新miRNA的 */
-	Map<AlignSeq, String> mapNovelMiRNASamFile2Prefix = new LinkedHashMap<AlignSeq, String>();
+	Map<String, AlignSeq> mapNovelMiRNAPrefix2SamFile = new LinkedHashMap<>();
 	boolean rfamSpeciesSpecific = false;
 	
 	boolean countRepeat = false;
@@ -75,16 +76,19 @@ public class CtrlMiRNAfastq {
 		}
 		this.gffChrAbs = gffChrAbs;
 	}
-	
-	public void setLsFastqFile(List<String[]> lsFastqFile2Prefix) {
-		this.lsFastqFile2Prefix = lsFastqFile2Prefix;
+	public void setMapPrefix2Fastq(Map<String, String> mapPrefix2Fastq) {
+		this.mapPrefix2Fastq = mapPrefix2Fastq;
 	}
-	
 	/** 设定输出文件夹 */
 	public void setOutPath(String outPath) {
 		this.outPath = FileOperate.addSep(outPath);
 		FileOperate.createFolders(this.outPath);
 		this.outPathTmpMapping = this.outPath + "tmpMapping";
+	}
+	
+	public void setMiRNAexp(GeneExpTable expMirPre, GeneExpTable expMirMature) {
+		this.expMirPre = expMirPre;
+		this.expMirMature = expMirMature;
 	}
 	
 	/**
@@ -119,17 +123,18 @@ public class CtrlMiRNAfastq {
 		FileOperate.createFolders(outPathTmpMapping);
 		setConfigFile();
 		initial();
-		for (String[] fastq2Prefix : lsFastqFile2Prefix) {
+		for (String prefix : mapPrefix2Fastq.keySet()) {
+			String fastq = mapPrefix2Fastq.get(prefix);
 			//文件名为输出文件夹+文件前缀
-			miRNAmappingPipline.setSample(fastq2Prefix[1], fastq2Prefix[0]);
+			miRNAmappingPipline.setSample(prefix, fastq);
 			miRNAmappingPipline.setOutPathTmp(outPathTmpMapping);
 			miRNAmappingPipline.mappingPipeline();
 			SamFile alignSeq = miRNAmappingPipline.getOutGenomeAlignSeq();
 			if (alignSeq != null) {
-				mapNovelMiRNASamFile2Prefix.put(alignSeq, fastq2Prefix[1]);
+				mapNovelMiRNAPrefix2SamFile.put(prefix, alignSeq);
 			}
-			setCurrentCondition(fastq2Prefix[1]);
-			countSmallRNA(outPath, fastq2Prefix[1], miRNAmappingPipline);
+			setCurrentCondition(prefix);
+			countSmallRNA(outPath, prefix, miRNAmappingPipline);
 		}
 	}
 	
@@ -278,7 +283,7 @@ public class CtrlMiRNAfastq {
 	}
 	
 	public static void writeFile(String fileName, GeneExpTable expTable, EnumExpression enumExpression) {
-		List<String[]> lsValues = expTable.getLsCond2CountsNum(enumExpression);
+		List<String[]> lsValues = expTable.getLsAllCountsNum(enumExpression);
 		if (lsValues == null || lsValues.size() == 0) {
 			return;
 		}
@@ -296,8 +301,8 @@ public class CtrlMiRNAfastq {
 	 * 返回mapping至基因组上的bed文件
 	 * 必须要等mapping完后才能获取
 	 */
-	public Map<AlignSeq, String> getMapGenomeSam2Prefix() {
-		return mapNovelMiRNASamFile2Prefix;
+	public Map<String, AlignSeq> getMapPrefix2GenomeSam() {
+		return mapNovelMiRNAPrefix2SamFile;
 	}
 	
 }

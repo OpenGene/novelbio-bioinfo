@@ -89,14 +89,15 @@ public class TestPredictSplice extends TestCase {
 			if (exonCluster.getStartAbs() == 40) {
 				SpliceTypePredict spliceTypeCS = new PredictCassette(exonCluster);
 				assertEquals(true, spliceTypeCS.isSpliceType());
-				
+				assertEquals(true, spliceTypeCS.isSpliceType());
+				assertEquals(SplicingAlternativeType.cassette, spliceTypeCS.getType());
 				SpliceTypePredict spliceTypeME= new PredictME(exonCluster);
 				assertEquals(false, spliceTypeME.isSpliceType());
 			}
 			if (exonCluster.getStartAbs() == 60) {
 				SpliceTypePredict spliceTypeCS = new PredictCassette(exonCluster);
 				assertEquals(true, spliceTypeCS.isSpliceType());
-				
+				assertEquals(SplicingAlternativeType.cassette_multi, spliceTypeCS.getType());
 				SpliceTypePredict spliceTypeME= new PredictME(exonCluster);
 				assertEquals(false, spliceTypeME.isSpliceType());
 			}

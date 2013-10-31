@@ -130,10 +130,9 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 			}
 			lsMirnaBlock.add(string);
 		}
+		copeMirBlock(lsMirnaBlock, getLatinName());
 		txtRead.close();
-	}	
-	
-	
+	}
 	
 	private void copeMirBlock(List<String> lsMirnaBlock, String speciesName) {
 		if (!isFindSpecies(lsMirnaBlock, speciesName)) {

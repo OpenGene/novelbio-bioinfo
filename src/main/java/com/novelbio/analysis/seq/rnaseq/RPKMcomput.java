@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.AlignRecord;
+import com.novelbio.analysis.seq.GeneExpTable;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
@@ -23,7 +24,6 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
-import com.novelbio.analysis.seq.mirna.GeneExpTable;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.SepSign;
@@ -462,11 +462,11 @@ public class RPKMcomput implements AlignmentRecorder {
 	
 	/** 返回计算得到的rpm值 */
 	public List<String[]> getLsTPMs() {
-		return geneExpTable.getLsCond2CountsNum(EnumExpression.TPM);
+		return geneExpTable.getLsAllCountsNum(EnumExpression.TPM);
 	}
 	/** 返回counts数量，可以拿来给DEseq继续做标准化 */
 	public List<String[]> getLsCounts() {
-		return geneExpTable.getLsCond2CountsNum(EnumExpression.Counts);
+		return geneExpTable.getLsAllCountsNum(EnumExpression.Counts);
 	}	
 	/**
 	 * 返回计算得到的rpkm值
@@ -474,7 +474,7 @@ public class RPKMcomput implements AlignmentRecorder {
 	 * exonlength的单位是kb
 	 */
 	public List<String[]> getLsRPKMs() {
-		return geneExpTable.getLsCond2CountsNum(EnumExpression.RPKM);
+		return geneExpTable.getLsAllCountsNum(EnumExpression.RPKM);
 	}
 	/**
 	 * 返回用Upper Quartile计算得到的rpkm值
@@ -482,7 +482,7 @@ public class RPKMcomput implements AlignmentRecorder {
 	 * exonlength的单位是kb
 	 */
 	public List<String[]> getLsUQRPKMs() {
-		return geneExpTable.getLsCond2CountsNum(EnumExpression.UQRPKM);
+		return geneExpTable.getLsAllCountsNum(EnumExpression.UQRPKM);
 	}
 	
 	/** 返回当前时期的rpm值 */

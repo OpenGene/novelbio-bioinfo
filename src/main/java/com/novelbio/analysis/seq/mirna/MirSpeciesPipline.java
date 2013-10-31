@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.GeneExpTable;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -49,6 +50,10 @@ public class MirSpeciesPipline {
 	public void addSample(String prefix, String fastqFile) {
 		this.mapPrefix2Fastq.put(prefix, fastqFile);
 	}
+	/** 设定待比对到其他物种的序列 */
+	public void setMapPrefix2Fastq(Map<String, String> mapPrefix2Fastq) {
+		this.mapPrefix2Fastq = mapPrefix2Fastq;
+	}
 	private String getOutputPrefix(String prefix) {
 		if (prefix != null && !prefix.trim().equals("")) {
 			if (!prefix.endsWith("_")) {
@@ -76,7 +81,7 @@ public class MirSpeciesPipline {
 	/** mapping的流水线 */
 	public void mappingPipeline(String rnadatFile) {
 		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.bowtie2);
-		
+		FileOperate.createFolders(outPathTmpMapping);
 		for (Species species : lsSpecies) {
 			MiRNACount miRNACount = new MiRNACount();
 			miRNACount.setSpecies(species, rnadatFile);
@@ -85,14 +90,18 @@ public class MirSpeciesPipline {
 			for (String prefix : mapPrefix2Fastq.keySet()) {
 				String outputPrefix = getOutputPrefix(prefix);
 				String fastqFile = mapPrefix2Fastq.get(prefix);
-				String outFastq = outPathTmpMapping + outputPrefix + "unmapped_" + species.getCommonName() + ".fq";
+				String outFastq = outPathTmpMapping + outputPrefix + "unmapped_" + species.getCommonName() + ".fq.gz";
 				samFileOut = outPathTmpMapping + outputPrefix + species.getCommonName() + ".bam";
 				samFileOut = MiRNAmapPipline.mappingBowtie2(softWareInfo.getExePath(), threadNum, fastqFile, species.getMiRNAhairpinFile(), samFileOut, outFastq);
 				miRNACount.setAlignFile(new SamFile(samFileOut));
 				miRNACount.run();
+				expMirMature.setCurrentCondition(prefix);
+				expMirMature.addAllReads(miRNACount.getCountMatureAll());
 				expMirMature.addLsGeneName(getLsGeneNot0(miRNACount.getMapMirMature2Value()));
 				expMirMature.addGeneExp(miRNACount.getMapMirMature2Value());
 				
+				expMirPre.setCurrentCondition(prefix);
+				expMirPre.addAllReads(miRNACount.getCountPreAll());
 				expMirPre.addLsGeneName(getLsGeneNot0(miRNACount.getMapMiRNApre2Value()));
 				expMirPre.addGeneExp(miRNACount.getMapMiRNApre2Value());
 				mapPrefix2Fastq.put(prefix, outFastq);

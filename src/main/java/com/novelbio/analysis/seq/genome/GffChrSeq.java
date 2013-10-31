@@ -119,10 +119,6 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	public void setGetSeqIso(List<String> lsIsoName) {
 		setIsoToGetSeq.clear();
 		for (String string : lsIsoName) {
-			if (string.equals("B130021B11Rik")) {
-				System.out.println(string);
-			}
-
 			List<GffGeneIsoInfo> lsGffGeneIsoInfo = getIso(string);
 			if (lsGffGeneIsoInfo.size() == 0) {
 				logger.error("没找到基因：" + string);

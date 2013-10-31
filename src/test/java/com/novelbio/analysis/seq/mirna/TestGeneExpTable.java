@@ -9,6 +9,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
+import com.novelbio.analysis.seq.GeneExpTable;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -137,7 +138,7 @@ public class TestGeneExpTable {
 			System.out.println("All " + enumExpression.toString());
 		}
 		List<String[]> ls = current ? geneExpTable.getLsCountsNum(enumExpression) :
-			geneExpTable.getLsCond2CountsNum(enumExpression);
+			geneExpTable.getLsAllCountsNum(enumExpression);
 		for (String[] strings : ls) {
 			String combine = ArrayOperate.cmbString(strings, "\t");
 			System.out.println(combine);
