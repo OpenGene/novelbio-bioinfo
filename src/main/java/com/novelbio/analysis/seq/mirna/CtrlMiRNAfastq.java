@@ -12,6 +12,7 @@ import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
 import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.sam.SamMapRate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
@@ -40,7 +41,7 @@ public class CtrlMiRNAfastq {
 
 	/** fastqFile--prefix */
 	Map<String, String> mapPrefix2Fastq;
-	
+		
 	///////输出文件夹 //////////
 	String outPath;
 	String outPathTmpMapping;
@@ -61,6 +62,9 @@ public class CtrlMiRNAfastq {
 	boolean rfamSpeciesSpecific = false;
 	
 	boolean countRepeat = false;
+	
+	public CtrlMiRNAfastq() {}
+	
 	/** 务必首先设定 */
 	public void setSpecies(Species species) {
 		this.species = species;
@@ -119,7 +123,7 @@ public class CtrlMiRNAfastq {
 	}
 	
 	/** 比对和计数，每比对一次就计数。主要是为了防止出错 */
-	public void mappingAndCounting() {
+	public void mappingAndCounting(SamMapRate samMapMiRNARate) {
 		FileOperate.createFolders(outPathTmpMapping);
 		setConfigFile();
 		initial();
@@ -132,6 +136,9 @@ public class CtrlMiRNAfastq {
 			SamFile alignSeq = miRNAmappingPipline.getOutGenomeAlignSeq();
 			if (alignSeq != null) {
 				mapNovelMiRNAPrefix2SamFile.put(prefix, alignSeq);
+			}
+			if (samMapMiRNARate != null) {
+				samMapMiRNARate.addMapInfo("MiRNA", miRNAmappingPipline.getSamFileStatisticsMiRNA());
 			}
 			setCurrentCondition(prefix);
 			countSmallRNA(outPath, prefix, miRNAmappingPipline);
@@ -184,11 +191,11 @@ public class CtrlMiRNAfastq {
 	 */
 	private void countSmallRNA(String outPath, String prefix, MiRNAmapPipline miRNAmappingPipline) {
 		outPath = outPath + prefix + FileOperate.getSepPath();
-		FileOperate.createFolders(outPath);
 		countMiRNA(outPath, prefix, miRNAmappingPipline);
 		countRfam(outPath, prefix, miRNAmappingPipline);
 		countNCrna(outPath, prefix, miRNAmappingPipline);
 		countRepeatGene(outPath, prefix, miRNAmappingPipline);
+		writeToFileCurrent(outPath, prefix);
 	}
 
 	/**
@@ -225,8 +232,8 @@ public class CtrlMiRNAfastq {
 		readsOnRepeatGene.setGffGene(gffChrAbs);
 		readsOnRepeatGene.readGffRepeat(species.getGffRepeat());
 		 
-		 expRepeatName.addLsGeneName(readsOnRepeatGene.getLsRepeatName());
-		 expRepeatFamily.addLsGeneName(readsOnRepeatGene.getLsRepeatFamily());
+		expRepeatName.addLsGeneName(readsOnRepeatGene.getLsRepeatName());
+		expRepeatFamily.addLsGeneName(readsOnRepeatGene.getLsRepeatFamily());
 		 countRepeat = true;
 	}
 
@@ -269,24 +276,47 @@ public class CtrlMiRNAfastq {
 		}
 	}
 	
+	private void writeToFileCurrent(String outPath, String prefix) {
+		writeFile(false, outPath + prefix + "_mirPre_Counts.txt", expMirPre, EnumExpression.Counts);
+		writeFile(false, outPath + prefix + "_mirMature_Counts.txt", expMirMature, EnumExpression.Counts);
+		writeFile(false, outPath + prefix + "_GeneStructure.txt", expGeneStructure, EnumExpression.Counts);
+		writeFile(false, outPath + prefix + "_RepeatFamily.txt", expRepeatFamily, EnumExpression.Counts);
+		writeFile(false, outPath + prefix + "_NCRNA.txt", expNcRNA, EnumExpression.Counts);
+		writeFile(false, outPath + prefix + "_RfamClass.txt", expRfamClass, EnumExpression.Counts);
+		writeFile(false, outPath + prefix + "_RfamID.txt", expRfamID, EnumExpression.Counts);
+	}
+
+	
 	/** 将汇总结果写入文本 */
 	public void writeToFile() {
-		writeFile(outPath + "mirPreAll_Counts.txt", expMirPre, EnumExpression.Counts);
-		writeFile(outPath + "mirMatureAll_Counts.txt", expMirMature, EnumExpression.Counts);
-		writeFile(outPath + "mirPreAll_UQTPM.txt", expMirPre, EnumExpression.UQPM);
-		writeFile(outPath + "mirMatureAll_UQTPM.txt", expMirMature, EnumExpression.UQPM);
-		writeFile(outPath + "GeneStructureAll.txt", expGeneStructure, EnumExpression.Counts);
-		writeFile(outPath + "RepeatFamilyAll.txt", expRepeatFamily, EnumExpression.Counts);
-		writeFile(outPath + "NCRNAAll.txt", expNcRNA, EnumExpression.Counts);
-		writeFile(outPath + "RfamClassAll.txt", expRfamClass, EnumExpression.Counts);
-		writeFile(outPath + "RfamIDAll.txt", expRfamID, EnumExpression.Counts);
+		writeFile(true, outPathTmpMapping + "mirPreAll_Counts.txt", expMirPre, EnumExpression.Counts);
+		writeFile(true, outPathTmpMapping + "mirMatureAll_Counts.txt", expMirMature, EnumExpression.Counts);
+		writeFile(true, outPath + "GeneStructureAll.txt", expGeneStructure, EnumExpression.Counts);
+		writeFile(true, outPath + "RepeatFamilyAll.txt", expRepeatFamily, EnumExpression.Counts);
+		writeFile(true, outPath + "NCRNAAll.txt", expNcRNA, EnumExpression.Counts);
+		writeFile(true, outPath + "RfamClassAll.txt", expRfamClass, EnumExpression.Counts);
+		writeFile(true, outPath + "RfamIDAll.txt", expRfamID, EnumExpression.Counts);
 	}
 	
-	public static void writeFile(String fileName, GeneExpTable expTable, EnumExpression enumExpression) {
-		List<String[]> lsValues = expTable.getLsAllCountsNum(enumExpression);
-		if (lsValues == null || lsValues.size() == 0) {
+	/**
+	 * 如果文件夹不存在，会新建文件夹
+	 * @param writeAllCondition
+	 * @param fileName
+	 * @param expTable
+	 * @param enumExpression
+	 */
+	public static void writeFile(boolean writeAllCondition, String fileName, GeneExpTable expTable, EnumExpression enumExpression) {
+		List<String[]> lsValues = null;
+		if (writeAllCondition) {
+			lsValues = expTable.getLsAllCountsNum(enumExpression);
+		} else {
+			lsValues = expTable.getLsCountsNum(enumExpression);
+		}
+		
+		if (lsValues == null || lsValues.size() <= 1) {
 			return;
 		}
+		FileOperate.createFolders(FileOperate.getPathName(fileName));
 		TxtReadandWrite txtWrite = new TxtReadandWrite(fileName, true);
 		txtWrite.ExcelWrite(lsValues);
 		txtWrite.close();

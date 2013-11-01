@@ -207,7 +207,10 @@ public class GeneExpTable {
 		}
 		mapCond2AllReads.put(currentCondition, (long)allReads);
 	}
-	
+	/** 设置当前时期所有mapping上的reads */
+	public void setAllReads(double allReads) {
+		mapCond2AllReads.put(currentCondition, (long)allReads);
+	}
 	/** 设置基因长度信息 */
 	public void setMapGene2Len(Map<String, Integer> mapGene2Len) {
 		this.mapGene2Len = mapGene2Len;
@@ -268,7 +271,12 @@ public class GeneExpTable {
 		}
 		return lsResult;
 	}
-	
+	public long getCurrentAllReads() {
+		if (currentCondition == null || !mapCond2AllReads.containsKey(currentCondition)) {
+			return 0;
+		}
+		return mapCond2AllReads.get(currentCondition);
+	}
 	/**
 	 * 获得全体时期的表达情况
 	 * @param enumExpression
@@ -291,6 +299,32 @@ public class GeneExpTable {
 			}
 			
 			lsTmpResult.addAll(getLsValue(geneName, enumExpression, mapCondition2UQ));
+			lsResult.add(lsTmpResult.toArray(new String[0]));
+		}
+		return lsResult;
+	}
+	/**
+	 * 获得全体时期的表达情况和ratio信息，用于mapping率
+	 * @param enumExpression
+	 *  @return 返回按照 lsConditions顺序的基因表达list
+	 */
+	public List<String[]> getLsAllCountsNum2Ratio(EnumExpression enumExpression) {
+		setAllreadsPerConditon();
+
+		List<String[]> lsResult = new ArrayList<>();
+		lsResult.add(getTitle2Ratio());
+		Map<String, Double> mapCondition2UQ = null; 
+		if (enumExpression == EnumExpression.UQPM || enumExpression == EnumExpression.UQRPKM) {
+			mapCondition2UQ = getMapCond2UQ();
+		}
+		for (String geneName : lsGeneName) {
+			List<String> lsTmpResult = new ArrayList<String>();
+			lsTmpResult.add(geneName);
+			if (!mapGene2Anno.isEmpty()) {
+				lsTmpResult.addAll(mapGene2Anno.get(geneName));
+			}
+			
+			lsTmpResult.addAll(getLsValue2Ratio(geneName, enumExpression, mapCondition2UQ));
 			lsResult.add(lsTmpResult.toArray(new String[0]));
 		}
 		return lsResult;
@@ -340,7 +374,22 @@ public class GeneExpTable {
 		}
 		return lsValue;
 	}
-	
+	/** 获得全体时期的基因表达情况以及其在allreads中的比例 */
+	private List<String> getLsValue2Ratio(String geneName, EnumExpression enumExpression, Map<String, Double> mapCondition2UQ) {
+		List<String> lsValue = new ArrayList<>();
+		Map<String, Double> mapCond2Exp = mapGene_2_Cond2Exp.get(geneName);
+		for (String condition : setCondition) {
+			Double value = mapCond2Exp.get(condition);			
+			double uq = (mapCondition2UQ != null) ? mapCondition2UQ.get(condition) : 0;
+			
+			Long allReadsNum = mapCond2AllReads.get(condition);
+			Integer geneLen = mapGene2Len == null ? 0 : mapGene2Len.get(geneName);
+			String geneValue = getValue(enumExpression, value, allReadsNum, uq, geneLen);
+			lsValue.add(geneValue);
+			lsValue.add(getValue(EnumExpression.Ratio, value, allReadsNum, uq, geneLen));
+		}
+		return lsValue;
+	}
 	/** 如果allReads没有设定，则设定每个时期的allReads数量为该时期counts数加和 */
 	private void setAllreadsPerConditon() {
 		for (String condition : setCondition) {
@@ -394,6 +443,8 @@ public class GeneExpTable {
 			resultValue = readsCount*geneExp*1000/upQuerterNum/geneLen + "";
 		} else if (enumExpression == EnumExpression.UQPM) {
 			resultValue = readsCount*geneExp/upQuerterNum + "";
+		} else if (enumExpression == EnumExpression.Ratio) {
+			resultValue = readsCount/allReadsNum + "";
 		}
 		return resultValue;
 	}
@@ -407,7 +458,16 @@ public class GeneExpTable {
 		
 		return lsTitle.toArray(new String[0]);
 	}
-	
+	private String[] getTitle2Ratio() {
+		List<String> lsTitle = new ArrayList<>();
+		lsTitle.add(geneTitleName);
+		lsTitle.addAll(setGeneAnnoTitle);
+		for (String condition : setCondition) {
+			lsTitle.add(condition);
+			lsTitle.add(condition + "_Rate");
+		}		
+		return lsTitle.toArray(new String[0]);
+	}
 	private String[] getCurrentTitle() {
 		List<String> lsTitle = new ArrayList<>();
 		lsTitle.add(geneTitleName);

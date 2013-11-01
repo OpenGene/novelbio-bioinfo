@@ -12,6 +12,7 @@ import com.novelbio.analysis.seq.GeneExpTable;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.sam.SamMapRate;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.PathDetailNBC;
 import com.novelbio.generalConf.TitleFormatNBC;
@@ -31,6 +32,7 @@ public class TestMirPipelineBlastToSpecies {
 	String outPath;
 	
 	Map<String, String> mapPrefix2Fastq;
+	SamMapRate samMapMiRNARate = new SamMapRate();
 
 	public static void main(String[] args) {
 		TestMirPipelineBlastToSpecies testMirPipeline = new TestMirPipelineBlastToSpecies();
@@ -69,7 +71,7 @@ public class TestMirPipelineBlastToSpecies {
 		mirSpeciesPipline.setLsSpecies(lsSpeciesBlastTo); 
 		mirSpeciesPipline.setOutPathTmp(outPath);
 		mirSpeciesPipline.setThreadNum(4);
-		mirSpeciesPipline.mappingPipeline(PathDetailNBC.getMiRNADat());
-		mirSpeciesPipline.writeToFile(outPath);
+		mirSpeciesPipline.mappingPipeline(PathDetailNBC.getMiRNADat(), samMapMiRNARate);
+		mirSpeciesPipline.writeToFile();
 	}
 }

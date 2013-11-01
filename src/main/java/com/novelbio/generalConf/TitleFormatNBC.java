@@ -1,5 +1,7 @@
 package com.novelbio.generalConf;
 
+import org.broad.tribble.annotation.Strand;
+
 
 public enum TitleFormatNBC {
 	/** 公司名缩写 */
@@ -14,7 +16,7 @@ public enum TitleFormatNBC {
 	Enrichment("Enrichment"),
 	
 	ChrID("ChrID"), LocStart("LocStart"), LocEnd("LocEnd"),
-	Location("Location"), Description("Description"), 
+	Location("Location"), Description("Description"), Strand("Strand"),
 	
 	miRNAName("miRNAName"), miRNApreName("miRNApreName"),
 	mirSequence("mirSequence"), mirPreSequence("mirPreSequence"),

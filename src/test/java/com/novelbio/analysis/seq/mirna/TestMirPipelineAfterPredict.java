@@ -11,6 +11,8 @@ import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.GeneExpTable;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.sam.SamMapRate;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.PathDetailNBC;
 import com.novelbio.generalConf.TitleFormatNBC;
@@ -30,6 +32,7 @@ public class TestMirPipelineAfterPredict {
 	String outPath;
 	
 	Map<String, AlignSeq> mapBedFile2Prefix;
+	SamMapRate samMapMiRNARate = new SamMapRate();
 
 	public static void main(String[] args) {
 		TestMirPipelineAfterPredict testMirPipeline = new TestMirPipelineAfterPredict();
@@ -68,6 +71,9 @@ public class TestMirPipelineAfterPredict {
 		for (String condition : expMirPre.getSetCondition()) {
 			System.out.println("pre:" + expMirPre.getMapCond2AllReads().get(condition) + "   mature:" + expMirMature.getMapCond2AllReads().get(condition));
 		}
+		TxtReadandWrite txtWrite = new TxtReadandWrite(outPath + "miRNAstatistics.txt", true);
+		txtWrite.ExcelWrite(samMapMiRNARate.getLsResult());
+		txtWrite.close();
 	}
 	
 	/** 已经预测好了算下表达就行了 */
@@ -78,10 +84,11 @@ public class TestMirPipelineAfterPredict {
 		if (mapMirna) {
 			ctrlMiRNApredict.setExpMir(expMirPre, expMirMature);
 		}
-		ctrlMiRNApredict.predictAndCalculate();
+		ctrlMiRNApredict.predictAndCalculate(samMapMiRNARate);
 		ctrlMiRNApredict.writeToFile();
 		logger.info("finish predict");
 	}
+	
 	private void blastToOtherSpecies() {
 		if (lsSpeciesBlastTo.size() == 0) {
 			return;
@@ -94,8 +101,8 @@ public class TestMirPipelineAfterPredict {
 		mirSpeciesPipline.setLsSpecies(lsSpeciesBlastTo); 
 		mirSpeciesPipline.setOutPathTmp(outPath);
 		mirSpeciesPipline.setThreadNum(4);
-		mirSpeciesPipline.mappingPipeline(PathDetailNBC.getMiRNADat());
-		mirSpeciesPipline.writeToFile(outPath);
+		mirSpeciesPipline.mappingPipeline(PathDetailNBC.getMiRNADat(), samMapMiRNARate);
+		mirSpeciesPipline.writeToFile();
 	}
 	
 }

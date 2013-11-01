@@ -17,8 +17,11 @@ import com.novelbio.database.model.species.Species;
 
 /** 新miRNA的注释 */
 public class MiRNAnovelAnnotaion {
+	static String sepSymbol = SepSign.SEP_INFO;
+
 	String miRNAthis;
 	String miRNAcope;
+	/** 分割novelmirName和blast到的mirName的标识 */
 	List<Species> lsBlastToSpecies = new ArrayList<>();
 	List<String> lsTmpBlastResult = new ArrayList<>();
 	Map<String, String> mapID2Blast;
@@ -93,7 +96,7 @@ public class MiRNAnovelAnnotaion {
 			if (content.startsWith(">")) {
 				content = content.replace(">", "").trim();
 				if (mapID2Blast.containsKey(content)) {
-					content = ">" + content + SepSign.SEP_INFO + mapID2Blast.get(content);
+					content = ">" + content + sepSymbol + mapID2Blast.get(content);
 				} else {
 					content = ">" + content;
 				}
@@ -104,5 +107,7 @@ public class MiRNAnovelAnnotaion {
 		txtWrite.close();
 	}
 	
-	
+	public static String getSepSymbol() {
+		return sepSymbol;
+	}
 }

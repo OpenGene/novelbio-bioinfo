@@ -3,6 +3,7 @@ package com.novelbio.analysis.annotation.genAnno;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -24,16 +25,16 @@ public class AnnoQuery extends RunProcess<AnnoQuery.AnnoQueryDisplayInfo>{
 //		annoQuery.setGeneIDFile(geneFile);
 //		annoQuery.writeTo(txtFile);
 //	}
-	
+	GffChrAbs gffChrAbs;
 	ArrayList<String[]> lsGeneID;
-	ArrayList<String[]> lsResult;
+	ArrayList<String[]> lsResult = new ArrayList<>();
+	TxtReadandWrite txtWriteResult;
 	int colAccID = 0;
 	String regex = "";
 	boolean blast = false;
 	double evalue = 1e-10;
 	int taxIDthis = 0;
 	int taxIDblastTo = 0;
-	String savePath;
 	int firstLine = 0;
 	AnnoAbs annoAbs;
 	/**
@@ -53,6 +54,10 @@ public class AnnoQuery extends RunProcess<AnnoQuery.AnnoQueryDisplayInfo>{
 			this.firstLine = firstLine - 1;
 		}
 	}
+	/** 是否添加坐标信息，仅用于annotation */
+	public void setGffChrAbs(GffChrAbs gffChrAbs) {
+		this.gffChrAbs = gffChrAbs;
+	}
 	public void setColAccIDFrom1(int colAccID) {
 		this.colAccID = colAccID - 1;
 	}
@@ -69,7 +74,9 @@ public class AnnoQuery extends RunProcess<AnnoQuery.AnnoQueryDisplayInfo>{
 	 * 设定了这个就不会往lsResult中保存了
 	 *  */
 	public void setSavePath(String savePath) {
-		this.savePath = savePath;
+		if (savePath != null && !savePath.equals("")) {
+			txtWriteResult = new TxtReadandWrite(savePath, true);
+		}
 	}
 	/**
 	 * 设定annotation的种类
@@ -77,6 +84,10 @@ public class AnnoQuery extends RunProcess<AnnoQuery.AnnoQueryDisplayInfo>{
 	 */
 	public void setAnnoType(int annoType) {
 		annoAbs = AnnoAbs.createAnnoAbs(annoType);
+		if (annoAbs instanceof AnnoAnno && gffChrAbs != null) {
+			((AnnoAnno)annoAbs).setAddLocInfo(true);
+			((AnnoAnno)annoAbs).setGffChrAbs(gffChrAbs);
+		}
 	}
 	/** 只有当annoType为 {@link AnnoAbs#GO} 时，才有设置的必要 */
 	public void setGOtype(GOtype gOtype) {
@@ -104,19 +115,8 @@ public class AnnoQuery extends RunProcess<AnnoQuery.AnnoQueryDisplayInfo>{
 		annoAbs.setBlastToTaxID(taxIDblastTo, evalue);
 		annoAbs.setTaxIDquery(taxIDthis);
 		annoAbs.setBlast(blast);
-		TxtReadandWrite txtWrite = null;
-		if (savePath != null && !savePath.equals("")) {
-			txtWrite = new TxtReadandWrite(savePath, true);
-		} else {
-			lsResult = new ArrayList<String[]>();
-		}
-		
 		if (firstLine >= 1) {
-			if (txtWrite != null) {
-				txtWrite.writefileln(getTitle());
-			} else {
-				lsResult.add(getTitle());
-			}
+			writeInfo(getTitle());
 		}
 		for (int i = firstLine; i < lsGeneID.size(); i++) {
 			String accID = lsGeneID.get(i)[colAccID];
@@ -129,30 +129,42 @@ public class AnnoQuery extends RunProcess<AnnoQuery.AnnoQueryDisplayInfo>{
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			if (lsTmpResult != null) {
-				if (txtWrite != null) {
-					for (String[] strings : lsTmpResult) {
-						txtWrite.writefileln(strings);
-					}
-				} else {
-					lsResult.addAll(lsTmpResult);
-				}
-				setRunInfo(i, lsTmpResult);
-			}
-			
+			writeInfo(lsTmpResult);
+			setRunInfo(i, lsTmpResult);
 			suspendCheck();
 	
 			if (flagStop) {
 				break;
 			}
 		}
-		savePath = null;
-		if (txtWrite != null) {
-			txtWrite.close();
+		if (txtWriteResult != null) {
+			txtWriteResult.close();
+		}
+	}
+	
+	private void writeInfo(List<String[]> lsTmpResult) {
+		if (lsTmpResult == null) return;
+		
+		if (txtWriteResult != null) {
+			for (String[] strings : lsTmpResult) {
+				txtWriteResult.writefileln(strings);
+			}
+		} else {
+			lsResult.addAll(lsTmpResult);
+		}
+	}
+	private void writeInfo(String[] tmpResult) {
+		if (tmpResult == null) return;
+		if (txtWriteResult != null) {
+				txtWriteResult.writefileln(tmpResult);
+		} else {
+			lsResult.add(tmpResult);
 		}
 	}
 	
 	private void setRunInfo(int num, List<String[]> lsTmpInfo) {
+		if (lsTmpInfo == null) return;
+		
 		for (String[] tmpInfo : lsTmpInfo) {
 			AnnoQueryDisplayInfo annoQueryDisplayInfo = new AnnoQueryDisplayInfo();
 			annoQueryDisplayInfo.countNum = num;
@@ -160,7 +172,6 @@ public class AnnoQuery extends RunProcess<AnnoQuery.AnnoQueryDisplayInfo>{
 			if (runGetInfo != null) {
 				runGetInfo.setRunningInfo(annoQueryDisplayInfo);
 			}
-			
 		}
 	}
 	

@@ -4,7 +4,6 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.mapping.MapBowtie;
-import com.novelbio.analysis.seq.mapping.MapBwa;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamFileStatistics;
 import com.novelbio.analysis.seq.sam.SamToFastq;
@@ -22,7 +21,7 @@ public class MiRNAmapPipline {
 	/** 输出的临时文件夹，主要保存mapping的中间文件 */
 	String outPathTmpMapping;
 	/** 输出的临时文件夹，主要保存mapping的中间文件 */
-	String outputPrefix = "";
+	String prefix = "";
 
 	/** rfam数据库中的序列 */
 	String rfamSeq = "";
@@ -48,6 +47,9 @@ public class MiRNAmapPipline {
 	
 	/** 全部reads mapping至全基因组上后产生的bed文件 */
 	String samFileGenomeAll = null;
+	
+	/** 比对到miRNA上的Statistics信息 */
+	SamFileStatistics samFileStatisticsMiRNA;
 	
 	int threadNum = 3;
 	
@@ -82,14 +84,12 @@ public class MiRNAmapPipline {
 		this.exePath = exePath;
 	}
 	/**
-	 * @param outputPrefix 输出前缀
+	 * @param prefix 输出前缀
 	 * @param seqFile 输入的fastq文件
 	 */
-	public void setSample(String outputPrefix, String fastqFile) {
-		if (outputPrefix != null && !outputPrefix.trim().equals("")) {
-			if (!outputPrefix.endsWith("_")) {
-				this.outputPrefix = outputPrefix.trim() + "_";
-			}
+	public void setSample(String prefix, String fastqFile) {
+		if (prefix != null && !prefix.trim().equals("")) {
+			this.prefix = prefix.trim();
 		}
 		this.seqFile = fastqFile;
 	}
@@ -134,7 +134,7 @@ public class MiRNAmapPipline {
 	}
 	/** mapping的流水线 */
 	public void mappingPipeline() {
-		String outputSam = outPathTmpMapping + outputPrefix;
+		String outputSam = outPathTmpMapping + prefix + "_";
 		samFileMiRNA = outputSam +  "miRNA.sam";
 		samFileRfam = outputSam + "rfam.sam";
 		samFileNCRNA = outputSam + "ncRna.sam";
@@ -142,13 +142,14 @@ public class MiRNAmapPipline {
 		/** 全部reads mapping至全基因组上 */
 		samFileGenomeAll = outputSam + "GenomeAll.sam";
 		
-		String outputTmpFinal = outPathTmpMapping + outputPrefix;
+		String outputTmpFinal = outPathTmpMapping + prefix + "_";
 		String fqFile = seqFile;
 		String unMappedFq = "";
 		String unMappedMiRNA = "";
 		if (FileOperate.isFileExist(miRNApreSeq)) {
 			unMappedFq = outputTmpFinal + "unMap2miRNA.fq.gz";
-			samFileMiRNA = mappingBowtie2(exePath, threadNum, fqFile, miRNApreSeq, samFileMiRNA, unMappedFq);
+			samFileStatisticsMiRNA = new SamFileStatistics(prefix);
+			samFileMiRNA = mappingBowtie2(samFileStatisticsMiRNA, exePath, threadNum, fqFile, miRNApreSeq, samFileMiRNA, unMappedFq);
 			unMappedMiRNA = unMappedFq;
 			if (!mappingAll2Rfam) {
 				fqFile = unMappedFq;
@@ -157,45 +158,55 @@ public class MiRNAmapPipline {
 	
 		if (FileOperate.isFileExist(rfamSeq)) {
 			unMappedFq = outputTmpFinal + "unMap2rfam.fq.gz";
-			samFileRfam = mappingBowtie2(exePath, threadNum, fqFile, rfamSeq, samFileRfam, unMappedFq);
+			samFileRfam = mappingBowtie2(new SamFileStatistics(FileOperate.getFileNameSep(samFileRfam)[0]),
+					exePath, threadNum, fqFile, rfamSeq, samFileRfam, unMappedFq);
 			fqFile = unMappedFq;
 		}
 		
 		if (FileOperate.isFileExist(ncRNAseq)) {
 			unMappedFq = outputTmpFinal + "unMap2ncRna.fq.gz";
-			samFileNCRNA = mappingBowtie2(exePath, threadNum, fqFile, ncRNAseq, samFileNCRNA, unMappedFq);
+			samFileNCRNA = mappingBowtie2(new SamFileStatistics(FileOperate.getFileNameSep(samFileNCRNA)[0]),
+					exePath, threadNum, fqFile, ncRNAseq, samFileNCRNA, unMappedFq);
 			fqFile = unMappedFq;
 		}
 		
 		if (FileOperate.isFileExist(genome)) {
 			unMappedFq = outputTmpFinal + "unMapped.fq.gz";
-			samFileGenome = mappingBowtie2(exePath, threadNum, unMappedMiRNA, genome, samFileGenome, unMappedFq);
+			samFileGenome = mappingBowtie2(new SamFileStatistics(FileOperate.getFileNameSep(samFileGenome)[0]),
+					exePath, threadNum, unMappedMiRNA, genome, samFileGenome, unMappedFq);
 		}
 		
 		if (mappingAll2Genome && FileOperate.isFileExist(genome)) {
 			fqFile = seqFile;
 			unMappedFq = outputTmpFinal + "unMapped.fq.gz";
-			samFileGenomeAll = mappingBowtie2(exePath, threadNum, fqFile, genome, samFileGenomeAll, unMappedFq);
+			samFileGenomeAll = mappingBowtie2(new SamFileStatistics(FileOperate.getFileNameSep(samFileGenomeAll)[0]),
+					exePath, threadNum, fqFile, genome, samFileGenomeAll, unMappedFq);
 		}
 	}
 	/** 仅mapping至MiRNA上 */
 	public void mappingMiRNA() {
 		FileOperate.createFolders(outPathTmpMapping);
 		
-		String outputSam = outPathTmpMapping + outputPrefix;
+		String outputSam = outPathTmpMapping + prefix + "_";
 		samFileMiRNA = outputSam +  "miRNA.sam";
 		/** 全部reads mapping至全基因组上 */
 		samFileGenomeAll = outputSam + "GenomeAll.sam";
 		
-		String outputTmpFinal = outPathTmpMapping + outputPrefix;
+		String outputTmpFinal = outPathTmpMapping + prefix + "_";
 		String fqFile = seqFile;
 		String unMappedFq = "";
 		if (FileOperate.isFileExist(miRNApreSeq)) {
 			unMappedFq = outputTmpFinal + "unMap2miRNA.fq.gz";
-			samFileMiRNA = mappingBowtie2(exePath, threadNum, fqFile, miRNApreSeq, samFileMiRNA, unMappedFq);
+			samFileStatisticsMiRNA = new SamFileStatistics(prefix);
+			samFileMiRNA = mappingBowtie2(samFileStatisticsMiRNA, exePath, threadNum, fqFile, miRNApreSeq, samFileMiRNA, unMappedFq);
 			fqFile = unMappedFq;
 		}
 	}
+	
+	public SamFileStatistics getSamFileStatisticsMiRNA() {
+		return samFileStatisticsMiRNA;
+	}
+	
 	/**
 	 * @param exePath
 	 * @param threadNum
@@ -205,7 +216,7 @@ public class MiRNAmapPipline {
 	 * @param unMappedFq 没有mapping上的文件输出为fq
 	 * @return 实际的sam输出文件名
 	 */
-	public static String mappingBowtie2(String exePath, int threadNum, String fqFile, String chrFile, String samFileName, String unMappedFq) {
+	public static String mappingBowtie2(SamFileStatistics samFileStatistics, String exePath, int threadNum, String fqFile, String chrFile, String samFileName, String unMappedFq) {
 		MapBowtie mapBowtie = new MapBowtie();
 		mapBowtie.setFqFile(new FastQ(fqFile), null);
 		mapBowtie.setOutFileName(samFileName);
@@ -213,10 +224,11 @@ public class MiRNAmapPipline {
 		mapBowtie.setExePath(exePath);
 		mapBowtie.setGapLength(3);
 		mapBowtie.setThreadNum(threadNum);
-		SamFileStatistics samFileStatistics = new SamFileStatistics(FileOperate.getFileNameSep(samFileName)[0]);
-		samFileStatistics.setCorrectChrReadsNum(true);
-		samFileStatistics.initial();
-		mapBowtie.addAlignmentRecorder(samFileStatistics);
+		if (samFileStatistics != null) {
+			samFileStatistics.setCorrectChrReadsNum(true);
+			samFileStatistics.initial();
+			mapBowtie.addAlignmentRecorder(samFileStatistics);
+		}
 
 		if (unMappedFq != null && !unMappedFq.equals("")) {
 			SamToFastq samToFastq = new SamToFastq();

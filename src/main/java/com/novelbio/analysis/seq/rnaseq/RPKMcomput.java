@@ -559,6 +559,8 @@ public class RPKMcomput implements AlignmentRecorder {
 	}
 	
 	public static enum EnumExpression {
-		TPM, RPKM, UQRPKM, UQPM, Counts
+		TPM, RPKM, UQRPKM, UQPM, Counts, 
+		/** 某个item占总测序量的比例 */
+		Ratio
 	}
 }

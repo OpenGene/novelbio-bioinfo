@@ -32,7 +32,7 @@ public class TestCtrlMiRNApredict {
 	public void testAnno() {
 		setUp();
 		ctrlMiRNApredict.setOutPath(parentPath + "test/miRNAanno");
-		ctrlMiRNApredict.calculateExp();
+		ctrlMiRNApredict.calculateExp(null);
 		ctrlMiRNApredict.writeToFile();
 	}
 }

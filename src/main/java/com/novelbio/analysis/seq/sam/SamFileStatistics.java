@@ -49,8 +49,6 @@ import com.novelbio.base.plot.PlotBar;
  *  */
 public class SamFileStatistics implements AlignmentRecorder {
 	private static final Logger logger = Logger.getLogger(SamFileStatistics.class);
-	SamFile samFile;
-	boolean countReadsNum;
 	
 	double allReadsNum = 0;
 	double unmappedReadsNum = 0;
@@ -105,7 +103,9 @@ public class SamFileStatistics implements AlignmentRecorder {
 	public SamFileStatistics(String prefix) {
 		this.prefix = prefix;
 	}
-	
+	public String getPrefix() {
+		return prefix;
+	}
 	/**
 	 * 由于非unique mapped reads的存在，为了精确统计reads在染色体上的分布，每个染色体上的reads数量用double来记数<br>
 	 * 这样如果一个reads在bam文本中出现多次--也就是mapping至多个位置，就会将每个记录(reads)除以其mapping number,<br>
@@ -125,13 +125,6 @@ public class SamFileStatistics implements AlignmentRecorder {
 	/** 染色体长度的map */
 	public void setStandardData(Map<String, Long> standardData) {
 		this.standardData = standardData;
-	}
-	protected void setSamFile(SamFile samFile) {
-		this.samFile = samFile;
-		countReadsNum = false;
-	}
-	public SamFile getSamFile() {
-		return samFile;
 	}
 	/**
 	 * 返回readsNum
@@ -178,18 +171,12 @@ public class SamFileStatistics implements AlignmentRecorder {
 	 * key都为小写
 	 * @return
 	 */
-	public Map<String, Long> getMapChrID2Len() {
-		Map<String, Long> mapChrID2Len = new LinkedHashMap<String, Long>();
+	public Map<String, Long> getMapChrID2MappedNumber() {
+		Map<String, Long> mapChrID2MappedNumber = new LinkedHashMap<String, Long>();
 		for (String chrID : mapChrID2ReadsNum.keySet()) {
-			mapChrID2Len.put(chrID.toLowerCase(), (long)mapChrID2ReadsNum.get(chrID)[0]);
+			mapChrID2MappedNumber.put(chrID.toLowerCase(), (long)mapChrID2ReadsNum.get(chrID)[0]);
 		}
-		return mapChrID2Len;
-	}
-	public double getMappedReadsNum() {
-		return mappedReadsNum;
-	}
-	public double getAllReadsNum() {
-		return allReadsNum;
+		return mapChrID2MappedNumber;
 	}
 	/**
 	 * 首先要运行 statistics
@@ -231,15 +218,6 @@ public class SamFileStatistics implements AlignmentRecorder {
 		return lsChrID2Num;
 	}
 	
-	public void statistics() {
-		if (countReadsNum) {
-			return;
-		}
-		countReadsNum = true;
-		 initial();
-		readSamFile();
-	}
-	
 	/** 初始化 */
 	public void initial() {
 		allReadsNum = 0;
@@ -251,19 +229,12 @@ public class SamFileStatistics implements AlignmentRecorder {
 		junctionUniReads = 0;
 		mapChrID2ReadsNum.clear();
 	}
-	
-	private void readSamFile() {
-		for (SamRecord samRecord : samFile.readLines()) {
-			addAlignRecord(samRecord);
-		}
-		summary();
-		samFile.close();
-	}
 
 	@Override
 	public void addAlignRecord(AlignRecord samRecord) {
 		int readsMappedWeight = samRecord.getMappedReadsWeight();
-		allReadsNum = allReadsNum + (double)1/readsMappedWeight;
+		double readsNum = (double)1/readsMappedWeight;
+		allReadsNum = allReadsNum + readsNum;
 		if (samRecord.isMapped()) {
 //			mappedReadsNum = mappedReadsNum + (double)1/readsMappedWeight;
 			setChrReads(readsMappedWeight, samRecord);
@@ -274,14 +245,14 @@ public class SamFileStatistics implements AlignmentRecorder {
 				}
 			}
 			else {
-				repeatMappedReadsNum = repeatMappedReadsNum + (double)1/readsMappedWeight;
+				repeatMappedReadsNum = repeatMappedReadsNum + readsNum;
 			}
 			if (samRecord.isJunctionCovered()) {
-				junctionAllReads = junctionAllReads + (double)1/readsMappedWeight;
+				junctionAllReads = junctionAllReads + readsNum;
 			}
 		}
 		else {
-			unmappedReadsNum = unmappedReadsNum + (double)1/readsMappedWeight;
+			unmappedReadsNum = unmappedReadsNum + readsNum;
 		}
 	}
 
@@ -392,7 +363,7 @@ public class SamFileStatistics implements AlignmentRecorder {
 			return mapChrID2LenProp;
 		}
 		mapChrID2LenProp = new LinkedHashMap<String, double[]>();
-		Map<String, Long> resultData = getMapChrID2Len();
+		Map<String, Long> resultData = getMapChrID2MappedNumber();
 		long readsNumAll = 0, chrLenAll = 0;
 		List<String> lsChrID = new ArrayList<String>(standardData.keySet());
 		Collections.sort(lsChrID, new CompareChrID());

@@ -10,6 +10,8 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.GeneExpTable;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
 import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.sam.SamFileStatistics;
+import com.novelbio.analysis.seq.sam.SamMapRate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
@@ -25,6 +27,7 @@ public class MirSpeciesPipline {
 	/** 序列文件 */
 	Map<String, String> mapPrefix2Fastq = new LinkedHashMap<>();
 	/** 输出的临时文件夹，主要保存mapping的中间文件 */
+	String outPath;
 	String outPathTmpMapping;
 	List<Species> lsSpecies;
 	/** bwa所在的路径 */
@@ -62,9 +65,10 @@ public class MirSpeciesPipline {
 		}
 		return prefix;
 	}
-	/** 设定输出临时文件夹，必须是文件夹 */
-	public void setOutPathTmp(String outPathTmpMapping) {
-		this.outPathTmpMapping = FileOperate.addSep(outPathTmpMapping) + "mapToBlastSpecies/";
+	/** 设定输出文件夹，必须是文件夹 */
+	public void setOutPathTmp(String outPath) {
+		this.outPath = FileOperate.addSep(outPath);
+		this.outPathTmpMapping = this.outPath + "tmpMapping/";
 	}
 	public void setExpMir(GeneExpTable expMirPre, GeneExpTable expMirMature) {
 		this.expMirPre = expMirPre;
@@ -79,20 +83,30 @@ public class MirSpeciesPipline {
 	}
 
 	/** mapping的流水线 */
-	public void mappingPipeline(String rnadatFile) {
+	public void mappingPipeline(String rnadatFile, SamMapRate samMapRate) {
 		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.bowtie2);
 		FileOperate.createFolders(outPathTmpMapping);
-		for (Species species : lsSpecies) {
+		for (int i = 0; i < lsSpecies.size(); i++) {
+			Species species = lsSpecies.get(i);
+
 			MiRNACount miRNACount = new MiRNACount();
 			miRNACount.setSpecies(species, rnadatFile);
 			miRNACount.setExpTableWithoutLsGeneName(expMirPre, expMirMature);
-			
 			for (String prefix : mapPrefix2Fastq.keySet()) {
 				String outputPrefix = getOutputPrefix(prefix);
 				String fastqFile = mapPrefix2Fastq.get(prefix);
-				String outFastq = outPathTmpMapping + outputPrefix + "unmapped_" + species.getCommonName() + ".fq.gz";
+				String outFastq = outPathTmpMapping + outputPrefix + species.getCommonName() + "_unmapped.fq.gz";
 				samFileOut = outPathTmpMapping + outputPrefix + species.getCommonName() + ".bam";
-				samFileOut = MiRNAmapPipline.mappingBowtie2(softWareInfo.getExePath(), threadNum, fastqFile, species.getMiRNAhairpinFile(), samFileOut, outFastq);
+				SamFileStatistics samFileStatistics = new SamFileStatistics(prefix);
+				samFileOut = MiRNAmapPipline.mappingBowtie2(samFileStatistics, softWareInfo.getExePath(), threadNum, fastqFile, species.getMiRNAhairpinFile(), samFileOut, outFastq);
+				
+				if (samMapRate != null) {
+					samMapRate.addMapInfo(species.getCommonName() + "_miRNA", samFileStatistics);
+					if (i == lsSpecies.size() - 1) {
+						samMapRate.addUnmapInfo(samFileStatistics);
+					}
+				}
+				
 				miRNACount.setAlignFile(new SamFile(samFileOut));
 				miRNACount.run();
 				expMirMature.setCurrentCondition(prefix);
@@ -105,6 +119,11 @@ public class MirSpeciesPipline {
 				expMirPre.addLsGeneName(getLsGeneNot0(miRNACount.getMapMiRNApre2Value()));
 				expMirPre.addGeneExp(miRNACount.getMapMiRNApre2Value());
 				mapPrefix2Fastq.put(prefix, outFastq);
+				
+				CtrlMiRNAfastq.writeFile(false, outPath + prefix + FileOperate.getSepPath() + prefix + "_BlastTo" 
+				+ species.getCommonName() + "_Pre_Counts.txt", expMirPre, EnumExpression.Counts);
+				CtrlMiRNAfastq.writeFile(false, outPath + prefix + FileOperate.getSepPath() + prefix + "_BlastTo" 
+						+ species.getCommonName() + "_Mature_Counts.txt", expMirMature, EnumExpression.Counts);
 			}
 		}
 	}
@@ -127,10 +146,10 @@ public class MirSpeciesPipline {
 		return mapPrefix2Fastq;
 	}
 	
-	public void writeToFile(String outPath) {
-		CtrlMiRNAfastq.writeFile(outPath + "blastMirPreAll_Counts.txt", expMirPre, EnumExpression.Counts);
-		CtrlMiRNAfastq.writeFile(outPath + "blastMirMatureAll_Counts.txt", expMirMature, EnumExpression.Counts);
-		CtrlMiRNAfastq.writeFile(outPath + "blastMirPreAll_UQTPM.txt", expMirPre, EnumExpression.UQPM);
-		CtrlMiRNAfastq.writeFile(outPath + "blastMirMatureAll_UQTPM.txt", expMirMature, EnumExpression.UQPM);
+	public void writeToFile() {
+		CtrlMiRNAfastq.writeFile(true, outPathTmpMapping + "blastMirPreAll_Counts.txt", expMirPre, EnumExpression.Counts);
+		CtrlMiRNAfastq.writeFile(true, outPathTmpMapping + "blastMirMatureAll_Counts.txt", expMirMature, EnumExpression.Counts);
+		CtrlMiRNAfastq.writeFile(true, outPathTmpMapping + "blastMirPreAll_UQTPM.txt", expMirPre, EnumExpression.UQPM);
+		CtrlMiRNAfastq.writeFile(true, outPathTmpMapping + "blastMirMatureAll_UQTPM.txt", expMirMature, EnumExpression.UQPM);
 	}
 }

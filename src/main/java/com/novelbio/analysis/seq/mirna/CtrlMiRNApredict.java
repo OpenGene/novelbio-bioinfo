@@ -16,6 +16,9 @@ import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
 import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.sam.SamFileStatistics;
+import com.novelbio.analysis.seq.sam.SamMapRate;
+import com.novelbio.base.SepSign;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
@@ -66,7 +69,7 @@ public class CtrlMiRNApredict {
 		this.mapPrefix2SamFile = mapPrefix2SamFile;
 	}
 
-	public void runMiRNApredict() {
+	public void runMiRNApredict(SamMapRate samMapMiRNARate) {
 		if (gffChrAbs == null) {
 			gffChrAbs = new GffChrAbs(species);
 		}
@@ -88,27 +91,34 @@ public class CtrlMiRNApredict {
 		novelMiRNADeep.setOutPath(novelMiRNAPathDeep);
 		novelMiRNADeep.predict();
 		setMiRNACount_And_Anno();
-		calculateExp();
+		calculateExp(samMapMiRNARate);
 	}
 	/** 仅用于测试
 	 * @param predictPath 类似 /media/public/customer/miRNAtest/miRNApredictDeep<br>
 	 * 会自动获取 /media/public/customer/miRNAtest/miRNApredictDeep/run/output.mrd 文件
 	 */
-	protected void predictAndCalculate() {
+	protected void predictAndCalculate(SamMapRate samMapMiRNARate) {
 		novelMiRNADeep.setOutPath(outPath + "miRNApredictDeep/");
 		novelMiRNADeep.readExistMrd();
 		setMiRNACount_And_Anno();
-		calculateExp();
+		calculateExp(samMapMiRNARate);
 	}
 	
-	protected void calculateExp() {
+	/**
+	 * @param samMapMiRNARate null表示不统计
+	 */
+	protected void calculateExp(SamMapRate samMapMiRNARate) {
 		miRNACount.setExpTable(expMirPre, expMirMature);
 		 for (String prefix : mapPrefix2SamFile.keySet()) {
-			 getMirPredictCount(prefix, mapPrefix2SamFile.get(prefix));
+			 SamFileStatistics samFileStatistics = new SamFileStatistics(prefix);
+			 getMirPredictCount(samFileStatistics, prefix, mapPrefix2SamFile.get(prefix));
+			 if (samMapMiRNARate != null) {
+				 samMapMiRNARate.addMapInfoNovelMiRNA(MiRNAnovelAnnotaion.getSepSymbol(), samFileStatistics);
+			}
 		}
 	}
 	
-	private void getMirPredictCount(String prefix, AlignSeq alignSeq) {
+	private void getMirPredictCount(SamFileStatistics samMiRNAstatistics, String prefix, AlignSeq alignSeq) {
 		FastQ fastQ = alignSeq.getFastQ();
 		alignSeq.close();
 		SoftWareInfo softWareInfo = new SoftWareInfo();
@@ -117,12 +127,10 @@ public class CtrlMiRNApredict {
 		FileOperate.createFolders(outPathMap);
 		String novelMiRNAsam = outPathMap + prefix + "novelMiRNAmapping.sam";
 		String unmappedFq = outPathMap + prefix + "novelMiRNAunmapped.fq.gz";
-		novelMiRNAsam = MiRNAmapPipline.mappingBowtie2(softWareInfo.getExePath(), 3, fastQ.getReadFileName(), 
+		novelMiRNAsam = MiRNAmapPipline.mappingBowtie2(samMiRNAstatistics, softWareInfo.getExePath(), 3, fastQ.getReadFileName(), 
 				novelMiRNADeep.getNovelMiRNAhairpin(), novelMiRNAsam, unmappedFq);
 		miRNACount.setAlignFile(new SamFile(novelMiRNAsam));
 		mapPrefix2UnmapFq.put(prefix, unmappedFq);
-		String outPathNovel = outPath + prefix + FileOperate.getSepPath();
-		FileOperate.createFolders(outPathNovel);
 		miRNACount.run();
 		expMirMature.setCurrentCondition(prefix);
 		expMirMature.addAllReads(miRNACount.getCountMatureAll());
@@ -131,6 +139,9 @@ public class CtrlMiRNApredict {
 		expMirPre.setCurrentCondition(prefix);
 		expMirPre.addAllReads(miRNACount.getCountPreAll());
 		expMirPre.addGeneExp(miRNACount.getMapMiRNApre2Value());
+		
+		CtrlMiRNAfastq.writeFile(false, outPath + prefix + FileOperate.getSepPath() + prefix + "_NovelMirPre_Counts.txt", expMirPre, EnumExpression.Counts);
+		CtrlMiRNAfastq.writeFile(false, outPath + prefix + FileOperate.getSepPath() + prefix + "_NovelMirMature_Counts.txt", expMirMature, EnumExpression.Counts);
 	}
 	
 	public Map<String, String> getMapPrefix2UnmapFq() {
@@ -145,10 +156,11 @@ public class CtrlMiRNApredict {
 	}
 	
 	public void writeToFile() {
-		CtrlMiRNAfastq.writeFile(outPath + "NovelMirPreAll_Counts.txt", expMirPre, EnumExpression.Counts);
-		CtrlMiRNAfastq.writeFile(outPath + "NovelMirMatureAll_Counts.txt", expMirMature, EnumExpression.Counts);
-		CtrlMiRNAfastq.writeFile(outPath + "NovelMirPreAll_UQTPM.txt", expMirPre, EnumExpression.UQPM);
-		CtrlMiRNAfastq.writeFile(outPath + "NovelMirMatureAll_UQTPM.txt", expMirMature, EnumExpression.UQPM);
+		String outPathNovel = outPath + "novelMiRNA/";
+		CtrlMiRNAfastq.writeFile(true, outPathNovel + "NovelMirPreAll_Counts.txt", expMirPre, EnumExpression.Counts);
+		CtrlMiRNAfastq.writeFile(true, outPathNovel + "NovelMirMatureAll_Counts.txt", expMirMature, EnumExpression.Counts);
+		CtrlMiRNAfastq.writeFile(true, outPathNovel + "NovelMirPreAll_UQTPM.txt", expMirPre, EnumExpression.UQPM);
+		CtrlMiRNAfastq.writeFile(true, outPathNovel + "NovelMirMatureAll_UQTPM.txt", expMirMature, EnumExpression.UQPM);
 	}
 	
 	private void setMiRNACount_And_Anno() {

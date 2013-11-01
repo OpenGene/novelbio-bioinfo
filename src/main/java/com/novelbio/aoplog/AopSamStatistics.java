@@ -55,7 +55,7 @@ public class AopSamStatistics {
 	
 	private void aopSamFileStatistics(String prefix, CtrlSamPPKMint ctrlSamPPKMint, SamFileStatistics samFileStatistics) {
 		SamStatisticsBuilder samStatisticsBuilder = new SamStatisticsBuilder(chrNumMax);
-		samStatisticsBuilder.setSamFileStatistics(ctrlSamPPKMint.getResultPrefix() +prefix, ctrlSamPPKMint.getMapChrID2Len(), samFileStatistics);
+		samStatisticsBuilder.setSamFileStatistics(ctrlSamPPKMint.getResultPrefix() +prefix, ctrlSamPPKMint.getMapChrID2MappedNumber(), samFileStatistics);
 		samStatisticsBuilder.writeInfo();
 	}
 
@@ -96,7 +96,7 @@ class SamStatisticsBuilder extends ReportBuilder {
 		this.samFileStatistics = samFileStatistics;
 		this.fileName = fileName;
 		setParamPath(fileName);
-		setMapChrID2PropAndLen(samFileStatistics.getMapChrID2Len(), mapChrID2Length);
+		setMapChrID2PropAndLen(samFileStatistics.getMapChrID2MappedNumber(), mapChrID2Length);
 		pathAndName = FileOperate.getPathName(fileName) + FileOperate.getFileNameSep(fileName)[0];
 	}
 	
@@ -104,7 +104,7 @@ class SamStatisticsBuilder extends ReportBuilder {
 		this.samFileStatistics = samFileStatistics;
 		this.fileName = samFile.getFileName();
 		setParamPath(fileName);
-		setMapChrID2PropAndLen(samFileStatistics.getMapChrID2Len(), samFile.getMapChrIDLowcase2Length());
+		setMapChrID2PropAndLen(samFileStatistics.getMapChrID2MappedNumber(), samFile.getMapChrIDLowcase2Length());
 		pathAndName = FileOperate.getParentPathName(samFile.getFileName()) + FileOperate.getFileNameSep(samFile.getFileName())[0];
 	}
 	
