@@ -41,7 +41,7 @@ public class SamToFastq implements AlignmentRecorder {
 	@Override
 	public void addAlignRecord(AlignRecord alignRecord) {
 		if (!justUnMapped || (justUnMapped && !alignRecord.isMapped())) {
-			FastQRecord fastQRecord = alignRecord.getFastQRecord();
+			FastQRecord fastQRecord = alignRecord.toFastQRecord();
 			if (!fastQRecord.isValidate()) {
 				logger.error("出错" + alignRecord.toString());
 			}

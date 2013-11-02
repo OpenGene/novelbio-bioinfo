@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.sam;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.GeneExpTable;
 import com.novelbio.analysis.seq.mapping.MappingReadsType;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
@@ -22,7 +23,12 @@ public class SamMapRate {
 		geneExpTable.setCurrentCondition(condition);
 		geneExpTable.setAllReads(allReadsNum);
 	}
+	/** 设定当前时期 */
+	public void setCurrentCondition(String condition) {
+		geneExpTable.setCurrentCondition(condition);
+	}
 	/**
+	 * 根据samFileStatistics的prefix自动设定condition，覆盖{@link #setCurrentCondition(String)}
 	 * @param refName 比对到序列的名称，显示时使用
 	 * @param samFileStatistics 其prefix就是condition
 	 */
@@ -37,29 +43,25 @@ public class SamMapRate {
 		geneExpTable.addGeneExp(refName, samFileStatistics.getReadsNum(MappingReadsType.allMappedReads));
 	}
 	
-	/**
-	 * 添加新miRNA的mapping统计结果，将novel miRNA的统计分成有注释--比对到其他物种上，和没注释两类
-	 * @param splitSymbol 用什么符号来切分mirName和mirAnnotation的，一般是@@，譬如 chr1_2345@@hsa-let-7a
-	 * @param samFileStatistics 其prefix就是condition
-	 */
-	public void addMapInfoNovelMiRNA(String splitSymbol, SamFileStatistics samFileStatistics) {
-		geneExpTable.setCurrentCondition(samFileStatistics.getPrefix());
-		if (geneExpTable.getCurrentAllReads() == 0) {
-			geneExpTable.setAllReads(samFileStatistics.getReadsNum(MappingReadsType.allReads));
-		}
+	public void setNovelMiRNAInfo() {
 		List<String> lsGene = new ArrayList<>();
 		lsGene.add("NovelMiRNA_Anno");
 		lsGene.add("NovelMiRNA_NoAnno");
 		geneExpTable.addLsGeneName(lsGene);
-		long numberAnno = 0;
-		for (String chrID : samFileStatistics.getMapChrID2MappedNumber().keySet()) {
-			if (chrID.contains(splitSymbol)) {
-				numberAnno += samFileStatistics.getMapChrID2MappedNumber().get(chrID);
-			}
+	}
+	
+	/**
+	 * <b>注意设定{@link #setCurrentCondition(String)}</b><br>
+	 * 添加新miRNA的mapping统计结果，将novel miRNA的统计分成有注释--比对到其他物种上，和没注释两类
+	 * @param splitSymbol 用什么符号来切分mirName和mirAnnotation的，一般是@@，譬如 chr1_2345@@hsa-let-7a
+	 * @param alignRecord 具体的mapping序列
+	 */
+	public void addMapInfoNovelMiRNA(String splitSymbol, String mirName, int weight) {
+		if (mirName != null && mirName.contains(splitSymbol)) {
+			geneExpTable.addGeneExp("NovelMiRNA_Anno", (double)1/weight);
+		} else {
+			geneExpTable.addGeneExp("NovelMiRNA_NoAnno", (double)1/weight);
 		}
-		
-		geneExpTable.addGeneExp("NovelMiRNA_Anno", numberAnno);
-		geneExpTable.addGeneExp("NovelMiRNA_NoAnno", samFileStatistics.getReadsNum(MappingReadsType.allMappedReads) - numberAnno);
 	}
 	
 	/** 最后一个unmap信息 */

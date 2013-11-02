@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.IntCmdSoft;
+import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
@@ -298,31 +299,35 @@ public class BedSeq implements AlignSeq, IntCmdSoft {
 		return getFastQ(outFileName);
 	}
 	/**
-	 * 从含有序列的bed文件获得fastQ文件
+	 * 从含有序列的bed文件获得fastQ文件<b>注意bed文件务必没有排过序</b>
 	 * @param outFileName fastQ文件全名（包括路径）
 	 * @throws Exception
 	 */
 	public FastQ getFastQ(String outFileName) {
 		FastQ fastQ = new FastQ(outFileName, true);
+		int i = 1;
 		for (BedRecord bedRecord : readLines()) {
-			FastQRecord fastQRecord = new FastQRecord();
-			fastQRecord.setName(bedRecord.getName());
-			fastQRecord.setFastaQuality(getQuality(bedRecord.getSeqFasta().Length()));
-			fastQRecord.setFastqOffset(FastQ.FASTQ_SANGER_OFFSET);
-			fastQRecord.setSeq(bedRecord.getSeqFasta().toString());
+			FastQRecord fastQRecord = null;
+			if (bedRecord.getMappedReadsWeight() == 1) {
+				fastQRecord = bedRecord.toFastQRecord();
+			} else {
+				if (i == 1) {
+					fastQRecord = bedRecord.toFastQRecord();
+					i++;
+				} else if (i < bedRecord.getMappedReadsWeight()) {
+					i++;
+					continue;
+				} else if (i == bedRecord.getMappedReadsWeight()) {
+					i = 1;
+					continue;
+				}
+			}
 			fastQ.writeFastQRecord(fastQRecord);
 		}
 		fastQ.close();
 		return fastQ;
 	}
-	
-	private String getQuality(int length) {
-		char[] qualityChar = new char[length];
-		for (int i = 0; i < qualityChar.length; i++) {
-			qualityChar[i] = 'f';
-		}
-		return String.copyValueOf(qualityChar);
-	}
+
 	
 	/**
 	 *  过滤reads

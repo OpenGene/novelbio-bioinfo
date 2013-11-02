@@ -255,25 +255,10 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 	public String getReadString() {
 		return samRecord.getReadString();
 	}
+
 	/**
 	 * 返回第一个记载的bedrecord 没有mapping上就返回null
-	 * */
-	public FastQRecord toFastQRecord() {
-		FastQRecord fastQRecord = new FastQRecord();
-		fastQRecord.setName(getName());
-		if (isMapped() && !isCis5to3()) {
-			//TODO 确定到底对不对
-			fastQRecord.setSeq(SeqFasta.reverseComplement(samRecord.getReadString()));
-			fastQRecord.setFastaQuality(SeqFasta.reverse(samRecord.getBaseQualityString()));
-		} else {
-			fastQRecord.setSeq(samRecord.getReadString());
-			fastQRecord.setFastaQuality(samRecord.getBaseQualityString());
-		}
-		
-		return fastQRecord;
-	}
-	/**
-	 * 返回第一个记载的bedrecord 没有mapping上就返回null
+	 * bedRecord中的sequence是与fastq一致的sequence
 	 * */
 	public BedRecord toBedRecordSE() {
 		if (!isMapped()) {
@@ -294,7 +279,12 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 		bedRecord.setAlignmentBlocks(getAlignmentBlocks());
 		return bedRecord;
 	}
-
+	
+	/** 获得原始的序列，不会根据cis5to3进行反向互补操作 */
+	public SeqFasta getSeqFasta() {
+		return super.getSeqFasta();
+	}
+	
 	/** 这样返回就是每个SamRecord返回一系列BedRecord */
 	public ArrayList<BedRecord> toBedRecordSELs() {
 		ArrayList<BedRecord> lsBedRecords = new ArrayList<BedRecord>();
@@ -371,16 +361,23 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 	public String getCIGAR() {
 		return samRecord.getCigarString();
 	}
-	
-	@Override
-	public FastQRecord getFastQRecord() {
+
+	/**
+	 * 返回第一个记载的bedrecord 没有mapping上就返回null
+	 * */
+	public FastQRecord toFastQRecord() {
 		FastQRecord fastQRecord = new FastQRecord();
 		fastQRecord.setName(getName());
-		fastQRecord.setSeq(getSeqFasta().toString());
-		fastQRecord.setFastaQuality(getReadsQuality());
+		if (isMapped() && !isCis5to3()) {
+			fastQRecord.setSeq(SeqFasta.reverseComplement(samRecord.getReadString()));
+			fastQRecord.setFastaQuality(SeqFasta.reverse(samRecord.getBaseQualityString()));
+		} else {
+			fastQRecord.setSeq(samRecord.getReadString());
+			fastQRecord.setFastaQuality(samRecord.getBaseQualityString());
+		}
+		
 		return fastQRecord;
 	}
-	
 	/** 返回唯一名字和序列时使用 */
 	public String getNameAndSeq() {
 		SeqFasta seqFasta = getSeqFasta();

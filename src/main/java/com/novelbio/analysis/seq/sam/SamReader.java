@@ -49,7 +49,7 @@ public class SamReader {
 	
 	Boolean pairend;
 	boolean isIndexed = false;
-	
+	boolean firstReadLine = true;
 	public SamReader(String fileName) {
 		this.fileName = fileName;
 	}
@@ -301,7 +301,13 @@ public class SamReader {
 	 */
 	public Iterable<SamRecord> readLines() {
 		closeIterate();
-		
+		if (firstReadLine) {
+			firstReadLine = false;
+		} else {
+			close();
+			initial();
+		}
+
 		samRecordIterator = getSamFileReader().iterator();
 		return new ReadSamIterable(samRecordIterator, samFileHeader);
 	}

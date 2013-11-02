@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
+import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.analysis.seq.mapping.Align;
@@ -17,7 +18,7 @@ import com.novelbio.base.dataStructure.Alignment;
   * @author zong0jie
   *
   */
-public class BedRecord extends SiteSeqInfo implements AlignRecord{
+public class BedRecord extends SiteSeqInfo implements AlignRecord {
 	static private Logger logger = Logger.getLogger(BedRecord.class);
 	
 	static final int COL_CHRID = 0;
@@ -154,13 +155,7 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord{
 	public String getCIGAR() {
 		return CIGAR;
 	}
-	public FastQRecord getFastQRecord() {
-		FastQRecord fastQRecord = new FastQRecord();
-		fastQRecord.setName(getName());
-		fastQRecord.setSeq(getSeqFasta().toString());
-		fastQRecord.setModifyQuality(true);
-		return fastQRecord;
-	}
+
 	/** 是否为unique mapping，不是的话mapping到了几个不同的位点上去 */
 	public Integer getMappingNum() {
 		if (mappingNum == null) {
@@ -355,6 +350,24 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord{
 		bedRecord.readLineInfo = readLineInfo;
 		return bedRecord;
 	}
+	/**
+	 * 返回第一个记载的bedrecord 没有mapping上就返回null
+	 * */
+	public FastQRecord toFastQRecord() {
+		FastQRecord fastQRecord = new FastQRecord();
+		fastQRecord.setName(getName());
+		fastQRecord.setSeq(getSeqFasta().toString());
+		fastQRecord.setModifyQuality(true);
+		return fastQRecord;
+	}
+	/**
+	 * 提取获得的序列和fastq是一致的
+	 */
+	@Override
+	public SeqFasta getSeqFasta() {
+		return super.getSeqFasta();
+	}
+
 	@Override
 	public boolean isMapped() {
 		return true;

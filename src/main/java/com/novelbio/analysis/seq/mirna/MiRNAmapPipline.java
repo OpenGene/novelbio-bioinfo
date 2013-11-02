@@ -208,13 +208,14 @@ public class MiRNAmapPipline {
 	}
 	
 	/**
+	 * @param samFileStatistics
 	 * @param exePath
 	 * @param threadNum
 	 * @param fqFile
 	 * @param chrFile
 	 * @param samFileName 输出sam文件名
 	 * @param unMappedFq 没有mapping上的文件输出为fq
-	 * @return 实际的sam输出文件名
+	 * @return
 	 */
 	public static String mappingBowtie2(SamFileStatistics samFileStatistics, String exePath, int threadNum, String fqFile, String chrFile, String samFileName, String unMappedFq) {
 		MapBowtie mapBowtie = new MapBowtie();

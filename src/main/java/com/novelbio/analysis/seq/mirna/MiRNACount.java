@@ -21,6 +21,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
 import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.sam.SamMapRate;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
@@ -48,7 +49,7 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 	/** 比对的bed文件 */
 	AlignSeq alignSeqMiRNA = null;
 	/** Mapping至前体但是没到成熟体的序列的后缀 */
-
+	
 	/**
 	 * 成熟体, 用于结果中<br>
 	 * key: Pre_Mature
@@ -69,6 +70,7 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 	 */
 	String sepMirPreID = "/";
 	
+	SamMapRate samMapRate;
 	/**
 	 * 设定miRNA的前体序列和成熟序列
 	 * @param hairpairMirna
@@ -78,7 +80,10 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 		seqFastaHashPreMiRNA = new SeqFastaHash(hairpairMirna);
 		seqFastaHashMatureMiRNA = new SeqFastaHash(matureMirna);
 	}
-	
+	/** 用来统计注释上的novel mirna数量的 */
+	public void setSamMapRate(SamMapRate samMapRate) {
+		this.samMapRate = samMapRate;
+	}
 	/**
 	 * 通过设定物种来设定
 	 * {@link #setListMiRNALocation(ListMiRNAInt)}
@@ -226,7 +231,7 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 	 * @param outTxt
 	 */
 	private void countMiRNA() {
-		int countLoop = 0;
+		int countLoop = 0;		
 		for (AlignRecord alignRecord : alignSeqMiRNA.readLines()) {
 			if (!alignRecord.isMapped()) {
 				continue;
@@ -257,6 +262,9 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 		//找不到名字的就不写如miRNA成熟体列表
 		if (subName != null) {
 			addMiRNACountMature(subName, value);
+		}
+		if (samMapRate != null) {
+			samMapRate.addMapInfoNovelMiRNA(MiRNAnovelAnnotaion.getSepSymbol(), subName, alignRecord.getMappedReadsWeight());
 		}
 	}
 	/**

@@ -34,6 +34,7 @@ public interface AlignSeq {
 	public String getFileName();
 	
 	public FastQ getFastQ();
+	public FastQ getFastQ(String outFileName);
 	
 	public double getReadPercentage();
 	/** 实际读取长度，考虑了压缩在里面 */

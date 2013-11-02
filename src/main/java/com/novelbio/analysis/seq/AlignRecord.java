@@ -35,7 +35,7 @@ public interface AlignRecord extends Alignment{
 	
 	boolean isUniqueMapping();
 	
-	public FastQRecord getFastQRecord();
+	public FastQRecord toFastQRecord();
 	/**
 	 * reads的权重，意思相同的reads在本sam文件中出现了几次
 	 * bwa的结果，一条reads只有一行，所以恒返回1

@@ -108,17 +108,14 @@ public class CtrlMiRNApredict {
 	 * @param samMapMiRNARate null表示不统计
 	 */
 	protected void calculateExp(SamMapRate samMapMiRNARate) {
+		samMapMiRNARate.setNovelMiRNAInfo();
 		miRNACount.setExpTable(expMirPre, expMirMature);
 		 for (String prefix : mapPrefix2SamFile.keySet()) {
-			 SamFileStatistics samFileStatistics = new SamFileStatistics(prefix);
-			 getMirPredictCount(samFileStatistics, prefix, mapPrefix2SamFile.get(prefix));
-			 if (samMapMiRNARate != null) {
-				 samMapMiRNARate.addMapInfoNovelMiRNA(MiRNAnovelAnnotaion.getSepSymbol(), samFileStatistics);
-			}
+			 getMirPredictCount(prefix, mapPrefix2SamFile.get(prefix), samMapMiRNARate);
 		}
 	}
 	
-	private void getMirPredictCount(SamFileStatistics samMiRNAstatistics, String prefix, AlignSeq alignSeq) {
+	private void getMirPredictCount(String prefix, AlignSeq alignSeq, SamMapRate samMapMiRNARate) {
 		FastQ fastQ = alignSeq.getFastQ();
 		alignSeq.close();
 		SoftWareInfo softWareInfo = new SoftWareInfo();
@@ -127,10 +124,12 @@ public class CtrlMiRNApredict {
 		FileOperate.createFolders(outPathMap);
 		String novelMiRNAsam = outPathMap + prefix + "novelMiRNAmapping.sam";
 		String unmappedFq = outPathMap + prefix + "novelMiRNAunmapped.fq.gz";
-		novelMiRNAsam = MiRNAmapPipline.mappingBowtie2(samMiRNAstatistics, softWareInfo.getExePath(), 3, fastQ.getReadFileName(), 
+		novelMiRNAsam = MiRNAmapPipline.mappingBowtie2(new SamFileStatistics(prefix), softWareInfo.getExePath(), 3, fastQ.getReadFileName(), 
 				novelMiRNADeep.getNovelMiRNAhairpin(), novelMiRNAsam, unmappedFq);
 		miRNACount.setAlignFile(new SamFile(novelMiRNAsam));
 		mapPrefix2UnmapFq.put(prefix, unmappedFq);
+		samMapMiRNARate.setCurrentCondition(prefix);
+		miRNACount.setSamMapRate(samMapMiRNARate);
 		miRNACount.run();
 		expMirMature.setCurrentCondition(prefix);
 		expMirMature.addAllReads(miRNACount.getCountMatureAll());

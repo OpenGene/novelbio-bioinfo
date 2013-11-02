@@ -134,7 +134,7 @@ public class CtrlMiRNApipeline {
 		ctrlMiRNApredict.setOutPath(outPath);
 		ctrlMiRNApredict.setLsSpeciesBlastTo(lsSpeciesBlastTo);
 		ctrlMiRNApredict.setExpMir(expMirPre, expMirMature);
-		ctrlMiRNApredict.predictAndCalculate(samMapMiRNARate);
+		ctrlMiRNApredict.runMiRNApredict(samMapMiRNARate);
 		ctrlMiRNApredict.writeToFile();
 		logger.info("finish predict");
 	}

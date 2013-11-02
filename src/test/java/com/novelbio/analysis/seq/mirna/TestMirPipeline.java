@@ -70,6 +70,6 @@ public class TestMirPipeline {
 		ctrlMiRNApipeline.readExistMiRNA(mirPreAll, mirMatureAll);
 		ctrlMiRNApipeline.setLsSpeciesBlastTo(lsSpeciesBlastTo);
 		ctrlMiRNApipeline.setOutPath(outPath);
-		ctrlMiRNApipeline.run();
+ 		ctrlMiRNApipeline.run();
 	}
 }

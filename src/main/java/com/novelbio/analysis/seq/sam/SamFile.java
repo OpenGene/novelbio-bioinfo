@@ -741,27 +741,38 @@ public class SamFile implements AlignSeq {
 	}
 	
 	/**
-	 * 从含有序列的bed文件获得fastQ文件
+	 * 从含有序列的bed文件获得fastQ文件，<b>注意如果是bowtie的结果，bam文件务必没有排过序</b><br>
 	 * @param outFileName fastQ文件全名（包括路径）
 	 * @throws Exception
 	 */
 	public FastQ getFastQ() {
-		String outFileName = FileOperate.changeFileSuffix(getFileName(), "", "fastq");
+		String outFileName = FileOperate.changeFileSuffix(getFileName(), "", "fastq.gz");
 		return getFastQ(outFileName);
 	}
 	/**
-	 * 从含有序列的bed文件获得fastQ文件
+	 * 从含有序列的bed文件获得fastQ文件，<b>注意如果是bowtie的结果，bam文件务必没有排过序</b><br>
 	 * @param outFileName fastQ文件全名（包括路径）
 	 * @throws Exception
 	 */
 	public FastQ getFastQ(String outFileName) {
 		FastQ fastQ = new FastQ(outFileName, true);
+		int i = 1;
 		for (SamRecord samRecord : readLines()) {
-			FastQRecord fastQRecord = new FastQRecord();
-			fastQRecord.setName(samRecord.getName());
-			fastQRecord.setFastaQuality(samRecord.getReadsQuality());
-			fastQRecord.setFastqOffset(FastQ.FASTQ_SANGER_OFFSET);
-			fastQRecord.setSeq(samRecord.getSeqFasta().toString());
+			FastQRecord fastQRecord = null;
+			if (samRecord.getMappedReadsWeight() == 1) {
+				fastQRecord = samRecord.toFastQRecord();
+			} else {
+				if (i == 1) {
+					fastQRecord = samRecord.toFastQRecord();
+					i++;
+				} else if (i < samRecord.getMappedReadsWeight()) {
+					i++;
+					continue;
+				} else if (i == samRecord.getMappedReadsWeight()) {
+					i = 1;
+					continue;
+				}
+			}
 			fastQ.writeFastQRecord(fastQRecord);
 		}
 		fastQ.close();
