@@ -226,15 +226,15 @@ public class CtrlMiRNAfastq {
 		if (gffChrAbs == null) {
 			gffChrAbs = new GffChrAbs(species);
 		}
+		readsOnRepeatGene.setGffGene(gffChrAbs);
 		if (!FileOperate.isFileExistAndBigThanSize(species.getGffRepeat(), 0)) {
 			return;
 		}
-		readsOnRepeatGene.setGffGene(gffChrAbs);
 		readsOnRepeatGene.readGffRepeat(species.getGffRepeat());
 		 
 		expRepeatName.addLsGeneName(readsOnRepeatGene.getLsRepeatName());
 		expRepeatFamily.addLsGeneName(readsOnRepeatGene.getLsRepeatFamily());
-		 countRepeat = true;
+		countRepeat = true;
 	}
 
 	/** 读取rfam信息并计数

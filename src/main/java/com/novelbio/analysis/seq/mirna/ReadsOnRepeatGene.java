@@ -149,7 +149,7 @@ public class ReadsOnRepeatGene {
 				key = "Exon";
 			}
 			else
-				key = "Trans Exon";
+				key = "Trans_Exon";
 		}
 		else if (geneLocType == GffGeneIsoInfo.COD_LOC_INTRON) {
 			key = "Intron";

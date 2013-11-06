@@ -4,19 +4,16 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.bed.BedRecord;
 import com.novelbio.analysis.seq.bed.BedSeq;
-import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.mapping.MapDNA;
 import com.novelbio.analysis.seq.mapping.MapDNAint;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 //TODO 移动文件还不够好
@@ -45,7 +42,6 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 	boolean createReportFile = true;
 	/** 已经加过/了 */
 	String outPath = null;
-	String outPrefix = "";
 	
 	String novelMiRNAhairpin = "";
 	String novelMiRNAmature = "";
@@ -54,12 +50,9 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 	@Override
 	public void setOutPath(String outPath) {
 		this.outPath = FileOperate.addSep(outPath);
+		FileOperate.createFolders(outPath);
 	}
-	public void setOutPrefix(String outPrefix) {
-		if (outPrefix != null && !outPrefix.trim().equals("")) {
-			this.outPrefix = outPrefix.trim() + "_";
-		}
-	}
+
 	/**
 	 * 从bed文件转变为fasta格式，或直接设定fasta文件
 	 * 设定待比对的短序列fasta文件名字，可以随便设定。如果不设定，则默认为输入bed文件+_Potential_DenoveMirna.fasta;
@@ -150,9 +143,6 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 			fastaInput = FileOperate.changeFileSuffix(lsAlignSeqFile.iterator().next().getFileName(), "_Potential_DenoveMirna" + DateUtil.getDateAndRandom(), "fasta");
 			fastaInput = outPath + FileOperate.getFileName(fastaInput);
 		}
-		if (!FileOperate.isFileExist(fastaInput)) {
-			convertNoCDSbed2Fasta(fastaInput);
-		}
 		return fastaInput + " ";
 	}
 	/**
@@ -160,15 +150,29 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 	 * 然后转化为fastq文件以便进行后续分析
 	 * @param fastaOut
 	 */
-	private void convertNoCDSbed2Fasta(String fastaOut) {
+	private void convertNoCDSbed2Fasta(BedSeq bedSeq, String fastaOut) {
 		String out = FileOperate.changeFileSuffix(lsAlignSeqFile.iterator().next().getFileName(), "_Predict_Mirna", "bed");
 		out = outPath + FileOperate.getFileName(out);
-		BedSeq bedSeq = getReadsNotOnCDS(out);
 		TxtReadandWrite txtOut = new TxtReadandWrite(fastaOut, true);
 		for (BedRecord bedRecord : bedSeq.readLines()) {
 			txtOut.writefileln(bedRecord.getSeqFasta().toStringNRfasta());
 		}
 		txtOut.close();
+		bedSeq.close();
+	}
+	/** 只生成文件名，并不生成实际文件 */
+	private String getFastaMapFileName() {
+		if (fastaInput == null || fastaInput.trim().equals("")) {
+			fastaInput = FileOperate.changeFileSuffix(lsAlignSeqFile.iterator().next().getFileName(), "_Potential_DenoveMirna" + DateUtil.getDateAndRandom(), "fasta");
+			fastaInput = outPath + FileOperate.getFileName(fastaInput);
+		}
+		return fastaInput;
+	}
+	private BedSeq getBedFile() {
+		String out = FileOperate.changeFileSuffix(lsAlignSeqFile.iterator().next().getFileName(), "_Predict_Mirna", "bed.gz");
+		out = outPath + FileOperate.getFileName(out);
+		BedSeq bedSeq = getReadsNotOnCDS(out);
+		return bedSeq;
 	}
 	/** 好像是输出的压缩的reads信息 */
 	private String getCollapseReadsFa() {
@@ -188,26 +192,44 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 	}
 	/**
 	 * 设定miRNA的最短长度
-	 * @param miRNAminLen 最短18bp
+	 * @param miRNAminLen 默认最短18bp
 	 */
 	public void setMiRNAminLen(int miRNAminLen) {
 		this.miRNAminLen = miRNAminLen;
 	}
 	public void predict() {
+		String mrdFile = outPath + "run" + "/output.mrd";
+		if (FileOperate.isFileExistAndBigThanSize(mrdFile, 0)) {
+			readExistMrd();
+		} else {
+			predictNovel();
+		}
+	}
+	
+	private void predictNovel() {
 		mapping();
-		predictNovelMiRNA();
+		mirDeep2Pl();
 		moveAndCopeFile();
 	}
+	
 	private void mapping() {
 		mapBowtie.IndexMake(false);
+		String fastaInput = getFastaMapFileName();
+		String bedSeqFileName = "";
+		if (!FileOperate.isFileExistAndBigThanSize(fastaInput, 0)) {
+			BedSeq bedSeq = getBedFile();
+			convertNoCDSbed2Fasta(bedSeq, fastaInput);
+			bedSeqFileName = bedSeq.getFileName();
+		}
 		String cmdMapping = mirDeepPath + "mapper.pl " + creatFastaMappingFile() +"-c -j " + getReadsMinLen();
 		cmdMapping = cmdMapping + "-m -p " + getChromFaIndex() + "-s " + getCollapseReadsFa() + "-t " + getMappingArf() + "-v";
 		CmdOperate cmdOperate = new CmdOperate(cmdMapping, "mirDeepMapping_" + species);
 		cmdOperate.run();
-		
+		FileOperate.DeleteFileFolder(fastaInput);
+		FileOperate.DeleteFileFolder(bedSeqFileName);
 		createReportFile = true;
 	}
-	private void predictNovelMiRNA() {
+	private void mirDeep2Pl() {
 		String cmdPredict = mirDeepPath + "miRDeep2.pl " + getCollapseReadsFa() + getChromFaSeq() + getMappingArf() 
 				+ getMatureMiRNA() + getMatureRelateMiRNA() + " " + getPrecursorsMiRNA() + getSpecies() + " 2> " + getReportFileRandom();
 		CmdOperate cmdOperate = new CmdOperate(cmdPredict, "mirDeepPredict_" + species);
@@ -233,6 +255,8 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 		String mirDeep_runs_Path = "mirdeep_runs/run_" + suffix;
 		String mirDeep_pdfs_Path = "pdfs_" + suffix;
 		
+		FileOperate.DeleteFileFolder(mirDeep_runs_Path + "/tmp");
+
 		lsFileName.add(expression_html);
 		lsFileName.add(result_html);
 		lsFileName.add(miRNAs_expressed_all_samples);
@@ -246,26 +270,39 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 		
 		for (String string : lsFileName) {
 			String fileName = FileOperate.getFileName(string);
-			FileOperate.moveFile(string, outPath, outPrefix +fileName.replace("_" + suffix, ""), true);
-			logger.info("move:" + string + "\t" + "to:" + outPrefix +fileName.replace("_" + suffix, ""));
+			FileOperate.moveFile(string, outPath, fileName.replace("_" + suffix, ""), true);
+			logger.info("move:" + string + "\t" + "to:" +fileName.replace("_" + suffix, ""));
 		}
-		String outFinal = outPath + outPrefix;
 		
-		novelMiRNAdeepMrdFile = outFinal + "run" + "/output.mrd";
-		novelMiRNAhairpin = outFinal + "novelMiRNA/hairpin.fa";
-		novelMiRNAmature = outFinal + "novelMiRNA/mature.fa";
+		novelMiRNAdeepMrdFile = outPath + "run" + "/output.mrd";
+		novelMiRNAhairpin = FileOperate.getParentPathName(outPath) + "novelMiRNA/hairpin.fa";
+		novelMiRNAmature =FileOperate.getParentPathName(outPath) + "novelMiRNA/mature.fa";
 //		HashSet<String> setMirPredictName = getSetMirPredictName(outFinal + "result.csv");
 		ListMiRNAdeep.extractHairpinSeqMatureSeq(novelMiRNAdeepMrdFile, novelMiRNAmature, novelMiRNAhairpin);
+		
+		//删除3天前做的项目，但是不删除本次做的东西，以防删错
+		List<String> lsOldPrepareTmp = FileOperate.getFoldFileNameLs("", "dir_prepare_signature", null);
+		for (String string : lsOldPrepareTmp) {
+			if (DateUtil.getNowTimeLong() - FileOperate.getTimeLastModify(string) > 86400000 * 3) {
+				FileOperate.DeleteFileFolder(string);
+			}
+		}
+		lsOldPrepareTmp = FileOperate.getFoldFileNameLs("mirdeep_runs", "run", null);
+		for (String string : lsOldPrepareTmp) {
+			if (DateUtil.getNowTimeLong() - FileOperate.getTimeLastModify(string) > 86400000 * 3) {
+				FileOperate.DeleteFileFolder(string);
+			}
+		}
 	}
 	/**
 	 * 读取已有的mrd文件
 	 * 仅用于测试
 	 */
-	protected void readExistMrd() {
-		String outFinal = outPath + outPrefix;
+	private void readExistMrd() {
+		String outFinal = outPath;
 		novelMiRNAdeepMrdFile = outFinal + "run" + "/output.mrd";
-		novelMiRNAhairpin = outFinal + "novelMiRNA/hairpin.fa";
-		novelMiRNAmature = outFinal + "novelMiRNA/mature.fa";
+		novelMiRNAhairpin =  FileOperate.getParentPathName(outFinal) + "novelMiRNA/hairpin.fa";
+		novelMiRNAmature =  FileOperate.getParentPathName(outFinal) + "novelMiRNA/mature.fa";
 //		HashSet<String> setMirPredictName = getSetMirPredictName(outFinal + "result.csv");
 		ListMiRNAdeep.extractHairpinSeqMatureSeq(novelMiRNAdeepMrdFile, novelMiRNAmature, novelMiRNAhairpin);
 	}

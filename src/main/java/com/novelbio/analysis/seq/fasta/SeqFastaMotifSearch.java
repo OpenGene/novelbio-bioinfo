@@ -21,7 +21,6 @@ public class SeqFastaMotifSearch {
 	 * 2: 具体的motif序列<br>
 	 * 3: motif最后一个碱基与本序列site点的距离
 	 * @param regex
-	 * @param site 设定site为0
 	 * 最后返回motif到site点，那么<b>负数</b>表示motif在site的上游，<b>正数</b>表示motif在site的下游
 	 * @return
 	 */
@@ -80,11 +79,7 @@ public class SeqFastaMotifSearch {
 					toEndSite = strings[1];
 				}
 				
-				if (site != 0) {
-					tmpResult[3] = (Integer.parseInt(toEndSite) + site) * -1 + "";
-				} else {
-					tmpResult[3] = toEndSite;
-				}
+				tmpResult[3] = (Integer.parseInt(toEndSite) + site) * -1 + "";
 				
 				lsResult.add(tmpResult);
 			}

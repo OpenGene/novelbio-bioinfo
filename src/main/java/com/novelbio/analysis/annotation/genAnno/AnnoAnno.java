@@ -67,7 +67,7 @@ public class AnnoAnno extends AnnoAbs {
 		List<String> lsResult = new ArrayList<>();
 		GffGeneIsoInfo gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO(accID);
 		if (gffGeneIsoInfo != null) {
-			lsResult.add(1, gffGeneIsoInfo.getRefID() + ":" + gffGeneIsoInfo.getStartAbs() + "-" + gffGeneIsoInfo.getEndAbs());
+			lsResult.add(gffGeneIsoInfo.getRefID() + ":" + gffGeneIsoInfo.getStartAbs() + "-" + gffGeneIsoInfo.getEndAbs());
 			String strand = gffGeneIsoInfo.isCis5to3() ? "+" : "-";
 			lsResult.add(strand);
 		} else {

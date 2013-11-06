@@ -94,6 +94,9 @@ public class RPKMcomput implements AlignmentRecorder {
 		geneExpTable.addLsGeneName(mapGene2Len.keySet());
 		geneExpTable.setMapGene2Len(mapGene2Len);
 		geneExpTable.addAnnotation(mapGene2Type);
+		List<String> lsTitleAnno = new ArrayList<>();
+		lsTitleAnno.add(TitleFormatNBC.GeneType.toString());
+		geneExpTable.addLsTitle(lsTitleAnno);
 	}
 	
 	/** 设定是否为双端测序，同时会清空双端的hash表 */

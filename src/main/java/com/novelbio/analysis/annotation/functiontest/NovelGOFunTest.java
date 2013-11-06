@@ -116,6 +116,9 @@ public class NovelGOFunTest extends FunctionTest {
 	public Map<String, List<String[]>> getMapWriteToExcel() {
 		Map<String, List<String[]>> mapResult = new HashMap<String, List<String[]>>();
 		List<String[]> lsStatisticTestResults = StatisticTestResult.getLsInfo(true, getTestResult());
+		if (lsStatisticTestResults.size() == 0) {
+			return new HashMap<>();
+		}
 		mapResult.put(StatisticTestResult.titleGO, lsStatisticTestResults);
 		List<String[]> lsGene2PathPvalue = StatisticTestGene2Item.getLsInfo(getGene2ItemPvalue());
 		mapResult.put(StatisticTestGene2Item.titleGO, lsGene2PathPvalue);

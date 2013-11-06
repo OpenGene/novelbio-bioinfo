@@ -173,6 +173,7 @@ public class ListMiRNAdeep extends ListHashBin implements ListMiRNAInt {
 	}
 	
 	/**
+	 * 提取序列，同时将mrd文件复制到提取序列的文件夹下，并改名为Predict_MiRNA_Structure.txt
 	 * @param setMirPredictName 新miRNA的名字
 	 * @param run_output_mrd 待提取的文件
 	 * @param outMatureSeq 输出
@@ -197,6 +198,9 @@ public class ListMiRNAdeep extends ListHashBin implements ListMiRNAInt {
  		}
 		List<SeqFasta> lsMiRNA = getLsMirna(lsBlock);
 		writeMir(lsMiRNA, txtWritePre, txtWriteMature);
+		
+		String mrdNew = FileOperate.getParentPathName(outMatureSeq) + "Predict_MiRNA_Structure.txt";
+		FileOperate.copyFile(run_output_mrd, mrdNew, true);
 		
 		txtReadMrd.close();
 		txtWriteMature.close();

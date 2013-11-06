@@ -455,6 +455,7 @@ public abstract class FunctionTest implements Cloneable {
 	}
 	
 	/**
+	 * 空的map表示没有返回结果<br>
 	 * 获得可以写入excel的map<br>
 	 * key为sheet名，是{@link StatisticTestResult#titleGO}, {@link StatisticTestGene2Item#titleGO}, {@link StatisticTestItem2Gene#titleGO} 等，<br>
 	 * 注意pathway没有{@link StatisticTestItem2Gene#titlePath}这一个sheet

@@ -123,7 +123,7 @@ public class CtrlMiRNApipeline {
 		ctrlMiRNAfastq.setRfamFile(PathDetailNBC.getRfamTab());
 		ctrlMiRNAfastq.setMapAll2Rfam(true);
 		ctrlMiRNAfastq.mappingAndCounting(samMapMiRNARate);
-//		ctrlMiRNAfastq.writeToFile();
+		ctrlMiRNAfastq.writeToFile();
 		logger.info("finish mapping");
 	}
 	/** 从头预测 */
