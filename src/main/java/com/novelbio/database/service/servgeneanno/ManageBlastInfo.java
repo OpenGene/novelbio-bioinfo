@@ -45,7 +45,7 @@ public class ManageBlastInfo {
 			blastFileInfo.setQueryTaxID(taxIDQ);
 			blastFileInfo.setSubjectTaxID(taxIDS);
 			manageBlastInfo.saveBlastFile(blastFileInfo);
-			manageBlastInfo.save(blastInfo);
+			manageBlastInfo.updateBlast(blastInfo);
 		}
 		txtRead.close();
 	}
@@ -100,7 +100,12 @@ public class ManageBlastInfo {
 	
 	public void saveBlastFile(BlastFileInfo blastFileInfo) {		
 		if (blastFileInfo != null) {
-			mongoTemplate.save(blastFileInfo);
+			List<BlastFileInfo> lsFileInfo = mongoTemplate.find(new Query(Criteria.where("fileName").is(blastFileInfo.getFileName())), BlastFileInfo.class);
+			if (lsFileInfo.size() == 0) {
+				mongoTemplate.save(blastFileInfo);
+			} else {
+				blastFileInfo.setId(lsFileInfo.get(0).getId());
+			}
 		}
 	}
 	
@@ -120,10 +125,10 @@ public class ManageBlastInfo {
 	public List<BlastFileInfo> queryBlastFile(String fileName, int queryTaxID, int subjectTaxID) {
 		Criteria criteria = Criteria.where("fileName").is(fileName);
 		if (queryTaxID > 0) {
-			criteria = criteria.and("queryTaxID").is(queryTaxID);
+			criteria = criteria.and("queryTaxID").is(queryTaxID + "");
 		}
 		if (subjectTaxID > 0) {
-			criteria = criteria.and("subjectTaxID").is(subjectTaxID);
+			criteria = criteria.and("subjectTaxID").is(subjectTaxID + "");
 		}
 		return mongoTemplate.find(new Query(criteria), BlastFileInfo.class);
 	}

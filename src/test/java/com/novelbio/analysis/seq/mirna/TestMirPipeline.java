@@ -66,7 +66,6 @@ public class TestMirPipeline {
 		ctrlMiRNApipeline.setMapPrefix2Fastq(mapPrefix2Fastq);
 		ctrlMiRNApipeline.setMapPrefix2AlignFile(mapBedFile2Prefix);
 		ctrlMiRNApipeline.setMapMirna(false);
-		ctrlMiRNApipeline.setPredictAlready(true);
 		ctrlMiRNApipeline.readExistMiRNA(mirPreAll, mirMatureAll);
 		ctrlMiRNApipeline.setLsSpeciesBlastTo(lsSpeciesBlastTo);
 		ctrlMiRNApipeline.setOutPath(outPath);

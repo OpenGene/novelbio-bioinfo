@@ -390,7 +390,7 @@ class ReadSamIterable implements Iterable<SamRecord> {
 
 class ReadSamIterator implements Iterator<SamRecord> {
 	private static Logger logger = Logger.getLogger(ReadSamIterable.class);
-	
+	int errorContinueNum = 0;
 	SAMRecordIterator samRecordIterator;
 	SAMFileHeader samFileHeader;
 	int correctLineNum = 0;
@@ -403,6 +403,9 @@ class ReadSamIterator implements Iterator<SamRecord> {
 	
 	@Override
 	public boolean hasNext() {
+		if (errorContinueNum > 100000) {
+			return false;
+		}
 		return samRecordIterator.hasNext();
 	}
 
@@ -414,6 +417,7 @@ class ReadSamIterator implements Iterator<SamRecord> {
 			if (correctLineNum < 100000) {
 				correctLineNum ++;
 			}
+			errorContinueNum = 0;
 		} catch (SAMFormatException e) {
 			logger.error(e);
 			if (e.toString().contains("Error parsing text SAM file. Non-numeric value in POS column")) {
@@ -425,7 +429,7 @@ class ReadSamIterator implements Iterator<SamRecord> {
 			logger.error(e.toString());
 			return getErrorSamRecord();
 		} catch (Exception e) {
-			e.printStackTrace();
+			errorContinueNum++;
 			logger.error(e);
 			return getErrorSamRecord();
 		}

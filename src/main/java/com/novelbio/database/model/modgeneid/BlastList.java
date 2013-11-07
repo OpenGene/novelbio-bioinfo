@@ -228,7 +228,7 @@ public class BlastList {
 	
 	public void update() {
 		for (BlastInfo blastInfo : mapUpdate.values()) {
-			manageBlastInfo.save(blastInfo);
+			manageBlastInfo.updateBlast(blastInfo);
 		}
 		mapUpdate.clear();
 	}

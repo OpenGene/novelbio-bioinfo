@@ -254,10 +254,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	 */
 	private void fillSetNameGenomWide() {
 		setIsoToGetSeq.clear();
-		ArrayList<String> lsID = gffChrAbs.getGffHashGene().getLsNameNoRedundent();
-		GffDetailGene gffDetailGene = null;
-		for (String geneID : lsID) {
-			gffDetailGene = gffChrAbs.getGffHashGene().searchLOC(geneID);
+		for (GffDetailGene gffDetailGene : gffChrAbs.getGffHashGene().getGffDetailAll()) {
 			if (getOnlyMRNA && !gffDetailGene.isMRNA()) {
 				continue;
 			}

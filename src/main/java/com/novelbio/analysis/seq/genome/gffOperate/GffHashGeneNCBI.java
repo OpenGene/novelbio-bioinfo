@@ -199,6 +199,8 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		   }
 		   else if (ss[2].equals("STS") || ss[2].contains("gene_segment") || ss[2].contains("contig") || ss[2].contains("match")) {
 			   continue;
+		   } else if(ss[2].equals("three_prime_UTR") || ss[2].equals("five_prime_UTR") ) {
+			   continue;
 		   } else {
 			   logger.debug("出现未知exon：" +  ArrayOperate.cmbString(ss, "\t"));
 		   }
@@ -431,20 +433,22 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		   mapID2value.put(info[0], info[1]);
 	   }
 	   String gbkey = mapID2value.get("gbkey");
-	   String ncRNAclass = null;
-	   if (gbkey.equals("ncRNA")) {
-		   ncRNAclass = mapID2value.get("ncrna_class");
-	   } else if (gbkey.equals("precursor_RNA")) {
-		   String product = mapID2value.get("product");
-		   if (product != null && product.contains("microRNA")) {
-			   gbkey = GeneType.Precursor_miRNA.toString();
+	   if (gbkey != null) {
+		   String ncRNAclass = null;
+		   if (gbkey.equals("ncRNA")) {
+			   ncRNAclass = mapID2value.get("ncrna_class");
+		   } else if (gbkey.equals("precursor_RNA")) {
+			   String product = mapID2value.get("product");
+			   if (product != null && product.contains("microRNA")) {
+				   gbkey = GeneType.Precursor_miRNA.toString();
+			   }
 		   }
-	   }
-	   
-	   if (ncRNAclass != null) {
-		   result = ncRNAclass;
-	   } else if (gbkey != null) {
-		   result = gbkey;
+		   
+		   if (ncRNAclass != null) {
+			   result = ncRNAclass;
+		   } else if (gbkey != null) {
+			   result = gbkey;
+		   }
 	   }
 	   
 	   GeneType geneType = GeneType.getGeneType(result);

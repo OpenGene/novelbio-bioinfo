@@ -12,6 +12,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.domain.kegg.KGIDkeg2Ko;
 import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.domain.kegg.KGpathway;
+import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.service.servkegg.ServKIDKeg2Ko;
 import com.novelbio.database.service.servkegg.ServKPathway;
 
@@ -210,10 +211,10 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 	 * 如果已经查过了一次，自动返回
 	 */
 	public static HashMap<String, KGpathway> getHashKGpath() {
-		ServKPathway servKPathway = new ServKPathway();
 		if (hashKGPath != null && hashKGPath.size() > 0) {
 			return hashKGPath;
 		}
+		ServKPathway servKPathway = new ServKPathway();
 		KGpathway kGpathway = new KGpathway();
 		ArrayList<KGpathway> lsKGpathways = servKPathway.queryLsKGpathways(kGpathway);
 		for (KGpathway kGpathway2 : lsKGpathways) {
@@ -235,4 +236,19 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 	public static KGpathway getKGpath(String MapNum, int taxID) {
 		return getHashKGpath().get(MapNum + SepSign.SEP_ID + taxID);
 	}
+	
+	public static KeggInfoAbs createInstance(int idType, String genUniAccID, int taxID) {
+		KeggInfoAbs keggInfoAbs = null;
+		if (idType == GeneID.IDTYPE_UNIID) {
+			keggInfoAbs = new KeggInfoUniID(genUniAccID, taxID);
+		}
+		else if (idType == GeneID.IDTYPE_GENEID) {
+			keggInfoAbs = new KeggInfoGenID(genUniAccID, taxID);
+		}
+		else if (idType == GeneID.IDTYPE_ACCID) {
+			keggInfoAbs = new KeggInfoAccID(genUniAccID, taxID);
+		}
+		return keggInfoAbs;
+	}
+
 }

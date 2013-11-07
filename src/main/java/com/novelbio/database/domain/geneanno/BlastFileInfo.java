@@ -35,6 +35,12 @@ public class BlastFileInfo {
 		this.fileName = fileName;
 		dateBlastFile = FileOperate.getTimeLastModifyStr(fileName);
 	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public String getId() {
+		return id;
+	}
 	/** 上传人 */
 	public void setUserID(String userName) {
 		this.userName = userName;

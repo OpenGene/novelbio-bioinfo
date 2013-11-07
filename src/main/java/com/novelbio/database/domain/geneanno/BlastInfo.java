@@ -11,8 +11,10 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.annotation.blast.BlastStatistics;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -49,6 +51,7 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	private int subjectIDtype;
 	
 	@Indexed
+	@DBRef
 	private BlastFileInfo blastFileInfo;
 	
 	@Transient
@@ -126,7 +129,7 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	
 	private void query(int taxIDQ, boolean isAccIDQ, int taxIDS, boolean isAccIDS, String[] blastInfo) {
 		GeneID geneIDQ;
-		if (!isAccIDQ) {
+		if (isAccIDQ) {
 			geneIDQ = new GeneID(blastInfo[0], taxIDQ);
 		} else {
 			geneIDQ = new GeneID(GeneID.IDTYPE_GENEID, blastInfo[0], taxIDQ);
@@ -135,7 +138,7 @@ public class BlastInfo implements Comparable<BlastInfo> {
 			}
 		}
 		
-		if (!isAccIDS) {
+		if (isAccIDS) {
 			geneIDS = new GeneID(blastInfo[1], taxIDS, blastInfo[1].contains("|"));
 		} else {
 			geneIDS = new GeneID(GeneID.IDTYPE_GENEID, blastInfo[1], taxIDS);

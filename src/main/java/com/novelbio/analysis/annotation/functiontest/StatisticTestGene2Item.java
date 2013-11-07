@@ -195,7 +195,6 @@ class StatisticTestGene2Path extends StatisticTestGene2Item {
 				lsTmpFinal.add("");
 			}
 		}
-
 		ArrayList<KGpathway> lsPath = geneID.getKegPath(blast);
 		if (lsPath == null || lsPath.size() == 0) {
 			return lsFinal;

@@ -19,6 +19,7 @@ import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.database.model.modkegg.KeggInfo;
+import com.novelbio.database.model.modkegg.KeggInfoAbs;
 
 /**
  * <b>注意blastInfo中的SubjectTab和QueryTab有问题，需要重写</b><br>
@@ -246,7 +247,7 @@ public class GeneID implements GeneIDInt{
 
 ////////////////////   KEGG    /////////////////////////////////////////////////////////
 	@Override
-	public KeggInfo getKeggInfo() {
+	public KeggInfoAbs getKeggInfo() {
 		return geneID.getKeggInfo();
 	}
 	@Override

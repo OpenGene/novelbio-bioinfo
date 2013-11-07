@@ -93,16 +93,6 @@ public class CtrlMiRNApredict {
 		setMiRNACount_And_Anno();
 		calculateExp(samMapMiRNARate);
 	}
-	/** 仅用于测试
-	 * @param predictPath 类似 /media/public/customer/miRNAtest/miRNApredictDeep<br>
-	 * 会自动获取 /media/public/customer/miRNAtest/miRNApredictDeep/run/output.mrd 文件
-	 */
-	protected void predictAndCalculate(SamMapRate samMapMiRNARate) {
-		novelMiRNADeep.setOutPath(outPath + "miRNApredictDeep/");
-		novelMiRNADeep.readExistMrd();
-		setMiRNACount_And_Anno();
-		calculateExp(samMapMiRNARate);
-	}
 	
 	/**
 	 * @param samMapMiRNARate null表示不统计

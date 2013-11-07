@@ -30,7 +30,6 @@ public class CtrlMiRNApipeline {
 	
 	List<Species> lsSpeciesBlastTo;
 	String outPath;
-	boolean isPredictAlready = false;
 	Map<String, AlignSeq> mapPrefix2AlignFile;
 	Map<String, String> mapPrefix2Fastq;
 	
@@ -51,10 +50,6 @@ public class CtrlMiRNApipeline {
 	}
 	public void setPredictMirna(boolean predictMirna) {
 		this.predictMirna = predictMirna;
-	}
-	/** miRNA是否已经预测完毕 */
-	public void setPredictAlready(boolean isPredictAlready) {
-		this.isPredictAlready = isPredictAlready;
 	}
 	/** 设定比对到的物种，不设定就不做这步分析 */
 	public void setLsSpeciesBlastTo(List<Species> lsSpeciesBlastTo) {
@@ -80,11 +75,7 @@ public class CtrlMiRNApipeline {
 			mapPrefix2AlignFile = ctrlMiRNAfastq.getMapPrefix2GenomeSam();
 		}
 		if (predictMirna) {
-			if (isPredictAlready) {
-				runPredictAlready(mapPrefix2AlignFile);
-			} else {
-				runPredict(mapPrefix2AlignFile, gffChrAbs, species);
-			}
+			runPredict(mapPrefix2AlignFile, gffChrAbs, species);
 			mapPrefix2Fastq = ctrlMiRNApredict.getMapPrefix2UnmapFq();
 		} else {
 			mapPrefix2Fastq = convertAlign2Fq(mapPrefix2AlignFile);
@@ -135,17 +126,6 @@ public class CtrlMiRNApipeline {
 		ctrlMiRNApredict.setLsSpeciesBlastTo(lsSpeciesBlastTo);
 		ctrlMiRNApredict.setExpMir(expMirPre, expMirMature);
 		ctrlMiRNApredict.runMiRNApredict(samMapMiRNARate);
-		ctrlMiRNApredict.writeToFile();
-		logger.info("finish predict");
-	}
-	
-	/** 已经预测好了算下表达就行了 */
-	private void runPredictAlready(Map<String, AlignSeq> mapPrefix2GenomeSam) {
-		ctrlMiRNApredict.setMapPrefix2GenomeSamFile(mapPrefix2GenomeSam);
-		ctrlMiRNApredict.setOutPath(outPath);
-		ctrlMiRNApredict.setLsSpeciesBlastTo(lsSpeciesBlastTo);
-		ctrlMiRNApredict.setExpMir(expMirPre, expMirMature);
-		ctrlMiRNApredict.predictAndCalculate(samMapMiRNARate);
 		ctrlMiRNApredict.writeToFile();
 		logger.info("finish predict");
 	}

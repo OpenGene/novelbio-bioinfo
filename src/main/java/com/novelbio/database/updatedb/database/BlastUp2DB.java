@@ -23,8 +23,7 @@ public class BlastUp2DB extends ImportPerLine {
 	/** true 导入数据库，false导入缓存
 	 * 默认false导入缓存
 	 */
-	public void setUpdate(boolean update, String blastFileName) {
-		blastFileInfo.setFileName(blastFileName);
+	public void setUpdate(boolean update) {
 		blastFileInfo.setTmp(!update);
 	}
 	/**
@@ -62,6 +61,7 @@ public class BlastUp2DB extends ImportPerLine {
 		this.blastIDType = IDtypeS;
 	}
 	public void updateFile(String gene2AccFile) {
+		blastFileInfo.setFileName(gene2AccFile);
 		manageBlastInfo.saveBlastFile(blastFileInfo);
 		super.updateFile(gene2AccFile);
 	}
@@ -72,7 +72,7 @@ public class BlastUp2DB extends ImportPerLine {
 		
 		blastInfo.setBlastFileInfo(blastFileInfo);
 		try {
-			manageBlastInfo.save(blastInfo);
+			manageBlastInfo.updateBlast(blastInfo);
 		} catch (Exception e) {
 			logger.error("import db error", e);
 			return false;

@@ -14,6 +14,7 @@ import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.database.model.modkegg.KeggInfo;
+import com.novelbio.database.model.modkegg.KeggInfoAbs;
 
 public interface GeneIDInt{
 
@@ -71,7 +72,7 @@ public interface GeneIDInt{
 	 * 获得相应的KeggInfo信息
 	 * @return
 	 */
-	public KeggInfo getKeggInfo();
+	public KeggInfoAbs getKeggInfo();
 	/**
 	 * blast多个物种 首先要设定blast的目标 用方法： setBlastInfo(double evalue, int... StaxID)
 	 * 给定一系列的目标物种的taxID，获得CopedIDlist 如果没有结果，返回一个空的lsResult

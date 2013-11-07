@@ -22,6 +22,7 @@ import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.database.model.modkegg.KeggInfo;
+import com.novelbio.database.model.modkegg.KeggInfoAbs;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.database.service.servgeneanno.ManageDBInfo;
 import com.novelbio.database.service.servgeneanno.ManageGeneInfo;
@@ -44,7 +45,7 @@ public class GeneIDabs implements GeneIDInt {
 	/** 譬方和多个物种进行blast，然后结合这些物种的信息，取并集 */
 	BlastList blastList;
 	AGeneInfo geneInfo = null;
-	KeggInfo keggInfo;
+	KeggInfoAbs keggInfo;
 	GOInfoAbs goInfoAbs = null;
 
 	boolean overrideUpdateDBinfo = false;
@@ -480,7 +481,7 @@ public class GeneIDabs implements GeneIDInt {
 			return keggInfo.getKgGentries();
 		} else {
 			List<GeneID> lsGeneIDsBlast = getLsBlastGeneID();
-			ArrayList<KeggInfo> lsKeggInfos = new ArrayList<KeggInfo>();
+			ArrayList<KeggInfoAbs> lsKeggInfos = new ArrayList<>();
 			lsKeggInfos.add(getKeggInfo());
 			for (GeneID copedID : lsGeneIDsBlast) {
 				lsKeggInfos.add(copedID.getKeggInfo());
@@ -494,11 +495,11 @@ public class GeneIDabs implements GeneIDInt {
 	 * 
 	 * @return
 	 */
-	public KeggInfo getKeggInfo() {
+	public KeggInfoAbs getKeggInfo() {
 		if (keggInfo != null) {
 			return keggInfo;
 		}
-		keggInfo = new KeggInfo(getIDtype(), ageneUniID.getGenUniID(), ageneUniID.getTaxID());
+		keggInfo = KeggInfoAbs.createInstance(getIDtype(), ageneUniID.getGenUniID(), ageneUniID.getTaxID());
 		return keggInfo;
 	}
 
@@ -510,7 +511,7 @@ public class GeneIDabs implements GeneIDInt {
 	public ArrayList<KGpathway> getKegPath(boolean blast) {
 		getKeggInfo();
 		if (blast) {
-			ArrayList<KeggInfo> lskeggInfo = new ArrayList<KeggInfo>();
+			ArrayList<KeggInfoAbs> lskeggInfo = new ArrayList<>();
 			lskeggInfo.add(keggInfo);
 			List<GeneID> lsBlastCopedIDs = getLsBlastGeneID();
 			for (GeneID copedID : lsBlastCopedIDs) {
