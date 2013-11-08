@@ -69,7 +69,10 @@ public class CtrlMiRNAfastq {
 	public void setSpecies(Species species) {
 		this.species = species;
 	}
-	
+	/** 遇到已经存在的文件，是重做该步骤，还是跳过该步骤 */
+	public void setOverlap(boolean overlap) {
+		miRNAmappingPipline.setOverlap(overlap);
+	}
 	public void setThreadNumMiRNAmap(int mapThreadNum) {
 		miRNAmappingPipline.setThreadNum(mapThreadNum);
 	}

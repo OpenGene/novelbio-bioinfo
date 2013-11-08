@@ -144,7 +144,7 @@ public abstract class MapDNA implements MapDNAint {
 		FileOperate.DeleteFileFolder(getOutNameCope());
 	}
 	/** 根据是否转化为bam文件以及是否排序，返回相应的文件名 */
-	private String getOutNameCope() {
+	public String getOutNameCope() {
 		String resultSamName = FileOperate.changeFileSuffix(outFileName, "", "bam");
 		if (isNeedSort) {
 			resultSamName = FileOperate.changeFileSuffix(resultSamName, "_sorted", null);

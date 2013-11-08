@@ -21,8 +21,8 @@ public class SamToFastq implements AlignmentRecorder {
 	public void setJustUnMapped(boolean justUnMapped) {
 		this.justUnMapped = justUnMapped;
 	}
-	/** 根据是否为mapping上的reads，自动设定文件名 */
-	public void setOutFileInfo(SamFile samFile, boolean justUnMapped) {
+	/** 根据是否为mapping上的reads，自动设定文件名，并返回设定好的文件名 */
+	public String setOutFileInfo(SamFile samFile, boolean justUnMapped) {
 		String fileName = samFile.getFileName();
 		if (justUnMapped) {
 			fileName = FileOperate.changeFileSuffix(fileName, "_unMapped", "fastq.gz");
@@ -31,6 +31,7 @@ public class SamToFastq implements AlignmentRecorder {
 		}
 		this.justUnMapped = justUnMapped;
 		setFastqFile(fileName);
+		return fileName;
 	}
 	/**
 	 * @param outFileName

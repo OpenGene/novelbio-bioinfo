@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.mapping.MapBowtie;
+import com.novelbio.analysis.seq.sam.AlignSeqReading;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamFileStatistics;
 import com.novelbio.analysis.seq.sam.SamToFastq;
@@ -53,10 +54,15 @@ public class MiRNAmapPipline {
 	
 	int threadNum = 3;
 	
+	/** 如果以前跑过一遍，再跑是否覆盖，false就是说遇到以前跑过的文件，现在就跳过 */
+	boolean overlap = false;
+	
 	public void setThreadNum(int threadNum) {
 		this.threadNum = threadNum;
 	}
-	
+	public void setOverlap(boolean overlap) {
+		this.overlap = overlap;
+	}
 	/** 是否全部mapping至genome上，默认为true */
 	public void setMappingAll2Genome(boolean mappingAll2Genome) {
 		this.mappingAll2Genome = mappingAll2Genome;
@@ -149,7 +155,7 @@ public class MiRNAmapPipline {
 		if (FileOperate.isFileExist(miRNApreSeq)) {
 			unMappedFq = outputTmpFinal + "unMap2miRNA.fq.gz";
 			samFileStatisticsMiRNA = new SamFileStatistics(prefix);
-			samFileMiRNA = mappingBowtie2(samFileStatisticsMiRNA, exePath, threadNum, fqFile, miRNApreSeq, samFileMiRNA, unMappedFq);
+			samFileMiRNA = mappingBowtie2(overlap, samFileStatisticsMiRNA, exePath, threadNum, fqFile, miRNApreSeq, samFileMiRNA, unMappedFq);
 			unMappedMiRNA = unMappedFq;
 			if (!mappingAll2Rfam) {
 				fqFile = unMappedFq;
@@ -158,28 +164,28 @@ public class MiRNAmapPipline {
 	
 		if (FileOperate.isFileExist(rfamSeq)) {
 			unMappedFq = outputTmpFinal + "unMap2rfam.fq.gz";
-			samFileRfam = mappingBowtie2(new SamFileStatistics(FileOperate.getFileNameSep(samFileRfam)[0]),
+			samFileRfam = mappingBowtie2(overlap, new SamFileStatistics(FileOperate.getFileNameSep(samFileRfam)[0]),
 					exePath, threadNum, fqFile, rfamSeq, samFileRfam, unMappedFq);
 			fqFile = unMappedFq;
 		}
 		
 		if (FileOperate.isFileExist(ncRNAseq)) {
 			unMappedFq = outputTmpFinal + "unMap2ncRna.fq.gz";
-			samFileNCRNA = mappingBowtie2(new SamFileStatistics(FileOperate.getFileNameSep(samFileNCRNA)[0]),
+			samFileNCRNA = mappingBowtie2(overlap, new SamFileStatistics(FileOperate.getFileNameSep(samFileNCRNA)[0]),
 					exePath, threadNum, fqFile, ncRNAseq, samFileNCRNA, unMappedFq);
 			fqFile = unMappedFq;
 		}
 		
 		if (FileOperate.isFileExist(genome)) {
 			unMappedFq = outputTmpFinal + "unMapped.fq.gz";
-			samFileGenome = mappingBowtie2(new SamFileStatistics(FileOperate.getFileNameSep(samFileGenome)[0]),
+			samFileGenome = mappingBowtie2(overlap, new SamFileStatistics(FileOperate.getFileNameSep(samFileGenome)[0]),
 					exePath, threadNum, unMappedMiRNA, genome, samFileGenome, unMappedFq);
 		}
 		
 		if (mappingAll2Genome && FileOperate.isFileExist(genome)) {
 			fqFile = seqFile;
 			unMappedFq = outputTmpFinal + "unMapped.fq.gz";
-			samFileGenomeAll = mappingBowtie2(new SamFileStatistics(FileOperate.getFileNameSep(samFileGenomeAll)[0]),
+			samFileGenomeAll = mappingBowtie2(overlap, new SamFileStatistics(FileOperate.getFileNameSep(samFileGenomeAll)[0]),
 					exePath, threadNum, fqFile, genome, samFileGenomeAll, unMappedFq);
 		}
 	}
@@ -198,7 +204,7 @@ public class MiRNAmapPipline {
 		if (FileOperate.isFileExist(miRNApreSeq)) {
 			unMappedFq = outputTmpFinal + "unMap2miRNA.fq.gz";
 			samFileStatisticsMiRNA = new SamFileStatistics(prefix);
-			samFileMiRNA = mappingBowtie2(samFileStatisticsMiRNA, exePath, threadNum, fqFile, miRNApreSeq, samFileMiRNA, unMappedFq);
+			samFileMiRNA = mappingBowtie2(overlap, samFileStatisticsMiRNA, exePath, threadNum, fqFile, miRNApreSeq, samFileMiRNA, unMappedFq);
 			fqFile = unMappedFq;
 		}
 	}
@@ -208,6 +214,7 @@ public class MiRNAmapPipline {
 	}
 	
 	/**
+	 * @param overlap 如果结果文件存在，是否重跑
 	 * @param samFileStatistics
 	 * @param exePath
 	 * @param threadNum
@@ -217,7 +224,8 @@ public class MiRNAmapPipline {
 	 * @param unMappedFq 没有mapping上的文件输出为fq
 	 * @return
 	 */
-	public static String mappingBowtie2(SamFileStatistics samFileStatistics, String exePath, int threadNum, String fqFile, String chrFile, String samFileName, String unMappedFq) {
+	public static String mappingBowtie2(boolean overlap, SamFileStatistics samFileStatistics, String exePath, 
+			int threadNum, String fqFile, String chrFile, String samFileName, String unMappedFq) {
 		MapBowtie mapBowtie = new MapBowtie();
 		mapBowtie.setFqFile(new FastQ(fqFile), null);
 		mapBowtie.setOutFileName(samFileName);
@@ -230,13 +238,30 @@ public class MiRNAmapPipline {
 			samFileStatistics.initial();
 			mapBowtie.addAlignmentRecorder(samFileStatistics);
 		}
-
+		if (!overlap) {
+			if (FileOperate.isFileExistAndBigThanSize(mapBowtie.getOutNameCope(), 0)
+					&& ((unMappedFq == null || unMappedFq.equals("")) 
+					|| FileOperate.isFileExistAndBigThanSize(unMappedFq, 0))
+					) {
+				if (samFileStatistics != null) {
+					samFileStatistics.setCorrectChrReadsNum(true);
+					samFileStatistics.initial();
+					SamFile samFile = new SamFile(mapBowtie.getOutNameCope());
+					AlignSeqReading alignSeqReading = new AlignSeqReading(samFile);
+					alignSeqReading.addAlignmentRecorder(samFileStatistics);
+					alignSeqReading.run();
+					return mapBowtie.getOutNameCope();
+				}
+			}
+		}
+		
 		if (unMappedFq != null && !unMappedFq.equals("")) {
 			SamToFastq samToFastq = new SamToFastq();
 			samToFastq.setFastqFile(unMappedFq);
 			samToFastq.setJustUnMapped(true);
 			mapBowtie.addAlignmentRecorder(samToFastq);
 		}
+		
 		logger.info("start mapping miRNA");
 		SamFile samFile = mapBowtie.mapReads();
 		logger.info("finish mapping miRNA");

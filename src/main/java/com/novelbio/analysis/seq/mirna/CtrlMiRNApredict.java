@@ -43,13 +43,17 @@ public class CtrlMiRNApredict {
 	/** 新miRNA的注释，比对到哪些物种上去 */
 	List<Species> lsBlastTo = new ArrayList<>();
 	
+	boolean overlap = false;
+	
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		if (this.gffChrAbs != null && gffChrAbs != null && this.gffChrAbs.getSpecies().equals(gffChrAbs.getSpecies())) {
 			return;
 		}
 		this.gffChrAbs = gffChrAbs;
 	}
-	
+	public void setOverlap(boolean overlap) {
+		this.overlap = overlap;
+	}
 	public void setSpecies(Species species) {
 		this.species = species;
 	}
@@ -114,7 +118,7 @@ public class CtrlMiRNApredict {
 		FileOperate.createFolders(outPathMap);
 		String novelMiRNAsam = outPathMap + prefix + "novelMiRNAmapping.sam";
 		String unmappedFq = outPathMap + prefix + "novelMiRNAunmapped.fq.gz";
-		novelMiRNAsam = MiRNAmapPipline.mappingBowtie2(new SamFileStatistics(prefix), softWareInfo.getExePath(), 3, fastQ.getReadFileName(), 
+		novelMiRNAsam = MiRNAmapPipline.mappingBowtie2(overlap, new SamFileStatistics(prefix), softWareInfo.getExePath(), 3, fastQ.getReadFileName(), 
 				novelMiRNADeep.getNovelMiRNAhairpin(), novelMiRNAsam, unmappedFq);
 		miRNACount.setAlignFile(new SamFile(novelMiRNAsam));
 		mapPrefix2UnmapFq.put(prefix, unmappedFq);
