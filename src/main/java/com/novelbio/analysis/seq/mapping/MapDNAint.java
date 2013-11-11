@@ -62,7 +62,7 @@ public interface MapDNAint {
 	 * @return
 	 */
 	public SamFile mapReads();
-
+	
 	public List<AlignmentRecorder> getLsAlignmentRecorders();
 	
 	/**
