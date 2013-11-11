@@ -460,7 +460,7 @@ public class SamFileStatistics implements AlignmentRecorder {
 	 */
 	public static BufferedImage drawMappingImage(List<SamFileStatistics> lsSamFileStatistics) {
 		if (lsSamFileStatistics.get(0).getMapChrID2PropAndLen().size() > chrNumMax) {			
-			logger.error("大于最大chr数量,只画前" + chrNumMax + "条");
+			logger.info("大于最大chr数量,只画前" + chrNumMax + "条");
 //			return null;
 		}
 		Color barColor1 = new Color(23, 200, 200); 
@@ -591,27 +591,40 @@ public class SamFileStatistics implements AlignmentRecorder {
 		return columnKeys;
 	}
 	
-	public static List<String> saveInfo(String pathAndName, SamFileStatistics samFileStatistics) {
-		List<String> lsResultFileName = new ArrayList<>();
-		String pathChrPic = "";
-		if (pathAndName.endsWith("/") || pathAndName.endsWith("\\")) {
-			pathChrPic = pathAndName + "ChrDistribution.png";
-		} else {
-			pathChrPic = FileOperate.changeFilePrefix(pathAndName, "ChrDistribution_", "png");
-		}
-		pathChrPic = ImageUtils.saveBufferedImage(samFileStatistics.getBufferedImages(), pathChrPic);
-		if (pathChrPic != null) {
-			lsResultFileName.add(pathChrPic);
-		}
-		String excelName = FileOperate.changeFileSuffix(pathAndName, "_MappingStatistic", "xls");
+	public static String saveExcel(String pathAndName, SamFileStatistics samFileStatistics) {
+		String excelName = getSaveExcel(pathAndName);
 		ExcelOperate excelOperate = new ExcelOperate(excelName);
 		Map<String, List<String[]>> mapSheetName2Info = samFileStatistics.getMapSheetName2Data();
 		for (String sheetName : mapSheetName2Info.keySet()) {
 			excelOperate.WriteExcel(sheetName, 1, 1, mapSheetName2Info.get(sheetName));
 		}
 		excelOperate.Close();
-		lsResultFileName.add(excelName);
-		return lsResultFileName;
+		return excelName;
+	}
+	public static String savePic(String pathAndName, SamFileStatistics samFileStatistics) {
+		String pathChrPic = getSavePic(pathAndName);
+		pathChrPic = ImageUtils.saveBufferedImage(samFileStatistics.getBufferedImages(), pathChrPic);
+		return pathChrPic;
+	}
+	/** 预判会出现的文件名 */
+	public static String getSavePic(String pathAndName) {
+		String pathChrPic = null;
+		if (pathAndName.endsWith("/") || pathAndName.endsWith("\\")) {
+			pathChrPic = pathAndName + "ChrDistribution.png";
+		} else {
+			pathChrPic = FileOperate.changeFilePrefix(pathAndName, "ChrDistribution_", "png");
+		}
+		return pathChrPic;
+	}
+	/** 预判会出现的文件名 */
+	public static String getSaveExcel(String pathAndName) {
+		String excelName = null;
+		if (pathAndName.endsWith("/") || pathAndName.endsWith("\\")) {
+			excelName = pathAndName + "MappingStatistic.xls";
+		} else {
+			excelName = FileOperate.changeFilePrefix(pathAndName, "_MappingStatistic", "png");
+		}
+		return excelName;
 	}
 	@Override
 	public Align getReadingRegion() {

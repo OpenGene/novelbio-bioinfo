@@ -33,11 +33,15 @@ public abstract class MapDNA implements MapDNAint {
 	/** 结果是否需要排序 */
 	boolean isNeedSort = false;
 	String outFileName = "";
+	String prefix;
 	/** 因为mapping完后会将sam文件转成bam文件，这时候就可以顺带的做一些工作 */
 	public void setLsAlignmentRecorders(List<AlignmentRecorder> lsAlignmentRecorders) {
 		this.lsAlignmentRecorders = lsAlignmentRecorders;
 	}
-	
+
+	public void setPrefix(String prefix) {
+		this.prefix = prefix;
+	}
 	/** 加入的samStatistics在samToBam的时候会自动加上染色体长度等信息 */
 	public void addAlignmentRecorder(AlignmentRecorder alignmentRecorder) {
 		this.lsAlignmentRecorders.add(alignmentRecorder);

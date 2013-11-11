@@ -33,8 +33,8 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 	/** bowtie所在路径 */
 	String ExePathBowtie = "";
 	
-	List<FastQ> lsLeftFq = new ArrayList<FastQ>();
-	List<FastQ> lsRightFq = new ArrayList<FastQ>();
+	List<FastQ> lsLeftFq = new ArrayList<>();
+	List<FastQ> lsRightFq = new ArrayList<>();
 	
 	List<String> lsSampleGroup = new ArrayList<>();
 	/** 非unique mapping的话，取几个 */

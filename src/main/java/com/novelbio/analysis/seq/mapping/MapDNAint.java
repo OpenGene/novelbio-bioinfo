@@ -70,4 +70,8 @@ public interface MapDNAint {
 	 * @param bowtieVersion
 	 */
 	public void setSubVersion(SoftWare bowtieVersion);
+	void setPrefix(String prefix);
+	void setLeftFq(List<FastQ> lsLeftFastQs);
+	void setRightFq(List<FastQ> lsRightFastQs);
+	String getOutNameCope();
 }

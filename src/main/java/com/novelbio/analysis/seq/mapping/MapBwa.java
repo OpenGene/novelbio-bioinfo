@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.fastq.FastQ;
+import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRGroup;
 import com.novelbio.base.cmd.CmdOperate;
@@ -25,18 +26,6 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 @Component
 @Scope("prototype")
 public class MapBwa extends MapDNA implements IntCmdSoft {
-	public static void main(String[] args) {
-		CmdOperate cmdOperate = new CmdOperate("bowtie --version");
-		cmdOperate.setGetLsStdOut();
-		cmdOperate.setGetLsErrOut();
-		cmdOperate.run();
-		
-		List<String> lsInfo = cmdOperate.getLsStdOut();
-		String version = lsInfo.get(0).split("version")[1];
-		System.out.println(version);
-	}
-	
-	
 	private static final Logger logger = Logger.getLogger(MapBwa.class);
 	/**
 	 * 在此大小以下的genome直接读入内存以帮助快速mapping
@@ -49,9 +38,11 @@ public class MapBwa extends MapDNA implements IntCmdSoft {
 	String ExePath = "";
 	String chrFile;
 	String[] sampleGroup;
-	String leftFq = "";
-	String rightFq = "";
-
+	List<FastQ> lsLeftFq = new ArrayList<>();
+	String leftCombFq;
+	List<FastQ> lsRightFq = new ArrayList<>();
+	String rightCombFq;
+	
 	MapLibrary mapLibrary = MapLibrary.PairEnd;
 	
 	/** 含有几个gap */
@@ -70,63 +61,81 @@ public class MapBwa extends MapDNA implements IntCmdSoft {
 	/** 是否将index读入内存，仅对双端有效 */
 	boolean readInMemory = true;
 	
-	public MapBwa() {}
-	/**
-	 * @param fastQ
-	 * @param outFileName 结果文件名，后缀自动改为sam
-	 * @param uniqMapping 是否uniqmapping，单端才有的参数
-	 */
-	public MapBwa(FastQ fastQ, String outFileName) {
-		this.outFileName = outFileName;
-		leftFq = fastQ.getReadFileName();
-	}
-	/**
-	 * 双端只做unique mapping
-	 * @param seqFile1
-	 * @param seqFile2 没有就写null
-	 * @param outFileName 结果文件名，后缀自动改为sam
-	 */
-	public MapBwa(String seqFile1, String seqFile2, String outFileName) {
-		leftFq = seqFile1;
-		rightFq = seqFile2;
-		this.outFileName = outFileName;
-	}
-	/**
-	 * @param seqFile1
-	 * @param outFileName 结果文件名，后缀自动改为sam
-	 * @param uniqMapping 是否unique mapping
-	 */
-	public MapBwa(String seqFile,String outFileName) {
-		leftFq = seqFile;
-		this.outFileName = outFileName;
-	}
-	/** 输入已经过滤好的fastq文件
-	 * @param leftFq
-	 * @param rightFq 没有文件则输入null
-	 */
-	public void setFqFile(String leftFq, String rightFq) {
-		if (FileOperate.isFileExistAndBigThanSize(leftFq, 1) && FileOperate.isFileExistAndBigThanSize(rightFq, 1)) {
-			this.leftFq = leftFq;
-			this.rightFq = rightFq;
-		}
-		else if (FileOperate.isFileExistAndBigThanSize(leftFq, 1)) {
-			this.leftFq = leftFq;
-		}
-		else if (FileOperate.isFileExistAndBigThanSize(rightFq, 1)) {
-			this.leftFq = rightFq;
-		}
-	}
-	/** 输入已经过滤好的fastq文件 */
 	public void setFqFile(FastQ leftFq, FastQ rightFq) {
-		String leftFqFile = "", rightFqFile = "";
+		this.lsLeftFq.clear();
+		this.lsRightFq.clear();
 		if (leftFq != null) {
-			leftFqFile = leftFq.getReadFileName();
+			lsLeftFq.add(leftFq);
 		}
 		if (rightFq != null) {
-			rightFqFile = rightFq.getReadFileName();
+			lsRightFq.add(rightFq);
 		}
-		setFqFile(leftFqFile, rightFqFile);
 	}
+	
+	/**
+	 * 设置左端的序列，设置会把以前的清空
+	 * @param fqFile
+	 */
+	@Override
+	public void setLeftFq(List<FastQ> lsLeftFastQs) {
+		if (lsLeftFastQs == null) return;
+		this.lsLeftFq = lsLeftFastQs;
+	}
+	/**
+	 * 设置右端的序列，设置会把以前的清空
+	 * @param fqFile
+	 */
+	@Override
+	public void setRightFq(List<FastQ> lsRightFastQs) {
+		if (lsRightFastQs == null) return;
+		this.lsRightFq = lsRightFastQs;
+	}
+	
+	private void combSeq() {
+		boolean singleEnd = (lsLeftFq.size() > 0 && lsRightFq.size() > 0) ? false : true;
+		if (lsLeftFq.size() > 0 && lsRightFq.size() > 0) {
+			singleEnd = false;
+		}
+		
+		if (lsLeftFq.size() == 1) {
+			leftCombFq = lsLeftFq.get(0).getReadFileName();
+		} else {
+			leftCombFq = combSeq(singleEnd, true, prefix, lsLeftFq);
+		}
+		if (lsRightFq.size() == 1) {
+			rightCombFq = lsRightFq.get(0).getReadFileName();
+		} else {
+			rightCombFq = combSeq(singleEnd, false, ExePath, lsRightFq);
+		}
+	}
+	
+	/** 将输入的fastq文件合并为一个 */
+	private static String combSeq(boolean singleEnd, boolean left, String prefix, List<FastQ> lsFastq) {
+		if (lsFastq == null || lsFastq.size() == 0) {
+			return null;
+		}
+		String fastqFile = FileOperate.getParentPathName(lsFastq.get(0).getReadFileName()) + prefix;
+		if (singleEnd) {
+			fastqFile += ".fq.gz";
+		} else {
+			if (left) {
+				fastqFile += "_1.fq.gz";
+			} else if (!left) {
+				fastqFile += "_2.fq.gz";
+			}
+		}
+
+		FastQ fastqComb = new FastQ(fastqFile);
+		for (FastQ fastQ : lsFastq) {
+			for (FastQRecord fastQRecord : fastQ.readlines()) {
+				fastqComb.writeFastQRecord(fastQRecord);
+			}
+			fastQ.close();
+		}
+		fastqComb.close();
+		return fastqComb.getReadFileName();
+	}
+	
 	/**
 	 * 百分之多少的mismatch，或者几个mismatch
 	 * @param mismatch
@@ -226,7 +235,7 @@ public class MapBwa extends MapDNA implements IntCmdSoft {
 		return null;
 	}
 	protected boolean isPairEnd() {
-		if (!FileOperate.isFileExist(leftFq) || !FileOperate.isFileExist(rightFq)) {
+		if (leftCombFq == null || rightCombFq == null) {
 			return false;
 		}
 		return true;
@@ -247,7 +256,7 @@ public class MapBwa extends MapDNA implements IntCmdSoft {
 	 * @return 64标准返回"-l", 32标准返回null
 	 */
 	private String getFastQoffset() {
-		FastQ fastQ = new FastQ(leftFq);
+		FastQ fastQ = new FastQ(leftCombFq);
 		int offset = fastQ.getOffset();
 		if (offset == FastQ.FASTQ_ILLUMINA_OFFSET) {
 			return  "-I";
@@ -286,7 +295,7 @@ public class MapBwa extends MapDNA implements IntCmdSoft {
 	
 	@Override
 	protected SamFile mapping() {
-		outFileName = addSamToFileName(outFileName);
+		combSeq();
 		if (!bwaAln()) {
 			return null;
 		}
@@ -331,11 +340,11 @@ public class MapBwa extends MapDNA implements IntCmdSoft {
 		addLsCmd(lsCmd, getFastQoffset());
 		lsCmd.add(chrFile);
 		if (firstOrSecond) {
-			lsCmd.add(leftFq);
+			lsCmd.add(leftCombFq);
 			lsCmd.add(">");
 			lsCmd.add(getSai(1));
 		} else {
-			lsCmd.add(rightFq);
+			lsCmd.add(rightCombFq);
 			lsCmd.add(">");
 			lsCmd.add(getSai(2));	
 		}
@@ -386,15 +395,15 @@ public class MapBwa extends MapDNA implements IntCmdSoft {
 			lsCmd.add(chrFile);
 			lsCmd.add(getSai(1));
 			lsCmd.add(getSai(2));
-			lsCmd.add(leftFq);
-			lsCmd.add(rightFq);
+			lsCmd.add(leftCombFq);
+			lsCmd.add(rightCombFq);
 		} else {
 			lsCmd.add("samse");
 			ArrayOperate.addArrayToList(lsCmd, sampleGroup);
 			lsCmd.add("-n"); lsCmd.add(50+"");
 			lsCmd.add(chrFile);
 			lsCmd.add(getSai(1));
-			lsCmd.add(leftFq);
+			lsCmd.add(leftCombFq);
 		}
 		lsCmd.add(">");
 		lsCmd.add(outFileName);

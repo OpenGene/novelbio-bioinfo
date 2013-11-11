@@ -108,22 +108,17 @@ public class DiffExpEBSeq extends DiffExpAbs{
 			for (int j = 0; j < tmpResult.length; j++) {
 				tmpResult[j] = tmpResult[j].replace("\"", "");
 			}
-			String tmp = tmpResult[1];
-			tmpResult[1] = tmpResult[2];
-			tmpResult[2] = tmp;
+//			String tmp = tmpResult[1];
+//			tmpResult[1] = tmpResult[2];
+//			tmpResult[2] = tmp;
 			
-			try {
-				double logfc = Double.parseDouble(tmpResult[3]);
-				tmpResult[3] = -logfc + "";
-			} catch (Exception e) {
-				if ((tmpResult[1].equals("0") || tmpResult[1].equalsIgnoreCase("NA") || tmpResult[1].equalsIgnoreCase("none") ) 
-						&& (tmpResult[2].equals("0") || tmpResult[2].equalsIgnoreCase("NA") || tmpResult[2].equalsIgnoreCase("none") )) {
-					tmpResult[3] = "0";
-				} else if (tmpResult[1].equals("0")) {
-					tmpResult[3] = "-20";
-				} else if (tmpResult[2].equals("0")) {
-					tmpResult[3] = "20";
-				}
+			if ((tmpResult[1].equals("0") || tmpResult[1].equalsIgnoreCase("NA") || tmpResult[1].equalsIgnoreCase("none") ) 
+					&& (tmpResult[2].equals("0") || tmpResult[2].equalsIgnoreCase("NA") || tmpResult[2].equalsIgnoreCase("none") )) {
+				tmpResult[3] = "0";
+			} else if (tmpResult[1].equals("0")) {
+				tmpResult[3] = "-20";
+			} else if (tmpResult[2].equals("0")) {
+				tmpResult[3] = "20";
 			}
 			lsResult.add(tmpResult);
 		}
