@@ -131,10 +131,10 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord {
 			return false;
 		}
 		String[] ss = bedline.split("\t");
-		if (ss[COL_CHRID].trim().equals("")) {
-			return false;
-		}
 		try {
+			if (ss[COL_CHRID].trim().equals("")) {
+				return false;
+			}
 			Integer.parseInt(ss[COL_START]);
 			Integer.parseInt(ss[COL_END]);
 		} catch (Exception e) {

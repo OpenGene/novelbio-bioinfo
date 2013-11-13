@@ -50,7 +50,7 @@ public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	/** 当过滤结束后，可以用该方法返回过滤好的结果 */
-	public FastQ[] getFqWrite() {
+	public FastQ[] getFqFiltered() {
 		return fqWrite;
 	}
 	

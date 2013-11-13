@@ -97,7 +97,12 @@ public class PredictUnKnown extends SpliceTypePredict {
 			if (exonNum >= gffGeneIsoInfo.size()-1) {
 				continue;
 			}
-			String location = gffGeneIsoInfo.get(exonNum).getEndCis() + SepSign.SEP_ID + gffGeneIsoInfo.get(exonNum+1).getStartCis();
+			String location = null;
+			try {
+				location = gffGeneIsoInfo.get(exonNum).getEndCis() + SepSign.SEP_ID + gffGeneIsoInfo.get(exonNum+1).getStartCis();
+			} catch (Exception e) {
+				location = gffGeneIsoInfo.get(exonNum).getEndCis() + SepSign.SEP_ID + gffGeneIsoInfo.get(exonNum+1).getStartCis();
+			}
 			setLocation.add(location);
 		}
 		return setLocation;

@@ -340,8 +340,8 @@ public class SamFileStatistics implements AlignmentRecorder {
 	 */
 	public Map<String, List<String[]>> getMapSheetName2Data() {
 		getMapChrID2PropAndLen();
-		List<String[]> lsSamTable = writeSamTable();
-		List<String[]> lsChrReports = writeChrInfoTable();
+		List<String[]> lsSamTable = getSamTable();
+		List<String[]> lsChrReports = getChrInfoTable();
 		Map<String, List<String[]>> mapSheetName2Data = new LinkedHashMap<String, List<String[]>>();
 		if (lsSamTable.size() > 0) {
 			mapSheetName2Data.put("statisticsTerm", lsSamTable);
@@ -386,7 +386,8 @@ public class SamFileStatistics implements AlignmentRecorder {
 	}
 	
 	/** 写每条染色体上 reads的覆盖度等数据 */
-	private List<String[]> writeChrInfoTable() {
+	private List<String[]> getChrInfoTable() {
+		getMapChrID2PropAndLen();
 		List<String[]> lsTable = new ArrayList<String[]>();
 		try {
 			lsTable.add(new String[]{"ChrID","MappedReadsNum","MappedReadsProp","ChrLen","ChrLenProp"});
@@ -408,7 +409,7 @@ public class SamFileStatistics implements AlignmentRecorder {
 	}
 	
 	/** 写junction reads等统计数据 */
-	private List<String[]> writeSamTable() {
+	private List<String[]> getSamTable() {
 		List<String[]> lsTable = new ArrayList<String[]>();
 		try {
 			lsTable.add(new String[] { "Statistics Term", "Result(" + prefix + ")" });
@@ -593,14 +594,22 @@ public class SamFileStatistics implements AlignmentRecorder {
 	
 	public static String saveExcel(String pathAndName, SamFileStatistics samFileStatistics) {
 		String excelName = getSaveExcel(pathAndName);
-		ExcelOperate excelOperate = new ExcelOperate(excelName);
-		Map<String, List<String[]>> mapSheetName2Info = samFileStatistics.getMapSheetName2Data();
-		for (String sheetName : mapSheetName2Info.keySet()) {
-			excelOperate.WriteExcel(sheetName, 1, 1, mapSheetName2Info.get(sheetName));
+		TxtReadandWrite excelOperate = new TxtReadandWrite(excelName);
+		excelOperate.writefileln("#Mapping_Statistics");
+		for (String[] contents : samFileStatistics.getSamTable()) {
+			excelOperate.writefileln(contents);
 		}
-		excelOperate.Close();
+		excelOperate.writefileln();
+		excelOperate.writefileln("########################");
+		excelOperate.writefileln();
+		excelOperate.writefileln("Chr_Distribution");
+		for (String[] contents : samFileStatistics.getChrInfoTable()) {
+			excelOperate.writefileln(contents);
+		}
+		excelOperate.close();
 		return excelName;
 	}
+	
 	public static String savePic(String pathAndName, SamFileStatistics samFileStatistics) {
 		String pathChrPic = getSavePic(pathAndName);
 		pathChrPic = ImageUtils.saveBufferedImage(samFileStatistics.getBufferedImages(), pathChrPic);
@@ -622,7 +631,7 @@ public class SamFileStatistics implements AlignmentRecorder {
 		if (pathAndName.endsWith("/") || pathAndName.endsWith("\\")) {
 			excelName = pathAndName + "MappingStatistic.xls";
 		} else {
-			excelName = FileOperate.changeFilePrefix(pathAndName, "_MappingStatistic", "png");
+			excelName = FileOperate.changeFilePrefix(pathAndName, "MappingStatistic_", "xls");
 		}
 		return excelName;
 	}

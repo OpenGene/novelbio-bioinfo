@@ -209,7 +209,7 @@ public class FastQ {
 		fastqReadingChannel.setFastQRead(lsFastQs);
 		fastqReadingChannel.setThreadNum(threadNum_FilterFastqRecord);
 		fastqReadingChannel.run();
-		return fastqReadingChannel.getFqWrite();
+		return fastqReadingChannel.getFqFiltered();
 	}
 	
 	/** 设定过滤后的输出文件名
