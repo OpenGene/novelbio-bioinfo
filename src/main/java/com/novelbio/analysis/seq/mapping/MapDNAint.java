@@ -56,7 +56,7 @@ public interface MapDNAint {
 	 * 如果face为true，则强制构建索引
 	 * @return
 	 */
-	public boolean IndexMake(boolean force);
+	public void IndexMake(boolean force);
 	/**
 	 * mapping
 	 * @return

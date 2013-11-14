@@ -594,7 +594,7 @@ public class SamFileStatistics implements AlignmentRecorder {
 	
 	public static String saveExcel(String pathAndName, SamFileStatistics samFileStatistics) {
 		String excelName = getSaveExcel(pathAndName);
-		TxtReadandWrite excelOperate = new TxtReadandWrite(excelName);
+		TxtReadandWrite excelOperate = new TxtReadandWrite(excelName, true);
 		excelOperate.writefileln("#Mapping_Statistics");
 		for (String[] contents : samFileStatistics.getSamTable()) {
 			excelOperate.writefileln(contents);

@@ -148,6 +148,7 @@ public class FastQC {
 	 * @param sepPic 两张图片合并之后的间距，取30比较合适
 	 * @param fastQCPairend
 	 * @param outPathPrefix
+	 * @return 返回保存成功的文件列表 
 	 */
 	public List<String> saveToPathPic(int sepPic, FastQC fastQCPairend, String outPathPrefix) {
 		List<String> lsOutFileName = new ArrayList<>();

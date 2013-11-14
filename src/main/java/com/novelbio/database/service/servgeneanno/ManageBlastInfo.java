@@ -1,6 +1,11 @@
 package com.novelbio.database.service.servgeneanno;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -10,6 +15,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.geneanno.BlastFileInfo;
 import com.novelbio.database.domain.geneanno.BlastInfo;
+import com.novelbio.database.model.species.Species;
 import com.novelbio.database.mongorepo.geneanno.RepoBlastInfo;
 import com.novelbio.database.service.SpringFactory;
 
@@ -115,17 +121,37 @@ public class ManageBlastInfo {
 	public List<BlastFileInfo> queryBlastFile(String fileName) {
 		return mongoTemplate.find(new Query(Criteria.where("fileName").is(fileName)), BlastFileInfo.class);
 	}
-	
+	/** 获得仅在blast中出现的临时物种 */
+	public Map<String, Species> getMapSpeciesOnyInBlast() {
+		Map<String, Species> mapName2Species = new HashMap<>();
+		List<BlastFileInfo> lsBlastFileInfo = mongoTemplate.findAll(BlastFileInfo.class);
+		for (BlastFileInfo blastFileInfo : lsBlastFileInfo) {
+			String name = null;
+			try {
+				int taxID = Integer.parseInt(blastFileInfo.getQueryTaxID());
+				Species species = new Species(taxID);
+				name = species.getNameLatin();
+			} catch (Exception e) {}
+			
+			if (name == null || name.equals("")) {
+				name = blastFileInfo.getQueryTaxID();
+			}
+			Species species = new Species();
+			species.setTaxID(name.hashCode());
+			mapName2Species.put(name, species);
+		}
+		return mapName2Species;
+	}
 	/**
 	 * @param fileName
-	 * @param queryTaxID 小于0则不考虑
+	 * @param queryTaxID 为null或者为空
 	 * @param subjectTaxID 小于0则不考虑
 	 * @return
 	 */
-	public List<BlastFileInfo> queryBlastFile(String fileName, int queryTaxID, int subjectTaxID) {
+	public List<BlastFileInfo> queryBlastFile(String fileName, String queryTaxID, int subjectTaxID) {
 		Criteria criteria = Criteria.where("fileName").is(fileName);
-		if (queryTaxID > 0) {
-			criteria = criteria.and("queryTaxID").is(queryTaxID + "");
+		if (queryTaxID != null && !queryTaxID.equals("")) {
+			criteria = criteria.and("queryTaxID").is(queryTaxID);
 		}
 		if (subjectTaxID > 0) {
 			criteria = criteria.and("subjectTaxID").is(subjectTaxID + "");

@@ -36,7 +36,6 @@ public class MapBwa extends MapDNA implements IntCmdSoft {
 	
 	/** bwa所在路径 */
 	String ExePath = "";
-	String chrFile;
 	String[] sampleGroup;
 	List<FastQ> lsLeftFq = new ArrayList<>();
 	String leftCombFq;
@@ -155,9 +154,7 @@ public class MapBwa extends MapDNA implements IntCmdSoft {
 	private String[] getMismatch() {
 		return new String[]{"-n", mismatch + ""};
 	}
-	public void setChrIndex(String chrFile) {
-		this.chrFile = chrFile;
-	}
+	
 	/**
 	 * 设定bwa所在的文件夹以及待比对的路径
 	 * @param exePath 如果在根目录下则设置为""或null
@@ -426,16 +423,17 @@ public class MapBwa extends MapDNA implements IntCmdSoft {
 	 * @return true仅表示是否运行了建索引程序，不代表建索引成功
 	 */
 	@Override
-	public boolean IndexMake(boolean force) {
-		if (!force && FileOperate.isFileExist(chrFile + ".bwt") == true) {
-			return false;
-		}
+	protected void makeIndex() {
 		List<String> lsCmd = getLsCmdIndex();
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.run();
-		return true;
 	}
-	
+
+	@Override
+	protected boolean isIndexExist() {
+		return FileOperate.isFileExist(chrFile + ".bwt");
+	}
+
 	private List<String> getLsCmdIndex() {
 //		linux命令如下 
 //	 	bwa index -p prefix -a algoType -c  chrFile

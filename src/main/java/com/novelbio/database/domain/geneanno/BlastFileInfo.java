@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.model.species.Species;
 
 /**
  * 记录blast信息是否为
@@ -22,7 +23,7 @@ public class BlastFileInfo {
 	boolean isTmp;
 	String userName;
 	@Indexed
-	int queryTaxID;
+	String queryTaxID;
 	@Indexed
 	int subjectTaxID;
 	
@@ -56,8 +57,11 @@ public class BlastFileInfo {
 	public String getDateImport() {
 		return dateImport;
 	}
-	public void setQueryTaxID(int queryTaxID) {
+	public void setQueryTaxID(String queryTaxID) {
 		this.queryTaxID = queryTaxID;
+	}
+	public void setQueryTaxID(int queryTaxID) {
+		this.queryTaxID = queryTaxID + "";
 	}
 	public void setSubjectTaxID(int subjectTaxID) {
 		this.subjectTaxID = subjectTaxID;
@@ -69,10 +73,35 @@ public class BlastFileInfo {
 	public boolean isTmp() {
 		return isTmp;
 	}
-	public int getQueryTaxID() {
+	public String getQueryTaxID() {
 		return queryTaxID;
 	}
+	public String getQueryLatinName() {
+		String name = null;
+		try {
+			int taxID = Integer.parseInt(queryTaxID);
+			Species species = new Species(taxID);
+			name = species.getNameLatin();
+		} catch (Exception e) {}
+		
+		if (name == null || name.equals("")) {
+			name = queryTaxID;
+		}
+		return name;
+	}
+
 	public int getSubjectTaxID() {
 		return subjectTaxID;
 	}
+	
+	public String getSubjectLatinName() {
+		Species species = new Species(subjectTaxID);
+		String name = species.getNameLatin();
+		
+		if (name == null || name.equals("")) {
+			name = queryTaxID;
+		}
+		return name;
+	}
+
 }

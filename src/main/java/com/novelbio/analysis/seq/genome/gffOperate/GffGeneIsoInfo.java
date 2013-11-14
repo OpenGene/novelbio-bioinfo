@@ -1216,7 +1216,9 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 					) {
 					continue;
 				}
-				ListCodAbsDu<ExonInfo, ListCodAbs<ExonInfo>> lsDu = gffGeneIsoInfo.searchLocationDu(exonBound[0], exonBound[1]);
+				int exonStart = gffGeneIsoInfo.isCis5to3()? exonBound[0] : exonBound[1];
+				int exonEnd = gffGeneIsoInfo.isCis5to3()? exonBound[1] : exonBound[0];
+				ListCodAbsDu<ExonInfo, ListCodAbs<ExonInfo>> lsDu = gffGeneIsoInfo.searchLocationDu(exonStart, exonEnd);
 				List<ExonInfo> lsExon = lsDu.getCoveredElement();
 				Collections.sort(lsExon);
 				boolean junc = false;//如果本isoform正好没有落在bounder组中的exon，那么就需要记录跳过的exon的位置，就将这个flag设置为true
@@ -1228,6 +1230,9 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 
 				exonCluster.addExonCluster(gffGeneIsoInfo, lsExon);
 				if (junc && beforeExonNum < gffGeneIsoInfo.size()-1) {
+					if (beforeExonNum == -1) {
+						logger.debug("error");
+					}
 					exonCluster.setIso2ExonNumSkipTheCluster(gffGeneIsoInfo, beforeExonNum);
 				}
 				if (junc && beforeExonNum >= gffGeneIsoInfo.size()-1) {

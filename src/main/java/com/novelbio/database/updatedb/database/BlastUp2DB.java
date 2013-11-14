@@ -35,6 +35,14 @@ public class BlastUp2DB extends ImportPerLine {
 		blastFileInfo.setQueryTaxID(taxID);
 	}
 	/**
+	 * 设定物种名，taxID由物种名的hashcode获得
+	 * @param taxName
+	 */
+	public void setTaxName(String taxName) {
+		this.taxID = taxName.hashCode();
+		blastFileInfo.setQueryTaxID(taxName);
+	}
+	/**
 	 * blast到的物种ID
 	 * @param subTaxID
 	 */

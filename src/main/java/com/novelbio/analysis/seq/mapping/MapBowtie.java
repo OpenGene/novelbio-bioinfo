@@ -28,8 +28,7 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 	
 	/** 默认bowtie2 */
 	SoftWare bowtieVersion = SoftWare.bowtie2;
-	/** 待比对的染色体 */
-	String chrFile = "";
+
 	/** bowtie所在路径 */
 	String ExePathBowtie = "";
 	
@@ -67,9 +66,7 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 			this.ExePathBowtie = FileOperate.addSep(exePathBowtie);
 	}
 
-	public void setChrIndex(String chrFile) {
-		this.chrFile = chrFile;
-	}
+
 	/** 设定是bowtie还是bowtie2 */
 	public void setSubVersion(SoftWare bowtieVersion) {
 		this.bowtieVersion = bowtieVersion;
@@ -255,23 +252,20 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 	 * @param forceMakeIndex 强制建立索引
 	 * @return true：表示运行了建索引程序，不代表成功建立了索引
 	 */
-	public boolean IndexMake(boolean forceMakeIndex) {
-//		linux命令如下 
-//	 	bwa index -p prefix -a algoType -c  chrFile
-//		-c 是solid用
-		if (!forceMakeIndex && bowtieVersion == SoftWare.bowtie) {
-			if (FileOperate.isFileExist(getChrNameWithoutSuffix() + ".3.ebwt") == true)
-				return false;
-		}
-		else if (!forceMakeIndex && bowtieVersion == SoftWare.bowtie2) {
-			if (FileOperate.isFileExist(getChrNameWithoutSuffix() + ".3.bt2") == true)
-				return false;
-		}
-
+	protected void makeIndex() {
 		List<String> lsCmd = getLsCmdIndex();
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.run();
-		return true;
+	}
+	
+	protected boolean isIndexExist() {
+		boolean isIndexExist = false;
+		if (bowtieVersion == SoftWare.bowtie) {
+			isIndexExist = FileOperate.isFileExist(getChrNameWithoutSuffix() + ".3.ebwt");
+		} else if (bowtieVersion == SoftWare.bowtie2) {
+			isIndexExist = FileOperate.isFileExist(getChrNameWithoutSuffix() + ".3.bt2");
+		}
+		return isIndexExist;
 	}
 	
 	private List<String> getLsCmdIndex() {

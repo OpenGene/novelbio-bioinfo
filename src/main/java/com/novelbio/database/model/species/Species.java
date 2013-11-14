@@ -21,6 +21,7 @@ import com.novelbio.database.domain.geneanno.SpeciesFile;
 import com.novelbio.database.domain.geneanno.TaxInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.service.servgeneanno.ManageBlastInfo;
 import com.novelbio.database.service.servgeneanno.ManageSpeciesFile;
 import com.novelbio.database.service.servgeneanno.ManageTaxID;
 /**
@@ -170,7 +171,7 @@ public class Species implements Cloneable {
 		}
 		return taxInfo.getComName();
 	}
-	/** 常用名 */
+	/** 常用名，没有就返回taxID */
 	public String getNameLatin() {
 		if (taxInfo == null) {
 			return taxID + "";
@@ -495,7 +496,16 @@ public class Species implements Cloneable {
 	 * @param speciesType 根据不同的
 	 * @return
 	 */
-	public static HashMap<String, Species> getSpeciesName2Species(int speciesType) {
+	public static Map<String, Species> getSpeciesName2Species(int speciesType) {
+		return getSpeciesName2Species(speciesType, false);
+	}
+	/**
+	 * 返回常用名对taxID
+	 * @param speciesType 根据不同的
+	 * @param getBlastSpecies 是否获取blast中的临时物种信息
+	 * @return
+	 */
+	public static Map<String, Species> getSpeciesName2Species(int speciesType, boolean getBlastSpecies) {
 		HashMap<String, Species> mapName2Species = new LinkedHashMap<String, Species>();
 		Species speciesUnKnown = new Species();
 		mapName2Species.put("UnKnown Species", speciesUnKnown);
@@ -527,6 +537,7 @@ public class Species implements Cloneable {
 			treemapName2Species.put(species.getCommonName().toLowerCase(), species);
 		}
 		
+		/** 添加 物种--序列表 中特有的物种 */
 		if (speciesType == SEQINFO_SPECIES) {
 			for (Integer integer : servSpeciesFile.getLsTaxID()) {
 				if (setTaxID.contains(integer)) {
@@ -536,14 +547,33 @@ public class Species implements Cloneable {
 				treemapName2Species.put(species.getTaxID() + "", species);
 			}
 		}
-
+		
+		/** 添加blast表中的物种 */
+		if (getBlastSpecies) {
+			ManageBlastInfo manageBlastInfo = ManageBlastInfo.getInstance();
+			treemapName2Species.putAll(manageBlastInfo.getMapSpeciesOnyInBlast());
+		}
 		
 		for (String name : treemapName2Species.keySet()) {
 			Species species = treemapName2Species.get(name);
-			mapName2Species.put(species.getCommonName(), species);
+			mapName2Species.put(name, species);
 		}
 		
 		return mapName2Species;
+	}
+	
+	/** 该taxID是否在数据库中记录 */
+	public static boolean validateTaxID(String taxIdOrName) {
+		try {
+			int taxID = Integer.parseInt(taxIdOrName);
+			Species species = new Species(taxID);
+			String latinName = species.getNameLatin();
+			if (latinName == null || latinName.equals(taxID)) {
+				return false;
+			}
+		} catch (Exception e) {}
+		
+		return false;
 	}
 	
 	static boolean isOK = true;

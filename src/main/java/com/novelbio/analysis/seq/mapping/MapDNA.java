@@ -2,6 +2,8 @@ package com.novelbio.analysis.seq.mapping;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -10,6 +12,8 @@ import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamToBamSort;
+import com.novelbio.base.dataOperate.DateUtil;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.service.SpringFactory;
@@ -34,6 +38,11 @@ public abstract class MapDNA implements MapDNAint {
 	boolean isNeedSort = false;
 	String outFileName = "";
 	String prefix;
+	/** 待比对的染色体 */
+	String chrFile = "";
+	public void setChrIndex(String chrFile) {
+		this.chrFile = chrFile;
+	}
 	/** 因为mapping完后会将sam文件转成bam文件，这时候就可以顺带的做一些工作 */
 	public void setLsAlignmentRecorders(List<AlignmentRecorder> lsAlignmentRecorders) {
 		this.lsAlignmentRecorders = lsAlignmentRecorders;
@@ -65,7 +74,6 @@ public abstract class MapDNA implements MapDNAint {
 	 */
 	public abstract void setMismatch(double mismatch);
 	
-	public abstract void setChrIndex(String chrFile);
 	/**
 	 * 设定bwa所在的文件夹以及待比对的路径
 	 * @param exePath 如果在根目录下则设置为""或null
@@ -97,12 +105,9 @@ public abstract class MapDNA implements MapDNAint {
 	 * @return
 	 */
 	public SamFile mapReads() {
-		boolean isIndexMake = IndexMake(false);
+		IndexMake(false);
 		SamFile samFile = mapping();
-		if (samFile == null && !isIndexMake) {
-//			IndexMake(true);
-//			mapping();
-		}
+		
 		logger.info("mapping 结束");
 		return samFile;
 	}
@@ -156,14 +161,46 @@ public abstract class MapDNA implements MapDNAint {
 		return resultSamName;
 	}
 	
+	public void IndexMake(boolean force) {
+		String flagMakeIndex = ".makeIndexFlag_";
+		String parentPath = FileOperate.getPathName(chrFile);
+		if (FileOperate.getFoldFileNameLs(parentPath, flagMakeIndex, "*").size() > 0) {
+			waitUntilIndexFinish(parentPath, flagMakeIndex);
+		} else if (force || !isIndexExist()) {
+			String flagMakeIndexDetail = flagMakeIndex + DateUtil.getNowTimeLongRandom();
+			TxtReadandWrite txtWriteFlag = new TxtReadandWrite(parentPath + flagMakeIndexDetail, true);
+			txtWriteFlag.close();
+			try { Thread.sleep(300); } catch (InterruptedException e) { }
+			List<String> lsFlags = FileOperate.getFoldFileNameLs(parentPath, flagMakeIndex, "*");
+			Collections.sort(lsFlags);
+			if (lsFlags.get(0).equals(parentPath + flagMakeIndexDetail)) {
+				makeIndex();
+			} else {
+				FileOperate.delFile(parentPath + flagMakeIndex);
+				waitUntilIndexFinish(parentPath, flagMakeIndex);
+			}
+		}
+		FileOperate.delFile(parentPath + flagMakeIndex);
+	}
+	
+	/** 等待别的机器把索引建好了 */
+	private void waitUntilIndexFinish(String parentPath, String flagMakeIndex) {
+		while (FileOperate.getFoldFileNameLs(parentPath, flagMakeIndex, "*").size() > 0) {
+			try { Thread.sleep(10000); } catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 	/**
 	 * 构建索引
 	 * @parcam force 默认会检查是否已经构建了索引，是的话则返回。
 	 * 如果face为true，则强制构建索引
 	 * @return
 	 */
-	public abstract boolean IndexMake(boolean force);
-
+	protected abstract void makeIndex();
+	
+	protected abstract boolean isIndexExist();
+	
 //	protected abstract SamFile copeAfterMapping();
 	
 	/**

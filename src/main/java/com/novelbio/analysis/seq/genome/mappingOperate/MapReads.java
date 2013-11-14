@@ -582,7 +582,7 @@ class MapReadsAddAlignRecord {
 			tmpOld = new int[2];//更新 tmpOld
 			summary();
 			lastChr = tmpChrID;// 实际这是新出现的ChrID
-			logger.error(lastChr);
+			logger.info(lastChr);
 			
 			Long chrLength = mapReads.mapChrID2Len.get(lastChr.toLowerCase());
 			flag = true;
@@ -601,11 +601,7 @@ class MapReadsAddAlignRecord {
 		}
 		//没有该染色体则跳过
 		if (flag == false) return;
-		try {
-			tmpOld = addLoc(alignRecord, tmpOld, chrBpReads, chrMapReadsInfo);
-		} catch (Exception e) {
-			tmpOld = addLoc(alignRecord, tmpOld, chrBpReads, chrMapReadsInfo);
-		}
+		tmpOld = addLoc(alignRecord, tmpOld, chrBpReads, chrMapReadsInfo);
 	
 		chrMapReadsInfo.addReadsAllNum(1);
 	}
@@ -622,7 +618,7 @@ class MapReadsAddAlignRecord {
 	 * 给定一行信息，将具体内容加到对应的坐标上
 	 * @param alignRecord reads信息
 	 * @param tmpOld 上一组的起点终点，用于判断是否是在同一位点叠加
-	 * @param chrBpReads 具体需要叠加的染色体信息
+	 * @param chrBpReads 具体需要叠加的染色体信息 0位：chrLength
 	 * @param chrMapReadsInfo 记录总共mapping的reads数量，为了能够传递下去，采用数组方式
 	 * @return
 	 * 本位点的信息，用于下一次判断是否是同一位点

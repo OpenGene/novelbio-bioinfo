@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.GuiAnnoInfo;
 import com.novelbio.analysis.seq.fasta.SeqHash;
+import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
@@ -33,6 +34,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
+import com.novelbio.database.model.species.Species;
 
 /**
  * 得到每个gene的Junction后，开始计算其可变剪接的差异
@@ -41,6 +43,9 @@ import com.novelbio.base.multithread.RunProcess;
  */
 public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	public static void main(String[] args) {
+		hongyanyanRice();
+	}
+	public static void test() {
 		//TODO
 		List<Align> lsAligns = new ArrayList<>();
 //		lsAligns.add(new Align("chr13", 113834688, 113853827));
@@ -76,6 +81,37 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		exonJunction.run();
 		exonJunction = null;
 		System.out.println(dateUtil.getEclipseTime());
+	}
+	public static void hongyanyanRice() {
+		List<Align> lsAligns = new ArrayList<>();
+//		lsAligns.add(new Align("chr1", 2551997, 2591491));
+		DateUtil dateUtil = new DateUtil();
+		dateUtil.setStartTime();
+		System.out.println("start");
+		GffChrAbs gffChrAbs = new GffChrAbs(new Species(39947));
+		gffChrAbs.close();
+		ExonJunction exonJunction = new ExonJunction();
+		exonJunction.setIsLessMemory(false);
+		exonJunction.setGffHashGene(gffChrAbs.getGffHashGene());
+		exonJunction.setgenerateNewIso();
+		exonJunction.setLsReadRegion(lsAligns);
+		exonJunction.setOneGeneOneSpliceEvent(false);
+		exonJunction.addBamSorted("WT", "/media/hdfs/nbCloud/TechDept/Projects/O.sativa_RNAseq_guofangqing/WT1_accepted_hits.bam");
+		exonJunction.addBamSorted("WT", "/media/hdfs/nbCloud/TechDept/Projects/O.sativa_RNAseq_guofangqing/WT2_accepted_hits.bam");
+		exonJunction.addBamSorted("WT", "/media/hdfs/nbCloud/TechDept/Projects/O.sativa_RNAseq_guofangqing/WT3_accepted_hits.bam");
+		exonJunction.addBamSorted("M", "/media/hdfs/nbCloud/TechDept/Projects/O.sativa_RNAseq_guofangqing/M1_accepted_hits.bam");
+		exonJunction.addBamSorted("M", "/media/hdfs/nbCloud/TechDept/Projects/O.sativa_RNAseq_guofangqing/M2_accepted_hits.bam");
+		exonJunction.addBamSorted("M", "/media/hdfs/nbCloud/TechDept/Projects/O.sativa_RNAseq_guofangqing/M3_accepted_hits.bam");
+		
+		exonJunction.setCompareGroups("M", "WT");
+
+		exonJunction.setResultFile("/media/hdfs/nbCloud/TechDept/Projects/O.sativa_RNAseq_guofangqing/as/as");
+		exonJunction.setgenerateNewIso();
+
+		exonJunction.run();
+		exonJunction = null;
+		System.out.println(dateUtil.getEclipseTime());
+ 
 	}
 	
 	private static Logger logger = Logger.getLogger(ExonJunction.class);
@@ -177,8 +213,8 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	/** 
 	 * 一个基因可能有多个可变剪接事件，但是我们可以只挑选其中最显著的那个可变剪接事件
-	 * 也可以输出全部的可变剪接事件
-	 * @param oneGeneOneSpliceEvent true:  每个基因只有一个可变剪接事件, <b>默认为true</b>
+	 * 也可以输出全部的可变剪接事件, <b>默认为true</b><br>
+	 * @param oneGeneOneSpliceEvent <br> true:  每个基因只有一个可变剪接事件<br>
 	 * false: 每个基因输出全部可变剪接事件
 	 */
 	public void setOneGeneOneSpliceEvent(boolean oneGeneOneSpliceEvent) {
@@ -363,7 +399,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		int i = 0;
 
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
-			logger.debug(gffDetailGene.getNameSingle());
+//			logger.debug(gffDetailGene.getNameSingle());
 			logger.info(i);
 			//TODO 设置断点
 			if (gffDetailGene.getName().contains(stopGeneName)) {
