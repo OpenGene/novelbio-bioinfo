@@ -396,12 +396,12 @@ public class MapTophat implements MapRNA, IntCmdSoft {
 	private void setGTFfile() {
 		if (gtfFile == null || FileOperate.isFileExistAndBigThanSize(gtfFile, 0.1)) {
 			generateGtfFile = false;
-			logger.info("not generate GTF");
+			logger.info("not need to generate GTF");
 			return;
 		}
 		if (gffChrAbs != null && gffChrAbs.getGffHashGene() != null) {
 			String pathGFF = gffChrAbs.getGffHashGene().getGffFilename();
-			String outGTF = FileOperate.changeFileSuffix(pathGFF, "_tophat", "gtf");
+			String outGTF = FileOperate.changeFileSuffix(pathGFF, "", "gtf");
 			if (!FileOperate.isFileExistAndBigThanSize(outGTF, 0)) {
 				gffChrAbs.getGffHashGene().writeToGTF(outGTF, "novelbio");
 			}			
@@ -435,7 +435,7 @@ public class MapTophat implements MapRNA, IntCmdSoft {
 		setIntronLen();
 		setGTFfile();
 		mapBowtie.setSubVersion(bowtieVersion);
-		mapBowtie.IndexMake(false);
+		mapBowtie.IndexMake();
 		
 		List<String> lsCmd = getLsCmd();
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);

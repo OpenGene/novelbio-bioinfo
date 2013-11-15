@@ -497,7 +497,7 @@ public class Species implements Cloneable {
 	 * @return
 	 */
 	public static Map<String, Species> getSpeciesName2Species(int speciesType) {
-		return getSpeciesName2Species(speciesType, false);
+		return getSpeciesName2Species(speciesType, false, null);
 	}
 	/**
 	 * 返回常用名对taxID
@@ -505,7 +505,7 @@ public class Species implements Cloneable {
 	 * @param getBlastSpecies 是否获取blast中的临时物种信息
 	 * @return
 	 */
-	public static Map<String, Species> getSpeciesName2Species(int speciesType, boolean getBlastSpecies) {
+	public static Map<String, Species> getSpeciesName2Species(int speciesType, boolean getBlastSpecies, String usrid) {
 		HashMap<String, Species> mapName2Species = new LinkedHashMap<String, Species>();
 		Species speciesUnKnown = new Species();
 		mapName2Species.put("UnKnown Species", speciesUnKnown);
@@ -551,7 +551,7 @@ public class Species implements Cloneable {
 		/** 添加blast表中的物种 */
 		if (getBlastSpecies) {
 			ManageBlastInfo manageBlastInfo = ManageBlastInfo.getInstance();
-			treemapName2Species.putAll(manageBlastInfo.getMapSpeciesOnyInBlast());
+			treemapName2Species.putAll(manageBlastInfo.getMapSpeciesOnyInBlast(usrid));
 		}
 		
 		for (String name : treemapName2Species.keySet()) {

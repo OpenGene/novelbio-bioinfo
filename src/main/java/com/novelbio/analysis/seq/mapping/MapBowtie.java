@@ -252,10 +252,11 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 	 * @param forceMakeIndex 强制建立索引
 	 * @return true：表示运行了建索引程序，不代表成功建立了索引
 	 */
-	protected void makeIndex() {
+	protected boolean makeIndex() {
 		List<String> lsCmd = getLsCmdIndex();
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.run();
+		return cmdOperate.isFinishedNormal();
 	}
 	
 	protected boolean isIndexExist() {
@@ -266,6 +267,14 @@ public class MapBowtie extends MapDNA implements IntCmdSoft {
 			isIndexExist = FileOperate.isFileExist(getChrNameWithoutSuffix() + ".3.bt2");
 		}
 		return isIndexExist;
+	}
+	
+	protected void deleteIndex() {
+		if (bowtieVersion == SoftWare.bowtie) {
+			FileOperate.delFile(getChrNameWithoutSuffix() + ".3.ebwt");
+		} else if (bowtieVersion == SoftWare.bowtie2) {
+			FileOperate.delFile(getChrNameWithoutSuffix() + ".3.bt2");
+		}
 	}
 	
 	private List<String> getLsCmdIndex() {

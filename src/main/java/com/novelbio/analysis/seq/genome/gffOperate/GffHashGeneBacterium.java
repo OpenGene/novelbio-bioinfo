@@ -40,8 +40,8 @@ public class GffHashGeneBacterium extends GffHashGeneAbs {
 			String[] ss = content.split("\t");// 按照tab分开
 			
 			// 新的染色体
-			if (!tmpChrID.equals(ss[0].toLowerCase()) ) {
-				tmpChrID = ss[0].toLowerCase();
+			if (!tmpChrID.equals(ss[0]) ) {
+				tmpChrID = ss[0];
 			}
 			String geneName = getGeneName(ss[8]);
 			
@@ -125,7 +125,7 @@ public class GffHashGeneBacterium extends GffHashGeneAbs {
 				continue;
 			}
 		}
-		mapChrID2ListGff.put(chrID, lsResult);
+		mapChrID2ListGff.put(chrID.toLowerCase(), lsResult);
 	}
 	
 	private GffDetailGene createGffDetailGene(ListGff lsParent, GffGeneIsoInfo gffGeneIsoInfo) {

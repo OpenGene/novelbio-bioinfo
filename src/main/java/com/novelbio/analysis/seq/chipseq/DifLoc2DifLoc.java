@@ -476,7 +476,7 @@ public class DifLoc2DifLoc {
 		int start = Math.min(startTmp, gffGeneIsoInfo.getTESsite());
 		int end = Math.max(startTmp, gffGeneIsoInfo.getTESsite());
 
-		ListCodAbsDu<ListDetailBin, ListCodAbs<ListDetailBin>> lsDu = mapPrefix2listHashBin.get(prefix).searchLocation(gffGeneIsoInfo.getRefID(), start, end);
+		ListCodAbsDu<ListDetailBin, ListCodAbs<ListDetailBin>> lsDu = mapPrefix2listHashBin.get(prefix).searchLocation(gffGeneIsoInfo.getRefIDlowcase(), start, end);
 		List<ListDetailBin> lsBin = lsDu.getAllGffDetail();
 		if (lsBin.size() == 0) {
 			return 1.0;
@@ -508,7 +508,7 @@ public class DifLoc2DifLoc {
 		}
 		end = gffGeneIsoInfo.getTESsite();
 		
-		ListCodAbsDu<ListDetailBin, ListCodAbs<ListDetailBin>> lsDu = mapPrefix2listHashBin.get(prefix).searchLocation(gffGeneIsoInfo.getRefID(), Math.min(start, end), Math.max(start, end));
+		ListCodAbsDu<ListDetailBin, ListCodAbs<ListDetailBin>> lsDu = mapPrefix2listHashBin.get(prefix).searchLocation(gffGeneIsoInfo.getRefIDlowcase(), Math.min(start, end), Math.max(start, end));
 		List<ListDetailBin> lsBin = lsDu.getAllGffDetail();
 		if (lsBin.size() == 0) {
 			return 1.0;
@@ -538,7 +538,7 @@ public class DifLoc2DifLoc {
 			start = gffGeneIsoInfo.getTSSsite() - tssRegion[0];
 			end = gffGeneIsoInfo.getTSSsite() - tssRegion[1];
 		}
-		ListCodAbsDu<ListDetailBin, ListCodAbs<ListDetailBin>> lsDu = mapPrefix2listHashBin.get(prefix).searchLocation(gffGeneIsoInfo.getRefID(), start, end);
+		ListCodAbsDu<ListDetailBin, ListCodAbs<ListDetailBin>> lsDu = mapPrefix2listHashBin.get(prefix).searchLocation(gffGeneIsoInfo.getRefIDlowcase(), start, end);
 		List<ListDetailBin> lsBin = lsDu.getAllGffDetail();
 		if (lsBin.size() == 0) {
 			return 1.0;
@@ -559,7 +559,7 @@ public class DifLoc2DifLoc {
 		if (gffGeneIsoInfo == null) {
 			return null;
 		}
-		MapInfo mapInfo = new MapInfo(gffGeneIsoInfo.getRefID());
+		MapInfo mapInfo = new MapInfo(gffGeneIsoInfo.getRefIDlowcase());
 		int start = 0, end = 0;
 		if (gffGeneIsoInfo.isCis5to3()) {
 			start = gffGeneIsoInfo.getTSSsite() + tssRegion[0];
@@ -592,7 +592,7 @@ public class DifLoc2DifLoc {
 			start = gffGeneIsoInfo.getTSSsite() - tssRegion[0];
 			end = gffGeneIsoInfo.getTSSsite() - tssRegion[1];
 		}
-		MapInfo mapInfo = new MapInfo(gffGeneIsoInfo.getRefID(),start, end);
+		MapInfo mapInfo = new MapInfo(gffGeneIsoInfo.getRefIDlowcase(),start, end);
 		ArrayList<MapReads> lsMapReads = mapPrefix2MapReads.get(prefix);
 		return getRatio(mapInfo, lsMapReads);
 	}
@@ -613,7 +613,7 @@ public class DifLoc2DifLoc {
 		} else {
 			start = gffGeneIsoInfo.getStart() + tssRegion[0];
 		}
-		MapInfo mapInfo = new MapInfo(gffGeneIsoInfo.getRefID(),start, gffGeneIsoInfo.getEnd());
+		MapInfo mapInfo = new MapInfo(gffGeneIsoInfo.getRefIDlowcase(),start, gffGeneIsoInfo.getEnd());
 		ArrayList<MapReads> lsMapReads = mapPrefix2MapReads.get(prefix);
 		return getRatio(mapInfo, lsMapReads);
 	}

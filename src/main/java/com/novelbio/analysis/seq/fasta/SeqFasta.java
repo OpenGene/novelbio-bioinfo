@@ -370,13 +370,13 @@ public class SeqFasta implements Cloneable {
 	public String toStringAAfasta() {
 		return toStringAAfasta(60);
 	}
-	/** 返回AA的fasta序列
+	/** 如果读取的是nr，则将其翻译为AA的fasta序列并返回
 	 * @param basePerLine 每多少个AA换行
 	 *  */
 	public String toStringAAfasta(int basePerLine) {
 		return getMultiLineSeq(SeqName, toStringAA(true, 0), basePerLine);
 	}
-	/** 返回Nr的fasta序列
+	/** 返回读取的fasta序列，如果读取的AA序列，返回的也是aa序列
 	 * 每隔60个碱基换行
 	 */
 	public String toStringNRfasta() {

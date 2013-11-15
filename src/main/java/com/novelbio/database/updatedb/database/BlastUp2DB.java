@@ -2,6 +2,7 @@ package com.novelbio.database.updatedb.database;
 
 import org.apache.log4j.Logger;
 
+import com.hg.doc.fa;
 import com.novelbio.database.domain.geneanno.BlastFileInfo;
 import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -15,6 +16,8 @@ public class BlastUp2DB extends ImportPerLine {
 	BlastFileInfo blastFileInfo = new BlastFileInfo();
 	ManageBlastInfo manageBlastInfo = ManageBlastInfo.getInstance();
 	
+	String usrid;
+	
 	public  BlastUp2DB() {
 		this.readFromLine = 1;
 		setReadFromLine(1);
@@ -25,6 +28,13 @@ public class BlastUp2DB extends ImportPerLine {
 	 */
 	public void setUpdate(boolean update) {
 		blastFileInfo.setTmp(!update);
+	}
+	/**
+	 * 为null表示不设定usrID
+	 * @param usrid
+	 */
+	public void setUsrid(String usrid) {
+		this.usrid = usrid;
 	}
 	/**
 	 * 导入单个文件时，设定taxID
@@ -68,10 +78,16 @@ public class BlastUp2DB extends ImportPerLine {
 	public void setBlastIDType(int IDtypeS) {
 		this.blastIDType = IDtypeS;
 	}
-	public void updateFile(String gene2AccFile) {
+	public boolean updateFile(String gene2AccFile) {
 		blastFileInfo.setFileName(gene2AccFile);
-		manageBlastInfo.saveBlastFile(blastFileInfo);
+		blastFileInfo.setUserID(usrid);
+		try {
+			manageBlastInfo.saveBlastFile(blastFileInfo);
+		} catch (Exception e) {
+			return false;
+		}
 		super.updateFile(gene2AccFile);
+		return true;
 	}
 	@Override
 	boolean impPerLine(String lineContent) {

@@ -23,6 +23,7 @@ public class NCBIrefseqChangeFormat {
 		String txtOut = FileOperate.changeFileSuffix(txtRef, "_modify", "fa");
 		SeqFastaHash seqFastaHash = new SeqFastaHash(txtRef, "\\w{2}_\\w+", true);
 		seqFastaHash.writeToFile(txtOut);
+		seqFastaHash.close();
 	}
 	
 	public void writeOutZeaMaize() {

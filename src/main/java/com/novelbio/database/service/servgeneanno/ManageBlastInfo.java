@@ -121,10 +121,20 @@ public class ManageBlastInfo {
 	public List<BlastFileInfo> queryBlastFile(String fileName) {
 		return mongoTemplate.find(new Query(Criteria.where("fileName").is(fileName)), BlastFileInfo.class);
 	}
-	/** 获得仅在blast中出现的临时物种 */
-	public Map<String, Species> getMapSpeciesOnyInBlast() {
+	
+	/** 获得仅在blast中出现的临时物种
+	 * @param usrid 为null表示获取全体blast的文本信息
+	 * @return
+	 */
+	public Map<String, Species> getMapSpeciesOnyInBlast(String usrid) {
 		Map<String, Species> mapName2Species = new HashMap<>();
-		List<BlastFileInfo> lsBlastFileInfo = mongoTemplate.findAll(BlastFileInfo.class);
+		List<BlastFileInfo> lsBlastFileInfo = null;
+		if (usrid != null && !usrid.equals("")) {
+			lsBlastFileInfo = mongoTemplate.find(new Query(Criteria.where("usrid").is(usrid)), BlastFileInfo.class);
+		} else {
+			lsBlastFileInfo = mongoTemplate.findAll(BlastFileInfo.class);
+		}
+		
 		for (BlastFileInfo blastFileInfo : lsBlastFileInfo) {
 			String name = null;
 			try {

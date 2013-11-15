@@ -73,7 +73,7 @@ class ImpGOExtObo extends ImportPerLine {
 	 * 所以覆盖方法
 	 */
 	@Override
-	public void updateFile(String gene2AccFile) {
+	public boolean updateFile(String gene2AccFile) {
 		TxtReadandWrite txtGene2Acc;
 		txtGene2Acc = new TxtReadandWrite(gene2AccFile, false);
 		
@@ -126,6 +126,7 @@ class ImpGOExtObo extends ImportPerLine {
 		if (txtWriteExcep != null) {
 			txtWriteExcep.close();
 		}
+		return true;
 	}
 	
 	/**

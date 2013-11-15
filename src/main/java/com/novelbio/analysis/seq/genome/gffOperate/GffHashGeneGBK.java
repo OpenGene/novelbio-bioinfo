@@ -41,6 +41,7 @@ public class GffHashGeneGBK extends GffHashGeneAbs {
 	
 	private void readGBKfile(String chrID, String gbkFile) {
 		ListGff listGff = new ListGff();
+		listGff.setName(chrID);
 		mapChrID2ListGff.put(chrID.toLowerCase(), listGff);
 		TxtReadandWrite	txtRead = new TxtReadandWrite(gbkFile);
 		boolean skip = true;

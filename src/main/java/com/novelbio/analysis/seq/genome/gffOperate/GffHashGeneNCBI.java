@@ -556,14 +556,14 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   mapChrID2ListGff = new LinkedHashMap<String, ListGff>();
 	   ListGff LOCList = null;
 	   for (GffDetailGene gffDetailGene : mapGenID2GffDetail.values()) {
-		   String chrIDlowCase = gffDetailGene.getRefID().toLowerCase();
+		   String chrID = gffDetailGene.getRefID();
 			 //新的染色体
-		   if (!mapChrID2ListGff.containsKey(chrIDlowCase)) { //新的染色体 
+		   if (!mapChrID2ListGff.containsKey(chrID.toLowerCase())) { //新的染色体 
 			   LOCList = new ListGff();//新建一个LOCList并放入Chrhash
-			   LOCList.setName(chrIDlowCase);
-			   mapChrID2ListGff.put(chrIDlowCase, LOCList);
+			   LOCList.setName(chrID);
+			   mapChrID2ListGff.put(chrID.toLowerCase(), LOCList);
 		   } else {
-			   LOCList = mapChrID2ListGff.get(chrIDlowCase);
+			   LOCList = mapChrID2ListGff.get(chrID.toLowerCase());
 		   }
 		   
 		   if (gffDetailGene.getLsCodSplit().size() == 0) {

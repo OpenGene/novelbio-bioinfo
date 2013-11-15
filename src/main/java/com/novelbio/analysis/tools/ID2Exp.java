@@ -103,7 +103,7 @@ public class ID2Exp {
 			for (String string : ssID) {
 				GffGeneIsoInfo gffGeneIsoInfo = gffHashGene.searchISO(string);
 				if (gffGeneIsoInfo != null) {
-					String[] tssInfo = new String[]{gffGeneIsoInfo.getRefID(), gffGeneIsoInfo.getTSSsite() - range + "", gffGeneIsoInfo.getTSSsite() + range + ""};
+					String[] tssInfo = new String[]{gffGeneIsoInfo.getRefIDlowcase(), gffGeneIsoInfo.getTSSsite() - range + "", gffGeneIsoInfo.getTSSsite() + range + ""};
 					String[] tmpResult = ArrayOperate.combArray(strings, tssInfo, 0);
 					lsInfo.add(tmpResult);
 					flag = true;

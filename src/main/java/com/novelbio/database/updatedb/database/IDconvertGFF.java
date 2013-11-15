@@ -40,7 +40,7 @@ public class IDconvertGFF {
 		Collection<GffDetailGene> lsGffDetailGenes = gffHashGeneQuery.getGffDetailAll();
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-				String chrID = gffGeneIsoInfo.getRefID();
+				String chrID = gffGeneIsoInfo.getRefIDlowcase();
 				int startID = gffGeneIsoInfo.getStartAbs();
 				int endID = gffGeneIsoInfo.getEndAbs();
 				GffCodGeneDU gffCodGeneDU = gffHashGeneDestination.searchLocation(chrID, startID, endID);

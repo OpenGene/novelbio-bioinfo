@@ -633,7 +633,7 @@ public class GffChrMap {
 		}
 		int tssStart = Math.min(tssStartR, tssEndR);
 		int tssEnd = Math.max(tssStartR, tssEndR);
-		double[] siteInfo = mapReads.getRangeInfo(mapReads.getBinNum(), gffGeneIsoInfo.getRefID(), tssStart, tssEnd, 0);
+		double[] siteInfo = mapReads.getRangeInfo(mapReads.getBinNum(), gffGeneIsoInfo.getRefIDlowcase(), tssStart, tssEnd, 0);
 		if (siteInfo == null) {
 //			System.out.println("stop");
 			return -1;
@@ -656,7 +656,7 @@ public class GffChrMap {
 		int tesSite = gffGeneIsoInfo.getTESsite();
 		int tssStart = Math.min(tssSite, tesSite);
 		int tssEnd = Math.max(tssSite, tesSite);
-		double[] siteInfo = mapReads.getRangeInfo(mapReads.getBinNum(), gffGeneIsoInfo.getRefID(), tssStart, tssEnd, 0);
+		double[] siteInfo = mapReads.getRangeInfo(mapReads.getBinNum(), gffGeneIsoInfo.getRefIDlowcase(), tssStart, tssEnd, 0);
 		return MathComput.sum(siteInfo);
 	}
 	

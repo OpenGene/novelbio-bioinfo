@@ -21,7 +21,7 @@ public class BlastFileInfo {
 	String fileName;
 	@Indexed
 	boolean isTmp;
-	String userName;
+	String usrid;
 	@Indexed
 	String queryTaxID;
 	@Indexed
@@ -43,8 +43,10 @@ public class BlastFileInfo {
 		return id;
 	}
 	/** 上传人 */
-	public void setUserID(String userName) {
-		this.userName = userName;
+	public void setUserID(String userid) {
+		if (userid == null || userid.equals("")) return;
+		
+		this.usrid = userid;
 	}
 	public void setTmp(boolean isTmp) {
 		this.isTmp = isTmp;

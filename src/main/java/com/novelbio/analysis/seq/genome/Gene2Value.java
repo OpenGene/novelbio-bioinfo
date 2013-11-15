@@ -122,7 +122,7 @@ public class Gene2Value {
 	 */
 	public MapInfo getMapInfo(MapReads mapReads, GeneStructure geneStructure) {
 		boolean sucess = true;
-		MapInfo mapInfo = new MapInfo(gffGeneIsoInfo.getRefID(), value, gffGeneIsoInfo.getName());
+		MapInfo mapInfo = new MapInfo(gffGeneIsoInfo.getRefIDlowcase(), value, gffGeneIsoInfo.getName());
 		mapInfo.setCis5to3(gffGeneIsoInfo.isCis5to3());
 		int upstream = plotTssTesRegion[0]; int downstream = plotTssTesRegion[1];
 		if (!gffGeneIsoInfo.isCis5to3()) {

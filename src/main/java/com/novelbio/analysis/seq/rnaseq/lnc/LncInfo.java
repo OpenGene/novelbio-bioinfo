@@ -184,7 +184,7 @@ public class LncInfo {
 		if (num != 0) {
 			GffDetailGene detailGeneUp;
 			try {
-				detailGeneUp = gffHashGene.getMapChrID2LsGff().get(gffGeneIsoInfoLnc.getRefID()).get(num - 1);
+				detailGeneUp = gffHashGene.getMapChrID2LsGff().get(gffGeneIsoInfoLnc.getRefIDlowcase()).get(num - 1);
 			} catch (Exception e) {
 				return;
 			}
@@ -209,7 +209,7 @@ public class LncInfo {
 		int num = gffGeneIsoInfoLnc.getParentGffDetailGene().getItemNum();
 		GffDetailGene detailGeneDown = null;
 		try {
-			detailGeneDown = gffHashGene.getMapChrID2LsGff().get(gffGeneIsoInfoLnc.getRefID()).get(num + 1);
+			detailGeneDown = gffHashGene.getMapChrID2LsGff().get(gffGeneIsoInfoLnc.getRefIDlowcase()).get(num + 1);
 		} catch (Exception e) {
 			return;
 		}
@@ -241,7 +241,7 @@ public class LncInfo {
 					geneType = geneTypeGeneID;
 				}
 			}
-			lsResult.add(gffGeneIsoInfoLnc.getRefID() + ":" + gffGeneIsoInfoLnc.getStartAbs() + "-" + gffGeneIsoInfoLnc.getEndAbs());
+			lsResult.add(gffGeneIsoInfoLnc.getRefIDlowcase() + ":" + gffGeneIsoInfoLnc.getStartAbs() + "-" + gffGeneIsoInfoLnc.getEndAbs());
 			lsResult.add(geneType);
 		}
 	

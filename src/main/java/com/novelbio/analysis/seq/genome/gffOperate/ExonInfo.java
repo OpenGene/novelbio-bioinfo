@@ -75,7 +75,7 @@ public class ExonInfo extends ListDetailAbs {
 		ExonInfo element = (ExonInfo)elementAbs;
 		//先不比较两个exon所在转录本的名字
 		if (numberstart == element.numberstart && numberend == element.numberend && super.cis5to3 == element.cis5to3 ) {
-			if (getParent().getRefID().equalsIgnoreCase(element.getParent().getRefID())) {
+			if (getParent().getRefIDlowcase().equalsIgnoreCase(element.getParent().getRefIDlowcase())) {
 				return true;
 			}
 		}
@@ -87,7 +87,7 @@ public class ExonInfo extends ListDetailAbs {
 		if (cis5to3) {
 			i = -1;
 		}
-		return numberstart * 100000 + numberend * i + getParent().getRefID().hashCode();
+		return numberstart * 100000 + numberend * i + getParent().getRefIDlowcase().hashCode();
 	}
 	
 	public String toString() {

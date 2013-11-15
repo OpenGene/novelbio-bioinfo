@@ -77,8 +77,8 @@ public class GffHashGTF extends GffHashGeneAbs{
 			}
 			
 			// 新的染色体
-			if (!tmpChrID.equals(ss[0].toLowerCase()) ) {
-				tmpChrID = ss[0].toLowerCase();
+			if (!tmpChrID.equals(ss[0]) ) {
+				tmpChrID = ss[0];
 			}
 			
 			String[] isoName2GeneName = getIsoName2GeneName(ss[8]);
@@ -115,23 +115,16 @@ public class GffHashGTF extends GffHashGeneAbs{
 				continue;
 			}
 			if (ss[2].equals("exon")) {
-				try {
-					if (mapIso2IsHaveExon.get(tmpTranscriptName) == false) {
-						gffGeneIsoInfo.addExon(cisExon, exonStart, exonEnd);
-						mapIso2IsHaveExon.put(tmpTranscriptName, true);
-					} else {
-						gffGeneIsoInfo.addExon(cisExon, exonStart, exonEnd);
-					}
-				} catch (Exception e) {
-					if (mapIso2IsHaveExon.get(tmpTranscriptName) == false) {
-						gffGeneIsoInfo.addExon(cisExon, exonStart, exonEnd);
-						mapIso2IsHaveExon.put(tmpTranscriptName, true);
-					} else {
-						gffGeneIsoInfo.addExon(cisExon, exonStart, exonEnd);
-					}
-				}
-				
+				if (mapIso2IsHaveExon.get(tmpTranscriptName) == false) {
+					gffGeneIsoInfo.addExon(cisExon, exonStart, exonEnd);
+					mapIso2IsHaveExon.put(tmpTranscriptName, true);
+				} else {
+					gffGeneIsoInfo.addExon(cisExon, exonStart, exonEnd);
+				}	
 			} else if (ss[2].toLowerCase().equals("cds")) {
+				//TODO  ncbi上的gff3，cds的末尾是uag，而
+				//ucsc上的GTF，cds的末尾不是uag，而是uag的前一位。
+				//所以该方法在这里不适用，不过后面有个专门设定uag的方法，所以倒也无所谓了。
 				gffGeneIsoInfo.setATGUAGauto(exonStart, exonEnd);
 				if (mapIso2IsHaveExon.get(tmpTranscriptName) == null) {
 					logger.error("没有找到相应的GeneID:" + tmpTranscriptName);
@@ -292,7 +285,7 @@ public class GffHashGTF extends GffHashGeneAbs{
 				continue;
 			}
 		}
-		mapChrID2ListGff.put(chrID, lsResult);
+		mapChrID2ListGff.put(chrID.toLowerCase(), lsResult);
 	}
 	
 	private GffDetailGene createGffDetailGene(ListGff lsParent, GffGeneIsoInfo gffGeneIsoInfo) {

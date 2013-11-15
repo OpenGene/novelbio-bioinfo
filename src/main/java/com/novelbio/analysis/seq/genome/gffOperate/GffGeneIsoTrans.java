@@ -2,6 +2,7 @@ package com.novelbio.analysis.seq.genome.gffOperate;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.model.modgeneid.GeneType;
 
 public class GffGeneIsoTrans extends GffGeneIsoInfo {
@@ -29,26 +30,6 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo {
 		return get(0).getStartCis();
 	}
 
-	@Override
-	protected String getGTFformatExon(String title, String strand) {
-		String geneExon = "";
-		for (int i = size() - 1; i >= 0; i--) {
-			ExonInfo exons = get(i);
-			geneExon = geneExon + getRefID() + "\t" + title + "\texon\t" + exons.getEndCis() + "\t" + exons.getStartCis()
-			     + "\t" + "." + "\t" + strand + "\t.\t" + "gene_id \"" + getParentGeneName() + "\"; transcript_id " + "\"" + getName() + "\"; \r\n";
-		}
-		return geneExon;
-	}
-	@Override
-	protected String getGFFformatExonMISO(String title, String strand) {
-		String geneExon = "";
-		for (int i = 0;  i < size(); i++) {
-			ExonInfo exons = get(i);
-			geneExon = geneExon + getRefID() + "\t" + title + "\texon\t" + exons.getEndCis() + "\t" + exons.getStartCis() + "\t" + "." + "\t"
-					+ strand + "\t.\t" + "ID=exon:" + getName()  + ":" + (i+1) +";"+ "Parent=" + getName() + " \r\n";
-		}
-		return geneExon;
-	}
 	@Override
 	public GffGeneIsoTrans clone() {
 		GffGeneIsoTrans result = null;

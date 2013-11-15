@@ -111,13 +111,13 @@ public class PredictME extends SpliceTypePredict {
 		int beforeEnd = lsExonInfos.get(0).getStartCis();
 		int exonIndexBefore = lsExonInfos.get(0).getItemNum() - 1;
 		int beforeStart = gffGeneIsoInfo.get(exonIndexBefore).getEndCis();
-		alignBefore = new Align(gffGeneIsoInfo.getRefID(), beforeStart, beforeEnd);
+		alignBefore = new Align(gffGeneIsoInfo.getRefIDlowcase(), beforeStart, beforeEnd);
 		alignBefore.setCis5to3(gffGeneIsoInfo.isCis5to3());
 		
 		int afterStart = lsExonInfos.get(lsExonInfos.size() - 1).getEndCis();
 		int exonIndexAfter = lsExonInfos.get(lsExonInfos.size() - 1).getItemNum() + 1;
 		int afterEnd = gffGeneIsoInfo.get(exonIndexAfter).getStartCis();
-		alignAfter = new Align(gffGeneIsoInfo.getRefID(), afterStart, afterEnd);
+		alignAfter = new Align(gffGeneIsoInfo.getRefIDlowcase(), afterStart, afterEnd);
 		alignAfter.setCis5to3(gffGeneIsoInfo.isCis5to3());
 		
 		aligns[0] = alignBefore;

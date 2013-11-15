@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster;
 import com.novelbio.base.SepSign;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.listOperate.ListAbs;
 import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
@@ -74,7 +75,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	protected int downTes=100;
 	/** 该转录本的ATG的第一个字符坐标，从1开始计数  */
 	protected int ATGsite = ListCodAbs.LOC_ORIGINAL;
-	/** 该转录本的Coding region end的最后一个字符坐标，从1开始计数 */
+	/** 该转录本的UAG的最后一个字符坐标，从1开始计数 */
 	protected int UAGsite = ListCodAbs.LOC_ORIGINAL;
 	/** 该转录本的长度 */
 	protected int lengthIso = ListCodAbs.LOC_ORIGINAL;
@@ -206,11 +207,17 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 		return true;
 	}
-	public String getRefID() {
+	public String getRefIDlowcase() {
 		if (gffDetailGeneParent == null) {
 			return "";
 		}
 		return gffDetailGeneParent.getRefID().toLowerCase();
+	}
+	public String getRefID() {
+		if (gffDetailGeneParent == null) {
+			return "";
+		}
+		return gffDetailGeneParent.getRefID();
 	}
 	/**
 	 * 是否是mRNA有atg和uag，
@@ -272,6 +279,34 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			UAGsite = get(size() - 1).getEndCis();
 		}
 	}
+	protected int[] getATGLoc() {
+		int[] atginfo = null;
+		if (ATGsite > 0) {
+			atginfo = new int[2];
+			if (isCis5to3()) {
+				atginfo[0] = ATGsite;
+				atginfo[1] = ATGsite + 2;
+			} else {
+				atginfo[0] = ATGsite - 2;
+				atginfo[1] = ATGsite;
+			}
+		}
+		return atginfo;
+	}
+	protected int[] getUAGLoc() {
+		int[] atginfo = null;
+		if (UAGsite > 0) {
+			atginfo = new int[2];
+			if (isCis5to3()) {
+				atginfo[0] = UAGsite - 2;
+				atginfo[1] = UAGsite;
+			} else {
+				atginfo[0] = UAGsite;
+				atginfo[1] = UAGsite + 2;
+			}
+		}
+		return atginfo;
+	}
 	/**
 	 * 该转录本的ATG的第一个字符坐标，从1开始计数，是闭区间
 	 * @return
@@ -280,7 +315,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return ATGsite;
 	}
 	/**
-	 * 该转录本的Coding region end的最后一个字符坐标，从1开始计数，是闭区间
+	 * 该转录本的UAG最后一个字符G的坐标，从1开始计数，是闭区间
 	 * @return
 	 */
 	public int getUAGsite() {
@@ -843,8 +878,36 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		String genetitle = getGFFformatExonMISO(title,strand);
 		return genetitle;
 	}
-	protected abstract String getGTFformatExon(String title, String strand);
-	protected abstract String getGFFformatExonMISO(String title, String strand);
+
+	protected String getGTFformatExon(String title, String strand) {
+		String geneExon = "";
+		String prefixInfo = getRefID() + "\t" + title + "\t";
+		String suffixInfo = "\t" + "." + "\t" + strand + "\t.\t" + "gene_id \"" + getParentGeneName() + "\"; transcript_id " + "\"" + getName()+"\"; " + TxtReadandWrite.ENTER_LINUX;
+		int[] atg = getATGLoc();
+		int[] uag = getUAGLoc();
+		boolean ismRNA = ismRNA();
+		for (ExonInfo exons : this) {
+			if (ismRNA && atg != null && ATGsite >= exons.getStartAbs() && ATGsite <= exons.getEndAbs()) {
+				geneExon = geneExon + prefixInfo + GffHashGTF.startCodeFlag + "\t" + atg[0] + "\t" + atg[1] + suffixInfo;
+			}
+			geneExon = geneExon + prefixInfo + "exon\t" + exons.getStartAbs()  + "\t" + exons.getEndAbs() 
+		         + suffixInfo;
+			if (ismRNA && uag != null && UAGsite >= exons.getStartAbs() && UAGsite <= exons.getEndAbs()) {
+				geneExon = geneExon + prefixInfo + GffHashGTF.stopCodeFlag + "\t" + uag[0] + "\t" + uag[1] + suffixInfo;
+			}
+		}
+		return geneExon;
+	}
+	
+	protected String getGFFformatExonMISO(String title, String strand) {
+		String geneExon = "";
+		for (int i = 0; i < size(); i++) {
+			ExonInfo exons = get(i);
+			geneExon = geneExon + getRefID() + "\t" +title + "\texon\t" + exons.getStartAbs() + "\t" + exons.getEndAbs()
+		     + "\t.\t" +strand+"\t.\t"+ "ID=exon:" + getName()  + ":" + (i+1) +";Parent=" + getName() + " "+TxtReadandWrite.ENTER_LINUX;
+		}
+		return geneExon;
+	}
 
 	/**
 	 * 可能不是很精确
@@ -1019,7 +1082,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		
 		GffGeneIsoInfo otherObj = (GffGeneIsoInfo)obj;
 		//物种，起点终点，ATG，UAG，外显子长度 等都一致
-		boolean flag =  this.getTaxID() == otherObj.getTaxID() && this.getRefID().equals(otherObj.getRefID()) && this.getATGsite() == otherObj.getATGsite()
+		boolean flag =  this.getTaxID() == otherObj.getTaxID() && this.getRefIDlowcase().equals(otherObj.getRefIDlowcase()) && this.getATGsite() == otherObj.getATGsite()
 		&& this.getUAGsite() == otherObj.getUAGsite() && this.getTSSsite() == otherObj.getTSSsite()
 		&& this.getListLen() == otherObj.getListLen();
 		if (flag && equalsIso(otherObj) ) {
@@ -1032,7 +1095,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @return
 	 */
 	public int hashCode() {
-		String info = this.getTaxID() + "//" + this.getRefID() + "//" + this.getATGsite() + "//" + this.getUAGsite() + "//" + this.getTSSsite() + "//" + this.getListLen();
+		String info = this.getTaxID() + "//" + this.getRefIDlowcase() + "//" + this.getATGsite() + "//" + this.getUAGsite() + "//" + this.getTSSsite() + "//" + this.getListLen();
 		for (ExonInfo exonInfo : this) {
 			info = info + SepSign.SEP_INFO + exonInfo.getStartAbs() + SepSign.SEP_ID + exonInfo.getEndAbs();
 		}
@@ -1197,7 +1260,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * 了方向然后按照方向顺序装进去的 
 	 */
 	public static ArrayList<ExonCluster> getExonCluster(Boolean cis5To3, List<GffGeneIsoInfo> lsGffGeneIsoInfos) {
-		String chrID = lsGffGeneIsoInfos.get(0).getRefID();
+		String chrID = lsGffGeneIsoInfos.get(0).getRefIDlowcase();
 		ArrayList<ExonCluster> lsResult = new ArrayList<ExonCluster>();
 		ArrayList<int[]> lsExonBound = ListAbs.getCombSep(cis5To3, lsGffGeneIsoInfos, false);
 		ExonCluster exonClusterBefore = null;

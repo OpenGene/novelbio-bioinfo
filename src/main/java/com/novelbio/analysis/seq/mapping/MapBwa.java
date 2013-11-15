@@ -423,17 +423,21 @@ public class MapBwa extends MapDNA implements IntCmdSoft {
 	 * @return true仅表示是否运行了建索引程序，不代表建索引成功
 	 */
 	@Override
-	protected void makeIndex() {
+	protected boolean makeIndex() {
 		List<String> lsCmd = getLsCmdIndex();
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.run();
+		return cmdOperate.isFinishedNormal();
 	}
 
 	@Override
 	protected boolean isIndexExist() {
 		return FileOperate.isFileExist(chrFile + ".bwt");
 	}
-
+	@Override
+	protected void deleteIndex() {
+		FileOperate.delFile(chrFile + ".bwt");
+	}
 	private List<String> getLsCmdIndex() {
 //		linux命令如下 
 //	 	bwa index -p prefix -a algoType -c  chrFile

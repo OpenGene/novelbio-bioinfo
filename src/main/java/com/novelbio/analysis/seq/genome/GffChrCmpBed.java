@@ -86,7 +86,7 @@ public class GffChrCmpBed extends GffChrAbs {
 		lsDectect.add(region);
 		GffGeneIsoInfo gffGeneIsoInfo = gffHashGene.searchISO(geneID);
 		ArrayList<int[]> lsTmpTss = gffGeneIsoInfo.getRegionNearTss(lsDectect);
-		return compRegion(gffGeneIsoInfo.getRefID(), lsTmpTss)[0];
+		return compRegion(gffGeneIsoInfo.getRefIDlowcase(), lsTmpTss)[0];
 	}
 
 	/**

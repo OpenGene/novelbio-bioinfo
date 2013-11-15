@@ -43,6 +43,7 @@ public class NCBIrepeatChangeFormat {
 			}
 			txtWrite.writefileln(tmp);
 		}
+		txtRead.close();
 		txtWrite.close();
 	}
 

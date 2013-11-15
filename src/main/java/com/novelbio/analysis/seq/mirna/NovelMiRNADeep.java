@@ -213,7 +213,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 	}
 	
 	private void mapping() {
-		mapBowtie.IndexMake(false);
+		mapBowtie.IndexMake();
 		String fastaInput = getFastaMapFileName();
 		String bedSeqFileName = "";
 		if (!FileOperate.isFileExistAndBigThanSize(fastaInput, 0)) {

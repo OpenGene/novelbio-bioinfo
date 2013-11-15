@@ -400,11 +400,11 @@ public class GenerateNewIso {
 		
 		if (!isHavePrevJun && exonNum > 0 && exonNumReal < 0) {
 			if (beforExon && Math.abs(gffGeneIsoInfo.get(exonNum-1).getEndCis() - junEdge) >= longExon) {
-				if (isContinuousExon(gffGeneIsoInfo.getRefID(), gffGeneIsoInfo.get(exonNum-1).getEndCis(), junEdge)) {
+				if (isContinuousExon(gffGeneIsoInfo.getRefIDlowcase(), gffGeneIsoInfo.get(exonNum-1).getEndCis(), junEdge)) {
 					return exonNum;
 				}
 			} else if (!beforExon && Math.abs(gffGeneIsoInfo.get(exonNum-1).getStartCis() - junEdge) >= longExon) {
-				if (isContinuousExon(gffGeneIsoInfo.getRefID(), gffGeneIsoInfo.get(exonNum-1).getStartCis(), junEdge)) {
+				if (isContinuousExon(gffGeneIsoInfo.getRefIDlowcase(), gffGeneIsoInfo.get(exonNum-1).getStartCis(), junEdge)) {
 					return exonNum;
 				}
 			}

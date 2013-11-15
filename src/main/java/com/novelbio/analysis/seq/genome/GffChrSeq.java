@@ -350,7 +350,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		List<SeqFasta> lsSeqFastas = new ArrayList<>();
 		List<GffGeneIsoInfo> lsGffGeneIsoInfo = getIso(IsoName);
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfo) {
-			SeqFasta seqFasta = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.isCis5to3(), gffGeneIsoInfo.getRefID(), startExon, endExon, gffGeneIsoInfo, getIntron);
+			SeqFasta seqFasta = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.isCis5to3(), gffGeneIsoInfo.getRefIDlowcase(), startExon, endExon, gffGeneIsoInfo, getIntron);
 			if (seqFasta == null) {
 				continue;
 			}
@@ -434,9 +434,9 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		}
 		int start = Math.min(startlocation, endlocation);
 		int end = Math.max(startlocation, endlocation);
-		SeqFasta seq = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.isCis5to3(), gffGeneIsoInfo.getRefID(), start, end);
+		SeqFasta seq = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.isCis5to3(), gffGeneIsoInfo.getRefIDlowcase(), start, end);
 		if (seq == null) {
-			logger.error("没有提取到序列：" + " "+ gffGeneIsoInfo.getRefID() + " " + start + " " + end);
+			logger.error("没有提取到序列：" + " "+ gffGeneIsoInfo.getRefIDlowcase() + " " + start + " " + end);
 			return null;
 		}
 		seq.setName(gffGeneIsoInfo.getName());

@@ -81,7 +81,7 @@ class EnsembleGTF extends ImportPerLine {
 	 * 将指定的文件导入数据库，如果是重复的基因，就不导入了
 	 * 如果需要导入多行，譬如amiGO的信息，请覆盖该方法
 	 */
-	public void updateFile(String gene2AccFile) {
+	public boolean updateFile(String gene2AccFile) {
 		setReadFromLine();
 		TxtReadandWrite txtGene2Acc = new TxtReadandWrite(gene2AccFile);
 		//从第二行开始读取
@@ -116,6 +116,7 @@ class EnsembleGTF extends ImportPerLine {
 			txtWriteExcep.close();
 		}
 		logger.info("finished import file " + gene2AccFile);
+		return true;
 	}
 	
 	/**

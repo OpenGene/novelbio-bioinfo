@@ -45,7 +45,7 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 		mapChrID2ListGff = new LinkedHashMap<String, ListGff>();// 一个哈希表来存储每条染色体
 		
 		TxtReadandWrite txtGffRead = new TxtReadandWrite(gfffilename, false);
-		ListGff lsChromGene = null;// 顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
+		ListGff lsGff = null;// 顺序存储每个loc的具体信息，一条染色体一个LOCList，最后装入Chrhash表中
 		String chrIDtmp = "";
 		// int mm=0;//计数的东西
 		for (String content : txtGffRead.readlines(2)) {
@@ -58,12 +58,14 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 			// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			// 新的染色体
 			if (!mapChrID2ListGff.containsKey(chrIDtmpLowCase)) {
-				if (lsChromGene != null) {
-					lsChromGene.trimToSize();
+				if (lsGff != null) {
+					lsGff.trimToSize();
 				}
-				lsChromGene = new ListGff();// 新建一个LOCList并放入Chrhash
-				lsChromGene.setName(chrIDtmp);
-				mapChrID2ListGff.put(chrIDtmpLowCase, lsChromGene);
+				lsGff = new ListGff();// 新建一个LOCList并放入Chrhash
+				lsGff.setName(chrIDtmp);
+				mapChrID2ListGff.put(chrIDtmpLowCase, lsGff);
+			} else {
+				lsGff = mapChrID2ListGff.get(chrIDtmpLowCase);
 			}
 			// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			// 添加转录本
@@ -72,14 +74,14 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 			int geneEnd = Integer.parseInt(geneInfo[4]);
 			
 			GffDetailGene lastGffdetailUCSCgene = null; double[] overlapInfo = null;
-			if (lsChromGene.size() > 0 ) {
-				lastGffdetailUCSCgene = lsChromGene.get(lsChromGene.size() - 1);
+			if (lsGff.size() > 0 ) {
+				lastGffdetailUCSCgene = lsGff.get(lsGff.size() - 1);
 				double[] regionLast = new double[]{lastGffdetailUCSCgene.getStartAbs(), lastGffdetailUCSCgene.getEndAbs()};
 				double[] regionThis = new double[]{geneStart, geneEnd};
 				overlapInfo = ArrayOperate.cmpArray(regionLast, regionThis);
 			}
 			
-			if (lsChromGene.size() > 0 
+			if (lsGff.size() > 0 
 //					&& // 如果转录本方向不同，那就新开一个转录本
 //					geneInfo[2].equals("+") == lastGffdetailUCSCgene.isCis5to3()
 					&&
@@ -118,7 +120,7 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 			}
 			// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			// 添加新基因
-			GffDetailGene gffDetailUCSCgene = new GffDetailGene(lsChromGene, geneInfo[0], geneInfo[2].equals("+"));
+			GffDetailGene gffDetailUCSCgene = new GffDetailGene(lsGff, geneInfo[0], geneInfo[2].equals("+"));
 			gffDetailUCSCgene.setTaxID(taxID);
 			gffDetailUCSCgene.setStartAbs(geneStart);
 			gffDetailUCSCgene.setEndAbs(geneEnd);
@@ -136,9 +138,9 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 			for (int i = 0; i < exonCount; i++) {
 				gffDetailUCSCgene.addExon(geneInfo[2].equals("+"), Integer.parseInt(exonStarts[i]) + 1, Integer.parseInt(exonEnds[i]));
 			}
-			lsChromGene.add(gffDetailUCSCgene);
+			lsGff.add(gffDetailUCSCgene);
 		}
-		lsChromGene.trimToSize();
+		lsGff.trimToSize();
 		txtGffRead.close();
 	}
 	

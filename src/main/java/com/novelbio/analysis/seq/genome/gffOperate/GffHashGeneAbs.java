@@ -28,7 +28,6 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	String gfffile = "";
 	private HashMap<String, String> mapGeneID2AccID = null;
 	private HashMap<String, GffGeneIsoInfo> mapName2Iso = new HashMap<String, GffGeneIsoInfo>();
-	
 	public GffHashGeneAbs() {
 		mapChrID2ListGff = new LinkedHashMap<String, ListGff>();
 		mapGeneID2AccID = new HashMap<String, String>();
@@ -83,7 +82,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 				for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 					if (mapName2Iso.containsKey(gffGeneIsoInfo.getName().toLowerCase())) {
 						GffGeneIsoInfo gffGeneIsoInfoOld = mapName2Iso.get(gffGeneIsoInfo.getName().toLowerCase());
-						if (gffGeneIsoInfoOld.getRefID().toLowerCase().startsWith("chr") && !gffGeneIsoInfo.getRefID().toLowerCase().startsWith("chr")) {
+						if (gffGeneIsoInfoOld.getRefIDlowcase().startsWith("chr") && !gffGeneIsoInfo.getRefIDlowcase().startsWith("chr")) {
 							continue;
 						}
 					}

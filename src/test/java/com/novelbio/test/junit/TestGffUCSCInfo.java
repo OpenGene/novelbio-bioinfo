@@ -60,7 +60,7 @@ public class TestGffUCSCInfo extends TestCase{
 			int atgsite = gffDetailGene.getLongestSplitMrna().getATGsite();
 			int tsssite = gffDetailGene.getLongestSplitMrna().getTSSsite();
 			int tessite = gffDetailGene.getLongestSplitMrna().getTESsite();
-			int uagsite = gffDetailGene.getLongestSplitMrna().getUAGsite();
+			int uagsite = gffDetailGene.getLongestSplitMrna().getCdsEndSite();
 			GffGeneIsoInfo gffGeneIsoSearch = gffDetailGene.getLongestSplitMrna();
 			
 			if ( gffDetailGene.getLongestSplitMrna().ismRNA()) {
@@ -142,7 +142,7 @@ public class TestGffUCSCInfo extends TestCase{
 		}
 		
 		int site500 = gffGeneIsoInfo.getLocDistmRNASite(atgsite, 500);
-		if (atgsite - gffGeneIsoInfo.getUAGsite() == 0) {
+		if (atgsite - gffGeneIsoInfo.getCdsEndSite() == 0) {
 			return;
 		}
 		if (site500 > 0 ) {

@@ -105,7 +105,7 @@ public abstract class MapDNA implements MapDNAint {
 	 * @return
 	 */
 	public SamFile mapReads() {
-		IndexMake(false);
+		IndexMake();
 		SamFile samFile = mapping();
 		
 		logger.info("mapping 结束");
@@ -161,32 +161,63 @@ public abstract class MapDNA implements MapDNAint {
 		return resultSamName;
 	}
 	
-	public void IndexMake(boolean force) {
+	public void IndexMake() {
 		String flagMakeIndex = ".makeIndexFlag_";
+		String flagMakeIndexDetail = null;
 		String parentPath = FileOperate.getPathName(chrFile);
 		if (FileOperate.getFoldFileNameLs(parentPath, flagMakeIndex, "*").size() > 0) {
 			waitUntilIndexFinish(parentPath, flagMakeIndex);
-		} else if (force || !isIndexExist()) {
-			String flagMakeIndexDetail = flagMakeIndex + DateUtil.getNowTimeLongRandom();
+			IndexMake();
+		}
+		else if (!isIndexExist()) {
+			boolean makeIndexSucess = true;
+			flagMakeIndexDetail = flagMakeIndex + DateUtil.getNowTimeLongRandom();
 			TxtReadandWrite txtWriteFlag = new TxtReadandWrite(parentPath + flagMakeIndexDetail, true);
 			txtWriteFlag.close();
-			try { Thread.sleep(300); } catch (InterruptedException e) { }
+			try { Thread.sleep(1000); } catch (Exception e) { }
 			List<String> lsFlags = FileOperate.getFoldFileNameLs(parentPath, flagMakeIndex, "*");
 			Collections.sort(lsFlags);
 			if (lsFlags.get(0).equals(parentPath + flagMakeIndexDetail)) {
-				makeIndex();
+				makeIndexSucess = tryMakeIndex(parentPath, flagMakeIndexDetail);
 			} else {
-				FileOperate.delFile(parentPath + flagMakeIndex);
+				FileOperate.delFile(parentPath + flagMakeIndexDetail);
 				waitUntilIndexFinish(parentPath, flagMakeIndex);
+				IndexMake();
+			}
+	
+			if (!makeIndexSucess) {
+				logger.error("index make error:" + parentPath + chrFile);
+				deleteIndex();
+				FileOperate.delFile(parentPath + flagMakeIndex);
+				throw new RuntimeException("index make error:" + parentPath + chrFile);
 			}
 		}
-		FileOperate.delFile(parentPath + flagMakeIndex);
+	}
+	
+	private boolean tryMakeIndex(String parentPath, String flagMakeIndexDetail) {
+		boolean makeIndexSucess = false;
+		try {
+			int i = 0;
+			makeIndexSucess = makeIndex();
+			while (!makeIndexSucess) {
+				makeIndexSucess = makeIndex();
+				i++;
+				if (i > 1) break;//重试一次
+			}
+		} catch (Exception e) {
+			logger.error("index make error:" + parentPath + chrFile);
+			deleteIndex();
+			FileOperate.delFile(parentPath + flagMakeIndexDetail);
+			throw new RuntimeException("index make error:" + parentPath + chrFile, e);
+		}
+		FileOperate.delFile(parentPath + flagMakeIndexDetail);
+		return makeIndexSucess;
 	}
 	
 	/** 等待别的机器把索引建好了 */
 	private void waitUntilIndexFinish(String parentPath, String flagMakeIndex) {
 		while (FileOperate.getFoldFileNameLs(parentPath, flagMakeIndex, "*").size() > 0) {
-			try { Thread.sleep(10000); } catch (InterruptedException e) {
+			try { Thread.sleep(1000); } catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
@@ -197,7 +228,9 @@ public abstract class MapDNA implements MapDNAint {
 	 * 如果face为true，则强制构建索引
 	 * @return
 	 */
-	protected abstract void makeIndex();
+	protected abstract boolean makeIndex();
+	/** 删除关键的索引文件，意思就是没有建成索引 */
+	protected abstract void deleteIndex();
 	
 	protected abstract boolean isIndexExist();
 	

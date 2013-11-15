@@ -117,7 +117,7 @@ public class MapSplice implements MapRNA {
 	public void mapReads() {
 		prepareReads();
 		mapBowtie.setSubVersion(getBowtieVersion());
-		mapBowtie.IndexMake(false);
+		mapBowtie.IndexMake();
 		
 		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
 		cmdOperate.run();
