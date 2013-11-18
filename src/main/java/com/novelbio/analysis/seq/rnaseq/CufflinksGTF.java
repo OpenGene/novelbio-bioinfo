@@ -376,7 +376,7 @@ public class CufflinksGTF {
 				return FileOperate.addSep(outGTF) + "transcripts.gtf";
 			}
 		} catch (Exception e) {
-			logger.error(prefix + " cufflinks error");
+			logger.error(prefix + " cufflinks error", e);
 		}
 		return null;
 	}
