@@ -849,15 +849,16 @@ public class GffDetailGene extends ListDetailAbs {
 //	
 	/**
 	 * 将本基因输出为gtf文件，就这个基因的几行
+	 * @param chrID 染色体名，主要是为了大小写问题，null表示走默认
 	 * @param geneID 自定义基因名字
 	 * @param title
 	 * @return
 	 */
-	public String toGTFformate(String title) {
+	public String toGTFformate(String chrID, String title) {
 		String geneGTF = "";
 		for (GffGeneIsoInfo gffGeneIsoInfo : getLsCodSplit()) {
 			gffGeneIsoInfo.sort();
-			geneGTF = geneGTF + gffGeneIsoInfo.getGTFformat(title);
+			geneGTF = geneGTF + gffGeneIsoInfo.getGTFformat(chrID, title);
 		}
 		return geneGTF;
 	}

@@ -55,7 +55,7 @@ public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	/** 不设定或如果fastQRecordFilter 为null，表示不过滤 */
-	public void setFilter(FastQRecordFilter fastQRecordFilter, int phredOffset) {
+	public void setFilter(FastQFilter fastQRecordFilter, int phredOffset) {
 		if (fastQRecordFilter != null) {
 			fastQRecordFilter.setPhredOffset(phredOffset);
 			lsFQrecordCopeLeft.addAll(fastQRecordFilter.getLsFQfilter());

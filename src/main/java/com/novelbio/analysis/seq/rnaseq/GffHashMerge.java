@@ -54,8 +54,8 @@ public class GffHashMerge {
 	GffHashGene gffHashGeneResult = new GffHashGene();
 	/**统计转录本信息时用到 */
 	Species species;
-	/**新的转录本如果长度小于1000，并且没有内含子，就有可能是假基因，就删除 */
-	int minGeneLen = 300;
+	/**新的转录本如果长度小于本长度，并且没有内含子，就有可能是假基因，就删除 */
+	int minGeneLen = 200;
 	
 	boolean calculate = false;
 	
@@ -108,8 +108,8 @@ public class GffHashMerge {
 				lsGffAll.add(listGff);
 			}
 			ArrayList<int[]> lsGeneBound = ListAbs.getCombSep(null, lsGffAll, true);
-			ArrayList<GffGeneCluster> lsGff = getListGeneCluster(chrID, lsGeneBound, lsGffHashGenes);
-			mapChrID2LsGffCluster.put(chrID.toLowerCase(), lsGff);
+			ArrayList<GffGeneCluster> lsGffCluster = getListGeneCluster(chrID, lsGeneBound, lsGffHashGenes);
+			mapChrID2LsGffCluster.put(chrID.toLowerCase(), lsGffCluster);
 		}
 	}
 	

@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeSet;
@@ -252,7 +253,13 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		}
 		return lsResult;
 	}
-	
+	public List<String> getLsRefID() {
+		List<String> lsRefID = new ArrayList<>();
+		for (ListGff lsGff : mapChrID2ListGff.values()) {
+			lsRefID.add(lsGff.getName());
+		}
+		return lsRefID;
+	}
 	/**
 	 * 将基因装入GffHash中
 	 * @param chrID
@@ -275,19 +282,30 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	 */
 	@Override
 	public void writeToGTF(String GTFfile,String title) {
+		writeToGTF(null, GTFfile, title);
+	}
+	
+	/**
+	 * 
+	 * <b>可能会出现重复ID，如同一名字的miRNA</b><br>
+	 * 将文件写入GTF中
+	 * @param lsChrIDinput 输入的chrID，主要是会有不同的大小写方式，需要和chrSeq保持一致 
+	 * @param GTFfile 输出文件名
+	 * @param title 给该GTF起个名字
+	 */
+	@Override
+	public void writeToGTF(List<String> lsChrIDinput, String GTFfile,String title) {
+		TreeSet<String> treeSet =getSortedChrID(lsChrIDinput);
 		TxtReadandWrite txtGtf = new TxtReadandWrite(GTFfile, true);
-		ArrayList<String> lsChrID = ArrayOperate.getArrayListKey(mapChrID2ListGff);
-		//把得到的ChrID排个序
-		TreeSet<String> treeSet = new TreeSet<String>();
-		for (String string : lsChrID) {
-			treeSet.add(string);
-		}
+
 		//基因名字去重复，因为一个基因只能有一个名字
 		//所以如果发现一样的基因名，就在其后面加上.1，.2等
 		HashSet<String> setGeneName = new HashSet<String>();
 		HashSet<String> setTranscriptName = new HashSet<String>();
-		for (String string : treeSet) {
-			ListGff lsGffDetailGenes = mapChrID2ListGff.get(string);
+		for (String chrID : treeSet) {
+			ListGff lsGffDetailGenes = mapChrID2ListGff.get(chrID.toLowerCase());
+			if (lsGffDetailGenes == null) continue;
+			
 			for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 				
 				//将每个iso的parentGene名字替换成不重复的名字
@@ -310,11 +328,39 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 				}
 				
 				gffDetailGene.removeDupliIso();
-				String geneGTF = gffDetailGene.toGTFformate(title);
+				String geneGTF = gffDetailGene.toGTFformate(chrID, title);
 				txtGtf.writefileln(geneGTF.trim());
 			}
 		}
 		txtGtf.close();
+	}
+	
+	/**
+	 * 返回排过序的chrID
+	 * @param lsChrIDinput 输入的chrID，主要是会有不同的大小写方式，需要和chrSeq保持一致
+	 * @return
+	 */
+	private TreeSet<String> getSortedChrID(List<String> lsChrIDinput) {
+		List<String> lsChrIDthis = getLsRefID();
+		if (lsChrIDinput == null || lsChrIDinput.isEmpty()) {
+			return new TreeSet<>(lsChrIDthis);
+		}
+		
+		//把得到的ChrID排个序
+		TreeSet<String> treeSet = new TreeSet<String>();
+		HashSet<String> setRemoveDup = new HashSet<>();
+		for (String chrID : lsChrIDinput) {
+			treeSet.add(chrID);
+			setRemoveDup.add(chrID.toLowerCase());
+		}
+		for (String string : lsChrIDthis) {
+			if (setRemoveDup.contains(string.toLowerCase())) {
+				continue;
+			}
+			setRemoveDup.add(string.toLowerCase());
+			treeSet.add(string);
+		}
+		return treeSet;
 	}
 	
 	private String getNoReplicateName(HashSet<String> setGeneName, String thisName) {

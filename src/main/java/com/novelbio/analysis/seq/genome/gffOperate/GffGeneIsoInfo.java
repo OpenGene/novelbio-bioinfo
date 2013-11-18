@@ -853,16 +853,17 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	}
 	/**
 	 * 返回该基因的GTF格式文件，末尾有换行符
+	 * @param chrID 染色体名，主要是为了大小写问题，null表示走默认
 	 * @param geneID 该基因的名字
 	 * @param title 该GTF文件的名称
 	 * @return
 	 */
-	protected String getGTFformat(String title) {
+	protected String getGTFformat(String chrID, String title) {
 		String strand = "+";
 		if (!isCis5to3()) {
 			strand = "-";
 		}
-		String genetitle = getGTFformatExon(title,strand);
+		String genetitle = getGTFformatExon(chrID, title,strand);
 		return genetitle;
 	}
 	/**
@@ -879,9 +880,11 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return genetitle;
 	}
 
-	protected String getGTFformatExon(String title, String strand) {
+	protected String getGTFformatExon(String chrID, String title, String strand) {
+		if (chrID == null) chrID = getRefID();
+		
 		String geneExon = "";
-		String prefixInfo = getRefID() + "\t" + title + "\t";
+		String prefixInfo = chrID + "\t" + title + "\t";
 		String suffixInfo = "\t" + "." + "\t" + strand + "\t.\t" + "gene_id \"" + getParentGeneName() + "\"; transcript_id " + "\"" + getName()+"\"; " + TxtReadandWrite.ENTER_LINUX;
 		int[] atg = getATGLoc();
 		int[] uag = getUAGLoc();
@@ -1279,9 +1282,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 					) {
 					continue;
 				}
-				int exonStart = gffGeneIsoInfo.isCis5to3()? exonBound[0] : exonBound[1];
-				int exonEnd = gffGeneIsoInfo.isCis5to3()? exonBound[1] : exonBound[0];
-				ListCodAbsDu<ExonInfo, ListCodAbs<ExonInfo>> lsDu = gffGeneIsoInfo.searchLocationDu(exonStart, exonEnd);
+				ListCodAbsDu<ExonInfo, ListCodAbs<ExonInfo>> lsDu = gffGeneIsoInfo.searchLocationDu(exonBound[0], exonBound[1]);
 				List<ExonInfo> lsExon = lsDu.getCoveredElement();
 				Collections.sort(lsExon);
 				boolean junc = false;//如果本isoform正好没有落在bounder组中的exon，那么就需要记录跳过的exon的位置，就将这个flag设置为true

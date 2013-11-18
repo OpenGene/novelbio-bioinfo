@@ -2,6 +2,7 @@ package com.novelbio.analysis.seq.genome.gffOperate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import com.novelbio.analysis.seq.genome.GffChrStatistics;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -69,5 +70,11 @@ public interface GffHashGeneInf  {
 	 * @param Gene2IsoFile
 	 */
 	void writeGene2Iso(String Gene2IsoFile);
+	/**
+	 * @param lsChrID 指定chrID的list，产生和其一样大小写的chrID的gff文件
+	 * @param GTFfile
+	 * @param title
+	 */
+	void writeToGTF(List<String> lsChrID, String GTFfile, String title);
 
 }

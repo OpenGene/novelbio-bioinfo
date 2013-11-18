@@ -310,25 +310,60 @@ public class ExonCluster implements Alignment {
 		return isSameExon(true);
 	}
 	
+	/**
+	 * 本组中的exon是否起点相同
+	 * @return
+	 */
+	public boolean isSameStartCis() {
+		List<List<ExonInfo>> lsIsoExon = ArrayOperate.getArrayListValue(mapIso2LsExon);
+		//如果本组中有不止一个exon的转录本，并且还有跨越的junction，说明本组有可变的exon
+		if (!isMaybeSameExon(lsIsoExon, true)) {
+			return false;
+		}
+		boolean sameStartCis = true;
+		ExonInfo exonOld = lsIsoExon.get(0).get(0);
+		for (int i = 1; i < lsIsoExon.size(); i++) {
+			//比较第一个就行了，因为如果有两个直接就返回false了
+			ExonInfo exon = lsIsoExon.get(i).get(0);
+			if (exon.getStartCis() != exonOld.getStartAbs()) {
+				sameStartCis = false;
+				break;
+			}
+		}
+		return sameStartCis;
+	}
+	/**
+	 * 本组中的exon是否终点相同
+	 * @return
+	 */
+	public boolean isSameEndCis() {
+		List<List<ExonInfo>> lsIsoExon = ArrayOperate.getArrayListValue(mapIso2LsExon);
+		//如果本组中有不止一个exon的转录本，并且还有跨越的junction，说明本组有可变的exon
+		if (!isMaybeSameExon(lsIsoExon, true)) {
+			return false;
+		}
+		boolean sameEndCis = true;
+		ExonInfo exonOld = lsIsoExon.get(0).get(0);
+		for (int i = 1; i < lsIsoExon.size(); i++) {
+			//比较第一个就行了，因为如果有两个直接就返回false了
+			ExonInfo exon = lsIsoExon.get(i).get(0);
+			if (exon.getEndAbs() != exonOld.getEndAbs()) {
+				sameEndCis = false;
+				break;
+			}
+		}
+		return sameEndCis;
+	}
 	private boolean isSameExon(boolean considerIsoNotInRegion) {
 		List<List<ExonInfo>> lsIsoExon = ArrayOperate.getArrayListValue(mapIso2LsExon);
 		//如果本组中有不止一个exon的转录本，并且还有跨越的junction，说明本组有可变的exon
-		if (lsIsoExon.size() >= 1 && mapIso2ExonNumSkipTheCluster.size() >= 1	) {
+		if (!isMaybeSameExon(lsIsoExon, considerIsoNotInRegion)) {
 			return false;
 		}
-		if (considerIsoNotInRegion && lsIsoExon.size() < colGeneIsoInfosParent.size()) {
-			return false;
-		}
+		
 		boolean sameExon = true;
-		if (lsIsoExon.get(0).size() != 1) {
-			return false;
-		}
 		ExonInfo exonOld = lsIsoExon.get(0).get(0);
 		for (int i = 1; i < lsIsoExon.size(); i++) {
-			if (lsIsoExon.get(i).size() != 1) {
-				sameExon = false;
-				break;
-			}
 			//比较第一个就行了，因为如果有两个直接就返回false了
 			ExonInfo exon = lsIsoExon.get(i).get(0);
 			if (!exon.equals(exonOld)) {
@@ -337,6 +372,29 @@ public class ExonCluster implements Alignment {
 			}
 		}
 		return sameExon;
+	}
+	/** 是相同exon的必要条件，譬如不包含junction exon等
+	 * 
+	 * @param considerIsoNotInRegion true：如果iso不在这个exoncluster范围内，就认为是不同
+	 *  false：如果iso不在这个exoncluster范围内，就不进行统计
+	 * @return true:表示有可能是相同的exon，但是还需要后续判定
+	 */
+	private boolean isMaybeSameExon(List<List<ExonInfo>> lsIsoExon, boolean considerIsoNotInRegion) {
+		//如果本组中有不止一个exon的转录本，并且还有跨越的junction，说明本组有可变的exon
+		if (lsIsoExon.size() >= 1 && mapIso2ExonNumSkipTheCluster.size() >= 1	) {
+			return false;
+		}
+		if (considerIsoNotInRegion && lsIsoExon.size() < colGeneIsoInfosParent.size()) {
+			return false;
+		}
+		boolean isMaybeSame = true;
+		for (List<ExonInfo> list : lsIsoExon) {
+			if (list.size() != 1) {
+				isMaybeSame = false;
+				break;
+			}
+		}
+		return isMaybeSame;
 	}
 	
 	/** 返回该exonCluster中的所有exon */

@@ -78,6 +78,7 @@ public class MapTophat implements MapRNA, IntCmdSoft {
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 	}
+	
 	/**
 	 * 设定tophat所在的文件夹以及待比对的路径
 	 * 
@@ -403,8 +404,10 @@ public class MapTophat implements MapRNA, IntCmdSoft {
 			String pathGFF = gffChrAbs.getGffHashGene().getGffFilename();
 			String outGTF = FileOperate.changeFileSuffix(pathGFF, "", "gtf");
 			if (!FileOperate.isFileExistAndBigThanSize(outGTF, 0)) {
-				gffChrAbs.getGffHashGene().writeToGTF(outGTF, "novelbio");
-			}			
+				List<String> lsChrID = null;
+				try { lsChrID = gffChrAbs.getSeqHash().getLsSeqName(); } catch (Exception e) { }
+				gffChrAbs.getGffHashGene().writeToGTF(lsChrID, outGTF, "novelbio");
+			}
 			logger.info("Generate GTF To:" + outGTF);
 			this.gtfFile = outGTF;
 			generateGtfFile = true;

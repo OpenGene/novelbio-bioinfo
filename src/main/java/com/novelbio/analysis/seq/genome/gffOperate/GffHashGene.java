@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.genome.gffOperate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -218,7 +219,10 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	public void writeToGTF(String GTFfile, String title) {
 		gffHashGene.writeToGTF(GTFfile, title);
 	}
-	
+	@Override
+	public void writeToGTF(List<String> lsChrID, String GTFfile, String title) {
+		gffHashGene.writeToGTF(lsChrID, GTFfile, title);
+	}
 	/**
 	 * 该方法待修正
 	 */

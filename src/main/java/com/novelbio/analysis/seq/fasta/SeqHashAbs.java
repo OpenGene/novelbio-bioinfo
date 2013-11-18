@@ -18,8 +18,8 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 	private static Logger logger = Logger.getLogger(SeqHashAbs.class);
-	/** 保存chrID和chrLength的对应关系
-	 * key小写
+	/** 保存chrID和chrLength的对应关系<br>
+	 * <b>key小写</b>
 	 *  */
 	LinkedHashMap<String, Long> mapChrID2Length = new LinkedHashMap<String, Long>();
 	/** 从小到大排列chrLength的list */

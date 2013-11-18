@@ -38,10 +38,13 @@ public class ChrSeqHash extends SeqHashAbs {
 	/** 每个文本所对应的单行长度
 	 *  Seq文件第二行的长度，也就是每行序列的长度+1，1是回车 
 	 *  现在是假设Seq文件第一行都是>ChrID,第二行开始都是Seq序列信息
-	 *  并且每一行的序列都等长
+	 *  并且每一行的序列都等长<br>
+	 *  <b>key小写</b>
 	 */
 	Map<String, Integer> mapChrID2LenRow = new LinkedHashMap<>();
-	/** 行中内容加上换行符和空格等 */
+	/** 行中内容加上换行符和空格等<br>
+	 * <b>key小写</b>
+	 */
 	Map<String, Integer> mapChrID2LenRowEnter = new LinkedHashMap<>();
 	
 	int maxExtractSeqLength = 2000000;
@@ -147,35 +150,35 @@ public class ChrSeqHash extends SeqHashAbs {
 	 * @throws IOException 
 	 */
 	private long[] getStartEndReal(String chrID, long start, long end) {
-		chrID = chrID.toLowerCase();
-		if (!mapChrID2Length.containsKey(chrID)) {
+		String chrIDLowcase = chrID.toLowerCase();
+		if (!mapChrID2Length.containsKey(chrIDLowcase)) {
 			logger.error( "无该染色体: "+ chrID);
 			return null;
 		}
-		long chrLength = getChrLength(chrID);
+		long chrLength = getChrLength(chrIDLowcase);
 		if (start <= 0) start = 1;
 		if (end <= 0) end = chrLength;
 		
 		start--;
 		//如果位点超过了范围，那么修正位点
 		if (start < 0 || start >= chrLength || end < 1 || end >= chrLength || end < start) {
-			logger.error(chrID + " " + start + " " + end + " 染色体坐标错误");
+			logger.error(chrIDLowcase + " " + start + " " + end + " 染色体坐标错误");
 			return null;
 		}
 		if (end - start > maxExtractSeqLength) {
-			logger.error(chrID + " " + start + " " + end + " 最多提取" + maxExtractSeqLength + "bp");
+			logger.error(chrIDLowcase + " " + start + " " + end + " 最多提取" + maxExtractSeqLength + "bp");
 			return null;
 		}
 		
-		long startChr = mapChrID2Start.get(chrID);
-		int lengthRow = mapChrID2LenRow.get(chrID);
-		int lenRowEnter = mapChrID2LenRowEnter.get(chrID);
+		long startChr = mapChrID2Start.get(chrIDLowcase);
+		int lengthRow = mapChrID2LenRow.get(chrIDLowcase);
+		int lenRowEnter = mapChrID2LenRowEnter.get(chrIDLowcase);
 		try {
 			long startReal = getRealSite(startChr, start, lengthRow, lenRowEnter);
 			long endReal = getRealSite(startChr, end, lengthRow, lenRowEnter);
 			return new long[]{startReal, endReal};
 		} catch (Exception e) {
-			logger.error("文件出错：" + chrFile + "\t" + chrID + " " + start + " " + end);
+			logger.error("文件出错：" + chrFile + "\t" + chrIDLowcase + " " + start + " " + end);
 			return null;
 		}
 	}
@@ -299,6 +302,7 @@ public class ChrSeqHash extends SeqHashAbs {
 	 * @throws IOException 
 	 */
 	private void readIndex(String indexFile) {
+		lsSeqName = new ArrayList<>();
 		mapChrID2Start.clear();
 		mapChrID2Length.clear();
 		mapChrID2LenRow.clear();
@@ -311,7 +315,6 @@ public class ChrSeqHash extends SeqHashAbs {
 		TxtReadandWrite txtRead = new TxtReadandWrite(indexFile);
 		for (String string : txtRead.readlines()) {
 			String[] ss = string.split("\t");
-			ss[0] =ss[0].toLowerCase();
 			String chrID = null;
 			if (regx != null && regx.equals(" ")) {
 				chrID = ss[0].split(" ")[0];
@@ -323,14 +326,16 @@ public class ChrSeqHash extends SeqHashAbs {
 			} else {
 				chrID = ss[0];
 			}
+			lsSeqName.add(chrID);
+			String chrIDlowcase = chrID.toLowerCase();
 			long length = Long.parseLong(ss[1].trim());
 			long start = Long.parseLong(ss[2].trim());
 			int lenRow = Integer.parseInt(ss[3].trim());
 			int lenRowEnter = Integer.parseInt(ss[4].trim());
-			mapChrID2LenRow.put(chrID, lenRow);
-			mapChrID2Start.put(chrID, start);
-			mapChrID2Length.put(chrID, length);
-			mapChrID2LenRowEnter.put(chrID, lenRowEnter);
+			mapChrID2LenRow.put(chrIDlowcase, lenRow);
+			mapChrID2Start.put(chrIDlowcase, start);
+			mapChrID2Length.put(chrIDlowcase, length);
+			mapChrID2LenRowEnter.put(chrIDlowcase, lenRowEnter);
 		}
 		txtRead.close();
 	}

@@ -31,7 +31,7 @@ public class GffGeneCluster {
 		 * 注意只修正一个端点，也就是靠近内侧的，如括弧所标注
 		 *差距是小于但不等于 所以设定为10表示10以下的差距才会修正，但是不会修正10
 	 */
-	int boundMaxFalseGapBp = 9;
+	int boundMaxFalseGapBp = 1;
 	/** 是否已经将refgff放置在isContainsRef中 
 	 * 这里的算法是首先将refGffGene放置在lsGeneCluster的最前面。
 	 * 然后如果存在Ref，则将第一位的lsGeneCluster放置在lsGenesRef
@@ -163,42 +163,42 @@ public class GffGeneCluster {
 		return index;
 	}
 
-	private ArrayList<GffDetailGene> compareAndModify_GffGene() {
-		ListGff lsGffDetailGenes = new ListGff();
-		for (GffDetailGene gffDetailGeneRefRaw : lsGenesRef) {//遍历每个GffDetail
-			GffDetailGene gffDetailGeneRef = gffDetailGeneRefRaw.clone();
-
-			GffDetailGene gffDetailGeneResult = gffDetailGeneRefRaw.clone();
-			gffDetailGeneResult.clearIso();
-			
-			HashSet<String> setGffIsoRefSelectName = new HashSet<String>();//所有选中的Iso的名字，也就是与cufflink预测的转录本相似的转录本
-			//这里的lsGeneCluster已经去除了refGff
-			for (ArrayList<GffDetailGene> lsgffArrayList : lsGeneCluster) {//获得GffCluster里面每个GffHash的list，这个一般只有一个GffHash
-				for (GffDetailGene gffDetailGeneCalculate : lsgffArrayList) {//获得另一个GffHash里面的GffDetailGene
-					for (GffGeneIsoInfo gffIsoThis : gffDetailGeneCalculate.getLsCodSplit()) {//遍历该GffDetailGene的转录本，并挑选出最接近的进行比较	
-						GffGeneIsoInfo gffIsoRef = gffDetailGeneRef.getSimilarIso(gffIsoThis, likelyhood);
-						
-						if (gffIsoRef == null) {
-							gffDetailGeneResult.addIso(gffIsoThis);
-							continue;
-						}
-						
-						setGffIsoRefSelectName.add(gffIsoRef.getName());
-						GffGeneIsoInfo gffIsoTmpResult = compareIso(gffIsoRef, gffIsoThis);
-						gffDetailGeneResult.addIso(gffIsoTmpResult);
-					}
-				}
-			}
-			
-			for (String isoName : setGffIsoRefSelectName) {
-				gffDetailGeneRef.removeIso(isoName);
-			}
-			gffDetailGeneResult.addIsoSimple(gffDetailGeneRef);
-			lsGffDetailGenes.add(gffDetailGeneResult);
-		}
-		lsGffDetailGenes = lsGffDetailGenes.combineOverlapGene();
-		return lsGffDetailGenes;
-	}
+//	private ArrayList<GffDetailGene> compareAndModify_GffGene() {
+//		ListGff lsGffDetailGenes = new ListGff();
+//		for (GffDetailGene gffDetailGeneRefRaw : lsGenesRef) {//遍历每个GffDetail
+//			GffDetailGene gffDetailGeneRef = gffDetailGeneRefRaw.clone();
+//
+//			GffDetailGene gffDetailGeneResult = gffDetailGeneRefRaw.clone();
+//			gffDetailGeneResult.clearIso();
+//			
+//			HashSet<String> setGffIsoRefSelectName = new HashSet<String>();//所有选中的Iso的名字，也就是与cufflink预测的转录本相似的转录本
+//			//这里的lsGeneCluster已经去除了refGff
+//			for (ArrayList<GffDetailGene> lsgffArrayList : lsGeneCluster) {//获得GffCluster里面每个GffHash的list，这个一般只有一个GffHash
+//				for (GffDetailGene gffDetailGeneCalculate : lsgffArrayList) {//获得另一个GffHash里面的GffDetailGene
+//					for (GffGeneIsoInfo gffIsoThis : gffDetailGeneCalculate.getLsCodSplit()) {//遍历该GffDetailGene的转录本，并挑选出最接近的进行比较	
+//						GffGeneIsoInfo gffIsoRef = gffDetailGeneRef.getSimilarIso(gffIsoThis, likelyhood);
+//						
+//						if (gffIsoRef == null) {
+//							gffDetailGeneResult.addIso(gffIsoThis);
+//							continue;
+//						}
+//						
+//						setGffIsoRefSelectName.add(gffIsoRef.getName());
+//						GffGeneIsoInfo gffIsoTmpResult = compareIso(gffIsoRef, gffIsoThis);
+//						gffDetailGeneResult.addIso(gffIsoTmpResult);
+//					}
+//				}
+//			}
+//			
+//			for (String isoName : setGffIsoRefSelectName) {
+//				gffDetailGeneRef.removeIso(isoName);
+//			}
+//			gffDetailGeneResult.addIsoSimple(gffDetailGeneRef);
+//			lsGffDetailGenes.add(gffDetailGeneResult);
+//		}
+//		lsGffDetailGenes = lsGffDetailGenes.combineOverlapGene();
+//		return lsGffDetailGenes;
+//	}
 	//TODO
 	private ArrayList<GffDetailGene> compareAndModify_GffGeneNew() {
 		ListGff lsGffDetailGenes = new ListGff();
@@ -257,7 +257,7 @@ public class GffGeneCluster {
 			
 			GffGeneIsoInfo gffIsoTmpResult = compareIso(gffIsoRef, gffIsoThis);
 			if (gffIsoTmpResult == null) {
-				if (gffIsoRef.ismRNA() && !gffIsoRef.ismRNA()) {
+				if (gffIsoRef.ismRNA() && !gffIsoThis.ismRNA()) {
 					gffIsoThis.setATGUAGauto(gffIsoRef.getATGsite(), gffIsoRef.getUAGsite());
 				}
 				gffDetailGeneResult.addIso(gffIsoThis);
@@ -301,8 +301,6 @@ public class GffGeneCluster {
 		
 		/** 上一个位点 */
 		ExonClusterBoundInfo lastExonClusterBoundInfo = new ExonClusterBoundInfo(gffGeneIsoInfoRef, gffGeneIsoInfoThis, boundMaxFalseGapBp);
-		lastExonClusterBoundInfo.booStartUnify = true;
-		lastExonClusterBoundInfo.booEndUnify = true;
 
 		for (int exonClusterNum = 0; exonClusterNum < lsExonClusters.size(); exonClusterNum++) {
 			ExonClusterBoundInfo exonClusterBoundInfo = new ExonClusterBoundInfo(gffGeneIsoInfoRef, gffGeneIsoInfoThis, boundMaxFalseGapBp);
@@ -310,14 +308,8 @@ public class GffGeneCluster {
 			exonClusterBoundInfo.setLsExonClustersAndNum(lsExonClusters, exonClusterNum);
 			exonClusterBoundInfo.setTailBoundInfo(tailBoundInfo);
 			
-			try {
-				List<ExonInfo> lsExonInfos = exonClusterBoundInfo.calculate();
-				gffGeneIsoInfoResult.addAll(lsExonInfos);
-			} catch (Exception e) {
-				List<ExonInfo> lsExonInfos = exonClusterBoundInfo.calculate();
-				gffGeneIsoInfoResult.addAll(lsExonInfos);
-			}
-
+			List<ExonInfo> lsExonInfos = exonClusterBoundInfo.calculate();
+			gffGeneIsoInfoResult.addAll(lsExonInfos);
 			
 			lsExonBoundInfoStatistics.add(exonClusterBoundInfo);
 			lastExonClusterBoundInfo = exonClusterBoundInfo;
@@ -329,9 +321,9 @@ public class GffGeneCluster {
 	/**
 	 * lsExonClusters是两个转录本比较的结果，如下图<br>
 	 * 0----1-----2-----3-----4<br>
-	 * A----B-----C-----D----E 第一个转录本<br>
-	 * *----*-----a-----b 第二个转录本<br>
-	 * 返回其中较晚出现的起点和较早出现的终点坐标，也就是a和b的坐标，从0开始
+	 * A----B-----C-----D----E-----F 第一个转录本<br>
+	 * *----*-----a-------b----c 第二个转录本<br>
+	 * 返回其中较晚出现的起点和较早出现的终点 exon index，也就是a和c的exon index，从0开始
 	 * 那么就是返回2和3
 	 * @param lsExonClusters
 	 * @return
@@ -379,7 +371,7 @@ class ExonClusterBoundInfo {
 	 * 0----1-----2-----3-----4<br>
 	 * A----B-----C-----D----E 第一个转录本<br>
 	 * *----*-----a-----b 第二个转录本<br>
-	 * 返回其中较晚出现的起点和较早出现的终点坐标，也就是a和b的坐标，从0开始
+	 * 返回其中较晚出现的起点和较早出现的终点的exon index，也就是a和b的exon index，从0开始
 	 * 那么就是返回2和3
 	 */
 	int[] tailBoundInfo;
@@ -470,8 +462,7 @@ class ExonClusterBoundInfo {
 		if (tailBoundInfo[0] > thisExonClusterNum || tailBoundInfo[1] < thisExonClusterNum) {
 			if (lsExonInfosRef != null && lsExonInfosRef.size() == 1) {
 				selectRefStart = true; selectRefEnd = true;
-			}
-			else {
+			} else {
 				selectRefStart = false; selectRefEnd = false;
 			}
 		}
@@ -536,7 +527,7 @@ class ExonClusterBoundInfo {
 		}
 	}
 	/**
-	 * 返回左端
+	 * 设定左端
 	 * @param gffGeneIsoInfoRef
 	 * @param lsExonInfosRef 必须不为0
 	 * @param gffGeneIsoInfoThis

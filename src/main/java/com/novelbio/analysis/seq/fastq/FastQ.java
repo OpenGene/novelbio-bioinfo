@@ -24,7 +24,7 @@ public class FastQ {
 //		fasatqQs = new FastQ[]{new FastQ("/media/winD/NBC/Project/Test/shnc_GGCTAC_L004_R1_003.fastq.gz"), new FastQ("/media/winD/NBC/Project/Test/shnc_GGCTAC_L004_R2_003.fastq.gz")};
 //		lsFastQs.add(fasatqQs);
 		
-		FastQRecordFilter fastQRecordFilter = new FastQRecordFilter();
+		FastQFilter fastQRecordFilter = new FastQFilter();
 		fastQRecordFilter.setFilterParamTrimNNN(true);
 		fastQReadingChannel.setFastQRead(lsFastQs);
 		FastQC fastQCLeftBefore = new FastQC("/media/winD/NBC/Project/Test/shnc_com1Before.fq", true);
@@ -105,7 +105,7 @@ public class FastQ {
 		return fastQRead.getOffset();
 	}
 	
-	public void setFilter(FastQRecordFilter fastQfilterRecord) {
+	public void setFilter(FastQFilter fastQfilterRecord) {
 		fastqReadingChannel.setFilter(fastQfilterRecord, getOffset());
 	}
 	
