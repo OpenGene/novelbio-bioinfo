@@ -36,7 +36,7 @@ public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 	int getLongestSeqLen = 2000000;
 	/**
 	 * @param chrFile
-	 * @param regx 序列名的正则表达式，null和"   "都不设定
+	 * @param regx 序列名的正则表达式，null和""都不设定
 	 * @param TOLOWCASE 是否将序列结果改为小写 True：小写，False：大写，null不变
 	 */
 	public SeqHashAbs(String chrFile, String regx) {

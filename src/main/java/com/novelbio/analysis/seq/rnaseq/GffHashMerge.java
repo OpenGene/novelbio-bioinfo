@@ -15,7 +15,12 @@ import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.listOperate.ListAbs;
 import com.novelbio.database.model.species.Species;
-/** 重建转录本 */
+/**
+ * merge转录本的，不过现在就用其统计模块把<br>
+ * merge工作交给cuffmerge来做
+ * @author zong0jie
+ *
+ */
 public class GffHashMerge {
 	private static final Logger logger = Logger.getLogger(GffHashMerge.class);
 	
@@ -28,7 +33,6 @@ public class GffHashMerge {
 		String gffFinalStatistics = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/novelbioTranscriptome/transcriptomeStatistics.txt";
 		Species species = new Species(10090);
 		GffHashMerge gffHashMerge = new GffHashMerge();
-		gffHashMerge.setSpecies(species);
 		gffHashMerge.setGffHashGeneRef(new GffHashGene(species.getGffType(), species.getGffFile()));
 		gffHashMerge.addGffHashGene(new GffHashGene(GffType.GTF, gffhashGeneCuf));
 		GffHashGene gffHashGene = gffHashMerge.getGffHashGeneModifyResult();
@@ -36,7 +40,6 @@ public class GffHashMerge {
 		gffHashGene.writeToGTF(gffFinal, "novelbio");
 
 		gffHashMerge = new GffHashMerge();
-		gffHashMerge.setSpecies(species);
 		gffHashMerge.setGffHashGeneRef(new GffHashGene(species.getGffType(), species.getGffFile()));
 		gffHashMerge.addGffHashGene(new GffHashGene(GffType.GTF, gffFinal));
 
@@ -53,7 +56,7 @@ public class GffHashMerge {
 	
 	GffHashGene gffHashGeneResult = new GffHashGene();
 	/**统计转录本信息时用到 */
-	Species species;
+	SeqHash seqHash;
 	/**新的转录本如果长度小于本长度，并且没有内含子，就有可能是假基因，就删除 */
 	int minGeneLen = 200;
 	
@@ -72,8 +75,8 @@ public class GffHashMerge {
 		lsGffHashGenes.add(gffHashGene);
 		calculate = false;
 	}
-	public void setSpecies(Species species) {
-		this.species = species;
+	public void setSeqHash(SeqHash seqHash) {
+		this.seqHash = seqHash;
 	}
 	/** 内部包含有重复的iso
 	 * 还是用cuffmerge做吧别多此一举麻烦
@@ -254,8 +257,7 @@ public class GffHashMerge {
 		return transcriptomStatistics;
 	}
 	private void prepareStatistics(TranscriptomStatistics transcriptomStatistics) {
-		SeqHash seqFastaHash = new SeqHash(species.getChromSeq(), " ");
-		transcriptomStatistics.setSeqFastaHash(seqFastaHash);
+		transcriptomStatistics.setSeqFastaHash(seqHash);
 	}
 	private void statisticsLsGffGeneCluster(TranscriptomStatistics transcriptomStatistics, ArrayList<GffGeneCluster> lsGeneCluster) {
 		for (GffGeneCluster gffGeneCluster : lsGeneCluster) {

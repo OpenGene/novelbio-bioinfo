@@ -34,7 +34,7 @@ import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
 
 import com.novelbio.analysis.seq.AlignRecord;
-import com.novelbio.analysis.seq.fasta.ChrStringHash.CompareChrID;
+import com.novelbio.analysis.seq.fasta.ChrFoldHash.CompareChrID;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.mapping.MappingReadsType;
 import com.novelbio.base.dataOperate.ExcelOperate;

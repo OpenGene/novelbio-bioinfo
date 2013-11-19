@@ -8,7 +8,6 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.novelbio.analysis.seq.mapping.MapTophat;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.cmd.CmdOperate;
@@ -17,9 +16,12 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class CufflinksGTF {
-	private static Logger logger = Logger.getLogger(MapTophat.class);
+	private static final Logger logger = Logger.getLogger(CufflinksGTF.class);
 	static int intronMin = 50;
 	static int intronMax = 500000;
+	/** 遇到错误跳过的模式 */
+	boolean skipErrorMode = false;
+	
 	StrandSpecific strandSpecifictype = StrandSpecific.NONE;
 	ArrayListMultimap<String, SamFile> mapPrefix2SamFiles = ArrayListMultimap.create();
 	Set<String> setPrefix= new LinkedHashSet<String>();
@@ -32,35 +34,42 @@ public class CufflinksGTF {
 	/** cufflinks所在路径 */
 	String ExePathCufflinks = "";
 	/** 用于校正的染色体 */
-	String chrFile = "";
+	String chrFile;
 
 	/** 在junction 的一头上至少要搭到多少bp的碱基 */
-	double smallAnchorFraction = 0.09;
+	Double smallAnchorFraction;
 	/** 内含子最短多少，默认50，需根据不同物种进行设置 */
-	int intronLenMin = intronMin;
+	Integer intronLenMin;
 	/** 内含子最长多少，默认500000，需根据不同物种进行设置 */
-	int intronLenMax = intronMax;
-	/** indel的长度，默认为3 */
-	int indelLen = 6;
+	Integer intronLenMax;
 	/** 线程数 */
 	int threadNum = 4;
 	/** 默认是solexa的最长插入 */
 	int maxInsert = 450;
-	/** 错配，这个走默认比较好，默认为2 */
-	int mismatch = 2;
 	/** 给定GTF的文件 */
-	String gtfFile = "";
+	String gtfFile;
+	boolean isReconstruct = true;
 	/** 输出文件路径 */
 	String outPathPrefix = "";
 	/** 是否用上四分之一位点标准化 */
-	boolean isUpQuartileNormalized = true;
+	boolean isUpQuartileNormalized = false;
 
 	boolean mergeBamFileByPrefix = false;
 	
 	/** 最后获得的结果 */
 	List<String> lsCufflinksResult = new ArrayList<String>();
-
-
+	
+	/** 遇到错误是否跳过，不跳过就抛出异常 */
+	public void setSkipErrorMode(boolean skipErrorMode) {
+		this.skipErrorMode = skipErrorMode;
+	}
+	/**
+	 * 是否根据prefix合并bam文件，然后再做cufflinks分析
+	 * 默认false
+	 */
+	public void setIsMergeBamByPrefix(boolean isMergeBamByPrefix) {
+		this.mergeBamFileByPrefix = isMergeBamByPrefix;
+	}
 	/**
 	 * 设定tophat所在的文件夹以及待比对的路径
 	 * 
@@ -113,17 +122,20 @@ public class CufflinksGTF {
 
 	/** 在junction 的一头上至少要搭到多少bp的碱基 */
 	private String[] getAnchoProportion() {
+		if (smallAnchorFraction == null) {
+			return null;
+		}
 		return new String[]{"-A", smallAnchorFraction + ""};
 	}
 
 	/** 内含子最短多少，默认50，需根据不同物种进行设置 */
 	private List<String> getIntronLen() {
 		List<String> lsIntronLen = new ArrayList<>();
-		if (intronLenMin != intronMin) {
+		if (intronLenMin != null) {
 			lsIntronLen.add("--min-intron-length");
 			lsIntronLen.add(intronLenMin + "");
 		}
-		if (intronLenMax != intronMax) {
+		if (intronLenMax != null) {
 			lsIntronLen.add("--max-intron-length");
 			lsIntronLen.add(intronLenMax + "");
 		}
@@ -135,6 +147,7 @@ public class CufflinksGTF {
 		this.intronLenMin = intronLenMin;
 		this.intronLenMax = intronLenMax;
 	}
+	
 	/** 内含子最短和最长，最短默认50，最长默认500000，需根据不同物种进行设置 */
 	public void setIntronLen(int[] intronLenMinMax) {
 		if (intronLenMinMax == null) {
@@ -142,20 +155,17 @@ public class CufflinksGTF {
 		}
 		if (intronLenMinMax[0] < 20) {
 			intronLenMin = 20;
-		} else if (intronLenMinMax[0] > 50) {
+		} else if (intronLenMinMax[0] > intronMin) {
 			intronLenMin = 50;
 		} else {
 			intronLenMin = intronLenMinMax[0];
 		}
 		
-		if (intronLenMinMax[1] < 500000) {
+		if (intronLenMinMax[1] < intronMax) {
 			intronLenMax = intronLenMinMax[1];
 		}
 	}
-	/** 内含子最长多少，默认500000，需根据不同物种进行设置 */
-	private String[] getIntronLenMax() {
-		return new String[]{"--max-intron-length", intronLenMax + ""};
-	}
+
 	/** 内含子最短多少，默认50，需根据不同物种进行设置 */
 	private String getIsUpQuartile() {
 		if (isUpQuartileNormalized) {
@@ -189,6 +199,7 @@ public class CufflinksGTF {
 			SamFile mergeFile = SamFile.mergeBamFile(samFile, lsSamFiles);
 			if (mergeFile != null) {
 				samFile = mergeFile.getFileName();
+				lsMergeSamFile.add(samFile);
 			} else {
 				throw new RuntimeException("cufflinks merge unsucess:" + prefix);
 			}
@@ -204,6 +215,7 @@ public class CufflinksGTF {
 		}
 		return lsResult;
 	}
+	
 	/** 线程数量，默认4线程 */
 	public void setThreadNum(int threadNum) {
 		if (threadNum <= 0) {
@@ -216,19 +228,22 @@ public class CufflinksGTF {
 		return new String[]{"-p", threadNum + ""};
 	}
 
-	/**
-	 * 用gtf文件辅助mapping
-	 * 
+	/** 
 	 * @param gtfFile
+	 * @param isReconstruct 是否发现新的转录本<br>
+	 * true: 用输入的gff文件指导重建转录本的工作
+	 * false: 仅用输入的gff文件进行定量工作
 	 */
-	public void setGtfFile(String gtfFile) {
+	public void setGtfFile(String gtfFile, boolean isReconstruct) {
 		this.gtfFile = gtfFile;
+		this.isReconstruct = isReconstruct;
 	}
 
 	/** 用GTF文件来辅助预测 */
 	private String[] getGtfFile() {
 		if (FileOperate.isFileExistAndBigThanSize(gtfFile, 0)) {
-			return new String[]{"-g",  gtfFile};
+			String param = isReconstruct ? "-g" : "-G";
+			return new String[]{param,  gtfFile};
 		}
 		return null;
 	}
@@ -291,65 +306,65 @@ public class CufflinksGTF {
 		lsCufflinksResult.clear();
 		for (String prefix : setPrefix) {
 			if (mergeBamFileByPrefix) {
-				String cufResultTmp = runCufflinksMergedBam(prefix);
+				String cufResultTmp = runMergeBamGtf(prefix);
 				if (cufResultTmp != null) {
 					lsCufflinksResult.add(cufResultTmp);
 				}
 			} else {
-				lsCufflinksResult.addAll(runCufflinksSepBam(prefix));
+				lsCufflinksResult.addAll(runSepBamGtf(prefix));
 			}
 		}
 		
-		//TODO 运行结束后考虑删除merge的bam文件
-//		deleteMergeFile();
+		deleteMergeFile();
 	}
 	
 	/**
-	 * 合并前缀相同的bam文件，并返回待执行的lsCmd
+	 * 返回合并好的bam文件
 	 * @param prefix
 	 * @return
 	 */
-	private List<String> getLsCmdMergedBam(String prefix) {
+	private String runMergeBamGtf(String prefix) {
 		String mergedBamFile = getSamFileMerged(prefix);
-		List<String> lsCmd = new ArrayList<>();
-		lsCmd.add(ExePathCufflinks + "cufflinks");
-		ArrayOperate.addArrayToList(lsCmd, getOutPathPrefixCmd(prefix));
-		ArrayOperate.addArrayToList(lsCmd, getAnchoProportion());
-		lsCmd.addAll(getIntronLen());
-		ArrayOperate.addArrayToList(lsCmd, getGtfFile());
-		addLsCmdStr(lsCmd, getStrandSpecifictype());
-		addLsCmdStr(lsCmd, getIsUpQuartile());
-		ArrayOperate.addArrayToList(lsCmd, getThreadNum());
-		ArrayOperate.addArrayToList(lsCmd, getCorrectChrFile());
-		lsCmd.add(mergedBamFile);
-		lsMergeSamFile.add(mergedBamFile);
-		return lsCmd;
+		return getCufflinksResult(mergedBamFile, prefix);
 	}
-	
-	private void addLsCmdStr(List<String> lsCmd, String param) {
-		if (param == null || param.equals("")) return;
-		lsCmd.add(param);
-	}
-	
-	private String runCufflinksMergedBam(String prefix) {
-		String outGTF = getOutPathPrefix(prefix);
-		String cmd = "";
-		cmd = ExePathCufflinks + "cufflinks ";
-		cmd = cmd + getOutPathPrefixCmd(prefix) + getAnchoProportion()
-				+ getIntronLenMin() + getIntronLenMax() + getGtfFile()
-				+ getStrandSpecifictype() + getIsUpQuartile() + getThreadNum()
-				+ getCorrectChrFile();
-		String cmdRun = cmd + getSamFileMerged(prefix);
-		try {
-			CmdOperate cmdOperate = new CmdOperate(cmdRun, "cufflinks");
-			cmdOperate.run();
-			if (cmdOperate.isFinished()) {
-				return FileOperate.addSep(outGTF) + "transcripts.gtf";
+	/**
+	 * 返回合并好的bam文件
+	 * @param prefix
+	 * @return
+	 */
+	private List<String> runSepBamGtf(String prefix) {
+		List<String> lsGtf = new ArrayList<>();
+		List<String> lsSamfiles = getSamFileSeperate(prefix);
+		int i = 0;
+		for (String bamFile : lsSamfiles) {
+			i++;
+			String prefixThis = prefix + i;
+			String tmpGtf = getCufflinksResult(bamFile, prefixThis);
+			if (tmpGtf != null) {
+				lsGtf.add(tmpGtf);
 			}
-		} catch (Exception e) {
-			logger.error(prefix + " cufflinks error", e);
 		}
-		return null;
+		return lsGtf;
+	}
+	
+	private String getCufflinksResult(String bamFile, String prefix) {
+		List<String> lsCmd = getLsCmd(bamFile, prefix);
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
+		if (!skipErrorMode) {
+			cmdOperate.setGetLsErrOut();
+		}
+		cmdOperate.run();
+		String outGTF = getOutPathPrefix(prefix);
+		if (cmdOperate.isFinishedNormal()) {
+			return FileOperate.addSep(outGTF) + "transcripts.gtf";
+		} else {
+			if (skipErrorMode) {
+				return null;
+			} else {
+				String errInfo = cmdOperate.getErrOut();
+				throw new RuntimeException("cufflinks error:" + prefix + "\n" + errInfo);
+			}
+		}
 	}
 	
 	/**
@@ -371,36 +386,9 @@ public class CufflinksGTF {
 		lsCmd.add(bamFileName);
 		return lsCmd;
 	}
-	
-	private List<String> runCufflinksSepBam(String prefix) {
-		List<String> lsResult  = new ArrayList<String>();
-		List<String> lsSamfiles = getSamFileSeperate(prefix);
-		int i = 0;
-		for (String string : lsSamfiles) {
-			i++;
-			String prefixThis = prefix + i;
-			String cmd = "";
-			cmd = ExePathCufflinks + "cufflinks ";
-			cmd = cmd + getOutPathPrefixCmd(prefixThis) + getAnchoProportion()
-					+ getIntronLenMin() + getIntronLenMax() + getGtfFile()
-					+ getStrandSpecifictype() + getIsUpQuartile() + getThreadNum()
-					+ getCorrectChrFile();
-			String cmdRun = cmd + string;
-			try {
-				CmdOperate cmdOperate = new CmdOperate(cmdRun, "cufflinks");
-				cmdOperate.run();
-				if (cmdOperate.isFinished()) {
-					lsResult.add(FileOperate.addSep(getOutPathPrefix(prefixThis)) + "transcripts.gtf");
-				}
-			} catch (Exception e) {
-				logger.error(prefixThis + " cufflinks error");
-			}
-		}
-		if (lsResult.size() > 0) {
-			return lsResult;
-		} else {
-			return null;
-		}
+	private void addLsCmdStr(List<String> lsCmd, String param) {
+		if (param == null || param.equals("")) return;
+		lsCmd.add(param);
 	}
 	
 	/** 获得结果 */
@@ -408,11 +396,16 @@ public class CufflinksGTF {
 		return lsCufflinksResult;
 	}
 	
-//	private void deleteMergeFile() {
-//		if (lsSamFiles.size() > 0) {
-//			FileOperate.delFile(mergeSamFile);
-//		}
-//	}
+	private void deleteMergeFile() {
+		if (!mergeBamFileByPrefix) return;
+		
+		if (lsMergeSamFile.size() > 0) {
+			for (String mergedSamFile : lsMergeSamFile) {
+				FileOperate.delFile(mergedSamFile);
+			}
+		}
+	}
+	
 	public String getCufflinksGTFPath() {
 		return FileOperate.addSep(outPathPrefix) + "transcripts.gtf";
 	}

@@ -18,11 +18,11 @@ import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
- * 本类用来将染色体的名字，序列装入染色体类，并且是以Hash表形式返回 目前本类中仅仅含有静态方法 同时用来提取某段位置的序列 和提取反向重复序列
+ * 本类用来提取放在文件夹中的序列
  * 作者：宗杰 20090617
  */
-public class ChrStringHash extends SeqHashAbs {
-	private static Logger logger = Logger.getLogger(ChrStringHash.class);
+public class ChrFoldHash extends SeqHashAbs {
+	private static Logger logger = Logger.getLogger(ChrFoldHash.class);
 	
 	/** 以下哈希表的键是染色体名称，都是小写，格式如：chr1，chr2，chr10 */
 	HashMap<String, String> mapChrID2FileName;
@@ -49,7 +49,7 @@ public class ChrStringHash extends SeqHashAbs {
 	 * @param regx null走默认，默认为"\\bchr\\w*"， 用该正则表达式去查找文件名中含有Chr的文件，每一个文件就认为是一个染色体
 	 * @param CaseChange 是否将序列名转化为小写，一般转为小写
 	 */
-	public ChrStringHash(String chrFilePath,String regx) {
+	public ChrFoldHash(String chrFilePath,String regx) {
 		super(chrFilePath, regx);
 		setFile();
 	}

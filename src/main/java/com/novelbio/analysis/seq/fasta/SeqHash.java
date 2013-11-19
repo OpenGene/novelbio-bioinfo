@@ -38,7 +38,7 @@ public class SeqHash implements SeqHashInt, Closeable {
 			seqHashAbs =new SeqFastaHash(chrFile, "", true);
 		}
 		if (FileOperate.isFileDirectory(chrFile)) {
-			seqHashAbs = new ChrStringHash(chrFile, "\\bchr\\w*");
+			seqHashAbs = new ChrFoldHash(chrFile, "\\bchr\\w*");
 		}
 	}
 	/**
@@ -54,7 +54,7 @@ public class SeqHash implements SeqHashInt, Closeable {
 			seqHashAbs =new ChrSeqHash(chrFile, regx);
 		}
 		if (FileOperate.isFileDirectory(chrFile)) {
-			seqHashAbs = new ChrStringHash(chrFile, regx);
+			seqHashAbs = new ChrFoldHash(chrFile, regx);
 		}
 	}
 	

@@ -20,6 +20,13 @@ public class GffHashModifyORF {
 	/** 参考的Gff，用Ref来矫正Raw的ATG等位点 */
 	GffHashGene gffHashGeneRef;
 	
+	boolean renameGene = true;
+	
+	/** 将待注释的iso的名字改成ref的名字 */
+	public void setRenameGene(boolean renameGene) {
+		this.renameGene = renameGene;
+	}
+	
 	public void setGffHashGeneRaw(GffHashGene gffHashGeneRaw) {
 		this.gffHashGeneRaw = gffHashGeneRaw;
 	}

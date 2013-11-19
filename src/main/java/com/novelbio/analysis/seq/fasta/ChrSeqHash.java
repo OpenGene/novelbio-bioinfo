@@ -68,7 +68,7 @@ public class ChrSeqHash extends SeqHashAbs {
 	}
 	
 	/**
-	 * 设定序列文件夹
+	 * 设定序列文件
 	 * @throws FileNotFoundException 
 	 */
 	protected void setChrFile() throws Exception {
@@ -259,7 +259,7 @@ public class ChrSeqHash extends SeqHashAbs {
 					length = length - content.length();
 					mapChrID2Length.put(chrID, length);
 				}
-				chrID = content.replace(">", "").toLowerCase();
+				chrID = content.split(" ")[0].replace(">", "").toLowerCase();
 				mapChrID2Start.put(chrID, start);
 				length = 0;
 			} else if (!mapChrID2LenRow.containsKey(chrID)) {

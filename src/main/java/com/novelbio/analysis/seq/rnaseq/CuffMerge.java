@@ -6,6 +6,7 @@ import java.util.List;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
 
@@ -34,6 +35,8 @@ public class CuffMerge {
 	int threadNum = 4;
 	
 	String exePath = "";
+	
+	String tmpGtfRecord;
 	/**
 	 * 设定cuffdiff所在的文件夹以及待比对的路径
 	 * @param exePath 如果在根目录下则设置为""或null
@@ -66,44 +69,62 @@ public class CuffMerge {
 		this.outputPrefix = outputPrefix;
 	}
 	
-	private String getRefGtf() {
+	private String[] getRefGtf() {
 		if (FileOperate.isFileExistAndBigThanSize(refGtf, 0)) {
-			return " -g " + CmdOperate.addQuot(refGtf) + " ";
+			return new String[]{"-g", refGtf};
 		}
-		return "";
+		return null;
 	}
-	private String getRefChrFa() {
+	private String[] getRefChrFa() {
 		if (FileOperate.isFileExistAndBigThanSize(refChrFa, 0)) {
-			return " -s " + CmdOperate.addQuot(refChrFa) + " ";
+			return new String[]{"-s", refChrFa};
 		}
-		return "";
+		return null;
 	}
 	
 	private String getGtfsTobeMerged() {
-		String outFileName = outputPrefix + "gtfList" + DateUtil.getDateAndRandom();
-		TxtReadandWrite txtWrite = new TxtReadandWrite(outFileName , true);
+		tmpGtfRecord = outputPrefix + "gtfList" + DateUtil.getDateAndRandom();
+		TxtReadandWrite txtWrite = new TxtReadandWrite(tmpGtfRecord , true);
 		for (String string : lsGtfTobeMerged) {
 			txtWrite.writefileln(string);
 		}
 		txtWrite.close();
-		return  " " + CmdOperate.addQuot(outFileName) + " ";
+		return tmpGtfRecord;
 	}
 	
-	private String getThreadNum() {
-		return " -p " + threadNum + " ";
+	private String[] getThreadNum() {
+		return new String[]{"-p", threadNum+""};
 	}
 	
-	private String getOutPrefixCMD() {
-		return " -o " + CmdOperate.addQuot(outputPrefix) + " ";
+	private String[] getOutPrefixCMD() {
+		return new String[]{"-o", outputPrefix + ""};
 	}
 	
-	/** 返回merge好的gtf文件名 */
 	public String runCuffmerge() {
-		String cmd = exePath + " cuffmerge " + getRefChrFa() + getRefGtf() + getThreadNum() + getOutPrefixCMD() + getGtfsTobeMerged();
-		CmdOperate cmdOperate = new CmdOperate(cmd, "cuffmerge");
+		String outMergedFile = null;
+		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
+		cmdOperate.setGetLsErrOut();
 		cmdOperate.run();
-		String outMergedFile = FileOperate.addSep(outputPrefix) + "merged.gtf";
+		if (cmdOperate.isFinishedNormal()) {
+			outMergedFile = FileOperate.addSep(outputPrefix) + "merged.gtf"; 
+		} else {
+			String errInfo = cmdOperate.getErrOut();
+			FileOperate.DeleteFileFolder(tmpGtfRecord);
+			throw new RuntimeException("cuffmerge error:\n" + errInfo);
+		}
+		FileOperate.DeleteFileFolder(tmpGtfRecord);
 		return outMergedFile;
+	}
+	
+	private List<String> getLsCmd() {
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add(exePath + " cuffmerge");
+		ArrayOperate.addArrayToList(lsCmd, getRefChrFa());
+		ArrayOperate.addArrayToList(lsCmd, getRefGtf());
+		ArrayOperate.addArrayToList(lsCmd, getThreadNum());
+		ArrayOperate.addArrayToList(lsCmd, getOutPrefixCMD());
+		lsCmd.add(getGtfsTobeMerged());
+		return lsCmd;
 	}
 	
 }
