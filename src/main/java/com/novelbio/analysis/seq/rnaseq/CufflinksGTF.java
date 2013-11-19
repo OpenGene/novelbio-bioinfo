@@ -8,19 +8,18 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.mapping.MapTophat;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class CufflinksGTF {
 	private static Logger logger = Logger.getLogger(MapTophat.class);
-
+	static int intronMin = 50;
+	static int intronMax = 500000;
 	StrandSpecific strandSpecifictype = StrandSpecific.NONE;
 	ArrayListMultimap<String, SamFile> mapPrefix2SamFiles = ArrayListMultimap.create();
 	Set<String> setPrefix= new LinkedHashSet<String>();
@@ -38,9 +37,9 @@ public class CufflinksGTF {
 	/** 在junction 的一头上至少要搭到多少bp的碱基 */
 	double smallAnchorFraction = 0.09;
 	/** 内含子最短多少，默认50，需根据不同物种进行设置 */
-	int intronLenMin = 50;
+	int intronLenMin = intronMin;
 	/** 内含子最长多少，默认500000，需根据不同物种进行设置 */
-	int intronLenMax = 500000;
+	int intronLenMax = intronMax;
 	/** indel的长度，默认为3 */
 	int indelLen = 6;
 	/** 线程数 */
@@ -56,20 +55,11 @@ public class CufflinksGTF {
 	/** 是否用上四分之一位点标准化 */
 	boolean isUpQuartileNormalized = true;
 
-	GffChrAbs gffChrAbs;
-	boolean booSetIntronMin = false;
-	boolean booSetIntronMax = false;
-	
 	boolean mergeBamFileByPrefix = false;
 	
 	/** 最后获得的结果 */
 	List<String> lsCufflinksResult = new ArrayList<String>();
-	
-	public void setGffChrAbs(GffChrAbs gffChrAbs) {
-		this.gffChrAbs = gffChrAbs;
-		booSetIntronMin = false;
-		booSetIntronMax = false;
-	}
+
 
 	/**
 	 * 设定tophat所在的文件夹以及待比对的路径
@@ -97,8 +87,8 @@ public class CufflinksGTF {
 	}
 	
 	/** 用于CMD */
-	private String getOutPathPrefixCmd(String prefix) {
-		return "-o " + CmdOperate.addQuot(getOutPathPrefix(prefix)) + " ";
+	private String[] getOutPathPrefixCmd(String prefix) {
+		return new String[]{"-o", getOutPathPrefix(prefix)};
 	}
 	/** 输出文件名 */
 	private String getOutPathPrefix(String prefix) {
@@ -122,74 +112,56 @@ public class CufflinksGTF {
 	}
 
 	/** 在junction 的一头上至少要搭到多少bp的碱基 */
-	private String getAnchoProportion() {
-		return "-A " + smallAnchorFraction + " ";
-	}
-	
-	private void setIntronLen() {
-		try {
-			setIntronLenExp();
-		} catch (Exception e) {
-			logger.error(e.toString());
-		}
-	}
-	
-	private void setIntronLenExp() {
-		if (booSetIntronMax && booSetIntronMin) {
-			return;
-		}
-		GffHashGene gffHashGene = null;
-		if (FileOperate.isFileExistAndBigThanSize(gtfFile, 10)) {
-			gffHashGene = new GffHashGene(GffType.GTF, gtfFile);
-		} else if (gffChrAbs != null && gffChrAbs.getGffHashGene() != null) {
-			gffHashGene = gffChrAbs.getGffHashGene();
-		}
-		if (gffHashGene == null) {
-			return;
-		}
-		ArrayList<Integer> lsIntronSortedS2M = gffHashGene.getLsIntronSortedS2M();
-		int intronLenMin = lsIntronSortedS2M.get(50);
-		int intronLenMax = lsIntronSortedS2M.get(lsIntronSortedS2M.size() - 10);
-		if (intronLenMin < this.intronLenMin) {
-			this.intronLenMin = intronLenMin;
-			booSetIntronMin = true;
-		}
-		if (intronLenMin < 20) {
-			this.intronLenMin = 20;
-		}
-		if (intronLenMax*2 < this.intronLenMax) {
-			this.intronLenMax = intronLenMax*2;
-			booSetIntronMax = true;
-		}
+	private String[] getAnchoProportion() {
+		return new String[]{"-A", smallAnchorFraction + ""};
 	}
 
 	/** 内含子最短多少，默认50，需根据不同物种进行设置 */
-	private String getIntronLenMin() {
-		return "--min-intron-length " + intronLenMin + " ";
+	private List<String> getIntronLen() {
+		List<String> lsIntronLen = new ArrayList<>();
+		if (intronLenMin != intronMin) {
+			lsIntronLen.add("--min-intron-length");
+			lsIntronLen.add(intronLenMin + "");
+		}
+		if (intronLenMax != intronMax) {
+			lsIntronLen.add("--max-intron-length");
+			lsIntronLen.add(intronLenMax + "");
+		}
+		return lsIntronLen;
 	}
 
-	/** 内含子最长多少，默认500000，需根据不同物种进行设置 */
-	public void setIntronLenMax(int intronLenMax) {
-		this.intronLenMax = intronLenMax;
-		booSetIntronMax = true;
-	}
-
-	/** 内含子最短多少，默认50，需根据不同物种进行设置 */
-	public void setIntronLenMin(int intronLenMin) {
+	/** 内含子最短和最长，最短默认50，最长默认500000，需根据不同物种进行设置 */
+	public void setIntronLen(int intronLenMin, int intronLenMax) {
 		this.intronLenMin = intronLenMin;
-		booSetIntronMin = true;
+		this.intronLenMax = intronLenMax;
 	}
-
+	/** 内含子最短和最长，最短默认50，最长默认500000，需根据不同物种进行设置 */
+	public void setIntronLen(int[] intronLenMinMax) {
+		if (intronLenMinMax == null) {
+			return;
+		}
+		if (intronLenMinMax[0] < 20) {
+			intronLenMin = 20;
+		} else if (intronLenMinMax[0] > 50) {
+			intronLenMin = 50;
+		} else {
+			intronLenMin = intronLenMinMax[0];
+		}
+		
+		if (intronLenMinMax[1] < 500000) {
+			intronLenMax = intronLenMinMax[1];
+		}
+	}
 	/** 内含子最长多少，默认500000，需根据不同物种进行设置 */
-	private String getIntronLenMax() {
-		return "--max-intron-length " + intronLenMax + " ";
+	private String[] getIntronLenMax() {
+		return new String[]{"--max-intron-length", intronLenMax + ""};
 	}
 	/** 内含子最短多少，默认50，需根据不同物种进行设置 */
 	private String getIsUpQuartile() {
 		if (isUpQuartileNormalized) {
-			return " -N ";
+			return "-N";
 		} else {
-			return "";
+			return null;
 		}
 	}
 	
@@ -210,16 +182,16 @@ public class CufflinksGTF {
 		List<SamFile> lsSamFiles = mapPrefix2SamFiles.get(prefix);
 		String samFile = "";
 		if (lsSamFiles.size() == 1) {
-			samFile = CmdOperate.addQuot(lsSamFiles.get(0).getFileName() );
+			samFile = lsSamFiles.get(0).getFileName();
 		}
 		else {
-			String mergeSamFile = outPathPrefix + "merge" + DateUtil.getDateAndRandom() + ".bam";
-			SamFile mergeFile = SamFile.mergeBamFile(mergeSamFile, lsSamFiles);
+			samFile = outPathPrefix + "merge" + DateUtil.getDateAndRandom() + ".bam";
+			SamFile mergeFile = SamFile.mergeBamFile(samFile, lsSamFiles);
 			if (mergeFile != null) {
-				mergeSamFile = mergeFile.getFileName();
-				samFile = CmdOperate.addQuot(mergeSamFile);
-				lsMergeSamFile.add(mergeSamFile);
-			}	
+				samFile = mergeFile.getFileName();
+			} else {
+				throw new RuntimeException("cufflinks merge unsucess:" + prefix);
+			}
 		}
 		return samFile;
 	}
@@ -240,8 +212,8 @@ public class CufflinksGTF {
 		this.threadNum = threadNum;
 	}
 
-	private String getThreadNum() {
-		return "-p " + threadNum + " ";
+	private String[] getThreadNum() {
+		return new String[]{"-p", threadNum + ""};
 	}
 
 	/**
@@ -254,36 +226,23 @@ public class CufflinksGTF {
 	}
 
 	/** 用GTF文件来辅助预测 */
-	private String getGtfFile() {
-		setGTFfile();
-		if (FileOperate.isFileExist(gtfFile)) {
-			return "-g \"" + gtfFile + "\" ";
+	private String[] getGtfFile() {
+		if (FileOperate.isFileExistAndBigThanSize(gtfFile, 0)) {
+			return new String[]{"-g",  gtfFile};
 		}
-		return "";
+		return null;
 	}
 	
 	/** 运行完一遍后再使用，因为如果是设定的GffChrAbs，程序会将其中的GFF转化为GTF文件 */
 	public String getGtfReffile() {
 		return gtfFile;
 	}
-	
-	private void setGTFfile() {
-		if (FileOperate.isFileExistAndBigThanSize(gtfFile, 10)) {
-			return;
-		}
-		if (gffChrAbs != null && gffChrAbs.getGffHashGene() != null) {
-			String path = FileOperate.getParentPathName(mapPrefix2SamFiles.values().iterator().next().getFileName());
-			String outGTF = path + gffChrAbs.getSpecies().getAbbrName() + DateUtil.getDateAndRandom() + ".GTF";
-			gffChrAbs.getGffHashGene().writeToGTF(outGTF, "novelbio");
-			this.gtfFile = outGTF;
-		}
-	}
 
-	private String getCorrectChrFile() {
+	private String[] getCorrectChrFile() {
 		if (FileOperate.isFileExist(chrFile)) {
-			return "-b \"" + chrFile + "\" ";
+			return new String[]{"-b", chrFile};
 		}
-		return "";
+		return null;
 	}
 
 	/**
@@ -316,35 +275,20 @@ public class CufflinksGTF {
 	 * @return
 	 */
 	private String getStrandSpecifictype() {
-		if (strandSpecifictype == StrandSpecific.NONE) {
-			return "";
-		} else if (strandSpecifictype == StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND) {
-			return "--library-type fr-firststrand ";
+		if (strandSpecifictype == StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND) {
+			return "--library-type fr-firststrand";
 		} else if (strandSpecifictype == StrandSpecific.SECOND_READ_TRANSCRIPTION_STRAND) {
-			return "--library-type fr-secondstrand ";
+			return "--library-type fr-secondstrand";
 		}
-		return "";
+		return null;
 	}
 
 	/**
 	 * 参数设定不能用于solid 还没加入gtf的选项，也就是默认没有gtf
 	 */
 	public void runCufflinks() {
-		setIntronLen();
 		lsMergeSamFile = new ArrayList<String>();
 		lsCufflinksResult.clear();
-		// linux命令如下
-		/**
-		 * cufflinks -o
-		 * /media/winE/NBC/Project/RNASeq_GF110614/resultTmp/cufflinks -p 4 -G
-		 * /media/winE/Bioinformatics/GenomeData/Arabidopsis\
-		 * TAIR9/TAIR10GFF/TAIR10_GTF3_genes.gtf -b
-		 * /media/winE/Bioinformatics/GenomeData/Arabidopsis\
-		 * TAIR9/ChromFa/TAIR10_chr_All.fas -u -N --compatible-hits-norm -L COL
-		 * -I 15000 --min-intron-length 20
-		 * /media/winE/NBC/Project/RNASeq_GF110614
-		 * /resultTmp/tophatResult/accepted_hits.bam
-		 */
 		for (String prefix : setPrefix) {
 			if (mergeBamFileByPrefix) {
 				String cufResultTmp = runCufflinksMergedBam(prefix);
@@ -358,6 +302,33 @@ public class CufflinksGTF {
 		
 		//TODO 运行结束后考虑删除merge的bam文件
 //		deleteMergeFile();
+	}
+	
+	/**
+	 * 合并前缀相同的bam文件，并返回待执行的lsCmd
+	 * @param prefix
+	 * @return
+	 */
+	private List<String> getLsCmdMergedBam(String prefix) {
+		String mergedBamFile = getSamFileMerged(prefix);
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add(ExePathCufflinks + "cufflinks");
+		ArrayOperate.addArrayToList(lsCmd, getOutPathPrefixCmd(prefix));
+		ArrayOperate.addArrayToList(lsCmd, getAnchoProportion());
+		lsCmd.addAll(getIntronLen());
+		ArrayOperate.addArrayToList(lsCmd, getGtfFile());
+		addLsCmdStr(lsCmd, getStrandSpecifictype());
+		addLsCmdStr(lsCmd, getIsUpQuartile());
+		ArrayOperate.addArrayToList(lsCmd, getThreadNum());
+		ArrayOperate.addArrayToList(lsCmd, getCorrectChrFile());
+		lsCmd.add(mergedBamFile);
+		lsMergeSamFile.add(mergedBamFile);
+		return lsCmd;
+	}
+	
+	private void addLsCmdStr(List<String> lsCmd, String param) {
+		if (param == null || param.equals("")) return;
+		lsCmd.add(param);
 	}
 	
 	private String runCufflinksMergedBam(String prefix) {
@@ -379,6 +350,26 @@ public class CufflinksGTF {
 			logger.error(prefix + " cufflinks error", e);
 		}
 		return null;
+	}
+	
+	/**
+	 * 合并前缀相同的bam文件，并返回待执行的lsCmd
+	 * @param prefix
+	 * @return
+	 */
+	private List<String> getLsCmd(String bamFileName, String prefix) {
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add(ExePathCufflinks + "cufflinks");
+		ArrayOperate.addArrayToList(lsCmd, getOutPathPrefixCmd(prefix));
+		ArrayOperate.addArrayToList(lsCmd, getAnchoProportion());
+		lsCmd.addAll(getIntronLen());
+		ArrayOperate.addArrayToList(lsCmd, getGtfFile());
+		addLsCmdStr(lsCmd, getStrandSpecifictype());
+		addLsCmdStr(lsCmd, getIsUpQuartile());
+		ArrayOperate.addArrayToList(lsCmd, getThreadNum());
+		ArrayOperate.addArrayToList(lsCmd, getCorrectChrFile());
+		lsCmd.add(bamFileName);
+		return lsCmd;
 	}
 	
 	private List<String> runCufflinksSepBam(String prefix) {

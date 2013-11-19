@@ -61,8 +61,6 @@ public class MapTophat implements MapRNA, IntCmdSoft {
 	
 	/** 给定GTF的文件 */
 	String gtfFile = "";
-	/** 是否自动产生GTF，如果产生了，最后要删除的 */
-	boolean generateGtfFile = false;
 	
 	/** 输出文件 */
 	String outPathPrefix = "";
@@ -396,23 +394,11 @@ public class MapTophat implements MapRNA, IntCmdSoft {
 	}
 	private void setGTFfile() {
 		if (gtfFile == null || FileOperate.isFileExistAndBigThanSize(gtfFile, 0.1)) {
-			generateGtfFile = false;
 			logger.info("not need to generate GTF");
 			return;
 		}
-		if (gffChrAbs != null && gffChrAbs.getGffHashGene() != null) {
-			String pathGFF = gffChrAbs.getGffHashGene().getGffFilename();
-			String outGTF = FileOperate.changeFileSuffix(pathGFF, "", "gtf");
-			if (!FileOperate.isFileExistAndBigThanSize(outGTF, 0)) {
-				List<String> lsChrID = null;
-				try { lsChrID = gffChrAbs.getSeqHash().getLsSeqName(); } catch (Exception e) { }
-				gffChrAbs.getGffHashGene().writeToGTF(lsChrID, outGTF, "novelbio");
-			}
-			logger.info("Generate GTF To:" + outGTF);
-			this.gtfFile = outGTF;
-			generateGtfFile = true;
-		} else {
-			logger.info("Error Not Generate GTF");
+		if (gffChrAbs != null) {
+			this.gtfFile = gffChrAbs.getGtfFile();;
 		}
 	}
 	/**

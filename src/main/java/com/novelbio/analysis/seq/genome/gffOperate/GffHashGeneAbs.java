@@ -289,7 +289,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	 * 
 	 * <b>可能会出现重复ID，如同一名字的miRNA</b><br>
 	 * 将文件写入GTF中
-	 * @param lsChrIDinput 输入的chrID，主要是会有不同的大小写方式，需要和chrSeq保持一致 
+	 * @param lsChrIDinput 输入的chrID，主要是会有不同的大小写方式，需要和chrSeq保持一致，null表示走默认
 	 * @param GTFfile 输出文件名
 	 * @param title 给该GTF起个名字
 	 */

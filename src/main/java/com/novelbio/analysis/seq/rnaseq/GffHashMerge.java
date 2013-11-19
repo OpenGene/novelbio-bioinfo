@@ -75,7 +75,10 @@ public class GffHashMerge {
 	public void setSpecies(Species species) {
 		this.species = species;
 	}
-	/** 内部包含有重复的iso */
+	/** 内部包含有重复的iso
+	 * 还是用cuffmerge做吧别多此一举麻烦
+	 *  */
+	@Deprecated 
 	public GffHashGene getGffHashGeneModifyResult() {
 		if (!calculate) {
 			fillGffHashGeneResult();
@@ -85,7 +88,7 @@ public class GffHashMerge {
 	}
 	public TranscriptomStatistics getStatisticsCompareGff() {
 		fillGffHashGeneResult();
-		modifyGff();
+//		modifyGff();
 		return statisticTranscriptome();
 	}
 	/**

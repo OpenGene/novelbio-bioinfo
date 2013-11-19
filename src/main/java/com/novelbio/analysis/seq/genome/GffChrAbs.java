@@ -2,6 +2,7 @@ package com.novelbio.analysis.seq.genome;
 
 import java.io.Closeable;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -120,7 +121,32 @@ public class GffChrAbs implements Closeable {
 			seqHash = new SeqHash(chrFile, regx);
 		}
 	}
-
+	
+	//TODO 没有考虑并发
+	public String getGtfFile() {
+		if (gffHashGene == null) {
+			return null;
+		}
+		String pathGFF = gffHashGene.getGffFilename();
+		String outGTF = FileOperate.changeFileSuffix(pathGFF, "", "gtf");
+		if (!FileOperate.isFileExistAndBigThanSize(outGTF, 10)) {
+			writeGTFfile(outGTF);
+		}
+		return outGTF;
+	}
+	
+	/** 务必保证GffGene存在
+	 * 
+	 * @param outFile
+	 * @return 是否成功写入
+	 */
+	private void writeGTFfile(String outFile) {
+		List<String> lsSeqName = null;
+		if (seqHash != null) {
+			lsSeqName = seqHash.getLsSeqName();
+		}
+		gffHashGene.writeToGTF(lsSeqName, outFile);
+	}
 	/**
 	 * 获得指定文件内的坐标信息 如果两个位点终点的间距在distanceMapInfo以内，就会删除那个权重低的
 	 * 
