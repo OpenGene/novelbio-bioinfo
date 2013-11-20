@@ -31,7 +31,7 @@ import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
 import org.springframework.stereotype.Component;
 
-import com.novelbio.analysis.seq.fasta.ChrStringHash.CompareChrID;
+import com.novelbio.analysis.seq.fasta.ChrFoldHash.CompareChrID;
 import com.novelbio.analysis.seq.mapping.MappingReadsType;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamFileStatistics;

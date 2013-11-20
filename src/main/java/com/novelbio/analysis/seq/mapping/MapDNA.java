@@ -12,6 +12,7 @@ import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamToBamSort;
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -105,6 +106,7 @@ public abstract class MapDNA implements MapDNAint {
 	 * @return
 	 */
 	public SamFile mapReads() {
+		PathDetail.getTmpPath();
 		IndexMake();
 		SamFile samFile = mapping();
 		

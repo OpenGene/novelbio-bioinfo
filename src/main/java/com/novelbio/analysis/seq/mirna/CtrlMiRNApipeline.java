@@ -33,7 +33,7 @@ public class CtrlMiRNApipeline {
 	Map<String, AlignSeq> mapPrefix2AlignFile;
 	Map<String, String> mapPrefix2Fastq;
 	
-	boolean overlap = false;
+	boolean isUseOldResult = true;
 	
 	public CtrlMiRNApipeline(Species species) {
 		this.species = species;
@@ -42,8 +42,8 @@ public class CtrlMiRNApipeline {
 	 * true：重做该步骤
 	 * false：跳过该步骤
 	 */
-	public void setOverlap(boolean overlap) {
-		this.overlap = overlap;
+	public void setIsUseOldResult(boolean isUseOldResult) {
+		this.isUseOldResult = isUseOldResult;
 	}
 	/** 输入数据 */
 	public void setMapPrefix2Fastq(Map<String, String> mapPrefix2Fastq) {
@@ -113,7 +113,7 @@ public class CtrlMiRNApipeline {
 	}
 	
 	private void runMapping(GffChrAbs gffChrAbs, Species species, Map<String, String> mapPrefix2Fastq) {
-		ctrlMiRNAfastq.setOverlap(overlap);
+		ctrlMiRNAfastq.setIsUseOldResult(isUseOldResult);
 		ctrlMiRNAfastq.setMappingAll2Genome(false);
 		ctrlMiRNAfastq.setRfamSpeciesSpecific(false);
 		ctrlMiRNAfastq.setSpecies(species);
@@ -129,7 +129,7 @@ public class CtrlMiRNApipeline {
 	}
 	/** 从头预测 */
 	private void runPredict(Map<String, AlignSeq> mapBedFile2Prefix, GffChrAbs gffChrAbs, Species species) {
-		ctrlMiRNApredict.setOverlap(overlap);
+		ctrlMiRNApredict.setIsUseOldResult(isUseOldResult);
 		ctrlMiRNApredict.setGffChrAbs(gffChrAbs);
 		ctrlMiRNApredict.setSpecies(species);
 		ctrlMiRNApredict.setMapPrefix2GenomeSamFile(mapBedFile2Prefix);
@@ -144,7 +144,7 @@ public class CtrlMiRNApipeline {
 	/** 比对到别的物种 */
 	private void blastToOtherSpecies() {
 		MirSpeciesPipline mirSpeciesPipline = new MirSpeciesPipline();
-		mirSpeciesPipline.setOverlap(overlap);
+		mirSpeciesPipline.setIsUseOldResult(isUseOldResult);
 		mirSpeciesPipline.setMapPrefix2Fastq(mapPrefix2Fastq);
 		mirSpeciesPipline.setExpMir(expMirPre, expMirMature);
 		mirSpeciesPipline.setLsSpecies(lsSpeciesBlastTo); 

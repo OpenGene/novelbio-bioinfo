@@ -118,7 +118,7 @@ public class CuffMerge {
 	
 	private List<String> getLsCmd() {
 		List<String> lsCmd = new ArrayList<>();
-		lsCmd.add(exePath + " cuffmerge");
+		lsCmd.add(exePath + "cuffmerge");
 		ArrayOperate.addArrayToList(lsCmd, getRefChrFa());
 		ArrayOperate.addArrayToList(lsCmd, getRefGtf());
 		ArrayOperate.addArrayToList(lsCmd, getThreadNum());

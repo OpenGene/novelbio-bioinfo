@@ -8,6 +8,7 @@ import net.sf.samtools.SAMFileWriterFactory;
 import net.sf.samtools.SAMFileWriterImpl;
 import net.sf.samtools.SAMRecord;
 
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 //import net.sf.picard.sam.SortSam;
@@ -27,7 +28,7 @@ public class BamSort {
     public void setSamFile(SamFile samFile) {
 		this.samFile = samFile;
 		SAMFileWriterImpl.setDefaultMaxRecordsInRam(maxRecordsInRam);
-//		PathDetail.setTmpDir(FileOperate.getParentPathName(samFile.getFileName()));
+		PathDetail.getTmpPath();
 	}
     
 	/**

@@ -19,6 +19,8 @@ public class CufflinksGTF {
 	private static final Logger logger = Logger.getLogger(CufflinksGTF.class);
 	static int intronMin = 50;
 	static int intronMax = 500000;
+	/** 重新计算是否使用以前的结果 */
+	boolean isUseOldResult = true;
 	/** 遇到错误跳过的模式 */
 	boolean skipErrorMode = false;
 	
@@ -59,6 +61,13 @@ public class CufflinksGTF {
 	/** 最后获得的结果 */
 	List<String> lsCufflinksResult = new ArrayList<String>();
 	
+	/** 是否使用以前跑出来的结果，默认为ture<br>
+	 * 意思就是如果以前跑出来过结果，这次就直接跳过
+	 * @param isUseOldResult
+	 */
+	public void setIsUseOldResult(boolean isUseOldResult) {
+		this.isUseOldResult = isUseOldResult;
+	}
 	/** 遇到错误是否跳过，不跳过就抛出异常 */
 	public void setSkipErrorMode(boolean skipErrorMode) {
 		this.skipErrorMode = skipErrorMode;
@@ -69,6 +78,9 @@ public class CufflinksGTF {
 	 */
 	public void setIsMergeBamByPrefix(boolean isMergeBamByPrefix) {
 		this.mergeBamFileByPrefix = isMergeBamByPrefix;
+	}
+	public boolean isMergeBamFileByPrefix() {
+		return mergeBamFileByPrefix;
 	}
 	/**
 	 * 设定tophat所在的文件夹以及待比对的路径
@@ -106,6 +118,9 @@ public class CufflinksGTF {
 			outPath = outPathPrefix + prefix;
 		} else {
 			outPath = outPathPrefix + "_" + prefix;
+		}
+		if (mergeBamFileByPrefix) {
+			outPath += "_mergeByPrefix";
 		}
 		return outPath;
 	}
@@ -211,7 +226,7 @@ public class CufflinksGTF {
 		List<SamFile> lsSamFiles = mapPrefix2SamFiles.get(prefix);
 		List<String> lsResult = new ArrayList<String>();
 		for (SamFile samFile : lsSamFiles) {
-			lsResult.add(CmdOperate.addQuot(samFile.getFileName()));
+			lsResult.add(samFile.getFileName());
 		}
 		return lsResult;
 	}
@@ -353,10 +368,20 @@ public class CufflinksGTF {
 		if (!skipErrorMode) {
 			cmdOperate.setGetLsErrOut();
 		}
+		String outGTF = FileOperate.addSep(getOutPathPrefix(prefix));
+		if (isUseOldResult
+				&& FileOperate.isFileExistAndBigThanSize(outGTF + "/genes.fpkm_tracking" , 0)
+				&& FileOperate.isFileExistAndBigThanSize(outGTF + "/isoforms.fpkm_tracking" , 0)
+				&& FileOperate.isFileExist(outGTF + "/skipped.gtf")
+				&& FileOperate.isFileExistAndBigThanSize(outGTF + "/transcripts.gtf" , 0)
+				) {
+			return outGTF + "transcripts.gtf";
+		}
 		cmdOperate.run();
-		String outGTF = getOutPathPrefix(prefix);
+
+		
 		if (cmdOperate.isFinishedNormal()) {
-			return FileOperate.addSep(outGTF) + "transcripts.gtf";
+			return outGTF + "transcripts.gtf";
 		} else {
 			if (skipErrorMode) {
 				return null;

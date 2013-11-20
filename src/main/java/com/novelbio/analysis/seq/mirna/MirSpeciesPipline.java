@@ -38,13 +38,13 @@ public class MirSpeciesPipline {
 	
 	int threadNum = 3;
 	
-	boolean overlap = false;
+	boolean isUseOldResult = true;
 	
 	public void setThreadNum(int threadNum) {
 		this.threadNum = threadNum;
 	}
-	public void setOverlap(boolean overlap) {
-		this.overlap = overlap;
+	public void setIsUseOldResult(boolean isUseOldResult) {
+		this.isUseOldResult = isUseOldResult;
 	}
 	public void setLsSpecies(List<Species> lsSpecies) {
 		this.lsSpecies = lsSpecies;
@@ -102,7 +102,7 @@ public class MirSpeciesPipline {
 				String outFastq = outPathTmpMapping + outputPrefix + species.getCommonName() + "_unmapped.fq.gz";
 				samFileOut = outPathTmpMapping + outputPrefix + species.getCommonName() + ".bam";
 				SamFileStatistics samFileStatistics = new SamFileStatistics(prefix);
-				samFileOut = MiRNAmapPipline.mappingBowtie2(overlap, samFileStatistics, softWareInfo.getExePath(), threadNum, fastqFile, species.getMiRNAhairpinFile(), samFileOut, outFastq);
+				samFileOut = MiRNAmapPipline.mappingBowtie2(isUseOldResult, samFileStatistics, softWareInfo.getExePath(), threadNum, fastqFile, species.getMiRNAhairpinFile(), samFileOut, outFastq);
 				
 				if (samMapRate != null) {
 					samMapRate.addMapInfo(species.getCommonName() + "_miRNA", samFileStatistics);
