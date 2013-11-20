@@ -1,11 +1,15 @@
 package com.novelbio.analysis.seq.genome;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
+import com.novelbio.base.fileOperate.FileOperate;
 
 /**
  * 给定一个没有ORF的gff
@@ -21,12 +25,15 @@ public class GffHashModifyORF {
 	GffHashGene gffHashGeneRef;
 	
 	boolean renameGene = true;
-	
-	/** 将待注释的iso的名字改成ref的名字 */
+	boolean renameIso = false;
+	/** 将待注释的iso的Parent名字和gffgenedetail名字改成ref的名字 */
 	public void setRenameGene(boolean renameGene) {
 		this.renameGene = renameGene;
 	}
-	
+	/** 将待注释的iso的名字改成ref的名字 */
+	public void setRenameIso(boolean renameIso) {
+		this.renameIso = renameIso;
+	}
 	public void setGffHashGeneRaw(GffHashGene gffHashGeneRaw) {
 		this.gffHashGeneRaw = gffHashGeneRaw;
 	}
@@ -34,7 +41,7 @@ public class GffHashModifyORF {
 		this.gffHashGeneRef = gffHashGeneRef;
 	}
 	
-	public void addATGUAG() {
+	public void modifyGff() {
 		for (GffDetailGene gffDetailGeneRef : gffHashGeneRef.getGffDetailAll()) {
 			int median = (gffDetailGeneRef.getStartCis() + gffDetailGeneRef.getEndCis())/2;
 			GffCodGene gffCodGene = gffHashGeneRaw.searchLocation(gffDetailGeneRef.getRefID(), median);
@@ -47,12 +54,40 @@ public class GffHashModifyORF {
 	}
 	
 	private void modifyGffDetailGene(GffDetailGene gffDetailGeneRef, GffDetailGene gffDetailGeneThis) {
-		if (!gffDetailGeneRef.isMRNA()) return;
-		
+		if (renameGene) {
+			gffDetailGeneThis.addItemName(gffDetailGeneRef.getNameSingle());
+		}
+		Set<String> setIsoName = new HashSet<>();//用来去重复的
 		for (GffGeneIsoInfo gffIso : gffDetailGeneThis.getLsCodSplit()) {
 			GffGeneIsoInfo gffRef = getSimilarIso(gffIso, gffDetailGeneRef);
-			gffIso.setATGUAGauto(gffRef.getATGsite(), gffIso.getUAGsite());
+			if (renameGene) {
+				gffIso.setParentGeneName(gffRef.getParentGeneName());
+			}
+			if (renameIso) {
+				String name = getNoDuplicateName(setIsoName, gffRef.getName());
+				setIsoName.add(name);
+				gffIso.setName(name);
+			}
+			if (gffRef.ismRNA()) {
+				gffIso.setATGUAGauto(gffRef.getATGsite(), gffIso.getUAGsite());
+			}
 		}
+	}
+	
+	/**
+	 * 将isoname到set中查，查到了就改后缀，直到查不到为止
+	 * @param setIsoName
+	 * @param isoName
+	 * @return
+	 */
+	private String getNoDuplicateName(Set<String> setIsoName, String isoName) {
+		int i = 1;
+		//修改名字
+		while (setIsoName.contains(isoName)) {
+			isoName = FileOperate.changeFileSuffix(isoName, "", ""+i).replace("/", "");
+			i++;
+		}
+		return isoName;
 	}
 	
 	/** 返回相似的ISO，注意这两个ISO的包含atg的exon必须一致或者至少是overlap的 */
