@@ -32,14 +32,18 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 	Set<AlignmentRecorder> setRecorderRun = new LinkedHashSet<>(); 
 	Map<String, Queue<AlignmentRecorder>>  mapChrID2RecorderTodo = new HashMap<>();
 	
-	AlignSeq alignSeqFile;
+	List<AlignSeq> lsAlignSeqs = new ArrayList<>();
 	long readLines;
 	double readByte;
 	
-	public AlignSeqReading(AlignSeq samFile) {
-		this.alignSeqFile = samFile;
+	public AlignSeqReading(AlignSeq alignSeq) {
+		lsAlignSeqs.add(alignSeq);
 		readLines = 0;
 		readByte = 0;
+	}
+	
+	public void addSeq(AlignSeq alignSeq) {
+		lsAlignSeqs.add(alignSeq);
 	}
 	
 	public double getReadByte() {
@@ -96,8 +100,12 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 		readLines = 0;
 	}
 	
+	/** 返回第一个SamFile */
 	public AlignSeq getSamFile() {
-		return alignSeqFile;
+		if (lsAlignSeqs == null || lsAlignSeqs.size() == 0) {
+			return null;
+		}
+		return lsAlignSeqs.get(0);
 	}
 	
 	@Override
@@ -110,24 +118,29 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 	protected void reading() {
 		readAllLines();
 		summaryRecorder();
-		alignSeqFile.close();
+		for (AlignSeq alignSeqFile : lsAlignSeqs) {
+			alignSeqFile.close();
+		}
 	}
 	protected void readAllLines() {
 		long num = 0;
-		for (AlignRecord samRecord : alignSeqFile.readLines()) {
-			suspendCheck();
-			if (suspendFlag) {
-				break;
+		for (AlignSeq alignSeqFile : lsAlignSeqs) {
+			for (AlignRecord samRecord : alignSeqFile.readLines()) {
+				suspendCheck();
+				if (suspendFlag) {
+					break;
+				}
+				num++;
+				if (num % 100000 == 0) {
+					System.out.println(num);
+				}
+				addOneSeq(samRecord, alignSeqFile);
 			}
-			num++;
-			if (num % 100000 == 0) {
-				System.out.println(num);
-			}
-			addOneSeq(samRecord);
 		}
+		
 	}
 	
-	protected void addOneSeq(AlignRecord samRecord) {
+	protected void addOneSeq(AlignRecord samRecord, AlignSeq alignSeqFile) {
 		removeRecord(samRecord);
 		addTodoRecord_2_RunList(samRecord);
 		

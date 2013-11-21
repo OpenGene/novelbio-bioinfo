@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.novelbio.analysis.seq.AlignRecord;
+import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.base.dataStructure.Alignment;
 
 /**
@@ -54,15 +55,20 @@ public class AlignSamReading extends AlignSeqReading {
 			readSelectLines();
 		}
 		summaryRecorder();
-		alignSeqFile.close();
+		for (AlignSeq alignSeqFile : lsAlignSeqs) {
+			alignSeqFile.close();
+		}
 	}
 	
 	public SamFile getSamFile() {
-		return (SamFile)alignSeqFile;
+		AlignSeq alignSeq = super.getSamFile();
+		if (alignSeq != null) {
+			return (SamFile) alignSeq;
+		}
+		return null;
 	}
 	
 	private void readSelectLines() {
-		SamFile samFile = (SamFile)super.alignSeqFile;
 		Collections.sort(lsAlignments, new Comparator<Alignment>() {
 			@Override
 			public int compare(Alignment o1, Alignment o2) {
@@ -75,17 +81,21 @@ public class AlignSamReading extends AlignSeqReading {
 		long num = 0;
 		
 		for (Alignment alignment : lsAlignments) {
-			for (AlignRecord samRecord : samFile.readLinesOverlap(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs())) {
-				num++;
-				if (num % 100000 == 0) {
-					System.out.println(num);
+			for (AlignSeq alignSeq : lsAlignSeqs) {
+				SamFile samFile = (SamFile)alignSeq;
+				for (AlignRecord samRecord : samFile.readLinesOverlap(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs())) {
+					num++;
+					if (num % 100000 == 0) {
+						System.out.println(num);
+					}
+					suspendCheck();
+					if (suspendFlag) {
+						break;
+					}
+					addOneSeq(samRecord, alignSeq);
 				}
-				suspendCheck();
-				if (suspendFlag) {
-					break;
-				}
-				addOneSeq(samRecord);
 			}
+		
 		}
 	}
 	

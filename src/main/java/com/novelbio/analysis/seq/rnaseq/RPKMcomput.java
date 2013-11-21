@@ -462,6 +462,10 @@ public class RPKMcomput implements AlignmentRecorder {
 		geneExpTable.addAllReads((long)currentReadsNum);
 	}
 	
+	/** 返回输入的值，不做修改或计算 */
+	public List<String[]> getLsRawValue() {
+		return geneExpTable.getLsAllCountsNum(EnumExpression.RawValue);
+	}
 	
 	/** 返回计算得到的rpm值 */
 	public List<String[]> getLsTPMs() {
@@ -562,7 +566,7 @@ public class RPKMcomput implements AlignmentRecorder {
 	}
 	
 	public static enum EnumExpression {
-		TPM, RPKM, UQRPKM, UQPM, Counts, 
+		RawValue, TPM, RPKM, UQRPKM, UQPM, Counts, 
 		/** 某个item占总测序量的比例 */
 		Ratio
 	}

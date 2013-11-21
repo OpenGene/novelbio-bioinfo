@@ -1,10 +1,13 @@
 package com.novelbio.analysis.seq.mapping;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.google.common.collect.HashMultimap;
 import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
@@ -33,7 +36,9 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
  */
 public class MapTophat implements MapRNA, IntCmdSoft {
 	private static Logger logger = Logger.getLogger(MapTophat.class);
-	
+	public static final String UnmapPrefix = "unmapped_";//没有mapping的bam文件的前缀
+	/** mapping文件的后缀，包含 ".bam" 字符串 */
+	public static final String TophatSuffix = "_tophat.bam";
 	StrandSpecific strandSpecifictype = StrandSpecific.NONE;
 	List<FastQ> lsLeftFq = new ArrayList<FastQ>();
 	List<FastQ> lsRightFq = new ArrayList<FastQ>();
@@ -71,6 +76,8 @@ public class MapTophat implements MapRNA, IntCmdSoft {
 	boolean booSetIntronMax = false;
 	
 	int sensitiveLevel = MapBowtie.Sensitive_Sensitive;
+	
+	HashMultimap<String, String> mapPrefix2Result = HashMultimap.create();
 	
 	/** 输入的gffChrAbs中只需要含有GffHashGene即可 */
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
@@ -429,10 +436,6 @@ public class MapTophat implements MapRNA, IntCmdSoft {
 		List<String> lsCmd = getLsCmd();
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.run();
-		
-//		if (generateGtfFile) {
-//			FileOperate.delFile(gtfFile);
-//		}
 		changeFileName();
 	}
 
@@ -502,8 +505,18 @@ public class MapTophat implements MapRNA, IntCmdSoft {
 		}
 		String prefix = FileOperate.getFileName(outPathPrefix);
 		String parentPath = FileOperate.getParentPathName(outPathPrefix);
-		FileOperate.moveFile(FileOperate.addSep(outPathPrefix) + "accepted_hits.bam", parentPath, prefix + "_accepted_hits.bam",false);
+		FileOperate.moveFile(FileOperate.addSep(outPathPrefix) + "accepted_hits.bam", parentPath, prefix + TophatSuffix,false);
+		FileOperate.moveFile(FileOperate.addSep(outPathPrefix) + "unmapped.bam", parentPath, UnmapPrefix + prefix + "_tophat.bam",false);
 		FileOperate.moveFile(FileOperate.addSep(outPathPrefix) + "junctions.bed", parentPath, prefix + "_junctions.bed",false);
 	}
-
+	
+	public static Map<String, String> mapPredictPrefix2File(String outPutPrefix) {
+		Map<String, String> mapPrefix2Value = new HashMap<>();
+		String tophatBamFile = outPutPrefix + "_tophat.bam";
+		mapPrefix2Value.put("accept", tophatBamFile);
+		mapPrefix2Value.put("accept", FileOperate.changeFilePrefix(tophatBamFile, "unmapped_", "bam"));
+		mapPrefix2Value.put("accept", outPutPrefix + "_junctions.bed");
+		return mapPrefix2Value;
+	}
+	
 }

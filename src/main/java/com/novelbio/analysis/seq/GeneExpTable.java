@@ -426,25 +426,26 @@ public class GeneExpTable {
 	}
 	
 	/** 计算单个基因的表达值 */
-	private String getValue(EnumExpression enumExpression, Double readsCount, Long allReadsNum, double upQuerterNum, Integer geneLen) {
+	private String getValue(EnumExpression enumExpression, Double value, Long allReadsNum, double upQuerterNum, Integer geneLen) {
 		String resultValue = null;
 		if (geneLen == null) geneLen = 1000;
 		if (allReadsNum == null) allReadsNum = (long) mapreadsNum;
 		
-		if (readsCount == null) return "0";
-		
-		if (enumExpression == EnumExpression.Counts) {
-			resultValue = readsCount.intValue() + "";
+		if (value == null) return "0";
+		if (enumExpression == EnumExpression.RawValue) {
+			resultValue = value + "";
+		} else if (enumExpression == EnumExpression.Counts) {
+			resultValue = value.intValue() + "";
 		} else if (enumExpression == EnumExpression.TPM) {
-			resultValue = (int)(readsCount*mapreadsNum/allReadsNum) + "";
+			resultValue = (int)(value*mapreadsNum/allReadsNum) + "";
 		} else if (enumExpression == EnumExpression.RPKM) {
-			resultValue = readsCount*mapreadsNum*1000/allReadsNum/geneLen + "";
+			resultValue = value*mapreadsNum*1000/allReadsNum/geneLen + "";
 		} else if (enumExpression == EnumExpression.UQRPKM) {
-			resultValue = readsCount*geneExp*1000/upQuerterNum/geneLen + "";
+			resultValue = value*geneExp*1000/upQuerterNum/geneLen + "";
 		} else if (enumExpression == EnumExpression.UQPM) {
-			resultValue = readsCount*geneExp/upQuerterNum + "";
+			resultValue = value*geneExp/upQuerterNum + "";
 		} else if (enumExpression == EnumExpression.Ratio) {
-			resultValue = readsCount/allReadsNum + "";
+			resultValue = value/allReadsNum + "";
 		}
 		return resultValue;
 	}

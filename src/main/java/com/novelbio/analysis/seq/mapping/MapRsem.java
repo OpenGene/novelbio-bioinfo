@@ -1,18 +1,22 @@
 package com.novelbio.analysis.seq.mapping;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.IntCmdSoft;
+import com.novelbio.analysis.seq.GeneExpTable;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.GffChrSeq;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -53,11 +57,6 @@ public class MapRsem implements MapRNA, IntCmdSoft {
 	boolean pairend = false;
 	/** 输出文件夹以及前缀 */
 	String outPathPrefix = "";
-	
-	/**跑完之后的gene表达值保存在这个里面 */
-	ArrayListMultimap<String, Double> mapGeneID2LsExp;
-	/**跑完之后的gene表达值保存在这个里面 */
-	ArrayListMultimap<String, Integer> mapGeneID2LsCounts; 
 	
 	/** rsem 到 rpkm是增加了10^6 倍 */
 	int foldRsem2RPKM = 1000000;
@@ -122,18 +121,6 @@ public class MapRsem implements MapRNA, IntCmdSoft {
 	
 	public SoftWare getBowtieVersion() {
 		return SoftWare.bowtie;
-	}
-	/** mapping完后获得结果，为RPKM
-	 * 为防止一个geneID对应多个exp的value，所以用list来报存value
-	 *  */
-	public ArrayListMultimap<String, Double> getMapGeneID2LsExp() {
-		return mapGeneID2LsExp;
-	}
-	/** mapping完后获得结果，为Counts
-	 * 为防止一个geneID对应多个exp的value，所以用list来报存value
-	 *  */
-	public ArrayListMultimap<String, Integer> getMapGeneID2LsCounts() {
-		return mapGeneID2LsCounts;
 	}
 	/** 产生全新的reference */
 	private void createGene2IsoAndRefSeq() {
@@ -243,7 +230,6 @@ public class MapRsem implements MapRNA, IntCmdSoft {
 		List<String> lsCmd = getLsCmdMapping();
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.run();
-		copeResult();
 	}
 	
 	private List<String> getLsCmdMapping() {
@@ -285,12 +271,17 @@ public class MapRsem implements MapRNA, IntCmdSoft {
 	}
 	
 	/** 整理结果文件，主要是整理gene.result,整理成gene list */
-	private void copeResult() {
-		mapGeneID2LsExp = ArrayListMultimap.create();
-		mapGeneID2LsCounts = ArrayListMultimap.create();
-		TxtReadandWrite txtReadGeneExp = new TxtReadandWrite(outPathPrefix+".genes.results", false);
-		for (String geneInfo : txtReadGeneExp.readlines()) {
-			String[] ss = geneInfo.split("\t");
+	public void getGeneExpInfo(String prefix, GeneExpTable expFPKM, GeneExpTable expCounts) {
+		expCounts.setCurrentCondition(prefix);
+		expFPKM.setCurrentCondition(prefix);
+		List<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(outPathPrefix+".genes.results", 1);
+		List<String> lsGeneName = new ArrayList<>();
+		for (String[] ss : lsInfo) {
+			lsGeneName.add(ss[0]);
+		}
+		expCounts.addLsGeneName(lsGeneName);
+		expFPKM.addLsGeneName(lsGeneName);
+		for (String[] ss : lsInfo) {
 			double valueRPKM = 0;
 			int valueCounts = 0;
 			try {
@@ -299,10 +290,9 @@ public class MapRsem implements MapRNA, IntCmdSoft {
 			} catch (Exception e) {
 				continue;
 			}
-			mapGeneID2LsExp.put(ss[0], valueRPKM * foldRsem2RPKM);
-			mapGeneID2LsCounts.put(ss[1], valueCounts);
+			expFPKM.addGeneExp(ss[0], valueRPKM * foldRsem2RPKM);
+			expCounts.addGeneExp(ss[1], valueCounts);
 		}
-		txtReadGeneExp.close();
 	}
 	
 	/** 设定Gene2Iso文件，如果有文件就用这个文件。
@@ -311,6 +301,13 @@ public class MapRsem implements MapRNA, IntCmdSoft {
 	@Override
 	public void setGtf_Gene2Iso(String gtfFile) {
 		this.gene2isoFile = gtfFile;
+	}
+	
+	public static Map<String, String> mapPredictPrefix2File(String outPathPrefix) {
+		Map<String, String> mapPrefix2Value = new HashMap<>();
+		mapPrefix2Value.put("geneExp", outPathPrefix + ".genes.results");
+		mapPrefix2Value.put("isoExp", outPathPrefix + ".isoforms.results");
+		return mapPrefix2Value;
 	}
 	
 }
