@@ -1,14 +1,12 @@
 package com.novelbio.analysis.seq.rnaseq;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 
@@ -28,8 +26,6 @@ import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.database.model.modgeneid.GeneType;
 import com.novelbio.generalConf.TitleFormatNBC;
 
@@ -47,9 +43,12 @@ public class RPKMcomput implements AlignmentRecorder {
 	boolean isPairend = false;
 	boolean calculateFPKM = true;
 	boolean upQuartile = false;
+
+	Map<String, String> mapGene2Type;
 	
 	GffHashGene gffHashGene;
 	GeneExpTable geneExpTable = new GeneExpTable(TitleFormatNBC.GeneID);
+	GeneExpTable rnaTypeTable = new GeneExpTable(TitleFormatNBC.RNAType);
 	/** 双端测序用来配对 */
 	HashMap<String, SamRecord> mapKey2SamRecord = new HashMap<String, SamRecord>((int)(numForFragment*1.5));
 	
@@ -79,7 +78,7 @@ public class RPKMcomput implements AlignmentRecorder {
 	private void initial() {
 		ArrayList<GffDetailGene> lsGffDetailGene = gffHashGene.getGffDetailAll();
 		Map<String, Integer> mapGene2Len = new HashMap<>();
-		Map<String, String> mapGene2Type = new HashMap<>();
+		mapGene2Type = new HashMap<>();
 		for (GffDetailGene gffDetailGene : lsGffDetailGene) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 				String geneName = gffGeneIsoInfo.getParentGeneName();
@@ -87,6 +86,8 @@ public class RPKMcomput implements AlignmentRecorder {
 				//获得一个基因中最长转录本的名字
 				if (!mapGene2Len.containsKey(geneName) || mapGene2Len.get(geneName) < isoLength) {
 					mapGene2Len.put(geneName, isoLength);
+				}
+				if (!mapGene2Type.containsKey(geneName) || !mapGene2Type.get(geneName).equals(GeneType.mRNA.toString())) {
 					mapGene2Type.put(geneName, gffGeneIsoInfo.getGeneType().toString());
 				}
 			}
@@ -94,6 +95,11 @@ public class RPKMcomput implements AlignmentRecorder {
 		geneExpTable.addLsGeneName(mapGene2Len.keySet());
 		geneExpTable.setMapGene2Len(mapGene2Len);
 		geneExpTable.addAnnotation(mapGene2Type);
+		Set<String> setGeneType = new TreeSet<>();
+		for (String geneType : mapGene2Type.values()) {
+			setGeneType.add(geneType);
+		}
+		rnaTypeTable.addLsGeneName(setGeneType);
 		List<String> lsTitleAnno = new ArrayList<>();
 		lsTitleAnno.add(TitleFormatNBC.GeneType.toString());
 		geneExpTable.addLsTitle(lsTitleAnno);
@@ -123,6 +129,7 @@ public class RPKMcomput implements AlignmentRecorder {
 	 */
 	public void setAndAddCurrentCondition(String currentCondition) {
 		geneExpTable.setCurrentCondition(currentCondition);
+		rnaTypeTable.setCurrentCondition(currentCondition);
 		this.currentReadsNum = 0;
 	}
 	
@@ -447,7 +454,10 @@ public class RPKMcomput implements AlignmentRecorder {
 	 * @param mapNum 如果是非unique mapping，那么mapping到几个位置上
 	 */
 	private void addInMapGeneName2Cond2ReadsCounts(String geneName, int mapNum) {
-		geneExpTable.addGeneExp(geneName,  (double)1/mapNum);
+		double value = (double)1/mapNum;
+		geneExpTable.addGeneExp(geneName, (double)1/mapNum);
+		String geneType = mapGene2Type.get(geneName);
+		rnaTypeTable.addGeneExp(geneType, value);
 	}
 	
 	@Override
@@ -491,6 +501,10 @@ public class RPKMcomput implements AlignmentRecorder {
 	public List<String[]> getLsUQRPKMs() {
 		return geneExpTable.getLsAllCountsNum(EnumExpression.UQRPKM);
 	}
+	/** 返回ncRNA的情况，只有NCBI的模式物种，本项目才有意义 */
+	public List<String[]> getLsNCrnaStatistics() {
+		return rnaTypeTable.getLsAllCountsNum(EnumExpression.Counts);
+	}
 	
 	/** 返回当前时期的rpm值 */
 	public List<String[]> getLsTPMsCurrent() {
@@ -500,7 +514,10 @@ public class RPKMcomput implements AlignmentRecorder {
 	public List<String[]> getLsCountsCurrent() {
 		return geneExpTable.getLsCountsNum(EnumExpression.Counts);
 	}
-	
+	/** 返回counts数量，可以拿来给DEseq继续做标准化 */
+	public List<String[]> getLsNCrnaStatisticsCurrent() {
+		return rnaTypeTable.getLsCountsNum(EnumExpression.Counts);
+	}
 	/**
 	 * 返回计算得到的rpkm值
 	 * 其中allreadscount的单位是百万
@@ -509,7 +526,6 @@ public class RPKMcomput implements AlignmentRecorder {
 	public List<String[]> getLsRPKMsCurrent() {
 		return geneExpTable.getLsCountsNum(EnumExpression.RPKM);
 	}
-	
 	/**
 	 * 返回用Upper Quartile计算得到的rpkm值
 	 * 其中Upper Quartile的单位是1/100

@@ -354,7 +354,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		for (String condition : mapCond2SamReader.keySet()) {
 			List<AlignSamReading> lsSamFileReadings = mapCond2SamReader.get(condition);
 			for (AlignSamReading samFileReading : lsSamFileReadings) {
-				fileLength = fileLength + FileOperate.getFileSizeLong(samFileReading.getSamFile().getFileName());
+				fileLength = fileLength + FileOperate.getFileSizeLong(samFileReading.getFirstSamFile().getFileName());
 			}
 		}
 		return fileLength;
@@ -373,7 +373,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			List<AlignSamReading> lsSamFileReadings = mapCond2SamReader.get(condition);
 			for (AlignSamReading samFileReading : lsSamFileReadings) {
 				samFileReading.clear();
-				samFileReading.getSamFile().indexMake();
+				samFileReading.getFirstSamFile().indexMake();
 				if (samFileReadingLast != null) {
 					samFileReading.setReadInfo(0L, samFileReadingLast.getReadByte());
 				}
@@ -528,7 +528,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	private MapReadsAbs getSamMapReads(AlignSamReading samFileReading) {
-		SamMapReads samMapReads = new SamMapReads(samFileReading.getSamFile(), strandSpecific);
+		SamMapReads samMapReads = new SamMapReads(samFileReading.getFirstSamFile(), strandSpecific);
 		samMapReads.setisUniqueMapping(true);
 		samMapReads.setNormalType(EnumMapNormalizeType.no_normalization);
 		return samMapReads;
@@ -539,9 +539,9 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		mapReads.setInvNum(15);
 		mapReads.setNormalType(EnumMapNormalizeType.no_normalization);
 		mapReads.setisUniqueMapping(true);
-		mapReads.prepareAlignRecord(samFileReading.getSamFile().readFirstLine());
+		mapReads.prepareAlignRecord(samFileReading.getFirstSamFile().readFirstLine());
 		//TODO 可以考虑从gtf文件中获取基因组长度然后给MapReads使用
-		mapReads.setMapChrID2Len(((SamFile)samFileReading.getSamFile()).getMapChrID2Length());
+		mapReads.setMapChrID2Len(((SamFile)samFileReading.getFirstSamFile()).getMapChrID2Length());
 		return mapReads;
 	}
 	

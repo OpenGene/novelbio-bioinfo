@@ -101,7 +101,7 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 	}
 	
 	/** 返回第一个SamFile */
-	public AlignSeq getSamFile() {
+	public AlignSeq getFirstSamFile() {
 		if (lsAlignSeqs == null || lsAlignSeqs.size() == 0) {
 			return null;
 		}

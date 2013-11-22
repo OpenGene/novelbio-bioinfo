@@ -60,8 +60,8 @@ public class AlignSamReading extends AlignSeqReading {
 		}
 	}
 	
-	public SamFile getSamFile() {
-		AlignSeq alignSeq = super.getSamFile();
+	public SamFile getFirstSamFile() {
+		AlignSeq alignSeq = super.getFirstSamFile();
 		if (alignSeq != null) {
 			return (SamFile) alignSeq;
 		}

@@ -1,8 +1,5 @@
 package com.novelbio.generalConf;
 
-import org.broad.tribble.annotation.Strand;
-
-
 public enum TitleFormatNBC {
 	/** 公司名缩写 */
 	CompanyNameAbbr("NovelBio"),
@@ -25,7 +22,7 @@ public enum TitleFormatNBC {
 	RfamID("RfamID"), RfamType("RfamType"), RfamAnnotaion("RfamAnnotaion"), RfamDescription("RfamDescription"), RfamClass("RfamClass"),
 	NCRNAID("NCRNAID"),
 	
-	GeneStructure("GeneStructure"),
+	GeneStructure("GeneStructure"), RNAType("RNA_Type"),
 	
 	RepeatName("RepeatName"), RepeatFamily("RepeatFamily"),
 	

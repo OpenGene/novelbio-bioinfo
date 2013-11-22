@@ -121,7 +121,7 @@ public abstract class MapDNA implements MapDNAint {
 	/**
 	 * 是否顺利执行
 	 * 实际上只要mapping能执行起来，譬如运行个10s没出错，就说明索引没问题了
-	 * @return SamFile
+	 * @return SamFile 内部已经关闭过的samfile
 	 * null 表示运行失败
 	 */
 	protected abstract SamFile mapping();

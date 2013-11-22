@@ -146,11 +146,19 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 		if (numMappedReadsInFile > 0) {
 			return numMappedReadsInFile;
 		}
-		Object attrCC = samRecord.getAttribute("NH");
+		//Tophat的标记，bowtie2我们会人为标记该flag
+		Integer attrCC = samRecord.getIntegerAttribute("NH");
 		if (attrCC != null) {
-			numMappedReadsInFile = (Integer) attrCC;
+			numMappedReadsInFile = attrCC;
 			return numMappedReadsInFile;
 		}
+		//mapsplice的标记
+		attrCC = samRecord.getIntegerAttribute("IH");
+		if (attrCC != null) {
+			numMappedReadsInFile = attrCC;
+			return numMappedReadsInFile;
+		}
+		//bwa的标记
 		String[] tmpInfo = null;
 		if (samRecord.getAttribute("XA") != null) {
 			if (samRecord.getAttribute("XT").equals('U')) {
