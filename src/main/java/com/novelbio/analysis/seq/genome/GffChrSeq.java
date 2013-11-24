@@ -1,10 +1,13 @@
 package com.novelbio.analysis.seq.genome;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -149,18 +152,25 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 			return lsSiteInfos.size();
 		}
 	}
-	private LinkedList<GffGeneIsoInfo> getGeneSeqAllIso(GffDetailGene gffDetailGene) {
-		LinkedList<GffGeneIsoInfo> lsResult = new LinkedList<GffGeneIsoInfo>();
+	/** 获取该基因中的最长转录本<br>
+	 * 因为基因的重叠关系，同一个GffDetailGene中可能会包含不止一个gene
+	 * 所以要遍历每个GffDetailGene，然后具有相同ParentName的Iso组 仅获得一条iso
+	 * 譬如一个GffDetailGene有正向表达的mRNA3条，反向ncRNA两条，那么总共返回2条iso
+	 * 其中一条来源于正向表达的mRNA，一条来源于反响的ncRNA
+	 * 
+	 * @param gffDetailGene
+	 * @return
+	 */
+	private Collection<GffGeneIsoInfo> getGeneSeqLongestIso(GffDetailGene gffDetailGene) {
+		Map<String, GffGeneIsoInfo> mapParentName2Iso = new HashMap<>();
 		for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-			lsResult.add(gffGeneIsoInfo);
+			String parentName = gffGeneIsoInfo.getParentGeneName();
+			if (!mapParentName2Iso.containsKey(parentName) || 
+					mapParentName2Iso.get(parentName).getLen() < gffGeneIsoInfo.getLen()) {
+				mapParentName2Iso.put(parentName, gffGeneIsoInfo);
+			}
 		}
-		return lsResult;
-	}
-	private LinkedList<GffGeneIsoInfo> getGeneSeqLongestIso(GffDetailGene gffDetailGene) {
-		LinkedList<GffGeneIsoInfo> lsResult = new LinkedList<GffGeneIsoInfo>();
-		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplitMrna();
-		lsResult.add(gffGeneIsoInfo);
-		return lsResult;
+		return mapParentName2Iso.values();
 	}
 	/**
 	 * 输入位点提取序列
@@ -259,7 +269,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 				continue;
 			}
 			if (getAllIso) {
-				setIsoToGetSeq.addAll(getGeneSeqAllIso(gffDetailGene));
+				setIsoToGetSeq.addAll(gffDetailGene.getLsCodSplit());
 			} else {
 				setIsoToGetSeq.addAll(getGeneSeqLongestIso(gffDetailGene));
 			}

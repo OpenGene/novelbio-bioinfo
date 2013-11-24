@@ -31,6 +31,7 @@ public class ListGff extends ListAbsSearch<GffDetailGene, GffCodGene, GffCodGene
 		GffDetailGene gffDetailGeneLast = null;
 		//合并两个重叠的基因
 		for (GffDetailGene gffDetailGene : this) {
+			gffDetailGene.resetStartEnd();
 			if (gffDetailGeneLast != null && gffDetailGene.getRefID().equals(gffDetailGeneLast.getRefID())) {
 				double[] regionLast = new double[]{gffDetailGeneLast.getStartAbs(), gffDetailGeneLast.getEndAbs()};
 				double[] regionThis = new double[]{gffDetailGene.getStartAbs(), gffDetailGene.getEndAbs() };

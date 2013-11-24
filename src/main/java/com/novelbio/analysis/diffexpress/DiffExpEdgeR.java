@@ -139,6 +139,7 @@ public class DiffExpEdgeR extends DiffExpAbs {
 		mapData.put("Group", getGroupInfo());
 		mapData.put("isReplicate", isHaveReplicate());
 		mapData.put("mapCompare2Outfile", getMapCompare2Outfile());
+		mapData.put("isSensitive", isSensitive);
 		String scriptContent = null;
 		try {
 			Template template = freeMarkerConfiguration.getTemplate("/R/diffgene/EdgeR.ftl");

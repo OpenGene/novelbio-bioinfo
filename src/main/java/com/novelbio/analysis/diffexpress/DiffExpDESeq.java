@@ -55,6 +55,7 @@ public class DiffExpDESeq extends DiffExpAbs {
 		mapData.put("Group", getGroupFactorAndSetRepeatExp());
 		mapData.put("isRepeatExp", isRepeatExp);
 		mapData.put("mapGroup2Out", getCompareAndWriteToFile());
+		mapData.put("isSensitive", isSensitive);
 		String scriptContent = null;
 		try {
 			Template template = freeMarkerConfiguration.getTemplate("/R/diffgene/DESeq.ftl");

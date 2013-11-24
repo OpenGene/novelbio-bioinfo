@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -22,6 +23,9 @@ import com.novelbio.base.fileOperate.FileOperate;
  *
  */
 public class CuffMerge {
+	/** 重新计算是否使用以前的结果 */
+	boolean isUseOldResult = true;
+	
 	/** ref的gtf */
 	String refGtf;
 	/** ref的染色体单个fasta文件 */
@@ -37,6 +41,9 @@ public class CuffMerge {
 	String exePath = "";
 	
 	String tmpGtfRecord;
+	public void setIsUseOldResult(boolean isUseOldResult) {
+		this.isUseOldResult = isUseOldResult;
+	}
 	/**
 	 * 设定cuffdiff所在的文件夹以及待比对的路径
 	 * @param exePath 如果在根目录下则设置为""或null
@@ -101,16 +108,20 @@ public class CuffMerge {
 	}
 	
 	public String runCuffmerge() {
-		String outMergedFile = null;
+		String outMergedFile = FileOperate.addSep(outputPrefix) + "merged.gtf"; 
+		if (isUseOldResult
+				&& FileOperate.isFileExistAndBigThanSize(outMergedFile , 0)
+				) {
+			return outMergedFile;
+		}
+		
 		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
 		cmdOperate.setGetLsErrOut();
 		cmdOperate.run();
-		if (cmdOperate.isFinishedNormal()) {
-			outMergedFile = FileOperate.addSep(outputPrefix) + "merged.gtf"; 
-		} else {
+		if (!cmdOperate.isFinishedNormal()) {
 			String errInfo = cmdOperate.getErrOut();
 			FileOperate.DeleteFileFolder(tmpGtfRecord);
-			throw new RuntimeException("cuffmerge error:\n" + errInfo);
+			throw new ExceptionCmd("cuffmerge error:\n" + errInfo);
 		}
 		FileOperate.DeleteFileFolder(tmpGtfRecord);
 		return outMergedFile;

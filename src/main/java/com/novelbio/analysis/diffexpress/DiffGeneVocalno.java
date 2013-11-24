@@ -95,10 +95,13 @@ import com.novelbio.generalConf.TitleFormatNBC;
 		List<Double> lsFDR2 = readListListColOut_0(lsInfoWithoutTitle, fdrCol);
 		Collections.sort(lsFDR2);
 		max99FDR = 45;// -Math.log10(lsFDR2.get((int)(lsFDR2.size()*(1- PRE))));
-		lsPvalue = readListListCol(lsInfoWithoutTitle, pvalueCol, 0, 1);
-		List<Double>  lsPvalueOut_0 = readListListColOut_0(lsInfoWithoutTitle,pvalueCol);
-		Collections.sort(lsPvalueOut_0);
-		max99Pvalue = 45;// -Math.log10(lsPvalueOut_0.get((int)(lsPvalueOut_0.size()*(1- PRE))));
+		if (pvalueCol > 0) {
+			lsPvalue = readListListCol(lsInfoWithoutTitle, pvalueCol, 0, 1);
+			List<Double>  lsPvalueOut_0 = readListListColOut_0(lsInfoWithoutTitle,pvalueCol);
+			Collections.sort(lsPvalueOut_0);
+			max99Pvalue = 45;// -Math.log10(lsPvalueOut_0.get((int)(lsPvalueOut_0.size()*(1- PRE))));
+		}
+
 		lsLogFC = readListListCol(lsInfoWithoutTitle, logfcCol, 10, 0);
 		List<Double> lsLogFC2 = new ArrayList<Double>();
 		lsLogFC2.addAll(lsLogFC);
@@ -228,8 +231,12 @@ import com.novelbio.generalConf.TitleFormatNBC;
 		
 		lslsDifGene = new ArrayList<List<String>>();
 		lslsDifGene.add(lslsInfo.get(0));
-		for (int i = 0; i < lsPvalue.size(); i++) {
-			double pvalue = lsPvalue.get(i);
+		if (pvalueCol < 0 && titlePvalueFDR != TitleFormatNBC.FDR) {
+			titlePvalueFDR = TitleFormatNBC.FDR;
+		}
+		
+		for (int i = 0; i < lsFDR.size(); i++) {
+			double pvalue = (pvalueCol > 0)? lsPvalue.get(i) : lsFDR.get(i);
 			double logfc = lsLogFC.get(i);
 			if (titlePvalueFDR == TitleFormatNBC.FDR) {
 				pvalue = lsFDR.get(i);
@@ -270,10 +277,10 @@ import com.novelbio.generalConf.TitleFormatNBC;
 		Volcano volcano = new Volcano();
 		volcano.setMaxX(max99LogFC);
 		volcano.setMinX(-max99LogFC);
-		if (titlePvalueFDR == TitleFormatNBC.Pvalue) {
+		if (max99Pvalue > 0 && titlePvalueFDR == TitleFormatNBC.Pvalue) {
 			volcano.setMaxY(max99Pvalue);
 			volcano.setLogFC2Pvalue(lslsInfo, logfcCol, pvalueCol);
-		} else if (titlePvalueFDR == TitleFormatNBC.FDR) {
+		} else if (max99Pvalue < 0 || titlePvalueFDR == TitleFormatNBC.FDR) {
 			volcano.setMaxY(max99FDR);
 			volcano.setLogFC2Pvalue(lslsInfo, logfcCol, fdrCol);
 		}

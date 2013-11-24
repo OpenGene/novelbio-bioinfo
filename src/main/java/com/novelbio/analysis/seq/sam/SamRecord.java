@@ -109,10 +109,16 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 				return false;
 			}
 		}
-		Object attrCC = samRecord.getAttribute("NH");
+		Integer attrCC = samRecord.getIntegerAttribute("NH");
 		if (attrCC != null) {
-			Integer number = (Integer) attrCC;
-			if (number > 1) {
+			if (attrCC > 1) {
+				return false;
+			}
+			return true;
+		}
+		attrCC = samRecord.getIntegerAttribute("IH");
+		if (attrCC != null) {
+			if (attrCC > 1) {
 				return false;
 			}
 			return true;
@@ -129,9 +135,16 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 	 * tophat的结果，一条reads如果mapping至多个位置，在文件中就会出现多次，所以返回可能大于1
 	 * */
 	public int getMappedReadsWeight() {
-		Object attrCC = samRecord.getAttribute("NH");
+		//Tophat的标记，bowtie2我们会人为标记该flag
+		Integer attrCC = samRecord.getIntegerAttribute("NH");
 		if (attrCC != null) {
-			numMappedReadsInFile = (Integer) attrCC;
+			numMappedReadsInFile = attrCC;
+			return numMappedReadsInFile;
+		}
+		//mapsplice的标记
+		attrCC = samRecord.getIntegerAttribute("IH");
+		if (attrCC != null) {
+			numMappedReadsInFile = attrCC;
 			return numMappedReadsInFile;
 		}
 		return 1;

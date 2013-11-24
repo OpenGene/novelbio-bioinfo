@@ -41,6 +41,7 @@ public class DiffExpEBSeq extends DiffExpAbs{
 		mapData.put("filename", getFileName());
 		mapData.put("mapOut2Compare_vector", getMapOut2Compare_vector());
 		mapData.put("mapOut2sample", mapOutFileName2Compare);
+		mapData.put("isSensitive", isSensitive);
 		String scriptContent = null;
 		try {
 			Template template = freeMarkerConfiguration.getTemplate("/R/diffgene/EBSeq.ftl");

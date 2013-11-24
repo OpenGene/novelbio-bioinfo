@@ -13,6 +13,7 @@ import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamToBamSort;
 import com.novelbio.base.PathDetail;
+import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -191,7 +192,7 @@ public abstract class MapDNA implements MapDNAint {
 				logger.error("index make error:" + parentPath + chrFile);
 				deleteIndex();
 				FileOperate.delFile(parentPath + flagMakeIndex);
-				throw new RuntimeException("index make error:" + parentPath + chrFile);
+				throw new ExceptionCmd("index make error:" + parentPath + chrFile);
 			}
 		}
 	}

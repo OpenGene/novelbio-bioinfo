@@ -202,7 +202,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		   } else if(ss[2].equals("three_prime_UTR") || ss[2].equals("five_prime_UTR") ) {
 			   continue;
 		   } else {
-			   logger.debug("出现未知exon：" +  ArrayOperate.cmbString(ss, "\t"));
+			   logger.info("出现未知exon：" +  ArrayOperate.cmbString(ss, "\t"));
 		   }
 			  
 	   }
@@ -259,7 +259,6 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	 //when read the # and the line contains gene, it means the new LOC
 	   String geneID = ss[0] + patID.getPatFirst(ss[8]);
 	   String geneName = getGeneName(ss[8]); setTaxID(ss, geneName);
-	   
 	   GffDetailGene gffDetailLOC = mapGenID2GffDetail.get(geneID);
 	   if (gffDetailLOC == null) {
 		   gffDetailLOC=new GffDetailGene(ss[0], geneName, ss[6].equals("+") || ss[6].equals("."));//新建一个基因类
@@ -284,7 +283,6 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   String rnaID = ss[0] + patID.getPatFirst(ss[8]);
 	   String rnaName = add_MapRnaID2RnaName_And_MapRnaID2GeneID(lastGeneIDandName, rnaID, ss);
 	   GffDetailGene gffDetailGene = getGffDetailRnaID(rnaID);
-	   
 	  GeneType mRNAtype = getMrnaName(ss);
 	   try {
 		   GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.addsplitlist(rnaName,gffDetailGene.getNameSingle(), mRNAtype, ss[6].equals("+") || ss[6].equals("."));//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类

@@ -165,6 +165,21 @@ public class GffDetailGene extends ListDetailAbs {
 			gffGeneIsoInfo.setTesRegion(upTes, downTes);
 		}
 	}
+	/** 根据mRNA的值重新设定起点和终点，因为NCBI的gff可能会出现起点终点与该起点终点不一致的情况 */
+	protected void resetStartEnd() {
+		int startAbs = Integer.MAX_VALUE, endAbs = Integer.MIN_VALUE;
+		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
+			if (startAbs > gffGeneIsoInfo.getStartAbs()) {
+				startAbs = gffGeneIsoInfo.getStartAbs();
+			}
+			if (endAbs < gffGeneIsoInfo.getEndAbs()) {
+				endAbs = gffGeneIsoInfo.getEndAbs();
+			}
+		}
+		setStartAbs(startAbs);
+		setEndAbs(endAbs);
+		
+	}
 	/**
 	 * 给最后一个转录本添加exon坐标，<br>
 	 * 只需要注意按照次序装，也就是说如果正向要从小到大的加，反向从大到小的加
@@ -1008,6 +1023,7 @@ public class GffDetailGene extends ListDetailAbs {
 			return mapGeneStructure2Str;
 		}
 	}
+
 }
 
 class IsoGroup {

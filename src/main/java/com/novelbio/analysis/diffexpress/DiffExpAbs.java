@@ -75,6 +75,9 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	
 	boolean isLog2Value = false;
 	
+	/** 是否提高算法的敏感度 */
+	boolean isSensitive = false;
+	
 	String scriptContent;
 	
 	public DiffExpAbs() {
@@ -86,6 +89,13 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	/** 设定是否为log2value，仅在limma中使用 */
 	public void setLog2Value(boolean isLog2Value) {
 		this.isLog2Value = isLog2Value;
+	}
+	/**
+	 * 是否提高差异基因筛选的敏感度，意思就是挑选出更多的差异基因
+	 * @param isSensitive
+	 */
+	public void setSensitive(boolean isSensitive) {
+		this.isSensitive = isSensitive;
 	}
 	/**
 	 * 一系列的表示基因分组的列<br>
@@ -399,10 +409,10 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	public static HashMap<String, EnumDifGene> getMapMethod2ID() {
 		HashMap<String, EnumDifGene> mapMethod2ID = new LinkedHashMap<>();
 		mapMethod2ID.put("Limma--Microarray", EnumDifGene.Limma);
-		mapMethod2ID.put("DEGseq--RPKM/Counts(recommand)", EnumDifGene.DEGSeq);
-		mapMethod2ID.put("EdegR--Counts(Needs Replication)", EnumDifGene.EdgeR);
-		mapMethod2ID.put("DESeq--Counts(Needs Replication)", EnumDifGene.DESeq);
+		mapMethod2ID.put("DEGseq--RPKM(No Rep)", EnumDifGene.DEGSeq);
+		mapMethod2ID.put("DESeq--Counts(Needs Rep)", EnumDifGene.DESeq);
 		mapMethod2ID.put("EBSeq--Counts", EnumDifGene.EBSeq);
+		mapMethod2ID.put("EdegR--Counts(Needs Rep)", EnumDifGene.EdgeR);
 		mapMethod2ID.put("Ttest", EnumDifGene.Ttest);
 		return mapMethod2ID;
 	}

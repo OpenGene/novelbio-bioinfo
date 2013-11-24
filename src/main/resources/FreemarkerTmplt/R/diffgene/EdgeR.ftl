@@ -2,7 +2,11 @@ filePath = "${workspace}"
 fileName = "${filename}"
 setwd(filePath)
 library(edgeR)
-bcv = 0.3
+<#if isSensitive>
+	bcv = 0.01
+<#else>
+	bcv = 0.3
+</#if>
 plus = 0
 data = read.table(fileName, he=T, sep="\t", row.names=1)
 data = data + plus

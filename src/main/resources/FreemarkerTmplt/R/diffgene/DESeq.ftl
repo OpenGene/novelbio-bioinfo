@@ -9,7 +9,11 @@ conds = factor( c(${Group}) )
 cds = newCountDataSet( data, conds )
 cds = estimateSizeFactors(cds)
 <#if isRepeatExp>
-   cds =  estimateDispersions(cds)
+   <#if isSensitive>
+   		cds =  estimateDispersions(cds, method="per-condition", sharingMode="gene-est-only")
+   	<#else>
+   		cds =  estimateDispersions(cds)
+   	</#if>
 <#else>
    cds = estimateDispersions( cds, method="blind", sharingMode="fit-only", fitType="local")
 </#if>
