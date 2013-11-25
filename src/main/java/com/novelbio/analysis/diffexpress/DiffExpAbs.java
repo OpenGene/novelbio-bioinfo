@@ -122,8 +122,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	 * 0: treatment<br>
 	 * 1: control
 	 */
-	public void addFileName2Compare(String fileName, String fold, String[] comparePair) {
-		fileName = FileHadoop.convertToLocalPath(FoldeCreate.createAndInFold(fileName, fold));
+	public void addFileName2Compare(String fileName, String[] comparePair) {
 		mapOutFileName2Compare.put(fileName, comparePair);
 		calculate = false;
 	}

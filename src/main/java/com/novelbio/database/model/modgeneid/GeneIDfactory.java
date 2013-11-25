@@ -9,7 +9,7 @@ public class GeneIDfactory implements GeneIDfactoryInt {
 	 * @param genUniID
 	 * @param taxID 物种ID
 	 */
-	public GeneIDInt createGeneID(int idType, String genUniID, int taxID) {
+	public GeneIDabs createGeneID(int idType, String genUniID, int taxID) {
 		GeneIDabs geneID = null;
 		genUniID = genUniID.trim();
 		if (genUniID.equals("")) {
@@ -26,7 +26,7 @@ public class GeneIDfactory implements GeneIDfactoryInt {
 	 * @param taxIDfile 物种ID
 	 */
 	@Override
-	public GeneIDInt createGeneID(AgeneUniID ageneUniID) {
+	public GeneIDabs createGeneID(AgeneUniID ageneUniID) {
 		return new GeneIDabs(ageneUniID);
 	}
 	
@@ -39,7 +39,7 @@ public class GeneIDfactory implements GeneIDfactoryInt {
 	 * @param taxID
 	 *            物种ID
 	 */
-	public GeneIDInt createGeneID(String accID, int taxID) {
+	public GeneIDabs createGeneID(String accID, int taxID) {
 		GeneIDabs geneID = null;
 		if (accID != null) {
 			accID = accID.replace("\"", "").trim();

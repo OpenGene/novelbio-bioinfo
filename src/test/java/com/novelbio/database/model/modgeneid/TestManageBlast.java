@@ -34,7 +34,7 @@ public class TestManageBlast extends TestCase {
 		List<AGene2Go> lsAGene2Gos = geneID.getGene2GOBlast(GOtype.BP);
 		assertEquals(2, lsAGene2Gos.size());
 		manageBlastInfo.getFileInfoAll();
-		List<BlastFileInfo> ls = manageBlastInfo.queryBlastFile(blastFileName, 456, 123456);
+		List<BlastFileInfo> ls = manageBlastInfo.queryBlastFile(blastFileName, "456", 123456);
 		manageBlastInfo.removeBlastFile(ls.get(0));
 	}
 	

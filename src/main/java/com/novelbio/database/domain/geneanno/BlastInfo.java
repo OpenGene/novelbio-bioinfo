@@ -14,7 +14,6 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.annotation.blast.BlastStatistics;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -87,22 +86,23 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	
 	/**
 	 * 用 <b>-m8</b> 参数跑出来的Blast程序跑出来的结果
+	 * 默认输入的是accID
 	 * @param queryDB 是否读取数据库并初始化
 	 * @param taxIDQ queryTaxID
 	 * @param taxIDS subjectTaxID
 	 * @param blastStr blast的具体ID
 	 */
 	public BlastInfo(boolean queryDB, int taxIDQ, int taxIDS, String blastStr) {
-		this(queryDB, taxIDQ, false, taxIDS, false, blastStr);
+		this(queryDB, taxIDQ, true, taxIDS, true, blastStr);
 	}
 	
 	/**
 	 * 用 <b>-m8</b> 参数跑出来的Blast程序跑出来的结果
 	 * @param queryDB 是否读取数据库并初始化
 	 * @param taxIDQ queryTaxID
-	 * @param isAccIDQ queryID是否为accID，一般都是false
+	 * @param isAccIDQ queryID是否为accID，一般都是true
 	 * @param taxIDS subjectTaxID
-	 * @param isAccIDS subjectID是否为accID，一般都是false
+	 * @param isAccIDS subjectID是否为accID，一般都是true
 	 * @param blastStr blast的具体某一行的内容
 	 */
 	public BlastInfo(boolean queryDB, int taxIDQ, boolean isAccIDQ, int taxIDS, boolean isAccIDS, String blastStr) {
@@ -146,7 +146,6 @@ public class BlastInfo implements Comparable<BlastInfo> {
 				geneIDS = new GeneID(GeneID.IDTYPE_UNIID, blastInfo[1], taxIDS);
 			}
 		}
-		
 		this.queryID = geneIDQ.getGeneUniID();
 		this.queryTax = geneIDQ.getTaxID();
 		this.queryIDtype = geneIDQ.getIDtype();

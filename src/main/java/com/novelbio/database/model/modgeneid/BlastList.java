@@ -8,12 +8,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.base.SepSign;
 import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.service.servgeneanno.ManageBlastInfo;
 
 /** 处理blast信息的类 */
 public class BlastList {
+	private static final Logger logger = Logger.getLogger(BlastList.class);
+	
 	int idType;
 	String genUniID;
 	int taxID;
@@ -175,7 +179,12 @@ public class BlastList {
 	
 	protected void searchBlastInfo() {
 		mapSubTaxID2_Key2BlastInfo.clear();
-		List<BlastInfo> lsBlastInfos = manageBlastInfo.queryBlastInfoLs(genUniID, taxID);
+		List<BlastInfo> lsBlastInfos = new ArrayList<>();
+		try {
+			lsBlastInfos = manageBlastInfo.queryBlastInfoLs(genUniID, taxID);
+		} catch (Exception e) {
+			logger.error("query database error, genUniID:" + genUniID + " taxID:" + taxID);
+		}
 		
 		for (BlastInfo blastInfo : lsBlastInfos) {
 			int taxID = blastInfo.getSubjectTax();

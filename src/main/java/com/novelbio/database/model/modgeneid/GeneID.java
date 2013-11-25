@@ -18,7 +18,6 @@ import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgo.GOInfoAbs;
-import com.novelbio.database.model.modkegg.KeggInfo;
 import com.novelbio.database.model.modkegg.KeggInfoAbs;
 
 /**
@@ -37,7 +36,7 @@ public class GeneID implements GeneIDInt{
 	public final static int IDTYPE_UNIID = 200;
 	public final static int IDTYPE_ACCID = 300; 
 
-	private GeneIDInt geneID;
+	private GeneIDabs geneID;
 	
 	GeneIDfactoryInt geneIDfactoryInt = new GeneIDfactory();
 	
@@ -60,7 +59,7 @@ public class GeneID implements GeneIDInt{
 	}
 	
 	/** 可以输入一个geneIDabs */
-	protected GeneID(GeneIDInt geneid) {
+	protected GeneID(GeneIDabs geneid) {
 		this.geneID = geneid;
 	}
 	
@@ -263,7 +262,7 @@ public class GeneID implements GeneIDInt{
 	public List<AGene2Go> getGene2GO(GOtype GOType) {
 		return geneID.getGene2GO(GOType);
  	}
-	public GOInfoAbs getGOInfo() {
+	protected GOInfoAbs getGOInfo() {
 		return geneID.getGOInfo();
 	}
 	@Override

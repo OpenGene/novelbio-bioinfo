@@ -2,9 +2,12 @@ package com.novelbio.database.mongorepo.geneanno;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
+import com.novelbio.database.domain.geneanno.BlastFileInfo;
 import com.novelbio.database.domain.geneanno.BlastInfo;
 
 public interface RepoBlastInfo extends PagingAndSortingRepository<BlastInfo, String> {
@@ -20,6 +23,8 @@ public interface RepoBlastInfo extends PagingAndSortingRepository<BlastInfo, Str
 	
 	@Query(value="{ 'queryID' : ?0, 'queryTax' : ?1}")
 	List<BlastInfo> findByQueryID(String queryID, int queryTax);
+	
+	Page<BlastInfo> findByBlastFileInfo(BlastFileInfo blastFileInfo, Pageable pageable);
 	
 	@Query(value="{ 'queryID' : ?0, 'queryTax' : ?1, 'subjectID' : ?2, 'subjectTax' : ?3}")
 	BlastInfo findByQueryIDAndSubID(String queryID, int queryTax, String subjectID, int subjectTax);

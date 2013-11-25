@@ -16,7 +16,7 @@ import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.database.model.modkegg.KeggInfo;
 import com.novelbio.database.model.modkegg.KeggInfoAbs;
 
-public interface GeneIDInt{
+public interface GeneIDInt {
 
 	AgeneUniID getAgeneUniID();
 	/**
@@ -253,8 +253,6 @@ GO_REF:0000004<br>
 	 * 没找到，也就是说数据库中没有该基因，则返回Null
 	 */
 	AgeneUniID getAccID_With_DefaultDB();
-
-	public GOInfoAbs getGOInfo();
 	
 	public boolean equals(Object obj);
 	

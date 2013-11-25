@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -35,6 +37,7 @@ public class ManageBlastInfo {
 	}
 	
 	/**
+	 * 升级指定的blast文件
 	 * @param taxIDQ
 	 * @param taxIDS
 	 * @param blastFile
@@ -45,14 +48,14 @@ public class ManageBlastInfo {
 		TxtReadandWrite txtRead = new TxtReadandWrite(blastFile);
 		for (String content : txtRead.readlines()) {
 			BlastInfo blastInfo = new BlastInfo(taxIDQ, taxIDS, content);
-			BlastFileInfo blastFileInfo = new BlastFileInfo();
-			blastFileInfo.setFileName(blastFile);
-			blastFileInfo.setTmp(true);
-			blastFileInfo.setQueryTaxID(taxIDQ);
-			blastFileInfo.setSubjectTaxID(taxIDS);
-			manageBlastInfo.saveBlastFile(blastFileInfo);
 			manageBlastInfo.updateBlast(blastInfo);
 		}
+		BlastFileInfo blastFileInfo = new BlastFileInfo();
+		blastFileInfo.setFileName(blastFile);
+		blastFileInfo.setTmp(true);
+		blastFileInfo.setQueryTaxID(taxIDQ);
+		blastFileInfo.setSubjectTaxID(taxIDS);
+		manageBlastInfo.saveBlastFile(blastFileInfo);
 		txtRead.close();
 	}
 	
@@ -97,7 +100,14 @@ public class ManageBlastInfo {
 	public List<BlastInfo> queryBlastInfoLs(String queryID, int taxIDQ) {
 		return repoBlastInfo.findByQueryID(queryID, taxIDQ);
 	}
-	
+	public Page<BlastInfo> queryBlastInfoLs(String fileName, Pageable pageable) {
+		List<BlastFileInfo> lsFileInfo = queryBlastFile(fileName);
+		if (lsFileInfo.size() == 0) {
+			return null;
+		}
+		BlastFileInfo blastFileInfo = lsFileInfo.get(0);
+		return repoBlastInfo.findByBlastFileInfo(blastFileInfo, pageable);
+	}
 	public void save(BlastInfo blastInfo) {		
 		if (blastInfo != null) {
 			repoBlastInfo.save(blastInfo);
@@ -118,10 +128,17 @@ public class ManageBlastInfo {
 	public List<BlastFileInfo> getFileInfoAll() {
 		return mongoTemplate.findAll(BlastFileInfo.class);
 	}
+	public Iterable<BlastInfo> getBlastInfoAll() {
+		return repoBlastInfo.findAll();
+	}
+	public void removeBlastInfo(String blastInfoId) {
+		repoBlastInfo.delete(blastInfoId);
+	}
+	
 	public List<BlastFileInfo> queryBlastFile(String fileName) {
 		return mongoTemplate.find(new Query(Criteria.where("fileName").is(fileName)), BlastFileInfo.class);
 	}
-	
+
 	/** 获得仅在blast中出现的临时物种
 	 * @param usrid 为null表示获取全体blast的文本信息
 	 * @return
