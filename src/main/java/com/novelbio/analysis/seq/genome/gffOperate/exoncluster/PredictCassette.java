@@ -39,7 +39,7 @@ public class PredictCassette extends SpliceTypePredict {
 		}
 		int exist = 0;
 		for (Integer align : setAlignExist) {
-			exist = exist + tophatJunction.getJunctionSite(condition, exonCluster.getRefID(), align);
+			exist = exist + tophatJunction.getJunctionSiteAll(condition, exonCluster.getRefID(), align);
 		}
 		lsCounts.add((double) exist);
 		return lsCounts;

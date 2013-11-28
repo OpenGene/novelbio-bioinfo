@@ -29,7 +29,7 @@ public abstract class SpliceTypePredict {
 		this.tophatJunction = tophatJunction;
 	}
 	/** 获得用于检验的junction reads */
-	public abstract List<Double> getJuncCounts(String condition);
+	public abstract List<List<Double>> getJuncCounts(String condition);
 	/** 是否为该种剪接类型 */
 	public boolean isSpliceType() {
 		if (isType != null) {
@@ -62,21 +62,38 @@ public abstract class SpliceTypePredict {
 	 * @param gffDetailGene1
 	 * @param exonCluster
 	 * @param condition
-	 * @return
+	 * @return list-int 返回同一个位点，n个重复中的情况
 	 */
-	protected int getJunReadsNum(String condition) {
+	protected List<Double> getJunReadsNum(String condition) {
 		GffDetailGene gffDetailGene = exonCluster.getParentGene();
-		int result = 0;
+		List<Double> lsInt = null;
 		HashSet<String> setLocation = new HashSet<String>();
 		setLocation.addAll(getSkipExonLoc_From_IsoHaveExon());
 		setLocation.addAll(getSkipExonLoc_From_IsoWithoutExon(gffDetailGene));
 		
 		for (String string : setLocation) {
 			String[] ss = string.split(SepSign.SEP_ID);
-			result = result + tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), gffDetailGene.getRefID(),
+			List<Double> lsTmpValue = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), gffDetailGene.getRefID(),
 					Integer.parseInt(ss[0]), Integer.parseInt(ss[1]));
+			addLsDouble(lsInt, lsTmpValue);	
 		}
-		return result;
+		return lsInt;
+	}
+	
+	/**
+	 * 将lsTmpValue的数据加到lsResult上
+	 * @param lsResult
+	 * @param lsTmpValue
+	 * @return
+	 */
+	protected List<Double> addLsDouble(List<Double> lsResult, List<Double> lsTmpValue) {
+		if (lsResult == null) {
+			lsResult = new ArrayList<>(lsTmpValue);
+		}
+		for (int i = 0; i < lsTmpValue.size(); i++) {
+			lsResult.add(i, lsResult.get(i) + lsTmpValue.get(i));
+		}
+		return lsResult;
 	}
 	
 	/**

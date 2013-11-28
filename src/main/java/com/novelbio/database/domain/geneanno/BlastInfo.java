@@ -11,13 +11,13 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.novelbio.analysis.annotation.blast.BlastStatistics;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.service.servgeneanno.ManageBlastInfo;
 
 /**
  * <b>导入数据库的时候数据库中必须已经存在了subjectID</b><br>
@@ -50,8 +50,7 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	private int subjectIDtype;
 	
 	@Indexed
-	@DBRef
-	private BlastFileInfo blastFileInfo;
+	private String blastFileId;
 	
 	@Transient
 	GeneID geneIDS = null;
@@ -192,8 +191,9 @@ public class BlastInfo implements Comparable<BlastInfo> {
 		return geneIDS;
 	}
 	
+	/** 必须是有ID的blastFileInfo */
 	public void setBlastFileInfo(BlastFileInfo blastFileInfo) {
-		this.blastFileInfo = blastFileInfo;
+		this.blastFileId = blastFileInfo.getId();
 	}
 	
 	/**
@@ -227,7 +227,11 @@ public class BlastInfo implements Comparable<BlastInfo> {
 		return this.subjectID;
 	}
 	public BlastFileInfo getBlastFileInfo() {
-		return blastFileInfo;
+		if (blastFileId == null) {
+			return null;
+		}
+		ManageBlastInfo manageBlastInfo = ManageBlastInfo.getInstance();
+		return manageBlastInfo.findBlastFile(blastFileId);
 	}
 	/**
 	 * 获得Blast搜索到的序列的物种

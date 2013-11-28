@@ -106,8 +106,9 @@ public class ManageBlastInfo {
 			return null;
 		}
 		BlastFileInfo blastFileInfo = lsFileInfo.get(0);
-		return repoBlastInfo.findByBlastFileInfo(blastFileInfo, pageable);
+		return repoBlastInfo.findByBlastFileInfo(blastFileInfo.getId(), pageable);
 	}
+	
 	public void save(BlastInfo blastInfo) {		
 		if (blastInfo != null) {
 			repoBlastInfo.save(blastInfo);
@@ -138,7 +139,9 @@ public class ManageBlastInfo {
 	public List<BlastFileInfo> queryBlastFile(String fileName) {
 		return mongoTemplate.find(new Query(Criteria.where("fileName").is(fileName)), BlastFileInfo.class);
 	}
-
+	public BlastFileInfo findBlastFile(String id) {
+		return mongoTemplate.findById(id, BlastFileInfo.class);
+	}
 	/** 获得仅在blast中出现的临时物种
 	 * @param usrid 为null表示获取全体blast的文本信息
 	 * @return
@@ -188,7 +191,7 @@ public class ManageBlastInfo {
 	
 	/** 删除某个blastFile以及与之相关的blast信息 */
 	public void removeBlastFile(BlastFileInfo blastFileInfo) {
-		mongoTemplate.remove(new Query(Criteria.where("blastFileInfo").is(blastFileInfo)), BlastInfo.class);
+		mongoTemplate.remove(new Query(Criteria.where("blastFileId").is(blastFileInfo.getId())), BlastInfo.class);
 		mongoTemplate.remove(blastFileInfo);
 	}
 	

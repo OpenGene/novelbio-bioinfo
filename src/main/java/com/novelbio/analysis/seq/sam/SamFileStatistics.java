@@ -10,12 +10,11 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
-
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
@@ -37,7 +36,6 @@ import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.fasta.ChrFoldHash.CompareChrID;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.mapping.MappingReadsType;
-import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -232,9 +230,17 @@ public class SamFileStatistics implements AlignmentRecorder {
 
 	@Override
 	public void addAlignRecord(AlignRecord samRecord) {
+		if (!samRecord.isMapped()) {
+			allReadsNum ++;
+			return;
+		}
 		int readsMappedWeight = samRecord.getMappedReadsWeight();
+		if (readsMappedWeight == 0) {
+			readsMappedWeight = 1;
+			logger.debug("reads mapped weight = 0: " + samRecord.toString());
+		}
 		double readsNum = (double)1/readsMappedWeight;
-		allReadsNum = allReadsNum + readsNum;
+		allReadsNum += readsNum;
 		if (samRecord.isMapped()) {
 //			mappedReadsNum = mappedReadsNum + (double)1/readsMappedWeight;
 			setChrReads(readsMappedWeight, samRecord);

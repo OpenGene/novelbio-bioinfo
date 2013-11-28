@@ -125,7 +125,7 @@ public class PredictRetainIntron extends SpliceTypePredict implements AlignmentR
 				for (int i = 0; i < lsExonInfo.size() - 1; i++) {
 					int startLoc =  lsExonInfo.get(i).getEndCis();
 					int endLoc = lsExonInfo.get(i+1).getStartCis();
-					int readsNum = tophatJunction.getJunctionSite(exonCluster.isCis5to3(), exonCluster.getRefID(), startLoc, endLoc);
+					int readsNum = tophatJunction.getJunctionSiteAll(exonCluster.isCis5to3(), exonCluster.getRefID(), startLoc, endLoc);
 					if (readsNum > maxReadsNum) {
 						maxReadsNum = readsNum;
 						alignRetain = new Align(exonCluster.getRefID(), startLoc, endLoc);

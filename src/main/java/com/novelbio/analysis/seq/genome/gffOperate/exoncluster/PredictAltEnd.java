@@ -36,7 +36,7 @@ public class PredictAltEnd extends PredictAltStartEnd {
 		}
 		String chrID = lsSite.get(0).getRefID();
 		for (Integer integer : setStartSide) {
-			lsCounts.add((double) tophatJunction.getJunctionSite(condition, chrID, integer));
+			lsCounts.add((double) tophatJunction.getJunctionSiteAll(condition, chrID, integer));
 		}
 		lsCounts.add((double) getJunReadsNum(condition));
 		return lsCounts;
@@ -78,7 +78,7 @@ public class PredictAltEnd extends PredictAltStartEnd {
 		});
 		
 		for (List<ExonInfo> lsExonInfos : lslsExonInfos) {
-			int juncReads = tophatJunction.getJunctionSite(exonCluster.isCis5to3(), exonCluster.getRefID(), lsExonInfos.get(lsExonInfos.size() - 1).getStartCis());
+			int juncReads = tophatJunction.getJunctionSiteAll(exonCluster.isCis5to3(), exonCluster.getRefID(), lsExonInfos.get(lsExonInfos.size() - 1).getStartCis());
 			mapJuncNum2Exon.put(juncReads, lsExonInfos);
 		}
 		//获得第一个

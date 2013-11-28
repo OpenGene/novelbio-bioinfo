@@ -1,7 +1,9 @@
 package com.novelbio.analysis.seq.rnaseq;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -94,8 +96,13 @@ public class JunctionInfo extends ListDetailAbs {
 		/**  记载与该jun相邻的后一个jun，与基因的方向无关 */
 		Map<String, JunctionUnit> mapJunAfter = new HashMap<>();
 		
-		/** value是为了地址传递才采用数组 */
-		Map<String, int[]> mapCond2JunNum = new HashMap<String, int[]>();
+		/**
+		 * key1:condition<br>
+		 * key2:group<br>
+		 * value:junction number<p>
+		 *  value是为了地址传递才采用数组
+		 */
+		Map<String, Map<String, double[]>> mapCond2group2JunNum = new HashMap<>();
 		/**
 		 * 根据正反向自动设定起点和终点
 		 * @param start 从1开始记数
@@ -117,7 +124,7 @@ public class JunctionInfo extends ListDetailAbs {
 			if (junBeforeExist == null) {
 				mapJunBefore.put(key, junBefore);
 			} else {
-				junBeforeExist.addReadsNum(junBefore);
+				junBeforeExist.addReadsJuncUnit(junBefore);
 			}
 		}
 		/** 添加下一个Jun，如果下一个jun存在，则把readsNum的数字加到下一个Jun中*/
@@ -129,7 +136,7 @@ public class JunctionInfo extends ListDetailAbs {
 			if (junAfterExist == null) {
 				mapJunAfter.put(key, junAfter);
 			} else {
-				junAfterExist.addReadsNum(junAfter);
+				junAfterExist.addReadsJuncUnit(junAfter);
 			}
 		}
 		
@@ -142,55 +149,81 @@ public class JunctionInfo extends ListDetailAbs {
 			return new ArrayList<>(mapJunBefore.values());
 		}
 		
-		public void setReadsNum(String condition, int readsNum) {
-			mapCond2JunNum.put(condition, new int[]{readsNum});
-		}
-		/** readsNum+1 */
-		public void addReadsNum(JunctionUnit junctionUnit) {
-			for (String condition : junctionUnit.mapCond2JunNum.keySet()) {
-				int[] numAdd = junctionUnit.mapCond2JunNum.get(condition);
-				if (mapCond2JunNum.containsKey(condition)) {
-					int[] num = mapCond2JunNum.get(condition);
-					num[0] = num[0] + numAdd[0];
-				} else {
-					mapCond2JunNum.put(condition, numAdd);
-				}
+		public void setReadsNum(String condition, String group, int readsNum) {
+			if (group == null) group = "";
+			
+			Map<String, double[]> mapGroup2Value = null;
+			if (mapCond2group2JunNum.containsKey(condition)) {
+				mapGroup2Value = mapCond2group2JunNum.get(condition);
+			} else {
+				mapGroup2Value = new HashMap<>();
+				mapCond2group2JunNum.put(condition, mapGroup2Value);
 			}
+			mapGroup2Value.put(group, new double[]{readsNum});
 		}
 		
 		/** readsNum+1 */
-		public void addReadsNum1(String condition) {
-			addReadsNum(condition, 1);
+		public void addReadsNum1(String condition, String group) {
+			addReadsNum(condition, group, 1);
 		}
+		
 		/** readsNum+1 */
-		public void addReadsNum(String condition, int num) {
-			int[] readsNum = mapCond2JunNum.get(condition);
+		public void addReadsNum(String condition, String group, double num) {
+			Map<String, double[]> mapGroup2Value = mapCond2group2JunNum.get(condition);
+			if (mapGroup2Value == null) {
+				mapGroup2Value = new HashMap<>();//方便排序正确
+				mapCond2group2JunNum.put(condition, mapGroup2Value);
+			}
+			
+			double[] readsNum = mapGroup2Value.get(group);
 			if (readsNum == null) {
-				readsNum = new int[1];
-				mapCond2JunNum.put(condition, readsNum);
+				readsNum = new double[1];
+				mapGroup2Value.put(condition, readsNum);
 			}
 			readsNum[0] += num;
 		}
 		
 		/** 把另一个junctionUnit中的信息全部加过来 */
 		protected void addReadsJuncUnit(JunctionUnit junctionUnit) {
-			for (String condition : junctionUnit.mapCond2JunNum.keySet()) {
-				addReadsNum(condition, junctionUnit.mapCond2JunNum.get(condition)[0]);
+			for (String condition : junctionUnit.mapCond2group2JunNum.keySet()) {
+				Map<String, double[]> mapGroup2Value = junctionUnit.mapCond2group2JunNum.get(condition);
+				for (String group : mapGroup2Value.keySet()) {
+					addReadsNum(condition, group, mapGroup2Value.get(group)[0]);
+				}
 			}
 		}
 		
-		public int getReadsNum(String condition) {
-			int[] readsNum = mapCond2JunNum.get(condition);
-			if (readsNum == null) {
+		public double getReadsNum(String condition, String group) {
+			try {
+				double[] readsNum = mapCond2group2JunNum.get(condition).get(group);
+				if (readsNum == null) {
+					return 0;
+				}
+				return readsNum[0];
+			} catch (Exception e) {
 				return 0;
 			}
-			return readsNum[0];
+		}
+		/** 返回该时期全体组的reads num */
+		public List<Double> getReadsNum(String condition, Collection<String> lsGroups) {
+			List<Double> lsReads = new ArrayList<>();
+			Map<String, double[]> mapGroup2Value = mapCond2group2JunNum.get(condition);
+			if (mapGroup2Value == null) {
+				return new ArrayList<>();
+			}
+			for (String group : lsGroups) {
+				double[] value = mapGroup2Value.get(group);
+				lsReads.add(value[0]);
+			}
+			return lsReads;
 		}
 		/** 返回所有时期的junction reads总和 */
 		public int getReadsNumAll() {
 			int numAll = 0;
-			for (int[] readsNums : mapCond2JunNum.values()) {
-				numAll += readsNums[0];
+			for (Map<String, double[]> mapGroup2Value : mapCond2group2JunNum.values()) {
+				for (double[] readsNums : mapGroup2Value.values()) {
+					numAll += readsNums[0];
+				}
 			}
 			return numAll;
 		}

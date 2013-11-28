@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.broad.tribble.Tribble;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.novelbio.database.domain.geneanno.AgeneUniID;
@@ -62,7 +61,7 @@ public class ManageNCBIUniID {
 	 * @param taxID 小于等于0表示不考虑
 	 * @return
 	 */
-	public AgeneUniID findByGeneUniIDAndAccIDAndTaxID(int geneType, String geneUniID, String accID, int taxID){
+	public AgeneUniID findByGeneUniIDAndAccIDAndTaxID(int geneType, String geneUniID, String accID, int taxID) {
 		accID = accID.toLowerCase();
 		if (geneType == GeneID.IDTYPE_GENEID) {
 			if (taxID > 0) {

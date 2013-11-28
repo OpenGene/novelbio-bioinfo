@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
@@ -20,46 +21,41 @@ public class PredictUnKnown extends SpliceTypePredict {
 	}
 
 	@Override
-	public ArrayList<Double> getJuncCounts(String condition) {
+	public List<List<Double>> getJuncCounts(String condition) {
 		List<ExonInfo> lsExon = exonCluster.getAllExons();
-		ArrayList<Double> lsCounts = new ArrayList<Double>();
+		List<List<Double>> lsCounts = new ArrayList<>();
 		if (exonCluster.getMapIso2ExonIndexSkipTheCluster().size() > 0) {
-			lsCounts.add((double) getJunReadsNum(condition));
+			lsCounts.add(getJunReadsNum(condition));
 		}
 		
 		//合并相同的边界
-		HashSet<Align> setAligns = new HashSet<Align>();
+		Set<Integer> setEdge = new HashSet<Integer>();
 		for (ExonInfo exonInfo : lsExon) {
-			setAligns.add(new Align(exonInfo.getRefID(), exonInfo.getStartAbs(), exonInfo.getEndAbs()));
+			setEdge.add(exonInfo.getStartAbs());
+			setEdge.add(exonInfo.getEndAbs());
 		}
-		for (Align align : setAligns) {
-			int thisCounts = tophatJunction.getJunctionSite(condition, exonCluster.getRefID(), align.getStartCis()) 
-					+ tophatJunction.getJunctionSite(condition, exonCluster.getRefID(), align.getEndCis());
+		for (Integer edge : setEdge) {
+			List<Double> ls1 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), edge);
 			lsCounts.add((double) thisCounts);
 		}
 		return lsCounts;
 	}
-	/**
-	 * 获得跳过该exonCluster组的readsNum
-	 * @param gffDetailGene1
-	 * @param exonCluster
-	 * @param condition
-	 * @return
-	 */
-	protected int getJunReadsNum(String condition) {
+
+	protected List<Double> getJunReadsNum(String condition) {
 		GffDetailGene gffDetailGene = exonCluster.getParentGene();
-		int result = 0;
+		List<Double> lsResult = new ArrayList<>();
 		HashSet<String> setLocation = new HashSet<String>();
 		setLocation.addAll(getSkipExonLoc_From_IsoHaveExon());
 		setLocation.addAll(getSkipExonLoc_From_IsoWithoutExon(gffDetailGene));
 		
 		for (String string : setLocation) {
 			String[] ss = string.split(SepSign.SEP_ID);
-			result = result + tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), gffDetailGene.getRefID(),
+			List<Double> lsTmp = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), gffDetailGene.getRefID(),
 					Integer.parseInt(ss[0]), Integer.parseInt(ss[1]));
+			addLsDouble(lsResult, lsTmp);	
 		}
 		
-		return result;
+		return lsResult;
 	}
 	
 	/**

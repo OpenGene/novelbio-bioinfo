@@ -121,8 +121,6 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	/**
 	 * <b>因为涉及到junction reads的信息</b><br>
 	 * 设定具体剪接位点的readsCount数，必须在读取完sam文件之后再设定
-	 * 
-	 * 
 	 */
 	public void setSpliceType2Value() {
 		for (SpliceTypePredict spliceTypePredict : exonCluster.getSplicingTypeLs()) {
@@ -221,8 +219,11 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		//表达水平超过该值就标准化
 		int normalizedValue = 50;
 		
-		List<Double> lsExp1 = mapCondition2SpliceInfo.get(condition1).getLsExp(splicingType);
-		List<Double> lsExp2= mapCondition2SpliceInfo.get(condition2).getLsExp(splicingType);
+		List<List<Double>> lsExp1 = mapCondition2SpliceInfo.get(condition1).getLsExp(splicingType);
+		List<List<Double>> lsExp2= mapCondition2SpliceInfo.get(condition2).getLsExp(splicingType);
+		
+		
+		
 		int[] tmpExpCond1 = new int[2];
 		tmpExpCond1[0] = lsExp1.get(0).intValue(); tmpExpCond1[1] = lsExp1.get(1).intValue();
 		int[] tmpExpCond2 = new int[2];
@@ -244,8 +245,8 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		//如果count数超过该值，就标准化
 		int normalizedNum = 200;
 		
-		List<Double> lsJunc1 = mapCondition2SpliceInfo.get(condition1).getLsJun(splicingType);
-		List<Double> lsJunc2 = mapCondition2SpliceInfo.get(condition2).getLsJun(splicingType);
+		List<List<Double>> lsJunc1 = mapCondition2SpliceInfo.get(condition1).getLsJun(splicingType);
+		List<List<Double>> lsJunc2 = mapCondition2SpliceInfo.get(condition2).getLsJun(splicingType);
 		int[] cond1 = getReadsNum(lsJunc1);
 		int[] cond2 = getReadsNum(lsJunc2);
 		
@@ -392,11 +393,11 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	public String[] toStringArray() {
 		getAndCalculatePvalue();
 		ArrayList<String> lsResult = new ArrayList<String>();
-		List<Double> lsJunc1 = mapCondition2SpliceInfo.get(condition1).getLsJun(splicingType);
-		List<Double> lsJunc2 = mapCondition2SpliceInfo.get(condition2).getLsJun(splicingType);
+		List<List<Double>> lsJunc1 = mapCondition2SpliceInfo.get(condition1).getLsJun(splicingType);
+		List<List<Double>> lsJunc2 = mapCondition2SpliceInfo.get(condition2).getLsJun(splicingType);
 		
-		List<Double> lsExp1 = mapCondition2SpliceInfo.get(condition1).getLsExp(splicingType);
-		List<Double> lsExp2 = mapCondition2SpliceInfo.get(condition2).getLsExp(splicingType);
+		List<List<Double>> lsExp1 = mapCondition2SpliceInfo.get(condition1).getLsExp(splicingType);
+		List<List<Double>> lsExp2 = mapCondition2SpliceInfo.get(condition2).getLsExp(splicingType);
  
 		
 		GffDetailGene gffDetailGene = exonCluster.getParentGene();
@@ -647,8 +648,8 @@ class SpliceType2Value {
 	private static final Logger logger = Logger.getLogger(SpliceType2Value.class);
 
 	Set<SplicingAlternativeType> setExonSplicingTypes = new HashSet<SplicingAlternativeType>();
-	ArrayListMultimap<SplicingAlternativeType, Double> mapSplicingType2LsExpValue = ArrayListMultimap.create();
-	ArrayListMultimap<SplicingAlternativeType, Double> mapSplicingType2LsJunctionReads = ArrayListMultimap.create();
+	ArrayListMultimap<SplicingAlternativeType, List<Double>> mapSplicingType2LsExpValue = ArrayListMultimap.create();
+	ArrayListMultimap<SplicingAlternativeType, List<Double>> mapSplicingType2LsJunctionReads = ArrayListMultimap.create();
 	Map<SplicingAlternativeType, SpliceTypePredict> mapSplicingType2Detail = new HashMap<SplicingAlternativeType, SpliceTypePredict>();
 	
 	/**
@@ -672,8 +673,7 @@ class SpliceType2Value {
 		}
 		lsExp.add((double) (getMean(info) + 1));
 		lsExp.add((double) (getMean(BGinfo) + 1));
-
-		addLsDouble(mapSplicingType2LsExpValue, spliceTypePredict.getType(), lsExp);
+		mapSplicingType2LsExpValue.put(spliceTypePredict.getType(), lsExp);
 		setExonSplicingTypes.add(spliceTypePredict.getType());
 	}
 	
@@ -689,38 +689,21 @@ class SpliceType2Value {
 	 */
 	public void addJunction(String condition, SpliceTypePredict spliceTypePredict) {
 		SplicingAlternativeType splicingAlternativeType = spliceTypePredict.getType();
-		List<Double> lsCounts = spliceTypePredict.getJuncCounts(condition);
-		
-		addLsDouble(mapSplicingType2LsJunctionReads, splicingAlternativeType, lsCounts);
+		List<List<Double>> lsCounts = spliceTypePredict.getJuncCounts(condition);
+		for (List<Double> list : lsCounts) {
+			mapSplicingType2LsJunctionReads.put(splicingAlternativeType, list);
+		}
 		setExonSplicingTypes.add(spliceTypePredict.getType());
 		mapSplicingType2Detail.put(splicingAlternativeType, spliceTypePredict);
 	}
 	
-	/** 把一个lsDouble和map里面已有的LsDouble加起来 */
-	private static void addLsDouble(ArrayListMultimap<SplicingAlternativeType, Double> mapSplicingType2LsInfo, 
-			SplicingAlternativeType splicingType, List<Double> lsJunNew) {
-		if (mapSplicingType2LsInfo.containsKey(splicingType)) {
-			List<Double> lsJun = mapSplicingType2LsInfo.get(splicingType);
-			if (lsJunNew.size() != lsJun.size()) {
-				logger.error("出错");
-				return;
-			}
-			//新老加起来放入map
-			for (int i = 0; i < lsJun.size(); i++) {
-				lsJun.set(i, lsJun.get(i) + lsJunNew.get(i));
-			}
-		} else {
-			mapSplicingType2LsInfo.putAll(splicingType, lsJunNew);
-		}
-	}
-	
 	/** 获得reads，如果不存在这种类型的可变剪接，就返回null */
-	public List<Double> getLsJun(SplicingAlternativeType splicingAlternativeType) {
+	public List<List<Double>> getLsJun(SplicingAlternativeType splicingAlternativeType) {
 		return mapSplicingType2LsJunctionReads.get(splicingAlternativeType);
 	}
 		
 	/** 获得表达，如果不存在这种类型的可变剪接，就返回null */
-	public List<Double> getLsExp(SplicingAlternativeType splicingAlternativeType) {
+	public List<List<Double>> getLsExp(SplicingAlternativeType splicingAlternativeType) {
 		return mapSplicingType2LsExpValue.get(splicingAlternativeType);
 	}
 	

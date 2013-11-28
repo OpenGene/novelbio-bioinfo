@@ -65,31 +65,18 @@
 	<!-- mongodb bean的仓库目录，会自动扫描扩展了MongoRepository接口的接口进行注入 -->
 	<mongo:repositories base-package="com.novelbio.database.mongorepo"/>
      
-     
-     
- 
-    <bean id="dataSource" class="com.jolbox.bonecp.BoneCPDataSource" destroy-method="close">
-  		 <property name="driverClass" value="com.mysql.jdbc.Driver" />
-  		 <property name="jdbcUrl" value="jdbc:mysql://192.168.0.104:3306/novelbio?useUnicode=true&amp;characterEncoding=utf-8" />  
-  		 <property name="username" value="root"/>
+   <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">  
+       <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+       <property name="url" value="jdbc:mysql://192.168.0.104:3306/novelbio?useUnicode=true&amp;characterEncoding=utf-8" />  
+       <property name="username" value="root"/>
   		 <property name="password" value=""/>
-  		 <!-- 每60秒检查所有连接池中的空闲连接    --> 
-  		 <property name="IdleConnectionTestPeriodInMinutes" value="60"/>
-  		 <!-- 设置连接空闲时间(分钟)     --> 
-  		 <property name="IdleMaxAgeInMinutes" value="240"/>
-  		 <!--  设置连接池在每个分区中的最大连接数  --> 
-  		 <property name="maxConnectionsPerPartition" value="2"/>
-  		 <!--  设置连接池设在每个分区中的最小连接数     --> 
-  		 <property name="minConnectionsPerPartition" value="1"/>
-  		 <!-- 设置分区(设置 3个分区)     --> 
-  		 <property name="partitionCount" value="1"/>
-  		 <!-- 当连接池中的连接耗尽的时候 BoneCP一次同时获取的连接数    --> 
- 		 <property name="acquireIncrement" value="3"/>
- 		 <property name="statementsCacheSize" value="100"/>
- 		  <!-- 连接释放处理    --> 
- 		 <property name="releaseHelperThreads" value="3"/>
-	</bean>
-    
+  		   
+       <property name="minIdle" value="1" />  
+       <property name="maxActive" value="25" />  
+       <property name="maxIdle" value="5" />  
+    </bean>  
+     
+
     
     <!-- define the SqlSessionFactory, notice that configLocation is not needed when you use MapperFactoryBean -->
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean" lazy-init="true">

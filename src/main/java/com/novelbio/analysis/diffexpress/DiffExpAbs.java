@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.google.common.collect.HashMultimap;
 import com.novelbio.analysis.IntCmdSoft;
-import com.novelbio.base.FoldeCreate;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -117,7 +117,6 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	/**
 	 * 设定输出文件夹和比较组
 	 * @param fileName
-	 * @param fold 需要新建的标准文件夹，如 "GOanalysis"
 	 * @param comparePair <br>
 	 * 0: treatment<br>
 	 * 1: control
@@ -441,4 +440,15 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		return lsScript;
 	}
 	
+	/** 必须在设定完输入文件名后才能使用 */
+	public HashMultimap<String, String> getPredictMapPrefix2Result() {
+		HashMultimap<String, String> mapPrefix2File = HashMultimap.create();
+		for (String outFileName : mapOutFileName2Compare.keySet()) {
+			String[] compare = mapOutFileName2Compare.get(outFileName);
+			mapPrefix2File.put(compare[0] + " vs " + compare[1], outFileName);
+			String difGene = DiffGeneVocalno.getDifGeneFileName(outFileName);
+			mapPrefix2File.put("difgene " + compare[0] + " vs " + compare[1], difGene);
+		}
+		return mapPrefix2File;
+	}
 }

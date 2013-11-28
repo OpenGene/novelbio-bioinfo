@@ -24,7 +24,7 @@ public interface DiffExpInt {
 	 * 0: treatment<br>
 	 * 1: control
 	 */
-	public void addFileName2Compare(String fileName, String fold, String[] comparePair);
+	public void addFileName2Compare(String fileName, String[] comparePair);
 	
 	public void setGeneInfo(List<String[]> lsGeneInfo);
 	

@@ -30,8 +30,8 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 	public ArrayList<Double> getJuncCounts(String condition) {
 		Align align = getDifSite();
 		ArrayList<Double> lsResult = new ArrayList<Double>();
-		lsResult.add((double) tophatJunction.getJunctionSite(condition, exonCluster.getRefID(), align.getStartAbs()));
-		lsResult.add((double) tophatJunction.getJunctionSite(condition, exonCluster.getRefID(), align.getEndAbs()));
+		lsResult.add((double) tophatJunction.getJunctionSiteAll(condition, exonCluster.getRefID(), align.getStartAbs()));
+		lsResult.add((double) tophatJunction.getJunctionSiteAll(condition, exonCluster.getRefID(), align.getEndAbs()));
 		return lsResult;
 	}
 	
@@ -47,7 +47,7 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 		//junc reads Num为key，treemap直接排序
 		//为防止junc reads num重复，用list装value
 		for (Integer edge : mapEdge2Iso.keySet()) {
-			int juncNum = tophatJunction.getJunctionSite(exonCluster.isCis5to3(), exonCluster.getRefID(), edge);
+			int juncNum = tophatJunction.getJunctionSiteAll(exonCluster.isCis5to3(), exonCluster.getRefID(), edge);
 			List<Integer> lsSite = null;
 			if (mapJuncNum2Edge.containsKey(juncNum)) {
 				lsSite = mapJuncNum2Edge.get(juncNum);

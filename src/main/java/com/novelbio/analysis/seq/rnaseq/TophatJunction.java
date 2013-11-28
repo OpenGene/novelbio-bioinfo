@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultimap;
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
@@ -30,10 +31,12 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	
 	private static int intronMinLen = 25;
 	
-	ArrayListMultimap<String, String> mapCond2JuncFile = ArrayListMultimap.create();
 	Map<String, JunctionUnit> mapJunUnitKey2Unit = new HashMap<String, JunctionUnit>();
 	ArrayListMultimap<String, JunctionUnit> mapJunSite2JunUnit = ArrayListMultimap.create();
 	String condition;
+	String subGroup;
+	HashMultimap<String, String> mapCondition2Group = HashMultimap.create();
+	
 	StrandSpecific strandSpecific = StrandSpecific.NONE;
 	
 	/** 针对链特异性进行了优化 */
@@ -48,8 +51,10 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	public void setStrandSpecific(StrandSpecific strandSpecific) {
 		this.strandSpecific = strandSpecific;
 	}
-	public void setCondition(String condition) {
+	public void setCondition(String condition, String subgroup) {
 		this.condition = condition;
+		this.subGroup = subgroup;
+		mapCondition2Group.put(condition, subgroup);
 	}
 	
 	/**添加samBam的文件用来获得信息 */
@@ -88,7 +93,7 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 			if (cis5to3 != null) {
 				jun.setCis5to3(cis5to3);
 			}
-			jun.addReadsNum1(condition);
+			jun.addReadsNum1(condition, subGroup);
 			lsJun.add(jun);
 		}
 		addJunctionInfo(lsJun);
@@ -132,15 +137,14 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 			junThis = junAfter;
 		}
 		addJun(junThis, junBefore, null);
-		
 	}
 	
 	private void addJun(JunctionUnit junThis, JunctionUnit junBefore, JunctionUnit junAfter) {
 		String juncUnitKey = junThis.key(strandSpecific != StrandSpecific.NONE);
 		if (mapJunUnitKey2Unit.containsKey(juncUnitKey)) {
 			JunctionUnit junThisExist = mapJunUnitKey2Unit.get(juncUnitKey);
-			junThisExist.addReadsNum(junThis);
-			//TODO 感觉有问题，就是before和after的引用是否正确
+			junThisExist.addReadsJuncUnit(junThis);
+			//TODO 感觉有问题，就是before和after的引用是否正确，考虑从mapJunUnitKey2Unit中获取before和end的信息
 			junThisExist.addJunBeforeAbs(junBefore);
 			junThisExist.addJunAfterAbs(junAfter);
 		} else {
@@ -165,7 +169,7 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	 * @param locSite
 	 * @return
 	 */
-	public int getJunctionSite(boolean cis5to3, String chrID, int locSite) {
+	public int getJunctionSiteAll(boolean cis5to3, String chrID, int locSite) {
 		int num = 0;
 		List<JunctionUnit> lsJunctionUnits = mapJunSite2JunUnit.get(chrID + SepSign.SEP_ID + locSite);
 		for (JunctionUnit junctionUnit : lsJunctionUnits) {
@@ -183,7 +187,7 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	 * @param locSite
 	 * @return
 	 */
-	public int getJunctionSite(boolean cis5to3, String chrID, int locStart, int locEnd) {
+	public int getJunctionSiteAll(boolean cis5to3, String chrID, int locStart, int locEnd) {
 		int start = Math.min(locStart, locEnd), end = Math.max(locStart, locEnd);
 		Boolean cis5to3Final = null;
 		if (strandSpecific != StrandSpecific.NONE) {
@@ -203,11 +207,54 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	 * @param locSite
 	 * @return
 	 */
-	public int getJunctionSite(String condition, String chrID, int locSite) {
+	public List<Double> getJunctionSite(String condition, boolean cis5to3, String chrID, int locSite) {
+		List<Double> lsNum = null;
+		List<JunctionUnit> lsJunctionUnits = mapJunSite2JunUnit.get(chrID + SepSign.SEP_ID + locSite);
+		for (JunctionUnit junctionUnit : lsJunctionUnits) {
+			if (strandSpecific != StrandSpecific.NONE && cis5to3 != junctionUnit.isCis5to3()) {
+				continue;
+			}
+			List<Double> lsTmpValue = junctionUnit.getReadsNum(condition, mapCondition2Group.get(condition));
+			if (lsTmpValue.isEmpty()) {
+				continue;
+			}
+			if (lsNum == null) {
+				lsNum = new ArrayList<>(lsTmpValue);
+			} else {
+				for (int i = 0; i < lsTmpValue.size(); i++) {
+					double tmpValue = lsTmpValue.get(i);
+					lsNum.set(i, lsNum.get(i) + tmpValue);
+				}
+			}
+		}
+		return lsNum;
+	}
+	/**
+	 * 给定坐标和位点，找出locsite,以及总共有多少reads支持
+	 * @param chrID
+	 * @param locSite
+	 * @return 没有就返为0的list
+	 */
+	public List<Double> getJunctionSite(String condition, boolean cis5to3, String chrID, int locStartSite, int locEndSite) {
+		List<Double> lsResult = new ArrayList<>();
+		for (String group : mapCondition2Group.get(condition)) {
+			lsResult.add(getJunctionSite(condition, group, cis5to3, chrID, locStartSite, locEndSite));
+		}
+		return lsResult;
+	}
+	
+	/**
+	 * 给定坐标和位点，找出locsite,以及总共有多少reads支持
+	 * 0表示没有junction
+	 * @param chrID
+	 * @param locSite
+	 * @return
+	 */
+	public int getJunctionSite(String condition, String group, String chrID, int locSite) {
 		int num = 0;
 		List<JunctionUnit> lsJunctionUnits = mapJunSite2JunUnit.get(chrID + SepSign.SEP_ID + locSite);
 		for (JunctionUnit junctionUnit : lsJunctionUnits) {
-			num += junctionUnit.getReadsNum(condition);
+			num += junctionUnit.getReadsNum(condition, group);
 		}
 		return num;
 	}
@@ -219,7 +266,7 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	 * @param locEndSite
 	 * @return
 	 */
-	public int getJunctionSite(String condition, boolean cis5to3, String chrID, int locStartSite, int locEndSite) {
+	private double getJunctionSite(String condition, String group, boolean cis5to3, String chrID, int locStartSite, int locEndSite) {
 		int start = Math.min(locStartSite, locEndSite), end = Math.max(locStartSite, locEndSite);
 		Boolean cis5to3Final = null;
 		if (strandSpecific != StrandSpecific.NONE) {
@@ -229,7 +276,7 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 		if (junctionUnit == null) {
 			return 0;
 		} else {
-			return junctionUnit.getReadsNum(condition);
+			return junctionUnit.getReadsNum(condition, group);
 		}
 	}
 

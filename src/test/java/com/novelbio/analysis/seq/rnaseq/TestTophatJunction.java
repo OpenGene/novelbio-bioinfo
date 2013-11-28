@@ -25,8 +25,8 @@ public class TestTophatJunction extends TestCase {
 	}
 	
 	public void test() {
-		assertEquals(145, tophatJunction.getJunctionSite("KO", "chr1", 4782733));
-		assertEquals(146, tophatJunction.getJunctionSite("WT", "chr1", 4782733));
+		assertEquals(145, tophatJunction.getJunctionSiteAll("KO", "chr1", 4782733));
+		assertEquals(146, tophatJunction.getJunctionSiteAll("WT", "chr1", 4782733));
 	}
 	public void test2() {
 		AlignSamReading alignSamReading = new AlignSamReading(new SamFile("/media/winE/NBC/Project/Project_FY/paper/KOod.bam"));
@@ -51,12 +51,12 @@ public class TestTophatJunction extends TestCase {
 			int locStartSite = Integer.parseInt(ss[0].split(SepSign.SEP_INFO_SAMEDB)[1]);
 			int locEndSite =  Integer.parseInt(ss[1].split(SepSign.SEP_INFO_SAMEDB)[1]);
 			int numOld = tophatJunctionOld.getJunctionSite("test1", chrID, locStartSite, locEndSite);
-			int numOld2 = tophatJunction.getJunctionSite("test1", chrID, locStartSite);
-			int numOld3 = tophatJunction.getJunctionSite("test1", chrID, locEndSite);
+			int numOld2 = tophatJunction.getJunctionSiteAll("test1", chrID, locStartSite);
+			int numOld3 = tophatJunction.getJunctionSiteAll("test1", chrID, locEndSite);
 			
 			int numNew = tophatJunction.getJunctionSite("test1", true, chrID, locStartSite, locEndSite);
-			int numNew2 = tophatJunction.getJunctionSite("test1", chrID, locStartSite);
-			int numNew3 = tophatJunction.getJunctionSite("test1", chrID, locEndSite);
+			int numNew2 = tophatJunction.getJunctionSiteAll("test1", chrID, locStartSite);
+			int numNew3 = tophatJunction.getJunctionSiteAll("test1", chrID, locEndSite);
 			System.out.println();
 			numOld = tophatJunctionOld.getJunctionSite("test1", chrID, locStartSite, locEndSite);
 			numNew = tophatJunction.getJunctionSite("test1", true, chrID, locStartSite, locEndSite);

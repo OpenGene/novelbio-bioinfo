@@ -1,18 +1,17 @@
 package com.novelbio.database.updatedb.database;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.hg.doc.fa;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.BlastFileInfo;
 import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.model.species.Species;
 import com.novelbio.database.service.servgeneanno.ManageBlastInfo;
 
 public class BlastUp2DB extends ImportPerLine {
@@ -130,16 +129,25 @@ public class BlastUp2DB extends ImportPerLine {
 		
 		if (notMatchQueryTaxID > linNum && notMatchSubjectTaxID > linNum) {
 			errorInfo = "query speciesID and subject speciesID may error\n " +
-					"query speciesID:" + taxID + " but was:" + setTaxIDquery +
-							"\nsubject speciesID:" +  taxIDS + " but was:" + setTaxIDsub;
+					"query speciesID:" + taxID + " but was:" + getSetSpeciesName(setTaxIDquery) +
+							"\nsubject speciesID:" +  taxIDS + " but was:" + getSetSpeciesName(setTaxIDsub);
 		} else if (notMatchQueryTaxID > linNum) {
 			errorInfo = "query speciesID may error\n" +
-					"query speciesID:" + taxID + " but was:" + setTaxIDquery;
+					"query speciesID:" + taxID + " but was:" + getSetSpeciesName(setTaxIDquery);
 		} else if (notMatchSubjectTaxID > linNum) {
 			errorInfo = "subject speciesID may error\n" +
-					"subject speciesID:" + taxIDS + " but was:" + setTaxIDsub;
+					"subject speciesID:" + taxIDS + " but was:" + getSetSpeciesName(setTaxIDsub);
 		}
 		return errorInfo;
+	}
+	
+	private Set<String> getSetSpeciesName(Set<Integer> setTaxID) {
+		Set<String> setSpeciesName = new HashSet<>();
+		for (Integer taxID : setTaxID) {
+			Species species = new Species(taxID);
+			setSpeciesName.add(species.getCommonName() + ", " + species.getNameLatin());
+		}
+		return setSpeciesName;
 	}
 	
 	/**
@@ -151,12 +159,12 @@ public class BlastUp2DB extends ImportPerLine {
 	private int getID(String ID, int taxID, boolean isBlastType) {
 		if (queryIDType == GeneID.IDTYPE_ACCID) {
 			List<GeneID> lsGeneIDs = GeneID.createLsCopedID(ID, 0, isBlastType);
-			if (lsGeneIDs.size() == 1 && lsGeneIDs.get(0).getTaxID() != taxID) {
+			if (lsGeneIDs.size() == 1 && lsGeneIDs.get(0).getTaxID() != 0 && lsGeneIDs.get(0).getTaxID() != taxID) {
 				return lsGeneIDs.get(0).getTaxID();
 			}
 		} else {
 			GeneID geneID = new GeneID(queryIDType, ID, 0);
-			if (geneID.getTaxID() != taxID) {
+			if (geneID.getTaxID() !=0 && geneID.getTaxID() != taxID) {
 				return geneID.getTaxID();
 			}
 		}

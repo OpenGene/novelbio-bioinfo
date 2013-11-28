@@ -369,9 +369,12 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				guiAnnoInfo.setInfo2("Reading Junction " + condition);
 				runGetInfo.setRunningInfo(guiAnnoInfo);
 			}
-			tophatJunction.setCondition(condition);
 			List<AlignSamReading> lsSamFileReadings = mapCond2SamReader.get(condition);
+			int i = 0;
 			for (AlignSamReading samFileReading : lsSamFileReadings) {
+				i++;
+				tophatJunction.setCondition(condition, i+"");
+
 				samFileReading.clear();
 				samFileReading.getFirstSamFile().indexMake();
 				if (samFileReadingLast != null) {
@@ -721,7 +724,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				guiAnnoInfo.setInfo2("Reading Junction " + condition);
 				runGetInfo.setRunningInfo(guiAnnoInfo);
 			}
-			tophatJunction.setCondition(condition);
 			List<AlignSamReading> lsSamFileReadings = mapCond2SamReader.get(condition);
 			for (AlignSamReading samFileReading : lsSamFileReadings) {
 				samFileReading.threadStop();
@@ -739,7 +741,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				guiAnnoInfo.setInfo2("Reading Junction " + condition);
 				runGetInfo.setRunningInfo(guiAnnoInfo);
 			}
-			tophatJunction.setCondition(condition);
 			List<AlignSamReading> lsSamFileReadings = mapCond2SamReader.get(condition);
 			for (AlignSamReading samFileReading : lsSamFileReadings) {
 				samFileReading.threadSuspend();
@@ -757,13 +758,13 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				guiAnnoInfo.setInfo2("Reading Junction " + condition);
 				runGetInfo.setRunningInfo(guiAnnoInfo);
 			}
-			tophatJunction.setCondition(condition);
 			List<AlignSamReading> lsSamFileReadings = mapCond2SamReader.get(condition);
 			for (AlignSamReading samFileReading : lsSamFileReadings) {
 				samFileReading.threadResume();
 			}
 		}
 	}
+	
 	public void clear() {
 		condition1 = null; condition2 = null;
 		lsResult = null;

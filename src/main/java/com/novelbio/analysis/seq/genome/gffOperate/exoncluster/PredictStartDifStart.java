@@ -20,8 +20,8 @@ public class PredictStartDifStart extends SpliceTypePredict {
 		ArrayList<Double> lsCounts = new ArrayList<Double>();
 		for (List<ExonInfo> lsExonInfos : ls_lsExonInfos) {
 			for (ExonInfo exonInfo : lsExonInfos) {
-				int num = tophatJunction.getJunctionSite(condition, exonCluster.getRefID(), exonInfo.getStartCis());
-				num += tophatJunction.getJunctionSite(condition, exonCluster.getRefID(), exonInfo.getEndCis());
+				int num = tophatJunction.getJunctionSiteAll(condition, exonCluster.getRefID(), exonInfo.getStartCis());
+				num += tophatJunction.getJunctionSiteAll(condition, exonCluster.getRefID(), exonInfo.getEndCis());
 				lsCounts.add((double) num);
 			}
 		}

@@ -209,14 +209,15 @@ import com.novelbio.generalConf.TitleFormatNBC;
 	 * @return
 	 */
 	public String writeDifGene() {
-		String outFile = getDifGeneFileName();
+		String outFile = getDifGeneFileName(excelFileName);
 		TxtReadandWrite txtWriteDifGene = new TxtReadandWrite(outFile, true);
 		txtWriteDifGene.writefilelnls(getLsDifGene());
 		txtWriteDifGene.close();
 		return outFile;
 	}
 	
-	public String getDifGeneFileName() {
+	/** 获得筛选差异后的文件名 */
+	public static String getDifGeneFileName(String excelFileName) {
 		return FileOperate.changeFileSuffix(excelFileName, "-Dif", null);
 	}
 	
