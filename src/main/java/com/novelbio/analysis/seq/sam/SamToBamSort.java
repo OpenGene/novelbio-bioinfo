@@ -58,7 +58,7 @@ public class SamToBamSort {
 		this.lsAlignmentRecorders = lsAlignmentRecorders;
 		for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {
 			if (alignmentRecorder instanceof SamFileStatistics) {
-				((SamFileStatistics)alignmentRecorder).setStandardData(samFileSam.getMapChrIDLowcase2Length());
+				((SamFileStatistics)alignmentRecorder).setStandardData(samFileSam.getMapChrID2Length());
 			}
 		}
 	}

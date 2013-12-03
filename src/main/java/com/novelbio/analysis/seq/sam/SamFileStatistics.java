@@ -120,7 +120,10 @@ public class SamFileStatistics implements AlignmentRecorder {
 	public void setCorrectChrReadsNum(boolean correctChrReadsNum) {
 		this.correctChrReadsNum = correctChrReadsNum;
 	}
-	/** 染色体长度的map */
+	/** 染色体长度的map
+	 * 无所谓大小写，应该是真实的ChrID
+	 * @param standardData
+	 */
 	public void setStandardData(Map<String, Long> standardData) {
 		this.standardData = standardData;
 	}
@@ -374,19 +377,20 @@ public class SamFileStatistics implements AlignmentRecorder {
 		List<String> lsChrID = new ArrayList<String>(standardData.keySet());
 		Collections.sort(lsChrID, new CompareChrID());
 		for (String chrID : lsChrID) {
-			if (resultData.containsKey(chrID)) {
+			if (resultData.containsKey(chrID.toLowerCase())) {
 				readsNumAll += resultData.get(chrID);
 			}
 			chrLenAll += standardData.get(chrID);
 		}
 		
-		for (String key : lsChrID) {
+		for (String chrID : lsChrID) {
+			String chrIDlowcase = chrID.toLowerCase();
 			double[] data = new double[4];
-			data[0] = resultData.get(key) ==null? 0 : resultData.get(key);
+			data[0] = resultData.get(chrIDlowcase) ==null? 0 : resultData.get(chrIDlowcase);
 			data[1] =  (double)data[0]/readsNumAll;
-			data[2] = standardData.get(key);
+			data[2] = standardData.get(chrID);
 			data[3] = (double)data[2]/chrLenAll;
-			mapChrID2LenProp.put(key, data);
+			mapChrID2LenProp.put(chrID, data);
 		}
 		return mapChrID2LenProp;
 	}

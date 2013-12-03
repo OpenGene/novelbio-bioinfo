@@ -178,7 +178,7 @@ public class JunctionInfo extends ListDetailAbs {
 			double[] readsNum = mapGroup2Value.get(group);
 			if (readsNum == null) {
 				readsNum = new double[1];
-				mapGroup2Value.put(condition, readsNum);
+				mapGroup2Value.put(group, readsNum);
 			}
 			readsNum[0] += num;
 		}
@@ -213,12 +213,16 @@ public class JunctionInfo extends ListDetailAbs {
 			}
 			for (String group : lsGroups) {
 				double[] value = mapGroup2Value.get(group);
-				lsReads.add(value[0]);
+				if (value == null) {
+					lsReads.add(0.0);
+				} else {
+					lsReads.add(value[0]);
+				}
 			}
 			return lsReads;
 		}
 		/** 返回所有时期的junction reads总和 */
-		public int getReadsNumAll() {
+		public double getReadsNumAll() {
 			int numAll = 0;
 			for (Map<String, double[]> mapGroup2Value : mapCond2group2JunNum.values()) {
 				for (double[] readsNums : mapGroup2Value.values()) {

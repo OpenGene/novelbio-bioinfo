@@ -60,13 +60,18 @@ public class GenerateNewIso {
 		List<JunctionUnit> lsJunUnit = getLsJunUnit(gffDetailGene);
 		Set<String> setJunInfoLast = getJunctionInfo(lsJunUnit);
 		//循环直至找不到新的junction reads
+		int loopNum = 0;
 		for (;;) {
+			loopNum++;
 			for (JunctionUnit junctionUnit : lsJunUnit) {
-				logger.error(junctionUnit.toString());
-				if (junctionUnit.toString().equals("MT 15869 15920")) {
-					logger.error("stop");
+				logger.debug(loopNum + " " +junctionUnit.toString());
+				if (junctionUnit.toString().equals("MT 16571 16622")) {
+					logger.debug("stop");
 				}
 				if (junctionUnit.getReadsNumAll() >= newIsoReadsNum && !isJunInGene(junctionUnit)) {
+					if (loopNum > 1 && isJunctionInAnotherGene(gffDetailGene, junctionUnit) && gffDetailGene.getLsCodSplit().size() > 100) {
+						continue;
+					}
 //					logger.debug(junctionUnit.toString());
 					reconstructIso(junctionUnit);
 				}
@@ -78,7 +83,6 @@ public class GenerateNewIso {
 			}
 			setJunInfoLast = setJunInfo;
 		}
-
 		//再反着来
 //		for (int i = lsJunUnit.size() - 1; i >= 0; i--) {
 //			JunctionUnit junctionUnit = lsJunUnit.get(i);
@@ -180,7 +184,35 @@ public class GenerateNewIso {
 		}
 		return false;
 	}
+	
+	private boolean isJunctionInAnotherGene(GffDetailGene gffDetailGene, JunctionUnit junctionUnit) {
+		GffCodGeneDU gffCodGeneDU = gffHashGene.searchLocation(junctionUnit.getRefID(), junctionUnit.getStartAbs(), junctionUnit.getEndAbs());
+		if (gffCodGeneDU.getLsGffDetailMid().size() > 0) return true;
+		//TODO
+		GffCodGene gffCodGeneStart = gffCodGeneDU.getGffCod1();
+		GffCodGene gffCodGeneEnd = gffCodGeneDU.getGffCod2();
 		
+		Set<GffDetailGene> setGeneUp = gffCodGeneStart.getSetGeneCodIn();
+		Set<GffDetailGene> setGeneDown = gffCodGeneEnd.getSetGeneCodIn();
+		boolean isUpInOtherGene = false, isDownInOtherGene = false;
+		for (GffDetailGene gffDetailGeneUpcod : setGeneUp) {
+			if (!gffDetailGeneUpcod.equals(gffDetailGene)) {
+				isUpInOtherGene = true;
+				break;
+			}
+		}
+		for (GffDetailGene gffDetailGeneDowncod : setGeneDown) {
+			if (gffDetailGeneDowncod.equals(gffDetailGene)) {
+				isDownInOtherGene = true;
+				break;
+			}
+		}
+		if (isUpInOtherGene || isDownInOtherGene) {
+			return true;	
+		}
+		return false;
+	}
+	
 	//TODO 
 	private boolean isJunInGene(JunctionUnit junctionUnit) {
 		boolean findJun = false;

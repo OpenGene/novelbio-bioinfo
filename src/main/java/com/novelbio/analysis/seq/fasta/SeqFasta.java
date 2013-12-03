@@ -27,7 +27,8 @@ public class SeqFasta implements Cloneable {
 	private static final String SEP_SEQ = "XXXXXXX";
 	
 	protected String SeqName;
-	protected String SeqSequence = "";
+	protected String SeqSequence;
+	StringBuilder stringBuilder;
 	/**
 	 * 结果的文件是否转化为大小写 True：小写 False：大写 null：不变
 	 * @return
@@ -239,6 +240,28 @@ public class SeqFasta implements Cloneable {
 		chrSeq[snpSite] = replace;
 		String FinalSeq = String.copyValueOf(chrSeq);
 		SeqSequence = FinalSeq;
+	}
+	
+	/** append完了之后务必调用 {@link #appendFinish()} */
+	public void appendSeq(char c) {
+		if (c == ' ' || c == '\n' || c == '\t') {
+			return;
+		}
+		if (stringBuilder == null) {
+			stringBuilder = new StringBuilder();
+			if (SeqSequence != null) {
+				stringBuilder.append(SeqSequence);
+			}
+		}
+		stringBuilder.append(c);
+	}
+	
+	/** 结束append */
+	public void appendFinish() {
+		if (stringBuilder != null) {
+			SeqSequence = stringBuilder.toString();
+			stringBuilder = null;
+		}
 	}
 	
 	/**

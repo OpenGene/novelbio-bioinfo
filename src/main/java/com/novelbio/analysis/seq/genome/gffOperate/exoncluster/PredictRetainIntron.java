@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
@@ -22,23 +24,29 @@ import com.novelbio.base.dataStructure.Alignment;
  *
  */
 public class PredictRetainIntron extends SpliceTypePredict implements AlignmentRecorder {
+	private static final Logger logger = Logger.getLogger(PredictRetainIntron.class);
 	Align alignRetain;
 	GffGeneIsoInfo gffIsoRetain;
 	ArrayListMultimap<String, SamFile> mapCond2Samfile;
 	
 	String condition;
-	int junCountsTmp = 0;
-	Map<String, List<Double>> mapCondition2Counts = new HashMap<>();
+	String group;
+	/** 覆盖retain intron区域的reads */
+	List<Double> lsRetainReadsCover = new ArrayList<>();
+	double junCountsTmp = 0;
+	Map<String, List<List<Double>>> mapCondition2Counts = new HashMap<>();
 	
 	public PredictRetainIntron(ExonCluster exonCluster) {
 		super(exonCluster);
 	}
 	
-	/** 设定时期，接下来reads的添加就会设定为该时期
+	/** 设定时期--不同的group组，接下来reads的添加就会设定为该时期
+	 * 
 	 * 同时会清空Junction的中间变量
 	 * */
-	public void setCondition(String condition) {
+	public void setCondition_DifGroup(String condition, String group) {
 		this.condition = condition;
+		this.group = group;
 		junCountsTmp = 0;
 	}
 	
@@ -49,12 +57,8 @@ public class PredictRetainIntron extends SpliceTypePredict implements AlignmentR
 	
 	@Override
 	//TODO 待修该
-	public List<Double> getJuncCounts(String condition) {
-		List<Double> lsCounts = mapCondition2Counts.get(condition);
-		if (lsCounts == null) {
-			lsCounts = new ArrayList<>();
-			lsCounts.add(0.0); lsCounts.add(0.0);
-		}
+	protected List<List<Double>> getLsJuncCounts(String condition) {
+		List<List<Double>> lsCounts = mapCondition2Counts.get(condition);
 		return lsCounts;
 	}
 	
@@ -81,10 +85,10 @@ public class PredictRetainIntron extends SpliceTypePredict implements AlignmentR
 		List<Align> lsAligns = samRecord.getAlignmentBlocks();
 		for (Align align : lsAligns) {
 			if (align.getStartAbs() < alignRetain.getStartAbs() - 3 && align.getEndAbs() > alignRetain.getStartAbs() + 3) {
-				junCountsTmp++;
+				junCountsTmp += (double)1/alignRecord.getMappedReadsWeight();
 			}
 			if (align.getStartAbs() < alignRetain.getEndAbs() - 3 && align.getEndAbs() > alignRetain.getEndAbs() + 3) {
-				junCountsTmp++;
+				junCountsTmp += (double)1/alignRecord.getMappedReadsWeight();
 				break;//先看了靠前位置的位点，又看了靠后位置的位点，所以现在可以跳出循环了
 			}
 		}
@@ -92,7 +96,7 @@ public class PredictRetainIntron extends SpliceTypePredict implements AlignmentR
 
 	@Override
 	public void summary() {
-		List<Double> lsCounts = null;
+		List<List<Double>> lsCounts = null;
 		if (mapCondition2Counts.containsKey(condition)) {
 			lsCounts = mapCondition2Counts.get(condition);
 		} else {
@@ -100,13 +104,12 @@ public class PredictRetainIntron extends SpliceTypePredict implements AlignmentR
 			mapCondition2Counts.put(condition, lsCounts);
 		}
 		if (lsCounts.size() == 0) {
-			lsCounts.add((double) tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), alignRetain.getStartCis(), alignRetain.getEndCis()));
+			lsCounts.add(new ArrayList<Double>());
+			lsCounts.add(new ArrayList<Double>());
 		}
-		if (lsCounts.size() == 1) {
-			lsCounts.add((double) junCountsTmp);
-		} else {
-			lsCounts.set(1, lsCounts.get(1) + junCountsTmp);
-		}
+		
+		lsCounts.get(0).add(tophatJunction.getJunctionSite(condition, group, exonCluster.isCis5to3(), exonCluster.getRefID(), alignRetain.getStartCis(), alignRetain.getEndCis()));
+		lsCounts.get(1).add(junCountsTmp);
 	}
 
 	@Override
@@ -119,13 +122,13 @@ public class PredictRetainIntron extends SpliceTypePredict implements AlignmentR
 	private void getJunctionSite() {
 		if (alignRetain != null) return;
 		
-		int maxReadsNum = -1;
+		double maxReadsNum = -1;
 		for (List<ExonInfo> lsExonInfo : exonCluster.getLsIsoExon()) {
 			if (lsExonInfo.size() > 1) {
 				for (int i = 0; i < lsExonInfo.size() - 1; i++) {
 					int startLoc =  lsExonInfo.get(i).getEndCis();
 					int endLoc = lsExonInfo.get(i+1).getStartCis();
-					int readsNum = tophatJunction.getJunctionSiteAll(exonCluster.isCis5to3(), exonCluster.getRefID(), startLoc, endLoc);
+					double readsNum = tophatJunction.getJunctionSiteAll(exonCluster.isCis5to3(), exonCluster.getRefID(), startLoc, endLoc);
 					if (readsNum > maxReadsNum) {
 						maxReadsNum = readsNum;
 						alignRetain = new Align(exonCluster.getRefID(), startLoc, endLoc);

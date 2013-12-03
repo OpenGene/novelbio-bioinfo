@@ -43,9 +43,12 @@ import com.novelbio.database.model.species.Species;
  */
 public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	public static void main(String[] args) {
-		hongyanyanRice();
+		long timeEclipse1 = test();
+//		long timeEclipse2 = hongyanyanRice();
+		System.out.println(timeEclipse1);
+//		System.out.println(timeEclipse2);
 	}
-	public static void test() {
+	public static long test() {
 		//TODO
 		List<Align> lsAligns = new ArrayList<>();
 //		lsAligns.add(new Align("chr13", 113834688, 113853827));
@@ -60,7 +63,8 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 //		lsAligns.add(new Align("7",30050239,30137766));
 //		lsAligns.add(new Align("7",30121258, 30123992));
 //		lsAligns.add(new Align("24", 5495310, 5695313));
-//		lsAligns.add(new Align("mt", 0, 6000));
+//		lsAligns.add(new Align("15", 7832874, 8032908));
+//		lsAligns.add(new Align("mt", 0, 27622));
 		DateUtil dateUtil = new DateUtil();
 		dateUtil.setStartTime();
 		System.out.println("start");
@@ -75,14 +79,14 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		exonJunction.addBamSorted("KO", "/home/zong0jie/Test/rnaseq/paper/chicken/DT40KO0h.bam");
 		exonJunction.setCompareGroups("KO", "WT");
 
-		exonJunction.setResultFile("/home/zong0jie/Test/rnaseq/paper/chicken/ensemble_Iso2_No_Merge");
+		exonJunction.setResultFile("/home/zong0jie/Test/rnaseq/paper/chicken/ensemble_Iso2_No_Merge_sepSeq");
 		exonJunction.setgenerateNewIso();
 
 		exonJunction.run();
 		exonJunction = null;
-		System.out.println(dateUtil.getEclipseTime());
+		return dateUtil.getEclipseTime();
 	}
-	public static void hongyanyanRice() {
+	public static long hongyanyanRice() {
 		List<Align> lsAligns = new ArrayList<>();
 //		lsAligns.add(new Align("chr1", 2551997, 2591491));
 		DateUtil dateUtil = new DateUtil();
@@ -105,17 +109,17 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		
 		exonJunction.setCompareGroups("M", "WT");
 
-		exonJunction.setResultFile("/media/hdfs/nbCloud/TechDept/Projects/O.sativa_RNAseq_guofangqing/as/as");
+		exonJunction.setResultFile("/media/hdfs/nbCloud/TechDept/Projects/O.sativa_RNAseq_guofangqing/as/as_sep");
 		exonJunction.setgenerateNewIso();
 
 		exonJunction.run();
 		exonJunction = null;
-		System.out.println(dateUtil.getEclipseTime());
+		return dateUtil.getEclipseTime();
  
 	}
 	
 	private static Logger logger = Logger.getLogger(ExonJunction.class);
-	private static String stopGeneName = "MT-ND2";
+	private static String stopGeneName = "ENSGALG00000021142";
 	
 	GffHashGene gffHashGene = null;
 	StrandSpecific strandSpecific = StrandSpecific.NONE;
@@ -493,7 +497,9 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				runGetInfo.setRunningInfo(guiAnnoInfo);
 			}
 			List<AlignSamReading> lsSamFileReadings = mapCond2SamReader.get(condition);
+			int i = 0;
 			for (AlignSamReading samFileReading : lsSamFileReadings) {
+				i++;
 				samFileReading.clear();
 				if (samFileReadingLast != null) {
 					samFileReading.setReadInfo(0L, samFileReadingLast.getReadByte());
@@ -501,7 +507,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				samFileReadingLast = samFileReading;
 				samFileReading.setLsAlignments(lsReadReagion);
 				samFileReading.setRunGetInfo(runGetInfo);
-				add_RetainIntron_Into_SamReading(condition, samFileReading);
+				add_RetainIntron_Into_SamReading(condition, i+"", samFileReading);
 				MapReadsAbs mapReadsAbs = null;
 				if (isLessMemory) {
 					mapReadsAbs = getSamMapReads(samFileReading);
@@ -517,7 +523,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		}
 	}
 	
-	private void add_RetainIntron_Into_SamReading(String condition, AlignSamReading samFileReading) {
+	private void add_RetainIntron_Into_SamReading(String condition, String group,  AlignSamReading samFileReading) {
 		List<PredictRetainIntron> lsRetainIntrons = new ArrayList<>();
 		for (List<ExonSplicingTest> lsExonSplicingTests : lsSplicingTests) {
 			for (ExonSplicingTest exonSplicingTest : lsExonSplicingTests) {
@@ -525,7 +531,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			}
 		}
 		for (PredictRetainIntron predictRetainIntron : lsRetainIntrons) {
-			predictRetainIntron.setCondition(condition);
+			predictRetainIntron.setCondition_DifGroup(condition, group);
 		}
 		samFileReading.addColAlignmentRecorder(lsRetainIntrons);
 	}
@@ -577,6 +583,10 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	private void setSplicingType() {
 		for (List<ExonSplicingTest> lstest : lsSplicingTests) {
 			for (ExonSplicingTest exonSplicingTest : lstest) {
+				if (exonSplicingTest.getExonCluster().getParentGene().getName().contains(stopGeneName)) {
+					logger.error("");
+				}
+				logger.info(exonSplicingTest.getExonCluster().getParentGene().getName());
 				exonSplicingTest.setSpliceType2Value();
 			}
 		}

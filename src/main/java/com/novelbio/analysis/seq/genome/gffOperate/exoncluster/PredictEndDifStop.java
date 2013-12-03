@@ -24,16 +24,19 @@ public class PredictEndDifStop extends SpliceTypePredict {
 	}
 
 	@Override
-	public ArrayList<Double> getJuncCounts(String condition) {
-		ArrayList<Double> lsCounts = new ArrayList<Double>();
+	protected List<List<Double>> getLsJuncCounts(String condition) {
+		List<ExonInfo> lsExonInfosFinal = new ArrayList<>();
 		for (List<ExonInfo> lsExonInfos : ls_lsExonInfos) {
-			for (ExonInfo exonInfo : lsExonInfos) {
-				int num = tophatJunction.getJunctionSiteAll(condition, exonCluster.getRefID(), exonInfo.getStartCis());
-				num += tophatJunction.getJunctionSiteAll(condition, exonCluster.getRefID(), exonInfo.getEndCis());
-				lsCounts.add((double) num);
-			}
+			lsExonInfosFinal.addAll(lsExonInfos);
 		}
-		return lsCounts;
+		List<ExonInfo2Value> lsExonInfo2Values = getLsExon2Value(lsExonInfosFinal);
+		lsExonInfosFinal.clear();
+		int i = 0;
+		for (ExonInfo2Value exonInfo2Value : lsExonInfo2Values) {
+			if (i++ > 1) break;
+			lsExonInfosFinal.add(exonInfo2Value.exonInfo);
+		}
+		return getlsJunInfoEdge(condition, lsExonInfosFinal);
 	}
 
 	@Override

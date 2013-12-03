@@ -339,19 +339,33 @@ public class SamFile implements AlignSeq {
 	
 	/** 添加group信息，如果已经有group信息了，则返回 */
 	public SamFile addGroup(String sampleID, String LibraryName, String SampleName, String Platform) {
-		return addGroup(false, sampleID, LibraryName, SampleName, Platform);
+		String outFile = FileOperate.changeFileSuffix(getFileName(), "_rgroup", null);
+		return addGroup(outFile, false, sampleID, LibraryName, SampleName, Platform);
+	}
+	/** 添加group信息，如果已经有group信息了，则返回 */
+	public SamFile addGroup(String outFileName, String sampleID, String LibraryName, String SampleName, String Platform) {
+		return addGroup(outFileName, false, sampleID, LibraryName, SampleName, Platform);
 	}
 	 /**
 	  * 添加group信息，如果已经有group信息了，则覆盖
 	  */
 	public SamFile addGroupOverlap(String sampleID, String LibraryName, String SampleName, String Platform) {
-		return addGroup(true, sampleID, LibraryName, SampleName, Platform);
+		String outFile = FileOperate.changeFileSuffix(getFileName(), "_rgroup", null);
+		return addGroup(outFile, true, sampleID, LibraryName, SampleName, Platform);
 	}
+	 /**
+	  * 添加group信息，如果已经有group信息了，则覆盖
+	  */
+	public SamFile addGroupOverlap(String outFileName, String sampleID, String LibraryName, String SampleName, String Platform) {
+		return addGroup(outFileName, true, sampleID, LibraryName, SampleName, Platform);
+	}
+	
+
 	 /**
 	  * 添加group信息，如果已经有group信息了，则返回
 	  * @param outFile
 	  */
-	private SamFile addGroup(boolean overlap, String sampleID, String LibraryName, String SampleName, String Platform) {
+	private SamFile addGroup(String outFile, boolean overlap, String sampleID, String LibraryName, String SampleName, String Platform) {
 		boolean isAddGroup = false;
 		if (overlap) {
 			isAddGroup = true;
@@ -377,15 +391,7 @@ public class SamFile implements AlignSeq {
 			return this;
 		}
 		SamRGroup samRGroup = new SamRGroup(sampleID, LibraryName, SampleName, Platform);
-		return setGroup(samRGroup);
-	}
-	 /**
-	  * 添加group信息
-	  * @param outFile
-	  */
-	private SamFile setGroup(SamRGroup samReadGroupRecord) {
-		String outFile = FileOperate.changeFileSuffix(getFileName(), "_rgroup", null);
-		return setGroup(outFile, samReadGroupRecord);
+		return setGroup(outFile, samRGroup);
 	}
 	
 	 /**
@@ -393,6 +399,7 @@ public class SamFile implements AlignSeq {
 	  * @param outFile
 	  */
 	public SamFile setGroup(String outFile, SamRGroup samRGroup) {
+		FileOperate.createFolders(FileOperate.getPathName(outFile));
 		List<SAMReadGroupRecord> lsReadGroupRecords = new ArrayList<SAMReadGroupRecord>();
 		lsReadGroupRecords.add(samRGroup.getSamReadGroupRecord());
 		
@@ -533,7 +540,7 @@ public class SamFile implements AlignSeq {
 	}
 	
 	public SamFile recalibrate(List<String> lsVcfFile) {
-		String outFile = FileOperate.changeFileSuffix(getFileName(), "recalibrate", "bam");
+		String outFile = FileOperate.changeFileSuffix(getFileName(), "_recalibrate", "bam");
 		return recalibrate(lsVcfFile, outFile);
 	}
 	/**
@@ -626,9 +633,8 @@ public class SamFile implements AlignSeq {
 		pileup(pileupFile, 10);
 		return pileupFile;
 	}
-	public void pileup(int mapQualityFilter) {
-		String pileupFile = FileOperate.changeFileSuffix(getFileName(), "_pileup", "gz");
-		pileup(pileupFile, 10);
+	public void pileup(String outFileName) {
+		pileup(outFileName, 10);
 	}
 	public void pileup(String outPileUpFile, int mapQualityFilter) {
 		SamFile bamFile = convertToBam(false);

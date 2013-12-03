@@ -64,6 +64,7 @@ public class BamSort {
 		if (reader.getFileHeader().getSortOrder() == SortOrder.coordinate) {
 			return samFile.getFileName();
 		}
+		FileOperate.createFolders(FileOperate.getPathName(sortBamFile));
         reader.getFileHeader().setSortOrder(SORT_ORDER);
         SAMFileWriter writer = new SAMFileWriterFactory().makeSAMOrBAMWriter(reader.getFileHeader(), false, sortBamFile);
 

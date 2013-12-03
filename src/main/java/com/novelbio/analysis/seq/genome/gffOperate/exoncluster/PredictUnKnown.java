@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
@@ -21,22 +20,22 @@ public class PredictUnKnown extends SpliceTypePredict {
 	}
 
 	@Override
-	public List<List<Double>> getJuncCounts(String condition) {
-		List<ExonInfo> lsExon = exonCluster.getAllExons();
-		List<List<Double>> lsCounts = new ArrayList<>();
-		if (exonCluster.getMapIso2ExonIndexSkipTheCluster().size() > 0) {
-			lsCounts.add(getJunReadsNum(condition));
+	protected List<List<Double>> getLsJuncCounts(String condition) {
+		List<ExonInfo2Value> lsExonInfos = getLsExon2Value(exonCluster.getAllExons());
+		List<ExonInfo> lsExon = new ArrayList<>();
+		int i = 0;
+		for (ExonInfo2Value exonInfo2Value : lsExonInfos) {
+			if (i++ > 2) break;
+			lsExon.add(exonInfo2Value.exonInfo);
 		}
-		
-		//合并相同的边界
-		Set<Integer> setEdge = new HashSet<Integer>();
-		for (ExonInfo exonInfo : lsExon) {
-			setEdge.add(exonInfo.getStartAbs());
-			setEdge.add(exonInfo.getEndAbs());
-		}
-		for (Integer edge : setEdge) {
-			List<Double> ls1 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), edge);
-			lsCounts.add((double) thisCounts);
+		List<List<Double>> lsCounts = getlsJunInfoEdge(condition, lsExon);
+		//如果跨过 exon的reads很多，则把跨过 exon的 reads添加进去
+		if (exonCluster.getMapIso2ExonIndexSkipTheCluster().size() > 0 && 
+				(lsExonInfos.size() < 2 || lsExonInfos.get(1) == null || getSkipNumAll() >= lsExonInfos.get(1).value)) {
+			lsCounts.add(0, getJunReadsNum(condition));
+			if (lsCounts.size() > 2) {
+				lsCounts.remove(2);
+			}
 		}
 		return lsCounts;
 	}
@@ -52,10 +51,23 @@ public class PredictUnKnown extends SpliceTypePredict {
 			String[] ss = string.split(SepSign.SEP_ID);
 			List<Double> lsTmp = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), gffDetailGene.getRefID(),
 					Integer.parseInt(ss[0]), Integer.parseInt(ss[1]));
-			addLsDouble(lsResult, lsTmp);	
+			lsResult = addLsDouble(lsResult, lsTmp);	
 		}
-		
 		return lsResult;
+	}
+	
+	protected int getSkipNumAll() {
+		GffDetailGene gffDetailGene = exonCluster.getParentGene();
+		HashSet<String> setLocation = new HashSet<String>();
+		setLocation.addAll(getSkipExonLoc_From_IsoHaveExon());
+		setLocation.addAll(getSkipExonLoc_From_IsoWithoutExon(gffDetailGene));
+		int numAll = 0;
+		for (String string : setLocation) {
+			String[] ss = string.split(SepSign.SEP_ID);
+			numAll += tophatJunction.getJunctionSiteAll(exonCluster.isCis5to3(), gffDetailGene.getRefID(),
+					Integer.parseInt(ss[0]), Integer.parseInt(ss[1]));
+		}
+		return numAll;
 	}
 	
 	/**

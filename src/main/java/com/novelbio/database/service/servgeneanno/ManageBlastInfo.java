@@ -139,6 +139,11 @@ public class ManageBlastInfo {
 	public List<BlastFileInfo> queryBlastFile(String fileName) {
 		return mongoTemplate.find(new Query(Criteria.where("fileName").is(fileName)), BlastFileInfo.class);
 	}
+	
+	public BlastFileInfo queryBlastFileByID(String blastID) {
+		return mongoTemplate.findById(blastID, BlastFileInfo.class);
+	}
+	
 	public BlastFileInfo findBlastFile(String id) {
 		return mongoTemplate.findById(id, BlastFileInfo.class);
 	}
@@ -194,7 +199,12 @@ public class ManageBlastInfo {
 		mongoTemplate.remove(new Query(Criteria.where("blastFileId").is(blastFileInfo.getId())), BlastInfo.class);
 		mongoTemplate.remove(blastFileInfo);
 	}
-	
+	/** 删除某个blastFile以及与之相关的blast信息 */
+	public void removeBlastFile(String blastFileInfoID) {
+		BlastFileInfo blastFileInfo = queryBlastFileByID(blastFileInfoID);
+		mongoTemplate.remove(new Query(Criteria.where("blastFileId").is(blastFileInfoID)), BlastInfo.class);
+		mongoTemplate.remove(blastFileInfo);
+	}
 	/**
 	 * 给定blastInfo的信息，如果数据库中的本物种已经有了该结果，则比较evalue，用低evalue的覆盖高evalue的
 	 * 如果没有，则插入

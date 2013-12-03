@@ -1,13 +1,19 @@
 package com.novelbio.analysis.seq.genome.gffOperate.exoncluster;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
+
+import com.google.common.collect.HashMultimap;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
@@ -18,18 +24,34 @@ import com.novelbio.base.dataStructure.Alignment;
 
 //TODO 需要返回该差异剪接位点所对应的两类Iso
 public abstract class SpliceTypePredict {
+	private static final Logger logger = Logger.getLogger(SpliceTypePredict.class);
 	ExonCluster exonCluster;
 	TophatJunction tophatJunction;
 	Boolean isType = null;
-	
+	HashMultimap<String, String> mapCond2Group;
 	public SpliceTypePredict(ExonCluster exonCluster) {
 		this.exonCluster = exonCluster;
 	}
 	public void setTophatJunction(TophatJunction tophatJunction) {
 		this.tophatJunction = tophatJunction;
+		this.mapCond2Group = tophatJunction.getMapCondition2Group();
+	}
+	public List<List<Double>> getJuncCounts(String condition) {
+		List<List<Double>> lsJun = getLsJuncCounts(condition);
+		for (int i = 0; i < lsJun.size(); i++) {
+			List<Double> list = lsJun.get(i);
+			if (list == null || list.size() == 0) {
+				list = new ArrayList<>();
+				for (String group : mapCond2Group.get(condition)) {
+					list.add(0.0);
+				}
+				lsJun.set(i, list);
+			}
+		}
+		return lsJun;
 	}
 	/** 获得用于检验的junction reads */
-	public abstract List<List<Double>> getJuncCounts(String condition);
+	protected abstract List<List<Double>> getLsJuncCounts(String condition);
 	/** 是否为该种剪接类型 */
 	public boolean isSpliceType() {
 		if (isType != null) {
@@ -41,7 +63,6 @@ public abstract class SpliceTypePredict {
 			//TODO 删除断点
 			return isType();
 		}
-
 	}
 	
 	protected abstract boolean isType();
@@ -57,6 +78,27 @@ public abstract class SpliceTypePredict {
 	 * 可以直接返回{@link GffGeneIsoInfo}
 	 */
 	public abstract List<? extends Alignment> getBGSite();
+	
+	
+	/** 分别计算exon边界所参与的reads数，只取前两个值 */
+	protected List<List<Double>> getlsJunInfoEdge(String condition, List<ExonInfo> lsExonInfos) {
+		ExonInfo exonInfo0 = lsExonInfos.get(0);
+		List<Double> ls0_1 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), exonInfo0.getStartAbs());
+		List<Double> ls0_2 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), exonInfo0.getEndAbs());
+		List<Double> ls0 = addLsDouble(ls0_1, ls0_2);
+		List<List<Double>> lsCounts = new ArrayList<>();
+		lsCounts.add(ls0);
+		
+		if (lsExonInfos.size() > 1) {
+			ExonInfo exonInfo1 = lsExonInfos.get(1);
+			List<Double> ls1_1 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), exonInfo1.getStartAbs());
+			List<Double> ls1_2 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), exonInfo1.getEndAbs());
+			List<Double> ls1 = addLsDouble(ls1_1, ls1_2);
+			lsCounts.add(ls1);
+		}
+		return lsCounts;
+	}
+	
 	/**
 	 * 获得跳过该exonCluster组的readsNum
 	 * @param gffDetailGene1
@@ -75,7 +117,7 @@ public abstract class SpliceTypePredict {
 			String[] ss = string.split(SepSign.SEP_ID);
 			List<Double> lsTmpValue = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), gffDetailGene.getRefID(),
 					Integer.parseInt(ss[0]), Integer.parseInt(ss[1]));
-			addLsDouble(lsInt, lsTmpValue);	
+			lsInt = addLsDouble(lsInt, lsTmpValue);	
 		}
 		return lsInt;
 	}
@@ -87,11 +129,16 @@ public abstract class SpliceTypePredict {
 	 * @return
 	 */
 	protected List<Double> addLsDouble(List<Double> lsResult, List<Double> lsTmpValue) {
-		if (lsResult == null) {
+		if (lsResult == null && lsTmpValue == null) {
+			return lsResult;
+		} else if (lsTmpValue == null) {
+			return lsResult;
+		} else if (lsResult == null || lsResult.size() == 0) {
 			lsResult = new ArrayList<>(lsTmpValue);
+			return lsResult;
 		}
 		for (int i = 0; i < lsTmpValue.size(); i++) {
-			lsResult.add(i, lsResult.get(i) + lsTmpValue.get(i));
+			lsResult.set(i, lsResult.get(i) + lsTmpValue.get(i));
 		}
 		return lsResult;
 	}
@@ -137,6 +184,20 @@ public abstract class SpliceTypePredict {
 		return setLocation;
 	}
 	
+	/** 按照junction reads数从大到小排序 */
+	protected List<ExonInfo2Value> getLsExon2Value(List<ExonInfo> lsExonInfos) {
+		List<ExonInfo2Value> lsExon2Value = new ArrayList<>();
+		for (ExonInfo exonInfo : lsExonInfos) {
+			double number = tophatJunction.getJunctionSiteAll(exonCluster.isCis5to3(), exonCluster.getRefID(), exonInfo.getStartAbs())
+					+ tophatJunction.getJunctionSiteAll(exonCluster.isCis5to3(), exonCluster.getRefID(), exonInfo.getEndAbs());
+			ExonInfo2Value exonInfo2Value = new ExonInfo2Value(exonInfo, number);
+			lsExon2Value.add(exonInfo2Value);
+		}
+		Collections.sort(lsExon2Value);
+		return lsExon2Value;
+	}
+	
+	
 	public static List<SpliceTypePredict> getSplicingTypeLs(ExonCluster exonCluster) {
 		ArrayList<SpliceTypePredict> lsSpliceTypePredictsTmp = new ArrayList<SpliceTypePredict>();
 		if (exonCluster.isSameExonInExistIso() || exonCluster.isNotSameTss_But_SameEnd() || exonCluster.isAtEdge()) {
@@ -175,6 +236,7 @@ public abstract class SpliceTypePredict {
 		cassette, cassette_multi, alt5, alt3, altend, altstart, mutually_exclusive, retain_intron, unknown, sam_exon,
 		startDif, endDif;
 		static HashMap<String, SplicingAlternativeType> mapName2Events = new LinkedHashMap<String, SplicingAlternativeType>();
+		
 		public static HashMap<String, SplicingAlternativeType> getMapName2SplicingEvents() {
 			if (mapName2Events.size() == 0) {
 				mapName2Events.put("cassette", cassette);
@@ -203,4 +265,19 @@ public abstract class SpliceTypePredict {
 		return true;
 	}
 
+}
+
+/** 用来排序的类 */
+class ExonInfo2Value implements Comparable<ExonInfo2Value> {
+	ExonInfo exonInfo;
+	Double value;
+	public ExonInfo2Value(ExonInfo exonInfo, double value) {
+		this.exonInfo = exonInfo;
+		this.value = value;
+	}
+	@Override
+	public int compareTo(ExonInfo2Value o) {
+		return -value.compareTo(o.value);
+	}
+	
 }

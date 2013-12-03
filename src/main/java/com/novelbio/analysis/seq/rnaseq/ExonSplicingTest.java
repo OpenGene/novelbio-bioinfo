@@ -22,6 +22,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.PredictRetainIntron;
+import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.PredictUnKnown;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict.SplicingAlternativeType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
@@ -64,6 +65,8 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	int readsLength = 100;
 	
 	SeqHash seqHash;
+	
+	private static final String debug = "CAMKK2";
 	
 	public ExonSplicingTest(ExonCluster exonCluster) {
 		this.exonCluster = exonCluster;
@@ -167,7 +170,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			return pvalue;
 		}
 		//TODO 可以设置断点
-		if (exonCluster.getParentGene().getName().contains("KIF2A")) {
+		if (exonCluster.getParentGene().getName().contains(debug)) {
 			logger.debug("stop");
 		}
 		if (!mapCondition2SpliceInfo.containsKey(condition1) || !mapCondition2SpliceInfo.containsKey(condition2)) {
@@ -208,6 +211,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		try {
 			return getPvalueReadsExp(splicingType);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return -1.0;
 		}
 	}
@@ -221,13 +225,15 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		
 		List<List<Double>> lsExp1 = mapCondition2SpliceInfo.get(condition1).getLsExp(splicingType);
 		List<List<Double>> lsExp2= mapCondition2SpliceInfo.get(condition2).getLsExp(splicingType);
-		
-		
-		
-		int[] tmpExpCond1 = new int[2];
-		tmpExpCond1[0] = lsExp1.get(0).intValue(); tmpExpCond1[1] = lsExp1.get(1).intValue();
-		int[] tmpExpCond2 = new int[2];
-		tmpExpCond2[0] = lsExp2.get(0).intValue(); tmpExpCond2[1] = lsExp2.get(1).intValue();
+		int[] tmpExpCond1 = null;
+		try {
+			tmpExpCond1 = combReadsNumExpInt(lsExp1);
+
+		} catch (Exception e) {
+			tmpExpCond1 = combReadsNumExpInt(lsExp1);
+
+		}
+		int[] tmpExpCond2 = combReadsNumExpInt(lsExp2);
 		
 //		long[] tmpExpCond1long = modifyInputValue(tmpExpCond1);
 //		long[] tmpExpCond2long = modifyInputValue(tmpExpCond2);
@@ -247,8 +253,14 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		
 		List<List<Double>> lsJunc1 = mapCondition2SpliceInfo.get(condition1).getLsJun(splicingType);
 		List<List<Double>> lsJunc2 = mapCondition2SpliceInfo.get(condition2).getLsJun(splicingType);
-		int[] cond1 = getReadsNum(lsJunc1);
-		int[] cond2 = getReadsNum(lsJunc2);
+		int[] cond1 = null;
+		try {
+			cond1 = combReadsNumJun(lsJunc1);
+		} catch (Exception e) {
+			cond1 = combReadsNumJun(lsJunc1);
+		}
+//		int[] cond1 = combReadsNumInt(lsJunc1);
+		int[] cond2 = combReadsNumJun(lsJunc2);
 		
 		if (!filter(cond1, cond2)) {
 			return 1.0;
@@ -262,13 +274,35 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		return chiSquareTestDataSetsComparison(cond1, cond2);
 	}
 	
-	private int[] getReadsNum(List<Double> lsJunc) {
+	private int[] combReadsNumJun(List<List<Double>> lsJunc) {
 		int[] result = new int[lsJunc.size()];
 		for (int i = 0; i < result.length; i++) {
-			result[i] = lsJunc.get(i).intValue();
+			result[i] = (int) MathComput.sum(lsJunc.get(i));
 		}
 		return result;
 	}
+	
+	private int[] combReadsNumExpInt(List<List<Double>> lsExp) {
+		int[] result = new int[lsExp.get(0).size()];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = 0;
+			for (List<Double> ls : lsExp) {
+				result[i] += ls.get(i);
+			}
+		}
+		return result;
+	}
+	private double[] combReadsNumExp(List<List<Double>> lsExp) {
+		double[] result = new double[lsExp.get(0).size()];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = 0;
+			for (List<Double> ls : lsExp) {
+				result[i] += ls.get(i);
+			}
+		}
+		return result;
+	}
+	
 	/** 某些情况不适合做分析，就过滤掉<br>
 	 * 譬如：遇到类似 0:5 0:50<br>
 	 * 和<br>
@@ -446,20 +480,20 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		return lsResult.toArray(new String[0]);
 	}
 		
-	private double getLogFC(List<? extends Number> lsInfo1, List<? extends Number> lsInfo2) {
+	private double getLogFC(List<List<Double>> lsInfo1, List<List<Double>> lsInfo2) {
 		if (lsInfo1.size() < 2 || lsInfo2.size() < 2) return 0;
 		
-		double a1 = lsInfo1.get(0).doubleValue(), b1 = lsInfo1.get(1).doubleValue();
-		double a2 = lsInfo2.get(0).doubleValue(), b2 = lsInfo2.get(1).doubleValue();
+		double a1 = MathComput.sum(lsInfo1.get(0)), b1 = MathComput.sum(lsInfo1.get(1));
+		double a2 = MathComput.sum(lsInfo2.get(0)), b2 = MathComput.sum(lsInfo2.get(1));
 		double result = Math.log((a1*b2 + 1)/(a2*b1+1))/Math.log(2);
 		return Math.abs(result);
 	}
 	
-	private double getLogFCnew(List<? extends Number> lsInfo1, List<? extends Number> lsInfo2) {
+	private double getLogFCnew(List<List<Double>> lsInfo1, List<List<Double>> lsInfo2) {
 		if (lsInfo1.size() < 2 || lsInfo2.size() < 2) return 0;
 		
-		double a1 = lsInfo1.get(0).doubleValue(), b1 = lsInfo1.get(1).doubleValue();
-		double a2 = lsInfo2.get(0).doubleValue(), b2 = lsInfo2.get(1).doubleValue();
+		double a1 = MathComput.sum(lsInfo1.get(0)), b1 = MathComput.sum(lsInfo1.get(1));
+		double a2 = MathComput.sum(lsInfo2.get(0)), b2 = MathComput.sum(lsInfo2.get(1));
 		double result = Math.log(a2-a1*b2/b1);
 		return Math.abs(result);
 	}
@@ -549,20 +583,26 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		return lsSeqFastas;
 	}
 	
-	private String getCondition(List<Double> lsJunc) {
+	private String getConditionInt(List<List<Double>> lsJunc) {
 		if (lsJunc == null || lsJunc.size() == 0) {
 			return "";
 		}
-		String condition = lsJunc.get(0)+ "";
-		for (int i = 1; i < lsJunc.size(); i++) {
-			condition = condition + "::" + lsJunc.get(i);
+		int[] junction = combReadsNumJun(lsJunc);
+		String condition = junction[0]+ "";
+		for (int i = 1; i < junction.length; i++) {
+			condition = condition + "::" + junction[i];
 		}
 		return condition;
 	}
-	private String getConditionInt(List<Double> lsJunc) {
-		String condition = lsJunc.get(0).intValue() + "";
-		for (int i = 1; i < lsJunc.size(); i++) {
-			condition = condition + "::" + lsJunc.get(i).intValue();
+	
+	private String getCondition(List<List<Double>> lsJunc) {
+		if (lsJunc == null || lsJunc.size() == 0) {
+			return "";
+		}
+		double[] junction = combReadsNumExp(lsJunc);
+		String condition = junction[0]+ "";
+		for (int i = 1; i < junction.length; i++) {
+			condition = condition + "::" + junction[i];
 		}
 		return condition;
 	}
@@ -579,7 +619,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		ArrayList<Double> lsPvalue = new ArrayList<Double>();
 		for (ExonSplicingTest exonSplicingTest : colExonSplicingTests) {
 			//TODO
-			if (exonSplicingTest.getExonCluster().getParentGene().getName().contains("SRSF10")) {
+			if (exonSplicingTest.getExonCluster().getParentGene().getName().contains(debug)) {
 				logger.error("stop");
 			}
 			if (exonSplicingTest.getAndCalculatePvalue() > 0.5) {
@@ -665,14 +705,16 @@ class SpliceType2Value {
 //			logger.error("stop");
 //		}
 		
-		ArrayList<Double> lsExp = new ArrayList<Double>();
+		List<Double> lsExp = new ArrayList<>();
 		Align siteInfo = spliceTypePredict.getDifSite();
 		double[] info = mapReads.getRangeInfo(siteInfo.getRefID(), siteInfo.getStartAbs(), siteInfo.getEndAbs(), 0);
 		if (info == null || BGinfo == null) {
-			return;
+			lsExp.add(0.0);
+			lsExp.add(0.0);
+		} else {
+			lsExp.add((double) (getMean(info) + 1));
+			lsExp.add((double) (getMean(BGinfo) + 1));
 		}
-		lsExp.add((double) (getMean(info) + 1));
-		lsExp.add((double) (getMean(BGinfo) + 1));
 		mapSplicingType2LsExpValue.put(spliceTypePredict.getType(), lsExp);
 		setExonSplicingTypes.add(spliceTypePredict.getType());
 	}
@@ -697,12 +739,21 @@ class SpliceType2Value {
 		mapSplicingType2Detail.put(splicingAlternativeType, spliceTypePredict);
 	}
 	
-	/** 获得reads，如果不存在这种类型的可变剪接，就返回null */
+	/** 获得reads，如果不存在这种类型的可变剪接，就返回null
+	 * 
+	 * @param splicingAlternativeType
+	 * @return
+	 * list--每个位点，各个group的junction reads number
+	 */
 	public List<List<Double>> getLsJun(SplicingAlternativeType splicingAlternativeType) {
 		return mapSplicingType2LsJunctionReads.get(splicingAlternativeType);
 	}
 		
-	/** 获得表达，如果不存在这种类型的可变剪接，就返回null */
+	/** 获得表达，如果不存在这种类型的可变剪接，就返回null
+	 * 
+	 * @param splicingAlternativeType
+	 * @return
+	 */
 	public List<List<Double>> getLsExp(SplicingAlternativeType splicingAlternativeType) {
 		return mapSplicingType2LsExpValue.get(splicingAlternativeType);
 	}
@@ -711,6 +762,7 @@ class SpliceType2Value {
 	 * 给定指定的剪接类型，返回该剪接类型的各种指标
 	 * @param splicingAlternativeType
 	 * @return
+	 * list--每个位点，各个group的junction reads number
 	 */
 	public SpliceTypePredict getSpliceTypePredict(SplicingAlternativeType splicingAlternativeType) {
 		return mapSplicingType2Detail.get(splicingAlternativeType);

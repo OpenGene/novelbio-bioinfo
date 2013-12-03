@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -24,30 +23,30 @@ public class PredictCassette extends SpliceTypePredict {
 	}
 	
 	@Override
-	public ArrayList<Double> getJuncCounts(String condition) {
+	protected List<List<Double>> getLsJuncCounts(String condition) {
 		return getJuncCountsLoose(condition);
 	}
 	/** 不完全按照转录本信息来 */
-	private ArrayList<Double> getJuncCountsLoose(String condition) {
-		ArrayList<Double> lsCounts = new ArrayList<Double>();
-		lsCounts.add((double) getJunReadsNum(condition));
+	private List<List<Double>> getJuncCountsLoose(String condition) {
+		List<List<Double>> lsCounts = new ArrayList<>();
+		lsCounts.add(getJunReadsNum(condition));
 		Set<Integer> setAlignExist = new HashSet<Integer>();
 		for (GffGeneIsoInfo gffGeneIsoInfo : setExistExonIso) {
 			List<ExonInfo> lsExon = exonCluster.getIsoExon(gffGeneIsoInfo);
 			setAlignExist.add(lsExon.get(0).getStartCis());
 			setAlignExist.add(lsExon.get(lsExon.size() - 1).getEndCis());
 		}
-		int exist = 0;
+		List<Double> lsExist = new ArrayList<>();
 		for (Integer align : setAlignExist) {
-			exist = exist + tophatJunction.getJunctionSiteAll(condition, exonCluster.getRefID(), align);
+			lsExist = addLsDouble(lsExist, tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align));
 		}
-		lsCounts.add((double) exist);
+		lsCounts.add(lsExist);
 		return lsCounts;
 	}
 	
 	/** 完全按照转录本信息来 */
-	private ArrayList<Double> getJuncCountsStrict(String condition) {
-		ArrayList<Double> lsCounts = new ArrayList<Double>();
+	private List<List<Double>> getJuncCountsStrict(String condition) {
+		List<List<Double>> lsCounts = new ArrayList<>();
 		HashSet<Align> setAlignSkip = new HashSet<Align>();
 		HashSet<Align> setAlignExist = new HashSet<Align>();
 		
@@ -75,16 +74,16 @@ public class PredictCassette extends SpliceTypePredict {
 			setAlignExist.add(alignAfter);
 		}
 		//获得junction reads
-		int skip = 0;
-		int exist = 0;
+		List<Double> lsSkip = null;
+		List<Double> lsExist = null;
 		for (Align align : setAlignSkip) {
-			skip += tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getStartAbs(), align.getEndAbs());
+			lsSkip = addLsDouble(lsSkip, tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getStartAbs(), align.getEndAbs()));
 		}
 		for (Align align : setAlignExist) {
-			exist += tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getStartAbs(), align.getEndAbs());
+			lsExist = addLsDouble(lsExist, tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getStartAbs(), align.getEndAbs()));
 		}
-		lsCounts.add((double) skip);
-		lsCounts.add((double) exist);
+		lsCounts.add(lsSkip);
+		lsCounts.add(lsExist);
 		return lsCounts;
 	}
 

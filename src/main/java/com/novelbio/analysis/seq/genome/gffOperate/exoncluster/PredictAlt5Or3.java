@@ -27,19 +27,19 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 	}
 
 	@Override
-	public ArrayList<Double> getJuncCounts(String condition) {
+	protected List<List<Double>> getLsJuncCounts(String condition) {
 		Align align = getDifSite();
-		ArrayList<Double> lsResult = new ArrayList<Double>();
-		lsResult.add((double) tophatJunction.getJunctionSiteAll(condition, exonCluster.getRefID(), align.getStartAbs()));
-		lsResult.add((double) tophatJunction.getJunctionSiteAll(condition, exonCluster.getRefID(), align.getEndAbs()));
+		List<List<Double>> lsResult = new ArrayList<>();
+		lsResult.add(tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getStartAbs()));
+		lsResult.add(tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getEndAbs()));
 		return lsResult;
 	}
 	
 	/** 获得alt5， alt3的差异位点 */
 	@Override
 	public Align getDifSite() {
-		Map<Integer, List<Integer>> mapJuncNum2Edge = new TreeMap<Integer, List<Integer>>(new Comparator<Integer>() {
-			public int compare(Integer o1, Integer o2) {
+		Map<Double, List<Integer>> mapJuncNum2Edge = new TreeMap<>(new Comparator<Double>() {
+			public int compare(Double o1, Double o2) {
 				return -o1.compareTo(o2);
 			}
 		});
@@ -47,7 +47,7 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 		//junc reads Num为key，treemap直接排序
 		//为防止junc reads num重复，用list装value
 		for (Integer edge : mapEdge2Iso.keySet()) {
-			int juncNum = tophatJunction.getJunctionSiteAll(exonCluster.isCis5to3(), exonCluster.getRefID(), edge);
+			double juncNum = tophatJunction.getJunctionSiteAll(exonCluster.isCis5to3(), exonCluster.getRefID(), edge);
 			List<Integer> lsSite = null;
 			if (mapJuncNum2Edge.containsKey(juncNum)) {
 				lsSite = mapJuncNum2Edge.get(juncNum);
@@ -61,7 +61,7 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 		//获得reads数最多的两个边界
 		int i = 0;
 		int[] startEnd = new int[2];
-		for (Integer juncNum : mapJuncNum2Edge.keySet()) {
+		for (Double juncNum : mapJuncNum2Edge.keySet()) {
 			List<Integer> lsSite = mapJuncNum2Edge.get(juncNum);
 			for (Integer integer : lsSite) {
 				if (i >= 2) {
@@ -70,10 +70,6 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 				startEnd[i] = integer;
 				i++;
 			}
-		}
-		
-		if (Math.abs(startEnd[0] - startEnd[1]) > 500000) {
-			System.out.println("stop");
 		}
 		if (Math.abs(startEnd[0] - startEnd[1]) < lengthMin) {
 			isFiltered = false;

@@ -1,7 +1,12 @@
 package com.novelbio.analysis.seq.genome.gffOperate.exoncluster;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeMap;
+
+import org.hyperic.sigar.cmd.SysInfo;
 
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.mapping.Align;
@@ -31,6 +36,28 @@ public abstract class PredictAltStartEnd extends SpliceTypePredict {
 		}
 		return istype;
 	}
+	
+	protected List<List<Double>> getLsJuncCounts(String condition) {
+		List<List<Double>> lsCounts = new ArrayList<>();
+		isType();
+		Set<Integer> setEdge = getSetEdge();
+		String chrID = lsSite.get(0).getRefID();
+		lsCounts.add(getJunReadsNum(condition));
+		TreeMap<Double, Integer> mapValue2Edge = new TreeMap<>(new Comparator<Double>() {
+			public int compare(Double o1, Double o2) {
+				return -o1.compareTo(o2);
+			}
+		});
+		
+		for (Integer integer : setEdge) {
+			mapValue2Edge.put(tophatJunction.getJunctionSiteAll(exonCluster.isCis5to3(), chrID, integer), integer);
+		}
+		int edge = mapValue2Edge.values().iterator().next();
+		lsCounts.add(tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), chrID, edge));
+		return lsCounts;
+	}
+	
+	protected abstract Set<Integer> getSetEdge();
 	
 	/**
 	 * 获得比较的位点

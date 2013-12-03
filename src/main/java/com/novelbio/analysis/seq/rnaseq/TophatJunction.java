@@ -56,7 +56,10 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 		this.subGroup = subgroup;
 		mapCondition2Group.put(condition, subgroup);
 	}
-	
+	/** 获得condition对group的对照表 */
+	public HashMultimap<String, String> getMapCondition2Group() {
+		return mapCondition2Group;
+	}
 	/**添加samBam的文件用来获得信息 */
 	public void addAlignRecord(AlignRecord alignRecord) {
 		Boolean cis5to3 = getCis5to3(alignRecord);
@@ -93,7 +96,7 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 			if (cis5to3 != null) {
 				jun.setCis5to3(cis5to3);
 			}
-			jun.addReadsNum1(condition, subGroup);
+			jun.addReadsNum(condition, subGroup, (double)1/alignRecord.getMappedReadsWeight());
 			lsJun.add(jun);
 		}
 		addJunctionInfo(lsJun);
@@ -169,8 +172,8 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	 * @param locSite
 	 * @return
 	 */
-	public int getJunctionSiteAll(boolean cis5to3, String chrID, int locSite) {
-		int num = 0;
+	public double getJunctionSiteAll(boolean cis5to3, String chrID, int locSite) {
+		double num = 0;
 		List<JunctionUnit> lsJunctionUnits = mapJunSite2JunUnit.get(chrID + SepSign.SEP_ID + locSite);
 		for (JunctionUnit junctionUnit : lsJunctionUnits) {
 			if (strandSpecific != StrandSpecific.NONE && cis5to3 != junctionUnit.isCis5to3()) {
@@ -187,7 +190,7 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	 * @param locSite
 	 * @return
 	 */
-	public int getJunctionSiteAll(boolean cis5to3, String chrID, int locStart, int locEnd) {
+	public double getJunctionSiteAll(boolean cis5to3, String chrID, int locStart, int locEnd) {
 		int start = Math.min(locStart, locEnd), end = Math.max(locStart, locEnd);
 		Boolean cis5to3Final = null;
 		if (strandSpecific != StrandSpecific.NONE) {
@@ -266,7 +269,7 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	 * @param locEndSite
 	 * @return
 	 */
-	private double getJunctionSite(String condition, String group, boolean cis5to3, String chrID, int locStartSite, int locEndSite) {
+	public double getJunctionSite(String condition, String group, boolean cis5to3, String chrID, int locStartSite, int locEndSite) {
 		int start = Math.min(locStartSite, locEndSite), end = Math.max(locStartSite, locEndSite);
 		Boolean cis5to3Final = null;
 		if (strandSpecific != StrandSpecific.NONE) {

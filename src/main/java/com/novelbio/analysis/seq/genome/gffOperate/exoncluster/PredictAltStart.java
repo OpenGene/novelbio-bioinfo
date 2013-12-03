@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeMap;
 
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
@@ -19,22 +20,15 @@ public class PredictAltStart extends PredictAltStartEnd {
 	public SplicingAlternativeType getType() {
 		return SplicingAlternativeType.altstart;
 	}
-	
-	public ArrayList<Double> getJuncCounts(String condition) {
-		ArrayList<Double> lsCounts = new ArrayList<Double>();
-		isType();
-		HashSet<Integer> setEndSide = new HashSet<Integer>();
+
+	@Override
+	protected Set<Integer> getSetEdge() {
+		Set<Integer> setEndSide = new HashSet<Integer>();
 		for (Align align : lsSite) {
 			setEndSide.add(align.getEndCis());
 		}
-		String chrID = lsSite.get(0).getRefID();
-		for (Integer integer : setEndSide) {
-			lsCounts.add((double) tophatJunction.getJunctionSiteAll(condition, chrID, integer));
-		}
-		lsCounts.add((double) getJunReadsNum(condition));
-		return lsCounts;
+		return setEndSide;
 	}
-
 	
 	protected boolean isBeforeOrAfterNotSame() {
 		ExonCluster exonClusterBefore = exonCluster.getExonClusterBefore();
@@ -62,23 +56,24 @@ public class PredictAltStart extends PredictAltStartEnd {
 	public Align getDifSite() {
 		isType();
 		//倒序，获得junction最多的reads
-		TreeMap<Integer, List<ExonInfo>> mapJuncNum2Exon = new TreeMap<>(new Comparator<Integer>() {
-			public int compare(Integer o1, Integer o2) {
+		TreeMap<Double, List<ExonInfo>> mapJuncNum2Exon = new TreeMap<>(new Comparator<Double>() {
+			public int compare(Double o1, Double o2) {
 				return -o1.compareTo(o2);
 			}
 		});
 		
 		for (List<ExonInfo> lsExonInfos : lslsExonInfos) {
-			int juncReads = tophatJunction.getJunctionSiteAll(exonCluster.isCis5to3(), exonCluster.getRefID(), lsExonInfos.get(lsExonInfos.size() - 1).getEndCis());
+			double juncReads = tophatJunction.getJunctionSiteAll(exonCluster.isCis5to3(), exonCluster.getRefID(), lsExonInfos.get(lsExonInfos.size() - 1).getEndCis());
 			mapJuncNum2Exon.put(juncReads, lsExonInfos);
 		}
 		//获得第一个
 		Align align = null;
-		for (Integer juncNum : mapJuncNum2Exon.keySet()) {
+		for (Double juncNum : mapJuncNum2Exon.keySet()) {
 			List<ExonInfo> lsExonInfos = mapJuncNum2Exon.get(juncNum);
 			align = new Align(exonCluster.getRefID(), lsExonInfos.get(0).getStartCis(), lsExonInfos.get(lsExonInfos.size() - 1).getEndCis());
 			break;
 		}		
 		return align;
 	}
+
 }

@@ -3,8 +3,6 @@ package com.novelbio.analysis.seq.fasta;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
@@ -89,53 +87,49 @@ public class SeqFastaHash extends SeqHashAbs {
 	 * @throws Exception 
 	 */
 	protected void setChrFile() throws Exception {
-		Pattern pattern = null;
-		if (regx == null) {
-			pattern = Pattern.compile("", Pattern.CASE_INSENSITIVE); // flags
-		} else {
-			pattern = Pattern.compile(regx, Pattern.CASE_INSENSITIVE); // flags
-		}
-		
-		Matcher matcher;// matcher.groupCount() 返回此匹配器模式中的捕获组数。
+		if (regx == null) regx = "";
+		PatternOperate patternOperate = new PatternOperate(regx, false);
 		hashSeq = new HashMap<String, SeqFasta>();// 本list用来存储染色体
-		TxtReadandWrite txtSeqFile = new TxtReadandWrite(chrFile,false);
-		StringBuilder SeqStringBuilder = new StringBuilder();
-		SeqFasta Seq = null;
 		lsSeqName = new ArrayList<String>();
+
+		TxtReadandWrite txtSeqFile = new TxtReadandWrite(chrFile,false);
+		SeqFasta seqFasta = null;
 		for (String content : txtSeqFile.readlines()) {
 			// 当读到一条序列时，给序列起名字
 			if (content.trim().startsWith(">")) {
-				if (Seq != null) {
-					putSeqFastaInHash(Seq, SeqStringBuilder.toString(), append);
-					SeqStringBuilder = new StringBuilder();// 清空
+				if (seqFasta != null) {
+					putSeqFastaInHash(seqFasta, append);
 				}
-				Seq = new SeqFasta();
-				String tmpSeqName = content.trim().substring(1).trim();
-				// ///////////////用正则表达式抓取序列名中的特定字符////////////////////////////////////////////////
-				if (regx == null || regx.trim().equals("")) {
-					Seq.setName(tmpSeqName);
-				} else {
-					matcher = pattern.matcher(tmpSeqName);
-					if (matcher.find()) {
-						Seq.setName(matcher.group());
-					} else {
-						System.out.println("没找到该序列的特定名称，用全称代替 " + tmpSeqName);
-						Seq.setName(tmpSeqName);
-					}
-				}
+				seqFasta = new SeqFasta();
+				String seqName = getSeqName(content, patternOperate);
+				seqFasta.setName(seqName);
 				continue;
 			}
 			//删除所有非字母的符号
 			String tmpSeq = content.replace(" ", "");
 			for (char c : tmpSeq.toCharArray()) {
 				if ((c >= 65 && c <= 90) || (c >= 97 && c <= 122) ) {
-					SeqStringBuilder.append(c);
+					seqFasta.appendSeq(c);
 				}
 			}
 		}
 		// /////////离开循环后，再做一次总结/////////////////////
-		putSeqFastaInHash(Seq, SeqStringBuilder.toString(), append);
+		putSeqFastaInHash(seqFasta, append);
 		txtSeqFile.close();
+	}
+	private String getSeqName(String content, PatternOperate patternOperate) {
+		String name = null;
+		String tmpSeqName = content.trim().substring(1).trim();
+		if (regx == null || regx.trim().equals("")) {
+			name = tmpSeqName;
+		} else {
+			name = patternOperate.getPatFirst(tmpSeqName);
+			if (name == null) {
+				logger.info("没找到该序列的特定名称，用全称代替 " + tmpSeqName);
+				name = tmpSeqName;
+			}
+		}
+		return name;
 	}
 	/**
 	 *  如果没有同名序列，直接装入hash表
@@ -145,18 +139,16 @@ public class SeqFastaHash extends SeqHashAbs {
 	 * @param seq
 	 * @param append
 	 */
-	private void putSeqFastaInHash(SeqFasta seqFasta, String seq, boolean append) {
-		String seqNameLow = seqFasta.getSeqName().toLowerCase();
-		if (TOLOWCASE != null) {
-			seq = (TOLOWCASE == true ? seq.toLowerCase() : seq.toUpperCase());
-		}
-		seqFasta.setSeq(seq);
+	private void putSeqFastaInHash(SeqFasta seqFasta, boolean append) {
+		seqFasta.appendFinish();
+		seqFasta.setTOLOWCASE(TOLOWCASE);
+		String seqNameLow = seqFasta.getSeqName();
 		SeqFasta tmpSeq = hashSeq.get(seqNameLow);// 看是否有同名的序列出现
 		// 如果没有同名序列，直接装入hash表
 		if (tmpSeq == null) {
 			hashSeq.put(seqNameLow, seqFasta);
 			lsSeqName.add(seqFasta.getSeqName());
-			mapChrID2Length.put(seqNameLow, (long) seq.length());
+			mapChrID2Length.put(seqNameLow, (long)seqFasta.Length());
 		} else {// 对于相同名称序列的处理，true：如果出现重名序列，则在第二条名字后加上"<"作为标记
 			//连续向后加上"<"直到hash中没有这条名字为止，然后装入hash表
 			if (append) {
@@ -165,12 +157,12 @@ public class SeqFastaHash extends SeqHashAbs {
 				 }
 				 hashSeq.put(seqFasta.getSeqName().toLowerCase(), seqFasta);
 				 lsSeqName.add(seqFasta.getSeqName());
-				 mapChrID2Length.put(seqFasta.getSeqName().toLowerCase(), (long) seq.length());
+				 mapChrID2Length.put(seqFasta.getSeqName().toLowerCase(), (long)seqFasta.Length());
 			 }
 			 else {
 				if (tmpSeq.Length()<seqFasta.Length()) {
 					hashSeq.put(seqNameLow, seqFasta);
-					mapChrID2Length.put(seqNameLow, (long) seq.length());
+					mapChrID2Length.put(seqNameLow, (long)seqFasta.Length());
 					//因为已经有了同名的序列，所以 lsSeqName 中不需要添加新的名字
 				}
 			}

@@ -14,6 +14,9 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
 
 public class MapSplice implements MapRNA {
+	/** mapping文件的后缀，包含 ".bam" 字符串 */
+	public static final String MapSpliceSuffix = "_mapsplice.bam";
+	
 	String exePath = "";
 	/** bowtie就是用来做索引的 */
 	MapBowtie mapBowtie = new MapBowtie();
@@ -121,7 +124,7 @@ public class MapSplice implements MapRNA {
 		
 		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
 		cmdOperate.run();
-		clearTmpReads();
+		clearTmpReads_And_MoveFile();
 	}
 	
 	private void prepareReads() {
@@ -144,12 +147,20 @@ public class MapSplice implements MapRNA {
 		}
 	}
 	
-	private void clearTmpReads() {
+	private void clearTmpReads_And_MoveFile() {
 		lsLeftRun.clear();
 		lsRightRun.clear();
 		for (String fastQname : lsTmp) {
 			FileOperate.delFile(fastQname);
 		}
+		
+		if (outFile.endsWith("/") || outFile.endsWith("\\")) {
+			return;
+		}
+		String prefix = FileOperate.getFileName(outFile);
+		String parentPath = FileOperate.getParentPathName(outFile);
+		FileOperate.moveFile(FileOperate.addSep(outFile) + "alignments.bam", parentPath, prefix + MapSpliceSuffix,false);
+		FileOperate.moveFile(FileOperate.addSep(outFile) + "junctions.txt", parentPath, prefix + "_junctions.txt",false);
 	}
 	
 	private FastQ deCompressFq(FastQ fastQ) {

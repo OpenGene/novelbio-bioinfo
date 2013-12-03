@@ -3,6 +3,8 @@ package com.novelbio.analysis.seq.rnaseq;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
 import junit.framework.TestCase;
 
 import com.novelbio.analysis.seq.mapping.Align;
@@ -24,44 +26,22 @@ public class TestTophatJunction extends TestCase {
 		super.tearDown();
 	}
 	
-	public void test() {
-		assertEquals(145, tophatJunction.getJunctionSiteAll("KO", "chr1", 4782733));
-		assertEquals(146, tophatJunction.getJunctionSiteAll("WT", "chr1", 4782733));
-	}
+	@Test
 	public void test2() {
 		AlignSamReading alignSamReading = new AlignSamReading(new SamFile("/media/winE/NBC/Project/Project_FY/paper/KOod.bam"));
 		List<Align> lsAlignments = new ArrayList<>();
-		lsAlignments.add(new Align("chrX", 159840368, 159840811));
+		lsAlignments.add(new Align("chr1", 4780733, 4789733));
 		alignSamReading.setLsAlignments(lsAlignments);
 		
-		TophatJunctionOld tophatJunctionOld = new TophatJunctionOld();
-		tophatJunctionOld.setCondition("test1");
-		alignSamReading.addAlignmentRecorder(tophatJunctionOld);
-		
 		TophatJunction tophatJunction = new TophatJunction();
-		tophatJunction.setCondition("test1");
+		tophatJunction.setCondition("test1", "1");
 		alignSamReading.addAlignmentRecorder(tophatJunction);
 
 		alignSamReading.run();
 		tophatJunction.conclusion();
-		
-		for (String string : tophatJunctionOld.getMapCond_To_JuncPair2ReadsNum().get("test1").keySet()) {
-			String[] ss = string.split(SepSign.SEP_INFO);
-			String chrID = ss[0].split(SepSign.SEP_INFO_SAMEDB)[0];
-			int locStartSite = Integer.parseInt(ss[0].split(SepSign.SEP_INFO_SAMEDB)[1]);
-			int locEndSite =  Integer.parseInt(ss[1].split(SepSign.SEP_INFO_SAMEDB)[1]);
-			int numOld = tophatJunctionOld.getJunctionSite("test1", chrID, locStartSite, locEndSite);
-			int numOld2 = tophatJunction.getJunctionSiteAll("test1", chrID, locStartSite);
-			int numOld3 = tophatJunction.getJunctionSiteAll("test1", chrID, locEndSite);
-			
-			int numNew = tophatJunction.getJunctionSite("test1", true, chrID, locStartSite, locEndSite);
-			int numNew2 = tophatJunction.getJunctionSiteAll("test1", chrID, locStartSite);
-			int numNew3 = tophatJunction.getJunctionSiteAll("test1", chrID, locEndSite);
-			System.out.println();
-			numOld = tophatJunctionOld.getJunctionSite("test1", chrID, locStartSite, locEndSite);
-			numNew = tophatJunction.getJunctionSite("test1", true, chrID, locStartSite, locEndSite);
-		}
-		
+
+		List<Double> num1 = tophatJunction.getJunctionSite("test1", true, "chr1", 4782733);
+		System.out.println();
 		
 	}
 }
