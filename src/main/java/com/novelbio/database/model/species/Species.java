@@ -106,6 +106,7 @@ public class Species implements Cloneable {
 			return;
 		}
 		this.version = version;
+		this.gffDB = null;
 	}
 	/**
 	 * 获得数据库中该物种的所有版本
@@ -143,6 +144,8 @@ public class Species implements Cloneable {
 	 * 获得该物种的信息
 	 */
 	private void querySpecies() {
+		lsVersion.clear();
+		mapVersion2Species.clear();
 		try {
 			taxInfo = servTaxID.queryTaxInfo(taxID);
 		} catch (Exception e) {
@@ -155,6 +158,8 @@ public class Species implements Cloneable {
 			lsVersion.add(new String[]{speciesFile.getVersion(), speciesFile.getPublishYear() + ""});
 			mapVersion2Species.put(speciesFile.getVersion().toLowerCase(), speciesFile);
 		}
+		version = null;
+		gffDB = null;
 		//年代从大到小排序
 //		Collections.sort(lsVersion, new Comparator<String[]>() {
 //			public int compare(String[] o1, String[] o2) {
@@ -431,7 +436,7 @@ public class Species implements Cloneable {
 			speciesClone = (Species)super.clone();
 			speciesClone.taxInfo = taxInfo;
 			speciesClone.lsVersion = new ArrayList<String[]>(lsVersion);
-			speciesClone.mapVersion2Species = new HashMap<String, SpeciesFile>(mapVersion2Species);			
+			speciesClone.mapVersion2Species = new HashMap<String, SpeciesFile>(mapVersion2Species);
 		} catch (CloneNotSupportedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

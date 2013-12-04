@@ -50,7 +50,9 @@ public class GffChrAbs implements Closeable {
 	 */
 	public void setSpecies(Species species) {
 		close();
-		if (this.species != null && this.species.equals(species) && this.species.getGffDB().equals(species.getGffDB())) {
+		if (this.species != null && this.species.equals(species) && this.species.getVersion().equals(species.getVersion()) 
+				&& this.species.getGffDB().equals(species.getGffDB())) {
+			//因为上面已经将chr文件close了，所以这里要再次打开
 			if (FileOperate.isFileExistAndBigThanSize(species.getChromSeq(), 0)) {
 				setChrFile(species.getChromSeq(), " ");
 			}
@@ -60,7 +62,7 @@ public class GffChrAbs implements Closeable {
 			return;
 		}
 
-		this.species = species;
+		this.species = species.clone();
 		setGffFile(species.getTaxID(), species.getGffType(), species.getGffFile());
 		setChrFile(species.getChromSeq(), " ");
 	}

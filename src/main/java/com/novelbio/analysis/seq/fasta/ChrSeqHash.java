@@ -178,8 +178,8 @@ public class ChrSeqHash extends SeqHashAbs {
 			long endReal = getRealSite(startChr, end, lengthRow, lenRowEnter);
 			return new long[]{startReal, endReal};
 		} catch (Exception e) {
-			logger.error("文件出错：" + chrFile + "\t" + chrIDLowcase + " " + start + " " + end);
-			return null;
+			logger.error("文件出错：" + chrFile + "\t" + chrIDLowcase + " " + start + " " + end, e);
+			throw new RuntimeException("extract seq error: " + chrFile + "\t" + chrIDLowcase + " " + start + " " + end, e);
 		}
 	}
 	

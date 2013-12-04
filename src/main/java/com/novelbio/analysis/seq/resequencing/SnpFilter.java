@@ -10,7 +10,7 @@ import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo.SnpIndelType;
 
 /** 不同的样本的Snp过滤规则，符合该规则的snp会被挑选出来 */
 public class SnpFilter {
-	private static Logger logger = Logger.getLogger(SnpFilter.class);
+	private static final Logger logger = Logger.getLogger(SnpFilter.class);
 	
 	/** 判定为纯合snp的最少reads数 */
 	int Snp_Homo_ReadsAllNumMin = 3;
