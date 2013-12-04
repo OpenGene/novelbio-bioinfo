@@ -161,10 +161,10 @@ public class SnpFilter {
 	 * 返回指定的snpindel的信息 */
 	private SnpIndelHomoHetoType getSnpIndelType(SiteSnpIndelInfo siteSnpIndelInfo) {
 		//TODO 这种合适吗？
-		int numSnpIndel = siteSnpIndelInfo.getReadsNum();
 		int numAll = siteSnpIndelInfo.getRefSiteSnpIndelParent().getReadsNumAll();
-		int numRef = siteSnpIndelInfo.getRefSiteSnpIndelParent().getReadsNumRef();
-		return getSnpIndelType(siteSnpIndelInfo.getSnpIndelType(), numAll - numRef, numRef, numAll);
+		int numThis = siteSnpIndelInfo.getReadsNum();
+//		int numRef = siteSnpIndelInfo.getRefSiteSnpIndelParent().getReadsNumRef();
+		return getSnpIndelType(siteSnpIndelInfo.getSnpIndelType(), numThis, numAll - numThis, numAll);
 	}
 	/**
 	 * public 仅供Junit测试 

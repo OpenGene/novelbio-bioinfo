@@ -84,10 +84,7 @@ public class AnnoQuery extends RunProcess<AnnoQuery.AnnoQueryDisplayInfo>{
 	 */
 	public void setAnnoType(int annoType) {
 		annoAbs = AnnoAbs.createAnnoAbs(annoType);
-		if (annoAbs instanceof AnnoAnno && gffChrAbs != null) {
-			((AnnoAnno)annoAbs).setAddLocInfo(true);
-			((AnnoAnno)annoAbs).setGffChrAbs(gffChrAbs);
-		}
+
 	}
 	/** 只有当annoType为 {@link AnnoAbs#GO} 时，才有设置的必要 */
 	public void setGOtype(GOtype gOtype) {
@@ -112,6 +109,10 @@ public class AnnoQuery extends RunProcess<AnnoQuery.AnnoQueryDisplayInfo>{
 	}
 	
 	private void anno() {
+		if (annoAbs instanceof AnnoAnno && gffChrAbs != null) {
+			((AnnoAnno)annoAbs).setAddLocInfo(true);
+			((AnnoAnno)annoAbs).setGffChrAbs(gffChrAbs);
+		}
 		annoAbs.setBlastToTaxID(taxIDblastTo, evalue);
 		annoAbs.setTaxIDquery(taxIDthis);
 		annoAbs.setBlast(blast);

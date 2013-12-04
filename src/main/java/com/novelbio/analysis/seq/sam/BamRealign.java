@@ -1,11 +1,16 @@
 package com.novelbio.analysis.seq.sam;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.cmd.ExceptionCmd;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.generalConf.PathDetailNBC;
 
-public class BamRealign {
+public class BamRealign implements IntCmdSoft {
 //	java -Xmx4g -jar $GATK \
 //    -T RealignerTargetCreator  \
 //    -R $Human_Ref \
@@ -25,6 +30,7 @@ public class BamRealign {
 	String refSequenceFile;
 	String bamSortedFile;
 	private String unsafe = GATKRealign.ALL;
+	List<String> lsCmdInfo = new ArrayList<>();
 	/**
 	 * 设定samtools所在的文件夹以及待比对的路径
 	 * @param exePath 如果在根目录下则设置为""或null
@@ -46,41 +52,80 @@ public class BamRealign {
 		return realign(bamRealignFile);
 	}
 	public String realign(String outFile) {
-		String cmdInertval ="java -Xmx4g -jar " + ExePath + "GenomeAnalysisTK.jar " +  "-T RealignerTargetCreator " 
-				+ getRefSequenceFile() + getSortedBam() + getOutIntervalFile();
-		CmdOperate cmdOperate = new CmdOperate(cmdInertval,"samToBam");
+		lsCmdInfo.clear();
+		CmdOperate cmdOperate = new CmdOperate(getLsCmdCreator(outFile));
 		cmdOperate.run();
-		
-		String cmdRealign = "java -Xmx10g -jar " + getTmpPath() + ExePath + "GenomeAnalysisTK.jar " +  "-T IndelRealigner " + "--consensusDeterminationModel USE_SW " 
-				+ getRefSequenceFile() + getSortedBam() + getInIntervalFile() + getOutRealignBam(outFile) + getUnsafe();
-		cmdOperate = new CmdOperate(cmdRealign,"samToBam");
-		cmdOperate.run();
-		if (cmdOperate.isFinished()) {
-			return FileOperate.changeFileSuffix(outFile, "", "bam");
+		if (!cmdOperate.isFinishedNormal()) {
+			throw new ExceptionCmd("realign error:\n" + cmdOperate.getCmdExeStrReal());
 		}
-		return null;
+		lsCmdInfo.add(cmdOperate.getCmdExeStr());
+		cmdOperate = new CmdOperate(getLsCmdIndelRealign(outFile));
+		cmdOperate.run();
+		if (!cmdOperate.isFinishedNormal()) {
+			throw new ExceptionCmd("realign error:\n" + cmdOperate.getCmdExeStrReal());
+		}
+		lsCmdInfo.add(cmdOperate.getCmdExeStr());
+		return outFile;
 	}
 	
-	private String getRefSequenceFile() {
-		return " -R " + CmdOperate.addQuot(refSequenceFile);
+	private List<String> getLsCmdCreator(String outFile) {
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add("java");
+		ArrayOperate.addArrayToList(lsCmd, getTmpPath());
+		lsCmd.add("-Xmx4g");
+		lsCmd.add("-jar");
+		lsCmd.add(ExePath + "GenomeAnalysisTK.jar");
+		lsCmd.add("-T"); lsCmd.add("RealignerTargetCreator");
+		ArrayOperate.addArrayToList(lsCmd, getRefSequenceFile());
+		ArrayOperate.addArrayToList(lsCmd, getSortedBam());
+		ArrayOperate.addArrayToList(lsCmd, getOutIntervalFile(outFile));
+		return lsCmd;
 	}
-	private String getSortedBam() {
-		return " -I " + CmdOperate.addQuot(bamSortedFile);
+	
+	private List<String> getLsCmdIndelRealign(String outFile) {
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add("java");
+		ArrayOperate.addArrayToList(lsCmd, getTmpPath());
+		lsCmd.add("-Xmx10g");
+		lsCmd.add("-jar");
+		lsCmd.add(ExePath + "GenomeAnalysisTK.jar");
+		lsCmd.add("-T"); lsCmd.add("IndelRealigner");
+		ArrayOperate.addArrayToList(lsCmd, getRealignType());
+		ArrayOperate.addArrayToList(lsCmd, getRefSequenceFile());
+		ArrayOperate.addArrayToList(lsCmd, getSortedBam());
+		ArrayOperate.addArrayToList(lsCmd, getInIntervalFile(outFile));
+		ArrayOperate.addArrayToList(lsCmd, getOutRealignBam(outFile));
+		ArrayOperate.addArrayToList(lsCmd, getUnsafe());
+		return lsCmd;
 	}
-	private String getOutIntervalFile() {
-		return " -o " + CmdOperate.addQuot(FileOperate.changeFileSuffix(bamSortedFile, "", "intervals"));
+	
+	private String[] getRefSequenceFile() {
+		return new String[]{"-R", refSequenceFile};
+	}
+	private String[] getSortedBam() {
+		return new String[]{"-I", bamSortedFile};
+	}
+	private String[] getRealignType() {
+		return new String[]{"--consensusDeterminationModel", "USE_SW"};
+	}
+	private String[] getOutIntervalFile(String outFile) {
+		return new String[]{"-o", FileOperate.changeFileSuffix(outFile, "", "intervals")};
 	}
 
-	private String getTmpPath() {
-		return " -Djava.io.tmpdir=" + CmdOperate.addQuot(PathDetail.getTmpPath()) + " ";
+	private String[] getTmpPath() {
+		return new String[]{"-Djava.io.tmpdir=" + PathDetail.getTmpPath()};
 	}
-	private String getInIntervalFile() {
-		return " -targetIntervals " + CmdOperate.addQuot(FileOperate.changeFileSuffix(bamSortedFile, "", "intervals")) + " ";
+	private String[] getInIntervalFile(String outFile) {
+		return new String[]{"-targetIntervals", FileOperate.changeFileSuffix(outFile, "", "intervals")};
 	}
-	private String getOutRealignBam(String outFile) {
-		return " -o " + CmdOperate.addQuot(FileOperate.changeFileSuffix(outFile, "", "bam")) + " ";
+	private String[] getOutRealignBam(String outFile) {
+		return new String[]{"-o", outFile};
 	}
-	private String getUnsafe() {
-		return " --unsafe " + unsafe + " ";
+	private String[] getUnsafe() {
+		return new String[]{"--unsafe", unsafe};
+	}
+	@Override
+	public List<String> getCmdExeStr() {
+		return lsCmdInfo;
 	}
 }

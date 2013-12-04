@@ -38,7 +38,7 @@ public class MapTophat implements MapRNA, IntCmdSoft {
 	private static Logger logger = Logger.getLogger(MapTophat.class);
 	public static final String UnmapPrefix = "unmapped_";//没有mapping的bam文件的前缀
 	/** mapping文件的后缀，包含 ".bam" 字符串 */
-	public static final String TophatSuffix = "_tophat.bam";
+	public static final String TophatSuffix = "_tophat_sorted.bam";
 	StrandSpecific strandSpecifictype = StrandSpecific.NONE;
 	List<FastQ> lsLeftFq = new ArrayList<FastQ>();
 	List<FastQ> lsRightFq = new ArrayList<FastQ>();

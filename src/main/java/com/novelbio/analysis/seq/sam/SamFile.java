@@ -107,6 +107,7 @@ public class SamFile implements AlignSeq {
 		}
 //		initialSoftWare();
 	}
+
 	/** 创建新的sambam文件'
 	 * @param samBamFile
 	 * @param samFileHeader
@@ -180,7 +181,7 @@ public class SamFile implements AlignSeq {
 //
 //	}
 	
-	/** 比对到的reference的文件名 */
+	/** 比对到的reference的文件名，用于realign等 */
 	public void setReferenceFileName(String referenceFileName) {
 		this.referenceFileName = referenceFileName;
 		faidxRefsequence();
@@ -572,7 +573,8 @@ public class SamFile implements AlignSeq {
 //		GATKDuplicate gatkDuplicate = new GATKDuplicate(getFileName(), outFile);
 		BamRemoveDuplicate bamRemoveDuplicate = new BamRemoveDuplicate();
 		bamRemoveDuplicate.setBamFile(getFileName());
-		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.samtools);
+		bamRemoveDuplicate.setSamtools(false);
+		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.picard);
 		bamRemoveDuplicate.setExePath(softWareInfo.getExePath());
 		outFile = bamRemoveDuplicate.removeDuplicate(outFile);
 		if (FileOperate.isFileExistAndBigThanSize(outFile, 0)) {

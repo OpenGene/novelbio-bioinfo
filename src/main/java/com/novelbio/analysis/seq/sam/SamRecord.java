@@ -378,6 +378,10 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 		return samRecord.getSAMString();
 	}
 	
+	public boolean getDuplicateReadFlag() {
+		return samRecord.getDuplicateReadFlag();
+	}
+	
 	@Override
 	public String getCIGAR() {
 		return samRecord.getCigarString();
