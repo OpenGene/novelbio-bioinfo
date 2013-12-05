@@ -216,31 +216,23 @@ public class DiffExpLimma extends DiffExpAbs{
 		ArrayList<int[]> lsIndelItem = new ArrayList<int[]>();
 		String[] titleOld = lsDifGene.get(0);
 		String[] firstLine = lsDifGene.get(1);
+		//第一列可能为数字列
 		if (firstLine.length == 8 || (firstLine.length == 7 && titleOld[0].replace("\"", "").equalsIgnoreCase("id"))) {
 			lsIndelItem.add(new int[]{0, -1});
-			lsIndelItem.add(new int[]{2, 2});//"treat" and control
-			lsIndelItem.add(new int[]{2, -1});//"AveExpr"
-			if (titleOld[3].replace("\"", "").equals("t")) {
-				lsIndelItem.add(new int[]{3, -1});//"t" 有时候不会有t出现
-			}
-		} else {
-			lsIndelItem.add(new int[]{1, 2});//"treat" and control
-			lsIndelItem.add(new int[]{1, -1});//"AveExpr"
-			if (titleOld[2].replace("\"", "").equals("t")) {
-				lsIndelItem.add(new int[]{2, -1});//"t" 有时候不会有t出现
-			}
 		}
 
 		for (int i = 1; i < lsDifGene.size(); i++) {
-			String[] tmpResult = ArrayOperate.indelElement(lsDifGene.get(i), lsIndelItem, "");
-			String geneID = tmpResult[0].replace("\"", "");
-			tmpResult[1] = mapGeneID_2_Sample2MeanValue.get(geneID).get(treatName) + "";
-			tmpResult[2] = mapGeneID_2_Sample2MeanValue.get(geneID).get(controlName) + "";
-
-			for (int j = 0; j < tmpResult.length; j++) {
-				tmpResult[j] = tmpResult[j].replace("\"", "");
+			String[] tmpResult = new String[7];
+			String[] geneInfo = ArrayOperate.indelElement(lsDifGene.get(i), lsIndelItem, "");
+			tmpResult[0] = geneInfo[0].replace("\"", "");
+			double treatLogValue = mapGeneID_2_Sample2MeanValue.get(tmpResult[0]).get(treatName);
+			double ctrlLogValue = mapGeneID_2_Sample2MeanValue.get(tmpResult[0]).get(controlName);
+			tmpResult[1] = treatLogValue + "";
+			tmpResult[2] = ctrlLogValue + "";
+			tmpResult[3] = (treatLogValue - ctrlLogValue) + "";
+			for (int j = 0; j < 3; j++) {
+				tmpResult[tmpResult.length - j - 1] = geneInfo[geneInfo.length - j - 1].replace("\"", "");
 			}
-			
 			lsResult.add(tmpResult);
 		}
 		return lsResult;
