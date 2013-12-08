@@ -2,12 +2,13 @@ package com.novelbio.analysis.seq.mapping;
 
 import java.util.List;
 
+import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
-public interface MapDNAint {
+public interface MapDNAint extends IntCmdSoft {
 	public void setLsAlignmentRecorders(List<AlignmentRecorder> lsAlignmentRecorders);
 	public void addAlignmentRecorder(AlignmentRecorder alignmentRecorder);
 	/** 输入已经过滤好的fastq文件 */

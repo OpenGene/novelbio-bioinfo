@@ -42,7 +42,8 @@ public class SeqHash implements SeqHashInt, Closeable {
 		}
 	}
 	/**
-	 * 适合无重复ID的大文件<br>
+	 * 适合无重复ID的文件，每一行的序列要相等<br>
+	 * 文件小于100M就读入内存
 	 * <b>如果是单个fasta文件，就会建立索引</b><p>
 	 * @param chrFile 序列文件或序列文件夹
 	 * @param regx 序列名的正则表达式，会用该正则表达式把序列名字过滤，如果没有符合该正则表达式，则返回全名。单文件默认为"";文件夹默认为"\\bchr\\w*"；
@@ -51,14 +52,34 @@ public class SeqHash implements SeqHashInt, Closeable {
 	 */
 	public SeqHash(String chrFile, String regx) {
 		if (FileOperate.isFileExistAndBigThanSize(chrFile,1)) {
-			seqHashAbs =new ChrSeqHash(chrFile, regx);
+			long fileSize = FileOperate.getFileSizeLong(chrFile);
+			if (fileSize > 100_000_000) {
+				seqHashAbs =new ChrSeqHash(chrFile, regx);
+			} else {
+				seqHashAbs =new SeqFastaHash(chrFile, regx, true);
+			}
 		}
 		if (FileOperate.isFileDirectory(chrFile)) {
 			seqHashAbs = new ChrFoldHash(chrFile, regx);
 		}
 	}
 	
-	
+	/**
+	 * 读取无重复ID的单个fasta文件
+	 * <b>如果不读入内存，要求seq序列每一行等长，会建立索引</b><p>
+	 * @param chrFile 序列文件或序列文件夹
+	 * @param readInMem 是否读入内存
+	 * @param regx 序列名的正则表达式，会用该正则表达式把序列名字过滤，如果没有符合该正则表达式，则返回全名。单文件默认为"";文件夹默认为"\\bchr\\w*"；
+	 * <br>
+	 * 单文件如果为" "表示序列名仅选择空格前面的字段，如">chr1 mouse test" 仅截取"chr1"
+	 */
+	public SeqHash(String chrSingleFile, String regx, boolean readInMem) {
+		if (readInMem) {
+			seqHashAbs =new SeqFastaHash(chrSingleFile, regx, true);
+		} else {
+			seqHashAbs =new ChrSeqHash(chrSingleFile, regx);
+		}
+	}
 	
 	/**
 	 * 返回文件名 
@@ -112,7 +133,9 @@ public class SeqHash implements SeqHashInt, Closeable {
 	
 	@Override
 	public SeqFasta getSeq(String seqName) {
-		return seqHashAbs.getSeq(seqName, 0 , 0);
+		SeqFasta seqFasta = seqHashAbs.getSeq(seqName, 0 , 0);
+		seqFasta.setName(seqName);
+		return seqFasta;
 	}
 	
 	@Override

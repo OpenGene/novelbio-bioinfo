@@ -18,9 +18,11 @@ import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
+ *  用 {@link ChrSeqHash}代替
  * 本类用来提取放在文件夹中的序列
  * 作者：宗杰 20090617
  */
+@Deprecated
 public class ChrFoldHash extends SeqHashAbs {
 	private static Logger logger = Logger.getLogger(ChrFoldHash.class);
 	
@@ -68,8 +70,11 @@ public class ChrFoldHash extends SeqHashAbs {
 		mapChrFile2LengthRow.clear();
 		String enterType = null, seqRow = null;
 		for (String fileName : lsChrFile) {
-			String[] chrFileName = FileOperate.getFileNameSep(fileName);
-			lsSeqName.add(chrFileName[0]);
+			String chrFileName = FileOperate.getFileNameSep(fileName)[0];
+			if (regx.equals(" ")) {
+				chrFileName = chrFileName.split(" ")[0];
+			}
+			lsSeqName.add(chrFileName);
 
 			//TODO
 			if (enterType == null || lsChrFile.size() <= maxSeqNum) {
@@ -77,7 +82,7 @@ public class ChrFoldHash extends SeqHashAbs {
 				enterType = info[0];
 				seqRow = info[1];
 			}
-			String chrID = chrFileName[0].toLowerCase();
+			String chrID = chrFileName.toLowerCase();
 
 			mapChrFile2LengthRow.put(chrID, seqRow.length());
 			mapChrID2FileName.put(chrID, fileName);
@@ -106,16 +111,18 @@ public class ChrFoldHash extends SeqHashAbs {
 	
 	/** 初始化并返回文件夹中的所有符合正则表达式的文本名 */
 	private ArrayList<String> initialAndGetFileList() {
+		String regGetFile = "*";
 		chrFile = FileOperate.addSep(chrFile);
-		if (regx == null)
-			regx = "\\bchr\\w*";
-		
+		if (regx.equals(" ")) {
+			regGetFile = "*";
+		} 
+			
 		mapChrID2FileName = new HashMap<>();
 		mapChrID2EnterType = new HashMap<>();
 		mapChrID2RandomFile = new HashMap<>();
 		
 		lsSeqName = new ArrayList<String>();
-		return FileOperate.getFoldFileNameLs(chrFile,regx, "*");
+		return FileOperate.getFoldFileNameLs(chrFile, regGetFile, "*");
 	}
 	/** 设定染色体长度 */
 	private void setChrLength() throws IOException {

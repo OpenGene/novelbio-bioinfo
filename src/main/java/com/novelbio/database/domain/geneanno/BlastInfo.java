@@ -49,6 +49,15 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	protected int subjectTax;
 	private int subjectIDtype;
 	
+	/** query比对到的起点 */
+	private int qStartLoc;
+	/** query比对到的终点 */
+	private int qEndLoc;
+	/** subject比对到的起点 */
+	private int sStartLoc;
+	/** subject比对到的终点 */
+	private int sEndLoc;
+	
 	@Indexed
 	private String blastFileId;
 	
@@ -120,6 +129,11 @@ public class BlastInfo implements Comparable<BlastInfo> {
 			this.queryTax = taxIDQ;
 			this.subjectTax = taxIDS;
 		}
+		this.qStartLoc = Integer.parseInt(blastInfo[6]);
+		this.qEndLoc = Integer.parseInt(blastInfo[7]);
+		this.sStartLoc = Integer.parseInt(blastInfo[8]);
+		this.sEndLoc = Integer.parseInt(blastInfo[9]);
+		
 		this.alignLen = Integer.parseInt(blastInfo[3].trim());
 		this.evalue = Double.parseDouble(blastInfo[10].trim());
 		this.identities = Double.parseDouble(blastInfo[2].trim());
@@ -244,6 +258,34 @@ public class BlastInfo implements Comparable<BlastInfo> {
 		return subjectIDtype;
 	}
 	
+	/** query序列比对上的终点  */
+	public int getqEndLoc() {
+		return qEndLoc;
+	}
+	/** query序列比对上的起点 */
+	public int getqStartLoc() {
+		return qStartLoc;
+	}
+	/** subject序列比对上的终点  */
+	public int getsEndLoc() {
+		return sEndLoc;
+	}
+	/** subject序列比对上的起点，如果该值大于{@link #getsEndLoc()}
+	 * 表示blast到了反向互补序列上
+	 *  */
+	public int getsStartLoc() {
+		return sStartLoc;
+	}
+	/** 比对到了反向互补序列上 */
+	public boolean isCis5to3() {
+		return sStartLoc <= sEndLoc;
+	}
+	public int getSStartAbs() {
+		return Math.min(sStartLoc, sEndLoc);
+	}
+	public int getSEndAbs() {
+		return Math.max(sStartLoc, sEndLoc);
+	}
 	/**
 	 * 设置查找的相似度,初值为0
 	 */

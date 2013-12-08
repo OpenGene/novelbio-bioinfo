@@ -15,6 +15,7 @@ import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
@@ -162,6 +163,10 @@ public class BlastNBC implements IntCmdSoft {
 	public String getResultFile() {
 		return resultFile;
 	}
+	/** 返回blast得到的结果信息 */
+	public List<BlastInfo> getResultInfo() {
+		return BlastInfo.readBlastFile(resultFile);
+	}
 	public int getResultType() {
 		return resultType;
 	}
@@ -183,6 +188,9 @@ public class BlastNBC implements IntCmdSoft {
 		}
 		CmdOperate cmdOperate = new CmdOperate(getLsCmdBlast());
 		cmdOperate.run();
+		if (!cmdOperate.isFinishedNormal()) {
+			throw new exceptionCmd();
+		}
 		return true;
 	}
 	

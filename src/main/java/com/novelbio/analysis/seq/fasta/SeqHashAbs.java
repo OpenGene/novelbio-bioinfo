@@ -407,7 +407,9 @@ public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 	}
 	
 	public SeqFasta getSeq(String seqName) {
-		return getSeq(seqName, 0 , 0);
+		SeqFasta seqFasta = getSeq(seqName, 0 , 0);
+		seqFasta.setName(seqName);
+		return seqFasta;
 	}
 	
 	public abstract void close();

@@ -25,7 +25,7 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
  */
 @Component
 @Scope("prototype")
-public class MapBwa extends MapDNA implements IntCmdSoft {
+public class MapBwa extends MapDNA {
 	private static final Logger logger = Logger.getLogger(MapBwa.class);
 	/**
 	 * 在此大小以下的genome直接读入内存以帮助快速mapping

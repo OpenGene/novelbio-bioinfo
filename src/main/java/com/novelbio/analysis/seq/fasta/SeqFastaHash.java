@@ -42,7 +42,7 @@ public class SeqFastaHash extends SeqHashAbs {
 	}
 	/**
 	 * @param chrFile
-	 * @param regx 序列名的正则表达式，null不设定
+	 * @param regx 序列名的正则表达式，null和""不设定。" "表示用空格做分隔符，选择第一个空格前的名称
 	 * @param append 对于相同名称序列的处理，true：如果出现重名序列，则在第二条名字后加上"<"作为标记
 	 * false：如果出现重名序列，则用长的序列去替换短的序列，默认为false
 	 */
@@ -120,9 +120,11 @@ public class SeqFastaHash extends SeqHashAbs {
 	private String getSeqName(String content, PatternOperate patternOperate) {
 		String name = null;
 		String tmpSeqName = content.trim().substring(1).trim();
-		if (regx == null || regx.trim().equals("")) {
+		if (regx == null || regx.equals("")) {
 			name = tmpSeqName;
-		} else {
+		} else if (regx.equals(" ")) {
+			name = tmpSeqName.split(" ")[0];
+		}else {
 			name = patternOperate.getPatFirst(tmpSeqName);
 			if (name == null) {
 				logger.info("没找到该序列的特定名称，用全称代替 " + tmpSeqName);
@@ -195,6 +197,12 @@ public class SeqFastaHash extends SeqHashAbs {
 	protected SeqFasta getSeqInfo(String seqID, long startlocation, long endlocation) {
 		seqID = seqID.toLowerCase();
 		SeqFasta seqfasta=hashSeq.get(seqID);
+		if (startlocation <= 0 && endlocation <= 0) {
+			SeqFasta seqFastaResult = seqfasta.clone();
+			seqFastaResult.setName(seqFastaResult.getSeqName()+"_" + 1 + "_" + seqFastaResult.Length());
+			return seqFastaResult;
+		}
+		
 		if (startlocation <= 0) {
 			startlocation = 1;
 		}
