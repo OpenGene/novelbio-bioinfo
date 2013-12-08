@@ -295,18 +295,19 @@ class CodeInfo {
 	static String[] reverseComplement(String sequence) {
 		String[] result = new String[2];
 		CodeInfo.getCompMap();
-		StringBuilder recomseq = new StringBuilder();
-		int length = sequence.length();
+		char[] charSeq = sequence.toCharArray();
+		char[] charSeqResult = new char[charSeq.length];
 		Character base;
-		for (int i = length - 1; i >= 0; i--) {
-			base = compmap.get(sequence.charAt(i));
+		int m = 0;
+		for (int i = charSeq.length - 1; i >= 0; i--) {
+			base = compmap.get(charSeq[i]);
 			if (base == null) {
 				result[1] = i + "";
-				base = sequence.charAt(i);
+				base = charSeq[i];
 			}
-			recomseq.append(base);
+			charSeqResult[m++] = base;
 		}
-		result[0] = recomseq.toString();
+		result[0] = String.copyValueOf(charSeqResult);
 		return result;
 	}
 	/**
@@ -322,6 +323,21 @@ class CodeInfo {
 			reseq.append(sequence.charAt(i));
 		}
 		return reseq.toString();
+	}
+	public static String complement(String sequence) {
+		CodeInfo.getCompMap();
+		char[] charSeq = sequence.toCharArray();
+		char[] charSeqResult = new char[charSeq.length];
+		Character base;
+		for (int i = 0; i < charSeq.length; i++) {
+			base = compmap.get(charSeq[i]);
+			if (base == null) {
+				base = charSeq[i];
+			}
+			charSeqResult[i] = base;
+		}
+		String result = String.copyValueOf(charSeqResult);
+		return result;
 	}
 	/**
 	 * 输入序列，互补对照表 获得反向互补序列

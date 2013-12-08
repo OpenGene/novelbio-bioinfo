@@ -171,6 +171,10 @@ public class SeqFasta implements Cloneable {
 	public static String reverseComplement(String sequence) {
 		return CodeInfo.revComplement(sequence);
 	}
+	/** 输入序列，互补对照表 获得互补序列，一般用来做miRNA结合计算自由能 */
+	public static String complement(String sequence) {
+		return CodeInfo.complement(sequence);
+	}
 	/** 输入序列，互补对照表 获得反向序列，一般用来颠倒FastQ文件的quality序列 */
 	public static String reverse(String sequence) {
 		return CodeInfo.reverse(sequence);

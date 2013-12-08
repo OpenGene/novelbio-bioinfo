@@ -32,16 +32,16 @@ public class FengYing {
 		TophatJunction tophatJunction = new TophatJunction();
 		tophatJunction.setJunFile("KO", parentFile + "KOjunctions.bed");
 		tophatJunction.setJunFile("WT",parentFile + "WTjunctions.bed");
-		System.out.println(tophatJunction.getJunctionSite("KO", "chr2", 154821007));
-		System.out.println(tophatJunction.getJunctionSite("KO", "chr2", 154821089));
-		System.out.println(tophatJunction.getJunctionSite("WT", "chr2", 154821007));
-		System.out.println(tophatJunction.getJunctionSite("WT", "chr2", 154821089));
+		System.out.println(tophatJunction.getJunctionSiteAll("KO", "chr2", 154821007));
+		System.out.println(tophatJunction.getJunctionSiteAll("KO", "chr2", 154821089));
+		System.out.println(tophatJunction.getJunctionSiteAll("WT", "chr2", 154821007));
+		System.out.println(tophatJunction.getJunctionSiteAll("WT", "chr2", 154821089));
 		
-		System.out.println(tophatJunction.getJunctionSite("KO", "chr2", 154791548, 154857269));
-		System.out.println(tophatJunction.getJunctionSite("KO", "chr2", 154791231, 154857269));
+		System.out.println(tophatJunction.getJunctionSiteAll("KO", "chr2", 154791548, 154857269));
+		System.out.println(tophatJunction.getJunctionSiteAll("KO", "chr2", 154791231, 154857269));
 		
-		System.out.println(tophatJunction.getJunctionSite("WT", "chr2", 154791548, 154857269));
-		System.out.println(tophatJunction.getJunctionSite("WT", "chr2", 154791231, 154857269));
+		System.out.println(tophatJunction.getJunctionSiteAll("WT", "chr2", 154791548, 154857269));
+		System.out.println(tophatJunction.getJunctionSiteAll("WT", "chr2", 154791231, 154857269));
 	}
 	
 	public static void mouse() {

@@ -111,7 +111,7 @@ public class GffChrAbs implements Closeable {
 	
 	/**
 	 * chrFile 序列文件或序列文件夹 regx 如果是序列文件，则用该正则表达式提取每个序列的名字，如果是序列文件夹，
-	 * 则用该正则表达式提取含有该文件名的文件 单文件默认为"";文件夹默认为"\\bchr\\w*"；
+	 * 则用该正则表达式提取含有该文件名的文件 单文件默认为"";文件夹默认为"*"；
 	 * 
 	 * @param chrFile
 	 * @param regx null和""都走默认 如果是" "，表示截取">chr1 mouse test" 为"chr1"

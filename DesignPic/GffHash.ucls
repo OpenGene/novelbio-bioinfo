@@ -1,226 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <class-diagram version="1.0.11" icons="true" always-add-relationships="false" generalizations="true" realizations="true" 
   associations="true" dependencies="false" nesting-relationships="true">  
-  <class id="1" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU" 
-    project="NBCplatform" 
-    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/gffOperate/GffCodGeneDU.java" binary="false">    
+  <class id="1" language="java" name="com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/gffOperate/GffCodGeneDU.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="332" y="166"/>    
-    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="false" protected="false" private="false"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="true" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="2" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genome.gffOperate.GffHashRepeat" 
-    project="NBCplatform" 
-    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/gffOperate/GffHashRepeat.java" binary="false">    
+  <class id="2" language="java" name="com.novelbio.analysis.seq.genome.gffOperate.GffHashRepeat" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/gffOperate/GffHashRepeat.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="2463" y="199"/>    
-    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="false" protected="false" private="false"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="true" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="3" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneUCSC" 
-    project="NBCplatform" 
-    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/gffOperate/GffHashGeneUCSC.java" binary="false">    
+  <class id="3" language="java" name="com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneUCSC" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/gffOperate/GffHashGeneUCSC.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="1958" y="1041"/>    
-    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="false" protected="false" private="false"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="true" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="4" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genome.gffOperate.GffHashCG" 
-    project="NBCplatform" file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/gffOperate/GffHashCG.java" 
-    binary="false">    
+  <class id="4" language="java" name="com.novelbio.analysis.seq.genome.gffOperate.GffHashCG" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/gffOperate/GffHashCG.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="2068" y="227"/>    
-    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="false" protected="false" private="false"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="true" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="5" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoCis" 
-    project="NBCplatform" 
-    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/gffOperate/GffGeneIsoCis.java" binary="false">    
+  <class id="5" language="java" name="com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoCis" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/gffOperate/GffGeneIsoCis.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="1357" y="1122"/>    
-    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="false" protected="false" private="false"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="true" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="6" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo" 
-    project="NBCplatform" 
-    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/gffOperate/GffGeneIsoInfo.java" binary="false">    
+  <class id="6" language="java" name="com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/gffOperate/GffGeneIsoInfo.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="909" y="1317"/>    
-    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="false" protected="false" private="false"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="true" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="7" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene" 
-    project="NBCplatform" 
-    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/gffOperate/GffDetailGene.java" binary="false">    
+  <class id="7" language="java" name="com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/gffOperate/GffDetailGene.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="290" y="757"/>    
-    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="false" protected="false" private="false"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="true" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="8" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genome.gffOperate.GffHashGenePlant" project="NBCplatform" 
-    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/gffOperate/GffHashGenePlant.java" binary="false">    
+  <class id="8" language="java" name="com.novelbio.analysis.seq.genome.gffOperate.GffHashGenePlant" 
+    project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/gffOperate/GffHashGenePlant.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="1968" y="938"/>    
-    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="false" protected="false" private="false"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="true" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="9" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoTrans" 
-    project="NBCplatform" 
-    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/gffOperate/GffGeneIsoTrans.java" binary="false">    
+  <class id="9" language="java" name="com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoTrans" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/gffOperate/GffGeneIsoTrans.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="1340" y="1608"/>    
-    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="false" protected="false" private="false"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="true" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="10" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs" 
-    project="NBCplatform" 
-    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/gffOperate/GffHashGeneAbs.java" binary="false">    
+  <class id="10" language="java" name="com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/gffOperate/GffHashGeneAbs.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="1646" y="916"/>    
-    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="false" protected="false" private="false"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="true" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="11" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genome.gffOperate.GffHashGene" 
-    project="NBCplatform" file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/gffOperate/GffHashGene.java" 
-    binary="false">    
+  <class id="11" language="java" name="com.novelbio.analysis.seq.genome.gffOperate.GffHashGene" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/gffOperate/GffHashGene.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="1141" y="224"/>    
-    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="false" protected="false" private="false"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="true" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="12" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genome.gffOperate.ExonInfo" 
-    project="NBCplatform" file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/gffOperate/ExonInfo.java" 
-    binary="false">    
+  <class id="12" language="java" name="com.novelbio.analysis.seq.genome.gffOperate.ExonInfo" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/gffOperate/ExonInfo.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="1351" y="1350"/>    
-    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="false" protected="false" private="false"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="true" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="13" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genome.gffOperate.GffCodGene" 
-    project="NBCplatform" file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/gffOperate/GffCodGene.java" 
-    binary="false">    
+  <class id="13" language="java" name="com.novelbio.analysis.seq.genome.gffOperate.GffCodGene" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/gffOperate/GffCodGene.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="307" y="398"/>    
-    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="false" protected="false" private="false"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="true" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="14" corner="BOTTOM_RIGHT" language="java" 
-    name="com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneNCBI" project="NBCplatform" 
-    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/gffOperate/GffHashGeneNCBI.java" binary="false">    
+  <class id="14" language="java" name="com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneNCBI" 
+    project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/gffOperate/GffHashGeneNCBI.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="1963" y="809"/>    
-    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="false" protected="false" private="false"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="true" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="15" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.fasta.ChrStringHash" 
-    project="NBCplatform" file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/fasta/ChrStringHash.java" 
-    binary="false">    
+  <class id="15" language="java" name="com.novelbio.analysis.seq.fasta.ChrFoldHash" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/fasta/ChrFoldHash.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="2741" y="1188"/>    
-    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="false" protected="false" private="false"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="true" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="16" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.fasta.SeqFasta" 
-    project="NBCplatform" file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/fasta/SeqFasta.java" binary="false">    
+  <class id="16" language="java" name="com.novelbio.analysis.seq.fasta.SeqFasta" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/fasta/SeqFasta.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="2885" y="-682"/>    
-    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="false" protected="false" private="false"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="true" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="17" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.fasta.SeqFastaHash" 
-    project="NBCplatform" file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/fasta/SeqFastaHash.java" 
-    binary="false">    
+  <class id="17" language="java" name="com.novelbio.analysis.seq.fasta.SeqFastaHash" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/fasta/SeqFastaHash.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="3083" y="1259"/>    
-    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="false" protected="false" private="false"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="true" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="18" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.fasta.SeqHash" 
-    project="NBCplatform" file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/fasta/SeqHash.java" binary="false">    
+  <class id="18" language="java" name="com.novelbio.analysis.seq.fasta.SeqHash" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/fasta/SeqHash.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="2895" y="203"/>    
-    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="false" protected="false" private="false"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="true" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="19" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.fasta.SeqHashAbs" 
-    project="NBCplatform" file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/fasta/SeqHashAbs.java" 
-    binary="false">    
+  <class id="19" language="java" name="com.novelbio.analysis.seq.fasta.SeqHashAbs" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/fasta/SeqHashAbs.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="2894" y="836"/>    
-    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="false" protected="false" private="false"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="true" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <interface id="20" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.fasta.SeqHashInt" 
-    project="NBCplatform" file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/fasta/SeqHashInt.java" 
-    binary="false">    
+  <interface id="20" language="java" name="com.novelbio.analysis.seq.fasta.SeqHashInt" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/fasta/SeqHashInt.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="3337" y="199"/>    
-    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="false" protected="false" private="false"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="true" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </interface>  
-  <class id="21" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genome.GffChrSeq" 
-    project="NBCplatform" file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/GffChrSeq.java" 
-    binary="false">    
+  <class id="21" language="java" name="com.novelbio.analysis.seq.genome.GffChrSeq" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/GffChrSeq.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="2416" y="-679"/>    
-    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="false" protected="false" private="false"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="true" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="22" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genome.GffChrAbs" 
-    project="NBCplatform" file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/GffChrAbs.java" 
-    binary="false">    
+  <class id="22" language="java" name="com.novelbio.analysis.seq.genome.GffChrAbs" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/GffChrAbs.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="2195" y="-106"/>    
-    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="false" protected="false" private="false"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="true" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="23" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genome.GffChrAnno" 
-    project="NBCplatform" file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/GffChrAnno.java" 
-    binary="false">    
+  <class id="23" language="java" name="com.novelbio.analysis.seq.genome.GffChrAnno" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/GffChrAnno.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="2030" y="-733"/>    
-    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="false" protected="false" private="false"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="true" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="24" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.genome.mappingOperate.MapInfo" 
-    project="NBCplatform" file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/mappingOperate/MapInfo.java" 
-    binary="false">    
+  <class id="24" language="java" name="com.novelbio.analysis.seq.genome.mappingOperate.MapInfo" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/genome/mappingOperate/MapInfo.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="2249" y="-1362"/>    
-    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="false" protected="false" private="false"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="true" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="25" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.resequencing.SnpAnnotation" 
-    project="NBCplatform" file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/resequencing/SnpAnnotation.java" 
-    binary="false">    
+  <class id="25" language="java" name="com.novelbio.analysis.seq.resequencing.SnpAnnotation" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/resequencing/SnpAnnotation.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="1762" y="-398"/>    
-    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="false" package="false" protected="false" private="false"/>      
-      <operations public="true" package="false" protected="false" private="false"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false" static="true"/>      
+      <operations public="true" package="false" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
   <dependency id="26">    
@@ -348,9 +376,9 @@
     <end type="TARGET" refId="1"/>  
   </dependency>  
   <classifier-display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
-    visibility="true">    
-    <attributes public="false" package="false" protected="false" private="false"/>    
-    <operations public="true" package="false" protected="false" private="false"/>  
+    accessors="true" visibility="true">    
+    <attributes public="false" package="false" protected="false" private="false" static="true"/>    
+    <operations public="true" package="false" protected="false" private="false" static="true"/>  
   </classifier-display>  
   <association-display labels="true" multiplicity="true"/>
 </class-diagram>

@@ -1,7 +1,6 @@
 package com.novelbio.test;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,65 +9,43 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.ibatis.builder.xml.dynamic.WhereSqlNode;
-import org.apache.jasper.tagplugins.jstl.core.When;
-import org.apache.log4j.Logger;
-import org.broadinstitute.sting.utils.codecs.samread.SAMReadCodec;
-import org.bson.BSONObject;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
+import net.sf.samtools.SAMFormatException;
 
-import com.mongodb.DBObject;
+import org.apache.log4j.Logger;
+import org.springframework.data.domain.Page;
+import org.springframework.data.mongodb.core.MongoTemplate;
+
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
-import com.novelbio.analysis.seq.fasta.SeqFastaMotifSearch;
 import com.novelbio.analysis.seq.fastq.FastQ;
-import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.GffChrSeq;
-import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.mapping.MapBowtie;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
-import com.novelbio.analysis.seq.mirna.MiRNAnovelAnnotaion;
-import com.novelbio.analysis.seq.sam.AlignSeqReading;
+import com.novelbio.analysis.seq.sam.SamErrorException;
 import com.novelbio.analysis.seq.sam.SamFile;
-import com.novelbio.analysis.seq.sam.SamFileStatistics;
-import com.novelbio.analysis.seq.sam.SamMapRate;
 import com.novelbio.analysis.seq.sam.SamRecord;
+import com.novelbio.base.PageModel;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.geneanno.AGene2Go;
-import com.novelbio.database.domain.geneanno.BlastFileInfo;
 import com.novelbio.database.domain.geneanno.BlastInfo;
-import com.novelbio.database.domain.geneanno.GOtype;
-import com.novelbio.database.domain.information.SoftWareInfo;
-import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.database.mongorepo.geneanno.RepoBlastInfo;
 import com.novelbio.database.service.SpringFactory;
 import com.novelbio.database.service.servgeneanno.ManageBlastInfo;
-import com.novelbio.database.updatedb.database.BlastUp2DB;
 
 
 public class mytest {
 	private static Logger logger = Logger.getLogger(mytest.class);
 	static boolean is;
 	public static void main(String[] args) throws IOException, URISyntaxException {
-		
-		
-		
-		
+		SamFile samFile = new SamFile("/media/hdfs/nbCloud/public/AllProject/project_5292c9c7559af117753facf6/task_529" +
+				"6b53c559a0d7e60d4d20a/RNASeqMap_result/testFastQLeft_mapsplice_sorted_dedup.bam");
+		Species species = new Species(9606);
+		samFile.setReferenceFileName(species.getChromSeq());
+		List<String> lsvcf = new ArrayList<>();
+		lsvcf.add("/media/winE/NBC/Project/Project_HXW/allPileUp/2B.samtools.raw.vcf");
+		samFile.recalibrate(lsvcf);
 	}
 	
 	private static SamRecord[] get1and2(SamRecord samRecord1, SamRecord samRecord2) {

@@ -20,7 +20,7 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 @Component
 @Scope("prototype")
-public class MapBowtie extends MapDNA implements IntCmdSoft {
+public class MapBowtie extends MapDNA {
 	public static final int Sensitive_Very_Fast = 11;
 	public static final int Sensitive_Fast = 12;
 	public static final int Sensitive_Sensitive = 13;
