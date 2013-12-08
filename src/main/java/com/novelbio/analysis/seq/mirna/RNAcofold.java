@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /** 每次用都要new一个新的比较好 
@@ -14,7 +15,54 @@ import com.novelbio.base.fileOperate.FileOperate;
  * 2131207 在家里
  */
 public class RNAcofold {
-	static final String cmdEXE = "RNAup";
+	public static void main(String[] args) {
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add(cmdEXE);
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
+//		cmdOperate.setGetCmdInErrStream(true);
+		cmdOperate.setGetCmdInStdStream(true);
+		Thread sss = new Thread(cmdOperate);
+		sss.start();
+		TxtReadandWrite txtWrite = new TxtReadandWrite(cmdOperate.getInStream());
+		System.out.println("start");
+		txtWrite.writefileln(">ggk");
+		txtWrite.writefileln("ATCAGAC&GTCTGAT");
+		
+		txtWrite.writefileln(">ggg");
+		txtWrite.writefileln("AAATTATTAGATATACCAAACCAGAGAAAACAAATACATAATCGGAGAAAT" +
+				"AC&AAATTATTAGATATACCAAACCAGAGAAAACAAATACATAATCGGAGAAATAC");
+		txtWrite.writefileln(">hui");
+		txtWrite.writefileln("AAATTATTAGATA&TACCAAACCAGAGAAAACAAATACATAATCGGAGAAAT");
+//		txtWrite.flush();
+
+		txtWrite.close();
+//		txtWrite.close();
+		TxtReadandWrite txtReadStd = new TxtReadandWrite(cmdOperate.getStreamStd());
+		for (String string : txtReadStd.readlines()) {
+			System.out.println(string);
+		}
+		
+	}
+	
+	
+	
+	/**
+	>aaaaa&bbbbbb
+AUCAGAC&GUCUGAU
+(((((((&))))))) ( -7.70)
+>aaaaa&bbbbbb
+AAAUUAUUAGAUAUACCAAACCAGAGAAAACAAAUACAUAAUCGGAGAAAUAC&AAAUUAUUAGAUAUACCAAACCAGAGAAAACAAAUACAUAAUCGGAGAAAUAC
+.........................................((.((.......&.........................................)).))....... ( -3.30)
+>aaaaa&bbbbbb
+AAAUUAUUAGAUA&UACCAAACCAGAGAAAACAAAUACAUAAUCGGAGAAAU
+..(((((......&........................)))))......... ( -1.00)
+
+	*/
+	
+	
+	
+	
+	static final String cmdEXE = "RNAcofold";
 	String exePath;
 	
 	InputStream cmdOutStream;
@@ -30,7 +78,7 @@ public class RNAcofold {
 	public void run() {
 		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
 		cmdOperate.setGetCmdInStdStream(true);
-		cmdOutStream = cmdOperate.getStdStream();
+		cmdOutStream = cmdOperate.getStreamStd();
 		
 	}
 	

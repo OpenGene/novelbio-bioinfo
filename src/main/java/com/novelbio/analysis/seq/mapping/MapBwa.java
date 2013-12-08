@@ -368,7 +368,7 @@ public class MapBwa extends MapDNA {
 		cmdOperate.setGetCmdInStdStream(true);
 		Thread thread = new Thread(cmdOperate);
 		thread.start();
-		InputStream inputStream = cmdOperate.getStdStream();
+		InputStream inputStream = cmdOperate.getStreamStd();
 		SamFile samResult = copeSamStream(false, inputStream, isNeedSort);
 		if (samResult != null && !cmdOperate.isRunning() && cmdOperate.isFinishedNormal()) {
 			deleteFile();

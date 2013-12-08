@@ -296,7 +296,7 @@ public class MapBowtie extends MapDNA {
 		cmdOperate.setGetCmdInStdStream(true);
 		Thread thread = new Thread(cmdOperate);
 		thread.start();
-		InputStream inputStream = cmdOperate.getStdStream();
+		InputStream inputStream = cmdOperate.getStreamStd();
 		SamFile samResult = copeSamStream(true, inputStream, isNeedSort);
 		if (samResult != null && !cmdOperate.isRunning() && cmdOperate.isFinishedNormal()) {
 			return samResult;

@@ -335,7 +335,7 @@ public class CombineTab {
 			}
 			fileName = fileName.replace("\\", "/");
 			mapShortName2PathName.put(mapFileName2ConditionAbbr.get(key), fileName);
-			txtReadandWrite.flash();
+			txtReadandWrite.flush();
 			tempFiles.add(fileName);
 		}
 		vennImage.setDataSize(mapShortName2PathName.size());

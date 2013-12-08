@@ -190,7 +190,8 @@ public class ChrSeqHash extends SeqHashAbs {
 			@Override
 			public Iterator<Character> iterator() {
 				IteratorBase iteratorBase = new IteratorBase();
-				TxtReadandWrite txtRead = new TxtReadandWrite(mapChrID2FileName.get(myRefID));
+				TxtReadandWrite txtRead = new TxtReadandWrite("");
+				//TODO 
 				iteratorBase.setReader(txtRead);
 				return iteratorBase;
 			}

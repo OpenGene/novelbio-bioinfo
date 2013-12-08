@@ -99,7 +99,7 @@ class FastQwriter extends RunProcess<Integer> {
 	 */
 	public void flash() {
 		if (txtSeqFile != null) {
-			txtSeqFile.flash();
+			txtSeqFile.flush();
 		}
 		if (fastQwriteMate != null) {
 			fastQwriteMate.flash();
@@ -112,7 +112,7 @@ class FastQwriter extends RunProcess<Integer> {
 	 */
 	public void close() {
 		try { 
-			txtSeqFile.flash();
+			txtSeqFile.flush();
 			txtSeqFile.close(); 
 		} catch (Exception e) { }
 	
