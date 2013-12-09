@@ -1,16 +1,11 @@
 package com.novelbio.generalConf;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
-import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.objectives;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
-import org.springframework.web.context.ContextLoader;
-
-import com.novelbio.base.PathDetail;
 
 public class PathDetailNBC {
 	private static final Logger logger = Logger.getLogger(PathDetailNBC.class);

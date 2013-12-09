@@ -40,7 +40,7 @@ public class RNAup {
 	}
 	
 	/**
->aaaaa&bbbbbb
+>aaaaa&bbbbbb               总能量  打开能量 稳定能量 
 (((((((&)))))))   1,7   :   1,7   (-7.70 = -7.70 + 0.00)
 AUCAGAC&GUCUGAU
 RNAup output in file: aaaaa&bbbbbb__w25_u1.out

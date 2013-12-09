@@ -24,6 +24,8 @@ public class RNAcofold {
 		Thread sss = new Thread(cmdOperate);
 		sss.start();
 		TxtReadandWrite txtWrite = new TxtReadandWrite(cmdOperate.getInStream());
+		TxtReadandWrite txtReadStd = new TxtReadandWrite(cmdOperate.getStreamStd());
+
 		System.out.println("start");
 		txtWrite.writefileln(">ggk");
 		txtWrite.writefileln("ATCAGAC&GTCTGAT");
@@ -31,16 +33,29 @@ public class RNAcofold {
 		txtWrite.writefileln(">ggg");
 		txtWrite.writefileln("AAATTATTAGATATACCAAACCAGAGAAAACAAATACATAATCGGAGAAAT" +
 				"AC&AAATTATTAGATATACCAAACCAGAGAAAACAAATACATAATCGGAGAAATAC");
+		txtWrite.writefileln(">ggg");
+		txtWrite.writefileln("AAATTATTAGATATACCAAACCAGAGAAAACAAATACATAATCGGAGAAAT" +
+				"AC&AAATTATTAGATATACCAAACCAGAGAAAACAAATACATAATCGGAGAAATAC");
+		txtWrite.flush();
+		for (String string : txtReadStd.readlines()) {
+			System.out.println(string);
+		}
+		System.out.println("ok");
 		txtWrite.writefileln(">hui");
 		txtWrite.writefileln("AAATTATTAGATA&TACCAAACCAGAGAAAACAAATACATAATCGGAGAAAT");
+		txtWrite.writefileln(">ggk");
+		txtWrite.writefileln("ATCAGAC&GTCTGAT");
+		txtWrite.flush();
+		for (String string : txtReadStd.readlines()) {
+			System.out.println(string);
+		}
+		System.out.println("ok");
+		
 //		txtWrite.flush();
 
 		txtWrite.close();
 //		txtWrite.close();
-		TxtReadandWrite txtReadStd = new TxtReadandWrite(cmdOperate.getStreamStd());
-		for (String string : txtReadStd.readlines()) {
-			System.out.println(string);
-		}
+
 		
 	}
 	
@@ -79,7 +94,6 @@ AAAUUAUUAGAUA&UACCAAACCAGAGAAAACAAAUACAUAAUCGGAGAAAU
 		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
 		cmdOperate.setGetCmdInStdStream(true);
 		cmdOutStream = cmdOperate.getStreamStd();
-		
 	}
 	
 	private List<String> getLsCmd() {

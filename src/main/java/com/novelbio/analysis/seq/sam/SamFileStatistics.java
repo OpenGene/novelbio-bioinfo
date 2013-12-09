@@ -235,6 +235,7 @@ public class SamFileStatistics implements AlignmentRecorder {
 	public void addAlignRecord(AlignRecord samRecord) {
 		if (!samRecord.isMapped()) {
 			allReadsNum ++;
+			unmappedReadsNum ++;
 			return;
 		}
 		int readsMappedWeight = samRecord.getMappedReadsWeight();
@@ -432,11 +433,12 @@ public class SamFileStatistics implements AlignmentRecorder {
 			long junctionUniqueMapping = getReadsNum(MappingReadsType.junctionUniqueMapping);
 
 			lsTable.add(new String[] { "allReads", allReads + "" });
-			lsTable.add(new String[] { "unMapped", unMapped + "" });
-
-			lsTable.add(new String[] { "allMappedReads", allMappedReads + "" });
+			lsTable.add(new String[] { "UnMapped", unMapped + "" });
+			lsTable.add(new String[] { "MappedReads", allMappedReads + "" });
+			lsTable.add(new String[] { "MappingRate", (double)allMappedReads/allReads + "" });
 			if (!(allMappedReads == repeatMapping && repeatMapping < 1)) {
-				lsTable.add(new String[] { "uniqueMapping", uniqueMapping + "" });
+				lsTable.add(new String[] { "UniqueMapping", uniqueMapping + "" });
+				lsTable.add(new String[] { "UniqueMappingRate", (double)uniqueMapping/allReads + "" });
 				lsTable.add(new String[] { "repeatMapping", repeatMapping + "" });
 			}
 			if (junctionAllMappedReads != 0 && junctionUniqueMapping != 0) {

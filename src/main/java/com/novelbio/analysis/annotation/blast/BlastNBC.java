@@ -6,13 +6,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.newDebugLog;
 
 import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.BlastInfo;
@@ -189,7 +189,7 @@ public class BlastNBC implements IntCmdSoft {
 		CmdOperate cmdOperate = new CmdOperate(getLsCmdBlast());
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {
-			throw new exceptionCmd();
+			throw new ExceptionCmd("blast error:" + cmdOperate.getCmdExeStrReal());
 		}
 		return true;
 	}

@@ -61,13 +61,9 @@ public class DiffExpLimma extends DiffExpAbs{
 					} else {
 						try {
 							double value = Double.parseDouble(tmpValue[j]);
-							if (value <= 1) {
-								tmpValue[j] = 0 + "";
-							} else {
-								tmpValue[j] = Math.log(value)/Math.log(2) + "";
-							}
+							tmpValue[j] = getLogValue(value) + "";
 						} catch (Exception e) {
-							tmpValue[j] = 0 + "";
+							tmpValue[j] = 0+"";
 						}
 					}
 				}
@@ -227,6 +223,10 @@ public class DiffExpLimma extends DiffExpAbs{
 			tmpResult[0] = geneInfo[0].replace("\"", "");
 			double treatLogValue = mapGeneID_2_Sample2MeanValue.get(tmpResult[0]).get(treatName);
 			double ctrlLogValue = mapGeneID_2_Sample2MeanValue.get(tmpResult[0]).get(controlName);
+			if (!isLogValue()) {
+				treatLogValue = getLogValue(treatLogValue);
+				ctrlLogValue = getLogValue(ctrlLogValue);
+			}
 			tmpResult[1] = treatLogValue + "";
 			tmpResult[2] = ctrlLogValue + "";
 			tmpResult[3] = (treatLogValue - ctrlLogValue) + "";
@@ -237,5 +237,10 @@ public class DiffExpLimma extends DiffExpAbs{
 		}
 		return lsResult;
 	}
-
+	
+	private double getLogValue(double value) {
+		value = (value <= 1)? 0 : Math.log(value)/Math.log(2);
+		return value;
+	}
+	
 }

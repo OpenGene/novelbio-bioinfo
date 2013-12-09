@@ -61,7 +61,7 @@ public class ReportBuilder {
 					txtReadandWrite.writefileln(param + txtValue);
 				}
 			}
-			txtReadandWrite.flash();
+			txtReadandWrite.flush();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("GOPath生成自动化报告参数文件param.txt出错！");

@@ -4,7 +4,6 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.fileOperate.FileOperate;
 
 /**
  * 预测miRNA的靶基因miranda
@@ -12,7 +11,7 @@ import com.novelbio.base.fileOperate.FileOperate;
  *
  */
 public class MiRNAtargetMiranda extends MiRNAtargetAbs{
-	Logger logger = Logger.getLogger(MiRNAtargetMiranda.class);
+	private static final Logger logger = Logger.getLogger(MiRNAtargetMiranda.class);
 	
 	int targetScore = 150;
 	int targetEnergy = -15;
