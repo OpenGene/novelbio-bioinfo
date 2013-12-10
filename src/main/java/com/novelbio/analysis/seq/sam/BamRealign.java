@@ -49,10 +49,15 @@ public class BamRealign implements IntCmdSoft {
 	}
 	public String realign() {
 		String bamRealignFile = FileOperate.changeFileSuffix(bamSortedFile, "_realign", "bam");
-		return realign(bamRealignFile);
+		return realign(bamRealignFile, false);
 	}
-	public String realign(String outFile) {
+	/** 是否覆盖 */
+	public String realign(String outFile, boolean isCover) {
 		lsCmdInfo.clear();
+		if (!isCover && FileOperate.isFileExistAndBigThanSize(outFile, 0)) {
+			return outFile;
+		}
+		
 		CmdOperate cmdOperate = new CmdOperate(getLsCmdCreator(outFile));
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {

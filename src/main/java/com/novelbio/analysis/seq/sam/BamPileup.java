@@ -53,11 +53,14 @@ public class BamPileup implements IntCmdSoft {
 	
 	public String pileup() {
 		String pileupFile = FileOperate.changeFileSuffix(bamFile, "_pileup", "gz");
-		return pileup(pileupFile);
+		return pileup(pileupFile, false);
 	}
 	/** 直接压缩 */
-	public String pileup(String outFile) {
+	public String pileup(String outFile, boolean isCover) {
 		lsCmdInfo.clear();
+		if (!isCover && FileOperate.isFileExistAndBigThanSize(outFile, 0)) {
+			return outFile;
+		}
 		CmdOperate cmdOperate = new CmdOperate(getLsCmd(outFile));
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {

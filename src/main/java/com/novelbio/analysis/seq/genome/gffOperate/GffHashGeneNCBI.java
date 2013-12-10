@@ -427,8 +427,16 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   String result = content[2];//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
 	   Map<String, String> mapID2value = new HashMap<>();
 	   for (String string : content[8].split(";")) {
+		   if (!string.contains("=")) {
+			   continue;
+		   }
 		   String[] info = string.trim().split("=");
-		   mapID2value.put(info[0], info[1]);
+		   try {
+			   mapID2value.put(info[0], info[1]);
+		} catch (Exception e) {
+			  mapID2value.put(info[0], info[1]);
+		}
+		 
 	   }
 	   String gbkey = mapID2value.get("gbkey");
 	   if (gbkey != null) {

@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.sf.samtools.BAMIndexer;
 import net.sf.samtools.SAMException;
@@ -14,6 +16,7 @@ import net.sf.samtools.SAMRecord;
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataOperate.HdfsBase;
 import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -21,7 +24,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 public class BamIndex {
 	private static Logger logger = Logger.getLogger(BamIndex.class);
 	SamFile samFile;
-	String bamFile;
+//	String bamFile;
 	
 	String ExePath = "";
 	public void setExePath(String exePath) {
@@ -34,22 +37,25 @@ public class BamIndex {
 	public BamIndex(SamFile samFile) {
 		this.samFile = samFile;
 	}
-	public void setBamFile(String bamFile) {
-		this.bamFile = bamFile;
-	}
 	
 	/**
 	 * 返回建好的索引名字
 	 * @return
 	 */
 	public String indexC() {
-		if (FileOperate.isFileExistAndBigThanSize(bamFile + ".bai", 1000)) {
-			return bamFile + ".bai";
+		if (FileOperate.isFileExistAndBigThanSize(samFile.getFileName() + ".bai", 1000)) {
+			return samFile.getFileName() + ".bai";
 		}
-		String cmd = ExePath + "samtools index " + "\"" + bamFile + "\"";
-		CmdOperate cmdOperate = new CmdOperate(cmd, "samIndex");
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add(ExePath + "samtools");
+		lsCmd.add("index");
+		lsCmd.add(samFile.getFileName());
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.run();
-		return bamFile + ".bai";
+		if (!cmdOperate.isFinishedNormal()) {
+			throw new ExceptionCmd("samtools index error:\n" + cmdOperate.getCmdExeStr());
+		}
+		return samFile.getFileName() + ".bai";
 	}
 	
 	/**
@@ -64,12 +70,12 @@ public class BamIndex {
 	}
 	
 	private String getIndexFileName() {
-		return bamFile + ".bai";
+		return samFile.getFileName() + ".bai";
 	}
 	
     private void makeIndex() {
     	String outFile = getIndexFileName();
-        if (!samFile.samReader.isBinary()) {
+        if (!samFile.getSamReader().isBinary()) {
             throw new SAMException("Input file must be bam file, not sam file.");
         }
 

@@ -67,6 +67,18 @@ public class BamRemoveDuplicate implements IntCmdSoft {
 			return removeDuplicatePicard(outFile);
 		}
 	}
+	/** 返回cmd命令 */
+	public String removeDuplicate(String outFile, boolean isCover) {
+		lsCmdInfo.clear();
+		if (!isCover && FileOperate.isFileExistAndBigThanSize(outFile, 0)) {
+			return outFile;
+		}
+		if (samtools) {
+			return removeDuplicateSamtools(outFile);
+		} else {
+			return removeDuplicatePicard(outFile);
+		}
+	}
 	
 	private String removeDuplicateSamtools() {
 		String bamNoDuplicateFile = FileOperate.changeFileSuffix(bamSortedFile, "_NoDuplicate", "bam");
@@ -110,7 +122,7 @@ public class BamRemoveDuplicate implements IntCmdSoft {
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {
-			throw new ExceptionCmd("picard remove duplicate error:" + cmdOperate.getCmdExeStrReal());
+			throw new ExceptionCmd("picard remove duplicate error:\n" + cmdOperate.getCmdExeStrReal());
 		}
 		lsCmdInfo.add(cmdOperate.getCmdExeStr());
 		return outFile;
@@ -149,6 +161,6 @@ public class BamRemoveDuplicate implements IntCmdSoft {
 	}
 	@Override
 	public List<String> getCmdExeStr() {
-		return null;
+		return lsCmdInfo;
 	}
 }

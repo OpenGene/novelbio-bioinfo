@@ -10,16 +10,16 @@ cds = newCountDataSet( data, conds )
 cds = estimateSizeFactors(cds)
 <#if isRepeatExp>
    <#if isSensitive>
-   		cds =  estimateDispersions(cds, method="per-condition", sharingMode="gene-est-only")
+cds = estimateDispersions(cds, method="per-condition", sharingMode="gene-est-only")
    	<#else>
-   		cds =  estimateDispersions(cds)
+cds = estimateDispersions(cds)
    	</#if>
 <#else>
-   cds = estimateDispersions( cds, method="blind", sharingMode="fit-only", fitType="local")
+cds = estimateDispersions( cds, method="blind", sharingMode="fit-only", fitType="local")
 </#if>
 
 <#list mapGroup2Out?keys as CompareGroup>
-   res = nbinomTest( cds, ${CompareGroup} )
-   write.table( res, file="${mapGroup2Out[CompareGroup]}",sep="\t",row.names=F  )
+res = nbinomTest( cds, ${CompareGroup} )
+write.table( res, file="${mapGroup2Out[CompareGroup]}",sep="\t",row.names=F  )
 </#list>
 

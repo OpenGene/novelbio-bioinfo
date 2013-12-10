@@ -88,10 +88,13 @@ public class BamRecalibrate implements IntCmdSoft {
 	
 	public String reCalibrate() {
 		String bamRealignFile = FileOperate.changeFileSuffix(bamSortedFile, "_Recalibrate", "bam");
-		return reCalibrate(bamRealignFile);
+		return reCalibrate(bamRealignFile, false);
 	}
-	public String reCalibrate(String outFile) {
+	public String reCalibrate(String outFile, boolean isCover) {
 		lsCmdInfo.clear();
+		if (!isCover && FileOperate.isFileExistAndBigThanSize(outFile, 0)) {
+			return outFile;
+		}
 		CmdOperate cmdOperate = new CmdOperate(getLsCmdBaseRecal(outFile));
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {

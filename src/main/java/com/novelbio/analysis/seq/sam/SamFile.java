@@ -1,9 +1,6 @@
 package com.novelbio.analysis.seq.sam;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -504,7 +501,6 @@ public class SamFile implements AlignSeq {
 		}
 		BamIndex bamIndex = new BamIndex(this);
 //		bamIndex.setExePath(softWareInfoSamtools.getExePath());
-		bamIndex.setBamFile(getFileName());
 		String index = bamIndex.index();
 		FormatSeq formatSeq = FormatSeq.BAM;
 		if (!bamFile) {
@@ -530,7 +526,7 @@ public class SamFile implements AlignSeq {
 		bamRealign.setRefSequenceFile(referenceFileName);
 		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.GATK);
 		bamRealign.setExePath(softWareInfo.getExePath());
-		outFile = bamRealign.realign(outFile);
+		outFile = bamRealign.realign(outFile, false);
 		if (FileOperate.isFileExistAndBigThanSize(outFile, 0)) {
 			SamFile samFile = new SamFile(outFile);
 			setParamSamFile(samFile);
@@ -555,7 +551,7 @@ public class SamFile implements AlignSeq {
 		bamRecalibrate.setSnpVcfFile(lsVcfFile);
 		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.GATK);
 		bamRecalibrate.setExePath(softWareInfo.getExePath());
-		outFile = bamRecalibrate.reCalibrate(outFile);
+		outFile = bamRecalibrate.reCalibrate(outFile, false);
 		if (FileOperate.isFileExistAndBigThanSize(outFile, 0)) {
 			SamFile samFile = new SamFile(outFile);
 			setParamSamFile(samFile);
@@ -646,7 +642,7 @@ public class SamFile implements AlignSeq {
 		bamPileup.setReferenceFile(referenceFileName);
 		bamPileup.setRealign(!isRealigned);
 //		bamPileup.setExePath(softWareInfoSamtools.getExePath());
-		bamPileup.pileup(outPileUpFile);
+		bamPileup.pileup(outPileUpFile, false);
 	}
 	
 	/** 用GATK来call snp，同时返回结果vcf的文本名 */

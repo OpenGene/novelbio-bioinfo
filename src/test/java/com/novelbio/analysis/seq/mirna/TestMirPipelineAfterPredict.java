@@ -84,7 +84,7 @@ public class TestMirPipelineAfterPredict {
 		if (mapMirna) {
 			ctrlMiRNApredict.setExpMir(expMirPre, expMirMature);
 		}
-		ctrlMiRNApredict.predictAndCalculate(samMapMiRNARate);
+		ctrlMiRNApredict.runMiRNApredict(samMapMiRNARate);
 		ctrlMiRNApredict.writeToFile();
 		logger.info("finish predict");
 	}
