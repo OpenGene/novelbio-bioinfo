@@ -29,6 +29,7 @@ import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.FormatSeq;
 import com.novelbio.analysis.seq.bed.BedSeq;
 import com.novelbio.analysis.seq.fasta.FastaDictMake;
+import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.base.dataOperate.DateUtil;
@@ -711,6 +712,15 @@ public class SamFile implements AlignSeq {
 	public Map<String, Long> getMapChrID2Length() {
 		return getSamReader().getMapChrID2Length();
 	}
+	
+	/** sam文件的chr和输入的reference是不是同一个 */
+	public boolean isSameChr() {
+		Map<String, Long> mapChrID2LenSam = getMapChrID2Length();
+		SeqHash seqHash = new SeqHash(referenceFileName);
+		Map<String, Long> mapChrID2LenSeq = seqHash.getMapChrLength();
+		seqHash.close();
+		return mapChrID2LenSeq.equals(mapChrID2LenSam);
+	}
 	/**
 	 * tobe checked
 	 * 返回双端，如果是单端文件，则返回延长的单端
@@ -843,7 +853,7 @@ public class SamFile implements AlignSeq {
     	}
     	return bytesRead;
     }
-
+    
 }
 /**
  * Constants used in reading & writing BAM files

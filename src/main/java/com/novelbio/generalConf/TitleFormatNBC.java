@@ -6,6 +6,7 @@ public enum TitleFormatNBC {
 	GeneID("GeneID"), MirName("MirName"),
 	QueryID("QueryID"), AccID("AccID"), Symbol("Symbol"), Pvalue("P-Value"), Log2Pnegative("(-log2P)"),
 	GeneName("GeneName"), GeneType("GeneType"),
+	SubjectID("SubjectID"),
 	
 	FDR("FDR"), FoldChange("FoldChange"), Log2FC("Log2FC"),
 	Log10FC("Log10FC"), Evalue("E-Value"),
@@ -26,7 +27,7 @@ public enum TitleFormatNBC {
 	
 	RepeatName("RepeatName"), RepeatFamily("RepeatFamily"),
 	
-	Score("Score"), 
+	Energy("Energy"), Score("Score"), 
 	GOID("GOID"), GOTerm("GOTerm"),
 	PathwayID("PathwayID"), PathwayTerm("PathwayTerm");
 	

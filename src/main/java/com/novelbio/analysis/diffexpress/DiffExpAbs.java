@@ -363,7 +363,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	
 	/** 删除中间文件 */
 	public void clean() {
-		FileOperate.DeleteFileFolder(outScript);
+//		FileOperate.DeleteFileFolder(outScript);
 		FileOperate.DeleteFileFolder(fileNameRawdata);
 	}
 	

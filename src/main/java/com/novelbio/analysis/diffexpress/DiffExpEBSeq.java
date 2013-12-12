@@ -17,6 +17,7 @@ import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 import freemarker.template.Template;
@@ -87,7 +88,7 @@ public class DiffExpEBSeq extends DiffExpAbs{
 				tmpResult[0] = tmpResult[0] + ", " + thisColNum;
 				tmpResult[1] = tmpResult[1] + ", " + CmdOperate.addQuot(mapColNum2Sample.get(thisColNum));
 			}
-			mapOutFile2Compare_Vector.put(outFileName, tmpResult);
+			mapOutFile2Compare_Vector.put(FileHadoop.convertToLocalPath(outFileName), tmpResult);
 		}
 		return mapOutFile2Compare_Vector;
 	}

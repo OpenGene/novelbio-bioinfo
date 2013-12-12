@@ -101,35 +101,6 @@ public class MiRNAtargetRNAhybrid extends MiRNAtargetAbs{
 		}
 		txtWrite.writefileln(tmpResult);
 	}
-	public static HashMap<String, RNAhybridClass> getMapSpeciesType2HybridClass() {
-		HashMap<String, RNAhybridClass> mapSpeciesType2HybridClass = new HashMap<String, RNAhybridClass>();
-		mapSpeciesType2HybridClass.put("worm", RNAhybridClass.worm);
-		mapSpeciesType2HybridClass.put("fly", RNAhybridClass.fly);
-		mapSpeciesType2HybridClass.put("mammal", RNAhybridClass.human);
-		return mapSpeciesType2HybridClass;
-	}
-	
-	public static enum RNAhybridClass {
-		worm("3utr_worm"), fly("3utr_fly"), human("3utr_human");
-		static Map<String, RNAhybridClass> map = new HashMap<>();
-		private final String detailClassName;
-		private RNAhybridClass(String detailClassName) {
-			this.detailClassName = detailClassName;
-		}
-		public String getDetailClassName() {
-			return detailClassName;
-		}
-		public String toString() {
-			return detailClassName;
-		}
-		public static Map<String, RNAhybridClass> getMapStr2Value() {
-			if (map.size() == 0) {
-				map.put("worm", worm);
-				map.put("fly", fly);
-				map.put("human", human);
-			}
-			return map;
-		}
-	}
+
 }
 

@@ -17,6 +17,7 @@ import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 import freemarker.template.Template;
@@ -101,7 +102,7 @@ public class DiffExpDESeq extends DiffExpAbs {
 		for (String outFileName : mapOutFileName2Compare.keySet()) {
 			String[] compareGroup = mapOutFileName2Compare.get(outFileName);
 			String compareGroupStr = CmdOperate.addQuot(compareGroup[1]) + ", " + CmdOperate.addQuot(compareGroup[0]);
-			mapGroup2Out.put(compareGroupStr, outFileName.replace("\\", "/"));
+			mapGroup2Out.put(compareGroupStr, FileHadoop.convertToLocalPath(outFileName.replace("\\", "/")));
 		}
 		return mapGroup2Out;
 	}

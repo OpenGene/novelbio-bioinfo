@@ -69,8 +69,8 @@ public class BamSort {
         SAMFileWriter writer = new SAMFileWriterFactory().makeSAMOrBAMWriter(reader.getFileHeader(), false, sortBamFile);
 
 //        ProgressLogger progress = new ProgressLogger(log, (int) 1e7, "Read");
-        for (final SAMRecord rec: reader) {
-            writer.addAlignment(rec);
+        for (SamRecord rec: samFile.readLines()) {
+            writer.addAlignment(rec.getSamRecord());
 //            progress.record(rec);
         }
 

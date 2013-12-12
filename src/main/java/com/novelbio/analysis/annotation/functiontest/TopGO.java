@@ -16,6 +16,7 @@ import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.service.SpringFactory;
@@ -113,12 +114,12 @@ public class TopGO implements IntCmdSoft {
 		mapData.put("GOtype", goType.getTwoWord());
 		mapData.put("GONum",  displayGoNum + "");
 		
-		mapData.put("GoResultFile",  rawGoResultFile.replace("\\", "/"));
-		mapData.put("GOInfoFile",  GOInfoFile.replace("\\", "/"));
+		mapData.put("GoResultFile",  FileHadoop.convertToLocalPath(rawGoResultFile.replace("\\", "/")));
+		mapData.put("GOInfoFile",  FileHadoop.convertToLocalPath(GOInfoFile.replace("\\", "/")));
 		
-		mapData.put("CalGeneIDFile", CalGeneIDFile.replace("\\", "/"));
+		mapData.put("CalGeneIDFile", FileHadoop.convertToLocalPath(CalGeneIDFile.replace("\\", "/")));
 		
-		mapData.put("BGGeneFile", BGGeneFile.replace("\\", "/"));
+		mapData.put("BGGeneFile", FileHadoop.convertToLocalPath(BGGeneFile.replace("\\", "/")));
 		mapData.put("GOAlgorithm", getAlgorithm());
 		
 		try {

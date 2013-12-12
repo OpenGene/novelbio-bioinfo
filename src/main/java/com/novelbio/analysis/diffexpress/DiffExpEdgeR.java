@@ -19,6 +19,7 @@ import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
+import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 import freemarker.template.Template;
@@ -200,7 +201,7 @@ public class DiffExpEdgeR extends DiffExpAbs {
 			String outFileName = lsFileName.get(i);
 			String[] pair = mapOutFileName2Compare.get(outFileName);
 			String compare = CmdOperate.addQuot(pair[1]) + "," + CmdOperate.addQuot(pair[0]);
-			mapCompare2Outfile.put(compare, outFileName.replace("\\", "/"));
+			mapCompare2Outfile.put(compare, FileHadoop.convertToLocalPath(outFileName.replace("\\", "/")));
 		}
 		return mapCompare2Outfile;
 	}

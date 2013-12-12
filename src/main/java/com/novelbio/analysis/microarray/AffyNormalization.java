@@ -12,6 +12,7 @@ import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.service.SpringFactory;
 
@@ -71,7 +72,7 @@ public class AffyNormalization implements IntCmdSoft {
 	protected void generateScript() {
 		Map<String,Object> mapData = new HashMap<String, Object>();
 		mapData.put("workspace", PathDetail.getRworkspaceTmp());
-		mapData.put("fileOutName", outFileName);
+		mapData.put("fileOutName", FileHadoop.convertToLocalPath(outFileName));
 		mapData.put("isNorm", isNormType());
 		mapData.put("RawCelFile", getRawDataFile());
 		mapData.put("normalizedType", getMethodType());

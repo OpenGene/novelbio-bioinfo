@@ -15,6 +15,7 @@ import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 import freemarker.template.Template;
@@ -189,7 +190,7 @@ public class DiffExpLimma extends DiffExpAbs{
 		Map<String, String> mapCoef2FileName = new HashMap<String, String>();
 		for (String outFileName : mapOutFileName2Compare.keySet()) {
 			String[] pair = mapOutFileName2Compare.get(outFileName);
-			mapCoef2FileName.put(getCoef(pair), outFileName);
+			mapCoef2FileName.put(getCoef(pair), FileHadoop.convertToLocalPath(outFileName));
 		}
 		return mapCoef2FileName;
 	}

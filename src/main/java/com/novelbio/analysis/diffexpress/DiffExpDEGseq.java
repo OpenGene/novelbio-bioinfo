@@ -16,6 +16,7 @@ import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.generalConf.TitleFormatNBC;
 
@@ -132,7 +133,7 @@ OutDir=6
 			tmpResult[4] = getSampleCol(mapSample2LsCol.get(comparePair[1]).size());//SampleControlNum
 			tmpResult[5] = comparePair[1];//SampleControlName
 			
-			tmpResult[6] = fileName.replace("\\", "/") + outPutSuffix;//OutDir
+			tmpResult[6] = FileHadoop.convertToLocalPath(fileName.replace("\\", "/") + outPutSuffix);//OutDir
 			lsResult.add(tmpResult);
 		}
 		return lsResult;

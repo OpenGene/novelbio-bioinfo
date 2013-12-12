@@ -4,7 +4,8 @@ import java.io.IOException;
 
 import org.springframework.core.io.ClassPathResource;
 
-import com.novelbio.analysis.seq.mirna.RNAmiranda.MirandaPair;
+import com.novelbio.analysis.seq.rnahybrid.RNAmiranda;
+import com.novelbio.analysis.seq.rnahybrid.RNAmiranda.MirandaPair;
 
 public class TestRNAmiranda {
 	public static void main(String[] args) throws IOException {

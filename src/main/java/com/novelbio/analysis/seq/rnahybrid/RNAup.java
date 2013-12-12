@@ -1,4 +1,4 @@
-package com.novelbio.analysis.seq.mirna;
+package com.novelbio.analysis.seq.rnahybrid;
 
 import java.io.InputStream;
 import java.io.OutputStream;
