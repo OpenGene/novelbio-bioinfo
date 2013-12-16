@@ -2,8 +2,10 @@ package com.novelbio.analysis.seq.genome.gffOperate.exoncluster;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.mapping.Align;
@@ -235,16 +237,16 @@ public class PredictME extends SpliceTypePredict {
 	 * @param tophatJunction
 	 * @return
 	 */
-	protected List<List<Double>> getLsJuncCounts(String condition) {
-		List<List<Double>> lsCounts = new ArrayList<>();
+	protected ArrayListMultimap<String, Double> getLsJuncCounts(String condition) {
+		ArrayListMultimap<String, Double> mapGroup2LsValue = ArrayListMultimap.create();
 		if (lsExonThisBefore != null && lsExonThisBefore.size() > 0) {
-			lsCounts.add(getJuncNum(true, getSiteInfoThisBefore(), condition, tophatJunction));
-			lsCounts.add( getJuncNum(false, getSiteInfoBefore(), condition, tophatJunction));
+			addMapGroup2LsValue(mapGroup2LsValue, getJuncNum(true, getSiteInfoThisBefore(), condition, tophatJunction));
+			addMapGroup2LsValue(mapGroup2LsValue,  getJuncNum(false, getSiteInfoBefore(), condition, tophatJunction));
 		} else if (lsExonThisAfter != null && lsExonThisAfter.size() > 0) {
-			lsCounts.add(getJuncNum(false, getSiteInfoThisAfter(), condition, tophatJunction));
-			lsCounts.add(getJuncNum(true, getSiteInfoAfter(), condition, tophatJunction));
+			addMapGroup2LsValue(mapGroup2LsValue, getJuncNum(false, getSiteInfoThisAfter(), condition, tophatJunction));
+			addMapGroup2LsValue(mapGroup2LsValue, getJuncNum(true, getSiteInfoAfter(), condition, tophatJunction));
 		}
-		return lsCounts;
+		return mapGroup2LsValue;
 	}
 	/** 输入的是
 	 * 一个exon组成mutually exclusive所对应的site，前面一个和后面一个共两个<br>
@@ -255,16 +257,16 @@ public class PredictME extends SpliceTypePredict {
 	 * @param before true选取4-5，false选取6-9
 	 * 
 	 */
-	private static List<Double> getJuncNum(boolean before, List<Align[]> lsAligns, String condition, TophatJunction tophatJunction) {
-		List<Double> lsValue = null;
+	private static Map<String, Double> getJuncNum(boolean before, List<Align[]> lsAligns, String condition, TophatJunction tophatJunction) {
+		Map<String, Double> mapValue = null;
 		for (Align[] aligns : lsAligns) {
 			if (before) {
-				lsValue = tophatJunction.getJunctionSite(condition, aligns[0].isCis5to3(), aligns[0].getRefID(), aligns[0].getStartAbs(), aligns[0].getEndAbs());
+				mapValue = tophatJunction.getJunctionSite(condition, aligns[0].isCis5to3(), aligns[0].getRefID(), aligns[0].getStartAbs(), aligns[0].getEndAbs());
 			} else {
-				lsValue = tophatJunction.getJunctionSite(condition, aligns[1].isCis5to3(), aligns[1].getRefID(), aligns[1].getStartAbs(), aligns[1].getEndAbs());
+				mapValue = tophatJunction.getJunctionSite(condition, aligns[1].isCis5to3(), aligns[1].getRefID(), aligns[1].getStartAbs(), aligns[1].getEndAbs());
 			}
 		}
-		return lsValue;
+		return mapValue;
 	}
 
 	@Override

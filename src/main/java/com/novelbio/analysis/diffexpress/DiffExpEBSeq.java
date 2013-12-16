@@ -41,7 +41,7 @@ public class DiffExpEBSeq extends DiffExpAbs{
 		mapData.put("workspace", getWorkSpace());
 		mapData.put("filename", getFileName());
 		mapData.put("mapOut2Compare_vector", getMapOut2Compare_vector());
-		mapData.put("mapOut2sample", mapOutFileName2Compare);
+		mapData.put("mapOut2sample", getMapOutFile2Compare());
 		mapData.put("isSensitive", isSensitive);
 		String scriptContent = null;
 		try {
@@ -91,6 +91,14 @@ public class DiffExpEBSeq extends DiffExpAbs{
 			mapOutFile2Compare_Vector.put(FileHadoop.convertToLocalPath(outFileName), tmpResult);
 		}
 		return mapOutFile2Compare_Vector;
+	}
+	
+	private Map<String, String[]> getMapOutFile2Compare() {
+		Map<String, String[]> mapOut2CompareFinal = new HashMap<>();
+		for (String fileName : mapOutFileName2Compare.keySet()) {
+			mapOut2CompareFinal.put(FileHadoop.convertToLocalPath(fileName), mapOutFileName2Compare.get(fileName));
+		}
+		return mapOut2CompareFinal;
 	}
 	
 	@Override

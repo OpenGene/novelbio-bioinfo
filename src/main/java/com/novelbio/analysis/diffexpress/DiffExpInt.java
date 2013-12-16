@@ -36,13 +36,9 @@ public interface DiffExpInt {
 	/** 仅供测试 */
 	public String getFileNameRawdata();
 	
-	/** 设定是否为log2value，仅在limma中使用 */
-	public void setLog2Value(boolean isLog2Value);
-	/** 返回是否为log过的值
-	 * 主要用于limma，其实就是判断最大的表达值是否大于40
-	 *  */
-	public boolean isLogValue();
-	
+	/** 设定是否需要log值，仅在limma中使用 */
+	public void setLogValue(boolean logTheValue);
+
 	/**
 	 * 返回文件名，以及对应的比较<br>
 	 * key：文件全名<br>

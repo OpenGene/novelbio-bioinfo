@@ -1,11 +1,13 @@
 package com.novelbio.analysis.seq.genome.gffOperate.exoncluster;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
@@ -20,7 +22,7 @@ public class PredictUnKnown extends SpliceTypePredict {
 	}
 
 	@Override
-	protected List<List<Double>> getLsJuncCounts(String condition) {
+	protected ArrayListMultimap<String, Double> getLsJuncCounts(String condition) {
 		List<ExonInfo2Value> lsExonInfos = getLsExon2Value(exonCluster.getAllExons());
 		List<ExonInfo> lsExon = new ArrayList<>();
 		int i = 0;
@@ -28,32 +30,36 @@ public class PredictUnKnown extends SpliceTypePredict {
 			if (i++ > 2) break;
 			lsExon.add(exonInfo2Value.exonInfo);
 		}
-		List<List<Double>> lsCounts = getlsJunInfoEdge(condition, lsExon);
+		ArrayListMultimap<String, Double> mapGroup2LsValue = getlsJunInfoEdge(condition, lsExon);
 		//如果跨过 exon的reads很多，则把跨过 exon的 reads添加进去
 		if (exonCluster.getMapIso2ExonIndexSkipTheCluster().size() > 0 && 
 				(lsExonInfos.size() < 2 || lsExonInfos.get(1) == null || getSkipNumAll() >= lsExonInfos.get(1).value)) {
-			lsCounts.add(0, getJunReadsNum(condition));
-			if (lsCounts.size() > 2) {
-				lsCounts.remove(2);
+			Map<String, Double> mapGroup2Value = getJunReadsNum(condition);
+			for (String group : mapGroup2Value.keySet()) {
+				List<Double> lsTmpValue = mapGroup2LsValue.get(group);
+				lsTmpValue.add(0, mapGroup2Value.get(group));
+				if (lsTmpValue.size() > 2) {
+					lsTmpValue.remove(2);
+				}
 			}
 		}
-		return lsCounts;
+		return mapGroup2LsValue;
 	}
 
-	protected List<Double> getJunReadsNum(String condition) {
+	protected Map<String, Double> getJunReadsNum(String condition) {
 		GffDetailGene gffDetailGene = exonCluster.getParentGene();
-		List<Double> lsResult = new ArrayList<>();
+		Map<String, Double> mapResult = new HashMap<>();
 		HashSet<String> setLocation = new HashSet<String>();
 		setLocation.addAll(getSkipExonLoc_From_IsoHaveExon());
 		setLocation.addAll(getSkipExonLoc_From_IsoWithoutExon(gffDetailGene));
 		
 		for (String string : setLocation) {
 			String[] ss = string.split(SepSign.SEP_ID);
-			List<Double> lsTmp = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), gffDetailGene.getRefID(),
+			Map<String, Double> mapTmp = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), gffDetailGene.getRefID(),
 					Integer.parseInt(ss[0]), Integer.parseInt(ss[1]));
-			lsResult = addLsDouble(lsResult, lsTmp);	
+			mapResult = addMapDouble(mapResult, mapTmp);	
 		}
-		return lsResult;
+		return mapResult;
 	}
 	
 	protected int getSkipNumAll() {

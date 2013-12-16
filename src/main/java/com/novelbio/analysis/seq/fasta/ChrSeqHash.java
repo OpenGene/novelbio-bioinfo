@@ -157,11 +157,11 @@ public class ChrSeqHash extends SeqHashAbs {
 		}
 		long chrLength = getChrLength(chrIDLowcase);
 		if (start <= 0) start = 1;
-		if (end <= 0) end = chrLength;
+		if (end <= 0 || end > chrLength) end = chrLength;
 		
 		start--;
 		//如果位点超过了范围，那么修正位点
-		if (start < 0 || start >= chrLength || end < 1 || end >= chrLength || end < start) {
+		if (start < 0 || start >= chrLength || end < 1 || end < start) {
 			logger.error(chrIDLowcase + " " + start + " " + end + " 染色体坐标错误");
 			return null;
 		}

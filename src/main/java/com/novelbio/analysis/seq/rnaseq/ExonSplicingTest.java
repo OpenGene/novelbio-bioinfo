@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.math.stat.descriptive.moment.Mean;
-import org.apache.commons.math.stat.inference.TestUtils;
+import org.apache.commons.math3.stat.descriptive.moment.Mean;
+import org.apache.commons.math3.stat.inference.TestUtils;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -22,7 +22,6 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.PredictRetainIntron;
-import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.PredictUnKnown;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict.SplicingAlternativeType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
@@ -75,7 +74,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	public void setGetSeq(SeqHash seqHash) {
 		this.seqHash = seqHash;
 	}
-	/** 必须设定，总统的condition数 */
+	/** 必须设定，总共的condition数 */
 	public void setSetCondition(Set<String> setCondition) {
 		this.setCondition = setCondition;
 	}
@@ -225,14 +224,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		
 		List<List<Double>> lsExp1 = mapCondition2SpliceInfo.get(condition1).getLsExp(splicingType);
 		List<List<Double>> lsExp2= mapCondition2SpliceInfo.get(condition2).getLsExp(splicingType);
-		int[] tmpExpCond1 = null;
-		try {
-			tmpExpCond1 = combReadsNumExpInt(lsExp1);
-
-		} catch (Exception e) {
-			tmpExpCond1 = combReadsNumExpInt(lsExp1);
-
-		}
+		int[] tmpExpCond1 = combReadsNumExpInt(lsExp1);
 		int[] tmpExpCond2 = combReadsNumExpInt(lsExp2);
 		
 //		long[] tmpExpCond1long = modifyInputValue(tmpExpCond1);
@@ -688,8 +680,8 @@ class SpliceType2Value {
 	private static final Logger logger = Logger.getLogger(SpliceType2Value.class);
 
 	Set<SplicingAlternativeType> setExonSplicingTypes = new HashSet<SplicingAlternativeType>();
-	ArrayListMultimap<SplicingAlternativeType, List<Double>> mapSplicingType2LsExpValue = ArrayListMultimap.create();
-	ArrayListMultimap<SplicingAlternativeType, List<Double>> mapSplicingType2LsJunctionReads = ArrayListMultimap.create();
+	ArrayListMultimap<SplicingAlternativeType, Map<String, Double>> mapSplicingType2_MapGroup2ExpValue = ArrayListMultimap.create();
+	ArrayListMultimap<SplicingAlternativeType, Map<String, Double>> mapSplicingType2_MapGroup2JunctionReads = ArrayListMultimap.create();
 	Map<SplicingAlternativeType, SpliceTypePredict> mapSplicingType2Detail = new HashMap<SplicingAlternativeType, SpliceTypePredict>();
 	
 	/**
@@ -731,7 +723,7 @@ class SpliceType2Value {
 	 */
 	public void addJunction(String condition, SpliceTypePredict spliceTypePredict) {
 		SplicingAlternativeType splicingAlternativeType = spliceTypePredict.getType();
-		List<List<Double>> lsCounts = spliceTypePredict.getJuncCounts(condition);
+		ArrayListMultimap<String, Double> mapGroup2LsValue = spliceTypePredict.getJunGroup2lsValue(condition);
 		for (List<Double> list : lsCounts) {
 			mapSplicingType2LsJunctionReads.put(splicingAlternativeType, list);
 		}
@@ -753,6 +745,7 @@ class SpliceType2Value {
 	 * 
 	 * @param splicingAlternativeType
 	 * @return
+	 * list--每个group，各个位点的reads number
 	 */
 	public List<List<Double>> getLsExp(SplicingAlternativeType splicingAlternativeType) {
 		return mapSplicingType2LsExpValue.get(splicingAlternativeType);

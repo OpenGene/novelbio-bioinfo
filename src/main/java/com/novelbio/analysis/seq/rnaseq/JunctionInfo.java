@@ -3,7 +3,6 @@ package com.novelbio.analysis.seq.rnaseq;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -204,23 +203,25 @@ public class JunctionInfo extends ListDetailAbs {
 				return 0;
 			}
 		}
+		
 		/** 返回该时期全体组的reads num */
-		public List<Double> getReadsNum(String condition, Collection<String> lsGroups) {
-			List<Double> lsReads = new ArrayList<>();
+		public Map<String, Double> getReadsNum(String condition, Collection<String> lsGroups) {
+			Map<String, Double> mapReads = new HashMap<>();
 			Map<String, double[]> mapGroup2Value = mapCond2group2JunNum.get(condition);
 			if (mapGroup2Value == null) {
-				return new ArrayList<>();
+				return new HashMap<>();
 			}
 			for (String group : lsGroups) {
 				double[] value = mapGroup2Value.get(group);
 				if (value == null) {
-					lsReads.add(0.0);
+					mapReads.put(group, 0.0);
 				} else {
-					lsReads.add(value[0]);
+					mapReads.put(group, value[0]);
 				}
 			}
-			return lsReads;
+			return mapReads;
 		}
+		
 		/** 返回所有时期的junction reads总和 */
 		public double getReadsNumAll() {
 			int numAll = 0;

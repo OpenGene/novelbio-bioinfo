@@ -96,6 +96,7 @@ public class MapReadsChangFang extends MapReads {
 		if (flag) {
 			chrMapReadsInfo.sumChrBp(chrBpReads, fold);
 		}
+		txtGtfRead.close();
 	}
 	
 	/**

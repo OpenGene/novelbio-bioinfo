@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
@@ -24,11 +25,14 @@ import com.novelbio.analysis.seq.genome.mappingOperate.EnumMapNormalizeType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.analysis.seq.mapping.MappingReadsType;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.sam.AlignSamReading;
 import com.novelbio.analysis.seq.sam.AlignSeqReading;
 import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.sam.SamFileStatistics;
 import com.novelbio.analysis.seq.sam.SamMapReads;
+import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -148,6 +152,10 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	/** condition到排序的bam文件 */
 	ArrayListMultimap<String, AlignSamReading> mapCond2SamReader = ArrayListMultimap.create();
 	ArrayListMultimap<String, SamFile> mapCond2SamFile = ArrayListMultimap.create();
+	
+	/** 每个样本都有多少 reads */
+	Map<String, Long> mapCond_group2ReadsNum = new HashMap<>();
+	
 	/** 统计可变剪接事件的map
 	 * key：可变剪接类型
 	 * value：int[2]
@@ -377,8 +385,8 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			int i = 0;
 			for (AlignSamReading samFileReading : lsSamFileReadings) {
 				i++;
-				tophatJunction.setCondition(condition, i+"");
-
+				String group = i+"";
+				tophatJunction.setCondition(condition, group);
 				samFileReading.clear();
 				samFileReading.getFirstSamFile().indexMake();
 				if (samFileReadingLast != null) {
@@ -388,16 +396,23 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				samFileReading.setLsAlignments(lsReadReagion);
 //				samFileReading.setLsAlignments(lsDifIsoGene);
 				samFileReading.setRunGetInfo(runGetInfo);
+				SamFileStatistics samStatistics = new SamFileStatistics(condition);
 				samFileReading.addAlignmentRecorder(tophatJunction);
+				samFileReading.addAlignmentRecorder(samStatistics);
 				if (mapReads != null) {
 					samFileReading.addAlignmentRecorder(mapReads);
 				}
 				samFileReading.run();
+				mapCond_group2ReadsNum.put(getCond2Group(condition, group), samStatistics.getReadsNum(MappingReadsType.allMappedReads));
 				samFileReading.clearRecorder();
 				samFileReadingLast = samFileReading;
 			}
 		}
 		samFileReadingLast = null;
+	}
+	
+	private String getCond2Group(String condtion, String group) {
+		return condtion + SepSign.SEP_ID + group;
 	}
 	
 	/** 从全基因组中获取差异的可变剪接事件，放入lsSplicingTest中 */

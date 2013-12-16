@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.GeneExpTable;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
@@ -31,7 +30,7 @@ import com.novelbio.database.model.species.Species;
  * @author zong0jie
  *
  */
-public class MapRsem implements MapRNA, IntCmdSoft {
+public class MapRsem implements MapRNA {
 	private static final Logger logger = Logger.getLogger(MapRsem.class);
 	
 	Species species;
@@ -264,8 +263,7 @@ public class MapRsem implements MapRNA, IntCmdSoft {
 	@Override
 	public List<String> getCmdExeStr() {
 		List<String> lsCmd = new ArrayList<>();
-		List<String> lsInfo = getLsCmdMapping();
-		CmdOperate cmdOperate = new CmdOperate(lsInfo);
+		CmdOperate cmdOperate = new CmdOperate(getLsCmdMapping());
 		lsCmd.add(cmdOperate.getCmdExeStr());
 		return lsCmd;
 	}

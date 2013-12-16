@@ -34,7 +34,7 @@ public class PredictRetainIntron extends SpliceTypePredict implements AlignmentR
 	/** 覆盖retain intron区域的reads */
 	List<Double> lsRetainReadsCover = new ArrayList<>();
 	double junCountsTmp = 0;
-	Map<String, List<List<Double>>> mapCondition2Counts = new HashMap<>();
+	Map<String, ArrayListMultimap<String, Double>> mapCondition2Counts = new HashMap<>();
 	
 	public PredictRetainIntron(ExonCluster exonCluster) {
 		super(exonCluster);
@@ -57,9 +57,9 @@ public class PredictRetainIntron extends SpliceTypePredict implements AlignmentR
 	
 	@Override
 	//TODO 待修该
-	protected List<List<Double>> getLsJuncCounts(String condition) {
-		List<List<Double>> lsCounts = mapCondition2Counts.get(condition);
-		return lsCounts;
+	protected ArrayListMultimap<String, Double> getLsJuncCounts(String condition) {
+		 ArrayListMultimap<String, Double> mapGroup2LsValue = mapCondition2Counts.get(condition);
+		return mapGroup2LsValue;
 	}
 	
 	/** 获得跨过该位点的readsNum */
@@ -96,20 +96,16 @@ public class PredictRetainIntron extends SpliceTypePredict implements AlignmentR
 
 	@Override
 	public void summary() {
-		List<List<Double>> lsCounts = null;
+		ArrayListMultimap<String, Double> mapGroup2LsValue = null;
 		if (mapCondition2Counts.containsKey(condition)) {
-			lsCounts = mapCondition2Counts.get(condition);
+			mapGroup2LsValue = mapCondition2Counts.get(condition);
 		} else {
-			lsCounts = new ArrayList<>();
-			mapCondition2Counts.put(condition, lsCounts);
-		}
-		if (lsCounts.size() == 0) {
-			lsCounts.add(new ArrayList<Double>());
-			lsCounts.add(new ArrayList<Double>());
+			mapGroup2LsValue = ArrayListMultimap.create();
+			mapCondition2Counts.put(condition, mapGroup2LsValue);
 		}
 		
-		lsCounts.get(0).add(tophatJunction.getJunctionSite(condition, group, exonCluster.isCis5to3(), exonCluster.getRefID(), alignRetain.getStartCis(), alignRetain.getEndCis()));
-		lsCounts.get(1).add(junCountsTmp);
+		mapGroup2LsValue.put(group, tophatJunction.getJunctionSite(condition, group, exonCluster.isCis5to3(), exonCluster.getRefID(), alignRetain.getStartCis(), alignRetain.getEndCis()));
+		mapGroup2LsValue.put(group, junCountsTmp);
 	}
 
 	@Override

@@ -129,6 +129,19 @@ public class SeqHash implements SeqHashInt, Closeable {
 		return seqFasta;
 	}
 	
+	/**
+	 * 提取序列块
+	 * @param length 每个块多大的长度
+	 * @param chrID 染色体ID
+	 * @param chrunk 第几个块
+	 * @return
+	 */
+	public SeqFasta getSeq(int length, String chrID, int chrunk) {
+		long start = length * chrunk + 1;
+		long end = start + length;
+		return getSeq(chrID, start, end);
+	}
+	
 	public SeqFasta getSeq(Align align) {
 		if (align == null) {
 			return null;

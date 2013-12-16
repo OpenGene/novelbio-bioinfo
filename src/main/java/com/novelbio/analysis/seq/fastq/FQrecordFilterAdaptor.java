@@ -7,8 +7,8 @@ public class FQrecordFilterAdaptor extends FQrecordFilter {
 //	Logger logger = Logger.getLogger(FQrecordFilterAdaptor.class); 
 	String seqAdaptorL;
 	String seqAdaptorR;
-	int mapNumLeft = -1;
-	int mapNumRight = -1;
+	int mapNumLeft = 1;
+	int mapNumRight = 1;
 	int numMM = 4;
 	int conNum = 1;
 	int perMm = 30;
@@ -95,7 +95,7 @@ public class FQrecordFilterAdaptor extends FQrecordFilter {
 		if (mapNumRight >= 0) {
 			rightNum = trimAdaptorR(seqFasta.toString(), seqAdaptorR, mapNumRight, numMM,conNum, perPm, perMm);
 		} else {
-			rightNum = trimAdaptorR(seqFasta.toString(), seqAdaptorR, seqFasta.Length() - seqAdaptorR.length(), numMM,conNum, perPm, perMm);
+			rightNum = trimAdaptorR(seqFasta.toString(), seqAdaptorR, seqFasta.Length() + 1 - seqAdaptorR.length(), numMM,conNum, perPm, perMm);
 		}
 		return rightNum;
 	}
@@ -128,6 +128,9 @@ public class FQrecordFilterAdaptor extends FQrecordFilter {
 		seqAdaptor = seqAdaptor.toUpperCase();
 		char[] chrIn = seqIn.toCharArray(); int lenIn = seqIn.length();
 		char[] chrAdaptor = seqAdaptor.toCharArray(); int lenA = seqAdaptor.length();
+		if (isNadaptor(seqAdaptor)) {
+			return seqIn.length() - seqAdaptor.length();
+		}
 		boolean flagCompareAll = true;//表示从头比较到结束，没有跳出
 //		从左到右搜索chrIn
 		for (int i = mapNumRight; i < lenIn; i++) {
@@ -139,7 +142,7 @@ public class FQrecordFilterAdaptor extends FQrecordFilter {
 			for (int j = 0; j < lenA; j++) {
 				if (i+j >= lenIn)
 					break;
-				if (chrIn[i+j] == chrAdaptor[j] || chrIn[i+j] == 'N') {
+				if (chrIn[i+j] == chrAdaptor[j] || chrIn[i+j] == 'N' || chrAdaptor[j] == 'N') {
 					pm++;
 					con = 0;
 				} else {
@@ -191,6 +194,11 @@ public class FQrecordFilterAdaptor extends FQrecordFilter {
 		char[] chrIn = seqIn.toCharArray(); //int lenIn = seqIn.length();
 		char[] chrAdaptor = seqAdaptor.toCharArray(); int lenA = seqAdaptor.length();
 		boolean flagCompareAll = true;//表示从头比较到结束，没有跳出
+		
+		if (isNadaptor(seqAdaptor)) {
+			return seqAdaptor.length();
+		}
+		
 //		从右到左搜索chrIn
 		for (int i = mapNum; i >= 0 ; i--) {
 			int pm = 0; //perfect match
@@ -222,6 +230,18 @@ public class FQrecordFilterAdaptor extends FQrecordFilter {
 		}
 		return 0;
 	}
+	
+	private static boolean isNadaptor(String adaptorUpcase) {
+		boolean isN = true;
+		for (char chr : adaptorUpcase.toCharArray()) {
+			if (chr != 'N') {
+				isN = false;
+				break;
+			}
+		}
+		return isN;
+	}
+	
 	/** 判定是否通过质检 */
 	private static boolean isMatch(int pm, int mm, int seqAdaptorLen,int maxMMnum, int perPm, int perMm) {
 		if ((float)pm/(pm+mm) >= (float)perPm/100 && pm > (float)seqAdaptorLen * perPm/200

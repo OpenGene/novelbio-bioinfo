@@ -1,8 +1,8 @@
 package com.novelbio.analysis.seq.fastq;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /** 实际上是过滤的类，不过可以用其来设定过滤的参数
  * 过滤前要先设定{@link #setLsfFQrecordFilters()}}
@@ -11,8 +11,8 @@ public class FastQFilter {
 	int phredOffset;
 	int readsLenMin = 18;
 	boolean isFiltered = true;
-	/** fastQ里面asc||码的指标与个数 */
-	HashMap<Integer, Integer> mapFastQFilter;
+	/** fastQ里面asc||码的指标与cutoff比例，意思 碱基质量小于 指定值 的数目 大于该比例 就会被过滤掉 */
+	Map<Integer, Double> mapFastQFilter;
 	
 	FQrecordFilterAdaptor fQrecordFilterAdaptor;
 	FQrecordFilterNNN fQrecordFilterNNN = new FQrecordFilterNNN();
@@ -34,7 +34,7 @@ public class FastQFilter {
 			fQrecordFilterModifyQuality.setModifyQuality(true);
 			return;
 		}
-		mapFastQFilter = FastQ.getMapFastQFilter(QUALITY);
+		mapFastQFilter = FastQ.getMapQuality2Num(QUALITY);
 	}
 	///////////////////////////////////////////  参数设置  ///////////////////////////////////////////////////////////////////////
 	/** 设定是否过滤，false表示不过滤直接跳过 */
@@ -113,9 +113,9 @@ public class FastQFilter {
 	}
 	
 	/**默认true */
-	public void setFilterParamTrimNNN(boolean trimNNN) {
-		fQrecordFilterNNN.setTrimNNN(trimNNN);
-	}	
+	public void setFilterParamTrimNNN(boolean trimNNN, int qualityCutoff) {
+		fQrecordFilterNNN.setTrimNNN(trimNNN, qualityCutoff);
+	}
 	/**默认false */
 	public void setFilterParamAdaptorLowercase(boolean adaptorLowercase) {
 		fQrecordFilterLowcase.setFiterLowcase(adaptorLowercase);

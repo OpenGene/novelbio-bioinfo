@@ -36,7 +36,7 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	String condition;
 	String subGroup;
 	HashMultimap<String, String> mapCondition2Group = HashMultimap.create();
-	
+	Map<String, double[]> mapCondition_Group2JunNum = new HashMap<>();
 	StrandSpecific strandSpecific = StrandSpecific.NONE;
 	
 	/** 针对链特异性进行了优化 */
@@ -55,7 +55,18 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 		this.condition = condition;
 		this.subGroup = subgroup;
 		mapCondition2Group.put(condition, subgroup);
+		mapCondition_Group2JunNum.put(getCond_group(condition, subGroup), new double[0]);
 	}
+	
+	/** 获得指定时期和group下的全体junction数量，考虑了非unique mapping */
+	public long getJunAllNum(String condition, String group) {
+		return (long)(mapCondition_Group2JunNum.get(getCond_group(condition, group))[0]);
+	}
+	
+	private String getCond_group(String condition, String group) {
+		return condition + SepSign.SEP_ID + group;
+	}
+	
 	/** 获得condition对group的对照表 */
 	public HashMultimap<String, String> getMapCondition2Group() {
 		return mapCondition2Group;
@@ -87,6 +98,7 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 		}
 		String chrID = alignRecord.getRefID();
 		List<JunctionUnit> lsJun = new ArrayList<>();
+		double[] junNum = mapCondition_Group2JunNum.get(getCond_group(condition, subGroup));
 		for (int i = 0; i < size - 1; i++) {
 			Align alignThis = lsAlignNew.get(i);
 			Align alignNext = lsAlignNew.get(i + 1);
@@ -98,6 +110,7 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 			}
 			jun.addReadsNum(condition, subGroup, (double)1/alignRecord.getMappedReadsWeight());
 			lsJun.add(jun);
+			junNum[0] += (double)1/alignRecord.getMappedReadsWeight();
 		}
 		addJunctionInfo(lsJun);
 	}
@@ -210,27 +223,28 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	 * @param locSite
 	 * @return
 	 */
-	public List<Double> getJunctionSite(String condition, boolean cis5to3, String chrID, int locSite) {
-		List<Double> lsNum = null;
+	public Map<String, Double> getJunctionSite(String condition, boolean cis5to3, String chrID, int locSite) {
+		Map<String, Double> mapGroup2Value = null;
 		List<JunctionUnit> lsJunctionUnits = mapJunSite2JunUnit.get(chrID + SepSign.SEP_ID + locSite);
 		for (JunctionUnit junctionUnit : lsJunctionUnits) {
 			if (strandSpecific != StrandSpecific.NONE && cis5to3 != junctionUnit.isCis5to3()) {
 				continue;
 			}
-			List<Double> lsTmpValue = junctionUnit.getReadsNum(condition, mapCondition2Group.get(condition));
-			if (lsTmpValue.isEmpty()) {
+			Map<String, Double> mapGroup2ValueTmp = junctionUnit.getReadsNum(condition, mapCondition2Group.get(condition));
+			if (mapGroup2ValueTmp.isEmpty()) {
 				continue;
 			}
-			if (lsNum == null) {
-				lsNum = new ArrayList<>(lsTmpValue);
+			if (mapGroup2Value == null) {
+				mapGroup2Value = new HashMap<>(mapGroup2ValueTmp);
 			} else {
-				for (int i = 0; i < lsTmpValue.size(); i++) {
-					double tmpValue = lsTmpValue.get(i);
-					lsNum.set(i, lsNum.get(i) + tmpValue);
+				for (String group : mapGroup2ValueTmp.keySet()) {
+					double value = mapGroup2Value.get(group);
+					double valueTmp = mapGroup2ValueTmp.get(group);
+					mapGroup2Value.put(group, value + valueTmp);
 				}
 			}
 		}
-		return lsNum;
+		return mapGroup2Value;
 	}
 	/**
 	 * 给定坐标和位点，找出locsite,以及总共有多少reads支持
@@ -238,12 +252,12 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	 * @param locSite
 	 * @return 没有就返为0的list
 	 */
-	public List<Double> getJunctionSite(String condition, boolean cis5to3, String chrID, int locStartSite, int locEndSite) {
-		List<Double> lsResult = new ArrayList<>();
+	public Map<String, Double> getJunctionSite(String condition, boolean cis5to3, String chrID, int locStartSite, int locEndSite) {
+		Map<String, Double> mapGroup2Value = new HashMap<>();
 		for (String group : mapCondition2Group.get(condition)) {
-			lsResult.add(getJunctionSite(condition, group, cis5to3, chrID, locStartSite, locEndSite));
+			mapGroup2Value.put(group, getJunctionSite(condition, group, cis5to3, chrID, locStartSite, locEndSite));
 		}
-		return lsResult;
+		return mapGroup2Value;
 	}
 	
 	/**

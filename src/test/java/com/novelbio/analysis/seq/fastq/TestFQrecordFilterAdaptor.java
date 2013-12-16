@@ -95,4 +95,16 @@ public class TestFQrecordFilterAdaptor extends TestCase {
 		assertEquals("TGGTAGAGC", fastQRecord2.getSeqFasta().toString());
 		assertEquals("IJJJHHIFH", fastQRecord2.getSeqQuality());
 	}
+	
+	public void testcopeReadsAdaptorNNN() {
+		fQrecordcopeReadsAdaptor.setFastqOffset(FastQ.FASTQ_SANGER_OFFSET);
+		fQrecordcopeReadsAdaptor.setSeqAdaptorL("NNNNNN");
+		fQrecordcopeReadsAdaptor.setSeqAdaptorR("NNNN");
+		fQrecordcopeReadsAdaptor.setTrimMinLen(6);
+		FastQRecord fastQRecord2 = fastQRecord.clone();
+		boolean iscopeReadsed = fQrecordcopeReadsAdaptor.copeReads(fastQRecord2);
+		assertEquals(iscopeReadsed, true);
+		assertEquals("ATAGCTCAGCTGGTAGAGCCTGTAGG", fastQRecord2.getSeqFasta().toString());
+		assertEquals("FFHHHGHJGGIJJJHHIFHIIJIJII", fastQRecord2.getSeqQuality());
+	}
 }

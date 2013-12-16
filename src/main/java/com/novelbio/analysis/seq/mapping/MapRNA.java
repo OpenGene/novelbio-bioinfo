@@ -2,11 +2,12 @@ package com.novelbio.analysis.seq.mapping;
 
 import java.util.List;
 
+import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
-public interface MapRNA {
+public interface MapRNA extends IntCmdSoft {
 	public void setGffChrAbs(GffChrAbs gffChrAbs);
 	/**
 	 * 设定tophat所在的文件夹以及待比对的路径

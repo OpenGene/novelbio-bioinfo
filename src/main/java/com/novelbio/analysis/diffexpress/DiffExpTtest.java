@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.math.stat.inference.TestUtils;
+import org.apache.commons.math3.stat.inference.TestUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 

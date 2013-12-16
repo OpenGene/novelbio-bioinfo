@@ -5,57 +5,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class FastQ {
-	public static void main(String[] args) {
-		FastQReadingChannel fastQReadingChannel = new FastQReadingChannel();
-		ArrayList<FastQ[]> lsFastQs = new ArrayList<FastQ[]>();
-		FastQ fastq1 = new FastQ("/media/winD/NBC/Project/Test/aaa.fq");
-		FastQ[] fasatqQs = new FastQ[]{fastq1, new FastQ("/media/winD/NBC/Project/Test/aaa2.fq")};
-		lsFastQs.add(fasatqQs);
-//		fasatqQs = new FastQ[]{new FastQ("/media/winD/NBC/Project/Test/shnc_GGCTAC_L004_R1_002.fastq.gz"), new FastQ("/media/winD/NBC/Project/Test/shnc_GGCTAC_L004_R2_002.fastq.gz")};
-//		lsFastQs.add(fasatqQs);
-//		fasatqQs = new FastQ[]{new FastQ("/media/winD/NBC/Project/Test/shnc_GGCTAC_L004_R1_003.fastq.gz"), new FastQ("/media/winD/NBC/Project/Test/shnc_GGCTAC_L004_R2_003.fastq.gz")};
-//		lsFastQs.add(fasatqQs);
-		
-		FastQFilter fastQRecordFilter = new FastQFilter();
-		fastQRecordFilter.setFilterParamTrimNNN(true);
-		fastQReadingChannel.setFastQRead(lsFastQs);
-		FastQC fastQCLeftBefore = new FastQC("/media/winD/NBC/Project/Test/shnc_com1Before.fq", true);
-		FastQC fastQCRightBefore = new FastQC("/media/winD/NBC/Project/Test/shnc_com2Before.fq", true);
-		FastQC fastQCLeftAfter = new FastQC("/media/winD/NBC/Project/Test/shnc_com1After.fq", true);
-		FastQC fastQCRightAfter = new FastQC("/media/winD/NBC/Project/Test/shnc_com2After.fq", true);
-		
-		fastQReadingChannel.setFastQC(fastQCLeftBefore, fastQCRightBefore);
-		fastQReadingChannel.setFilter(fastQRecordFilter, fastq1.getOffset());
-		fastQReadingChannel.setFastQC(fastQCLeftAfter, fastQCRightAfter);
-		
-		FastQ fastqWrite1 = new FastQ("/media/winD/NBC/Project/Test/shnc_com1.fq", true);
-		FastQ fastqWrite2 = new FastQ("/media/winD/NBC/Project/Test/shnc_com2.fq", true);
-		fastQReadingChannel.setFastQWrite(fastqWrite1, fastqWrite2);
-		fastQReadingChannel.setThreadNum(4);
-		DateUtil dateUtil = new DateUtil();
-		dateUtil.setStartTime();
-		fastQReadingChannel.run();
-		System.out.println(dateUtil.getEclipseTime());
-		fastQCLeftAfter.saveToPathPic("/media/winD/NBC/Project/Test/QC/LeftAfter");
-		fastQCLeftAfter.saveToPathTable("/media/winD/NBC/Project/Test/QC/LeftAfter");
-		
-		fastQCLeftBefore.saveToPathPic("/media/winD/NBC/Project/Test/QC/LeftBefore");
-		fastQCLeftBefore.saveToPathTable("/media/winD/NBC/Project/Test/QC/LeftBefore");
-		
-		fastQCRightAfter.saveToPathPic("/media/winD/NBC/Project/Test/QC/RightAfter");
-		fastQCRightAfter.saveToPathTable("/media/winD/NBC/Project/Test/QC/RightAfter");
-		
-		fastQCRightBefore.saveToPathPic("/media/winD/NBC/Project/Test/QC/RightBefore");
-		fastQCRightBefore.saveToPathTable("/media/winD/NBC/Project/Test/QC/RightBefore");
-	}
 	private static final Logger logger = Logger.getLogger(FastQ.class);
 	
 	public static final int FASTQ_SANGER_OFFSET = 33;
@@ -358,37 +315,46 @@ public class FastQ {
 		return mapReadsQualtiy;
 	}
 	
-	public static HashMap<Integer, Integer> getMapFastQFilter(int QUALITY) {
-		HashMap<Integer, Integer> mapFastQFilter = new HashMap<Integer, Integer>();
+	/**
+	 * 
+	 * reads质量过滤参数
+	 * @param QUALITY 选定等级
+	 * @return map<br>
+	 * key 具体的碱基质量等级，如10，13，20<br>
+	 * value 指定的碱基质量不得超过的比例<br>
+	 * 如质量小于10的碱基数量不得超过 reads长度的 10%
+	 */
+	public static Map<Integer, Double> getMapQuality2Num(int QUALITY) {
+		Map<Integer, Double> mapQuality2CutoffNum = new HashMap<Integer, Double>();
 		if (QUALITY == FastQ.QUALITY_HIGM) {
-			mapFastQFilter.put(10, 3);
-			mapFastQFilter.put(13, 3);
-			mapFastQFilter.put(20, 10);
+			mapQuality2CutoffNum.put(10, 0.07);
+			mapQuality2CutoffNum.put(13, 0.07);
+			mapQuality2CutoffNum.put(20, 0.15);
 		} else if (QUALITY == FastQ.QUALITY_LOW) {
 			// hashFastQFilter.put(2, 1);
-			mapFastQFilter.put(10, 5);
-			mapFastQFilter.put(13, 10);
-			mapFastQFilter.put(20, 30);
+			mapQuality2CutoffNum.put(10, 0.1);
+			mapQuality2CutoffNum.put(13, 0.15);
+			mapQuality2CutoffNum.put(20, 0.35);
 		} else if (QUALITY == FastQ.QUALITY_MIDIAN
 				|| QUALITY == FastQ.QUALITY_MIDIAN_PAIREND) {
 			// hashFastQFilter.put(2, 1);
-			mapFastQFilter.put(10, 4);
-			mapFastQFilter.put(13, 7);
-			mapFastQFilter.put(20, 20);
+			mapQuality2CutoffNum.put(10, 0.1);
+			mapQuality2CutoffNum.put(13, 0.14);
+			mapQuality2CutoffNum.put(20, 0.3);
 		} else if (QUALITY == FastQ.QUALITY_LOW_454) {
 			// hashFastQFilter.put(2, 1);
-			mapFastQFilter.put(10, 8);
-			mapFastQFilter.put(15, 15);
+			mapQuality2CutoffNum.put(10, 0.15);
+			mapQuality2CutoffNum.put(15, 0.3);
 		} else if (QUALITY == FastQ.QUALITY_LOW_PGM) {
-			mapFastQFilter.put(10, 10);
-			mapFastQFilter.put(13, 30);
+			mapQuality2CutoffNum.put(10, 0.15);
+			mapQuality2CutoffNum.put(13, 0.2);
 		} else if (QUALITY == FastQ.QUALITY_NONE || QUALITY == FastQ.QUALITY_CHANGE_TO_BEST) {
 			//空的就不会过滤
 		} else {
-			mapFastQFilter.put(10, 2);
-			mapFastQFilter.put(13, 6);
-			mapFastQFilter.put(20, 10);
+			mapQuality2CutoffNum.put(10, 0.07);
+			mapQuality2CutoffNum.put(13, 0.1);
+			mapQuality2CutoffNum.put(20, 0.2);
 		}
-		return mapFastQFilter;
+		return mapQuality2CutoffNum;
 	}
 }

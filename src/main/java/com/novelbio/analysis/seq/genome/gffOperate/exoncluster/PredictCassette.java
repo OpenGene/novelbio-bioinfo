@@ -2,8 +2,10 @@ package com.novelbio.analysis.seq.genome.gffOperate.exoncluster;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -23,29 +25,29 @@ public class PredictCassette extends SpliceTypePredict {
 	}
 	
 	@Override
-	protected List<List<Double>> getLsJuncCounts(String condition) {
+	protected ArrayListMultimap<String, Double> getLsJuncCounts(String condition) {
 		return getJuncCountsLoose(condition);
 	}
 	/** 不完全按照转录本信息来 */
-	private List<List<Double>> getJuncCountsLoose(String condition) {
-		List<List<Double>> lsCounts = new ArrayList<>();
-		lsCounts.add(getJunReadsNum(condition));
+	private ArrayListMultimap<String, Double> getJuncCountsLoose(String condition) {
+		ArrayListMultimap<String, Double> mapGroup2LsValue = ArrayListMultimap.create();
+		addMapGroup2LsValue(mapGroup2LsValue, getJunReadsNum(condition));
 		Set<Integer> setAlignExist = new HashSet<Integer>();
 		for (GffGeneIsoInfo gffGeneIsoInfo : setExistExonIso) {
 			List<ExonInfo> lsExon = exonCluster.getIsoExon(gffGeneIsoInfo);
 			setAlignExist.add(lsExon.get(0).getStartCis());
 			setAlignExist.add(lsExon.get(lsExon.size() - 1).getEndCis());
 		}
-		List<Double> lsExist = new ArrayList<>();
+		Map<String, Double> mapExistGroup2Value = new HashMap<>();
 		for (Integer align : setAlignExist) {
-			lsExist = addLsDouble(lsExist, tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align));
+			mapExistGroup2Value = addMapDouble(mapExistGroup2Value, tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align));
 		}
-		lsCounts.add(lsExist);
-		return lsCounts;
+		addMapGroup2LsValue(mapGroup2LsValue, mapExistGroup2Value);
+		return mapGroup2LsValue;
 	}
 	
 	/** 完全按照转录本信息来 */
-	private List<List<Double>> getJuncCountsStrict(String condition) {
+	private ArrayListMultimap<String, Double> getJuncCountsStrict(String condition) {
 		List<List<Double>> lsCounts = new ArrayList<>();
 		HashSet<Align> setAlignSkip = new HashSet<Align>();
 		HashSet<Align> setAlignExist = new HashSet<Align>();
@@ -74,17 +76,18 @@ public class PredictCassette extends SpliceTypePredict {
 			setAlignExist.add(alignAfter);
 		}
 		//获得junction reads
-		List<Double> lsSkip = null;
-		List<Double> lsExist = null;
+		Map<String, Double> mapSkip = null;
+		Map<String, Double> mapExist = null;
 		for (Align align : setAlignSkip) {
-			lsSkip = addLsDouble(lsSkip, tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getStartAbs(), align.getEndAbs()));
+			mapSkip = addMapDouble(mapSkip, tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getStartAbs(), align.getEndAbs()));
 		}
 		for (Align align : setAlignExist) {
-			lsExist = addLsDouble(lsExist, tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getStartAbs(), align.getEndAbs()));
+			mapExist = addMapDouble(mapExist, tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getStartAbs(), align.getEndAbs()));
 		}
-		lsCounts.add(lsSkip);
-		lsCounts.add(lsExist);
-		return lsCounts;
+		ArrayListMultimap<String, Double> mapGroup2LsValue = ArrayListMultimap.create();
+		addMapGroup2LsValue(mapGroup2LsValue, mapSkip);
+		addMapGroup2LsValue(mapGroup2LsValue, mapExist);
+		return mapGroup2LsValue;
 	}
 
 	@Override

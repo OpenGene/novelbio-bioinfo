@@ -16,7 +16,7 @@ public class PredictStartDifStart extends SpliceTypePredict {
 	}
 
 	@Override
-	protected List<List<Double>> getLsJuncCounts(String condition) {
+	protected ArrayListMultimap<String, Double> getLsJuncCounts(String condition) {
 		List<ExonInfo> lsExonInfosFinal = new ArrayList<>();
 		for (List<ExonInfo> lsExonInfos : ls_lsExonInfos) {
 			for (ExonInfo exonInfo : lsExonInfos) {

@@ -93,12 +93,12 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	 /** 总共有多少reads参与了mapping，这个从ReadMapFile才能得到。 */
 	public long getAllReadsNum() {
 		if (allReadsNum > 0) {
-			return allReadsNum;
+			return (long)allReadsNum;
 		}
 		for (ChrMapReadsInfo chrMapReadsInfo : mapChrID2ReadsInfo.values()) {
 			allReadsNum = allReadsNum + chrMapReadsInfo.getReadsChrNum();
 		}
-		return allReadsNum;
+		return (long)allReadsNum;
 	}
 	
 	/**
@@ -493,16 +493,15 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 		if (!prepareAlignRecord(alignRecordFirst)) {
 			return;
 		}
-		
+		int readsNum = 0;
 		for (AlignRecord alignRecord : alignSeqReader.readLines()) {
-			allReadsNum++;
 			mapReadsAddAlignRecord.addAlignRecord(alignRecord);
-			
+			readsNum++;
 			suspendCheck();
 			if (flagStop) {
 				break;
 			}
-			if (allReadsNum%1000 == 0) {
+			if (readsNum%1000 == 0) {
 				MapReadsProcessInfo mapReadsProcessInfo = new MapReadsProcessInfo(alignSeqReader.getReadByte());
 				setRunInfo(mapReadsProcessInfo);
 			}
@@ -603,7 +602,7 @@ class MapReadsAddAlignRecord {
 		if (flag == false) return;
 		tmpOld = addLoc(alignRecord, tmpOld, chrBpReads, chrMapReadsInfo);
 	
-		chrMapReadsInfo.addReadsAllNum(1);
+		chrMapReadsInfo.addReadsAllNum((double)1/alignRecord.getMappedReadsWeight());
 	}
 	
 	public void summary() {
@@ -756,7 +755,7 @@ class ChrMapReadsInfo {
 	/** 直接从0开始记录，1代表第二个invNum,也和实际相同 */
 	int[] SumChrBpReads;
 	/** 本条染色体上的reads数量 */
-	long readsAllNum;
+	double readsAllNum;
 	/** 本条染色体上的reads的堆叠数之和 */
 	double readsAllPipNum;
 	/** 用于校正数据 */
@@ -778,10 +777,10 @@ class ChrMapReadsInfo {
 		return chrID;
 	}
 	public long getReadsChrNum() {
-		return readsAllNum;
+		return (long)readsAllNum;
 	}
 	/** 设定总reads的数量 */
-	public void addReadsAllNum(long readsAllNum) {
+	public void addReadsAllNum(double readsAllNum) {
 		this.readsAllNum = this.readsAllNum + readsAllNum;
 	}
 	public long getReadsPipNum() {

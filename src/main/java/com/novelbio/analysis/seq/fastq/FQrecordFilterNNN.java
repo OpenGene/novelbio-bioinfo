@@ -13,10 +13,19 @@ public class FQrecordFilterNNN extends FQrecordFilter {
 	boolean isFilterNNN = true;
 	/** 几个好的序列，就是说NNNCNNN这种，坏的中间夹一个好的 一般为1 */
 	int numGoodBp = 1;
-	int cutoffQuality = 14;
+	int cutoffQuality = 15;
 
 	public void setTrimNNN(boolean isFilterNNN) {
 		this.isFilterNNN = isFilterNNN;
+	}
+	
+	/**
+	 * @param isFilterNNN
+	 * @param qualityCutoff 碱基质量的最低值，小于该值会被cut
+	 */
+	public void setTrimNNN(boolean isFilterNNN, int qualityCutoff) {
+		this.isFilterNNN = isFilterNNN;
+		this.cutoffQuality = qualityCutoff;
 	}
 	@Override
 	public boolean isUsing() {
@@ -28,13 +37,6 @@ public class FQrecordFilterNNN extends FQrecordFilter {
 	 */
 	public void setNumGoodBp(int numGoodBp) {
 		this.numGoodBp = numGoodBp;
-	}
-	/**
-	 * 碱基质量的最低值，小于该值会被cut
-	 * @param cutoffQuality
-	 */
-	public void setCutoffQuality(int cutoffQuality) {
-		this.cutoffQuality = cutoffQuality;
 	}
 	
 	/**

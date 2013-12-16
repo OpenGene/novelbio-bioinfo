@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultimap;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.dataStructure.Alignment;
@@ -27,12 +29,20 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 	}
 
 	@Override
-	protected List<List<Double>> getLsJuncCounts(String condition) {
+	protected ArrayListMultimap<String, Double> getLsJuncCounts(String condition) {
 		Align align = getDifSite();
-		List<List<Double>> lsResult = new ArrayList<>();
-		lsResult.add(tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getStartAbs()));
-		lsResult.add(tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getEndAbs()));
-		return lsResult;
+		ArrayListMultimap<String, Double> mapGroup2LsValue = ArrayListMultimap.create();
+		Map<String, Double> mapGroup2Value1 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getStartAbs());
+		Map<String, Double> mapGroup2Value2 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getEndAbs());
+		addMapGroup2Value(mapGroup2LsValue, mapGroup2Value1);
+		addMapGroup2Value(mapGroup2LsValue, mapGroup2Value2);
+		return mapGroup2LsValue;
+	}
+	
+	private void addMapGroup2Value(ArrayListMultimap<String, Double> mapGroup2LsValue, Map<String, Double> mapGroup2ValueTmp) {
+		for (String group : mapGroup2ValueTmp.keySet()) {
+			mapGroup2LsValue.put(group, mapGroup2ValueTmp.get(group));
+		}
 	}
 	
 	/** 获得alt5， alt3的差异位点 */

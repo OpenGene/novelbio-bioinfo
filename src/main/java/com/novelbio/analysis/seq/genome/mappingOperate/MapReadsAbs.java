@@ -57,7 +57,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	  * value： 染色体过滤信息，马红想要只看tss，只看exon等表达
 	  */
 	 Map<String, List<? extends Alignment>> mapChrID2LsAlignmentFilter;
-	 protected long allReadsNum = 0;
+	 protected double allReadsNum = 0;
 	 /**
 	  * @param invNum 每隔多少位计数，如果设定为1，则算法会变化，然后会很精确
 	  * @param mapFile mapping的结果文件，一般为bed格式

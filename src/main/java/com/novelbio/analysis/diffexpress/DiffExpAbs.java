@@ -73,7 +73,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	List<String> lsOutFile = new ArrayList<>();
 	boolean calculate = false;
 	
-	boolean isLog2Value = false;
+	boolean logTheValue = false;
 	
 	/** 是否提高算法的敏感度 */
 	boolean isSensitive = false;
@@ -86,9 +86,9 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		setFileNameRawdata();
 	}
 	
-	/** 设定是否为log2value，仅在limma中使用 */
-	public void setLog2Value(boolean isLog2Value) {
-		this.isLog2Value = isLog2Value;
+	/** 设定是否需要进行log，仅在limma中使用 */
+	public void setLogValue(boolean isLog2Value) {
+		this.logTheValue = isLog2Value;
 	}
 	/**
 	 * 是否提高差异基因筛选的敏感度，意思就是挑选出更多的差异基因
@@ -154,8 +154,8 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	/** 返回是否为log过的值
 	 * 主要用于limma，其实就是判断最大的表达值是否大于40
 	 *  */
-	public boolean isLogValue() {
-		return isLog2Value;
+	protected boolean isLogValue() {
+		return !logTheValue;
 //		ArrayList<Double> lsValue = new ArrayList<Double>();
 //		for (String[] strings : lsGeneInfo) {
 //			int colNum = Integer.parseInt(lsSampleColumn2GroupName.get(0)[0]) - 1;
@@ -436,7 +436,10 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	/** 务必在run完之后调用 */
 	public List<String> getCmdExeStr() {
 		List<String> lsScript = new ArrayList<>();
-		lsScript.add(scriptContent);
+		for (String string : scriptContent.split("\n")) {
+			lsScript.add(string);
+		}
+	
 		return lsScript;
 	}
 	

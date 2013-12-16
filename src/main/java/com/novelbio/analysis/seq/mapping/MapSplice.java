@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.mapping;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
@@ -249,5 +250,13 @@ public class MapSplice implements MapRNA {
 		SamFile samFile = null;//获得mapping好的bam文件
 		String outFastQfile = FileOperate.changeFileSuffix(samFile.getFileName(), "_Unmapped", "fq.gz");
 		samFile.getUnMappedReads(false, outFastQfile);
+	}
+
+	@Override
+	public List<String> getCmdExeStr() {
+		List<String> lsCmd = new ArrayList<>();
+		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
+		lsCmd.add(cmdOperate.getCmdExeStr());
+		return lsCmd;
 	}
 }

@@ -3,8 +3,6 @@
 import java.awt.Color;
 import java.util.ArrayList;
 
-import javax.jnlp.FileOpenService;
-
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.GffChrPlotTss;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;

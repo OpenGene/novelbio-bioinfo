@@ -8,6 +8,7 @@ import java.util.TreeMap;
 
 import org.hyperic.sigar.cmd.SysInfo;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.dataStructure.Alignment;
@@ -37,12 +38,12 @@ public abstract class PredictAltStartEnd extends SpliceTypePredict {
 		return istype;
 	}
 	
-	protected List<List<Double>> getLsJuncCounts(String condition) {
-		List<List<Double>> lsCounts = new ArrayList<>();
+	protected ArrayListMultimap<String, Double> getLsJuncCounts(String condition) {
+		ArrayListMultimap<String, Double> mapGroup2LsValue = ArrayListMultimap.create();
 		isType();
 		Set<Integer> setEdge = getSetEdge();
 		String chrID = lsSite.get(0).getRefID();
-		lsCounts.add(getJunReadsNum(condition));
+		addMapGroup2LsValue(mapGroup2LsValue, getJunReadsNum(condition));
 		TreeMap<Double, Integer> mapValue2Edge = new TreeMap<>(new Comparator<Double>() {
 			public int compare(Double o1, Double o2) {
 				return -o1.compareTo(o2);
@@ -53,8 +54,8 @@ public abstract class PredictAltStartEnd extends SpliceTypePredict {
 			mapValue2Edge.put(tophatJunction.getJunctionSiteAll(exonCluster.isCis5to3(), chrID, integer), integer);
 		}
 		int edge = mapValue2Edge.values().iterator().next();
-		lsCounts.add(tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), chrID, edge));
-		return lsCounts;
+		addMapGroup2LsValue(mapGroup2LsValue, tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), chrID, edge));
+		return mapGroup2LsValue;
 	}
 	
 	protected abstract Set<Integer> getSetEdge();

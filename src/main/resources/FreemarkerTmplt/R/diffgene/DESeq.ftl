@@ -10,7 +10,7 @@ cds = newCountDataSet( data, conds )
 cds = estimateSizeFactors(cds)
 <#if isRepeatExp>
    <#if isSensitive>
-cds = estimateDispersions(cds, method="per-condition", sharingMode="gene-est-only")
+cds = estimateDispersions(cds, method="pooled", sharingMode="gene-est-only")
    	<#else>
 cds = estimateDispersions(cds)
    	</#if>

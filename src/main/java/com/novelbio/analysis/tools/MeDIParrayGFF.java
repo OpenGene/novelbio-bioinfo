@@ -6,8 +6,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.math.stat.StatUtils;
-import org.apache.commons.math.stat.inference.TestUtils;
+import org.apache.commons.math3.stat.StatUtils;
+import org.apache.commons.math3.stat.inference.TestUtils;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;

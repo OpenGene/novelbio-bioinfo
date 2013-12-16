@@ -2,17 +2,16 @@ package com.novelbio.analysis.seq.genome.gffOperate.exoncluster;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
@@ -36,22 +35,27 @@ public abstract class SpliceTypePredict {
 		this.tophatJunction = tophatJunction;
 		this.mapCond2Group = tophatJunction.getMapCondition2Group();
 	}
-	public List<List<Double>> getJuncCounts(String condition) {
-		List<List<Double>> lsJun = getLsJuncCounts(condition);
-		for (int i = 0; i < lsJun.size(); i++) {
-			List<Double> list = lsJun.get(i);
-			if (list == null || list.size() == 0) {
-				list = new ArrayList<>();
-				for (String group : mapCond2Group.get(condition)) {
-					list.add(0.0);
-				}
-				lsJun.set(i, list);
+	
+	/**
+	 * @param condition
+	 * @return
+	 * key: group
+	 * value: 每个位点的值
+	 */
+	public ArrayListMultimap<String, Double> getJunGroup2lsValue(String condition) {
+		ArrayListMultimap<String, Double> mapGroup2LsValue = getLsJuncCounts(condition);
+		for (String group : mapGroup2LsValue.keys()) {
+			List<Double> lsValue = mapGroup2LsValue.get(group);
+			logger.error("没有reads");
+			if (lsValue == null || lsValue.size() == 0) {
+				mapGroup2LsValue.put(group, 0.0);
+				mapGroup2LsValue.put(group, 0.0);
 			}
 		}
-		return lsJun;
+		return mapGroup2LsValue;
 	}
 	/** 获得用于检验的junction reads */
-	protected abstract List<List<Double>> getLsJuncCounts(String condition);
+	protected abstract ArrayListMultimap<String, Double> getLsJuncCounts(String condition);
 	/** 是否为该种剪接类型 */
 	public boolean isSpliceType() {
 		if (isType != null) {
@@ -81,22 +85,28 @@ public abstract class SpliceTypePredict {
 	
 	
 	/** 分别计算exon边界所参与的reads数，只取前两个值 */
-	protected List<List<Double>> getlsJunInfoEdge(String condition, List<ExonInfo> lsExonInfos) {
+	protected ArrayListMultimap<String, Double> getlsJunInfoEdge(String condition, List<ExonInfo> lsExonInfos) {
+		ArrayListMultimap<String, Double> mapGroup2LsValue = ArrayListMultimap.create();
 		ExonInfo exonInfo0 = lsExonInfos.get(0);
-		List<Double> ls0_1 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), exonInfo0.getStartAbs());
-		List<Double> ls0_2 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), exonInfo0.getEndAbs());
-		List<Double> ls0 = addLsDouble(ls0_1, ls0_2);
-		List<List<Double>> lsCounts = new ArrayList<>();
-		lsCounts.add(ls0);
+		Map<String, Double> mapGroup2Value0_1 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), exonInfo0.getStartAbs());
+		Map<String, Double> mapGroup2Value0_2 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), exonInfo0.getEndAbs());
+		Map<String, Double> map0 = addMapDouble(mapGroup2Value0_1, mapGroup2Value0_2);
+		addMapGroup2LsValue(mapGroup2LsValue, map0);
 		
 		if (lsExonInfos.size() > 1) {
 			ExonInfo exonInfo1 = lsExonInfos.get(1);
-			List<Double> ls1_1 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), exonInfo1.getStartAbs());
-			List<Double> ls1_2 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), exonInfo1.getEndAbs());
-			List<Double> ls1 = addLsDouble(ls1_1, ls1_2);
-			lsCounts.add(ls1);
+			Map<String, Double> mapGroup2Value1_1 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), exonInfo1.getStartAbs());
+			Map<String, Double> mapGroup2Value1_2 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), exonInfo1.getEndAbs());
+			Map<String, Double> map1 = addMapDouble(mapGroup2Value1_1, mapGroup2Value1_2);
+			addMapGroup2LsValue(mapGroup2LsValue, map1);
 		}
-		return lsCounts;
+		return mapGroup2LsValue;
+	}
+	
+	protected void addMapGroup2LsValue(ArrayListMultimap<String, Double> mapGroup2LsValue, Map<String, Double> mapGroup2Value) {
+		for (String group : mapGroup2Value.keySet()) {
+			mapGroup2LsValue.put(group, mapGroup2Value.get(group));
+		}
 	}
 	
 	/**
@@ -106,20 +116,20 @@ public abstract class SpliceTypePredict {
 	 * @param condition
 	 * @return list-int 返回同一个位点，n个重复中的情况
 	 */
-	protected List<Double> getJunReadsNum(String condition) {
+	protected Map<String, Double> getJunReadsNum(String condition) {
 		GffDetailGene gffDetailGene = exonCluster.getParentGene();
-		List<Double> lsInt = null;
+		Map<String, Double> mapGroupeValue = null;
 		HashSet<String> setLocation = new HashSet<String>();
 		setLocation.addAll(getSkipExonLoc_From_IsoHaveExon());
 		setLocation.addAll(getSkipExonLoc_From_IsoWithoutExon(gffDetailGene));
 		
 		for (String string : setLocation) {
 			String[] ss = string.split(SepSign.SEP_ID);
-			List<Double> lsTmpValue = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), gffDetailGene.getRefID(),
+			Map<String, Double> mapGroup2ValueTmp = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), gffDetailGene.getRefID(),
 					Integer.parseInt(ss[0]), Integer.parseInt(ss[1]));
-			lsInt = addLsDouble(lsInt, lsTmpValue);	
+			mapGroupeValue = addMapDouble(mapGroupeValue, mapGroup2ValueTmp);	
 		}
-		return lsInt;
+		return mapGroupeValue;
 	}
 	
 	/**
@@ -128,19 +138,21 @@ public abstract class SpliceTypePredict {
 	 * @param lsTmpValue
 	 * @return
 	 */
-	protected List<Double> addLsDouble(List<Double> lsResult, List<Double> lsTmpValue) {
-		if (lsResult == null && lsTmpValue == null) {
-			return lsResult;
-		} else if (lsTmpValue == null) {
-			return lsResult;
-		} else if (lsResult == null || lsResult.size() == 0) {
-			lsResult = new ArrayList<>(lsTmpValue);
-			return lsResult;
+	protected Map<String, Double> addMapDouble(Map<String, Double> mapResult, Map<String, Double> mapTmpValue) {
+		if (mapResult == null && mapTmpValue == null) {
+			return mapResult;
+		} else if (mapTmpValue == null) {
+			return mapResult;
+		} else if (mapResult == null || mapResult.size() == 0) {
+			mapResult = new HashMap<>(mapTmpValue);
+			return mapResult;
 		}
-		for (int i = 0; i < lsTmpValue.size(); i++) {
-			lsResult.set(i, lsResult.get(i) + lsTmpValue.get(i));
+		for (String group : mapTmpValue.keySet()) {
+			double value = mapResult.get(group);
+			double valueTmp = mapTmpValue.get(group);
+			mapResult.put(group, value + valueTmp);
 		}
-		return lsResult;
+		return mapResult;
 	}
 	
 	/**

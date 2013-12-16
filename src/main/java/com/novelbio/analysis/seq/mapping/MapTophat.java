@@ -34,7 +34,7 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
  * @author zong0jie
  * 
  */
-public class MapTophat implements MapRNA, IntCmdSoft {
+public class MapTophat implements MapRNA {
 	private static Logger logger = Logger.getLogger(MapTophat.class);
 	public static final String UnmapPrefix = "unmapped_";//没有mapping的bam文件的前缀
 	/** mapping文件的后缀，包含 ".bam" 字符串 */
@@ -493,8 +493,7 @@ public class MapTophat implements MapRNA, IntCmdSoft {
 	@Override
 	public List<String> getCmdExeStr() {
 		List<String> lsCmd = new ArrayList<>();
-		List<String> lsSubCmd = getLsCmd();
-		CmdOperate cmdOperate = new CmdOperate(lsSubCmd);
+		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
 		lsCmd.add(cmdOperate.getCmdExeStr());
 		return lsCmd;
 	}
