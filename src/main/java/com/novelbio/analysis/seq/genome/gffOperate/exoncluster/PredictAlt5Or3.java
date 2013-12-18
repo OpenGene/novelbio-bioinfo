@@ -34,6 +34,9 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 		ArrayListMultimap<String, Double> mapGroup2LsValue = ArrayListMultimap.create();
 		Map<String, Double> mapGroup2Value1 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getStartAbs());
 		Map<String, Double> mapGroup2Value2 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getEndAbs());
+		if (mapGroup2Value2.size() == 0) {
+			mapGroup2Value2 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getEndAbs());
+		}
 		addMapGroup2Value(mapGroup2LsValue, mapGroup2Value1);
 		addMapGroup2Value(mapGroup2LsValue, mapGroup2Value2);
 		return mapGroup2LsValue;

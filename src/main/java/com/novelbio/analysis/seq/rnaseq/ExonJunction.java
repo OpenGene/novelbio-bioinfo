@@ -67,7 +67,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 //		lsAligns.add(new Align("7",30050239,30137766));
 //		lsAligns.add(new Align("7",30121258, 30123992));
 //		lsAligns.add(new Align("24", 5495310, 5695313));
-//		lsAligns.add(new Align("15", 7832874, 8032908));
+//		lsAligns.add(new Align("15", 5334938, 5535018));
 //		lsAligns.add(new Align("mt", 0, 27622));
 		DateUtil dateUtil = new DateUtil();
 		dateUtil.setStartTime();
@@ -83,7 +83,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		exonJunction.addBamSorted("KO", "/home/zong0jie/Test/rnaseq/paper/chicken/DT40KO0h.bam");
 		exonJunction.setCompareGroups("KO", "WT");
 
-		exonJunction.setResultFile("/home/zong0jie/Test/rnaseq/paper/chicken/ensemble_Iso2_No_Merge_sepSeq");
+		exonJunction.setResultFile("/home/zong0jie/Test/rnaseq/paper/chicken/ensemble_Iso2_No_Merge_sepSeq_new");
 		exonJunction.setgenerateNewIso();
 
 		exonJunction.run();
@@ -123,7 +123,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	private static Logger logger = Logger.getLogger(ExonJunction.class);
-	private static String stopGeneName = "ENSGALG00000021142";
+	private static String stopGeneName = "CAMKK2";
 	
 	GffHashGene gffHashGene = null;
 	StrandSpecific strandSpecific = StrandSpecific.NONE;
@@ -515,6 +515,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			int i = 0;
 			for (AlignSamReading samFileReading : lsSamFileReadings) {
 				i++;
+				String group = i+"";
 				samFileReading.clear();
 				if (samFileReadingLast != null) {
 					samFileReading.setReadInfo(0L, samFileReadingLast.getReadByte());
@@ -533,7 +534,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				
 				samFileReading.run();
 				samFileReading.clearRecorder();
-				addMapReadsInfo(condition, mapReadsAbs);
+				addMapReadsInfo(condition, group, mapReadsAbs);
 			}
 		}
 	}
@@ -570,7 +571,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	/** 将表达信息加入统计 */
-	private void addMapReadsInfo(String condition, MapReadsAbs mapReads) {
+	private void addMapReadsInfo(String condition, String group, MapReadsAbs mapReads) {
 		DateUtil dateTime = new DateUtil();
 		dateTime.setStartTime();
 		int num = 0;
@@ -580,7 +581,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				if (exonSplicingTest.getExonCluster().getParentGene().getName().contains(stopGeneName)) {
 					logger.error("");
 				}
-				exonSplicingTest.addMapCondition2MapReads(condition, mapReads);
+				exonSplicingTest.addMapCondition2MapReads(condition, group, mapReads);
 			}
 			if (num % 100 == 0) {
 				logger.error(num);

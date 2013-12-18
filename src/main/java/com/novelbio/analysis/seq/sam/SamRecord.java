@@ -17,7 +17,6 @@ import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.analysis.seq.mapping.Align;
-import com.novelbio.base.cmd.CmdOperate;
 
 public class SamRecord extends SiteSeqInfo implements AlignRecord{
 	private static Logger logger = Logger.getLogger(SamRecord.class);

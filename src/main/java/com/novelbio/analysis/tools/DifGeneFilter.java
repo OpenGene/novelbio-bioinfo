@@ -2,7 +2,9 @@ package com.novelbio.analysis.tools;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
+import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
@@ -51,13 +53,13 @@ public class DifGeneFilter {
 	}
 	/** 开始过滤，采用直接读入内存的模式 */
 	public void filtering() {
-		TxtReadandWrite txtFiltered = new TxtReadandWrite(outTxtFile, true);
+		List<String[]> lsResult = new ArrayList<>();
 		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(excelTxtFile, 1);
 		for (int i = 0; i < lsInfo.size(); i++) {
 			String[] ss = lsInfo.get(i);
 
 			if (i < readFromLines - 1) {
-				txtFiltered.writefileln(ss);
+				lsResult.add(ss);
 			}
 			
 			//是否通过过滤
@@ -71,10 +73,13 @@ public class DifGeneFilter {
 				}
 			}
 			if (filtered) {
-				txtFiltered.writefileln(ss);
+				lsResult.add(ss);
 			}
 		}
-		txtFiltered.close();
+		ExcelOperate excelOperate = new ExcelOperate(outTxtFile);
+		excelOperate.setNBCExcel(true);
+		excelOperate.WriteExcel(1, 1, lsResult);
+		excelOperate.Close();
 	}
 	
 }

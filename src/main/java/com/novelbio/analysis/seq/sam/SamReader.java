@@ -16,8 +16,8 @@ import net.sf.samtools.SAMFormatException;
 import net.sf.samtools.SAMRecord;
 import net.sf.samtools.SAMRecordIterator;
 import net.sf.samtools.SAMSequenceRecord;
-import net.sf.samtools.SeekableHDFSstream;
 import net.sf.samtools.seekablestream.SeekableFileStream;
+import net.sf.samtools.seekablestream.SeekableHDFSstream;
 import net.sf.samtools.seekablestream.SeekableStream;
 
 import org.apache.log4j.Logger;

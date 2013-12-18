@@ -41,7 +41,7 @@ public class DiffExpEBSeq extends DiffExpAbs{
 		mapData.put("workspace", getWorkSpace());
 		mapData.put("filename", getFileName());
 		mapData.put("mapOut2Compare_vector", getMapOut2Compare_vector());
-		mapData.put("mapOut2sample", getMapOutFile2Compare());
+//		mapData.put("mapOut2sample", getMapOutFile2Compare());
 		mapData.put("isSensitive", isSensitive);
 		String scriptContent = null;
 		try {
@@ -112,15 +112,25 @@ public class DiffExpEBSeq extends DiffExpAbs{
 		ArrayList<String[]> lsDifGene = ExcelTxtRead.readLsExcelTxt(outFileName, 1);
 		String[] title = new String[]{TitleFormatNBC.AccID.toString(), treatName , controlName, TitleFormatNBC.Log2FC.toString(), TitleFormatNBC.FDR.toString()};
 		lsResult.add(title);
-
+		
+		String[] titleReal = lsDifGene.get(0);
+		boolean swap = false;
+		if (titleReal[0].replace("\"", "").equals(controlName) && titleReal[1].replace("\"", "").equals(treatName)) {
+			swap = true;
+		}
+		
+		
 		for (int i = 1; i < lsDifGene.size(); i++) {
 			String[] tmpResult = lsDifGene.get(i);
 			for (int j = 0; j < tmpResult.length; j++) {
 				tmpResult[j] = tmpResult[j].replace("\"", "");
 			}
-//			String tmp = tmpResult[1];
-//			tmpResult[1] = tmpResult[2];
-//			tmpResult[2] = tmp;
+			
+			if (swap) {
+				String tmp = tmpResult[1];
+				tmpResult[1] = tmpResult[2];
+				tmpResult[2] = tmp;
+			}
 			
 			if ((tmpResult[1].equals("0") || tmpResult[1].equalsIgnoreCase("NA") || tmpResult[1].equalsIgnoreCase("none") ) 
 					&& (tmpResult[2].equals("0") || tmpResult[2].equalsIgnoreCase("NA") || tmpResult[2].equalsIgnoreCase("none") )) {

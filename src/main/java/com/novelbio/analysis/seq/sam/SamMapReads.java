@@ -60,7 +60,7 @@ public class SamMapReads extends MapReadsAbs {
 
 	@Override
 	protected long getAllReadsNum() {
-		return allReadsNum;
+		return (long)allReadsNum;
 	}
 
 	@Override
@@ -90,6 +90,10 @@ public class SamMapReads extends MapReadsAbs {
 		return getRangeInfo(chrID, startNum, endNum, binNumFinal, type);
 	}
 
+	
+	/**
+	 * 使用之前务必先设定 {@link #setAllReadsNum(long)}
+	 */
 	@Override
 	protected double[] getRangeInfo(String chrID, int startNum, int endNum, int binNum, int type) {
 		double[] value = getRangeInfo(chrID, startNum, endNum);
@@ -102,7 +106,7 @@ public class SamMapReads extends MapReadsAbs {
 		} else {
 			result = MathComput.mySpline(value, binNum, 0, 0, type);
 		}
-		normDouble(NormalType, result, allReadsNum);
+		normDouble(NormalType, result, (long)allReadsNum);
 		return result;
 	}
 

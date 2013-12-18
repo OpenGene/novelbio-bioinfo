@@ -55,7 +55,7 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 		this.condition = condition;
 		this.subGroup = subgroup;
 		mapCondition2Group.put(condition, subgroup);
-		mapCondition_Group2JunNum.put(getCond_group(condition, subGroup), new double[0]);
+		mapCondition_Group2JunNum.put(getCond_group(condition, subGroup), new double[1]);
 	}
 	
 	/** 获得指定时期和group下的全体junction数量，考虑了非unique mapping */
@@ -224,8 +224,15 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	 * @return
 	 */
 	public Map<String, Double> getJunctionSite(String condition, boolean cis5to3, String chrID, int locSite) {
-		Map<String, Double> mapGroup2Value = null;
+		Map<String, Double> mapGroup2Value = new HashMap<>();
 		List<JunctionUnit> lsJunctionUnits = mapJunSite2JunUnit.get(chrID + SepSign.SEP_ID + locSite);
+		if (lsJunctionUnits.size() == 0) {
+			for (String group : mapCondition2Group.get(condition)) {
+				mapGroup2Value.put(group, 0.0);
+			}
+			return mapGroup2Value;
+		}
+		
 		for (JunctionUnit junctionUnit : lsJunctionUnits) {
 			if (strandSpecific != StrandSpecific.NONE && cis5to3 != junctionUnit.isCis5to3()) {
 				continue;
@@ -234,7 +241,7 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 			if (mapGroup2ValueTmp.isEmpty()) {
 				continue;
 			}
-			if (mapGroup2Value == null) {
+			if (mapGroup2Value == null || mapGroup2Value.size() == 0) {
 				mapGroup2Value = new HashMap<>(mapGroup2ValueTmp);
 			} else {
 				for (String group : mapGroup2ValueTmp.keySet()) {

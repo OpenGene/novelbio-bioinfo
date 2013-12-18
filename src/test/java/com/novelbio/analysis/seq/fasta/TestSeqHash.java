@@ -20,7 +20,7 @@ public class TestSeqHash extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		Species species = new Species(9606);
-		seqHash = new SeqHash(FileHadoop.getHdfsHeadSymbol("/nbCloud/nbcplatform/genome/human/hg19_GRCh37/ChromFa/chrAll.fa"), " ");
+		seqHash = new SeqHash(FileHadoop.addHdfsHeadSymbol("/nbCloud/nbcplatform/genome/human/hg19_GRCh37/ChromFa/chrAll.fa"), " ");
 		gffDetailGene = new GffDetailGene("chr1", "test", true);
 	}
 	

@@ -209,7 +209,7 @@ public class JunctionInfo extends ListDetailAbs {
 			Map<String, Double> mapReads = new HashMap<>();
 			Map<String, double[]> mapGroup2Value = mapCond2group2JunNum.get(condition);
 			if (mapGroup2Value == null) {
-				return new HashMap<>();
+				mapGroup2Value = new HashMap<>();
 			}
 			for (String group : lsGroups) {
 				double[] value = mapGroup2Value.get(group);

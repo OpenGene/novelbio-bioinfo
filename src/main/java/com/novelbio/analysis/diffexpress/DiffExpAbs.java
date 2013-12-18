@@ -13,6 +13,7 @@ import com.google.common.collect.HashMultimap;
 import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileHadoop;
@@ -353,7 +354,14 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 			FileOperate.DeleteFileFolder(fileName);
 			//防止R还没输出结果就去读取
 			try { Thread.sleep(50); } catch (Exception e) { }
+//			
+//			TxtReadandWrite txtOutFinal = new TxtReadandWrite(fileName, true);
+			ExcelOperate excelOperate = new ExcelOperate(fileName);
+			excelOperate.setNBCExcel(true);
+			excelOperate.WriteExcel(1, 1, lsResult);
+			excelOperate.Close();
 			
+			fileName = FileOperate.changeFileSuffix(fileName, "", "txt");
 			TxtReadandWrite txtOutFinal = new TxtReadandWrite(fileName, true);
 			txtOutFinal.ExcelWrite(lsResult);
 			txtOutFinal.close();
@@ -367,6 +375,10 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		FileOperate.DeleteFileFolder(fileNameRawdata);
 	}
 	
+	/**
+	 * 筛选满足条件的差异基因并画图
+	 * @return
+	 */
 	public List<String> plotDifParams() {
 		ArrayList<String> lsOutFile = new ArrayList<>(); 
 		Map<String, String[]> mapExcelName2Compare = getMapOutFileName2Compare();

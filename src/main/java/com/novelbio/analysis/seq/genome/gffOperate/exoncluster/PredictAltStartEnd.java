@@ -54,7 +54,12 @@ public abstract class PredictAltStartEnd extends SpliceTypePredict {
 			mapValue2Edge.put(tophatJunction.getJunctionSiteAll(exonCluster.isCis5to3(), chrID, integer), integer);
 		}
 		int edge = mapValue2Edge.values().iterator().next();
-		addMapGroup2LsValue(mapGroup2LsValue, tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), chrID, edge));
+		try {
+			addMapGroup2LsValue(mapGroup2LsValue, tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), chrID, edge));
+		} catch (Exception e) {
+			addMapGroup2LsValue(mapGroup2LsValue, tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), chrID, edge));
+		}
+	
 		return mapGroup2LsValue;
 	}
 	

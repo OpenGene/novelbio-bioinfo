@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -210,9 +211,19 @@ import com.novelbio.generalConf.TitleFormatNBC;
 	 */
 	public String writeDifGene() {
 		String outFile = getDifGeneFileName(excelFileName);
-		TxtReadandWrite txtWriteDifGene = new TxtReadandWrite(outFile, true);
-		txtWriteDifGene.writefilelnls(getLsDifGene());
-		txtWriteDifGene.close();
+		ExcelOperate excelOperate = new ExcelOperate(outFile);
+		excelOperate.setNBCExcel(true);
+		List<List<String>> lsResult = getLsDifGene();
+		excelOperate.WriteExcel(lsResult);
+		excelOperate.Close();
+		
+		String txtFile = FileOperate.changeFileSuffix(outFile, "", "txt");
+		TxtReadandWrite txtOutFinal = new TxtReadandWrite(txtFile, true);
+		for (List<String> list : lsResult) {
+			String[] ss = list.toArray(new String[0]);
+			txtOutFinal.writefileln(ss);
+		}
+		txtOutFinal.close();
 		return outFile;
 	}
 	

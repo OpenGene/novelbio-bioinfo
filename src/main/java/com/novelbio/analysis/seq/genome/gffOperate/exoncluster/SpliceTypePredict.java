@@ -39,14 +39,13 @@ public abstract class SpliceTypePredict {
 	/**
 	 * @param condition
 	 * @return
-	 * key: group
+	 * key: group<br>
 	 * value: 每个位点的值
 	 */
 	public ArrayListMultimap<String, Double> getJunGroup2lsValue(String condition) {
 		ArrayListMultimap<String, Double> mapGroup2LsValue = getLsJuncCounts(condition);
 		for (String group : mapGroup2LsValue.keys()) {
 			List<Double> lsValue = mapGroup2LsValue.get(group);
-			logger.error("没有reads");
 			if (lsValue == null || lsValue.size() == 0) {
 				mapGroup2LsValue.put(group, 0.0);
 				mapGroup2LsValue.put(group, 0.0);
