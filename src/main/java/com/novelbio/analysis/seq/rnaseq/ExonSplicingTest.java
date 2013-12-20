@@ -11,11 +11,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
-import org.apache.commons.math3.stat.inference.TestUtils;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.novelbio.analysis.seq.FormatSeq;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
@@ -28,16 +26,18 @@ import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.dataStructure.Alignment;
-import com.novelbio.base.dataStructure.FisherTest;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 /**
+ * 一个ExonSplicingTest专门检测一个ExonCluster
+ * 而一个ExonCluster会存在超过一种的剪接形式，所以这里会选择其中最显著的一个结果
+ * 
  * 可变剪接的检验
  * 有一个需要修正的地方
  * 就是alt3和alt5
  * 有时候这个只相差3个bp，就是边界就相差1-3个氨基酸
- * 这种我觉得很扯淡
+ * 这种我觉得很扯淡--不过后来发现是有文献依据的
  * 我觉得这种要被过滤掉
  */
 public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
@@ -51,10 +51,9 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	 * key condition<br>
 	 * value SpliceType2Value<br>
 	 *  */
-	HashMap<String, SpliceType2Value> mapCondition2SpliceInfo = new LinkedHashMap<String, SpliceType2Value>();
-	
-	/** 差异最大的那个exonSplicingType */
-	SplicingAlternativeType splicingType;
+	Map<String, SpliceType2Value> mapCondition2SpliceInfo = new LinkedHashMap<String, SpliceType2Value>();
+	List<PvalueCalculate> lsPvalueInfo = new ArrayList<>();
+
 	String condition1;
 	String condition2;
 	/** 设置一个负数的初始值 */
@@ -65,6 +64,9 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	int readsLength = 100;
 	
 	SeqHash seqHash;
+	
+	Map<String, Map<String, double[]>> mapCond_Group2ReadsNum;
+	Map<String, Map<String, double[]>> mapCond_Group2JunNum;
 	
 	private static final String debug = "CAMKK2";
 	
@@ -84,6 +86,10 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		this.condition1 = condition1;
 		this.condition2 = condition2;
 		pvalue = -1.0;
+	}
+	public void setMapCond_Group2ReadsNum(
+			Map<String, Map<String, double[]>> mapCond_Group2ReadsNum) {
+		this.mapCond_Group2ReadsNum = mapCond_Group2ReadsNum;
 	}
 	
 	/** 测序长度，根据这个长度来判定pvalue的比例 */
@@ -105,6 +111,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	 * @param tophatJunction
 	 */
 	public void setJunctionInfo(TophatJunction tophatJunction) {
+		mapCond_Group2JunNum = tophatJunction.mapCondition_Group2JunNum;
 		for (SpliceTypePredict spliceTypePredict : exonCluster.getSplicingTypeLs()) {
 			spliceTypePredict.setTophatJunction(tophatJunction);
 		}
@@ -166,35 +173,18 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 
 	/** 计算并获得pvalue */
 	public Double getAndCalculatePvalue() {
-		if (pvalue > 0) {
-			return pvalue;
-		}
-		//TODO 可以设置断点
 		if (exonCluster.getParentGene().getName().contains(debug)) {
 			logger.debug("stop");
 		}
-		if (!mapCondition2SpliceInfo.containsKey(condition1) || !mapCondition2SpliceInfo.containsKey(condition2)) {
-			pvalue = 1.0;
-			return pvalue;
-		}
 		for (SplicingAlternativeType splicingType : exonCluster.getSplicingTypeSet()) {
-			double pvalueExp = getPvalueReads(splicingType);
-			double pvalueCounts = getPvalueJunctionCounts(splicingType);
-			double pvalue = getPvalueCombine(pvalueExp, pvalueCounts);
-			
-			if (mapCondition2SpliceInfo.get(condition1).isFiltered(splicingType) == false) {
-				pvalue = 1.0;
-			}
-			
-			if (this.pvalue < 0 || pvalue < this.pvalue) {
-				this.splicingType = splicingType;
-				this.pvalue = pvalue;
-			}
+			PvalueCalculate pvaCalculate = new PvalueCalculate();
+			pvaCalculate.setSpliceType2Value(splicingType, condition1, mapCondition2SpliceInfo.get(condition1), 
+					condition2, mapCondition2SpliceInfo.get(condition2));
+			pvaCalculate.calculatePvalue();
+			lsPvalueInfo.add(pvaCalculate);
 		}
-		if (this.pvalue < 0) {
-			this.pvalue = 1.0;
-		}
-		return this.pvalue;
+		Collections.sort(lsPvalueInfo);
+		return lsPvalueInfo.get(0).calculatePvalue();
 	}
 	
 	/**
@@ -203,217 +193,10 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	 * @return
 	 */
 	public SplicingAlternativeType getSplicingType() {
-		return splicingType;
-	}
-	
-	/** 出错就返回-1 */
-	protected Double getPvalueReads(SplicingAlternativeType splicingType) {
-		try {
-			return getPvalueReadsExp(splicingType);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return -1.0;
-		}
+		return lsPvalueInfo.get(0).splicingType;
 	}
 
-	/** 比较exon 表达量
-	 * 在这之前务必设定condition
-	 */
-	private Double getPvalueReadsExp(SplicingAlternativeType splicingType) {
-		//表达水平超过该值就标准化
-		int normalizedValue = 50;
-		
-		ArrayListMultimap<String, Double> lsExp1 = mapCondition2SpliceInfo.get(condition1).getLsExp(splicingType);
-		ArrayListMultimap<String, Double> lsExp2= mapCondition2SpliceInfo.get(condition2).getLsExp(splicingType);
-		int[] tmpExpCond1 = combReadsNumInt(lsExp1);
-		int[] tmpExpCond2 = combReadsNumInt(lsExp2);
-		
-//		long[] tmpExpCond1long = modifyInputValue(tmpExpCond1);
-//		long[] tmpExpCond2long = modifyInputValue(tmpExpCond2);
-		normalizeToLowValue(tmpExpCond1, normalizedValue);
-		normalizeToLowValue(tmpExpCond2, normalizedValue);
-		int sum = (int) (tmpExpCond1[0] + tmpExpCond1[1] + tmpExpCond2[0] + tmpExpCond2[1]);
-		FisherTest fisherTest = new FisherTest(sum + 3);
-		
-		return fisherTest.getTwoTailedP(tmpExpCond1[0], tmpExpCond1[1], tmpExpCond2[0], tmpExpCond2[1]);
-	}
-	/** 比较junction reads
-	 * 在这之前务必设定condition
-	 */
-	protected Double getPvalueJunctionCounts(SplicingAlternativeType splicingType) {
-		//如果count数超过该值，就标准化
-		int normalizedNum = 200;
-		
-		ArrayListMultimap<String, Double> lsJunc1 = mapCondition2SpliceInfo.get(condition1).getLsJun(splicingType);
-		ArrayListMultimap<String, Double> lsJunc2 = mapCondition2SpliceInfo.get(condition2).getLsJun(splicingType);
-		int[] cond1 = null;
-		cond1 = combReadsNumInt(lsJunc1);
-//		int[] cond1 = combReadsNumInt(lsJunc1);
-		int[] cond2 = combReadsNumInt(lsJunc2);
-		if (!filter(cond1, cond2)) {
-			return 1.0;
-		}
-
-		
-//		cond1 = modifyInputValue(cond1);
-//		cond2 = modifyInputValue(cond2);
-		normalizeToLowValue(cond1, normalizedNum);
-		normalizeToLowValue(cond2, normalizedNum);
-
-		return chiSquareTestDataSetsComparison(cond1, cond2);
-	}
 	
-	private int[] combReadsNumInt(ArrayListMultimap<String, Double> mapGroup2LsValue) {
-		int[] result = null;
-		for (String group : mapGroup2LsValue.keySet()) {
-			List<Double> lsValues = mapGroup2LsValue.get(group);
-			if (result == null) {
-				result = new int[lsValues.size()];
-			}
-			for (int i = 0; i < result.length; i++) {
-				result[i] += lsValues.get(i);
-			}
-		}
-		return result;
-	}
-	
-	private double[] combReadsNumDouble(ArrayListMultimap<String, Double> mapGroup2LsValue) {
-		double[] result = null;
-		for (String group : mapGroup2LsValue.keySet()) {
-			List<Double> lsValues = mapGroup2LsValue.get(group);
-			if (result == null) {
-				result = new double[lsValues.size()];
-			}
-			for (int i = 0; i < result.length; i++) {
-				result[i] += lsValues.get(i);
-			}
-		}
-		return result;
-	}
-	
-	/** 某些情况不适合做分析，就过滤掉<br>
-	 * 譬如：遇到类似 0:5 0:50<br>
-	 * 和<br>
-	 * 2：3：50<br>  4：2：50<br>
-	 * 以及总reads过少的情况，就要删除不进行分析<br>
-	 */
-	private boolean filter(int[] cond1, int[] cond2) {
-		//遇到类似 0:5 0:50
-		//2：3：50  4：2：50
-		//等就要删除了
-		int allReadsNum = MathComput.sum(cond1) + MathComput.sum(cond2);
-		int readsNumLess = 0;
-		for (int i = 0; i < cond1.length; i++) {
-			try {
-				if (cond1[i] <= allReadsNum/20 && cond2[i] <= allReadsNum/20) {
-					readsNumLess++;
-				}
-			} catch (Exception e) {
-				if (cond1[i] <= allReadsNum/20 && cond2[i] <= allReadsNum/20) {
-					readsNumLess++;
-				}
-			}
-		
-		}
-		if (cond1.length - readsNumLess <= 1) {
-			return false;
-		}
-		
-		//总reads数太少也过滤
-		if (MathComput.sum(cond1) + MathComput.sum(cond1) < junctionReadsMinNum) {
-			return false;
-		}
-		return true;
-	}
-	
-	private double chiSquareTestDataSetsComparison(int[] cond1, int[] cond2) {
-		long[] cond1Long = new long[cond1.length];
-		long[] cond2Long = new long[cond2.length];
-		for (int i = 0; i < cond1.length; i++) {
-			cond1Long[i] = cond1[i] + 1;
-		}
-		for (int i = 0; i < cond2.length; i++) {
-			cond2Long[i] = cond2[i] + 1;
-		}
-		try {
-			return TestUtils.chiSquareTestDataSetsComparison(cond1Long, cond2Long);
-		} catch (Exception e) {
-			return 1.0;
-		}
-	}
-	
-	/** 
-	 *  公式：2^((log2(0.8)*0.5 + log2(0.1)*0.5))
-	 *  */
-	private double getPvalueCombine(double pvalueExp, double pvalueCounts) {
-		double pvalue = 1.0;
-		if (pvalueExp < 0) {
-			pvalue = 1.0;
-			return pvalue;
-		}
-		if (pvalueCounts == 1) {
-			return 1;
-		}
-		double expPro = getPvaluePropExp();
-//		double pvalueLog = Math.log10(pvalueExp) * expPro +  Math.log10(pvalueCounts) * (1 - expPro);
-//		pvalue = Math.pow(10, pvalueLog);
-		
-		pvalue = pvalueExp * expPro +  pvalueCounts * (1 - expPro);
-		
-		if (pvalue > 1) {
-			pvalue = 1.0;
-		}
-		return pvalue;
-	}
-	
-	/** 获得表达所占有的pvalue的比例
-	 * exon越长比例越高，越短比例越低
-	 *  */
-	private double getPvaluePropExp() {
-		double prop = 0.5;
-		//TODO 将ratio换掉，把exonCluster.getLength()换成difSite.Length();
-		double ratio = (double)exonCluster.getLength()/(readsLength * 1.5);
-		if (ratio > 1) {
-			prop = Math.pow(0.5, 1/ratio);
-		} else {
-			prop = 1 - Math.pow(0.5, ratio);
-		}
-		
-		if (prop > 0.85) {
-			prop = 0.85;
-		} else if (prop < 0.15) {
-			prop = 0.15;
-		}
-		return prop;
-	}
-	
-	/** 
-	 * 当可变剪接的形式为cassette时，修正输入的值
-	 * 就是将值加上他们的平均数
-	 */
-	private int[] modifyInputValue(int[] conditionInfo) {
-		int mean = (int) MathComput.mean(conditionInfo);
-		int[] modifiedCondition = new int[conditionInfo.length];
-		for (int i = 0; i < conditionInfo.length; i++) {
-			modifiedCondition[i] = conditionInfo[i] + mean;
-		}
-		return modifiedCondition;
-	}
-	
-	/** 
-	 * 如果count数量太大，就将其标准化至一个比较低的值
-	 * @param normalizedValue 大于该值就开始修正
-	 */
-	private void normalizeToLowValue(int[] condition, int normalizedValue) {
-		int meanValue = (int) MathComput.mean(condition);
-		if (meanValue < normalizedValue) {
-			return;
-		}
-		for (int i = 0; i < condition.length; i++) {
-			condition[i] = (int) ((double)condition[i]/meanValue * normalizedValue);
-		}
-	}
-
 	@Override
 	public int compareTo(ExonSplicingTest o) {
 		return pvalue.compareTo(o.pvalue);
@@ -422,22 +205,17 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	public String[] toStringArray() {
 		getAndCalculatePvalue();
 		ArrayList<String> lsResult = new ArrayList<String>();
-		ArrayListMultimap<String, Double> mapGroup2LsValue_Junc1 = mapCondition2SpliceInfo.get(condition1).getLsJun(splicingType);
-		ArrayListMultimap<String, Double> mapGroup2LsValue_Junc2 = mapCondition2SpliceInfo.get(condition2).getLsJun(splicingType);
-		
-		ArrayListMultimap<String, Double> mapGroup2LsValue_Exp1 = mapCondition2SpliceInfo.get(condition1).getLsExp(splicingType);
-		ArrayListMultimap<String, Double> mapGroup2LsValue_Exp2 = mapCondition2SpliceInfo.get(condition2).getLsExp(splicingType);
- 
-		
 		GffDetailGene gffDetailGene = exonCluster.getParentGene();
 		lsResult.add(gffDetailGene.getName().get(0));
-		lsResult.add(mapCondition2SpliceInfo.get(condition1).getSpliceTypePredict(splicingType).getDifSite().toStringNoCis());
-		lsResult.add(getConditionInt(mapGroup2LsValue_Junc1));
-		lsResult.add(getConditionInt(mapGroup2LsValue_Junc2));
+		lsResult.add(mapCondition2SpliceInfo.get(condition1).getSpliceTypePredict(getSplicingType()).getDifSite().toStringNoCis());
+		lsResult.add(lsPvalueInfo.get(0).getStrInfo(false, false));
+		lsResult.add(lsPvalueInfo.get(0).getStrInfo(false, true));
+		lsResult.add(lsPvalueInfo.get(0).getStrInfo(true, false));
+		lsResult.add(lsPvalueInfo.get(0).getStrInfo(true, true));
+
 //		double logfcJun = getLogFC(mapGroup2LsValue_Junc1, mapGroup2LsValue_Junc2);
 //		double logfcJunNew = getLogFCnew(mapGroup2LsValue_Junc1, mapGroup2LsValue_Junc2);
-		lsResult.add(getCondition(mapGroup2LsValue_Exp1));
-		lsResult.add(getCondition(mapGroup2LsValue_Exp2));
+
 //		double logfcExp = getLogFC(mapGroup2LsValue_Exp1, mapGroup2LsValue_Exp2);
 //		double logfcExpNew = getLogFCnew(mapGroup2LsValue_Exp1, mapGroup2LsValue_Exp2);
 //		
@@ -449,12 +227,10 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		
 		
 		
-		
-		
 		lsResult.add(getAndCalculatePvalue() + "");
 		lsResult.add(fdr + "");
 		//TODO
-		lsResult.add(splicingType.toString());
+		lsResult.add(getSplicingType().toString());
 //		GeneID geneID = gffDetailGene.getSetGeneID().iterator().next();
 //		lsResult.add(geneID.getSymbol());
 //		lsResult.add(geneID.getDescription());
@@ -502,7 +278,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		ArrayList<String> lsResult = new ArrayList<String>();
 		GffDetailGene gffDetailGene = exonCluster.getParentGene();
 		lsResult.add(gffDetailGene.getName().get(0));
-		lsResult.add(mapCondition2SpliceInfo.get(condition1).getSpliceTypePredict(splicingType).getDifSite().toStringNoCis());
+		lsResult.add(mapCondition2SpliceInfo.get(condition1).getSpliceTypePredict(getSplicingType()).getDifSite().toStringNoCis());
 
 		try {
 			ArrayList<SeqFasta> lsSeqFasta = getSeq(seqHash);
@@ -522,7 +298,6 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		}
 		
 		return lsResult.toArray(new String[0]);
-	
 	}
 	
 	/** 
@@ -576,30 +351,6 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		lsSeqFastas.add(seqFasta);
 		
 		return lsSeqFastas;
-	}
-	
-	private String getConditionInt(ArrayListMultimap<String, Double> mapGroup2LsValue) {
-		if (mapGroup2LsValue == null || mapGroup2LsValue.size() == 0) {
-			return "";
-		}
-		int[] junction = combReadsNumInt(mapGroup2LsValue);
-		String condition = junction[0]+ "";
-		for (int i = 1; i < junction.length; i++) {
-			condition = condition + "::" + junction[i];
-		}
-		return condition;
-	}
-	
-	private String getCondition(ArrayListMultimap<String, Double> mapGroup2LsValue) {
-		if (mapGroup2LsValue == null || mapGroup2LsValue.size() == 0) {
-			return "";
-		}
-		double[] junction = combReadsNumDouble(mapGroup2LsValue);
-		String condition = junction[0]+ "";
-		for (int i = 1; i < junction.length; i++) {
-			condition = condition + "::" + junction[i];
-		}
-		return condition;
 	}
 	
 	/** 输入的信息会自动排序 */
@@ -666,6 +417,111 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		lsTitle.add("Casual_Exon+-300bp");
 		lsTitle.add("Casual_Exon+-1Exon");
 		return lsTitle.toArray(new String[0]);
+	}	
+	
+	class PvalueCalculate implements Comparable<PvalueCalculate> {
+		int normExp = 50;
+		int junction = 200;
+		SplicingAlternativeType splicingType;
+		ISpliceTestModule iSpliceTestExp;
+		ISpliceTestModule iSpliceTestJun;
+		double pvalue = -1;
+		public void setSpliceType2Value(SplicingAlternativeType splicingType, String condTreat,
+				SpliceType2Value spliceType2ValueTreat, String condCtrl, SpliceType2Value spliceType2ValueCtrl) {
+			pvalue = -1;
+			this.splicingType = splicingType;
+			
+			iSpliceTestExp = new SpliceTestCombine();
+			ArrayListMultimap<String, Double> lsExp1 = spliceType2ValueTreat.getLsExp(splicingType);
+			ArrayListMultimap<String, Double> lsExp2= spliceType2ValueCtrl.getLsExp(splicingType);
+			iSpliceTestExp.setNormalizedNum(normExp);
+			iSpliceTestExp.setLsRepeat2Value(mapCond_Group2JunNum, condTreat, lsExp1, condCtrl, lsExp2);
+			
+			iSpliceTestJun = new SpliceTestCombine();
+			ArrayListMultimap<String, Double> lsJunc1 = spliceType2ValueTreat.getLsJun(splicingType);
+			ArrayListMultimap<String, Double> lsJunc2 = spliceType2ValueCtrl.getLsJun(splicingType);
+			iSpliceTestJun.setNormalizedNum(junction);
+			iSpliceTestJun.setLsRepeat2Value(mapCond_Group2JunNum, condTreat, lsJunc1, condCtrl, lsJunc2);
+		}
+		
+		public double calculatePvalue() {
+			if (pvalue < 0) {
+				double pvalueExp = iSpliceTestExp.calculatePvalue();
+				double pvalueJun = iSpliceTestJun.calculatePvalue();
+				pvalue = getPvalueCombine(pvalueExp, pvalueJun);
+			}
+			return pvalue;
+		}
+
+		/** 
+		 *  公式：2^((log2(0.8)*0.5 + log2(0.1)*0.5))
+		 *  */
+		private double getPvalueCombine(double pvalueExp, double pvalueCounts) {
+			double pvalue = 1.0;
+			if (pvalueExp < 0) {
+				pvalue = 1.0;
+				return pvalue;
+			}
+			if (pvalueCounts == 1) {
+				return 1;
+			}
+			double expPro = getPvaluePropExp();
+//			double pvalueLog = Math.log10(pvalueExp) * expPro +  Math.log10(pvalueCounts) * (1 - expPro);
+//			pvalue = Math.pow(10, pvalueLog);
+			
+			pvalue = pvalueExp * expPro +  pvalueCounts * (1 - expPro);
+			
+			if (pvalue > 1) {
+				pvalue = 1.0;
+			}
+			return pvalue;
+		}
+		
+		/** 获得表达所占有的pvalue的比例
+		 * exon越长比例越高，越短比例越低
+		 *  */
+		private double getPvaluePropExp() {
+			double prop = 0.5;
+			//TODO 将ratio换掉，把exonCluster.getLength()换成difSite.Length();
+			double ratio = (double)exonCluster.getLength()/(readsLength * 1.5);
+			if (ratio > 1) {
+				prop = Math.pow(0.5, 1/ratio);
+			} else {
+				prop = 1 - Math.pow(0.5, ratio);
+			}
+			
+			if (prop > 0.85) {
+				prop = 0.85;
+			} else if (prop < 0.15) {
+				prop = 0.15;
+			}
+			return prop;
+		}
+		
+		public String getStrInfo( boolean isExp, boolean isCtrl) {
+			String info = null;
+			if (isExp) {
+				if (isCtrl) {
+					info = iSpliceTestExp.getCondtionCtrl(false);
+				} else {
+					info = iSpliceTestExp.getCondtionTreat(true);
+				}
+			} else {
+				if (isCtrl) {
+					info = iSpliceTestJun.getCondtionCtrl(false);
+				} else {
+					info = iSpliceTestJun.getCondtionTreat(true);
+				}
+			}
+			return info;
+		}
+
+		@Override
+		public int compareTo(PvalueCalculate o) {
+			Double p1 = this.pvalue;
+			Double p2 = o.pvalue;
+			return p1.compareTo(p2);
+		}
 	}
 }
 
@@ -673,7 +529,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 /**
  * 某个时期的某个位点的<br>
  * 
- * 某种可变剪接形式的<br>
+ * 多种可变剪接形式的<br>
  * 
  * 表达和Junction Reads数
  * 
@@ -694,7 +550,8 @@ class SpliceType2Value {
 	boolean isFiltered = true;
 	
 	/** 添加表达 */
-	public void addExp(String group, GffDetailGene gffDetailGene, SpliceTypePredict spliceTypePredict, MapReadsAbs mapReads, double[] BGinfo) {
+	public void addExp(String group, GffDetailGene gffDetailGene, 
+			SpliceTypePredict spliceTypePredict, MapReadsAbs mapReads, double[] BGinfo) {
 		//TODO
 //		if (gffDetailGene.getName().contains("Foxp1") && spliceTypePredict instanceof PredictAltStart) {
 //			logger.error("stop");
@@ -733,7 +590,7 @@ class SpliceType2Value {
 		SplicingAlternativeType splicingAlternativeType = spliceTypePredict.getType();
 		ArrayListMultimap<String, Double> mapGroup2LsValue = spliceTypePredict.getJunGroup2lsValue(condition);
 		mapSplicingType2_MapGroup2LsJunctionReads.put(splicingAlternativeType, mapGroup2LsValue);
-		setExonSplicingTypes.add(spliceTypePredict.getType());
+		setExonSplicingTypes.add(splicingAlternativeType);
 		mapSplicingType2Detail.put(splicingAlternativeType, spliceTypePredict);
 	}
 	
@@ -778,4 +635,8 @@ class SpliceType2Value {
 		}
 		return mapSplicingType2Detail.get(splicingAlternativeType).isFiltered();
 	}
+	
+
+
 }
+

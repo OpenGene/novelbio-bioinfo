@@ -154,7 +154,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	ArrayListMultimap<String, SamFile> mapCond2SamFile = ArrayListMultimap.create();
 	
 	/** 每个样本都有多少 reads */
-	Map<String, Long> mapCond_group2ReadsNum = new HashMap<>();
+	Map<String, Map<String, double[]>> mapCond_group2ReadsNum = new HashMap<>();
 	
 	/** 统计可变剪接事件的map
 	 * key：可变剪接类型
@@ -403,7 +403,9 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 					samFileReading.addAlignmentRecorder(mapReads);
 				}
 				samFileReading.run();
-				mapCond_group2ReadsNum.put(getCond2Group(condition, group), samStatistics.getReadsNum(MappingReadsType.allMappedReads));
+				Map<String, double[]> mapGroup2Num = new HashMap<>();
+				mapGroup2Num.put(group, new double[]{samStatistics.getReadsNum(MappingReadsType.allMappedReads)});
+				mapCond_group2ReadsNum.put(condition, mapGroup2Num);
 				samFileReading.clearRecorder();
 				samFileReadingLast = samFileReading;
 			}
@@ -494,6 +496,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				}
 
 				ExonSplicingTest exonSplicingTest = new ExonSplicingTest(exonCluster);
+				exonSplicingTest.setMapCond_Group2ReadsNum(mapCond_group2ReadsNum);
 				//获得junction信息
 				exonSplicingTest.setSetCondition(setCondition);
 				exonSplicingTest.setJunctionInfo(tophatJunction);

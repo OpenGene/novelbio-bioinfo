@@ -36,7 +36,7 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	String condition;
 	String subGroup;
 	HashMultimap<String, String> mapCondition2Group = HashMultimap.create();
-	Map<String, double[]> mapCondition_Group2JunNum = new HashMap<>();
+	Map<String, Map<String, double[]>> mapCondition_Group2JunNum = new HashMap<>();
 	StrandSpecific strandSpecific = StrandSpecific.NONE;
 	
 	/** 针对链特异性进行了优化 */
@@ -55,16 +55,17 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 		this.condition = condition;
 		this.subGroup = subgroup;
 		mapCondition2Group.put(condition, subgroup);
-		mapCondition_Group2JunNum.put(getCond_group(condition, subGroup), new double[1]);
+		Map<String, double[]> mapGroup2Num = new HashMap<>();
+		mapGroup2Num.put(subgroup, new double[1]);
+		mapCondition_Group2JunNum.put(condition, mapGroup2Num);
 	}
 	
 	/** 获得指定时期和group下的全体junction数量，考虑了非unique mapping */
 	public long getJunAllNum(String condition, String group) {
-		return (long)(mapCondition_Group2JunNum.get(getCond_group(condition, group))[0]);
-	}
-	
-	private String getCond_group(String condition, String group) {
-		return condition + SepSign.SEP_ID + group;
+		if (mapCondition_Group2JunNum.containsKey(condition) && mapCondition_Group2JunNum.get(condition).containsKey(group)) {
+			return (long)mapCondition_Group2JunNum.get(condition).get(group)[0];
+		}
+		return 0;
 	}
 	
 	/** 获得condition对group的对照表 */
@@ -98,7 +99,7 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 		}
 		String chrID = alignRecord.getRefID();
 		List<JunctionUnit> lsJun = new ArrayList<>();
-		double[] junNum = mapCondition_Group2JunNum.get(getCond_group(condition, subGroup));
+		double[] junNum = mapCondition_Group2JunNum.get(condition).get(subGroup);
 		for (int i = 0; i < size - 1; i++) {
 			Align alignThis = lsAlignNew.get(i);
 			Align alignNext = lsAlignNew.get(i + 1);
