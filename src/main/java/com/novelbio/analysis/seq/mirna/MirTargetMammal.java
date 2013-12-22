@@ -17,7 +17,6 @@ import com.novelbio.base.fileOperate.FileOperate;
 
 /** 动物和植物的mir靶基因预测 */
 public class MirTargetMammal {
-
 	GffChrSeq gffChrSeq = new GffChrSeq();
 	/** 将初步文件经过整理后产生的结果文件 */
 	String predictResultFinal;
@@ -98,6 +97,7 @@ public class MirTargetMammal {
 	
 
 	private String predictMiranda() {
+		String mirandaFile = FileOperate.changeFileSuffix(predictResultFinal, "_miranda", null);
 		RNAmiranda rnAmiranda = new RNAmiranda();
 		rnAmiranda.setMiRNAseq(inputMiRNAseq);
 		rnAmiranda.setUtr3File(getInput3UTRseq());
@@ -107,22 +107,25 @@ public class MirTargetMammal {
 		if (energy > 0) {
 			rnAmiranda.setTargetEnergy(energy);
 		}
-		
-	
-		
-		rnAmiranda.setPredictResultFile(FileOperate.changeFileSuffix(predictResultFinal, "_miranda", null));
+
+		rnAmiranda.setPredictResultFile(mirandaFile);
 		String mirandaOut = FileOperate.changeFileSuffix(predictResultFinal, "_miranda_modify", null);
+		if (!FileOperate.isFileExist(mirandaOut) || !FileOperate.isFileExistAndBigThanSize(mirandaFile, 0)) {
+			rnAmiranda.mirnaPredict();
+		}
+		
 		TxtReadandWrite txtWrite = new TxtReadandWrite(mirandaOut, true);
 		boolean title = false;
 		for (MirandaPair mirandaPair : rnAmiranda.readPerlines()) {
 			HybridUnit hybridUnit = mirandaPair.getMirandaUnitMaxEnergySeed();
+			if (hybridUnit == null) {
+				continue;
+			}
 			if (!title) {
 				txtWrite.writefileln(hybridUnit.getTitle());
 				title = true;
 			}
-			if (hybridUnit == null) {
-				continue;
-			}
+
 			txtWrite.writefileln(hybridUnit.toResultTab());
 		}
 		txtWrite.close();
@@ -130,6 +133,8 @@ public class MirTargetMammal {
 	}
 	
 	private String predictRNAhybrid() {
+		String rnaHybridFile = FileOperate.changeFileSuffix(predictResultFinal, "_rnahybrid", null);
+
 		RNAhybrid rnAhybrid = new RNAhybrid();
 		rnAhybrid.setMiRNAseq(inputMiRNAseq);
 		rnAhybrid.setSpeciesType(rnaHybridClass);
@@ -140,8 +145,12 @@ public class MirTargetMammal {
 		if (pvalue > 0) {
 			rnAhybrid.setTargetPvalue(pvalue);
 		}
-		rnAhybrid.setPredictResultFile(FileOperate.changeFileSuffix(predictResultFinal, "_rnahybrid", null));
+		rnAhybrid.setPredictResultFile(rnaHybridFile);
 		String rnaHybridOut = FileOperate.changeFileSuffix(predictResultFinal, "_rnahybrid_modify", null);
+		if (!FileOperate.isFileExist(rnaHybridOut) || !FileOperate.isFileExistAndBigThanSize(rnaHybridFile, 0)) {
+			rnAhybrid.mirnaPredictRun();
+		}
+		
 		TxtReadandWrite txtWrite = new TxtReadandWrite(rnaHybridOut, true);
 		boolean title = false;
 		for (HybridUnit hybridUnit : rnAhybrid.readPerlines()) {
@@ -158,19 +167,19 @@ public class MirTargetMammal {
 		return rnaHybridOut;
 	}
 	
-	
 	private List<String[]> overLap(String txtInputFileMiranda, String txtInputFileMiRNAhybrid) {
 		CombineTab combineTab = new CombineTab();
 		combineTab.setStrNull(null);
-		combineTab.setColExtractDetail(txtInputFileMiranda, "mirnada", 2,3,4,5,6);
+		combineTab.setColExtractDetail(txtInputFileMiranda, "mirnada", 3,4,5,6);
 		combineTab.setColExtractDetail(txtInputFileMiRNAhybrid, "rnaHybrid", 3,4,5,6);
 		combineTab.setColCompareOverlapID(1, 2);
 		ArrayList<String[]> lsCombine = combineTab.getResultLsIntersection();
 		try {
 			combineTab.renderScriptAndDrawImage(FileOperate.changeFileSuffix(predictResultFinal, "_Ven", "tiff"), "", "");
-		} catch (Exception e) {}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return lsCombine;
 	}
-
 
 }

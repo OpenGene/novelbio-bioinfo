@@ -37,6 +37,24 @@ public interface ISpliceTestModule {
 	 * @return
 	 */
 	public String getCondtionCtrl(boolean isInt);
+	
+	public static class SpliceTestFactory {
+		
+		/**
+		 * 是否将n次重复的reads合并为一个bam文件，然后进行分析
+		 * @param combine true：合并，false：考虑重复
+		 * @return
+		 */
+		public static ISpliceTestModule createSpliceModule(boolean combine) {
+			ISpliceTestModule iSpliceTestModule = null;
+			if (combine) {
+				iSpliceTestModule = new SpliceTestCombine();
+			} else {
+				iSpliceTestModule = new SpliceTestRepeat();
+			}
+			return iSpliceTestModule;
+		}
+	}
 }
 
 class SpliceTestRepeat implements ISpliceTestModule {
@@ -143,17 +161,17 @@ class SpliceTestRepeat implements ISpliceTestModule {
 		for (int i = 0; i < lsTreat2LsValue.size(); i++) {
 			List<Double> lsTreat_OneRepeat = lsTreat2LsValue.get(i);
 			List<Double> lsCtrl_OneRepeat = lsCtrl2LsValue.get(i);
-			chiSquareValue += TestUtils.chiSquareDataSetsComparison(getDoubleValue(lsTreat_OneRepeat), getDoubleValue(lsCtrl_OneRepeat));
+			chiSquareValue += TestUtils.chiSquareDataSetsComparison(getLongValue(lsTreat_OneRepeat), getLongValue(lsCtrl_OneRepeat));
 		}
 		double df = (lsTreat2LsValue.size()) * (lsTreat2LsValue.get(0).size() ) - 1;
 		ChiSquaredDistribution chiSquaredDistribution = new ChiSquaredDistribution(df);
 		return 1 - chiSquaredDistribution.cumulativeProbability(chiSquareValue);
 	}
 	
-	private long[] getDoubleValue(List<Double> lsDouble) {
+	private long[] getLongValue(List<Double> lsDouble) {
 		long[] result = new long[lsDouble.size()];
 		for (int i = 0; i < result.length; i++) {
-			result[i] = lsDouble.get(i).longValue();
+			result[i] = lsDouble.get(i).longValue() +1;
 		}
 		return result;
 	}

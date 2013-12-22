@@ -83,7 +83,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		exonJunction.addBamSorted("KO", "/home/zong0jie/Test/rnaseq/paper/chicken/DT40KO0h.bam");
 		exonJunction.setCompareGroups("KO", "WT");
 
-		exonJunction.setResultFile("/home/zong0jie/Test/rnaseq/paper/chicken/ensemble_Iso2_No_Merge_sepSeq_new");
+		exonJunction.setResultFile("/home/zong0jie/Test/rnaseq/paper/chicken/ensemble_Iso2_No_Merge_sepSeq_new2");
 		exonJunction.setgenerateNewIso();
 
 		exonJunction.run();
@@ -411,10 +411,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			}
 		}
 		samFileReadingLast = null;
-	}
-	
-	private String getCond2Group(String condtion, String group) {
-		return condtion + SepSign.SEP_ID + group;
 	}
 	
 	/** 从全基因组中获取差异的可变剪接事件，放入lsSplicingTest中 */

@@ -5,14 +5,18 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.PathDetail;
+import com.novelbio.base.SepSign;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
@@ -33,7 +37,7 @@ import freemarker.template.Template;
  * @author zong0jie
  */
 public class CombineTab {
-	
+
 	public static void main(String[] args) {
 		String parentFile = "/home/novelbio/桌面/";
 		String file1 = parentFile + "A.xls";
@@ -99,19 +103,27 @@ public class CombineTab {
 	 * @param colID
 	 */
 	public void setColCompareOverlapID(int... colID) {
-		for (int i = 0; i < colID.length; i++) {
-			colID[i] = colID[i] - 1;
+		Set<Integer> setID = new LinkedHashSet<>();
+		for (Integer integer : colID) {
+			setID.add(integer-1);
 		}
-		this.colCompareOverlapID = colID;
+		this.colCompareOverlapID = new int[setID.size()];
+		int i = 0;
+		for (Integer integer : setID) {
+			colCompareOverlapID[i++] = integer;
+		}
 		runningFlag = false;
 	}
 	
 	public void setColCompareOverlapID(ArrayList<Integer> lsColID) {
-		//先排个序
-		Collections.sort(lsColID);
-		colCompareOverlapID = new int[lsColID.size()];
-		for (int i = 0; i < colCompareOverlapID.length; i++) {
-			colCompareOverlapID[i] = lsColID.get(i)-1;
+		Set<Integer> setID = new LinkedHashSet<>();
+		for (Integer integer : lsColID) {
+			setID.add(integer-1);
+		}
+		this.colCompareOverlapID = new int[setID.size()];
+		int i = 0;
+		for (Integer integer : setID) {
+			colCompareOverlapID[i++] = integer;
 		}
 		runningFlag = false;
 	}
@@ -123,10 +135,16 @@ public class CombineTab {
 	 * @param colDetail 该文本具体获取哪几列
 	 */
 	public void setColExtractDetail(String condTxt, String codName, int... colDetail) {
-		for (int i = 0; i < colDetail.length; i++) {
-			colDetail[i] = colDetail[i] - 1;
+		Set<Integer> setID = new LinkedHashSet<>();
+		for (Integer integer : colDetail) {
+			setID.add(integer-1);
 		}
-		mapFileName2ExtractColNum.put(condTxt, colDetail);
+		int[] colReal = new int[setID.size()];
+		int i = 0;
+		for (Integer integer : setID) {
+			colReal[i++] = integer;
+		}
+		mapFileName2ExtractColNum.put(condTxt, colReal);
 		mapFileName2ConditionAbbr.put(condTxt,codName);
 		runningFlag = false;
 	}
@@ -138,11 +156,17 @@ public class CombineTab {
 	 * @param colDetai 该文本具体获取哪几列
 	 */
 	@Deprecated
-	public void setColDetai(String condTxt,int... colDetai) {
-		for (int i = 0; i < colDetai.length; i++) {
-			colDetai[i] = colDetai[i] - 1;
+	public void setColDetai(String condTxt,int... colDetail) {
+		Set<Integer> setID = new LinkedHashSet<>();
+		for (Integer integer : colDetail) {
+			setID.add(integer-1);
 		}
-		mapFileName2ExtractColNum.put(condTxt, colDetai);
+		int[] colReal = new int[setID.size()];
+		int i = 0;
+		for (Integer integer : setID) {
+			colReal[i++] = integer;
+		}
+		mapFileName2ExtractColNum.put(condTxt, colReal);
 		mapFileName2ConditionAbbr.put(condTxt,FileOperate.getFileNameSep(condTxt)[0]);
 		runningFlag = false;
 	}
@@ -222,7 +246,7 @@ public class CombineTab {
 				if (i == 0) {
 					colIDcombineStr += strings[i];
 				}else{
-					colIDcombineStr += "__" + strings[i];
+					colIDcombineStr += SepSign.SEP_ID + strings[i];
 				}
 			}
 			//删除flag列的信息
@@ -236,7 +260,7 @@ public class CombineTab {
 			}
 			mapColCompareID2ExtractInfo.put(colIDcombineStr, tmpExtractColInfo);
 			//不重复的所有ID，为取并集做准备
-			mapColCompareComb_To_ColCompareSep.put(colIDcombineStr,colIDarray);
+			mapColCompareComb_To_ColCompareSep.put(colIDcombineStr, colIDarray);
 		}
 	}
 	/**
@@ -331,7 +355,11 @@ public class CombineTab {
 			fileName = tempFolder + mapFileName2ConditionAbbr.get(key) + DateUtil.getDateAndRandom() + ".txt";
 			txtReadandWrite = new TxtReadandWrite(fileName,true);
 			for (String[] content : ExcelTxtRead.readLsExcelTxt(key, 2)) {
-				txtReadandWrite.writefileln(content[0]);
+				String combineContent = content[colCompareOverlapID[0]];
+				for (int i = 1; i < colCompareOverlapID.length; i++) {
+					combineContent = combineContent + SepSign.SEP_ID + content[colCompareOverlapID[i]];
+				}
+				txtReadandWrite.writefileln(combineContent);
 			}
 			fileName = fileName.replace("\\", "/");
 			mapShortName2PathName.put(mapFileName2ConditionAbbr.get(key), fileName);
@@ -361,6 +389,7 @@ public class CombineTab {
 			txtReadandWrite = new TxtReadandWrite(scriptName,true);
 			txtReadandWrite.writefile(sw.toString());
 			tempFiles.add(scriptName);
+			txtReadandWrite.close();
 		} catch (Exception e) {
 			logger.error("渲染出错啦! " + e.getMessage());
 			deleteAllTempFile();

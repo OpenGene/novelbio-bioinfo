@@ -25,6 +25,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict.SplicingAlternativeType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.analysis.seq.rnaseq.ISpliceTestModule.SpliceTestFactory;
 import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.generalConf.TitleFormatNBC;
@@ -420,24 +421,36 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	}	
 	
 	class PvalueCalculate implements Comparable<PvalueCalculate> {
+		boolean isCombine = false;
 		int normExp = 50;
 		int junction = 200;
 		SplicingAlternativeType splicingType;
 		ISpliceTestModule iSpliceTestExp;
 		ISpliceTestModule iSpliceTestJun;
 		double pvalue = -1;
+		
+		/**
+		 * 是否将n次重复的reads合并为一个bam文件，然后进行分析
+		 * @param combine <br>true：合并，false：考虑重复<br>
+		 * 默认为true
+		 * @return
+		 */
+		public void setCombine(boolean isCombine) {
+			this.isCombine = isCombine;
+		}
+		
 		public void setSpliceType2Value(SplicingAlternativeType splicingType, String condTreat,
 				SpliceType2Value spliceType2ValueTreat, String condCtrl, SpliceType2Value spliceType2ValueCtrl) {
 			pvalue = -1;
 			this.splicingType = splicingType;
 			
-			iSpliceTestExp = new SpliceTestCombine();
+			iSpliceTestExp = SpliceTestFactory.createSpliceModule(isCombine);
 			ArrayListMultimap<String, Double> lsExp1 = spliceType2ValueTreat.getLsExp(splicingType);
 			ArrayListMultimap<String, Double> lsExp2= spliceType2ValueCtrl.getLsExp(splicingType);
 			iSpliceTestExp.setNormalizedNum(normExp);
 			iSpliceTestExp.setLsRepeat2Value(mapCond_Group2JunNum, condTreat, lsExp1, condCtrl, lsExp2);
 			
-			iSpliceTestJun = new SpliceTestCombine();
+			iSpliceTestJun = SpliceTestFactory.createSpliceModule(isCombine);
 			ArrayListMultimap<String, Double> lsJunc1 = spliceType2ValueTreat.getLsJun(splicingType);
 			ArrayListMultimap<String, Double> lsJunc2 = spliceType2ValueCtrl.getLsJun(splicingType);
 			iSpliceTestJun.setNormalizedNum(junction);
@@ -504,11 +517,11 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 				if (isCtrl) {
 					info = iSpliceTestExp.getCondtionCtrl(false);
 				} else {
-					info = iSpliceTestExp.getCondtionTreat(true);
+					info = iSpliceTestExp.getCondtionTreat(false);
 				}
 			} else {
 				if (isCtrl) {
-					info = iSpliceTestJun.getCondtionCtrl(false);
+					info = iSpliceTestJun.getCondtionCtrl(true);
 				} else {
 					info = iSpliceTestJun.getCondtionTreat(true);
 				}
