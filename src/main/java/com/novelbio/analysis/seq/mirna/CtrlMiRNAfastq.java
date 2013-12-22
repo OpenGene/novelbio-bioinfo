@@ -1,11 +1,14 @@
 package com.novelbio.analysis.seq.mirna;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.broadinstitute.sting.jna.lsf.v7_0_6.LibLsf.lsConf;
 
+import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.GeneExpTable;
 import com.novelbio.analysis.seq.fasta.SeqHash;
@@ -24,7 +27,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
  * 给定一系列fastq文件，获得miRNA的bed文件
  * @author zong0jie
  */
-public class CtrlMiRNAfastq {
+public class CtrlMiRNAfastq implements IntCmdSoft {
 	private static final Logger logger = Logger.getLogger(CtrlMiRNAfastq.class);
 	
 	Species species;
@@ -62,6 +65,8 @@ public class CtrlMiRNAfastq {
 	boolean rfamSpeciesSpecific = false;
 	
 	boolean countRepeat = false;
+	
+	List<String> lsCmd = new ArrayList<>();
 	
 	public CtrlMiRNAfastq() {}
 	
@@ -127,6 +132,7 @@ public class CtrlMiRNAfastq {
 	
 	/** 比对和计数，每比对一次就计数。主要是为了防止出错 */
 	public void mappingAndCounting(SamMapRate samMapMiRNARate) {
+		lsCmd.clear();
 		FileOperate.createFolders(outPathTmpMapping);
 		setConfigFile();
 		initial();
@@ -136,6 +142,7 @@ public class CtrlMiRNAfastq {
 			miRNAmappingPipline.setSample(prefix, fastq);
 			miRNAmappingPipline.setOutPathTmp(outPathTmpMapping);
 			miRNAmappingPipline.mappingPipeline();
+			lsCmd.addAll(miRNAmappingPipline.getCmdExeStr());
 			SamFile alignSeq = miRNAmappingPipline.getOutGenomeAlignSeq();
 			if (alignSeq != null) {
 				mapNovelMiRNAPrefix2SamFile.put(prefix, alignSeq);
@@ -336,6 +343,11 @@ public class CtrlMiRNAfastq {
 	 */
 	public Map<String, AlignSeq> getMapPrefix2GenomeSam() {
 		return mapNovelMiRNAPrefix2SamFile;
+	}
+
+	@Override
+	public List<String> getCmdExeStr() {
+		return lsCmd;
 	}
 	
 }

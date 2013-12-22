@@ -32,7 +32,11 @@ public abstract class FQrecordFilter implements FQrecordCopeInt {
 		int end = trimRight(fastQRecord);
 		
 		if (start < 0 && end < 0) {
-			return true;
+			if (fastQRecord.getLength() < readsMinLen) {
+				return false;
+			} else {
+				return true;
+			}
 		}
 		
 		return trimSeq(fastQRecord, readsMinLen, start, end);

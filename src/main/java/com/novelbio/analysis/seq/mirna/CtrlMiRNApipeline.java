@@ -1,11 +1,13 @@
 package com.novelbio.analysis.seq.mirna;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.GeneExpTable;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
@@ -16,7 +18,7 @@ import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.PathDetailNBC;
 import com.novelbio.generalConf.TitleFormatNBC;
 
-public class CtrlMiRNApipeline {
+public class CtrlMiRNApipeline implements IntCmdSoft {
 	private static final Logger logger = Logger.getLogger(CtrlMiRNApipeline.class);
 	Species species;
 	GeneExpTable expMirPre = new GeneExpTable(TitleFormatNBC.miRNApreName);
@@ -32,11 +34,29 @@ public class CtrlMiRNApipeline {
 	String outPath;
 	Map<String, AlignSeq> mapPrefix2AlignFile;
 	Map<String, String> mapPrefix2Fastq;
-	
+
 	boolean isUseOldResult = true;
+	
+	List<String> lsCmd = new ArrayList<>();
+	
+	boolean mapToGenome = false;
+	boolean mapRfam2Species = false;
+	boolean mapAllToRfam = true;
 	
 	public CtrlMiRNApipeline(Species species) {
 		this.species = species;
+	}
+	/** 将全体reads mapping至rfam，默认为true */
+	public void setMapAllToRfam(boolean mapAllToRfam) {
+		this.mapAllToRfam = mapAllToRfam;
+	}
+	/** 将reads mapping至物种特异性的rfam上，默认false，意思mapping至总的rfam上 */
+	public void setMapRfam2Species(boolean mapRfam2Species) {
+		this.mapRfam2Species = mapRfam2Species;
+	}
+	/** 将全体reads mapping至基因组上，一般用不到，默认false*/
+	public void setMapToGenome(boolean mapToGenome) {
+		this.mapToGenome = mapToGenome;
 	}
 	/** 遇到已经存在的结果文件，是否重做
 	 * true：重做该步骤
@@ -76,6 +96,7 @@ public class CtrlMiRNApipeline {
 	}
 
 	public void run() {
+		lsCmd.clear();
 		GffChrAbs gffChrAbs = new GffChrAbs(species);
 		ctrlMiRNAfastq = new CtrlMiRNAfastq();
 		ctrlMiRNAfastq.setMiRNAexp(expMirPre, expMirMature);
@@ -114,17 +135,18 @@ public class CtrlMiRNApipeline {
 	
 	private void runMapping(GffChrAbs gffChrAbs, Species species, Map<String, String> mapPrefix2Fastq) {
 		ctrlMiRNAfastq.setIsUseOldResult(isUseOldResult);
-		ctrlMiRNAfastq.setMappingAll2Genome(false);
-		ctrlMiRNAfastq.setRfamSpeciesSpecific(false);
+		ctrlMiRNAfastq.setMappingAll2Genome(mapToGenome);
+		ctrlMiRNAfastq.setRfamSpeciesSpecific(mapRfam2Species);
 		ctrlMiRNAfastq.setSpecies(species);
 		ctrlMiRNAfastq.setOutPath(outPath);
 		ctrlMiRNAfastq.setGffChrAbs(gffChrAbs);
 		ctrlMiRNAfastq.setMapPrefix2Fastq(mapPrefix2Fastq);
 		ctrlMiRNAfastq.setMiRNAinfo(PathDetailNBC.getMiRNADat());
 		ctrlMiRNAfastq.setRfamFile(PathDetailNBC.getRfamTab());
-		ctrlMiRNAfastq.setMapAll2Rfam(true);
+		ctrlMiRNAfastq.setMapAll2Rfam(mapAllToRfam);
 		ctrlMiRNAfastq.mappingAndCounting(samMapMiRNARate);
 		ctrlMiRNAfastq.writeToFile();
+		lsCmd.addAll(ctrlMiRNAfastq.getCmdExeStr());
 		logger.info("finish mapping");
 	}
 	/** 从头预测 */
@@ -138,6 +160,7 @@ public class CtrlMiRNApipeline {
 		ctrlMiRNApredict.setExpMir(expMirPre, expMirMature);
 		ctrlMiRNApredict.runMiRNApredict(samMapMiRNARate);
 		ctrlMiRNApredict.writeToFile();
+		lsCmd.addAll(ctrlMiRNApredict.getCmdExeStr());
 		logger.info("finish predict");
 	}
 	
@@ -151,7 +174,13 @@ public class CtrlMiRNApipeline {
 		mirSpeciesPipline.setOutPathTmp(outPath);
 		mirSpeciesPipline.setThreadNum(4);
 		mirSpeciesPipline.mappingPipeline(PathDetailNBC.getMiRNADat(), samMapMiRNARate);
+		lsCmd.addAll(mirSpeciesPipline.getCmdExeStr());
 //		mirSpeciesPipline.writeToFile();
+	}
+	@Override
+	public List<String> getCmdExeStr() {
+		// TODO Auto-generated method stub
+		return lsCmd;
 	}
 
 }

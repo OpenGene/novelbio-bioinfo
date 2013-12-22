@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.newDebugLog;
+
+import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.annotation.blast.BlastNBC;
 import com.novelbio.analysis.annotation.blast.BlastType;
 import com.novelbio.base.PathDetail;
@@ -16,7 +19,7 @@ import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.model.species.Species;
 
 /** 新miRNA的注释 */
-public class MiRNAnovelAnnotaion {
+public class MiRNAnovelAnnotaion implements IntCmdSoft {
 	static String sepSymbol = SepSign.SEP_INFO;
 
 	String miRNAthis;
@@ -25,6 +28,7 @@ public class MiRNAnovelAnnotaion {
 	List<Species> lsBlastToSpecies = new ArrayList<>();
 	List<String> lsTmpBlastResult = new ArrayList<>();
 	Map<String, String> mapID2Blast;
+	List<String> lsCmd = new ArrayList<>();
 	/** 设定需要比对到的物种 */
 	public void setLsMiRNAblastTo(List<Species> lsBlastToSpecies) {
 		this.lsBlastToSpecies = lsBlastToSpecies;
@@ -56,6 +60,7 @@ public class MiRNAnovelAnnotaion {
 	}
 	
 	private void blast() {
+		lsCmd.clear();
 		BlastNBC blastNBC = new BlastNBC();
 		lsTmpBlastResult.clear();
 		blastNBC.setQueryFastaFile(miRNAthis);
@@ -72,6 +77,7 @@ public class MiRNAnovelAnnotaion {
 			lsTmpBlastResult.add(tmpBlastFile);
 			blastNBC.setResultFile(tmpBlastFile);
 			blastNBC.blast();
+			lsCmd.addAll(blastNBC.getCmdExeStr());
 		}
 	}
 	
@@ -109,5 +115,10 @@ public class MiRNAnovelAnnotaion {
 	
 	public static String getSepSymbol() {
 		return sepSymbol;
+	}
+
+	@Override
+	public List<String> getCmdExeStr() {
+		return lsCmd;
 	}
 }

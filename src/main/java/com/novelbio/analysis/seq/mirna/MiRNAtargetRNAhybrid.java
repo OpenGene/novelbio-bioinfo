@@ -6,7 +6,7 @@ import java.util.Map;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
-public class MiRNAtargetRNAhybrid extends MiRNAtargetAbs{
+public class MiRNAtargetRNAhybrid extends MiRNAtargetAbs {
 	String SpeciesType = "3utr_human";
 	
 	double targetPvalue = 0.01;

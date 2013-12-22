@@ -7,13 +7,16 @@ import java.util.Random;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.bed.BedRecord;
 import com.novelbio.analysis.seq.bed.BedSeq;
 import com.novelbio.analysis.seq.mapping.MapDNA;
 import com.novelbio.analysis.seq.mapping.MapDNAint;
 import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 //TODO 移动文件还不够好
@@ -22,7 +25,7 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
  * 注意bowtie必须在系统变量下。可以通过修改mapper.pl文件来设置bowtie的文件夹路径
  * @author zong0jie
  */
-public class NovelMiRNADeep extends NovelMiRNApredict {
+public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	Logger logger = Logger.getLogger(NovelMiRNADeep.class);
 	
 	MapDNAint mapBowtie = MapDNA.creatMapDNA(SoftWare.bowtie);
@@ -46,6 +49,8 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 	String novelMiRNAhairpin = "";
 	String novelMiRNAmature = "";
 	String novelMiRNAdeepMrdFile = "";
+	
+	List<String> lsCmd = new ArrayList<>();
 	
 	@Override
 	public void setOutPath(String outPath) {
@@ -90,29 +95,29 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 		this.hairpinMiRNA = hairpinMiRNA;
 	}
 	
-	private String getSpecies() {
+	private String[] getSpecies() {
 		if (species == null || species.equals("")) {
-			return "none ";
+			return new String[]{"none"};
 		}
-		return "-t " + species + " ";
+		return new String[]{"-t", species};
 	}
 	private String getMatureMiRNA() {
 		if (!FileOperate.isFileExistAndBigThanSize(matureMiRNA, 1)) {
-			return "none ";
+			return "none";
 		}
-		return matureMiRNA + " ";
+		return matureMiRNA;
 	}
 	private String getMatureRelateMiRNA() {
 		if (!FileOperate.isFileExistAndBigThanSize(matureRelateMiRNA, 1)) {
-			return "none ";
+			return "none";
 		}
-		return matureRelateMiRNA + " ";
+		return matureRelateMiRNA;
 	}
 	private String getPrecursorsMiRNA() {
 		if (!FileOperate.isFileExistAndBigThanSize(hairpinMiRNA, 1)) {
-			return "none ";
+			return "none";
 		}
-		return hairpinMiRNA + " ";
+		return hairpinMiRNA;
 	}
 	/**
 	 * 设定bowtie所在的文件夹以及待比对的路径
@@ -128,11 +133,11 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 		mapBowtie.setChrIndex(chromFaIndexBowtie);
 	}
 	private String getChromFaSeq() {
-		return chromFaIndexBowtie + " ";
+		return chromFaIndexBowtie;
 	}
 	private String getChromFaIndex() {
 		String result = FileOperate.getParentPathName(chromFaIndexBowtie) + FileOperate.getFileNameSep(chromFaIndexBowtie)[0];
-		return result + " ";
+		return result;
 	}
 	
 	/** 产生输入的reads文件
@@ -143,7 +148,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 			fastaInput = FileOperate.changeFileSuffix(lsAlignSeqFile.iterator().next().getFileName(), "_Potential_DenoveMirna" + DateUtil.getDateAndRandom(), "fasta");
 			fastaInput = outPath + FileOperate.getFileName(fastaInput);
 		}
-		return fastaInput + " ";
+		return fastaInput;
 	}
 	/**
 	 * 将输入的bed文件比对基因组，获得没有mapping至正向exon的序列，然后写入文本并转化为fastq文件
@@ -178,17 +183,17 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 	private String getCollapseReadsFa() {
 		String fileName = FileOperate.changeFileSuffix(fastaInput, "_collapsed", "fasta");
 		String resultName = outPath + FileOperate.getFileName(fileName);
-		return resultName + " ";
+		return resultName;
 	}
 	/** 好像是输出的压缩的reads信息 */
 	private String getMappingArf() {
 		String fileName = FileOperate.changeFileSuffix(fastaInput, "_collapsed_mapping", "arf");
 		String resultName = outPath + FileOperate.getFileName(fileName);
-		return resultName + " ";
+		return resultName;
 	}
 
-	private String getReadsMinLen() {
-		return "-l " + miRNAminLen + " ";
+	private String[] getReadsMinLen() {
+		return new String[]{"-l", miRNAminLen + ""};
 	}
 	/**
 	 * 设定miRNA的最短长度
@@ -207,6 +212,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 	}
 	
 	private void predictNovel() {
+		lsCmd.clear();
 		mapping();
 		mirDeep2Pl();
 		moveAndCopeFile();
@@ -221,20 +227,44 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 			convertNoCDSbed2Fasta(bedSeq, fastaInput);
 			bedSeqFileName = bedSeq.getFileName();
 		}
-		String cmdMapping = mirDeepPath + "mapper.pl " + creatFastaMappingFile() +"-c -j " + getReadsMinLen();
-		cmdMapping = cmdMapping + "-m -p " + getChromFaIndex() + "-s " + getCollapseReadsFa() + "-t " + getMappingArf() + "-v";
-		CmdOperate cmdOperate = new CmdOperate(cmdMapping, "mirDeepMapping_" + species);
+		List<String> lsCmdRun = new ArrayList<>();
+		lsCmdRun.add(mirDeepPath + "mapper.pl");
+		lsCmdRun.add(creatFastaMappingFile());
+		lsCmdRun.add("-c"); lsCmdRun.add("-j");
+		ArrayOperate.addArrayToList(lsCmdRun, getReadsMinLen());
+		lsCmdRun.add("-m");
+		lsCmdRun.add("-p"); lsCmdRun.add(getChromFaIndex());
+		lsCmdRun.add("-s"); lsCmdRun.add(getCollapseReadsFa());
+		lsCmdRun.add("-t"); lsCmdRun.add(getMappingArf());
+		lsCmdRun.add("-v");
+		
+		CmdOperate cmdOperate = new CmdOperate(lsCmdRun);
 		cmdOperate.run();
+		if (!cmdOperate.isFinishedNormal()) {
+			throw new ExceptionCmd("miRNAdeep2 mapper.pl error:\n" + cmdOperate.getCmdExeStrReal());
+		}
+		lsCmd.add(cmdOperate.getCmdExeStr());
 		FileOperate.DeleteFileFolder(fastaInput);
 		FileOperate.DeleteFileFolder(bedSeqFileName);
 		createReportFile = true;
 	}
 	private void mirDeep2Pl() {
-		String cmdPredict = mirDeepPath + "miRDeep2.pl " + getCollapseReadsFa() + getChromFaSeq() + getMappingArf() 
-				+ getMatureMiRNA() + getMatureRelateMiRNA() + " " + getPrecursorsMiRNA() + getSpecies() + " 2> " + getReportFileRandom();
-		CmdOperate cmdOperate = new CmdOperate(cmdPredict, "mirDeepPredict_" + species);
+		List<String> lsCmdRun = new ArrayList<>();
+		lsCmdRun.add(mirDeepPath + "miRDeep2.pl");
+		lsCmdRun.add(getCollapseReadsFa());
+		lsCmdRun.add(getChromFaSeq());
+		lsCmdRun.add(getMappingArf());
+		lsCmdRun.add(getMatureMiRNA());
+		lsCmdRun.add(getMatureRelateMiRNA());
+		lsCmdRun.add(getPrecursorsMiRNA());
+		ArrayOperate.addArrayToList(lsCmdRun, getSpecies());
+		lsCmdRun.add("2>"); lsCmdRun.add(getReportFileRandom());
+		CmdOperate cmdOperate = new CmdOperate(lsCmdRun);
 		cmdOperate.run();
-		
+		if (!cmdOperate.isFinishedNormal()) {
+			throw new ExceptionCmd("miRNAdeep2 miRDeep2.pl error:\n" + cmdOperate.getCmdExeStrReal());
+		}
+		lsCmd.add(cmdOperate.getCmdExeStr());
 		createReportFile = false;
 	}
 	
@@ -372,6 +402,11 @@ public class NovelMiRNADeep extends NovelMiRNApredict {
 		this.novelMiRNAhairpin = novelMiRNAhairpin;
 		this.novelMiRNAmature = novelMiRNAmature;
 		this.novelMiRNAdeepMrdFile = novelMiRNAdeepMrdFile;
+	}
+
+	@Override
+	public List<String> getCmdExeStr() {
+		return lsCmd;
 	}
 
 }

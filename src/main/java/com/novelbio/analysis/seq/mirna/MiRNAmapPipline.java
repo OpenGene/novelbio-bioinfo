@@ -1,7 +1,11 @@
 package com.novelbio.analysis.seq.mirna;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.mapping.MapBowtie;
 import com.novelbio.analysis.seq.sam.AlignSeqReading;
@@ -15,7 +19,7 @@ import com.novelbio.base.fileOperate.FileOperate;
  * @author zong0jie
  *
  */
-public class MiRNAmapPipline {
+public class MiRNAmapPipline implements IntCmdSoft {
 	private static final Logger logger = Logger.getLogger(MiRNAmapPipline.class);
 	/** 序列文件 */
 	String seqFile = "";
@@ -42,7 +46,7 @@ public class MiRNAmapPipline {
 	String samFileGenome = null;
 	
 	/** 是否全部mapping至genome上，默认为true */
-	boolean mappingAll2Genome = true;
+	boolean mappingAll2Genome = false;
 	/** 是将全部reads mapping到下一步的数据库上还是将上一次剩下的reads mapping到下一步的数据库上 */
 	boolean mappingAll2Rfam = true;
 	
@@ -57,17 +61,21 @@ public class MiRNAmapPipline {
 	/** 如果以前跑过一遍，再跑是否覆盖，false就是说遇到以前跑过的文件，现在就跳过 */
 	boolean isUseOldResult = true;
 	
+	List<String> lsCmd = new ArrayList<>();
+	
 	public void setThreadNum(int threadNum) {
 		this.threadNum = threadNum;
 	}
 	public void setIsUseOldResult(boolean isUseOldResult) {
 		this.isUseOldResult = isUseOldResult;
 	}
-	/** 是否全部mapping至genome上，默认为true */
+	/** 是否全部mapping至genome上，默认为false */
 	public void setMappingAll2Genome(boolean mappingAll2Genome) {
 		this.mappingAll2Genome = mappingAll2Genome;
 	}
-	/** 是将全部reads mapping到下一步的数据库上还是将上一次剩下的reads mapping到下一步的数据库上 */
+	/** 是将全部reads mapping到下一步的数据库上还是将上一次剩下的reads mapping到下一步的数据库上
+	 * @param mappingAll2Seq 默认为true
+	 */
 	public void setMappingAll2Seq(boolean mappingAll2Seq) {
 		this.mappingAll2Rfam = mappingAll2Seq;
 	}
@@ -140,6 +148,7 @@ public class MiRNAmapPipline {
 	}
 	/** mapping的流水线 */
 	public void mappingPipeline() {
+		lsCmd.clear();
 		String outputSam = outPathTmpMapping + prefix + "_";
 		samFileMiRNA = outputSam +  "miRNA.sam";
 		samFileRfam = outputSam + "rfam.sam";
@@ -155,7 +164,7 @@ public class MiRNAmapPipline {
 		if (FileOperate.isFileExist(miRNApreSeq)) {
 			unMappedFq = outputTmpFinal + "unMap2miRNA.fq.gz";
 			samFileStatisticsMiRNA = new SamFileStatistics(prefix);
-			samFileMiRNA = mappingBowtie2(isUseOldResult, samFileStatisticsMiRNA, exePath, threadNum, fqFile, miRNApreSeq, samFileMiRNA, unMappedFq);
+			samFileMiRNA = mappingBowtie2(lsCmd, isUseOldResult, samFileStatisticsMiRNA, exePath, threadNum, fqFile, miRNApreSeq, samFileMiRNA, unMappedFq);
 			unMappedMiRNA = unMappedFq;
 			if (!mappingAll2Rfam) {
 				fqFile = unMappedFq;
@@ -164,28 +173,28 @@ public class MiRNAmapPipline {
 	
 		if (FileOperate.isFileExist(rfamSeq)) {
 			unMappedFq = outputTmpFinal + "unMap2rfam.fq.gz";
-			samFileRfam = mappingBowtie2(isUseOldResult, new SamFileStatistics(FileOperate.getFileNameSep(samFileRfam)[0]),
+			samFileRfam = mappingBowtie2(lsCmd, isUseOldResult, new SamFileStatistics(FileOperate.getFileNameSep(samFileRfam)[0]),
 					exePath, threadNum, fqFile, rfamSeq, samFileRfam, unMappedFq);
 			fqFile = unMappedFq;
 		}
 		
 		if (FileOperate.isFileExist(ncRNAseq)) {
 			unMappedFq = outputTmpFinal + "unMap2ncRna.fq.gz";
-			samFileNCRNA = mappingBowtie2(isUseOldResult, new SamFileStatistics(FileOperate.getFileNameSep(samFileNCRNA)[0]),
+			samFileNCRNA = mappingBowtie2(lsCmd, isUseOldResult, new SamFileStatistics(FileOperate.getFileNameSep(samFileNCRNA)[0]),
 					exePath, threadNum, fqFile, ncRNAseq, samFileNCRNA, unMappedFq);
 			fqFile = unMappedFq;
 		}
 		
 		if (FileOperate.isFileExist(genome)) {
 			unMappedFq = outputTmpFinal + "unMapped.fq.gz";
-			samFileGenome = mappingBowtie2(isUseOldResult, new SamFileStatistics(FileOperate.getFileNameSep(samFileGenome)[0]),
+			samFileGenome = mappingBowtie2(lsCmd, isUseOldResult, new SamFileStatistics(FileOperate.getFileNameSep(samFileGenome)[0]),
 					exePath, threadNum, unMappedMiRNA, genome, samFileGenome, unMappedFq);
 		}
 		
 		if (mappingAll2Genome && FileOperate.isFileExist(genome)) {
 			fqFile = seqFile;
 			unMappedFq = outputTmpFinal + "unMapped.fq.gz";
-			samFileGenomeAll = mappingBowtie2(isUseOldResult, new SamFileStatistics(FileOperate.getFileNameSep(samFileGenomeAll)[0]),
+			samFileGenomeAll = mappingBowtie2(lsCmd, isUseOldResult, new SamFileStatistics(FileOperate.getFileNameSep(samFileGenomeAll)[0]),
 					exePath, threadNum, fqFile, genome, samFileGenomeAll, unMappedFq);
 		}
 	}
@@ -204,7 +213,7 @@ public class MiRNAmapPipline {
 		if (FileOperate.isFileExist(miRNApreSeq)) {
 			unMappedFq = outputTmpFinal + "unMap2miRNA.fq.gz";
 			samFileStatisticsMiRNA = new SamFileStatistics(prefix);
-			samFileMiRNA = mappingBowtie2(isUseOldResult, samFileStatisticsMiRNA, exePath, threadNum, fqFile, miRNApreSeq, samFileMiRNA, unMappedFq);
+			samFileMiRNA = mappingBowtie2(lsCmd, isUseOldResult, samFileStatisticsMiRNA, exePath, threadNum, fqFile, miRNApreSeq, samFileMiRNA, unMappedFq);
 			fqFile = unMappedFq;
 		}
 	}
@@ -224,7 +233,7 @@ public class MiRNAmapPipline {
 	 * @param unMappedFq 没有mapping上的文件输出为fq
 	 * @return
 	 */
-	public static String mappingBowtie2(boolean isUseOldResult, SamFileStatistics samFileStatistics, String exePath, 
+	public static String mappingBowtie2(List<String> lsCmd, boolean isUseOldResult, SamFileStatistics samFileStatistics, String exePath, 
 			int threadNum, String fqFile, String chrFile, String samFileName, String unMappedFq) {
 		MapBowtie mapBowtie = new MapBowtie();
 		mapBowtie.setFqFile(new FastQ(fqFile), null);
@@ -266,7 +275,13 @@ public class MiRNAmapPipline {
 		SamFile samFile = mapBowtie.mapReads();
 		logger.info("finish mapping miRNA");
 		samFileStatistics.writeToFile(FileOperate.changeFileSuffix(samFile.getFileName(), "_Statistics", "txt"));
-		System.out.println();
+		if (lsCmd != null) {
+			lsCmd.addAll(mapBowtie.getCmdExeStr());
+		}
 		return samFile.getFileName();
+	}
+	@Override
+	public List<String> getCmdExeStr() {
+		return lsCmd;
 	}
 }

@@ -4,28 +4,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import javax.swing.JOptionPane;
-
+import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.GeneExpTable;
-import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamFileStatistics;
 import com.novelbio.analysis.seq.sam.SamMapRate;
-import com.novelbio.base.SepSign;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.TitleFormatNBC;
 
-public class CtrlMiRNApredict {
+public class CtrlMiRNApredict implements IntCmdSoft {
 	GffChrAbs gffChrAbs;
 	Species species;
 	String outPath;
@@ -44,6 +39,8 @@ public class CtrlMiRNApredict {
 	List<Species> lsBlastTo = new ArrayList<>();
 	
 	boolean isUseOldResult = true;
+	
+	List<String> lsCmd = new ArrayList<>();
 	
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		if (this.gffChrAbs != null && gffChrAbs != null && this.gffChrAbs.getSpecies().equals(gffChrAbs.getSpecies())) {
@@ -74,6 +71,7 @@ public class CtrlMiRNApredict {
 	}
 
 	public void runMiRNApredict(SamMapRate samMapMiRNARate) {
+		lsCmd.clear();
 		if (gffChrAbs == null) {
 			gffChrAbs = new GffChrAbs(species);
 		}
@@ -82,8 +80,7 @@ public class CtrlMiRNApredict {
 		}
 		String novelMiRNAPathDeep = outPath + "miRNApredictDeep/";
 		if (!FileOperate.createFolders(novelMiRNAPathDeep)) {
-			JOptionPane.showMessageDialog(null, "cannot create fold: " + novelMiRNAPathDeep, "fold create error",JOptionPane.ERROR_MESSAGE);
-			return;
+			throw new RuntimeException("cannot create fold: " + novelMiRNAPathDeep);
 		}
 		
 		novelMiRNADeep.setSeqInput(mapPrefix2SamFile.values());
@@ -94,6 +91,7 @@ public class CtrlMiRNApredict {
 		novelMiRNADeep.setSpecies(species.getCommonName());
 		novelMiRNADeep.setOutPath(novelMiRNAPathDeep);
 		novelMiRNADeep.predict();
+		lsCmd.addAll(novelMiRNADeep.getCmdExeStr());
 		setMiRNACount_And_Anno();
 		calculateExp(samMapMiRNARate);
 	}
@@ -118,7 +116,7 @@ public class CtrlMiRNApredict {
 		FileOperate.createFolders(outPathMap);
 		String novelMiRNAsam = outPathMap + prefix + "novelMiRNAmapping.sam";
 		String unmappedFq = outPathMap + prefix + "novelMiRNAunmapped.fq.gz";
-		novelMiRNAsam = MiRNAmapPipline.mappingBowtie2(isUseOldResult, new SamFileStatistics(prefix), softWareInfo.getExePath(), 3, fastQ.getReadFileName(), 
+		novelMiRNAsam = MiRNAmapPipline.mappingBowtie2(lsCmd, isUseOldResult, new SamFileStatistics(prefix), softWareInfo.getExePath(), 3, fastQ.getReadFileName(), 
 				novelMiRNADeep.getNovelMiRNAhairpin(), novelMiRNAsam, unmappedFq);
 		miRNACount.setAlignFile(new SamFile(novelMiRNAsam));
 		mapPrefix2UnmapFq.put(prefix, unmappedFq);
@@ -165,6 +163,7 @@ public class CtrlMiRNApredict {
 			miRNAnovelAnnotaion.setLsMiRNAblastTo(lsBlastTo);
 			miRNAnovelAnnotaion.annotation();
 			mapID2Blast = miRNAnovelAnnotaion.getMapID2Blast();
+			lsCmd.addAll(miRNAnovelAnnotaion.getCmdExeStr());
 		}
 
 		ListMiRNAdeep listMiRNAdeep = new ListMiRNAdeep();
@@ -178,6 +177,10 @@ public class CtrlMiRNApredict {
 		} else {
 			miRNACount.setMiRNAfile(novelMiRNADeep.getNovelMiRNAhairpin(), novelMiRNADeep.getNovelMiRNAmature());		
 		}
+	}
+	@Override
+	public List<String> getCmdExeStr() {
+		return lsCmd;
 	}
 	
 }

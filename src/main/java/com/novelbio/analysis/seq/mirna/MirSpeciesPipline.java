@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.GeneExpTable;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
 import com.novelbio.analysis.seq.sam.SamFile;
@@ -22,7 +23,7 @@ import com.novelbio.database.model.species.Species;
  * @author zong0jie
  *
  */
-public class MirSpeciesPipline {
+public class MirSpeciesPipline implements IntCmdSoft {
 	private static final Logger logger = Logger.getLogger(MirSpeciesPipline.class);
 	/** 序列文件 */
 	Map<String, String> mapPrefix2Fastq = new LinkedHashMap<>();
@@ -39,6 +40,8 @@ public class MirSpeciesPipline {
 	int threadNum = 3;
 	
 	boolean isUseOldResult = true;
+	
+	List<String> lsCmd = new ArrayList<>();
 	
 	public void setThreadNum(int threadNum) {
 		this.threadNum = threadNum;
@@ -88,6 +91,7 @@ public class MirSpeciesPipline {
 
 	/** mapping的流水线 */
 	public void mappingPipeline(String rnadatFile, SamMapRate samMapRate) {
+		lsCmd.clear();
 		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.bowtie2);
 		FileOperate.createFolders(outPathTmpMapping);
 		for (int i = 0; i < lsSpecies.size(); i++) {
@@ -102,7 +106,7 @@ public class MirSpeciesPipline {
 				String outFastq = outPathTmpMapping + outputPrefix + species.getCommonName() + "_unmapped.fq.gz";
 				samFileOut = outPathTmpMapping + outputPrefix + species.getCommonName() + ".bam";
 				SamFileStatistics samFileStatistics = new SamFileStatistics(prefix);
-				samFileOut = MiRNAmapPipline.mappingBowtie2(isUseOldResult, samFileStatistics, softWareInfo.getExePath(), threadNum, fastqFile, species.getMiRNAhairpinFile(), samFileOut, outFastq);
+				samFileOut = MiRNAmapPipline.mappingBowtie2(lsCmd, isUseOldResult, samFileStatistics, softWareInfo.getExePath(), threadNum, fastqFile, species.getMiRNAhairpinFile(), samFileOut, outFastq);
 				
 				if (samMapRate != null) {
 					samMapRate.addMapInfo(species.getCommonName() + "_miRNA", samFileStatistics);
@@ -155,5 +159,9 @@ public class MirSpeciesPipline {
 		CtrlMiRNAfastq.writeFile(true, outPathTmpMapping + "blastMirMatureAll_Counts.txt", expMirMature, EnumExpression.Counts);
 		CtrlMiRNAfastq.writeFile(true, outPathTmpMapping + "blastMirPreAll_UQTPM.txt", expMirPre, EnumExpression.UQPM);
 		CtrlMiRNAfastq.writeFile(true, outPathTmpMapping + "blastMirMatureAll_UQTPM.txt", expMirMature, EnumExpression.UQPM);
+	}
+	@Override
+	public List<String> getCmdExeStr() {
+		return lsCmd;
 	}
 }

@@ -3,50 +3,124 @@ package com.novelbio.test;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.samtools.SAMFormatException;
-
 import org.apache.log4j.Logger;
-import org.springframework.data.domain.Page;
-import org.springframework.data.mongodb.core.MongoTemplate;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
-import com.novelbio.analysis.seq.sam.SamErrorException;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
-import com.novelbio.base.PageModel;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.geneanno.BlastInfo;
-import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.model.species.Species;
-import com.novelbio.database.mongorepo.geneanno.RepoBlastInfo;
-import com.novelbio.database.service.SpringFactory;
-import com.novelbio.database.service.servgeneanno.ManageBlastInfo;
 
 
 public class mytest {
 	private static Logger logger = Logger.getLogger(mytest.class);
 	static boolean is;
 	public static void main(String[] args) throws IOException, URISyntaxException {
-		SamFile samFile = new SamFile("/media/hdfs/nbCloud/public/AllProject/project_5292c9c7559af117753facf6/task_529" +
-				"6b53c559a0d7e60d4d20a/RNASeqMap_result/testFastQLeft_mapsplice_sorted_dedup.bam");
-		Species species = new Species(9606);
-		samFile.setReferenceFileName(species.getChromSeq());
-		List<String> lsvcf = new ArrayList<>();
-		lsvcf.add("/media/winE/NBC/Project/Project_HXW/allPileUp/2B.samtools.raw.vcf");
-		samFile.recalibrate(lsvcf);
+		TxtReadandWrite txtRead = new TxtReadandWrite("/media/hdfs/nbCloud/public/rawData/2013-12-18/DYY_1H_SR_GTGGCC.fq.gz");
+		txtRead.setGrepContent("@HWI-ST531R:225:C3474ACXX:4:1101:17658:1949");
+		List<String> lsInfo = txtRead.grepInfo(20, false, false);
+		for (String string : lsInfo) {
+			System.out.println(string);
+		}
+
 	}
+	
+	public static void fanweiCope() {
+		List<String> lsList =FileOperate.getFoldFileNameLs("/media/hdfs/nbCloud/staff/fanwei/9311tmp/", "*", "bam");
+		for (String samName : lsList) {
+			SamFile samFile = new SamFile(samName);
+			String samNameNew = FileOperate.changeFileSuffix(samName, "_unique", null);
+			SamFile samFileUnique = new SamFile(samNameNew, samFile.getHeader());
+			for (SamRecord smRecord : samFile.readLines()) {
+				if (smRecord.isUniqueMapping()) {
+					samFileUnique.writeSamRecord(smRecord);
+				}
+			}
+			samFile.close();
+			samFileUnique.close();
+		}
+		
+	}
+	
+	
+	private static double calculPIC(double[] allen) {
+		List<Double> lsAllen = new ArrayList<>();
+		for (Double double1 : allen) {
+			lsAllen.add(double1);
+		}
+		return calculPIC(lsAllen);
+	}
+	private static double calculPICSimple(double[] allen) {
+		List<Double> lsAllen = new ArrayList<>();
+		for (Double double1 : allen) {
+			lsAllen.add(double1);
+		}
+		return calculPICSimple(lsAllen);
+	}
+	
+	private static double calculPIC(List<Double> lsAllen) {
+		double value = 0;
+		for (Double double1 : lsAllen) {
+			value+=double1;
+		}
+		if (value != 1) {
+			throw new RuntimeException("error");
+		}
+		
+		double first = 0;
+		for (Double double1 : lsAllen) {
+			first += Math.pow(double1,2);
+		}
+		
+		double second = 0;
+		for (int i = 0; i < lsAllen.size()-1; i++) {
+			for (int j = i+1; j < lsAllen.size(); j++) {
+				double pi = lsAllen.get(i);
+				double pj = lsAllen.get(j);
+				second += 2*Math.pow(pi, 2)*Math.pow(pj, 2);
+			}
+		}
+		double result = 1 - first - second;
+		return result;
+		
+	}
+	
+	private static double calculPICSimple(List<Double> lsAllen) {
+		double value = 0;
+		for (Double double1 : lsAllen) {
+			value+=double1;
+		}
+		if (value != 1) {
+			throw new RuntimeException("error");
+		}
+		
+		double first = 0;
+		for (Double double1 : lsAllen) {
+			first += Math.pow(double1,2);
+		}
+		double second = Math.pow(first, 2);
+		double third = 0;
+		for (Double double1 : lsAllen) {
+			third += Math.pow(double1,4);
+		}
+		double result = 1 - first - second + third;
+		return result;
+		
+	}
+	
 	
 	private static SamRecord[] get1and2(SamRecord samRecord1, SamRecord samRecord2) {
 		if (samRecord1.isFirstRead()) {

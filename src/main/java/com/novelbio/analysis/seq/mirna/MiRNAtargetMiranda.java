@@ -10,7 +10,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
  * @author zong0jie
  *
  */
-public class MiRNAtargetMiranda extends MiRNAtargetAbs{
+public class MiRNAtargetMiranda extends MiRNAtargetAbs {
 	private static final Logger logger = Logger.getLogger(MiRNAtargetMiranda.class);
 	
 	int targetScore = 150;

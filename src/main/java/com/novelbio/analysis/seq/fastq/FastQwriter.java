@@ -40,39 +40,14 @@ class FastQwriter extends RunProcess<Integer> {
 	}
 	
 	/**
-	 * 写入文本
-	 * <b>写完后务必用 {@link #closeWrite} 方法关闭</b>
-	 * 创建的时候要设定为creat模式
-	 * @param bedRecord
+	 * 不关闭
+	 * @param lsBedRecord
 	 */
-	protected void writeFastQRecordString(String fastQRecord1, String fastQRecord2) {
-		if (fastQRecord1 == null || fastQRecord1.equals("")) {
-			return;
-		}
-		
-		if (fastQwriteMate == null) {
-			txtSeqFile.writefileln(fastQRecord1);
-		} else {
-			if (fastQRecord2 == null || fastQRecord2.equals("")) {
-				return;
-			}
-			txtSeqFile.writefileln(fastQRecord1);
-			fastQwriteMate.txtSeqFile.writefileln(fastQRecord2);
+	public void wirteFastqRecord(List<FastQRecord> lsFastQRecords) {
+		for (FastQRecord fastQRecord : lsFastQRecords) {
+			writeFastQRecord(fastQRecord);
 		}
 	}
-	/**
-	 * 写入文本
-	 * <b>写完后务必用 {@link #closeWrite} 方法关闭</b>
-	 * 创建的时候要设定为creat模式
-	 * @param bedRecord
-	 */
-	public void writeFastQRecordString(String fastQRecord) {
-		if (fastQRecord == null || fastQRecord.equals("")) {
-			return;
-		}
-		txtSeqFile.writefileln(fastQRecord);
-	}
-	
 	/**
 	 * <b>写完后务必用 {@link #closeWrite} 方法关闭</b>
 	 * 创建的时候要设定为creat模式
@@ -84,15 +59,7 @@ class FastQwriter extends RunProcess<Integer> {
 			txtSeqFile.writefileln(seq);
 		}
 	}
-	/**
-	 * 不关闭
-	 * @param lsBedRecord
-	 */
-	public void wirteFastqRecord(List<FastQRecord> lsFastQRecords) {
-		for (FastQRecord fastQRecord : lsFastQRecords) {
-			writeFastQRecord(fastQRecord);
-		}
-	}
+
 	
 	/**
 	 * 如果有mate，也一起flash
@@ -167,5 +134,37 @@ class FastQwriter extends RunProcess<Integer> {
 			}
 		}
 	}
-	
+	/**
+	 * 写入文本
+	 * <b>写完后务必用 {@link #closeWrite} 方法关闭</b>
+	 * 创建的时候要设定为creat模式
+	 * @param bedRecord
+	 */
+	private void writeFastQRecordString(String fastQRecord) {
+		if (fastQRecord == null || fastQRecord.equals("")) {
+			return;
+		}
+		txtSeqFile.writefileln(fastQRecord);
+	}
+	/**
+	 * 写入文本
+	 * <b>写完后务必用 {@link #closeWrite} 方法关闭</b>
+	 * 创建的时候要设定为creat模式
+	 * @param bedRecord
+	 */
+	private void writeFastQRecordString(String fastQRecord1, String fastQRecord2) {
+		if (fastQRecord1 == null || fastQRecord1.equals("")) {
+			return;
+		}
+		
+		if (fastQwriteMate == null) {
+			txtSeqFile.writefileln(fastQRecord1);
+		} else {
+			if (fastQRecord2 == null || fastQRecord2.equals("")) {
+				return;
+			}
+			txtSeqFile.writefileln(fastQRecord1);
+			fastQwriteMate.txtSeqFile.writefileln(fastQRecord2);
+		}
+	}
 }

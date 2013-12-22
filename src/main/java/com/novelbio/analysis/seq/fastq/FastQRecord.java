@@ -68,7 +68,11 @@ public class FastQRecord implements Cloneable {
 		}
 		seqFasta.setName(seqName);
 		seqFasta.setSeq(ss[1]);
-		setFastaQuality(ss[3]);
+		if (ss[1].length() == 0) {
+			setFastaQuality("");
+		} else {
+			setFastaQuality(ss[3]);
+		}
 	}
 	
 	protected void setMapFastqFilter(HashMap<Integer, Integer> mapFastQFilter) {
