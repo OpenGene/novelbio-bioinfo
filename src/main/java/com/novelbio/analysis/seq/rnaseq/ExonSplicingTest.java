@@ -69,12 +69,18 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	Map<String, Map<String, double[]>> mapCond_Group2ReadsNum;
 	Map<String, Map<String, double[]>> mapCond_Group2JunNum;
 	
+	/** 是否合并文件--也就是不考虑重复，默认为true，也就是合并文件 */
+	boolean isCombine = true;
+	
 	private static final String debug = "CAMKK2";
 	
 	public ExonSplicingTest(ExonCluster exonCluster) {
 		this.exonCluster = exonCluster;
 	}
-	
+	/** 是否合并文件--也就是不考虑重复，默认为true，也就是合并文件 */
+	public void setCombine(boolean isCombine) {
+		this.isCombine = isCombine;
+	}
 	public void setGetSeq(SeqHash seqHash) {
 		this.seqHash = seqHash;
 	}
@@ -179,6 +185,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		}
 		for (SplicingAlternativeType splicingType : exonCluster.getSplicingTypeSet()) {
 			PvalueCalculate pvaCalculate = new PvalueCalculate();
+			pvaCalculate.setCombine(isCombine);
 			pvaCalculate.setSpliceType2Value(splicingType, condition1, mapCondition2SpliceInfo.get(condition1), 
 					condition2, mapCondition2SpliceInfo.get(condition2));
 			pvaCalculate.calculatePvalue();
@@ -421,7 +428,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	}	
 	
 	class PvalueCalculate implements Comparable<PvalueCalculate> {
-		boolean isCombine = false;
+		boolean isCombine = true;
 		int normExp = 50;
 		int junction = 200;
 		SplicingAlternativeType splicingType;

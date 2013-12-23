@@ -47,9 +47,9 @@ import com.novelbio.database.model.species.Species;
  */
 public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	public static void main(String[] args) {
-		long timeEclipse1 = test();
-//		long timeEclipse2 = hongyanyanRice();
-		System.out.println(timeEclipse1);
+//		long timeEclipse1 = test();
+		long timeEclipse2 = hongyanyanRice();
+		System.out.println(timeEclipse2);
 //		System.out.println(timeEclipse2);
 	}
 	public static long test() {
@@ -83,7 +83,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		exonJunction.addBamSorted("KO", "/home/zong0jie/Test/rnaseq/paper/chicken/DT40KO0h.bam");
 		exonJunction.setCompareGroups("KO", "WT");
 
-		exonJunction.setResultFile("/home/zong0jie/Test/rnaseq/paper/chicken/ensemble_Iso2_No_Merge_sepSeq_new2");
+		exonJunction.setResultFile("/home/zong0jie/Test/rnaseq/paper/chicken/ensemble_Iso2_No_Merge_sepSeq_new2_Sub");
 		exonJunction.setgenerateNewIso();
 
 		exonJunction.run();
@@ -110,10 +110,9 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		exonJunction.addBamSorted("M", "/media/hdfs/nbCloud/TechDept/Projects/O.sativa_RNAseq_guofangqing/M1_accepted_hits.bam");
 		exonJunction.addBamSorted("M", "/media/hdfs/nbCloud/TechDept/Projects/O.sativa_RNAseq_guofangqing/M2_accepted_hits.bam");
 		exonJunction.addBamSorted("M", "/media/hdfs/nbCloud/TechDept/Projects/O.sativa_RNAseq_guofangqing/M3_accepted_hits.bam");
-		
+		exonJunction.setCombine(false);
 		exonJunction.setCompareGroups("M", "WT");
-
-		exonJunction.setResultFile("/media/hdfs/nbCloud/TechDept/Projects/O.sativa_RNAseq_guofangqing/as/as_sep");
+		exonJunction.setResultFile("/media/hdfs/nbCloud/TechDept/Projects/O.sativa_RNAseq_guofangqing/as/as_sep_repeat");
 		exonJunction.setgenerateNewIso();
 
 		exonJunction.run();
@@ -166,7 +165,8 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	double pvalue = 0.05;//表示差异可变剪接的事件的pvalue阈值
 	
 	String resultFile;
-	
+	/** 是否合并文件--也就是不考虑重复，默认为true，也就是合并文件 **/
+	boolean isCombine = true;
 	/** 是否提取序列 */
 	SeqHash seqHash;
 	//TODO 默认设置为false
@@ -193,7 +193,10 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	public void setgenerateNewIso() {
 		isReconstructIso = true;
 	}
-	
+	/** 是否合并文件--也就是不考虑重复，默认为true，也就是合并文件 **/
+	public void setCombine(boolean isCombine) {
+		this.isCombine = isCombine;
+	}
 	/**
 	 * 是否采用节省内存模式
 	 * 如果节省内存就用SamMapReads 速度慢
@@ -492,6 +495,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				}
 
 				ExonSplicingTest exonSplicingTest = new ExonSplicingTest(exonCluster);
+				exonSplicingTest.setCombine(isCombine);
 				exonSplicingTest.setMapCond_Group2ReadsNum(mapCond_group2ReadsNum);
 				//获得junction信息
 				exonSplicingTest.setSetCondition(setCondition);

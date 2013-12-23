@@ -97,7 +97,7 @@ public class MirTargetMammal {
 	
 
 	private String predictMiranda() {
-		String mirandaFile = FileOperate.changeFileSuffix(predictResultFinal, "_miranda", null);
+		String mirandaFile = FileOperate.changeFileSuffix(predictResultFinal, "_miranda", "gz");
 		RNAmiranda rnAmiranda = new RNAmiranda();
 		rnAmiranda.setMiRNAseq(inputMiRNAseq);
 		rnAmiranda.setUtr3File(getInput3UTRseq());
@@ -133,7 +133,7 @@ public class MirTargetMammal {
 	}
 	
 	private String predictRNAhybrid() {
-		String rnaHybridFile = FileOperate.changeFileSuffix(predictResultFinal, "_rnahybrid", null);
+		String rnaHybridFile = FileOperate.changeFileSuffix(predictResultFinal, "_rnahybrid", "gz");
 
 		RNAhybrid rnAhybrid = new RNAhybrid();
 		rnAhybrid.setMiRNAseq(inputMiRNAseq);

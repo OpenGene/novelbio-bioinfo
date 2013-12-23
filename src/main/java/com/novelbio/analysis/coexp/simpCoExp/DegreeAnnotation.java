@@ -92,7 +92,10 @@ public class DegreeAnnotation {
 	public List<String[]> getLsPairAnno() {
 		List<String[]> lsPairAnno = new ArrayList<>();
 		for (CoexPair coexPair : lsCoexPairs) {
-			lsPairAnno.add(coexPair.toStringArrayAnno());
+			String[] tmp = coexPair.toStringArrayAnno();
+			if (tmp != null) {
+				lsPairAnno.add(tmp);
+			}
 		}
 		if (readCoexpDegree) {
 			lsPairAnno.add(0, CoexPair.getTitleAnnoCoexp());

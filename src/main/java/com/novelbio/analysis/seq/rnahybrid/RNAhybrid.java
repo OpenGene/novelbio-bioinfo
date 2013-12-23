@@ -53,6 +53,7 @@ public class RNAhybrid {
 	public void setMiRNAseq(String miRNASeq) {
 		this.miRNASeq = miRNASeq;
 	}
+	/** 输出文件，可以是gz */
 	public void setPredictResultFile(String predictResultFile) {
 		this.predictResultFile = predictResultFile;
 	}

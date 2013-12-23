@@ -31,7 +31,12 @@ public class CoExp {
 	}
 	
 	public void readTxtExcel(String inFile, int[] columnID) {
-		lsRawData = ExcelTxtRead.readLsExcelTxt(inFile, columnID, readFirstLine, -1);
+		if (columnID == null) {
+			lsRawData = ExcelTxtRead.readLsExcelTxt(inFile, readFirstLine);
+		} else {
+			lsRawData = ExcelTxtRead.readLsExcelTxt(inFile, columnID, readFirstLine, -1);
+		}
+		
 	}
 	
 	public void writeToExcel(String outFile) {
@@ -48,9 +53,12 @@ public class CoExp {
 		sortAndCutLsCoexpPair(lsCoexPairs);
 		List<String[]> lsResult = new ArrayList<>();
 		for (CoexPair coexPair : lsCoexPairs) {
-			lsResult.add(coexPair.toStringArray());
+			String[] tmp = coexPair.toStringArray();
+			if (tmp != null) {
+				lsResult.add(tmp);
+			}
 		}
-		if (lsCoexPairs.get(0).getPvalue() > 0) {
+		if (lsCoexPairs.get(0).getPvalue() >= 0) {
 			lsResult.add(0, CoexPair.getTitleCoexp());
 		} else {
 			lsResult.add(0, CoexPair.getTitle());
@@ -83,7 +91,7 @@ public class CoExp {
 		for (int i = 0; i < lsCoexpGenInfos.size() -1 ; i++) {
 			for (int j = i+1 ; j < lsCoexpGenInfos.size(); j++) {
 				CoexPair coexPair = pearsonCalculate.getCoexpPair(lsCoexpGenInfos.get(i), lsCoexpGenInfos.get(j));
-				if (coexPair.getPvalue() > pvalueCutoff) {
+				if (coexPair.getPvalue() > pvalueCutoff || coexPair.getPvalue().equals(Double.NaN)) {
 					continue;
 				}
 				lsCoexPairs.add(coexPair);
@@ -281,6 +289,9 @@ class CoexPair {
 	}
 	
 	public String[] toStringArrayAnno() {
+		if (Pvalue < 0) {
+			return null;
+		}
 		List<String> lsResult = new ArrayList<>();
 		lsResult.add(coexpGenInfo1.getGeneID().getAccID());
 		lsResult.add(coexpGenInfo1.getGeneID().getSymbol());
@@ -288,18 +299,17 @@ class CoexPair {
 		lsResult.add(coexpGenInfo2.getGeneID().getAccID());
 		lsResult.add(coexpGenInfo2.getGeneID().getSymbol());
 		lsResult.add(coexpGenInfo2.getGeneID().getDescription());
-		if (Pvalue > 0) {
-			addCorInfo(lsResult);
-		}
+		addCorInfo(lsResult);
 		return lsResult.toArray(new String[0]);
 	}
 	public String[] toStringArray() {
+		if (Pvalue < 0) {
+			return null;
+		}
 		List<String> lsResult = new ArrayList<>();
 		lsResult.add(coexpGenInfo1.getGeneName());
 		lsResult.add(coexpGenInfo2.getGeneName());
-		if (Pvalue > 0) {
-			addCorInfo(lsResult);
-		}
+		addCorInfo(lsResult);
 		return lsResult.toArray(new String[0]);
 	}
 	

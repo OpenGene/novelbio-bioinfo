@@ -54,6 +54,7 @@ public class RNAmiranda {
 	public void setUtr3File(String inputUTR3seq) {
 		this.inputUTR3seq = inputUTR3seq;
 	}
+	/** 输出文件，可以是gz */
 	public void setPredictResultFile(String predictResultFile) {
 		this.predictResultFile = predictResultFile;
 	}
@@ -83,7 +84,7 @@ public class RNAmiranda {
 		lsCmd.add(inputUTR3seq);
 		ArrayOperate.addArrayToList(lsCmd, getTargetScore());
 		ArrayOperate.addArrayToList(lsCmd, getTargetEnergy());
-		ArrayOperate.addArrayToList(lsCmd, getPredictResult());
+		lsCmd.add(">"); lsCmd.add(predictResultFile);
 		return lsCmd;
 	}
 	
@@ -92,9 +93,6 @@ public class RNAmiranda {
 	}
 	private String[] getTargetEnergy() {
 		return new String[]{"-en", targetEnergy + ""};
-	}
-	private String[] getPredictResult() {
-		return new String[]{"-out", predictResultFile};
 	}
 	
 	/** 读取产生的结果 */
