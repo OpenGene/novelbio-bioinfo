@@ -42,9 +42,13 @@ public class CtrlMiRNApipeline implements IntCmdSoft {
 	boolean mapToGenome = false;
 	boolean mapRfam2Species = false;
 	boolean mapAllToRfam = true;
-	
+	int threadNum = 7;
 	public CtrlMiRNApipeline(Species species) {
 		this.species = species;
+	}
+	/** 设定线程数 */
+	public void setThreadNum(int threadNum) {
+		this.threadNum = threadNum;
 	}
 	/** 将全体reads mapping至rfam，默认为true */
 	public void setMapAllToRfam(boolean mapAllToRfam) {
@@ -100,6 +104,7 @@ public class CtrlMiRNApipeline implements IntCmdSoft {
 		GffChrAbs gffChrAbs = new GffChrAbs(species);
 		ctrlMiRNAfastq = new CtrlMiRNAfastq();
 		ctrlMiRNAfastq.setMiRNAexp(expMirPre, expMirMature);
+		ctrlMiRNAfastq.setThreadNum(threadNum);
 		if (mapMirna) {
 			runMapping(gffChrAbs, species, mapPrefix2Fastq);
 			mapPrefix2AlignFile = ctrlMiRNAfastq.getMapPrefix2GenomeSam();

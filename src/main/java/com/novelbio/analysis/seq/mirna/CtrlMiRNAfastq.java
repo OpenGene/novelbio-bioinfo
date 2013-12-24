@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.broadinstitute.sting.jna.lsf.v7_0_6.LibLsf.lsConf;
 
 import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.AlignSeq;
@@ -121,6 +120,10 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 	}
 	public void setMapAll2Rfam(boolean mappingAll2Rfam) {
 		miRNAmappingPipline.setMappingAll2Seq(mappingAll2Rfam);
+	}
+	/** 设定线程数 */
+	public void setThreadNum(int threadNum) {
+		miRNAmappingPipline.setThreadNum(threadNum);
 	}
 	/**
 	 * miRNA计算表达使用

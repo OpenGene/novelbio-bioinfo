@@ -8,7 +8,7 @@ public class TestRNAhybrid extends TestCase {
 	@Test
 	public void testRead() {
 		RNAhybrid rnaHybrid = new RNAhybrid();
-		for (RNAHybridUnit rnaHybridUnit : rnaHybrid.readPerlines("/media/winD/plant_miRNA_predict/rnahybrid.out")) {
+		for (HybridRNAUnit rnaHybridUnit : rnaHybrid.readPerlines("/media/winD/plant_miRNA_predict/rnahybrid.out")) {
 			System.out.println(rnaHybridUnit.isSeedPerfectMatch());
 			System.out.println(rnaHybridUnit.getAlign());
 			System.out.println();
@@ -18,7 +18,7 @@ public class TestRNAhybrid extends TestCase {
 	
 	@Test
 	public void test() {
-		RNAHybridUnit hybridHybrid = new RNAHybridUnit();
+		HybridRNAUnit hybridHybrid = new HybridRNAUnit();
 		String[] seq = new String[]{"target 5'  C  G            A   G 3'",
 				"            GU  GCU UCUUCUG UUG    ",
 				"            CG  UGA AGAAGAC AGC    ",

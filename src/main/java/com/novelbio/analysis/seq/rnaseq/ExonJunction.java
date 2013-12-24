@@ -92,7 +92,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	public static long hongyanyanRice() {
 		List<Align> lsAligns = new ArrayList<>();
-//		lsAligns.add(new Align("chr1", 2551997, 2591491));
+		lsAligns.add(new Align("chr1", 2551997, 2591491));
 		DateUtil dateUtil = new DateUtil();
 		dateUtil.setStartTime();
 		System.out.println("start");
@@ -406,7 +406,10 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 					samFileReading.addAlignmentRecorder(mapReads);
 				}
 				samFileReading.run();
-				Map<String, double[]> mapGroup2Num = new HashMap<>();
+				Map<String, double[]> mapGroup2Num = mapCond_group2ReadsNum.get(condition);
+				if (mapGroup2Num == null) {
+					mapGroup2Num = new HashMap<>();
+				}
 				mapGroup2Num.put(group, new double[]{samStatistics.getReadsNum(MappingReadsType.allMappedReads)});
 				mapCond_group2ReadsNum.put(condition, mapGroup2Num);
 				samFileReading.clearRecorder();

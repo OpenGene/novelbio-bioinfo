@@ -36,7 +36,6 @@ public class CoExp {
 		} else {
 			lsRawData = ExcelTxtRead.readLsExcelTxt(inFile, columnID, readFirstLine, -1);
 		}
-		
 	}
 	
 	public void writeToExcel(String outFile) {

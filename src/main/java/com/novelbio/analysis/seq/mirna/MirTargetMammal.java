@@ -8,6 +8,7 @@ import com.novelbio.analysis.seq.genome.GffChrSeq;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.rnahybrid.HybridUnit;
 import com.novelbio.analysis.seq.rnahybrid.RNAhybrid;
+import com.novelbio.analysis.seq.rnahybrid.RNAhybrid.HybridRNAUnit;
 import com.novelbio.analysis.seq.rnahybrid.RNAhybrid.RNAhybridClass;
 import com.novelbio.analysis.seq.rnahybrid.RNAmiranda;
 import com.novelbio.analysis.seq.rnahybrid.RNAmiranda.MirandaPair;
@@ -153,12 +154,12 @@ public class MirTargetMammal {
 		
 		TxtReadandWrite txtWrite = new TxtReadandWrite(rnaHybridOut, true);
 		boolean title = false;
-		for (HybridUnit hybridUnit : rnAhybrid.readPerlines()) {
+		for (HybridRNAUnit hybridUnit : rnAhybrid.readPerlines()) {
 			if (!title) {
 				txtWrite.writefileln(hybridUnit.getTitle());
 				title = true;
 			}
-			if (!hybridUnit.isSeedPerfectMatch()) {
+			if (hybridUnit.getPvalue() > pvalue || !hybridUnit.isSeedPerfectMatch()) {
 				continue;
 			}
 			txtWrite.writefileln(hybridUnit.toResultTab());

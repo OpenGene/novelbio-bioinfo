@@ -455,7 +455,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			ArrayListMultimap<String, Double> lsExp1 = spliceType2ValueTreat.getLsExp(splicingType);
 			ArrayListMultimap<String, Double> lsExp2= spliceType2ValueCtrl.getLsExp(splicingType);
 			iSpliceTestExp.setNormalizedNum(normExp);
-			iSpliceTestExp.setLsRepeat2Value(mapCond_Group2JunNum, condTreat, lsExp1, condCtrl, lsExp2);
+			iSpliceTestExp.setLsRepeat2Value(mapCond_Group2ReadsNum, condTreat, lsExp1, condCtrl, lsExp2);
 			
 			iSpliceTestJun = SpliceTestFactory.createSpliceModule(isCombine);
 			ArrayListMultimap<String, Double> lsJunc1 = spliceType2ValueTreat.getLsJun(splicingType);

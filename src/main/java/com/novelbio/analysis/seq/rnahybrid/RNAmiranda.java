@@ -302,9 +302,8 @@ Complete
 		}
 	}
 
-}
 
-class HybridMiranda extends HybridUnit {
+public static class HybridMiranda extends HybridUnit {
 	double score;
 
 	/** 获得3-5的queryseq */
@@ -374,4 +373,6 @@ class HybridMiranda extends HybridUnit {
 		String[] result = lsResult.toArray(new String[0]);
 		return ArrayOperate.cmbString(result, "\t");
 	}
+}
+
 }

@@ -55,7 +55,10 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 		this.condition = condition;
 		this.subGroup = subgroup;
 		mapCondition2Group.put(condition, subgroup);
-		Map<String, double[]> mapGroup2Num = new HashMap<>();
+		Map<String, double[]> mapGroup2Num = mapCondition_Group2JunNum.get(condition);
+		if (mapGroup2Num == null) {
+			mapGroup2Num = new HashMap<>();
+		}
 		mapGroup2Num.put(subgroup, new double[1]);
 		mapCondition_Group2JunNum.put(condition, mapGroup2Num);
 	}
