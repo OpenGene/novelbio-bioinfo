@@ -13,6 +13,7 @@ import com.google.common.collect.HashMultimap;
 import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
@@ -24,7 +25,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
 import freemarker.template.Configuration;
 
 public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
-
+	
 	// 满足条件的差异基因的最少数量
 //	public static final int QUANUM = 1000;
 	public static final double THRESHOLD1 = 0.01;
@@ -35,6 +36,8 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	
 	//TODO这个值要改，需要在数据库里获取，前台表单填写到数据库中
 	public static final String sequencingType = "表达谱芯片";
+	
+	EnumDifGene enumDifGene;
 	
 	Configuration freeMarkerConfiguration = (Configuration)SpringFactory.getFactory().getBean("freemarkNBC");
 	String workSpace;
@@ -87,6 +90,10 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		setFileNameRawdata();
 	}
 	
+	/** 设定是哪一种算法 */
+	private void setEnumDifGene(EnumDifGene enumDifGene) {
+		this.enumDifGene = enumDifGene;
+	}
 	/** 设定是否需要进行log，仅在limma中使用 */
 	public void setLogValue(boolean isLog2Value) {
 		this.logTheValue = isLog2Value;
@@ -337,7 +344,11 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		lsCmd.add(PathDetail.getRscript());
 		lsCmd.add(outScript.replace("\\", "/"));
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
+		cmdOperate.setGetLsErrOut();
 		cmdOperate.run();
+		if (!cmdOperate.isFinishedNormal()) {
+			throw new ExceptionCmd(enumDifGene.toString() + " error:\n" + cmdOperate.getErrOut());
+		}
 		try { Thread.sleep(2000); } catch (Exception e) {}
 	}
 	
@@ -442,6 +453,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		} else if (DiffExpID == EnumDifGene.EBSeq) {
 			diffExpInt = (DiffExpInt)SpringFactory.getFactory().getBean("diffExpEBSeq");
 		}
+		((DiffExpAbs)diffExpInt).setEnumDifGene(DiffExpID);
 		return diffExpInt;
 	}
 

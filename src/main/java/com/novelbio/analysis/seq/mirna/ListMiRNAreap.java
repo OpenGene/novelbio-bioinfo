@@ -27,8 +27,6 @@ public class ListMiRNAreap extends ListHashBin implements ListMiRNAInt {
 	protected void ReadGffarrayExcepMirReap(String rnadataFile) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(rnadataFile, false);
 		ListBin<ListDetailBin> lsMiRNA = null; ListDetailBin listDetailBin = null;
-		super.mapName2DetailAbs = new LinkedHashMap<String, ListDetailBin>();
-		super.lsNameNoRedundent = new ArrayList<String>();
 		int start = 0; int end = 0;
 		boolean cis5to3 = true;
 		for (String string : txtRead.readlines()) {
@@ -48,7 +46,7 @@ public class ListMiRNAreap extends ListHashBin implements ListMiRNAInt {
 					end = Integer.parseInt(ss[3]);
 				}
 				//装入chrHash
-				getMapChrID2LsGff().put(lsMiRNA.getName(), lsMiRNA);
+				getMapChrID2LsGff().put(lsMiRNA.getName().toLowerCase(), lsMiRNA);
 			}
 			if (ss[2].startsWith("mature")) {
 				listDetailBin = new ListDetailBin();
@@ -64,8 +62,6 @@ public class ListMiRNAreap extends ListHashBin implements ListMiRNAInt {
 					listDetailBin.setEndAbs(start - Integer.parseInt(ss[3]));
 				}
 				lsMiRNA.add(listDetailBin);
-				mapName2DetailAbs.put(listDetailBin.getNameSingle(), listDetailBin);
-				lsNameNoRedundent.add(listDetailBin.getNameSingle());
 			}
 		}
 		txtRead.close();

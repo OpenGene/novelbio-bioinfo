@@ -6,29 +6,20 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.GeneExpTable;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
-import com.novelbio.analysis.seq.rnaseq.RPKMcomput;
-import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
-import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamMapRate;
-import com.novelbio.base.SepSign;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.listOperate.ListBin;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.generalConf.PathDetailNBC;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 /**

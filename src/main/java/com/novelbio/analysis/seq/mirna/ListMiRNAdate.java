@@ -119,8 +119,6 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 	 */
 	protected void ReadGffarrayExcepRNADat(String rnadataFile) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(rnadataFile, false);
-		super.mapName2DetailAbs = new LinkedHashMap<String, ListDetailBin>();
-		super.lsNameNoRedundent = new ArrayList<String>();
 		List<String> lsMirnaBlock = new ArrayList<>();
 		for (String string : txtRead.readlines()) {
 			if (string.startsWith("//")) {				
@@ -146,8 +144,6 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 		getMapChrID2LsGff().put(lsMiRNA.getName().toLowerCase(), lsMiRNA);
 		List<ListDetailBin> lsMiRNABin = getLsMatureMirnaLocation(lsMirnaBlock);
 		for (ListDetailBin miRNAbin : lsMiRNABin) {
-			mapName2DetailAbs.put(miRNAbin.getNameSingle(), miRNAbin);
-			lsNameNoRedundent.add(miRNAbin.getNameSingle());
 			miRNAbin.setParentListAbs(lsMiRNA);
 			lsMiRNA.add(miRNAbin);
 		}

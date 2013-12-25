@@ -124,7 +124,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		for (String string : lsIsoName) {
 			List<GffGeneIsoInfo> lsGffGeneIsoInfo = getIso(string);
 			if (lsGffGeneIsoInfo.size() == 0) {
-				logger.error("没找到基因：" + string);
+				logger.warn("cannot find gene: " + string);
 				continue;
 			}
 			for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfo) {

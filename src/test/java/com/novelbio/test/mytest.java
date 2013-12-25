@@ -13,28 +13,31 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.novelbio.analysis.seq.GeneExpTable;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
+import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
+import com.novelbio.analysis.seq.mirna.ListMiRNAdate;
+import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.model.species.Species;
+import com.novelbio.generalConf.PathDetailNBC;
 
 
 public class mytest {
 	private static Logger logger = Logger.getLogger(mytest.class);
 	static boolean is;
 	public static void main(String[] args) throws IOException, URISyntaxException {
-		TxtReadandWrite txtRead = new TxtReadandWrite("/media/hdfs/nbCloud/public/rawData/2013-12-18/DYY_1H_SR_GTGGCC.fq.gz");
-		txtRead.setGrepContent("@HWI-ST531R:225:C3474ACXX:4:1101:17658:1949");
-		List<String> lsInfo = txtRead.grepInfo(20, false, false);
-		for (String string : lsInfo) {
-			System.out.println(string);
-		}
 
 	}
 	

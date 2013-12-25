@@ -48,14 +48,12 @@ public class ListMiRNAdeep extends ListHashBin implements ListMiRNAInt {
 	protected void ReadGffarrayExcepMirDeep(String rnadataFile) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(rnadataFile, false);
 		ListBin<ListDetailBin> lsMiRNA = null;
-		super.mapName2DetailAbs = new LinkedHashMap<String, ListDetailBin>();
-		super.lsNameNoRedundent = new ArrayList<String>();
 		List<String> lsBlock = new ArrayList<>();
 		for (String string : txtRead.readlines()) {
 			if (string.startsWith(">")) {
 				lsMiRNA = getMiRNAbin(lsBlock);
 				if (lsMiRNA != null) {
-					getMapChrID2LsGff().put(lsMiRNA.getName(), lsMiRNA);
+					getMapChrID2LsGff().put(lsMiRNA.getName().toLowerCase(), lsMiRNA);
 				}
 				lsBlock.clear();
 			}
@@ -63,7 +61,7 @@ public class ListMiRNAdeep extends ListHashBin implements ListMiRNAInt {
 		}
 		lsMiRNA = getMiRNAbin(lsBlock);
 		if (lsMiRNA != null) {
-			getMapChrID2LsGff().put(lsMiRNA.getName(), lsMiRNA);
+			getMapChrID2LsGff().put(lsMiRNA.getName().toLowerCase(), lsMiRNA);
 		}
 		txtRead.close();
 	}
@@ -174,7 +172,6 @@ public class ListMiRNAdeep extends ListHashBin implements ListMiRNAInt {
 	
 	/**
 	 * 提取序列，同时将mrd文件复制到提取序列的文件夹下，并改名为Predict_MiRNA_Structure.txt
-	 * @param setMirPredictName 新miRNA的名字
 	 * @param run_output_mrd 待提取的文件
 	 * @param outMatureSeq 输出
 	 * @param outPreSeq 输出

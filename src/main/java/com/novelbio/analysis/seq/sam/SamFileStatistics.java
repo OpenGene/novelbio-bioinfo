@@ -33,7 +33,7 @@ import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
 
 import com.novelbio.analysis.seq.AlignRecord;
-import com.novelbio.analysis.seq.fasta.ChrFoldHash.CompareChrID;
+import com.novelbio.analysis.seq.fasta.ChrSeqHash.CompareChrID;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.mapping.MappingReadsType;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -58,7 +58,7 @@ public class SamFileStatistics implements AlignmentRecorder {
 	
 	/** 用于画图和生成表格的参数 */
 	HashMap<String, double[]> mapChrID2LenProp = null;
-	/** standardData 染色体长度的map */
+	/** standardData 染色体长度的map, key是真实的ChrID */
 	Map<String, Long> standardData;
 	/** 超过50条染色体就不画这个图了 */
 	private static int chrNumMax = 50;
@@ -379,7 +379,7 @@ public class SamFileStatistics implements AlignmentRecorder {
 		Collections.sort(lsChrID, new CompareChrID());
 		for (String chrID : lsChrID) {
 			if (resultData.containsKey(chrID.toLowerCase())) {
-				readsNumAll += resultData.get(chrID);
+				readsNumAll += resultData.get(chrID.toLowerCase());
 			}
 			chrLenAll += standardData.get(chrID);
 		}

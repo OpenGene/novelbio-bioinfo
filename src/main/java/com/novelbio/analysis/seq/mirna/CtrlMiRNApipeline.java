@@ -62,9 +62,9 @@ public class CtrlMiRNApipeline implements IntCmdSoft {
 	public void setMapToGenome(boolean mapToGenome) {
 		this.mapToGenome = mapToGenome;
 	}
-	/** 遇到已经存在的结果文件，是否重做
-	 * true：重做该步骤
-	 * false：跳过该步骤
+	/** 遇到已经存在的结果文件，是否跳过<br>
+	 * true：跳过该步骤<br>
+	 * false：重做该步骤
 	 */
 	public void setIsUseOldResult(boolean isUseOldResult) {
 		this.isUseOldResult = isUseOldResult;

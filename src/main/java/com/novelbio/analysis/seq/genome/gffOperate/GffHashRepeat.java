@@ -44,10 +44,10 @@ ListCodAbsDu<GffDetailRepeat, ListCodAbs<GffDetailRepeat>>, ListBin<GffDetailRep
 			  String chrID=ss[5].toLowerCase();
 			  //新的染色体
 			   if (!mapChrID2ListGff.containsKey(chrID))  {
-				   if(LOCList!=null)//如果已经存在了LOCList，也就是前一个LOCList，那么先截短，然后将它按照gffGCtmpDetail.numberstart排序
+				   if(LOCList != null)//如果已经存在了LOCList，也就是前一个LOCList，那么先截短，然后将它按照gffGCtmpDetail.numberstart排序
 					   LOCList.trimToSize();
 				   
-				   LOCList=new ListBin<GffDetailRepeat>();//新建一个LOCList并放入Chrhash
+				   LOCList = new ListBin<GffDetailRepeat>();//新建一个LOCList并放入Chrhash
 				   mapChrID2ListGff.put(chrID, LOCList);
 			   }
 			   //每一行就是一个repeat
@@ -69,22 +69,18 @@ ListCodAbsDu<GffDetailRepeat, ListCodAbs<GffDetailRepeat>>, ListBin<GffDetailRep
 	 * @return
 	 */
 	public Hashtable<String, Integer> getLength() {
-		int LOCNum=lsNameNoRedundent.size();
 		Hashtable<String, Integer> hashRepeatLength=new Hashtable<String, Integer>();
-		
-		for (int i = 0; i < LOCNum; i++) {
-			GffDetailRepeat gffDetailRepeat=mapName2DetailAbs.get(lsNameNoRedundent.get(i));
+		for (String repName : lsNameNoRedundent) {
+			GffDetailRepeat gffDetailRepeat=mapName2DetailAbs.get(repName);
 			int tmpLength=gffDetailRepeat.getLength();
 			String tmprepeatClass=gffDetailRepeat.repeatClass+"/"+gffDetailRepeat.repeatFamily;
-			if (hashRepeatLength.containsKey(tmprepeatClass)) //含有已知的repeat，则把repeat的长度累加上去
-			{
+			if (hashRepeatLength.containsKey(tmprepeatClass)) {
 				tmpLength=tmpLength+hashRepeatLength.get(tmprepeatClass);
 				hashRepeatLength.put(tmprepeatClass, tmpLength);
-			}
-			else//不含有则把新的repeat加进去 
-			{
+			} else {
 				hashRepeatLength.put(tmprepeatClass,tmpLength);
 			}
+		
 		}
 		return hashRepeatLength;
 	}

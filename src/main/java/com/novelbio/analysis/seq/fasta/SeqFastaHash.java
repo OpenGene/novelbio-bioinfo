@@ -144,7 +144,7 @@ public class SeqFastaHash extends SeqHashAbs {
 	private void putSeqFastaInHash(SeqFasta seqFasta, boolean append) {
 		seqFasta.appendFinish();
 		seqFasta.setTOLOWCASE(TOLOWCASE);
-		String seqNameLow = seqFasta.getSeqName();
+		String seqNameLow = seqFasta.getSeqName().toLowerCase();
 		SeqFasta tmpSeq = hashSeq.get(seqNameLow);// 看是否有同名的序列出现
 		// 如果没有同名序列，直接装入hash表
 		if (tmpSeq == null) {

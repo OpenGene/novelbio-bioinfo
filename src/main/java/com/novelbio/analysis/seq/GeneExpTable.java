@@ -23,7 +23,6 @@ public class GeneExpTable {
 	String geneTitleName;
 	/** 基因annotation的title */
 	Set<String> setGeneAnnoTitle = new LinkedHashSet<>();
-	List<String> lsGeneName = new ArrayList<>();
 	/** 基因名和注释的对照表 */
 	ArrayListMultimap<String, String> mapGene2Anno = ArrayListMultimap.create();
 	/** 时期信息 */
@@ -48,13 +47,25 @@ public class GeneExpTable {
 	public GeneExpTable(String geneAccIDName) {
 		this.geneTitleName = geneAccIDName;
 	}
-	/** 添加counts文本，将其加入mapGene_2_Cond2Exp中
+
+	
+	/**
+	 *  添加counts文本，将其加入mapGene_2_Cond2Exp中
 	 * 同时添加注释信息并设定allCountsNumber为全体reads的累加
+	 *
+	 * @param file 读取的文件
+	 * @param addAnno 是否添加注释，如果本对象已经有了注释，就不可以添加了，否则会出错
 	 */
 	public void read(String file, boolean addAnno) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(file);
 		List<String> lsFirst3Lines = txtRead.readFirstLines(3);
 		Map<Integer, String> mapCol2Sample = getMapCol2Sample(lsFirst3Lines);
+		txtRead.close();
+		read(file, addAnno, mapCol2Sample);
+	}
+	
+	public void read(String file, boolean addAnno, Map<Integer, String> mapCol2Sample) {
+		TxtReadandWrite txtRead = new TxtReadandWrite(file);
 		if (mapCol2Sample == null) {
 			txtRead.close();
 			return;
@@ -62,7 +73,7 @@ public class GeneExpTable {
 		for (String string : mapCol2Sample.values()) {
 			setCondition.add(string);
 		}
-		String[] title = lsFirst3Lines.get(0).split("\t");
+		String[] title = txtRead.readFirstLine().split("\t");
 		geneTitleName = title[0];
 		if (addAnno) {
 			setLsAnnoTitle(title, mapCol2Sample.keySet());
@@ -91,7 +102,6 @@ public class GeneExpTable {
 		setAllreadsPerConditon();
 		txtRead.close();
 	}
-	
 	/**
 	 * @param lsFirst3Lines 前三行
 	 * @return 从0开始计算的col --- sampleName
@@ -131,11 +141,13 @@ public class GeneExpTable {
 			setGeneAnnoTitle.add(title[i]);
 		}
 	}
-	
+	/** 返回一系列基因的名称 */
+	public Set<String> getSetGeneName() {
+		return mapGene_2_Cond2Exp.keySet();
+	}
 	/**  最早就要设定 */
 	public void addLsGeneName(Collection<String> colGeneName) {
 		setLsGeneName(colGeneName);
-		lsGeneName = new ArrayList<>(mapGene_2_Cond2Exp.keySet());
 	}
 	/**
 	 * 大致测序量，譬如rna-seq就是百万级别，小RNAseq就是可能就要变成十万级别
@@ -259,7 +271,7 @@ public class GeneExpTable {
 		if (enumExpression == EnumExpression.UQPM || enumExpression == EnumExpression.UQRPKM) {
 			uq = getUQ(currentCondition);
 		}
-		for (String geneName : lsGeneName) {
+		for (String geneName : getSetGeneName()) {
 			List<String> lsTmpResult = new ArrayList<String>();
 			lsTmpResult.add(geneName);
 			if (!mapGene2Anno.isEmpty()) {
@@ -291,7 +303,7 @@ public class GeneExpTable {
 		if (enumExpression == EnumExpression.UQPM || enumExpression == EnumExpression.UQRPKM) {
 			mapCondition2UQ = getMapCond2UQ();
 		}
-		for (String geneName : lsGeneName) {
+		for (String geneName : getSetGeneName()) {
 			List<String> lsTmpResult = new ArrayList<String>();
 			lsTmpResult.add(geneName);
 			if (!mapGene2Anno.isEmpty()) {
@@ -317,7 +329,7 @@ public class GeneExpTable {
 		if (enumExpression == EnumExpression.UQPM || enumExpression == EnumExpression.UQRPKM) {
 			mapCondition2UQ = getMapCond2UQ();
 		}
-		for (String geneName : lsGeneName) {
+		for (String geneName : getSetGeneName()) {
 			List<String> lsTmpResult = new ArrayList<String>();
 			lsTmpResult.add(geneName);
 			if (!mapGene2Anno.isEmpty()) {
@@ -342,7 +354,7 @@ public class GeneExpTable {
 	/** @return 返回指定时期的UQreads */
 	private double getUQ(String condition) {
 		List<Double> lsValues = new ArrayList<>();
-		for (String geneName : lsGeneName) {
+		for (String geneName : getSetGeneName()) {
 			Map<String, Double> mapCond2Counts = mapGene_2_Cond2Exp.get(geneName);
 			if (mapCond2Counts == null) {
 				lsValues.add(0.0);

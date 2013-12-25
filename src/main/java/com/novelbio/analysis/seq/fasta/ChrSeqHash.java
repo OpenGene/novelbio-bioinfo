@@ -1,24 +1,16 @@
 package com.novelbio.analysis.seq.fasta;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
-import com.hg.doc.ch;
 import com.novelbio.analysis.seq.fasta.RandomChrFileInt.RandomChrFileFactory;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
@@ -346,5 +338,31 @@ public class ChrSeqHash extends SeqHashAbs {
 	}
 	private String getChrIndexFileNameFaidx() {
 		return chrFile + ".fai";
+	}
+	
+	/** 专门用于排序比较的类 */
+	public static class CompareChrID implements Comparator<String> {
+		PatternOperate patChrID = new PatternOperate("\\d+", false);
+		@Override
+		public int compare(String o1, String o2) {
+			String chrID1 = patChrID.getPatFirst(o1);
+			String chrID2 = patChrID.getPatFirst(o2);
+			if (chrID1 == null || chrID2 == null) {
+				if (o1.equalsIgnoreCase("chrm") ) {
+					return 1;
+				} else if (o2.equalsIgnoreCase("chrm")) {
+					return -1;
+				} else if (o1.equalsIgnoreCase("chrc")) {
+					return 1;
+				} else if (o2.equalsIgnoreCase("chrc")) {
+					return -1;
+				}
+				return o1.compareTo(o2);
+			}
+			Integer chr1 = Integer.parseInt(chrID1);
+			Integer chr2 = Integer.parseInt(chrID2);
+			return chr1.compareTo(chr2);
+		}
+		
 	}
 }

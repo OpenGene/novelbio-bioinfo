@@ -273,32 +273,6 @@ public class ChrFoldHash extends SeqHashAbs {
 		};
 	}
 	
-	/** 专门用于排序比较的类 */
-	public static class CompareChrID implements Comparator<String> {
-		PatternOperate patChrID = new PatternOperate("\\d+", false);
-		@Override
-		public int compare(String o1, String o2) {
-			String chrID1 = patChrID.getPatFirst(o1);
-			String chrID2 = patChrID.getPatFirst(o2);
-			if (chrID1 == null || chrID2 == null) {
-				if (o1.equalsIgnoreCase("chrm") ) {
-					return 1;
-				} else if (o2.equalsIgnoreCase("chrm")) {
-					return -1;
-				} else if (o1.equalsIgnoreCase("chrc")) {
-					return 1;
-				} else if (o2.equalsIgnoreCase("chrc")) {
-					return -1;
-				}
-				return o1.compareTo(o2);
-			}
-			Integer chr1 = Integer.parseInt(chrID1);
-			Integer chr2 = Integer.parseInt(chrID2);
-			return chr1.compareTo(chr2);
-		}
-		
-	}
-	
 	public void close() {
 		if (mapChrID2RandomFile.size() > 0) {
 			for (RandomAccessFile randomAccessFile : mapChrID2RandomFile.values()) {

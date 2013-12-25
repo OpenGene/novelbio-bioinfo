@@ -1,13 +1,8 @@
 package com.novelbio.analysis.seq.rnahybrid;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.generalConf.TitleFormatNBC;
 
 /** 具体的一对pair */
 public abstract class HybridUnit {
@@ -29,6 +24,7 @@ public abstract class HybridUnit {
 	String sSeq;
 	/** 连配的竖线 */
 	String align;
+	/** 连配中开头的空格 */
 	int startSpaceNum;
 
 	protected String getKey() {
@@ -70,6 +66,10 @@ public abstract class HybridUnit {
 		return qNameDesply + qSeq + TxtReadandWrite.ENTER_LINUX + alignDesply + TxtReadandWrite.ENTER_LINUX + sNameDesply + sSeq;
 	}
 	
+	/**
+	 * 开头0-5个碱基开始，是否和mRNA有6个以上的配对
+	 * @return
+	 */
 	public boolean isSeedPerfectMatch() {
 		int startMaxNum = 5;//最多开头5个碱基
 		int seedLen = 6;
@@ -83,7 +83,7 @@ public abstract class HybridUnit {
 				break;
 			}
 		}
-		int startNum = startSpaceNum-barNum;
+		int startNum = startSpaceNum - barNum;
 		String alignSeq = SeqFasta.reverse(align);
 		int matchNum = 0;
 		for (char bar : alignSeq.toCharArray()) {
