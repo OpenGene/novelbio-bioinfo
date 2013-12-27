@@ -21,7 +21,8 @@ import com.novelbio.database.model.species.Species;
 /** 新miRNA的注释 */
 public class MiRNAnovelAnnotaion implements IntCmdSoft {
 	static String sepSymbol = SepSign.SEP_INFO;
-
+	boolean isUseOldResult = true;
+	String pathTmpBlast;
 	String miRNAthis;
 	String miRNAcope;
 	/** 分割novelmirName和blast到的mirName的标识 */
@@ -30,10 +31,13 @@ public class MiRNAnovelAnnotaion implements IntCmdSoft {
 	Map<String, String> mapID2Blast;
 	List<String> lsCmd = new ArrayList<>();
 	/** 设定需要比对到的物种 */
-	public void setLsMiRNAblastTo(List<Species> lsBlastToSpecies) {
+	public void setLsMiRNAblastTo(List<Species> lsBlastToSpecies, String pathTmpBlast) {
+		this.pathTmpBlast = FileOperate.addSep(pathTmpBlast);
 		this.lsBlastToSpecies = lsBlastToSpecies;
 	}
-	
+	public void setIsUseOldResult(boolean isUseOldResult) {
+		this.isUseOldResult = isUseOldResult;
+	}
 	public void setMiRNAthis(String miRNAthis) {
 		this.miRNAthis = miRNAthis;
 		this.miRNAcope = FileOperate.changeFileSuffix(miRNAthis, "_anno", null);
@@ -60,6 +64,7 @@ public class MiRNAnovelAnnotaion implements IntCmdSoft {
 	}
 	
 	private void blast() {
+		FileOperate.createFolders(pathTmpBlast);
 		lsCmd.clear();
 		BlastNBC blastNBC = new BlastNBC();
 		lsTmpBlastResult.clear();
@@ -68,16 +73,19 @@ public class MiRNAnovelAnnotaion implements IntCmdSoft {
 			if (species == null || species.getTaxID() == 0) {
 				continue;
 			}
-			blastNBC.setSubjectSeq(species.getMiRNAmatureFile());
-			blastNBC.setShortQuerySeq(true);
-			blastNBC.setBlastType(BlastType.blastn);
-			blastNBC.setResultSeqNum(1);
-			blastNBC.setResultType(BlastNBC.ResultType_Simple);
-			String tmpBlastFile = FileOperate.addSep(PathDetail.getTmpPath()) + species.getAbbrName() + DateUtil.getDateAndRandom();
-			lsTmpBlastResult.add(tmpBlastFile);
-			blastNBC.setResultFile(tmpBlastFile);
-			blastNBC.blast();
-			lsCmd.addAll(blastNBC.getCmdExeStr());
+	
+			String tmpBlastResult = pathTmpBlast + "novel_miRNA_blast_to_" + species.getNameLatin().trim().replace(" ", "_");
+			lsTmpBlastResult.add(tmpBlastResult);
+			if (!isUseOldResult || !FileOperate.isFileExistAndBigThanSize(tmpBlastResult, 0)) {
+				blastNBC.setSubjectSeq(species.getMiRNAmatureFile());
+				blastNBC.setShortQuerySeq(true);
+				blastNBC.setBlastType(BlastType.blastn);
+				blastNBC.setResultSeqNum(1);
+				blastNBC.setResultType(BlastNBC.ResultType_Simple);
+				blastNBC.setResultFile(tmpBlastResult);
+				blastNBC.blast();
+				lsCmd.addAll(blastNBC.getCmdExeStr());
+			}
 		}
 	}
 	
@@ -90,6 +98,10 @@ public class MiRNAnovelAnnotaion implements IntCmdSoft {
 		List<BlastInfo> lsBlastInfo = BlastInfo.removeDuplicate(lsBlastInfoAll);
 		
 		for (BlastInfo blastInfo : lsBlastInfo) {
+			//过滤一下
+			if (blastInfo.getAlignLen() < 16 || blastInfo.getIdentities() < 90 || (blastInfo.getGapNum() + blastInfo.getMismatchNum()) < 4) {
+				continue;
+			}
 			mapGeneID2BlastID.put(blastInfo.getQueryID(), blastInfo.getSubjectID());
 		}
 		return mapGeneID2BlastID;

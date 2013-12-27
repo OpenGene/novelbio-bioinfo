@@ -3,6 +3,7 @@ package com.novelbio.analysis.diffexpress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import com.novelbio.base.dataOperate.ExcelOperate;
@@ -37,9 +38,9 @@ import com.novelbio.generalConf.TitleFormatNBC;
 	List<Double> lsFDR = new ArrayList<Double>();
 	List<Double> lsPvalue = new ArrayList<Double>();
 	List<Double> lsLogFC = new ArrayList<Double>();
-	/** 具体的值 */
+	/** 具体的值，第一行是标题 */
 	List<List<String>> lslsInfo;
-	/** 具体的值 */
+	/** 差异基因的值 */
 	List<List<String>> lslsDifGene;
 	/** 谁跟谁比 */
 	public String[] compare;
@@ -57,12 +58,12 @@ import com.novelbio.generalConf.TitleFormatNBC;
 	TitleFormatNBC titlePvalueFDR = TitleFormatNBC.FDR;
 	/** pvalue或fdr的阈值，是0.05还是0.01 */
 	double pvalueFDRthreshold = THRESHOLD2;	
-	/**pValue的列号*/
-	int pvalueCol;
-	/**L的列号*/
-	int logfcCol;
-	/**FDR的列号*/
-	int fdrCol;
+	/** pValue的列号, 从0开始计算 */
+	int pvalueCol = -1;
+	/** LogFC的列号, 从0开始计算*/
+	int logfcCol = -1;
+	/** FDR的列号, 从0开始计算 */
+	int fdrCol = -1;
 	/**
 	 * @param excelName 含有结果的excle的名字
 	 * @param compare 谁跟谁比，譬如 string[]{treat, control}
@@ -93,8 +94,6 @@ import com.novelbio.generalConf.TitleFormatNBC;
 		
 		List<List<String>> lsInfoWithoutTitle = lslsInfo.subList(1, lslsInfo.size());
 		lsFDR = readListListCol(lsInfoWithoutTitle, fdrCol, 0,1);
-		List<Double> lsFDR2 = readListListColOut_0(lsInfoWithoutTitle, fdrCol);
-		Collections.sort(lsFDR2);
 		max99FDR = 45;// -Math.log10(lsFDR2.get((int)(lsFDR2.size()*(1- PRE))));
 		if (pvalueCol > 0) {
 			lsPvalue = readListListCol(lsInfoWithoutTitle, pvalueCol, 0, 1);
@@ -104,9 +103,6 @@ import com.novelbio.generalConf.TitleFormatNBC;
 		}
 
 		lsLogFC = readListListCol(lsInfoWithoutTitle, logfcCol, 10, 0);
-		List<Double> lsLogFC2 = new ArrayList<Double>();
-		lsLogFC2.addAll(lsLogFC);
-		Collections.sort(lsLogFC2);
 		max99LogFC = 8;// lsLogFC2.get((int)(lsLogFC2.size()*PRE));
 		this.compare = compare;
 	}
@@ -211,9 +207,10 @@ import com.novelbio.generalConf.TitleFormatNBC;
 	 */
 	public String writeDifGene() {
 		String outFile = getDifGeneFileName(excelFileName);
+		List<List<String>> lsResult = getLsDifGene();
+		
 		ExcelOperate excelOperate = new ExcelOperate(outFile);
 		excelOperate.setNBCExcel(true);
-		List<List<String>> lsResult = getLsDifGene();
 		excelOperate.WriteExcel(lsResult);
 		excelOperate.Close();
 		
@@ -242,7 +239,6 @@ import com.novelbio.generalConf.TitleFormatNBC;
 		}
 		
 		lslsDifGene = new ArrayList<List<String>>();
-		lslsDifGene.add(lslsInfo.get(0));
 		if (pvalueCol < 0 && titlePvalueFDR != TitleFormatNBC.FDR) {
 			titlePvalueFDR = TitleFormatNBC.FDR;
 		}
@@ -256,9 +252,45 @@ import com.novelbio.generalConf.TitleFormatNBC;
 			
 			if (pvalue <= pvalueFDRthreshold && (logfc >= upfc || logfc <= downfc)) {
 				//因为lslsInfo的第一行是title，所以要加上1行以保持一致
-				lslsDifGene.add(lslsInfo.get(i+1));
+				List<String> lsValue = new ArrayList<>(lslsInfo.get(i+1));
+				if (logfc >= upfc) {
+					lsValue.add("up");
+				} else {
+					lsValue.add("down");
+				}
+				lslsDifGene.add(lsValue);
 			}
 		}
+		
+		//先按照fdr排序，一样的话按照pvalue排序，再一样按照foldchange排序
+		Collections.sort(lslsDifGene, new Comparator<List<String>>() {
+			public int compare(List<String> o1, List<String> o2) {
+				Double pvalue1= 0.0, pvalue2 = 0.0, fdr1 = 0.0, fdr2 = 0.0, logfc1 = 0.0, logfc2 = 0.0;
+				if (pvalueCol >= 0) {
+					pvalue1 = Double.parseDouble(o1.get(pvalueCol));
+					pvalue2 = Double.parseDouble(o2.get(pvalueCol));
+				}
+				if (fdrCol >= 0) {
+					fdr1 = Double.parseDouble(o1.get(fdrCol));
+					fdr2 = Double.parseDouble(o2.get(fdrCol));
+				}
+				if (logfcCol >= 0) {
+					logfc1 = Double.parseDouble(o1.get(logfcCol));
+					logfc2 = Double.parseDouble(o2.get(logfcCol));
+				}
+				int result = fdr1.compareTo(fdr2);
+				if (result == 0) {
+					result = pvalue1.compareTo(pvalue2);
+				}
+				if (result == 0) {
+					result = logfc1.compareTo(logfc2);
+				}
+				return result;
+			}
+		});
+		List<String> lsTitle = new ArrayList<>(lslsInfo.get(0));
+		lsTitle.add(TitleFormatNBC.Style.toString());
+		lslsDifGene.add(0, lsTitle);
 		return lslsDifGene;
 	}
 	

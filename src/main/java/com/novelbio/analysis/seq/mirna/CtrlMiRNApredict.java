@@ -10,6 +10,7 @@ import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.GeneExpTable;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.mapping.MappingReadsType;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamFileStatistics;
@@ -24,6 +25,9 @@ public class CtrlMiRNApredict implements IntCmdSoft {
 	GffChrAbs gffChrAbs;
 	Species species;
 	String outPath;
+	String outPathSample;
+	String outPathTmp;
+	String samStatisticsPath;
 	
 	Map<String, ? extends AlignSeq> mapPrefix2SamFile;
 	Map<String, String> mapPrefix2UnmapFq = new HashMap<>();
@@ -63,8 +67,11 @@ public class CtrlMiRNApredict implements IntCmdSoft {
 		this.lsBlastTo = lsBlastTo;
 	}
 	/** 输出文件夹 */
-	public void setOutPath(String outPath) {
-		this.outPath = FileOperate.addSep(outPath);
+	public void setOutPath(String outPath, String outPathSample, String outPathTmp, String samStatisticsPath) {
+		this.outPath = outPath;
+		this.outPathSample = outPathSample;
+		this.outPathTmp = outPathTmp;
+		this.samStatisticsPath = samStatisticsPath;
 	}
 	public void setMapPrefix2GenomeSamFile(Map<String, ? extends AlignSeq> mapPrefix2SamFile) {
 		this.mapPrefix2SamFile = mapPrefix2SamFile;
@@ -108,16 +115,26 @@ public class CtrlMiRNApredict implements IntCmdSoft {
 	}
 	
 	private void getMirPredictCount(String prefix, AlignSeq alignSeq, SamMapRate samMapMiRNARate) {
-		FastQ fastQ = alignSeq.getFastQ();
+		FastQ fastQ = null;
+		if (isUseOldResult && FileOperate.isFileExistAndBigThanSize(FileOperate.changeFileSuffix(alignSeq.getFileName(), "", "fastq.gz"), 0)) {
+			fastQ = new FastQ(FileOperate.changeFileSuffix(alignSeq.getFileName(), "", "fastq.gz"));
+		} else {
+			fastQ = alignSeq.getFastQ();
+		}
 		alignSeq.close();
 		SoftWareInfo softWareInfo = new SoftWareInfo();
 		softWareInfo.setName(SoftWare.bowtie2);
-		String outPathMap = outPath + "tmpMapping/";
-		FileOperate.createFolders(outPathMap);
-		String novelMiRNAsam = outPathMap + prefix + "novelMiRNAmapping.sam";
-		String unmappedFq = outPathMap + prefix + "novelMiRNAunmapped.fq.gz";
-		novelMiRNAsam = MiRNAmapPipline.mappingBowtie2(lsCmd, isUseOldResult, new SamFileStatistics(prefix), softWareInfo.getExePath(), 3, fastQ.getReadFileName(), 
-				novelMiRNADeep.getNovelMiRNAhairpin(), novelMiRNAsam, unmappedFq);
+		String novelMiRNAsam = outPathTmp + prefix + "novelMiRNAmapping.sam";
+		String unmappedFq = outPathTmp + prefix + "novelMiRNAunmapped.fq.gz";
+		SamFileStatistics samFileNovelMiRNA = new SamFileStatistics(prefix);
+		String mirHairp = novelMiRNADeep.getNovelMiRNAhairpin();
+		String mirHairpNew = outPathTmp + FileOperate.getFileName(mirHairp);
+		FileOperate.copyFile(mirHairp, mirHairpNew, false);
+		novelMiRNAsam = MiRNAmapPipline.mappingBowtie2(lsCmd, isUseOldResult, samFileNovelMiRNA, softWareInfo.getExePath(), 3, fastQ.getReadFileName(), 
+				mirHairpNew, novelMiRNAsam, unmappedFq);
+		if (samFileNovelMiRNA.getReadsNum(MappingReadsType.allMappedReads) > 0) {
+			SamFileStatistics.saveExcel(samStatisticsPath + FileOperate.getFileName(novelMiRNAsam), samFileNovelMiRNA);
+		}
 		miRNACount.setAlignFile(new SamFile(novelMiRNAsam));
 		mapPrefix2UnmapFq.put(prefix, unmappedFq);
 		samMapMiRNARate.setCurrentCondition(prefix);
@@ -131,8 +148,8 @@ public class CtrlMiRNApredict implements IntCmdSoft {
 		expMirPre.addAllReads(miRNACount.getCountPreAll());
 		expMirPre.addGeneExp(miRNACount.getMapMiRNApre2Value());
 		
-		CtrlMiRNAfastq.writeFile(false, outPath + prefix + FileOperate.getSepPath() + prefix + "_NovelMirPre_Counts.txt", expMirPre, EnumExpression.Counts);
-		CtrlMiRNAfastq.writeFile(false, outPath + prefix + FileOperate.getSepPath() + prefix + "_NovelMirMature_Counts.txt", expMirMature, EnumExpression.Counts);
+		CtrlMiRNAfastq.writeFile(false, outPathSample + prefix + FileOperate.getSepPath() + prefix + "_NovelMirPre_Counts.txt", expMirPre, EnumExpression.Counts);
+		CtrlMiRNAfastq.writeFile(false, outPathSample + prefix + FileOperate.getSepPath() + prefix + "_NovelMirMature_Counts.txt", expMirMature, EnumExpression.Counts);
 	}
 	
 	public Map<String, String> getMapPrefix2UnmapFq() {
@@ -160,7 +177,8 @@ public class CtrlMiRNApredict implements IntCmdSoft {
 		if (lsBlastTo != null && lsBlastTo.size() > 0) {
 			miRNAnovelAnnotaion = new MiRNAnovelAnnotaion();
 			miRNAnovelAnnotaion.setMiRNAthis(novelMiRNADeep.getNovelMiRNAmature());
-			miRNAnovelAnnotaion.setLsMiRNAblastTo(lsBlastTo);
+			miRNAnovelAnnotaion.setLsMiRNAblastTo(lsBlastTo, outPathTmp);
+			miRNAnovelAnnotaion.setIsUseOldResult(isUseOldResult);
 			miRNAnovelAnnotaion.annotation();
 			mapID2Blast = miRNAnovelAnnotaion.getMapID2Blast();
 			lsCmd.addAll(miRNAnovelAnnotaion.getCmdExeStr());

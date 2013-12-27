@@ -32,7 +32,7 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 	Species species;
 	/** 设定gff和chrome */
 	GffChrAbs gffChrAbs = new GffChrAbs();
-	
+	boolean isUseOldResult = true;
 	/** mapping 序列 */
 	MiRNAmapPipline miRNAmappingPipline = new MiRNAmapPipline();
 	
@@ -46,7 +46,9 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 		
 	///////输出文件夹 //////////
 	String outPath;
+	String outPathSample;
 	String outPathTmpMapping;
+	String outPathStatistics;
 	///////输出数量 ///////////
 	GeneExpTable expMirPre = new GeneExpTable(TitleFormatNBC.miRNApreName);
 	GeneExpTable expMirMature = new GeneExpTable(TitleFormatNBC.miRNAName);
@@ -77,6 +79,7 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 	 * @param isUseOldResult true表示跳过该步骤
 	 */
 	public void setIsUseOldResult(boolean isUseOldResult) {
+		this.isUseOldResult = isUseOldResult;
 		miRNAmappingPipline.setIsUseOldResult(isUseOldResult);
 	}
 	public void setThreadNumMiRNAmap(int mapThreadNum) {
@@ -93,10 +96,11 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 		this.mapPrefix2Fastq = mapPrefix2Fastq;
 	}
 	/** 设定输出文件夹 */
-	public void setOutPath(String outPath) {
-		this.outPath = FileOperate.addSep(outPath);
-		FileOperate.createFolders(this.outPath);
-		this.outPathTmpMapping = this.outPath + "tmpMapping";
+	public void setOutPath(String outPath, String outPathSample, String outPathTmpMapping, String outPathStatistics) {
+		this.outPath = outPath;
+		this.outPathSample = outPathSample;
+		this.outPathTmpMapping = outPathTmpMapping;
+		this.outPathStatistics = outPathStatistics;
 	}
 	
 	public void setMiRNAexp(GeneExpTable expMirPre, GeneExpTable expMirMature) {
@@ -145,7 +149,7 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 			String fastq = mapPrefix2Fastq.get(prefix);
 			//文件名为输出文件夹+文件前缀
 			miRNAmappingPipline.setSample(prefix, fastq);
-			miRNAmappingPipline.setOutPathTmp(outPathTmpMapping);
+			miRNAmappingPipline.setOutPathTmp(outPathTmpMapping, outPathStatistics);
 			miRNAmappingPipline.mappingPipeline();
 			lsCmd.addAll(miRNAmappingPipline.getCmdExeStr());
 			SamFile alignSeq = miRNAmappingPipline.getOutGenomeAlignSeq();
@@ -156,7 +160,7 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 				samMapMiRNARate.addMapInfo("MiRNA", miRNAmappingPipline.getSamFileStatisticsMiRNA());
 			}
 			setCurrentCondition(prefix);
-			countSmallRNA(outPath, prefix, miRNAmappingPipline);
+			countSmallRNA(outPathSample, prefix, miRNAmappingPipline);
 		}
 	}
 	
@@ -220,7 +224,7 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 	* @param miRNAmappingPipline
 	*/
 	private void countMiRNA(String outPath, String prefix, MiRNAmapPipline miRNAmappingPipline) {
-		if (FileOperate.isFileExistAndBigThanSize(outPath + prefix + "_mirPre_Counts.txt", 0) 
+		if (isUseOldResult && FileOperate.isFileExistAndBigThanSize(outPath + prefix + "_mirPre_Counts.txt", 0) 
 				&& FileOperate.isFileExistAndBigThanSize(outPath + prefix + "_mirMature_Counts.txt", 0)) {
 			expMirPre.read(outPath + prefix + "_mirPre_Counts.txt", false);
 			expMirMature.read(outPath + prefix + "_mirMature_Counts.txt", false);
@@ -244,7 +248,7 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 	 * @param solo 单独计数
 	 *  */
 	private void countRfam(String outPath, String prefix, MiRNAmapPipline miRNAmappingPipline) {
-		if (FileOperate.isFileExistAndBigThanSize(outPath + prefix + "_RfamClass.txt", 0) 
+		if (isUseOldResult && FileOperate.isFileExistAndBigThanSize(outPath + prefix + "_RfamClass.txt", 0) 
 				&& FileOperate.isFileExistAndBigThanSize(outPath + prefix + "_RfamID.txt", 0)) {
 			expRfamClass.read(outPath + prefix + "_RfamClass.txt", false);
 			expRfamID.read(outPath + prefix + "_RfamID.txt", false);
@@ -263,7 +267,7 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 	 * @param solo 单独计数
 	 *  */
 	private void countNCrna(String outPath, String prefix, MiRNAmapPipline miRNAmappingPipline) {
-		if (FileOperate.isFileExistAndBigThanSize(outPath + prefix + "_NCRNA.txt", 0)) {
+		if (isUseOldResult && FileOperate.isFileExistAndBigThanSize(outPath + prefix + "_NCRNA.txt", 0)) {
 			expNcRNA.read(outPath + prefix + "_NCRNA.txt", false);
 			return;
 		}
@@ -281,7 +285,7 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 	 * @param solo 单独计数
 	 *  */
 	private void countRepeatGene(String outPath, String prefix, MiRNAmapPipline miRNAmappingPipline) {
-		if (FileOperate.isFileExistAndBigThanSize(outPath + prefix + "_GeneStructure.txt", 0) 
+		if (isUseOldResult && FileOperate.isFileExistAndBigThanSize(outPath + prefix + "_GeneStructure.txt", 0) 
 				&& FileOperate.isFileExistAndBigThanSize(outPath + prefix + "_RepeatFamily.txt", 0)
 				&& FileOperate.isFileExistAndBigThanSize(outPath + prefix + "_RepeatName.txt", 0)
 				) {

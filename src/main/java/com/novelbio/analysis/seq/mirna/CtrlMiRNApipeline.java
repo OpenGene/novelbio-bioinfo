@@ -14,6 +14,7 @@ import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
 import com.novelbio.analysis.seq.sam.SamMapRate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.PathDetailNBC;
 import com.novelbio.generalConf.TitleFormatNBC;
@@ -32,6 +33,11 @@ public class CtrlMiRNApipeline implements IntCmdSoft {
 	
 	List<Species> lsSpeciesBlastTo;
 	String outPath;
+	String outPathTmpMapping;
+	String outPathStatistics;
+	/** 每个样本的输出信息保存在这个里面 */
+	String outPathSample;
+	
 	Map<String, AlignSeq> mapPrefix2AlignFile;
 	Map<String, String> mapPrefix2Fastq;
 
@@ -90,7 +96,14 @@ public class CtrlMiRNApipeline implements IntCmdSoft {
 	}
 	/** 设定输出路径 */
 	public void setOutPath(String outPath) {
-		this.outPath = outPath;
+		this.outPath = FileOperate.addSep(outPath);
+		FileOperate.createFolders(this.outPath);
+		this.outPathSample = this.outPath + "samples" + FileOperate.getSepPath();
+		FileOperate.createFolders(outPathSample);
+		this.outPathTmpMapping = this.outPath + "tmpMapping" + FileOperate.getSepPath();
+		FileOperate.createFolders(outPathTmpMapping);
+		this.outPathStatistics = FileOperate.addSep(outPath) + "map_statistics" + FileOperate.getSepPath();
+		FileOperate.createFolders(outPathStatistics);
 	}
 	
 	/** 读取已有的miRNA信息 */
@@ -143,7 +156,7 @@ public class CtrlMiRNApipeline implements IntCmdSoft {
 		ctrlMiRNAfastq.setMappingAll2Genome(mapToGenome);
 		ctrlMiRNAfastq.setRfamSpeciesSpecific(mapRfam2Species);
 		ctrlMiRNAfastq.setSpecies(species);
-		ctrlMiRNAfastq.setOutPath(outPath);
+		ctrlMiRNAfastq.setOutPath(outPath, outPathSample, outPathTmpMapping, outPathStatistics);
 		ctrlMiRNAfastq.setGffChrAbs(gffChrAbs);
 		ctrlMiRNAfastq.setMapPrefix2Fastq(mapPrefix2Fastq);
 		ctrlMiRNAfastq.setMiRNAinfo(PathDetailNBC.getMiRNADat());
@@ -160,7 +173,7 @@ public class CtrlMiRNApipeline implements IntCmdSoft {
 		ctrlMiRNApredict.setGffChrAbs(gffChrAbs);
 		ctrlMiRNApredict.setSpecies(species);
 		ctrlMiRNApredict.setMapPrefix2GenomeSamFile(mapBedFile2Prefix);
-		ctrlMiRNApredict.setOutPath(outPath);
+		ctrlMiRNApredict.setOutPath(outPath, outPathSample, outPathTmpMapping, outPathStatistics);
 		ctrlMiRNApredict.setLsSpeciesBlastTo(lsSpeciesBlastTo);
 		ctrlMiRNApredict.setExpMir(expMirPre, expMirMature);
 		ctrlMiRNApredict.runMiRNApredict(samMapMiRNARate);
@@ -176,7 +189,7 @@ public class CtrlMiRNApipeline implements IntCmdSoft {
 		mirSpeciesPipline.setMapPrefix2Fastq(mapPrefix2Fastq);
 		mirSpeciesPipline.setExpMir(expMirPre, expMirMature);
 		mirSpeciesPipline.setLsSpecies(lsSpeciesBlastTo); 
-		mirSpeciesPipline.setOutPathTmp(outPath);
+		mirSpeciesPipline.setOutPathTmp(outPath, outPathSample, outPathTmpMapping, outPathStatistics);
 		mirSpeciesPipline.setThreadNum(4);
 		mirSpeciesPipline.mappingPipeline(PathDetailNBC.getMiRNADat(), samMapMiRNARate);
 		lsCmd.addAll(mirSpeciesPipline.getCmdExeStr());
@@ -184,7 +197,6 @@ public class CtrlMiRNApipeline implements IntCmdSoft {
 	}
 	@Override
 	public List<String> getCmdExeStr() {
-		// TODO Auto-generated method stub
 		return lsCmd;
 	}
 

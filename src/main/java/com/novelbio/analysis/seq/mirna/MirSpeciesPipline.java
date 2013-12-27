@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.GeneExpTable;
+import com.novelbio.analysis.seq.mapping.MappingReadsType;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamFileStatistics;
@@ -29,7 +30,9 @@ public class MirSpeciesPipline implements IntCmdSoft {
 	Map<String, String> mapPrefix2Fastq = new LinkedHashMap<>();
 	/** 输出的临时文件夹，主要保存mapping的中间文件 */
 	String outPath;
+	String outPathSample;
 	String outPathTmpMapping;
+	String outPathStatistics;
 	List<Species> lsSpecies;
 	/** bwa所在的路径 */
 	GeneExpTable expMirMature;
@@ -73,9 +76,11 @@ public class MirSpeciesPipline implements IntCmdSoft {
 		return prefix;
 	}
 	/** 设定输出文件夹，必须是文件夹 */
-	public void setOutPathTmp(String outPath) {
+	public void setOutPathTmp(String outPath, String outPathSample, String outPathTmpMapping, String outPathStatistics) {
 		this.outPath = FileOperate.addSep(outPath);
-		this.outPathTmpMapping = this.outPath + "tmpMapping/";
+		this.outPathSample = outPathSample;
+		this.outPathTmpMapping = outPathTmpMapping;
+		this.outPathStatistics = outPathStatistics;
 	}
 	public void setExpMir(GeneExpTable expMirPre, GeneExpTable expMirMature) {
 		this.expMirPre = expMirPre;
@@ -107,13 +112,17 @@ public class MirSpeciesPipline implements IntCmdSoft {
 				samFileOut = outPathTmpMapping + outputPrefix + species.getCommonName() + ".bam";
 				SamFileStatistics samFileStatistics = new SamFileStatistics(prefix);
 				samFileOut = MiRNAmapPipline.mappingBowtie2(lsCmd, isUseOldResult, samFileStatistics, softWareInfo.getExePath(), threadNum, fastqFile, species.getMiRNAhairpinFile(), samFileOut, outFastq);
-				
-				if (samMapRate != null) {
-					samMapRate.addMapInfo(species.getCommonName() + "_miRNA", samFileStatistics);
-					if (i == lsSpecies.size() - 1) {
-						samMapRate.addUnmapInfo(samFileStatistics);
+				if (samFileStatistics.getReadsNum(MappingReadsType.allMappedReads) > 0) {
+					SamFileStatistics.saveExcel(outPathStatistics + FileOperate.getFileName(samFileOut), samFileStatistics);
+					
+					if (samMapRate != null) {
+						samMapRate.addMapInfo(species.getCommonName() + "_miRNA", samFileStatistics);
+						if (i == lsSpecies.size() - 1) {
+							samMapRate.addUnmapInfo(samFileStatistics);
+						}
 					}
 				}
+				
 				
 				miRNACount.setAlignFile(new SamFile(samFileOut));
 				miRNACount.run();
@@ -128,9 +137,9 @@ public class MirSpeciesPipline implements IntCmdSoft {
 				expMirPre.addGeneExp(miRNACount.getMapMiRNApre2Value());
 				mapPrefix2Fastq.put(prefix, outFastq);
 				
-				CtrlMiRNAfastq.writeFile(false, outPath + prefix + FileOperate.getSepPath() + prefix + "_BlastTo" 
+				CtrlMiRNAfastq.writeFile(false, outPathSample + prefix + FileOperate.getSepPath() + prefix + "_BlastTo" 
 				+ species.getCommonName() + "_Pre_Counts.txt", expMirPre, EnumExpression.Counts);
-				CtrlMiRNAfastq.writeFile(false, outPath + prefix + FileOperate.getSepPath() + prefix + "_BlastTo" 
+				CtrlMiRNAfastq.writeFile(false, outPathSample + prefix + FileOperate.getSepPath() + prefix + "_BlastTo" 
 						+ species.getCommonName() + "_Mature_Counts.txt", expMirMature, EnumExpression.Counts);
 			}
 		}

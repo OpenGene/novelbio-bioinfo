@@ -56,7 +56,7 @@ public class SamFileStatistics implements AlignmentRecorder {
 	double junctionUniReads = 0;
 	double junctionAllReads = 0;
 	
-	/** 用于画图和生成表格的参数 */
+	/** 用于画图和生成表格的参数, key是真实的ChrID */
 	HashMap<String, double[]> mapChrID2LenProp = null;
 	/** standardData 染色体长度的map, key是真实的ChrID */
 	Map<String, Long> standardData;
@@ -79,24 +79,7 @@ public class SamFileStatistics implements AlignmentRecorder {
 	 */
 	boolean correctChrReadsNum = false;
 	
-	Map<String, double[]> mapChrID2ReadsNum = new TreeMap<String, double[]>(new Comparator<String>() {
-		PatternOperate patternOperate = new PatternOperate("\\d+", false);
-		@Override
-		public int compare(String arg0, String arg1) {
-			String str1 = patternOperate.getPatFirst(arg0);
-			String str2 = patternOperate.getPatFirst(arg1);
-			if (str1 == null || str1.equals("") || str2 == null || str2.equals("")) {
-				 return arg0.compareTo(arg1);
-			}
-			Integer num1 = Integer.parseInt(str1);
-			Integer num2 = Integer.parseInt(str2);
-			if (num1.equals( num2)) {
-				return arg0.compareTo(arg1);
-			} else {
-				return num1.compareTo(num2);
-			}
-		}
-	});
+	Map<String, double[]> mapChrID2ReadsNum = new HashMap<>();
 	
 	public SamFileStatistics(String prefix) {
 		this.prefix = prefix;
@@ -174,9 +157,12 @@ public class SamFileStatistics implements AlignmentRecorder {
 	 */
 	public Map<String, Long> getMapChrID2MappedNumber() {
 		Map<String, Long> mapChrID2MappedNumber = new LinkedHashMap<String, Long>();
-		for (String chrID : mapChrID2ReadsNum.keySet()) {
+		List<String> lsChrID = new ArrayList<>(mapChrID2ReadsNum.keySet());
+		Collections.sort(lsChrID, new CompareChrID());
+		for (String chrID : lsChrID) {
 			mapChrID2MappedNumber.put(chrID.toLowerCase(), (long)mapChrID2ReadsNum.get(chrID)[0]);
 		}
+		
 		return mapChrID2MappedNumber;
 	}
 	/**
@@ -207,8 +193,10 @@ public class SamFileStatistics implements AlignmentRecorder {
 	
 	private ArrayList<String[]> getLsChrID2Num() {
 		ArrayList<String[]> lsChrID2Num = new ArrayList<String[]>();
-		for (Entry<String, double[]> entry : mapChrID2ReadsNum.entrySet()) {
-			String[] tmp = new String[]{entry.getKey(), (long)entry.getValue()[0] + ""};
+		List<String> lsChrID = new ArrayList<>(mapChrID2ReadsNum.keySet());
+		Collections.sort(lsChrID, new CompareChrID());
+		for (String chrID : lsChrID) {
+			String[] tmp = new String[]{chrID, (long)mapChrID2ReadsNum.get(chrID)[0] + ""};
 			lsChrID2Num.add(tmp);
 		}
 		Collections.sort(lsChrID2Num, new Comparator<String[]>() {

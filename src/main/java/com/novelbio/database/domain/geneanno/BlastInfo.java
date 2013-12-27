@@ -49,6 +49,9 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	protected int subjectTax;
 	private int subjectIDtype;
 	
+	private int mismatchNum;
+	private int gapNum;
+	
 	/** query比对到的起点 */
 	private int qStartLoc;
 	/** query比对到的终点 */
@@ -129,14 +132,17 @@ public class BlastInfo implements Comparable<BlastInfo> {
 			this.queryTax = taxIDQ;
 			this.subjectTax = taxIDS;
 		}
+		this.identities = Double.parseDouble(blastInfo[2].trim());
+		this.alignLen = Integer.parseInt(blastInfo[3].trim());
+		this.mismatchNum = Integer.parseInt(blastInfo[4]);
+		this.gapNum = Integer.parseInt(blastInfo[5]);
 		this.qStartLoc = Integer.parseInt(blastInfo[6]);
 		this.qEndLoc = Integer.parseInt(blastInfo[7]);
 		this.sStartLoc = Integer.parseInt(blastInfo[8]);
 		this.sEndLoc = Integer.parseInt(blastInfo[9]);
-		
-		this.alignLen = Integer.parseInt(blastInfo[3].trim());
+
 		this.evalue = Double.parseDouble(blastInfo[10].trim());
-		this.identities = Double.parseDouble(blastInfo[2].trim());
+
 		this.score = Double.parseDouble(blastInfo[11].trim());
 	}
 	
@@ -287,12 +293,17 @@ public class BlastInfo implements Comparable<BlastInfo> {
 		return Math.max(sStartLoc, sEndLoc);
 	}
 	/**
-	 * 设置查找的相似度,初值为0
+	 * 获得查找的相似度,初值为0
 	 */
 	public double getIdentities() {
 		return this.identities;
 	}
-
+	public int getMismatchNum() {
+		return mismatchNum;
+	}
+	public int getGapNum() {
+		return gapNum;
+	}
 	/**
 	 * 获得查找的evalue，初值为100
 	 */

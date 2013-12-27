@@ -1,5 +1,7 @@
 package com.novelbio.generalConf;
 
+import javax.jws.soap.SOAPBinding.Style;
+
 public enum TitleFormatNBC {
 	/** 公司名缩写 */
 	CompanyNameAbbr("NovelBio"),
@@ -15,6 +17,8 @@ public enum TitleFormatNBC {
 	
 	ChrID("ChrID"), LocStart("LocStart"), LocEnd("LocEnd"),
 	Location("Location"), Description("Description"), Strand("Strand"),
+	
+	Style("Style"),
 	
 	miRNAName("miRNAName"), miRNApreName("miRNApreName"),
 	mirSequence("mirSequence"), mirPreSequence("mirPreSequence"),

@@ -295,7 +295,7 @@ public class BedSeq implements AlignSeq, IntCmdSoft {
 	 * @throws Exception
 	 */
 	public FastQ getFastQ() {
-		String outFileName = FileOperate.changeFileSuffix(getFileName(), "", "fastq");
+		String outFileName = FileOperate.changeFileSuffix(getFileName(), "", "fastq.gz");
 		return getFastQ(outFileName);
 	}
 	/**

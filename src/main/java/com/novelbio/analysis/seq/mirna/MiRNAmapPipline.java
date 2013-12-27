@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.mapping.MapBowtie;
-import com.novelbio.analysis.seq.sam.AlignSeqReading;
+import com.novelbio.analysis.seq.mapping.MappingReadsType;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamFileStatistics;
 import com.novelbio.analysis.seq.sam.SamToFastq;
@@ -25,6 +25,8 @@ public class MiRNAmapPipline implements IntCmdSoft {
 	String seqFile = "";
 	/** 输出的临时文件夹，主要保存mapping的中间文件 */
 	String outPathTmpMapping;
+	/** 统计结果的输出 */
+	String samStatisticPath;
 	/** 输出的临时文件夹，主要保存mapping的中间文件 */
 	String prefix = "";
 
@@ -107,9 +109,10 @@ public class MiRNAmapPipline implements IntCmdSoft {
 		}
 		this.seqFile = fastqFile;
 	}
-	/** 设定输出临时文件夹，必须是文件夹 */
-	public void setOutPathTmp(String outPathTmpMapping) {
-		this.outPathTmpMapping = FileOperate.addSep(outPathTmpMapping);
+	/** 设定输出临时文件夹，必须是文件夹，尾部有"/" */
+	public void setOutPathTmp(String outPathTmpMapping, String samStatisticPath) {
+		this.outPathTmpMapping = outPathTmpMapping;
+		this.samStatisticPath = samStatisticPath;
 	}
 	/** 比对miRNA的Sam文件结果 */
 	public SamFile getOutMiRNAAlignSeq() {
@@ -165,6 +168,10 @@ public class MiRNAmapPipline implements IntCmdSoft {
 			unMappedFq = outputTmpFinal + "unMap2miRNA.fq.gz";
 			samFileStatisticsMiRNA = new SamFileStatistics(prefix);
 			samFileMiRNA = mappingBowtie2(lsCmd, isUseOldResult, samFileStatisticsMiRNA, exePath, threadNum, fqFile, miRNApreSeq, samFileMiRNA, unMappedFq);
+			if (samFileStatisticsMiRNA.getReadsNum(MappingReadsType.allMappedReads) > 0) {
+				SamFileStatistics.saveExcel(samStatisticPath + FileOperate.getFileName(samFileMiRNA), samFileStatisticsMiRNA);
+			}
+			
 			unMappedMiRNA = unMappedFq;
 			if (!mappingAll2Rfam) {
 				fqFile = unMappedFq;
@@ -173,35 +180,49 @@ public class MiRNAmapPipline implements IntCmdSoft {
 	
 		if (FileOperate.isFileExist(rfamSeq)) {
 			unMappedFq = outputTmpFinal + "unMap2rfam.fq.gz";
-			samFileRfam = mappingBowtie2(lsCmd, isUseOldResult, new SamFileStatistics(FileOperate.getFileNameSep(samFileRfam)[0]),
+			SamFileStatistics samStatisticsRfam = new SamFileStatistics(FileOperate.getFileNameSep(samFileRfam)[0]);
+			samFileRfam = mappingBowtie2(lsCmd, isUseOldResult, samStatisticsRfam,
 					exePath, threadNum, fqFile, rfamSeq, samFileRfam, unMappedFq);
+			if (samStatisticsRfam.getReadsNum(MappingReadsType.allMappedReads) > 0) {
+				SamFileStatistics.saveExcel(samStatisticPath + FileOperate.getFileName(samFileRfam), samStatisticsRfam);
+			}
 			fqFile = unMappedFq;
 		}
 		
 		if (FileOperate.isFileExist(ncRNAseq)) {
 			unMappedFq = outputTmpFinal + "unMap2ncRna.fq.gz";
-			samFileNCRNA = mappingBowtie2(lsCmd, isUseOldResult, new SamFileStatistics(FileOperate.getFileNameSep(samFileNCRNA)[0]),
+			SamFileStatistics samStatisticsNCRNA = new SamFileStatistics(FileOperate.getFileNameSep(samFileNCRNA)[0]);
+			samFileNCRNA = mappingBowtie2(lsCmd, isUseOldResult, samStatisticsNCRNA,
 					exePath, threadNum, fqFile, ncRNAseq, samFileNCRNA, unMappedFq);
+			if (samStatisticsNCRNA.getReadsNum(MappingReadsType.allMappedReads) > 0) {
+				SamFileStatistics.saveExcel(samStatisticPath + FileOperate.getFileName(samFileNCRNA), samStatisticsNCRNA);
+			}
 			fqFile = unMappedFq;
 		}
 		
 		if (FileOperate.isFileExist(genome)) {
 			unMappedFq = outputTmpFinal + "unMapped.fq.gz";
-			samFileGenome = mappingBowtie2(lsCmd, isUseOldResult, new SamFileStatistics(FileOperate.getFileNameSep(samFileGenome)[0]),
+			SamFileStatistics samStatisticsGenome = new SamFileStatistics(FileOperate.getFileNameSep(samFileGenome)[0]);
+			samFileGenome = mappingBowtie2(lsCmd, isUseOldResult, samStatisticsGenome,
 					exePath, threadNum, unMappedMiRNA, genome, samFileGenome, unMappedFq);
+			if (samStatisticsGenome.getReadsNum(MappingReadsType.allMappedReads) > 0) {
+				SamFileStatistics.saveExcel(samStatisticPath + FileOperate.getFileName(samFileGenome), samStatisticsGenome);
+			}
 		}
 		
 		if (mappingAll2Genome && FileOperate.isFileExist(genome)) {
 			fqFile = seqFile;
 			unMappedFq = outputTmpFinal + "unMapped.fq.gz";
-			samFileGenomeAll = mappingBowtie2(lsCmd, isUseOldResult, new SamFileStatistics(FileOperate.getFileNameSep(samFileGenomeAll)[0]),
+			SamFileStatistics samStatisticsGenomeAll = new SamFileStatistics(FileOperate.getFileNameSep(samFileGenomeAll)[0]);
+			samFileGenomeAll = mappingBowtie2(lsCmd, isUseOldResult, samStatisticsGenomeAll,
 					exePath, threadNum, fqFile, genome, samFileGenomeAll, unMappedFq);
+			if (samStatisticsGenomeAll.getReadsNum(MappingReadsType.allMappedReads) > 0) {
+				SamFileStatistics.saveExcel(samStatisticPath + FileOperate.getFileName(samFileGenomeAll), samStatisticsGenomeAll);
+			}
 		}
 	}
 	/** 仅mapping至MiRNA上 */
-	public void mappingMiRNA() {
-		FileOperate.createFolders(outPathTmpMapping);
-		
+	public void mappingMiRNA() {		
 		String outputSam = outPathTmpMapping + prefix + "_";
 		samFileMiRNA = outputSam +  "miRNA.sam";
 		/** 全部reads mapping至全基因组上 */
@@ -214,6 +235,9 @@ public class MiRNAmapPipline implements IntCmdSoft {
 			unMappedFq = outputTmpFinal + "unMap2miRNA.fq.gz";
 			samFileStatisticsMiRNA = new SamFileStatistics(prefix);
 			samFileMiRNA = mappingBowtie2(lsCmd, isUseOldResult, samFileStatisticsMiRNA, exePath, threadNum, fqFile, miRNApreSeq, samFileMiRNA, unMappedFq);
+			if (samFileStatisticsMiRNA.getReadsNum(MappingReadsType.allMappedReads) > 0) {
+				SamFileStatistics.saveExcel(samStatisticPath + FileOperate.getFileName(samFileMiRNA), samFileStatisticsMiRNA);
+			}
 			fqFile = unMappedFq;
 		}
 	}
@@ -252,15 +276,7 @@ public class MiRNAmapPipline implements IntCmdSoft {
 					&& ((unMappedFq == null || unMappedFq.equals("")) 
 					|| FileOperate.isFileExistAndBigThanSize(unMappedFq, 0))
 					) {
-				if (samFileStatistics != null) {
-					samFileStatistics.setCorrectChrReadsNum(true);
-					samFileStatistics.initial();
-					SamFile samFile = new SamFile(mapBowtie.getOutNameCope());
-					AlignSeqReading alignSeqReading = new AlignSeqReading(samFile);
-					alignSeqReading.addAlignmentRecorder(samFileStatistics);
-					alignSeqReading.run();
-					return mapBowtie.getOutNameCope();
-				}
+				return mapBowtie.getOutNameCope();
 			}
 		}
 		
@@ -274,7 +290,6 @@ public class MiRNAmapPipline implements IntCmdSoft {
 		logger.info("start mapping miRNA");
 		SamFile samFile = mapBowtie.mapReads();
 		logger.info("finish mapping miRNA");
-		samFileStatistics.writeToFile(FileOperate.changeFileSuffix(samFile.getFileName(), "_Statistics", "txt"));
 		if (lsCmd != null) {
 			lsCmd.addAll(mapBowtie.getCmdExeStr());
 		}
