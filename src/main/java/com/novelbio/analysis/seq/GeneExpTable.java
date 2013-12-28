@@ -13,6 +13,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 /**
@@ -488,5 +489,29 @@ public class GeneExpTable {
 
 		lsTitle.add(currentCondition);
 		return lsTitle.toArray(new String[0]);
+	}
+	
+	/**
+	 * 如果文件夹不存在，会新建文件夹
+	 * @param writeAllCondition
+	 * @param fileName
+	 * @param expTable
+	 * @param enumExpression
+	 */
+	public void writeFile(boolean writeAllCondition, String fileName, EnumExpression enumExpression) {
+		List<String[]> lsValues = null;
+		if (writeAllCondition) {
+			lsValues = getLsAllCountsNum(enumExpression);
+		} else {
+			lsValues = getLsCountsNum(enumExpression);
+		}
+		
+		if (lsValues == null || lsValues.size() <= 1) {
+			return;
+		}
+		FileOperate.createFolders(FileOperate.getPathName(fileName));
+		TxtReadandWrite txtWrite = new TxtReadandWrite(fileName, true);
+		txtWrite.ExcelWrite(lsValues);
+		txtWrite.close();
 	}
 }

@@ -1,6 +1,5 @@
 package com.novelbio.generalConf;
 
-import javax.jws.soap.SOAPBinding.Style;
 
 public enum TitleFormatNBC {
 	/** 公司名缩写 */
@@ -33,7 +32,12 @@ public enum TitleFormatNBC {
 	
 	Energy("Energy"), Score("Score"), 
 	GOID("GOID"), GOTerm("GOTerm"),
-	PathwayID("PathwayID"), PathwayTerm("PathwayTerm");
+	PathwayID("PathwayID"), PathwayTerm("PathwayTerm"),
+	
+	/** mapping的临时文件夹 */
+	TmpMapping("TmpMapping"),
+	/** 样本文件夹 */
+	Samples("Samples");
 	
 	String item;
 	TitleFormatNBC(String item) {

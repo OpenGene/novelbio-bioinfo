@@ -9,7 +9,8 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.AlignSeq;
-import com.novelbio.analysis.seq.fasta.SeqHash;
+import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.generalConf.TitleFormatNBC;
@@ -18,7 +19,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
  * 读取Rfam的文件，获得RfamID对应的具体信息
  * @author zong0jie
  */
-public class RfamStatistic {
+public class RfamStatistic implements AlignmentRecorder {
 	Logger logger = Logger.getLogger(RfamStatistic.class);
 	/** RfamID2Info的信息
 	 * key: RfamID
@@ -30,9 +31,10 @@ public class RfamStatistic {
 	 */
 	Map<String, String[]> mapRfamID2Info = new HashMap<String, String[]>();	
 	/** 具体看每个RfamID的counts */
-	Map<String, Double> mapRfamID2Counts;
-	Map<String, Double> mapRfamType2Counts;
-	Map<String, Double> mapRfamClass2Counts;
+	Map<String, Double> mapRfamID2Counts = new HashMap<>();
+	Map<String, Double> mapRfamType2Counts = new HashMap<>();
+	Map<String, Double> mapRfamClass2Counts = new HashMap<>();
+	long allReadsNum = 0;
 	
 	AlignSeq samFile;
 	
@@ -98,6 +100,7 @@ public class RfamStatistic {
 	}
 	
 	/**
+	 * 内部initial过了
 	 * bed文件格式<br>
 	 * RF00019//Y_RNA//ABBA01048699.1/58018-58105	1	32	8A23	32M	+	4	2KRM5:42:742<br>
 	 * RF00019//Y_RNA//AF065396.1/1723-1629	0	32	32M	32M	+	4	2KRM5:42:742<br>
@@ -107,24 +110,32 @@ public class RfamStatistic {
 	 * @param bedFile
 	 */
 	public void countRfamBam() {
-		mapRfamID2Counts = new HashMap<>();
-		mapRfamType2Counts = new HashMap<>();
-		mapRfamClass2Counts = new HashMap<>();
-		
+		initial();
 		for (AlignRecord samRecord : samFile.readLines()) {
-			if (!samRecord.isMapped()) {
-				continue;
-			}
-			String RfamID = samRecord.getRefID().split("//")[0];
-			String rfamType = mapRfamID2Info.get(RfamID)[0];
-			String rfamClass = mapRfamID2Info.get(RfamID)[3];
-			Double thisCount = (double)1/samRecord.getMappedReadsWeight();
-			
-			addCounts(RfamID, mapRfamID2Counts, thisCount);
-			addCounts(rfamClass, mapRfamClass2Counts, thisCount);
-			addCounts(rfamType, mapRfamType2Counts, thisCount);
+			addAlignRecord(samRecord);
 		}
 		samFile.close();
+	}
+	
+	@Override
+	public Align getReadingRegion() {
+		return null;
+	}
+	
+	@Override
+	public void addAlignRecord(AlignRecord alignRecord) {
+		allReadsNum++;
+		if (!alignRecord.isMapped()) {
+			return;
+		}
+		String RfamID = alignRecord.getRefID().split("//")[0];
+		String rfamType = mapRfamID2Info.get(RfamID)[0];
+		String rfamClass = mapRfamID2Info.get(RfamID)[3];
+		Double thisCount = (double)1/alignRecord.getMappedReadsWeight();
+		
+		addCounts(RfamID, mapRfamID2Counts, thisCount);
+		addCounts(rfamClass, mapRfamClass2Counts, thisCount);
+		addCounts(rfamType, mapRfamType2Counts, thisCount);
 	}
 	
 	private void addCounts(String id, Map<String, Double> mapId2Value, double value) {
@@ -135,7 +146,20 @@ public class RfamStatistic {
 			mapId2Value.put(id, value);
 		}
 	}
+	@Override
+	public void summary() {
+	}
 	
+	public void initial() {
+		mapRfamID2Counts.clear();
+		mapRfamType2Counts.clear();
+		mapRfamClass2Counts.clear();
+		allReadsNum = 0;
+	}
+	/** 获取全体reads数量 */
+	public long getAllReadsNum() {
+		return allReadsNum;
+	}
 	public Map<String, Double> getMapRfamID2Counts() {
 		return mapRfamID2Counts;
 	}
@@ -154,5 +178,6 @@ public class RfamStatistic {
 		lsTitle.add(TitleFormatNBC.RfamClass.toString());
 		return lsTitle;
 	}
+
 	
 }

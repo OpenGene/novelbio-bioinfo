@@ -148,8 +148,8 @@ public class CtrlMiRNApredict implements IntCmdSoft {
 		expMirPre.addAllReads(miRNACount.getCountPreAll());
 		expMirPre.addGeneExp(miRNACount.getMapMiRNApre2Value());
 		
-		CtrlMiRNAfastq.writeFile(false, outPathSample + prefix + FileOperate.getSepPath() + prefix + "_NovelMirPre_Counts.txt", expMirPre, EnumExpression.Counts);
-		CtrlMiRNAfastq.writeFile(false, outPathSample + prefix + FileOperate.getSepPath() + prefix + "_NovelMirMature_Counts.txt", expMirMature, EnumExpression.Counts);
+		expMirPre.writeFile(false, outPathSample + prefix + FileOperate.getSepPath() + prefix + "_NovelMirPre_Counts.txt", EnumExpression.Counts);
+		expMirMature.writeFile(false, outPathSample + prefix + FileOperate.getSepPath() + prefix + "_NovelMirMature_Counts.txt", EnumExpression.Counts);
 	}
 	
 	public Map<String, String> getMapPrefix2UnmapFq() {
@@ -165,10 +165,10 @@ public class CtrlMiRNApredict implements IntCmdSoft {
 	
 	public void writeToFile() {
 		String outPathNovel = outPath + "novelMiRNA/";
-		CtrlMiRNAfastq.writeFile(true, outPathNovel + "NovelMirPreAll_Counts.txt", expMirPre, EnumExpression.Counts);
-		CtrlMiRNAfastq.writeFile(true, outPathNovel + "NovelMirMatureAll_Counts.txt", expMirMature, EnumExpression.Counts);
-		CtrlMiRNAfastq.writeFile(true, outPathNovel + "NovelMirPreAll_UQTPM.txt", expMirPre, EnumExpression.UQPM);
-		CtrlMiRNAfastq.writeFile(true, outPathNovel + "NovelMirMatureAll_UQTPM.txt", expMirMature, EnumExpression.UQPM);
+		expMirPre.writeFile(true, outPathNovel + "NovelMirPreAll_Counts.txt", EnumExpression.Counts);
+		expMirMature.writeFile(true, outPathNovel + "NovelMirMatureAll_Counts.txt", EnumExpression.Counts);
+		expMirPre.writeFile(true, outPathNovel + "NovelMirPreAll_UQTPM.txt", EnumExpression.UQPM);
+		expMirMature.writeFile(true, outPathNovel + "NovelMirMatureAll_UQTPM.txt", EnumExpression.UQPM);
 	}
 	
 	private void setMiRNACount_And_Anno() {

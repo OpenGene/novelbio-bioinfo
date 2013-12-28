@@ -98,9 +98,9 @@ public class CtrlMiRNApipeline implements IntCmdSoft {
 	public void setOutPath(String outPath) {
 		this.outPath = FileOperate.addSep(outPath);
 		FileOperate.createFolders(this.outPath);
-		this.outPathSample = this.outPath + "samples" + FileOperate.getSepPath();
+		this.outPathSample = this.outPath + TitleFormatNBC.Samples.toString() + FileOperate.getSepPath();
 		FileOperate.createFolders(outPathSample);
-		this.outPathTmpMapping = this.outPath + "tmpMapping" + FileOperate.getSepPath();
+		this.outPathTmpMapping = this.outPath + TitleFormatNBC.TmpMapping.toString() + FileOperate.getSepPath();
 		FileOperate.createFolders(outPathTmpMapping);
 		this.outPathStatistics = FileOperate.addSep(outPath) + "map_statistics" + FileOperate.getSepPath();
 		FileOperate.createFolders(outPathStatistics);
@@ -131,11 +131,11 @@ public class CtrlMiRNApipeline implements IntCmdSoft {
 		if (lsSpeciesBlastTo.size() > 0) {
 			blastToOtherSpecies();
 		}
-		CtrlMiRNAfastq.writeFile(true, outPath + "/miRNA_All_Counts", expMirMature, EnumExpression.Counts);
-		CtrlMiRNAfastq.writeFile(true, outPath + "/miRNA_All_UQ", expMirMature, EnumExpression.UQPM);
+		expMirMature.writeFile(true, outPath + "/miRNA_All_Counts", EnumExpression.Counts);
+		expMirMature.writeFile(true, outPath + "/miRNA_All_UQ", EnumExpression.UQPM);
 
-		CtrlMiRNAfastq.writeFile(true, outPath + "/miRNAPre_All_Counts", expMirPre, EnumExpression.Counts);
-		CtrlMiRNAfastq.writeFile(true, outPath + "/miRNAPre_All_UQ", expMirPre, EnumExpression.UQPM);
+		expMirPre.writeFile(true, outPath + "/miRNAPre_All_Counts", EnumExpression.Counts);
+		expMirPre.writeFile(true, outPath + "/miRNAPre_All_UQ", EnumExpression.UQPM);
 		TxtReadandWrite txtWrite = new TxtReadandWrite(outPath + "/miRNAmappingStatistics", true);
 		txtWrite.ExcelWrite(samMapMiRNARate.getLsResult());
 		txtWrite.close();

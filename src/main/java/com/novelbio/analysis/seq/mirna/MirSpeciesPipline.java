@@ -137,10 +137,10 @@ public class MirSpeciesPipline implements IntCmdSoft {
 				expMirPre.addGeneExp(miRNACount.getMapMiRNApre2Value());
 				mapPrefix2Fastq.put(prefix, outFastq);
 				
-				CtrlMiRNAfastq.writeFile(false, outPathSample + prefix + FileOperate.getSepPath() + prefix + "_BlastTo" 
-				+ species.getCommonName() + "_Pre_Counts.txt", expMirPre, EnumExpression.Counts);
-				CtrlMiRNAfastq.writeFile(false, outPathSample + prefix + FileOperate.getSepPath() + prefix + "_BlastTo" 
-						+ species.getCommonName() + "_Mature_Counts.txt", expMirMature, EnumExpression.Counts);
+				expMirPre.writeFile(false, outPathSample + prefix + FileOperate.getSepPath() + prefix + "_BlastTo" 
+				+ species.getCommonName() + "_Pre_Counts.txt", EnumExpression.Counts);
+				expMirMature.writeFile(false, outPathSample + prefix + FileOperate.getSepPath() + prefix + "_BlastTo" 
+						+ species.getCommonName() + "_Mature_Counts.txt", EnumExpression.Counts);
 			}
 		}
 	}
@@ -164,10 +164,10 @@ public class MirSpeciesPipline implements IntCmdSoft {
 	}
 	
 	public void writeToFile() {
-		CtrlMiRNAfastq.writeFile(true, outPathTmpMapping + "blastMirPreAll_Counts.txt", expMirPre, EnumExpression.Counts);
-		CtrlMiRNAfastq.writeFile(true, outPathTmpMapping + "blastMirMatureAll_Counts.txt", expMirMature, EnumExpression.Counts);
-		CtrlMiRNAfastq.writeFile(true, outPathTmpMapping + "blastMirPreAll_UQTPM.txt", expMirPre, EnumExpression.UQPM);
-		CtrlMiRNAfastq.writeFile(true, outPathTmpMapping + "blastMirMatureAll_UQTPM.txt", expMirMature, EnumExpression.UQPM);
+		expMirPre.writeFile(true, outPathTmpMapping + "blastMirPreAll_Counts.txt", EnumExpression.Counts);
+		expMirMature.writeFile(true, outPathTmpMapping + "blastMirMatureAll_Counts.txt", EnumExpression.Counts);
+		expMirPre.writeFile(true, outPathTmpMapping + "blastMirPreAll_UQTPM.txt", EnumExpression.UQPM);
+		expMirMature.writeFile(true, outPathTmpMapping + "blastMirMatureAll_UQTPM.txt", EnumExpression.UQPM);
 	}
 	@Override
 	public List<String> getCmdExeStr() {
