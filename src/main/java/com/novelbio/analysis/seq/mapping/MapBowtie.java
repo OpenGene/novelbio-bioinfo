@@ -13,6 +13,7 @@ import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
@@ -293,12 +294,16 @@ public class MapBowtie extends MapDNA {
 	protected SamFile mapping() {
 		List<String> lsCmd = getLsCmdMapping();
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
+		cmdOperate.setGetLsErrOut();
 		cmdOperate.setGetCmdInStdStream(true);
 		Thread thread = new Thread(cmdOperate);
 		thread.start();
 		InputStream inputStream = cmdOperate.getStreamStd();
 		SamFile samResult = copeSamStream(true, inputStream, isNeedSort);
-		if (samResult != null && !cmdOperate.isRunning() && cmdOperate.isFinishedNormal()) {
+		if (!cmdOperate.isFinishedNormal()) {
+			throw new ExceptionCmd("bowtie2 mapping error:\n" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
+		}
+		if (samResult != null && !cmdOperate.isRunning()) {
 			return samResult;
 		} else {
 			deleteFailFile();
