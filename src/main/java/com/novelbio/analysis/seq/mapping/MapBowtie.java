@@ -394,9 +394,12 @@ public class MapBowtie extends MapDNA {
 		} else if (bowtieVersion == SoftWare.bowtie2) {
 			bowtie = "bowtie2";
 		}
-		CmdOperate cmdOperate = new CmdOperate(this.ExePathBowtie + bowtie + " --version");
-		cmdOperate.setGetLsErrOut();
-		
+		List<String> lsCmdVersion = new ArrayList<>();
+		lsCmdVersion.add(this.ExePathBowtie + bowtie);
+		lsCmdVersion.add("--version");
+		CmdOperate cmdOperate = new CmdOperate(lsCmdVersion);
+		cmdOperate.setGetLsStdOut();
+		cmdOperate.run();
 		List<String> lsInfo = cmdOperate.getLsStdOut();
 		String version = lsInfo.get(0).toLowerCase().split("version")[1].trim();
 		return version;

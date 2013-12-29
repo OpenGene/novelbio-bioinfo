@@ -18,7 +18,7 @@ public class RNAup {
 		cmdOperate.setGetCmdInStdStream(true);
 		Thread sss = new Thread(cmdOperate);
 		sss.start();
-		TxtReadandWrite txtWrite = new TxtReadandWrite(cmdOperate.getInStream());
+		TxtReadandWrite txtWrite = new TxtReadandWrite(cmdOperate.getStdin());
 		System.out.println("start");
 		txtWrite.writefileln(">aaaaa&bbbbbb");
 		txtWrite.writefileln("ATCAGAC&GTCTGAT");
