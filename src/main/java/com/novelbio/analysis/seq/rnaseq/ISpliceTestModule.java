@@ -58,6 +58,8 @@ public interface ISpliceTestModule {
 class SpliceTestRepeat implements ISpliceTestModule {
 	/** 实验组和对照组的junction reads数量加起来小于这个数，就返回1 */
 	static int junctionReadsMinNum = 10;
+	/** 将reads的数量扩大4倍，这样可以获得更多的差异 */
+	static int fold = 1;
 	/** 如果count数超过该值，就标准化 */
 	int normalizedNum = 200;
 	
@@ -115,7 +117,7 @@ class SpliceTestRepeat implements ISpliceTestModule {
 			List<Double> lsDouble = mapTreat2LsValue.get(group);
 			List<Double> lsDoubleNormal = new ArrayList<>();
 			for (Double value : lsDouble) {
-				lsDoubleNormal.add(value*maxReads/mapGroup2Value.get(group)[0]);
+				lsDoubleNormal.add(value * fold * maxReads/mapGroup2Value.get(group)[0]);
 			}
 			lslsValue.add(lsDoubleNormal);
 		}
@@ -156,8 +158,8 @@ class SpliceTestRepeat implements ISpliceTestModule {
 	
 	
 	public double calculatePvalue() {
-		int[] cond1 = avgReadsNumInt(mapTreat2LsValue);
-		int[] cond2 = avgReadsNumInt(mapCtrl2LsValue);
+		int[] cond1 = combReadsNumInt(mapTreat2LsValue);
+		int[] cond2 = combReadsNumInt(mapCtrl2LsValue);
 		if (!filter(cond1, cond2)) {
 			return 1.0;
 		}
@@ -172,7 +174,7 @@ class SpliceTestRepeat implements ISpliceTestModule {
 			normalizeToLowValue(treatOne, normalizedNum);
 			normalizeToLowValue(ctrlOne, normalizedNum);
 			
-			chiSquareValue += chiSquareTestDataSetsComparison(treatOne, ctrlOne);
+			chiSquareValue += chiSquareDataSetsComparison(treatOne, ctrlOne);
 		}
 		double df = (lsTreat2LsValue.size()) * (lsTreat2LsValue.get(0).size() ) - 1;
 		ChiSquaredDistribution chiSquaredDistribution = new ChiSquaredDistribution(df);
@@ -212,6 +214,21 @@ class SpliceTestRepeat implements ISpliceTestModule {
 		}
 		try {
 			return TestUtils.chiSquareTestDataSetsComparison(cond1Long, cond2Long);
+		} catch (Exception e) {
+			return 1.0;
+		}
+	}
+	protected static double chiSquareDataSetsComparison(int[] cond1, int[] cond2) {
+		long[] cond1Long = new long[cond1.length];
+		long[] cond2Long = new long[cond2.length];
+		for (int i = 0; i < cond1.length; i++) {
+			cond1Long[i] = cond1[i] + 1;
+		}
+		for (int i = 0; i < cond2.length; i++) {
+			cond2Long[i] = cond2[i] + 1;
+		}
+		try {
+			return TestUtils.chiSquareDataSetsComparison(cond1Long, cond2Long);
 		} catch (Exception e) {
 			return 1.0;
 		}

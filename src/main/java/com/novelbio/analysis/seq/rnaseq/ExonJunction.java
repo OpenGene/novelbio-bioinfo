@@ -92,7 +92,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	public static long hongyanyanRice() {
 		List<Align> lsAligns = new ArrayList<>();
-		lsAligns.add(new Align("chr1", 2551997, 2591491));
+		lsAligns.add(new Align("chr10", 20028129, 21228188));
 		DateUtil dateUtil = new DateUtil();
 		dateUtil.setStartTime();
 		System.out.println("start");
@@ -112,7 +112,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		exonJunction.addBamSorted("M", "/media/hdfs/nbCloud/TechDept/Projects/O.sativa_RNAseq_guofangqing/M3_accepted_hits.bam");
 		exonJunction.setCombine(false);
 		exonJunction.setCompareGroups("M", "WT");
-		exonJunction.setResultFile("/media/hdfs/nbCloud/TechDept/Projects/O.sativa_RNAseq_guofangqing/as/as_sep_repeat");
+		exonJunction.setResultFile("/media/hdfs/nbCloud/TechDept/Projects/O.sativa_RNAseq_guofangqing/as/as_sep_rep");
 		exonJunction.setgenerateNewIso();
 
 		exonJunction.run();
@@ -122,7 +122,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	private static Logger logger = Logger.getLogger(ExonJunction.class);
-	private static String stopGeneName = "CAMKK2";
+	private static String stopGeneName = "LOC_Os10g39420";
 	
 	GffHashGene gffHashGene = null;
 	StrandSpecific strandSpecific = StrandSpecific.NONE;

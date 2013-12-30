@@ -72,7 +72,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	/** 是否合并文件--也就是不考虑重复，默认为true，也就是合并文件 */
 	boolean isCombine = true;
 	
-	private static final String debug = "CAMKK2";
+	private static final String debug = "LOC_Os10g39420";
 	
 	public ExonSplicingTest(ExonCluster exonCluster) {
 		this.exonCluster = exonCluster;
@@ -579,7 +579,11 @@ class SpliceType2Value {
 		
 		List<Double> lsExp = new ArrayList<>();
 		Align siteInfo = spliceTypePredict.getDifSite();
-		ArrayListMultimap<String, Double> mapGroup2LsExp = ArrayListMultimap.create();
+		ArrayListMultimap<String, Double> mapGroup2LsExp = mapSplicingType2_MapGroup2LsExpValue.get(spliceTypePredict.getType());
+		if (mapGroup2LsExp == null) {
+			mapGroup2LsExp = ArrayListMultimap.create();
+			mapSplicingType2_MapGroup2LsExpValue.put(spliceTypePredict.getType(), mapGroup2LsExp);
+		}
 		double[] info = mapReads.getRangeInfo(siteInfo.getRefID(), siteInfo.getStartAbs(), siteInfo.getEndAbs(), 0);
 		if (info == null || BGinfo == null) {
 			mapGroup2LsExp.put(group, 0.0);
@@ -592,7 +596,6 @@ class SpliceType2Value {
 			mapGroup2LsExp.put(group, (double) (getMean(info) + 1));
 			mapGroup2LsExp.put(group, (double) (getMean(BGinfo) + 1));
 		}
-		mapSplicingType2_MapGroup2LsExpValue.put(spliceTypePredict.getType(), mapGroup2LsExp);
 		setExonSplicingTypes.add(spliceTypePredict.getType());
 	}
 	
