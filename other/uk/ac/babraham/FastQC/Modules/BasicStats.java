@@ -185,7 +185,7 @@ public class BasicStats extends FastQCmodules implements QCModule {
 						}
 						
 						
-					case 5 : 
+					case 4 : 
 						if (aCount+tCount+gCount+cCount > 0) {
 							return ""+(((gCount+cCount)*100)/(aCount+tCount+gCount+cCount));
 						}

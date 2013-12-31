@@ -174,7 +174,7 @@ public class CtrlMiRNApredict implements IntCmdSoft {
 	private void setMiRNACount_And_Anno() {
 		Map<String, String> mapID2Blast = null;
 		MiRNAnovelAnnotaion miRNAnovelAnnotaion = null;
-		if (lsBlastTo != null && lsBlastTo.size() > 0) {
+		if (lsBlastTo != null && !lsBlastTo.isEmpty()) {
 			miRNAnovelAnnotaion = new MiRNAnovelAnnotaion();
 			miRNAnovelAnnotaion.setMiRNAthis(novelMiRNADeep.getNovelMiRNAmature());
 			miRNAnovelAnnotaion.setLsMiRNAblastTo(lsBlastTo, outPathTmp);
@@ -190,7 +190,7 @@ public class CtrlMiRNApredict implements IntCmdSoft {
 		listMiRNAdeep.ReadGffarray(novelMiRNADeep.getNovelMiRNAdeepMrdFile());
 		
 		miRNACount.setListMiRNALocation(listMiRNAdeep);
-		if (lsBlastTo != null && lsBlastTo.size() > 0) {
+		if (lsBlastTo != null && !lsBlastTo.isEmpty()) {
 			miRNACount.setMiRNAfile(novelMiRNADeep.getNovelMiRNAhairpin(), miRNAnovelAnnotaion.getMiRNAmatureCope());		
 		} else {
 			miRNACount.setMiRNAfile(novelMiRNADeep.getNovelMiRNAhairpin(), novelMiRNADeep.getNovelMiRNAmature());		

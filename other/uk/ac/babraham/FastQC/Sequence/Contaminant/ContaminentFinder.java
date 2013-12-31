@@ -26,6 +26,10 @@ import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.Vector;
 
+import org.springframework.core.io.ClassPathResource;
+
+import com.novelbio.generalConf.PathDetailNBC;
+
 public class ContaminentFinder {
 
 	private static Contaminant [] contaminants;
@@ -59,12 +63,8 @@ public class ContaminentFinder {
 		Vector<Contaminant>c = new Vector<Contaminant>();
 		
 		try {
-			
-			File contaminantFile = new File (URLDecoder.decode(ClassLoader.getSystemResource("Contaminants/contaminant_list.txt").getFile(),"UTF-8"));
-			
-			if (System.getProperty("fastqc.contaminant_file") != null && System.getProperty("fastqc.contaminant_file").length()>0) {
-				contaminantFile = new File(System.getProperty("fastqc.contaminant_file"));
-			}
+			ClassPathResource resource = new ClassPathResource("contaminant_list.txt", ContaminentFinder.class);
+			File contaminantFile = resource.getFile();
 			
 			BufferedReader br = new BufferedReader(new FileReader(contaminantFile));
 

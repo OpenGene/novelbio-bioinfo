@@ -45,6 +45,18 @@ public class MiRNAnovelAnnotaion implements IntCmdSoft {
 	
 	/** 会将输入的miRNA序列的名字进行修正 */
 	public void annotation() {
+		List<Species> lsSpecies = new ArrayList<>();
+		for (Species species : lsBlastToSpecies) {
+			if (species == null || species.getTaxID() == 0) {
+				continue;
+			}
+			lsSpecies.add(species);
+		}
+		lsBlastToSpecies = lsSpecies;
+		if (lsBlastToSpecies.isEmpty()) {
+			return;
+		}
+		
 		blast();
 		mapID2Blast = getMapGeneID2Info();
 		copeSeqFile(mapID2Blast);
@@ -70,10 +82,6 @@ public class MiRNAnovelAnnotaion implements IntCmdSoft {
 		lsTmpBlastResult.clear();
 		blastNBC.setQueryFastaFile(miRNAthis);
 		for (Species species : lsBlastToSpecies) {
-			if (species == null || species.getTaxID() == 0) {
-				continue;
-			}
-	
 			String tmpBlastResult = pathTmpBlast + "novel_miRNA_blast_to_" + species.getNameLatin().trim().replace(" ", "_");
 			lsTmpBlastResult.add(tmpBlastResult);
 			if (!isUseOldResult || !FileOperate.isFileExistAndBigThanSize(tmpBlastResult, 0)) {
@@ -89,6 +97,10 @@ public class MiRNAnovelAnnotaion implements IntCmdSoft {
 		}
 	}
 	
+	/**
+	 * @return key：mirName 为小写
+	 * value：Subject
+	 */
 	private Map<String, String> getMapGeneID2Info() {
 		Map<String, String> mapGeneID2BlastID = new HashMap<>();
 		List<BlastInfo> lsBlastInfoAll = new ArrayList<>();
@@ -102,19 +114,23 @@ public class MiRNAnovelAnnotaion implements IntCmdSoft {
 			if (blastInfo.getAlignLen() < 16 || blastInfo.getIdentities() < 90 || (blastInfo.getGapNum() + blastInfo.getMismatchNum()) < 4) {
 				continue;
 			}
-			mapGeneID2BlastID.put(blastInfo.getQueryID(), blastInfo.getSubjectID());
+			mapGeneID2BlastID.put(blastInfo.getQueryID().toLowerCase(), blastInfo.getSubjectID());
 		}
 		return mapGeneID2BlastID;
 	}
 	
+	/**
+	 * @param mapID2Blast key为小写
+	 */
 	private void copeSeqFile(Map<String, String> mapID2Blast) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(miRNAthis);
 		TxtReadandWrite txtWrite = new TxtReadandWrite(miRNAcope, true);
 		for (String content : txtRead.readlines()) {
 			if (content.startsWith(">")) {
 				content = content.replace(">", "").trim();
-				if (mapID2Blast.containsKey(content)) {
-					content = ">" + content + sepSymbol + mapID2Blast.get(content);
+				String key = content.toLowerCase();
+				if (mapID2Blast.containsKey(key)) {
+					content = ">" + content + sepSymbol + mapID2Blast.get(key);
 				} else {
 					content = ">" + content;
 				}

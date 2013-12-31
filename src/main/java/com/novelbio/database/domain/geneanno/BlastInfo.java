@@ -20,10 +20,11 @@ import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.service.servgeneanno.ManageBlastInfo;
 
 /**
- * <b>导入数据库的时候数据库中必须已经存在了subjectID</b><br>
- * 如果数据库中不存在queryID，而又需要导入，则先导入queryID，再导入blast信息
+ * <b>导入数据库时会</b>将queryID和subjectID都<b>转变为小写</b><p>
+ * 导入数据库的时候数据库中必须<b>已经存在了subjectID</b><br>
+ * 如果数据库中不存在queryID，而又需要导入，则先导入queryID，再导入blast信息<p>
+ * Comparable接口实现为按照evalue从小到大排序
  * @author zong0jie
- * 按照evalue从小到大排序
  */
 @Document(collection = "blastInfo")
 @CompoundIndexes({
@@ -191,6 +192,10 @@ public class BlastInfo implements Comparable<BlastInfo> {
 		this.subjectTax = geneIDS.getTaxID();
 		this.subjectIDtype = geneIDS.getIDtype();
 	}
+	public void convertQuerySubjectID_To_Lowcase() {
+		this.queryID = queryID.toLowerCase();
+		this.subjectID = subjectID.toLowerCase();
+	}
 	/** mongodb中的id */
 	public void setId(String id) {
 		this.id = id;
@@ -226,7 +231,7 @@ public class BlastInfo implements Comparable<BlastInfo> {
 		this.identities = identities;
 	}
 	
-	/** 设置搜到的序列ID */
+	/** 获得搜到的序列ID */
 	public String getQueryID() {
 		return this.queryID.trim();
 	}

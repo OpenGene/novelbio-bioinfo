@@ -1,11 +1,8 @@
 package com.novelbio.database.service.servgeneanno;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -98,7 +95,7 @@ public class ManageBlastInfo {
 	 * @return
 	 */
 	public List<BlastInfo> queryBlastInfoLs(String queryID, int taxIDQ) {
-		return repoBlastInfo.findByQueryID(queryID, taxIDQ);
+		return repoBlastInfo.findByQueryID(queryID.toLowerCase(), taxIDQ);
 	}
 	public Page<BlastInfo> queryBlastInfoLs(String fileName, Pageable pageable) {
 		List<BlastFileInfo> lsFileInfo = queryBlastFile(fileName);
@@ -109,8 +106,9 @@ public class ManageBlastInfo {
 		return repoBlastInfo.findByBlastFileInfo(blastFileInfo.getId(), pageable);
 	}
 	
-	public void save(BlastInfo blastInfo) {		
+	public void save(BlastInfo blastInfo) {
 		if (blastInfo != null) {
+			blastInfo.convertQuerySubjectID_To_Lowcase();
 			repoBlastInfo.save(blastInfo);
 		}
 	}
@@ -208,9 +206,10 @@ public class ManageBlastInfo {
 	/**
 	 * 给定blastInfo的信息，如果数据库中的本物种已经有了该结果，则比较evalue，用低evalue的覆盖高evalue的
 	 * 如果没有，则插入
-	 * @param blastInfo
+	 * @param blastInfo <b>会将输入的blastInfo的queryID和subjectID都改为小写</b>
 	 */
 	public void updateBlast(BlastInfo blastInfo) {
+		blastInfo.convertQuerySubjectID_To_Lowcase();
 		BlastInfo blastInfoQ = repoBlastInfo.findByQueryIDAndSubID(blastInfo.getQueryID(), blastInfo.getQueryTax(), 
 				blastInfo.getSubjectID(), blastInfo.getSubjectTax());
 		if (blastInfoQ == null) {

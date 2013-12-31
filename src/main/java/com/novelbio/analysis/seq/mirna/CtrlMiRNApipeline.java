@@ -128,7 +128,7 @@ public class CtrlMiRNApipeline implements IntCmdSoft {
 		} else {
 			mapPrefix2Fastq = convertAlign2Fq(mapPrefix2AlignFile);
 		}
-		if (lsSpeciesBlastTo.size() > 0) {
+		if (!lsSpeciesBlastTo.isEmpty()) {
 			blastToOtherSpecies();
 		}
 		expMirMature.writeFile(true, outPath + "/miRNA_All_Counts", EnumExpression.Counts);
