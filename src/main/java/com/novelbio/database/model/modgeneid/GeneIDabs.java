@@ -413,10 +413,13 @@ public class GeneIDabs implements GeneIDInt {
 	 * @return
 	 */
 	public GOInfoAbs getGOInfo() {
-		return goInfoAbs == null ? initGoInfoAbs() : goInfoAbs;
+		if (goInfoAbs == null) {
+			initGoInfoAbs();
+		}
+		return goInfoAbs;
 	}
 
-	private GOInfoAbs initGoInfoAbs() {
+	private void initGoInfoAbs() {
 		int idtype;
 		String genUniID;
 		if (isAccID) {
@@ -426,7 +429,7 @@ public class GeneIDabs implements GeneIDInt {
 			idtype = ageneUniID.getGeneIDtype();
 			genUniID = ageneUniID.getGenUniID();
 		}		
-		return GOInfoAbs.createGOInfoAbs(idtype, genUniID, ageneUniID.getTaxID());
+		goInfoAbs = GOInfoAbs.createGOInfoAbs(idtype, genUniID, ageneUniID.getTaxID());
 	}
 
 	/**

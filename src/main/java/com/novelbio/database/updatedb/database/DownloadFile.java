@@ -3,6 +3,8 @@ package com.novelbio.database.updatedb.database;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.base.dataOperate.FtpFetch;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -13,9 +15,10 @@ import com.novelbio.base.fileOperate.FileOperate;
  *
  */
 public class DownloadFile {
+	private static final Logger logger = Logger.getLogger(DownloadFile.class);
 	public static void main(String[] args) {
 		DownloadFile downloadFile = new DownloadFile();
-		downloadFile.setSaveto("/media/winE/Bioinformatics/DataBase/dbnew");
+		downloadFile.setSaveto("/media/winE/NBCplatform/database");
 		downloadFile.download();
 	}
 	String saveto;
@@ -56,7 +59,8 @@ public class DownloadFile {
 		lsEMBL.add("http://www.ensembl.org/info/data/ftp/index.html");
 		
 		lsRice = new ArrayList<String>();
-		lsRice.add("http://rapdb.dna.affrc.go.jp/download/archive/irgsp1/IRGSP-1.0_representative_2013-03-19.tar.gz");
+		//GFF file
+		lsRice.add("http://rapdb.dna.affrc.go.jp/download/archive/irgsp1/IRGSP-1.0_representative_2013-04-24.tar.gz");
 		lsRice.add("http://rapdb.dna.affrc.go.jp/download/archive/RAP-MSU.txt.gz");
 		lsRice.add("ftp://ftp.plantbiology.msu.edu/pub/data/Eukaryotic_Projects/o_sativa/annotation_dbs/pseudomolecules/version_7.0/all.dir/all.gff3");
 		lsRice.add("ftp://ftp.plantbiology.msu.edu/pub/data/Eukaryotic_Projects/o_sativa/annotation_dbs/pseudomolecules/version_7.0/all.dir/all.GOSlim_assignment");
@@ -64,30 +68,54 @@ public class DownloadFile {
 	
 	public void download() {
 		for (String ftpFile : lsDownloadNCBI) {
+			if (FileOperate.isFileExistAndBigThanSize(saveto + FileOperate.getFileName(ftpFile), 0)) {
+				continue;
+			}
 			FtpFetch fetch = new FtpFetch();
 			fetch.setDownLoadUrl(ftpFile);
 			fetch.setSavePath(saveto);
-			fetch.downloadFile();
+			if (!fetch.downloadFile()) {
+				logger.error("download error:" + ftpFile);
+				FileOperate.DeleteFileFolder(saveto + FileOperate.getFileName(ftpFile));
+			}
 		}
 		for (String ftpFile : lsUniprot) {
+			if (FileOperate.isFileExistAndBigThanSize(saveto + FileOperate.getFileName(ftpFile), 0)) {
+				continue;
+			}
 			FtpFetch fetch = new FtpFetch();
 			fetch.setDownLoadUrl(ftpFile);
 			fetch.setSavePath(saveto);
-			fetch.downloadFile();
+			if (!fetch.downloadFile()) {
+				logger.error("download error:" + ftpFile);
+				FileOperate.DeleteFileFolder(saveto + FileOperate.getFileName(ftpFile));
+			}
 		}
 		for (String gourl : lsGO) {
 			String fileName = FileOperate.getFileName(gourl);
+			if (FileOperate.isFileExistAndBigThanSize(saveto + fileName, 0)) {
+				continue;
+			}
 			HttpFetch httpFetch = HttpFetch.getInstance();
 			httpFetch.setUri(gourl);
 			httpFetch.query();
-			httpFetch.download(saveto + fileName);
+			if (httpFetch.download(saveto + fileName)) {
+				logger.error("download error:" + gourl);
+				FileOperate.DeleteFileFolder(saveto + fileName);
+			}
 		}
 		for (String rapDBurl : lsRice) {
 			String fileName = FileOperate.getFileName(rapDBurl);
+			if (FileOperate.isFileExistAndBigThanSize(saveto + fileName, 0)) {
+				continue;
+			}
 			HttpFetch httpFetch = HttpFetch.getInstance();
 			httpFetch.setUri(rapDBurl);
 			httpFetch.query();
-			httpFetch.download(saveto + fileName);
+			if (httpFetch.download(saveto + fileName)) {
+				logger.error("download error:" + rapDBurl);
+				FileOperate.DeleteFileFolder(saveto + fileName);
+			}
 		}
 		
 	}

@@ -42,10 +42,10 @@ public class ImportDB {
 //		importDB.updateUniprotID();
 //		importDB.updateZeaMaize();
 //		importDB.updateRiceID("/media/winE/Bioinformatics/DataBase/Rice/");//只导了前两个
-		importDB.updateTAIR("/media/winD/NBCplatform/genome/arabidopsis/tair10/db/");
+//		importDB.updateTAIR("/media/winD/NBCplatform/genome/arabidopsis/tair10/db/");
 //		importDB.updateZB();
 //		updateEnsembl();
-//		importDB.updateYeast();
+		importDB.updateYeast();
 //		importDB.updateMicroarray();
 
 //		updateSoyBean();
@@ -461,7 +461,7 @@ public class ImportDB {
 	}
 	
 	private void updateYeast() {
-		String path = "/media/winE/NBCplatform/genome/yeast/db/";
+		String path = "/media/winE/NBCplatform/database/SGD/";
 		String yeastDBxrefFile = path + "dbxref.tab";
 		String SGD_featuresFile = path + "SGD_features.tab";
 		String Gene_AssociationFile = path + "gene_association.sgd.gz";

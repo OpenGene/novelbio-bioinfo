@@ -244,7 +244,11 @@ class Gene_Association extends ImportPerLine {
 		if (lineContent.startsWith("!")) {
 			return true;
 		}
+
 		String[] ss = lineContent.split("\t");
+		if (ss[1].equals("S000004660")) {
+			System.out.println();
+		}
 		GeneID copedID = new GeneID(ss[1], taxID);
 		copedID.setUpdateDBinfo(DBAccIDSource.SSC_ScerID, false);
 		Gene2Go gene2Go = new Gene2Go();

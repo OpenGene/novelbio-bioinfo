@@ -170,7 +170,7 @@ public class ManageBlastInfo {
 				name = blastFileInfo.getQueryTaxID();
 			}
 			Species species = new Species();
-			species.setTaxID(name.hashCode());
+			species.setTaxID(Math.abs(name.hashCode()));
 			mapName2Species.put(name, species);
 		}
 		return mapName2Species;
