@@ -27,9 +27,18 @@ public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
 	List<FQrecordCopeInt> lsFQrecordCopeLeft = new ArrayList<FQrecordCopeInt>();
 	List<FQrecordCopeInt> lsFQrecordCopeRight = new ArrayList<FQrecordCopeInt>();
 	
+	/**是否输出过滤的结果，默认为true
+	 * false 表示仅进行 fastqc工作
+	 */
+	boolean isOutputResult = true;
+	
 	/** 输入的FastQ是否为双端，务必一致 */
 	public void setFastQRead(List<FastQ[]> lsFastQs) {
 		this.lsFastqReader = lsFastQs;
+	}
+	/** 是否输出过滤文件，false一般用来仅输出fastqc结果 */
+	public void setOutputResult(boolean isOutputResult) {
+		this.isOutputResult = isOutputResult;
 	}
 	/** 默认是3000 */
 	public void setMaxNumReadInLs(int maxNumReadInLs) {
@@ -82,8 +91,12 @@ public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
 			threadFilterNum = 1;
 		}
 		executorPool = new ThreadPoolExecutor(threadFilterNum, (int)(threadFilterNum*1.5), 5000, TimeUnit.MICROSECONDS, new ArrayBlockingQueue<Runnable>(maxNumReadInLs));
-		queueResult = new ArrayBlockingQueue<Future<FastQrecordCopeUnit>>(maxNumReadInLs);
-		fqWrite[0].fastQwrite.setQueue(queueResult);
+		//输出过滤的结果
+		if (isOutputResult) {
+			queueResult = new ArrayBlockingQueue<Future<FastQrecordCopeUnit>>(maxNumReadInLs);
+			fqWrite[0].fastQwrite.setQueue(queueResult);
+		}
+	
 	}
 	
 	public void runChannel() {
@@ -93,26 +106,33 @@ public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
 		
 		if (lsFastqReader == null || lsFastqReader.size() == 0) return;
 		
-		fqWrite[0].fastQwrite.setFinishedRead(false);
-		
-		Thread thread = new Thread(fqWrite[0].fastQwrite);
-		thread.start();
+		if (isOutputResult) {
+			fqWrite[0].fastQwrite.setFinishedRead(false);
+			Thread thread = new Thread(fqWrite[0].fastQwrite);
+			thread.start();
+		}
+
 		if (lsFastqReader.get(0).length == 2) {
 			readPE();
 		} else {
 			readSE();
 		}
-		fqWrite[0].fastQwrite.setFinishedRead(true);
-		while (fqWrite[0].fastQwrite.isRunning()) {
-			try { Thread.sleep(100); 	} catch (InterruptedException e) { e.printStackTrace(); }
+		
+		if (isOutputResult) {
+			fqWrite[0].fastQwrite.setFinishedRead(true);
+			while (fqWrite[0].fastQwrite.isRunning()) {
+				try { Thread.sleep(100); 	} catch (InterruptedException e) { e.printStackTrace(); }
+			}
+			fqWrite[0].close();
+			if (fqWrite[1] != null) {
+				fqWrite[1].close();
+			}
 		}
+
 		executorPool.shutdown();
 		executorPool = null;
 		queueResult = null;
-		fqWrite[0].close();
-		if (fqWrite[1] != null) {
-			fqWrite[1].close();
-		}
+
 	}
 	
 	private void readSE() {
@@ -130,14 +150,19 @@ public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
 				fastQrecordFilterRun.setFastQRecordFilter(lsFQrecordCopeLeft, lsFQrecordCopeRight);
 				fastQrecordFilterRun.setFastQRecordSE(fastQRecord);
 				Future<FastQrecordCopeUnit> future = executorPool.submit(fastQrecordFilterRun);
-				queueResult.add(future);
+				if (isOutputResult) {
+					queueResult.add(future);
+				}
 				
 				if (readsNum % 500000 == 0) {
 					setGUIinfo(readByte, readsNum, fastQs[0]);
 				}
 			}
 			fastQs[0].close();
-			fqWrite[0].fastQwrite.flash();
+			if (isOutputResult) {
+				fqWrite[0].fastQwrite.flash();
+			}
+		
 		}
 	}
 	
@@ -164,15 +189,18 @@ public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
 				fastQrecordFilterRun.setFastQRecordPE(fastQRecord[1]);
 				
 				Future<FastQrecordCopeUnit> future = executorPool.submit(fastQrecordFilterRun);
-				queueResult.add(future);
-				
+				if (isOutputResult) {
+					queueResult.add(future);
+				}
 				if (readsNum % 500000 == 0) {
 					setGUIinfo(readByte, readsNum, fastQs[0]);
 				}
 			}
 			fastQs[0].close();
 			fastQs[1].close();
-			fqWrite[0].fastQwrite.flash();
+			if (isOutputResult) {
+				fqWrite[0].fastQwrite.flash();
+			}
 		}
 
 	}
