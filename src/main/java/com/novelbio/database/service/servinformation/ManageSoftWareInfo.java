@@ -19,14 +19,14 @@ import com.novelbio.generalConf.PathDetailNBC;
  *
  */
 public class ManageSoftWareInfo {
-	@Autowired
-	RepoSoftwareInfo repoSoftwareInfo;
+//	@Autowired
+//	RepoSoftwareInfo repoSoftwareInfo;
 	static Map<String, SoftWareInfo> mapKey2Info;
 	static ManageSoftWareInfo manageSoftWareInfo;
 	
 	private ManageSoftWareInfo() {
 		fillMap();
-		repoSoftwareInfo = (RepoSoftwareInfo)SpringFactory.getFactory().getBean("repoSoftwareInfo");
+//		repoSoftwareInfo = (RepoSoftwareInfo)SpringFactory.getFactory().getBean("repoSoftwareInfo");
 	}
 	
 	private void fillMap() {
@@ -37,14 +37,14 @@ public class ManageSoftWareInfo {
 		if (!FileOperate.isFileExistAndBigThanSize(fileSoft, 0)) {
 			return;
 		}
-		updateInfo(false, fileSoft);
+		updateInfo(fileSoft);
 	}
 	
 	/**
 	 * 将配置信息导入数据库
 	 * @param txtFile 	 配置信息：第一行，item名称
 	 */
-	public void updateInfo(boolean updateToDB, String txtFile) {
+	public void updateInfo(String txtFile) {
 		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(txtFile, 0);
 		String[] title = lsInfo.get(0);
 		HashMap<String, Integer> hashName2ColNum = new HashMap<String, Integer>();
@@ -80,7 +80,7 @@ public class ManageSoftWareInfo {
 			m = hashName2ColNum.get("ispath");
 			softWareInfo.setInPath(info[m].trim().toLowerCase().equals("true"));
 			//升级
-			update(updateToDB, softWareInfo);
+			update(softWareInfo);
 		}
 	}
 
@@ -89,7 +89,8 @@ public class ManageSoftWareInfo {
 		if (softWareInfo != null) {
 			return softWareInfo;
 		}
-		return repoSoftwareInfo.findBySoftName(softName);
+		return null;
+//		return repoSoftwareInfo.findBySoftName(softName);
 	}
 	public SoftWareInfo findSoftwareByName(SoftWare softWare) {
 		return findSoftwareByName(softWare.toString());
@@ -98,18 +99,18 @@ public class ManageSoftWareInfo {
 	 * 先查找有没有该项，没有就插入，有就升级
 	 * @param softWareInfo
 	 */
-	public void update(boolean updateToDB, SoftWareInfo softWareInfo) {
-		if (updateToDB) {
-			SoftWareInfo softWareInfoS= repoSoftwareInfo.findBySoftName(softWareInfo.getName());
-			if (softWareInfoS == null) {
-				repoSoftwareInfo.save(softWareInfo);
-			} else {
-				if (!softWareInfoS.equalsDeep(softWareInfo)) {
-					softWareInfo.setId(softWareInfoS.getId());
-					repoSoftwareInfo.save(softWareInfo);
-				}
-			}
-		}
+	public void update(SoftWareInfo softWareInfo) {
+//		if (updateToDB) {
+//			SoftWareInfo softWareInfoS= repoSoftwareInfo.findBySoftName(softWareInfo.getName());
+//			if (softWareInfoS == null) {
+//				repoSoftwareInfo.save(softWareInfo);
+//			} else {
+//				if (!softWareInfoS.equalsDeep(softWareInfo)) {
+//					softWareInfo.setId(softWareInfoS.getId());
+//					repoSoftwareInfo.save(softWareInfo);
+//				}
+//			}
+//		}
 		mapKey2Info.put(softWareInfo.getName().toLowerCase(), softWareInfo);
 	}
 	

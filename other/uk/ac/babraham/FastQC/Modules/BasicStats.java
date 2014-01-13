@@ -131,6 +131,42 @@ public class BasicStats extends FastQCmodules implements QCModule {
 		return null;
 	}
 	
+	public double getGCpersentage() {
+		if (aCount+tCount+gCount+cCount > 0) {
+			return ((gCount+cCount)*100)/(aCount+tCount+gCount+cCount);
+		}
+		else {
+			return 0.0;
+		}
+	}
+	
+	public String getFileType() {
+		return fileType;
+	}
+	
+	public String getEncoding() {
+		return PhredEncoding.getFastQEncodingOffset(lowestChar).toString();
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public int getReadsNum() {
+		return actualCount;
+	}
+	public long getBaseNum() {
+		return aCount+tCount+gCount+cCount;
+	}
+	public String getSeqLen() {
+		if (minLength == maxLength) {
+			return ""+minLength;
+		}
+		else {
+			return minLength+"-"+maxLength;
+		}
+	}
+	
 	public Map<String, String> getResult() {
 		ResultsTable table = new ResultsTable();
 		Map<String, String> mapResult = new LinkedHashMap<String, String>();
@@ -142,6 +178,7 @@ public class BasicStats extends FastQCmodules implements QCModule {
 		return mapResult;
 	}
 	
+
 	
 	private class ResultsTable extends AbstractTableModel {
 				

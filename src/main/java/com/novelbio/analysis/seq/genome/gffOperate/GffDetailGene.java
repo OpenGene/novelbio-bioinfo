@@ -12,7 +12,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.persistence.Transient;
+
 import org.apache.log4j.Logger;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict.SplicingAlternativeType;
@@ -46,16 +52,23 @@ import com.novelbio.generalConf.TitleFormatNBC;
  * 本基因转录方向<br>
  * 本类中的几个方法都和Gff基因有关<br>
  */
+@Document(collection="GffGene")
+@CompoundIndexes({
+    @CompoundIndex(unique = true, name = "gene_acc_tax_idx", def = "{'geneID': 1, 'accID': -1, 'taxID': 1}"),
+    @CompoundIndex(unique = false, name = "acc_tax_idx", def = "{'accID': 1, 'taxID': -1}")
+ })
 public class GffDetailGene extends ListDetailAbs {
 	private final static Logger logger = Logger.getLogger(GffDetailGene.class);
 	/** 两个转录本的overlap 覆盖 必须大于0.6才算是一个基因 */
 	public final static double OVERLAP_RATIO = 0.6;
 	/** 顺序存储每个转录本的的坐标情况 */
 	private ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfos = new ArrayList<GffGeneIsoInfo>();//存储可变剪接的mRNA
+	@Transient
 	ListGff listGff;
 	int taxID = 0;
-	Set<GeneID> setGeneID;
-	
+	/** 保存数据库的时候使用 */
+	String fileName;
+	@Transient
 	boolean removeDuplicateIso = false;
 	Boolean ismRNA = null;
 	/**
@@ -118,8 +131,7 @@ public class GffDetailGene extends ListDetailAbs {
 		for (int i = 0; i < lsGffGeneIsoInfos.size(); i++) {
 			GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(i);
 			String tmpName = gffGeneIsoInfo.getName();
-			tmpName = GeneID.removeDot(tmpName);
-				if(tmpName.equalsIgnoreCase( GeneID.removeDot(isoName) )) {
+				if(tmpName.equalsIgnoreCase(isoName)) {
 					return i;
 			}
 		}
@@ -396,16 +408,6 @@ public class GffDetailGene extends ListDetailAbs {
 	}
 	public void clearIso() {
 		lsGffGeneIsoInfos.clear();
-	}
-	public Set<GeneID> getSetGeneID() {
-		if (setGeneID != null) {
-			return setGeneID;
-		}
-		setGeneID = new HashSet<GeneID>();
-		for (GffGeneIsoInfo gffGeneIsoInfo : getLsCodSplit()) {
-			setGeneID.add(gffGeneIsoInfo.getGeneID());
-		}
-		return setGeneID;
 	}
 	/**
 	 * 是否在该基因内，具体情况

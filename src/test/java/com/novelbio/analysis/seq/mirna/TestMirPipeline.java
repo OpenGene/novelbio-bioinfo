@@ -29,10 +29,12 @@ public class TestMirPipeline {
 	String outPath;
 	private void preperData() {
 		mapPrefix2Fastq = new LinkedHashMap<>();
-		mapPrefix2Fastq.put("H1", "/media/hdfs/nbCloud/public/customer/gaohongmei_IASCAAS_sheep_RNA_20130925/miRNA" +
-				"-Data/Sheep_H/Sheep_H.clean.fa.fastq");
-		mapPrefix2Fastq.put("H2", "/media/hdfs/nbCloud/public/customer/gaohongmei_IASCAAS_sheep_RNA_20130925/miRNA" +
-				"-Data/Sheep_Q/Sheep_Q.clean.fa.fastq");
+//		mapPrefix2Fastq.put("H1", "/media/hdfs/nbCloud/public/customer/gaohongmei_IASCAAS_sheep_RNA_20130925/miRNA" +
+//				"-Data/Sheep_H/Sheep_H.clean.fa.fastq");
+//		mapPrefix2Fastq.put("H2", "/media/hdfs/nbCloud/public/customer/gaohongmei_IASCAAS_sheep_RNA_20130925/miRNA" +
+//				"-Data/Sheep_Q/Sheep_Q.clean.fa.fastq");
+		mapPrefix2Fastq.put("Test", "/media/hdfs/nbCloud/public/customer/zhaoqian/microRNA-analysis-0905/rawdata/PB2A.fq");
+		
 		
 		mapBedFile2Prefix = new HashMap<>();
 		mapBedFile2Prefix.put("H1", new SamFile("/media/hdfs/nbCloud/public/customer/gaohongmei_IASCA" +
@@ -47,10 +49,10 @@ public class TestMirPipeline {
 		lsSpeciesBlastTo = new ArrayList<>();
 		lsSpeciesBlastTo.add(new Species(9913));
 		lsSpeciesBlastTo.add(new Species(9606));
-		outPath = "/media/hdfs/nbCloud/public/customer/gaohongmei_IASCAAS_sheep_RNA_20130925/miRNAtest/";
+		outPath = "/media/hdfs/nbCloud/public/customer/zhaoqian/microRNA-analysis-0905/rawdata/test";
 	}
 	
-//	@Test
+	@Test
 	public void runMirna() {
 		preperData();
 		CtrlMiRNApipeline ctrlMiRNApipeline = new CtrlMiRNApipeline(species);
@@ -59,7 +61,7 @@ public class TestMirPipeline {
 		ctrlMiRNApipeline.setOutPath(outPath);
 		ctrlMiRNApipeline.run();
 	}
-	@Test
+//	@Test
 	public void runMirnaWithoutPredict() {
 		preperData();
 		CtrlMiRNApipeline ctrlMiRNApipeline = new CtrlMiRNApipeline(species);

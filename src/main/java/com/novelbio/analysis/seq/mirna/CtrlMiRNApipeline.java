@@ -60,6 +60,9 @@ public class CtrlMiRNApipeline implements IntCmdSoft {
 	public void setMapAllToRfam(boolean mapAllToRfam) {
 		this.mapAllToRfam = mapAllToRfam;
 	}
+	public void setNovelMiRNAmrd(String novelMiRNAmrd) {
+		ctrlMiRNApredict.setNovelMiRNAmrd(novelMiRNAmrd);
+	}
 	/** 将reads mapping至物种特异性的rfam上，默认false，意思mapping至总的rfam上 */
 	public void setMapRfam2Species(boolean mapRfam2Species) {
 		this.mapRfam2Species = mapRfam2Species;

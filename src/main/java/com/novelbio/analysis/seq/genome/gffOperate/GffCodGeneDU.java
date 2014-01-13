@@ -265,7 +265,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 
 	/**
 	 * 不查询数据库，直接返回gffDetailGene
-	 * @return
+	 * @return LinkedHashSet
 	 */
 	public Set<GffDetailGene> getCoveredGffGene() {
 		setHashCoveredGenInfo();

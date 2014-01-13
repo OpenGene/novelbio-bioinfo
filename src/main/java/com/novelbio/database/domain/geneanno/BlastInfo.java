@@ -123,11 +123,11 @@ public class BlastInfo implements Comparable<BlastInfo> {
 		if (queryDB) {
 			query(taxIDQ, isAccIDQ, taxIDS, isAccIDS, blastInfo);
 		} else {
-			queryID = GeneID.removeDot(blastInfo[0]);
+			queryID = blastInfo[0];
 			if (blastInfo[1].contains("|")) {
 				subjectID = GeneID.getBlastAccID(blastInfo[1]);
 			} else {
-				subjectID = GeneID.removeDot(blastInfo[1]);
+				subjectID = blastInfo[1];
 			}
 			
 			this.queryTax = taxIDQ;

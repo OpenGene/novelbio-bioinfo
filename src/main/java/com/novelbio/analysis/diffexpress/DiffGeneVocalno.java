@@ -31,8 +31,8 @@ import com.novelbio.generalConf.TitleFormatNBC;
 	public static final double THRESHOLD2 = 0.05;
 	
 	/** 上下调的阈值 */
-	public static final double upfc = 1;
-	public static final double downfc = -1;
+	public double upfc = 1;
+	public double downfc = -1;
 	
 	String excelFileName;
 	List<Double> lsFDR = new ArrayList<Double>();
@@ -77,7 +77,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
 		return titlePvalueFDR;
 	}
 	
-	public static double getUpfc() {
+	public double getUpfc() {
 		return upfc;
 	}
 	
@@ -188,11 +188,15 @@ import com.novelbio.generalConf.TitleFormatNBC;
 	 * @param titlePvalueFdr
 	 * @param threshold
 	 */
-	private void setThreshold(TitleFormatNBC titlePvalueFdr, double threshold) {
+	public void setThreshold(TitleFormatNBC titlePvalueFdr, double threshold) {
 		this.titlePvalueFDR = titlePvalueFdr;
 		this.pvalueFDRthreshold = threshold;
 	}
-	
+	/** 设定差异倍数 */
+	public void setLogfcCol(double upfc, double downfc) {
+		this.upfc = upfc;
+		this.downfc = downfc;
+	}
 	/** 根据阈值，获得差异基因的个数 */
 	public int getDifGeneNum() {
 		return getLsDifGene().size() - 1;
@@ -283,7 +287,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
 					result = pvalue1.compareTo(pvalue2);
 				}
 				if (result == 0) {
-					result = logfc1.compareTo(logfc2);
+					result = -logfc1.compareTo(logfc2);
 				}
 				return result;
 			}
@@ -346,7 +350,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
 	 * @return 返回卡定的阈值 string[2] 0是pvalue还是fdr<br>
 	 * 1：具体的阈值
 	 */
-	public static String[] setThreshold(Collection<DiffGeneVocalno> lslspValue) {
+	public static String[] setThreshold(Collection<DiffGeneVocalno> lslspValue, double upfc, double downfc) {
 		int thresholdNum = (int)(lslspValue.size() * MIN_PROP_NUM + 1);
 		/** 超过1000个基因的样本数量 */
 		int pvalueUpThresh1 = 0, pvalueUpThresh2 = 0, fdrUpThresh1 = 0, fdrUpThresh2 = 0;

@@ -44,10 +44,14 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	String outScript = "";
 	
 	TitleFormatNBC titleFormatNBC;
-	
 	double logFCcutoff;
+	double pValueOrFDRcutoff = 0.05;
 	
-	double pValueOrFDRcutoff;
+	/** 做差异基因的时候各个样本表达量的值之和不能小于等于该数值 */
+	double minSampleSumNum = 0;
+
+	
+
 	
 	List<String[]> lsGeneInfo = new ArrayList<String[]>();
 	/**
@@ -82,6 +86,8 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	boolean isSensitive = false;
 	
 	String scriptContent;
+
+	TitleFormatNBC titlePvalueFdr = TitleFormatNBC.FDR;
 	
 	public DiffExpAbs() {
 		setRworkspace();
@@ -89,6 +95,14 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		setFileNameRawdata();
 	}
 	
+	/** 做差异基因的时候各个样本表达量的值之和不能小于等于该数值
+	 * 譬如如果多个样本表达量都为0，那就不考虑了
+	 * @param addAllLine 默认为0，意思就是多个样本表达量之和为0 就不考虑
+	 * 是小于等于的关系
+	 */
+	public void setMinSampleSumNum(double minSampleSumNum) {
+		this.minSampleSumNum = minSampleSumNum;
+	}
 	/** 设定是哪一种算法 */
 	private void setEnumDifGene(EnumDifGene enumDifGene) {
 		this.enumDifGene = enumDifGene;
@@ -96,6 +110,19 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	/** 设定是否需要进行log，仅在limma中使用 */
 	public void setLogValue(boolean isLog2Value) {
 		this.logTheValue = isLog2Value;
+	}
+	/** 默认是正负1，表示卡两倍阈值 */
+	public void setLogFCcutoff(double logFCcutoff) {
+		this.logFCcutoff = logFCcutoff;
+	}
+	/** 
+	 * 设定用pvalue还是fdr卡，以及卡的阈值
+	 * @param titlePvalueFdr
+	 * @param threshold
+	 */
+	public void setThreshold(TitleFormatNBC titlePvalueFdr, double threshold) {
+		this.titlePvalueFdr = titlePvalueFdr;
+		this.pValueOrFDRcutoff = threshold;
 	}
 	/**
 	 * 是否提高差异基因筛选的敏感度，意思就是挑选出更多的差异基因
@@ -223,8 +250,17 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		List<String[]> lsAnalysisGeneInfo = getAnalysisGeneInfo();
 		String[] title = lsAnalysisGeneInfo.get(0);
 		lsAnalysisGeneInfo = removeDuplicate(lsAnalysisGeneInfo.subList(1, lsAnalysisGeneInfo.size()));
-		lsAnalysisGeneInfo.add(0, title);
-		txtWrite.ExcelWrite(lsAnalysisGeneInfo);
+		txtWrite.writefileln(title);
+	
+		for (String[] info : lsAnalysisGeneInfo) {
+			double sum = 0;
+			for (int i = 1; i < info.length; i++) {
+				sum += Double.parseDouble(info[i]);
+			}
+			if (minSampleSumNum < 0 || sum > minSampleSumNum) {
+				txtWrite.writefileln(info);
+			}	
+		}
 		txtWrite.close();
 	}
 	/**
@@ -346,7 +382,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		cmdOperate.setGetLsErrOut();
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {
-			throw new ExceptionCmd(enumDifGene.toString() + " error:\n" + cmdOperate.getErrOut());
+			throw new ExceptionCmd(enumDifGene.toString() + " error:\n" + cmdOperate.getCmdExeStrReal() + "\n"+ cmdOperate.getErrOut());
 		}
 		try { Thread.sleep(2000); } catch (Exception e) {}
 	}
@@ -401,10 +437,12 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		//画图，出差异基因的表格
 		for (String excelFileName : mapExcelName2DifResultInfo.keySet()) {
 			DiffGeneVocalno difResultInfo = mapExcelName2DifResultInfo.get(excelFileName);
+			difResultInfo.setThreshold(titlePvalueFdr, pValueOrFDRcutoff);
+			difResultInfo.setLogfcCol(Math.abs(logFCcutoff), -Math.abs(logFCcutoff));
 			String outFile = difResultInfo.writeDifGene();
 			lsOutFile.add(outFile);
 			titleFormatNBC= difResultInfo.getTitlePvalueFDR();
-			logFCcutoff = DiffGeneVocalno.getUpfc();
+			logFCcutoff = difResultInfo.getUpfc();
 			pValueOrFDRcutoff = difResultInfo.getPvalueFDRthreshold();
 		}
 		return lsOutFile;

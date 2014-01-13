@@ -177,7 +177,13 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	public GffDetailGene searchLOC(String chrID, int LOCNum) {
 		return gffHashGene.searchLOC(chrID, LOCNum);
 	}
-
+	/**
+	 * 内部自动判断 cod1 和 cod2的大小
+	 * @param chrID
+	 * @param cod1
+	 * @param cod2
+	 * @return
+	 */
 	public GffCodGeneDU searchLocation(String chrID, int cod1, int cod2) {
 		return gffHashGene.searchLocation(chrID, cod1, cod2);
 	}

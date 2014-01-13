@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.geneanno.AgeneUniID;
 import com.novelbio.database.domain.geneanno.NCBIID;
 import com.novelbio.database.domain.geneanno.UniProtID;
@@ -15,13 +16,21 @@ import com.novelbio.database.mongorepo.geneanno.RepoUniID;
 import com.novelbio.database.service.SpringFactory;
 
 public class ManageNCBIUniID {
+	public static void main(String[] args) {
+		TxtReadandWrite txtRead = new TxtReadandWrite("/media/winE/NBCplatform/database/idmapping_selected.tab.gz");
+		for (String string : txtRead.readlines()) {
+			if (string.contains("Q5QNB8")) {
+				System.out.println(string);
+			}
+		}
+	}
 	private static final Logger logger = Logger.getLogger(ManageNCBIUniID.class);
 	@Autowired
 	private RepoNCBIID repoNCBIID;
 	@Autowired
 	private RepoUniID repoUniID;
 	
-	public ManageNCBIUniID() {
+	private ManageNCBIUniID() {
 		repoNCBIID = (RepoNCBIID) SpringFactory.getFactory().getBean("repoNCBIID");
 		repoUniID = (RepoUniID) SpringFactory.getFactory().getBean("repoUniID");
 	}
@@ -53,6 +62,25 @@ public class ManageNCBIUniID {
 		}
 	}
 	
+	/**
+	 * @param geneType
+	 * @param geneUniID 会查找不去点和去点两种情况
+	 * @param accID
+	 * @param taxID
+	 * @return
+	 */
+	public AgeneUniID findByGeneUniIDAndAccIDAndTaxID(int geneType, String geneUniID, String accID, int taxID) {
+		accID = accID.toLowerCase();
+		AgeneUniID ageneUniID = findByGeneUniIDAndAccIDAndTaxIDUnit(geneType, geneUniID, accID, taxID);
+		if (ageneUniID == null && accID.contains(".")) {
+			String accIDnoDot = GeneID.removeDot(accID);
+			if (accIDnoDot.equals(accID) ) {
+				return null;
+			}
+			ageneUniID = findByGeneUniIDAndAccIDAndTaxIDUnit(geneType, geneUniID, accIDnoDot, taxID);
+		}
+		return ageneUniID;
+	}
 	
 	/**
 	 * @param geneType
@@ -61,8 +89,7 @@ public class ManageNCBIUniID {
 	 * @param taxID 小于等于0表示不考虑
 	 * @return
 	 */
-	public AgeneUniID findByGeneUniIDAndAccIDAndTaxID(int geneType, String geneUniID, String accID, int taxID) {
-		accID = accID.toLowerCase();
+	private AgeneUniID findByGeneUniIDAndAccIDAndTaxIDUnit(int geneType, String geneUniID, String accID, int taxID) {
 		if (geneType == GeneID.IDTYPE_GENEID) {
 			if (taxID > 0) {
 				return repoNCBIID.findByGeneIDAndAccIDAndTaxID(Long.parseLong(geneUniID), accID, taxID);
@@ -86,12 +113,20 @@ public class ManageNCBIUniID {
 	}
 	
 	public ArrayList<AgeneUniID> findByAccID(int geneType, String accID, int taxID) {
-		boolean removeDot = false;
 		accID =  accID.toLowerCase();
-		if (accID.contains("_")) {
-			removeDot = true;
-			accID = GeneID.removeDot(accID);
+		ArrayList<AgeneUniID> lsResult = findByAccIDunit(geneType, accID, taxID);
+		if (lsResult.isEmpty() && accID.contains(".")) {
+			String accIDnoDot = GeneID.removeDot(accID);
+			if (accIDnoDot.equals(accID)) {
+				return new ArrayList<AgeneUniID>(lsResult);
+			}
+			lsResult = findByAccIDunit(geneType, accIDnoDot, taxID);
 		}
+		
+		return lsResult;
+	}
+	
+	private ArrayList<AgeneUniID> findByAccIDunit(int geneType, String accID, int taxID) {
 		List<? extends AgeneUniID> lsResult = new ArrayList<AgeneUniID>();
 		if (geneType == GeneID.IDTYPE_GENEID) {
 			if (taxID > 0) {
@@ -106,28 +141,9 @@ public class ManageNCBIUniID {
 				lsResult = repoUniID.findByAccID(accID);
 			}
 		}
-		
-		if ((lsResult == null || lsResult.size() == 0) && removeDot == false && accID.contains(".")) {
-			accID = GeneID.removeDot(accID);
-			
-			if (geneType == GeneID.IDTYPE_GENEID) {
-				if (taxID > 0) {
-					lsResult = repoNCBIID.findByAccIDAndTaxID(accID, taxID);
-				} else {
-					lsResult = repoNCBIID.findByAccID(accID);
-				}
-			} else if (geneType == GeneID.IDTYPE_UNIID) {
-				if (taxID > 0) {
-					lsResult = repoUniID.findByAccIDAndTaxID(accID, taxID);
-				} else {
-					lsResult = repoUniID.findByAccID(accID);
-				}
-			}
-		}
-		
 		return new ArrayList<AgeneUniID>(lsResult);
 	}
-
+	
 	/**
 	 * 如果存在则返回第一个找到的geneID
 	 * 不存在就返回null
@@ -224,38 +240,49 @@ public class ManageNCBIUniID {
 		}
 		try {
 			AgeneUniID ageneUniID = findByGeneUniIDAndAccIDAndTaxID(ncbiid.getGeneIDtype(), ncbiid.getGenUniID(), ncbiid.getAccID(), ncbiid.getTaxID());
-			if (ageneUniID == null) {
-				try {
-					if (ncbiid.getGeneIDtype() == GeneID.IDTYPE_GENEID) {
-						repoNCBIID.save((NCBIID)ncbiid);
-					} else {
-						repoUniID.save((UniProtID)ncbiid);
-					}
-				} catch (Exception e) {
-					update(ncbiid);
-				}
-			} else {
-				if (override) {
-					update(ncbiid);
-				}
+			try {
+				update(ageneUniID, ncbiid, override);
+			} catch (Exception e) {
+				update(ageneUniID, ncbiid, override);
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			return false;
 		}
 		return true;
 	}
 
-	private boolean update(AgeneUniID ncbiid) {
-		 AgeneUniID ageneUniID = findByGeneUniIDAndAccIDAndTaxID(ncbiid.getGeneIDtype(), ncbiid.getGenUniID(), ncbiid.getAccID(), ncbiid.getTaxID());
-		 if (ageneUniID.getDataBaseInfo().equals(ncbiid.getDataBaseInfo())) {
+	private boolean update(AgeneUniID geneUniexist, AgeneUniID ncbiid, boolean override) {
+		if (geneUniexist == null) {
+			saveNCBIUniID(ncbiid);
+			return true;
+		}
+		
+		boolean isSameAccID = (ncbiid.getAccID() == null || geneUniexist.getSetAccID().contains(ncbiid.getAccID()));
+		boolean isDBsame = geneUniexist.getDataBaseInfo().equals(ncbiid.getDataBaseInfo());
+		 if (isSameAccID && isDBsame) {
 			 return true;
 		 }
-		 ageneUniID.setDataBaseInfo(ncbiid.getDataBaseInfo());
-		 if (ncbiid.getGeneIDtype() == GeneID.IDTYPE_GENEID) {
-			 repoNCBIID.save((NCBIID)ageneUniID);
+		 geneUniexist.addAccID(ncbiid.getAccID());
+		 if (!isSameAccID) {
+			if (override) {
+				geneUniexist.setDataBaseInfo(ncbiid.getDataBaseInfo());
+			}
+			saveNCBIUniID(geneUniexist);
 		 } else {
-			 repoUniID.save((UniProtID)ageneUniID);
-		 }
+			 if (override) {
+				 geneUniexist.setDataBaseInfo(ncbiid.getDataBaseInfo());
+				 saveNCBIUniID(geneUniexist);
+			 }
+		}
 		 return true;
+	}
+
+	static class ManageNCBIUniIDholder {
+		static ManageNCBIUniID manageNCBIUniID = new ManageNCBIUniID();
+	}
+	
+	public static ManageNCBIUniID getInstance() {
+		return ManageNCBIUniIDholder.manageNCBIUniID;
 	}
 }

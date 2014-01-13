@@ -6,12 +6,18 @@ public abstract class FQrecordFilter implements FQrecordCopeInt {
 	private static final Logger logger = Logger.getLogger(FQrecordFilter.class);
 	
 	int readsMinLen = 20;
+	int readsMaxLen = -1;
 	int fastqOffset;
 
 	/** 裁剪序列时最短为多少， 默认为20
 	 */
 	public void setTrimMinLen(int trimMinLen) {
 		this.readsMinLen = trimMinLen;
+	}
+	/** 裁剪序列时最短为多少， 默认为20
+	 */
+	public void setTrimMaxLen(int readsMaxLen) {
+		this.readsMaxLen = readsMaxLen;
 	}
 	/**
 	 * 设定偏移
@@ -32,14 +38,15 @@ public abstract class FQrecordFilter implements FQrecordCopeInt {
 		int end = trimRight(fastQRecord);
 		
 		if (start < 0 && end < 0) {
-			if (fastQRecord.getLength() < readsMinLen) {
+			int len = fastQRecord.getLength();
+			if (len < readsMinLen || (readsMaxLen > 0 && len > readsMaxLen)) {
 				return false;
 			} else {
 				return true;
 			}
 		}
 		
-		return trimSeq(fastQRecord, readsMinLen, start, end);
+		return trimSeq(fastQRecord, readsMinLen, readsMaxLen, start, end);
 	}
 	
 	/**
@@ -72,11 +79,12 @@ public abstract class FQrecordFilter implements FQrecordCopeInt {
 	 * @return 返回截短后的string
 	 * 如果截短后的长度小于设定的最短reads长度，那么就返回false
 	 */
-	protected static boolean trimSeq(FastQRecord fastQRecord, int readsMinLen, int start, int end) {
+	protected static boolean trimSeq(FastQRecord fastQRecord, int readsMinLen, int readsMaxLen, int start, int end) {
 		if (start > end) {
 			start = end;
 		}
-		if (end - start < readsMinLen) {
+		int len = end - start;
+		if (len < readsMinLen || (readsMaxLen > 0 && len > readsMaxLen)) {
 			return false;
 		}
 		if (start == 0 && end == fastQRecord.seqQuality.length()) {

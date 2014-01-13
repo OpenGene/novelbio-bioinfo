@@ -28,15 +28,6 @@ public class ManageSpeciesFile {
 	 */
 	static LinkedHashMap<Integer, LinkedHashMap<String, SpeciesFile>> mapTaxID_2_version2SpeciesFile;
 	
-	private static ManageSpeciesFile manageSpeciesFile;
-	
-	public static ManageSpeciesFile getInstance() {
-		if (manageSpeciesFile == null) {
-			manageSpeciesFile = new ManageSpeciesFile();
-		}
-		return manageSpeciesFile;
-	}
-	
 	private ManageSpeciesFile() {
 		if (mapTaxID_2_version2SpeciesFile == null) {
 			 mapTaxID_2_version2SpeciesFile = new LinkedHashMap<>();
@@ -119,7 +110,7 @@ public class ManageSpeciesFile {
 				logger.error("条目出错：" + ArrayOperate.cmbString(info, "\t"));
 			}
 			//升级
-			speciesFile.update();
+			update(speciesFile);
 		}
 	
 	}
@@ -199,4 +190,13 @@ public class ManageSpeciesFile {
 		mapVersion2Species.put(speciesFileS.getVersion().toLowerCase(), speciesFileS);
 	}
 	
+	
+	static class ManageSpeciesFileHold {
+		private static ManageSpeciesFile manageSpeciesFile = new ManageSpeciesFile();
+	}
+	
+	
+	public static ManageSpeciesFile getInstance() {
+		return ManageSpeciesFileHold.manageSpeciesFile;
+	}
 }

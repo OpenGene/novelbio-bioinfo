@@ -111,7 +111,7 @@ public class MiRNAnovelAnnotaion implements IntCmdSoft {
 		
 		for (BlastInfo blastInfo : lsBlastInfo) {
 			//过滤一下
-			if (blastInfo.getAlignLen() < 16 || blastInfo.getIdentities() < 90 || (blastInfo.getGapNum() + blastInfo.getMismatchNum()) < 4) {
+			if (blastInfo.getAlignLen() < 16 || blastInfo.getIdentities() < 90 || (blastInfo.getGapNum() + blastInfo.getMismatchNum()) > 4) {
 				continue;
 			}
 			mapGeneID2BlastID.put(blastInfo.getQueryID().toLowerCase(), blastInfo.getSubjectID());

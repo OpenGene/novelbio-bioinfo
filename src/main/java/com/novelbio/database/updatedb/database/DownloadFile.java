@@ -67,30 +67,30 @@ public class DownloadFile {
 	}
 	
 	public void download() {
-		for (String ftpFile : lsDownloadNCBI) {
-			if (FileOperate.isFileExistAndBigThanSize(saveto + FileOperate.getFileName(ftpFile), 0)) {
-				continue;
-			}
-			FtpFetch fetch = new FtpFetch();
-			fetch.setDownLoadUrl(ftpFile);
-			fetch.setSavePath(saveto);
-			if (!fetch.downloadFile()) {
-				logger.error("download error:" + ftpFile);
-				FileOperate.DeleteFileFolder(saveto + FileOperate.getFileName(ftpFile));
-			}
-		}
-		for (String ftpFile : lsUniprot) {
-			if (FileOperate.isFileExistAndBigThanSize(saveto + FileOperate.getFileName(ftpFile), 0)) {
-				continue;
-			}
-			FtpFetch fetch = new FtpFetch();
-			fetch.setDownLoadUrl(ftpFile);
-			fetch.setSavePath(saveto);
-			if (!fetch.downloadFile()) {
-				logger.error("download error:" + ftpFile);
-				FileOperate.DeleteFileFolder(saveto + FileOperate.getFileName(ftpFile));
-			}
-		}
+//		for (String ftpFile : lsDownloadNCBI) {
+//			if (FileOperate.isFileExistAndBigThanSize(saveto + FileOperate.getFileName(ftpFile), 0)) {
+//				continue;
+//			}
+//			FtpFetch fetch = new FtpFetch();
+//			fetch.setDownLoadUrl(ftpFile);
+//			fetch.setSavePath(saveto);
+//			if (!fetch.downloadFile()) {
+//				logger.error("download error:" + ftpFile);
+//				FileOperate.DeleteFileFolder(saveto + FileOperate.getFileName(ftpFile));
+//			}
+//		}
+//		for (String ftpFile : lsUniprot) {
+//			if (FileOperate.isFileExistAndBigThanSize(saveto + FileOperate.getFileName(ftpFile), 0)) {
+//				continue;
+//			}
+//			FtpFetch fetch = new FtpFetch();
+//			fetch.setDownLoadUrl(ftpFile);
+//			fetch.setSavePath(saveto);
+//			if (!fetch.downloadFile()) {
+//				logger.error("download error:" + ftpFile);
+//				FileOperate.DeleteFileFolder(saveto + FileOperate.getFileName(ftpFile));
+//			}
+//		}
 		for (String gourl : lsGO) {
 			String fileName = FileOperate.getFileName(gourl);
 			if (FileOperate.isFileExistAndBigThanSize(saveto + fileName, 0)) {
@@ -99,7 +99,7 @@ public class DownloadFile {
 			HttpFetch httpFetch = HttpFetch.getInstance();
 			httpFetch.setUri(gourl);
 			httpFetch.query();
-			if (httpFetch.download(saveto + fileName)) {
+			if (!httpFetch.download(saveto + fileName)) {
 				logger.error("download error:" + gourl);
 				FileOperate.DeleteFileFolder(saveto + fileName);
 			}
@@ -112,7 +112,7 @@ public class DownloadFile {
 			HttpFetch httpFetch = HttpFetch.getInstance();
 			httpFetch.setUri(rapDBurl);
 			httpFetch.query();
-			if (httpFetch.download(saveto + fileName)) {
+			if (!httpFetch.download(saveto + fileName)) {
 				logger.error("download error:" + rapDBurl);
 				FileOperate.DeleteFileFolder(saveto + fileName);
 			}

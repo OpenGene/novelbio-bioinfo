@@ -309,7 +309,7 @@ public class SamReader {
 		}
 
 		samRecordIterator = getSamFileReader().iterator();
-		return new ReadSamIterable(samRecordIterator, samFileHeader);
+		return new ReadSamIterable(fileName, samRecordIterator, samFileHeader);
 	}
 	
 	/**
@@ -329,7 +329,7 @@ public class SamReader {
 			return null;
 		}
 		samRecordIterator = samFileReader.queryContained(mapChrIDlowCase2ChrID.get(chrID), start, end);
-		return new ReadSamIterable(samRecordIterator, samFileHeader);
+		return new ReadSamIterable(fileName, samRecordIterator, samFileHeader);
 	}
 	
 	/**
@@ -349,7 +349,7 @@ public class SamReader {
 			return null;
 		}
 		samRecordIterator = samFileReader.queryOverlapping(mapChrIDlowCase2ChrID.get(chrID), start, end);
-		return new ReadSamIterable(samRecordIterator, samFileHeader);
+		return new ReadSamIterable(fileName, samRecordIterator, samFileHeader);
 	}
 	
 	private void closeIterate() {
@@ -379,8 +379,8 @@ public class SamReader {
 
 class ReadSamIterable implements Iterable<SamRecord> {
 	ReadSamIterator readSamIterator;
-	public ReadSamIterable(SAMRecordIterator samRecordIterator, SAMFileHeader samFileHeader) {
-		readSamIterator = new ReadSamIterator(samRecordIterator, samFileHeader);
+	public ReadSamIterable(String fileName, SAMRecordIterator samRecordIterator, SAMFileHeader samFileHeader) {
+		readSamIterator = new ReadSamIterator(fileName, samRecordIterator, samFileHeader);
 	}
 	@Override
 	public Iterator<SamRecord> iterator() {
@@ -397,8 +397,12 @@ class ReadSamIterator implements Iterator<SamRecord> {
 	SAMFileHeader samFileHeader;
 	int correctLineNum = 0;
 	int errorFormateLineNum = 0;
-	
-	public ReadSamIterator(SAMRecordIterator samRecordIterator, SAMFileHeader samFileHeader) {
+	String fileName = "";
+	public ReadSamIterator(String fileName, SAMRecordIterator samRecordIterator, SAMFileHeader samFileHeader) {
+		if (fileName != null && !fileName.equals("")) {
+			this.fileName = fileName;
+		}
+
 		this.samRecordIterator = samRecordIterator;
 		this.samFileHeader = samFileHeader;
 	}
@@ -406,9 +410,9 @@ class ReadSamIterator implements Iterator<SamRecord> {
 	@Override
 	public boolean hasNext() {
 		if ((errorFormateLineNum > 500 && correctLineNum < 5)) {
-			throw new SamErrorException("sam file has too many error formate lines");
+			throw new SamErrorException("sam file has too many error formate lines" + fileName);
 		} else if (errorContinueNum > errorLinNum) {
-			throw new SamErrorException("sam file is not end normally");
+			throw new SamErrorException("sam file is not end normally" + fileName);
 		}
 		return samRecordIterator.hasNext();
 	}

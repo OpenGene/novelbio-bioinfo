@@ -39,28 +39,28 @@ public class UniProt {
 	public void update() {
 		IdmappingSelected idmappingSelected = new IdmappingSelected();
 		IdmappingSelected.setTaxIDFile(taxIDFile);
-//		idmappingSelected.setTxtWriteExcep(outUniIDFile);
-//		idmappingSelected.updateFile(idmappingSelectedFile);
-//		logger.error("finished Import: " + idmappingSelectedFile);
-//		
-//		Impgene_associationgoa_uniprot impgene_associationgoa_uniprot = new Impgene_associationgoa_uniprot();
-//		impgene_associationgoa_uniprot.updateFile(impgene_associationgoa_uniprotFile);
-//		logger.error("finished Import: " + impgene_associationgoa_uniprotFile);
+		idmappingSelected.setTxtWriteExcep(outUniIDFile);
+		idmappingSelected.updateFile(idmappingSelectedFile);
+		logger.info("finished Import: " + idmappingSelectedFile);
+		
+		Impgene_associationgoa_uniprot impgene_associationgoa_uniprot = new Impgene_associationgoa_uniprot();
+		impgene_associationgoa_uniprot.updateFile(impgene_associationgoa_uniprotFile);
+		logger.info("finished Import: " + impgene_associationgoa_uniprotFile);
 		
 		idmappingSelected = new IdmappingSelected();
 		idmappingSelected.setUpdateUniprotID(true);
 		idmappingSelected.setTxtWriteExcep(outUniIDFile+"_2");
 		idmappingSelected.updateFile(outUniIDFile);
-		logger.error("finished Import: " + outUniIDFile);
+		logger.info("finished Import: " + outUniIDFile);
 
 		IdmappingSelectedGOPubmed idmappingSelectedGOPubmed = new IdmappingSelectedGOPubmed();
 		idmappingSelectedGOPubmed.setTxtWriteExcep(FileOperate.changeFileSuffix(idmappingSelectedFile, "_failed", "txt"));
 		idmappingSelectedGOPubmed.updateFile(idmappingSelectedFile);
-		logger.error("finished Import GO pubmed: " + idmappingSelectedFile);
+		logger.info("finished Import GO pubmed: " + idmappingSelectedFile);
 		
 		idmappingSelectedGOPubmed = new IdmappingSelectedGOPubmed();
 		idmappingSelectedGOPubmed.updateFile(FileOperate.changeFileSuffix(idmappingSelectedFile, "_failed", "txt"));
-		logger.error("finished Import GO pubmed: " + FileOperate.changeFileSuffix(idmappingSelectedFile, "_failed", "txt"));
+		logger.info("finished Import GO pubmed: " + FileOperate.changeFileSuffix(idmappingSelectedFile, "_failed", "txt"));
 	}
 }
 
@@ -162,9 +162,9 @@ class IdmappingSelected extends ImportPerLine {
 		}
 		updateInfo(ss[1], copedID, DBAccIDSource.UniprotKB_ID);
 		updateInfo(ss[7], copedID, DBAccIDSource.IPI);
-		updateInfo(ss[8].replace("UniRef100_", ""), copedID, DBAccIDSource.UniprotUniGene);
-		updateInfo(ss[9].replace("UniRef90_", ""), copedID, DBAccIDSource.UniprotUniGene);
-		updateInfo(ss[10].replace("UniRef50_", ""), copedID, DBAccIDSource.UniprotUniGene);
+//		updateInfo(ss[8].replace("UniRef100_", ""), copedID, DBAccIDSource.UniprotUniGene);
+//		updateInfo(ss[9].replace("UniRef90_", ""), copedID, DBAccIDSource.UniprotUniGene);
+//		updateInfo(ss[10].replace("UniRef50_", ""), copedID, DBAccIDSource.UniprotUniGene);
 		updateInfo(ss[11], copedID, DBAccIDSource.UniprotPARC);
 		updateInfo(ss[12], copedID, DBAccIDSource.PIR);
 		updateInfo(ss[15], copedID, DBAccIDSource.UniprotUniGene);

@@ -42,7 +42,7 @@ public class SamWriter {
 		try {
 			samFileWriter.addAlignment(samRecord.samRecord);
 		} catch (Exception e) {
-			logger.error("samRecord出错" + samRecord.toString());
+			logger.error("samRecord出错" + samRecord.toString(), e);
 		}
 	}
 	

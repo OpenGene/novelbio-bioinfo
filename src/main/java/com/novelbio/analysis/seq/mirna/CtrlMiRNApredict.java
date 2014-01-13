@@ -43,7 +43,7 @@ public class CtrlMiRNApredict implements IntCmdSoft {
 	List<Species> lsBlastTo = new ArrayList<>();
 	
 	boolean isUseOldResult = true;
-	
+	String novelMiRNAmrd;
 	List<String> lsCmd = new ArrayList<>();
 	
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
@@ -61,6 +61,9 @@ public class CtrlMiRNApredict implements IntCmdSoft {
 	public void setExpMir(GeneExpTable expMirPre, GeneExpTable expMirMature) {
 		this.expMirPre = expMirPre;
 		this.expMirMature = expMirMature;
+	}
+	public void setNovelMiRNAmrd(String novelMiRNAmrd) {
+		this.novelMiRNAmrd = novelMiRNAmrd;
 	}
 	/** 新miRNA的注释，比对到哪些物种上去 */
 	public void setLsSpeciesBlastTo(List<Species> lsBlastTo) {
@@ -97,6 +100,7 @@ public class CtrlMiRNApredict implements IntCmdSoft {
 		novelMiRNADeep.setMiRNASeq(species.getMiRNAmatureFile(), null, species.getMiRNAhairpinFile());
 		novelMiRNADeep.setSpecies(species.getCommonName());
 		novelMiRNADeep.setOutPath(novelMiRNAPathDeep);
+		novelMiRNADeep.setNovelMiRNAdeepMrdFile(novelMiRNAmrd);
 		novelMiRNADeep.predict();
 		lsCmd.addAll(novelMiRNADeep.getCmdExeStr());
 		setMiRNACount_And_Anno();

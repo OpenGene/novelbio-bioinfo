@@ -42,6 +42,9 @@ public class ManageDBInfo {
 	}
 	
 	public DBInfo findOne(String dbInfoID) {
+		if (dbInfoID == null) {
+			return null;
+		}
 		return mapDBid2DBinfo.get(dbInfoID);
 	}
 	

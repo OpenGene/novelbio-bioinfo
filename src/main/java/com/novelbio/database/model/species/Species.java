@@ -48,8 +48,6 @@ public class Species implements Cloneable {
 	Map<String, SpeciesFile> mapVersion2Species = new LinkedHashMap<String, SpeciesFile>();
 	ManageTaxID servTaxID = new ManageTaxID();
 	
-	String updateTaxInfoFile = "";
-	String updateSpeciesFile = "";
 	String sepVersionAndYear = "_year_";
 	
 	/** 需要获得哪一种gffType */
@@ -336,63 +334,7 @@ public class Species implements Cloneable {
 		return speciesFile.getIndexRefseq(softMapping, isAllIso);
 	}
 	////////////////////////    升级   //////////////////////////////////////////////////////////////////////////////////////
-	/** 输入taxinfo的文本 */
-	public void setUpdateTaxInfo(String taxInfoFile) {
-		this.updateTaxInfoFile = taxInfoFile;
-	}
-	public void setUpdateSpeciesFile(String speciesFile) {
-		this.updateSpeciesFile = speciesFile;
-	}
-	/** 自动化升级 */
-	public void update() {
-		if (FileOperate.isFileExistAndBigThanSize(updateTaxInfoFile, 0.05))
-			updateTaxInfo(updateTaxInfoFile);
-		
-		if (FileOperate.isFileExistAndBigThanSize(updateSpeciesFile, 0.05))
-			updateSpeciesFile(updateSpeciesFile);
-	}
-	/**
-	 * 将配置信息导入数据库
-	 * @param txtFile 	 配置信息：第一行，item名称
-	 */
-	private void updateTaxInfo(String txtFile) {
-		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(txtFile, 0);
-		String[] title = lsInfo.get(0);
-		title[0] = title[0].replace("#", "");
-		HashMap<String, Integer> hashName2ColNum = new HashMap<String, Integer>();
-		for (int i = 0; i < title.length; i++) {
-			hashName2ColNum.put(title[i].trim().toLowerCase(), i);
-		}
-		
-		for (int i = 1; i < lsInfo.size()-1; i++) {
-			TaxInfo taxInfo = new TaxInfo();
-			String[] info = lsInfo.get(i);
-			int m = hashName2ColNum.get("taxid");
-			taxInfo.setTaxID(Integer.parseInt(info[m]));
-			
-			m = hashName2ColNum.get("chinesename");
-			taxInfo.setChnName(info[m]);
-			
-			m = hashName2ColNum.get("latinname");
-			taxInfo.setLatin(info[m]);
-			
-			m = hashName2ColNum.get("commonname");
-			taxInfo.setComName(info[m]);
-			
-			m = hashName2ColNum.get("abbreviation");
-			taxInfo.setAbbr(info[m]);
-			//升级
-			taxInfo.update();
-		}
-	}
-	/**
-	 * 将配置信息导入数据库
-	 * @param txtFile 	 配置信息：第一行，item名称
-	 */
-	private void updateSpeciesFile(String speciesFileInput) {
-		ManageSpeciesFile.getInstance().readSpeciesFile(speciesFileInput);
-	}
-	
+
 	/** 用数据库查找的方式，遍历refseq文件，然后获得gene2iso的表 */
 	public String getGene2IsoFileFromRefSeq() {
 		String gene2IsoFile = FileOperate.changeFileSuffix(getRefseqFile(true), "_Gene2Iso", "txt");
@@ -604,5 +546,38 @@ public class Species implements Cloneable {
 //			txtRead.close();
 //		}		
 //	}
-	
+	/**
+	 * 将配置信息导入数据库
+	 * @param txtFile 	 配置信息：第一行，item名称
+	 */
+	public static void updateTaxInfo(String taxInfoFile) {
+		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(taxInfoFile, 0);
+		String[] title = lsInfo.get(0);
+		title[0] = title[0].replace("#", "");
+		HashMap<String, Integer> hashName2ColNum = new HashMap<String, Integer>();
+		for (int i = 0; i < title.length; i++) {
+			hashName2ColNum.put(title[i].trim().toLowerCase(), i);
+		}
+		
+		for (int i = 1; i < lsInfo.size()-1; i++) {
+			TaxInfo taxInfo = new TaxInfo();
+			String[] info = lsInfo.get(i);
+			int m = hashName2ColNum.get("taxid");
+			taxInfo.setTaxID(Integer.parseInt(info[m]));
+			
+			m = hashName2ColNum.get("chinesename");
+			taxInfo.setChnName(info[m]);
+			
+			m = hashName2ColNum.get("latinname");
+			taxInfo.setLatin(info[m]);
+			
+			m = hashName2ColNum.get("commonname");
+			taxInfo.setComName(info[m]);
+			
+			m = hashName2ColNum.get("abbreviation");
+			taxInfo.setAbbr(info[m]);
+			//升级
+			taxInfo.update();
+		}
+	}
 }

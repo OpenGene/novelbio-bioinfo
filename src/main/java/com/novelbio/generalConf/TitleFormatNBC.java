@@ -1,5 +1,8 @@
 package com.novelbio.generalConf;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 public enum TitleFormatNBC {
 	/** 公司名缩写 */
@@ -40,6 +43,7 @@ public enum TitleFormatNBC {
 	Samples("Samples");
 	
 	String item;
+	static Map<String, TitleFormatNBC> mapPvalueFdr;
 	TitleFormatNBC(String item) {
 		this.item = item;
 	}
@@ -49,6 +53,13 @@ public enum TitleFormatNBC {
 		return item;
 	}
 	
-//	public HashMap<String, String>
+	public static Map<String, TitleFormatNBC> getPvalueFdr() {
+		if (mapPvalueFdr == null) {
+			mapPvalueFdr = new HashMap<>();
+			mapPvalueFdr.put(Pvalue.name(), Pvalue);
+			mapPvalueFdr.put(FDR.name(), FDR);
+		}
+		return mapPvalueFdr;
+	}
 	
 }

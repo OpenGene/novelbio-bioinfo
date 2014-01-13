@@ -285,7 +285,11 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 	 * @param solo 单独计数
 	 *  */
 	private void countRepeatGene(String outPath, String prefix, MiRNAmapPipline miRNAmappingPipline) {
-		if (isUseOldResult && FileOperate.isFileExistAndBigThanSize(outPath + prefix + "_GeneStructure.txt", 0) 
+		if (isUseOldResult && FileOperate.isFileExistAndBigThanSize(outPath + prefix + "_GeneStructure.txt", 0)
+				&& !FileOperate.isFileExistAndBigThanSize(species.getGffRepeat(), 0)) {
+			expGeneStructure.read(outPath + prefix + "_GeneStructure.txt", false);
+			return;
+		} else if (isUseOldResult && FileOperate.isFileExistAndBigThanSize(outPath + prefix + "_GeneStructure.txt", 0) 
 				&& FileOperate.isFileExistAndBigThanSize(outPath + prefix + "_RepeatFamily.txt", 0)
 				&& FileOperate.isFileExistAndBigThanSize(outPath + prefix + "_RepeatName.txt", 0)
 				) {

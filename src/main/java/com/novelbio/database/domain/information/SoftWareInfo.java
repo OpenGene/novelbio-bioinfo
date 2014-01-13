@@ -142,8 +142,8 @@ public class SoftWareInfo {
 	/**
 	 * 升级本信息，没有就插入，有就升级
 	 */
-	public void update(boolean updateToDB) {
-		manageSoftWareInfo.update(updateToDB, this);
+	public void update() {
+		manageSoftWareInfo.update(this);
 	}
 	
 	/**
@@ -206,8 +206,8 @@ public class SoftWareInfo {
 	 * 将配置信息导入数据库
 	 * @param txtFile 	 配置信息：第一行，item名称
 	 */
-	public static void updateInfo(boolean updateToDB, String txtFile) {
-		manageSoftWareInfo.updateInfo(updateToDB, txtFile);
+	public static void updateInfo(String txtFile) {
+		manageSoftWareInfo.updateInfo(txtFile);
 	}
 	public static enum SoftWare {
 		blast,

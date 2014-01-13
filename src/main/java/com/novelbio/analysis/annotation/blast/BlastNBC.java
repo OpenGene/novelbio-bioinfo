@@ -187,9 +187,10 @@ public class BlastNBC implements IntCmdSoft {
 			}
 		}
 		CmdOperate cmdOperate = new CmdOperate(getLsCmdBlast());
+		cmdOperate.setGetLsErrOut();
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {
-			throw new ExceptionCmd("blast error:" + cmdOperate.getCmdExeStrReal());
+			throw new ExceptionCmd("blast error:\n" + cmdOperate.getCmdExeStrReal() + cmdOperate.getErrOut());
 		}
 		return true;
 	}
@@ -265,7 +266,11 @@ public class BlastNBC implements IntCmdSoft {
 			return false;
 		}
 		CmdOperate cmdOperate = new CmdOperate(getLsCmdFormatDB());
+		cmdOperate.setGetLsErrOut();
 		cmdOperate.run();
+		if (!cmdOperate.isFinishedNormal()) {
+			throw new ExceptionCmd("make database error:\n" + cmdOperate.getCmdExeStrReal() + cmdOperate.getErrOut());
+		}
 		return true;
 	}
 	

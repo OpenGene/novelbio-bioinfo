@@ -10,6 +10,7 @@ import java.util.Map;
 public class FastQFilter {
 	int phredOffset;
 	int readsLenMin = 18;
+	int readsLenMax = -1;
 	boolean isFiltered = true;
 	/** fastQ里面asc||码的指标与cutoff比例，意思 碱基质量小于 指定值 的数目 大于该比例 就会被过滤掉 */
 	Map<Integer, Double> mapFastQFilter;
@@ -44,6 +45,10 @@ public class FastQFilter {
 	/** 序列最短多少 */
 	public void setFilterParamReadsLenMin(int readsLenMin) {
 		this.readsLenMin = readsLenMin;
+	}
+	/** 序列最短多少 */
+	public void setFilterParamReadsLenMax(int readsLenMax) {
+		this.readsLenMax = readsLenMax;
 	}
 	/** 如果有adapterL，则必须先设定该方法，否则会报错 */
 	public void setFilterParamAdaptorLeft(String adaptorLeft) {
@@ -149,6 +154,7 @@ public class FastQFilter {
 			if (fQrecordFilter.isUsing()) {
 				fQrecordFilter.setFastqOffset(phredOffset);
 				fQrecordFilter.setTrimMinLen(readsLenMin);
+				fQrecordFilter.setTrimMaxLen(readsLenMax);
 				lsFQrecordFilters.add(fQrecordFilter);
 			}
 		}

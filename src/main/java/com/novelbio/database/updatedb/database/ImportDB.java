@@ -3,7 +3,6 @@ package com.novelbio.database.updatedb.database;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.DBInfo;
-import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.model.species.Species;
 
 /**
@@ -12,40 +11,43 @@ import com.novelbio.database.model.species.Species;
  * @author zong0jie
  *
  */
-public class ImportDB {
-	String databasePath2 = "/media/winE/Bioinformatics/DataBaseUpdate/";
-	
+public class ImportDB {	
 	String softToolsFile;
 	String speciesFile;
 	
 	/** NCBI等数据库文件下载后存放的路径 */
-	String downloadPath = "/media/winE/NBCplatform/genome/";
+	String downloadPath;
 	
-	String taxIDFile = downloadPath + "常见物种IDKEGGAll.txt";
-	String GOPath = "/media/winE/Bioinformatics/DataBaseUpdate/";
+	String taxIDFile;
+	String GOPath;
 	
 	public static void main(String[] args) {
-		String downloadPath = "/media/winD/Bioinfor/database/";
-		String softToolsFile = "/media/winD/NBCplatform/BioInfomaticsToolsPlatform/SoftwareInfo.txt";
-		String speciesFile = "/media/winE/NBCplatform/genome/常见物种IDKEGGAll.txt";
-		String dbInfo = "/media/winD/NBCplatform/DBinfo.txt";
+		String downloadPath = "/media/winE/NBCplatform/database/";
+		String softToolsFile = "/media/hdfs/nbCloud/public/nbcplatform/genome/SoftwareInfo.txt";
+		String taxIDFile = "/media/hdfs/nbCloud/public/nbcplatform/genome/常见物种IDKEGGAll.txt";
+		String dbInfo = "/media/winE/NBCplatform/database/DBinfo.txt";
+		String GOPath = "/media/winE/NBCplatform/database/GO/";
+		String speciesFile = "";
+		
 		ImportDB importDB = new ImportDB();
 		importDB.setDownloadPath(downloadPath);
 		importDB.setSoftToolsFile(softToolsFile);
 		importDB.setSpeciesFile(speciesFile);
-//		importDB.updateDBinfo(dbInfo);
-//		importDB.updateSoftInfo();
-//		importDB.updateSpecies();
-//		importDB.updateGODB();
+		importDB.setGOPath(GOPath);
+		importDB.setTaxIDFile(taxIDFile);
 		
-//		importDB.updateNCBIID();
+		
+		importDB.updateDBinfo(dbInfo);
+		importDB.updateGODB();
+		
+		importDB.updateNCBIID();
 //		importDB.updateUniprotID();
 //		importDB.updateZeaMaize();
-//		importDB.updateRiceID("/media/winE/Bioinformatics/DataBase/Rice/");//只导了前两个
-//		importDB.updateTAIR("/media/winD/NBCplatform/genome/arabidopsis/tair10/db/");
+//		importDB.updateRiceID("/media/winE/NBCplatform/database/rice/");//只导了前两个
+//		importDB.updateTAIR("/media/winE/NBCplatform/database/arabidopsis/");
 //		importDB.updateZB();
 //		updateEnsembl();
-		importDB.updateYeast();
+//		importDB.updateYeast();
 //		importDB.updateMicroarray();
 
 //		updateSoyBean();
@@ -68,9 +70,12 @@ public class ImportDB {
 	public void setDownloadPath(String databasePath) {
 		this.downloadPath = databasePath;
 	}
+	public void setGOPath(String gOPath) {
+		GOPath = gOPath;
+	}
 	
-	private void updateSoftInfo() {
-		SoftWareInfo.updateInfo(true, softToolsFile);
+	private void updateTaxInfo() {
+		Species.updateTaxInfo(taxIDFile);
 	}
 	
 	private void updateGODB() {
@@ -80,12 +85,6 @@ public class ImportDB {
 		amiGO.importFile();
 	}
 	
-	private void updateSpecies() {
-		Species species = new Species();
-		species.setUpdateSpeciesFile(speciesFile);
-		species.setUpdateTaxInfo(taxIDFile);
-		species.update();
-	}
 	
 	private void updateDBinfo(String dbInfoFile) {
 		DBInfo.updateDBinfo(dbInfoFile);
@@ -99,7 +98,6 @@ public class ImportDB {
 		String geneRef2UniID = downloadPath + "gene_refseq_uniprotkb_collab.gz";
 		String gene2Info = downloadPath + "gene_info.gz";
 		String gene2Pub = downloadPath + "gene2pubmed.gz";
-		String goExtObo = GOPath + "gene_ontology_ext.obo";
 		String gene2GO = downloadPath + "gene2go.gz";
 		
 		NCBI ncbi = new NCBI();
@@ -156,10 +154,11 @@ public class ImportDB {
 	}
 	
 	private void updateRiceID(String riceParentPath) {
-		String gffRapDB = riceParentPath + "RAP_genes.gff3";
+		String gffRapDB = riceParentPath + "RAP_transcripts_exon.gff";
 		String gffTIGR =  riceParentPath + "Tigr_all.gff3";
-		String rap2MSU =  riceParentPath + "RAP-MSU.txt";
+		String rap2MSU =  riceParentPath + "RAP-MSU.txt.gz";
 		String goFile = riceParentPath + "all.GOSlim_assignment";
+		String rapLocusGff = riceParentPath + "locus.gff";
 		String rapDBoutID = FileOperate.changeFileSuffix(gffRapDB, "_IDout", "txt");
 		String tigrDBoutID = FileOperate.changeFileSuffix(gffTIGR, "_IDout", "txt");
 		RiceID riceID = new RiceID();
@@ -169,6 +168,7 @@ public class ImportDB {
 		riceID.setRiceRap2MSU(rap2MSU);
 		riceID.setTigrDBoutID(tigrDBoutID);
 		riceID.setTigrGoSlim(goFile);
+		riceID.setRapLocusGff(rapLocusGff);
 		riceID.update();
 	}
 	
@@ -401,20 +401,16 @@ public class ImportDB {
 	
 	private void updateTAIR(String parentPath) {
 		Arabidopsis arabidopsis = new Arabidopsis();
-		String athGO = parentPath + "ATH_GO_GOSLIM.txt/ATH_GO_GOSLIM2.txt";
+		String athGO = parentPath + "ATH_GO_GOSLIM.txt.gz";
 		String tAIR_functional_descriptions = parentPath + "TAIR10_functional_descriptions";
-		String tAIRModelcDNAAssociations = parentPath + "idconvert/TAIR10_Model_cDNA_associations";
 		String tAIRNCBIGeneIDmapping = parentPath + "TAIR10_NCBI_GENEID_mapping";
 		String tAIRNCBIRefSeqMappingPROT = parentPath + "TAIR10_NCBI_REFSEQ_mapping_PROT";
 		String tAIRNCBIRefSeqMappingRNA = parentPath + "TAIR10_NCBI_REFSEQ_mapping_RNA";
-		String uniprot2agi = parentPath + "idconvert/Uniprot2AGI";
 		arabidopsis.setAthGO(athGO);
 		arabidopsis.setTAIR_functional_descriptions(tAIR_functional_descriptions);
-		arabidopsis.setTAIRModelcDNAAssociations(tAIRModelcDNAAssociations);
 		arabidopsis.setTAIRNCBIGeneIDmapping(tAIRNCBIGeneIDmapping);
 		arabidopsis.setTAIRNCBIRefSeqMappingPROT(tAIRNCBIRefSeqMappingPROT);
 		arabidopsis.setTAIRNCBIRefSeqMappingRNA(tAIRNCBIRefSeqMappingRNA);
-		arabidopsis.setUniprot2AGI(uniprot2agi);
 		arabidopsis.update();
 	}
 	
@@ -488,9 +484,8 @@ public class ImportDB {
 	}
 	
 	private void updateZeaMaize() {
-		String zeamaizeDbxref = "/media/winE/Bioinformatics/GenomeData/maize/ZmB73_5a_xref.txt";
-		String maizeGeneInfo =
-				"/media/winE/Bioinformatics/GenomeData/maize/ZmB73_5a_gene_descriptors.txt/ZmB73_5a_gene_descriptors.txt";
+		String zeamaizeDbxref = "/media/winE/NBCplatform/database/maize/ZmB73_5a_xref.txt.gz";
+		String maizeGeneInfo = "/media/winE/NBCplatform/database/maize/ZmB73_5a_gene_descriptors.txt.gz";
 		MaizeGDB maizeGDB = new MaizeGDB();
 		maizeGDB.setMaizeDbxref(zeamaizeDbxref);
 		maizeGDB.setMaizeGeneInfo(maizeGeneInfo);

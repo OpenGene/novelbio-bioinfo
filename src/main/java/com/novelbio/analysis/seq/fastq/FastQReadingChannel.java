@@ -218,7 +218,7 @@ public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
 	/** 等待处理线程将AbsQueue队列中的记录处理掉 */
 	protected void wait_To_Cope_AbsQueue() {
 		suspendCheck();
-		while (executorPool.getQueue().size() == maxNumReadInLs || queueResult.size() == maxNumReadInLs) {
+		while (executorPool.getQueue().size() == maxNumReadInLs || (queueResult != null && queueResult.size() == maxNumReadInLs)) {
 			try { Thread.sleep(50); } catch (InterruptedException e) { }
 		}
 	}

@@ -11,6 +11,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 
+import com.novelbio.base.SepSign;
 import com.novelbio.database.service.servgeneanno.ManageDBInfo;
 /**
  * ibatis在操作数据库时会自动使用类中的setter和getter给属性赋值
@@ -131,6 +132,9 @@ public abstract class AGeneInfo {
 	 * @param symbol
 	 */
 	public void setSymb(String symbol) {
+		if (symbol == null || symbol.trim().equals("")) {
+			return;
+		}
 		mapSymbol.put(dbInfo.getDbNameLowcase(), symbol);
 	}
 	/**
@@ -248,7 +252,7 @@ public abstract class AGeneInfo {
 				mapDescription.put(dbInfoName, geneInfo.mapDescription.get(dbInfoName));
 				update = true;
 			} else if(!mapDescription.get(dbInfoName).toLowerCase().equals(geneInfo.mapDescription.get(dbInfoName).toLowerCase()) ) {
-				mapDescription.put(dbInfoName, geneInfo.mapDescription.get(dbInfoName));
+				mapDescription.put(dbInfoName, mapDescription.get(dbInfoName) + "//" + geneInfo.mapDescription.get(dbInfoName));
 				update = true;
 			}
 		}

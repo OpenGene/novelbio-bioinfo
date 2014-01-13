@@ -118,6 +118,7 @@ abstract class ImportPerLine {
 			taxInfo.update();
 			setTaxID.add(Integer.parseInt(ss[0]));
 		}
+		txtTaxID.close();
 	}
 	/**
 	 * 导入单个文件时，设定taxID

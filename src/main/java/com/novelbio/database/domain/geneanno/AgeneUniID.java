@@ -1,9 +1,11 @@
 package com.novelbio.database.domain.geneanno;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.service.servgeneanno.ManageDBInfo;
@@ -21,21 +23,23 @@ public abstract class AgeneUniID {
 	private String id;
     private int taxID;
     /** 通通小写 */
-	private String accID;
+	private Set<String> accID;
 	/** 原始值，不小写 */
 	private String accIDraw;
 	
-	@DBRef
-	DBInfo databaseInfo;
+	String dbInfoID;
 	
 	@Transient
 	ManageDBInfo manageDBInfo = ManageDBInfo.getInstance();
-
+	
 	public void setId(String id) {
 		this.id = id;
 	}
 	public String getId() {
 		return id;
+	}
+	public Set<String> getSetAccID() {
+		return accID;
 	}
 	public int getTaxID() {
 		return taxID;
@@ -70,16 +74,46 @@ public abstract class AgeneUniID {
 		}
 		return accIDraw;
 	}
+	/** 不需要去掉最后的点，内部会去一次点 */
 	public void setAccID(String accessID) {
+		setAccID(accessID, true);
+	}
+	/** 不需要去掉最后的点，内部会去一次点 */
+	public void setAccID(String accessID, boolean removeDot) {
+		addAccID(false, accessID, removeDot);
+	}
+	/** 不需要去掉最后的点，内部会去一次点 */
+	public void addAccID(String accessID) {
+		addAccID(true, accessID, true);
+	}
+	/** 不需要去掉最后的点，内部会去一次点 */
+	public void addAccID(String accessID, boolean removeDot) {
+		addAccID(true, accessID, removeDot);
+	}
+	/** 不需要去掉最后的点，内部会去一次点 */
+	private void addAccID(boolean isAdd,String accessID, boolean removeDot) {
 		if (accessID == null || accessID.equals("")) {
 			return;
 		}
-		this.accID = accessID.toLowerCase();
-		this.accIDraw = accessID;
-	}  
+		if (!isAdd) {
+			accID = new HashSet<>();
+		}
 	
+		String accessIDlowcase = accessID.toLowerCase();
+		this.accID.add(accessIDlowcase);
+		if (removeDot) {
+			String accIDremoveDot = GeneID.removeDot(accessIDlowcase);
+			accID.add(accIDremoveDot);
+		}
+		if (removeDot && accID.size() > 2) {
+			this.accIDraw = GeneID.removeDot(accessID);
+		} else {
+			this.accIDraw = accessID;
+		}
+	}
 	public DBInfo getDataBaseInfo() {
-		return databaseInfo;
+		ManageDBInfo manageDBInfo = ManageDBInfo.getInstance();
+		return manageDBInfo.findOne(dbInfoID);
 	}
 	
 	/** 是否添加了，false表示不需要添加 */
@@ -104,8 +138,8 @@ public abstract class AgeneUniID {
 	}
 	
 	public boolean setDataBaseInfo(DBInfo databaseInfo) {
-		if (databaseInfo != null && (this.databaseInfo == null || !this.databaseInfo.equals(databaseInfo)) ) {
-			this.databaseInfo = databaseInfo;
+		if (databaseInfo != null && (dbInfoID == null || !dbInfoID.equals(databaseInfo.getDbInfoID())) ) {
+			this.dbInfoID = databaseInfo.getDbInfoID();
 			return true;
 		}
 		return false;
@@ -121,7 +155,7 @@ public abstract class AgeneUniID {
 		if (!overrideDBinfo && getId() != null && !getId().equals("")) {
 			return true;
 		}
-		ManageNCBIUniID manageNCBIUniID = new ManageNCBIUniID();
+		ManageNCBIUniID manageNCBIUniID = ManageNCBIUniID.getInstance();
 		return manageNCBIUniID.updateNCBIUniID(this, overrideDBinfo);
 	}
 	

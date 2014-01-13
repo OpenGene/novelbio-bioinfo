@@ -21,6 +21,7 @@ package uk.ac.babraham.FastQC.Modules;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.swing.JPanel;
@@ -36,6 +37,8 @@ public class SequenceLengthDistribution extends FastQCmodules implements QCModul
 	private double max = 0;
 	private boolean calculated = false;
 	
+	int minLen, maxLen = -1;
+	
 	public JPanel getResultsPanel() {
 	
 		if (!calculated) calculateDistribution();
@@ -48,8 +51,6 @@ public class SequenceLengthDistribution extends FastQCmodules implements QCModul
 	}
 	
 	private synchronized void calculateDistribution () {
-		int maxLen = 0;
-		int minLen = -1;
 		max = 0;
 		
 		// Find the min and max lengths
@@ -212,8 +213,11 @@ public class SequenceLengthDistribution extends FastQCmodules implements QCModul
 	}
 
 	public Map<String, String> getResult() {
-		// TODO Auto-generated method stub
-		return null;
+		Map<String, String> mapBp2Len = new LinkedHashMap<>();
+		for (int i = minLen; i <= maxLen; i++) {
+			mapBp2Len.put(i+"", lengthCounts[i]+"");
+		}
+		return mapBp2Len;
 	}
 
 }

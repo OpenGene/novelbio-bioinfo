@@ -139,6 +139,9 @@ public class DiffExpEBSeq extends DiffExpAbs{
 				tmpResult[3] = "-20";
 			} else if (tmpResult[2].equals("0")) {
 				tmpResult[3] = "20";
+			} else {
+				double fc = Double.parseDouble(tmpResult[1])/Double.parseDouble(tmpResult[2]);
+				tmpResult[3] = Math.log(fc)/Math.log(2) + "";
 			}
 			lsResult.add(tmpResult);
 		}

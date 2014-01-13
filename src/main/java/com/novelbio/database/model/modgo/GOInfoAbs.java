@@ -174,7 +174,6 @@ public abstract class GOInfoAbs {
 				setUpdate.add(aGene2Go);
 			}
 		} else {
-			gene2Go.setGeneUniID(getGenUniAccID());
 			setUpdate.add(gene2Go);
 			mapGene2Gos.put(GOID, gene2Go);
 		}

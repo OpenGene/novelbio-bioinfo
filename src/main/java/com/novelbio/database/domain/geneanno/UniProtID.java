@@ -12,7 +12,7 @@ import com.novelbio.database.model.modgeneid.GeneID;
 @Document(collection = "uniid")
 @CompoundIndexes({
     @CompoundIndex(unique = true, name = "uni_acc_idx", def = "{'uniID': 1, 'accID': -1}"),
-    @CompoundIndex(unique = true, name = "acc_tax_idx", def = "{'accID': 1, 'taxID': -1}")
+    @CompoundIndex(unique = false, name = "acc_tax_idx", def = "{'accID': 1, 'taxID': -1}")
  })
 public class UniProtID extends AgeneUniID {
 	private String uniID;

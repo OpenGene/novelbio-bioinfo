@@ -57,7 +57,9 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 		this.outPath = FileOperate.addSep(outPath);
 		FileOperate.createFolders(outPath);
 	}
-
+	public void setNovelMiRNAdeepMrdFile(String novelMiRNAdeepMrdFile) {
+		this.novelMiRNAdeepMrdFile = novelMiRNAdeepMrdFile;
+	}
 	/**
 	 * 从bed文件转变为fasta格式，或直接设定fasta文件
 	 * 设定待比对的短序列fasta文件名字，可以随便设定。如果不设定，则默认为输入bed文件+_Potential_DenoveMirna.fasta;
@@ -203,8 +205,10 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 		this.miRNAminLen = miRNAminLen;
 	}
 	public void predict() {
-		String mrdFile = outPath + "run" + "/output.mrd";
-		if (FileOperate.isFileExistAndBigThanSize(mrdFile, 0)) {
+		if (!FileOperate.isFileExistAndBigThanSize(novelMiRNAdeepMrdFile, 0)) {
+			novelMiRNAdeepMrdFile = outPath + "run" + "/output.mrd";
+		}
+		if (FileOperate.isFileExistAndBigThanSize(novelMiRNAdeepMrdFile, 0)) {
 			readExistMrd();
 		} else {
 			predictNovel();
@@ -241,7 +245,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 		CmdOperate cmdOperate = new CmdOperate(lsCmdRun);
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {
-			throw new ExceptionCmd("miRNAdeep2 mapper.pl error:\n" + cmdOperate.getCmdExeStrReal());
+			throw new ExceptionCmd("miRNAdeep2 mapper.pl error:\n" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
 		}
 		lsCmd.add(cmdOperate.getCmdExeStr());
 		FileOperate.DeleteFileFolder(fastaInput);
@@ -337,10 +341,8 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	 * 仅用于测试
 	 */
 	private void readExistMrd() {
-		String outFinal = outPath;
-		novelMiRNAdeepMrdFile = outFinal + "run" + "/output.mrd";
-		novelMiRNAhairpin =  FileOperate.getParentPathName(outFinal) + "novelMiRNA/hairpin.fa";
-		novelMiRNAmature =  FileOperate.getParentPathName(outFinal) + "novelMiRNA/mature.fa";
+		novelMiRNAhairpin =  FileOperate.getParentPathName(outPath) + "novelMiRNA/hairpin.fa";
+		novelMiRNAmature =  FileOperate.getParentPathName(outPath) + "novelMiRNA/mature.fa";
 //		HashSet<String> setMirPredictName = getSetMirPredictName(outFinal + "result.csv");
 		ListMiRNAdeep.extractHairpinSeqMatureSeq(novelMiRNAdeepMrdFile, novelMiRNAmature, novelMiRNAhairpin);
 	}

@@ -114,7 +114,7 @@ public class TaxInfo implements Cloneable {
 		return servTaxID.getHashTaxIDName();
 	}
 	public void update() {
-		ManageTaxID servTaxID = new ManageTaxID();
+		ManageTaxID servTaxID = ManageTaxID.getInstance();
 		servTaxID.update(this);
 	}
 	/**
@@ -154,4 +154,5 @@ public class TaxInfo implements Cloneable {
 			return null;
 		}
 	}
+	
 }

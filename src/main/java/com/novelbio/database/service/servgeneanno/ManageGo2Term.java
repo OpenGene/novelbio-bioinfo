@@ -43,8 +43,12 @@ public class ManageGo2Term {
 	}
 	/** 全部读入内存后，hash访问。第一次速度慢，后面效率很高 */
 	public Go2Term queryGo2Term(String goID) {
-		return mapGoIDQuery2GOTerm.get(goID.toUpperCase()).clone();
-//		return repoGo2Term.findByQueryGoID(goID);
+		Go2Term go2Term = mapGoIDQuery2GOTerm.get(goID.toUpperCase());
+		if (go2Term != null) {
+			return go2Term.clone();
+		} else {
+			return repoGo2Term.findByQueryGoID(goID);
+		}
 	}
 	
 	public void saveGo2Term(Go2Term go2Term) {
@@ -61,7 +65,12 @@ public class ManageGo2Term {
 	 */
 	private void saveGo2TermExp(Go2Term go2Term) throws Exception {
 		boolean update = false;
-		Go2Term go2TermS = queryGo2Term(go2Term.getGoID());
+		Go2Term go2TermS = null;
+		try {
+			go2TermS = queryGo2Term(go2Term.getGoID());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		if (go2TermS == null) {
 			go2TermS = go2Term;
 			update = true;
