@@ -24,7 +24,7 @@ public class ImportDB {
 	public static void main(String[] args) {
 		String downloadPath = "/media/winE/NBCplatform/database/";
 		String softToolsFile = "/media/hdfs/nbCloud/public/nbcplatform/genome/SoftwareInfo.txt";
-		String taxIDFile = "/media/hdfs/nbCloud/public/nbcplatform/genome/常见物种IDKEGGAll.txt";
+		String taxIDFile = "/media/winE/NBCplatform/database/常见物种IDKEGGAll.txt";
 		String dbInfo = "/media/winE/NBCplatform/database/DBinfo.txt";
 		String GOPath = "/media/winE/NBCplatform/database/GO/";
 		String speciesFile = "";
@@ -37,17 +37,17 @@ public class ImportDB {
 		importDB.setTaxIDFile(taxIDFile);
 		
 		
-		importDB.updateDBinfo(dbInfo);
-		importDB.updateGODB();
+//		importDB.updateDBinfo(dbInfo);
+//		importDB.updateGODB();
 		
-		importDB.updateNCBIID();
+//		importDB.updateNCBIID();
 //		importDB.updateUniprotID();
 //		importDB.updateZeaMaize();
 //		importDB.updateRiceID("/media/winE/NBCplatform/database/rice/");//只导了前两个
 //		importDB.updateTAIR("/media/winE/NBCplatform/database/arabidopsis/");
 //		importDB.updateZB();
 //		updateEnsembl();
-//		importDB.updateYeast();
+		importDB.updateYeast();
 //		importDB.updateMicroarray();
 
 //		updateSoyBean();
@@ -116,35 +116,35 @@ public class ImportDB {
 	 */
 	private void updateUniprotID() {
 		String idmappingSelectedFile = downloadPath + "idmapping_selected.tab.gz";
-		String impgene_associationgoa_uniprotFile = GOPath + "gene_association.goa_uniprot.gz";
-		String outUniIDFile = downloadPath + "outIdmap.txt";
+		String gene_association_goa_uniprot = GOPath + "gene_association.goa_uniprot.gz";
+		String outUniIDFile = downloadPath + "idmapping_selected_Out.txt.gz";
 		UniProt uniProt = new UniProt();
 		uniProt.setIdmappingSelectedFile(idmappingSelectedFile);
 		uniProt.setTaxIDFile(taxIDFile);
 		uniProt.setOutUniIDFile(outUniIDFile);
-		uniProt.setImpgene_associationgoa_uniprotFile(impgene_associationgoa_uniprotFile);
+		uniProt.setGene_association_goa_uniprot(gene_association_goa_uniprot);
 		uniProt.update();
 	}
 	
 	private void updateEnsembl() {
 		Species species = null;
 		species.getGffFile();
-//		String ensemblFileMouse = "/media/winE/Bioinformatics/DataBase/Mus_musculus.NCBIM37.65.gtf"; 
-//		String ucscGffFileMouse = "/media/winE/Bioinformatics/GenomeData/mouse/ucsc_mm9/refseqSortUsing.txt";
-//		int taxIDMouse = 10090;
+		String ensemblFileMouse = "/media/winE/Bioinformatics/DataBase/Mus_musculus.NCBIM37.65.gtf"; 
+		String ucscGffFileMouse = "/media/winE/Bioinformatics/GenomeData/mouse/ucsc_mm9/refseqSortUsing.txt";
+		int taxIDMouse = 10090;
 		IDconvertEnsembl2NCBI ensembl = new IDconvertEnsembl2NCBI();
-//		ensembl.setEnsemblFile(ensemblFileMouse, ucscGffFileMouse, taxIDMouse);
+		ensembl.setEnsemblFile(ensemblFileMouse, ucscGffFileMouse, taxIDMouse);
 		
-//		String ensemblFileChicken = "/media/winE/Bioinformatics/GenomeData/checken/GeneLoc/Gallus_gallus.WASHUC2.65.gtf";
-//		String ucscGffFileChicken = "/media/winE/Bioinformatics/GenomeData/checken/GeneLoc/chicken_Refseq_UCSCGFF";
-//		ensembl.setEnsemblFile(ensemblFileChicken, ucscGffFileChicken, taxIDChicken);
-//		ensembl.update();
+		String ensemblFileChicken = "/media/winE/Bioinformatics/GenomeData/checken/GeneLoc/Gallus_gallus.WASHUC2.65.gtf";
+		String ucscGffFileChicken = "/media/winE/Bioinformatics/GenomeData/checken/GeneLoc/chicken_Refseq_UCSCGFF";
+		ensembl.setEnsemblFile(ensemblFileChicken, ucscGffFileChicken, taxIDChicken);
+		ensembl.update();
 		
-//		String ensemblFileCow = "/media/winE/Bioinformatics/GenomeData/Cow/cow_bta6_Ensembl.GTF";
-//		String ucscFileCow = "/media/winE/Bioinformatics/GenomeData/Cow/cow_bta6_UCSC";
-//		int taxIDCow = 9913;
-//		ensembl.setEnsemblFile(ensemblFileCow, ucscFileCow, taxIDCow);
-//		ensembl.update();
+		String ensemblFileCow = "/media/winE/Bioinformatics/GenomeData/Cow/cow_bta6_Ensembl.GTF";
+		String ucscFileCow = "/media/winE/Bioinformatics/GenomeData/Cow/cow_bta6_UCSC";
+		int taxIDCow = 9913;
+		ensembl.setEnsemblFile(ensemblFileCow, ucscFileCow, taxIDCow);
+		ensembl.update();
 		
 		String ensemblFilePig = "/media/winE/Bioinformatics/GenomeData/pig/gff/Sus_scrofa.Sscrofa10.2.67.gtf";
 		String ncbiFilePig = "/media/winE/Bioinformatics/GenomeData/pig/gff/ref_Sscrofa10.2_top_level_modify.gff3";

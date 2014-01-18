@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.dataStructure.listOperate.ListAbs;
 import com.novelbio.base.dataStructure.listOperate.ListHashSearch;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -27,6 +28,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	int taxID = 0;
 	String acc2GeneIDfile = "";
 	String gfffile = "";
+	String version;
 	private HashMap<String, String> mapGeneID2AccID = null;
 	private HashMap<String, GffGeneIsoInfo> mapName2Iso = new HashMap<String, GffGeneIsoInfo>();
 	public GffHashGeneAbs() {
@@ -67,6 +69,9 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		}
 		return true;
 	}
+	public void setVersion(String version) {
+		this.version = version;
+	}
 	/**
 	 * 在读取文件后如果有什么需要设置的，可以写在setOther();方法里面
 	 * @param gfffilename
@@ -80,6 +85,8 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 			ListGff listGffNew = listGff.combineOverlapGene();
 			//装入hash表
 			for (GffDetailGene gffDetailGene : listGff) {
+				gffDetailGene.setTaxID(taxID);
+				gffDetailGene.setVersion(version);
 				for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 					if (mapName2Iso.containsKey(gffGeneIsoInfo.getName().toLowerCase())) {
 						GffGeneIsoInfo gffGeneIsoInfoOld = mapName2Iso.get(gffGeneIsoInfo.getName().toLowerCase());
@@ -389,7 +396,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 			treeSet.add(string);
 		}
 		for (String string : treeSet) {
-			ArrayList<GffDetailGene> lsGffDetailGenes = mapChrID2ListGff.get(string);
+			ListAbs<GffDetailGene> lsGffDetailGenes = mapChrID2ListGff.get(string);
 			writeToGFFIsoMoreThanOne(txtGtf, lsGffDetailGenes, title);
 		}
 		txtGtf.close();
@@ -402,7 +409,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	 * @param lsGffDetailGenes
 	 * @param title
 	 */
-	private void writeToGFFIsoMoreThanOne(TxtReadandWrite txtWrite, ArrayList<GffDetailGene> lsGffDetailGenes, String title) {
+	private void writeToGFFIsoMoreThanOne(TxtReadandWrite txtWrite, ListAbs<GffDetailGene> lsGffDetailGenes, String title) {
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 			gffDetailGene.removeDupliIso();
 			if (gffDetailGene.getLsCodSplit().size() <= 1) {
@@ -474,4 +481,8 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 //			txtRead.close();
 //		}
 //	}
+	
+	public void save() {
+		
+	}
 }

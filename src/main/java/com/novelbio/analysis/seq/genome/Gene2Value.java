@@ -136,7 +136,7 @@ public class Gene2Value {
 			mapInfo.setStartEndLoc(gffGeneIsoInfo.getTESsite() + upstream, gffGeneIsoInfo.getTESsite() + downstream);
 			mapReads.getRange(splitNum, mapInfo, 0);
 		} else if (geneStructure == GeneStructure.EXON) {
-			sucess = setMapInfo(mapInfo, mapReads, gffGeneIsoInfo);
+			sucess = setMapInfo(mapInfo, mapReads, gffGeneIsoInfo.getLsElement());
 		} else if (geneStructure == GeneStructure.INTRON) {
 			if (gffGeneIsoInfo.getLsIntron().size() == 0) {
 				return null;

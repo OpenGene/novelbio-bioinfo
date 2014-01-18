@@ -16,14 +16,6 @@ import com.novelbio.database.mongorepo.geneanno.RepoUniID;
 import com.novelbio.database.service.SpringFactory;
 
 public class ManageNCBIUniID {
-	public static void main(String[] args) {
-		TxtReadandWrite txtRead = new TxtReadandWrite("/media/winE/NBCplatform/database/idmapping_selected.tab.gz");
-		for (String string : txtRead.readlines()) {
-			if (string.contains("Q5QNB8")) {
-				System.out.println(string);
-			}
-		}
-	}
 	private static final Logger logger = Logger.getLogger(ManageNCBIUniID.class);
 	@Autowired
 	private RepoNCBIID repoNCBIID;

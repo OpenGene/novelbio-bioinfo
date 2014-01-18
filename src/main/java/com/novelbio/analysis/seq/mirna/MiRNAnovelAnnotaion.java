@@ -82,6 +82,9 @@ public class MiRNAnovelAnnotaion implements IntCmdSoft {
 		lsTmpBlastResult.clear();
 		blastNBC.setQueryFastaFile(miRNAthis);
 		for (Species species : lsBlastToSpecies) {
+			if (species.getMiRNAmatureFile() == null) {
+				continue;
+			}
 			String tmpBlastResult = pathTmpBlast + "novel_miRNA_blast_to_" + species.getNameLatin().trim().replace(" ", "_");
 			lsTmpBlastResult.add(tmpBlastResult);
 			if (!isUseOldResult || !FileOperate.isFileExistAndBigThanSize(tmpBlastResult, 0)) {

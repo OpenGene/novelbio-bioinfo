@@ -309,6 +309,10 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		}
 	}
 	
+	private GffGeneIsoInfo getIsoOne(String IsoName) {
+		GffGeneIsoInfo gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO(IsoName);
+		return gffGeneIsoInfo;
+	}
 	
 	/** 判定序列是否存在并且够长，同时根据需要写入output */
 	private boolean isSeqFastaAndWriteToFile(SeqFasta seqFasta) {
@@ -360,7 +364,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		List<SeqFasta> lsSeqFastas = new ArrayList<>();
 		List<GffGeneIsoInfo> lsGffGeneIsoInfo = getIso(IsoName);
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfo) {
-			SeqFasta seqFasta = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.isCis5to3(), gffGeneIsoInfo.getRefIDlowcase(), startExon, endExon, gffGeneIsoInfo, getIntron);
+			SeqFasta seqFasta = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.isCis5to3(), gffGeneIsoInfo.getRefIDlowcase(), startExon, endExon, gffGeneIsoInfo.getLsElement(), getIntron);
 			if (seqFasta == null) {
 				continue;
 			}
@@ -370,15 +374,11 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		return lsSeqFastas;
 	}
 	
-	/**一般只返回一个seqfasta，不过如果设定了提取全部iso的序列，则会返回多个seqfasta */
-	public List<SeqFasta> getSeq(String IsoName) {
-		List<SeqFasta> lsSeqFastas = new ArrayList<>();
-		List<GffGeneIsoInfo> lsGffGeneIsoInfo = getIso(IsoName);
-		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfo) {
-			SeqFasta seqFasta = getSeq(gffGeneIsoInfo);
-			lsSeqFastas.add(seqFasta);
-		}
-		return lsSeqFastas;
+	/**只返回一个seqfasta */
+	public SeqFasta getSeqIso(String IsoName) {
+		GffGeneIsoInfo gffGeneIsoInfo = getIsoOne(IsoName);
+		SeqFasta seqFasta = getSeq(gffGeneIsoInfo);
+		return seqFasta;
 	}
 	/**
 	 * 根据genestructure中定义的结构提取序列
@@ -391,9 +391,9 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		if (gffGeneIsoInfo == null) {
 			return null;
 		}
-		ArrayList<ExonInfo> lsExonInfos = null;
+		List<ExonInfo> lsExonInfos = null;
 		if (geneStructure.equals(GeneStructure.ALLLENGTH) || geneStructure.equals(GeneStructure.EXON)) {
-			lsExonInfos = gffGeneIsoInfo;
+			lsExonInfos = gffGeneIsoInfo.getLsElement();
 		} else if (geneStructure.equals(GeneStructure.CDS)) {
 			lsExonInfos = gffGeneIsoInfo.getIsoInfoCDS();
 		} else if (geneStructure.equals(GeneStructure.INTRON)) {

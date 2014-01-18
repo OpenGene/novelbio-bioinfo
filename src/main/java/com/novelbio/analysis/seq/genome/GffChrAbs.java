@@ -40,7 +40,7 @@ public class GffChrAbs implements Closeable {
 
 	public void setTaxID(int taxID) {
 		this.species = new Species(taxID);
-		setGffFile(species.getTaxID(), species.getGffType(), species.getGffFile());
+		setGffFile(species.getTaxID(), species.getVersion(), species.getGffType(), species.getGffFile());
 		setChrFile(species.getChromSeq(), " ");
 	}
 	
@@ -63,7 +63,7 @@ public class GffChrAbs implements Closeable {
 		}
 
 		this.species = species.clone();
-		setGffFile(species.getTaxID(), species.getGffType(), species.getGffFile());
+		setGffFile(species.getTaxID(), species.getVersion(), species.getGffType(), species.getGffFile());
 		setChrFile(species.getChromSeq(), " ");
 	}
 
@@ -102,10 +102,9 @@ public class GffChrAbs implements Closeable {
 	public SeqHash getSeqHash() {
 		return seqHash;
 	}
-	public void setGffFile(int taxID, GffType gffType, String gffFile) {
+	public void setGffFile(int taxID, String version, GffType gffType, String gffFile) {
 		if (FileOperate.isFileExist(gffFile)) {
-			gffHashGene = new GffHashGene(gffType, gffFile);
-			gffHashGene.setTaxID(taxID);
+			gffHashGene = new GffHashGene(taxID, version, gffType, gffFile);
 		}
 	}
 	

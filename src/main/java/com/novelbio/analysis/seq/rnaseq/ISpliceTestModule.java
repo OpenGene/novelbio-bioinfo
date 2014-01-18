@@ -59,9 +59,9 @@ class SpliceTestRepeat implements ISpliceTestModule {
 	/** 实验组和对照组的junction reads数量加起来小于这个数，就返回1 */
 	static int junctionReadsMinNum = 10;
 	/** 将reads的数量扩大4倍，这样可以获得更多的差异 */
-	static int fold = 1;
+	static int fold = 4;
 	/** 如果count数超过该值，就标准化 */
-	int normalizedNum = 200;
+	int normalizedNum = 300;
 	
 	/** 本组比较中最大测序量的reads数 */
 	long maxReads = 0;

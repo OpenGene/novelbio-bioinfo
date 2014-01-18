@@ -963,9 +963,11 @@ public class GeneIDabs implements GeneIDInt {
 			return;
 		}
 		AgeneUniID ageneUniID = lsgeneID.get(0).get(0);
-		ageneUniID.setAccID(this.ageneUniID.getAccID());
-		ageneUniID.setDataBaseInfo(this.ageneUniID.getDataBaseInfo());
-		ageneUniID.setId(null);
+		if (this.ageneUniID.getAccID() != null) {
+			ageneUniID.setAccID(this.ageneUniID.getAccID());
+			ageneUniID.setDataBaseInfo(this.ageneUniID.getDataBaseInfo());
+			ageneUniID.setId(null);
+		}
 		this.ageneUniID = ageneUniID;
 		this.isAccID = false;
 	}

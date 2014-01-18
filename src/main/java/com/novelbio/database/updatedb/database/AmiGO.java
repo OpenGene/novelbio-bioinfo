@@ -381,8 +381,8 @@ class ImpGOExtObo extends ImportPerLine {
  * @author zong0jie
  *
  */
-class Impgene_associationgoa_uniprot extends ImportPerLine {
-	private static Logger logger = Logger.getLogger(Impgene_associationgoa_uniprot.class);
+class Gene_associationgoa_uniprot extends ImportPerLine {
+	private static Logger logger = Logger.getLogger(Gene_associationgoa_uniprot.class);
 	ManageDBInfo manageDBInfo = ManageDBInfo.getInstance();
 	/**
 	 * 从第5行开始读取

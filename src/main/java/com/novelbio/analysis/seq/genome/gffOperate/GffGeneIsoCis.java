@@ -2,6 +2,9 @@ package com.novelbio.analysis.seq.genome.gffOperate;
 
 
 import org.apache.log4j.Logger;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.model.modgeneid.GeneType;
@@ -20,7 +23,9 @@ import com.novelbio.database.model.modgeneid.GeneType;
 public class GffGeneIsoCis extends GffGeneIsoInfo {
 	private static final long serialVersionUID = 8473636267008365629L;
 	private static final Logger logger = Logger.getLogger(GffGeneIsoCis.class);
-
+	
+	public GffGeneIsoCis() {}
+	
 	public GffGeneIsoCis(String IsoName, String geneParentName, GeneType geneType) {
 		super(IsoName, geneParentName, geneType);
 		super.setCis5to3(true);

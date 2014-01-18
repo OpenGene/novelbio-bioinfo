@@ -325,7 +325,7 @@ public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 	 * @param getIntron 是否提取内含子区域，True，内含子小写，外显子大写。False，只提取外显子
 	 */
 	public SeqFasta getSeq(GffGeneIsoInfo gffGeneIsoInfo, boolean getIntron) {
-		 SeqFasta seqFasta = getSeq(gffGeneIsoInfo.isCis5to3(), SeqType.isoForward, gffGeneIsoInfo.getRefIDlowcase(), gffGeneIsoInfo, sep, getIntron);
+		 SeqFasta seqFasta = getSeq(gffGeneIsoInfo.isCis5to3(), SeqType.isoForward, gffGeneIsoInfo.getRefIDlowcase(), gffGeneIsoInfo.getLsElement(), sep, getIntron);
 		 if (seqFasta == null) {
 			return null;
 		}

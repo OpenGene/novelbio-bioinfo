@@ -32,7 +32,6 @@ import com.novelbio.analysis.seq.sam.AlignSeqReading;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamFileStatistics;
 import com.novelbio.analysis.seq.sam.SamMapReads;
-import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -48,7 +47,7 @@ import com.novelbio.database.model.species.Species;
 public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	public static void main(String[] args) {
 //		long timeEclipse1 = test();
-		long timeEclipse2 = hongyanyanRice();
+		long timeEclipse2 = wuwenwuDrosophilia();
 		System.out.println(timeEclipse2);
 //		System.out.println(timeEclipse2);
 	}
@@ -67,7 +66,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 //		lsAligns.add(new Align("7",30050239,30137766));
 //		lsAligns.add(new Align("7",30121258, 30123992));
 //		lsAligns.add(new Align("24", 5495310, 5695313));
-//		lsAligns.add(new Align("15", 5334938, 5535018));
+		lsAligns.add(new Align("15", 5334938, 5535018));
 //		lsAligns.add(new Align("mt", 0, 27622));
 		DateUtil dateUtil = new DateUtil();
 		dateUtil.setStartTime();
@@ -112,7 +111,37 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		exonJunction.addBamSorted("M", "/media/hdfs/nbCloud/TechDept/Projects/O.sativa_RNAseq_guofangqing/M3_accepted_hits.bam");
 		exonJunction.setCombine(false);
 		exonJunction.setCompareGroups("M", "WT");
-		exonJunction.setResultFile("/media/hdfs/nbCloud/TechDept/Projects/O.sativa_RNAseq_guofangqing/as/as_sep_rep");
+		exonJunction.setResultFile("/media/hdfs/nbCloud/TechDept/Projects/O.sativa_RNAseq_guofangqing/as/as_test_sep");
+		exonJunction.setgenerateNewIso();
+
+		exonJunction.run();
+		exonJunction = null;
+		return dateUtil.getEclipseTime();
+ 
+	}
+	public static long wuwenwuDrosophilia() {
+		String path = "/media/hdfs/nbCloud/public/RNA-seq/";
+		List<Align> lsAligns = new ArrayList<>();
+		lsAligns.add(new Align("X", 11594654, 11595160));
+		DateUtil dateUtil = new DateUtil();
+		dateUtil.setStartTime();
+		System.out.println("start");
+
+		ExonJunction exonJunction = new ExonJunction();
+		exonJunction.setIsLessMemory(false);
+		exonJunction.setGffHashGene(new GffHashGene(GffType.GTF, "/media/hdfs/nbCloud/public/RNA-seq/genes.gtf"));//TODO
+		exonJunction.setgenerateNewIso();
+		exonJunction.setLsReadRegion(lsAligns);
+		exonJunction.setOneGeneOneSpliceEvent(false);
+		exonJunction.addBamSorted("RNAi", path + "RNAi-S1.bam");
+		exonJunction.addBamSorted("RNAi", path + "RNAi-S3.bam");
+		exonJunction.addBamSorted("RNAi", path + "RNAi-S4.bam");
+		exonJunction.addBamSorted("Untreated", path + "Untreated-S1.bam");
+		exonJunction.addBamSorted("Untreated", path + "Untreated-S3.bam");
+		exonJunction.addBamSorted("Untreated", path + "Untreated-S4.bam");
+		exonJunction.setCombine(false);
+		exonJunction.setCompareGroups("RNAi", "Untreated");
+		exonJunction.setResultFile(path + "as_test_sep");
 		exonJunction.setgenerateNewIso();
 
 		exonJunction.run();

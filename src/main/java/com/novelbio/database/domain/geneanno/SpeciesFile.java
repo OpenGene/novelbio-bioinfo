@@ -387,9 +387,16 @@ public class SpeciesFile {
 	}
 	
 	public String getMiRNAmatureFile() {
+		if (getMiRNAseq()[0] == null) {
+			return null;
+		}
 		return pathParent + getMiRNAseq()[0];
 	}
+	
 	public String getMiRNAhairpinFile() {
+		if (getMiRNAseq()[1] == null) {
+			return null;
+		}
 		return pathParent + getMiRNAseq()[1];
 	}
 	/**
@@ -411,6 +418,12 @@ public class SpeciesFile {
 			Species species = new Species(taxID);
 			extractSmallRNASeq.setMiRNAdata(PathDetailNBC.getMiRNADat(), species.getNameLatin());
 			extractSmallRNASeq.getSeq();
+		}
+		if (!FileOperate.isFileExistAndBigThanSize(miRNAhairpinFile, 0)) {
+			FileOperate.DeleteFileFolder(miRNAhairpinFile);
+			FileOperate.DeleteFileFolder(miRNAfile);
+			miRNAhairpinFile = null;
+			miRNAfile = null;
 		}
 		return new String[]{miRNAfile, miRNAhairpinFile};
 	}

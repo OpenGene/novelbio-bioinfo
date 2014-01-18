@@ -10,6 +10,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.service.servgff.ManageGffDetailGene;
 
 /**
  * 
@@ -30,7 +31,8 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	GffHashGeneAbs gffHashGene = null;
 	GffType gffType;
 	String gffFile;
-	
+	int taxID;
+	String version;
 	/**
 	 * 新建一个GffHashGeneUCSC的类，需要readGffFile
 	 */
@@ -40,7 +42,7 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	public GffHashGene(GffHashGeneAbs gffHashGene) {
 		this.gffHashGene = gffHashGene;
 	}
-	
+
 	/**
 	 * 读取并初始化，可以用isFinished()来判定是否顺利运行完毕
 	 * @param gffType
@@ -49,7 +51,19 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	public GffHashGene(GffType gffType, String gffFile) {
 		this.gffType = gffType;
 		this.gffFile = gffFile;
-		flagFinish = read(gffType, gffFile);
+		flagFinish = read(0, null, gffType, gffFile);
+	}
+	/**
+	 * 读取并初始化，可以用isFinished()来判定是否顺利运行完毕
+	 * @param gffType
+	 * @param gffFile
+	 */
+	public GffHashGene(int taxID, String version, GffType gffType, String gffFile) {
+		this.taxID = taxID;
+		this.version = version;
+		this.gffType = gffType;
+		this.gffFile = gffFile;
+		flagFinish = read(taxID,version, gffType, gffFile);
 	}
 	/**
 	 * 读取并初始化，可以用isFinished()来判定是否顺利运行完毕
@@ -66,8 +80,14 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 		}
 		
 		this.gffFile = gffFile;
-		flagFinish = read(gffType, gffFile);
+		flagFinish = read(taxID, version, gffType, gffFile);
 	}
+	
+	public void setTaxIdVersion(int taxID, String version) {
+		this.taxID = taxID;
+		this.version = version;
+	}
+	
 	/**
 	 * 读取但不初始化<br>
 	 * 设定完该信息后可以通过运行run来加载Gff信息
@@ -79,12 +99,16 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 		this.gffType = gffType;
 	}
 	
-	@Override
-	protected void running() {
-		flagFinish = read(gffType, gffFile);
+	public String getVersion() {
+		return version;
 	}
 	
-	private boolean read(GffType gffType, String gffFile) {
+	@Override
+	protected void running() {
+		flagFinish = read(taxID, version, gffType, gffFile);
+	}
+	
+	private boolean read(int taxID, String version, GffType gffType, String gffFile) {
 		if (gffType == GffType.UCSC) {
 			gffHashGene = new GffHashGeneUCSC();
 		}
@@ -96,6 +120,10 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 		}
 		else if (gffType == GffType.NCBI) {
 			gffHashGene = new GffHashGeneNCBI();
+		}
+		if (taxID > 0) {
+			gffHashGene.setTaxID(taxID);
+			gffHashGene.setVersion(version);
 		}
 		return gffHashGene.ReadGffarray(gffFile);
 	}
@@ -110,12 +138,7 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	public void setGffHashGene(GffHashGeneAbs gffHashGene) {
 		this.gffHashGene = gffHashGene;
 	}
-
-	public void setTaxID(int taxID) {
-		if (taxID > 0) {
-			gffHashGene.setTaxID(taxID);
-		}
-	}
+	
 	/**
 	 * 读取信息
 	 * @param gffFile
@@ -290,6 +313,9 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 		}
 		return mapChrID2Length;
 	}
-
+	
+	public void saveToDB() {
+		ManageGffDetailGene.getInstance().saveGffHashGene(this);
+	}
 	
 }

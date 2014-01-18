@@ -23,9 +23,9 @@ public class UniProt {
 	String outUniIDFile = "";
 	String idmappingSelectedFile = "";
 	String taxIDFile = "";
-	String impgene_associationgoa_uniprotFile = "";
-	public void setImpgene_associationgoa_uniprotFile(String impgene_associationgoa_uniprotFile) {
-		this.impgene_associationgoa_uniprotFile = impgene_associationgoa_uniprotFile;
+	String gene_associationgoa_uniprotFile = "";
+	public void setGene_association_goa_uniprot(String gene_associationgoa_uniprotFile) {
+		this.gene_associationgoa_uniprotFile = gene_associationgoa_uniprotFile;
 	}
 	public void setTaxIDFile(String taxIDFile) {
 		this.taxIDFile = taxIDFile;
@@ -39,28 +39,28 @@ public class UniProt {
 	public void update() {
 		IdmappingSelected idmappingSelected = new IdmappingSelected();
 		IdmappingSelected.setTaxIDFile(taxIDFile);
-		idmappingSelected.setTxtWriteExcep(outUniIDFile);
-		idmappingSelected.updateFile(idmappingSelectedFile);
-		logger.info("finished Import: " + idmappingSelectedFile);
-		
-		Impgene_associationgoa_uniprot impgene_associationgoa_uniprot = new Impgene_associationgoa_uniprot();
-		impgene_associationgoa_uniprot.updateFile(impgene_associationgoa_uniprotFile);
-		logger.info("finished Import: " + impgene_associationgoa_uniprotFile);
-		
-		idmappingSelected = new IdmappingSelected();
-		idmappingSelected.setUpdateUniprotID(true);
-		idmappingSelected.setTxtWriteExcep(outUniIDFile+"_2");
-		idmappingSelected.updateFile(outUniIDFile);
-		logger.info("finished Import: " + outUniIDFile);
+//		idmappingSelected.setTxtWriteExcep(outUniIDFile);
+//		idmappingSelected.updateFile(idmappingSelectedFile);
+//		logger.info("finished Import: " + idmappingSelectedFile);
+//		
+//		Gene_associationgoa_uniprot impgene_associationgoa_uniprot = new Gene_associationgoa_uniprot();
+//		impgene_associationgoa_uniprot.updateFile(gene_associationgoa_uniprotFile);
+//		logger.info("finished Import: " + gene_associationgoa_uniprotFile);
+//		
+//		idmappingSelected = new IdmappingSelected();
+//		idmappingSelected.setUpdateUniprotID(true);
+//		idmappingSelected.setTxtWriteExcep(FileOperate.changeFileSuffix(outUniIDFile, "_2", null));
+//		idmappingSelected.updateFile(outUniIDFile);
+//		logger.info("finished Import: " + outUniIDFile);
 
 		IdmappingSelectedGOPubmed idmappingSelectedGOPubmed = new IdmappingSelectedGOPubmed();
 		idmappingSelectedGOPubmed.setTxtWriteExcep(FileOperate.changeFileSuffix(idmappingSelectedFile, "_failed", "txt"));
 		idmappingSelectedGOPubmed.updateFile(idmappingSelectedFile);
 		logger.info("finished Import GO pubmed: " + idmappingSelectedFile);
 		
-		idmappingSelectedGOPubmed = new IdmappingSelectedGOPubmed();
-		idmappingSelectedGOPubmed.updateFile(FileOperate.changeFileSuffix(idmappingSelectedFile, "_failed", "txt"));
-		logger.info("finished Import GO pubmed: " + FileOperate.changeFileSuffix(idmappingSelectedFile, "_failed", "txt"));
+//		idmappingSelectedGOPubmed = new IdmappingSelectedGOPubmed();
+//		idmappingSelectedGOPubmed.updateFile(FileOperate.changeFileSuffix(idmappingSelectedFile, "_failed", "txt"));
+//		logger.info("finished Import GO pubmed: " + FileOperate.changeFileSuffix(idmappingSelectedFile, "_failed", "txt"));
 	}
 }
 

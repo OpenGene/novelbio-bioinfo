@@ -387,7 +387,7 @@ public class CufflinksGTF {
 				return null;
 			} else {
 				String errInfo = cmdOperate.getErrOut();
-				throw new RuntimeException("cufflinks error:" + prefix + "\n" + errInfo);
+				throw new RuntimeException("cufflinks error:" + prefix + ":\n" + cmdOperate.getCmdExeStrReal() + "\n" + errInfo);
 			}
 		}
 	}

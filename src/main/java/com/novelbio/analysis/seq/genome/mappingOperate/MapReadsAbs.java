@@ -17,6 +17,7 @@ import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.Equations;
 import com.novelbio.base.dataStructure.MathComput;
+import com.novelbio.base.dataStructure.listOperate.ListAbs;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.species.Species;
 
@@ -199,6 +200,16 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 */
 	public double[] getRangeInfo(String chrID, List<? extends Alignment> lsLoc) {
 		return getRangeInfo(chrID, lsLoc, -1 , 0);
+	}
+	/**
+	 * 经过标准化，和equations修正，<b>注意返回的值一直都是按照坐标从小到大，不会根据方向而改变方向</b>
+	 * 给定坐标范围，返回该区间内的信息，取点为加权平均
+	 * @param chrID
+	 * @param lsLoc 一个转录本的exon list
+	 * @return null表示出错
+	 */
+	public double[] getRangeInfo(String chrID, ListAbs<? extends Alignment> lsLoc) {
+		return getRangeInfo(chrID, lsLoc.getLsElement(), -1 , 0);
 	}
 	/**
 	 * 经过标准化，和equations修正，<b>注意返回的值一直都是按照坐标从小到大，不会根据方向而改变方向</b>

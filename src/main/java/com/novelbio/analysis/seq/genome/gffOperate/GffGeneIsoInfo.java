@@ -6,7 +6,15 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import javax.persistence.Id;
+
 import org.apache.log4j.Logger;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster;
 import com.novelbio.base.SepSign;
@@ -29,6 +37,10 @@ import com.novelbio.database.model.modgeneid.GeneType;
  * 如果反向则从大到小排列，且int0&gt;int1
  * @return
  */
+@Document(collection="gffiso")
+@CompoundIndexes({
+    @CompoundIndex(unique = false, name = "gffgene_name", def = "{'gffGeneId': 1, 'listName': 1}")
+})
 public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<ExonInfo>, ListCodAbsDu<ExonInfo, ListCodAbs<ExonInfo>>> {
 	private static final Logger logger = Logger.getLogger(GffGeneIsoInfo.class);
 	private static final long serialVersionUID = -6015332335255457620L;
@@ -63,29 +75,41 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	/**  Proximal Promoter_  */
 	public static final String PROMOTER_DOWNSTREAMTSS_STR = "Promoter DownStream Of Tss_";
 
+	@Id
+	String id;
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	private GeneType flagTypeGene = GeneType.mRNA;
 	/** 设定基因的转录起点上游长度，默认为0 */
+	@Transient
 	protected int upTss = 0;
 	/** 设定基因的转录起点下游长度，默认为0  */
+	@Transient
 	protected int downTss=0;
 	/**  设定基因的转录终点点上游长度，默认为0 */
+	@Transient
 	protected int upTes=0;
 	/** 设定基因结尾向外延伸的长度，默认为0 */
+	@Transient
 	protected int downTes=100;
+	
 	/** 该转录本的ATG的第一个字符坐标，从1开始计数  */
 	protected int ATGsite = ListCodAbs.LOC_ORIGINAL;
 	/** 该转录本的UAG的最后一个字符坐标，从1开始计数 */
 	protected int UAGsite = ListCodAbs.LOC_ORIGINAL;
 	/** 该转录本的长度 */
 	protected int lengthIso = ListCodAbs.LOC_ORIGINAL;
-
+	
+	@Transient
 	GffDetailGene gffDetailGeneParent;
+	@Indexed
+	String gffGeneId;
 	/**
 	 * 该名字为实际上的iso所在的基因名字，不一定为其 gffDetailGeneParent 的gene name
 	 * 因为可能会有多个gffDetailGene合并为一个gffDetailGene，这时候直接用gffDetailGeneParent的名字就无法进行区分
 	 */
 	String geneParentName;
+	
+	@Transient
 	GeneID geneID;
 	
 	//TODO 考虑兼容这种特性的exon
@@ -93,8 +117,11 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * 是否为错乱的exon
 	 * 目前只看到叶绿体的基因是错乱的exon
 	 */
-	private boolean isUnorderedExon = false;
+	@Transient
+	private boolean isUnorderedExon = false;	
 	
+	/** 给mongodb使用 */
+	public GffGeneIsoInfo() {	}
 	
 	public GffGeneIsoInfo(String IsoName, String geneParentName, GeneType geneType) {
 		super.listName = IsoName;
@@ -112,6 +139,14 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	}
 	public void setParentGeneName(String geneParentName) {
 		this.geneParentName = geneParentName;
+	}
+	/** 仅供数据库使用 */
+	public String getId() {
+		return id;
+	}
+	/** 仅供数据库使用 */
+	public String getGffGeneId() {
+		return gffGeneId;
 	}
 	/**
 	 * 返回该基因的类型
@@ -132,6 +167,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	}
 	public void setGffDetailGeneParent(GffDetailGene gffDetailGeneParent) {
 		this.gffDetailGeneParent = gffDetailGeneParent;
+		this.gffGeneId = gffDetailGeneParent.id;
 	}
 	public GffDetailGene getParentGffDetailGene() {
 		return gffDetailGeneParent;

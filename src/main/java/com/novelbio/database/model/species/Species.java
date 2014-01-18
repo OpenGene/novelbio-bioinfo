@@ -286,12 +286,12 @@ public class Species implements Cloneable {
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getGffRepeatFile();
 	}
-	/** 获得本物种指定version的miRNA前体序列 */
+	/** 获得本物种指定version的miRNA前体序列，不存在则返回null */
 	public String getMiRNAhairpinFile() {
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getMiRNAhairpinFile();
 	}
-	/** 获得本物种指定version的miRNA序列 */
+	/** 获得本物种指定version的miRNA序列，不存在则返回null */
 	public String getMiRNAmatureFile() {
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getMiRNAmatureFile();

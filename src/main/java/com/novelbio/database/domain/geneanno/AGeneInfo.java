@@ -182,7 +182,9 @@ public abstract class AGeneInfo {
 		if (descrip != null) {
 			descrip = descrip.replaceAll("\"", "");
 			descrip = descrip.replaceAll("@@", " \\\\\\\\ ");
-			return descrip;
+			//TODO 现在一个基因有很多description，并且没有考虑重复的description
+			return descrip.split("//")[0];
+//			return descrip;
 		}
 		return "";
 	}
@@ -251,7 +253,9 @@ public abstract class AGeneInfo {
 					) {
 				mapDescription.put(dbInfoName, geneInfo.mapDescription.get(dbInfoName));
 				update = true;
-			} else if(!mapDescription.get(dbInfoName).toLowerCase().equals(geneInfo.mapDescription.get(dbInfoName).toLowerCase()) ) {
+			} else if(!mapDescription.get(dbInfoName).toLowerCase().contains(geneInfo.mapDescription.get(dbInfoName).toLowerCase()) &&
+					mapDescription.get(dbInfoName).length() < geneInfo.mapDescription.get(dbInfoName).length()
+					) {
 				mapDescription.put(dbInfoName, mapDescription.get(dbInfoName) + "//" + geneInfo.mapDescription.get(dbInfoName));
 				update = true;
 			}

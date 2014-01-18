@@ -40,7 +40,7 @@ public class GffGeneCluster {
 	 * */
 	boolean setRefLsGene = false;
 	/** 最后比完的结果放在这里 */
-	ArrayList<GffDetailGene> lsCombGenesResult;
+	List<GffDetailGene> lsCombGenesResult;
 	/**
 	 * 挑选出需要进行修正的GffDetailGeneList，首先选择RefGffGene
 	 * 设定的时候会将lsGeneCluster里面的对应项目删除
@@ -120,7 +120,7 @@ public class GffGeneCluster {
 	/** 获得修饰好的GffDetailGene
 	 * @return
 	 */
-	public ArrayList<GffDetailGene> getCombinedGffGene() {
+	public List<GffDetailGene> getCombinedGffGene() {
 		if (lsCombGenesResult == null) {
 			setRefGffGene();
 			lsCombGenesResult = compareAndModify_GffGeneNew();
@@ -200,7 +200,7 @@ public class GffGeneCluster {
 //		return lsGffDetailGenes;
 //	}
 	//TODO
-	private ArrayList<GffDetailGene> compareAndModify_GffGeneNew() {
+	private List<GffDetailGene> compareAndModify_GffGeneNew() {
 		ListGff lsGffDetailGenes = new ListGff();
 		GffDetailGene gffDetailGeneRef = getGffDetailGene(lsGenesRef);
 		GffDetailGene gffDetailGeneResult = gffDetailGeneRef.clone();
@@ -218,7 +218,7 @@ public class GffGeneCluster {
 		}
 		gffDetailGeneResult.addIsoSimple(gffDetailGeneRef);
 		lsGffDetailGenes.add(gffDetailGeneResult);
-		return lsGffDetailGenes;
+		return lsGffDetailGenes.getLsElement();
 	}
 	
 	/** 把若干gffDetailGene合并为1个,克隆的方法获得 */

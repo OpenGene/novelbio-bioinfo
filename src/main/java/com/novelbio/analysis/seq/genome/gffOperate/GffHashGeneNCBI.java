@@ -230,7 +230,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 				   chrID = "chrm";
 			   } else if (ss[8].contains("genome=chloroplast")) {
 				   chrID = "chrc";
-			   }  else if (ss[8].contains("genome=Unknown")) {
+			   }  else if (ss[8].contains("genome=Unknown") || ss[8].toLowerCase().contains("genome=un")) {
 				   chrID = ss[0];
 			   } else {
 				   try {
@@ -636,7 +636,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 			   } else if (ss[8].contains("genome=mitochondrion")) {
 				   chrID = "chrM";
 			   } else if (ss[8].contains("genome=chloroplast")) {
-				   chrID = "chrc";
+				   chrID = "chrC";
 			   } else {
 				   try {
 					   chrID = "chr" + PatternOperate.getPatLoc(ss[8], regxChrID, false).get(0)[0];

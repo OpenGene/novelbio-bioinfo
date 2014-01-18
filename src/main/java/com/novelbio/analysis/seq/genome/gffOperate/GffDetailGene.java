@@ -12,11 +12,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.persistence.Transient;
+import javax.persistence.Id;
 
 import org.apache.log4j.Logger;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -52,25 +54,46 @@ import com.novelbio.generalConf.TitleFormatNBC;
  * 本基因转录方向<br>
  * 本类中的几个方法都和Gff基因有关<br>
  */
-@Document(collection="GffGene")
+@Document(collection="gffgene")
 @CompoundIndexes({
-    @CompoundIndex(unique = true, name = "gene_acc_tax_idx", def = "{'geneID': 1, 'accID': -1, 'taxID': 1}"),
-    @CompoundIndex(unique = false, name = "acc_tax_idx", def = "{'accID': 1, 'taxID': -1}")
+    @CompoundIndex(unique = false, name = "taxid_version_chr_start_end_idx", def = "{'taxID': 1, 'version': 1, 'parentName': 1, 'numberstart': 1, 'numberend': 1}"),
+    @CompoundIndex(unique = false, name = "taxid_version_name_idx", def = "{'taxID': 1, 'version': 1, 'setNameLowcase': 1}")
  })
 public class GffDetailGene extends ListDetailAbs {
 	private final static Logger logger = Logger.getLogger(GffDetailGene.class);
 	/** 两个转录本的overlap 覆盖 必须大于0.6才算是一个基因 */
 	public final static double OVERLAP_RATIO = 0.6;
+	
+	@Id
+	String id;
+	
 	/** 顺序存储每个转录本的的坐标情况 */
+	@DBRef
 	private ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfos = new ArrayList<GffGeneIsoInfo>();//存储可变剪接的mRNA
-	@Transient
-	ListGff listGff;
+	
+	@Indexed(unique = false)
 	int taxID = 0;
 	/** 保存数据库的时候使用 */
-	String fileName;
+	@Indexed(unique = false)
+	String version;
+	
 	@Transient
 	boolean removeDuplicateIso = false;
+	
+	/** 仅保存数据库使用 */
+	Set<String> setNameLowcase;
+	
 	Boolean ismRNA = null;
+	
+	public GffDetailGene() {}
+	/**
+	 * @param listGff
+	 * @param locString 没名字就写null
+	 * @param cis5to3
+	 */
+	public GffDetailGene(ListGff listGff, String locString, boolean cis5to3) {
+		super(listGff, locString, cis5to3);
+	}
 	/**
 	 * @param chrID 内部小写
 	 * @param locString 没名字就写null
@@ -79,13 +102,20 @@ public class GffDetailGene extends ListDetailAbs {
 	public GffDetailGene(String chrID, String locString, boolean cis5to3) {
 		super(chrID, locString, cis5to3);
 	}
-	/**
-	 * @param listGff
-	 * @param locString 没名字就写null
-	 * @param cis5to3
-	 */
-	public GffDetailGene(ListGff listGff, String locString, boolean cis5to3) {
-		super(listGff, locString, cis5to3);
+	
+	public void setVersion(String version) {
+		this.version = version;
+	}
+	public String getVersion() {
+		return version;
+	}
+	/** 仅供数据库使用 */
+	public void setId(String id) {
+		this.id = id;
+	}
+	/** 仅供数据库使用 */
+	public String getId() {
+		return id;
 	}
 	
 	protected void setTaxID(int taxID) {
@@ -1025,7 +1055,18 @@ public class GffDetailGene extends ListDetailAbs {
 			return mapGeneStructure2Str;
 		}
 	}
-
+	
+	/** 仅数据库使用 */
+	public void setNameLowcase() {
+		setNameLowcase = new HashSet<>();
+		for (String string : this.setItemName) {
+			setNameLowcase.add(string.toLowerCase());
+		}
+		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
+			setNameLowcase.add(gffGeneIsoInfo.getName().toLowerCase());
+			setNameLowcase.add(GeneID.removeDot(gffGeneIsoInfo.getName().toLowerCase()));
+		}
+	}
 }
 
 class IsoGroup {
@@ -1065,5 +1106,6 @@ class IsoGroup {
 			setEdge.add(exonInfo.getEndAbs());
 		}
 	}
+
 	
 }

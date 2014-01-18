@@ -75,8 +75,8 @@ abstract class ImportPerLine {
 			}
 	
 			num++;
-			if (num%10000 == 0) {
-				logger.info("import line number:" + num);
+			if (num%300000 == 0) {
+				logger.info(gene2AccFile + " import line number:" + num);
 			}
 		}
 		impEnd();
@@ -111,7 +111,7 @@ abstract class ImportPerLine {
 			ss = ArrayOperate.copyArray(ss, 5);
 			TaxInfo taxInfo = new TaxInfo();
 			taxInfo.setTaxID(Integer.parseInt(ss[0]));
-//			taxInfo.setChnName(ss[1]);
+			taxInfo.setChnName(ss[1]);
 			taxInfo.setLatin(ss[2]);
 			taxInfo.setComName(ss[3]);
 			taxInfo.setAbbr(ss[4]);
@@ -135,6 +135,5 @@ abstract class ImportPerLine {
 	/**
 	 * 结尾的时候做的工作，譬如最后还需要导入一次什么东西，就重写该函数
 	 */
-	void impEnd()
-	{}
+	void impEnd() {}
 }

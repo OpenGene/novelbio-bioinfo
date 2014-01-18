@@ -71,7 +71,7 @@ public abstract class PredictAltStartEnd extends SpliceTypePredict {
 	 * 如果是retain intron和alt5 alt3，返回该exon的长度
 	 */
 	public List<? extends Alignment> getBGSite() {
-		return exonCluster.getParentGene().getLongestSplitMrna();
+		return exonCluster.getParentGene().getLongestSplitMrna().getLsElement();
 	}
 	
 	/**

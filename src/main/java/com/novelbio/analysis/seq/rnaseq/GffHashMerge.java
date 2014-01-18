@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.rnaseq;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -228,7 +229,7 @@ public class GffHashMerge {
 //			if (gffGeneCluster.getRefGffGene() != null && gffGeneCluster.getRefGffGene().size() > 0 && gffGeneCluster.getRefGffGene().get(0).getName().contains("PARK2")) {
 //				logger.error("stop");
 //			}
-			ArrayList<GffDetailGene> lsGene = gffGeneCluster.getCombinedGffGene();
+			List<GffDetailGene> lsGene = gffGeneCluster.getCombinedGffGene();
 	
 			boolean shortGene = true;
 			for (GffDetailGene gffDetailGene : lsGene) {

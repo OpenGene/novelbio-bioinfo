@@ -88,6 +88,10 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 		listMiRNAdate.setSpecies(species);
 		listMiRNAdate.ReadGffarray(rnadatFile);
 		listMiRNALocation = listMiRNAdate;
+		if (species.getMiRNAmatureFile() == null) {
+			String msg = "no miRNA file exist in species:" + species.getCommonName() + " " + species.getNameLatin();
+			throw new RuntimeException(msg.trim());
+		}
 		setMiRNAfile(species.getMiRNAhairpinFile(), species.getMiRNAmatureFile());
 	}
 	
