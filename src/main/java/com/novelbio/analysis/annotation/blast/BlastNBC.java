@@ -11,8 +11,11 @@ import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fasta.SeqHash;
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
+import com.novelbio.base.dataOperate.DateUtil;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.BlastInfo;
@@ -35,6 +38,9 @@ public class BlastNBC implements IntCmdSoft {
 	final String formatDB = "makeblastdb";
 	
 	String queryFasta = "";
+	/** 只有设定queryFasta为seqfasta时才会删除该文件 */
+	boolean deleteQueryFasta = false;
+	
 	/**待比对的数据库，如果是fasta文件，则会自动建索引*/
 	String databaseSeq = "";
 	/** 数据库是nr还是pro */
@@ -85,7 +91,16 @@ public class BlastNBC implements IntCmdSoft {
 	 */
 	public void setQueryFastaFile(String queryFasta) {
 		this.queryFasta = queryFasta;
-	}	
+		this.deleteQueryFasta = false;
+	}
+	/** 待比对的序列，和{@link #setQueryFastaFile(String)} 两者取一 */
+	public void setQueryFasta(SeqFasta seqFasta) {
+		this.queryFasta = PathDetail.getTmpConfFold() + "seqToBlast" + DateUtil.getDateAndRandom() + ".fa";
+		this.deleteQueryFasta = true;
+		TxtReadandWrite txtWrite = new TxtReadandWrite(queryFasta, true);
+		txtWrite.writefileln(seqFasta.toStringNRfasta());
+		txtWrite.close();
+	}
 	/**
 	 * 待比对的数据库，如果是fasta文件，则会自动建索引
 	 * @param databaseSeq
@@ -189,6 +204,9 @@ public class BlastNBC implements IntCmdSoft {
 		CmdOperate cmdOperate = new CmdOperate(getLsCmdBlast());
 		cmdOperate.setGetLsErrOut();
 		cmdOperate.run();
+		if (deleteQueryFasta) {
+			FileOperate.DeleteFileFolder(queryFasta);
+		}
 		if (!cmdOperate.isFinishedNormal()) {
 			throw new ExceptionCmd("blast error:\n" + cmdOperate.getCmdExeStrReal() + cmdOperate.getErrOut());
 		}
@@ -197,7 +215,7 @@ public class BlastNBC implements IntCmdSoft {
 	
 	private List<String> getLsCmdBlast() {
 		List<String> lsCmd = new ArrayList<>();
-		lsCmd.add(softWareInfo.getExePath().trim() + blastType.toString());
+		lsCmd.add(FileOperate.addSep(softWareInfo.getExePath()) + blastType.toString());
 		ArrayOperate.addArrayToList(lsCmd, getDB());
 		ArrayOperate.addArrayToList(lsCmd, getQuery());
 		ArrayOperate.addArrayToList(lsCmd, getOut());
@@ -276,7 +294,7 @@ public class BlastNBC implements IntCmdSoft {
 	
 	private List<String> getLsCmdFormatDB() {
 		List<String> lsCmd = new ArrayList<>();
-		lsCmd.add(softWareInfo.getExePath() + formatDB);
+		lsCmd.add(FileOperate.addSep(softWareInfo.getExePath())+ formatDB);
 		lsCmd.add("-in"); lsCmd.add(databaseSeq);
 		lsCmd.add("-dbtype"); lsCmd.add(seqTypePro);
 		lsCmd.add("-parse_seqids");

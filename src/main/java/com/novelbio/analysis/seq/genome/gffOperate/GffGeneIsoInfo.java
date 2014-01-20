@@ -792,7 +792,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		){
 			add(0,exonInfo);
 		} else {
-			logger.error("NCBI的Gff文件有问题，其exon会窜位，本次添加exon出错，请check: " + locStart + " " + locEnd);
+			logger.error("NCBI的Gff文件有问题，其exon会窜位，本次添加exon出错，请check: " + getRefID() + " " + locStart + " " + locEnd);
 		}
 	}
 	/**

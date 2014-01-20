@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.novelbio.analysis.annotation.blast.BlastStatistics;
+import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -371,7 +372,7 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	}
 	
 	/** 将一系列blastInfo的结果去重复，一个geneID仅挑选evalue最小的那个blastTo */
-	public static List<BlastInfo> removeDuplicate(Collection<BlastInfo> colBlastInfos) {
+	public static List<BlastInfo> removeDuplicateQueryID(Collection<BlastInfo> colBlastInfos) {
 		 Map<String, BlastInfo> mapQuery2Evalue = new HashMap<>();
 		for (BlastInfo blastInfo : colBlastInfos) {
 			String queryID = blastInfo.getQueryID().toLowerCase();
@@ -384,4 +385,17 @@ public class BlastInfo implements Comparable<BlastInfo> {
 		return new ArrayList<>(mapQuery2Evalue.values());
 	}
 	
+	/** 将一系列blastInfo的结果去重复，一对query和subject仅获取evalue最小的那一对 */
+	public static List<BlastInfo> removeDuplicate(Collection<BlastInfo> colBlastInfos) {
+		 Map<String, BlastInfo> mapQuery2Evalue = new HashMap<>();
+		for (BlastInfo blastInfo : colBlastInfos) {
+			String queryID2SubID = blastInfo.getQueryID().toLowerCase() + SepSign.SEP_ID + blastInfo.getSubjectID().toLowerCase();
+			double evalue = blastInfo.getEvalue();
+			if (mapQuery2Evalue.containsKey(queryID2SubID) && mapQuery2Evalue.get(queryID2SubID).getEvalue() <= evalue) {
+				continue;
+			}
+			mapQuery2Evalue.put(queryID2SubID, blastInfo);
+		}
+		return new ArrayList<>(mapQuery2Evalue.values());
+	}
 }

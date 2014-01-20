@@ -33,7 +33,18 @@ public class GffChrAbs implements Closeable {
 	public GffChrAbs(Species species) {
 		setSpecies(species);
 	}
-
+	
+	/**
+	 *  查找数据库的方法载入gff文件，占用内存少，但是效率稍低，不适用于大量search，
+	 * 并且gffhash提取上一个和下一个gene也不能实现
+	 * @param species
+	 * @param searchDB 是否查找数据库
+	 */
+	public GffChrAbs(Species species, boolean searchDB) {
+		//TODO 还没实现
+		setSpecies(species);
+	}
+	
 	public GffChrAbs(int taxID) {
 		setTaxID(taxID);
 	}

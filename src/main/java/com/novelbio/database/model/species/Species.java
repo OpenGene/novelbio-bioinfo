@@ -315,7 +315,14 @@ public class Species implements Cloneable {
 	 *  */
 	public String getRefseqFile(boolean isAllIso) {
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
-		return speciesFile.getRefSeqFile(isAllIso);
+		return speciesFile.getRefSeqFile(isAllIso, false);
+	}
+	/** 获得本物中指定version的refseq的序列
+	 * @param isAllIso 是否需要全体iso
+	 *  */
+	public String getRefseqProFile(boolean isAllIso) {
+		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
+		return speciesFile.getRefSeqFile(isAllIso, true);
 	}
 	/** 指定mapping的软件，获得该软件所对应的索引文件
 	 * 没有就新建一个，格式<br>

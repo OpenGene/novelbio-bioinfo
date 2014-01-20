@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import com.novelbio.analysis.seq.blastZJ.BlastSeqFasta;
+import com.novelbio.analysis.blastZJ.BlastSeqFasta;
 import com.novelbio.analysis.seq.fastq.FQrecordFilterAdaptor;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;

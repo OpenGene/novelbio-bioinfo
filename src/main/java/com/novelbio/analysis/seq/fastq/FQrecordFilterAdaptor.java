@@ -1,6 +1,6 @@
 package com.novelbio.analysis.seq.fastq;
 
-import com.novelbio.analysis.seq.blastZJ.BlastSeqFasta;
+import com.novelbio.analysis.blastZJ.BlastSeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 
 public class FQrecordFilterAdaptor extends FQrecordFilter {

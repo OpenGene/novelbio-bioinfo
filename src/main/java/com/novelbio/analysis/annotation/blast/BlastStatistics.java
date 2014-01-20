@@ -47,6 +47,7 @@ public class BlastStatistics {
 			lsBlastInfo.add(blastInfo);
 		}
 		setLsBlastinfos(lsBlastInfo);
+		txtRead.close();
 	}
 	
 	public void setQueryFastaFile(String queryFastaFile) {

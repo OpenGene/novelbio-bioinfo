@@ -64,9 +64,13 @@ public class SpeciesFile {
 	/** 相对路径 gff的repeat文件，从ucsc下载 */
 	String gffRepeatFile = "";
 	/** 相对路径 refseq文件，全体Iso */
-	String refseqFileAllIso = "";
+	String refseqFileAllIso;
 	/** 相对路径 refseq文件，一个gene一个Iso */
-	String refseqFileOneIso = "";
+	String refseqFileOneIso;
+	/** 相对路径 ref protein 文件，全体iso */
+	String refProFileAllIso;
+	/** 相对路径 ref protein 文件，一个gene一个Iso */
+	String refProFileOneIso;
 	
 	/** 相对路径 保存不同mapping软件所对应的RefSeq索引
 	 * 主要是全体Iso的RefSeq
@@ -302,7 +306,7 @@ public class SpeciesFile {
 			} else {
 				mapSoft2Seq = mapSoftware2IndexRefOneIso;
 			}
-			indexRefseqThis = creatAndGetSeqIndex(true, softMapping, getRefSeqFile(isAllIso), mapSoft2Seq);
+			indexRefseqThis = creatAndGetSeqIndex(true, softMapping, getRefSeqFile(isAllIso, false), mapSoft2Seq);
 			if (indexRefseqThis != null && !indexRefseqThis.equals("")) {
 				update();
 			}
@@ -448,27 +452,16 @@ public class SpeciesFile {
 	 * @param isAllIso 是否获取含有全部iso的序列
 	 * @return
 	 */
-	public String getRefSeqFile(boolean isAllIso) {
-		return pathParent + getRefSeqFileRlt(isAllIso);
+	public String getRefSeqFile(boolean isAllIso, boolean isProtein) {
+		return pathParent + getRefSeqFileRlt(isAllIso, isProtein);
 	}
 	
 	/**
 	 * 获得refSeq的相对路径
 	 * @return
 	 */
-	private String getRefSeqFileRlt(boolean isAllIso) {
-		String refseq = null;
-		if (isAllIso) {
-			if (refseqFileAllIso == null || refseqFileAllIso.trim().equals("")) {
-				refseqFileAllIso = getSpeciesPath() + "refrna/rnaAllIso.fa";
-			}
-			refseq = refseqFileAllIso;
-		} else {
-			if (refseqFileOneIso == null || refseqFileOneIso.trim().equals("")) {
-				refseqFileOneIso = getSpeciesPath() + "refrna/rnaOneIso.fa";
-			}
-			refseq = refseqFileOneIso;
-		}
+	private String getRefSeqFileRlt(boolean isAllIso, boolean isProtein) {
+		String refseq = set_And_GetRefSeqName(isAllIso, isProtein);
 		if (FileOperate.isFileExistAndBigThanSize(pathParent + refseq, 0.2)) {
 			return refseq;
 		}
@@ -482,8 +475,14 @@ public class SpeciesFile {
 			gffChrAbs.setGffHash(new GffHashGene(getGffType(), getGffFile()));
 			gffChrAbs.setSeqHash(new SeqHash(getChromSeqFile(), " "));
 			GffChrSeq gffChrSeq = new GffChrSeq(gffChrAbs);
-			gffChrSeq.setGeneStructure(GeneStructure.ALLLENGTH);
-			gffChrSeq.setGetAAseq(false);
+			if (isProtein) {
+				gffChrSeq.setGeneStructure(GeneStructure.CDS);
+				gffChrSeq.setGetAAseq(true);
+			} else {
+				gffChrSeq.setGeneStructure(GeneStructure.ALLLENGTH);
+				gffChrSeq.setGetAAseq(false);
+			}
+			gffChrSeq.setGetReplicateIso(false);
 			gffChrSeq.setGetAllIso(isAllIso);
 			gffChrSeq.setGetIntron(false);
 			gffChrSeq.setGetSeqGenomWide();
@@ -491,12 +490,46 @@ public class SpeciesFile {
 			gffChrSeq.run();
 			update();
 			gffChrAbs.close();
+			gffChrAbs = null;
+			gffChrSeq = null;
 		} catch (Exception e) {
 			logger.error("生成 RefRNA序列出错");
 		}
 	
 		return refseq;
 	}
+	
+	/** 生成文件名 */
+	private String set_And_GetRefSeqName(boolean isAllIso, boolean isProtein) {
+		String refseq;
+		if (!isProtein) {
+			if (isAllIso) {
+				if (refseqFileAllIso == null || refseqFileAllIso.trim().equals("")) {
+					refseqFileAllIso = getSpeciesPath() + "refrna/rnaAllIso_" + version + ".fa";
+				}
+				refseq = refseqFileAllIso;
+			} else {
+				if (refseqFileOneIso == null || refseqFileOneIso.trim().equals("")) {
+					refseqFileOneIso = getSpeciesPath() + "refrna/rnaOneIso_" + version + ".fa";
+				}
+				refseq = refseqFileOneIso;
+			}
+		} else {
+			if (isAllIso) {
+				if (refProFileAllIso == null || refProFileAllIso.trim().equals("")) {
+					refProFileAllIso = getSpeciesPath() + "refprotein/proteinAllIso_" + version + ".fa";
+				}
+				refseq = refProFileAllIso;
+			} else {
+				if (refProFileOneIso == null || refProFileOneIso.trim().equals("")) {
+					refProFileOneIso = getSpeciesPath() + "refprotein/proteinOneIso_" + version + ".fa";
+				}
+				refseq = refProFileOneIso;
+			}
+		}
+		return refseq;
+	}
+	
 	/** 设定相对路径 */
 	public void setRefseqNCfile(String refseqNCfile) {
 		this.refseqNCfile = refseqNCfile;

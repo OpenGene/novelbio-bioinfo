@@ -5,8 +5,16 @@ import java.util.HashMap;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 
 public enum BlastType {
-
-	tblastn, tblastx, blastn, blastx, blastp;
+	/** Pro-->DNA translate to Pro */
+	tblastn,
+	/** DNA-->DNA translate to Pro */
+	tblastx,
+	/** DNA-->DNA use DNA */
+	blastn,
+	/** DNA-->Pro translate to Pro */
+	blastx,
+	/** Pro-->Pro use Pro */
+	blastp;
 	/**
 	 * @param QfastaType 输入的fasta类型，是核酸还是蛋白
 	 * @param SfastaType 输出的fasta类型，是核酸还是蛋白

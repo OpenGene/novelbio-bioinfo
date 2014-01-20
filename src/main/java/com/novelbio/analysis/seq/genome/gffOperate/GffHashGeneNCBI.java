@@ -157,9 +157,13 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   for (String content : txtgff.readlines()) {
 		   if(content.charAt(0) == '#') continue;
 		   String[] ss = content.split("\t");//按照tab分开
-		   if (ss[2].equals("match") || ss[2].toLowerCase().equals("chromosome") || ss[2].toLowerCase().equals("intron") || ss[0].startsWith("NT_")) {
+		   if (content.contains("XM_003846419")) {
+			logger.error("stop");
+		}
+		   if (ss[2].equals("match") || ss[2].toLowerCase().equals("chromosome") || ss[2].toLowerCase().equals("intron")) {
 			   continue;
 		   }
+
 //		   if (ss[2].equals("match") || ss[2].toLowerCase().equals("chromosome") || ss[2].toLowerCase().equals("intron") || ss[0].startsWith("NW_") || ss[0].startsWith("NT_")) {
 //			   continue;
 //		   }
@@ -225,7 +229,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		   if (ss[2].equals("region")) {
 			   String regxChrID = "(?<=chromosome\\=)\\w+";
 			   if (ss[8].contains("genome=genomic")) {
-				   chrID = ss[0];
+				   chrID = GeneID.removeDot(ss[0]);
 			   } else if (ss[8].contains("genome=mitochondrion")) {
 				   chrID = "chrm";
 			   } else if (ss[8].contains("genome=chloroplast")) {

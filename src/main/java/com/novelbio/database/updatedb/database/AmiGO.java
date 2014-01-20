@@ -44,9 +44,7 @@ public class AmiGO {
 	}
 	
 	public void importFile() {
-		ImportPerLine.setTaxIDFile(taxIDfile);
-		ImportPerLine impFile = null;
-		impFile = new ImpGOExtObo();
+		ImportPerLine impFile = new ImpGOExtObo();
 		impFile.updateFile(goExtObo);
 	}
 

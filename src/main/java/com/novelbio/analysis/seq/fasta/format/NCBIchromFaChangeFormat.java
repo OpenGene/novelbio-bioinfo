@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.fasta.format;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
@@ -55,8 +56,9 @@ public class NCBIchromFaChangeFormat {
 	
 	/** 将多个文件合并成一个单一文本 */
 	public void writeToSingleFile(String outFile) {
+		List<String> lsFileName = initialAndGetFileList();
 		TxtReadandWrite txtWrite = new TxtReadandWrite(outFile, true);
-		for (String chrFileName : initialAndGetFileList()) {
+		for (String chrFileName : lsFileName) {
 			TxtReadandWrite txtRead = new TxtReadandWrite(chrFileName, false);
 			writeToFile(FileOperate.getFileNameSep(chrFileName)[0], txtRead, txtWrite);
 		}

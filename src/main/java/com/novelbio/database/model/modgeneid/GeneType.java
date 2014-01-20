@@ -60,6 +60,8 @@ public enum GeneType {
 			mapMRNA2GeneType.put("snoRNA".toLowerCase(), snoRNA);
 			mapMRNA2GeneType.put("snRNA".toLowerCase(), snRNA);			
 			mapMRNA2GeneType.put("ncRNA".toLowerCase(), ncRNA);
+			mapMRNA2GeneType.put("ncRNA".toLowerCase(), ncRNA);
+			mapMRNA2GeneType.put("lncRNA".toLowerCase(), ncRNA);
 			mapMRNA2GeneType.put("primary_transcript".toLowerCase(), ncRNA);
 			mapMRNA2GeneType.put("precursor_RNA".toLowerCase(), Precursor_RNA);
 			mapMRNA2GeneType.put("Precursor_miRNA".toLowerCase(), Precursor_miRNA);

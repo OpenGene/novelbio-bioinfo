@@ -110,7 +110,7 @@ public class MiRNAnovelAnnotaion implements IntCmdSoft {
 		for (String string : lsTmpBlastResult) {
 			lsBlastInfoAll.addAll(BlastInfo.readBlastFile(string));
 		}
-		List<BlastInfo> lsBlastInfo = BlastInfo.removeDuplicate(lsBlastInfoAll);
+		List<BlastInfo> lsBlastInfo = BlastInfo.removeDuplicateQueryID(lsBlastInfoAll);
 		
 		for (BlastInfo blastInfo : lsBlastInfo) {
 			//过滤一下
