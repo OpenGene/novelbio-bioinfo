@@ -279,7 +279,13 @@ public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 				if (seqType == SeqType.isoForward && !cis5to3) {
 					seqfastaTmp = seqfastaTmp.reservecom();
 				}
-				result = addSep(result, sep) + seqfastaTmp.toString().toUpperCase(); 
+				try {
+					result = addSep(result, sep) + seqfastaTmp.toString().toUpperCase(); 
+				} catch (Exception e) {
+					result = addSep(result, sep) + seqfastaTmp.toString().toUpperCase();
+					System.out.println();
+				}
+				
 				if (getIntron && i < lsInfo.size()-1) {
 					SeqFasta seqfastaTmpIntron =  getSeq(myChrID, exon.getEndAbs()+1, lsInfo.get(i+1).getStartAbs()-1);
 					result = addSep(result, sep) + seqfastaTmpIntron.toString().toLowerCase();

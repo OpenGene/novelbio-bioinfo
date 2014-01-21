@@ -24,11 +24,11 @@ public class ImportDB {
 	public static void main(String[] args) {
 		String downloadPath = "/media/winE/NBCplatform/database/";
 		String softToolsFile = "/media/hdfs/nbCloud/public/nbcplatform/genome/SoftwareInfo.txt";
-		String taxIDFile = "/media/winE/NBCplatform/database/常见物种IDKEGGAll.txt";
+		String taxIDFile = "/media/winE/NBCplatform/genome/常见物种IDKEGGAll.txt";
 		String dbInfo = "/media/winE/NBCplatform/database/DBinfo.txt";
 		String GOPath = "/media/winE/NBCplatform/database/GO/";
 		String speciesFile = "";
-		
+		ImportPerLine.setTaxIDFile(taxIDFile);
 		ImportDB importDB = new ImportDB();
 		importDB.setDownloadPath(downloadPath);
 		importDB.setSoftToolsFile(softToolsFile);
@@ -36,18 +36,17 @@ public class ImportDB {
 		importDB.setGOPath(GOPath);
 		importDB.setTaxIDFile(taxIDFile);
 		
-		
 //		importDB.updateDBinfo(dbInfo);
 //		importDB.updateGODB();
 		
-//		importDB.updateNCBIID();
+		importDB.updateNCBIID();
 //		importDB.updateUniprotID();
 //		importDB.updateZeaMaize();
 //		importDB.updateRiceID("/media/winE/NBCplatform/database/rice/");//只导了前两个
 //		importDB.updateTAIR("/media/winE/NBCplatform/database/arabidopsis/");
 //		importDB.updateZB();
 //		updateEnsembl();
-		importDB.updateYeast();
+//		importDB.updateYeast();
 //		importDB.updateMicroarray();
 
 //		updateSoyBean();

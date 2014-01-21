@@ -289,7 +289,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   GffDetailGene gffDetailGene = getGffDetailRnaID(rnaID);
 	  GeneType mRNAtype = getMrnaName(ss);
 	   try {
-		   GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.addsplitlist(rnaName,gffDetailGene.getNameSingle(), mRNAtype, ss[6].equals("+") || ss[6].equals("."));//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
+		   GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.addsplitlist(rnaName, gffDetailGene.getNameSingle(), mRNAtype, ss[6].equals("+") || ss[6].equals("."));//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
 		   mapRnaID2LsIso.put(rnaID, gffGeneIsoInfo);
 		   ExonInfo exonInfo = new ExonInfo(true, Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
 		   mapRnaID2LsIsoLocInfo.put(rnaID, exonInfo);
@@ -443,9 +443,11 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		 
 	   }
 	   String gbkey = mapID2value.get("gbkey");
+	   boolean ncRNA = false;
 	   if (gbkey != null) {
 		   String ncRNAclass = null;
 		   if (gbkey.equals("ncRNA")) {
+			   ncRNA = true;
 			   ncRNAclass = mapID2value.get("ncrna_class");
 		   } else if (gbkey.equals("precursor_RNA")) {
 			   String product = mapID2value.get("product");
@@ -463,7 +465,11 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   
 	   GeneType geneType = GeneType.getGeneType(result);
 	   if (geneType == null) {
-		   logger.error("UnKnown RNA Type: please check: " + ArrayOperate.cmbString(content, "\t"));
+		   if (ncRNA) {
+			   geneType = GeneType.ncRNA;
+		   } else {
+			   logger.error("UnKnown RNA Type: please check: " + ArrayOperate.cmbString(content, "\t"));
+		   }
 	   }
 	   return geneType;
    }

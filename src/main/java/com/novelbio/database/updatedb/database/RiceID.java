@@ -66,28 +66,28 @@ public class RiceID{
 //		riceTIGRGFFID.setTxtWriteExcep(tigrDBoutID);
 //		riceTIGRGFFID.setInsertAccID(false);
 //		riceTIGRGFFID.updateFile(gffTIGR);
-		
+//		
 		RiceRapDBLocus riceRapDBLocus = new RiceRapDBLocus();
-		riceRapDBLocus.setTxtWriteExcep(rapLocusGff + "out");
-		riceRapDBLocus.setInsertAccID(false);
-		riceRapDBLocus.updateFile(rapLocusGff);
+//		riceRapDBLocus.setTxtWriteExcep(rapLocusGff + "out");
+//		riceRapDBLocus.setInsertAccID(false);
+//		riceRapDBLocus.updateFile(rapLocusGff);
 		
-//		RiceRap2MSU riceRap2MSU = new RiceRap2MSU();
-//		riceRap2MSU.updateFile(rap2MSU);
+		RiceRap2MSU riceRap2MSU = new RiceRap2MSU();
+		riceRap2MSU.updateFile(rap2MSU);
 		
-//		riceRapDBLocus = new RiceRapDBLocus();
-//		riceRapDBLocus.setInsertAccID(true);
-//		riceRapDBLocus.updateFile(rapLocusGff + "out");
+		riceRapDBLocus = new RiceRapDBLocus();
+		riceRapDBLocus.setInsertAccID(true);
+		riceRapDBLocus.updateFile(rapLocusGff + "out");
 		
-//		RiceRapDBID riceRapDBID = new RiceRapDBID();
-//		riceRapDBID.setTxtWriteExcep(rapDBoutID);
-//		riceRapDBID.setInsertAccID(true);
-//		riceRapDBID.updateFile(gffRapDB);
-//		
-//		
-//		riceTIGRGFFID.setInsertAccID(true);
-//		riceTIGRGFFID.setTxtWriteExcep(tigrDBoutID + "_2");
-//		riceTIGRGFFID.updateFile(tigrDBoutID);
+		RiceRapDBID riceRapDBID = new RiceRapDBID();
+		riceRapDBID.setTxtWriteExcep(rapDBoutID);
+		riceRapDBID.setInsertAccID(true);
+		riceRapDBID.updateFile(gffRapDB);
+		
+		
+		riceTIGRGFFID.setInsertAccID(true);
+		riceTIGRGFFID.setTxtWriteExcep(tigrDBoutID + "_2");
+		riceTIGRGFFID.updateFile(tigrDBoutID);
 		
 /////////////////////////////////////////////////////////////////////////////////////////////////
 		
@@ -154,7 +154,7 @@ class RiceRapDBLocus extends ImportPerLine {
 				for (int j = 0; j < tmpAcc.length; j++) {
 					String[] tmpRapID =new String[2];
 					tmpRapID[0] = tmpAcc[j];
-					tmpRapID[1] = DBAccIDSource.RapDB_rice.toString();
+					tmpRapID[1] = DBAccIDSource.IRGSP_rice.toString();
 					lsAccIDInfo2DB.add(tmpRapID);
 					lsRefID.add(tmpAcc[j]);
 				}
@@ -168,7 +168,7 @@ class RiceRapDBLocus extends ImportPerLine {
 					}
 					String[] tmpRapID =new String[2];
 					tmpRapID[0] = tmpAcc[j];
-					tmpRapID[1] = DBAccIDSource.RapDB_rice.toString();
+					tmpRapID[1] = DBAccIDSource.IRGSP_rice.toString();
 					lsAccIDInfo2DB.add(tmpRapID);
 					lsRefID.add(tmpAcc[j]);			
 				}
@@ -285,7 +285,7 @@ class RiceRapDBID extends ImportPerLine {
 				for (int j = 0; j < tmpAcc.length; j++) {
 					String[] tmpRapID =new String[2];
 					tmpRapID[0] = tmpAcc[j];
-					tmpRapID[1] = DBAccIDSource.RapDB_rice.toString();
+					tmpRapID[1] = DBAccIDSource.IRGSP_rice.toString();
 					lsAccIDInfo2DB.add(tmpRapID);
 					lsRefID.add(tmpAcc[j]);
 				}
@@ -296,7 +296,7 @@ class RiceRapDBID extends ImportPerLine {
 				for (int j = 0; j < tmpAcc.length; j++) {
 					String[] tmpRapID =new String[2];
 					tmpRapID[0] = tmpAcc[j];
-					tmpRapID[1] = DBAccIDSource.RapDB_rice.toString();
+					tmpRapID[1] = DBAccIDSource.IRGSP_rice.toString();
 					lsAccIDInfo2DB.add(tmpRapID);
 					lsRefID.add(tmpAcc[j]);			
 				}
@@ -464,12 +464,12 @@ class RiceRapDBInfo extends ImportPerLine {
 		GeneID copedID = new GeneID("", 39947);
 		copedID.setUpdateRefAccID(lsRefID);
 		GeneInfo geneInfo = new GeneInfo();
-		geneInfo.setDBinfo(manageDBInfo.findByDBname(DBAccIDSource.RapDB_rice.toString()));
+		geneInfo.setDBinfo(manageDBInfo.findByDBname(DBAccIDSource.IRGSP_rice.toString()));
 		geneInfo.setSymb(symbol);
 		geneInfo.setDescrp(description);
 		geneInfo.addPubID(lsPubmeds);
 		for (String string : lsGOs) {
-			copedID.addUpdateGO(string, DBAccIDSource.RapDB_rice, null, null, null);
+			copedID.addUpdateGO(string, DBAccIDSource.IRGSP_rice, null, null, null);
 		}
 		
 		copedID.setUpdateGeneInfo(geneInfo);
@@ -502,6 +502,9 @@ class RiceRap2MSU extends ImportPerLine {
 	
 	@Override
 	boolean impPerLine(String lineContent) {
+		if (lineContent.contains("None")) {
+			return true;
+		}
 		String[] tmpID = lineContent.split("\t");
 		if (tmpID.length<2) //说明该IRGSPID没有LOCID与之对应，那么可以跳过
 			return true;
@@ -569,7 +572,7 @@ class RapDBGO extends ImportPerLine {
 
 		List<String> lsGOID = patternOperate.getPat(lineContent);
 		for (String goID : lsGOID) {
-			copedID.addUpdateGO(goID, DBAccIDSource.RapDB_rice, "", null, "");
+			copedID.addUpdateGO(goID, DBAccIDSource.IRGSP_rice, "", null, "");
 		}
 		
 		return copedID.update(false);

@@ -36,6 +36,8 @@ public class BlastGetSeq implements IntCmdSoft {
 		lsSpecies.add(new Species(7955));
 		lsSpecies.add(new Species(7227));
 		lsSpecies.add(new Species(6239));
+		lsSpecies.add(new Species(3702));
+		lsSpecies.add(new Species(39947));
 		blastGetSeq.setLsSpeciesBlastTo(lsSpecies);
 		SeqFasta seqFasta = new SeqFasta();
 		seqFasta.setName("GRLH1");
@@ -212,7 +214,7 @@ public class BlastGetSeq implements IntCmdSoft {
 			if (!geneID.getSymbol().toLowerCase().equals(seqfastaNameNew.toLowerCase())) {
 				seqfastaNameNew = geneID.getSymbol() + "_" + seqfastaNameNew;
 			}
-			seqFasta.setName(species.getAbbrName() + "_" + seqfastaNameNew);
+			seqFasta.setName(species.getCommonName() + "_" + seqfastaNameNew);
 			String result = null;
 			if (isGetProtein) {
 				result = seqFasta.toStringAAfasta();

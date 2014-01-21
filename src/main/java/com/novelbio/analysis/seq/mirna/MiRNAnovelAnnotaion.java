@@ -5,14 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.broadinstitute.sting.jna.lsf.v7_0_6.LibBat.newDebugLog;
-
 import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.annotation.blast.BlastNBC;
 import com.novelbio.analysis.annotation.blast.BlastType;
-import com.novelbio.base.PathDetail;
 import com.novelbio.base.SepSign;
-import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.BlastInfo;

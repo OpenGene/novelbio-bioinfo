@@ -250,7 +250,7 @@ public class ManageNCBIUniID {
 			return true;
 		}
 		
-		boolean isSameAccID = (ncbiid.getAccID() == null || geneUniexist.getSetAccID().contains(ncbiid.getAccID()));
+		boolean isSameAccID = (ncbiid.getAccID() == null || geneUniexist.getSetAccID().contains(ncbiid.getAccID().toLowerCase()));
 		boolean isDBsame = geneUniexist.getDataBaseInfo().equals(ncbiid.getDataBaseInfo());
 		 if (isSameAccID && isDBsame) {
 			 return true;

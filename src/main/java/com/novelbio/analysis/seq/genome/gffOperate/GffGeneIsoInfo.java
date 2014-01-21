@@ -771,11 +771,6 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 */
 	protected void addExon(Boolean cis5to3, int locStart, int locEnd) {
 		boolean mycis5to3 = getExonCis5To3(cis5to3);
-		if (cis5to3 != null) {
-			mycis5to3 = cis5to3;
-		} else {
-			mycis5to3 = this.isCis5to3();
-		}
 		ExonInfo exonInfo = new ExonInfo(mycis5to3, locStart, locEnd);
 		if (size() == 0) {
 			add(exonInfo);
@@ -814,10 +809,10 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 */
 	private boolean getExonCis5To3(Boolean cis5to3) {
 		boolean mycis5to3 = true;
-		if (cis5to3 != null) {
-			mycis5to3 = cis5to3;
-		} else if (this.isCis5to3() != null) {
+		if (this.isCis5to3() != null) {
 			mycis5to3 = this.isCis5to3();
+		} else if (this.isCis5to3() != null) {
+			mycis5to3 = cis5to3;
 		} else if (getParentGffDetailGene() != null && getParentGffDetailGene().isCis5to3Real() != null) {
 			mycis5to3 = getParentGffDetailGene().isCis5to3Real();
 		} else {
