@@ -22,7 +22,6 @@ import net.sf.samtools.seekablestream.SeekableStream;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.base.dataOperate.HdfsBase;
 import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -138,7 +137,7 @@ public class SamReader {
 		if (fileName != null) initialStream();
 		
 		if (isIndexed) {
-			if (HdfsBase.isHdfs(fileIndex)) {
+			if (FileHadoop.isHdfs(fileIndex)) {
 				FileHadoop fileHadoopIndex = new FileHadoop(fileIndex);
 				SeekableHDFSstream seekableIndex = new SeekableHDFSstream(fileHadoopIndex);
 				samFileReader = new SAMFileReader((SeekableStream)inputStream, seekableIndex, false);
@@ -152,7 +151,7 @@ public class SamReader {
 	}
 	
 	private void initialStream() throws IOException {
-		if (HdfsBase.isHdfs(fileName)) {
+		if (FileHadoop.isHdfs(fileName)) {
 			FileHadoop fileHadoop = new FileHadoop(fileName);
 			if (isIndexed) {
 				inputStream = new SeekableHDFSstream(fileHadoop);

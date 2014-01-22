@@ -423,9 +423,9 @@ public class SpeciesFile {
 			extractSmallRNASeq.setMiRNAdata(PathDetailNBC.getMiRNADat(), species.getNameLatin());
 			extractSmallRNASeq.getSeq();
 		}
-		if (!FileOperate.isFileExistAndBigThanSize(miRNAhairpinFile, 0)) {
-			FileOperate.DeleteFileFolder(miRNAhairpinFile);
-			FileOperate.DeleteFileFolder(miRNAfile);
+		if (!FileOperate.isFileExistAndBigThanSize(pathParent + miRNAhairpinFile, 0)) {
+			FileOperate.DeleteFileFolder(pathParent + miRNAhairpinFile);
+			FileOperate.DeleteFileFolder(pathParent + miRNAfile);
 			miRNAhairpinFile = null;
 			miRNAfile = null;
 		}

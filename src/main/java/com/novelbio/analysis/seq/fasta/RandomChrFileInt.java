@@ -6,7 +6,6 @@ import java.io.RandomAccessFile;
 
 import org.apache.hadoop.fs.FSDataInputStream;
 
-import com.novelbio.base.dataOperate.HdfsBase;
 import com.novelbio.base.fileOperate.FileHadoop;
 
 public interface RandomChrFileInt {
@@ -20,7 +19,7 @@ public interface RandomChrFileInt {
 		/** 根据是fileHadoop还是本地文件，初始化相应的对象 */
 		public static RandomChrFileInt createInstance(String fileName) {
 			try {
-				if (HdfsBase.isHdfs(fileName)) {
+				if (FileHadoop.isHdfs(fileName)) {
 					return new RandomFileHdfs(fileName);
 				} else {
 					return new RandomFileLocal(fileName);

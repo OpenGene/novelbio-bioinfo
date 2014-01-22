@@ -17,7 +17,6 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
-import com.novelbio.base.dataOperate.HdfsBase;
 import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -93,7 +92,7 @@ public class BamIndex {
     private static void makeIndex(SamReader reader, String output) throws IOException {
     	SAMFileReader samFileReader = reader.samFileReader;
     	OutputStream outStream = null;
-    	if (HdfsBase.isHdfs(output)) {
+    	if (FileHadoop.isHdfs(output)) {
 			FileHadoop fileHadoop = new FileHadoop(output);
 			outStream = fileHadoop.getOutputStreamNew(true);
 		} else {

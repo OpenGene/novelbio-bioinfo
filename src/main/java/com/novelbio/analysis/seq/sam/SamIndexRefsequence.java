@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import com.novelbio.analysis.seq.fasta.ChrSeqHash;
 import com.novelbio.base.cmd.CmdOperate;
-import com.novelbio.base.dataOperate.HdfsBase;
+import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class SamIndexRefsequence {
@@ -33,7 +33,7 @@ public class SamIndexRefsequence {
 				return;
 			}
 		}
-		if (HdfsBase.isHdfs(sequence)) {
+		if (FileHadoop.isHdfs(sequence)) {
 			try {
 				ChrSeqHash.createIndex(sequence, faidx);
 			} catch (IOException e) {
