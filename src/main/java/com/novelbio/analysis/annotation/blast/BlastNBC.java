@@ -34,7 +34,7 @@ public class BlastNBC implements IntCmdSoft {
 	public static final int ResultType_Simple = 6;
 	public static final int ResultType_Normal = 0;
 	
-	SoftWareInfo softWareInfo;
+	String exePath;
 	final String formatDB = "makeblastdb";
 	
 	String queryFasta = "";
@@ -63,7 +63,11 @@ public class BlastNBC implements IntCmdSoft {
 	int resultSeqNum = 2;
 	
 	public BlastNBC() {
-		softWareInfo = new SoftWareInfo(SoftWare.blast);
+		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.blast);
+		exePath = softWareInfo.getExePath();
+		if (!exePath.equals("")) {
+			exePath = FileOperate.addSep(exePath);
+		}
 	}
 	/**
 	 * @return blast输出结果的哈希表
@@ -215,7 +219,7 @@ public class BlastNBC implements IntCmdSoft {
 	
 	private List<String> getLsCmdBlast() {
 		List<String> lsCmd = new ArrayList<>();
-		lsCmd.add(FileOperate.addSep(softWareInfo.getExePath()) + blastType.toString());
+		lsCmd.add(exePath + blastType.toString());
 		ArrayOperate.addArrayToList(lsCmd, getDB());
 		ArrayOperate.addArrayToList(lsCmd, getQuery());
 		ArrayOperate.addArrayToList(lsCmd, getOut());
@@ -294,7 +298,7 @@ public class BlastNBC implements IntCmdSoft {
 	
 	private List<String> getLsCmdFormatDB() {
 		List<String> lsCmd = new ArrayList<>();
-		lsCmd.add(FileOperate.addSep(softWareInfo.getExePath())+ formatDB);
+		lsCmd.add(exePath + formatDB);
 		lsCmd.add("-in"); lsCmd.add(databaseSeq);
 		lsCmd.add("-dbtype"); lsCmd.add(seqTypePro);
 		lsCmd.add("-parse_seqids");
