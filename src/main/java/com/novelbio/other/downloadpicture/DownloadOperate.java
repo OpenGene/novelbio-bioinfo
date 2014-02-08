@@ -1,7 +1,10 @@
 package com.novelbio.other.downloadpicture;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -10,12 +13,16 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
+import com.mongodb.util.StringParseUtil;
 import com.novelbio.base.dataOperate.HttpFetch;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.other.downloadpicture.donmai.DonmaiOperate;
 import com.novelbio.other.downloadpicture.pixiv.PixivGetPathExistPic;
+import com.novelbio.other.downloadpicture.pixiv.PixivOperate;
 
 public abstract class DownloadOperate {
-	private static Logger logger = Logger.getLogger(DownloadOperate.class);
+	private static final Logger logger = Logger.getLogger(DownloadOperate.class);
 	
 	public static void main(String[] args) throws InterruptedException {
 //		PixivOperate pixivOperate = new PixivOperate();
@@ -48,13 +55,14 @@ public abstract class DownloadOperate {
 //		pixivOperate.run();
 		
 		
-		DonmaiOperate donmaiOperate = new DonmaiOperate();
-		donmaiOperate.getcookies();
-		donmaiOperate.setUrlAuther("koyama_hirokazu");
-		donmaiOperate.setDownloadFast(true);
-		donmaiOperate.setSavePath("D:/Picture/donmai");
-		donmaiOperate.run();
+//		DonmaiOperate donmaiOperate = new DonmaiOperate();
+//		donmaiOperate.getcookies();
+//		donmaiOperate.setUrlAuther("koyama_hirokazu");
+//		donmaiOperate.setDownloadFast(true);
+//		donmaiOperate.setSavePath("D:/Picture/donmai");
+//		donmaiOperate.run();
 		
+		downloadFileAll("D:/Picture/pixiv", true);
 	}
 	
 	protected HttpFetch webFetch;
@@ -76,6 +84,67 @@ public abstract class DownloadOperate {
     protected abstract void getcookies();
     
 	DownloadPictureFile downloadFile = new DownloadPictureFile();
+	
+	/** 升级一个文件夹下所有的文件
+	 * @param path 路径，无所谓是否为"/"结尾
+	 * @param isPixiv 是否为pixiv的结果
+	 */
+	public static void downloadFileAll(String path, boolean isPixiv) {
+		String fileAlreadyRun = getTxtAlreadyReadFile(path, isPixiv);
+		Set<String> setUrlRead = getUrlAlready(fileAlreadyRun);
+		List<String> lsFold = FileOperate.getFoldFileNameLs(path, null, null);
+		TxtReadandWrite txtWrite = new TxtReadandWrite(fileAlreadyRun, true, true);
+		for (String foldName : lsFold) {
+			String urlInput = null;
+			DownloadOperate downloadOperate = null;
+			if (isPixiv) {
+				String[] ss = foldName.split("_");
+				urlInput = ss[ss.length - 1];
+				downloadOperate = new PixivOperate();
+			} else {
+				urlInput = foldName;
+				downloadOperate = new DonmaiOperate();
+			}
+			if (setUrlRead.contains(urlInput)) {
+				continue;
+			}
+			downloadOperate.setUrlAuther(urlInput);
+			downloadOperate.setDownloadFast(true);
+			downloadOperate.setSavePath(path);
+			
+			logger.info("start reading:" + urlInput);
+			downloadOperate.run();
+			logger.info("finish reading:" + urlInput);
+			setUrlRead.add(urlInput);
+			txtWrite.writefileln(urlInput);
+			txtWrite.flush();
+		}
+		txtWrite.close();
+	}
+	private static String getTxtAlreadyReadFile(String path, boolean isPixiv) {
+		String fileAlreadyRun = null;
+		if (isPixiv) {
+			fileAlreadyRun = FileOperate.getParentPathName(path) + "pixivAlreadyRead.txt";
+		} else {
+			fileAlreadyRun = FileOperate.getParentPathName(path) + "donmaiAlreadyRead.txt";
+		}
+		return fileAlreadyRun;
+	}
+	private static Set<String> getUrlAlready(String txtFile) {
+		if (!FileOperate.isFileExistAndBigThanSize(txtFile, 0)) {
+			return new HashSet<>();
+		}
+		Set<String> setUrlName = new HashSet<>();
+		TxtReadandWrite txtRead = new TxtReadandWrite(txtFile);
+		for (String urlName : txtRead.readlines()) {
+			if (urlName == null || urlName.equals("")) {
+				continue;
+			}
+			setUrlName.add(urlName);
+		}
+		txtRead.close();
+		return setUrlName;
+	}
 	
     public void setWebFetchPixiv(HttpFetch webFetchPixiv) {
 		this.webFetch = webFetchPixiv;
