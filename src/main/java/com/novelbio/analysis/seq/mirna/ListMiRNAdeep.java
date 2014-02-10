@@ -1,27 +1,25 @@
 package com.novelbio.analysis.seq.mirna;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
-import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
-import com.novelbio.analysis.seq.genome.gffOperate.ListHashBin;
+import com.novelbio.analysis.seq.genome.gffOperate.MiRNAList;
+import com.novelbio.analysis.seq.genome.gffOperate.MirMature;
+import com.novelbio.analysis.seq.genome.gffOperate.MirPre;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
-import com.novelbio.base.dataStructure.listOperate.ListBin;
 import com.novelbio.base.fileOperate.FileOperate;
 /**
  * 读取miRNA.dat的信息，构建listabs表，方便给定mirID和loc，从而查找到底是5p还是3p
  * @author zong0jie
  *
  */
-public class ListMiRNAdeep extends ListHashBin implements ListMiRNAInt {
+public class ListMiRNAdeep extends MiRNAList {
 	private static final Logger logger = Logger.getLogger(ListMiRNAdeep.class);
 //	Set<String> setMiRNApredict;
 	Map<String, String> mapID2Blast;
@@ -47,30 +45,30 @@ public class ListMiRNAdeep extends ListHashBin implements ListMiRNAInt {
 	 */
 	protected void ReadGffarrayExcepMirDeep(String rnadataFile) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(rnadataFile, false);
-		ListBin<ListDetailBin> lsMiRNA = null;
+		MirPre mirPre = null;
 		List<String> lsBlock = new ArrayList<>();
 		for (String string : txtRead.readlines()) {
 			if (string.startsWith(">")) {
-				lsMiRNA = getMiRNAbin(lsBlock);
-				if (lsMiRNA != null) {
-					getMapChrID2LsGff().put(lsMiRNA.getName().toLowerCase(), lsMiRNA);
+				mirPre = getMiRNAbin(lsBlock);
+				if (mirPre != null) {
+					getMapChrID2LsGff().put(mirPre.getName().toLowerCase(), mirPre);
 				}
 				lsBlock.clear();
 			}
 			lsBlock.add(string);
 		}
-		lsMiRNA = getMiRNAbin(lsBlock);
-		if (lsMiRNA != null) {
-			getMapChrID2LsGff().put(lsMiRNA.getName().toLowerCase(), lsMiRNA);
+		mirPre = getMiRNAbin(lsBlock);
+		if (mirPre != null) {
+			getMapChrID2LsGff().put(mirPre.getName().toLowerCase(), mirPre);
 		}
 		txtRead.close();
 	}
 	
-	private ListBin<ListDetailBin> getMiRNAbin(List<String> lsBlock) {
+	private MirPre getMiRNAbin(List<String> lsBlock) {
 		if (lsBlock.size() == 0) return null;
-		ListBin<ListDetailBin> lsMiRNA = new ListBin<ListDetailBin>();
-		lsMiRNA.setName(lsBlock.get(0).substring(1).trim());
-		lsMiRNA.setCis5to3(true);
+		MirPre mirPre = new MirPre();
+		mirPre.setName(lsBlock.get(0).substring(1).trim());
+		mirPre.setCis5to3(true);
 
 		PatternOperate patternOperate = new PatternOperate("\\bseq_\\d+", false);
 		String mirModel = null;
@@ -78,11 +76,17 @@ public class ListMiRNAdeep extends ListHashBin implements ListMiRNAInt {
 		
 		for (String string : lsBlock) {
 			if (string.startsWith(">") ) {
-				lsMiRNA.setName(string.substring(1).trim());
-				lsMiRNA.setCis5to3(true);
+				mirPre.setName(string.substring(1).trim());
+				mirPre.setCis5to3(true);
 			} else if (string.startsWith("exp")) {
 				mirModel = string.replace("exp", "").trim();
-				setMatureMiRNAdeep(lsMiRNA, mirModel);
+			} else if (string.startsWith("pri_seq ")) {
+				//前体序列
+				if (isGetSeq) {
+					String mirSeq = string.replace("pri_seq ", "").trim();
+					mirPre.setMirPreSeq(mirSeq);
+				}
+				setMatureMiRNAdeep(mirPre, mirModel);
 			} else if (string.startsWith("pri_struct ")) {
 				readDetail = true;
 				continue;
@@ -91,7 +95,7 @@ public class ListMiRNAdeep extends ListHashBin implements ListMiRNAInt {
 				return null;
 			}
 		}
-		return lsMiRNA;
+		return mirPre;
 	}
 	
 	/**
@@ -99,54 +103,54 @@ public class ListMiRNAdeep extends ListHashBin implements ListMiRNAInt {
 	 * M: mature mirna
 	 * S: star mirna
 	 */
-	private void setMatureMiRNAdeep(ListBin<ListDetailBin> lsMirnaMautre, String mirModelString) {
+	private void setMatureMiRNAdeep(MirPre mirPre, String mirModelString) {
 		char[] mirModel = mirModelString.toCharArray();
 		boolean MstartFlag = false;
 		boolean SstartFlag = false;
-		ListDetailBin listDetailBin = null;
+		MirMature mirMature = null;
 		for (int i = 0; i < mirModel.length; i++) {
 			if (mirModel[i] == 'f' || mirModel[i] == 'l') {
 				if (MstartFlag) {
-					listDetailBin.setEndAbs(i);
+					mirMature.setEndAbs(i);
 					MstartFlag = false;
 				}
 				if (SstartFlag) {
-					listDetailBin.setEndAbs(i);
+					mirMature.setEndAbs(i);
 					SstartFlag = false;
 				}
 				continue;
 			}
 			else if (mirModel[i] == 'M') {
 				if (!MstartFlag) {
-					listDetailBin = new ListDetailBin();
-					String name = lsMirnaMautre.getName() + "_mature";
+					mirMature = new MirMature();
+					String name = mirPre.getName() + "_mature";
 //					if (setMiRNApredict != null && setMiRNApredict.size() > 0 && !setMiRNApredict.contains(name)) {
 //						continue;
 //					}
 					if (mapID2Blast != null && mapID2Blast.size() > 0 && mapID2Blast.containsKey(name)) {
 						name += SepSign.SEP_INFO + mapID2Blast.get(name);
 					}
-					listDetailBin.addItemName(name);
-					listDetailBin.setCis5to3(true);
-					listDetailBin.setStartAbs(i+1);
-					lsMirnaMautre.add(listDetailBin);
+					mirMature.addItemName(name);
+					mirMature.setCis5to3(true);
+					mirMature.setStartAbs(i+1);
+					mirPre.add(mirMature);
 					MstartFlag = true;
 				}
 			}
 			else if (mirModel[i] == 'S') {
 				if (!SstartFlag) {
-					listDetailBin = new ListDetailBin();
-					String name = lsMirnaMautre.getName() + "_star";
+					mirMature = new MirMature();
+					String name = mirPre.getName() + "_star";
 //					if (setMiRNApredict != null && setMiRNApredict.size() > 0 && !setMiRNApredict.contains(name)) {
 //						continue;
 //					}
 					if (mapID2Blast != null && mapID2Blast.size() > 0 && mapID2Blast.containsKey(name)) {
 						name += SepSign.SEP_INFO + mapID2Blast.get(name);
 					}
-					listDetailBin.addItemName(name);
-					listDetailBin.setCis5to3(true);
-					listDetailBin.setStartAbs(i+1);
-					lsMirnaMautre.add(listDetailBin);
+					mirMature.addItemName(name);
+					mirMature.setCis5to3(true);
+					mirMature.setStartAbs(i+1);
+					mirPre.add(mirMature);
 					
 					SstartFlag = true;
 				}
@@ -162,7 +166,7 @@ public class ListMiRNAdeep extends ListHashBin implements ListMiRNAInt {
 	 * @return
 	 */
 	public String searchMirName(String mirName, int start, int end) {
-		ListDetailBin element = searchElement(mirName, start, end);
+		MirMature element = searchElement(mirName, start, end);
 		if (element == null) {
  			logger.error("没有比对到miRNA上：" + mirName +" " + start + " " + end);
 			return null;

@@ -34,7 +34,7 @@ class FastQReader implements Closeable {
 	
 	/** 另一端的读取文件，双端读取的时候才有用，两端是对应的读 */
 	FastQReader fastQReadMate;
-	
+	boolean isCheckFormat = true;
 	int readsLenAvg = 0;
 
 	/** 标准文件名的话，自动判断是否为gz压缩 */
@@ -42,7 +42,10 @@ class FastQReader implements Closeable {
 		txtSeqFile = new TxtReadandWrite(seqFile, false);
 		getOffset();
 	}
-
+	/** 是否检查文件格式，true检查，false不检查 */
+	public void setCheckFormat(boolean isCheckFormat) {
+		this.isCheckFormat = isCheckFormat;
+	}
 	public int getOffset() {
 		setFastQFormatLen();
 		return offset;
@@ -143,7 +146,8 @@ class FastQReader implements Closeable {
 	 * @throws IOException
 	 */
 	private Iterable<FastQRecord> readPerlines(final boolean initial) throws Exception {
-		final BufferedReader bufread =  txtSeqFile.readfile(); 
+		final BufferedReader bufread =  txtSeqFile.readfile();
+		final long[] lineNum = new long[1];
 		return new Iterable<FastQRecord>() {
 			public Iterator<FastQRecord> iterator() {
 				return new Iterator<FastQRecord>() {
@@ -160,6 +164,7 @@ class FastQReader implements Closeable {
 						throw new UnsupportedOperationException();
 					}
 					FastQRecord getLine() {
+						lineNum[0]++;
 						FastQRecord fastQRecord = null;
 						try {
 							String linestr = bufread.readLine();
@@ -173,6 +178,10 @@ class FastQReader implements Closeable {
 							fastQRecord = new FastQRecord(linestr, offset, initial);
 						} catch (IOException ioEx) {
 							fastQRecord = null;
+						} catch (ExceptionFastq efastq) {
+							if (isCheckFormat) {
+								throw new ExceptionFastq(txtSeqFile.getFileName() + " fastq format error on line: " + lineNum[0]);
+							}
 						}
 						return fastQRecord;
 					}
@@ -224,6 +233,7 @@ class FastQReader implements Closeable {
 	private Iterable<FastQRecord[]> readPerlinesPE(final boolean initial) throws Exception {
 		final BufferedReader bufread1 =  txtSeqFile.readfile();
 		final BufferedReader bufread2 = fastQReadMate.txtSeqFile.readfile();
+		final long[] lineNum = new long[1];
 		return new Iterable<FastQRecord[]>() {
 			public Iterator<FastQRecord[]> iterator() {
 				return new Iterator<FastQRecord[]>() {
@@ -240,6 +250,7 @@ class FastQReader implements Closeable {
 						throw new UnsupportedOperationException();
 					}
 					FastQRecord[] getLine() {
+						lineNum[0]++;
 						FastQRecord[] fastQRecord = new FastQRecord[2];
 						try {
 							String linestr1 = bufread1.readLine();
@@ -259,6 +270,10 @@ class FastQReader implements Closeable {
 							fastQRecord[0].setFastqOffset(offset);
 						} catch (IOException ioEx) {
 							fastQRecord = null;
+						} catch (ExceptionFastq efastq) {
+							if (isCheckFormat) {
+								throw new ExceptionFastq(txtSeqFile.getFileName() + " fastq format error on line: " + lineNum[0]);
+							}
 						}
 						return fastQRecord;
 					}

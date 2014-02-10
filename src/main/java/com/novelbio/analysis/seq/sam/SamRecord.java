@@ -53,9 +53,27 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 		try { super.setRefID(chrID); } catch (Exception e) { }
 	}
 	
+    /**
+     * Do not modify the value returned by this method.  If you want to change the bases, create a new
+     * byte[] and call setReadBases() or call setReadString().
+     * @return read sequence as ASCII bytes ACGTN=.
+     */
+	public byte[] getReadBase() {
+		return samRecord.getReadBases();
+	}
+    /**
+     * Do not modify the value returned by this method.  If you want to change the qualities, create a new
+     * byte[] and call setBaseQualities() or call setBaseQualityString().
+     * @return Base qualities, as binary phred scores (not ASCII).
+     */
+	public byte[] getBaseQualities() {
+		return samRecord.getBaseQualities();
+	}
+	
 	public String getDescription() {
 		return samRecord.toString();
-	}	  
+	}
+	
 	public boolean isJunctionCovered() {
 		if (isJunctionReads != null) {
 			return isJunctionReads;

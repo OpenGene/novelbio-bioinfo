@@ -69,7 +69,13 @@ public class CtrlMiRNApredict implements IntCmdSoft {
 	public void setLsSpeciesBlastTo(List<Species> lsBlastTo) {
 		this.lsBlastTo = lsBlastTo;
 	}
-	/** 输出文件夹 */
+	/**
+	 *  输出文件夹
+	 * @param outPath 输入汇总结果路径
+	 * @param outPathSample 输出样本文件夹
+	 * @param outPathTmp 临时文件夹
+	 * @param samStatisticsPath 统计报告文件夹
+	 */
 	public void setOutPath(String outPath, String outPathSample, String outPathTmp, String samStatisticsPath) {
 		this.outPath = outPath;
 		this.outPathSample = outPathSample;

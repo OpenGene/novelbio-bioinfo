@@ -17,7 +17,7 @@ public class TestMiRNAnovelAnnotation {
 		miRNAnovelAnnotaion.setMiRNAthis("/media/hdfs/nbCloud/public/test/miRNApredict/miRNA.fa");
 		List<Species> lsSpecies = new ArrayList<>();
 		lsSpecies.add(new Species(10090));
-		miRNAnovelAnnotaion.setLsMiRNAblastTo(lsSpecies);
+		miRNAnovelAnnotaion.setLsMiRNAblastTo(lsSpecies, "/media/hdfs/nbCloud/public/test/miRNApredict/blastto.fa");
 		miRNAnovelAnnotaion.annotation();
 	}
 }

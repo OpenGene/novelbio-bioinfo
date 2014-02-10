@@ -15,7 +15,9 @@ import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.GeneExpTable;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
-import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
+import com.novelbio.analysis.seq.genome.gffOperate.MiRNAList;
+import com.novelbio.analysis.seq.genome.gffOperate.MirMature;
+import com.novelbio.analysis.seq.genome.gffOperate.MirPre;
 import com.novelbio.analysis.seq.sam.SamMapRate;
 import com.novelbio.base.dataStructure.listOperate.ListBin;
 import com.novelbio.base.multithread.RunProcess;
@@ -32,7 +34,7 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 	static String flag_MapTo_PreMirna_NotTo_MatureMirna_Suffix = "_pre";
 
 	/** 获得miRNA定位信息 */
-	ListMiRNAInt listMiRNALocation;
+	MiRNAList listMiRNALocation;
 	/** miRNA前体 */
 	SeqFastaHash seqFastaHashPreMiRNA = null;
 	/** miRNA成熟体 */
@@ -84,7 +86,7 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 	 * @param rnadatFile
 	 */
 	public void setSpecies(Species species, String rnadatFile) {
-		ListMiRNAdate listMiRNAdate = new ListMiRNAdate();
+		ListMiRNAdat listMiRNAdate = new ListMiRNAdat();
 		listMiRNAdate.setSpecies(species);
 		listMiRNAdate.ReadGffarray(rnadatFile);
 		listMiRNALocation = listMiRNAdate;
@@ -96,19 +98,19 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 	}
 	
 	/** 设定自定义ListMiRNALocation */
-	public void setListMiRNALocation(ListMiRNAInt listMiRNALocation) {
+	public void setListMiRNALocation(MiRNAList listMiRNALocation) {
 		this.listMiRNALocation = listMiRNALocation;
 	}
 	public List<String> getLsMirNameMature() {
 		List<String> lsMirName = new ArrayList<>();
-		for (ListDetailBin listDetailBin : listMiRNALocation.getGffDetailAll()) {
+		for (MirMature listDetailBin : listMiRNALocation.getGffDetailAll()) {
 			lsMirName.add(listDetailBin.getNameSingle());
 		}
 		return lsMirName;
 	}
 	public Map<String, String> getMapPre2Seq() {
 		Map<String, String> mapPre2Seq = new HashMap<>();
-		for (ListDetailBin lsMiRNA : listMiRNALocation.getGffDetailAll()) {
+		for (MirMature lsMiRNA : listMiRNALocation.getGffDetailAll()) {
 			String parentName = lsMiRNA.getParent().getName();
 			mapPre2Seq.put(parentName, getMiRNApreSeq(parentName));
 		}
@@ -117,7 +119,7 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 	
 	public Map<String, String> getMapMature2Seq() {
 		Map<String, String> mapMature2Seq = new HashMap<>();
-		for (ListDetailBin lsMiRNA : listMiRNALocation.getGffDetailAll()) {
+		for (MirMature lsMiRNA : listMiRNALocation.getGffDetailAll()) {
 			String matureName = lsMiRNA.getNameSingle();
 			String parentName = lsMiRNA.getParent().getName();
 			mapMature2Seq.put(matureName, getMiRNAmatureSeq(parentName, matureName));
@@ -126,7 +128,7 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 	}
 	public List<String> getLsMirNamePre() {
 		Set<String> setMirName = new HashSet<>();
-		for (ListDetailBin listDetailBin : listMiRNALocation.getGffDetailAll()) {
+		for (MirMature listDetailBin : listMiRNALocation.getGffDetailAll()) {
 			setMirName.add(listDetailBin.getParent().getName());
 		}
 		return new ArrayList<>(setMirName);
@@ -139,7 +141,7 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 	 */
 	public Map<String, String> getMapMature2Pre() {
 		Map<String, String> mapMature2Pre = new HashMap<>();
-		for (ListDetailBin lsMiRNA : listMiRNALocation.getGffDetailAll()) {
+		for (MirMature lsMiRNA : listMiRNALocation.getGffDetailAll()) {
 			String matureName = lsMiRNA.getNameSingle();
 			String parentName = lsMiRNA.getParent().getName();
 			if (mapMature2Pre.containsKey(matureName)) {
@@ -172,11 +174,11 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 		if (seqFastaHashMatureMiRNA.getSeqFasta(matureID) != null) {
 			return seqFastaHashMatureMiRNA.getSeqFasta(matureID).toString();
 		}
-		ListDetailBin listDetailBin = listMiRNALocation.searchLOC(matureID);
-		if (listDetailBin == null) {
-			ListBin<ListDetailBin > lsInfo = listMiRNALocation.getMapChrID2LsGff().get(matureID);
-			if (lsInfo != null) {
-				listDetailBin = lsInfo.get(0);
+		MirMature mirMature = listMiRNALocation.searchLOC(matureID);
+		if (mirMature == null) {
+			MirPre mirPre = listMiRNALocation.getMapChrID2LsGff().get(matureID);
+			if (mirPre != null) {
+				mirMature = mirPre.get(0);
 			} else {
 				if (!matureID.endsWith(flag_MapTo_PreMirna_NotTo_MatureMirna_Suffix)) {
 					logger.error("出现未知miRNA的成熟体：" + mirID + " "  + matureID);
@@ -184,8 +186,8 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 				return null;
 			}
 		}
-		SeqFasta seqFasta = seqFastaHashPreMiRNA.getSeq(mirID.split(sepMirPreID)[0].toLowerCase(), listDetailBin.getStartAbs(), listDetailBin.getEndAbs());
-		if (listDetailBin.getStartAbs() > 40) {
+		SeqFasta seqFasta = seqFastaHashPreMiRNA.getSeq(mirID.split(sepMirPreID)[0].toLowerCase(), mirMature.getStartAbs(), mirMature.getEndAbs());
+		if (mirMature.getStartAbs() > 40) {
 			return seqFasta.reservecom().toString();
 		}
 		return seqFasta.toString();

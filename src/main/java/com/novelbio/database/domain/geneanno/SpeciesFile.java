@@ -27,7 +27,7 @@ import com.novelbio.analysis.seq.genome.GffChrSeq;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
-import com.novelbio.analysis.seq.mirna.ListMiRNAdate;
+import com.novelbio.analysis.seq.mirna.ListMiRNAdat;
 import com.novelbio.analysis.seq.sam.SamIndexRefsequence;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -774,7 +774,7 @@ public class SpeciesFile {
 				if (outMatureRNA == null)
 					outMatureRNA = outPathPrefix + "_mature.fa";
 				
-				ListMiRNAdate listMiRNALocation = new ListMiRNAdate();
+				ListMiRNAdat listMiRNALocation = new ListMiRNAdat();
 				try {
 					listMiRNALocation.extractMiRNASeqFromRNAdata(setMiRNAname, miRNAdataSpeciesName, RNAdataFile, outHairpinRNA, outMatureRNA);
 				} catch (Exception e) {

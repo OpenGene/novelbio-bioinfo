@@ -1,32 +1,29 @@
 package com.novelbio.analysis.seq.mirna;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
-import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
-import com.novelbio.analysis.seq.genome.gffOperate.ListHashBin;
+import com.novelbio.analysis.seq.genome.gffOperate.MiRNAList;
+import com.novelbio.analysis.seq.genome.gffOperate.MirMature;
+import com.novelbio.analysis.seq.genome.gffOperate.MirPre;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.listOperate.ListBin;
 import com.novelbio.database.model.species.Species;
 /**
  * 读取miRNA.dat的信息，构建listabs表，方便给定mirID和loc，从而查找到底是5p还是3p
  * @author zong0jie
  *
  */
-public class ListMiRNAdate extends ListHashBin implements ListMiRNAInt {
-	private static final Logger logger = Logger.getLogger(ListMiRNAdate.class);
+public class ListMiRNAdat extends MiRNAList {
+	private static final Logger logger = Logger.getLogger(ListMiRNAdat.class);
+	/** 物种的拉丁名 */
+	String speciesLatinName;
 
-	/** taxID对应RNA.data中的String */
-	HashMap<Integer, String> hashSpecies = new HashMap<Integer, String>();
-	String speciesAbbr = "HSA";
-	Species species;
+
 	/**
 	 * 为miRNA.dat中的物种名
 	 * 设定物种，默认为人类：HSA
@@ -34,24 +31,31 @@ public class ListMiRNAdate extends ListHashBin implements ListMiRNAInt {
 	 * @param species
 	 */
 	public void setSpecies(Species species) {
-		this.species = species;
+		String[] names = species.getNameLatin().split(" ");
+		if (names.length > 1) {
+			speciesLatinName = names[0] + " " + names[1];
+		} else {
+			speciesLatinName = species.getNameLatin();
+		}
 	}
+	
+	/**
+	 * @param speciesLatinName species 里面的拉丁名，会自动截取前两位
+	 */
+	public void setSpeciesLatinName(String speciesLatinName) {
+		String[] names = speciesLatinName.split(" ");;
+		if (names.length > 1) {
+			this.speciesLatinName = names[0] + " " + names[1];
+		} else {
+			this.speciesLatinName = speciesLatinName;
+		}
+	}
+	
 	/**
 	 * 读取miRNA.data文件，同时读取和它一起的整理好的taxID2species文件
 	 */
 	protected void ReadGffarrayExcep(String rnadataFile) {
 		ReadGffarrayExcepRNADat(rnadataFile);
-	}
-	
-	private String getLatinName() {
-		String resultName = "";
-		String[] names = species.getNameLatin().split(" ");
-		if (names.length > 1) {
-			resultName = names[0] + " " + names[1];
-		} else {
-			resultName = species.getNameLatin();
-		}
-		return resultName;
 	}
 	
 	/**
@@ -70,23 +74,7 @@ public class ListMiRNAdate extends ListHashBin implements ListMiRNAInt {
 		ExtractMirSeq extractMirSeq = new ExtractMirSeq(setMirnaToBeExtract, speciesName, rnaDataFile, rnaHairpinOut, rnaMatureOut);
 		extractMirSeq.writeFile();
 	}
-	
 
-	private String getHairpinSeq(List<String> lsMirBlock) {
-		String finalSeq = "";
-		boolean seqFlag = false;
-		for (String string : lsMirBlock) {
-			if (string.startsWith("SQ")) {
-				seqFlag = true;
-				continue;
-			}
-			if (seqFlag) {
-				String[] ssA = string.trim().split(" +");
-				finalSeq = finalSeq + string.replace(ssA[ssA.length - 1], "").replace(" ", "");
-			}
-		}
-		return finalSeq;
-	}
 	/**
 	 * 读取RNA.dat，获得每个小RNA的序列信息
 	 * ID   hsa-mir-1539      standard; RNA; HSA; 50 BP.
@@ -122,13 +110,13 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 		List<String> lsMirnaBlock = new ArrayList<>();
 		for (String string : txtRead.readlines()) {
 			if (string.startsWith("//")) {				
-				copeMirBlock(lsMirnaBlock, getLatinName());
+				copeMirBlock(lsMirnaBlock, speciesLatinName);
 				lsMirnaBlock = new ArrayList<>();
 				continue;
 			}
 			lsMirnaBlock.add(string);
 		}
-		copeMirBlock(lsMirnaBlock, getLatinName());
+		copeMirBlock(lsMirnaBlock, speciesLatinName);
 		txtRead.close();
 	}
 	
@@ -136,42 +124,71 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 		if (!isFindSpecies(lsMirnaBlock, speciesName)) {
 			return;
 		}
-		ListBin<ListDetailBin> lsMiRNA = new ListBin<>();
+		MirPre mirPre = new MirPre();
 		String[] sepInfo = lsMirnaBlock.get(0).split(" +");
-		lsMiRNA.setName(sepInfo[1]);
-		lsMiRNA.setCis5to3(true);
+		mirPre.setName(sepInfo[1]);
+		mirPre.setCis5to3(true);
+		if (isGetSeq) {
+			mirPre.setMirPreSeq(getHairpinSeq(lsMirnaBlock));
+		}
+		
 		//装入chrHash
-		getMapChrID2LsGff().put(lsMiRNA.getName().toLowerCase(), lsMiRNA);
-		List<ListDetailBin> lsMiRNABin = getLsMatureMirnaLocation(lsMirnaBlock);
-		for (ListDetailBin miRNAbin : lsMiRNABin) {
-			miRNAbin.setParentListAbs(lsMiRNA);
-			lsMiRNA.add(miRNAbin);
+		getMapChrID2LsGff().put(mirPre.getName().toLowerCase(), mirPre);
+		List<MirMature> lsMiRNABin = getLsMatureMirnaLocation(lsMirnaBlock);
+		for (MirMature miRNAbin : lsMiRNABin) {
+			miRNAbin.setParentListAbs(mirPre);
+			mirPre.add(miRNAbin);
 		}
 	}
 	
-	private ArrayList<ListDetailBin> getLsMatureMirnaLocation(List<String> lsMirBlock) {
-		ArrayList<ListDetailBin> lsResult = new ArrayList<ListDetailBin>();
-		ListDetailBin lsMiRNAhairpin = null;
+	private String getHairpinSeq(List<String> lsMirBlock) {
+		String finalSeq = "";
+		boolean seqFlag = false;
+		for (String string : lsMirBlock) {
+			if (string.startsWith("SQ")) {
+				seqFlag = true;
+				continue;
+			}
+			if (seqFlag) {
+				String[] ssA = string.trim().split(" +");
+				finalSeq = finalSeq + string.replace(ssA[ssA.length - 1], "").replace(" ", "");
+			}
+		}
+		return finalSeq;
+	}
+	
+	private ArrayList<MirMature> getLsMatureMirnaLocation(List<String> lsMirBlock) {
+		ArrayList<MirMature> lsResult = new ArrayList<>();
+		MirMature mirMature = null;
 		for (String string : lsMirBlock) {
 			String[] sepInfo = string.split(" +");
 			if (sepInfo[0].equals("FT")) {
 				if (sepInfo[1].equals("miRNA")) {
-					lsMiRNAhairpin = new ListDetailBin();
-					lsMiRNAhairpin.setCis5to3(true);
+					mirMature = new MirMature();
+					mirMature.setCis5to3(true);
 					String[] loc = sepInfo[2].split("\\.\\.");
-					lsMiRNAhairpin.setStartAbs(Integer.parseInt(loc[0]));
-					lsMiRNAhairpin.setEndAbs(Integer.parseInt(loc[1]));
+					mirMature.setStartAbs(Integer.parseInt(loc[0]));
+					mirMature.setEndAbs(Integer.parseInt(loc[1]));
+					lsResult.add(mirMature);
 				}
-				if (sepInfo[1].contains("product")) {
+				
+				if (sepInfo[1].contains("accession")) {
 					String accID = sepInfo[1].split("=")[1];
 					accID = accID.replace("\"", "");
-					lsMiRNAhairpin.addItemName(accID);
-					lsResult.add(lsMiRNAhairpin);
+					mirMature.setMirAccID(accID);
+				} else if (sepInfo[1].contains("product")) {
+					String accID = sepInfo[1].split("=")[1];
+					accID = accID.replace("\"", "");
+					mirMature.addItemName(accID);
+				} else if (sepInfo[1].contains("evidence")) {
+					String evidence = sepInfo[1].split("=")[1];
+					mirMature.setEvidence(evidence);
 				}
 			}
 		}
 		return lsResult;
 	}
+	
 	private boolean isFindSpecies(List<String> lsMirBlock, String speciesName) {
 		if (lsMirBlock.size() == 0 || !lsMirBlock.get(0).startsWith("ID")) {
 			return false;
@@ -197,7 +214,7 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 	 * @return
 	 */
 	public String searchMirName(String mirName, int start, int end) {
-		ListDetailBin element = searchElement(mirName, start, end);
+		MirMature element = searchElement(mirName, start, end);
 		if (element == null) {
 			logger.warn("cannot find miRNA on：" + mirName + " " + start + " " + end);
 
@@ -250,7 +267,6 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 			txtMature.close();
 		}
 		
-		
 		private void writeToFile(List<SeqFasta> lsseqFastas) {
 			if (lsseqFastas.size() == 0) return;
 			
@@ -291,14 +307,14 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 			String[] ssID = lsMirBlock.get(0).split(" +");
 			
 			String miRNAhairpinName = ssID[1]; //ID   cel-lin-4         standard; RNA; CEL; 94 BP.
-			ArrayList<ListDetailBin> lsSeqLocation = getLsMatureMirnaLocation(lsMirBlock);
+			ArrayList<MirMature> lsSeqLocation = getLsMatureMirnaLocation(lsMirBlock);
 			String finalSeq = getHairpinSeq(lsMirBlock);
 			
 			ArrayList<SeqFasta> lsResult = new ArrayList<SeqFasta>();
 			SeqFasta seqFasta = new SeqFasta(miRNAhairpinName, finalSeq);
 			seqFasta.setDNA(true);
 			lsResult.add(seqFasta);
-			for (ListDetailBin listDetailBin : lsSeqLocation) {
+			for (MirMature listDetailBin : lsSeqLocation) {
 				SeqFasta seqFastaMature = new SeqFasta();
 				seqFastaMature.setName(listDetailBin.getNameSingle());
 				seqFastaMature.setSeq(finalSeq.substring(listDetailBin.getStartAbs()-1, listDetailBin.getEndAbs()));

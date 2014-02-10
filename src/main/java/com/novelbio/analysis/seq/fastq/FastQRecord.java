@@ -61,6 +61,9 @@ public class FastQRecord implements Cloneable {
 		if (ss.length == 1) {
 			ss = fastqStringReadIn.split(TxtReadandWrite.ENTER_WINDOWS);
 		}
+		if (ss.length != 4 || !ss[2].equals("+")) {
+			throw new ExceptionFastq("fastq format error");
+		}
 		String seqName = ss[0].substring(1).trim();
 		if (seqName == null || seqName.equals("")) {
 			seqName = SEQNAME + i;

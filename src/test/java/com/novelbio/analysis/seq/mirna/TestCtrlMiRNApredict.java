@@ -31,7 +31,8 @@ public class TestCtrlMiRNApredict {
 	@Test
 	public void testAnno() {
 		setUp();
-		ctrlMiRNApredict.setOutPath(parentPath + "test/miRNAanno");
+		ctrlMiRNApredict.setOutPath(parentPath + "test/miRNAanno", parentPath + "test/miRNASample", 
+				parentPath + "test/Tmp", parentPath + "test/statistics");
 		ctrlMiRNApredict.calculateExp(null);
 		ctrlMiRNApredict.writeToFile();
 	}

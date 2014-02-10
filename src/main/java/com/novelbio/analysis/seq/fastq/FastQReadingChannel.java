@@ -31,6 +31,8 @@ public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
 	 * false 表示仅进行 fastqc工作
 	 */
 	boolean isOutputResult = true;
+	boolean isCheckFormat = true;
+	
 	
 	/** 输入的FastQ是否为双端，务必一致 */
 	public void setFastQRead(List<FastQ[]> lsFastQs) {
@@ -39,6 +41,13 @@ public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
 	/** 是否输出过滤文件，false一般用来仅输出fastqc结果 */
 	public void setOutputResult(boolean isOutputResult) {
 		this.isOutputResult = isOutputResult;
+	}
+	/** 是否检查fastq文件的格式，true检查，false不检查<br>
+	 * 默认为true
+	 * @param isCheckFormat
+	 */
+	public void setCheckFormat(boolean isCheckFormat) {
+		this.isCheckFormat = isCheckFormat;
 	}
 	/** 默认是3000 */
 	public void setMaxNumReadInLs(int maxNumReadInLs) {
@@ -140,7 +149,9 @@ public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
 		
 		for (FastQ[] fastQs : lsFastqReader) {
 			if (flagStop) break;
-			
+			if (isCheckFormat) {
+				fastQs[0].fastQRead.setCheckFormat(isCheckFormat);
+			}
 			for (FastQRecord fastQRecord : fastQs[0].readlines(false)) {
 				readsNum++;
 				wait_To_Cope_AbsQueue();
@@ -171,7 +182,12 @@ public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
 		for (FastQ[] fastQs : lsFastqReader) {
 			if (flagStop) break;
 			
+			if (isCheckFormat) {
+				fastQs[0].fastQRead.setCheckFormat(isCheckFormat);
+				fastQs[1].fastQRead.setCheckFormat(isCheckFormat);
+			}
 			fastQs[0].fastQRead.setFastQReadMate(fastQs[1].fastQRead);
+
 			
 			for (FastQRecord[] fastQRecord : fastQs[0].fastQRead.readlinesPE(false)) {
 				readsNum++;
