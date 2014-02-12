@@ -197,7 +197,7 @@ public class GoPathBarPlot {
 
 		int i = 0;
 		for (StatisticTestResult statisticTestResult : lsTestResults) {
-			if (statisticTestResult.getPvalue() < 0.05) {
+			if (statisticTestResult.getPvalue() < FunctionTest.PvalueFdr_Cutoff) {
 				barColorRed.addBarNum(i);
 			} else {
 				barColorBlue.addBarNum(i);

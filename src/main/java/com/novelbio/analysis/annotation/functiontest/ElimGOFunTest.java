@@ -95,7 +95,7 @@ public class ElimGOFunTest extends NovelGOFunTest{
 		ArrayListMultimap<String, String> hashGo2LsGene = topGO.getGo2GeneUniIDAll();
 		
 		for (StatisticTestResult statisticTestResult : lsTestResult) {
-			List<String> lsTmpGeneUniID = hashGo2LsGene.get(statisticTestResult.getItemName());
+			List<String> lsTmpGeneUniID = hashGo2LsGene.get(statisticTestResult.getItemID());
 			for (String geneUniID : lsTmpGeneUniID) {
 				if (!setTestGeneUniID.contains(geneUniID)) {
 					continue;

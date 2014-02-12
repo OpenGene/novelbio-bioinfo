@@ -11,9 +11,8 @@ import org.jfree.chart.renderer.category.BarRenderer;
 
 /** 用来渲染jfreechart的bar图的 */
 public class JFreeChartBarRender extends BarRenderer {  
-	
-	
-    private static final long serialVersionUID = 784630226449158436L;  
+    private static final long serialVersionUID = 784630226449158436L;
+    
     private Paint[] colors;  
     //初始化柱子颜色  
     private String[] colorValues = { "#AFD8F8", "#F6BD0F", "#8BBA00", "#FF8E46", "#008E8E", "#D64646" };  

@@ -18,7 +18,7 @@ public class StatisticTestResult {
 	
 	static int logBaseNum = 2;
 	
-	String itemName;
+	String itemID;
 	String itemTerm;
 	
 	int difGeneInItemNum;
@@ -34,8 +34,8 @@ public class StatisticTestResult {
 	StatisticsTest statisticsTest;
 	
 	
-	public StatisticTestResult(String itemName) {
-		this.itemName = itemName;
+	public StatisticTestResult(String itermID) {
+		this.itemID = itermID;
 	}
 	public void setItemTerm(String itemTerm) {
 		this.itemTerm = itemTerm;
@@ -60,6 +60,9 @@ public class StatisticTestResult {
 	public int getAllGeneNum() {
 		return AllGeneNum;
 	}
+	public int getDifGeneInItemNum() {
+		return difGeneInItemNum;
+	}
 	/** 只有elimGo才用 */
 	protected void setPvalue(double pvalue) {
 		this.pvalue = pvalue;
@@ -70,8 +73,8 @@ public class StatisticTestResult {
 		this.fdr = fdr;
 	}
 	
-	public String getItemName() {
-		return itemName;
+	public String getItemID() {
+		return itemID;
 	}
 	public String getItemTerm() {
 		return itemTerm;
@@ -119,7 +122,7 @@ public class StatisticTestResult {
 	
 	public String[] toStringArray() {
 		ArrayList<String> lsTitle = new ArrayList<String>();
-		lsTitle.add(itemName);
+		lsTitle.add(itemID);
 		lsTitle.add(itemTerm);
 		lsTitle.add(difGeneInItemNum + "");
 		lsTitle.add(allDifGeneNum + "");

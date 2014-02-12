@@ -45,7 +45,7 @@ public class StatisticTestItem2Gene {
 			}
 			setGeneAccID.add(geneID.getAccID());
 			ArrayList<String> lsTmpResult = new ArrayList<String>();
-			lsTmpResult.add(statisticTestResult.getItemName());
+			lsTmpResult.add(statisticTestResult.getItemID());
 			lsTmpResult.add(statisticTestResult.getItemTerm());
 			lsTmpResult.add(geneID.getAccID());
 			lsTmpResult.add(geneID.getSymbol());

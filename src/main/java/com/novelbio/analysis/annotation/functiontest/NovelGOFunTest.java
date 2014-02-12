@@ -57,7 +57,7 @@ public class NovelGOFunTest extends FunctionTest {
 		ArrayListMultimap<String, GeneID> hashGo2LsGene = getGo2GeneUniID();
 		
 		for (StatisticTestResult statisticTestResult : lsTestResult) {
-			List<GeneID> lsTmpGeneUniID = hashGo2LsGene.get(statisticTestResult.getItemName());
+			List<GeneID> lsTmpGeneUniID = hashGo2LsGene.get(statisticTestResult.getItemID());
 			ArrayList<GeneID> lsFinalGeneIDs = new ArrayList<GeneID>();
 			for (GeneID geneID : lsTmpGeneUniID) {
 				//同一个geneUniID对应的不同accID

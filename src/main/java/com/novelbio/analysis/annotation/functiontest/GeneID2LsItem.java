@@ -150,6 +150,7 @@ public abstract class GeneID2LsItem {
 	
 	/**
 	 * 给定fisher需要的信息， 做检验并获得fdr
+	 * 对结果进行排序
 	 */
 	private static void doFisherTest(StatisticsTest statisticsTest, List<StatisticTestResult> lsTestResult) {
 		if (statisticsTest instanceof FisherTest) {

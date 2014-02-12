@@ -27,7 +27,9 @@ public abstract class FunctionTest implements Cloneable {
 	public static final String FUNCTION_GO_NOVELBIO = "gene ontology";
 	public static final String FUNCTION_GO_ELIM = "gene ontology elim";
 	public static final String FUNCTION_PATHWAY_KEGG = "pathway kegg";
-		
+	/** 默认pvalue的cutoff的值 */
+	public static final double PvalueFdr_Cutoff = 0.05;
+	
 	int taxID = 0;
 	List<Integer> blastTaxID = null;
 	double blastEvalue = 1e-10;
@@ -384,7 +386,7 @@ public abstract class FunctionTest implements Cloneable {
 		//key为小写，item和检验结果的map
 		HashMap<String, StatisticTestResult> mapItem2StatisticsResult = new HashMap<String, StatisticTestResult>();
 		for (StatisticTestResult statisticTestResult : lStatisticTestResults) {
-			mapItem2StatisticsResult.put(statisticTestResult.getItemName().toLowerCase(), statisticTestResult);
+			mapItem2StatisticsResult.put(statisticTestResult.getItemID().toLowerCase(), statisticTestResult);
 		}
 		return mapItem2StatisticsResult;
 	}
@@ -399,7 +401,8 @@ public abstract class FunctionTest implements Cloneable {
 	 * booRun 新跑一次 返回最后的结果，ElimGO需要覆盖该方法 对结果排个序
 	 * 返回最后的结果，ElimGO需要覆盖该方法
 	 * @throws Exception 
-	 * 没有就返回null
+	 * 没有就返回null<br>
+	 * <b>结果已经排过序了</b>
 	 */
 	public ArrayList<StatisticTestResult> getTestResult() {
 		if (statisticsTest == null) {
@@ -415,7 +418,7 @@ public abstract class FunctionTest implements Cloneable {
 		List<GeneID2LsItem> lsbg = getFilteredLs(mapBGGeneID2Items.values());
 		lsTestResult = GeneID2LsItem.getFisherResult(statisticsTest, lstest, lsbg, BGnum);
 		for (StatisticTestResult statisticTestResult : lsTestResult) {
-			statisticTestResult.setItemTerm(getItemTerm(statisticTestResult.getItemName()));
+			statisticTestResult.setItemTerm(getItemTerm(statisticTestResult.getItemID()));
 		}
 		return lsTestResult;
 	}
