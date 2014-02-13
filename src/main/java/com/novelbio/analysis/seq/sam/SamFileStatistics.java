@@ -221,9 +221,6 @@ public class SamFileStatistics implements AlignmentRecorder {
 
 	@Override
 	public void addAlignRecord(AlignRecord samRecord) {
-		if (!samRecord.getRefID().equals("chr1")) {
-			System.out.println();
-		}
 		if (!samRecord.isMapped()) {
 			allReadsNum ++;
 			unmappedReadsNum ++;

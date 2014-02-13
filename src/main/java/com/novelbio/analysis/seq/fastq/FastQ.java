@@ -316,7 +316,6 @@ public class FastQ {
 	}
 	
 	/**
-	 * 
 	 * reads质量过滤参数
 	 * @param QUALITY 选定等级
 	 * @return map<br>
