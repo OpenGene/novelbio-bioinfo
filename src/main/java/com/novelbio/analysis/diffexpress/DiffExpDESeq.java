@@ -68,9 +68,7 @@ public class DiffExpDESeq extends DiffExpAbs {
 			txtReadandWrite.writefile(scriptContent);
 			txtReadandWrite.close();
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("渲染出错啦! " + e.getMessage());
-		}
+			throw new ExceptionFreemarker("DESeq rendering error:" + outScript, e);		}
 		return scriptContent;
 	}
 	

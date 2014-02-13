@@ -153,8 +153,7 @@ public class DiffExpEdgeR extends DiffExpAbs {
 			txtReadandWrite.close();
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error("渲染出错啦! " + e.getMessage());
-		}
+			throw new ExceptionFreemarker("edgeR rendering error:" + outScript, e);		}
 		return scriptContent;
 	}
 	

@@ -55,7 +55,7 @@ public class DiffExpDEGseq extends DiffExpAbs {
 			txtReadandWrite.writefile(scriptContent);
 			txtReadandWrite.close();
 		} catch (Exception e) {
-			logger.error("渲染出错啦! " + e.getMessage());
+			throw new ExceptionFreemarker("DEGSeq rendering error:" + outScript, e);
 		}
 		return scriptContent;
 	}

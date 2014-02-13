@@ -95,7 +95,7 @@ public class DiffExpLimma extends DiffExpAbs{
 			txtReadandWrite.writefile(scriptContent);
 			txtReadandWrite.close();
 		} catch (Exception e) {
-			logger.error("rendering error",e);
+			throw new ExceptionFreemarker("limma rendering error:" + outScript, e);
 		}
 		return scriptContent;
 	}
