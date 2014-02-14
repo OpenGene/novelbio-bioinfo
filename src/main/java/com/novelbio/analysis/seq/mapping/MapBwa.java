@@ -79,6 +79,7 @@ public class MapBwa extends MapDNA {
 	public void setLeftFq(List<FastQ> lsLeftFastQs) {
 		if (lsLeftFastQs == null) return;
 		this.lsLeftFq = lsLeftFastQs;
+		leftCombFq = null;
 	}
 	/**
 	 * 设置右端的序列，设置会把以前的清空
@@ -88,12 +89,13 @@ public class MapBwa extends MapDNA {
 	public void setRightFq(List<FastQ> lsRightFastQs) {
 		if (lsRightFastQs == null) return;
 		this.lsRightFq = lsRightFastQs;
+		rightCombFq = null;
 	}
 	
 	private void combSeq() {
 		boolean singleEnd = (lsLeftFq.size() > 0 && lsRightFq.size() > 0) ? false : true;
-		if (lsLeftFq.size() > 0 && lsRightFq.size() > 0) {
-			singleEnd = false;
+		if ( leftCombFq != null && (singleEnd || (!singleEnd && rightCombFq != null))) {
+			return;
 		}
 		
 		if (lsLeftFq.size() == 1) {
@@ -253,7 +255,7 @@ public class MapBwa extends MapDNA {
 	 * @return 64标准返回"-l", 32标准返回null
 	 */
 	private String getFastQoffset() {
-		FastQ fastQ = new FastQ(leftCombFq);
+		FastQ fastQ = lsLeftFq.get(0);
 		int offset = fastQ.getOffset();
 		if (offset == FastQ.FASTQ_ILLUMINA_OFFSET) {
 			return  "-I";
@@ -484,6 +486,7 @@ public class MapBwa extends MapDNA {
 	}
 	@Override
 	public List<String> getCmdExeStr() {
+		combSeq();
 		List<String> lsCmdResult = new ArrayList<>();
 		List<String> lsCmd = getLsCmdAln(true);
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
