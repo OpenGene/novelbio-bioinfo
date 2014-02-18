@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -34,7 +35,7 @@ class FastQReader implements Closeable {
 	
 	/** 另一端的读取文件，双端读取的时候才有用，两端是对应的读 */
 	FastQReader fastQReadMate;
-	boolean isCheckFormat = true;
+	boolean isCheckFormat = false;
 	int readsLenAvg = 0;
 
 	/** 标准文件名的话，自动判断是否为gz压缩 */
@@ -148,6 +149,8 @@ class FastQReader implements Closeable {
 	private Iterable<FastQRecord> readPerlines(final boolean initial) throws Exception {
 		final BufferedReader bufread =  txtSeqFile.readfile();
 		final long[] lineNum = new long[1];
+		final int[] errorNum = new int[1];
+		final LinkedList<String> lsStr = new LinkedList<>();
 		return new Iterable<FastQRecord>() {
 			public Iterator<FastQRecord> iterator() {
 				return new Iterator<FastQRecord>() {
@@ -164,23 +167,49 @@ class FastQReader implements Closeable {
 						throw new UnsupportedOperationException();
 					}
 					FastQRecord getLine() {
-						lineNum[0]++;
+						lsStr.clear();
+						lineNum[0] += 4;
 						FastQRecord fastQRecord = null;
 						try {
-							String linestr = bufread.readLine();
+							lsStr.add(bufread.readLine());
 							for (int i = 0; i < 3; i++) {
 								String lineTmp = bufread.readLine();
-								if (linestr == null) {
+								if (lineTmp == null) {
 									return null;
 								}
-								linestr = linestr + TxtReadandWrite.ENTER_LINUX + lineTmp;
+								lsStr.add(lineTmp);
 							}
-							fastQRecord = new FastQRecord(linestr, offset, initial);
+							fastQRecord = new FastQRecord(lsStr, offset, initial);
 						} catch (IOException ioEx) {
 							fastQRecord = null;
 						} catch (ExceptionFastq efastq) {
 							if (isCheckFormat) {
 								throw new ExceptionFastq(txtSeqFile.getFileName() + " fastq format error on line: " + lineNum[0]);
+							} else {
+								logger.error(txtSeqFile.getFileName() + " fastq format error on line: " + lineNum[0]);
+								while (true) {
+									String next = null;
+									try {
+										next = bufread.readLine();
+										lineNum[0]++;
+									} catch (Exception e) {
+										throw new ExceptionFastq(txtSeqFile.getFileName() + " fastq format error on line: " + lineNum[0], e);
+									}
+									if (next == null) {
+										return null;
+									}
+									lsStr.removeFirst();
+									lsStr.add(next);
+									errorNum[0]++;
+									try {
+										fastQRecord = new FastQRecord(lsStr, offset, initial);
+										errorNum[0] = 0;
+										break;
+									} catch (Exception e) {}
+									if (errorNum[0] > 10000) {
+										throw new ExceptionFastq(txtSeqFile.getFileName() + " fastq format error on line: " + lineNum[0]);
+									}
+								}
 							}
 						}
 						return fastQRecord;

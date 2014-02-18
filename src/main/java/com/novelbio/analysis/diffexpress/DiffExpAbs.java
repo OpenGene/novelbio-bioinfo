@@ -49,9 +49,6 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	
 	/** 做差异基因的时候各个样本表达量的值之和不能小于等于该数值 */
 	double minSampleSumNum = 0;
-
-	
-
 	
 	List<String[]> lsGeneInfo = new ArrayList<String[]>();
 	/**
@@ -86,9 +83,8 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	boolean isSensitive = false;
 	
 	String scriptContent;
-
 	TitleFormatNBC titlePvalueFdr = TitleFormatNBC.FDR;
-	
+		
 	public DiffExpAbs() {
 		setRworkspace();
 		setOutScriptPath();
@@ -224,6 +220,27 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	public List<String> getResultFileName() {
 		return lsOutFile;
 	}
+	
+	public void generateGeneAndScript() {
+		if (calculate) {
+			return;
+		}
+		calculate = true;
+		//清空文件
+		for (String fileName : mapOutFileName2Compare.keySet()) {
+			FileOperate.DeleteFileFolder(fileName);
+		}
+		writeToGeneFile();
+		setMapSample_2_time2value();
+		scriptContent = generateScript();
+	}
+	
+	public void runAndModifyResult() {
+		run();
+		modifyResult();
+		lsOutFile = plotDifParams();
+	}
+	
 	/** 计算差异 */
 	public void calculateResult() {
 		if (calculate) {
@@ -242,6 +259,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 //		clean();
 		lsOutFile = plotDifParams();
 	}
+	
 	/**
 	 * 将输入的文件重整理成所需要的txt格式写入文本
 	 */
@@ -417,8 +435,14 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	
 	/** 删除中间文件 */
 	public void clean() {
-//		FileOperate.DeleteFileFolder(outScript);
+		FileOperate.DeleteFileFolder(outScript);
 		FileOperate.DeleteFileFolder(fileNameRawdata);
+	}
+	
+	/** 将中间文件拷贝到指定文件夹，文件夹必须存在 */
+	public void copyTmpFileToPath(String path) {
+		FileOperate.copyFile(outScript, FileOperate.addSep(path) + FileOperate.getFileName(outScript), true);
+		FileOperate.copyFile(fileNameRawdata, FileOperate.addSep(path) + FileOperate.getFileName(fileNameRawdata), true);		
 	}
 	
 	/**
@@ -494,7 +518,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		return diffExpInt;
 	}
 
-	/** 务必在run完之后调用 */
+	/** 调用{@link #generateGeneAndScript()}后可以使用 */
 	public List<String> getCmdExeStr() {
 		List<String> lsScript = new ArrayList<>();
 		for (String string : scriptContent.split("\n")) {

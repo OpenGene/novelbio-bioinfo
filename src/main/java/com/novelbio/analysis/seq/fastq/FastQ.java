@@ -47,7 +47,9 @@ public class FastQ {
 	public FastQ(String fastqFile) {
 		this(fastqFile, false);
 	}
-
+	public FastQReader getFastQRead() {
+		return fastQRead;
+	}
 	public FastQ(String fastqFile, boolean createNew) {
 		if (createNew) {
 			fastQwrite = new FastQwriter(fastqFile);

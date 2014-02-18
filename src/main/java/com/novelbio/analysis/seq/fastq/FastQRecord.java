@@ -2,6 +2,7 @@ package com.novelbio.analysis.seq.fastq;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -13,7 +14,7 @@ import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 public class FastQRecord implements Cloneable {
-	private static Logger logger = Logger.getLogger(FastQRecord.class);
+	private static final Logger logger = Logger.getLogger(FastQRecord.class);
 	/** 万一fastq没有名字，就给它随机加个名字 */
 	static String SEQNAME = "Novelbio";
 	static long i = 0;
@@ -21,15 +22,13 @@ public class FastQRecord implements Cloneable {
 	/** fastQ里面asc||码的指标与个数 */
 	HashMap<Integer, Integer> mapFastQFilter;
 	
-	/** 读入的文本，仅仅用于初始化 */
-	String fastqStringReadIn;
-	
 	SeqFasta seqFasta = new SeqFasta();
 	protected int fastqOffset = FastQ.FASTQ_SANGER_OFFSET;
 	protected String seqQuality = "";
 	
 	/** 如果过滤出错，就要用这个重新设定quality，全部设置为f */
 	boolean modifyQuality = false;
+	String[] fastqInfo;
 	
 	public FastQRecord() {
 		seqFasta = new SeqFasta();
@@ -45,9 +44,39 @@ public class FastQRecord implements Cloneable {
 	/** 读入fastq文件但根据需要进行初始化
 	 * 用在fastq过滤的时候，可以先不初始化，然后在多线程的时候进行初始化
 	 *  */
-	protected FastQRecord(String fastqlines, int fastqOffset, boolean initial) {
-		fastqStringReadIn = fastqlines;
+	protected FastQRecord(List<String> lsFqInfo, int fastqOffset, boolean initial) {
 		this.fastqOffset = fastqOffset;
+		fastqInfo = new String[4];
+		int i = 0;
+		for (String string : lsFqInfo) {
+			fastqInfo[i++] = string;
+		}
+		if (i != 4) {
+			throw new ExceptionFastq("fastq format error");
+		}
+		if (initial) {
+			initialReadRecord();
+		}
+	}
+	/** 读入fastq文件但根据需要进行初始化
+	 * 用在fastq过滤的时候，可以先不初始化，然后在多线程的时候进行初始化
+	 *  */
+	protected FastQRecord(String[] ss, int fastqOffset, boolean initial) {
+		this.fastqOffset = fastqOffset;
+		fastqInfo = ss;
+		if (initial) {
+			initialReadRecord();
+		}
+	}
+	/** 读入fastq文件但根据需要进行初始化
+	 * 用在fastq过滤的时候，可以先不初始化，然后在多线程的时候进行初始化
+	 *  */
+	protected FastQRecord(String fastqlines, int fastqOffset, boolean initial) {
+		this.fastqOffset = fastqOffset;
+		fastqInfo = fastqlines.split(TxtReadandWrite.ENTER_LINUX);
+		if (fastqInfo.length == 1) {
+			fastqInfo = fastqlines.split(TxtReadandWrite.ENTER_WINDOWS);
+		}
 		if (initial) {
 			initialReadRecord();
 		}
@@ -57,27 +86,22 @@ public class FastQRecord implements Cloneable {
 		if (seqFasta.getSeqName() != null) {
 			return;
 		}
-		String[] ss = fastqStringReadIn.split(TxtReadandWrite.ENTER_LINUX);
-		if (ss.length == 1) {
-			ss = fastqStringReadIn.split(TxtReadandWrite.ENTER_WINDOWS);
-		}
-		if (ss.length != 4 || !ss[2].equals("+")) {
+		if (fastqInfo.length != 4 || !fastqInfo[2].equals("+")) {
 			throw new ExceptionFastq("fastq format error");
 		}
-		String seqName = ss[0].substring(1).trim();
+		String seqName = fastqInfo[0].substring(1).trim();
 		if (seqName == null || seqName.equals("")) {
 			seqName = SEQNAME + i;
 			i ++;
 		}
 		seqFasta.setName(seqName);
-		seqFasta.setSeq(ss[1]);
-		if (ss[1].length() == 0) {
+		seqFasta.setSeq(fastqInfo[1]);
+		if (fastqInfo[1].length() == 0) {
 			setFastaQuality("");
 		} else {
-			setFastaQuality(ss[3]);
+			setFastaQuality(fastqInfo[3]);
 		}
 	}
-	
 	protected void setMapFastqFilter(HashMap<Integer, Integer> mapFastQFilter) {
 		this.mapFastQFilter = mapFastQFilter;
 	}
