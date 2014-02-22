@@ -69,6 +69,20 @@ public class TaxInfo implements Cloneable {
 		}
 		return this.latin;
 	}
+	/**
+	 * @param speciesName 物种的拉丁名
+	 */
+	public String getLatinName_2Word() {
+		String result = null;
+		String latin = getLatin();
+		String[] names = latin.split(" ");
+		if (names.length > 1) {
+			result = names[0] + " " + names[1];
+		} else {
+			result = latin;
+		}
+		return result;
+	}
 	/** 常用名 */
 	public void setComName(String comName) {
 		if (comName == null) {
@@ -97,6 +111,12 @@ public class TaxInfo implements Cloneable {
 		}
 		return this.chnName;
 	}
+	
+	public void update() {
+		ManageTaxID servTaxID = ManageTaxID.getInstance();
+		servTaxID.update(this);
+	}
+	
 	/**
 	 * 返回常用名对taxID
 	 * @return
@@ -113,10 +133,7 @@ public class TaxInfo implements Cloneable {
 		ManageTaxID servTaxID = new ManageTaxID();
 		return servTaxID.getHashTaxIDName();
 	}
-	public void update() {
-		ManageTaxID servTaxID = ManageTaxID.getInstance();
-		servTaxID.update(this);
-	}
+
 	/**
 	 * 不仅仅比较taxID，全部比较一遍
 	 * 且比较染色体长度

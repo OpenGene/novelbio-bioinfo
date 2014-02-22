@@ -411,7 +411,8 @@ public class SpeciesFile {
 	 */
 	private String[] getMiRNAseq() {
 		String node = "miRNA/";
-		String genomePath = node + getSpeciesPathWithoutRoot();
+		Species species = new Species(taxID);
+		String genomePath = node + species.getNameLatin_2Word().replace(" ", "_") + FileOperate.getSepPath();
 		String miRNAfile = genomePath + "miRNA.fa";
 		String miRNAhairpinFile = genomePath + "miRNAhairpin.fa";
 		if (!FileOperate.isFileExistAndBigThanSize(pathParent + miRNAfile,10) || !FileOperate.isFileExistAndBigThanSize(pathParent + miRNAhairpinFile,10)) {
@@ -419,8 +420,7 @@ public class SpeciesFile {
 			ExtractSmallRNASeq extractSmallRNASeq = new ExtractSmallRNASeq();
 			extractSmallRNASeq.setOutMatureRNA(pathParent + miRNAfile);
 			extractSmallRNASeq.setOutHairpinRNA(pathParent + miRNAhairpinFile);
-			Species species = new Species(taxID);
-			extractSmallRNASeq.setMiRNAdata(PathDetailNBC.getMiRNADat(), species.getNameLatin());
+			extractSmallRNASeq.setMiRNAdata(PathDetailNBC.getMiRNADat(), species.getNameLatin_2Word());
 			extractSmallRNASeq.getSeq();
 		}
 		if (!FileOperate.isFileExistAndBigThanSize(pathParent + miRNAhairpinFile, 0)) {
@@ -726,16 +726,11 @@ public class SpeciesFile {
 		}
 		/**
 		 * @param rnaDataFile
-		 * @param speciesName 物种的拉丁名
+		 * @param speciesName 物种的拉丁名 两个单词
 		 */
 		public void setMiRNAdata(String rnaDataFile, String speciesName) {
 			this.RNAdataFile = rnaDataFile;
-			String[] names = speciesName.split(" ");
-			if (names.length > 1) {
-				this.miRNAdataSpeciesName = names[0] + " " + names[1];
-			} else {
-				this.miRNAdataSpeciesName = speciesName;
-			}
+			this.miRNAdataSpeciesName = speciesName;
 		}
 		/**
 		 * 待提取的NCBI上下载的refseq文件

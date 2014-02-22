@@ -24,6 +24,7 @@ import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.service.servgeneanno.ManageBlastInfo;
 import com.novelbio.database.service.servgeneanno.ManageSpeciesFile;
 import com.novelbio.database.service.servgeneanno.ManageTaxID;
+import com.novelbio.generalConf.PathDetailNBC;
 /**
  * 物种信息，包括名字，以及各个文件所在路径
  * @author zong0jie
@@ -147,7 +148,7 @@ public class Species implements Cloneable {
 		try {
 			taxInfo = servTaxID.queryTaxInfo(taxID);
 		} catch (Exception e) {
-			logger.error("数据库没连上");
+			logger.error("cannot connect to database");
 			e.printStackTrace();
 			return;
 		}
@@ -174,8 +175,15 @@ public class Species implements Cloneable {
 		}
 		return taxInfo.getComName();
 	}
-	/** 常用名，没有就返回taxID */
+	/** 拉丁名，没有就返回taxID */
 	public String getNameLatin() {
+		if (taxInfo == null) {
+			return taxID + "";
+		}
+		return taxInfo.getLatin();
+	}
+	/** 拉丁名，两个单词的，不显示种系名，没有就返回taxID */
+	public String getNameLatin_2Word() {
 		if (taxInfo == null) {
 			return taxID + "";
 		}
@@ -288,12 +296,25 @@ public class Species implements Cloneable {
 	}
 	/** 获得本物种指定version的miRNA前体序列，不存在则返回null */
 	public String getMiRNAhairpinFile() {
-		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
+		SpeciesFile speciesFile = null;
+		if ( version == null || mapVersion2Species == null || !mapVersion2Species.containsKey(version.toLowerCase())) {
+			String parentPath = FileOperate.getParentPathName(FileOperate.getParentPathName(PathDetailNBC.getSpeciesFile()));
+			speciesFile = new SpeciesFile(parentPath);
+			speciesFile.setTaxID(taxID);
+		} else {
+			speciesFile = mapVersion2Species.get(version.toLowerCase());
+		}
 		return speciesFile.getMiRNAhairpinFile();
 	}
 	/** 获得本物种指定version的miRNA序列，不存在则返回null */
 	public String getMiRNAmatureFile() {
-		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
+		SpeciesFile speciesFile = null;
+		if (mapVersion2Species == null || !mapVersion2Species.containsKey(version.toLowerCase())) {
+			String parentPath = FileOperate.getParentPathName(FileOperate.getParentPathName(PathDetailNBC.getSpeciesFile()));
+			speciesFile = new SpeciesFile(parentPath);
+		} else {
+			speciesFile = mapVersion2Species.get(version.toLowerCase());
+		}
 		return speciesFile.getMiRNAmatureFile();
 	}
 	/**

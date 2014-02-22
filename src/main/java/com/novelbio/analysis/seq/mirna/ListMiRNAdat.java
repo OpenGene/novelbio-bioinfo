@@ -28,27 +28,10 @@ public class ListMiRNAdat extends MiRNAList {
 	 * 为miRNA.dat中的物种名
 	 * 设定物种，默认为人类：HSA
 	 * 具体要检查RNA.data文件
-	 * @param species
+	 * @param species 输入的物种名是<b>两个单词的拉丁名</b>，也就是说不考虑亚种，譬如不考虑水道indica和japanica的区别
 	 */
 	public void setSpecies(Species species) {
-		String[] names = species.getNameLatin().split(" ");
-		if (names.length > 1) {
-			speciesLatinName = names[0] + " " + names[1];
-		} else {
-			speciesLatinName = species.getNameLatin();
-		}
-	}
-	
-	/**
-	 * @param speciesLatinName species 里面的拉丁名，会自动截取前两位
-	 */
-	public void setSpeciesLatinName(String speciesLatinName) {
-		String[] names = speciesLatinName.split(" ");;
-		if (names.length > 1) {
-			this.speciesLatinName = names[0] + " " + names[1];
-		} else {
-			this.speciesLatinName = speciesLatinName;
-		}
+		speciesLatinName = species.getNameLatin_2Word();
 	}
 	
 	/**
