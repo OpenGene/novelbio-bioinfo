@@ -22,7 +22,7 @@ import com.novelbio.database.domain.geneanno.TaxInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.service.servgeneanno.ManageBlastInfo;
-import com.novelbio.database.service.servgeneanno.ManageSpeciesFile;
+import com.novelbio.database.service.servgeneanno.ManageSpecies;
 import com.novelbio.database.service.servgeneanno.ManageTaxID;
 import com.novelbio.generalConf.PathDetailNBC;
 /**
@@ -31,12 +31,6 @@ import com.novelbio.generalConf.PathDetailNBC;
  */
 public class Species implements Cloneable {
 	private static Logger logger = Logger.getLogger(Species.class);
-	/** 全部物种 */
-	public static final int ALL_SPECIES = 10;
-	/** 有Kegg缩写名的物种 */
-	public static final int KEGGNAME_SPECIES = 20;
-	/** 有数据库序列等信息的物种 */
-	public static final int SEQINFO_SPECIES = 30;
 	
 	int taxID = 0;
 	TaxInfo taxInfo = new TaxInfo();
@@ -152,7 +146,7 @@ public class Species implements Cloneable {
 			e.printStackTrace();
 			return;
 		}
-		List<SpeciesFile> lsSpeciesFile = ManageSpeciesFile.getInstance().queryLsSpeciesFile(taxID);
+		List<SpeciesFile> lsSpeciesFile = ManageSpecies.getInstance().queryLsSpeciesFile(taxID);
 		for (SpeciesFile speciesFile : lsSpeciesFile) {
 			lsVersion.add(new String[]{speciesFile.getVersion(), speciesFile.getPublishYear() + ""});
 			mapVersion2Species.put(speciesFile.getVersion().toLowerCase(), speciesFile);
@@ -471,7 +465,7 @@ public class Species implements Cloneable {
 	 * @param speciesType 根据不同的
 	 * @return
 	 */
-	public static Map<String, Species> getSpeciesName2Species(int speciesType) {
+	public static Map<String, Species> getSpeciesName2Species(EnumSpeciesType speciesType) {
 		return getSpeciesName2Species(speciesType, false, null);
 	}
 	/**
@@ -480,7 +474,7 @@ public class Species implements Cloneable {
 	 * @param getBlastSpecies 是否获取blast中的临时物种信息
 	 * @return
 	 */
-	public static Map<String, Species> getSpeciesName2Species(int speciesType, boolean getBlastSpecies, String usrid) {
+	public static Map<String, Species> getSpeciesName2Species(EnumSpeciesType speciesType, boolean getBlastSpecies, String usrid) {
 		HashMap<String, Species> mapName2Species = new LinkedHashMap<String, Species>();
 		Species speciesUnKnown = new Species();
 		mapName2Species.put("UnKnown Species", speciesUnKnown);
@@ -488,7 +482,7 @@ public class Species implements Cloneable {
 		TreeMap<String, Species> treemapName2Species = new TreeMap<String, Species>();
 		
 		ManageTaxID servTaxID = new ManageTaxID();
-		ManageSpeciesFile servSpeciesFile = ManageSpeciesFile.getInstance();
+		ManageSpecies servSpeciesFile = ManageSpecies.getInstance();
 		List<Integer> lsTaxID = new ArrayList<Integer>();
 		try {
 			lsTaxID = servTaxID.getLsAllTaxID();
@@ -500,9 +494,9 @@ public class Species implements Cloneable {
 			if (species.getCommonName().equals("")) {
 				continue;
 			}
-			if (speciesType == KEGGNAME_SPECIES && species.getAbbrName().equals("")) {
+			if (speciesType == EnumSpeciesType.KeggName && species.getAbbrName().equals("")) {
 				continue;
-			} else if (speciesType == SEQINFO_SPECIES) {
+			} else if (speciesType == EnumSpeciesType.Genome) {
 				List<SpeciesFile> lsSpeciesFiles = servSpeciesFile.queryLsSpeciesFile(taxID);
 				if (lsSpeciesFiles.size() == 0) {
 					continue;
@@ -513,7 +507,7 @@ public class Species implements Cloneable {
 		}
 		
 		/** 添加 物种--序列表 中特有的物种 */
-		if (speciesType == SEQINFO_SPECIES) {
+		if (speciesType == EnumSpeciesType.Genome) {
 			for (Integer integer : servSpeciesFile.getLsTaxID()) {
 				if (setTaxID.contains(integer)) {
 					continue;
@@ -590,6 +584,8 @@ public class Species implements Cloneable {
 		for (int i = 1; i < lsInfo.size()-1; i++) {
 			TaxInfo taxInfo = new TaxInfo();
 			String[] info = lsInfo.get(i);
+			info = ArrayOperate.copyArray(info, 6);
+			
 			int m = hashName2ColNum.get("taxid");
 			taxInfo.setTaxID(Integer.parseInt(info[m]));
 			
@@ -604,8 +600,22 @@ public class Species implements Cloneable {
 			
 			m = hashName2ColNum.get("abbreviation");
 			taxInfo.setAbbr(info[m]);
+			
+			m = hashName2ColNum.get("ishavemirna");
+			taxInfo.setHaveMiRNA(info[5] != null && info[5].equalsIgnoreCase("true"));
 			//升级
 			taxInfo.update();
 		}
+	}
+	
+	public static enum EnumSpeciesType {
+		/** 全体物种 */
+		All,
+		/** 有Kegg缩写的 */
+		KeggName,
+		/** 有基因组序列的 */
+		Genome,
+		/** 有miRNA的*/
+		miRNA
 	}
 }

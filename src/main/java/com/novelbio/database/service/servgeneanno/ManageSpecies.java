@@ -19,8 +19,8 @@ import com.novelbio.database.mongorepo.geneanno.RepoSpeciesFile;
 import com.novelbio.database.service.SpringFactory;
 import com.novelbio.generalConf.PathDetailNBC;
 
-public class ManageSpeciesFile {
-	private static final Logger logger = Logger.getLogger(ManageSpeciesFile.class);
+public class ManageSpecies {
+	private static final Logger logger = Logger.getLogger(ManageSpecies.class);
 	@Autowired
 	private RepoSpeciesFile repoSpeciesFile;
 	/**
@@ -28,7 +28,7 @@ public class ManageSpeciesFile {
 	 */
 	static LinkedHashMap<Integer, LinkedHashMap<String, SpeciesFile>> mapTaxID_2_version2SpeciesFile;
 	
-	private ManageSpeciesFile() {
+	private ManageSpecies() {
 		if (mapTaxID_2_version2SpeciesFile == null) {
 			 mapTaxID_2_version2SpeciesFile = new LinkedHashMap<>();
 			 readDBinfo();
@@ -45,7 +45,7 @@ public class ManageSpeciesFile {
 		}
 	}
 		
-	public void readSpeciesFile(String speciesFileInput) {
+	private void readSpeciesFile(String speciesFileInput) {
 		if (!FileOperate.isFileExistAndBigThanSize(speciesFileInput, 0)) return;
 		
 		String parentPath = FileOperate.getParentPathName(FileOperate.getParentPathName(speciesFileInput));
@@ -192,11 +192,11 @@ public class ManageSpeciesFile {
 	
 	
 	static class ManageSpeciesFileHold {
-		private static ManageSpeciesFile manageSpeciesFile = new ManageSpeciesFile();
+		private static ManageSpecies manageSpeciesFile = new ManageSpecies();
 	}
 	
 	
-	public static ManageSpeciesFile getInstance() {
+	public static ManageSpecies getInstance() {
 		return ManageSpeciesFileHold.manageSpeciesFile;
 	}
 }

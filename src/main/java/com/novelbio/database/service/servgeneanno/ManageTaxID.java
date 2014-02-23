@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.novelbio.database.domain.geneanno.TaxInfo;
 import com.novelbio.database.mongorepo.geneanno.RepoTaxInfo;
 import com.novelbio.database.service.SpringFactory;
-import com.novelbio.database.service.servgeneanno.ManageSpeciesFile.ManageSpeciesFileHold;
+import com.novelbio.database.service.servgeneanno.ManageSpecies.ManageSpeciesFileHold;
 
 public class ManageTaxID {
 	static double[] lock = new double[0];

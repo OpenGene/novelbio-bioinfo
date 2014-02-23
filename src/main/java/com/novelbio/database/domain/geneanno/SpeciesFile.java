@@ -16,6 +16,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
@@ -34,7 +35,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.database.service.servgeneanno.ManageSpeciesFile;
+import com.novelbio.database.service.servgeneanno.ManageSpecies;
 import com.novelbio.generalConf.PathDetailNBC;
 
 /**
@@ -51,6 +52,7 @@ public class SpeciesFile {
 	private static final Logger logger = Logger.getLogger(SpeciesFile.class);
 	@Id
 	String id;
+	@Indexed
 	int taxID = 0;
 	/** 文件版本 */
 	String version = "";
@@ -58,42 +60,48 @@ public class SpeciesFile {
 	int publishYear = 0;
 	/** 染色体的单文件序列 */
 	String chromSeq = "";
-	/** 保存不同mapping软件所对应的索引 */
-	Map<SoftWare, String> mapSoftware2IndexChrom = new HashMap<>();
-	
 	/** 相对路径 gff的repeat文件，从ucsc下载 */
 	String gffRepeatFile = "";
 	/** 相对路径 refseq文件，全体Iso */
 	String refseqFileAllIso;
 	/** 相对路径 refseq文件，一个gene一个Iso */
 	String refseqFileOneIso;
+	/** refseq中的NCRNA文件 */
+	String refseqNCfile = "";
+	
+	/**
+	 * key: DBname, 为小写<br>
+	 * value: 0, GffType 1:GffFile
+	 */
+	Map<String, String[]> mapDB2GffTypeAndFile = new LinkedHashMap<>();
+	/** 用来将小写的DB转化为正常的DB，使得getDB获得的字符应该是正常的DB */
+	Map<String, String> mapGffDBLowCase2DBNormal = new LinkedHashMap<>();
+	/** 是否有对应的miRNA序列 */
+	boolean isHaveMiRNA;
+	
+	/** 保存不同mapping软件所对应的索引 */
+	@Transient
+	Map<SoftWare, String> mapSoftware2IndexChrom = new HashMap<>();
 	/** 相对路径 ref protein 文件，全体iso */
+	@Transient
 	String refProFileAllIso;
 	/** 相对路径 ref protein 文件，一个gene一个Iso */
+	@Transient
 	String refProFileOneIso;
 	
 	/** 相对路径 保存不同mapping软件所对应的RefSeq索引
 	 * 主要是全体Iso的RefSeq
 	 *  */
+	@Transient
 	Map<SoftWare, String> mapSoftware2IndexRefAllIso = new HashMap<>();
 	/** 相对路径 保存不同mapping软件所对应的索引
-	 * 主要是全体gene，每个基因一个iso
-	 *  */
+	 * 主要是全体gene，每个基因一个iso */
+	@Transient
 	Map<SoftWare, String> mapSoftware2IndexRefOneIso = new HashMap<>();
-	/** refseq中的NCRNA文件 */
-	String refseqNCfile = "";
 	/** key: chrID，为小写    value: chrLen */
+	@Transient
 	private Map<String, Long> mapChrID2ChrLen = new LinkedHashMap<String, Long>();
 
-	/**
-	 * key: DBname, 为小写<br>
-	 * value: 0, GffType 1:GffFile
-	 */
-//	Map<String, String[]> mapDB2GffTypeAndFile = new TreeMap<String, String[]>(new CompGffDB());
-	Map<String, String[]> mapDB2GffTypeAndFile = new LinkedHashMap<>();
-	/** 用来将小写的DB转化为正常的DB，使得getDB获得的字符应该是正常的DB */
-//	Map<String, String> mapGffDBLowCase2DBNormal = new TreeMap<String, String>(new CompGffDB());
-	Map<String, String> mapGffDBLowCase2DBNormal = new LinkedHashMap<>();
 	
 	/** 相对路径，类似 /media/hdfs/nbCloud/public/nbcplatform/ ，注意不要把genome写进去<br>
 	 * 然后以后把speciesFile写在 /media/hdfs/nbCloud/public/nbcplatform/这个文件夹下就行
@@ -127,6 +135,12 @@ public class SpeciesFile {
 	public String getVersion() {
 		return version;
 	}
+	public void setHaveMiRNA(boolean isHaveMiRNA) {
+		this.isHaveMiRNA = isHaveMiRNA;
+	}
+	public boolean isHaveMiRNA() {
+		return isHaveMiRNA;
+	}
 	/**
 	 * @return
 	 * key: chrID 小写
@@ -140,12 +154,15 @@ public class SpeciesFile {
 		}
 		return mapChrID2ChrLen;
 	}
-
+	
 	public void setChromSeq(String chromSeq) {
 		this.chromSeq = chromSeq;
 	}
 	/** 获得总体的文件 */
 	public String getChromSeqFile() {
+		if (chromSeq == null || chromSeq.equals("")) {
+			return null;
+		}
 		String chromeSeq = pathParent + chromSeq;
 		if (FileOperate.isFileExistAndBigThanSize(chromeSeq, 0)) {
 			SamIndexRefsequence samIndexRefsequence = new SamIndexRefsequence();
@@ -505,11 +522,17 @@ public class SpeciesFile {
 		if (!isProtein) {
 			if (isAllIso) {
 				if (refseqFileAllIso == null || refseqFileAllIso.trim().equals("")) {
+					if (getChromSeqFile() == null) {
+						return null;
+					}
 					refseqFileAllIso = getSpeciesPath() + "refrna/rnaAllIso_" + version + ".fa";
 				}
 				refseq = refseqFileAllIso;
 			} else {
 				if (refseqFileOneIso == null || refseqFileOneIso.trim().equals("")) {
+					if (getChromSeqFile() == null) {
+						return null;
+					}
 					refseqFileOneIso = getSpeciesPath() + "refrna/rnaOneIso_" + version + ".fa";
 				}
 				refseq = refseqFileOneIso;
@@ -517,11 +540,17 @@ public class SpeciesFile {
 		} else {
 			if (isAllIso) {
 				if (refProFileAllIso == null || refProFileAllIso.trim().equals("")) {
+					if (getChromSeqFile() == null) {
+						return null;
+					}
 					refProFileAllIso = getSpeciesPath() + "refprotein/proteinAllIso_" + version + ".fa";
 				}
 				refseq = refProFileAllIso;
 			} else {
 				if (refProFileOneIso == null || refProFileOneIso.trim().equals("")) {
+					if (getChromSeqFile() == null) {
+						return null;
+					}
 					refProFileOneIso = getSpeciesPath() + "refprotein/proteinOneIso_" + version + ".fa";
 				}
 				refseq = refProFileOneIso;
@@ -535,6 +564,9 @@ public class SpeciesFile {
 		this.refseqNCfile = refseqNCfile;
 	}
 	public String getRefseqNCfile() {
+		if (refseqNCfile == null || refseqNCfile.equals("")) {
+			return null;
+		}
 		return pathParent + refseqNCfile;
 	}
 	
@@ -569,7 +601,7 @@ public class SpeciesFile {
 	}
 	
 	public void update() {
-		ManageSpeciesFile.getInstance().update(this);
+		ManageSpecies.getInstance().update(this);
 	}
 	
 	/**

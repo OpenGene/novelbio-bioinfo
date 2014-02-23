@@ -19,14 +19,16 @@ public class TaxInfo implements Cloneable {
 	private int taxID;
 	/** KEGG上的缩写 */
 	@Indexed
-	private String abbr;//缩写
+	private String abbr;
 	/** 拉丁名 */
-	private String latin;//常用名
+	private String latin;
 	/** 常用名 */
-	private String comName;//常用名
+	private String comName;
 	/** 中文名 */
 	@Indexed
-	private String chnName;//中文名
+	private String chnName;
+	/** 是否有miRNA */
+	private boolean isHaveMiRNA;
 	/**
 	 * NCBI的物种ID
 	 * @param taxID
@@ -111,7 +113,12 @@ public class TaxInfo implements Cloneable {
 		}
 		return this.chnName;
 	}
-	
+	public void setHaveMiRNA(boolean isHaveMiRNA) {
+		this.isHaveMiRNA = isHaveMiRNA;
+	}
+	public boolean isHaveMiRNA() {
+		return isHaveMiRNA;
+	}
 	public void update() {
 		ManageTaxID servTaxID = ManageTaxID.getInstance();
 		servTaxID.update(this);

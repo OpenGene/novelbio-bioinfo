@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.domain.geneanno.TaxInfo;
+import com.novelbio.database.model.species.Species;
 /**
  * 将待升级的文件按照行读取的abstract类，因为很多文件都是一行一个信息，
  * 那么就可以按照行将文件信息导入数据库
@@ -98,6 +99,7 @@ abstract class ImportPerLine {
 		if (ImportPerLine.taxIDfile.equals(taxIDfile)) {
 			return;
 		}
+		Species.updateTaxInfo(taxIDfile);
 		setTaxID = new HashSet<Integer>();
 		TxtReadandWrite txtTaxID=new TxtReadandWrite(taxIDfile, false);
 		for (String string : txtTaxID.readlines()) {
@@ -108,14 +110,6 @@ abstract class ImportPerLine {
 				continue;
 			}
 			String[] ss=string.split("\t");
-			ss = ArrayOperate.copyArray(ss, 5);
-			TaxInfo taxInfo = new TaxInfo();
-			taxInfo.setTaxID(Integer.parseInt(ss[0]));
-			taxInfo.setChnName(ss[1]);
-			taxInfo.setLatin(ss[2]);
-			taxInfo.setComName(ss[3]);
-			taxInfo.setAbbr(ss[4]);
-			taxInfo.update();
 			setTaxID.add(Integer.parseInt(ss[0]));
 		}
 		txtTaxID.close();
