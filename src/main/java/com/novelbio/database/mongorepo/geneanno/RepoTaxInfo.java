@@ -15,4 +15,5 @@ public interface RepoTaxInfo extends PagingAndSortingRepository<TaxInfo, Integer
 	@Query(value="{ 'abbr' : ?0 }")
 	List<TaxInfo> findByAbbr(String abbr);
 
+	List<TaxInfo> findAll();
 }

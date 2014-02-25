@@ -123,15 +123,7 @@ public class TaxInfo implements Cloneable {
 		ManageTaxID servTaxID = ManageTaxID.getInstance();
 		servTaxID.update(this);
 	}
-	
-	/**
-	 * 返回常用名对taxID
-	 * @return
-	 */
-	public static HashMap<String, Integer> getHashNameTaxID(boolean allID) {
-		ManageTaxID servTaxID = new ManageTaxID();
-		return servTaxID.getSpeciesNameTaxID(allID);
-	}
+
 	/**
 	 * 返回taxID对常用名
 	 * @return
@@ -162,6 +154,8 @@ public class TaxInfo implements Cloneable {
 		getLatin().equals(otherObj.getLatin())
 		&&
 		getTaxID() == otherObj.getTaxID()
+		&&
+		isHaveMiRNA() == otherObj.isHaveMiRNA()
 		)
 		{
 			return true;

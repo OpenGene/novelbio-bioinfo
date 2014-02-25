@@ -26,12 +26,15 @@ public class CtrlMiRNApipeline implements IntCmdSoft {
 	GeneExpTable expMirMature = new GeneExpTable(TitleFormatNBC.miRNAName);
 	SamMapRate samMapMiRNARate = new SamMapRate();
 	
-	CtrlMiRNAfastq ctrlMiRNAfastq;
+	CtrlMiRNAfastq ctrlMiRNAfastq = new CtrlMiRNAfastq();
 	CtrlMiRNApredict ctrlMiRNApredict = new CtrlMiRNApredict();
 	boolean mapMirna = true;
 	boolean predictMirna = true;
 	
+	/** 比对到哪些物种上去 */
 	List<Species> lsSpeciesBlastTo;
+	boolean isParallelMapping = false;
+
 	String outPath;
 	String outPathTmpMapping;
 	String outPathStatistics;
@@ -42,7 +45,7 @@ public class CtrlMiRNApipeline implements IntCmdSoft {
 	Map<String, String> mapPrefix2Fastq;
 
 	boolean isUseOldResult = true;
-	
+
 	List<String> lsCmd = new ArrayList<>();
 	
 	boolean mapToGenome = false;
@@ -71,6 +74,15 @@ public class CtrlMiRNApipeline implements IntCmdSoft {
 	public void setMapToGenome(boolean mapToGenome) {
 		this.mapToGenome = mapToGenome;
 	}
+	/**
+	 * 是否平行mapping
+	 * @param isParallelMapping
+	 * true: 将输入的reads分别mapping至指定的物种上
+	 * false: 将输入的reads首先mapping值第一个物种，mapping不上的mapping至第二个物种上，依次mapping到最后的物种
+	 */
+	public void setParallelMapping(boolean isParallelMapping) {
+		this.isParallelMapping = isParallelMapping;
+	}
 	/** 遇到已经存在的结果文件，是否跳过<br>
 	 * true：跳过该步骤<br>
 	 * false：重做该步骤
@@ -86,7 +98,9 @@ public class CtrlMiRNApipeline implements IntCmdSoft {
 	public void setMapPrefix2AlignFile(Map<String, AlignSeq> mapPrefix2AlignFile) {
 		this.mapPrefix2AlignFile = mapPrefix2AlignFile;
 	}
-	/** 是否比对到本物种上 */
+	/** 是否比对到本物种上
+	 * @param mapMirna 默认为true
+	 */
 	public void setMapMirna(boolean mapMirna) {
 		this.mapMirna = mapMirna;
 	}
@@ -118,7 +132,6 @@ public class CtrlMiRNApipeline implements IntCmdSoft {
 	public void run() {
 		lsCmd.clear();
 		GffChrAbs gffChrAbs = new GffChrAbs(species);
-		ctrlMiRNAfastq = new CtrlMiRNAfastq();
 		ctrlMiRNAfastq.setMiRNAexp(expMirPre, expMirMature);
 		ctrlMiRNAfastq.setThreadNum(threadNum);
 		if (mapMirna) {
@@ -172,6 +185,9 @@ public class CtrlMiRNApipeline implements IntCmdSoft {
 	}
 	/** 从头预测 */
 	private void runPredict(Map<String, AlignSeq> mapBedFile2Prefix, GffChrAbs gffChrAbs, Species species) {
+		if (species.getTaxID() == 0) {
+			return;
+		}
 		ctrlMiRNApredict.setIsUseOldResult(isUseOldResult);
 		ctrlMiRNApredict.setGffChrAbs(gffChrAbs);
 		ctrlMiRNApredict.setSpecies(species);
@@ -191,7 +207,8 @@ public class CtrlMiRNApipeline implements IntCmdSoft {
 		mirSpeciesPipline.setIsUseOldResult(isUseOldResult);
 		mirSpeciesPipline.setMapPrefix2Fastq(mapPrefix2Fastq);
 		mirSpeciesPipline.setExpMir(expMirPre, expMirMature);
-		mirSpeciesPipline.setLsSpecies(lsSpeciesBlastTo); 
+		mirSpeciesPipline.setLsSpecies(lsSpeciesBlastTo);
+		mirSpeciesPipline.setParallelMapping(isParallelMapping);
 		mirSpeciesPipline.setOutPathTmp(outPath, outPathSample, outPathTmpMapping, outPathStatistics);
 		mirSpeciesPipline.setThreadNum(4);
 		mirSpeciesPipline.mappingPipeline(PathDetailNBC.getMiRNADat(), samMapMiRNARate);

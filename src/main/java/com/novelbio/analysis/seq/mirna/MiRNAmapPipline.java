@@ -247,6 +247,7 @@ public class MiRNAmapPipline implements IntCmdSoft {
 	}
 	
 	/**
+	 * @param lsCmd 将本次mapping产生的cmd命令写入该list中
 	 * @param isUseOldResult 如果结果文件存在，是否重跑 ture表示不重跑
 	 * @param samFileStatistics
 	 * @param exePath
@@ -256,6 +257,7 @@ public class MiRNAmapPipline implements IntCmdSoft {
 	 * @param samFileName 输出sam文件名
 	 * @param unMappedFq 没有mapping上的文件输出为fq
 	 * @return
+	 * 
 	 */
 	public static String mappingBowtie2(List<String> lsCmd, boolean isUseOldResult, SamFileStatistics samFileStatistics, String exePath, 
 			int threadNum, String fqFile, String chrFile, String samFileName, String unMappedFq) {

@@ -24,7 +24,6 @@ import com.novelbio.generalConf.TitleFormatNBC;
 import freemarker.template.Configuration;
 
 public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
-	
 	// 满足条件的差异基因的最少数量
 //	public static final int QUANUM = 1000;
 	public static final double THRESHOLD1 = 0.01;
@@ -49,6 +48,11 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	
 	/** 做差异基因的时候各个样本表达量的值之和不能小于等于该数值 */
 	double minSampleSumNum = 0;
+	/** 做差异基因的时候每个样本表达量的值不能都小于等于该数值
+	 * 意思如果为 2, 3, 2, 1.3, 3
+	 * 则当值设定为3时，上述基因删除 
+	 */
+	double minSampleSepNum = 0;
 	
 	List<String[]> lsGeneInfo = new ArrayList<String[]>();
 	/**
@@ -272,12 +276,19 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	
 		for (String[] info : lsAnalysisGeneInfo) {
 			double sum = 0;
+			boolean biggerThanMinSampleSep = false;
 			for (int i = 1; i < info.length; i++) {
-				sum += Double.parseDouble(info[i]);
+				double num = Double.parseDouble(info[i]);
+				if (num > minSampleSepNum) {
+					biggerThanMinSampleSep = true;
+				}
+				sum += num;
 			}
-			if (minSampleSumNum < 0 || sum > minSampleSumNum) {
+			if ((minSampleSumNum < 0 || sum > minSampleSumNum)
+					&& (minSampleSepNum < 0 || biggerThanMinSampleSep) 
+				) {
 				txtWrite.writefileln(info);
-			}	
+			}
 		}
 		txtWrite.close();
 	}

@@ -19,6 +19,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.SpeciesFile;
 import com.novelbio.database.domain.geneanno.TaxInfo;
+import com.novelbio.database.domain.geneanno.SpeciesFile.ExtractSmallRNASeq;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.service.servgeneanno.ManageBlastInfo;
@@ -55,16 +56,28 @@ public class Species implements Cloneable {
 		if (!isOK) return;
 		
 		this.taxID = taxID;
-		querySpecies();
+		querySpecies(false);
 		if (lsVersion.size() > 0) {
 			this.version = lsVersion.get(0)[0];
 		}
 	}
+	
+	public Species(TaxInfo taxInfo) {
+		if (!isOK) return;
+		
+		this.taxID = taxInfo.getTaxID();
+		this.taxInfo = taxInfo.clone();
+		querySpecies(true);
+		if (lsVersion.size() > 0) {
+			this.version = lsVersion.get(0)[0];
+		}
+	}
+	
 	public Species(int taxID, String version) {
 		if (!isOK) return;//TODO
 		
 		this.taxID = taxID;
-		querySpecies();
+		querySpecies(false);
 		setVersion(version);
 	}
 	public int getTaxID() {
@@ -81,7 +94,7 @@ public class Species implements Cloneable {
 			return;
 		}
 		this.taxID = taxID;
-		querySpecies();
+		querySpecies(false);
 		if (lsVersion.size() > 0) {
 			this.version = lsVersion.get(0)[0];
 		}
@@ -136,16 +149,19 @@ public class Species implements Cloneable {
 	/**
 	 * 获得该物种的信息
 	 */
-	private void querySpecies() {
+	private void querySpecies(boolean isTaxInfoExist) {
 		lsVersion.clear();
 		mapVersion2Species.clear();
-		try {
-			taxInfo = servTaxID.queryTaxInfo(taxID);
-		} catch (Exception e) {
-			logger.error("cannot connect to database");
-			e.printStackTrace();
-			return;
+		if (!isTaxInfoExist) {
+			try {
+				taxInfo = servTaxID.queryTaxInfo(taxID);
+			} catch (Exception e) {
+				logger.error("cannot connect to database");
+				e.printStackTrace();
+				return;
+			}
 		}
+
 		List<SpeciesFile> lsSpeciesFile = ManageSpecies.getInstance().queryLsSpeciesFile(taxID);
 		for (SpeciesFile speciesFile : lsSpeciesFile) {
 			lsVersion.add(new String[]{speciesFile.getVersion(), speciesFile.getPublishYear() + ""});
@@ -290,27 +306,55 @@ public class Species implements Cloneable {
 	}
 	/** 获得本物种指定version的miRNA前体序列，不存在则返回null */
 	public String getMiRNAhairpinFile() {
-		SpeciesFile speciesFile = null;
-		if ( version == null || mapVersion2Species == null || !mapVersion2Species.containsKey(version.toLowerCase())) {
-			String parentPath = FileOperate.getParentPathName(FileOperate.getParentPathName(PathDetailNBC.getSpeciesFile()));
-			speciesFile = new SpeciesFile(parentPath);
-			speciesFile.setTaxID(taxID);
-		} else {
-			speciesFile = mapVersion2Species.get(version.toLowerCase());
+		if (!taxInfo.isHaveMiRNA()) return null;
+		
+		String[] path = getMiRNAseq();
+		if (path[0] == null) {
+			return null;
 		}
-		return speciesFile.getMiRNAhairpinFile();
+		return path[1];
 	}
+	
 	/** 获得本物种指定version的miRNA序列，不存在则返回null */
 	public String getMiRNAmatureFile() {
-		SpeciesFile speciesFile = null;
-		if (mapVersion2Species == null || !mapVersion2Species.containsKey(version.toLowerCase())) {
-			String parentPath = FileOperate.getParentPathName(FileOperate.getParentPathName(PathDetailNBC.getSpeciesFile()));
-			speciesFile = new SpeciesFile(parentPath);
-		} else {
-			speciesFile = mapVersion2Species.get(version.toLowerCase());
+		if (!taxInfo.isHaveMiRNA()) return null;
+		
+		String[] path = getMiRNAseq();
+		if (path[0] == null) {
+			return null;
 		}
-		return speciesFile.getMiRNAmatureFile();
+		return path[0];
 	}
+	
+	/**
+	 * 返回绝对路径
+	 * @return
+	 * 0: miRNAfile<br>
+	 * 1: miRNAhairpinFile
+	 */
+	private String[] getMiRNAseq() {
+		String pathParent = PathDetailNBC.getGenomePath();
+		String node = "miRNA/";
+		String genomePath = node + getNameLatin_2Word().replace(" ", "_") + FileOperate.getSepPath();
+		String miRNAfile = pathParent + genomePath + "miRNA.fa";
+		String miRNAhairpinFile = pathParent + genomePath + "miRNAhairpin.fa";
+		if (!FileOperate.isFileExistAndBigThanSize(miRNAfile,10) || !FileOperate.isFileExistAndBigThanSize(miRNAhairpinFile,10)) {
+			FileOperate.createFolders(FileOperate.getParentPathName(miRNAfile));
+			ExtractSmallRNASeq extractSmallRNASeq = new ExtractSmallRNASeq();
+			extractSmallRNASeq.setOutMatureRNA(miRNAfile);
+			extractSmallRNASeq.setOutHairpinRNA(miRNAhairpinFile);
+			extractSmallRNASeq.setMiRNAdata(PathDetailNBC.getMiRNADat(), getNameLatin_2Word());
+			extractSmallRNASeq.getSeq();
+		}
+		if (!FileOperate.isFileExistAndBigThanSize(miRNAhairpinFile, 0)) {
+			FileOperate.DeleteFileFolder(miRNAhairpinFile);
+			FileOperate.DeleteFileFolder(miRNAfile);
+			miRNAhairpinFile = null;
+			miRNAfile = null;
+		}
+		return new String[]{miRNAfile, miRNAhairpinFile};
+	}
+	
 	/**
 	 *  获得rfam序列
 	 * @param spciesSpecific 是否只获取当前物种的rfam序列
@@ -483,26 +527,25 @@ public class Species implements Cloneable {
 		
 		ManageTaxID servTaxID = new ManageTaxID();
 		ManageSpecies servSpeciesFile = ManageSpecies.getInstance();
-		List<Integer> lsTaxID = new ArrayList<Integer>();
-		try {
-			lsTaxID = servTaxID.getLsAllTaxID();
-		} catch (Exception e) { }
+		List<TaxInfo> lsTaxID = servTaxID.getLsAllTaxID();
 		
 		Set<Integer> setTaxID = new HashSet<Integer>();
-		for (Integer taxID : lsTaxID) {
-			Species species = new Species(taxID);
+		for (TaxInfo taxInfo : lsTaxID) {
+			Species species = new Species(taxInfo);
 			if (species.getCommonName().equals("")) {
 				continue;
 			}
 			if (speciesType == EnumSpeciesType.KeggName && species.getAbbrName().equals("")) {
 				continue;
 			} else if (speciesType == EnumSpeciesType.Genome) {
-				List<SpeciesFile> lsSpeciesFiles = servSpeciesFile.queryLsSpeciesFile(taxID);
+				List<SpeciesFile> lsSpeciesFiles = servSpeciesFile.queryLsSpeciesFile(taxInfo.getTaxID());
 				if (lsSpeciesFiles.size() == 0) {
 					continue;
 				}
+			} else if (speciesType == EnumSpeciesType.miRNA && !species.taxInfo.isHaveMiRNA()) {
+				continue;
 			}
-			setTaxID.add(taxID);
+			setTaxID.add(taxInfo.getTaxID());
 			treemapName2Species.put(species.getCommonName().toLowerCase(), species);
 		}
 		

@@ -37,8 +37,8 @@ public class TestSamMapReads extends TestCase {
 				if (!samFile.getMapChrIDLowcase2Length().containsKey(gffGeneIsoInfo.getRefIDlowcase().toLowerCase())) {
 					continue;
 				}
-				List<double[]> lsInfoOld = samMapReads.getRangeInfoLsOld(gffGeneIsoInfo.getRefIDlowcase(), gffGeneIsoInfo);
-				List<double[]> lsInfo = samMapReads.getRangeInfoLs(gffGeneIsoInfo.getRefIDlowcase(), gffGeneIsoInfo);
+				List<double[]> lsInfoOld = samMapReads.getRangeInfoLsOld(gffGeneIsoInfo.getRefIDlowcase(), gffGeneIsoInfo.getLsElement());
+				List<double[]> lsInfo = samMapReads.getRangeInfoLs(gffGeneIsoInfo.getRefIDlowcase(), gffGeneIsoInfo.getLsElement());
 				for (int j = 0; j < lsInfo.size(); j++) {
 					double[] tmpInfo = lsInfo.get(j);
 					double[] tmpInfo2 = lsInfoOld.get(j);

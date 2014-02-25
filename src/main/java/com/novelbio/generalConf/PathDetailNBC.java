@@ -36,6 +36,10 @@ public class PathDetailNBC {
 //			}
 //		}
 	}
+	/** 有最后的"/" */
+	public static String getGenomePath() {
+		return properties.getProperty("GenomePath");
+	}
 	
 	/** 内部自动加空格 */
 	public static String getSpeciesFile() {

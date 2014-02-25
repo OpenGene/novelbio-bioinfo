@@ -1,6 +1,5 @@
 package com.novelbio.database.service.servgeneanno;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -10,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.novelbio.database.domain.geneanno.TaxInfo;
 import com.novelbio.database.mongorepo.geneanno.RepoTaxInfo;
 import com.novelbio.database.service.SpringFactory;
-import com.novelbio.database.service.servgeneanno.ManageSpecies.ManageSpeciesFileHold;
 
 public class ManageTaxID {
 	static double[] lock = new double[0];
@@ -18,11 +16,9 @@ public class ManageTaxID {
 	 * 全体物种ID
 	 */
 	static HashMap<String, Integer> hashNameTaxID = new LinkedHashMap<String, Integer>();
-	static ArrayList<Integer> lsAllTaxID = new ArrayList<Integer>();
 	/**
 	 * 仅包含有缩写的物种
 	 */
-	static HashMap<String, Integer> hashNameTaxIDUsual = new LinkedHashMap<String, Integer>();
 	static HashMap<Integer, String> hashTaxIDName = new LinkedHashMap<Integer, String>();
 	static HashMap<Integer, TaxInfo> mapTaxID2TaxInfo = new HashMap<Integer, TaxInfo>();
 	@Autowired
@@ -35,31 +31,33 @@ public class ManageTaxID {
 	
 	private void setMapInfo() {
 		synchronized (lock) {
-			if (mapTaxID2TaxInfo.size() > 0) {
-				return;
-			}
+			if (mapTaxID2TaxInfo.size() > 0) return;
 			
 			for (TaxInfo taxInfo : repoTaxInfo.findAll()) {
-				mapTaxID2TaxInfo.put(taxInfo.getTaxID(), taxInfo);
-			}
-			for (Integer taxID : mapTaxID2TaxInfo.keySet()) {
-				TaxInfo taxInfo = mapTaxID2TaxInfo.get(taxID);
-				if (taxInfo.getAbbr() != null || !taxInfo.getAbbr().trim().equals("")) {
-					hashNameTaxIDUsual.put(taxInfo.getComName().trim(), taxInfo.getTaxID());
-				}
-				hashNameTaxID.put(taxInfo.getComName().trim(), taxInfo.getTaxID());
-				hashTaxIDName.put(taxInfo.getTaxID(), taxInfo.getComName().trim());
-				lsAllTaxID.add(taxInfo.getTaxID());
+				addToMap(taxInfo);
 			}
 		}
 	}
+	
+	private void addToMap(TaxInfo taxInfo) {
+		mapTaxID2TaxInfo.put(taxInfo.getTaxID(), taxInfo);
+		hashNameTaxID.put(taxInfo.getComName().trim(), taxInfo.getTaxID());
+		hashTaxIDName.put(taxInfo.getTaxID(), taxInfo.getComName().trim());
+	}
+	
 	/**
 	 * @param taxID 0 则返回null
 	 * @return
 	 */
 	public TaxInfo queryTaxInfo(int taxID) {
 		if (!mapTaxID2TaxInfo.containsKey(taxID)) {
-			return null;
+			TaxInfo taxInfo = repoTaxInfo.findByTaxID(taxID);
+			if (taxInfo != null) {
+				addToMap(taxInfo);
+				return taxInfo;
+			} else {
+				return null;
+			}
 		}
 		return mapTaxID2TaxInfo.get(taxID).clone();
 	}
@@ -86,30 +84,18 @@ public class ManageTaxID {
 			TaxInfo taxInfoS = queryTaxInfo(taxInfo.getTaxID());
 			if (taxInfoS == null) {
 				repoTaxInfo.save(taxInfo);
-				mapTaxID2TaxInfo.put(taxInfo.getTaxID(), taxInfo);
+				addToMap(taxInfoS);
 				changeMapInfo(null, taxInfo);
 			}
 			else if (!taxInfoS.equals(taxInfo)) {
 				//因为taxID是mongoDB的ID
 				repoTaxInfo.save(taxInfo);
-				mapTaxID2TaxInfo.put(taxInfo.getTaxID(), taxInfo);
+				addToMap(taxInfoS);
 				changeMapInfo(taxInfoS, taxInfo);
 			}
 		}
 	}
 
-	/**
-	 * 返回常用名对taxID
-	 * @param allSpecies
-	 * @return
-	 */
-	public HashMap<String, Integer> getSpeciesNameTaxID(boolean allSpecies) {
-		if (allSpecies) {
-			return hashNameTaxID;
-		} else {
-			return hashNameTaxIDUsual;
-		}
-	}
 	/**
 	 * 返回taxID对常用名
 	 * @return
@@ -121,25 +107,18 @@ public class ManageTaxID {
 	 * 返回taxID对常用名
 	 * @return
 	 */
-	public ArrayList< Integer> getLsAllTaxID() {
-		return lsAllTaxID;
+	public List<TaxInfo> getLsAllTaxID() {
+		List<TaxInfo> lsTaxInfos = repoTaxInfo.findAll();
+		return lsTaxInfos;
 	}
 
 	
 	/** 修改taxInfo之后修正map */
 	private void changeMapInfo(TaxInfo taxInfoOld, TaxInfo taxInfoNew) {
 		if (taxInfoOld == null) {
-			if (taxInfoNew.getAbbr() != null || !taxInfoNew.getAbbr().trim().equals("")) {
-				hashNameTaxIDUsual.put(taxInfoNew.getComName().trim(), taxInfoNew.getTaxID());
-			}
 			hashNameTaxID.put(taxInfoNew.getComName().trim(), taxInfoNew.getTaxID());
 			hashTaxIDName.put(taxInfoNew.getTaxID(), taxInfoNew.getComName().trim());
-			lsAllTaxID.add(taxInfoNew.getTaxID());
 		} else {
-			if (taxInfoNew.getAbbr() != null || !taxInfoNew.getAbbr().trim().equals("")) {
-				hashNameTaxIDUsual.remove(taxInfoOld.getComName().trim());
-				hashNameTaxIDUsual.put(taxInfoNew.getComName().trim(), taxInfoNew.getTaxID());
-			}
 			hashNameTaxID.remove(taxInfoOld.getComName().trim());
 			hashNameTaxID.put(taxInfoNew.getComName().trim(), taxInfoNew.getTaxID());
 			

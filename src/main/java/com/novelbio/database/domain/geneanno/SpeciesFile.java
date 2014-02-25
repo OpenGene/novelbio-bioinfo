@@ -406,48 +406,7 @@ public class SpeciesFile {
 		String result = path.replace(root, "");
 		return FileOperate.addSep(result);
 	}
-	
-	public String getMiRNAmatureFile() {
-		if (getMiRNAseq()[0] == null) {
-			return null;
-		}
-		return pathParent + getMiRNAseq()[0];
-	}
-	
-	public String getMiRNAhairpinFile() {
-		if (getMiRNAseq()[1] == null) {
-			return null;
-		}
-		return pathParent + getMiRNAseq()[1];
-	}
-	/**
-	 * 返回相对路径
-	 * @return
-	 * 0: miRNAfile<br>
-	 * 1: miRNAhairpinFile
-	 */
-	private String[] getMiRNAseq() {
-		String node = "miRNA/";
-		Species species = new Species(taxID);
-		String genomePath = node + species.getNameLatin_2Word().replace(" ", "_") + FileOperate.getSepPath();
-		String miRNAfile = genomePath + "miRNA.fa";
-		String miRNAhairpinFile = genomePath + "miRNAhairpin.fa";
-		if (!FileOperate.isFileExistAndBigThanSize(pathParent + miRNAfile,10) || !FileOperate.isFileExistAndBigThanSize(pathParent + miRNAhairpinFile,10)) {
-			FileOperate.createFolders(FileOperate.getParentPathName(pathParent + miRNAfile));
-			ExtractSmallRNASeq extractSmallRNASeq = new ExtractSmallRNASeq();
-			extractSmallRNASeq.setOutMatureRNA(pathParent + miRNAfile);
-			extractSmallRNASeq.setOutHairpinRNA(pathParent + miRNAhairpinFile);
-			extractSmallRNASeq.setMiRNAdata(PathDetailNBC.getMiRNADat(), species.getNameLatin_2Word());
-			extractSmallRNASeq.getSeq();
-		}
-		if (!FileOperate.isFileExistAndBigThanSize(pathParent + miRNAhairpinFile, 0)) {
-			FileOperate.DeleteFileFolder(pathParent + miRNAhairpinFile);
-			FileOperate.DeleteFileFolder(pathParent + miRNAfile);
-			miRNAhairpinFile = null;
-			miRNAfile = null;
-		}
-		return new String[]{miRNAfile, miRNAhairpinFile};
-	}
+
 	public void setPublishYear(int publishYear) {
 		this.publishYear = publishYear;
 	}

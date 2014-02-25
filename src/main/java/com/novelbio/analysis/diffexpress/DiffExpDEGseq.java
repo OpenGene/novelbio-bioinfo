@@ -32,12 +32,6 @@ public class DiffExpDEGseq extends DiffExpAbs {
 	private static final Logger logger = Logger.getLogger(DiffExpDEGseq.class);
 	String outPutSuffix = "_Path";
 	
-	/** 基因标记列，实际列，用在R里面，所以不需要减1 */
-	public void setColID(int colID) {
-		this.colAccID = colID;
-		calculate = false;
-	}
-	
 	protected String generateScript() {
 		Map<String,Object> mapData = new HashMap<String, Object>();
 		mapData.put("workspace", getWorkSpace());
@@ -60,13 +54,12 @@ public class DiffExpDEGseq extends DiffExpAbs {
 		return scriptContent;
 	}
 
-
 	private Map<String, String[]> getMapReadFileAndColumn() {
 		Map<String, String[]> mapSampleName2ColInfo = new LinkedHashMap<String, String[]>();
 		HashMap<String, ArrayList<Integer>> mapSample2LsCol = getMapSample2LsCol();
 		for (Entry<String, ArrayList<Integer>> entry : mapSample2LsCol.entrySet()) {
 			String[] colInfo = new String[2];
-			colInfo[0] = colAccID + "";
+			colInfo[0] = (colAccID+1) + "";
 			colInfo[1] = getRformatSampleVector(entry.getValue()) + "";
 			mapSampleName2ColInfo.put( entry.getKey(), colInfo);
 		}
@@ -79,6 +72,7 @@ public class DiffExpDEGseq extends DiffExpAbs {
 	 */
 	private HashMap<String, ArrayList<Integer>> getMapSample2LsCol() {
 		HashMap<String, ArrayList<Integer>> mapSample2LsCol = new LinkedHashMap<String, ArrayList<Integer>>();
+		int i = 2;
 		for (String[] strings : lsSampleColumn2GroupName) {
 			strings[1] = strings[1].replace("\\", "/");
 			ArrayList<Integer> lsColNum = null;
@@ -88,7 +82,7 @@ public class DiffExpDEGseq extends DiffExpAbs {
 				lsColNum = new ArrayList<Integer>();
 				mapSample2LsCol.put(strings[1], lsColNum);
 			}
-			lsColNum.add(Integer.parseInt(strings[0]));
+			lsColNum.add(i++);
 		}
 		return mapSample2LsCol;
 	}
@@ -156,15 +150,15 @@ OutDir=6
 	protected void setFileNameRawdata() {
 		fileNameRawdata = workSpace + "DEGseqGeneInfo_" + DateUtil.getDateAndRandom() + ".txt";
 	}
-	/**
-	 * 不需要提取专门的信息
-	 */
-	@Override
-	protected void writeToGeneFile() {
-		TxtReadandWrite txtWrite = new TxtReadandWrite(fileNameRawdata, true);
-		txtWrite.ExcelWrite(lsGeneInfo);
-		txtWrite.close();
-	}
+//	/**
+//	 * 不需要提取专门的信息
+//	 */
+//	@Override
+//	protected void writeToGeneFile() {
+//		TxtReadandWrite txtWrite = new TxtReadandWrite(fileNameRawdata, true);
+//		txtWrite.ExcelWrite(lsGeneInfo);
+//		txtWrite.close();
+//	}
 
 	@Override
 	protected void run() {

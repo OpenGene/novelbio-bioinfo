@@ -46,6 +46,9 @@ public class MirSpeciesPipline implements IntCmdSoft {
 	
 	List<String> lsCmd = new ArrayList<>();
 	
+	/** 是否平行mapping */
+	boolean isParallelMapping = false;
+	
 	public void setThreadNum(int threadNum) {
 		this.threadNum = threadNum;
 	}
@@ -55,7 +58,15 @@ public class MirSpeciesPipline implements IntCmdSoft {
 	public void setLsSpecies(List<Species> lsSpecies) {
 		this.lsSpecies = lsSpecies;
 	}
- 
+	/**
+	 * 是否平行mapping
+	 * @param isParallelMapping
+	 * true: 将输入的reads分别mapping至指定的物种上
+	 * false: 将输入的reads首先mapping值第一个物种，mapping不上的mapping至第二个物种上，依次mapping到最后的物种
+	 */
+	public void setParallelMapping(boolean isParallelMapping) {
+		this.isParallelMapping = isParallelMapping;
+	}
 	/**
 	 * @param prefix 前缀
 	 * @param seqFile 输入的fastq文件
@@ -94,8 +105,93 @@ public class MirSpeciesPipline implements IntCmdSoft {
 		return null;
 	}
 
-	/** mapping的流水线 */
+	/** mapping的流水线
+	 * mapping策略：
+	 * 输入的fastq文件先mapping至第一个物种，mapping不上的mapping至第二个物种，以此类推
+	 * @param rnadatFile
+	 * @param samMapRate
+	 */
 	public void mappingPipeline(String rnadatFile, SamMapRate samMapRate) {
+		lsCmd.clear();
+		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.bowtie2);
+		FileOperate.createFolders(outPathTmpMapping);
+		for (int i = 0; i < lsSpecies.size(); i++) {
+			Species species = lsSpecies.get(i);
+
+			MiRNACount miRNACount = new MiRNACount();
+			miRNACount.setSpecies(species, rnadatFile);
+			miRNACount.setExpTableWithoutLsGeneName(expMirPre, expMirMature);
+			for (String prefix : mapPrefix2Fastq.keySet()) {
+				String outputPrefix = getOutputPrefix(prefix);
+				String fastqFile = mapPrefix2Fastq.get(prefix);
+				String outFastq = outPathTmpMapping + outputPrefix + species.getCommonName() + "_unmapped.fq.gz";
+				samFileOut = outPathTmpMapping + outputPrefix + species.getCommonName() + ".bam";
+				SamFileStatistics samFileStatistics = new SamFileStatistics(prefix);
+				samFileOut = MiRNAmapPipline.mappingBowtie2(lsCmd, isUseOldResult, samFileStatistics, softWareInfo.getExePath(), threadNum, fastqFile, species.getMiRNAhairpinFile(), samFileOut, outFastq);
+				//TODO
+				if (isParallelMapping) {
+					statisticsParallel(samMapRate, samFileStatistics, species.getCommonName());
+				} else {
+					statisticsCascade(samMapRate, samFileStatistics, species.getCommonName(), i == lsSpecies.size() - 1);
+					mapPrefix2Fastq.put(prefix, outFastq);
+				}
+				
+				miRNACount.setAlignFile(new SamFile(samFileOut));
+				miRNACount.run();
+				expMirMature.setCurrentCondition(prefix);
+				expMirMature.addAllReads(miRNACount.getCountMatureAll());
+				expMirMature.addLsGeneName(getLsGeneNot0(miRNACount.getMapMirMature2Value()));
+				expMirMature.addGeneExp(miRNACount.getMapMirMature2Value());
+				
+				expMirPre.setCurrentCondition(prefix);
+				expMirPre.addAllReads(miRNACount.getCountPreAll());
+				expMirPre.addLsGeneName(getLsGeneNot0(miRNACount.getMapMiRNApre2Value()));
+				expMirPre.addGeneExp(miRNACount.getMapMiRNApre2Value());
+				
+				expMirPre.writeFile(false, outPathSample + prefix + FileOperate.getSepPath() + prefix + "_BlastTo" 
+				+ species.getCommonName() + "_Pre_Counts.txt", EnumExpression.Counts);
+				expMirMature.writeFile(false, outPathSample + prefix + FileOperate.getSepPath() + prefix + "_BlastTo" 
+						+ species.getCommonName() + "_Mature_Counts.txt", EnumExpression.Counts);
+			}
+		}
+	}
+	
+	/** 级联mapping的处理，统计结果放入samMapRate */
+	private void statisticsCascade(SamMapRate samMapRate, SamFileStatistics samFileStatistics, String speciesName, boolean finalSpecies) {
+		if (samMapRate == null) return;
+		
+		if (samFileStatistics.getReadsNum(MappingReadsType.allMappedReads) > 0) {
+			SamFileStatistics.saveExcel(outPathStatistics + FileOperate.getFileName(samFileOut), samFileStatistics);
+			
+			if (samMapRate != null) {
+				samMapRate.addMapInfo(speciesName + "_miRNA", samFileStatistics);
+				if (finalSpecies) {
+					samMapRate.addUnmapInfo(samFileStatistics);
+				}
+			}
+		}
+	}
+	
+	/** 平行mapping的处理，统计结果放入samMapRate */
+	private void statisticsParallel(SamMapRate samMapRate, SamFileStatistics samFileStatistics, String speciesName) {
+		if (samMapRate == null) return;
+		
+		if (samFileStatistics.getReadsNum(MappingReadsType.allMappedReads) > 0) {
+			SamFileStatistics.saveExcel(outPathStatistics + FileOperate.getFileName(samFileOut), samFileStatistics);
+			
+			if (samMapRate != null) {
+				samMapRate.addMapInfo(speciesName + "_miRNA", samFileStatistics);
+			}
+		}
+	}
+	
+	/** mapping的流水线
+	 * mapping策略：
+	 * 输入的fastq文件分别mapping至每一个物种
+	 * @param rnadatFile
+	 * @param samMapRate
+	 */
+	public void mappingPipelineSep(String rnadatFile, SamMapRate samMapRate) {
 		lsCmd.clear();
 		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.bowtie2);
 		FileOperate.createFolders(outPathTmpMapping);
@@ -117,9 +213,6 @@ public class MirSpeciesPipline implements IntCmdSoft {
 					
 					if (samMapRate != null) {
 						samMapRate.addMapInfo(species.getCommonName() + "_miRNA", samFileStatistics);
-						if (i == lsSpecies.size() - 1) {
-							samMapRate.addUnmapInfo(samFileStatistics);
-						}
 					}
 				}
 				
@@ -135,7 +228,6 @@ public class MirSpeciesPipline implements IntCmdSoft {
 				expMirPre.addAllReads(miRNACount.getCountPreAll());
 				expMirPre.addLsGeneName(getLsGeneNot0(miRNACount.getMapMiRNApre2Value()));
 				expMirPre.addGeneExp(miRNACount.getMapMiRNApre2Value());
-				mapPrefix2Fastq.put(prefix, outFastq);
 				
 				expMirPre.writeFile(false, outPathSample + prefix + FileOperate.getSepPath() + prefix + "_BlastTo" 
 				+ species.getCommonName() + "_Pre_Counts.txt", EnumExpression.Counts);

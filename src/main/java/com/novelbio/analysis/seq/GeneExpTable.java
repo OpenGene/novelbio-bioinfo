@@ -1,5 +1,6 @@
 package com.novelbio.analysis.seq;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -443,7 +444,7 @@ public class GeneExpTable {
 		String resultValue = null;
 		if (geneLen == null) geneLen = 1000;
 		if (allReadsNum == null) allReadsNum = (long) mapreadsNum;
-		
+		DecimalFormat df = new DecimalFormat("0.##"); 
 		if (value == null) return "0";
 		if (enumExpression == EnumExpression.RawValue) {
 			resultValue = value + "";
@@ -458,7 +459,7 @@ public class GeneExpTable {
 		} else if (enumExpression == EnumExpression.UQPM) {
 			resultValue = value*geneExp/upQuerterNum + "";
 		} else if (enumExpression == EnumExpression.Ratio) {
-			resultValue = value/allReadsNum + "";
+			resultValue = df.format(value/allReadsNum) + "";
 		}
 		return resultValue;
 	}

@@ -26,6 +26,7 @@ import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.database.model.modkegg.KeggInfo;
 import com.novelbio.database.model.modkegg.KeggInfoAbs;
 import com.novelbio.database.model.species.Species;
+import com.novelbio.database.model.species.Species.EnumSpeciesType;
 import com.novelbio.database.service.servgeneanno.ManageDBInfo;
 import com.novelbio.database.service.servgeneanno.ManageGeneInfo;
 import com.novelbio.database.service.servgeneanno.ManageNCBIUniID;
@@ -393,17 +394,17 @@ public class GeneIDabs implements GeneIDInt {
 			tmpAnno[0] = getSymbol();
 			tmpAnno[1] = getDescription();
 			if (getLsBlastGeneID() != null && getLsBlastInfos() != null && getLsBlastInfos().size() > 0) {
+
 				for (int i = 0; i < getLsBlastInfos().size(); i++) {
+					int subTaxID = getLsBlastInfos().get(i).getSubjectTax();
+					Species species = new Species(subTaxID);
 					if (tmpAnno[2] == null || tmpAnno[2].trim().equals("")) {
-						int subTaxID = getLsBlastInfos().get(i).getSubjectTax();
-						Species species = new Species(subTaxID);
 						tmpAnno[2] = species.getCommonName();
 						tmpAnno[3] = getLsBlastInfos().get(i).getEvalue() + "";
 						tmpAnno[4] = getLsBlastGeneID().get(i).getSymbol();
 						tmpAnno[5] = getLsBlastGeneID().get(i).getDescription();
 					} else {
-						tmpAnno[2] = tmpAnno[2] + "//"
-								+ Species.getSpeciesName2Species(Species.ALL_SPECIES).get(getLsBlastInfos().get(i).getSubjectTax()).getCommonName();
+						tmpAnno[2] = tmpAnno[2] + "//" + species.getCommonName();
 						tmpAnno[3] = tmpAnno[3] + "//" + getLsBlastInfos().get(i).getEvalue();
 						tmpAnno[4] = tmpAnno[4] + "//" + getLsBlastGeneID().get(i).getSymbol();
 						tmpAnno[5] = tmpAnno[5] + "//" + getLsBlastGeneID().get(i).getDescription();

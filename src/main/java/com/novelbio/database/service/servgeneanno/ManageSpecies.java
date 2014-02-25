@@ -48,7 +48,7 @@ public class ManageSpecies {
 	private void readSpeciesFile(String speciesFileInput) {
 		if (!FileOperate.isFileExistAndBigThanSize(speciesFileInput, 0)) return;
 		
-		String parentPath = FileOperate.getParentPathName(FileOperate.getParentPathName(speciesFileInput));
+		String parentPath = PathDetailNBC.getGenomePath();
 		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(speciesFileInput, 0);
 		String[] title = null;
 		for (String[] strings : lsInfo) {
@@ -107,6 +107,7 @@ public class ManageSpecies {
 			try {
 				speciesFile.getMapChromInfo();
 			} catch (Exception e) {
+				e.printStackTrace();
 				logger.error("条目出错：" + ArrayOperate.cmbString(info, "\t"));
 			}
 			//升级
