@@ -51,11 +51,16 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	String novelMiRNAdeepMrdFile = "";
 	
 	List<String> lsCmd = new ArrayList<>();
+	boolean isFastq = false;
 	
 	@Override
 	public void setOutPath(String outPath) {
 		this.outPath = FileOperate.addSep(outPath);
 		FileOperate.createFolders(outPath);
+	}
+	/** 是否为fastq文件，默认是fasta文件，为false */
+	public void setFastq(boolean isFastq) {
+		this.isFastq = isFastq;
 	}
 	public void setNovelMiRNAdeepMrdFile(String novelMiRNAdeepMrdFile) {
 		this.novelMiRNAdeepMrdFile = novelMiRNAdeepMrdFile;
@@ -66,7 +71,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	 * 推荐不设定
 	 * @param fastaOut
 	 * */
-	public void setFastaOut(String fastaIn) {
+	public void setFastaInput(String fastaIn) {
 		this.fastaInput = fastaIn;
 	}
 	/** 设定物种 */
@@ -104,19 +109,19 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 		return new String[]{"-t", species};
 	}
 	private String getMatureMiRNA() {
-		if (!FileOperate.isFileExistAndBigThanSize(matureMiRNA, 1)) {
+		if (!FileOperate.isFileExistAndBigThanSize(matureMiRNA, 0)) {
 			return "none";
 		}
 		return matureMiRNA;
 	}
 	private String getMatureRelateMiRNA() {
-		if (!FileOperate.isFileExistAndBigThanSize(matureRelateMiRNA, 1)) {
+		if (!FileOperate.isFileExistAndBigThanSize(matureRelateMiRNA, 0)) {
 			return "none";
 		}
 		return matureRelateMiRNA;
 	}
 	private String getPrecursorsMiRNA() {
-		if (!FileOperate.isFileExistAndBigThanSize(hairpinMiRNA, 1)) {
+		if (!FileOperate.isFileExistAndBigThanSize(hairpinMiRNA, 0)) {
 			return "none";
 		}
 		return hairpinMiRNA;
@@ -140,17 +145,6 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	private String getChromFaIndex() {
 		String result = FileOperate.getParentPathName(chromFaIndexBowtie) + FileOperate.getFileNameSep(chromFaIndexBowtie)[0];
 		return result;
-	}
-	
-	/** 产生输入的reads文件
-	 * 会将输入的bed文件比对基因组，获得没有mapping至正向exon的序列，然后写入文本并转化为fastq文件
-	 *  */
-	private String creatFastaMappingFile() {
-		if (fastaInput == null || fastaInput.trim().equals("")) {
-			fastaInput = FileOperate.changeFileSuffix(lsAlignSeqFile.iterator().next().getFileName(), "_Potential_DenoveMirna" + DateUtil.getDateAndRandom(), "fasta");
-			fastaInput = outPath + FileOperate.getFileName(fastaInput);
-		}
-		return fastaInput;
 	}
 	/**
 	 * 将输入的bed文件比对基因组，获得没有mapping至正向exon的序列，然后写入文本并转化为fastq文件
@@ -204,6 +198,8 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	public void setMiRNAminLen(int miRNAminLen) {
 		this.miRNAminLen = miRNAminLen;
 	}
+	
+	/** 默认看到存在mrd文件就会跳过去不执行 */
 	public void predict() {
 		if (!FileOperate.isFileExistAndBigThanSize(novelMiRNAdeepMrdFile, 0)) {
 			novelMiRNAdeepMrdFile = outPath + "run" + "/output.mrd";
@@ -233,8 +229,14 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 		}
 		List<String> lsCmdRun = new ArrayList<>();
 		lsCmdRun.add(mirDeepPath + "mapper.pl");
-		lsCmdRun.add(creatFastaMappingFile());
-		lsCmdRun.add("-c"); lsCmdRun.add("-j");
+		lsCmdRun.add(fastaInput);
+		if (isFastq) {
+			lsCmdRun.add("-e"); 
+		} else {
+			lsCmdRun.add("-c"); 
+		}
+			
+		lsCmdRun.add("-j");
 		ArrayOperate.addArrayToList(lsCmdRun, getReadsMinLen());
 		lsCmdRun.add("-m");
 		lsCmdRun.add("-p"); lsCmdRun.add(getChromFaIndex());
@@ -316,7 +318,6 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 			logger.info("move:" + string + "\t" + "to:" +fileName.replace("_" + suffix, ""));
 		}
 		
-		novelMiRNAdeepMrdFile = outPath + "run" + "/output.mrd";
 		novelMiRNAhairpin = FileOperate.getParentPathName(outPath) + "novelMiRNA/hairpin.fa";
 		novelMiRNAmature =FileOperate.getParentPathName(outPath) + "novelMiRNA/mature.fa";
 //		HashSet<String> setMirPredictName = getSetMirPredictName(outFinal + "result.csv");
