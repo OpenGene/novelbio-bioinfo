@@ -213,6 +213,7 @@ public class LncInfo {
 	}
 	
 	/**
+	 * protected修饰仅用于测试
 	 * @param gffLnc
 	 * @param setEdgeCis
 	 * @param setEdgeTrans
