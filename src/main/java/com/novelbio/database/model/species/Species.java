@@ -521,7 +521,10 @@ public class Species implements Cloneable {
 	public static Map<String, Species> getSpeciesName2Species(EnumSpeciesType speciesType, boolean getBlastSpecies, String usrid) {
 		HashMap<String, Species> mapName2Species = new LinkedHashMap<String, Species>();
 		Species speciesUnKnown = new Species();
-		mapName2Species.put("UnKnown Species", speciesUnKnown);
+		if (speciesType != EnumSpeciesType.miRNA) {
+			mapName2Species.put("UnKnown Species", speciesUnKnown);
+		}
+	
 		//按照物种名进行排序
 		TreeMap<String, Species> treemapName2Species = new TreeMap<String, Species>();
 		

@@ -587,7 +587,7 @@ public class Scr2TargetNew {
 		title[0] = "source"; title[1] = "target"; title[2] = "relation"; title[3] = "detailRelation";  title[4] = "pathway"; 
 		lsScr2Target.add(0, title);
 		ExcelOperate excelOperate = new ExcelOperate();
-		excelOperate.openExcel(ResultFIleScr2Target);
+		excelOperate.newExcelOpen(ResultFIleScr2Target);
 		excelOperate.WriteExcel(1, 1, lsScr2Target);
 //		TxtReadandWrite txtReadandWrite = new TxtReadandWrite();
 //		txtReadandWrite.setParameter(ResultFIleScr2Target, true, false);
@@ -609,7 +609,7 @@ public class Scr2TargetNew {
 		title2[7] = "pathWay";
 		lsAttribute.add(0,title2);
 		ExcelOperate excelOperate2 = new ExcelOperate();
-		excelOperate2.openExcel(resultFIleAttribute);
+		excelOperate2.newExcelOpen(resultFIleAttribute);
 		excelOperate2.WriteExcel(1, 1, lsAttribute);
 //		txtReadandWrite.setParameter(resultFIleAttribute, true, false);
 //		txtReadandWrite.ExcelWrite(lsAttribute, "\t", 1, 1);
