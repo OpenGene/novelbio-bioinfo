@@ -265,14 +265,32 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 
 	/**
 	 * 不查询数据库，直接返回gffDetailGene
+	 * 如果一个基因的某些iso没有和两个位点区域有交集，则去除这些iso
+	 * 譬如转录本为
+	 * chr1 30366 30900 
+	 * chr1 30350 31200
+	 * 不扩展tes区域
+	 * 
+	 * 而left位点为chr1 31000
+	 * 则返回基因时将chr1 30366 30900 这个转录本删掉
+	 * 
 	 * @return LinkedHashSet
 	 */
-	public Set<GffDetailGene> getCoveredGffGene() {
+	public Set<GffDetailGene> getCoveredOverlapGffGene() {
 		setHashCoveredGenInfo();
 		return setGffDetailGene;
 	}
 	/**
-	 * 由前面的设定，将所有符合要求的gene的全部提取出来
+	 * 不查询数据库，直接返回gffDetailGene
+	 * 如果一个基因的某些iso没有和两个位点区域有交集，则去除这些iso
+	 * 
+	 * 譬如转录本为
+	 * chr1 30366 30900 
+	 * chr1 30350 31200
+	 * 注意不扩展tes区域
+	 * 
+	 * 而left位点为chr1 31000
+	 * 则返回基因时将chr1 30366 30900 这个转录本删掉
 	 * 查询数据库，并返回GeneID
 	 * @return
 	 */

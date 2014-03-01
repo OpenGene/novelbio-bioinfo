@@ -13,7 +13,6 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster;
@@ -265,6 +264,50 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 		return Math.abs(ATGsite - UAGsite) > 10 ?  true : false;
 	}
+	
+	/**
+	 * 根据输入的gffIso延长两端
+	 * @param gffGeneIsoInfo
+	 */
+	public void extendUtr(GffGeneIsoInfo gffGeneIsoInfo) {
+		extend5Utr(gffGeneIsoInfo);
+		extend3Utr(gffGeneIsoInfo);
+	}
+	
+	
+	private void extend5Utr(GffGeneIsoInfo gffGeneIsoInfo) {
+		ListCodAbs<ExonInfo> codStart = gffGeneIsoInfo.searchLocation(getStart());
+		if (!codStart.isInsideLoc()) {
+			return;
+		}
+		int itemNum = codStart.getItemNumThis();
+		List<ExonInfo> lsExonInfos = new ArrayList<>();
+		for (int i = 0; i <= itemNum; i++) {
+			lsExonInfos.add(gffGeneIsoInfo.get(i));
+		}
+		ExonInfo exonInfo = lsExonInfos.get(lsExonInfos.size() - 1);
+		getLsElement().get(0).setStartCis(exonInfo.getStartCis());
+		lsExonInfos = lsExonInfos.subList(0, lsExonInfos.size() - 1);
+		getLsElement().addAll(0, lsExonInfos);
+	}
+	
+	private void extend3Utr(GffGeneIsoInfo gffGeneIsoInfo) {
+		ListCodAbs<ExonInfo> codStart = gffGeneIsoInfo.searchLocation(getEnd());
+		if (!codStart.isInsideLoc()) {
+			return;
+		}
+		
+		int itemNum = codStart.getItemNumThis();
+		List<ExonInfo> lsExonInfos = new ArrayList<>();
+		for (int i = itemNum; i < gffGeneIsoInfo.size(); i++) {
+			lsExonInfos.add(gffGeneIsoInfo.get(i));
+		}
+		ExonInfo exonInfo = lsExonInfos.get(0);
+		getLsElement().get(getLsElement().size() - 1).setEndCis(exonInfo.getEndCis());
+		lsExonInfos = lsExonInfos.subList(1, lsExonInfos.size());
+		getLsElement().addAll(lsExonInfos);
+	}
+	
 	/**
 	 * 给该转录本添加ATG和UAG坐标，<br>
 	 * 加入这一对坐标的时候，并不需要分别大小，程序会根据gene方向自动判定
@@ -1210,6 +1253,9 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 				|| gffGeneIsoInfo1.getEndAbs() <= gffGeneIsoInfo2.getStartAbs() 
 				|| gffGeneIsoInfo1.getStartAbs() >= gffGeneIsoInfo2.getEndAbs()) {
 			return new int[]{0,gffGeneIsoInfo1.size() * 2, gffGeneIsoInfo1.size()*2, gffGeneIsoInfo2.size()*2};
+		} else if (gffGeneIsoInfo1.equals(gffGeneIsoInfo2)) {
+			int edgeNum = gffGeneIsoInfo1.size();
+			return new int[]{edgeNum, edgeNum*2, edgeNum, edgeNum};
 		}
 		ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfos = new ArrayList<GffGeneIsoInfo>();
 		lsGffGeneIsoInfos.add(gffGeneIsoInfo1); lsGffGeneIsoInfos.add(gffGeneIsoInfo2);

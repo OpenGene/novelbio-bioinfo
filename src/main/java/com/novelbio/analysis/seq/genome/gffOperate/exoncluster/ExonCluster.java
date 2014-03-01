@@ -18,6 +18,12 @@ import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict
 import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.ArrayOperate;
 
+/**
+ * 由于GffGeneIsoInfo重写了hashcode
+ * 所以本类无法两个hashcode相同的GffGeneIsoInfo，会将其合并为一个GffGeneIsoInfo
+ * @author zong0jie
+ *
+ */
 public class ExonCluster implements Alignment {
 	private static Logger logger = Logger.getLogger(ExonCluster.class);
 	

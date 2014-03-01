@@ -351,14 +351,14 @@ public class Gene2Value {
 		gffCodGeneDU.cleanFilter();
 		if (structure.equals(GeneStructure.TSS)) {
 			gffCodGeneDU.setTss(tssTesRange);
-			return gffCodGeneDU.getCoveredGffGene();
+			return gffCodGeneDU.getCoveredOverlapGffGene();
 		}
 		else if (structure.equals(GeneStructure.TES)) {
 			gffCodGeneDU.setTes(tssTesRange);
-			return gffCodGeneDU.getCoveredGffGene();
+			return gffCodGeneDU.getCoveredOverlapGffGene();
 		}
 		else {
-			return gffCodGeneDU.getCoveredGffGene();
+			return gffCodGeneDU.getCoveredOverlapGffGene();
 		}
 	}
 	/**

@@ -974,11 +974,11 @@ public class GffChrMap {
 		gffCodGeneDU.cleanFilter();
 		if (structure.equals(GeneStructure.TSS)) {
 			gffCodGeneDU.setTss(plotRange);
-			return gffCodGeneDU.getCoveredGffGene();
+			return gffCodGeneDU.getCoveredOverlapGffGene();
 		}
 		else if (structure.equals(GeneStructure.TES)) {
 			gffCodGeneDU.setTes(plotRange);
-			return gffCodGeneDU.getCoveredGffGene();
+			return gffCodGeneDU.getCoveredOverlapGffGene();
 		}
 		else {
 			logger.error("暂时没有除Tss和Tes之外的基因结构");

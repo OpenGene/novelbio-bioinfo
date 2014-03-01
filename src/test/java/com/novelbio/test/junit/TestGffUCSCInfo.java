@@ -190,7 +190,7 @@ public class TestGffUCSCInfo extends TestCase{
 			String chrID = strings[0]; int start = Integer.parseInt(strings[1]); int end = Integer.parseInt(strings[2]);
 			GffCodGeneDU gffCodGeneDU = gffHashUCSC.searchLocation(chrID, start, end);
 			gffCodGeneDU.setGeneBody(false);
-			Set<GffDetailGene> hashSetTss = gffCodGeneDU.getCoveredGffGene();
+			Set<GffDetailGene> hashSetTss = gffCodGeneDU.getCoveredOverlapGffGene();
 			gffCodGeneDU.setTss(tss); gffCodGeneDU.setGeneBody(false);
 			
 //			HashSet<GffDetailGene> hashSet = new HashSet<GffDetailGene>();

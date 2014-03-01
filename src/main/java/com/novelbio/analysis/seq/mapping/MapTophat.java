@@ -417,9 +417,9 @@ public class MapTophat implements MapRNA {
 		if (strandSpecifictype == StrandSpecific.NONE) {
 			
 		} else if (strandSpecifictype == StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND) {
-			cmd = new String[]{"--library-type", "fr-firststrand"};
-		} else if (strandSpecifictype == StrandSpecific.SECOND_READ_TRANSCRIPTION_STRAND) {
 			cmd = new String[]{"--library-type", "fr-secondstrand"};
+		} else if (strandSpecifictype == StrandSpecific.SECOND_READ_TRANSCRIPTION_STRAND) {
+			cmd = new String[]{"--library-type", "fr-firststrand"};
 		}
 		return cmd;
 	}

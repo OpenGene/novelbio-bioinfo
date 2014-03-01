@@ -10,11 +10,11 @@ import java.util.LinkedHashMap;
  */
 //TODO 到底FR和RF是哪种建库方式，还有待考证
 public enum StrandSpecific {
-	/** 可能是表示有方向的测序，无方向 */
+	/** 表示有方向的测序，无方向 */
 	NONE,
-	/** 可能是表示有方向的测序，第一条链的方向 */
+	/** 表示有方向的测序，第一条链的方向 */
 	FIRST_READ_TRANSCRIPTION_STRAND,
-	/** 可能是表示有方向的测序，第二条链的方向 */
+	/** 表示有方向的测序，第二条链的方向 */
 	SECOND_READ_TRANSCRIPTION_STRAND;
 	
 	public static HashMap<String, StrandSpecific> getMapStrandLibrary() {

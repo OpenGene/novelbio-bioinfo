@@ -20,8 +20,8 @@ import com.novelbio.base.fileOperate.FileOperate;
  * 
  * 务必是同一个物种同一个版本的Gff
  */
-public class GffHashModifyORF {
-	private static final Logger logger = Logger.getLogger(GffHashModifyORF.class);
+public class GffHashModifyNewGffORF {
+	private static final Logger logger = Logger.getLogger(GffHashModifyNewGffORF.class);
 	/** 待修该的Gff */
 	GffHashGene gffHashGeneRaw;
 	/** 参考的Gff，用Ref来矫正Raw的ATG等位点 */
@@ -139,9 +139,9 @@ public class GffHashModifyORF {
 	private boolean isCanbeRef(GffGeneIsoInfo gffIso, GffGeneIsoInfo gffRef) {
 		if (gffIso.isCis5to3() != gffRef.isCis5to3()) return false;
 		
-		ListCodAbs<ExonInfo> lsCodExonAtg = gffIso.searchLocation(gffRef.getATGsite());
-		ListCodAbs<ExonInfo> lsCodExonUag = gffIso.searchLocation(gffRef.getUAGsite());
-		if (lsCodExonAtg.isInsideLoc() && lsCodExonUag.isInsideLoc()) {
+		if (gffIso.getCodLoc(gffRef.getATGsite()) == GffGeneIsoInfo.COD_LOC_EXON 
+				&& gffIso.getCodLoc(gffRef.getUAGsite()) ==  GffGeneIsoInfo.COD_LOC_EXON
+			) {
 			return true;
 		}
 		return false;

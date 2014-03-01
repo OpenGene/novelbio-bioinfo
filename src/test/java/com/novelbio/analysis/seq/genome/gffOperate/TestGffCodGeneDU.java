@@ -25,7 +25,7 @@ public class TestGffCodGeneDU extends TestCase {
 		GffCodGeneDU gffCodGeneDU = gffHashGene.searchLocation("chr1",153599872, 153602222);
 		gffCodGeneDU.setGeneBody(false);
 		gffCodGeneDU.setExon(true);
-		Set<GffDetailGene> lsGffGene = gffCodGeneDU.getCoveredGffGene();
+		Set<GffDetailGene> lsGffGene = gffCodGeneDU.getCoveredOverlapGffGene();
 		for (GffDetailGene gffDetailGene : lsGffGene) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 				System.out.println(gffGeneIsoInfo.getName());

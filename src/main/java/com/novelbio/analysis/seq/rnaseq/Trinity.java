@@ -227,6 +227,8 @@ public class Trinity {
 		return false;
 	}
 	
+	
+	//TODO 确定好是FR还是RF
 	private String getSS_lib_type() {
 		if (strandSpecific == StrandSpecific.NONE) {
 			return "";

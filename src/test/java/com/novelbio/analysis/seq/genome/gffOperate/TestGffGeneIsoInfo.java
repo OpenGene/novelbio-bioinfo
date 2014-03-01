@@ -1,18 +1,132 @@
 package com.novelbio.analysis.seq.genome.gffOperate;
 
-import java.util.ArrayList;
-
 import junit.framework.TestCase;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster;
 import com.novelbio.database.model.modgeneid.GeneType;
 
 public class TestGffGeneIsoInfo extends TestCase{
+	public void testExtenUtrCis1() {
+		GffGeneIsoInfo gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso("iso1", "gene1", GeneType.mRNA, true);
+		gffGeneIsoInfo.add(new ExonInfo(true, 1000, 2000));
+		gffGeneIsoInfo.add(new ExonInfo(true, 3000, 4000));
+		gffGeneIsoInfo.add(new ExonInfo(true, 5000, 6000));
+		gffGeneIsoInfo.add(new ExonInfo(true, 7000, 8000));
+		
+		GffGeneIsoInfo gffGeneIsoInfoExtend1 = GffGeneIsoInfo.createGffGeneIso("iso1", "gene1", GeneType.mRNA, true);
+		gffGeneIsoInfoExtend1.add(new ExonInfo(true, 100, 200));
+		gffGeneIsoInfoExtend1.add(new ExonInfo(true, 300, 400));
+		gffGeneIsoInfoExtend1.add(new ExonInfo(true, 1000, 2000));
+		gffGeneIsoInfoExtend1.add(new ExonInfo(true, 5000, 6000));
+		gffGeneIsoInfoExtend1.add(new ExonInfo(true, 7000, 8000));
+		gffGeneIsoInfoExtend1.add(new ExonInfo(true, 8500, 9000));
+		gffGeneIsoInfoExtend1.add(new ExonInfo(true, 9500, 9800));
+		
+		GffGeneIsoInfo gffGeneIsoInfoExtendExpect1 = GffGeneIsoInfo.createGffGeneIso("iso1", "gene1", GeneType.mRNA, true);
+		gffGeneIsoInfoExtendExpect1.add(new ExonInfo(true, 100, 200));
+		gffGeneIsoInfoExtendExpect1.add(new ExonInfo(true, 300, 400));
+		gffGeneIsoInfoExtendExpect1.add(new ExonInfo(true, 1000, 2000));
+		gffGeneIsoInfoExtendExpect1.add(new ExonInfo(true, 3000, 4000));
+		gffGeneIsoInfoExtendExpect1.add(new ExonInfo(true, 5000, 6000));
+		gffGeneIsoInfoExtendExpect1.add(new ExonInfo(true, 7000, 8000));
+		gffGeneIsoInfoExtendExpect1.add(new ExonInfo(true, 8500, 9000));
+		gffGeneIsoInfoExtendExpect1.add(new ExonInfo(true, 9500, 9800));
+		
+		
+		gffGeneIsoInfo.extendUtr(gffGeneIsoInfoExtend1);
+		assertEquals(gffGeneIsoInfoExtendExpect1, gffGeneIsoInfo);
+	}
+	
+	public void testExtenUtrCis2() {
+		GffGeneIsoInfo gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso("iso1", "gene1", GeneType.mRNA, true);
+		gffGeneIsoInfo.add(new ExonInfo(true, 1000, 2000));
+		gffGeneIsoInfo.add(new ExonInfo(true, 3000, 4000));
+		gffGeneIsoInfo.add(new ExonInfo(true, 5000, 6000));
+		gffGeneIsoInfo.add(new ExonInfo(true, 7000, 8000));
+		
+		GffGeneIsoInfo gffGeneIsoInfoExtend1 = GffGeneIsoInfo.createGffGeneIso("iso1", "gene1", GeneType.mRNA, true);
+		gffGeneIsoInfoExtend1.add(new ExonInfo(true, 100, 200));
+		gffGeneIsoInfoExtend1.add(new ExonInfo(true, 300, 400));
+		gffGeneIsoInfoExtend1.add(new ExonInfo(true, 1200, 2000));
+		gffGeneIsoInfoExtend1.add(new ExonInfo(true, 5000, 6000));
+		gffGeneIsoInfoExtend1.add(new ExonInfo(true, 7000, 7900));
+		gffGeneIsoInfoExtend1.add(new ExonInfo(true, 8500, 9000));
+		gffGeneIsoInfoExtend1.add(new ExonInfo(true, 9500, 9800));
+		
+		GffGeneIsoInfo gffGeneIsoInfoExtendExpect1 = GffGeneIsoInfo.createGffGeneIso("iso1", "gene1", GeneType.mRNA, true);
+		gffGeneIsoInfoExtendExpect1.add(new ExonInfo(true, 1000, 2000));
+		gffGeneIsoInfoExtendExpect1.add(new ExonInfo(true, 3000, 4000));
+		gffGeneIsoInfoExtendExpect1.add(new ExonInfo(true, 5000, 6000));
+		gffGeneIsoInfoExtendExpect1.add(new ExonInfo(true, 7000, 8000));
+		
+		
+		gffGeneIsoInfo.extendUtr(gffGeneIsoInfoExtend1);
+		assertEquals(gffGeneIsoInfoExtendExpect1, gffGeneIsoInfo);
+	}
+	
+	public void testExtenUtrCis3() {
+		GffGeneIsoInfo gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso("iso1", "gene1", GeneType.mRNA, true);
+		gffGeneIsoInfo.add(new ExonInfo(true, 1000, 2000));
+		gffGeneIsoInfo.add(new ExonInfo(true, 3000, 4000));
+		gffGeneIsoInfo.add(new ExonInfo(true, 5000, 6000));
+		gffGeneIsoInfo.add(new ExonInfo(true, 7000, 8000));
+		
+		GffGeneIsoInfo gffGeneIsoInfoExtend1 = GffGeneIsoInfo.createGffGeneIso("iso1", "gene1", GeneType.mRNA, true);
+		gffGeneIsoInfoExtend1.add(new ExonInfo(true, 100, 200));
+		gffGeneIsoInfoExtend1.add(new ExonInfo(true, 300, 400));
+		gffGeneIsoInfoExtend1.add(new ExonInfo(true, 800, 2000));
+		gffGeneIsoInfoExtend1.add(new ExonInfo(true, 5000, 6000));
+		gffGeneIsoInfoExtend1.add(new ExonInfo(true, 7000, 8200));
+		gffGeneIsoInfoExtend1.add(new ExonInfo(true, 8500, 9000));
+		gffGeneIsoInfoExtend1.add(new ExonInfo(true, 9500, 9800));
+		
+		GffGeneIsoInfo gffGeneIsoInfoExtendExpect1 = GffGeneIsoInfo.createGffGeneIso("iso1", "gene1", GeneType.mRNA, true);
+		gffGeneIsoInfoExtendExpect1.add(new ExonInfo(true, 100, 200));
+		gffGeneIsoInfoExtendExpect1.add(new ExonInfo(true, 300, 400));
+		gffGeneIsoInfoExtendExpect1.add(new ExonInfo(true, 800, 2000));
+		gffGeneIsoInfoExtendExpect1.add(new ExonInfo(true, 3000, 4000));
+		gffGeneIsoInfoExtendExpect1.add(new ExonInfo(true, 5000, 6000));
+		gffGeneIsoInfoExtendExpect1.add(new ExonInfo(true, 7000, 8200));
+		gffGeneIsoInfoExtendExpect1.add(new ExonInfo(true, 8500, 9000));
+		gffGeneIsoInfoExtendExpect1.add(new ExonInfo(true, 9500, 9800));
+		
+		
+		gffGeneIsoInfo.extendUtr(gffGeneIsoInfoExtend1);
+		assertEquals(gffGeneIsoInfoExtendExpect1, gffGeneIsoInfo);
+	}
+	
+	public void testExtenUtrTran1() {
+		GffGeneIsoInfo gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso("iso1", "gene1", GeneType.mRNA, false);
+		gffGeneIsoInfo.add(new ExonInfo(false, 7000, 8000));
+		gffGeneIsoInfo.add(new ExonInfo(false, 5000, 6000));
+		gffGeneIsoInfo.add(new ExonInfo(false, 3000, 4000));
+		gffGeneIsoInfo.add(new ExonInfo(false, 1000, 2000));
+		gffGeneIsoInfo.sort();
+		
+		GffGeneIsoInfo gffGeneIsoInfoExtend1 = GffGeneIsoInfo.createGffGeneIso("iso1", "gene1", GeneType.mRNA, false);
+		gffGeneIsoInfoExtend1.add(new ExonInfo(false, 100, 200));
+		gffGeneIsoInfoExtend1.add(new ExonInfo(false, 300, 400));
+		gffGeneIsoInfoExtend1.add(new ExonInfo(false, 1000, 2000));
+		gffGeneIsoInfoExtend1.add(new ExonInfo(false, 5000, 6000));
+		gffGeneIsoInfoExtend1.add(new ExonInfo(false, 7000, 8000));
+		gffGeneIsoInfoExtend1.add(new ExonInfo(false, 8500, 9000));
+		gffGeneIsoInfoExtend1.add(new ExonInfo(false, 9500, 9800));
+		gffGeneIsoInfoExtend1.sort();
 
+		GffGeneIsoInfo gffGeneIsoInfoExtendExpect1 = GffGeneIsoInfo.createGffGeneIso("iso1", "gene1", GeneType.mRNA, false);
+		gffGeneIsoInfoExtendExpect1.add(new ExonInfo(false, 100, 200));
+		gffGeneIsoInfoExtendExpect1.add(new ExonInfo(false, 300, 400));
+		gffGeneIsoInfoExtendExpect1.add(new ExonInfo(false, 1000, 2000));
+		gffGeneIsoInfoExtendExpect1.add(new ExonInfo(false, 3000, 4000));
+		gffGeneIsoInfoExtendExpect1.add(new ExonInfo(false, 5000, 6000));
+		gffGeneIsoInfoExtendExpect1.add(new ExonInfo(false, 7000, 8000));
+		gffGeneIsoInfoExtendExpect1.add(new ExonInfo(false, 8500, 9000));
+		gffGeneIsoInfoExtendExpect1.add(new ExonInfo(false, 9500, 9800));
+		gffGeneIsoInfoExtendExpect1.sort();
 
+		
+		gffGeneIsoInfo.extendUtr(gffGeneIsoInfoExtend1);
+		assertEquals(gffGeneIsoInfoExtendExpect1, gffGeneIsoInfo);
+	}
+	
+	
 }

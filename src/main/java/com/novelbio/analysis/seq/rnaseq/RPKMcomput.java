@@ -438,7 +438,7 @@ public class RPKMcomput implements AlignmentRecorder {
 		Set<GffGeneIsoInfo> setIso = new HashSet<>();
 		gffCodGeneDu.setGeneBody(false);
 		gffCodGeneDu.setExon(true);
-		Set<GffDetailGene> setGffGene = gffCodGeneDu.getCoveredGffGene();
+		Set<GffDetailGene> setGffGene = gffCodGeneDu.getCoveredOverlapGffGene();
 		for (GffDetailGene gffDetailGene : setGffGene) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 				if (strandSpecific == StrandSpecific.NONE || (readsCis5to3 == gffGeneIsoInfo.isCis5to3())) {

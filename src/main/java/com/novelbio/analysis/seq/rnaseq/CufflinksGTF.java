@@ -289,13 +289,13 @@ public class CufflinksGTF {
 	 *            transcript coordinates) is the first sequenced (or only
 	 *            sequenced for single-end reads). Equivalently, it is assumed
 	 *            that only the strand generated during first strand synthesis
-	 *            is sequenced.<br>
+	 *            is sequenced.<br><b>意思mapping到反的上面去。</b><br>
 	 *            <b>fr-secondstrand</b> Ligation, Standard SOLiD Same as above
 	 *            except we enforce the rule that the left-most end of the
 	 *            fragment (in transcript coordinates) is the first sequenced
 	 *            (or only sequenced for single-end reads). Equivalently, it is
 	 *            assumed that only the strand generated during second strand
-	 *            synthesis is sequenced.
+	 *            synthesis is sequenced.<b>意思mapping到正的上面去。</b>
 	 */
 	public void setStrandSpecifictype(StrandSpecific strandSpecifictype) {
 		this.strandSpecifictype = strandSpecifictype;
@@ -304,11 +304,12 @@ public class CufflinksGTF {
 	 * 返回链的方向
 	 * @return
 	 */
-	private String getStrandSpecifictype() {
+	private String[] getStrandSpecifictype() {
+		
 		if (strandSpecifictype == StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND) {
-			return "--library-type fr-firststrand";
+			return new String[]{"--library-type", "fr-secondstrand"};
 		} else if (strandSpecifictype == StrandSpecific.SECOND_READ_TRANSCRIPTION_STRAND) {
-			return "--library-type fr-secondstrand";
+			return new String[]{"--library-type", "fr-firststrand"};
 		}
 		return null;
 	}
@@ -404,7 +405,7 @@ public class CufflinksGTF {
 		ArrayOperate.addArrayToList(lsCmd, getAnchoProportion());
 		lsCmd.addAll(getIntronLen());
 		ArrayOperate.addArrayToList(lsCmd, getGtfFile());
-		addLsCmdStr(lsCmd, getStrandSpecifictype());
+		ArrayOperate.addArrayToList(lsCmd, getStrandSpecifictype());
 		addLsCmdStr(lsCmd, getIsUpQuartile());
 		ArrayOperate.addArrayToList(lsCmd, getThreadNum());
 		ArrayOperate.addArrayToList(lsCmd, getCorrectChrFile());
