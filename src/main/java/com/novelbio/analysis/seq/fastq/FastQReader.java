@@ -184,16 +184,19 @@ class FastQReader implements Closeable {
 							fastQRecord = null;
 						} catch (ExceptionFastq efastq) {
 							if (isCheckFormat) {
-								throw new ExceptionFastq(txtSeqFile.getFileName() + " fastq format error on line: " + lineNum[0]);
+								throw new ExceptionFastq("fastq file error on line: " + lineNum[0] + "\n" + 
+										txtSeqFile.getFileName() );
 							} else {
-								logger.error(txtSeqFile.getFileName() + " fastq format error on line: " + lineNum[0]);
+								logger.error("fastq file error on line: " + lineNum[0] + "\n" + 
+										txtSeqFile.getFileName() );
 								while (true) {
 									String next = null;
 									try {
 										next = bufread.readLine();
 										lineNum[0]++;
 									} catch (Exception e) {
-										throw new ExceptionFastq(txtSeqFile.getFileName() + " fastq format error on line: " + lineNum[0], e);
+										throw new ExceptionFastq("fastq file error on line: " + lineNum[0] + "\n" + 
+												txtSeqFile.getFileName() , e);
 									}
 									if (next == null) {
 										return null;
@@ -207,11 +210,15 @@ class FastQReader implements Closeable {
 										break;
 									} catch (Exception e) {}
 									if (errorNum[0] > 10000) {
-										throw new ExceptionFastq(txtSeqFile.getFileName() + " fastq format error on line: " + lineNum[0]);
+										throw new ExceptionFastq("fastq file error on line: " + lineNum[0] + "\n" + 
+												txtSeqFile.getFileName() );
 									}
 								}
 							}
-						}
+						} catch (OutOfMemoryError e) {
+								throw new ExceptionFastq("fastq file error on line: " + lineNum[0] + "\n" + 
+										txtSeqFile.getFileName() );
+						 }
 						return fastQRecord;
 					}
 				};

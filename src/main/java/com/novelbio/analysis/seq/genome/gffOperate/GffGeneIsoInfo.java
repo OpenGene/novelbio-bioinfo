@@ -956,24 +956,46 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 
 	protected String getGTFformatExon(String chrID, String title, String strand) {
 		if (chrID == null) chrID = getRefID();
-		
-		String geneExon = "";
+		StringBuilder geneExon = new StringBuilder();
 		String prefixInfo = chrID + "\t" + title + "\t";
 		String suffixInfo = "\t" + "." + "\t" + strand + "\t.\t" + "gene_id \"" + getParentGeneName() + "\"; transcript_id " + "\"" + getName()+"\"; " + TxtReadandWrite.ENTER_LINUX;
 		int[] atg = getATGLoc();
 		int[] uag = getUAGLoc();
 		boolean ismRNA = ismRNA();
 		for (ExonInfo exons : this) {
+			ExonInfo cds = getCds(exons);
 			if (ismRNA && atg != null && ATGsite >= exons.getStartAbs() && ATGsite <= exons.getEndAbs()) {
-				geneExon = geneExon + prefixInfo + GffHashGTF.startCodeFlag + "\t" + atg[0] + "\t" + atg[1] + suffixInfo;
+				geneExon.append(prefixInfo).append(GffHashGTF.startCodeFlag).append("\t").append(atg[0]).append("\t").append(atg[1]).append(suffixInfo);
 			}
-			geneExon = geneExon + prefixInfo + "exon\t" + exons.getStartAbs()  + "\t" + exons.getEndAbs() 
-		         + suffixInfo;
+			geneExon.append(prefixInfo).append("exon\t").append(exons.getStartAbs()).append("\t").append(exons.getEndAbs()).append(suffixInfo);
+			if (cds != null) {
+				geneExon.append(prefixInfo).append("CDS\t").append(cds.getStartAbs()).append("\t").append(cds.getEndAbs()).append(suffixInfo);
+			}
 			if (ismRNA && uag != null && UAGsite >= exons.getStartAbs() && UAGsite <= exons.getEndAbs()) {
-				geneExon = geneExon + prefixInfo + GffHashGTF.stopCodeFlag + "\t" + uag[0] + "\t" + uag[1] + suffixInfo;
+				geneExon.append(prefixInfo).append(GffHashGTF.stopCodeFlag).append("\t").append(uag[0]).append("\t").append(uag[1]).append(suffixInfo);
 			}
 		}
-		return geneExon;
+		return geneExon.toString();
+	}
+	
+	/** 根据输入的exon，判断是否存在cds，并返回<br>
+	 * null表示没有cds
+	 * @param exons
+	 * @return
+	 */
+	private ExonInfo getCds(ExonInfo exons) {
+		ExonInfo cdsInfo = exons.clone();
+		ExonInfo atgUag = new ExonInfo(isCis5to3(), ATGsite, UAGsite);
+		if (cdsInfo.getEndAbs() < atgUag.getStartAbs() || cdsInfo.getStartAbs() > atgUag.getEndAbs()) {
+			return null;
+		}
+		if (cdsInfo.isCodInSide(ATGsite)) {
+			cdsInfo.setStartCis(ATGsite);
+		}
+		if (cdsInfo.isCodInSide(UAGsite)) {
+			cdsInfo.setEndCis(UAGsite);
+		}
+		return cdsInfo;
 	}
 	
 	protected String getGFFformatExonMISO(String title, String strand) {

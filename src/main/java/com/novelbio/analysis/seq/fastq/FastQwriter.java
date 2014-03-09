@@ -113,7 +113,7 @@ class FastQwriter extends RunProcess<Integer> {
 			}
 
 			FastQrecordCopeUnit fastQrecordFilterRun = null;
-			try { fastQrecordFilterRun = future.get(); } catch (Exception e) { e.printStackTrace();}
+			try { fastQrecordFilterRun = future.get(); } catch (Exception e) {logger.warn(e);}
 			
 			if (fastQrecordFilterRun != null && fastQrecordFilterRun.isFilterSucess()) {
 				writeReadsNum++;

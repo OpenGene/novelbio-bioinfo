@@ -199,7 +199,7 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 	public String searchMirName(String mirName, int start, int end) {
 		MirMature element = searchElement(mirName, start, end);
 		if (element == null) {
-			logger.warn("cannot find miRNA on：" + mirName + " " + start + " " + end);
+			logger.debug("cannot find miRNA on：" + mirName + " " + start + " " + end);
 
 			return null;
 		}

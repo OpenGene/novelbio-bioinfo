@@ -383,6 +383,7 @@ public class SpeciesFile {
 		if (FileOperate.isFileExist(indexChromFinal)) {
 			return indexChromFinal;
 		}
+		FileOperate.DeleteFileFolder(indexChromFinal);
 		if (!FileOperate.linkFile(seqFile, indexChromFinal, true)) {
 			logger.error("创建链接出错：" + seqFile + " " + indexChromFinal);
 			return null;

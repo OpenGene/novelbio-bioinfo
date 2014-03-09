@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.samtools.FileTruncatedException;
 import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMFormatException;
@@ -19,6 +20,7 @@ import net.sf.samtools.SAMSequenceRecord;
 import net.sf.samtools.seekablestream.SeekableFileStream;
 import net.sf.samtools.seekablestream.SeekableHDFSstream;
 import net.sf.samtools.seekablestream.SeekableStream;
+import net.sf.samtools.util.RuntimeEOFException;
 
 import org.apache.log4j.Logger;
 
@@ -388,7 +390,8 @@ class ReadSamIterable implements Iterable<SamRecord> {
 }
 
 class ReadSamIterator implements Iterator<SamRecord> {
-	private static Logger logger = Logger.getLogger(ReadSamIterable.class);
+	private static final Logger logger = Logger.getLogger(ReadSamIterable.class);
+	boolean isReportEOF = false;
 	/** 连续50000条reads出错就报错 */
 	static int errorLinNum = 50000;
 	int errorContinueNum = 0;
@@ -411,7 +414,7 @@ class ReadSamIterator implements Iterator<SamRecord> {
 		if ((errorFormateLineNum > 500 && correctLineNum < 5)) {
 			throw new SamErrorException("sam file has too many error formate lines" + fileName);
 		} else if (errorContinueNum > errorLinNum) {
-			throw new SamErrorException("sam file is not end normally" + fileName);
+			throw new SamErrorException("sam file is not end normally:\n" + fileName);
 		}
 		return samRecordIterator.hasNext();
 	}
@@ -432,6 +435,16 @@ class ReadSamIterator implements Iterator<SamRecord> {
 			}
 			logger.error(e.toString());
 			return getErrorSamRecord();
+		} catch (FileTruncatedException e) {
+			throw new FileTruncatedException("sam file may not complete, please check:\n" + fileName, e);
+		} catch (RuntimeEOFException e) {
+			if (!isReportEOF) {
+				errorContinueNum++;
+				logger.error(e);
+				return getErrorSamRecord();
+			} else {
+				throw new RuntimeEOFException("sam file may not complete, please check:\n" + fileName, e);
+			}
 		} catch (Exception e) {
 			errorContinueNum++;
 			logger.error(e);

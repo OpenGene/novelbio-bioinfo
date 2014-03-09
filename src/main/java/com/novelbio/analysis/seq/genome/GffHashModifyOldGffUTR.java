@@ -39,10 +39,14 @@ public class GffHashModifyOldGffUTR {
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGeneRef.getLsCodSplit()) {
 				int median = (gffGeneIsoInfo.getStart() + gffGeneIsoInfo.getEnd())/2;
 				GffCodGene gffCodGene = gffHashGeneRaw.searchLocation(gffDetailGeneRef.getRefID(), median);
-				if (!gffCodGene.isInsideLoc()) {
+				if (gffCodGene == null || !gffCodGene.isInsideLoc()) {
 					logger.warn("cannot find gene on:" + gffDetailGeneRef.getRefID() + " " + median );
+					continue;
 				}
 				GffDetailGene gffDetailGeneThis = gffCodGene.getGffDetailThis();
+				if (gffDetailGeneThis == null) {
+					logger.error("stop");
+				}
 				if (setGffGeneName.contains(gffDetailGeneThis)) {
 					continue;
 				}

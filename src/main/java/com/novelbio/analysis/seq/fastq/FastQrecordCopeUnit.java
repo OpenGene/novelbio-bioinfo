@@ -4,6 +4,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import net.sf.samtools.util.RuntimeEOFException;
+
 import com.novelbio.base.dataOperate.HttpFetch;
 
 /**
@@ -68,7 +70,6 @@ public class FastQrecordCopeUnit implements Callable<FastQrecordCopeUnit> {
 			e.printStackTrace();
 			filterSucess = false;
 		}
-		
 		return this;
 	}
 	

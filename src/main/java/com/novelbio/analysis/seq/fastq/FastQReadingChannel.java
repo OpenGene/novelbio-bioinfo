@@ -112,36 +112,46 @@ public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
 		if (executorPool == null) {
 			setThreadNum(4);
 		}
-		
-		if (lsFastqReader == null || lsFastqReader.size() == 0) return;
-		
-		if (isOutputResult) {
-			fqWrite[0].fastQwrite.setFinishedRead(false);
-			Thread thread = new Thread(fqWrite[0].fastQwrite);
-			thread.start();
-		}
 
-		if (lsFastqReader.get(0).length == 2) {
-			readPE();
-		} else {
-			readSE();
+		if (lsFastqReader == null || lsFastqReader.size() == 0) return;
+		try {
+			if (isOutputResult) {
+				fqWrite[0].fastQwrite.setFinishedRead(false);
+				Thread thread = new Thread(fqWrite[0].fastQwrite);
+				thread.start();
+			}
+
+			if (lsFastqReader.get(0).length == 2) {
+				readPE();
+			} else {
+				readSE();
+			}
+			
+			if (isOutputResult) {
+				closeThread();
+			}
+		} catch (Exception e) {
+			closeThread();
+			throw e;
 		}
-		
-		if (isOutputResult) {
-			fqWrite[0].fastQwrite.setFinishedRead(true);
-			while (fqWrite[0].fastQwrite.isRunning()) {
+	}
+	
+	private void closeThread() {
+		fqWrite[0].fastQwrite.setFinishedRead(true);
+		while (fqWrite[0].fastQwrite.isRunning()) {
+			try { Thread.sleep(100); 	} catch (InterruptedException e) { e.printStackTrace(); }
+		}
+		fqWrite[0].close();
+		if (fqWrite[1] != null) {
+			fqWrite[1].fastQwrite.setFinishedRead(true);
+			while (fqWrite[1].fastQwrite.isRunning()) {
 				try { Thread.sleep(100); 	} catch (InterruptedException e) { e.printStackTrace(); }
 			}
-			fqWrite[0].close();
-			if (fqWrite[1] != null) {
-				fqWrite[1].close();
-			}
+			fqWrite[1].close();
 		}
-
 		executorPool.shutdown();
 		executorPool = null;
 		queueResult = null;
-
 	}
 	
 	private void readSE() {
@@ -218,7 +228,6 @@ public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
 				fqWrite[0].fastQwrite.flash();
 			}
 		}
-
 	}
 	
 	/** 将中间结果发送到GUI */
