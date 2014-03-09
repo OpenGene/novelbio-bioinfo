@@ -298,7 +298,20 @@ public class PredictCassette extends SpliceTypePredict {
 
 	@Override
 	public List<? extends Alignment> getBGSite() {
-		return exonCluster.getParentGene().getLongestSplitMrna().getLsElement();
+		List<ExonInfo> lsExonInfos = new ArrayList<>();
+		GffGeneIsoInfo iso = exonCluster.getParentGene().getLongestSplitMrna();
+		Align alignExon = getDifSite();
+		for (ExonInfo exonInfo : iso) {
+			if (exonInfo.getStartAbs() <= alignExon.getEndAbs() && exonInfo.getEndAbs() >= alignExon.getStartAbs()) {
+				continue;
+			}
+			lsExonInfos.add(exonInfo);
+		}
+		if (lsExonInfos.isEmpty()) {
+			return iso.getLsElement();
+		}
+		return lsExonInfos;
+//		return exonCluster.getParentGene().getLongestSplitMrna().getLsElement();
 	}
 
 }

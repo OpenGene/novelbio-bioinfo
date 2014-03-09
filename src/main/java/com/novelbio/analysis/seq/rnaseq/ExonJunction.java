@@ -47,8 +47,9 @@ import com.novelbio.database.model.species.Species;
 public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	public static void main(String[] args) {
 //		long timeEclipse1 = test();
-		long timeEclipse2 = wuwenwuDrosophilia();
+		long timeEclipse2 = wuwenwuDrosophilia(true);
 		System.out.println(timeEclipse2);
+		timeEclipse2 = wuwenwuDrosophilia(false);
 //		System.out.println(timeEclipse2);
 	}
 	public static long test() {
@@ -66,7 +67,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 //		lsAligns.add(new Align("7",30050239,30137766));
 //		lsAligns.add(new Align("7",30121258, 30123992));
 //		lsAligns.add(new Align("24", 5495310, 5695313));
-		lsAligns.add(new Align("15", 5334938, 5535018));
+//		lsAligns.add(new Align("15", 5334938, 5535018));
 //		lsAligns.add(new Align("mt", 0, 27622));
 		DateUtil dateUtil = new DateUtil();
 		dateUtil.setStartTime();
@@ -119,10 +120,10 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		return dateUtil.getEclipseTime();
  
 	}
-	public static long wuwenwuDrosophilia() {
+	public static long wuwenwuDrosophilia(bool53192244e4b02cc50a17d90053192244e4b02cc50a17d90053192244e4b02cc50a17d90053192244e4b02cc50a17d90053192244e4b02cc50a17d900ean isGenerateNewIso) {
 		String path = "/media/hdfs/nbCloud/public/RNA-seq/";
 		List<Align> lsAligns = new ArrayList<>();
-		lsAligns.add(new Align("X", 11594654, 11595160));
+//		lsAligns.add(new Align("X", 16700823, 16730633));
 		DateUtil dateUtil = new DateUtil();
 		dateUtil.setStartTime();
 		System.out.println("start");
@@ -130,7 +131,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		ExonJunction exonJunction = new ExonJunction();
 		exonJunction.setIsLessMemory(false);
 		exonJunction.setGffHashGene(new GffHashGene(GffType.GTF, "/media/hdfs/nbCloud/public/RNA-seq/genes.gtf"));//TODO
-		exonJunction.setgenerateNewIso();
+		exonJunction.setgenerateNewIso(isGenerateNewIso);
 		exonJunction.setLsReadRegion(lsAligns);
 		exonJunction.setOneGeneOneSpliceEvent(false);
 		exonJunction.addBamSorted("RNAi", path + "RNAi-S1.bam");
@@ -141,17 +142,16 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		exonJunction.addBamSorted("Untreated", path + "Untreated-S4.bam");
 		exonJunction.setCombine(false);
 		exonJunction.setCompareGroups("RNAi", "Untreated");
-		exonJunction.setResultFile(path + "as_test_sep");
-		exonJunction.setgenerateNewIso();
+		exonJunction.setResultFile(path + "as_test_generate_iso_"+isGenerateNewIso);
+		exonJunction.setgenerateNewIso(isGenerateNewIso);
 
 		exonJunction.run();
 		exonJunction = null;
 		return dateUtil.getEclipseTime();
- 
 	}
 	
 	private static Logger logger = Logger.getLogger(ExonJunction.class);
-	private static String stopGeneName = "LOC_Os10g39420";
+	private static String stopGeneName = "PhKgamma";
 	
 	GffHashGene gffHashGene = null;
 	StrandSpecific strandSpecific = StrandSpecific.NONE;
@@ -207,8 +207,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	 */
 	List<Align> lsReadReagion;
 
-	public ExonJunction() {
-	}
+	public ExonJunction() { }
 	/**
 	 * 表示差异可变剪接的事件的pvalue阈值，仅用于统计差异可变剪接事件的数量，不用于可变剪接的筛选
 	 * @param pvalue
@@ -219,8 +218,8 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	/** 是否重建转录本，调用一下就重建<br>
 	 * 在run之前最后一个设定
 	 */
-	public void setgenerateNewIso() {
-		isReconstructIso = true;
+	public void setgenerateNewIso(boolean isReconstructIso) {
+		this.isReconstructIso = isReconstructIso;
 	}
 	/** 是否合并文件--也就是不考虑重复，默认为true，也就是合并文件 **/
 	public void setCombine(boolean isCombine) {

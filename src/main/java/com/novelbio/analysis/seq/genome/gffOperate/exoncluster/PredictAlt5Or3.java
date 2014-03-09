@@ -89,14 +89,11 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 		} else {
 			isFiltered = true;
 		}
-		return new Align(exonCluster.getRefID(), MathComput.min(startEnd), MathComput.max(startEnd));
+		Align align = new Align(exonCluster.getRefID(), MathComput.min(startEnd), MathComput.max(startEnd));
+		align.setCis5to3(exonCluster.isCis5to3());
+		return align;
 	}
-	
-	public List<? extends Alignment> getBGSite() {
-		List<Alignment> lsAlignments = new ArrayList<Alignment>();
-		lsAlignments.add(exonCluster);
-		return lsAlignments;
-	}
+
 	
 	public boolean isFiltered() {
 		return isFiltered;

@@ -1,9 +1,12 @@
 package com.novelbio.analysis.seq.sam;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.novelbio.analysis.seq.fasta.ChrSeqHash;
 import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -41,9 +44,16 @@ public class SamIndexRefsequence {
 				e.printStackTrace();
 			}
 		} else {
-			String cmd = ExePath + "samtools faidx " + "\"" + sequence + "\"";
-			CmdOperate cmdOperate = new CmdOperate(cmd,"sortBam");
+			List<String> lsCmd = new ArrayList<>();
+			lsCmd.add(ExePath + "samtools");
+			lsCmd.add("faidx");
+			lsCmd.add(sequence);			
+			CmdOperate cmdOperate = new CmdOperate(lsCmd);
+			cmdOperate.setGetLsErrOut();
 			cmdOperate.run();
+			if (!cmdOperate.isFinishedNormal()) {
+				throw new ExceptionCmd("make index error:" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
+			}
 		}
 	}
 

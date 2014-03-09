@@ -14,5 +14,5 @@ public interface RepoSpeciesFile extends PagingAndSortingRepository<SpeciesFile,
 	
 	@Query(value="{ 'taxID' : ?0, 'version' : ?1 }")
 	SpeciesFile findByTaxIDAndVersion(int taxID, String version);
-
+	
 }

@@ -7,6 +7,8 @@ import org.apache.log4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 
+import com.novelbio.base.fileOperate.FileOperate;
+
 public class PathDetailNBC {
 	private static final Logger logger = Logger.getLogger(PathDetailNBC.class);
 	static Properties properties;
@@ -38,7 +40,7 @@ public class PathDetailNBC {
 	}
 	/** 有最后的"/" */
 	public static String getGenomePath() {
-		return properties.getProperty("GenomePath");
+		return FileOperate.addSep(properties.getProperty("GenomePath"));	
 	}
 	
 	/** 内部自动加空格 */

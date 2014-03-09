@@ -39,6 +39,7 @@ public class NCBIchromFaChangeFormat {
 	public void writeToSepFile(String outFilePrefix) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(chrFile);
 		TxtReadandWrite txtWrite = null;
+		FileOperate.createFolders(FileOperate.getPathName(outFilePrefix));
 		for (String content : txtRead.readlines()) {
 			if (content.startsWith(">")) {
 				if (txtWrite != null) {

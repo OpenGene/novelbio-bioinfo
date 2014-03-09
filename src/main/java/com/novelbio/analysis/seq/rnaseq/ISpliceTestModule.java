@@ -16,7 +16,13 @@ import com.novelbio.base.dataStructure.MathComput;
 /** 差异可变剪接的pvalue计算模块 */
 public interface ISpliceTestModule {
 	
-	/** 设定输入值 */
+	/** 设定输入值
+	 * @param mapCond_Group2ReadsNum 样本--分组--测序量，用来做标准化的
+	 * @param condTreat treat样本的condition名字
+	 * @param mapTreat2LsValue treat位点--对应的reads数
+	 * @param condCtrl treat样本的condition，名字
+	 * @param mapCtrl2LsValue control位点--对应的reads数
+	 */
 	public void setLsRepeat2Value(Map<String, Map<String, double[]>> mapCond_Group2ReadsNum, String condTreat,
 			ArrayListMultimap<String, Double> mapTreat2LsValue, String condCtrl, ArrayListMultimap<String, Double> mapCtrl2LsValue);
 	
@@ -58,10 +64,16 @@ public interface ISpliceTestModule {
 class SpliceTestRepeat implements ISpliceTestModule {
 	/** 实验组和对照组的junction reads数量加起来小于这个数，就返回1 */
 	static int junctionReadsMinNum = 10;
-	/** 将reads的数量扩大4倍，这样可以获得更多的差异 */
-	static int fold = 4;
+	
+	/** 将reads的数量扩大5倍，这样可以获得更多的差异 */
+	static int foldbig = 3;
+	/** 将reads的数量扩大3倍，这样可以获得更多的差异 */
+	static int foldMid = 3;
+	/** 如果reads数量过少，可以考虑扩大3倍 */
+	static int foldsmall = 3;
+	
 	/** 如果count数超过该值，就标准化 */
-	int normalizedNum = 300;
+	int normalizedNum = 400;
 	
 	/** 本组比较中最大测序量的reads数 */
 	long maxReads = 0;
@@ -100,8 +112,8 @@ class SpliceTestRepeat implements ISpliceTestModule {
 		}
 		maxReads = setReadsNum.iterator().next();
 		
-		lsTreat2LsValue = normalizeLsDouble(mapCond_Group2ReadsNum.get(condTreat), mapTreat2LsValue);
-		lsCtrl2LsValue = normalizeLsDouble(mapCond_Group2ReadsNum.get(condCtrl), mapCtrl2LsValue);
+		lsTreat2LsValue = normalizeLsDouble(mapCond_Group2ReadsNum.get(condTreat), mapTreat2LsValue, getFold(mapTreat2LsValue));
+		lsCtrl2LsValue = normalizeLsDouble(mapCond_Group2ReadsNum.get(condCtrl), mapCtrl2LsValue, getFold(mapCtrl2LsValue));
 		
 		if (this.lsTreat2LsValue.size() < this.lsCtrl2LsValue.size()) {
 			this.lsCtrl2LsValue = balanceUnEqualPair(lsTreat2LsValue.size(), lsCtrl2LsValue);
@@ -110,8 +122,28 @@ class SpliceTestRepeat implements ISpliceTestModule {
 		}
 	}
 	
+	private int getFold(ArrayListMultimap<String, Double> mapCtrl2LsValue) {
+		double valueAll = 0;
+		for (Double value : mapCtrl2LsValue.values()) {
+			valueAll += value;
+		}
+		if (valueAll < 30) {
+			return foldbig;
+		} else if (valueAll >= 20 && valueAll < 80) {
+			return foldMid;
+		} else {
+			return foldsmall;
+		}
+	}
+	
+	/**
+	 * @param mapGroup2Value
+	 * @param mapTreat2LsValue
+	 * @param fold 扩大倍数
+	 * @return
+	 */
 	private List<List<Double>> normalizeLsDouble(Map<String, double[]> mapGroup2Value, 
-			ArrayListMultimap<String, Double> mapTreat2LsValue) {
+			ArrayListMultimap<String, Double> mapTreat2LsValue, int fold) {
 		List<List<Double>> lslsValue = new ArrayList<>();
 		for (String group : mapTreat2LsValue.keySet()) {
 			List<Double> lsDouble = mapTreat2LsValue.get(group);

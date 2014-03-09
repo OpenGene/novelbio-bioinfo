@@ -72,7 +72,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	/** 是否合并文件--也就是不考虑重复，默认为true，也就是合并文件 */
 	boolean isCombine = true;
 	
-	private static final String debug = "LOC_Os10g39420";
+	private static final String debug = "PhKgamma";
 	
 	public ExonSplicingTest(ExonCluster exonCluster) {
 		this.exonCluster = exonCluster;
@@ -182,6 +182,9 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	public Double getAndCalculatePvalue() {
 		if (exonCluster.getParentGene().getName().contains(debug)) {
 			logger.debug("stop");
+		}
+		if (!lsPvalueInfo.isEmpty()) {
+			return lsPvalueInfo.get(0).calculatePvalue();
 		}
 		for (SplicingAlternativeType splicingType : exonCluster.getSplicingTypeSet()) {
 			PvalueCalculate pvaCalculate = new PvalueCalculate();
@@ -503,7 +506,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		private double getPvaluePropExp() {
 			double prop = 0.5;
 			//TODO 将ratio换掉，把exonCluster.getLength()换成difSite.Length();
-			double ratio = (double)exonCluster.getLength()/(readsLength * 1.5);
+			double ratio = (double)exonCluster.getLength()/(readsLength * 2);
 			if (ratio > 1) {
 				prop = Math.pow(0.5, 1/ratio);
 			} else {

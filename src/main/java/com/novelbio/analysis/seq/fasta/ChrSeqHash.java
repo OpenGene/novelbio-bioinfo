@@ -68,9 +68,6 @@ public class ChrSeqHash extends SeqHashAbs {
 		if (FileOperate.isFileExist(getChrIndexFileName()) &&
 				FileOperate.getTimeLastModify(getChrIndexFileName()) > FileOperate.getTimeLastModify(chrFile)) {
 			indexFile = getChrIndexFileName();
-		} else if (FileOperate.isFileExist(getChrIndexFileNameFaidx()) &&
-				FileOperate.getTimeLastModify(getChrIndexFileNameFaidx()) > FileOperate.getTimeLastModify(chrFile)) {
-			indexFile = getChrIndexFileNameFaidx();
 		} else {
 			createIndex(chrFile, getChrIndexFileName());
 			indexFile = getChrIndexFileName();
@@ -334,9 +331,6 @@ public class ChrSeqHash extends SeqHashAbs {
 	}
 	
 	private String getChrIndexFileName() {
-		return chrFile + ".index";
-	}
-	private String getChrIndexFileNameFaidx() {
 		return chrFile + ".fai";
 	}
 	

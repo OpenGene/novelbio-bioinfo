@@ -245,7 +245,10 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		lsOutFile = plotDifParams();
 	}
 	
-	/** 计算差异 */
+	/** 计算差异
+	 * 包含了{@link #generateGeneAndScript()}和{@link #runAndModifyResult()}
+	 * 两个方法
+	 */
 	public void calculateResult() {
 		if (calculate) {
 			return;
@@ -340,7 +343,6 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 				Map<String, Double> mapTime2value = mapTime2AvgValue(geneID2Info);
 				mapGeneID_2_Sample2MeanValue.put(geneName, mapTime2value);
 			} catch (Exception e) {
-				// TODO: handle exception
 			}
 		}
 	}

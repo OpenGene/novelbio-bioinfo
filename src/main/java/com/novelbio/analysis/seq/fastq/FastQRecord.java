@@ -114,7 +114,9 @@ public class FastQRecord implements Cloneable {
 	public SeqFasta getSeqFasta() {
 		return seqFasta;
 	}
-	
+	public String getName() {
+		return seqFasta.getSeqName();
+	}
 	/**
 	 * 设定序列质量字符串，用phred格式设定
 	 * @param fastaQuality

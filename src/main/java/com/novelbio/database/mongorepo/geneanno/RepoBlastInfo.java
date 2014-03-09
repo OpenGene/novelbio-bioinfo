@@ -29,6 +29,9 @@ public interface RepoBlastInfo extends PagingAndSortingRepository<BlastInfo, Str
 	@Query(value="{ 'queryID' : ?0, 'queryTax' : ?1, 'subjectID' : ?2, 'subjectTax' : ?3}")
 	BlastInfo findByQueryIDAndSubID(String queryID, int queryTax, String subjectID, int subjectTax);
 	
+	@Query(value="{ 'blastFileId' : ?0}")
+	List<BlastInfo> findByBlastFileId(String blastFileId);
+	
 	@Query(value="{ 'queryID' : ?0, 'queryTax' : ?1, 'subjectID' : ?2, 'subjectTax' : ?3}")
 	void findAndRemove(String queryID, int queryTax, String subjectID, int subjectTax);
 }

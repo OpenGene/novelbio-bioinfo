@@ -3,12 +3,13 @@ package com.novelbio.analysis.seq.mapping;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.novelbio.analysis.IntCmdSoft;
+import com.novelbio.analysis.seq.fasta.format.NCBIchromFaChangeFormat;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
@@ -21,8 +22,8 @@ public class MapSplice implements MapRNA {
 	String exePath = "";
 	/** bowtie就是用来做索引的 */
 	MapBowtie mapBowtie = new MapBowtie();
-	String fileRefSep;
-	String indexFile;
+	String chrFile;
+	
 	String outFile;
 	int indelLen = 6;
 	int threadNum = 10;
@@ -34,9 +35,10 @@ public class MapSplice implements MapRNA {
 	List<FastQ> lsRightRun = new ArrayList<>();
 	//转换的文件放在这个里面，最后要被删掉
 	List<String> lsTmp = new ArrayList<>();
-	
+	boolean isPrepare = false;
 	int mismatch = 3;
 	boolean fusion = false;
+	String gtfFile;
 	int seedLen = 22;
 	Species species;
 	@Override
@@ -59,13 +61,14 @@ public class MapSplice implements MapRNA {
 	}
 	/** 这个输入的应该是一个包含分割Chr文件的文件夹 */
 	@Override
-	public void setRefIndex(String index) {
-		mapBowtie.setChrIndex(index);
+	public void setRefIndex(String chrFile) {
+		this.chrFile = chrFile;
+		mapBowtie.setChrIndex(chrFile);
 	}
 	
 	@Override
 	public void setGtf_Gene2Iso(String gtfFile) {
-		fileRefSep = gtfFile;
+		this.gtfFile = gtfFile;
 	}
 	@Override
 	public void setOutPathPrefix(String outPathPrefix) {
@@ -102,6 +105,7 @@ public class MapSplice implements MapRNA {
 	public void setLeftFq(List<FastQ> lsLeftFastQs) {
 		if (lsLeftFastQs == null) return;
 		this.lsLeftFq = lsLeftFastQs;
+		isPrepare = false;
 	}
 	/**
 	 * 设置右端的序列，设置会把以前的清空
@@ -110,6 +114,7 @@ public class MapSplice implements MapRNA {
 	public void setRightFq(List<FastQ> lsRightFastQs) {
 		if (lsRightFastQs == null) return;
 		this.lsRightFq = lsRightFastQs;
+		isPrepare = false;
 	}
 
 	@Override
@@ -124,11 +129,20 @@ public class MapSplice implements MapRNA {
 		mapBowtie.IndexMake();
 		
 		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
+		cmdOperate.setGetLsErrOut();
 		cmdOperate.run();
+		if (!cmdOperate.isFinishedNormal()) {
+			FileOperate.DeleteFileFolder(FileOperate.addSep(outFile) + "tmp");
+			throw new ExceptionCmd("error running mapsplice:" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
+		}
 		clearTmpReads_And_MoveFile();
 	}
 	
 	private void prepareReads() {
+		if (isPrepare) {
+			return;
+		}
+		isPrepare = true;
 		lsLeftRun.clear();
 		lsRightRun.clear();
 		lsTmp.clear();
@@ -162,6 +176,7 @@ public class MapSplice implements MapRNA {
 		String parentPath = FileOperate.getParentPathName(outFile);
 		FileOperate.moveFile(FileOperate.addSep(outFile) + "alignments.bam", parentPath, prefix + MapSpliceSuffix,false);
 		FileOperate.moveFile(FileOperate.addSep(outFile) + "junctions.txt", parentPath, prefix + "_junctions.txt",false);
+		FileOperate.DeleteFileFolder(FileOperate.addSep(outFile) + "tmp");
 	}
 	
 	private FastQ deCompressFq(FastQ fastQ) {
@@ -178,8 +193,16 @@ public class MapSplice implements MapRNA {
 	}
 	
 	private String[] getRefseq() {
+		String fileRefSep = null;
 		if (species != null) {
 			fileRefSep = species.getChromSeqSep();
+		} else {
+			fileRefSep = FileOperate.addSep(FileOperate.changeFileSuffix(chrFile, "_sep", ""));
+			if (!FileOperate.isFileDirectory(fileRefSep)) {
+				NCBIchromFaChangeFormat ncbIchromFaChangeFormat = new NCBIchromFaChangeFormat();
+				ncbIchromFaChangeFormat.setChromFaPath(chrFile, "");
+				ncbIchromFaChangeFormat.writeToSepFile(fileRefSep);
+			}
 		}
 		return new String[]{"-c", fileRefSep};
 	}
@@ -188,6 +211,12 @@ public class MapSplice implements MapRNA {
 	}
 	private String[] getThreadNum() {
 		return new String[]{"-p", threadNum + ""};
+	}
+	private String[] getGtfFile() {
+		if (gtfFile != null) {
+			return new String[]{"--gene-gtf", gtfFile};
+		}
+		return null;
 	}
 	private String[] getOutPath() {
 		return new String[]{"-o", outFile};
@@ -254,6 +283,7 @@ public class MapSplice implements MapRNA {
 
 	@Override
 	public List<String> getCmdExeStr() {
+		prepareReads();
 		List<String> lsCmd = new ArrayList<>();
 		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
 		lsCmd.add(cmdOperate.getCmdExeStr());

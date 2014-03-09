@@ -97,25 +97,30 @@ public class MapBwa extends MapDNA {
 		if ( leftCombFq != null && (singleEnd || (!singleEnd && rightCombFq != null))) {
 			return;
 		}
-		
+		String outPath = FileOperate.getPathName(outFileName);
 		if (lsLeftFq.size() == 1) {
 			leftCombFq = lsLeftFq.get(0).getReadFileName();
 		} else {
-			leftCombFq = combSeq(singleEnd, true, prefix, lsLeftFq);
+			leftCombFq = combSeq(outPath, singleEnd, true, prefix, lsLeftFq);
 		}
 		if (lsRightFq.size() == 1) {
 			rightCombFq = lsRightFq.get(0).getReadFileName();
 		} else {
-			rightCombFq = combSeq(singleEnd, false, ExePath, lsRightFq);
+			rightCombFq = combSeq(outPath, singleEnd, false, prefix, lsRightFq);
 		}
 	}
 	
 	/** 将输入的fastq文件合并为一个 */
-	private static String combSeq(boolean singleEnd, boolean left, String prefix, List<FastQ> lsFastq) {
+	private static String combSeq(String outPath, boolean singleEnd, boolean left, String prefix, List<FastQ> lsFastq) {
 		if (lsFastq == null || lsFastq.size() == 0) {
 			return null;
 		}
-		String fastqFile = FileOperate.getParentPathName(lsFastq.get(0).getReadFileName()) + prefix;
+		String fastqFile = outPath + prefix;
+		if (prefix.equals("")) {
+			fastqFile = fastqFile + "combine";
+		} else {
+			fastqFile = fastqFile + "_combine";
+		}
 		if (singleEnd) {
 			fastqFile += ".fq.gz";
 		} else {
@@ -126,7 +131,7 @@ public class MapBwa extends MapDNA {
 			}
 		}
 
-		FastQ fastqComb = new FastQ(fastqFile);
+		FastQ fastqComb = new FastQ(fastqFile, true);
 		for (FastQ fastQ : lsFastq) {
 			for (FastQRecord fastQRecord : fastQ.readlines()) {
 				fastqComb.writeFastQRecord(fastQRecord);

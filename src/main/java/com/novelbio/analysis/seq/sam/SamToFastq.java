@@ -8,12 +8,17 @@ import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.fileOperate.FileOperate;
 
+/**
+ * 在没有排序的情况下，非unique mapping只会输出一条reads
+ * @author zong0jie
+ *
+ */
 public class SamToFastq implements AlignmentRecorder {
 	private static final Logger logger = Logger.getLogger(SamToFastq.class);
 	/** 是否仅挑选没有mapping上的reads */
 	boolean justUnMapped = false;
 	FastQ fastQ;
-	
+	FastQRecord lastFastqRecord;
 	/**
 	 * 是否仅需要unMapped，默认为false
 	 * @param justUnMapped
@@ -41,13 +46,23 @@ public class SamToFastq implements AlignmentRecorder {
 	}
 	@Override
 	public void addAlignRecord(AlignRecord alignRecord) {
+		FastQRecord fastQRecord = null;
 		if (!justUnMapped || (justUnMapped && !alignRecord.isMapped())) {
-			FastQRecord fastQRecord = alignRecord.toFastQRecord();
-			if (!fastQRecord.isValidate()) {
-				logger.error("出错" + alignRecord.toString());
+			if (!alignRecord.isUniqueMapping() && lastFastqRecord != null && 
+					alignRecord.getSeqFasta().getSeqName().equals(lastFastqRecord.getName())
+					&& alignRecord.getSeqFasta().toString().equalsIgnoreCase(lastFastqRecord.getSeqFasta().toString())
+					) {
+				//不写入文本
+				fastQRecord = alignRecord.toFastQRecord();
+			} else {
+				fastQRecord = alignRecord.toFastQRecord();
+				if (!fastQRecord.isValidate()) {
+					logger.error("出错" + alignRecord.toString());
+				}
+				fastQ.writeFastQRecord(fastQRecord);
+				fastQRecord = null;
 			}
-			fastQ.writeFastQRecord(fastQRecord);
-			fastQRecord = null;
+			lastFastqRecord = fastQRecord;
 		}
 	}
 	

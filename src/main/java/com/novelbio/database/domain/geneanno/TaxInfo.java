@@ -1,12 +1,13 @@
 package com.novelbio.database.domain.geneanno;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.novelbio.database.service.servgeneanno.ManageTaxID;
+import com.novelbio.database.service.servgeneanno.IManageSpecies;
+import com.novelbio.database.service.servgeneanno.ManageSpecies;
 
 /**
  * 有关taxID的表格
@@ -119,18 +120,18 @@ public class TaxInfo implements Cloneable {
 	public boolean isHaveMiRNA() {
 		return isHaveMiRNA;
 	}
-	public void update() {
-		ManageTaxID servTaxID = ManageTaxID.getInstance();
-		servTaxID.update(this);
+	public void save() {
+		IManageSpecies servTaxID = ManageSpecies.getInstance();
+		servTaxID.saveTaxInfo(this);
 	}
 
 	/**
 	 * 返回taxID对常用名
 	 * @return
 	 */
-	public static HashMap<Integer,String> getHashTaxIDName() {
-		ManageTaxID servTaxID = new ManageTaxID();
-		return servTaxID.getHashTaxIDName();
+	public static Map<Integer,String> getMapTaxIDName() {
+		IManageSpecies servTaxID = ManageSpecies.getInstance();
+		return servTaxID.getMapTaxIDName();
 	}
 
 	/**

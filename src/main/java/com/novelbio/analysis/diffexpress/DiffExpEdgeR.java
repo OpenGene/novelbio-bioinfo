@@ -83,6 +83,11 @@ public class DiffExpEdgeR extends DiffExpAbs {
 		return lsResult;
 	}
 	
+	public void generateGeneAndScript() {
+		setNormalizeCoef();
+		super.generateGeneAndScript();
+	}
+	
 	public void calculateResult() {
 		setNormalizeCoef();
 		super.calculateResult();
@@ -222,6 +227,7 @@ public class DiffExpEdgeR extends DiffExpAbs {
 			String geneID = tmpResult[0].replace("\"", "");
 			tmpResult[1] = mapGeneID_2_Sample2MeanValue.get(geneID).get(treatName) + "";
 			tmpResult[2] = mapGeneID_2_Sample2MeanValue.get(geneID).get(controlName) + "";
+			
 			if (!tmpResult[2].equals("0")) {
 				setLogFC(tmpResult);
 			}

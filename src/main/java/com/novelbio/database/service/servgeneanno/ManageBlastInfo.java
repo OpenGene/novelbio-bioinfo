@@ -87,7 +87,9 @@ public class ManageBlastInfo {
 //		}
 //		return null;
 //	}
-	
+	public List<BlastInfo> queryBlastInfoLsByBlastFileId(String blastFileId) {
+		return repoBlastInfo.findByBlastFileId(blastFileId);
+	}
 	/**
 	 * 查找符合条件的List BlastInfo，已经去重复了
 	 * @param queryID 待查找ID，一般是genUniID
@@ -164,6 +166,7 @@ public class ManageBlastInfo {
 				int taxID = Integer.parseInt(blastFileInfo.getQueryTaxID());
 				Species species = new Species(taxID);
 				name = species.getNameLatin();
+				continue;
 			} catch (Exception e) {}
 			
 			if (name == null || name.equals("")) {

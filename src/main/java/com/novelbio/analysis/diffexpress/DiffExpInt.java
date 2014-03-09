@@ -49,8 +49,9 @@ public interface DiffExpInt {
 	
 	public List<String> getResultFileName();
 	
-	/** 仅供AOP拦截使用，外界不要调用
-	 * 拦截在其完成之后
+	/** 计算差异
+	 * 包含了{@link #generateGeneAndScript()}和{@link #runAndModifyResult()}
+	 * 两个方法
 	 */
 	public void calculateResult();
 		

@@ -1,6 +1,7 @@
 package com.novelbio.database.model.species;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -18,13 +19,13 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.SpeciesFile;
-import com.novelbio.database.domain.geneanno.TaxInfo;
 import com.novelbio.database.domain.geneanno.SpeciesFile.ExtractSmallRNASeq;
+import com.novelbio.database.domain.geneanno.TaxInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.service.servgeneanno.IManageSpecies;
 import com.novelbio.database.service.servgeneanno.ManageBlastInfo;
 import com.novelbio.database.service.servgeneanno.ManageSpecies;
-import com.novelbio.database.service.servgeneanno.ManageTaxID;
 import com.novelbio.generalConf.PathDetailNBC;
 /**
  * 物种信息，包括名字，以及各个文件所在路径
@@ -42,7 +43,6 @@ public class Species implements Cloneable {
 	ArrayList<String[]> lsVersion = new ArrayList<String[]>();
 	/** key：版本ID,通通小写  value：具体的信息 */
 	Map<String, SpeciesFile> mapVersion2Species = new LinkedHashMap<String, SpeciesFile>();
-	ManageTaxID servTaxID = new ManageTaxID();
 	
 	String sepVersionAndYear = "_year_";
 	
@@ -154,7 +154,7 @@ public class Species implements Cloneable {
 		mapVersion2Species.clear();
 		if (!isTaxInfoExist) {
 			try {
-				taxInfo = servTaxID.queryTaxInfo(taxID);
+				taxInfo = ManageSpecies.getInstance().queryTaxInfo(taxID);
 			} catch (Exception e) {
 				logger.error("cannot connect to database");
 				e.printStackTrace();
@@ -526,11 +526,14 @@ public class Species implements Cloneable {
 		}
 	
 		//按照物种名进行排序
-		TreeMap<String, Species> treemapName2Species = new TreeMap<String, Species>();
+		TreeMap<String, Species> treemapName2Species = new TreeMap<String, Species>(new Comparator<String>() {
+			public int compare(String o1, String o2) {
+				return o1.toLowerCase().compareTo(o2.toLowerCase());
+			}
+		});
 		
-		ManageTaxID servTaxID = new ManageTaxID();
-		ManageSpecies servSpeciesFile = ManageSpecies.getInstance();
-		List<TaxInfo> lsTaxID = servTaxID.getLsAllTaxID();
+		IManageSpecies servSpeciesFile = ManageSpecies.getInstance();
+		List<TaxInfo> lsTaxID = servSpeciesFile.getLsAllTaxID();
 		
 		Set<Integer> setTaxID = new HashSet<Integer>();
 		for (TaxInfo taxInfo : lsTaxID) {
@@ -650,7 +653,7 @@ public class Species implements Cloneable {
 			m = hashName2ColNum.get("ishavemirna");
 			taxInfo.setHaveMiRNA(info[5] != null && info[5].equalsIgnoreCase("true"));
 			//升级
-			taxInfo.update();
+			taxInfo.save();
 		}
 	}
 	

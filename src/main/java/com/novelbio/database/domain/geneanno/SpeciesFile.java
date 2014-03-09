@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -34,7 +35,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.database.service.servgeneanno.IManageSpecies;
 import com.novelbio.database.service.servgeneanno.ManageSpecies;
 import com.novelbio.generalConf.PathDetailNBC;
 
@@ -76,8 +77,6 @@ public class SpeciesFile {
 	Map<String, String[]> mapDB2GffTypeAndFile = new LinkedHashMap<>();
 	/** 用来将小写的DB转化为正常的DB，使得getDB获得的字符应该是正常的DB */
 	Map<String, String> mapGffDBLowCase2DBNormal = new LinkedHashMap<>();
-	/** 是否有对应的miRNA序列 */
-	boolean isHaveMiRNA;
 	
 	/** 保存不同mapping软件所对应的索引 */
 	@Transient
@@ -107,12 +106,7 @@ public class SpeciesFile {
 	 * 然后以后把speciesFile写在 /media/hdfs/nbCloud/public/nbcplatform/这个文件夹下就行
 	 */
 	@Transient
-	String pathParent;
-	
-	/** genome文件夹所在的路径 */
-	public SpeciesFile(String pathParent) {
-		this.pathParent = FileOperate.addSep(pathParent);
-	}
+	String pathParent = PathDetailNBC.getGenomePath();
 	
 	/** mongodb的ID */
 	public void setId(String id) {
@@ -135,25 +129,51 @@ public class SpeciesFile {
 	public String getVersion() {
 		return version;
 	}
-	public void setHaveMiRNA(boolean isHaveMiRNA) {
-		this.isHaveMiRNA = isHaveMiRNA;
+	////////////   以下方法仅用于视图   /////////////////////////
+	public String getChromSeqRaw() {
+		return chromSeq;
 	}
-	public boolean isHaveMiRNA() {
-		return isHaveMiRNA;
+	public String getGffRepeatFileRaw() {
+		return gffRepeatFile;
 	}
+	public String getRefseqFileAllIsoRaw() {
+		return refseqFileAllIso;
+	}
+	public String getRefseqFileOneIsoRaw() {
+		return refseqFileOneIso;
+	}
+	public String getRefseqNCfileRaw() {
+		return refseqNCfile;
+	}
+	/////////////////////////////////////
 	/**
 	 * @return
 	 * key: chrID 小写
 	 * value： length
 	 */
 	public Map<String, Long> getMapChromInfo() {
-		if (mapChrID2ChrLen.size() == 0) {
+		if (!mapChrID2ChrLen.isEmpty()) {
+			return mapChrID2ChrLen;
+		}
+		String chrFile = getChromSeqFile();
+		if (FileOperate.isFileExistAndBigThanSize(chrFile + ".fai", 0)) {
+			mapChrID2ChrLen = new LinkedHashMap<>();
+			TxtReadandWrite txtRead = new TxtReadandWrite(chrFile + ".fai");
+			for (String content : txtRead.readlines()) {
+				String[] ss = content.split("\t");
+				mapChrID2ChrLen.put(ss[0], Long.parseLong(ss[1]));
+			}
+			txtRead.close();
+		} else if (FileOperate.isFileExistAndBigThanSize(chrFile, 0)) {
 			SeqHash seqHash = new SeqHash(getChromSeqFile(), " ");
 			mapChrID2ChrLen = seqHash.getMapChrLength();
 			seqHash.close();
 		}
+			
 		return mapChrID2ChrLen;
 	}
+	
+	
 	
 	public void setChromSeq(String chromSeq) {
 		this.chromSeq = chromSeq;
@@ -300,7 +320,6 @@ public class SpeciesFile {
 		String indexChromFa = pathParent + mapSoftware2IndexChrom.get(softMapping);
 		if (!FileOperate.isFileExist(indexChromFa)) {
 			indexChromFa = creatAndGetSeqIndex(false, softMapping, getChromSeqFile(), mapSoftware2IndexChrom);
-			update();
 		}
 		return indexChromFa;
 	}
@@ -324,9 +343,6 @@ public class SpeciesFile {
 				mapSoft2Seq = mapSoftware2IndexRefOneIso;
 			}
 			indexRefseqThis = creatAndGetSeqIndex(true, softMapping, getRefSeqFile(isAllIso, false), mapSoft2Seq);
-			if (indexRefseqThis != null && !indexRefseqThis.equals("")) {
-				update();
-			}
 		}
 		return indexRefseqThis;
 	}
@@ -464,7 +480,7 @@ public class SpeciesFile {
 			gffChrSeq.setGetSeqGenomWide();
 			gffChrSeq.setOutPutFile(pathParent + refseq);
 			gffChrSeq.run();
-			update();
+			save();
 			gffChrAbs.close();
 			gffChrAbs = null;
 			gffChrSeq = null;
@@ -559,8 +575,8 @@ public class SpeciesFile {
 		return rfamFile;
 	}
 	
-	public void update() {
-		ManageSpecies.getInstance().update(this);
+	public void save() {
+		ManageSpecies.getInstance().saveSpeciesFile(this);
 	}
 	
 	/**
@@ -650,16 +666,16 @@ public class SpeciesFile {
         return true;
 	}
 	
+	public static List<SpeciesFile> findByTaxID(int taxID) {
+		IManageSpecies manageSpecies = ManageSpecies.getInstance();
+		return manageSpecies.queryLsSpeciesFile(taxID);
+	}
+	public static SpeciesFile findByTaxIDVersion(int taxID, String version) {
+		IManageSpecies manageSpecies = ManageSpecies.getInstance();
+		return manageSpecies.querySpeciesFile(taxID, version);
+	}
 	/** 提取小RNA的一系列序列 */
 	static public class ExtractSmallRNASeq {
-		public static void main(String[] args) {
-			ExtractSmallRNASeq extractSmallRNASeq = new ExtractSmallRNASeq();
-			Species species = new Species(10090);
-			extractSmallRNASeq.setMiRNAdata("/media/winE/NBCplatform/genome/otherResource/sRNA/miRNA.dat", species.getNameLatin());
-			extractSmallRNASeq.setOutPathPrefix("/media/winE/NBCplatform/genome/otherResource/sRNA/poplar");
-			extractSmallRNASeq.getSeq();
-		}
-		
 		String RNAdataFile = "";
 		/** 用于在mir.dat文件中查找miRNA的物种名 */
 		String miRNAdataSpeciesName = "";
