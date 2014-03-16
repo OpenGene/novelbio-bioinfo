@@ -13,7 +13,7 @@ public class SnpFilter {
 	private static final Logger logger = Logger.getLogger(SnpFilter.class);
 	
 	/** 判定为纯合snp的最少reads数 */
-	int Snp_Homo_ReadsAllNumMin = 3;
+	int Snp_Homo_ReadsAllNumMin = 5;
 	/** 判定为Snp所含有的ref数量不得大于该数值 */
 	int Snp_Homo_Contain_RefNumMax = 2;
 	/**判定为纯合snp所含有的ref比例不得大于该数值 */

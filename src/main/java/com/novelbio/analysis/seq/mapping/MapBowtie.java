@@ -33,9 +33,6 @@ public class MapBowtie extends MapDNA {
 	/** bowtie所在路径 */
 	String ExePathBowtie = "";
 	
-	List<FastQ> lsLeftFq = new ArrayList<>();
-	List<FastQ> lsRightFq = new ArrayList<>();
-	
 	List<String> lsSampleGroup = new ArrayList<>();
 	/** 非unique mapping的话，取几个 */
 	int mappingNum = 0;
@@ -92,16 +89,6 @@ public class MapBowtie extends MapDNA {
 		this.threadNum = threadNum;
 	}
 	
-	public void setFqFile(FastQ leftFq, FastQ rightFq) {
-		this.lsLeftFq.clear();
-		this.lsRightFq.clear();
-		if (leftFq != null) {
-			lsLeftFq.add(leftFq);
-		}
-		if (rightFq != null) {
-			lsRightFq.add(rightFq);
-		}
-	}
 	/**
 	 * 设置左端的序列，设置会把以前的清空
 	 * @param fqFile
@@ -237,6 +224,9 @@ public class MapBowtie extends MapDNA {
 		return lsSampleGroup;
 	}
 	private String[] getThreadNum() {
+		if (threadNum <= 0) {
+			return null;
+		}
 		return new String[]{"-p", threadNum + ""};
 	}
 	

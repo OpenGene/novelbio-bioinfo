@@ -247,6 +247,7 @@ public class MiRNAmapPipline implements IntCmdSoft {
 	}
 	
 	/**
+	 * 默认走的very sensitive
 	 * @param lsCmd 将本次mapping产生的cmd命令写入该list中
 	 * @param isUseOldResult 如果结果文件存在，是否重跑 ture表示不重跑
 	 * @param samFileStatistics
@@ -268,6 +269,7 @@ public class MiRNAmapPipline implements IntCmdSoft {
 		mapBowtie.setExePath(exePath);
 		mapBowtie.setGapLength(3);
 		mapBowtie.setThreadNum(threadNum);
+		mapBowtie.setSensitive(MapBowtie.Sensitive_Very_Sensitive);
 		if (samFileStatistics != null) {
 			samFileStatistics.setCorrectChrReadsNum(true);
 			samFileStatistics.initial();

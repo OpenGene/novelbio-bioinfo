@@ -14,6 +14,8 @@ public enum GffType {
 	GTF,
 	/** UCSC的gene list，必须排过序 */
 	UCSC,
+	/** 暂时只支持输出，不支持输入 */
+	BED,
 	/** 根据蛋白序列和RNA序列产生的GFF信息 */
 	Fasta;
 	

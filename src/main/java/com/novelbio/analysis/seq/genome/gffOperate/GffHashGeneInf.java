@@ -55,7 +55,7 @@ public interface GffHashGeneInf  {
 	 */
 	int getTaxID();
 
-	void writeToGTF(String GTFfile, String title);
+
 	/**
 	 * <b>该方法待修正</b>
 	 * 将一个染色体中的 含有不止一个转录本的 基因信息写入文本，按照GFF格式
@@ -76,5 +76,8 @@ public interface GffHashGeneInf  {
 	 * @param title
 	 */
 	void writeToGTF(List<String> lsChrID, String GTFfile, String title);
+	void writeToGTF(String GTFfile, String title);
+
+	void writeToBED(List<String> lsChrID, String BEDfile, String title);
 
 }

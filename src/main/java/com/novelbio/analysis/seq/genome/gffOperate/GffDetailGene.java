@@ -56,8 +56,8 @@ import com.novelbio.generalConf.TitleFormatNBC;
  */
 @Document(collection="gffgene")
 @CompoundIndexes({
-    @CompoundIndex(unique = false, name = "taxid_version_chr_start_end_idx", def = "{'taxID': 1, 'version': 1, 'parentName': 1, 'numberstart': 1, 'numberend': 1}"),
-    @CompoundIndex(unique = false, name = "taxid_version_name_idx", def = "{'taxID': 1, 'version': 1, 'setNameLowcase': 1}")
+    @CompoundIndex(unique = false, name = "taxid_version_dbinfo_chr_start_end_idx", def = "{'taxID': 1, 'version': 1, 'dbinfo': 1, 'parentName': 1, 'numberstart': 1, 'numberend': 1}"),
+    @CompoundIndex(unique = false, name = "taxid_version_dbinfo_name_idx", def = "{'taxID': 1, 'version': 1, 'dbinfo': 1, 'setNameLowcase': 1}")
  })
 public class GffDetailGene extends ListDetailAbs {
 	private final static Logger logger = Logger.getLogger(GffDetailGene.class);
@@ -73,9 +73,12 @@ public class GffDetailGene extends ListDetailAbs {
 	
 	@Indexed(unique = false)
 	int taxID = 0;
-	/** 保存数据库的时候使用 */
+	/** 保存数据库的时候使用，本Gff对应的物种版本 */
 	@Indexed(unique = false)
 	String version;
+	/** 保存数据库的时候使用，本Gff对应的文件来源，如来自NCBI或者Eensembl等 */
+	@Indexed(unique = false)
+	String dbinfo;
 	
 	@Transient
 	boolean removeDuplicateIso = false;
@@ -106,9 +109,19 @@ public class GffDetailGene extends ListDetailAbs {
 	public void setVersion(String version) {
 		this.version = version;
 	}
+
 	public String getVersion() {
 		return version;
 	}
+	
+	public void setDbinfo(String dbinfo) {
+		this.dbinfo = dbinfo;
+	}
+	
+	public String getDbinfo() {
+		return dbinfo;
+	}
+	
 	/** 仅供数据库使用 */
 	public void setId(String id) {
 		this.id = id;
@@ -889,15 +902,29 @@ public class GffDetailGene extends ListDetailAbs {
 		return mapCompInfo2GeneIso.get(lsCompInfo.get(0));
 	}
 	
-	//TODO
-//	public ArrayListMultimap<String, GffGeneIsoInfo> getMapIsoGroup() {
-//		
-//	}
-//	
+	/**
+	 * 将本基因输出为bed格式
+	 * @param chrID 染色体名，主要是为了大小写问题，null表示走默认
+	 * @param title
+	 * @return
+	 */
+	public String toBedFormate(String chrID, String title) {
+		String bed = "";
+		int i = 0;
+		for (GffGeneIsoInfo gffGeneIsoInfo : getLsCodSplit()) {
+			gffGeneIsoInfo.sort();
+			if (i++ == 0) {
+				bed = gffGeneIsoInfo.getBedFormat(chrID, title);
+			} else {
+				bed = bed + TxtReadandWrite.ENTER_LINUX + gffGeneIsoInfo.getBedFormat(chrID, title);
+			}			
+		}
+		return bed;
+	}
+
 	/**
 	 * 将本基因输出为gtf文件，就这个基因的几行
 	 * @param chrID 染色体名，主要是为了大小写问题，null表示走默认
-	 * @param geneID 自定义基因名字
 	 * @param title
 	 * @return
 	 */
@@ -909,7 +936,6 @@ public class GffDetailGene extends ListDetailAbs {
 		}
 		return geneGTF;
 	}
-
 	
 	//TODO 待修正
 	/**

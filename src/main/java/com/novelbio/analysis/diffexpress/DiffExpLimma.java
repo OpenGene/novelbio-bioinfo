@@ -52,39 +52,39 @@ public class DiffExpLimma extends DiffExpAbs{
 		String[] title = lsAnalysisGeneInfo.get(0);
 		lsAnalysisGeneInfo = removeDuplicate(lsAnalysisGeneInfo.subList(1, lsAnalysisGeneInfo.size()));
 		txtWrite.writefileln(title);
-		//在这里取log
-		if (!isLogValue()) {
-			for (int i = 0; i < lsAnalysisGeneInfo.size(); i++) {
-				String[] info = lsAnalysisGeneInfo.get(i);
-				for (int j = 1; j < info.length; j++) {
-					if (info[j].equalsIgnoreCase("na") || info[j].equalsIgnoreCase("nan") || info[j].equals("null") || info[j].equals("none")) {
-						info[j] = 0 + "";
-					} else {
-						try {
-							double value = Double.parseDouble(info[j]);
+		// 在这里取log
+		for (int i = 0; i < lsAnalysisGeneInfo.size(); i++) {
+			String[] info = lsAnalysisGeneInfo.get(i);
+			for (int j = 1; j < info.length; j++) {
+				if (info[j].equalsIgnoreCase("na") || info[j].equalsIgnoreCase("nan") || info[j].equals("null") || info[j].equals("none")) {
+					info[j] = 0 + "";
+				} else {
+					try {
+						double value = Double.parseDouble(info[j]);
+						if (!isLogValue()) {
 							info[j] = getLogValue(value) + "";
-						} catch (Exception e) {
-							info[j] = 0+"";
 						}
+					} catch (Exception e) {
+						info[j] = 0 + "";
 					}
-				}
-				
-				double sum = 0;
-				boolean biggerThanMinSampleSep = false;
-				for (int m = 1; m < info.length; m++) {
-					double num = Double.parseDouble(info[i]);
-					if (num > minSampleSepNum) {
-						biggerThanMinSampleSep = true;
-					}
-					sum += num;
-				}
-				if ((minSampleSumNum < 0 || sum > minSampleSumNum)
-						&& (minSampleSepNum < 0 || biggerThanMinSampleSep) 
-					) {
-					txtWrite.writefileln(info);
 				}
 			}
+
+			double sum = 0;
+			boolean biggerThanMinSampleSep = false;
+			for (int m = 1; m < info.length; m++) {
+				double num = Double.parseDouble(info[m]);
+				if (num > minSampleSepNum) {
+					biggerThanMinSampleSep = true;
+				}
+				sum += num;
+			}
+			if ((minSampleSumNum < 0 || sum > minSampleSumNum)
+					&& (minSampleSepNum < 0 || biggerThanMinSampleSep)) {
+				txtWrite.writefileln(info);
+			}
 		}
+
 		txtWrite.close();
 	}
 	

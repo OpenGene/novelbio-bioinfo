@@ -312,6 +312,9 @@ public class SamFileStatistics implements AlignmentRecorder {
 		so we make a correction here.
 	 *  */
 	private void modifyChrReadsNum() {
+		if (mapChrID2ReadsNum.isEmpty()) {
+			return;
+		}
 		long numAllChrReads = 0;
 		for (double[] readsNum : mapChrID2ReadsNum.values()) {
 			numAllChrReads += (long)readsNum[0];
@@ -410,6 +413,8 @@ public class SamFileStatistics implements AlignmentRecorder {
 	/** 写junction reads等统计数据 */
 	private List<String[]> getSamTable() {
 		List<String[]> lsTable = new ArrayList<String[]>();
+		java.text.DecimalFormat df =new java.text.DecimalFormat("0.000");  
+
 		try {
 			lsTable.add(new String[] { "Statistics Term", "Result(" + prefix + ")" });
 			long allReads = getReadsNum(MappingReadsType.allReads);
@@ -423,10 +428,10 @@ public class SamFileStatistics implements AlignmentRecorder {
 			lsTable.add(new String[] { "allReads", allReads + "" });
 			lsTable.add(new String[] { "UnMapped", unMapped + "" });
 			lsTable.add(new String[] { "MappedReads", allMappedReads + "" });
-			lsTable.add(new String[] { "MappingRate", (double)allMappedReads/allReads + "" });
+			lsTable.add(new String[] { "MappingRate", df.format((double)allMappedReads/allReads) + "" });
 			if (!(allMappedReads == repeatMapping && repeatMapping < 1)) {
 				lsTable.add(new String[] { "UniqueMapping", uniqueMapping + "" });
-				lsTable.add(new String[] { "UniqueMappingRate", (double)uniqueMapping/allReads + "" });
+				lsTable.add(new String[] { "UniqueMappingRate", df.format((double)uniqueMapping/allReads) + "" });
 				lsTable.add(new String[] { "repeatMapping", repeatMapping + "" });
 			}
 			if (junctionAllMappedReads != 0 && junctionUniqueMapping != 0) {

@@ -154,18 +154,16 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 	public int getMappedReadsWeight() {
 		//Tophat的标记，bowtie2我们会人为标记该flag
 		Integer attrCC = null;
-		attrCC = samRecord.getIntegerAttribute("NH");
 		try {
-			
+			attrCC = samRecord.getIntegerAttribute("NH");
 		} catch (Exception e) { }
 		if (attrCC != null) {
 			numMappedReadsInFile = attrCC;
 			return numMappedReadsInFile;
 		}
 		//mapsplice的标记
-		attrCC = samRecord.getIntegerAttribute("IH");
 		try {
-		
+			attrCC = samRecord.getIntegerAttribute("IH");
 		} catch (Exception e) {}
 		
 		if (attrCC != null) {

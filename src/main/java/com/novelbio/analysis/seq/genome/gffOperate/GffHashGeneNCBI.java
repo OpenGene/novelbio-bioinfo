@@ -221,6 +221,10 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
    private String getChrID(String[] ss) {
 	   String chrID = mapID2ChrID.get(ss[0]);
 	   if (chrID != null) return chrID;
+	   if (ss[0].toLowerCase().startsWith("chr")) {
+		   mapID2ChrID.put(ss[0], ss[0].toLowerCase());
+		   return ss[0].toLowerCase();
+	   }
 	   
 	   try {
 		   if (ss[2].equals("region")) {

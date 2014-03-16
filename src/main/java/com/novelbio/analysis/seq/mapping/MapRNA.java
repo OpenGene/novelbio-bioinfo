@@ -79,4 +79,7 @@ public interface MapRNA extends IntCmdSoft {
 	 * @param gtfFile
 	 */
 	public void setGtf_Gene2Iso(String gtfFile);
+	
+	/** 预测的结果文件的文件名 */
+	public String getFinishName();
 }

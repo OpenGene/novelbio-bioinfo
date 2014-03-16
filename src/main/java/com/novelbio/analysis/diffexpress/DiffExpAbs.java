@@ -534,6 +534,9 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	/** 调用{@link #generateGeneAndScript()}后可以使用 */
 	public List<String> getCmdExeStr() {
 		List<String> lsScript = new ArrayList<>();
+		if (scriptContent == null) {
+			return lsScript;
+		}
 		for (String string : scriptContent.split("\n")) {
 			lsScript.add(string);
 		}

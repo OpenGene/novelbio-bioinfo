@@ -50,7 +50,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		long timeEclipse2 = wuwenwuDrosophilia(true);
 		System.out.println(timeEclipse2);
 		timeEclipse2 = wuwenwuDrosophilia(false);
-//		System.out.println(timeEclipse2);
+		System.out.println(timeEclipse2);
 	}
 	public static long test() {
 		//TODO
@@ -120,10 +120,10 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		return dateUtil.getEclipseTime();
  
 	}
-	public static long wuwenwuDrosophilia(bool53192244e4b02cc50a17d90053192244e4b02cc50a17d90053192244e4b02cc50a17d90053192244e4b02cc50a17d90053192244e4b02cc50a17d900ean isGenerateNewIso) {
+	public static long wuwenwuDrosophilia(boolean isGenerateNewIso) {
 		String path = "/media/hdfs/nbCloud/public/RNA-seq/";
 		List<Align> lsAligns = new ArrayList<>();
-//		lsAligns.add(new Align("X", 16700823, 16730633));
+//		lsAligns.add(new Align("3r", 19867302, 20067382));
 		DateUtil dateUtil = new DateUtil();
 		dateUtil.setStartTime();
 		System.out.println("start");
@@ -142,7 +142,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		exonJunction.addBamSorted("Untreated", path + "Untreated-S4.bam");
 		exonJunction.setCombine(false);
 		exonJunction.setCompareGroups("RNAi", "Untreated");
-		exonJunction.setResultFile(path + "as_test_generate_iso_"+isGenerateNewIso);
+		exonJunction.setResultFile(path + "as_testNew_generate_iso_"+isGenerateNewIso);
 		exonJunction.setgenerateNewIso(isGenerateNewIso);
 
 		exonJunction.run();

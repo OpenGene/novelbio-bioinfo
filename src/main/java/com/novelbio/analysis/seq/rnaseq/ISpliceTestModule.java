@@ -66,11 +66,11 @@ class SpliceTestRepeat implements ISpliceTestModule {
 	static int junctionReadsMinNum = 10;
 	
 	/** 将reads的数量扩大5倍，这样可以获得更多的差异 */
-	static int foldbig = 3;
+	static int foldbig = 2;
 	/** 将reads的数量扩大3倍，这样可以获得更多的差异 */
-	static int foldMid = 3;
+	static int foldMid = 2;
 	/** 如果reads数量过少，可以考虑扩大3倍 */
-	static int foldsmall = 3;
+	static int foldsmall = 2;
 	
 	/** 如果count数超过该值，就标准化 */
 	int normalizedNum = 400;

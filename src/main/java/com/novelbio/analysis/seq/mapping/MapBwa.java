@@ -8,7 +8,6 @@ import org.apache.log4j.Logger;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.sam.SamFile;
@@ -37,9 +36,7 @@ public class MapBwa extends MapDNA {
 	/** bwa所在路径 */
 	String ExePath = "";
 	String[] sampleGroup;
-	List<FastQ> lsLeftFq = new ArrayList<>();
 	String leftCombFq;
-	List<FastQ> lsRightFq = new ArrayList<>();
 	String rightCombFq;
 	
 	MapLibrary mapLibrary = MapLibrary.PairEnd;
@@ -60,17 +57,7 @@ public class MapBwa extends MapDNA {
 	/** 是否将index读入内存，仅对双端有效 */
 	boolean readInMemory = true;
 	
-	public void setFqFile(FastQ leftFq, FastQ rightFq) {
-		this.lsLeftFq.clear();
-		this.lsRightFq.clear();
-		if (leftFq != null) {
-			lsLeftFq.add(leftFq);
-		}
-		if (rightFq != null) {
-			lsRightFq.add(rightFq);
-		}
-	}
-	
+
 	/**
 	 * 设置左端的序列，设置会把以前的清空
 	 * @param fqFile

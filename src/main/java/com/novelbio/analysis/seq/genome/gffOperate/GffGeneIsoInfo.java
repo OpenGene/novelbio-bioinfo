@@ -925,6 +925,61 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			}
 		}
 	}
+	
+	protected String getBedFormat(String chrID, String title) {
+		StringBuilder bed = new StringBuilder();
+		bed.append(chrID).append("\t")
+		.append(getStartAbs() - 1).append("\t")
+		.append(getEndAbs()).append("\t")
+		.append(getName()).append("\t")
+		.append("0").append("\t");
+		if (isCis5to3()) {
+			bed.append("+").append("\t");
+		} else {
+			bed.append("-").append("\t");
+		}
+		if (ismRNA()) {
+			bed.append(Math.min(getATGsite(), getUAGsite()) - 1).append("\t");
+			bed.append(Math.max(getATGsite(), getUAGsite())).append("\t");
+		} else {
+			bed.append(getEndAbs()).append("\t");
+			bed.append(getEndAbs()).append("\t");
+		}
+		bed.append(0).append("\t");
+		bed.append(size()).append("\t");
+		
+		StringBuilder len = new StringBuilder();
+		if (isCis5to3()) {
+			for (ExonInfo exonInfo : this) {
+				len.append(exonInfo.getLength());
+					len.append(",");
+			}
+		} else {
+			for (int i = size() - 1; i >= 0; i--) {
+				ExonInfo exonInfo = get(i);
+				len.append(exonInfo.getLength());
+				len.append(",");
+			}
+		}
+		bed.append(len.toString()).append("\t");
+		
+		StringBuilder site = new StringBuilder();
+		if (isCis5to3()) {
+			for (ExonInfo exonInfo : this) {
+				site.append(exonInfo.getStartAbs() - getStartAbs());
+				site.append(",");
+			}
+		} else {
+			for (int i = size() - 1; i >= 0; i--) {
+				ExonInfo exonInfo = get(i);
+				site.append(exonInfo.getStartAbs() - getStartAbs());
+				site.append(",");
+			}
+		}
+		bed.append(site.toString());
+		return bed.toString();
+	}
+	
 	/**
 	 * 返回该基因的GTF格式文件，末尾有换行符
 	 * @param chrID 染色体名，主要是为了大小写问题，null表示走默认
@@ -955,6 +1010,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	}
 
 	protected String getGTFformatExon(String chrID, String title, String strand) {
+		List<ExonInfo> ls;
 		if (chrID == null) chrID = getRefID();
 		StringBuilder geneExon = new StringBuilder();
 		String prefixInfo = chrID + "\t" + title + "\t";

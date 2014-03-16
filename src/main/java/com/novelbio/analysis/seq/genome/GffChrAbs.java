@@ -51,7 +51,7 @@ public class GffChrAbs implements Closeable {
 
 	public void setTaxID(int taxID) {
 		this.species = new Species(taxID);
-		setGffFile(species.getTaxID(), species.getVersion(), species.getGffType(), species.getGffFile());
+		setGffFile(species.getTaxID(), species.getVersion(), species.getGffDB(), species.getGffType(), species.getGffFile());
 		setChrFile(species.getChromSeq(), " ");
 	}
 	
@@ -74,7 +74,7 @@ public class GffChrAbs implements Closeable {
 		}
 
 		this.species = species.clone();
-		setGffFile(species.getTaxID(), species.getVersion(), species.getGffType(), species.getGffFile());
+		setGffFile(species.getTaxID(), species.getVersion(), species.getGffDB(), species.getGffType(), species.getGffFile());
 		setChrFile(species.getChromSeq(), " ");
 	}
 
@@ -113,9 +113,9 @@ public class GffChrAbs implements Closeable {
 	public SeqHash getSeqHash() {
 		return seqHash;
 	}
-	public void setGffFile(int taxID, String version, GffType gffType, String gffFile) {
+	public void setGffFile(int taxID, String version, String dbinfo, GffType gffType, String gffFile) {
 		if (FileOperate.isFileExist(gffFile)) {
-			gffHashGene = new GffHashGene(taxID, version, gffType, gffFile);
+			gffHashGene = new GffHashGene(taxID, version, dbinfo, gffType, gffFile);
 		}
 	}
 	
@@ -142,22 +142,33 @@ public class GffChrAbs implements Closeable {
 		String pathGFF = gffHashGene.getGffFilename();
 		String outGTF = FileOperate.changeFileSuffix(pathGFF, "", "gtf");
 		if (!FileOperate.isFileExistAndBigThanSize(outGTF, 10)) {
-			writeGTFfile(outGTF);
+			writeToFile(outGTF, GffType.GTF);
 		}
 		return outGTF;
 	}
-	
+	//TODO 没有考虑并发
+	public String getBedFile() {
+		if (gffHashGene == null) {
+			return null;
+		}
+		String pathGFF = gffHashGene.getGffFilename();
+		String outGTF = FileOperate.changeFileSuffix(pathGFF, "", "bed");
+		if (!FileOperate.isFileExistAndBigThanSize(outGTF, 10)) {
+			writeToFile(outGTF, GffType.BED);
+		}
+		return outGTF;
+	}
 	/** 务必保证GffGene存在
 	 * 
 	 * @param outFile
 	 * @return 是否成功写入
 	 */
-	private void writeGTFfile(String outFile) {
+	private void writeToFile(String outFile, GffType gffType) {
 		List<String> lsSeqName = null;
 		if (seqHash != null) {
 			lsSeqName = seqHash.getLsSeqName();
 		}
-		gffHashGene.writeToGTF(lsSeqName, outFile);
+		gffHashGene.writeToFile(gffType, lsSeqName, outFile);
 	}
 	/**
 	 * 获得指定文件内的坐标信息 如果两个位点终点的间距在distanceMapInfo以内，就会删除那个权重低的

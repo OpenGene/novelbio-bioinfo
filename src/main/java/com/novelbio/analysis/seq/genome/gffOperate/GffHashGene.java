@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.genome.gffOperate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +20,7 @@ import com.novelbio.database.service.servgff.ManageGffDetailGene;
  */
 public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	public static void main(String[] args) {
+		//TODO dbinfo 没有保存到数据库
 		GffHashGene gffHashGene = new GffHashGene(GffType.GTF, "/home/zong0jie/desktop/hg19-gencode.v16.gtf");
 		Map<String, Long> mapChrID2Len = gffHashGene.getChrID2LengthForRNAseq();
 		for (String chrID : mapChrID2Len.keySet()) {
@@ -32,7 +34,11 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	GffType gffType;
 	String gffFile;
 	int taxID;
+	/** 数据库使用，记录物种的测序版本 */
 	String version;
+	/** 数据库使用，记录gff的来源，是NCBI还是Ensembl */
+	String dbinfo;
+	
 	/**
 	 * 新建一个GffHashGeneUCSC的类，需要readGffFile
 	 */
@@ -51,19 +57,20 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	public GffHashGene(GffType gffType, String gffFile) {
 		this.gffType = gffType;
 		this.gffFile = gffFile;
-		flagFinish = read(0, null, gffType, gffFile);
+		flagFinish = read(0, null, null, gffType, gffFile);
 	}
 	/**
 	 * 读取并初始化，可以用isFinished()来判定是否顺利运行完毕
 	 * @param gffType
 	 * @param gffFile
 	 */
-	public GffHashGene(int taxID, String version, GffType gffType, String gffFile) {
+	public GffHashGene(int taxID, String version, String dbinfo, GffType gffType, String gffFile) {
 		this.taxID = taxID;
 		this.version = version;
 		this.gffType = gffType;
 		this.gffFile = gffFile;
-		flagFinish = read(taxID,version, gffType, gffFile);
+		this.dbinfo = dbinfo;
+		flagFinish = read(taxID,version, dbinfo, gffType, gffFile);
 	}
 	/**
 	 * 读取并初始化，可以用isFinished()来判定是否顺利运行完毕
@@ -80,12 +87,13 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 		}
 		
 		this.gffFile = gffFile;
-		flagFinish = read(taxID, version, gffType, gffFile);
+		flagFinish = read(taxID, version, dbinfo, gffType, gffFile);
 	}
 	
-	public void setTaxIdVersion(int taxID, String version) {
+	public void setTaxIdVersion(int taxID, String version, String dbinfo) {
 		this.taxID = taxID;
 		this.version = version;
+		this.dbinfo = dbinfo;
 	}
 	
 	/**
@@ -102,13 +110,15 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	public String getVersion() {
 		return version;
 	}
-	
+	public String getDbinfo() {
+		return dbinfo;
+	}
 	@Override
 	protected void running() {
-		flagFinish = read(taxID, version, gffType, gffFile);
+		flagFinish = read(taxID, version, dbinfo, gffType, gffFile);
 	}
 	
-	private boolean read(int taxID, String version, GffType gffType, String gffFile) {
+	private boolean read(int taxID, String version, String dbinfo, GffType gffType, String gffFile) {
 		if (gffType == GffType.UCSC) {
 			gffHashGene = new GffHashGeneUCSC();
 		}
@@ -124,6 +134,7 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 		if (taxID > 0) {
 			gffHashGene.setTaxID(taxID);
 			gffHashGene.setVersion(version);
+			gffHashGene.setDbinfo(dbinfo);
 		}
 		return gffHashGene.ReadGffarray(gffFile);
 	}
@@ -219,8 +230,9 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	}
 	@Override
 	public int getTaxID() {
-		return gffHashGene.getTaxID();
+		return taxID;
 	}
+	/** 染色体都小写 */
 	public  HashMap<String, ListGff> getMapChrID2LsGff() {
 		return gffHashGene.getMapChrID2LsGff();
 	}
@@ -251,9 +263,20 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	public void writeToGTF(List<String> lsChrID, String GTFfile) {
 		gffHashGene.writeToGTF(lsChrID, GTFfile, "novelbio");
 	}
+	public void writeToFile(GffType gffType, List<String> lsChrID, String outFile) {
+		gffHashGene.writeToFile(gffType, lsChrID, outFile, "novelbio");
+	}
 	@Override
 	public void writeToGTF(List<String> lsChrID, String GTFfile, String title) {
 		gffHashGene.writeToGTF(lsChrID, GTFfile, title);
+	}
+	@Override
+	public void writeToBED(List<String> lsChrID, String GTFfile, String title) {
+		gffHashGene.writeToBED(lsChrID, GTFfile, title);
+	}
+
+	public void writeToBED(List<String> lsChrID, String GTFfile) {
+		gffHashGene.writeToBED(lsChrID, GTFfile, "novelbio");
 	}
 	/**
 	 * 该方法待修正
@@ -318,4 +341,34 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 		ManageGffDetailGene.getInstance().saveGffHashGene(this);
 	}
 	
+	/**
+	 * 设定每个基因的区间
+	 * @param geneNum 每个区间的基因数量，可以设定为10
+	 */
+	public Map<String, List<int[]>> getMapChrID2LsInterval(int geneNum) {
+		Map<String, List<int[]>> mapChrID2LsInterval = new LinkedHashMap<>();
+		Map<String, ListGff> mapChrID2ListGff = getMapChrID2LsGff();
+		for (String chrID : mapChrID2ListGff.keySet()) {
+			int num = 1;
+			List<int[]> lsInterval = new ArrayList<>();
+			mapChrID2LsInterval.put(chrID, lsInterval);
+			int[] interval = null;
+			ListGff lsGff = mapChrID2ListGff.get(chrID);
+			for (GffDetailGene gffDetailGene : lsGff) {
+				if (num == 1) {
+					interval = new int[2];
+					interval[0] = gffDetailGene.getStartAbs();
+					interval[1] = gffDetailGene.getEndAbs();
+					lsInterval.add(interval);
+				} else {
+					interval[1] = gffDetailGene.getEndAbs();
+					if (num == geneNum) {
+						num = 0;
+					}
+				}
+				num++;
+			}
+		}
+		return mapChrID2LsInterval;
+	}
 }

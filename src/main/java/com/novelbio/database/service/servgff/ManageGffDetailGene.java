@@ -3,6 +3,7 @@ package com.novelbio.database.service.servgff;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.apache.velocity.app.event.ReferenceInsertionEventHandler.referenceInsertExecutor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -29,8 +30,13 @@ public class ManageGffDetailGene {
 		gffFile.setFileName(gffHashGene.getGffFilename());
 		gffFile.setTaxID(gffHashGene.getTaxID());
 		gffFile.setVersion(gffHashGene.getVersion());
+		gffFile.setDbinfo(gffHashGene.getDbinfo());
+		gffFile.setMapChrID2LsInterval(gffHashGene.getMapChrID2LsInterval(10));
 		List<GffFile> lsGffFiles = mongoTemplate.find(new Query(Criteria.where("fileName").is(gffFile.getFileName())), GffFile.class);
 		if (lsGffFiles.isEmpty()) {
+			mongoTemplate.save(gffFile);
+		} else {
+			gffFile.setId(lsGffFiles.get(0).getId());
 			mongoTemplate.save(gffFile);
 		}
 		
@@ -39,10 +45,22 @@ public class ManageGffDetailGene {
 		}
 	}
 	
+	/** 仅update 每条染色体上的interval */
+	public void saveGffChrInterval(GffHashGene gffHashGene) {
+		List<GffFile> lsGffFiles = mongoTemplate.find(new Query(Criteria.where("fileName").is(gffHashGene.getGffFilename())), GffFile.class);
+		if (lsGffFiles.isEmpty()) {
+			return;
+		}
+		GffFile gffFile = lsGffFiles.get(0);
+		gffFile.setMapChrID2LsInterval(gffHashGene.getMapChrID2LsInterval(10));
+		mongoTemplate.save(gffFile);
+	}
+	
 	public void delete(GffFile gffFile) {
 		mongoTemplate.remove(gffFile);
 		mongoTemplate.remove(new Query( Criteria.where("taxID").is(gffFile.getTaxID())
 				.andOperator( Criteria.where("version").is(gffFile.getVersion())
+						.andOperator(Criteria.where("dbinfo").is(gffFile.getDbinfo()))
 						)
 				),
 				GffDetailGene.class);
@@ -50,6 +68,22 @@ public class ManageGffDetailGene {
 	
 	public List<GffFile> getLsGffFileAll() {
 		return mongoTemplate.findAll(GffFile.class);
+	}
+	
+	public GffFile findGffFile(int taxId, String version, String dbinfo) {
+		List<GffFile> lsGffFiles = mongoTemplate
+				.find(new Query( Criteria.where("taxID").is(taxId)
+						.andOperator(
+								Criteria.where("version").is(version)
+								.andOperator(Criteria.where("dbinfo").is(dbinfo)
+										)
+								)
+						),
+						GffFile.class);
+		if (lsGffFiles.isEmpty()) {
+			return null;
+		}
+		return lsGffFiles.get(0);
 	}
 	
 	public void saveGffDetailGene(GffDetailGene gffDetailGene) {
@@ -60,13 +94,15 @@ public class ManageGffDetailGene {
 				.find(new Query( Criteria.where("taxID").is(gffDetailGene.getTaxID())
 						.andOperator(
 								Criteria.where("version").is(gffDetailGene.getVersion())
-								.andOperator(
-										Criteria.where("chrID").is(gffDetailGene.getRefID())
+								.andOperator(Criteria.where("dbinfo").is(gffDetailGene.getDbinfo())
 										.andOperator(
-												Criteria.where("setItemName").is(gffDetailGene.getNameSingle()))
+												Criteria.where("parentName").is(gffDetailGene.getRefID())
+												.andOperator(
+														Criteria.where("setItemName").is(gffDetailGene.getNameSingle()))
 												)
 										)
-								),
+								)
+						),
 						GffDetailGene.class);
 		for (GffDetailGene gffDetailGeneSubject : lsGffDetailGenes) {
 			if (gffDetailGeneSubject.getStartAbs() == gffDetailGene.getStartAbs() && gffDetailGeneSubject.getEndAbs() == gffDetailGene.getEndAbs()) {
@@ -83,6 +119,7 @@ public class ManageGffDetailGene {
 		}
 		gffDetailGene.setNameLowcase();
 		mongoTemplate.save(gffDetailGene);
+		
 		for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 			gffGeneIsoInfo.setGffDetailGeneParent(gffDetailGene);
 			saveGffIso(gffGeneIsoInfo);
@@ -109,7 +146,7 @@ public class ManageGffDetailGene {
 		mongoTemplate.save(gffGeneIsoInfo);
 	}
 	
-	public List<GffDetailGene> searchRegionOverlap(int taxID, String version, String chrID, int start, int end) {
+	public List<GffDetailGene> searchRegionOverlap(int taxID, String version, String dbinfo, String chrID, int start, int end) {
 		int startAbs = Math.min(start, end);
 		int endAbs = Math.max(start, end);
 		List<GffDetailGene> lsGffDetailGenes = mongoTemplate
@@ -117,10 +154,13 @@ public class ManageGffDetailGene {
 						.andOperator(
 								Criteria.where("version").is(version)
 								.andOperator(
-										Criteria.where("parentName").is(chrID)
+										Criteria.where("dbinfo").is(dbinfo)
 										.andOperator(
-												Criteria.where("numberstart").lte(endAbs)
-												           .andOperator(Criteria.where("numberend").gte(startAbs))
+												Criteria.where("parentName").is(chrID)
+												.andOperator(
+														Criteria.where("numberstart").lte(endAbs)
+														.andOperator(Criteria.where("numberend").gte(startAbs))
+														)
 												)
 										)
 								)
@@ -133,14 +173,16 @@ public class ManageGffDetailGene {
 		}
 		return lsGffDetailGenes;
 	}
-	public List<GffDetailGene> searchRegionOverlap(int taxID, String version, String geneName) {
+	public List<GffDetailGene> searchRegionOverlap(int taxID, String version, String dbinfo, String geneName) {
 		geneName = geneName.toLowerCase();
 		List<GffDetailGene> lsGffDetailGenes = mongoTemplate
 				.find(new Query( Criteria.where("taxID").is(taxID)
 						.andOperator(
 								Criteria.where("version").is(version)
-								.andOperator(
-										Criteria.where("setNameLowcase").is(geneName)
+								.andOperator(Criteria.where("dbinfo").is(dbinfo)
+										.andOperator(
+												Criteria.where("setNameLowcase").is(geneName)
+												)
 										)
 								)
 						).with(new Sort(new Sort.Order(Sort.Direction.ASC, "numberstart"))),
@@ -152,18 +194,20 @@ public class ManageGffDetailGene {
 		}
 		return lsGffDetailGenes;
 	}
-	public List<GffDetailGene> searchRegionIn(int taxID, String version, String chrID, int start, int end) {
+	public List<GffDetailGene> searchRegionIn(int taxID, String version, String dbinfo, String chrID, int start, int end) {
 		int startAbs = Math.min(start, end);
 		int endAbs = Math.max(start, end);
 		List<GffDetailGene> lsGffDetailGenes = mongoTemplate
 				.find(new Query( Criteria.where("taxID").is(taxID)
 						.andOperator(
 								Criteria.where("version").is(version)
-								.andOperator(
-										Criteria.where("chrID").is(chrID)
+								.andOperator(Criteria.where("dbinfo").is(dbinfo)
 										.andOperator(
-												Criteria.where("numberstart").gte(startAbs)
-												           .andOperator(Criteria.where("numberend").lte(endAbs))
+												Criteria.where("parentName").is(chrID)
+												.andOperator(
+														Criteria.where("numberstart").gte(startAbs)
+														.andOperator(Criteria.where("numberend").lte(endAbs))
+														)
 												)
 										)
 								)

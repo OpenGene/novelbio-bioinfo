@@ -29,6 +29,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	String acc2GeneIDfile = "";
 	String gfffile = "";
 	String version;
+	String dbinfo;
 	private HashMap<String, String> mapGeneID2AccID = null;
 	private HashMap<String, GffGeneIsoInfo> mapName2Iso = new HashMap<String, GffGeneIsoInfo>();
 	public GffHashGeneAbs() {
@@ -72,6 +73,9 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	public void setVersion(String version) {
 		this.version = version;
 	}
+	public void setDbinfo(String dbinfo) {
+		this.dbinfo = dbinfo;
+	}
 	/**
 	 * 在读取文件后如果有什么需要设置的，可以写在setOther();方法里面
 	 * @param gfffilename
@@ -87,6 +91,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 			for (GffDetailGene gffDetailGene : listGff) {
 				gffDetailGene.setTaxID(taxID);
 				gffDetailGene.setVersion(version);
+				gffDetailGene.setDbinfo(dbinfo);
 				for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 					if (mapName2Iso.containsKey(gffGeneIsoInfo.getName().toLowerCase())) {
 						GffGeneIsoInfo gffGeneIsoInfoOld = mapName2Iso.get(gffGeneIsoInfo.getName().toLowerCase());
@@ -302,8 +307,41 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	 */
 	@Override
 	public void writeToGTF(List<String> lsChrIDinput, String GTFfile,String title) {
+		writeToFile(lsChrIDinput, GffType.GTF, GTFfile, title);
+	}
+	/**
+	 * <b>可能会出现重复ID，如同一名字的miRNA</b><br>
+	 * 将文件写入BED中
+	 * @param lsChrIDinput 输入的chrID，主要是会有不同的大小写方式，需要和chrSeq保持一致，null表示走默认
+	 * @param GTFfile 输出文件名
+	 * @param title 给该GTF起个名字
+	 */
+	@Override
+	public void writeToBED(List<String> lsChrIDinput, String GTFfile,String title) {
+		writeToFile(lsChrIDinput, GffType.BED, GTFfile, title);
+	}
+	/**
+	 * 
+	 * <b>可能会出现重复ID，如同一名字的miRNA</b><br>
+	 * 将文件写入GTF中
+	 * @param lsChrIDinput 输入的chrID，主要是会有不同的大小写方式，需要和chrSeq保持一致，null表示走默认
+	 * @param GTFfile 输出文件名
+	 * @param title 给该GTF起个名字
+	 */
+	public void writeToFile(GffType gffType, List<String> lsChrIDinput, String outFile,String title) {
+		writeToFile(lsChrIDinput, gffType, outFile, title);
+	}
+	/**
+	 * 
+	 * <b>可能会出现重复ID，如同一名字的miRNA</b><br>
+	 * 将文件写入GTF中
+	 * @param lsChrIDinput 输入的chrID，主要是会有不同的大小写方式，需要和chrSeq保持一致，null表示走默认
+	 * @param GTFfile 输出文件名
+	 * @param title 给该GTF起个名字
+	 */
+	private void writeToFile(List<String> lsChrIDinput, GffType gffType, String Outfile,String title) {
 		TreeSet<String> treeSet =getSortedChrID(lsChrIDinput);
-		TxtReadandWrite txtGtf = new TxtReadandWrite(GTFfile, true);
+		TxtReadandWrite txtGtf = new TxtReadandWrite(Outfile, true);
 
 		//基因名字去重复，因为一个基因只能有一个名字
 		//所以如果发现一样的基因名，就在其后面加上.1，.2等
@@ -335,13 +373,18 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 				}
 				
 				gffDetailGene.removeDupliIso();
-				String geneGTF = gffDetailGene.toGTFformate(chrID, title);
-				txtGtf.writefileln(geneGTF.trim());
+				String outUnit = null;
+				if (gffType == GffType.GTF) {
+					outUnit = gffDetailGene.toGTFformate(chrID, title);
+				} else if (gffType == GffType.BED) {
+					outUnit = gffDetailGene.toBedFormate(chrID, title);
+				}
+			
+				txtGtf.writefileln(outUnit.trim());
 			}
 		}
 		txtGtf.close();
 	}
-	
 	/**
 	 * 返回排过序的chrID
 	 * @param lsChrIDinput 输入的chrID，主要是会有不同的大小写方式，需要和chrSeq保持一致

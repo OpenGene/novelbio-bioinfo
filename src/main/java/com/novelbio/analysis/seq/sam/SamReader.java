@@ -408,7 +408,10 @@ class ReadSamIterator implements Iterator<SamRecord> {
 		this.samRecordIterator = samRecordIterator;
 		this.samFileHeader = samFileHeader;
 	}
-	
+	/** 是否报告eof出错，默认为true */
+	public void setReportEOF(boolean isReportEOF) {
+		this.isReportEOF = isReportEOF;
+	}
 	@Override
 	public boolean hasNext() {
 		if ((errorFormateLineNum > 500 && correctLineNum < 5)) {

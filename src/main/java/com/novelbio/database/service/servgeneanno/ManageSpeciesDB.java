@@ -138,7 +138,7 @@ public class ManageSpeciesDB implements IManageSpecies {
 	 */
 	public List<SpeciesFile> queryLsSpeciesFile(int taxID) {
 		if (taxID <= 0) {
-			return null;
+			return new ArrayList<>();
 		}
 		return repoSpeciesFile.findByTaxID(taxID);
 	}

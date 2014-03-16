@@ -335,7 +335,7 @@ public class Species implements Cloneable {
 	private String[] getMiRNAseq() {
 		String pathParent = PathDetailNBC.getGenomePath();
 		String node = "miRNA/";
-		String genomePath = node + getNameLatin_2Word().replace(" ", "_") + FileOperate.getSepPath();
+		String genomePath = node + taxID + FileOperate.getSepPath();
 		String miRNAfile = pathParent + genomePath + "miRNA.fa";
 		String miRNAhairpinFile = pathParent + genomePath + "miRNAhairpin.fa";
 		if (!FileOperate.isFileExistAndBigThanSize(miRNAfile,10) || !FileOperate.isFileExistAndBigThanSize(miRNAhairpinFile,10)) {

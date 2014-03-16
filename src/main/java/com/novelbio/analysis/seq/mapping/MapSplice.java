@@ -7,17 +7,23 @@ import com.novelbio.analysis.seq.fasta.format.NCBIchromFaChangeFormat;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.sam.AlignSamReading;
 import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.sam.SamRecord;
+import com.novelbio.analysis.seq.sam.SamToFastq;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
 
 public class MapSplice implements MapRNA {
 	/** mapping文件的后缀，包含 ".bam" 字符串 */
 	public static final String MapSpliceSuffix = "_mapsplice.bam";
+	/** mapsplice mapping完后又用bowtie2 mapping的后缀，包含 ".bam" 字符串 */
+	public static final String MapSpliceAllSuffix = "_mapspliceAll.bam";
 	
 	String exePath = "";
 	/** bowtie就是用来做索引的 */
@@ -41,6 +47,12 @@ public class MapSplice implements MapRNA {
 	String gtfFile;
 	int seedLen = 22;
 	Species species;
+	
+	/** 将没有mapping上的reads用bowtie2比对到基因组上，仅用于proton数据 */
+	boolean mapUnmapedReads = false;
+	/** 比对到的index */
+	String bowtie2ChrIndex;
+	
 	@Override
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		if (gffChrAbs != null && gffChrAbs.getSpecies() != null && gffChrAbs.getSpecies().getTaxID() != 0) {
@@ -55,6 +67,19 @@ public class MapSplice implements MapRNA {
 		}
 		mapBowtie.setExePath(exePathBowtie);
 	}
+	
+	/**
+	 * 是否将没有mapping上的reads用bowtie2比对到基因组上，<b>注意目前仅用于proton数据</b>
+	 * @param mapUnmapedReads
+	 * @param bowtie2ChrIndex
+	 */
+	public void setMapUnmapedReads(boolean mapUnmapedReads, String bowtie2ChrIndex) {
+		this.mapUnmapedReads = mapUnmapedReads;
+		if (mapUnmapedReads) {
+			this.bowtie2ChrIndex = bowtie2ChrIndex;
+		}
+	}
+	
 	/** 是否检测fusion gene，检测fusion gene会获得比较少的junction reads */
 	public void setFusion(boolean fusion) {
 		this.fusion = fusion;
@@ -117,6 +142,8 @@ public class MapSplice implements MapRNA {
 		isPrepare = false;
 	}
 
+
+	
 	@Override
 	public void setMismatch(int mismatch) {
 		this.mismatch = mismatch;
@@ -128,14 +155,25 @@ public class MapSplice implements MapRNA {
 		mapBowtie.setSubVersion(getBowtieVersion());
 		mapBowtie.IndexMake();
 		
-		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
-		cmdOperate.setGetLsErrOut();
-		cmdOperate.run();
-		if (!cmdOperate.isFinishedNormal()) {
-			FileOperate.DeleteFileFolder(FileOperate.addSep(outFile) + "tmp");
-			throw new ExceptionCmd("error running mapsplice:" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
+		String prefix = FileOperate.getFileName(outFile);
+		String parentPath = FileOperate.getParentPathName(outFile);
+		String mapSpliceBam = parentPath + prefix + MapSpliceSuffix;
+		if (!FileOperate.isFileExistAndBigThanSize(mapSpliceBam, 0)) {
+			CmdOperate cmdOperate = new CmdOperate(getLsCmd());
+			cmdOperate.setGetLsErrOut();
+			cmdOperate.run();
+			if (!cmdOperate.isFinishedNormal()) {
+//				FileOperate.DeleteFileFolder(FileOperate.addSep(outFile) + "tmp");
+				throw new ExceptionCmd("error running mapsplice:" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
+			}
+			clearTmpReads_And_MoveFile();
 		}
-		clearTmpReads_And_MoveFile();
+		
+		if (mapUnmapedReads) {
+			String finalBam = parentPath + prefix + MapSpliceAllSuffix;
+			MapTophat.mapUnmapedReads(threadNum, bowtie2ChrIndex, mapSpliceBam, null, finalBam);
+		}
+		
 	}
 	
 	private void prepareReads() {
@@ -177,6 +215,18 @@ public class MapSplice implements MapRNA {
 		FileOperate.moveFile(FileOperate.addSep(outFile) + "alignments.bam", parentPath, prefix + MapSpliceSuffix,false);
 		FileOperate.moveFile(FileOperate.addSep(outFile) + "junctions.txt", parentPath, prefix + "_junctions.txt",false);
 		FileOperate.DeleteFileFolder(FileOperate.addSep(outFile) + "tmp");
+	}
+	
+	@Override
+	public String getFinishName() {
+		String prefix = FileOperate.getFileName(outFile);
+		String parentPath = FileOperate.getParentPathName(outFile);
+		if (!mapUnmapedReads) {
+			return parentPath + prefix + MapSpliceSuffix;
+		} else {
+			return parentPath + prefix + MapSpliceAllSuffix;
+		}
+	
 	}
 	
 	private FastQ deCompressFq(FastQ fastQ) {
@@ -274,13 +324,6 @@ public class MapSplice implements MapRNA {
 		return SoftWare.bowtie;
 	}
 	
-	/** 二次mapping，用bowtie2做最敏感的mapping */
-	public void mapSecond() {
-		SamFile samFile = null;//获得mapping好的bam文件
-		String outFastQfile = FileOperate.changeFileSuffix(samFile.getFileName(), "_Unmapped", "fq.gz");
-		samFile.getUnMappedReads(false, outFastQfile);
-	}
-
 	@Override
 	public List<String> getCmdExeStr() {
 		prepareReads();
@@ -289,4 +332,5 @@ public class MapSplice implements MapRNA {
 		lsCmd.add(cmdOperate.getCmdExeStr());
 		return lsCmd;
 	}
+
 }

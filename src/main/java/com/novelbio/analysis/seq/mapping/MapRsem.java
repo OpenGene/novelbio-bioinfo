@@ -307,5 +307,10 @@ public class MapRsem implements MapRNA {
 		mapPrefix2Value.put("isoExp", outPathPrefix + ".isoforms.results");
 		return mapPrefix2Value;
 	}
+
+	@Override
+	public String getFinishName() {
+		return outPathPrefix + ".genes.results";
+	}
 	
 }

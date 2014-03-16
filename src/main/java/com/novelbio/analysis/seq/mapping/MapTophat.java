@@ -11,9 +11,15 @@ import com.google.common.collect.HashMultimap;
 import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.sam.AlignSamReading;
+import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.sam.SamRecord;
+import com.novelbio.analysis.seq.sam.SamToFastq;
 import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 /**
@@ -39,6 +45,9 @@ public class MapTophat implements MapRNA {
 	public static final String UnmapPrefix = "unmapped_";//没有mapping的bam文件的前缀
 	/** mapping文件的后缀，包含 ".bam" 字符串 */
 	public static final String TophatSuffix = "_tophat_sorted.bam";
+	/** tophat mapping完后又用bowtie2 mapping的后缀，包含 ".bam" 字符串 */
+	public static final String TophatAllSuffix = "_tophatAll.bam";
+	
 	StrandSpecific strandSpecifictype = StrandSpecific.NONE;
 	List<FastQ> lsLeftFq = new ArrayList<FastQ>();
 	List<FastQ> lsRightFq = new ArrayList<FastQ>();
@@ -77,11 +86,30 @@ public class MapTophat implements MapRNA {
 	
 	int sensitiveLevel = MapBowtie.Sensitive_Sensitive;
 	
+	/** 将没有mapping上的reads用bowtie2比对到基因组上，仅用于proton数据 */
+	boolean mapUnmapedReads = false;
+	/** 比对到的index */
+	String bowtie2ChrIndex;
+	
 	HashMultimap<String, String> mapPrefix2Result = HashMultimap.create();
+	
+	List<String> lsCmd;
 	
 	/** 输入的gffChrAbs中只需要含有GffHashGene即可 */
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
+	}
+	
+	/**
+	 * 是否将没有mapping上的reads用bowtie2比对到基因组上，<b>注意目前仅用于proton数据</b>
+	 * @param mapUnmapedReads
+	 * @param bowtie2ChrIndex
+	 */
+	public void setMapUnmapedReads(boolean mapUnmapedReads, String bowtie2ChrIndex) {
+		this.mapUnmapedReads = mapUnmapedReads;
+		if (mapUnmapedReads) {
+			this.bowtie2ChrIndex = bowtie2ChrIndex;
+		}
 	}
 	
 	/**
@@ -433,10 +461,27 @@ public class MapTophat implements MapRNA {
 		mapBowtie.setSubVersion(bowtieVersion);
 		mapBowtie.IndexMake();
 		
-		List<String> lsCmd = getLsCmd();
-		CmdOperate cmdOperate = new CmdOperate(lsCmd);
-		cmdOperate.run();
-		changeFileName();
+		String prefix = FileOperate.getFileName(outPathPrefix);
+		String parentPath = FileOperate.getParentPathName(outPathPrefix);
+		String tophatBam = parentPath + prefix + TophatSuffix;
+		String unmappedBam = parentPath + UnmapPrefix + prefix + "_tophat.bam";
+		if (!FileOperate.isFileExistAndBigThanSize(tophatBam, 0) ||
+				!FileOperate.isFileExistAndBigThanSize(unmappedBam, 0)
+				) {
+			List<String> lsCmd = getLsCmd();
+			CmdOperate cmdOperate = new CmdOperate(lsCmd);
+			cmdOperate.run();
+			if (!cmdOperate.isFinishedNormal()) {
+				FileOperate.DeleteFileFolder(FileOperate.addSep(outPathPrefix) + "tmp");
+				throw new ExceptionCmd("error running mapsplice:" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
+			}
+			changeFileName();
+		}
+
+		if (mapUnmapedReads) {
+			String finalBam = FileOperate.getParentPathName(outPathPrefix) + "prefix" + TophatAllSuffix;
+			mapUnmapedReads(threadNum, bowtie2ChrIndex, tophatBam, unmappedBam, finalBam);
+		}
 	}
 
 	
@@ -495,6 +540,7 @@ public class MapTophat implements MapRNA {
 		List<String> lsCmd = new ArrayList<>();
 		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
 		lsCmd.add(cmdOperate.getCmdExeStr());
+		
 		return lsCmd;
 	}
 	
@@ -507,6 +553,71 @@ public class MapTophat implements MapRNA {
 		FileOperate.moveFile(FileOperate.addSep(outPathPrefix) + "accepted_hits.bam", parentPath, prefix + TophatSuffix,false);
 		FileOperate.moveFile(FileOperate.addSep(outPathPrefix) + "unmapped.bam", parentPath, UnmapPrefix + prefix + "_tophat.bam",false);
 		FileOperate.moveFile(FileOperate.addSep(outPathPrefix) + "junctions.bed", parentPath, prefix + "_junctions.bed",false);
+	}
+	
+	/**
+	 *  将没有mapping上的reads重新mapping，仅用于单端的proton数据
+	 * @param threadNum
+	 * @param bowtie2ChrIndex
+	 * @param acceptedBam
+	 * @param unmappedBam mapsplice本项填null
+	 * @param outFinalBam
+	 * @return 返回使用的命令行
+	 */
+	protected static List<String> mapUnmapedReads(int threadNum, String bowtie2ChrIndex, String acceptedBam, String unmappedBam, String outFinalBam) {
+		String unmappedFq = null;
+		String unmapBamGetSeq = unmappedBam;
+		if (unmappedBam == null) {
+			unmappedFq = FileOperate.changeFileSuffix(acceptedBam, "_unmapped", "fq.gz");
+		} else {
+			unmappedFq = FileOperate.changeFileSuffix(unmappedBam, "", "fq.gz");
+			unmapBamGetSeq = acceptedBam;
+		}
+		String mapBowtieBam = FileOperate.changeFileSuffix(unmappedBam, "_bowtieMap", "bam");
+		
+		SamToFastq samToFastq = new SamToFastq();
+		samToFastq.setFastqFile(unmappedFq);
+		samToFastq.setJustUnMapped(true);
+		AlignSamReading alignSamReading = new AlignSamReading(new SamFile(unmapBamGetSeq));
+		alignSamReading.addAlignmentRecorder(samToFastq);
+		alignSamReading.run();
+		
+		FastQ fastQ = samToFastq.getResultFastQ();
+		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.bowtie2);
+		MapBowtie mapBowtie = new MapBowtie();
+		mapBowtie.setThreadNum(threadNum);
+		mapBowtie.setChrIndex(bowtie2ChrIndex);
+		mapBowtie.setFqFile(fastQ, null);
+		mapBowtie.setSensitive(MapBowtie.Sensitive_Very_Sensitive);
+		mapBowtie.setExePath(softWareInfo.getExePath());
+		mapBowtie.setOutFileName(mapBowtieBam);
+		SamFile samFile = mapBowtie.mapReads();
+		SamFile samFileTophat = new SamFile(acceptedBam);
+		SamFile samFileOut = new SamFile(outFinalBam, samFileTophat.getHeader());
+		for (SamRecord samRecord : samFileTophat.readLines()) {
+			if (samRecord.isMapped()) {
+				samFileOut.writeSamRecord(samRecord);
+			}
+		}
+		samFileTophat.close();
+		for (SamRecord samRecord : samFile.readLines()) {
+			samFileOut.writeSamRecord(samRecord);
+		}
+		samFile.close();
+		samFileOut.close();
+		return mapBowtie.getCmdExeStr();
+	}
+	
+	
+	@Override
+	public String getFinishName() {
+		String prefix = FileOperate.getFileName(outPathPrefix);
+		String parentPath = FileOperate.getParentPathName(outPathPrefix);
+		if (!mapUnmapedReads) {
+			return parentPath + prefix + TophatSuffix;
+		} else {
+			return parentPath + prefix + TophatAllSuffix;
+		}
 	}
 	
 	public static Map<String, String> mapPredictPrefix2File(String outPutPrefix) {
