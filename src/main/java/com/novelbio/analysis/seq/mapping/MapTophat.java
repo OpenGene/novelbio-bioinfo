@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.samtools.SAMFileHeader;
+import net.sf.samtools.SAMFileHeader.SortOrder;
+
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.HashMultimap;
@@ -574,38 +577,50 @@ public class MapTophat implements MapRNA {
 			unmappedFq = FileOperate.changeFileSuffix(unmappedBam, "", "fq.gz");
 		}
 		String mapBowtieBam = FileOperate.changeFileSuffix(unmappedBam, "_bowtieMap", "bam");
-		
-		SamToFastq samToFastq = new SamToFastq();
-		samToFastq.setFastqFile(unmappedFq);
-		samToFastq.setJustUnMapped(true);
-		AlignSamReading alignSamReading = new AlignSamReading(new SamFile(unmapBamGetSeq));
-		alignSamReading.addAlignmentRecorder(samToFastq);
-		alignSamReading.run();
-		
-		FastQ fastQ = samToFastq.getResultFastQ();
-		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.bowtie2);
-		MapBowtie mapBowtie = new MapBowtie();
-		mapBowtie.setThreadNum(threadNum);
-		mapBowtie.setChrIndex(bowtie2ChrIndex);
-		mapBowtie.setFqFile(fastQ, null);
-		mapBowtie.setSensitive(MapBowtie.Sensitive_Very_Sensitive);
-		mapBowtie.setExePath(softWareInfo.getExePath());
-		mapBowtie.setOutFileName(mapBowtieBam);
-		SamFile samFile = mapBowtie.mapReads();
+		SamFile samFileMapBowtie = null;
+		MapBowtie mapBowtie = null;
+		if (!FileOperate.isFileExistAndBigThanSize(mapBowtieBam, 0)) {
+			SamToFastq samToFastq = new SamToFastq();
+			samToFastq.setFastqFile(unmappedFq);
+			samToFastq.setJustUnMapped(true);
+			AlignSamReading alignSamReading = new AlignSamReading(new SamFile(unmapBamGetSeq));
+			alignSamReading.addAlignmentRecorder(samToFastq);
+			alignSamReading.run();
+			
+			FastQ fastQ = samToFastq.getResultFastQ();
+			SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.bowtie2);
+			mapBowtie = new MapBowtie();
+			mapBowtie.setThreadNum(threadNum);
+			mapBowtie.setChrIndex(bowtie2ChrIndex);
+			mapBowtie.setFqFile(fastQ, null);
+			mapBowtie.setSensitive(MapBowtie.Sensitive_Very_Sensitive);
+			mapBowtie.setExePath(softWareInfo.getExePath());
+			String mapFile = FileOperate.changeFileSuffix(unmappedBam, "_bowtieMapTmp", "bam");
+			mapBowtie.setOutFileName(mapFile);
+			mapBowtie.mapReads();
+			FileOperate.changeFileName(mapFile, FileOperate.getFileName(mapBowtieBam));
+		}
+		samFileMapBowtie = new SamFile(mapBowtieBam);
 		SamFile samFileTophat = new SamFile(acceptedBam);
-		SamFile samFileOut = new SamFile(outFinalBam, samFileTophat.getHeader());
+		SAMFileHeader header = samFileTophat.getHeader();
+		header.setSortOrder(SortOrder.unsorted);
+		SamFile samFileOut = new SamFile(outFinalBam, header);
 		for (SamRecord samRecord : samFileTophat.readLines()) {
 			if (samRecord.isMapped()) {
 				samFileOut.writeSamRecord(samRecord);
 			}
 		}
 		samFileTophat.close();
-		for (SamRecord samRecord : samFile.readLines()) {
+		for (SamRecord samRecord : samFileMapBowtie.readLines()) {
 			samFileOut.writeSamRecord(samRecord);
 		}
-		samFile.close();
+		samFileMapBowtie.close();
 		samFileOut.close();
-		return mapBowtie.getCmdExeStr();
+		if (mapBowtie != null) {
+			return mapBowtie.getCmdExeStr();
+		} else {
+			return new ArrayList<>();
+		}
 	}
 	
 	

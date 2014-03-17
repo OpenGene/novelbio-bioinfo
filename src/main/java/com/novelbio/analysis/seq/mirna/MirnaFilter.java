@@ -23,8 +23,7 @@ public class MirnaFilter {
 	>t0000001_3  655863
 	TCGCTTGGTGCAGATCGGGAC
 	 */
-	public void Filter(String miRNAFile, String outFile)
-	{
+	public void Filter(String miRNAFile, String outFile) {
 		TxtReadandWrite txtOut = new TxtReadandWrite(outFile, true);
 		
 		TxtReadandWrite txtIn = new TxtReadandWrite(miRNAFile, false);

@@ -4,72 +4,73 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.fop.datatypes.Keep;
 import org.apache.log4j.Logger;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 
-import uk.ac.babraham.FastQC.Sequence.Contaminant.ContaminentFinder;
-
-import com.google.common.collect.ArrayListMultimap;
-import com.novelbio.Person;
-import com.novelbio.analysis.seq.GeneExpTable;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fasta.SeqHash;
-import com.novelbio.analysis.seq.fasta.format.NCBIchromFaChangeFormat;
 import com.novelbio.analysis.seq.fastq.FastQ;
-import com.novelbio.analysis.seq.fastq.FastQC;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.GffChrSeq;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.GffHashModifyOldGffUTR;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
-import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
-import com.novelbio.analysis.seq.mapping.MapBowtie;
-import com.novelbio.analysis.seq.mapping.MapBwa;
+import com.novelbio.analysis.seq.mapping.MapSplice;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
-import com.novelbio.analysis.seq.mirna.ListMiRNAdate;
-import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
-import com.novelbio.base.PathDetail;
-import com.novelbio.base.cmd.CmdOperate;
-import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.geneanno.AGene2Go;
-import com.novelbio.database.domain.geneanno.AgeneUniID;
-import com.novelbio.database.domain.geneanno.GOtype;
-import com.novelbio.database.domain.geneanno.Gene2Go;
+import com.novelbio.database.domain.geneanno.SpeciesFile;
+import com.novelbio.database.domain.information.SoftWareInfo;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.database.service.servgeneanno.ManageNCBIUniID;
+import com.novelbio.database.model.species.Species.EnumSpeciesType;
+import com.novelbio.database.service.servgeneanno.IManageSpecies;
+import com.novelbio.database.service.servgeneanno.ManageSpecies;
 import com.novelbio.database.service.servgff.ManageGffDetailGene;
-import com.novelbio.generalConf.PathDetailNBC;
-import com.novelbio.test.testaop.Test;
 
 
 public class mytest {
 	private static final Logger logger = Logger.getLogger(mytest.class);
 	static boolean is;
-	public static void main(String[] args) throws IOException, URISyntaxException {
-		Species species = new Species(9606);
-		System.out.println(species.getMiRNAmatureFile());
-		;
+	public static void main(String[] args) {
+		GffChrAbs gffChrAbs = new GffChrAbs(9606);
+		System.gc();
+		gffChrAbs.getBedFile();
+	}
+	
+	/** 将有问题的fastq文件整理为正常的 */
+	public static void makeFastqFile() {
+//		String fastq = "/media/hdfs/nbCloud/public/customerData/SRA/DN14001/IonXpress_012" +
+//		"_R_2014_01_14_01_29_45_user_BBD-32-novelbio_20140114_ampliseq_exome_Auto_user_BBD-32-novelbio_20140114_ampliseq_exome_95.fq.gz";
+//		//FastQ fastQ = new FastQ(fastq);
+//		String fastqOut = "";
+//		if (fastq.endsWith("gz")) {
+//			fastqOut = FileOperate.changeFileSuffix(fastq, "_modify", "fastq|fq", "fastq.gz");
+//		} else {
+//			fastqOut = FileOperate.changeFileSuffix(fastq, "", "fastq|fq", "fastq.gz");
+//		}
+//		//FastQ fastQ2 = new FastQ("/media/winD/asd/test.fq", true);
+//		//
+//		//for (FastQRecord fastQRecord : fastQ.readl	ines()) {
+//		//	fastQ2.writeFastQRecord(fastQRecord);
+//		//}
+//		//fastQ.close();
+//		//fastQ2.close();
+//		System.out.println(fastqOut);
+		
 	}
 	
 	public static void fanweiCope() {

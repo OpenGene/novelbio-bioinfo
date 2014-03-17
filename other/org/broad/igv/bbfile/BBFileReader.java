@@ -25,17 +25,18 @@
  */
 package org.broad.igv.bbfile;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-
 import net.sf.samtools.seekablestream.SeekableFileStream;
+import net.sf.samtools.seekablestream.SeekableHDFSstream;
 import net.sf.samtools.seekablestream.SeekableStream;
 
-import org.apache.log4j.Logger;
 import org.broad.tribble.util.LittleEndianInputStream;
+import org.apache.log4j.Logger;
+
+import com.novelbio.base.fileOperate.FileHadoop;
+import com.novelbio.base.fileOperate.FileOperate;
+
+import java.io.*;
+import java.util.ArrayList;
 
 /*
 *   Broad Institute Interactive Genome Viewer Big Binary File (BBFile) Reader
@@ -128,13 +129,21 @@ public class BBFileReader {
 
 
     public BBFileReader(String path) throws IOException {
-        this(path, new SeekableFileStream(new File(path)));
-
+    	File file = FileOperate.getFile(path);
+    	SeekableStream seekableStream = null;
+    	if (file instanceof FileHadoop) {
+    		seekableStream = new SeekableHDFSstream((FileHadoop) file);
+		} else {
+			seekableStream = new SeekableFileStream(file);
+		}
+    	read(path, seekableStream);
     }
-
+    
     public BBFileReader(String path, SeekableStream stream) {
-
-
+		read(path, stream);
+	}
+    
+    private void read(String path, SeekableStream stream) {
         log.debug("Opening BBFile source  " + path);
         this.path = path;
         fis = stream;
@@ -556,15 +565,15 @@ public class BBFileReader {
      * <p/>
      * Note: the BBFile type should be BigBed; else a null iterator is returned.
      * <p/>
-     * Parameters:
-     * startChromosome - name of start chromosome
-     * startBase     - starting base position for features
-     * endChromosome - name of end chromosome
-     * endBase       - ending base position for feature
-     * contained     - flag specifies bed features must be contained in the specified
-     * base region if true; else can intersect the region if false
+     *
+     * @param startChromosome - name of start chromosome
+     * @param startBase     - starting base position for features
+     * @param endChromosome - name of end chromosome
+     * @param endBase       - ending base position for feature
+     * @param contained     - flag specifies bed features must be contained in the specified
+     * @param base region if true; else can intersect the region if false
      * <p/>
-     * Returns:
+     * @return
      * Iterator to provide BedFeature(s) for the requested chromosome region.
      * Error conditions:
      * 1) An empty iterator is returned if region has no data available

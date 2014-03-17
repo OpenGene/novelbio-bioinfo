@@ -8,7 +8,7 @@ import com.novelbio.base.dataStructure.Alignment;
  * @author zong0jie
  * 重写了hashcode和equals方法，为 chrID+start+end
  */
-public class Align implements Alignment{
+public class Align implements Alignment {
 	int start, end;
 	String chrID;
 	Boolean cis5to3;
