@@ -192,34 +192,8 @@ public class GffDetailGene extends ListDetailAbs {
 
 		return ArrayOperate.getArrayListValue(setIsoName);
 	}
-	/**
-	 * 划定Tss范围上游为负数，下游为正数
-	 * 同时设定里面当时含有的全部GffGeneIsoInfo
-	 * @param upTss
-	 * @param downTss
-	 */
-	@Override
-	public void setTssRegion(int upTss, int downTss) {
-		super.upTss = upTss;
-		super.downTss = downTss;
-		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
-			gffGeneIsoInfo.setTssRegion(upTss, downTss);
-		}
-	}
-	/**
-	 * 划定Tes范围上游为负数，下游为正数
-	 * 同时设定里面当时含有的全部GffGeneIsoInfo
-	 * @param upTes
-	 * @param downTes
-	 */
-	@Override
-	public void setTesRegion(int upTes, int downTes) {
-		this.upGeneEnd3UTR = upTes;
-		this.downGeneEnd3UTR = downTes;
-		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
-			gffGeneIsoInfo.setTesRegion(upTes, downTes);
-		}
-	}
+
+
 	/** 根据mRNA的值重新设定起点和终点，因为NCBI的gff可能会出现起点终点与该起点终点不一致的情况 */
 	protected void resetStartEnd() {
 		int startAbs = Integer.MAX_VALUE, endAbs = Integer.MIN_VALUE;
@@ -462,15 +436,15 @@ public class GffDetailGene extends ListDetailAbs {
 	 * 3：location
 	 * 没有就返回“”
 	 */
-	public String[] getInfo(int coord) {
+	public String[] getInfo(int[] tss, int[] geneEnd, int coord) {
 		String[] anno = new String[4];
 		for (int i = 0; i < anno.length; i++) {
 			anno[i] = "";
 		}
 		HashSet<GeneID> hashCopedID = new HashSet<GeneID>();
-		if (isCodInGeneExtend(coord)) {
+		if (isCodInGeneExtend(tss, geneEnd, coord)) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : getLsCodSplit()) {
-				if (gffGeneIsoInfo.isCodInIsoExtend(coord)) {
+				if (gffGeneIsoInfo.isCodInIsoExtend(tss, geneEnd, coord)) {
 					hashCopedID.add(gffGeneIsoInfo.getGeneID());
 				}
 			}
@@ -486,13 +460,13 @@ public class GffDetailGene extends ListDetailAbs {
 					anno[2] = anno[2]+"//"+copedID.getDescription();
 				}
 			}
-			if (getLongestSplitMrna().isCodInIsoExtend(coord)) {
-				anno[4] = getLongestSplitMrna().toStringCodLocStr(coord);
+			if (getLongestSplitMrna().isCodInIsoExtend(tss, geneEnd, coord)) {
+				anno[4] = getLongestSplitMrna().toStringCodLocStr(tss, coord);
 			}
 			else {
 				for (GffGeneIsoInfo gffGeneIsoInfo : getLsCodSplit()) {
-					if (gffGeneIsoInfo.isCodInIsoExtend(coord)) {
-						anno[4] = gffGeneIsoInfo.toStringCodLocStr(coord);
+					if (gffGeneIsoInfo.isCodInIsoExtend(tss, geneEnd, coord)) {
+						anno[4] = gffGeneIsoInfo.toStringCodLocStr(tss, coord);
 						break;
 					}
 				}

@@ -13,6 +13,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffFile;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.database.model.species.Species;
 import com.novelbio.database.service.SpringFactory;
 
 public class ManageGffDetailGene {

@@ -177,8 +177,8 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 
 		setStructureGene_And_Remove_IsoNotBeFiltered();
 		for (GffDetailGene gffDetailGene : setGffDetailGenesLeft) {
-			String[] anno = getAnnoCod(gffCod1.getCoord(), gffDetailGene, "peak_Left_point:");
-			String[] anno2 = getAnnoCod(gffCod2.getCoord(), gffDetailGene, "peak_Right_point:");
+			String[] anno = getAnnoCod(tss, gffCod1.getCoord(), gffDetailGene, "peak_Left_point:");
+			String[] anno2 = getAnnoCod(tss, gffCod2.getCoord(), gffDetailGene, "peak_Right_point:");
 			anno[3] = anno[3] + "  " + anno2[3];
 			lsAnno.add(anno);
 		}
@@ -189,8 +189,8 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 			}
 		}
 		for (GffDetailGene gffDetailGene : setGffDetailGenesRight) {
-			String[] anno = getAnnoCod(gffCod1.getCoord(), gffDetailGene, "peak_Left_point:");
-			String[] anno2 = getAnnoCod(gffCod2.getCoord(), gffDetailGene, "peak_Right_point:");
+			String[] anno = getAnnoCod(tss, gffCod1.getCoord(), gffDetailGene, "peak_Left_point:");
+			String[] anno2 = getAnnoCod(tss, gffCod2.getCoord(), gffDetailGene, "peak_Right_point:");
 			anno[3] = anno[3] + "  " + anno2[3];
 			lsAnno.add(anno);
 		}
@@ -207,7 +207,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 	 *         2：description<br>
 	 *         3：文字形式的定位描述
 	 */
-	private String[] getAnnoCod(int coord, GffDetailGene gffDetailGene, String peakPointInfo) {
+	private String[] getAnnoCod(int[] tss, int coord, GffDetailGene gffDetailGene, String peakPointInfo) {
 		HashSet<GeneID> hashCopedID = new HashSet<GeneID>();
 		String[] anno = new String[4];
 		for (int i = 0; i < anno.length; i++)
@@ -226,7 +226,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 		anno[0] = anno[0].replaceFirst("///", "");
 		anno[1] = anno[1].replaceFirst("///", "");
 		anno[2] = anno[2].replaceFirst("///", "");
-		anno[3] = peakPointInfo + gffDetailGene.getLongestSplitMrna().toStringCodLocStr(coord);
+		anno[3] = peakPointInfo + gffDetailGene.getLongestSplitMrna().toStringCodLocStr(tss, coord);
 		return anno;
 	}
 

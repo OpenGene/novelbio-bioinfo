@@ -11,7 +11,7 @@ public class RseQC {
 	public static void main(String[] args) {
 		String inFile = "/media/hdfs/nbCloud/public/test/RSeQC/Pairend_nonStrandSpecific_36mer_Human_hg19.sort.bam";
 		String outFile = "/home/zong0jie/hdfs/GeneBodyCoverage";
-		String  bedFile = "/media/hdfs/nbCloud/public/test/RSeQC/hg19_RefSeq.bed";
+		String bedFile = "/media/hdfs/nbCloud/public/test/RSeQC/hg19_RefSeq.bed";
 		GeneBodyCoverage geneBodyCoverage = new  GeneBodyCoverage(inFile, outFile, bedFile);
 		geneBodyCoverage.run();
 		InnerDistance innerDistance = new InnerDistance(inFile, outFile, bedFile);

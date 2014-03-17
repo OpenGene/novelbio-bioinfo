@@ -152,7 +152,7 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 			lsInfo.add("");
 		}
 		
-		lsInfo.add(gffGeneIsoInfo.toStringCodLocStr(refStartSite));
+		lsInfo.add(gffGeneIsoInfo.toStringCodLocStr(new int[]{0,0}, refStartSite));
 		
 		//如果snp落在了intron里面，本项目就不计数了
 		double prop = refSiteSnpIndel.getProp();

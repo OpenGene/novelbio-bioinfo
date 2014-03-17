@@ -479,7 +479,7 @@ public class MapTophat implements MapRNA {
 		}
 
 		if (mapUnmapedReads) {
-			String finalBam = FileOperate.getParentPathName(outPathPrefix) + "prefix" + TophatAllSuffix;
+			String finalBam = FileOperate.getParentPathName(outPathPrefix) + prefix + TophatAllSuffix;
 			mapUnmapedReads(threadNum, bowtie2ChrIndex, tophatBam, unmappedBam, finalBam);
 		}
 	}
@@ -569,9 +569,9 @@ public class MapTophat implements MapRNA {
 		String unmapBamGetSeq = unmappedBam;
 		if (unmappedBam == null) {
 			unmappedFq = FileOperate.changeFileSuffix(acceptedBam, "_unmapped", "fq.gz");
+			unmapBamGetSeq = acceptedBam;
 		} else {
 			unmappedFq = FileOperate.changeFileSuffix(unmappedBam, "", "fq.gz");
-			unmapBamGetSeq = acceptedBam;
 		}
 		String mapBowtieBam = FileOperate.changeFileSuffix(unmappedBam, "_bowtieMap", "bam");
 		

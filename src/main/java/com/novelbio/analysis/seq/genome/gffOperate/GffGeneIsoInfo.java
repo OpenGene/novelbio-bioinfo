@@ -78,18 +78,18 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	String id;
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	private GeneType flagTypeGene = GeneType.mRNA;
-	/** 设定基因的转录起点上游长度，默认为0 */
-	@Transient
-	protected int upTss = 0;
-	/** 设定基因的转录起点下游长度，默认为0  */
-	@Transient
-	protected int downTss=0;
-	/**  设定基因的转录终点点上游长度，默认为0 */
-	@Transient
-	protected int upTes=0;
-	/** 设定基因结尾向外延伸的长度，默认为0 */
-	@Transient
-	protected int downTes=100;
+//	/** 设定基因的转录起点上游长度，默认为0 */
+//	@Transient
+//	protected int upTss = 0;
+//	/** 设定基因的转录起点下游长度，默认为0  */
+//	@Transient
+//	protected int downTss=0;
+//	/**  设定基因的转录终点点上游长度，默认为0 */
+//	@Transient
+//	protected int upTes=0;
+//	/** 设定基因结尾向外延伸的长度，默认为0 */
+//	@Transient
+//	protected int downTes=100;
 	
 	/** 该转录本的ATG的第一个字符坐标，从1开始计数  */
 	protected int ATGsite = ListCodAbs.LOC_ORIGINAL;
@@ -133,8 +133,6 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		this.flagTypeGene = geneType;
 		this.gffDetailGeneParent = gffDetailGene;
 		this.geneParentName = geneParentName;
-		setTssRegion(gffDetailGene.getTssRegion()[0], gffDetailGene.getTssRegion()[1]);
-		setTesRegion(gffDetailGene.getTesRegion()[0], gffDetailGene.getTesRegion()[1]);
 	}
 	public void setParentGeneName(String geneParentName) {
 		this.geneParentName = geneParentName;
@@ -180,42 +178,24 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return geneParentName;
 	}
 	/**
-	 * 跟随gffDetailGene的设定
-	 * 划定Tss范围上游为负数，下游为正数
-	 * @param upTss
-	 * @param downTss
-	 */
-	protected void setTssRegion(int upTss, int downTss) {
-		this.upTss = upTss;
-		this.downTss = downTss;
-	}
-	/**
-	 * 跟随gffDetailGene的设定
-	 * @param upTes
-	 * @param downTes
-	 */
-	protected void setTesRegion(int upTes, int downTes) {
-		this.upTes = upTes;
-		this.downTes = downTes;
-	}
-	/**
 	 * coord是否在promoter区域的范围内，从Tss上游UpStreamTSSbp到Tss下游DownStreamTssbp
 	 * @return
 	 */
-	public boolean isCodInIsoTss(int coord) {
+	public boolean isCodInIsoTss(int[] tss, int coord) {
 		int cod2tss = getCod2Tss(coord);
-		if (cod2tss >= upTss && cod2tss <= downTss) {
+		if (cod2tss >= tss[0] && cod2tss <= tss[1]) {
 			return true;
 		}
 		return false;
 	}
+	
 	/**
 	 * coord是否在geneEnd区域的范围内
 	 * @return
 	 */
-	public boolean isCodInIsoGenEnd(int coord) {
+	public boolean isCodInIsoGenEnd(int[] geneEnd, int coord) {
 		int cod2tes = getCod2Tes(coord);
-		if (cod2tes >= upTes && cod2tes <= downTes) {
+		if (cod2tes >= geneEnd[0] && cod2tes <= geneEnd[1]) {
 			return true;
 		}
 		return false;
@@ -224,9 +204,9 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * coord是否在该转录本包括promoter和geneEnd延长区域的范围内
 	 * @return
 	 */
-	public boolean isCodInIsoExtend(int coord) {
+	public boolean isCodInIsoExtend(int[] tss, int[] geneEnd, int coord) {
 		int codLoc = getCodLoc(coord);
-		return (codLoc != COD_LOC_OUT) || isCodInIsoTss(coord) || isCodInIsoGenEnd(coord);
+		return (codLoc != COD_LOC_OUT) || isCodInIsoTss(tss, coord) || isCodInIsoGenEnd(geneEnd, coord);
 	}
 	/**
 	 * cod是否在编码区
@@ -770,14 +750,14 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * n+1: 基因名<br>
 	 * n+2: 基因信息<br>
 	 **/
-	public boolean isCodLocFilter(int coord, boolean filterTss, boolean filterGenEnd, 
+	public boolean isCodLocFilter(int coord, boolean filterTss, int[] tss, boolean filterGenEnd, int[] geneEnd,  
 			boolean filterGeneBody,boolean filter5UTR, boolean filter3UTR,boolean filterExon, boolean filterIntron) {
 		boolean filter = false;
 		if (filterTss == true) {
-			if (isCodInIsoTss(coord)) filter = true;
+			if (isCodInIsoTss(tss, coord)) filter = true;
 		}
 		if (filterGenEnd == true) {
-			if (isCodInIsoGenEnd(coord)) filter = true;
+			if (isCodInIsoGenEnd(geneEnd, coord)) filter = true;
 		}
 		
 		if (filterGeneBody && getCodLoc(coord) != COD_LOC_OUT) {
@@ -1169,11 +1149,11 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * n+1: 基因名<br>
 	 * n+2: 基因信息<br>
 	 **/
-	public String toStringCodLocStrFilter(int coord, boolean filterTss, boolean filterGenEnd, 
+	public String toStringCodLocStrFilter(int coord, boolean filterTss, int[] tss, boolean filterGenEnd, int[] geneEnd, 
 			boolean filterGeneBody,boolean filter5UTR, boolean filter3UTR,boolean filterExon, boolean filterIntron) {
-		boolean filter = isCodLocFilter(coord, filterTss, filterGenEnd, filterGeneBody, filter5UTR, filter3UTR, filterExon, filterIntron);
+		boolean filter = isCodLocFilter(coord, filterTss,tss, filterGenEnd, geneEnd, filterGeneBody, filter5UTR, filter3UTR, filterExon, filterIntron);
 		if (filter) {
-			return toStringCodLocStr(coord);
+			return toStringCodLocStr(tss, coord);
 		}
 		else {
 			return null;
@@ -1184,7 +1164,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @return
 	 * null: 不在该转录本内
 	 */
-	public String toStringCodLocStr(int coord) {
+	public String toStringCodLocStr(int[] tss, int coord) {
 		String result = "gene_position:";
 		if ( isCis5to3()) {
 			result = result + "forward ";
@@ -1193,7 +1173,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 		int codLoc = getCodLoc(coord);
 		//promoter\
-		if (isCodInIsoTss(coord) && codLoc == COD_LOC_OUT) {
+		if (isCodInIsoTss(tss, coord) && codLoc == COD_LOC_OUT) {
 			if (getCod2Tss(coord) > PROMOTER_INTERGENIC_MAMMUM) {
 				result = result + PROMOTER_INTERGENIC_STR;
 			} else if (getCod2Tss(coord) > PROMOTER_DISTAL_MAMMUM) {
@@ -1201,7 +1181,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			} else {
 				result = result + PROMOTER_PROXIMAL_STR;;
 			}
-		} else if (isCodInIsoTss(coord) && codLoc != COD_LOC_OUT) {
+		} else if (isCodInIsoTss(tss, coord) && codLoc != COD_LOC_OUT) {
 			result = result + PROMOTER_DOWNSTREAMTSS_STR;
 		}
 		
@@ -1265,13 +1245,9 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		result.ATGsite = ATGsite;
 		result.gffDetailGeneParent = gffDetailGeneParent;
 		result.geneParentName = geneParentName;
-		result.downTes = downTes;
-		result.downTss = downTss;
 		result.flagTypeGene = flagTypeGene;
 		result.lengthIso = lengthIso;
 		result.UAGsite = UAGsite;
-		result.upTes = upTes;
-		result.upTss = upTss;
 		result.geneID = geneID;
 		return result;
 	}

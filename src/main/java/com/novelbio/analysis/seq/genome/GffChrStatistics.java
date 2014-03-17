@@ -255,15 +255,13 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	 * @return
 	 */
 	private boolean setStatisticsNum(double prop, GffDetailGene gffDetailGene, int coord) {
-		gffDetailGene.setTssRegion(tssRegion);
-		gffDetailGene.setTesRegion(tesRegion);
 		GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplitMrna();
 		boolean flagIntraGenic = true;
 		//Tss Tes
-		if (gffGeneIsoInfo.isCodInIsoTss(coord) ) {
+		if (gffGeneIsoInfo.isCodInIsoTss(tssRegion, coord) ) {
 			tssNum += prop*1;
 		}
-		else if (gffGeneIsoInfo.isCodInIsoGenEnd(coord) ) {
+		else if (gffGeneIsoInfo.isCodInIsoGenEnd(tesRegion, coord) ) {
 			tesNum += prop*1;
 		}
 		
@@ -300,14 +298,6 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	
 	private boolean setStatisticsNum(double prop, GffDetailGene gffDetailGeneUp, GffDetailGene gffDetailGeneDown, int coord) {
 		boolean flagIntraGenic = false;
-		if (gffDetailGeneUp != null ) {
-			gffDetailGeneUp.setTssRegion(tssRegion);
-			gffDetailGeneUp.setTesRegion(tesRegion);
-		}
-		if (gffDetailGeneDown != null) {
-			gffDetailGeneDown.setTssRegion(tssRegion);
-			gffDetailGeneDown.setTesRegion(tesRegion);
-		}
 		GffGeneIsoInfo gffGeneIsoInfoUp = null, gffGeneIsoInfoDown = null;
 		if (gffDetailGeneUp != null) {
 			gffGeneIsoInfoUp = gffDetailGeneUp.getLongestSplitMrna();
@@ -317,15 +307,15 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 		}
 		
 		//Tss Tes
-		if ( ( gffGeneIsoInfoUp != null && gffGeneIsoInfoUp.isCodInIsoTss(coord) ) 
-				|| ( gffGeneIsoInfoDown != null && gffGeneIsoInfoDown.isCodInIsoTss(coord) )
+		if ( ( gffGeneIsoInfoUp != null && gffGeneIsoInfoUp.isCodInIsoTss(tssRegion, coord) ) 
+				|| ( gffGeneIsoInfoDown != null && gffGeneIsoInfoDown.isCodInIsoTss(tssRegion, coord) )
 			) {
 			tssNum += prop*1;
 			flagIntraGenic =true;
 		}
 		//GeneEnd
-		if ( (gffGeneIsoInfoUp != null && gffGeneIsoInfoUp.isCodInIsoGenEnd(coord) )
-				|| ( gffGeneIsoInfoDown != null && gffGeneIsoInfoDown.isCodInIsoGenEnd(coord) )
+		if ( (gffGeneIsoInfoUp != null && gffGeneIsoInfoUp.isCodInIsoGenEnd(tesRegion, coord) )
+				|| ( gffGeneIsoInfoDown != null && gffGeneIsoInfoDown.isCodInIsoGenEnd(tesRegion, coord) )
 			) {
 			tesNum += prop*1;
 			flagIntraGenic =true;

@@ -608,13 +608,27 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   patParentID = null;
 	   patProduct = null;
 
-	   mapRnaID2GeneID = null;
-	   mapGenID2GffDetail = null;
+	   mapRnaID2GeneID.clear();
+	   mapGenID2GffDetail.clear();
 		
-	   mapRnaID2LsIso = null;
-	   mapRnaID2LsIsoLocInfo = null;
-	   mapID2ChrID = null;
-	   mapGeneName2IsHaveExon = null;
+	   mapRnaID2LsIso.clear();
+	   mapRnaID2LsIsoLocInfo.clear();
+	   mapID2ChrID.clear();
+	   mapGeneName2IsHaveExon.clear();
+	   
+	    mapRnaID2GeneID = null;
+	    mapGenID2GffDetail = null;
+	    
+	    mapRnaID2GeneID = null;
+	    mapGenID2GffDetail = null;
+			
+	    mapRnaID2LsIso = null;
+	    mapRnaID2LsIsoLocInfo = null;
+	    mapID2ChrID = null;
+	    mapGeneName2IsHaveExon = null;
+		   
+	    mapRnaID2GeneID = null;
+	    mapGenID2GffDetail = null;
    }
    
    /**
