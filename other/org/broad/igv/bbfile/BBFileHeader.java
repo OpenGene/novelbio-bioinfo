@@ -30,8 +30,9 @@
 package org.broad.igv.bbfile;
 
 
+import net.sf.samtools.seekablestream.SeekableStream;
+
 import org.apache.log4j.Logger;
-import org.broad.tribble.util.SeekableStream;
 import org.broad.tribble.util.*;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;

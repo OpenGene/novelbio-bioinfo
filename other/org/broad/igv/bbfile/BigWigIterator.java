@@ -18,7 +18,8 @@
 
 package org.broad.igv.bbfile;
 
-import org.broad.tribble.util.SeekableStream;
+import net.sf.samtools.seekablestream.SeekableStream;
+
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
