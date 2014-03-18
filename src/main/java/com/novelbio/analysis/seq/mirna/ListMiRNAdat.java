@@ -124,7 +124,7 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 		}
 	}
 	
-	private String getHairpinSeq(List<String> lsMirBlock) {
+	protected static String getHairpinSeq(List<String> lsMirBlock) {
 		String finalSeq = "";
 		boolean seqFlag = false;
 		for (String string : lsMirBlock) {
@@ -140,7 +140,7 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 		return finalSeq;
 	}
 	
-	private ArrayList<MirMature> getLsMatureMirnaLocation(List<String> lsMirBlock) {
+	protected static ArrayList<MirMature> getLsMatureMirnaLocation(List<String> lsMirBlock) {
 		ArrayList<MirMature> lsResult = new ArrayList<>();
 		MirMature mirMature = null;
 		for (String string : lsMirBlock) {
@@ -172,7 +172,7 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 		return lsResult;
 	}
 	
-	private boolean isFindSpecies(List<String> lsMirBlock, String speciesName) {
+	protected static boolean isFindSpecies(List<String> lsMirBlock, String speciesName) {
 		if (lsMirBlock.size() == 0 || !lsMirBlock.get(0).startsWith("ID")) {
 			return false;
 		}
@@ -206,107 +206,140 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 		return element.getNameSingle();
 	}
 	
-	class ExtractMirSeq {
-		Set<String> setMirnaToBeExtract;
-		String speciesName;
-		TxtReadandWrite txtRead;
-		TxtReadandWrite txtHairpin;
-		TxtReadandWrite txtMature;
-		Set<String> setUniqueMirMatureName = new HashSet<>();
-		
-		/**
-		 * @param setMirnaToBeExtract 待提取的序列名，务必都小写
-		 * @param speciesName
-		 * @param rnaDataFile
-		 * @param rnaHairpinOut
-		 * @param rnaMatureOut
-		 */
-		public ExtractMirSeq(Set<String> setMirnaToBeExtract, String speciesName, 
-				String rnaDataFile, String rnaHairpinOut, String rnaMatureOut) {
-			if (setMirnaToBeExtract != null && setMirnaToBeExtract.size() > 0) {
-				this.setMirnaToBeExtract = setMirnaToBeExtract;
-			}
-			this.speciesName = speciesName;
-			txtRead = new TxtReadandWrite(rnaDataFile, false);
-			txtHairpin = new TxtReadandWrite(rnaHairpinOut, true);
-			txtMature = new TxtReadandWrite(rnaMatureOut, true);
-		}
-		
-		/** 内部关闭流 */
-		public void writeFile() {
-			setUniqueMirMatureName.clear();
-			List<String> lsBlock = new ArrayList<>();
-			for (String string : txtRead.readlines()) {
-				if (string.startsWith("//")) {
-					List<SeqFasta> lsseqFastas = getSeqFromRNAdata(lsBlock, speciesName);
-					writeToFile(lsseqFastas);
-					lsBlock = new ArrayList<>();
-					continue;
-				}
-				lsBlock.add(string);
-			}
-			txtRead.close();
-			txtHairpin.close();
-			txtMature.close();
-		}
-		
-		private void writeToFile(List<SeqFasta> lsseqFastas) {
-			if (lsseqFastas.size() == 0) return;
-			
-			for (int i = 0; i < lsseqFastas.size(); i++) {
-				SeqFasta seqFasta = lsseqFastas.get(i);
-				String seqName = seqFasta.getSeqName().toLowerCase();
-				
-				if ((setMirnaToBeExtract != null && !setMirnaToBeExtract.contains(seqName)))
-					continue;
-				if (i != 0) {
-					if (setUniqueMirMatureName.contains(seqName)) {
-						continue;
-					} else {
-						setUniqueMirMatureName.add(seqName);
-					}
-				}
-
-				if (i == 0) {
-					txtHairpin.writefileln(lsseqFastas.get(i).toStringNRfasta());
-				} else {
-					txtMature.writefileln(lsseqFastas.get(i).toStringNRfasta());
-				}
-			}
-		}
-		
-		/**
-		 * 给定RNAdata文件的一个block，将其中的序列提取出来
-		 * @param rnaDataBlock
-		 * @return speciesName 物种英文名，无所谓大小写
-		 * 后面为成熟体序列
-		 */
-		private ArrayList<SeqFasta> getSeqFromRNAdata(List<String> lsMirBlock, String speciesName) {
-			ArrayList<SeqFasta> lSeqFastas = new ArrayList<SeqFasta>();
-			if (!isFindSpecies(lsMirBlock, speciesName)) {
-				return lSeqFastas;
-			}
-			
-			String[] ssID = lsMirBlock.get(0).split(" +");
-			
-			String miRNAhairpinName = ssID[1]; //ID   cel-lin-4         standard; RNA; CEL; 94 BP.
-			ArrayList<MirMature> lsSeqLocation = getLsMatureMirnaLocation(lsMirBlock);
-			String finalSeq = getHairpinSeq(lsMirBlock);
-			
-			ArrayList<SeqFasta> lsResult = new ArrayList<SeqFasta>();
-			SeqFasta seqFasta = new SeqFasta(miRNAhairpinName, finalSeq);
-			seqFasta.setDNA(true);
-			lsResult.add(seqFasta);
-			for (MirMature listDetailBin : lsSeqLocation) {
-				SeqFasta seqFastaMature = new SeqFasta();
-				seqFastaMature.setName(listDetailBin.getNameSingle());
-				seqFastaMature.setSeq(finalSeq.substring(listDetailBin.getStartAbs()-1, listDetailBin.getEndAbs()));
-				seqFastaMature.setDNA(true);
-				lsResult.add(seqFastaMature);
-			}
-			return lsResult;
-		}
+	public static boolean isContainMiRNA(String speciesName, String rnaDataFile) {
+		ExtractMirSeq extractMirSeq = new ExtractMirSeq(null, speciesName, rnaDataFile, null, null);
+		return extractMirSeq.isContainMiRNA(speciesName);
 	}
 
 }
 
+class ExtractMirSeq {
+	Set<String> setMirnaToBeExtract;
+	String speciesName;
+	
+	String rnaDataFile;
+	String rnaHairpinOut;
+	String rnaMatureOut;
+	
+	TxtReadandWrite txtRead;
+	TxtReadandWrite txtHairpin;
+	TxtReadandWrite txtMature;
+	Set<String> setUniqueMirMatureName = new HashSet<>();
+	
+	/** 看mirDat文件中是否存在该物种的miRNA */
+	public boolean isContainMiRNA(String speciesName) {
+		boolean findMiRNA = false;
+		txtRead = new TxtReadandWrite(rnaDataFile, false);
+		setUniqueMirMatureName.clear();
+		List<String> lsBlock = new ArrayList<>();
+		for (String string : txtRead.readlines()) {
+			if (string.startsWith("//")) {
+				List<SeqFasta> lsseqFastas = getSeqFromRNAdata(lsBlock, speciesName);
+				lsBlock.clear();
+				if (!lsseqFastas.isEmpty()) {
+					findMiRNA = true;
+					break;
+				}
+			}
+			lsBlock.add(string);
+		}
+		return findMiRNA;
+	}
+	
+	/**
+	 * @param setMirnaToBeExtract 待提取的序列名，务必都小写
+	 * @param speciesName
+	 * @param rnaDataFile
+	 * @param rnaHairpinOut
+	 * @param rnaMatureOut
+	 */
+	public ExtractMirSeq(Set<String> setMirnaToBeExtract, String speciesName, 
+			String rnaDataFile, String rnaHairpinOut, String rnaMatureOut) {
+		if (setMirnaToBeExtract != null && setMirnaToBeExtract.size() > 0) {
+			this.setMirnaToBeExtract = setMirnaToBeExtract;
+		}
+		this.speciesName = speciesName;
+		this.rnaDataFile = rnaDataFile;
+		this.rnaHairpinOut = rnaHairpinOut;
+		this.rnaMatureOut = rnaMatureOut;
+	}
+	
+	/** 内部关闭流 */
+	public void writeFile() {
+		txtRead = new TxtReadandWrite(rnaDataFile, false);
+		txtHairpin = new TxtReadandWrite(rnaHairpinOut, true);
+		txtMature = new TxtReadandWrite(rnaMatureOut, true);
+		
+		setUniqueMirMatureName.clear();
+		List<String> lsBlock = new ArrayList<>();
+		for (String string : txtRead.readlines()) {
+			if (string.startsWith("//")) {
+				List<SeqFasta> lsseqFastas = getSeqFromRNAdata(lsBlock, speciesName);
+				writeToFile(lsseqFastas);
+				lsBlock = new ArrayList<>();
+				continue;
+			}
+			lsBlock.add(string);
+		}
+		txtRead.close();
+		txtHairpin.close();
+		txtMature.close();
+	}
+	
+	private void writeToFile(List<SeqFasta> lsseqFastas) {
+		if (lsseqFastas.size() == 0) return;
+		
+		for (int i = 0; i < lsseqFastas.size(); i++) {
+			SeqFasta seqFasta = lsseqFastas.get(i);
+			String seqName = seqFasta.getSeqName().toLowerCase();
+			
+			if ((setMirnaToBeExtract != null && !setMirnaToBeExtract.contains(seqName)))
+				continue;
+			if (i != 0) {
+				if (setUniqueMirMatureName.contains(seqName)) {
+					continue;
+				} else {
+					setUniqueMirMatureName.add(seqName);
+				}
+			}
+
+			if (i == 0) {
+				txtHairpin.writefileln(lsseqFastas.get(i).toStringNRfasta());
+			} else {
+				txtMature.writefileln(lsseqFastas.get(i).toStringNRfasta());
+			}
+		}
+	}
+	
+	/**
+	 * 给定RNAdata文件的一个block，将其中的序列提取出来
+	 * @param rnaDataBlock
+	 * @return speciesName 物种英文名，无所谓大小写
+	 * 后面为成熟体序列
+	 */
+	private ArrayList<SeqFasta> getSeqFromRNAdata(List<String> lsMirBlock, String speciesName) {
+		ArrayList<SeqFasta> lSeqFastas = new ArrayList<SeqFasta>();
+		if (!ListMiRNAdat.isFindSpecies(lsMirBlock, speciesName)) {
+			return lSeqFastas;
+		}
+		
+		String[] ssID = lsMirBlock.get(0).split(" +");
+		
+		String miRNAhairpinName = ssID[1]; //ID   cel-lin-4         standard; RNA; CEL; 94 BP.
+		ArrayList<MirMature> lsSeqLocation = ListMiRNAdat.getLsMatureMirnaLocation(lsMirBlock);
+		String finalSeq = ListMiRNAdat.getHairpinSeq(lsMirBlock);
+		
+		ArrayList<SeqFasta> lsResult = new ArrayList<SeqFasta>();
+		SeqFasta seqFasta = new SeqFasta(miRNAhairpinName, finalSeq);
+		seqFasta.setDNA(true);
+		lsResult.add(seqFasta);
+		for (MirMature listDetailBin : lsSeqLocation) {
+			SeqFasta seqFastaMature = new SeqFasta();
+			seqFastaMature.setName(listDetailBin.getNameSingle());
+			seqFastaMature.setSeq(finalSeq.substring(listDetailBin.getStartAbs()-1, listDetailBin.getEndAbs()));
+			seqFastaMature.setDNA(true);
+			lsResult.add(seqFastaMature);
+		}
+		return lsResult;
+	}
+}

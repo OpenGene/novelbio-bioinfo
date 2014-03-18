@@ -57,6 +57,10 @@ public class ManageGffDetailGene {
 		mongoTemplate.save(gffFile);
 	}
 	
+	public void saveGffFile(GffFile gffFile) {
+		mongoTemplate.save(gffFile);
+	}
+	
 	public void delete(GffFile gffFile) {
 		mongoTemplate.remove(gffFile);
 		mongoTemplate.remove(new Query( Criteria.where("taxID").is(gffFile.getTaxID())
@@ -85,6 +89,11 @@ public class ManageGffDetailGene {
 			return null;
 		}
 		return lsGffFiles.get(0);
+	}
+	
+	public List<GffFile> findAllGffFile() {
+		List<GffFile> lsGffFiles = mongoTemplate.findAll(GffFile.class);
+		return lsGffFiles;
 	}
 	
 	public void saveGffDetailGene(GffDetailGene gffDetailGene) {

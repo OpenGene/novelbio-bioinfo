@@ -468,8 +468,8 @@ public class MapTophat implements MapRNA {
 		String parentPath = FileOperate.getParentPathName(outPathPrefix);
 		String tophatBam = parentPath + prefix + TophatSuffix;
 		String unmappedBam = parentPath + UnmapPrefix + prefix + "_tophat.bam";
-		if (!FileOperate.isFileExistAndBigThanSize(tophatBam, 0) ||
-				!FileOperate.isFileExistAndBigThanSize(unmappedBam, 0)
+		if (!FileOperate.isFileExistAndBigThanSize(tophatBam, 1_000_000) ||
+				!FileOperate.isFileExistAndBigThanSize(unmappedBam, 1_000)
 				) {
 			List<String> lsCmd = getLsCmd();
 			CmdOperate cmdOperate = new CmdOperate(lsCmd);
@@ -567,7 +567,8 @@ public class MapTophat implements MapRNA {
 	 * @param outFinalBam
 	 * @return 返回使用的命令行
 	 */
-	protected static List<String> mapUnmapedReads(int threadNum, String bowtie2ChrIndex, String acceptedBam, String unmappedBam, String outFinalBam) {
+	protected static List<String> mapUnmapedReads(int threadNum, String bowtie2ChrIndex, 
+			String acceptedBam, String unmappedBam, String outFinalBam) {
 		String unmappedFq = null;
 		String unmapBamGetSeq = unmappedBam;
 		if (unmappedBam == null) {
@@ -576,10 +577,11 @@ public class MapTophat implements MapRNA {
 		} else {
 			unmappedFq = FileOperate.changeFileSuffix(unmappedBam, "", "fq.gz");
 		}
+		//没有比对上的reads用bowtie2再次比对
 		String mapBowtieBam = FileOperate.changeFileSuffix(unmappedBam, "_bowtieMap", "bam");
 		SamFile samFileMapBowtie = null;
 		MapBowtie mapBowtie = null;
-		if (!FileOperate.isFileExistAndBigThanSize(mapBowtieBam, 0)) {
+		if (!FileOperate.isFileExistAndBigThanSize(mapBowtieBam, 1_000_000)) {
 			SamToFastq samToFastq = new SamToFastq();
 			samToFastq.setFastqFile(unmappedFq);
 			samToFastq.setJustUnMapped(true);
@@ -595,16 +597,17 @@ public class MapTophat implements MapRNA {
 			mapBowtie.setFqFile(fastQ, null);
 			mapBowtie.setSensitive(MapBowtie.Sensitive_Very_Sensitive);
 			mapBowtie.setExePath(softWareInfo.getExePath());
-			String mapFile = FileOperate.changeFileSuffix(unmappedBam, "_bowtieMapTmp", "bam");
+			String mapFile = FileOperate.changeFileSuffix(mapBowtieBam, "_TmpMapping", "bam");
 			mapBowtie.setOutFileName(mapFile);
 			mapBowtie.mapReads();
-			FileOperate.changeFileName(mapFile, FileOperate.getFileName(mapBowtieBam));
+			FileOperate.moveFile(true, mapFile, mapBowtieBam);
 		}
 		samFileMapBowtie = new SamFile(mapBowtieBam);
 		SamFile samFileTophat = new SamFile(acceptedBam);
 		SAMFileHeader header = samFileTophat.getHeader();
 		header.setSortOrder(SortOrder.unsorted);
-		SamFile samFileOut = new SamFile(outFinalBam, header);
+		String outFinalBamTmp = FileOperate.changeFileSuffix(outFinalBam, "_tmpMerge", null);
+		SamFile samFileOut = new SamFile(outFinalBamTmp, header);
 		for (SamRecord samRecord : samFileTophat.readLines()) {
 			if (samRecord.isMapped()) {
 				samFileOut.writeSamRecord(samRecord);
@@ -616,6 +619,7 @@ public class MapTophat implements MapRNA {
 		}
 		samFileMapBowtie.close();
 		samFileOut.close();
+		FileOperate.moveFile(true, outFinalBamTmp, outFinalBam);
 		if (mapBowtie != null) {
 			return mapBowtie.getCmdExeStr();
 		} else {

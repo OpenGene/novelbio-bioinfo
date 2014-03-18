@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import com.novelbio.analysis.seq.mapping.MapBowtie;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.database.model.species.Species;
+import com.novelbio.database.service.servgff.ManageGffDetailGene;
 
 @Document(collection = "gfffileinfo")
 @CompoundIndexes({
@@ -89,6 +90,10 @@ public class GffFile {
 		} catch (Exception e) {
 		}
 		return name;
+	}
+	
+	public void save() {
+		ManageGffDetailGene.getInstance().saveGffFile(this);
 	}
 
 }

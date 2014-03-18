@@ -80,6 +80,10 @@ public class FastQC {
 		return lsModules;
 	}
 	
+	public static String getQualityScoreFileName(String outPathPrefix) {
+		return FileOperate.changeFilePrefix(outPathPrefix, "QualityScore_", "png");
+	}
+	
 	public List<String> saveToPathPic(String outPathPrefix) {
 		List<String> lsSaveName = new ArrayList<>();
 		if (!qc) return lsSaveName;

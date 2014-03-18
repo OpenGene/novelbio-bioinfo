@@ -158,7 +158,7 @@ public class MapSplice implements MapRNA {
 		String prefix = FileOperate.getFileName(outFile);
 		String parentPath = FileOperate.getParentPathName(outFile);
 		String mapSpliceBam = parentPath + prefix + MapSpliceSuffix;
-		if (!FileOperate.isFileExistAndBigThanSize(mapSpliceBam, 0)) {
+		if (!FileOperate.isFileExistAndBigThanSize(mapSpliceBam, 1_000_000)) {
 			CmdOperate cmdOperate = new CmdOperate(getLsCmd());
 			cmdOperate.setGetLsErrOut();
 			cmdOperate.run();

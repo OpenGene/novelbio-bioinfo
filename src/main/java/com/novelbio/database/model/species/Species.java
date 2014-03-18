@@ -107,11 +107,11 @@ public class Species implements Cloneable {
 		if (version == null) {
 			return;
 		}
+		this.version = version;
 		version = version.split(sepVersionAndYear)[0].toLowerCase();
 		if (!mapVersion2Species.containsKey(version)) {
 			return;
 		}
-		this.version = version;
 		this.gffDB = null;
 	}
 	/**
@@ -649,9 +649,6 @@ public class Species implements Cloneable {
 			
 			m = hashName2ColNum.get("abbreviation");
 			taxInfo.setAbbr(info[m]);
-			
-			m = hashName2ColNum.get("ishavemirna");
-			taxInfo.setHaveMiRNA(info[5] != null && info[5].equalsIgnoreCase("true"));
 			//升级
 			taxInfo.save();
 		}
