@@ -46,6 +46,7 @@ public class MapBowtie extends MapDNA {
 	int maxMultipHit = 4;
 	
 	int sensitive = Sensitive_Sensitive;
+	boolean isLocal = true;
 	/**
 	 * pe -fr
 	 * mp -rf
@@ -64,7 +65,10 @@ public class MapBowtie extends MapDNA {
 			this.ExePathBowtie = FileOperate.addSep(exePathBowtie);
 	}
 
-
+	public void setLocal(boolean isLocal) {
+		this.isLocal = isLocal;
+	}
+	
 	/** 设定是bowtie还是bowtie2 */
 	public void setSubVersion(SoftWare bowtieVersion) {
 		this.bowtieVersion = bowtieVersion;
@@ -305,18 +309,34 @@ public class MapBowtie extends MapDNA {
 	private List<String> getLsCmdMapping() {
 		List<String> lsCmd = new ArrayList<>();
 		lsCmd.add(ExePathBowtie + "bowtie2");
-		lsCmd.add("--local");
-		if (sensitive == Sensitive_Very_Fast) {
-			lsCmd.add("--very-fast-local");
-		} else if (sensitive == Sensitive_Fast) {
-			lsCmd.add("--fast-local");
-		} else if (sensitive == Sensitive_Sensitive) {
-			lsCmd.add("--sensitive-local");
-		} else if (sensitive == Sensitive_Very_Sensitive) {
-			lsCmd.add("--very-sensitive-local");
+		if (isLocal) {
+			lsCmd.add("--local");
+			if (sensitive == Sensitive_Very_Fast) {
+				lsCmd.add("--very-fast-local");
+			} else if (sensitive == Sensitive_Fast) {
+				lsCmd.add("--fast-local");
+			} else if (sensitive == Sensitive_Sensitive) {
+				lsCmd.add("--sensitive-local");
+			} else if (sensitive == Sensitive_Very_Sensitive) {
+				lsCmd.add("--very-sensitive-local");
+			} else {
+				lsCmd.add("--sensitive-local");
+			}
 		} else {
-			lsCmd.add("--sensitive-local");
+			lsCmd.add("--end-to-end");
+			if (sensitive == Sensitive_Very_Fast) {
+				lsCmd.add("--very-fast");
+			} else if (sensitive == Sensitive_Fast) {
+				lsCmd.add("--fast");
+			} else if (sensitive == Sensitive_Sensitive) {
+				lsCmd.add("--sensitive");
+			} else if (sensitive == Sensitive_Very_Sensitive) {
+				lsCmd.add("--very-sensitive");
+			} else {
+				lsCmd.add("--sensitive");
+			}
 		}
+		
 		lsCmd.add("--mm");
 		lsCmd.add(getOffset());
 		ArrayOperate.addArrayToList(lsCmd, getMappingNum());

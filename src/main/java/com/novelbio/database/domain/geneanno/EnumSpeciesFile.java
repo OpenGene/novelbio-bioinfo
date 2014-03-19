@@ -12,8 +12,11 @@ public enum EnumSpeciesFile {
 	gffRepeatFile("gff"),
 	refseqNCfile("refrna"),
 	gffGeneFile("gff"),
-	refseqFileAllIso("refrna"),
-	refseqFileOneIso("refrna"),
+	refseqAllIsoRNA("refrna"),
+	refseqOneIsoRNA("refrna"),
+	
+	refseqAllIsoPro("refprotein"),
+	refseqOneIsoPro("refprotein"),
 	
 	ChromSepPath("Chrom_Sep") {
 		public String getSavePath(SpeciesFile speciesFile) {

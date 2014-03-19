@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,7 +20,6 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.multithread.RunProcess;
-import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modgeneid.GeneType;
 /**
  * 在GffChrAbs中设定Tss和Tes的范围
@@ -30,7 +28,7 @@ import com.novelbio.database.model.modgeneid.GeneType;
  *
  */
 public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
-	private static Logger logger = Logger.getLogger(GffChrSeq.class);
+	private static final Logger logger = Logger.getLogger(GffChrSeq.class);
 	GffChrAbs gffChrAbs;
 	
 	GeneStructure geneStructure = GeneStructure.ALLLENGTH;
@@ -239,11 +237,14 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	 */
 	public ArrayList<String[]> motifPromoterScan(String regex) {
 		ArrayList<String[]> lsMotifResult = new ArrayList<String[]>();
+		Set<String> setGeneNameRemoveDuplicate = new HashSet<>();
 		if (booGetIsoSeq) {
-			copeSetIso();
 			for (GffGeneIsoInfo gffGeneIsoInfo : setIsoToGetSeq) {
 				SeqFasta seqFasta = getSeq(gffGeneIsoInfo);
 				if (seqFasta == null || seqFasta.Length() < 3) {
+					continue;
+				}
+				if(!skipForDuplicate(setGeneNameRemoveDuplicate, gffGeneIsoInfo)) {
 					continue;
 				}
 				lsMotifResult.addAll(seqFasta.getMotifScan().getMotifScanResult(regex));
@@ -269,13 +270,17 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		
 		int num = 0;
 		boolean isGetSeq = false;
-
+		Set<String> setGeneNameRemoveDuplicate = new HashSet<>();
 		if (booGetIsoSeq) {
-			copeSetIso();
 			for (GffGeneIsoInfo gffGeneIsoInfo : setIsoToGetSeq) {
 				num++;
 				SeqFasta seqFasta = getSeq(gffGeneIsoInfo);
-
+				if (seqFasta == null) {
+					continue;
+				}
+				if(!skipForDuplicate(setGeneNameRemoveDuplicate, gffGeneIsoInfo)) {
+					continue;
+				}
 				isGetSeq = isSeqFastaAndWriteToFile(seqFasta);
 				
 				suspendCheck();
@@ -302,6 +307,17 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		if (saveToFile)
 			txtOutFile.close();
 	}
+	
+	private boolean skipForDuplicate(Set<String> setGeneNameRemoveDuplicate, GffGeneIsoInfo gffGeneIsoInfo) {
+		if (!isGetReplicateIso) {
+			if (setGeneNameRemoveDuplicate.contains(gffGeneIsoInfo.getName())) {
+				return false;
+			} else {
+				setGeneNameRemoveDuplicate.add(gffGeneIsoInfo.getName());
+			}
+		}
+		return true;
+	}
 	/**
 	 * 输入名字提取序列，内部会去除重复基因
 	 * @param lsListGffName
@@ -318,6 +334,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 				setIsoToGetSeq.addAll(getGeneSeqLongestIso(gffDetailGene));
 			}
 		}
+		
 		booGetIsoSeq = true;
 	}
 	

@@ -31,17 +31,38 @@ public class BlastGetSeq implements IntCmdSoft {
 		blastGetSeq.setBlastType(BlastType.blastp);
 		blastGetSeq.setResultFile("/media/winE/NBC/Project/liufei/");
 		List<Species> lsSpecies = new ArrayList<>();
-		lsSpecies.add(new Species(9606));
-		lsSpecies.add(new Species(10090));
-		lsSpecies.add(new Species(7955));
-		lsSpecies.add(new Species(7227));
-		lsSpecies.add(new Species(6239));
-		lsSpecies.add(new Species(3702));
-		lsSpecies.add(new Species(39947));
+		Species species = new Species(9606);
+		species.setVersion("GRCh38");
+		lsSpecies.add(species);
+
+		species = new Species(10090);
+		species.setVersion("mm10_GRCm38");
+		lsSpecies.add(species);
+		
+		species = new Species(7955);
+		species.setVersion("Zv9");
+		lsSpecies.add(species);
+		
+		species = new Species(7227);
+		species.setVersion("dmel_r5_48");
+		lsSpecies.add(species);
+		
+		species = new Species(6239);
+		species.setVersion("ce10");
+		lsSpecies.add(species);
+		
+		species = new Species(3702);
+		species.setVersion("tair10");
+		lsSpecies.add(species);
+		
+		species = new Species(39947);
+		species.setVersion("tigr7");
+		lsSpecies.add(species);
+		
 		blastGetSeq.setLsSpeciesBlastTo(lsSpecies);
 		SeqFasta seqFasta = new SeqFasta();
-		seqFasta.setName("GRLH1");
-		seqFasta.setSeq("MSQEHENKRAVLVLPNDPAYNQRRPYTSEDEAWKSFLENPLTAATKAMMSINGDEDSAAALGLLYDYYKVPRDKRTISQQKTDVLGSDVDPNKRNMLTPLQETSMQLGDNRIQVLKGVPLNIVLPGNQHVQDKRGLFPSPDTTVTVSIAPVASNSVKTEGPSHGFSVTVPNPHCAEPDSHTVVFDRQLPHNQFSPNTQPRTPDSTFPENPDVFSFPGDLQLRMGPITQDDYGTFDTVSGNNFEYILEASKSLRQKSGDGTMTYLNKGQFYPITLRETDNGKLLQGPICKVRSVVMVVFGEEKSRDDQLKHWKYWHSRQHTAKQRCIDIADYKESFNTISNIEEISYNAISFTWDISEEAKIFISVNCLSTDFSSQKGVKGLPLNIQIDTYSYNNRSNKPIHRAYCQIKVFCDKGAERKIRDEERKQSRRKVGADVKVPLLHKRTDMTVFRTLTDFETQPVLFIPDIHFSTFQRHAFTAEDSEEGSAMKRLPYTEEEFGSPPNKLARMDEPKRVLLYVRRETEEVFDALMLKTPTLKGLVEAISEKYEVSLEKIGKVYKKCKKGILVNMDDNIIKHYSNEDTFQIQMEEMGGMIKLTLTEIE");
+		seqFasta.setName("IT_p3n27	");
+		seqFasta.setSeq("MGGKQRDEDDEAYGKPVKYDPSFRGPIKNRSCTDVICCVLFLLFILGYIVVGIVAWLYGDPRQVLYPRNSTGAYCGMGENKDKPYLLYFNIFSCILSSNIISVAENGLQCPTPQVCVSSCPEDPWTVGKNEFSQTVGEVFYTKNRNFCLPGVPWNMTVITSLQQELCPSFLLPSAPALGRCFPWTNVTPPALPGITNDTTIQQGISGLIDSLNARDISVKIFEDFAQSWYWILVALGVALVLSLLFILLLRLVAGPLVLVLILGVLGVLAYGIYYCWEEYRVLRDKGASISQLGFTTNLSAYQSVQETWLAALIVLAVLEAILLLMLIFLRQRIRIAIALLKEASKAVGQMMSTMFYPLVTFVLLLICIAYWAMTALYLATSGQPQYVLWASNISSPGCEKVPINTSCNPTAHLVNSSCPGLMCVFQGYSSKGLIQRSVFNLQIYGVLGLFWTLNWVLALGQCVLAGAFASFYWAFHKPQDIPTFPLISAFIRTLRYHTGSLAFGALILTLVQIARVILEYIDHKLRGVQNPVARCIMCCFKCCLWCLEKFIKFLNRNAYIMIAIYGKNFCVSAKNAFMLLMRNIVRVVVLDKVTDLLLFFGKLLVVGGVGVLSFFFFSGRIPGLGKDFKSPHLNYYWLPIMTSILGAYVIASGFFSVFGMCVDTLFLCFLEDLERNNGSLDRPYYMSKSLLKILGKKNEAPPDNKKRKK");
 		blastGetSeq.setQueryFasta(seqFasta);
 		blastGetSeq.blastAndGetSeq();
 	}
@@ -212,9 +233,9 @@ public class BlastGetSeq implements IntCmdSoft {
 			GeneID geneID = new GeneID(seqFasta.getSeqName(), species.getTaxID());
 			String seqfastaNameNew = seqFasta.getSeqName();
 			if (!geneID.getSymbol().toLowerCase().equals(seqfastaNameNew.toLowerCase())) {
-				seqfastaNameNew = geneID.getSymbol() + "_" + seqfastaNameNew;
+				seqfastaNameNew = geneID.getSymbol().replace(" ", "_") + "_" + seqfastaNameNew;
 			}
-			seqFasta.setName(species.getCommonName() + "_" + seqfastaNameNew);
+			seqFasta.setName(species.getCommonName().replace(" ", "_") + "_" + seqfastaNameNew);
 			String result = null;
 			if (isGetProtein) {
 				result = seqFasta.toStringAAfasta();

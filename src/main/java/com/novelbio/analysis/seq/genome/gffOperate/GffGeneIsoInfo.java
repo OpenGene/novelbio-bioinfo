@@ -150,6 +150,9 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @return
 	 */
 	public GeneType getGeneType() {
+		if (flagTypeGene == null) {
+			return GeneType.ncRNA;
+		}
 		if (flagTypeGene != GeneType.mRNA && ismRNA()) {
 			flagTypeGene = GeneType.mRNA;
 			return GeneType.mRNA;

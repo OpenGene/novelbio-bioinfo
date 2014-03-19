@@ -268,6 +268,7 @@ public class MiRNAmapPipline implements IntCmdSoft {
 		mapBowtie.setChrIndex(chrFile);
 		mapBowtie.setExePath(exePath);
 		mapBowtie.setGapLength(3);
+		mapBowtie.setLocal(false);
 		mapBowtie.setThreadNum(threadNum);
 		mapBowtie.setSensitive(MapBowtie.Sensitive_Very_Sensitive);
 		if (samFileStatistics != null) {

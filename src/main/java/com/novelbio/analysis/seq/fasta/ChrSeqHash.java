@@ -104,11 +104,6 @@ public class ChrSeqHash extends SeqHashAbs {
 		if (startEndReal == null) return null;
 		long startReal = startEndReal[0]; long endReal = startEndReal[1];
 		
-		if (endReal > FileOperate.getFileSizeLong(chrFile)) {
-			logger.error("文件出错");
-			return null;
-		}
-		
 		byte[] readInfo = new byte[(int) (endReal - startReal)];
 		randomChrFileInt.seek(startReal);
 		randomChrFileInt.read(readInfo);

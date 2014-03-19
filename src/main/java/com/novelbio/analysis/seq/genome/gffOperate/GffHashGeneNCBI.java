@@ -450,7 +450,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		   if (gbkey.equals("ncRNA")) {
 			   ncRNA = true;
 			   ncRNAclass = mapID2value.get("ncrna_class");
-		   } else if (gbkey.equals("precursor_RNA")) {
+		   } else if (gbkey.equals("precursor_RNA") || gbkey.equals("RNA")) {
 			   String product = mapID2value.get("product");
 			   if (product != null && product.contains("microRNA")) {
 				   gbkey = GeneType.Precursor_miRNA.toString();

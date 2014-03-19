@@ -19,7 +19,6 @@ import com.novelbio.analysis.seq.genome.gffOperate.MiRNAList;
 import com.novelbio.analysis.seq.genome.gffOperate.MirMature;
 import com.novelbio.analysis.seq.genome.gffOperate.MirPre;
 import com.novelbio.analysis.seq.sam.SamMapRate;
-import com.novelbio.base.dataStructure.listOperate.ListBin;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.TitleFormatNBC;

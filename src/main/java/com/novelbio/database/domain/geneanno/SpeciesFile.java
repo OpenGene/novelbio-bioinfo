@@ -32,8 +32,10 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.mirna.ListMiRNAdat;
 import com.novelbio.analysis.seq.sam.SamIndexRefsequence;
 import com.novelbio.base.StringOperate;
+import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
@@ -52,10 +54,6 @@ import com.novelbio.generalConf.PathDetailNBC;
     @CompoundIndex(unique = true, name = "species_version_idx", def = "{'taxID': 1, 'version': -1}"),
  })
 public class SpeciesFile {
-	public static void main(String[] args) {
-		Species species = new Species(9606);
-		System.out.println(species.getRefseqFile(true));
-	}
 	private static final Logger logger = Logger.getLogger(SpeciesFile.class);
 	/** 物种文件夹名称 */
 	public static final String SPECIES_FOLDER = "species";
@@ -92,25 +90,12 @@ public class SpeciesFile {
 	/** 用来将小写的DB转化为正常的DB，使得getDB获得的字符应该是正常的DB */
 	Map<String, String> mapGffDBLowCase2DBNormal = new LinkedHashMap<>();
 	
-	/** 保存不同mapping软件所对应的索引 */
-	@Transient
-	Map<SoftWare, String> mapSoftware2IndexChrom = new HashMap<>();
 	/** 相对路径 ref protein 文件，全体iso */
 	@Transient
 	String refProFileAllIso;
 	/** 相对路径 ref protein 文件，一个gene一个Iso */
 	@Transient
 	String refProFileOneIso;
-	
-	/** 相对路径 保存不同mapping软件所对应的RefSeq索引
-	 * 主要是全体Iso的RefSeq
-	 *  */
-	@Transient
-	Map<SoftWare, String> mapSoftware2IndexRefAllIso = new HashMap<>();
-	/** 相对路径 保存不同mapping软件所对应的索引
-	 * 主要是全体gene，每个基因一个iso */
-	@Transient
-	Map<SoftWare, String> mapSoftware2IndexRefOneIso = new HashMap<>();
 	/** key: chrID，为小写    value: chrLen */
 	@Transient
 	private Map<String, Long> mapChrID2ChrLen = new LinkedHashMap<String, Long>();
@@ -412,12 +397,7 @@ public class SpeciesFile {
 	 * softMapping.toString() + "_Chr_Index/"
 	 */
 	public String getIndexChromFa(SoftWare softMapping) {
-		String parentIndexPath = getParentPathIndex(false, softMapping);
-		String indexChromFa = parentIndexPath + mapSoftware2IndexChrom.get(softMapping);
-		if (!FileOperate.isFileExist(indexChromFa)) {
-			indexChromFa = parentIndexPath + creatAndGetSeqIndex(false, softMapping, getChromSeqFile(), mapSoftware2IndexChrom);
-		}
-		return indexChromFa;
+		return creatAndGetSeqIndex(false, softMapping, EnumSpeciesFile.chromSeqFile.getSavePath(this) + chromSeq);
 	}
 
 	/** 返回该mapping软件所对应的index的文件
@@ -425,51 +405,35 @@ public class SpeciesFile {
 	 * 格式如下：softMapping.toString() + "_Ref_Index/"
 	 */
 	public String getIndexRefseq(SoftWare softMapping, boolean isAllIso) {
-		String indexRefseqThis = null;
-		String parentIndexPath = getParentPathIndex(true, softMapping);
-		if (isAllIso) {
-			indexRefseqThis = mapSoftware2IndexRefAllIso.get(softMapping);
-		} else {
-			indexRefseqThis = mapSoftware2IndexRefOneIso.get(softMapping);
-		}
-		indexRefseqThis = parentIndexPath + indexRefseqThis;
-		if (!FileOperate.isFileExist(indexRefseqThis)) {
-			Map<SoftWare, String> mapSoft2Seq = null;
-			if (isAllIso) {
-				mapSoft2Seq = mapSoftware2IndexRefAllIso;
-			} else {
-				mapSoft2Seq = mapSoftware2IndexRefOneIso;
-			}
-			indexRefseqThis = creatAndGetSeqIndex(true, softMapping, getRefSeqFile(isAllIso, false), mapSoft2Seq);
-		}
-		return parentIndexPath + indexRefseqThis;
+		return creatAndGetSeqIndex(true, softMapping, getRefSeqFile(isAllIso, false));
 	}
 	
 	/**
-	 * 如果不存在该index，那么就新创建一个index并且保存入数据库 
-	 * @param refseq 是否为refseq
-	 * @param isAllIso 是否提取全体iso
-	 * @param softMapping mapping的软件
-	 * @param seqIndex 该index所对应的保存在数据库中的值，譬如indexChr
-	 * @param seqFile 该index所对应的序列，用getChromSeq()获得
-	 * @param mapSoftware2ChrIndexPath 该index所对应的hash表，如 mapSoftware2ChrIndexPath
-	 * @return 相对路径
+	 * 
+	 * 如果不存在该index，那么就新创建一个index连接，但不保存入数据库 
+	 * @param refseq
+	 * @param softMapping
+	 * @param seqFile
+	 * @return
 	 */
-	private String creatAndGetSeqIndex(Boolean refseq, SoftWare softMapping, String seqFile, Map<SoftWare, String> mapSoftware2ChrIndexPath) {
+	private String creatAndGetSeqIndex(Boolean refseq, SoftWare softMapping, String seqFile) {
+		if (StringOperate.isRealNull(seqFile)) {
+			return null;
+		}
 		String seqName = FileOperate.getFileName(seqFile);
 		
 		String indexChromFinal = getParentPathIndex(refseq, softMapping) + seqName;
-		if (FileOperate.isFileExist(indexChromFinal)) {
+		String indexChromLocal = FileHadoop.convertToLocalPath(indexChromFinal);
+
+		if (FileOperate.isFileExistAndBigThanSize(indexChromLocal, 0)) {
 			return indexChromFinal;
 		}
-		FileOperate.DeleteFileFolder(indexChromFinal);
-		if (!FileOperate.linkFile(seqFile, indexChromFinal, true)) {
-			logger.error("创建链接出错：" + seqFile + " " + indexChromFinal);
+		FileOperate.DeleteFileFolder(indexChromLocal);
+		if (!FileOperate.linkFile(seqFile, indexChromLocal, true)) {
+			logger.error("创建链接出错：" + seqFile + " " + indexChromLocal);
 			return null;
 		}
-		mapSoftware2ChrIndexPath.put(softMapping, indexChromFinal);
-		
-		return seqName;
+		return indexChromFinal;
 	}
 	
 	/**
@@ -479,7 +443,7 @@ public class SpeciesFile {
 	 * @return
 	 */
 	private String getParentPathIndex(Boolean refseq, SoftWare softMapping) {
-		String parentPath = getPathParent() + "index/" + softMapping.toString() + getPathToVersion();
+		String parentPath = getPathParent() + "index/" + softMapping.toString() + FileOperate.getSepPath()+ getPathToVersion();
 		String indexFinalPath = null;
 		if (refseq) {
 			indexFinalPath = parentPath + "Ref_Index/";
@@ -511,7 +475,17 @@ public class SpeciesFile {
 	 * @return
 	 */
 	public String getRefSeqFile(boolean isAllIso, boolean isProtein) {
-		return EnumSpeciesFile.refseqFileAllIso.getSavePath(this) + getRefSeqFileRlt(isAllIso, isProtein);
+		String fileName = getRefSeqFileRlt(isAllIso, isProtein);
+		if (StringOperate.isRealNull(fileName)) {
+			return null;
+		}
+		String refseqFile = null;
+		if (!isProtein) {
+			refseqFile = EnumSpeciesFile.refseqAllIsoRNA.getSavePath(this) + fileName;
+		} else {
+			refseqFile = EnumSpeciesFile.refseqAllIsoPro.getSavePath(this) + fileName;
+		}
+		return refseqFile;
 	}
 	
 	/**
@@ -520,8 +494,15 @@ public class SpeciesFile {
 	 */
 	private String getRefSeqFileRlt(boolean isAllIso, boolean isProtein) {
 		String refseq = set_And_GetRefSeqName(isAllIso, isProtein);
-		String refseqPath = EnumSpeciesFile.refseqFileAllIso.getSavePath(this);
-		String refseqFile = EnumSpeciesFile.refseqFileAllIso.getSavePath(this) + refseq;
+		String refseqPath = null, refseqFile = null;
+		if (!isProtein) {
+			refseqPath = EnumSpeciesFile.refseqAllIsoRNA.getSavePath(this);
+			refseqFile = EnumSpeciesFile.refseqAllIsoRNA.getSavePath(this) + refseq;
+		} else {
+			refseqPath = EnumSpeciesFile.refseqAllIsoPro.getSavePath(this);
+			refseqFile = EnumSpeciesFile.refseqAllIsoPro.getSavePath(this) + refseq;
+		}
+		
 		if (FileOperate.isFileExistAndBigThanSize(refseqFile, 0.2)) {
 			return refseq;
 		}
@@ -655,9 +636,6 @@ public class SpeciesFile {
 		if (mapChrID2ChrLen.equals(otherObj.mapChrID2ChrLen)
 			&& compareMapStrArray(mapDB2GffTypeAndFile, otherObj.mapDB2GffTypeAndFile)
 			&& mapGffDBLowCase2DBNormal.equals(otherObj.mapGffDBLowCase2DBNormal)
-			&& mapSoftware2IndexChrom.equals(otherObj.mapSoftware2IndexChrom)
-			&& mapSoftware2IndexRefAllIso.equals(otherObj.mapSoftware2IndexRefAllIso)
-			&& mapSoftware2IndexRefOneIso.equals(otherObj.mapSoftware2IndexRefOneIso)
 			&& ArrayOperate.compareString(chromSeq, otherObj.chromSeq)
 			&& ArrayOperate.compareString(gffRepeatFile, otherObj.gffRepeatFile)
 			&& this.publishYear == otherObj.publishYear
@@ -970,11 +948,11 @@ public class SpeciesFile {
 			setGffRepeatFile(fileName);
 			break;
 		}
-		case refseqFileAllIso:{
+		case refseqAllIsoRNA:{
 			setRefseqFileAllIso(fileName);
 			break;
 		}
-		case refseqFileOneIso:{
+		case refseqOneIsoRNA:{
 			setRefseqFileOneIso(fileName);
 			break;
 		}

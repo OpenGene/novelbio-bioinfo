@@ -183,7 +183,7 @@ public class ManageGffDetailGene {
 		}
 		return lsGffDetailGenes;
 	}
-	public List<GffDetailGene> searchRegionOverlap(int taxID, String version, String dbinfo, String geneName) {
+	public List<GffDetailGene> searchGene(int taxID, String version, String dbinfo, String geneName) {
 		geneName = geneName.toLowerCase();
 		List<GffDetailGene> lsGffDetailGenes = mongoTemplate
 				.find(new Query( Criteria.where("taxID").is(taxID)

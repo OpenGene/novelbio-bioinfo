@@ -10,6 +10,8 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.bed.BedRecord;
 import com.novelbio.analysis.seq.bed.BedSeq;
+import com.novelbio.analysis.seq.fastq.FastQ;
+import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.mapping.MapDNA;
 import com.novelbio.analysis.seq.mapping.MapDNAint;
 import com.novelbio.base.cmd.CmdOperate;
@@ -229,31 +231,71 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 		}
 		List<String> lsCmdRun = new ArrayList<>();
 		lsCmdRun.add(mirDeepPath + "mapper.pl");
-		lsCmdRun.add(fastaInput);
 		if (isFastq) {
-			lsCmdRun.add("-e"); 
-		} else {
-			lsCmdRun.add("-c"); 
+			fastaInput = convert2Fasta(fastaInput);
 		}
-			
+		
+		String collapseReadsFa = getCollapseReadsFa();
+		String arfFile = getMappingArf();
+		if (FileOperate.isFileExistAndBigThanSize(arfFile, 0)) {
+			return;
+		}
+		
+		String collapseTmp = FileOperate.changeFileSuffix(collapseReadsFa, "_tmp", null);
+		String arfTmp = FileOperate.changeFileSuffix(arfFile, "_tmp", null);
+		
+		FileOperate.DeleteFileFolder(collapseTmp);
+		FileOperate.delFile(arfTmp);
+		
+		lsCmdRun.add(fastaInput);
+		lsCmdRun.add("-c"); 
 		lsCmdRun.add("-j");
 		ArrayOperate.addArrayToList(lsCmdRun, getReadsMinLen());
 		lsCmdRun.add("-m");
 		lsCmdRun.add("-p"); lsCmdRun.add(getChromFaIndex());
-		lsCmdRun.add("-s"); lsCmdRun.add(getCollapseReadsFa());
-		lsCmdRun.add("-t"); lsCmdRun.add(getMappingArf());
+		lsCmdRun.add("-s"); lsCmdRun.add(collapseTmp);
+		lsCmdRun.add("-t"); lsCmdRun.add(arfTmp);
 		lsCmdRun.add("-v");
-		
 		CmdOperate cmdOperate = new CmdOperate(lsCmdRun);
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {
 			throw new ExceptionCmd("miRNAdeep2 mapper.pl error:\n" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
 		}
+		moveFile(collapseTmp, collapseReadsFa);
+		moveFile(arfTmp, arfFile);
+		
 		lsCmd.add(cmdOperate.getCmdExeStr());
 		FileOperate.DeleteFileFolder(fastaInput);
 		FileOperate.DeleteFileFolder(bedSeqFileName);
 		createReportFile = true;
 	}
+	
+	private void moveFile(String oldFile, String newFile) {
+		if (FileOperate.isFileExistAndBigThanSize(oldFile, 0)) {
+			FileOperate.moveFile(true, oldFile, newFile);
+		}
+	}
+	
+	private String convert2Fasta(String fastqFile) {
+		FastQ fastQ = new FastQ(fastaInput);
+		String fastaOut = outPath + FileOperate.getFileName(fastaInput);
+		fastaOut = FileOperate.changeFileSuffix(fastaOut, "", "fa");
+		//遇到文件改名，处理完后再改回来
+		if (FileOperate.isFileExistAndBigThanSize(fastaOut, 1_000_000)) {
+			return fastaOut;
+		}
+		
+		String fastaOutTmp = FileOperate.changeFileSuffix(fastaOut, "_tmp", null);
+		TxtReadandWrite txtWrite = new TxtReadandWrite(fastaOutTmp , true);
+		for (FastQRecord fastQRecord : fastQ.readlines()) {
+			txtWrite.writefileln(fastQRecord.getSeqFasta().toStringNRfasta(1000));
+		}
+		fastQ.close();
+		txtWrite.close();
+		FileOperate.moveFile(true, fastaOutTmp, fastaOut);
+		return fastaOut;
+	}
+	
 	private void mirDeep2Pl() {
 		List<String> lsCmdRun = new ArrayList<>();
 		lsCmdRun.add(mirDeepPath + "miRDeep2.pl");
@@ -266,6 +308,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 		ArrayOperate.addArrayToList(lsCmdRun, getSpecies());
 		lsCmdRun.add("2>"); lsCmdRun.add(getReportFileRandom());
 		CmdOperate cmdOperate = new CmdOperate(lsCmdRun);
+		cmdOperate.setGetLsErrOut();
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {
 			StringBuilder stringBuilder = new StringBuilder("miRNAdeep2 miRDeep2.pl error:\n");
