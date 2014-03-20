@@ -195,6 +195,10 @@ public class TaxInfo implements Cloneable {
 	public static Page<TaxInfo> queryLsTaxInfo(Pageable pageable){
 		return repo().queryLsTaxInfo(pageable);
 	}
+
+	public static TaxInfo findByTaxID(int taxID){
+		return repo().queryTaxInfo(taxID);
+	}
 	
 	public TaxInfo clone() {
 		try {

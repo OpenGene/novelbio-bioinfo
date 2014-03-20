@@ -165,10 +165,6 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 	
 	/** 设定待比对的序列 */
 	private void setConfigFile() {
-		SoftWareInfo softWareInfo = new SoftWareInfo();
-		softWareInfo.setName(SoftWare.bowtie2.toString());
-		
-		miRNAmappingPipline.setExePath(softWareInfo.getExePath());
 		miRNAmappingPipline.setMiRNApreSeq(species.getMiRNAhairpinFile());
 		miRNAmappingPipline.setNcRNAseq(species.getRefseqNCfile());
 		miRNAmappingPipline.setRfamSeq(species.getRfamFile(rfamSpeciesSpecific));

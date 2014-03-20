@@ -4,7 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.cmd.ExceptionCmd;
+import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.fileOperate.FileOperate;
 
 
 /**
@@ -13,7 +17,7 @@ import com.novelbio.base.cmd.CmdOperate;
  *
  */
 public class Trinity {
-	//TODO宗博设定
+	String exePath = "";
 	String trinityPlPath="Trinity.pl";
 	
 	/**
@@ -150,13 +154,15 @@ public class Trinity {
 	 *                                   for naively parallel cmds. (eg. 'BroadInstGridRunner')
 	 */
 	String grid_computing_module;
-
-	private String getSeqType() {
-		if (seqType == null) {
-			return "";
+	
+	/** trinity的所在路径 */
+	public void setExePath(String exePath) {
+		if (exePath == null || exePath.equals("")) {
+			return;
 		}
-		return " --seqType " +  seqType;
+		this.exePath = FileOperate.addSep(exePath);
 	}
+	
 	/** 这几种 cfa, cfq, fa, or fq，默认fq */
 	public void setSeqType(String seqType) {
 		if (seqType == null || seqType.equals("")) {
@@ -169,11 +175,18 @@ public class Trinity {
 		this.seqType = seqType;
 	}
 
-	private String getJellyfishMemory() {
-		if (JellyfishMemory <= 0) {
-			return "";
+	private String[] getSeqType() {
+		if (seqType == null) {
+			return null;
 		}
-		return " --JM " +  JellyfishMemory + "G";
+		return new String[]{" --seqType", seqType};
+	}
+	
+	private String[] getJellyfishMemory() {
+		if (JellyfishMemory <= 0) {
+			return null;
+		}
+		return new String[]{"--JM", JellyfishMemory + "G"};
 	}
 	/**
 	 * (Jellyfish Memory) number of GB of system memory to use for k-mer counting by jellyfish (eg. 10G)
@@ -192,30 +205,19 @@ public class Trinity {
 		this.lsRightFq = lsRightFq;
 	}
 
-	private String getFastQ() {
-		String resultFq = "";
-		if ((lsLeftFq == null || lsLeftFq.size() == 0)//单端
-				|| lsRightFq == null || lsRightFq.size() == 0
-				) {
-			List<String> lsSingle = new ArrayList<>();
-			if (lsLeftFq != null) lsSingle.addAll(lsLeftFq);
-			if (lsRightFq != null) lsSingle.addAll(lsRightFq);
-			String resultSingle = "";
-			for (String string : lsSingle) {
-				resultSingle = resultSingle + CmdOperate.addQuot(string) + " ";
-			}
-			resultFq = " --single " + resultSingle;
+	private List<String> getFastQ() {
+		List<String> lsFq = new ArrayList<>();
+		if (isSingleEnd()) {
+			lsFq.add("--single");
+			if (lsLeftFq != null) lsFq.addAll(lsLeftFq);
+			if (lsRightFq != null) lsFq.addAll(lsRightFq);			
 		} else {//双端
-			String resultLeft = "", resultRight = "";
-			for (String leftFq : lsLeftFq) {
-				resultLeft = resultLeft + CmdOperate.addQuot(leftFq) + " ";
-			}
-			for (String rightFq : lsRightFq) {
-				resultRight = resultRight + CmdOperate.addQuot(rightFq) + " ";
-			}
-			resultFq = " --left " + resultLeft + " -- right " + resultRight;
+			lsFq.add("--left");
+			lsFq.addAll(lsLeftFq);
+			lsFq.add("--right");
+			lsFq.addAll(lsRightFq);
 		}
-		return resultFq;
+		return lsFq;
 	}
 	
 	private boolean isSingleEnd() {
@@ -227,23 +229,22 @@ public class Trinity {
 		return false;
 	}
 	
-	
 	//TODO 确定好是FR还是RF
-	private String getSS_lib_type() {
+	private String[] getSS_lib_type() {
 		if (strandSpecific == StrandSpecific.NONE) {
-			return "";
+			return null;
 		} else {
 			if (isSingleEnd()) {
 				if (strandSpecific == StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND) {
-					return " --SS_lib_type F ";
+					return new String[]{"--SS_lib_type", "F"};
 				} else {
-					return " --SS_lib_type R ";
+					return new String[]{"--SS_lib_type", "R"};
 				}
 			} else {
 				if (strandSpecific == StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND) {
-					return " --SS_lib_type FR ";
+					return new String[]{"--SS_lib_type", "FR"};
 				} else {
-					return " --SS_lib_type RF ";
+					return new String[]{"--SS_lib_type", "RF"};
 				}
 			}
 		}
@@ -260,11 +261,11 @@ public class Trinity {
 		this.output = output;
 	}
 
-	private String getOutput() {
+	private String[] getOutput() {
 		if (output == null) {
-			return "";
+			return null;
 		}
-		return " --output " +  output;
+		return new String[]{"--output", output};
 	}
 
 	/**线程数，默认20线程 */
@@ -274,11 +275,11 @@ public class Trinity {
 		}
 	}
 
-	private String getCPU() {
+	private String[] getCPU() {
 		if (threadNum <= 0) {
-			return "";
+			return null;
 		}
-		return " --CPU " +  threadNum + " ";
+		return new String[]{"--CPU", threadNum + ""};
 	}
 	
 	/** 最短contig的长度，默认200 */
@@ -286,18 +287,18 @@ public class Trinity {
 		this.min_contig_length = min_contig_length;
 	}
 
-	private String getMin_contig_length() {
+	private String[] getMin_contig_length() {
 		if (min_contig_length <= 0) {
-			return "";
+			return null;
 		}
-		return " --min_contig_length " +  min_contig_length;
+		return new String[]{"--min_contig_length", min_contig_length+""};
 	}
 
 	private String getJaccard_clip() {
 		if (isJaccard_clip) {
-			return " --jaccard_clip ";
+			return "--jaccard_clip";
 		} else {
-			return "";
+			return null;
 		}
 	}
 	
@@ -314,9 +315,9 @@ public class Trinity {
 
 	private String getPrep() {
 		if (isJustPrep) {
-			return " --prep ";
+			return "--prep";
 		}
-		return "";
+		return null;
 	}
 	
 	/** Only prepare files (high I/O usage) and stop before kmer counting.
@@ -328,9 +329,9 @@ public class Trinity {
 
 	private String getNo_cleanup() {
 		if (!isCleanup) {
-			return " --no_cleanup ";
+			return "--no_cleanup";
 		}
-		return"";
+		return null;
 	}
 	/** 是否删除中间文件 
 	 * @param isCleanUp 默认为true
@@ -341,9 +342,9 @@ public class Trinity {
 
 	private String getFull_cleanup() {
 		if (!isFull_cleanup) {
-			return "";
+			return null;
 		} else {
-			return " --full_cleanup ";
+			return "--full_cleanup";
 		}
 	}
 	
@@ -355,11 +356,11 @@ public class Trinity {
 		this.isFull_cleanup = full_cleanup;
 	}
 
-	private String getMin_kmer_cov() {
+	private String[] getMin_kmer_cov() {
 		if (min_kmer_cov <= 0) {
-			return "";
+			return null;
 		}
-		return " --min_kmer_cov " +  min_kmer_cov;
+		return new String[]{"--min_kmer_cov",  min_kmer_cov + ""};
 	}
 	/** min count for K-mers to be assembled by Inchworm (default: 1)<br> 
 	 * 就走默认吧
@@ -368,15 +369,15 @@ public class Trinity {
 		this.min_kmer_cov = min_kmer_cov;
 	}
 
-	private String getInchworm_cpu() {
-		return" --inchworm_cpu " + threadNum;
+	private String[] getInchworm_cpu() {
+		return new String[]{"--inchworm_cpu", threadNum+ ""};
 	}
 
-	private String getMax_reads_per_graph() {
+	private String[] getMax_reads_per_graph() {
 		if (max_reads_per_graph <= 0) {
-			return "";
+			return null;
 		}
-		return" --max_reads_per_graph " + max_reads_per_graph;
+		return new String[]{"--max_reads_per_graph", max_reads_per_graph+ ""};
 	}
 	
 	/** 每张图里面有多少条reads，走默认就好 */
@@ -386,9 +387,9 @@ public class Trinity {
 
 	private String getNo_run_chrysalis() {
 		if (no_run_chrysalis) {
-			return " --no_run_chrysalis ";
+			return "--no_run_chrysalis";
 		} else {
-			return "";
+			return null;
 		}
 	}
 	/** stop Trinity after Inchworm and before running Chrysalis，默认false不用设定 */
@@ -396,11 +397,11 @@ public class Trinity {
 		this.no_run_chrysalis = no_run_chrysalis;
 	}
 
-	private String getBfly_opts() {
+	private String[] getBfly_opts() {
 		if (bfly_opts == null || bfly_opts.trim().equals("")) {
-			return "";
+			return null;
 		}
-		return " --bfly_opts " + bfly_opts;
+		return new String[]{"--bfly_opts", bfly_opts + ""};
 	}
 	/** additional parameters to pass through to butterfly
 	 * 一般不设定
@@ -412,11 +413,11 @@ public class Trinity {
 		this.bfly_opts = bfly_opts;
 	}
 	
-	private String getMax_number_of_paths_per_node() {
+	private String[] getMax_number_of_paths_per_node() {
 		if (max_number_of_paths_per_node < 0) {
-			return "";
+			return null;
 		}
-		return " --max_number_of_paths_per_node " + max_number_of_paths_per_node;
+		return new String[]{"--max_number_of_paths_per_node", max_number_of_paths_per_node + ""};
 	}
 	/** only most supported (N) paths are extended from node A->B, 
 	 * mitigating combinatoric path explorations. (default: 10)<br>
@@ -426,11 +427,11 @@ public class Trinity {
 		this.max_number_of_paths_per_node = max_number_of_paths_per_node;
 	}
 
-	private String getPairs_distance() {
+	private String[] getPairs_distance() {
 		if (isSingleEnd() || group_pairs_distance <= 0) {
-			return "";
+			return null;
 		}
-		return " --group_pairs_distance " + group_pairs_distance;
+		return new String[]{"--group_pairs_distance", group_pairs_distance + ""};
 	}
 	
 	/** 双端测序的建库长度，默认500 */
@@ -438,11 +439,11 @@ public class Trinity {
 		this.group_pairs_distance = group_pairs_distance;
 	}
 
-	private String getPath_reinforcement_distance() {
+	private String[] getPath_reinforcement_distance() {
 		if (path_reinforcement_distance <= 0) {
-			return "";
+			return null;
 		}
-		return " --path_reinforcement_distance " + path_reinforcement_distance;
+		return new String[]{"--path_reinforcement_distance ", path_reinforcement_distance + ""};
 	}
 	/** minimum overlap of reads with growing transcript path (default: PE: 75, SE: 25)，一般不用设定 */
 	public void setPath_reinforcement_distance(int path_reinforcement_distance) {
@@ -451,9 +452,9 @@ public class Trinity {
 
 	private String getNo_triplet_lock() {
 		if (isNo_triplet_lock) {
-			return " --no_triplet_lock ";
+			return "--no_triplet_lock";
 		} else {
-			return "";
+			return null;
 		}
 	}
 	/**
@@ -463,44 +464,45 @@ public class Trinity {
 		this.isNo_triplet_lock = no_triplet_lock;
 	}
 
-	private String getBflyHeapSpaceMax() {
+	private String[] getBflyHeapSpaceMax() {
 		if (bflyHeapSpaceMax <= 0) {
-			return "";
+			return null;
 		}
-		return " --bflyHeapSpaceMax " + bflyHeapSpaceMax + "G";
+		return new String[]{"--bflyHeapSpaceMax", bflyHeapSpaceMax + "G"};
 	}
+	
 	/** java max heap space setting for butterfly (default: 50G) => yields command */
 	public void setBflyHeapSpaceMax(int bflyHeapSpaceMax) {
 		this.bflyHeapSpaceMax = bflyHeapSpaceMax;
 	}
 
-	private String getBflyHeapSpaceInit() {
+	private String[] getBflyHeapSpaceInit() {
 		if (bflyHeapSpaceInit <= 0) {
-			return "";
+			return null;
 		}
-		return" --bflyHeapSpaceInit " + bflyHeapSpaceInit + "G";
+		return new String[]{"--bflyHeapSpaceInit", bflyHeapSpaceInit + "G"};
 	}
 
 	public void setBflyHeapSpaceInit(int bflyHeapSpaceInit) {
 		this.bflyHeapSpaceInit = bflyHeapSpaceInit;
 	}
 	
-	private String getBflyCPU() {
+	private String[] getBflyCPU() {
 		if (threadNum <= 0) {
-			return "";
+			return null;
 		}
-		return " --bflyCPU " + threadNum;
+		return new String[]{"--bflyCPU", threadNum + ""};
 	}
 
 //	private String getBflyCalculateCPU() {
 //		return "  --bflyCalculateCPU ";
 //	}
 
-	private String getGrid_computing_module() {
+	private String[] getGrid_computing_module() {
 		if (grid_computing_module == null || grid_computing_module.trim().equals("")) {
-			return "";
+			return null;
 		}
-		return " --grid_computing_module " + grid_computing_module;
+		return new String[]{"--grid_computing_module", grid_computing_module + ""};
 	}
 
 	public void setGrid_computing_module(String grid_computing_module) {
@@ -508,15 +510,50 @@ public class Trinity {
 	}
 	
 	public void runTrinity() {
-		String cmdScript = trinityPlPath + getSeqType() + getJellyfishMemory() + getFastQ() + getSS_lib_type() + getOutput()
-					+ getCPU() + getMin_contig_length() + getJaccard_clip() + getPrep() + getNo_cleanup()
-					+ getFull_cleanup() + getMin_kmer_cov() + getInchworm_cpu() + getMax_reads_per_graph() 
-					+ getNo_run_chrysalis() + getBfly_opts() + getMax_number_of_paths_per_node() + getPairs_distance() 
-					+ getPath_reinforcement_distance() + getNo_triplet_lock() + getBflyHeapSpaceInit()
-					+ getBflyHeapSpaceMax() + getBflyCPU() + getGrid_computing_module();
-			
-		CmdOperate cmdOperate = new CmdOperate(cmdScript);
+		List<String> lsCmd = getLsCmd();
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.run();
+		cmdOperate.setGetLsErrOut();
+		if (!cmdOperate.isFinishedNormal()) {
+			throw new ExceptionCmd("run trinity error:\n" + cmdOperate.getCmdExeStr() + "\n" + cmdOperate.getErrOut());
+		}
+	}
+	
+	private List<String> getLsCmd() {
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add(exePath + trinityPlPath);
+		ArrayOperate.addArrayToList(lsCmd, getSeqType());
+		ArrayOperate.addArrayToList(lsCmd, getJellyfishMemory() );
+		lsCmd.addAll(getFastQ());
+		ArrayOperate.addArrayToList(lsCmd, getSS_lib_type());
+		ArrayOperate.addArrayToList(lsCmd, getOutput());
+		ArrayOperate.addArrayToList(lsCmd, getCPU());
+		ArrayOperate.addArrayToList(lsCmd, getMin_contig_length());
+		addString(lsCmd, getJaccard_clip());
+		addString(lsCmd, getPrep());
+		addString(lsCmd, getNo_cleanup());
+		addString(lsCmd, getFull_cleanup());
+		ArrayOperate.addArrayToList(lsCmd, getMin_kmer_cov());
+		ArrayOperate.addArrayToList(lsCmd, getInchworm_cpu());
+		ArrayOperate.addArrayToList(lsCmd, getMax_reads_per_graph());
+		addString(lsCmd, getNo_run_chrysalis());
+		ArrayOperate.addArrayToList(lsCmd, getBfly_opts());
+		ArrayOperate.addArrayToList(lsCmd, getMax_number_of_paths_per_node());
+		ArrayOperate.addArrayToList(lsCmd, getPairs_distance());
+		ArrayOperate.addArrayToList(lsCmd, getPath_reinforcement_distance());
+		addString(lsCmd, getNo_triplet_lock());
+		ArrayOperate.addArrayToList(lsCmd, getBflyHeapSpaceInit());
+		ArrayOperate.addArrayToList(lsCmd, getBflyHeapSpaceMax());
+		ArrayOperate.addArrayToList(lsCmd, getBflyCPU());
+		ArrayOperate.addArrayToList(lsCmd, getGrid_computing_module());
+		return lsCmd;
+	}
+	
+	private void addString(List<String> lsCmd, String param) {
+		if (StringOperate.isRealNull(param)) {
+			return;
+		}
+		lsCmd.add(param);
 	}
 	
 	public String getResultPath() {

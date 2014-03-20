@@ -1,5 +1,6 @@
 package com.novelbio.database.service.servgff;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -13,6 +14,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffFile;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.database.service.SpringFactory;
 
@@ -183,20 +185,27 @@ public class ManageGffDetailGene {
 		}
 		return lsGffDetailGenes;
 	}
-	public List<GffDetailGene> searchGene(int taxID, String version, String dbinfo, String geneName) {
-		geneName = geneName.toLowerCase();
-		List<GffDetailGene> lsGffDetailGenes = mongoTemplate
-				.find(new Query( Criteria.where("taxID").is(taxID)
-						.andOperator(
-								Criteria.where("version").is(version)
-								.andOperator(Criteria.where("dbinfo").is(dbinfo)
-										.andOperator(
-												Criteria.where("setNameLowcase").is(geneName)
-												)
-										)
-								)
-						).with(new Sort(new Sort.Order(Sort.Direction.ASC, "numberstart"))),
-						GffDetailGene.class);
+	
+	/** 模糊查找 */
+	public List<GffDetailGene> searchGene(int taxID, String version, String dbinfo, String geneNameRegex) {
+		List<GffDetailGene> lsGffDetailGenes = searchGeneExact(taxID, version, dbinfo, geneNameRegex);
+		if (lsGffDetailGenes.isEmpty()) {
+			GeneID geneID = new GeneID(geneNameRegex, taxID);
+			if (geneID.getTaxID() == 0) {
+				return new ArrayList<>();
+			}
+			String geneId = geneID.getGeneUniID();
+			lsGffDetailGenes = searchGeneExact(taxID, version, dbinfo, geneId);
+		}
+		
+		if (lsGffDetailGenes.isEmpty()) {
+			if (geneNameRegex.length() <= 1) {
+				return new ArrayList<>();
+			}	
+			lsGffDetailGenes = searchGeneRegex(taxID, version, dbinfo, geneNameRegex);
+		}
+
+		
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 				gffGeneIsoInfo.setGffDetailGeneParent(gffDetailGene);
@@ -204,6 +213,40 @@ public class ManageGffDetailGene {
 		}
 		return lsGffDetailGenes;
 	}
+	
+	private List<GffDetailGene> searchGeneRegex(int taxID, String version, String dbinfo, String geneNameRegex) {
+		geneNameRegex = geneNameRegex.toLowerCase();
+		List<GffDetailGene> lsGffDetailGenes = mongoTemplate
+				.find(new Query( Criteria.where("taxID").is(taxID)
+						.andOperator(
+								Criteria.where("version").is(version)
+								.andOperator(Criteria.where("dbinfo").is(dbinfo)
+										.andOperator(
+												Criteria.where("setNameLowcase").regex("^"+geneNameRegex)
+												)
+										)
+								)
+						).with(new Sort(new Sort.Order(Sort.Direction.ASC, "numberstart"))),
+						GffDetailGene.class);
+		return lsGffDetailGenes;
+	}
+	private List<GffDetailGene> searchGeneExact(int taxID, String version, String dbinfo, String geneNameExact) {
+		geneNameExact = geneNameExact.toLowerCase();
+		List<GffDetailGene> lsGffDetailGenes = mongoTemplate
+				.find(new Query( Criteria.where("taxID").is(taxID)
+						.andOperator(
+								Criteria.where("version").is(version)
+								.andOperator(Criteria.where("dbinfo").is(dbinfo)
+										.andOperator(
+												Criteria.where("setNameLowcase").is(geneNameExact)
+												)
+										)
+								)
+						).with(new Sort(new Sort.Order(Sort.Direction.ASC, "numberstart"))),
+						GffDetailGene.class);
+		return lsGffDetailGenes;
+	}
+	
 	public List<GffDetailGene> searchRegionIn(int taxID, String version, String dbinfo, String chrID, int start, int end) {
 		int startAbs = Math.min(start, end);
 		int endAbs = Math.max(start, end);

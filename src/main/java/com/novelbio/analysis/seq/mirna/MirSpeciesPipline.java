@@ -113,7 +113,6 @@ public class MirSpeciesPipline implements IntCmdSoft {
 	 */
 	public void mappingPipeline(String rnadatFile, SamMapRate samMapRate) {
 		lsCmd.clear();
-		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.bowtie2);
 		FileOperate.createFolders(outPathTmpMapping);
 		for (int i = 0; i < lsSpecies.size(); i++) {
 			Species species = lsSpecies.get(i);
@@ -127,7 +126,7 @@ public class MirSpeciesPipline implements IntCmdSoft {
 				String outFastq = outPathTmpMapping + outputPrefix + species.getCommonName() + "_unmapped.fq.gz";
 				samFileOut = outPathTmpMapping + outputPrefix + species.getCommonName() + ".bam";
 				SamFileStatistics samFileStatistics = new SamFileStatistics(prefix);
-				samFileOut = MiRNAmapPipline.mappingBowtie2(lsCmd, isUseOldResult, samFileStatistics, softWareInfo.getExePath(), threadNum, fastqFile, species.getMiRNAhairpinFile(), samFileOut, outFastq);
+				samFileOut = MiRNAmapPipline.mappingDNA(lsCmd, isUseOldResult, samFileStatistics, threadNum, fastqFile, species.getMiRNAhairpinFile(), samFileOut, outFastq);
 				//TODO
 				if (isParallelMapping) {
 					statisticsParallel(samMapRate, samFileStatistics, species.getCommonName());
@@ -193,7 +192,6 @@ public class MirSpeciesPipline implements IntCmdSoft {
 	 */
 	public void mappingPipelineSep(String rnadatFile, SamMapRate samMapRate) {
 		lsCmd.clear();
-		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.bowtie2);
 		FileOperate.createFolders(outPathTmpMapping);
 		for (int i = 0; i < lsSpecies.size(); i++) {
 			Species species = lsSpecies.get(i);
@@ -207,7 +205,7 @@ public class MirSpeciesPipline implements IntCmdSoft {
 				String outFastq = outPathTmpMapping + outputPrefix + species.getCommonName() + "_unmapped.fq.gz";
 				samFileOut = outPathTmpMapping + outputPrefix + species.getCommonName() + ".bam";
 				SamFileStatistics samFileStatistics = new SamFileStatistics(prefix);
-				samFileOut = MiRNAmapPipline.mappingBowtie2(lsCmd, isUseOldResult, samFileStatistics, softWareInfo.getExePath(), threadNum, fastqFile, species.getMiRNAhairpinFile(), samFileOut, outFastq);
+				samFileOut = MiRNAmapPipline.mappingDNA(lsCmd, isUseOldResult, samFileStatistics, threadNum, fastqFile, species.getMiRNAhairpinFile(), samFileOut, outFastq);
 				if (samFileStatistics.getReadsNum(MappingReadsType.allMappedReads) > 0) {
 					SamFileStatistics.saveExcel(outPathStatistics + FileOperate.getFileName(samFileOut), samFileStatistics);
 					

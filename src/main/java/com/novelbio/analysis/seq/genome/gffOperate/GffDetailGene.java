@@ -1065,6 +1065,8 @@ public class GffDetailGene extends ListDetailAbs {
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
 			setNameLowcase.add(gffGeneIsoInfo.getName().toLowerCase());
 			setNameLowcase.add(GeneID.removeDot(gffGeneIsoInfo.getName().toLowerCase()));
+			GeneID geneID = new GeneID(gffGeneIsoInfo.getName(), taxID);
+			setNameLowcase.add(geneID.getGeneUniID().toLowerCase());
 		}
 	}
 }

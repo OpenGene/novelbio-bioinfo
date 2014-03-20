@@ -532,19 +532,22 @@ public class Species implements Cloneable {
 			}
 		});
 		
-		IManageSpecies servSpeciesFile = ManageSpecies.getInstance();
-		List<TaxInfo> lsTaxID = servSpeciesFile.getLsAllTaxID();
+		IManageSpecies servSpecies = ManageSpecies.getInstance();
+		List<TaxInfo> lsTaxID = servSpecies.getLsAllTaxID();
 		
 		Set<Integer> setTaxID = new HashSet<Integer>();
 		for (TaxInfo taxInfo : lsTaxID) {
 			Species species = new Species(taxInfo);
+			if (taxInfo.getTaxID() == 123456) {
+				logger.debug("stop");
+			}
 			if (species.getCommonName().equals("")) {
 				continue;
 			}
 			if (speciesType == EnumSpeciesType.KeggName && species.getAbbrName().equals("")) {
 				continue;
 			} else if (speciesType == EnumSpeciesType.Genome) {
-				List<SpeciesFile> lsSpeciesFiles = servSpeciesFile.queryLsSpeciesFile(taxInfo.getTaxID());
+				List<SpeciesFile> lsSpeciesFiles = servSpecies.queryLsSpeciesFile(taxInfo.getTaxID());
 				if (lsSpeciesFiles.size() == 0) {
 					continue;
 				}
@@ -552,12 +555,13 @@ public class Species implements Cloneable {
 				continue;
 			}
 			setTaxID.add(taxInfo.getTaxID());
+			System.out.println(species.getCommonName().toLowerCase());
 			treemapName2Species.put(species.getCommonName().toLowerCase(), species);
 		}
 		
 		/** 添加 物种--序列表 中特有的物种 */
 		if (speciesType == EnumSpeciesType.Genome) {
-			for (Integer integer : servSpeciesFile.getLsTaxID()) {
+			for (Integer integer : servSpecies.getLsTaxID()) {
 				if (setTaxID.contains(integer)) {
 					continue;
 				}
@@ -573,6 +577,7 @@ public class Species implements Cloneable {
 		}
 		
 		for (String name : treemapName2Species.keySet()) {
+			System.out.println(name);
 			Species species = treemapName2Species.get(name);
 			mapName2Species.put(name, species);
 		}
