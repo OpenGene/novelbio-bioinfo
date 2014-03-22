@@ -100,8 +100,8 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	
 	@Transient
 	GffDetailGene gffDetailGeneParent;
-	@Indexed
-	String gffGeneId;
+	@Indexed(unique = false)
+	String gffFileId;
 	/**
 	 * 该名字为实际上的iso所在的基因名字，不一定为其 gffDetailGeneParent 的gene name
 	 * 因为可能会有多个gffDetailGene合并为一个gffDetailGene，这时候直接用gffDetailGeneParent的名字就无法进行区分
@@ -141,9 +141,16 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	public String getId() {
 		return id;
 	}
-	/** 仅供数据库使用 */
-	public String getGffGeneId() {
-		return gffGeneId;
+	public void setId(String id) {
+		this.id = id;
+	}
+	/** 仅用于数据库 */
+	public String getGffFileId() {
+		return gffFileId;
+	}
+	/** 仅用于数据库 */
+	public void setGffFileId(String gffFileId) {
+		this.gffFileId = gffFileId;
 	}
 	/**
 	 * 返回该基因的类型
@@ -166,8 +173,10 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return gffDetailGeneParent.getTaxID();
 	}
 	public void setGffDetailGeneParent(GffDetailGene gffDetailGeneParent) {
+		if (gffDetailGeneParent == null) {
+			return;
+		}
 		this.gffDetailGeneParent = gffDetailGeneParent;
-		this.gffGeneId = gffDetailGeneParent.id;
 	}
 	public GffDetailGene getParentGffDetailGene() {
 		return gffDetailGeneParent;
@@ -1220,13 +1229,35 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		
 		GffGeneIsoInfo otherObj = (GffGeneIsoInfo)obj;
 		//物种，起点终点，ATG，UAG，外显子长度 等都一致
-		boolean flag =  this.getTaxID() == otherObj.getTaxID() && this.getRefIDlowcase().equals(otherObj.getRefIDlowcase()) && this.getATGsite() == otherObj.getATGsite()
+		boolean flag = this.getRefIDlowcase().equals(otherObj.getRefIDlowcase()) && this.getATGsite() == otherObj.getATGsite()
 		&& this.getUAGsite() == otherObj.getUAGsite() && this.getTSSsite() == otherObj.getTSSsite()
 		&& this.getListLen() == otherObj.getListLen();
 		if (flag && equalsIso(otherObj) ) {
 			return true;
 		}
 		return false;
+	}
+	
+	/**
+	 * 依次比较两个list中的元素是否一致。内部调用每个元素的equals方法
+	 * 不比较name，如果需要比较name，那么就用equal
+	 * 暂时还没重写equal
+	 * 外显子比较如果一模一样则返回true；
+	 * @param lsOtherExon
+	 * @return
+	 */
+	public boolean equalsIso(ListAbs<ExonInfo> lsOther) {
+		if (lsOther.size() != size() ) {
+			return false;
+		}
+		for (int i = 0; i < lsOther.size(); i++) {
+			ExonInfo otherT = lsOther.get(i);
+			ExonInfo thisT = get(i);
+			if (otherT.getStartAbs() != thisT.getStartAbs() || otherT.getEndAbs() != thisT.getEndAbs() ) {
+				return false;
+			}
+		}
+		return true;
 	}
 	/**
 	 * 重写hash，不包含基因名信息，包含基因taxID，chrID，atg，uag，tss，长度，以及每一个exon的信息

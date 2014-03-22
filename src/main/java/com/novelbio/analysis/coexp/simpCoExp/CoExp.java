@@ -14,6 +14,7 @@ import org.apache.velocity.exception.MathException;
 
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.generalConf.TitleFormatNBC;
@@ -286,7 +287,21 @@ class CoexPair {
 	public void setFdr(double fdr) {
 		this.fdr = fdr;
 	}
-	
+	public String toString() {
+		if (Pvalue < 0) {
+			return null;
+		}
+		List<String> lsResult = new ArrayList<>();
+		lsResult.add(coexpGenInfo1.getGeneID().getAccID());
+		lsResult.add(coexpGenInfo1.getGeneID().getSymbol());
+		lsResult.add(coexpGenInfo1.getGeneID().getDescription());
+		lsResult.add(coexpGenInfo2.getGeneID().getAccID());
+		lsResult.add(coexpGenInfo2.getGeneID().getSymbol());
+		lsResult.add(coexpGenInfo2.getGeneID().getDescription());
+		addCorInfo(lsResult);
+		String[] result = lsResult.toArray(new String[0]);
+		return ArrayOperate.cmbString(result, "\t");
+	}
 	public String[] toStringArrayAnno() {
 		if (Pvalue < 0) {
 			return null;

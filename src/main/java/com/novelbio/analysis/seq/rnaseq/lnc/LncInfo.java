@@ -21,11 +21,11 @@ public class LncInfo {
 	/** 找出上下游该区域内的旁临基因 */
 	int upDownExtend = 0;
 	/**基因具体的转录本名称，方便提取序列 */
-	String lncIsoName;
+	String lncIsoName = "";
 	/**基因名称*/
 	String lncName;
 	Align align;
-	List<GffGeneIsoInfo> lsLncIso;
+	List<GffGeneIsoInfo> lsLncIso = new ArrayList<>();
 	/** 本组中最后展示的lnc */
 	GffGeneIsoInfo gffLncIso;
 	/**重叠区域的mRna*/
@@ -96,8 +96,15 @@ public class LncInfo {
 		if (gffiso.getGeneType() == GeneType.mRNA || gffiso.getGeneType() == GeneType.miRNA) {
 			lsLncIso = getLncIso(detailGene);
 			if (lsLncIso.isEmpty()) return;
+		} else {
+			for (GffGeneIsoInfo iso : detailGene.getLsCodSplit()) {
+				if (gffiso.getGeneType() != GeneType.mRNA && gffiso.getGeneType() != GeneType.miRNA) {
+					lsLncIso.add(iso);
+				}
+			}
 		}
 		gffLncIso = getLncIsoOne();
+		
 		cis5to3 = gffLncIso.isCis5to3();
 		setNameAndUpDown(gffLncIso);
 	}

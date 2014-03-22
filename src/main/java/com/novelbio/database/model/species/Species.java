@@ -555,7 +555,6 @@ public class Species implements Cloneable {
 				continue;
 			}
 			setTaxID.add(taxInfo.getTaxID());
-			System.out.println(species.getCommonName().toLowerCase());
 			treemapName2Species.put(species.getCommonName().toLowerCase(), species);
 		}
 		
@@ -577,7 +576,6 @@ public class Species implements Cloneable {
 		}
 		
 		for (String name : treemapName2Species.keySet()) {
-			System.out.println(name);
 			Species species = treemapName2Species.get(name);
 			mapName2Species.put(name, species);
 		}

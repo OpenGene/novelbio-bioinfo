@@ -375,9 +375,28 @@ public class SpeciesFile {
 	 * 里面都是相对路径
 	 * @return
 	 */
-	public Map<String, String[]> getGffDB2GffTypeFileMap(){
+	public Map<String, String[]> getGffDB2GffTypeFileMap() {
+		Map<String, String[]> mapDB2GffTypeAndFile = new LinkedHashMap<>();
+		for (String gffDBlowcase : this.mapDB2GffTypeAndFile.keySet()) {
+			String gffDB = mapGffDBLowCase2DBNormal.get(gffDBlowcase);
+			mapDB2GffTypeAndFile.put(gffDB, this.mapDB2GffTypeAndFile.get(gffDB));
+		}
 		return mapDB2GffTypeAndFile;
 	}
+	/**
+	 * 返回gffGene的map
+	 * 里面都是相对路径
+	 * @return
+	 */
+	public Map<String, String[]> getGffDB2GffTypeFileLowcase() {
+		return mapDB2GffTypeAndFile;
+	}
+	
+	public void removeGffDB(String gffDB) {
+		mapDB2GffTypeAndFile.remove(gffDB.toLowerCase());
+		mapGffDBLowCase2DBNormal.remove(gffDB.toLowerCase());
+	}
+	
 	
 	/** 输入相对路径 */
 	public void setGffRepeatFile(String gffRepeatFile) {

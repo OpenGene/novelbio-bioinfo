@@ -62,7 +62,7 @@ public class DegreeAnnotation {
 				coexpGenInfo1.initialGeneInfo();
 				CoexpGenInfo coexpGenInfo2 = new CoexpGenInfo(pairInfo[1], taxID, null);
 				coexpGenInfo2.initialGeneInfo();
-				coexPair.setCoexpPair(coexpGenInfo1, coexpGenInfo1);
+				coexPair.setCoexpPair(coexpGenInfo1, coexpGenInfo2);
 			}
 			lsCoexPairs.add(coexPair);
 			
@@ -107,7 +107,8 @@ public class DegreeAnnotation {
 	
 	public List<String[]> getLsDegree() {
 		List<String[]> lsDegree = new ArrayList<>();
-		for (GeneDegreeUnit geneDegreeUnit : mapAccID2Degree.values()) {
+		for (String accID : mapAccID2Degree.keySet()) {
+			GeneDegreeUnit geneDegreeUnit = mapAccID2Degree.get(accID);
 			lsDegree.add(geneDegreeUnit.toStringArray());
 		}
 		lsDegree.add(0, GeneDegreeUnit.getTitle());

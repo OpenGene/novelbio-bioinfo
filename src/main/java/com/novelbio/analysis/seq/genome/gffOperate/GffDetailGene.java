@@ -57,8 +57,8 @@ import com.novelbio.generalConf.TitleFormatNBC;
 @Document(collection="gffgene")
 @CompoundIndexes({
     @CompoundIndex(unique = false, name = "taxid_version_dbinfo_chr_start_end_idx", def = "{'taxID': 1, 'version': 1, 'dbinfo': 1, 'parentName': 1, 'numberstart': 1, 'numberend': 1}"),
-    @CompoundIndex(unique = false, name = "taxid_version_dbinfo_name_idx", def = "{'taxID': 1, 'version': 1, 'dbinfo': 1, 'setNameLowcase': 1}")
- })
+    @CompoundIndex(unique = false, name = "taxid_version_dbinfo_name_idx", def = "{'taxID': 1, 'version': 1, 'dbinfo': 1, 'setNameLowcase': 1}"),
+})
 public class GffDetailGene extends ListDetailAbs {
 	private final static Logger logger = Logger.getLogger(GffDetailGene.class);
 	/** 两个转录本的overlap 覆盖 必须大于0.6才算是一个基因 */
@@ -79,7 +79,8 @@ public class GffDetailGene extends ListDetailAbs {
 	/** 保存数据库的时候使用，本Gff对应的文件来源，如来自NCBI或者Eensembl等 */
 	@Indexed(unique = false)
 	String dbinfo;
-	
+	@Indexed(unique = false)
+	String gffFileId;
 	@Transient
 	boolean removeDuplicateIso = false;
 	
@@ -121,7 +122,14 @@ public class GffDetailGene extends ListDetailAbs {
 	public String getDbinfo() {
 		return dbinfo;
 	}
-	
+	/** 仅供数据库使用 */
+	public void setGffFileId(String gffFileId) {
+		this.gffFileId = gffFileId;
+	}
+	/** 仅供数据库使用 */
+	public String getGffFileId() {
+		return gffFileId;
+	}
 	/** 仅供数据库使用 */
 	public void setId(String id) {
 		this.id = id;
