@@ -265,7 +265,7 @@ public class MiRNAmapPipline implements IntCmdSoft {
 		mapDNA.setFqFile(new FastQ(fqFile), null);
 		mapDNA.setOutFileName(samFileName);
 		mapDNA.setChrIndex(chrFile);
-		mapDNA.setExePath(softWareInfo.toString());
+		mapDNA.setExePath(softWareInfo.getExePath());
 		mapDNA.setGapLength(3);
 		mapDNA.setThreadNum(threadNum);
 		if (samFileStatistics != null) {

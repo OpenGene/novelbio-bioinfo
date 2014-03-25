@@ -78,7 +78,7 @@ public class LncInfo {
 		if (lncName != null ) {
 			searchByGeneName();
 		}
-		if (align != null && lsLncIso == null) {
+		if (align != null && lsLncIso.isEmpty()) {
 			searchByAlign();
 		}
 	}

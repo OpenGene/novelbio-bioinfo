@@ -45,7 +45,7 @@ public class CtrlMiRNApredict implements IntCmdSoft {
 	boolean isUseOldResult = true;
 	String novelMiRNAmrd;
 	List<String> lsCmd = new ArrayList<>();
-	
+	int threadNum = 8;
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		if (this.gffChrAbs != null && gffChrAbs != null && this.gffChrAbs.getSpecies().equals(gffChrAbs.getSpecies())) {
 			return;
@@ -57,6 +57,9 @@ public class CtrlMiRNApredict implements IntCmdSoft {
 	}
 	public void setSpecies(Species species) {
 		this.species = species;
+	}
+	public void setThreadNum(int threadNum) {
+		this.threadNum = threadNum;
 	}
 	public void setExpMir(GeneExpTable expMirPre, GeneExpTable expMirMature) {
 		this.expMirPre = expMirPre;
@@ -132,15 +135,13 @@ public class CtrlMiRNApredict implements IntCmdSoft {
 			fastQ = alignSeq.getFastQ();
 		}
 		alignSeq.close();
-		SoftWareInfo softWareInfo = new SoftWareInfo();
-		softWareInfo.setName(SoftWare.bowtie2);
 		String novelMiRNAsam = outPathTmp + prefix + "novelMiRNAmapping.sam";
 		String unmappedFq = outPathTmp + prefix + "novelMiRNAunmapped.fq.gz";
 		SamFileStatistics samFileNovelMiRNA = new SamFileStatistics(prefix);
 		String mirHairp = novelMiRNADeep.getNovelMiRNAhairpin();
 		String mirHairpNew = outPathTmp + FileOperate.getFileName(mirHairp);
 		FileOperate.copyFile(mirHairp, mirHairpNew, false);
-		novelMiRNAsam = MiRNAmapPipline.mappingBowtie2(lsCmd, isUseOldResult, samFileNovelMiRNA, softWareInfo.getExePath(), 3, fastQ.getReadFileName(), 
+		novelMiRNAsam = MiRNAmapPipline.mappingDNA(lsCmd, isUseOldResult, samFileNovelMiRNA, threadNum, fastQ.getReadFileName(), 
 				mirHairpNew, novelMiRNAsam, unmappedFq);
 		if (samFileNovelMiRNA.getReadsNum(MappingReadsType.allMappedReads) > 0) {
 			SamFileStatistics.saveExcel(samStatisticsPath + FileOperate.getFileName(novelMiRNAsam), samFileNovelMiRNA);

@@ -90,8 +90,6 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 			//装入hash表
 			for (GffDetailGene gffDetailGene : listGff) {
 				gffDetailGene.setTaxID(taxID);
-				gffDetailGene.setVersion(version);
-				gffDetailGene.setDbinfo(dbinfo);
 				for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 					if (mapName2Iso.containsKey(gffGeneIsoInfo.getName().toLowerCase())) {
 						GffGeneIsoInfo gffGeneIsoInfoOld = mapName2Iso.get(gffGeneIsoInfo.getName().toLowerCase());

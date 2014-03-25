@@ -3,6 +3,7 @@ package com.novelbio.database.domain.geneanno;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -387,7 +388,7 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	
 	/** 将一系列blastInfo的结果去重复，一对query和subject仅获取evalue最小的那一对 */
 	public static List<BlastInfo> removeDuplicate(Collection<BlastInfo> colBlastInfos) {
-		 Map<String, BlastInfo> mapQuery2Evalue = new HashMap<>();
+		 Map<String, BlastInfo> mapQuery2Evalue = new LinkedHashMap<>();
 		for (BlastInfo blastInfo : colBlastInfos) {
 			String queryID2SubID = blastInfo.getQueryID().toLowerCase() + SepSign.SEP_ID + blastInfo.getSubjectID().toLowerCase();
 			double evalue = blastInfo.getEvalue();

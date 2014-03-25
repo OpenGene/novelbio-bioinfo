@@ -210,7 +210,6 @@ public class BlastGetSeq implements IntCmdSoft {
 		if (lsGeneName.size() == 0) {
 			return new ArrayList<>();
 		}
-		
 		GffChrAbs gffChrAbs = new GffChrAbs(species, true);
 		GffChrSeq gffChrSeq = new GffChrSeq(gffChrAbs);
 		if (isGetProtein) {

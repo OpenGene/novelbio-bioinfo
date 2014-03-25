@@ -2,16 +2,22 @@ package com.novelbio.database.service.servgff;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffFile;
+import com.novelbio.analysis.seq.genome.gffOperate.GffFileUnit;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.mongorepo.geneanno.RepoGffFile;
+import com.novelbio.database.mongorepo.geneanno.RepoGffFileUnit;
 import com.novelbio.database.mongorepo.geneanno.RepoGffGene;
 import com.novelbio.database.mongorepo.geneanno.RepoGffIso;
 import com.novelbio.database.service.SpringFactory;
@@ -23,10 +29,14 @@ public class ManageGffDetailGene {
 	RepoGffFile repoGffFile;
 	RepoGffGene repoGffGene;
 	RepoGffIso repoGffIso;
+	RepoGffFileUnit repoGffFileUnit;
+	MongoTemplate mongoTemplate;
 	private ManageGffDetailGene() {
 		repoGffFile = (RepoGffFile)SpringFactory.getFactory().getBean("repoGffFile");
 		repoGffGene = (RepoGffGene)SpringFactory.getFactory().getBean("repoGffGene");
 		repoGffIso = (RepoGffIso)SpringFactory.getFactory().getBean("repoGffIso");
+		repoGffFileUnit = (RepoGffFileUnit)SpringFactory.getFactory().getBean("repoGffFileUnit");
+		mongoTemplate = (MongoTemplate)SpringFactory.getFactory().getBean("mongoTemplate");
 	}
 	
 	public void saveGffHashGene(GffHashGene gffHashGene) {
@@ -39,8 +49,22 @@ public class ManageGffDetailGene {
 		gffFile.setTaxID(gffHashGene.getTaxID());
 		gffFile.setVersion(gffHashGene.getVersion());
 		gffFile.setDbinfo(gffHashGene.getDbinfo());
-		gffFile.setMapChrID2LsInterval(gffHashGene.getMapChrID2LsInterval(10));
 		repoGffFile.save(gffFile);
+		
+		Map<String, List<int[]>> mapChrID2LsInterval = gffHashGene.getMapChrID2LsInterval(10);
+		for (String chrId : mapChrID2LsInterval.keySet()) {
+			List<int[]> lsTrunkNum = mapChrID2LsInterval.get(chrId);
+			for (int i = 0; i < lsTrunkNum.size(); i++) {
+				GffFileUnit gffFileUnit = new GffFileUnit();
+				gffFileUnit.setGffFileId(gffFile.getId());
+				gffFileUnit.setTaxVsDb(gffHashGene.getTaxID(), gffHashGene.getVersion(), gffHashGene.getDbinfo());
+				gffFileUnit.setChrId(chrId);
+				gffFileUnit.setTrunkNum(i);
+				gffFileUnit.setTrunkDetail(lsTrunkNum.get(i));
+				repoGffFileUnit.save(gffFileUnit);
+			}
+		}
+		
 		for (GffDetailGene gffDetailGene : gffHashGene.getGffDetailAll()) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 				gffGeneIsoInfo.setGffFileId(gffFile.getId());
@@ -56,9 +80,11 @@ public class ManageGffDetailGene {
 	}
 	
 	public void delete(GffFile gffFile) {
-		repoGffGene.deleteByFileId(gffFile.getId());
-		repoGffIso.deleteByFileId(gffFile.getId());
-		repoGffFile.delete(gffFile.getId());
+		Query query = new Query( Criteria.where("gffFileId").is(gffFile.getId()));
+		mongoTemplate.remove(query, GffGeneIsoInfo.class);
+		mongoTemplate.remove(query, GffDetailGene.class);
+		mongoTemplate.remove(query, GffFileUnit.class);
+		mongoTemplate.remove(query, GffFile.class);
 	}
 	
 	public List<GffFile> getLsGffFileAll() {
@@ -67,13 +93,38 @@ public class ManageGffDetailGene {
 	
 	public GffFile findGffFile(int taxId, String version, String dbinfo) {
 		return repoGffFile.findByTaxIdAndVersionAndDbinfo(taxId, version, dbinfo);
-	}	
+	}
 	
-	public List<GffDetailGene> searchRegionOverlap(int taxID, String version, String dbinfo, String chrID, int start, int end) {
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/** 直接查GffFileUnit */
+	public GffFileUnit findGffFileUnit(int taxId, String version, String dbinfo, String chrId, int trunkNum) {
+		String taxVsDb = GffFileUnit.getTaxVsDb(taxId, version, dbinfo);
+		return repoGffFileUnit.findByTaxVsDbAndChrIdAndTruncNum(taxVsDb, chrId, trunkNum);
+	}
+	public GffFileUnit findGffFileUnit(String gffFileId, String chrId, int trunkNum) {
+		return repoGffFileUnit.findByFileIdAndChrIdAndTruncNum(gffFileId, chrId, trunkNum);
+	}
+	public List<GffFileUnit> findLsGffFileUnit(String gffFileId) {
+		return repoGffFileUnit.findByFileId(gffFileId);
+	}
+	public List<GffFileUnit> findLsGffFileUnit(int taxId, String version, String dbinfo) {
+		String taxVsDb = GffFileUnit.getTaxVsDb(taxId, version, dbinfo);
+		return repoGffFileUnit.findByTaxVsDb(taxVsDb);
+	}
+	public List<GffFileUnit> findLsGffFileUnit(String gffFileId, String chrId) {
+		return repoGffFileUnit.findByFileIdAndChrId(gffFileId, chrId);
+	}
+	public List<GffFileUnit> findLsGffFileUnit(int taxId, String version, String dbinfo, String chrId) {
+		String taxVsDb = GffFileUnit.getTaxVsDb(taxId, version, dbinfo);
+		return repoGffFileUnit.findByTaxVsDbAndChrId(taxVsDb, chrId);
+	}
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	public List<GffDetailGene> searchRegionOverlap(String gffFileId, String chrID, int start, int end) {
 		int startAbs = Math.min(start, end);
 		int endAbs = Math.max(start, end);
-		List<GffDetailGene> lsGffDetailGenes = repoGffGene.findByTaxId_Version_Dbinfo_ChrId_RegionOverlap
-				(taxID, version, dbinfo, chrID, startAbs, endAbs, new Sort(new Sort.Order(Sort.Direction.ASC, "numberstart")));
+		List<GffDetailGene> lsGffDetailGenes = repoGffGene.findByFileId_ChrId_RegionOverlap
+				(gffFileId, chrID, startAbs, endAbs, new Sort(new Sort.Order(Sort.Direction.ASC, "numberstart")));
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 				gffGeneIsoInfo.setGffDetailGeneParent(gffDetailGene);
@@ -82,11 +133,11 @@ public class ManageGffDetailGene {
 		return lsGffDetailGenes;
 	}
 	
-	public List<GffDetailGene> searchRegionIn(int taxID, String version, String dbinfo, String chrID, int start, int end) {
+	public List<GffDetailGene> searchRegionIn(String gffFileId, String chrID, int start, int end) {
 		int startAbs = Math.min(start, end);
 		int endAbs = Math.max(start, end);
-		List<GffDetailGene> lsGffDetailGenes = repoGffGene.findByTaxId_Version_Dbinfo_ChrId_RegionCover
-				(taxID, version, dbinfo, chrID, startAbs, endAbs, new Sort(new Sort.Order(Sort.Direction.ASC, "numberstart")));
+		List<GffDetailGene> lsGffDetailGenes = repoGffGene.findByFileId_ChrId_RegionCover
+				(gffFileId, chrID, startAbs, endAbs, new Sort(new Sort.Order(Sort.Direction.ASC, "numberstart")));
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 				gffGeneIsoInfo.setGffDetailGeneParent(gffDetailGene);
@@ -95,22 +146,22 @@ public class ManageGffDetailGene {
 		return lsGffDetailGenes;
 	}
 	/** 模糊查找 */
-	public List<GffDetailGene> searchGene(int taxID, String version, String dbinfo, String geneNameRegex) {
-		List<GffDetailGene> lsGffDetailGenes = searchGeneExact(taxID, version, dbinfo, geneNameRegex);
+	public List<GffDetailGene> searchGene(GffFile gffFile, String geneNameRegex) {
+		List<GffDetailGene> lsGffDetailGenes = searchGeneExact(gffFile.getId(), geneNameRegex);
 		if (lsGffDetailGenes.isEmpty()) {
-			GeneID geneID = new GeneID(geneNameRegex, taxID);
+			GeneID geneID = new GeneID(geneNameRegex, gffFile.getTaxID());
 			if (geneID.getTaxID() == 0) {
 				return new ArrayList<>();
 			}
 			String geneId = geneID.getGeneUniID();
-			lsGffDetailGenes = searchGeneExact(taxID, version, dbinfo, geneId);
+			lsGffDetailGenes = searchGeneExact(gffFile.getId(), geneId);
 		}
 		
 		if (lsGffDetailGenes.isEmpty()) {
 			if (geneNameRegex.length() <= 1) {
 				return new ArrayList<>();
 			}	
-			lsGffDetailGenes = searchGeneRegex(taxID, version, dbinfo, geneNameRegex);
+			lsGffDetailGenes = searchGeneRegex(gffFile.getId(), geneNameRegex);
 		}
 
 		
@@ -122,13 +173,13 @@ public class ManageGffDetailGene {
 		return lsGffDetailGenes;
 	}
 	
-	private List<GffDetailGene> searchGeneRegex(int taxID, String version, String dbinfo, String geneNameRegex) {
+	private List<GffDetailGene> searchGeneRegex(String gffFileId, String geneNameRegex) {
 		geneNameRegex = geneNameRegex.toLowerCase();
-		return repoGffGene.findByTaxId_Version_Dbinfo_Name_Regex(taxID, version, dbinfo, geneNameRegex);
+		return repoGffGene.findByFileId_Name_Regex(gffFileId, geneNameRegex);
 	}
-	private List<GffDetailGene> searchGeneExact(int taxID, String version, String dbinfo, String geneNameExact) {
+	private List<GffDetailGene> searchGeneExact(String gffFileId, String geneNameExact) {
 		geneNameExact = geneNameExact.toLowerCase();
-		return repoGffGene.findByTaxId_Version_Dbinfo_Name_Exact(taxID, version, dbinfo, geneNameExact);
+		return repoGffGene.findByFileId_Name_Exact(gffFileId, geneNameExact);
 	}
 
 	

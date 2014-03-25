@@ -191,6 +191,7 @@ public class CtrlMiRNApipeline implements IntCmdSoft {
 		ctrlMiRNApredict.setIsUseOldResult(isUseOldResult);
 		ctrlMiRNApredict.setGffChrAbs(gffChrAbs);
 		ctrlMiRNApredict.setSpecies(species);
+		ctrlMiRNApredict.setThreadNum(threadNum);
 		ctrlMiRNApredict.setMapPrefix2GenomeSamFile(mapBedFile2Prefix);
 		ctrlMiRNApredict.setOutPath(outPath, outPathSample, outPathTmpMapping, outPathStatistics);
 		ctrlMiRNApredict.setLsSpeciesBlastTo(lsSpeciesBlastTo);

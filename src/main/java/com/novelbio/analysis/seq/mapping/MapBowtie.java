@@ -288,7 +288,6 @@ public class MapBowtie extends MapDNA {
 	protected SamFile mapping() {
 		List<String> lsCmd = getLsCmdMapping();
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
-		cmdOperate.setGetLsErrOut();
 		cmdOperate.setGetCmdInStdStream(true);
 		Thread thread = new Thread(cmdOperate);
 		thread.start();

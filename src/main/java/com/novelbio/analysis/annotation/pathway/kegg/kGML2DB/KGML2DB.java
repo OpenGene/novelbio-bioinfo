@@ -15,8 +15,8 @@ import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.domain.kegg.KGreaction;
 import com.novelbio.database.domain.kegg.KGrelation;
 import com.novelbio.database.domain.kegg.KGsubstrate;
-import com.novelbio.database.service.servgeneanno.ManageDBInfo;
-import com.novelbio.database.service.servgeneanno.ManageTaxID;
+import com.novelbio.database.service.servgeneanno.IManageSpecies;
+import com.novelbio.database.service.servgeneanno.ManageSpecies;
 import com.novelbio.database.service.servkegg.ServKEntry;
 import com.novelbio.database.service.servkegg.ServKPathRelation;
 import com.novelbio.database.service.servkegg.ServKPathway;
@@ -62,7 +62,7 @@ public class KGML2DB
 		ServKPathway servKPathway = new ServKPathway();
 		ServKReaction servKReaction = new ServKReaction();
 		ServKRelation servKRelation = new ServKRelation();
-		ManageTaxID servTaxID = new ManageTaxID();
+		IManageSpecies servTaxID = ManageSpecies.getInstance();
 		//获得具体物种
 		String taxAbbr=kgml.getSpecies();
 		TaxInfo taxInfo2= servTaxID.queryAbbr(taxAbbr);

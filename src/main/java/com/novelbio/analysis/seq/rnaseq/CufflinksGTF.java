@@ -366,9 +366,6 @@ public class CufflinksGTF {
 	private String getCufflinksResult(String bamFile, String prefix) {
 		List<String> lsCmd = getLsCmd(bamFile, prefix);
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
-		if (!skipErrorMode) {
-			cmdOperate.setGetLsErrOut();
-		}
 		String outGTF = FileOperate.addSep(getOutPathPrefix(prefix));
 		if (isUseOldResult
 				&& FileOperate.isFileExistAndBigThanSize(outGTF + "/genes.fpkm_tracking" , 0)

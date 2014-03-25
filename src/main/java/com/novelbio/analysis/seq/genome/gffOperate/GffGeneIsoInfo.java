@@ -38,7 +38,7 @@ import com.novelbio.database.model.modgeneid.GeneType;
  */
 @Document(collection="gffiso")
 @CompoundIndexes({
-    @CompoundIndex(unique = false, name = "gffgene_name", def = "{'gffGeneId': 1, 'listName': 1}")
+    @CompoundIndex(unique = false, name = "fileId_name", def = "{'gffFileId': 1, 'listName': 1}")
 })
 public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<ExonInfo>, ListCodAbsDu<ExonInfo, ListCodAbs<ExonInfo>>> {
 	private static final Logger logger = Logger.getLogger(GffGeneIsoInfo.class);

@@ -9,7 +9,6 @@ import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.novelbio.analysis.seq.mapping.MapBowtie;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.database.service.servgff.ManageGffDetailGene;
@@ -32,8 +31,6 @@ public class GffFile {
 
 	/** 导入日期 */
 	String dateImport = DateUtil.getDateDetail();
-	/** 染色体ID都小写 */
-	Map<String, List<int[]>> mapChrID2LsInterval;
 	
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
@@ -70,30 +67,12 @@ public class GffFile {
 	public String getFileName() {
 		return fileName;
 	}
-	/** 设定每条染色体的区域
-	 * 染色体ID都小写
-	 * @param mapChrID2LsInterval
-	 */
-	public void setMapChrID2LsInterval(
-			Map<String, List<int[]>> mapChrID2LsInterval) {
-		this.mapChrID2LsInterval = mapChrID2LsInterval;
-	}
-	/** 给jbrowse用的东西，染色体ID都小写 */
-	public Map<String, List<int[]>> getMapChrID2LsInterval() {
-		return mapChrID2LsInterval;
-	}
-	public String getLatinName() {
-		String name = null;
-		try {
-			Species species = new Species(taxID);
-			name = species.getNameLatin();
-		} catch (Exception e) {
-		}
-		return name;
-	}
-	
+
 	public void save() {
 		ManageGffDetailGene.getInstance().saveGffFile(this);
 	}
-
+	
+	public static GffFile findGffFile(int taxId, String version, String dbinfo) {
+		return ManageGffDetailGene.getInstance().findGffFile(taxId, version, dbinfo);
+	}
 }

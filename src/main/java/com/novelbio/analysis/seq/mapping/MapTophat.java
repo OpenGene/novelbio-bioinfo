@@ -421,7 +421,7 @@ public class MapTophat implements MapRNA {
 		List<String> lsCmd = new ArrayList<>();
 		if (FileOperate.isFileExistAndBigThanSize(gtfFile, 0)) {
 			String index = mapBowtie.getChrNameWithoutSuffix();
-			String gtfName = FileOperate.getFileNameSep(gtfFile)[0];
+			String gtfName = FileOperate.getFileName(gtfFile);
 			String indexTranscriptome = index + "_" + gtfName;
 			FileOperate.createFolders(FileOperate.getParentPathName(indexTranscriptome));
 			
@@ -476,7 +476,7 @@ public class MapTophat implements MapRNA {
 			cmdOperate.run();
 			if (!cmdOperate.isFinishedNormal()) {
 				FileOperate.DeleteFileFolder(FileOperate.addSep(outPathPrefix) + "tmp");
-				throw new ExceptionCmd("error running mapsplice:" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
+				throw new ExceptionCmd("error running tophat:" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
 			}
 			changeFileName();
 		}
@@ -595,7 +595,7 @@ public class MapTophat implements MapRNA {
 			mapBowtie.setThreadNum(threadNum);
 			mapBowtie.setChrIndex(bowtie2ChrIndex);
 			mapBowtie.setFqFile(fastQ, null);
-			mapBowtie.setSensitive(MapBowtie.Sensitive_Very_Sensitive);
+			mapBowtie.setSensitive(MapBowtie.Sensitive_Sensitive);
 			mapBowtie.setExePath(softWareInfo.getExePath());
 			String mapFile = FileOperate.changeFileSuffix(mapBowtieBam, "_TmpMapping", "bam");
 			mapBowtie.setOutFileName(mapFile);

@@ -56,8 +56,8 @@ import com.novelbio.generalConf.TitleFormatNBC;
  */
 @Document(collection="gffgene")
 @CompoundIndexes({
-    @CompoundIndex(unique = false, name = "taxid_version_dbinfo_chr_start_end_idx", def = "{'taxID': 1, 'version': 1, 'dbinfo': 1, 'parentName': 1, 'numberstart': 1, 'numberend': 1}"),
-    @CompoundIndex(unique = false, name = "taxid_version_dbinfo_name_idx", def = "{'taxID': 1, 'version': 1, 'dbinfo': 1, 'setNameLowcase': 1}"),
+	@CompoundIndex(unique = false, name = "fileid_chr_start_end_idx", def = "{'gffFileId': 1, 'parentName': 1, 'numberstart': 1, 'numberend': 1}"),
+    @CompoundIndex(unique = false, name = "fileid_chr_start_end_idx", def = "{'gffFileId': 1 , 'parentName': 1, 'numberstart': 1, 'numberend': 1}")
 })
 public class GffDetailGene extends ListDetailAbs {
 	private final static Logger logger = Logger.getLogger(GffDetailGene.class);
@@ -73,12 +73,6 @@ public class GffDetailGene extends ListDetailAbs {
 	
 	@Indexed(unique = false)
 	int taxID = 0;
-	/** 保存数据库的时候使用，本Gff对应的物种版本 */
-	@Indexed(unique = false)
-	String version;
-	/** 保存数据库的时候使用，本Gff对应的文件来源，如来自NCBI或者Eensembl等 */
-	@Indexed(unique = false)
-	String dbinfo;
 	@Indexed(unique = false)
 	String gffFileId;
 	@Transient
@@ -106,22 +100,7 @@ public class GffDetailGene extends ListDetailAbs {
 	public GffDetailGene(String chrID, String locString, boolean cis5to3) {
 		super(chrID, locString, cis5to3);
 	}
-	
-	public void setVersion(String version) {
-		this.version = version;
-	}
 
-	public String getVersion() {
-		return version;
-	}
-	
-	public void setDbinfo(String dbinfo) {
-		this.dbinfo = dbinfo;
-	}
-	
-	public String getDbinfo() {
-		return dbinfo;
-	}
 	/** 仅供数据库使用 */
 	public void setGffFileId(String gffFileId) {
 		this.gffFileId = gffFileId;

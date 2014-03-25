@@ -93,7 +93,7 @@ public class ManageBlastInfo {
 	/**
 	 * 查找符合条件的List BlastInfo，已经去重复了
 	 * @param queryID 待查找ID，一般是genUniID
-	 * @param taxID 物种ID
+	 * @param taxId 物种ID
 	 * @return
 	 */
 	public List<BlastInfo> queryBlastInfoLs(String queryID, int taxIDQ) {

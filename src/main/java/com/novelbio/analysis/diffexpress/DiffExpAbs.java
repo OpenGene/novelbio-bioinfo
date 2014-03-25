@@ -410,7 +410,6 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		lsCmd.add(PathDetail.getRscript());
 		lsCmd.add(outScript.replace("\\", "/"));
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
-		cmdOperate.setGetLsErrOut();
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {
 			throw new ExceptionCmd(enumDifGene.toString() + " error:\n" + cmdOperate.getCmdExeStrReal() + "\n"+ cmdOperate.getErrOut());

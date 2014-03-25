@@ -374,7 +374,12 @@ public class GeneIDabs implements GeneIDInt {
 	/** 设定geneInfo信息 */
 	protected void setGenInfo() {
 		if (geneInfo == null && !isAccID) {
-			geneInfo = servGeneInfo.queryGeneInfo(getIDtype(), ageneUniID.getGenUniID(), getTaxID());
+			try {
+				geneInfo = servGeneInfo.queryGeneInfo(getIDtype(), ageneUniID.getGenUniID(), getTaxID());
+			} catch (Exception e) {
+				return;
+			}
+			
 		}
 	}
 

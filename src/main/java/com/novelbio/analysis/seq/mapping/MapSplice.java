@@ -160,7 +160,6 @@ public class MapSplice implements MapRNA {
 		String mapSpliceBam = parentPath + prefix + MapSpliceSuffix;
 		if (!FileOperate.isFileExistAndBigThanSize(mapSpliceBam, 1_000_000)) {
 			CmdOperate cmdOperate = new CmdOperate(getLsCmd());
-			cmdOperate.setGetLsErrOut();
 			cmdOperate.run();
 			if (!cmdOperate.isFinishedNormal()) {
 //				FileOperate.DeleteFileFolder(FileOperate.addSep(outFile) + "tmp");

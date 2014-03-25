@@ -308,7 +308,6 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 		ArrayOperate.addArrayToList(lsCmdRun, getSpecies());
 		lsCmdRun.add("2>"); lsCmdRun.add(getReportFileRandom());
 		CmdOperate cmdOperate = new CmdOperate(lsCmdRun);
-		cmdOperate.setGetLsErrOut();
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {
 			StringBuilder stringBuilder = new StringBuilder("miRNAdeep2 miRDeep2.pl error:\n");

@@ -470,7 +470,6 @@ public class MapBwa extends MapDNA {
 		List<String> lsCmdVersion = new ArrayList<>();
 		lsCmdVersion.add(this.ExePath + "bwa");
 		CmdOperate cmdOperate = new CmdOperate(lsCmdVersion);
-		cmdOperate.setGetLsErrOut();
 		cmdOperate.run();
 		List<String> lsInfo = cmdOperate.getLsErrOut();
 		String version = lsInfo.get(2).toLowerCase().replace("version:", "").trim();
