@@ -154,7 +154,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	private static String stopGeneName = "PhKgamma";
 	
 	GffHashGene gffHashGene = null;
-	StrandSpecific strandSpecific = StrandSpecific.NONE;
+//	StrandSpecific strandSpecific = StrandSpecific.NONE;
 	/** 全体差异基因的外显子
 	 * ls--
 	 * ls：gene

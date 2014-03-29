@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.novelbio.base.ExceptionNullParam;
+
 /** 实际上是过滤的类，不过可以用其来设定过滤的参数
  * 过滤前要先设定{@link #setLsfFQrecordFilters()}}
  *  */
@@ -36,6 +38,9 @@ public class FastQFilter {
 			return;
 		}
 		mapFastQFilter = FastQ.getMapQuality2Num(QUALITY);
+		if (mapFastQFilter == null) {
+			throw new ExceptionNullParam("Error Quality Filter Value:" + QUALITY);
+		}
 	}
 	///////////////////////////////////////////  参数设置  ///////////////////////////////////////////////////////////////////////
 	/** 设定是否过滤，false表示不过滤直接跳过 */

@@ -11,6 +11,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapInfo;
+import com.novelbio.base.ExceptionNullParam;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.species.Species;
@@ -116,6 +117,8 @@ public class GffChrAbs implements Closeable {
 	public void setGffFile(int taxID, String version, String dbinfo, GffType gffType, String gffFile) {
 		if (FileOperate.isFileExist(gffFile)) {
 			gffHashGene = new GffHashGene(taxID, version, dbinfo, gffType, gffFile);
+		} else {
+			throw new ExceptionNullParam(gffFile + " GffFile is not exist");
 		}
 	}
 	

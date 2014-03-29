@@ -7,7 +7,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import com.novelbio.base.dataStructure.listOperate.HistList;
+import com.novelbio.listOperate.HistList;
 
 public class HistogramEqualization {
 	

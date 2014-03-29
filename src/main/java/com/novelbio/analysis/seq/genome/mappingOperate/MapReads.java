@@ -20,9 +20,9 @@ import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.Equations;
 import com.novelbio.base.dataStructure.MathComput;
-import com.novelbio.base.dataStructure.listOperate.ListAbs;
-import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.database.model.species.Species;
+import com.novelbio.listOperate.ListAbs;
+import com.novelbio.listOperate.ListCodAbs;
 /**
  * 输入的mapping结果已经排序好，并且染色体已经分开好。
  * 不考虑内存限制的编<br>

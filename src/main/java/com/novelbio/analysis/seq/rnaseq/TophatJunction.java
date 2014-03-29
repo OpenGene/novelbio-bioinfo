@@ -20,10 +20,10 @@ import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.base.dataStructure.listOperate.ListBin;
-import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
-import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
-import com.novelbio.base.dataStructure.listOperate.ListHashSearch;
+import com.novelbio.listOperate.ListBin;
+import com.novelbio.listOperate.ListCodAbs;
+import com.novelbio.listOperate.ListCodAbsDu;
+import com.novelbio.listOperate.ListHashSearch;
 
 public class TophatJunction extends ListHashSearch<JunctionInfo, ListCodAbs<JunctionInfo>, 
 ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> implements AlignmentRecorder {
@@ -124,19 +124,7 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 			return null;
 		}
 		SamRecord samRecord = (SamRecord)alignRecord;
-		if (strandSpecific == StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND) {
-			if (samRecord.isFirstRead()) {
-				return samRecord.isCis5to3();
-			} else {
-				return !samRecord.isCis5to3();
-			}
-		} else {
-			if (samRecord.isFirstRead()) {
-				return !samRecord.isCis5to3();
-			} else {
-				return samRecord.isCis5to3();
-			}
-		}
+		return samRecord.isCis5to3ConsiderStrand(strandSpecific);
 	}
 	
 	/** 

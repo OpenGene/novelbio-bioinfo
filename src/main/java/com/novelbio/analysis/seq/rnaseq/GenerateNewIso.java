@@ -21,8 +21,8 @@ import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.rnaseq.JunctionInfo.JunctionUnit;
 import com.novelbio.base.SepSign;
-import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
-import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
+import com.novelbio.listOperate.ListCodAbs;
+import com.novelbio.listOperate.ListCodAbsDu;
 
 /** 根据junction reads，产生新的iso
  * 暂时没有考虑链特异性测序
@@ -65,9 +65,6 @@ public class GenerateNewIso {
 			loopNum++;
 			for (JunctionUnit junctionUnit : lsJunUnit) {
 				logger.debug(loopNum + " " +junctionUnit.toString());
-				if (junctionUnit.toString().equals("MT 16571 16622")) {
-					logger.debug("stop");
-				}
 				if (junctionUnit.getReadsNumAll() >= newIsoReadsNum && !isJunInGene(junctionUnit)) {
 					if (loopNum > 1 && isJunctionInAnotherGene(gffDetailGene, junctionUnit) && gffDetailGene.getLsCodSplit().size() > 100) {
 						continue;

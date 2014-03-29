@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 
 import com.google.common.collect.HashMultimap;
 import com.novelbio.analysis.IntCmdSoft;
+import com.novelbio.base.ExceptionNullParam;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
@@ -512,6 +513,9 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	}
 	
 	public static DiffExpInt createDiffExp(EnumDifGene DiffExpID) {
+		if (DiffExpID == null) {
+			throw new ExceptionNullParam("No DiffExpID");
+		}
 		DiffExpInt diffExpInt = null;
 		if (DiffExpID == EnumDifGene.Limma) {
 			diffExpInt = (DiffExpInt)SpringFactory.getFactory().getBean("diffExpLimma");

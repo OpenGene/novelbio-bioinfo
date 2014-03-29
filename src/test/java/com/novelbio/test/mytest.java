@@ -1,8 +1,6 @@
 package com.novelbio.test;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,35 +8,34 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.fop.datatypes.Keep;
 import org.apache.log4j.Logger;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
-import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
-import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.GffChrSeq;
-import com.novelbio.analysis.seq.genome.GffHashModifyOldGffUTR;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffType;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
-import com.novelbio.analysis.seq.mapping.MapSplice;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffFile;
+import com.novelbio.analysis.seq.genome.gffOperate.GffFileUnit;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.mappingOperate.EnumMapNormalizeType;
+import com.novelbio.analysis.seq.mapping.MapDNA;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
+import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.geneanno.SpeciesFile;
-import com.novelbio.database.domain.information.SoftWareInfo;
+import com.novelbio.base.plot.ImageUtils;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
-import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.database.model.species.Species.EnumSpeciesType;
-import com.novelbio.database.service.servgeneanno.IManageSpecies;
-import com.novelbio.database.service.servgeneanno.ManageSpecies;
+import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.service.servgeneanno.ManageBlastInfo;
 import com.novelbio.database.service.servgff.ManageGffDetailGene;
 
 
@@ -46,31 +43,16 @@ public class mytest {
 	private static final Logger logger = Logger.getLogger(mytest.class);
 	static boolean is;
 	public static void main(String[] args) {
-		GffChrAbs gffChrAbs = new GffChrAbs(9606);
-		System.gc();
-		gffChrAbs.getBedFile();
+		DateUtil dateUtil = new DateUtil();
+
+		dateUtil.setStartTime();
+		ImageUtils.read("/hdfs:/nbCloud/public/SampleQC/2014-03-29/aaa-RNA-2013-12-31-02_D1K_2014-03-29-03-48-3910289.png");
+		System.out.println(dateUtil.getEclipseTime());
 	}
 	
 	/** 将有问题的fastq文件整理为正常的 */
 	public static void makeFastqFile() {
-//		String fastq = "/media/hdfs/nbCloud/public/customerData/SRA/DN14001/IonXpress_012" +
-//		"_R_2014_01_14_01_29_45_user_BBD-32-novelbio_20140114_ampliseq_exome_Auto_user_BBD-32-novelbio_20140114_ampliseq_exome_95.fq.gz";
-//		//FastQ fastQ = new FastQ(fastq);
-//		String fastqOut = "";
-//		if (fastq.endsWith("gz")) {
-//			fastqOut = FileOperate.changeFileSuffix(fastq, "_modify", "fastq|fq", "fastq.gz");
-//		} else {
-//			fastqOut = FileOperate.changeFileSuffix(fastq, "", "fastq|fq", "fastq.gz");
-//		}
-//		//FastQ fastQ2 = new FastQ("/media/winD/asd/test.fq", true);
-//		//
-//		//for (FastQRecord fastQRecord : fastQ.readl	ines()) {
-//		//	fastQ2.writeFastQRecord(fastQRecord);
-//		//}
-//		//fastQ.close();
-//		//fastQ2.close();
-//		System.out.println(fastqOut);
-		
+	
 	}
 	
 	public static void fanweiCope() {

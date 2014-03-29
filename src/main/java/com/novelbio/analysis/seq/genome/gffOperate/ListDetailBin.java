@@ -1,6 +1,6 @@
 package com.novelbio.analysis.seq.genome.gffOperate;
 
-import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
+import com.novelbio.listOperate.ListDetailAbs;
 /**
  * 继承 Comparable 接口，只比较score
  * @author zong0jie

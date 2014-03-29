@@ -1,8 +1,8 @@
 package com.novelbio.analysis.seq.genome.gffOperate;
 
-import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
-import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
-import com.novelbio.base.dataStructure.listOperate.ListHashSearch;
+import com.novelbio.listOperate.ListCodAbs;
+import com.novelbio.listOperate.ListCodAbsDu;
+import com.novelbio.listOperate.ListHashSearch;
 
 /** 存储miRNA的list */
 public abstract class MiRNAList extends ListHashSearch<MirMature, ListCodAbs<MirMature>, 

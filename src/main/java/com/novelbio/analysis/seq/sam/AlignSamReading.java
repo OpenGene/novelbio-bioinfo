@@ -52,7 +52,12 @@ public class AlignSamReading extends AlignSeqReading {
 		if (lsAlignments == null || lsAlignments.size() == 0) {
 			readAllLines();
 		} else {
-			readSelectLines();
+			try {
+				readSelectLines();
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+		
 		}
 		summaryRecorder();
 		for (AlignSeq alignSeqFile : lsAlignSeqs) {
@@ -83,6 +88,7 @@ public class AlignSamReading extends AlignSeqReading {
 		for (Alignment alignment : lsAlignments) {
 			for (AlignSeq alignSeq : lsAlignSeqs) {
 				SamFile samFile = (SamFile)alignSeq;
+				//TODO
 				for (AlignRecord samRecord : samFile.readLinesOverlap(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs())) {
 					num++;
 					if (num % 100000 == 0) {

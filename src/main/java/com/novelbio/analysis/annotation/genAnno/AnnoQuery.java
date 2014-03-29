@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.base.ExceptionNullParam;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -84,11 +85,16 @@ public class AnnoQuery extends RunProcess<AnnoQuery.AnnoQueryDisplayInfo>{
 	 */
 	public void setAnnoType(int annoType) {
 		annoAbs = AnnoAbs.createAnnoAbs(annoType);
-
+		if (annoAbs == null) {
+			throw new ExceptionNullParam("Invalid AnnoType: " + annoType);
+		}
 	}
 	/** 只有当annoType为 {@link AnnoAbs#GO} 时，才有设置的必要 */
 	public void setGOtype(GOtype gOtype) {
 		if (annoAbs instanceof AnnoGO) {
+			if (gOtype == null) {
+				throw new ExceptionNullParam("No GoType");
+			}
 			((AnnoGO) annoAbs).setgOtype(gOtype);
 		}
 	}

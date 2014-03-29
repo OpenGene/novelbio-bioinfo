@@ -8,10 +8,10 @@ import java.util.Map;
 import java.util.Set;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.listOperate.HistBin;
-import com.novelbio.base.dataStructure.listOperate.HistList;
-import com.novelbio.base.dataStructure.listOperate.HistList.HistBinType;
 import com.novelbio.database.domain.geneanno.BlastInfo;
+import com.novelbio.listOperate.HistBin;
+import com.novelbio.listOperate.HistList;
+import com.novelbio.listOperate.HistList.HistBinType;
 
 public class BlastStatistics {
 	/** 进行blast的所有序列的名字 */

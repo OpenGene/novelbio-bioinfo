@@ -1,5 +1,6 @@
 package com.novelbio.database.updatedb.database;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,84 +15,58 @@ import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.database.service.servgeneanno.ManageBlastInfo;
 
-public class BlastUp2DB extends ImportPerLine {
+public class BlastUp2DB {
 	private static final Logger logger = Logger.getLogger(BlastUp2DB.class);
 	
 	int queryIDType = GeneID.IDTYPE_ACCID;
 	int blastIDType = GeneID.IDTYPE_ACCID;
 	BlastFileInfo blastFileInfo = new BlastFileInfo();
 	ManageBlastInfo manageBlastInfo = ManageBlastInfo.getInstance();
-	
-	String usrid;
-	
-	/** 检查行数超过15行有问题就可以报错了 */
+		
+	/** 出错行数超过15行有问题就可以报错了 */
 	int linNum = 15;
 	
-	public  BlastUp2DB() {
-		this.readFromLine = 1;
-		setReadFromLine(1);
+	/** 这就是一步到位的设定 */
+	public void setBlastFileInfo(BlastFileInfo blastFileInfo, int queryIdType, int blastIdType) {
+		this.blastFileInfo = blastFileInfo;
+		this.queryIDType = queryIdType;
+		this.blastIDType = blastIdType;
 	}
-	
-	/** true 导入数据库，false导入缓存
-	 * 默认false导入缓存
-	 */
-	public void setUpdate(boolean update) {
-		blastFileInfo.setTmp(!update);
-	}
-	/**
-	 * 为null表示不设定usrID
-	 * @param usrid
-	 */
-	public void setUsrid(String usrid) {
-		this.usrid = usrid;
-	}
-	/**
-	 * 导入单个文件时，设定taxID
-	 * @param taxID
-	 */
-	public void setTaxID(int taxID) {
-		this.taxID = taxID;
-		blastFileInfo.setQueryTaxID(taxID);
-	}
-	/**
-	 * 设定物种名，taxID由物种名的hashcode获得
-	 * @param taxName
-	 */
-	public void setTaxName(String taxName) {
-		this.taxID = Math.abs(taxName.hashCode());
-		blastFileInfo.setQueryTaxID(taxName);
-	}
-	/**
-	 * blast到的物种ID
-	 * @param subTaxID
-	 */
-	public void setSubTaxID(int subTaxID) {
-		blastFileInfo.setSubjectTaxID(subTaxID);
+		
+	public boolean updateFile() throws BlastFileException, IOException {
+		checkFile();
+		blastFileInfo.save(true);
+		updateBlastInfo(blastFileInfo.realFileAndName());
+		return true;
 	}
 	
 	/**
-	 * 第一列，是accID还是geneID还是UniID
-	 * @param IDtype 默认是CopedID.IDTYPE_ACCID
-	 * @return
+	 * 将指定的文件导入数据库，必须是每一行都能单独导入的表
+	 * 如果需要导入多行，譬如amiGO的信息，请覆盖该方法
 	 */
-	public void setQueryIDType(int IDtypeQ) {
-		this.queryIDType = IDtypeQ;
-	}
-	public void setUserID(String userID) {
-		blastFileInfo.setUserID(userID);
-	}
-	/**
-	 * blast到的ID是accID还是geneID还是UniID
-	 * @param blastID 默认是CopedID.IDTYPE_ACCID
-	 */
-	public void setBlastIDType(int IDtypeS) {
-		this.blastIDType = IDtypeS;
-	}
-	public boolean updateFile(String gene2AccFile) {
-		blastFileInfo.setFileName(gene2AccFile);
-		blastFileInfo.setUserID(usrid);
-		manageBlastInfo.saveBlastFile(blastFileInfo);
-		super.updateFile(gene2AccFile);
+	private boolean updateBlastInfo(String gene2AccFile) {
+		TxtReadandWrite txtGene2Acc;
+		txtGene2Acc = new TxtReadandWrite(gene2AccFile, false);
+		
+		//从第二行开始读取
+		int num = 0;
+		for (String content : txtGene2Acc.readlines()) {
+			if (content.startsWith("#") || content.startsWith("!")) {
+				continue;
+			}
+			try {
+				impPerLine(content);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+	
+			num++;
+			if (num%300000 == 0) {
+				logger.info(gene2AccFile + " import line number:" + num);
+			}
+		}
+		txtGene2Acc.close();
+		logger.info("finished import file " + gene2AccFile);
 		return true;
 	}
 	
@@ -99,12 +74,16 @@ public class BlastUp2DB extends ImportPerLine {
 	 * 返回错误信息
 	 * @param gene2AccFile
 	 * @return
+	 * @throws BlastFileException 
 	 */
-	public String checkFile(String gene2AccFile) {
+	public void checkFile() throws BlastFileException {
+		String gene2AccFile = blastFileInfo.realFileAndName();
 		if (!FileOperate.isFileExistAndBigThanSize(gene2AccFile, 0)) {
-			return "file is not exist:" + gene2AccFile;
+			FileOperate.DeleteFileFolder(blastFileInfo.realFileAndName());
+			throw new BlastFileException("file is not exist:" + gene2AccFile);
 		}
-		
+		int taxIdQ = blastFileInfo.getQueryTaxID();
+		int taxIdS = blastFileInfo.getSubjectTaxID();
 		String errorInfo = null;
 		TxtReadandWrite txtRead = new TxtReadandWrite(gene2AccFile);
 		List<String> lsBlastLines = txtRead.readFirstLines(100);
@@ -114,10 +93,17 @@ public class BlastUp2DB extends ImportPerLine {
 		Set<Integer> setTaxIDsub = new HashSet<>();
 		int taxIDS = blastFileInfo.getSubjectTaxID();
 		for (String lineContent : lsBlastLines) {
+			if (lineContent.startsWith("#")) {
+				continue;
+			}
 			String[] ss = lineContent.split("\t");
-			int idRealQ = getID(ss[0], taxID, false);
-			int idRealS = getID(ss[1], taxIDS, ss[1].contains("|"));
-			if (idRealQ != taxID) {
+			if (ss.length != 12) {
+				errorInfo = "file format is not correct";
+				break;
+			}
+			int idRealQ = getID(ss[0], taxIdQ, false);
+			int idRealS = getID(ss[1], taxIdS, ss[1].contains("|"));
+			if (idRealQ != taxIdQ) {
 				setTaxIDquery.add(idRealQ);
 				notMatchQueryTaxID++;
 			}
@@ -127,18 +113,25 @@ public class BlastUp2DB extends ImportPerLine {
 			}
 		}
 		
-		if (notMatchQueryTaxID > linNum && notMatchSubjectTaxID > linNum) {
-			errorInfo = "query speciesID and subject speciesID may error\n " +
-					"query speciesID:" + taxID + " but was:" + getSetSpeciesName(setTaxIDquery) +
-							"\nsubject speciesID:" +  taxIDS + " but was:" + getSetSpeciesName(setTaxIDsub);
-		} else if (notMatchQueryTaxID > linNum) {
-			errorInfo = "query speciesID may error\n" +
-					"query speciesID:" + taxID + " but was:" + getSetSpeciesName(setTaxIDquery);
-		} else if (notMatchSubjectTaxID > linNum) {
-			errorInfo = "subject speciesID may error\n" +
-					"subject speciesID:" + taxIDS + " but was:" + getSetSpeciesName(setTaxIDsub);
+		if (errorInfo == null) {
+			if (notMatchQueryTaxID > linNum && notMatchSubjectTaxID > linNum) {
+				errorInfo = "query speciesID and subject speciesID may error\n " +
+						"query speciesID:" + taxIdQ + " but was:" + getSetSpeciesName(setTaxIDquery) +
+								"\nsubject speciesID:" +  taxIDS + " but was:" + getSetSpeciesName(setTaxIDsub);
+			} else if (notMatchQueryTaxID > linNum) {
+				errorInfo = "query speciesID may error\n" +
+						"query speciesID:" + taxIdQ + " but was:" + getSetSpeciesName(setTaxIDquery);
+			} else if (notMatchSubjectTaxID > linNum) {
+				errorInfo = "subject speciesID may error\n" +
+						"subject speciesID:" + taxIDS + " but was:" + getSetSpeciesName(setTaxIDsub);
+			}
 		}
-		return errorInfo;
+		
+		
+		if (errorInfo != null) {
+			FileOperate.DeleteFileFolder(blastFileInfo.realFileAndName());
+			throw new BlastFileException(errorInfo);
+		}
 	}
 	
 	private Set<String> getSetSpeciesName(Set<Integer> setTaxID) {
@@ -171,12 +164,11 @@ public class BlastUp2DB extends ImportPerLine {
 		return taxID;
 	}
 	
-	@Override
 	boolean impPerLine(String lineContent) {
-		BlastInfo blastInfo = new BlastInfo(true, taxID, queryIDType == GeneID.IDTYPE_ACCID, 
+		BlastInfo blastInfo = new BlastInfo(true, blastFileInfo.getQueryTaxID(), queryIDType == GeneID.IDTYPE_ACCID, 
 				blastFileInfo.getSubjectTaxID(), blastIDType == GeneID.IDTYPE_ACCID, lineContent);
 		
-		blastInfo.setBlastFileInfo(blastFileInfo);
+		blastInfo.setBlastFileId(blastFileInfo.getId());
 		try {
 			manageBlastInfo.updateBlast(blastInfo);
 		} catch (Exception e) {
@@ -187,10 +179,10 @@ public class BlastUp2DB extends ImportPerLine {
 		return true;
 	}
 	
-	public static class BlastUpdateException extends RuntimeException {
+	public static class BlastFileException extends Exception {
 		private static final long serialVersionUID = 1L;
 
-		public BlastUpdateException(String info) {
+		public BlastFileException(String info) {
 			super(info);
 		}
 	}

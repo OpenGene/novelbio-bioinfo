@@ -1,5 +1,6 @@
 package com.novelbio.database.model.species;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -14,6 +15,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
+import com.novelbio.base.ExceptionNullParam;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -105,12 +107,12 @@ public class Species implements Cloneable {
 	 */
 	public void setVersion(String version) {
 		if (version == null) {
-			return;
+			throw new ExceptionNullParam("No Param Version");
 		}
 		this.version = version;
 		version = version.split(sepVersionAndYear)[0].toLowerCase();
 		if (!mapVersion2Species.containsKey(version)) {
-			return;
+			throw new ExceptionSpeceis("no exist version: " + version);
 		}
 		this.gffDB = null;
 	}
@@ -519,6 +521,17 @@ public class Species implements Cloneable {
 	 * @return
 	 */
 	public static Map<String, Species> getSpeciesName2Species(EnumSpeciesType speciesType, boolean getBlastSpecies, String usrid) {
+		File file = FileOperate.getFile("/hdfs:/nbCloud/staff/zongjie/test/dme_GTFfile.gtf.bak");
+		if (file.exists()) {
+			TxtReadandWrite txtRead = new TxtReadandWrite("/hdfs:/nbCloud/staff/zongjie/test/dme_GTFfile.gtf.bak");
+			String id = txtRead.readFirstLines(1).get(0);
+			System.out.println(id);
+			if (id.split("\t")[8].contains(" transcript_id \"NM_001272857.1\"")) {
+				System.out.println(true);
+			}
+			txtRead.close();
+		}
+		
 		HashMap<String, Species> mapName2Species = new LinkedHashMap<String, Species>();
 		Species speciesUnKnown = new Species();
 		if (speciesType != EnumSpeciesType.miRNA) {
@@ -654,6 +667,12 @@ public class Species implements Cloneable {
 			taxInfo.setAbbr(info[m]);
 			//升级
 			taxInfo.save();
+		}
+	}
+	
+	public static class ExceptionSpeceis extends RuntimeException {
+		public ExceptionSpeceis(String msg) {
+			super(msg);
 		}
 	}
 	

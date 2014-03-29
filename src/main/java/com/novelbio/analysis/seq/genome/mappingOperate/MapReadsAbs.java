@@ -17,9 +17,9 @@ import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.Equations;
 import com.novelbio.base.dataStructure.MathComput;
-import com.novelbio.base.dataStructure.listOperate.ListAbs;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.species.Species;
+import com.novelbio.listOperate.ListAbs;
 
 /**
  * 不考虑内存限制的编

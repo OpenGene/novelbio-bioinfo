@@ -1,7 +1,7 @@
 package com.novelbio.analysis.seq.genome.gffOperate;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
-import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
+import com.novelbio.listOperate.ListDetailAbs;
 
 public class MirMature extends ListDetailAbs {
 	String mirAccID;

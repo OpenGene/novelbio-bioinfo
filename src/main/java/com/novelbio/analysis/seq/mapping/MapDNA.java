@@ -208,10 +208,10 @@ public abstract class MapDNA implements MapDNAint {
 			}
 	
 			if (!makeIndexSucess) {
-				logger.error("index make error:" + parentPath + chrFile);
+				logger.error("index make error:" + chrFile);
 				deleteIndex();
 				FileOperate.delFile(parentPath + flagMakeIndex);
-				throw new ExceptionCmd("index make error:" + parentPath + chrFile);
+				throw new ExceptionCmd("index make error:" + chrFile);
 			}
 		}
 	}

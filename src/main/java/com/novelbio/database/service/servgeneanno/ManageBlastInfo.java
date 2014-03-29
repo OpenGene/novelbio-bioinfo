@@ -11,10 +11,12 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.geneanno.BlastFileInfo;
 import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.model.species.Species;
+import com.novelbio.database.mongorepo.geneanno.RepoBlastFileInfo;
 import com.novelbio.database.mongorepo.geneanno.RepoBlastInfo;
 import com.novelbio.database.service.SpringFactory;
 
@@ -27,33 +29,13 @@ public class ManageBlastInfo {
 	MongoTemplate mongoTemplate;
 	@Autowired
 	RepoBlastInfo repoBlastInfo;
+	@Autowired
+	RepoBlastFileInfo repoBlastFileInfo;
 	
 	private ManageBlastInfo() {
 		repoBlastInfo = (RepoBlastInfo)SpringFactory.getFactory().getBean("repoBlastInfo");
+		repoBlastFileInfo = (RepoBlastFileInfo)SpringFactory.getFactory().getBean("repoBlastFileInfo");
 		mongoTemplate = (MongoTemplate)SpringFactory.getFactory().getBean("mongoTemplate");
-	}
-	
-	/**
-	 * 升级指定的blast文件
-	 * @param taxIDQ
-	 * @param taxIDS
-	 * @param blastFile
-	 * @param isBlastFormat 如果subjecdt是accID，具体的accID是否类似 blast的结果，如：dbj|AK240418.1|，那么获得AK240418，一般都是false
-	 */
-	public static void readBlastFile(int taxIDQ, int taxIDS, String blastFile) {
-		ManageBlastInfo manageBlastInfo = ManageBlastInfo.getInstance();
-		TxtReadandWrite txtRead = new TxtReadandWrite(blastFile);
-		for (String content : txtRead.readlines()) {
-			BlastInfo blastInfo = new BlastInfo(taxIDQ, taxIDS, content);
-			manageBlastInfo.updateBlast(blastInfo);
-		}
-		BlastFileInfo blastFileInfo = new BlastFileInfo();
-		blastFileInfo.setFileName(blastFile);
-		blastFileInfo.setTmp(true);
-		blastFileInfo.setQueryTaxID(taxIDQ);
-		blastFileInfo.setSubjectTaxID(taxIDS);
-		manageBlastInfo.saveBlastFile(blastFileInfo);
-		txtRead.close();
 	}
 	
 //	/**
@@ -115,62 +97,65 @@ public class ManageBlastInfo {
 		}
 	}
 	
-	public void saveBlastFile(BlastFileInfo blastFileInfo) {		
+	public boolean saveBlastFile(BlastFileInfo blastFileInfo) {		
 		if (blastFileInfo != null) {
-			List<BlastFileInfo> lsFileInfo = mongoTemplate.find(new Query(Criteria.where("fileName").is(blastFileInfo.getFileName())), BlastFileInfo.class);
-			if (lsFileInfo.size() == 0) {
-				mongoTemplate.save(blastFileInfo);
-			} else {
-				blastFileInfo.setId(lsFileInfo.get(0).getId());
+			if(!StringOperate.isRealNull(blastFileInfo.getId())){
+				repoBlastFileInfo.save(blastFileInfo);
+				return true;
+			}
+			try {
+				List<BlastFileInfo> lsFileInfo = repoBlastFileInfo.findByFileName(blastFileInfo.getFileName());
+				if (lsFileInfo.size() == 0) {
+					repoBlastFileInfo.save(blastFileInfo);
+				} else {
+					blastFileInfo.setId(lsFileInfo.get(0).getId());
+				}
+			} catch (Exception e) {
+				return false;
 			}
 		}
+		return true;
 	}
 	
 	public List<BlastFileInfo> getFileInfoAll() {
-		return mongoTemplate.findAll(BlastFileInfo.class);
+		return repoBlastFileInfo.findAll();
 	}
 	public Iterable<BlastInfo> getBlastInfoAll() {
 		return repoBlastInfo.findAll();
 	}
-	public void removeBlastInfo(String blastInfoId) {
-		repoBlastInfo.delete(blastInfoId);
-	}
-	
+
 	public List<BlastFileInfo> queryBlastFile(String fileName) {
-		return mongoTemplate.find(new Query(Criteria.where("fileName").is(fileName)), BlastFileInfo.class);
+		return repoBlastFileInfo.findByFileName(fileName);
 	}
 	
-	public BlastFileInfo queryBlastFileByID(String blastID) {
-		return mongoTemplate.findById(blastID, BlastFileInfo.class);
+	public BlastFileInfo findBlastFileById(String blastID) {
+		return repoBlastFileInfo.findOne(blastID);
 	}
 	
-	public BlastFileInfo findBlastFile(String id) {
-		return mongoTemplate.findById(id, BlastFileInfo.class);
-	}
 	/** 获得仅在blast中出现的临时物种
 	 * @param usrid 为null表示获取全体blast的文本信息
 	 * @return
 	 */
-	public Map<String, Species> getMapSpeciesOnyInBlast(String usrid) {
+	public Map<String, Species> getMapSpeciesOnyInBlast(String usrId) {
 		Map<String, Species> mapName2Species = new HashMap<>();
 		List<BlastFileInfo> lsBlastFileInfo = null;
-		if (usrid != null && !usrid.equals("")) {
-			lsBlastFileInfo = mongoTemplate.find(new Query(Criteria.where("usrid").is(usrid)), BlastFileInfo.class);
+		if (usrId != null && !usrId.equals("")) {
+			lsBlastFileInfo = repoBlastFileInfo.findByUserId(usrId);
 		} else {
-			lsBlastFileInfo = mongoTemplate.findAll(BlastFileInfo.class);
+			lsBlastFileInfo = repoBlastFileInfo.findAll();
 		}
 		
 		for (BlastFileInfo blastFileInfo : lsBlastFileInfo) {
 			String name = null;
 			try {
-				int taxID = Integer.parseInt(blastFileInfo.getQueryTaxID());
+				int taxID = blastFileInfo.getQueryTaxID();
 				Species species = new Species(taxID);
 				name = species.getNameLatin();
 				continue;
 			} catch (Exception e) {}
 			
 			if (name == null || name.equals("")) {
-				name = blastFileInfo.getQueryTaxID();
+				name = blastFileInfo.getQueryTaxName();
 			}
 			Species species = new Species();
 			species.setTaxID(Math.abs(name.hashCode()));
@@ -197,14 +182,25 @@ public class ManageBlastInfo {
 	
 	/** 删除某个blastFile以及与之相关的blast信息 */
 	public void removeBlastFile(BlastFileInfo blastFileInfo) {
+		if (blastFileInfo == null || blastFileInfo.getId() == null) {
+			return;
+		}
 		mongoTemplate.remove(new Query(Criteria.where("blastFileId").is(blastFileInfo.getId())), BlastInfo.class);
 		mongoTemplate.remove(blastFileInfo);
 	}
 	/** 删除某个blastFile以及与之相关的blast信息 */
 	public void removeBlastFile(String blastFileInfoID) {
-		BlastFileInfo blastFileInfo = queryBlastFileByID(blastFileInfoID);
+		if (blastFileInfoID == null) return;
+		
+		BlastFileInfo blastFileInfo = findBlastFileById(blastFileInfoID);
+		if (blastFileInfo == null) return;
+	
 		mongoTemplate.remove(new Query(Criteria.where("blastFileId").is(blastFileInfoID)), BlastInfo.class);
 		mongoTemplate.remove(blastFileInfo);
+	}
+	
+	public void removeBlastInfo(String blastInfoId) {
+		repoBlastInfo.delete(blastInfoId);
 	}
 	/**
 	 * 给定blastInfo的信息，如果数据库中的本物种已经有了该结果，则比较evalue，用低evalue的覆盖高evalue的
@@ -231,5 +227,18 @@ public class ManageBlastInfo {
 	
 	public static ManageBlastInfo getInstance() {
 		return ManageHolder.manageBlastInfo;
+	}
+	
+	/**
+	 * 根据分页对象查找分页
+	 * @param pageable
+	 * @return
+	 */
+	public Page<BlastFileInfo> findAll(Pageable pageable) {
+		return repoBlastFileInfo.findAll(pageable);
+	}
+	
+	public List<BlastFileInfo> findAll() {
+		return repoBlastFileInfo.findAll();
 	}
 }

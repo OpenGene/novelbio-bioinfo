@@ -14,8 +14,8 @@ import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.genome.Gene2Value;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
-import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.plot.java.HeatChartDataInt;
+import com.novelbio.listOperate.ListCodAbs;
 /**
  * 内建根据weight排序的方法
  * @author zong0jie

@@ -3,8 +3,11 @@ package com.novelbio.analysis.seq.rnaseq;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.fileOperate.FileOperate;
 
 public class RseQC {
 	
@@ -30,7 +33,27 @@ public class RseQC {
 	String inFile;
 	String outPah;
 	String bedFile;
-	
+	String exePath;
+	public void setExePath(String exePath) {
+		this.exePath = exePath;
+	}
+	public void setInFile(String inFile) {
+		this.inFile = inFile;
+	}
+	public void setOutPah(String outPah) {
+		this.outPah = outPah;
+	}
+	public void setBedFile(String bedFile) {
+		this.bedFile = bedFile;
+	}
+	public void setGtfFile(String gtfFile) {
+		GffHashGene gffHashGene = new GffHashGene(GffType.GTF, gtfFile);
+		String bedFile = FileOperate.getPathName(outPah) + FileOperate.getFileName(gtfFile);
+		bedFile = FileOperate.changeFileSuffix(bedFile, "_toBed", "bed");
+		gffHashGene.writeToBED(gtfFile);
+		gffHashGene = null;
+		this.bedFile = bedFile;
+	}
 	
 	
 	/**
@@ -38,7 +61,7 @@ public class RseQC {
 	 * @author novelbio
 	 *
 	 */
-	public static  class GeneBodyCoverage {
+	public static class GeneBodyCoverage {
 		/**输入文件*/
 		protected String inFile;
 		/**输出文件前缀*/
@@ -344,7 +367,26 @@ public class RseQC {
 	}
 	/**用于评估样本大小对RPKM的影响*/
 	public static class RPKMSaturation  extends JunctionSaturation {
-		/**链规则，例如：1++,1--,2+-,2-+ */
+		/**
+ * For pair-end RNA-seq, there are two different ways to strand reads:
+  i) 1++,1--,2+-,2-+
+     read1 mapped to '+' strand indicates parental gene on '+' strand
+     read1 mapped to '-' strand indicates parental gene on '-' strand
+     read2 mapped to '+' strand indicates parental gene on '-' strand
+     read2 mapped to '-' strand indicates parental gene on '+' strand
+  ii) 1+-,1-+,2++,2--
+     read1 mapped to '+' strand indicates parental gene on '-' strand
+     read1 mapped to '-' strand indicates parental gene on '+' strand
+     read2 mapped to '+' strand indicates parental gene on '+' strand
+     read2 mapped to '-' strand indicates parental gene on '-' strand
+ * For single-end RNA-seq, there are two different ways to strand reads:
+  i) ++,--
+     read mapped to '+' strand indicates parental gene on '+' strand
+     read mapped to '-' strand indicates parental gene on '-' strand
+  ii) +-,-+
+     read mapped to '+' strand indicates parental gene on '-' strand
+     read mapped to '-' strand indicates parental gene on '+' strand	
+		 */
 		String lineRule = "1++,1--,2+-,2-+";
 		/** -c 指定RPKM的cutoff值。默认是0.01*/	
 		double cutoffValue = 0.01;
@@ -379,5 +421,16 @@ public class RseQC {
 		
 		
 	}
-
+	
+	public static enum EnumRseQCmodule {
+		GeneBodyCoverage,
+		GeneBodyCoverage2,
+		InnerDistance,
+		JunctionAnnotation,
+		JunctionSaturation,
+		ReadDuplication,
+		RPKMSaturation
+	}
+	
+	
 }

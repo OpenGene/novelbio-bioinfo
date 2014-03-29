@@ -3,10 +3,10 @@ package com.novelbio.analysis.seq.resequencing;
 import java.util.HashMap;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
-import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
-import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
-import com.novelbio.base.dataStructure.listOperate.ListDetailAbs;
+import com.novelbio.listOperate.ListAbsSearch;
+import com.novelbio.listOperate.ListCodAbs;
+import com.novelbio.listOperate.ListCodAbsDu;
+import com.novelbio.listOperate.ListDetailAbs;
 
 /**
  * pfam domain的数据库，指定每个蛋白都有哪些domain

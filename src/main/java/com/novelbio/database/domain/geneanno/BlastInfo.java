@@ -219,8 +219,8 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	}
 	
 	/** 必须是有ID的blastFileInfo */
-	public void setBlastFileInfo(BlastFileInfo blastFileInfo) {
-		this.blastFileId = blastFileInfo.getId();
+	public void setBlastFileId(String blastFileId) {
+		this.blastFileId = blastFileId;
 	}
 	
 	/**
@@ -258,7 +258,7 @@ public class BlastInfo implements Comparable<BlastInfo> {
 			return null;
 		}
 		ManageBlastInfo manageBlastInfo = ManageBlastInfo.getInstance();
-		return manageBlastInfo.findBlastFile(blastFileId);
+		return manageBlastInfo.findBlastFileById(blastFileId);
 	}
 	/**
 	 * 获得Blast搜索到的序列的物种

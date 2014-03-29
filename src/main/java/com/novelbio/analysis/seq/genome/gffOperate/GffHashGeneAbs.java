@@ -1,6 +1,7 @@
 package com.novelbio.analysis.seq.genome.gffOperate;
 
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,10 +17,10 @@ import org.apache.log4j.Logger;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.base.dataStructure.listOperate.ListAbs;
-import com.novelbio.base.dataStructure.listOperate.ListHashSearch;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.listOperate.ListAbs;
+import com.novelbio.listOperate.ListHashSearch;
 
 public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCodGene, GffCodGeneDU, ListGff> implements GffHashGeneInf {
 	private static final Logger logger = Logger.getLogger(GffHashGeneAbs.class);
@@ -46,6 +47,17 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	 * @param gfffilename
 	 */
 	public boolean ReadGffarray(String gfffilename) {
+		File file = FileOperate.getFile("/hdfs:/nbCloud/staff/zongjie/test/dme_GTFfile.gtf.bak");
+		if (file.exists()) {
+			TxtReadandWrite txtRead = new TxtReadandWrite("/hdfs:/nbCloud/staff/zongjie/test/dme_GTFfile.gtf.bak");
+			String id = txtRead.readFirstLines(1).get(0);
+			System.out.println(id);
+			if (id.split("\t")[8].contains(" transcript_id \"NM_001272857.1\"")) {
+				System.out.println(true);
+			}
+			txtRead.close();
+		}
+		
 		if (!readFile) return false;
 		
 		this.acc2GeneIDfile = FileOperate.changeFileSuffix(gfffilename, "_accID2geneID", "list");
@@ -307,6 +319,17 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	public void writeToGTF(List<String> lsChrIDinput, String GTFfile,String title) {
 		writeToFile(lsChrIDinput, GffType.GTF, GTFfile, title);
 	}
+	
+	@Override
+	public void writeToBED(String GTFfile) {
+		writeToBED(null, GTFfile, "novelbio");
+	}
+	
+	@Override
+	public void writeToBED(String GTFfile, String title) {
+		writeToBED(null, GTFfile, title);
+	}
+	
 	/**
 	 * <b>可能会出现重复ID，如同一名字的miRNA</b><br>
 	 * 将文件写入BED中
@@ -318,6 +341,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	public void writeToBED(List<String> lsChrIDinput, String GTFfile,String title) {
 		writeToFile(lsChrIDinput, GffType.BED, GTFfile, title);
 	}
+
 	/**
 	 * 
 	 * <b>可能会出现重复ID，如同一名字的miRNA</b><br>

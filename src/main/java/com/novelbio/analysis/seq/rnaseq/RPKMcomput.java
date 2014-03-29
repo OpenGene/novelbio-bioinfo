@@ -11,8 +11,10 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.hg.doc.fa;
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.GeneExpTable;
+import com.novelbio.analysis.seq.fastq.ExceptionFastq;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
@@ -23,7 +25,9 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
+import com.novelbio.analysis.seq.sam.SamErrorException;
 import com.novelbio.analysis.seq.sam.SamRecord;
+import com.novelbio.base.ExceptionNullParam;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.model.modgeneid.GeneType;
@@ -113,6 +117,9 @@ public class RPKMcomput implements AlignmentRecorder {
 	
 	/** 是否考虑reads方向，只有链特异性测序才使用 */
 	public void setConsiderStrand(StrandSpecific strandSpecific) {
+		if (strandSpecific == null) {
+			throw new ExceptionNullParam("No Param StrandSpecific");
+		}
 		this.strandSpecific = strandSpecific;
 	}
 	/** 双端数据是否计算FPKM，单端设置该参数无效 */
@@ -145,16 +152,16 @@ public class RPKMcomput implements AlignmentRecorder {
 		}
 		addAlignRecord(lSamRecords);
 	}
-	
+
 	private void addAlignRecord(List<SamRecord> lsSamRecords) {
 		if (lsSamRecords == null || lsSamRecords.size() == 0) {
 			return;
 		}
 		
-		boolean cis5to3 = lsSamRecords.get(0).isCis5to3();
-		if (strandSpecific == StrandSpecific.SECOND_READ_TRANSCRIPTION_STRAND) {
-			cis5to3 = !cis5to3;
-		}
+		SamRecord samRecord = lsSamRecords.get(0);
+		//标记reads的正反向，将链特异性的reads转换成正向
+		Boolean cis5to3 = samRecord.isCis5to3ConsiderStrand(strandSpecific);
+		if (cis5to3 == null) cis5to3 = true;
 		
 		//TODO 待改进，如何能够更好的区分iso的表达
 		List<List<Align>> lslsAligns = new ArrayList<>();
@@ -329,13 +336,14 @@ public class RPKMcomput implements AlignmentRecorder {
 					setGeneName.add(gffGeneIsoInfo.getParentGeneName());
 					continue;
 				}
-				
 				int start = gffGeneIsoInfo.getNumCodInEle(align.getStartAbs()+3);
 				int end = gffGeneIsoInfo.getNumCodInEle(align.getEndAbs() - 3);
+				//reads是否覆盖了小于两个exon
 				if (start == end || Math.abs(Math.abs(start) - Math.abs(end)) <= 2) {
 					setGeneName.add(gffGeneIsoInfo.getParentGeneName());
 					continue;
 				}
+				//reads 是否覆盖了基因的开头或结尾
 				if (gffGeneIsoInfo.isCis5to3()) {
 					if (start == 0 && Math.abs(end) <= 2
 						|| end == 0 && Math.abs(start) >= gffGeneIsoInfo.size()-1 ) 
@@ -419,7 +427,7 @@ public class RPKMcomput implements AlignmentRecorder {
 		for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 			if (gffGeneIsoInfo.getCodLoc(gffCodGene.getCoord()) == GffGeneIsoInfo.COD_LOC_EXON) {
 				
-				if (strandSpecific == StrandSpecific.NONE || (readsCis5to3 == gffGeneIsoInfo.isCis5to3())) {
+				if (strandSpecific == null || strandSpecific == StrandSpecific.NONE || (readsCis5to3 == gffGeneIsoInfo.isCis5to3())) {
 					setIso.add(gffGeneIsoInfo);
 				}
 			}
@@ -441,7 +449,7 @@ public class RPKMcomput implements AlignmentRecorder {
 		Set<GffDetailGene> setGffGene = gffCodGeneDu.getCoveredOverlapGffGene();
 		for (GffDetailGene gffDetailGene : setGffGene) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-				if (strandSpecific == StrandSpecific.NONE || (readsCis5to3 == gffGeneIsoInfo.isCis5to3())) {
+				if (strandSpecific == null || strandSpecific == StrandSpecific.NONE || (readsCis5to3 == gffGeneIsoInfo.isCis5to3())) {
 					setIso.add(gffGeneIsoInfo);
 				}
 			}

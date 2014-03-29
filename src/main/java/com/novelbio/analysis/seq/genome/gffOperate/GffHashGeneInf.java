@@ -49,13 +49,30 @@ public interface GffHashGeneInf  {
 	 * @return
 	 */
 	GffGeneIsoInfo searchISO(String LOCID);
+	
+	public GffCodGene searchLocation(String chrID, int Coordinate);
+
+	public GffDetailGene searchLOC(String LOCID);
+
+	public GffDetailGene searchLOC(String chrID, int LOCNum);
+	/**
+	 * 内部自动判断 cod1 和 cod2的大小
+	 * @param chrID
+	 * @param cod1
+	 * @param cod2
+	 * @return
+	 */
+	public GffCodGeneDU searchLocation(String chrID, int cod1, int cod2);
 	/**
 	 * 获得该转录本组的物种ID
 	 * @return
 	 */
 	int getTaxID();
-
-
+	
+	/** 返回所有不重复GffDetailGene */
+	public ArrayList<GffDetailGene> getGffDetailAll();
+	/** 染色体都小写 */
+	public  HashMap<String, ListGff> getMapChrID2LsGff();
 	/**
 	 * <b>该方法待修正</b>
 	 * 将一个染色体中的 含有不止一个转录本的 基因信息写入文本，按照GFF格式
@@ -79,5 +96,8 @@ public interface GffHashGeneInf  {
 	void writeToGTF(String GTFfile, String title);
 
 	void writeToBED(List<String> lsChrID, String BEDfile, String title);
+	
+	void writeToBED(String GTFfile, String title);
+	void writeToBED(String GTFfile);
 
 }

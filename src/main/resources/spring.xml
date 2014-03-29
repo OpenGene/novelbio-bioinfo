@@ -39,12 +39,12 @@
 		<!-- 一些连接属性的设置 -->	
 		<mongo:options
 		     connections-per-host="8"
-		     threads-allowed-to-block-for-connection-multiplier="4"
-		     connect-timeout="1000"
-		     max-wait-time="1500"
+		     threads-allowed-to-block-for-connection-multiplier="5000"
+		     connect-timeout="5000"
+		     max-wait-time="10000"
 		     auto-connect-retry="true"
 		     socket-keep-alive="true"
-		     socket-timeout="1500"
+		     socket-timeout="10000"
 		     slave-ok="true"
 		     write-number="1"
 		     write-timeout="0"

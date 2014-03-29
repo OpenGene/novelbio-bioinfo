@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo;
 import com.novelbio.analysis.seq.resequencing.SnpFilter;
 import com.novelbio.analysis.seq.resequencing.SnpLevel;
-import com.novelbio.base.dataStructure.listOperate.HistList;
+import com.novelbio.listOperate.HistList;
 
 /**
  * indel 出现后的比例分布，譬如 0.1的占多少，0.2的占多少这种

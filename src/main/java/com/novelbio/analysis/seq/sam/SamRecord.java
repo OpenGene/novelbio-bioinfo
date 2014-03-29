@@ -17,6 +17,8 @@ import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.analysis.seq.mapping.StrandSpecific;
+import com.novelbio.base.ExceptionNullParam;
 
 public class SamRecord extends SiteSeqInfo implements AlignRecord{
 	private static Logger logger = Logger.getLogger(SamRecord.class);
@@ -380,9 +382,21 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 		return samRecord.getBaseQualityString();
 	}
 	
-	/** 双端测序的话，是否为第一条reads */
+	/** 双端测序的话，是否为第一条reads
+	 * 单端测序恒返回true
+	 * @return
+	 */
 	public boolean isFirstRead() {
-		return samRecord.getFirstOfPairFlag();
+		if (getReadPairedFlag()) {
+			return samRecord.getFirstOfPairFlag();
+		} else {
+			return true;
+		}
+		
+	}
+	
+	public boolean getReadPairedFlag() {
+		return samRecord.getReadPairedFlag();
 	}
 	
 	public int hashCode() {
@@ -409,7 +423,32 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 	public String getCIGAR() {
 		return samRecord.getCigarString();
 	}
-
+	
+	/**
+	 * 结合测序双端信息，链特异性信息，来判定该reads到底是正向还是反向
+	 * 会通过链特异性信息进行校正
+	 * 如链特异性是正向，reads是正向，则返回true
+	 * 连特异性是反向，reads是正向，则返回false，意思该reads比对到了反向基因组上
+	 * @return 如果不是链特异性测序，返回null
+	 */
+	public Boolean isCis5to3ConsiderStrand(StrandSpecific strandSpecific) {
+		if (strandSpecific == null) {
+			throw new ExceptionNullParam("No Param StrandSpecific");
+		} else if (strandSpecific == StrandSpecific.NONE) {
+			return null;
+		}
+		boolean cis5to3 = true;
+		boolean readsStrand = (!isFirstRead() ^ isCis5to3()) ? true : false;
+		if (strandSpecific == StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND) {
+			cis5to3 = readsStrand;
+		} else if (strandSpecific == StrandSpecific.SECOND_READ_TRANSCRIPTION_STRAND) {
+			cis5to3 = !readsStrand;
+		} else {
+			throw new SamErrorException("Find No StrandSpecific Type: " + strandSpecific.toString());
+		}
+		return cis5to3;
+	}
+	
 	/**
 	 * 返回第一个记载的bedrecord 没有mapping上就返回null
 	 * */

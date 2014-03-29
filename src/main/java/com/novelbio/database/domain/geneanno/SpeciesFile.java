@@ -31,6 +31,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.mirna.ListMiRNAdat;
 import com.novelbio.analysis.seq.sam.SamIndexRefsequence;
+import com.novelbio.base.ExceptionNullParam;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -306,7 +307,7 @@ public class SpeciesFile {
 	 */
 	public GffType getGffType(String gffDB) {
 		if (gffDB == null) {
-			return getGffType();
+			throw new ExceptionNullParam("No Param gffDB");
 		}
 		String gffType = mapDB2GffTypeAndFile.get(gffDB.toLowerCase())[0];
 		return GffType.getType(gffType);
@@ -379,7 +380,7 @@ public class SpeciesFile {
 		Map<String, String[]> mapDB2GffTypeAndFile = new LinkedHashMap<>();
 		for (String gffDBlowcase : this.mapDB2GffTypeAndFile.keySet()) {
 			String gffDB = mapGffDBLowCase2DBNormal.get(gffDBlowcase);
-			mapDB2GffTypeAndFile.put(gffDB, this.mapDB2GffTypeAndFile.get(gffDB));
+			mapDB2GffTypeAndFile.put(gffDB, this.mapDB2GffTypeAndFile.get(gffDBlowcase));
 		}
 		return mapDB2GffTypeAndFile;
 	}

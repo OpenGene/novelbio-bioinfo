@@ -3,8 +3,8 @@ package com.novelbio.analysis.seq.genome.gffOperate;
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.base.dataStructure.listOperate.ListAbsSearch;
 import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.listOperate.ListAbsSearch;
 
 public class ListGff extends ListAbsSearch<GffDetailGene, GffCodGene, GffCodGeneDU> {
 	private static Logger logger = Logger.getLogger(ListGff.class);

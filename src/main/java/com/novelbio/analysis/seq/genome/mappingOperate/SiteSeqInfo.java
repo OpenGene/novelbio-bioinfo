@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.MathComput;
-import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
+import com.novelbio.listOperate.ListCodAbs;
 
 /**
  * 含有序列信息的Alignment

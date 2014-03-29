@@ -11,8 +11,8 @@ import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoCis;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoTrans;
-import com.novelbio.base.dataStructure.listOperate.ListAbs;
 import com.novelbio.database.model.modgeneid.GeneType;
+import com.novelbio.listOperate.ListAbs;
 /**
  * @author zong0jie
  *

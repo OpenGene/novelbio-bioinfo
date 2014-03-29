@@ -3,10 +3,10 @@ package com.novelbio.analysis.seq.genome.gffOperate;
 import java.util.LinkedHashMap;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.listOperate.ListBin;
-import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
-import com.novelbio.base.dataStructure.listOperate.ListCodAbsDu;
-import com.novelbio.base.dataStructure.listOperate.ListHashSearch;
+import com.novelbio.listOperate.ListBin;
+import com.novelbio.listOperate.ListCodAbs;
+import com.novelbio.listOperate.ListCodAbsDu;
+import com.novelbio.listOperate.ListHashSearch;
 
 /**
  * 获得UCSC中CpG等Gff的条目信息,本类必须实例化才能使用<br/>

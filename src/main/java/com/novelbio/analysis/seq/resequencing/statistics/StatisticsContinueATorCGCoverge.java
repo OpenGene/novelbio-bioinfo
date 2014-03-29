@@ -4,9 +4,9 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.base.dataStructure.listOperate.BoxPlotList;
-import com.novelbio.base.dataStructure.listOperate.HistList;
-import com.novelbio.base.dataStructure.listOperate.HistList.HistBinType;
+import com.novelbio.listOperate.BoxPlotList;
+import com.novelbio.listOperate.HistList;
+import com.novelbio.listOperate.HistList.HistBinType;
 
 /**
  * 连续AT或CG的覆盖度

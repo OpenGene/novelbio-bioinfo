@@ -10,8 +10,8 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
-import com.novelbio.base.dataStructure.listOperate.ListCodAbs;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.listOperate.ListCodAbs;
 
 /**
  * 给定一个没有ORF的gff

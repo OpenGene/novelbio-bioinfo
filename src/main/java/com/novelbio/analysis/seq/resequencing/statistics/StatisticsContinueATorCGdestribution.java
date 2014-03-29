@@ -2,7 +2,7 @@ package com.novelbio.analysis.seq.resequencing.statistics;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.base.dataStructure.listOperate.HistList;
+import com.novelbio.listOperate.HistList;
 
 /**
  * 连续AT或CG的分布

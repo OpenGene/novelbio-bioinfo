@@ -8,7 +8,7 @@ import java.util.List;
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
-import com.novelbio.base.dataStructure.listOperate.HistList;
+import com.novelbio.listOperate.HistList;
 
 /** 计算序列的N50和其他统计长度信息，最后画出柱状图 */
 public class N50AndSeqLen {

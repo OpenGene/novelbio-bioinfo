@@ -274,7 +274,15 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	public void writeToBED(List<String> lsChrID, String GTFfile, String title) {
 		gffHashGene.writeToBED(lsChrID, GTFfile, title);
 	}
-
+	@Override
+	public void writeToBED(String GTFfile) {
+		gffHashGene.writeToBED(GTFfile);
+	}
+	@Override
+	public void writeToBED(String GTFfile, String title) {
+		gffHashGene.writeToBED(GTFfile, title);
+	}
+	
 	public void writeToBED(List<String> lsChrID, String GTFfile) {
 		gffHashGene.writeToBED(lsChrID, GTFfile, "novelbio");
 	}
