@@ -110,15 +110,15 @@ public class BamReadsInfo {
 	}
 	
 	protected void calculateStrandSpecific() {
-		int cisNum = 0, transNum = 0;//与iso同向和反向的reads数量
-		int countsMax = 500000;
+		double cisNum = 0, transNum = 0;//与iso同向和反向的reads数量
+		int countsMax = 1000000;
 		int counts = 0;
 		int countsMapped = 0;//mapping上的reads数量
 		for (SamRecord samRecord : samFile.readLines()) {
 			if (!samRecord.isFirstRead()) {//只看第一条reads
 				continue;
 			}
-			if (counts++ > countsMax) {
+			if (counts++ > countsMax || (cisNum + transNum) > 500000) {
 				break;
 			}
 			if (!samRecord.isMapped()) {
@@ -140,11 +140,12 @@ public class BamReadsInfo {
 			throw new SamErrorException(samFile.getFileName() + "Mapped Rate Too Low");
 		}
 		samFile.close();
-		if (cisNum/transNum > 7) {
+		System.out.println(cisNum/transNum);
+		if (cisNum/transNum > 6) {
 			strandSpecific = StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND;
-		} else if (transNum/cisNum > 7) {
+		} else if (transNum/cisNum > 6) {
 			strandSpecific = StrandSpecific.SECOND_READ_TRANSCRIPTION_STRAND;
-		} else if ( transNum/cisNum <= 7 && cisNum/transNum <= 7) {
+		} else if ( transNum/cisNum <= 6 && cisNum/transNum <= 6 && (transNum/cisNum >= 4 || cisNum/transNum >= 4)) {
 			throw new SamErrorException(samFile.getFileName() + "Unknown SamFile Reads Strand Library");
 		} else {
 			strandSpecific = StrandSpecific.NONE;

@@ -199,7 +199,7 @@ public class Species implements Cloneable {
 		if (taxInfo == null) {
 			return taxID + "";
 		}
-		return taxInfo.getLatin();
+		return taxInfo.getLatinName_2Word();
 	}
 	/** KEGG上的缩写 */
 	public String getAbbrName() {
@@ -525,7 +525,6 @@ public class Species implements Cloneable {
 		if (file.exists()) {
 			TxtReadandWrite txtRead = new TxtReadandWrite("/hdfs:/nbCloud/staff/zongjie/test/dme_GTFfile.gtf.bak");
 			String id = txtRead.readFirstLines(1).get(0);
-			System.out.println(id);
 			if (id.split("\t")[8].contains(" transcript_id \"NM_001272857.1\"")) {
 				System.out.println(true);
 			}

@@ -196,7 +196,7 @@ public abstract class MapDNA implements MapDNAint {
 			flagMakeIndexDetail = flagMakeIndex + DateUtil.getNowTimeLongRandom();
 			TxtReadandWrite txtWriteFlag = new TxtReadandWrite(parentPath + flagMakeIndexDetail, true);
 			txtWriteFlag.close();
-			try { Thread.sleep(500); } catch (Exception e) { }
+			try { Thread.sleep(5000); } catch (Exception e) { }
 			List<String> lsFlags = FileOperate.getFoldFileNameLs(parentPath, flagMakeIndex, "*");
 			Collections.sort(lsFlags);
 			if (lsFlags.get(0).equals(parentPath + flagMakeIndexDetail)) {

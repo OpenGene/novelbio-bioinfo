@@ -432,13 +432,23 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 	 * @return 如果不是链特异性测序，返回null
 	 */
 	public Boolean isCis5to3ConsiderStrand(StrandSpecific strandSpecific) {
+		return isCis5to3ConsiderStrand(strandSpecific, isFirstRead(), isCis5to3());
+	}
+	/**
+	 * 结合测序双端信息，链特异性信息，来判定该reads到底是正向还是反向
+	 * 会通过链特异性信息进行校正
+	 * 如链特异性是正向，reads是正向，则返回true
+	 * 连特异性是反向，reads是正向，则返回false，意思该reads比对到了反向基因组上
+	 * @return 如果不是链特异性测序，返回null
+	 */
+	protected static Boolean isCis5to3ConsiderStrand(StrandSpecific strandSpecific, boolean isFirstRead, boolean isCis5to3) {
 		if (strandSpecific == null) {
 			throw new ExceptionNullParam("No Param StrandSpecific");
 		} else if (strandSpecific == StrandSpecific.NONE) {
 			return null;
 		}
 		boolean cis5to3 = true;
-		boolean readsStrand = (!isFirstRead() ^ isCis5to3()) ? true : false;
+		boolean readsStrand = (!isFirstRead ^ isCis5to3) ? true : false;
 		if (strandSpecific == StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND) {
 			cis5to3 = readsStrand;
 		} else if (strandSpecific == StrandSpecific.SECOND_READ_TRANSCRIPTION_STRAND) {
@@ -448,7 +458,6 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 		}
 		return cis5to3;
 	}
-	
 	/**
 	 * 返回第一个记载的bedrecord 没有mapping上就返回null
 	 * */

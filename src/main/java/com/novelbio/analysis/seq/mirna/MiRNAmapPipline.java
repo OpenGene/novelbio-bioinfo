@@ -70,7 +70,7 @@ public class MiRNAmapPipline implements IntCmdSoft {
 		this.threadNum = threadNum;
 	}
 	public void setIsUseOldResult(boolean isUseOldResult) {
-		this.isUseOldResult = isUseOldResult;
+//		this.isUseOldResult = isUseOldResult;
 	}
 	/** 是否全部mapping至genome上，默认为false */
 	public void setMappingAll2Genome(boolean mappingAll2Genome) {

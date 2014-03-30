@@ -64,6 +64,11 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	public void setFastq(boolean isFastq) {
 		this.isFastq = isFastq;
 	}
+	
+	/** 如果文件存在，则直接读取该mrd文件
+	 * 如果文件不存在，则最后返回生成该mir文件
+	 * @param novelMiRNAdeepMrdFile
+	 */
 	public void setNovelMiRNAdeepMrdFile(String novelMiRNAdeepMrdFile) {
 		this.novelMiRNAdeepMrdFile = novelMiRNAdeepMrdFile;
 	}
@@ -203,8 +208,8 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	
 	/** 默认看到存在mrd文件就会跳过去不执行 */
 	public void predict() {
-		if (!FileOperate.isFileExistAndBigThanSize(novelMiRNAdeepMrdFile, 0)) {
-			novelMiRNAdeepMrdFile = outPath + "run" + "/output.mrd";
+		if (novelMiRNAdeepMrdFile == null) {
+			novelMiRNAdeepMrdFile = outPath + "run" + "/output_final.mrd";
 		}
 		if (FileOperate.isFileExistAndBigThanSize(novelMiRNAdeepMrdFile, 0)) {
 			readExistMrd();
@@ -231,16 +236,16 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 		}
 		List<String> lsCmdRun = new ArrayList<>();
 		lsCmdRun.add(mirDeepPath + "mapper.pl");
-		if (isFastq) {
-			fastaInput = convert2Fasta(fastaInput);
-		}
-		
 		String collapseReadsFa = getCollapseReadsFa();
 		String arfFile = getMappingArf();
 		if (FileOperate.isFileExistAndBigThanSize(arfFile, 0)) {
 			return;
 		}
 		
+		if (isFastq) {
+			fastaInput = convert2Fasta(fastaInput);
+		}
+
 		String collapseTmp = FileOperate.changeFileSuffix(collapseReadsFa, "_tmp", null);
 		String arfTmp = FileOperate.changeFileSuffix(arfFile, "_tmp", null);
 		
@@ -329,9 +334,11 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	 * 同时处理结果文件为指定格式
 	 */
 	private void moveAndCopeFile() {
+		String mrdOld = outPath + "run" + "/output.mrd";
+		FileOperate.moveFile(true, mrdOld, novelMiRNAdeepMrdFile);
+		
 		ArrayList<String> lsFileName = new ArrayList<String>();
 		String suffix = getResultFileSuffixFromReportLog();
-		
 		String expression_html = "expression_" + suffix + ".html";
 		String result_html = "result_" + suffix + ".html";
 		String miRNAs_expressed_all_samples = "miRNAs_expressed_all_samples_" + suffix + ".csv";
@@ -342,7 +349,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 		String mirDeep_pdfs_Path = "pdfs_" + suffix;
 		
 		FileOperate.DeleteFileFolder(mirDeep_runs_Path + "/tmp");
-
+		
 		lsFileName.add(expression_html);
 		lsFileName.add(result_html);
 		lsFileName.add(miRNAs_expressed_all_samples);

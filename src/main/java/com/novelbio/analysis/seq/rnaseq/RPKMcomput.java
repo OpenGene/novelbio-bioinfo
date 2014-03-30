@@ -11,10 +11,8 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.hg.doc.fa;
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.GeneExpTable;
-import com.novelbio.analysis.seq.fastq.ExceptionFastq;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
@@ -25,7 +23,6 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
-import com.novelbio.analysis.seq.sam.SamErrorException;
 import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.ExceptionNullParam;
 import com.novelbio.base.SepSign;

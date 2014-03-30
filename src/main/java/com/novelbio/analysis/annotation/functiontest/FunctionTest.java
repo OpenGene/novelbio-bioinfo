@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.management.RuntimeErrorException;
+
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -309,8 +311,7 @@ public abstract class FunctionTest implements Cloneable {
 		
 		//如果没有lsBG，就查找数据库，否则查找lsBG
 		if (mapBGGeneID2Items == null || mapBGGeneID2Items.size() < 1) {
-			logger.error("BG文件要先输入");
-			return null;
+			throw new RuntimeException(BGfile + " no background item find, please check");
 		}
 		ArrayList<GeneID2LsItem> lsout = new ArrayList<GeneID2LsItem>();
 		
