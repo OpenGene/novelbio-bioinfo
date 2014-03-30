@@ -42,6 +42,11 @@ public class BamReadsInfo {
 	/** 建库方法 */
 	MapLibrary mapLibrary;
 	
+	/** 与基因同向的reads数量 */
+	double cisNum;
+	/** 与基因反向的reads数量 */
+	double transNum;
+	
 	/** 不能输入流形式的samFile */
 	public void setSamFile(SamFile samFile) {
 		assert samFile != null;
@@ -66,6 +71,21 @@ public class BamReadsInfo {
 		return mapLibrary;
 	}
 	
+	public double getCisNum() {
+		return cisNum;
+	}
+	public double getTransNum() {
+		return transNum;
+	}
+	
+	/** mapLibrary "\t" strandSpecific "\t" cisNum "\t" transNum */
+	public String toString() {
+		return mapLibrary + "\t" + strandSpecific + "\t" + cisNum + "\t" + transNum;
+	}
+	
+	public static String[] getTitle() {
+		return new String[]{"Library", "StrandInfo", "CisReadsNum", "TransReadsNum"};
+	}
 	/**
 	 * 双端数据是否获得连在一起的bed文件
 	 * 如果输入是单端数据，则将序列延长返回bed文件
@@ -110,7 +130,6 @@ public class BamReadsInfo {
 	}
 	
 	protected void calculateStrandSpecific() {
-		double cisNum = 0, transNum = 0;//与iso同向和反向的reads数量
 		int countsMax = 1000000;
 		int counts = 0;
 		int countsMapped = 0;//mapping上的reads数量
@@ -146,12 +165,12 @@ public class BamReadsInfo {
 		} else if (transNum/cisNum > 6) {
 			strandSpecific = StrandSpecific.SECOND_READ_TRANSCRIPTION_STRAND;
 		} else if ( transNum/cisNum <= 6 && cisNum/transNum <= 6 && (transNum/cisNum >= 4 || cisNum/transNum >= 4)) {
-			throw new SamErrorException(samFile.getFileName() + "Unknown SamFile Reads Strand Library");
+			strandSpecific = StrandSpecific.UNKNOWN;
 		} else {
 			strandSpecific = StrandSpecific.NONE;
 		}
 	}
-	
+
 	/**
 	 * 返回落到的基因Iso
 	 * 没有落在基因内部就返回null
