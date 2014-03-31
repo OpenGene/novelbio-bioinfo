@@ -164,7 +164,7 @@ public abstract class MapDNA implements MapDNAint {
 		samToBamSort.convert();
 		samFileIn.close();
 		FileOperate.moveFile(true, fileNameTmp, fileNameFinal);
-		if (FileOperate.isFileExistAndBigThanSize(getOutNameCope(), 1_000_000)) {
+		if (FileOperate.isFileExistAndBigThanSize(getOutNameCope(), 1_000)) {
 			return new SamFile(fileNameFinal);
 		} else {
 			return null;

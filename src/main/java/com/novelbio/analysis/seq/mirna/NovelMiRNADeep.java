@@ -14,6 +14,7 @@ import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.mapping.MapDNA;
 import com.novelbio.analysis.seq.mapping.MapDNAint;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataOperate.DateUtil;
@@ -133,6 +134,14 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 		}
 		return hairpinMiRNA;
 	}
+	
+	private String[] getMirBaseMrd() {
+		if (!FileOperate.isFileExistAndBigThanSize(matureMiRNA, 0)) {
+			return null;
+		}
+		return new String[]{"-q", "/media/winD/miRBase.mrd"};
+	}
+	
 	/**
 	 * 设定bowtie所在的文件夹以及待比对的路径
 	 * @param exePath 如果在根目录下则设置为""或null
@@ -208,7 +217,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	
 	/** 默认看到存在mrd文件就会跳过去不执行 */
 	public void predict() {
-		if (novelMiRNAdeepMrdFile == null) {
+		if (StringOperate.isRealNull(novelMiRNAdeepMrdFile)) {
 			novelMiRNAdeepMrdFile = outPath + "run" + "/output_final.mrd";
 		}
 		if (FileOperate.isFileExistAndBigThanSize(novelMiRNAdeepMrdFile, 0)) {
@@ -311,6 +320,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 		lsCmdRun.add(getMatureRelateMiRNA());
 		lsCmdRun.add(getPrecursorsMiRNA());
 		ArrayOperate.addArrayToList(lsCmdRun, getSpecies());
+//		ArrayOperate.addArrayToList(lsCmdRun, getMirBaseMrd());
 		lsCmdRun.add("2>"); lsCmdRun.add(getReportFileRandom());
 		CmdOperate cmdOperate = new CmdOperate(lsCmdRun);
 		cmdOperate.run();
@@ -335,7 +345,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	 */
 	private void moveAndCopeFile() {
 		String mrdOld = outPath + "run" + "/output.mrd";
-		FileOperate.moveFile(true, mrdOld, novelMiRNAdeepMrdFile);
+		FileOperate.copyFile(mrdOld, novelMiRNAdeepMrdFile, true);
 		
 		ArrayList<String> lsFileName = new ArrayList<String>();
 		String suffix = getResultFileSuffixFromReportLog();
