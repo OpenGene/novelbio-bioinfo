@@ -76,7 +76,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		exonJunction.setIsLessMemory(false);
 //		exonJunction.setGffHashGene(new GffHashGene(GffType.GTF, "/home/zong0jie/Test/rnaseq/paper/chicken/raw_ensembl_genes/chicken_ensemble_KO-WT-merged.gtf"));
 		exonJunction.setGffHashGene(new GffHashGene(GffType.GTF, "/home/zong0jie/Test/rnaseq/paper/chicken/raw_ensembl_genes/genes.gtf"));
-		exonJunction.setgenerateNewIso();
+		exonJunction.setgenerateNewIso(true);
 		exonJunction.setLsReadRegion(lsAligns);
 		exonJunction.setOneGeneOneSpliceEvent(false);
 		exonJunction.addBamSorted("WT", "/home/zong0jie/Test/rnaseq/paper/chicken/DT40WT0h.bam");
@@ -84,7 +84,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		exonJunction.setCompareGroups("KO", "WT");
 
 		exonJunction.setResultFile("/home/zong0jie/Test/rnaseq/paper/chicken/ensemble_Iso2_No_Merge_sepSeq_new2_Sub");
-		exonJunction.setgenerateNewIso();
+		exonJunction.setgenerateNewIso(true);
 
 		exonJunction.run();
 		exonJunction = null;
@@ -101,7 +101,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		ExonJunction exonJunction = new ExonJunction();
 		exonJunction.setIsLessMemory(false);
 		exonJunction.setGffHashGene(gffChrAbs.getGffHashGene());
-		exonJunction.setgenerateNewIso();
+		exonJunction.setgenerateNewIso(true);
 		exonJunction.setLsReadRegion(lsAligns);
 		exonJunction.setOneGeneOneSpliceEvent(false);
 		exonJunction.addBamSorted("WT", "/media/hdfs/nbCloud/TechDept/Projects/O.sativa_RNAseq_guofangqing/WT1_accepted_hits.bam");
@@ -113,7 +113,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		exonJunction.setCombine(false);
 		exonJunction.setCompareGroups("M", "WT");
 		exonJunction.setResultFile("/media/hdfs/nbCloud/TechDept/Projects/O.sativa_RNAseq_guofangqing/as/as_test_sep");
-		exonJunction.setgenerateNewIso();
+		exonJunction.setgenerateNewIso(true);
 
 		exonJunction.run();
 		exonJunction = null;
@@ -154,7 +154,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	private static String stopGeneName = "PhKgamma";
 	
 	GffHashGene gffHashGene = null;
-//	StrandSpecific strandSpecific = StrandSpecific.NONE;
+	StrandSpecific strandSpecific = StrandSpecific.NONE;
 	/** 全体差异基因的外显子
 	 * ls--
 	 * ls：gene

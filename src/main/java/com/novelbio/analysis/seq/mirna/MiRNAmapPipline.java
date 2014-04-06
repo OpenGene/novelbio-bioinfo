@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.fastq.FastQ;
-import com.novelbio.analysis.seq.mapping.MapBwa;
+import com.novelbio.analysis.seq.mapping.MapBwaAln;
 import com.novelbio.analysis.seq.mapping.MapDNAint;
 import com.novelbio.analysis.seq.mapping.MappingReadsType;
 import com.novelbio.analysis.seq.sam.SamFile;
@@ -259,13 +259,10 @@ public class MiRNAmapPipline implements IntCmdSoft {
 	 */
 	public static String mappingDNA(List<String> lsCmd, boolean isUseOldResult, SamFileStatistics samFileStatistics, 
 			int threadNum, String fqFile, String chrFile, String samFileName, String unMappedFq) {
-		SoftWareInfo softWareInfo = new SoftWareInfo();
-		softWareInfo.setName(SoftWare.bwa.toString());
-		MapDNAint mapDNA = new MapBwa();
+		MapBwaAln mapDNA = new MapBwaAln();
 		mapDNA.setFqFile(new FastQ(fqFile), null);
 		mapDNA.setOutFileName(samFileName);
 		mapDNA.setChrIndex(chrFile);
-		mapDNA.setExePath(softWareInfo.getExePath());
 		mapDNA.setGapLength(3);
 		mapDNA.setThreadNum(threadNum);
 		if (samFileStatistics != null) {

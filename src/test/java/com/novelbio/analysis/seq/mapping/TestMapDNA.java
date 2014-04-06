@@ -7,7 +7,7 @@ import net.sf.samtools.SAMFileHeader.SortOrder;
 import com.novelbio.analysis.seq.FormatSeq;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.mapping.MapBowtie;
-import com.novelbio.analysis.seq.mapping.MapBwa;
+import com.novelbio.analysis.seq.mapping.MapBwaAln;
 import com.novelbio.analysis.seq.mapping.MapDNAint;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
@@ -44,11 +44,11 @@ public class TestMapDNA extends TestCase {
 	
 	@Test
 	public void testBwa() {
-		mapDNA = new MapBwa();
+		mapDNA = new MapBwaAln();
 		String leftFqName = "/media/hdfs/nbCloud/public/test/DNASeqMap/HumanDNA_2A_1_Small.fastq.gz";
 		String rightFqName = "/media/hdfs/nbCloud/public/test/DNASeqMap/HumanDNA_2A_2_Small.fastq.gz";
 		Species species = new Species(9606);
-		mapDNA.setChrIndex(species.getIndexChr(SoftWare.bwa));
+		mapDNA.setChrIndex(species.getIndexChr(SoftWare.bwa_aln));
 		FastQ leftFq = new FastQ(leftFqName);
 		FastQ rightFq = new FastQ(rightFqName);
 		mapDNA.setFqFile(leftFq, rightFq);

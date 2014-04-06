@@ -9,6 +9,8 @@ import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.information.SoftWareInfo;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 public class BamRealign implements IntCmdSoft {
 //	java -Xmx4g -jar $GATK \
@@ -31,15 +33,10 @@ public class BamRealign implements IntCmdSoft {
 	String bamSortedFile;
 	private String unsafe = GATKRealign.ALL;
 	List<String> lsCmdInfo = new ArrayList<>();
-	/**
-	 * 设定samtools所在的文件夹以及待比对的路径
-	 * @param exePath 如果在根目录下则设置为""或null
-	 */
-	public void setExePath(String exePath) {
-		if (exePath == null || exePath.trim().equals(""))
-			this.ExePath = "";
-		else
-			this.ExePath = FileOperate.addSep(exePath);
+	
+	public BamRealign() {
+		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.GATK);
+		this.ExePath = softWareInfo.getExePathRun();
 	}
 	public void setRefSequenceFile(String refSequencFile) {
 		this.refSequenceFile = refSequencFile;

@@ -7,22 +7,20 @@ import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.information.SoftWareInfo;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 public class BamMerge implements IntCmdSoft {	
 	String ExePath = "";
 	List<String> lsBamFile = new ArrayList<String>();
 	String outFileName;
 	List<String> lsCmdLine = new ArrayList<>();
-	/**
-	 * 设定samtools所在的文件夹以及待比对的路径
-	 * @param exePath 如果在根目录下则设置为""或null
-	 */
-	public void setExePath(String exePath) {
-		if (exePath == null || exePath.trim().equals(""))
-			this.ExePath = "";
-		else
-			this.ExePath = FileOperate.addSep(exePath);
+	
+	public BamMerge() {
+		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.samtools);
+		ExePath = softWareInfo.getExePathRun();
 	}
+
 	public void addBamFile(String bamFile) {
 		lsBamFile.add(bamFile);
 	}

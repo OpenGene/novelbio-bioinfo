@@ -7,6 +7,8 @@ import java.util.List;
 import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.information.SoftWareInfo;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 
 public class PeakCallingSicer implements IntCmdSoft {
@@ -39,16 +41,10 @@ public class PeakCallingSicer implements IntCmdSoft {
 	 * 后面自动加上"/"
 	 */
 	String exePath = "";
-	/**
-	 * 设定SICER的执行路径
-	 * @param exePath
-	 */
-	public void setExePath(String exePath) {
-		if (exePath == null || exePath.trim().equals("")) {
-			this.exePath = "";
-		} else {
-			this.exePath = FileOperate.addSep(exePath);
-		}
+	
+	public PeakCallingSicer() {
+		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.sicer);
+		exePath = softWareInfo.getExePathRun();
 		PathTo = FileOperate.getParentPathName(exePath);
 		PathTo = FileOperate.removeSep(PathTo);
 	}

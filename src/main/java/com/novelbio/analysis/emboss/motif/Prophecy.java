@@ -8,6 +8,8 @@ import com.novelbio.analysis.emboss.motif.MotifEmboss.MotifEmbossScanAlgorithm;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.information.SoftWareInfo;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 /**
  * emboss将alignment产生权重矩阵，然后给Profit来扫描motif的
@@ -30,18 +32,8 @@ public class Prophecy implements IntCmdSoft {
 	 */
 	public Prophecy(boolean isNR) {
 		this.isNr = isNR;
-	}
-	
-	/**
-	 * 设定samtools所在的文件夹以及待比对的路径
-	 * @param exePath 如果在根目录下则设置为""或null
-	 */
-	public void setExePath(String exePath) {
-		if (exePath == null || exePath.trim().equals("")) {
-			this.ExePath = "";
-		} else {
-			this.ExePath = FileOperate.addSep(exePath);
-		}
+		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.emboss);
+		ExePath = softWareInfo.getExePathRun();
 	}
 	
 	public void setOutFile(String outFile) {

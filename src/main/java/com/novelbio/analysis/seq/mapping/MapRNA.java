@@ -9,12 +9,6 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 public interface MapRNA extends IntCmdSoft {
 	public void setGffChrAbs(GffChrAbs gffChrAbs);
-	/**
-	 * 设定tophat所在的文件夹以及待比对的路径
-	 * @param exePath 如果在根目录下则设置为""或null
-	 * @param exePathBowtie
-	 */
-	public void setExePath(String exePath, String exePathBowtie);
 	
 	/** 设定index或与index相关的ref */
 	public void setRefIndex(String chrFile);

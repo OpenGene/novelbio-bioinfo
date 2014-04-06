@@ -7,10 +7,6 @@ import com.novelbio.analysis.seq.fasta.format.NCBIchromFaChangeFormat;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.sam.AlignSamReading;
-import com.novelbio.analysis.seq.sam.SamFile;
-import com.novelbio.analysis.seq.sam.SamRecord;
-import com.novelbio.analysis.seq.sam.SamToFastq;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -51,7 +47,16 @@ public class MapSplice implements MapRNA {
 	/** 将没有mapping上的reads用bowtie2比对到基因组上，仅用于proton数据 */
 	boolean mapUnmapedReads = false;
 	/** 比对到的index */
-	String bowtie2ChrIndex;
+	String dnaIndex;
+	
+	/** 第二次mapping所使用的命令 */
+	List<String> lsCmdMapping2nd = new ArrayList<>();
+	
+	public MapSplice() {
+		SoftWareInfo softMapSplice = new SoftWareInfo();
+		softMapSplice.setName(SoftWare.mapsplice);
+		this.exePath = softMapSplice.getExePathRun();
+	}
 	
 	@Override
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
@@ -59,24 +64,16 @@ public class MapSplice implements MapRNA {
 			this.species = gffChrAbs.getSpecies();
 		}
 	}
-
-	@Override
-	public void setExePath(String exePath, String exePathBowtie) {
-		if (exePath != null && !exePath.equals("")) {
-			this.exePath = FileOperate.addSep(exePath);
-		}
-		mapBowtie.setExePath(exePathBowtie);
-	}
 	
 	/**
 	 * 是否将没有mapping上的reads用bowtie2比对到基因组上，<b>注意目前仅用于proton数据</b>
 	 * @param mapUnmapedReads
 	 * @param bowtie2ChrIndex
 	 */
-	public void setMapUnmapedReads(boolean mapUnmapedReads, String bowtie2ChrIndex) {
+	public void setMapUnmapedReads(boolean mapUnmapedReads, String bwaIndex) {
 		this.mapUnmapedReads = mapUnmapedReads;
 		if (mapUnmapedReads) {
-			this.bowtie2ChrIndex = bowtie2ChrIndex;
+			this.dnaIndex = bwaIndex;
 		}
 	}
 	
@@ -154,7 +151,8 @@ public class MapSplice implements MapRNA {
 		prepareReads();
 		mapBowtie.setSubVersion(getBowtieVersion());
 		mapBowtie.IndexMake();
-		
+		lsCmdMapping2nd.clear();
+
 		String prefix = FileOperate.getFileName(outFile);
 		String parentPath = FileOperate.getParentPathName(outFile);
 		String mapSpliceBam = parentPath + prefix + MapSpliceSuffix;
@@ -170,7 +168,7 @@ public class MapSplice implements MapRNA {
 		
 		if (mapUnmapedReads) {
 			String finalBam = parentPath + prefix + MapSpliceAllSuffix;
-			MapTophat.mapUnmapedReads(threadNum, bowtie2ChrIndex, mapSpliceBam, null, finalBam);
+			lsCmdMapping2nd = MapTophat.mapUnmapedReads(threadNum, dnaIndex, mapSpliceBam, null, finalBam);
 		}
 		
 	}
@@ -329,6 +327,9 @@ public class MapSplice implements MapRNA {
 		List<String> lsCmd = new ArrayList<>();
 		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
 		lsCmd.add(cmdOperate.getCmdExeStr());
+		if (!lsCmdMapping2nd.isEmpty()) {
+			lsCmd.addAll(lsCmdMapping2nd);
+		}
 		return lsCmd;
 	}
 

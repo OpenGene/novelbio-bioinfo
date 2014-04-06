@@ -7,6 +7,8 @@ import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.information.SoftWareInfo;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 /**
  * profit scans one or more sequences with a simple frequency matrix 
@@ -36,18 +38,8 @@ public class Profit implements IntCmdSoft {
 	 */
 	public Profit(boolean isNR) {
 		this.isNr = isNR;
-	}
-	
-	/**
-	 * 设定samtools所在的文件夹以及待比对的路径
-	 * @param exePath 如果在根目录下则设置为""或null
-	 */
-	public void setExePath(String exePath) {
-		if (exePath == null || exePath.trim().equals("")) {
-			this.ExePath = "";
-		} else {
-			this.ExePath = FileOperate.addSep(exePath);
-		}
+		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.emboss);
+		ExePath = softWareInfo.getExePathRun();
 	}
 	
 	/** 输入的打分矩阵 */

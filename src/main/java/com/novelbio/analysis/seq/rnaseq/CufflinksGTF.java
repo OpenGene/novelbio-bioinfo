@@ -14,6 +14,8 @@ import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.information.SoftWareInfo;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 public class CufflinksGTF {
 	private static final Logger logger = Logger.getLogger(CufflinksGTF.class);
@@ -61,6 +63,11 @@ public class CufflinksGTF {
 	/** 最后获得的结果 */
 	List<String> lsCufflinksResult = new ArrayList<String>();
 	
+	public CufflinksGTF() {
+		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.cufflinks);
+		ExePathCufflinks = softWareInfo.getExePathRun();
+	}
+	
 	/** 是否使用以前跑出来的结果，默认为ture<br>
 	 * 意思就是如果以前跑出来过结果，这次就直接跳过
 	 * @param isUseOldResult
@@ -90,12 +97,7 @@ public class CufflinksGTF {
 	 * @param chrFile
 	 *            单条染色体
 	 */
-	public void setExePath(String ExePathCufflinks, String chrFile) {
-		if (ExePathCufflinks == null || ExePathCufflinks.trim().equals("")) {
-			this.ExePathCufflinks = "";
-		} else {
-			this.ExePathCufflinks = FileOperate.addSep(ExePathCufflinks);
-		}
+	public void setChrFile(String chrFile) {
 		this.chrFile = chrFile;
 	}
 	

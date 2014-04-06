@@ -49,7 +49,6 @@ public class SamIndexRefsequence {
 			lsCmd.add("faidx");
 			lsCmd.add(sequence);			
 			CmdOperate cmdOperate = new CmdOperate(lsCmd);
-			cmdOperate.setGetLsErrOut();
 			cmdOperate.run();
 			if (!cmdOperate.isFinishedNormal()) {
 				throw new ExceptionCmd("make index error:" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());

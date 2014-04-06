@@ -168,7 +168,7 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 		miRNAmappingPipline.setMiRNApreSeq(species.getMiRNAhairpinFile());
 		miRNAmappingPipline.setNcRNAseq(species.getRefseqNCfile());
 		miRNAmappingPipline.setRfamSeq(species.getRfamFile(rfamSpeciesSpecific));
-		miRNAmappingPipline.setGenome(species.getIndexChr(SoftWare.bwa));//默认bwa做mapping
+		miRNAmappingPipline.setGenome(species.getIndexChr(SoftWare.bwa_aln));//默认bwa做mapping
 	}
 	
 	/** 没有初始化repeat */

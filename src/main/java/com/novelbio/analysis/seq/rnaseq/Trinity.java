@@ -513,7 +513,6 @@ public class Trinity {
 		List<String> lsCmd = getLsCmd();
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.run();
-		cmdOperate.setGetLsErrOut();
 		if (!cmdOperate.isFinishedNormal()) {
 			throw new ExceptionCmd("run trinity error:\n" + cmdOperate.getCmdExeStr() + "\n" + cmdOperate.getErrOut());
 		}

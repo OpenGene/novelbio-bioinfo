@@ -16,12 +16,12 @@ public class TestNovelMiRNADeep {
 
 	public void prepare() {
 		Species species = new Species(9940);
-		novelMiRNADeep.setExePath("", species.getIndexChr(SoftWare.bowtie));
+		novelMiRNADeep.setSpeciesChrIndex(species);
 		novelMiRNADeep.setGffChrAbs(new GffChrAbs(species));
 		novelMiRNADeep.setMiRNASeq(species.getMiRNAmatureFile(), null, species.getMiRNAhairpinFile());
 		novelMiRNADeep.setOutPath("/media/hdfs/nbCloud/public/test/miRNApredict/mirDeep");
 		novelMiRNADeep.setSeqInput(new BedSeq("/media/hdfs/nbCloud/public/test/miRNApredict/sheepAlign.bed.gz"));
-		novelMiRNADeep.setSpecies(species.getCommonName());
+		novelMiRNADeep.setSpeciesName(species.getCommonName());
 	}
 	@Test
 	public void test() {

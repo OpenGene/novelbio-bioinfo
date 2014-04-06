@@ -21,7 +21,9 @@ import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
+import com.novelbio.database.model.species.Species;
 //TODO 移动文件还不够好
 /**
  * 新的miRNA的预测，基于mirDeep的算法
@@ -31,7 +33,10 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	Logger logger = Logger.getLogger(NovelMiRNADeep.class);
 	
-	MapDNAint mapBowtie = MapDNA.creatMapDNA(SoftWare.bowtie);
+	/** miRDeep2是调用bowtie实现的 */
+	static SoftWare softWareMap = SoftWare.bowtie;
+	
+	MapDNAint mapBowtie;
 	int miRNAminLen = 18;
 	String mirDeepPath = "";
 	/** 输入的fasta格式，从bed文件转变而来，也可直接设定 */
@@ -56,6 +61,12 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	List<String> lsCmd = new ArrayList<>();
 	boolean isFastq = false;
 	
+	public NovelMiRNADeep() {
+		SoftWareInfo softWareInfo = new SoftWareInfo(softWareMap);
+		mirDeepPath = softWareInfo.getExePathRun();
+		mapBowtie = MapDNA.creatMapDNA(softWareMap);
+	}
+	
 	@Override
 	public void setOutPath(String outPath) {
 		this.outPath = FileOperate.addSep(outPath);
@@ -73,18 +84,36 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	public void setNovelMiRNAdeepMrdFile(String novelMiRNAdeepMrdFile) {
 		this.novelMiRNAdeepMrdFile = novelMiRNAdeepMrdFile;
 	}
+	
 	/**
 	 * 从bed文件转变为fasta格式，或直接设定fasta文件
 	 * 设定待比对的短序列fasta文件名字，可以随便设定。如果不设定，则默认为输入bed文件+_Potential_DenoveMirna.fasta;
 	 * 推荐不设定
 	 * @param fastaOut
-	 * */
+	 */
 	public void setFastaInput(String fastaIn) {
 		this.fastaInput = fastaIn;
 	}
-	/** 设定物种 */
-	public void setSpecies(String species) {
+	/** 设定物种名 */
+	public void setSpeciesName(String species) {
 		this.species = species.replace(" ", "_");
+	}
+	
+	/**
+	 * 设定待比对的物种
+	 * @param species 某物种
+	 */
+	public void setSpeciesChrIndex(Species species) {
+		this.chromFaIndexBowtie = species.getIndexChr(softWareMap);
+		mapBowtie.setChrIndex(chromFaIndexBowtie);
+	}
+	/**
+	 * 设定待比对的物种index文件路径
+	 * @param chromFaIndexBowtie 某物种序列的bowtie1索引
+	 */
+	public void setSpeciesChrIndex(String chromFaIndexBowtie) {
+		this.chromFaIndexBowtie = chromFaIndexBowtie;
+		mapBowtie.setChrIndex(chromFaIndexBowtie);
 	}
 	/**
 	 * 设定一个随机的report的类型，采用日期时间+随机数的方式
@@ -141,20 +170,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 		}
 		return new String[]{"-q", "/media/winD/miRBase.mrd"};
 	}
-	
-	/**
-	 * 设定bowtie所在的文件夹以及待比对的路径
-	 * @param exePath 如果在根目录下则设置为""或null
-	 * @param chromFaIndexBowtie 某物种序列的bowtie1索引
-	 */
-	public void setExePath(String exePath, String chromFaIndexBowtie) {
-		if (exePath != null && !exePath.trim().equals("")) {
-			this.mirDeepPath = FileOperate.addSep(exePath);
-		}
-		this.chromFaIndexBowtie = chromFaIndexBowtie;
-		mapBowtie.setExePath("");
-		mapBowtie.setChrIndex(chromFaIndexBowtie);
-	}
+
 	private String getChromFaSeq() {
 		return chromFaIndexBowtie;
 	}
@@ -218,13 +234,12 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	/** 默认看到存在mrd文件就会跳过去不执行 */
 	public void predict() {
 		if (StringOperate.isRealNull(novelMiRNAdeepMrdFile)) {
-			novelMiRNAdeepMrdFile = outPath + "run" + "/output_final.mrd";
+			novelMiRNAdeepMrdFile = outPath + "run" + "/output.mrd";
 		}
-		if (FileOperate.isFileExistAndBigThanSize(novelMiRNAdeepMrdFile, 0)) {
-			readExistMrd();
-		} else {
+		if (!FileOperate.isFileExistAndBigThanSize(novelMiRNAdeepMrdFile, 0)) {
 			predictNovel();
 		}
+		readExistMrd();
 	}
 	
 	private void predictNovel() {
@@ -344,11 +359,13 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	 * 同时处理结果文件为指定格式
 	 */
 	private void moveAndCopeFile() {
-		String mrdOld = outPath + "run" + "/output.mrd";
-		FileOperate.copyFile(mrdOld, novelMiRNAdeepMrdFile, true);
-		
 		ArrayList<String> lsFileName = new ArrayList<String>();
-		String suffix = getResultFileSuffixFromReportLog();
+		String suffix = null;
+		try {
+			suffix = getResultFileSuffixFromReportLog();
+		} catch (Exception e) {
+			return;
+		}
 		String expression_html = "expression_" + suffix + ".html";
 		String result_html = "result_" + suffix + ".html";
 		String miRNAs_expressed_all_samples = "miRNAs_expressed_all_samples_" + suffix + ".csv";
@@ -377,15 +394,11 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 			logger.info("move:" + string + "\t" + "to:" +fileName.replace("_" + suffix, ""));
 		}
 		
-		novelMiRNAhairpin = FileOperate.getParentPathName(outPath) + "novelMiRNA/hairpin.fa";
-		novelMiRNAmature =FileOperate.getParentPathName(outPath) + "novelMiRNA/mature.fa";
-//		HashSet<String> setMirPredictName = getSetMirPredictName(outFinal + "result.csv");
-		ListMiRNAdeep.extractHairpinSeqMatureSeq(novelMiRNAdeepMrdFile, novelMiRNAmature, novelMiRNAhairpin);
-		
 		//删除3天前做的项目，但是不删除本次做的东西，以防删错
 		List<String> lsOldPrepareTmp = FileOperate.getFoldFileNameLs("", "dir_prepare_signature", null);
 		for (String string : lsOldPrepareTmp) {
-			if (DateUtil.getNowTimeLong() - FileOperate.getTimeLastModify(string) > 86400000 * 3) {
+			long time = DateUtil.getNowTimeLong() - FileOperate.getTimeLastModify(string);
+			if (time > 86400000 * 3) {
 				FileOperate.DeleteFileFolder(string);
 			}
 		}
@@ -477,6 +490,32 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	@Override
 	public List<String> getCmdExeStr() {
 		return lsCmd;
+	}
+	
+	public void clear() {
+		miRNAminLen = 18;
+		mirDeepPath = "";
+		/** 输入的fasta格式，从bed文件转变而来，也可直接设定 */
+		fastaInput = "";
+		matureMiRNA = "";
+		/** 成熟的近似物种miRNA序列，最好分成动物植物，线虫等等 */
+		matureRelateMiRNA = null;
+		/** 本物种miRNA前体 */
+		hairpinMiRNA = "";
+		species = "";
+		chromFaIndexBowtie = null;
+		/** 输出报告文件，通过生成随机的该文件名，来找到本次mirDeep所在的路径 */
+		reportFile = null;
+		createReportFile = true;
+		/** 已经加过/了 */
+		outPath = null;
+		
+		novelMiRNAhairpin = "";
+		novelMiRNAmature = "";
+		novelMiRNAdeepMrdFile = "";
+		
+		lsCmd = new ArrayList<>();
+		isFastq = false;
 	}
 
 }

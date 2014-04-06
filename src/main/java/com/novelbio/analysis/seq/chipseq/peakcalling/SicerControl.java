@@ -43,10 +43,6 @@ public class SicerControl {
 	
 	PeakCallingSicerType peakCallingSicerType;
 	
-	public SicerControl() {
-		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.sicer);
-		peakCallingSicer.setExePath(softWareInfo.getExePath());
-	}
 	public void setSicerType( PeakCallingSicerType peakCallingSicerType) {
 		this.peakCallingSicerType = peakCallingSicerType;
 	}

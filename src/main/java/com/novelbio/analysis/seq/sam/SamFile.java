@@ -525,8 +525,6 @@ public class SamFile implements AlignSeq {
 		BamRealign bamRealign = new BamRealign();
 		bamRealign.setBamFile(getFileName());
 		bamRealign.setRefSequenceFile(referenceFileName);
-		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.GATK);
-		bamRealign.setExePath(softWareInfo.getExePath());
 		outFile = bamRealign.realign(outFile, false);
 		if (FileOperate.isFileExistAndBigThanSize(outFile, 0)) {
 			SamFile samFile = new SamFile(outFile);
@@ -550,8 +548,6 @@ public class SamFile implements AlignSeq {
 		bamRecalibrate.setBamFile(getFileName());
 		bamRecalibrate.setRefSequenceFile(referenceFileName);
 		bamRecalibrate.setSnpVcfFile(lsVcfFile);
-		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.GATK);
-		bamRecalibrate.setExePath(softWareInfo.getExePath());
 		outFile = bamRecalibrate.reCalibrate(outFile, false);
 		if (FileOperate.isFileExistAndBigThanSize(outFile, 0)) {
 			SamFile samFile = new SamFile(outFile);
@@ -571,8 +567,6 @@ public class SamFile implements AlignSeq {
 		BamRemoveDuplicate bamRemoveDuplicate = new BamRemoveDuplicate();
 		bamRemoveDuplicate.setBamFile(getFileName());
 		bamRemoveDuplicate.setSamtools(false);
-		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.picard);
-		bamRemoveDuplicate.setExePath(softWareInfo.getExePath());
 		outFile = bamRemoveDuplicate.removeDuplicate(outFile);
 		if (FileOperate.isFileExistAndBigThanSize(outFile, 0)) {
 			SamFile samFile = new SamFile(outFile);

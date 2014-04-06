@@ -2,7 +2,6 @@ package com.novelbio.analysis.seq.mapping;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -12,6 +11,7 @@ import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamToBamSort;
+import com.novelbio.base.ExceptionNullParam;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataOperate.DateUtil;
@@ -86,19 +86,6 @@ public abstract class MapDNA implements MapDNAint {
 		this.outFileName = outFileName;
 	}
 	
-	/**
-	 * 百分之多少的mismatch，或者几个mismatch
-	 * @param mismatch
-	 */
-	public abstract void setMismatch(double mismatch);
-	
-	/**
-	 * 设定bwa所在的文件夹以及待比对的路径
-	 * @param exePath 如果在根目录下则设置为""或null
-	 * @param chrFile
-	 */
-	public abstract void setExePath(String exePath);
-	
 	/** 线程数量，默认4线程 */
 	public abstract void setThreadNum(int threadNum);
 
@@ -111,11 +98,6 @@ public abstract class MapDNA implements MapDNAint {
 	 * @param Platform
 	 */
 	public abstract void setSampleGroup(String sampleID, String LibraryName, String SampleName, String Platform);
-	/**
-	 * 默认gap为4，如果是indel查找的话，设置到5或者6比较合适
-	 * @param gapLength
-	 */
-	public abstract void setGapLength(int gapLength);
 	
 	protected abstract boolean isPairEnd();
 	/**
@@ -306,11 +288,15 @@ public abstract class MapDNA implements MapDNAint {
 	 */
 	public static MapDNAint creatMapDNA(SoftWare softMapping) {
 		MapDNAint mapSoftware = null;
-		if (softMapping == SoftWare.bwa) {
-			mapSoftware = (MapDNAint)SpringFactory.getFactory().getBean("mapBwa");
+		if (softMapping == SoftWare.bwa_aln) {
+			mapSoftware = (MapDNAint)SpringFactory.getFactory().getBean(MapBwaAln.class);
+		} else if (softMapping == SoftWare.bwa_men) {
+			mapSoftware = (MapDNAint)SpringFactory.getFactory().getBean(MapBwaMem.class);
 		} else if (softMapping == SoftWare.bowtie || softMapping == SoftWare.bowtie2) {
-			mapSoftware = (MapDNAint)SpringFactory.getFactory().getBean("mapBowtie");
-			mapSoftware.setSubVersion(softMapping);
+			mapSoftware = (MapDNAint)SpringFactory.getFactory().getBean(MapBowtie.class);
+			((MapBowtie)mapSoftware).setSubVersion(softMapping);
+		} else {
+			throw new ExceptionNullParam("No Such Param:" + softMapping.toString());
 		}
 		return mapSoftware;
 	}

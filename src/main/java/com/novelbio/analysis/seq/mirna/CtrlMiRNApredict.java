@@ -33,7 +33,7 @@ public class CtrlMiRNApredict implements IntCmdSoft {
 	Map<String, String> mapPrefix2UnmapFq = new HashMap<>();
 	
 	NovelMiRNADeep novelMiRNADeep = new NovelMiRNADeep();
-	SoftWareInfo softWareInfo = new SoftWareInfo();
+//	SoftWareInfo softWareInfo = new SoftWareInfo();
 	MiRNACount miRNACount = new MiRNACount();
 	
 	GeneExpTable expMirPre = new GeneExpTable(TitleFormatNBC.miRNApreName);
@@ -103,11 +103,10 @@ public class CtrlMiRNApredict implements IntCmdSoft {
 		}
 		
 		novelMiRNADeep.setSeqInput(mapPrefix2SamFile.values());
-		softWareInfo.setName(SoftWare.mirDeep);
-		novelMiRNADeep.setExePath(softWareInfo.getExePath(), species.getIndexChr(SoftWare.bowtie));
+		novelMiRNADeep.setSpeciesChrIndex(species);
 		novelMiRNADeep.setGffChrAbs(gffChrAbs);
 		novelMiRNADeep.setMiRNASeq(species.getMiRNAmatureFile(), null, species.getMiRNAhairpinFile());
-		novelMiRNADeep.setSpecies(species.getCommonName());
+		novelMiRNADeep.setSpeciesName(species.getCommonName());
 		novelMiRNADeep.setOutPath(novelMiRNAPathDeep);
 		novelMiRNADeep.setNovelMiRNAdeepMrdFile(novelMiRNAmrd);
 		novelMiRNADeep.predict();

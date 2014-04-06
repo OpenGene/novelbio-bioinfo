@@ -541,7 +541,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 			return lsScript;
 		}
 		for (String string : scriptContent.split("\n")) {
-			lsScript.add(string);
+			lsScript.add(CmdOperate.makePathToRelative(string));
 		}
 	
 		return lsScript;

@@ -1032,11 +1032,16 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @return
 	 */
 	private ExonInfo getCds(ExonInfo exons) {
+		if (!ismRNA()) {
+			return null;
+		}
+		
 		ExonInfo cdsInfo = exons.clone();
 		ExonInfo atgUag = new ExonInfo(isCis5to3(), ATGsite, UAGsite);
 		if (cdsInfo.getEndAbs() < atgUag.getStartAbs() || cdsInfo.getStartAbs() > atgUag.getEndAbs()) {
 			return null;
 		}
+
 		if (cdsInfo.isCodInSide(ATGsite)) {
 			cdsInfo.setStartCis(ATGsite);
 		}

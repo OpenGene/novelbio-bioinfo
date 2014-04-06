@@ -9,6 +9,8 @@ import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.information.SoftWareInfo;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 /**
  * 用samtools来去除pcr duplicate
@@ -29,6 +31,8 @@ public class BamRemoveDuplicate implements IntCmdSoft {
 	String bamSortedFile;
 	boolean samtools = false;
 	List<String> lsCmdInfo = new ArrayList<>();
+	
+	
 	/** 是否使用samtools，默认为true
 	 * false则使用picard
 	 * @param samtools
@@ -36,16 +40,7 @@ public class BamRemoveDuplicate implements IntCmdSoft {
 	public void setSamtools(boolean samtools) {
 		this.samtools = samtools;
 	}
-	/**
-	 * 设定samtools所在的文件夹以及待比对的路径
-	 * @param exePath 如果在根目录下则设置为""或null
-	 */
-	public void setExePath(String exePath) {
-		if (exePath == null || exePath.trim().equals(""))
-			this.ExePath = "";
-		else
-			this.ExePath = FileOperate.addSep(exePath);
-	}
+
 	public void setBamFile(String bamFile) {
 		this.bamSortedFile = bamFile;
 	}
@@ -53,8 +48,12 @@ public class BamRemoveDuplicate implements IntCmdSoft {
 	/** 返回cmd命令 */
 	public String removeDuplicate() {
 		if (samtools) {
+			SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.samtools);
+			ExePath = softWareInfo.getExePathRun();
 			return removeDuplicateSamtools();
 		} else {
+			SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.picard);
+			ExePath = softWareInfo.getExePathRun();
 			return removeDuplicatePicard();
 		}
 	}

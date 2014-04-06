@@ -9,9 +9,9 @@ import java.util.Map;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.base.ExceptionNullParam;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -53,16 +53,9 @@ public class MapBowtie extends MapDNA {
 	 */
 	MapLibrary mapLibrary = MapLibrary.PairEnd;
 	
-	/**
-	 * 设定tophat所在的文件夹以及待比对的路径
-	 * @param exePath 如果在根目录下则设置为""或null
-	 * @param chrFile
-	 */
-	public void setExePath(String exePathBowtie) {
-		if (exePathBowtie == null || exePathBowtie.trim().equals(""))
-			this.ExePathBowtie = "";
-		else
-			this.ExePathBowtie = FileOperate.addSep(exePathBowtie);
+	public MapBowtie() {
+		SoftWareInfo softWareInfo = new SoftWareInfo(bowtieVersion);
+		this.ExePathBowtie = softWareInfo.getExePathRun();
 	}
 
 	public void setLocal(boolean isLocal) {
@@ -71,6 +64,14 @@ public class MapBowtie extends MapDNA {
 	
 	/** 设定是bowtie还是bowtie2 */
 	public void setSubVersion(SoftWare bowtieVersion) {
+		if (bowtieVersion == null || (bowtieVersion != SoftWare.bowtie && bowtieVersion != SoftWare.bowtie2)) {
+			throw new ExceptionNullParam("Error Param BowtieVersion: " + bowtieVersion.toString());
+		}
+		if (bowtieVersion == this.bowtieVersion) {
+			return;
+		}
+		SoftWareInfo softWareInfo = new SoftWareInfo(bowtieVersion);
+		this.ExePathBowtie = softWareInfo.getExePathRun();
 		this.bowtieVersion = bowtieVersion;
 	}
 
@@ -357,10 +358,12 @@ public class MapBowtie extends MapDNA {
 	
 	@Override
 	public List<String> getCmdExeStr() {
+		List<String> lsResult = new ArrayList<>();
+		lsResult.add(bowtieVersion.toString() + " version: " + getVersion());
 		List<String> lsCmd = getLsCmdMapping();
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
-		lsCmd.add(cmdOperate.getCmdExeStr());
-		return lsCmd;
+		lsResult.add(cmdOperate.getCmdExeStr());
+		return lsResult;
 	}
 //	/**
 //	 * 将sam文件压缩成bam文件，然后做好统计并返回
@@ -389,12 +392,6 @@ public class MapBowtie extends MapDNA {
 //			FileOperate.delFile(samFile);
 //		}
 //	}
-	
-	/** 没用 */
-	public void setMismatch(double mismatch) { }
-
-	/** 没用 */
-	public void setGapLength(int gapLength) {}
 	
 	public String getVersion() {
 		String bowtie = "";

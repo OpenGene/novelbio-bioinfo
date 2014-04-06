@@ -9,6 +9,8 @@ import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.information.SoftWareInfo;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 
 /** cuffmerge第437行的
@@ -41,6 +43,11 @@ public class CuffMerge {
 	String exePath = "";
 	
 	String tmpGtfRecord;
+	
+	public CuffMerge() {
+		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.cufflinks);
+		exePath = softWareInfo.getExePathRun();
+	}
 	public void setIsUseOldResult(boolean isUseOldResult) {
 		this.isUseOldResult = isUseOldResult;
 	}
@@ -116,7 +123,6 @@ public class CuffMerge {
 		}
 		
 		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
-		cmdOperate.setGetLsErrOut();
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {
 			String errInfo = cmdOperate.getErrOut();

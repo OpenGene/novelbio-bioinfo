@@ -15,6 +15,7 @@ import com.novelbio.analysis.seq.sam.SamRGroup;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 /**
@@ -24,8 +25,8 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
  */
 @Component
 @Scope("prototype")
-public class MapBwa extends MapDNA {
-	private static final Logger logger = Logger.getLogger(MapBwa.class);
+public class MapBwaAln extends MapDNA {
+	private static final Logger logger = Logger.getLogger(MapBwaAln.class);
 	/**
 	 * 在此大小以下的genome直接读入内存以帮助快速mapping
 	 * 单位，KB
@@ -42,11 +43,15 @@ public class MapBwa extends MapDNA {
 	MapLibrary mapLibrary = MapLibrary.PairEnd;
 	
 	/** 含有几个gap */
-	int gapNum = 1;
+	int gapNum;
 	/** gap的长度 */
-	int gapLength = 20;
+	int gapLength;
 	/** 线程数量 */
 	int threadNum = 4;
+	/** 比对的种子长度 */
+	int seedLen;
+	/** gap的open罚分 */
+	int openPanalty;
 	/**
 	 * Maximum edit distance if the value is INT, or the fraction of missing alignments given 2% uniform
 	 *  base error rate if FLOAT. In the latter case, the maximum edit distance is automatically chosen 
@@ -57,7 +62,11 @@ public class MapBwa extends MapDNA {
 	/** 是否将index读入内存，仅对双端有效 */
 	boolean readInMemory = true;
 	
-
+	public MapBwaAln() {
+		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.bwa_aln);
+		this.ExePath = softWareInfo.getExePathRun();
+	}
+	
 	/**
 	 * 设置左端的序列，设置会把以前的清空
 	 * @param fqFile
@@ -98,7 +107,7 @@ public class MapBwa extends MapDNA {
 	}
 	
 	/** 将输入的fastq文件合并为一个 */
-	private static String combSeq(String outPath, boolean singleEnd, boolean left, String prefix, List<FastQ> lsFastq) {
+	protected static String combSeq(String outPath, boolean singleEnd, boolean left, String prefix, List<FastQ> lsFastq) {
 		if (lsFastq == null || lsFastq.size() == 0) {
 			return null;
 		}
@@ -148,19 +157,7 @@ public class MapBwa extends MapDNA {
 	private String[] getMismatch() {
 		return new String[]{"-n", mismatch + ""};
 	}
-	
-	/**
-	 * 设定bwa所在的文件夹以及待比对的路径
-	 * @param exePath 如果在根目录下则设置为""或null
-	 * @param chrFile
-	 */
-	public void setExePath(String exePath) {
-		if (exePath == null || exePath.trim().equals("")) {
-			this.ExePath = "";
-		} else {
-			this.ExePath = FileOperate.addSep(exePath);
-		}
-	}
+
 	/** 线程数量，默认4线程 */
 	public void setThreadNum(int threadNum) {
 		this.threadNum = threadNum;
@@ -201,6 +198,9 @@ public class MapBwa extends MapDNA {
 	 * @param gapLength
 	 */
 	private String[] getGapLen() {
+		if (gapLength <= 0) {
+			return null;
+		}
 		return new String[]{"-e", gapLength + ""};
 	}
 	/** 比对的时候容忍最多几个gap 默认为1，1个就够了，除非长度特别长或者是454*/
@@ -209,6 +209,9 @@ public class MapBwa extends MapDNA {
 	}
 	/** 比对的时候容忍最多几个gap 默认为1，1个就够了，除非长度特别长或者是454*/
 	private String[] getGapNum() {
+		if (gapNum <= 0) {
+			return null;
+		}
 		return new String[]{"-o", gapNum + ""};
 	}
 	private String[] getInsertSize() {
@@ -231,16 +234,28 @@ public class MapBwa extends MapDNA {
 		}
 		return true;
 	}
+	/** 比对的种子长度 */
+	public void setSeedLen(int seedLen) {
+		this.seedLen = seedLen;
+	}
 	/** 种子长度 */
 	private String[] getSeedSize() {
-		return new String[]{"-l", 25 + ""};
+		if (seedLen <= 0) {
+			return null;
+		}
+		return new String[]{"-l", seedLen + ""};
 	}
-	/**
-	 * gap罚分
-	 * @return
-	 */
+	
+	/** gap的open罚分 */
+	public void setGepOpenPanalty(int gepOpenPanalty) {
+		this.openPanalty = gepOpenPanalty;
+	}
+	/** gap的open罚分 */
 	private String[] getOpenPanalty() {
-		return new String[]{"-O", 10 +""};
+		if (openPanalty <= 0) {
+			return null;
+		}
+		return new String[]{"-O", openPanalty +""};
 	}
 	/**
 	 * 是illumina32标准还是64标准
@@ -418,7 +433,7 @@ public class MapBwa extends MapDNA {
 	 */
 	@Override
 	protected boolean makeIndex() {
-		List<String> lsCmd = getLsCmdIndex();
+		List<String> lsCmd = getLsCmdIndex(ExePath, chrFile);
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.run();
 		return cmdOperate.isFinishedNormal();
@@ -426,21 +441,28 @@ public class MapBwa extends MapDNA {
 
 	@Override
 	protected boolean isIndexExist() {
-		return FileOperate.isFileExist(chrFile + ".bwt");
+		return isIndexExist(chrFile);
 	}
 	@Override
 	protected void deleteIndex() {
+		deleteIndexBwa(chrFile);
+	}
+	
+	protected static boolean isIndexExist(String chrFile) {
+		return FileOperate.isFileExist(chrFile + ".bwt");
+	}
+	protected static void deleteIndexBwa(String chrFile) {
 		FileOperate.delFile(chrFile + ".bwt");
 	}
-	private List<String> getLsCmdIndex() {
+	protected static List<String> getLsCmdIndex(String exePath, String chrFile) {
 //		linux命令如下 
 //	 	bwa index -p prefix -a algoType -c  chrFile
 //		-c 是solid用
 
 		List<String> lsCmd = new ArrayList<>();
-		lsCmd.add(this.ExePath + "bwa");
+		lsCmd.add(exePath + "bwa");
 		lsCmd.add("index");
-		ArrayOperate.addArrayToList(lsCmd, getChrLen());
+		ArrayOperate.addArrayToList(lsCmd, getChrLen(chrFile));
 		lsCmd.add(chrFile);
 		return lsCmd;
 	}
@@ -451,7 +473,7 @@ public class MapBwa extends MapDNA {
 	 * 小于500MB的用 -a is
 	 * 大于500MB的用 -a bwtsw
 	 */
-	private String[] getChrLen() {
+	private static String[] getChrLen(String chrFile) {
 		long size = (long) FileOperate.getFileSize(chrFile);
 		if (size/1024 > 500) {
 			return new String[]{"-a", "bwtsw"};
@@ -459,16 +481,10 @@ public class MapBwa extends MapDNA {
 			return new String[]{"-a", "is"};
 		}
 	}
-
-	@Override
-	public void setSubVersion(SoftWare bowtieVersion) {
-		// TODO Auto-generated method stub
-		
-	}
 	
-	public String getVersion() {
+	public static String getVersion(String exePath) {
 		List<String> lsCmdVersion = new ArrayList<>();
-		lsCmdVersion.add(this.ExePath + "bwa");
+		lsCmdVersion.add(exePath + "bwa");
 		CmdOperate cmdOperate = new CmdOperate(lsCmdVersion);
 		cmdOperate.run();
 		List<String> lsInfo = cmdOperate.getLsErrOut();
@@ -479,6 +495,7 @@ public class MapBwa extends MapDNA {
 	public List<String> getCmdExeStr() {
 		combSeq();
 		List<String> lsCmdResult = new ArrayList<>();
+		lsCmdResult.add("bwa version: " + getVersion(this.ExePath));
 		List<String> lsCmd = getLsCmdAln(true);
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		lsCmdResult.add(cmdOperate.getCmdExeStr());

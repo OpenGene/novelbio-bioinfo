@@ -375,7 +375,13 @@ public class Species implements Cloneable {
 	 * @param isAllIso 是否需要全体iso
 	 *  */
 	public String getRefseqFile(boolean isAllIso) {
+		if (taxID == 0 || version == null) {
+			return null;
+		}
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
+		if (speciesFile == null) {
+			return null;
+		}
 		return speciesFile.getRefSeqFile(isAllIso, false);
 	}
 	/** 获得本物中指定version的refseq的序列

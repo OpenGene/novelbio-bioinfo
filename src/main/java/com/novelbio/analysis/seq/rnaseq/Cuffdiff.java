@@ -16,6 +16,8 @@ import com.novelbio.analysis.seq.mapping.MapLibrary;
 import com.novelbio.base.HashMapLsValue;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.information.SoftWareInfo;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
 
 public class Cuffdiff {
@@ -46,16 +48,9 @@ public class Cuffdiff {
 	
 	MapLibrary mapLibrary;
 	
-	/**
-	 * 设定cuffdiff所在的文件夹以及待比对的路径
-	 * @param exePath 如果在根目录下则设置为""或null
-	 */
-	public void setExePath(String exePath) {
-		if (exePath == null || exePath.trim().equals("")) {
-			this.exePath = "";
-		} else {
-			this.exePath = FileOperate.addSep(exePath);
-		}
+	public Cuffdiff() {
+		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.cufflinks);
+		exePath = softWareInfo.getExePathRun();
 	}
 	public void setLsSample2Prefix(ArrayList<String[]> lsSample2Prefix) {
 		for (String[] strings : lsSample2Prefix) {

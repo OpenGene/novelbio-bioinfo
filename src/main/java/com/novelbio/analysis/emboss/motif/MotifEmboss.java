@@ -33,9 +33,7 @@ public class MotifEmboss {
 //		FileOperate.moveFile(result[0], "/home/zong0jie/桌面/20121224/motifResult", fileName + "motif.txt", true);
 //		FileOperate.moveFile(result[1], "/home/zong0jie/桌面/20121224/motifResult", fileName + "motif_reverse.txt", true);
 //	}
-	
-	SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.emboss);
-	
+		
 	/** 连配好的motif */
 	Collection<SeqFasta> colAlignmentMotif;
 	
@@ -200,7 +198,6 @@ public class MotifEmboss {
 
 	/** 生成打分矩阵，并返回结果 */
 	private String[] generateWeightMatrix(String alignedMotif, String suffix) {
-		prophecy.setExePath(softWareInfo.getExePath());
 		prophecy.setInAlignment(alignedMotif);
 		prophecy.setMatrixAlgorithm(motifEmbossScanAlgorithm);
 		String resultFile = FileOperate.addSep(motifPath) + "weightedMatrix" + suffix + ".fa";
@@ -209,7 +206,6 @@ public class MotifEmboss {
 	}
 	
 	private String scanAndGetResult(String weightMatrix, String seqFile, String suffix) {
-		profit.setExePath(softWareInfo.getExePath());
 		profit.setInProfit(weightMatrix);
 		profit.setSeqFile(seqFile);
 		String resultFile = FileOperate.addSep(motifPath) + "MotifScaningResult" + suffix + ".fa";

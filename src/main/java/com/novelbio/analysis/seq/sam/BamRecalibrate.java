@@ -11,6 +11,8 @@ import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.information.SoftWareInfo;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 /** 对于每个碱基质量的重估计 */
 public class BamRecalibrate implements IntCmdSoft {
@@ -46,15 +48,10 @@ public class BamRecalibrate implements IntCmdSoft {
 	private Set<String> setSnpDBVcfFilePath = new HashSet<String>();
 	
 	List<String> lsCmdInfo = new ArrayList<>();
-	/**
-	 * 设定samtools所在的文件夹以及待比对的路径
-	 * @param exePath 如果在根目录下则设置为""或null
-	 */
-	public void setExePath(String exePath) {
-		if (exePath == null || exePath.trim().equals(""))
-			this.ExePath = "";
-		else
-			this.ExePath = FileOperate.addSep(exePath);
+	
+	public BamRecalibrate() {
+		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.GATK);
+		ExePath = softWareInfo.getExePathRun();
 	}
 	public void setRefSequenceFile(String refSequencFile) {
 		this.refSequenceFile = refSequencFile;

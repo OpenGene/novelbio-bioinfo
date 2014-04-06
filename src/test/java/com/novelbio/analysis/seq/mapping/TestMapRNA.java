@@ -28,11 +28,8 @@ public class TestMapRNA {
 		lsLeftFq.add(new FastQ("/media/hdfs/nbCloud/public/test/RNASeqMap/MouseRNA_KO_L1_1_Small.fq.gz"));
 		lsRightFq.add(new FastQ("/media/hdfs/nbCloud/public/test/RNASeqMap/MouseRNA_KO_L1_2_Small.fq.gz"));
 		mapRNA = new MapSplice();
-		SoftWareInfo softMapSplice = new SoftWareInfo(SoftWare.mapsplice);
-		SoftWareInfo softBowtie = new SoftWareInfo(SoftWare.bowtie);
 		Species species = new Species(10090);		
 		
-		mapRNA.setExePath(softMapSplice.getExePath(), softBowtie.getExePath());
 		mapRNA.setRefIndex(species.getIndexChr(SoftWare.bowtie));
 		mapRNA.setGtf_Gene2Iso(species.getChromSeqSep());
 		mapRNA.setLeftFq(lsLeftFq);
@@ -49,12 +46,10 @@ public class TestMapRNA {
 		lsLeftFq.add(new FastQ("/media/hdfs/nbCloud/public/test/RNASeqMap/MouseRNA_KO_L1_1_Small.fq.gz"));
 		lsRightFq.add(new FastQ("/media/hdfs/nbCloud/public/test/RNASeqMap/MouseRNA_KO_L1_2_Small.fq.gz"));
 		mapRNA = new MapTophat();
-		SoftWareInfo softMapSplice = new SoftWareInfo(SoftWare.tophat);
-		SoftWareInfo softBowtie = new SoftWareInfo(SoftWare.bowtie2);
+
 		Species species = new Species(9606);
 		
 		mapRNA.setGffChrAbs(new GffChrAbs(9606));
-		mapRNA.setExePath(softMapSplice.getExePath(), softBowtie.getExePath());
 		mapRNA.setRefIndex(species.getIndexChr(SoftWare.bowtie2));
 		mapRNA.setGtf_Gene2Iso("");
 		mapRNA.setOutPathPrefix("/media/hdfs/nbCloud/public/test/RNASeqMap/ddd");

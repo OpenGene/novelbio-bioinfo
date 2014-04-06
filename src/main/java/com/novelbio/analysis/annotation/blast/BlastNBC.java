@@ -64,10 +64,7 @@ public class BlastNBC implements IntCmdSoft {
 	
 	public BlastNBC() {
 		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.blast);
-		exePath = softWareInfo.getExePath();
-		if (!exePath.equals("")) {
-			exePath = FileOperate.addSep(exePath);
-		}
+		exePath = softWareInfo.getExePathRun();
 	}
 	/**
 	 * @return blast输出结果的哈希表

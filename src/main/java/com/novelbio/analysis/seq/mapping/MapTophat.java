@@ -92,12 +92,25 @@ public class MapTophat implements MapRNA {
 	/** 将没有mapping上的reads用bowtie2比对到基因组上，仅用于proton数据 */
 	boolean mapUnmapedReads = false;
 	/** 比对到的index */
-	String bowtie2ChrIndex;
+	String bwaIndex;
 	
 	HashMultimap<String, String> mapPrefix2Result = HashMultimap.create();
 	
-	List<String> lsCmd;
+	/** 第二次mapping所使用的命令 */
+	List<String> 	lsCmdMapping2nd = new ArrayList<>();
+	public MapTophat() {
+		SoftWareInfo softMapSplice = new SoftWareInfo(SoftWare.tophat);
+		this.ExePathTophat = softMapSplice.getExePathRun();
+	}
 	
+	/**
+	 * 是否使用bowtie2进行分析
+	 * 
+	 * @param bowtie2
+	 */
+	public void setBowtieVersion(SoftWare bowtieVersion) {
+		mapBowtie.setSubVersion(bowtieVersion);
+	}
 	/** 输入的gffChrAbs中只需要含有GffHashGene即可 */
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
@@ -108,27 +121,13 @@ public class MapTophat implements MapRNA {
 	 * @param mapUnmapedReads
 	 * @param bowtie2ChrIndex
 	 */
-	public void setMapUnmapedReads(boolean mapUnmapedReads, String bowtie2ChrIndex) {
+	public void setMapUnmapedReads(boolean mapUnmapedReads, String bwaIndex) {
 		this.mapUnmapedReads = mapUnmapedReads;
 		if (mapUnmapedReads) {
-			this.bowtie2ChrIndex = bowtie2ChrIndex;
+			this.bwaIndex = bwaIndex;
 		}
 	}
-	
-	/**
-	 * 设定tophat所在的文件夹以及待比对的路径
-	 * 
-	 * @param exePathTophat
-	 *            如果在根目录下则设置为""或null
-	 * @param exePathBowtie
-	 */
-	public void setExePath(String exePathTophat, String exePathBowtie) {
-		if (exePathTophat == null || exePathTophat.trim().equals(""))
-			this.ExePathTophat = "";
-		else
-			this.ExePathTophat = FileOperate.addSep(exePathTophat);
-		mapBowtie.setExePath(exePathBowtie);
-	}
+
 	public void setRefIndex(String chrFile) {
 		mapBowtie.setChrIndex(chrFile);
 	}
@@ -208,14 +207,6 @@ public class MapTophat implements MapRNA {
 	 */
 	public void setStrandSpecifictype(StrandSpecific strandSpecifictype) {
 		this.strandSpecifictype = strandSpecifictype;
-	}
-	/**
-	 * 是否使用bowtie2进行分析
-	 * 
-	 * @param bowtie2
-	 */
-	public void setBowtieVersion(SoftWare bowtieVersion) {
-		this.bowtieVersion = bowtieVersion;
 	}
 	
 	private String[] getOutPathPrefix() {
@@ -463,7 +454,8 @@ public class MapTophat implements MapRNA {
 		setGTFfile();
 		mapBowtie.setSubVersion(bowtieVersion);
 		mapBowtie.IndexMake();
-		
+		lsCmdMapping2nd.clear();
+
 		String prefix = FileOperate.getFileName(outPathPrefix);
 		String parentPath = FileOperate.getParentPathName(outPathPrefix);
 		String tophatBam = parentPath + prefix + TophatSuffix;
@@ -483,7 +475,7 @@ public class MapTophat implements MapRNA {
 
 		if (mapUnmapedReads) {
 			String finalBam = FileOperate.getParentPathName(outPathPrefix) + prefix + TophatAllSuffix;
-			mapUnmapedReads(threadNum, bowtie2ChrIndex, tophatBam, unmappedBam, finalBam);
+			lsCmdMapping2nd = mapUnmapedReads(threadNum, bwaIndex, tophatBam, unmappedBam, finalBam);
 		}
 	}
 
@@ -541,9 +533,13 @@ public class MapTophat implements MapRNA {
 	@Override
 	public List<String> getCmdExeStr() {
 		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add("tophat version: " + getVersionTophat());
+		lsCmd.add(bowtieVersion.toString() + " version: " + mapBowtie.getVersion());
 		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
 		lsCmd.add(cmdOperate.getCmdExeStr());
-		
+		if (!lsCmdMapping2nd.isEmpty()) {
+			lsCmd.addAll(lsCmdMapping2nd);
+		}
 		return lsCmd;
 	}
 	
@@ -561,13 +557,13 @@ public class MapTophat implements MapRNA {
 	/**
 	 *  将没有mapping上的reads重新mapping，仅用于单端的proton数据
 	 * @param threadNum
-	 * @param bowtie2ChrIndex
+	 * @param bwaIndex
 	 * @param acceptedBam
 	 * @param unmappedBam mapsplice本项填null
 	 * @param outFinalBam
 	 * @return 返回使用的命令行
 	 */
-	protected static List<String> mapUnmapedReads(int threadNum, String bowtie2ChrIndex, 
+	protected static List<String> mapUnmapedReads(int threadNum, String bwaIndex, 
 			String acceptedBam, String unmappedBam, String outFinalBam) {
 		String unmappedFq = null;
 		String unmapBamGetSeq = unmappedBam;
@@ -578,9 +574,9 @@ public class MapTophat implements MapRNA {
 			unmappedFq = FileOperate.changeFileSuffix(unmappedBam, "", "fq.gz");
 		}
 		//没有比对上的reads用bowtie2再次比对
-		String mapBowtieBam = FileOperate.changeFileSuffix(unmappedBam, "_bowtieMap", "bam");
+		String mapBowtieBam = FileOperate.changeFileSuffix(unmappedBam, "_bwaMap", "bam");
 		SamFile samFileMapBowtie = null;
-		MapBowtie mapBowtie = null;
+		MapBwaMem mapBwaMem = null;
 		if (!FileOperate.isFileExistAndBigThanSize(mapBowtieBam, 1_000_000)) {
 			SamToFastq samToFastq = new SamToFastq();
 			samToFastq.setFastqFile(unmappedFq);
@@ -590,16 +586,13 @@ public class MapTophat implements MapRNA {
 			alignSamReading.run();
 			
 			FastQ fastQ = samToFastq.getResultFastQ();
-			SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.bowtie2);
-			mapBowtie = new MapBowtie();
-			mapBowtie.setThreadNum(threadNum);
-			mapBowtie.setChrIndex(bowtie2ChrIndex);
-			mapBowtie.setFqFile(fastQ, null);
-			mapBowtie.setSensitive(MapBowtie.Sensitive_Sensitive);
-			mapBowtie.setExePath(softWareInfo.getExePath());
+			mapBwaMem = new MapBwaMem();
+			mapBwaMem.setThreadNum(threadNum);
+			mapBwaMem.setChrIndex(bwaIndex);
+			mapBwaMem.setFqFile(fastQ, null);
 			String mapFile = FileOperate.changeFileSuffix(mapBowtieBam, "_TmpMapping", "bam");
-			mapBowtie.setOutFileName(mapFile);
-			mapBowtie.mapReads();
+			mapBwaMem.setOutFileName(mapFile);
+			mapBwaMem.mapReads();
 			FileOperate.moveFile(true, mapFile, mapBowtieBam);
 		}
 		samFileMapBowtie = new SamFile(mapBowtieBam);
@@ -620,14 +613,27 @@ public class MapTophat implements MapRNA {
 		samFileMapBowtie.close();
 		samFileOut.close();
 		FileOperate.moveFile(true, outFinalBamTmp, outFinalBam);
-		if (mapBowtie != null) {
-			return mapBowtie.getCmdExeStr();
+		if (mapBwaMem != null) {
+			return mapBwaMem.getCmdExeStr();
 		} else {
 			return new ArrayList<>();
 		}
 	}
 	
-	
+	public String getVersionTophat() {
+		List<String> lsCmdVersion = new ArrayList<>();
+		lsCmdVersion.add(ExePathTophat + "tophat");
+		lsCmdVersion.add("--version");
+		CmdOperate cmdOperate = new CmdOperate(lsCmdVersion);
+		cmdOperate.setGetLsStdOut();
+		cmdOperate.run();
+		List<String> lsInfo = cmdOperate.getLsStdOut();
+		String version = lsInfo.get(0).toLowerCase().replace("tophat", "").trim();
+		return version;
+	}
+	public String getVersionBowtie() {
+		return mapBowtie.getVersion();
+	}
 	@Override
 	public String getFinishName() {
 		String prefix = FileOperate.getFileName(outPathPrefix);

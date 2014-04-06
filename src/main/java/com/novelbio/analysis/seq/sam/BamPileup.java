@@ -8,6 +8,8 @@ import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.information.SoftWareInfo;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 public class BamPileup implements IntCmdSoft {
 //	samtools mpileup -EB  -C50 -f $chrmFa -Q 13 $bamFile > $out
@@ -20,6 +22,10 @@ public class BamPileup implements IntCmdSoft {
 	
 	List<String> lsCmdInfo = new ArrayList<>();
 	
+	public BamPileup() {
+		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.samtools);
+		ExePath = softWareInfo.getExePathRun();
+	}
 	/**
 	 * 设定samtools所在的文件夹以及待比对的路径
 	 * @param exePath 如果在根目录下则设置为""或null

@@ -8,7 +8,9 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.service.servinformation.ManageSoftWareInfo;
 
 /**
@@ -50,11 +52,19 @@ public class SoftWareInfo {
 	}
 	
 	public void setName(String softName) {
-		this.softName = softName.toLowerCase();
+		if (softName.toString().startsWith("bwa_")) {
+			this.softName = "bwa";
+		} else {
+			this.softName = softName.toLowerCase();
+		}
 		searched = false;
 	}
 	public void setName(SoftWare softName) {
-		this.softName = softName.toString().toLowerCase();
+		if (softName.toString().startsWith("bwa_")) {
+			this.softName = "bwa";
+		} else {
+			this.softName = softName.toString().toLowerCase();
+		}
 		searched = false;
 	}
 	public String getName() {
@@ -134,6 +144,24 @@ public class SoftWareInfo {
 		}
 		return locationPath;
 	}
+	/**
+	 * 根据是否在系统路径，返回""或者locationPath，最后加上/
+	 * 可以直接用于执行
+	 * @return
+	 */
+	public String getExePathRun() {
+		String path = null;
+		querySoftWareInfo();
+		if (isPath==1) {
+			path = "";
+		}
+		path = locationPath;
+		if (StringOperate.isRealNull(path)) {
+			return "";
+		} else {
+			return FileOperate.addSep(path);
+		}
+	}
 	public String getInstallPath() {
 		querySoftWareInfo();
 		return installPath;
@@ -211,7 +239,7 @@ public class SoftWareInfo {
 	}
 	public static enum SoftWare {
 		blast,
-		bwa, bowtie, bowtie2, 
+		bwa_aln, bwa_men, bowtie, bowtie2, 
 		tophat, rsem, mapsplice,
 		miranada, RNAhybrid, mirDeep, miReap,
 		samtools, picard, GATK, cufflinks,
@@ -221,7 +249,8 @@ public class SoftWareInfo {
 		static HashMap<String, SoftWare> mapStr2MapSoftware = new LinkedHashMap<String, SoftWareInfo.SoftWare>();
 		public static HashMap<String, SoftWare> getMapStr2MappingSoftware() {
 			if (mapStr2MapSoftware.size() == 0) {
-				mapStr2MapSoftware.put("bwa", bwa);
+				mapStr2MapSoftware.put("bwa_aln", bwa_aln);
+				mapStr2MapSoftware.put("bwa_mem", bwa_men);
 				mapStr2MapSoftware.put("bowtie2", bowtie2);
 			}
 			return mapStr2MapSoftware;

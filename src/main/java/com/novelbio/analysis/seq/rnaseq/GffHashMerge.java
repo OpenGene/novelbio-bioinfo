@@ -29,10 +29,10 @@ public class GffHashMerge {
 //		mouse();
 	}
 	public static void mouse() {
-		String gffhashGeneCuf = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/novelbioTranscriptome/transcripts.gtf";
-		String gffFinal = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/novelbioTranscriptome/finalTranscript.gtf";
-		String gffFinalStatistics = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/novelbioTranscriptome/transcriptomeStatistics.txt";
-		Species species = new Species(10090);
+		String gffhashGeneCuf = "/media/hdfs/nbCloud/staff/hongyanyan/wanglinsurui/reconstructure/ReconstructTranscriptome_result/tmpMerge/merged.gtf";
+		String gffFinal = "/media/hdfs/nbCloud/staff/hongyanyan/wanglinsurui/reconstructure/ReconstructTranscriptome_result/finalTranscriptNew.gtf";
+		String gffFinalStatistics = "/media/winF/NBC/Project/Project_FY/FYmouse20111122/tophata15m1/novelbioTranscriptome/transcriptomeStatisticsNew.txt";
+		Species species = new Species(9925);
 		GffHashMerge gffHashMerge = new GffHashMerge();
 		gffHashMerge.setGffHashGeneRef(new GffHashGene(species.getGffType(), species.getGffFile()));
 		gffHashMerge.addGffHashGene(new GffHashGene(GffType.GTF, gffhashGeneCuf));

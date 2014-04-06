@@ -65,7 +65,8 @@ public class MapRsem implements MapRNA {
 		softWareInfoRsem.setName(SoftWare.rsem);
 		SoftWareInfo softWareInfoBowtie = new SoftWareInfo();
 		softWareInfoBowtie.setName(SoftWare.bowtie);
-		setExePath(softWareInfoRsem.getExePath(), softWareInfoBowtie.getExePath());
+		this.exePathRsem = softWareInfoRsem.getExePathRun();
+		this.exePathBowtie = softWareInfoBowtie.getExePathRun();
 	}
 
 	/**
@@ -79,22 +80,6 @@ public class MapRsem implements MapRNA {
 		}
 		gffChrSeq = new GffChrSeq(gffChrAbs);
 		this.species = gffChrAbs.getSpecies();
-	}
-	/**
-	 * 设定bwa所在的文件夹以及待比对的路径
-	 * @param exePathRsem rsem的路径 如果在根目录下则设置为""或null
-	 * @param exePathBowtie bowtie的路径，什么时候rsem支持bowtie2了，那么再修正
-	 */
-	public void setExePath(String exePathRsem, String exePathBowtie) {
-		if (exePathRsem == null || exePathRsem.trim().equals(""))
-			this.exePathRsem = "";
-		else
-			this.exePathRsem = FileOperate.addSep(exePathRsem);
-		
-		if (exePathBowtie == null || exePathBowtie.trim().equals(""))
-			this.exePathBowtie = "";
-		else
-			this.exePathBowtie = FileOperate.addSep(exePathBowtie);
 	}
 	/**
 	 * 设定refFile

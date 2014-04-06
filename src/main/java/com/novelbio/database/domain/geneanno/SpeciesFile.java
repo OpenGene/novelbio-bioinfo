@@ -463,7 +463,11 @@ public class SpeciesFile {
 	 * @return
 	 */
 	private String getParentPathIndex(Boolean refseq, SoftWare softMapping) {
-		String parentPath = getPathParent() + "index/" + softMapping.toString() + FileOperate.getSepPath()+ getPathToVersion();
+		String softName = softMapping.toString();
+		if (softName.startsWith("bwa_")) {
+			softName = "bwa";
+		}
+		String parentPath = getPathParent() + "index/" + softName + FileOperate.getSepPath()+ getPathToVersion();
 		String indexFinalPath = null;
 		if (refseq) {
 			indexFinalPath = parentPath + "Ref_Index/";

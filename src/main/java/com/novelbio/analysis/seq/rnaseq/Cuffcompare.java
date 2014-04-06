@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.information.SoftWareInfo;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 public class Cuffcompare {
 	//cuffcompare 的参数
@@ -17,16 +19,9 @@ public class Cuffcompare {
 	/** 是否删除一些未知文件 */
 	boolean clearFile = false;
 	
-	/**
-	 * 设定samtools所在的文件夹以及待比对的路径
-	 * @param exePath 如果在根目录下则设置为""或null
-	 */
-	public void setExePath(String exePath) {
-		if (exePath == null || exePath.trim().equals("")) {
-			this.ExePath = "";
-		} else {
-			this.ExePath = FileOperate.addSep(ExePath);
-		}
+	public Cuffcompare() {
+		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.cufflinks);
+		ExePath = softWareInfo.getExePathRun();
 	}
 	
 	/** 是否删除结果中的一些未知文件 */

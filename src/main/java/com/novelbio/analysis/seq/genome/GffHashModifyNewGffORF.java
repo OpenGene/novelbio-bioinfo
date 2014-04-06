@@ -10,6 +10,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.listOperate.ListCodAbs;
 
@@ -21,6 +22,16 @@ import com.novelbio.listOperate.ListCodAbs;
  * 务必是同一个物种同一个版本的Gff
  */
 public class GffHashModifyNewGffORF {
+	public static void main(String[] args) {
+		GffHashGene gffRaw = new GffHashGene(GffType.GTF, "/media/hdfs/nbCloud/staff/hongyanyan/wanglinsurui/reconstructure/ReconstructTranscriptome_result/tmpMerge/merged.gtf");
+		GffChrAbs gffChrAbs = new GffChrAbs(9925);
+		
+		GffHashModifyNewGffORF gffHashModifyNewGffORF = new GffHashModifyNewGffORF();
+		gffHashModifyNewGffORF.setGffHashGeneRaw(gffRaw);
+		gffHashModifyNewGffORF.setGffHashGeneRef(gffChrAbs.getGffHashGene());
+		gffHashModifyNewGffORF.modifyGff();
+		gffRaw.writeToGTF("/media/winD/novelNew2.gtf");
+	}
 	private static final Logger logger = Logger.getLogger(GffHashModifyNewGffORF.class);
 	/** 待修该的Gff */
 	GffHashGene gffHashGeneRaw;
@@ -31,10 +42,13 @@ public class GffHashModifyNewGffORF {
 	boolean renameIso = false;
 	String prefixGeneName = "NBC";
 	
-	/** 设定基因的前缀，一般用物种名缩写加上随机数比较合适<br>
+	/**
+	 * 不用设定该方法了<br>
+	 * 设定基因的前缀，一般用物种名缩写加上随机数比较合适<br>
 	 * 譬如: hsa_123
 	 * @param prefixGeneName
 	 */
+	@Deprecated
 	public void setPrefixGeneName(String prefixGeneName) {
 		this.prefixGeneName = prefixGeneName;
 	}
@@ -62,6 +76,7 @@ public class GffHashModifyNewGffORF {
 				GffCodGene gffCodGene = gffHashGeneRaw.searchLocation(gffDetailGeneRef.getRefID(), median);
 				if (!gffCodGene.isInsideLoc()) {
 					logger.warn("cannot find gene on:" + gffDetailGeneRef.getRefID() + " " + median );
+					continue;
 				}
 				GffDetailGene gffDetailGeneThis = gffCodGene.getGffDetailThis();
 				if (setGffGeneName.contains(gffDetailGeneThis)) {
@@ -81,10 +96,10 @@ public class GffHashModifyNewGffORF {
 		for (GffGeneIsoInfo gffIso : gffDetailGeneThis.getLsCodSplit()) {
 			GffGeneIsoInfo gffRef = getSimilarIso(gffIso, gffDetailGeneRef);
 			if (gffRef == null) {
-				String geneName = gffIso.getParentGeneName();
-				if (geneName.startsWith("XLOC")) {
-					gffIso.setParentGeneName(geneName.replace("XLOC_", prefixGeneName));
-				}
+//				String geneName = gffIso.getParentGeneName();
+//				if (geneName.startsWith("XLOC")) {
+//					gffIso.setParentGeneName(gffDetailGeneRef.getNameSingle());
+//				}
 				continue;
 			}
 			if (renameGene) {

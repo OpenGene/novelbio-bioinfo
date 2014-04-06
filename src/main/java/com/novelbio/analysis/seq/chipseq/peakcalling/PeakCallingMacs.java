@@ -8,6 +8,8 @@ import com.novelbio.analysis.seq.FormatSeq;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.information.SoftWareInfo;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 public class PeakCallingMacs implements IntCmdSoft {
 	private String pathInput;
@@ -107,7 +109,9 @@ public class PeakCallingMacs implements IntCmdSoft {
 	
 	private List<String> getLsCmd() {
 		List<String> lsCmd = new ArrayList<>();
-		lsCmd.add("macs14");
+		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.macs);
+		String exePath = softWareInfo.getExePathRun();
+		lsCmd.add(exePath + "macs14");
 		ArrayOperate.addArrayToList(lsCmd, getFileType());
 		ArrayOperate.addArrayToList(lsCmd, getGenomeLength());
 		ArrayOperate.addArrayToList(lsCmd, getPathinput());
