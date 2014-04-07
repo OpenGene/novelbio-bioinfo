@@ -13,6 +13,7 @@ import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRGroup;
 import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
@@ -302,9 +303,7 @@ public class MapBwaAln extends MapDNA {
 	@Override
 	protected SamFile mapping() {
 		combSeq();
-		if (!bwaAln()) {
-			return null;
-		}
+		bwaAln();
 		return bwaSamPeSe();
 	}
 	/**
@@ -315,7 +314,7 @@ public class MapBwaAln extends MapDNA {
 	 *
 	 * @return 是否成功运行
 	 */
-	private boolean bwaAln() {
+	private void bwaAln() {
 		List<String> lsCmdLeft = getLsCmdAln(true);
 		CmdOperate cmdOperate = new CmdOperate(lsCmdLeft);
 		cmdOperate.run();
@@ -327,9 +326,10 @@ public class MapBwaAln extends MapDNA {
 		}
 		
 		if (cmdOperate.isFinishedNormal() || cmdOperate.getRunTime() > overTime) {
-			return true;
-		} else {
-			return false;
+			return;
+		}
+		if(!cmdOperate.isFinishedNormal()) {
+			throw new ExceptionCmd("bwa aln error:\n" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
 		}
 	}
 	
@@ -384,6 +384,9 @@ public class MapBwaAln extends MapDNA {
 			return samResult;
 		} else {
 			deleteFailFile();
+			if(!cmdOperate.isFinishedNormal()) {
+				throw new ExceptionCmd("bwa aln mapping error:\n" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
+			}
 			return null;
 		}
 	}
@@ -432,11 +435,13 @@ public class MapBwaAln extends MapDNA {
 	 * @return true仅表示是否运行了建索引程序，不代表建索引成功
 	 */
 	@Override
-	protected boolean makeIndex() {
+	protected void makeIndex() {
 		List<String> lsCmd = getLsCmdIndex(ExePath, chrFile);
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.run();
-		return cmdOperate.isFinishedNormal();
+		if(!cmdOperate.isFinishedNormal()) {
+			throw new ExceptionCmd("bwa index error:\n" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
+		}
 	}
 
 	@Override

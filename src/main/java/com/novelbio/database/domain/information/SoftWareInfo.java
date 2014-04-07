@@ -240,7 +240,7 @@ public class SoftWareInfo {
 	public static enum SoftWare {
 		blast,
 		bwa_aln, bwa_men, bowtie, bowtie2, 
-		tophat, rsem, mapsplice,
+		tophat, rsem, mapsplice, rseqc,
 		miranada, RNAhybrid, mirDeep, miReap,
 		samtools, picard, GATK, cufflinks,
 		macs, sicer,

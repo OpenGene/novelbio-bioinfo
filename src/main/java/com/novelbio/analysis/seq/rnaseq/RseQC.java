@@ -3,72 +3,39 @@ package com.novelbio.analysis.seq.rnaseq;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.novelbio.analysis.IntCmdSoft;
+import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
+import com.novelbio.analysis.seq.mapping.MapLibrary;
+import com.novelbio.analysis.seq.mapping.StrandSpecific;
+import com.novelbio.analysis.seq.sam.BamReadsInfo;
+import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.base.ExceptionNullParam;
+import com.novelbio.base.FoldeCreate;
 import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.information.SoftWareInfo;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
+import com.novelbio.database.model.species.Species;
 
 public class RseQC {
-	
-	public static void main(String[] args) {
-		String inFile = "/media/hdfs/nbCloud/public/test/RSeQC/Pairend_nonStrandSpecific_36mer_Human_hg19.sort.bam";
-		String outFile = "/home/zong0jie/hdfs/GeneBodyCoverage";
-		String bedFile = "/media/hdfs/nbCloud/public/test/RSeQC/hg19_RefSeq.bed";
-		GeneBodyCoverage geneBodyCoverage = new  GeneBodyCoverage(inFile, outFile, bedFile);
-		geneBodyCoverage.run();
-		InnerDistance innerDistance = new InnerDistance(inFile, outFile, bedFile);
-		innerDistance.run();
-		JunctionAnnotation junctionAnnotation = new JunctionAnnotation(inFile, outFile, bedFile);
-		junctionAnnotation.run();
-		JunctionSaturation junctionSaturation = new JunctionSaturation(inFile, outFile, bedFile);
-		junctionSaturation.run();
-		ReadDuplication readDuplication =  new ReadDuplication(inFile, outFile);
-		readDuplication.run();
-		
-		RPKMSaturation rPKMsaSaturation = new RPKMSaturation(inFile, outFile, bedFile);
-		rPKMsaSaturation.run();
-	}
-	
-	String inFile;
-	String outPah;
-	String bedFile;
-	String exePath;
-	public void setExePath(String exePath) {
-		this.exePath = exePath;
-	}
-	public void setInFile(String inFile) {
-		this.inFile = inFile;
-	}
-	public void setOutPah(String outPah) {
-		this.outPah = outPah;
-	}
-	public void setBedFile(String bedFile) {
-		this.bedFile = bedFile;
-	}
-	public void setGtfFile(String gtfFile) {
-		GffHashGene gffHashGene = new GffHashGene(GffType.GTF, gtfFile);
-		String bedFile = FileOperate.getPathName(outPah) + FileOperate.getFileName(gtfFile);
-		bedFile = FileOperate.changeFileSuffix(bedFile, "_toBed", "bed");
-		gffHashGene.writeToBED(gtfFile);
-		gffHashGene = null;
-		this.bedFile = bedFile;
-	}
-	
-	
 	/**
-	 * 用于计算在genebody的覆盖谱
+	 * 用于计算在genebody的覆盖谱<br>
+	 * 输入bam文件
 	 * @author novelbio
 	 *
 	 */
-	public static class GeneBodyCoverage {
+	public static class GeneBodyCoverage implements IntCmdSoft {
 		/**输入文件*/
 		protected String inFile;
 		/**输出文件前缀*/
 		protected String outFile;
 		/**参考基因组bed文件*/
 		protected String bedFile;
-		
+		String exePath = "";
 		public GeneBodyCoverage(String inFile,String outFile,String bedFile) {
 			/**出入的bam或者sam文件*/
 			this.inFile = inFile;
@@ -76,6 +43,8 @@ public class RseQC {
 			this.outFile = outFile;
 			
 			this.bedFile = bedFile;
+			SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.rseqc);
+			exePath = softWareInfo.getExePathRun();
 		}
 		
 		
@@ -112,15 +81,30 @@ public class RseQC {
 		}
 		
 		public void run() {
-			List<String> lsListCmd = new ArrayList<String>();
-			lsListCmd.add("geneBody_coverage.py");
-			lsListCmd.addAll(getParamList());
-			CmdOperate cmdOperate = new CmdOperate(lsListCmd);
+			CmdOperate cmdOperate = new CmdOperate(getLsCmd());
 			cmdOperate.run();
+			if (!cmdOperate.isFinishedNormal()) {
+				throw new ExceptionCmd("rseqcError: " + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
+			}
+		}
+
+		protected List<String> getLsCmd() {
+			List<String> lsCmd = new ArrayList<String>();
+			lsCmd.add(exePath + "geneBody_coverage.py");
+			lsCmd.addAll(getParamList());
+			return lsCmd;
+		}
+		@Override
+		public List<String> getCmdExeStr() {
+			List<String> lsCmd = new ArrayList<>();
+			CmdOperate cmdOperate = new CmdOperate(getLsCmd());
+			lsCmd.add( cmdOperate.getCmdExeStr());
+			return lsCmd;
 		}
 	}
 	/**
-	 * 用于计算在genebody的覆盖谱
+	 * 用于计算在genebody的覆盖谱<br>
+	 * 输入bigwig文件
 	 * @author novelbio
 	 *
 	 */
@@ -143,20 +127,20 @@ public class RseQC {
 		public String getImageType() {
 			return imageType;
 		}
-		
-		@Override
-		public void run() {
+
+		protected List<String> getLsCmd() {
 			List<String> lsListCmd = new ArrayList<String>();
-			lsListCmd.add("geneBody_coverage2.py");
+			lsListCmd.add(exePath + "geneBody_coverage2.py");
 			lsListCmd.addAll(getParamList());
 			ArrayOperate.addArrayToList(lsListCmd, getImageTypeParam());
-			CmdOperate cmdOperate = new CmdOperate(lsListCmd);
-			cmdOperate.run();
+			return lsListCmd;
 		}
-		
+
 	}
+	
 	/**
-	 *用于计算两个成对的RNA读长的距离
+	 * 用于计算两个成对的RNA读长的距离<br>
+	 * 输入bam文件
 	 * @author novelbio
 	 *
 	 */
@@ -198,21 +182,21 @@ public class RseQC {
 			super(inFile, outFile, bedFile);
 		}
 		
-		@Override
-		public void run() {
+		protected List<String> getLsCmd() {
 			List<String> lsListCmd = new ArrayList<String>();
-			lsListCmd.add("inner_distance.py");
+			lsListCmd.add(exePath + "inner_distance.py");
 			lsListCmd.addAll(getParamList());
 			ArrayOperate.addArrayToList(lsListCmd, getImageLowerBoundParamer());
 			ArrayOperate.addArrayToList(lsListCmd, getImageUpBoundParam());
 			ArrayOperate.addArrayToList(lsListCmd,getImageStepLenght());
-			CmdOperate cmdOperate = new CmdOperate(lsListCmd);
-			cmdOperate.run();
+			return lsListCmd;
 		}
-		
+
 	}
 	/**
-	 * 比较参考基因组（bed文件）与测序的结果（BAM/SAM文件）中junction的种类。可以在两个层面上进行，剪切事件阶段以及剪切junction阶段。结果将会被分为三类：已知的，部分未知的，完全未知的。
+	 * 比较参考基因组（bed文件）与测序的结果（BAM/SAM文件）中junction的种类。可以在两个层面上进行，
+	 * 剪切事件阶段以及剪切junction阶段。结果将会被分为三类：已知的，部分未知的，完全未知的。<br>
+	 * 输入bam文件
 	 * @author novelbio
 	 *
 	 */
@@ -232,19 +216,17 @@ public class RseQC {
 			super(inFile, outFile, bedFile);
 		}
 		
-		@Override
-		public void run() {			
+		protected List<String> getLsCmd() {
 			List<String> lsListCmd = new ArrayList<String>();
-			lsListCmd.add("junction_annotation.py");
+			lsListCmd.add(exePath + "junction_annotation.py");
 			lsListCmd.addAll(getParamList());
 			ArrayOperate.addArrayToList(lsListCmd, getIntronLengthParam());
-			CmdOperate cmdOperate = new CmdOperate(lsListCmd);
-			cmdOperate.run();
+			return lsListCmd;
 		}
-		
 	}
 	/**
-	 * 用于检测当前的测序深度是否可以用于可变剪切分析。
+	 * 用于检测当前的测序深度是否可以用于可变剪切分析。<br>
+	 * 输入bam文件
 	 * @author novelbio
 	 *
 	 */
@@ -318,55 +300,43 @@ public class RseQC {
 			super(inFile, outFile, bedFile);
 		}
 		
-		@Override
-		public void run() {
+		protected List<String> getLsCmd() {
 			List<String> lsListCmd = new ArrayList<String>();
-			lsListCmd.add("junction_saturation.py");
+			lsListCmd.add(exePath + "junction_saturation.py");
 			lsListCmd.addAll(getParamList());
-			CmdOperate cmdOperate = new CmdOperate(lsListCmd);
-			cmdOperate.run();
+			return lsListCmd;
 		}
 	}
-	/**用于计算读长的重复性。*/
-	public static class ReadDuplication {
-		/**输入文件*/
-		protected String inFile;
-		/**输出文件前缀*/
-		protected String outFile;
+	/**用于计算读长的重复性<br>
+	 * 输入bam文件
+	 * @author zong0jie
+	 *
+	 */
+	public static class ReadDuplication extends GeneBodyCoverage {
 		/**读长重复次数的上限，仅用于绘图，默认是500*/
 		protected int readsRepeatNum = 500;
 		
-		public ReadDuplication(String inFile ,String outFile ) {
-			this.inFile = inFile;
-			this.outFile = outFile;
+		public ReadDuplication(String inFile, String outFile, String bedFile) {
+			super(inFile, outFile, bedFile);
 		}
-		
-		private String[] getInFileParam() {
-			return new String[]{"-i",inFile};
-		}
-		
-		private String[] getOutFileParam() {
-			return new String[]{"-o",outFile};
-		}
-		
+
 		private String[] getReadsRepeatNumParam() {
 			return new String[]{"-u",readsRepeatNum + ""};
 		}
 		
-		
-		public void run() {
+		protected List<String> getLsCmd() {
 			List<String> lsListCmd = new ArrayList<String>();
-			lsListCmd.add("read_duplication.py");
+			lsListCmd.add(exePath + "read_duplication.py");
 			ArrayOperate.addArrayToList(lsListCmd, getInFileParam());
 			ArrayOperate.addArrayToList(lsListCmd, getOutFileParam());
 			ArrayOperate.addArrayToList(lsListCmd, getReadsRepeatNumParam());
-			CmdOperate cmdOperate = new CmdOperate(lsListCmd);
-			cmdOperate.run();
+			return lsListCmd;
 		}
-		
+
 	}
+	
 	/**用于评估样本大小对RPKM的影响*/
-	public static class RPKMSaturation  extends JunctionSaturation {
+	public static class RPKMSaturation extends JunctionSaturation {
 		/**
  * For pair-end RNA-seq, there are two different ways to strand reads:
   i) 1++,1--,2+-,2-+
@@ -387,15 +357,44 @@ public class RseQC {
      read mapped to '+' strand indicates parental gene on '-' strand
      read mapped to '-' strand indicates parental gene on '+' strand	
 		 */
-		String lineRule = "1++,1--,2+-,2-+";
+		StrandSpecific strandSpecific = StrandSpecific.NONE;
+		MapLibrary mapLibrary;
+		
 		/** -c 指定RPKM的cutoff值。默认是0.01*/	
 		double cutoffValue = 0.01;
 		
 		public RPKMSaturation(String inFile, String outFile, String bedFile) {
 			super(inFile, outFile, bedFile);
 		}
+		@Deprecated
+		public void setIntronLength(int intronLen) {}
+		
+		public void setStrandSpecific(StrandSpecific strandSpecific) {
+			this.strandSpecific = strandSpecific;
+		}
+		public void setMapLibrary(MapLibrary mapLibrary) {
+			this.mapLibrary = mapLibrary;
+		}
 		
 		private String[] getLineRuleParam() {
+			String lineRule = null;
+			if (strandSpecific == null || strandSpecific == StrandSpecific.NONE || strandSpecific == StrandSpecific.UNKNOWN) {
+				return null;
+			} else if (strandSpecific == StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND) {
+				if (mapLibrary != MapLibrary.Unknown && mapLibrary != MapLibrary.SingleEnd) {
+					lineRule = "1++,1--,2+-,2-+";
+				} else {
+					lineRule = "++,--";
+				}
+			} else if (strandSpecific == StrandSpecific.SECOND_READ_TRANSCRIPTION_STRAND) {
+				if (mapLibrary != MapLibrary.Unknown && mapLibrary != MapLibrary.SingleEnd) {
+					lineRule = "1+-,1-+,2++,2--";
+				} else {
+					lineRule = "+-,-+";
+				}
+			} else {
+				throw new ExceptionNullParam("error no param:" + strandSpecific.toString() + " " + mapLibrary.toString());
+			}
 			return new  String[]{"-d",lineRule};
 		}
 		
@@ -403,10 +402,9 @@ public class RseQC {
 			return new  String[]{"-c",cutoffValue+""};
 		}
 		
-		@Override
-		public void run() {
+		protected List<String> getLsCmd() {
 			List<String> lsListCmd = new ArrayList<String>();
-			lsListCmd.add("RPKM_saturation.py");
+			lsListCmd.add(exePath + "RPKM_saturation.py");
 			ArrayOperate.addArrayToList(lsListCmd, getInFileParam());
 			ArrayOperate.addArrayToList(lsListCmd, getOutFileParam());
 			ArrayOperate.addArrayToList(lsListCmd, getBedFileParam());
@@ -415,11 +413,8 @@ public class RseQC {
 			ArrayOperate.addArrayToList(lsListCmd, getSampleStepLenghtParam());
 			ArrayOperate.addArrayToList(lsListCmd, getLineRuleParam());
 			ArrayOperate.addArrayToList(lsListCmd, getCutoffValue());
-			CmdOperate cmdOperate = new CmdOperate(lsListCmd);
-			cmdOperate.run();
+			return lsListCmd;
 		}
-		
-		
 	}
 	
 	public static enum EnumRseQCmodule {

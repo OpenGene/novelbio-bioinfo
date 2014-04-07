@@ -21,14 +21,23 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffFile;
 import com.novelbio.analysis.seq.genome.gffOperate.GffFileUnit;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.genome.mappingOperate.EnumMapNormalizeType;
+import com.novelbio.analysis.seq.mapping.MapBowtie;
+import com.novelbio.analysis.seq.mapping.MapBwaAln;
 import com.novelbio.analysis.seq.mapping.MapDNA;
+import com.novelbio.analysis.seq.mapping.MapDNAint;
+import com.novelbio.analysis.seq.mapping.MapSplice;
+import com.novelbio.analysis.seq.mapping.MapTophat;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
+import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.ImageUtils;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
@@ -43,11 +52,8 @@ public class mytest {
 	private static final Logger logger = Logger.getLogger(mytest.class);
 	static boolean is;
 	public static void main(String[] args) {
-		DateUtil dateUtil = new DateUtil();
-
-		dateUtil.setStartTime();
-		ImageUtils.read("/hdfs:/nbCloud/public/SampleQC/2014-03-29/aaa-RNA-2013-12-31-02_D1K_2014-03-29-03-48-3910289.png");
-		System.out.println(dateUtil.getEclipseTime());
+		MapSplice mapSplice = new MapSplice();
+		System.out.println(mapSplice.getVersionMapSplice());
 	}
 	
 	/** 将有问题的fastq文件整理为正常的 */

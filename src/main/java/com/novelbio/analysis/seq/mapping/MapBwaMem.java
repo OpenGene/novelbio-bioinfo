@@ -425,6 +425,9 @@ public class MapBwaMem extends MapDNA {
 			return samResult;
 		} else {
 			deleteFailFile();
+			if(!cmdOperate.isFinishedNormal()) {
+				throw new ExceptionCmd("bwa aln mapping error:\n" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
+			}
 			return null;
 		}
 	}
@@ -454,11 +457,13 @@ public class MapBwaMem extends MapDNA {
 	public void setMapLibrary(MapLibrary mapLibrary) {}
 
 	@Override
-	protected boolean makeIndex() {
+	protected void makeIndex() {
 		List<String> lsCmd = MapBwaAln.getLsCmdIndex(exePath, chrFile);
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.run();
-		return cmdOperate.isFinishedNormal();
+		if(!cmdOperate.isFinishedNormal()) {
+			throw new ExceptionCmd("bwa index error:\n" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
+		}
 	}
 
 	@Override

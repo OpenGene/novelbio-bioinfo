@@ -574,7 +574,7 @@ public class MapTophat implements MapRNA {
 			unmappedFq = FileOperate.changeFileSuffix(unmappedBam, "", "fq.gz");
 		}
 		//没有比对上的reads用bowtie2再次比对
-		String mapBowtieBam = FileOperate.changeFileSuffix(unmappedBam, "_bwaMap", "bam");
+		String mapBowtieBam = FileOperate.changeFileSuffix(unmappedFq, "_bwaMap", "bam");
 		SamFile samFileMapBowtie = null;
 		MapBwaMem mapBwaMem = null;
 		if (!FileOperate.isFileExistAndBigThanSize(mapBowtieBam, 1_000_000)) {

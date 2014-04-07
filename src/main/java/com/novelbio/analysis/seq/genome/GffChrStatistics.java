@@ -40,6 +40,7 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	double UTR3num = 0;
 	double CDSnum = 0;
 	double exonNum = 0;
+	double exonNcRNA = 0;
 	double intronNum = 0;
 	double tssNum = 0;
 	double tesNum = 0;
@@ -121,6 +122,7 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 		UTR5num = 0;
 		UTR3num = 0;
 		exonNum = 0;
+		exonNcRNA = 0;
 		CDSnum = 0;
 		intronNum = 0;
 		tssNum = 0;	
@@ -330,7 +332,8 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 		lsTitle.add(new String[]{"UTR5", (long)UTR5num + "", (long)gffChrStatistics.UTR5num + ""});
 		lsTitle.add(new String[]{"UTR3", (long)UTR3num + "", (long)gffChrStatistics.UTR3num + ""});
 		lsTitle.add(new String[]{"CDS", (long)CDSnum + "", (long)gffChrStatistics.CDSnum + ""});//
-		lsTitle.add(new String[]{"Exon", (long)exonNum + "", (long)gffChrStatistics.exonNum + ""});
+		lsTitle.add(new String[]{"ExonNCRNA", (long)exonNcRNA + "", (long)gffChrStatistics.exonNcRNA + ""});
+		lsTitle.add(new String[]{"ExonAll", (long)exonNum + "", (long)gffChrStatistics.exonNum + ""});
 		lsTitle.add(new String[]{"Intron", (long)intronNum + "", (long)gffChrStatistics.intronNum + ""});
 		lsTitle.add(new String[]{"Tss", (long)tssNum + "", (long)gffChrStatistics.tssNum + ""});
 		lsTitle.add(new String[]{"Tes", (long)tesNum + "", (long)gffChrStatistics.tesNum + ""});
@@ -365,6 +368,8 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 					if (cdsLen > 0) {
 						gffChrStatistics.CDSnum = gffChrStatistics.CDSnum + cdsLen;
 					}
+				} else {
+					gffChrStatistics.exonNcRNA = gffChrStatistics.exonNcRNA + gffGeneIsoInfoLong.getLenExon(0);
 				}
 				gffChrStatistics.exonNum = gffChrStatistics.exonNum + gffGeneIsoInfoLong.getLenExon(0);
 				gffChrStatistics.intronNum = gffChrStatistics.intronNum + gffGeneIsoInfoLong.getLenIntron(0);
@@ -424,6 +429,7 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 		gffChrStatisticsResult.colChrID = colChrID;
 		gffChrStatisticsResult.colSummit = colSummit;
 		gffChrStatisticsResult.exonNum = exonNum;
+		gffChrStatisticsResult.exonNcRNA = exonNcRNA;
 		gffChrStatisticsResult.fileName = fileName;
 		gffChrStatisticsResult.firstLine = firstLine;
 		gffChrStatisticsResult.gffChrAbs = gffChrAbs;

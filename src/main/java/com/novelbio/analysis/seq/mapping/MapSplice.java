@@ -287,7 +287,7 @@ public class MapSplice implements MapRNA {
 			fqLeft = fqLeft + "," + lsLeftRun.get(i).getReadFileName();
 		}
 		lsFqFileInfo.add(fqLeft);
-		if (lsRightRun.size() == 0)
+		if (lsRightRun.isEmpty())
 			return lsFqFileInfo;
 		
 		lsFqFileInfo.add("-2");
@@ -316,15 +316,32 @@ public class MapSplice implements MapRNA {
 		ArrayOperate.addArrayToList(lsCmd, getOutPath());
 		return lsCmd;
 	}
+	
+	
+	
 	@Override
 	public SoftWare getBowtieVersion() {
 		return SoftWare.bowtie;
 	}
 	
+	public String getVersionMapSplice() {
+		List<String> lsCmdVersion = new ArrayList<>();
+		lsCmdVersion.add("python");
+		lsCmdVersion.add(exePath + "mapsplice.py");
+		lsCmdVersion.add("--version");
+		CmdOperate cmdOperate = new CmdOperate(lsCmdVersion);
+		cmdOperate.run();
+		List<String> lsInfo = cmdOperate.getLsErrOut();
+		String[] ss = lsInfo.get(0).trim().split(" ");
+		String version = ss[ss.length-1];
+		return version;
+	}
 	@Override
 	public List<String> getCmdExeStr() {
 		prepareReads();
 		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add("MapSplice version: " + getVersionMapSplice());
+		lsCmd.add(getBowtieVersion().toString() + " version: " + mapBowtie.getVersion());
 		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
 		lsCmd.add(cmdOperate.getCmdExeStr());
 		if (!lsCmdMapping2nd.isEmpty()) {

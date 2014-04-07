@@ -226,11 +226,10 @@ public abstract class MapDNA implements MapDNAint {
 		boolean makeIndexSucess = false;
 		try {
 			int i = 0;
-			makeIndexSucess = makeIndex();
-			while (!makeIndexSucess) {
-				makeIndexSucess = makeIndex();
-				i++;
-				if (i > 1) break;//重试一次
+			try {
+				makeIndex();
+			} catch (Exception e) {
+				makeIndex();
 			}
 		} catch (Exception e) {
 			logger.error("index make error:" + parentPath + chrFile);
@@ -258,7 +257,7 @@ public abstract class MapDNA implements MapDNAint {
 	 * 如果face为true，则强制构建索引
 	 * @return
 	 */
-	protected abstract boolean makeIndex();
+	protected abstract void makeIndex();
 	/** 删除关键的索引文件，意思就是没有建成索引 */
 	protected abstract void deleteIndex();
 	

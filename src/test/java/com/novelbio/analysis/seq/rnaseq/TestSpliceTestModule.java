@@ -8,7 +8,7 @@ import junit.framework.TestCase;
 public class TestSpliceTestModule extends TestCase {
 	
 	public void testBalance() {
-		SpliceTestModule spliceTestModule = new SpliceTestModule();
+		SpliceTestRepeat spliceTestModule = new SpliceTestRepeat();
 		List<List<Double>> lsSite2LsGroup = new ArrayList<>();
 		List<Double> lsSite1 = new ArrayList<>();
 		lsSite1.add(27.0); lsSite1.add(24.0); lsSite1.add(33.0);

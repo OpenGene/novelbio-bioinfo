@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 
-import com.novelbio.analysis.seq.mapping.MapBwa;
+import com.novelbio.analysis.seq.mapping.MapBwaAln;
 import com.novelbio.analysis.seq.mapping.MapDNAint;
 import com.novelbio.analysis.seq.sam.AlignSeqReading;
 import com.novelbio.analysis.seq.sam.SamFile;
@@ -18,7 +18,7 @@ public class TestAopDNAMapping extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		samFile = new SamFile("/home/zong0jie/Atmp/Test/Novelbio Result/1、quality-control_result/MappingInfoaaa.bam");
-		mapDNAint = new MapBwa();
+		mapDNAint = new MapBwaAln();
 		SamFileStatistics samFileStatistics = new SamFileStatistics();
 		AlignSeqReading alignSeqReading = new AlignSeqReading(samFile);
 		alignSeqReading.addAlignmentRecorder(samFileStatistics);

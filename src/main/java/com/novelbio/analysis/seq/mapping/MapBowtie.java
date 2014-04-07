@@ -248,11 +248,13 @@ public class MapBowtie extends MapDNA {
 	 * @param forceMakeIndex 强制建立索引
 	 * @return true：表示运行了建索引程序，不代表成功建立了索引
 	 */
-	protected boolean makeIndex() {
+	protected void makeIndex() {
 		List<String> lsCmd = getLsCmdIndex();
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.run();
-		return cmdOperate.isFinishedNormal();
+		if(!cmdOperate.isFinishedNormal()) {
+			throw new ExceptionCmd(bowtieVersion.toString() + " index error:\n" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
+		}
 	}
 	
 	protected boolean isIndexExist() {
