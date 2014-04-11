@@ -689,7 +689,7 @@ public class SamFile implements AlignSeq {
 		
 		SamFile samFileOut = new SamFile(FileOperate.changeFileSuffix(getFileName(), "_Lowcase", null), mFileHeaderLowcase, mFileHeaderLowcase.getSortOrder() != SortOrder.unsorted);
 		for (SamRecord samRecord : readLines()) {
-			samRecord.setRefID(samRecord.getRefID().toLowerCase());
+			samRecord.setReferenceName(samRecord.getRefID().toLowerCase());
 			samFileOut.writeSamRecord(samRecord);
 		}
 		samFileOut.close();
@@ -815,6 +815,7 @@ public class SamFile implements AlignSeq {
 		if (samBamFile.endsWith("bam")) {
 			thisFormate = FormatSeq.BAM;
 		}
+		samReader.close();
 		return thisFormate;
 	}
     /**

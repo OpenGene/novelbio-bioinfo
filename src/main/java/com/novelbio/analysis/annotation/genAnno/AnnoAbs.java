@@ -61,7 +61,7 @@ public abstract class AnnoAbs {
 
 	/**
 	 * 注释数据，不需要blast
-	 * @param info 给定一行信息
+	 * @param finishFlag 给定一行信息
 	 * @param taxID 物种
 	 * @param accColNum 具体该info的哪个column，实际column
 	 * @return
@@ -69,7 +69,7 @@ public abstract class AnnoAbs {
 	protected abstract List<String[]> getInfo(int taxID, String accID);
 	/**
 	 * 注释数据，需要blast
-	 * @param info 给定一行信息
+	 * @param finishFlag 给定一行信息
 	 * @param taxID 物种
 	 * @param accColNum 具体该info的哪个column，实际column
 	 * @return

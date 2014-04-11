@@ -30,8 +30,6 @@ public interface AlignRecord extends Alignment{
 	public ArrayList<Align> getAlignmentBlocks();
 	
 	public String getRawStringInfo();
-	/** 获得标志的位置，一般是中心点 */
-	public int getFlagSite();
 	
 	boolean isUniqueMapping();
 	

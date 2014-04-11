@@ -547,7 +547,7 @@ public class SpeciesFile {
 				gffChrSeq.setGeneStructure(GeneStructure.ALLLENGTH);
 				gffChrSeq.setGetAAseq(false);
 			}
-			gffChrSeq.setGetReplicateIso(false);
+			gffChrSeq.setIsGetReplicateIso(false);
 			gffChrSeq.setGetAllIso(isAllIso);
 			gffChrSeq.setGetIntron(false);
 			gffChrSeq.setGetSeqGenomWide();

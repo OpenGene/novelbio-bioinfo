@@ -15,16 +15,14 @@ import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.bed.BedRecord;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
-import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.base.ExceptionNullParam;
 
-public class SamRecord extends SiteSeqInfo implements AlignRecord{
+public class SamRecord implements AlignRecord {
 	private static Logger logger = Logger.getLogger(SamRecord.class);
 	SAMRecord samRecord;
 	Boolean isJunctionReads;
-	Boolean isHavePaireReads;
 	int numMappedReadsInFile = 0;
     
 	public SamRecord() {
@@ -33,26 +31,17 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 
 	public SamRecord(SAMRecord samRecord) {
 		this.samRecord = samRecord;
-		setSiteInfo(samRecord);
 	}
 	protected SAMRecord getSamRecord() {
 		return samRecord;
-	}
-	private void setSiteInfo(SAMRecord samRecord) {
-		try { super.setCis5to3(!samRecord.getReadNegativeStrandFlag()); } catch (Exception e) { }
-		try { super.setRefID(samRecord.getReferenceName()); } catch (Exception e) { }
-		try { super.setSeq(new SeqFasta(samRecord.getReadString()), false); } catch (Exception e) { }
-		try { super.setStartEndLoc(samRecord.getAlignmentStart(), samRecord.getAlignmentEnd()); } catch (Exception e) { }
-		try { super.setName(samRecord.getReadName());} catch (Exception e) { }
 	}
 	
 	public void setHeader(SAMFileHeader samFileHeader) {
 		samRecord.setHeader(samFileHeader);
 	}
 	
-	public void setChrID(String chrID) {
+	public void setReferenceName(String chrID) {
 		samRecord.setReferenceName(chrID);
-		try { super.setRefID(chrID); } catch (Exception e) { }
 	}
 	
     /**
@@ -220,27 +209,9 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 		samRecord.setAttribute("NH", multiHitNum);
 	}
 	
-	/**
-	 * 是否为双端或者说有令一端 返回null：表示不知道到底有没有另一端，那么就要根据输入的文件进行判断
-	 * */
+	/** the read is paired in sequencing, no matter whether it is mapped in a pair. */
 	public boolean isHavePairEnd() {
-		if (isHavePaireReads != null) {
-			return isHavePaireReads;
-		}
-		String aa = samRecord.getMateReferenceName();
-		if (aa.equals("*")) {
-			if (getRefID().equals("*")) {
-				try {
-					samRecord.getMateUnmappedFlag();
-					isHavePaireReads = true;
-				} catch (Exception e) {
-					isHavePaireReads = false;
-				}
-			}
-			isHavePaireReads = false;
-		} else
-			isHavePaireReads = true;
-		return isHavePaireReads;
+		return samRecord.getReadPairedFlag();
 	}
 
 	/** 双端的另一半是否mapping上了，单端也返回false */
@@ -328,7 +299,9 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 	
 	/** 获得原始的序列，不会根据cis5to3进行反向互补操作 */
 	public SeqFasta getSeqFasta() {
-		return super.getSeqFasta();
+		SeqFasta seqFasta = new SeqFasta(samRecord.getReadString());
+		seqFasta.setName(samRecord.getReadName());
+		return seqFasta;
 	}
 	
 	/** 这样返回就是每个SamRecord返回一系列BedRecord */
@@ -482,4 +455,53 @@ public class SamRecord extends SiteSeqInfo implements AlignRecord{
 		}
 		return getName() + seqFasta.toString();
 	}
+
+	@Override
+	public int getStartAbs() {
+		return samRecord.getAlignmentStart();
+	}
+
+	@Override
+	public int getEndAbs() {
+		return samRecord.getAlignmentEnd();
+	}
+
+	@Override
+	public int getStartCis() {
+		if (isCis5to3()) {
+			return samRecord.getAlignmentStart();
+		} else {
+			return samRecord.getAlignmentEnd();
+		}
+	}
+
+	@Override
+	public int getEndCis() {
+		if (isCis5to3()) {
+			return samRecord.getAlignmentEnd();
+		} else {
+			return samRecord.getAlignmentStart();
+		}
+	}
+
+	@Override
+	public Boolean isCis5to3() {
+		return !samRecord.getReadNegativeStrandFlag();
+	}
+
+	@Override
+	public int getLength() {
+		return Math.abs(samRecord.getAlignmentEnd() - samRecord.getAlignmentStart()) + 1;
+	}
+
+	@Override
+	public String getRefID() {
+		return samRecord.getReferenceName();
+	}
+
+	@Override
+	public String getName() {
+		return samRecord.getReadName();
+	}
+
 }

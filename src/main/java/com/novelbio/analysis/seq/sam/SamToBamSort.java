@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.novelbio.base.fileOperate.FileOperate;
+
 import net.sf.samtools.SAMFileHeader.SortOrder;
 
 /** 将sam文件转化为bam文件
@@ -20,7 +22,7 @@ public class SamToBamSort {
 	List<SamRecord> lsSamRecordsWithSameName = new ArrayList<>();
 	boolean addMultiHitFlag = false;
 	boolean isPairend = false;
-	
+	boolean isUsingTmpFile = false;
 	/** 默认不排序 */
 	boolean isNeedSort = false;
 	
@@ -42,6 +44,14 @@ public class SamToBamSort {
 	/** 是否需要排序，默认false */
 	public void setNeedSort(boolean isNeedSort) {
 		this.isNeedSort = isNeedSort;
+	}
+	/** 是否使用临时文件<br>
+	 * 意思就是说在转化过程中用中间文件保存，只有当成功后才会改为最后文件名<br>
+	 * <b>默认false</b>，因为mapping模块里面已经采用了中间文件名
+	 * @param isUsingTmpFile
+	 */
+	public void setUsingTmpFile(boolean isUsingTmpFile) {
+		this.isUsingTmpFile = isUsingTmpFile;
 	}
 	/**
 	 * 设定是否添加比对到多处的标签，暂时仅适用于bowtie2
@@ -73,14 +83,23 @@ public class SamToBamSort {
 		} else {
 			convertNotAddMultiFlag();
 		}
+		finishConvert();
 	}
 	
 	private void setBamWriteFile() {
+		String outFileName = this.outFileName;
+		if (isUsingTmpFile) {
+			outFileName = getTmpFileName();
+		}
 		if (isNeedSort && samFileSam.getHeader().getSortOrder()== SortOrder.unsorted) {
 			samFileBam = new SamFile(outFileName, samFileSam.getHeader(true), false);
 		} else {
 			samFileBam = new SamFile(outFileName, samFileSam.getHeader());
 		}
+	}
+	
+	private String getTmpFileName() {
+		return FileOperate.changeFileSuffix(outFileName, "_tmp", null);
 	}
 	
 	private void convertNotAddMultiFlag() {
@@ -92,7 +111,6 @@ public class SamToBamSort {
 			}
 			samFileBam.writeSamRecord(samRecord);
 		}
-		finishConvert();
 	}
 	
 	/** 进行转换 */
@@ -114,7 +132,6 @@ public class SamToBamSort {
 			lsSamRecordsWithSameName.add(samRecord);
 		}
 		addLsSamRecord(lsSamRecordsWithSameName);
-		finishConvert();
 	}
 	
 	/**
@@ -140,7 +157,12 @@ public class SamToBamSort {
 			alignmentRecorder.summary();
 		}
 		samFileBam.close();
-		samFileSam.setParamSamFile(samFileBam);
+		if (isUsingTmpFile) {
+			samFileBam = null;
+		}
+		FileOperate.moveFile(true, getTmpFileName(), outFileName);
+		samFileBam = new SamFile(outFileName);
+		samFileBam.setParamSamFile(samFileSam);
 		samFileBam.bamFile = true;
 	}
 	

@@ -12,6 +12,7 @@ import org.apache.commons.math3.stat.correlation.PearsonsCorrelation;
 import org.apache.log4j.Logger;
 import org.apache.velocity.exception.MathException;
 
+import com.novelbio.base.FoldeCreate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -39,7 +40,7 @@ public class CoExp {
 		}
 	}
 	
-	public void writeToExcel(String outFile) {
+	public void writeToExcel(String outFile) {		
 		TxtReadandWrite txtOut = new TxtReadandWrite(outFile, true);
 		for (String[] strings : calculateExp()) {
 			txtOut.writefileln(strings);

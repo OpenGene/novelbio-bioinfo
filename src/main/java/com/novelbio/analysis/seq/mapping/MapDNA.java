@@ -107,9 +107,12 @@ public abstract class MapDNA implements MapDNAint {
 	public SamFile mapReads() {
 		PathDetail.getTmpPath();
 		IndexMake();
-		SamFile samFile = mapping();
 		
+		SamFile samFile = mapping();
+		String fileNameFinal = getOutNameCope();		
+		FileOperate.moveFile(true, samFile.getFileName(), fileNameFinal);
 		logger.info("mapping 结束");
+		samFile = new SamFile(fileNameFinal);
 		return samFile;
 	}
 	
@@ -145,12 +148,7 @@ public abstract class MapDNA implements MapDNAint {
 		samToBamSort.setLsAlignmentRecorders(lsAlignmentRecorders);
 		samToBamSort.convert();
 		samFileIn.close();
-		FileOperate.moveFile(true, fileNameTmp, fileNameFinal);
-		if (FileOperate.isFileExistAndBigThanSize(getOutNameCope(), 1_000)) {
-			return new SamFile(fileNameFinal);
-		} else {
-			return null;
-		}
+		return samToBamSort.getSamFileBam();
 	}
 	/** 运行失败后删除文件 */
 	protected void deleteFailFile() {

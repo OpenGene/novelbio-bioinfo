@@ -233,6 +233,9 @@ class ExtractMirSeq {
 		setUniqueMirMatureName.clear();
 		List<String> lsBlock = new ArrayList<>();
 		for (String string : txtRead.readlines()) {
+			if (string.contains(speciesName)) {
+				System.out.println("sss");
+			}
 			if (string.startsWith("//")) {
 				List<SeqFasta> lsseqFastas = getSeqFromRNAdata(lsBlock, speciesName);
 				lsBlock.clear();
@@ -240,8 +243,9 @@ class ExtractMirSeq {
 					findMiRNA = true;
 					break;
 				}
+			} else {
+				lsBlock.add(string);
 			}
-			lsBlock.add(string);
 		}
 		return findMiRNA;
 	}

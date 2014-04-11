@@ -585,11 +585,11 @@ public class MapTophat implements MapRNA {
 			alignSamReading.addAlignmentRecorder(samToFastq);
 			alignSamReading.run();
 			
-			FastQ fastQ = samToFastq.getResultFastQ();
+			FastQ[] fastQ = samToFastq.getResultFastQ();
 			mapBwaMem = new MapBwaMem();
 			mapBwaMem.setThreadNum(threadNum);
 			mapBwaMem.setChrIndex(bwaIndex);
-			mapBwaMem.setFqFile(fastQ, null);
+			mapBwaMem.setFqFile(fastQ[0], fastQ[1]);
 			String mapFile = FileOperate.changeFileSuffix(mapBowtieBam, "_TmpMapping", "bam");
 			mapBwaMem.setOutFileName(mapFile);
 			mapBwaMem.mapReads();

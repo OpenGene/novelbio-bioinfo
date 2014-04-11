@@ -12,6 +12,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.bed.BedRecord;
 import com.novelbio.analysis.seq.bed.BedSeq;
 import com.novelbio.analysis.seq.chipseq.peakcalling.PeakCallingSicer.PeakCallingSicerType;
+import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -394,9 +395,7 @@ class ModifyGenomeData {
 	}
 	
 	public static  void  modifyDataFile(Species species,String GenomeDataFile) {
-		DateFormat d4 = DateFormat.getInstance();
-		Date now = new Date();
-		String dataAndTime = d4.format(now);
+		String dataAndTime = DateUtil.getDateAndRandom();
 //		System.out.println(dataAndTime);
 		readGenomeData(GenomeDataFile);
 		String tmpstrVersion =  species.getVersion();

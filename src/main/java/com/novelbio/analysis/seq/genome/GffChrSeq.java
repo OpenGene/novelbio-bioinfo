@@ -43,7 +43,8 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	/** 同名序列是否提取多次，默认不提取同名序列 */
 	boolean isGetReplicateIso = false;
 	boolean getGenomWide = false;
-	
+	/** 是否提取iso的名字，默认是true，false表示提取基因的名字，也就是iso的parent name */
+	boolean isGetIsoName = true;
 	/** 是提取位点还是提取基因 */
 	boolean booGetIsoSeq = false;
 	LinkedHashSet<GffGeneIsoInfo> setIsoToGetSeq = new LinkedHashSet<GffGeneIsoInfo>();
@@ -70,8 +71,14 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		this.tesUagRange = tesRange;
 	}
 	/** 同名序列是否提取多次，默认不提取同名序列 */
-	public void setGetReplicateIso(boolean isGetReplicateIso) {
+	public void setIsGetReplicateIso(boolean isGetReplicateIso) {
 		this.isGetReplicateIso = isGetReplicateIso;
+	}
+	/** 是否提取iso的名字<br>
+	 * 默认是true: 表示提取iso的名字<br>
+	 * false: 提取基因的名字，也就是iso的parent name */
+	public void setIsGetIsoName(boolean isGetIsoName) {
+		this.isGetIsoName = isGetIsoName;
 	}
 	/** 
 	 * <b>false时{@link #setGetAAseq(boolean)}失效，返回的都是nr序列</b><p>
@@ -503,7 +510,13 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		if (seqFastaResult == null) {
 			return null;
 		}
-		seqFastaResult.setName(gffGeneIsoInfo.getName());
+		
+		if (isGetIsoName) {
+			seqFastaResult.setName(gffGeneIsoInfo.getName());
+		} else {
+			seqFastaResult.setName(gffGeneIsoInfo.getParentGeneName());
+		}
+	
 		return seqFastaResult;
 	}
 	/**
