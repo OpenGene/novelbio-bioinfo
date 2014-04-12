@@ -200,6 +200,11 @@ public class SamRecord implements AlignRecord {
 		return numMappedReadsInFile;
 	}
 	
+	public Integer getMapNum() {
+		Integer attrCC = samRecord.getIntegerAttribute("HI");
+		return attrCC;
+	}
+	
 	/** 设定本reads在sam文件中出现了几次，也就是比对到基因组的几个位置去了
 	 * 就是修改NH标签
 	 * @param multiHitNum 出现了几次，如果小于等于0就不设定

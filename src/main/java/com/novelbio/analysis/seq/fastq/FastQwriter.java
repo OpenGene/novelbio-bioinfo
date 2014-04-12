@@ -104,6 +104,9 @@ class FastQwriter extends RunProcess<Integer> {
 	@Override
 	protected void running() {
 		while (!finishedRead || queue.size() != 0) {
+			if (flagStop) break;
+			suspendCheck();
+			
 			Future<FastQrecordCopeUnit> future = queue.poll();
 			if (future == null) {
 				continue;
@@ -112,6 +115,7 @@ class FastQwriter extends RunProcess<Integer> {
 				try { Thread.sleep(1); } catch (InterruptedException e) { }
 			}
 
+		
 			FastQrecordCopeUnit fastQrecordFilterRun = null;
 			try { fastQrecordFilterRun = future.get(); } catch (Exception e) {logger.warn(e);}
 			
@@ -153,17 +157,10 @@ class FastQwriter extends RunProcess<Integer> {
 	 * @param bedRecord
 	 */
 	private void writeFastQRecordString(String fastQRecord1, String fastQRecord2) {
-		if (fastQRecord1 == null || fastQRecord1.equals("")) {
-			return;
-		}
+		if (fastQRecord1 == null || fastQRecord1.equals("")) return;
 		
-		if (fastQwriteMate == null) {
-			txtSeqFile.writefileln(fastQRecord1);
-		} else {
-			if (fastQRecord2 == null || fastQRecord2.equals("")) {
-				return;
-			}
-			txtSeqFile.writefileln(fastQRecord1);
+		txtSeqFile.writefileln(fastQRecord1);
+		if (fastQwriteMate != null && fastQRecord2 != null && !fastQRecord2.equals("")) {
 			fastQwriteMate.txtSeqFile.writefileln(fastQRecord2);
 		}
 	}

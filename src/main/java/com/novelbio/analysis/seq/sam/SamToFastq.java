@@ -32,11 +32,14 @@ public class SamToFastq implements AlignmentRecorder {
 
 	FastQ fastQ1;
 	FastQ fastQ2;
+	/** 如果比对到多个位置，reads是从几开始计算的 */
+	Boolean readsIndexNumFrom1 = null;
 	AlignRecord lastRecord;
 	/**
 	 * 是否仅需要unMapped，默认为false
 	 * @param justUnMapped
 	 */
+	@Deprecated
 	public void setJustUnMapped(boolean justUnMapped) {
 		this.justUnMapped = justUnMapped;
 	}
@@ -46,6 +49,7 @@ public class SamToFastq implements AlignmentRecorder {
 	}
 	/** 根据是否为mapping上的reads，自动设定文件名，并返回设定好的文件名 */
 	public String setOutFileInfo(SamFile samFile, boolean justUnMapped) {
+		clear();
 		String fileName = samFile.getFileName();
 		if (justUnMapped) {
 			fileName = FileOperate.changeFileSuffix(fileName, "_unMapped", "fastq.gz");
@@ -53,12 +57,13 @@ public class SamToFastq implements AlignmentRecorder {
 			fileName = FileOperate.changeFileSuffix(fileName, "", "fastq.gz");
 		}
 		this.justUnMapped = justUnMapped;
-		setFastqFile(fileName);
+		this.outFileName = fileName;
 		return fileName;
 	}
 	/**
 	 * @param outFileName
 	 */
+	@Deprecated
 	public void setFastqFile(String outFileName) {
 		this.outFileName = outFileName;
 	}
@@ -99,6 +104,10 @@ public class SamToFastq implements AlignmentRecorder {
 	}
 	
 	private void addAlignRecordSam(SamRecord samRecord) {
+		if (readsIndexNumFrom1 == null && samRecord.getMappedReadsWeight() > 1 && samRecord.getMapNum() != null && samRecord.getMapNum() == 0) {
+			readsIndexNumFrom1 = false;
+		}
+		
           if (samRecord.getReadPairedFlag()) {
               final String currentReadName = samRecord.getName();
               final SamRecord firstRecord = firstSeenMates.remove(currentReadName);
@@ -115,6 +124,16 @@ public class SamToFastq implements AlignmentRecorder {
           } else {
               fastQ1.writeFastQRecord(samRecord.toFastQRecord());
           }
+	}
+	
+	private initialReadsIndex(SamRecord samRecord) {
+		if (readsIndexNumFrom1 != null) return;
+		if (samRecord.getMappedReadsWeight() > 1 && samRecord.getMapNum() != null) {
+			//我们假定reads的index是从0开始的
+			if (samRecord.getMapNum() > 1) {
+				throw new SamErrorException(outFileName + " error: reads map num Index is not from 0 or 1");
+			}
+		}
 	}
 	
     private void assertPairedMates(final SamRecord record1, final SamRecord record2) {
@@ -184,5 +203,24 @@ public class SamToFastq implements AlignmentRecorder {
 	public Align getReadingRegion() {
 		return null;
 	}
-
+	
+	
+	public void clear() {
+		/** 是否仅挑选没有mapping上的reads */
+		justUnMapped = false;
+		outFileName = null;
+		initial = false;
+		isPairend = false;
+		/** 是否产生临时文件，意思就是如果顺利结束才会将文件名改成正式名字 */
+		isGenerateTmpFile = true;
+		firstSeenMates.clear();
+		if (fastQ1 != null) fastQ1.close();
+		
+		if (fastQ2 != null) fastQ2.close();
+		
+		fastQ1 = null;
+		fastQ2 = null;
+		lastRecord = null;
+		readsIndexNumFrom1 = null;
+	}
 }

@@ -112,17 +112,13 @@ class FastQReader implements Closeable {
 	 */
 	public Iterable<FastQRecord> readlines(int lines) {
 		lines = lines - 1;
-		try {
-			Iterable<FastQRecord> itContent = readPerlines(true);
-			if (lines > 0) {
-				for (int i = 0; i < lines; i++) {
-					itContent.iterator().hasNext();
-				}
+		Iterable<FastQRecord> itContent = readPerlines(true);
+		if (lines > 0) {
+			for (int i = 0; i < lines; i++) {
+				itContent.iterator().hasNext();
 			}
-			return itContent;
-		} catch (Exception e) {
-			return null;
 		}
+		return itContent;
 	}
 	
 	/**
@@ -131,12 +127,7 @@ class FastQReader implements Closeable {
 	 * @return
 	 */
 	public Iterable<FastQRecord> readlines(boolean initial) {
-		try {
-			Iterable<FastQRecord> itContent = readPerlines(initial);
-			return itContent;
-		} catch (Exception e) {
-			return null;
-		}
+		return readPerlines(initial);
 	}
 	
 	/**
@@ -146,7 +137,7 @@ class FastQReader implements Closeable {
 	 * @throws Exception 
 	 * @throws IOException
 	 */
-	private Iterable<FastQRecord> readPerlines(final boolean initial) throws Exception {
+	private Iterable<FastQRecord> readPerlines(final boolean initial) {
 		final BufferedReader bufread =  txtSeqFile.readfile();
 		final long[] lineNum = new long[1];
 		final int[] errorNum = new int[1];
