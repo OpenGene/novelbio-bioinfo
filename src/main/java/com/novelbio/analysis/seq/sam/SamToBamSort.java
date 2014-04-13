@@ -2,24 +2,25 @@ package com.novelbio.analysis.seq.sam;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-
-import com.novelbio.base.fileOperate.FileOperate;
 
 import net.sf.samtools.SAMFileHeader.SortOrder;
 
-/** 将sam文件转化为bam文件
- * 其中添加multiHit的功能仅适用于bowtie
+import com.novelbio.base.SepSign;
+import com.novelbio.base.fileOperate.FileOperate;
+
+/** 将sam文件转化为bam文件，<b>仅用于没有排序过的sam文件</b><br>
+ * 其中添加multiHit的功能仅适用于bowtie和bwa 的mem
  *  */
 public class SamToBamSort {
 	SamFile samFileBam;//需要转化成的bam文件
 	String outFileName;
 	SamFile samFileSam;//输入的sam文件
 	List<AlignmentRecorder> lsAlignmentRecorders = new ArrayList<>();
-	
-	/** 相同名字的序列 */
-	List<SamRecord> lsSamRecordsWithSameName = new ArrayList<>();
+
 	boolean addMultiHitFlag = false;
 	boolean isPairend = false;
 	boolean isUsingTmpFile = false;
@@ -116,6 +117,9 @@ public class SamToBamSort {
 	/** 进行转换 */
 	private void convertAndAddMultiFlag() {
 		Set<String> setTmp = new HashSet<>();
+		/** 相同名字的序列 */
+		final Map<String, SamRecord[]> mapMateInfo2pairReads = new LinkedHashMap<String, SamRecord[]>();
+		
 		for (SamRecord samRecord : samFileSam.readLines()) {
 			if ((!isPairend && setTmp.size() == 0) || (isPairend && setTmp.size() < 2)
 					) {
@@ -123,32 +127,56 @@ public class SamToBamSort {
 			} else {
 				String samNameAndSeq = samRecord.getNameAndSeq();
 				if (!setTmp.contains(samNameAndSeq)) {
-					addLsSamRecord(lsSamRecordsWithSameName);
+					addMapSamRecord(mapMateInfo2pairReads);
 					setTmp.clear();
 					setTmp.add(samNameAndSeq);
-					lsSamRecordsWithSameName.clear();
+					mapMateInfo2pairReads.clear();
 				}
 			}
-			lsSamRecordsWithSameName.add(samRecord);
+			addSamRecordToMap(isPairend, samRecord, mapMateInfo2pairReads);
 		}
-		addLsSamRecord(lsSamRecordsWithSameName);
+		addMapSamRecord(mapMateInfo2pairReads);
 	}
 	
+	private void addSamRecordToMap(boolean isPairend, SamRecord samRecord, 
+			Map<String, SamRecord[]> mapMateInfo2pairReads) {
+		String pairInfo = samRecord.getRefID() + SepSign.SEP_INFO_SIMPLE + samRecord.getStartAbs();
+		if (isPairend) {
+			if (mapMateInfo2pairReads.containsKey(pairInfo)) {
+				SamRecord[] samRecords = mapMateInfo2pairReads.get(pairInfo);
+				samRecords[1] = samRecord;
+			} else {
+				SamRecord[] samRecords = new SamRecord[2];
+				samRecords[0] = samRecord;
+				String pairMateInfo = samRecord.getMateRefID() + SepSign.SEP_INFO_SIMPLE + samRecord.getMateAlignmentStart();
+				mapMateInfo2pairReads.put(pairMateInfo, samRecords);
+			}
+		} else {
+			mapMateInfo2pairReads.put(pairInfo, new SamRecord[]{samRecord});
+		}
+		
+	}
 	/**
 	 * @param lsSamRecords
 	 * @param mapHitNum 小于0表示不需要调整flag
 	 */
-	private void addLsSamRecord(List<SamRecord> lsSamRecords) {
-		int mapHitNum = lsSamRecords.size();
-		if (isPairend) mapHitNum = mapHitNum/2;
-		for (SamRecord samRecord : lsSamRecords) {
-			samRecord.setMultiHitNum(mapHitNum);
-			for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {
-				try {
-					alignmentRecorder.addAlignRecord(samRecord);
-				} catch (Exception e) { }
+	private void addMapSamRecord(Map<String, SamRecord[]> mapMateInfo2pairReads) {
+		int multiHitNum = mapMateInfo2pairReads.size();
+		int i = 1;
+		for (SamRecord[] samRecords : mapMateInfo2pairReads.values()) {
+			for (SamRecord samRecord : samRecords) {
+				if (samRecord != null) {
+					samRecord.setMultiHitNum(multiHitNum);
+					samRecord.setMapIndexNum(i++);
+					
+					for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {
+						try {
+							alignmentRecorder.addAlignRecord(samRecord);
+						} catch (Exception e) { }
+					}
+					samFileBam.writeSamRecord(samRecord);
+				}
 			}
-			samFileBam.writeSamRecord(samRecord);
 		}
 	}
 	

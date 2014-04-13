@@ -21,14 +21,12 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.SpeciesFile;
-import com.novelbio.database.domain.geneanno.SpeciesFile.ExtractSmallRNASeq;
 import com.novelbio.database.domain.geneanno.TaxInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.service.servgeneanno.IManageSpecies;
 import com.novelbio.database.service.servgeneanno.ManageBlastInfo;
 import com.novelbio.database.service.servgeneanno.ManageSpecies;
-import com.novelbio.generalConf.PathDetailNBC;
 /**
  * 物种信息，包括名字，以及各个文件所在路径
  * @author zong0jie
@@ -310,7 +308,7 @@ public class Species implements Cloneable {
 	public String getMiRNAhairpinFile() {
 		if (!taxInfo.isHaveMiRNA()) return null;
 		
-		String[] path = getMiRNAseq();
+		String[] path = taxInfo.fetchMiRNAseq();
 		if (path[0] == null) {
 			return null;
 		}
@@ -321,40 +319,16 @@ public class Species implements Cloneable {
 	public String getMiRNAmatureFile() {
 		if (!taxInfo.isHaveMiRNA()) return null;
 		
-		String[] path = getMiRNAseq();
+		String[] path = taxInfo.fetchMiRNAseq();
 		if (path[0] == null) {
 			return null;
 		}
 		return path[0];
 	}
 	
-	/**
-	 * 返回绝对路径
-	 * @return
-	 * 0: miRNAfile<br>
-	 * 1: miRNAhairpinFile
-	 */
-	private String[] getMiRNAseq() {
-		String pathParent = PathDetailNBC.getGenomePath();
-		String node = "miRNA/";
-		String genomePath = node + taxID + FileOperate.getSepPath();
-		String miRNAfile = pathParent + genomePath + "miRNA.fa";
-		String miRNAhairpinFile = pathParent + genomePath + "miRNAhairpin.fa";
-		if (!FileOperate.isFileExistAndBigThanSize(miRNAfile,10) || !FileOperate.isFileExistAndBigThanSize(miRNAhairpinFile,10)) {
-			FileOperate.createFolders(FileOperate.getParentPathName(miRNAfile));
-			ExtractSmallRNASeq extractSmallRNASeq = new ExtractSmallRNASeq();
-			extractSmallRNASeq.setOutMatureRNA(miRNAfile);
-			extractSmallRNASeq.setOutHairpinRNA(miRNAhairpinFile);
-			extractSmallRNASeq.setMiRNAdata(PathDetailNBC.getMiRNADat(), getNameLatin_2Word());
-			extractSmallRNASeq.getSeq();
-		}
-		if (!FileOperate.isFileExistAndBigThanSize(miRNAhairpinFile, 0)) {
-			FileOperate.DeleteFileFolder(miRNAhairpinFile);
-			FileOperate.DeleteFileFolder(miRNAfile);
-			miRNAhairpinFile = null;
-			miRNAfile = null;
-		}
-		return new String[]{miRNAfile, miRNAhairpinFile};
+	/** 返回核糖体rna所在的路径 */
+	public String getRrnaFile() {
+		return taxInfo.getRrnaFile();
 	}
 	
 	/**

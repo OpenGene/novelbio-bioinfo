@@ -9,6 +9,8 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.novelbio.analysis.seq.mirna.ListMiRNAdat;
+import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.geneanno.SpeciesFile.ExtractSmallRNASeq;
 import com.novelbio.database.service.servgeneanno.IManageSpecies;
 import com.novelbio.database.service.servgeneanno.ManageSpecies;
 import com.novelbio.generalConf.PathDetailNBC;
@@ -34,6 +36,9 @@ public class TaxInfo implements Cloneable {
 	private String chnName;
 	/** 是否有miRNA */
 	private Boolean isHaveMiRNA;
+	
+	/** 核糖体rna的序列文件 */
+	private String rrnaFile;
 	/**
 	 * NCBI的物种ID
 	 * @param taxID
@@ -123,6 +128,15 @@ public class TaxInfo implements Cloneable {
 		this.isHaveMiRNA = isHaveMiRNA;
 	}
 	
+	public void setRrnaFile(String rrnaFile) {
+		this.rrnaFile = rrnaFile;
+	}
+	
+	/** 获取核糖体rna所在的路径 */
+	public String getRrnaFile() {
+		return rrnaFile;
+	}
+	
 	public boolean isHaveMiRNA() {
 		if (isHaveMiRNA == null) {
 			isHaveMiRNA = ListMiRNAdat.isContainMiRNA(getLatinName_2Word(), PathDetailNBC.getMiRNADat());
@@ -130,7 +144,43 @@ public class TaxInfo implements Cloneable {
 		}
 		return isHaveMiRNA;
 	}
-
+	/**
+	 * 返回绝对路径
+	 * @return
+	 * 0: miRNAfile<br>
+	 * 1: miRNAhairpinFile
+	 */
+	public String[] fetchMiRNAseq() {
+		String pathParent = PathDetailNBC.getGenomePath();
+		String node = "miRNA/";
+		String genomePath = node + taxID + FileOperate.getSepPath();
+		String miRNAfile = pathParent + genomePath + "miRNA.fa";
+		String miRNAhairpinFile = pathParent + genomePath + "miRNAhairpin.fa";
+		if (!FileOperate.isFileExistAndBigThanSize(miRNAfile,10) || !FileOperate.isFileExistAndBigThanSize(miRNAhairpinFile,10)) {
+			FileOperate.createFolders(FileOperate.getParentPathName(miRNAfile));
+			ExtractSmallRNASeq extractSmallRNASeq = new ExtractSmallRNASeq();
+			extractSmallRNASeq.setOutMatureRNA(miRNAfile);
+			extractSmallRNASeq.setOutHairpinRNA(miRNAhairpinFile);
+			extractSmallRNASeq.setMiRNAdata(PathDetailNBC.getMiRNADat(), getLatinName_2Word());
+			extractSmallRNASeq.getSeq();
+		}
+		if (!FileOperate.isFileExistAndBigThanSize(miRNAhairpinFile, 0)) {
+			FileOperate.DeleteFileFolder(miRNAhairpinFile);
+			FileOperate.DeleteFileFolder(miRNAfile);
+			miRNAhairpinFile = null;
+			miRNAfile = null;
+		}
+		return new String[]{miRNAfile, miRNAhairpinFile};
+	}
+	
+	/** 获得rrna所应该保存的路径 */
+	public String fetchRrnaPath() {
+		String pathParent = PathDetailNBC.getGenomePath();
+		String node = "rrna/";
+		String rrnaPath = pathParent + node + taxID + FileOperate.getSepPath();
+		return rrnaPath;
+	}
+	
 	/**
 	 * 返回taxID对常用名
 	 * @return

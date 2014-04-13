@@ -420,7 +420,7 @@ public class MapBwaMem extends MapDNA {
 		Thread thread = new Thread(cmdOperate);
 		thread.start();
 		InputStream inputStream = cmdOperate.getStreamStd();
-		SamFile samResult = copeSamStream(false, inputStream, isNeedSort);
+		SamFile samResult = copeSamStream(true, inputStream, isNeedSort);
 		if (samResult != null && !cmdOperate.isRunning() && cmdOperate.isFinishedNormal()) {
 			return samResult;
 		} else {

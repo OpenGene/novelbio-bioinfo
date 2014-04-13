@@ -200,11 +200,6 @@ public class SamRecord implements AlignRecord {
 		return numMappedReadsInFile;
 	}
 	
-	public Integer getMapNum() {
-		Integer attrCC = samRecord.getIntegerAttribute("HI");
-		return attrCC;
-	}
-	
 	/** 设定本reads在sam文件中出现了几次，也就是比对到基因组的几个位置去了
 	 * 就是修改NH标签
 	 * @param multiHitNum 出现了几次，如果小于等于0就不设定
@@ -214,6 +209,22 @@ public class SamRecord implements AlignRecord {
 		samRecord.setAttribute("NH", multiHitNum);
 	}
 	
+	/** 如果一条reads在基因组上出现了若干次，那么该reads是第几个出现的
+	 * 其中tophat从0开始计算，mapsplice从1开始计算，novelbio添加的flag也是从1 开始
+	 * @return
+	 */
+	public Integer getMapIndexNum() {
+		Integer attrCC = samRecord.getIntegerAttribute("HI");
+		return attrCC;
+	}
+	/** 如果一条reads在基因组上出现了若干次，那么该reads是第几个出现的
+	 * novelbio添加的flag是从1 开始
+	 * @param multiHitNum 出现了几次，如果小于等于0就不设定
+	 */
+	public void setMapIndexNum(int multiHitNum) {
+		if (multiHitNum < 1) return;
+		samRecord.setAttribute("HI", multiHitNum);
+	}
 	/** the read is paired in sequencing, no matter whether it is mapped in a pair. */
 	public boolean isHavePairEnd() {
 		return samRecord.getReadPairedFlag();

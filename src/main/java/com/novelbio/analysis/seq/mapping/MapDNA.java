@@ -129,7 +129,7 @@ public abstract class MapDNA implements MapDNAint {
 	protected abstract SamFile mapping();
 	
 	/**
-	 * @param isSetMulitFlag 是否需要设定非unique mapping的标签，目前 只有bowtie2需要
+	 * @param isSetMulitFlag 是否需要设定非unique mapping的标签，目前 有bowtie2和bwa的 mem需要
 	 * @param inputStream 内部关闭流
 	 * @param isNeedSort 看是否需要排序
 	 * @return null表示运行失败，失败了也不删除文件
@@ -139,12 +139,8 @@ public abstract class MapDNA implements MapDNAint {
 		String fileNameFinal = getOutNameCope();
 		String fileNameTmp = FileOperate.changeFileSuffix(fileNameFinal, "_TmpMap", null);
 		SamToBamSort samToBamSort = new SamToBamSort(fileNameTmp, samFileIn, isPairEnd());
-		if (isNeedSort) {
-			samToBamSort.setNeedSort(true);
-		}
-		if (isSetMulitFlag) {
-			samToBamSort.setAddMultiHitFlag(isSetMulitFlag);
-		}
+		samToBamSort.setNeedSort(isNeedSort);
+		samToBamSort.setAddMultiHitFlag(isSetMulitFlag);
 		samToBamSort.setLsAlignmentRecorders(lsAlignmentRecorders);
 		samToBamSort.convert();
 		samFileIn.close();

@@ -231,7 +231,7 @@ public class Trinity {
 	
 	//TODO 确定好是FR还是RF
 	private String[] getSS_lib_type() {
-		if (strandSpecific == StrandSpecific.NONE) {
+		if (strandSpecific == StrandSpecific.NONE || strandSpecific == StrandSpecific.UNKNOWN) {
 			return null;
 		} else {
 			if (isSingleEnd()) {
