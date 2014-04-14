@@ -91,7 +91,7 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 		}
 		this.gffChrAbs = gffChrAbs;
 	}
-	public void setMapPrefix2Fastq(Map<String, String> mapPrefix2Fastq) {
+	public void setMapPrefix2Fastq(final Map<String, String> mapPrefix2Fastq) {
 		this.mapPrefix2Fastq = mapPrefix2Fastq;
 	}
 	/** 设定输出文件夹 */

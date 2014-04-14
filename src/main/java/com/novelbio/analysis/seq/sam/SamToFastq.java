@@ -22,92 +22,134 @@ public class SamToFastq implements AlignmentRecorder {
 	private static final Logger logger = Logger.getLogger(SamToFastq.class);
 	/** 是否仅挑选没有mapping上的reads */
 	SamToFastqType samToFastqType = SamToFastqType.AllReads;
-	String outFileName;
-	boolean initial = false;
-	boolean isPairend = false;
+	
 	/** 是否产生临时文件，意思就是如果顺利结束才会将文件名改成正式名字 */
 	boolean isGenerateTmpFile = true;
+	/** 临时结果文件名 */
+	String[] outFileNameTmp;
+	/** 修改好的文件名 */
+	String[] outFileName;
+	
+	boolean isPairend = false;
+
     final Map<String, SamRecord> firstSeenMates = new HashMap<String, SamRecord>();
 
 	FastQ fastQ1;
 	FastQ fastQ2;
-	AlignRecord lastRecord;
 	/** 是否产生临时文件，意思就是如果顺利结束才会将文件名改成正式名字，默认是true */
 	public void setGenerateTmpFile(boolean isGenerateTmpFile) {
 		this.isGenerateTmpFile = isGenerateTmpFile;
 	}
 	/** 根据是否为mapping上的reads，自动设定文件名，并返回设定好的文件名 */
-	public String setOutFileInfo(SamFile samFile, SamToFastqType samToFastqType) {
+	public void setOutFileInfo(SamFile samFile, SamToFastqType samToFastqType) {
 		clear();
 		String fileName = samFile.getFileName();
 		this.samToFastqType = samToFastqType;
+		this.isPairend = samFile.isPairend();
 		fileName = FileOperate.changeFileSuffix(fileName, samToFastqType.getSuffix(), "fastq.gz");
-		this.outFileName = fileName;
-		return fileName;
+		
+		outFileName = getFinalName(fileName, false);
+		if (isGenerateTmpFile) {
+			outFileNameTmp =  getFinalName(fileName, true);
+		}
+		initialFq();
 	}
 	/** 根据是否为mapping上的reads，自动设定文件名，并返回设定好的文件名 */
-	public void setOutFileInfo(String outFileName, SamToFastqType samToFastqType) {
+	public void setOutFileInfo(boolean isPairend, String outFileName, SamToFastqType samToFastqType) {
 		clear();
+		this.isPairend = isPairend;
 		this.samToFastqType = samToFastqType;
-		this.outFileName = outFileName;
+		this.outFileName = getFinalName(outFileName, false);
+		if (isGenerateTmpFile) {
+			outFileNameTmp = getFinalName(outFileName, true);
+		}
+		initialFq();
 	}
-	/**
-	 * @param outFileName
-	 */
-	@Deprecated
-	public void setFastqFile(String outFileName) {
-		this.outFileName = outFileName;
+	
+	/** 根据是否为mapping上的reads，指定文件名，并返回设定好的文件名 */
+	public void setOutFileInfo(boolean isPairend, String outFile1, String outFile2, SamToFastqType samToFastqType) {
+		clear();
+		this.isPairend = isPairend;
+		this.samToFastqType = samToFastqType;
+		outFileName = new String[isPairend? 2 : 1];
+		outFileName[0] = outFile1;
+		if (isPairend) {
+			outFileName[1] = outFile2;
+		}
+		if (isGenerateTmpFile) {
+			outFileNameTmp[0] = FileOperate.changeFileSuffix(outFileName[0], "_tmp", null);
+			if (isPairend) {
+				outFileNameTmp[1] = FileOperate.changeFileSuffix(outFileName[1], "_tmp", null);
+			}
+		}
+		initialFq();
+	}
+	
+	private void initialFq() {
+		if (isGenerateTmpFile) {
+			fastQ1 = new FastQ(outFileNameTmp[0], true);
+			if (isPairend) {
+				fastQ2 = new FastQ(outFileNameTmp[1], true);
+			}
+		} else {
+			fastQ1 = new FastQ(outFileName[0], true);
+			if (isPairend) {
+				fastQ2 = new FastQ(outFileName[1], true);
+			}
+		}
 	}
 	
 	//TODO 待测试
 	@Override
 	public void addAlignRecord(AlignRecord alignRecord) {
+		if (alignRecord instanceof SamRecord) {
+			addSamRecord((SamRecord)alignRecord);
+		} else {
+			addNormalRecord(alignRecord);
+		}
+	}
+	
+	private void addSamRecord(SamRecord samRecord) {
+		//比对到多个位置的，只取其中一条
+		if (samRecord.getMappedReadsWeight() > 1 && samRecord.getMapIndexNum() != 1) {
+			return;
+		}
+		
 		if (samToFastqType == SamToFastqType.UnmappedReads) {
-			if (alignRecord.isMapped()) {
+			if (samRecord.isMapped() || (isPairend && samRecord.isMateMapped())) {
 				return;
-			} else if (alignRecord instanceof SamRecord) {
-				SamRecord samRecord = (SamRecord)alignRecord;
-				if (samRecord.isHavePairEnd() && samRecord.isMateMapped()) {
-					return;
-				}
 			}
 		} else if (samToFastqType == SamToFastqType.MappedReads) {
-			if (alignRecord instanceof SamRecord) {
-				SamRecord samRecord = (SamRecord)alignRecord;
-				if (!samRecord.isMapped() && 
-						(!isPairend || 
-								(isPairend && samRecord.isHavePairEnd() && !samRecord.isMateMapped())
-								)
-						) {
-					return;
-				}
-			} else if (!alignRecord.isMapped()) {
+			if (!samRecord.isMapped() && 
+					(!isPairend || 
+							(isPairend && !samRecord.isMateMapped())
+							)
+					) {
 				return;
 			}
 		} else if (samToFastqType == SamToFastqType.MappedReadsPairend) {
-			if (alignRecord instanceof SamRecord) {
-				SamRecord samRecord = (SamRecord)alignRecord;
-				if (!samRecord.isMapped() || (isPairend && samRecord.isHavePairEnd() && !samRecord.isMateMapped())) {
-					return;
-				}
-			} else if (!alignRecord.isMapped()) {
+			if (!samRecord.isMapped() || (isPairend && !samRecord.isMateMapped())) {
 				return;
 			}
 		}
-		
-		if (alignRecord.getSeqFasta().getSeqName().equals(lastRecord.getName())
-					&& alignRecord.getSeqFasta().toString().equalsIgnoreCase(lastRecord.getSeqFasta().toString())) {
-			return;
+		addAlignRecordSam(samRecord);
+	}
+
+	private void addNormalRecord(AlignRecord alignRecord) {
+		if (samToFastqType == SamToFastqType.UnmappedReads) {
+			if (alignRecord.isMapped()) {
+				return;
+			}
+		} else if (samToFastqType == SamToFastqType.MappedReads) {
+		if (!alignRecord.isMapped()) {
+				return;
+			}
+		} else if (samToFastqType == SamToFastqType.MappedReadsPairend) {
+			if (!alignRecord.isMapped()) {
+				return;
+			}
 		}
-		lastRecord = alignRecord;
-		
-		if (alignRecord instanceof SamRecord) {
-			SamRecord samRecord = (SamRecord)alignRecord;
-			addAlignRecordSam(samRecord);
-		} else {
-			addAlignRecordNormal(alignRecord);
-		}
-		
+		addAlignRecordNormal(alignRecord);
 	}
 	
 	private void addAlignRecordNormal(AlignRecord alignRecord) {
@@ -119,13 +161,18 @@ public class SamToFastq implements AlignmentRecorder {
 			return;
 		}
 		
-		if (samRecord.getReadPairedFlag()) {
+		if (isPairend) {
 			final String currentReadName = samRecord.getName();
 			final SamRecord firstRecord = firstSeenMates.remove(currentReadName);
 			if (firstRecord == null) {
 				firstSeenMates.put(currentReadName, samRecord);
 			} else {
-				assertPairedMates(firstRecord, samRecord);
+				try {
+					assertPairedMates(firstRecord, samRecord);
+				} catch (Exception e) {
+					System.out.println("error");
+					return;
+				}
 				
 				final SamRecord read1 =  samRecord.isFirstRead() ? samRecord : firstRecord;
 				final SamRecord read2 = samRecord.isFirstRead() ? firstRecord : samRecord;
@@ -140,39 +187,9 @@ public class SamToFastq implements AlignmentRecorder {
     private void assertPairedMates(final SamRecord record1, final SamRecord record2) {
         if (! (record1.isFirstRead() && !record2.isFirstRead() ||
                record2.isFirstRead() && !record1.isFirstRead() ) ) {
-            throw new PicardException("Illegal mate state: " + record1.getName());
+            throw new PicardException("Illegal mate state: " + record1.getName() + " " + record2.getName());
         }
     }
-    
-	private void initial(AlignRecord alignRecord) {
-		if (alignRecord instanceof SamRecord) {
-			isPairend = ((SamRecord)alignRecord).isHavePairEnd();
-		}
-		String[] finalFileName = getFinalName(isGenerateTmpFile);
-		if (isPairend) {
-			fastQ1 = new FastQ(finalFileName[0], true);
-			fastQ2 = new FastQ(finalFileName[1], true);
-		} else {
-			fastQ1 = new FastQ(finalFileName[0], true);
-		}
-	}
-	
-	private String[] getFinalName(boolean isTmp) {
-		String[] finalFileName = new String[isPairend? 2 : 1];
-		if (isPairend) {
-			finalFileName[0] = FileOperate.changeFileSuffix(outFileName, "_1", "fastq|fq", null);
-			finalFileName[1] = FileOperate.changeFileSuffix(outFileName, "_2", "fastq|fq", null);
-		} else {
-			finalFileName[0] = outFileName;
-		}
-		if (isTmp) {
-			for (int i = 0; i < finalFileName.length; i++) {
-				finalFileName[i] = FileOperate.changeFileSuffix(outFileName, "_tmp", "fastq|fq", null);
-			}
-		}
-
-		return finalFileName;
-	}
 
 	public FastQ[] getResultFastQ() {
 		FastQ[] fastQ = new FastQ[isPairend? 2 : 1];
@@ -190,16 +207,38 @@ public class SamToFastq implements AlignmentRecorder {
 			fastQ2.close();
 		}
 		if (isGenerateTmpFile) {
-			String[] finalFileName = getFinalName(false);
-			FileOperate.moveFile(true, fastQ1.getReadFileName(), finalFileName[0]);
-			fastQ1 = new FastQ(finalFileName[0]);
+			FileOperate.moveFile(true, outFileNameTmp[0], outFileName[0]);
+			fastQ1 = new FastQ(outFileName[0]);
 			if (isPairend) {
-				FileOperate.moveFile(true, fastQ2.getReadFileName(), finalFileName[1]);
-				fastQ2 = new FastQ(finalFileName[1]);
+				FileOperate.moveFile(true, outFileNameTmp[1], outFileName[1]);
+				fastQ2 = new FastQ(outFileName[1]);
 			}
+		}
+		if (!firstSeenMates.isEmpty()) {
+			logger.error(firstSeenMates.size() + " reads have unpaired");
+		}
+		for (String name : firstSeenMates.keySet()) {
+			System.out.println(name);
 		}
 	}
 	
+	private String[] getFinalName(String outFileName, boolean isTmp) {
+		String[] finalFileName = new String[isPairend? 2 : 1];
+		if (isPairend) {
+			finalFileName[0] = FileOperate.changeFileSuffix(outFileName, "_1", "fastq|fq", null);
+			finalFileName[1] = FileOperate.changeFileSuffix(outFileName, "_2", "fastq|fq", null);
+		} else {
+			finalFileName[0] = outFileName;
+		}
+		if (isTmp) {
+			for (int i = 0; i < finalFileName.length; i++) {
+				finalFileName[i] = FileOperate.changeFileSuffix(finalFileName[i], "_tmp", "fastq|fq", null);
+			}
+		}
+
+		return finalFileName;
+	}
+
 	@Override
 	public Align getReadingRegion() {
 		return null;
@@ -210,7 +249,6 @@ public class SamToFastq implements AlignmentRecorder {
 		/** 是否仅挑选没有mapping上的reads */
 		samToFastqType = SamToFastqType.AllReads;		
 		outFileName = null;
-		initial = false;
 		isPairend = false;
 		/** 是否产生临时文件，意思就是如果顺利结束才会将文件名改成正式名字 */
 		isGenerateTmpFile = true;
@@ -221,7 +259,6 @@ public class SamToFastq implements AlignmentRecorder {
 		
 		fastQ1 = null;
 		fastQ2 = null;
-		lastRecord = null;
 	}
 	
 	public static enum SamToFastqType {

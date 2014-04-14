@@ -25,9 +25,7 @@ public class SamRecord implements AlignRecord {
 	Boolean isJunctionReads;
 	int numMappedReadsInFile = 0;
     
-	public SamRecord() {
-		// TODO Auto-generated constructor stub
-	}
+	public SamRecord() {}
 
 	public SamRecord(SAMRecord samRecord) {
 		this.samRecord = samRecord;

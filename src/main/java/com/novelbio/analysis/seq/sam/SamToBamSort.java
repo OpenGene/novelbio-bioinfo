@@ -162,12 +162,13 @@ public class SamToBamSort {
 	 */
 	private void addMapSamRecord(Map<String, SamRecord[]> mapMateInfo2pairReads) {
 		int multiHitNum = mapMateInfo2pairReads.size();
-		int i = 1;
+		int i = 0;
 		for (SamRecord[] samRecords : mapMateInfo2pairReads.values()) {
+			i++;
 			for (SamRecord samRecord : samRecords) {
 				if (samRecord != null) {
 					samRecord.setMultiHitNum(multiHitNum);
-					samRecord.setMapIndexNum(i++);
+					samRecord.setMapIndexNum(i);
 					
 					for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {
 						try {

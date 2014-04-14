@@ -105,8 +105,7 @@ public class SamReader {
 		int countLines = 0;
 		pairend = false;
 		for (SamRecord samRecord : readLines()) {
-			countLines++;
-			if (countLines > countAll) {
+			if (countLines++ > countAll) {
 				break;
 			}
 			if (samRecord.isHavePairEnd()) {

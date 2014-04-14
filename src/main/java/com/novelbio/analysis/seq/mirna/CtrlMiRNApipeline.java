@@ -167,7 +167,7 @@ public class CtrlMiRNApipeline implements IntCmdSoft {
 		return mapPrefix2unmapFastq;
 	}
 	
-	private void runMapping(GffChrAbs gffChrAbs, Species species, Map<String, String> mapPrefix2Fastq) {
+	private void runMapping(GffChrAbs gffChrAbs, Species species, final Map<String, String> mapPrefix2Fastq) {
 		ctrlMiRNAfastq.setIsUseOldResult(isUseOldResult);
 		ctrlMiRNAfastq.setMappingAll2Genome(mapToGenome);
 		ctrlMiRNAfastq.setRfamSpeciesSpecific(mapRfam2Species);

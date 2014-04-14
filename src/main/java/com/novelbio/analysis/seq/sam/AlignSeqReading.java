@@ -137,7 +137,6 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 				addOneSeq(samRecord, alignSeqFile);
 			}
 		}
-		
 	}
 	
 	protected void addOneSeq(AlignRecord samRecord, AlignSeq alignSeqFile) {
