@@ -13,6 +13,7 @@ import com.novelbio.analysis.seq.mapping.MappingReadsType;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamFileStatistics;
 import com.novelbio.analysis.seq.sam.SamToFastq;
+import com.novelbio.analysis.seq.sam.SamToFastq.SamToFastqType;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
@@ -281,8 +282,7 @@ public class MiRNAmapPipline implements IntCmdSoft {
 		
 		if (unMappedFq != null && !unMappedFq.equals("")) {
 			SamToFastq samToFastq = new SamToFastq();
-			samToFastq.setFastqFile(unMappedFq);
-			samToFastq.setJustUnMapped(true);
+			samToFastq.setOutFileInfo(false, unMappedFq, null, SamToFastqType.UnmappedReads);
 			mapDNA.addAlignmentRecorder(samToFastq);
 		}
 		

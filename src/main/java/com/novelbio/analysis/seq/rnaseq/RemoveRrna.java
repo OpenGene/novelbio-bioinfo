@@ -5,6 +5,7 @@ import com.novelbio.analysis.seq.mapping.MapBwaAln;
 import com.novelbio.analysis.seq.mapping.MapDNAint;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamToFastq;
+import com.novelbio.analysis.seq.sam.SamToFastq.SamToFastqType;
 import com.novelbio.base.ExceptionNullParam;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.species.Species;
@@ -16,7 +17,9 @@ public class RemoveRrna {
 	MapDNAint mapDNAint;
 	
 	FastQ fastQleft;
+	String outLeft;
 	FastQ fastQRight;
+	String outRight;
 	
 	int threadNum = 7;
 	
@@ -30,8 +33,23 @@ public class RemoveRrna {
 	}
 	
 	public void setFastQs(FastQ fastQleft, FastQ fastQRight) {
+		if (fastQleft == null) {
+			throw new ExceptionNullParam("Left Fastq Must Exist");
+		}
 		this.fastQleft = fastQleft;
+		outLeft = FileOperate.changeFileSuffix(fastQleft.getReadFileName(), "_filterReads", null);
 		this.fastQRight = fastQRight;
+		if (fastQRight != null) {
+			outRight = FileOperate.changeFileSuffix(fastQleft.getReadFileName(), "_filterReads", null);
+		}
+	}
+	
+	private boolean isPairend() {
+		if (fastQleft != null && fastQRight != null) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	private void run() {
@@ -39,14 +57,26 @@ public class RemoveRrna {
 		mapDNAint.setChrIndex(getRrnaFile());
 		mapDNAint.setFqFile(fastQleft, fastQRight);
 		mapDNAint.setThreadNum(threadNum);
-		SamToFastq samToFastq = new SamToFastq();
-		samToFastq.setGenerateTmpFile(true);
-		//TODO 文件名怎么取是个问题
-		samToFastq.setOutFileInfo(fastQleft.getReadFileName(), true);
-		
+		mapDNAint.setWriteToBam(false);
+		SamToFastq samToFastq = new SamToFastq(false);
+		String outLeftTmp = FileOperate.changeFileSuffix(outLeft, "_tmp", null);
+		String outRightTmp = null;
+		if (isPairend()) {
+			outRightTmp = FileOperate.changeFileSuffix(outRight, "_tmp", null);
+		}
+		samToFastq.setOutFileInfo(isPairend(), outLeftTmp, outRightTmp, SamToFastqType.UnmappedReads);
 		mapDNAint.addAlignmentRecorder(samToFastq);
-		SamFile samFile = mapDNAint.mapReads();
-		FileOperate.DeleteFileFolder(samFile.getFileName());
+		try {
+			mapDNAint.mapReads();
+		} catch (Exception e) {
+			FileOperate.DeleteFileFolder(outLeftTmp);
+			FileOperate.DeleteFileFolder(outRightTmp);
+			throw e;
+		}
+		FileOperate.moveFile(true, outLeftTmp, outLeft);
+		if (isPairend()) {
+			FileOperate.moveFile(true, outRightTmp, outRight);
+		}
 	}
 	
 	private String getRrnaFile() {
@@ -57,5 +87,14 @@ public class RemoveRrna {
 		} else {
 			throw new ExceptionNullParam("No Rrna File Exist");
 		}
+	}
+	
+	public FastQ[] getBamFiltered() {
+		FastQ[] fastQs = new FastQ[2];
+		fastQs[0] = new FastQ(outLeft);
+		if (isPairend()) {
+			fastQs[1] = new FastQ(outRight);
+		}
+		return fastQs;
 	}
 }

@@ -18,6 +18,7 @@ import com.novelbio.analysis.seq.sam.AlignSamReading;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.analysis.seq.sam.SamToFastq;
+import com.novelbio.analysis.seq.sam.SamToFastq.SamToFastqType;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -475,7 +476,7 @@ public class MapTophat implements MapRNA {
 
 		if (mapUnmapedReads) {
 			String finalBam = FileOperate.getParentPathName(outPathPrefix) + prefix + TophatAllSuffix;
-			lsCmdMapping2nd = mapUnmapedReads(threadNum, bwaIndex, tophatBam, unmappedBam, finalBam);
+			lsCmdMapping2nd = mapUnmapedReads(isPairend(), threadNum, bwaIndex, tophatBam, unmappedBam, finalBam);
 		}
 	}
 
@@ -563,7 +564,7 @@ public class MapTophat implements MapRNA {
 	 * @param outFinalBam
 	 * @return 返回使用的命令行
 	 */
-	protected static List<String> mapUnmapedReads(int threadNum, String bwaIndex, 
+	protected static List<String> mapUnmapedReads(Boolean isPairend, int threadNum, String bwaIndex, 
 			String acceptedBam, String unmappedBam, String outFinalBam) {
 		String unmappedFq = null;
 		String unmapBamGetSeq = unmappedBam;
@@ -579,8 +580,7 @@ public class MapTophat implements MapRNA {
 		MapBwaMem mapBwaMem = null;
 		if (!FileOperate.isFileExistAndBigThanSize(mapBowtieBam, 1_000_000)) {
 			SamToFastq samToFastq = new SamToFastq();
-			samToFastq.setFastqFile(unmappedFq);
-			samToFastq.setJustUnMapped(true);
+			samToFastq.setOutFileInfo(isPairend, unmappedFq, SamToFastqType.UnmappedReads);
 			AlignSamReading alignSamReading = new AlignSamReading(new SamFile(unmapBamGetSeq));
 			alignSamReading.addAlignmentRecorder(samToFastq);
 			alignSamReading.run();
@@ -589,7 +589,11 @@ public class MapTophat implements MapRNA {
 			mapBwaMem = new MapBwaMem();
 			mapBwaMem.setThreadNum(threadNum);
 			mapBwaMem.setChrIndex(bwaIndex);
-			mapBwaMem.setFqFile(fastQ[0], fastQ[1]);
+			if (fastQ.length == 2) {
+				mapBwaMem.setFqFile(fastQ[0], fastQ[1]);
+			} else {
+				mapBwaMem.setFqFile(fastQ[0], null);
+			}
 			String mapFile = FileOperate.changeFileSuffix(mapBowtieBam, "_TmpMapping", "bam");
 			mapBwaMem.setOutFileName(mapFile);
 			mapBwaMem.mapReads();

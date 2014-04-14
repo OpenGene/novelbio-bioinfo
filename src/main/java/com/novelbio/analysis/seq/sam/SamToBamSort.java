@@ -16,6 +16,7 @@ import com.novelbio.base.fileOperate.FileOperate;
  * 其中添加multiHit的功能仅适用于bowtie和bwa 的mem
  *  */
 public class SamToBamSort {
+	boolean writeToBam = true;
 	SamFile samFileBam;//需要转化成的bam文件
 	String outFileName;
 	SamFile samFileSam;//输入的sam文件
@@ -41,6 +42,14 @@ public class SamToBamSort {
 		this.outFileName = outFileName;
 		this.samFileSam = samFileSam;
 		this.isPairend = isPairend;
+	}
+	/** 是否写入bam文件，默认写入
+	 * 有时候mapping但不需要写入文件，譬如过滤掉rrna reads的时候，
+	 * 只需要将没有mapping的reads输出即可，并不需要要把bam文件输出
+	 * @param writeToBam
+	 */
+	public void setWriteToBam(boolean writeToBam) {
+		this.writeToBam = writeToBam;
 	}
 	/** 是否需要排序，默认false */
 	public void setNeedSort(boolean isNeedSort) {
@@ -92,6 +101,9 @@ public class SamToBamSort {
 		if (isUsingTmpFile) {
 			outFileName = getTmpFileName();
 		}
+		if (!writeToBam) {
+			return;
+		}
 		if (isNeedSort && samFileSam.getHeader().getSortOrder()== SortOrder.unsorted) {
 			samFileBam = new SamFile(outFileName, samFileSam.getHeader(true), false);
 		} else {
@@ -110,7 +122,9 @@ public class SamToBamSort {
 					alignmentRecorder.addAlignRecord(samRecord);
 				} catch (Exception e) { }
 			}
-			samFileBam.writeSamRecord(samRecord);
+			if (writeToBam) {
+				samFileBam.writeSamRecord(samRecord);
+			}
 		}
 	}
 	
@@ -175,7 +189,9 @@ public class SamToBamSort {
 							alignmentRecorder.addAlignRecord(samRecord);
 						} catch (Exception e) { }
 					}
-					samFileBam.writeSamRecord(samRecord);
+					if (writeToBam) {
+						samFileBam.writeSamRecord(samRecord);
+					}
 				}
 			}
 		}
@@ -184,6 +200,9 @@ public class SamToBamSort {
 	private void finishConvert() {
 		for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {
 			alignmentRecorder.summary();
+		}
+		if (!writeToBam) {
+			return;
 		}
 		samFileBam.close();
 		if (isUsingTmpFile) {

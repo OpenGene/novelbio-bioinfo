@@ -51,4 +51,10 @@ public interface MapDNAint extends IntCmdSoft {
 	void setLeftFq(List<FastQ> lsLeftFastQs);
 	void setRightFq(List<FastQ> lsRightFastQs);
 	String getOutNameCope();
+	/** 是否写入bam文件，默认写入
+	 * 有时候mapping但不需要写入文件，譬如过滤掉rrna reads的时候，
+	 * 只需要将没有mapping的reads输出即可，并不需要要把bam文件输出
+	 * @param writeToBam
+	 */
+	void setWriteToBam(boolean writeToBam);
 }

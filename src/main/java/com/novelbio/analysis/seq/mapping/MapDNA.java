@@ -45,6 +45,10 @@ public abstract class MapDNA implements MapDNAint {
 	String prefix;
 	/** 待比对的染色体 */
 	String chrFile = "";
+	
+	boolean writeToBam = true;
+	
+	
 	public void setChrIndex(String chrFile) {
 		this.chrFile = chrFile;
 	}
@@ -60,7 +64,10 @@ public abstract class MapDNA implements MapDNAint {
 	public void addAlignmentRecorder(AlignmentRecorder alignmentRecorder) {
 		this.lsAlignmentRecorders.add(alignmentRecorder);
 	}
-	
+	@Override
+	public void setWriteToBam(boolean writeToBam) {
+		this.writeToBam = writeToBam;
+	}
 	/** 输出的bam文件是否需要排序 */
 	public void setSortNeed(boolean isNeedSort) {
 		this.isNeedSort = isNeedSort;
@@ -109,6 +116,9 @@ public abstract class MapDNA implements MapDNAint {
 		IndexMake();
 		
 		SamFile samFile = mapping();
+		if (!writeToBam) {
+			return null;
+		}
 		String fileNameFinal = getOutNameCope();		
 		FileOperate.moveFile(true, samFile.getFileName(), fileNameFinal);
 		logger.info("mapping 结束");
@@ -139,6 +149,7 @@ public abstract class MapDNA implements MapDNAint {
 		String fileNameFinal = getOutNameCope();
 		String fileNameTmp = FileOperate.changeFileSuffix(fileNameFinal, "_TmpMap", null);
 		SamToBamSort samToBamSort = new SamToBamSort(fileNameTmp, samFileIn, isPairEnd());
+		samToBamSort.setWriteToBam(writeToBam);
 		samToBamSort.setNeedSort(isNeedSort);
 		samToBamSort.setAddMultiHitFlag(isSetMulitFlag);
 		samToBamSort.setLsAlignmentRecorders(lsAlignmentRecorders);

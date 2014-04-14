@@ -31,15 +31,19 @@ public class SamToFastq implements AlignmentRecorder {
 	String[] outFileName;
 	
 	boolean isPairend = false;
-
-    final Map<String, SamRecord> firstSeenMates = new HashMap<String, SamRecord>();
-
+	
 	FastQ fastQ1;
 	FastQ fastQ2;
+	
+    final Map<String, SamRecord> firstSeenMates = new HashMap<String, SamRecord>();
+    
+    public SamToFastq() {}
+    
 	/** 是否产生临时文件，意思就是如果顺利结束才会将文件名改成正式名字，默认是true */
-	public void setGenerateTmpFile(boolean isGenerateTmpFile) {
-		this.isGenerateTmpFile = isGenerateTmpFile;
+    public SamToFastq(boolean isGenerateTmpFile) {
+    	this.isGenerateTmpFile = isGenerateTmpFile;
 	}
+
 	/** 根据是否为mapping上的reads，自动设定文件名，并返回设定好的文件名 */
 	public void setOutFileInfo(SamFile samFile, SamToFastqType samToFastqType) {
 		clear();
