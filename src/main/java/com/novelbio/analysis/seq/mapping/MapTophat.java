@@ -476,7 +476,7 @@ public class MapTophat implements MapRNA {
 
 		if (mapUnmapedReads) {
 			String finalBam = FileOperate.getParentPathName(outPathPrefix) + prefix + TophatAllSuffix;
-			lsCmdMapping2nd = mapUnmapedReads(isPairend(), threadNum, bwaIndex, tophatBam, unmappedBam, finalBam);
+			lsCmdMapping2nd = mapUnmapedReads(threadNum, bwaIndex, tophatBam, unmappedBam, finalBam);
 		}
 	}
 
@@ -564,7 +564,7 @@ public class MapTophat implements MapRNA {
 	 * @param outFinalBam
 	 * @return 返回使用的命令行
 	 */
-	protected static List<String> mapUnmapedReads(Boolean isPairend, int threadNum, String bwaIndex, 
+	protected static List<String> mapUnmapedReads(int threadNum, String bwaIndex, 
 			String acceptedBam, String unmappedBam, String outFinalBam) {
 		String unmappedFq = null;
 		String unmapBamGetSeq = unmappedBam;
@@ -579,9 +579,10 @@ public class MapTophat implements MapRNA {
 		SamFile samFileMapBowtie = null;
 		MapBwaMem mapBwaMem = null;
 		if (!FileOperate.isFileExistAndBigThanSize(mapBowtieBam, 1_000_000)) {
+			SamFile unmappedSam = new SamFile(unmapBamGetSeq);
 			SamToFastq samToFastq = new SamToFastq();
-			samToFastq.setOutFileInfo(isPairend, unmappedFq, SamToFastqType.UnmappedReads);
-			AlignSamReading alignSamReading = new AlignSamReading(new SamFile(unmapBamGetSeq));
+			samToFastq.setOutFileInfo(unmappedSam.isPairend(), unmappedFq, SamToFastqType.UnmappedReads);
+			AlignSamReading alignSamReading = new AlignSamReading(unmappedSam);
 			alignSamReading.addAlignmentRecorder(samToFastq);
 			alignSamReading.run();
 			
