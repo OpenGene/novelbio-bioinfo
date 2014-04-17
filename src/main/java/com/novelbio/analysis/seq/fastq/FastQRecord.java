@@ -28,7 +28,6 @@ public class FastQRecord implements Cloneable {
 	
 	/** 如果过滤出错，就要用这个重新设定quality，全部设置为f */
 	boolean modifyQuality = false;
-	String[] fastqInfo;
 	
 	public FastQRecord() {
 		seqFasta = new SeqFasta();
@@ -44,9 +43,9 @@ public class FastQRecord implements Cloneable {
 	/** 读入fastq文件但根据需要进行初始化
 	 * 用在fastq过滤的时候，可以先不初始化，然后在多线程的时候进行初始化
 	 *  */
-	protected FastQRecord(List<String> lsFqInfo, int fastqOffset, boolean initial) {
+	protected FastQRecord(List<String> lsFqInfo, int fastqOffset) {
 		this.fastqOffset = fastqOffset;
-		fastqInfo = new String[4];
+		String[] fastqInfo = new String[4];
 		int i = 0;
 		for (String string : lsFqInfo) {
 			fastqInfo[i++] = string;
@@ -54,35 +53,28 @@ public class FastQRecord implements Cloneable {
 		if (i != 4) {
 			throw new ExceptionFastq("fastq format error");
 		}
-		if (initial) {
-			initialReadRecord();
-		}
+		initialReadRecord(fastqInfo);
 	}
 	/** 读入fastq文件但根据需要进行初始化
 	 * 用在fastq过滤的时候，可以先不初始化，然后在多线程的时候进行初始化
 	 *  */
 	protected FastQRecord(String[] ss, int fastqOffset, boolean initial) {
 		this.fastqOffset = fastqOffset;
-		fastqInfo = ss;
-		if (initial) {
-			initialReadRecord();
-		}
+		initialReadRecord(ss);
 	}
 	/** 读入fastq文件但根据需要进行初始化
 	 * 用在fastq过滤的时候，可以先不初始化，然后在多线程的时候进行初始化
 	 *  */
 	protected FastQRecord(String fastqlines, int fastqOffset, boolean initial) {
 		this.fastqOffset = fastqOffset;
-		fastqInfo = fastqlines.split(TxtReadandWrite.ENTER_LINUX);
+		String[] fastqInfo = fastqlines.split(TxtReadandWrite.ENTER_LINUX);
 		if (fastqInfo.length == 1) {
 			fastqInfo = fastqlines.split(TxtReadandWrite.ENTER_WINDOWS);
 		}
-		if (initial) {
-			initialReadRecord();
-		}
+		initialReadRecord(fastqInfo);
 	}
 	/**初始化读入的数据 */
-	protected void initialReadRecord() {
+	protected void initialReadRecord(String[] fastqInfo) {
 		if (seqFasta.getSeqName() != null) {
 			return;
 		}

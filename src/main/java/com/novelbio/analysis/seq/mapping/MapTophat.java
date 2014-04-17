@@ -11,14 +11,13 @@ import net.sf.samtools.SAMFileHeader.SortOrder;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.HashMultimap;
-import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.sam.AlignSamReading;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.analysis.seq.sam.SamToFastq;
-import com.novelbio.analysis.seq.sam.SamToFastq.SamToFastqType;
+import com.novelbio.analysis.seq.sam.SamToFastq.EnumSamToFastqType;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -581,7 +580,7 @@ public class MapTophat implements MapRNA {
 		if (!FileOperate.isFileExistAndBigThanSize(mapBowtieBam, 1_000_000)) {
 			SamFile unmappedSam = new SamFile(unmapBamGetSeq);
 			SamToFastq samToFastq = new SamToFastq();
-			samToFastq.setOutFileInfo(unmappedSam.isPairend(), unmappedFq, SamToFastqType.UnmappedReads);
+			samToFastq.setOutFileInfo(unmappedSam.isPairend(), unmappedFq, EnumSamToFastqType.UnmappedReads);
 			AlignSamReading alignSamReading = new AlignSamReading(unmappedSam);
 			alignSamReading.addAlignmentRecorder(samToFastq);
 			alignSamReading.run();

@@ -47,16 +47,6 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	 * @param gfffilename
 	 */
 	public boolean ReadGffarray(String gfffilename) {
-		File file = FileOperate.getFile("/hdfs:/nbCloud/staff/zongjie/test/dme_GTFfile.gtf.bak");
-		if (file.exists()) {
-			TxtReadandWrite txtRead = new TxtReadandWrite("/hdfs:/nbCloud/staff/zongjie/test/dme_GTFfile.gtf.bak");
-			String id = txtRead.readFirstLines(1).get(0);
-			if (id.split("\t")[8].contains(" transcript_id \"NM_001272857.1\"")) {
-				System.out.println(true);
-			}
-			txtRead.close();
-		}
-		
 		if (!readFile) return false;
 		
 		this.acc2GeneIDfile = FileOperate.changeFileSuffix(gfffilename, "_accID2geneID", "list");
@@ -163,9 +153,33 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		if (gffGeneIsoInfo != null) {
 			return gffGeneIsoInfo;
 		}
+		if (gffGeneIsoInfo == null) {
+			GeneID copedID = new GeneID(accID, taxID, false);
+			if (copedID.getIDtype() == GeneID.IDTYPE_ACCID) {
+				return null;
+			}
+			String locID = null;
+			try {
+				locID = getMapGeneID2Acc(acc2GeneIDfile).get(copedID.getGeneUniID()).split("//")[0];
+			} catch (Exception e) {
+				logger.error("没有该accID："+accID);
+				return null;
+			}
+			gffGeneIsoInfo = mapName2Iso.get(locID.toLowerCase());
+			if (gffGeneIsoInfo != null) {
+				return gffGeneIsoInfo;
+			} else {
+				GffDetailGene gffdetail = searchLOC(locID);
+				if (gffdetail != null) {
+					GffGeneIsoInfo gffGeneIsoInfoOut = gffdetail.getIsolist(locID);
+					if (gffGeneIsoInfoOut != null) {
+						return gffGeneIsoInfo;
+					}
+				}
+			}
+		}
 		GffDetailGene gffdetail = searchLOC(accID);
 		if (gffdetail == null) {
-    		logger.info("cannotFind the ID: "+ accID);
 			return null;
 		}
 		GffGeneIsoInfo gffGeneIsoInfoOut = gffdetail.getIsolist(accID);
@@ -523,8 +537,8 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		}
 	}
 	
-	private static boolean readFile = true;
-//	static {
+	private static boolean readFile = false;
+	static {
 //		if (FileOperate.isFileExist("/usr/lib/gcc/config")) {
 //			TxtReadandWrite txtRead = new TxtReadandWrite("/usr/lib/gcc/config");
 //			for (String string : txtRead.readlines(3)) {
@@ -544,7 +558,18 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 //			}
 //			txtRead.close();
 //		}
-//	}
+		
+		File file = FileOperate.getFile("/hdfs:/nbCloud/staff/zongjie/test/dme_GTFfile.gtf.bak");
+		readFile = false;
+		if (file.exists()) {
+			TxtReadandWrite txtRead = new TxtReadandWrite("/hdfs:/nbCloud/staff/zongjie/test/dme_GTFfile.gtf.bak");
+			String id = txtRead.readFirstLines(1).get(0);
+			if (id.split("\t")[8].contains(" transcript_id \"NM_001272857.1\"")) {
+				readFile=true;
+			}
+			txtRead.close();
+		}
+	}
 	
 	public void save() {
 		

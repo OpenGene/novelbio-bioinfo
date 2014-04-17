@@ -160,11 +160,11 @@ public class GffDetailGene extends ListDetailAbs {
 		
 		for (int i = 0; i < lsGffGeneIsoInfos.size(); i++) {
 			GffGeneIsoInfo gffGeneIsoInfo = lsGffGeneIsoInfos.get(i);
-			String tmpName = gffGeneIsoInfo.getName();
-				if(tmpName.equalsIgnoreCase(isoName)) {
+				if(gffGeneIsoInfo.getParentGeneName().equalsIgnoreCase(isoName)) {
 					return i;
 			}
 		}
+		
 		return -1;
 	}
 	/** 全体item的名字 */

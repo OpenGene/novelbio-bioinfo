@@ -193,21 +193,25 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		String chrID = geneLocInfo[colChrID];
 		int start = 0, end = 0, summit = 0;
-		try {
-			start =  (int)Double.parseDouble(geneLocInfo[colStart]);
-			end =  (int)Double.parseDouble(geneLocInfo[colEnd]);
-			
-		} catch (Exception e) { 	
-			logger.warn("summit col contains wrong value, omit this line:" + geneLocInfo[colStart] + " " + geneLocInfo[colEnd]);
-			return lsResult;
+		if (! searchSummit) {
+			try {
+				start =  (int)Double.parseDouble(geneLocInfo[colStart]);
+				end =  (int)Double.parseDouble(geneLocInfo[colEnd]);
+				
+			} catch (Exception e) { 	
+				logger.warn("summit col contains wrong value, omit this line:" + geneLocInfo[colStart] + " " + geneLocInfo[colEnd]);
+				return lsResult;
+			}
+		} else {
+			try {
+				summit = colSummit >= 0 ?  (int)Double.parseDouble(geneLocInfo[colSummit]) : ((start + end)/2);
+			} catch (Exception e) {
+				summit = (start + end)/2;
+				logger.warn("summit col contains wrong value, omit this line:" + geneLocInfo[colSummit]);
+				return lsResult;
+			}
 		}
-		try {
-			summit = colSummit >= 0 ?  (int)Double.parseDouble(geneLocInfo[colSummit]) : ((start + end)/2);
-		} catch (Exception e) {
-			summit = (start + end)/2;
-			logger.warn("summit col contains wrong value, omit this line:" + geneLocInfo[colSummit]);
-			return lsResult;
-		}
+	
 		ArrayList<String[]> lsanno = null;
 		if (searchSummit) {
 			lsanno = getGenInfoFilterSummitSingle(chrID, summit);

@@ -2,7 +2,9 @@ package com.novelbio.analysis.seq.rnaseq.lnc;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
@@ -25,7 +27,7 @@ public class LncInfo {
 	/**基因名称*/
 	String lncName;
 	Align align;
-	List<GffGeneIsoInfo> lsLncIso = new ArrayList<>();
+	Map<String, GffGeneIsoInfo> mapName2LncIso = new LinkedHashMap<>();
 	/** 本组中最后展示的lnc */
 	GffGeneIsoInfo gffLncIso;
 	/**重叠区域的mRna*/
@@ -78,14 +80,14 @@ public class LncInfo {
 		if (lncName != null ) {
 			searchByGeneName();
 		}
-		if (align != null && lsLncIso.isEmpty()) {
+		if (align != null && mapName2LncIso.isEmpty()) {
 			searchByAlign();
 		}
 	}
 	
 	/** 是否找到了lnc */
 	public boolean isFindLnc() {
-		return !lsLncIso.isEmpty();
+		return !mapName2LncIso.isEmpty();
 	}
 	
 	private void searchByGeneName() {
@@ -93,17 +95,10 @@ public class LncInfo {
 		if (gffiso == null) return;
 		
 		GffDetailGene detailGene = gffiso.getParentGffDetailGene();
-		if (gffiso.getGeneType() == GeneType.mRNA || gffiso.getGeneType() == GeneType.miRNA) {
-			lsLncIso = getLncIso(detailGene);
-			if (lsLncIso.isEmpty()) return;
-		} else {
-			for (GffGeneIsoInfo iso : detailGene.getLsCodSplit()) {
-				if (gffiso.getGeneType() != GeneType.mRNA && gffiso.getGeneType() != GeneType.miRNA) {
-					lsLncIso.add(iso);
-				}
-			}
-		}
-		gffLncIso = getLncIsoOne();
+		mapName2LncIso = getLncIso(detailGene);
+		if (mapName2LncIso.isEmpty()) return;
+		
+		gffLncIso = getLncIsoOne(gffiso);
 		
 		cis5to3 = gffLncIso.isCis5to3();
 		setNameAndUpDown(gffLncIso);
@@ -116,37 +111,42 @@ public class LncInfo {
 		Set<GffDetailGene> setGffDetailGenes = gffCodGeneDU.getCoveredOverlapGffGene();
 		if (setGffDetailGenes.size() == 0) return;
 		
-		lsLncIso = new ArrayList<>();
+		mapName2LncIso = new LinkedHashMap<>();
 		for (GffDetailGene gffDetailGene : setGffDetailGenes) {
-			lsLncIso.addAll(getLncIso(gffDetailGene));
+			mapName2LncIso.putAll(getLncIso(gffDetailGene));
 		}
-		gffLncIso = getLncIsoOne();
+		gffLncIso = getLncIsoOne(null);
 		setNameAndUpDown(gffLncIso);
 	}
 	
 	/** 选择一个iso */
-	private GffGeneIsoInfo getLncIsoOne() {
-		if (lsLncIso.isEmpty()) return null;
+	private GffGeneIsoInfo getLncIsoOne(GffGeneIsoInfo isoInput) {
+		if (mapName2LncIso.isEmpty()) return null;
 		
 		GffGeneIsoInfo gffGeneIsoInfoLnc = null;
-		if (lsLncIso.size() == 1) {
-			gffGeneIsoInfoLnc = lsLncIso.iterator().next();
-		} else if (align != null) {
+		if (mapName2LncIso.size() == 1) {//只有一个lnc，就选这个了
+			gffGeneIsoInfoLnc = mapName2LncIso.values().iterator().next();
+		} else if (isoInput != null && mapName2LncIso.containsKey(isoInput.getName())) {//得到的lnc中有我们的选项，就选这个
+			gffGeneIsoInfoLnc = mapName2LncIso.get(isoInput.getName());
+		} else if (align != null || isoInput != null) {//比较lnc与输入基因的overlap，选择overlap最大的那个
+			Align alignThis = align;
+			if (alignThis == null && isoInput != null) {
+				alignThis = new Align(isoInput.getRefID(), isoInput.getStartAbs(), isoInput.getEndAbs());
+			}
 			double overlap = 0;
-			for (GffGeneIsoInfo gffGeneIsoInfo : lsLncIso) {
-				double[] region1 = new double[]{align.getStartAbs(), align.getEndAbs()};
-				double[] region2 = new double[]{gffGeneIsoInfo.getStartAbs(), gffGeneIsoInfo.getEndAbs()};
+			for (GffGeneIsoInfo iso : mapName2LncIso.values()) {
+				double[] region1 = new double[]{alignThis.getStartAbs(), alignThis.getEndAbs()};
+				double[] region2 = new double[]{iso.getStartAbs(), iso.getEndAbs()};
 				
 				//获得与输入区域覆盖度最大的iso
 				double overlapNew = ArrayOperate.cmpArray(region1, region2)[1];
 				if (overlapNew > overlap) {
-					gffGeneIsoInfoLnc = gffGeneIsoInfo;
+					gffGeneIsoInfoLnc = iso;
 					overlap = overlapNew;
 				}
 			}
-		} else {
-			//按照名字查询lnc，直接获取第一个就行了
-			gffGeneIsoInfoLnc = lsLncIso.iterator().next();
+		} else {//啥也没找到，选第一个
+			gffGeneIsoInfoLnc = mapName2LncIso.values().iterator().next();
 		}
 		return gffGeneIsoInfoLnc;
 	}
@@ -174,8 +174,8 @@ public class LncInfo {
 	 * @param gffDetailGene
 	 * @return
 	 */
-	protected static List<GffGeneIsoInfo> getLncIso(GffDetailGene gffDetailGene) {
-		List<GffGeneIsoInfo> lsLnc = new ArrayList<>();
+	protected static Map<String, GffGeneIsoInfo> getLncIso(GffDetailGene gffDetailGene) {
+		Map<String, GffGeneIsoInfo> lsLnc = new LinkedHashMap<>();
 		List<GffGeneIsoInfo> lsMRNAcis = new ArrayList<>();
 		List<GffGeneIsoInfo> lsMRNAtrans = new ArrayList<>();
 
@@ -187,7 +187,7 @@ public class LncInfo {
 					lsMRNAtrans.add(gffGeneIsoInfo);	
 				}				
 			} else if (gffGeneIsoInfo.getGeneType() != GeneType.miRNA) {
-				lsLnc.add(gffGeneIsoInfo);
+				lsLnc.put(gffGeneIsoInfo.getName(), gffGeneIsoInfo);
 			}
 		}
 		
@@ -209,10 +209,10 @@ public class LncInfo {
 				setEdgeMrnaTrans.add(exonInfo.getEndAbs());
 			}
 		}
-		List<GffGeneIsoInfo> lsLncFinal = new ArrayList<>();
-		for (GffGeneIsoInfo gffLnc : lsLnc) {
+		Map<String, GffGeneIsoInfo> lsLncFinal = new LinkedHashMap<>();
+		for (GffGeneIsoInfo gffLnc : lsLnc.values()) {
 			if(isHaveLessEdge(gffLnc, setEdgeMrnaCis, setEdgeMrnaTrans, 0.3)) {
-				lsLncFinal.add(gffLnc);
+				lsLncFinal.put(gffLnc.getName(), gffLnc);
 			}
 		}
 		
@@ -315,7 +315,7 @@ public class LncInfo {
 		List<String> lsResult = new ArrayList<String>();
 		lsResult.add(lncIsoName);
 		lsResult.add(lncName);
-		if (lsLncIso.isEmpty()) {
+		if (mapName2LncIso.isEmpty()) {
 			lsResult.add("");
 			lsResult.add("");
 		} else {

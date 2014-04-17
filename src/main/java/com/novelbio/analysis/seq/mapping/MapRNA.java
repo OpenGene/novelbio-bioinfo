@@ -7,6 +7,7 @@ import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
+/** 每次都要new一个，不要连续用 */
 public interface MapRNA extends IntCmdSoft {
 	public void setGffChrAbs(GffChrAbs gffChrAbs);
 	

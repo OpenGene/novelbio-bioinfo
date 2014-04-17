@@ -4,8 +4,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import net.sf.samtools.util.RuntimeEOFException;
-
 import com.novelbio.base.dataOperate.HttpFetch;
 
 /**
@@ -53,11 +51,9 @@ public class FastQrecordCopeUnit implements Callable<FastQrecordCopeUnit> {
 	@Override
 	public FastQrecordCopeUnit call() throws Exception {
 		try {
-			fastQRecord1.initialReadRecord();
 			if (fastQRecord2 == null) {
 				filterSucess = copeFastQRecordSE(fastQRecord1);
 			} else {
-				fastQRecord2.initialReadRecord();
 				filterSucess = copeFastQRecordPE(fastQRecord1, fastQRecord2);
 			}
 			if (filterSucess) {

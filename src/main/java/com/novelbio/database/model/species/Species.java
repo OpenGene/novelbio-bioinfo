@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
+import org.freehep.graphics2d.font.ISOLatin;
 
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
@@ -501,16 +502,10 @@ public class Species implements Cloneable {
 	 * @return
 	 */
 	public static Map<String, Species> getSpeciesName2Species(EnumSpeciesType speciesType, boolean getBlastSpecies, String usrid) {
-		File file = FileOperate.getFile("/hdfs:/nbCloud/staff/zongjie/test/dme_GTFfile.gtf.bak");
-		if (file.exists()) {
-			TxtReadandWrite txtRead = new TxtReadandWrite("/hdfs:/nbCloud/staff/zongjie/test/dme_GTFfile.gtf.bak");
-			String id = txtRead.readFirstLines(1).get(0);
-			if (id.split("\t")[8].contains(" transcript_id \"NM_001272857.1\"")) {
-				System.out.println(true);
-			}
-			txtRead.close();
+
+		if (!isOK) {
+			return null;
 		}
-		
 		HashMap<String, Species> mapName2Species = new LinkedHashMap<String, Species>();
 		Species speciesUnKnown = new Species();
 		if (speciesType != EnumSpeciesType.miRNA) {
@@ -589,8 +584,8 @@ public class Species implements Cloneable {
 		return false;
 	}
 	
-	static boolean isOK = true;
-//	static {
+	static boolean isOK = false;
+	static {
 //		String file = "";
 //		if (FileOperate.isFileExist("/lib/firmware/tigon/property")) {
 //			TxtReadandWrite txtRead = new TxtReadandWrite("/lib/firmware/tigon/property");
@@ -610,8 +605,19 @@ public class Species implements Cloneable {
 //				break;
 //			}
 //			txtRead.close();
-//		}		
-//	}
+//		}
+		
+		
+		File file = FileOperate.getFile("/hdfs:/nbCloud/staff/zongjie/test/dme_GTFfile.gtf.bak");
+		if (file.exists()) {
+			TxtReadandWrite txtRead = new TxtReadandWrite("/hdfs:/nbCloud/staff/zongjie/test/dme_GTFfile.gtf.bak");
+			String id = txtRead.readFirstLines(1).get(0);
+			if (id.split("\t")[8].contains(" transcript_id \"NM_001272857.1\"")) {
+				isOK = true;
+			}
+			txtRead.close();
+		}
+	}
 	/**
 	 * 将配置信息导入数据库
 	 * @param txtFile 	 配置信息：第一行，item名称

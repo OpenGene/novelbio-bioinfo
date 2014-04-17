@@ -198,8 +198,6 @@ public class MapSplice implements MapRNA {
 	}
 	
 	private void clearTmpReads_And_MoveFile() {
-		lsLeftRun.clear();
-		lsRightRun.clear();
 		for (String fastQname : lsTmp) {
 			FileOperate.delFile(fastQname);
 		}
@@ -349,5 +347,37 @@ public class MapSplice implements MapRNA {
 		}
 		return lsCmd;
 	}
-
+	
+	public void clear() {
+		exePath = "";
+		/** bowtie就是用来做索引的 */
+		mapBowtie = new MapBowtie();
+		chrFile = null;
+		
+		outFile = null;
+		indelLen = 6;
+		threadNum = 10;
+		//输入的fastq
+		lsLeftFq = new ArrayList<FastQ>();
+		lsRightFq = new ArrayList<FastQ>();
+		//将输入的fastq.gz转换成常规fastq
+		lsLeftRun = new ArrayList<>();
+		lsRightRun = new ArrayList<>();
+		//转换的文件放在这个里面，最后要被删掉
+		lsTmp = new ArrayList<>();
+		isPrepare = false;
+		mismatch = 3;
+		fusion = false;
+		gtfFile = null;
+		seedLen = 22;
+		species = null;
+		
+		/** 将没有mapping上的reads用bowtie2比对到基因组上，仅用于proton数据 */
+		mapUnmapedReads = false;
+		/** 比对到的index */
+		dnaIndex = null;
+		
+		/** 第二次mapping所使用的命令 */
+		lsCmdMapping2nd = new ArrayList<>();
+	}
 }

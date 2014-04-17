@@ -88,13 +88,7 @@ public class FastQ {
 	}
 	
 	public Iterable<FastQRecord> readlines() {
-		return fastQRead.readlines(true);
-	}
-	/** 读取fastq的时候是否初始化
-	 * 主要用在多线程过滤reads的时候，可以在过滤reads的时候才进行初始化
-	 *  */
-	public Iterable<FastQRecord> readlines(boolean initial) {
-		return fastQRead.readlines(initial);
+		return fastQRead.readlines();
 	}
 	public Iterable<FastQRecord> readlines(int startLines) {
 		return fastQRead.readlines(startLines);
@@ -239,7 +233,7 @@ public class FastQ {
 	 */
 	public void convertToFasta(String fastaFile) {
 		TxtReadandWrite txtFasta = new TxtReadandWrite(fastaFile, true);
-		for (FastQRecord fastQRecord : fastQRead.readlines(true)) {
+		for (FastQRecord fastQRecord : fastQRead.readlines()) {
 			txtFasta.writefile(fastQRecord.getSeqFasta().toStringNRfasta());
 		}
 		txtFasta.close();

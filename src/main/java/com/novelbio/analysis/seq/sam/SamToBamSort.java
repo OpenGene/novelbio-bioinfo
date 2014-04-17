@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMFileHeader.SortOrder;
 
 import com.novelbio.base.SepSign;
@@ -104,10 +105,17 @@ public class SamToBamSort {
 		if (!writeToBam) {
 			return;
 		}
+		SAMFileHeader samFileHeader = samFileSam.getHeader();
 		if (isNeedSort && samFileSam.getHeader().getSortOrder()== SortOrder.unsorted) {
-			samFileBam = new SamFile(outFileName, samFileSam.getHeader(true), false);
+			samFileHeader.setSortOrder(SAMFileHeader.SortOrder.coordinate);
+			samFileBam = new SamFile(outFileName, samFileHeader, false);
 		} else {
-			samFileBam = new SamFile(outFileName, samFileSam.getHeader());
+			samFileBam = new SamFile(outFileName, samFileHeader);
+		}
+		for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {
+			if (alignmentRecorder instanceof SamFileStatistics) {
+				((SamFileStatistics)alignmentRecorder).setStandardData(samFileSam.getMapChrID2Length());
+			}
 		}
 	}
 	

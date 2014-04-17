@@ -9,6 +9,7 @@ import com.novelbio.analysis.seq.sam.SamFile;
 
 public interface MapDNAint extends IntCmdSoft {
 	public void setLsAlignmentRecorders(List<AlignmentRecorder> lsAlignmentRecorders);
+	/** 内部会对SamFileStatistics添加chr信息 */
 	public void addAlignmentRecorder(AlignmentRecorder alignmentRecorder);
 	/** 输入已经过滤好的fastq文件 */
 	public void setFqFile(FastQ leftFq, FastQ rightFq);

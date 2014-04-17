@@ -21,7 +21,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 public class SamToFastq implements AlignmentRecorder {
 	private static final Logger logger = Logger.getLogger(SamToFastq.class);
 	/** 是否仅挑选没有mapping上的reads */
-	SamToFastqType samToFastqType = SamToFastqType.AllReads;
+	EnumSamToFastqType samToFastqType = EnumSamToFastqType.AllReads;
 	
 	/** 是否产生临时文件，意思就是如果顺利结束才会将文件名改成正式名字 */
 	boolean isGenerateTmpFile = true;
@@ -37,6 +37,7 @@ public class SamToFastq implements AlignmentRecorder {
 	
     final Map<String, SamRecord> firstSeenMates = new HashMap<String, SamRecord>();
     
+	/** 是否产生临时文件，意思就是如果顺利结束才会将文件名改成正式名字，默认是true */
     public SamToFastq() {}
     
 	/** 是否产生临时文件，意思就是如果顺利结束才会将文件名改成正式名字，默认是true */
@@ -45,7 +46,7 @@ public class SamToFastq implements AlignmentRecorder {
 	}
 
 	/** 根据是否为mapping上的reads，自动设定文件名，并返回设定好的文件名 */
-	public void setOutFileInfo(SamFile samFile, SamToFastqType samToFastqType) {
+	public void setOutFileInfo(SamFile samFile, EnumSamToFastqType samToFastqType) {
 		clear();
 		String fileName = samFile.getFileName();
 		this.samToFastqType = samToFastqType;
@@ -58,8 +59,13 @@ public class SamToFastq implements AlignmentRecorder {
 		}
 		initialFq();
 	}
-	/** 根据是否为mapping上的reads，自动设定文件名，并返回设定好的文件名 */
-	public void setOutFileInfo(boolean isPairend, String outFileName, SamToFastqType samToFastqType) {
+	/** 根据是否为mapping上的reads，自动设定文件名，并返回设定好的文件名
+	 * 
+	 * @param isPairend
+	 * @param outFileName 必须以fastq.gz, fastq, fq.gz, fq 结尾
+	 * @param samToFastqType
+	 */
+	public void setOutFileInfo(boolean isPairend, String outFileName, EnumSamToFastqType samToFastqType) {
 		clear();
 		this.isPairend = isPairend;
 		this.samToFastqType = samToFastqType;
@@ -71,7 +77,7 @@ public class SamToFastq implements AlignmentRecorder {
 	}
 	
 	/** 根据是否为mapping上的reads，指定文件名，并返回设定好的文件名 */
-	public void setOutFileInfo(boolean isPairend, String outFile1, String outFile2, SamToFastqType samToFastqType) {
+	public void setOutFileInfo(boolean isPairend, String outFile1, String outFile2, EnumSamToFastqType samToFastqType) {
 		clear();
 		this.isPairend = isPairend;
 		this.samToFastqType = samToFastqType;
@@ -119,11 +125,11 @@ public class SamToFastq implements AlignmentRecorder {
 			return;
 		}
 		
-		if (samToFastqType == SamToFastqType.UnmappedReads) {
+		if (samToFastqType == EnumSamToFastqType.UnmappedReads) {
 			if (samRecord.isMapped() || (isPairend && samRecord.isMateMapped())) {
 				return;
 			}
-		} else if (samToFastqType == SamToFastqType.MappedReads) {
+		} else if (samToFastqType == EnumSamToFastqType.MappedReads) {
 			if (!samRecord.isMapped() && 
 					(!isPairend || 
 							(isPairend && !samRecord.isMateMapped())
@@ -131,7 +137,7 @@ public class SamToFastq implements AlignmentRecorder {
 					) {
 				return;
 			}
-		} else if (samToFastqType == SamToFastqType.MappedReadsPairend) {
+		} else if (samToFastqType == EnumSamToFastqType.MappedReadsPairend) {
 			if (!samRecord.isMapped() || (isPairend && !samRecord.isMateMapped())) {
 				return;
 			}
@@ -140,15 +146,15 @@ public class SamToFastq implements AlignmentRecorder {
 	}
 
 	private void addNormalRecord(AlignRecord alignRecord) {
-		if (samToFastqType == SamToFastqType.UnmappedReads) {
+		if (samToFastqType == EnumSamToFastqType.UnmappedReads) {
 			if (alignRecord.isMapped()) {
 				return;
 			}
-		} else if (samToFastqType == SamToFastqType.MappedReads) {
+		} else if (samToFastqType == EnumSamToFastqType.MappedReads) {
 		if (!alignRecord.isMapped()) {
 				return;
 			}
-		} else if (samToFastqType == SamToFastqType.MappedReadsPairend) {
+		} else if (samToFastqType == EnumSamToFastqType.MappedReadsPairend) {
 			if (!alignRecord.isMapped()) {
 				return;
 			}
@@ -194,7 +200,12 @@ public class SamToFastq implements AlignmentRecorder {
             throw new PicardException("Illegal mate state: " + record1.getName() + " " + record2.getName());
         }
     }
-
+    
+    /** 返回输出的文件名 */
+    public String[] getOutFileName() {
+		return outFileName;
+	}
+    
 	public FastQ[] getResultFastQ() {
 		FastQ[] fastQ = new FastQ[isPairend? 2 : 1];
 		fastQ[0] = fastQ1;
@@ -251,7 +262,7 @@ public class SamToFastq implements AlignmentRecorder {
 	
 	public void clear() {
 		/** 是否仅挑选没有mapping上的reads */
-		samToFastqType = SamToFastqType.AllReads;		
+		samToFastqType = EnumSamToFastqType.AllReads;		
 		outFileName = null;
 		isPairend = false;
 		/** 是否产生临时文件，意思就是如果顺利结束才会将文件名改成正式名字 */
@@ -265,7 +276,7 @@ public class SamToFastq implements AlignmentRecorder {
 		fastQ2 = null;
 	}
 	
-	public static enum SamToFastqType {
+	public static enum EnumSamToFastqType {
 		/** 全部reads */
 		AllReads("_All"),
 		/** Mapped Reads，双端测序只要有一段比对上就算是比对上了 */
@@ -276,13 +287,14 @@ public class SamToFastq implements AlignmentRecorder {
 		UnmappedReads("_UnMapped");
 		
 		String suffix;
-		SamToFastqType(String suffix) {
+		EnumSamToFastqType(String suffix) {
 			this.suffix = suffix;
 		}
 		
 		public String getSuffix() {
 			return suffix;
 		}
+		
 	}
 }
 

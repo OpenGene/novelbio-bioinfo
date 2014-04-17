@@ -76,7 +76,7 @@ class FastQReader implements Closeable {
 	public ArrayList<FastQRecord> readHeadLines(int num) {
 		ArrayList<FastQRecord> lsResult = new ArrayList<FastQRecord>();
 		int i = 0;
-		for (FastQRecord info : readlines(true)) {
+		for (FastQRecord info : readlines()) {
 			if (i >= num) {
 				break;
 			}
@@ -112,7 +112,7 @@ class FastQReader implements Closeable {
 	 */
 	public Iterable<FastQRecord> readlines(int lines) {
 		lines = lines - 1;
-		Iterable<FastQRecord> itContent = readPerlines(true);
+		Iterable<FastQRecord> itContent = readPerlines();
 		if (lines > 0) {
 			for (int i = 0; i < lines; i++) {
 				itContent.iterator().hasNext();
@@ -126,8 +126,8 @@ class FastQReader implements Closeable {
 	 * @param initial 是否进行初始化
 	 * @return
 	 */
-	public Iterable<FastQRecord> readlines(boolean initial) {
-		return readPerlines(initial);
+	public Iterable<FastQRecord> readlines() {
+		return readPerlines();
 	}
 	
 	/**
@@ -137,7 +137,7 @@ class FastQReader implements Closeable {
 	 * @throws Exception 
 	 * @throws IOException
 	 */
-	private Iterable<FastQRecord> readPerlines(final boolean initial) {
+	private Iterable<FastQRecord> readPerlines() {
 		final BufferedReader bufread =  txtSeqFile.readfile();
 		final long[] lineNum = new long[1];
 		final int[] errorNum = new int[1];
@@ -170,7 +170,7 @@ class FastQReader implements Closeable {
 								}
 								lsStr.add(lineTmp);
 							}
-							fastQRecord = new FastQRecord(lsStr, offset, initial);
+							fastQRecord = new FastQRecord(lsStr, offset);
 						} catch (IOException ioEx) {
 							fastQRecord = null;
 						} catch (ExceptionFastq efastq) {
@@ -194,7 +194,7 @@ class FastQReader implements Closeable {
 									lsStr.add(next);
 									errorNum[0]++;
 									try {
-										fastQRecord = new FastQRecord(lsStr, offset, initial);
+										fastQRecord = new FastQRecord(lsStr, offset);
 										errorNum[0] = 0;
 										break;
 									} catch (Exception e) {}
@@ -287,8 +287,8 @@ class FastQReader implements Closeable {
 								linestr1 = linestr1 + TxtReadandWrite.ENTER_LINUX + lineTmp1;
 								linestr2 = linestr2 + TxtReadandWrite.ENTER_LINUX + lineTmp2;
 							}
-							fastQRecord[0] = new FastQRecord(linestr1, offset, initial);
-							fastQRecord[1] = new FastQRecord(linestr2, offset, initial);
+							fastQRecord[0] = new FastQRecord(linestr1, offset);
+							fastQRecord[1] = new FastQRecord(linestr2, offset);
 							fastQRecord[0].setFastqOffset(offset);
 							fastQRecord[0].setFastqOffset(offset);
 						} catch (IOException ioEx) {
@@ -337,7 +337,7 @@ class FastQReader implements Closeable {
 	private ArrayList<FastQRecord> getLsFastQSeq(int Num) {
 		ArrayList<FastQRecord> lsFastqRecord = new ArrayList<FastQRecord>();
 		int thisnum = 0;
-		for (FastQRecord fastQRecord : readlines(true)) {
+		for (FastQRecord fastQRecord : readlines()) {
 			if (thisnum > Num) break;
 			if (fastQRecord.getSeqQuality().contains("BBB")) {
 				continue;

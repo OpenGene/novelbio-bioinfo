@@ -194,6 +194,9 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @return
 	 */
 	public boolean isCodInIsoTss(int[] tss, int coord) {
+		if (tss == null) {
+			return false;
+		}
 		int cod2tss = getCod2Tss(coord);
 		if (cod2tss >= tss[0] && cod2tss <= tss[1]) {
 			return true;
@@ -206,6 +209,9 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @return
 	 */
 	public boolean isCodInIsoGenEnd(int[] geneEnd, int coord) {
+		if (geneEnd == null) {
+			return false;
+		}
 		int cod2tes = getCod2Tes(coord);
 		if (cod2tes >= geneEnd[0] && cod2tes <= geneEnd[1]) {
 			return true;

@@ -162,7 +162,7 @@ public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
 			if (isCheckFormat) {
 				fastQs[0].fastQRead.setCheckFormat(isCheckFormat);
 			}
-			for (FastQRecord fastQRecord : fastQs[0].readlines(false)) {
+			for (FastQRecord fastQRecord : fastQs[0].readlines()) {
 				readsNum++;
 				wait_To_Cope_AbsQueue();
 				if (flagStop) break;

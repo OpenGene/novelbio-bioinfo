@@ -179,7 +179,6 @@ public abstract class MapDNA implements MapDNAint {
 			IndexMake();
 		}
 		else if (!isIndexExist()) {
-			boolean makeIndexSucess = true;
 			flagMakeIndexDetail = flagMakeIndex + DateUtil.getNowTimeLongRandom();
 			TxtReadandWrite txtWriteFlag = new TxtReadandWrite(parentPath + flagMakeIndexDetail, true);
 			txtWriteFlag.close();
@@ -187,18 +186,11 @@ public abstract class MapDNA implements MapDNAint {
 			List<String> lsFlags = FileOperate.getFoldFileNameLs(parentPath, flagMakeIndex, "*");
 			Collections.sort(lsFlags);
 			if (lsFlags.get(0).equals(parentPath + flagMakeIndexDetail)) {
-				makeIndexSucess = tryMakeIndex(parentPath, flagMakeIndexDetail, flagMakeIndex);
+				tryMakeIndex(parentPath, flagMakeIndexDetail, flagMakeIndex);
 			} else {
 				FileOperate.delFile(parentPath + flagMakeIndexDetail);
 				waitUntilIndexFinish(parentPath, flagMakeIndex);
 				IndexMake();
-			}
-	
-			if (!makeIndexSucess) {
-				logger.error("index make error:" + chrFile);
-				deleteIndex();
-				FileOperate.delFile(parentPath + flagMakeIndex);
-				throw new ExceptionCmd("index make error:" + chrFile);
 			}
 		}
 	}
@@ -228,7 +220,6 @@ public abstract class MapDNA implements MapDNAint {
 	}
 	
 	private boolean tryMakeIndex(String parentPath, String flagMakeIndexDetail, String flagMakeIndex) {
-		boolean makeIndexSucess = false;
 		try {
 			int i = 0;
 			try {
@@ -245,7 +236,7 @@ public abstract class MapDNA implements MapDNAint {
 		for (String fileName : FileOperate.getFoldFileNameLs(parentPath, flagMakeIndex, "*")) {
 			FileOperate.delFile(fileName);
 		}
-		return makeIndexSucess;
+		return true;
 	}
 	
 	/** 等待别的机器把索引建好了 */
