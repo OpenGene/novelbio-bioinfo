@@ -46,19 +46,8 @@ public class BamRemoveDuplicate implements IntCmdSoft {
 	}
 	
 	/** 返回cmd命令 */
-	public String removeDuplicate() {
-		if (samtools) {
-			SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.samtools);
-			ExePath = softWareInfo.getExePathRun();
-			return removeDuplicateSamtools();
-		} else {
-			SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.picard);
-			ExePath = softWareInfo.getExePathRun();
-			return removeDuplicatePicard();
-		}
-	}
-	/** 返回cmd命令 */
 	public String removeDuplicate(String outFile) {
+		setExePath();
 		lsCmdInfo.clear();
 		if (samtools) {
 			return removeDuplicateSamtools(outFile);
@@ -68,6 +57,7 @@ public class BamRemoveDuplicate implements IntCmdSoft {
 	}
 	/** 返回cmd命令 */
 	public String removeDuplicate(String outFile, boolean isCover) {
+		setExePath();
 		lsCmdInfo.clear();
 		if (!isCover && FileOperate.isFileExistAndBigThanSize(outFile, 0)) {
 			return outFile;
@@ -79,9 +69,14 @@ public class BamRemoveDuplicate implements IntCmdSoft {
 		}
 	}
 	
-	private String removeDuplicateSamtools() {
-		String bamNoDuplicateFile = FileOperate.changeFileSuffix(bamSortedFile, "_NoDuplicate", "bam");
-		return removeDuplicate(bamNoDuplicateFile);
+	private void setExePath() {
+		if (samtools) {
+			SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.samtools);
+			ExePath = softWareInfo.getExePathRun();
+		} else {
+			SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.picard);
+			ExePath = softWareInfo.getExePathRun();
+		}
 	}
 	
 	/**
@@ -89,11 +84,14 @@ public class BamRemoveDuplicate implements IntCmdSoft {
 	 * @return 返回文件名
 	 */
 	private String removeDuplicateSamtools(String outFile) {
-		CmdOperate cmdOperate = new CmdOperate(getLsCmdSamtools(outFile));
+		String outFileTmp = FileOperate.changeFileSuffix(outFile, "_tmp", null);
+		CmdOperate cmdOperate = new CmdOperate(getLsCmdSamtools(outFileTmp));
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {
+			FileOperate.DeleteFileFolder(outFileTmp);
 			throw new ExceptionCmd("samtools remove duplicate error:" + cmdOperate.getCmdExeStr());
 		}
+		FileOperate.moveFile(true, outFileTmp, outFile);
 		lsCmdInfo.add(cmdOperate.getCmdExeStr());
 		return outFile;
 	}
@@ -105,11 +103,6 @@ public class BamRemoveDuplicate implements IntCmdSoft {
 		lsCmd.add(bamSortedFile);
 		lsCmd.add(outFile);
 		return lsCmd;
-	}
-	
-	private String removeDuplicatePicard() {
-		String bamNoDuplicateFile = FileOperate.changeFileSuffix(bamSortedFile, "_NoDuplicate", "bam");
-		return removeDuplicate(bamNoDuplicateFile);
 	}
 	
 	/**

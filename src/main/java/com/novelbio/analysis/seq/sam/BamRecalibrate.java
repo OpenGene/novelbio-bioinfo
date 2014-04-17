@@ -92,19 +92,21 @@ public class BamRecalibrate implements IntCmdSoft {
 		if (!isCover && FileOperate.isFileExistAndBigThanSize(outFile, 0)) {
 			return outFile;
 		}
-		CmdOperate cmdOperate = new CmdOperate(getLsCmdBaseRecal(outFile));
+		String outFileTmp = FileOperate.changeFileSuffix(outFile, "_tmp", null);
+		CmdOperate cmdOperate = new CmdOperate(getLsCmdBaseRecal(outFileTmp));
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {
 			throw new ExceptionCmd("gatk base recal error:\n" + cmdOperate.getCmdExeStrReal());
 		}
 		lsCmdInfo.add(cmdOperate.getCmdExeStr());
 
-		cmdOperate = new CmdOperate(getLsCmdPrintReads(outFile));
+		cmdOperate = new CmdOperate(getLsCmdPrintReads(outFileTmp));
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {
 			throw new ExceptionCmd("gatk print reads error:\n" + cmdOperate.getCmdExeStrReal());
 		}
 		lsCmdInfo.add(cmdOperate.getCmdExeStr());
+		FileOperate.moveFile(true, outFileTmp, outFile);
 		return outFile;
 	}
 	

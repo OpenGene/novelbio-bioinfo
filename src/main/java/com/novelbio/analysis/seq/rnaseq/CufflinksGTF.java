@@ -8,7 +8,12 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.novelbio.analysis.IntCmdSoft;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffType;
+import com.novelbio.analysis.seq.mapping.MapBwaAln;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
+import com.novelbio.analysis.seq.sam.BamReadsInfo;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
@@ -17,7 +22,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
-public class CufflinksGTF {
+public class CufflinksGTF implements IntCmdSoft {
 	private static final Logger logger = Logger.getLogger(CufflinksGTF.class);
 	static int intronMin = 50;
 	static int intronMax = 500000;
@@ -62,6 +67,8 @@ public class CufflinksGTF {
 	
 	/** 最后获得的结果 */
 	List<String> lsCufflinksResult = new ArrayList<String>();
+	
+	List<String> lsCmd = new ArrayList<>();
 	
 	public CufflinksGTF() {
 		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.cufflinks);
@@ -306,7 +313,15 @@ public class CufflinksGTF {
 	 * 返回链的方向
 	 * @return
 	 */
-	private String[] getStrandSpecifictype() {
+	private String[] getStrandSpecifictype(String bamFile) {
+		if (strandSpecifictype == StrandSpecific.UNKNOWN && FileOperate.isFileExistAndBigThanSize(gtfFile, 0)) {
+			GffHashGene gffHashGene = new GffHashGene(GffType.GTF, gtfFile);
+			BamReadsInfo bamReadsInfo = new BamReadsInfo();
+			bamReadsInfo.setSamFile(new SamFile(bamFile));
+			bamReadsInfo.setGffHashGene(gffHashGene);
+			bamReadsInfo.calculate();
+			strandSpecifictype = bamReadsInfo.getStrandSpecific();
+		}
 		
 		if (strandSpecifictype == StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND) {
 			return new String[]{"--library-type", "fr-secondstrand"};
@@ -322,6 +337,7 @@ public class CufflinksGTF {
 	public void runCufflinks() {
 		lsMergeSamFile = new ArrayList<String>();
 		lsCufflinksResult.clear();
+		lsCmd.clear();
 		for (String prefix : setPrefix) {
 			if (mergeBamFileByPrefix) {
 				String cufResultTmp = runMergeBamGtf(prefix);
@@ -378,7 +394,7 @@ public class CufflinksGTF {
 			return outGTF + "transcripts.gtf";
 		}
 		cmdOperate.run();
-
+		this.lsCmd.add(cmdOperate.getCmdExeStr());
 		
 		if (cmdOperate.isFinishedNormal()) {
 			return outGTF + "transcripts.gtf";
@@ -404,7 +420,7 @@ public class CufflinksGTF {
 		ArrayOperate.addArrayToList(lsCmd, getAnchoProportion());
 		lsCmd.addAll(getIntronLen());
 		ArrayOperate.addArrayToList(lsCmd, getGtfFile());
-		ArrayOperate.addArrayToList(lsCmd, getStrandSpecifictype());
+		ArrayOperate.addArrayToList(lsCmd, getStrandSpecifictype(bamFileName));
 		addLsCmdStr(lsCmd, getIsUpQuartile());
 		ArrayOperate.addArrayToList(lsCmd, getThreadNum());
 		ArrayOperate.addArrayToList(lsCmd, getCorrectChrFile());
@@ -433,5 +449,22 @@ public class CufflinksGTF {
 	
 	public String getCufflinksGTFPath() {
 		return FileOperate.addSep(outPathPrefix) + "transcripts.gtf";
+	}
+	
+	/** 最后再获得 */
+	@Override
+	public List<String> getCmdExeStr() {
+		lsCmd.add(0, "cufflinks version:" + getVersion());
+		return lsCmd;
+	}
+	
+	public String getVersion() {
+		List<String> lsCmdVersion = new ArrayList<>();
+		lsCmdVersion.add(ExePathCufflinks + "cufflinks");
+		CmdOperate cmdOperate = new CmdOperate(lsCmdVersion);
+		cmdOperate.run();
+		List<String> lsInfo = cmdOperate.getLsErrOut();
+		String cufflinksVersion = lsInfo.get(0).toLowerCase().replace("cufflinks", "").trim();
+		return cufflinksVersion;
 	}
 }

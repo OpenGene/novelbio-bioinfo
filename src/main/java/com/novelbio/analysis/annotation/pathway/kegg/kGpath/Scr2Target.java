@@ -28,7 +28,7 @@ public class Scr2Target {
 	 * @throws Exception
 	 */
 	public static void getGene2RelateKo(String pathName, List<String> accID,String ResultFIleScr2Target,
-			String resultFIleAttribute,int QtaxID,boolean blast,int subTaxID,double evalue) throws Exception {
+			String resultFIleAttribute,int QtaxID,boolean blast,int subTaxID,double evalue) {
 		GeneID geneID = null;
 		ServKIDKeg2Ko servKIDKeg2Ko = new ServKIDKeg2Ko();
 		ServKEntry servKEntry = new ServKEntry();
@@ -375,7 +375,7 @@ public class Scr2Target {
 	 * @throws Exception
 	 */
 	private static void getRelation(String pathName, ArrayList<Object[]> lsRelationInfo ,int QtaxID,
-			String ResultFIleScr2Target, String resultFIleAttribute) throws Exception {
+			String ResultFIleScr2Target, String resultFIleAttribute) {
 		//source 2 target 的表格
 		//string[3] 0:source 1:target 2:relation
 		ArrayList<String[]> lsScr2Target = new ArrayList<String[]>();

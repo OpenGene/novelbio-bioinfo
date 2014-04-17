@@ -3,6 +3,8 @@ package com.novelbio.analysis.seq.rnaseq;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.novelbio.analysis.IntCmdSoft;
+import com.novelbio.analysis.seq.mapping.MapBwaAln;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataOperate.DateUtil;
@@ -24,7 +26,7 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
  * @author zong0jie
  *
  */
-public class CuffMerge {
+public class CuffMerge implements IntCmdSoft {
 	/** 重新计算是否使用以前的结果 */
 	boolean isUseOldResult = true;
 	
@@ -43,7 +45,7 @@ public class CuffMerge {
 	String exePath = "";
 	
 	String tmpGtfRecord;
-	
+	List<String> lsCmd = new ArrayList<>();
 	public CuffMerge() {
 		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.cufflinks);
 		exePath = softWareInfo.getExePathRun();
@@ -124,6 +126,7 @@ public class CuffMerge {
 		
 		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
 		cmdOperate.run();
+		lsCmd.add(cmdOperate.getCmdExeStr());
 		if (!cmdOperate.isFinishedNormal()) {
 			String errInfo = cmdOperate.getErrOut();
 			FileOperate.DeleteFileFolder(tmpGtfRecord);
@@ -144,4 +147,20 @@ public class CuffMerge {
 		return lsCmd;
 	}
 	
+	@Override
+	public List<String> getCmdExeStr() {
+		lsCmd.add(0, "cuffmerge version: " + getVersion());
+		return lsCmd;
+	}
+
+	public String getVersion() {
+		List<String> lsCmdVersion = new ArrayList<>();
+		lsCmdVersion.add(exePath + "cuffmerge"); lsCmdVersion.add("--version");
+		CmdOperate cmdOperate = new CmdOperate(lsCmdVersion);
+		cmdOperate.setGetLsStdOut();
+		cmdOperate.run();
+		List<String> lsInfo = cmdOperate.getLsStdOut();
+		String cuffmegeVersion = lsInfo.get(0).toLowerCase().split(" ")[1].trim();
+		return cuffmegeVersion;
+	}
 }

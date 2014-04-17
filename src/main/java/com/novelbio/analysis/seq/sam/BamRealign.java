@@ -54,18 +54,21 @@ public class BamRealign implements IntCmdSoft {
 		if (!isCover && FileOperate.isFileExistAndBigThanSize(outFile, 0)) {
 			return outFile;
 		}
-		
-		CmdOperate cmdOperate = new CmdOperate(getLsCmdCreator(outFile));
+		String outFileTmp = FileOperate.changeFileSuffix(outFile, "_tmp", null);
+		CmdOperate cmdOperate = new CmdOperate(getLsCmdCreator(outFileTmp));
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {
 			throw new ExceptionCmd("realign error:\n" + cmdOperate.getCmdExeStrReal());
 		}
 		lsCmdInfo.add(cmdOperate.getCmdExeStr());
-		cmdOperate = new CmdOperate(getLsCmdIndelRealign(outFile));
+		cmdOperate = new CmdOperate(getLsCmdIndelRealign(outFileTmp));
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {
+			FileOperate.DeleteFileFolder(getOutIntervalFile(outFileTmp)[1]);
+			FileOperate.DeleteFileFolder(outFileTmp);
 			throw new ExceptionCmd("realign error:\n" + cmdOperate.getCmdExeStrReal());
 		}
+		FileOperate.moveFile(true, outFileTmp, outFile);
 		lsCmdInfo.add(cmdOperate.getCmdExeStr());
 		return outFile;
 	}

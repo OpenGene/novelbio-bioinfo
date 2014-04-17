@@ -60,16 +60,19 @@ public class BamMerge implements IntCmdSoft {
 		} else if (lsBamFile.size() == 1) {
 			FileOperate.moveFile(lsBamFile.get(0), outFileName, true);
 		} else {
-			CmdOperate cmdOperate = new CmdOperate(getLsCmd());
+			String outFileNameTmp = FileOperate.changeFileSuffix(outFileName, "_tmp", null);
+			CmdOperate cmdOperate = new CmdOperate(getLsCmd(outFileNameTmp));
 			cmdOperate.run();
 			if (!cmdOperate.isFinishedNormal()) {
+				FileOperate.DeleteFileFolder(outFileNameTmp);
 				throw new ExceptionCmd("sam merge error:\n" + cmdOperate.getCmdExeStrReal());
 			}
+			FileOperate.moveFile(true, outFileNameTmp, outFileName);
 		}
 		return outFileName;
 	}
 	
-	private List<String> getLsCmd() {
+	private List<String> getLsCmd(String outFileName) {
 		List<String> lsCmd = new ArrayList<>();
 		lsCmd.add(ExePath + "samtools");
 		lsCmd.add("merge");
