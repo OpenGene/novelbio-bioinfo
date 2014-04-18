@@ -154,8 +154,9 @@ public class SoftWareInfo {
 		querySoftWareInfo();
 		if (isPath==1) {
 			path = "";
+		} else {
+			path = locationPath;
 		}
-		path = locationPath;
 		if (StringOperate.isRealNull(path)) {
 			return "";
 		} else {
@@ -240,7 +241,7 @@ public class SoftWareInfo {
 	public static enum SoftWare {
 		blast,
 		bwa_aln, bwa_men, bowtie, bowtie2, 
-		tophat, rsem, mapsplice, rseqc,
+		tophat, rsem, mapsplice, rseqc, trinity,
 		miranada, RNAhybrid, mirDeep, miReap,
 		samtools, picard, GATK, cufflinks,
 		macs, sicer,

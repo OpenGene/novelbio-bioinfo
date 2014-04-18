@@ -90,7 +90,6 @@ public class BamIndex {
     }
     
     private static void makeIndex(SamReader reader, String output) throws IOException {
-    	SAMFileReader samFileReader = reader.samFileReader;
     	OutputStream outStream = null;
     	if (FileHadoop.isHdfs(output)) {
 			FileHadoop fileHadoop = new FileHadoop(output);
@@ -98,18 +97,23 @@ public class BamIndex {
 		} else {
 			outStream = new FileOutputStream(new File(output));
 		}
-        BAMIndexer indexer = new BAMIndexer(outStream, samFileReader.getFileHeader());
+    	SAMFileHeader samFileHeader = reader.getSamFileHead();
+        BAMIndexer indexer = new BAMIndexer(outStream, samFileHeader);
+        try {
+        	reader.samFileReader.enableFileSource(true);
+            int allRecordsNum = 0;
 
-        samFileReader.enableFileSource(true);
-        int allRecordsNum = 0;
-
-        for (SAMRecord rec : samFileReader) {
-            if (allRecordsNum % 1000000 == 0) {
-            	logger.info(allRecordsNum + " reads processed ...");
+            for (SamRecord rec : reader.readLines()) {
+                if (allRecordsNum % 1000000 == 0) {
+                	logger.info(allRecordsNum + " reads processed ...");
+                }
+                indexer.processAlignment(rec.samRecord);
+                allRecordsNum ++;
             }
-            indexer.processAlignment(rec);
-            allRecordsNum ++;
-        }
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
         indexer.finish();
     }
 

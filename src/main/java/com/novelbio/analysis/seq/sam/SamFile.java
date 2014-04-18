@@ -387,6 +387,7 @@ public class SamFile implements AlignSeq {
 			}
 		}
 		if (!isAddGroup) {
+			close();
 			return this;
 		}
 		SamRGroup samRGroup = new SamRGroup(sampleID, LibraryName, SampleName, Platform);
@@ -497,7 +498,7 @@ public class SamFile implements AlignSeq {
 	 * 待检查
 	 */
 	public void indexMake() {
-		if (FileOperate.isFileExist(getFileName() + ".bai")) {
+		if (FileOperate.isFileExistAndBigThanSize(getFileName() + ".bai",10)) {
 			return;
 		}
 		BamIndex bamIndex = new BamIndex(this);

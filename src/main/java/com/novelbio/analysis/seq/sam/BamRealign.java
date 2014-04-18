@@ -69,6 +69,8 @@ public class BamRealign implements IntCmdSoft {
 			throw new ExceptionCmd("realign error:\n" + cmdOperate.getCmdExeStrReal());
 		}
 		FileOperate.moveFile(true, outFileTmp, outFile);
+		FileOperate.moveFile(true, FileOperate.getFileNameSep(outFileTmp)[0] + ".bai", outFile + ".bai");
+		FileOperate.moveFile(true, FileOperate.getFileNameSep(outFileTmp)[0] + ".intervals", FileOperate.getFileName(outFile) + ".intervals");
 		lsCmdInfo.add(cmdOperate.getCmdExeStr());
 		return outFile;
 	}

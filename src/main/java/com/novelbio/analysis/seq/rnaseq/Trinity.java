@@ -9,6 +9,8 @@ import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.information.SoftWareInfo;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 
 /**
@@ -154,6 +156,11 @@ public class Trinity {
 	 *                                   for naively parallel cmds. (eg. 'BroadInstGridRunner')
 	 */
 	String grid_computing_module;
+	
+	public Trinity() {
+		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.trinity);
+		this.exePath = softWareInfo.getExePathRun();
+	}
 	
 	/** trinity的所在路径 */
 	public void setExePath(String exePath) {

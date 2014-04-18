@@ -8,6 +8,7 @@ import net.sf.samtools.Cigar;
 import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMReadGroupRecord;
 import net.sf.samtools.SAMRecord;
+import net.sf.samtools.SAMRecord.SAMTagAndValue;
 
 import org.apache.log4j.Logger;
 
@@ -101,7 +102,17 @@ public class SamRecord implements AlignRecord {
 	public Object getAttribute(String tag) {
 		return samRecord.getAttribute(tag);
 	}
+	public List<SAMTagAndValue> getAttributes() {
+		return samRecord.getAttributes();
+	}
 	
+	public void clearAttributes() {
+		samRecord.clearAttributes();
+	}
+	
+	public void setAttribute(final String tag, final Object value) {
+		samRecord.setAttribute(tag, value);
+	}
 	@Override
 	public boolean isUniqueMapping() {
 		Object attrXT = samRecord.getAttribute("XT");
