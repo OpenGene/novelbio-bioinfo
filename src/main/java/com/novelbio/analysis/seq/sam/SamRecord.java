@@ -224,6 +224,9 @@ public class SamRecord implements AlignRecord {
 	 */
 	public Integer getMapIndexNum() {
 		Integer attrCC = samRecord.getIntegerAttribute("HI");
+		if (attrCC == null) {
+			return 1;
+		}
 		return attrCC;
 	}
 	/** 如果一条reads在基因组上出现了若干次，那么该reads是第几个出现的

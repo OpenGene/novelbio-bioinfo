@@ -38,7 +38,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import java.io.*;
 import java.util.ArrayList;
 
-/*
+/**
 *   Broad Institute Interactive Genome Viewer Big Binary File (BBFile) Reader
 *   -   File reader for UCSC BigWig and BigBed file types.
 *
@@ -127,7 +127,7 @@ public class BBFileReader {
     private long chromDataTreeOffset;  // file offset to mChromosome data R+ tree
     private RPTree chromosomeDataTree;     // Container for the mChromosome data R+ tree
 
-
+    /** 已经修正为可直接读取hdfs文件的形式 */
     public BBFileReader(String path) throws IOException {
     	File file = FileOperate.getFile(path);
     	SeekableStream seekableStream = null;

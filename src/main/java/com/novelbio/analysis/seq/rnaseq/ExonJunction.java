@@ -88,7 +88,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 
 		exonJunction.run();
 		exonJunction = null;
-		return dateUtil.getEclipseTime();
+		return dateUtil.getElapseTime();
 	}
 	public static long hongyanyanRice() {
 		List<Align> lsAligns = new ArrayList<>();
@@ -117,7 +117,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 
 		exonJunction.run();
 		exonJunction = null;
-		return dateUtil.getEclipseTime();
+		return dateUtil.getElapseTime();
  
 	}
 	public static long wuwenwuDrosophilia(boolean isGenerateNewIso) {
@@ -147,7 +147,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 
 		exonJunction.run();
 		exonJunction = null;
-		return dateUtil.getEclipseTime();
+		return dateUtil.getElapseTime();
 	}
 	
 	private static Logger logger = Logger.getLogger(ExonJunction.class);
@@ -624,7 +624,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 					guiAnnoInfo.setInfo("reading " + condition + " exp gene num" + num);
 					runGetInfo.setRunningInfo(guiAnnoInfo);
 				}
-				logger.error(dateTime.getEclipseTime());
+				logger.error(dateTime.getElapseTime());
 			}
 			num ++;
 		}

@@ -47,8 +47,8 @@ public class WigFileWriter implements Closeable {
 	 * Formats values for writing into Wig files
 	 */
 	public static DecimalFormat newFormatter() {
-		DecimalFormat formatter = new DecimalFormat();
-		formatter.setMaximumFractionDigits(8);
+		DecimalFormat formatter = new DecimalFormat("0.##");
+//		formatter.setMaximumFractionDigits(8);
 		formatter.setGroupingUsed(false);
 		DecimalFormatSymbols symbols = formatter.getDecimalFormatSymbols();
 		symbols.setInfinity("Inf");

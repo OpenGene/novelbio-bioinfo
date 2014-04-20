@@ -1,73 +1,188 @@
 package com.novelbio.analysis.seq.wig;
 
 import java.io.IOException;
-import java.io.Writer;
-import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
+import com.novelbio.base.ExceptionNullParam;
+import com.novelbio.base.StringOperate;
+import com.novelbio.base.dataOperate.DateUtil;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.FileOperate;
 
-public class SamFileToWig {
-	private static final Logger log = Logger.getLogger(SamFileToWig.class);
+/** 将sam文件转化为bigwig文件 */
+public class SamFileToWig implements IntCmdSoft {
+	private static final Logger loggger = Logger.getLogger(SamFileToWig.class);
 	
 	public static void main(String[] args) {
 		SamFile samFile = new SamFile("/media/winE/NBC/Project/Project_MaHong/huangqiyue/col_accepted_hits.bam");
-		samFile.indexMake();
+		DateUtil dateUtil = new DateUtil();
+		dateUtil.setStartTime();
 		SamFileToWig samFileToWig = new SamFileToWig();
 		samFileToWig.setSamFile(samFile);
-		samFileToWig.setOutputFile("/media/winE/NBC/Project/Project_MaHong/huangqiyue/info.wig");
-		try {
-			samFileToWig.run();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		samFileToWig.setNormalizedByReadsNum(true);
+		samFileToWig.calculate();
+		System.out.println(dateUtil.getElapseTime());
 	}
+	/** 每次读取的份数 */
+	int chunkSize = 10_000_000;
+
+	List<SamFile> lsSamFiles;
+	String prefix;
+	String outPath;
+	String outBigWigFile;
+	 
+	boolean normalizedByReadsNum;
+	/** Specified wigsum. 1,000,000,000 equals to coverage of 10 million 100nt reads. Ignore this option to disable normalization */
+	long normalizeNum = 1000000000;
+	long readsBpNum = 0;
 	
-	public boolean defaultZero = false;
-	
-	public int chunkSize = 10_000_000;
-	public String outputFile;
-	
-	SamFile samFile;
+	List<String> lsCmd = new ArrayList<>();
+
 	
 	/**
 	 * 必须输入排序并index的sam文件
 	 * @param samFile
 	 */
-	public void setSamFile(SamFile samFile) {
-		this.samFile = samFile;
-	}
-	public void setDefaultZero(boolean defaultZero) {
-		this.defaultZero = defaultZero;
-	}
-	public void setOutputFile(String outputFile) {
-		this.outputFile = outputFile;
+	public void setLsSamFile(String prefix, List<SamFile> lsSamFiles) {
+		if (lsSamFiles == null || lsSamFiles.size() == 0) {
+			throw new ExceptionNullParam("No Sam File");
+		}
+		//检测sam文件是否mapping至同一个reference
+		if (lsSamFiles.size() > 1) {
+			Map<String, Long> mapChrId2Len = lsSamFiles.get(0).getMapChrID2Length();
+			for (int i = 1; i < lsSamFiles.size(); i++) {
+				Map<String, Long> mapChrId2LenTmp = lsSamFiles.get(i).getMapChrID2Length();
+				if (!mapChrId2Len.equals(mapChrId2LenTmp)) {
+					throw new ExceptionNullParam("Sam Files Are Not From Same Reference");
+				}
+			}
+		}
+		
+		this.lsSamFiles = lsSamFiles;
+		this.prefix = prefix;
 	}
 	
-	public final void run() throws IOException {
+	public void setSamFile(SamFile samFile) {
+		if (samFile == null) {
+			throw new ExceptionNullParam("No Sam File");
+		}
+		
+		lsSamFiles = new ArrayList<>();
+		lsSamFiles.add(samFile);
+	}
+	/**
+	 * 设定输出路径，默认输出在第一个sam文件夹下
+	 * @param outputFile
+	 */
+	public void setOutPath(String outPath) {
+		if (!StringOperate.isRealNull(outPath)) {
+			this.outPath = FileOperate.addSep(outPath);
+		}
+	}
+	
+	/** 获得转换好的bigwig文件名 */
+	public String getOutBigWigFile() {
+		return outBigWigFile;
+	}
+	
+	/** 是否用readsNum进行标准化 */
+	public void setNormalizedByReadsNum(boolean normalizedByReadsNum) {
+		this.normalizedByReadsNum = normalizedByReadsNum;
+	}
+	
+	public void calculate() {
+		try {
+			run();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+	private final void run() throws IOException {
+		setOutPathAndPrefix();
+		String wigFile = outPath + prefix + ".wig";
+		outBigWigFile = outPath + prefix + ".bw";
+		String txtMapChrId2Len = outPath + prefix + DateUtil.getDateAndRandom();
+		Map<String, Long> mapChrId2Len = lsSamFiles.get(0).getMapChrID2Length();
+		writeMapChrId2Len(txtMapChrId2Len, mapChrId2Len);
+		if (!FileOperate.isFileExistAndBigThanSize(wigFile, 0)) {
+			for (SamFile samFile : lsSamFiles) {
+				samFile.indexMake();
+			}
+			getNormalizedReadsNum();
+			writeWigFile(mapChrId2Len, wigFile);
+		}
+		
+		WigToBigWig wigToBigWig = new WigToBigWig();
+		wigToBigWig.setWigFile(wigFile);
+		wigToBigWig.setTxtMapChrId2Len(txtMapChrId2Len);
+		wigToBigWig.setBigWigFile(outBigWigFile);
+		lsCmd = wigToBigWig.getCmdExeStr();
+		wigToBigWig.convert();
+	}
+	
+	/** 设定输出文件夹等信息 */
+	private void setOutPathAndPrefix() {
+		if (outPath == null) outPath = FileOperate.getPathName(lsSamFiles.get(0).getFileName());
+		if (prefix == null) {
+			if (lsSamFiles.size() == 1) {
+				prefix = FileOperate.getFileName(lsSamFiles.get(0).getFileName());
+			} else {
+				prefix = FileOperate.getFileName(lsSamFiles.get(0).getFileName() + "_merge");
+			}
+		}
+	}
+	
+	/** 获取标准化所需要的信息 */
+	private void getNormalizedReadsNum() {
+		if (normalizedByReadsNum && readsBpNum <= 0) {
+			readsBpNum = 0;
+			for (SamFile samFile : lsSamFiles) {
+				for (SamRecord samRecord : samFile.readLines()) {
+					if (samRecord.getMappedReadsWeight() > 1 && samRecord.getMapIndexNum() != 1) {
+						continue;
+					}
+					for (Align align : samRecord.getAlignmentBlocks()) {
+						readsBpNum += align.getLength();
+					}
+				}
+			}
+		}
+	}
+	
+	private void writeMapChrId2Len(String outFileName, Map<String, Long> mapChrId2Len) {
+		TxtReadandWrite txtWrite = new TxtReadandWrite(outFileName, true);
+		for (String chrId : mapChrId2Len.keySet()) {
+			txtWrite.writefileln(new String[]{chrId, mapChrId2Len.get(chrId) + ""});
+		}
+		txtWrite.close();
+	}
+	
+	private void writeWigFile(Map<String, Long> mapChrId2Len, String wigFile) throws IOException {
 		TrackHeader header = TrackHeader.newWiggle();
-		header.setName("Processed " + samFile.getFileName());
-		header.setDescription("Processed " + samFile.getFileName());
-		Map<String, Long> mapChrID2Len = samFile.getMapChrID2Length();
-		try (WigFileWriter writer = new WigFileWriter(outputFile, header)) {
-			for (String chr : samFile.getMapChrID2Length().keySet()) {
-				processChromosome(samFile, writer, chr, mapChrID2Len);
+
+		String wigFileTmp = FileOperate.changeFileSuffix(wigFile, "_tmp", null);
+		try (WigFileWriter writer = new WigFileWriter(wigFileTmp, header)) {
+			for (String chr : mapChrId2Len.keySet()) {
+				processChromosome(lsSamFiles, writer, chr, mapChrId2Len);
 			}
 			writer.close();
 		}
-
+		FileOperate.moveFile(true, wigFileTmp, wigFile);
 	}
-
-	private void processChromosome(SamFile samfile, WigFileWriter writer, String chr, Map<String, Long> mapChrID2Len) throws IOException {
+	
+	private void processChromosome(List<SamFile> lsSamfile, WigFileWriter writer, String chr, Map<String, Long> mapChrID2Len) throws IOException {
 		int chunkStart = 1;
 		while (chunkStart < mapChrID2Len.get(chr)) {
 			int chunkStop = (int) Math.min(chunkStart+chunkSize-1, mapChrID2Len.get(chr));
-			float[] result = compute(samfile, chr, chunkStart, chunkStop);
+			float[] result = compute(lsSamfile, chr, chunkStart, chunkStop);
 			// Write the count at each base pair to the output file
 			writer.write(new Contig(chr, chunkStart, chunkStop, result));
 			// Process the next chunk
@@ -82,29 +197,35 @@ public class SamFileToWig {
 	 * @param chunk the interval to process
 	 * @return the results of the computation for this chunk
 	 * @throws IOException
-	 * @throws WigFileException
 	 */
-	public float[] compute(SamFile samFile, String chrId, int start, int end) throws IOException {
+	public float[] compute(List<SamFile> lsSamfile, String chrId, int start, int end) throws IOException {
 		float[] sum = new float[end - start + 1];
-		int[] count = new int[sum.length];
-		
-		for (SamRecord samRecord : samFile.readLinesOverlap(chrId, start, end)) {
-			for (Align align : samRecord.getAlignmentBlocks()) {
-				int entryStart = Math.max(start, align.getStartAbs());
-				int entryStop = Math.min(end, align.getEndAbs());
-				for (int i = entryStart; i <= entryStop; i++) {
-					sum[i-start] += 1/(float)samRecord.getMappedReadsWeight();
-					count[i-start]++;
+		for (SamFile samFile : lsSamfile) {
+			for (SamRecord samRecord : samFile.readLinesOverlap(chrId, start, end)) {
+				if (samRecord.getMapQuality() < 30) {
+					continue;
+				}
+				for (Align align : samRecord.getAlignmentBlocks()) {
+					int entryStart = Math.max(start, align.getStartAbs());
+					int entryStop = Math.min(end, align.getEndAbs());
+					for (int i = entryStart; i <= entryStop; i++) {
+						sum[i-start] += 1/(float)samRecord.getMappedReadsWeight();
+					}
 				}
 			}
 		}
-		// Calculate the average at each base pair in the chunk
-		for (int i = 0; i < sum.length; i++) {
-			if (count[i] != 0 || !defaultZero) {
-				sum[i] /= count[i];
+
+		if (normalizedByReadsNum && readsBpNum > 0) {
+			for (int i = 0; i < sum.length; i++) {
+				sum[i] = (float) ((double)sum[i]* normalizeNum/readsBpNum );
 			}
 		}
 		return sum;
+	}
+	
+	@Override
+	public List<String> getCmdExeStr() {
+		return lsCmd;
 	}
 	
 }

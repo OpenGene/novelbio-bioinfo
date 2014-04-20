@@ -1,8 +1,13 @@
 package com.novelbio.analysis.seq.sam;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.cmd.ExceptionCmd;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
@@ -16,8 +21,8 @@ import com.novelbio.base.fileOperate.FileOperate;
  * http://www.broadinstitute.org/gatk/gatkdocs/<br>
  */
 public class GATKCalling {
-
 	private static final Logger logger = Logger.getLogger(GATKCalling.class);
+	
 	public static final String SNP = "SNP";
 	public static final String INDEL = "INDEL";
 	public static final String GENERALPLOIDYSNP = "GENERALPLOIDYSNP";
@@ -57,19 +62,65 @@ public class GATKCalling {
 	 * 
 	 */
 	public String callingByGATK() {
-		String cmdInertval = "";
-		cmdInertval ="java -Xmx4g -jar " + ExePath + "GenomeAnalysisTK.jar" +  " -T UnifiedGenotyper " 
-				+ " -R " + refFilePath + " -o " + outputFilePath + " -I " + inputFilePath + " -stand_call_conf "
-				+ stand_call_conf + " -stand_emit_conf " + stand_emit_conf + " -glm " + glm + " -rf BadCigar" + getDBsnpVcf();
-		
-		CmdOperate cmdOperate = new CmdOperate(cmdInertval,"GATKCalling");
+		List<String> lsCmd = getLsCmd();
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.run();
-		if (cmdOperate.isFinished()) {
-			return outputFilePath;
+		if (!cmdOperate.isFinishedNormal()) {
+			throw new ExceptionCmd("GATK error:\n" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
 		}
-		return null;	
+		return outputFilePath;	
 	}
-
+	
+	private List<String> getLsCmd() {
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add("java"); lsCmd.add("-Xmx4g"); lsCmd.add("-jar");
+		lsCmd.add(ExePath + "GenomeAnalysisTK.jar");
+		lsCmd.add("-T"); lsCmd.add("UnifiedGenotyper");
+		ArrayOperate.addArrayToList(lsCmd, getRefFilePath());
+		ArrayOperate.addArrayToList(lsCmd, getOutPutPath());
+		ArrayOperate.addArrayToList(lsCmd, getInputPath());
+		ArrayOperate.addArrayToList(lsCmd, getStandCallConf());
+		ArrayOperate.addArrayToList(lsCmd, getStandEmitConf());
+		ArrayOperate.addArrayToList(lsCmd, getGlm());
+		ArrayOperate.addArrayToList(lsCmd, getCigar());
+		ArrayOperate.addArrayToList(lsCmd, getDBsnpVcf());
+		return lsCmd;
+	}
+	
+	private String[] getRefFilePath() {
+		return new String[]{"-R", refFilePath};
+	}
+	
+	private String[] getOutPutPath() {
+		return new String[]{"-o", outputFilePath};
+	}
+	
+	private String[] getInputPath() {
+		return new String[]{"-I", inputFilePath};
+	}
+	
+	private String[] getStandCallConf() {
+		return new String[]{"-stand_call_conf", stand_call_conf + ""};
+	}
+	
+	private String[] getStandEmitConf() {
+		return new String[]{"-stand_emit_conf", stand_emit_conf + ""};
+	}
+	
+	private String[] getGlm() {
+		return new String[]{"-glm", glm};
+	}
+	
+	private String[] getCigar() {
+		return new String[]{"-rf", "BadCigar"};
+	}
+	
+	private String[] getDBsnpVcf() {
+		if (FileOperate.isFileExist(snpDBVcfFilePath)) {
+			return new String[]{"--dbsnp", snpDBVcfFilePath};
+		}
+		return null;
+	}
 	/** 取得输出路径 */
 	public String getOutputFilePath() {
 		return outputFilePath;
@@ -105,12 +156,6 @@ public class GATKCalling {
 	public void setStand_emit_conf(double stand_emit_conf) {
 		this.stand_emit_conf = stand_emit_conf;
 	}
-	
-	private String getDBsnpVcf() {
-		if (FileOperate.isFileExist(snpDBVcfFilePath)) {
-			return " --dbsnp " + CmdOperate.addQuot(snpDBVcfFilePath);
-		}
-		return "";
-	}
+
 	
 }
