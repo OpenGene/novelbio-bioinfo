@@ -812,7 +812,7 @@ public class BBFileReader {
         return zoomIterator;
     }
 
-    /*
+    /**
     *   Method generates a chromosome bounds region for the supplied chromosome region name.
     *
     *   Note: No attempt is made to verify the region exists in the file data, nor

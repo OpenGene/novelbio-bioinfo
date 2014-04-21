@@ -15,6 +15,7 @@ public class Contig extends Interval {
 	private static final long serialVersionUID = -4260411310249231783L;
 
 	private final float[] values;
+	int spanNum = 0;
 	private SummaryStatistics stats;
 	
 	public Contig(Interval interval) {
@@ -35,8 +36,26 @@ public class Contig extends Interval {
 	 * @throws ContigException if values.length != (start-stop+1)
 	 */
 	public Contig(String chr, int start, int stop, float[] values) throws ContigException {
+		this(chr, start, stop, values, 0);
+	}
+	
+	public Contig(String chr, int start, int stop) {
+		this(chr, start, stop, null);
+	}
+	
+	/**
+	 * Create a new Contig for the interval chr:start-stop with values in values[]
+	 * @param chr the chromosome of the interval
+	 * @param start the start base pair of the interval
+	 * @param stop the stop base pair of the interval
+	 * @param values the values for this interval, one for each base pair. 
+	 *        The value for start should be in values[0], start+/-1 in values[1], etc.
+	 * @param span 间隔区域，默认为1，该项设定必须在values的基础上设定，也就是说前期的values必须已经满足前提了
+	 * @throws ContigException if values.length != (start-stop+1)
+	 */
+	public Contig(String chr, int start, int stop, float[] values, int span) throws ContigException {
 		super(chr, start, stop);
-		
+		this.spanNum = span;
 		// Verify that values has the correct length
 		if (values == null) {
 			values = new float[length()];
@@ -45,10 +64,6 @@ public class Contig extends Interval {
 			throw new ContigException("Incorrect number of values for Contig ("+values.length+" != "+length()+")");
 		}
 		this.values = values;
-	}
-	
-	public Contig(String chr, int start, int stop) {
-		this(chr, start, stop, null);
 	}
 	
 	/**
@@ -302,6 +317,9 @@ public class Contig extends Interval {
 	 * @return the minimum span size for this Contig
 	 */
 	public int getMinSpan() {
+		if (spanNum > 0) {
+			return spanNum;
+		}
 		int minSpan = length();
 		int span = 1;
 		int firstbp = getFirstBaseWithData();
@@ -335,6 +353,10 @@ public class Contig extends Interval {
 	 * @return the span size that must be used if this Contig is written in variableStep format
 	 */
 	public int getVariableStepSpan() {
+		if (spanNum > 0) {
+			return spanNum;
+		}
+		
 		int minSpan = getMinSpan();
 		int span = 1;
 		int firstbp = getFirstBaseWithData();

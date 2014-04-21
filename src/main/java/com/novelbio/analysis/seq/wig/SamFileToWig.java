@@ -22,18 +22,20 @@ public class SamFileToWig implements IntCmdSoft {
 	private static final Logger loggger = Logger.getLogger(SamFileToWig.class);
 	
 	public static void main(String[] args) {
-		SamFile samFile = new SamFile("/media/winE/NBC/Project/Project_MaHong/huangqiyue/col_accepted_hits.bam");
+		SamFile samFile = new SamFile("/hdfs:/nbCloud/public/customerData/Projects/DN14001/bam/IonXpress_013.bam");
 		DateUtil dateUtil = new DateUtil();
 		dateUtil.setStartTime();
 		SamFileToWig samFileToWig = new SamFileToWig();
 		samFileToWig.setSamFile(samFile);
-		samFileToWig.setNormalizedByReadsNum(true);
+		samFileToWig.setNormalizedByReadsNum(false);
+		samFileToWig.setInterval(6);
 		samFileToWig.calculate();
 		System.out.println(dateUtil.getElapseTime());
 	}
 	/** 每次读取的份数 */
+	int chunkSizeRaw = 10_000_000;
 	int chunkSize = 10_000_000;
-
+	int interval = 5;
 	List<SamFile> lsSamFiles;
 	String prefix;
 	String outPath;
@@ -46,6 +48,12 @@ public class SamFileToWig implements IntCmdSoft {
 	
 	List<String> lsCmd = new ArrayList<>();
 
+	
+	public void setInterval(int interval) {
+		this.interval = interval;
+//		chunkSize = chunkSizeRaw;
+		chunkSize = chunkSizeRaw /interval * interval;
+	}
 	
 	/**
 	 * 必须输入排序并index的sam文件
@@ -167,7 +175,6 @@ public class SamFileToWig implements IntCmdSoft {
 	
 	private void writeWigFile(Map<String, Long> mapChrId2Len, String wigFile) throws IOException {
 		TrackHeader header = TrackHeader.newWiggle();
-
 		String wigFileTmp = FileOperate.changeFileSuffix(wigFile, "_tmp", null);
 		try (WigFileWriter writer = new WigFileWriter(wigFileTmp, header)) {
 			for (String chr : mapChrId2Len.keySet()) {
@@ -181,15 +188,30 @@ public class SamFileToWig implements IntCmdSoft {
 	private void processChromosome(List<SamFile> lsSamfile, WigFileWriter writer, String chr, Map<String, Long> mapChrID2Len) throws IOException {
 		int chunkStart = 1;
 		while (chunkStart < mapChrID2Len.get(chr)) {
-			int chunkStop = (int) Math.min(chunkStart+chunkSize-1, mapChrID2Len.get(chr));
+			int chunkStop = getChunkStop(chr, chunkStart, mapChrID2Len);
+			if (chunkStop < 0) {
+				break;
+			}
 			float[] result = compute(lsSamfile, chr, chunkStart, chunkStop);
 			// Write the count at each base pair to the output file
-			writer.write(new Contig(chr, chunkStart, chunkStop, result));
+			writer.write(new Contig(chr, chunkStart, chunkStop, result, interval));
 			// Process the next chunk
 			chunkStart = chunkStop + 1;
 		}
 	}
-
+	
+	private int getChunkStop(String chr, int chunkStart, Map<String, Long> mapChrID2Len) {
+		int caculateStop = chunkStart+chunkSize-1;
+		int chunkStop = (int) Math.min(caculateStop, mapChrID2Len.get(chr));
+		if (chunkStop != caculateStop) {
+			chunkStop = (chunkStop + 1 - chunkStart) / interval * interval + chunkStart - 1;
+		}
+		if (chunkStop - chunkStart <= interval) {
+			return -1;
+		}
+		return chunkStop;
+	}
+	
 	/**
 	 * Do the computation on a chunk and return the results
 	 * Must return chunk.length() values (one for every base pair in chunk)
@@ -214,7 +236,23 @@ public class SamFileToWig implements IntCmdSoft {
 				}
 			}
 		}
-
+		
+		if (interval > 1) {
+			for (int i = 0; i < sum.length - 1; i+=interval) {
+				float sumAll = 0;
+				int finalNum = interval;
+				if (i+interval >= sum.length) {
+					finalNum = sum.length - i;
+				}
+				for (int j = 0; j < finalNum; j++) {
+					sumAll += sum[i+j];
+				}
+				for (int j = 0; j < finalNum; j++) {
+					sum[i+j] = sumAll/finalNum;
+				}
+			}
+		}
+		
 		if (normalizedByReadsNum && readsBpNum > 0) {
 			for (int i = 0; i < sum.length; i++) {
 				sum[i] = (float) ((double)sum[i]* normalizeNum/readsBpNum );

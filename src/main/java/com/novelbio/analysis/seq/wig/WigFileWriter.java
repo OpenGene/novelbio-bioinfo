@@ -68,11 +68,12 @@ public class WigFileWriter implements Closeable {
 		  log.debug("Not writing empty contig with no data values");
 		} else {
 			float sparsity = ((float) contig.coverage()) / contig.length();
-			if (sparsity < 0.55 || contig.getVariableStepSpan() > contig.getMinStep()) {
-				writeVariableStepContig(contig);
-			} else {
-				writeFixedStepContig(contig);
-			}
+			writeVariableStepContig(contig);
+//			if (sparsity < 0.55 || contig.getVariableStepSpan() > contig.getMinStep()) {
+//				writeVariableStepContig(contig);
+//			} else {
+//				writeFixedStepContig(contig);
+//			}
 		}
 	}
 	
@@ -90,7 +91,11 @@ public class WigFileWriter implements Closeable {
 		synchronized (writer) {
 			writer.writefileln(contig.getFixedStepHeader());
 			for (int bp = contig.getFirstBaseWithData(); bp <= contig.high(); bp += step) {
-				writer.writefileln(formatter.format(contig.get(bp)));
+				float value = contig.get(bp);
+				if (value == 0) {
+					continue;
+				}
+				writer.writefileln(bp + "\t" + formatter.format(value));
 			}
 		}
 	}
@@ -103,6 +108,9 @@ public class WigFileWriter implements Closeable {
 	 * @return 
 	 */
 	public final void writeVariableStepContig(final Contig contig) {
+		if (contig.getVariableStepSpan() > 10) {
+			contig.getVariableStepSpan();
+		}
 		log.debug("Writing contig: "+contig.getVariableStepHeader());
 		DecimalFormat formatter = newFormatter();
 		int bp = contig.getFirstBaseWithData();
@@ -113,7 +121,9 @@ public class WigFileWriter implements Closeable {
 				float value = contig.get(bp);
 				// Write the value and skip the span size
 				if (!Float.isNaN(value)) {
-					writer.writefileln(bp+"\t"+formatter.format(value));
+					if (value != 0) {
+						writer.writefileln(bp+"\t"+formatter.format(value));
+					}
 					bp += span;
 				} else {
 					bp++;
