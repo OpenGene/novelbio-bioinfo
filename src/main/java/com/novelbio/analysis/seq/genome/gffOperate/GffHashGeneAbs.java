@@ -173,7 +173,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 				if (gffdetail != null) {
 					GffGeneIsoInfo gffGeneIsoInfoOut = gffdetail.getIsolist(locID);
 					if (gffGeneIsoInfoOut != null) {
-						return gffGeneIsoInfo;
+						return gffGeneIsoInfoOut;
 					}
 				}
 			}

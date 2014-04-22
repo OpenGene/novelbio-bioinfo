@@ -217,7 +217,6 @@ public class BlastGetSeq implements IntCmdSoft {
 		} else {
 			gffChrSeq.setGeneStructure(GeneStructure.ALLLENGTH);
 		}
-		gffChrSeq.setIsGetReplicateIso(false);
 		gffChrSeq.setGetAllIso(false);
 		gffChrSeq.setGetIntron(false);
 		gffChrSeq.setGetSeqIsoRemoveSamGene(lsGeneName);

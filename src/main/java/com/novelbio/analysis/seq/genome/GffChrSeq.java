@@ -41,13 +41,13 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	/** 是否仅提取mRNA序列 */
 	boolean getOnlyMRNA = false;
 	/** 同名序列是否提取多次，默认不提取同名序列 */
-	boolean isGetReplicateIso = false;
+//	boolean isGetReplicateIso = false;
 	boolean getGenomWide = false;
-	/** 是否提取iso的名字，默认是true，false表示提取基因的名字，也就是iso的parent name */
-	boolean isGetIsoName = true;
+//	/** 是否提取iso的名字，默认是true，false表示提取基因的名字，也就是iso的parent name */
+//	boolean isGetIsoName = true;
 	/** 是提取位点还是提取基因 */
 	boolean booGetIsoSeq = false;
-	LinkedHashSet<GffGeneIsoInfo> setIsoToGetSeq = new LinkedHashSet<GffGeneIsoInfo>();
+	LinkedHashMap<String, GffGeneIsoInfo> mapName2Iso = new LinkedHashMap<>();
 	ArrayList<SiteSeqInfo> lsSiteInfos = new ArrayList<SiteSeqInfo>();
 	
 	/** 默认存入文件，否则返回一个listSeqFasta */
@@ -69,16 +69,6 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	}
 	public void setTesUagRange(int[] tesRange) {
 		this.tesUagRange = tesRange;
-	}
-	/** 同名序列是否提取多次，默认不提取同名序列 */
-	public void setIsGetReplicateIso(boolean isGetReplicateIso) {
-		this.isGetReplicateIso = isGetReplicateIso;
-	}
-	/** 是否提取iso的名字<br>
-	 * 默认是true: 表示提取iso的名字<br>
-	 * false: 提取基因的名字，也就是iso的parent name */
-	public void setIsGetIsoName(boolean isGetIsoName) {
-		this.isGetIsoName = isGetIsoName;
 	}
 	/** 
 	 * <b>false时{@link #setGetAAseq(boolean)}失效，返回的都是nr序列</b><p>
@@ -136,7 +126,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	 * @param lsIsoName
 	 */
 	public void setGetSeqIso(List<String> lsIsoName) {
-		setIsoToGetSeq.clear();
+		mapName2Iso.clear();
 		for (String string : lsIsoName) {
 			List<GffGeneIsoInfo> lsGffGeneIsoInfo = getIso(string);
 			if (lsGffGeneIsoInfo.size() == 0) {
@@ -148,7 +138,11 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 					continue;
 				}
 				if (gffGeneIsoInfo != null) {
-					setIsoToGetSeq.add(gffGeneIsoInfo);
+					if (getAllIso) {
+						mapName2Iso.put(gffGeneIsoInfo.getName(), gffGeneIsoInfo);
+					} else {
+						mapName2Iso.put(string, gffGeneIsoInfo);
+					}
 				}
 			}
 		}
@@ -160,8 +154,8 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	 * @param lsIsoName
 	 */
 	public void setGetSeqIsoRemoveSamGene(List<String> lsIsoName) {
-		setIsoToGetSeq.clear();
-		Map<String, GffGeneIsoInfo> mapGene2Iso = new LinkedHashMap<>();
+		mapName2Iso.clear();
+		LinkedHashMap<String, GffGeneIsoInfo> mapGene2Iso = new LinkedHashMap<>();
 		for (String string : lsIsoName) {
 			List<GffGeneIsoInfo> lsGffGeneIsoInfo = getIso(string);
 			if (lsGffGeneIsoInfo.size() == 0) {
@@ -181,7 +175,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 			}
 		}
 		
-		setIsoToGetSeq = new LinkedHashSet<GffGeneIsoInfo>(mapGene2Iso.values());
+		mapName2Iso = mapGene2Iso;
 		booGetIsoSeq = true;
 	}
 	public void setGetSeqGenomWide() {
@@ -193,7 +187,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 			fillSetNameGenomWide();
 		}
 		if (booGetIsoSeq) {
-			return setIsoToGetSeq.size();
+			return mapName2Iso.size();
 		} else {
 			return lsSiteInfos.size();
 		}
@@ -207,7 +201,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	 * @param gffDetailGene
 	 * @return
 	 */
-	private Collection<GffGeneIsoInfo> getGeneSeqLongestIso(GffDetailGene gffDetailGene) {
+	private Map<String, GffGeneIsoInfo> getGeneSeqLongestIso(GffDetailGene gffDetailGene) {
 		Map<String, GffGeneIsoInfo> mapParentName2Iso = new HashMap<>();
 		for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 			String parentName = gffGeneIsoInfo.getParentGeneName();
@@ -216,7 +210,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 				mapParentName2Iso.put(parentName, gffGeneIsoInfo);
 			}
 		}
-		return mapParentName2Iso.values();
+		return mapParentName2Iso;
 	}
 	/**
 	 * 输入位点提取序列
@@ -246,12 +240,11 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		ArrayList<String[]> lsMotifResult = new ArrayList<String[]>();
 		Set<String> setGeneNameRemoveDuplicate = new HashSet<>();
 		if (booGetIsoSeq) {
-			for (GffGeneIsoInfo gffGeneIsoInfo : setIsoToGetSeq) {
-				SeqFasta seqFasta = getSeq(gffGeneIsoInfo);
+			for (String name : mapName2Iso.keySet()) {
+				GffGeneIsoInfo iso = mapName2Iso.get(name);
+				SeqFasta seqFasta = getSeq(iso);
+				seqFasta.setName(name);
 				if (seqFasta == null || seqFasta.Length() < 3) {
-					continue;
-				}
-				if(!skipForDuplicate(setGeneNameRemoveDuplicate, gffGeneIsoInfo)) {
 					continue;
 				}
 				lsMotifResult.addAll(seqFasta.getMotifScan().getMotifScanResult(regex));
@@ -277,17 +270,15 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		
 		int num = 0;
 		boolean isGetSeq = false;
-		Set<String> setGeneNameRemoveDuplicate = new HashSet<>();
 		if (booGetIsoSeq) {
-			for (GffGeneIsoInfo gffGeneIsoInfo : setIsoToGetSeq) {
+			for (String geneName : mapName2Iso.keySet()) {
+				GffGeneIsoInfo iso = mapName2Iso.get(geneName);
 				num++;
-				SeqFasta seqFasta = getSeq(gffGeneIsoInfo);
+				SeqFasta seqFasta = getSeq(iso);
 				if (seqFasta == null) {
 					continue;
 				}
-				if(!skipForDuplicate(setGeneNameRemoveDuplicate, gffGeneIsoInfo)) {
-					continue;
-				}
+				seqFasta.setName(geneName);
 				isGetSeq = isSeqFastaAndWriteToFile(seqFasta);
 				
 				suspendCheck();
@@ -314,57 +305,28 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		if (saveToFile)
 			txtOutFile.close();
 	}
-	
-	private boolean skipForDuplicate(Set<String> setGeneNameRemoveDuplicate, GffGeneIsoInfo gffGeneIsoInfo) {
-		if (!isGetReplicateIso) {
-			if (setGeneNameRemoveDuplicate.contains(gffGeneIsoInfo.getName())) {
-				return false;
-			} else {
-				setGeneNameRemoveDuplicate.add(gffGeneIsoInfo.getName());
-			}
-		}
-		return true;
-	}
+
 	/**
 	 * 输入名字提取序列，内部会去除重复基因
 	 * @param lsListGffName
 	 */
 	private void fillSetNameGenomWide() {
-		setIsoToGetSeq.clear();
+		mapName2Iso.clear();
 		for (GffDetailGene gffDetailGene : gffChrAbs.getGffHashGene().getGffDetailAll()) {
 			if (getOnlyMRNA && !gffDetailGene.isMRNA()) {
 				continue;
 			}
 			if (getAllIso) {
-				setIsoToGetSeq.addAll(gffDetailGene.getLsCodSplit());
+				for (GffGeneIsoInfo iso : gffDetailGene.getLsCodSplit()) {
+					mapName2Iso.put(iso.getName(), iso);
+				}
 			} else {
-				setIsoToGetSeq.addAll(getGeneSeqLongestIso(gffDetailGene));
+				mapName2Iso.putAll(getGeneSeqLongestIso(gffDetailGene));
+				
 			}
 		}
 		
 		booGetIsoSeq = true;
-	}
-	
-	/** 如果不提取同名iso，删除比较短的iso */
-	private void copeSetIso() {
-		if (isGetReplicateIso) {
-			return;
-		}
-		Set<String> setIsoName = new HashSet<>();
-		Map<String, GffGeneIsoInfo> mapIsoName2Iso = new LinkedHashMap<>();
-		for (GffGeneIsoInfo iso : setIsoToGetSeq) {
-			String geneName = iso.getName();
-			int len = iso.getLenExon(0);
-			if (setIsoName.contains(geneName)) {
-				if (mapIsoName2Iso.get(geneName).getLenExon(0) < len) {
-					mapIsoName2Iso.put(geneName, iso);
-				}
-			} else {
-				mapIsoName2Iso.put(geneName, iso);
-			}
-		}
-		setIsoToGetSeq = new LinkedHashSet<>(mapIsoName2Iso.values());
-		mapIsoName2Iso = null;//notify gc
 	}
 	
 	/** 设定中间参数 */
@@ -385,7 +347,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	private List<GffGeneIsoInfo> getIso(String IsoName) {
 		try {
 			if (getAllIso) {
-				return gffChrAbs.getGffHashGene().searchISO(IsoName).getParentGffDetailGene().getLsCodSplit();
+				return gffChrAbs.getGffHashGene().searchISO(IsoName).getParentGffGeneSame().getLsCodSplit();
 			} else {
 				List<GffGeneIsoInfo> lsGeneIsoInfos = new ArrayList<>();
 				GffGeneIsoInfo gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO(IsoName);
@@ -510,13 +472,6 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		if (seqFastaResult == null) {
 			return null;
 		}
-		
-		if (isGetIsoName) {
-			seqFastaResult.setName(gffGeneIsoInfo.getName());
-		} else {
-			seqFastaResult.setName(gffGeneIsoInfo.getParentGeneName());
-		}
-	
 		return seqFastaResult;
 	}
 	/**
@@ -588,7 +543,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		getGenomWide = false;
 		/** 是提取位点还是提取基因 */
 		booGetIsoSeq = false;
-		setIsoToGetSeq = new LinkedHashSet<GffGeneIsoInfo>();
+		mapName2Iso = new LinkedHashMap<>();
 		lsSiteInfos = new ArrayList<SiteSeqInfo>();
 		
 		/** 默认存入文件，否则返回一个listSeqFasta */
