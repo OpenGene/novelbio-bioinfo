@@ -1,7 +1,6 @@
 package com.novelbio.analysis.seq.rnaseq;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,12 +14,11 @@ import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
-/** 修正Trinity之后的结果
- * 把trinity的结果整理成iso和单独基因的，并且基因名用我们的id
+/** 修正Trinity之后的结果，把trinity的所有转录本进行聚类，将相似的聚为一组
  * @author zong0jie
  *
  */
-public class TrinityCopeIso {
+public class TrinityClusterIsoAll {
 	public static final String geneNamePrefix = "NovelBio";
 	/** trinity得到的fasta文件 */
 	String inTrinityFile;
@@ -36,11 +34,11 @@ public class TrinityCopeIso {
 	
 	List<String> lsTmpFileName = new ArrayList<String>();
 	/** 两个iso的最低相似度，小于这个相似度就认为是两个不同的基因 */
-	int identity = 85;
+	int identity = 95;
 	int geneNum = 0;
 	
 	public static void main(String[] args) {
-		TrinityCopeIso trinityModify = new TrinityCopeIso();
+		TrinityClusterIsoAll trinityModify = new TrinityClusterIsoAll();
 		trinityModify.setInFileName("/media/winE/NBC/Project/Project_WH/Trinity_tmp2013-07-150307-18080.fasta");
 		trinityModify.setOutTrinityGeneFile("/media/winE/NBC/Project/Project_WH/Trinity_Out_Gene.fasta");
 		trinityModify.setOutTrinityIsoFile("/media/winE/NBC/Project/Project_WH/Trinity_Out_Iso.fasta");
@@ -56,7 +54,6 @@ public class TrinityCopeIso {
 	public void setOutTrinityGeneName2Iso(String outTrinityGeneName2Iso) {
 		this.outTrinityGeneName2Iso = outTrinityGeneName2Iso;
 	}
-	
 	public void setInFileName(String inFileName) {
 		this.inTrinityFile = inFileName;
 	}
@@ -82,65 +79,28 @@ public class TrinityCopeIso {
 	/** 聚类并将结果写入文本 */
 	private void clusterAndWrite2File() {
 		geneNum = 1;
-		int geneNumToCluster = 500;//每500个基因做一次聚类
 		TxtReadandWrite txtWriteGene = new TxtReadandWrite(outTrinityGeneFile, true);
 		TxtReadandWrite txtWriteIso = new TxtReadandWrite(outTrinityIsoFile, true);
 		TxtReadandWrite txtWriteGene2Iso = new TxtReadandWrite(outTrinityGeneName2Iso, true);
-
-		List<SeqFasta> lsSeqFastaToCluster = new ArrayList<>();
-		for (String geneName : mapGeneID2LsSeqFasta.keySet()) {
-			List<SeqFasta> lsSeqFastas = mapGeneID2LsSeqFasta.get(geneName);
-			//只有一个iso
-			if (lsSeqFastas.size() == 1) {
-				String geneNameNew = getGeneName(geneNum); geneNum++;
-				SeqFasta seqFasta = lsSeqFastas.get(0);
-				seqFasta.setName(geneNameNew);
-				txtWriteGene.writefileln(seqFasta.toStringNRfasta());
-				seqFasta.setName(geneNameNew + "." + 1);
+		
+		List<SeqFasta> lsSeqFastaToCluster = new ArrayList<>(mapGeneID2LsSeqFasta.values());
+		ArrayListMultimap<String, SeqFasta> mapName2LsIso = getClusteredGene2LsIso(lsSeqFastaToCluster);
+		for (String geneName : mapName2LsIso.keySet()) {
+			List<SeqFasta> lsSeqFastasNew = mapName2LsIso.get(geneName);
+			for (SeqFasta seqFasta : lsSeqFastasNew) {
 				txtWriteIso.writefileln(seqFasta.toStringNRfasta());
-				txtWriteGene2Iso.writefileln(geneNameNew + "\t" + geneNameNew + "." + 1);
-				continue;
+				txtWriteGene2Iso.writefileln(geneName + "\t" + seqFasta.getSeqName());
 			}
-			lsSeqFastaToCluster.addAll(lsSeqFastas);
-			if (lsSeqFastaToCluster.size() < geneNumToCluster) {
-				continue;
-			}
-			//有多个iso，通过聚类将不相似的iso分成两个不同的基因
-			ArrayListMultimap<String, SeqFasta> mapName2LsIso = null;
-			try {
-				mapName2LsIso = getClusteredGene2LsIso(lsSeqFastaToCluster);
-			} catch (Exception e) {
-				e.printStackTrace();
-				continue;
-			}
-			if (mapName2LsIso == null) {
-				continue;
-			}
-			for (String name : mapName2LsIso.keySet()) {
-				List<SeqFasta> lsSeqFastasNew = mapName2LsIso.get(name);
-				String geneNameNew = getGeneName(geneNum); geneNum++;
-				int isoNum = 1;
-				for (SeqFasta seqFasta : lsSeqFastasNew) {
-					seqFasta.setName(geneNameNew + "." + isoNum);
-					isoNum++;
-					txtWriteIso.writefileln(seqFasta.toStringNRfasta());
-					txtWriteGene2Iso.writefileln(geneNameNew + "\t" + geneNameNew + "." + isoNum);
-				}
-				SeqFasta seqLongestIso = getLongestIso(lsSeqFastasNew);
-				seqLongestIso.setName(geneNameNew);
-				txtWriteGene.writefileln(seqLongestIso.toStringNRfasta());
-			}
-			lsSeqFastaToCluster.clear();
+			SeqFasta seqLongestIso = getLongestIso(lsSeqFastasNew);
+			seqLongestIso.setName(geneName);
+			txtWriteGene.writefileln(seqLongestIso.toStringNRfasta());
 		}
 		txtWriteGene.close();
 		txtWriteIso.close();
 		txtWriteGene2Iso.close();
 	}
 	
-	/**
-	 * 将若干组iso group进行聚类。实际上这只是为了降低io
-	 * 本质上是将一组iso group进行聚类，如果本组iso没法聚到一起，说明本组iso来源于不同的gene，就要将其根据聚类结果切分成多个gene  
-	 * 获得通过聚类后得到的gene和iso
+	/** 获得通过聚类后得到的gene和iso
 	 * SeqFasta的名字随便起的
 	 */
 	private ArrayListMultimap<String, SeqFasta> getClusteredGene2LsIso(List<SeqFasta> lsSeqFastas) {
@@ -152,33 +112,20 @@ public class TrinityCopeIso {
 		clusterSeq.setIdentityThrshld(identity);
 		clusterSeq.setThreadNum(2);//一个线程就够啦
 		clusterSeq.run();
+		Map<String, SeqFasta> mapNameOld2Seq = getMapName2Seq(lsSeqFastas);
 		List<List<String>> lsResult = clusterSeq.getLsCluster();
-		
-		//modifyResult
-		Map<String, SeqFasta> mapName2Seq = getMapName2Seq(lsSeqFastas);
 		ArrayListMultimap<String, SeqFasta> mapGeneName2LsSeqFasta = ArrayListMultimap.create();
-		int i = 0;
-		for (List<String> list : lsResult) {
-			i++;
-			Collections.sort(list);
-			String geneNameLast = null;
-			for (String seqFastaName : list) {
-				SeqFasta seqFasta = mapName2Seq.get(seqFastaName);
-				if (geneNameLast != null && seqFastaName.startsWith(geneNameLast)) {
-					mapGeneName2LsSeqFasta.put(i+" ", seqFasta);
-				} else {
-					String[] ss = seqFastaName.split("_");
-					geneNameLast = ss[0] + "_" + ss[1];
-					
-					i++;
-					mapGeneName2LsSeqFasta.put(i+" ", seqFasta);
-				}				
+		int allNum = lsResult.size();
+		for (int i = 0; i < lsResult.size(); i++) {
+			List<String> lsSeqName = lsResult.get(i);
+			String geneName = geneNamePrefix + "_" + getSeqId(i, allNum);
+			for (int j = 0; j < lsSeqFastas.size(); j++) {
+				String geneNameOld = lsSeqName.get(j);
+				SeqFasta seqFasta = mapNameOld2Seq.get(geneNameOld);
+				seqFasta.setName(geneName+"."+j);
+				mapGeneName2LsSeqFasta.put(geneName, seqFasta);
 			}
 		}
-		//清空文件
-		clusterSeq.clearTmpFile();
-		FileOperate.DeleteFileFolder(clusterSeq.getOutClusterInfo());
-		FileOperate.DeleteFileFolder(clusterSeq.getOutClusterSeq());
 		return mapGeneName2LsSeqFasta;
 	}
 	
@@ -190,6 +137,18 @@ public class TrinityCopeIso {
 		return mapName2Seq;
 	}
 	
+	private String getSeqId(int num, int allNum) {
+		int fold10Num = 1;
+		while((allNum = allNum/10) > 0) {
+			fold10Num++;
+		}
+		String numString = num+"";
+		for (int i = 0; i < fold10Num - numString.length(); i++) {
+			numString = 0+numString;
+		}
+		return numString;
+	}
+	
 	private SeqFasta getLongestIso(List<SeqFasta> lsSeqFastas) {
 		SeqFasta seqFastaMaxLen = null;
 		int len = 0;
@@ -199,18 +158,6 @@ public class TrinityCopeIso {
 			}
 		}
 		return seqFastaMaxLen;
-	}
-	
-	/** 给定geneNum，返回该基因的名字 */
-	private String getGeneName(int geneNum) {
-		String geneNumFinal = geneNum + "";
-		String prefix = geneNamePrefix;
-		if (geneNumFinal.length() < 6) {
-			for (int i = 0; i < 6 - geneNumFinal.length(); i++) {
-				prefix = prefix + "0";
-			}
-		}
-		return prefix + geneNumFinal;
 	}
 	
 	public void removeTmpFile() {
