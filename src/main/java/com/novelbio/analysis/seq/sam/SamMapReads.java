@@ -289,4 +289,10 @@ public class SamMapReads extends MapReadsAbs {
 		}
 		return lstmp;
 	}
+
+	@Override
+	public double[] getReadsDensity(String chrID, int startLoc, int endLoc,
+			int binNum) {
+		throw new RuntimeException("cannot do this work with SamFile");
+	}
 }

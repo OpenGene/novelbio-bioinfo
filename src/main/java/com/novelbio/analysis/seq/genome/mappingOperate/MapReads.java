@@ -31,6 +31,14 @@ import com.novelbio.listOperate.ListCodAbs;
  * 
  */
 public class MapReads extends MapReadsAbs implements AlignmentRecorder {
+	/**将长的单碱基精度的一条染色体压缩为短的每个inv大约10-20bp的序列，那么压缩方法选择为20bp中的数值的中位数 */
+	public static final int SUM_TYPE_MEDIAN = 2;
+	/**将长的单碱基精度的一条染色体压缩为短的每个inv大约10-20bp的序列，那么压缩方法选择为20bp中的数值的平均数 */
+	public static final int SUM_TYPE_MEAN = 3;
+	/**将长的单碱基精度的一条染色体压缩为短的每个inv大约10-20bp的序列，那么压缩方法选择为20bp中的数值的总和 */
+	public static final int SUM_TYPE_SUM = 4;
+	
+
 	private static Logger logger = Logger.getLogger(MapReads.class);
 
 	 boolean uniqReads = false;
@@ -249,6 +257,7 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	 * @param binNum
 	 * @return
 	 */
+	//TODO 还没做好
 	public  double[] getReadsDensity(ListAbs<ExonInfo> lsExonInfos, String chrID, int startLoc, int endLoc, int binNum ) {
 		//首先将reads标准化为一个400-500bp宽的大块，每一块里面应该是该区域里面tags的总数，所以求该区域里面的最大值
 		//然后再在大块上面统计，
@@ -830,11 +839,11 @@ class ChrMapReadsInfo {
 	}
 	
 	private void samplingSite(int siteNum, int[] tmpSumReads) {
-		 if (type == MapReadsAbs.SUM_TYPE_MEDIAN) { //每隔一段区域取样，建议每隔10bp取样，取中位数
+		 if (type == MapReads.SUM_TYPE_MEDIAN) { //每隔一段区域取样，建议每隔10bp取样，取中位数
 			 SumChrBpReads[siteNum] += (int) MathComput.median(tmpSumReads);
-		 } else if (type == MapReadsAbs.SUM_TYPE_MEAN) { 
+		 } else if (type == MapReads.SUM_TYPE_MEAN) { 
 			 SumChrBpReads[siteNum] += (int) MathComput.mean(tmpSumReads);
-		 } else if (type == MapReadsAbs.SUM_TYPE_SUM) {
+		 } else if (type == MapReads.SUM_TYPE_SUM) {
 			SumChrBpReads[siteNum] += MathComput.sum(tmpSumReads);
 		}else {//默认取中位数 
 			 SumChrBpReads[siteNum] += (int) MathComput.median(tmpSumReads);

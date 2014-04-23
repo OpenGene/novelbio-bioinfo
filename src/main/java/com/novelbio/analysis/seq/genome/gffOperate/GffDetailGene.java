@@ -69,7 +69,7 @@ public class GffDetailGene extends ListDetailAbs {
 	
 	/** 顺序存储每个转录本的的坐标情况 */
 	@DBRef
-	private ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfos = new ArrayList<GffGeneIsoInfo>();//存储可变剪接的mRNA
+	ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfos = new ArrayList<GffGeneIsoInfo>();//存储可变剪接的mRNA
 	
 	@Indexed(unique = false)
 	int taxID = 0;
@@ -534,6 +534,28 @@ public class GffDetailGene extends ListDetailAbs {
 			i++;
 		}
 		gffGeneIsoInfo.setName(IsoName);
+		lsGffGeneIsoInfos.add(gffGeneIsoInfo);
+		
+		if (numberstart < 0 || numberstart > gffGeneIsoInfo.getStartAbs()) {
+			numberstart = gffGeneIsoInfo.getStartAbs();
+		}
+		if (numberend < 0 || numberend < gffGeneIsoInfo.getEndAbs()) {
+			numberend = gffGeneIsoInfo.getEndAbs();
+		}
+	}
+	
+	/**
+	 * 添加新的转录本，不设定removeDuplicateIso和cis5to3
+	 * 不考虑重复iso，不修改同名iso
+	 * 同时重新设定该基因的numberstart和numberend
+	 * @param gffGeneIsoInfo 输入的iso必须不能为null，并且要有exon信息的存在
+	 */
+	public void addIsoSimple(GffGeneIsoInfo gffGeneIsoInfo) {
+		if (gffGeneIsoInfo == null || gffGeneIsoInfo.size() == 0) {
+			return;
+		}
+		
+		gffGeneIsoInfo.setGffDetailGeneParent(this);
 		lsGffGeneIsoInfos.add(gffGeneIsoInfo);
 		
 		if (numberstart < 0 || numberstart > gffGeneIsoInfo.getStartAbs()) {

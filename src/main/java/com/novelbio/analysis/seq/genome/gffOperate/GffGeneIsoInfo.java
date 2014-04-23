@@ -182,6 +182,20 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return gffDetailGeneParent;
 	}
 	
+	/** 返回同一组的GffDetailGene，效率略低 */
+	public GffDetailGene getParentGffGeneSame() {
+		GffDetailGene gffDetailGene = gffDetailGeneParent.clone();
+		gffDetailGene.setStartAbs(-100);
+		gffDetailGene.setEndAbs(-100);
+		gffDetailGene.lsGffGeneIsoInfos.clear();
+		for (GffGeneIsoInfo iso : gffDetailGeneParent.lsGffGeneIsoInfos) {
+			if (iso.getParentGeneName().equals(getParentGeneName())) {
+				gffDetailGene.addIsoSimple(iso);
+			}
+		}		
+		return gffDetailGene;
+	}
+	
 	/**
 	 * 该名字为实际上的iso所在的基因名字，不一定为其 gffDetailGeneParent 的gene name<br>
 	 * 因为可能会有多个gffDetailGene合并为一个gffDetailGene，这时候直接用gffDetailGeneParent的名字就无法进行区分
