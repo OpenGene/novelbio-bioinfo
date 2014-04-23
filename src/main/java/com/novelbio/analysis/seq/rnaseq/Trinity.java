@@ -92,7 +92,7 @@ public class Trinity {
 	 * maximum number of reads to anchor within   a single graph (default: 200000)
 	 */
 	int max_reads_per_graph = 0;
-	
+	String genome;
 	/**
 	 *stop Trinity after Inchworm and before running Chrysalis 
 	 */
@@ -274,7 +274,15 @@ public class Trinity {
 		}
 		return new String[]{"--output", output};
 	}
-
+	public void setGenome(String genome) {
+		this.genome = genome;
+	}
+	private String[] getGenomeGuid() {
+		if (genome == null) {
+			return null;
+		}
+		return new String[]{"--genome", genome};
+	}
 	/**线程数，默认20线程 */
 	public void setThreadNum(int threadNum) {
 		if (threadNum > 0) {
@@ -542,6 +550,7 @@ public class Trinity {
 		ArrayOperate.addArrayToList(lsCmd, getMin_kmer_cov());
 		ArrayOperate.addArrayToList(lsCmd, getInchworm_cpu());
 		ArrayOperate.addArrayToList(lsCmd, getMax_reads_per_graph());
+		ArrayOperate.addArrayToList(lsCmd, getGenomeGuid());
 		addString(lsCmd, getNo_run_chrysalis());
 		ArrayOperate.addArrayToList(lsCmd, getBfly_opts());
 		ArrayOperate.addArrayToList(lsCmd, getMax_number_of_paths_per_node());

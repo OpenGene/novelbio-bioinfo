@@ -99,7 +99,9 @@ public class LncInfo {
 		if (mapName2LncIso.isEmpty()) return;
 		
 		gffLncIso = getLncIsoOne(gffiso);
-		
+		if (gffLncIso == null) {
+			return;
+		}
 		cis5to3 = gffLncIso.isCis5to3();
 		setNameAndUpDown(gffLncIso);
 	}
@@ -178,7 +180,6 @@ public class LncInfo {
 		Map<String, GffGeneIsoInfo> lsLnc = new LinkedHashMap<>();
 		List<GffGeneIsoInfo> lsMRNAcis = new ArrayList<>();
 		List<GffGeneIsoInfo> lsMRNAtrans = new ArrayList<>();
-
 		for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 			if (gffGeneIsoInfo.getGeneType() == GeneType.mRNA) {
 				if (gffGeneIsoInfo.isCis5to3()) {
@@ -315,11 +316,12 @@ public class LncInfo {
 		List<String> lsResult = new ArrayList<String>();
 		lsResult.add(lncIsoName);
 		lsResult.add(lncName);
-		if (mapName2LncIso.isEmpty()) {
+		if (mapName2LncIso.isEmpty() || gffLncIso == null) {
 			lsResult.add("");
 			lsResult.add("");
 		} else {
 			GeneID geneID = gffLncIso.getGeneID();
+			
 			String geneType = gffLncIso.getGeneType().toString();
 			if (geneID != null && geneID.getGeneInfo() != null && geneID.getGeneInfo().getTypeOfGene() != null) {
 				String geneTypeGeneID = geneID.getGeneInfo().getTypeOfGene();

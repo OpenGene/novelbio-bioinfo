@@ -4,11 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.swing.JOptionPane;
 
 import org.apache.commons.math.stat.descriptive.moment.Mean;
 import org.apache.log4j.Logger;
@@ -37,19 +34,12 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	/** 标准化数字会很小很小，乘以一个很大的数防止溢出 */
 	private static final int mulNum = 10000000;
 	private static Logger logger = Logger.getLogger(MapReadsAbs.class);
-	/**将长的单碱基精度的一条染色体压缩为短的每个inv大约10-20bp的序列，那么压缩方法选择为20bp中的数值的中位数 */
-	public static final int SUM_TYPE_MEDIAN = 2;
-	/**将长的单碱基精度的一条染色体压缩为短的每个inv大约10-20bp的序列，那么压缩方法选择为20bp中的数值的平均数 */
-	public static final int SUM_TYPE_MEAN = 3;
-	/**将长的单碱基精度的一条染色体压缩为短的每个inv大约10-20bp的序列，那么压缩方法选择为20bp中的数值的总和 */
-	public static final int SUM_TYPE_SUM = 4;
-	
 
 	/** 对于结果的标准化方法 */
 	protected EnumMapNormalizeType NormalType = EnumMapNormalizeType.allreads;
 
 	 /** 序列信息,名字都为小写 */
-	 Map<String, Long> mapChrID2Len = new HashMap<String, Long>();
+	 protected Map<String, Long> mapChrID2Len = new HashMap<String, Long>();
 	 
 	 Equations FormulatToCorrectReads;
 	 protected boolean booUniqueMapping = true;
@@ -298,6 +288,17 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 		});
 		return lsLocNew;
 	}
+	/**
+	 * 经过标准化，和equations修正
+	 * 给定染色体，与起点和终点，返回该染色体上tag的密度分布，如果该染色体在mapping时候不存在，则返回null
+	 * @param chrID 小写
+	 * @param startLoc 起点坐标，为实际起点 如果startNum<=0 并且endNum<=0，则返回全长信息
+	 * @param endLoc 
+	 * @param binNum 待分割的块数
+	 * @return
+	 */
+	public abstract double[] getReadsDensity(String chrID, int startLoc, int endLoc, int binNum );
+	
 	/**
 	 * 经过标准化，和equations修正
 	 * 输入坐标区间，默认每个区间的bp数为invNum，返回该段区域内reads的数组

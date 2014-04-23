@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +23,7 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 @Component
 @Scope("prototype")
 public class MapBowtie extends MapDNA {
+	Logger logger = Logger.getLogger(MapBowtie.class);
 	public static final int Sensitive_Very_Fast = 11;
 	public static final int Sensitive_Fast = 12;
 	public static final int Sensitive_Sensitive = 13;
@@ -396,21 +398,27 @@ public class MapBowtie extends MapDNA {
 //	}
 	
 	public String getVersion() {
-		String bowtie = "";
-		if (bowtieVersion == SoftWare.bowtie) {
-			bowtie = "bowtie";
-		} else if (bowtieVersion == SoftWare.bowtie2) {
-			bowtie = "bowtie2";
+		String version = null;
+		try {
+			String bowtie = "";
+			if (bowtieVersion == SoftWare.bowtie) {
+				bowtie = "bowtie";
+			} else if (bowtieVersion == SoftWare.bowtie2) {
+				bowtie = "bowtie2";
+			}
+			List<String> lsCmdVersion = new ArrayList<>();
+			lsCmdVersion.add(this.ExePathBowtie + bowtie);
+			lsCmdVersion.add("--version");
+			CmdOperate cmdOperate = new CmdOperate(lsCmdVersion);
+			cmdOperate.setGetLsStdOut();
+			cmdOperate.run();
+			List<String> lsInfo = cmdOperate.getLsStdOut();
+			version = lsInfo.get(0).toLowerCase().split("version")[1].trim();
+		} catch (Exception e) {
+			logger.error("cannot get bowtie version", e);
 		}
-		List<String> lsCmdVersion = new ArrayList<>();
-		lsCmdVersion.add(this.ExePathBowtie + bowtie);
-		lsCmdVersion.add("--version");
-		CmdOperate cmdOperate = new CmdOperate(lsCmdVersion);
-		cmdOperate.setGetLsStdOut();
-		cmdOperate.run();
-		List<String> lsInfo = cmdOperate.getLsStdOut();
-		String version = lsInfo.get(0).toLowerCase().split("version")[1].trim();
 		return version;
+
 	}
 	
 	
