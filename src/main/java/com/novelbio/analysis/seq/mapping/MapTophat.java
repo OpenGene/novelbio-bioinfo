@@ -625,14 +625,20 @@ public class MapTophat implements MapRNA {
 	}
 	
 	public String getVersionTophat() {
-		List<String> lsCmdVersion = new ArrayList<>();
-		lsCmdVersion.add(ExePathTophat + "tophat");
-		lsCmdVersion.add("--version");
-		CmdOperate cmdOperate = new CmdOperate(lsCmdVersion);
-		cmdOperate.setGetLsStdOut();
-		cmdOperate.run();
-		List<String> lsInfo = cmdOperate.getLsStdOut();
-		String version = lsInfo.get(0).toLowerCase().replace("tophat", "").trim();
+		String version = null;
+		try {
+			List<String> lsCmdVersion = new ArrayList<>();
+			lsCmdVersion.add(ExePathTophat + "tophat");
+			lsCmdVersion.add("--version");
+			CmdOperate cmdOperate = new CmdOperate(lsCmdVersion);
+			cmdOperate.setGetLsStdOut();
+			cmdOperate.run();
+			List<String> lsInfo = cmdOperate.getLsStdOut();
+			version = lsInfo.get(0).toLowerCase().replace("tophat", "").trim();
+		} catch (Exception e) {
+			logger.error("getversion error", e);
+		}
+
 		return version;
 	}
 	public String getVersionBowtie() {

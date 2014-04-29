@@ -12,8 +12,11 @@ import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.GuiAnnoInfo;
+import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
@@ -835,4 +838,53 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		setCondition.clear();
 		tophatJunction = new TophatJunction();
 	}
+	
+	
+	/** 提取某个exon周边的序列的，吴文武要的东西 */
+	private static void getSeqfasta(List<String[]> lsInfo, GffChrAbs gffChrAbs, String outFile) {
+		TxtReadandWrite txtWrite = new TxtReadandWrite(outFile, true);
+		for (String[] strings : lsInfo) {
+			String name = strings[0] + "_" + strings[1];
+			String chrId = "chr" + strings[1].split(":")[0];
+			int start = Integer.parseInt(strings[1].split(":")[1].split("-")[0]);
+			int end = Integer.parseInt(strings[1].split(":")[1].split("-")[1]);
+			SeqFasta seqFasta = getSeqfasta(name, chrId, start, end, gffChrAbs);
+			if (seqFasta == null) {
+				continue;
+			}
+			txtWrite.writefileln(seqFasta.toStringNRfasta());
+		}
+	}
+	
+	private static SeqFasta getSeqfasta(String name, String chrId, int start, int end, GffChrAbs gffChrAbs) {
+		int codMid = (start + end)/2;
+		GffCodGene gffCodGene = gffChrAbs.getGffHashGene().searchLocation(chrId, codMid);
+		if (gffCodGene == null || !gffCodGene.isInsideLoc()) {
+			return null;
+		}
+		int exonNum = 0;
+		GffGeneIsoInfo isoGetSeq = null;
+		for (GffGeneIsoInfo iso : gffCodGene.getGffDetailThis().getLsCodSplit()) {
+			int exonNumThis = iso.getNumCodInEle(codMid);
+			if (exonNumThis > 0) {
+				exonNum = exonNumThis;
+				isoGetSeq = iso;
+				break;
+			}
+		}
+		if (isoGetSeq == null) {
+			return null;
+		}
+		int exonStart = exonNum - 2;
+		if (exonStart < 0) exonStart = 0;
+		int exonEnd = exonNum + 1;
+		if (exonEnd > isoGetSeq.size()) {
+			exonEnd = isoGetSeq.size();
+		}
+		List<ExonInfo> lsSub = isoGetSeq.subList(exonStart, exonEnd);
+		SeqFasta seqFasta = gffChrAbs.getSeqHash().getSeq(isoGetSeq.isCis5to3(), isoGetSeq.getRefID(), lsSub, true);
+		seqFasta.setName(name);
+		return seqFasta;
+	}
+	
 }

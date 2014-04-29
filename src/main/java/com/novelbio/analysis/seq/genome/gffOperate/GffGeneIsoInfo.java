@@ -764,6 +764,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		lsresult.add(exonInfo2);
 		return lsresult;
 	}
+	
 	/**
 	 * 文字形式的定位描述, <b>首先在gffDetailGene中设定tss，tes这两项</b><br>
 	 * null: 不在该转录本内

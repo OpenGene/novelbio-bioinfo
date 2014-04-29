@@ -9,7 +9,6 @@ import java.util.Map;
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.denovo.ClusterSeq;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
-import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -20,67 +19,22 @@ import com.novelbio.base.fileOperate.FileOperate;
  * @author zong0jie
  *
  */
-public class TrinityCopeIso {
+public class TrinityCopeIso extends TrinityClusterIso {
 	public static final String geneNamePrefix = "NovelBio";
-	/** trinity得到的fasta文件 */
-	String inTrinityFile;
-	/** 输出的基因文件名，仅包含最长Iso的序列，可用于做blast */
-	String outTrinityGeneFile;
-	/** 输出的Iso文件名，包含全体Iso序列 */
-	String outTrinityIsoFile;
-	/** 输出GeneName对IsoName的对照表，给Rsem用的 */
-	String outTrinityGeneName2Iso;
-	
-	/** 将输入的trinity文件按照iso分成小组，放在这个里面 */
-	ArrayListMultimap<String, SeqFasta> mapGeneID2LsSeqFasta = ArrayListMultimap.create();
-	
-	List<String> lsTmpFileName = new ArrayList<String>();
-	/** 两个iso的最低相似度，小于这个相似度就认为是两个不同的基因 */
-	int identity = 85;
-	int geneNum = 0;
 	
 	public static void main(String[] args) {
-		TrinityCopeIso trinityModify = new TrinityCopeIso();
-		trinityModify.setInFileName("/media/winE/NBC/Project/Project_WH/Trinity_tmp2013-07-150307-18080.fasta");
-		trinityModify.setOutTrinityGeneFile("/media/winE/NBC/Project/Project_WH/Trinity_Out_Gene.fasta");
-		trinityModify.setOutTrinityIsoFile("/media/winE/NBC/Project/Project_WH/Trinity_Out_Iso.fasta");
-		trinityModify.cope();
-	}
-	public void setOutTrinityGeneFile(String outTrinityGeneFile) {
-		this.outTrinityGeneFile = outTrinityGeneFile;
-	}
-	public void setOutTrinityIsoFile(String outTrinityIsoFile) {
-		this.outTrinityIsoFile = outTrinityIsoFile;
-	}
-	/** 给Rsem用的 */
-	public void setOutTrinityGeneName2Iso(String outTrinityGeneName2Iso) {
-		this.outTrinityGeneName2Iso = outTrinityGeneName2Iso;
-	}
-	
-	public void setInFileName(String inFileName) {
-		this.inTrinityFile = inFileName;
-	}
-	
-	public void cope() {
-		copeFileToGene2LsIso();
-		clusterAndWrite2File();
-	}
-	
-	/** 将trinity的结果读取并整理成GeneID2LsIso的形式 */
-	private void copeFileToGene2LsIso() {
-		lsTmpFileName.clear();
-		SeqFastaHash seqFastaHash = new SeqFastaHash(inTrinityFile);
-		for (SeqFasta seqFasta : seqFastaHash.getSeqFastaAll()) {
-			seqFasta.setName(seqFasta.getSeqName().split(" ")[0]);
-			String[] ss = seqFasta.getSeqName().split("_");
-			String geneName = ss[0] + "_" + ss[1];
-			mapGeneID2LsSeqFasta.put(geneName, seqFasta);
-		}
-		seqFastaHash.close();
+//		TrinityCopeIso trinityModify = new TrinityCopeIso();
+//		trinityModify.setInFileName("/media/winE/NBC/Project/Project_WH/Trinity_tmp2013-07-150307-18080.fasta");
+//		trinityModify.setOutTrinityGeneFile("/media/winE/NBC/Project/Project_WH/Trinity_Out_Gene.fasta");
+//		trinityModify.setOutTrinityIsoFile("/media/winE/NBC/Project/Project_WH/Trinity_Out_Iso.fasta");
+//		trinityModify.cope();
+		
+		
+		
 	}
 	
 	/** 聚类并将结果写入文本 */
-	private void clusterAndWrite2File() {
+	protected void clusterAndWrite2File() {
 		geneNum = 1;
 		int geneNumToCluster = 500;//每500个基因做一次聚类
 		TxtReadandWrite txtWriteGene = new TxtReadandWrite(outTrinityGeneFile, true);
@@ -211,12 +165,6 @@ public class TrinityCopeIso {
 			}
 		}
 		return prefix + geneNumFinal;
-	}
-	
-	public void removeTmpFile() {
-		for (String fileName : lsTmpFileName) {
-			FileOperate.DeleteFileFolder(fileName);
-		}
 	}
 	
 }

@@ -360,7 +360,13 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		
 		for (int i = 0; i < lsSampleColumn2GroupName.size(); i++) {
 			int colNum = Integer.parseInt(lsSampleColumn2GroupName.get(i)[0]) - 1;
-			double value = Double.parseDouble(info[colNum]);
+			double value = 0;
+			try {
+				value = Double.parseDouble(info[colNum]);
+			} catch (Exception e) {
+				
+			}
+			
 			String timeInfo = lsSampleColumn2GroupName.get(i)[1];//时期
 			List<Double> lsValue = add_and_get_LsValue(timeInfo, mapTime2LsValue);
 			lsValue.add(value);

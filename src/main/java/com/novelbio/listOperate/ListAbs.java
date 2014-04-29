@@ -160,6 +160,7 @@ public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E>
 		element.setParentListAbs(this);
 		lsElement.add(index, element);
 	}
+
 	public boolean addAll(Collection<? extends E> colElement) {
 		for (E element : colElement) {
 			element.setParentListAbs(this);
@@ -360,6 +361,12 @@ public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E>
 		}
 		return mapName2DetailAbs;
 	}
+	
+	/** 从0开始计算 */
+	public List<E> subList(int fromIndex, int toIndex) {
+		return lsElement.subList(fromIndex, toIndex);
+	}
+	
 	/**
 	 *  首先除去空格，如果为""或“-”
 	 *  则返回null

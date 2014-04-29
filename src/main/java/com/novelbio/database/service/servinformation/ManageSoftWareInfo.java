@@ -53,9 +53,12 @@ public class ManageSoftWareInfo {
 			hashName2ColNum.put(title[i].trim().toLowerCase(), i);
 		}
 		
-		for (int i = 1; i < lsInfo.size()-1; i++) {
+		for (int i = 1; i < lsInfo.size(); i++) {
 			SoftWareInfo softWareInfo = new SoftWareInfo();
 			String[] info = lsInfo.get(i);
+			if (info[0].trim().startsWith("#") || info.length < 1) {
+				continue;
+			}
 			int m = hashName2ColNum.get("softwarename");
 			softWareInfo.setName(info[m]);
 			

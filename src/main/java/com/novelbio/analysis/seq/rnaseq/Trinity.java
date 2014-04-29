@@ -27,9 +27,7 @@ public class Trinity {
 	 */
 	String seqType = "fq";
 	
-	/**
-	 * (Jellyfish Memory) number of GB of system memory to use for   k-mer counting by jellyfish  (eg. 10G) *include the 'G' char
-	 */
+	/** (Jellyfish Memory) number of GB of system memory to use for   k-mer counting by jellyfish  (eg. 10G) *include the 'G' char */
 	int JellyfishMemory = 60;
 	
 	/**
@@ -73,6 +71,15 @@ public class Trinity {
 	 */
 	boolean isJaccard_clip = false;
 	
+	/**
+	 * If you have especially large RNA-Seq data sets involving many hundreds of
+	 * millions of reads to billions of reads, consider performing an in silico
+	 * normalization of the full data set using Trinity --normalize_reads. The
+	 * default normalization process should work well for most data sets. If you
+	 * prefer to manually set normalization-related parameters, you can find the
+	 * options under the full Trinity usage info:
+	 */
+	boolean isNormalizeReads = false;
 	/** Only prepare files (high I/O usage) and stop before kmer counting. */
 	boolean isJustPrep = false;
 	
@@ -92,7 +99,11 @@ public class Trinity {
 	 * maximum number of reads to anchor within   a single graph (default: 200000)
 	 */
 	int max_reads_per_graph = 0;
+	
 	String genome;
+	String genomeSortedBam;
+	/** maximum allowed intron length (also maximum fragment span on genome) */
+	int intronMaxLen = 50000;
 	/**
 	 *stop Trinity after Inchworm and before running Chrysalis 
 	 */
@@ -274,15 +285,54 @@ public class Trinity {
 		}
 		return new String[]{"--output", output};
 	}
+	
+	/**
+	 * If you have especially large RNA-Seq data sets involving many hundreds of
+	 * millions of reads to billions of reads, consider performing an in silico
+	 * normalization of the full data set using Trinity --normalize_reads. The
+	 * default normalization process should work well for most data sets. If you
+	 * prefer to manually set normalization-related parameters, you can find the
+	 * options under the full Trinity usage info:
+	 */
+	public void setNormalizeReads(boolean isNormalizeReads) {
+		this.isNormalizeReads = isNormalizeReads;
+	}
+	
+	private String isNormalizeReads() {
+		if (isNormalizeReads) {
+			return "--normalize_reads";
+		}
+		return null;
+	}
+	
 	public void setGenome(String genome) {
 		this.genome = genome;
 	}
-	private String[] getGenomeGuid() {
-		if (genome == null) {
-			return null;
-		}
-		return new String[]{"--genome", genome};
+	/** 有的话就用该bam文件指导拼接，没有就自己做mapping */
+	public void setGenomeSortedBam(String genomeSortedBam) {
+		this.genomeSortedBam = genomeSortedBam;
 	}
+	/** 最长intron的长度，也是用于指导拼接的，默认50000bp */
+	public void setIntronMaxLen(int intronMaxLen) {
+		if (intronMaxLen <= 0) return;
+		
+		this.intronMaxLen = intronMaxLen;
+	}
+	
+	private String[] getGenomeGuid() {
+		List<String> lsGenomeGuid = new ArrayList<>();
+		if (!StringOperate.isRealNull(genome)) {
+			lsGenomeGuid.add("--genome"); lsGenomeGuid.add(genome);
+			if (!StringOperate.isRealNull(genomeSortedBam)) {
+				lsGenomeGuid.add("--genome_guided_use_bam"); lsGenomeGuid.add(genomeSortedBam);
+			}
+			if (intronMaxLen > 0) {
+				lsGenomeGuid.add("--genome_guided_max_intron"); lsGenomeGuid.add(intronMaxLen + "");
+			}
+		}
+		return lsGenomeGuid.toArray(new String[0]);
+	}
+	
 	/**线程数，默认20线程 */
 	public void setThreadNum(int threadNum) {
 		if (threadNum > 0) {
@@ -547,6 +597,7 @@ public class Trinity {
 		addString(lsCmd, getPrep());
 		addString(lsCmd, getNo_cleanup());
 		addString(lsCmd, getFull_cleanup());
+		addString(lsCmd, isNormalizeReads());
 		ArrayOperate.addArrayToList(lsCmd, getMin_kmer_cov());
 		ArrayOperate.addArrayToList(lsCmd, getInchworm_cpu());
 		ArrayOperate.addArrayToList(lsCmd, getMax_reads_per_graph());

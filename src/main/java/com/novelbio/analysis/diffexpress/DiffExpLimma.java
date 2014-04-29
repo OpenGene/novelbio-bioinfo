@@ -236,8 +236,14 @@ public class DiffExpLimma extends DiffExpAbs{
 			String[] tmpResult = new String[7];
 			String[] geneInfo = ArrayOperate.indelElement(lsDifGene.get(i), lsIndelItem, "");
 			tmpResult[0] = geneInfo[0].replace("\"", "");
-			double treatLogValue = mapGeneID_2_Sample2MeanValue.get(tmpResult[0]).get(treatName);
-			double ctrlLogValue = mapGeneID_2_Sample2MeanValue.get(tmpResult[0]).get(controlName);
+			double treatLogValue = 0; double ctrlLogValue = 0;
+			Map<String, Double> mapSample2Value = mapGeneID_2_Sample2MeanValue.get(tmpResult[0]);
+			if (mapSample2Value == null) {
+				continue;
+			}
+			treatLogValue = mapSample2Value.get(treatName);
+			ctrlLogValue = mapSample2Value.get(controlName);
+		
 			if (!isLogValue()) {
 				treatLogValue = getLogValue(treatLogValue);
 				ctrlLogValue = getLogValue(ctrlLogValue);

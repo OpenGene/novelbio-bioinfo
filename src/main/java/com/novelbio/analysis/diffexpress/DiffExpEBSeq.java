@@ -134,7 +134,7 @@ public class DiffExpEBSeq extends DiffExpAbs{
 			if ((tmpResult[1].equals("0") || tmpResult[1].equalsIgnoreCase("NA") || tmpResult[1].equalsIgnoreCase("none") ) 
 					&& (tmpResult[2].equals("0") || tmpResult[2].equalsIgnoreCase("NA") || tmpResult[2].equalsIgnoreCase("none") )) {
 				tmpResult[3] = "0";
-			} else if (tmpResult[1].equals("0")) {
+			} else if (tmpResult[1].equals("0") || tmpResult[1].equals("NA")) {
 				tmpResult[3] = "-20";
 			} else if (tmpResult[2].equals("0")) {
 				tmpResult[3] = "20";
