@@ -82,6 +82,7 @@ public class SamToFastq implements AlignmentRecorder {
 		this.isPairend = isPairend;
 		this.samToFastqType = samToFastqType;
 		outFileName = new String[isPairend? 2 : 1];
+		outFileNameTmp = new String[isPairend? 2 : 1];
 		outFileName[0] = outFile1;
 		if (isPairend) {
 			outFileName[1] = outFile2;
