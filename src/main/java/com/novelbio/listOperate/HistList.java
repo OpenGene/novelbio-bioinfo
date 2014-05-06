@@ -140,7 +140,7 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 	 * 意思本区间为上一个num和本num之间
 	 * @param number 本bin所代表的数值，null就用终点和起点的平均值
 	 * @param name 填写的话，就用该名字做坐标名字
-	 * @param thisNum
+	 * @param thisNum 本bin的终点
 	 */
 	public void addHistBin(Integer number, String name, int thisNum) {
 		addHistBin(number.doubleValue(), name, thisNum);

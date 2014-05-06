@@ -27,6 +27,10 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 @Component
 @Scope("prototype")
 public class MapBwaAln extends MapDNA {
+	public static void main(String[] args) {
+		MapBwaAln mm = new MapBwaAln();
+		System.out.println(mm.getVersion("/media/hdfs/nbCloud/public/nbcplatform/BioInfoTools/bioinfo/"));
+	}
 	private static final Logger logger = Logger.getLogger(MapBwaAln.class);
 	/**
 	 * 在此大小以下的genome直接读入内存以帮助快速mapping
@@ -492,15 +496,21 @@ public class MapBwaAln extends MapDNA {
 		lsCmdVersion.add(exePath + "bwa");
 		CmdOperate cmdOperate = new CmdOperate(lsCmdVersion);
 		cmdOperate.run();
-		List<String> lsInfo = cmdOperate.getLsErrOut();
-		String version = lsInfo.get(2).toLowerCase().replace("version:", "").trim();
+		String version = null;
+		try {
+			List<String> lsInfo = cmdOperate.getLsErrOut();
+			version = lsInfo.get(2).toLowerCase().replace("version:", "").trim();
+		} catch (Exception e) { }
 		return version;
 	}
 	@Override
 	public List<String> getCmdExeStr() {
 		combSeq();
 		List<String> lsCmdResult = new ArrayList<>();
-		lsCmdResult.add("bwa version: " + getVersion(this.ExePath));
+		String version = getVersion(this.ExePath);
+		if (version != null) {
+			lsCmdResult.add("bwa version: " + getVersion(this.ExePath));
+		}
 		List<String> lsCmd = getLsCmdAln(true);
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		lsCmdResult.add(cmdOperate.getCmdExeStr());

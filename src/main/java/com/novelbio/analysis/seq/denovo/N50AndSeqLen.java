@@ -1,5 +1,6 @@
 package com.novelbio.analysis.seq.denovo;
 
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -8,10 +9,30 @@ import java.util.List;
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
+import com.novelbio.base.plot.BarStyle;
+import com.novelbio.base.plot.ImageUtils;
 import com.novelbio.listOperate.HistList;
 
 /** 计算序列的N50和其他统计长度信息，最后画出柱状图 */
 public class N50AndSeqLen {
+	public static void main(String[] args) {
+		N50AndSeqLen n50AndSeqLen = new N50AndSeqLen("/media/hdfs/nbCloud/public/Testforzong/ToxoDB-10.0_TgondiiME49_Genome.fasta");
+		n50AndSeqLen.setLengthStep(500);
+		n50AndSeqLen.setMaxContigLen(10000);
+		n50AndSeqLen.doStatistics();
+		HistList histList = n50AndSeqLen.gethListLength();
+		histList.getPlotHistBar(new BarStyle()).saveToFile("/media/hdfs/nbCloud/public/Testforzong/reads Len distribution2.png", 1000, 1000);
+
+		BufferedImage img = histList.getPlotHistBar("SeqStatistics", "Reads Length", "Reads Num").createBufferedImage(1200, 1000);
+		ImageUtils.saveBufferedImage(img, "/media/hdfs/nbCloud/public/Testforzong/reads Len distribution.png");
+		
+		List<String[]> lsInfo = n50AndSeqLen.getLsNinfo();
+		TxtReadandWrite txtWrite = new TxtReadandWrite("/media/hdfs/nbCloud/public/Testforzong/N50.txt", true);
+		for (String[] strings : lsInfo) {
+			txtWrite.writefileln(strings);
+		}
+		txtWrite.close();
+	}
 	/** 记录N25，N50等信息 */
 	List<String[]> lsNinfo = new ArrayList<String[]>();
 	ArrayListMultimap<String, Integer> mapContigName2Length = ArrayListMultimap.create();
@@ -20,6 +41,11 @@ public class N50AndSeqLen {
 	int NvalueStep = 5;
 	/** contig长度的步进 */
 	int lengthStep = 200;
+	/** 最短多长的contig，0表示全部统计，200表示统计长度200bp以上的contig */
+	int minContigLen = 200;
+	/** 最长统计到多长的contig */
+	int maxContigLen = 3000;
+	
 	int contigMeanLen = 0;
 	/** 长度统计 */
 	HistList hListLength;
@@ -27,20 +53,29 @@ public class N50AndSeqLen {
 	/** 设定后就会计算 */
 	public N50AndSeqLen(String seqFileName) {
 		this.seqFileName = seqFileName;
-		doStatistics();
+	}
+	/** 统计contig的步长 */
+	public void setLengthStep(int lengthStep) {
+		this.lengthStep = lengthStep;
+	}
+	public void setMinContigLen(int minContigLen) {
+		this.minContigLen = minContigLen;
+	}
+	public void setMaxContigLen(int maxContigLen) {
+		this.maxContigLen = maxContigLen;
 	}
 	/** 设定后就会计算 */
 	public void setSeqFileName(String seqFileName) {
 		this.seqFileName = seqFileName;
 		clear();
-		doStatistics();
 	}
 	/** 设定步长 */
 	public void setNvalueStep(int nvalueStep) {
 		NvalueStep = nvalueStep;
 	}
 	
-	private void doStatistics() {
+	/** 开始统计 */
+	public void doStatistics() {
 		getInfo();
 		CalculateN50();
 		statisticContigLen();
@@ -65,31 +100,28 @@ public class N50AndSeqLen {
 	
 	private void getInfo() {
 		TxtReadandWrite txtRead = new TxtReadandWrite(seqFileName);
-		String tmpName = "", tmpSeq = "";
+		String tmpName = "";
+		int tmpSeqLen = 0;
 		for (String string : txtRead.readlines()) {
 			string = string.trim();
 			if (string.startsWith(">")) {
-				summaryInfo(tmpName, tmpSeq);
+				summaryInfo(tmpName, tmpSeqLen);
 				tmpName = string.replace(">", "").trim();
-				tmpSeq = "";
+				tmpSeqLen = 0;
 				continue;
 			}
-			tmpSeq = tmpSeq + string.trim().replace(" ", "").replace("\t", "");
+			tmpSeqLen += string.trim().replace(" ", "").replace("\t", "").length();
 		}
-		summaryInfo(tmpName, tmpSeq);
+		summaryInfo(tmpName, tmpSeqLen);
 		txtRead.close();
 	}
 	
-	private void summaryInfo(String seqName, String seqDetail) {
-		if (seqDetail == null || seqDetail.equals("")) return;
-		
-		if (seqDetail.length() < 400) {
-			System.out.println(seqName + " " +seqDetail.length());
-		}
+	private void summaryInfo(String seqName, int seqLen) {
+		if (seqLen == 0) return;
 		while (mapContigName2Length.containsKey(seqName)) {
 			seqName = seqName + "<";
 		}
-		mapContigName2Length.put(seqName, seqDetail.length());
+		mapContigName2Length.put(seqName, seqLen);
 	}
 	
 	private void CalculateN50() {
@@ -104,31 +136,45 @@ public class N50AndSeqLen {
 		contigMeanLen = (int) (lenAll/lsSeqLen.size());
 		double tmpN = 0;
 		int lastSeqLen = 0;
+		int contigNum = 0;
 		int Nvalue = NvalueStep;
 		for (Integer seqLen : lsSeqLen) {
+			contigNum ++;
 			tmpN = tmpN + seqLen;
-			if (tmpN*100 / lenAll > Nvalue) {
-				String[] tmpNvalue = new String[2];
+			if (tmpN*100 / lenAll >= Nvalue) {
+				String[] tmpNvalue = new String[3];
 				tmpNvalue[0] = "N" + Nvalue;
-				tmpNvalue[1] = lastSeqLen + "";
+				if (lastSeqLen == 0 || tmpN*100 / lenAll == Nvalue) {
+					tmpNvalue[1] = seqLen + "";
+				} else {
+					tmpNvalue[1] = lastSeqLen + "";
+				}
+				tmpNvalue[2] = contigNum + "";
 				Nvalue += NvalueStep;
-				if (NvalueStep >= 100) {
+				if (Nvalue > 100) {
 					break;
 				}
 				lsNinfo.add(tmpNvalue);
 			}
 			lastSeqLen = seqLen;
 		}
-		lsNinfo.add(0, new String[]{"Nvalue", "Length"});
+		if (Nvalue != 100 ) {
+			String[] tmpNvalue = new String[3];
+			tmpNvalue[0] = "N" + 100;
+			tmpNvalue[1] = lastSeqLen + "";
+			tmpNvalue[2] = contigNum + "";
+			lsNinfo.add(tmpNvalue);
+		}
+		lsNinfo.add(0, new String[]{"Nvalue", "Length", "ContigNum"});
 	}
 	
 	private void statisticContigLen() {
 		hListLength = HistList.creatHistList("SeqLen", true);
 		hListLength.setStartBin(lengthStep*2, lengthStep +"-" + lengthStep*2, lengthStep, lengthStep*2);
-		for (int i = lengthStep*3; i < 3000; i+=lengthStep) {
+		for (int i = lengthStep*3; i < maxContigLen; i+= lengthStep) {
 			hListLength.addHistBin(i, (i-lengthStep)+"-"+(i+lengthStep), i);
 		}
-		hListLength.addHistBin(3000, ">3000", 2000000);
+		hListLength.addHistBin(maxContigLen, ">" + maxContigLen, 200000000);
 		for (Integer length : mapContigName2Length.values()) {
 			hListLength.addNum(length);
 		}
