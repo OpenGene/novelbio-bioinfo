@@ -10,12 +10,12 @@ cds = newCountDataSet( data, conds )
 cds = estimateSizeFactors(cds)
 <#if isRepeatExp>
    <#if isSensitive>
-cds = estimateDispersions(cds, method="pooled", sharingMode="gene-est-only")
+cds = estimateDispersions(cds, method="pooled", sharingMode="gene-est-only", fitType="${fitType}")
    	<#else>
-cds = estimateDispersions(cds)
+cds = estimateDispersions(cds, fitType="${fitType}")
    	</#if>
 <#else>
-cds = estimateDispersions( cds, method="blind", sharingMode="fit-only", fitType="local")
+cds = estimateDispersions( cds, method="blind", sharingMode="fit-only", fitType="${fitType}")
 </#if>
 
 <#list mapGroup2Out?keys as CompareGroup>

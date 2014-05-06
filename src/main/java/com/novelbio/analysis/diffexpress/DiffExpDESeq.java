@@ -38,10 +38,20 @@ public class DiffExpDESeq extends DiffExpAbs {
 	/** 实验是否有重复，貌似有一次重复就算有重复了 */
 	boolean isRepeatExp = false;
 	
+	/** 有parametric和local两个选项 */
+	boolean fitTypeParametric = true;
 	/** 仅供测试 */
 	public boolean isRepeatExp() {
 		return isRepeatExp;
 	}
+	/** 只有parametric和local两个选项
+	 * 
+	 * @param fitTypeParametric true表示Parametric，false表示local
+	 */
+	public void setFitType(boolean fitTypeParametric) {
+		this.fitTypeParametric = fitTypeParametric;
+	}
+	
 	protected void setOutScriptPath() {
 		outScript = workSpace + "deseq_"+ DateUtil.getDateAndRandom() +".R";
 	}
@@ -57,6 +67,12 @@ public class DiffExpDESeq extends DiffExpAbs {
 		mapData.put("isRepeatExp", isRepeatExp);
 		mapData.put("mapGroup2Out", getCompareAndWriteToFile());
 		mapData.put("isSensitive", isSensitive);
+		if (fitTypeParametric) {
+			mapData.put("fitType", "parametric");
+		} else {
+			mapData.put("fitType", "local");
+		}
+		
 		String scriptContent = null;
 		try {
 			Template template = freeMarkerConfiguration.getTemplate("/R/diffgene/DESeq.ftl");

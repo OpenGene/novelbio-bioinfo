@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
@@ -378,5 +379,52 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 			}
 		}
 		return mapChrID2LsInterval;
+	}
+	
+	/**
+	 * 返回overlap的gene
+	 * @return
+	 */
+	public List<GffDetailGene> getLsOverlapGenes() {
+		List<GffDetailGene> lsOverlapGene = new ArrayList<>();
+		for (GffDetailGene gffGene : getGffDetailAll()) {
+			if (gffGene.isCis5to3Real() != null) {
+				continue;
+			}
+			Map<double[], GffGeneIsoInfo> mapIsoCis = new HashMap<>();
+			Map<double[], GffGeneIsoInfo> mapIsoTrans = new HashMap<>();
+			for (GffGeneIsoInfo iso : gffGene.getLsCodSplit()) {
+				if (iso.isCis5to3()) {
+					for (ExonInfo exonInfo : iso) {
+						mapIsoCis.put(new double[]{exonInfo.getStartAbs(), exonInfo.getEndAbs()}, iso);
+					}
+				} else {
+					for (ExonInfo exonInfo : iso) {
+						mapIsoTrans.put(new double[]{exonInfo.getStartAbs(), exonInfo.getEndAbs()}, iso);
+					}
+				}
+			}
+			boolean isTrue = false;
+			for (double[] edge : mapIsoCis.keySet()) {
+				GffGeneIsoInfo isoCis = mapIsoCis.get(edge);
+				int overlapNum = 0;
+
+				for (double[] edgeTrans : mapIsoTrans.keySet()) {
+					GffGeneIsoInfo isoTrans = mapIsoTrans.get(edgeTrans);
+					if (ArrayOperate.cmpArray(edge, edgeTrans)[1] > 10 && isoCis.size() > 2 && isoTrans.size() > 2 ) {
+						overlapNum++;
+					}
+			
+				}
+				if (overlapNum > 2) {
+					isTrue = true;
+					break;
+				}
+			}
+			if (isTrue) {
+				lsOverlapGene.add(gffGene);
+			}
+		}
+		return lsOverlapGene;
 	}
 }
