@@ -15,7 +15,8 @@ import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
+import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.base.ExceptionNullParam;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.modgeneid.GeneType;
@@ -46,7 +47,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	/** 是提取位点还是提取基因 */
 	boolean booGetIsoSeq = false;
 	LinkedHashMap<String, GffGeneIsoInfo> mapName2Iso = new LinkedHashMap<>();
-	ArrayList<SiteSeqInfo> lsSiteInfos = new ArrayList<SiteSeqInfo>();
+	ArrayList<Align> lsSiteInfos = new ArrayList<Align>();
 	
 	/** 默认存入文件，否则返回一个listSeqFasta */
 	boolean saveToFile = true;
@@ -117,6 +118,9 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 
 	/** 待提取基因的哪一个部分 */
 	public void setGeneStructure(GeneStructure geneStructure) {
+		if (geneStructure == null) {
+			throw new ExceptionNullParam("No Param GeneStructre");
+		}
 		this.geneStructure = geneStructure;
 	}
 	/**
@@ -214,7 +218,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	 * 输入位点提取序列
 	 * @param lsListGffName
 	 */
-	public void setGetSeqSite(ArrayList<SiteSeqInfo> lsSiteName) {
+	public void setGetSeqSite(ArrayList<Align> lsSiteName) {
 		lsSiteInfos = lsSiteName;
 		booGetIsoSeq = false;
 	}
@@ -287,10 +291,9 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 			}
 		}
 		else {
-			for (SiteSeqInfo siteInfo : lsSiteInfos) {
+			for (Align align : lsSiteInfos) {
 				num++;
-				getSeq(siteInfo);
-				SeqFasta seqFasta = siteInfo.getSeqFasta();
+				SeqFasta seqFasta = getSeq(align);
 				isGetSeq = isSeqFastaAndWriteToFile(seqFasta);
 				
 				suspendCheck();
@@ -386,8 +389,8 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	 * 给定坐标，获得该坐标所对应的序列,会根据输入的方向进行反向
 	 * @return
 	 */
-	public void getSeq(SiteSeqInfo siteInfo) {
-		gffChrAbs.getSeqHash().getSeq(siteInfo);
+	public SeqFasta getSeq(Align siteInfo) {
+		return gffChrAbs.getSeqHash().getSeq(siteInfo);
 	}
 	/**
 	 * 给定坐标，提取序列
@@ -542,7 +545,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		/** 是提取位点还是提取基因 */
 		booGetIsoSeq = false;
 		mapName2Iso = new LinkedHashMap<>();
-		lsSiteInfos = new ArrayList<SiteSeqInfo>();
+		lsSiteInfos = new ArrayList<>();
 		
 		/** 默认存入文件，否则返回一个listSeqFasta */
 		saveToFile = true;

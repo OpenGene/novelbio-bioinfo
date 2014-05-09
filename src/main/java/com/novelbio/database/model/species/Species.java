@@ -53,6 +53,7 @@ public class Species implements Cloneable {
 	public Species() {
 		if (!isOK) return;
 	}
+	
 	public Species(int taxID) {
 		if (!isOK) return;
 		
@@ -206,6 +207,9 @@ public class Species implements Cloneable {
 			return taxID + "";
 		}
 		return taxInfo.getAbbr();
+	}
+	public Map<String, SpeciesFile> getMapVersion2Species() {
+		return mapVersion2Species;
 	}
 	/**
 	 * @return

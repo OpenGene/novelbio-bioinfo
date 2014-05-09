@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.rnaseq;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.cmd.CmdOperate;
@@ -18,10 +19,8 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
  * @author ywd
  *
  */
-public class Trinity {
-	String exePath = "";
-	String trinityPlPath="Trinity.pl";
-	
+public class Trinity implements IntCmdSoft {
+	String exePath = "";	
 	/**
 	 * type of reads: ( cfa, cfq, fa, or fq )
 	 */
@@ -585,7 +584,7 @@ public class Trinity {
 	
 	private List<String> getLsCmd() {
 		List<String> lsCmd = new ArrayList<>();
-		lsCmd.add(exePath + trinityPlPath);
+		lsCmd.add(exePath + "Trinity.pl");
 		ArrayOperate.addArrayToList(lsCmd, getSeqType());
 		ArrayOperate.addArrayToList(lsCmd, getJellyfishMemory() );
 		lsCmd.addAll(getFastQ());
@@ -622,8 +621,19 @@ public class Trinity {
 		lsCmd.add(param);
 	}
 	
+	/** 返回拼接好的文件的路径 */
 	public String getResultPath() {
-		//TODO 返回拼接好的文件的路径
-		return "";
+		return FileOperate.addSep(output) + "trinity.fa";
 	}
+
+	@Override
+	public List<String> getCmdExeStr() {
+		List<String> lsCmd = getLsCmd();
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
+		String cmd = cmdOperate.getCmdExeStr();
+		List<String> lsCmdOut = new ArrayList<>();
+		lsCmdOut.add(cmd);
+		return lsCmdOut;
+	}
+	
 }

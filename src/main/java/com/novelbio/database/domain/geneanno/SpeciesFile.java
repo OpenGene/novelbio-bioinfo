@@ -753,6 +753,9 @@ public class SpeciesFile {
 		Set<String> setMiRNAname;
 		
 		public void setLsMiRNAname(Collection<String> lsMiRNAname) {
+			if (lsMiRNAname == null) {
+				return;
+			}
 			setMiRNAname = new LinkedHashSet<String>();
 			for (String string : lsMiRNAname) {
 				setMiRNAname.add(string.toLowerCase());

@@ -130,7 +130,7 @@ public class BamReadsInfo {
 	}
 	
 	protected void calculateStrandSpecific() {
-		int countsMax = 1000000;
+		int countsMax = 10000000;
 		int counts = 0;
 		int countsMapped = 0;//mapping上的reads数量
 		for (SamRecord samRecord : samFile.readLines()) {
@@ -143,9 +143,12 @@ public class BamReadsInfo {
 			if (!samRecord.isMapped()) {
 				continue;
 			}
-			countsMapped++;
 			Align align = samRecord.getAlignmentBlocks().iterator().next();
 			GffCodGeneDU gffCodGeneDu = gffHashGene.searchLocation(align.getRefID(), align.getStartAbs(), align.getEndAbs());
+			if (gffCodGeneDu == null) {
+				continue;
+			}
+			countsMapped++;
 			Boolean isSame = isSameToGeneIso(samRecord.isCis5to3(), gffCodGeneDu);
 			if (isSame != null) {//不考虑重叠基因
 				if (isSame) {
@@ -155,7 +158,7 @@ public class BamReadsInfo {
 				}
 			}
 		}
-		if (countsMapped < counts/10) {
+		if (countsMapped < counts/100) {
 			throw new SamErrorException(samFile.getFileName() + "Mapped Rate Too Low");
 		}
 		samFile.close();
