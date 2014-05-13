@@ -43,7 +43,9 @@ public class HistBin extends ListDetailAbs {
 		}
 		return (getEndAbs() + getStartAbs())/2;
 	}
-	
+	public int getLength() {
+		return Math.abs(numberend-numberstart);
+	}
 	/**
 	 * 获得分数，根据需要保存的计数值
 	 * @return

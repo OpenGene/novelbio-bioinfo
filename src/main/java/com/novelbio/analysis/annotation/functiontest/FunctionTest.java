@@ -169,6 +169,9 @@ public abstract class FunctionTest implements Cloneable {
 			logger.error("BG accID file is not correct: "+ fileName);
 		}
 		for (String[] strings : accID) {
+			if (strings[0].equals("Eef1a2")) {
+				logger.debug("stop");
+			}
 			GeneID copedID = new GeneID(strings[0], taxID, false);
 			if (isBlast()) {
 				copedID.setBlastInfo(blastEvalue, blastTaxID);
@@ -226,6 +229,9 @@ public abstract class FunctionTest implements Cloneable {
 		int num = 0;
 		int numAll = lsGeneID.size();
 		for (GeneID geneID : lsGeneID) {
+			if (geneID.getGeneUniID().equals("24799") || geneID.getAccID().equals("Eef1a2")) {
+				logger.debug("stop");
+			}
 			num++;
 			GeneID2LsItem geneID2LsItem = convert2Item(geneID);
 			if (geneID2LsItem == null) {

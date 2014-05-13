@@ -53,10 +53,13 @@ public class SamFile implements AlignSeq {
 	public static void main(String[] args) {
 		DateUtil dateUtil = new DateUtil();
 		dateUtil.setStartTime();
-		SamFile samFile = new SamFile("/home/zong0jie/Test/fastq/rice/Mapping_result/9522-E.bam");
-		Species species = new Species(39947);
-		samFile.setReferenceFileName(species.getChromSeq());
-		samFile.removeDuplicate().realign();
+		SamFile samFile = new SamFile("/media/hdfs/nbCloud/public/AllProject/project_53717abee4b074ba192cd6ec/task_5371957fe4b0a9f14de0fd59/DNASeqMap_result/YYG.bam");
+		for (SamRecord samRecord : samFile.readLines()) {
+			if (samRecord.getCIGAR().contains("H")) {
+//				System.out.println(samRecord.getCIGAR() + "\t" + samRecord.getStartAbs() + "\t" + samRecord.getEndAbs() + "\t"+ samRecord.getSeqFasta().toString());
+				System.out.print(samRecord.toString());
+			}
+		}
 	}
 	
 	

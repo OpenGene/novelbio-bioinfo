@@ -139,11 +139,42 @@ public class GffDetailGene extends ListDetailAbs {
 	}
 	/**
 	 * 返回所有的转录本信息
-	 * @param coord
 	 */
 	public ArrayList<GffGeneIsoInfo> getLsCodSplit() {
 		return lsGffGeneIsoInfos;
 	}
+	
+	/**
+	 * 如果本GffDetailGene中包含两个以上的GffDetailGene，譬如两个parentName那种<br>
+	 * 则用这个返回。<br>
+	 * 仅用于GFF3的结果，如NCBI的等<br>
+	 */
+	public List<GffDetailGene> getlsGffDetailGenes() {
+		List<GffDetailGene> lsGenes = new ArrayList<>();
+		GffDetailGene gffDetailGene = null;
+		String parentName = null;
+		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
+			if (!gffGeneIsoInfo.getParentGeneName().equals(parentName)) {
+				parentName = gffGeneIsoInfo.getParentGeneName();
+				gffDetailGene = getGffDetailGeneClone();
+				gffDetailGene.setItemName.add(parentName);
+				lsGenes.add(gffDetailGene);
+			}
+			gffDetailGene.addIsoSimple(gffGeneIsoInfo);
+		}
+		return lsGenes;
+	}
+	
+	/** 返回一个和现在GffDetailGene一样的GffDetailGene */
+	private GffDetailGene getGffDetailGeneClone() {
+		GffDetailGene gffDetailGene = this.clone();
+		gffDetailGene.setItemName.clear();
+		gffDetailGene.setStartAbs(-1);
+		gffDetailGene.setEndAbs(-1);
+		gffDetailGene.lsGffGeneIsoInfos = new ArrayList<>();
+		return gffDetailGene;
+	}
+	
 	/**
 	 * 从0开始计数
 	 * 返回-1表示没有该转录本 

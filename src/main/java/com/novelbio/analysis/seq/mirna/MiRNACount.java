@@ -18,6 +18,8 @@ import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.genome.gffOperate.MiRNAList;
 import com.novelbio.analysis.seq.genome.gffOperate.MirMature;
 import com.novelbio.analysis.seq.genome.gffOperate.MirPre;
+import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamMapRate;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.species.Species;
@@ -28,7 +30,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
  * @author zong0jie
  *
  */
-public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
+public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess> implements AlignmentRecorder {
 	private static final Logger logger = Logger.getLogger(MiRNACount.class);
 	static String flag_MapTo_PreMirna_NotTo_MatureMirna_Suffix = "_pre";
 
@@ -46,9 +48,9 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 	 * 成熟体, 用于结果中<br>
 	 * key: Pre_Mature
 	 */
-	Map<String, Double> mapMirMature2Value;
+	Map<String, Double> mapMirMature2Value = new LinkedHashMap<String, Double>();
 	/** 前体 */
-	Map<String, Double> mapMiRNApre2Value;
+	Map<String, Double> mapMiRNApre2Value = new LinkedHashMap<String, Double>();
 
 	/** double[2] 0: allReadsNum 1: upQuartile的reads number */
 	double countsPreAll = 0;
@@ -207,7 +209,7 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 	
 	@Override
 	protected void running() {
-		initialMap();
+		initial();
 		countMiRNA();
 	}
 	
@@ -216,7 +218,7 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 	 * 如果出现了两个相同的matureRNA，但是它们的前体名字不一样<br>
 	 * 则格式调整为 mir-163-5p  --> mir-163-1/mir-163-2
 	 */
-	private void initialMap() {
+	public void initial() {
 		mapMiRNApre2Value = new LinkedHashMap<String, Double>();
 		mapMirMature2Value = new LinkedHashMap<String, Double>();
 	}
@@ -232,7 +234,7 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 			if (!alignRecord.isMapped()) {
 				continue;
 			}
-			copeRecordAndFillMap(alignRecord);
+			addAlignRecord(alignRecord);
 			
 			suspendCheck();
 			if (flagStop) break;
@@ -250,7 +252,7 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 	/** 一行一行处理
 	 * 并填充hashmap
 	 *  */
-	private void copeRecordAndFillMap(AlignRecord alignRecord) {
+	public void addAlignRecord(AlignRecord alignRecord) {
 		double value = (double)1/alignRecord.getMappedReadsWeight();
 		addMiRNACountPre(alignRecord.getRefID(), value);
 		
@@ -291,7 +293,7 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 		}
 	}
 	
-	private void summary() {
+	public void summary() {
 		countsMatureAll = 0;
 		countsPreAll = 0;
 		for (String mirMatureName : mapMirMature2Value.keySet()) {
@@ -381,5 +383,9 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess>{
 		lsTitleAnno.add(TitleFormatNBC.miRNApreName.toString());
 		lsTitleAnno.add(TitleFormatNBC.mirSequence.toString());
 		return lsTitleAnno;
+	}
+	@Override
+	public Align getReadingRegion() {
+		return null;
 	}
 }

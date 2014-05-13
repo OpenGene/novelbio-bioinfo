@@ -12,6 +12,8 @@ import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.mapping.MappingReadsType;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
+import com.novelbio.analysis.seq.sam.AlignSeqReading;
+import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamFileStatistics;
 import com.novelbio.analysis.seq.sam.SamMapRate;
@@ -46,6 +48,8 @@ public class CtrlMiRNApredict implements IntCmdSoft {
 	String novelMiRNAmrd;
 	List<String> lsCmd = new ArrayList<>();
 	int threadNum = 8;
+	int lenMin = 17, lenMax = 32;
+	
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		if (this.gffChrAbs != null && gffChrAbs != null && this.gffChrAbs.getSpecies().equals(gffChrAbs.getSpecies())) {
 			return;
@@ -149,7 +153,10 @@ public class CtrlMiRNApredict implements IntCmdSoft {
 		mapPrefix2UnmapFq.put(prefix, unmappedFq);
 		samMapMiRNARate.setCurrentCondition(prefix);
 		miRNACount.setSamMapRate(samMapMiRNARate);
-		miRNACount.run();
+		miRNACount.initial();
+		AlignSeqReading alignSeqReading = getAlignSeqReading(alignSeq, miRNACount);
+		alignSeqReading.running();
+		
 		expMirMature.setCurrentCondition(prefix);
 		expMirMature.addAllReads(miRNACount.getCountMatureAll());
 		expMirMature.addGeneExp(miRNACount.getMapMirMature2Value());
@@ -160,6 +167,15 @@ public class CtrlMiRNApredict implements IntCmdSoft {
 		
 		expMirPre.writeFile(false, outPathSample + prefix + FileOperate.getSepPath() + prefix + "_NovelMirPre_Counts.txt", EnumExpression.Counts);
 		expMirMature.writeFile(false, outPathSample + prefix + FileOperate.getSepPath() + prefix + "_NovelMirMature_Counts.txt", EnumExpression.Counts);
+	}
+	
+	private AlignSeqReading getAlignSeqReading(AlignSeq alignSeq, AlignmentRecorder alignmentRecorder) {
+		AlignSeqReading alignSeqReading = new AlignSeqReading();
+		alignSeqReading.addSeq(alignSeq);
+		alignSeqReading.setLenMin(lenMin);
+		alignSeqReading.setLenMax(lenMax);
+		alignSeqReading.addAlignmentRecorder(alignmentRecorder);
+		return alignSeqReading;
 	}
 	
 	public Map<String, String> getMapPrefix2UnmapFq() {

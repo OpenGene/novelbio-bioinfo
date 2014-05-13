@@ -4,22 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.novelbio.analysis.IntCmdSoft;
-import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.mapping.MapLibrary;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
-import com.novelbio.analysis.seq.sam.BamReadsInfo;
-import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.ExceptionNullParam;
-import com.novelbio.base.FoldeCreate;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
-import com.novelbio.database.model.species.Species;
 
 public class RseQC {
 	/**
@@ -319,7 +311,11 @@ public class RseQC {
 		public ReadDuplication(String inFile, String outFile, String bedFile) {
 			super(inFile, outFile, bedFile);
 		}
-
+		/**读长重复次数的上限，仅用于绘图，默认是500*/
+		public void setReadsRepeatNum(int readsRepeatNum) {
+			this.readsRepeatNum = readsRepeatNum;
+		}
+		
 		private String[] getReadsRepeatNumParam() {
 			return new String[]{"-u",readsRepeatNum + ""};
 		}
@@ -360,11 +356,21 @@ public class RseQC {
 		StrandSpecific strandSpecific = StrandSpecific.NONE;
 		MapLibrary mapLibrary;
 		
-		/** -c 指定RPKM的cutoff值。默认是0.01*/	
+		/**
+		 * -c Transcripts with RPKM smaller than this number will be
+		 * ignored in visualization plot. default=0.01
+		 */
 		double cutoffValue = 0.01;
 		
 		public RPKMSaturation(String inFile, String outFile, String bedFile) {
 			super(inFile, outFile, bedFile);
+		}
+		/**
+		 * -c Transcripts with RPKM smaller than this number will be
+		 * ignored in visualization plot. default=0.01
+		 */
+		public void setCutoffValue(double cutoffValue) {
+			this.cutoffValue = cutoffValue;
 		}
 		@Deprecated
 		public void setIntronLength(int intronLen) {}
@@ -416,16 +422,5 @@ public class RseQC {
 			return lsListCmd;
 		}
 	}
-	
-	public static enum EnumRseQCmodule {
-		GeneBodyCoverage,
-		GeneBodyCoverage2,
-		InnerDistance,
-		JunctionAnnotation,
-		JunctionSaturation,
-		ReadDuplication,
-		RPKMSaturation
-	}
-	
 	
 }

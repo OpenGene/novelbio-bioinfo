@@ -35,11 +35,22 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 	List<AlignSeq> lsAlignSeqs = new ArrayList<>();
 	long readLines;
 	double readByte;
+	int lenMin = -1;
+	int lenMax = -1;
+	
+	public AlignSeqReading() {}
 	
 	public AlignSeqReading(AlignSeq alignSeq) {
 		lsAlignSeqs.add(alignSeq);
 		readLines = 0;
 		readByte = 0;
+	}
+	
+	public void setLenMin(int lenMin) {
+		this.lenMin = lenMin;
+	}
+	public void setLenMax(int lenMax) {
+		this.lenMax = lenMax;
 	}
 	
 	public void addSeq(AlignSeq alignSeq) {
@@ -92,14 +103,6 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 		lsAlignmentRecorders = new ArrayList<>();
 	}
 	
-	/** 清空AlignmentRecorder和readByte和readLines，但不清除samFile */
-	public void clear() {
-		lsAlignmentRecorders.clear();
-		lsAlignmentRecorders = new ArrayList<>();
-		readByte = 0;
-		readLines = 0;
-	}
-	
 	/** 返回第一个SamFile */
 	public AlignSeq getFirstSamFile() {
 		if (lsAlignSeqs == null || lsAlignSeqs.size() == 0) {
@@ -109,7 +112,7 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 	}
 	
 	@Override
-	protected void running() {
+	public void running() {
 		sortRecorders();
 		InitialRecorders();
 		reading();
@@ -133,6 +136,13 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 				num++;
 				if (num % 100000 == 0) {
 					System.out.println(num);
+				}
+				int seqLen = samRecord.getLength();
+				if (lenMin > 0 && seqLen < lenMin) {
+					continue;
+				}
+				if (lenMax > 0 && seqLen > lenMax) {
+					continue;
 				}
 				addOneSeq(samRecord, alignSeqFile);
 			}
@@ -238,10 +248,20 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 		}
 	}
 	
-	
 	protected void summaryRecorder() {
 		for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {
 			alignmentRecorder.summary();
 		}
+	}
+	
+	public void clear() {
+		lsAlignmentRecorders.clear();
+		setRecorderRun.clear();
+		mapChrID2RecorderTodo.clear();
+		lsAlignSeqs.clear();
+		readLines = 0;
+		readByte = 0;
+		lenMin = -1;
+		lenMax = -1;
 	}
 }

@@ -5,6 +5,8 @@ import java.util.List;
 
 import net.sf.samtools.AlignmentBlock;
 import net.sf.samtools.Cigar;
+import net.sf.samtools.CigarElement;
+import net.sf.samtools.CigarOperator;
 import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMReadGroupRecord;
 import net.sf.samtools.SAMRecord;
@@ -325,13 +327,73 @@ public class SamRecord implements AlignRecord {
 		return bedRecord;
 	}
 	
-	/** 获得原始的序列，不会根据cis5to3进行反向互补操作 */
+	/** 获得原始的序列，不会根据cis5to3进行反向互补操作
+	 * 而mapping的结果，如果是mapping到互补链上，好象已经对reads进行了反相处理
+	 */
 	public SeqFasta getSeqFasta() {
 		SeqFasta seqFasta = new SeqFasta(samRecord.getReadString());
 		seqFasta.setName(samRecord.getReadName());
 		return seqFasta;
 	}
 	
+	/**
+	 * <b>只有当soft clip的时候才会用到</b><p>
+	 * 获得clip好的序列，不会根据cis5to3进行反向互补操作
+	 * 而mapping的结果，如果是mapping到互补链上，好象已经对reads进行了反相处理
+	 */
+	public SeqFasta getSeqFastaClip() {
+		return getSeqFastaClip(0);
+	}
+	
+	/**
+	 * <b>只有当soft clip的时候才会用到</b><p>
+	 * 获得clip好的序列，不会根据cis5to3进行反向互补操作
+	 * 而mapping的结果，如果是mapping到互补链上，好象已经对reads进行了反相处理
+	 * @param ignoreNum 小于等于该长度的碱基，就忽略softclip
+	 * 意思就是如果末尾是一个碱基的错配，则认为这个碱基是合适的
+	 */
+	public SeqFasta getSeqFastaClip(int ignoreNum) {
+		SeqFasta seqFasta = new SeqFasta(samRecord.getReadString());
+		int num = 0;
+		int seqfastaLen = seqFasta.Length();
+		int left = 0, right = seqfastaLen;
+		for (CigarElement cigarElement : samRecord.getCigar().getCigarElements()) {
+			if (cigarElement.getOperator() == CigarOperator.SOFT_CLIP && cigarElement.getLength() > ignoreNum) {
+				if (num == 0) {
+					left = cigarElement.getLength();
+				} else {
+					right = seqFasta.Length() - cigarElement.getLength();
+				}
+			}
+			num++;
+		}
+		if (left != 0 || right != seqfastaLen) {
+			seqFasta = seqFasta.trimSeq(left, right);
+		}
+		seqFasta.setName(samRecord.getReadName());
+		return seqFasta;
+	}
+	/**
+	 * <b>只有当soft clip的时候才会用到，根{@link #getSeqFastaClip}配合使用</b><p>
+	 * 获得clip好的num，意思往前后各延展几bp，向前为负数，向后为正数
+	 * @param ignoreNum 小于等于该长度的碱基，就忽略softclip
+	 * 意思就是如果末尾是一个碱基的错配，则认为这个碱基是合适的
+	 */
+	public int[] getStartEndClip(int ignoreNum) {
+		int num = 0;
+		int left = 0, right = 0;
+		for (CigarElement cigarElement : samRecord.getCigar().getCigarElements()) {
+			if (cigarElement.getOperator() == CigarOperator.SOFT_CLIP && cigarElement.getLength() <= ignoreNum) {
+				if (num == 0) {
+					left = -cigarElement.getLength();
+				} else {
+					right = cigarElement.getLength();
+				}
+			}
+			num++;
+		}
+		return new int[]{left, right};
+	}
 	/** 这样返回就是每个SamRecord返回一系列BedRecord */
 	public ArrayList<BedRecord> toBedRecordSELs() {
 		ArrayList<BedRecord> lsBedRecords = new ArrayList<BedRecord>();
@@ -488,7 +550,7 @@ public class SamRecord implements AlignRecord {
 	public int getStartAbs() {
 		return samRecord.getAlignmentStart();
 	}
-
+	
 	@Override
 	public int getEndAbs() {
 		return samRecord.getAlignmentEnd();

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import com.hg.doc.fo;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.listOperate.HistBin;
@@ -168,6 +169,7 @@ public class ShuffleReads {
 
 	public Iterable<Align> readlines() {
 		final int[] readNum = new int[]{1};
+		final int[] allReadsNumTmp = new int[]{allReadsNum};
 		return new Iterable<Align>() {
 			public Iterator<Align> iterator() {
 				return new Iterator<Align>() {
@@ -176,19 +178,21 @@ public class ShuffleReads {
 				    private Align getChrIdRandom() {
 				    	Align align = null;
 				    	do {
-				    		if (readNum[0] > allReadsNum) {
+				    		if (readNum[0] > allReadsNumTmp[0]) {
 				    			break;
 							}
-				    		int num = rnd.nextInt(100);
-				        	int chrNum = (int) ((double)num/100*allReadsNum);
+				    		double num = rnd.nextDouble();
+				        	int chrNum = (int) (num*allReadsNumTmp[0]);
 				        	HistBin histBin = lsChrId2ReadsNum.searchHistBin(chrNum);
-				        	if (histBin.getCountNumber() < mapChrId2ReadsNum.get(histBin.getNameSingle())[0]) {
+				        	if (histBin.getCountNumber() < histBin.getLength()) {
 				    			String chrId = histBin.getNameSingle();
 				    			align = getAlign(chrId, (int) histBin.getCountNumber());
 				    			
 				    			histBin.addNumber();
 								readNum[0]++;
-				    		}
+				    		} else {
+				    			allReadsNumTmp[0] = removeChrId(histBin.getNameSingle());
+							}
 						} while (align == null);
 				    	return align;
 				    }
@@ -211,6 +215,33 @@ public class ShuffleReads {
 		};
 		
 	}
+	
+	/** 返回减去该chrId后剩下的reads总数 */
+	private int removeChrId(String chrId) {
+		int i = 0;
+		for (HistBin histBin : lsChrId2ReadsNum) {
+			if (histBin.getNameSingle().equals(chrId)) {
+				lsChrId2ReadsNum.remove(i);
+				break;
+			}
+			i++;
+		}
+		HistList lsChrId2ReadsNumTmp = HistList.creatHistList("", true);
+		int allReads = 0;
+		for (int j = 0; j < lsChrId2ReadsNum.size(); j++) {
+			HistBin histBin = lsChrId2ReadsNum.get(j);
+			allReads = allReads +  (int)(histBin.getEndAbs() - histBin.getStartAbs() - histBin.getCountNumber());
+			if (j == 0) {
+				lsChrId2ReadsNumTmp.setStartBin(0, histBin.getNameSingle(), 0, allReads);
+			} else {
+				lsChrId2ReadsNumTmp.setStartBin(0, histBin.getNameSingle(), 0, allReads);
+			}
+		}
+		lsChrId2ReadsNum = lsChrId2ReadsNumTmp;
+		return allReads;
+	}
+	
+	
     /** 
      * 从0开始计数
      * @param chrId

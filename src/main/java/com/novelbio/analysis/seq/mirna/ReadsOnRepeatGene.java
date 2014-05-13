@@ -14,6 +14,8 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailRepeat;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashRepeat;
+import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.listOperate.ListCodAbs;
 /**
@@ -21,7 +23,7 @@ import com.novelbio.listOperate.ListCodAbs;
  * @author zong0jie
  *
  */
-public class ReadsOnRepeatGene {
+public class ReadsOnRepeatGene implements AlignmentRecorder {
 	GffHashRepeat gffHashRepeat = null;
 	GffChrAbs gffChrAbs = null;
 	Map<String, Double> mapRepeatName2Value;
@@ -68,16 +70,18 @@ public class ReadsOnRepeatGene {
 		return lsGeneStructure;
 	}
 	
+	public void initial() {
+		mapRepeatName2Value = new HashMap<String, Double>();
+		mapRepeatFamily2Value = new HashMap<String, Double>();
+		mapGeneStructure2Value = new HashMap<String, Double>();
+	}
+	
 	public void countReadsInfo(AlignSeq alignSeq) {
 		mapRepeatName2Value = new HashMap<String, Double>();
 		mapRepeatFamily2Value = new HashMap<String, Double>();
 		mapGeneStructure2Value = new HashMap<String, Double>();
 		
 		for (AlignRecord alignRecord : alignSeq.readLines()) {
-			if (!alignRecord.isMapped()) {
-				continue;
-			}
-			
 			String repeatInfo = null;
 			if (gffHashRepeat != null) {//如果没有读取repeat文件，则返回
 				repeatInfo = searchReadsRepeat(alignRecord.getRefID(), alignRecord.getStartAbs(), alignRecord.getEndAbs());
@@ -90,11 +94,37 @@ public class ReadsOnRepeatGene {
 				if (geneLocInfo != null) {
 					addHashGene(geneLocInfo[0], geneLocInfo[1]==1 ,alignRecord.getMappedReadsWeight());
 				}
-				
 			}
 		}
 	}
 	
+	@Override
+	public Align getReadingRegion() {
+		return null;
+	}
+	
+	@Override
+	public void addAlignRecord(AlignRecord alignRecord) {
+		if (!alignRecord.isMapped()) {
+			return;
+		}
+		String repeatInfo = null;
+		if (gffHashRepeat != null) {//如果没有读取repeat文件，则返回
+			repeatInfo = searchReadsRepeat(alignRecord.getRefID(), alignRecord.getStartAbs(), alignRecord.getEndAbs());
+			if (repeatInfo != null) {
+				addHashRepeat(repeatInfo, alignRecord.getMappedReadsWeight());
+			}
+		}
+		if (gffChrAbs != null && gffChrAbs.getGffHashGene() != null) {
+			int[] geneLocInfo = searchGene(alignRecord.isCis5to3(), alignRecord.getRefID(), alignRecord.getStartAbs(), alignRecord.getEndAbs());
+			if (geneLocInfo != null) {
+				addHashGene(geneLocInfo[0], geneLocInfo[1]==1 ,alignRecord.getMappedReadsWeight());
+			}
+		}
+	}
+	
+	@Override
+	public void summary() { }
 	/**
 	 * 返回该reads所在的repeat的位置
 	 * @param chrID
@@ -150,18 +180,16 @@ public class ReadsOnRepeatGene {
 			}
 			else
 				key = "Trans_Exon";
-		}
-		else if (geneLocType == GffGeneIsoInfo.COD_LOC_INTRON) {
+		} else if (geneLocType == GffGeneIsoInfo.COD_LOC_INTRON) {
 			key = "Intron";
-		}
-		else if (geneLocType == GffGeneIsoInfo.COD_LOC_OUT) {
+		} else if (geneLocType == GffGeneIsoInfo.COD_LOC_OUT) {
 			key = "Intergenic";
 		}
+		
 		if (mapGeneStructure2Value.containsKey(key)) {
 			double num = mapGeneStructure2Value.get(key);
 			mapGeneStructure2Value.put(key, (double)1/mapNum + num);
-		}
-		else {
+		} else {
 			mapGeneStructure2Value.put(key, (double)1/mapNum);
 		}
 	}

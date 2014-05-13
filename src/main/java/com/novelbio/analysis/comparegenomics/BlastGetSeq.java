@@ -27,42 +27,64 @@ public class BlastGetSeq implements IntCmdSoft {
 	private static final Logger logger = Logger.getLogger(BlastGetSeq.class);
 	
 	public static void main(String[] args) {
+		String path = "/media/winE/NBC/Project/liufei/liulinyu/";
+		FileOperate.createFolders(path);
 		BlastGetSeq blastGetSeq = new BlastGetSeq();
 		blastGetSeq.setBlastType(BlastType.blastp);
-		blastGetSeq.setResultFile("/media/winE/NBC/Project/liufei/");
+		blastGetSeq.setResultFile(path);
 		List<Species> lsSpecies = new ArrayList<>();
-		Species species = new Species(9606);
-		species.setVersion("GRCh38");
-		lsSpecies.add(species);
-
-		species = new Species(10090);
-		species.setVersion("mm10_GRCm38");
+//		Species species = new Species(9606);
+//		species.setVersion("GRCh38");
+//		lsSpecies.add(species);
+		
+//		species = new Species(9940);
+//		lsSpecies.add(species);
+		
+		Species species = new Species(9541);
 		lsSpecies.add(species);
 		
-		species = new Species(7955);
-		species.setVersion("Zv9");
-		lsSpecies.add(species);
+//		species = new Species(9823);
+//		species.setVersion("sus10_NCBI");
+//		lsSpecies.add(species);
+//		
+//		species = new Species(9913);
+//		lsSpecies.add(species);
+//		
+//		species = new Species(9031);
+//		lsSpecies.add(species);
+//		
+//		species = new Species(10116);
+//		species.setVersion("rnor5_NCBI");		
+//		lsSpecies.add(species);
+//		
+//		species = new Species(10090);
+//		species.setVersion("mm10_GRCm38");
+//		lsSpecies.add(species);
+//		
+//		species = new Species(7955);
+//		species.setVersion("Zv9");
+//		lsSpecies.add(species);
+//		
+//		species = new Species(7227);
+//		species.setVersion("dmel_r5_48");
+//		lsSpecies.add(species);
+//		
+//		species = new Species(6239);
+//		species.setVersion("ce10");
+//		lsSpecies.add(species);
 		
-		species = new Species(7227);
-		species.setVersion("dmel_r5_48");
-		lsSpecies.add(species);
-		
-		species = new Species(6239);
-		species.setVersion("ce10");
-		lsSpecies.add(species);
-		
-		species = new Species(3702);
-		species.setVersion("tair10");
-		lsSpecies.add(species);
-		
-		species = new Species(39947);
-		species.setVersion("tigr7");
-		lsSpecies.add(species);
+//		species = new Species(3702);
+//		species.setVersion("tair10");
+//		lsSpecies.add(species);
+//		
+//		species = new Species(39947);
+//		species.setVersion("tigr7");
+//		lsSpecies.add(species);
 		
 		blastGetSeq.setLsSpeciesBlastTo(lsSpecies);
 		SeqFasta seqFasta = new SeqFasta();
-		seqFasta.setName("IT_p3n27	");
-		seqFasta.setSeq("MGGKQRDEDDEAYGKPVKYDPSFRGPIKNRSCTDVICCVLFLLFILGYIVVGIVAWLYGDPRQVLYPRNSTGAYCGMGENKDKPYLLYFNIFSCILSSNIISVAENGLQCPTPQVCVSSCPEDPWTVGKNEFSQTVGEVFYTKNRNFCLPGVPWNMTVITSLQQELCPSFLLPSAPALGRCFPWTNVTPPALPGITNDTTIQQGISGLIDSLNARDISVKIFEDFAQSWYWILVALGVALVLSLLFILLLRLVAGPLVLVLILGVLGVLAYGIYYCWEEYRVLRDKGASISQLGFTTNLSAYQSVQETWLAALIVLAVLEAILLLMLIFLRQRIRIAIALLKEASKAVGQMMSTMFYPLVTFVLLLICIAYWAMTALYLATSGQPQYVLWASNISSPGCEKVPINTSCNPTAHLVNSSCPGLMCVFQGYSSKGLIQRSVFNLQIYGVLGLFWTLNWVLALGQCVLAGAFASFYWAFHKPQDIPTFPLISAFIRTLRYHTGSLAFGALILTLVQIARVILEYIDHKLRGVQNPVARCIMCCFKCCLWCLEKFIKFLNRNAYIMIAIYGKNFCVSAKNAFMLLMRNIVRVVVLDKVTDLLLFFGKLLVVGGVGVLSFFFFSGRIPGLGKDFKSPHLNYYWLPIMTSILGAYVIASGFFSVFGMCVDTLFLCFLEDLERNNGSLDRPYYMSKSLLKILGKKNEAPPDNKKRKK");
+		seqFasta.setName("GBA");
+		seqFasta.setSeq("mefsspsreecpkplsrvsimagsltgllllqavswasgarpcipksfgyssvvcvcnatycdsfdpptfpalgtfsryestrsgrrmelsmgpiqanhtgtgllltlqpeqkfqkvkgfggamtdaaalnilalsppaqnlllksyfseegigyniirvpmascdfsirtytyadtpddfqlhnfslpeedtklkiplihralqlaqrpvsllaspwtsptwlktngavngkgslkgqpgdiyhqtwaryfvkfldayaehklqfwavtaenepsagllsgypfqclgftpehqrdfiardlgptlansthhnvrllmlddqrlllphwakvvltdpeaakyvhgiavhwyldflapakatlgethrlfpntmlfaseacvgskfweqsvrlgswdrgmqyshsiitnllyhvvgwtdwnlalnpeggpnwvrnfvdspiivditkdtfykqpmfyhlghfskfipegsqrvglvasqkndldavalmhpdgsavvvvlnrsskdvpltikdpavgfletispgysihtylwrrq");
 		blastGetSeq.setQueryFasta(seqFasta);
 		blastGetSeq.blastAndGetSeq();
 	}

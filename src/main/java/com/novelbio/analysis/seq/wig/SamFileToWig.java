@@ -57,7 +57,7 @@ public class SamFileToWig implements IntCmdSoft {
 	
 	/**
 	 * 必须输入排序并index的sam文件
-	 * @param samFile
+	 * @param samFilePath
 	 */
 	public void setLsSamFile(String prefix, List<SamFile> lsSamFiles) {
 		if (lsSamFiles == null || lsSamFiles.size() == 0) {

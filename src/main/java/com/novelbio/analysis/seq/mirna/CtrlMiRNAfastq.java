@@ -13,10 +13,11 @@ import com.novelbio.analysis.seq.GeneExpTable;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
+import com.novelbio.analysis.seq.sam.AlignSeqReading;
+import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamMapRate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.TitleFormatNBC;
@@ -68,6 +69,8 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 	
 	List<String> lsCmd = new ArrayList<>();
 	
+	int lenMin = 17, lenMax = 32;
+
 	public CtrlMiRNAfastq() {}
 	
 	/** 务必首先设定 */
@@ -200,6 +203,15 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 		expRfamID.setCurrentCondition(currentCondition);
 	}
 	
+	private AlignSeqReading getAlignSeqReading(AlignSeq alignSeq, AlignmentRecorder alignmentRecorder) {
+		AlignSeqReading alignSeqReading = new AlignSeqReading();
+		alignSeqReading.addSeq(alignSeq);
+		alignSeqReading.setLenMin(lenMin);
+		alignSeqReading.setLenMax(lenMax);
+		alignSeqReading.addAlignmentRecorder(alignmentRecorder);
+		return alignSeqReading;
+	}
+	
 	/** 计算miRNA表达
 	 * @param solo 前面是否有mapping
 	 */
@@ -228,8 +240,9 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 		
 		AlignSeq alignSeq = miRNAmappingPipline.getOutMiRNAAlignSeq();
 		if (alignSeq != null) {
-			miRNACount.setAlignFile(alignSeq);
-			miRNACount.run();
+			miRNACount.initial();
+			AlignSeqReading alignSeqReading = getAlignSeqReading(alignSeq, miRNACount);
+			alignSeqReading.running();
 			
 			expMirMature.addAllReads(miRNACount.getCountMatureAll());
 			expMirMature.addGeneExp(miRNACount.getMapMirMature2Value());
@@ -251,9 +264,10 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 		}
 		
 		SamFile alignSeq = miRNAmappingPipline.getOutRfamAlignSeq();
-		rfamStatistic.setSamFile(alignSeq);
 		if (alignSeq != null) {
-			rfamStatistic.countRfamBam();
+			rfamStatistic.initial();
+			AlignSeqReading alignSeqReading = getAlignSeqReading(alignSeq, rfamStatistic);
+			alignSeqReading.running();
 			expRfamClass.addGeneExp(rfamStatistic.getMapRfamClass2Counts());
 			expRfamID.addGeneExp(rfamStatistic.getMapRfamID2Counts());
 		}
@@ -269,8 +283,9 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 		
 		SamFile alignSeq = miRNAmappingPipline.getOutNCRNAAlignSeq();
 		if (alignSeq != null) {
-			readsOnNCrna.setSamFile(alignSeq);
-			readsOnNCrna.searchNCrna();
+			readsOnNCrna.initial();
+			AlignSeqReading alignSeqReading = getAlignSeqReading(alignSeq, readsOnNCrna);
+			alignSeqReading.running();
 			readsOnNCrna.writeToFile(outPath + "NCrnaStatistics.txt");
 			expNcRNA.addGeneExp(readsOnNCrna.getMapNCrnaID2Value());
 		}
@@ -297,7 +312,10 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 		AlignSeq alignSeq = miRNAmappingPipline.getOutGenomeAlignSeq();
 		if (alignSeq != null) {
 			readRepeatGff();
-			readsOnRepeatGene.countReadsInfo(alignSeq);
+			readsOnRepeatGene.initial();
+			AlignSeqReading alignSeqReading = getAlignSeqReading(alignSeq, readsOnRepeatGene);
+			alignSeqReading.running();
+			
 			expRepeatFamily.addGeneExp(readsOnRepeatGene.getMapRepeatFamily2Value());
 			expRepeatName.addGeneExp(readsOnRepeatGene.getMapRepeatName2Value());
 			expGeneStructure.addGeneExp(readsOnRepeatGene.getMapGeneStructure2Value());

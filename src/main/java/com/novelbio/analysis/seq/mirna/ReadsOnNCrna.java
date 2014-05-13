@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.novelbio.analysis.seq.AlignRecord;
+import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -16,7 +18,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
  * @author zong0jie
  *
  */
-public class ReadsOnNCrna {
+public class ReadsOnNCrna implements AlignmentRecorder {
 	/**
 	 * key: ncrnaID
 	 * value 0: ncrnaID
@@ -25,6 +27,8 @@ public class ReadsOnNCrna {
 	 */
 	Map<String, Double> mapNCrnaID2Value;
 	SamFile samFile;
+	int lenMin = 17;
+	int lenMax = 32;
 	
 	public void setSamFile(SamFile alignSeq) {
 		this.samFile = alignSeq;
@@ -42,18 +46,35 @@ public class ReadsOnNCrna {
 	public void searchNCrna() {
 		mapNCrnaID2Value = new HashMap<String, Double>();
 		for (AlignRecord alignRecord : samFile.readLines()) {
-			if (!alignRecord.isMapped()) {
-				continue;
-			}
-			if (mapNCrnaID2Value.containsKey(alignRecord.getRefID())) {
-				double info = mapNCrnaID2Value.get(alignRecord.getRefID());
-				info = (double)1/alignRecord.getMappedReadsWeight() + info;
-				mapNCrnaID2Value.put(alignRecord.getRefID(), info);
-			}
-			else {
-				mapNCrnaID2Value.put(alignRecord.getRefID(), (double)1/alignRecord.getMappedReadsWeight() );
-			}
+			addAlignRecord(alignRecord);
 		}
+	}
+
+	@Override
+	public void addAlignRecord(AlignRecord alignRecord) {
+		if (!alignRecord.isMapped()) {
+			return;
+		}
+		if (mapNCrnaID2Value.containsKey(alignRecord.getRefID())) {
+			double info = mapNCrnaID2Value.get(alignRecord.getRefID());
+			info = (double)1/alignRecord.getMappedReadsWeight() + info;
+			mapNCrnaID2Value.put(alignRecord.getRefID(), info);
+		}
+		else {
+			mapNCrnaID2Value.put(alignRecord.getRefID(), (double)1/alignRecord.getMappedReadsWeight() );
+		}
+	}
+	
+	public void initial() {
+		mapNCrnaID2Value = new HashMap<String, Double>();
+	}
+	
+	@Override
+	public void summary() {}
+	
+	@Override
+	public Align getReadingRegion() {
+		return null;
 	}
 	/**
 	 * 将结果写入文本中
@@ -83,4 +104,5 @@ public class ReadsOnNCrna {
 		lsTitle.add(TitleFormatNBC.Description.toString());
 		return lsTitle;
 	}
+
 }

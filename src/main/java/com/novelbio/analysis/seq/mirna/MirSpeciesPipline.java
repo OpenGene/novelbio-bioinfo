@@ -8,9 +8,12 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.IntCmdSoft;
+import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.GeneExpTable;
 import com.novelbio.analysis.seq.mapping.MappingReadsType;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
+import com.novelbio.analysis.seq.sam.AlignSeqReading;
+import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamFileStatistics;
 import com.novelbio.analysis.seq.sam.SamMapRate;
@@ -43,6 +46,7 @@ public class MirSpeciesPipline implements IntCmdSoft {
 	int threadNum = 3;
 	
 	boolean isUseOldResult = true;
+	int lenMin = 17, lenMax = 32;
 	
 	List<String> lsCmd = new ArrayList<>();
 	
@@ -135,8 +139,10 @@ public class MirSpeciesPipline implements IntCmdSoft {
 					mapPrefix2Fastq.put(prefix, outFastq);
 				}
 				
-				miRNACount.setAlignFile(new SamFile(samFileOut));
-				miRNACount.run();
+				miRNACount.initial();
+				AlignSeqReading alignSeqReading = getAlignSeqReading(new SamFile(samFileOut), miRNACount);
+				alignSeqReading.running();
+
 				expMirMature.setCurrentCondition(prefix);
 				expMirMature.addAllReads(miRNACount.getCountMatureAll());
 				expMirMature.addLsGeneName(getLsGeneNot0(miRNACount.getMapMirMature2Value()));
@@ -214,9 +220,10 @@ public class MirSpeciesPipline implements IntCmdSoft {
 					}
 				}
 				
+				miRNACount.initial();
+				AlignSeqReading alignSeqReading = getAlignSeqReading(new SamFile(samFileOut), miRNACount);
+				alignSeqReading.running();
 				
-				miRNACount.setAlignFile(new SamFile(samFileOut));
-				miRNACount.run();
 				expMirMature.setCurrentCondition(prefix);
 				expMirMature.addAllReads(miRNACount.getCountMatureAll());
 				expMirMature.addLsGeneName(getLsGeneNot0(miRNACount.getMapMirMature2Value()));
@@ -234,7 +241,14 @@ public class MirSpeciesPipline implements IntCmdSoft {
 			}
 		}
 	}
-	
+	private AlignSeqReading getAlignSeqReading(AlignSeq alignSeq, AlignmentRecorder alignmentRecorder) {
+		AlignSeqReading alignSeqReading = new AlignSeqReading();
+		alignSeqReading.addSeq(alignSeq);
+		alignSeqReading.setLenMin(lenMin);
+		alignSeqReading.setLenMax(lenMax);
+		alignSeqReading.addAlignmentRecorder(alignmentRecorder);
+		return alignSeqReading;
+	}
 	/** 获得所有不为0的geneName */
 	private List<String> getLsGeneNot0(Map<String, Double> mapGeneName2Value) {
 		List<String> lsName = new ArrayList<>();

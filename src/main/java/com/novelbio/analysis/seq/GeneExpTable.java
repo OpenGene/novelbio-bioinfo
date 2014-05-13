@@ -12,6 +12,7 @@ import java.util.Set;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
+import com.novelbio.base.ExceptionNullParam;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -147,9 +148,31 @@ public class GeneExpTable {
 	public Set<String> getSetGeneName() {
 		return mapGene_2_Cond2Exp.keySet();
 	}
+	
+	/** 看是否存在该基因名*/
+	public boolean isContainGeneName(String geneName) {
+		return mapGene_2_Cond2Exp.containsKey(geneName);
+	}
+	
+	public void addGeneName(String geneName) {
+		if (mapGene_2_Cond2Exp.containsKey(geneName)) return;
+		
+		Map<String, Double> mapCond2Exp = new HashMap<>();
+		mapGene_2_Cond2Exp.put(geneName, mapCond2Exp);
+	}
+	
 	/**  最早就要设定 */
 	public void addLsGeneName(Collection<String> colGeneName) {
 		setLsGeneName(colGeneName);
+	}
+	/** 初始化基因列表 */
+	private void setLsGeneName(Collection<String> lsGeneName) {
+		for (String geneName : lsGeneName) {
+			if (mapGene_2_Cond2Exp.containsKey(geneName)) continue;
+			
+			Map<String, Double> mapCond2Exp = new HashMap<>();
+			mapGene_2_Cond2Exp.put(geneName, mapCond2Exp);
+		}
 	}
 	/**
 	 * 大致测序量，譬如rna-seq就是百万级别，小RNAseq就是可能就要变成十万级别
@@ -169,7 +192,9 @@ public class GeneExpTable {
 	}
 	public void setCurrentCondition(String currentCondition) {
 		this.currentCondition = currentCondition;
-		setCondition.add(currentCondition);
+		if (!setCondition.contains(currentCondition)) {
+			setCondition.add(currentCondition);
+		}
 	}
 	public String getCurrentCondition() {
 		return currentCondition;
@@ -181,6 +206,30 @@ public class GeneExpTable {
 	/** 返回全体condition和对应的allReads */
 	public Map<String, Long> getMapCond2AllReads() {
 		return mapCond2AllReads;
+	}
+	
+	/**
+	 * mapGene2Anno中务必含有全体geneName
+	 * 已经添加过一次的Gene不能再添加第二次 
+	 */
+	public void addAnnotation(String geneName, String annotation) {
+		if (mapGene2Anno.containsKey(geneName)) {
+			throw new ExceptionNullParam("Cannot add same geneName twice");
+		}
+		this.mapGene2Anno.put(geneName, annotation);
+	}
+	/**
+	 * mapGene2Anno中务必含有全体geneName
+	 * 已经添加过一次的Gene不能再添加第二次 
+	 */
+	public void addAnnotation(String geneName, String[] annotation) {
+		if (mapGene2Anno.containsKey(geneName)) {
+			throw new ExceptionNullParam("Cannot add same geneName twice");
+		}
+		for (String string : annotation) {
+			if (string == null) string = "";
+			this.mapGene2Anno.put(geneName, string);
+		}
 	}
 	/** mapGene2Anno中务必含有全体geneName */
 	public void addAnnotation(Map<String, String> mapGene2Anno) {
@@ -204,15 +253,7 @@ public class GeneExpTable {
 	public void addLsTitle(Collection<String> colTitle) {
 		setGeneAnnoTitle.addAll(colTitle);
 	}
-	/** 初始化基因列表 */
-	private void setLsGeneName(Collection<String> lsGeneName) {
-		for (String geneName : lsGeneName) {
-			if (mapGene_2_Cond2Exp.containsKey(geneName)) continue;
-			
-			Map<String, Double> mapCond2Exp = new HashMap<>();
-			mapGene_2_Cond2Exp.put(geneName, mapCond2Exp);
-		}
-	}
+
 	
 	/** 设置当前时期所有mapping上的reads */
 	public void addAllReads(double allReads) {

@@ -37,7 +37,7 @@ public class RfamStatistic implements AlignmentRecorder {
 	long allReadsNum = 0;
 	
 	AlignSeq samFile;
-	
+
 	public void setSamFile(SamFile samFile) {
 		this.samFile = samFile;
 	}

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.XYPlot;
@@ -23,6 +24,7 @@ import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.sam.AlignSeqReading;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.plot.ImageUtils;
 import com.novelbio.database.model.species.Species;
@@ -33,6 +35,7 @@ import com.novelbio.database.model.species.Species;
  *
  */
 public class JunctionSaturationJava implements AlignmentRecorder {
+	private static final Logger logger = Logger.getLogger(JunctionSaturationJava.class);
 	public static void main(String[] args) {
 		JunctionSaturationJava junctionSaturation = new JunctionSaturationJava();
 		Species species = new Species(9606);
@@ -49,8 +52,14 @@ public class JunctionSaturationJava implements AlignmentRecorder {
 	ShuffleReads shuffleReads = new ShuffleReads();
 	StrandSpecific specific = StrandSpecific.UNKNOWN;
 
-	int times = 0; //大于多少次
+	int leastReadNum = 0; //大于多少次
 	int nodeNum = 20; //画多少个点
+	/** 不考虑小于50bp长度的junction */
+	int minIntronLen = 50;
+	int maxIntronLen = 500000;
+	
+	String samFilePath;
+	
 	XYSeries xyExistJun = new XYSeries("Known Junctions");
 	XYSeries xyNovelJun = new XYSeries("Novel Junctions");
 	XYSeries xyAllJun = new XYSeries("All Junctions");
@@ -80,8 +89,25 @@ public class JunctionSaturationJava implements AlignmentRecorder {
 		this.gffHashGene = gffHashGene;
 	}
 	/** 出现几次才算是junction */
-	public void setTimes(int times) {
-		this.times = times;
+	public void setLeastReadNum(int leastReadNum) {
+		this.leastReadNum = leastReadNum;
+	}
+	/** 输入要计算的sam文件 */
+	public void setSamFile(String samFilePath) {
+		this.samFilePath = samFilePath;
+	}
+	/**
+	 * 最短intron和最长intron的长度，不在这个范围内的intron则不进入计算
+	 * @param minIntronLen 默认50
+	 * @param maxIntronLen 默认500000
+	 */
+	public void setIntronLen(int minIntronLen, int maxIntronLen) {
+		if (minIntronLen > 0) {
+			this.minIntronLen = minIntronLen;
+		}
+		if (maxIntronLen > 0) {
+			this.maxIntronLen = maxIntronLen;
+		}
 	}
 	/** 画几个点 */
 	public void setNodeNum(int nodeNum) {
@@ -91,12 +117,26 @@ public class JunctionSaturationJava implements AlignmentRecorder {
 	public void setSavePath(String imageSavePath) {
 		this.imageSavePath = imageSavePath;
 	}
+	
+	/** 对设定的sam文件进行画图 */
+	public void plotUseSamfile() {
+		SamFile samFile = new SamFile(samFilePath);
+		for (SamRecord samRecord : samFile.readLines()) {
+			addAlignRecord(samRecord);
+		}
+		summary();
+		plot();
+	}
+	
 	@Override
 	public void addAlignRecord(AlignRecord alignRecord) {
 		List<Align> lsAlign = alignRecord.getAlignmentBlocks();
 		if(lsAlign.size() < 2) return;
 		for (int i = 1; i < lsAlign.size(); i++) {
 			Align align = new Align(alignRecord.getRefID(), lsAlign.get(i-1).getEndAbs(), lsAlign.get(i).getStartAbs());
+			if (align.getLength() < minIntronLen || (maxIntronLen > 0 && align.getLength() > maxIntronLen)) {
+				continue;
+			}
 			shuffleReads.addAlign(align, alignRecord.isCis5to3(), specific);
 		}
 	}
@@ -105,6 +145,7 @@ public class JunctionSaturationJava implements AlignmentRecorder {
 	public void summary() {
 		fillChrId2Jun();
 		shuffleReads.summary();
+		logger.info("finish read bam file");
 		statisticJunctionInfo();
 	}
 
@@ -133,7 +174,6 @@ public class JunctionSaturationJava implements AlignmentRecorder {
 		int readBlockNum = 1;
 		int readNum = 0;
 
-		
 		for (Align align : shuffleReads.readlines()) {
 			if (readNum >= shuffleReads.getAllReadsNum() * ratioBlock * readBlockNum) {
 				getSubsiteInfo((double)readNum/shuffleReads.getAllReadsNum(), xyExistJun, xyNovelJun, xyAllJun);
@@ -148,11 +188,12 @@ public class JunctionSaturationJava implements AlignmentRecorder {
 					mapJuncUnKnown2Num.put(junInfo, readsNum);
 				}
 			}
-			if (readBlockNum <= nodeNum) {
-				getSubsiteInfo(1, xyExistJun, xyNovelJun, xyAllJun);
-			}
+
 			readsNum[0]++;
 			readNum++;
+		}
+		if (readBlockNum <= nodeNum) {
+			getSubsiteInfo(1, xyExistJun, xyNovelJun, xyAllJun);
 		}
 	}
 	
@@ -167,20 +208,20 @@ public class JunctionSaturationJava implements AlignmentRecorder {
 	private void getSubsiteInfo(double rate, XYSeries xyExistJun, XYSeries xyNovelJun, XYSeries xyAllJun) {
 		int existJunSiteNum = 0, novelJunSiteNum = 0;
 		for (int[] readsNum : mapJuncKnown2Num.values()) {
-			if (readsNum[0] > 0 && readsNum[0] >= times) {
+			if (readsNum[0] > 0 && readsNum[0] >= leastReadNum) {
 				existJunSiteNum++;
 			}
 		}
 		for (int[] readsNum : mapJuncUnKnown2Num.values()) {
-			if (readsNum[0] >= times) {
+			if (readsNum[0] >= leastReadNum) {
 				novelJunSiteNum++;
 			}
 		}
 		int allJunSiteNum = existJunSiteNum + novelJunSiteNum;
 		
-		xyExistJun.add(Math.floor(rate*100), (double)existJunSiteNum/mapJuncKnown2Num.size()*100);  
-		xyNovelJun.add(Math.floor(rate*100), (double)novelJunSiteNum/mapJuncKnown2Num.size()*100);  
-		xyAllJun.add(Math.floor(rate*100), (double)allJunSiteNum/mapJuncKnown2Num.size()*100);  
+		xyExistJun.add(Math.floor(rate*100), (double)existJunSiteNum/1000);  
+		xyNovelJun.add(Math.floor(rate*100), (double)novelJunSiteNum/1000);  
+		xyAllJun.add(Math.floor(rate*100), (double)allJunSiteNum/1000);  
 	}
 	
 	public void plot() {
@@ -204,9 +245,9 @@ public class JunctionSaturationJava implements AlignmentRecorder {
     	renderer.setSeriesShapesVisible(1, true);
     	renderer.setSeriesShapesVisible(2, true);
     	//create plot
-    	NumberAxis xAxis = new NumberAxis("percentage of bam junctions (%)");
+    	NumberAxis xAxis = new NumberAxis("Percentage of bam junctions (%)");
     	xAxis.setAutoRangeIncludesZero(false);
-    	NumberAxis yAxis = new NumberAxis("percentage of all know junctions(%)");
+    	NumberAxis yAxis = new NumberAxis("Number of splicing junctions (x1000)");
     	yAxis.setAutoRangeIncludesZero(false);
 
     	XYPlot plot = new XYPlot(xySeriesCollection, xAxis, yAxis, renderer);
@@ -219,7 +260,7 @@ public class JunctionSaturationJava implements AlignmentRecorder {
     			plot,
     			true //不在图片底部显示图例
     	);
-    	ImageUtils.saveBufferedImage(chart.createBufferedImage(1024, 768), savePath);
+    	ImageUtils.saveBufferedImage(chart.createBufferedImage(800, 800), savePath);
 	}
 
 	@Override
@@ -230,7 +271,7 @@ public class JunctionSaturationJava implements AlignmentRecorder {
 	public void clear() {
 		shuffleReads = new ShuffleReads();
 		specific = StrandSpecific.UNKNOWN;
-		times = 0;
+		leastReadNum = 0;
 		nodeNum = 20;
 		xyExistJun = new XYSeries("Known Junctions");
 		xyNovelJun = new XYSeries("Novel Junctions");
