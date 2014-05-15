@@ -37,6 +37,7 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 	MiRNAmapPipline miRNAmappingPipline = new MiRNAmapPipline();
 	
 	MiRNACount miRNACount = new MiRNACount();
+//	MirnaIso mirnaIso = new MirnaIso();
 	RfamStatistic rfamStatistic = new RfamStatistic();
 	ReadsOnRepeatGene readsOnRepeatGene = new ReadsOnRepeatGene();
 	ReadsOnNCrna readsOnNCrna = new ReadsOnNCrna();
@@ -241,6 +242,7 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 		AlignSeq alignSeq = miRNAmappingPipline.getOutMiRNAAlignSeq();
 		if (alignSeq != null) {
 			miRNACount.initial();
+			//TODO
 			AlignSeqReading alignSeqReading = getAlignSeqReading(alignSeq, miRNACount);
 			alignSeqReading.running();
 			

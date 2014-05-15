@@ -52,6 +52,8 @@ public class MirnaIso implements AlignmentRecorder {
 		mirnaIso.setMapMirnaName(miRNAList, samfile1.getMapChrID2Length().keySet());
 
 		AlignSeqReading alignSeqReading = new AlignSeqReading(samfile1);
+		alignSeqReading.setLenMin(17);
+		alignSeqReading.setLenMax(32);
 		alignSeqReading.addAlignmentRecorder(mirnaIso);
 		mirnaIso.setSampleName("DL4R1");
 		alignSeqReading.run();

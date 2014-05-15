@@ -78,7 +78,7 @@ public class FastQRecord implements Cloneable {
 		if (seqFasta.getSeqName() != null) {
 			return;
 		}
-		if (!fastqInfo[0].startsWith("@") || fastqInfo.length != 4 || !fastqInfo[2].equals("+")) {
+		if (!fastqInfo[0].startsWith("@") || fastqInfo.length != 4 || !fastqInfo[2].startsWith("+")) {
 			throw new ExceptionFastq("fastq format error");
 		}
 		char[] seq = fastqInfo[1].toLowerCase().toCharArray();

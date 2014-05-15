@@ -15,4 +15,14 @@ public class MirPre extends ListBin<MirMature> {
 		return seqMirPre;
 	}
 	
+	/** 因为一个miRpre只有1-2个mirMature，所以遍历效率也不低 */
+	public MirMature searchMirName(String mirName) {
+		for (MirMature mirMature : getLsElement()) {
+			if (mirMature.getNameSingle().equalsIgnoreCase(mirName)) {
+				return mirMature;
+			}
+		}
+		return null;
+	}
+	
 }

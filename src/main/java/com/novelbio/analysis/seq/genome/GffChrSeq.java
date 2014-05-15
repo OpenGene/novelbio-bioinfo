@@ -473,6 +473,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		if (seqFastaResult == null) {
 			return null;
 		}
+		seqFastaResult.setName(gffGeneIsoInfo.getName());
 		return seqFastaResult;
 	}
 	/**

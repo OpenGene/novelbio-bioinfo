@@ -1,9 +1,13 @@
 package com.novelbio.analysis.seq.mirna;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.samtools.CigarElement;
 import net.sf.samtools.CigarOperator;
@@ -60,7 +64,7 @@ public class MirIsoUnit extends GeneExpTable {
 	
 	/** 添加isoMiRNA的表达 */
 	private void addIsoMirExp(MirMature mirMature, SamRecord samRecord) {
-		String seq = samRecord.getSeqFasta().toString().toUpperCase();
+		String seq = samRecord.getSeqFastaClip().toString().toUpperCase();
 		if (!isContainGeneName(seq)) {
 			addGeneName(seq);
 			if (mirMature.getSeq().toString().equalsIgnoreCase(seq)) {
@@ -169,11 +173,14 @@ public class MirIsoUnit extends GeneExpTable {
 		for (MirMature mirMature : mirPre.getLsElement()) {
 			mapMirna2IsoNum.put(mirMature.getNameSingle(), new int[]{1});
 		}
-		
+		int m = 0;
 		for (String[]info : lsInfo) {
 			int sum = 0;
+
 			if (!info[1].contains(SepSign.SEP_ID)) {//说明不是isoMiRNA
-				lsFinal.add(info);
+				//第一个miRNA放在第一位，第二个miRNA放在第二位
+				//譬如mir-164-5p放在第一位，mir-164-3p放在第二位
+				lsFinal.add(m++, info);
 				continue;
 			}
 			for (int i = 3; i < info.length; i++) {
@@ -192,6 +199,58 @@ public class MirIsoUnit extends GeneExpTable {
 			lsFinal.add(info);
 		}
 		return lsFinal;
+	}
+	
+	/** 返回一系列基因的名称，并按照表达量进行排序 */
+	protected Set<String> getSetGeneName() {
+		Map<String, List<String[]>> mapMirName2LsIsoValue = new HashMap<>();
+		for (String seqIso : mapGene_2_Cond2Exp.keySet()) {
+			List<String> lsAnno = mapGene2Anno.get(seqIso);//annotation 第一个是mirName@@iso 第二个是mir alignment
+			String mirName = lsAnno.get(0).split(SepSign.SEP_ID)[0];
+			
+			List<String[]> lsGene2Value = mapMirName2LsIsoValue.get(mirName);
+			if (lsGene2Value == null) {
+				lsGene2Value = new ArrayList<>();
+				mapMirName2LsIsoValue.put(mirName, lsGene2Value);
+			}
+			
+			lsGene2Value.add(new String[]{seqIso, getSum(mapGene_2_Cond2Exp.get(seqIso)) + ""});
+		}
+		
+		/** 对于每个miRNA的不同iso形式，按照iso的数量从大到小排序 */
+		for (List<String[]> lsGene2Value : mapMirName2LsIsoValue.values()) {
+			Collections.sort(lsGene2Value, new Comparator<String[]>() {
+				public int compare(String[] o1, String[] o2) {
+					Double o1value = Double.parseDouble(o1[1]);
+					Double o2value = Double.parseDouble(o2[1]);
+					return -o1value.compareTo(o2value);
+				}
+			});
+		}
+		
+		List<String> lsMirName = new ArrayList<>(mapMirName2LsIsoValue.keySet());
+		Collections.sort(lsMirName, new Comparator<String>() {
+			public int compare(String o1, String o2) {
+				Integer startO1 = mirPre.searchMirName(o1).getStartAbs();
+				Integer startO2 = mirPre.searchMirName(o2).getStartAbs();
+				return startO1.compareTo(startO2);
+			}
+		});
+		Set<String> lsIsoNameResult = new LinkedHashSet<>();
+		for (String string : lsMirName) {
+			for (String[] geneName  : mapMirName2LsIsoValue.get(string)) {
+				lsIsoNameResult.add(geneName[0]);
+			}
+		}
+		return lsIsoNameResult;
+	}
+	
+	private double getSum(Map<String, Double> mapCond2Value ) {
+		double sum = 0;
+		for (Double value : mapCond2Value.values()) {
+			sum+=value;
+		}
+		return sum;
 	}
 	
 }

@@ -27,11 +27,11 @@ public class GeneExpTable {
 	/** 基因annotation的title */
 	Set<String> setGeneAnnoTitle = new LinkedHashSet<>();
 	/** 基因名和注释的对照表 */
-	ArrayListMultimap<String, String> mapGene2Anno = ArrayListMultimap.create();
+	protected ArrayListMultimap<String, String> mapGene2Anno = ArrayListMultimap.create();
 	/** 时期信息 */
 	Set<String> setCondition = new LinkedHashSet<>();
 	/** 具体存储表达信息的表 */
-	Map<String, Map<String, Double>> mapGene_2_Cond2Exp = new LinkedHashMap<>();
+	protected Map<String, Map<String, Double>> mapGene_2_Cond2Exp = new LinkedHashMap<>();
 	/** 大致测序量，譬如rna-seq就是百万级别，小RNAseq就是可能就要变成十万级别 */
 	int mapreadsNum = 1000000;
 	/** 单个基因的平均表达量，用于UQ的时候除以uq的数量 */
@@ -145,7 +145,7 @@ public class GeneExpTable {
 		}
 	}
 	/** 返回一系列基因的名称 */
-	public Set<String> getSetGeneName() {
+	protected Set<String> getSetGeneName() {
 		return mapGene_2_Cond2Exp.keySet();
 	}
 	
@@ -314,7 +314,7 @@ public class GeneExpTable {
 		if (enumExpression == EnumExpression.UQPM || enumExpression == EnumExpression.UQRPKM) {
 			uq = getUQ(currentCondition);
 		}
-		for (String geneName : getSetGeneName()) {
+		for (String geneName : mapGene_2_Cond2Exp.keySet()) {
 			List<String> lsTmpResult = new ArrayList<String>();
 			lsTmpResult.add(geneName);
 			if (!mapGene2Anno.isEmpty()) {
@@ -338,25 +338,7 @@ public class GeneExpTable {
 	 *  @return 返回按照 lsConditions顺序的基因表达list
 	 */
 	public List<String[]> getLsAllCountsNum(EnumExpression enumExpression) {
-		setAllreadsPerConditon();
-
-		List<String[]> lsResult = new ArrayList<>();
-		lsResult.add(getTitle());
-		Map<String, Double> mapCondition2UQ = null; 
-		if (enumExpression == EnumExpression.UQPM || enumExpression == EnumExpression.UQRPKM) {
-			mapCondition2UQ = getMapCond2UQ();
-		}
-		for (String geneName : getSetGeneName()) {
-			List<String> lsTmpResult = new ArrayList<String>();
-			lsTmpResult.add(geneName);
-			if (!mapGene2Anno.isEmpty()) {
-				lsTmpResult.addAll(mapGene2Anno.get(geneName));
-			}
-			
-			lsTmpResult.addAll(getLsValue(geneName, enumExpression, mapCondition2UQ));
-			lsResult.add(lsTmpResult.toArray(new String[0]));
-		}
-		return lsResult;
+		return getLsAllCountsNum2Ratio(false, enumExpression);
 	}
 	/**
 	 * 获得全体时期的表达情况和ratio信息，用于mapping率
@@ -364,6 +346,10 @@ public class GeneExpTable {
 	 *  @return 返回按照 lsConditions顺序的基因表达list
 	 */
 	public List<String[]> getLsAllCountsNum2Ratio(EnumExpression enumExpression) {
+		return getLsAllCountsNum2Ratio(true, enumExpression);
+	}
+	
+	protected List<String[]> getLsAllCountsNum2Ratio(boolean isGetRatio, EnumExpression enumExpression) {
 		setAllreadsPerConditon();
 
 		List<String[]> lsResult = new ArrayList<>();
@@ -373,20 +359,14 @@ public class GeneExpTable {
 			mapCondition2UQ = getMapCond2UQ();
 		}
 		for (String geneName : getSetGeneName()) {
-			List<String> lsTmpResult = new ArrayList<String>();
-			lsTmpResult.add(geneName);
-			if (!mapGene2Anno.isEmpty()) {
-				lsTmpResult.addAll(mapGene2Anno.get(geneName));
-			}
-			
-			lsTmpResult.addAll(getLsValue2Ratio(geneName, enumExpression, mapCondition2UQ));
+			List<String> lsTmpResult = getLsGeneResult2Anno(isGetRatio, geneName, enumExpression, mapCondition2UQ);
 			lsResult.add(lsTmpResult.toArray(new String[0]));
 		}
 		return lsResult;
 	}
 	
 	/** @return 返回每个时期的UQreads */
-	private Map<String, Double> getMapCond2UQ() {
+	protected Map<String, Double> getMapCond2UQ() {
 		Map<String, Double> mapGene2UQ = new HashMap<>();
 		for (String condition : setCondition) {
 			mapGene2UQ.put(condition, getUQ(condition));
@@ -397,7 +377,7 @@ public class GeneExpTable {
 	/** @return 返回指定时期的UQreads */
 	private double getUQ(String condition) {
 		List<Double> lsValues = new ArrayList<>();
-		for (String geneName : getSetGeneName()) {
+		for (String geneName : mapGene_2_Cond2Exp.keySet()) {
 			Map<String, Double> mapCond2Counts = mapGene_2_Cond2Exp.get(geneName);
 			if (mapCond2Counts == null) {
 				lsValues.add(0.0);
@@ -414,23 +394,20 @@ public class GeneExpTable {
 		return uq;
 	}
 	
-	/** 获得全体时期的基因表达情况 */
-	private List<String> getLsValue(String geneName, EnumExpression enumExpression, Map<String, Double> mapCondition2UQ) {
-		List<String> lsValue = new ArrayList<>();
-		Map<String, Double> mapCond2Exp = mapGene_2_Cond2Exp.get(geneName);
-		for (String condition : setCondition) {
-			Double value = mapCond2Exp.get(condition);			
-			double uq = (mapCondition2UQ != null) ? mapCondition2UQ.get(condition) : 0;
-			
-			Long allReadsNum = mapCond2AllReads.get(condition);
-			Integer geneLen = mapGene2Len == null ? 0 : mapGene2Len.get(geneName);
-			String geneValue = getValue(enumExpression, value, allReadsNum, uq, geneLen);
-			lsValue.add(geneValue);
+	/** 获得全体时期的基因表达情况，ratio，以及annotation  */
+	private List<String> getLsGeneResult2Anno(boolean isGetRatio, String geneName, EnumExpression enumExpression, Map<String, Double> mapCondition2UQ) {
+		List<String> lsTmpResult = new ArrayList<String>();
+		lsTmpResult.add(geneName);
+		if (!mapGene2Anno.isEmpty()) {
+			lsTmpResult.addAll(mapGene2Anno.get(geneName));
 		}
-		return lsValue;
+		lsTmpResult.addAll(getLsValue2Ratio(isGetRatio, geneName, enumExpression, mapCondition2UQ));
+			
+		return lsTmpResult;
 	}
+	
 	/** 获得全体时期的基因表达情况以及其在allreads中的比例 */
-	private List<String> getLsValue2Ratio(String geneName, EnumExpression enumExpression, Map<String, Double> mapCondition2UQ) {
+	private List<String> getLsValue2Ratio(boolean isGetRatio, String geneName, EnumExpression enumExpression, Map<String, Double> mapCondition2UQ) {
 		List<String> lsValue = new ArrayList<>();
 		Map<String, Double> mapCond2Exp = mapGene_2_Cond2Exp.get(geneName);
 		for (String condition : setCondition) {
@@ -441,12 +418,14 @@ public class GeneExpTable {
 			Integer geneLen = mapGene2Len == null ? 0 : mapGene2Len.get(geneName);
 			String geneValue = getValue(enumExpression, value, allReadsNum, uq, geneLen);
 			lsValue.add(geneValue);
-			lsValue.add(getValue(EnumExpression.Ratio, value, allReadsNum, uq, geneLen));
+			if (isGetRatio) {
+				lsValue.add(getValue(EnumExpression.Ratio, value, allReadsNum, uq, geneLen));
+			}
 		}
 		return lsValue;
 	}
 	/** 如果allReads没有设定，则设定每个时期的allReads数量为该时期counts数加和 */
-	private void setAllreadsPerConditon() {
+	protected void setAllreadsPerConditon() {
 		for (String condition : setCondition) {
 			setConditionAllreads(condition);
 		}
@@ -505,7 +484,7 @@ public class GeneExpTable {
 		return resultValue;
 	}
 	
-	private String[] getTitle() {
+	protected String[] getTitle() {
 		List<String> lsTitle = new ArrayList<>();
 		lsTitle.add(geneTitleName);
 		lsTitle.addAll(setGeneAnnoTitle);
