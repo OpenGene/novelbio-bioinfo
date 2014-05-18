@@ -100,13 +100,13 @@ public class TestMapInfoSnpIndel extends TestCase {
 		SnpGroupFilterInfo sampleDetail2A = new SnpGroupFilterInfo();
 		sampleDetail2A.addSampleName("2A");
 		sampleDetail2A.setSampleSnpRegion(SnpLevel.RefHomo, 1, 1);
-		sampleDetail2A.setSampleSnpRegionUp(SnpLevel.HetoLess, 0, 0);
+		sampleDetail2A.setSampleSnpRegionUp(SnpLevel.HeteroLess, 0, 0);
 		sampleFilter.addSampleFilterInfo(sampleDetail2A);
 		
 		SnpGroupFilterInfo sampleDetail2B = new SnpGroupFilterInfo();
 		sampleDetail2B.addSampleName("2B");
 		sampleDetail2B.setSampleSnpRegion(SnpLevel.RefHomo, 0, 0);
-		sampleDetail2B.setSampleSnpRegionUp(SnpLevel.HetoLess, 1, 1);
+		sampleDetail2B.setSampleSnpRegionUp(SnpLevel.HeteroLess, 1, 1);
 		sampleFilter.addSampleFilterInfo(sampleDetail2B);
 		
 		ArrayList<SiteSnpIndelInfo> result = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
@@ -147,7 +147,7 @@ public class TestMapInfoSnpIndel extends TestCase {
 		
 		SnpGroupFilterInfo sampleDetail2B = new SnpGroupFilterInfo();
 		sampleDetail2B.addSampleName("2B");
-		sampleDetail2B.setSampleSnpRegionUp(SnpLevel.HetoMid, 1, 1);
+		sampleDetail2B.setSampleSnpRegionUp(SnpLevel.HeteroMid, 1, 1);
 		sampleFilter.addSampleFilterInfo(sampleDetail2B);
 		
 		ArrayList<SiteSnpIndelInfo> result = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
@@ -186,7 +186,7 @@ public class TestMapInfoSnpIndel extends TestCase {
 		
 		SnpGroupFilterInfo sampleDetail2B = new SnpGroupFilterInfo();
 		sampleDetail2B.addSampleName("2B");
-		sampleDetail2B.setSampleSnpRegionUp(SnpLevel.HetoMid, 1, 1);
+		sampleDetail2B.setSampleSnpRegionUp(SnpLevel.HeteroMid, 1, 1);
 		sampleFilter.addSampleFilterInfo(sampleDetail2B);
 		
 		ArrayList<SiteSnpIndelInfo> result = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
@@ -224,7 +224,7 @@ public class TestMapInfoSnpIndel extends TestCase {
 		
 		SnpGroupFilterInfo sampleDetail2B = new SnpGroupFilterInfo();
 		sampleDetail2B.addSampleName("2B");
-		sampleDetail2B.setSampleSnpRegionUp(SnpLevel.HetoMid, 1, 1);
+		sampleDetail2B.setSampleSnpRegionUp(SnpLevel.HeteroMid, 1, 1);
 		sampleFilter.addSampleFilterInfo(sampleDetail2B);
 		
 		ArrayList<SiteSnpIndelInfo> result = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
@@ -272,7 +272,7 @@ public class TestMapInfoSnpIndel extends TestCase {
 		SnpGroupFilterInfo sampleDetail2AB = new SnpGroupFilterInfo();
 		sampleDetail2AB.addSampleName("2A");
 		sampleDetail2AB.addSampleName("2B");
-		sampleDetail2AB.setSampleSnpRegionUp(SnpLevel.HetoMid, 1, 10);
+		sampleDetail2AB.setSampleSnpRegionUp(SnpLevel.HeteroMid, 1, 10);
 		sampleDetail2AB.setSampleSnpRegionUp(SnpLevel.RefHomo, 0, 0);
 		
 		sampleFilter.addSampleFilterInfo(sampleDetail2AB);
@@ -282,7 +282,7 @@ public class TestMapInfoSnpIndel extends TestCase {
 		sampleDetail2CD.addSampleName("2D");
 
 		sampleDetail2CD.setSampleSnpRegionUp(SnpLevel.RefHomo, 1, 10);
-		sampleDetail2CD.setSampleSnpRegionUp(SnpLevel.HetoLess, 0, 0);
+		sampleDetail2CD.setSampleSnpRegionUp(SnpLevel.HeteroLess, 0, 0);
 		sampleFilter.addSampleFilterInfo(sampleDetail2CD);
 		
 		ArrayList<SiteSnpIndelInfo> result = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
@@ -329,7 +329,7 @@ public class TestMapInfoSnpIndel extends TestCase {
 		sampleDetail2AB.addSampleName("2A");
 		sampleDetail2AB.addSampleName("2B");
 		
-		sampleDetail2AB.setSampleSnpRegionUp(SnpLevel.HetoMid, 1, 10);
+		sampleDetail2AB.setSampleSnpRegionUp(SnpLevel.HeteroMid, 1, 10);
 		sampleDetail2AB.setSampleSnpRegionUp(SnpLevel.RefHomo, 0, 0);
 		
 		sampleFilter.addSampleFilterInfo(sampleDetail2AB);
@@ -339,7 +339,7 @@ public class TestMapInfoSnpIndel extends TestCase {
 		sampleDetail2CD.addSampleName("2D");
 		
 		sampleDetail2CD.setSampleSnpRegionUp(SnpLevel.RefHomo, 0, 10);
-		sampleDetail2CD.setSampleSnpRegionUp(SnpLevel.HetoLess, 0, 1);
+		sampleDetail2CD.setSampleSnpRegionUp(SnpLevel.HeteroLess, 0, 1);
 		
 		sampleFilter.addSampleFilterInfo(sampleDetail2CD);
 		

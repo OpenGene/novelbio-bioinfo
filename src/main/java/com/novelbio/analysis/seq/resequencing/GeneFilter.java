@@ -54,7 +54,7 @@ public class GeneFilter {
 	/** 过滤单个snpSite位点的过滤器 */
 	SnpFilter snpFilterSingleSite = new SnpFilter();
 	
-	SnpLevel snpLevel = SnpLevel.HetoMid;
+	SnpLevel snpLevel = SnpLevel.HeteroMid;
 	
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;

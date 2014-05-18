@@ -34,7 +34,7 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 	/** 找到的snp数量 */
 	int findSnp;
 	
-	SnpLevel snpLevel = SnpLevel.HetoMid;
+	SnpLevel snpLevel = SnpLevel.HeteroMid;
 	
 	TxtReadandWrite txtSnpOut;
 	

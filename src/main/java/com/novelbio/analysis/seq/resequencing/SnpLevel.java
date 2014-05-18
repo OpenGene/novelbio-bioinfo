@@ -8,11 +8,11 @@ public enum SnpLevel {
 	/** Ref纯合，表示没有snp */
 	RefHomo, 
 	/** 杂合很少，只要有就跳选出来，可以认为是最宽松的阈值 */
-	HetoLess, 
+	HeteroLess, 
 	/** 中等杂合 */
-	HetoMid, 
+	HeteroMid, 
 	/** 杂合很高，比它更高的等级就是纯合snp */
-	HetoMore,
+	HeteroMore,
 	/** 纯合snp */
 	SnpHomo;
 	
@@ -24,9 +24,9 @@ public enum SnpLevel {
 		}
 		mapStr2SnpLevel = new LinkedHashMap<String, SnpLevel>();
 		mapStr2SnpLevel.put("RefHomo", RefHomo);
-		mapStr2SnpLevel.put("HetoLess", HetoLess);
-		mapStr2SnpLevel.put("HetoMid", HetoMid);
-		mapStr2SnpLevel.put("HetoMore", HetoMore);
+		mapStr2SnpLevel.put("HeteroLess", HeteroLess);
+		mapStr2SnpLevel.put("HeteroMid", HeteroMid);
+		mapStr2SnpLevel.put("HeteroMore", HeteroMore);
 		mapStr2SnpLevel.put("SnpHomo", SnpHomo);
 		return mapStr2SnpLevel;
 	}

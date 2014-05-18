@@ -23,7 +23,7 @@ public class TestSampleDetail extends TestCase{
 	@Test
 	public void testHomo() {
 		sampleDetail2A.setSampleSnpRegion(SnpLevel.RefHomo, 1, 1);
-		sampleDetail2A.setSampleSnpRegion(SnpLevel.HetoMid, 0, 0);
+		sampleDetail2A.setSampleSnpRegion(SnpLevel.HeteroMid, 0, 0);
 		sampleDetail2A.setSampleSnpRegion(SnpLevel.SnpHomo, 0, 0);
 	
 		sampleDetail2A.addSampleName("2A");
@@ -51,7 +51,7 @@ public class TestSampleDetail extends TestCase{
 	@Test
 	public void testHetoMore() {
 		sampleDetail2A.setSampleSnpRegion(SnpLevel.RefHomo, 0, 0);
-		sampleDetail2A.setSampleSnpRegion(SnpLevel.HetoMore, 1, 1);
+		sampleDetail2A.setSampleSnpRegion(SnpLevel.HeteroMore, 1, 1);
 	
 		sampleDetail2A.addSampleName("2A");
 		sampleDetail2A.clearData();

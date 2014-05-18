@@ -44,14 +44,14 @@ public class SnpGroupFilterInfo {
 		if (snpLevel == SnpLevel.RefHomo) {
 			setSampleRefHomoNum(1, 1);
 		}
-		else if (snpLevel == SnpLevel.HetoLess) {
+		else if (snpLevel == SnpLevel.HeteroLess) {
 			setSampleSnpIndelNum(1, 1);
 		}
-		else if (snpLevel == SnpLevel.HetoMid) {
+		else if (snpLevel == SnpLevel.HeteroMid) {
 			setSampleSnpIndelNum(1, 1);
 			setSampleSnpIndelHetoLessNum(0, 0);
 		}
-		else if (snpLevel == SnpLevel.HetoMore) {
+		else if (snpLevel == SnpLevel.HeteroMore) {
 			setSampleSnpIndelNum(1, 1);
 			setSampleSnpIndelHetoLessNum(0, 0);
 			setSampleSnpIndelHetoMidNum(0, 0);
@@ -85,11 +85,11 @@ public class SnpGroupFilterInfo {
 		
 		if (snpIndelLevel == SnpLevel.RefHomo) {
 			setSampleRefHomoNum(minNum, maxNum);
-		} else if (snpIndelLevel == SnpLevel.HetoLess) {
+		} else if (snpIndelLevel == SnpLevel.HeteroLess) {
 			setSampleSnpIndelHetoLessNum(minNum, maxNum);
-		} else if (snpIndelLevel == SnpLevel.HetoMid) {
+		} else if (snpIndelLevel == SnpLevel.HeteroMid) {
 			setSampleSnpIndelHetoMidNum(minNum, maxNum);
-		} else if (snpIndelLevel == SnpLevel.HetoMore) {
+		} else if (snpIndelLevel == SnpLevel.HeteroMore) {
 			setSampleSnpIndelHetoMoreNum(minNum, maxNum);
 		} else if (snpIndelLevel == SnpLevel.SnpHomo) {
 			setSampleSnpIndelHomoNum(minNum, maxNum);
@@ -97,11 +97,11 @@ public class SnpGroupFilterInfo {
 	}
 	
 	/**
-	 * <b>当SnpLevel为{@link SnpLevel#HetoMid} 和{@link SnpLevel#HetoMore}时</b>，
+	 * <b>当SnpLevel为{@link SnpLevel#HeteroMid} 和{@link SnpLevel#HeteroMore}时</b>，
 	 * 每个group类只能设定该类型level一次，后设定的覆盖前设定
-	 *  ，且<b>低于该等级的snp类型设定为0个，</b>即如果设定SnpLevel为{@link SnpLevel#HetoMid} ，则{@link SnpLevel#HetoLess} 自动设定为0到0 ;<br><br>
+	 *  ，且<b>低于该等级的snp类型设定为0个，</b>即如果设定SnpLevel为{@link SnpLevel#HeteroMid} ，则{@link SnpLevel#HeteroLess} 自动设定为0到0 ;<br><br>
 	 *  
-	 * 其他的SnpLevel如{@link SnpLevel#HetoLess} 或 {@link SnpLevel#RefHomo}等可以设定多次，并且只会改变自身数量
+	 * 其他的SnpLevel如{@link SnpLevel#HeteroLess} 或 {@link SnpLevel#RefHomo}等可以设定多次，并且只会改变自身数量
 	 * 
 	 * 过滤用，输入snp的类型，以及样本的数量区间<br>
 	 * 当输入{@link SnpLevel#RefHomo}时，功能和{@link #setSampleSnpRegion(SnpLevel, int, int)} 一致<br>
@@ -120,12 +120,12 @@ public class SnpGroupFilterInfo {
 		
 		if (snpIndelLevel == SnpLevel.RefHomo) {
 			setSampleRefHomoNum(minNum, maxNum);
-		} else if (snpIndelLevel == SnpLevel.HetoLess) {
+		} else if (snpIndelLevel == SnpLevel.HeteroLess) {
 			setSampleSnpIndelNum(minNum, maxNum);
-		} else if (snpIndelLevel == SnpLevel.HetoMid) {
+		} else if (snpIndelLevel == SnpLevel.HeteroMid) {
 			setSampleSnpIndelNum(minNum, maxNum);
 			setSampleSnpIndelHetoLessNum(0, 0);
-		} else if (snpIndelLevel == SnpLevel.HetoMore) {
+		} else if (snpIndelLevel == SnpLevel.HeteroMore) {
 			setSampleSnpIndelNum(minNum, maxNum);
 			setSampleSnpIndelHetoLessNum(0, 0);
 			setSampleSnpIndelHetoMidNum(0, 0);
