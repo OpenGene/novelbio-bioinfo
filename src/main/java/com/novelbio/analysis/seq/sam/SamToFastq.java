@@ -181,7 +181,7 @@ public class SamToFastq implements AlignmentRecorder {
 				try {
 					assertPairedMates(firstRecord, samRecord);
 				} catch (Exception e) {
-					System.out.println("error");
+					logger.error("error");
 					return;
 				}
 				

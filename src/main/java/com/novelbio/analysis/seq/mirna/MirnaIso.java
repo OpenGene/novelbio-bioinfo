@@ -1,5 +1,6 @@
 package com.novelbio.analysis.seq.mirna;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.Map;
 
 import com.novelbio.analysis.ExceptionNBCsoft;
 import com.novelbio.analysis.seq.AlignRecord;
+import com.novelbio.analysis.seq.GeneExpTable.EnumAddAnnoType;
 import com.novelbio.analysis.seq.genome.gffOperate.MiRNAList;
 import com.novelbio.analysis.seq.genome.gffOperate.MirPre;
 import com.novelbio.analysis.seq.mapping.Align;
@@ -16,6 +18,7 @@ import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.generalConf.PathDetailNBC;
 
@@ -55,16 +58,18 @@ public class MirnaIso implements AlignmentRecorder {
 		alignSeqReading.setLenMin(17);
 		alignSeqReading.setLenMax(32);
 		alignSeqReading.addAlignmentRecorder(mirnaIso);
-		mirnaIso.setSampleName("DL4R1");
+		mirnaIso.setCurrentCondition("DL4R1");
 		alignSeqReading.run();
 		
 		alignSeqReading = new AlignSeqReading(samfile2);
 		alignSeqReading.addAlignmentRecorder(mirnaIso);
-		mirnaIso.setSampleName("DL5R1");
+		mirnaIso.setCurrentCondition("DL5R1");
 		alignSeqReading.run();
 		
 		mirnaIso.writeToFile("/media/winE/OutMrd1.mrd/testIsoMir2.txt");
 	}
+	
+	/** key为小写 */
 	Map<String, MirIsoUnit> mapMirName2IsoUnit = new LinkedHashMap<>();
 	MiRNAList listMiRNAdat;
 	
@@ -82,12 +87,21 @@ public class MirnaIso implements AlignmentRecorder {
 				throw new ExceptionNBCsoft(mirName + " cannot find this mirName in mirDat");
 			}
 			MirIsoUnit mirnaIsoUnit = new MirIsoUnit(mirPre);
-			mapMirName2IsoUnit.put(mirName, mirnaIsoUnit);
+			mapMirName2IsoUnit.put(mirName.toLowerCase(), mirnaIsoUnit);
 		}
 	}
-	
+	/** 第一次的时候设定，设定listMiRNAdat，miRNA的名字来源于输入的{@link MiRNAList}
+	 * @param listMiRNAdat
+	 */
+	public void setMapMirnaName(MiRNAList listMiRNAdat) {
+		this.listMiRNAdat = listMiRNAdat;
+		for (MirPre mirPre : listMiRNAdat.getMapChrID2LsGff().values()) {
+			MirIsoUnit mirnaIsoUnit = new MirIsoUnit(mirPre);
+			mapMirName2IsoUnit.put(mirPre.getName().toLowerCase(), mirnaIsoUnit);
+		}
+	}
 	/** 设定样本名 */
-	public void setSampleName(String sampleName) {
+	public void setCurrentCondition(String sampleName) {
 		for (MirIsoUnit mirnaIsoUnit : mapMirName2IsoUnit.values()) {
 			mirnaIsoUnit.setCurrentCondition(sampleName);
 		}
@@ -104,7 +118,7 @@ public class MirnaIso implements AlignmentRecorder {
 		if (!alignRecord.isMapped()) {
 			return;
 		}
-		mapMirName2IsoUnit.get(alignRecord.getRefID()).addMirSamRecord(listMiRNAdat, samRecord);
+		mapMirName2IsoUnit.get(alignRecord.getRefID().toLowerCase()).addMirSamRecord(listMiRNAdat, samRecord);
 	}
 
 	@Override
@@ -122,6 +136,52 @@ public class MirnaIso implements AlignmentRecorder {
 			}
 		}
 		txtWrite.close();
+	}
+	
+	/**
+	 * 如果文件夹不存在，会新建文件夹
+	 * @param writeAllCondition
+	 * @param fileName
+	 * @param expTable
+	 * @param enumExpression
+	 */
+	public void writeFile(boolean writeAllCondition, String fileName) {
+		TxtReadandWrite txtWrite = new TxtReadandWrite(fileName, true);
+		for (String mirPreName : mapMirName2IsoUnit.keySet()) {
+			MirIsoUnit mirIsoUnit = mapMirName2IsoUnit.get(mirPreName);
+			List<String[]> lsInfo = null;
+			if (writeAllCondition) {
+				lsInfo = mirIsoUnit.getLsAllCountsNum(EnumExpression.Counts);
+			} else {
+				lsInfo = mirIsoUnit.getLsCountsNum(EnumExpression.Counts);
+			}
+			txtWrite.writefileln();
+			txtWrite.writefileln("#" + mirPreName);
+			for (String[] strings : lsInfo) {
+				txtWrite.writefileln(strings);
+			}
+		}
+		txtWrite.close();
+	}
+	
+	public void read(String existFile) {
+		TxtReadandWrite txtRead = new TxtReadandWrite(existFile);
+		List<String> lsInfo = new ArrayList<>();
+		MirIsoUnit mirIsoUnit = null;
+		for (String content : txtRead.readlines()) {
+			if (content.startsWith("#")) {
+				if (mirIsoUnit != null) {
+					mirIsoUnit.read(lsInfo, EnumAddAnnoType.addNew);
+				}
+				lsInfo = new ArrayList<>();
+				String mirPreName = content.split("#")[1];
+				mirIsoUnit = mapMirName2IsoUnit.get(mirPreName);
+				continue;
+			}
+			lsInfo.add(content);
+		}
+		mirIsoUnit.read(lsInfo, EnumAddAnnoType.addNew);
+		txtRead.close();
 	}
 	
 	

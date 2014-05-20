@@ -14,4 +14,24 @@ ListCodAbsDu<MirMature,ListCodAbs<MirMature>>, MirPre> {
 	public void setGetSeq(boolean isGetSeq) {
 		this.isGetSeq = isGetSeq;
 	}
+	
+	public void addMirMature(MiRNAList miRNAList) {
+		for (MirPre mirPre : miRNAList.getMapChrID2LsGff().values()) {
+			getMapChrID2LsGff().put(mirPre.getName().toLowerCase(), mirPre);
+			if (lsGffDetailAll != null) {
+				lsGffDetailAll.addAll(mirPre.getLsElement());
+			}
+			if (lsNameAll != null) {
+				lsNameAll.addAll(mirPre.getLsNameAll());
+			}
+			if (lsNameNoRedundent != null) {
+				for (MirMature gff : mirPre) {
+					lsNameNoRedundent.add(gff.getNameSingle().toLowerCase());
+				}
+			}
+			if (mapName2DetailNum != null) {
+				mapName2DetailNum.putAll(mirPre.getMapName2DetailAbsNum());
+			}
+		}
+	}
 }

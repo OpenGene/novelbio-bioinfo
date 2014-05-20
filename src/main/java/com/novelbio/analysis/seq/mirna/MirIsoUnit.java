@@ -154,27 +154,41 @@ public class MirIsoUnit extends GeneExpTable {
 		String result = startDotStr + stringFinal.toString() + endDotStr;
 		return result;
 	}
+	
+//	public List<String[]> getLsCountsNum(EnumExpression enumExpression) {
+//		List<String[]> lsInfo = super.getLsCountsNum(enumExpression);
+//		return lsInfo;
+//	}
+	
+	
 	/**
 	 * 注意本方法要和{@link #addIsoMirExp} 中的annotation统一<br>
 	 * 目的是将表达量为0的isoMiRNA删除
 	 */
 	public List<String[]> getLsAllCountsNum(EnumExpression enumExpression) {
-		List<String[]> lsFinal = new ArrayList<>();
 		List<String[]> lsInfo = super.getLsAllCountsNum(enumExpression);
-		//根据不同的mir成熟体来标记iso number
-		//譬如
-		//mir-169-5p_iso1
-		//mir-169-5p_iso2
-		//
-		//mir-169-3p_iso1
-		//mir-169-3p_iso2
-		//
+		return modifyFinalIso(lsInfo);
+	}
+	
+	/**
+	 * 根据不同的mir成熟体来标记iso number
+	 * 譬如
+	 * mir-169-5p_iso1
+	 * mir-169-5p_iso2
+	 * 
+	 * mir-169-3p_iso1
+	 * mir-169-3p_iso2
+	 * @param lsInfo
+	 * @return
+	 */
+	private List<String[]> modifyFinalIso(List<String[]> lsInfo) {
+		List<String[]> lsFinal = new ArrayList<>();
 		Map<String, int[]> mapMirna2IsoNum = new HashMap<>();
 		for (MirMature mirMature : mirPre.getLsElement()) {
 			mapMirna2IsoNum.put(mirMature.getNameSingle(), new int[]{1});
 		}
 		int m = 0;
-		for (String[]info : lsInfo) {
+		for (String[] info : lsInfo) {
 			int sum = 0;
 
 			if (!info[1].contains(SepSign.SEP_ID)) {//说明不是isoMiRNA
@@ -206,8 +220,8 @@ public class MirIsoUnit extends GeneExpTable {
 		Map<String, List<String[]>> mapMirName2LsIsoValue = new HashMap<>();
 		for (String seqIso : mapGene_2_Cond2Exp.keySet()) {
 			List<String> lsAnno = mapGene2Anno.get(seqIso);//annotation 第一个是mirName@@iso 第二个是mir alignment
-			String mirName = lsAnno.get(0).split(SepSign.SEP_ID)[0];
-			
+			String mirName = null;
+			mirName = lsAnno.get(0).split(SepSign.SEP_ID)[0];
 			List<String[]> lsGene2Value = mapMirName2LsIsoValue.get(mirName);
 			if (lsGene2Value == null) {
 				lsGene2Value = new ArrayList<>();
@@ -232,7 +246,7 @@ public class MirIsoUnit extends GeneExpTable {
 		Collections.sort(lsMirName, new Comparator<String>() {
 			public int compare(String o1, String o2) {
 				Integer startO1 = mirPre.searchMirName(o1).getStartAbs();
-				Integer startO2 = mirPre.searchMirName(o2).getStartAbs();
+				Integer startO2 = mirPre.searchMirName(o2).getStartAbs();				
 				return startO1.compareTo(startO2);
 			}
 		});

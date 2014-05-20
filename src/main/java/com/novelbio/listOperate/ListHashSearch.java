@@ -45,7 +45,7 @@ K extends ListCodAbsDu<T, E>, M extends ListAbsSearch<T, E, K>> {
 	 */
 	protected LinkedHashMap<String, M> mapChrID2ListGff;
 	/** 保存所有gffDetailGene */
-	ArrayList<T> lsGffDetailAll = new ArrayList<T>();
+	protected ArrayList<T> lsGffDetailAll = new ArrayList<T>();
 	/** 顺序存储ChrHash中的ID，这个就是ChrHash中实际存储的ID，如果两个Item是重叠的，就取其中的第一个 */
 	protected ArrayList<String> lsNameAll;
 	/**

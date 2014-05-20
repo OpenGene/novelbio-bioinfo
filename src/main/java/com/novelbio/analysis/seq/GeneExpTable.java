@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
 import com.novelbio.base.ExceptionNullParam;
@@ -23,6 +25,16 @@ import com.novelbio.generalConf.TitleFormatNBC;
  * @author zong0jie
  */
 public class GeneExpTable {
+	private static final Logger logger = Logger.getLogger(GeneExpTable.class);
+	
+	public enum EnumAddAnnoType {
+		/** 不添加anno，如果第一次anno已经都加好了就可以用这个 */
+		notAdd,
+		/** 将全部anno都添加进去，当遇到一个全新的文本可以这么做 */
+		addAll,
+		/** 如果发现已经存在的geneName，则跳过；如果发现全新的geneName，就把该Anno添加进去 */
+		addNew
+	}
 	String geneTitleName;
 	/** 基因annotation的title */
 	Set<String> setGeneAnnoTitle = new LinkedHashSet<>();
@@ -53,21 +65,23 @@ public class GeneExpTable {
 
 	
 	/**
+	 * <b>添加前需要指定condition</b>
+	 * 
 	 *  添加counts文本，将其加入mapGene_2_Cond2Exp中
 	 * 同时添加注释信息并设定allCountsNumber为全体reads的累加
 	 *
 	 * @param file 读取的文件
 	 * @param addAnno 是否添加注释，如果本对象已经有了注释，就不可以添加了，否则会出错
 	 */
-	public void read(String file, boolean addAnno) {
+	public void read(String file, EnumAddAnnoType enumAddAnnoType) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(file);
 		List<String> lsFirst3Lines = txtRead.readFirstLines(3);
 		Map<Integer, String> mapCol2Sample = getMapCol2Sample(lsFirst3Lines);
 		txtRead.close();
-		read(file, addAnno, mapCol2Sample);
+		read(file, enumAddAnnoType, mapCol2Sample);
 	}
 	
-	public void read(String file, boolean addAnno, Map<Integer, String> mapCol2Sample) {
+	public void read(String file, EnumAddAnnoType addAnno, Map<Integer, String> mapCol2Sample) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(file);
 		if (mapCol2Sample == null) {
 			txtRead.close();
@@ -78,33 +92,69 @@ public class GeneExpTable {
 		}
 		String[] title = txtRead.readFirstLine().split("\t");
 		geneTitleName = title[0];
-		if (addAnno) {
+		if (addAnno != EnumAddAnnoType.notAdd) {
 			setLsAnnoTitle(title, mapCol2Sample.keySet());
 		}
 	
 		for (String content : txtRead.readlines(2)) {
-			String[] data = content.split("\t");
-			String geneName = data[0];
-			Map<String, Double> mapSample2Value = null;
-			if (mapGene_2_Cond2Exp.containsKey(geneName)) {
-				mapSample2Value = mapGene_2_Cond2Exp.get(geneName);
-			} else {
-				mapSample2Value = new HashMap<>();
-				mapGene_2_Cond2Exp.put(geneName, mapSample2Value);
+			if (content.trim().equals("")) {
+				continue;
 			}
-			for (int i = 1; i < data.length; i++) {
-				if (mapCol2Sample.containsKey(i)) {
-					String sampleName = mapCol2Sample.get(i);
-					Double value = Double.parseDouble(data[i]);
-					mapSample2Value.put(sampleName, value);
-				} else if (addAnno) {
-					mapGene2Anno.put(geneName, data[i]);
-				}
-			}
+			addValue(content.split("\t"), mapCol2Sample, addAnno);
 		}
 		setAllreadsPerConditon();
 		txtRead.close();
 	}
+	
+	/**
+	 * <b>添加前需要指定condition</b>
+	 * 
+	 *  添加counts文本，将其加入mapGene_2_Cond2Exp中
+	 * 同时添加注释信息并设定allCountsNumber为全体reads的累加
+	 *
+	 * @param file 读取的文件
+	 * @param addAnno 是否添加注释，如果本对象已经有了注释，就不可以添加了，否则会出错
+	 */
+	public void read(List<String> lsInfo, EnumAddAnnoType addAnno) {
+		List<String> lsTitles = new ArrayList<>();
+		for (int i = 0; i < Math.min(3, lsInfo.size()); i++) {
+			lsTitles.add(lsInfo.get(i));
+		}
+		if (lsTitles.size() < 3) {
+			lsTitles.add(lsTitles.get(1));
+		}
+		Map<Integer, String> mapCol2Sample = getMapCol2Sample(lsTitles);
+		read(lsInfo, addAnno, mapCol2Sample);
+	}
+	
+	/**
+	 * 
+	 * @param lsInfo 第一行是title
+	 * @param addAnno
+	 * @param mapCol2Sample
+	 */
+	public void read(List<String> lsInfo, EnumAddAnnoType addAnno, Map<Integer, String> mapCol2Sample) {
+		if (mapCol2Sample == null) {
+			return;
+		}
+		for (String string : mapCol2Sample.values()) {
+			setCondition.add(string);
+		}
+		String[] title = lsInfo.get(0).split("\t");
+		geneTitleName = title[0];
+		if (addAnno != EnumAddAnnoType.notAdd) {
+			setLsAnnoTitle(title, mapCol2Sample.keySet());
+		}
+		for (int m = 1; m < lsInfo.size(); m++) {
+			String content = lsInfo.get(m);
+			if (content.trim().equals("")) {
+				continue;
+			}
+			addValue(content.split("\t"), mapCol2Sample, addAnno);
+		}
+		setAllreadsPerConditon();
+	}
+	
 	/**
 	 * @param lsFirst3Lines 前三行
 	 * @return 从0开始计算的col --- sampleName
@@ -141,9 +191,40 @@ public class GeneExpTable {
 			if (colCol.contains(i)) {
 				continue;
 			}
-			setGeneAnnoTitle.add(title[i]);
+			if (!setGeneAnnoTitle.contains(title[i])) {
+				setGeneAnnoTitle.add(title[i]);
+			}
 		}
 	}
+	
+	private void addValue(String[] data, Map<Integer, String> mapCol2Sample, EnumAddAnnoType enumAddAnnoType) {
+		String geneName = data[0];
+		Map<String, Double> mapSample2Value = null;
+		if (mapGene_2_Cond2Exp.containsKey(geneName)) {
+			mapSample2Value = mapGene_2_Cond2Exp.get(geneName);
+		} else {
+			mapSample2Value = new HashMap<>();
+			mapGene_2_Cond2Exp.put(geneName, mapSample2Value);
+		}
+		boolean addAnno = false;
+		if (enumAddAnnoType == EnumAddAnnoType.addAll 
+				|| (enumAddAnnoType == EnumAddAnnoType.addNew && !mapGene2Anno.containsKey(geneName))) {
+			addAnno = true;
+		}
+		
+		for (int i = 1; i < data.length; i++) {
+			if (mapCol2Sample.containsKey(i)) {
+				String sampleName = mapCol2Sample.get(i);
+				Double value = Double.parseDouble(data[i]);
+				mapSample2Value.put(sampleName, value);
+			} else {
+				if (addAnno) {
+					mapGene2Anno.put(geneName, data[i]);
+				}
+			}
+		}
+	}
+	
 	/** 返回一系列基因的名称 */
 	protected Set<String> getSetGeneName() {
 		return mapGene_2_Cond2Exp.keySet();

@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.GeneExpTable;
+import com.novelbio.analysis.seq.GeneExpTable.EnumAddAnnoType;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
 import com.novelbio.analysis.seq.sam.SamMapRate;
@@ -26,6 +27,7 @@ public class CtrlMiRNApipeline implements IntCmdSoft {
 	GeneExpTable expMirMature = new GeneExpTable(TitleFormatNBC.miRNAName);
 	SamMapRate samMapMiRNARate = new SamMapRate();
 	
+	MirnaIso mirnaIso = new MirnaIso();
 	CtrlMiRNAfastq ctrlMiRNAfastq = new CtrlMiRNAfastq();
 	CtrlMiRNApredict ctrlMiRNApredict = new CtrlMiRNApredict();
 	boolean mapMirna = true;
@@ -125,8 +127,8 @@ public class CtrlMiRNApipeline implements IntCmdSoft {
 	
 	/** 读取已有的miRNA信息 */
 	public void readExistMiRNA(String miRNApreFile, String miRNAmatureFile) {
-		expMirPre.read(miRNApreFile, true);
-		expMirMature.read(miRNAmatureFile, true);
+		expMirPre.read(miRNApreFile, EnumAddAnnoType.addNew);
+		expMirMature.read(miRNAmatureFile, EnumAddAnnoType.addNew);
 	}
 
 	public void run() {
@@ -134,6 +136,13 @@ public class CtrlMiRNApipeline implements IntCmdSoft {
 		GffChrAbs gffChrAbs = new GffChrAbs(species);
 		ctrlMiRNAfastq.setMiRNAexp(expMirPre, expMirMature);
 		ctrlMiRNAfastq.setThreadNum(threadNum);
+		
+		ListMiRNAdat listMiRNAdate = new ListMiRNAdat();
+		listMiRNAdate.setSpecies(species);
+		listMiRNAdate.ReadGffarray(PathDetailNBC.getMiRNADat());
+		mirnaIso.setMapMirnaName(listMiRNAdate);
+		
+		ctrlMiRNAfastq.setMirnaIso(mirnaIso);
 		if (mapMirna) {
 			runMapping(gffChrAbs, species, mapPrefix2Fastq);
 			mapPrefix2AlignFile = ctrlMiRNAfastq.getMapPrefix2GenomeSam();
@@ -147,11 +156,12 @@ public class CtrlMiRNApipeline implements IntCmdSoft {
 		if (!lsSpeciesBlastTo.isEmpty()) {
 			blastToOtherSpecies();
 		}
-		expMirMature.writeFile(true, outPath + "/miRNA_All_Counts", EnumExpression.Counts);
-		expMirMature.writeFile(true, outPath + "/miRNA_All_UQ", EnumExpression.UQPM);
+		expMirMature.writeFile(true, outPath + "/miRNA_All_Counts.txt", EnumExpression.Counts);
+		expMirMature.writeFile(true, outPath + "/miRNA_All_UQ.txt", EnumExpression.UQPM);
 
-		expMirPre.writeFile(true, outPath + "/miRNAPre_All_Counts", EnumExpression.Counts);
-		expMirPre.writeFile(true, outPath + "/miRNAPre_All_UQ", EnumExpression.UQPM);
+		expMirPre.writeFile(true, outPath + "/miRNAPre_All_Counts.txt", EnumExpression.Counts);
+		expMirPre.writeFile(true, outPath + "/miRNAPre_All_UQ.txt", EnumExpression.UQPM);
+		mirnaIso.writeToFile(outPath + "/miRNA_Iso.txt");
 		TxtReadandWrite txtWrite = new TxtReadandWrite(outPath + "/miRNAmappingStatistics", true);
 		txtWrite.ExcelWrite(samMapMiRNARate.getLsResult());
 		txtWrite.close();

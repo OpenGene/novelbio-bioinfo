@@ -302,7 +302,9 @@ public class SamRecord implements AlignRecord {
 	public String getReadString() {
 		return samRecord.getReadString();
 	}
-
+	public String getBaseQualityString() {
+		return samRecord.getBaseQualityString();
+	}
 	/**
 	 * 返回第一个记载的bedrecord 没有mapping上就返回null
 	 * bedRecord中的sequence是与fastq一致的sequence
@@ -579,11 +581,16 @@ public class SamRecord implements AlignRecord {
 		return !samRecord.getReadNegativeStrandFlag();
 	}
 
+	/** 比对上的长度 */
 	@Override
 	public int getLength() {
 		return Math.abs(samRecord.getAlignmentEnd() - samRecord.getAlignmentStart()) + 1;
 	}
-
+	/** reads的实际长度，如果是hard clip，就算clip之后的长度 */
+	public int getLengthReal() {
+		return getSeqFasta().Length();
+	}
+	
 	@Override
 	public String getRefID() {
 		return samRecord.getReferenceName();
