@@ -149,12 +149,11 @@ public class CtrlMiRNApredict implements IntCmdSoft {
 		if (samFileNovelMiRNA.getReadsNum(MappingReadsType.allMappedReads) > 0) {
 			SamFileStatistics.saveExcel(samStatisticsPath + FileOperate.getFileName(novelMiRNAsam), samFileNovelMiRNA);
 		}
-		miRNACount.setAlignFile(new SamFile(novelMiRNAsam));
 		mapPrefix2UnmapFq.put(prefix, unmappedFq);
 		samMapMiRNARate.setCurrentCondition(prefix);
 		miRNACount.setSamMapRate(samMapMiRNARate);
 		miRNACount.initial();
-		AlignSeqReading alignSeqReading = getAlignSeqReading(alignSeq, miRNACount);
+		AlignSeqReading alignSeqReading = getAlignSeqReading(new SamFile(novelMiRNAsam), miRNACount);
 		alignSeqReading.running();
 		
 		expMirMature.setCurrentCondition(prefix);

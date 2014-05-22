@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import com.novelbio.analysis.ExceptionNBCsoft;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -40,14 +41,29 @@ public class NCBIchromFaChangeFormat {
 		TxtReadandWrite txtRead = new TxtReadandWrite(chrFile);
 		TxtReadandWrite txtWrite = null;
 		FileOperate.createFolders(FileOperate.getPathName(outFilePrefix));
+		int readNum = 0;
+		for (String content : txtRead.readlines()) {
+			if (content.startsWith(">")) {
+				readNum++;
+			}
+		}
+		txtRead.close();
+		if (readNum > 3000) {
+			throw new ExceptionNBCsoft(readNum + " sequences is too much, can have only 3000 reads max");
+		}
+		txtRead = new TxtReadandWrite(chrFile);
 		for (String content : txtRead.readlines()) {
 			if (content.startsWith(">")) {
 				if (txtWrite != null) {
 					txtWrite.close();
 				}
-				content = content.split(" ")[0];
-				String fileName = FileOperate.changeFileSuffix(outFilePrefix + content.replace(">", ""), "", "fa");
-				txtWrite = new TxtReadandWrite(fileName , true);
+				String fileName = content.split(" ")[0].replace(">", "");
+				if (fileName.endsWith(".")) {
+					fileName = fileName + "fa";
+				} else {
+					fileName = fileName + ".fa";
+				}
+				txtWrite = new TxtReadandWrite(content , true);
 			}
 			txtWrite.writefileln(content);
 		}
