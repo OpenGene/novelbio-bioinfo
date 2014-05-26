@@ -190,7 +190,7 @@ OutDir=6
 				}
 			} else if (tmpResult[3].equals("0")) {
 				tmpResult[4] = -20 + "";
-			} else if (tmpResult[3].equals("Inf")) {
+			} else if (tmpResult[3].toLowerCase().startsWith("Inf")) {
 				tmpResult[4] = 20 + "";
 			} else if (tmpResult[3].equals("NA") || tmpResult[3].equals("None")) {
 				tmpResult[4] = 0 + "";

@@ -7,9 +7,11 @@ import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.mapping.MapLibrary;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.base.ExceptionNullParam;
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
@@ -374,6 +376,23 @@ public class RseQC {
 		}
 		@Deprecated
 		public void setIntronLength(int intronLen) {}
+		
+		public void run() {
+			super.run();
+			//不知道为什么，RSeQC在服务器上跑的时候，saturation的结果就会出不来
+			if (!FileOperate.isFileExistAndBigThanSize(outFile + ".saturation.png", 0)) {
+				String rscript = outFile + ".saturation.r";
+				
+				List<String> lsCmd = new ArrayList<>();
+				lsCmd.add(PathDetail.getRscript());
+				lsCmd.add(rscript.replace("\\", "/"));
+				CmdOperate cmdOperate = new CmdOperate(lsCmd);
+				cmdOperate.run();
+				if (!cmdOperate.isFinishedNormal()) {
+					throw new ExceptionCmd("rseqcError: " + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
+				}
+			}
+		}
 		
 		public void setStrandSpecific(StrandSpecific strandSpecific) {
 			this.strandSpecific = strandSpecific;

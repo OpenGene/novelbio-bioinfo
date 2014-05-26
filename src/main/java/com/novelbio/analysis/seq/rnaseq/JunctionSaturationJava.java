@@ -236,7 +236,7 @@ public class JunctionSaturationJava implements AlignmentRecorder {
 	 * 根据点画曲线图
 	 * @param xySeriesCollection
 	 */
-	private void drawImage(XYSeriesCollection xySeriesCollection,String savePath){
+	private void drawImage(XYSeriesCollection xySeriesCollection,String savePath) {
     	XYSplineRenderer renderer = new XYSplineRenderer();
     	renderer.setBaseShapesVisible(false); //绘制的线条上不显示图例，如果显示的话，会使图片变得很丑陋
     	renderer.setSeriesPaint(0, Color.GREEN); //设置0号数据的颜色。如果一个图中绘制多条曲线，可以手工设置颜色
