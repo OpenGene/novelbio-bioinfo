@@ -434,7 +434,12 @@ public class GeneExpTable {
 		setAllreadsPerConditon();
 
 		List<String[]> lsResult = new ArrayList<>();
-		lsResult.add(getTitle2Ratio());
+		if (isGetRatio) {
+			lsResult.add(getTitle2Ratio());
+		} else {
+			lsResult.add(getTitle());
+		}
+		
 		Map<String, Double> mapCondition2UQ = null; 
 		if (enumExpression == EnumExpression.UQPM || enumExpression == EnumExpression.UQRPKM) {
 			mapCondition2UQ = getMapCond2UQ();
