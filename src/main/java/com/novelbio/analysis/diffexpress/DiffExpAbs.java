@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.base.ExceptionNullParam;
@@ -16,9 +17,11 @@ import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.service.SpringFactory;
 import com.novelbio.generalConf.TitleFormatNBC;
 
@@ -47,9 +50,9 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	double logFCcutoff;
 	double pValueOrFDRcutoff = 0.05;
 	
-	/** 做差异基因的时候各个样本表达量的值之和不能小于等于该数值 */
+	/** 做差异基因的时候各个样本表达量的值之和不能小于该数值 */
 	double minSampleSumNum = 0;
-	/** 做差异基因的时候每个样本表达量的值不能都小于等于该数值
+	/** 做差异基因的时候每个样本表达量的值不能都小于该数值
 	 * 意思如果为 2, 3, 2, 1.3, 3
 	 * 则当值设定为3时，上述基因删除 
 	 */
@@ -67,7 +70,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	 * 对应平均表达值
 	 */
 	Map<String, Map<String, Double>> mapGeneID_2_Sample2MeanValue;
-	/**基因唯一ID，必须没有重复 */
+	/**基因唯一ID，必须没有重复，从0开始计算 */
 	int colAccID = 0;
 	/**
 	 * 比较组与相应的输出文件名，可以输入一系列组
@@ -87,6 +90,12 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	/** 是否提高算法的敏感度 */
 	boolean isSensitive = false;
 	
+	/** 结果中是否添加注释 */
+	boolean isAddAnno = false;
+	/** 结果中是否添加原始信号值 */
+	boolean isAddInputData = true;
+	int taxId;
+	
 	String scriptContent;
 	TitleFormatNBC titlePvalueFdr = TitleFormatNBC.FDR;
 		
@@ -96,13 +105,21 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		setFileNameRawdata();
 	}
 	
-	/** 做差异基因的时候各个样本表达量的值之和不能小于等于该数值
+	/** 做差异基因的时候各个样本表达量的值之和不能小于该数值
 	 * 譬如如果多个样本表达量都为0，那就不考虑了
 	 * @param addAllLine 默认为0，意思就是多个样本表达量之和为0 就不考虑
-	 * 是小于等于的关系
+	 * 是小于的关系，不包括等于
 	 */
 	public void setMinSampleSumNum(double minSampleSumNum) {
 		this.minSampleSumNum = minSampleSumNum;
+	}
+	/** 做差异基因的时候每个样本表达量的值不能都小于该数值
+	 * 意思如果为 2, 3, 2, 1.3, 3
+	 * 则当值设定为3时，上述基因删除
+	 * @param minSampleSepNum 是小于的关系，不包括等于
+	 */
+	public void setMinSampleSepNum(double minSampleSepNum) {
+		this.minSampleSepNum = minSampleSepNum;
 	}
 	/** 设定是哪一种算法 */
 	private void setEnumDifGene(EnumDifGene enumDifGene) {
@@ -272,23 +289,27 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	 * 将输入的文件重整理成所需要的txt格式写入文本
 	 */
 	protected void writeToGeneFile() {
+		lsGeneInfo = removeDuplicate();
+		
 		TxtReadandWrite txtWrite = new TxtReadandWrite(fileNameRawdata, true);
 		List<String[]> lsAnalysisGeneInfo = getAnalysisGeneInfo();
 		String[] title = lsAnalysisGeneInfo.get(0);
-		lsAnalysisGeneInfo = removeDuplicate(lsAnalysisGeneInfo.subList(1, lsAnalysisGeneInfo.size()));
 		txtWrite.writefileln(title);
-	
+		
+		int m = 0;
 		for (String[] info : lsAnalysisGeneInfo) {
+			if (m++ <= 0) continue; //跳过第一行
+			
 			double sum = 0;
 			boolean biggerThanMinSampleSep = false;
 			for (int i = 1; i < info.length; i++) {
 				double num = Double.parseDouble(info[i]);
-				if (num > minSampleSepNum) {
+				if (num >= minSampleSepNum) {
 					biggerThanMinSampleSep = true;
 				}
 				sum += num;
 			}
-			if ((minSampleSumNum < 0 || sum > minSampleSumNum)
+			if ((minSampleSumNum < 0 || sum >= minSampleSumNum)
 					&& (minSampleSepNum < 0 || biggerThanMinSampleSep) 
 				) {
 				txtWrite.writefileln(info);
@@ -296,6 +317,18 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		}
 		txtWrite.close();
 	}
+	
+	/** 将lsGeneInfo去重复 */
+	protected List<String[]> removeDuplicate() {
+		ArrayList<Integer> lsColID = new ArrayList<Integer>();
+		for (String[] col2Group : lsSampleColumn2GroupName) {
+			lsColID.add(Integer.parseInt(col2Group[0]) - 1);
+		}
+		List<String[]> lsTmpResult = MathComput.getMedian(lsGeneInfo.subList(colAccID, lsGeneInfo.size()), 1, lsColID);
+		lsTmpResult.add(0, lsGeneInfo.get(0));
+		return lsTmpResult;
+	}
+	
 	/**
 	 * 获得选定的基因ID和具体值
 	 * 排序方式按照输入的lsSampleColumn2GroupName进行排序，不做调整
@@ -328,13 +361,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		return lsResultGeneInfo;
 	}
 	
-	protected List<String[]> removeDuplicate(List<String[]> lsGeneInfo) {
-		ArrayList<Integer> lsColID = new ArrayList<Integer>();
-		for (int i = 2; i <= lsGeneInfo.size(); i++) {
-			lsColID.add(i);
-		}
-		return MathComput.getMedian(lsGeneInfo, 1, lsColID);
-	}
+
 	
 	private void setMapSample_2_time2value() {
 		mapGeneID_2_Sample2MeanValue = new HashMap<>();
@@ -428,6 +455,11 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	 * 拦截在其完成之后
 	 */
 	public void modifyResult() {
+		ArrayListMultimap<String, Integer> mapGroup2LsColId = ArrayListMultimap.create();
+		for (String[] col2Group : lsSampleColumn2GroupName) {
+			mapGroup2LsColId.put(col2Group[1], Integer.parseInt(col2Group[0]) - 1);
+		}
+		
 		for (Entry<String, String[]> entry : mapOutFileName2Compare.entrySet()) {
 			String fileName = entry.getKey();
 			String[] groupPaire = entry.getValue();
@@ -438,18 +470,68 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 			//防止R还没输出结果就去读取
 			try { Thread.sleep(50); } catch (Exception e) { }
 			
-//			TxtReadandWrite txtOutFinal = new TxtReadandWrite(fileName, true);
-//			ExcelOperate excelOperate = new ExcelOperate(fileName);
-//			excelOperate.setNBCExcel(true);
-//			excelOperate.WriteExcel(1, 1, lsResult);
-//			excelOperate.Close();
-			
 			fileName = FileOperate.changeFileSuffix(fileName, "", "xls");
 			TxtReadandWrite txtOutFinal = new TxtReadandWrite(fileName, true);
+			lsResult = addInputDataAndAnno(groupPaire, lsResult, mapGroup2LsColId);
 			txtOutFinal.ExcelWrite(lsResult);
 			txtOutFinal.close();
 		}
 	}
+	
+	/** 添加表达值和注释信息
+	 * @param groupPaire
+	 * @param lsDifGeneResult 第一行是title
+	 * @param mapGroup2LsColId group--colId的list，注意colid从0开始计算
+	 * @return
+	 */
+	private List<String[]> addInputDataAndAnno(String[] groupPaire, List<String[]> lsDifGeneResult, ArrayListMultimap<String, Integer> mapGroup2LsColId) {
+		if (!isAddAnno && !isAddInputData) return lsDifGeneResult;
+		
+		List<String[]> lsResult = new ArrayList<>();
+		List<String> lsTitle = ArrayOperate.converArray2List(lsDifGeneResult.get(0));
+		Map<String, String[]> mapGeneName2LsValue = new HashMap<>();
+		for (String[] info : lsGeneInfo) {
+			mapGeneName2LsValue.put(info[colAccID], info);
+		}
+		List<Integer> lsColTreat = null, lsColCtrl = null;
+		if (isAddInputData) {
+			lsColTreat = mapGroup2LsColId.get(groupPaire[0]);
+			lsColCtrl = mapGroup2LsColId.get(groupPaire[1]);
+			
+			for (Integer colTreat : lsColTreat) {
+				lsTitle.add(lsGeneInfo.get(0)[colTreat]);
+			}
+			for (Integer colCtrl : lsColCtrl) {
+				lsTitle.add(lsGeneInfo.get(0)[colCtrl]);
+			}
+		}
+		
+		if (isAddAnno) {
+			lsTitle.add(TitleFormatNBC.Description.toString());
+		}
+		lsResult.add(lsTitle.toArray(new String[0]));
+		
+		for (int i = 1; i < lsDifGeneResult.size(); i++) {
+			String[] difgene = lsDifGeneResult.get(i);
+			List<String> lsGene = ArrayOperate.converArray2List(difgene);
+			if (isAddInputData) {
+				String[] lsValues = mapGeneName2LsValue.get(lsGene.get(0));
+				for (Integer colTreat : lsColTreat) {
+					lsGene.add(lsValues[colTreat]);
+				}
+				for (Integer colCtrl : lsColCtrl) {
+					lsGene.add(lsValues[colCtrl]);
+				}
+			}
+			if (isAddAnno) {
+				GeneID geneID = new GeneID(lsGene.get(0), taxId);
+				lsGene.add(geneID.getDescription());
+			}
+			lsResult.add(lsGene.toArray(new String[0]));
+		}
+		return lsResult;
+	}
+	
 	protected abstract List<String[]> modifySingleResultFile(String outFileName, String treatName, String controlName);
 	
 	/** 删除中间文件 */

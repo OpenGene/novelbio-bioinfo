@@ -158,18 +158,14 @@ public class DiffExpDESeq extends DiffExpAbs {
 			}
 			lsResultGeneInfo.add(tmpResult);
 		}
-		return lsResultGeneInfo;
-	}
-	
-	protected List<String[]> removeDuplicate(List<String[]> lsGeneInfo) {
-		List<String[]> lsResult = super.removeDuplicate(lsGeneInfo);
-		for (int i = 1; i < lsResult.size(); i++) {
-			String[] strings = lsResult.get(i);
+		
+		for (int i = 1; i < lsResultGeneInfo.size(); i++) {
+			String[] strings = lsResultGeneInfo.get(i);
 			for (int j = 1; i < strings.length; i++) {
 				strings[j] = (int)Double.parseDouble(strings[j]) + "";
 			}
 		}
-		return lsResult;
+		return lsResultGeneInfo;
 	}
 	
 	@Override

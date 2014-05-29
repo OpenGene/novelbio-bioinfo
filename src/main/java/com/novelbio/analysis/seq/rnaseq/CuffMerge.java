@@ -10,6 +10,7 @@ import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
@@ -102,7 +103,7 @@ public class CuffMerge implements IntCmdSoft {
 		tmpGtfRecord = outputPrefix + "gtfList" + DateUtil.getDateAndRandom();
 		TxtReadandWrite txtWrite = new TxtReadandWrite(tmpGtfRecord , true);
 		for (String string : lsGtfTobeMerged) {
-			txtWrite.writefileln(string);
+			txtWrite.writefileln(FileHadoop.convertToLocalPath(string));
 		}
 		txtWrite.close();
 		return tmpGtfRecord;

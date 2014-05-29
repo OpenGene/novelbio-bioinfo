@@ -26,7 +26,8 @@ public class SeqHash implements SeqHashInt, Closeable {
 	Boolean TOLOWCASE = null;
 	
 	/**
-	 * 适合小文件，直接读入内存，不建立索引
+	 * 小于100MB的直接读入内存，不建立索引
+	 * 大于100MB的建索引读
 	 * <b>不会建立文件夹</b><p>
 	 * 重名文件就返回，认为一样的东西
 	 * @param chrFile 序列文件或序列文件夹

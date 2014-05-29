@@ -213,6 +213,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
 		String outFile = getDifGeneFileName(excelFileName);
 		List<List<String>> lsResult = getLsDifGene();
 		
+		FileOperate.DeleteFileFolder(outFile);
 		ExcelOperate excelOperate = new ExcelOperate(outFile);
 		excelOperate.setNBCExcel(true);
 		excelOperate.WriteExcel(lsResult);

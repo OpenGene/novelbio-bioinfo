@@ -454,7 +454,10 @@ public class CufflinksGTF implements IntCmdSoft {
 	/** 最后再获得 */
 	@Override
 	public List<String> getCmdExeStr() {
-		lsCmd.add(0, "cufflinks version:" + getVersion());
+		String version = getVersion();
+		if (version != null) {
+			lsCmd.add(0, "cufflinks version:" + getVersion());
+		}
 		return lsCmd;
 	}
 	
@@ -464,7 +467,10 @@ public class CufflinksGTF implements IntCmdSoft {
 		CmdOperate cmdOperate = new CmdOperate(lsCmdVersion);
 		cmdOperate.run();
 		List<String> lsInfo = cmdOperate.getLsErrOut();
-		String cufflinksVersion = lsInfo.get(0).toLowerCase().replace("cufflinks", "").trim();
+		String cufflinksVersion = "";
+		try {
+			cufflinksVersion = lsInfo.get(0).toLowerCase().replace("cufflinks", "").trim();
+		} catch (Exception e) {}
 		return cufflinksVersion;
 	}
 }

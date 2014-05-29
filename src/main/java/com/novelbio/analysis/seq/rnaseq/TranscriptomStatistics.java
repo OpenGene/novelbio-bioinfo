@@ -70,7 +70,9 @@ public class TranscriptomStatistics {
 			for (GffDetailGene gffDetailGene : lsGene) {
 				allIsoNewNum = allIsoNewNum + gffDetailGene.getLsCodSplit().size();
 			}
-			addCodingGeneNum(gffGeneCluster);
+			if (seqFastaHash != null) {
+				addCodingGeneNum(gffGeneCluster);
+			}
 		}
 		//已有的进行修正
 		else {

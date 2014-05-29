@@ -47,10 +47,10 @@ public class DiffExpLimma extends DiffExpAbs{
 	 * 将输入的文件重整理成所需要的txt格式写入文本
 	 */
 	protected void writeToGeneFile() {
+		lsGeneInfo = removeDuplicate();
 		TxtReadandWrite txtWrite = new TxtReadandWrite(fileNameRawdata, true);
 		List<String[]> lsAnalysisGeneInfo = getAnalysisGeneInfo();
 		String[] title = lsAnalysisGeneInfo.get(0);
-		lsAnalysisGeneInfo = removeDuplicate(lsAnalysisGeneInfo.subList(1, lsAnalysisGeneInfo.size()));
 		txtWrite.writefileln(title);
 		// 在这里取log
 		for (int i = 0; i < lsAnalysisGeneInfo.size(); i++) {
