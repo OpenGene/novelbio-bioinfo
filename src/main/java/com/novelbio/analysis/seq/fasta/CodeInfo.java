@@ -290,7 +290,7 @@ class CodeInfo {
 	 * @param sequence
 	 * @return
 	 * 0：seq 出错则返回null
-	 * 1：如果出错，记录出错位置
+	 * 1：如果出错，记录出错位置，从0开始计算，计算的是输入sequence的位置
 	 */
 	static String[] reverseComplement(String sequence) {
 		String[] result = new String[2];

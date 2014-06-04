@@ -163,7 +163,7 @@ public class SeqFasta implements Cloneable {
 	private String reservecomplement(String sequence) {
 		String[] revSeq = CodeInfo.reverseComplement(sequence);
 		if (revSeq[1] != null) {
-			logger.error(SeqName + " 含有未知碱基 " + revSeq[1]);
+			logger.error(SeqName + " 含有未知碱基 " + revSeq[1] + " " + sequence.toCharArray()[Integer.parseInt(revSeq[1])]);
 		}
 		return revSeq[0];
 	}

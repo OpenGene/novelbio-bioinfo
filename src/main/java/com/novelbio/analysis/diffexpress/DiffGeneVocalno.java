@@ -186,7 +186,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
 	/** 
 	 * 设定用pvalue还是fdr卡，以及卡的阈值
 	 * @param titlePvalueFdr
-	 * @param threshold
+	 * @param threshold 小于等于
 	 */
 	public void setThreshold(TitleFormatNBC titlePvalueFdr, double threshold) {
 		this.titlePvalueFDR = titlePvalueFdr;
