@@ -62,7 +62,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	boolean isFastq = false;
 	
 	public NovelMiRNADeep() {
-		SoftWareInfo softWareInfo = new SoftWareInfo(softWareMap);
+		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.mirDeep);
 		mirDeepPath = softWareInfo.getExePathRun();
 		mapBowtie = MapDNA.creatMapDNA(softWareMap);
 	}
