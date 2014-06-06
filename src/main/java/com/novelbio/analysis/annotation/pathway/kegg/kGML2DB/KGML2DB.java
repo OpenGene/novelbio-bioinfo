@@ -215,6 +215,8 @@ public class KGML2DB
 		if (servKPathway.queryKGpathway(kGpathway)==null)
 		{
 			servKPathway.insertKGpathway(kGpathway);
+		} else {
+			servKPathway.updateKGpathway(kGpathway);
 		}
 		
 		//////////////////装入reaction和substrate//////////////////////////////////////////////////////////////////

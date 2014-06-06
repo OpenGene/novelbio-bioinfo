@@ -259,9 +259,9 @@ import com.novelbio.generalConf.TitleFormatNBC;
 				//因为lslsInfo的第一行是title，所以要加上1行以保持一致
 				List<String> lsValue = new ArrayList<>(lslsInfo.get(i+1));
 				if (logfc >= upfc) {
-					lsValue.add("up");
+					lsValue.add(getLastCol()+1, "up");
 				} else {
-					lsValue.add("down");
+					lsValue.add(getLastCol()+1, "down");
 				}
 				lslsDifGene.add(lsValue);
 			}
@@ -294,11 +294,15 @@ import com.novelbio.generalConf.TitleFormatNBC;
 			}
 		});
 		List<String> lsTitle = new ArrayList<>(lslsInfo.get(0));
-		lsTitle.add(TitleFormatNBC.Style.toString());
+		lsTitle.add(getLastCol()+1, TitleFormatNBC.Style.toString());
 		lslsDifGene.add(0, lsTitle);
 		return lslsDifGene;
 	}
 	
+	/** 获得最靠后的一列，从0开始计算 */
+	private int getLastCol() {
+		return Math.max(pvalueCol, Math.max(fdrCol, logfcCol));
+	}
 	/**
 	 * 画图，写图片的配置描述文件
 	 * 并返回图片路径
@@ -373,7 +377,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
 				if (pvalue < THRESHOLD1) pValue1Num++;
 				if (pvalue < THRESHOLD2)pValue2Num++;
 			}
-
+			
 			if (FDR1Num >= QUANUM) fdrUpThresh1++;
 			if (FDR2Num >= QUANUM) fdrUpThresh2++;
 			if (pValue1Num >= QUANUM) pvalueUpThresh1++;
