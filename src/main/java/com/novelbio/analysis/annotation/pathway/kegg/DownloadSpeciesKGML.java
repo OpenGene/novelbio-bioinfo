@@ -1,7 +1,12 @@
 package com.novelbio.analysis.annotation.pathway.kegg;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.htmlparser.Node;
 import org.htmlparser.NodeFilter;
@@ -14,14 +19,26 @@ import org.htmlparser.util.ParserException;
 import org.htmlparser.util.SimpleNodeIterator;
 
 import com.novelbio.base.dataOperate.HttpFetch;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.species.Species;
 
-public class DownloadKGML {
+public class DownloadSpeciesKGML {
 	String keggPathwayUri = "http://www.genome.jp/kegg/pathway.html";
 	String keggOrgUri = "http://www.genome.jp/kegg-bin/get_htext?htext=br08601_KEGPATH.keg&hier=5";
 	String speciesKeggName;
 	
 	HttpFetch httpFetch = HttpFetch.getInstance();
+	
+	/** 下载kegg的线程池 */
+	ThreadPoolExecutor executorDownload = new ThreadPoolExecutor(5, 8, 5000,
+			TimeUnit.MICROSECONDS, new ArrayBlockingQueue<Runnable>(1000));
+	LinkedList<Future<DownloadKGMLunit>> lsFutureDownload = new LinkedList<Future<DownloadKGMLunit>>();
+
+	String savePath;
+	/** 线程池的最大容量 */
+	int numMaxPoolNum = 1000;
+	
+	boolean isStart = false;
 	
 	/**
 	 * 输入hsa等
@@ -30,13 +47,57 @@ public class DownloadKGML {
 	public void setSpeciesKeggName(String speciesKeggName) {
 		this.speciesKeggName = speciesKeggName;
 	}
-	/** 输入物种，和{@link #setSpeciesKeggName(String)} 二选一 */
-	public void setSpecies(Species species) {
-		this.speciesKeggName = species.getAbbrName();
+	
+	/** 后面不加"/" **/
+	public void setSavePath(String savePath) {
+		this.savePath = savePath;
+	}
+	
+	/** 这个先开，并且是单开一个线程运行 */
+	public void download() throws InterruptedException {
+		List<String> lsMapId = getLsPathMapId();
+		String path = savePath + speciesKeggName + FileOperate.getSepPath();
+		FileOperate.createFolders(path);
+		
+		for (String string : lsMapId) {
+			DownloadKGMLunit downloadKGMLunit = new DownloadKGMLunit();
+			downloadKGMLunit.setHttpFetch(httpFetch);
+			downloadKGMLunit.setMapId(string);
+			downloadKGMLunit.setSpeciesKeggId(speciesKeggName);
+			downloadKGMLunit.setSavePath(savePath+speciesKeggName);
+			
+			while (executorDownload.getQueue().size() > 1000) {
+				Thread.sleep(1000);
+			}
+			lsFutureDownload.add(executorDownload.submit(downloadKGMLunit));
+			isStart = true;
+		}
+	}
+
+	/** 这个后运行 */
+	public void executDownLoad() {
+		try {
+			while (!isStart) {
+				Thread.sleep(100);
+			}
+			
+			//将executorGetUrlPrepToDownload中间的内容运行直到完毕
+			while (executorDownload.getActiveCount() > 0 || lsFutureDownload.size() > 0) {
+				Future<DownloadKGMLunit> futureToDownload = lsFutureDownload.poll();
+				if (!futureToDownload.isDone() ) {
+					lsFutureDownload.add(futureToDownload);
+				}
+				Thread.sleep(100);
+			}
+			executorDownload.shutdown();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+
 	}
 	
 	/** 获得pathway的map的Id */
-	private List<String> getPathMapId() {
+	private List<String> getLsPathMapId() {
 		httpFetch.setUri(keggPathwayUri);
 		httpFetch.queryExp(3);
 		try {

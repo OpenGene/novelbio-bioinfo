@@ -1,5 +1,7 @@
 package com.novelbio.analysis.annotation.pathway.kegg;
 
+import java.util.concurrent.Callable;
+
 import org.htmlparser.Node;
 import org.htmlparser.NodeFilter;
 import org.htmlparser.Parser;
@@ -18,7 +20,7 @@ import com.novelbio.base.dataOperate.HttpFetch;
  * @author zong0jie
  *
  */
-public class DownloadKGMLunit {
+public class DownloadKGMLunit implements Callable<DownloadKGMLunit> {
 	static String keggOrgUri = "http://www.genome.jp/kegg-bin/get_htext?htext=br08601_KEGPATH.keg&hier=5";
 	static String keggUri = "http://www.genome.jp";
 	HttpFetch keggFetch;
@@ -30,6 +32,11 @@ public class DownloadKGMLunit {
 	/** 保存路径 */
 	String savePath;
 	
+	/** 重试次数，意思在线程池中失败后的重试次数 */
+	int retryNum = 0;
+	
+	boolean isSucess;
+	
 	/** hsa等 */
 	public void setSpeciesKeggId(String speciesKeggId) {
 		this.speciesKeggId = speciesKeggId;
@@ -37,7 +44,6 @@ public class DownloadKGMLunit {
 	public void setMapId(String mapId) {
 		this.mapId = mapId;
 	}
-	
 	/** 保存路径，后面不会自动加上sep */
 	public void setSavePath(String savePath) {
 		this.savePath = savePath;
@@ -46,15 +52,34 @@ public class DownloadKGMLunit {
 	public void setHttpFetch(HttpFetch httpFetch) {
 		this.keggFetch = HttpFetch.getInstance( httpFetch);
 	}
+	/** 重试次数，意思在线程池中失败后的重试次数 */
+	public int getRetryNum() {
+		return retryNum;
+	}
+	/** 是否成功运行 */
+	public boolean isSucess() {
+		return isSucess;
+	}
+	
+	@Override
+	public DownloadKGMLunit call() throws Exception {
+		isSucess = false;
+		try {
+			runDownload();
+			isSucess = true;
+		} catch (Exception e) { }
+		return this;
+	}
 	
 	public void runDownload() throws ParserException {
+		retryNum++;
 		String pathUri = getPathUri();
 		if (pathUri != null) {
 			download(pathUri);
 		}
 	}
 	
-	/** 返回本物中该pathway的uri，没有该pathway则返回null */
+	/** 返回本物中该pathway的uri，就是可以下载图片和kgml的那个页面，没有该pathway则返回null */
 	private String getPathUri() throws ParserException {
 		String keggOrgUri = DownloadKGMLunit.keggOrgUri.replace("KEGPATH", mapId);
 		keggFetch.setUri(keggOrgUri);
@@ -69,6 +94,7 @@ public class DownloadKGMLunit {
 		return uri;
 	}
 	
+	/** 给定 可以下载图片和kgml的那个页面，下载kgml文件和相关图片 */
 	private void download(String speciesPathUri) throws ParserException {
 		keggFetch.setUri(speciesPathUri);
 		keggFetch.queryExp(3);
@@ -83,7 +109,7 @@ public class DownloadKGMLunit {
 			keggFetch.download(savePath + saveName + ".xml");
 		}
 		
-		String picUri = getKGMLuri(keggPage);
+		String picUri = getPicUri(keggPage);
 		if (picUri == null) {
 			return;
 		}
@@ -125,5 +151,6 @@ public class DownloadKGMLunit {
 		System.out.println(kgmlUri);
 		return keggUri + kgmlUri;
 	}
+
 	
 }
