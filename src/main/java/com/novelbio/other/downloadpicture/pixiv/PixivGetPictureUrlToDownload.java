@@ -110,7 +110,7 @@ public class PixivGetPictureUrlToDownload extends GetPictureUrl {
 		String[] ss = url.split(" ");
 		for (String string : ss) {
 			if (string.contains("href=")) {
-				resultUrl = string.replace("href=", "").replace("\"", "").trim();
+				resultUrl = string.split("href=")[1].replace("\"", "").trim();
 				break;
 			}
 		}
@@ -130,7 +130,7 @@ public class PixivGetPictureUrlToDownload extends GetPictureUrl {
 		String[] ss = rawUrl.split(" ");
 		for (String string : ss) {
 			if (string.contains("src")) {
-				resultUrl = string.replace("src=", "").replace("\"", "").trim();
+				resultUrl = string.split("src=")[1].replace("\"", "").trim();
 			}
 		}
 		resultUrl = HttpFetch.decode(resultUrl);

@@ -90,7 +90,8 @@ public class DownloadKGMLunit implements Callable<DownloadKGMLunit> {
 		if (nodeList.size() == 0) {
 			return null;
 		}
-		String uri = keggUri + nodeList.elementAt(0).getText().replace("a", "").replace("href=", "").replace("\"", "").trim();
+		String uri = nodeList.elementAt(0).getText();
+		uri = keggUri + uri.split("href=")[1].split(" ")[0].replace("\"", "").trim();
 		return uri;
 	}
 	
@@ -131,7 +132,8 @@ public class DownloadKGMLunit implements Callable<DownloadKGMLunit> {
 			return null;
 		}
 		Node nodeDownloadKGML = nodeList.elementAt(0).getParent();
-		String kgmlUri = nodeDownloadKGML.getText().replace("a", "").replace("href=", "").replace("\"", "").trim();
+		String kgmlUri = nodeDownloadKGML.getText();
+		kgmlUri = kgmlUri.split("href=")[1].split(" ")[0].replace("\"", "");
 		return kgmlUri;
 	}
 	

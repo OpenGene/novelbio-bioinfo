@@ -52,8 +52,11 @@ public class mytest {
 	private static final Logger logger = Logger.getLogger(mytest.class);
 	static boolean is;
 	public static void main(String[] args) {
-		MapSplice mapSplice = new MapSplice();
-		System.out.println(mapSplice.getVersionMapSplice());
+		SamFile samFile = new SamFile("D:/zongjie/Desktop/L4_GENfpoDABDMAAPEI-11_BWA_no_map_Bac.sam");
+		for (SamRecord samRecord : samFile.readLines()) {
+			System.out.println(samRecord.toString());
+		}
+		System.out.println(samFile.isPairend());
 	}
 	
 	/** 将有问题的fastq文件整理为正常的 */

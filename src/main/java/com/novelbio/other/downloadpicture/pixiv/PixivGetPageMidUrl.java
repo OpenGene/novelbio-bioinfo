@@ -115,7 +115,7 @@ public class PixivGetPageMidUrl {
 	private String getPictureUrl(Node nodePicture) {
 		String urlAll = nodePicture.getText();
 		 urlAll = HttpFetch.decode(urlAll).trim();
-		 urlAll = urlAll.replace("a", "").replace("href=", "").replace("\"", "").trim();
+		 urlAll = urlAll.split("href=")[1].replace("\"", "").trim();
 		 urlAll = urlAll.split(" ")[0];
 		 if (urlAll.startsWith("/")) {
 			urlAll = urlAll.substring(1);

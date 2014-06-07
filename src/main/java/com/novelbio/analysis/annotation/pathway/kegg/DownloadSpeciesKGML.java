@@ -38,6 +38,8 @@ public class DownloadSpeciesKGML {
 	/** 线程池的最大容量 */
 	int numMaxPoolNum = 1000;
 	
+	List<String> lsMapId;
+	
 	boolean isStart = false;
 	
 	/**
@@ -53,9 +55,19 @@ public class DownloadSpeciesKGML {
 		this.savePath = savePath;
 	}
 	
+	/** 获得pathway的map的Id */
+	public void fetchPathMapId() {
+		httpFetch.setUri(keggPathwayUri);
+		httpFetch.queryExp(3);
+		try {
+			lsMapId = getLsPathMapIds(httpFetch.getResponse());
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
 	/** 这个先开，并且是单开一个线程运行 */
 	public void download() throws InterruptedException {
-		List<String> lsMapId = getLsPathMapId();
 		String path = savePath + speciesKeggName + FileOperate.getSepPath();
 		FileOperate.createFolders(path);
 		
@@ -96,17 +108,6 @@ public class DownloadSpeciesKGML {
 
 	}
 	
-	/** 获得pathway的map的Id */
-	private List<String> getLsPathMapId() {
-		httpFetch.setUri(keggPathwayUri);
-		httpFetch.queryExp(3);
-		try {
-			return getLsPathMapIds(httpFetch.getResponse());
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
 	/** 获得全体kegg的pathwayId */
 	private List<String> getLsPathMapIds(String keggPage) throws ParserException {
 		List<String> lsKegPath = new ArrayList<>();
@@ -122,8 +123,9 @@ public class DownloadSpeciesKGML {
         while (iterator.hasMoreNodes()) {
         	//每个pathway的node
             Node nodePathway = iterator.nextNode();
-           if(nodePathway.getText().contains("show_pathway")) {
-        	   String pathId = nodePathway.getText().split("map=")[1].split("&")[0];
+            String pathStr = nodePathway.getText();
+           if(pathStr.contains("show_pathway")) {
+        	   String pathId = pathStr.split("show_pathway\\?")[1].split("&")[0].replace("map=", "").replace("\"", "");
         	   lsKegPath.add(pathId);
            }
         }

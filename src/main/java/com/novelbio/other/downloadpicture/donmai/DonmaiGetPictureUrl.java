@@ -85,7 +85,7 @@ public class DonmaiGetPictureUrl extends GetPictureUrl {
 			}
 	    	for (String string : ss) {
 				if (string.contains("src=")) {
-					String[] ss2 = string.replace("src=", "").replace("\"", "").trim().split("/");
+					String[] ss2 = string.split("src=")[1].replace("\"", "").trim().split("/");
 					String pictureUrl = "http://hijiribe.donmai.us/data/" + ss2[ss2.length - 1];
 					if (pixivGetPathExistPic != null && pixivGetPathExistPic.isPicAlreadyHave(pictureUrl)) {
 						continue;

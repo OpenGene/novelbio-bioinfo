@@ -7,6 +7,13 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.species.Species;
 
 public class DownloadKEGG {
+	public static void main(String[] args) {
+		DownloadKEGG downloadKEGG = new DownloadKEGG();
+		downloadKEGG.addSpecies("hsa");
+		downloadKEGG.setSavePath("D:\\zongjie\\Desktop\\Life\\");
+		downloadKEGG.download();
+	}
+	
 	Set<String> setSpecies = new LinkedHashSet<>();
 	String savePath;
 	
@@ -27,14 +34,10 @@ public class DownloadKEGG {
 			final DownloadSpeciesKGML downloadSpeciesKGML = new DownloadSpeciesKGML();
 			downloadSpeciesKGML.setSavePath(savePath);
 			downloadSpeciesKGML.setSpeciesKeggName(speciesAbbr);
+			downloadSpeciesKGML.fetchPathMapId();
 			Thread thread = new Thread(new Runnable() {
-				@Override
 				public void run() {
-					try {
-						downloadSpeciesKGML.download();
-					} catch (Exception e) {
-						// TODO: handle exception
-					}
+					try { downloadSpeciesKGML.download(); } catch (InterruptedException e) { }
 				}
 			});
 			thread.start();

@@ -65,7 +65,7 @@ public class DonmaiGetDownloadUrl  extends GetPictureUrl {
     	String[] ss = info.split(">")[0].split(" ");
     	for (String string : ss) {
 			if (string.contains("href=")) {
-				String pictureUrl = string.replace("href=", "").replace("\"", "").trim();
+				String pictureUrl = string.split("href=")[1].replace("\"", "").trim();
 				UrlPictureDownLoad urlPictureDownLoad = new UrlPictureDownLoad();
 				urlPictureDownLoad.setPictureNum(thisPictureNum);
 				urlPictureDownLoad.setPictureUrl(pictureUrl);
