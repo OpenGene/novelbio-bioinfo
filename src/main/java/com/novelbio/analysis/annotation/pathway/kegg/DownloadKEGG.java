@@ -10,7 +10,12 @@ public class DownloadKEGG {
 	public static void main(String[] args) {
 		DownloadKEGG downloadKEGG = new DownloadKEGG();
 		downloadKEGG.addSpecies("hsa");
-		downloadKEGG.setSavePath("D:\\zongjie\\Desktop\\Life\\");
+		downloadKEGG.addSpecies("mmu");
+		downloadKEGG.addSpecies("osa");
+		downloadKEGG.addSpecies("ath");
+		downloadKEGG.addSpecies("ssc");
+		
+		downloadKEGG.setSavePath("/media/winE/OutMrd1.mrd");
 		downloadKEGG.download();
 	}
 	

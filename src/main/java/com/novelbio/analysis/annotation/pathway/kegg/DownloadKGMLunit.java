@@ -2,6 +2,7 @@ package com.novelbio.analysis.annotation.pathway.kegg;
 
 import java.util.concurrent.Callable;
 
+import org.apache.log4j.Logger;
 import org.htmlparser.Node;
 import org.htmlparser.NodeFilter;
 import org.htmlparser.Parser;
@@ -14,6 +15,8 @@ import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
 
 import com.novelbio.base.dataOperate.HttpFetch;
+import com.novelbio.base.dataStructure.PatternOperate;
+import com.novelbio.base.fileOperate.FileOperate;
 
 /**
  * 下载KGML文件的单元，可以用于多线程
@@ -21,6 +24,7 @@ import com.novelbio.base.dataOperate.HttpFetch;
  *
  */
 public class DownloadKGMLunit implements Callable<DownloadKGMLunit> {
+	private static final Logger logger = Logger.getLogger(DownloadKGMLunit.class);
 	static String keggOrgUri = "http://www.genome.jp/kegg-bin/get_htext?htext=br08601_KEGPATH.keg&hier=5";
 	static String keggUri = "http://www.genome.jp";
 	HttpFetch keggFetch;
@@ -41,9 +45,12 @@ public class DownloadKGMLunit implements Callable<DownloadKGMLunit> {
 	public void setSpeciesKeggId(String speciesKeggId) {
 		this.speciesKeggId = speciesKeggId;
 	}
+	
 	public void setMapId(String mapId) {
-		this.mapId = mapId;
+		String id = PatternOperate.getPatLoc(mapId, "\\d+", false).get(0)[0];
+		this.mapId = id;
 	}
+	
 	/** 保存路径，后面不会自动加上sep */
 	public void setSavePath(String savePath) {
 		this.savePath = savePath;
@@ -73,6 +80,11 @@ public class DownloadKGMLunit implements Callable<DownloadKGMLunit> {
 	
 	public void runDownload() throws ParserException {
 		retryNum++;
+		String saveName = savePath + speciesKeggId + mapId;
+		if (FileOperate.isFileExist(saveName + ".xml") && FileOperate.isFileExist(saveName + ".png")) {
+			return;
+		}
+		
 		String pathUri = getPathUri();
 		if (pathUri != null) {
 			download(pathUri);
@@ -81,7 +93,7 @@ public class DownloadKGMLunit implements Callable<DownloadKGMLunit> {
 	
 	/** 返回本物中该pathway的uri，就是可以下载图片和kgml的那个页面，没有该pathway则返回null */
 	private String getPathUri() throws ParserException {
-		String keggOrgUri = DownloadKGMLunit.keggOrgUri.replace("KEGPATH", mapId);
+		String keggOrgUri = DownloadKGMLunit.keggOrgUri.replace("KEGPATH", "map" + mapId);
 		keggFetch.setUri(keggOrgUri);
 		keggFetch.queryExp(3);
 		Parser parser = new Parser(keggFetch.getResponse());
@@ -104,20 +116,29 @@ public class DownloadKGMLunit implements Callable<DownloadKGMLunit> {
 		if (kgmlUri == null) {
 			return;
 		}
-		keggFetch.setUri(kgmlUri);
 		String saveName = kgmlUri.split("entry=")[1].split("&")[0];
-		if (keggFetch.query(3)) {
-			keggFetch.download(savePath + saveName + ".xml");
+		String saveToXml = savePath + saveName + ".xml";
+		if (!FileOperate.isFileExist(saveToXml)) {//存在文件则不下载
+			keggFetch.setUri(kgmlUri);
+			if (keggFetch.query(3)) {
+				keggFetch.download(saveToXml);
+			}
 		}
 		
 		String picUri = getPicUri(keggPage);
 		if (picUri == null) {
 			return;
 		}
-		keggFetch.setUri(picUri);
-		if (keggFetch.query(3)) {
-			keggFetch.download(savePath + saveName + ".png");
+		
+		String saveToPic = savePath + saveName + ".png";
+		if (!FileOperate.isFileExist(saveToPic)) { 
+			keggFetch.setUri(picUri);
+			if (keggFetch.query(3)) {
+				keggFetch.download(saveToPic);
+			}
 		}
+		
+
 		keggFetch.close();
 	}
 	
@@ -150,7 +171,7 @@ public class DownloadKGMLunit implements Callable<DownloadKGMLunit> {
 		}
 		Node nodeDownloadKGML = nodeList.elementAt(0);
 		String kgmlUri = nodeDownloadKGML.getText().split("src=")[1].split(" ")[0].replace("\"", "").trim();
-		System.out.println(kgmlUri);
+		logger.info("get " +kgmlUri);
 		return keggUri + kgmlUri;
 	}
 
