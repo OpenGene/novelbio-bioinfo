@@ -65,6 +65,7 @@ public class DownloadSpeciesKGML {
 	/** 获得pathway的map的Id */
 	public void fetchPathMapId() {
 		String path = savePath + speciesKeggName + FileOperate.getSepPath();
+		FileOperate.createFolders(path);
 		downloadGeneID2KeggID(speciesKeggName, path);
 		httpFetch.setUri(keggPathwayUri);
 		httpFetch.queryExp(3);

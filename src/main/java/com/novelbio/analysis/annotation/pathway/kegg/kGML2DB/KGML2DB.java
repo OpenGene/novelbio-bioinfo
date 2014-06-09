@@ -180,6 +180,9 @@ public class KGML2DB
 					if (servKPathRelation.queryKGpathRelation(kGpathRelation)==null) {
 						kGpathRelation.setType("relate");
 						servKPathRelation.insertKGpathRelation(kGpathRelation);
+					} else {
+						kGpathRelation.setType("relate");
+						servKPathRelation.updateKGpathRelation(kGpathRelation);
 					}
 				}
 			}
