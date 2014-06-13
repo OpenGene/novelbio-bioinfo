@@ -76,6 +76,65 @@ public class DownloadSpeciesKGML {
 		}
 	}
 	
+	/**
+	 * 下载keggid和ncbiid的对照表
+	 * @param savePath 保存的目录
+	 */
+	private void downloadGeneID2KeggID(String keggName, String savePath) {
+		List<String[]> lsParam = generateParam(keggName);
+		HttpFetch httpFetch = HttpFetch.getInstance();
+		httpFetch.setUri(ncbiKeggIDurl);
+		httpFetch.setPostParam(lsParam);
+		String filePath = FileOperate.addSep(savePath) + keggName + "_ncbi-geneid.list";
+		if (httpFetch.query()) {
+			if(httpFetch.download(filePath)){
+				logger.info("下载" + filePath + "成功!");
+			}else {
+				logger.error("下载" + filePath + "失败!");
+			}
+		}
+	}
+
+	/** 用于post提交的信息 */
+	private List<String[]> generateParam(String keggName) {
+		List<String[]> lsKey2Value = new ArrayList<String[]>(); 
+		lsKey2Value.add(new String[] { "page", "download" });
+		lsKey2Value.add(new String[] { "u", "uniq" });
+		lsKey2Value.add(new String[] { "t", "ncbi-geneid" });
+		lsKey2Value.add(new String[] { "targetformat", "" });
+		lsKey2Value.add(new String[] { "m", keggName});
+		return lsKey2Value;
+	}
+	
+	/** 获得全体kegg的pathwayId */
+	private List<String> getLsPathMapIds(String keggPage) throws ParserException {
+		List<String> lsKegPath = new ArrayList<>();
+		Parser parser = new Parser(keggPage);
+		NodeFilter filterKGML = new AndFilter(new TagNameFilter("table"), new HasAttributeFilter("width", "660"));
+		NodeList nodeListPicture = parser.parse(filterKGML);
+		Node node = nodeListPicture.elementAt(0);
+		parser = new Parser(node.toHtml());
+		NodeFilter filterPathNode = new AndFilter(new TagNameFilter("a"), new HasAttributeFilter("href"));
+		NodeList nodeListPath = parser.parse(filterPathNode);
+		
+		SimpleNodeIterator iterator = nodeListPath.elements();
+        while (iterator.hasMoreNodes()) {
+        	//每个pathway的node
+            Node nodePathway = iterator.nextNode();
+            String pathStr = nodePathway.getText();
+           if(pathStr.contains("show_pathway")) {
+        	   String pathId = pathStr.split("show_pathway\\?")[1].split("&")[0].replace("map=", "").replace("\"", "");
+        	   
+//        	   if (!pathId.contains("04380")) {
+//				continue;
+//			}
+        	   
+        	   lsKegPath.add(pathId);
+           }
+        }
+        return lsKegPath;
+	}
+	
 	/** 这个先开，并且是单开一个线程运行 */
 	public void download() throws InterruptedException {
 		String path = savePath + speciesKeggName + FileOperate.getSepPath();
@@ -125,63 +184,5 @@ public class DownloadSpeciesKGML {
 			// TODO: handle exception
 		}
 	}
-	
-	/** 获得全体kegg的pathwayId */
-	private List<String> getLsPathMapIds(String keggPage) throws ParserException {
-		List<String> lsKegPath = new ArrayList<>();
-		Parser parser = new Parser(keggPage);
-		NodeFilter filterKGML = new AndFilter(new TagNameFilter("table"), new HasAttributeFilter("width", "660"));
-		NodeList nodeListPicture = parser.parse(filterKGML);
-		Node node = nodeListPicture.elementAt(0);
-		parser = new Parser(node.toHtml());
-		NodeFilter filterPathNode = new AndFilter(new TagNameFilter("a"), new HasAttributeFilter("href"));
-		NodeList nodeListPath = parser.parse(filterPathNode);
-		
-		SimpleNodeIterator iterator = nodeListPath.elements();
-        while (iterator.hasMoreNodes()) {
-        	//每个pathway的node
-            Node nodePathway = iterator.nextNode();
-            String pathStr = nodePathway.getText();
-           if(pathStr.contains("show_pathway")) {
-        	   String pathId = pathStr.split("show_pathway\\?")[1].split("&")[0].replace("map=", "").replace("\"", "");
-        	   
-//        	   if (!pathId.contains("04380")) {
-//				continue;
-//			}
-        	   
-        	   lsKegPath.add(pathId);
-           }
-        }
-        return lsKegPath;
-	}
-	
-	/**
-	 * 下载所有的有机体
-	 * @param savePath 保存的目录
-	 */
-	private void downloadGeneID2KeggID(String keggName, String savePath) {
-		List<String[]> lsParam = generateParam(keggName);
-		HttpFetch httpFetch = HttpFetch.getInstance();
-		httpFetch.setUri(ncbiKeggIDurl);
-		httpFetch.setPostParam(lsParam);
-		String filePath = FileOperate.addSep(savePath) + keggName + "_ncbi-geneid.list";
-		if (httpFetch.query()) {
-			if(httpFetch.download(filePath)){
-				logger.info("下载" + filePath + "成功!");
-			}else {
-				logger.error("下载" + filePath + "失败!");
-			}
-		}
-	}
-	
-	/** 用于post提交的信息 */
-	private List<String[]> generateParam(String keggName) {
-		List<String[]> lsKey2Value = new ArrayList<String[]>(); 
-		lsKey2Value.add(new String[] { "page", "download" });
-		lsKey2Value.add(new String[] { "u", "uniq" });
-		lsKey2Value.add(new String[] { "t", "ncbi-geneid" });
-		lsKey2Value.add(new String[] { "targetformat", "" });
-		lsKey2Value.add(new String[] { "m", keggName});
-		return lsKey2Value;
-	}
+
 }
