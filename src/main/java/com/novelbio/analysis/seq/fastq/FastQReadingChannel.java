@@ -13,7 +13,7 @@ import com.novelbio.GuiAnnoInfo;
 import com.novelbio.base.multithread.RunProcess;
 
 public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
-	Logger logger = Logger.getLogger(FastQReadingChannel.class);
+	private static final Logger logger = Logger.getLogger(FastQReadingChannel.class);
 	
 	List<FastQ[]> lsFastqReader;
 	FastQ[] fqWrite = new FastQ[2];
@@ -142,13 +142,7 @@ public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
 			try { Thread.sleep(100); 	} catch (InterruptedException e) { e.printStackTrace(); }
 		}
 		fqWrite[0].close();
-		if (fqWrite[1] != null) {
-			fqWrite[1].fastQwrite.setFinishedRead(true);
-			while (fqWrite[1].fastQwrite.isRunning()) {
-				try { Thread.sleep(100); 	} catch (InterruptedException e) { e.printStackTrace(); }
-			}
-			fqWrite[1].close();
-		}
+		fqWrite[1].close();
 		executorPool.shutdown();
 		executorPool = null;
 		queueResult = null;
@@ -203,10 +197,6 @@ public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
 				readsNum++;
 				wait_To_Cope_AbsQueue();
 				if (flagStop) break;
-				
-				if (fastQRecord[0].seqQuality.contains("u") || fastQRecord[1].seqQuality.contains("u")) {
-					logger.error("sss");
-				}
 				
 				FastQrecordCopeUnit fastQrecordFilterRun = new FastQrecordCopeUnit();
 				fastQrecordFilterRun.setFastQRecordFilter(lsFQrecordCopeLeft, lsFQrecordCopeRight);

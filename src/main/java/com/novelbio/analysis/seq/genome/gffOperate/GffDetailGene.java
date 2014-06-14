@@ -150,19 +150,18 @@ public class GffDetailGene extends ListDetailAbs {
 	 * 仅用于GFF3的结果，如NCBI的等<br>
 	 */
 	public List<GffDetailGene> getlsGffDetailGenes() {
-		List<GffDetailGene> lsGenes = new ArrayList<>();
-		GffDetailGene gffDetailGene = null;
-		String parentName = null;
+		Map<String, GffDetailGene> mapName2Gene = new HashMap<>();
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
-			if (!gffGeneIsoInfo.getParentGeneName().equals(parentName)) {
-				parentName = gffGeneIsoInfo.getParentGeneName();
+			String parentName = gffGeneIsoInfo.getParentGeneName();
+			GffDetailGene gffDetailGene = mapName2Gene.get(parentName);
+			if (gffDetailGene == null) {
 				gffDetailGene = getGffDetailGeneClone();
 				gffDetailGene.setItemName.add(parentName);
-				lsGenes.add(gffDetailGene);
+				mapName2Gene.put(parentName, gffDetailGene);
 			}
 			gffDetailGene.addIsoSimple(gffGeneIsoInfo);
 		}
-		return lsGenes;
+		return new ArrayList<>(mapName2Gene.values());
 	}
 	
 	/** 返回一个和现在GffDetailGene一样的GffDetailGene */

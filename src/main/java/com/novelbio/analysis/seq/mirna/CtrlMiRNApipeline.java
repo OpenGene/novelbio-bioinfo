@@ -147,10 +147,10 @@ public class CtrlMiRNApipeline implements IntCmdSoft {
 			runMapping(gffChrAbs, species, mapPrefix2Fastq);
 			mapPrefix2AlignFile = ctrlMiRNAfastq.getMapPrefix2GenomeSam();
 		}
-		if (predictMirna) {
+		if (predictMirna && species.getTaxID() > 0) {
 			runPredict(mapPrefix2AlignFile, gffChrAbs, species);
 			mapPrefix2Fastq = ctrlMiRNApredict.getMapPrefix2UnmapFq();
-		} else {
+		} else if (mapMirna) {
 			mapPrefix2Fastq = convertAlign2Fq(mapPrefix2AlignFile);
 		}
 		if (!lsSpeciesBlastTo.isEmpty()) {
