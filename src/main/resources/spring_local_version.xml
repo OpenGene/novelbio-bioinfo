@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright 2010 The myBatis Team
+
+    Licensed under the Apache License, Version 2.0 (the "License")l;
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xmlns:aop="http://www.springframework.org/schema/aop"
+     xmlns:tx="http://www.springframework.org/schema/tx"
+     xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+     xmlns:context="http://www.springframework.org/schema/context"
+     xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+     xmlns:util=" http://www.springframework.org/schema/util"
+     xsi:schemaLocation="
+     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+     http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
+     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+     http://www.springframework.org/schema/data/mongo http://www.springframework.org/schema/data/mongo/spring-mongo-1.0.xsd
+     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+     		
+	<!-- 启用注解 -->
+	<context:annotation-config />
+     
+
+    
+    <!-- 什么时候学会了JPA再添上，可能缺少JPA的包，加上后会出错 -->
+    <!-- transaction manager, use JtaTransactionManager for global tx  
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+    </bean> -->
+
+   <!--  <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+   </bean>
+   <tx:annotation-driven transaction-manager="transactionManager"/>
+   -->
+    
+    <!-- spring AOP 
+	<aop:aspectj-autoproxy proxy-target-class="true" /> -->
+	
+    <!-- 自动探测 enable component scanning (beware that this does not enable mapper scanning!)     --> 
+    <context:component-scan base-package="com.novelbio.database.mapper.kegg" />
+    <context:component-scan base-package="com.novelbio.nbcgui.controltest" />
+     <context:component-scan base-package="com.novelbio.nbcgui.controlseq" />
+    <context:component-scan base-package="com.novelbio.analysis.diffexpress" />
+    <context:component-scan base-package="com.novelbio.analysis.seq.mapping" />
+   
+   	 <bean id="freemarkNBC" class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">  
+        <property name="templateLoaderPath" value="classpath:FreemarkerTmplt" />  
+         <property name="freemarkerSettings">  
+            <props>
+                <prop key="defaultEncoding">UTF-8</prop>         
+            </props>
+        </property>  
+    </bean>  
+</beans>
