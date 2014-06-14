@@ -142,12 +142,13 @@ public class ManageSpeciesDB implements IManageSpecies {
 		return repoSpeciesFile.findByTaxID(taxID);
 	}
 
-	public List<Integer> getLsTaxID() {
-		List<Integer> lsTaxId = new ArrayList<>();
-		for (SpeciesFile speciesFile : repoSpeciesFile.findAll()) {
-			lsTaxId.add(speciesFile.getTaxID());
-		}
-		return lsTaxId;
+	public List<Integer> getLsNameNotInDB() {
+//		List<Integer> lsTaxId = new ArrayList<>();
+//		for (SpeciesFile speciesFile : repoSpeciesFile.findAll()) {
+//			lsTaxId.add(speciesFile.getTaxID());
+//		}
+//		return lsTaxId;
+		return new ArrayList<>();
 	}
 	/**
 	 * Version大小写敏感

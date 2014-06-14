@@ -529,9 +529,6 @@ public class Species implements Cloneable {
 		Set<Integer> setTaxID = new HashSet<Integer>();
 		for (TaxInfo taxInfo : lsTaxID) {
 			Species species = new Species(taxInfo);
-			if (taxInfo.getTaxID() == 123456) {
-				logger.debug("stop");
-			}
 			if (species.getCommonName().equals("")) {
 				continue;
 			}
@@ -551,12 +548,18 @@ public class Species implements Cloneable {
 		
 		/** 添加 物种--序列表 中特有的物种 */
 		if (speciesType == EnumSpeciesType.Genome) {
-			for (Integer integer : servSpecies.getLsTaxID()) {
+			for (Integer integer : servSpecies.getLsNameNotInDB()) {
 				if (setTaxID.contains(integer)) {
 					continue;
 				}
 				Species species = new Species(integer);
-				treemapName2Species.put(species.getTaxID() + "", species);
+				try {
+					String speciesName = species.getMapVersion2Species().values().iterator().next().getSpeciesName();
+					treemapName2Species.put(speciesName, species);
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+				
 			}
 		}
 		

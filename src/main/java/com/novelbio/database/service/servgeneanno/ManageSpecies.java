@@ -22,6 +22,7 @@ import com.novelbio.database.mongorepo.geneanno.RepoSpeciesFile;
 import com.novelbio.database.mongorepo.geneanno.RepoTaxInfo;
 import com.novelbio.database.service.SpringFactory;
 import com.novelbio.database.service.servgeneanno.ManageSpeciesDB.ManageSpeciesDBHold;
+import com.novelbio.database.service.servgeneanno.ManageSpeciesTxt.ManageSpeciesTxtHold;
 import com.novelbio.generalConf.PathDetailNBC;
 
 public class ManageSpecies implements IManageSpecies {
@@ -124,7 +125,7 @@ public class ManageSpecies implements IManageSpecies {
 	}
 	
 	/** 返回所有有基因组的物种 */
-	public List<Integer> getLsTaxID() {
+	public List<Integer> getLsNameNotInDB() {
 //		readDBinfo();
 		return new ArrayList<Integer>(mapTaxID_2_version2SpeciesFile.keySet());
 	}
@@ -253,6 +254,7 @@ public class ManageSpecies implements IManageSpecies {
 	public static IManageSpecies getInstance() {
 //		return ManageSpeciesHold.manageSpecies;
 		return ManageSpeciesDBHold.manageSpecies;
+//		return ManageSpeciesTxtHold.manageSpecies;
 	}
 
 	@Override
