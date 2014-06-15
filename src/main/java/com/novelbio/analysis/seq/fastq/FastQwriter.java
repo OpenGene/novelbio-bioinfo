@@ -127,6 +127,7 @@ class FastQwriter extends RunProcess<Integer> {
 			}
 			future = null;
 		}
+		logger.info("finish fastq writing");
 	}
 	
 	private void writeInFile(FastQrecordCopeUnit fastQrecordFilterRun) {

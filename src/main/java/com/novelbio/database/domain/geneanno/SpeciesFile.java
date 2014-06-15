@@ -12,9 +12,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.persistence.Transient;
+
 import org.apache.log4j.Logger;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -33,13 +34,11 @@ import com.novelbio.analysis.seq.mirna.ListMiRNAdat;
 import com.novelbio.analysis.seq.sam.SamIndexRefsequence;
 import com.novelbio.base.ExceptionNullParam;
 import com.novelbio.base.StringOperate;
-import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
-import com.novelbio.database.model.species.Species;
 import com.novelbio.database.service.servgeneanno.IManageSpecies;
 import com.novelbio.database.service.servgeneanno.ManageSpecies;
 import com.novelbio.generalConf.PathDetailNBC;
@@ -68,6 +67,11 @@ public class SpeciesFile {
 	String id;
 	@Indexed
 	int taxID;
+	
+	/** 物种名，仅供桌面发行版使用 */
+	@Transient
+	transient String speciesName;
+	
 	/** 文件版本 */
 	String version;
 	/** 该版本的年代，大概年代就行 */
@@ -163,8 +167,14 @@ public class SpeciesFile {
 			mapChrID2ChrLen = seqHash.getMapChrLength();
 			seqHash.close();
 		}
-			
 		return mapChrID2ChrLen;
+	}
+	
+	public void setSpeciesName(String speciesName) {
+		this.speciesName = speciesName;
+	}
+	public String getSpeciesName() {
+		return speciesName;
 	}
 	
 	/**

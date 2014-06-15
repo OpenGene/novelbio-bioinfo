@@ -22,26 +22,22 @@ import com.novelbio.database.mongorepo.geneanno.RepoSpeciesFile;
 import com.novelbio.database.mongorepo.geneanno.RepoTaxInfo;
 import com.novelbio.database.service.SpringFactory;
 import com.novelbio.database.service.servgeneanno.ManageSpeciesDB.ManageSpeciesDBHold;
-import com.novelbio.database.service.servgeneanno.ManageSpeciesTxt.ManageSpeciesTxtHold;
 import com.novelbio.generalConf.PathDetailNBC;
 
-public class ManageSpecies implements IManageSpecies {
-	private static final Logger logger = Logger.getLogger(ManageSpecies.class);
-	@Autowired
+public class ManageSpeciesTxt implements IManageSpecies {
+	private static final Logger logger = Logger.getLogger(ManageSpeciesTxt.class);
 	private RepoSpeciesFile repoSpeciesFile;
-	@Autowired
-	private RepoTaxInfo repoTaxInfo;
+	
 	/**
 	 * version 必须为小写
 	 */
 	static LinkedHashMap<Integer, LinkedHashMap<String, SpeciesFile>> mapTaxID_2_version2SpeciesFile;
 	
-	private ManageSpecies() {
+	private ManageSpeciesTxt() {
 		if (mapTaxID_2_version2SpeciesFile == null) {
 			 mapTaxID_2_version2SpeciesFile = new LinkedHashMap<>();
 			 readDBinfo();
 		}
-		repoTaxInfo = (RepoTaxInfo)SpringFactory.getFactory().getBean("repoTaxInfo");
 	}
 	
 	private void readDBinfo() {
@@ -49,7 +45,6 @@ public class ManageSpecies implements IManageSpecies {
 		if (FileOperate.isFileExistAndBigThanSize(speciesFile, 0)) {
 			readSpeciesFile(speciesFile);
 		} else {
-//			readFromDB();
 			logger.error("文本无法读取:" + speciesFile);
 		}
 	}
@@ -80,20 +75,33 @@ public class ManageSpecies implements IManageSpecies {
 			SpeciesFile speciesFile = new SpeciesFile();
 			String[] info = lsInfo.get(i);
 			info = ArrayOperate.copyArray(info, title.length);
-			int m = hashName2ColNum.get("taxid");
-			speciesFile.setTaxID((int)Double.parseDouble(info[m]));
+
+			
+			Integer m = hashName2ColNum.get("name");
+			if (m != null) speciesFile.setSpeciesName(info[m]);
+			
+			m = hashName2ColNum.get("taxid");
+			if (m != null) {
+				try {
+					speciesFile.setTaxID((int)Double.parseDouble(info[m]));
+				} catch (Exception e) {
+					speciesFile.setTaxID(speciesFile.getSpeciesName().hashCode());
+				}
+			} else {
+				speciesFile.setTaxID(speciesFile.getSpeciesName().hashCode());
+			}
 			
 			m = hashName2ColNum.get("version");
-			speciesFile.setVersion(info[m]);
+			if (m != null) speciesFile.setVersion(info[m]);
 			
 			m = hashName2ColNum.get("publishyear");
-			speciesFile.setPublishYear((int)Double.parseDouble(info[m]));
+			if (m != null) speciesFile.setPublishYear((int)Double.parseDouble(info[m]));
 			
 			m = hashName2ColNum.get("chromseq");
-			speciesFile.setChromSeq(info[m]);
+			if (m != null) speciesFile.setChromSeq(info[m]);
 						
 			m = hashName2ColNum.get("gffgenefile");
-			if (!info[m].equals("")) {
+			if (m != null && !info[m].equals("")) {
 				String[] gffUnit = info[m].split(SepSign.SEP_ID);
 				for (String gffInfo : gffUnit) {
 					String[] gffDB2TypeFile = gffInfo.split(SepSign.SEP_INFO);
@@ -102,16 +110,16 @@ public class ManageSpecies implements IManageSpecies {
 			}
 			
 			m = hashName2ColNum.get("gffrepeatfile");
-			speciesFile.setGffRepeatFile(info[m]);
+			if (m != null) speciesFile.setGffRepeatFile(info[m]);
 			
 			m = hashName2ColNum.get("refseq_all_iso");
-			speciesFile.setRefseqFileAllIso(info[m]);
+			if (m != null) speciesFile.setRefseqFileAllIso(info[m]);
 			
 			m = hashName2ColNum.get("refseq_one_iso");
-			speciesFile.setRefseqFileOneIso(info[m]);
+			if (m != null) speciesFile.setRefseqFileOneIso(info[m]);
 			
 			m = hashName2ColNum.get("refseqncfile");
-			speciesFile.setRefseqNCfile(info[m]);
+			if (m != null) speciesFile.setRefseqNCfile(info[m]);
 			try {
 				speciesFile.getMapChromInfo();
 			} catch (Exception e) {
@@ -197,28 +205,20 @@ public class ManageSpecies implements IManageSpecies {
 	 * @return
 	 */
 	public TaxInfo queryTaxInfo(int taxID) {
-		return repoTaxInfo.findByTaxID(taxID);
+		return null;
 	}
 	/**
 	 * @param taxIDfile 0 则返回null
 	 * @return
 	 */
 	public TaxInfo queryAbbr(String abbr) {
-		List<TaxInfo> lsTaxInfos = repoTaxInfo.findByAbbr(abbr);
-		if (lsTaxInfos.size() == 0) {
-			return null;
-		}
-		return lsTaxInfos.get(0);
+		return null;
 	}
 	/**
 	 * 没有就插入，有就升级
 	 * @param taxInfo
 	 */
 	public void saveTaxInfo(TaxInfo taxInfo) {
-		if (taxInfo.getTaxID() == 0) {
-			return;
-		}
-		repoTaxInfo.save(taxInfo);
 	}
 
 	/**
@@ -226,11 +226,7 @@ public class ManageSpecies implements IManageSpecies {
 	 * @return
 	 */
 	public Map< Integer,String> getMapTaxIDName() {
-		Map<Integer, String> mapTaxId2CommName = new HashMap<>();
-		for (TaxInfo taxInfo : repoTaxInfo.findAll()) {
-			mapTaxId2CommName.put(taxInfo.getTaxID(), taxInfo.getComName());
-		}
-		return mapTaxId2CommName;
+		return null;
 	}
 	
 	/**
@@ -238,40 +234,27 @@ public class ManageSpecies implements IManageSpecies {
 	 * @return
 	 */
 	public List<TaxInfo> getLsAllTaxID() {
-		List<TaxInfo> lsTaxInfos = repoTaxInfo.findAll();
-		return lsTaxInfos;
+		return new ArrayList<>();
 	}
 
 	public Page<TaxInfo> queryLsTaxInfo(Pageable pageable) {
-		return repoTaxInfo.findAll(pageable);
+		return null;
 	}
 	
-	static class ManageSpeciesHold {
-		protected static ManageSpecies manageSpecies = new ManageSpecies();
+	static class ManageSpeciesTxtHold {
+		protected static ManageSpeciesTxt manageSpecies = new ManageSpeciesTxt();
 	}
 	
-	
-	public static IManageSpecies getInstance() {
-//		return ManageSpeciesHold.manageSpecies;
-		return ManageSpeciesDBHold.manageSpecies;
-//		return ManageSpeciesTxtHold.manageSpecies;
+	@Override
+	public void deleteByTaxId(int taxid) {		
 	}
 
 	@Override
-	public void deleteByTaxId(int taxid) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void deleteSpeciesFile(String speciesFileId) {
-		// TODO Auto-generated method stub
-		
+	public void deleteSpeciesFile(String speciesFileId) {		
 	}
 
 	@Override
 	public SpeciesFile findOne(String speciesFileId) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

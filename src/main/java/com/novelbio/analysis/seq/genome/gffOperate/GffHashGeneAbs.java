@@ -155,28 +155,28 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		}
 		if (gffGeneIsoInfo == null) {
 			GeneID copedID = new GeneID(accID, taxID, false);
-			if (copedID.getIDtype() == GeneID.IDTYPE_ACCID) {
-				return null;
-			}
-			String locID = null;
-			try {
-				locID = getMapGeneID2Acc(acc2GeneIDfile).get(copedID.getGeneUniID()).split("//")[0];
-			} catch (Exception e) {
-				logger.error("没有该accID："+accID);
-				return null;
-			}
-			gffGeneIsoInfo = mapName2Iso.get(locID.toLowerCase());
-			if (gffGeneIsoInfo != null) {
-				return gffGeneIsoInfo;
-			} else {
-				GffDetailGene gffdetail = searchLOC(locID);
-				if (gffdetail != null) {
-					GffGeneIsoInfo gffGeneIsoInfoOut = gffdetail.getIsolist(locID);
-					if (gffGeneIsoInfoOut != null) {
-						return gffGeneIsoInfoOut;
+			if (copedID.getIDtype() != GeneID.IDTYPE_ACCID) {
+				String locID = null;
+				try {
+					locID = getMapGeneID2Acc(acc2GeneIDfile).get(copedID.getGeneUniID()).split("//")[0];
+				} catch (Exception e) {
+					logger.error("没有该accID："+accID);
+					return null;
+				}
+				gffGeneIsoInfo = mapName2Iso.get(locID.toLowerCase());
+				if (gffGeneIsoInfo != null) {
+					return gffGeneIsoInfo;
+				} else {
+					GffDetailGene gffdetail = searchLOC(locID);
+					if (gffdetail != null) {
+						GffGeneIsoInfo gffGeneIsoInfoOut = gffdetail.getIsolist(locID);
+						if (gffGeneIsoInfoOut != null) {
+							return gffGeneIsoInfoOut;
+						}
 					}
 				}
 			}
+			
 		}
 		GffDetailGene gffdetail = searchLOC(accID);
 		if (gffdetail == null) {

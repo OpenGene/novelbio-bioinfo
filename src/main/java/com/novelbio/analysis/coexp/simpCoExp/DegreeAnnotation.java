@@ -27,7 +27,7 @@ public class DegreeAnnotation {
 	public void readData(String infile) {
 		lsPairInfo = ExcelTxtRead.readLsExcelTxt(infile, 1);
 		String[] title = lsPairInfo.get(0);
-		if (title[2].equals("pearson") && title[3].equals(TitleFormatNBC.Pvalue.toString()) 
+		if (title.length > 5 && title[2].equals("pearson") && title[3].equals(TitleFormatNBC.Pvalue.toString()) 
 				&& title[4].equals(TitleFormatNBC.FDR.toString())) {
 			readCoexpDegree = true;
 		} else {

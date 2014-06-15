@@ -12,7 +12,7 @@ import com.novelbio.database.domain.geneanno.TaxInfo;
 public interface IManageSpecies {
 	
 	/** 返回所有有基因组的物种 */
-	public List<Integer> getLsTaxID();
+	public List<Integer> getLsNameNotInDB();
 	
 	/**
 	 * @param taxID 必须选项，没这个就不用选了
