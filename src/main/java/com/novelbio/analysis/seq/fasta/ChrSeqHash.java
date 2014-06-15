@@ -244,7 +244,7 @@ public class ChrSeqHash extends SeqHashAbs {
 					length = length - content.length();
 					mapChrID2Length.put(chrID, length);
 				}
-				chrID = content.split(" ")[0].replace(">", "").toLowerCase();
+				chrID = content.split(" ")[0].replace(">", "");
 				mapChrID2Start.put(chrID, start);
 				length = 0;
 			} else if (!mapChrID2LenRow.containsKey(chrID)) {

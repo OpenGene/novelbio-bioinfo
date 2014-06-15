@@ -48,8 +48,8 @@ public class NCBIchromFaChangeFormat {
 			}
 		}
 		txtRead.close();
-		if (readNum > 3000) {
-			throw new ExceptionNBCsoft(readNum + " sequences is too much, can have only 3000 reads max");
+		if (readNum > 10000) {
+			throw new ExceptionNBCsoft(readNum + " sequences is too much, can have only 10000 reads max");
 		}
 		txtRead = new TxtReadandWrite(chrFile);
 		for (String content : txtRead.readlines()) {
@@ -63,7 +63,7 @@ public class NCBIchromFaChangeFormat {
 				} else {
 					fileName = fileName + ".fa";
 				}
-				txtWrite = new TxtReadandWrite(content , true);
+				txtWrite = new TxtReadandWrite(outFilePrefix + fileName , true);
 			}
 			txtWrite.writefileln(content);
 		}

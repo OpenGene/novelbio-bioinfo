@@ -228,13 +228,18 @@ public class MapSplice implements MapRNA {
 		String fileName = fastQ.getReadFileName();
 		fileName = fileName.replace("fastq.gz", "fastq").replace("fq.gz", "fastq");
 		String newFastqName = FileOperate.changeFileSuffix(fileName, "_decompress", null);
-		FastQ fastQdecompress = new FastQ(newFastqName, true);
+		if (FileOperate.isFileExistAndBigThanSize(newFastqName, 0)) {
+			return new FastQ(newFastqName);
+		}
+		String fastqTmp = FileOperate.changeFileSuffix(newFastqName, "_tmp", null);
+		FastQ fastQdecompress = new FastQ(fastqTmp, true);
 		for (FastQRecord fastQRecord : fastQ.readlines()) {
 			fastQdecompress.writeFastQRecord(fastQRecord);
 		}
 		fastQ.close();
 		fastQdecompress.close();
-		return fastQdecompress;
+		FileOperate.changeFileName(fastqTmp, newFastqName, true);
+		return new FastQ(newFastqName);
 	}
 	
 	private String[] getRefseq() {

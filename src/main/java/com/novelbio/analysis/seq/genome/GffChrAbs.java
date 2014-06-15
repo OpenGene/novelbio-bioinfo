@@ -3,10 +3,12 @@ package com.novelbio.analysis.seq.genome;
 import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.SeqHash;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
@@ -252,6 +254,31 @@ public class GffChrAbs implements Closeable {
 		}
 		MapInfo.sortLsMapInfo(lsMapInfos, distanceMapInfo);
 		return lsMapInfos;
+	}
+	
+	/** 检查gtf文件的基因坐标是否都落在chrAll.fa的里面
+	 * 因为葡萄线粒体的gtf坐标落在了线粒体基因组的外面
+	 * 也就是说葡萄线粒体基因nad1 范围 25462--795041
+	 * 而线粒体的长度为：773279
+	 * 或者gtf文件含有染色体没有的序列
+	 */
+	public void checkGTF() {
+		if (seqHash == null || gffHashGene == null) {
+			return;
+		}
+		
+		Map<String, Long> mapChr2Len = seqHash.getMapChrLength();
+		for (GffDetailGene gffDetailGene : gffHashGene.getGffDetailAll()) {
+			Long chrLen = mapChr2Len.get(gffDetailGene.getRefID());
+			if (chrLen == null) {
+				throw new ExceptionGFF("chromosome file error: " + gffDetailGene.getRefID() + " chrFile doesn't contain this chrId");
+			}
+			if (gffDetailGene.getStartAbs() <= 0 || gffDetailGene.getEndAbs() > chrLen) {
+				throw new ExceptionGFF("gff or chromosome file error: " 
+						+ gffDetailGene.getRefID() + " " + gffDetailGene.getNameSingle() + " " + gffDetailGene.getStartAbs() + " " + gffDetailGene.getEndAbs() 
+						+ " out of chr Range: " + gffDetailGene.getRefID() + " " + chrLen);
+			}
+		}
 	}
 	
 	/**
