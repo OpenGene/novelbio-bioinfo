@@ -275,6 +275,11 @@ public class Species implements Cloneable {
 	 * @return
 	 */
 	public GffType getGffType() {
+		String gffDB = this.gffDB;
+		if (gffDB == null) {
+			SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
+			gffDB = speciesFile.getGffDB();
+		}
 		return getGffType(gffDB);
 	}
 	
@@ -591,7 +596,7 @@ public class Species implements Cloneable {
 		return false;
 	}
 	
-	static boolean isOK = false;
+	static boolean isOK = true;
 	static {
 //		String file = "";
 //		if (FileOperate.isFileExist("/lib/firmware/tigon/property")) {

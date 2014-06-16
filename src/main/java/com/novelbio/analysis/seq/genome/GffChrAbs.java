@@ -269,9 +269,10 @@ public class GffChrAbs implements Closeable {
 		
 		Map<String, Long> mapChr2Len = seqHash.getMapChrLength();
 		for (GffDetailGene gffDetailGene : gffHashGene.getGffDetailAll()) {
-			Long chrLen = mapChr2Len.get(gffDetailGene.getRefID());
+			Long chrLen = mapChr2Len.get(gffDetailGene.getRefID().toLowerCase());
 			if (chrLen == null) {
-				throw new ExceptionGFF("chromosome file error: " + gffDetailGene.getRefID() + " chrFile doesn't contain this chrId");
+//				throw new ExceptionGFF("chromosome file error: " + gffDetailGene.getRefID() + " chrFile doesn't contain this chrId");
+				continue;
 			}
 			if (gffDetailGene.getStartAbs() <= 0 || gffDetailGene.getEndAbs() > chrLen) {
 				throw new ExceptionGFF("gff or chromosome file error: " 

@@ -142,7 +142,10 @@ public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
 			try { Thread.sleep(100); 	} catch (InterruptedException e) { e.printStackTrace(); }
 		}
 		fqWrite[0].close();
-		fqWrite[1].close();
+		try {
+			fqWrite[1].close();
+		} catch (Exception e) {}
+		
 		executorPool.shutdown();
 		executorPool = null;
 		queueResult = null;
