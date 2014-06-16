@@ -238,7 +238,7 @@ public class MapSplice implements MapRNA {
 		}
 		fastQ.close();
 		fastQdecompress.close();
-		FileOperate.changeFileName(fastqTmp, newFastqName, true);
+		FileOperate.changeFileName(fastqTmp, FileOperate.getFileName(newFastqName), true);
 		return new FastQ(newFastqName);
 	}
 	
