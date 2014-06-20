@@ -1,5 +1,7 @@
 package com.novelbio.analysis.seq.sam;
 
+import java.util.List;
+
 import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMFileHeader.SortOrder;
 import net.sf.samtools.SAMFileReader;
@@ -7,6 +9,7 @@ import net.sf.samtools.SAMFileWriter;
 import net.sf.samtools.SAMFileWriterFactory;
 import net.sf.samtools.SAMFileWriterImpl;
 import net.sf.samtools.SAMRecord;
+import net.sf.samtools.SAMSequenceDictionary;
 
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
@@ -22,6 +25,8 @@ public class BamSort {
 //    private final Log log = Log.getInstance(SortSam.class);
     SAMFileHeader.SortOrder SORT_ORDER = SAMFileHeader.SortOrder.coordinate;
     SamFile samFile;
+    
+    SAMSequenceDictionary samSequenceDictionary;
     int maxRecordsInRam = 500000;
     String ExePath = "";
 	
@@ -30,7 +35,11 @@ public class BamSort {
 		SAMFileWriterImpl.setDefaultMaxRecordsInRam(maxRecordsInRam);
 		PathDetail.getTmpPath();
 	}
-    
+    /** 根据输入的samSequenceDictionary的顺序来重新排列samHeader中的染色体顺序，只有当选择java模式时才有作用 */
+    public void setSamSequenceDictionary(
+			SAMSequenceDictionary samSequenceDictionary) {
+		this.samSequenceDictionary = samSequenceDictionary;
+	}
 	/**
 	 * 设定samtools所在的文件夹以及待比对的路径
 	 * @param exePath 如果在根目录下则设置为""或null
@@ -60,16 +69,34 @@ public class BamSort {
 	}
 	
 	public String sortJava(String sortBamFile) {
+		if (FileOperate.isFileExistAndBigThanSize(sortBamFile, 0)) {
+			return sortBamFile;
+		}
+		
 		SAMFileReader reader = samFile.getSamReader().getSamFileReader();
-		if (reader.getFileHeader().getSortOrder() == SortOrder.coordinate) {
+		SAMFileHeader samFileHeader = reader.getFileHeader();
+		if (samFileHeader.getSortOrder() == SortOrder.coordinate) {
 			return samFile.getFileName();
 		}
+		SamReorder samReorder = null;
+		if (samSequenceDictionary != null) {
+			samReorder = new SamReorder();
+			samReorder.setSamSequenceDictionary(samSequenceDictionary);
+			samReorder.setSamFileHeader(samFileHeader);
+			samReorder.reorder();
+			samFileHeader = samReorder.getSamFileHeaderNew();
+		}
+		
 		FileOperate.createFolders(FileOperate.getPathName(sortBamFile));
-        reader.getFileHeader().setSortOrder(SORT_ORDER);
-        SAMFileWriter writer = new SAMFileWriterFactory().makeSAMOrBAMWriter(reader.getFileHeader(), false, sortBamFile);
+		String tmpFile = FileOperate.changeFileSuffix(sortBamFile, "_tmp", null);
+		samFileHeader.setSortOrder(SORT_ORDER);
+        SAMFileWriter writer = new SAMFileWriterFactory().makeSAMOrBAMWriter(samFileHeader, false, tmpFile);
 
 //        ProgressLogger progress = new ProgressLogger(log, (int) 1e7, "Read");
         for (SamRecord rec: samFile.readLines()) {
+        	if (samSequenceDictionary != null) {
+				samReorder.copeReads(rec);
+			}
             writer.addAlignment(rec.getSamRecord());
 //            progress.record(rec);
         }
@@ -78,6 +105,7 @@ public class BamSort {
 
         reader.close();
         writer.close();
+        FileOperate.moveFile(true, tmpFile, sortBamFile);
         return sortBamFile;
 	}
 	

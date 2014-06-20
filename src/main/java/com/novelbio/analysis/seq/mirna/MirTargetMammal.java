@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.mirna;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.GffChrSeq;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
@@ -17,7 +18,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /** 动物和植物的mir靶基因预测 */
-public class MirTargetMammal {
+public class MirTargetMammal implements IntCmdSoft {
 	GffChrSeq gffChrSeq = new GffChrSeq();
 	/** 将初步文件经过整理后产生的结果文件 */
 	String predictResultFinal;
@@ -28,6 +29,8 @@ public class MirTargetMammal {
 	double pvalue;
 	int score;
 	int energy;
+	
+	List<String> lsCmd = new ArrayList<>();
 	
 	public void setSpeciesType(RNAhybridClass rnaHybridClass) {
 		this.rnaHybridClass = rnaHybridClass;
@@ -88,6 +91,7 @@ public class MirTargetMammal {
 	}
 	
 	public void predict() {
+		lsCmd.clear();
 		String mirandaOut = predictMiranda();
 		String rnaHybridOut = predictRNAhybrid();
 		List<String[]> lsOverlap = overLap(mirandaOut, rnaHybridOut);
@@ -111,7 +115,8 @@ public class MirTargetMammal {
 
 		rnAmiranda.setPredictResultFile(mirandaFile);
 		String mirandaOut = FileOperate.changeFileSuffix(predictResultFinal, "_miranda_modify", null);
-		if (!FileOperate.isFileExist(mirandaOut) || !FileOperate.isFileExistAndBigThanSize(mirandaFile, 0)) {
+		if (!FileOperate.isFileExistAndBigThanSize(mirandaFile, 0)) {
+			lsCmd.addAll(rnAmiranda.getCmdExeStr());
 			rnAmiranda.mirnaPredict();
 		}
 		
@@ -148,7 +153,8 @@ public class MirTargetMammal {
 		}
 		rnAhybrid.setPredictResultFile(rnaHybridFile);
 		String rnaHybridOut = FileOperate.changeFileSuffix(predictResultFinal, "_rnahybrid_modify", null);
-		if (!FileOperate.isFileExist(rnaHybridOut) || !FileOperate.isFileExistAndBigThanSize(rnaHybridFile, 0)) {
+		if (!FileOperate.isFileExistAndBigThanSize(rnaHybridFile, 0)) {
+			lsCmd.addAll(rnAhybrid.getCmdExeStr());
 			rnAhybrid.mirnaPredictRun();
 		}
 		
@@ -181,6 +187,10 @@ public class MirTargetMammal {
 			e.printStackTrace();
 		}
 		return lsCombine;
+	}
+	@Override
+	public List<String> getCmdExeStr() {
+		return lsCmd;
 	}
 
 }

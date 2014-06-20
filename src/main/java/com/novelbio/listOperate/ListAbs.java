@@ -34,7 +34,7 @@ public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E>
 	/** List的方向 */
 	Boolean cis5to3 = null;
 	
-	ArrayList<E> lsElement = new ArrayList<>();
+	protected ArrayList<E> lsElement = new ArrayList<>();
 	
 	/** 本list的名字，不需要转变为小写 */
 	public void setName(String listName) {

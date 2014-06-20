@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import net.sf.samtools.SAMSequenceDictionary;
+import net.sf.samtools.SAMSequenceRecord;
+
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
@@ -84,7 +87,7 @@ public class SeqHash implements SeqHashInt, Closeable {
 	}
 
 	@Override
-	public long getChrLength(String chrID) {
+	public Long getChrLength(String chrID) {
 		return seqHashAbs.getChrLength(chrID);
 	}
 
@@ -212,6 +215,16 @@ public class SeqHash implements SeqHashInt, Closeable {
 		}
 		return seqFasta;
 	}
+	
+	public SAMSequenceDictionary getDictionary() {
+		SAMSequenceDictionary samSequenceDictionary = new SAMSequenceDictionary();
+		for (String chrId : getLsSeqName()) {
+			SAMSequenceRecord samSequenceRecord = new SAMSequenceRecord(chrId, getChrLength(chrId).intValue());
+			samSequenceDictionary.addSequence(samSequenceRecord);
+		}
+		return samSequenceDictionary;
+	}
+	
 	@Override
 	public void setSep(String sep) {
 		seqHashAbs.setSep(sep);

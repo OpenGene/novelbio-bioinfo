@@ -82,39 +82,39 @@ public class BamIndex {
             throw new SAMException("Input bam file must be sorted by coordinates");
         }
         try {
-        	  makeIndex(samFile.samReader, outFile);
+			makeIndex(samFile.samReader, outFile);
 		} catch (Exception e) {
-			logger.error("make index error:" + outFile);
+			throw e;
 		}
-        logger.info("Finished Make Index " + outFile);
     }
     
-    private static void makeIndex(SamReader reader, String output) throws IOException {
-    	OutputStream outStream = null;
-    	if (FileHadoop.isHdfs(output)) {
-			FileHadoop fileHadoop = new FileHadoop(output);
-			outStream = fileHadoop.getOutputStreamNew(true);
-		} else {
-			outStream = new FileOutputStream(new File(output));
-		}
+    private static void makeIndex(SamReader reader, String output) {
+    	String outTmp = FileOperate.changeFileSuffix(output, "_tmp", null);
+    	OutputStream outStream = FileOperate.getOutputStream(outTmp, true);
+    	
     	SAMFileHeader samFileHeader = reader.getSamFileHead();
         BAMIndexer indexer = new BAMIndexer(outStream, samFileHeader);
-        try {
-        	reader.samFileReader.enableFileSource(true);
-            int allRecordsNum = 0;
+        reader.samFileReader.enableFileSource(true);
+        int allRecordsNum = 0;
 
-            for (SamRecord rec : reader.readLines()) {
-                if (allRecordsNum % 1000000 == 0) {
-                	logger.info(allRecordsNum + " reads processed ...");
-                }
-                indexer.processAlignment(rec.samRecord);
-                allRecordsNum ++;
+        for (SamRecord rec : reader.readLines()) {
+        	if (rec.getRefID().equals("chr17")) {
+				logger.debug("stop");
+			}
+            if (allRecordsNum % 1000000 == 0) {
+            	logger.info(allRecordsNum + " reads processed ...");
             }
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+            try {
+            	 indexer.processAlignment(rec.samRecord);
+			} catch (Exception e) {
+				 indexer.processAlignment(rec.samRecord);
+			}
+           
+            allRecordsNum ++;
+        }
 
         indexer.finish();
+        FileOperate.moveFile(true, outTmp, output);
     }
 
 }

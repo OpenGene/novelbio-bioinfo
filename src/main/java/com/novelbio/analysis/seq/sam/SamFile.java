@@ -17,6 +17,7 @@ import net.sf.samtools.SAMFileHeader.SortOrder;
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMFileReader.ValidationStringency;
 import net.sf.samtools.SAMReadGroupRecord;
+import net.sf.samtools.SAMSequenceDictionary;
 import net.sf.samtools.SAMSequenceRecord;
 import net.sf.samtools.SAMTextHeaderCodec;
 import net.sf.samtools.util.BlockCompressedInputStream;
@@ -35,9 +36,6 @@ import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.information.SoftWareInfo;
-import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
-import com.novelbio.database.model.species.Species;
 
 /**
  * 提取为bed文件时，仅仅考虑f-r情况
@@ -134,7 +132,12 @@ public class SamFile implements AlignSeq {
 		}
 		return samReader;
 	}
-	
+	public boolean isIndexed() {
+		if (samReader != null) {
+			samReader.initial();
+		}
+		return samReader.isIndexed;
+	}
 	private void setSamRead(InputStream inputStream) {
 		samReader = new SamReader(inputStream);
 		read = true;
@@ -427,26 +430,43 @@ public class SamFile implements AlignSeq {
     	String outName = FileOperate.changeFileSuffix(getFileName(), "_sorted", "bam");
     	return sort(outName);
     }
+    public SamFile sortByChrIds(SAMSequenceDictionary samSequenceDictionary) {
+    	if (getFileName().endsWith("_sorted.bam")) {
+			return this;
+		}
+    	String outName = FileOperate.changeFileSuffix(getFileName(), "_sorted", "bam");
+    	return sort(samSequenceDictionary, outName);
+    }
 	 /**
 	  * 排序，输出为bam形式
 	  * @param outFile
 	  */
     public SamFile sort(String outFile) {
+		return sort(null, outFile);
+	}
+    
+	 /**
+	  * 排序，输出为bam形式
+	  * @param lsChrId 如果有lsChrId存在，会根据该顺序来调整samHeader中的顺序
+	  * @param outFile
+	  * @return
+	  */
+   public SamFile sort(SAMSequenceDictionary samSequenceDictionary, String outFile) {
 		BamSort bamSort = new BamSort();
-    	if (!bamFile) {
-    		SamFile bamFile = convertToBam(false);
-    		bamSort.setSamFile(bamFile);
-    	} else {
-    		bamSort.setSamFile(this);
+		bamSort.setSamSequenceDictionary(samSequenceDictionary);
+		if (!bamFile) {
+			SamFile bamFile = convertToBam(false);
+			bamSort.setSamFile(bamFile);
+		} else {
+			bamSort.setSamFile(this);
 		}
 
-    	String outSortedBamName = bamSort.sortJava(outFile);
+		String outSortedBamName = bamSort.sortJava(outFile);
 		SamFile samFile = new SamFile(outSortedBamName);
 		setParamSamFile(samFile);
 		samFile.read = true;
 		return samFile;
 	}
-    
     protected void setParamSamFile(SamFile samFile) {
     	samFile.referenceFileName = referenceFileName;
     	samFile.isRealigned = isRealigned;

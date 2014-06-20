@@ -253,6 +253,7 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess> impleme
 	 * 并填充hashmap
 	 *  */
 	public void addAlignRecord(AlignRecord alignRecord) {
+		if (!alignRecord.isMapped()) return;
 		double value = (double)1/alignRecord.getMappedReadsWeight();
 		addMiRNACountPre(alignRecord.getRefID(), value);
 		

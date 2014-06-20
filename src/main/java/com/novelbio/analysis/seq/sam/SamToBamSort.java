@@ -9,6 +9,7 @@ import java.util.Set;
 
 import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMFileHeader.SortOrder;
+import net.sf.samtools.SAMSequenceDictionary;
 
 import com.novelbio.base.SepSign;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -22,7 +23,11 @@ public class SamToBamSort {
 	String outFileName;
 	SamFile samFileSam;//输入的sam文件
 	List<AlignmentRecorder> lsAlignmentRecorders = new ArrayList<>();
-
+	
+	/** 输入lsChrId，可以用这个来调整samFile的head */
+	SAMSequenceDictionary samSequenceDictionary;
+	SamReorder samReorder;
+	
 	boolean addMultiHitFlag = false;
 	boolean isPairend = false;
 	boolean isUsingTmpFile = false;
@@ -56,6 +61,11 @@ public class SamToBamSort {
 	public void setNeedSort(boolean isNeedSort) {
 		this.isNeedSort = isNeedSort;
 	}
+	/** 是否根据samSequenceDictionary重新排列samHeader中的顺序，目前只有mapsplice才遇到 */
+	public void setSamSequenceDictionary(
+			SAMSequenceDictionary samSequenceDictionary) {
+		this.samSequenceDictionary = samSequenceDictionary;
+	}
 	/** 是否使用临时文件<br>
 	 * 意思就是说在转化过程中用中间文件保存，只有当成功后才会改为最后文件名<br>
 	 * <b>默认false</b>，因为mapping模块里面已经采用了中间文件名
@@ -84,9 +94,7 @@ public class SamToBamSort {
 		}
 	}
 	
-	/**
-	 * 转换结束后，关闭输出的bam文件，但是不关闭输入的sam文件
-	 */
+	/** 转换结束后，关闭输出的bam文件，但是不关闭输入的sam文件 */
 	public void convert() {
 		setBamWriteFile();
 		if (addMultiHitFlag) {
@@ -105,7 +113,17 @@ public class SamToBamSort {
 		if (!writeToBam) {
 			return;
 		}
+		
+		
 		SAMFileHeader samFileHeader = samFileSam.getHeader();
+		if (samSequenceDictionary != null) {
+			samReorder = new SamReorder();
+			samReorder.setSamSequenceDictionary(samSequenceDictionary);
+			samReorder.setSamFileHeader(samFileHeader);
+			samReorder.reorder();
+			samFileHeader = samReorder.getSamFileHeaderNew();
+		}
+		
 		if (isNeedSort && samFileSam.getHeader().getSortOrder()== SortOrder.unsorted) {
 			samFileHeader.setSortOrder(SAMFileHeader.SortOrder.coordinate);
 			samFileBam = new SamFile(outFileName, samFileHeader, false);
@@ -125,6 +143,10 @@ public class SamToBamSort {
 	
 	private void convertNotAddMultiFlag() {
 		for (SamRecord samRecord : samFileSam.readLines()) {
+			if (samReorder != null) {
+				samReorder.copeReads(samRecord);
+			}
+			
 			for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {
 				try {
 					alignmentRecorder.addAlignRecord(samRecord);
@@ -143,6 +165,10 @@ public class SamToBamSort {
 		final Map<String, SamRecord[]> mapMateInfo2pairReads = new LinkedHashMap<String, SamRecord[]>();
 		
 		for (SamRecord samRecord : samFileSam.readLines()) {
+			if (samReorder != null) {
+				samReorder.copeReads(samRecord);
+			}
+			
 			if ((!isPairend && setTmp.size() == 0) || (isPairend && setTmp.size() < 2)
 					) {
 				setTmp.add(samRecord.getNameAndSeq());

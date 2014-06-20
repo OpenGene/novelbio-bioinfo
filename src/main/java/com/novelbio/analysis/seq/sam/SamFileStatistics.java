@@ -10,9 +10,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 import org.jfree.chart.ChartFactory;
@@ -37,7 +35,6 @@ import com.novelbio.analysis.seq.fasta.ChrSeqHash.CompareChrID;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.mapping.MappingReadsType;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.ImageUtils;
 import com.novelbio.base.plot.PlotBar;
@@ -55,6 +52,10 @@ public class SamFileStatistics implements AlignmentRecorder {
 	double repeatMappedReadsNum = 0;
 	double junctionUniReads = 0;
 	double junctionAllReads = 0;
+	
+	int insertSize = 0;
+	double insertSizeAll = 0;
+	double insertNum = 0;
 	
 	/** 用于画图和生成表格的参数, key是真实的ChrID */
 	HashMap<String, double[]> mapChrID2LenProp = null;
@@ -248,6 +249,9 @@ public class SamFileStatistics implements AlignmentRecorder {
 			if (samRecord.isJunctionCovered()) {
 				junctionAllReads = junctionAllReads + readsNum;
 			}
+			
+			setMateSizeInfo(samRecord);
+			
 		}
 		else {
 			unmappedReadsNum = unmappedReadsNum + readsNum;
@@ -266,6 +270,30 @@ public class SamFileStatistics implements AlignmentRecorder {
 			mapChrID2ReadsNum.put(chrID, chrNum);
 		}
 		chrNum[0] = chrNum[0] + (double)1/readsWeight;
+	}
+	
+	int uniqueNum = -1;
+	
+	private void setMateSizeInfo(AlignRecord samRecord) {
+		if (samRecord instanceof SamRecord) {
+			SamRecord samRecordThis = (SamRecord)samRecord;
+			if (!samRecordThis.isMapped() || !samRecordThis.isFirstRead() ||  !samRecordThis.isUniqueMapping() 
+					|| !samRecordThis.isMateMapped() || !samRecordThis.getRefID().equals(samRecordThis.getMateRefID()
+					)) {
+				int mateStart = samRecordThis.getMateAlignmentStart();
+				int insertSizeThis = 0;
+				if (mateStart >= samRecordThis.getStartAbs()) {
+					insertSizeThis = mateStart - samRecordThis.getStartAbs() + samRecordThis.getLength();
+				} else if (mateStart < samRecordThis.getStartAbs()) {
+					insertSizeThis = samRecordThis.getEndAbs() - mateStart;
+				}
+				if (insertSizeThis > 0) {
+					insertSizeAll += insertSizeThis;
+					insertNum++;
+				}
+				
+			}
+		}
 	}
 
 	@Override
@@ -300,6 +328,11 @@ public class SamFileStatistics implements AlignmentRecorder {
 		
 		junctionAllReads = Math.round(junctionAllReads);
 		junctionUniReads = Math.round(junctionUniReads);
+		
+		if (insertNum > mappedReadsNum * 0.1) {
+			insertSize = (int) (insertSizeAll/insertNum);
+		}
+		
 		for (double[] readsNum : mapChrID2ReadsNum.values()) {
 			readsNum[0] = Math.round(readsNum[0]);
 		}
@@ -437,6 +470,9 @@ public class SamFileStatistics implements AlignmentRecorder {
 			if (junctionAllMappedReads != 0 && junctionUniqueMapping != 0) {
 				lsTable.add(new String[] { "junctionAllMappedReads", junctionAllMappedReads + "" });
 				lsTable.add(new String[] { "junctionUniqueMapping", junctionUniqueMapping + "" });
+			}
+			if (insertSize > 0) {
+				lsTable.add(new String[] { "insertSize", insertSize + "" });
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

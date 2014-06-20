@@ -241,6 +241,9 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	
 	/** 设定建库的方式 */
 	public void setStrandSpecific(StrandSpecific strandSpecific) {
+		if (strandSpecific == StrandSpecific.UNKNOWN) {
+			return;
+		}
 		this.strandSpecific = strandSpecific;
 	}
 	
@@ -421,7 +424,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				i++;
 				String group = i+"";
 				tophatJunction.setCondition(condition, group);
-				samFileReading.clear();
+				samFileReading.clearOther();
 				samFileReading.getFirstSamFile().indexMake();
 				if (samFileReadingLast != null) {
 					samFileReading.setReadInfo(0L, samFileReadingLast.getReadByte());
@@ -553,7 +556,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			for (AlignSamReading samFileReading : lsSamFileReadings) {
 				i++;
 				String group = i+"";
-				samFileReading.clear();
+				samFileReading.clearOther();
 				if (samFileReadingLast != null) {
 					samFileReading.setReadInfo(0L, samFileReadingLast.getReadByte());
 				}

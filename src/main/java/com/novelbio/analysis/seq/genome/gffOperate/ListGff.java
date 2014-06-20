@@ -1,5 +1,7 @@
 package com.novelbio.analysis.seq.genome.gffOperate;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -45,5 +47,9 @@ public class ListGff extends ListAbsSearch<GffDetailGene, GffCodGene, GffCodGene
 			gffDetailGeneLast = gffDetailGene;
 		}
 		return listGffNew;
+	}
+	
+	public void removeGene(GffDetailGene gene) {
+		lsElement.indexOf(gene);
 	}
 }

@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.novelbio.analysis.tools.Mas3.getProbID;
+import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -16,7 +16,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.generalConf.TitleFormatNBC;
 
-public class RNAhybrid {
+public class RNAhybrid implements IntCmdSoft {
 	public static void main(String[] args) {
 		RNAhybrid rnAhybrid = new RNAhybrid();
 		rnAhybrid.setMiRNAseq("/media/winD/plant_miRNA_predict/AraDemo.fa");
@@ -81,18 +81,23 @@ public class RNAhybrid {
 	}
 	
 	public void mirnaPredictRun() {
+		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
+		cmdOperate.run();
+		if (!cmdOperate.isFinishedNormal()) {
+			throw new ExceptionCmd("RNAhybrid error:\n" + cmdOperate.getCmdExeStrReal());
+		}
+		FileOperate.moveFile(true, FileOperate.changeFilePrefix(predictResultFile, "_tmp", null), predictResultFile);
+	}
+	
+	private List<String> getLsCmd() {
 		List<String> lsCmd = new ArrayList<>();
 		lsCmd.add(exePath + "RNAhybrid");
 		ArrayOperate.addArrayToList(lsCmd, getRNAhybridClass());
 		ArrayOperate.addArrayToList(lsCmd, getUtr3Seq());
 		ArrayOperate.addArrayToList(lsCmd, getMirSeq());
 		lsCmd.add(">");
-		lsCmd.add(predictResultFile);
-		CmdOperate cmdOperate = new CmdOperate(lsCmd);
-		cmdOperate.run();
-		if (!cmdOperate.isFinishedNormal()) {
-			throw new ExceptionCmd("RNAhybrid error:\n" + cmdOperate.getCmdExeStrReal());
-		}
+		lsCmd.add(FileOperate.changeFilePrefix(predictResultFile, "_tmp", null));
+		return lsCmd;
 	}
 	
 	/** 读取产生的结果 */
@@ -206,7 +211,15 @@ public class RNAhybrid {
 		}
 	}
 
-	
+	@Override
+	public List<String> getCmdExeStr() {
+		List<String> lsResult = new ArrayList<>();
+		List<String> lsCmd = getLsCmd();
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
+		String cmd = cmdOperate.getCmdExeStr();
+		lsResult.add(cmd);
+		return lsResult;
+	}	
 	
 	public static class HybridRNAUnit extends HybridUnit {
 		double pvalue;
@@ -358,6 +371,7 @@ public class RNAhybrid {
 		}
 
 	}
+
 }
 
 

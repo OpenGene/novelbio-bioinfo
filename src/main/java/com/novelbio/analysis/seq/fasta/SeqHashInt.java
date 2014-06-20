@@ -30,7 +30,7 @@ public interface SeqHashInt {
 	 * @param chrID 内部自动转换为小写
 	 * @return
 	 */
-	public long getChrLength(String chrID) ;
+	public Long getChrLength(String chrID) ;
 	/**
 	 * 在读取chr长度文件后，可以通过此获得每条chr的长度
 	 * @param chrID 内部自动转换为小写

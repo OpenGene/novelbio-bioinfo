@@ -87,7 +87,7 @@ public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 	 * @param chrID 内部自动转换为小写
 	 * @return
 	 */
-	public long getChrLength(String chrID) {
+	public Long getChrLength(String chrID) {
 		return getMapChrLength().get(chrID.toLowerCase());
 	}
 	/**

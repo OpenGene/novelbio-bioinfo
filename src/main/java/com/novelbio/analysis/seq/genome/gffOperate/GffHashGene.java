@@ -7,7 +7,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
@@ -58,7 +57,7 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	public GffHashGene(GffType gffType, String gffFile) {
 		this.gffType = gffType;
 		this.gffFile = gffFile;
-		flagFinish = read(0, null, null, gffType, gffFile);
+		flagStop = read(0, null, null, gffType, gffFile);
 	}
 	/**
 	 * 读取并初始化，可以用isFinished()来判定是否顺利运行完毕
@@ -71,7 +70,7 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 		this.gffType = gffType;
 		this.gffFile = gffFile;
 		this.dbinfo = dbinfo;
-		flagFinish = read(taxID,version, dbinfo, gffType, gffFile);
+		read(taxID,version, dbinfo, gffType, gffFile);
 	}
 	/**
 	 * 读取并初始化，可以用isFinished()来判定是否顺利运行完毕
@@ -88,7 +87,7 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 		}
 		
 		this.gffFile = gffFile;
-		flagFinish = read(taxID, version, dbinfo, gffType, gffFile);
+		read(taxID, version, dbinfo, gffType, gffFile);
 	}
 	
 	public void setTaxIdVersion(int taxID, String version, String dbinfo) {
@@ -116,7 +115,7 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	}
 	@Override
 	protected void running() {
-		flagFinish = read(taxID, version, dbinfo, gffType, gffFile);
+		read(taxID, version, dbinfo, gffType, gffFile);
 	}
 	
 	private boolean read(int taxID, String version, String dbinfo, GffType gffType, String gffFile) {
@@ -250,8 +249,8 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	 * @param chrID
 	 * @param gffDetailGene
 	 */
-	public void addGffDetailGene(String chrID, GffDetailGene gffDetailGene) {
-		gffHashGene.addGffDetailGene(chrID, gffDetailGene);
+	public void addGffDetailGene(GffDetailGene gffDetailGene) {
+		gffHashGene.addGffDetailGene(gffDetailGene);
 	}
 
 	public void writeToGTF(String GTFfile) {

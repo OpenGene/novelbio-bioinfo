@@ -300,8 +300,8 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	 * @param chrID
 	 * @param gffDetailGene
 	 */
-	public void addGffDetailGene(String chrID, GffDetailGene gffDetailGene) {
-		chrID = chrID.toLowerCase();
+	public void addGffDetailGene(GffDetailGene gffDetailGene) {
+		String chrID = gffDetailGene.getRefID().toLowerCase();
 		if (!mapChrID2ListGff.containsKey(chrID)) {
 			ListGff lsGffDetailGenes = new ListGff();
 			mapChrID2ListGff.put(chrID, lsGffDetailGenes);
@@ -309,6 +309,21 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		ListGff lsGffDetailGenes = mapChrID2ListGff.get(chrID);
 		lsGffDetailGenes.add(gffDetailGene);
 	}
+	
+	/**
+	 * 删除基因
+	 * @param chrID
+	 * @param gffDetailGene
+	 */
+	public void removeGffDetailGene(GffDetailGene gffDetailGene) {
+		String chrID = gffDetailGene.getRefID().toLowerCase();
+		if (!mapChrID2ListGff.containsKey(chrID)) {
+			return;
+		}
+		ListGff lsGffDetailGenes = mapChrID2ListGff.get(chrID);
+		lsGffDetailGenes.add(gffDetailGene);
+	}
+	
 	/**
 	 * <b>可能会出现重复ID，如同一名字的miRNA</b><br>
 	 * 将文件写入GTF中

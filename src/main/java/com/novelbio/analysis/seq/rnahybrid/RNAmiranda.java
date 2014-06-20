@@ -12,6 +12,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -19,7 +20,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.generalConf.TitleFormatNBC;
 
-public class RNAmiranda {
+public class RNAmiranda implements IntCmdSoft {
 	private static final Logger logger = Logger.getLogger(RNAmiranda.class);
 	
 	public static void main(String[] args) {
@@ -74,6 +75,7 @@ public class RNAmiranda {
 		if (!cmdOperate.isFinishedNormal()) {
 			throw new ExceptionCmd("miranda error:" + cmdOperate.getCmdExeStrReal());
 		}
+		FileOperate.moveFile(true, FileOperate.changeFilePrefix(predictResultFile, "_tmp", null), predictResultFile);
 		return predictResultFile;
 	}
 	
@@ -84,7 +86,7 @@ public class RNAmiranda {
 		lsCmd.add(inputUTR3seq);
 		ArrayOperate.addArrayToList(lsCmd, getTargetScore());
 		ArrayOperate.addArrayToList(lsCmd, getTargetEnergy());
-		lsCmd.add(">"); lsCmd.add(predictResultFile);
+		lsCmd.add(">"); lsCmd.add(FileOperate.changeFilePrefix(predictResultFile, "_tmp", null));
 		return lsCmd;
 	}
 	
@@ -302,77 +304,93 @@ Complete
 		}
 	}
 
-
-public static class HybridMiranda extends HybridUnit {
-	double score;
-
-	/** 获得3-5的queryseq */
-	protected void setQseq(String qSeqContent) {
-		qSeq = qSeqContent.replace("Query:", "").replace("3'", "").replace("5'", "").trim();
+	@Override
+	public List<String> getCmdExeStr() {
+		List<String> lsResult = new ArrayList<>();
+		List<String> lsCmd = getLsCmd();
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
+		String cmd = cmdOperate.getCmdExeStr();
+		lsResult.add(cmd);
+		return lsResult;
 	}
-	/** 获得5-3的queryseq */
-	protected void setSseq(String sSeqContent) {
-		sSeq = sSeqContent.replace("Ref:", "").replace("3'", "").replace("5'", "").trim();
-	}
-	/** 获得5-3的queryseq */
-	protected void setAlign(String alignContent) {
-		align = alignContent.trim();
-		char[] seqQ = qSeq.toCharArray();
-		startSpaceNum = 0;
-		for (char c : seqQ) {
-			if ((int)c >= 97 ) {
-				startSpaceNum++;
-			} else if ((int)c < 97) {
-				break;
+
+	public static class HybridMiranda extends HybridUnit {
+		double score;
+
+		/** 获得3-5的queryseq */
+		protected void setQseq(String qSeqContent) {
+			qSeq = qSeqContent.replace("Query:", "").replace("3'", "")
+					.replace("5'", "").trim();
+		}
+
+		/** 获得5-3的queryseq */
+		protected void setSseq(String sSeqContent) {
+			sSeq = sSeqContent.replace("Ref:", "").replace("3'", "")
+					.replace("5'", "").trim();
+		}
+
+		/** 获得5-3的queryseq */
+		protected void setAlign(String alignContent) {
+			align = alignContent.trim();
+			char[] seqQ = qSeq.toCharArray();
+			startSpaceNum = 0;
+			for (char c : seqQ) {
+				if ((int) c >= 97) {
+					startSpaceNum++;
+				} else if ((int) c < 97) {
+					break;
+				}
 			}
 		}
+
+		/**
+		 * 设定seq的位置，打分，能量<br>
+		 * 从以下文字获取<br>
+		 * >ath-miR156c AT1G01010.1 161.00 -18.63 2 23 264 293 24 66.67% 75.00%
+		 * 
+		 * @param content
+		 */
+		protected void setLocSocreEnergy(String content) {
+			content = content.replace(">", "");
+			String[] sep = content.split("\t");
+			qName = sep[0];
+			sName = sep[1];
+			score = Double.parseDouble(sep[2]);
+			energy = Double.parseDouble(sep[3]);
+			String[] startendQ = sep[4].split(" ");
+			String[] startendS = sep[5].split(" ");
+			startQ = Integer.parseInt(startendQ[0]);
+			endQ = Integer.parseInt(startendQ[1]);
+			startS = Integer.parseInt(startendS[0]);
+			endS = Integer.parseInt(startendS[1]);
+			alignLen = Integer.parseInt(sep[6]);
+		}
+
+		/** 整理清楚的结果 */
+		public String toResultTab() {
+			List<String> lsResult = new ArrayList<>();
+			lsResult.add(qName);
+			lsResult.add(sName);
+			lsResult.add(energy + "");
+			lsResult.add(score + "");
+			lsResult.add(startS + "");
+			lsResult.add(endS + "");
+			String[] result = lsResult.toArray(new String[0]);
+			return ArrayOperate.cmbString(result, "\t");
+		}
+
+		public String getTitle() {
+			List<String> lsResult = new ArrayList<>();
+			lsResult.add(TitleFormatNBC.QueryID.toString());
+			lsResult.add(TitleFormatNBC.SubjectID.toString());
+			lsResult.add(TitleFormatNBC.Energy.toString());
+			lsResult.add(TitleFormatNBC.Score.toString());
+			lsResult.add("StartSubject");
+			lsResult.add("EndSubject");
+			String[] result = lsResult.toArray(new String[0]);
+			return ArrayOperate.cmbString(result, "\t");
+		}
+
 	}
-	
-	/** 设定seq的位置，打分，能量<br>
-	 * 从以下文字获取<br>
-	 * >ath-miR156c	AT1G01010.1	161.00	-18.63	2 23	264 293	24	66.67%	75.00%
-	 * @param content
-	 */
-	protected void setLocSocreEnergy(String content) {
-		content = content.replace(">", "");
-		String[] sep = content.split("\t");
-		qName = sep[0];
-		sName = sep[1];
-		score = Double.parseDouble(sep[2]);
-		energy = Double.parseDouble(sep[3]);
-		String[] startendQ = sep[4].split(" ");
-		String[] startendS = sep[5].split(" ");
-		startQ = Integer.parseInt(startendQ[0]);
-		endQ = Integer.parseInt(startendQ[1]);
-		startS = Integer.parseInt(startendS[0]);
-		endS = Integer.parseInt(startendS[1]);
-		alignLen = Integer.parseInt(sep[6]);
-	}
-	
-	/** 整理清楚的结果 */
-	public String toResultTab() {
-		List<String> lsResult = new ArrayList<>();
-		lsResult.add(qName);
-		lsResult.add(sName);
-		lsResult.add(energy+"");
-		lsResult.add(score + "");
-		lsResult.add(startS + "");
-		lsResult.add(endS + "");
-		String[] result = lsResult.toArray(new String[0]);
-		return ArrayOperate.cmbString(result, "\t");
-	}
-	
-	public String getTitle() {
-		List<String> lsResult = new ArrayList<>();
-		lsResult.add(TitleFormatNBC.QueryID.toString());
-		lsResult.add(TitleFormatNBC.SubjectID.toString());
-		lsResult.add(TitleFormatNBC.Energy.toString());
-		lsResult.add(TitleFormatNBC.Score.toString());
-		lsResult.add("StartSubject");
-		lsResult.add("EndSubject");
-		String[] result = lsResult.toArray(new String[0]);
-		return ArrayOperate.cmbString(result, "\t");
-	}
-}
 
 }

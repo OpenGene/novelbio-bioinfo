@@ -26,7 +26,7 @@ public enum StrandSpecific {
 	
 	public static HashMap<String, StrandSpecific> getMapStrandLibrary() {
 		LinkedHashMap<String, StrandSpecific> mapReadsQualtiy = new LinkedHashMap<String, StrandSpecific>();
-		mapReadsQualtiy.put("Predict Automaticly", UNKNOWN);
+		mapReadsQualtiy.put("Unknown", UNKNOWN);
 		mapReadsQualtiy.put("Not Consider Strand", NONE);
 		mapReadsQualtiy.put("1st Read is Strand(Proton)", FIRST_READ_TRANSCRIPTION_STRAND);
 		mapReadsQualtiy.put("2nd Read is Strand", SECOND_READ_TRANSCRIPTION_STRAND);

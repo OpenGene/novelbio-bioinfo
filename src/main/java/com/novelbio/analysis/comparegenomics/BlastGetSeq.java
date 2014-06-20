@@ -1,14 +1,20 @@
 package com.novelbio.analysis.comparegenomics;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.apache.xmlbeans.soap.SOAPArrayType;
 
 import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.annotation.blast.BlastNBC;
 import com.novelbio.analysis.annotation.blast.BlastType;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
+import com.novelbio.analysis.seq.fasta.SeqFastaHash;
+import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.GffChrSeq;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
@@ -27,10 +33,10 @@ public class BlastGetSeq implements IntCmdSoft {
 	private static final Logger logger = Logger.getLogger(BlastGetSeq.class);
 	
 	public static void main(String[] args) {
-		String path = "/media/winE/NBC/Project/liufei/liulinyu/";
+		String path = "/media/winE/Arabidopsis HD-ZIP protien--王宏(201461710125)等2个文件/sequence/";
 		FileOperate.createFolders(path);
 		BlastGetSeq blastGetSeq = new BlastGetSeq();
-		blastGetSeq.setBlastType(BlastType.blastp);
+		blastGetSeq.setBlastType(BlastType.tblastn);
 		blastGetSeq.setResultFile(path);
 		List<Species> lsSpecies = new ArrayList<>();
 //		Species species = new Species(9606);
@@ -40,58 +46,36 @@ public class BlastGetSeq implements IntCmdSoft {
 //		species = new Species(9940);
 //		lsSpecies.add(species);
 		
-		Species species = new Species(9541);
+		Species species = new Species(3702);
+		species.setVersion("tair10");
 		lsSpecies.add(species);
 		
-//		species = new Species(9823);
-//		species.setVersion("sus10_NCBI");
-//		lsSpecies.add(species);
-//		
-//		species = new Species(9913);
-//		lsSpecies.add(species);
-//		
-//		species = new Species(9031);
-//		lsSpecies.add(species);
-//		
-//		species = new Species(10116);
-//		species.setVersion("rnor5_NCBI");		
-//		lsSpecies.add(species);
-//		
-//		species = new Species(10090);
-//		species.setVersion("mm10_GRCm38");
-//		lsSpecies.add(species);
-//		
-//		species = new Species(7955);
-//		species.setVersion("Zv9");
-//		lsSpecies.add(species);
-//		
-//		species = new Species(7227);
-//		species.setVersion("dmel_r5_48");
-//		lsSpecies.add(species);
-//		
-//		species = new Species(6239);
-//		species.setVersion("ce10");
-//		lsSpecies.add(species);
+		species = new Species(39947);
+		species.setVersion("tigr7");
+		lsSpecies.add(species);
 		
-//		species = new Species(3702);
-//		species.setVersion("tair10");
-//		lsSpecies.add(species);
-//		
-//		species = new Species(39947);
-//		species.setVersion("tigr7");
-//		lsSpecies.add(species);
+		species = new Species(3694);
+		lsSpecies.add(species);
+		
+		species = new Species(29760);
+		lsSpecies.add(species);
+		
+		species = new Species(3847);
+		lsSpecies.add(species);
 		
 		blastGetSeq.setLsSpeciesBlastTo(lsSpecies);
-		SeqFasta seqFasta = new SeqFasta();
-		seqFasta.setName("GBA");
-		seqFasta.setSeq("mefsspsreecpkplsrvsimagsltgllllqavswasgarpcipksfgyssvvcvcnatycdsfdpptfpalgtfsryestrsgrrmelsmgpiqanhtgtgllltlqpeqkfqkvkgfggamtdaaalnilalsppaqnlllksyfseegigyniirvpmascdfsirtytyadtpddfqlhnfslpeedtklkiplihralqlaqrpvsllaspwtsptwlktngavngkgslkgqpgdiyhqtwaryfvkfldayaehklqfwavtaenepsagllsgypfqclgftpehqrdfiardlgptlansthhnvrllmlddqrlllphwakvvltdpeaakyvhgiavhwyldflapakatlgethrlfpntmlfaseacvgskfweqsvrlgswdrgmqyshsiitnllyhvvgwtdwnlalnpeggpnwvrnfvdspiivditkdtfykqpmfyhlghfskfipegsqrvglvasqkndldavalmhpdgsavvvvlnrsskdvpltikdpavgfletispgysihtylwrrq");
-		blastGetSeq.setQueryFasta(seqFasta);
+		SeqFastaHash seqHash = new SeqFastaHash("/media/winE/Arabidopsis HD-ZIP protien--王宏(201461710125)等2个文件/Arabidopsis_HD-ZIP_protien.fa");
+		List<SeqFasta> ls = seqHash.getSeqFastaAll();
+		blastGetSeq.addQueryFasta(ls);
+		seqHash.close();
 		blastGetSeq.blastAndGetSeq();
 	}
 	
 	
-	/** 输入的序列 */
-	SeqFasta seqFasta;
+	/** 输入的序列
+	 * 用map 的原因是为了去除重复序列，key为小写
+	 */
+	Map<String, SeqFasta> mapSeq2Fasta = new HashMap<>();
 	
 	/** 需要比对到的物种 */
 	List<Species> lsSpeciesBlastTo;
@@ -112,9 +96,16 @@ public class BlastGetSeq implements IntCmdSoft {
 	
 	List<String> lsCmd = new ArrayList<>();
 	
-	public void setQueryFasta(SeqFasta seqFasta) {
-		this.seqFasta = seqFasta;
+	public void addQueryFasta(SeqFasta seqFasta) {
+		this.mapSeq2Fasta.put(seqFasta.toString().toLowerCase(), seqFasta);
 	}
+	
+	public void addQueryFasta(List<SeqFasta> lsSeqFasta) {
+		for (SeqFasta seqFasta : lsSeqFasta) {
+			this.mapSeq2Fasta.put(seqFasta.toString().toLowerCase(), seqFasta);
+		}
+	}
+	
 	public void setLsSpeciesBlastTo(List<Species> lsSpeciesBlastTo) {
 		this.lsSpeciesBlastTo = lsSpeciesBlastTo;
 	}
@@ -159,34 +150,57 @@ public class BlastGetSeq implements IntCmdSoft {
 		TxtReadandWrite txtWriteSeq = new TxtReadandWrite(outSeq, true);
 		txtWriteNum.writefileln("SpeciesName\tSeqNum");
 		for (Species species : lsSpeciesBlastTo) {
+			Map<String, SeqFasta> mapName2Seqfasta = new HashMap<>();
 			if (!checkSpecies(species)) {
 				logger.info("no species: " + species.getNameLatin());
 				continue;
 			}
 			String seqBlastTo = getBlastToSeq(species);
-			BlastNBC blastNBC = new BlastNBC();
-			blastNBC.setBlastType(blastType);
-			blastNBC.setQueryFasta(seqFasta);
-			blastNBC.setSubjectSeq(seqBlastTo);
-			if (seqFasta.Length() < 50) {
-				blastNBC.setShortQuerySeq(true);
+			
+			GffChrAbs gffChrAbs = new GffChrAbs(species);
+			for (SeqFasta seqFasta : mapSeq2Fasta.values()) {
+				Map<String, SeqFasta> mapName2SeqfastaOnseq = getBlast2Species(seqFasta, seqBlastTo, species, gffChrAbs);
+				mapName2Seqfasta.putAll(mapName2SeqfastaOnseq);
 			}
-			blastNBC.setEvalue(evalue);
-			blastNBC.setResultSeqNum(1000);
-			blastNBC.setResultType(BlastNBC.ResultType_Simple);
-			String resultBlast = FileOperate.getPathName(resultFile) + seqFasta.getSeqName().trim().split(" ")[0] + "_blastto_"  + species.getNameLatin().replace(" ", "_");
-			blastNBC.setResultFile(resultBlast);
-			blastNBC.blast();
-			lsCmd.addAll(blastNBC.getCmdExeStr());
-			List<SeqFasta> lsSeqFastas = getSeq(blastNBC, species);
-			txtWriteNum.writefileln(species.getNameLatin() + "\t" + lsSeqFastas.size());
-			writeToFile(species, lsSeqFastas, txtWriteSeq);
+			gffChrAbs.close();
+			txtWriteNum.writefileln(species.getNameLatin() + "\t" + mapName2Seqfasta.size());
+			writeToFile(species, mapName2Seqfasta.values(), txtWriteSeq);
 			logger.info("finish get species: " + species.getNameLatin());
 		}
 		
 		txtWriteNum.close();
 		txtWriteSeq.close();
 	}
+	
+	/**
+	 * 将seqFasta比对到seqBlastTo上去
+	 * @param seqFasta
+	 * @param seqBlastTo
+	 * @return
+	 */
+	private Map<String, SeqFasta> getBlast2Species(SeqFasta seqFasta, String seqBlastTo, Species species, GffChrAbs gffChrAbs) {
+		BlastNBC blastNBC = new BlastNBC();
+		blastNBC.setBlastType(blastType);
+		blastNBC.setQueryFasta(seqFasta);
+		blastNBC.setSubjectSeq(seqBlastTo);
+		if (seqFasta.Length() < 50) {
+			blastNBC.setShortQuerySeq(true);
+		}
+		blastNBC.setEvalue(evalue);
+		blastNBC.setResultSeqNum(1000);
+		blastNBC.setResultType(BlastNBC.ResultType_Simple);
+		String resultBlast = FileOperate.getPathName(resultFile) + seqFasta.getSeqName().trim().split(" ")[0] + "_"+ blastType + "_"  + species.getNameLatin().replace(" ", "_");
+		blastNBC.setResultFile(resultBlast);
+		blastNBC.blast();
+		lsCmd.addAll(blastNBC.getCmdExeStr());
+		List<SeqFasta> lsSeqFastas = getSeq(seqFasta, blastNBC, species, gffChrAbs);
+		Map<String, SeqFasta> mapName2SeqFasta = new HashMap<>();
+		for (SeqFasta seqFasta2 : lsSeqFastas) {
+			mapName2SeqFasta.put(seqFasta2.getSeqName(), seqFasta2);
+		}
+		return mapName2SeqFasta;
+	}
+	
 	
 	private boolean checkSpecies(Species species) {
 		if (species == null || species.getTaxID() == 0) {
@@ -208,7 +222,7 @@ public class BlastGetSeq implements IntCmdSoft {
 	}
 	
 	/** 根据blast以及相应的参数，返回提取到的序列 */
-	private List<SeqFasta> getSeq(BlastNBC blastNBC, Species species) {
+	private List<SeqFasta> getSeq(SeqFasta seqFasta, BlastNBC blastNBC, Species species, GffChrAbs gffChrAbs) {
 		List<BlastInfo> lsBlastInfos = BlastInfo.readBlastFile(blastNBC.getResultFile());
 		if (lsBlastInfos.size() == 0) {
 			return new ArrayList<>();
@@ -232,7 +246,6 @@ public class BlastGetSeq implements IntCmdSoft {
 		if (lsGeneName.size() == 0) {
 			return new ArrayList<>();
 		}
-		GffChrAbs gffChrAbs = new GffChrAbs(species, true);
 		GffChrSeq gffChrSeq = new GffChrSeq(gffChrAbs);
 		if (isGetProtein) {
 			gffChrSeq.setGeneStructure(GeneStructure.CDS);
@@ -248,7 +261,7 @@ public class BlastGetSeq implements IntCmdSoft {
 		return lsSeqfasta;
 	}
 		
-	private void writeToFile(Species species, List<SeqFasta> lsSeqFastas, TxtReadandWrite txtWrite) {
+	private void writeToFile(Species species, Collection<SeqFasta> lsSeqFastas, TxtReadandWrite txtWrite) {
 		for (SeqFasta seqFasta : lsSeqFastas) {
 			GeneID geneID = new GeneID(seqFasta.getSeqName(), species.getTaxID());
 			String seqfastaNameNew = seqFasta.getSeqName();

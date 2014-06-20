@@ -253,7 +253,16 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 			alignmentRecorder.summary();
 		}
 	}
-	
+	/** 清空除samfile以外的其他信息 */
+	public void clearOther() {
+		lsAlignmentRecorders.clear();
+		setRecorderRun.clear();
+		mapChrID2RecorderTodo.clear();
+		readLines = 0;
+		readByte = 0;
+		lenMin = -1;
+		lenMax = -1;
+	}
 	public void clear() {
 		lsAlignmentRecorders.clear();
 		setRecorderRun.clear();
