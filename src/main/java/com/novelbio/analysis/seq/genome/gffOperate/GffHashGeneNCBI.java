@@ -203,7 +203,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		   } else if(ss[2].equals("three_prime_UTR") || ss[2].equals("five_prime_UTR") ) {
 			   continue;
 		   } else {
-			   logger.info("出现未知exon：" +  ArrayOperate.cmbString(ss, "\t"));
+			   logger.debug("出现未知exon：" +  ArrayOperate.cmbString(ss, "\t"));
 		   }
 			  
 	   }

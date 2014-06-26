@@ -77,7 +77,11 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	 * @param gffFile 根据文件后缀名判断是GFF还是GTF
 	 */
 	public GffHashGene(String gffFile) {
-		String suffix = FileOperate.getFileNameSep(gffFile)[1];
+		String gffFileTmp = gffFile;
+		if (gffFile.endsWith(".gz")) {
+			gffFileTmp = gffFile.substring(0, gffFile.length()-3);
+		}
+		String suffix = FileOperate.getFileNameSep(gffFileTmp)[1];
 		if (suffix.trim().toLowerCase().equals("gff") || suffix.trim().toLowerCase().equals("gff3")) {
 			this.gffType = GffType.NCBI;
 		} else if (suffix.trim().toLowerCase().equals("gtf")) {
