@@ -110,7 +110,7 @@ public class ConvolutionExample extends ExamplePanel {
 	                // Add plot to Swing component
 	                add(new InteractivePanel(plot), BorderLayout.CENTER);
 	                
-	                System.out.println(dateTime.getEclipseTime());
+	                System.out.println(dateTime.getElapseTime());
 	        }
 	
 	        private static void formatLine(XYPlot plot, DataSeries series, Color color) {

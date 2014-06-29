@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.GeneExpTable;
+import com.novelbio.analysis.seq.GeneExpTable.EnumAddAnnoType;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamMapRate;
@@ -57,8 +58,8 @@ public class TestMirPipelineAfterPredict {
 		lsSpeciesBlastTo.add(new Species(9913));
 		lsSpeciesBlastTo.add(new Species(9606));
 		
-		expMirPre.read("/media/hdfs/nbCloud/public/customer/gaohongmei_IASCAAS_sheep_RNA_20130925/miRNAtest/mirPreAll_Counts.txt", true);
-		expMirMature.read("/media/hdfs/nbCloud/public/customer/gaohongmei_IASCAAS_sheep_RNA_20130925/miRNAtest/mirMatureAll_Counts.txt", true);
+		expMirPre.read("/media/hdfs/nbCloud/public/customer/gaohongmei_IASCAAS_sheep_RNA_20130925/miRNAtest/mirPreAll_Counts.txt", EnumAddAnnoType.addNew);
+		expMirMature.read("/media/hdfs/nbCloud/public/customer/gaohongmei_IASCAAS_sheep_RNA_20130925/miRNAtest/mirMatureAll_Counts.txt", EnumAddAnnoType.addNew);
 		
 		outPath = "/media/hdfs/nbCloud/public/customer/gaohongmei_IASCAAS_sheep_RNA_20130925/miRNAtest/";
 	}

@@ -35,6 +35,7 @@ public enum TitleFormatNBC {
 	
 	Energy("Energy"), Score("Score"), 
 	GOID("GOID"), GOTerm("GOTerm"),
+	KEGGID("KeggID"), KEGGTerm("KeggTerm"),
 	PathwayID("PathwayID"), PathwayTerm("PathwayTerm"),
 	
 	/** mapping的临时文件夹 */

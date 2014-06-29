@@ -324,7 +324,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		for (String[] col2Group : lsSampleColumn2GroupName) {
 			lsColID.add(Integer.parseInt(col2Group[0]) - 1);
 		}
-		List<String[]> lsTmpResult = MathComput.getMedian(lsGeneInfo.subList(colAccID, lsGeneInfo.size()), 1, lsColID);
+		List<String[]> lsTmpResult = MathComput.getMedian(lsGeneInfo.subList(1, lsGeneInfo.size()), colAccID+1, lsColID);
 		lsTmpResult.add(0, lsGeneInfo.get(0));
 		return lsTmpResult;
 	}

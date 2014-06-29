@@ -219,7 +219,6 @@ public class GeneID implements GeneIDInt{
 						0:symbol 1:description<br>
 	 */
 	@Override
-	@Deprecated
 	public String[] getAnno(boolean blast) {
 		return geneID.getAnno(blast);
 	}

@@ -225,7 +225,12 @@ public class DiffExpEdgeR extends DiffExpAbs {
 		for (int i = 1; i < lsDifGene.size(); i++) {
 			String[] tmpResult = ArrayOperate.indelElement(lsDifGene.get(i), lsIndelItem, "");
 			String geneID = tmpResult[0].replace("\"", "");
-			tmpResult[1] = mapGeneID_2_Sample2MeanValue.get(geneID).get(treatName) + "";
+			try {
+				tmpResult[1] = mapGeneID_2_Sample2MeanValue.get(geneID).get(treatName) + "";
+			} catch (Exception e) {
+				tmpResult[1] = mapGeneID_2_Sample2MeanValue.get(geneID).get(treatName) + "";
+			}
+		
 			tmpResult[2] = mapGeneID_2_Sample2MeanValue.get(geneID).get(controlName) + "";
 			
 			if (!tmpResult[2].equals("0")) {

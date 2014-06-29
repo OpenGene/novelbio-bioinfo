@@ -1,6 +1,5 @@
 package com.novelbio.test;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,56 +7,105 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
+import net.sf.picard.fastq.FastqRecord;
 
+import org.apache.log4j.Logger;
+
+import com.novelbio.analysis.seq.GeneExpTable;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
+import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffFile;
-import com.novelbio.analysis.seq.genome.gffOperate.GffFileUnit;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
-import com.novelbio.analysis.seq.genome.mappingOperate.EnumMapNormalizeType;
-import com.novelbio.analysis.seq.mapping.MapBowtie;
-import com.novelbio.analysis.seq.mapping.MapBwaAln;
-import com.novelbio.analysis.seq.mapping.MapDNA;
-import com.novelbio.analysis.seq.mapping.MapDNAint;
-import com.novelbio.analysis.seq.mapping.MapSplice;
-import com.novelbio.analysis.seq.mapping.MapTophat;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
+import com.novelbio.analysis.seq.mirna.MiRNACount;
+import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
+import com.novelbio.analysis.seq.sam.AlignSeqReading;
+import com.novelbio.analysis.seq.sam.BamIndex;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
-import com.novelbio.base.cmd.CmdOperate;
-import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.PatternOperate;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.base.plot.ImageUtils;
-import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.database.model.species.Species.EnumSpeciesType;
-import com.novelbio.database.service.SpringFactory;
-import com.novelbio.database.service.servgeneanno.ManageBlastInfo;
-import com.novelbio.database.service.servgff.ManageGffDetailGene;
+import com.novelbio.generalConf.PathDetailNBC;
+import com.novelbio.generalConf.TitleFormatNBC;
 
 
 public class mytest {
 	private static final Logger logger = Logger.getLogger(mytest.class);
 	static boolean is;
 	public static void main(String[] args) {
-		SamFile samFile = new SamFile("D:/zongjie/Desktop/L4_GENfpoDABDMAAPEI-11_BWA_no_map_Bac.sam");
-		for (SamRecord samRecord : samFile.readLines()) {
+//		SamFile samFile = new SamFile("/media/winE/tmp/test.sam");
+//		SamFile samFile2 = new SamFile("/media/winE/tmp/testOrder.bam", samFile.getHeader());
+//		int i = 0;
+//		for (SamRecord samRecord : samFile.readLines()) {
+//			if (i++ > 50000) {
+//				break;
+//			}
+//			samFile2.writeSamRecord(samRecord);
+//		}
+//		samFile.close();
+//		samFile2.close();
+		
+//		SamFile samFile = new SamFile("/media/winE/tmp/testOrder.bam");
+//		SAMFileHeader header = samFile.getHeader();
+		
+//		TxtReadandWrite txtRead = new TxtReadandWrite("/media/hdfs/nbCloud/public/test/fastq/798B_CGATGT_L004_R2_001.fastq.gz");
+//		int i = 0;
+//		for (String string : txtRead.readlines()) {
+//			if (i++ > 10) {
+//				break;
+//			}
+//			System.out.println(string);
+//		}
+//		txtRead.close();
+		
+		SamFile samFile = new SamFile("/media/hdfs/nbCloud/public/test/RNASeqMap/R001_mapsplice.sort.bam");
+//		samFile.indexMake();
+//		BamIndex bamIndex = new BamIndex(samFile);
+//		bamIndex.indexC();
+//		int i = 0;
+		for (SamRecord samRecord : samFile.readLinesContained("chr3", 23456789, 33456789)) {
+//			if (i++ > 10) {
+//				break;
+//			}
 			System.out.println(samRecord.toString());
 		}
-		System.out.println(samFile.isPairend());
+		
 	}
+	
+	private void copeGffWangxia() {
+		GffHashGene gffHashGeneOther = new GffHashGene(GffType.NCBI, "");
+		GffHashGene gffHashGeneOur = new GffHashGene(GffType.GTF, "");
+		Set<GffDetailGene> addOther = new HashSet<>();
+		Set<GffDetailGene> removeOur = new HashSet<>();
+		for (GffDetailGene gffDetailGeneOur : gffHashGeneOur.getGffDetailAll()) {
+			GffCodGeneDU gffCodGeneDU = gffHashGeneOther.searchLocation(gffDetailGeneOur.getRefID(), gffDetailGeneOur.getStartAbs(), gffDetailGeneOur.getEndAbs());
+			Set<GffDetailGene> setGffDetailGenes = gffCodGeneDU.getCoveredOverlapGffGene();
+			if (setGffDetailGenes.size() <= 1) {
+				continue;
+			}
+			double[] regionThis = new double[]{gffDetailGeneOur.getStartAbs(), gffDetailGeneOur.getEndAbs()};
+			Set<GffDetailGene> setThisOther = new HashSet<>();
+			for (GffDetailGene gffDetailGeneOther : setGffDetailGenes) {
+				double[] regionOther = new double[]{gffDetailGeneOther.getStartAbs(), gffDetailGeneOther.getEndAbs()};
+				if (ArrayOperate.cmpArray(regionOther, regionThis)[2] >= 0.6) {
+					setThisOther.add(gffDetailGeneOther);
+				}
+			}
+			if (setThisOther.size() > 1) {
+				addOther.addAll(setThisOther);
+				removeOur.add(gffDetailGeneOur);
+			}
+		}
+	}
+	
 	
 	/** 将有问题的fastq文件整理为正常的 */
 	public static void makeFastqFile() {
@@ -79,7 +127,6 @@ public class mytest {
 			samFileUnique.close();
 		}
 	}
-	
 	
 	private static double calculPIC(double[] allen) {
 		List<Double> lsAllen = new ArrayList<>();
