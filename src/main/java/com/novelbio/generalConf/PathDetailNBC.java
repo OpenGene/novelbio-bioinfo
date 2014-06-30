@@ -1,12 +1,17 @@
 package com.novelbio.generalConf;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 
+import com.jhlabs.image.MapColorsFilter;
+import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class PathDetailNBC {
@@ -82,4 +87,35 @@ public class PathDetailNBC {
 	public static String getRfamSeq() {
 		return properties.getProperty("rfamSeq");
 	}
+	
+	public static Map<String, String> getMapReadsQuality() {
+		Map<String, String> mapReadsQualtiy = new LinkedHashMap<String, String>();
+		String value = properties.getProperty("FastQ_Levels");
+		for (String qualityInfo : value.split(";")) {
+			mapReadsQualtiy.put(qualityInfo.replace("FastQ_QUALITY_", ""), qualityInfo);
+		}
+		return mapReadsQualtiy;
+	}
+	
+	/** 从上面的那个map中获得value，当作key来查找具体的quality map<br>
+	 * 格式类似如下：<br>
+	 * FastQ_QUALITY_HIGH=10,0.07;13,0.07;20,0.15<br>
+	 *  10以下不得超过0.07的碱基比例<br>
+	 *  13以下不得超过0.07的碱基比例<br>
+	 *  20以下不得超过0.15的碱基比例<br>
+	 */
+	public static Map<Integer, Double> getMapQuality2Num(String QUALITY) {
+		Map<Integer, Double> mapQuality2CutoffNum = new HashMap<Integer, Double>();
+		String value = properties.getProperty(QUALITY);
+		if (value.equalsIgnoreCase("ChangeToBest") || value.equalsIgnoreCase("NotFilter")) {
+			return mapQuality2CutoffNum;
+		}
+		String[] ss = value.split(";");
+		for (String quality2property : ss) {
+			String[] quality2propertyArray = quality2property.split(",");
+			mapQuality2CutoffNum.put(Integer.parseInt(quality2propertyArray[0]), Double.parseDouble(quality2propertyArray[1]));
+		}
+		return mapQuality2CutoffNum;
+	}
+	
 }

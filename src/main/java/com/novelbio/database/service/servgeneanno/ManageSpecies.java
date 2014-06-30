@@ -252,8 +252,9 @@ public class ManageSpecies implements IManageSpecies {
 	
 	
 	public static IManageSpecies getInstance() {
+		return (IManageSpecies)SpringFactory.getFactory().getBean("managespecies");
 //		return ManageSpeciesHold.manageSpecies;
-		return ManageSpeciesDBHold.manageSpecies;
+//		return ManageSpeciesDBHold.manageSpecies;
 //		return ManageSpeciesTxtHold.manageSpecies;
 	}
 

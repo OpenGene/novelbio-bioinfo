@@ -265,8 +265,7 @@ public class FQrecordFilterAdaptor extends FQrecordFilter {
 		}
 		if (leftAdaptor) {
 			return blastSeqFasta.getEndQuery();
-		}
-		else {
+		} else {
 			return blastSeqFasta.getStartQuery();
 		}
 	}

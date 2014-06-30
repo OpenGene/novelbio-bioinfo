@@ -1,9 +1,7 @@
 package com.novelbio.analysis.seq.fastq;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.generalConf.PathDetailNBC;
 
 public class FastQ {
 	private static final Logger logger = Logger.getLogger(FastQ.class);
@@ -18,18 +17,21 @@ public class FastQ {
 	public static final int FASTQ_SANGER_OFFSET = 33;
 	public static final int FASTQ_ILLUMINA_OFFSET = 64;
 	
-	public static final int QUALITY_LOW = 10;
-	public static final int QUALITY_MIDIAN = 20;
-	
-	/** 双端的时候只有两个序列都是好的才保留 */
-	public static final int QUALITY_MIDIAN_PAIREND = 40;
-	public static final int QUALITY_HIGM = 50;
-	public static final int QUALITY_LOW_454 = 60;
-	public static final int QUALITY_LOW_PGM = 70;
-	/** 不过滤 */
-	public static final int QUALITY_NONE = 80;
-	/** 将quality值变成最高 */
-	public static final int QUALITY_CHANGE_TO_BEST = 90;
+	/** 和 path.properties 文件中的 change to best 一样 */
+	static final String FASTQ_QUALITY_CHANGE_TO_BEST = "ChangeToBest";
+//	
+//	public static final int QUALITY_LOW = 10;
+//	public static final int QUALITY_MIDIAN = 20;
+//	
+//	/** 双端的时候只有两个序列都是好的才保留 */
+//	public static final int QUALITY_MIDIAN_PAIREND = 40;
+//	public static final int QUALITY_HIGH = 50;
+//	public static final int QUALITY_LOW_454 = 60;
+//	public static final int QUALITY_LOW_PGM = 70;
+//	/** 不过滤 */
+//	public static final int QUALITY_NONE = 80;
+//	/** 将quality值变成最高 */
+//	public static final int QUALITY_CHANGE_TO_BEST = 90;
 	
 	//=======================================================================
 	private int threadNum_FilterFastqRecord = 10;
@@ -297,18 +299,8 @@ public class FastQ {
 		return String.valueOf(tmpResultChar);
 	}
 	
-	public static HashMap<String, Integer> getMapReadsQuality() {
-		HashMap<String, Integer> mapReadsQualtiy = new LinkedHashMap<String, Integer>();
-		
-		mapReadsQualtiy.put("MidanQuality", QUALITY_MIDIAN);
-		mapReadsQualtiy.put("Midan_PEQuality", QUALITY_MIDIAN_PAIREND);
-		mapReadsQualtiy.put("HigtQuality", QUALITY_HIGM);
-		mapReadsQualtiy.put("LowQuality", QUALITY_LOW);
-		mapReadsQualtiy.put("LowQuality454", QUALITY_LOW_454);
-		mapReadsQualtiy.put("LowQualityPGM", QUALITY_LOW_PGM);
-		mapReadsQualtiy.put("NotFilter", QUALITY_NONE);
-		mapReadsQualtiy.put("Change_Q_ToBest", QUALITY_CHANGE_TO_BEST);
-		return mapReadsQualtiy;
+	public static Map<String, String> getMapReadsQuality() {
+		return PathDetailNBC.getMapReadsQuality();
 	}
 	
 	/**
@@ -319,37 +311,7 @@ public class FastQ {
 	 * value 指定的碱基质量不得超过的比例<br>
 	 * 如质量小于10的碱基数量不得超过 reads长度的 10%
 	 */
-	public static Map<Integer, Double> getMapQuality2Num(int QUALITY) {
-		Map<Integer, Double> mapQuality2CutoffNum = new HashMap<Integer, Double>();
-		if (QUALITY == FastQ.QUALITY_HIGM) {
-			mapQuality2CutoffNum.put(10, 0.07);
-			mapQuality2CutoffNum.put(13, 0.07);
-			mapQuality2CutoffNum.put(20, 0.15);
-		} else if (QUALITY == FastQ.QUALITY_LOW) {
-			// hashFastQFilter.put(2, 1);
-			mapQuality2CutoffNum.put(10, 0.1);
-			mapQuality2CutoffNum.put(13, 0.15);
-			mapQuality2CutoffNum.put(20, 0.35);
-		} else if (QUALITY == FastQ.QUALITY_MIDIAN
-				|| QUALITY == FastQ.QUALITY_MIDIAN_PAIREND) {
-			// hashFastQFilter.put(2, 1);
-			mapQuality2CutoffNum.put(10, 0.1);
-			mapQuality2CutoffNum.put(13, 0.14);
-			mapQuality2CutoffNum.put(20, 0.3);
-		} else if (QUALITY == FastQ.QUALITY_LOW_454) {
-			// hashFastQFilter.put(2, 1);
-			mapQuality2CutoffNum.put(10, 0.15);
-			mapQuality2CutoffNum.put(15, 0.3);
-		} else if (QUALITY == FastQ.QUALITY_LOW_PGM) {
-			mapQuality2CutoffNum.put(10, 0.15);
-			mapQuality2CutoffNum.put(13, 0.2);
-		} else if (QUALITY == FastQ.QUALITY_NONE || QUALITY == FastQ.QUALITY_CHANGE_TO_BEST) {
-			//空的就不会过滤
-		} else {
-			mapQuality2CutoffNum.put(10, 0.07);
-			mapQuality2CutoffNum.put(13, 0.1);
-			mapQuality2CutoffNum.put(20, 0.2);
-		}
-		return mapQuality2CutoffNum;
+	public static Map<Integer, Double> getMapQuality2Num(String QUALITY) {
+		return PathDetailNBC.getMapQuality2Num(QUALITY);
 	}
 }

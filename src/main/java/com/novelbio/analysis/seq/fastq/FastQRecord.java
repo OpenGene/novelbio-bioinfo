@@ -227,34 +227,6 @@ public class FastQRecord implements Cloneable {
 		return sequence;
 	}
 	
-	class FastqFileForFastqc implements SequenceFile {
-		String name;
-		FastqFileForFastqc(String fileName) {
-			this.name = fileName;
-		}
-		public boolean hasNext() {
-			return false;
-		}
-		public Sequence next() throws SequenceFormatException {
-			return null;
-		}
-		public boolean isColorspace() {
-			return false;
-		}
-		public String name() {
-			return name;
-		}
-		@Override
-		public int getPercentComplete() {
-			return 0;
-		}
-		@Override
-		public File getFile() {
-			return null;
-		}
-		
-	}
-	
 	/**
 	 * 克隆序列
 	 */

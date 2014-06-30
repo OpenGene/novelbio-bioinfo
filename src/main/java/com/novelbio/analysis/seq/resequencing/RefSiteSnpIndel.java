@@ -361,7 +361,10 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		this.chrID = ss[0];
 		this.refSnpIndelStart = Integer.parseInt(ss[1]);//本行舍不设定都无所谓，因为输入的时候就是要求相同的ID
 		this.refBase = ss[2];
-		setAllenInfo(Integer.parseInt(ss[3]), ss[4]);
+		int coverage = Integer.parseInt(ss[3]);
+		if (coverage != 0) {
+			setAllenInfo(Integer.parseInt(ss[3]), ss[4]);
+		}
 	}
 
 	/**

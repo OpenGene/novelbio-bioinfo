@@ -111,7 +111,7 @@
 		<property name="basePackage" value="com.novelbio.database.mapper.kegg"/>
 		<property name="markerInterface" value="com.novelbio.database.mapper.MapperSql"/>
     </bean>
-    
+
     <!-- spring AOP 
 	<aop:aspectj-autoproxy proxy-target-class="true" /> -->
 	
@@ -129,5 +129,16 @@
                 <prop key="defaultEncoding">UTF-8</prop>         
             </props>
         </property>  
-    </bean>  
+    </bean>
+    
+    <!-- ==========================  其他配置  ================================================================================================== -->
+    <bean id="managespecies" class="com.novelbio.database.service.servgeneanno.ManageSpeciesDB" lazy-init="true">
+    </bean>
+    
+    <!-- 单机无数据库模式
+    <bean id="managespecies" class="com.novelbio.database.service.servgeneanno.ManageSpeciesTxt" lazy-init="true">
+    </bean>
+     -->
+
+ 
 </beans>

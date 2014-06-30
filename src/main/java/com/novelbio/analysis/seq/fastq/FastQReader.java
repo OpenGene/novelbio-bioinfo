@@ -12,7 +12,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.multithread.txtreadcopewrite.MTRecordRead;
 
 /**
  * FastQ的各个指标<br>
@@ -459,11 +458,3 @@ class FastQReader implements Closeable {
 	}
 }
 
-class FastqRecordInfoRead implements MTRecordRead{
-	long readsNum = 0;
-	FastQRecord[] fastQRecord;
-	public FastqRecordInfoRead(long readsNum, FastQRecord[] fastQRecord) {
-		this.readsNum = readsNum;
-		this.fastQRecord = fastQRecord;
-	}
-}

@@ -35,6 +35,9 @@
 	<context:annotation-config />
      
 
+    <bean id="managespecies" class="com.novelbio.database.service.servgeneanno.ManageSpeciesTxt" lazy-init="true">
+    </bean>
+
     
     <!-- 什么时候学会了JPA再添上，可能缺少JPA的包，加上后会出错 -->
     <!-- transaction manager, use JtaTransactionManager for global tx  

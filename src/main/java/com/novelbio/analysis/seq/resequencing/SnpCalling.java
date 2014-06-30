@@ -146,8 +146,8 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 			}
 			////////////////////////////////////////////////
 			RefSiteSnpIndel refSiteSnpIndel = new RefSiteSnpIndel(sampleName);
-			refSiteSnpIndel.setSamToolsPilup(pileupLines);
-			
+			refSiteSnpIndel.setSamToolsPilup(pileupLines);	
+
 			ArrayList<SiteSnpIndelInfo> lsFilteredSnp = snpFilter.getFilterdSnp(refSiteSnpIndel);
 			if (lsFilteredSnp.size() > 0) {
 				if(!writeInFile(refSiteSnpIndel, lsFilteredSnp)) {

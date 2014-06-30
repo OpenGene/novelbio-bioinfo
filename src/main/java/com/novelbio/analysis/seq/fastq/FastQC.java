@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import uk.ac.babraham.FastQC.Modules.BasicStats;
+import uk.ac.babraham.FastQC.Modules.FastQCmodules;
 import uk.ac.babraham.FastQC.Modules.KmerContent;
 import uk.ac.babraham.FastQC.Modules.NContent;
 import uk.ac.babraham.FastQC.Modules.OverRepresentedSeqs;
@@ -24,29 +25,30 @@ import com.novelbio.base.plot.ImageUtils;
 import com.novelbio.generalConf.Param;
 
 public class FastQC {
-	private List<FQrecordCopeInt> lsModules = new ArrayList<FQrecordCopeInt>();
+	private List<FastQCmodules> lsModules = new ArrayList<FastQCmodules>();
 	/** 如果不qc，则只计数，也就是只加入BasicStats过滤器 */
 	boolean qc;
-	BasicStats basicStats = new BasicStats();
-	PerBaseQualityScores perBaseQualityScores = new PerBaseQualityScores();
-	PerSequenceQualityScores perSequenceQualityScores = new PerSequenceQualityScores();
-	PerBaseSequenceContent perBaseSequenceContent = new PerBaseSequenceContent();
-	PerBaseGCContent perBaseGCContent = new PerBaseGCContent();
-	PerSequenceGCContent perSequenceGCContent = new PerSequenceGCContent();
-	NContent nContent = new NContent();
-	SequenceLengthDistribution sequenceLengthDistribution = new SequenceLengthDistribution();
-	OverRepresentedSeqs os = new OverRepresentedSeqs();
-	KmerContent kmerContent = new KmerContent();
-	
+	FastQCmodules basicStats = new BasicStats();
+	FastQCmodules perBaseQualityScores = new PerBaseQualityScores();
+	FastQCmodules perSequenceQualityScores = new PerSequenceQualityScores();
+	FastQCmodules perBaseSequenceContent = new PerBaseSequenceContent();
+	FastQCmodules perBaseGCContent = new PerBaseGCContent();
+	FastQCmodules perSequenceGCContent = new PerSequenceGCContent();
+	FastQCmodules nContent = new NContent();
+	FastQCmodules sequenceLengthDistribution = new SequenceLengthDistribution();
+	FastQCmodules os = new OverRepresentedSeqs();
+	FastQCmodules kmerContent = new KmerContent();
+	FastQCmodules duplicate;
 	/**
 	 * @param fileName
 	 * @param qc true 全面质检 false 仅计算reads数量
 	 */
 	public FastQC(String fileName, boolean qc) {
 		this.qc = qc;
-		basicStats.setName(fileName);
+		((BasicStats)basicStats).setName(fileName);
 		lsModules.add(basicStats);
 		if (qc) {
+			duplicate = ((OverRepresentedSeqs)os).duplicationLevelModule();
 			lsModules.add(perBaseQualityScores);
 			lsModules.add(perSequenceQualityScores);
 			lsModules.add(perBaseSequenceContent);
@@ -54,13 +56,13 @@ public class FastQC {
 			lsModules.add(perSequenceGCContent);
 			lsModules.add(nContent);
 			lsModules.add(sequenceLengthDistribution);
-			lsModules.add(os.duplicationLevelModule());
+			lsModules.add(duplicate);
 			lsModules.add(os);
 			lsModules.add(kmerContent);
 		}
 	}
 	public BasicStats getBasicStats() {
-		return basicStats;
+		return (BasicStats)basicStats;
 	}
 	
 	public boolean isQC() {
@@ -68,7 +70,7 @@ public class FastQC {
 	}
 	
 	public void setFileName(String fileName) {
-		basicStats.setName(fileName);
+		((BasicStats)basicStats).setName(fileName);
 	}
 	
 	/**
@@ -76,7 +78,7 @@ public class FastQC {
 	 * 每个模块的getBufferedImage()方法可以获得BufferedImage用来保存为所需的图表
 	 * @return
 	 */
-	public List<FQrecordCopeInt> getLsModules() {
+	public List<FastQCmodules> getLsModules() {
 		return lsModules;
 	}
 	
@@ -126,7 +128,7 @@ public class FastQC {
 			ImageUtils.saveBufferedImage(bufferedImage, outName);
 			lsSaveName.add(outName);} catch (Exception e) { e.printStackTrace(); }
 		try {
-			bufferedImage = os.duplicationLevelModule().getBufferedImage(1000, 1000);
+			bufferedImage = duplicate.getBufferedImage(1000, 1000);
 			outName = FileOperate.changeFilePrefix(outPathPrefix, "DuplicationLevel_", "png");
 			ImageUtils.saveBufferedImage(bufferedImage, outName);
 			lsSaveName.add(outName);} catch (Exception e) { e.printStackTrace(); }
@@ -215,8 +217,8 @@ public class FastQC {
 			lsOutFileName.add(outName);
 		} catch (Exception e) {e.printStackTrace(); }
 		try {
-			bufferedImage = os.duplicationLevelModule().getBufferedImage(1000, 1000);
-			bufferedImagePair = fastQCPairend.os.duplicationLevelModule().getBufferedImage(1000, 1000);
+			bufferedImage = duplicate.getBufferedImage(1000, 1000);
+			bufferedImagePair = fastQCPairend.duplicate.getBufferedImage(1000, 1000);
 			outName = FileOperate.changeFilePrefix(outPathPrefix, "DuplicationLevel_", "png");
 			savePic(outName, sepPic, bufferedImage, bufferedImagePair);
 			lsOutFileName.add(outName);

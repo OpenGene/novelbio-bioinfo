@@ -25,15 +25,13 @@ public class FastQFilter {
 	FQrecordFilterModifyQuality fQrecordFilterModifyQuality = new FQrecordFilterModifyQuality();
 	
 	List<FQrecordCopeInt> lsFQrecordFilters;
-	FastQC fastQCLeft;
-	FastQC fastQCRight;
 		
 	/**
 	 * 设定全局过滤指标
 	 * @param QUALITY
 	 */
-	public void setQualityFilter(int QUALITY) {
-		if (QUALITY == FastQ.QUALITY_CHANGE_TO_BEST) {
+	public void setQualityFilter(String QUALITY) {
+		if (QUALITY.toLowerCase().contains(FastQ.FASTQ_QUALITY_CHANGE_TO_BEST.toLowerCase())) {
 			fQrecordFilterModifyQuality.setModifyQuality(true);
 			return;
 		}
@@ -80,7 +78,7 @@ public class FastQFilter {
 		fQrecordFilterAdaptor.setNumMM(adaptermaxMismach);
 	}
 	/** <b>务必在设定了{@link #setFilterParamAdaptorLeft(String)}后设定</b><br>
-	 *最多连续错配，默认为2 */
+	 *最多连续错配，默认为1 */
 	public void setFilterParamAdaptermaxConMismatch(int adaptermaxConMismatch) {
 		fQrecordFilterAdaptor.setConNum(adaptermaxConMismatch);
 	}

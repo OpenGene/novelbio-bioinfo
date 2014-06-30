@@ -8,12 +8,15 @@ import java.util.TreeSet;
  * @author zong0jie
  */
 public class FQrecordFilterQC extends FQrecordFilter {
-	/** fastQ里面asc||码的指标与最大比例 */
+	/** fastQ里面asc||码的指标与最大比例
+	 * value 大于等于1，表示绝对数量，value小于1，表示相对数量
+	 */
 	Map<Integer, Double> mapQuality2CutoffProportion;
 	/** 检测哪几个quality值
 	 * 从小到大排列
 	 */
 	int[] qcQalitySmall2Big;
+	
 	/**
 	 * 输入为null则只会判定readsMinLen
 	 * @param mapFastQFilter
@@ -137,9 +140,16 @@ public class FQrecordFilterQC extends FQrecordFilter {
 			Double proportion = mapQuality2CutoffProportion.get(is[0]);
 			if (proportion == null) {
 				continue;
-			} else if (proportion*readsLen < is[1]) {
-				return false;
+			} else {
+				double num = proportion;
+				if (proportion < 1) {
+					num = proportion * readsLen;
+				}
+				if (num < is[1]) {
+					return false;
+				}
 			}
+			
 		}
 		return true;
 	}

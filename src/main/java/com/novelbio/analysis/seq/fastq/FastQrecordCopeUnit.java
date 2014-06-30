@@ -16,7 +16,6 @@ public class FastQrecordCopeUnit implements Callable<FastQrecordCopeUnit> {
 		HttpFetch.getInstance();
 		System.out.println("aaa");
 	}
-	FastQC fastQC;
 	
 	/** 左右是一样的，所以最后就是左边拷贝给右边 */
 	List<FQrecordCopeInt> lsFQrecordCopeLeft;
