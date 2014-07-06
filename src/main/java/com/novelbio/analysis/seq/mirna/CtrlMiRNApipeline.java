@@ -185,7 +185,9 @@ public class CtrlMiRNApipeline implements IntCmdSoft {
 		ctrlMiRNAfastq.setOutPath(outPath, outPathSample, outPathTmpMapping, outPathStatistics);
 		ctrlMiRNAfastq.setGffChrAbs(gffChrAbs);
 		ctrlMiRNAfastq.setMapPrefix2Fastq(mapPrefix2Fastq);
-		ctrlMiRNAfastq.setMiRNAinfo(PathDetailNBC.getMiRNADat());
+		if (species.getMiRNAmatureFile() != null) {
+			ctrlMiRNAfastq.setMiRNAinfo(PathDetailNBC.getMiRNADat());
+		}
 		ctrlMiRNAfastq.setRfamFile(PathDetailNBC.getRfamTab());
 		ctrlMiRNAfastq.setMapAll2Rfam(mapAllToRfam);
 		ctrlMiRNAfastq.mappingAndCounting(samMapMiRNARate);

@@ -59,8 +59,8 @@ public class TestGffGeneCluster extends TestCase{
 		//--------10-----20-------------30-----40----------------50-----60-----------------------70-----80-------------------90-----95---------------
 		//-----------------------------------35---40----------------50-----60-----------------------70-----80-------------------90-----120---------------
 		//--------10----20--------------30-----40----------------50-----60-----------------------70-----80-------------------90-----120---------------
-		gffGeneIsoInfoRefCis.clear();
-		gffGeneIsoInfoThisCis.clear();
+		gffGeneIsoInfoRefCis.clearElements();
+		gffGeneIsoInfoThisCis.clearElements();
 		
 		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 10, 20));
 		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 30, 40));
@@ -88,8 +88,8 @@ public class TestGffGeneCluster extends TestCase{
 	 */
 	private void assertCisIsoNull() {
 		boolean cis = true;
-		gffGeneIsoInfoRefCis.clear();
-		gffGeneIsoInfoThisCis.clear();
+		gffGeneIsoInfoRefCis.clearElements();
+		gffGeneIsoInfoThisCis.clearElements();
 		gffGeneIsoInfoThisCis = GffGeneIsoInfo.createGffGeneIso("CisThis", gffDetailGeneCis.getNameSingle(), gffDetailGeneCis, GeneType.mRNA, true);
 		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 10, 20));
 		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 30, 40));
@@ -123,8 +123,8 @@ public class TestGffGeneCluster extends TestCase{
 		//------------------------------------35--40---------------50------60-----------------------70-----80-------------------90-----100---------------
 		//--------15-----20-------------30-----40---------------50------60-----------------------70-----80-------------------91---------120---------------
 		//--------15-----20-------------30-----40---------------50------60-----------------------70-----80-------------------91---------120---------------
-		gffGeneIsoInfoRefCis.clear();
-		gffGeneIsoInfoThisCis.clear();
+		gffGeneIsoInfoRefCis.clearElements();
+		gffGeneIsoInfoThisCis.clearElements();
 		
 		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 35, 40));
 		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 50, 60));
@@ -150,8 +150,8 @@ public class TestGffGeneCluster extends TestCase{
 		//--------10-----20-------------30-----40----------------50-----60-----------------------70-----80-------------------90-----100---------------
 		//-----5----------20-------------30---35--------------- 45-------60-----------------------70-----80-------------------90----95----100----125-----------
 		//-----5----------20-------------30---35----------------45--------60-----------------------70----80-------------------90----95----100----125----------
-		gffGeneIsoInfoRefCis.clear();
-		gffGeneIsoInfoThisCis.clear();
+		gffGeneIsoInfoRefCis.clearElements();
+		gffGeneIsoInfoThisCis.clearElements();
 		
 
 		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 50, 60));
@@ -177,8 +177,8 @@ public class TestGffGeneCluster extends TestCase{
 		//--------10-----20-------------30-----40----------------50-----60-----------------------70-----80-------------------90------100---------------
 		//---------------------------------30---35--------------- 45-------60-----------------------70---75---------------------90----95---------------
 		//--------10-----20-------------30---35----------------45--------60-----------------------70--75---------------------90-----100---------------
-		gffGeneIsoInfoRefCis.clear();
-		gffGeneIsoInfoThisCis.clear();
+		gffGeneIsoInfoRefCis.clearElements();
+		gffGeneIsoInfoThisCis.clearElements();
 		
 		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 10, 20));
 		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 30, 40));
@@ -208,8 +208,8 @@ public class TestGffGeneCluster extends TestCase{
 		//--------10-----20--------------------30-----40----------------50-----60-----------------------70-----80-------------------90-----100---------------
 		//----------------------25--26---------30---35---------------45--------60-----------------------70-----80-----83--84---------------------------------
 		//----------------------25--26---------30--35----------------45--------60------------------------70----80-----83--84---------------------------------
-		gffGeneIsoInfoRefCis.clear();
-		gffGeneIsoInfoThisCis.clear();
+		gffGeneIsoInfoRefCis.clearElements();
+		gffGeneIsoInfoThisCis.clearElements();
 		
 		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 10, 20));
 		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 30, 40));
@@ -236,8 +236,8 @@ public class TestGffGeneCluster extends TestCase{
 		//-----------10-----20-------------30-----40----------------50-----60-----------------------70-----80-------------------90-----100---------------
 		//--5--6----------------------------30---35--------------- 45-------60-----------------------70-----80----------------------------------------110---120------------
 		//--5--6----------------------------30---35----------------45--------60-----------------------70----80----------------------------------------110---120----------
-		gffGeneIsoInfoRefCis.clear();
-		gffGeneIsoInfoThisCis.clear();
+		gffGeneIsoInfoRefCis.clearElements();
+		gffGeneIsoInfoThisCis.clearElements();
 		
 		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 10, 20));
 		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 30, 40));
@@ -269,8 +269,8 @@ public class TestGffGeneCluster extends TestCase{
 		//--------10-----20-------------30-----40----------------50-----60-----------------------70-----80-------------------90-----100---------------
 		//---------------------------------30---35---------------45--------60-----------------------70-----80------------------------------------------------
 		//--------10-----20-------------30--35----------------45--------60------------------------70----80-------------------90-----100---------------
-		gffGeneIsoInfoRefCis.clear();
-		gffGeneIsoInfoThisCis.clear();
+		gffGeneIsoInfoRefCis.clearElements();
+		gffGeneIsoInfoThisCis.clearElements();
 		
 		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 10, 20));
 		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 30, 40));
@@ -295,8 +295,8 @@ public class TestGffGeneCluster extends TestCase{
 		//--------10-----20-------------30-----40-------------------50----60---------------------70---------80--------------------------------------------------
 		//-----------------------------------35--36-----------------45-------60----------------------72-----79----------------------90-----100---------------------
 		//--------10-----20-------------30---36------------------45-------60----------------------72--------80-------------------90-----100---------------
-		gffGeneIsoInfoRefCis.clear();
-		gffGeneIsoInfoThisCis.clear();
+		gffGeneIsoInfoRefCis.clearElements();
+		gffGeneIsoInfoThisCis.clearElements();
 		
 		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 10, 20));
 		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 30, 40));
@@ -321,8 +321,8 @@ public class TestGffGeneCluster extends TestCase{
 		//--------10-----20-------------30-----40-------------------50----60---------------------70-------80--------------------90-----100---------------------
 		//-----------------------------------35--36-----------------45-------60-----------------------75---77
 		//--------10-----20-------------30---36------------------45-------60-----------------------75-----80--------------------90-----100---------------
-		gffGeneIsoInfoRefCis.clear();
-		gffGeneIsoInfoThisCis.clear();
+		gffGeneIsoInfoRefCis.clearElements();
+		gffGeneIsoInfoThisCis.clearElements();
 		
 		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 10, 20));
 		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 30, 40));
@@ -353,8 +353,8 @@ public class TestGffGeneCluster extends TestCase{
 		//--------10-----20-------------30-----40----------------50-----60-----------------------70-----80-------------------90-----100---------------
 		//--------10-----20---------25-----35----------------45-----55----------------------------70---75---------------------90-----100---------------
 		//--------10-----20---------25-----35----------------45-----55----------------------------70---75---------------------90-----100---------------
-		gffGeneIsoInfoRefTrans.clear();
-		gffGeneIsoInfoThisTrans.clear();
+		gffGeneIsoInfoRefTrans.clearElements();
+		gffGeneIsoInfoThisTrans.clearElements();
 		
 		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 10, 20));
 		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 30, 40));
@@ -384,8 +384,8 @@ public class TestGffGeneCluster extends TestCase{
 		//--------10-----20-------------30-----40----------------50-----60-----------------------70-----80-------------------90-----100---------------
 		//--------10-----20---------25-----39----------------49----55----------------------------70---75---------------------90-----100---------------
 		//--------10-----20---------25---------40---------------50-----55----------------------------70---75---------------------90-----100---------------
-		gffGeneIsoInfoRefTrans.clear();
-		gffGeneIsoInfoThisTrans.clear();
+		gffGeneIsoInfoRefTrans.clearElements();
+		gffGeneIsoInfoThisTrans.clearElements();
 		
 		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 10, 20));
 		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 30, 40));
@@ -415,8 +415,8 @@ public class TestGffGeneCluster extends TestCase{
 		//--------10-----20-------------30-----40----------------50-----60-----------------------70-----80-------------------90-----100---------------
 		//--------10-----20---------25-----35-------------------49----55----------------------------70---75---------------------90-----100---------------
 		//--------10-----20---------25-----35--------------------50-----55----------------------------70---75---------------------90-----100---------------
-		gffGeneIsoInfoRefTrans.clear();
-		gffGeneIsoInfoThisTrans.clear();
+		gffGeneIsoInfoRefTrans.clearElements();
+		gffGeneIsoInfoThisTrans.clearElements();
 		
 		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 10, 20));
 		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 30, 40));
@@ -450,8 +450,8 @@ public class TestGffGeneCluster extends TestCase{
 		//--------10-----20-------------30-----40----------------50-----60-----------------------70-----80-------------------90-----100---------------
 		//-----------15--20-------------30---35---------------45--------60-----------------------70-----80-------------------90--------110---------------
 		//--------10-----20-------------30--35----------------45--------60------------------------70----80-------------------90--------110---------------
-		gffGeneIsoInfoRefTrans.clear();
-		gffGeneIsoInfoThisTrans.clear();
+		gffGeneIsoInfoRefTrans.clearElements();
+		gffGeneIsoInfoThisTrans.clearElements();
 		
 		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 10, 20));
 		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 30, 40));
@@ -480,8 +480,8 @@ public class TestGffGeneCluster extends TestCase{
 		//--------10-----20-------------30-----40----------------50-----60-----------------------70-----80-------------------90-----100---------------
 		//-----5----------20-------------30---35--------------- 45-------60-----------------------70-----80-------------------90----95---------------
 		//-----5----------20-------------30---35----------------45--------60-----------------------70----80-------------------90-----100---------------
-		gffGeneIsoInfoRefTrans.clear();
-		gffGeneIsoInfoThisTrans.clear();
+		gffGeneIsoInfoRefTrans.clearElements();
+		gffGeneIsoInfoThisTrans.clearElements();
 		
 		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 10, 20));
 		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 30, 40));
@@ -510,8 +510,8 @@ public class TestGffGeneCluster extends TestCase{
 		//--------10-----20-------------30-----40----------------50-----60-----------------------70-----80-------------------90------100---------------
 		//-----5----------20-------------30---35--------------- 45-------60-----------------------70---75---------------------90----95---------------
 		//-----5----------20-------------30---35----------------45--------60-----------------------70--75---------------------90-----100---------------
-		gffGeneIsoInfoRefTrans.clear();
-		gffGeneIsoInfoThisTrans.clear();
+		gffGeneIsoInfoRefTrans.clearElements();
+		gffGeneIsoInfoThisTrans.clearElements();
 		
 		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 10, 20));
 		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 30, 40));
@@ -545,8 +545,8 @@ public class TestGffGeneCluster extends TestCase{
 		//--------10-----20-------------30-----40----------------50-----60-----------------------70-----80-------------------90-----100---------------
 		//---------------------------------30---35---------------45--------60-----------------------70-----80------------------------------------------------
 		//--------10-----20-------------30--35----------------45--------60------------------------70----80-------------------90-----100---------------
-		gffGeneIsoInfoRefTrans.clear();
-		gffGeneIsoInfoThisTrans.clear();
+		gffGeneIsoInfoRefTrans.clearElements();
+		gffGeneIsoInfoThisTrans.clearElements();
 		
 		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 10, 20));
 		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 30, 40));
@@ -573,8 +573,8 @@ public class TestGffGeneCluster extends TestCase{
 		//--------10-----20----------30-----------40-------------------50----60---------------------70-------80-------------------90-----100---------------
 		//                                  35--36-------------------45-------60----------------------72-----79----------------------------------------------
 		//--------10-----20----------30------36--------------------45-------60----------------------72------80-------------------90-----100---------------
-		gffGeneIsoInfoRefTrans.clear();
-		gffGeneIsoInfoThisTrans.clear();
+		gffGeneIsoInfoRefTrans.clearElements();
+		gffGeneIsoInfoThisTrans.clearElements();
 		
 		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 10, 20));
 		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 30, 40));
@@ -601,8 +601,8 @@ public class TestGffGeneCluster extends TestCase{
 		//--------10-----20-----------------30------40-------------------50----60---------------------70-------80-------------------90-----100---------------
 		//--------------------------25--26----35--36-----------------45-------60----------------------72-----79----------------------------------------------
 		//--------10-----20------25--26----35--36------------------45-------60----------------------72------80-------------------90-----100---------------
-		gffGeneIsoInfoRefTrans.clear();
-		gffGeneIsoInfoThisTrans.clear();
+		gffGeneIsoInfoRefTrans.clearElements();
+		gffGeneIsoInfoThisTrans.clearElements();
 		
 		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 10, 20));
 		gffGeneIsoInfoRefTrans.add(new ExonInfo(cis, 30, 40));

@@ -12,6 +12,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.RandomChrFileInt.RandomChrFileFactory;
+import com.novelbio.analysis.seq.sam.SamIndexRefsequence;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -69,8 +70,9 @@ public class ChrSeqHash extends SeqHashAbs {
 				FileOperate.getTimeLastModify(getChrIndexFileName()) > FileOperate.getTimeLastModify(chrFile)) {
 			indexFile = getChrIndexFileName();
 		} else {
-			createIndex(chrFile, getChrIndexFileName());
-			indexFile = getChrIndexFileName();
+			SamIndexRefsequence samIndexRefsequence = new SamIndexRefsequence();
+			samIndexRefsequence.setRefsequence(chrFile);
+			indexFile = samIndexRefsequence.indexSequence();
 		}
 		readIndex(indexFile);
 		randomChrFileInt = RandomChrFileFactory.createInstance(chrFile);
@@ -215,15 +217,15 @@ public class ChrSeqHash extends SeqHashAbs {
 	}
 	
 	/**
-	 * 
-	 * 建索引
+	 * 建索引，本方法有错误
 	 * index 文件格式如下
 	 * chrID chrLength start   rowLength rowLenWithEnter
 	 * @param chrFile 染色体序列，必须每一行等长
 	 * @param indexFile 输出的index文件夹
 	 * @throws IOException
 	 */
-	public static void createIndex(String chrFile, String indexFile) throws IOException {
+	private static void createIndex(String chrFile, String indexFile) throws IOException {
+		//TODO 本方法有错误
 		Map<String, Long> mapChrID2Start = new LinkedHashMap<>();
 		Map<String, Long> mapChrID2Length = new LinkedHashMap<>();
 		Map<String, Integer> mapChrID2LenRow = new LinkedHashMap<>();
@@ -236,7 +238,6 @@ public class ChrSeqHash extends SeqHashAbs {
 			if (enterLen < 0) {
 				enterLen = getEnterLen(txtRead.getBufferedReader(), content.length());
 			}
-			
 			start = start + content.length() + enterLen;
 			length = length + content.length();
 			if (content.startsWith(">")) {
@@ -246,9 +247,15 @@ public class ChrSeqHash extends SeqHashAbs {
 				}
 				chrID = content.split(" ")[0].replace(">", "");
 				mapChrID2Start.put(chrID, start);
+				try {
+					enterLen = getEnterLen(txtRead.getBufferedReader(), content.length());
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.out.println(chrID);
+				}
 				length = 0;
 			} else if (!mapChrID2LenRow.containsKey(chrID)) {
-				enterLen = getEnterLen(txtRead.getBufferedReader(), content.length());
+				
 				mapChrID2LenRowEnter.put(chrID, content.length() + enterLen);
 				mapChrID2LenRow.put(chrID, content.trim().length());
 			}
@@ -269,9 +276,11 @@ public class ChrSeqHash extends SeqHashAbs {
 	/** 给定 bfReader，返回换行的格式 
 	 * @throws IOException */
 	private static int getEnterLen(BufferedReader bfreader, int contentLen) throws IOException {
-		bfreader.mark(contentLen * 2);
+		bfreader.mark(10000);
 		int lineByteNum = bfreader.readLine().length();
 		bfreader.reset();
+
+		
 		char[] mychar = new char[lineByteNum + 2];
 		bfreader.read(mychar);
 		bfreader.reset();

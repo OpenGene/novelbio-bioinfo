@@ -1,59 +1,54 @@
 package com.novelbio.analysis.seq.sam;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.novelbio.analysis.seq.fasta.ChrSeqHash;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.information.SoftWareInfo;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 public class SamIndexRefsequence {
 	
 	String ExePath = "";
 	String sequence;
-	/**
-	 * 设定samtools所在的文件夹以及待比对的路径
-	 * @param exePath 如果在根目录下则设置为""或null
-	 */
-	public void setExePath(String exePath) {
-		if (exePath == null || exePath.trim().equals(""))
-			this.ExePath = "";
-		else
-			this.ExePath = FileOperate.addSep(exePath);
+	
+	public SamIndexRefsequence() {
+		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.samtools);
+		ExePath = softWareInfo.getExePathRun();
 	}
+	
 	public void setRefsequence(String sequence) {
 		this.sequence = sequence;
 	}
 	
-	/** 如果有索引并且索引比文件新，则直接返回 */
-	public void indexSequence() {
+	/** 如果有索引并且索引比文件新，则直接返回
+	 * @return 返回建好的索引文件名
+	 */
+	public String indexSequence() {
 		String faidx = sequence + ".fai";
 		if (FileOperate.isFileExistAndBigThanSize(faidx, 0)) {
 			if (FileOperate.getTimeLastModify(sequence) < FileOperate.getTimeLastModify(faidx)) {
-				return;
+				return faidx;
 			}
 		}
+		String sequenceLocal = sequence;
 		if (FileHadoop.isHdfs(sequence)) {
-			try {
-				ChrSeqHash.createIndex(sequence, faidx);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} else {
-			List<String> lsCmd = new ArrayList<>();
-			lsCmd.add(ExePath + "samtools");
-			lsCmd.add("faidx");
-			lsCmd.add(sequence);			
-			CmdOperate cmdOperate = new CmdOperate(lsCmd);
-			cmdOperate.run();
-			if (!cmdOperate.isFinishedNormal()) {
-				throw new ExceptionCmd("make index error:" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
-			}
+			sequenceLocal = FileHadoop.convertToLocalPath(sequence);
 		}
+		
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add(ExePath + "samtools");
+		lsCmd.add("faidx");
+		lsCmd.add(sequenceLocal);			
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
+		cmdOperate.run();
+		if (!cmdOperate.isFinishedNormal()) {
+			throw new ExceptionCmd("make index error:" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
+		}
+		return faidx;
 	}
-
+	
 }

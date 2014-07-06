@@ -322,7 +322,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	protected List<String[]> removeDuplicate() {
 		ArrayList<Integer> lsColID = new ArrayList<Integer>();
 		for (String[] col2Group : lsSampleColumn2GroupName) {
-			lsColID.add(Integer.parseInt(col2Group[0]) - 1);
+			lsColID.add(Integer.parseInt(col2Group[0]));
 		}
 		List<String[]> lsTmpResult = MathComput.getMedian(lsGeneInfo.subList(1, lsGeneInfo.size()), colAccID+1, lsColID);
 		lsTmpResult.add(0, lsGeneInfo.get(0));
@@ -553,15 +553,15 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	public List<String> plotDifParams() {
 		ArrayList<String> lsOutFile = new ArrayList<>(); 
 		Map<String, String[]> mapExcelName2Compare = getMapOutFileName2Compare();
-		Map<String, DiffGeneVocalno> mapExcelName2DifResultInfo= new LinkedHashMap<String, DiffGeneVocalno>();
+		Map<String, DiffGeneFilter> mapExcelName2DifResultInfo= new LinkedHashMap<String, DiffGeneFilter>();
 		
 		for (String excelName : mapExcelName2Compare.keySet()) {
-			mapExcelName2DifResultInfo.put(excelName, new DiffGeneVocalno(excelName, mapExcelName2Compare.get(excelName)));
+			mapExcelName2DifResultInfo.put(excelName, new DiffGeneFilter(excelName));
 		}
 //		String[] threshold = DiffGeneVocalno.setThreshold(mapExcelName2DifResultInfo.values());
 		//画图，出差异基因的表格
 		for (String excelFileName : mapExcelName2DifResultInfo.keySet()) {
-			DiffGeneVocalno difResultInfo = mapExcelName2DifResultInfo.get(excelFileName);
+			DiffGeneFilter difResultInfo = mapExcelName2DifResultInfo.get(excelFileName);
 			difResultInfo.setThreshold(titlePvalueFdr, pValueOrFDRcutoff);
 			difResultInfo.setLogfcCol(Math.abs(logFCcutoff), -Math.abs(logFCcutoff));
 			String outFile = difResultInfo.writeDifGene();
@@ -641,7 +641,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		for (String outFileName : mapOutFileName2Compare.keySet()) {
 			String[] compare = mapOutFileName2Compare.get(outFileName);
 			mapPrefix2File.put(compare[0] + " vs " + compare[1], outFileName);
-			String difGene = DiffGeneVocalno.getDifGeneFileName(outFileName);
+			String difGene = DiffGeneFilter.getDifGeneFileName(outFileName);
 			mapPrefix2File.put("difgene " + compare[0] + " vs " + compare[1], difGene);
 		}
 		return mapPrefix2File;

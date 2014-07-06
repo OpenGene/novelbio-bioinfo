@@ -158,7 +158,7 @@ public class MiRNAmapPipline implements IntCmdSoft {
 		String outputTmpFinal = outPathTmpMapping + prefix + "_";
 		String fqFile = seqFile;
 		String unMappedFq = "";
-		String unMappedMiRNA = "";
+		String unMappedMiRNA = fqFile;
 		if (FileOperate.isFileExist(miRNApreSeq)) {
 			unMappedFq = outputTmpFinal + "unMap2miRNA.fq.gz";
 			samFileStatisticsMiRNA = new SamFileStatistics(prefix);

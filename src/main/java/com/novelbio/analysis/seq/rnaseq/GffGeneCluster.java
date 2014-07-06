@@ -289,7 +289,7 @@ public class GffGeneCluster {
 		if (gffGeneIsoInfoThis == null || gffGeneIsoInfoThis.size() == 0 || gffGeneIsoInfoRef.equalsIso(gffGeneIsoInfoThis)) {
 			return gffGeneIsoInfoResult;
 		}
-		gffGeneIsoInfoResult.clear();
+		gffGeneIsoInfoResult.clearElements();
 		
 		ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfos = new ArrayList<GffGeneIsoInfo>();
 		lsGffGeneIsoInfos.add(gffGeneIsoInfoRef); lsGffGeneIsoInfos.add(gffGeneIsoInfoThis);

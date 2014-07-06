@@ -18,6 +18,7 @@ import com.novelbio.analysis.seq.sam.AlignSeqReading;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamMapRate;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
@@ -73,7 +74,7 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 	List<String> lsCmd = new ArrayList<>();
 	
 	int lenMin = 17, lenMax = 32;
-
+	
 	public CtrlMiRNAfastq() {}
 	
 	/** 务必首先设定 */
@@ -165,7 +166,7 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 			if (alignSeq != null) {
 				mapNovelMiRNAPrefix2SamFile.put(prefix, alignSeq);
 			}
-			if (samMapMiRNARate != null) {
+			if (samMapMiRNARate != null && miRNAmappingPipline.getSamFileStatisticsMiRNA() != null) {
 				samMapMiRNARate.addMapInfo("MiRNA", miRNAmappingPipline.getSamFileStatisticsMiRNA());
 			}
 			setCurrentCondition(prefix);
@@ -183,7 +184,9 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 	
 	/** 没有初始化repeat */
 	private void initial() {
-		miRNACount.setExpTable(expMirPre, expMirMature);
+		if (!StringOperate.isRealNull(species.getMiRNAmatureFile())) {
+			miRNACount.setExpTable(expMirPre, expMirMature);	
+		}
 		
 		List<String> lsRfamNameRaw = SeqHash.getLsSeqName(species.getRfamFile(rfamSpeciesSpecific));
 		expRfamID.addLsGeneName(rfamStatistic.getLsRfamID(lsRfamNameRaw));

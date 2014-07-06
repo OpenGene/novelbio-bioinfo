@@ -262,21 +262,6 @@ public abstract class MapDNA implements MapDNAint {
 //	protected abstract SamFile copeAfterMapping();
 	
 	/**
-	 * 如果文件后缀名不是.sam，则在文件末尾添加.sam
-	 * @param outFileName
-	 * @return
-	 */
-	protected static String addSamToFileName(String outFileName) {
-		if (outFileName.endsWith(".sam")) {
-			return outFileName;
-		} else if (outFileName.endsWith(".")) {
-			return outFileName + "sam";
-		} else {
-			return outFileName + ".sam";
-		}
-	}
-	
-	/**
 	 * 目前只有bwa和bowtie2两种
 	 * @param softMapping
 	 * @return

@@ -15,7 +15,7 @@ public interface MapDNAint extends IntCmdSoft {
 	public void setFqFile(FastQ leftFq, FastQ rightFq);
 	
 	/**
-	 * @param outFileName 结果文件名，后缀自动改为sam
+	 * @param outFileName 结果文件名，后缀自动改为bam
 	 */
 	public void setOutFileName(String outFileName);
 	

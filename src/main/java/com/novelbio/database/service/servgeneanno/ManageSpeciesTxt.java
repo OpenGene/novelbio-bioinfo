@@ -26,11 +26,8 @@ import com.novelbio.generalConf.PathDetailNBC;
 
 public class ManageSpeciesTxt implements IManageSpecies {
 	private static final Logger logger = Logger.getLogger(ManageSpeciesTxt.class);
-	private RepoSpeciesFile repoSpeciesFile;
 	
-	/**
-	 * version 必须为小写
-	 */
+	/** version 必须为小写 */
 	static LinkedHashMap<Integer, LinkedHashMap<String, SpeciesFile>> mapTaxID_2_version2SpeciesFile;
 	
 	private ManageSpeciesTxt() {

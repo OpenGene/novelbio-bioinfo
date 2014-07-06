@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.base.SepSign;
 import com.novelbio.base.StringOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modkegg.KeggInfoAbs;
@@ -90,6 +91,20 @@ public class AnnoAnno extends AnnoAbs {
 		geneID.setBlastInfo(evalue, subTaxID);
 		lsResultTmp.add(geneID.getAccID_With_DefaultDB().getAccID());
 		String[] anno = geneID.getAnno(true);
+		String blastAccId = "";
+		List<GeneID> lsGeneIDs = geneID.getLsBlastGeneID();
+		int i = 0;
+		for (GeneID geneID2 : lsGeneIDs) {
+			if (i++ == 0) {
+				blastAccId = geneID2.getAccID_With_DefaultDB().getAccID();
+			} else {
+				blastAccId = blastAccId + "//" + geneID2.getAccID_With_DefaultDB().getAccID();
+			}
+		}
+		if (blastAccId.endsWith("//")) {
+			blastAccId.substring(0, blastAccId.length() - 2);
+		}
+		
 		lsResultTmp.add(anno[0]);
 		if (addLocInfo) {
 			lsResultTmp.addAll(getLocInfo(accID));
@@ -102,6 +117,7 @@ public class AnnoAnno extends AnnoAbs {
 		
 		lsResultTmp.add(anno[1]);
 		lsResultTmp.add(anno[3]);
+		lsResultTmp.add(blastAccId);
 		lsResultTmp.add(anno[4]);
 		lsResultTmp.add(anno[5]);
 		lsResult.add(lsResultTmp.toArray(new String[0]));
@@ -121,6 +137,7 @@ public class AnnoAnno extends AnnoAbs {
 		lsTitle.add(TitleFormatNBC.Description.toString());
 		if (blast) {
 			lsTitle.add(TitleFormatNBC.Evalue.toString());
+			lsTitle.add("Blast_AccID");
 			lsTitle.add("Blast_Symbol");
 			lsTitle.add("Blast_Description");
 		}

@@ -56,7 +56,8 @@ public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E>
 	public int indexOf(Object o) {
 		return lsElement.indexOf(o);
 	}
-	public void clear() {
+	
+	public void clearElements() {
 		lsElement.clear();
 	}
 	public String getName() {

@@ -300,7 +300,7 @@ public class GenerateNewIso {
 		
 		/////////////   根据指定的startexon和endexon，还有listJun的信息，新建转录本 /////////////////////////////////////////
 		GffGeneIsoInfo gffGeneIsoInfoNew = gffGeneIsoInfo.clone();
-		gffGeneIsoInfoNew.clear();
+		gffGeneIsoInfoNew.clearElements();
 		JunctionUnit junStart = lsJun.get(0);
 		//如果是altstart和altend，现在设定边界exon的长度
 		int start_endEdge = junStart.getStartAbs(), start_startEdge = start_endEdge - startEndExonLen;

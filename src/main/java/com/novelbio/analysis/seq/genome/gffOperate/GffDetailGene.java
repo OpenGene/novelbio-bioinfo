@@ -170,6 +170,7 @@ public class GffDetailGene extends ListDetailAbs {
 		gffDetailGene.setItemName.clear();
 		gffDetailGene.setStartAbs(-1);
 		gffDetailGene.setEndAbs(-1);
+		gffDetailGene.setCis5to3(null);
 		gffDetailGene.lsGffGeneIsoInfos = new ArrayList<>();
 		return gffDetailGene;
 	}
@@ -583,6 +584,13 @@ public class GffDetailGene extends ListDetailAbs {
 	public void addIsoSimple(GffGeneIsoInfo gffGeneIsoInfo) {
 		if (gffGeneIsoInfo == null || gffGeneIsoInfo.size() == 0) {
 			return;
+		}
+		if (cis5to3 == null) {
+			if (lsGffGeneIsoInfos.isEmpty()) {
+				cis5to3 = gffGeneIsoInfo.isCis5to3();
+			}
+		} else if (cis5to3 != gffGeneIsoInfo.isCis5to3()) {
+			cis5to3 = null;
 		}
 		
 		gffGeneIsoInfo.setGffDetailGeneParent(this);

@@ -50,8 +50,8 @@ public class TestGffGeneIsoInfo1 extends TestCase {
 		boolean cis = true;
 		//--------10-----20-------------30-----40----------------50-----60-----------------------70-----80-------------------90-----100---------------
 		//--------10-----20---------25-----35----------------45-----55----------------------------70---75---------------------90-----100---------------
-		gffGeneIsoInfoRefCis.clear();
-		gffGeneIsoInfoThisCis.clear();
+		gffGeneIsoInfoRefCis.clearElements();
+		gffGeneIsoInfoThisCis.clearElements();
 		
 		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 10, 20));
 		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 30, 40));
@@ -74,8 +74,8 @@ public class TestGffGeneIsoInfo1 extends TestCase {
 		boolean cis = true;
 		//--------10-----20-------------30-----40----------------50-----60-----------------------70-----80-------------------90-----100---------------
 		//--------10-----20---------25-----35----------------45-----55----------------------------70---75---------------------90-----100---------------
-		gffGeneIsoInfoRefCis.clear();
-		gffGeneIsoInfoThisCis.clear();
+		gffGeneIsoInfoRefCis.clearElements();
+		gffGeneIsoInfoThisCis.clearElements();
 		
 		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 10, 20));
 		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 30, 40));
@@ -98,8 +98,8 @@ public class TestGffGeneIsoInfo1 extends TestCase {
 		boolean cis = true;
 		//--------10-----20-------------30-----40----------------50-----60-----------------------70-----80-------------------90-----100---------------
 		//-------5--------20-------------30-----40----------------50-----60-----------------------70-----80-------------------90-----100---------------
-		gffGeneIsoInfoRefCis.clear();
-		gffGeneIsoInfoThisCis.clear();
+		gffGeneIsoInfoRefCis.clearElements();
+		gffGeneIsoInfoThisCis.clearElements();
 		
 		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 10, 20));
 		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 30, 40));
@@ -123,8 +123,8 @@ public class TestGffGeneIsoInfo1 extends TestCase {
 		//------------------------------------35--40----------------50-----60------------------------70----80-------------------90-----100---------------
 		//--------10-----20-------------30-----40----------------50-----60------------------------70-----80------------------90-----100---------------
 	
-		gffGeneIsoInfoRefCis.clear();
-		gffGeneIsoInfoThisCis.clear();
+		gffGeneIsoInfoRefCis.clearElements();
+		gffGeneIsoInfoThisCis.clearElements();
 		
 //		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 10, 20));
 		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 35, 40));
@@ -148,8 +148,8 @@ public class TestGffGeneIsoInfo1 extends TestCase {
 		//---------------------------------30-----40----------------50-----60------------------------70----80-------------------90-----100---------------
 		//--------10-----20-------------30-----40----------------50-----60------------------------70-----80-----------------------------------------------
 	
-		gffGeneIsoInfoRefCis.clear();
-		gffGeneIsoInfoThisCis.clear();
+		gffGeneIsoInfoRefCis.clearElements();
+		gffGeneIsoInfoThisCis.clearElements();
 		
 //		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 10, 20));
 		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 30, 40));
@@ -172,8 +172,8 @@ public class TestGffGeneIsoInfo1 extends TestCase {
 		//---------------------------------30-----40----------------50-----60------------------------70-----80-------------------90-----100---------------
 		//--------10-----20-------------30-----40----------------50-----60------------------------70-----80-------------------90-----100---------------
 	
-		gffGeneIsoInfoRefCis.clear();
-		gffGeneIsoInfoThisCis.clear();
+		gffGeneIsoInfoRefCis.clearElements();
+		gffGeneIsoInfoThisCis.clearElements();
 		
 //		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 10, 20));
 		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 30, 40));
@@ -197,8 +197,8 @@ public class TestGffGeneIsoInfo1 extends TestCase {
 		boolean cis = true;
 		//--------10-----20-------------30-----40----------------50-----60-----------------------70-----80-------------------90-----100---------------
 		//--------10-----20---------25-----35----------------45-----55----------------------------70---75---------------------90-----100---------------
-		gffGeneIsoInfoRefCis.clear();
-		gffGeneIsoInfoThisCis.clear();
+		gffGeneIsoInfoRefCis.clearElements();
+		gffGeneIsoInfoThisCis.clearElements();
 		
 		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 10, 20));
 		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 30, 40));
@@ -221,8 +221,8 @@ public class TestGffGeneIsoInfo1 extends TestCase {
 		boolean cis = true;
 		//----------------20-------------30-----40----------------50-----60-----------------------70-----80-------------------90-----100---------------
 		//--------10-----20---------25-----35----------------45-----55----------------------------70---75---------------------90-----100---------------
-		gffGeneIsoInfoRefCis.clear();
-		gffGeneIsoInfoThisCis.clear();
+		gffGeneIsoInfoRefCis.clearElements();
+		gffGeneIsoInfoThisCis.clearElements();
 		
 		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 5, 20));
 		gffGeneIsoInfoRefCis.add(new ExonInfo(cis, 30, 40));

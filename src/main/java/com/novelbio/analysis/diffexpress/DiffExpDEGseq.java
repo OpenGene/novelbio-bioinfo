@@ -177,20 +177,27 @@ OutDir=6
 		lsIndelItem.add(new int[]{5, -1});//"z-score"
 		lsIndelItem.add(new int[]{8, -1});//"q-value(Storey et al. 2003)"
 		lsIndelItem.add(new int[]{9, -1});//"Signature(p-value < 0.001)"
+		
+
+		
 		for (int i = 1; i < lsDifGene.size(); i++) {
 			String[] tmpResult = ArrayOperate.indelElement(lsDifGene.get(i), lsIndelItem, "");
 			for (int j = 0; j < tmpResult.length; j++) {
 				tmpResult[j] = tmpResult[j].replace("\"", "");
 			}
 			tmpResult[3] = division(tmpResult[1], tmpResult[2]);
-			if (!tmpResult[3].equals("NA") && !tmpResult[3].equals("Inf") && !tmpResult[3].equals("None") && !tmpResult[3].equals("0")) {
+			
+			double fc = -1;
+			try { fc = Double.parseDouble(tmpResult[3]); } catch (Exception e) { }
+			
+			if (!tmpResult[3].equals("NA") && !tmpResult[3].contains("Inf") && !tmpResult[3].equals("None") && fc != 0) {
 				try {
 					tmpResult[4] = Math.log(Double.parseDouble(tmpResult[3]))/ Math.log(2) + "";
 				} catch (Exception e) {
 				}
-			} else if (tmpResult[3].equals("0")) {
+			} else if (fc == 0) {
 				tmpResult[4] = -20 + "";
-			} else if (tmpResult[3].toLowerCase().startsWith("Inf")) {
+			} else if (tmpResult[3].toLowerCase().startsWith("inf")) {
 				tmpResult[4] = 20 + "";
 			} else if (tmpResult[3].equals("NA") || tmpResult[3].equals("None")) {
 				tmpResult[4] = 0 + "";
@@ -211,7 +218,7 @@ OutDir=6
 			if (Integer.parseInt(A) == 0) {
 				return 0 + "";
 			}
-			return "Inf";
+			return "Infinity";
 		}
 		try {
 			double a = Double.parseDouble(A);

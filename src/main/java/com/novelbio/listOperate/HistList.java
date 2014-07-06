@@ -97,7 +97,7 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 	 * @param maxSize 最大值，如果最后一位bin都没到最大值，接下来一个bin就和最大值合并
 	 */
 	public void setBinAndInterval(int binNum, int interval,int maxSize) {
-		clear();
+		clearElements();
 		setStartBin(interval, interval + "", 0, interval);
 		int binNext = interval*2;
 		for (int i = 1; i < binNum; i++) {

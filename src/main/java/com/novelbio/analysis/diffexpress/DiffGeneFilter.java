@@ -10,17 +10,16 @@ import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.base.plot.PlotScatter;
-import com.novelbio.base.plot.Volcano;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 /**
- * 用来筛选差异基因，画火山图的类
+ * 用来筛选差异基因,
+ * 需要指定pvalue、fdr、logfc
  * @author zong0jie
  */
- public class DiffGeneVocalno {
+ public class DiffGeneFilter {
 	 /**给出图中的比例*/
-	 public static final double  PRE = 0.999;
+	 public static final double PRE = 0.999;
 		
 	// 满足条件的差异基因数量,默认是1000，在构造方法里面设定，数量的10/1
 	public static  int QUANUM = 1000;
@@ -42,17 +41,6 @@ import com.novelbio.generalConf.TitleFormatNBC;
 	List<List<String>> lslsInfo;
 	/** 差异基因的值 */
 	List<List<String>> lslsDifGene;
-	/** 谁跟谁比 */
-	public String[] compare;
-	
-	
-	
-	/**画图的FDR的所用的纵坐标值，99%, 上面的值确定*/
-	double max99FDR;
-	/**画图的Pvalue的所用的纵坐标值，99%，上面的值确定*/
-	double max99Pvalue;
-	/**画图的LogFC的所用的横坐标值，99%，上面的值确定*/
-	double max99LogFC;
 	
 	/** 画图的时候用pvalue还是fdr做阈值 */
 	TitleFormatNBC titlePvalueFDR = TitleFormatNBC.FDR;
@@ -64,10 +52,25 @@ import com.novelbio.generalConf.TitleFormatNBC;
 	int logfcCol = -1;
 	/** FDR的列号, 从0开始计算 */
 	int fdrCol = -1;
-	/**
-	 * @param excelName 含有结果的excle的名字
-	 * @param compare 谁跟谁比，譬如 string[]{treat, control}
-	 */
+
+	public DiffGeneFilter(String excelName) {
+		this.excelFileName = excelName;
+		lslsInfo = ExcelTxtRead.readLsExcelTxtls(excelName, 0);
+		QUANUM = lslsInfo.size()/10;
+		List<String> lsTitle = lslsInfo.get(0);
+		fdrCol = findColNum(lsTitle, TitleFormatNBC.FDR.toString());
+		pvalueCol = findColNum(lsTitle, TitleFormatNBC.Pvalue.toString());
+		logfcCol = findColNum(lsTitle, TitleFormatNBC.Log2FC.toString());
+		
+		List<List<String>> lsInfoWithoutTitle = lslsInfo.subList(1, lslsInfo.size());
+		lsFDR = readListListCol(lsInfoWithoutTitle, fdrCol, 0,1);
+		if (pvalueCol > 0) {
+			lsPvalue = readListListCol(lsInfoWithoutTitle, pvalueCol, 0, 1);
+			List<Double>  lsPvalueOut_0 = readListListColOut_0(lsInfoWithoutTitle,pvalueCol);
+			Collections.sort(lsPvalueOut_0);
+		}
+		lsLogFC = readListListCol(lsInfoWithoutTitle, logfcCol, 10, 0);
+	}
 	
 	public double getPvalueFDRthreshold() {
 		return pvalueFDRthreshold;
@@ -80,31 +83,19 @@ import com.novelbio.generalConf.TitleFormatNBC;
 	public double getUpfc() {
 		return upfc;
 	}
-	
-	
-	public DiffGeneVocalno(String excelName, String[] compare) {
-		this.excelFileName = excelName;
-		
-		lslsInfo = ExcelTxtRead.readLsExcelTxtls(excelName, 0);
-		QUANUM = lslsInfo.size()/10;
-		List<String> lsTitle = lslsInfo.get(0);
-		fdrCol = findColNum(lsTitle, TitleFormatNBC.FDR.toString());
-		pvalueCol = findColNum(lsTitle, TitleFormatNBC.Pvalue.toString());
-		logfcCol = findColNum(lsTitle, TitleFormatNBC.Log2FC.toString());
-		
-		List<List<String>> lsInfoWithoutTitle = lslsInfo.subList(1, lslsInfo.size());
-		lsFDR = readListListCol(lsInfoWithoutTitle, fdrCol, 0,1);
-		max99FDR = 45;// -Math.log10(lsFDR2.get((int)(lsFDR2.size()*(1- PRE))));
-		if (pvalueCol > 0) {
-			lsPvalue = readListListCol(lsInfoWithoutTitle, pvalueCol, 0, 1);
-			List<Double>  lsPvalueOut_0 = readListListColOut_0(lsInfoWithoutTitle,pvalueCol);
-			Collections.sort(lsPvalueOut_0);
-			max99Pvalue = 45;// -Math.log10(lsPvalueOut_0.get((int)(lsPvalueOut_0.size()*(1- PRE))));
-		}
-
-		lsLogFC = readListListCol(lsInfoWithoutTitle, logfcCol, 10, 0);
-		max99LogFC = 8;// lsLogFC2.get((int)(lsLogFC2.size()*PRE));
-		this.compare = compare;
+	/** 
+	 * 设定用pvalue还是fdr卡，以及卡的阈值
+	 * @param titlePvalueFdr
+	 * @param threshold 小于等于
+	 */
+	public void setThreshold(TitleFormatNBC titlePvalueFdr, double threshold) {
+		this.titlePvalueFDR = titlePvalueFdr;
+		this.pvalueFDRthreshold = threshold;
+	}
+	/** 设定差异倍数 */
+	public void setLogfcCol(double upfc, double downfc) {
+		this.upfc = upfc;
+		this.downfc = downfc;
 	}
 	
 	/**
@@ -153,7 +144,6 @@ import com.novelbio.generalConf.TitleFormatNBC;
 					value = naValue;
 				}
 			}
-			
 			lsCol.add(value);
 		}
 		return lsCol;
@@ -183,20 +173,6 @@ import com.novelbio.generalConf.TitleFormatNBC;
 		return lsCol;
 	}
 
-	/** 
-	 * 设定用pvalue还是fdr卡，以及卡的阈值
-	 * @param titlePvalueFdr
-	 * @param threshold 小于等于
-	 */
-	public void setThreshold(TitleFormatNBC titlePvalueFdr, double threshold) {
-		this.titlePvalueFDR = titlePvalueFdr;
-		this.pvalueFDRthreshold = threshold;
-	}
-	/** 设定差异倍数 */
-	public void setLogfcCol(double upfc, double downfc) {
-		this.upfc = upfc;
-		this.downfc = downfc;
-	}
 	/** 根据阈值，获得差异基因的个数 */
 	public int getDifGeneNum() {
 		return getLsDifGene().size() - 1;
@@ -303,46 +279,10 @@ import com.novelbio.generalConf.TitleFormatNBC;
 	private int getLastCol() {
 		return Math.max(pvalueCol, Math.max(fdrCol, logfcCol));
 	}
-	/**
-	 * 画图，写图片的配置描述文件
-	 * 并返回图片路径
-	 */
-	public void plotVolcanAndWriteParam(int plotwidth, int plotheigth) {
-		PlotScatter plotScatter = plotVolcano();
-		String imageName = getVolcanoFileName();
-		plotScatter.saveToFile(imageName, plotwidth, plotheigth);		
-		
-		String outImageCon = FileOperate.changeFileSuffix(getVolcanoFileName(), "_pic", "txt");
-		String groupName = FileOperate.getFileName(outImageCon).substring(0, 4);
-		TxtReadandWrite txtReadandWrite2 = new TxtReadandWrite(outImageCon, true);
-		txtReadandWrite2.writefileln("﻿title@@" + groupName + "组实验数据对应的聚类图");
-		txtReadandWrite2.writefileln("note@@注：图中的两条线是阈值");
-		txtReadandWrite2.close();
-	}
 	
 	/** 画的火山图的路径 */
 	public String getVolcanoFileName() {
 		return FileOperate.changeFileSuffix(excelFileName, "_volcano", "jpg");
-	}
-	
-	public PlotScatter plotVolcano() {
-		double pValueBorder = -Math.log10(pvalueFDRthreshold);
-		Volcano volcano = new Volcano();
-		volcano.setMaxX(max99LogFC);
-		volcano.setMinX(-max99LogFC);
-		if (max99Pvalue > 0 && titlePvalueFDR == TitleFormatNBC.Pvalue) {
-			volcano.setMaxY(max99Pvalue);
-			volcano.setLogFC2Pvalue(lslsInfo, logfcCol, pvalueCol);
-		} else if (max99Pvalue < 0 || titlePvalueFDR == TitleFormatNBC.FDR) {
-			volcano.setMaxY(max99FDR);
-			volcano.setLogFC2Pvalue(lslsInfo, logfcCol, fdrCol);
-		}
-		
-		//LogFC恒定1
-		volcano.setLogFCBorder(1);
-		volcano.setLogPvalueBorder(pValueBorder);
-		PlotScatter plotScatter = volcano.drawVolimage(titlePvalueFDR.toString());
-		return plotScatter;
 	}
 	
 	/**
@@ -355,11 +295,11 @@ import com.novelbio.generalConf.TitleFormatNBC;
 	 * @return 返回卡定的阈值 string[2] 0是pvalue还是fdr<br>
 	 * 1：具体的阈值
 	 */
-	public static String[] setThreshold(Collection<DiffGeneVocalno> lslspValue, double upfc, double downfc) {
+	public static String[] setThreshold(Collection<DiffGeneFilter> lslspValue, double upfc, double downfc) {
 		int thresholdNum = (int)(lslspValue.size() * MIN_PROP_NUM + 1);
 		/** 超过1000个基因的样本数量 */
 		int pvalueUpThresh1 = 0, pvalueUpThresh2 = 0, fdrUpThresh1 = 0, fdrUpThresh2 = 0;
-		for (DiffGeneVocalno difResultInfo : lslspValue) {
+		for (DiffGeneFilter difResultInfo : lslspValue) {
 			int FDR1Num = 0, FDR2Num = 0, pValue1Num = 0, pValue2Num = 0;
 			for (int i = 0; i < difResultInfo.lsFDR.size(); i++) {
 				double fdr = difResultInfo.lsFDR.get(i);
@@ -407,7 +347,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
 //			threshold = THRESHOLD2;
 //		}
 		
-		for (DiffGeneVocalno difResultInfo : lslspValue) {
+		for (DiffGeneFilter difResultInfo : lslspValue) {
 			difResultInfo.setThreshold(title, threshold);
 		}
 		return new String[]{title.toString(), threshold + ""};

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -20,7 +21,7 @@ import com.novelbio.base.fileOperate.FileOperate;
  * -rf的其他参数可以参考GATK网站Read filters下面的条目<br>
  * http://www.broadinstitute.org/gatk/gatkdocs/<br>
  */
-public class GATKCalling {
+public class GATKCalling implements IntCmdSoft {
 	private static final Logger logger = Logger.getLogger(GATKCalling.class);
 	
 	public static final String SNP = "SNP";
@@ -30,9 +31,9 @@ public class GATKCalling {
 	public static final String BOTH = "BOTH";
 	String ExePath = "";
 	/** 输入文件路径+bam文件名 */
-	private String inputFilePath;
+	private List<String> lsInputFilePath = new ArrayList<>();
 	/** 默认和输入文件同路径包括文件名 */
-	private String outputFilePath;
+	private String outVcf;
 	/** 输入ref文件路径+fasta文件名 */
 	private String refFilePath;
 	/** 输入文件路径+vcf文件名 */
@@ -43,10 +44,13 @@ public class GATKCalling {
 	/** The minimum phred-scaled confidence threshold at which variants should be emitted (and filtered with LowQual if less than the calling threshold) */
 	private double stand_emit_conf = 0;
 
-	public GATKCalling(String inputFilePath, String refFilePath) {
-		this.inputFilePath = inputFilePath;
+	public GATKCalling(String refFilePath) {
 		this.refFilePath = refFilePath;
 		this.snpDBVcfFilePath = null;
+	}
+	
+	public void addBamFile(String inputFile) {
+		lsInputFilePath.add(inputFile);
 	}
 	
 	public void setExePath(String exePath) {
@@ -55,11 +59,10 @@ public class GATKCalling {
 		else
 			this.ExePath = FileOperate.addSep(exePath);
 	}
+	
 	/**
 	 * variants calling by GATK<br>
-	 * 
 	 * @return 输出文件路径 + 输入文件名.recal.bam
-	 * 
 	 */
 	public String callingByGATK() {
 		List<String> lsCmd = getLsCmd();
@@ -68,7 +71,7 @@ public class GATKCalling {
 		if (!cmdOperate.isFinishedNormal()) {
 			throw new ExceptionCmd("GATK error:\n" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
 		}
-		return outputFilePath;	
+		return outVcf;
 	}
 	
 	private List<String> getLsCmd() {
@@ -78,7 +81,7 @@ public class GATKCalling {
 		lsCmd.add("-T"); lsCmd.add("UnifiedGenotyper");
 		ArrayOperate.addArrayToList(lsCmd, getRefFilePath());
 		ArrayOperate.addArrayToList(lsCmd, getOutPutPath());
-		ArrayOperate.addArrayToList(lsCmd, getInputPath());
+		lsCmd.addAll(getLsInputPath());
 		ArrayOperate.addArrayToList(lsCmd, getStandCallConf());
 		ArrayOperate.addArrayToList(lsCmd, getStandEmitConf());
 		ArrayOperate.addArrayToList(lsCmd, getGlm());
@@ -92,11 +95,16 @@ public class GATKCalling {
 	}
 	
 	private String[] getOutPutPath() {
-		return new String[]{"-o", outputFilePath};
+		return new String[]{"-o", outVcf};
 	}
 	
-	private String[] getInputPath() {
-		return new String[]{"-I", inputFilePath};
+	private List<String> getLsInputPath() {
+		List<String> lsInputCmd = new ArrayList<>();
+		for (String bamFile : lsInputFilePath) {
+			lsInputCmd.add("-I");
+			lsInputCmd.add(bamFile);
+		}
+		return lsInputCmd;
 	}
 	
 	private String[] getStandCallConf() {
@@ -121,14 +129,15 @@ public class GATKCalling {
 		}
 		return null;
 	}
+	
 	/** 取得输出路径 */
 	public String getOutputFilePath() {
-		return outputFilePath;
+		return outVcf;
 	}
 
-	/** 设置输出路径包括文件名*.bam */
-	public void setOutputFilePath(String outputFilePath) {
-		this.outputFilePath = outputFilePath;
+	/** 设置输出路径包括文件名*.vcf */
+	public void setOutVcf(String outVcf) {
+		this.outVcf = outVcf;
 	}
 
 	/** 设置输入文件路径+vcf文件名 可以设为null,默认为null，只是降低准确度 */
@@ -137,6 +146,7 @@ public class GATKCalling {
 	}
 
 	/**
+	 * 这个不用改，意思同时找snp和indel<br>
 	 * Genotype likelihoods calculation model to employ -- SNP is the default
 	 * option, while INDEL is also available for calling indels and BOTH is
 	 * available for calling both together. The --genotype_likelihoods_model
@@ -155,6 +165,15 @@ public class GATKCalling {
 	/** set the minimum phred-scaled confidence threshold at which variants should be emitted (and filtered with LowQual if less than the calling threshold) */
 	public void setStand_emit_conf(double stand_emit_conf) {
 		this.stand_emit_conf = stand_emit_conf;
+	}
+
+	@Override
+	public List<String> getCmdExeStr() {
+		List<String> lsResult = new ArrayList<>();
+		List<String> lsCmd = getLsCmd();
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
+		lsResult.add(cmdOperate.getCmdExeStr());
+		return lsResult;
 	}
 
 	

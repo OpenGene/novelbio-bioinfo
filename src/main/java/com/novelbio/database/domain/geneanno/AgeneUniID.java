@@ -202,4 +202,9 @@ public abstract class AgeneUniID {
 			return null;
 		}
 	}
+	
+	public void delete() {
+		ManageNCBIUniID.getInstance().delete(this);
+	}
+	
 }

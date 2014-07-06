@@ -295,8 +295,11 @@ public class FastQC {
 		writeTable(txtWrite, mapTable);
 		txtWrite.close();
 		lsSaveFileName.add(fileKmer);
-		
-		mapTable = fastQC.os.getResult();
+		try {
+			mapTable = fastQC.os.getResult();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		if (mapTable.size() > 0) {
 			txtWrite = new TxtReadandWrite(fileRepresentedSeq, true);
 			writeTable(txtWrite, mapTable);

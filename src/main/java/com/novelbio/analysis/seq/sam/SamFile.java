@@ -664,23 +664,6 @@ public class SamFile implements AlignSeq {
 		bamPileup.pileup(outPileUpFile, false);
 	}
 	
-	/** 用GATK来call snp，同时返回结果vcf的文本名 */
-	public String snpCalling(String dbSnpFile) {
-		String vcfFileName = FileOperate.changeFileSuffix(getFileName(), "_GATKsnp", "vcf");
-		return snpCalling(dbSnpFile, vcfFileName);
-	}
-	/**
-	 * 用GATK来call snp，同时返回结果vcf的文本
-	 * @param dbSnpFile dbsnp的vcf文件
-	 */
-	public String snpCalling(String dbSnpFile, String outSnpVcf) {
-		outSnpVcf = FileOperate.changeFileSuffix(outSnpVcf, "", "vcf");
-		GATKCalling gatkCalling = new GATKCalling(getFileName(), referenceFileName);
-		gatkCalling.setOutputFilePath(outSnpVcf);
-		gatkCalling.setSnpDBVcfFilePath(dbSnpFile);
-		outSnpVcf = gatkCalling.callingByGATK();
-		return outSnpVcf;
-	}
 	/**
 	 * 把该samfile的refID都修正为小写字母
 	 * @return

@@ -191,15 +191,20 @@ public class DiffExpDESeq extends DiffExpAbs {
 			String tmp = tmpResult[1];
 			tmpResult[1] = tmpResult[2];
 			tmpResult[2] = tmp;
+			
+			double caseValue = -1, ctrlValue = -1;
+			try { caseValue = Double.parseDouble(tmpResult[1]); } catch (Exception e) { }
+			try { ctrlValue = Double.parseDouble(tmpResult[2]); } catch (Exception e) { }
+			
 			try {
 				Double.parseDouble(tmpResult[4]);
 			} catch (Exception e) {
-				if ((tmpResult[1].equals("0") || tmpResult[1].equalsIgnoreCase("NA") || tmpResult[1].equalsIgnoreCase("none") ) 
-						&& (tmpResult[2].equals("0") || tmpResult[2].equalsIgnoreCase("NA") || tmpResult[2].equalsIgnoreCase("none") )) {
+				if ((caseValue == 0 || tmpResult[1].equalsIgnoreCase("NA") || tmpResult[1].equalsIgnoreCase("none") ) 
+						&& (ctrlValue == 0 || tmpResult[2].equalsIgnoreCase("NA") || tmpResult[2].equalsIgnoreCase("none") )) {
 					tmpResult[4] = "0";
-				} else if (tmpResult[1].equals("0")) {
+				} else if (caseValue == 0) {
 					tmpResult[4] = "-20";
-				} else if (tmpResult[2].equals("0")) {
+				} else if (ctrlValue == 0) {
 					tmpResult[4] = "20";
 				}
 			}

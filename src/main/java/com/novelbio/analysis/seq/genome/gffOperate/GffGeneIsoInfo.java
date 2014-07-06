@@ -854,7 +854,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	protected void addFirstExon(Boolean cis5to3, int locStart, int locEnd) {
 		boolean mycis5to3 = getExonCis5To3(cis5to3);
 		ExonInfo exonInfo = new ExonInfo(mycis5to3, locStart, locEnd);
-		clear();
+		clearElements();
 		add(exonInfo);
 	}
 	
@@ -909,7 +909,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 		
 		if (combine) {
-			clear();
+			clearElements();
 			for (ExonInfo exonInfo : lsExoninfo) {
 				add(exonInfo);
 			}
@@ -932,7 +932,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			setExonInfos.add(exonInfo);
 		}
 		if (haveDuplicateExon) {
-			clear();
+			clearElements();
 			for (ExonInfo exonInfo : setExonInfos) {
 				add(exonInfo);
 			}
@@ -1107,6 +1107,30 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 		return lsTmp;
 	}
+	
+	public GffGeneIsoInfo subGffGeneIso(int startLoc, int endLoc) {
+		int startAbs = Math.min(startLoc, endLoc);
+		int endAbs = Math.max(startAbs, endLoc);
+		GffGeneIsoInfo gffGeneIsoInfoResult = this.clone();
+		gffGeneIsoInfoResult.clearElements();
+		for (ExonInfo exonInfo : this) {
+			ExonInfo exonInfoResult = exonInfo.clone();
+			if (exonInfo.getEndAbs() < startAbs) {
+				continue;
+			} else if (exonInfo.getStartAbs() <= startAbs && exonInfo.getEndAbs() >= startAbs) {
+				exonInfoResult.setStartAbs(startAbs);
+			}
+			
+			if (exonInfo.getStartAbs() > endAbs) {
+				continue;
+			} else if (exonInfo.getStartAbs() <= endAbs && exonInfo.getEndAbs() >= endAbs) {
+				exonInfoResult.setEndAbs(endAbs);
+			}
+			gffGeneIsoInfoResult.add(exonInfoResult);
+		}
+		return gffGeneIsoInfoResult;
+	}
+	
 	/**
 	 * 获得Intron的list信息，从前到后排序
 	 * 没有结果就返回new list-exonInfo

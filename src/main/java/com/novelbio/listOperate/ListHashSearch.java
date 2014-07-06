@@ -312,7 +312,7 @@ K extends ListCodAbsDu<T, E>, M extends ListAbsSearch<T, E, K>> {
 	 * 同时设定每个gffDetail的itemNum
 	 */
 	protected void setItemDistance() {
-		for (M lsGffDetail : mapChrID2ListGff.values()) {
+		for (M lsGffDetail : getMapChrID2LsGff().values()) {
 			for (int i = 0; i < lsGffDetail.size(); i++) {
 				T gffDetail = lsGffDetail.get(i);
 				T gffDetailUp = null;
