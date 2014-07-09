@@ -40,9 +40,9 @@ public class GATKCalling implements IntCmdSoft {
 	private String snpDBVcfFilePath;
 	private String glm = GATKCalling.BOTH;
 	/** The minimum phred-scaled confidence threshold at which variants should be called */
-	private double stand_call_conf = 20.0;
+	private double stand_call_conf = 30.0;
 	/** The minimum phred-scaled confidence threshold at which variants should be emitted (and filtered with LowQual if less than the calling threshold) */
-	private double stand_emit_conf = 0;
+	private double stand_emit_conf = 10.0;
 
 	public GATKCalling(String refFilePath) {
 		this.refFilePath = refFilePath;

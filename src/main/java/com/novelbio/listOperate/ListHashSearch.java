@@ -155,7 +155,7 @@ K extends ListCodAbsDu<T, E>, M extends ListAbsSearch<T, E, K>> {
 		chrID = chrID.toLowerCase();
 		M Loclist =  getMapChrID2LsGff().get(chrID);// 某一条染色体的信息
 		if (Loclist == null) {
-			logger.info("Find UnKnown chrID: " + chrID);
+			logger.debug("Find UnKnown chrID: " + chrID);
 			return null;
 		}
 		E gffCod1 = Loclist.searchLocation(cod1);//(chrID, Math.min(cod1, cod2));

@@ -13,6 +13,9 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.service.servgeneanno.ManageSpecies;
+import com.novelbio.database.service.servgeneanno.ManageSpeciesDB;
+import com.novelbio.database.service.servgeneanno.ManageSpeciesTxt;
 import com.novelbio.generalConf.TitleFormatNBC;
 //TODO 本类中的注释功能在RefSiteSnpIndel类中已经写过类似的tostring方法，考虑将两个合并起来
 /** 
@@ -141,17 +144,22 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 			}
 			gffGeneIsoInfo = gffDetailGene.getLongestSplitMrna();
 		}
-		GeneID geneID = gffGeneIsoInfo.getGeneID();
-		if (geneID.getIDtype() != GeneID.IDTYPE_ACCID) {
-			lsInfo.add(gffGeneIsoInfo.getName());
-			lsInfo.add(geneID.getSymbol());
-			lsInfo.add(geneID.getDescription());
-		} else {
-			lsInfo.add(gffGeneIsoInfo.getName());
-			lsInfo.add("");
-			lsInfo.add("");
+		lsInfo.add(gffGeneIsoInfo.getName());
+		if (ManageSpecies.getInstance() instanceof ManageSpeciesDB) {
+			try {
+				GeneID geneID = gffGeneIsoInfo.getGeneID();
+				if (geneID.getIDtype() != GeneID.IDTYPE_ACCID) {
+					lsInfo.add(geneID.getSymbol());
+					lsInfo.add(geneID.getDescription());
+				} else {
+					lsInfo.add("");
+					lsInfo.add("");
+				}
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
 		}
-		
+
 		lsInfo.add(gffGeneIsoInfo.toStringCodLocStr(new int[]{0,0}, refStartSite));
 		
 		//如果snp落在了intron里面，本项目就不计数了
@@ -174,8 +182,11 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 	public static ArrayList<String> getTitleLs() {
 		ArrayList<String> lsTitle = new ArrayList<String>();
 		lsTitle.add(TitleFormatNBC.AccID.toString());
-		lsTitle.add(TitleFormatNBC.Symbol.toString());
-		lsTitle.add(TitleFormatNBC.Description.toString());
+		if (ManageSpecies.getInstance() instanceof ManageSpeciesDB) {
+			lsTitle.add(TitleFormatNBC.Symbol.toString());
+			lsTitle.add(TitleFormatNBC.Description.toString());
+		}
+	
 		lsTitle.add("LocationDescription");
 		lsTitle.add("PropToGeneStart");
 		lsTitle.addAll(SiteSnpIndelInfo.getTitle());

@@ -37,8 +37,6 @@ public class SoftWareInfo {
 	/** 是否已经查找过 */
 	@Transient
 	boolean searched = false;
-	@Transient
-	static ManageSoftWareInfo manageSoftWareInfo = ManageSoftWareInfo.getInstance();
 	
 	public SoftWareInfo() { }
 	public SoftWareInfo(SoftWare softName) { 
@@ -172,7 +170,7 @@ public class SoftWareInfo {
 	 * 升级本信息，没有就插入，有就升级
 	 */
 	public void update() {
-		manageSoftWareInfo.update(this);
+		ManageSoftWareInfo.getInstance().update(this);
 	}
 	
 	/**
@@ -185,7 +183,7 @@ public class SoftWareInfo {
 		if (softName == null || softName.trim().equals("")) {
 			return;
 		}
-		SoftWareInfo softWareInfos = manageSoftWareInfo.findSoftwareByName(softName);
+		SoftWareInfo softWareInfos = ManageSoftWareInfo.getInstance().findSoftwareByName(softName);
 		copyInfo(softWareInfos);
 		searched = true;
 	}
@@ -236,7 +234,7 @@ public class SoftWareInfo {
 	 * @param txtFile 	 配置信息：第一行，item名称
 	 */
 	public static void updateInfo(String txtFile) {
-		manageSoftWareInfo.updateInfo(txtFile);
+		ManageSoftWareInfo.getInstance().updateInfo(txtFile);
 	}
 	public static enum SoftWare {
 		blast,

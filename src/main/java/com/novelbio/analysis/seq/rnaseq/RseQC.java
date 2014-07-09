@@ -144,7 +144,7 @@ public class RseQC {
 		/** 图片上界  */
 		int imageUpBound = 250;
 		/** 绘图的步长  */
-		int imageStepLenght = 5;
+		int imageStepLength = 5;
 		
 		public void setImageLowerBound(int imageLowerBound) {
 			this.imageLowerBound = imageLowerBound;
@@ -164,12 +164,12 @@ public class RseQC {
 			return  new String[]{"-u",imageUpBound + ""};
 		}
 		
-		public void setImageStepLenght(int imageStepLenght) {
-			this.imageStepLenght = imageStepLenght;
+		public void setImageStepLength(int imageStepLength) {
+			this.imageStepLength = imageStepLength;
 		}
 		
-		public String[] getImageStepLenght() {
-			return  new String[]{"-s",imageStepLenght + ""};
+		public String[] getImageStepLength() {
+			return  new String[]{"-s",imageStepLength + ""};
 		}
 		
 		public InnerDistance(String inFile, String outFile, String bedFile) {
@@ -182,7 +182,7 @@ public class RseQC {
 			lsListCmd.addAll(getParamList());
 			ArrayOperate.addArrayToList(lsListCmd, getImageLowerBoundParamer());
 			ArrayOperate.addArrayToList(lsListCmd, getImageUpBoundParam());
-			ArrayOperate.addArrayToList(lsListCmd,getImageStepLenght());
+			ArrayOperate.addArrayToList(lsListCmd,getImageStepLength());
 			return lsListCmd;
 		}
 
@@ -232,7 +232,7 @@ public class RseQC {
 		protected int sampleUpBound = 100;
 		
 		/**设定采样的步长。默认是5，可输入0~100的整数*/
-		protected int sampleStepLenght = 5;
+		protected int sampleStepLength = 5;
 		/**最小内含子长度，默认是50*/
 		protected int intronLength = 50;
 		/**设定能够认为是junction的最少读长数目，默认是1*/
@@ -246,8 +246,8 @@ public class RseQC {
 			this.sampleUpBound = sampleUpBound;
 		}
 		
-		public void setSampleStepLenght(int sampleStepLenght) {
-			this.sampleStepLenght = sampleStepLenght;
+		public void setSampleStepLength(int sampleStepLength) {
+			this.sampleStepLength = sampleStepLength;
 		}
 		
 		public void setIntronLength(int intronLength) {
@@ -266,8 +266,8 @@ public class RseQC {
 			return new String[]{"-u",sampleUpBound + ""};
 		}
 		
-		protected  String[] getSampleStepLenghtParam() {
-			return new String[]{"-s",sampleStepLenght + ""};
+		protected  String[] getSampleStepLengthParam() {
+			return new String[]{"-s",sampleStepLength + ""};
 		}
 		
 		protected  String[] getIntronLength() {
@@ -283,7 +283,7 @@ public class RseQC {
 			List<String> lsList =  super.getParamList();
 			ArrayOperate.addArrayToList(lsList, getSampleLowerBoundParam());
 			ArrayOperate.addArrayToList(lsList, getSampleUpBoundParam());
-			ArrayOperate.addArrayToList(lsList, getSampleStepLenghtParam());
+			ArrayOperate.addArrayToList(lsList, getSampleStepLengthParam());
 			ArrayOperate.addArrayToList(lsList, getIntronLength());
 			ArrayOperate.addArrayToList(lsList, getLeastReadNum());
 			return lsList;
@@ -435,7 +435,7 @@ public class RseQC {
 			ArrayOperate.addArrayToList(lsListCmd, getBedFileParam());
 			ArrayOperate.addArrayToList(lsListCmd, getSampleLowerBoundParam());
 			ArrayOperate.addArrayToList(lsListCmd, getSampleUpBoundParam());
-			ArrayOperate.addArrayToList(lsListCmd, getSampleStepLenghtParam());
+			ArrayOperate.addArrayToList(lsListCmd, getSampleStepLengthParam());
 			ArrayOperate.addArrayToList(lsListCmd, getLineRuleParam());
 			ArrayOperate.addArrayToList(lsListCmd, getCutoffValue());
 			return lsListCmd;

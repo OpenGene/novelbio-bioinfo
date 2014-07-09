@@ -16,6 +16,8 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
+import com.novelbio.database.service.servgeneanno.ManageSpecies;
+import com.novelbio.database.service.servgeneanno.ManageSpeciesDB;
 
 /**
  * 主要做基因定位的工作
@@ -215,8 +217,7 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 		ArrayList<String[]> lsanno = null;
 		if (searchSummit) {
 			lsanno = getGenInfoFilterSummitSingle(chrID, summit);
-		}
-		else {
+		} else {
 			lsanno = getGenInfoFilterPeakSingle(chrID, start, end);
 		}
 		if (lsanno == null) {
@@ -236,6 +237,19 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 	}
 	
 	public String[] getTitleGeneInfoFilterAnno() {
+		List<String> lsTitle = new ArrayList<>();
+		for (String string : lsGeneInfo.get(0)) {
+			lsTitle.add(string);
+		}
+		lsTitle.add("AccID");
+		if (ManageSpecies.getInstance() instanceof ManageSpeciesDB) {
+			lsTitle.add("Symbol");
+			lsTitle.add("Description");
+		}
+
+		lsTitle.add("Location");
+		
+		
 		String[] titleOld = lsGeneInfo.get(0);
 		//添加title
 		String[] title = ArrayOperate.copyArray(titleOld, titleOld.length + 4);
@@ -319,9 +333,13 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 		tmpAnno = new String[4];
 		
 		tmpAnno[0] = gffGeneIsoInfo.getName();
-		GeneID geneID = gffGeneIsoInfo.getGeneID();
-		tmpAnno[1] = geneID.getSymbol();
-		tmpAnno[2] = geneID.getDescription();
+		
+		if (ManageSpecies.getInstance() instanceof ManageSpeciesDB) {
+			GeneID geneID = gffGeneIsoInfo.getGeneID();
+			tmpAnno[1] = geneID.getSymbol();
+			tmpAnno[2] = geneID.getDescription();
+		}
+		
 		tmpAnno[3] = gffGeneIsoInfo.toStringCodLocStr(tss, coord);
 		
 		lsAnno.add(tmpAnno);

@@ -117,12 +117,12 @@ public class ManageSpeciesTxt implements IManageSpecies {
 			
 			m = hashName2ColNum.get("refseqncfile");
 			if (m != null) speciesFile.setRefseqNCfile(info[m]);
-			try {
-				speciesFile.getMapChromInfo();
-			} catch (Exception e) {
-				e.printStackTrace();
-				logger.error("条目出错：" + ArrayOperate.cmbString(info, "\t"));
-			}
+//			try {
+//				speciesFile.getMapChromInfo();
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//				logger.error("条目出错：" + ArrayOperate.cmbString(info, "\t"));
+//			}
 			//升级
 			saveSpeciesFile(speciesFile);
 		}

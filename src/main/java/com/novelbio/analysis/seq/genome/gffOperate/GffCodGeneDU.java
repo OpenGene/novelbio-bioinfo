@@ -3,12 +3,15 @@ package com.novelbio.analysis.seq.genome.gffOperate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modgeneid.GeneType;
+import com.novelbio.database.service.servgeneanno.ManageSpecies;
+import com.novelbio.database.service.servgeneanno.ManageSpeciesDB;
 import com.novelbio.listOperate.ListCodAbsDu;
 
 /**
@@ -208,26 +211,9 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 	 *         3：文字形式的定位描述
 	 */
 	private String[] getAnnoCod(int[] tss, int coord, GffDetailGene gffDetailGene, String peakPointInfo) {
-		HashSet<GeneID> hashCopedID = new HashSet<GeneID>();
-		String[] anno = new String[4];
-		for (int i = 0; i < anno.length; i++)
-			anno[i] = "";
-
-		for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-			GeneID copedID = new GeneID(gffGeneIsoInfo.getName(), gffDetailGene.getTaxID(), false);
-			if (hashCopedID.contains(copedID)) {
-				continue;
-			}
-			hashCopedID.add(copedID);
-			anno[0] = anno[0] + "///" + copedID.getAccID();
-			anno[1] = anno[1] + "///" + copedID.getSymbol();
-			anno[2] = anno[2] + "///" + copedID.getDescription();
-		}
-		anno[0] = anno[0].replaceFirst("///", "");
-		anno[1] = anno[1].replaceFirst("///", "");
-		anno[2] = anno[2].replaceFirst("///", "");
-		anno[3] = peakPointInfo + gffDetailGene.getLongestSplitMrna().toStringCodLocStr(tss, coord);
-		return anno;
+		List<String> lsAnno = getLsAnno(gffDetailGene);
+		lsAnno.add(peakPointInfo + gffDetailGene.getLongestSplitMrna().toStringCodLocStr(tss, coord));
+		return lsAnno.toArray(new String[0]);
 	}
 
 	/**
@@ -240,29 +226,33 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 	 *         3：Covered
 	 */
 	private String[] getAnnoMid(GffDetailGene gffDetailGene) {
-		HashSet<GeneID> hashCopedID = new HashSet<GeneID>();
-		String[] anno = new String[4];
-		for (int i = 0; i < anno.length; i++)
-			anno[i] = "";
-
-		for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-			GeneID copedID = new GeneID(gffGeneIsoInfo.getName(),
-					gffDetailGene.getTaxID(), false);
-			if (hashCopedID.contains(copedID)) {
-				continue;
+		List<String> lsAnno = getLsAnno(gffDetailGene);
+		lsAnno.add("Covered");
+		return lsAnno.toArray(new String[0]);
+	}
+	
+	private List<String> getLsAnno(GffDetailGene gffDetailGene) {
+		List<String> lsAnno = new ArrayList<>();
+		String[] anno = new String[3];
+		for (GffDetailGene gffDetailGeneSub : gffDetailGene.getlsGffDetailGenes()) {
+			anno[0] = anno[0] + "///" + gffDetailGeneSub.getNameSingle();
+			if (ManageSpecies.getInstance() instanceof ManageSpeciesDB) {
+				GeneID geneID = new GeneID(gffDetailGeneSub.getNameSingle(), gffDetailGene.getTaxID());
+				anno[1] = geneID.getSymbol();
+				anno[2] = geneID.getDescription();
 			}
-			hashCopedID.add(copedID);
-			anno[0] = anno[0] + "///" + copedID.getAccID();
-			anno[1] = anno[1] + "///" + copedID.getSymbol();
-			anno[2] = anno[2] + "///" + copedID.getDescription();
 		}
 		anno[0] = anno[0].replaceFirst("///", "");
 		anno[1] = anno[1].replaceFirst("///", "");
 		anno[2] = anno[2].replaceFirst("///", "");
-		anno[3] = "Covered";
-		return anno;
+		lsAnno.add(anno[0]);
+		if (ManageSpecies.getInstance() instanceof ManageSpeciesDB) {
+			lsAnno.add(anno[1]);lsAnno.add(anno[2]);
+		}
+		return lsAnno;
 	}
-
+	
+	
 	/**
 	 * 不查询数据库，直接返回gffDetailGene
 	 * 如果一个基因的某些iso没有和两个位点区域有交集，则去除这些iso

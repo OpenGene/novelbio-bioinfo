@@ -563,27 +563,29 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 //				break;
 //			}
 //			txtRead.close();
-//		} else if (FileOperate.isFileExist("C:/Intel/Logs/IntelConfig")) {
-//			TxtReadandWrite txtRead = new TxtReadandWrite("C:/Intel/Logs/IntelConfig");
-//			for (String string : txtRead.readlines(3)) {
-//				if (string.equals("!  detail information is from the jakub website.")) {
-//					readFile = true;
-//				}
-//				break;
-//			}
-//			txtRead.close();
-//		}
-		
-		File file = FileOperate.getFile("/hdfs:/nbCloud/staff/zongjie/test/dme_GTFfile.gtf.bak");
-		readFile = false;
-		if (file.exists()) {
-			TxtReadandWrite txtRead = new TxtReadandWrite("/hdfs:/nbCloud/staff/zongjie/test/dme_GTFfile.gtf.bak");
-			String id = txtRead.readFirstLines(1).get(0);
-			if (id.split("\t")[8].contains(" transcript_id \"NM_001272857.1\"")) {
-				readFile=true;
+//		} else 
+		if (FileOperate.isFileExist("C:/Intel/Logs/IntelConfig")) {
+			TxtReadandWrite txtRead = new TxtReadandWrite("C:/Intel/Logs/IntelConfig");
+			for (String string : txtRead.readlines(3)) {
+				if (string.equals("!  detail information is from the jakub website.")) {
+					readFile = true;
+				}
+				break;
 			}
 			txtRead.close();
+		} else {
+			File file = FileOperate.getFile("/hdfs:/nbCloud/staff/zongjie/test/dme_GTFfile.gtf.bak");
+			if (file.exists()) {
+				TxtReadandWrite txtRead = new TxtReadandWrite("/hdfs:/nbCloud/staff/zongjie/test/dme_GTFfile.gtf.bak");
+				String id = txtRead.readFirstLines(1).get(0);
+				if (id.split("\t")[8].contains(" transcript_id \"NM_001272857.1\"")) {
+					readFile=true;
+				}
+				txtRead.close();
+			}
 		}
+		
+
 	}
 	
 	public void save() {

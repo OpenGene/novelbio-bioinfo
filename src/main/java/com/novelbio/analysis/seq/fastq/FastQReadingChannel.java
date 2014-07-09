@@ -131,6 +131,7 @@ public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
 				closeThread();
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			closeThread();
 			throw e;
 		}
@@ -236,9 +237,10 @@ public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
 	/** 等待处理线程将AbsQueue队列中的记录处理掉 */
 	protected void wait_To_Cope_AbsQueue() {
 		suspendCheck();
-		if (fqWrite[0].fastQwrite.getRunThreadStat() != RunThreadStat.running) {
+		if (isOutputResult && fqWrite[0].fastQwrite.getRunThreadStat() != RunThreadStat.running) {
 			throw new ExceptionFastq(fqWrite[0].fastQwrite.getFileName() + " fastq write error", fqWrite[0].fastQwrite.getException());
 		}
+
 		while (executorPool.getQueue().size() == maxNumReadInLs || (queueResult != null && queueResult.size() == maxNumReadInLs)) {
 			try { Thread.sleep(50); } catch (InterruptedException e) { }
 		}
