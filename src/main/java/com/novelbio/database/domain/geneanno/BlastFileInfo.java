@@ -39,7 +39,7 @@ public class BlastFileInfo {
 
 	String userId;
 	String userName;
-	/** 随机文件夹 */
+	/** 随机文件后缀 */
 	String randomFolder = DateUtil.getDateAndRandom();
 	@Indexed
 	int queryTaxID;
