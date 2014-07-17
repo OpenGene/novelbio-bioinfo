@@ -95,10 +95,14 @@ public class AnnoAnno extends AnnoAbs {
 		List<GeneID> lsGeneIDs = geneID.getLsBlastGeneID();
 		int i = 0;
 		for (GeneID geneID2 : lsGeneIDs) {
-			if (i++ == 0) {
-				blastAccId = geneID2.getAccID_With_DefaultDB().getAccID();
-			} else {
-				blastAccId = blastAccId + "//" + geneID2.getAccID_With_DefaultDB().getAccID();
+			try {
+				if (i++ == 0) {
+					blastAccId = geneID2.getAccID_With_DefaultDB().getAccID();
+				} else {
+					blastAccId = blastAccId + "//" + geneID2.getAccID_With_DefaultDB().getAccID();
+				}
+			} catch (Exception e) {
+				// TODO: handle exception
 			}
 		}
 		if (blastAccId.endsWith("//")) {

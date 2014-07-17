@@ -125,22 +125,30 @@ public class CuffMerge implements IntCmdSoft {
 			return outMergedFile;
 		}
 		
-		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
+		CmdOperate cmdOperate = new CmdOperate(getLsCmd(true));
 		cmdOperate.run();
+		// 有时候gtf会有问题，这时候就不要加入reference，就可以出结果了
+		if (!cmdOperate.isFinishedNormal()) {
+			cmdOperate = new CmdOperate(getLsCmd(false));
+			cmdOperate.run();
+		}
 		lsCmd.add(cmdOperate.getCmdExeStr());
+
 		if (!cmdOperate.isFinishedNormal()) {
 			String errInfo = cmdOperate.getErrOut();
-			FileOperate.DeleteFileFolder(tmpGtfRecord);
+//			FileOperate.DeleteFileFolder(tmpGtfRecord);
 			throw new ExceptionCmd("cuffmerge error:\n" + cmdOperate.getCmdExeStrReal() + "\n" + errInfo);
 		}
 		FileOperate.DeleteFileFolder(tmpGtfRecord);
 		return outMergedFile;
 	}
 	
-	private List<String> getLsCmd() {
+	private List<String> getLsCmd(boolean isHaveReference) {
 		List<String> lsCmd = new ArrayList<>();
 		lsCmd.add(exePath + "cuffmerge");
-		ArrayOperate.addArrayToList(lsCmd, getRefChrFa());
+		if (isHaveReference) {
+			ArrayOperate.addArrayToList(lsCmd, getRefChrFa());
+		}
 		ArrayOperate.addArrayToList(lsCmd, getRefGtf());
 		ArrayOperate.addArrayToList(lsCmd, getThreadNum());
 		ArrayOperate.addArrayToList(lsCmd, getOutPrefixCMD());

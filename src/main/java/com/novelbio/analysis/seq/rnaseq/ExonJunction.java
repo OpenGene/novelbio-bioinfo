@@ -729,7 +729,8 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			if (mapSplicingType2Num.containsKey(exonSplicingType)) {
 				tmpInfo = mapSplicingType2Num.get(exonSplicingType);
 			} else {
-				mapSplicingType2Num.put(exonSplicingType, tmpInfo);
+				continue;
+//				mapSplicingType2Num.put(exonSplicingType, tmpInfo);
 			}
 			tmpInfo[1] ++;
 			if (exonSplicingTest.getAndCalculatePvalue() <= pvalue) {
@@ -774,7 +775,11 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		TxtReadandWrite txtStatistics = new TxtReadandWrite(FileOperate.changeFileSuffix(fileName, "_statistics", "txt"), true);
 		txtStatistics.writefileln("SplicingEvent\tSignificantNum\tAllNum");
 		for (Entry<SplicingAlternativeType, int[]> exonSplicingInfo : mapSplicingType2Num.entrySet()) {
-			String tmpResult = exonSplicingInfo.getKey() + "\t" + exonSplicingInfo.getValue()[0] + "\t" +  exonSplicingInfo.getValue()[1];
+			SplicingAlternativeType type = exonSplicingInfo.getKey();
+			if (!mapSplicingType2Num.containsKey(type)) {
+				continue;
+			}
+			String tmpResult = exonSplicingInfo.getKey().toString() + "\t" + exonSplicingInfo.getValue()[0] + "\t" +  exonSplicingInfo.getValue()[1];
 			txtStatistics.writefileln(tmpResult);
 		}
 		txtStatistics.close();

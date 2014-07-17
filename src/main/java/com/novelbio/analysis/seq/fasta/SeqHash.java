@@ -193,6 +193,9 @@ public class SeqHash implements SeqHashInt, Closeable {
 	}
 
 	public SeqFasta getSeq(GffGeneIsoInfo gffGeneIsoInfo, boolean getIntron) {
+		if (gffGeneIsoInfo.getStartAbs() < 0 || gffGeneIsoInfo.getEndAbs() > getChrLength(gffGeneIsoInfo.getRefID().toLowerCase())) {
+			return null;
+		}
 		SeqFasta seqFasta = seqHashAbs.getSeq(gffGeneIsoInfo, getIntron);
 		if (seqFasta != null) {
 			seqFasta.setTOLOWCASE(TOLOWCASE);

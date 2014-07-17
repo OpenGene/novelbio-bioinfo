@@ -239,7 +239,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		
 		
 		lsResult.add(getAndCalculatePvalue() + "");
-		lsResult.add(fdr + "");
+//		lsResult.add(fdr + "");
 		//TODO
 		lsResult.add(getSplicingType().toString());
 //		GeneID geneID = gffDetailGene.getSetGeneID().iterator().next();
@@ -412,8 +412,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 //		lsTitle.add("LogFoldChange_Type1");
 //		lsTitle.add("LogFoldChange_Type2");
 
-		lsTitle.add(TitleFormatNBC.Pvalue.toString());
-		lsTitle.add(TitleFormatNBC.FDR.toString());
+		lsTitle.add(TitleFormatNBC.Adjusted_PValue.toString());
 		lsTitle.add("SplicingType");
 		lsTitle.add(TitleFormatNBC.Symbol.toString());
 		lsTitle.add(TitleFormatNBC.Description.toString());
@@ -525,9 +524,9 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			String info = null;
 			if (isExp) {
 				if (isCtrl) {
-					info = iSpliceTestExp.getCondtionCtrl(false);
+					info = iSpliceTestExp.getCondtionCtrl(true);//TODO 这里已经都改成了整数
 				} else {
-					info = iSpliceTestExp.getCondtionTreat(false);
+					info = iSpliceTestExp.getCondtionTreat(true);//TODO 这里已经都改成了整数
 				}
 			} else {
 				if (isCtrl) {

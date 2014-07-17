@@ -77,27 +77,43 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	 * @param gffFile 根据文件后缀名判断是GFF还是GTF
 	 */
 	public GffHashGene(String gffFile) {
+		gffType = readGffTypeFromFileName(gffFile);
+		this.gffFile = gffFile;
+		read(taxID, version, dbinfo, gffType, gffFile);
+	}
+	
+	private GffType readGffTypeFromFileName(String gffFile) {
+		GffType gffType = GffType.GTF;
 		String gffFileTmp = gffFile;
 		if (gffFile.endsWith(".gz")) {
 			gffFileTmp = gffFile.substring(0, gffFile.length()-3);
 		}
 		String suffix = FileOperate.getFileNameSep(gffFileTmp)[1];
 		if (suffix.trim().toLowerCase().equals("gff") || suffix.trim().toLowerCase().equals("gff3")) {
-			this.gffType = GffType.NCBI;
+			gffType = GffType.NCBI;
 		} else if (suffix.trim().toLowerCase().equals("gtf")) {
-			this.gffType = GffType.GTF;
+			gffType = GffType.GTF;
 		} else {
-			this.gffType = GffType.UCSC;
+			gffType = GffType.UCSC;
 		}
-		
-		this.gffFile = gffFile;
-		read(taxID, version, dbinfo, gffType, gffFile);
+		return gffType;
 	}
 	
 	public void setTaxIdVersion(int taxID, String version, String dbinfo) {
 		this.taxID = taxID;
 		this.version = version;
 		this.dbinfo = dbinfo;
+	}
+	
+	/**
+	 * 读取但不初始化<br>
+	 * 设定完该信息后可以通过运行run来加载Gff信息
+	 * @param gffFile
+	 * @param gffType
+	 */
+	public void setGffInfo(String gffFile) {
+		this.gffFile =gffFile;
+		this.gffType = readGffTypeFromFileName(gffFile);
 	}
 	
 	/**

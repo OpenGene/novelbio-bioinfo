@@ -244,24 +244,29 @@ public abstract class SpliceTypePredict {
 	}
 
 	public static enum SplicingAlternativeType {
-		cassette, cassette_multi, alt5, alt3, altend, altstart, mutually_exclusive, retain_intron, unknown, sam_exon,
-		startDif, endDif;
+		cassette("cassette"), cassette_multi("cassette_multi"), alt5("A5SS"), alt3("A3SS"), altend("AltEnd"), altstart("AltStart"),
+		mutually_exclusive("MX"), retain_intron("IR"), unknown("Undefined"), sam_exon("same_exon"),
+		startDif("StartDiff"), endDif("EndDif");
 		static HashMap<String, SplicingAlternativeType> mapName2Events = new LinkedHashMap<String, SplicingAlternativeType>();
+		String info;
+		SplicingAlternativeType(String name) {
+			this.info = name;
+		}
 		
 		public static HashMap<String, SplicingAlternativeType> getMapName2SplicingEvents() {
 			if (mapName2Events.size() == 0) {
 				mapName2Events.put("cassette", cassette);
 				mapName2Events.put("cassette_multi", cassette_multi);
-				mapName2Events.put("alt5", alt5);
-				mapName2Events.put("alt3", alt3);
-				mapName2Events.put("altend", altend);
-				mapName2Events.put("altstart", altstart);
-				mapName2Events.put("mutually_exon", mutually_exclusive);
-				mapName2Events.put("retain_intron", retain_intron);
-				mapName2Events.put("unknown", unknown);
-				mapName2Events.put("sam_exon", sam_exon);
-				mapName2Events.put("startDif", startDif);
-				mapName2Events.put("endDif", endDif);
+				mapName2Events.put("A5SS", alt5);
+				mapName2Events.put("A3SS", alt3);
+				mapName2Events.put("AltEnd", altend);
+				mapName2Events.put("AltStart", altstart);
+				mapName2Events.put("MX", mutually_exclusive);
+				mapName2Events.put("IR", retain_intron);
+				mapName2Events.put("Undefined", unknown);
+//				mapName2Events.put("sam_exon", sam_exon);
+//				mapName2Events.put("startDif", startDif);
+//				mapName2Events.put("endDif", endDif);
 			}
 			return mapName2Events;
 		}
