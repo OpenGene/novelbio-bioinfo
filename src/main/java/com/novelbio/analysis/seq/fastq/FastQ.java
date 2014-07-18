@@ -62,6 +62,11 @@ public class FastQ {
 		}
 	}
 	
+	/** 只有初始化读取文件后，才能设定这个 */
+	public void setCheckFormat(boolean isCheckFormat) {
+		fastQRead.setCheckFormat(isCheckFormat);
+	}
+	
 	public int getOffset() {
 		return fastQRead.getOffset();
 	}

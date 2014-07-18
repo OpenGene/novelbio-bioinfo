@@ -31,7 +31,7 @@ public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
 	 * false 表示仅进行 fastqc工作
 	 */
 	boolean isOutputResult = true;
-	boolean isCheckFormat = false;
+	boolean isCheckFormat = true;
 	
 	
 	/** 输入的FastQ是否为双端，务必一致 */

@@ -34,7 +34,7 @@ class FastQReader implements Closeable {
 	
 	/** 另一端的读取文件，双端读取的时候才有用，两端是对应的读 */
 	FastQReader fastQReadMate;
-	boolean isCheckFormat = false;
+	boolean isCheckFormat = true;
 	int readsLenAvg = 0;
 
 	/** 标准文件名的话，自动判断是否为gz压缩 */
@@ -161,17 +161,20 @@ class FastQReader implements Closeable {
 						lineNum[0] += 4;
 						FastQRecord fastQRecord = null;
 						try {
-							lsStr.add(bufread.readLine());
-							for (int i = 0; i < 3; i++) {
+							for (int i = 0; i < 4; i++) {
 								String lineTmp = bufread.readLine();
 								if (lineTmp == null) {
-									return null;
+									if (i != 0 && isCheckFormat) {
+										throw new ExceptionFastq(txtSeqFile.getFileName() + " fastq file error on line: " + lineNum[0]/4);
+									} else {
+										return null;
+									}
 								}
 								lsStr.add(lineTmp);
 							}
 							fastQRecord = new FastQRecord(lsStr, offset);
 						} catch (IOException ioEx) {
-							fastQRecord = null;
+							throw new ExceptionFastq(txtSeqFile.getFileName() + " fastq file error on line: " + lineNum[0]/4);
 						} catch (ExceptionFastq efastq) {
 							if (isCheckFormat) {
 								throw new ExceptionFastq(txtSeqFile.getFileName() + " fastq file error on line: " + lineNum[0]/4);
