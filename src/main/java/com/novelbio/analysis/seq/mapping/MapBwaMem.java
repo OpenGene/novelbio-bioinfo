@@ -69,6 +69,7 @@ public class MapBwaMem extends MapDNA {
 	
 	public MapBwaMem() {
 		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.bwa_men);
+		softWare = SoftWare.bwa_men;
 		this.exePath = softWareInfo.getExePathRun();
 	}
 	
@@ -455,17 +456,16 @@ public class MapBwaMem extends MapDNA {
 	@Override
 	@Deprecated
 	public void setMapLibrary(MapLibrary mapLibrary) {}
-
-	@Override
-	protected void makeIndex() {
-		List<String> lsCmd = MapBwaAln.getLsCmdIndex(exePath, chrFile);
-		CmdOperate cmdOperate = new CmdOperate(lsCmd);
-		cmdOperate.run();
-		if(!cmdOperate.isFinishedNormal()) {
-			throw new ExceptionCmd("bwa index error:\n" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
-		}
+	
+	protected List<String> getLsCmdIndex() {
+		MapBwaAln mapBwaAln = new MapBwaAln();
+		mapBwaAln.setChrIndex(chrFile);
+		mapBwaAln.setExePath(exePath);
+		List<String> lsCmd = mapBwaAln.getLsCmdIndex();
+		mapBwaAln = null;
+		return lsCmd;
 	}
-
+	
 	@Override
 	protected void deleteIndex() {
 		MapBwaAln.deleteIndexBwa(chrFile);

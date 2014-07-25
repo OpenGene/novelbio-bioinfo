@@ -69,9 +69,12 @@ public class MapBwaAln extends MapDNA {
 	
 	public MapBwaAln() {
 		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.bwa_aln);
+		softWare = SoftWare.bwa_aln;
 		this.ExePath = softWareInfo.getExePathRun();
 	}
-	
+	void setExePath(String exePath) {
+		ExePath = exePath;
+	}
 	/**
 	 * 设置左端的序列，设置会把以前的清空
 	 * @param fqFile
@@ -280,7 +283,7 @@ public class MapBwaAln extends MapDNA {
 	 * @return
 	 */
 	private String getSai(int Sai1orSai2) {
-		String sai = FileOperate.getParentPathName(outFileName) + FileOperate.getFileNameSep(outFileName)[0];
+		String sai = FileOperate.getParentPathNameWithSep(outFileName) + FileOperate.getFileNameSep(outFileName)[0];
 		if (Sai1orSai2 == 1) {
 			if (isPairEnd()) {
 				sai = sai + "_1.sai"; 
@@ -433,20 +436,6 @@ public class MapBwaAln extends MapDNA {
 			FileOperate.DeleteFileFolder(getSai(2));
 		}
 	}
-	
-	/**
-	 * @param force 是否强制建索引，只有当mapping出错的时候才会强制建索引，但是也只会建一次
-	 * @return true仅表示是否运行了建索引程序，不代表建索引成功
-	 */
-	@Override
-	protected void makeIndex() {
-		List<String> lsCmd = getLsCmdIndex(ExePath, chrFile);
-		CmdOperate cmdOperate = new CmdOperate(lsCmd);
-		cmdOperate.run();
-		if(!cmdOperate.isFinishedNormal()) {
-			throw new ExceptionCmd("bwa index error:\n" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
-		}
-	}
 
 	@Override
 	protected boolean isIndexExist() {
@@ -463,13 +452,13 @@ public class MapBwaAln extends MapDNA {
 	protected static void deleteIndexBwa(String chrFile) {
 		FileOperate.delFile(chrFile + ".bwt");
 	}
-	protected static List<String> getLsCmdIndex(String exePath, String chrFile) {
+	protected List<String> getLsCmdIndex() {
 //		linux命令如下 
 //	 	bwa index -p prefix -a algoType -c  chrFile
 //		-c 是solid用
 
 		List<String> lsCmd = new ArrayList<>();
-		lsCmd.add(exePath + "bwa");
+		lsCmd.add(ExePath + "bwa");
 		lsCmd.add("index");
 		ArrayOperate.addArrayToList(lsCmd, getChrLen(chrFile));
 		lsCmd.add(chrFile);

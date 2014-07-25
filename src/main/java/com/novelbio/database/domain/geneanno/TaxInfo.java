@@ -157,7 +157,7 @@ public class TaxInfo implements Cloneable {
 		String miRNAfile = pathParent + genomePath + "miRNA.fa";
 		String miRNAhairpinFile = pathParent + genomePath + "miRNAhairpin.fa";
 		if (!FileOperate.isFileExistAndBigThanSize(miRNAfile,10) || !FileOperate.isFileExistAndBigThanSize(miRNAhairpinFile,10)) {
-			FileOperate.createFolders(FileOperate.getParentPathName(miRNAfile));
+			FileOperate.createFolders(FileOperate.getParentPathNameWithSep(miRNAfile));
 			ExtractSmallRNASeq extractSmallRNASeq = new ExtractSmallRNASeq();
 			extractSmallRNASeq.setOutMatureRNA(miRNAfile);
 			extractSmallRNASeq.setOutHairpinRNA(miRNAhairpinFile);

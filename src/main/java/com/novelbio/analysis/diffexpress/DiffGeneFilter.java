@@ -69,7 +69,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
 			List<Double>  lsPvalueOut_0 = readListListColOut_0(lsInfoWithoutTitle,pvalueCol);
 			Collections.sort(lsPvalueOut_0);
 		}
-		lsLogFC = readListListCol(lsInfoWithoutTitle, logfcCol, 10, 0);
+		lsLogFC = readListListCol(lsInfoWithoutTitle, logfcCol, 20, 0);
 	}
 	
 	public double getPvalueFDRthreshold() {
@@ -131,11 +131,11 @@ import com.novelbio.generalConf.TitleFormatNBC;
 			String str = list.get(colNum);
 			double value;
 			//TODO 尚未考虑NA等情况
-			if (str.trim().equalsIgnoreCase("inf")) {
+			if (str.trim().toLowerCase().startsWith("inf")) {
 				value = inf;
-			} else if (str.trim().equalsIgnoreCase("-inf")) {
+			} else if (str.trim().toLowerCase().startsWith("-inf")) {
 				value = -inf;
-			} else if (str.trim().equalsIgnoreCase("na")) {
+			} else if (str.trim().toLowerCase().startsWith("na")) {
 				value = naValue;
 			} else {
 				try {
@@ -191,7 +191,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
 		
 		FileOperate.DeleteFileFolder(outFile);
 		ExcelOperate excelOperate = new ExcelOperate(outFile);
-		excelOperate.setNBCExcel(true);
+//		excelOperate.setNBCExcel(true);
 		excelOperate.WriteExcel(lsResult);
 		excelOperate.Close();
 		

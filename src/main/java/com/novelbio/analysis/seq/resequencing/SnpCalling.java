@@ -130,7 +130,7 @@ public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
 	 * @param pileUpFile
 	 */
 	private void addPileupToLsSnpIndel(String sampleName, String pileupFile, String outPutFile) {
-		if (FileOperate.isFileDirectory(FileOperate.getParentPathName(outPutFile))) {
+		if (FileOperate.isFileDirectory(FileOperate.getParentPathNameWithSep(outPutFile))) {
 			txtSnpOut = new TxtReadandWrite(outPutFile, true);
 		}
 		TxtReadandWrite txtReadPileUp = new TxtReadandWrite(pileupFile, false);

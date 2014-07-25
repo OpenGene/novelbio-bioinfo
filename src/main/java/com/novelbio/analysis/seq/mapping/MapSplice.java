@@ -7,6 +7,7 @@ import com.novelbio.analysis.seq.fasta.format.NCBIchromFaChangeFormat;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -154,15 +155,18 @@ public class MapSplice implements MapRNA {
 		lsCmdMapping2nd.clear();
 
 		String prefix = FileOperate.getFileName(outFile);
-		String parentPath = FileOperate.getParentPathName(outFile);
+		String parentPath = FileOperate.getParentPathNameWithSep(outFile);
 		String mapSpliceBam = parentPath + prefix + MapSpliceSuffix;
 		if (!FileOperate.isFileExistAndBigThanSize(mapSpliceBam, 1_000_000)) {
-			CmdOperate cmdOperate = new CmdOperate(getLsCmd());
+			String tmpPath = PathDetail.getTmpPathRandomWithSep(SoftWare.mapsplice.toString());
+			CmdOperate cmdOperate = new CmdOperate(getLsCmd(tmpPath));
 			cmdOperate.run();
 			if (!cmdOperate.isFinishedNormal()) {
-//				FileOperate.DeleteFileFolder(FileOperate.addSep(outFile) + "tmp");
+				FileOperate.DeleteFileFolder(tmpPath);
 				throw new ExceptionCmd("error running mapsplice:" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
 			}
+			MapDNA.copyFile(tmpPath, parentPath, true);
+			FileOperate.DeleteFileFolder(tmpPath);
 			clearTmpReads_And_MoveFile();
 		}
 		
@@ -206,7 +210,7 @@ public class MapSplice implements MapRNA {
 			return;
 		}
 		String prefix = FileOperate.getFileName(outFile);
-		String parentPath = FileOperate.getParentPathName(outFile);
+		String parentPath = FileOperate.getParentPathNameWithSep(outFile);
 		FileOperate.moveFile(FileOperate.addSep(outFile) + "alignments.bam", parentPath, prefix + MapSpliceSuffix,false);
 		FileOperate.moveFile(FileOperate.addSep(outFile) + "junctions.txt", parentPath, prefix + "_junctions.txt",false);
 		FileOperate.DeleteFileFolder(FileOperate.addSep(outFile) + "tmp");
@@ -215,7 +219,7 @@ public class MapSplice implements MapRNA {
 	@Override
 	public String getFinishName() {
 		String prefix = FileOperate.getFileName(outFile);
-		String parentPath = FileOperate.getParentPathName(outFile);
+		String parentPath = FileOperate.getParentPathNameWithSep(outFile);
 		if (!mapUnmapedReads) {
 			return parentPath + prefix + MapSpliceSuffix;
 		} else {
@@ -268,8 +272,9 @@ public class MapSplice implements MapRNA {
 		}
 		return null;
 	}
-	private String[] getOutPath() {
-		return new String[]{"-o", outFile};
+
+	private String getOutPathTmp(String tmpPath) {
+		return tmpPath + FileOperate.getFileName(outFile);
 	}
 	private String[] getSeedLen() {
 		return new String[]{"-s", seedLen + ""};
@@ -301,7 +306,7 @@ public class MapSplice implements MapRNA {
 		lsFqFileInfo.add(fqRight);
 		return lsFqFileInfo;
 	}
-	private List<String> getLsCmd() {
+	private List<String> getLsCmd(String tmpPath) {
 		List<String> lsCmd = new ArrayList<>();
 		lsCmd.add("python");
 		lsCmd.add(exePath + "mapsplice.py");
@@ -316,7 +321,7 @@ public class MapSplice implements MapRNA {
 			lsCmd.add("--fusion");
 		}
 		lsCmd.add("--bam");
-		ArrayOperate.addArrayToList(lsCmd, getOutPath());
+		lsCmd.add("-o"); lsCmd.add(getOutPathTmp(tmpPath));
 		return lsCmd;
 	}
 	
@@ -345,7 +350,7 @@ public class MapSplice implements MapRNA {
 		List<String> lsCmd = new ArrayList<>();
 		lsCmd.add("MapSplice version: " + getVersionMapSplice());
 		lsCmd.add(getBowtieVersion().toString() + " version: " + mapBowtie.getVersion());
-		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
+		CmdOperate cmdOperate = new CmdOperate(getLsCmd(FileOperate.getParentPathNameWithSep(outFile)));
 		lsCmd.add(cmdOperate.getCmdExeStr());
 		if (!lsCmdMapping2nd.isEmpty()) {
 			lsCmd.addAll(lsCmdMapping2nd);

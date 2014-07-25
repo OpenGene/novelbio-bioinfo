@@ -580,6 +580,15 @@ public class SamFileStatistics implements AlignmentRecorder {
 	 * @return
 	 */
 	private static double[][] getResultProp(List<SamFileStatistics> lsSamFileStatistics) {
+		SamFileStatistics samFileStatistics = lsSamFileStatistics.get(0);
+		boolean isChromosome = false;
+		for (String chrId : samFileStatistics.getMapChrID2MappedNumber().keySet()) {
+			if (chrId.toLowerCase().startsWith("chr")) {
+				isChromosome = true;
+				break;
+			}
+		}
+		
 		int chrNum = lsSamFileStatistics.get(0).getMapChrID2PropAndLen().size();
 		if (chrNum > chrNumMax) {
 			chrNum = chrNumMax;
@@ -590,6 +599,9 @@ public class SamFileStatistics implements AlignmentRecorder {
 		for (int j = 0; j < lsSamFileStatistics.size(); j++) {
 			int i = 0;
 			for (String key : lsSamFileStatistics.get(0).getMapChrID2PropAndLen().keySet()) {
+				if (isChromosome && !key.toLowerCase().startsWith("ch")) {
+					continue;
+				}
 				if (i >= chrNumMax) {
 					break;
 				}

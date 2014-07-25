@@ -107,7 +107,7 @@ public class SicerControl {
 	public void setKoBedFile(String koBedPathAndFile, String prefix) {
 		this.prefixKO = getPrefix(koBedPathAndFile, prefix);
 		
-		String indir = FileOperate.getParentPathName(koBedPathAndFile);
+		String indir = FileOperate.getParentPathNameWithSep(koBedPathAndFile);
 		setInputDir(indir);
 		peakCallingSicer.setInputDir(indir);
 		setParamFromBedFile(koBedPathAndFile);
@@ -173,7 +173,7 @@ public class SicerControl {
 		if (FileOperate.isFileExistAndBigThanSize(inputBed, 0.01)) {
 			return;
 		}
-		String indir = FileOperate.getParentPathName(inputBed);
+		String indir = FileOperate.getParentPathNameWithSep(inputBed);
 		String bedfile = FileOperate.getFileName(inputBed);
 		if (!this.dir.equals(indir)) {
 			if (!FileOperate.linkFile(inputBed, this.dir + bedfile, true)) {
@@ -221,7 +221,7 @@ public class SicerControl {
 	}
 	
 	private static String creatForde(PeakCallingSicerType sicerType,String outDir) {
-		String resultDir =FileOperate.getParentPathName(outDir) + sicerType +"_result/";
+		String resultDir =FileOperate.getParentPathNameWithSep(outDir) + sicerType +"_result/";
 		FileOperate.createFolders(resultDir);
 		return resultDir;
 	}

@@ -19,7 +19,7 @@ public class NCBIchromFaChangeFormat {
 	public static void main(String[] args) {
 		String file = "/media/winE/Bioinformatics/genome/rice/tigr7/ChromFa";
 		String out = file + "/all/tigr7chrAll.fa";
-		FileOperate.createFolders(FileOperate.getParentPathName(out));
+		FileOperate.createFolders(FileOperate.getParentPathNameWithSep(out));
 		NCBIchromFaChangeFormat ncbIchromFaChangeFormat = new NCBIchromFaChangeFormat();
 		ncbIchromFaChangeFormat.setChromFaPath(file, "");
 		ncbIchromFaChangeFormat.writeToSingleFile(out);

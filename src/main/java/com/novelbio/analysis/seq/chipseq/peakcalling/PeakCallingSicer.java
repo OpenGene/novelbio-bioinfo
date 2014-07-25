@@ -45,7 +45,7 @@ public class PeakCallingSicer implements IntCmdSoft {
 	public PeakCallingSicer() {
 		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.sicer);
 		exePath = softWareInfo.getExePathRun();
-		PathTo = FileOperate.getParentPathName(exePath);
+		PathTo = FileOperate.getParentPathNameWithSep(exePath);
 		PathTo = FileOperate.removeSep(PathTo);
 	}
 	

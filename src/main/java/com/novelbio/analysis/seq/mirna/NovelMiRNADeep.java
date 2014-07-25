@@ -175,7 +175,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 		return chromFaIndexBowtie;
 	}
 	private String getChromFaIndex() {
-		String result = FileOperate.getParentPathName(chromFaIndexBowtie) + FileOperate.getFileNameSep(chromFaIndexBowtie)[0];
+		String result = FileOperate.getParentPathNameWithSep(chromFaIndexBowtie) + FileOperate.getFileNameSep(chromFaIndexBowtie)[0];
 		return result;
 	}
 	/**
@@ -414,8 +414,8 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	 * 仅用于测试
 	 */
 	private void readExistMrd() {
-		novelMiRNAhairpin =  FileOperate.getParentPathName(outPath) + "novelMiRNA/hairpin.fa";
-		novelMiRNAmature =  FileOperate.getParentPathName(outPath) + "novelMiRNA/mature.fa";
+		novelMiRNAhairpin =  FileOperate.getParentPathNameWithSep(outPath) + "novelMiRNA/hairpin.fa";
+		novelMiRNAmature =  FileOperate.getParentPathNameWithSep(outPath) + "novelMiRNA/mature.fa";
 //		HashSet<String> setMirPredictName = getSetMirPredictName(outFinal + "result.csv");
 		ListMiRNAdeep.extractHairpinSeqMatureSeq(novelMiRNAdeepMrdFile, novelMiRNAmature, novelMiRNAhairpin);
 	}

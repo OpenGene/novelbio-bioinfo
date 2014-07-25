@@ -7,14 +7,15 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.GeneExpTable;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.GffChrSeq;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -167,18 +168,28 @@ public class MapRsem implements MapRNA {
 		rsemIndex = FileOperate.changeFileSuffix(refFile, "_rsemIndex", "");
 		if (FileOperate.isFileExist(rsemIndex + ".3.ebwt") == true)
 			return;
-		List<String> lsCmd = getLsCmdIndex();
+		
+		String pathTmp = PathDetail.getTmpPathRandomWithSep(SoftWare.rsem.toString());
+		String tmpRef = pathTmp + FileOperate.getFileName(refFile);
+		String tmpOutIndex = pathTmp + FileOperate.getFileName(rsemIndex);
+		FileOperate.copyFile(refFile, tmpRef, true);
+		List<String> lsCmd = getLsCmdIndex(tmpRef, tmpOutIndex);
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.run();
+		if (!cmdOperate.isFinishedNormal()) {
+			FileOperate.DeleteFileFolder(pathTmp);
+			throw new ExceptionCmd(SoftWare.rsem.toString() + " index error:\n" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
+		}
+		MapDNA.copyFile(pathTmp, FileOperate.getParentPathNameWithSep(refFile), true, tmpRef);
 	}
 	
-	private List<String> getLsCmdIndex() {
+	private List<String> getLsCmdIndex(String tmpRef, String tmpOutIndex) {
 		List<String> lsCmd = new ArrayList<>();
 		lsCmd.add(exePathRsem+"rsem-prepare-reference");
 		lsCmd.add("--transcript-to-gene-map");
 		lsCmd.add(gene2isoFile);
-		lsCmd.add(refFile);
-		lsCmd.add(rsemIndex);
+		lsCmd.add(tmpRef);
+		lsCmd.add(tmpOutIndex);
 		return lsCmd;
 	}
 	
@@ -211,12 +222,18 @@ public class MapRsem implements MapRNA {
 	 */
 	public void mapReads() {
 		IndexMakeBowtie();
-		List<String> lsCmd = getLsCmdMapping();
+		String pathTmp = PathDetail.getTmpPathRandomWithSep(SoftWare.rsem.toString());
+		List<String> lsCmd = getLsCmdMapping(pathTmp);
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.run();
+		if (!cmdOperate.isFinishedNormal()) {
+			FileOperate.DeleteFileFolder(pathTmp);
+			throw new ExceptionCmd(SoftWare.rsem.toString() + " index error:\n" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
+		}
+		MapDNA.copyFile(pathTmp, FileOperate.getParentPathNameWithSep(outPathPrefix), true);
 	}
 	
-	private List<String> getLsCmdMapping() {
+	private List<String> getLsCmdMapping(String tmpPath) {
 		List<String> lsCmd = new ArrayList<>();
 		lsCmd.add(exePathRsem + "rsem-calculate-expression");
 		ArrayOperate.addArrayToList(lsCmd, getBowtiePath());
@@ -236,7 +253,8 @@ public class MapRsem implements MapRNA {
 			lsCmd.add(right);
 		}
 		lsCmd.add(rsemIndex);
-		lsCmd.add(outPathPrefix);
+		String outPath = tmpPath + FileOperate.getFileName(outPathPrefix);
+		lsCmd.add(outPath);
 		return lsCmd;
 	}
 	
@@ -248,7 +266,7 @@ public class MapRsem implements MapRNA {
 	@Override
 	public List<String> getCmdExeStr() {
 		List<String> lsCmd = new ArrayList<>();
-		CmdOperate cmdOperate = new CmdOperate(getLsCmdMapping());
+		CmdOperate cmdOperate = new CmdOperate(getLsCmdMapping(FileOperate.getParentPathNameWithSep(outPathPrefix)));
 		lsCmd.add(cmdOperate.getCmdExeStr());
 		return lsCmd;
 	}

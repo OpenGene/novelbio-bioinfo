@@ -3,7 +3,9 @@ package com.novelbio.analysis.seq.mapping;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -13,6 +15,7 @@ import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamToBamSort;
 import com.novelbio.base.ExceptionNullParam;
 import com.novelbio.base.PathDetail;
+import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -45,7 +48,7 @@ public abstract class MapDNA implements MapDNAint {
 	String prefix;
 	/** 待比对的染色体 */
 	String chrFile = "";
-	
+	SoftWare softWare;
 	boolean writeToBam = true;
 	
 	
@@ -253,7 +256,39 @@ public abstract class MapDNA implements MapDNAint {
 	 * 如果face为true，则强制构建索引
 	 * @return
 	 */
-	protected abstract void makeIndex();
+	protected void makeIndex() {
+		String prefix = softWare == null? "" : softWare.toString();
+		String tmpPath = PathDetail.getTmpPathRandomWithSep(prefix);
+		String parentPath = FileOperate.getParentPathNameWithSep(chrFile);
+		List<String> lsCmd = getLsCmdIndex();
+		List<String> lsCmdFinal = new ArrayList<>();
+		for (String path : lsCmd) {
+			if (path.equals(chrFile)) {
+				String pathNew = path.replaceFirst(parentPath, tmpPath);
+				boolean isSucess = FileOperate.copyFile(path, pathNew, false);
+				if (!isSucess) {
+					FileOperate.DeleteFileFolder(tmpPath);
+					throw new ExceptionCmd("cannot copy " + path + " to " + pathNew);
+				}
+				path = pathNew;
+			} else if (path.startsWith(parentPath)) {
+				path = path.replaceFirst(parentPath, tmpPath);
+			}
+			lsCmdFinal.add(path);
+		}
+		CmdOperate cmdOperate = new CmdOperate(lsCmdFinal);
+		cmdOperate.run();
+		if(!cmdOperate.isFinishedNormal()) {
+			FileOperate.DeleteFileFolder(tmpPath);
+			throw new ExceptionCmd(softWare.toString() + " index error:\n" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
+		}
+		
+		String chrFileFinish = chrFile.replaceFirst(parentPath, tmpPath);
+		copyFile(tmpPath, parentPath, true, chrFileFinish);
+		FileOperate.DeleteFileFolder(tmpPath);
+	}
+
+	protected abstract List<String> getLsCmdIndex();
 	/** 删除关键的索引文件，意思就是没有建成索引 */
 	protected abstract void deleteIndex();
 	
@@ -279,5 +314,34 @@ public abstract class MapDNA implements MapDNAint {
 			throw new ExceptionNullParam("No Such Param:" + softMapping.toString());
 		}
 		return mapSoftware;
+	}
+	
+	/**
+	 * 将tmpPath文件夹中的内容全部移动到resultPath中
+	 * notmove是不需要移动的文件名
+	 * @param tmpPath
+	 * @param resultPath
+	 * @param notMove
+	 * @param isDelFile 如果出错是否删除原来的文件
+	 */
+	public static void copyFile(String tmpPath, String resultPath, boolean isDelFileWhileError, String... notMove) {
+		List<String> lsFilesFinish = FileOperate.getFoldFileNameLs(tmpPath, "*", "*");
+		Set<String> setNotMove = new HashSet<>();
+		for (String string : notMove) {
+			setNotMove.add(string);
+		}
+		for (String filePath : lsFilesFinish) {
+			if (setNotMove.contains(filePath)) {
+				continue;
+			}
+			String  filePathResult = filePath.replaceFirst(tmpPath, resultPath);
+			boolean isSucess = FileOperate.copyFile(filePath, filePathResult, false);
+			if (!isSucess) {
+				if (isDelFileWhileError) {
+					FileOperate.DeleteFileFolder(tmpPath);
+				}
+				throw new ExceptionCmd("cannot copy " + filePath + " to " + filePathResult);
+			}
+		}
 	}
 }

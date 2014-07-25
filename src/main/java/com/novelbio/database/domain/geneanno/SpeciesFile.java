@@ -640,7 +640,7 @@ public class SpeciesFile {
 			rfamFile = speciesPath + "rfamFileAll";
 		}
 		if (!FileOperate.isFileExistAndBigThanSize(rfamFile,10)) {
-			FileOperate.createFolders(FileOperate.getParentPathName(rfamFile));
+			FileOperate.createFolders(FileOperate.getParentPathNameWithSep(rfamFile));
 			ExtractSmallRNASeq extractSmallRNASeq = new ExtractSmallRNASeq();
 			//TODO 
 			//这里提取的是全体rfam序列

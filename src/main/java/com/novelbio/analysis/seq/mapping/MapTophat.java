@@ -18,6 +18,7 @@ import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.analysis.seq.sam.SamToFastq;
 import com.novelbio.analysis.seq.sam.SamToFastq.EnumSamToFastqType;
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -209,8 +210,8 @@ public class MapTophat implements MapRNA {
 		this.strandSpecifictype = strandSpecifictype;
 	}
 	
-	private String[] getOutPathPrefix() {
-		return new String[]{"-o", outPathPrefix};
+	private String getOutPathTmp(String tmpPath) {
+		return tmpPath + FileOperate.getFileName(outPathPrefix);
 	}
 	/**
 	 * 插入长度，默认是illumina：450
@@ -414,7 +415,7 @@ public class MapTophat implements MapRNA {
 			String index = mapBowtie.getChrNameWithoutSuffix();
 			String gtfName = FileOperate.getFileName(gtfFile);
 			String indexTranscriptome = index + "_" + gtfName;
-			FileOperate.createFolders(FileOperate.getParentPathName(indexTranscriptome));
+			FileOperate.createFolders(FileOperate.getParentPathNameWithSep(indexTranscriptome));
 			
 			lsCmd.add("-G"); lsCmd.add(gtfFile);
 			lsCmd.add("--transcriptome-index=" + indexTranscriptome);
@@ -457,30 +458,32 @@ public class MapTophat implements MapRNA {
 		lsCmdMapping2nd.clear();
 
 		String prefix = FileOperate.getFileName(outPathPrefix);
-		String parentPath = FileOperate.getParentPathName(outPathPrefix);
+		String parentPath = FileOperate.getParentPathNameWithSep(outPathPrefix);
 		String tophatBam = parentPath + prefix + TophatSuffix;
 		String unmappedBam = parentPath + UnmapPrefix + prefix + "_tophat.bam";
 		if (!FileOperate.isFileExistAndBigThanSize(tophatBam, 1_000_000) ||
 				!FileOperate.isFileExistAndBigThanSize(unmappedBam, 1_000)
 				) {
-			List<String> lsCmd = getLsCmd();
+			String tmpPath = PathDetail.getTmpPathRandomWithSep(SoftWare.mapsplice.toString());
+			List<String> lsCmd = getLsCmd(tmpPath);
 			CmdOperate cmdOperate = new CmdOperate(lsCmd);
 			cmdOperate.run();
 			if (!cmdOperate.isFinishedNormal()) {
-				FileOperate.DeleteFileFolder(FileOperate.addSep(outPathPrefix) + "tmp");
+				FileOperate.DeleteFileFolder(tmpPath);
 				throw new ExceptionCmd("error running tophat:" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
 			}
+			MapDNA.copyFile(tmpPath, parentPath, true);
 			changeFileName();
 		}
 
 		if (mapUnmapedReads) {
-			String finalBam = FileOperate.getParentPathName(outPathPrefix) + prefix + TophatAllSuffix;
+			String finalBam = FileOperate.getParentPathNameWithSep(outPathPrefix) + prefix + TophatAllSuffix;
 			lsCmdMapping2nd = mapUnmapedReads(threadNum, bwaIndex, tophatBam, unmappedBam, finalBam);
 		}
 	}
 
 	
-	private List<String> getLsCmd() {
+	private List<String> getLsCmd(String tmpPath) {
 		// linux命令如下
 		/**
 		 * tophat -r 120 -a 10 -m 1 -i 20 -I 6000 --solexa1.3-quals -F 0.15 -p 4
@@ -519,7 +522,7 @@ public class MapTophat implements MapRNA {
 		lsCmd.addAll(getMinCoverageIntron());
 		ArrayOperate.addArrayToList(lsCmd, getMaxCoverageIntron());
 		ArrayOperate.addArrayToList(lsCmd, getMaxSegmentIntron());
-		ArrayOperate.addArrayToList(lsCmd, getOutPathPrefix());
+		lsCmd.add("-o"); lsCmd.add(getOutPathTmp(tmpPath));
 		lsCmd.add(mapBowtie.getChrNameWithoutSuffix());
 		lsCmd.addAll(getLsFqFile());
 		return lsCmd;
@@ -535,7 +538,7 @@ public class MapTophat implements MapRNA {
 		List<String> lsCmd = new ArrayList<>();
 		lsCmd.add("tophat version: " + getVersionTophat());
 		lsCmd.add(bowtieVersion.toString() + " version: " + mapBowtie.getVersion());
-		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
+		CmdOperate cmdOperate = new CmdOperate(getLsCmd(FileOperate.getParentPathNameWithSep(outPathPrefix)));
 		lsCmd.add(cmdOperate.getCmdExeStr());
 		if (!lsCmdMapping2nd.isEmpty()) {
 			lsCmd.addAll(lsCmdMapping2nd);
@@ -548,7 +551,7 @@ public class MapTophat implements MapRNA {
 			return;
 		}
 		String prefix = FileOperate.getFileName(outPathPrefix);
-		String parentPath = FileOperate.getParentPathName(outPathPrefix);
+		String parentPath = FileOperate.getParentPathNameWithSep(outPathPrefix);
 		FileOperate.moveFile(FileOperate.addSep(outPathPrefix) + "accepted_hits.bam", parentPath, prefix + TophatSuffix,false);
 		FileOperate.moveFile(FileOperate.addSep(outPathPrefix) + "unmapped.bam", parentPath, UnmapPrefix + prefix + "_tophat.bam",false);
 		FileOperate.moveFile(FileOperate.addSep(outPathPrefix) + "junctions.bed", parentPath, prefix + "_junctions.bed",false);
@@ -647,7 +650,7 @@ public class MapTophat implements MapRNA {
 	@Override
 	public String getFinishName() {
 		String prefix = FileOperate.getFileName(outPathPrefix);
-		String parentPath = FileOperate.getParentPathName(outPathPrefix);
+		String parentPath = FileOperate.getParentPathNameWithSep(outPathPrefix);
 		if (!mapUnmapedReads) {
 			return parentPath + prefix + TophatSuffix;
 		} else {

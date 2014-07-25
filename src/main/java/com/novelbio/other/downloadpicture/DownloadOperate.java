@@ -124,9 +124,9 @@ public abstract class DownloadOperate {
 	private static String getTxtAlreadyReadFile(String path, boolean isPixiv) {
 		String fileAlreadyRun = null;
 		if (isPixiv) {
-			fileAlreadyRun = FileOperate.getParentPathName(path) + "pixivAlreadyRead.txt";
+			fileAlreadyRun = FileOperate.getParentPathNameWithSep(path) + "pixivAlreadyRead.txt";
 		} else {
-			fileAlreadyRun = FileOperate.getParentPathName(path) + "donmaiAlreadyRead.txt";
+			fileAlreadyRun = FileOperate.getParentPathNameWithSep(path) + "donmaiAlreadyRead.txt";
 		}
 		return fileAlreadyRun;
 	}

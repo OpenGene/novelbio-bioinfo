@@ -234,7 +234,7 @@ public class ShuffleReads {
 			if (j == 0) {
 				lsChrId2ReadsNumTmp.setStartBin(0, histBin.getNameSingle(), 0, allReads);
 			} else {
-				lsChrId2ReadsNumTmp.setStartBin(0, histBin.getNameSingle(), 0, allReads);
+				lsChrId2ReadsNumTmp.addHistBin(0, histBin.getNameSingle(), allReads);
 			}
 		}
 		lsChrId2ReadsNum = lsChrId2ReadsNumTmp;
@@ -251,7 +251,9 @@ public class ShuffleReads {
     private Align getAlign(String chrId, int index) {
 		List<int[][]> lsAlign = mapChrId2StartEnd.get(chrId);
 		int[] indexNum = getReadsIndex(blockSize, index);
-		int[] startEnd = lsAlign.get(indexNum[0])[indexNum[1]];
+		int[] startEnd = null;
+		startEnd = lsAlign.get(indexNum[0])[indexNum[1]];
+		
 		Align align = new Align(chrId, startEnd[0], startEnd[1]);
 		return align;
 	}

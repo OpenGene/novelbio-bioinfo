@@ -181,8 +181,8 @@ public class ListMiRNAdeep extends MiRNAList {
 	 * @param outPreSeq 输出
 	 */
 	public static void extractHairpinSeqMatureSeq(String run_output_mrd, String outMatureSeq, String outPreSeq) {
-		FileOperate.createFolders(FileOperate.getParentPathName(outMatureSeq));
-		FileOperate.createFolders(FileOperate.getParentPathName(outPreSeq));
+		FileOperate.createFolders(FileOperate.getParentPathNameWithSep(outMatureSeq));
+		FileOperate.createFolders(FileOperate.getParentPathNameWithSep(outPreSeq));
 		
 		TxtReadandWrite txtReadMrd = new TxtReadandWrite(run_output_mrd, false);
 		TxtReadandWrite txtWriteMature = new TxtReadandWrite(outMatureSeq, true);
@@ -200,7 +200,7 @@ public class ListMiRNAdeep extends MiRNAList {
 		List<SeqFasta> lsMiRNA = getLsMirna(lsBlock);
 		writeMir(lsMiRNA, txtWritePre, txtWriteMature);
 		
-		String mrdNew = FileOperate.getParentPathName(outMatureSeq) + "Predict_MiRNA_Structure.txt";
+		String mrdNew = FileOperate.getParentPathNameWithSep(outMatureSeq) + "Predict_MiRNA_Structure.txt";
 		FileOperate.copyFile(run_output_mrd, mrdNew, true);
 		
 		txtReadMrd.close();

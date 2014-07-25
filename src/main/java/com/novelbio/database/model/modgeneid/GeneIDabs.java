@@ -134,12 +134,27 @@ public class GeneIDabs implements GeneIDInt {
 		}
 
 		AgeneUniID ageneUniID = null;
-		for (AgeneUniID ageneUniIDSub : lsAgenUniID) {
-			if (ageneUniIDSub.getDataBaseInfo().getDbName().equals(dbSource)) {
-				ageneUniID = ageneUniIDSub;
-				break;
-			} else if (ageneUniIDSub.getDataBaseInfo().getDbName().equals(DBAccIDSource.RefSeqRNA.toString())) {
-				ageneUniID = ageneUniIDSub;
+		//如果是要找RefSeqRNA，那么注意要找NM的号
+		if (dbSource.toLowerCase().equals(DBAccIDSource.RefSeqRNA.toString().toLowerCase())) {
+			for (AgeneUniID ageneUniIDSub : lsAgenUniID) {
+				if (ageneUniIDSub.getDataBaseInfo().getDbName().equals(DBAccIDSource.RefSeqRNA.toString())) {
+					ageneUniID = ageneUniIDSub;
+					if (ageneUniIDSub.getAccID().toLowerCase().startsWith("nm") || ageneUniIDSub.getAccID().toLowerCase().startsWith("xm")) {
+						break;
+					}
+				}
+			}
+		} else {
+			for (AgeneUniID ageneUniIDSub : lsAgenUniID) {
+				if (ageneUniIDSub.getDataBaseInfo().getDbName().equals(dbSource)) {
+					ageneUniID = ageneUniIDSub;
+					break;
+				} else if (ageneUniIDSub.getDataBaseInfo().getDbName().equals(DBAccIDSource.RefSeqRNA.toString())) {
+					if (ageneUniID != null && (ageneUniIDSub.getAccID().toLowerCase().startsWith("nm") || ageneUniIDSub.getAccID().toLowerCase().startsWith("xm"))) {
+						continue;
+					}
+					ageneUniID = ageneUniIDSub;
+				}
 			}
 		}
 		isAccID = false;

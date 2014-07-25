@@ -28,9 +28,6 @@ public class MapBowtie extends MapDNA {
 	public static final int Sensitive_Fast = 12;
 	public static final int Sensitive_Sensitive = 13;
 	public static final int Sensitive_Very_Sensitive = 14;
-	
-	/** 默认bowtie2 */
-	SoftWare bowtieVersion = SoftWare.bowtie2;
 
 	/** bowtie所在路径 */
 	String ExePathBowtie = "";
@@ -56,7 +53,9 @@ public class MapBowtie extends MapDNA {
 	MapLibrary mapLibrary = MapLibrary.PairEnd;
 	
 	public MapBowtie() {
-		SoftWareInfo softWareInfo = new SoftWareInfo(bowtieVersion);
+		//默认bowtie2
+		softWare = SoftWare.bowtie2;
+		SoftWareInfo softWareInfo = new SoftWareInfo(softWare);
 		this.ExePathBowtie = softWareInfo.getExePathRun();
 	}
 
@@ -69,12 +68,12 @@ public class MapBowtie extends MapDNA {
 		if (bowtieVersion == null || (bowtieVersion != SoftWare.bowtie && bowtieVersion != SoftWare.bowtie2)) {
 			throw new ExceptionNullParam("Error Param BowtieVersion: " + bowtieVersion.toString());
 		}
-		if (bowtieVersion == this.bowtieVersion) {
+		if (this.softWare == bowtieVersion) {
 			return;
 		}
+		this.softWare = bowtieVersion;
 		SoftWareInfo softWareInfo = new SoftWareInfo(bowtieVersion);
 		this.ExePathBowtie = softWareInfo.getExePathRun();
-		this.bowtieVersion = bowtieVersion;
 	}
 
 	public void setSensitive(int sensitive) {
@@ -86,7 +85,7 @@ public class MapBowtie extends MapDNA {
 	}
 	/** 获得没有后缀名的序列，不带引号 */
 	protected String getChrNameWithoutSuffix() {
-		String chrFileName = FileOperate.getParentPathName(chrFile) + FileOperate.getFileNameSep(chrFile)[0];
+		String chrFileName = FileOperate.getParentPathNameWithSep(chrFile) + FileOperate.getFileNameSep(chrFile)[0];
 		return chrFileName;
 	}
 	public void setMapLibrary(MapLibrary mapLibrary) {
@@ -244,46 +243,32 @@ public class MapBowtie extends MapDNA {
 		return true;
 	}
 	
-	/**
-	 * 制作索引
-	 * 这个暴露出来是给MirDeep用的
-	 * @param forceMakeIndex 强制建立索引
-	 * @return true：表示运行了建索引程序，不代表成功建立了索引
-	 */
-	protected void makeIndex() {
-		List<String> lsCmd = getLsCmdIndex();
-		CmdOperate cmdOperate = new CmdOperate(lsCmd);
-		cmdOperate.run();
-		if(!cmdOperate.isFinishedNormal()) {
-			throw new ExceptionCmd(bowtieVersion.toString() + " index error:\n" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
-		}
-	}
+
 	
 	protected boolean isIndexExist() {
 		boolean isIndexExist = false;
-		if (bowtieVersion == SoftWare.bowtie) {
+		if (softWare == SoftWare.bowtie) {
 			isIndexExist = FileOperate.isFileExist(getChrNameWithoutSuffix() + ".3.ebwt");
-		} else if (bowtieVersion == SoftWare.bowtie2) {
+		} else if (softWare == SoftWare.bowtie2) {
 			isIndexExist = FileOperate.isFileExist(getChrNameWithoutSuffix() + ".3.bt2");
 		}
 		return isIndexExist;
 	}
 	
 	protected void deleteIndex() {
-		if (bowtieVersion == SoftWare.bowtie) {
+		if (softWare == SoftWare.bowtie) {
 			FileOperate.delFile(getChrNameWithoutSuffix() + ".3.ebwt");
-		} else if (bowtieVersion == SoftWare.bowtie2) {
+		} else if (softWare == SoftWare.bowtie2) {
 			FileOperate.delFile(getChrNameWithoutSuffix() + ".3.bt2");
 		}
 	}
 	
-	private List<String> getLsCmdIndex() {
+	protected List<String> getLsCmdIndex() {
 		List<String> lsCmd = new ArrayList<>();
-		SoftWareInfo softWareInfo = new SoftWareInfo(bowtieVersion);
-		if (bowtieVersion == SoftWare.bowtie) {
-			lsCmd.add(softWareInfo.getExePath() + "bowtie-build");
-		} else if (bowtieVersion == SoftWare.bowtie2) {
-			lsCmd.add(softWareInfo.getExePath() + "bowtie2-build");
+		if (softWare == SoftWare.bowtie) {
+			lsCmd.add(ExePathBowtie + "bowtie-build");
+		} else if (softWare == SoftWare.bowtie2) {
+			lsCmd.add(ExePathBowtie + "bowtie2-build");
 		}
 		lsCmd.add(getChrFile());
 		lsCmd.add(getChrNameWithoutSuffix());
@@ -363,7 +348,7 @@ public class MapBowtie extends MapDNA {
 	@Override
 	public List<String> getCmdExeStr() {
 		List<String> lsResult = new ArrayList<>();
-		lsResult.add(bowtieVersion.toString() + " version: " + getVersion());
+		lsResult.add(softWare.toString() + " version: " + getVersion());
 		List<String> lsCmd = getLsCmdMapping();
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		lsResult.add(cmdOperate.getCmdExeStr());
@@ -401,9 +386,9 @@ public class MapBowtie extends MapDNA {
 		String version = null;
 		try {
 			String bowtie = "";
-			if (bowtieVersion == SoftWare.bowtie) {
+			if (softWare == SoftWare.bowtie) {
 				bowtie = "bowtie";
-			} else if (bowtieVersion == SoftWare.bowtie2) {
+			} else if (softWare == SoftWare.bowtie2) {
 				bowtie = "bowtie2";
 			}
 			List<String> lsCmdVersion = new ArrayList<>();
