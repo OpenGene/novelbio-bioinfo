@@ -18,7 +18,6 @@ import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.analysis.seq.sam.SamToFastq;
 import com.novelbio.analysis.seq.sam.SamToFastq.EnumSamToFastqType;
-import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -210,8 +209,8 @@ public class MapTophat implements MapRNA {
 		this.strandSpecifictype = strandSpecifictype;
 	}
 	
-	private String getOutPathTmp(String tmpPath) {
-		return tmpPath + FileOperate.getFileName(outPathPrefix);
+	private String[] getOutPathPrefix() {
+		return new String[]{"-o", outPathPrefix};
 	}
 	/**
 	 * 插入长度，默认是illumina：450
@@ -464,15 +463,14 @@ public class MapTophat implements MapRNA {
 		if (!FileOperate.isFileExistAndBigThanSize(tophatBam, 1_000_000) ||
 				!FileOperate.isFileExistAndBigThanSize(unmappedBam, 1_000)
 				) {
-			String tmpPath = PathDetail.getTmpPathRandomWithSep(SoftWare.mapsplice.toString());
-			List<String> lsCmd = getLsCmd(tmpPath);
-			CmdOperate cmdOperate = new CmdOperate(lsCmd);
+			CmdOperate cmdOperate = new CmdOperate(getLsCmd());
+			cmdOperate.addCmdParamOutput(outPathPrefix, false);
+			cmdOperate.setRedirectOutToTmp(true);
 			cmdOperate.run();
 			if (!cmdOperate.isFinishedNormal()) {
-				FileOperate.DeleteFileFolder(tmpPath);
+				FileOperate.DeleteFileFolder(FileOperate.addSep(outPathPrefix) + "tmp");
 				throw new ExceptionCmd("error running tophat:" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
 			}
-			MapDNA.copyFile(tmpPath, parentPath, true);
 			changeFileName();
 		}
 
@@ -483,7 +481,7 @@ public class MapTophat implements MapRNA {
 	}
 
 	
-	private List<String> getLsCmd(String tmpPath) {
+	private List<String> getLsCmd() {
 		// linux命令如下
 		/**
 		 * tophat -r 120 -a 10 -m 1 -i 20 -I 6000 --solexa1.3-quals -F 0.15 -p 4
@@ -522,7 +520,7 @@ public class MapTophat implements MapRNA {
 		lsCmd.addAll(getMinCoverageIntron());
 		ArrayOperate.addArrayToList(lsCmd, getMaxCoverageIntron());
 		ArrayOperate.addArrayToList(lsCmd, getMaxSegmentIntron());
-		lsCmd.add("-o"); lsCmd.add(getOutPathTmp(tmpPath));
+		ArrayOperate.addArrayToList(lsCmd, getOutPathPrefix());
 		lsCmd.add(mapBowtie.getChrNameWithoutSuffix());
 		lsCmd.addAll(getLsFqFile());
 		return lsCmd;
@@ -538,7 +536,7 @@ public class MapTophat implements MapRNA {
 		List<String> lsCmd = new ArrayList<>();
 		lsCmd.add("tophat version: " + getVersionTophat());
 		lsCmd.add(bowtieVersion.toString() + " version: " + mapBowtie.getVersion());
-		CmdOperate cmdOperate = new CmdOperate(getLsCmd(FileOperate.getParentPathNameWithSep(outPathPrefix)));
+		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
 		lsCmd.add(cmdOperate.getCmdExeStr());
 		if (!lsCmdMapping2nd.isEmpty()) {
 			lsCmd.addAll(lsCmdMapping2nd);

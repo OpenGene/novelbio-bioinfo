@@ -3,9 +3,7 @@ package com.novelbio.analysis.seq.mapping;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -257,35 +255,24 @@ public abstract class MapDNA implements MapDNAint {
 	 * @return
 	 */
 	protected void makeIndex() {
-		String prefix = softWare == null? "" : softWare.toString();
-		String tmpPath = PathDetail.getTmpPathRandomWithSep(prefix);
 		String parentPath = FileOperate.getParentPathNameWithSep(chrFile);
 		List<String> lsCmd = getLsCmdIndex();
-		List<String> lsCmdFinal = new ArrayList<>();
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
+		cmdOperate.setRedirectInToTmp(true);
+		cmdOperate.setRedirectOutToTmp(true);
+		
 		for (String path : lsCmd) {
 			if (path.equals(chrFile)) {
-				String pathNew = path.replaceFirst(parentPath, tmpPath);
-				boolean isSucess = FileOperate.copyFile(path, pathNew, false);
-				if (!isSucess) {
-					FileOperate.DeleteFileFolder(tmpPath);
-					throw new ExceptionCmd("cannot copy " + path + " to " + pathNew);
-				}
-				path = pathNew;
+				cmdOperate.addCmdParamInput(chrFile, false);
 			} else if (path.startsWith(parentPath)) {
-				path = path.replaceFirst(parentPath, tmpPath);
+				cmdOperate.addCmdParamOutput(path, false);
 			}
-			lsCmdFinal.add(path);
 		}
-		CmdOperate cmdOperate = new CmdOperate(lsCmdFinal);
+		cmdOperate.addCmdParamOutput(chrFile, false);
 		cmdOperate.run();
 		if(!cmdOperate.isFinishedNormal()) {
-			FileOperate.DeleteFileFolder(tmpPath);
 			throw new ExceptionCmd(softWare.toString() + " index error:\n" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
 		}
-		
-		String chrFileFinish = chrFile.replaceFirst(parentPath, tmpPath);
-		copyFile(tmpPath, parentPath, true, chrFileFinish);
-		FileOperate.DeleteFileFolder(tmpPath);
 	}
 
 	protected abstract List<String> getLsCmdIndex();
@@ -314,34 +301,5 @@ public abstract class MapDNA implements MapDNAint {
 			throw new ExceptionNullParam("No Such Param:" + softMapping.toString());
 		}
 		return mapSoftware;
-	}
-	
-	/**
-	 * 将tmpPath文件夹中的内容全部移动到resultPath中
-	 * notmove是不需要移动的文件名
-	 * @param tmpPath
-	 * @param resultPath
-	 * @param notMove
-	 * @param isDelFile 如果出错是否删除原来的文件
-	 */
-	public static void copyFile(String tmpPath, String resultPath, boolean isDelFileWhileError, String... notMove) {
-		List<String> lsFilesFinish = FileOperate.getFoldFileNameLs(tmpPath, "*", "*");
-		Set<String> setNotMove = new HashSet<>();
-		for (String string : notMove) {
-			setNotMove.add(string);
-		}
-		for (String filePath : lsFilesFinish) {
-			if (setNotMove.contains(filePath)) {
-				continue;
-			}
-			String  filePathResult = filePath.replaceFirst(tmpPath, resultPath);
-			boolean isSucess = FileOperate.copyFile(filePath, filePathResult, false);
-			if (!isSucess) {
-				if (isDelFileWhileError) {
-					FileOperate.DeleteFileFolder(tmpPath);
-				}
-				throw new ExceptionCmd("cannot copy " + filePath + " to " + filePathResult);
-			}
-		}
 	}
 }
