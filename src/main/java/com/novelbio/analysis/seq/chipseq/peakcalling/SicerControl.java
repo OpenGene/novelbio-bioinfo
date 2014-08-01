@@ -1,8 +1,6 @@
 package com.novelbio.analysis.seq.chipseq.peakcalling;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -30,7 +28,7 @@ public class SicerControl {
 	public static final int METHY_UNKNOWN = 40;
 	
 	Species species;
-	
+	List<String> lsCopyFiles = new ArrayList<>();
 	String PathTo;
 	int methylationType = METHY_H3K4;
 	PeakCallingSicer peakCallingSicer = new PeakCallingSicer();
@@ -117,7 +115,7 @@ public class SicerControl {
 	
 	public void setWtBedFile(String wtBedPathAndFile, String prefix) {
 		this.prefixWT = getPrefix(wtBedPathAndFile, prefix);;
-		linkBed(wtBedPathAndFile);
+		copyBed(wtBedPathAndFile);
 		peakCallingSicer.setWtBedFile(FileOperate.getFileName(wtBedPathAndFile));
 	}
 	
@@ -134,12 +132,12 @@ public class SicerControl {
 		return FileOperate.getFileNameSep(fileName)[0];
 	}
 	public void setKoControlFile(String koColBed) {
-		linkBed(koColBed);
+		copyBed(koColBed);
 		peakCallingSicer.setKoControlFile(FileOperate.getFileName(koColBed));
 	}
 	
 	public void setWtControlFile(String wetColBed) {
-		linkBed(wetColBed);
+		copyBed(wetColBed);
 		peakCallingSicer.setWtControlFile(FileOperate.getFileName(wetColBed));
 	}
 	
@@ -169,16 +167,17 @@ public class SicerControl {
 		peakCallingSicer.setFragmentSize(250-length);
 	}
 	
-	private void linkBed(String inputBed) {
+	private void copyBed(String inputBed) {
 		if (FileOperate.isFileExistAndBigThanSize(inputBed, 0.01)) {
 			return;
 		}
 		String indir = FileOperate.getParentPathNameWithSep(inputBed);
 		String bedfile = FileOperate.getFileName(inputBed);
 		if (!this.dir.equals(indir)) {
-			if (!FileOperate.linkFile(inputBed, this.dir + bedfile, true)) {
+			if (!FileOperate.copyFile(inputBed, this.dir + bedfile, true)) {
 				logger.error("");
 			}
+			lsCopyFiles.add(this.dir + bedfile);
 		}
 	}
 	
@@ -202,6 +201,12 @@ public class SicerControl {
 		peakCallingSicer.setPeakCallingType(peakCallingSicerType);
 		ArrayList<String> lsOutFile = peakCallingSicer.peakCallingAndGetResultFile();
 		dealResult(peakCallingSicerType, lsOutFile, peakCallingSicer.getOutDir(), prefixKO, prefixWT);
+		
+		//删除复制的临时文件
+		for (String string : lsCopyFiles) {
+			FileOperate.DeleteFileFolder(string);
+		}
+		lsCopyFiles.clear();
 	}
 	
 	private void modifyGenomePy() {

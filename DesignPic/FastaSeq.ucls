@@ -1,112 +1,367 @@
-<class-diagram version="1.0.4" icons="true" automaticImage="PNG" always-add-relationships="false" generalizations="true" 
+<?xml version="1.0" encoding="UTF-8"?>
+<class-diagram version="1.1.3" icons="true" automaticImage="PNG" always-add-relationships="false" generalizations="true" 
   realizations="true" associations="true" dependencies="false" nesting-relationships="true">  
-  <class id="1" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.mapping.FastQMapSoap" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/seq/mapping/FastQMapSoap.java" binary="false">    
-    <position height="-1" width="-1" x="1339" y="1513"/>    
-    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
+  <class id="1" language="java" name="com.novelbio.analysis.seq.fastq.FastQRecord" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/fastq/FastQRecord.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="2236" y="1680"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="2" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.mapping.FastQMapAbs" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/seq/mapping/FastQMapAbs.java" binary="false">    
-    <position height="-1" width="-1" x="759" y="1224"/>    
-    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
+  <interface id="2" language="java" name="com.novelbio.analysis.seq.fastq.FQrecordCopeInt" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/fastq/FQrecordCopeInt.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="3359" y="707"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </interface>  
+  <class id="3" language="java" name="com.novelbio.analysis.seq.fastq.FQrecordFilterPloyAT" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/fastq/FQrecordFilterPloyAT.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="3671" y="1888"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="4" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.mapping.FastQRNASeq" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/seq/mapping/FastQRNASeq.java" binary="false">    
-    <position height="-1" width="-1" x="1156" y="989"/>    
-    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
+  <class id="4" language="java" name="com.novelbio.analysis.seq.fastq.FQrecordFilterModifyQuality" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/fastq/FQrecordFilterModifyQuality.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="3122" y="1867"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="5" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.mapping.FastQMapBwa" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/seq/mapping/FastQMapBwa.java" binary="false">    
-    <position height="-1" width="-1" x="1384" y="1208"/>    
-    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
+  <class id="5" language="java" name="com.novelbio.analysis.seq.fastq.FastQ" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/fastq/FastQ.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1295" y="683"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="6" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.mapping.SAMtools" 
-    project="Novelbio" file="/Novelbio/src/main/java/com/novelbio/analysis/seq/mapping/SAMtools.java" binary="false">    
-    <position height="-1" width="-1" x="1384" y="741"/>    
-    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
+  <class id="6" language="java" name="com.novelbio.analysis.seq.fastq.FQrecordFilterAdaptor" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/fastq/FQrecordFilterAdaptor.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="4055" y="2070"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="8" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.FastQ" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/FastQ.java" binary="false">    
-    <position height="-1" width="-1" x="897" y="663"/>    
-    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
+  <class id="7" language="java" name="com.novelbio.analysis.seq.fastq.FQrecordFilterLowcase" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/fastq/FQrecordFilterLowcase.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="4388" y="1850"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="9" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.CtrlSeq" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/CtrlSeq.java" binary="false">    
-    <position height="-1" width="-1" x="533" y="331"/>    
-    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
+  <class id="8" language="java" name="com.novelbio.analysis.seq.fastq.FQrecordFilterNNN" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/fastq/FQrecordFilterNNN.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="5041" y="1759"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="10" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.SeqComb" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/SeqComb.java" binary="false">    
-    <position height="-1" width="-1" x="1175" y="110"/>    
-    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
+  <class id="9" language="java" name="com.novelbio.analysis.seq.fastq.FastQFilter" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/fastq/FastQFilter.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="3382" y="1133"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="11" corner="BOTTOM_RIGHT" language="java" name="com.novelbio.analysis.seq.BedSeq" project="Novelbio" 
-    file="/Novelbio/src/main/java/com/novelbio/analysis/seq/BedSeq.java" binary="false">    
-    <position height="-1" width="-1" x="1377" y="446"/>    
-    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true"/>      
-      <operations public="true" package="true" protected="true" private="true"/>    
+  <class id="10" language="java" name="com.novelbio.analysis.seq.fastq.FastQReader" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/fastq/FastQReader.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="917" y="1588"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <dependency>    
-    <end type="SOURCE" nodeId="5"/>    
-    <end type="TARGET" nodeId="6"/>  
+  <class id="11" language="java" name="com.novelbio.analysis.seq.fastq.FastQReadingChannel" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/fastq/FastQReadingChannel.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="2077" y="563"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="12" language="java" name="com.novelbio.analysis.seq.fastq.FastQrecordCopeUnit" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/fastq/FastQrecordCopeUnit.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="2069" y="1102"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="13" language="java" name="com.novelbio.analysis.seq.fastq.FastQwriter" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/fastq/FastQwriter.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1458" y="1555"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="14" language="java" name="com.novelbio.analysis.seq.fastq.FQrecordFilter" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/fastq/FQrecordFilter.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="4293" y="1164"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="15" language="java" name="com.novelbio.analysis.seq.fastq.FQrecordFilterQC" project="NBCplatform" 
+    file="/NBCplatform/src/main/java/com/novelbio/analysis/seq/fastq/FQrecordFilterQC.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="4693" y="1863"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <generalization id="16">    
+    <end type="SOURCE" refId="15"/>    
+    <end type="TARGET" refId="14"/>  
+  </generalization>  
+  <association id="17">    
+    <end type="SOURCE" refId="12" navigable="false">      
+      <attribute id="18" name="fastQRecord2"/>      
+      <multiplicity id="19" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="1" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="20">    
+    <end type="SOURCE" refId="9"/>    
+    <end type="TARGET" refId="14"/>  
   </dependency>  
-  <generalization>    
-    <end type="SOURCE" nodeId="5"/>    
-    <end type="TARGET" nodeId="2"/>  
+  <association id="21">    
+    <end type="SOURCE" refId="9" navigable="false">      
+      <attribute id="22" name="fQrecordFilterQC"/>      
+      <multiplicity id="23" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="24">    
+    <end type="SOURCE" refId="12" navigable="false">      
+      <attribute id="25" name="lsFQrecordCopeLeft"/>      
+      <multiplicity id="26" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="2" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="27">    
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="14"/>  
   </generalization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="4"/>    
-    <end type="TARGET" nodeId="2"/>  
+  <realization id="28">    
+    <end type="SOURCE" refId="14"/>    
+    <end type="TARGET" refId="2"/>  
+  </realization>  
+  <generalization id="29">    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="14"/>  
   </generalization>  
-  <dependency>    
-    <end type="SOURCE" nodeId="6"/>    
-    <end type="TARGET" nodeId="11"/>  
+  <association id="30">    
+    <end type="SOURCE" refId="9" navigable="false">      
+      <attribute id="31" name="fQrecordFilterModifyQuality"/>      
+      <multiplicity id="32" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="4" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="33">    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="34" name="fastQwriteMate"/>      
+      <multiplicity id="35" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="36">    
+    <end type="SOURCE" refId="10" navigable="false">      
+      <attribute id="37" name="fastQReadMate"/>      
+      <multiplicity id="38" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="10" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="39">    
+    <end type="SOURCE" refId="40" navigable="false">      
+      <attribute id="41" name="fastQRecord"/>      
+      <multiplicity id="42" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="1" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="43">    
+    <end type="SOURCE" refId="5" navigable="false">      
+      <attribute id="44" name="fastqReadingChannel"/>      
+      <multiplicity id="45" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="11" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="46">    
+    <end type="SOURCE" refId="3"/>    
+    <end type="TARGET" refId="14"/>  
+  </generalization>  
+  <association id="47">    
+    <end type="SOURCE" refId="11" navigable="false">      
+      <attribute id="48" name="lsFastqReader"/>      
+      <multiplicity id="49" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="5" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="50">    
+    <end type="SOURCE" refId="13"/>    
+    <end type="TARGET" refId="12"/>  
   </dependency>  
-  <generalization>    
-    <end type="SOURCE" nodeId="2"/>    
-    <end type="TARGET" nodeId="8"/>  
+  <association id="51">    
+    <end type="SOURCE" refId="11" navigable="false">      
+      <attribute id="52" name="lsFQrecordCopeRight"/>      
+      <multiplicity id="53" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="2" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="54">    
+    <end type="SOURCE" refId="9" navigable="false">      
+      <attribute id="55" name="fQrecordFilterAdaptor"/>      
+      <multiplicity id="56" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="6" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="57">    
+    <end type="SOURCE" refId="9" navigable="false">      
+      <attribute id="58" name="fQrecordFilterNNN"/>      
+      <multiplicity id="59" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="8" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="60">    
+    <end type="SOURCE" refId="9" navigable="false">      
+      <attribute id="61" name="fQrecordFilterLowcase"/>      
+      <multiplicity id="62" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="7" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="63">    
+    <end type="SOURCE" refId="12" navigable="false">      
+      <attribute id="64" name="fastQRecord1"/>      
+      <multiplicity id="65" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="1" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="66">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="14"/>  
   </generalization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="8"/>    
-    <end type="TARGET" nodeId="10"/>  
+  <association id="67">    
+    <end type="SOURCE" refId="5" navigable="false">      
+      <attribute id="68" name="fastQwrite"/>      
+      <multiplicity id="69" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="70">    
+    <end type="SOURCE" refId="12" navigable="false">      
+      <attribute id="71" name="lsFQrecordCopeRight"/>      
+      <multiplicity id="72" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="2" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="73">    
+    <end type="SOURCE" refId="11" navigable="false">      
+      <attribute id="74" name="fqWrite"/>      
+      <multiplicity id="75" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="5" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="76">    
+    <end type="SOURCE" refId="9" navigable="false">      
+      <attribute id="77" name="lsFQrecordFilters"/>      
+      <multiplicity id="78" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="2" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="79">    
+    <end type="SOURCE" refId="7"/>    
+    <end type="TARGET" refId="14"/>  
   </generalization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="1"/>    
-    <end type="TARGET" nodeId="2"/>  
-  </generalization>  
-  <generalization>    
-    <end type="SOURCE" nodeId="11"/>    
-    <end type="TARGET" nodeId="10"/>  
-  </generalization>  
-  <classifier-display autosize="true" package="true" initial-value="false" signature="true" visibility="true">    
-    <attributes public="true" package="true" protected="true" private="true"/>    
-    <operations public="true" package="true" protected="true" private="true"/>  
+  <association id="80">    
+    <end type="SOURCE" refId="11" navigable="false">      
+      <attribute id="81" name="lsFQrecordCopeLeft"/>      
+      <multiplicity id="82" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="2" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="83">    
+    <end type="SOURCE" refId="5" navigable="false">      
+      <attribute id="84" name="fastQRead"/>      
+      <multiplicity id="85" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="10" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="86">    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="12"/>  
+  </dependency>  
+  <association id="87">    
+    <end type="SOURCE" refId="9" navigable="false">      
+      <attribute id="88" name="fQrecordFilterPloyAT"/>      
+      <multiplicity id="89" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="3" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+    accessors="true" visibility="true">    
+    <attributes public="true" package="true" protected="true" private="true" static="true"/>    
+    <operations public="true" package="true" protected="true" private="true" static="true"/>  
   </classifier-display>  
   <association-display labels="true" multiplicity="true"/>
 </class-diagram>

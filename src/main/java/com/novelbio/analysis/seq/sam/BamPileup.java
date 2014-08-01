@@ -67,11 +67,13 @@ public class BamPileup implements IntCmdSoft {
 		if (!isCover && FileOperate.isFileExistAndBigThanSize(outFile, 0)) {
 			return outFile;
 		}
-		CmdOperate cmdOperate = new CmdOperate(getLsCmd(outFile));
+		String outFileTmp = FileOperate.changeFileSuffix(outFile, "_tmp", null);
+		CmdOperate cmdOperate = new CmdOperate(getLsCmd(outFileTmp));
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {
 			throw new ExceptionCmd("pileup error:\n" + cmdOperate.getCmdExeStrReal());
 		}
+		FileOperate.moveFile(true, outFileTmp, outFile);
 		lsCmdInfo.add(cmdOperate.getCmdExeStr());
 		return bamFile;
 	}

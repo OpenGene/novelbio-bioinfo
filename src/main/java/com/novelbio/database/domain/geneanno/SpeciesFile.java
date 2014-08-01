@@ -439,8 +439,8 @@ public class SpeciesFile {
 	}
 	
 	/**
-	 * 
-	 * 如果不存在该index，那么就新创建一个index连接，但不保存入数据库 
+	 * 如果不存在该index，那么就新复制一个index，但不保存入数据库
+	 * 以前是创建连接的，但是在hadoop2中无法创建连接，所以只能是复制 
 	 * @param refseq
 	 * @param softMapping
 	 * @param seqFile
@@ -458,9 +458,9 @@ public class SpeciesFile {
 		if (FileOperate.isFileExistAndBigThanSize(indexChromLocal, 0)) {
 			return indexChromFinal;
 		}
-		FileOperate.DeleteFileFolder(indexChromLocal);
-		if (!FileOperate.linkFile(seqFile, indexChromLocal, true)) {
-			logger.error("创建链接出错：" + seqFile + " " + indexChromLocal);
+		FileOperate.DeleteFileFolder(indexChromFinal);
+		if (!FileOperate.copyFile(seqFile, indexChromFinal, true)) {
+			logger.error("复制文件出错：" + seqFile + " " + indexChromFinal);
 			return null;
 		}
 		return indexChromFinal;
