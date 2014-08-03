@@ -216,7 +216,7 @@ public class KgmlDownLoad {
 		
 		if (update && txtFileName != null && !txtFileName.equals("")) {
 			try {
-				if(FileOperate.createFolders(FileOperate.getParentPathName(txtFileName))) {
+				if(FileOperate.createFolders(FileOperate.getParentPathNameWithSep(txtFileName))) {
 					TxtReadandWrite txtWrite = new TxtReadandWrite(txtFileName, true);
 					for (String href : lsKGMLurl) {
 						txtWrite.writefileln(href);
