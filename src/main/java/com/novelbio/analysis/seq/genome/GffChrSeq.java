@@ -18,6 +18,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.ExceptionNullParam;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.modgeneid.GeneType;
 /**
@@ -267,8 +268,9 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		if (getGenomWide) {
 			fillSetNameGenomWide();
 		}
+		String outTmp = FileOperate.changeFileSuffix(outFile, "_tmp", null);
 		if (saveToFile)
-			txtOutFile = new TxtReadandWrite(outFile, true);
+			txtOutFile = new TxtReadandWrite(outTmp, true);
 		
 		int num = 0;
 		boolean isGetSeq = false;
@@ -303,8 +305,11 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 				setTmpInfo(isGetSeq, seqFasta, num);
 			}
 		}
-		if (saveToFile)
+		if (saveToFile) {
 			txtOutFile.close();
+			FileOperate.moveFile(true, outTmp, outFile);
+		}
+			
 	}
 
 	/**

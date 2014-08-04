@@ -564,7 +564,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 //			}
 //			txtRead.close();
 //		} else 
-		if (FileOperate.isFileExist("C:/Intel/Logs/IntelConfig")) {
+		if (!readFile && FileOperate.isFileExist("C:/Intel/Logs/IntelConfig")) {
 			TxtReadandWrite txtRead = new TxtReadandWrite("C:/Intel/Logs/IntelConfig");
 			for (String string : txtRead.readlines(3)) {
 				if (string.equals("!  detail information is from the jakub website.")) {
@@ -573,7 +573,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 				break;
 			}
 			txtRead.close();
-		} else {
+		} else if(!readFile) {
 			File file = FileOperate.getFile("/hdfs:/nbCloud/staff/zongjie/test/dme_GTFfile.gtf.bak");
 			if (file.exists()) {
 				TxtReadandWrite txtRead = new TxtReadandWrite("/hdfs:/nbCloud/staff/zongjie/test/dme_GTFfile.gtf.bak");

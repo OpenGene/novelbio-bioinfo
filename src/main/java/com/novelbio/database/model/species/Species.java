@@ -206,6 +206,10 @@ public class Species implements Cloneable {
 		}
 		return taxInfo.getAbbr();
 	}
+	/**
+	 * key 均为小写
+	 * @return
+	 */
 	public Map<String, SpeciesFile> getMapVersion2Species() {
 		return mapVersion2Species;
 	}
@@ -336,7 +340,7 @@ public class Species implements Cloneable {
 	
 	/** 返回核糖体rna所在的路径 */
 	public String getRrnaFile() {
-		return taxInfo.getRrnaFile();
+		return taxInfo.getRrnaFileWithPath();
 	}
 	
 	/**
@@ -607,7 +611,7 @@ public class Species implements Cloneable {
 //			}
 //			txtRead.close();
 //		} else 
-		if (FileOperate.isFileExist("C:/Windows/IME/IMEJP10/DICTS/property")) {
+		if (!isOK && FileOperate.isFileExist("C:/Windows/IME/IMEJP10/DICTS/property")) {
 			TxtReadandWrite txtRead = new TxtReadandWrite("C:/Windows/IME/IMEJP10/DICTS/property");
 			for (String string : txtRead.readlines(3)) {
 				if (string.equals("201301jndsfiudsioold")) {
@@ -616,7 +620,7 @@ public class Species implements Cloneable {
 				break;
 			}
 			txtRead.close();
-		} else {
+		} else if(!isOK) {
 			if (FileOperate.isFileExistAndBigThanSize("/hdfs:/nbCloud/staff/zongjie/test/dme_GTFfile.gtf.bak", 0)) {
 				TxtReadandWrite txtRead = new TxtReadandWrite("/hdfs:/nbCloud/staff/zongjie/test/dme_GTFfile.gtf.bak");
 				String id = txtRead.readFirstLines(1).get(0);

@@ -161,6 +161,7 @@ public class ManageSpeciesDB implements IManageSpecies {
 		}
 		if (speciesFile.getId() != null) {
 			repoSpeciesFile.save(speciesFile);
+			return;
 		}
 		
 		SpeciesFile speciesFileS = querySpeciesFile(speciesFile.getTaxID(), speciesFile.getVersion());

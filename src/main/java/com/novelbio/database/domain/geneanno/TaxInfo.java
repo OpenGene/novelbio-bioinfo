@@ -132,9 +132,12 @@ public class TaxInfo implements Cloneable {
 		this.rrnaFile = rrnaFile;
 	}
 	
-	/** 获取核糖体rna所在的路径 */
-	public String getRrnaFile() {
-		return rrnaFile;
+	/** 获取核糖体rna所在的路径，绝对路径 */
+	public String getRrnaFileWithPath() {
+		SpeciesFile speciesFile = new SpeciesFile();
+		speciesFile.setTaxID(taxID);
+		String savePath = EnumSpeciesFile.rrnaFile.getSavePath(speciesFile);
+		return savePath + rrnaFile;
 	}
 	
 	public boolean isHaveMiRNA() {

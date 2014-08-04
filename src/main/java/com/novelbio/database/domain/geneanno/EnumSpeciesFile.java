@@ -13,13 +13,13 @@ public enum EnumSpeciesFile {
 
 	chromSeqFile("ChromFa"),
 	gffRepeatFile("gff"),
-	refseqNCfile("refrna"),
+	refseqNCfile("refncrna"),
 	gffGeneFile("gff"),
-	refseqAllIsoRNA("refrna"),
-	refseqOneIsoRNA("refrna"),
+	refseqAllIsoRNA("refrna_all_iso"),
+	refseqOneIsoRNA("refrna_one_iso"),
 	
-	refseqAllIsoPro("refprotein"),
-	refseqOneIsoPro("refprotein"),
+	refseqAllIsoPro("refprotein_all_iso"),
+	refseqOneIsoPro("refprotein_one_iso"),
 	
 	rrnaFile("rrnaFile") {
 		public String getSavePath(SpeciesFile speciesFile) {
@@ -50,7 +50,7 @@ public enum EnumSpeciesFile {
 	}
 	
 	/**
-	 * 获得保存物种文件的路径
+	 * 获得保存物种文件的路径，最后加上"/"
 	 * @param speciesFile
 	 * @return
 	 */

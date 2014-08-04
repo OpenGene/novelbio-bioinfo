@@ -47,7 +47,6 @@ import com.novelbio.generalConf.PathDetailNBC;
  * 保存某个物种的各种文件信息，譬如mapping位置等等
  * 感觉可以用nosql进行存储，完全不能是一个结构化文件啊
  * @author zong0jie
- *
  */
 @Document(collection="speciesfile")
 @CompoundIndexes({
@@ -55,6 +54,13 @@ import com.novelbio.generalConf.PathDetailNBC;
  })
 public class SpeciesFile {
 	private static final Logger logger = Logger.getLogger(SpeciesFile.class);
+	
+	private static final String indexPath = "index/";
+	private static final String indexChrPath = "Chr_Index/";
+	private static final String indexRefAllIsoPath = "Ref_AllIso_Index/";
+	private static final String indexRefOneIsoPath = "Ref_OneIso_Index/";
+
+
 	/** 物种文件夹名称 */
 	public static final String SPECIES_FOLDER = "species";
 	/** 相对路径，类似 /media/hdfs/nbCloud/public/nbcplatform/ ，注意不要把genome写进去<br>
@@ -135,9 +141,21 @@ public class SpeciesFile {
 		return gffRepeatFile;
 	}
 	public String getRefseqFileAllIsoRaw() {
+		if (StringOperate.isRealNull(refseqFileAllIso)) {
+			String refseqFile = getRefFileName(true, false);
+			if (FileOperate.isFileExistAndBigThanSize(refseqFile, 0.2)) {
+				return refseqFile;
+			}
+		}
 		return refseqFileAllIso;
 	}
 	public String getRefseqFileOneIsoRaw() {
+		if (StringOperate.isRealNull(refseqFileOneIso)) {
+			String refseqFile = getRefFileName(false, false);
+			if (FileOperate.isFileExistAndBigThanSize(refseqFile, 0.2)) {
+				return refseqFile;
+			}
+		}
 		return refseqFileOneIso;
 	}
 	public String getRefseqNCfileRaw() {
@@ -177,18 +195,7 @@ public class SpeciesFile {
 		return speciesName;
 	}
 	
-	/**
-	 * 数据库操作类
-	 * @return
-	 */
-	private static IManageSpecies repo() {
-		return ManageSpecies.getInstance();
-	}
-	
-	/**
-	 * 保存，保存之前验证version是否改变，如果改变了，那么就不能保存成功
-	 * @return
-	 */
+	/** 保存，保存之前验证version是否改变，如果改变了，那么就不能保存成功 */
 	public boolean save() {
 		try {
 			if(!StringOperate.isRealNull(this.id)) {
@@ -273,7 +280,10 @@ public class SpeciesFile {
 		return chromeSeq;
 	}
 	
-	/** 获得分割的文件夹 */
+	/** 获得分割的文件夹
+	 * 如果不存在就创建一个新的
+	 * @return
+	 */
 	public String getChromSeqFileSep() {
 		String chromeSeq = EnumSpeciesFile.ChromSepPath.getSavePath(this);
 		if (!FileOperate.isFileFoldExist(chromeSeq)) {
@@ -284,6 +294,164 @@ public class SpeciesFile {
 		}
 		return chromeSeq;
 	}
+	
+	public void deleteFile(EnumSpeciesFile fileType, String gffDb) {
+		switch (fileType) {
+		case chromSeqFile: {
+			deleteChromAll();
+			break;
+		}
+		case gffGeneFile: {
+			deleteGff(gffDb);
+			break;
+		}
+		case gffRepeatFile: {
+			FileOperate.DeleteFileFolder(getGffRepeatFile());
+			gffRepeatFile = null;
+			break;
+		}
+		case refseqAllIsoRNA: {
+			deleteRefseqAll();
+			break;
+		}
+		case refseqOneIsoRNA: {
+			deleteRefseqOne();
+			break;
+		}
+		case refseqAllIsoPro: {
+			deleteRefProAll();
+			break;
+		}
+		case refseqOneIsoPro: {
+			deleteRefProOne();
+			break;
+		}
+		case refseqNCfile: {
+			FileOperate.DeleteFileFolder(getRefseqNCfile());
+			refseqNCfile = null;
+			break;
+		}
+		default:
+			break;
+		}
+	}
+	
+	public void deleteGff(String gffDb) {
+		if (StringOperate.isRealNull(gffDb)) {
+			return;
+		}
+		gffDb = gffDb.toLowerCase();
+		String gffFile = mapDB2GffTypeAndFile.get(gffDb)[1];
+		mapDB2GffTypeAndFile.remove(gffDb);
+		mapGffDBLowCase2DBNormal.remove(gffDb);
+		FileOperate.DeleteFileFolder(gffFile);
+	}
+	/**
+	 * 删除所有Chromose相关的文件
+	 * 不保存
+	 */
+	public void deleteChromAll() {
+		//删除染色体文件
+		String chromeSeq = EnumSpeciesFile.chromSeqFile.getSavePath(this) + chromSeq;
+		FileOperate.DeleteFileFolder(chromeSeq);
+		FileOperate.DeleteFileFolder(chromeSeq + ".fai");
+		FileOperate.DeleteFileFolder(FileOperate.changeFileSuffix(chromeSeq, "", "fai"));
+		
+		//删除分割好的chromosome
+		String chromeSeqSep = EnumSpeciesFile.ChromSepPath.getSavePath(this);
+		FileOperate.DeleteFileFolder(chromeSeqSep);
+		
+		//删除创建的索引
+		List<String> lsSoftMappingName = getLsAllSoftMappingName();
+		for (String softName : lsSoftMappingName) {
+			String path = getParentPathIndex(false, false, softName);
+			FileOperate.DeleteFileFolder(path);
+		}
+		
+		if (!StringOperate.isRealNull(chromSeq)) {
+			chromSeq = null;
+		}
+		
+		if (StringOperate.isRealNull(refseqFileAllIso)) {
+			deleteRefseqAll();
+		}
+		if (StringOperate.isRealNull(refseqFileOneIso)) {
+			deleteRefseqOne();
+		}
+		
+		if (StringOperate.isRealNull(refProFileAllIso)) {
+			deleteRefProAll();
+		}
+		if (StringOperate.isRealNull(refProFileOneIso)) {
+			deleteRefProOne();
+		}
+	}
+	
+	/** 删除所有refseq AllIso相关的文件
+	 * 不保存
+	 */
+	public void deleteRefseqAll() {
+		String refFileAll = getRefFileName(true, false);
+		deleteRef(refFileAll);
+		deleteRefIndex(true, refFileAll);
+		if (!StringOperate.isRealNull(refseqFileAllIso)) {
+			refseqFileAllIso = null;
+		}
+	}
+	/** 删除所有refseq OneIso相关的文件
+	 * 不保存
+	 */
+	public void deleteRefseqOne() {
+		String refFileOne = getRefFileName(false, false);
+		deleteRef(refFileOne);
+		deleteRefIndex(false, refFileOne);
+		if (!StringOperate.isRealNull(refseqFileOneIso)) {
+			refseqFileOneIso = null;
+		}
+	}
+	/** 删除所有refseq AllIso相关的文件
+	 * 不保存
+	 */
+	public void deleteRefProAll() {
+		String refFileAll = getRefFileName(true, true);
+		deleteRef(refFileAll);
+		if (!StringOperate.isRealNull(refProFileAllIso)) {
+			refProFileAllIso = null;
+		}
+	}
+	/** 删除所有refseq OneIso相关的文件
+	 * 不保存
+	 */
+	public void deleteRefProOne() {
+		String refFileOne = getRefFileName(false, true);
+		deleteRef(refFileOne);
+		if (!StringOperate.isRealNull(refProFileOneIso)) {
+			refProFileOneIso = null;
+		}
+	}
+	
+	/** 删除给定的refRNA或refProtein，以及相关的blast文件等 */
+	private void deleteRef(String refFileName) {
+		String refPath = FileOperate.getParentPathNameWithSep(refFileName);
+		String refName = FileOperate.getFileNameSep(refFileName)[0];
+		List<String> lsRefInfo = FileOperate.getFoldFileNameLs(refPath, refName, "*");
+		for (String refInfo : lsRefInfo) {
+			FileOperate.DeleteFileFolder(refInfo);
+		}
+	}
+	/** 删除相关的index */
+	private void deleteRefIndex(boolean isAllIso, String refFileName) {
+		String refName = FileOperate.getFileNameSep(refFileName)[0];
+		List<String> lsSoftMappingName = getLsAllSoftMappingName();
+		for (String softName : lsSoftMappingName) {
+			String path = getParentPathIndex(true, isAllIso, softName);
+			List<String> lsRefIndex = FileOperate.getFoldFileNameLs(path, refName, "*");
+			for (String fileIndex : lsRefIndex) {
+				FileOperate.DeleteFileFolder(fileIndex);
+			}
+		}
+	}
+	
 	/**
 	 * 给GUI的下拉框用的，一般用不到
 	 * @return GffFile
@@ -427,7 +595,7 @@ public class SpeciesFile {
 	 * softMapping.toString() + "_Chr_Index/"
 	 */
 	public String getIndexChromFa(SoftWare softMapping) {
-		return creatAndGetSeqIndex(false, softMapping, EnumSpeciesFile.chromSeqFile.getSavePath(this) + chromSeq);
+		return creatAndGetSeqIndex(false, false, softMapping, EnumSpeciesFile.chromSeqFile.getSavePath(this) + chromSeq);
 	}
 
 	/** 返回该mapping软件所对应的index的文件
@@ -435,30 +603,32 @@ public class SpeciesFile {
 	 * 格式如下：softMapping.toString() + "_Ref_Index/"
 	 */
 	public String getIndexRefseq(SoftWare softMapping, boolean isAllIso) {
-		return creatAndGetSeqIndex(true, softMapping, getRefSeqFile(isAllIso, false));
+		return creatAndGetSeqIndex(true, isAllIso, softMapping, getRefSeqFile(isAllIso, false));
 	}
 	
 	/**
 	 * 如果不存在该index，那么就新复制一个index，但不保存入数据库
 	 * 以前是创建连接的，但是在hadoop2中无法创建连接，所以只能是复制 
 	 * @param refseq
+	 * @param isAllIso
 	 * @param softMapping
 	 * @param seqFile
 	 * @return
 	 */
-	private String creatAndGetSeqIndex(Boolean refseq, SoftWare softMapping, String seqFile) {
+	private String creatAndGetSeqIndex(Boolean refseq, boolean isAllIso, SoftWare softMapping, String seqFile) {
 		if (StringOperate.isRealNull(seqFile)) {
 			return null;
 		}
 		String seqName = FileOperate.getFileName(seqFile);
 		
-		String indexChromFinal = getParentPathIndex(refseq, softMapping) + seqName;
+		String indexChromFinal = getParentPathIndex(refseq, isAllIso, softMapping.toString()) + seqName;
 		String indexChromLocal = FileHadoop.convertToLocalPath(indexChromFinal);
 
 		if (FileOperate.isFileExistAndBigThanSize(indexChromLocal, 0)) {
 			return indexChromFinal;
 		}
 		FileOperate.DeleteFileFolder(indexChromFinal);
+		FileOperate.createFolders(FileOperate.getPathName(indexChromFinal));
 		if (!FileOperate.copyFile(seqFile, indexChromFinal, true)) {
 			logger.error("复制文件出错：" + seqFile + " " + indexChromFinal);
 			return null;
@@ -467,26 +637,37 @@ public class SpeciesFile {
 	}
 	
 	/**
+	 * 
 	 * 返回索引所在的文件夹，绝对路径
 	 * @param refseq
-	 * @param softMapping
+	 * @param isAllIso
+	 * @param softName
 	 * @return
 	 */
-	private String getParentPathIndex(Boolean refseq, SoftWare softMapping) {
-		String softName = softMapping.toString();
+	private String getParentPathIndex(Boolean refseq, boolean isAllIso, String softName) {
 		if (softName.startsWith("bwa_")) {
 			softName = "bwa";
 		}
-		String parentPath = getPathParent() + "index/" + softName + FileOperate.getSepPath()+ getPathToVersion();
+		String parentPath = getPathParent() + indexPath + softName + FileOperate.getSepPath() + getPathToVersion();
 		String indexFinalPath = null;
 		if (refseq) {
-			indexFinalPath = parentPath + "Ref_Index/";
+			indexFinalPath = parentPath + (isAllIso? indexRefAllIsoPath : indexRefOneIsoPath);
 		} else {
-			indexFinalPath = parentPath + "Chr_Index/";
+			indexFinalPath = parentPath + indexChrPath;
 		}
 		return indexFinalPath;
 	}
-
+	
+	private List<String> getLsAllSoftMappingName() {
+		List<String> lsSoftName = new ArrayList<String>();
+		String parentPath = getPathParent() + "index/";
+		List<String> lsFoldsAll = FileOperate.getFoldFileNameLs(parentPath, "*", "*");
+		for (String string : lsFoldsAll) {
+			lsSoftName.add(FileOperate.getFileName(string));
+		}
+		return lsSoftName;
+	}
+	
 	public void setPublishYear(int publishYear) {
 		this.publishYear = publishYear;
 	}
@@ -509,43 +690,41 @@ public class SpeciesFile {
 	 * @return
 	 */
 	public String getRefSeqFile(boolean isAllIso, boolean isProtein) {
-		String fileName = getRefSeqFileRlt(isAllIso, isProtein);
-		if (StringOperate.isRealNull(fileName)) {
+		String refseqFile = getAndCreateRefSeqFileRlt(isAllIso, isProtein);
+		if (StringOperate.isRealNull(refseqFile)) {
 			return null;
-		}
-		String refseqFile = null;
-		if (!isProtein) {
-			refseqFile = EnumSpeciesFile.refseqAllIsoRNA.getSavePath(this) + fileName;
-		} else {
-			refseqFile = EnumSpeciesFile.refseqAllIsoPro.getSavePath(this) + fileName;
 		}
 		return refseqFile;
 	}
 	
-	/**
-	 * 获得refSeq的相对路径
-	 * @return
-	 */
-	private String getRefSeqFileRlt(boolean isAllIso, boolean isProtein) {
-		String refseq = set_And_GetRefSeqName(isAllIso, isProtein);
+	/** 返回全路径 */
+	public String getRefFileName(boolean isAllIso, boolean isProtein) {
+		String refseq = getRefSeqName(isAllIso, isProtein);
 		String refseqPath = null, refseqFile = null;
 		if (!isProtein) {
-			refseqPath = EnumSpeciesFile.refseqAllIsoRNA.getSavePath(this);
-			refseqFile = EnumSpeciesFile.refseqAllIsoRNA.getSavePath(this) + refseq;
+			refseqPath = isAllIso? EnumSpeciesFile.refseqAllIsoRNA.getSavePath(this) : EnumSpeciesFile.refseqOneIsoRNA.getSavePath(this);
 		} else {
-			refseqPath = EnumSpeciesFile.refseqAllIsoPro.getSavePath(this);
-			refseqFile = EnumSpeciesFile.refseqAllIsoPro.getSavePath(this) + refseq;
+			refseqPath = isAllIso? EnumSpeciesFile.refseqAllIsoPro.getSavePath(this) : EnumSpeciesFile.refseqOneIsoPro.getSavePath(this);
 		}
-		
+		refseqFile = refseqPath + refseq;
+		return refseqFile;
+	}
+	
+	/**
+	 * 获得refSeq的绝对路径
+	 * @return
+	 */
+	private String getAndCreateRefSeqFileRlt(boolean isAllIso, boolean isProtein) {
+		String refseqFile = getRefFileName(isAllIso, isProtein);
 		if (FileOperate.isFileExistAndBigThanSize(refseqFile, 0.2)) {
-			return refseq;
+			return refseqFile;
 		}
 		//说明没有序列
 		if (!FileOperate.isFileExistAndBigThanSize(getGffFile(), 0) || !FileOperate.isFileExistAndBigThanSize(getChromSeqFile(), 0)) {
 			return "";
 		}
 		try {
-			FileOperate.createFolders(refseqPath);
+			FileOperate.createFolders(FileOperate.getParentPathNameWithSep(refseqFile));
 			GffChrAbs gffChrAbs = new GffChrAbs();
 			gffChrAbs.setGffHash(new GffHashGene(getGffType(), getGffFile()));
 			gffChrAbs.setSeqHash(new SeqHash(getChromSeqFile(), " "));
@@ -569,11 +748,11 @@ public class SpeciesFile {
 		} catch (Exception e) {
 			logger.error("生成 RefRNA序列出错");
 		}
-		return refseq;
+		return refseqFile;
 	}
 	
-	/** 生成文件名 */
-	private String set_And_GetRefSeqName(boolean isAllIso, boolean isProtein) {
+	/** 生成文件名，没有路径 */
+	private String getRefSeqName(boolean isAllIso, boolean isProtein) {
 		String refseq;
 		if (!isProtein) {
 			if (isAllIso) {
@@ -581,17 +760,19 @@ public class SpeciesFile {
 					if (getChromSeqFile() == null) {
 						return null;
 					}
-					refseqFileAllIso = "rnaAllIso_" + version + ".fa";
+					refseq = "rnaAllIso_" + version + ".fa";
+				} else {
+					refseq = refseqFileAllIso;
 				}
-				refseq = refseqFileAllIso;
 			} else {
 				if (StringOperate.isRealNull(refseqFileOneIso)) {
 					if (getChromSeqFile() == null) {
 						return null;
 					}
-					refseqFileOneIso = "rnaOneIso_" + version + ".fa";
+					refseq = "rnaOneIso_" + version + ".fa";
+				} else {
+					refseq = refseqFileOneIso;
 				}
-				refseq = refseqFileOneIso;
 			}
 		} else {
 			if (isAllIso) {
@@ -599,17 +780,19 @@ public class SpeciesFile {
 					if (getChromSeqFile() == null) {
 						return null;
 					}
-					refProFileAllIso = "proteinAllIso_" + version + ".fa";
+					refseq = "proteinAllIso_" + version + ".fa";
+				} else {
+					refseq = refProFileAllIso;
 				}
-				refseq = refProFileAllIso;
 			} else {
 				if (StringOperate.isRealNull(refProFileAllIso)) {
 					if (getChromSeqFile() == null) {
 						return null;
 					}
-					refProFileOneIso = "proteinOneIso_" + version + ".fa";
+					refseq = "proteinOneIso_" + version + ".fa";
+				} else {
+					refseq = refProFileOneIso;
 				}
-				refseq = refProFileOneIso;
 			}
 		}
 		return refseq;
@@ -619,6 +802,7 @@ public class SpeciesFile {
 	public void setRefseqNCfile(String refseqNCfile) {
 		this.refseqNCfile = refseqNCfile;
 	}
+	
 	public String getRefseqNCfile() {
 		if (StringOperate.isRealNull(refseqNCfile)) {
 			return null;
@@ -972,27 +1156,27 @@ public class SpeciesFile {
 	 */
 	public void addPathInfo(EnumSpeciesFile fileType, String fileName,GffType gffType,String gffDB) {
 		switch (fileType) {
-		case chromSeqFile:{
+		case chromSeqFile: {
 			setChromSeq(fileName);
 			break;
 		}
-		case gffGeneFile:{
+		case gffGeneFile: {
 			addGffDB2TypeFile(gffDB, gffType, fileName);
 			break;
 		}
-		case gffRepeatFile:{
+		case gffRepeatFile: {
 			setGffRepeatFile(fileName);
 			break;
 		}
-		case refseqAllIsoRNA:{
+		case refseqAllIsoRNA: {
 			setRefseqFileAllIso(fileName);
 			break;
 		}
-		case refseqOneIsoRNA:{
+		case refseqOneIsoRNA: {
 			setRefseqFileOneIso(fileName);
 			break;
 		}
-		case refseqNCfile:{
+		case refseqNCfile: {
 			setRefseqNCfile(fileName);
 			break;
 		}
@@ -1001,6 +1185,10 @@ public class SpeciesFile {
 		}
 	}
 	
+	/** 数据库操作类 */
+	private static IManageSpecies repo() {
+		return ManageSpecies.getInstance();
+	}
 }
 
 /** 比较GFFDB的比较器 */
