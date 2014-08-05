@@ -49,6 +49,7 @@ public class RPKMcomput implements AlignmentRecorder {
 	
 	GffHashGene gffHashGene;
 	GeneExpTable geneExpTable = new GeneExpTable(TitleFormatNBC.GeneID);
+	/** 不同类型RNA的表达量，譬如tRNA多少，rRNA多少，ncRNA多少等 */
 	GeneExpTable rnaTypeTable = new GeneExpTable(TitleFormatNBC.RNAType);
 	/** 双端测序用来配对 */
 	HashMap<String, SamRecord> mapKey2SamRecord = new HashMap<String, SamRecord>((int)(numForFragment*1.5));
@@ -460,7 +461,7 @@ public class RPKMcomput implements AlignmentRecorder {
 	 */
 	private void addInMapGeneName2Cond2ReadsCounts(String geneName, int mapNum) {
 		double value = (double)1/mapNum;
-		geneExpTable.addGeneExp(geneName, (double)1/mapNum);
+		geneExpTable.addGeneExp(geneName, value);
 		String geneType = mapGene2Type.get(geneName);
 		rnaTypeTable.addGeneExp(geneType, value);
 	}
