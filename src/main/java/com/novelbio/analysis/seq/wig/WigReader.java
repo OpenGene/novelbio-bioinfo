@@ -64,8 +64,10 @@ public class WigReader extends MapReadsAbs {
 		WigItem wi;
 		while ((wi = bi.next()) != null) {
 			for (int i = wi.getStartBase() + 1; i <= wi.getEndBase(); i++) {
-				if (i < startNum - 1 || i > endNum) {
+				if (i < startNum - 1) {
 					continue;
+				} else if ( i > endNum) {
+					break;
 				}
 				tmpResult[i - startNum] = wi.getWigValue();
 			}
@@ -106,8 +108,10 @@ public class WigReader extends MapReadsAbs {
 		WigItem wi;
 		while ((wi = bi.next()) != null) {
 			for (int i = wi.getStartBase() + 1; i <= wi.getEndBase(); i++) {
-				if (i < startNum - 1 || i > endNum) {
+				if (i < startNum - 1) {
 					continue;
+				} else if ( i > endNum) {
+					break;
 				}
 				tmpResult[i - startNum] = wi.getWigValue();
 			}

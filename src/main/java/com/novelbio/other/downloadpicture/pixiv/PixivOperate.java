@@ -41,7 +41,6 @@ public class PixivOperate extends DownloadOperate{
 	
 	public PixivOperate() {
 		pixivGetPathExistPic = new PixivGetPathExistPic(PixivGetPathExistPic.SITE_PIXIV);
-		getcookies();
 	}
 	/**
 	 * 获得pixiv的cookies
@@ -58,7 +57,7 @@ public class PixivOperate extends DownloadOperate{
     	mapPostKey2Value.put("pixiv_id", name);
     	mapPostKey2Value.put("pass", password);
     	webFetch.setPostParam(mapPostKey2Value);
-    	webFetch.setUri("http://www.pixiv.net/index.php");
+    	webFetch.setUri("https://www.secure.pixiv.net/login.php");
     	if (!webFetch.query()) {
 			getcookies();
 		}
@@ -85,7 +84,9 @@ public class PixivOperate extends DownloadOperate{
 
 			String pixivAutherInfo = webFetch.getResponse();
 			Parser parser = new Parser(pixivAutherInfo);
-			
+			TxtReadandWrite txtwrite = new TxtReadandWrite("D:\\sss.txt", true);
+			txtwrite.writefile(pixivAutherInfo);
+			txtwrite.close();
 			NodeFilter filterNum = new AndFilter(new TagNameFilter("span"), new HasAttributeFilter("class", "count-badge"));
 			NodeList nodeListNum = parser.parse(filterNum);
 			allPictureNum = getNodeAllPicture(nodeListNum);
@@ -96,10 +97,9 @@ public class PixivOperate extends DownloadOperate{
 			autherName = getAuterName(nodeAutherName);
 			savePath = getSavePath(autherName, autherID);
 			allPages = (int) Math.ceil((double)allPictureNum/20);
-			webFetch.readResponse();
 			return true;
 		} catch (Exception e) {
-			webFetch.readResponse();
+			e.printStackTrace();
 		}
 		return false;
 	}

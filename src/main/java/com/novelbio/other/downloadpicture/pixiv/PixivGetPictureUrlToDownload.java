@@ -46,7 +46,7 @@ public class PixivGetPictureUrlToDownload extends GetPictureUrl {
 		this.pictureNum = pictureNum;
 	}
 	public void setWebFetch(HttpFetch webFetch) {
-		this.webFetch = webFetch;
+		this.webFetch = HttpFetch.getInstance(webFetch);
 	}
 	/** 保存的路径里面应该要包含作者名 */
 	public void setSavePath(String savePath) {
@@ -73,6 +73,7 @@ public class PixivGetPictureUrlToDownload extends GetPictureUrl {
 		NodeFilter filterPicture = new AndFilter(new TagNameFilter("div"), new HasAttributeFilter("class", "works_display"));
 		Node nodePicture = parser.parse(filterPicture).elementAt(0);
 		lsResult = getLsDownloads(nodePicture);
+		webFetch.close();
 	}
 	
 	private ArrayList<UrlPictureDownLoad> getLsDownloads(Node nodePicture) throws ParserException {
@@ -95,7 +96,7 @@ public class PixivGetPictureUrlToDownload extends GetPictureUrl {
 			pixivUrlDownLoad.setPictureNum(pictureNum);
 			pixivUrlDownLoad.setPictureUrl(pictureUrl);
 			pixivUrlDownLoad.setRefUrl(midUrl);
-			pixivUrlDownLoad.setWebFetch(HttpFetch.getInstance(webFetch));
+			pixivUrlDownLoad.setWebFetch(webFetch);
 			pixivUrlDownLoad.setSavePath(savePath);
 			lsPixivUrlDownLoads.add(pixivUrlDownLoad);
 		}

@@ -35,7 +35,7 @@ public class PixivGetPageMidUrl {
 	boolean isAlreadyHaveFile = false;
 	
 	public void setWebFetch(HttpFetch webFetch) {
-		this.webFetch = webFetch;
+		this.webFetch = HttpFetch.getInstance(webFetch);
 	}
 	public void setPageUrl(String pageUrl) {
 		this.pageUrl = pageUrl;
@@ -70,6 +70,7 @@ public class PixivGetPageMidUrl {
 			webFetch.readResponse();
 			return null;
 		}
+		webFetch.close();
 		return getLsPixivGetPictureUrlToDownloads();
 	}
 	/**
@@ -155,7 +156,7 @@ public class PixivGetPageMidUrl {
 			//每页20张图
 			int pictureNum = allPictureNum - (thisPageNum - 1) * 20 - i;
 			pictureUrlToDownload.setPictureNum(pictureNum);
-			pictureUrlToDownload.setWebFetch(HttpFetch.getInstance(webFetch));
+			pictureUrlToDownload.setWebFetch(webFetch);
 			pictureUrlToDownload.setSavePath(savePath);
 			lsResult.add(pictureUrlToDownload);
 			i ++;

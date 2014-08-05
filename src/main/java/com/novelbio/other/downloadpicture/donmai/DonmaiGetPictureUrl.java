@@ -33,7 +33,7 @@ public class DonmaiGetPictureUrl extends GetPictureUrl {
 	ArrayList<UrlPictureDownLoad> lsResult;
 	@Override
 	public void setWebFetch(HttpFetch webFetch) {
-		this.webFetch = webFetch;
+		this.webFetch = HttpFetch.getInstance(webFetch);
 	}
 	public void setPixivGetPathExistPic(PixivGetPathExistPic pixivGetPathExistPic) {
 		this.pixivGetPathExistPic = pixivGetPathExistPic;
@@ -71,6 +71,7 @@ public class DonmaiGetPictureUrl extends GetPictureUrl {
 		NodeFilter filterPicture = new AndFilter(new TagNameFilter("img"), new HasAttributeFilter("alt"));
 		NodeList nodeLsPicture = parser.parse(filterPicture);
 		lsResult = getLsDownloads(nodeLsPicture);
+		webFetch.close();
 		return this;
 	}
 	private ArrayList<UrlPictureDownLoad> getLsDownloads(NodeList nodeLsPicture) {

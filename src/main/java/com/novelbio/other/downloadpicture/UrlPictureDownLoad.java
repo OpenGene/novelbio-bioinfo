@@ -32,7 +32,7 @@ public class UrlPictureDownLoad implements Callable<UrlPictureDownLoad> {
 	String name;
 	boolean saveSucess = false;
 	public void setWebFetch(HttpFetch webFetch) {
-		this.httpFetch = webFetch;
+		this.httpFetch = HttpFetch.getInstance(webFetch);
 	}
 	public void setPictureUrl(String pictureUrl) {
 		try {
@@ -78,6 +78,7 @@ public class UrlPictureDownLoad implements Callable<UrlPictureDownLoad> {
     	try {
 			if(download(httpFetch, savePath)) {
 				saveSucess = true;
+		    	httpFetch.close();
 			} else {
 				saveSucess = false;
 			}

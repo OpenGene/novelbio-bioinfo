@@ -27,7 +27,7 @@ public class DonmaiGetDownloadUrl  extends GetPictureUrl {
 	ArrayList<UrlPictureDownLoad> lsResult;
 	@Override
 	public void setWebFetch(HttpFetch webFetch) {
-		this.webFetch = webFetch;
+		this.webFetch = HttpFetch.getInstance(webFetch);
 	}
 	public void setUrl(String url, int page, int thisPictureNum) {
 		this.url = url;
@@ -55,6 +55,7 @@ public class DonmaiGetDownloadUrl  extends GetPictureUrl {
 		NodeFilter filterPicture = new AndFilter(new TagNameFilter("a"), new HasAttributeFilter("id", "highres"));
 		NodeList nodeLsPicture = parser.parse(filterPicture);
 		lsResult = getLsDownloads(nodeLsPicture);
+		webFetch.close();
 		return this;
 	}
 	
@@ -70,7 +71,7 @@ public class DonmaiGetDownloadUrl  extends GetPictureUrl {
 				urlPictureDownLoad.setPictureNum(thisPictureNum);
 				urlPictureDownLoad.setPictureUrl(pictureUrl);
 				urlPictureDownLoad.setSavePath(savePath);
-				urlPictureDownLoad.setWebFetch(HttpFetch.getInstance(webFetch));
+				urlPictureDownLoad.setWebFetch(webFetch);
 				lsResult.add(urlPictureDownLoad);
 				break;
 			}
