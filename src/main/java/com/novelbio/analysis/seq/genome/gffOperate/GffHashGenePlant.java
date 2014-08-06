@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.database.model.modgeneid.GeneType;
@@ -80,6 +81,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 		   if(content.length() == 0 || content.charAt(0)=='#') {
 			   continue;
 		   }
+		   content = HttpFetch.decode(content);
 		   ////////////////// 需要进行替换的地方 /////////////////////////////////////////////////////////////
 		   if (geneType != GeneType.mRNA) {
 			   content = content.replace("pseudogenic_exon", "CDS");

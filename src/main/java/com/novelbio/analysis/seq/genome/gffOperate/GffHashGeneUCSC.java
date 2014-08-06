@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.genome.gffOperate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -49,6 +50,7 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 		String chrIDtmp = "";
 		// int mm=0;//计数的东西
 		for (String content : txtGffRead.readlines(2)) {
+			content = HttpFetch.decode(content);
 			content = content.replace("\"", "");
 			String[] geneInfo = content.split("\t");
 			String[] exonStarts = geneInfo[8].split(",");

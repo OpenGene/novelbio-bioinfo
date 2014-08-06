@@ -11,6 +11,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -63,6 +64,7 @@ public class GffHashGTF extends GffHashGeneAbs{
 		String tmpChrID = "";
 		String tmpTranscriptNameLast = "";
 		for (String content : txtgff.readlines() ) {
+			content = HttpFetch.decode(content);
 			if (content.charAt(0) == '#') continue;
 			String[] ss = content.split("\t");// 按照tab分开
 			

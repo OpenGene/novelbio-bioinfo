@@ -52,7 +52,7 @@ public class RPKMcomput implements AlignmentRecorder {
 	/** 不同类型RNA的表达量，譬如tRNA多少，rRNA多少，ncRNA多少等 */
 	GeneExpTable rnaTypeTable = new GeneExpTable(TitleFormatNBC.RNAType);
 	/** 双端测序用来配对 */
-	HashMap<String, SamRecord> mapKey2SamRecord = new HashMap<String, SamRecord>((int)(numForFragment*1.5));
+	Map<String, SamRecord> mapKey2SamRecord = new HashMap<>((int)(numForFragment*1.5));
 	
 	int parNum = 0;
 	

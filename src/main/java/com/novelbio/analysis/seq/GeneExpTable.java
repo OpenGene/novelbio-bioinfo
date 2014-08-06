@@ -312,7 +312,11 @@ public class GeneExpTable {
 			this.mapGene2Anno.put(geneName, string);
 		}
 	}
-	/** mapGene2Anno中务必含有全体geneName */
+	/** mapGene2Anno中务必含有全体geneName
+	 * key geneName
+	 * value annotation
+	 * @param mapGene2Anno
+	 */
 	public void addAnnotation(Map<String, String> mapGene2Anno) {
 		for (String geneName : mapGene2Anno.keySet()) {
 			String anno = mapGene2Anno.get(geneName);
@@ -320,7 +324,11 @@ public class GeneExpTable {
 			this.mapGene2Anno.put(geneName, anno);
 		}
 	}
-	/** mapGene2Anno中务必含有全体geneName */
+	/** mapGene2Anno中务必含有全体geneName
+	 * key geneName
+	 * value annotation 是个数组，可以有好多项
+	 * @param mapGene2Anno
+	 */
 	public void addAnnotationArray(Map<String, String[]> mapGene2Anno) {
 		for (String geneName : mapGene2Anno.keySet()) {
 			String[] anno = mapGene2Anno.get(geneName);

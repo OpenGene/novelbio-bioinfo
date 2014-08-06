@@ -539,13 +539,9 @@ public class SamRecord implements AlignRecord {
 		
 		return fastQRecord;
 	}
-	/** 返回唯一名字和序列时使用 */
-	public String getNameAndSeq() {
-		SeqFasta seqFasta = getSeqFasta();
-		if (isMapped() && !isCis5to3()) {
-			seqFasta = seqFasta.reservecom();
-		}
-		return getName() + seqFasta.toString();
+	/** 返回名字和左端序列的起点信息 */
+	public String getNameAndFirstSite() {
+		return isFirstRead()? getName() + getRefID() + getStartAbs() : getName() + getMateRefID() + getMateAlignmentStart();
 	}
 
 	@Override

@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
@@ -156,6 +157,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   
 	   for (String content : txtgff.readlines()) {
 		   if(content.charAt(0) == '#') continue;
+		   content = HttpFetch.decode(content);
 		   String[] ss = content.split("\t");//按照tab分开
 		   if (ss[2].equals("match") || ss[2].toLowerCase().equals("chromosome") || ss[2].toLowerCase().equals("intron")) {
 			   continue;
