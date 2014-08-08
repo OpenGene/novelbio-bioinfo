@@ -11,7 +11,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.annotation.functiontest.TopGO.GoAlgorithm;
 import com.novelbio.database.model.modgeneid.GeneID;
 
-public class ElimGOFunTest extends NovelGOFunTest{
+public class ElimGOFunTest extends NovelGOFunTest {
 	private static final Logger logger = Logger.getLogger(ElimGOFunTest.class);
 
 	/** 和strGeneID一样的东西 */

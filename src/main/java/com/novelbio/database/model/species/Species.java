@@ -213,6 +213,12 @@ public class Species implements Cloneable {
 	public Map<String, SpeciesFile> getMapVersion2Species() {
 		return mapVersion2Species;
 	}
+	
+	/** 设定好version后，获得SpeciesFile */
+	public SpeciesFile getSelectSpeciesFile() {
+		return mapVersion2Species.get(version.toLowerCase());
+	}
+	
 	/**
 	 * @return
 	 * key: chrID 小写

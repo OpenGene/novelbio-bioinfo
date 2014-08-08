@@ -123,7 +123,7 @@ public class BlastNBC implements IntCmdSoft {
 		else if(seqTypeFlag == SeqFasta.SEQ_DNA)
 			seqTypePro = "nucl";
 		else {
-			logger.error("databaseSeq 序列出现未知字符");
+			throw new ExceptionCmd("blast error:\n" + "cannot detect the sequence type.");
 		}
 		return seqTypePro;
 	}
@@ -192,11 +192,12 @@ public class BlastNBC implements IntCmdSoft {
 	 * true blast成功
 	 */
 	public boolean blast() {
-		if (indexExisted() == null) {
+		Boolean isIndexExist = indexExisted();
+		if (isIndexExist == null) {
 			return false;
 		}
 		//索引是否存在
-		if (!indexExisted()) {
+		if (!isIndexExist) {
 			//是否成功构建blast数据库
 			if (!formatDB()) {
 				return false;

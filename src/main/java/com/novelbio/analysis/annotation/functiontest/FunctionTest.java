@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.management.RuntimeErrorException;
-
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -29,11 +27,13 @@ public abstract class FunctionTest implements Cloneable {
 	public static final String FUNCTION_GO_NOVELBIO = "gene ontology";
 	public static final String FUNCTION_GO_ELIM = "gene ontology elim";
 	public static final String FUNCTION_PATHWAY_KEGG = "pathway kegg";
+	public static final String FUNCTION_COG = "cog";
+	
 	/** 默认pvalue的cutoff的值 */
 	public static final double PvalueFdr_Cutoff = 0.05;
 	
 	int taxID = 0;
-	List<Integer> blastTaxID = null;
+	List<Integer> lsBlastTaxId = null;
 	double blastEvalue = 1e-10;
 	
 	Set<GeneID> setGeneIDsBG = null;
@@ -62,17 +62,17 @@ public abstract class FunctionTest implements Cloneable {
 		this.statisticsTest = statisticsTest;
 	}
 	
-	public void setBlastInfo(double evalue, List<Integer> blastTaxID) {
+	public void setBlastInfo(double evalue, List<Integer> lsBlastTaxId) {
 		this.blastEvalue = evalue;
-		this.blastTaxID = blastTaxID;
+		this.lsBlastTaxId = lsBlastTaxId;
 	}
 	/** 比对到哪些物种上去了 */
 	public List<Integer> getBlastTaxID() {
-		return blastTaxID;
+		return lsBlastTaxId;
 	}
 	public boolean isBlast() {
-		if (blastTaxID != null) {
-			for (int taxID : blastTaxID) {
+		if (lsBlastTaxId != null) {
+			for (int taxID : lsBlastTaxId) {
 				if (taxID > 0) {
 					return true;
 				}
@@ -107,7 +107,7 @@ public abstract class FunctionTest implements Cloneable {
 			logger.error("no FIle exist: "+ fileName);
 		}
 		
-		ArrayList<String[]> lsTmpGeneID2LsItem = ExcelTxtRead.readLsExcelTxt(fileName, new int[]{1,2}, 1, -1, true);
+		List<String[]> lsTmpGeneID2LsItem = ExcelTxtRead.readLsExcelTxt(fileName, new int[]{1,2}, 1, -1, true);
 		mapBGGeneID2Items = readFromBGfile(lsTmpGeneID2LsItem);
 		BGnum = mapBGGeneID2Items.size();
 	}
@@ -171,24 +171,10 @@ public abstract class FunctionTest implements Cloneable {
 		for (String[] strings : accID) {
 			GeneID copedID = new GeneID(strings[0], taxID, false);
 			if (isBlast()) {
-				copedID.setBlastInfo(blastEvalue, blastTaxID);
+				copedID.setBlastInfo(blastEvalue, lsBlastTaxId);
 			}
 			setGeneIDsBG.add(copedID);
 		}
-		mapBGGeneID2Items = convert2Item(setGeneIDsBG);
-		BGnum = mapBGGeneID2Items.size();
-	}
-	/**
-	 * 第一时间设定，在此之前必须先设定{@link #setBlast(boolean, double, int...)} blast情况
-	 * 读取背景文件，指定读取某一列
-	 * @param showMessage
-	 */
-	public void setLsBGCopedID(Collection<GeneID> lsBGaccID) {
-		lsTestResult = new ArrayList<StatisticTestResult>();
-		for (GeneID copedID : lsBGaccID) {
-			copedID.setBlastInfo(blastEvalue, blastTaxID);
-		}
-		setGeneIDsBG = new HashSet<GeneID>(lsBGaccID);
 		mapBGGeneID2Items = convert2Item(setGeneIDsBG);
 		BGnum = mapBGGeneID2Items.size();
 	}
@@ -255,17 +241,8 @@ public abstract class FunctionTest implements Cloneable {
 		return mapBGGeneID2Items;
 	}
 	
-	public void setLsTestAccID(Collection<String> lsCopedID) {
-		Set<GeneID> setGeneIDsTest = new HashSet<GeneID>();		
-		for (String string : lsCopedID) {
-			GeneID copedID = new GeneID(string, taxID, false);
-			setGeneIDsTest.add(copedID);
-		}
-		initial(setGeneIDsTest);
-	}
-	
 	public void setLsTestGeneID(Collection<GeneID> lsCopedIDs) {
-		Set<GeneID> setGeneIDsTest = new HashSet<GeneID>(lsCopedIDs);
+		Set<GeneID> setGeneIDsTest = new HashSet<>(lsCopedIDs);
 		initial(setGeneIDsTest);
 	}
 	
@@ -304,7 +281,7 @@ public abstract class FunctionTest implements Cloneable {
 		HashSet<GeneID> setGeneIDs = new HashSet<GeneID>();
 		for (GeneID geneID : lsTest) {
 			if (isBlast()) {
-				geneID.setBlastInfo(blastEvalue, blastTaxID);
+				geneID.setBlastInfo(blastEvalue, lsBlastTaxId);
 			}
 			setGeneIDs.add(geneID);
 		}
@@ -480,8 +457,8 @@ public abstract class FunctionTest implements Cloneable {
 			functionTest.BGfile = BGfile;
 			functionTest.BGnum = BGnum;
 			functionTest.blastEvalue = blastEvalue;
-			if (blastTaxID != null) {
-				functionTest.blastTaxID = new ArrayList<Integer>(blastTaxID);
+			if (lsBlastTaxId != null) {
+				functionTest.lsBlastTaxId = new ArrayList<Integer>(lsBlastTaxId);
 			}
 			if (lsTest != null) {
 				functionTest.lsTest = new ArrayList<GeneID2LsItem>(lsTest);
@@ -536,14 +513,13 @@ public abstract class FunctionTest implements Cloneable {
 		FunctionTest functionTest;
 		if (functionType.equals(FUNCTION_GO_NOVELBIO)) {
 			functionTest = new NovelGOFunTest();
-		}
-		else if (functionType.equals(FUNCTION_GO_ELIM)) {
+		} else if (functionType.equals(FUNCTION_GO_ELIM)) {
 			functionTest = new ElimGOFunTest();
-		}
-		else if (functionType.equals(FUNCTION_PATHWAY_KEGG)) {
+		} else if (functionType.equals(FUNCTION_PATHWAY_KEGG)) {
 			functionTest = new KEGGPathwayFunTest();
-		}
-		else {
+		} else if (functionType.equals(FUNCTION_COG)) {
+			functionTest = new CogFunTest();
+		} else {
 			logger.error("unknown functiontest: "+ functionType);
 			return null;
 		}

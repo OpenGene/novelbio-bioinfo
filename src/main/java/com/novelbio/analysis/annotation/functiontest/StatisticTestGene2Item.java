@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.novelbio.analysis.annotation.cog.CogInfo;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.domain.geneanno.Go2Term;
@@ -14,6 +15,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
 public abstract class StatisticTestGene2Item {
 	public static final String titleGO = "Gene2GO";
 	public static final String titlePath = "Gene2Path";
+	public static final String titleCOG = "Gene2COG";
 	
 	boolean blast;
 	boolean isUpdateBG = false;
@@ -251,6 +253,52 @@ class StatisticTestGene2Path extends StatisticTestGene2Item {
 		lsTitle.add(TitleFormatNBC.Enrichment.toString());
 //		lsTitle.add(TitleFormatNBC.Log2Pnegative.toString());
 		
+		return lsTitle.toArray(new String[0]);
+	}
+	
+}
+
+class StatisticTestGene2Cog extends StatisticTestGene2Item {
+	CogInfo cogInfo;
+	public void setCogInfo(CogInfo cogInfo) {
+		this.cogInfo = cogInfo;
+	}
+	
+	protected ArrayList<ArrayList<String>> getInfo() {
+		ArrayList<ArrayList<String>> lsFinal = new ArrayList<ArrayList<String>>();
+		ArrayList<String> lsTmpFinal = new ArrayList<String>();
+		// GO前面的常规信息的填充,Symbol和description等
+		lsTmpFinal.add(geneID.getAccID());
+		if (cogInfo == null) {
+			return lsFinal;
+		}
+		String cogId = "COG:" + cogInfo.getCogId();
+		ArrayList<String> lsTmpFinalNew = (ArrayList<String>) lsTmpFinal.clone();
+		if (!mapItem2StatisticTestResult.containsKey(cogId)) {
+			return lsFinal;
+		}
+		if (!geneID2LsItem.setItemID.contains(cogId) ) {
+			isUpdateBG = true;
+			return lsFinal;
+		}
+		StatisticTestResult statisticTestResult = mapItem2StatisticTestResult.get(cogId.toLowerCase());
+		
+		lsTmpFinalNew.add(cogId);
+		lsTmpFinalNew.add(cogInfo.getCogAnnoDetail());
+		lsTmpFinalNew.add(statisticTestResult.getPvalue() + "");
+		lsTmpFinalNew.add(statisticTestResult.getEnrichment() + "");
+		lsFinal.add(lsTmpFinalNew);
+
+		return lsFinal;
+	}
+	
+	public String[] getTitle() {
+		List<String> lsTitle = new ArrayList<String>();
+		lsTitle.add(TitleFormatNBC.QueryID.toString());
+		lsTitle.add(TitleFormatNBC.COGID.toString());
+		lsTitle.add(TitleFormatNBC.COGTerm.toString());
+		lsTitle.add(TitleFormatNBC.Pvalue.toString());
+		lsTitle.add(TitleFormatNBC.Enrichment.toString());		
 		return lsTitle.toArray(new String[0]);
 	}
 	

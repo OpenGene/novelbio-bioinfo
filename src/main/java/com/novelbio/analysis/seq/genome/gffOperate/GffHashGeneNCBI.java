@@ -230,7 +230,8 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   
 	   try {
 		   if (ss[2].equals("region")) {
-			   String regxChrID = "(?<=chromosome\\=)\\w+";
+			   String regxChrID = "(?<=chromosome\\=)[\\w\\.\\-%\\:]+";
+			   String regxName = "(?<=Name\\=)[\\w\\.\\-%\\:]+";
 			   if (ss[8].contains("genome=genomic")) {
 				   chrID = GeneID.removeDot(ss[0]);
 			   } else if (ss[8].contains("genome=mitochondrion")) {
@@ -240,8 +241,10 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 			   }  else if (ss[8].contains("genome=Unknown") || ss[8].toLowerCase().contains("genome=un")) {
 				   chrID = ss[0];
 			   } else {
+				   List<String[]> lsRegx = PatternOperate.getPatLoc(ss[8], regxChrID, false);
+				   if (lsRegx.isEmpty()) lsRegx = PatternOperate.getPatLoc(ss[8], regxName, false);
 				   try {
-					   chrID = "chr" + PatternOperate.getPatLoc(ss[8], regxChrID, false).get(0)[0];
+					   chrID = "chr" + lsRegx.get(0)[0];
 				   } catch (Exception e) {
 					   logger.error("本位置出错，错误的region，本来一个region应该是一个染色体，这里不知道是什么 " + ArrayOperate.cmbString(ss, "\t"));
 					   chrID = ss[0];

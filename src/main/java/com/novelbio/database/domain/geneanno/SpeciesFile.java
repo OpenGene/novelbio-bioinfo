@@ -230,7 +230,7 @@ public class SpeciesFile {
 		SpeciesFile speciesFileOld = SpeciesFile.findById(speciesFileId);
 		try {
 			repo().deleteSpeciesFile(speciesFileId);
-			FileOperate.delFolder(speciesFileOld.speciesVersionPath());
+			FileOperate.delFolder(speciesFileOld.getSpeciesVersionPath());
 		} catch (Exception e) {
 			return false;
 		}
@@ -241,7 +241,7 @@ public class SpeciesFile {
 	 * 物种版本对应的文件夹
 	 * @return
 	 */
-	public String speciesVersionPath() {
+	public String getSpeciesVersionPath() {
 		if(taxID == 0 || StringOperate.isRealNull(version))
 			return null;
 		String basePath = FileOperate.addSep(pathParent) + SpeciesFile.SPECIES_FOLDER + FileOperate.getSepPath()

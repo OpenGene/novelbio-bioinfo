@@ -10,6 +10,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.HashMultimap;
+import com.novelbio.analysis.annotation.cog.CogInfo;
 import com.novelbio.base.dataStructure.FisherTest;
 import com.novelbio.base.dataStructure.StatisticsTest;
 import com.novelbio.base.dataStructure.StatisticsTest.StatisticsPvalueType;
@@ -230,3 +231,13 @@ class GeneID2LsPath extends GeneID2LsItem {
 	}
 }
 
+class GeneID2LsCog extends GeneID2LsItem {
+	public void setGeneID(GeneID geneID, boolean blast) {
+		this.geneID = geneID;
+		this.geneUniID = geneID.getGeneUniID();
+	}
+	
+	public void setCogInfo(CogInfo cogInfo) {
+		addItemID("PATH:" + cogInfo.getCogId());
+	}
+}

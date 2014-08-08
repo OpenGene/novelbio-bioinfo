@@ -39,6 +39,17 @@ public enum EnumSpeciesFile {
 			return basePath + folder + FileOperate.getSepPath() + pathToVersion;
 		}
 	},
+	
+	COG("COG") {
+		public String getSavePath(SpeciesFile speciesFile) {
+			String basePath = SpeciesFile.getPathParent();
+			String pathToVersion = speciesFile.getPathToVersion();
+			if(StringOperate.isRealNull(pathToVersion))
+				return null;
+			return basePath + folder + FileOperate.getSepPath() + pathToVersion;
+		}
+	},
+	
 	;
 	/**
 	 * 对应保存的文件夹
@@ -55,7 +66,7 @@ public enum EnumSpeciesFile {
 	 * @return
 	 */
 	public String getSavePath(SpeciesFile speciesFile) {
-		String basePath = speciesFile.speciesVersionPath();
+		String basePath = speciesFile.getSpeciesVersionPath();
 		if(StringOperate.isRealNull(basePath))
 			return null;
 		return basePath + folder + FileOperate.getSepPath();
