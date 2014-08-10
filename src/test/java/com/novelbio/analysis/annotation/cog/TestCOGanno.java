@@ -12,5 +12,6 @@ public class TestCOGanno {
 		cogAnno.setPro2cogFile(pro2cogFile);
 		cogAnno.setCogAbbr2FunFile(cogAbbr2FunFile);
 		cogAnno.initial();
+//		COGanno.getModifiedSeq(seqFastaFile, pro2cogFile);
 	}
 }

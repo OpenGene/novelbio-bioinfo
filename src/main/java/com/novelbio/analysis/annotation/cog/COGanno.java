@@ -8,6 +8,7 @@ import com.novelbio.analysis.annotation.blast.BlastNBC;
 import com.novelbio.analysis.annotation.blast.BlastType;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqHash;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.BlastInfo;
@@ -97,13 +98,15 @@ public class COGanno {
 	private void generateGene2Cog(String blastFile) {
 		//key 输入的序列名 subject 输出的物种id
 		String cogOutFile = getCOGFile();
-		String tmp = FileOperate.changeFileSuffix(cogOutFile, "_tmp", null);
-		TxtReadandWrite txtWrite = new TxtReadandWrite(tmp, true);
+
 		List<BlastInfo> lsBlastInfo = BlastInfo.readBlastFile(blastFile);
 		lsBlastInfo = BlastInfo.removeDuplicateQueryID(lsBlastInfo);
 		Map<String, String[]> mapCogId2Anno = getMapCogId2Function(cogId2AnnoFile);
 		Map<String, String[]> mapCogAbbr2Fun = getMapCogAbbr2Fun(cogAbbr2FunFile);
 		Map<String, String> mapProId2CogId = getMapProId2Cog(pro2cogFile);
+		
+		String tmp = FileOperate.changeFileSuffix(cogOutFile, "_tmp", null);
+		TxtReadandWrite txtWrite = new TxtReadandWrite(tmp, true);
 		for (BlastInfo blastInfo : lsBlastInfo) {
 			CogInfo cogInfo = new CogInfo();
 			cogInfo.setCogSeqName(blastInfo.getSubjectID());
@@ -136,14 +139,23 @@ public class COGanno {
 			blastType = BlastType.blastx;
 		}
 		String blastFileResult = getBlastFile();
-		blastNBC.setResultFile(blastFileResult);
+		if (FileOperate.isFileExist(blastFileResult)) {
+			return blastFileResult;
+		}
+		String cogModify = FileOperate.changeFileSuffix(cogFastaFile, "_modify", null);
+		if (!FileOperate.isFileExistAndBigThanSize(cogModify, 0) || FileOperate.getTimeLastModify(cogModify) < FileOperate.getTimeLastModify(cogFastaFile) ) {
+			getModifiedSeq(cogFastaFile, cogModify, pro2cogFile);
+		}
+		String blastFileTmp = FileOperate.changeFileSuffix(blastFileResult, "_tmp", null);
+		blastNBC.setResultFile(blastFileTmp);
 		blastNBC.setBlastType(blastType);
 		blastNBC.setEvalue(1e-10);
 		blastNBC.setCpuNum(threadNum);
 		blastNBC.setQueryFastaFile(seqFastaFile);
-		blastNBC.setSubjectSeq(cogFastaFile);
+		blastNBC.setSubjectSeq(cogModify);
 		blastNBC.setResultSeqNum(1);
 		blastNBC.blast();
+		FileOperate.moveFile(true, blastFileTmp, blastFileResult);
 		return blastFileResult;
 	}
 	
@@ -175,24 +187,28 @@ public class COGanno {
 	}
 	
 	//TODO 还没测试
-	public static String getModifiedSeq(String cogSeq, String cogAnno) {
-		Map<String, String[]> mapCogId2Function = getMapCogId2Function(cogAnno);
-		String modifyFile = FileOperate.changeFileSuffix(cogSeq, "_modify", null);
+	/**
+	 * 将在pro2cogId中的protein提取出来
+	 * @param cogSeq
+	 * @param cogSeqModify
+	 * @param pro2CogId
+	 */
+	private static void getModifiedSeq(String cogSeq, String cogSeqModify, String pro2CogId) {
+		Map<String, String> mapPro2CogId = getMapProId2Cog(pro2CogId);
 		TxtReadandWrite txtRead = new TxtReadandWrite(cogSeq);
-		TxtReadandWrite txtWrite = new TxtReadandWrite(modifyFile, true);
+		TxtReadandWrite txtWrite = new TxtReadandWrite(cogSeqModify, true);
 		boolean isHaveCogFunction = true;
 		for (String content : txtRead.readlines()) {
 			if (content.startsWith(">")) {
 				String id = content.substring(1);
-				isHaveCogFunction = mapCogId2Function.containsKey(id)? true : false;
+				isHaveCogFunction = mapPro2CogId.containsKey(id)? true : false;
 			}
 			if (isHaveCogFunction) {
-				txtWrite.writefile(content);
+				txtWrite.writefileln(content);
 			}
 		}
 		txtRead.close();
 		txtWrite.close();
-		return modifyFile;
 	}
 	
 	/** CogId和Cog具体类的对照表
@@ -242,8 +258,14 @@ public class COGanno {
 		String annoBig = "";//宏观的注释，如INFORMATION STORAGE AND PROCESSING
 		TxtReadandWrite txtRead = new TxtReadandWrite(cogAbbr2FunFile);
 		for (String content : txtRead.readlines()) {
+			content = content.trim();
+			if (StringOperate.isRealNull(content)) {
+				continue;
+			}
 			if (!content.startsWith("[")) {
-				annoBig = content.toLowerCase();
+				//首字母大写
+				String annoBigNew = content.substring(1).toLowerCase();
+				annoBig = content.substring(0, 1).toUpperCase() + annoBigNew;
 			} else {
 				String[] ss = content.split("]");
 				String abbr = ss[0].replace("[", "").trim();
