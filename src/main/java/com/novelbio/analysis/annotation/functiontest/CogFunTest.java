@@ -9,9 +9,9 @@ import java.util.Map;
 
 import com.novelbio.analysis.annotation.cog.COGanno;
 import com.novelbio.analysis.annotation.cog.CogInfo;
+import com.novelbio.base.dataStructure.FisherTest;
 import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.model.modkegg.KeggInfo;
 
 public class CogFunTest extends FunctionTest {
 	COGanno cogAnno = new COGanno();
@@ -28,8 +28,7 @@ public class CogFunTest extends FunctionTest {
 	}
 	
 	@Override
-	protected Map<String, GeneID2LsItem> readFromBGfile(
-			Collection<String[]> lsTmpGeneID2LsItem) {
+	protected Map<String, GeneID2LsItem> readFromBGfile(Collection<String[]> lsTmpGeneID2LsItem) {
 		Map<String, GeneID2LsItem> lsGeneID2LsItem = new LinkedHashMap<String, GeneID2LsItem>();
 		for (String[] strings : lsTmpGeneID2LsItem) {
 			GeneID2LsCog geneID2LsCog = new GeneID2LsCog();
@@ -54,7 +53,42 @@ public class CogFunTest extends FunctionTest {
 		}
 		return geneId2LsCog;
 	}
-
+	
+	/**
+	 * booRun 新跑一次 返回最后的结果，ElimGO需要覆盖该方法 对结果排个序
+	 * 返回最后的结果，ElimGO需要覆盖该方法
+	 * @throws Exception 
+	 * 没有就返回null<br>
+	 * <b>结果已经排过序了</b>
+	 */
+	public ArrayList<StatisticTestResult> getTestResult() {
+		if (statisticsTest == null) {
+			statisticsTest = new FisherTest();
+		}
+		if (lsTestResult != null && lsTestResult.size() > 10) return lsTestResult;
+		
+		List<GeneID2LsItem> lstest = convertLsGeneId2Cog(getFilteredLs(lsTest));
+		if (lstest.size() == 0) return null;
+		
+		List<GeneID2LsItem> lsbg = convertLsGeneId2Cog(getFilteredLs(mapBGGeneID2Items.values()));
+		lsTestResult = getFisherResult(statisticsTest, lstest, lsbg, BGnum);
+		for (StatisticTestResult statisticTestResult : lsTestResult) {
+			statisticTestResult.setItemTerm(getItemTerm(statisticTestResult.getItemID()));
+		}
+		return lsTestResult;
+	}
+	
+	private List<GeneID2LsItem> convertLsGeneId2Cog(List<GeneID2LsItem> lsGeneID2LsItems) {
+		List<GeneID2LsItem> lsGeneID2LsCogs = new ArrayList<>();
+		for (GeneID2LsItem geneID2LsItem : lsGeneID2LsItems) {
+			GeneID2LsCog geneID2LsCog = (GeneID2LsCog)geneID2LsItem;
+			GeneID2LsCog geneID2LsCogConvert = geneID2LsCog.convert2Abbr(cogAnno);
+			lsGeneID2LsCogs.add(geneID2LsCogConvert);
+		}
+		return lsGeneID2LsCogs;
+	}
+	
+	
 	@Override
 	protected StatisticTestGene2Item creatStatisticTestGene2Item() {
 		return new StatisticTestGene2Cog();
@@ -65,8 +99,8 @@ public class CogFunTest extends FunctionTest {
 		if (item.contains(":")) {
 			item = item.split(":")[1];
 		}
-		cogAnno.getCogInfoFromCogId(item);
-		return KeggInfo.getKGpathway(item).getTitle();
+		String[] cogInfo = cogAnno.queryAnnoFromCogAbbr(item);
+		return cogInfo[0];
 	}
 
 	@Override

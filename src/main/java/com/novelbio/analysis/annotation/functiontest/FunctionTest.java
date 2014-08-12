@@ -3,6 +3,8 @@ package com.novelbio.analysis.annotation.functiontest;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -13,10 +15,12 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultimap;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.FisherTest;
 import com.novelbio.base.dataStructure.StatisticsTest;
+import com.novelbio.base.dataStructure.StatisticsTest.StatisticsPvalueType;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -45,7 +49,7 @@ public abstract class FunctionTest implements Cloneable {
 	 *  */
 	Map<String, GeneID2LsItem> mapBGGeneID2Items = null;
 	String BGfile = "";
-	int BGnum = 0;
+	protected int BGnum = 0;
 	/**
 	 * gene2CopedID的对照表，多个accID对应同一个geneID的时候就用这个hash来处理
 	 * 用途，当做elimFisher的时候，最后会得到一系列的geneID，而每个geneID可能对应了多个accID
@@ -276,7 +280,7 @@ public abstract class FunctionTest implements Cloneable {
 	 * @param lsTest
 	 * @return
 	 */
-	protected ArrayList<GeneID2LsItem> getLsTestFromLsBG(Collection<GeneID> lsTest) {
+	protected List<GeneID2LsItem> getLsTestFromLsBG(Collection<GeneID> lsTest) {
 		//去冗余用的
 		HashSet<GeneID> setGeneIDs = new HashSet<GeneID>();
 		for (GeneID geneID : lsTest) {
@@ -394,14 +398,14 @@ public abstract class FunctionTest implements Cloneable {
 			return null;
 		}
 		List<GeneID2LsItem> lsbg = getFilteredLs(mapBGGeneID2Items.values());
-		lsTestResult = GeneID2LsItem.getFisherResult(statisticsTest, lstest, lsbg, BGnum);
+		lsTestResult = getFisherResult(statisticsTest, lstest, lsbg, BGnum);
 		for (StatisticTestResult statisticTestResult : lsTestResult) {
 			statisticTestResult.setItemTerm(getItemTerm(statisticTestResult.getItemID()));
 		}
 		return lsTestResult;
 	}
 	
-	private List<GeneID2LsItem> getFilteredLs(Collection<GeneID2LsItem> lsInput) {
+	protected List<GeneID2LsItem> getFilteredLs(Collection<GeneID2LsItem> lsInput) {
 		List<GeneID2LsItem> lsResult = new ArrayList<GeneID2LsItem>();
 		for (GeneID2LsItem geneID2LsGO : lsInput) {
 			if (!geneID2LsGO.isValidate()) {
@@ -526,4 +530,107 @@ public abstract class FunctionTest implements Cloneable {
 		return functionTest;
 	}
 	
+	
+	/**
+	 * 这个是最完善的方法，其他的方法都是它内部的模块
+	 * 给定两个Gene2Item的list，计算Fishertest并得到结果返回。
+	 * 结果排过序了
+	 * @param lsGene2Item 差异基因的 gene2item的list
+	 * @param lsGene2ItemBG
+	 * @param BGnum
+	 * @return 结果没加标题<br>
+	 * @throws Exception 
+	 */
+	protected static ArrayList<StatisticTestResult> getFisherResult(StatisticsTest statisticsTest, List<GeneID2LsItem> lsGene2Item,List<GeneID2LsItem> lsGene2ItemBG, int bgNum) {
+		HashMultimap<String, String> mapItemID2SetGeneID = getHashItem2Gen(lsGene2Item);
+		HashMultimap<String, String> mapItemID2SetGeneIDBG = getHashItem2Gen(lsGene2ItemBG);
+		int numDif = lsGene2Item.size();
+		int numBG = lsGene2ItemBG.size();
+		ArrayList<StatisticTestResult> lsFiserInput = cope2HashForPvalue(mapItemID2SetGeneID, numDif, mapItemID2SetGeneIDBG, bgNum);		
+		doFisherTest(statisticsTest, lsFiserInput);
+		return lsFiserInput;
+	}
+	
+	/**
+	 * 给定gene2Item的list，将其转化为一个hashMap。格式为
+	 * Item--list-GeneID<br>
+	 * 当获得了试验和背景的两个hashmap的时候，就可以调用cope2HashForPvalue来计算pvalue
+	 * @param <T>
+	 * @param lsGene2Item string2 0：gene  1：item,item,item的形式，注意 1. gene不能有重复 2.每个gene内的item不能为空，且不能有重复
+	 * @return
+	 */
+	private static HashMultimap<String, String> getHashItem2Gen(List<GeneID2LsItem> lsGene2Item) {
+		HashMultimap<String, String> mapItem2SetGeneID = HashMultimap.create();
+		for (GeneID2LsItem geneID2LsItem : lsGene2Item) {
+			for (String itemID : geneID2LsItem.getSetItemID()) {
+				mapItem2SetGeneID.put(itemID, geneID2LsItem.getGeneUniID());
+			}
+		}
+		return mapItem2SetGeneID;
+	}
+	
+	/**
+	 * 给定两个HashMap，
+	 * Item--list-GeneID[]
+	 * 一个为总Item
+	 * Item---list-GeneID[]
+	 * 注意差异基因必须在总基因中
+	 * @param hashDif 一个为差异Item
+	 * @param NumDif
+	 * @param hashAll
+	 * @param NumAll
+	 * @return 返回整理好的list
+	 */
+	private static ArrayList<StatisticTestResult> cope2HashForPvalue(HashMultimap<String, String> mapItemID2SetGeneID, int NumDif, HashMultimap<String, String> mapItemID2SetGeneIDBG ,int NumAll) {
+		ArrayList<StatisticTestResult> lsResult=new ArrayList<StatisticTestResult>();
+		
+		for (String itemID : mapItemID2SetGeneID.keySet()) {
+			if (itemID == null || itemID.trim().equals("")) {
+				continue;
+			}
+			Set<String> setGeneID = mapItemID2SetGeneID.get(itemID);
+			Set<String> setGeneIDBG = mapItemID2SetGeneIDBG.get(itemID);
+			StatisticTestResult statisticTestResult = new StatisticTestResult(itemID);
+			statisticTestResult.setDifGeneNum(setGeneID.size(), NumDif);
+			statisticTestResult.setGeneNum(setGeneIDBG.size(), NumAll);
+			lsResult.add(statisticTestResult);
+		}
+		return lsResult;
+	}
+	
+	/**
+	 * 给定fisher需要的信息， 做检验并获得fdr
+	 * 对结果进行排序
+	 */
+	private static void doFisherTest(StatisticsTest statisticsTest, List<StatisticTestResult> lsTestResult) {
+		if (statisticsTest instanceof FisherTest) {
+			setFisherTestMaxSize((FisherTest) statisticsTest, lsTestResult);
+		}
+		for (StatisticTestResult statisticTestResult : lsTestResult) {
+			statisticTestResult.setStatisticsTest(statisticsTest, StatisticsPvalueType.RightTail);
+			statisticTestResult.calculatePvalue();
+		}
+		
+		//排序
+        Collections.sort(lsTestResult,new Comparator<StatisticTestResult>(){
+            public int compare(StatisticTestResult arg0, StatisticTestResult arg1) {
+            	Double a = arg0.getPvalue();
+            	Double b = arg1.getPvalue();
+                return a.compareTo(b);
+            }
+        });
+        StatisticTestResult.setFDR(lsTestResult);
+	}
+	
+	private static void setFisherTestMaxSize(FisherTest statisticsTest, List<StatisticTestResult> lsGOinfo) {
+		//Fisher检验需要设定的初始值
+		int max = 0;
+		for (StatisticTestResult statisticTestResult : lsGOinfo) {
+			int tmp = statisticTestResult.getAllCountNum();
+			if (tmp > max) {
+				max = tmp; 
+			}
+		}
+		statisticsTest.setMaxSize(max);
+	}
 }

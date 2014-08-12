@@ -9,6 +9,7 @@ import java.util.Set;
 
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.GeneExpTable;
+import com.novelbio.analysis.seq.GeneExpTable.EnumAddAnnoType;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
@@ -27,7 +28,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
  * @author zomg0jie
  */
 public class RefSeqCounts implements AlignmentRecorder {
-	public static void main(String[] args) {
+	public static void main2(String[] args) {
 		String expPath = "/media/hdfs/nbCloud/staff/bianlianle/Project/RNA_Denovo/Paralichthys_olivaceus_ZhangXiaoYan/6.Gene_Expression/zongjieExp/";
 		String parentPath = "/media/hdfs/nbCloud/staff/bianlianle/Project/RNA_Denovo/Paralichthys_olivaceus_ZhangXiaoYan/";
 		RefSeqCounts refSeqCounts = new RefSeqCounts();
@@ -38,8 +39,15 @@ public class RefSeqCounts implements AlignmentRecorder {
 		lsRecorders.add(refSeqCounts);
 		
 		List<String> lsFile = FileOperate.getFoldFileNameLs(parentPath + "10.SNP/tmp", "*", "*");
+		SamFile samFile = new SamFile(lsFile.get(0));
+		refSeqCounts.setMapIsoId2Len(samFile.getMapChrID2Length());
 		for (String bamFile : lsFile) {
 			String prefix = FileOperate.getFileNameSep(bamFile)[0];
+			String out = expPath + prefix + ".xls";
+			if (FileOperate.isFileExistAndBigThanSize(out, 0)) {
+				refSeqCounts.geneExpTable.read(out, EnumAddAnnoType.notAdd);
+				continue;
+			}
 			refSeqCounts.setCondition(prefix);
 			SamToBamSort samToBamSort = new SamToBamSort(null, new SamFile(bamFile));
 			samToBamSort.setNeedSort(false);
@@ -47,11 +55,27 @@ public class RefSeqCounts implements AlignmentRecorder {
 			samToBamSort.setLsAlignmentRecorders(lsRecorders);
 			samToBamSort.setWriteToBam(false);
 			samToBamSort.convert();
-			refSeqCounts.geneExpTable.writeFile(false, expPath + prefix, EnumExpression.Counts);
+//			refSeqCounts.geneExpTable.writeFile(false, expPath + prefix, EnumExpression.Counts);
+
 		}
 		refSeqCounts.geneExpTable.writeFile(true, expPath + "All" + ".txt", EnumExpression.Counts);
+		refSeqCounts.geneExpTable.writeFile(true, expPath + "All_RPKM" + ".txt", EnumExpression.RPKM);
 	}
 	
+	public static void main(String[] args) {
+		String expPath = "/media/hdfs/nbCloud/staff/bianlianle/Project/RNA_Denovo/Paralichthys_olivaceus_LiChao/6.Gene_Expression/zongjieExp/";
+		String parentPath = "/media/hdfs/nbCloud/staff/bianlianle/Project/RNA_Denovo/Paralichthys_olivaceus_LiChao/";
+		RefSeqCounts refSeqCounts = new RefSeqCounts();
+		refSeqCounts.readGene2IsoFile(parentPath + "7.Gene_Expression/RefSeqIndex/All_Trinity.fa.cluster.result.fa.gene_trans_map");
+		
+		refSeqCounts.setPairend(true);
+		SamFile samFile = new SamFile(parentPath + "10.SNP/R2.bam");
+		refSeqCounts.setMapIsoId2Len(samFile.getMapChrID2Length());
+		refSeqCounts.geneExpTable.read(parentPath + "7.Gene_Expression/zongjieExp/All.txt", EnumAddAnnoType.notAdd);
+
+		refSeqCounts.geneExpTable.writeFile(true, expPath + "All_new" + ".txt", EnumExpression.Counts);
+		refSeqCounts.geneExpTable.writeFile(true, expPath + "All_RPKM" + ".txt", EnumExpression.RPKM);
+	}
 	GeneExpTable geneExpTable = new GeneExpTable(TitleFormatNBC.GeneID);
 
 	/** iso到基因的对照表，key为小写 */
@@ -61,7 +85,6 @@ public class RefSeqCounts implements AlignmentRecorder {
 	Map<String, SamRecord> mapKey2SamRecord = new HashMap<>();
 	SamRecord lastRecord;
 	boolean isPairend;
-	
 	public void setPairend(boolean isPairend) {
 		this.isPairend = isPairend;
 	}
@@ -82,7 +105,22 @@ public class RefSeqCounts implements AlignmentRecorder {
 		txtRead.close();
 		geneExpTable.addLsGeneName(mapIso2Gene.values());
 	}
-	
+	/** 设定转录本名和长度，直接从bam文件获得就行 {@link SamFile#getMapChrID2Length()}<br>
+	 * 注意务必先调用{@link #readGene2IsoFile(String)}读取对照表
+	 * @param mapIsoId2Len
+	 */
+	public void setMapIsoId2Len(Map<String, ? extends Number> mapIsoId2Len) {
+		Map<String, Integer> mapGeneName2Len = new HashMap<>();
+		for (String isoName : mapIsoId2Len.keySet()) {
+			int length = mapIsoId2Len.get(isoName).intValue();
+
+			String geneName = mapIso2Gene.get(isoName.toLowerCase());
+			if (!mapGeneName2Len.containsKey(geneName) || mapGeneName2Len.get(geneName) < length) {
+				mapGeneName2Len.put(geneName, length);
+			}
+		}
+		geneExpTable.setMapGene2Len(mapGeneName2Len);
+	}
 	public void setCondition(String currentCondition) {
 		geneExpTable.setCurrentCondition(currentCondition);
 	}

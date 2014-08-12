@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.analysis.annotation.blast.BlastNBC;
 import com.novelbio.analysis.annotation.blast.BlastType;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
@@ -24,6 +26,7 @@ import com.novelbio.generalConf.PathDetailNBC;
  *
  */
 public class COGanno {
+	private static final Logger logger = Logger.getLogger(COGanno.class);
 	String cogFastaFile = PathDetailNBC.getCOGfastaFile();
 	String seqFastaFile;
 	int threadNum = 4;
@@ -48,7 +51,9 @@ public class COGanno {
 	Map<String, CogInfo> mapGeneUniId2CogInfo = new HashMap<>();
 	/** key 为小写 */
 	Map<String, CogInfo> mapCogId2CogInfo = new HashMap<>();
-
+	/** key 为小写 */
+	Map<String, String[]> mapCogAbbr2Anno = new HashMap<>();
+	
 	public void setCogAbbr2FunFile(String cogAbbr2FunFile) {
 		this.cogAbbr2FunFile = cogAbbr2FunFile;
 	}
@@ -85,14 +90,27 @@ public class COGanno {
 			mapGeneUniId2CogInfo.put(queryId.toLowerCase(), cogInfo);
 			mapCogId2CogInfo.put(cogInfo.getCogId().toLowerCase(), cogInfo);
 		}
+		mapCogAbbr2Anno = getMapCogAbbr2Fun(cogAbbr2FunFile);
 		txtRead.close();
 	}
 	
 	public CogInfo getCogInfoFromGeneUniId(String geneUniId) {
 		return mapGeneUniId2CogInfo.get(geneUniId.toLowerCase());
 	}
-	public CogInfo getCogInfoFromCogId(String cogId) {
+	
+	public CogInfo queryCogInfoFromCogId(String cogId) {
 		return mapCogId2CogInfo.get(cogId.toLowerCase());
+	}
+	
+	/**
+	 * string[2]:<br> 
+	 * 0 cog注释的常规，就是 [A] 是 RNA processing and modification这种<br>
+	 * 1: cog的大类，类似CELLULAR PROCESSES AND SIGNALING 这种
+	 * @param cogAbbr
+	 * @return
+	 */
+	public String[] queryAnnoFromCogAbbr(String cogAbbr) {
+		return mapCogAbbr2Anno.get(cogAbbr.toLowerCase());
 	}
 	
 	private void generateGene2Cog(String blastFile) {
@@ -102,7 +120,6 @@ public class COGanno {
 		List<BlastInfo> lsBlastInfo = BlastInfo.readBlastFile(blastFile);
 		lsBlastInfo = BlastInfo.removeDuplicateQueryID(lsBlastInfo);
 		Map<String, String[]> mapCogId2Anno = getMapCogId2Function(cogId2AnnoFile);
-		Map<String, String[]> mapCogAbbr2Fun = getMapCogAbbr2Fun(cogAbbr2FunFile);
 		Map<String, String> mapProId2CogId = getMapProId2Cog(pro2cogFile);
 		
 		String tmp = FileOperate.changeFileSuffix(cogOutFile, "_tmp", null);
@@ -114,9 +131,6 @@ public class COGanno {
 			String[] anno = mapCogId2Anno.get(cogInfo.getCogId());
 			cogInfo.setCogAbbr(anno[0]);
 			cogInfo.setCogAnnoDetail(anno[1]);
-			String[] anno2Big = mapCogAbbr2Fun.get(anno[0]);
-			cogInfo.setCogAnno(anno2Big[0]);
-			cogInfo.setCogAnnoBig(anno2Big[1]);
 			cogInfo.setEvalue(blastInfo.getEvalue());
 			String qId = blastInfo.getQueryID();
 			if (species != null) {
@@ -193,7 +207,7 @@ public class COGanno {
 	 * @param cogSeqModify
 	 * @param pro2CogId
 	 */
-	private static void getModifiedSeq(String cogSeq, String cogSeqModify, String pro2CogId) {
+	public static void getModifiedSeq(String cogSeq, String cogSeqModify, String pro2CogId) {
 		Map<String, String> mapPro2CogId = getMapProId2Cog(pro2CogId);
 		TxtReadandWrite txtRead = new TxtReadandWrite(cogSeq);
 		TxtReadandWrite txtWrite = new TxtReadandWrite(cogSeqModify, true);

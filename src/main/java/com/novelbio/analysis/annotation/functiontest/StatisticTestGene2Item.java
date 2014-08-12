@@ -272,29 +272,33 @@ class StatisticTestGene2Cog extends StatisticTestGene2Item {
 		if (cogInfo == null) {
 			return lsFinal;
 		}
-		String cogId = "COG:" + cogInfo.getCogId();
-		ArrayList<String> lsTmpFinalNew = (ArrayList<String>) lsTmpFinal.clone();
-		if (!mapItem2StatisticTestResult.containsKey(cogId)) {
-			return lsFinal;
+		for (char charCog : cogInfo.getCogAbbr().toCharArray()) {
+			ArrayList<String> lsTmpFinalNew = (ArrayList<String>) lsTmpFinal.clone();
+			//这里的mapItem2StatisticTestResult的key是单字母的COGID
+			String cogAbbr = (Character.toLowerCase(charCog) + "").toLowerCase();
+			if (!mapItem2StatisticTestResult.containsKey(cogAbbr)) {
+				return lsFinal;
+			}
+			//这里的geneID2LsItem.setItemID的key是正常的COGID，类似COG0630
+			if (!geneID2LsItem.setItemID.contains(cogInfo.getCogId()) ) {
+				isUpdateBG = true;
+				return lsFinal;
+			}
+			StatisticTestResult statisticTestResult = mapItem2StatisticTestResult.get(cogAbbr);
+			lsTmpFinalNew.add(cogAbbr);
+			lsTmpFinalNew.add(cogInfo.getCogId());
+			lsTmpFinalNew.add(cogInfo.getCogAnnoDetail());
+			lsTmpFinalNew.add(statisticTestResult.getPvalue() + "");
+			lsTmpFinalNew.add(statisticTestResult.getEnrichment() + "");
+			lsFinal.add(lsTmpFinalNew);
 		}
-		if (!geneID2LsItem.setItemID.contains(cogId) ) {
-			isUpdateBG = true;
-			return lsFinal;
-		}
-		StatisticTestResult statisticTestResult = mapItem2StatisticTestResult.get(cogId.toLowerCase());
-		
-		lsTmpFinalNew.add(cogId);
-		lsTmpFinalNew.add(cogInfo.getCogAnnoDetail());
-		lsTmpFinalNew.add(statisticTestResult.getPvalue() + "");
-		lsTmpFinalNew.add(statisticTestResult.getEnrichment() + "");
-		lsFinal.add(lsTmpFinalNew);
-
 		return lsFinal;
 	}
 	
 	public String[] getTitle() {
 		List<String> lsTitle = new ArrayList<String>();
 		lsTitle.add(TitleFormatNBC.QueryID.toString());
+		lsTitle.add(TitleFormatNBC.COGAbbr.toString());
 		lsTitle.add(TitleFormatNBC.COGID.toString());
 		lsTitle.add(TitleFormatNBC.COGTerm.toString());
 		lsTitle.add(TitleFormatNBC.Pvalue.toString());

@@ -37,7 +37,7 @@ public enum TitleFormatNBC {
 	GOID("GOID"), GOTerm("GOTerm"),
 	KEGGID("KeggID"), KEGGTerm("KeggTerm"),
 	PathwayID("PathwayID"), PathwayTerm("PathwayTerm"),
-	COGID("COGID"), COGTerm("COGTerm"),
+	COGAbbr("COGFunction"), COGID("COGID"), COGTerm("COGTerm"),
 	/** mapping的临时文件夹 */
 	TmpMapping("TmpMapping"),
 	/** 样本文件夹 */
