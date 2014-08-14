@@ -79,7 +79,10 @@ public class ManageGffDetailGene {
 	public void saveGffFile(GffFile gffFile) {
 		repoGffFile.save(gffFile);
 	}
-	
+	public void delete(GffHashGene gffHashGene) {
+		GffFile gffFile = repoGffFile.findByTaxIdAndVersionAndDbinfo(gffHashGene.getTaxID(), gffHashGene.getVersion(), gffHashGene.getDbinfo());
+		delete(gffFile);
+	}
 	public void delete(GffFile gffFile) {
 		Query query = new Query( Criteria.where("gffFileId").is(gffFile.getId()));
 		mongoTemplate.remove(query, GffGeneIsoInfo.class);

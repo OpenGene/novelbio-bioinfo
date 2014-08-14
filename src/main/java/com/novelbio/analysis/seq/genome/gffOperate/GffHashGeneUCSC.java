@@ -50,7 +50,6 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 		String chrIDtmp = "";
 		// int mm=0;//计数的东西
 		for (String content : txtGffRead.readlines(2)) {
-			content = HttpFetch.decode(content);
 			content = content.replace("\"", "");
 			String[] geneInfo = content.split("\t");
 			String[] exonStarts = geneInfo[8].split(",");

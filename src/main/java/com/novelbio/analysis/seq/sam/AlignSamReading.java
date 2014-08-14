@@ -103,6 +103,7 @@ public class AlignSamReading extends AlignSeqReading {
 			}
 		
 		}
+		System.out.println();
 	}
 	
 	/** 清空AlignmentRecorder和readByte和readLines，但不清除samFile */

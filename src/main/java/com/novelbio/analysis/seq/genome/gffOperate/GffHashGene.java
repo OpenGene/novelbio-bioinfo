@@ -368,7 +368,9 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	public void saveToDB() {
 		ManageGffDetailGene.getInstance().saveGffHashGene(this);
 	}
-	
+	public void deleteFromDB() {
+		ManageGffDetailGene.getInstance().delete(this);
+	}
 	/**
 	 * 设定每个基因的区间
 	 * @param geneNum 每个区间的基因数量，可以设定为10

@@ -81,14 +81,13 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 		   if(content.length() == 0 || content.charAt(0)=='#') {
 			   continue;
 		   }
-		   content = HttpFetch.decode(content);
 		   ////////////////// 需要进行替换的地方 /////////////////////////////////////////////////////////////
 		   if (geneType != GeneType.mRNA) {
 			   content = content.replace("pseudogenic_exon", "CDS");
 			   content = content.replace("exon", "CDS");
 		   }
 		   String[] ss = content.split("\t");//按照tab分开
-		   
+		   ss[8] = HttpFetch.decode(ss[8]);
 		   chrIDtmp = ss[0];//小写的chrID
 		   String chrIDtmpLowCase = chrIDtmp.toLowerCase();
 		   //新的染色体

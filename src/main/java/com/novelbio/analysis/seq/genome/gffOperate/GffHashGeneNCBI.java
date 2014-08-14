@@ -157,11 +157,11 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   
 	   for (String content : txtgff.readlines()) {
 		   if(content.charAt(0) == '#') continue;
-		   content = HttpFetch.decode(content);
 		   String[] ss = content.split("\t");//按照tab分开
 		   if (ss[2].equals("match") || ss[2].toLowerCase().equals("chromosome") || ss[2].toLowerCase().equals("intron")) {
 			   continue;
 		   }
+		   ss[8] = HttpFetch.decode(ss[8]);
 
 //		   if (ss[2].equals("match") || ss[2].toLowerCase().equals("chromosome") || ss[2].toLowerCase().equals("intron") || ss[0].startsWith("NW_") || ss[0].startsWith("NT_")) {
 //			   continue;

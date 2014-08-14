@@ -64,10 +64,9 @@ public class GffHashGTF extends GffHashGeneAbs{
 		String tmpChrID = "";
 		String tmpTranscriptNameLast = "";
 		for (String content : txtgff.readlines() ) {
-			content = HttpFetch.decode(content);
 			if (content.charAt(0) == '#') continue;
 			String[] ss = content.split("\t");// 按照tab分开
-			
+			ss[8] = HttpFetch.decode(ss[8]);
 			if (setContig.contains(ss[2].toLowerCase())) continue;
 			
 			int exonStart = Integer.parseInt(ss[3]), exonEnd = Integer.parseInt(ss[4]);

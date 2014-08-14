@@ -26,14 +26,19 @@ public class GoPathBarPlot {
 	private static final int barMaxNumVertical = 25;
 	/** 画的柱状图的柱的数量上限 */
 	private static final int barMaxNumHorizon = 15;
+	
+	
+	public static BufferedImage drawLog2PvaluePicture(List<StatisticTestResult> lsTestResults, String title) throws Exception {
+		return drawLog2PvaluePicture(lsTestResults, barMaxNumHorizon, title);
+	}
 	/**
 	 * 根据参数画gopath的柱状图
 	 * 
 	 * @return　是否成功
 	 */
-	public static BufferedImage drawLog2PvaluePicture(List<StatisticTestResult> lsTestResults, String title) throws Exception {
+	public static BufferedImage drawLog2PvaluePicture(List<StatisticTestResult> lsTestResults, int barNum, String title) throws Exception {
 		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-		for (int i = 0; i < barMaxNumHorizon; i++) {
+		for (int i = 0; i < barNum; i++) {
 			if (i < lsTestResults.size())
 				dataset.addValue(lsTestResults.get(i).getLog2Pnegative(), "", lsTestResults.get(i).getItemTerm());
 		}
@@ -122,14 +127,18 @@ public class GoPathBarPlot {
 //		}
 //		return true;
 	}
+	
+	public static BufferedImage drawEnrichmentPicture(List<StatisticTestResult> lsTestResults, String title) throws Exception {
+		return drawEnrichmentPicture(lsTestResults, barMaxNumVertical, title);
+	}
 	/**
 	 * 根据参数画gopath的柱状图
 	 * 
 	 * @return　是否成功
 	 */
-	public static BufferedImage drawEnrichmentPicture(List<StatisticTestResult> lsTestResults, String title) throws Exception {
+	public static BufferedImage drawEnrichmentPicture(List<StatisticTestResult> lsTestResults, int barNum, String title) throws Exception {
 		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-		for (int i = 0; i < barMaxNumVertical; i++) {
+		for (int i = 0; i < barNum; i++) {
 			if (i < lsTestResults.size())
 				dataset.addValue(lsTestResults.get(i).getEnrichment(), "", lsTestResults.get(i).getItemTerm());
 		}
