@@ -158,8 +158,6 @@ public class RseQC {
 			this.imageUpBound = imageUpBound;
 		}
 		
-		
-		
 		public String[] getImageUpBoundParam() {
 			return  new String[]{"-u",imageUpBound + ""};
 		}
