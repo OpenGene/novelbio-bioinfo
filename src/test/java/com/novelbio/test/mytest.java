@@ -7,77 +7,70 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.picard.fastq.FastqRecord;
-
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.GeneExpTable;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
-import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
-import com.novelbio.analysis.seq.mirna.MiRNACount;
-import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
-import com.novelbio.analysis.seq.sam.AlignSeqReading;
-import com.novelbio.analysis.seq.sam.BamIndex;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.generalConf.PathDetailNBC;
-import com.novelbio.generalConf.TitleFormatNBC;
 
 
 public class mytest {
 	private static final Logger logger = Logger.getLogger(mytest.class);
 	static boolean is;
 	public static void main(String[] args) {
-//		SamFile samFile = new SamFile("/media/winE/tmp/test.sam");
-//		SamFile samFile2 = new SamFile("/media/winE/tmp/testOrder.bam", samFile.getHeader());
-//		int i = 0;
-//		for (SamRecord samRecord : samFile.readLines()) {
-//			if (i++ > 50000) {
-//				break;
-//			}
-//			samFile2.writeSamRecord(samRecord);
-//		}
-//		samFile.close();
-//		samFile2.close();
-		
-//		SamFile samFile = new SamFile("/media/winE/tmp/testOrder.bam");
-//		SAMFileHeader header = samFile.getHeader();
-		
-//		TxtReadandWrite txtRead = new TxtReadandWrite("/media/hdfs/nbCloud/public/test/fastq/798B_CGATGT_L004_R2_001.fastq.gz");
-//		int i = 0;
-//		for (String string : txtRead.readlines()) {
-//			if (i++ > 10) {
-//				break;
-//			}
-//			System.out.println(string);
-//		}
-//		txtRead.close();
-		
-		SamFile samFile = new SamFile("/media/hdfs/nbCloud/public/test/RNASeqMap/R001_mapsplice.sort.bam");
-//		samFile.indexMake();
-//		BamIndex bamIndex = new BamIndex(samFile);
-//		bamIndex.indexC();
-//		int i = 0;
-		for (SamRecord samRecord : samFile.readLinesContained("chr3", 23456789, 33456789)) {
-//			if (i++ > 10) {
-//				break;
-//			}
-			System.out.println(samRecord.toString());
+		Species species = new Species(9606);
+		String file = species.getChromSeq();
+		System.out.println(file);
+		TxtReadandWrite txtRead = new TxtReadandWrite(file);
+		int i = 0;
+		for (String string : txtRead.readlines()) {
+			if (i++ > 10) {
+				break;
+			}
+			System.out.println(string);
 		}
-		
+	}
+	
+	private static void copeGffWangxia2() {
+		GffHashGene gffHashGeneOur = new GffHashGene(GffType.NCBI, "/media/winE/OutMrd1.mrd/ARZ_v2.gff3.gz");
+		for (GffDetailGene gffDetailGeneOur : gffHashGeneOur.getGffDetailAll()) {
+			List<GffGeneIsoInfo> lsIso = gffDetailGeneOur.getLsCodSplit();
+			GffGeneIsoInfo isoLong = gffDetailGeneOur.getLongestSplitMrna();
+			for (GffGeneIsoInfo isoShort : lsIso) {
+				if (isoLong.equals(isoShort) || isoLong.isCis5to3() == isoShort.isCis5to3()) {
+					continue;
+				}
+				double[] longInt = new double[]{isoLong.getStartAbs(), isoLong.getEndAbs()};
+				double[] shortInt = new double[]{isoShort.getStartAbs(), isoShort.getEndAbs()};
+				if (ArrayOperate.cmpArray(longInt, shortInt)[3] > 0.7) {
+					double midShort = MathComput.mean(shortInt);
+					if (isoLong.getATGsite() > midShort && isoLong.getUAGsite() > midShort) {
+						isoLong = isoLong.subGffGeneIso(isoShort.getEndAbs(), isoLong.getEndAbs());
+					} else if (isoLong.getATGsite() < midShort && isoLong.getUAGsite() < midShort){
+						isoLong = isoLong.subGffGeneIso(isoLong.getStartAbs(), isoShort.getStartAbs());
+					}
+				}
+			}
+			gffDetailGeneOur.removeIso(isoLong.getName());
+			gffDetailGeneOur.addIso(isoLong);
+		}
+		gffHashGeneOur.writeToGTF("/media/winE/OutMrd1.mrd/ARZ_v2_coped.gtf");
 	}
 	
 	private void copeGffWangxia() {
