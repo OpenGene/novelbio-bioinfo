@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -18,10 +17,6 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.SpeciesFile;
 import com.novelbio.database.domain.geneanno.TaxInfo;
-import com.novelbio.database.mongorepo.geneanno.RepoSpeciesFile;
-import com.novelbio.database.mongorepo.geneanno.RepoTaxInfo;
-import com.novelbio.database.service.SpringFactory;
-import com.novelbio.database.service.servgeneanno.ManageSpeciesDB.ManageSpeciesDBHold;
 import com.novelbio.generalConf.PathDetailNBC;
 
 public class ManageSpeciesTxt implements IManageSpecies {

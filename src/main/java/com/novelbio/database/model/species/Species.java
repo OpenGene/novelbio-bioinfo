@@ -358,6 +358,11 @@ public class Species implements Cloneable {
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getRfamFile(spciesSpecific);
 	}
+	/** 获得本物中指定version的refseq的ncRNA序列，仅获得数据库记录的ncRNA */
+	public String getRefseqNCfileDB() {
+		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
+		return speciesFile.getRefseqNCfileDB();
+	}
 	/** 获得本物中指定version的refseq的ncRNA序列 */
 	public String getRefseqNCfile() {
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());

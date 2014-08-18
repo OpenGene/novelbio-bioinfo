@@ -74,8 +74,8 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	/** "(?<=product\\=)\\w+" */
 	PatternOperate patProduct = null;
 
-	private HashMap<String, String> mapRnaID2GeneID = new HashMap<String, String>();
-	private LinkedHashMap<String, GffDetailGene> mapGenID2GffDetail = new LinkedHashMap<String, GffDetailGene>();
+	private Map<String, String> mapRnaID2GeneID = new HashMap<String, String>();
+	private Map<String, GffDetailGene> mapGenID2GffDetail = new LinkedHashMap<String, GffDetailGene>();
 	
 	/** 这两个是一对，一个是rnaID对应多个iso，常见于TRNA
 	 * 另一个这个存储ISO对应的坐标 */
@@ -101,7 +101,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	 * 那么本map就用来记录该转录本是否出现了exon，如果出现了exon，CDS就只用来设定ATG和UAG。
 	 * 如果没有出现exon，CDS就要当exon来设定。
 	 */
-	private HashMap<String, Boolean> mapGeneName2IsHaveExon = new HashMap<String, Boolean>();
+	private Map<String, Boolean> mapGeneName2IsHaveExon = new HashMap<String, Boolean>();
 	int numCopedIDsearch = 0;//查找taxID的次数最多10次
 	/** 默认连上数据库 */
 	boolean database = true;

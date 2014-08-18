@@ -11,6 +11,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.model.modgeneid.GeneType;
 import com.novelbio.database.service.servgff.ManageGffDetailGene;
 
 /**
@@ -447,5 +448,32 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 			}
 		}
 		return lsOverlapGene;
+	}
+	
+	
+	/** 判定这个gff中是否有ncRNA存在，首先要有mRNA存在，因为如果没有mRNA都是ncRNA，很可能是没有预测好orf的Gff文件
+	 * 此外还要有miRNA，这是判定该gff文件是否注释清楚的关键
+	 * @param gffHashGene
+	 * @return
+	 */
+	public boolean isContainNcRNA() {
+		int mRNAnum = 0, miRNAnum = 0, ncRNAnum = 0, all = 0;
+		for (GffDetailGene gffDetailGene : getGffDetailAll()) {
+			for (GffGeneIsoInfo iso : gffDetailGene.getLsCodSplit()) {
+				GeneType geneType = iso.getGeneType();
+				all++;
+				if (geneType == GeneType.mRNA) {
+					miRNAnum++;
+				} else if (geneType == GeneType.miRNA) {
+					miRNAnum++;
+				} else {
+					ncRNAnum++;
+				}
+			}
+		}
+		if (mRNAnum > all/3 && miRNAnum > 10 && ncRNAnum > 100) {
+			return true;
+		}
+		return false;
 	}
 }

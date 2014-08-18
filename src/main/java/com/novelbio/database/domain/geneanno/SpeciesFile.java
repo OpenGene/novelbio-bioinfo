@@ -20,6 +20,7 @@ import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
@@ -28,6 +29,8 @@ import com.novelbio.analysis.seq.fasta.format.NCBIchromFaChangeFormat;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.GffChrSeq;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.mirna.ListMiRNAdat;
@@ -39,6 +42,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
+import com.novelbio.database.model.modgeneid.GeneType;
 import com.novelbio.database.service.servgeneanno.IManageSpecies;
 import com.novelbio.database.service.servgeneanno.ManageSpecies;
 import com.novelbio.generalConf.PathDetailNBC;
@@ -327,7 +331,7 @@ public class SpeciesFile {
 			break;
 		}
 		case refseqNCfile: {
-			FileOperate.DeleteFileFolder(getRefseqNCfile());
+			FileOperate.DeleteFileFolder(getRefseqNCfileDB());
 			refseqNCfile = null;
 			break;
 		}
@@ -803,12 +807,42 @@ public class SpeciesFile {
 		this.refseqNCfile = refseqNCfile;
 	}
 	
-	public String getRefseqNCfile() {
+	/** 数据库里是否记载了ncRNA，没记载就返回null */
+	public String getRefseqNCfileDB() {
 		if (StringOperate.isRealNull(refseqNCfile)) {
 			return null;
 		}
 		return EnumSpeciesFile.refseqNCfile.getSavePath(this) + refseqNCfile;
 	}
+	
+	/** 数据库里是否记载了ncRNA，没记载就从Gff中提取 */
+	public String getRefseqNCfile() {
+		String ncFile = !StringOperate.isRealNull(refseqNCfile)? refseqNCfile : EnumSpeciesFile.refseqNCfile.getSavePath(this) + "ncRNA.fa";
+		if (FileOperate.isFileExistAndBigThanSize(ncFile, 0)) {
+			return ncFile;
+		}
+		GffHashGene gffHash = new GffHashGene(getGffType(), getGffFile());
+		if (!gffHash.isContainNcRNA()) return null;
+		
+		GffChrAbs gffChrAbs = new GffChrAbs();
+		gffChrAbs.setGffHash(gffHash);
+		gffChrAbs.setSeqHash(new SeqHash(getChromSeqFile(), " "));
+		GffChrSeq gffChrSeq = new GffChrSeq(gffChrAbs);
+		gffChrSeq.setGeneStructure(GeneStructure.EXON);
+		gffChrSeq.setGeneType(GeneType.ncRNA);
+		gffChrSeq.setGetAAseq(false);
+		gffChrSeq.setGeneStructure(GeneStructure.ALLLENGTH);
+		gffChrSeq.setGetAllIso(true);
+		gffChrSeq.setGetIntron(false);
+		gffChrSeq.setGetSeqGenomWide();
+		gffChrSeq.setOutPutFile(ncFile);
+		gffChrSeq.run();
+		gffChrAbs.close();
+		gffChrAbs = null;
+		gffChrSeq = null;
+		return ncFile;
+	}
+	
 	/**
 	 * 是否物种特异性的提取，获取绝对路径
 	 * @param speciesSpecific
