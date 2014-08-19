@@ -345,10 +345,13 @@ public class SpeciesFile {
 			return;
 		}
 		gffDb = gffDb.toLowerCase();
-		String gffFile = mapDB2GffTypeAndFile.get(gffDb)[1];
-		mapDB2GffTypeAndFile.remove(gffDb);
-		mapGffDBLowCase2DBNormal.remove(gffDb);
-		FileOperate.DeleteFileFolder(gffFile);
+		String[] gffInfo = mapDB2GffTypeAndFile.get(gffDb);
+		if (gffInfo != null) {
+			String gffFile = mapDB2GffTypeAndFile.get(gffDb)[1];
+			mapDB2GffTypeAndFile.remove(gffDb);
+			mapGffDBLowCase2DBNormal.remove(gffDb);
+			FileOperate.DeleteFileFolder(gffFile);
+		}
 	}
 	/**
 	 * 删除所有Chromose相关的文件
