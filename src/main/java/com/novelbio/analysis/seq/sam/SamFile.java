@@ -795,7 +795,7 @@ public class SamFile implements AlignSeq {
 	}
 	
 	public static SamFile mergeBamFile(String outBamFile, Collection<SamFile> lsBamFile) {
-		BamMerge bamMerge = new BamMerge();
+		BamMergeInt bamMerge = BamMerge.getInstance();
 		ArrayList<String> lsBamFileName = new ArrayList<String>();
 		for (SamFile samFile : lsBamFile) {
 			lsBamFileName.add(samFile.getFileName());

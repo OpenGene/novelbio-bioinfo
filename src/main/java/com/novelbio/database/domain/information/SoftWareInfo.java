@@ -241,6 +241,7 @@ public class SoftWareInfo {
 		bwa_aln, bwa_men, bowtie, bowtie2, 
 		tophat, rsem, mapsplice, rseqc, trinity,
 		cpat,
+		cap3,
 		wigToBigwig,
 		miranada, RNAhybrid, mirDeep, miReap,
 		samtools, picard, GATK, cufflinks,

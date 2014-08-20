@@ -3,14 +3,13 @@ package com.novelbio.analysis.seq.sam;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
-public class BamMerge implements IntCmdSoft {	
+public class BamMerge implements BamMergeInt {
 	String ExePath = "";
 	List<String> lsBamFile = new ArrayList<String>();
 	String outFileName;
@@ -53,7 +52,7 @@ public class BamMerge implements IntCmdSoft {
 	}
 	
 	/** 返回merge后的名字，"" 表示没有成功 */
-	public String merge() {
+	private String merge() {
 		lsCmdLine.clear();
 		if (lsBamFile.size() == 0) {
 			return "";
@@ -87,5 +86,9 @@ public class BamMerge implements IntCmdSoft {
 	public List<String> getCmdExeStr() {
 		return lsCmdLine;
 	}
-
+	
+	public static BamMergeInt getInstance() {
+		return new BamMergeJava();
+	}
+	
 }

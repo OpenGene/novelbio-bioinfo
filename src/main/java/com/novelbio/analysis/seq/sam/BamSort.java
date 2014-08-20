@@ -56,6 +56,7 @@ public class BamSort {
 	 * @param outFile
 	 * @return
 	 */
+	@Deprecated
 	public String sortSamtools(String outFile) {
 		SAMFileReader reader = samFile.getSamReader().getSamFileReader();
 		if (reader.getFileHeader().getSortOrder() == SortOrder.coordinate) {

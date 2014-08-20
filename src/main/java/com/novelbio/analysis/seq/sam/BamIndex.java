@@ -98,15 +98,13 @@ public class BamIndex {
         int allRecordsNum = 0;
 
         for (SamRecord rec : reader.readLines()) {
-        	if (rec.getRefID().equals("chr17")) {
-				logger.debug("stop");
-			}
             if (allRecordsNum % 1000000 == 0) {
             	logger.info(allRecordsNum + " reads processed ...");
             }
             try {
             	 indexer.processAlignment(rec.samRecord);
 			} catch (Exception e) {
+				System.out.println(rec.toString());
 				 indexer.processAlignment(rec.samRecord);
 			}
            
