@@ -45,7 +45,6 @@ public class SamPileUp {
 	private double[] getRangeInfo(String chrID, int startNum, int endNum, int binNum, int type) {
 		int[] startEnd = MapReadsAbs.correctStartEnd(mapChrIDlowcase2Length, chrID, startNum, endNum);
 		if (startEnd == null) return null;
-		TxtReadandWrite
 		
 		for (SamRecord samRecord : queueSamRecord) {
 			ArrayList<Align> lsAlign = samRecord.getAlignmentBlocks();

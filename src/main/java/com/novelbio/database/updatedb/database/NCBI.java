@@ -82,48 +82,48 @@ public class NCBI {
 		impFile.updateFile(FileOperate.changeFileSuffix(gene2Acc, "_failed", "txt"));
 		logger.info("finish gene2Acc");		
 		
-//		impFile = new ImpGen2Acc();
-//		impFile.setTxtWriteExcep(FileOperate.changeFileSuffix(gene2Ref, "_failed", "txt"));
-//		impFile.updateFile(gene2Ref);
-//		impFile = new ImpGen2Acc();
-//		impFile.updateFile(FileOperate.changeFileSuffix(gene2Ref, "_failed", "txt"));
-//		logger.info("finish gene2Ref");
-//		
-//		
-//		impFile = new ImpGen2Ensembl();
-//		impFile.setTxtWriteExcep(FileOperate.changeFileSuffix(gene2ensembl, "_failed", "txt"));
-//		impFile.updateFile(gene2ensembl);
-//		impFile = new ImpGen2Ensembl();
-//		impFile.updateFile(FileOperate.changeFileSuffix(gene2ensembl, "_failed", "txt"));
-//		logger.info("finish gene2Ref");
-//		
-//		impFile = new ImpGeneRef2UniID();
-//		impFile.setTxtWriteExcep(FileOperate.changeFileSuffix(geneRef2UniID, "_failed", "txt"));
-//		impFile.updateFile(geneRef2UniID);
-//		impFile = new ImpGeneRef2UniID();
-//		impFile.updateFile(FileOperate.changeFileSuffix(geneRef2UniID, "_failed", "txt"));
-//		logger.info("finish geneRef2UniID");
-//		
-//		impFile = new ImpGene2Info();
-//		impFile.setTxtWriteExcep(FileOperate.changeFileSuffix(gene2Info, "_failed", "txt"));
-//		impFile.updateFile(gene2Info);
-//		impFile = new ImpGene2Info();
-//		impFile.updateFile(FileOperate.changeFileSuffix(gene2Info, "_failed", "txt"));
-//		logger.info("finish gene2Info");
-//		
-//		impFile = new ImpGene2Pub();
-//		impFile.setTxtWriteExcep(FileOperate.changeFileSuffix(gene2Pub, "_failed", "txt"));
-//		impFile.updateFile(gene2Pub);
-//		impFile = new ImpGene2Pub();
-//		impFile.updateFile(FileOperate.changeFileSuffix(gene2Pub, "_failed", "txt"));
-//		logger.info("finish gene2Pub");
-//		
-//		impFile = new ImpGene2GO();
-//		impFile.setTxtWriteExcep(FileOperate.changeFileSuffix(gene2GO, "_failed", "txt"));
-//		impFile.updateFile(gene2GO);
-//		impFile = new ImpGene2GO();
-//		impFile.updateFile(FileOperate.changeFileSuffix(gene2GO, "_failed", "txt"));
-//		logger.info("finish gene2GO");
+		impFile = new ImpGen2Acc();
+		impFile.setTxtWriteExcep(FileOperate.changeFileSuffix(gene2Ref, "_failed", "txt"));
+		impFile.updateFile(gene2Ref);
+		impFile = new ImpGen2Acc();
+		impFile.updateFile(FileOperate.changeFileSuffix(gene2Ref, "_failed", "txt"));
+		logger.info("finish gene2Ref");
+		
+		
+		impFile = new ImpGen2Ensembl();
+		impFile.setTxtWriteExcep(FileOperate.changeFileSuffix(gene2ensembl, "_failed", "txt"));
+		impFile.updateFile(gene2ensembl);
+		impFile = new ImpGen2Ensembl();
+		impFile.updateFile(FileOperate.changeFileSuffix(gene2ensembl, "_failed", "txt"));
+		logger.info("finish gene2Ref");
+		
+		impFile = new ImpGeneRef2UniID();
+		impFile.setTxtWriteExcep(FileOperate.changeFileSuffix(geneRef2UniID, "_failed", "txt"));
+		impFile.updateFile(geneRef2UniID);
+		impFile = new ImpGeneRef2UniID();
+		impFile.updateFile(FileOperate.changeFileSuffix(geneRef2UniID, "_failed", "txt"));
+		logger.info("finish geneRef2UniID");
+		
+		impFile = new ImpGene2Info();
+		impFile.setTxtWriteExcep(FileOperate.changeFileSuffix(gene2Info, "_failed", "txt"));
+		impFile.updateFile(gene2Info);
+		impFile = new ImpGene2Info();
+		impFile.updateFile(FileOperate.changeFileSuffix(gene2Info, "_failed", "txt"));
+		logger.info("finish gene2Info");
+		
+		impFile = new ImpGene2Pub();
+		impFile.setTxtWriteExcep(FileOperate.changeFileSuffix(gene2Pub, "_failed", "txt"));
+		impFile.updateFile(gene2Pub);
+		impFile = new ImpGene2Pub();
+		impFile.updateFile(FileOperate.changeFileSuffix(gene2Pub, "_failed", "txt"));
+		logger.info("finish gene2Pub");
+		
+		impFile = new ImpGene2GO();
+		impFile.setTxtWriteExcep(FileOperate.changeFileSuffix(gene2GO, "_failed", "txt"));
+		impFile.updateFile(gene2GO);
+		impFile = new ImpGene2GO();
+		impFile.updateFile(FileOperate.changeFileSuffix(gene2GO, "_failed", "txt"));
+		logger.info("finish gene2GO");
 	}
 }
 

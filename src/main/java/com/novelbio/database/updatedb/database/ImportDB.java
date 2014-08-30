@@ -93,20 +93,20 @@ public class ImportDB {
 	private void updateNCBIID() {
 		String gene2Acc = downloadPath + "gene2accession.gz";
 		String gene2Ref = downloadPath + "gene2refseq.gz";
-//		String gene2ensembl = downloadPath + "gene2ensembl.gz";
-//		String geneRef2UniID = downloadPath + "gene_refseq_uniprotkb_collab.gz";
-//		String gene2Info = downloadPath + "gene_info.gz";
-//		String gene2Pub = downloadPath + "gene2pubmed.gz";
-//		String gene2GO = downloadPath + "gene2go.gz";
+		String gene2ensembl = downloadPath + "gene2ensembl.gz";
+		String geneRef2UniID = downloadPath + "gene_refseq_uniprotkb_collab.gz";
+		String gene2Info = downloadPath + "gene_info.gz";
+		String gene2Pub = downloadPath + "gene2pubmed.gz";
+		String gene2GO = downloadPath + "gene2go.gz";
 		
 		NCBI ncbi = new NCBI();
 		ncbi.setTaxID(taxIDFile);
 		ncbi.setGene2AccFile(gene2Acc, gene2Ref);
-//		ncbi.setGene2Ensembl(gene2ensembl);
-//		ncbi.setGene2Info(gene2Info);
-//		ncbi.setGene2Pub(gene2Pub);
-//		ncbi.setGeneRef2UniID(geneRef2UniID);
-//		ncbi.setGene2GO(gene2GO);
+		ncbi.setGene2Ensembl(gene2ensembl);
+		ncbi.setGene2Info(gene2Info);
+		ncbi.setGene2Pub(gene2Pub);
+		ncbi.setGeneRef2UniID(geneRef2UniID);
+		ncbi.setGene2GO(gene2GO);
 		ncbi.importFile();
 	}
 	

@@ -463,7 +463,7 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 				GeneType geneType = iso.getGeneType();
 				all++;
 				if (geneType == GeneType.mRNA) {
-					miRNAnum++;
+					mRNAnum++;
 				} else if (geneType == GeneType.miRNA) {
 					miRNAnum++;
 				} else {

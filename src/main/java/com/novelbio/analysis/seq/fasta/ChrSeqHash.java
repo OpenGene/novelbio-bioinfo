@@ -357,8 +357,8 @@ public class ChrSeqHash extends SeqHashAbs {
 				}
 				return o1.compareTo(o2);
 			}
-			Integer chr1 = Integer.parseInt(chrID1);
-			Integer chr2 = Integer.parseInt(chrID2);
+			Long chr1 = Long.parseLong(chrID1);
+			Long chr2 = Long.parseLong(chrID2);
 			return chr1.compareTo(chr2);
 		}
 		

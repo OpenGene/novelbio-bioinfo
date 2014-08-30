@@ -2,6 +2,7 @@ package com.novelbio.analysis.tools.compare;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -22,15 +23,15 @@ public class runCompSimple {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}//这个不乱码;
-
-		ArrayList<String[]> lsFileName=FileOperate.getFoldFileName(thisFilePath, "*", "xls|txt");
-		String FileA=lsFileName.get(0)[0]+"."+lsFileName.get(0)[1];
-		String FileB=lsFileName.get(1)[0]+"."+lsFileName.get(1)[1];
-		System.out.println(lsFileName.get(0)[0]+"."+lsFileName.get(0)[1]);
+		List<String> lsFileName = FileOperate.getFoldFileNameLs(thisFilePath, "*", "xls|txt");
+		String FileA=lsFileName.get(0);
+		String FileB=lsFileName.get(1);
+		System.out.println(FileA);
 		String outputFilePath="IntersectionResults";
 		FileOperate.createFolders(thisFilePath+"/"+outputFilePath);
 		try {
-			CompareListSimple.getFileToList(thisFilePath,outputFilePath, FileA, FileB, false,"InterSection.xls",lsFileName.get(0)[0]+"Only.xls", lsFileName.get(1)[0]+"Only.xls");
+			CompareListSimple.getFileToList(thisFilePath,outputFilePath, FileA, FileB, false,
+					"InterSection.xls", FileOperate.changeFileSuffix(FileA, "_only", "xls"), FileOperate.changeFileSuffix(FileB, "_only", "xls"));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

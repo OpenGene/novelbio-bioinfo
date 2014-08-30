@@ -95,7 +95,7 @@ public class UrlPictureDownLoad implements Callable<UrlPictureDownLoad> {
     	LinkedList<String> lsSuffix = new LinkedList<String>();
     	lsSuffix.add("png"); lsSuffix.add("gif"); lsSuffix.add("jpeg");
     	while (webFetch.download(savePath)) {
-    		if (FileOperate.getFileSize(savePath) > 2) {
+    		if (FileOperate.getFileSizeLong(savePath) > 2000) {
     			sucess = true;
     			break;
 			} else {

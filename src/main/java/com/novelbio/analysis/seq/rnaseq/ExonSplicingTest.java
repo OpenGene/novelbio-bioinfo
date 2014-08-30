@@ -217,8 +217,9 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		getAndCalculatePvalue();
 		ArrayList<String> lsResult = new ArrayList<String>();
 		GffDetailGene gffDetailGene = exonCluster.getParentGene();
-		lsResult.add(gffDetailGene.getName().get(0));
+		lsResult.add(gffDetailGene.getNameSingle());
 		lsResult.add(mapCondition2SpliceInfo.get(condition1).getSpliceTypePredict(getSplicingType()).getDifSite().toStringNoCis());
+		lsResult.add(exonCluster.getExonNum() + "");
 		lsResult.add(lsPvalueInfo.get(0).getStrInfo(false, false));
 		lsResult.add(lsPvalueInfo.get(0).getStrInfo(false, true));
 		lsResult.add(lsPvalueInfo.get(0).getStrInfo(true, false));
@@ -402,6 +403,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		ArrayList<String> lsTitle = new ArrayList<String>();
 		lsTitle.add(TitleFormatNBC.AccID.toString());
 		lsTitle.add(TitleFormatNBC.Location.toString());
+		lsTitle.add("Exon_Number");
 		lsTitle.add(condition1 + "_Skip::Others");
 		lsTitle.add(condition2 + "_Skip::Others");
 		lsTitle.add(condition1 + "Exp");

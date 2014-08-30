@@ -112,9 +112,9 @@ public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E>
 			return get(0).getLength();
 		} else {
 			if (get(0).getStartAbs() < get(1).getStartAbs()) {
-				return get(size()-1).getEndAbs() - get(0).getStartAbs();
+				return get(size()-1).getEndAbs() - get(0).getStartAbs() + 1;
 			} else {
-				return get(0).getEndAbs() - get(size()-1).getStartAbs();
+				return get(0).getEndAbs() - get(size()-1).getStartAbs() + 1;
 			}
 		}
 	}
@@ -1033,7 +1033,7 @@ class CoordLocationInfo {
 		return false;
 	}
 	/**
-	 * 返回该点所在的元素，一直返回正数。如果在list外，返回-1<br>
+	 * 返回该点上一个元素的序号，一直返回正数。如果在list外，返回-1<br>
 	 * 计数从0开始<br>
 	 * <b>-1表示前面没有基因</b>
 	 * @return
@@ -1063,7 +1063,7 @@ class CoordLocationInfo {
 		}
 	}
 	/**
-	 * 返回该点所在的元素，一直返回正数。如果在list外，返回-1<br>
+	 * 返回该点下一个元素的序号，一直返回正数。如果在list外，返回-1<br>
 	 * 计数从0开始<br>
 	 * <b>-1表示后面没有基因</b>
 	 * @return

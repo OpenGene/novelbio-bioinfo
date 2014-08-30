@@ -126,7 +126,7 @@ public class GffChrMap {
 	 * @return
 	 */
 	public void setFilterChrDistInfo(GeneStructure geneStructure, int num) {
-		if (geneStructure == GeneStructure.All) {
+		if (geneStructure == GeneStructure.ALLLENGTH) {
 			mapReads.setMapChrID2LsAlignments(null);
 			return;
 		}

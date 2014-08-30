@@ -22,6 +22,8 @@ package uk.ac.babraham.FastQC.Modules;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -64,6 +66,28 @@ public class OverRepresentedSeqs extends FastQCmodules implements QCModule {
 	
 	public boolean ignoreFilteredSequences() {
 		return true;
+	}
+	
+	/** duplicate 序列和数量的对照表，从大到小排列
+	 * string[2] 0: 数量
+	 * 1: 序列
+	 * @return
+	 */
+	public List<String[]> getLsNum2Seq() {
+		List<String[]> lsNum2Seq = new ArrayList<String[]>();
+		for (String seq : sequences.keySet()) {
+			Integer num = sequences.get(seq);
+			lsNum2Seq.add(new String[]{num+"", seq});
+		}
+		//按照序列数量从大到小排序
+		Collections.sort(lsNum2Seq, new Comparator<String[]>() {
+			public int compare(String[] o1, String[] o2) {
+				Integer intO1 = Integer.parseInt(o1[0]);
+				Integer intO2 = Integer.parseInt(o2[0]);
+				return -intO1.compareTo(intO2);
+			}
+		});
+		return lsNum2Seq;
 	}
 	
 	public DuplicationLevel duplicationLevelModule () {

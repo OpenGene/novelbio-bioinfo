@@ -1,4 +1,5 @@
 package com.novelbio.analysis.seq.genome.gffOperate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -11,6 +12,7 @@ import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.analysis.seq.reseq.ModifyInfo;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -192,7 +194,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 			   
 			   thisRnaIDandName = addMRNA(thisGeneIDandName, ss);
 		   }
-		   else if (ss[2].contains("exon")) {
+		   else if (ss[2].equals("exon")) {
 			   if (!addExon(thisGeneIDandName, thisRnaIDandName, ss)) {
 				   continue;
 			   }
@@ -728,4 +730,54 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   return intis[0];
    }
    
+   /** 修正果蝇的gff文件 */
+   public static void ModifyDrosophylia(String input, String output) {
+		String parentRegx = "Parent=([\\w\\-%\\,\\.]+)?;";
+		String idRegx = "ID=([\\w\\-%\\,\\.]+)?;";
+		PatternOperate patParent = new PatternOperate(parentRegx, false);
+		PatternOperate patId = new PatternOperate(idRegx, false);
+		
+		//保存已经出现过的id
+		Set<String> setId = new HashSet<String>();
+		
+		TxtReadandWrite txtRead = new TxtReadandWrite(input);
+		TxtReadandWrite txtWrite = new TxtReadandWrite(output, true);
+		for (String content : txtRead.readlines()) {
+			if (content.startsWith("#") || content.trim().equals("")) {
+				txtWrite.writefileln(content);
+				continue;
+			}
+			String[] ss = content.split("\t");
+			if (ss[2].equals("golden_path_region") || ss[2].equals("exon_junction") || ss[2].equals("intron")) {
+				continue;
+			}
+			String id = patId.getPatFirst(ss[8], 1);
+			String parentId = patParent.getPatFirst(ss[8], 1);
+
+			if (id != null) {
+				if (id.contains(",")) {
+					logger.debug("find id contains \",\" :" + id);
+				}
+				setId.add(id);
+			}
+			if (parentId != null) {
+				List<String> lsParentId = new ArrayList<String>();
+				for (String string : parentId.split(",")) {
+					lsParentId.add(string);
+				}
+				String detailInfo = ss[8];
+				for (String string : lsParentId) {
+					if (setId.contains(string)) {
+						ss[8] = detailInfo.replaceFirst(parentId, string);
+						txtWrite.writefileln(ss);
+					}
+				}
+				continue;
+			}
+			txtWrite.writefileln(ss);
+		}
+		txtRead.close();
+		txtWrite.close();
+	
+   }
 }

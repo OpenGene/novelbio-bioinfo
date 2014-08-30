@@ -301,7 +301,7 @@ public class MapBwaAln extends MapDNA {
 	 * @return 没有则返回null
 	 */
 	private String readInMemory() {
-		if (FileOperate.getFileSize(chrFile) < GENOME_SIZE_IN_MEMORY || readInMemory) {
+		if (FileOperate.getFileSizeLong(chrFile)/1024 < GENOME_SIZE_IN_MEMORY || readInMemory) {
 			return "-P";
 		}
 		return null;
@@ -472,8 +472,8 @@ public class MapBwaAln extends MapDNA {
 	 * 大于500MB的用 -a bwtsw
 	 */
 	private static String[] getChrLen(String chrFile) {
-		long size = (long) FileOperate.getFileSize(chrFile);
-		if (size/1024 > 500) {
+		long size = FileOperate.getFileSizeLong(chrFile);
+		if (size/1024/1024 > 500) {
 			return new String[]{"-a", "bwtsw"};
 		} else {
 			return new String[]{"-a", "is"};

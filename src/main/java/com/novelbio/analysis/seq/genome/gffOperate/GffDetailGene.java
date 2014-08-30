@@ -22,6 +22,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict.SplicingAlternativeType;
 import com.novelbio.analysis.seq.mapping.Align;
@@ -349,6 +350,71 @@ public class GffDetailGene extends ListDetailAbs {
 		int id = getLongestSplitIDMrna();
 		return lsGffGeneIsoInfos.get(id);
 	}
+	
+	/**
+	 * <b>不能返回ATG和UAG位点</b><br>
+	 *  获得coord在该基因内部的最长的一条转录本的信息
+	 * @param coord 坐标位置
+	 * @param geneStructure 基因结构，意思优先返回指定的基因结构，如果为CDS，UTR这种，不在CDS和UTR内部的优先返回在exon上，还不在就返回在Intron上的
+	 * 如果基因结构指定了Intron则直接返回Intron，如果不在Intron上，就返回最长的在exon上的。
+	 * @return
+	 */
+	public GffGeneIsoInfo getLongestmRNAIso(int coord, GeneStructure geneStructure) {
+		return getLongestmRNAIso(coord, geneStructure, null, null);
+	}
+	
+	/**
+	 *  获得coord在该基因内部的最长的一条转录本的信息
+	 * @param coord 坐标位置
+	 * @param geneStructure 基因结构，意思优先返回指定的基因结构，如果为CDS，UTR这种，不在CDS和UTR内部的优先返回在exon上，还不在就返回在Intron上的
+	 * 如果基因结构指定了Intron则直接返回Intron，如果不在Intron上，就返回最长的在exon上的。
+	 * @return
+	 */
+	public GffGeneIsoInfo getLongestmRNAIso(int coord, GeneStructure geneStructure, int[] tssRange, int[] tesRange) {
+    	if (lsGffGeneIsoInfos.size() == 1) {
+			return lsGffGeneIsoInfos.get(0);
+		}
+    	ArrayListMultimap<GeneStructure, GffGeneIsoInfo> mapGeneStruct2LsIso = ArrayListMultimap.create();    	
+    	//获得位点情况
+    	for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
+			Set<GeneStructure> setGeneStructures = gffGeneIsoInfo.getLsCoordOnGeneStructure(coord, tssRange, tesRange);
+			for (GeneStructure geneStructureThis : setGeneStructures) {
+				mapGeneStruct2LsIso.put(geneStructureThis, gffGeneIsoInfo);
+			}
+		}
+		
+		if (mapGeneStruct2LsIso.containsKey(geneStructure)) {
+			List<GffGeneIsoInfo> lsIsos = mapGeneStruct2LsIso.get(geneStructure);
+			Collections.sort(lsIsos, new IsoCompareM2S());
+			return lsIsos.get(0);
+		} else if (geneStructure == GeneStructure.INTRON || geneStructure == GeneStructure.ATG
+				|| geneStructure == GeneStructure.UAG || geneStructure == GeneStructure.CDS 
+				|| geneStructure == GeneStructure.UTR3 || geneStructure == GeneStructure.UTR5) {
+			List<GffGeneIsoInfo> lsIsos = mapGeneStruct2LsIso.get(GeneStructure.EXON);
+			if (lsIsos.isEmpty()) {
+				lsIsos = mapGeneStruct2LsIso.get(GeneStructure.INTRON);
+			}
+			if (lsIsos.isEmpty()) {
+				return getLongestSplitMrna();
+			}
+			
+			Collections.sort(lsIsos, new IsoCompareM2S());
+			return lsIsos.get(0);
+		}
+		return getLongestSplitMrna();
+	}
+	
+	private static class IsoCompareM2S implements Comparator<GffGeneIsoInfo> {
+		@Override
+		public int compare(GffGeneIsoInfo o1, GffGeneIsoInfo o2) {
+			int compare = Boolean.valueOf(o1.ismRNA()).compareTo(o2.ismRNA());
+			if (compare == 0) {
+				compare = -Integer.valueOf(o1.getLen()).compareTo(o2.getLen());
+			}
+			return compare;
+		}
+	}
+	
     private int getLongestSplitIDMrna() {
     	if (lsGffGeneIsoInfos.size() == 1) {
 			return 0;
@@ -1061,7 +1127,7 @@ public class GffDetailGene extends ListDetailAbs {
 		return result;
 	}
 	public static enum GeneStructure {
-		All("All"), ALLLENGTH("AllLength"),
+		ALLLENGTH("AllLength"),
 		INTRON("Intron"), CDS("CDS"), EXON("Exon"), UTR5("5-UTR"), UTR3("3-UTR"), 
 		TSS("Tss"), TES("Tes"), ATG("Atg"), UAG("Uag");
 		String name;

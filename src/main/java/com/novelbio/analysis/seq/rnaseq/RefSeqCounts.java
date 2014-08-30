@@ -28,17 +28,26 @@ import com.novelbio.generalConf.TitleFormatNBC;
  * @author zomg0jie
  */
 public class RefSeqCounts implements AlignmentRecorder {
-	public static void main2(String[] args) {
-		String expPath = "/media/hdfs/nbCloud/staff/bianlianle/Project/RNA_Denovo/Paralichthys_olivaceus_ZhangXiaoYan/6.Gene_Expression/zongjieExp/";
-		String parentPath = "/media/hdfs/nbCloud/staff/bianlianle/Project/RNA_Denovo/Paralichthys_olivaceus_ZhangXiaoYan/";
+	public static void main(String[] args) {
+		String expPath = "/media/hdfs/nbCloud/staff/bianlianle/Project/RNA_Denovo/Salvia_Mil_Bunge_KaiGuoyin/4.Gene_Expression/zongjieExp/";
+		FileOperate.createFolders(expPath);
+		String parentPath = "/media/hdfs/nbCloud/staff/bianlianle/Project/RNA_Denovo/Salvia_Mil_Bunge_KaiGuoyin/";
 		RefSeqCounts refSeqCounts = new RefSeqCounts();
-		refSeqCounts.readGene2IsoFile(parentPath + "6.Gene_Expression/RefSeqIndex/All_Trinity.fa.cluster.result.fa.gene_trans_map");
+		refSeqCounts.readGene2IsoFile(parentPath + "4.Gene_Expression/All-Unigene.Gene2Tar2.list");
 		
 		refSeqCounts.setPairend(true);
 		List<AlignmentRecorder> lsRecorders = new ArrayList<>();
 		lsRecorders.add(refSeqCounts);
 		
-		List<String> lsFile = FileOperate.getFoldFileNameLs(parentPath + "10.SNP/tmp", "*", "*");
+		List<String> lsFileRaw = FileOperate.getFoldFileNameLs(parentPath + "4.Gene_Expression", "*", "bam");
+		List<String> lsFile = new ArrayList<String>();
+		for (String string : lsFileRaw) {
+			if (FileOperate.getFileName(string).contains("sort")) {
+				continue;
+			}
+			lsFile.add(string);
+		}
+		
 		SamFile samFile = new SamFile(lsFile.get(0));
 		refSeqCounts.setMapIsoId2Len(samFile.getMapChrID2Length());
 		for (String bamFile : lsFile) {
@@ -55,14 +64,14 @@ public class RefSeqCounts implements AlignmentRecorder {
 			samToBamSort.setLsAlignmentRecorders(lsRecorders);
 			samToBamSort.setWriteToBam(false);
 			samToBamSort.convert();
-//			refSeqCounts.geneExpTable.writeFile(false, expPath + prefix, EnumExpression.Counts);
+			refSeqCounts.geneExpTable.writeFile(false, expPath + prefix, EnumExpression.Counts);
 
 		}
 		refSeqCounts.geneExpTable.writeFile(true, expPath + "All" + ".txt", EnumExpression.Counts);
 		refSeqCounts.geneExpTable.writeFile(true, expPath + "All_RPKM" + ".txt", EnumExpression.RPKM);
 	}
 	
-	public static void main(String[] args) {
+	public static void main2(String[] args) {
 		String expPath = "/media/hdfs/nbCloud/staff/bianlianle/Project/RNA_Denovo/Paralichthys_olivaceus_LiChao/6.Gene_Expression/zongjieExp/";
 		String parentPath = "/media/hdfs/nbCloud/staff/bianlianle/Project/RNA_Denovo/Paralichthys_olivaceus_LiChao/";
 		RefSeqCounts refSeqCounts = new RefSeqCounts();

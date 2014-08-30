@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -501,20 +502,18 @@ public class SamFileStatistics implements AlignmentRecorder {
 	 * @return 是否成功
 	 */
 	public static BufferedImage drawMappingImage(List<SamFileStatistics> lsSamFileStatistics) {
-		if (lsSamFileStatistics.get(0).getMapChrID2PropAndLen().size() > chrNumMax) {			
-			logger.info("大于最大chr数量,只画前" + chrNumMax + "条");
-//			return null;
-		}
 		Color barColor1 = new Color(23, 200, 200); 
 		Color barColor2 = new Color(100, 100, 100);
-		double[][] allData = getResultProp(lsSamFileStatistics);
+		Set<String> setChrIdUsed = getSetChrId(lsSamFileStatistics.get(0));
+		
+		double[][] allData = getResultProp(setChrIdUsed, lsSamFileStatistics);
 		List<String> lsRowkeys = new ArrayList<String>();
 		for (SamFileStatistics samFileStatistics : lsSamFileStatistics) {
 			lsRowkeys.add(samFileStatistics.prefix);
 		}
 		lsRowkeys.add("Genome");
 		String [] rowkeys = lsRowkeys.toArray(new String[lsRowkeys.size()]);
-		String[] columnKeys = getColumnKey(lsSamFileStatistics);
+		String[] columnKeys = getColumnKey(setChrIdUsed);
 //		int width = 50 * (lsSamFileStatistics.get(0).getMapChrID2PropAndLen().size() * (lsSamFileStatistics.size() + 1));
 //		float rate = width/1500-1;
 		CategoryDataset dataset = DatasetUtilities.createCategoryDataset(rowkeys,columnKeys, allData);
@@ -573,49 +572,51 @@ public class SamFileStatistics implements AlignmentRecorder {
 		return chart.createBufferedImage(1500, 700);
 	}
 	
-	/**
-	 * 返回染色体高度的数据用于画图，染色体根据染色体编号进行排序
-	 * @param resultData 实际reads在染色体上分布的map
-	 * @param standardData 染色体长度的map
-	 * @return
-	 */
-	private static double[][] getResultProp(List<SamFileStatistics> lsSamFileStatistics) {
-		SamFileStatistics samFileStatistics = lsSamFileStatistics.get(0);
+	/** 获得最后需要输出的染色体id */
+	private static Set<String> getSetChrId(SamFileStatistics statistics) {
 		boolean isChromosome = false;
-		for (String chrId : samFileStatistics.getMapChrID2MappedNumber().keySet()) {
+		for (String chrId : statistics.getMapChrID2MappedNumber().keySet()) {
 			if (chrId.toLowerCase().startsWith("chr")) {
 				isChromosome = true;
 				break;
 			}
 		}
 		
-		int chrNum = lsSamFileStatistics.get(0).getMapChrID2PropAndLen().size();
-		if (chrNum > chrNumMax) {
-			chrNum = chrNumMax;
-		}
-		
-		double[][] dataInfo = new double[lsSamFileStatistics.size()+1][chrNum];
-		
-		for (int j = 0; j < lsSamFileStatistics.size(); j++) {
-			int i = 0;
-			for (String key : lsSamFileStatistics.get(0).getMapChrID2PropAndLen().keySet()) {
-				if (isChromosome && !key.toLowerCase().startsWith("ch")) {
-					continue;
-				}
-				if (i >= chrNumMax) {
-					break;
-				}
-				dataInfo[j][i] = lsSamFileStatistics.get(j).getMapChrID2PropAndLen().get(key)[1];
-				i++;
+		Set<String> setChrIdUse = new LinkedHashSet<String>();
+		int chrCounts = 0;
+		for (String chrId : statistics.getMapChrID2PropAndLen().keySet()) {
+			if (isChromosome && !chrId.toLowerCase().startsWith("ch")) {
+				continue;
 			}
-		}
-		int k = 0;
-		for (String key : lsSamFileStatistics.get(0).getMapChrID2PropAndLen().keySet()) {
-			if (k >= chrNumMax) {
+			if (chrCounts >= chrNumMax) {
+				logger.info("大于最大chr数量,只画前" + chrNumMax + "条");
 				break;
 			}
-			dataInfo[lsSamFileStatistics.size()][k] = lsSamFileStatistics.get(0).getMapChrID2PropAndLen().get(key)[3];
-			k++;
+			setChrIdUse.add(chrId);
+			chrCounts++;
+		}
+		return setChrIdUse;
+	}
+	
+	/**
+	 * 返回染色体高度的数据用于画图，染色体根据染色体编号进行排序
+	 * @param resultData 实际reads在染色体上分布的map
+	 * @param standardData 染色体长度的map
+	 * @return
+	 */
+	private static double[][] getResultProp(Set<String> setChrIdUsed, List<SamFileStatistics> lsSamFileStatistics) {
+		double[][] dataInfo = new double[lsSamFileStatistics.size()+1][setChrIdUsed.size()];
+		for (int i = 0; i <lsSamFileStatistics.size(); i++) {
+			int j = 0;
+			for (String chrId : setChrIdUsed) {
+				dataInfo[i][j] = lsSamFileStatistics.get(i).getMapChrID2PropAndLen().get(chrId)[1];
+				j++;
+			}
+		}
+		int j = 0;
+		for (String chrId : setChrIdUsed) {
+			dataInfo[lsSamFileStatistics.size()][j] = lsSamFileStatistics.get(0).getMapChrID2PropAndLen().get(chrId)[3];
+			j++;
 		}
 		return dataInfo;
 	}
@@ -626,24 +627,16 @@ public class SamFileStatistics implements AlignmentRecorder {
 	 * @param standardData 染色体长度的map
 	 * @return
 	 */
-	private static String[] getColumnKey(List<SamFileStatistics> lsSamFileStatistics) {
-		Set<String> setChrID = lsSamFileStatistics.get(0).getMapChrID2PropAndLen().keySet();
-		String[] columnKeys = null;
-		if (setChrID.size() > chrNumMax) {
-			columnKeys = new String[chrNumMax];
-		} else {
-			columnKeys = new String[setChrID.size()];
-		}
-			
+	private static String[] getColumnKey(Set<String> setChrIdUsed) {
+		String[] columnKeys = new String[setChrIdUsed.size()];
 		int i = 0;
-		for (String chrID : setChrID) {
-			if (i >= columnKeys.length) break;
-			
+		for (String chrID : setChrIdUsed) {
 			columnKeys[i] = chrID;
 			i++;
 		}
 		return columnKeys;
 	}
+
 	
 	public static String saveExcel(String pathAndName, SamFileStatistics samFileStatistics) {
 		String excelName = getSaveExcel(pathAndName);

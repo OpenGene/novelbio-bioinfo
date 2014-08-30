@@ -53,7 +53,7 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 	public double getFileSizeEvaluateK() {
 		double allFileSize = 0;
 		for (String pileUpFile : mapSample2PileupFile.values()) {
-			double size = FileOperate.getFileSize(pileUpFile);
+			double size = (double)FileOperate.getFileSizeLong(pileUpFile)/1024;
 			//如果是压缩文件就假设源文件为6倍大 */
 			if (FileOperate.getFileNameSep(pileUpFile)[1].toLowerCase().equals("gz"))
 				size = size * 6;

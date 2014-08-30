@@ -37,7 +37,9 @@ public class ExonCluster implements Alignment {
 	int endLoc = 0;
 	List<ExonInfo> lsCombExon;
 
-	/** 该iso跳过了这个exon，则里面装空的list
+	/**
+	 * 某个iso在该exonCluster中所对应的lsExon
+	 * 该iso跳过了这个exon，则里面装空的list
 	 *  如果该iso根本不在这个范围内,则里面就没有这个list
 	 */
 	Map<GffGeneIsoInfo, List<ExonInfo>> mapIso2LsExon = new LinkedHashMap<GffGeneIsoInfo, List<ExonInfo>>();
@@ -306,6 +308,28 @@ public class ExonCluster implements Alignment {
 	 */
 	public boolean isSameExonInExistIso() {
 		return isSameExon(false);
+	}
+	
+	/** 本exoncluster所在的exon的位置，如果同时存在retain_intron可能会不准 */
+	public int getExonNum() {
+		int i = 1;
+		ExonCluster before = exonClusterBefore;
+		while (before != null) {
+			i += before.getMaxExonNumInCluster();
+			before = before.exonClusterBefore;
+		}
+		return i;
+	}
+	
+	/** 本cluster中，最多的转录本含有多少exon  */
+	protected int getMaxExonNumInCluster() {
+		int maxNum = 0;
+		for (List<ExonInfo> lsExonInfos : mapIso2LsExon.values()) {
+			if (lsExonInfos.size() > maxNum) {
+				maxNum = lsExonInfos.size();
+			}
+		}
+		return maxNum;
 	}
 	
 	/**

@@ -3,8 +3,10 @@ package com.novelbio.analysis.seq.genome.gffOperate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Id;
 
@@ -15,6 +17,7 @@ import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -329,6 +332,10 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @param uag 从1开始记数
 	 */
 	public void setATGUAGauto(int atg, int uag) {
+		if (!ismRNA()) {
+			ATGsite = -1;
+			UAGsite = -1;
+		}
 		if (Math.abs(atg - uag)<=1) {
 			atg = Math.min(atg, uag);
 			uag = Math.min(atg, uag);
@@ -502,6 +509,46 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	public int getCodLoc(int coord) {
 		return getCodLocInfo(coord)[0];
 	}
+	
+	/**
+	 * 返回该位点在基因的哪些结构内
+	 * @param coord
+	 * @param tssRange 如果不指定，就不返回tss的区域
+	 * @param tesRange 如果不指定，就不返回tes的区域
+	 * @return
+	 */
+	public Set<GeneStructure> getLsCoordOnGeneStructure(int coord, int[] tssRange, int[] tesRange) {
+		Set<GeneStructure> lsGeneStructures = new HashSet<>();
+		if (isCodInIsoTss(tssRange, coord)) {
+			lsGeneStructures.add(GeneStructure.TSS);
+		}
+		if (isCodInIsoGenEnd(tesRange, coord)) {
+			lsGeneStructures.add(GeneStructure.TES);
+		}
+		int ExIntronnum = getNumCodInEle(coord);
+		if (ExIntronnum > 0) {
+			lsGeneStructures.add(GeneStructure.EXON);
+			
+			if (ismRNA()) {
+				if ((coord < ATGsite && isCis5to3()) || (coord > ATGsite && !isCis5to3())) {
+					lsGeneStructures.add(GeneStructure.UTR5);
+				} else if((coord > UAGsite && isCis5to3()) || (coord < UAGsite && !isCis5to3())){       //大于cds起始区，在3‘UTR中
+					lsGeneStructures.add(GeneStructure.UTR3);
+				} else {
+					lsGeneStructures.add(GeneStructure.CDS);
+					if (isCis5to3() && coord >= ATGsite && coord <= ATGsite + 2 || !isCis5to3() && coord <= ATGsite && coord >= ATGsite - 2) {
+						lsGeneStructures.add(GeneStructure.ATG);
+					} else if (isCis5to3() && coord <= UAGsite && coord >= UAGsite - 2 || !isCis5to3() && coord >= UAGsite && coord <= UAGsite + 2) {
+						lsGeneStructures.add(GeneStructure.UAG);
+					}
+				}
+			}
+		} else {
+			lsGeneStructures.add(GeneStructure.INTRON);
+		}
+		return lsGeneStructures;
+	}
+	
 	/**
 	 * 在转录本的哪个位置
 	 * 有COD_LOCUTR_5UTR，COD_LOCUTR_3UTR，COD_LOCUTR_CDS等
