@@ -248,13 +248,7 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 		}
 
 		lsTitle.add("Location");
-		
-		
-		String[] titleOld = lsGeneInfo.get(0);
-		//添加title
-		String[] title = ArrayOperate.copyArray(titleOld, titleOld.length + 4);
-		title[title.length - 1] = "Location"; title[title.length - 2] = "Description"; title[title.length - 3] = "Symbol"; title[title.length - 4] = "AccID";
-		return title;
+		return lsTitle.toArray(new String[0]);
 	}
 	/**
 	 * peak注释
@@ -328,21 +322,17 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 		if (!gffGeneIsoInfo.isCodLocFilter(coord, filtertss, tss, filtertes, tes, genebody, UTR5, UTR3, exonFilter, intronFilter)) {
 			return;
 		}
-		
-		String[] tmpAnno = null;
-		tmpAnno = new String[4];
-		
-		tmpAnno[0] = gffGeneIsoInfo.getName();
+		List<String> lsTmpAnno = new ArrayList<String>();
+		lsTmpAnno.add(gffGeneIsoInfo.getName());
 		
 		if (ManageSpecies.getInstance() instanceof ManageSpeciesDB) {
 			GeneID geneID = gffGeneIsoInfo.getGeneID();
-			tmpAnno[1] = geneID.getSymbol();
-			tmpAnno[2] = geneID.getDescription();
+			lsTmpAnno.add(geneID.getSymbol());
+			lsTmpAnno.add(geneID.getDescription());
 		}
-		
-		tmpAnno[3] = gffGeneIsoInfo.toStringCodLocStr(tss, coord);
-		
-		lsAnno.add(tmpAnno);
+		lsTmpAnno.add(gffGeneIsoInfo.toStringCodLocStr(tss, coord));
+
+		lsAnno.add(lsTmpAnno.toArray(new String[0]));
 	}
 
 }

@@ -47,40 +47,40 @@ public class ManageSoftWareInfo {
 	public void updateInfo(String txtFile) {
 		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(txtFile, 0);
 		String[] title = lsInfo.get(0);
-		Map<String, Integer> hashName2ColNum = new HashMap<>();
+		Map<String, Integer> mapName2Col = new HashMap<>();
 		for (int i = 0; i < title.length; i++) {
-			title[i] = title[i].replace("#", "");
-			hashName2ColNum.put(title[i].trim().toLowerCase(), i);
+			title[i] = title[i].replace("#", "");			
+			mapName2Col.put(title[i].toLowerCase().trim(), i);
 		}
-		
+
 		for (int i = 1; i < lsInfo.size(); i++) {
 			SoftWareInfo softWareInfo = new SoftWareInfo();
 			String[] info = lsInfo.get(i);
-			if (info[0].trim().startsWith("#") || info.length < 1) {
-				continue;
-			}
-			Integer m = hashName2ColNum.get("softwarename");
+
+			Integer m = mapName2Col.get("softwarename");
 			softWareInfo.setName(info[m]);
 			
-			m = hashName2ColNum.get("description");
+			m = mapName2Col.get("description");
 			softWareInfo.setDescription(info[m]);
 			
-			m = hashName2ColNum.get("website");
+
+			
+			m = mapName2Col.get("website");
 			softWareInfo.setWebsite(info[m]);
 			
-			m = hashName2ColNum.get("installpath");
+			m = mapName2Col.get("installpath");
 			softWareInfo.setInstallPath(info[m]);
 			
-			m = hashName2ColNum.get("path");
+			m = mapName2Col.get("path");
 			softWareInfo.setPath(info[m]);
 			
-			m = hashName2ColNum.get("usage");
+			m = mapName2Col.get("usage");
 			softWareInfo.setUsage(info[m]);
 			
-			m = hashName2ColNum.get("version");
+			m = mapName2Col.get("version");
 			softWareInfo.setVersion(info[m]);
 			
-			m = hashName2ColNum.get("ispath");
+			m = mapName2Col.get("ispath");
 			softWareInfo.setInPath(info[m].trim().toLowerCase().equals("true"));
 			//升级
 			update(softWareInfo);
