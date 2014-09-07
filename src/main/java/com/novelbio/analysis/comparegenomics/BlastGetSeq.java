@@ -138,6 +138,8 @@ public class BlastGetSeq implements IntCmdSoft {
 	public void setBlastType(BlastType blastType) {
 		this.blastType = blastType;
 	}
+	
+	/** 比对到指定物种上并获得比对到的序列 */
 	public void blastAndGetSeq() {
 		//物种与找到的基因数量
 		String outNum = FileOperate.getPathName(resultFile) + "blastSpeciesNum";

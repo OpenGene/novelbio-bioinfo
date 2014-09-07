@@ -34,6 +34,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modgeneid.GeneType;
 import com.novelbio.generalConf.TitleFormatNBC;
+import com.novelbio.listOperate.ListCodAbs;
 import com.novelbio.listOperate.ListDetailAbs;
 /**
  * 考虑将其中的iso装入hash表中，以加快查找效率
@@ -508,6 +509,12 @@ public class GffDetailGene extends ListDetailAbs {
 		return -1000000;
 	}
 	public void clearIso() {
+		setItemName.clear();
+		cis5to3 = null;
+		numberstart = ListCodAbs.LOC_ORIGINAL; // loc start number
+		numberend = ListCodAbs.LOC_ORIGINAL; //loc end number
+		tss2UpGene = ListCodAbs.LOC_ORIGINAL;
+		tes2DownGene = ListCodAbs.LOC_ORIGINAL;
 		lsGffGeneIsoInfos.clear();
 	}
 	/**

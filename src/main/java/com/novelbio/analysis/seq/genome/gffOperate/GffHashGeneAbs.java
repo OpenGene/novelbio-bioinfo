@@ -52,9 +52,25 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		this.acc2GeneIDfile = FileOperate.changeFileSuffix(gfffilename, "_accID2geneID", "list");
 		super.ReadGffarray(gfffilename);
 		
+		removeDuplicate();
+		return true;
+	}
+	/**
+	 * 只有当gff为new的GffHashGene，并且是addGffDetailGene的形式加入的基因
+	 * 才需要用这个来初始化
+	 */
+	public void initialGffWhileAddGffDetailGene() {
+		sort();
+		setItemDistance();
+		setOther();
+		getMapName2DetailNum();
+		getMapName2Detail();
+		removeDuplicate();
+	}
+	
+	private void removeDuplicate() {
 		//删除重复的iso
 		for (ListGff listGff : mapChrID2ListGff.values()) {
-			listGff.sort();
 			for (int i = 0; i < listGff.size(); i++) {
 				GffDetailGene gffDetailGene = listGff.get(i);
 				gffDetailGene.setParentListAbs(listGff);
@@ -69,8 +85,9 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 				gffDetailGene.removeDupliIso();
 			}
 		}
-		return true;
 	}
+
+	
 	public void setVersion(String version) {
 		this.version = version;
 	}

@@ -172,6 +172,13 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	}
 	
 	/**
+	 * 只有当gff为new的GffHashGene，并且是addGffDetailGene的形式加入的基因
+	 * 才需要用这个来初始化
+	 */
+	public void initialGffWhileAddGffDetailGene() {
+		gffHashGene.initialGffWhileAddGffDetailGene();
+	}
+	/**
 	 * 读取信息
 	 * @param gffFile
 	 */
@@ -194,7 +201,11 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 			}
 		}
 	}
-
+	
+	public void sort() {
+		gffHashGene.sort();
+	}
+	
 	/** 顺序存储ChrHash中的ID，这个就是ChrHash中实际存储的ID，如果两个Item是重叠的，就全加入 */
 	public ArrayList<String> getLsNameAll() {
 		return gffHashGene.getLsNameAll();

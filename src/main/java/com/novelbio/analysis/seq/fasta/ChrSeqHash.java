@@ -10,8 +10,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.apache.tools.zip.RandomFileInt;
+import org.apache.tools.zip.RandomFileInt.RandomFileFactory;
 
-import com.novelbio.analysis.seq.fasta.RandomChrFileInt.RandomChrFileFactory;
 import com.novelbio.analysis.seq.sam.SamIndexRefsequence;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
@@ -26,7 +27,7 @@ public class ChrSeqHash extends SeqHashAbs {
 	
 	/** 以下哈希表的键是染色体名称，都是小写，格式如：chr1，chr2，chr10 */
 	Map<String, Long> mapChrID2Start = new LinkedHashMap<>();
-	RandomChrFileInt randomChrFileInt;
+	RandomFileInt randomChrFileInt;
 	
 	/** 每个文本所对应的单行长度
 	 *  Seq文件第二行的长度，也就是每行序列的长度+1，1是回车 
@@ -75,7 +76,7 @@ public class ChrSeqHash extends SeqHashAbs {
 			indexFile = samIndexRefsequence.indexSequence();
 		}
 		readIndex(indexFile);
-		randomChrFileInt = RandomChrFileFactory.createInstance(chrFile);
+		randomChrFileInt = RandomFileFactory.createInstance(chrFile);
 	}
 	
 	protected SeqFasta getSeqInfo(String chrID, long startlocation, long endlocation) {

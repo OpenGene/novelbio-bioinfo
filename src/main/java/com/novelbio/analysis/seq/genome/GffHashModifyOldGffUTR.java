@@ -19,7 +19,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
  * 务必是同一个物种同一个版本的Gff
  */
 public class GffHashModifyOldGffUTR {
-	private static final Logger logger = Logger.getLogger(GffHashModifyNewGffORF.class);
+	private static final Logger logger = Logger.getLogger(GffHashModifyOldGffUTR.class);
 	/** 待修该的Gff */
 	GffHashGene gffHashGeneRaw;
 	/** 参考的Gff，用Ref来矫正Raw的ATG等位点 */

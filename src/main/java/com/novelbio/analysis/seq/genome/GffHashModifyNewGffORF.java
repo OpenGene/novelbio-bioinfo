@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.print.attribute.standard.MediaSize.ISO;
+
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
@@ -45,6 +47,8 @@ public class GffHashModifyNewGffORF {
 	/** 参考的Gff，用Ref来矫正Raw的ATG等位点 */
 	GffHashGene gffHashGeneRef;
 	
+	GffHashGene gffResult;
+	
 	boolean renameGene = true;
 	boolean renameIso = false;
 	String prefixGeneName = "NBC";
@@ -77,6 +81,10 @@ public class GffHashModifyNewGffORF {
 		this.gffHashGeneRef = gffHashGeneRef;
 	}
 	
+	/** modify完毕后获得修正后的gff文件 */
+	public GffHashGene getGffResult() {
+		return gffResult;
+	}
 	public void modifyGff() {
 		Set<GffDetailGene> setGffGeneName = new HashSet<>();//用来去重复的
 		for (GffDetailGene gffDetailGeneRef : gffHashGeneRef.getGffDetailAll()) {
@@ -84,7 +92,10 @@ public class GffHashModifyNewGffORF {
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGeneRef.getLsCodSplit()) {
 				int median = (gffGeneIsoInfo.getStart() + gffGeneIsoInfo.getEnd())/2;
 				GffCodGene gffCodGene = gffHashGeneRaw.searchLocation(gffDetailGeneRef.getRefID(), median);
-				if (!gffCodGene.isInsideLoc()) {
+				if (gffCodGene == null) {
+					gffHashGeneRaw.addGffDetailGene(gffDetailGeneRef);
+					continue;
+				} else if (!gffCodGene.isInsideLoc()) {
 					logger.warn("cannot find gene on:" + gffDetailGeneRef.getRefID() + " " + median );
 					continue;
 				}
@@ -96,6 +107,40 @@ public class GffHashModifyNewGffORF {
 				modifyGffDetailGene(gffDetailGeneRef, gffDetailGeneThis);
 			}
 		}
+		gffResult = filterGene2();
+	}
+	
+	private GffHashGene filterGene() {
+		return gffHashGeneRaw;
+	}
+	
+	private GffHashGene filterGene2() {
+		Set<String> setGffKnownGeneName = new HashSet<String>();
+		for (GffDetailGene gffDetailGene : gffHashGeneRef.getGffDetailAll()) {
+			for (GffGeneIsoInfo iso : gffDetailGene.getLsCodSplit()) {
+				setGffKnownGeneName.add(iso.getParentGeneName());
+			}
+		}
+		
+		GffHashGene gffResult = new GffHashGene();
+		for (GffDetailGene gffDetailGeneSuper : gffHashGeneRaw.getGffDetailAll()) {
+			for (GffDetailGene gffDetailGene : gffDetailGeneSuper.getlsGffDetailGenes()) {
+				GffDetailGene gffDetailGeneNew = gffDetailGene.clone();
+				gffDetailGeneNew.clearIso();
+				for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+					if (setGffKnownGeneName.contains(gffGeneIsoInfo.getParentGeneName())
+							|| gffGeneIsoInfo.size() > 1
+							) {
+						gffDetailGeneNew.addIsoSimple(gffGeneIsoInfo);
+					}
+				}
+				if (gffDetailGeneNew.getLsCodSplit().size() > 0) {
+					gffResult.addGffDetailGene(gffDetailGene);
+				}
+			}
+		}
+		gffResult.initialGffWhileAddGffDetailGene();
+		return gffResult;
 	}
 	
 	private void modifyGffDetailGene(GffDetailGene gffDetailGeneRef, GffDetailGene gffDetailGeneThis) {

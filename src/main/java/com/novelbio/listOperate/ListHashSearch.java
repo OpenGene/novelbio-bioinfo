@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.apache.tools.ant.types.resources.Sort;
+
+import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
 
 
 /**
@@ -209,6 +212,7 @@ K extends ListCodAbsDu<T, E>, M extends ListAbsSearch<T, E, K>> {
 		this.gfffilename = gfffilename;
 		try {
 			ReadGffarrayExcep(gfffilename);
+			sort();
 			setItemDistance();
 			setOther();
 			getMapName2DetailNum();
@@ -219,6 +223,12 @@ K extends ListCodAbsDu<T, E>, M extends ListAbsSearch<T, E, K>> {
 			return false;
 		}
 		return true;
+	}
+	
+	public void sort() {
+		for (M lsGffDetail : getMapChrID2LsGff().values()) {
+			lsGffDetail.sort();
+		}
 	}
 	/**
 	 * @本方法需要被覆盖

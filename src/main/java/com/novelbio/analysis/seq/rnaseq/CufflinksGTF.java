@@ -1,15 +1,20 @@
 package com.novelbio.analysis.seq.rnaseq;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.IntCmdSoft;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneNCBI;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.mapping.MapBwaAln;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
@@ -17,7 +22,9 @@ import com.novelbio.analysis.seq.sam.BamReadsInfo;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
@@ -65,6 +72,10 @@ public class CufflinksGTF implements IntCmdSoft {
 
 	boolean mergeBamFileByPrefix = false;
 	
+	/** fpkm小于该数值的新转录本就过滤掉 */
+	double fpkmFilter = 10;
+	/** 长度小于该长度的单exon转录本就过滤掉 */
+	int isoLenFilter = 200;
 	/** 最后获得的结果 */
 	List<String> lsCufflinksResult = new ArrayList<String>();
 	
@@ -85,6 +96,14 @@ public class CufflinksGTF implements IntCmdSoft {
 	/** 遇到错误是否跳过，不跳过就抛出异常 */
 	public void setSkipErrorMode(boolean skipErrorMode) {
 		this.skipErrorMode = skipErrorMode;
+	}
+	/** fpkm小于该数值的新转录本就过滤掉 */
+	public void setFpkmFilter(double fpkmFilter) {
+		this.fpkmFilter = fpkmFilter;
+	}
+	/** 长度小于该长度的单exon转录本就过滤掉 */
+	public void setIsoLenFilter(int isoLenFilter) {
+		this.isoLenFilter = isoLenFilter;
 	}
 	/**
 	 * 是否根据prefix合并bam文件，然后再做cufflinks分析
@@ -384,29 +403,97 @@ public class CufflinksGTF implements IntCmdSoft {
 	private String getCufflinksResult(String bamFile, String prefix) {
 		List<String> lsCmd = getLsCmd(bamFile, prefix);
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
-		String outGTF = FileOperate.addSep(getOutPathPrefix(prefix));
+		String outGTFPath = FileOperate.addSep(getOutPathPrefix(prefix));
+		String outGtf = "";
 		if (isUseOldResult
-				&& FileOperate.isFileExistAndBigThanSize(outGTF + "/genes.fpkm_tracking" , 0)
-				&& FileOperate.isFileExistAndBigThanSize(outGTF + "/isoforms.fpkm_tracking" , 0)
-				&& FileOperate.isFileExist(outGTF + "/skipped.gtf")
-				&& FileOperate.isFileExistAndBigThanSize(outGTF + "/transcripts.gtf" , 0)
+				&& FileOperate.isFileExistAndBigThanSize(outGTFPath + "/genes.fpkm_tracking" , 0)
+				&& FileOperate.isFileExistAndBigThanSize(outGTFPath + "/isoforms.fpkm_tracking" , 0)
+				&& FileOperate.isFileExist(outGTFPath + "/skipped.gtf")
+				&& FileOperate.isFileExistAndBigThanSize(outGTFPath + "/transcripts.gtf" , 0)
 				) {
-			return outGTF + "transcripts.gtf";
+			outGtf = outGTFPath + "transcripts.gtf";
 		}
 		cmdOperate.run();
 		this.lsCmd.add(cmdOperate.getCmdExeStr());
 		
 		if (cmdOperate.isFinishedNormal()) {
-			return outGTF + "transcripts.gtf";
+			outGtf = outGTFPath + "transcripts.gtf";
 		} else {
 			if (skipErrorMode) {
-				return null;
+				outGtf = null;
 			} else {
 				String errInfo = cmdOperate.getErrOut();
 				throw new RuntimeException("cufflinks error:" + prefix + ":\n" + cmdOperate.getCmdExeStrReal() + "\n" + errInfo);
 			}
 		}
+		
+		if (outGtf != null) {
+			String outGtfModify = FileOperate.changeFileSuffix(outGtf, "_filterWithFPKMlessThan" + fpkmFilter, null);
+			filterGtfFile(outGtf, outGtfModify, fpkmFilter, isoLenFilter);
+			outGtf = outGtfModify;
+		}
+		return outGtf;
 	}
+	
+	public static void filterGtfFile(String outGtf, String outFinal, double fpkmFilter, int isoLenFilter) {
+		TxtReadandWrite txtRead = new TxtReadandWrite(outGtf);
+		
+		/** 基因名字的正则，可以改成识别人类或者其他,这里是拟南芥，默认  NCBI的ID  */
+		String transIdreg = "(?<=transcript_id \")[\\w\\-%\\:\\.]+";
+		String fpkmreg = "(?<=FPKM \")[\\d\\.]+";
+		String geneNamereg = "(?<=gene_name \")[\\w\\-%\\:\\.]+";
+		PatternOperate patTransId = new PatternOperate(transIdreg, false);
+		PatternOperate patFpkm = new PatternOperate(fpkmreg, false);
+		PatternOperate patGeneName = new PatternOperate(geneNamereg, false);
+		Map<String, Double> mapIso2Fpkm = new HashMap<String, Double>();
+		Map<String, String> mapIso2GeneName = new HashMap<String, String>();
+		for (String content : txtRead.readlines()) {
+			String transId = patTransId.getPatFirst(content);
+			double fpkm = Double.parseDouble(patFpkm.getPatFirst(content));
+			String geneName = patGeneName.getPatFirst(content);
+			mapIso2Fpkm.put(transId, fpkm);
+			if (geneName != null) {
+				mapIso2GeneName.put(transId, geneName);
+			}
+		}
+		txtRead.close();
+		
+		GffHashGene gffHashGene = new GffHashGene(GffType.GTF, outGtf);
+		GffHashGene gffHashGeneNew = new GffHashGene();
+		for (GffDetailGene gffDetailGene : gffHashGene.getGffDetailAll()) {
+			GffDetailGene gffDetailGeneNew = gffDetailGene.clone();
+			gffDetailGeneNew.clearIso();
+			for (GffGeneIsoInfo iso : gffDetailGene.getLsCodSplit()) {
+				if (mapIso2GeneName.containsKey(iso.getName())
+						||  iso.size() > 1 || (mapIso2Fpkm.get(iso.getName()) >= fpkmFilter && (iso.getLen() >= isoLenFilter))
+						) {
+					gffDetailGeneNew.addIsoSimple(iso);
+				}
+			}
+			if (gffDetailGeneNew.getLsCodSplit().size() > 0) {
+				gffHashGeneNew.addGffDetailGene(gffDetailGeneNew);
+			}
+		}
+		logger.info("before filter iso with only one exon have " + getIsoHaveOneExonNum(gffHashGene));
+		logger.info("after filter iso with only one exon have " + getIsoHaveOneExonNum(gffHashGeneNew));
+		logger.info("before filter geneNum " + gffHashGene.getGffDetailAll().size());
+		logger.info("after filter geneNum " + gffHashGeneNew.getGffDetailAll().size());
+		gffHashGeneNew.writeToGTF(outFinal);
+	}
+	
+	/** 仅含一个exon的iso的数量 */
+	private static int getIsoHaveOneExonNum(GffHashGene gffHashGene) {
+		int isoExon1NumNew = 0;
+		for (GffDetailGene gene : gffHashGene.getGffDetailAll()) {
+			for (GffGeneIsoInfo isoInfo : gene.getLsCodSplit()) {
+				if (isoInfo.size() == 1) {
+					isoExon1NumNew++;
+				}
+			}
+		}
+		return isoExon1NumNew;
+	}
+	
 	
 	/**
 	 * 合并前缀相同的bam文件，并返回待执行的lsCmd
