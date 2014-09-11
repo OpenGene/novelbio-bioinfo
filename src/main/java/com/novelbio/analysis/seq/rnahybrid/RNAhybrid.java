@@ -84,7 +84,7 @@ public class RNAhybrid implements IntCmdSoft {
 		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {
-			throw new ExceptionCmd("RNAhybrid error:\n" + cmdOperate.getCmdExeStrReal());
+			throw new ExceptionCmd("RNAhybrid error:\n", cmdOperate);
 		}
 		FileOperate.moveFile(true, FileOperate.changeFilePrefix(predictResultFile, "_tmp", null), predictResultFile);
 	}

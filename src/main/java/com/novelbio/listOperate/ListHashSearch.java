@@ -4,12 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.apache.tools.ant.types.resources.Sort;
-
-import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
 
 
 /**
@@ -47,8 +43,6 @@ K extends ListCodAbsDu<T, E>, M extends ListAbsSearch<T, E, K>> {
 	 * chr格式，全部小写 chr1,chr2,chr11<br>
 	 */
 	protected LinkedHashMap<String, M> mapChrID2ListGff;
-	/** 保存所有gffDetailGene */
-	protected ArrayList<T> lsGffDetailAll = new ArrayList<T>();
 	/** 顺序存储ChrHash中的ID，这个就是ChrHash中实际存储的ID，如果两个Item是重叠的，就取其中的第一个 */
 	protected ArrayList<String> lsNameAll;
 	/**
@@ -373,10 +367,11 @@ K extends ListCodAbsDu<T, E>, M extends ListAbsSearch<T, E, K>> {
 //		if (lsGffDetailAll.size() != 0) {
 //			return lsGffDetailAll;
 //		}
-		lsGffDetailAll = new ArrayList<T>();
+		ArrayList<T> lsGffDetailAll = new ArrayList<T>();
 		for (M lsGffDetailGenes : mapChrID2ListGff.values()) {
 			lsGffDetailAll.addAll(lsGffDetailGenes.getLsElement());
 		}
 		return lsGffDetailAll;
 	}
+
 }

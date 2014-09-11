@@ -69,8 +69,14 @@ public interface GffHashGeneInf  {
 	 */
 	int getTaxID();
 	
-	/** 返回所有不重复GffDetailGene */
+	/** 返回所有不重复GffDetailGene，注意如果有overlap超过30%的基因，它们会合并在同一个gffDetailGene中
+	 * 需要调用{@link GffDetailGene#getlsGffDetailGenes()}方法来获得具体每一个Gene */
 	public ArrayList<GffDetailGene> getGffDetailAll();
+	/** 获得单个gffDetailGene，而不是一系列gffDetailGene的Unit<br>
+	 * 不需要再调用{@link GffDetailGene#getlsGffDetailGenes()}方法
+	 * @return
+	 */
+	public List<GffDetailGene> getLsGffDetailGenes();
 	/** 染色体都小写 */
 	public  HashMap<String, ListGff> getMapChrID2LsGff();
 	/**

@@ -42,20 +42,15 @@ public class GffIDconvert {
 	public void convert() {
 		setGeneAlreadFind.clear();
 		mapQgene2Sgene.clear();
-		Collection<GffDetailGene> lsGffDetailGenes = gffHashGeneQuery.getGffDetailAll();
-		for (GffDetailGene gffDetailGeneRaw : lsGffDetailGenes) {
-			for (GffDetailGene gffDetailGene : gffDetailGeneRaw.getlsGffDetailGenes()) {
-				searchGffGene(gffDetailGene, gffHashGeneSub, true);
-			}
+		for (GffDetailGene gffDetailGene : gffHashGeneQuery.getLsGffDetailGenes()) {
+			searchGffGene(gffDetailGene, gffHashGeneSub, true);
 		}
 		
-		for (GffDetailGene gffDetailGeneRaw : gffHashGeneSub.getGffDetailAll()) {
-			for (GffDetailGene gffDetailGene : gffDetailGeneRaw.getlsGffDetailGenes()) {
-				if (setGeneAlreadFind.contains(gffDetailGene.getNameSingle())) {
-					continue;
-				}
-				searchGffGene(gffDetailGene, gffHashGeneQuery, false);
+		for (GffDetailGene gffDetailGene : gffHashGeneSub.getLsGffDetailGenes()) {
+			if (setGeneAlreadFind.contains(gffDetailGene.getNameSingle())) {
+				continue;
 			}
+			searchGffGene(gffDetailGene, gffHashGeneQuery, false);
 		}
 	}
 	

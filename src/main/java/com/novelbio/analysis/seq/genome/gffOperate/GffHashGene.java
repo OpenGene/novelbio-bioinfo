@@ -272,6 +272,10 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	public ArrayList<GffDetailGene> getGffDetailAll() {
 		return gffHashGene.getGffDetailAll();
 	}
+	@Override
+	public List<GffDetailGene> getLsGffDetailGenes() {
+		return gffHashGene.getLsGffDetailGenes();
+	}
 	/** 返回所有不重复GffDetailGene */
 	public ArrayList<Integer> getLsIntronSortedS2M() {
 		return gffHashGene.getLsIntronSortedS2M();
@@ -469,7 +473,7 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	 */
 	public boolean isContainNcRNA() {
 		int mRNAnum = 0, miRNAnum = 0, ncRNAnum = 0, all = 0;
-		for (GffDetailGene gffDetailGene : getGffDetailAll()) {
+		for (GffDetailGene gffDetailGene : getLsGffDetailGenes()) {
 			for (GffGeneIsoInfo iso : gffDetailGene.getLsCodSplit()) {
 				GeneType geneType = iso.getGeneType();
 				all++;
@@ -487,4 +491,5 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 		}
 		return false;
 	}
+
 }

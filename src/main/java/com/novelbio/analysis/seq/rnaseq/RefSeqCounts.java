@@ -29,11 +29,11 @@ import com.novelbio.generalConf.TitleFormatNBC;
  */
 public class RefSeqCounts implements AlignmentRecorder {
 	public static void main(String[] args) {
-		String expPath = "/media/hdfs/nbCloud/staff/bianlianle/Project/RNA_Denovo/Salvia_Mil_Bunge_KaiGuoyin/4.Gene_Expression/zongjieExp/";
+		String expPath = "/hdfs:/nbCloud/staff/bianlianle/Project/RNA_Denovo/Ophiorrhiza_pumila_CuiLiJie/4.Gene_Expression/zongjieExp/";
 		FileOperate.createFolders(expPath);
-		String parentPath = "/media/hdfs/nbCloud/staff/bianlianle/Project/RNA_Denovo/Salvia_Mil_Bunge_KaiGuoyin/";
+		String parentPath = "/hdfs:/nbCloud/staff/bianlianle/Project/RNA_Denovo/Ophiorrhiza_pumila_CuiLiJie/";
 		RefSeqCounts refSeqCounts = new RefSeqCounts();
-		refSeqCounts.readGene2IsoFile(parentPath + "4.Gene_Expression/All-Unigene.Gene2Tar2.list");
+		refSeqCounts.readGene2IsoFile(parentPath + "3.Cluster/All-Unigene.Gene2Tra.list");
 		
 		refSeqCounts.setPairend(true);
 		List<AlignmentRecorder> lsRecorders = new ArrayList<>();

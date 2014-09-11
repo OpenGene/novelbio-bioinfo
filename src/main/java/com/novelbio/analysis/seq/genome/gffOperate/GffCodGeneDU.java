@@ -265,10 +265,15 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 	 * 则返回基因时将chr1 30366 30900 这个转录本删掉
 	 * 
 	 * @return LinkedHashSet
+	 * 不需要调用 {@link GffDetailGene#getlsGffDetailGenes()}
 	 */
 	public Set<GffDetailGene> getCoveredOverlapGffGene() {
 		setHashCoveredGenInfo();
-		return setGffDetailGene;
+		Set<GffDetailGene> setResult = new HashSet<GffDetailGene>();
+		for (GffDetailGene gffDetailGene : setGffDetailGene) {
+			setResult.addAll(gffDetailGene.getlsGffDetailGenes());
+		}
+		return setResult;
 	}
 	/**
 	 * 不查询数据库，直接返回gffDetailGene

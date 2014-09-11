@@ -13,7 +13,7 @@ public class DownloadKEGG {
 //		downloadKEGG.addSpecies("mmu");
 //		downloadKEGG.addSpecies("osa");
 //		downloadKEGG.addSpecies("ath");
-		downloadKEGG.addSpecies("dme");
+		downloadKEGG.addSpecies("apla");
 		
 		downloadKEGG.setSavePath("/media/winE/OutMrd1.mrd");
 		downloadKEGG.download();

@@ -31,7 +31,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 	/** 可变剪接mRNA的正则 */
 	protected String splitmRNA = "";
 	/** 可变剪接mRNA的正则 */
-	protected String splitmRNAParent = "(?<=Parent\\=)[\\w\\.\\-%]+";
+	protected String splitmRNAParent = "(?<=Parent\\=)[\\w\\-%\\:\\.\\{\\}]+";
 	/** gene类似名 */
 	private static HashSet<String> hashgene = new HashSet<String>();
 	
@@ -43,12 +43,12 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 	 */
 	public GffHashGenePlant(GffType gffType) {
 		if (gffType == GffType.Plant) {
-			GeneName= "(?<=Name\\=)[\\w\\.]+";
-			splitmRNA= "(?<=Name\\=)[\\w\\.]+";
+			GeneName= "(?<=Name\\=)[\\w\\-%\\:\\.\\{\\}]+";
+			splitmRNA= "(?<=Name\\=)[\\w\\-%\\:\\.\\{\\}]+";
 		}
 		else if (gffType == GffType.TIGR) {
-			GeneName = "(?<=Alias\\=)[\\w\\.]+";
-			splitmRNA = "(?<=Alias\\=)[\\w\\.]+";
+			GeneName = "(?<=Alias\\=)[\\w\\-%\\:\\.\\{\\}]+";
+			splitmRNA = "(?<=Alias\\=)[\\w\\-%\\:\\.\\{\\}]+";
 		}
 	}
 

@@ -341,6 +341,21 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		lsGffDetailGenes.add(gffDetailGene);
 	}
 	
+	/** 获得单个gffDetailGene，而不是一系列gffDetailGene的Unit<br>
+	 * 不需要再调用{@link GffDetailGene#getlsGffDetailGenes()}方法
+	 * @return
+	 */
+	public List<GffDetailGene> getLsGffDetailGenes() {
+		List<GffDetailGene> lsGffDetailAll = new ArrayList<>();
+		for (ListGff lsGffDetailGenes : mapChrID2ListGff.values()) {
+			List<GffDetailGene> lsGene = lsGffDetailGenes.getLsElement();
+			for (GffDetailGene geneUnit : lsGene) {
+				lsGffDetailAll.addAll(geneUnit.getlsGffDetailGenes());
+			}
+		}
+		return lsGffDetailAll;
+	}
+	
 	/**
 	 * <b>可能会出现重复ID，如同一名字的miRNA</b><br>
 	 * 将文件写入GTF中

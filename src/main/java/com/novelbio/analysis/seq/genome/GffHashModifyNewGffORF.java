@@ -123,22 +123,20 @@ public class GffHashModifyNewGffORF {
 		}
 		
 		GffHashGene gffResult = new GffHashGene();
-		for (GffDetailGene gffDetailGeneSuper : gffHashGeneRaw.getGffDetailAll()) {
-			for (GffDetailGene gffDetailGene : gffDetailGeneSuper.getlsGffDetailGenes()) {
-				GffDetailGene gffDetailGeneNew = gffDetailGene.clone();
-				gffDetailGeneNew.clearIso();
-				for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-					if (setGffKnownGeneName.contains(gffGeneIsoInfo.getParentGeneName())
-							|| gffGeneIsoInfo.size() > 1
-							) {
-						gffDetailGeneNew.addIsoSimple(gffGeneIsoInfo);
-					}
-				}
-				if (gffDetailGeneNew.getLsCodSplit().size() > 0) {
-					gffResult.addGffDetailGene(gffDetailGene);
+		for (GffDetailGene gffDetailGene : gffHashGeneRaw.getLsGffDetailGenes()) {
+			GffDetailGene gffDetailGeneNew = gffDetailGene.clone();
+			gffDetailGeneNew.clearIso();
+			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+				if (setGffKnownGeneName.contains(gffGeneIsoInfo.getParentGeneName())
+						|| gffGeneIsoInfo.size() > 1
+						) {
+					gffDetailGeneNew.addIsoSimple(gffGeneIsoInfo);
 				}
 			}
-		}
+			if (gffDetailGeneNew.getLsCodSplit().size() > 0) {
+				gffResult.addGffDetailGene(gffDetailGene);
+			}
+				}
 		gffResult.initialGffWhileAddGffDetailGene();
 		return gffResult;
 	}

@@ -490,8 +490,10 @@ public abstract class FunctionTest implements Cloneable {
 		try {
 			BufferedImage bfImageLog2Pic = GoPathBarPlot.drawLog2PvaluePicture(lsTestResults, getTitle());
 			return bfImageLog2Pic;
-		} catch (Exception e) { e.printStackTrace(); }
-		return null;
+		} catch (Exception e) { e.printStackTrace(); 
+			logger.error("draw pvalue pic error " + getTitle(), e);
+			throw new ExceptionFunctionTest("draw pvalue pic error " + getTitle(), e);
+		}
 	}
 	
 	public BufferedImage getImageEnrichment() {
@@ -502,8 +504,10 @@ public abstract class FunctionTest implements Cloneable {
 		try {
 			BufferedImage bfImageLog2Pic = GoPathBarPlot.drawEnrichmentPicture(lsTestResults, getTitle());
 			return bfImageLog2Pic;
-		} catch (Exception e) { e.printStackTrace(); }
-		return null;
+		} catch (Exception e) { 
+			logger.error("draw enrich pic error " + getTitle(), e);
+			throw new ExceptionFunctionTest("draw enrich pic error " + getTitle(), e);
+		}
 	}
 	
 	protected abstract String getTitle();

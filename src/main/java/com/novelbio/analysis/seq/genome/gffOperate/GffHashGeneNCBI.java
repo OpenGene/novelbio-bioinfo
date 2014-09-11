@@ -42,7 +42,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	private static final Logger logger = Logger.getLogger(GffHashGeneNCBI.class);
 	
 	/** 基因名字的正则，可以改成识别人类或者其他,这里是拟南芥，默认  NCBI的ID  */
-	protected static String regGeneName = "(?<=gene\\=)[\\w\\-%\\:\\.]+";
+	protected static String regGeneName = "(?<=gene\\=)[\\w\\-%\\:\\.\\{\\}\\(\\)]+";
 	/**  可变剪接mRNA的正则，默认 NCBI的ID */
 	protected static String regSplitmRNA = "(?<=transcript_id\\=)[\\w\\-\\.]+|(?<=stable_id\\=)[\\w\\-\\.]+";
 	/**  可变剪接mRNA的产物的正则，默认 NCBI的symbol */
@@ -50,11 +50,11 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	/** geneID的正则 */
 	protected static String regGeneID = "(?<=Dbxref\\=GeneID\\:)\\d+";
 	/** Name的正则 */
-	protected static String regName = "(?<=Name\\=)[\\w\\-%\\.\\:]+";
+	protected static String regName = "(?<=Name\\=)[\\w\\-%\\.\\:\\{\\}\\(\\)]+";
 	/** ID的正则 */
-	protected static String regID = "(?<=ID\\=)[\\w\\.\\-%\\:]+";
+	protected static String regID = "(?<=ID\\=)[\\w\\.\\-%\\:\\{\\}]+";
 	/** parentID的正则 */
-	protected static String regParentID = "(?<=Parent\\=)[\\w\\.\\-%\\:]+";
+	protected static String regParentID = "(?<=Parent\\=)[\\w\\.\\-%\\:\\{\\}\\(\\)]+";
 
 	/** gene类似名 */
 	private static Set<String> setIsGene = new HashSet<String>();
@@ -112,7 +112,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		if (setIsGene.isEmpty()) {
 			setIsGene.add("gene");
 			setIsGene.add("transposable_element_gene");
-			setIsGene.add("transposable_element");
+//			setIsGene.add("transposable_element");
 			setIsGene.add("pseudogene");
 //			setIsGene.add("tRNA");
 		}
