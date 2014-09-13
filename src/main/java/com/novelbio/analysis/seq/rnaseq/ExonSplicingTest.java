@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqHash;
+import com.novelbio.analysis.seq.fasta.StrandType;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
@@ -341,7 +342,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 					break;
 				}
 				exonClusterBefore = exonClusterBefore.getExonClusterBefore();
-			}	
+			}
 		}
 		
 		lsGetExon.add(new ExonInfo(exonCluster.isCis5to3(), exonCluster.getStartCis(), exonCluster.getEndCis()));
@@ -356,10 +357,10 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 					break;
 				}
 				exonClusterAfter = exonClusterAfter.getExonClusterAfter();
-			}	
+			}
 		}
 		
-		seqFasta = seqHash.getSeq(exonCluster.isCis5to3(), exonCluster.getRefID(), lsGetExon, true);
+		seqFasta = seqHash.getSeq(StrandType.isoForward, exonCluster.getRefID(), lsGetExon, true);
 		lsSeqFastas.add(seqFasta);
 		
 		return lsSeqFastas;

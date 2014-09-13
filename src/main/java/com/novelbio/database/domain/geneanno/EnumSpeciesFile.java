@@ -21,18 +21,33 @@ public enum EnumSpeciesFile {
 	refseqAllIsoPro("refprotein_all_iso"),
 	refseqOneIsoPro("refprotein_one_iso"),
 	
+	/** 用来作go，pathway，COG背景的基因 */
+	bgGeneFile("BGgene") {
+		/** 返回具体的文件路径 */
+		public String getSavePath(int taxId, SpeciesFile speciesFile) {
+			validateSpeciesFile(taxId, speciesFile);
+			
+			String basePath = PathDetailNBC.getGenomePath();
+			String pathToVersion = speciesFile.getPathToVersion();
+			if(StringOperate.isRealNull(pathToVersion))
+				return null;
+			return basePath + folder + FileOperate.getSepPath() + pathToVersion + speciesFile.getTaxID() + "_" + speciesFile.getVersion() + "_BGgeneList.txt";
+		}
+	},
+	
 	rrnaFile("rrnaFile") {
-		public String getSavePath(SpeciesFile speciesFile) {
-			int taxid = speciesFile.getTaxID();
+		public String getSavePath(int taxId, SpeciesFile speciesFile) {			
 			String path = PathDetailNBC.getGenomePath() + "rrna" + FileOperate.getSepPath();
-			path = path + taxid + FileOperate.getSepPath();
+			path = path + taxId + FileOperate.getSepPath();
 			return path;
 		}
 	},
 	
 	ChromSepPath("Chrom_Sep") {
-		public String getSavePath(SpeciesFile speciesFile) {
-			String basePath = SpeciesFile.getPathParent();
+		public String getSavePath(int taxId, SpeciesFile speciesFile) {
+			validateSpeciesFile(taxId, speciesFile);
+			
+			String basePath = PathDetailNBC.getGenomePath();
 			String pathToVersion = speciesFile.getPathToVersion();
 			if(StringOperate.isRealNull(pathToVersion))
 				return null;
@@ -41,8 +56,10 @@ public enum EnumSpeciesFile {
 	},
 	
 	COG("COG") {
-		public String getSavePath(SpeciesFile speciesFile) {
-			String basePath = SpeciesFile.getPathParent();
+		public String getSavePath(int taxId, SpeciesFile speciesFile) {
+			validateSpeciesFile(taxId, speciesFile);
+			
+			String basePath = PathDetailNBC.getGenomePath();
 			String pathToVersion = speciesFile.getPathToVersion();
 			if(StringOperate.isRealNull(pathToVersion))
 				return null;
@@ -55,7 +72,7 @@ public enum EnumSpeciesFile {
 	 * 对应保存的文件夹
 	 */
 	protected String folder;
-	
+		
 	EnumSpeciesFile(String folder) {
 		this.folder = folder;
 	}
@@ -65,11 +82,37 @@ public enum EnumSpeciesFile {
 	 * @param speciesFile
 	 * @return
 	 */
-	public String getSavePath(SpeciesFile speciesFile) {
+	public String getSavePath(int taxId, SpeciesFile speciesFile) {
+		validateSpeciesFile(taxId, speciesFile);
+		
 		String basePath = speciesFile.getSpeciesVersionPath();
 		if(StringOperate.isRealNull(basePath))
 			return null;
 		return basePath + folder + FileOperate.getSepPath();
+	}
+	
+	private static void validateSpeciesFile(int taxId, SpeciesFile speciesFile) {
+		if (speciesFile == null || speciesFile.getTaxID() == 0) {
+			throw new ExceptionNoSpeciesFile(taxId + "Have No SpeciesFile Exist");
+		}
+	}
+	
+	public static class ExceptionNoSpeciesFile extends RuntimeException {
+		public ExceptionNoSpeciesFile() {
+			super();
+		}
+		
+		public ExceptionNoSpeciesFile(String msg) {
+			super(msg);
+		}
+		
+		public ExceptionNoSpeciesFile(Throwable e) {
+			super(e);
+		}
+		
+		public ExceptionNoSpeciesFile(String msg, Throwable e) {
+			super(msg, e);
+		}
 	}
 	
 }

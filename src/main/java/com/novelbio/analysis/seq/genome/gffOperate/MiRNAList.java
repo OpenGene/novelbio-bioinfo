@@ -18,9 +18,6 @@ ListCodAbsDu<MirMature,ListCodAbs<MirMature>>, MirPre> {
 	public void addMirMature(MiRNAList miRNAList) {
 		for (MirPre mirPre : miRNAList.getMapChrID2LsGff().values()) {
 			getMapChrID2LsGff().put(mirPre.getName().toLowerCase(), mirPre);
-			if (lsGffDetailAll != null) {
-				lsGffDetailAll.addAll(mirPre.getLsElement());
-			}
 			if (lsNameAll != null) {
 				lsNameAll.addAll(mirPre.getLsNameAll());
 			}

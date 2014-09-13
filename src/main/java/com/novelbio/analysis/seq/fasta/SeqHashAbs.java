@@ -15,6 +15,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.Alignment;
 
 public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 	private static Logger logger = Logger.getLogger(SeqHashAbs.class);
@@ -248,80 +249,97 @@ public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 	 * seqname = chrID_第一个外显子的起点_第一个外显子的终点
 	 * 完全兼容gffgeneinfo获得的序列
 	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基
-	 * <b>不管转录本的方向，总是从基因组的5‘向3’提取。</b>
-	 * 方向需要人工设定cisseq
-	 * @param cis5to3All 全局的方向是正向还是反向，如果为null，则取第一个exonInfo的方向
-	 * @param cisseq 正反向，是否需要反向互补。正向永远是5to3
+	 * @param strandType 提取的方向
 	 * @param chrID 无所谓大小写
-	 * @param lsInfo ArrayList-int[] 给定的转录本，每一对是一个外显子
+	 * @param lsInfo 给定的转录本，每一对是一个外显子，必须是cis5to3从小到大排序，trans 从大到小排序
+	 * @param sep intron和exon之间的间隔符
 	 * @param getIntron 是否提取内含子区域，True，内含子小写，外显子大写。False，只提取外显子
+	 * @return
 	 */
-	private SeqFasta getSeq(Boolean cis5to3All, SeqType seqType, String chrID, List<ExonInfo> lsInfo, String sep, boolean getIntron) {
-		if (cis5to3All == null) cis5to3All = lsInfo.get(0).isCis5to3();
-		
-		SeqFasta seqFasta = new SeqFasta();
-		seqFasta.setName(chrID + "_" + lsInfo.get(0).getName() + "_");
+	private SeqFasta getSeq(StrandType strandType, String chrID, List<ExonInfo> lsInfo, String sep, boolean getIntron) {
 		String myChrID = chrID.toLowerCase();
-		
 		if (!mapChrID2Length.containsKey(myChrID)) {
 			logger.error("没有该染色体： "+chrID);
 			return null;
 		}
 		
-		String result = "";
-		if (cis5to3All) {
+		SeqFasta seqFasta = new SeqFasta();
+		seqFasta.setName(chrID + "_" + lsInfo.get(0).getName() + "_");
+
+		StringBuilder result = new StringBuilder();
+		
+		boolean cis5to3 = getStrand(lsInfo);
+		if (cis5to3) {
 			for (int i = 0; i < lsInfo.size(); i++) {
 				ExonInfo exon = lsInfo.get(i);
-				Boolean cis5to3 = exon.isCis5to3();
-				if (cis5to3 == null) cis5to3 = true;
-				
 				SeqFasta seqfastaTmp =  getSeq(myChrID, exon.getStartAbs(), exon.getEndAbs());
-				if (seqType == SeqType.isoForward && !cis5to3) {
-					seqfastaTmp = seqfastaTmp.reservecom();
-				}
-				try {
-					result = addSep(result, sep) + seqfastaTmp.toString().toUpperCase(); 
-				} catch (Exception e) {
-					result = addSep(result, sep) + seqfastaTmp.toString().toUpperCase();
-					System.out.println();
-				}
+				addSep(result, sep);
+				result.append(seqfastaTmp.toString().toUpperCase());
 				
 				if (getIntron && i < lsInfo.size()-1) {
 					SeqFasta seqfastaTmpIntron =  getSeq(myChrID, exon.getEndAbs()+1, lsInfo.get(i+1).getStartAbs()-1);
-					result = addSep(result, sep) + seqfastaTmpIntron.toString().toLowerCase();
+					addSep(result, sep);
+					result.append(seqfastaTmpIntron.toString().toLowerCase());
 				}
 			}
-		}
-		else {
+		} else {
 			for (int i = lsInfo.size() - 1; i >= 0; i--) {
 				ExonInfo exon = lsInfo.get(i);
-				Boolean cis5to3 = exon.isCis5to3();
-				if (cis5to3 == null) cis5to3 = false;
 				SeqFasta seqfastaTmp = getSeq(myChrID, exon.getStartAbs(), exon.getEndAbs());
-				if (seqType == SeqType.isoForward && cis5to3) {
-					seqfastaTmp = seqfastaTmp.reservecom();
-				}
-				result = addSep(result, sep) + seqfastaTmp.toString().toUpperCase();
+				addSep(result, sep);
+				result.append(seqfastaTmp.toString().toUpperCase());
 				if (getIntron && i > 0) {
-					SeqFasta seqfastaTmpIntron =  getSeq(myChrID, exon.getEndAbs() + 1, lsInfo.get(i-1).getStartAbs() - 1);			
-					result = addSep(result, sep) + seqfastaTmpIntron.toString().toLowerCase();;
+					SeqFasta seqfastaTmpIntron =  getSeq(myChrID, exon.getEndAbs() + 1, lsInfo.get(i-1).getStartAbs() - 1);
+					addSep(result, sep);
+					result.append(seqfastaTmpIntron.toString().toLowerCase());
 				}
 			}
 		}
-		seqFasta.setSeq(result);
-		if (seqType == SeqType.trans || (seqType == SeqType.isoForward && !cis5to3All)) {
+		seqFasta.setSeq(result.toString());
+		if (strandType == StrandType.trans || (strandType == StrandType.isoForward && !cis5to3)) {
 			return seqFasta.reservecom();
 		} else {
 			return seqFasta;
 		}
 	}
 	
+	/** 获得这一系列exon的方向<br>
+	 * 如果是正向，就应该是从小到大排列<br>
+	 * 如果是反向，就应该是从大到小排列<br>
+	 * 如果不符合，就抛出异常
+	 * @param lsInfo
+	 */
+	private boolean getStrand(List<? extends Alignment> lsInfo) {
+		boolean cis5to3 = lsInfo.get(0).isCis5to3();
+		Alignment exonLast = null;
+		for (Alignment exonInfo : lsInfo) {
+			if (cis5to3 != exonInfo.isCis5to3()) {
+				throw new ExceptionSeqFasta("strand is not consistent, first exon strand is: " + cis5to3 + " but exist exon: " + exonInfo.getStartAbs() + " " + exonInfo.getEndAbs() + " " + exonInfo.isCis5to3());
+			}
+			if (cis5to3 ) {
+				if (exonInfo.getStartCis() > exonInfo.getEndCis()) {
+					throw new ExceptionSeqFasta("strand is not consistent, strand is: " + cis5to3 + " but exon start bigger than end " + exonInfo.getStartAbs() + " " + exonInfo.getEndAbs() + " " + exonInfo.isCis5to3());
+				}
+				if (exonLast != null && exonLast.getEndCis() > exonInfo.getStartCis()) {
+					throw new ExceptionSeqFasta("strand is not consistent, strand is: " + cis5to3 + " but last exon end bigger than this start " + exonInfo.getStartAbs() + " " + exonInfo.getEndAbs() + " " + exonInfo.isCis5to3());
+				}
+			} else {
+				if (exonInfo.getStartCis() < exonInfo.getEndCis()) {
+					throw new ExceptionSeqFasta("strand is not consistent, strand is: " + cis5to3 + " but exon start less than end " + exonInfo.getStartAbs() + " " + exonInfo.getEndAbs() + " " + exonInfo.isCis5to3());
+				}
+				if (exonLast != null && exonLast.getEndCis() < exonInfo.getStartCis()) {
+					throw new ExceptionSeqFasta("strand is not consistent, strand is: " + cis5to3 + " but last exon end less than this start " + exonInfo.getStartAbs() + " " + exonInfo.getEndAbs() + " " + exonInfo.isCis5to3());
+				}
+			}
+			exonLast = exonInfo;
+		}
+		return cis5to3;
+	}
+	
 	/** 在输入的result后添加sep */
-	private String addSep(String result, String sep) {
-		if (result.trim().equals("")) {
-			return "";
-		} else {
-			return result + sep;
+	private void addSep(StringBuilder result, String sep) {
+		if (!result.toString().equals("")) {
+			result.append(sep);
 		}
 	}
 	/**
@@ -331,7 +349,7 @@ public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 	 * @param getIntron 是否提取内含子区域，True，内含子小写，外显子大写。False，只提取外显子
 	 */
 	public SeqFasta getSeq(GffGeneIsoInfo gffGeneIsoInfo, boolean getIntron) {
-		 SeqFasta seqFasta = getSeq(gffGeneIsoInfo.isCis5to3(), SeqType.isoForward, gffGeneIsoInfo.getRefIDlowcase(), gffGeneIsoInfo.getLsElement(), sep, getIntron);
+		 SeqFasta seqFasta = getSeq(StrandType.isoForward, gffGeneIsoInfo.getRefIDlowcase(), gffGeneIsoInfo.getLsElement(), sep, getIntron);
 		 if (seqFasta == null) {
 			return null;
 		}
@@ -348,43 +366,17 @@ public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 	 * @param getIntron 是否提取内含子区域，True，内含子小写，外显子大写。False，只提取外显子
 	 */
 	@Override
-	public SeqFasta getSeq(Boolean cis5To3Iso, String chrID,List<ExonInfo> lsInfo, boolean getIntron) {
+	public SeqFasta getSeq(StrandType strandType, String chrID,List<ExonInfo> lsInfo, boolean getIntron) {
 		if (lsInfo.size() == 0) {
 			return new SeqFasta("", "");
 		}
 		 try {
-			 return this.getSeq(cis5To3Iso, SeqType.isoForward, chrID, lsInfo, sep,getIntron);
+			 return this.getSeq(strandType, chrID, lsInfo, sep,getIntron);
 		} catch (Exception e) {
 			return null;
 		}
 	}
-	/**
-	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基<br>
-	 * 按照GffGeneIsoInfo转录本给定的情况，自动提取相对于基因转录方向的序列
-	 * 仅获得起始exon到终止exon（包括起点和终点）的exon list
-	 * @param chrID
-	 * @param cisseq 正反向，在提出的正向转录本的基础上，是否需要反向互补。
-	 * @param lsInfo ArrayList-int[] 给定的转录本，每一对是一个外显子
-	 * @param getIntron 是否提取内含子区域，True，内含子小写，外显子大写。False，只提取外显子
-	 * @param cisseq 正反向
-	 * @param start 实际第几个exon 起点必须小于等于终点
-	 * @param end 实际第几个axon
-	 * @param lsInfo
-	 * @param getIntron 是否获取内含子，内含子自动小写
-	 * @return
-	 */
-	@Override
-	public SeqFasta getSeq(Boolean cis5to3Iso, String chrID, int start, int end, List<ExonInfo> lsInfo, boolean getIntron) {
-		start--;
-		if (start < 0) start = 0;
-		
-		if (end <= 0 || end > lsInfo.size()) 
-			end = lsInfo.size();
-		
-		List<ExonInfo> lsExon = lsInfo.subList(start, end);
-		SeqFasta seq = getSeq(cis5to3Iso, SeqType.isoForward, chrID, lsExon,sep, getIntron);
-		return seq;
-	}
+
 	/**
 	 * 按顺序提取闭区间序列，每一个区段保存为一个SeqFasta对象
 	 * SeqFasta的名字为chrID:起点坐标-终点坐标 都是闭区间
@@ -420,12 +412,5 @@ public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 	}
 	
 	public abstract void close();
+	
 }
- enum SeqType {
-	 /** 转录本特有的方向，不同的exon有不同的方向 */
-	 isoForward, 
-	 /** 一直正向 */
-	 cis, 
-	 /** 一直反向 */
-	 trans;
- }

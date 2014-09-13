@@ -15,7 +15,7 @@ import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.model.modgeneid.GeneID;
 
 public class CogFunTest extends FunctionTest {
-	COGanno cogAnno = new COGanno();
+	COGanno cogAnno;
 	
 	/** Cog不需要blast到其他物种，本身他就是blast到Cog数据库的 */
 	@Deprecated
@@ -26,6 +26,11 @@ public class CogFunTest extends FunctionTest {
 	}
 	public boolean isBlast() {
 		return false;
+	}
+	
+	public void setCogAnno(COGanno cogAnno) {
+		this.cogAnno = cogAnno;
+		cogAnno.initial();
 	}
 	
 	@Override

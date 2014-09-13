@@ -63,7 +63,7 @@ public class SpeciesFileUpload {
 	
 	private void uploadSpeciesFile() throws IOException, SpeciesUploadException {
 		SpeciesFile speciesFile = SpeciesFile.findById(speciesFileId);
-		String savePath = speciesFileType.getSavePath(speciesFile);
+		String savePath = speciesFileType.getSavePath(taxId, speciesFile);
 		if (StringOperate.isRealNull(savePath)) {
 			throw new SpeciesUploadException("保存路径错误，请检查");
 		}
@@ -87,7 +87,7 @@ public class SpeciesFileUpload {
 	private void uploadRrnaFile() throws IOException, SpeciesUploadException {
 		SpeciesFile speciesFile = new SpeciesFile();
 		speciesFile.setTaxID(taxId);
-		String savePath = speciesFileType.getSavePath(speciesFile);
+		String savePath = speciesFileType.getSavePath(taxId, speciesFile);
 		if (StringOperate.isRealNull(savePath)) {
 			throw new SpeciesUploadException("保存路径错误，请检查");
 		}

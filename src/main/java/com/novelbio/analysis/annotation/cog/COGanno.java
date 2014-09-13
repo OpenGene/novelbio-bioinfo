@@ -27,14 +27,14 @@ import com.novelbio.generalConf.PathDetailNBC;
  */
 public class COGanno {
 	private static final Logger logger = Logger.getLogger(COGanno.class);
-	String cogFastaFile = PathDetailNBC.getCOGfastaFile();
+	String cogFastaFile = PathDetailNBC.getCogFasta();
 	String seqFastaFile;
 	int threadNum = 4;
 	double evalueCutoff = 1e-10;
 	/** 蛋白id到cogid的对照表 */
-	String pro2cogFile;
+	String pro2cogFile = PathDetailNBC.getCogPro2CogId();
 	/** CogId和Cog具体类的对照表 */
-	String cogId2AnnoFile;
+	String cogId2AnnoFile = PathDetailNBC.getCogId2Anno();
 	/** Cog单字母对应Cog功能的文件
 	 * INFORMATION STORAGE AND PROCESSING
 	 * [J] Translation, ribosomal structure and biogenesis 
@@ -43,7 +43,7 @@ public class COGanno {
 	 * [L] Replication, recombination and repair 
 	 * [B] Chromatin structure and dynamics 
 	 */
-	String cogAbbr2FunFile;
+	String cogAbbr2FunFile = PathDetailNBC.getCogAbbr2Fun();
 	/** 物种信息，有这个信息就把cog文件保存在genome/cog中，没有这个信息就把物种保存在sequence的文件下 */
 	Species species;
 	
@@ -54,19 +54,22 @@ public class COGanno {
 	/** key 为小写 */
 	Map<String, String[]> mapCogAbbr2Anno = new HashMap<>();
 	
+	/** 默认已经设定好 */
 	public void setCogAbbr2FunFile(String cogAbbr2FunFile) {
 		this.cogAbbr2FunFile = cogAbbr2FunFile;
 	}
+	/** 默认已经设定好 */
 	public void setCogId2AnnoFile(String cogId2AnnoFile) {
 		this.cogId2AnnoFile = cogId2AnnoFile;
 	}
-	/** cog blast的阈值，默认为1e-5 */
-	public void setEvalueCutoff(double evalueCutoff) {
-		this.evalueCutoff = evalueCutoff;
-	}
-	/** 蛋白名到cog的对照表 */
+	/** 默认已经设定好， 蛋白名到cog的对照表 */
 	public void setPro2cogFile(String pro2cogFile) {
 		this.pro2cogFile = pro2cogFile;
+	}
+	
+	/** cog blast的阈值，默认为1e-10 */
+	public void setEvalueCutoff(double evalueCutoff) {
+		this.evalueCutoff = evalueCutoff;
 	}
 	public void setSpecies(Species species) {
 		this.species = species;
@@ -156,6 +159,7 @@ public class COGanno {
 		if (FileOperate.isFileExist(blastFileResult)) {
 			return blastFileResult;
 		}
+		FileOperate.createFolders(FileOperate.getPathName(blastFileResult));
 		String cogModify = FileOperate.changeFileSuffix(cogFastaFile, "_modify", null);
 		if (!FileOperate.isFileExistAndBigThanSize(cogModify, 0) || FileOperate.getTimeLastModify(cogModify) < FileOperate.getTimeLastModify(cogFastaFile) ) {
 			getModifiedSeq(cogFastaFile, cogModify, pro2cogFile);
@@ -195,7 +199,7 @@ public class COGanno {
 		if (species == null) {
 			outPathPrefix = seqFastaFile;
 		} else {
-			outPathPrefix = EnumSpeciesFile.COG.getSavePath(species.getSelectSpeciesFile());
+			outPathPrefix = EnumSpeciesFile.COG.getSavePath(species.getTaxID(), species.getSelectSpeciesFile());
 		}
 		return outPathPrefix;
 	}

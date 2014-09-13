@@ -11,6 +11,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
+import com.novelbio.analysis.seq.fasta.StrandType;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
@@ -434,7 +435,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	 * 设定外显子范围，获得具体序列
 	 * 按照GffGeneIsoInfo转录本给定的情况，自动提取相对于基因转录方向的序列
 	 * @param IsoName 转录本的名字
-	 * @param startExon 具体某个exon 起点
+	 * @param startExon 具体某个exon 起点 从1开始计算
 	 * @param endExon 具体某个Intron 终点
 	 * @param absIso 是否是该转录本，false则选择该基因名下的最长转录本
 	 * @param getIntron
@@ -443,8 +444,16 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	public List<SeqFasta> getSeq(String IsoName, int startExon, int endExon, boolean getIntron) {
 		List<SeqFasta> lsSeqFastas = new ArrayList<>();
 		List<GffGeneIsoInfo> lsGffGeneIsoInfo = getIso(IsoName);
+		startExon--;
+		if (startExon < 0) startExon = 0;
+
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfo) {
-			SeqFasta seqFasta = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.isCis5to3(), gffGeneIsoInfo.getRefIDlowcase(), startExon, endExon, gffGeneIsoInfo.getLsElement(), getIntron);
+			if (endExon <= 0 || endExon > gffGeneIsoInfo.size()) {
+				endExon = gffGeneIsoInfo.size();
+			}
+			List<ExonInfo> lsExon = gffGeneIsoInfo.subList(startExon, endExon);
+			
+			SeqFasta seqFasta = gffChrAbs.getSeqHash().getSeq(StrandType.isoForward, gffGeneIsoInfo.getRefID(), lsExon, getIntron);
 			if (seqFasta == null) {
 				continue;
 			}
@@ -472,23 +481,23 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 			return null;
 		}
 		List<ExonInfo> lsExonInfos = null;
-		if (geneStructure.equals(GeneStructure.ALLLENGTH) || geneStructure.equals(GeneStructure.EXON)) {
+		if (geneStructure == GeneStructure.ALLLENGTH || geneStructure == GeneStructure.EXON) {
 			lsExonInfos = gffGeneIsoInfo.getLsElement();
-		} else if (geneStructure.equals(GeneStructure.CDS)) {
+		} else if (geneStructure == GeneStructure.CDS) {
 			lsExonInfos = gffGeneIsoInfo.getIsoInfoCDS();
-		} else if (geneStructure.equals(GeneStructure.INTRON)) {
+		} else if (geneStructure == GeneStructure.INTRON) {
 			lsExonInfos = gffGeneIsoInfo.getLsIntron();
-		} else if (geneStructure.equals(GeneStructure.UTR3)) {
+		} else if (geneStructure == GeneStructure.UTR3) {
 			lsExonInfos = gffGeneIsoInfo.getUTR3seq();
-		} else if (geneStructure.equals(GeneStructure.UTR5)) {
+		} else if (geneStructure == GeneStructure.UTR5) {
 			lsExonInfos = gffGeneIsoInfo.getUTR5seq();
-		} else if (geneStructure.equals(GeneStructure.TSS)) {
+		} else if (geneStructure == GeneStructure.TSS) {
 			return getSiteRange(gffGeneIsoInfo, gffGeneIsoInfo.getTSSsite(),tssAtgRange[0], tssAtgRange[1]);
-		} else if (geneStructure.equals(GeneStructure.TES)) {
+		} else if (geneStructure == GeneStructure.TES) {
 			return getSiteRange(gffGeneIsoInfo, gffGeneIsoInfo.getTESsite(),tesUagRange[0], tesUagRange[1]);
-		} else if (geneStructure.equals(GeneStructure.ATG)) {
+		} else if (geneStructure == GeneStructure.ATG) {
 			return getSiteRange(gffGeneIsoInfo, gffGeneIsoInfo.getATGsite(), tssAtgRange[0], tssAtgRange[1]);
-		} else if (geneStructure.equals(GeneStructure.UAG)) {
+		} else if (geneStructure == GeneStructure.UAG) {
 			return getSiteRange(gffGeneIsoInfo, gffGeneIsoInfo.getUAGsite(), tesUagRange[0], tesUagRange[1]);
 		}
 		if (lsExonInfos.size() == 0) {
@@ -498,6 +507,10 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		gffGeneIsoInfoSearch.addAll(lsExonInfos);
 		SeqFasta seqFastaResult = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfoSearch, getIntron);
 		if (seqFastaResult == null) {
+			return null;
+		}
+		if (geneStructure == GeneStructure.CDS && !seqFastaResult.isAA()) {
+			logger.error("cds cannot contains UAG site " + gffGeneIsoInfo.getName());
 			return null;
 		}
 		seqFastaResult.setName(gffGeneIsoInfo.getName());

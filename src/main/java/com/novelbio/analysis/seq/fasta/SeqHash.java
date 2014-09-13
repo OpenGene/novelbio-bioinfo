@@ -132,7 +132,10 @@ public class SeqHash implements SeqHashInt, Closeable {
 		}
 		return seqFasta;
 	}
-	
+	@Override
+	public SeqFasta getSeq(StrandType strandType, String chrID, List<ExonInfo> lsInfo, boolean getIntron) {
+		return seqHashAbs.getSeq(strandType, chrID, lsInfo, getIntron);
+	}
 	/**
 	 * 提取序列块
 	 * @param length 每个块多大的长度
@@ -201,22 +204,6 @@ public class SeqHash implements SeqHashInt, Closeable {
 		}
 
 		SeqFasta seqFasta = seqHashAbs.getSeq(gffGeneIsoInfo, getIntron);
-		if (seqFasta != null) {
-			seqFasta.setTOLOWCASE(TOLOWCASE);
-		}
-		return seqFasta;
-	}
-	@Override
-	public SeqFasta getSeq(Boolean cis5to3All, String chrID, List<ExonInfo> lsInfo, boolean getIntron) {
-		SeqFasta seqFasta = seqHashAbs.getSeq(cis5to3All, chrID, lsInfo, getIntron);
-		if (seqFasta != null) {
-			seqFasta.setTOLOWCASE(TOLOWCASE);
-		}
-		return seqFasta;
-	}
-	@Override
-	public SeqFasta getSeq(Boolean cis5to3All, String chrID, int start, int end, List<ExonInfo> lsInfo, boolean getIntron) {
-		SeqFasta seqFasta = seqHashAbs.getSeq(cis5to3All, chrID, start, end, lsInfo, getIntron);
 		if (seqFasta != null) {
 			seqFasta.setTOLOWCASE(TOLOWCASE);
 		}
@@ -338,5 +325,6 @@ public class SeqHash implements SeqHashInt, Closeable {
 		txtRead.close();
 		return lsName;
 	}
+
 	
 }

@@ -63,8 +63,20 @@ public class PathDetailNBC {
 	}
 	
 	/** COGfasta文件的路径 */
-	public static String getCOGfastaFile() {
+	public static String getCogFasta() {
 		return properties.getProperty("COGfasta");
+	}
+	/** COGfasta文件的路径 */
+	public static String getCogId2Anno() {
+		return properties.getProperty("cogId2Anno");
+	}
+	/** COGfasta文件的路径 */
+	public static String getCogPro2CogId() {
+		return properties.getProperty("pro2cog");
+	}
+	/** COGfasta文件的路径 */
+	public static String getCogAbbr2Fun() {
+		return properties.getProperty("cogAbbr2Fun");
 	}
 	
 	/** software配置文件的路径 */

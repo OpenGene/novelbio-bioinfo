@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
+import com.novelbio.analysis.seq.fasta.StrandType;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
@@ -17,7 +18,6 @@ import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.base.SepSign;
 import com.novelbio.database.domain.geneanno.SnpIndelRs;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.service.servgeneanno.ServSnpIndelRs;
 
 
 /**
@@ -529,9 +529,9 @@ class SiteSnpIndelInfoInsert extends SiteSnpIndelInfo{
 		}
 		else {
 			try {
-				NR = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.isCis5to3(), refSiteSnpIndelParent.getRefID(), lsTmp, false);
+				NR = gffChrAbs.getSeqHash().getSeq(StrandType.isoForward, refSiteSnpIndelParent.getRefID(), lsTmp, false);
 			} catch (Exception e) {
-				NR = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.isCis5to3(), refSiteSnpIndelParent.getRefID(), lsTmp, false);
+				NR = gffChrAbs.getSeqHash().getSeq(StrandType.isoForward, refSiteSnpIndelParent.getRefID(), lsTmp, false);
 			}
 		}
 		refSeqIntactAA.setCis5to3(gffGeneIsoInfo.isCis5to3());
@@ -663,7 +663,7 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 				return;
 			}
 			setOrfShiftAndReplaceSite(gffGeneIsoInfo, refStartCis, refEndCis);
-			SeqFasta NR = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.isCis5to3(), refSeqIntactAA.getRefID(), lsTmp, false);
+			SeqFasta NR = gffChrAbs.getSeqHash().getSeq(StrandType.isoForward, refSeqIntactAA.getRefID(), lsTmp, false);
 			refSeqIntactAA.setSeq(NR,false);//因为上面已经反向过了
 		}
 		

@@ -14,6 +14,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.GuiAnnoInfo;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqHash;
+import com.novelbio.analysis.seq.fasta.StrandType;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
@@ -890,7 +891,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			exonEnd = isoGetSeq.size();
 		}
 		List<ExonInfo> lsSub = isoGetSeq.subList(exonStart, exonEnd);
-		SeqFasta seqFasta = gffChrAbs.getSeqHash().getSeq(isoGetSeq.isCis5to3(), isoGetSeq.getRefID(), lsSub, true);
+		SeqFasta seqFasta = gffChrAbs.getSeqHash().getSeq(StrandType.isoForward, isoGetSeq.getRefID(), lsSub, true);
 		seqFasta.setName(name);
 		return seqFasta;
 	}

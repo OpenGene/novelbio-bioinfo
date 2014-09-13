@@ -253,7 +253,7 @@ public class SpeciesFile {
 		return basePath;
 	}
 	/** 物种版本的上层文件夹 */
-	public static String getPathParent() {
+	private static String getPathParent() {
 		return FileOperate.addSep(pathParent);
 	}
 	/** 物种版本的相对路径，到版本为止
@@ -275,7 +275,7 @@ public class SpeciesFile {
 		if (StringOperate.isRealNull(chromSeq)) {
 			return null;
 		}
-		String chromeSeq = EnumSpeciesFile.chromSeqFile.getSavePath(this) + chromSeq;
+		String chromeSeq = EnumSpeciesFile.chromSeqFile.getSavePath(taxID, this) + chromSeq;
 		if (FileOperate.isFileExistAndBigThanSize(chromeSeq, 0)) {
 			SamIndexRefsequence samIndexRefsequence = new SamIndexRefsequence();
 			samIndexRefsequence.setRefsequence(chromeSeq);
@@ -289,7 +289,7 @@ public class SpeciesFile {
 	 * @return
 	 */
 	public String getChromSeqFileSep() {
-		String chromeSeq = EnumSpeciesFile.ChromSepPath.getSavePath(this);
+		String chromeSeq = EnumSpeciesFile.ChromSepPath.getSavePath(taxID, this);
 		if (!FileOperate.isFileFoldExist(chromeSeq)) {
 			FileOperate.createFolders(chromeSeq);
 			NCBIchromFaChangeFormat ncbIchromFaChangeFormat = new NCBIchromFaChangeFormat();
@@ -359,13 +359,13 @@ public class SpeciesFile {
 	 */
 	public void deleteChromAll() {
 		//删除染色体文件
-		String chromeSeq = EnumSpeciesFile.chromSeqFile.getSavePath(this) + chromSeq;
+		String chromeSeq = EnumSpeciesFile.chromSeqFile.getSavePath(taxID, this) + chromSeq;
 		FileOperate.DeleteFileFolder(chromeSeq);
 		FileOperate.DeleteFileFolder(chromeSeq + ".fai");
 		FileOperate.DeleteFileFolder(FileOperate.changeFileSuffix(chromeSeq, "", "fai"));
 		
 		//删除分割好的chromosome
-		String chromeSeqSep = EnumSpeciesFile.ChromSepPath.getSavePath(this);
+		String chromeSeqSep = EnumSpeciesFile.ChromSepPath.getSavePath(taxID, this);
 		FileOperate.DeleteFileFolder(chromeSeqSep);
 		
 		//删除创建的索引
@@ -513,7 +513,7 @@ public class SpeciesFile {
 	 */
 	public String getGffFile() {
 		String[] gffInfo = getGffDB2GffTypeFile();
-		return EnumSpeciesFile.gffGeneFile.getSavePath(this) + gffInfo[2];
+		return EnumSpeciesFile.gffGeneFile.getSavePath(taxID, this) + gffInfo[2];
 	}
 	
 	/**
@@ -525,7 +525,7 @@ public class SpeciesFile {
 		if (gffDB == null) {
 			return getGffFile();
 		}
-		return EnumSpeciesFile.gffGeneFile.getSavePath(this) + mapDB2GffTypeAndFile.get(gffDB.toLowerCase())[1];
+		return EnumSpeciesFile.gffGeneFile.getSavePath(taxID, this) + mapDB2GffTypeAndFile.get(gffDB.toLowerCase())[1];
 	}
 	
 	/**
@@ -593,7 +593,7 @@ public class SpeciesFile {
 		if (StringOperate.isRealNull(gffRepeatFile)) {
 			return "";
 		}
-		return EnumSpeciesFile.gffRepeatFile.getSavePath(this) + gffRepeatFile;
+		return EnumSpeciesFile.gffRepeatFile.getSavePath(taxID, this) + gffRepeatFile;
 	}
 
 	/** 返回该mapping软件所对应的index的文件
@@ -602,7 +602,7 @@ public class SpeciesFile {
 	 * softMapping.toString() + "_Chr_Index/"
 	 */
 	public String getIndexChromFa(SoftWare softMapping) {
-		return creatAndGetSeqIndex(false, false, softMapping, EnumSpeciesFile.chromSeqFile.getSavePath(this) + chromSeq);
+		return creatAndGetSeqIndex(false, false, softMapping, EnumSpeciesFile.chromSeqFile.getSavePath(taxID, this) + chromSeq);
 	}
 
 	/** 返回该mapping软件所对应的index的文件
@@ -709,9 +709,9 @@ public class SpeciesFile {
 		String refseq = getRefSeqName(isAllIso, isProtein);
 		String refseqPath = null, refseqFile = null;
 		if (!isProtein) {
-			refseqPath = isAllIso? EnumSpeciesFile.refseqAllIsoRNA.getSavePath(this) : EnumSpeciesFile.refseqOneIsoRNA.getSavePath(this);
+			refseqPath = isAllIso? EnumSpeciesFile.refseqAllIsoRNA.getSavePath(taxID, this) : EnumSpeciesFile.refseqOneIsoRNA.getSavePath(taxID, this);
 		} else {
-			refseqPath = isAllIso? EnumSpeciesFile.refseqAllIsoPro.getSavePath(this) : EnumSpeciesFile.refseqOneIsoPro.getSavePath(this);
+			refseqPath = isAllIso? EnumSpeciesFile.refseqAllIsoPro.getSavePath(taxID, this) : EnumSpeciesFile.refseqOneIsoPro.getSavePath(taxID, this);
 		}
 		refseqFile = refseqPath + refseq;
 		return refseqFile;
@@ -815,12 +815,12 @@ public class SpeciesFile {
 		if (StringOperate.isRealNull(refseqNCfile)) {
 			return null;
 		}
-		return EnumSpeciesFile.refseqNCfile.getSavePath(this) + refseqNCfile;
+		return EnumSpeciesFile.refseqNCfile.getSavePath(taxID, this) + refseqNCfile;
 	}
 	
 	/** 数据库里是否记载了ncRNA，没记载就从Gff中提取 */
 	public String getRefseqNCfile() {
-		String ncFile = !StringOperate.isRealNull(refseqNCfile)? refseqNCfile : EnumSpeciesFile.refseqNCfile.getSavePath(this) + "ncRNA.fa";
+		String ncFile = !StringOperate.isRealNull(refseqNCfile)? refseqNCfile : EnumSpeciesFile.refseqNCfile.getSavePath(taxID, this) + "ncRNA.fa";
 		if (FileOperate.isFileExistAndBigThanSize(ncFile, 0)) {
 			return ncFile;
 		}

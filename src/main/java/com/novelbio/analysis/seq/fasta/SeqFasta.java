@@ -288,6 +288,10 @@ public class SeqFasta implements Cloneable {
 	public String toStringAA1() {
 		return toStringAA(true, 0, true);
 	}
+	/**@return 将nr序列转变为单字母aa序列，首先正反向之后，然后按照该顺序进行orf选择 */
+	public boolean isAA() {
+		return isAA(true, 0, true);
+	}
 	/**@return 将nr序列转变为三字母aa序列，首先正反向之后，然后按照该顺序进行orf选择 */
 	public String toStringAA3() {
 		return toStringAA(true, 0, false);
@@ -333,6 +337,36 @@ public class SeqFasta implements Cloneable {
 		}
 		return resultAA.toString();
 	}
+	
+	/**
+	 * 将nr序列转变为aa序列，首先正反向之后，然后按照该顺序进行orf选择
+	 * @param cis 是正向 false：反向互补
+	 * @param orf 第几个orf，0，1，2
+	 * @param AAnum true 单字母AA，false 三字母AA
+	 * @return
+	 */
+	public boolean isAA(boolean cis,int orf, boolean AAnum) {
+		if (SeqSequence == null) {
+			return false;
+		}
+		char[] nrChar = null;
+		if (!cis) {
+			nrChar = reverseComplement(SeqSequence).toCharArray();
+		}
+		else {
+			nrChar = SeqSequence.toCharArray();
+		}
+		StringBuilder resultAA = new StringBuilder();
+		for (int i = orf; i <= nrChar.length - 6; i = i+3) {
+			String tmp = String.valueOf(new char[]{nrChar[i],nrChar[i+1],nrChar[i+2]});
+			String aa = CodeInfo.convertDNACode2AA(tmp, AAnum);
+			if (aa.contains("*")) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	/**
 	 * 进行moti查找
 	 * @return

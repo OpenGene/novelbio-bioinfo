@@ -78,33 +78,32 @@ public class GffSpeciesInfo {
 		return lsChrID2Length;
 	}
 
-	/**
-	 * 获取物种的所有的基因
-	 */
+	/** 获取物种的所有的基因 */
 	private HashSet<String> getSpeciesGene() {
-		HashMap<String, ListGff> mapChrID2LsGff = new HashMap<String, ListGff>();
 		HashSet<String> setGeneID = new HashSet<String>();
-		mapChrID2LsGff = gffChrAbs.getGffHashGene().getMapChrID2LsGff();
-		for (ListGff listGff : mapChrID2LsGff.values()) {
-			for (GffDetailGene gffDetailGene : listGff) {
-				for (GffGeneIsoInfo geneIsoInfo : gffDetailGene.getLsCodSplit()) {
-					setGeneID.add(geneIsoInfo.getParentGeneName());
-				}
+		for (GffDetailGene gene : gffChrAbs.getGffHashGene().getLsGffDetailGenes()) {
+			for (GffGeneIsoInfo geneIsoInfo : gene.getLsCodSplit()) {
+				setGeneID.add(geneIsoInfo.getParentGeneName());
 			}
 		}
 		return setGeneID;
 	}
 	/**
-	 * 写所有的物种所有基因
+	 * 写所有的物种所有基因，如果输入的outpath以"/"或"\" 结尾，则添加 _geneBG.txt
+	 * 返回写入的文件名
 	 */
-	public void writeGeneBG(String outPath) {
+	public String writeGeneBG(String outPath) {
 		HashSet<String> setGeneID = getSpeciesGene();
-		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(outPath + "geneBG.txt", true);
-		txtReadandWrite.writefileln("GeneSymbol");
+		if (outPath.endsWith("/") || outPath.endsWith("\\")) {
+			outPath = outPath +  "_geneBG.txt";
+		}
+		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(outPath, true);
+		txtReadandWrite.writefileln("#GeneSymbol");
 		for (String string : setGeneID) {
 			txtReadandWrite.writefileln(string);
 		}
 		txtReadandWrite.close();
+		return outPath;
 	}
 	/**
 	 * 获取指定基因的各个外显子长度

@@ -136,7 +136,7 @@ public class TaxInfo implements Cloneable {
 	public String getRrnaFileWithPath() {
 		SpeciesFile speciesFile = new SpeciesFile();
 		speciesFile.setTaxID(taxID);
-		String savePath = EnumSpeciesFile.rrnaFile.getSavePath(speciesFile);
+		String savePath = EnumSpeciesFile.rrnaFile.getSavePath(taxID, null);
 		return savePath + rrnaFile;
 	}
 	
