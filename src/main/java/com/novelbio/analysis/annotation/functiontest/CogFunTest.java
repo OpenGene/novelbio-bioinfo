@@ -4,9 +4,11 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.novelbio.analysis.annotation.cog.COGanno;
 import com.novelbio.analysis.annotation.cog.CogInfo;
@@ -58,6 +60,34 @@ public class CogFunTest extends FunctionTest {
 			return null;
 		}
 		return geneId2LsCog;
+	}
+	
+	/**
+	 * 待修正
+	 * 返回Gene2ItemPvalue
+	 * @param Type
+	 * @return
+	 * 根据不同的StatisticTestGene2Item子类有不同的情况
+	 */
+	public ArrayList<StatisticTestGene2Item> getGene2ItemPvalue() {
+		ArrayList<StatisticTestGene2Item> lsTestResult = new ArrayList<StatisticTestGene2Item>();
+		Map<String, StatisticTestResult> mapItem2StatictResult = getMapItemID2StatisticsResult();
+		Set<String> setAccID = new HashSet<String>();//用来去重复的
+		for (GeneID2LsItem geneID2LsItem : lsTest) {
+			for (GeneID geneID : mapGeneUniID2LsGeneID.get(geneID2LsItem.getGeneUniID())) {
+				if (setAccID.contains(geneID.getAccID())) continue;
+				
+				setAccID.add(geneID.getAccID());
+				StatisticTestGene2Item statisticTestGene2Item = creatStatisticTestGene2Item();
+				statisticTestGene2Item.setGeneID(((GeneID2LsCog)geneID2LsItem).convert2Abbr(cogAnno), geneID, isBlast());
+				statisticTestGene2Item.setStatisticTestResult(mapItem2StatictResult);
+				CogInfo cogInfo = cogAnno.getCogInfoFromGeneUniId(geneID.getGeneUniID());
+				((StatisticTestGene2Cog)statisticTestGene2Item).setCogInfo(cogInfo);
+				((StatisticTestGene2Cog)statisticTestGene2Item).setCogAnno(cogAnno);
+				lsTestResult.add(statisticTestGene2Item);
+			}
+		}
+		return lsTestResult;
 	}
 	
 	/**
@@ -138,7 +168,7 @@ public class CogFunTest extends FunctionTest {
 	@Override
 	public Map<String, List<String[]>> getMapWriteToExcel() {
 		Map<String, List<String[]>> mapResult = new LinkedHashMap<String, List<String[]>>();
-		List<String[]> lsStatisticTestResults = StatisticTestResult.getLsInfo(false, getTestResult());
+		List<String[]> lsStatisticTestResults = StatisticTestResult.getLsInfo(TestType.COG, getTestResult());
 		if (lsStatisticTestResults.size() == 0) {
 			return new HashMap<>();
 		}

@@ -13,7 +13,7 @@ public enum TitleFormatNBC {
 	SubjectID("SubjectID"),
 	
 	FDR("FDR"), FoldChange("FoldChange"), Log2FC("Log2FC"),
-	Log10FC("Log10FC"), Evalue("E-Value"),
+	Log10FC("Log10FC"), Evalue("E-Value"), BlastEvalue("Blast_E-Value"),
 	
 	Enrichment("Enrichment"),
 	
@@ -37,7 +37,7 @@ public enum TitleFormatNBC {
 	GOID("GOID"), GOTerm("GOTerm"),
 	KEGGID("KeggID"), KEGGTerm("KeggTerm"),
 	PathwayID("PathwayID"), PathwayTerm("PathwayTerm"),
-	COGAbbr("COGFunction"), COGID("COGID"), COGTerm("COGTerm"),
+	COGAbbr("COGFunction"), COGID("COGID"), COGTerm("COGTerm"), COGTermDetail("COGTermDetail"),
 	/** mapping的临时文件夹 */
 	TmpMapping("TmpMapping"),
 	/** 样本文件夹 */

@@ -321,6 +321,9 @@ public abstract class FunctionTest implements Cloneable {
 				mapBGGeneID2Items.put(geneID.getGeneUniID().toLowerCase(), tmpresult);
 			}
 		}
+		if (tmpresult != null && tmpresult.geneID == null) {
+			tmpresult.geneID = geneID;
+		}
 		return tmpresult;
 	}
 	
@@ -363,7 +366,7 @@ public abstract class FunctionTest implements Cloneable {
 	 * 把 getTestResult() 的结果装入hash表
 	 * @return
 	 */
-	private HashMap<String, StatisticTestResult> getMapItemID2StatisticsResult() {
+	protected HashMap<String, StatisticTestResult> getMapItemID2StatisticsResult() {
 		ArrayList<StatisticTestResult> lStatisticTestResults = getTestResult();
 		//key为小写，item和检验结果的map
 		HashMap<String, StatisticTestResult> mapItem2StatisticsResult = new HashMap<String, StatisticTestResult>();

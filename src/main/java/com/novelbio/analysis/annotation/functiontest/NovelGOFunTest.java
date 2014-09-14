@@ -115,7 +115,7 @@ public class NovelGOFunTest extends FunctionTest {
 	@Override
 	public Map<String, List<String[]>> getMapWriteToExcel() {
 		Map<String, List<String[]>> mapResult = new HashMap<String, List<String[]>>();
-		List<String[]> lsStatisticTestResults = StatisticTestResult.getLsInfo(true, getTestResult());
+		List<String[]> lsStatisticTestResults = StatisticTestResult.getLsInfo(TestType.GO, getTestResult());
 		if (lsStatisticTestResults.size() == 0) {
 			return new HashMap<>();
 		}

@@ -131,7 +131,9 @@ class GeneID2LsCog extends GeneID2LsItem {
 	}
 	
 	public void setCogInfo(CogInfo cogInfo) {
-		addItemID(cogInfo.getCogId());
+		if (cogInfo != null) {
+			addItemID(cogInfo.getCogId());
+		}
 	}
 	
 	/** 正常的geneId2LsCog是geneId对应CogId，类似COG12345这种<br>
@@ -141,8 +143,9 @@ class GeneID2LsCog extends GeneID2LsItem {
 	 */
 	public GeneID2LsCog convert2Abbr(COGanno coGanno) {
 		GeneID2LsCog geneID2LsCog = new GeneID2LsCog();
-		geneID2LsCog.setGeneID(geneID, true);
-		for (String cogId : geneID2LsCog.getSetItemID()) {
+		geneID2LsCog.geneID = geneID;
+		geneID2LsCog.geneUniID = geneUniID;
+		for (String cogId : getSetItemID()) {
 			String abbr = coGanno.queryCogInfoFromCogId(cogId).getCogAbbr();
 			for (char charCog : abbr.toCharArray()) {
 				geneID2LsCog.addItemID("COG:" + charCog);

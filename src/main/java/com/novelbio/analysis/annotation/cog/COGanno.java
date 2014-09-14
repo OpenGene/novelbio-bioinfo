@@ -109,7 +109,7 @@ public class COGanno {
 	 * string[2]:<br> 
 	 * 0 cog注释的常规，就是 [A] 是 RNA processing and modification这种<br>
 	 * 1: cog的大类，类似CELLULAR PROCESSES AND SIGNALING 这种
-	 * @param cogAbbr
+	 * @param cogAbbr cog的单字母缩写
 	 * @return
 	 */
 	public String[] queryAnnoFromCogAbbr(String cogAbbr) {
@@ -267,7 +267,7 @@ public class COGanno {
 	/**
 	 * 返回单字母对应的注释
 	 * @return
-	 * key 单字母 J
+	 * key 单字母 J 为小写
 	 * value 0 注释 Translation, ribosomal structure and biogenesis 
 	 * 1 大类注释 INFORMATION STORAGE AND PROCESSING
 	 */
@@ -288,7 +288,7 @@ public class COGanno {
 				String[] ss = content.split("]");
 				String abbr = ss[0].replace("[", "").trim();
 				String anno = ss[1].trim();
-				mapAbbr2Fun.put(abbr, new String[]{anno, annoBig});
+				mapAbbr2Fun.put(abbr.toLowerCase(), new String[]{anno, annoBig});
 			}
 		}
 		txtRead.close();

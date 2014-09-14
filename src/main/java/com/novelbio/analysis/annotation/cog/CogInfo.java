@@ -18,6 +18,7 @@ public class CogInfo {
 		setEvalue(Double.parseDouble(ss[2]));
 		setCogId(ss[3]);
 		setCogAbbr(ss[4]);
+		setCogAnnoDetail(ss[5]);
 	}
 	public void setCogSeqName(String cogSeqName) {
 		this.cogSeqName = cogSeqName;

@@ -179,6 +179,19 @@ public class StatisticTestResult {
 		return lsTitle.toArray(new String[0]);
 	}
 	
+	public static String[] getTitleCOG() {
+		ArrayList<String> lsTitle = new ArrayList<String>();
+		lsTitle.add(TitleFormatNBC.COGID.toString());
+		lsTitle.add(TitleFormatNBC.COGTerm.toString());
+		lsTitle.add("DifGene");
+		lsTitle.add("AllDifGene");
+		lsTitle.add("GeneInCOGID");
+		lsTitle.add("AllGene");
+		
+		addTitle(lsTitle);
+		return lsTitle.toArray(new String[0]);
+	}
+	
 	private static void addTitle(ArrayList<String> lsTitle) {
 		lsTitle.add(TitleFormatNBC.Pvalue.toString());
 		lsTitle.add(TitleFormatNBC.FDR.toString());
@@ -191,15 +204,17 @@ public class StatisticTestResult {
 	 * @param go true：用go的title false：用pathway的title
 	 * @param lsStatisticTestResults
 	 */
-	public static List<String[]> getLsInfo(boolean go, List<StatisticTestResult> lsStatisticTestResults) {
+	public static List<String[]> getLsInfo(TestType testType, List<StatisticTestResult> lsStatisticTestResults) {
 		if (lsStatisticTestResults == null || lsStatisticTestResults.size() == 0) {
 			return new ArrayList<String[]>();
 		}
 		List<String[]> lsResult = new ArrayList<String[]>();
-		if (go) {
+		if (testType == TestType.GO) {
 			lsResult.add(StatisticTestResult.getTitleGo());
-		} else {
+		} else if(testType == TestType.Pathway) {
 			lsResult.add(StatisticTestResult.getTitlePath());
+		} else if (testType == testType.COG) {
+			lsResult.add(StatisticTestResult.getTitleCOG());
 		}
 		
 		for (StatisticTestResult statisticTestResult : lsStatisticTestResults) {
@@ -207,4 +222,6 @@ public class StatisticTestResult {
 		}
 		return lsResult;
 	}
+
 }
+

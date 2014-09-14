@@ -57,7 +57,7 @@ public class KEGGPathwayFunTest extends FunctionTest {
 	@Override
 	public Map<String, List<String[]>> getMapWriteToExcel() {
 		Map<String, List<String[]>> mapResult = new LinkedHashMap<String, List<String[]>>();
-		List<String[]> lsStatisticTestResults = StatisticTestResult.getLsInfo(false, getTestResult());
+		List<String[]> lsStatisticTestResults = StatisticTestResult.getLsInfo(TestType.Pathway, getTestResult());
 		if (lsStatisticTestResults.size() == 0) {
 			return new HashMap<>();
 		}

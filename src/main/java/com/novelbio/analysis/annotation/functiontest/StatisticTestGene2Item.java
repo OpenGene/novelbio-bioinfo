@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.novelbio.analysis.annotation.cog.COGanno;
 import com.novelbio.analysis.annotation.cog.CogInfo;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.GOtype;
@@ -260,32 +261,38 @@ class StatisticTestGene2Path extends StatisticTestGene2Item {
 
 class StatisticTestGene2Cog extends StatisticTestGene2Item {
 	CogInfo cogInfo;
+	COGanno cogAnno;
+
 	public void setCogInfo(CogInfo cogInfo) {
 		this.cogInfo = cogInfo;
 	}
-	
+	public void setCogAnno(COGanno cogAnno) {
+		this.cogAnno = cogAnno;
+	}
 	protected ArrayList<ArrayList<String>> getInfo() {
 		ArrayList<ArrayList<String>> lsFinal = new ArrayList<ArrayList<String>>();
 		ArrayList<String> lsTmpFinal = new ArrayList<String>();
 		// GO前面的常规信息的填充,Symbol和description等
 		lsTmpFinal.add(geneID.getAccID());
+		lsTmpFinal.add(cogInfo.getEvalue() + "");
 		if (cogInfo == null) {
 			return lsFinal;
 		}
 		for (char charCog : cogInfo.getCogAbbr().toCharArray()) {
 			ArrayList<String> lsTmpFinalNew = (ArrayList<String>) lsTmpFinal.clone();
 			//这里的mapItem2StatisticTestResult的key是单字母的COGID
-			String cogAbbr = (Character.toLowerCase(charCog) + "").toLowerCase();
-			if (!mapItem2StatisticTestResult.containsKey(cogAbbr)) {
+			String cogId = "COG:" + charCog;
+			if (!mapItem2StatisticTestResult.containsKey(cogId.toLowerCase())) {
 				return lsFinal;
 			}
 			//这里的geneID2LsItem.setItemID的key是正常的COGID，类似COG0630
-			if (!geneID2LsItem.setItemID.contains(cogInfo.getCogId()) ) {
+			if (!geneID2LsItem.setItemID.contains(cogId) ) {
 				isUpdateBG = true;
 				return lsFinal;
 			}
-			StatisticTestResult statisticTestResult = mapItem2StatisticTestResult.get(cogAbbr);
-			lsTmpFinalNew.add(cogAbbr);
+			StatisticTestResult statisticTestResult = mapItem2StatisticTestResult.get(cogId.toLowerCase());
+			lsTmpFinalNew.add(cogId);
+			lsTmpFinalNew.add(cogAnno.queryAnnoFromCogAbbr(charCog + "")[0]);
 			lsTmpFinalNew.add(cogInfo.getCogId());
 			lsTmpFinalNew.add(cogInfo.getCogAnnoDetail());
 			lsTmpFinalNew.add(statisticTestResult.getPvalue() + "");
@@ -298,9 +305,11 @@ class StatisticTestGene2Cog extends StatisticTestGene2Item {
 	public String[] getTitle() {
 		List<String> lsTitle = new ArrayList<String>();
 		lsTitle.add(TitleFormatNBC.QueryID.toString());
+		lsTitle.add(TitleFormatNBC.BlastEvalue.toString());
 		lsTitle.add(TitleFormatNBC.COGAbbr.toString());
-		lsTitle.add(TitleFormatNBC.COGID.toString());
 		lsTitle.add(TitleFormatNBC.COGTerm.toString());
+		lsTitle.add(TitleFormatNBC.COGID.toString());
+		lsTitle.add(TitleFormatNBC.COGTermDetail.toString());
 		lsTitle.add(TitleFormatNBC.Pvalue.toString());
 		lsTitle.add(TitleFormatNBC.Enrichment.toString());		
 		return lsTitle.toArray(new String[0]);
