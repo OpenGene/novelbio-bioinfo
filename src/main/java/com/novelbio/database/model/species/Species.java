@@ -324,7 +324,7 @@ public class Species implements Cloneable {
 	}
 	/** 获得本物种指定version的miRNA前体序列，不存在则返回null */
 	public String getMiRNAhairpinFile() {
-		if (!taxInfo.isHaveMiRNA()) return null;
+		if (!taxInfo.isHaveMiRNArecalculate()) return null;
 		
 		String[] path = taxInfo.fetchMiRNAseq();
 		if (path[0] == null) {
@@ -335,7 +335,7 @@ public class Species implements Cloneable {
 	
 	/** 获得本物种指定version的miRNA序列，不存在则返回null */
 	public String getMiRNAmatureFile() {
-		if (!taxInfo.isHaveMiRNA()) return null;
+		if (!taxInfo.isHaveMiRNArecalculate()) return null;
 		
 		String[] path = taxInfo.fetchMiRNAseq();
 		if (path[0] == null) {

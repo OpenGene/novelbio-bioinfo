@@ -91,6 +91,20 @@ public enum EnumSpeciesFile {
 		return basePath + folder + FileOperate.getSepPath();
 	}
 	
+	/**
+	 * 获得保存物种文件的路径，最后加上"/"
+	 * @param speciesFile
+	 * @return
+	 */
+	public String getSavePath(SpeciesFile speciesFile) {
+		validateSpeciesFile(speciesFile.getTaxID(), speciesFile);
+		
+		String basePath = speciesFile.getSpeciesVersionPath();
+		if(StringOperate.isRealNull(basePath))
+			return null;
+		return basePath + folder + FileOperate.getSepPath();
+	}
+	
 	private static void validateSpeciesFile(int taxId, SpeciesFile speciesFile) {
 		if (speciesFile == null || speciesFile.getTaxID() == 0) {
 			throw new ExceptionNoSpeciesFile(taxId + "Have No SpeciesFile Exist");
