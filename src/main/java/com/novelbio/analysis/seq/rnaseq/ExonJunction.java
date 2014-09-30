@@ -50,13 +50,41 @@ import com.novelbio.database.model.species.Species;
  */
 public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	public static void main(String[] args) {
-//		long timeEclipse1 = test();
-		long timeEclipse2 = wuwenwuDrosophilia(true);
-		System.out.println(timeEclipse2);
-		timeEclipse2 = wuwenwuDrosophilia(false);
-		System.out.println(timeEclipse2);
+		long timeEclipse1 = test();
+//		Species species = new Species(7227);
+//		species.setVersion("dmel_r6_01");
+//		GffChrAbs gffChrAbs = new GffChrAbs(species);
+//		gffChrAbs.getGtfFile();
 	}
 	public static long test() {
+		//TODO
+		List<Align> lsAligns = new ArrayList<>();
+		lsAligns.add(new Align("chr2l", 9974811-500000, 9974891 + 500000));
+		DateUtil dateUtil = new DateUtil();
+		dateUtil.setStartTime();
+		System.out.println("start");
+		Species species = new Species(7227);
+		species.setVersion("dmel_r6_01");
+		GffChrAbs gffChrAbs = new GffChrAbs(species);
+		ExonJunction exonJunction = new ExonJunction();
+//		exonJunction.setGffHashGene(new GffHashGene(GffType.GTF, "/home/zong0jie/Test/rnaseq/paper/chicken/raw_ensembl_genes/chicken_ensemble_KO-WT-merged.gtf"));
+		exonJunction.setGffHashGene(gffChrAbs.getGffHashGene());
+		exonJunction.setgenerateNewIso(true);
+		exonJunction.setLsReadRegion(lsAligns);
+		exonJunction.setOneGeneOneSpliceEvent(false);
+		String parentPath = "/media/hdfs/nbCloud/public/AllProject/project_53d846e3e4b0f96fc62c53dd/task_53f5bf93e4b0de9535e844aa/RNASeqMap_result/";
+		exonJunction.addBamSorted("WT", parentPath + "C1_mapsplice_sorted.bam");
+		exonJunction.addBamSorted("KO", parentPath + "C3_mapsplice_sorted.bam");
+		exonJunction.setCompareGroups("KO", "WT");
+//		exonJunction.setStrandSpecific(StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND);
+		exonJunction.setResultFile("/media/winE/NBC/testDrosophylia_no_consider.txt");
+
+		exonJunction.run();
+		exonJunction = null;
+		return dateUtil.getElapseTime();
+	}
+	
+	public static long test1() {
 		//TODO
 		List<Align> lsAligns = new ArrayList<>();
 //		lsAligns.add(new Align("chr13", 113834688, 113853827));
@@ -155,7 +183,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	private static Logger logger = Logger.getLogger(ExonJunction.class);
-	private static String stopGeneName = "PhKgamma";
+	private static String stopGeneName = "Prosalpha6";
 	
 	GffHashGene gffHashGene = null;
 	StrandSpecific strandSpecific = StrandSpecific.NONE;
@@ -211,7 +239,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	 */
 	List<Align> lsReadReagion;
 
-	public ExonJunction() { }
+
 	/**
 	 * 表示差异可变剪接的事件的pvalue阈值，仅用于统计差异可变剪接事件的数量，不用于可变剪接的筛选
 	 * @param pvalue
@@ -456,7 +484,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	
 	/** 从全基因组中获取差异的可变剪接事件，放入lsSplicingTest中 */
 	private void fillLsAll_Dif_Iso_Exon(GenerateNewIso generateNewIso) {
-		ArrayList<GffDetailGene> lsGffDetailGenes = gffHashGene.getGffDetailAll();
+		List<GffDetailGene> lsGffDetailGenes = gffHashGene.getLsGffDetailGenes();
 		int i = 0;
 
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {

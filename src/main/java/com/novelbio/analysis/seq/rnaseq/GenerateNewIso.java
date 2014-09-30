@@ -107,14 +107,15 @@ public class GenerateNewIso {
 				if (junctionUnit.getStartAbs() <= gffDetailGene.getStartAbs() && junctionUnit.getEndAbs() >= gffDetailGene.getEndAbs()
 						|| 
 						(
-						  (junctionUnit.getEndAbs() - junctionUnit.getStartAbs() > gffDetailGene.getLength() &&  junctionInfo.lsJunctionUnits.size() >= 5)
-						   ||  junctionUnit.getEndAbs() - junctionUnit.getStartAbs() > 4 * gffDetailGene.getLength() )
+						  (junctionUnit.getLength() > gffDetailGene.getLength() &&  junctionInfo.lsJunctionUnits.size() >= 5)
+						   ||  (junctionUnit.getLength() > 4 * gffDetailGene.getLength() && junctionInfo.lsJunctionUnits.size() >= 5))
 						) {
 					continue;
 				}
 				if(isJunctionCoverTwoGene(gffDetailGene, junctionUnit)) {
 					continue;
 				}
+				isJunctionCoverTwoGene(gffDetailGene, junctionUnit);
 				lsJunUnit.add(junctionUnit);
 			}
 		}
@@ -146,7 +147,22 @@ public class GenerateNewIso {
 	//TODO 没有考虑链特异性
 	private boolean isJunctionCoverTwoGene(GffDetailGene gffDetailGene, JunctionUnit junctionUnit) {
 		int isoExtend = 600;
-		GffCodGeneDU gffCodGeneDU = gffHashGene.searchLocation(junctionUnit.getRefID(), junctionUnit.getStartAbs(), junctionUnit.getEndAbs());
+		int startJun = junctionUnit.getStartAbs(), endJun = junctionUnit.getEndAbs();
+		int juncMid = (startJun + endJun)/2, juncGene = (gffDetailGene.getStartAbs() + gffDetailGene.getEndAbs())/2;
+		int start = startJun, end = endJun;
+
+		if (juncMid > juncGene) {
+			if (startJun > gffDetailGene.getEndAbs()) {
+				start = gffDetailGene.getEndAbs();
+			}
+		} else {
+			if (endJun < gffDetailGene.getStartAbs()) {
+				end = gffDetailGene.getStartAbs();
+			}
+		}
+		
+		
+		GffCodGeneDU gffCodGeneDU = gffHashGene.searchLocation(junctionUnit.getRefID(), start, end);
 		if (gffCodGeneDU.getLsGffDetailMid().size() > 0) return true;
 		//TODO
 		GffCodGene gffCodGeneStart = gffCodGeneDU.getGffCod1();
@@ -183,6 +199,9 @@ public class GenerateNewIso {
 	}
 	
 	private boolean isJunctionInAnotherGene(GffDetailGene gffDetailGene, JunctionUnit junctionUnit) {
+		if (considerStrand && gffDetailGene.isCis5to3() != null && junctionUnit.isCis5to3() != gffDetailGene.isCis5to3()) {
+			return false;
+		}
 		GffCodGeneDU gffCodGeneDU = gffHashGene.searchLocation(junctionUnit.getRefID(), junctionUnit.getStartAbs(), junctionUnit.getEndAbs());
 		if (gffCodGeneDU.getLsGffDetailMid().size() > 0) return true;
 		//TODO
@@ -199,7 +218,7 @@ public class GenerateNewIso {
 			}
 		}
 		for (GffDetailGene gffDetailGeneDowncod : setGeneDown) {
-			if (gffDetailGeneDowncod.equals(gffDetailGene)) {
+			if (!gffDetailGeneDowncod.equals(gffDetailGene)) {
 				isDownInOtherGene = true;
 				break;
 			}
@@ -214,6 +233,10 @@ public class GenerateNewIso {
 	private boolean isJunInGene(JunctionUnit junctionUnit) {
 		boolean findJun = false;
 		int start, end = 0;
+		
+		if (considerStrand && gffDetailGene.isCis5to3() != null && gffDetailGene.isCis5to3() != junctionUnit.isCis5to3()) {
+			return false;
+		}
 		
 		for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 			if (gffGeneIsoInfo.isCis5to3()) {
@@ -248,6 +271,7 @@ public class GenerateNewIso {
 	public void reconstructIso(JunctionUnit junctionUnit) {
 		 for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 			GffGeneIsoInfo gffGeneIsoInfoNew = getReconstructIso(junctionUnit, gffGeneIsoInfo);
+			gffGeneIsoInfoNew = getReconstructIso(junctionUnit, gffGeneIsoInfo);
 			if (gffGeneIsoInfoNew != null ) {
 				gffDetailGene.addIso(gffGeneIsoInfoNew);
 				break;
@@ -266,15 +290,16 @@ public class GenerateNewIso {
 		if (considerStrand && junctionUnit.isCis5to3() != gffGeneIsoInfo.isCis5to3()) {
 			return null;
 		}
-		
 		int exonStart = 0, exonEnd = 0;
 		List<JunctionUnit> lsJun = new ArrayList<>();
 		Set<String> setJunInfo = new HashSet<>();
-		if (isEdgeInExon(true, junctionUnit, gffGeneIsoInfo) || isEdgeInExon(false, junctionUnit, gffGeneIsoInfo)) {
+		boolean isEdgeInExonBefore = isEdgeInExon(true, junctionUnit, gffGeneIsoInfo);
+		boolean isEdgeInExonAfter = isEdgeInExon(false, junctionUnit, gffGeneIsoInfo);
+		if (isEdgeInExonBefore || isEdgeInExonAfter) {
 			lsJun.add(junctionUnit);
 			setJunInfo.add(junctionUnit.key(false));
 		}
-		if (isEdgeInExon(true, junctionUnit, gffGeneIsoInfo)) {
+		if (isEdgeInExonBefore) {
 			if (gffGeneIsoInfo.isCis5to3()) {
 				exonStart = gffGeneIsoInfo.getNumCodInEle(junctionUnit.getStartAbs());
 			} else {
@@ -284,7 +309,7 @@ public class GenerateNewIso {
 			exonStart = getExonSiteAndAddLsJun(true, junctionUnit, lsJun, setJunInfo, gffGeneIsoInfo);
 		}
 	
-		if (isEdgeInExon(false, junctionUnit, gffGeneIsoInfo)) {
+		if (isEdgeInExonAfter) {
 			if (gffGeneIsoInfo.isCis5to3()) {
 				exonEnd = gffGeneIsoInfo.getNumCodInEle(junctionUnit.getEndAbs());
 			} else {
@@ -482,8 +507,14 @@ public class GenerateNewIso {
 		mapLoc2IsCovered.put(keySite, true);
 		return true;
 	}
-	
-	
+
+	/**
+	 * 返回null表示没有找到前面的junction 
+	 * @param prev
+	 * @param cis5to3
+	 * @param junctionUnit
+	 * @return
+	 */
 	private List<JunctionUnit> getJunPrevAfter(boolean prev, boolean cis5to3, JunctionUnit junctionUnit) {
 		try {
 			if ((prev && cis5to3) || (!prev && !cis5to3)) {
@@ -607,7 +638,7 @@ public class GenerateNewIso {
 					}
 				}
 			}
-			if (junctionUnitPrev != null) {
+			if (junctionUnitPrev != null && (isJunInGene(junctionUnitPrev) || !isJunctionInAnotherGene(gffDetailGene, junctionUnitPrev))) {
 				lsJunctionUnits.add(junctionUnitPrev);
 			}
 		}
