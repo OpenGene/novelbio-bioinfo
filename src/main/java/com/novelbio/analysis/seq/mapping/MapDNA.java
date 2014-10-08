@@ -113,7 +113,6 @@ public abstract class MapDNA implements MapDNAint {
 	 * @return
 	 */
 	public SamFile mapReads() {
-		PathDetail.getTmpPath();
 		IndexMake();
 		
 		SamFile samFile = mapping();

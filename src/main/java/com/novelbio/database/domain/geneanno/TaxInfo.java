@@ -147,6 +147,13 @@ public class TaxInfo implements Cloneable {
 		}
 		return isHaveMiRNA;
 	}
+	public boolean isHaveMiRNArecalculate() {
+		if (isHaveMiRNA == null || !isHaveMiRNA) {
+			isHaveMiRNA = ListMiRNAdat.isContainMiRNA(getLatinName_2Word(), PathDetailNBC.getMiRNADat());
+			save();
+		}
+		return isHaveMiRNA;
+	}
 	/**
 	 * 返回绝对路径
 	 * @return

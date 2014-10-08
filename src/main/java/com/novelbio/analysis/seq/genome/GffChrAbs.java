@@ -77,7 +77,9 @@ public class GffChrAbs implements Closeable {
 		}
 
 		this.species = species.clone();
-		setGffFile(species.getTaxID(), species.getVersion(), species.getGffDB(), species.getGffType(), species.getGffFile());
+		if (species.getGffFile() != null) {
+			setGffFile(species.getTaxID(), species.getVersion(), species.getGffDB(), species.getGffType(), species.getGffFile());
+		}
 		setChrFile(species.getChromSeq(), " ");
 	}
 

@@ -29,17 +29,17 @@ import com.novelbio.generalConf.TitleFormatNBC;
  */
 public class RefSeqCounts implements AlignmentRecorder {
 	public static void main(String[] args) {
-		String expPath = "/hdfs:/nbCloud/staff/bianlianle/Project/RNA_Denovo/Ophiorrhiza_pumila_CuiLiJie/4.Gene_Expression/zongjieExp/";
-		FileOperate.createFolders(expPath);
-		String parentPath = "/hdfs:/nbCloud/staff/bianlianle/Project/RNA_Denovo/Ophiorrhiza_pumila_CuiLiJie/";
+		String parentPath = "/hdfs:/nbCloud/public/AllProject/project_541805e2e4b0338e496cfc5f/task_541941a0e4b0ce893738a79c/DNASeqMap_result/";
+		String resultPath = parentPath + "expAllId/";
+		FileOperate.createFolders(resultPath);
+//		FileOperate.createFolders(expPath);
 		RefSeqCounts refSeqCounts = new RefSeqCounts();
-		refSeqCounts.readGene2IsoFile(parentPath + "3.Cluster/All-Unigene.Gene2Tra.list");
 		
-		refSeqCounts.setPairend(true);
+		refSeqCounts.setPairend(false);
 		List<AlignmentRecorder> lsRecorders = new ArrayList<>();
 		lsRecorders.add(refSeqCounts);
 		
-		List<String> lsFileRaw = FileOperate.getFoldFileNameLs(parentPath + "4.Gene_Expression", "*", "bam");
+		List<String> lsFileRaw = FileOperate.getFoldFileNameLs(parentPath, "*", "bam");
 		List<String> lsFile = new ArrayList<String>();
 		for (String string : lsFileRaw) {
 			if (FileOperate.getFileName(string).contains("sort")) {
@@ -49,10 +49,11 @@ public class RefSeqCounts implements AlignmentRecorder {
 		}
 		
 		SamFile samFile = new SamFile(lsFile.get(0));
+		refSeqCounts.readGene2IsoFile(samFile);
 		refSeqCounts.setMapIsoId2Len(samFile.getMapChrID2Length());
 		for (String bamFile : lsFile) {
 			String prefix = FileOperate.getFileNameSep(bamFile)[0];
-			String out = expPath + prefix + ".xls";
+			String out = resultPath + prefix + ".xls";
 			if (FileOperate.isFileExistAndBigThanSize(out, 0)) {
 				refSeqCounts.geneExpTable.read(out, EnumAddAnnoType.notAdd);
 				continue;
@@ -64,11 +65,11 @@ public class RefSeqCounts implements AlignmentRecorder {
 			samToBamSort.setLsAlignmentRecorders(lsRecorders);
 			samToBamSort.setWriteToBam(false);
 			samToBamSort.convert();
-			refSeqCounts.geneExpTable.writeFile(false, expPath + prefix, EnumExpression.Counts);
-
+			refSeqCounts.geneExpTable.writeFile(false, resultPath + prefix, EnumExpression.Counts);
 		}
-		refSeqCounts.geneExpTable.writeFile(true, expPath + "All" + ".txt", EnumExpression.Counts);
-		refSeqCounts.geneExpTable.writeFile(true, expPath + "All_RPKM" + ".txt", EnumExpression.RPKM);
+		refSeqCounts.geneExpTable.writeFile(true, resultPath + "All" + ".txt", EnumExpression.Counts);
+		refSeqCounts.geneExpTable.writeFile(true, resultPath + "All_RPKM" + ".txt", EnumExpression.RPKM);
+		refSeqCounts.geneExpTable.writeFile(true, resultPath + "All_TPM" + ".txt", EnumExpression.TPM);
 	}
 	
 	public static void main2(String[] args) {
@@ -98,7 +99,8 @@ public class RefSeqCounts implements AlignmentRecorder {
 		this.isPairend = isPairend;
 	}
 	/**
-	 * 读取文本，第一列 geneName<br>
+	 * 读取gene2Iso的对照表
+	 * 第一列 geneName<br>
 	 * 第二列 isoName<br>
 	 * @param gene2IsoFile
 	 */
@@ -112,6 +114,16 @@ public class RefSeqCounts implements AlignmentRecorder {
 			mapIso2Gene.put(gene2iso[1].toLowerCase(), gene2iso[0]);
 		}
 		txtRead.close();
+		geneExpTable.addLsGeneName(mapIso2Gene.values());
+	}
+	/**
+	 * 根据sam文件的head，获取基因名，这时候认为一个基因就是一个iso
+	 * @param samFile
+	 */
+	public void readGene2IsoFile(SamFile samFile) {
+		for (String chrId : samFile.getMapChrID2Length().keySet()) {
+			mapIso2Gene.put(chrId.toLowerCase(), chrId);
+		}
 		geneExpTable.addLsGeneName(mapIso2Gene.values());
 	}
 	/** 设定转录本名和长度，直接从bam文件获得就行 {@link SamFile#getMapChrID2Length()}<br>

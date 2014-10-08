@@ -513,6 +513,9 @@ public class SpeciesFile {
 	 */
 	public String getGffFile() {
 		String[] gffInfo = getGffDB2GffTypeFile();
+		if (gffInfo[2] == null) {
+			return null;
+		}
 		return EnumSpeciesFile.gffGeneFile.getSavePath(taxID, this) + gffInfo[2];
 	}
 	
@@ -547,7 +550,7 @@ public class SpeciesFile {
 	 */
 	private String[] getGffDB2GffTypeFile() {
 		if (mapDB2GffTypeAndFile.size() == 0) {
-			return new String[]{null, null};
+			return new String[]{null, null, null};
 		}
 		Entry<String, String[]> entyGffDB2File = mapDB2GffTypeAndFile.entrySet().iterator().next();
 		String gffDB = entyGffDB2File.getKey();

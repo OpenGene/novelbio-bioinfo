@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -11,7 +12,9 @@ import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fasta.SeqHash;
+import com.novelbio.analysis.seq.fasta.StrandType;
 import com.novelbio.base.PathDetail;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataOperate.DateUtil;
@@ -56,7 +59,13 @@ public class BlastNBC implements IntCmdSoft {
 	double evalue = 0.1;
 	/** 显示几个比对结果 */
 	int resultAlignNum = 2;
-	
+	/**
+	 * Query strand(s) to search against database/subject. Choice of both, minus, or plus.
+	 * 意思比对到reference的正链还是反链。
+	 * 所在的blast type：
+	 * blastn, blastx, tblastx
+	 */
+	StrandType strandType = StrandType.isoForward;
 	/**
 	 * 显示几个结果
 	 */
@@ -134,7 +143,15 @@ public class BlastNBC implements IntCmdSoft {
 	public void setResultFile(String resultFile) {
 		this.resultFile = resultFile;
 	}
-
+	/**
+	 * Query strand(s) to search against database/subject. Choice of both, minus, or plus.
+	 * 意思比对到reference的正链还是反链。
+	 * 所在的blast type：
+	 * blastn, blastx, tblastx
+	 */
+	 public void setStrandType(StrandType strandType) {
+		this.strandType = strandType;
+	}
 	/**
 	 * 设定cpu使用数量，感觉设定了没用
 	 * 默认为2
@@ -218,6 +235,7 @@ public class BlastNBC implements IntCmdSoft {
 		List<String> lsCmd = new ArrayList<>();
 		lsCmd.add(exePath + blastType.toString());
 		ArrayOperate.addArrayToList(lsCmd, getDB());
+		ArrayOperate.addArrayToList(lsCmd, getBlastStrand());
 		ArrayOperate.addArrayToList(lsCmd, getQuery());
 		ArrayOperate.addArrayToList(lsCmd, getOut());
 		ArrayOperate.addArrayToList(lsCmd, getThread());
@@ -245,6 +263,23 @@ public class BlastNBC implements IntCmdSoft {
 			}
 		}
 		return new String[0];
+	}
+	
+	private String[] getBlastStrand() {
+		if (strandType == null) return null;
+		
+		String strand = null;
+		if (blastType == BlastType.blastn || blastType == BlastType.blastx || blastType == BlastType.blastx) {
+			if (strandType == StrandType.cis) {
+				strand = "plus";
+			} else if (strandType == StrandType.trans) {
+				strand = "minus";
+			}
+		}
+		if (!StringOperate.isRealNull(strand)) {
+			return new String[]{"-strand", strand};
+		}
+		return null;
 	}
 	
 	private 	String[] getDB() {
@@ -355,6 +390,15 @@ public class BlastNBC implements IntCmdSoft {
 		lsCmds.add(cmdOperate.getCmdExeStr());
 		// TODO Auto-generated method stub
 		return lsCmds;
+	}
+	
+	/** 返回是否用链特异性的blast */
+	public static Map<String, StrandType> getMapStrandType2Value() {
+		Map<String, StrandType> mapKey2StrandType = new LinkedHashMap<>();
+		mapKey2StrandType.put("Both", StrandType.isoForward);
+		mapKey2StrandType.put("plus", StrandType.cis);
+		mapKey2StrandType.put("minus", StrandType.trans);
+		return mapKey2StrandType;
 	}
 	
 }

@@ -43,7 +43,7 @@ public class BamRecalibrate implements IntCmdSoft {
 	String ExePath = "";
 	String refSequenceFile;
 	String bamSortedFile;
-	int threadNum = 4;
+//	int threadNum = 4;
 	/** 输入文件路径+vcf文件名 */
 	private Set<String> setSnpDBVcfFilePath = new HashSet<String>();
 	
@@ -58,6 +58,8 @@ public class BamRecalibrate implements IntCmdSoft {
 	}
 	public void setBamFile(String bamFile) {
 		this.bamSortedFile = bamFile;
+		SamFile samFile = new SamFile(bamSortedFile);
+		samFile.sort();
 	}
 	/**
 	 * @param snpVcfFile 已知的snpdb等文件，用于校正。可以添加多个
@@ -119,8 +121,8 @@ public class BamRecalibrate implements IntCmdSoft {
 		lsCmd.add("-T"); lsCmd.add("BaseRecalibrator");
 		ArrayOperate.addArrayToList(lsCmd, getRefSequenceFile());
 		ArrayOperate.addArrayToList(lsCmd, getSortedBam());
-		ArrayOperate.addArrayToList(lsCmd, getThreadNum());
-		ArrayOperate.addArrayToList(lsCmd, getRecalTableName(outFile));
+//		ArrayOperate.addArrayToList(lsCmd, getThreadNum());
+		ArrayOperate.addArrayToList(lsCmd, getRecalTable(outFile));
 		lsCmd.addAll(getKnownSite());
 		return lsCmd;
 	}
@@ -134,10 +136,8 @@ public class BamRecalibrate implements IntCmdSoft {
 		lsCmd.add("-T"); lsCmd.add("PrintReads");
 		ArrayOperate.addArrayToList(lsCmd, getRefSequenceFile());
 		ArrayOperate.addArrayToList(lsCmd, getSortedBam());
-		lsCmd.add("-BQSR");
-		ArrayOperate.addArrayToList(lsCmd, getRecalTableName(outFile));
+		lsCmd.add("-BQSR"); lsCmd.add(getRecalTableName(outFile));
 		ArrayOperate.addArrayToList(lsCmd, getOutRecalibrateBam(outFile));
-		lsCmd.addAll(getKnownSite());
 		return lsCmd;
 	}
 	
@@ -147,9 +147,9 @@ public class BamRecalibrate implements IntCmdSoft {
 	private String[] getSortedBam() {
 		return new String[]{"-I", bamSortedFile};
 	}
-	private String[] getThreadNum() {
-		return new String[]{"-nt", threadNum + ""};
-	}
+//	private String[] getThreadNum() {
+//		return new String[]{"-nt", threadNum + ""};
+//	}
 	private List<String> getKnownSite() {
 		List<String> lsKnowSite = new ArrayList<>();
 		for (String vcfFile : setSnpDBVcfFilePath) {
@@ -159,11 +159,15 @@ public class BamRecalibrate implements IntCmdSoft {
 		return lsKnowSite;
 	}
 	
-	private String[] getRecalTableName(String outFile) {
+	private String[] getRecalTable(String outFile) {
 		String recalTable = FileOperate.changeFileSuffix(outFile, "_recal_data", "grp");
 		return new String[]{"-o", recalTable};
 	}
-
+	
+	private String getRecalTableName(String outFile) {
+		return FileOperate.changeFileSuffix(outFile, "_recal_data", "grp");
+	}
+	
 	private String[] getOutRecalibrateBam(String outFile) {
 		return new String[]{"-o", outFile};
 	}

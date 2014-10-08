@@ -12,6 +12,7 @@ import org.springframework.core.io.support.PropertiesLoaderUtils;
 
 import com.jhlabs.image.MapColorsFilter;
 import com.novelbio.analysis.seq.fastq.FastQ;
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class PathDetailNBC {
@@ -45,12 +46,25 @@ public class PathDetailNBC {
 	}
 	/** 有最后的"/" */
 	public static String getGenomePath() {
-		return FileOperate.addSep(properties.getProperty("GenomePath"));	
+		String genomePath = properties.getProperty("GenomePath");
+		if (!genomePath.startsWith("/") && !genomePath.startsWith("\\")) {
+			if (!FileOperate.isFileDirectory(genomePath)) {
+				genomePath = PathDetail.getProjectPathLinux() + genomePath;
+			}
+		}
+		
+		return genomePath;
 	}
 	
 	/** 内部自动加空格 */
 	public static String getSpeciesFile() {
-		return properties.getProperty("SpeciesFile");
+		String speciesFile = properties.getProperty("SpeciesFile");
+		if (!speciesFile.startsWith("/") && !speciesFile.startsWith("\\")) {
+			if (!FileOperate.isFileExistAndBigThanSize(speciesFile, 0)) {
+				speciesFile = PathDetail.getProjectPathLinux() + speciesFile;
+			}
+		}
+		return speciesFile;
 	}
 	
 	public static String getMiRNADat() {
@@ -81,7 +95,13 @@ public class PathDetailNBC {
 	
 	/** software配置文件的路径 */
 	public static String getSoftwareInfo() {
-		return properties.getProperty("Software");
+		String software = properties.getProperty("Software");
+		if (!software.startsWith("/") && !software.startsWith("\\")) {
+			if (!FileOperate.isFileExistAndBigThanSize(software, 0)) {
+				software = PathDetail.getProjectPathLinux() + software;
+			}
+		}
+		return software;
 	}
 	
 	/** rfam的对照表文件<br>
