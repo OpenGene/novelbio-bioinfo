@@ -50,14 +50,17 @@ public class N50AndSeqLen {
 	/** 长度统计 */
 	HistList hListLength;
 	
-	/** 设定后就会计算 */
+	/** 设定后就会计算
+	 * @param seqFileName 输入的需要统计N50的文件
+	 *  */
 	public N50AndSeqLen(String seqFileName) {
 		this.seqFileName = seqFileName;
 	}
-	/** 统计contig的步长 */
+	/** 统计contig的步长，默认为 200 */
 	public void setLengthStep(int lengthStep) {
 		this.lengthStep = lengthStep;
 	}
+	/** 最短多长的contig，0表示全部统计，200表示统计长度200bp以上的contig，默认为200 */
 	public void setMinContigLen(int minContigLen) {
 		this.minContigLen = minContigLen;
 	}

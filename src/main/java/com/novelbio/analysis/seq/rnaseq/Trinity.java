@@ -578,7 +578,7 @@ public class Trinity implements IntCmdSoft {
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {
-			throw new ExceptionCmd("run trinity error:\n" + cmdOperate.getCmdExeStr() + "\n" + cmdOperate.getErrOut());
+			throw new ExceptionCmd("run trinity error:", cmdOperate);
 		}
 	}
 	

@@ -80,7 +80,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	@Id
 	String id;
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	private GeneType flagTypeGene = GeneType.mRNA;
+	public GeneType flagTypeGene = GeneType.mRNA;
 //	/** 设定基因的转录起点上游长度，默认为0 */
 //	@Transient
 //	protected int upTss = 0;
@@ -277,7 +277,11 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		if (ATGsite < 0 || UAGsite < 0) {
 			return false;
 		}
-		return Math.abs(ATGsite - UAGsite) > 10 ?  true : false;
+		if ( Math.abs(ATGsite - UAGsite) > 10 || flagTypeGene == GeneType.mRNA) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	/**
@@ -340,7 +344,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			atg = Math.min(atg, uag);
 			uag = Math.min(atg, uag);
 		}
-		flagTypeGene = GeneType.mRNA;
+//		flagTypeGene = GeneType.mRNA;
 		if (isCis5to3()) {
 			if (ATGsite < 0 || ATGsite > Math.min(atg, uag)) {
 				ATGsite = Math.min(atg, uag);

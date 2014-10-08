@@ -82,9 +82,7 @@ public class GffDetailGene extends ListDetailAbs {
 	
 	/** 仅保存数据库使用 */
 	Set<String> setNameLowcase;
-	
-	Boolean ismRNA = null;
-	
+		
 	public GffDetailGene() {}
 	/**
 	 * @param listGff
@@ -446,13 +444,23 @@ public class GffDetailGene extends ListDetailAbs {
 	}
     /** 本基因是否编码蛋白 */
     public boolean isMRNA() {
-    	if (ismRNA != null) {
-			return ismRNA;
-		}
 		//判定是否为mRNA
-    	ismRNA = false;
+    	boolean ismRNA = false;
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
 			if (gffGeneIsoInfo.ismRNA()) {
+				ismRNA = true;
+				break;
+			}
+		}
+		return ismRNA;
+    }
+    
+    /** 本基因是否编码蛋白 */
+    public boolean isMRNAgeneType() {
+		//判定是否为mRNA
+    	boolean ismRNA = false;
+		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
+			if (gffGeneIsoInfo.flagTypeGene == GeneType.mRNA) {
 				ismRNA = true;
 				break;
 			}

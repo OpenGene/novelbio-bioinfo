@@ -51,7 +51,6 @@ public class SamFileToWig implements IntCmdSoft {
 	
 	public void setInterval(int interval) {
 		this.interval = interval;
-//		chunkSize = chunkSizeRaw;
 		chunkSize = chunkSizeRaw /interval * interval;
 	}
 	

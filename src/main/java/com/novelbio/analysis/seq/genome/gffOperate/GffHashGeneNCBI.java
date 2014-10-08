@@ -364,7 +364,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   int cdsEnd = Integer.parseInt(ss[4]);
 	   String rnaID = getRNAID(lastGeneID2Name, lastRnaID2Name, ss);
 	   String geneID = getGeneID(rnaID);
-	   GffGeneIsoInfo gffGeneIsoInfo = getGffIso(rnaID, cdsStart, cdsEnd, GeneType.mRNA);
+	   GffGeneIsoInfo gffGeneIsoInfo = getGffIso(rnaID, cdsStart, cdsEnd, null);
 	   gffGeneIsoInfo.setATGUAGauto(cdsStart, cdsEnd);
 	   if (mapGeneName2IsHaveExon.get(geneID) == null) {
 		   logger.error("没有找到相应的GeneID:" + geneID);
