@@ -382,6 +382,9 @@ public class GeneExpTable {
 	 */
 	public void addGeneExp(String geneName, double value) {
 		Map<String, Double> mapCond2Exp = mapGene_2_Cond2Exp.get(geneName);
+		if (mapCond2Exp == null) {
+			throw new ExceptionNullParam(geneName + " is not exist");
+		}
 		if (mapCond2Exp.containsKey(currentCondition)) {
 			double lastValue = mapCond2Exp.get(currentCondition);
 			value += lastValue;

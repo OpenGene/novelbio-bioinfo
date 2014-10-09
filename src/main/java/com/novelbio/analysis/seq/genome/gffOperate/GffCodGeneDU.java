@@ -21,7 +21,7 @@ import com.novelbio.listOperate.ListCodAbsDu;
  * 
  */
 public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
-	private static Logger logger = Logger.getLogger(GffCodGeneDU.class);
+	private static final Logger logger = Logger.getLogger(GffCodGeneDU.class);
 	
 	/** 是否需要查询Iso */
 	private boolean flagSearchAnno = false;

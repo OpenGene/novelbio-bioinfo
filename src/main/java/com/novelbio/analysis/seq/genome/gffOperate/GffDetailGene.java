@@ -455,7 +455,12 @@ public class GffDetailGene extends ListDetailAbs {
 		return ismRNA;
     }
     
-    /** 本基因是否编码蛋白 */
+    /**
+     * 本基因是否为mRNA
+     * 直接看其中的iso的geneType是否为mRNA
+     * 有些基因譬如ATP6，没有标注为mRNA但是有CDS，这里就不会被识别为mRNA
+     * @return
+     */
     public boolean isMRNAgeneType() {
 		//判定是否为mRNA
     	boolean ismRNA = false;

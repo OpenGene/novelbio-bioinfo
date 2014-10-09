@@ -1,6 +1,10 @@
 package com.novelbio.analysis.seq.mapping;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.novelbio.base.dataStructure.Alignment;
+import com.novelbio.base.dataStructure.MathComput;
 
 
 /**
@@ -106,4 +110,24 @@ public class Align implements Alignment {
 	public String toStringNoCis() {
 		return chrID + ":" + getStartAbs() + "-" + getEndAbs();
 	}
+	
+	/** 不考虑方向的合并，将overlap的align合并为一个align */
+	public static List<Align> mergeLsAlign(List<Align> lsAlign) {
+		if (lsAlign.isEmpty()) {
+			return new ArrayList<Align>();
+		}
+		
+		List<double[]> lsDouble = new ArrayList<double[]>();
+		for (Align align : lsAlign) {
+			lsDouble.add(new double[]{align.getStartAbs(), align.getEndAbs()});
+		}
+		List<double[]> lsMerge = MathComput.combInterval(lsDouble, 0);
+		List<Align> lsResult = new ArrayList<Align>();
+		for (double[] ds : lsMerge) {
+			Align align = new Align(lsAlign.get(0).getRefID(), (int)ds[0], (int)ds[1]);
+			lsResult.add(align);
+		}
+		return lsAlign;
+	}
+	
 }
