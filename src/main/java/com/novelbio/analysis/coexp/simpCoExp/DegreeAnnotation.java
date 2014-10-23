@@ -48,6 +48,7 @@ public class DegreeAnnotation {
 		excelCoExp.WriteExcel(sheet1, 1, 1, getLsPairAnno());
 		String sheet2 = "Attribute";
 		excelCoExp.WriteExcel(sheet2, 1, 1, getLsDegree());
+		excelCoExp.close();
 	}
 	
 	public void initial() {

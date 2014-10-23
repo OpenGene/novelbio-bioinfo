@@ -58,6 +58,7 @@ public class GffIDconvert {
 	 * 给定query的geneIso的信息，和查找Destination的结果，将结果进行升级
 	 * @param gffGeneIsoInfo
 	 * @param gffCodGeneDU
+	 * @param q2s 是query 到 subject 还是 subject 到 query
 	 */
 	private void searchGffGene(GffDetailGene gffDetailGene, GffHashGene gffHash, boolean q2s) {
 		String chrId = gffDetailGene.getRefID();

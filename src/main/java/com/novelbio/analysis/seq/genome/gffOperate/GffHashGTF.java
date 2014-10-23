@@ -11,6 +11,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.novelbio.analysis.seq.genome.ExceptionGFF;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -54,7 +55,7 @@ public class GffHashGTF extends GffHashGeneAbs{
 		}
 	}
 	@Override
-	protected void ReadGffarrayExcepTmp(String gfffilename) throws Exception {
+	protected void ReadGffarrayExcepTmp(String gfffilename) {
 		setGeneName(); setContig();
 		mapChrID2ListGff = new LinkedHashMap<String, ListGff>();
 		ArrayListMultimap<String, GffGeneIsoInfo> mapChrID2LsIso = ArrayListMultimap.create();
@@ -63,7 +64,9 @@ public class GffHashGTF extends GffHashGeneAbs{
 		GffGeneIsoInfo gffGeneIsoInfo = null;
 		String tmpChrID = "";
 		String tmpTranscriptNameLast = "";
+		int line = 0;
 		for (String content : txtgff.readlines() ) {
+			line++;
 			if (content.charAt(0) == '#') continue;
 			String[] ss = content.split("\t");// 按照tab分开
 			ss[8] = HttpFetch.decode(ss[8]);
@@ -83,6 +86,9 @@ public class GffHashGTF extends GffHashGeneAbs{
 			}
 			
 			String[] isoName2GeneName = getIsoName2GeneName(ss[8]);
+			if (isoName2GeneName == null) {
+				throw new ExceptionGFF("line " + line + " error, no isoName exist: " + content);
+			}
 			String tmpTranscriptName = isoName2GeneName[0], tmpGeneName = isoName2GeneName[1];
 			
 			if (setIsGene.contains(ss[2].toLowerCase())) continue;

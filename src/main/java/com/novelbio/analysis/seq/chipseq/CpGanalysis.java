@@ -1,6 +1,10 @@
 package com.novelbio.analysis.seq.chipseq;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.novelbio.analysis.seq.fasta.SeqFasta;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 public class CpGanalysis {
 	int CG;
@@ -60,6 +64,24 @@ public class CpGanalysis {
 		this.CG += cpGanalysis.CG;
 		this.CHG += cpGanalysis.CHG;
 		this.CHH += cpGanalysis.CHH;
+	}
+	
+	public void writeToFile(String fileName) {
+		TxtReadandWrite txtWrite = new TxtReadandWrite(fileName, true);
+		txtWrite.writefileln(new String[]{"CpG_Type", "Number"});
+		txtWrite.writefileln(new String[]{"CG", CG + ""});
+		txtWrite.writefileln(new String[]{"CHG", CHG + ""});
+		txtWrite.writefileln(new String[]{"CHH", CHH + ""});
+		txtWrite.close();
+	}
+	
+	public List<String[]> getLsCpGInfo() {
+		List<String[]> lsInfo = new ArrayList<>();
+		lsInfo.add(new String[]{"CpG_Type", "Number"});
+		lsInfo.add(new String[]{"CG", CG + ""});
+		lsInfo.add(new String[]{"CHG", CHG + ""});
+		lsInfo.add(new String[]{"CHH", CHH + ""});
+		return lsInfo;
 	}
 	
 }

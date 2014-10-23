@@ -50,7 +50,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	/** geneID的正则 */
 	protected static String regGeneID = "(?<=Dbxref\\=GeneID\\:)\\d+";
 	/** Name的正则 */
-	protected static String regName = "(?<=Name\\=)[\\w\\-%\\.\\:\\{\\}\\(\\)]+";
+	protected static String regName = "(?<=(\\W|^)Name\\=)[\\w\\-%\\.\\:\\{\\}\\(\\)]+";
 	/** ID的正则 */
 	protected static String regID = "(?<=ID\\=)[\\w\\.\\-%\\:\\{\\}]+";
 	/** parentID的正则 */
@@ -112,7 +112,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		if (setIsGene.isEmpty()) {
 			setIsGene.add("gene");
 			setIsGene.add("transposable_element_gene");
-//			setIsGene.add("transposable_element");
+			setIsGene.add("protein_coding_gene");
 			setIsGene.add("pseudogene");
 //			setIsGene.add("tRNA");
 		}
@@ -147,7 +147,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
      *   LOCChrHashIDList中保存LOCID代表具体的条目编号,与Chrhash里的名字一致，将同一基因的多个转录本放在一起： NM_XXXX/NM_XXXX...<br>
 	 * @throws Exception 
 	 */
-   protected void ReadGffarrayExcepTmp(String gfffilename) throws Exception {
+   protected void ReadGffarrayExcepTmp(String gfffilename) {
 	   setGeneName();
 	   setPattern();
 	   TxtReadandWrite txtgff = new TxtReadandWrite(gfffilename, false);
@@ -159,12 +159,13 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   
 	   for (String content : txtgff.readlines()) {
 		   if(content.charAt(0) == '#') continue;
+		   
 		   String[] ss = content.split("\t");//按照tab分开
 		   if (ss[2].equals("match") || ss[2].toLowerCase().equals("chromosome") || ss[2].toLowerCase().equals("intron")) {
 			   continue;
 		   }
 		   ss[8] = HttpFetch.decode(ss[8]);
-
+		   
 //		   if (ss[2].equals("match") || ss[2].toLowerCase().equals("chromosome") || ss[2].toLowerCase().equals("intron") || ss[0].startsWith("NW_") || ss[0].startsWith("NT_")) {
 //			   continue;
 //		   }
@@ -188,7 +189,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 				   compareRegion = ArrayOperate.cmpArray(new double[]{alignRegion.getStartAbs(), alignRegion.getEndAbs()}, 
 						   new double[]{alignGeneRegion.getStartAbs(), alignGeneRegion.getEndAbs()});
 			   }
-			   if (thisGeneIDandName == null || compareRegion[2] < 0.5) {
+			   if (patParentID.getPatFirst(ss[8]) == null && (thisGeneIDandName == null || compareRegion[2] < 0.5)) {
 				   thisGeneIDandName = addNewGene(ss);
 			   }
 			   
@@ -281,6 +282,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   
 	   mapGeneName2IsHaveExon.put(geneID, false);
 	   mapGeneID2Region.put(geneID, new Align(ss[0], Integer.parseInt(ss[3]), Integer.parseInt(ss[4])));
+	   
 	   return new String[]{geneID, geneName};
    }
    /**
@@ -342,7 +344,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   try {
 		   gffGeneIsoInfo = getGffIso(rnaID, exonStart, exonEnd, GeneType.ncRNA);//TODO
 	   } catch (Exception e) {
-		   logger.error("出现未知exon：" + ArrayOperate.cmbString(ss, "\t"));
+		   logger.error("出现未知exon：" + ArrayOperate.cmbString(ss, "\t"), e);
 		   return false;
 	   }
 	   String geneID = getGeneID(rnaID);
@@ -579,7 +581,8 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
    private void setGffList() {
 	   mapChrID2ListGff = new LinkedHashMap<String, ListGff>();
 	   ListGff LOCList = null;
-	   for (GffDetailGene gffDetailGene : mapGenID2GffDetail.values()) {
+	   for (String geneIdkey : mapGenID2GffDetail.keySet()) {
+		   GffDetailGene gffDetailGene = mapGenID2GffDetail.get(geneIdkey);
 		   String chrID = gffDetailGene.getRefID();
 			 //新的染色体
 		   if (!mapChrID2ListGff.containsKey(chrID.toLowerCase())) { //新的染色体 

@@ -53,6 +53,8 @@ public enum GeneType {
 	 */
 	private static void setMapName2GeneType() {
 		if (mapMRNA2GeneType.isEmpty()) {
+			mapMRNA2GeneType.put("transcript", mRNA);
+
 			mapMRNA2GeneType.put("mRNA".toLowerCase(),mRNA);
 			mapMRNA2GeneType.put("miRNA".toLowerCase(),miRNA);
 			mapMRNA2GeneType.put("tRNA".toLowerCase(),tRNA);
@@ -69,7 +71,6 @@ public enum GeneType {
 			mapMRNA2GeneType.put("RNase_P_RNA".toLowerCase(), RNase_P_RNA);
 			mapMRNA2GeneType.put("RNase_MRP_RNA".toLowerCase(), RNase_MRP_RNA);
 			mapMRNA2GeneType.put("scRNA".toLowerCase(), scRNA);
-			
 			mapMRNA2GeneType.put("pseudogene".toLowerCase(),PSEU);
 			mapMRNA2GeneType.put("pseudogenic_transcript".toLowerCase(), PSEU);
 			

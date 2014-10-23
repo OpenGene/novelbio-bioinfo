@@ -99,7 +99,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	 * @param gfffilename
 	 * @throws Exception 
 	 */
-	public void ReadGffarrayExcep(String gfffilename) throws Exception {
+	public void ReadGffarrayExcep(String gfffilename) {
 		ReadGffarrayExcepTmp(gfffilename);
 		for (Entry<String, ListGff> entry : mapChrID2ListGff.entrySet()) {
 			String chrID = entry.getKey();
@@ -109,6 +109,9 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 			for (GffDetailGene gffDetailGene : listGff) {
 				gffDetailGene.setTaxID(taxID);
 				for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+					if (gffGeneIsoInfo.getName().toLowerCase().contains("frem1")) {
+						logger.debug("");
+					}
 					if (mapName2Iso.containsKey(gffGeneIsoInfo.getName().toLowerCase())) {
 						GffGeneIsoInfo gffGeneIsoInfoOld = mapName2Iso.get(gffGeneIsoInfo.getName().toLowerCase());
 						if (gffGeneIsoInfoOld.getRefIDlowcase().startsWith("chr") && !gffGeneIsoInfo.getRefIDlowcase().startsWith("chr")) {
@@ -124,7 +127,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		}
 	}
 	
-	protected abstract void ReadGffarrayExcepTmp(String gfffilename) throws Exception;
+	protected abstract void ReadGffarrayExcepTmp(String gfffilename);
 	
 	public int getTaxID() {
 		return taxID;
@@ -584,7 +587,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		}
 	}
 	
-	private static boolean readFile = false;
+	private static boolean readFile = true;
 	static {
 //		if (FileOperate.isFileExist("/usr/lib/gcc/config")) {
 //			TxtReadandWrite txtRead = new TxtReadandWrite("/usr/lib/gcc/config");

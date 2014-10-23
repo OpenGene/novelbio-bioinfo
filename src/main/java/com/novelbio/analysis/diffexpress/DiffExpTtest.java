@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.novelbio.base.dataStructure.MathComput;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 /** 常规t检验
@@ -43,7 +44,9 @@ public class DiffExpTtest extends DiffExpAbs {
 		return "";
 	}
 	protected void writeToGeneFile() { }
-	public void clean(){};
+	public void clean() {};
+	/** 将中间文件拷贝到指定文件夹，文件夹必须存在 */
+	public void copyTmpFileToPath(String path) {}
 	@Override
 	protected void run() {
 		mapKey2Result = new HashMap<>();

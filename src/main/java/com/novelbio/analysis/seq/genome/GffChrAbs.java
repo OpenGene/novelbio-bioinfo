@@ -122,7 +122,7 @@ public class GffChrAbs implements Closeable {
 		if (FileOperate.isFileExist(gffFile)) {
 			gffHashGene = new GffHashGene(taxID, version, dbinfo, gffType, gffFile);
 		} else {
-			throw new ExceptionNullParam(gffFile + " GffFile is not exist");
+			throw new ExceptionGFF(gffFile + " GffFile is not exist");
 		}
 	}
 	

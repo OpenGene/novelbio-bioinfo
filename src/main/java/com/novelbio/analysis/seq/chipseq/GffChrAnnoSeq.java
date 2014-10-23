@@ -1,19 +1,22 @@
 package com.novelbio.analysis.seq.chipseq;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.hg.doc.fa;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.Alignment;
+import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.model.species.Species;
 
 /** 给定peak cover的区域，将覆盖到tss等区域的坐标提取出来
  * 目前仅分析tss上游，tes下游，genebody区域
@@ -29,6 +32,44 @@ public class GffChrAnnoSeq {
 	int tssUpstream;
 	/** 向下延长的tes下游 */
 	int tesDownstream;
+	
+	public static void main(String[] args) {
+		GffChrAnnoSeq gffChrAnnoSeq = new GffChrAnnoSeq(new GffChrAbs(39947));
+		gffChrAnnoSeq.setTssUpstream(1500);
+		gffChrAnnoSeq.setTesDownstream(500);
+		String parentPath = "/home/novelbio/下载/张宏宇2011-12-25/川农-张宏宇分析结果/Peak Calling/";
+		List<File> lsFiles = FileOperate.getFoldFileLs(parentPath, "*", "txt");
+		for (File file : lsFiles) {
+			Map<GeneStructure, CpGanalysis> mapStr2CpgInfo = new HashMap<>();
+			TxtReadandWrite txtRead = new TxtReadandWrite(file);
+			for (String content : txtRead.readlines(2)) {
+				String[] ss = content.split("\t");
+				Align align = new Align(ss[0], Integer.parseInt(ss[1]), Integer.parseInt(ss[2]));
+				Map<GeneStructure, CpGanalysis> mapStr2CpgInfoThis = gffChrAnnoSeq.queryAlignment(align);
+				for (GeneStructure str : mapStr2CpgInfoThis.keySet()) {
+					CpGanalysis cpGanalysis = mapStr2CpgInfo.get(str);
+					if (cpGanalysis == null) {
+						mapStr2CpgInfo.put(str, mapStr2CpgInfoThis.get(str));
+					} else {
+						cpGanalysis.addCpGInfo(mapStr2CpgInfoThis.get(str));
+					}
+				}
+			}
+			txtRead.close();
+			
+			TxtReadandWrite txtWrite = new TxtReadandWrite(FileOperate.changeFileSuffix(file.getAbsolutePath(), "_cpg", "info"), true);
+			for (GeneStructure str : mapStr2CpgInfo.keySet()) {
+				txtWrite.writefileln(str.toString());
+				List<String[]> lsCpGInfo = mapStr2CpgInfo.get(str).getLsCpGInfo();
+				for (String[] strings : lsCpGInfo) {
+					txtWrite.writefileln(strings);
+				}
+				txtWrite.writefileln();
+			}
+			txtWrite.close();
+		}
+	}
+	
 	public GffChrAnnoSeq(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 	}

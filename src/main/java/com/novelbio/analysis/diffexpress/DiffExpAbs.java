@@ -539,6 +539,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	
 	/** 将中间文件拷贝到指定文件夹，文件夹必须存在 */
 	public void copyTmpFileToPath(String path) {
+		FileOperate.createFolders(path);
 		FileOperate.copyFile(outScript, FileOperate.addSep(path) + FileOperate.getFileName(outScript), true);
 		FileOperate.copyFile(fileNameRawdata, FileOperate.addSep(path) + FileOperate.getFileName(fileNameRawdata), true);		
 	}

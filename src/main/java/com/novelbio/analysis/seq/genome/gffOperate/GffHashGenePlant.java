@@ -62,7 +62,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 		}
 	}
 
-   protected void ReadGffarrayExcepTmp(String gfffilename) throws Exception {
+   protected void ReadGffarrayExcepTmp(String gfffilename) {
 	   setHashName();
 		mapChrID2ListGff = new LinkedHashMap<String, ListGff>();
 	   TxtReadandWrite txtgff=new TxtReadandWrite(gfffilename, false);

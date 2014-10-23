@@ -29,7 +29,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
  */
 public class RefSeqCounts implements AlignmentRecorder {
 	public static void main(String[] args) {
-		String parentPath = "/hdfs:/nbCloud/public/AllProject/project_541805e2e4b0338e496cfc5f/task_541941a0e4b0ce893738a79c/DNASeqMap_result/";
+		String parentPath = "/hdfs:/nbCloud/public/AllProject/project_539a72a3e4b0e2f2f738c15b/task_5427ddb0e4b0ece9e25a7396/DNASeqMap_result/";
 		String resultPath = parentPath + "expAllId/";
 		FileOperate.createFolders(resultPath);
 //		FileOperate.createFolders(expPath);
@@ -49,7 +49,7 @@ public class RefSeqCounts implements AlignmentRecorder {
 		}
 		
 		SamFile samFile = new SamFile(lsFile.get(0));
-		refSeqCounts.readGene2IsoFile(samFile);
+		refSeqCounts.readGene2IsoFile("/media/hdfs/nbCloud/staff/bianlianle/Project/RNA_Denovo/Delphacidae_ChenRongZhi/4.Gene_Expression/All-Unigene.gene2Tran.list");
 		refSeqCounts.setMapIsoId2Len(samFile.getMapChrID2Length());
 		for (String bamFile : lsFile) {
 			String prefix = FileOperate.getFileNameSep(bamFile)[0];
@@ -150,7 +150,19 @@ public class RefSeqCounts implements AlignmentRecorder {
 	public Align getReadingRegion() {
 		return null;
 	}
-
+	
+	/** 读取以前计算好的counts文件
+	 * 会从title中获取具体的sample名
+	 * @param outTmpFile 必须是counts文件
+	 */
+	public void readExistExpFile(String outTmpFile) {
+		this.geneExpTable.read(outTmpFile, EnumAddAnnoType.notAdd);
+	}
+	
+	public void writeFile(boolean writeAllCondition, String fileName, EnumExpression enumExpression) {
+		this.geneExpTable.writeFile(writeAllCondition, fileName, enumExpression);
+	}
+	
 	@Override
 	public void addAlignRecord(AlignRecord alignRecord) {
 		SamRecord samRecord = (SamRecord)alignRecord;

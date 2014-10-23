@@ -211,10 +211,10 @@ K extends ListCodAbsDu<T, E>, M extends ListAbsSearch<T, E, K>> {
 			setOther();
 			getMapName2DetailNum();
 			getMapName2Detail();
+		} catch (ExceptionGff e) {
+			throw e;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
+			throw new ExceptionGff("GffFile Formate Error:" + gfffilename, e);
 		}
 		return true;
 	}

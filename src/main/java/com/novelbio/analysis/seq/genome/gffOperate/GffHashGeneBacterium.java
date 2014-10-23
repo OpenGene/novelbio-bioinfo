@@ -26,7 +26,7 @@ public class GffHashGeneBacterium extends GffHashGeneAbs {
 	HashMap<String, String> mapIsoName2GeneName = new HashMap<String, String>();
 	
 	@Override
-	protected void ReadGffarrayExcepTmp(String gfffilename) throws Exception {
+	protected void ReadGffarrayExcepTmp(String gfffilename) {
 		mapChrID2ListGff = new LinkedHashMap<String, ListGff>();
 		ArrayListMultimap<String, GffGeneIsoInfo> mapChrID2LsIso = ArrayListMultimap.create();
 		TxtReadandWrite txtgff = new TxtReadandWrite(gfffilename, false);

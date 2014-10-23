@@ -79,7 +79,7 @@ public class DifGeneFilter {
 		ExcelOperate excelOperate = new ExcelOperate(outTxtFile);
 		excelOperate.setNBCExcel(true);
 		excelOperate.WriteExcel(1, 1, lsResult);
-		excelOperate.Close();
+		excelOperate.close();
 	}
 	
 }

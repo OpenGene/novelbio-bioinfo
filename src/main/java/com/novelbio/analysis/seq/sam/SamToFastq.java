@@ -233,9 +233,10 @@ public class SamToFastq implements AlignmentRecorder {
 		if (!firstSeenMates.isEmpty()) {
 			logger.error(firstSeenMates.size() + " reads have unpaired");
 		}
-		for (String name : firstSeenMates.keySet()) {
-			System.out.println(name);
-		}
+		firstSeenMates.clear();
+//		for (String name : firstSeenMates.keySet()) {
+//			System.out.println(name);
+//		}
 	}
 	
 	private String[] getFinalName(String outFileName, boolean isTmp) {

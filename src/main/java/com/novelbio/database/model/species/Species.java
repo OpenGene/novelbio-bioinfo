@@ -609,7 +609,7 @@ public class Species implements Cloneable {
 		return false;
 	}
 	
-	static boolean isOK = false;
+	static boolean isOK = true;
 	static {
 //		String file = "";
 //		if (FileOperate.isFileExist("/lib/firmware/tigon/property")) {

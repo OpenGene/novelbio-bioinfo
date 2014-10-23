@@ -41,6 +41,7 @@ public class MedianGet {
 		ExcelOperate excelOperate = new ExcelOperate();
 		excelOperate.newExcelOpen(outFile);
 		excelOperate.WriteExcel(1, 1, lsResult);
+		excelOperate.close();
 	}
 
 	

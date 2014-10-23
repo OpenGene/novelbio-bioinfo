@@ -288,7 +288,7 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	public double[] getRangeInfo(int thisInvNum,String chrID,int startNum,int endNum,int type) {
 		double[] result = null;
 		if (!mapChrID2ReadsInfo.containsKey(chrID.toLowerCase())) {
-			logger.error("没有该染色体：" + chrID);
+			logger.info("cannot find this chromosome: " + chrID);
 			return result;
 		}
 		////////////////////////不需要分割了////////////////////////////////////////
@@ -311,7 +311,7 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	private double[] getRangeInfoInv1(String chrID, int startNum, int endNum) {
 		ChrMapReadsInfo chrMapReadsInfo = mapChrID2ReadsInfo.get(chrID.toLowerCase());
 		if (chrMapReadsInfo == null) {
-			logger.info("没有该染色体： " + chrID);
+			logger.info("cannot find this chromosome: " + chrID);
 			return null;
 		}
 		int[] startEnd = correctStartEnd(mapChrID2Len, chrID, startNum, endNum);

@@ -1,5 +1,6 @@
 package com.novelbio.analysis.annotation.cog;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.domain.geneanno.EnumSpeciesFile;
@@ -27,14 +29,13 @@ import com.novelbio.generalConf.PathDetailNBC;
  */
 public class COGanno {
 	private static final Logger logger = Logger.getLogger(COGanno.class);
-	String cogFastaFile = PathDetailNBC.getCogFasta();
-	String seqFastaFile;
-	int threadNum = 4;
-	double evalueCutoff = 1e-10;
+	EnumCogType cogType;
+
+	String cogFastaFile;
 	/** 蛋白id到cogid的对照表 */
-	String pro2cogFile = PathDetailNBC.getCogPro2CogId();
+	String pro2cogFile;
 	/** CogId和Cog具体类的对照表 */
-	String cogId2AnnoFile = PathDetailNBC.getCogId2Anno();
+	String cogId2AnnoFile;
 	/** Cog单字母对应Cog功能的文件
 	 * INFORMATION STORAGE AND PROCESSING
 	 * [J] Translation, ribosomal structure and biogenesis 
@@ -43,7 +44,13 @@ public class COGanno {
 	 * [L] Replication, recombination and repair 
 	 * [B] Chromatin structure and dynamics 
 	 */
-	String cogAbbr2FunFile = PathDetailNBC.getCogAbbr2Fun();
+	String cogAbbr2FunFile;
+	
+	
+	String seqFastaFile;
+	int threadNum = 4;
+	double evalueCutoff = 1e-5;
+
 	/** 物种信息，有这个信息就把cog文件保存在genome/cog中，没有这个信息就把物种保存在sequence的文件下 */
 	Species species;
 	
@@ -53,6 +60,18 @@ public class COGanno {
 	Map<String, CogInfo> mapCogId2CogInfo = new HashMap<>();
 	/** key 为小写 */
 	Map<String, String[]> mapCogAbbr2Anno = new HashMap<>();
+	
+	public COGanno(EnumCogType cogType) {
+		cogFastaFile = PathDetailNBC.getCogFasta(cogType);
+		pro2cogFile = PathDetailNBC.getCogPro2CogId(cogType);
+		cogId2AnnoFile = PathDetailNBC.getCogId2Anno(cogType);
+		cogAbbr2FunFile = PathDetailNBC.getCogAbbr2Fun(cogType);
+		this.cogType = cogType;
+	}
+	
+	public EnumCogType getCogType() {
+		return cogType;
+	}
 	
 	/** 默认已经设定好 */
 	public void setCogAbbr2FunFile(String cogAbbr2FunFile) {
@@ -81,6 +100,7 @@ public class COGanno {
 	}
 	
 	public void initial() {
+		System.out.println();
 		String cogFile = getCOGFile();
 		if (!FileOperate.isFileExistAndBigThanSize(cogFile, 0)) {
 			String blastFile = blastSeqToCOG();
@@ -90,6 +110,9 @@ public class COGanno {
 		for (String content : txtRead.readlines()) {
 			String queryId = content.split("\t")[0];
 			CogInfo cogInfo = new CogInfo(content);
+			if (cogInfo.getEvalue() > evalueCutoff) {
+				continue;
+			}
 			mapGeneUniId2CogInfo.put(queryId.toLowerCase(), cogInfo);
 			mapCogId2CogInfo.put(cogInfo.getCogId().toLowerCase(), cogInfo);
 		}
@@ -167,7 +190,8 @@ public class COGanno {
 		String blastFileTmp = FileOperate.changeFileSuffix(blastFileResult, "_tmp", null);
 		blastNBC.setResultFile(blastFileTmp);
 		blastNBC.setBlastType(blastType);
-		blastNBC.setEvalue(1e-10);
+		double evlaue = 1e-5 > evalueCutoff ? 1e-5 : evalueCutoff; 
+		blastNBC.setEvalue(1e-5);
 		blastNBC.setCpuNum(threadNum);
 		blastNBC.setQueryFastaFile(seqFastaFile);
 		blastNBC.setSubjectSeq(cogModify);
@@ -178,7 +202,7 @@ public class COGanno {
 	}
 	
 	private String getBlastFile() {
-		String blastFile = generatePathPrefix() + "blastCOG.txt";
+		String blastFile = generatePathPrefix() + "blast"+ cogType.toString() + ".txt";
 		if (species != null) {
 			FileOperate.changeFilePrefix(blastFile, species.getAbbrName() + "_" + species.getVersion(), null);
 		}
@@ -186,7 +210,7 @@ public class COGanno {
 	}
 	
 	private String getCOGFile() {
-		String blastFile = generatePathPrefix() + "COGanno.txt";
+		String blastFile = generatePathPrefix() + cogType.toString() + "anno.txt";
 		if (species != null) {
 			FileOperate.changeFilePrefix(blastFile, species.getAbbrName() + "_" + species.getVersion(), null);
 		}
@@ -295,4 +319,63 @@ public class COGanno {
 		return mapAbbr2Fun;
 	}
 	
+	
+	public static void convertKog() {
+		String kogPath = FileOperate.getPathName(PathDetailNBC.getCogAbbr2Fun(EnumCogType.KOG));
+		List<String> lsKogFiles = new ArrayList<>();
+		lsKogFiles.add(kogPath + "kog");
+		lsKogFiles.add(kogPath + "lse");
+		lsKogFiles.add(kogPath + "twog");
+		convertKog(lsKogFiles, kogPath);
+	}
+	
+	/** 将kog的文件转化为kog的对照表，类似COG的 prot2COG.tab 和 cogs.csv */
+	private static void convertKog(List<String> lsKogInfos, String outPath) {
+		String outProt2Kog = FileOperate.addSep(outPath) + "prot2KOG.tab";
+		String outKog = FileOperate.addSep(outPath) + "kogs.csv";
+		if (FileOperate.isFileExistAndBigThanSize(outProt2Kog, 0) && FileOperate.isFileExistAndBigThanSize(outKog, 0)) {
+			return;
+		}
+		
+		String outProt2KogTmp = outProt2Kog + ".tmp";
+		String outKogTmp = outKog + ".tmp";
+		TxtReadandWrite txtWriteProt = new TxtReadandWrite(outProt2KogTmp, true);
+		TxtReadandWrite txtWriteKogs = new TxtReadandWrite(outKogTmp, true);
+		
+		PatternOperate pat = new PatternOperate("\\[(\\w+)\\](.+)");
+		
+		for (String kogInfoFile : lsKogInfos) {
+			TxtReadandWrite txtRead = new TxtReadandWrite(kogInfoFile);
+			CogInfo cogInfo = null;
+			for (String content : txtRead.readlines()) {
+				if (content.startsWith("[")) {
+					cogInfo = new CogInfo();
+					String cogId = pat.getPatFirst(content, 1);
+					String[] cogDetail = pat.getPatFirst(content, 2).trim().split(" ", 2);
+					cogInfo.setCogAbbr(cogId);
+					cogInfo.setCogId(cogDetail[0].trim());
+					cogInfo.setCogAnnoDetail(cogDetail[1].trim());
+					txtWriteKogs.writefileln(cogInfo.getCogId() + "," + cogInfo.getCogAbbr() + "," + cogInfo.getCogAnnoDetail());
+					continue;
+				}
+				
+				String[] ss = content.split(" ");
+				for (String cogGene : ss) {
+					cogGene = cogGene.trim();
+					if (cogGene.equals("") || cogGene.contains(":")) {
+						continue;
+					}
+					txtWriteProt.writefileln(cogGene + "\t" + cogInfo.getCogId());
+				}
+			}
+			txtRead.close();
+		}
+		txtWriteKogs.close();
+		txtWriteProt.close();
+		
+		FileOperate.moveFile(true, outProt2KogTmp, outProt2Kog);
+		FileOperate.moveFile(true, outKogTmp, outKog);
+	}
+	
 }
+

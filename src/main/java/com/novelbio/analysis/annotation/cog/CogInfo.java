@@ -12,6 +12,8 @@ public class CogInfo {
 	/** cog具体的注释，跟最泛泛的注释还不一样 */
 	String cogAnnoDetail;
 	public CogInfo() {}
+	
+	/** 仅用于Cog的行，不能用于Kog */
 	public CogInfo(String cogLine) {
 		String[] ss = cogLine.split("\t");
 		setCogSeqName(ss[1]);
@@ -35,7 +37,7 @@ public class CogInfo {
 	public void setEvalue(double evalue) {
 		this.evalue = evalue;
 	}
-	/** Cog的单字母缩写 */
+	/** Cog的单字母缩写，但是会包含不止一个cogId */
 	public String getCogAbbr() {
 		return cogAbbr;
 	}

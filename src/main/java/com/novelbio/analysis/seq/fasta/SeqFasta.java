@@ -288,9 +288,14 @@ public class SeqFasta implements Cloneable {
 	public String toStringAA1() {
 		return toStringAA(true, 0, true);
 	}
-	/**@return 将nr序列转变为单字母aa序列，首先正反向之后，然后按照该顺序进行orf选择 */
-	public boolean isAA() {
-		return isAA(true, 0, true);
+	/**
+	 * 判定是否为蛋白序列，如果序列中含有超过stopCodeNum个终止密码子，就返回false
+	 * @param stopCodeNum 可以容忍的终止密码子个数，不包括最后一个终止密码子<br>
+	 * 有些基因譬如 XM_008758589，中间就包含一个终止密码子，但是NCBI依然记录其为蛋白序列，这个设置为1就也可以判定该序列为蛋白序列
+	 * @return
+	 */
+	public boolean isAA(int stopCodeNum) {
+		return isAA(true, 0, true, stopCodeNum);
 	}
 	/**@return 将nr序列转变为三字母aa序列，首先正反向之后，然后按照该顺序进行orf选择 */
 	public String toStringAA3() {
@@ -345,7 +350,7 @@ public class SeqFasta implements Cloneable {
 	 * @param AAnum true 单字母AA，false 三字母AA
 	 * @return
 	 */
-	public boolean isAA(boolean cis,int orf, boolean AAnum) {
+	public boolean isAA(boolean cis,int orf, boolean AAnum, int stopCodeNum) {
 		if (SeqSequence == null) {
 			return false;
 		}
@@ -356,13 +361,16 @@ public class SeqFasta implements Cloneable {
 		else {
 			nrChar = SeqSequence.toCharArray();
 		}
-		StringBuilder resultAA = new StringBuilder();
+		int stopNum = 0;
 		for (int i = orf; i <= nrChar.length - 6; i = i+3) {
 			String tmp = String.valueOf(new char[]{nrChar[i],nrChar[i+1],nrChar[i+2]});
 			String aa = CodeInfo.convertDNACode2AA(tmp, AAnum);
 			if (aa.contains("*")) {
-				return false;
+				stopNum++;
 			}
+		}
+		if (stopNum > stopCodeNum) {
+			return false;
 		}
 		return true;
 	}

@@ -883,18 +883,20 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			add(exonInfo);
 			return;
 		}
-		if ((isCis5to3() && exonInfo.getStartAbs() >= get(size() - 1).getEndAbs())
+		ExonInfo exonLast = get(size() - 1);
+		ExonInfo exonFirst = get(0);
+		if ((isCis5to3() && exonInfo.getStartAbs() >= exonLast.getEndAbs())
 		|| 
-		(!isCis5to3() && exonInfo.getEndAbs() <= get(size() - 1).getStartAbs())
+		(!isCis5to3() && exonInfo.getEndAbs() <= exonLast.getStartAbs())
 		) {
 			add(exonInfo);
-		} else if ((isCis5to3() && exonInfo.getEndAbs() <= get(0).getStartAbs())
+		} else if ((isCis5to3() && exonInfo.getEndAbs() <= exonFirst.getStartAbs())
 				|| 
-				(!isCis5to3() && exonInfo.getStartAbs() >= get(size() - 1).getEndAbs())
-		){
+				(!isCis5to3() && exonInfo.getStartAbs() >= exonFirst.getEndAbs())
+		) {
 			add(0,exonInfo);
 		} else {
-			logger.error("NCBI的Gff文件有问题，其exon会窜位，本次添加exon出错，请check: " + getRefID() + " " + locStart + " " + locEnd);
+			logger.info("The Gff file may have error on gene: " + getName() + " and exon: " + getRefID() + " " + locStart + " " + locEnd + "  please check");
 		}
 	}
 	/**

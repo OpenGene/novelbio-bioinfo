@@ -11,6 +11,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 
 import com.jhlabs.image.MapColorsFilter;
+import com.novelbio.analysis.annotation.cog.EnumCogType;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -77,20 +78,44 @@ public class PathDetailNBC {
 	}
 	
 	/** COGfasta文件的路径 */
-	public static String getCogFasta() {
-		return properties.getProperty("COGfasta");
+	public static String getCogFasta(EnumCogType cogType) {
+		String cogFile = null;
+		if (cogType == EnumCogType.COG) {
+			cogFile = properties.getProperty("COGfasta");
+		} else if (cogType == EnumCogType.KOG) {
+			cogFile = properties.getProperty("KOGfasta");
+		}
+		return cogFile;
 	}
 	/** COGfasta文件的路径 */
-	public static String getCogId2Anno() {
-		return properties.getProperty("cogId2Anno");
+	public static String getCogId2Anno(EnumCogType cogType) {
+		String cogFile = null;
+		if (cogType == EnumCogType.COG) {
+			cogFile = properties.getProperty("cogId2Anno");
+		} else if (cogType == EnumCogType.KOG) {
+			cogFile = properties.getProperty("kogId2Anno");
+		}
+		return cogFile;
 	}
 	/** COGfasta文件的路径 */
-	public static String getCogPro2CogId() {
-		return properties.getProperty("pro2cog");
+	public static String getCogPro2CogId(EnumCogType cogType) {
+		String cogFile = null;
+		if (cogType == EnumCogType.COG) {
+			cogFile = properties.getProperty("pro2cog");
+		} else if (cogType == EnumCogType.KOG) {
+			cogFile = properties.getProperty("pro2kog");
+		}
+		return cogFile;
 	}
 	/** COGfasta文件的路径 */
-	public static String getCogAbbr2Fun() {
-		return properties.getProperty("cogAbbr2Fun");
+	public static String getCogAbbr2Fun(EnumCogType cogType) {
+		String cogFile = null;
+		if (cogType == EnumCogType.COG) {
+			cogFile = properties.getProperty("cogAbbr2Fun");
+		} else if (cogType == EnumCogType.KOG) {
+			cogFile = properties.getProperty("kogAbbr2Fun");
+		}
+		return cogFile;
 	}
 	
 	/** software配置文件的路径 */

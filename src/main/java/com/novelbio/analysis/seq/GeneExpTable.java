@@ -71,7 +71,7 @@ public class GeneExpTable {
 	 * 同时添加注释信息并设定allCountsNumber为全体reads的累加
 	 *
 	 * @param file 读取的文件
-	 * @param addAnno 是否添加注释，如果本对象已经有了注释，就不可以添加了，否则会出错
+	 * @param enumAddAnnoType 是否添加注释，如果本对象已经有了注释，就不可以添加了，否则会出错
 	 */
 	public void read(String file, EnumAddAnnoType enumAddAnnoType) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(file);

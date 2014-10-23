@@ -31,7 +31,7 @@ public class GffHashGeneGBK extends GffHashGeneAbs {
 	 * 这里输入的应该是一个文件夹，包含了所有GBK的文件
 	 */
 	@Override
-	protected void ReadGffarrayExcepTmp(String gfffilename) throws Exception {
+	protected void ReadGffarrayExcepTmp(String gfffilename) {
 //		List<String> lsGBKfile = FileOperate.getFoldFileNameLs(gfffilename, "*", "gbk");
 //		for (String string : lsGBKfile) {		
 //		}

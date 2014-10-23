@@ -537,6 +537,7 @@ public class Scr2Target {
 		ExcelOperate excelOperate = new ExcelOperate();
 		excelOperate.newExcelOpen(ResultFIleScr2Target);
 		excelOperate.WriteExcel(1, 1, lsScr2Target);
+		excelOperate.close();
 //		TxtReadandWrite txtReadandWrite = new TxtReadandWrite();
 //		txtReadandWrite.setParameter(ResultFIleScr2Target, true, false);
 //		txtReadandWrite.ExcelWrite(lsScr2Target, "\t", 1, 1);
@@ -559,6 +560,7 @@ public class Scr2Target {
 		ExcelOperate excelOperate2 = new ExcelOperate();
 		excelOperate2.newExcelOpen(resultFIleAttribute);
 		excelOperate2.WriteExcel(1, 1, lsAttribute);
+		excelOperate2.close();
 //		txtReadandWrite.setParameter(resultFIleAttribute, true, false);
 //		txtReadandWrite.ExcelWrite(lsAttribute, "\t", 1, 1);
 	}

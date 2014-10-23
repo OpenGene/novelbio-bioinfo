@@ -592,7 +592,7 @@ public class Scr2TargetNew {
 //		TxtReadandWrite txtReadandWrite = new TxtReadandWrite();
 //		txtReadandWrite.setParameter(ResultFIleScr2Target, true, false);
 //		txtReadandWrite.ExcelWrite(lsScr2Target, "\t", 1, 1);
-		
+		excelOperate.close();
 		
 		Enumeration<String> keys=hashEntryInfoResult.keys();
 		
@@ -611,6 +611,7 @@ public class Scr2TargetNew {
 		ExcelOperate excelOperate2 = new ExcelOperate();
 		excelOperate2.newExcelOpen(resultFIleAttribute);
 		excelOperate2.WriteExcel(1, 1, lsAttribute);
+		excelOperate2.close();
 //		txtReadandWrite.setParameter(resultFIleAttribute, true, false);
 //		txtReadandWrite.ExcelWrite(lsAttribute, "\t", 1, 1);
 	}

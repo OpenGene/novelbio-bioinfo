@@ -31,6 +31,9 @@ public class AnnoAnno extends AnnoAbs {
 	 * @return
 	 */
 	protected List<String[]> getInfo(int taxID, String accID) {
+		if (accID.toLowerCase().equals("frem1")) {
+			System.out.println();
+		}
 		List<String[]> lsResult = new ArrayList<>();
 		List<String> resultTmp = new ArrayList<>();
 		GeneID copedID = new GeneID(accID, taxID);

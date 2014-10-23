@@ -217,7 +217,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
 		ExcelOperate excelOperate = new ExcelOperate(outFile);
 		excelOperate.setNBCExcel(true);
 		excelOperate.WriteExcel(lsResult);
-		excelOperate.Close();
+		excelOperate.close();
 		
 		String txtFile = FileOperate.changeFileSuffix(outFile, "", "txt");
 		TxtReadandWrite txtOutFinal = new TxtReadandWrite(txtFile, true);
