@@ -1113,7 +1113,7 @@ public class GffDetailGene extends ListDetailAbs {
 	 */
 	private boolean isContainsIso(String IsoName) {
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
-			if (gffGeneIsoInfo.getName().toLowerCase().contains(IsoName.toLowerCase())) {
+			if (gffGeneIsoInfo.getName().toLowerCase().equals(IsoName.toLowerCase())) {
 				return true;
 			}
 		}

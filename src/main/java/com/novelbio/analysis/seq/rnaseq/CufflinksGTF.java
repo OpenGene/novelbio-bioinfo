@@ -412,20 +412,20 @@ public class CufflinksGTF implements IntCmdSoft {
 				&& FileOperate.isFileExistAndBigThanSize(outGTFPath + "/transcripts.gtf" , 0)
 				) {
 			outGtf = outGTFPath + "transcripts.gtf";
-		}
-		cmdOperate.run();
-		this.lsCmd.add(cmdOperate.getCmdExeStr());
-		
-		if (cmdOperate.isFinishedNormal()) {
-			outGtf = outGTFPath + "transcripts.gtf";
 		} else {
-			if (skipErrorMode) {
-				outGtf = null;
+			cmdOperate.run();
+			if (cmdOperate.isFinishedNormal()) {
+				outGtf = outGTFPath + "transcripts.gtf";
 			} else {
-				String errInfo = cmdOperate.getErrOut();
-				throw new RuntimeException("cufflinks error:" + prefix + ":\n" + cmdOperate.getCmdExeStrReal() + "\n" + errInfo);
+				if (skipErrorMode) {
+					outGtf = null;
+				} else {
+					String errInfo = cmdOperate.getErrOut();
+					throw new RuntimeException("cufflinks error:" + prefix + ":\n" + cmdOperate.getCmdExeStrReal() + "\n" + errInfo);
+				}
 			}
 		}
+		this.lsCmd.add(cmdOperate.getCmdExeStr());
 		
 		if (outGtf != null) {
 			String outGtfModify = FileOperate.changeFileSuffix(outGtf, "_filterWithFPKMlessThan" + fpkmFilter, null);
@@ -441,7 +441,7 @@ public class CufflinksGTF implements IntCmdSoft {
 		/** 基因名字的正则，可以改成识别人类或者其他,这里是拟南芥，默认  NCBI的ID  */
 		String transIdreg = "(?<=transcript_id \")[\\w\\-%\\:\\.]+";
 		String fpkmreg = "(?<=FPKM \")[\\d\\.]+";
-		String geneNamereg = "(?<=gene_name \")[\\w\\-%\\:\\.]+";
+		String geneNamereg = "(?<=gene_id \")[\\w\\-%\\:\\.]+";
 		PatternOperate patTransId = new PatternOperate(transIdreg, false);
 		PatternOperate patFpkm = new PatternOperate(fpkmreg, false);
 		PatternOperate patGeneName = new PatternOperate(geneNamereg, false);
@@ -464,11 +464,13 @@ public class CufflinksGTF implements IntCmdSoft {
 			GffDetailGene gffDetailGeneNew = gffDetailGene.clone();
 			gffDetailGeneNew.clearIso();
 			for (GffGeneIsoInfo iso : gffDetailGene.getLsCodSplit()) {
+				
 				if (mapIso2GeneName.containsKey(iso.getName())
-						||  iso.size() > 1 || (mapIso2Fpkm.get(iso.getName()) >= fpkmFilter && (iso.getLen() >= isoLenFilter))
+						||  iso.size() > 1 || (mapIso2Fpkm.containsKey(iso.getName()) && mapIso2Fpkm.get(iso.getName()) >= fpkmFilter && (iso.getLen() >= isoLenFilter))
 						) {
 					gffDetailGeneNew.addIsoSimple(iso);
 				}
+
 			}
 			if (gffDetailGeneNew.getLsCodSplit().size() > 0) {
 				gffHashGeneNew.addGffDetailGene(gffDetailGeneNew);
