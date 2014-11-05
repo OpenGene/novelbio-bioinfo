@@ -28,7 +28,7 @@ public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 	/** 是否要设定为DNA，也就是将序列中的U全部转化为T */
 	boolean isDNAseq = false;
 	/** 抓取chrID的正则表达式 */
-	String regx = null;	
+	String regx = null;
 	String chrFile = "";
 	/** 将序列名称按顺序读入list */
 	public ArrayList<String> lsSeqName;
@@ -52,12 +52,13 @@ public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 	public String getChrFile() {
 		return chrFile;
 	}
+	
 	/**
 	 * 是否要设定为DNA，也就是将序列中的U全部转化为T
 	 * 只有当序列为RNA时才会用到
 	 */
 	@Override
-	public void setDNAseq(boolean isDNAseq){
+	public void setDNAseq(boolean isDNAseq) {
 		this.isDNAseq = isDNAseq;
 	}
 	/**

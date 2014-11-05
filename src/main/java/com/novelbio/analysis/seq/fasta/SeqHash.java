@@ -1,6 +1,5 @@
 package com.novelbio.analysis.seq.fasta;
 
-import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -17,7 +16,7 @@ import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
-public class SeqHash implements SeqHashInt, Closeable {
+public class SeqHash implements SeqHashInt {
 	private static Logger logger = Logger.getLogger(SeqHash.class);
 	
 	SeqHashAbs seqHashAbs = null;
@@ -27,6 +26,10 @@ public class SeqHash implements SeqHashInt, Closeable {
 	 * null：不变
 	 */
 	Boolean TOLOWCASE = null;
+	
+	public SeqHash(SeqHashAbs seqHashAbs) {
+		this.seqHashAbs = seqHashAbs;
+	}
 	
 	/**
 	 * 小于100MB的直接读入内存，不建立索引
@@ -52,6 +55,8 @@ public class SeqHash implements SeqHashInt, Closeable {
 	public SeqHash(String chrFile, String regx) {
 		initial(chrFile, regx);
 	}
+	
+	
 	
 	private void initial(String chrFile, String regx) {
 		if (FileOperate.isFileExistAndBigThanSize(chrFile,1)) {

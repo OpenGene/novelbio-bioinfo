@@ -246,7 +246,8 @@ public class SoftWareInfo {
 		miranada, RNAhybrid, mirDeep, miReap,
 		samtools, picard, GATK, cufflinks,
 		macs, sicer,
-		emboss;
+		emboss,
+		estscan;
 		
 		static HashMap<String, SoftWare> mapStr2MapSoftware = new LinkedHashMap<String, SoftWareInfo.SoftWare>();
 		public static HashMap<String, SoftWare> getMapStr2MappingSoftware() {

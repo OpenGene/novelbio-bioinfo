@@ -196,7 +196,7 @@ public class Trinity implements IntCmdSoft {
 		if (seqType == null) {
 			return null;
 		}
-		return new String[]{" --seqType", seqType};
+		return new String[]{"--seqType", seqType};
 	}
 	
 	private String[] getJellyfishMemory() {
@@ -478,7 +478,7 @@ public class Trinity implements IntCmdSoft {
 	}
 	
 	private String[] getMax_number_of_paths_per_node() {
-		if (max_number_of_paths_per_node < 0) {
+		if (max_number_of_paths_per_node <= 0) {
 			return null;
 		}
 		return new String[]{"--max_number_of_paths_per_node", max_number_of_paths_per_node + ""};
@@ -559,7 +559,7 @@ public class Trinity implements IntCmdSoft {
 	}
 
 //	private String getBflyCalculateCPU() {
-//		return "  --bflyCalculateCPU ";
+//		return "--bflyCalculateCPU";
 //	}
 
 	private String[] getGrid_computing_module() {
@@ -584,7 +584,7 @@ public class Trinity implements IntCmdSoft {
 	
 	private List<String> getLsCmd() {
 		List<String> lsCmd = new ArrayList<>();
-		lsCmd.add(exePath + "Trinity.pl");
+		lsCmd.add(exePath + "Trinity");
 		ArrayOperate.addArrayToList(lsCmd, getSeqType());
 		ArrayOperate.addArrayToList(lsCmd, getJellyfishMemory() );
 		lsCmd.addAll(getFastQ());

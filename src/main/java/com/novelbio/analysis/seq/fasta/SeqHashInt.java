@@ -1,5 +1,6 @@
 package com.novelbio.analysis.seq.fasta;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,7 +10,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 
-public interface SeqHashInt {
+public interface SeqHashInt extends Closeable {
 	/**
 	 * 返回chrID和chrLength的对应关系
 	 * chrID通通小写
