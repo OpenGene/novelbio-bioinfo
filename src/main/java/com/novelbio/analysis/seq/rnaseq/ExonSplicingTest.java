@@ -379,7 +379,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		for (ExonSplicingTest exonSplicingTest : colExonSplicingTests) {
 			//TODO
 			if (exonSplicingTest.getExonCluster().getParentGene().getName().contains(debug)) {
-				logger.error("stop");
+				logger.debug("stop");
 			}
 			if (exonSplicingTest.getAndCalculatePvalue() > 0.5) {
 				break;

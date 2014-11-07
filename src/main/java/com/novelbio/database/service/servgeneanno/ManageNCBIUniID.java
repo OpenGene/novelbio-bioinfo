@@ -235,7 +235,7 @@ public class ManageNCBIUniID {
 			try {
 				update(ageneUniID, ncbiid, override);
 			} catch (Exception e) {
-				update(ageneUniID, ncbiid, override);
+				logger.error(e);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

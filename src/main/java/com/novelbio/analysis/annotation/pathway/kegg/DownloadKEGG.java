@@ -13,9 +13,9 @@ public class DownloadKEGG {
 //		downloadKEGG.addSpecies("mmu");
 //		downloadKEGG.addSpecies("osa");
 //		downloadKEGG.addSpecies("ath");
-		downloadKEGG.addSpecies("apla");
+		downloadKEGG.addSpecies("mtu");
 		
-		downloadKEGG.setSavePath("/media/winE/OutMrd1.mrd");
+		downloadKEGG.setSavePath("/home/novelbio/NBCsource/database/kegg");
 		downloadKEGG.download();
 	}
 	

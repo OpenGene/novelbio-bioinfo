@@ -351,7 +351,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		tophatJunction.conclusion();
 		
 		suspendCheck();
-		logger.error("finish junction reads");
+		logger.info("finish junction reads");
 		if (runGetInfo != null) {
 			GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
 			guiAnnoInfo.setInfo2("Get Junction Event");
@@ -494,7 +494,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			if (gffDetailGene.getName().contains(stopGeneName)) {
 				logger.debug("stop");
 			}
-//			logger.error(gffDetailGene.getNameSingle());
+//			logger.info(gffDetailGene.getNameSingle());
 			reconstructIso(generateNewIso, gffDetailGene);
 			gffDetailGene.removeDupliIso();
 			
@@ -648,18 +648,17 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			for (ExonSplicingTest exonSplicingTest : lsExonTest) {
 				//TODO
 				if (exonSplicingTest.getExonCluster().getParentGene().getName().contains(stopGeneName)) {
-					logger.error("");
+					logger.debug("");
 				}
 				exonSplicingTest.addMapCondition2MapReads(condition, group, mapReads);
 			}
 			if (num % 100 == 0) {
-				logger.error(num);
+				logger.info("do " + num + " events");
 				if (runGetInfo != null) {
 					GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
 					guiAnnoInfo.setInfo("reading " + condition + " exp gene num" + num);
 					runGetInfo.setRunningInfo(guiAnnoInfo);
 				}
-				logger.error(dateTime.getElapseTime());
 			}
 			num ++;
 		}
@@ -669,7 +668,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		for (List<ExonSplicingTest> lstest : lsSplicingTests) {
 			for (ExonSplicingTest exonSplicingTest : lstest) {
 				if (exonSplicingTest.getExonCluster().getParentGene().getName().contains(stopGeneName)) {
-					logger.error("");
+					logger.debug("");
 				}
 				logger.info(exonSplicingTest.getExonCluster().getParentGene().getName());
 				exonSplicingTest.setSpliceType2Value();
@@ -733,7 +732,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	private void doTest_And_StatisticSplicingEvent(ArrayList<ExonSplicingTest> lsExonSplicingTest) {
 		for (ExonSplicingTest exonSplicingTest : lsExonSplicingTest) {
 			if (exonSplicingTest.getExonCluster().getParentGene().getName().contains(stopGeneName)) {
-				logger.error("");
+				logger.debug("");
 			}
 			exonSplicingTest.setCompareCondition(condition1, condition2);
 		}
@@ -782,7 +781,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		for (ExonSplicingTest chisqTest : lsResult) {
 			//TODO 设定断点
 //			if (chisqTest.getExonCluster().getParentGene().getName().contains(stopGeneName)) {
-//				logger.error("stop");
+//				logger.debug("stop");
 //			}
 			chisqTest.setGetSeq(seqHash);
 			try {

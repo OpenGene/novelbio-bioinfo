@@ -813,7 +813,7 @@ public class GeneIDabs implements GeneIDInt {
 		}
 		boolean update = false;
 		if (ageneUniID.getDataBaseInfo() == null || ageneUniID.getDataBaseInfo().getDbName().equals("")) {
-			logger.error("升级geneID时没有设置该gene的数据库来源，自动设置为NCBIID");
+			logger.info("升级geneID时没有设置该gene的数据库来源，自动设置为NCBIID");
 			if (ageneUniID.getGeneIDtype() == GeneID.IDTYPE_GENEID) {
 				ageneUniID.setDataBaseInfo(DBAccIDSource.NCBI.toString());
 			} else {
