@@ -6,6 +6,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -13,13 +15,21 @@ import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class CopyFile {
+	private static final Logger logger = Logger.getLogger(CopyFile.class);
+	
 	List<String> lsFileNeedToCopy = new ArrayList<String>();
 	Set<String> setFileAlreadyCopied = new LinkedHashSet<String>();
 	TxtReadandWrite txtWriteCopiedFile;
 	/** 超过该时间修改的文件就不移动，-1表示全部移动 */
 	long time = -1;
-	
+	TxtReadandWrite txtWriteCannotCopy;
 	public static void main(String[] args) {
+		String[] ss = new String[]{"/media/hdfs/nbCloud/public/nbcplatform/copy/needCopy1.txt", "2014-11-11"};
+		main2(ss);
+	}
+	
+	
+	public static void main2(String[] args) {
 		String inputFile = args[0];
 		String date = null;
 		if (args.length > 1 && args[1] != null) {
@@ -30,6 +40,7 @@ public class CopyFile {
 		CopyFile copyFile = new CopyFile();
 		copyFile.readFileNeedToCopy(inputFile);
 		copyFile.readFileAlreadyCopied(fileCopied);
+		copyFile.setCannotCopy(FileOperate.changeFileSuffix(inputFile, "_cannotCopy", null));
 		copyFile.setTimeCutoff(date, "yyyy-MM-dd");
 		copyFile.copyFile();
 		
@@ -62,6 +73,11 @@ public class CopyFile {
 		txtWriteCopiedFile.flush();
 	}
 	
+	/** 将无法拷贝的文件写入该文本中 */
+	public void setCannotCopy(String fileName) {
+		txtWriteCannotCopy = new TxtReadandWrite(fileName, true);
+	}
+	
 	public void setTimeCutoff(String date, String pattern) {
 		if (StringOperate.isRealNull(date)) {
 			return;
@@ -75,6 +91,7 @@ public class CopyFile {
 			copyFile(file);
 		}
 		txtWriteCopiedFile.close();
+		txtWriteCannotCopy.close();
 	}
 	
 	private void copyFile(File file) {
@@ -82,6 +99,7 @@ public class CopyFile {
 		if (setFileAlreadyCopied.contains(fileName)) {
 			return;
 		}
+		logger.info("copy filePath:" + fileName);
 		if (FileOperate.isFileDirectory(file)) {
 			List<File> lsSubFile = FileOperate.getFoldFileLs(file);
 			for (File fileSub : lsSubFile) {
@@ -92,11 +110,17 @@ public class CopyFile {
 				return;
 			}
 			String fileNew = fileName.replace(FileHadoop.getHdfsSymbol(), "/media/nbfs");
+			if (fileName.endsWith("Zone.Identifier")) {
+				return;
+			}
 			FileOperate.createFolders(FileOperate.getPathName(fileNew));
 			boolean isSucess = FileOperate.copyFile(fileName, fileNew, true);
 			if (isSucess) {
 				txtWriteCopiedFile.writefileln(fileName);
 				txtWriteCopiedFile.flush();
+			} else {
+				txtWriteCannotCopy.writefileln("cannot copy: " + fileName);
+				txtWriteCannotCopy.flush();
 			}
 		}
 	}

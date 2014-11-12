@@ -65,7 +65,7 @@ public class ManageGffDetailGene {
 			}
 		}
 		
-		for (GffDetailGene gffDetailGene : gffHashGene.getGffDetailAll()) {
+		for (GffDetailGene gffDetailGene : gffHashGene.getLsGffDetailGenes()) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 				gffGeneIsoInfo.setGffFileId(gffFile.getId());
 				repoGffIso.save(gffGeneIsoInfo);

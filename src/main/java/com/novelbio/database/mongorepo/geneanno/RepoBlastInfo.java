@@ -18,7 +18,10 @@ public interface RepoBlastInfo extends PagingAndSortingRepository<BlastInfo, Str
 	List<BlastInfo> findByQueryIDAndSubTaxID(String queryID, int queryTax, int subjectTax);
 	
 	@Query(value="{'queryTax' : ?0, 'subjectTax' : ?1}")
-	Iterable<BlastInfo> findByQueryTaxAndSubTaxID(int queryTax, int subjectTax);
+	List<BlastInfo> findByQueryTaxAndSubTaxID(int queryTax, int subjectTax);
+	
+	@Query(value="{'subjectTax' : ?0}")
+	List<BlastInfo> findBySubTaxID(int subjectTax);
 	
 	@Query(value="{ 'queryID' : ?0, 'queryTax' : ?1}")
 	List<BlastInfo> findByQueryID(String queryID, int queryTax);
@@ -34,4 +37,6 @@ public interface RepoBlastInfo extends PagingAndSortingRepository<BlastInfo, Str
 	
 	@Query(value="{ 'queryID' : ?0, 'queryTax' : ?1, 'subjectID' : ?2, 'subjectTax' : ?3}")
 	void findAndRemove(String queryID, int queryTax, String subjectID, int subjectTax);
+	
+	List<BlastInfo> findAll();
 }

@@ -72,6 +72,13 @@ public class ManageBlastInfo {
 	public List<BlastInfo> queryBlastInfoLsByBlastFileId(String blastFileId) {
 		return repoBlastInfo.findByBlastFileId(blastFileId);
 	}
+	
+	public List<BlastInfo> findByQueryTaxAndSubTaxID(int queryTax, int subjectTax) {
+		return repoBlastInfo.findByQueryTaxAndSubTaxID(queryTax, subjectTax);
+	}
+	public List<BlastInfo> findBySubTaxID(int subjectTax) {
+		return repoBlastInfo.findBySubTaxID(subjectTax);
+	}
 	/**
 	 * 查找符合条件的List BlastInfo，已经去重复了
 	 * @param queryID 待查找ID，一般是genUniID
@@ -188,6 +195,7 @@ public class ManageBlastInfo {
 		mongoTemplate.remove(new Query(Criteria.where("blastFileId").is(blastFileInfo.getId())), BlastInfo.class);
 		mongoTemplate.remove(blastFileInfo);
 	}
+	
 	/** 删除某个blastFile以及与之相关的blast信息 */
 	public void removeBlastFile(String blastFileInfoID) {
 		if (blastFileInfoID == null) return;

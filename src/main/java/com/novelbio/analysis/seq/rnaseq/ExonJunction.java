@@ -59,12 +59,12 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	public static long test() {
 		//TODO
 		List<Align> lsAligns = new ArrayList<>();
-		lsAligns.add(new Align("chr2l", 9974811-500000, 9974891 + 500000));
+		lsAligns.add(new Align("chr7", 42621171, 44157497));
 		DateUtil dateUtil = new DateUtil();
 		dateUtil.setStartTime();
 		System.out.println("start");
-		Species species = new Species(7227);
-		species.setVersion("dmel_r6_01");
+		Species species = new Species(9606);
+		species.setVersion("hg19_GRCh37");
 		GffChrAbs gffChrAbs = new GffChrAbs(species);
 		ExonJunction exonJunction = new ExonJunction();
 //		exonJunction.setGffHashGene(new GffHashGene(GffType.GTF, "/home/zong0jie/Test/rnaseq/paper/chicken/raw_ensembl_genes/chicken_ensemble_KO-WT-merged.gtf"));
@@ -72,12 +72,12 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		exonJunction.setgenerateNewIso(true);
 		exonJunction.setLsReadRegion(lsAligns);
 		exonJunction.setOneGeneOneSpliceEvent(false);
-		String parentPath = "/media/hdfs/nbCloud/public/AllProject/project_53d846e3e4b0f96fc62c53dd/task_53f5bf93e4b0de9535e844aa/RNASeqMap_result/";
-		exonJunction.addBamSorted("WT", parentPath + "C1_mapsplice_sorted.bam");
-		exonJunction.addBamSorted("KO", parentPath + "C3_mapsplice_sorted.bam");
-		exonJunction.setCompareGroups("KO", "WT");
+		String parentPath = "/media/winE/asdTest/";
+		exonJunction.addBamSorted("A3", parentPath + "A3_mapsplice_sorted.bam");
+		exonJunction.addBamSorted("A0", parentPath + "A0_mapsplice_sorted.bam");
+		exonJunction.setCompareGroups("A3", "A0");
 //		exonJunction.setStrandSpecific(StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND);
-		exonJunction.setResultFile("/media/winE/NBC/testDrosophylia_no_consider.txt");
+		exonJunction.setResultFile(parentPath + "result");
 
 		exonJunction.run();
 		exonJunction = null;
@@ -238,8 +238,20 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	 * 读取区域，调试用。设定之后就只会读取这个区域的reads
 	 */
 	List<Align> lsReadReagion;
-
-
+	
+	/** junction的pvalue所占的比重
+	 * 小于0 或者大于1 表示动态比重
+	 */
+	double pvalueJunctionProp = 0.2;
+	
+	/**
+	 * pvalue的计算是合并exon表达pvalue和junction pvalue 
+	 * junction的pvalue所占的比重
+	 * 小于0 或者大于1 表示动态比重，也就是从exon的长度上推断pvalue
+	 */
+	public void setPvalueJunctionProp(double pvalueJunctionProp) {
+		this.pvalueJunctionProp = pvalueJunctionProp;
+	}
 	/**
 	 * 表示差异可变剪接的事件的pvalue阈值，仅用于统计差异可变剪接事件的数量，不用于可变剪接的筛选
 	 * @param pvalue
@@ -468,6 +480,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				if (mapReads != null) {
 					samFileReading.addAlignmentRecorder(mapReads);
 				}
+				samFileReading.setUniqueMapping(true);
 				samFileReading.run();
 				Map<String, double[]> mapGroup2Num = mapCond_group2ReadsNum.get(condition);
 				if (mapGroup2Num == null) {
@@ -561,6 +574,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				}
 
 				ExonSplicingTest exonSplicingTest = new ExonSplicingTest(exonCluster);
+				exonSplicingTest.setPvalueJunctionProp(pvalueJunctionProp);
 				exonSplicingTest.setCombine(isCombine);
 				exonSplicingTest.setMapCond_Group2ReadsNum(mapCond_group2ReadsNum);
 				//获得junction信息

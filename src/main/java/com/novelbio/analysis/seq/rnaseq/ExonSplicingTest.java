@@ -67,6 +67,11 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	
 	SeqHash seqHash;
 	
+	/** junction的pvalue所占的比重
+	 * 小于0 或者大于1 表示动态比重
+	 */
+	double pvalueJunctionProp = -1;
+	
 	Map<String, Map<String, double[]>> mapCond_Group2ReadsNum;
 	Map<String, Map<String, double[]>> mapCond_Group2JunNum;
 	
@@ -84,6 +89,14 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	}
 	public void setGetSeq(SeqHash seqHash) {
 		this.seqHash = seqHash;
+	}
+	/**
+	 * pvalue的计算是合并exon表达pvalue和junction pvalue 
+	 * junction的pvalue所占的比重
+	 * 小于0 或者大于1 表示动态比重，也就是从exon的长度上推断pvalue
+	 */
+	public void setPvalueJunctionProp(double pvalueJunctionProp) {
+		this.pvalueJunctionProp = pvalueJunctionProp;
 	}
 	/** 必须设定，总共的condition数 */
 	public void setSetCondition(Set<String> setCondition) {
@@ -494,8 +507,12 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 //			double pvalueLog = Math.log10(pvalueExp) * expPro +  Math.log10(pvalueCounts) * (1 - expPro);
 //			pvalue = Math.pow(10, pvalueLog);
 			
-			pvalue = pvalueExp * expPro +  pvalueCounts * (1 - expPro);
-			
+			if (pvalueJunctionProp >= 0 && pvalueJunctionProp <= 1) {
+				pvalue = pvalueExp * (1-pvalueJunctionProp) + pvalueCounts * pvalueJunctionProp;
+			} else {
+				pvalue = pvalueExp * expPro +  pvalueCounts * (1 - expPro);
+			}
+						
 			if (pvalue > 1) {
 				pvalue = 1.0;
 			}

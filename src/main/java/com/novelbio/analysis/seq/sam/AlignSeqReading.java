@@ -37,6 +37,7 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 	double readByte;
 	int lenMin = -1;
 	int lenMax = -1;
+	boolean isUniqueMapping = false;
 	
 	public AlignSeqReading() {}
 	
@@ -44,6 +45,11 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 		lsAlignSeqs.add(alignSeq);
 		readLines = 0;
 		readByte = 0;
+	}
+	
+	/** 是否只考虑uniqueMapping */
+	public void setUniqueMapping(boolean isUniqueMapping) {
+		this.isUniqueMapping = isUniqueMapping;
 	}
 	
 	public void setLenMin(int lenMin) {
@@ -142,6 +148,9 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 					continue;
 				}
 				if (lenMax > 0 && seqLen > lenMax) {
+					continue;
+				}
+				if (isUniqueMapping && !samRecord.isUniqueMapping()) {
 					continue;
 				}
 				addOneSeq(samRecord, alignSeqFile);

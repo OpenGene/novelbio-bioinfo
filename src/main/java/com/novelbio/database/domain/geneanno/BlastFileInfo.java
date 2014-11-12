@@ -213,8 +213,7 @@ public class BlastFileInfo {
 	 */
 	public boolean importAndSave() throws BlastFileException, IOException {
 		BlastUp2DB blastUp2DB = new BlastUp2DB();
-		blastUp2DB.setBlastFileInfo(this, GeneID.IDTYPE_ACCID,
-				GeneID.IDTYPE_ACCID);
+		blastUp2DB.setBlastFileInfo(this, GeneID.IDTYPE_ACCID, GeneID.IDTYPE_ACCID);
 		blastUp2DB.updateFile();
 		return true;
 	}
