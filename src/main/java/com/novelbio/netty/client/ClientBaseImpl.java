@@ -8,9 +8,9 @@ import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
+import org.springframework.util.StopWatch.TaskInfo;
 
 import com.novelbio.netty.task.TaskPipelineFactory;
-import com.novelbio.web.model.task.TaskInfo;
 
 /**
  * 客户端的基本实现类

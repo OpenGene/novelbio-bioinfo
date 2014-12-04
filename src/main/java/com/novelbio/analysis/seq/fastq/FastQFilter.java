@@ -28,6 +28,7 @@ public class FastQFilter {
 		
 	/**
 	 * 设定全局过滤指标
+	 * 类似 FastQ.FASTQ_QUALITY_CHANGE_TO_BEST
 	 * @param QUALITY
 	 */
 	public void setQualityFilter(String QUALITY) {

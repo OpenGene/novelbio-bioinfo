@@ -7,9 +7,7 @@ import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
-
-import com.novelbio.netty.task.TaskFactory;
-import com.novelbio.web.model.task.TaskInfo;
+import org.springframework.util.StopWatch.TaskInfo;
 
 /**
  * slaver端 应用服务端响应请求的处理类
@@ -26,10 +24,11 @@ public class ServerHandlerForAPP extends SimpleChannelHandler {
 	 */
 	@Override
 	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
+		
 		taskInfo = (TaskInfo)e.getMessage();
-		logger.info("APP服务器接收到任务: " + taskInfo.getTaskId() );
+//		logger.info("APP服务器接收到任务: " + taskInfo.getTaskId() );
 		//TODO 启动一个线程来执行任务
-		TaskFactory.createTaskThread(taskInfo);
+//		TaskFactory.createTaskThread(taskInfo);
 		e.getChannel().close();
 	}
 	
@@ -46,9 +45,9 @@ public class ServerHandlerForAPP extends SimpleChannelHandler {
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) {
 		logger.error(e.getCause());
-		if(taskInfo != null && taskInfo.getProgress() != 100){
-			taskInfo.setProgress(101);
-			TaskFactory.feedbackTask(taskInfo);
-		}
+//		if(taskInfo != null && taskInfo.getProgress() != 100){
+//			taskInfo.setProgress(101);
+//			TaskFactory.feedbackTask(taskInfo);
+//		}
 	}
 }

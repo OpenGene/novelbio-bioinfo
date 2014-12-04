@@ -149,7 +149,12 @@ public class TaxInfo implements Cloneable {
 	}
 	public boolean isHaveMiRNArecalculate() {
 		if (isHaveMiRNA == null || !isHaveMiRNA) {
-			isHaveMiRNA = ListMiRNAdat.isContainMiRNA(getLatinName_2Word(), PathDetailNBC.getMiRNADat());
+			try {
+				isHaveMiRNA = ListMiRNAdat.isContainMiRNA(getLatinName_2Word(), PathDetailNBC.getMiRNADat());
+			} catch (Exception e) {
+				isHaveMiRNA = ListMiRNAdat.isContainMiRNA(getLatinName_2Word(), PathDetailNBC.getMiRNADat());
+			}
+			
 			save();
 		}
 		return isHaveMiRNA;

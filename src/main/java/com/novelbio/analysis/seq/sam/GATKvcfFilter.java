@@ -1,7 +1,6 @@
 package com.novelbio.analysis.seq.sam;
 
 import org.apache.log4j.Logger;
-import org.broadinstitute.sting.gatk.CommandLineGATK;
 
 import com.novelbio.base.cmd.CmdOperate;
 
@@ -50,7 +49,7 @@ public class GATKvcfFilter {
 					getFilterExpression(),
 					"--missingValuesInExpressionsShouldEvaluateAsFailing", "--variant", inVcfFile, "--logging_level", "ERROR", "-o",
 					outFilteredVcvFile};
-			CommandLineGATK.main(params);
+//			CommandLineGATK.main(params);
 			return true;
 		} catch (Exception e) {
 			logger.error("callingForRecalibrate error!!!");

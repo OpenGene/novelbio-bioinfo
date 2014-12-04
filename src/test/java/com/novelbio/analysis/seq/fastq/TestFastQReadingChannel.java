@@ -44,7 +44,7 @@ public class TestFastQReadingChannel extends TestCase {
 //		fastQReadingChannel.setFastQC(fastQCbefore[0], fastQCbefore[1]);
 		fastQReadingChannel.setOutputResult(true);
 		FastQFilter fastQfilterRecord = new FastQFilter();
-		fastQfilterRecord.setQualityFilter(FastQ.QUALITY_LOW);
+		fastQfilterRecord.setQualityFilter(FastQ.FASTQ_QUALITY_CHANGE_TO_BEST);
 		fastQReadingChannel.setFilter(fastQfilterRecord, lsFastQs.get(0)[0].getOffset());
 		// QC after Filter
 		fastQReadingChannel.setFastQWrite(fastQWrite1, fastQWrite2);

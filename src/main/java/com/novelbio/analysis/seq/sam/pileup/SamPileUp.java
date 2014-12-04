@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.aspectj.apache.bcel.generic.RET;
+
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.SamFile;
@@ -59,37 +61,39 @@ public class SamPileUp {
 	 * @throws IOException
 	 */
 	private Iterable<Integer> readPerlines(final List<Alignment> lsAlignments) throws Exception {
-		return new Iterable<Integer>() {
-			
-			public Iterator<Integer> iterator() {
-				return new Iterator<Integer>() {
-					public boolean hasNext() {
-						return line != null;
-					}
-					public Integer next() {
-						String retval = line;
-						line = getLine();
-						return retval;
-					}
-					public void remove() {
-						throw new UnsupportedOperationException();
-					}
-					Integer getLine() {
-						String line = null;
-						try {
-							line = bufread.readLine();
-						} catch (IOException ioEx) {
-							line = null;
-						}
-						if (line == null) {
-							close();
-						}
-						return line;
-					}
-					Integer line = getLine();
-				};
-			}
-		};
+//		return new Iterable<Integer>() {
+//			
+//			public Iterator<Integer> iterator() {
+//				return new Iterator<Integer>() {
+//					public boolean hasNext() {
+//						return line != null;
+//					}
+//					public Integer next() {
+//						String retval = line;
+//						line = getLine();
+//						return retval;
+//					}
+//					public void remove() {
+//						throw new UnsupportedOperationException();
+//					}
+//					Integer getLine() {
+//						String line = null;
+//						try {
+//							line = bufread.readLine();
+//						} catch (IOException ioEx) {
+//							line = null;
+//						}
+//						if (line == null) {
+//							close();
+//						}
+//						return line;
+//					}
+//					Integer line = getLine();
+//				};
+//			}
+//		};
+		
+		return null;
 	}
 	
 
@@ -110,51 +114,53 @@ class ItCoverage implements Iterable<Integer> {
 	
 	@Override
 	public Iterator<Integer> iterator() {
-		return new Iterator<Integer>() {
-			Integer coverage = getLine();
-			
-			public boolean hasNext() {
-				return !isFinished;
-			}
-			
-			public Integer next() {
-				String retval = line;
-				line = getLine();
-				return retval;
-			}
-			
-			public void remove() {
-				throw new UnsupportedOperationException();
-			}
-			
-			Integer getLine() {
-				SamRecord samRecord = queueSamRecord.peek();
-				if (!samRecord.getRefID().equals(thisChrID)) {
-					lsCalRegionThis = mapChrID2LsAlignment.get(samRecord.getRefID().toLowerCase());
-				}
-				queueSamRecord.
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				String line = null;
-				try {
-					line = bufread.readLine();
-				} catch (IOException ioEx) {
-					line = null;
-				}
-				if (line == null) {
-					close();
-				}
-				return line;
-			}
-	
-		};
+//		return new Iterator<Integer>() {
+//			Integer coverage = getLine();
+//			
+//			public boolean hasNext() {
+//				return !isFinished;
+//			}
+//			
+//			public Integer next() {
+//				String retval = line;
+//				line = getLine();
+//				return retval;
+//			}
+//			
+//			public void remove() {
+//				throw new UnsupportedOperationException();
+//			}
+//			
+//			Integer getLine() {
+//				SamRecord samRecord = queueSamRecord.peek();
+//				if (!samRecord.getRefID().equals(thisChrID)) {
+//					lsCalRegionThis = mapChrID2LsAlignment.get(samRecord.getRefID().toLowerCase());
+//				}
+//				queueSamRecord.
+//				
+//				
+//				
+//				
+//				
+//				
+//				
+//				
+//				
+//				
+//				String line = null;
+//				try {
+//					line = bufread.readLine();
+//				} catch (IOException ioEx) {
+//					line = null;
+//				}
+//				if (line == null) {
+//					close();
+//				}
+//				return line;
+//			}
+//	
+		
+//		};
+		return null;
 	}
 }

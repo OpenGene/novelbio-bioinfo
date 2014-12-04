@@ -80,7 +80,8 @@ public class TestMirPipelineAfterPredict {
 	/** 已经预测好了算下表达就行了 */
 	private void runPredictAlready(Map<String, AlignSeq> mapBedFile2Prefix, GeneExpTable expMirPre, GeneExpTable expMirMature) {
 		ctrlMiRNApredict.setMapPrefix2GenomeSamFile(mapBedFile2Prefix);
-		ctrlMiRNApredict.setOutPath(outPath);
+		//TODO 填写正确
+//		ctrlMiRNApredict.setOutPath(outPath);
 		ctrlMiRNApredict.setLsSpeciesBlastTo(lsSpeciesBlastTo);
 		if (mapMirna) {
 			ctrlMiRNApredict.setExpMir(expMirPre, expMirMature);
@@ -100,7 +101,8 @@ public class TestMirPipelineAfterPredict {
 		}
 		mirSpeciesPipline.setExpMir(ctrlMiRNApredict.getExpMirPre(), ctrlMiRNApredict.getExpMirMature());
 		mirSpeciesPipline.setLsSpecies(lsSpeciesBlastTo); 
-		mirSpeciesPipline.setOutPathTmp(outPath);
+		//TODO 填写正确
+//		mirSpeciesPipline.setOutPathTmp(outPath);
 		mirSpeciesPipline.setThreadNum(4);
 		mirSpeciesPipline.mappingPipeline(PathDetailNBC.getMiRNADat(), samMapMiRNARate);
 		mirSpeciesPipline.writeToFile();

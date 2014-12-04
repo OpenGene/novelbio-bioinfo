@@ -17,7 +17,7 @@ import com.novelbio.database.service.servgeneanno.ManageDBInfo;
 import com.novelbio.database.service.servgeneanno.ManageNCBIUniID;
 
 public class TestGeneID extends TestCase {
-	ManageNCBIUniID manageNCBIUniID = new ManageNCBIUniID();
+	ManageNCBIUniID manageNCBIUniID = ManageNCBIUniID.getInstance();
 	int taxID = 123456;
 	@Override
 	protected void setUp() throws Exception {

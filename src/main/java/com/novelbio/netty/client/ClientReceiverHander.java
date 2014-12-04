@@ -1,6 +1,7 @@
 package com.novelbio.netty.client;
 
 import java.net.InetSocketAddress;
+
 import org.apache.log4j.Logger;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -8,8 +9,7 @@ import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
-
-import com.novelbio.web.model.task.TaskInfo;
+import org.springframework.util.StopWatch.TaskInfo;
 
 
 
@@ -29,10 +29,10 @@ public class ClientReceiverHander extends SimpleChannelHandler {
 			throws Exception {
 		taskInfo = (TaskInfo) e.getMessage();
 		// TODO 干什么乱七八糟的事，比如推送任务状态给用户或者把任务状态写进数据库
-		logger.info("任务 " + taskInfo.getTaskId() + " 状态:" + taskInfo.getProgress());
-		if (taskInfo.getProgress() == 100 || taskInfo.getProgress() == 101) {
-			e.getChannel().close();
-		}
+//		logger.info("任务 " + taskInfo.getTaskId() + " 状态:" + taskInfo.getProgress());
+//		if (taskInfo.getProgress() == 100 || taskInfo.getProgress() == 101) {
+//			e.getChannel().close();
+//		}
 	}
 
 	/**
@@ -61,12 +61,12 @@ public class ClientReceiverHander extends SimpleChannelHandler {
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) {
 		logger.error(e.getCause());
-		if(taskInfo.getProgress() != 100){
-			taskInfo.setProgress(101);
-			logger.info("任务 " + taskInfo.getTaskId() + " 状态:" + taskInfo.getProgress());
-		}
-		if (e.getChannel() != null) {
-			e.getChannel().close().addListener(ChannelFutureListener.CLOSE);
-		}
+//		if(taskInfo.getProgress() != 100){
+//			taskInfo.setProgress(101);
+//			logger.info("任务 " + taskInfo.getTaskId() + " 状态:" + taskInfo.getProgress());
+//		}
+//		if (e.getChannel() != null) {
+//			e.getChannel().close().addListener(ChannelFutureListener.CLOSE);
+//		}
 	}
 }

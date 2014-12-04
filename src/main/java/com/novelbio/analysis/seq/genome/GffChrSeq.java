@@ -506,14 +506,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		}
 		GffGeneIsoInfo gffGeneIsoInfoSearch = GffGeneIsoInfo.createGffGeneIso("", "", gffGeneIsoInfo.getParentGffDetailGene(), GeneType.mRNA, gffGeneIsoInfo.isCis5to3());
 		gffGeneIsoInfoSearch.addAll(lsExonInfos);
-		SeqFasta seqFastaResult = null;
-		try {
-			seqFastaResult = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfoSearch, getIntron);
-		} catch (ExceptionSeqFasta e) {
-			String msg = gffGeneIsoInfo.getName() +  " getSeq error, detail is: " + e.getMessage();
-			throw new ExceptionSeqFasta(msg);
-		}
-	
+		SeqFasta seqFastaResult = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfoSearch, getIntron);
 		if (seqFastaResult == null) {
 			return null;
 		}
@@ -569,7 +562,13 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 					continue;
 				}
 				setRemoveRedundent.add(gffGeneIsoInfo.getName());
-				SeqFasta seq = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo, false);
+				SeqFasta seq = null;
+				try {
+					seq = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo, false);
+				} catch (Exception e) {
+					logger.error(e);
+				}
+				
 				if (seq == null) {
 					continue;
 				}

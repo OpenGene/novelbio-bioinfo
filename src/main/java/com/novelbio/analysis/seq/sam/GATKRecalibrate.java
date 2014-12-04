@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.broadinstitute.sting.gatk.CommandLineGATK;
 
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -89,11 +88,11 @@ public class GATKRecalibrate {
 		try {
 			// 生成校验文件
 			String[] params1 =  getParamBaseRecalibrator();
-			CommandLineGATK.main(params1);
+//			CommandLineGATK.main(params1);
 
 			// 进行校正，生成校正后的文件 *.recal.bam
 			String[] params2 = { "-R", referenceFile, "-T", "PrintReads", "-o", outBamFile, "-I", inBamFile, "-BQSR", grpPath };
-			CommandLineGATK.main(params2);
+//			CommandLineGATK.main(params2);
 			return true;
 		} catch (Exception e) {
 			logger.error("recalibrate 重新校正 error!!!");

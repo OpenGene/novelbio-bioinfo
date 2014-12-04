@@ -48,7 +48,7 @@ public class TestGene2Value extends TestCase {
 		lsGet.add(2);
 		lsGet.add(-1);
 		gene2Value.setGetNum(lsGet, true);
-		List<ExonInfo> lsExonInfo = gene2Value.getSelectLsExonInfo(gffGeneIsoInfoCis);
+		List<ExonInfo> lsExonInfo = gene2Value.getSelectLsExonInfo(gffGeneIsoInfoCis.getLsElement());
 		
 		assertEquals(3, lsExonInfo.size());
 		assertEquals(gffGeneIsoInfoCis.get(0), lsExonInfo.get(0));
@@ -63,7 +63,7 @@ public class TestGene2Value extends TestCase {
 		lsGet.add(-2);
 		lsGet.add(-1);
 		gene2Value.setGetNum(lsGet, true);
-		List<ExonInfo> lsExonInfo = gene2Value.getSelectLsExonInfo(gffGeneIsoInfoCis);
+		List<ExonInfo> lsExonInfo = gene2Value.getSelectLsExonInfo(gffGeneIsoInfoCis.getLsElement());
 		
 		assertEquals(4, lsExonInfo.size());
 		assertEquals(gffGeneIsoInfoCis.get(0), lsExonInfo.get(0));
@@ -77,7 +77,7 @@ public class TestGene2Value extends TestCase {
 		lsGet.add(2);
 		lsGet.add(6);
 		gene2Value.setGetNum(lsGet, true);
-		List<ExonInfo> lsExonInfo = gene2Value.getSelectLsExonInfo(gffGeneIsoInfoCis);
+		List<ExonInfo> lsExonInfo = gene2Value.getSelectLsExonInfo(gffGeneIsoInfoCis.getLsElement());
 		
 		assertEquals(3, lsExonInfo.size());
 		assertEquals(gffGeneIsoInfoCis.get(0), lsExonInfo.get(0));
@@ -92,7 +92,7 @@ public class TestGene2Value extends TestCase {
 		lsGet.add(-2);
 		lsGet.add(-1);
 		gene2Value.setGetNum(lsGet, true);
-		List<ExonInfo> lsExonInfo = gene2Value.getSelectLsExonInfo(gffGeneIsoInfoCis);
+		List<ExonInfo> lsExonInfo = gene2Value.getSelectLsExonInfo(gffGeneIsoInfoCis.getLsElement());
 		
 		assertEquals(4, lsExonInfo.size());
 		assertEquals(gffGeneIsoInfoCis.get(0), lsExonInfo.get(0));
@@ -107,7 +107,7 @@ public class TestGene2Value extends TestCase {
 		lsGet.add(2);
 		lsGet.add(-1);
 		gene2Value.setGetNum(lsGet, false);
-		List<ExonInfo> lsExonInfo = gene2Value.getSelectLsExonInfo(gffGeneIsoInfoCis);
+		List<ExonInfo> lsExonInfo = gene2Value.getSelectLsExonInfo(gffGeneIsoInfoCis.getLsElement());
 		
 		assertEquals(4, lsExonInfo.size());
 		assertEquals(gffGeneIsoInfoCis.get(2), lsExonInfo.get(0));
@@ -123,7 +123,7 @@ public class TestGene2Value extends TestCase {
 		lsGet.add(-2);
 		lsGet.add(-1);
 		gene2Value.setGetNum(lsGet, false);
-		List<ExonInfo> lsExonInfo = gene2Value.getSelectLsExonInfo(gffGeneIsoInfoCis);
+		List<ExonInfo> lsExonInfo = gene2Value.getSelectLsExonInfo(gffGeneIsoInfoCis.getLsElement());
 		
 		assertEquals(3, lsExonInfo.size());
 		assertEquals(gffGeneIsoInfoCis.get(2), lsExonInfo.get(0));
@@ -139,7 +139,7 @@ public class TestGene2Value extends TestCase {
 		lsGet.add(-2);
 		lsGet.add(-1);
 		gene2Value.setGetNum(lsGet, false);
-		List<ExonInfo> lsExonInfo = gene2Value.getSelectLsExonInfo(gffGeneIsoInfoCis);
+		List<ExonInfo> lsExonInfo = gene2Value.getSelectLsExonInfo(gffGeneIsoInfoCis.getLsElement());
 		
 		assertEquals(3, lsExonInfo.size());
 		assertEquals(gffGeneIsoInfoCis.get(2), lsExonInfo.get(0));

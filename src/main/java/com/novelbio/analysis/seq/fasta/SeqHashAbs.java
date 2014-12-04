@@ -199,11 +199,14 @@ public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 	 */
 	public SeqFasta getSeq(String chrID, long startlocation, long endlocation) {
 		chrID = chrID.toLowerCase();
-		SeqFasta seqFasta = getSeqInfo(chrID, startlocation, endlocation);
-		if (seqFasta == null) {
-			logger.error("提取出错："+chrID + " " + startlocation + "_" + endlocation);
+		SeqFasta seqFasta = null;
+		try {
+			seqFasta = getSeqInfo(chrID, startlocation, endlocation);
+		} catch (Exception e) {
+			logger.error(e);
 			return null;
 		}
+		
 		seqFasta.setDNA(isDNAseq);
 		return seqFasta;
 	}
@@ -273,12 +276,13 @@ public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 		if (cis5to3) {
 			for (int i = 0; i < lsInfo.size(); i++) {
 				ExonInfo exon = lsInfo.get(i);
-				SeqFasta seqfastaTmp =  getSeq(myChrID, exon.getStartAbs(), exon.getEndAbs());
+				SeqFasta seqfastaTmp = getSeq(myChrID, exon.getStartAbs(), exon.getEndAbs());
+				if (seqfastaTmp == null) return null;
 				addSep(result, sep);
 				result.append(seqfastaTmp.toString().toUpperCase());
 				
 				if (getIntron && i < lsInfo.size()-1) {
-					SeqFasta seqfastaTmpIntron =  getSeq(myChrID, exon.getEndAbs()+1, lsInfo.get(i+1).getStartAbs()-1);
+					SeqFasta seqfastaTmpIntron = getSeq(myChrID, exon.getEndAbs()+1, lsInfo.get(i+1).getStartAbs()-1);
 					addSep(result, sep);
 					result.append(seqfastaTmpIntron.toString().toLowerCase());
 				}
@@ -287,10 +291,12 @@ public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 			for (int i = lsInfo.size() - 1; i >= 0; i--) {
 				ExonInfo exon = lsInfo.get(i);
 				SeqFasta seqfastaTmp = getSeq(myChrID, exon.getStartAbs(), exon.getEndAbs());
+				if (seqfastaTmp == null) return null;
+				
 				addSep(result, sep);
 				result.append(seqfastaTmp.toString().toUpperCase());
 				if (getIntron && i > 0) {
-					SeqFasta seqfastaTmpIntron =  getSeq(myChrID, exon.getEndAbs() + 1, lsInfo.get(i-1).getStartAbs() - 1);
+					SeqFasta seqfastaTmpIntron = getSeq(myChrID, exon.getEndAbs() + 1, lsInfo.get(i-1).getStartAbs() - 1);
 					addSep(result, sep);
 					result.append(seqfastaTmpIntron.toString().toLowerCase());
 				}

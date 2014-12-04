@@ -1,7 +1,6 @@
 package com.novelbio.analysis.seq.sam;
 
 import org.apache.log4j.Logger;
-import org.broadinstitute.sting.gatk.CommandLineGATK;
 
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -28,7 +27,7 @@ public class GATKRealign {
 				"-o", "/media/winE/NBC/Project/Project_ZDB_Lab/QXL/Project_ZDB/NewCombine/realignTest/AF18-1_sorted_subNew.bam", 
 				"--consensusDeterminationModel","USE_SW", //表示用'Smith-Waterman'的比对方法来产生最佳名参数有：USE_READS
 				"-I", "/media/winE/NBC/Project/Project_ZDB_Lab/QXL/Project_ZDB/NewCombine/realignTest/AF18-1_sorted_sub.bam", "--unsafe", ALL }; //, "--filter_mismatching_base_and_quals"
-		CommandLineGATK.main(params2);
+//		CommandLineGATK.main(params2);
 	}
 	private static final Logger logger = Logger.getLogger(GATKRealign.class);
 	
@@ -70,11 +69,11 @@ public class GATKRealign {
 			
 //			intervalsPath = "/media/winE/NBC/Project/Project_ZDB_Lab/QXL/Project_ZDB/NewCombine/realignTest/AF18_realign2013-05-23013331150.intervals";
 			String[] params1 = { "-I", inputFilePath, "-R", refFilePath, "-T", "RealignerTargetCreator", "-o", intervalsPath ,"--unsafe", unsafe};
-			CommandLineGATK.main(params1);
+//			CommandLineGATK.main(params1);
 			String[] params2 = { "-R", refFilePath, "-T", "IndelRealigner", "-targetIntervals", intervalsPath, "-o", outputFilePath, 
 					"--consensusDeterminationModel","USE_READS", //表示用'Smith-Waterman'的比对方法来产生最佳名参数有：USE_READS
 					"-I", inputFilePath, "--unsafe", unsafe }; //, "--filter_mismatching_base_and_quals"
-			CommandLineGATK.main(params2);
+//			CommandLineGATK.main(params2);
 			return true;
 		} catch (Exception e) {
 			logger.error("realign 本地重排 error!!!");
