@@ -1,6 +1,7 @@
 package com.novelbio.database.model.modkegg;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.domain.kegg.KGpathway;
@@ -36,12 +37,12 @@ public class KeggInfo implements KeggInfoInter{
 	}
 
 	@Override
-	public ArrayList<KGentry> getKgGentries() {
+	public List<KGentry> getKgGentries() {
 		return keggInfoAbs.getKgGentries();
 	}
 
 	@Override
-	public ArrayList<String> getLsKo() {
+	public List<String> getLsKo() {
 		return keggInfoAbs.getLsKo();
 	}
 

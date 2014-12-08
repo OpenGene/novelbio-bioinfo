@@ -51,7 +51,7 @@ public interface GeneIDInt {
 	 * @param StaxID 如果blast为true，那么设定StaxID
 	 * @return 如果没有就返回null
 	 */
-	public ArrayList<KGentry> getKegEntity(boolean blast) ;
+	public List<KGentry> getKegEntity(boolean blast) ;
 	
 	
 	/**

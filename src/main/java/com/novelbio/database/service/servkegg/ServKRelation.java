@@ -1,38 +1,50 @@
 package com.novelbio.database.service.servkegg;
 
-import java.util.ArrayList;
-
-import javax.inject.Inject;
+import java.util.List;
 
 import com.novelbio.database.domain.kegg.KGrelation;
-import com.novelbio.database.mapper.kegg.MapKRelation;
+import com.novelbio.database.mongorepo.kegg.RepoKRelation;
 import com.novelbio.database.service.SpringFactory;
 
-public class ServKRelation implements MapKRelation{
-	@Inject
-	MapKRelation mapKRelation;
+public class ServKRelation {
+
+	RepoKRelation mapKRelation;
+	
 	public ServKRelation() {
-		// TODO Auto-generated constructor stub
-		mapKRelation = (MapKRelation)SpringFactory.getFactory().getBean("mapKRelation");
+		mapKRelation = (RepoKRelation)SpringFactory.getFactory().getBean("repoKRelation");
 	}
-	@Override
-	public ArrayList<KGrelation> queryLsKGrelations(KGrelation kGrelation) {
-		// TODO Auto-generated method stub
-		return mapKRelation.queryLsKGrelations(kGrelation);
+	
+	public List<KGrelation> findByPathNameAndEntry1Id(String pathName, int entry1Id) {
+		return mapKRelation.findByPathNameAndEntry1Id(pathName, entry1Id);
 	}
-	@Override
-	public KGrelation queryKGrelation(KGrelation kGrelation) {
-		// TODO Auto-generated method stub
-		return mapKRelation.queryKGrelation(kGrelation);
+	
+	public List<KGrelation> findByPathNameAndEntry2Id(String pathName, int entry2Id) {
+		return mapKRelation.findByPathNameAndEntry2Id(pathName, entry2Id);
 	}
-	@Override
-	public void insertKGrelation(KGrelation kGrelation) {
-		// TODO Auto-generated method stub
-		mapKRelation.insertKGrelation(kGrelation);
+	
+	public List<KGrelation> findByPathNameAndEntry1IdAndEntry2Id(String pathName, int entry1Id, int entry2Id) {
+		return mapKRelation.findByPathNameAndEntry1IdAndEntry2Id(pathName, entry1Id, entry2Id);
 	}
-	@Override
-	public void updateKGrelation(KGrelation kGrelation) {
-		// TODO Auto-generated method stub
-		mapKRelation.updateKGrelation(kGrelation);
+
+	public KGrelation findByPathNameAndEntry1IdAndEntry2IdAndType(
+			String pathName, int entry1Id, int entry2Id, String type) {
+		return mapKRelation.findByPathNameAndEntry1IdAndEntry2IdAndType(pathName, entry1Id, entry2Id, type);
 	}
+	
+	public void save(KGrelation kGrelation) {
+		mapKRelation.save(kGrelation);		
+	}
+
+
+	static class ManageHolder {
+		static ServKRelation instance = new ServKRelation();
+	}
+	
+	public static ServKRelation getInstance() {
+		return ManageHolder.instance;
+	}
+
+
+
+	
 }

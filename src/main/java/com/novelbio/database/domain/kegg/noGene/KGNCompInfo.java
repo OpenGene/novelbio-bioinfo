@@ -1,6 +1,17 @@
 package com.novelbio.database.domain.kegg.noGene;
 
+import javax.persistence.Id;
+
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection="kgncompInfo")
+@CompoundIndexes({
+    @CompoundIndex(unique = false, name = "name_path_id_idx", def = "{'name': 1, 'pathName': -1, 'id' : 1}")
+ })
 public class KGNCompInfo {
+	@Id
 	private String kegID;
 	/**
 	 * 设定Compound等的KeggID

@@ -1,60 +1,64 @@
 package com.novelbio.database.domain.kegg;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection="kgidkeg2ko")
+@CompoundIndexes({
+    @CompoundIndex(unique = false, name = "keggID_Ko_idx", def = "{'keggID': 1, 'Ko': -1}")
+ })
 public class KGIDkeg2Ko {
-	/**
-	 * geneID
-	 */
-	private String Ko;
+	/** Mongodb的id */
+	@Id
+	String kgIdinside;
+	/** keggID */
+	private String keggID;
+	/** KoId */
+	@Indexed
+	private String ko;
+	/** taxID */
+	private int taxID;
 	/**
 	 * kegg ontology
 	 */
-	public void setKo(String Ko)
-	{
-		this.Ko=Ko;
+	public void setKo(String Ko) {
+		this.ko = Ko;
 	}
 	/**
 	 * kegg ontology
 	 */
-	public String getKo()
-	{
-		return Ko;
+	public String getKo() {
+		return ko;
 	}
 	
+
 	/**
 	 * keggID
 	 */
-	private String keggID;
-	/**
-	 * keggID
-	 */
-	public void setKeggID(String keggID)
-	{
+	public void setKeggID(String keggID) {
 		this.keggID=keggID;
 	}
 	/**
 	 * keggID
 	 */
-	public String getKeggID()
-	{
+	public String getKeggID() {
 		return keggID;
 	}
 	
-	/**
-	 * taxID
-	 */
-	private int taxID;
+
 	/**
 	 * NCBIID表中的geneID
 	 */
-	public void setTaxID(int taxID)
-	{
+	public void setTaxID(int taxID) {
 		this.taxID=taxID;
 	}
 	/**
 	 * NCBIID表中的geneID
 	 */
-	public int getTaxID()
-	{
+	public int getTaxID() {
 		return taxID;
 	}
 	

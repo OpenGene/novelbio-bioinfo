@@ -73,9 +73,7 @@ public class Scr2Target {
 				for (int j = 0; j < ko.length; j++)
 				{
 					////////////////如果geneBlast到了人类，并且得到了相应的KO，那么尝试获得该KO所对应本物种的KeggID，并用KeggID直接mapping回本基因。如果没有KeggID，则用KO去mapping////////////////////////////////////////////////////////////////
-					KGIDkeg2Ko kgiDkeg2Ko = new KGIDkeg2Ko();
-					kgiDkeg2Ko.setKo(ko[j]); kgiDkeg2Ko.setTaxID(QtaxID);
-					ArrayList<KGIDkeg2Ko> lsKgiDkeg2Kos2 = servKIDKeg2Ko.queryLsKGIDkeg2Ko(kgiDkeg2Ko);
+					List<KGIDkeg2Ko> lsKgiDkeg2Kos2 = servKIDKeg2Ko.findLsByKegIdAndTaxId(ko[j], QtaxID);
 					if (lsKgiDkeg2Kos2 != null && lsKgiDkeg2Kos2.size()>0) 
 					{
 						//虽然一个ko对应多个keggID，但是对于pathway来说，一个ko就对应到一个pathway上，所以一个ko就够了
@@ -89,7 +87,7 @@ public class Scr2Target {
 			{
 				KGentry qkGentry=new KGentry();
 				qkGentry.setEntryName(ko[j]);qkGentry.setTaxID(QtaxID);
-				ArrayList<KGentry> lsKGentryQuery = servKEntry.queryLsKGentries(qkGentry);
+				List<KGentry> lsKGentryQuery = servKEntry.findByNameAndTaxId(ko[j], QtaxID);
  				for (int k = 0; k < lsKGentryQuery.size(); k++)
 				{
  					if (lsKGentryQuery.get(k).getEntryName().equals("hsa:56604")) {
@@ -168,7 +166,7 @@ public class Scr2Target {
 			{
 				KGentry qkGentry=new KGentry();
 				qkGentry.setEntryName(ko[j]);qkGentry.setTaxID(QtaxID);
-				ArrayList<KGentry> lsKGentryQuery = servKEntry.queryLsKGentries(qkGentry);
+				List<KGentry> lsKGentryQuery = servKEntry.findByNameAndTaxId(ko[j], QtaxID);
  				for (int k = 0; k < lsKGentryQuery.size(); k++)
 				{
 					Hashtable<String, KGpathScr2Trg> tmpHashEntryRelation=QKegPath.getHashKGpathRelation(lsKGentryQuery.get(k));

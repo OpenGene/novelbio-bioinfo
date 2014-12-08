@@ -1,38 +1,36 @@
 package com.novelbio.database.service.servkegg;
 
-import java.util.ArrayList;
-
-import javax.inject.Inject;
+import java.util.List;
 
 import com.novelbio.database.domain.kegg.KGpathRelation;
-import com.novelbio.database.mapper.kegg.MapKPathRelation;
+import com.novelbio.database.mongorepo.kegg.RepoKPathRelation;
 import com.novelbio.database.service.SpringFactory;
 
-public class ServKPathRelation implements MapKPathRelation{
-	@Inject
-	MapKPathRelation mapKPathRelation;
+public class ServKPathRelation {
+	RepoKPathRelation mapKPathRelation;
+	
 	public ServKPathRelation() {
-		mapKPathRelation = (MapKPathRelation)SpringFactory.getFactory().getBean("mapKPathRelation");
+		mapKPathRelation = (RepoKPathRelation)SpringFactory.getFactory().getBean("repoKPathRelation");
 	}
-	@Override
-	public ArrayList<KGpathRelation> queryLskGpathRelations(
-			KGpathRelation kGpathRelation) {
-		// TODO Auto-generated method stub
-		return mapKPathRelation.queryLskGpathRelations(kGpathRelation);
+
+	public List<KGpathRelation> findByPathName(String pathName) {
+		return mapKPathRelation.findByPathName(pathName);
 	}
-	@Override
-	public KGpathRelation queryKGpathRelation(KGpathRelation kGpathRelation) {
-		// TODO Auto-generated method stub
-		return mapKPathRelation.queryKGpathRelation(kGpathRelation);
+	
+	public KGpathRelation findByPathNameSrcTrg(String pathName, String src, String trg) {
+		return mapKPathRelation.findByPathNameSrcTrg(pathName, src, trg);
 	}
-	@Override
-	public void insertKGpathRelation(KGpathRelation kGpathRelation) {
-		// TODO Auto-generated method stub
-		mapKPathRelation.insertKGpathRelation(kGpathRelation);
+
+	public void save(KGpathRelation kGpathRelation) {
+		mapKPathRelation.save(kGpathRelation);
 	}
-	@Override
-	public void updateKGpathRelation(KGpathRelation kGpathRelation) {
-		// TODO Auto-generated method stub
-		mapKPathRelation.updateKGpathRelation(kGpathRelation);
+	
+	static class ManageHolder {
+		static ServKPathRelation instance = new ServKPathRelation();
 	}
+	
+	public static ServKPathRelation getInstance() {
+		return ManageHolder.instance;
+	}
+
 }

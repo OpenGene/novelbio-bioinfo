@@ -2,6 +2,7 @@ package com.novelbio.analysis.annotation.pathway.kegg.kGML2DB;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.simpleframework.xml.Serializer;
@@ -55,7 +56,7 @@ public class KGML2DB
 		}
 	}
 	
-	private static void kgml2DB(KGML kgml) 
+	public static void kgml2DB(KGML kgml) 
 	{
 		ServKEntry servKEntry = new ServKEntry();
 		ServKPathRelation servKPathRelation = new ServKPathRelation();
@@ -80,9 +81,12 @@ public class KGML2DB
 			KGentry kGentry=new KGentry();
 			kGentry.setTaxID(taxID);
 			kGentry.setPathName(kgml.getPathName());
-			kGentry.setID(lsEntry.get(i).getID());
+			kGentry.setEntryId(lsEntry.get(i).getID());
 			kGentry.setType(lsEntry.get(i).getType());
 			kGentry.setLinkEntry(lsEntry.get(i).getLinkEntry());
+		
+			
+			
 			//kGentry.setReaction(lsEntry.get(i).getReaction());
 			///////////////////////////////////////////////////////////////////////////////////
 			if (kGentry.getType().equals("group"))
@@ -104,7 +108,7 @@ public class KGML2DB
 						//获得那个子类的entryID
 						Entry entryComp=kgml.getEntry(entryID);
 						//将子类的信息赋值给kgentry
-						kGentry.setID(entryComp.getID());
+						kGentry.setEntryId(entryComp.getID());
 						kGentry.setLinkEntry(entryComp.getLinkEntry());
 						kGentry.setType(entryComp.getType());
 						/////
@@ -138,18 +142,17 @@ public class KGML2DB
 								//因为本循环中kGentry一直没有new，所以前一次的ParentID会继续存在，从而干扰查询，所以要先清零
 								kGentry.setParentID(0);
 								//先用不包含parentID的kgentry查找数据库，没找到就插入，找到就升级，实际也就是将parentID加上去
-								if (servKEntry.queryKGentry(kGentry)!=null) 
-								{
-									
+								KGentry search = servKEntry.findByNamePathAndIdAndReaction(kGentry.getEntryName(),
+										kGentry.getPathName(), kGentry.getEntryId(), kGentry.getReaction());
+								if (search != null) {
 									kGentry.setParentID(lsEntry.get(i).getID());
+									kGentry.setId(search.getId());
 									//这里可能会报错，这是由于前面单个组分已经输入了一遍，所以这个错误没关系可以忽略
-									servKEntry.updateKGentry(kGentry);
-								}
-								else 
-								{
+									servKEntry.save(kGentry);
+								} else {
 									kGentry.setReaction(ss2[k2]);
 									kGentry.setParentID(lsEntry.get(i).getID());
-									servKEntry.insertKGentry(kGentry);
+									servKEntry.save(kGentry);
 								}
 							}
 						}
@@ -167,9 +170,11 @@ public class KGML2DB
 					}
 					for (int k2 = 0; k2 < ss2.length; k2++) {
 						kGentry.setEntryName(ss[j]);kGentry.setReaction(ss2[k2]);
-						if (servKEntry.queryKGentry(kGentry)==null) 
-						{
-							servKEntry.insertKGentry(kGentry);
+						
+						KGentry search = servKEntry.findByNamePathAndIdAndReaction(kGentry.getEntryName(),
+								kGentry.getPathName(), kGentry.getEntryId(), kGentry.getReaction());
+						if (search == null) {
+							servKEntry.save(kGentry);
 						}
 					}
 					/////////////////////////////可能做一个单独的map关系网络会更好
@@ -177,17 +182,19 @@ public class KGML2DB
 					kGpathRelation.setPathName(kgml.getPathName());
 					kGpathRelation.setScrPath(kgml.getPathName());
 					kGpathRelation.setTrgPath(ss[j]);
-					if (servKPathRelation.queryKGpathRelation(kGpathRelation)==null) {
+					KGpathRelation search = servKPathRelation.findByPathNameSrcTrg(kGpathRelation.getPathName(), kGpathRelation.getScrPath(), kGpathRelation.getTrgPath());
+					
+					if (search == null) {
 						kGpathRelation.setType("relate");
-						servKPathRelation.insertKGpathRelation(kGpathRelation);
+						servKPathRelation.save(kGpathRelation);
 					} else {
 						kGpathRelation.setType("relate");
-						servKPathRelation.updateKGpathRelation(kGpathRelation);
+						kGpathRelation.setId(search.getId());
+						servKPathRelation.save(kGpathRelation);
 					}
 				}
 			}
-			else 
-			{
+			else {
 				String[] ss=lsEntry.get(i).getEntryName().trim().split(" +");
 				String[] ss2=lsEntry.get(i).getReaction().trim().split(" +"); 
 				for (int j = 0; j < ss.length; j++) 
@@ -196,10 +203,10 @@ public class KGML2DB
 						continue;
 					}
 					for (int j2 = 0; j2 < ss2.length; j2++) {
+						KGentry search = servKEntry.findByNamePathAndIdAndReaction(ss[j], kGentry.getPathName(), kGentry.getEntryId(), ss2[j2]);
 						kGentry.setEntryName(ss[j]);kGentry.setReaction(ss2[j2]);
-						if (servKEntry.queryLsKGentries(kGentry) == null || servKEntry.queryLsKGentries(kGentry).size() == 0) 
-						{
-							servKEntry.insertKGentry(kGentry);
+						if (search == null) {
+							servKEntry.save(kGentry);
 						}
 					}
 			
@@ -215,13 +222,12 @@ public class KGML2DB
 		kGpathway.setMapNum(kgml.getMapNum());
 		kGpathway.setTitle(kgml.getTitle());
 		kGpathway.setLinkUrl(kgml.getLinkUrl());
-		if (servKPathway.queryKGpathway(kGpathway)==null)
-		{
-			servKPathway.insertKGpathway(kGpathway);
-		} else {
-			servKPathway.updateKGpathway(kGpathway);
-		}
+		KGpathway search = servKPathway.findByPathName(kgml.getPathName());
 		
+		if (search != null) {
+			kGpathway.setPathName(search.getPathName());
+		}
+		servKPathway.save(kGpathway);
 		//////////////////装入reaction和substrate//////////////////////////////////////////////////////////////////
 		ArrayList<Reaction> lsReactions=kgml.getLsrReactions();
 		if (lsReactions!=null) {
@@ -229,7 +235,7 @@ public class KGML2DB
 			{
 				KGreaction kGreaction=new KGreaction();
 				kGreaction.setPathName(kgml.getPathName());
-				kGreaction.setID(lsReactions.get(i).getID());
+				kGreaction.setReactionId(lsReactions.get(i).getID());
 			
 				kGreaction.setType(lsReactions.get(i).getType());
 				if (lsReactions.get(i).getAlt()!=null) {
@@ -238,17 +244,19 @@ public class KGML2DB
 				String[] ss2=lsReactions.get(i).getName().trim().split(" +");
 				for (int j = 0; j < ss2.length; j++) {
 					kGreaction.setName(ss2[j]);
-					if (servKReaction.queryKGreaction(kGreaction)==null)
-					{
-						servKReaction.insertKGreaction(kGreaction);
+					KGreaction searchReac = servKReaction.findByNameAndPathNameAndId(kGreaction.getName(), kGreaction.getPathName(), kGreaction.getReactionId());
+					
+					if (searchReac != null) {
+						kGreaction.setId(searchReac.getId());
 					}
+					servKReaction.save(kGreaction);
 				}
 				ArrayList<Substrate> lsSubstrates=lsReactions.get(i).getLsSubstrate();
 				if (lsSubstrates!=null&&lsSubstrates.size()>0) 
 				{
 					KGsubstrate kGsubstrate=new KGsubstrate();
 					kGsubstrate.setPathName(kgml.getPathName());
-					kGsubstrate.setReactionID(kGreaction.getID());
+					kGsubstrate.setReactionID(kGreaction.getReactionId());
 					for (int j = 0; j < lsSubstrates.size(); j++) {
 						kGsubstrate.setID(lsSubstrates.get(j).getID());
 						kGsubstrate.setName(lsSubstrates.get(j).getName());
@@ -260,7 +268,7 @@ public class KGML2DB
 				{
 					KGsubstrate kGsubstrate=new KGsubstrate();
 					kGsubstrate.setPathName(kgml.getPathName());
-					kGsubstrate.setReactionID(kGreaction.getID());
+					kGsubstrate.setReactionID(kGreaction.getReactionId());
 					for (int j = 0; j < lsProduct.size(); j++) 
 					{
 						kGsubstrate.setID(lsProduct.get(j).getID());
@@ -287,9 +295,9 @@ public class KGML2DB
 					for (int j = 0; j < lsRelations.get(i).getLsSubtype().size(); j++) {
 						kGrelation.setSubtypeName(lsRelations.get(i).getLsSubtype().get(j).getName());
 						kGrelation.setSubtypeValue(lsRelations.get(i).getLsSubtype().get(j).getValue());
-						if (servKRelation.queryKGrelation(kGrelation)==null)
-						{
-							servKRelation.insertKGrelation(kGrelation);
+						KGrelation searchKGR = servKRelation.findByPathNameAndEntry1IdAndEntry2IdAndType(kGrelation.getPathName(), kGrelation.getEntry1ID(), kGrelation.getEntry2ID(), kGrelation.getType());
+						if (searchKGR == null) {
+							servKRelation.save(kGrelation);
 						}
 					}
 				}

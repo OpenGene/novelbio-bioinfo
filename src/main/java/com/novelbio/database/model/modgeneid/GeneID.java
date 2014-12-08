@@ -253,7 +253,7 @@ public class GeneID implements GeneIDInt{
 		return geneID.getKegPath(blast);
 	}
 	@Override
-	public ArrayList<KGentry> getKegEntity(boolean blast) {
+	public List<KGentry> getKegEntity(boolean blast) {
 		return geneID.getKegEntity(blast);
 	}
 	//////////////  GO 方法  ///////////////////////

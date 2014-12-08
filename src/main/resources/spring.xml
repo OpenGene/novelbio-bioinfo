@@ -16,39 +16,44 @@
 -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-     xmlns:aop="http://www.springframework.org/schema/aop"
-     xmlns:tx="http://www.springframework.org/schema/tx"
-     xmlns:jdbc="http://www.springframework.org/schema/jdbc"
-     xmlns:context="http://www.springframework.org/schema/context"
-     xmlns:mongo="http://www.springframework.org/schema/data/mongo"
-     xmlns:util=" http://www.springframework.org/schema/util"
-     xsi:schemaLocation="
-     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
-     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-     http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
-     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
-     http://www.springframework.org/schema/data/mongo http://www.springframework.org/schema/data/mongo/spring-mongo-1.0.xsd
-     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
-     		
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util=" http://www.springframework.org/schema/util"
+	xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+	xmlns:hdp="http://www.springframework.org/schema/hadoop"
+	xsi:schemaLocation="
+          http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+          http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+          http://www.springframework.org/schema/data/mongo
+          http://www.springframework.org/schema/data/mongo/spring-mongo-1.0.xsd
+          http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+          http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+          http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+          http://www.springframework.org/schema/hadoop http://www.springframework.org/schema/hadoop/spring-hadoop.xsd">
+    
+  	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
+		p:location="dataSource.properties"
+		p:ignoreUnresolvablePlaceholders="true" />
+	
 	<!-- 启用注解 -->
 	<context:annotation-config />
      
      <!-- 定义mongo对象，对应的是mongodb官方jar包中的Mongo，replica-set设置集群副本的ip地址和端口 -->
-	<mongo:mongo id="mongo" replica-set="192.168.0.104:27017">
+	<mongo:mongo id="mongo" replica-set="192.168.0.104:27016">
 		<!-- 一些连接属性的设置 -->	
 		<mongo:options
-		     connections-per-host="8"
-		     threads-allowed-to-block-for-connection-multiplier="5000"
-		     connect-timeout="5000"
-		     max-wait-time="10000"
+ 			 connections-per-host="8"
+		     threads-allowed-to-block-for-connection-multiplier="4"
+		     connect-timeout="1000"
+		     max-wait-time="1500"
 		     auto-connect-retry="true"
 		     socket-keep-alive="true"
-		     socket-timeout="10000"
+		     socket-timeout="1500"
 		     slave-ok="true"
 		     write-number="1"
 		     write-timeout="0"
-		     write-fsync="false"/>		
+		     write-fsync="false"/>
 	</mongo:mongo>
 
 	<!-- mongo的工厂，通过它来取得mongo实例,dbname为mongodb的数据库名，没有的话会自动创建 -->
@@ -64,53 +69,6 @@
 	
 	<!-- mongodb bean的仓库目录，会自动扫描扩展了MongoRepository接口的接口进行注入 -->
 	<mongo:repositories base-package="com.novelbio.database.mongorepo"/>
-     
-   <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">  
-       <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-       <property name="url" value="jdbc:mysql://192.168.0.104:3306/novelbio?useUnicode=true&amp;characterEncoding=utf-8" />  
-       <property name="username" value="root"/>
-  		 <property name="password" value=""/>
-  		   
-       <property name="minIdle" value="1" />  
-       <property name="maxActive" value="25" />  
-       <property name="maxIdle" value="5" />  
-    </bean>  
-     
-
-    
-    <!-- define the SqlSessionFactory, notice that configLocation is not needed when you use MapperFactoryBean -->
-    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean" lazy-init="true">
-        <property name="dataSource" ref="dataSource" />
-        <property name="configLocation" value="classpath:NBCConf.xml" />
-                <!-- mapper和resultmap配置路径 -->
-        <property name="mapperLocations">
-            <list>
-                <!-- 表示在com.hoo.resultmap包或以下所有目录中，以-resultmap.xml结尾所有文件 -->
-                <!-- <value>classpath:XML/IdMapper/*.xml</value> -->
-                <value>classpath:XML/KeggMapper/*.xml</value>
-                <!-- <value>classpath:XML/ReactMapper/*.xml</value> -->
-               	<!-- <value>classpath:XML/InformationMapper/*.xml</value> -->
-            </list>
-        </property>
-    </bean>
-    
-    <!-- 什么时候学会了JPA再添上，可能缺少JPA的包，加上后会出错 -->
-    <!-- transaction manager, use JtaTransactionManager for global tx  
-    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <property name="dataSource" ref="dataSource" />
-    </bean> -->
-
-   <!--  <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
-        <property name="entityManagerFactory" ref="entityManagerFactory"/>
-   </bean>
-   <tx:annotation-driven transaction-manager="transactionManager"/>
-   -->
-
-    <!-- 通过扫描的模式，扫描目录在com/hoo/mapper目录下，所有的mapper都继承SqlMapper接口， 这样一个bean就可以了 -->
- 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer" lazy-init="true">
-		<property name="basePackage" value="com.novelbio.database.mapper.kegg"/>
-		<property name="markerInterface" value="com.novelbio.database.mapper.MapperSql"/>
-    </bean>
 
     <!-- spring AOP 
 	<aop:aspectj-autoproxy proxy-target-class="true" /> -->

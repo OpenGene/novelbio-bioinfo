@@ -6,7 +6,7 @@ import com.novelbio.database.domain.kegg.noGene.KGNIdKeg;
 import com.novelbio.database.service.servkegg.ServKNIdKeg;
 
 public class KeggInfoAccID extends KeggInfoAbs{
-	static ServKNIdKeg servKNIdKeg = new ServKNIdKeg();
+	
 	public KeggInfoAccID(String genUniAccID, int taxID) {
 		super(genUniAccID, taxID);
 		// TODO Auto-generated constructor stub
@@ -20,11 +20,11 @@ public class KeggInfoAccID extends KeggInfoAbs{
 	
 	@Override
 	protected void setKeggID() {
+		ServKNIdKeg servKNIdKeg = ServKNIdKeg.getInstance();
+		
 		if (!bookgiDgen2Keg) {
 			bookgiDgen2Keg = true;
-			KGNIdKeg kgnIdKegTmp = new KGNIdKeg();
-			kgnIdKegTmp.setUsualName(genUniAccID);
-			kgnIdKeg = servKNIdKeg.queryKGNIdKeg(kgnIdKegTmp);
+			kgnIdKeg = servKNIdKeg.findByUsualName(genUniAccID);
 		}
 		if (kgnIdKeg != null) {
 			keggID = "cpd:"+kgnIdKeg.getKegID();

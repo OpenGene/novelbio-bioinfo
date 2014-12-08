@@ -1,16 +1,33 @@
 package com.novelbio.database.domain.kegg;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 
 /**
  * 包括底物和产物的类，用type来区分底物和产物
  * @author zong0jie
  *
  */
+@Document(collection="kgsubstrate")
+@CompoundIndexes({
+    @CompoundIndex(unique = false, name = "react_path_idx", def = "{'reactionID': 1, 'pathName': -1}")
+ })
 public class KGsubstrate {
-
+	@Id
+	String kgId;
+	
 	/**
-	 * substrate所在的pathway
+	 * KEGGID of substrate node
+	 * ex) cpd:C05378   gl:G00037
 	 */
+	@Indexed
+	private String name;
+	
+	/** substrate所在的pathway */
 	private String pathName;
 	
 	/**
@@ -27,12 +44,6 @@ public class KGsubstrate {
 	 * the identification number of this substrate
 	 */
 	private int id;
-	
-	/**
-	 * KEGGID of substrate node
-	 * ex) cpd:C05378   gl:G00037
-	 */
-	private String name;
 	
 	/**
 	 * the ID of this substrate
@@ -91,7 +102,7 @@ public class KGsubstrate {
 	 * substrate所在的reaction
 	 */
 	public void setReactionID(int reactionID) {
-		this.reactionID=reactionID;
+		this.reactionID = reactionID;
 	}
 	
 	/**

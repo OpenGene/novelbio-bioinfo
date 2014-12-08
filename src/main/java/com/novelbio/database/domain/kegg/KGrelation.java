@@ -3,13 +3,24 @@ package com.novelbio.database.domain.kegg;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 /**
  * 两个entry可能有多个作用方法，譬如binding和activation同时存在那么这个就出现两次
  * @author zong0jie
  *
  */
+@Document(collection="kgrelation")
+@CompoundIndexes({
+    @CompoundIndex(unique = false, name = "path_entry1_idx", def = "{'pathName': 1, 'entry1': -1}"),
+    @CompoundIndex(unique = false, name = "path_entry2_idx", def = "{'pathName': 1, 'entry2': -1}")
+ })
 public class KGrelation {
-	
+	@Id
+	String id;
 	/**
 	 * 本相互作用的关系必须在指定的pathway下才能有作用
 	 */
@@ -295,8 +306,7 @@ public class KGrelation {
 	 * @param lsKGrelations
 	 * @return
 	 */
-	public static HashMap<String, KGrelation> removeRep(ArrayList<KGrelation> lsKGrelations) 
-	{
+	public static HashMap<String, KGrelation> removeRep(ArrayList<KGrelation> lsKGrelations) {
 		/////////////////////////////////////////因为有些relation中有这种情况：entry1、entry2完全一致，就是subtype不一致，这个就是将一致的entry1、entry2去冗余的////////////////////////////////////////////////////////////////
 		HashMap<String, KGrelation> hashPathID2KGRelation = new HashMap<String, KGrelation>();
 		for (int i = 0; i < lsKGrelations.size(); i++) 
@@ -321,28 +331,6 @@ public class KGrelation {
 		}
 		return hashPathID2KGRelation;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 }

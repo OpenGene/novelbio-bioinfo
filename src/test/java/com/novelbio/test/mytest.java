@@ -8,19 +8,19 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.springframework.data.mongodb.MongoDbFactory;
+import org.springframework.data.mongodb.core.MongoFactoryBean;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
 
+import com.mongodb.Mongo;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
-import com.novelbio.analysis.seq.fastq.FastQ;
-import com.novelbio.analysis.seq.fastq.FastQRecord;
-import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
-import com.novelbio.analysis.seq.mapping.MapBwaAln;
-import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.dataOperate.HttpFetch;
@@ -28,25 +28,115 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.mongorepo.kegg.RepoKEntry;
+import com.novelbio.database.mongorepo.kegg.RepoKIDKeg2Ko;
+import com.novelbio.database.mongorepo.kegg.RepoKIDgen2Keg;
+import com.novelbio.database.mongorepo.kegg.RepoKNCompInfo;
+import com.novelbio.database.mongorepo.kegg.RepoKNIdKeg;
+import com.novelbio.database.mongorepo.kegg.RepoKPathRelation;
+import com.novelbio.database.mongorepo.kegg.RepoKPathway;
+import com.novelbio.database.mongorepo.kegg.RepoKReaction;
+import com.novelbio.database.mongorepo.kegg.RepoKRelation;
+import com.novelbio.database.mongorepo.kegg.RepoKSubstrate;
+import com.novelbio.database.service.SpringFactory;
 
 
 public class mytest {
 	private static final Logger logger = Logger.getLogger(mytest.class);
 	static boolean is;
 	public static void main(String[] args) throws Exception {
-		String name = "/hdfs:/nbCloud/public/nbcplatform/genome/Chrom_Sep/9606/testsss";
-		TxtReadandWrite txtRead = new TxtReadandWrite(name);
-		for (String string : txtRead.readlines()) {
-			System.out.println(string);
-		}
-		txtRead.close();
+			RepoKIDKeg2Ko mapKIDKeg2Ko = (RepoKIDKeg2Ko)SpringFactory.getFactory().getBean("repoKIDKeg2Ko");
+		GeneID geneID = new GeneID("tp53", 9606);
+		System.out.println(geneID.getDescription());
+//			mapKIDKeg2Ko.deleteAll();
+//		Mongo mongo = new Mongo();
+//		MongoTemplate mongoTemplate;
+//		SimpleMongoDbFactory mongoDbFactory;
+//		TxtReadandWrite txtRead = new TxtReadandWrite("/home/novelbio/idkeg2ko.txt");
+//		ServKIDKeg2Ko serv = ServKIDKeg2Ko.getInstance();
+//		
+//		int i = 0;
+//		for (String content : txtRead.readlines(2)) {
+//			i++;
+//			String[] ss = content.split("\t");
+//			KGIDkeg2Ko kgiDkeg2Ko = new KGIDkeg2Ko();
+//			kgiDkeg2Ko.setKeggID(ss[0]);
+//			kgiDkeg2Ko.setKo(ss[1]);
+//			kgiDkeg2Ko.setTaxID(Integer.parseInt(ss[2]));
+//			
+//
+//			if (i % 100 == 0) {
+//				System.out.println(i);
+//			}
+//			serv.save(kgiDkeg2Ko);
+//		}
+//		txtRead.close();
 		
-		name = "/hdfs:/nbCloud/public/nbcplatform/genome/Chrom_Sep/9606/hg19_GRCh37/chr4.fa";
-		txtRead = new TxtReadandWrite(name);
-		for (String string : txtRead.readlines()) {
-			System.out.println(string);
+	}
+	
+	private void deletdb() {
+		RepoKEntry a = SpringFactory.getFactory().getBean(RepoKEntry.class);
+		RepoKPathRelation b = SpringFactory.getFactory().getBean(RepoKPathRelation.class);
+		RepoKReaction c = SpringFactory.getFactory().getBean(RepoKReaction.class);
+		RepoKIDgen2Keg d = SpringFactory.getFactory().getBean(RepoKIDgen2Keg.class);
+		RepoKIDKeg2Ko e = SpringFactory.getFactory().getBean(RepoKIDKeg2Ko.class);
+		RepoKNCompInfo f = SpringFactory.getFactory().getBean(RepoKNCompInfo.class);
+		RepoKNIdKeg g = SpringFactory.getFactory().getBean(RepoKNIdKeg.class);
+		RepoKPathway h = SpringFactory.getFactory().getBean(RepoKPathway.class);
+		RepoKSubstrate i = SpringFactory.getFactory().getBean(RepoKSubstrate.class);
+		RepoKRelation j = SpringFactory.getFactory().getBean(RepoKRelation.class);
+		
+		try {
+			a.deleteAll();
+		} catch (Exception e2) {
+			// TODO: handle exception
 		}
-		txtRead.close();
+		try {
+			b.deleteAll(); 
+		} catch (Exception e2) {
+			// TODO: handle exception
+		}
+		try {
+			c.deleteAll(); 
+		} catch (Exception e2) {
+			// TODO: handle exception
+		}  
+		try {
+			d.deleteAll(); 
+		} catch (Exception e2) {
+			// TODO: handle exception
+		}
+		try {
+			e.deleteAll();
+		} catch (Exception e2) {
+			// TODO: handle exception
+		}
+		try {
+			f.deleteAll();
+		} catch (Exception e2) {
+			// TODO: handle exception
+		}
+		try {
+			 g.deleteAll();
+		} catch (Exception e2) {
+			// TODO: handle exception
+		}
+		try {
+			h.deleteAll();
+		} catch (Exception e2) {
+			// TODO: handle exception
+		}
+		try {
+			 i.deleteAll(); 
+		} catch (Exception e2) {
+			// TODO: handle exception
+		}
+		try {
+			j.deleteAll();
+		} catch (Exception e2) {
+			// TODO: handle exception
+		}
 	}
  
 	private static void copeGffWangxia2() {

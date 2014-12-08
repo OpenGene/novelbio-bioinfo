@@ -1,39 +1,27 @@
 package com.novelbio.database.service.servkegg;
 
-import java.util.ArrayList;
-
-import javax.inject.Inject;
-
 import com.novelbio.database.domain.kegg.KGsubstrate;
-import com.novelbio.database.mapper.kegg.MapKSubstrate;
+import com.novelbio.database.mongorepo.kegg.RepoKSubstrate;
 import com.novelbio.database.service.SpringFactory;
 
-public class ServKSubstrate implements MapKSubstrate{
-	@Inject
-	MapKSubstrate mapKSubstrate;
+public class ServKSubstrate {
+	
+	RepoKSubstrate mapKSubstrate;
+	
 	public ServKSubstrate() {
-		// TODO Auto-generated constructor stub
-		mapKSubstrate = (MapKSubstrate)SpringFactory.getFactory().getBean("mapKSubstrate");
+		mapKSubstrate = (RepoKSubstrate)SpringFactory.getFactory().getBean("repoKSubstrate");
 	}
-	@Override
-	public ArrayList<KGsubstrate> queryLskgKGsubstrates(KGsubstrate kGsubstrate) {
-		// TODO Auto-generated method stub
-		return mapKSubstrate.queryLskgKGsubstrates(kGsubstrate);
+
+	public KGsubstrate findByKegId(String kgId) {
+		return mapKSubstrate.findOne(kgId);
 	}
-	@Override
-	public KGsubstrate queryKGsubstrate(KGsubstrate kGsubstrate) {
-		// TODO Auto-generated method stub
-		return mapKSubstrate.queryKGsubstrate(kGsubstrate);
+	
+	static class ManageHolder {
+		static ServKSubstrate instance = new ServKSubstrate();
 	}
-	@Override
-	public void insertKGsubstrate(KGsubstrate kGsubstrate) {
-		// TODO Auto-generated method stub
-		mapKSubstrate.insertKGsubstrate(kGsubstrate);
-	}
-	@Override
-	public void updateKGsubstrate(KGsubstrate kGsubstrate) {
-		// TODO Auto-generated method stub
-		mapKSubstrate.updateKGsubstrate(kGsubstrate);
+	
+	public static ServKSubstrate getInstance() {
+		return ManageHolder.instance;
 	}
 	
 }

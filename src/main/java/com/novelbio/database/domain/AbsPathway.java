@@ -1,11 +1,7 @@
 package com.novelbio.database.domain;
 
 public class AbsPathway {
-	/**
-	 * the KEGGID of this pathway map.  example:<br>
-	 * <b>path:ko*****     path:[org prefix]***** </b> the KEGGID of this pathway map ex) name="path:ko00010"   name="path:hsa00010"
-	 */
-	protected String pathName;
+
 	
 	/**
 	 * ko/ec/[org prefix].  example:<br>
@@ -20,26 +16,6 @@ public class AbsPathway {
 	 * <b>string</b> ex) title="Pentose phosphate pathway"
 	 */
 	protected String title;
-	
-	/**
-	 * the KEGGID of this pathway map.  example:<br>
-	 * <b>path:ko*****     path:[org prefix]***** </b> the KEGGID of this pathway map ex) name="path:ko00010"   name="path:hsa00010"
-	 */
-	public String getPathName()
-	{
-		return this.pathName;
-	}
-	
-	/**
-	 * KEGG
-	 * already trim()
-	 * the KEGGID of this pathway map.  example:<br>
-	 * <b>path:ko*****     path:[org prefix]***** </b> the KEGGID of this pathway map ex) name="path:ko00010"   name="path:hsa00010"
-	 */
-	public void setPathName(String pathName)
-	{
-		this.pathName=pathName.trim();
-	}
 	
 	/**
 	 * ko/ec/[org prefix].  example:<br>

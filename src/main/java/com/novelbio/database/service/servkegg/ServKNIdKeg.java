@@ -1,11 +1,9 @@
 package com.novelbio.database.service.servkegg;
 
-import java.util.ArrayList;
-
-import javax.inject.Inject;
+import java.util.List;
 
 import com.novelbio.database.domain.kegg.noGene.KGNIdKeg;
-import com.novelbio.database.mapper.kegg.MapKNIdKeg;
+import com.novelbio.database.mongorepo.kegg.RepoKNIdKeg;
 import com.novelbio.database.service.SpringFactory;
 
 /**
@@ -13,31 +11,31 @@ import com.novelbio.database.service.SpringFactory;
  * @author zong0jie
  *
  */
-public class ServKNIdKeg implements MapKNIdKeg {
-	@Inject
-	MapKNIdKeg mapKNIdKeg;
+public class ServKNIdKeg {
+	RepoKNIdKeg mapKNIdKeg;
 	public ServKNIdKeg() {
-		mapKNIdKeg = (MapKNIdKeg)SpringFactory.getFactory().getBean("mapKNIdKeg");
+		mapKNIdKeg = (RepoKNIdKeg)SpringFactory.getFactory().getBean("repoKNIdKeg");
 	}
-	@Override
-	public ArrayList<KGNIdKeg> queryLsKGNIdKeg(KGNIdKeg kgnIdKeg) {
-		// TODO Auto-generated method stub
-		return mapKNIdKeg.queryLsKGNIdKeg(kgnIdKeg);
+
+	public List<KGNIdKeg> findByKegId(String kegID) {
+		return mapKNIdKeg.findByKegId(kegID);
 	}
-	@Override
-	public KGNIdKeg queryKGNIdKeg(KGNIdKeg kgnIdKeg) {
-		// TODO Auto-generated method stub
-		return mapKNIdKeg.queryKGNIdKeg(kgnIdKeg);
+	public KGNIdKeg findByUsualName(String usualName) {
+		return mapKNIdKeg.findOne(usualName);
 	}
-	@Override
-	public void insertKGNIdKeg(KGNIdKeg kgnIdKeg) {
-		// TODO Auto-generated method stub
-		mapKNIdKeg.insertKGNIdKeg(kgnIdKeg);
+	
+	static class ManageHolder {
+		static ServKNIdKeg instance = new ServKNIdKeg();
 	}
-	@Override
-	public void updateKGNIdKeg(KGNIdKeg kgnIdKeg) {
-		// TODO Auto-generated method stub
-		mapKNIdKeg.updateKGNIdKeg(kgnIdKeg);
+	
+	public static ServKNIdKeg getInstance() {
+		return ManageHolder.instance;
 	}
+
+	public void save(KGNIdKeg kgnIdKeg) {
+		mapKNIdKeg.save(kgnIdKeg);
+	}
+
+
 	
 }

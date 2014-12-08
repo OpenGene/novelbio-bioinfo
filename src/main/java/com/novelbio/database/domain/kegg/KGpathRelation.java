@@ -1,7 +1,19 @@
 package com.novelbio.database.domain.kegg;
 
-public class KGpathRelation {
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+
+@Document(collection="kgpathrelation")
+@CompoundIndexes({
+    @CompoundIndex(unique = false, name = "pathName_scrPath_idx", def = "{'pathName': 1, 'scrPath': -1}")
+ })
+public class KGpathRelation {
+	/** mongoId */
+	@Id
+	String id;
 	
 	/**
 	 * 本相互作用的关系是在指定pathway下的
@@ -27,9 +39,15 @@ public class KGpathRelation {
 	 * <b>maplink</b> 	link to another map													     <br> 
 	 */
 	private String type;
-	
 
-
+	/** mongoid */
+	public void setId(String id) {
+		this.id = id;
+	}
+	/** mongoid */
+	public String getId() {
+		return id;
+	}
 	
 	/**
 	 * the first (from) entry that defines this relation. detail:<br>

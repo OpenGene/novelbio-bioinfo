@@ -1,39 +1,48 @@
 package com.novelbio.database.service.servkegg;
 
-import java.util.ArrayList;
-
-import javax.inject.Inject;
-
-import org.springframework.stereotype.Service;
+import java.util.List;
 
 import com.novelbio.database.domain.kegg.KGIDkeg2Ko;
-import com.novelbio.database.mapper.kegg.MapKIDKeg2Ko;
+import com.novelbio.database.mongorepo.kegg.RepoKIDKeg2Ko;
 import com.novelbio.database.service.SpringFactory;
-@Service
-public class ServKIDKeg2Ko implements MapKIDKeg2Ko{
-	@Inject
-	MapKIDKeg2Ko mapKIDKeg2Ko;
+
+public class ServKIDKeg2Ko {
+
+	RepoKIDKeg2Ko mapKIDKeg2Ko;
 	public ServKIDKeg2Ko() {
-		mapKIDKeg2Ko = (MapKIDKeg2Ko)SpringFactory.getFactory().getBean("mapKIDKeg2Ko");
+		mapKIDKeg2Ko = (RepoKIDKeg2Ko)SpringFactory.getFactory().getBean("repoKIDKeg2Ko");
 	}
-	@Override
-	public ArrayList<KGIDkeg2Ko> queryLsKGIDkeg2Ko(KGIDkeg2Ko kgiDkeg2Ko) {
-		// TODO Auto-generated method stub
-		return mapKIDKeg2Ko.queryLsKGIDkeg2Ko(kgiDkeg2Ko);
+
+	public List<KGIDkeg2Ko> findLsByKegId(String keggID) {
+		return mapKIDKeg2Ko.findyLsByKegId(keggID);
 	}
-	@Override
-	public KGIDkeg2Ko queryKGIDkeg2Ko(KGIDkeg2Ko kGIDkeg2Ko) {
-		// TODO Auto-generated method stub
-		return mapKIDKeg2Ko.queryKGIDkeg2Ko(kGIDkeg2Ko);
+	
+	public List<KGIDkeg2Ko> findLsByKegIdAndTaxId(String kegID, int taxID) {
+		return mapKIDKeg2Ko.findyLsByKegIdAndTaxId(kegID, taxID);
 	}
-	@Override
-	public void insertKGIDkeg2Ko(KGIDkeg2Ko kGIDkeg2Ko) {
-		// TODO Auto-generated method stub
-		mapKIDKeg2Ko.insertKGIDkeg2Ko(kGIDkeg2Ko);
+	
+	public KGIDkeg2Ko findByKegIdAndKo(String kegID, String Ko) {
+		return mapKIDKeg2Ko.findByKegIdAndKo(kegID, Ko);
 	}
-	@Override
-	public void updateKGIDkeg2Ko(KGIDkeg2Ko kGIDkeg2Ko) {
-		// TODO Auto-generated method stub
-		mapKIDKeg2Ko.updateKGIDkeg2Ko(kGIDkeg2Ko);
+	
+	public List<KGIDkeg2Ko> findLsByKoAndTaxId(String KoId, int taxID) {
+		return mapKIDKeg2Ko.findyLsByKoAndTaxId(KoId, taxID);
 	}
+	
+	public void save(KGIDkeg2Ko kgDkeg2Ko) {
+		mapKIDKeg2Ko.save(kgDkeg2Ko);
+	}
+	
+	static class ManageHolder {
+		static ServKIDKeg2Ko instance = new ServKIDKeg2Ko();
+	}
+	
+	public static ServKIDKeg2Ko getInstance() {
+		return ManageHolder.instance;
+	}
+
+
+
+
+	
 }

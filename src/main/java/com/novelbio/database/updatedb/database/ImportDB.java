@@ -26,34 +26,26 @@ public class ImportDB {
 	String GOPath;
 	
 	public static void main(String[] args) {
-//		String downloadPath = "/home/novelbio/NBCsource/database/";
-//		String softToolsFile = "/media/hdfs/nbCloud/public/nbcplatform/genome/SoftwareInfo.txt";
-//		String taxIDFile = "/home/novelbio/NBCsource/species/常见物种IDKEGGUploadTmp.txt";
-//		String dbInfo = "/media/winE/NBCplatform/database/DBinfo.txt";
-//		String GOPath = "/media/winE/NBCplatform/database/GO/";
-//		String speciesFile = "";
-//		ImportPerLine.setTaxIDFile(taxIDFile);
-//		ImportDB importDB = new ImportDB();
-//		importDB.setDownloadPath(downloadPath);
-////		importDB.setSoftToolsFile(softToolsFile);
-////		importDB.setSpeciesFile(speciesFile);
-////		importDB.setGOPath(GOPath);
-//		importDB.setTaxIDFile(taxIDFile);
-//		
-////		importDB.updateDBinfo(dbInfo);
-////		importDB.updateGODB();
-//		
-//		importDB.updateNCBIID();
+		String downloadPath = "/home/novelbio/NBCsource/database/";
+		String softToolsFile = "/media/hdfs/nbCloud/public/nbcplatform/genome/SoftwareInfo.txt";
+		String taxIDFile = "/home/novelbio/NBCsource/species/常见物种IDKEGGUploadTmp.txt";
+		String dbInfo = "/media/winE/NBCplatform/database/DBinfo.txt";
+		String GOPath = "/media/winE/NBCplatform/database/GO/";
+		String speciesFile = "";
+		ImportPerLine.setTaxIDFile(taxIDFile);
+		ImportDB importDB = new ImportDB();
+		importDB.setDownloadPath(downloadPath);
+//		importDB.setSoftToolsFile(softToolsFile);
+//		importDB.setSpeciesFile(speciesFile);
+//		importDB.setGOPath(GOPath);
+		importDB.setTaxIDFile(taxIDFile);
+		
+//		importDB.updateDBinfo(dbInfo);
+//		importDB.updateGODB();
+		
+		importDB.updateNCBIID();
 		
 		
-		TxtReadandWrite txtRead = new TxtReadandWrite("/home/novelbio/NBCsource/database/gene2go.gz");
-		for (String string : txtRead.readlines()) {
-			String[] ss = string.split("\t");
-			if (ss[0].contains("83332")) {
-				System.out.println(string);
-			}
-		}
-		txtRead.close();
 		
 		
 		

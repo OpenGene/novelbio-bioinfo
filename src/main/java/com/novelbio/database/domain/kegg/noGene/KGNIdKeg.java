@@ -1,7 +1,25 @@
 package com.novelbio.database.domain.kegg.noGene;
 
+import javax.persistence.Id;
+
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+
+@Document(collection="kgnIdkeg")
 public class KGNIdKeg {
+	/**
+	 * 常用名，也就是待转换的ID
+	 */
+	@Id
+	private String usualName;
+	
+	@Indexed
 	private String kegID;
+	
+
 	/**
 	 * 设定Compound等的KeggID
 	 * @param kegID
@@ -31,10 +49,7 @@ public class KGNIdKeg {
 	public String getAttribute() {
 		return this.attribute;
 	}
-	/**
-	 * 常用名，也就是待转换的ID
-	 */
-	private String usualName;
+
 	/**
 	 * 常用名，也就是待转换的ID
 	 * @param usualName

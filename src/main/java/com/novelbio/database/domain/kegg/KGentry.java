@@ -1,20 +1,32 @@
 package com.novelbio.database.domain.kegg;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.novelbio.database.service.servkegg.ServKEntry;
 import com.novelbio.database.service.servkegg.ServKPathway;
 import com.novelbio.database.service.servkegg.ServKRelation;
 
 
+@Document(collection="kgentry")
+@CompoundIndexes({
+    @CompoundIndex(unique = false, name = "name_path_id_idx", def = "{'name': 1, 'pathName': -1, 'id' : 1}")
+ })
 public class KGentry {
-	ServKRelation servKRelation = new ServKRelation();
-	ServKPathway servKPathway = new ServKPathway();
+	/** mongodbId */
+	@Id
+	String id;
 	/**
 	 * the ID of this entry in the pathway map <br>
 	 *  the identification number of this entry，从1开始记数
 	 */
-	private int id;
+	private int entryId;
 	
 	/**
 	 * the KEGGID of this entry，输入时先要将name以空格分割成一个一个单独的名字
@@ -38,9 +50,11 @@ public class KGentry {
 	 * If accession is undefined, "undefined" is specified.
 	 * ex) name="group:ORC"
 	 */
+	@Indexed
 	private String name;
 	
 	/**  该entry所在的pathwayID */
+	@Indexed
 	private String pathName;
 	
 	/** component总数 */
@@ -69,6 +83,7 @@ public class KGentry {
 	 */
 	private String linkEntry;
 	
+	@Indexed
 	private int taxID;
 
 	/**
@@ -76,6 +91,16 @@ public class KGentry {
 	 * ex)reaction="rn:R02749"
 	 */
 	private String reactionName;
+	
+	/** mongodb的id */
+	public String getId() {
+		return id;
+	}
+	/** mongodb的id */
+	public void setId(String identry) {
+		this.id = identry;
+	}
+	
 	/** component的总数 */
 	public void setCompNum(int compNum) {
 		this.compNum=compNum;
@@ -108,15 +133,15 @@ public class KGentry {
 	 * the ID of this entry in the pathway map <br>
 	 *  the identification number of this entry，从1开始记数
 	 */
-	public int getID() {
-		return this.id;
+	public int getEntryId() {
+		return this.entryId;
 	}
 	/**
 	 * the ID of this entry in the pathway map <br>
 	 *  the identification number of this entry，从1开始记数
 	 */
-	public void setID(int id) {
-		this.id=id;
+	public void setEntryId(int id) {
+		this.entryId=id;
 	}
 	
 	/**
@@ -274,13 +299,12 @@ public class KGentry {
 			return null;
 		}
 		////////如果有复合物，先查找entry中的复合物，将该复合物的其余复合物都找到//////////////////////////////////////////////////////////////////////////////////////////////////////////
-		KGentry tmpqkGentry = new KGentry();//查询用的KGentry
-		tmpqkGentry.setPathName(pathName);
-		tmpqkGentry.setParentID(parentID);
+		ServKEntry servKEntry = ServKEntry.getInstance();
 		//这里都是与queryEntry是component的entry,
-		ArrayList<KGentry> lsSubKGentries = getLsEntity(tmpqkGentry);
+		List<KGentry> lsSubKGentries = servKEntry.findByPathNameAndParentId(pathName, parentID);
+		
 		for (KGentry kGentry : lsSubKGentries) {
-			if (kGentry.getID() == id) {
+			if (kGentry.getEntryId() == entryId) {
 				continue;
 			}
 			lsKGentries.add(kGentry);
@@ -293,13 +317,14 @@ public class KGentry {
 	 * 获得有本Entity参与的relation关系，里面可能会有重复项存在
 	 * @return
 	 */
-	public ArrayList<KGrelation> getRelatEntity() 	{
+	public List<KGrelation> getRelatEntity() 	{
+		ServKRelation servKRelation = ServKRelation.getInstance();
 		KGrelation tmpQkGrelation=new KGrelation();
-		tmpQkGrelation.setEntry1ID(id); tmpQkGrelation.setPathName(pathName);
-		ArrayList<KGrelation> lsKGrelations1 = servKRelation.queryLsKGrelations(tmpQkGrelation);
+		tmpQkGrelation.setEntry1ID(entryId); tmpQkGrelation.setPathName(pathName);
+		List<KGrelation> lsKGrelations1 = servKRelation.findByPathNameAndEntry1Id(pathName, entryId);
 		
-		tmpQkGrelation.setEntry2ID(id); tmpQkGrelation.setPathName(pathName);
-		ArrayList<KGrelation> lsKGrelations2 = servKRelation.queryLsKGrelations(tmpQkGrelation);
+		tmpQkGrelation.setEntry2ID(entryId); tmpQkGrelation.setPathName(pathName);
+		List<KGrelation> lsKGrelations2 = servKRelation.findByPathNameAndEntry2Id(pathName, entryId);
 		/////////设定来自哪个
 		for (KGrelation kGrelation : lsKGrelations1) {
 			kGrelation.setFlag(KGrelation.FLAG_ENTRYID1);
@@ -316,38 +341,14 @@ public class KGentry {
 	 * @return
 	 */
 	public String getPathTitle() {
-		KGpathway kGpathway = servKPathway.queryKGpathway(getPathName());
+		ServKPathway servKPathway = ServKPathway.getInstance();
+		KGpathway kGpathway = servKPathway.findByPathName(getPathName());
 		if (kGpathway == null) {
 			return null;
 		}
 		return kGpathway.getTitle();
 	}
 	
-		/**
-		 * 给定entryID和pathName，查找该pathway中的具体KGentry，没有就返回null<br>
-		 * 因为一个entryID可能会对应多个keggID，那么也就会返回多个KGentry对象<br>
-		 * 首先查找entry的ID，没找到的话，查找parentID<br>
-		 * 如果是parentID，不需要将结果--也就是component 之间连起来，因为在输入（所有项）查找的时候 已经考虑了之间的联系，
-		 * 这些关系在将（所有）项目mapping回去的时候会被计算到
-		 * @param entryID
-		 * @param pathName
-		 * @return
-		 */
-		public static ArrayList<KGentry> getPathEntry(int entryID, String pathName) {
-			KGentry qKGentry = new KGentry();
-			qKGentry.setID(entryID); qKGentry.setPathName(pathName);
-			ArrayList<KGentry> lskegEntities = getLsEntity(qKGentry);
-			if (lskegEntities == null ) 
-			{
-				qKGentry = new KGentry();
-				qKGentry.setParentID(entryID); qKGentry.setPathName(pathName);
-				 lskegEntities = getLsEntity(qKGentry);
-			}
-			if (lskegEntities == null || lskegEntities.size() < 1) {
-				return null;
-			}
-			return lskegEntities;
-		}
 	
 		/**
 		 * 给定kGentry，用里面的信息搜数据库并返回，如果没搜到的话就返回null<br>
@@ -374,14 +375,14 @@ public class KGentry {
 		 * @param KGentry
 		 * @return
 		 */
-		public static ArrayList<KGentry> getLsEntity(KGentry kGentry) {
-			ServKEntry servKEntry = new ServKEntry();
-			ArrayList<KGentry> lskGentries = servKEntry.queryLsKGentries(kGentry);
-			if (lskGentries == null || lskGentries.size() < 1) {
-				return null;
-			}
-			return lskGentries;
-		}
+//		public static ArrayList<KGentry> getLsEntity(KGentry kGentry) {
+//			ServKEntry servKEntry = ServKEntry.getInstance();
+//			ArrayList<KGentry> lskGentries = servKEntry.queryLsKGentries(kGentry);
+//			if (lskGentries == null || lskGentries.size() < 1) {
+//				return null;
+//			}
+//			return lskGentries;
+//		}
 
 		/**
 		 * 给定kGentry，用里面的信息搜数据库并返回，如果没搜到的话就返回new arraylist<br>
@@ -408,14 +409,12 @@ public class KGentry {
 		 * @param KGentry
 		 * @return
 		 */
-		public static ArrayList<KGentry> getLsEntity(String kegID) {
+		public static List<KGentry> getLsEntity(String kegID) {
 			if (kegID == null) {
 				return new ArrayList<KGentry>();
 			}
-			ServKEntry servKEntry = new ServKEntry();
-			KGentry kGentry = new KGentry();
-			kGentry.setEntryName(kegID);
-			ArrayList<KGentry> lskGentries = servKEntry.queryLsKGentries(kGentry);
+			ServKEntry servKEntry = ServKEntry.getInstance();
+			List<KGentry> lskGentries = servKEntry.findByName(kegID);
 			if (lskGentries == null) {
 				return new ArrayList<KGentry>();
 			}
@@ -432,7 +431,7 @@ public class KGentry {
 			if (getClass() != obj.getClass()) return false;
 			
 			KGentry otherObj = (KGentry)obj;
-			if (id == otherObj.getID() && pathName.equals(otherObj.getPathName()) &&  name.equals(otherObj.getEntryName())) {
+			if (entryId == otherObj.getEntryId() && pathName.equals(otherObj.getPathName()) &&  name.equals(otherObj.getEntryName())) {
 				return true;
 			}
 			return false;
@@ -443,7 +442,7 @@ public class KGentry {
 		 * 用id + name + pathName来做hashcode
 		 */
 		public int hashCode(){
-			String hash = id + name + pathName;
+			String hash = entryId + name + pathName;
 			return hash.hashCode();
 		}
 		

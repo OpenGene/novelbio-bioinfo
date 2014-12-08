@@ -13,6 +13,7 @@ import com.novelbio.database.domain.kegg.KGIDkeg2Ko;
 import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.service.servkegg.ServKEntry;
 import com.novelbio.database.service.servkegg.ServKIDKeg2Ko;
 import com.novelbio.database.service.servkegg.ServKPathway;
 
@@ -25,7 +26,6 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 	 */
 	static HashMap<String, KGpathway> hashKGPath = new HashMap<String, KGpathway>();
 	
-	static ServKIDKeg2Ko servKIDKeg2Ko = new ServKIDKeg2Ko();
 	/**
 	 * geneID或UniID或AccID
 	 * 如果是AccID，那么一定是没有GeneID和UniID的
@@ -38,12 +38,12 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 	 * 是否已经装载过lskGentries了
 	 */
 	boolean boolskGentries = false;
-	private ArrayList<KGentry> lskGentries = null;
+	private List<KGentry> lskGentries = null;
 	
 	boolean boolsKgiDkeg2Kos = false;
 	
 	/** kegID2KO的对照表 */
-	ArrayList<KGIDkeg2Ko> lsKgiDkeg2Kos = null;
+	List<KGIDkeg2Ko> lsKgiDkeg2Kos = null;
 	/**
 	 * 如果本类是人类等注释全面物种的KG，那么这个存储本身以及blast的query物种信息，也就是mapping到query物种的entry
 	 */
@@ -82,7 +82,7 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 	 * 此时会清空blast的结果
 	 * @return
 	 */
-	public ArrayList<KGentry> getKgGentries() {
+	public List<KGentry> getKgGentries() {
 		if (!boolskGentries) {
 			lskGentries = KGentry.getLsEntity(getKegID());
 			boolskGentries = true;
@@ -101,16 +101,15 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 	 * 如果没有就返回null<br>
 	 * accID需要将其覆盖，因为理论上accID只有希望对应component
 	 */
-	public ArrayList<String> getLsKo() {
+	public List<String> getLsKo() {
 		if (!boolsKgiDkeg2Kos || lsKgiDkeg2Kos == null) {
 			boolsKgiDkeg2Kos = true;
 			if (getKegID() == null) {
 				return null;
 			}
-			
-			KGIDkeg2Ko kgiDkeg2Ko = new KGIDkeg2Ko();
-			kgiDkeg2Ko.setKeggID(getKegID()); kgiDkeg2Ko.setTaxID(taxID);
-			lsKgiDkeg2Kos = servKIDKeg2Ko.queryLsKGIDkeg2Ko(kgiDkeg2Ko);
+	
+			ServKIDKeg2Ko servKIDKeg2Ko = ServKIDKeg2Ko.getInstance();
+			lsKgiDkeg2Kos =  servKIDKeg2Ko.findLsByKegIdAndTaxId(getKegID(), taxID);
 			if (lsKgiDkeg2Kos == null) {
 				lsKgiDkeg2Kos = new ArrayList<KGIDkeg2Ko>();
 			}
@@ -194,8 +193,8 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 		if (kegIDS == null || taxIDS == 0) {
 			return new ArrayList<KGentry>();
 		}
-		KGentry kGentry = new KGentry(); kGentry.setEntryName(kegIDS); kGentry.setTaxID(taxIDS);
-		List<KGentry> lsQKegEntities = KGentry.getLsEntity(kGentry);
+		ServKEntry servKEntry = ServKEntry.getInstance();
+		List<KGentry> lsQKegEntities = servKEntry.findByNameAndTaxId(kegIDS, taxIDS);
 		if (lsQKegEntities == null) {
 			return new ArrayList<KGentry>();
 		}
@@ -215,8 +214,7 @@ public abstract class KeggInfoAbs implements KeggInfoInter{
 			return hashKGPath;
 		}
 		ServKPathway servKPathway = new ServKPathway();
-		KGpathway kGpathway = new KGpathway();
-		ArrayList<KGpathway> lsKGpathways = servKPathway.queryLsKGpathways(kGpathway);
+		List<KGpathway> lsKGpathways = servKPathway.findAll();
 		for (KGpathway kGpathway2 : lsKGpathways) {
 			hashKGPath.put(kGpathway2.getPathName(), kGpathway2);
 			hashKGPath.put(kGpathway2.getMapNum(), kGpathway2);	

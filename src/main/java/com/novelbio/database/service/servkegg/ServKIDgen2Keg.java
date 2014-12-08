@@ -1,50 +1,49 @@
 package com.novelbio.database.service.servkegg;
 
-import java.util.ArrayList;
-
-import javax.inject.Inject;
-
-import org.springframework.stereotype.Service;
+import java.util.List;
 
 import com.novelbio.database.domain.kegg.KGIDgen2Keg;
-import com.novelbio.database.mapper.kegg.MapKIDgen2Keg;
+import com.novelbio.database.mongorepo.kegg.RepoKIDgen2Keg;
 import com.novelbio.database.service.SpringFactory;
 
 /**
  * geneID到KeggID的转换表
  * @author zong0jie
  */
-@Service
-public class ServKIDgen2Keg implements MapKIDgen2Keg{
-	@Inject
-	MapKIDgen2Keg mapKIDgen2Keg;
+public class ServKIDgen2Keg {
+	
+	RepoKIDgen2Keg mapKIDgen2Keg;
+	
 	public ServKIDgen2Keg() {
-		// TODO Auto-generated constructor stub
-		mapKIDgen2Keg = (MapKIDgen2Keg)SpringFactory.getFactory().getBean("mapKIDgen2Keg");
+		mapKIDgen2Keg = (RepoKIDgen2Keg)SpringFactory.getFactory().getBean("repoKIDgen2Keg");
+	}
+
+	public KGIDgen2Keg findByGeneId(Long geneId) {
+		return mapKIDgen2Keg.findByGeneId(geneId);
 	}
 	
-	@Override
-	public ArrayList<KGIDgen2Keg> queryLsKGIDgen2Keg(KGIDgen2Keg kgIDgen2Keg) {
-		// TODO Auto-generated method stub
-		return mapKIDgen2Keg.queryLsKGIDgen2Keg(kgIDgen2Keg);
+	public KGIDgen2Keg findByKegId(String kegId) {
+		return mapKIDgen2Keg.findByKegId(kegId);
+	}
+	
+	public List<KGIDgen2Keg> findByGeneIdAndTaxIdAndKegId(long geneID, int taxID, String kegID) {
+		return mapKIDgen2Keg.findByGeneIdAndTaxIdAndKegId(geneID, taxID, kegID);
 	}
 
-	@Override
-	public KGIDgen2Keg queryKGIDgen2Keg(KGIDgen2Keg kGIDgen2Keg) {
-		// TODO Auto-generated method stub
-		return mapKIDgen2Keg.queryKGIDgen2Keg(kGIDgen2Keg);
+	public void save(KGIDgen2Keg kgiDgen2Keg) {
+		mapKIDgen2Keg.save(kgiDgen2Keg);
+	}
+	
+	static class ManageHolder {
+		static ServKIDgen2Keg instance = new ServKIDgen2Keg();
+	}
+	
+	public static ServKIDgen2Keg getInstance() {
+		return ManageHolder.instance;
 	}
 
-	@Override
-	public void insertKGIDgen2Keg(KGIDgen2Keg kGIDgen2Keg) {
-		// TODO Auto-generated method stub
-		mapKIDgen2Keg.insertKGIDgen2Keg(kGIDgen2Keg);
-	}
 
-	@Override
-	public void updateKGIDgen2Keg(KGIDgen2Keg kGIDgen2Keg) {
-		// TODO Auto-generated method stub
-		mapKIDgen2Keg.updateKGIDgen2Keg(kGIDgen2Keg);
-	}
 
+
+	
 }
