@@ -247,7 +247,9 @@ public class SoftWareInfo {
 		samtools, picard, GATK, cufflinks,
 		macs, sicer,
 		emboss,
+		misa,
 		estscan;
+
 		
 		static HashMap<String, SoftWare> mapStr2MapSoftware = new LinkedHashMap<String, SoftWareInfo.SoftWare>();
 		public static HashMap<String, SoftWare> getMapStr2MappingSoftware() {

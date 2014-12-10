@@ -1,24 +1,14 @@
 package com.novelbio.database.service;
 
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.data.mongodb.MongoDbFactory;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
-
-import com.mongodb.Mongo;
-import com.mongodb.MongoOptions;
-import com.mongodb.ServerAddress;
 
 
 public class SpringFactory {
 	static ApplicationContext ctx;
 	static protected BeanFactory factory;
+	private static ApplicationContext context;
 	public static BeanFactory getFactory() {
 		if (factory == null) {
 			ctx = new ClassPathXmlApplicationContext("spring.xml");
@@ -32,5 +22,32 @@ public class SpringFactory {
 //			mongo.set(seeds);
 		}
 		return factory;
+	}
+	/**
+	 * 根据id拿到spring容器中的bean
+	 * @param id
+	 * @return
+	 */
+	public static Object getBean(String id) {
+		if (context == null) {
+			context = new ClassPathXmlApplicationContext("spring.xml");
+		}
+		return context.getBean(id);
+	}
+	public static void main(String[] args) {
+		SpringFactory.getBean("springHelper");
+	}
+	
+	/**
+	 * 根据class拿到spring容器中的bean
+	 * @param <T>
+	 * @param id
+	 * @return
+	 */
+	public static <T> T getBean(Class<T> requiredType) {
+		if (context == null) {
+			context = new ClassPathXmlApplicationContext("spring.xml");
+		}
+		return context.getBean(requiredType);
 	}
 }
