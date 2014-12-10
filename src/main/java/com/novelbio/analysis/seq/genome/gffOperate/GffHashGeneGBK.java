@@ -3,6 +3,8 @@ package com.novelbio.analysis.seq.genome.gffOperate;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.resequencing.SnpAnnotation;
@@ -10,23 +12,17 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.model.modgeneid.GeneType;
 
 public class GffHashGeneGBK extends GffHashGeneAbs {
-	int geneSpaceNum = 1;
-	String chrID = "";
+	private static final Logger logger = Logger.getLogger(GffHashGeneGBK.class);
+	static String geneFlag = "Gene";
+	static String mRNAFlag = "mRNA";
+	static String cdsFlag = "cds";
+	
+	String flag;
 	public static void main(String[] args) {
 		GffHashGeneGBK gffHashGeneGBK = new GffHashGeneGBK();
-		gffHashGeneGBK.chrID = "dq167399";
-		gffHashGeneGBK.ReadGffarray("/media/winD/zongjie/desktop/栾霁/dq167399.gbk");
-		SnpAnnotation snpAnnotation = new SnpAnnotation();
-		GffChrAbs gffChrAbs = new GffChrAbs();
-		gffChrAbs.setGffHash(gffHashGeneGBK);
-		SeqHash seqHash = new SeqHash("/media/winD/zongjie/desktop/栾霁/dq167399.txt");
-		gffChrAbs.setSeqHash(seqHash);
-		snpAnnotation.setGffChrAbs(gffChrAbs);
-		snpAnnotation.addTxtSnpFile("/media/winD/zongjie/desktop/栾霁/399_807_snps.txt", "/media/winD/zongjie/desktop/栾霁/399_807_snps_anno.txt");
-		snpAnnotation.setCol(1, 2, 3, 4);
-		snpAnnotation.run();
+		gffHashGeneGBK.ReadGffarray("/media/winE/APAU02.1.gbff.gz");
+		gffHashGeneGBK.writeToGTF("/media/winE/APAU02.1.gtf", "GeneBank");
 	}
-	
 	/**
 	 * 这里输入的应该是一个文件夹，包含了所有GBK的文件
 	 */
@@ -36,18 +32,27 @@ public class GffHashGeneGBK extends GffHashGeneAbs {
 //		for (String string : lsGBKfile) {		
 //		}
 		mapChrID2ListGff = new LinkedHashMap<String, ListGff>();
-		readGBKfile(chrID, gfffilename);
+		readGBKfile(gfffilename);
 	}
 	
-	private void readGBKfile(String chrID, String gbkFile) {
-		ListGff listGff = new ListGff();
-		listGff.setName(chrID);
-		mapChrID2ListGff.put(chrID.toLowerCase(), listGff);
+	private void readGBKfile(String gbkFile) {
+
 		TxtReadandWrite	txtRead = new TxtReadandWrite(gbkFile);
 		boolean skip = true;
 		String tmpInfo = "";
 		GffDetailGene gffDetailGene = null;
+		ListGff listGff = null;
 		for (String content : txtRead.readlines()) {
+			if (content.trim().equals("//")) {
+				continue;
+			}
+			if(content.startsWith("VERSION")) {
+				String chrId = content.replaceFirst("VERSION", "").trim();
+				chrId = chrId.split(" ")[0];
+				listGff = new ListGff();
+				listGff.setName(chrId);
+				mapChrID2ListGff.put(chrId.toLowerCase(), listGff);
+			}
 			if (content.startsWith("ORIGIN") || content.trim().startsWith("//")) {
 				skip = true;
 			}
@@ -55,7 +60,7 @@ public class GffHashGeneGBK extends GffHashGeneAbs {
 				content = content.substring(5);
 			} catch (Exception e) {
 				content = content.trim();
-				System.out.println(content);
+				logger.error("string error: " + content);
 				continue;
 			}
 			
@@ -72,20 +77,26 @@ public class GffHashGeneGBK extends GffHashGeneAbs {
 			
 			if (content.startsWith(" ") && !content.trim().startsWith("/")) {
 				tmpInfo = tmpInfo + content.trim();
+				continue;
 			} else {
 				if (tmpInfo.startsWith("gene")) {
+					flag = geneFlag;
 					gffDetailGene = addGene(listGff, tmpInfo);
 					listGff.add(gffDetailGene);
 				} else if (tmpInfo.startsWith("CDS")) {
+					flag = cdsFlag;
 					addExon(gffDetailGene, tmpInfo);
-				} else if(!tmpInfo.equals("") && !tmpInfo.startsWith(" ")) {
+				} else if(!tmpInfo.equals("") && !tmpInfo.startsWith(" ") && !tmpInfo.equalsIgnoreCase("gap")) {
+					flag = mRNAFlag;
 					GeneType geneType = GeneType.getGeneType(tmpInfo.trim().split(" +")[0]);
 					addmRNA(gffDetailGene, geneType, tmpInfo);
 				} else {
-					if (tmpInfo.trim().startsWith("/gene")) {
+					if (geneFlag.equals(flag)) {
 						setGeneName(gffDetailGene, tmpInfo);
-					} else if (tmpInfo.trim().startsWith("/transcript_id=")) {
+						flag = "";
+					} else if (mRNAFlag.equals(flag)) {
 						setmRNAname(gffDetailGene, tmpInfo);
+						flag = "";
 					}
 				}
 			}
@@ -121,9 +132,7 @@ public class GffHashGeneGBK extends GffHashGeneAbs {
 	
 	private void setGeneName(GffDetailGene gffDetailGene, String content) {
 		content = content.trim();
-		if (content.startsWith("/gene=")) {
-			gffDetailGene.addItemName(content.split("=")[1].replace("\"", ""));
-		}
+		gffDetailGene.addItemName(content.split("=")[1].replace("\"", ""));
 	}
 	
 	private GffGeneIsoInfo addmRNA(GffDetailGene gffDetailGene, GeneType geneTypes, String content) {

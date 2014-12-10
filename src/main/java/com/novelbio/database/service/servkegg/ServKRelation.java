@@ -34,7 +34,10 @@ public class ServKRelation {
 	public void save(KGrelation kGrelation) {
 		mapKRelation.save(kGrelation);		
 	}
-
+	
+	public void deleteAll() {
+		mapKRelation.deleteAll();
+	}
 
 	static class ManageHolder {
 		static ServKRelation instance = new ServKRelation();

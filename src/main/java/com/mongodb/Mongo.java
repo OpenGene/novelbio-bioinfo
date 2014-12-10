@@ -18,6 +18,7 @@
 
 package com.mongodb;
 
+/** 添加了一个set方法，同时将final修饰删除，方便未来可以通过配置文件来自定义换链接 */
 import org.bson.io.PoolOutputBuffer;
 
 import java.net.UnknownHostException;

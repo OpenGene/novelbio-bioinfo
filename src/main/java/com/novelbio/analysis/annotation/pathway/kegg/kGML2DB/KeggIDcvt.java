@@ -60,8 +60,8 @@ public class KeggIDcvt {
 			KGIDgen2Keg kgiDgen2Keg=new KGIDgen2Keg();
 			kgiDgen2Keg.setGeneID(geneID);kgiDgen2Keg.setKeggID(kegID);kgiDgen2Keg.setTaxID(TaxID);
 			
-			List<KGIDgen2Keg> ls = servKIDgen2Keg.findByGeneIdAndTaxIdAndKegId(geneID, TaxID, kegID);
-			if (ls == null || ls.size() == 0) {
+			KGIDgen2Keg ls = servKIDgen2Keg.findByGeneIdAndTaxIdAndKegId(geneID, TaxID, kegID);
+			if (ls == null) {
 				servKIDgen2Keg.save(kgiDgen2Keg);
 			}
 		}

@@ -34,6 +34,10 @@ public class ServKEntry {
 		mapKEntry.save(kGentry);
 	}
 	
+	public void deleteAll() {
+		mapKEntry.deleteAll();
+	}
+	
 	static class ManageHolder {
 		static ServKEntry instance = new ServKEntry();
 	}

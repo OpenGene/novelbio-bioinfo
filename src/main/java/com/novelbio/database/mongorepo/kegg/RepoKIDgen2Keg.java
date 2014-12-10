@@ -21,7 +21,7 @@ public interface RepoKIDgen2Keg extends PagingAndSortingRepository<KGIDgen2Keg, 
 	List<KGIDgen2Keg> findByGeneIdAndTaxId(long geneId, int taxId);
 	
 	@Query(value="{ 'geneID' : ?0, 'taxID' : ?1, 'keggID' : ?2}")
-	List<KGIDgen2Keg> findByGeneIdAndTaxIdAndKegId(long geneId, int taxId, String keggId);
+	KGIDgen2Keg findByGeneIdAndTaxIdAndKegId(long geneId, int taxId, String keggId);
 
 
 

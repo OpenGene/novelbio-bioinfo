@@ -182,7 +182,7 @@ public class KGML2DB
 					kGpathRelation.setPathName(kgml.getPathName());
 					kGpathRelation.setScrPath(kgml.getPathName());
 					kGpathRelation.setTrgPath(ss[j]);
-					KGpathRelation search = servKPathRelation.findByPathNameSrcTrg(kGpathRelation.getPathName(), kGpathRelation.getScrPath(), kGpathRelation.getTrgPath());
+					KGpathRelation search = servKPathRelation.findByPathNameSrcTrg(kGpathRelation.getPathName(), kGpathRelation.getSrcPath(), kGpathRelation.getTrgPath());
 					
 					if (search == null) {
 						kGpathRelation.setType("relate");

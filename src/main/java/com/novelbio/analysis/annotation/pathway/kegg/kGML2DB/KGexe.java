@@ -47,17 +47,17 @@ public class KGexe {
 			
 			
 			
-//			KGML2DB.readKGML("/home/novelbio/NBCsource/database/kegg/hsa");
+			KGML2DB.readKGML("/home/novelbio/NBCsource/database/kegg/hsa");
 //			KeggIDcvt.upDateGen2Keg("/home/novelbio/NBCsource/database/kegg/hsa/hsa_ncbi-geneid.list");
 //			
-			KGML2DB.readKGML("/home/novelbio/NBCsource/database/kegg/mmu");
-			KeggIDcvt.upDateGen2Keg("/home/novelbio/NBCsource/database/kegg/mmu/mmu_ncbi-geneid.list");
-			
-			KGML2DB.readKGML("/home/novelbio/NBCsource/database/kegg/ath");
-			KeggIDcvt.upDateGen2Keg("/home/novelbio/NBCsource/database/kegg/ath/ath_ncbi-geneid.list");
-
-			KGML2DB.readKGML("/home/novelbio/NBCsource/database/kegg/osa");
-			KeggIDcvt.upDateGen2Keg("/home/novelbio/NBCsource/database/kegg/osa/osa_ncbi-geneid.list");
+//			KGML2DB.readKGML("/home/novelbio/NBCsource/database/kegg/mmu");
+//			KeggIDcvt.upDateGen2Keg("/home/novelbio/NBCsource/database/kegg/mmu/mmu_ncbi-geneid.list");
+//			
+//			KGML2DB.readKGML("/home/novelbio/NBCsource/database/kegg/ath");
+//			KeggIDcvt.upDateGen2Keg("/home/novelbio/NBCsource/database/kegg/ath/ath_ncbi-geneid.list");
+//
+//			KGML2DB.readKGML("/home/novelbio/NBCsource/database/kegg/osa");
+//			KeggIDcvt.upDateGen2Keg("/home/novelbio/NBCsource/database/kegg/osa/osa_ncbi-geneid.list");
 //
 //			System.out.println("ok");
 		} catch (Exception e) {

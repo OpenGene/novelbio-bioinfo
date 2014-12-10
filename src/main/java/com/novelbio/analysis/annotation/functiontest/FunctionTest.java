@@ -403,7 +403,12 @@ public abstract class FunctionTest implements Cloneable {
 		List<GeneID2LsItem> lsbg = getFilteredLs(mapBGGeneID2Items.values());
 		lsTestResult = getFisherResult(statisticsTest, lstest, lsbg, BGnum);
 		for (StatisticTestResult statisticTestResult : lsTestResult) {
-			statisticTestResult.setItemTerm(getItemTerm(statisticTestResult.getItemID()));
+			try {
+				statisticTestResult.setItemTerm(getItemTerm(statisticTestResult.getItemID()));
+			} catch (Exception e) {
+				statisticTestResult.setItemTerm(getItemTerm(statisticTestResult.getItemID()));
+			}
+			
 		}
 		return lsTestResult;
 	}

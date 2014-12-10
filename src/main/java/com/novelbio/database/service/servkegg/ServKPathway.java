@@ -26,6 +26,15 @@ public class ServKPathway {
 		mapKPathway.save(kGpathway);
 	}
 	
+	/** 给定一个含有pathName的pathway，将其删除 */
+	public void delete(KGpathway kGpathway) {
+		mapKPathway.delete(kGpathway.getPathName());
+	}
+	
+	public void deleteAll() {
+		mapKPathway.deleteAll();
+	}
+	
 	static class ManageHolder {
 		static ServKPathway instance = new ServKPathway();
 	}

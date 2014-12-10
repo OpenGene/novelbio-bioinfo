@@ -25,6 +25,10 @@ public class ServKReaction {
 		mapKReaction.save(kGreaction);
 	}
 	
+	public void deleteAll() {
+		mapKReaction.deleteAll();
+	}
+	
 	static class ManageHolder {
 		static ServKReaction instance = new ServKReaction();
 	}

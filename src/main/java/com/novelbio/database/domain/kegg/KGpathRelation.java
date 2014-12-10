@@ -54,7 +54,7 @@ public class KGpathRelation {
 	 * the ID of node which takes part in this relation
 	 * already trim()
 	 */
-	public String getScrPath() 
+	public String getSrcPath() 
 	{
 		return this.scrPath;
 	}

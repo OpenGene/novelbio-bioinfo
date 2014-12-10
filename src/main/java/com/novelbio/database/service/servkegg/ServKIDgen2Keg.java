@@ -26,12 +26,16 @@ public class ServKIDgen2Keg {
 		return mapKIDgen2Keg.findByKegId(kegId);
 	}
 	
-	public List<KGIDgen2Keg> findByGeneIdAndTaxIdAndKegId(long geneID, int taxID, String kegID) {
+	public KGIDgen2Keg findByGeneIdAndTaxIdAndKegId(long geneID, int taxID, String kegID) {
 		return mapKIDgen2Keg.findByGeneIdAndTaxIdAndKegId(geneID, taxID, kegID);
 	}
 
 	public void save(KGIDgen2Keg kgiDgen2Keg) {
 		mapKIDgen2Keg.save(kgiDgen2Keg);
+	}
+	
+	public void deleteAll() {
+		mapKIDgen2Keg.deleteAll();
 	}
 	
 	static class ManageHolder {

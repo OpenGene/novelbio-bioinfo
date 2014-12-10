@@ -33,6 +33,10 @@ public class ServKIDKeg2Ko {
 		mapKIDKeg2Ko.save(kgDkeg2Ko);
 	}
 	
+	public void deleteAll() {
+		mapKIDKeg2Ko.deleteAll();
+	}
+	
 	static class ManageHolder {
 		static ServKIDKeg2Ko instance = new ServKIDKeg2Ko();
 	}

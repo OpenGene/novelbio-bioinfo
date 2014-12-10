@@ -25,6 +25,10 @@ public class ServKPathRelation {
 		mapKPathRelation.save(kGpathRelation);
 	}
 	
+	public void deleteAll() {
+		mapKPathRelation.deleteAll();
+	}
+	
 	static class ManageHolder {
 		static ServKPathRelation instance = new ServKPathRelation();
 	}
