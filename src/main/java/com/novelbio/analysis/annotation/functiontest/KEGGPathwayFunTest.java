@@ -16,6 +16,7 @@ public class KEGGPathwayFunTest extends FunctionTest {
 	protected GeneID2LsItem convert2Item(GeneID geneID) {
 		GeneID2LsItem geneID2LsItem = new GeneID2LsPath();
 		geneID2LsItem.setGeneID(geneID, isBlast());
+		
 		if (!geneID2LsItem.isValidate()) {
 			return null;
 		}

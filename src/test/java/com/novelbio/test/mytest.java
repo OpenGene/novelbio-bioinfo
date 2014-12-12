@@ -1,5 +1,6 @@
 package com.novelbio.test;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,33 +47,9 @@ public class mytest {
 	private static final Logger logger = Logger.getLogger(mytest.class);
 	static boolean is;
 	public static void main(String[] args) throws Exception {
-			RepoKIDKeg2Ko mapKIDKeg2Ko = (RepoKIDKeg2Ko)SpringFactory.getFactory().getBean("repoKIDKeg2Ko");
-		GeneID geneID = new GeneID("tp53", 9606);
-		System.out.println(geneID.getDescription());
-//			mapKIDKeg2Ko.deleteAll();
-//		Mongo mongo = new Mongo();
-//		MongoTemplate mongoTemplate;
-//		SimpleMongoDbFactory mongoDbFactory;
-//		TxtReadandWrite txtRead = new TxtReadandWrite("/home/novelbio/idkeg2ko.txt");
-//		ServKIDKeg2Ko serv = ServKIDKeg2Ko.getInstance();
-//		
-//		int i = 0;
-//		for (String content : txtRead.readlines(2)) {
-//			i++;
-//			String[] ss = content.split("\t");
-//			KGIDkeg2Ko kgiDkeg2Ko = new KGIDkeg2Ko();
-//			kgiDkeg2Ko.setKeggID(ss[0]);
-//			kgiDkeg2Ko.setKo(ss[1]);
-//			kgiDkeg2Ko.setTaxID(Integer.parseInt(ss[2]));
-//			
-//
-//			if (i % 100 == 0) {
-//				System.out.println(i);
-//			}
-//			serv.save(kgiDkeg2Ko);
-//		}
-//		txtRead.close();
-		
+//		GeneID geneID = new GeneID("tp53", 9606);
+//		System.out.println(geneID.getDescription());
+		logger.info("fsefe");
 	}
 	
 	private void deletdb() {

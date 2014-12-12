@@ -11,7 +11,7 @@ public class SpringFactory {
 	private static ApplicationContext context;
 	public static BeanFactory getFactory() {
 		if (factory == null) {
-			ctx = new ClassPathXmlApplicationContext("spring.xml");
+			ctx = new ClassPathXmlApplicationContext("spring_bioinfo.xml");
 			factory = (BeanFactory) ctx;
 			
 			//TODO 这里可以动态绑定数据库

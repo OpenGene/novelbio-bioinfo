@@ -54,11 +54,14 @@ public class Scr2Target {
 		ArrayList<Object[]> lsRelationInfo = new ArrayList<Object[]>();
 		ArrayList<String[]> lsAccID = QKegPath.getGeneID(accID, QtaxID);
 		//一个一个的accID去查找
-		for (int i = 0; i < lsAccID.size(); i++) 
-		{
+		for (int i = 0; i < lsAccID.size(); i++) {
+			String[] accIdInfo = lsAccID.get(i);
+			if (accIdInfo[1] == null && accIdInfo[2] == null) {
+				continue;
+			}
 			Hashtable<String, KGpathScr2Trg> hashEntryRelation = new Hashtable<String, KGpathScr2Trg>();
-			
-			String[] qGenKegInfo=QKegPath.getKeggID(QtaxID, lsAccID.get(i), blast, subTaxID, evalue);
+			String[] qGenKegInfo=QKegPath.getKeggID(QtaxID, accIdInfo, blast, subTaxID, evalue);
+
 			if (qGenKegInfo[3]==null&&qGenKegInfo[7]==null) {
 				continue;
 			}
