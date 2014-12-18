@@ -248,6 +248,7 @@ public class SoftWareInfo {
 		macs, sicer,
 		emboss,
 		misa,
+		varscan,
 		estscan;
 
 		
