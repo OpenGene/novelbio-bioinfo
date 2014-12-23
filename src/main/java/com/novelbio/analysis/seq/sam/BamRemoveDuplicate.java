@@ -86,6 +86,8 @@ public class BamRemoveDuplicate implements IntCmdSoft {
 	private String removeDuplicateSamtools(String outFile) {
 		String outFileTmp = FileOperate.changeFileSuffix(outFile, "_tmp", null);
 		CmdOperate cmdOperate = new CmdOperate(getLsCmdSamtools(outFileTmp));
+		cmdOperate.setRedirectOutToTmp(true);
+		cmdOperate.addCmdParamOutput(outFileTmp);
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {
 			FileOperate.DeleteFileFolder(outFileTmp);
@@ -110,12 +112,20 @@ public class BamRemoveDuplicate implements IntCmdSoft {
 	 * @return 返回文件名
 	 */
 	private String removeDuplicatePicard(String outFile) {
-		List<String> lsCmd = getLsCmdPicard(outFile);
+		String outTmp = FileOperate.changeFileSuffix(outFile, "_tmp", null);
+		List<String> lsCmd = getLsCmdPicard(outTmp);
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
+		cmdOperate.setRedirectOutToTmp(true);
+		cmdOperate.addCmdParamOutput(getMetricsFile(outTmp));
+		cmdOperate.addCmdParamOutput(outTmp);
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {
+			FileOperate.DeleteFileFolder(getMetricsFile(outTmp));
+			FileOperate.DeleteFileFolder(outTmp);
 			throw new ExceptionCmd("picard remove duplicate error:\n" + cmdOperate.getCmdExeStrReal());
 		}
+		FileOperate.moveFile(true, getMetricsFile(outTmp), getMetricsFile(outFile));
+		FileOperate.moveFile(true, outTmp, outFile);
 		lsCmdInfo.add(cmdOperate.getCmdExeStr());
 		return outFile;
 	}
@@ -146,8 +156,13 @@ public class BamRemoveDuplicate implements IntCmdSoft {
 	}
 	/** duplicate的矩阵 */
 	private String[] getMETRICS(String outFile) {
-		return new String[]{"METRICS_FILE=" + FileOperate.changeFileSuffix(outFile, "_duplicate", "txt")};
+		return new String[]{"METRICS_FILE=" + getMetricsFile(outFile)};
 	}
+	
+	private String getMetricsFile(String outFile) {
+		return FileOperate.changeFileSuffix(outFile, "_duplicate", "txt");
+	}
+	
 	private String[] getOutFile(String outFile) {
 		return new String[]{"OUTPUT=" + outFile};
 	}

@@ -110,7 +110,12 @@ public class NovelGOFunTest extends FunctionTest {
 	}
 	@Override
 	protected String getItemTerm(String item) {
-		return servGo2Term.queryGo2Term(item).getGoTerm();
+		try {
+			return servGo2Term.queryGo2Term(item).getGoTerm();	
+		} catch (Exception e) {
+			return servGo2Term.queryGo2Term(item).getGoTerm();
+		}
+	
 	}
 	@Override
 	public Map<String, List<String[]>> getMapWriteToExcel() {

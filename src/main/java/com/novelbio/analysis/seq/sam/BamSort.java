@@ -1,14 +1,11 @@
 package com.novelbio.analysis.seq.sam;
 
-import java.util.List;
-
 import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMFileHeader.SortOrder;
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMFileWriter;
 import net.sf.samtools.SAMFileWriterFactory;
 import net.sf.samtools.SAMFileWriterImpl;
-import net.sf.samtools.SAMRecord;
 import net.sf.samtools.SAMSequenceDictionary;
 
 import com.novelbio.base.PathDetail;
@@ -20,7 +17,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 public class BamSort {
 	public static void main(String[] args) {
 		SamFile samFile = new SamFile("/media/winF/NBC/Project/Project_ZDB_Lab/QXL/Project_ZDB/mapping/Q60-1.bam");
-		samFile.sort("/media/winF/NBC/Project/Project_ZDB_Lab/QXL/Project_ZDB/mapping/Q60-2");
+		samFile.sort("/media/winF/NBC/Project/Project_ZDB_Lab/QXL/Project_ZDB/mapping/Q60-2", false);
 	}
 //    private final Log log = Log.getInstance(SortSam.class);
     SAMFileHeader.SortOrder SORT_ORDER = SAMFileHeader.SortOrder.coordinate;
@@ -69,7 +66,13 @@ public class BamSort {
 		return FileOperate.changeFileSuffix(outFile, "", "") + ".bam";
 	}
 	
-	public String sortJava(String sortBamFile) {
+	/**
+	 * 
+	 * @param sortBamFile
+	 * @param filterUniqMap 是否过滤非unique mapped reads
+	 * @return
+	 */
+	public String sortJava(String sortBamFile, boolean filterUniqeMap) {
 		if (FileOperate.isFileExistAndBigThanSize(sortBamFile, 0)) {
 			return sortBamFile;
 		}
@@ -91,10 +94,18 @@ public class BamSort {
 		FileOperate.createFolders(FileOperate.getPathName(sortBamFile));
 		String tmpFile = FileOperate.changeFileSuffix(sortBamFile, "_tmp", null);
 		samFileHeader.setSortOrder(SORT_ORDER);
+        boolean isFilterUnique = false;
+        if (filterUniqeMap && !BamFilterUnique.isUniqueMapped(samFile)) {
+        	isFilterUnique = true;
+        	BamFilterUnique.setAttributeUnique(samFileHeader);
+        }
+        
         SAMFileWriter writer = new SAMFileWriterFactory().makeSAMOrBAMWriter(samFileHeader, false, tmpFile);
 
-//        ProgressLogger progress = new ProgressLogger(log, (int) 1e7, "Read");
         for (SamRecord rec: samFile.readLines()) {
+        	if (isFilterUnique && !rec.isUniqueMapping()) {
+				continue;
+			}
         	if (samSequenceDictionary != null) {
 				samReorder.copeReads(rec);
 			}

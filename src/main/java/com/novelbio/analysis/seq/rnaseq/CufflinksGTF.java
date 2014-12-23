@@ -14,9 +14,7 @@ import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneNCBI;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
-import com.novelbio.analysis.seq.mapping.MapBwaAln;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.sam.BamReadsInfo;
 import com.novelbio.analysis.seq.sam.SamFile;
@@ -413,6 +411,8 @@ public class CufflinksGTF implements IntCmdSoft {
 				) {
 			outGtf = outGTFPath + "transcripts.gtf";
 		} else {
+			cmdOperate.setRedirectOutToTmp(true);
+			cmdOperate.addCmdParamOutput(getOutPathPrefix(prefix));
 			cmdOperate.run();
 			if (cmdOperate.isFinishedNormal()) {
 				outGtf = outGTFPath + "transcripts.gtf";

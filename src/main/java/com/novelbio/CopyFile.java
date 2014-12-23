@@ -24,7 +24,7 @@ public class CopyFile {
 	long time = -1;
 	TxtReadandWrite txtWriteCannotCopy;
 	public static void main(String[] args) {
-		String[] ss = new String[]{"/media/hdfs/nbCloud/public/nbcplatform/copy/needCopy2.txt", "2014-11-24"};
+		String[] ss = new String[]{"/media/hdfs/nbCloud/public/nbcplatform/copy/needCopy1.txt", "2014-12-21"};
 		main2(ss);
 	}
 	

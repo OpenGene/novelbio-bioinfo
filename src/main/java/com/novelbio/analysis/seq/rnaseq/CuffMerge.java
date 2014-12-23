@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.novelbio.analysis.IntCmdSoft;
-import com.novelbio.analysis.seq.mapping.MapBwaAln;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataOperate.DateUtil;
@@ -126,10 +125,18 @@ public class CuffMerge implements IntCmdSoft {
 		}
 		
 		CmdOperate cmdOperate = new CmdOperate(getLsCmd(true));
+		//=====
+		cmdOperate.setRedirectOutToTmp(true);
+		cmdOperate.addCmdParamOutput(outputPrefix);
+		//=====
 		cmdOperate.run();
 		// 有时候gtf会有问题，这时候就不要加入reference，就可以出结果了
 		if (!cmdOperate.isFinishedNormal()) {
 			cmdOperate = new CmdOperate(getLsCmd(false));
+			//=====
+			cmdOperate.setRedirectOutToTmp(true);
+			cmdOperate.addCmdParamOutput(outputPrefix);
+			//=====
 			cmdOperate.run();
 		}
 		lsCmd.add(cmdOperate.getCmdExeStr());
@@ -143,6 +150,10 @@ public class CuffMerge implements IntCmdSoft {
 		return outMergedFile;
 	}
 	
+	/**
+	 * @param isHaveReference 是否添加reference
+	 * @return
+	 */
 	private List<String> getLsCmd(boolean isHaveReference) {
 		List<String> lsCmd = new ArrayList<>();
 		lsCmd.add(exePath + "cuffmerge");

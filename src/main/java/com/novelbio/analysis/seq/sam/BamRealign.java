@@ -55,19 +55,26 @@ public class BamRealign implements IntCmdSoft {
 			return outFile;
 		}
 		String outFileTmp = FileOperate.changeFileSuffix(outFile, "_tmp", null);
+		
 		CmdOperate cmdOperate = new CmdOperate(getLsCmdCreator(outFileTmp));
+		cmdOperate.setRedirectOutToTmp(true);
+		cmdOperate.addCmdParamOutput(getOutInterVals(outFileTmp));
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {
 			throw new ExceptionCmd("realign error:\n" + cmdOperate.getCmdExeStrReal());
 		}
 		lsCmdInfo.add(cmdOperate.getCmdExeStr());
+		
 		cmdOperate = new CmdOperate(getLsCmdIndelRealign(outFileTmp));
+		cmdOperate.setRedirectOutToTmp(true);
+		cmdOperate.addCmdParamOutput(outFileTmp);
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {
 			FileOperate.DeleteFileFolder(getOutIntervalFile(outFileTmp)[1]);
 			FileOperate.DeleteFileFolder(outFileTmp);
 			throw new ExceptionCmd("realign error:\n" + cmdOperate.getCmdExeStrReal());
 		}
+		
 		FileOperate.moveFile(true, outFileTmp, outFile);
 		FileOperate.moveFile(true, FileOperate.getFileNameSep(outFileTmp)[0] + ".bai", outFile + ".bai");
 		FileOperate.moveFile(true, FileOperate.getFileNameSep(outFileTmp)[0] + ".intervals", FileOperate.getFileName(outFile) + ".intervals");
@@ -116,15 +123,20 @@ public class BamRealign implements IntCmdSoft {
 		return new String[]{"--consensusDeterminationModel", "USE_SW"};
 	}
 	private String[] getOutIntervalFile(String outFile) {
-		return new String[]{"-o", FileOperate.changeFileSuffix(outFile, "", "intervals")};
+		return new String[]{"-o", getOutInterVals(outFile)};
 	}
 
 	private String[] getTmpPath() {
 		return new String[]{"-Djava.io.tmpdir=" + PathDetail.getTmpPath()};
 	}
 	private String[] getInIntervalFile(String outFile) {
-		return new String[]{"-targetIntervals", FileOperate.changeFileSuffix(outFile, "", "intervals")};
+		return new String[]{"-targetIntervals", getOutInterVals(outFile)};
 	}
+	
+	private String getOutInterVals(String outFile) {
+		return FileOperate.changeFileSuffix(outFile, "", "intervals");
+	}
+	
 	private String[] getOutRealignBam(String outFile) {
 		return new String[]{"-o", outFile};
 	}

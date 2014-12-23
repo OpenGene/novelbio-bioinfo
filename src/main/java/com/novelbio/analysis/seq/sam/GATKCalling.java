@@ -67,6 +67,8 @@ public class GATKCalling implements IntCmdSoft {
 	public String callingByGATK() {
 		List<String> lsCmd = getLsCmd();
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
+		cmdOperate.setRedirectOutToTmp(true);
+		cmdOperate.addCmdParamOutput(outVcf);
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {
 			throw new ExceptionCmd("GATK error:\n" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
