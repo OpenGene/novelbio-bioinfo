@@ -92,7 +92,10 @@ public class VarScanSomatic implements IntCmdSoft {
 		 this.exePath = softWareInfo.getExePathRun();
 	}
 	public void run() {
+		
 		CmdOperate cmdOperate = new CmdOperate(getCmdExeStr());
+		cmdOperate.run();
+		
 	}
 
 	

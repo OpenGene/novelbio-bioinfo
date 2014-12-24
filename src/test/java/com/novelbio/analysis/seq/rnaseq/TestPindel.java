@@ -11,11 +11,23 @@ public class TestPindel extends TestCase {
 	
 	public void testCmdExeStr() {
 		List<String> lsCmd = new ArrayList<>();
-		// /media/hdfs/nbCloud/staff/bianlianle/software/pindel/demo
 		String path = "/media/hdfs/nbCloud/staff/bianlianle/software/pindel/";
+		String reference = path + "demo/simulated_reference.fa";
+		int insertSize = 200;
+		List<String> lsInputFile = new ArrayList<>();
+		lsInputFile.add("/media/hdfs/nbCloud/staff/bianlianle/software/pindel/demo/simulated_sample_1.bam");
+		lsInputFile.add("/media/hdfs/nbCloud/staff/bianlianle/software/pindel/demo/simulated_sample_2.bam");
+		lsInputFile.add("/media/hdfs/nbCloud/staff/bianlianle/software/pindel/demo/simulated_sample_3.bam");
+		List<String> lsPrefix = new ArrayList<>();
+		lsPrefix.add("sample1");
+		lsPrefix.add("sample2");
+		lsPrefix.add("sample3");
 		Pindel pindel = new Pindel();
-		pindel.setInputFile("/media/hdfs/nbCloud/staff/bianlianle/software/pindel/demo/simulated_reference.fa");
-		pindel.setConfigFile("/media/hdfs/nbCloud/staff/bianlianle/software/pindel/demo/simulated_config.txt");
+		pindel.setReference(reference);
+		pindel.setInputFile(lsInputFile);
+		pindel.setLsPrefix(lsPrefix);
+		pindel.setInsertSize(insertSize);
+//		pindel.setConfigFile("/media/hdfs/nbCloud/staff/bianlianle/software/pindel/demo/simulated_config.txt");
 		pindel.setMinInversionSize(60);
 		pindel.setMinNTSize(60);
 		pindel.setNumberOfThreads(3);
