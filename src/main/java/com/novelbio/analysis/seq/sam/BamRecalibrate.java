@@ -96,6 +96,8 @@ public class BamRecalibrate implements IntCmdSoft {
 		}
 		String outFileTmp = FileOperate.changeFileSuffix(outFile, "_tmp", null);
 		CmdOperate cmdOperate = new CmdOperate(getLsCmdBaseRecal(outFileTmp));
+		cmdOperate.setRedirectOutToTmp(true);
+		cmdOperate.addCmdParamOutput(getRecalTableName(outFileTmp));
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {
 			throw new ExceptionCmd("gatk base recal error:\n" + cmdOperate.getCmdExeStrReal());
@@ -103,6 +105,8 @@ public class BamRecalibrate implements IntCmdSoft {
 		lsCmdInfo.add(cmdOperate.getCmdExeStr());
 
 		cmdOperate = new CmdOperate(getLsCmdPrintReads(outFileTmp));
+		cmdOperate.setRedirectOutToTmp(true);
+		cmdOperate.addCmdParamOutput(outFileTmp);
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {
 			throw new ExceptionCmd("gatk print reads error:\n" + cmdOperate.getCmdExeStrReal());
@@ -160,8 +164,7 @@ public class BamRecalibrate implements IntCmdSoft {
 	}
 	
 	private String[] getRecalTable(String outFile) {
-		String recalTable = FileOperate.changeFileSuffix(outFile, "_recal_data", "grp");
-		return new String[]{"-o", recalTable};
+		return new String[]{"-o", getRecalTableName(outFile)};
 	}
 	
 	private String getRecalTableName(String outFile) {

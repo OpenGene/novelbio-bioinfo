@@ -29,21 +29,21 @@ public class ImportDB {
 		String downloadPath = "/home/novelbio/NBCsource/database/";
 		String softToolsFile = "/media/hdfs/nbCloud/public/nbcplatform/genome/SoftwareInfo.txt";
 		String taxIDFile = "/home/novelbio/NBCsource/species/常见物种IDKEGGUploadTmp.txt";
-		String dbInfo = "/media/winE/NBCplatform/database/DBinfo.txt";
-		String GOPath = "/media/winE/NBCplatform/database/GO/";
+		String dbInfo = "/home/novelbio/NBCsource/database/DBinfo.txt";
+		String GOPath = "/home/novelbio/NBCsource/database/GO/";
 		String speciesFile = "";
 		ImportPerLine.setTaxIDFile(taxIDFile);
 		ImportDB importDB = new ImportDB();
 		importDB.setDownloadPath(downloadPath);
 //		importDB.setSoftToolsFile(softToolsFile);
 //		importDB.setSpeciesFile(speciesFile);
-//		importDB.setGOPath(GOPath);
-		importDB.setTaxIDFile(taxIDFile);
+		importDB.setGOPath(GOPath);
+//		importDB.setTaxIDFile(taxIDFile);
 		
 //		importDB.updateDBinfo(dbInfo);
-//		importDB.updateGODB();
+		importDB.updateGODB();
 		
-		importDB.updateNCBIID();
+//		importDB.updateNCBIID();
 		
 		
 		

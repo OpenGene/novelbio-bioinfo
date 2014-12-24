@@ -26,6 +26,7 @@ import net.sf.samtools.util.StringLineReader;
 
 import org.apache.log4j.Logger;
 
+import com.hg.doc.fa;
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.FormatSeq;
 import com.novelbio.analysis.seq.bed.BedSeq;
@@ -424,25 +425,43 @@ public class SamFile implements AlignSeq {
 	}
 	
     public SamFile sort() {
-    	if (getFileName().endsWith("_sorted.bam")) {
-			return this;
-		}
-    	String outName = FileOperate.changeFileSuffix(getFileName(), "_sorted", "bam");
-    	return sort(outName);
+    	return sort(false);
     }
-    public SamFile sortByChrIds(SAMSequenceDictionary samSequenceDictionary) {
-    	if (getFileName().endsWith("_sorted.bam")) {
+    
+    public static boolean isSorted(SamFile samFile) {
+    	if (samFile.getFileName() != null && samFile.getFileName().endsWith("sorted.bam")) {
+			return true;
+		} else if (samFile.getHeader().getSortOrder() == SortOrder.coordinate) {
+			samFile.close();
+			return true;
+		}
+    	return false;
+    }
+    
+    /** 是否在过滤的同时去除非uniquemapped reads */
+    public SamFile sort(boolean isFilterUnique) {
+    	if (isSorted(this)) {
 			return this;
 		}
+    	
     	String outName = FileOperate.changeFileSuffix(getFileName(), "_sorted", "bam");
-    	return sort(samSequenceDictionary, outName);
+    	return sort(outName, isFilterUnique);
+    }
+    
+    public SamFile sortByChrIds(SAMSequenceDictionary samSequenceDictionary, boolean isFilterUnique) {
+    	if (isSorted(this)) {
+			return this;
+		}
+    	
+    	String outName = FileOperate.changeFileSuffix(getFileName(), "_sorted", "bam");
+    	return sort(samSequenceDictionary, outName, isFilterUnique);
     }
 	 /**
 	  * 排序，输出为bam形式
 	  * @param outFile
 	  */
-    public SamFile sort(String outFile) {
-		return sort(null, outFile);
+    public SamFile sort(String outFile, boolean isFilterUnique) {
+		return sort(null, outFile, isFilterUnique);
 	}
     
 	 /**
@@ -451,7 +470,7 @@ public class SamFile implements AlignSeq {
 	  * @param outFile
 	  * @return
 	  */
-   public SamFile sort(SAMSequenceDictionary samSequenceDictionary, String outFile) {
+   public SamFile sort(SAMSequenceDictionary samSequenceDictionary, String outFile, boolean isFilterUnique) {
 		BamSort bamSort = new BamSort();
 		bamSort.setSamSequenceDictionary(samSequenceDictionary);
 		if (!bamFile) {
@@ -461,7 +480,7 @@ public class SamFile implements AlignSeq {
 			bamSort.setSamFile(this);
 		}
 
-		String outSortedBamName = bamSort.sortJava(outFile);
+		String outSortedBamName = bamSort.sortJava(outFile, isFilterUnique);
 		SamFile samFile = new SamFile(outSortedBamName);
 		setParamSamFile(samFile);
 		samFile.read = true;
