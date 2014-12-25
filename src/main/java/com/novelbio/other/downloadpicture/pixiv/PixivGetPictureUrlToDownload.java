@@ -58,7 +58,10 @@ public class PixivGetPictureUrlToDownload extends GetPictureUrl {
 	/** 返回null表示失败，就需要重跑
 	 * @throws ParserException */
 	private void getLsPicture() throws ParserException {
-		webFetch.setUri(midUrl);
+		webFetch.setUri("http://www.pixiv.net/member_illust.php?mode=medium&illust_id=43680130");
+//		if (midUrl.contains("43680130")) {
+//			logger.debug("");
+//		}
 		if (!webFetch.query(retryNum)) {
 			lsResult = null;
 			return;
@@ -69,6 +72,7 @@ public class PixivGetPictureUrlToDownload extends GetPictureUrl {
 			lsResult = new ArrayList<UrlPictureDownLoad>();
 			return;
 		}
+		System.out.println(info);
 		Parser parser = new Parser(info);
 		NodeFilter filterPicture = new AndFilter(new TagNameFilter("div"), new HasAttributeFilter("class", "works_display"));
 		Node nodePicture = parser.parse(filterPicture).elementAt(0);
@@ -179,6 +183,7 @@ public class PixivGetPictureUrlToDownload extends GetPictureUrl {
 		try {
 			getLsPicture();
 		} catch (Exception e) {
+			e.printStackTrace();
 			lsResult = null;
 		}
 		return this;

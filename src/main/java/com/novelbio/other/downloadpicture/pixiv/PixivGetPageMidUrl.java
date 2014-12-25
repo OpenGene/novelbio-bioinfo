@@ -24,8 +24,7 @@ public class PixivGetPageMidUrl {
 	int allPictureNum;
 	int allPageNum;
 	int thisPageNum;
-	/** 本页有多少图片 */
-	int thisPagePictureNum;
+
 	int retryNum = 100;
 	
 	String savePath;
@@ -84,8 +83,10 @@ public class PixivGetPageMidUrl {
 		if (!webFetch.query(retryNum)) {
 			return false;
 		}
-		Parser parser = new Parser(webFetch.getResponse());
-		NodeFilter filterPicture = new AndFilter(new TagNameFilter("div"), new HasAttributeFilter("class", "display_works linkStyleWorks"));
+		String pageInfo = webFetch.getResponse();
+		Parser parser = new Parser(pageInfo);
+		
+		NodeFilter filterPicture = new AndFilter(new TagNameFilter("ul"), new HasAttributeFilter("class", "_image-items"));
 		NodeList nodeListPicture = parser.parse(filterPicture);
 		lsNameAndUrl = getPictureMidUrl(nodeListPicture);
 		return true;
@@ -93,10 +94,9 @@ public class PixivGetPageMidUrl {
 	/** 获得中等图片的url */
 	private ArrayList<String[]> getPictureMidUrl(NodeList nodeListPicture) {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		NodeFilter filterPicture = new TagNameFilter("a");
+		NodeFilter filterPicture = new AndFilter(new TagNameFilter("li"), new HasAttributeFilter("class", "image-item"));
 		//包含有全部图片的nodelist
 		NodeList nodeLsPicture = nodeListPicture.extractAllNodesThatMatch(filterPicture, true);
-		thisPagePictureNum = nodeListPicture.size();
 		
 		SimpleNodeIterator iterator = nodeLsPicture.elements();
         while (iterator.hasMoreNodes()) {
@@ -114,7 +114,7 @@ public class PixivGetPageMidUrl {
 	}
 	/** 获得每个图片的url */
 	private String getPictureUrl(Node nodePicture) {
-		String urlAll = nodePicture.getText();
+		String urlAll = nodePicture.getFirstChild().getText();
 		 urlAll = HttpFetch.decode(urlAll).trim();
 		 urlAll = urlAll.split("href=")[1].replace("\"", "").trim();
 		 urlAll = urlAll.split(" ")[0];
@@ -125,7 +125,7 @@ public class PixivGetPageMidUrl {
 	}
 	/** 获得每个图片的名字 */
 	private String getPictureName(Node nodePicture) {
-		String name = nodePicture.toPlainTextString();
+		String name = nodePicture.getLastChild().toPlainTextString();
 		return name;
 //		NodeFilter filterUrl = new TagNameFilter("img");
 //		//只可能有一个url

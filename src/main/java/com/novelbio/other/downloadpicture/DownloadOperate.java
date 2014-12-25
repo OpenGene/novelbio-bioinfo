@@ -62,7 +62,8 @@ public abstract class DownloadOperate {
 //		donmaiOperate.setSavePath("D:/Picture/donmai");
 //		donmaiOperate.run();
 		
-		downloadFileAll("D:/Picture/donmai", false);
+//		downloadFileAll("D:/Picture/donmai", false);
+		downloadFileAll("D:/Picture/pixiv", true);
 	}
 	
 	protected HttpFetch webFetch;
@@ -94,6 +95,7 @@ public abstract class DownloadOperate {
 		Set<String> setUrlRead = getUrlAlready(fileAlreadyRun);
 		List<String> lsFold = FileOperate.getFoldFileNameLs(path, null, null);
 		TxtReadandWrite txtWrite = new TxtReadandWrite(fileAlreadyRun, true, true);
+		HttpFetch webFetch = HttpFetch.getInstance();
 		for (String foldName : lsFold) {
 			foldName = FileOperate.getFileName(foldName);
 			String urlInput = null;
@@ -106,6 +108,7 @@ public abstract class DownloadOperate {
 				urlInput = foldName;
 				downloadOperate = new DonmaiOperate();
 			}
+//			downloadOperate.setWebFetchPixiv(webFetch);
 			downloadOperate.getcookies();
 			if (setUrlRead.contains(urlInput)) {
 				continue;
