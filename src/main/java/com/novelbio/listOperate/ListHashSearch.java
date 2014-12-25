@@ -214,6 +214,7 @@ K extends ListCodAbsDu<T, E>, M extends ListAbsSearch<T, E, K>> {
 		} catch (ExceptionGff e) {
 			throw e;
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new ExceptionGff("GffFile Formate Error:" + gfffilename, e);
 		}
 		return true;

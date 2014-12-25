@@ -15,7 +15,7 @@ public class TestManageGffDetailGene extends TestCase {
 		ManageGffDetailGene manageGffDetailGene = ManageGffDetailGene.getInstance();
 		Species species = new Species(9606);
 		GffChrAbs gffChrAbs = new GffChrAbs(species);
-		manageGffDetailGene.saveGffChrInterval(gffChrAbs.getGffHashGene());
+//		manageGffDetailGene.saveGffChrInterval(gffChrAbs.getGffHashGene());
 	}
 	public void testCase() {
 		ManageGffDetailGene manageGffDetailGene = ManageGffDetailGene.getInstance();

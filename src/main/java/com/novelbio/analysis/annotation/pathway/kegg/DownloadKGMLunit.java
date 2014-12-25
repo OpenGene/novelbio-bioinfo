@@ -96,7 +96,12 @@ public class DownloadKGMLunit implements Callable<DownloadKGMLunit> {
 		String keggOrgUri = DownloadKGMLunit.keggOrgUri.replace("KEGPATH", "map" + mapId);
 		keggFetch.setUri(keggOrgUri);
 		keggFetch.queryExp(3);
-		Parser parser = new Parser(keggFetch.getResponse());
+		String response = keggFetch.getResponse();
+//		System.out.println(response);
+//		if (mapId.equals("01230")) {
+//			logger.debug("");
+//		}
+		Parser parser = new Parser(response);
 		NodeFilter filterKGML = new AndFilter(new TagNameFilter("a"), new HasChildFilter(new StringFilter(speciesKeggId)));
 		NodeList nodeList = parser.parse(filterKGML);
 		if (nodeList.size() == 0) {

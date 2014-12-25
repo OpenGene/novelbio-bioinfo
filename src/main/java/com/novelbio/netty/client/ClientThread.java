@@ -2,7 +2,7 @@ package com.novelbio.netty.client;
 
 import java.net.SocketAddress;
 
-import com.novelbio.web.model.task.TaskInfo;
+import org.springframework.util.StopWatch.TaskInfo;
 
 
 

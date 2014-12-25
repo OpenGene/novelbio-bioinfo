@@ -162,7 +162,7 @@ public class MapSplice implements MapRNA {
 			cmdOperate.setRedirectOutToTmp(true);
 			cmdOperate.run();
 			if (!cmdOperate.isFinishedNormal()) {
-//				FileOperate.DeleteFileFolder(FileOperate.addSep(outFile) + "tmp");
+				FileOperate.DeleteFileFolder(FileOperate.addSep(outFile) + "tmp");
 				throw new ExceptionCmd("error running mapsplice:" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
 			}
 			clearTmpReads_And_MoveFile();

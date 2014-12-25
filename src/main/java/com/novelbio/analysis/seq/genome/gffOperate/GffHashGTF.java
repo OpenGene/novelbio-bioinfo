@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.genome.ExceptionGFF;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -31,6 +32,13 @@ public class GffHashGTF extends GffHashGeneAbs{
 	
 	ArrayListMultimap<String, GffGeneIsoInfo> mapID2Iso = ArrayListMultimap.create();
 	private HashMap<String, Boolean> mapIso2IsHaveExon = new HashMap<String, Boolean>();
+	
+	String geneNameFlag = null;
+	
+	/** geneName是哪一项，默认是 gene_name */
+	public void setGeneNameFlag(String geneNameFlag) {
+		this.geneNameFlag = geneNameFlag;
+	}
 	/**
 	 * 设定参考基因的Gff文件
 	 * @param gffHashRef
@@ -66,6 +74,9 @@ public class GffHashGTF extends GffHashGeneAbs{
 		String tmpTranscriptNameLast = "";
 		int line = 0;
 		for (String content : txtgff.readlines() ) {
+			if (content.contains("NM_005199.4")) {
+				logger.debug("stop");
+			}
 			line++;
 			if (content.charAt(0) == '#') continue;
 			String[] ss = content.split("\t");// 按照tab分开
@@ -160,6 +171,13 @@ public class GffHashGTF extends GffHashGeneAbs{
 	
 	private String[] getIsoName2GeneName(String ss8) {
 		String geneNameFlag = "gene_name";
+		if (!StringOperate.isRealNull(this.geneNameFlag)) {
+			geneNameFlag = this.geneNameFlag;
+			if (!ss8.contains(geneNameFlag) && ss8.contains("gene_name")) {
+				geneNameFlag = "gene_name";
+			}
+		}
+				
 		if (!ss8.contains(geneNameFlag) && ss8.contains("gene_id")) {
 			geneNameFlag = "gene_id";
 		} else if (!ss8.contains(geneNameFlag) && !ss8.contains("gene_id") && ss8.contains("Name")) {

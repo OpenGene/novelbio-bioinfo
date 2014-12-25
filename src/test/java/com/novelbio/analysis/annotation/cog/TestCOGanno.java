@@ -16,9 +16,9 @@ public class TestCOGanno {
 		cogAnno.setCogAbbr2FunFile(cogAbbr2FunFile);
 		cogAnno.initial();
 		COGanno.getModifiedSeq(PathDetailNBC.getCogFasta(EnumCogType.COG), "/media/winE/NBCsource/otherResource/cog/COG0303/test22", pro2cogFile);
-		HistList histList = HistList.creatHistList(name, cisList);
-		histList.setStartBin(number, name, start, end);
-		histList.addHistBin(number, name, thisNum);
+//		HistList histList = HistList.creatHistList(name, cisList);
+//		histList.setStartBin(number, name, start, end);
+//		histList.addHistBin(number, name, thisNum);
 				
 	}
 }

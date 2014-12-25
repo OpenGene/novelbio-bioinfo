@@ -30,16 +30,16 @@ public class TestSpliceTestModule extends TestCase {
 		lsSite2LsGroup2.add(lsSite1); lsSite2LsGroup2.add(lsSite2);
 		
 		List<List<Double>> listResult = new ArrayList<>();
-		spliceTestModule.setLsRepeat2Value(true, lsSite2LsGroup, lsSite2LsGroup2);
-		
-		assertEquals(30.0, spliceTestModule.getLsTreat2LsValue().get(0).get(0));
-		assertEquals(31.5, spliceTestModule.getLsTreat2LsValue().get(0).get(1));
-		assertEquals(33.25, spliceTestModule.getLsTreat2LsValue().get(0).get(2));
+//		spliceTestModule.setLsRepeat2Value(true, lsSite2LsGroup, lsSite2LsGroup2);
+//		
+//		assertEquals(30.0, spliceTestModule.getLsTreat2LsValue().get(0).get(0));
+//		assertEquals(31.5, spliceTestModule.getLsTreat2LsValue().get(0).get(1));
+//		assertEquals(33.25, spliceTestModule.getLsTreat2LsValue().get(0).get(2));
 	}
 	
 	
 	public void testConvert() {
-		SpliceTestModule spliceTestModule = new SpliceTestModule();
+//		SpliceTestModule spliceTestModule = new SpliceTestModule();
 		List<List<Double>> lsSite2LsGroup = new ArrayList<>();
 		List<Double> lsSite1 = new ArrayList<>();
 		lsSite1.add(1.0); lsSite1.add(2.0); lsSite1.add(3.0);
@@ -50,7 +50,7 @@ public class TestSpliceTestModule extends TestCase {
 		lsSite2LsGroup.add(lsSite1); lsSite2LsGroup.add(lsSite2); lsSite2LsGroup.add(lsSite3);
 		
 		List<List<Double>> listResult = new ArrayList<>();
-		spliceTestModule.convert(lsSite2LsGroup, listResult);
+//		spliceTestModule.convert(lsSite2LsGroup, listResult);
 		
 		assertEquals(1.0, listResult.get(0).get(0));
 		assertEquals(10.0, listResult.get(0).get(1));

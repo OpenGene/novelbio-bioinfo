@@ -1,44 +1,42 @@
 package com.novelbio.database.service.servkegg;
 
-import java.util.ArrayList;
-
-import javax.inject.Inject;
+import java.util.List;
 
 import com.novelbio.database.domain.kegg.KGreaction;
-import com.novelbio.database.mapper.kegg.MapKReaction;
+import com.novelbio.database.mongorepo.kegg.RepoKReaction;
 import com.novelbio.database.service.SpringFactory;
 
-public class ServKReaction implements MapKReaction{
-	@Inject
-	MapKReaction mapKReaction;
+public class ServKReaction {
+	RepoKReaction mapKReaction;
 	
 	public ServKReaction() {
-		// TODO Auto-generated constructor stub
-		mapKReaction = (MapKReaction)SpringFactory.getFactory().getBean("mapKReaction");
+		mapKReaction = (RepoKReaction)SpringFactory.getFactory().getBean("repoKReaction");
 	}
 
-	@Override
-	public ArrayList<KGreaction> queryLsKGreactions(KGreaction kGreaction) {
-		// TODO Auto-generated method stub
-		return mapKReaction.queryLsKGreactions(kGreaction);
+	public List<KGreaction> findByName(String name) {
+		return mapKReaction.findByName(name	);
+	}
+	
+	public KGreaction findByNameAndPathNameAndId(String name, String pathName, int id) {
+		return mapKReaction.findByNameAndPathNameAndId(name, pathName, id);
+	}
+	
+	public void save(KGreaction kGreaction) {
+		mapKReaction.save(kGreaction);
+	}
+	
+	public void deleteAll() {
+		mapKReaction.deleteAll();
+	}
+	
+	static class ManageHolder {
+		static ServKReaction instance = new ServKReaction();
+	}
+	
+	public static ServKReaction getInstance() {
+		return ManageHolder.instance;
 	}
 
-	@Override
-	public KGreaction queryKGreaction(KGreaction kGreaction) {
-		// TODO Auto-generated method stub
-		return mapKReaction.queryKGreaction(kGreaction);
-	}
 
-	@Override
-	public void insertKGreaction(KGreaction kGreaction) {
-		// TODO Auto-generated method stub
-		mapKReaction.insertKGreaction(kGreaction);
-	}
-
-	@Override
-	public void updateKGreaction(KGreaction kGreaction) {
-		// TODO Auto-generated method stub
-		mapKReaction.updateKGreaction(kGreaction);
-	}
 	
 }

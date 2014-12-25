@@ -69,8 +69,9 @@ public class TestMirPipelineBlastToSpecies {
 			mirSpeciesPipline.addSample(prefix, mapPrefix2Fastq.get(prefix));
 		}
 		mirSpeciesPipline.setExpMir(ctrlMiRNApredict.getExpMirPre(), ctrlMiRNApredict.getExpMirMature());
-		mirSpeciesPipline.setLsSpecies(lsSpeciesBlastTo); 
-		mirSpeciesPipline.setOutPathTmp(outPath);
+		mirSpeciesPipline.setLsSpecies(lsSpeciesBlastTo);
+		//TODO 填写正确
+//		mirSpeciesPipline.setOutPathTmp(outPath);
 		mirSpeciesPipline.setThreadNum(4);
 		mirSpeciesPipline.mappingPipeline(PathDetailNBC.getMiRNADat(), samMapMiRNARate);
 		mirSpeciesPipline.writeToFile();

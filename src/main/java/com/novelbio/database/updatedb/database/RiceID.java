@@ -2,21 +2,19 @@ package com.novelbio.database.updatedb.database;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataOperate.HttpFetch;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.GeneInfo;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.service.servgeneanno.ManageDBInfo;
 
-public class RiceID{
+public class RiceID {
 	/** 下载的东西保存在哪里 */
 	String downLoadPath = "";
 	

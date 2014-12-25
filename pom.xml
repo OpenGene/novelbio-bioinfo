@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.novelBio</groupId>
 	<artifactId>bioinfo-platform</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2</version>
 	<name>bioinfo-platform</name>
 	<dependencies>
 		<dependency>
@@ -17,6 +17,11 @@
 			<version>3.8-beta2</version>
 			<type>jar</type>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+			<version>4.0.5.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>asm</groupId>
@@ -37,18 +42,6 @@
 			<groupId>aopalliance</groupId>
 			<artifactId>aopalliance</artifactId>
 			<version>1.0</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.16</version>
-		</dependency>
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.22</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
@@ -170,7 +163,7 @@
 		<dependency>
 			<groupId>com.novelbio</groupId>
 			<artifactId>base</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.0.2</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>netty</artifactId>
@@ -240,12 +233,13 @@
 			<name>Internal Releases</name>
 			<url>http://192.168.0.104:8081/nexus/content/repositories/releases</url>
 		</repository>
-		<!-- use the following if you ARE using a snapshot version. -->
+		<!-- use the following if you ARE using a snapshot version. 
 		<snapshotRepository>
 			<id>my-nexus-releases</id>
 			<name>Internal Releases</name>
 			<url>http://192.168.0.104:8081/nexus/content/repositories/snapshots</url>
 		</snapshotRepository>
+		-->
 	</distributionManagement>
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>

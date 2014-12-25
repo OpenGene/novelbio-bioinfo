@@ -77,7 +77,7 @@ public class QKegPath {
 		kegIDInfo[4] = copedID.getLsBlastInfos().get(0).getEvalue() + "";
 		kegIDInfo[5] = subTaxID + "";
 		kegIDInfo[6] = copedID.getGeneIDBlast().getGeneUniID();
-		ArrayList<String> lsKO =  copedID.getGeneIDBlast().getKeggInfo().getLsKo();
+		List<String> lsKO =  copedID.getGeneIDBlast().getKeggInfo().getLsKo();
 		if (lsKO == null || lsKO.size() == 0) {
 			return kegIDInfo;
 		}
@@ -156,16 +156,13 @@ public class QKegPath {
 		if (kGentry.getParentID()>0)
 		{
 			////////如果有复合物，先查找entry中的复合物，将该复合物的其余复合物都找到//////////////////////////////////////////////////////////////////////////////////////////////////////////
-			KGentry tmpqkGentry = new KGentry();//查询用的KGentry
-			tmpqkGentry.setPathName(kGentry.getPathName());
-			tmpqkGentry.setParentID(kGentry.getParentID());
 			//这里都是与queryEntry是component的entry,
-			ArrayList<KGentry> lsSubKGentries=servKEntry.queryLsKGentries(tmpqkGentry);
+			List<KGentry> lsSubKGentries=servKEntry.findByPathNameAndParentId(kGentry.getPathName(), kGentry.getParentID());
 			for (int i = 0; i < lsSubKGentries.size(); i++) 
 			{
 				KGentry tmpkgGentrySub=lsSubKGentries.get(i);
 				//一个pathway上的entry会有多个keggID对应上去，那么这时候相同entry的keggID--也就是同一个entry的不同的基因，之间不要有联系，所以跳过
-				if (tmpkgGentrySub.getID() == kGentry.getID())
+				if (tmpkgGentrySub.getEntryId() == kGentry.getEntryId())
 				{
 					continue;
 				}
@@ -178,9 +175,7 @@ public class QKegPath {
 			}
 			////////////////接下来分别用entryID和parentID去查找relation表，获得结果的entryID////////////////////////////////////////////////////////////////////////////////////////////////////
 			////////////////////////////////////////////////首先用entryID去查找//////////////////////////////////////////////////////////////
-			KGrelation tmpQkGrelation=new KGrelation();
-			tmpQkGrelation.setEntry1ID(kGentry.getID()); tmpQkGrelation.setPathName(kGentry.getPathName());
-			ArrayList<KGrelation> lsKGrelations = servKRelation.queryLsKGrelations(tmpQkGrelation);
+			List<KGrelation> lsKGrelations = servKRelation.findByPathNameAndEntry1Id(kGentry.getPathName(), kGentry.getEntryId());
 			/////////////////////////////////////////因为有些relation中有这种情况：entry1、entry2完全一致，就是subtype不一致，这个就是将一致的entry1、entry2去冗余的////////////////////////////////////////////////////////////////
 			Hashtable<String, KGrelation> hashPathID2KGRelation = removeRep(lsKGrelations);
 			
@@ -191,7 +186,7 @@ public class QKegPath {
 				KGrelation kGrelation = hashPathID2KGRelation.get(key);
 			
 				//搜索该entry对应的所有实际entry--也就是不同的keggID-entry
-				ArrayList<KGentry> lskGentriesSub = getRelateEntry(kGrelation.getEntry2ID(), kGrelation.getPathName());
+				List<KGentry> lskGentriesSub = getRelateEntry(kGrelation.getEntry2ID(), kGrelation.getPathName());
 				if ( lskGentriesSub == null || lskGentriesSub.size() == 0) 
 				{
 					System.out.println("用entryID"+kGrelation.getEntry2ID()+"在pathway"+ kGrelation.getPathName()+"中没找到对应的entry");
@@ -212,9 +207,7 @@ public class QKegPath {
 				}	
 			}
 			//////////////////////然后用parentID去查///////////////////////////////////////////////////////////////////////////////////////
-			KGrelation tmpQkGrelation2=new KGrelation();
-			tmpQkGrelation2.setEntry1ID(kGentry.getParentID()); tmpQkGrelation2.setPathName(kGentry.getPathName());
-			ArrayList<KGrelation> lsKGrelations2 = servKRelation.queryLsKGrelations(tmpQkGrelation2);
+			List<KGrelation> lsKGrelations2 = servKRelation.findByPathNameAndEntry1Id(kGentry.getPathName(), kGentry.getParentID());
 			/////////////////////////////////////////因为有些relation中有这种情况：entry1、entry2完全一致，就是subtype不一致，这个就是将一致的entry1、entry2去冗余的////////////////////////////////////////////////////////////////
 			Hashtable<String, KGrelation> hashPathID2KGRelation2 = removeRep(lsKGrelations2);
 			
@@ -225,7 +218,7 @@ public class QKegPath {
 				KGrelation kGrelation2 = hashPathID2KGRelation.get(key2);
 			
 				//搜索该entry对应的所有实际entry--也就是不同的keggID-entry
-				ArrayList<KGentry> lskGentriesSub = getRelateEntry(kGrelation2.getEntry2ID(), kGrelation2.getPathName());
+				List<KGentry> lskGentriesSub = getRelateEntry(kGrelation2.getEntry2ID(), kGrelation2.getPathName());
 				if ( lskGentriesSub == null || lskGentriesSub.size() == 0)
 				{
 					System.out.println("用entryID"+kGrelation2.getEntry2ID()+"在pathway"+ kGrelation2.getPathName()+"中没找到对应的entry");
@@ -248,9 +241,7 @@ public class QKegPath {
 		else
 		{
 			////////////////////////////////////////////////直接用entryID去查找//////////////////////////////////////////////////////////////
-			KGrelation tmpQkGrelation=new KGrelation();
-			tmpQkGrelation.setEntry1ID(kGentry.getID()); tmpQkGrelation.setPathName(kGentry.getPathName());
-			ArrayList<KGrelation> lsKGrelations = servKRelation.queryLsKGrelations(tmpQkGrelation);
+			List<KGrelation> lsKGrelations = servKRelation.findByPathNameAndEntry1Id(kGentry.getPathName(), kGentry.getEntryId());
 			/////////////////////////////////////////因为有些relation中有这种情况：entry1、entry2完全一致，就是subtype不一致(也就是一对entry1-entry2含有多个不同的subtype)，这个就是将一致的entry1、entry2去冗余的////////////////////////////////////////////////////////////////
 			Hashtable<String, KGrelation> hashPathID2KGRelation = removeRep(lsKGrelations);
 			Enumeration keys=hashPathID2KGRelation.keys();
@@ -260,7 +251,7 @@ public class QKegPath {
 				KGrelation kGrelation = hashPathID2KGRelation.get(key);
 			
 				//搜索该entry对应的所有实际entry--也就是不同的keggID-entry
-				ArrayList<KGentry> lskGentriesSub = getRelateEntry(kGrelation.getEntry2ID(), kGrelation.getPathName());
+				List<KGentry> lskGentriesSub = getRelateEntry(kGrelation.getEntry2ID(), kGrelation.getPathName());
 				if ( lskGentriesSub == null || lskGentriesSub.size() == 0)
 				{
 					System.out.println("用entryID"+kGrelation.getEntry2ID()+"在pathway"+ kGrelation.getPathName()+"中没找到对应的entry");
@@ -346,7 +337,7 @@ public class QKegPath {
 	 * @param lsKGrelations
 	 * @return
 	 */
-	private static Hashtable<String, KGrelation> removeRep(ArrayList<KGrelation> lsKGrelations ) 
+	private static Hashtable<String, KGrelation> removeRep(List<KGrelation> lsKGrelations ) 
 	{
 		/////////////////////////////////////////因为有些relation中有这种情况：entry1、entry2完全一致，就是subtype不一致，这个就是将一致的entry1、entry2去冗余的////////////////////////////////////////////////////////////////
 		Hashtable<String, KGrelation> hashPathID2KGRelation = new Hashtable<String, KGrelation>();
@@ -384,22 +375,20 @@ public class QKegPath {
 	 * @param pathName
 	 * @return
 	 */
-	private static ArrayList<KGentry> getRelateEntry(int entryID, String pathName) {
+	private static List<KGentry> getRelateEntry(int entryID, String pathName) {
 		ServKEntry servKEntry = new ServKEntry();
 		KGentry qKGentry = new KGentry();
-		qKGentry.setID(entryID); qKGentry.setPathName(pathName);
+		qKGentry.setEntryId(entryID); qKGentry.setPathName(pathName);
 		
-		ArrayList<KGentry> lskGentries = servKEntry.queryLsKGentries(qKGentry);
-		if (lskGentries != null && lskGentries.size() > 0) 
-		{
-			return lskGentries;
+		List<KGentry> lsKGentries = servKEntry.findByPathNameAndEntryId(pathName, entryID);
+		if (lsKGentries != null && lsKGentries.size() > 0) {
+			return lsKGentries;
 		}
 		//如果没有在entryID项目搜索到基因，则用parentID项搜索
-		else 
-		{
+		else {
 			qKGentry = new KGentry();
 			qKGentry.setParentID(entryID); qKGentry.setPathName(pathName);
-			ArrayList<KGentry> lsKGentries2=servKEntry.queryLsKGentries(qKGentry);
+			List<KGentry> lsKGentries2 = servKEntry.findByPathNameAndParentId(pathName, entryID);			
 			return lsKGentries2;
 		}
 	}
@@ -414,10 +403,7 @@ public class QKegPath {
 	 */
 	private static ArrayList<String> getRelatePath(String pathName) {
 		ServKPathRelation servKPathRelation = new ServKPathRelation();
-		KGpathRelation kGpathRelation = new KGpathRelation();
-		KGrelation kGrelation =new KGrelation();
-		kGpathRelation.setPathName(pathName);
-		ArrayList<KGpathRelation> lsKGpathRelations = servKPathRelation.queryLskGpathRelations(kGpathRelation);
+		List<KGpathRelation> lsKGpathRelations = servKPathRelation.findByPathName(pathName);
 		ArrayList<String> lsTrgPathName = new ArrayList<String>();
 		for (KGpathRelation kGpathRelation2 : lsKGpathRelations) {
 			lsTrgPathName.add(kGpathRelation2.getTrgPath());
@@ -432,15 +418,12 @@ public class QKegPath {
 	 * @param PathID
 	 * @return
 	 */
-	private static Hashtable<String, KGpathway> getHashKGpathway(String[] PathID)
-	{
+	private static Hashtable<String, KGpathway> getHashKGpathway(String[] PathID) {
 		ServKPathway servKPathway = new ServKPathway();
 		Hashtable<String, KGpathway> hashPath = new Hashtable<String, KGpathway>();
 		for (String string : PathID) {
 			string = string.trim();
-			KGpathway kGpathway = new KGpathway();
-			kGpathway.setPathName(string);
-			kGpathway = servKPathway.queryKGpathway(kGpathway);
+			KGpathway kGpathway = servKPathway.findByPathName(string);
 			hashPath.put(string, kGpathway);
 		}
 		return hashPath;

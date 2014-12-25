@@ -40,7 +40,7 @@ public class TestTophatJunction extends TestCase {
 		alignSamReading.run();
 		tophatJunction.conclusion();
 
-		List<Double> num1 = tophatJunction.getJunctionSite("test1", true, "chr1", 4782733);
+//		List<Double> num1 = tophatJunction.getJunctionSite("test1", true, "chr1", 4782733);
 		System.out.println();
 		
 	}

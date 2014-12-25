@@ -75,7 +75,7 @@ public class KGprepare {
 	 */
 	public ArrayList<String[]> getLsAcc2GenID(String accIDFile,int rowStartNum,int colNum,int taxID,boolean Sep) throws Exception 
 	{
-		ManageNCBIUniID servNCBIID = new ManageNCBIUniID();
+		ManageNCBIUniID servNCBIID = ManageNCBIUniID.getInstance();
 		Hashtable<String, String> hashAcc2Gen = new Hashtable<String, String>();
 		String geneID[] =KGprepare.getAccID(accIDFile, rowStartNum, colNum);
  

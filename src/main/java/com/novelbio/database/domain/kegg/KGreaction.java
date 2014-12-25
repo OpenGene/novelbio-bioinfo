@@ -1,10 +1,22 @@
 package com.novelbio.database.domain.kegg;
- 
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection="kgreaction")
+@CompoundIndexes({
+    @CompoundIndex(unique = false, name = "name_path_idx", def = "{'name': 1, 'pathName': -1}")
+ })
 public class KGreaction {
+	@Id
+	String id;
 	/**
 	 * the ID of this reaction,和Entry的ID是同一个
 	 */
-	private int id;
+	private int reactionId;
 	 
 	/**
 	 * the KEGGID of this reaction.  example:<br>
@@ -15,6 +27,7 @@ public class KGreaction {
 	/**
 	 * 这个反应的ID是在特定的pathway下的
 	 */
+	@Indexed
 	private String pathName;
 	
 	
@@ -30,19 +43,25 @@ public class KGreaction {
 	 */
 	private String alt;
 	
-	/**
-	 * the ID of this reaction,和Entry的ID是同一个
-	 * 这个反应的ID是在特定的pathway下的
-	 */
-	public int getID() {
-		return this.id;
+	public void setId(String id) {
+		this.id = id;
+	}
+	public String getId() {
+		return id;
 	}
 	/**
 	 * the ID of this reaction,和Entry的ID是同一个
 	 * 这个反应的ID是在特定的pathway下的
 	 */
-	public void setID(int id) {
-		 this.id=id;
+	public int getReactionId() {
+		return this.reactionId;
+	}
+	/**
+	 * the ID of this reaction,和Entry的ID是同一个
+	 * 这个反应的ID是在特定的pathway下的
+	 */
+	public void setReactionId(int id) {
+		 this.reactionId=id;
 	}
 	
 	/**

@@ -1,9 +1,13 @@
 package com.novelbio.database.updatedb.database;
 
+import java.util.Map;
+
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.DBInfo;
 import com.novelbio.database.model.species.Species;
+import com.novelbio.database.model.species.Species.EnumSpeciesType;
 
 /**
  * 
@@ -22,37 +26,43 @@ public class ImportDB {
 	String GOPath;
 	
 	public static void main(String[] args) {
-		String downloadPath = "/media/winE/NBCsource/database/";
+		String downloadPath = "/home/novelbio/NBCsource/database/";
 		String softToolsFile = "/media/hdfs/nbCloud/public/nbcplatform/genome/SoftwareInfo.txt";
-		String taxIDFile = "/media/winE/NBCsource/database/常见物种IDKEGGAllssc.txt";
-		String dbInfo = "/media/winE/NBCplatform/database/DBinfo.txt";
-		String GOPath = "/media/winE/NBCplatform/database/GO/";
+		String taxIDFile = "/home/novelbio/NBCsource/species/常见物种IDKEGGUploadTmp.txt";
+		String dbInfo = "/home/novelbio/NBCsource/database/DBinfo.txt";
+		String GOPath = "/home/novelbio/NBCsource/database/GO/";
 		String speciesFile = "";
 		ImportPerLine.setTaxIDFile(taxIDFile);
 		ImportDB importDB = new ImportDB();
 		importDB.setDownloadPath(downloadPath);
 //		importDB.setSoftToolsFile(softToolsFile);
 //		importDB.setSpeciesFile(speciesFile);
-//		importDB.setGOPath(GOPath);
-		importDB.setTaxIDFile(taxIDFile);
+		importDB.setGOPath(GOPath);
+//		importDB.setTaxIDFile(taxIDFile);
 		
 //		importDB.updateDBinfo(dbInfo);
-//		importDB.updateGODB();
+		importDB.updateGODB();
 		
-		importDB.updateNCBIID();
-//		importDB.updateUniprotID();
-//		importDB.updateZeaMaize();
-//		importDB.updateRiceID("/media/winE/NBCplatform/database/rice/");//只导了前两个
-//		importDB.updateTAIR("/media/winE/NBCplatform/database/arabidopsis/");
-//		importDB.updateZB();
-//		updateEnsembl();
-//		importDB.updateYeast();
-//		importDB.updateMicroarray();
-
-//		updateSoyBean();
-//		updateZeaMaize();
-//		updateBlast();
-//		importDB.updateAffy();
+//		importDB.updateNCBIID();
+		
+		
+		
+		
+		
+		
+////		importDB.updateUniprotID();
+////		importDB.updateZeaMaize();
+////		importDB.updateRiceID("/media/winE/NBCplatform/database/rice/");//只导了前两个
+////		importDB.updateTAIR("/media/winE/NBCplatform/database/arabidopsis/");
+////		importDB.updateZB();
+////		updateEnsembl();
+////		importDB.updateYeast();
+////		importDB.updateMicroarray();
+//
+////		updateSoyBean();
+////		updateZeaMaize();
+////		updateBlast();
+////		importDB.updateAffy();
 	}
 	
 	
@@ -136,7 +146,7 @@ public class ImportDB {
 		
 		String ensemblFileChicken = "/media/winE/Bioinformatics/GenomeData/checken/GeneLoc/Gallus_gallus.WASHUC2.65.gtf";
 		String ucscGffFileChicken = "/media/winE/Bioinformatics/GenomeData/checken/GeneLoc/chicken_Refseq_UCSCGFF";
-		ensembl.setEnsemblFile(ensemblFileChicken, ucscGffFileChicken, taxIDChicken);
+		ensembl.setEnsemblFile(ensemblFileChicken, ucscGffFileChicken, taxIDMouse);
 		ensembl.update();
 		
 		String ensemblFileCow = "/media/winE/Bioinformatics/GenomeData/Cow/cow_bta6_Ensembl.GTF";

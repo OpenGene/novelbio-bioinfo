@@ -86,8 +86,11 @@ public class TranscriptomStatistics {
 		ArrayList<GffDetailGene> lsGeneThis = gffGeneCluster.getThisGffGene();
 		for (GffDetailGene gffDetailGene : lsGeneThis) {			
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-				SeqFasta seqFasta = seqFastaHash.getSeq(gffGeneIsoInfo, false);
-				if (seqFasta == null) {
+				SeqFasta seqFasta = null;
+				try {
+					seqFasta = seqFastaHash.getSeq(gffGeneIsoInfo, false);
+				} catch (Exception e) {
+					logger.error(e);
 					continue;
 				}
 				SeqfastaStatisticsCDS seqfastaStatisticsCDS = seqFasta.statisticsCDS();

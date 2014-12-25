@@ -1,7 +1,9 @@
 package com.novelbio.analysis.annotation.pathway.kegg.kGML2DB;
 
-import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.service.servkegg.ServKEntry;
+import java.io.File;
+
+import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.core.Persister;
 
 
 public class KGexe {
@@ -12,21 +14,50 @@ public class KGexe {
 		try {
 //			KGML2DB.readKGML("/media/winE/OutMrd1.mrd/ssc");
 //			KeggIDcvt.upDateGen2Keg("/media/winE/OutMrd1.mrd/ssc/ssc_ncbi-geneid.list");
+
+//			GeneID geneID = new GeneID("ATCC25795GL000001", 1773);
+//			System.out.println(geneID.getTaxID());
+//			geneID.setBlastInfo(1e-5, 83332);
+//			System.out.println(ArrayOperate.cmbString(geneID.getAnno(true),"\t"));
 			
-			GeneID genId = new GeneID("YP_006516293.1", 0);
-			System.out.println(genId.getGeneUniID());
+//			RepoBlastInfo repoBlastInfo = (RepoBlastInfo)SpringFactory.getFactory().getBean("repoBlastInfo");
+//			repoBlastInfo.deleteAll();
+//			RepoBlastFileInfo repoBlastFileInfo = (RepoBlastFileInfo)SpringFactory.getFactory().getBean("repoBlastFileInfo");
+//			repoBlastFileInfo.deleteAll();
 			
-//			KGML2DB.readKGML("/home/novelbio/NBCsource/database/kegg/mtu");
-//			KeggIDcvt.upDateGen2Keg("/home/novelbio/NBCsource/database/kegg/mtu/mtu_ncbi-geneid.list");
+//			RepoBlastInfo repoBlastInfo = (RepoBlastInfo)SpringFactory.getFactory().getBean("repoBlastInfo");
 //			
-////			KGML2DB.readKGML("/media/winE/NBCplatform/database/kegg/ssc");
-////			KeggIDcvt.upDateGen2Keg("/media/winE/NBCplatform/database/kegg/ssc_ncbi-geneid.list");
+//			List<BlastInfo> lt = repoBlastInfo.findBySubTaxID(83332);
+//			System.out.println(lt.size());
+//			Set<Integer> setId = new HashSet<>();
+//			for (BlastInfo blastInfo : lt) {
+//				System.out.println(blastInfo.getSubjectTax());
+//				setId.add(blastInfo.getSubjectTax());
+//				if (blastInfo.getQueryID().equalsIgnoreCase("ATCC25795GL000001")) {
+//					System.out.println();
+//				}
+//				if (blastInfo.getSubjectTax() == 83332) {
+//					ManageBlastInfo.getInstance().removeBlastInfo(blastInfo.getId());
+//				}
+//			}
+//			for (Integer integer : setId) {
+//				System.out.println(integer);
+//			}
+			
+			
+			
+			
+			KGML2DB.readKGML("/home/novelbio/NBCsource/database/kegg/hsa");
+//			KeggIDcvt.upDateGen2Keg("/home/novelbio/NBCsource/database/kegg/hsa/hsa_ncbi-geneid.list");
 //			
-////			KGML2DB.readKGML("/media/winD/NBC/KGMLNew/bta");
-////			KeggIDcvt.upDateGen2Keg("/media/winD/NBC/KGMLNew/bta/bta_ncbi-geneid.list");
-////
-////			KGML2DB.readKGML("/media/winD/NBC/KGMLNew/ssc");
-////			KeggIDcvt.upDateGen2Keg("/media/winD/NBC/KGMLNew/bta/ssc_ncbi-geneid.list");
+//			KGML2DB.readKGML("/home/novelbio/NBCsource/database/kegg/mmu");
+//			KeggIDcvt.upDateGen2Keg("/home/novelbio/NBCsource/database/kegg/mmu/mmu_ncbi-geneid.list");
+//			
+//			KGML2DB.readKGML("/home/novelbio/NBCsource/database/kegg/ath");
+//			KeggIDcvt.upDateGen2Keg("/home/novelbio/NBCsource/database/kegg/ath/ath_ncbi-geneid.list");
+//
+//			KGML2DB.readKGML("/home/novelbio/NBCsource/database/kegg/osa");
+//			KeggIDcvt.upDateGen2Keg("/home/novelbio/NBCsource/database/kegg/osa/osa_ncbi-geneid.list");
 //
 //			System.out.println("ok");
 		} catch (Exception e) {
@@ -34,4 +65,5 @@ public class KGexe {
 			e.printStackTrace();
 		}
 	}
+
 }

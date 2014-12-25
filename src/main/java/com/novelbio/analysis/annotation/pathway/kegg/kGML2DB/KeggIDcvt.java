@@ -1,6 +1,7 @@
 package com.novelbio.analysis.annotation.pathway.kegg.kGML2DB;
 
 import java.io.BufferedReader;
+import java.util.List;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.kegg.KGIDgen2Keg;
@@ -25,7 +26,7 @@ public class KeggIDcvt {
 	 * @throws Exception 
 	 */
 	public static void upDateGen2Keg(String gen2KegFile) throws Exception {
-		ServKIDgen2Keg servKIDgen2Keg = new ServKIDgen2Keg();
+		ServKIDgen2Keg servKIDgen2Keg = ServKIDgen2Keg.getInstance();
 		TxtReadandWrite txtgene2Keg=new TxtReadandWrite(gen2KegFile);
 		int TaxID=0;
 		////////////////获得taxID////////////////////////////////////////////////////////
@@ -58,8 +59,10 @@ public class KeggIDcvt {
 			String kegID=ss[0];long geneID=Long.parseLong(ss[1].replace("ncbi-geneid:", "").trim());
 			KGIDgen2Keg kgiDgen2Keg=new KGIDgen2Keg();
 			kgiDgen2Keg.setGeneID(geneID);kgiDgen2Keg.setKeggID(kegID);kgiDgen2Keg.setTaxID(TaxID);
-			if (servKIDgen2Keg.queryLsKGIDgen2Keg(kgiDgen2Keg) == null || servKIDgen2Keg.queryLsKGIDgen2Keg(kgiDgen2Keg).size() == 0) {
-				servKIDgen2Keg.insertKGIDgen2Keg(kgiDgen2Keg);
+			
+			KGIDgen2Keg ls = servKIDgen2Keg.findByGeneIdAndTaxIdAndKegId(geneID, TaxID, kegID);
+			if (ls == null) {
+				servKIDgen2Keg.save(kgiDgen2Keg);
 			}
 		}
 	}
@@ -72,8 +75,8 @@ public class KeggIDcvt {
 	 * @throws Exception 
 	 */
 	public static void upDateKeg2Ko(String keg2KoFile) throws Exception {
-		ServKIDgen2Keg servKIDgen2Keg = new ServKIDgen2Keg();
-		ServKIDKeg2Ko servKIDKeg2Ko = new ServKIDKeg2Ko();
+		ServKIDgen2Keg servKIDgen2Keg = ServKIDgen2Keg.getInstance();
+		ServKIDKeg2Ko servKIDKeg2Ko = ServKIDKeg2Ko.getInstance();
 		TxtReadandWrite txtKeg2Ko=new TxtReadandWrite(keg2KoFile);
 		int TaxID=0;
 		////////////////获得taxID////////////////////////////////////////////////////////
@@ -82,14 +85,17 @@ public class KeggIDcvt {
 			String kegID=ss[0].trim();
 			KGIDgen2Keg kgiDgen2Keg=new KGIDgen2Keg();
 			kgiDgen2Keg.setKeggID(kegID);
-			KGIDgen2Keg kgiDgen2Keg2=servKIDgen2Keg.queryKGIDgen2Keg(kgiDgen2Keg);
-			if (kgiDgen2Keg2!=null) {
-				TaxID=kgiDgen2Keg2.getTaxID();
+			
+			KGIDgen2Keg kgiDgen2Keg2 = servKIDgen2Keg.findByKegId(kegID);
+			
+			if (kgiDgen2Keg2 != null) {
+				TaxID = kgiDgen2Keg2.getTaxID();
 				break;
 			}
 		}
+		
 		///////////////////////////////////////////////////////////////////////////////////////
-		if (TaxID==0) {
+		if (TaxID == 0) {
 			System.err.println("在gene2Keg表中没有找到该物种的taxID");
 			return;
 		}
@@ -99,8 +105,11 @@ public class KeggIDcvt {
 			String kegID=ss[0];String ko=ss[1].trim();
 			KGIDkeg2Ko kgDkeg2Ko=new KGIDkeg2Ko();
 			kgDkeg2Ko.setKeggID(kegID);kgDkeg2Ko.setKo(ko);kgDkeg2Ko.setTaxID(TaxID);
-			if (servKIDKeg2Ko.queryLsKGIDkeg2Ko(kgDkeg2Ko) == null || servKIDKeg2Ko.queryLsKGIDkeg2Ko(kgDkeg2Ko).size() == 0) {
-				servKIDKeg2Ko.insertKGIDkeg2Ko(kgDkeg2Ko);
+			
+			List<KGIDkeg2Ko> ls = servKIDKeg2Ko.findLsByKegIdAndTaxId(kegID, TaxID);
+			
+			if (ls == null || ls.size() == 0) {
+				servKIDKeg2Ko.save(kgDkeg2Ko);
 			}
 		}
 	}
@@ -111,8 +120,9 @@ public class KeggIDcvt {
 	 * @throws Exception 
 	 */
 	public static void upDateKegCompound(String compFile) throws Exception {
-		ServKNIdKeg servKNIdKeg = new ServKNIdKeg();
-		ServKNCompInfo servKNCompInfo = new ServKNCompInfo();
+		ServKNIdKeg servKNIdKeg = ServKNIdKeg.getInstance();
+		ServKNCompInfo servKNCompInfo = ServKNCompInfo.getInstance();
+		
 		TxtReadandWrite txtComp = new TxtReadandWrite(compFile);
 		BufferedReader readerComp = txtComp.readfile();
 		String content = "";
@@ -129,7 +139,7 @@ public class KeggIDcvt {
 				kgnIdKeg.setAttribute("Compound");
 				kgnIdKeg.setKegID(kegID);
 				kgnIdKeg.setUsualName(kegID);
-				servKNIdKeg.insertKGNIdKeg(kgnIdKeg);
+				servKNIdKeg.save(kgnIdKeg);
 				
 				//读取Name那一列
 				content = readerComp.readLine();
@@ -140,7 +150,7 @@ public class KeggIDcvt {
 					kgnIdKeg.setAttribute("Compound");
 					kgnIdKeg.setKegID(kegID);
 					kgnIdKeg.setUsualName(name);
-					servKNIdKeg.insertKGNIdKeg(kgnIdKeg);
+					servKNIdKeg.save(kgnIdKeg);
 					nameAll = name;
 					name = "";
 				}
@@ -151,7 +161,7 @@ public class KeggIDcvt {
 							kgnIdKeg.setAttribute("Compound");
 							kgnIdKeg.setKegID(kegID);
 							kgnIdKeg.setUsualName(name);
-							servKNIdKeg.insertKGNIdKeg(kgnIdKeg);
+							servKNIdKeg.save(kgnIdKeg);
 							nameAll = nameAll + "//"+name;
 							name = "";
 						}
@@ -161,7 +171,7 @@ public class KeggIDcvt {
 					kgnIdKeg.setAttribute("Compound");
 					kgnIdKeg.setKegID(kegID);
 					kgnIdKeg.setUsualName(name);
-					servKNIdKeg.insertKGNIdKeg(kgnIdKeg);
+					servKNIdKeg.save(kgnIdKeg);
 					if (nameAll.trim().equals("")) {
 						nameAll = name;
 					}
@@ -188,7 +198,7 @@ public class KeggIDcvt {
 					}
 					content = readerComp.readLine();
 				}
-				servKNCompInfo.insertKGNCompInfo(kgnCompInfo);
+				servKNCompInfo.save(kgnCompInfo);
 				continue;
 			}
 		}

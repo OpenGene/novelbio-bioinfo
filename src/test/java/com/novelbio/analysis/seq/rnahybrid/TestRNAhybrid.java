@@ -4,6 +4,8 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 
+import com.novelbio.analysis.seq.rnahybrid.RNAhybrid.HybridRNAUnit;
+
 public class TestRNAhybrid extends TestCase {
 	@Test
 	public void testRead() {

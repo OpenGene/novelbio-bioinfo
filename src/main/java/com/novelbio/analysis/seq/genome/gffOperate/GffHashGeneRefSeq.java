@@ -3,9 +3,6 @@ package com.novelbio.analysis.seq.genome.gffOperate;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.apache.velocity.app.event.ReferenceInsertionEventHandler.referenceInsertExecutor;
-import org.hamcrest.core.Is;
-
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.base.dataOperate.TxtReadandWrite;

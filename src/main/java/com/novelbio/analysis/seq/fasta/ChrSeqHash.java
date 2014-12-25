@@ -82,7 +82,7 @@ public class ChrSeqHash extends SeqHashAbs {
 	protected SeqFasta getSeqInfo(String chrID, long startlocation, long endlocation) {
 		try {
 			return getSeqInfoExp(chrID, startlocation, endlocation);
-		} catch (Exception e) {
+		} catch (IOException e) {
 			return null;
 		}
 	}
@@ -139,8 +139,7 @@ public class ChrSeqHash extends SeqHashAbs {
 	private long[] getStartEndReal(String chrID, long start, long end) {
 		String chrIDLowcase = chrID.toLowerCase();
 		if (!mapChrID2Length.containsKey(chrIDLowcase)) {
-			logger.error( "无该染色体: "+ chrID);
-			return null;
+			throw new ExceptionSeqFasta( "no chromosome ID: "+ chrID);
 		}
 		long chrLength = getChrLength(chrIDLowcase);
 		if (start <= 0) start = 1;
@@ -149,12 +148,10 @@ public class ChrSeqHash extends SeqHashAbs {
 		start--;
 		//如果位点超过了范围，那么修正位点
 		if (start < 0 || start >= chrLength || end < 1 || end < start) {
-			logger.error(chrIDLowcase + " " + start + " " + end + " 染色体坐标错误");
-			return null;
+			throw new ExceptionSeqFasta(chrIDLowcase + " " + start + " " + end + " chromosome location error");
 		}
 		if (end - start > maxExtractSeqLength) {
-			logger.error(chrIDLowcase + " " + start + " " + end + " 最多提取" + maxExtractSeqLength + "bp");
-			return null;
+			throw new ExceptionSeqFasta(chrIDLowcase + " " + start + " " + end + " cannot extract sequence longer than " + maxExtractSeqLength + "bp");
 		}
 		
 		long startChr = mapChrID2Start.get(chrIDLowcase);
@@ -165,7 +162,6 @@ public class ChrSeqHash extends SeqHashAbs {
 			long endReal = getRealSite(startChr, end, lengthRow, lenRowEnter);
 			return new long[]{startReal, endReal};
 		} catch (Exception e) {
-			logger.error("文件出错：" + chrFile + "\t" + chrIDLowcase + " " + start + " " + end, e);
 			throw new RuntimeException("extract seq error: " + chrFile + "\t" + chrIDLowcase + " " + start + " " + end, e);
 		}
 	}

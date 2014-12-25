@@ -1,13 +1,21 @@
 package com.novelbio.database.domain.kegg;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.novelbio.database.domain.AbsPathway;
-import com.novelbio.database.service.servkegg.ServKIDgen2Keg;
 import com.novelbio.database.service.servkegg.ServKPathway;
 
+
+@Document(collection="kgpathway")
 public class KGpathway extends AbsPathway{
+	/**
+	 * the KEGGID of this pathway map.  example:<br>
+	 * <b>path:ko*****     path:[org prefix]***** </b> the KEGGID of this pathway map ex) name="path:ko00010"   name="path:hsa00010"
+	 */
+	@Id
+	protected String pathName;
+
 	
 	/**
 	 * the map number of this pathway map. example:<br>
@@ -27,6 +35,25 @@ public class KGpathway extends AbsPathway{
 	 */
 	private String linkUrl;
 	
+	/**
+	 * the KEGGID of this pathway map.  example:<br>
+	 * <b>path:ko*****     path:[org prefix]***** </b> the KEGGID of this pathway map ex) name="path:ko00010"   name="path:hsa00010"
+	 */
+	public String getPathName()
+	{
+		return this.pathName;
+	}
+	
+	/**
+	 * KEGG
+	 * already trim()
+	 * the KEGGID of this pathway map.  example:<br>
+	 * <b>path:ko*****     path:[org prefix]***** </b> the KEGGID of this pathway map ex) name="path:ko00010"   name="path:hsa00010"
+	 */
+	public void setPathName(String pathName)
+	{
+		this.pathName=pathName.trim();
+	}
 	/**
 	 * the map number of this pathway map. example:<br>
 	 * <b>five-digit integer</b>   	ex) number="00030"
@@ -73,8 +100,8 @@ public class KGpathway extends AbsPathway{
 	}
 	
 	public static KGpathway queryKPathway(String kgPathID) {	
-		ServKPathway servKPathway = new ServKPathway();
-		return servKPathway.queryKGpathway(kgPathID);
+		ServKPathway servKPathway = ServKPathway.getInstance();
+		return servKPathway.findByPathName(kgPathID);
 	}
 	
 }

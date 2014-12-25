@@ -23,7 +23,7 @@ public class TestManageBlast extends TestCase {
 	public void test() {
 		ManageBlastInfo manageBlastInfo = ManageBlastInfo.getInstance();
 		String blastFileName = "/home/zong0jie/桌面/blastInfoTest.txt";
-		ManageBlastInfo.readBlastFile(456, 123456, "/home/zong0jie/桌面/blastInfoTest.txt");
+//		ManageBlastInfo.getInstance().re(456, 123456, "/home/zong0jie/桌面/blastInfoTest.txt");
 		GeneID geneID = new GeneID("other1", 456);
 		assertEquals("12345678903", geneID.getLsBlastGeneID().get(0).getGeneUniID());
 		

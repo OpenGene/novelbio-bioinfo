@@ -8,11 +8,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.math.MathException;
 import org.apache.commons.math3.stat.correlation.PearsonsCorrelation;
 import org.apache.log4j.Logger;
-import org.apache.velocity.exception.MathException;
 
-import com.novelbio.base.FoldeCreate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -206,7 +205,7 @@ class PearsonCalculate {
 		corInfo = pearson.getCorrelationMatrix().getData();
 		try {
 			corPvalue = pearson.getCorrelationPValues().getData();
-		} catch (MathException e) {
+		} catch (Exception e) {
 			logger.error("pearson 系数计算错误" + e.toString());
 			e.printStackTrace();
 		}

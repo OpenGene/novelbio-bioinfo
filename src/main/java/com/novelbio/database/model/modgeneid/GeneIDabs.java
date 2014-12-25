@@ -513,7 +513,7 @@ public class GeneIDabs implements GeneIDInt {
 	 *            如果blast为true，那么设定StaxID
 	 * @return 如果没有就返回一个空的list
 	 */
-	public ArrayList<KGentry> getKegEntity(boolean blast) {
+	public List<KGentry> getKegEntity(boolean blast) {
 		getKeggInfo();
 		if (!blast) {
 			return keggInfo.getKgGentries();
@@ -537,7 +537,12 @@ public class GeneIDabs implements GeneIDInt {
 		if (keggInfo != null) {
 			return keggInfo;
 		}
-		keggInfo = KeggInfoAbs.createInstance(getIDtype(), ageneUniID.getGenUniID(), ageneUniID.getTaxID());
+		int idType = getIDtype();
+		String geneUniAccId = ageneUniID.getGenUniID();
+		if (idType == GeneID.IDTYPE_ACCID) {
+			geneUniAccId = ageneUniID.getAccID();
+		}
+		keggInfo = KeggInfoAbs.createInstance(idType, geneUniAccId, ageneUniID.getTaxID());
 		return keggInfo;
 	}
 

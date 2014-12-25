@@ -44,6 +44,10 @@ public class ElimGOFunTest extends NovelGOFunTest {
 			statisticTestResult.setItemTerm(getItemTerm(strings[0]));
 			statisticTestResult.setDifGeneNum(Integer.parseInt(strings[2]),Integer.parseInt(strings[3]));
 			statisticTestResult.setGeneNum(Integer.parseInt(strings[4]),Integer.parseInt(strings[5]));
+			//类似< 1e-30 这种
+			if(strings[6].startsWith("<")) {
+				strings[6] = strings[6].replace("<", "").trim();
+			}
 			statisticTestResult.setPvalue(Double.parseDouble(strings[6]));
 			lsTestResult.add(statisticTestResult);
 		}

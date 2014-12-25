@@ -576,6 +576,8 @@ public class Trinity implements IntCmdSoft {
 	public void runTrinity() {
 		List<String> lsCmd = getLsCmd();
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
+		cmdOperate.setRedirectOutToTmp(true);
+		cmdOperate.addCmdParamOutput(output, false);
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {
 			throw new ExceptionCmd("run trinity error:", cmdOperate);

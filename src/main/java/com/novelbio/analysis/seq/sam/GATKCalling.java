@@ -10,6 +10,8 @@ import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.information.SoftWareInfo;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 /**
  * variants calling by GATK<br>
@@ -29,7 +31,7 @@ public class GATKCalling implements IntCmdSoft {
 	public static final String GENERALPLOIDYSNP = "GENERALPLOIDYSNP";
 	public static final String GENERALPLOIDYINDEL = "GENERALPLOIDYINDEL";
 	public static final String BOTH = "BOTH";
-	String ExePath = "";
+	String exePath = "";
 	/** 输入文件路径+bam文件名 */
 	private List<String> lsInputFilePath = new ArrayList<>();
 	/** 默认和输入文件同路径包括文件名 */
@@ -47,18 +49,20 @@ public class GATKCalling implements IntCmdSoft {
 	public GATKCalling(String refFilePath) {
 		this.refFilePath = refFilePath;
 		this.snpDBVcfFilePath = null;
+		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.GATK);
+		 this.exePath = softWareInfo.getExePathRun();
 	}
 	
 	public void addBamFile(String inputFile) {
 		lsInputFilePath.add(inputFile);
 	}
 	
-	public void setExePath(String exePath) {
-		if (exePath == null || exePath.trim().equals(""))
-			this.ExePath = "";
-		else
-			this.ExePath = FileOperate.addSep(exePath);
-	}
+//	public void setExePath(String exePath) {
+//		if (exePath == null || exePath.trim().equals(""))
+//			this.ExePath = "";
+//		else
+//			this.ExePath = FileOperate.addSep(exePath);
+//	}
 	
 	/**
 	 * variants calling by GATK<br>
@@ -67,6 +71,8 @@ public class GATKCalling implements IntCmdSoft {
 	public String callingByGATK() {
 		List<String> lsCmd = getLsCmd();
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
+		cmdOperate.setRedirectOutToTmp(true);
+		cmdOperate.addCmdParamOutput(outVcf);
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {
 			throw new ExceptionCmd("GATK error:\n" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
@@ -77,7 +83,7 @@ public class GATKCalling implements IntCmdSoft {
 	private List<String> getLsCmd() {
 		List<String> lsCmd = new ArrayList<>();
 		lsCmd.add("java"); lsCmd.add("-Xmx4g"); lsCmd.add("-jar");
-		lsCmd.add(ExePath + "GenomeAnalysisTK.jar");
+		lsCmd.add(exePath + "GenomeAnalysisTK-3.2-2.jar");
 		lsCmd.add("-T"); lsCmd.add("UnifiedGenotyper");
 		ArrayOperate.addArrayToList(lsCmd, getRefFilePath());
 		ArrayOperate.addArrayToList(lsCmd, getOutPutPath());
@@ -87,6 +93,7 @@ public class GATKCalling implements IntCmdSoft {
 		ArrayOperate.addArrayToList(lsCmd, getGlm());
 		ArrayOperate.addArrayToList(lsCmd, getCigar());
 		ArrayOperate.addArrayToList(lsCmd, getDBsnpVcf());
+		System.out.println("GATK lsCmd IS " + lsCmd);
 		return lsCmd;
 	}
 	

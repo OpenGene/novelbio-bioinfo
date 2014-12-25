@@ -1,5 +1,6 @@
 package com.novelbio.test;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,17 +9,19 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.springframework.data.mongodb.MongoDbFactory;
+import org.springframework.data.mongodb.core.MongoFactoryBean;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
 
+import com.mongodb.Mongo;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
-import com.novelbio.analysis.seq.fastq.FastQ;
-import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
-import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.dataOperate.HttpFetch;
@@ -27,26 +30,92 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.database.mongorepo.kegg.RepoKEntry;
+import com.novelbio.database.mongorepo.kegg.RepoKIDKeg2Ko;
+import com.novelbio.database.mongorepo.kegg.RepoKIDgen2Keg;
+import com.novelbio.database.mongorepo.kegg.RepoKNCompInfo;
+import com.novelbio.database.mongorepo.kegg.RepoKNIdKeg;
+import com.novelbio.database.mongorepo.kegg.RepoKPathRelation;
+import com.novelbio.database.mongorepo.kegg.RepoKPathway;
+import com.novelbio.database.mongorepo.kegg.RepoKReaction;
+import com.novelbio.database.mongorepo.kegg.RepoKRelation;
+import com.novelbio.database.mongorepo.kegg.RepoKSubstrate;
+import com.novelbio.database.service.SpringFactory;
 
 
 public class mytest {
 	private static final Logger logger = Logger.getLogger(mytest.class);
 	static boolean is;
-	public static void main(String[] args) {
-		Species species = new Species(9606);
-		String file = species.getChromSeq();
-		System.out.println(file);
-		TxtReadandWrite txtRead = new TxtReadandWrite(file);
-		int i = 0;
-		for (String string : txtRead.readlines()) {
-			if (i++ > 10) {
-				break;
-			}
-			System.out.println(string);
-		}
+	public static void main(String[] args) throws Exception {
+//		GeneID geneID = new GeneID("tp53", 9606);
+//		System.out.println(geneID.getDescription());
+		logger.info("fsefe");
 	}
 	
+	private void deletdb() {
+		RepoKEntry a = SpringFactory.getFactory().getBean(RepoKEntry.class);
+		RepoKPathRelation b = SpringFactory.getFactory().getBean(RepoKPathRelation.class);
+		RepoKReaction c = SpringFactory.getFactory().getBean(RepoKReaction.class);
+		RepoKIDgen2Keg d = SpringFactory.getFactory().getBean(RepoKIDgen2Keg.class);
+		RepoKIDKeg2Ko e = SpringFactory.getFactory().getBean(RepoKIDKeg2Ko.class);
+		RepoKNCompInfo f = SpringFactory.getFactory().getBean(RepoKNCompInfo.class);
+		RepoKNIdKeg g = SpringFactory.getFactory().getBean(RepoKNIdKeg.class);
+		RepoKPathway h = SpringFactory.getFactory().getBean(RepoKPathway.class);
+		RepoKSubstrate i = SpringFactory.getFactory().getBean(RepoKSubstrate.class);
+		RepoKRelation j = SpringFactory.getFactory().getBean(RepoKRelation.class);
+		
+		try {
+			a.deleteAll();
+		} catch (Exception e2) {
+			// TODO: handle exception
+		}
+		try {
+			b.deleteAll(); 
+		} catch (Exception e2) {
+			// TODO: handle exception
+		}
+		try {
+			c.deleteAll(); 
+		} catch (Exception e2) {
+			// TODO: handle exception
+		}  
+		try {
+			d.deleteAll(); 
+		} catch (Exception e2) {
+			// TODO: handle exception
+		}
+		try {
+			e.deleteAll();
+		} catch (Exception e2) {
+			// TODO: handle exception
+		}
+		try {
+			f.deleteAll();
+		} catch (Exception e2) {
+			// TODO: handle exception
+		}
+		try {
+			 g.deleteAll();
+		} catch (Exception e2) {
+			// TODO: handle exception
+		}
+		try {
+			h.deleteAll();
+		} catch (Exception e2) {
+			// TODO: handle exception
+		}
+		try {
+			 i.deleteAll(); 
+		} catch (Exception e2) {
+			// TODO: handle exception
+		}
+		try {
+			j.deleteAll();
+		} catch (Exception e2) {
+			// TODO: handle exception
+		}
+	}
+ 
 	private static void copeGffWangxia2() {
 		GffHashGene gffHashGeneOur = new GffHashGene(GffType.NCBI, "/media/winE/OutMrd1.mrd/ARZ_v2.gff3.gz");
 		for (GffDetailGene gffDetailGeneOur : gffHashGeneOur.getGffDetailAll()) {
@@ -62,7 +131,7 @@ public class mytest {
 					double midShort = MathComput.mean(shortInt);
 					if (isoLong.getATGsite() > midShort && isoLong.getUAGsite() > midShort) {
 						isoLong = isoLong.subGffGeneIso(isoShort.getEndAbs(), isoLong.getEndAbs());
-					} else if (isoLong.getATGsite() < midShort && isoLong.getUAGsite() < midShort){
+					} else if (isoLong.getATGsite() < midShort && isoLong.getUAGsite() < midShort) {
 						isoLong = isoLong.subGffGeneIso(isoLong.getStartAbs(), isoShort.getStartAbs());
 					}
 				}
@@ -214,32 +283,6 @@ public class mytest {
 		return result;
 	}
 	
-	private void testMapTophat() {
-		Map<String, ArrayList<ArrayList<FastQ>>> mapPrefix2LsFQ = new HashMap<String, ArrayList<ArrayList<FastQ>>>();
-		ArrayList<ArrayList<FastQ>> lsFQ = new ArrayList<ArrayList<FastQ>>();
-		mapPrefix2LsFQ.put("aaa", lsFQ);
-		ArrayList<FastQ> lsLeft = new ArrayList<FastQ>();
-		ArrayList<FastQ> lsRight = new ArrayList<FastQ>();
-		lsLeft.add(new FastQ("/media/winE/NBC/Project/Project_QZL/QZL-Filted/359_filtered.fastq"));
-		lsRight.add(new FastQ("/media/winE/NBC/Project/Project_QZL/QZL-Filted/363_filtered.fastq"));
-		lsFQ.add(lsLeft); lsFQ.add(lsRight);
-		
-		
-		GffChrAbs gffChrAbs = new GffChrAbs(690566);
-//		gffChrAbs.setChrFile("/home/zong0jie/Desktop/test/Schl_L-1/ChromFa", "NC");
-//		gffChrAbs.setGffFile(0, GffType.NCBI, "/home/zong0jie/Desktop/test/Schl_L-1/gff/Schl_L-1.gff");
-		CtrlRNAmap ctrlRNAmap = new CtrlRNAmap(CtrlRNAmap.TOP_HAT);
-		ctrlRNAmap.setGffChrAbs(gffChrAbs);
-		ctrlRNAmap.setGtfAndGene2Iso("");
-		ctrlRNAmap.setMapPrefix2LsFastq(mapPrefix2LsFQ);
-		ctrlRNAmap.setIndexFile("/home/zong0jie/Desktop/test/Schl_L-1/ChromFa/All/all.fa");
-		ctrlRNAmap.setIsUseGTF(true);
-		
-		ctrlRNAmap.setOutPathPrefix("/home/zong0jie/Desktop/test/Schl_L-1/test");
-		ctrlRNAmap.setStrandSpecifictype(StrandSpecific.NONE);
-		ctrlRNAmap.setThreadNum(4);
-		ctrlRNAmap.mapping();
-	}
 	
 	private void wzfBlast() {
 		TxtReadandWrite txtRead = new TxtReadandWrite("/media/winF/NBC/Project/Project_WZF/compareGenomic/blast/result", false);

@@ -1,14 +1,9 @@
 package com.novelbio.database.service.servkegg;
 
-import java.util.ArrayList;
-
-import javax.inject.Inject;
-
 import org.springframework.stereotype.Service;
 
 import com.novelbio.database.domain.kegg.noGene.KGNCompInfo;
-import com.novelbio.database.domain.kegg.noGene.KGNIdKeg;
-import com.novelbio.database.mapper.kegg.MapKNCompInfo;
+import com.novelbio.database.mongorepo.kegg.RepoKNCompInfo;
 import com.novelbio.database.service.SpringFactory;
 
 /**
@@ -17,32 +12,27 @@ import com.novelbio.database.service.SpringFactory;
  *
  */
 @Service
-public class ServKNCompInfo implements MapKNCompInfo{
-	@Inject
-	MapKNCompInfo mapKNCompInfo;
+public class ServKNCompInfo {
+	RepoKNCompInfo repoKNCompInfo;
 	public ServKNCompInfo() {
-		// TODO Auto-generated constructor stub
-		mapKNCompInfo = (MapKNCompInfo)SpringFactory.getFactory().getBean("mapKNCompInfo");
+		repoKNCompInfo = (RepoKNCompInfo)SpringFactory.getFactory().getBean("repoKNCompInfo");
 	}
-	@Override
-	public ArrayList<KGNCompInfo> queryLsKGNCompInfo(KGNIdKeg kgnIdKeg) {
-		// TODO Auto-generated method stub
-		return mapKNCompInfo.queryLsKGNCompInfo(kgnIdKeg);
-	}
-	@Override
-	public KGNCompInfo queryKGNCompInfo(KGNIdKeg kgnIdKeg) {
-		// TODO Auto-generated method stub
-		return mapKNCompInfo.queryKGNCompInfo(kgnIdKeg);
-	}
-	@Override
-	public void insertKGNCompInfo(KGNCompInfo kgnCompInfo) {
-		// TODO Auto-generated method stub
-		mapKNCompInfo.insertKGNCompInfo(kgnCompInfo);
-	}
-	@Override
-	public void updateKGNCompInfo(KGNCompInfo kgnCompInfo) {
-		// TODO Auto-generated method stub\
-		mapKNCompInfo.updateKGNCompInfo(kgnCompInfo);
+
+	public KGNCompInfo findByKegId(String kegId) {
+		return repoKNCompInfo.findOne(kegId);
 	}
 	
+	public void save(KGNCompInfo kgnCompInfo) {
+		repoKNCompInfo.save(kgnCompInfo);
+	}
+	
+	static class ManageHolder {
+		static ServKNCompInfo instance = new ServKNCompInfo();
+	}
+	
+	public static ServKNCompInfo getInstance() {
+		return ManageHolder.instance;
+	}
+
+
 }
