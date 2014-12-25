@@ -3,6 +3,8 @@ package com.novelbio.analysis.seq.rnaseq;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.ethz.ssh2.log.Logger;
+
 import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -10,7 +12,7 @@ import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 public class VarScanSomatic implements IntCmdSoft {
-
+	private static final Logger logger = Logger.getLogger(VarScanSomatic.class);
 	
 	String exePath = "";
 	String varScanCom = "";
@@ -18,6 +20,15 @@ public class VarScanSomatic implements IntCmdSoft {
 	/** 输入文件*/
 	String inputFile;
 	/** Minimum read depth at a position to make a call [8]*/
+	
+	/** 输入Con文件*/
+	List<String> lsConFile;
+	/** 输入Con文件名称*/
+	List<String> lsConPrefix;
+	/** 输入Tum文件*/
+	List<String> lsTumFile;
+	/** 输入Tum文件名称*/
+	List<String> lsTumPrefix;
 	int minCoverage;
 	/** Minimum coverage in normal to call somatic [6] */
 	int minCovNor;
@@ -31,6 +42,8 @@ public class VarScanSomatic implements IntCmdSoft {
 	double pValue;
 	/** Minimum frequency to call homozygote [0.75]*/
 	double minFreqForHom;
+	/** output directory*/
+	String outputDir;
 	/** If set to 1, outputs in VCF format */
 	int outputVcf;
 	/** Output file for SNP calls [default: output.snp] */
@@ -43,10 +56,21 @@ public class VarScanSomatic implements IntCmdSoft {
 		this.varScanCom = varScanCom;
 	}
 	
-	public void setInputFile(String inputFile) {
+	public void setLsConFile(String inputFile) {
 		this.inputFile = inputFile;
 	}
-
+	public void setLsConFile(List<String> lsConFile) {
+		this.lsConFile = lsConFile;
+	}
+	public void setLsConPrefix(List<String> lsConPrefix) {
+		this.lsConPrefix = lsConPrefix;
+	}
+	public void setLsTumFile(List<String> lsTumFile) {
+		this.lsTumFile = lsTumFile;
+	}
+	public void setLsTumPrefix(List<String> lsTumPrefix) {
+		this.lsTumPrefix = lsTumPrefix;
+	}
 	public void setMinCoverage(int minCoverage) {
 		this.minCoverage = minCoverage;
 	}
@@ -62,7 +86,9 @@ public class VarScanSomatic implements IntCmdSoft {
 	public void setMinFreqForHom(double minFreqForHom) {
 		this.minFreqForHom = minFreqForHom;
 	}
-
+public void setOutputDir(String outputDir) {
+	this.outputDir = outputDir;
+}
 	public void setOutoutVcf(int outputVcf) {
 		this.outputVcf = outputVcf;
 	}
@@ -92,14 +118,21 @@ public class VarScanSomatic implements IntCmdSoft {
 		 this.exePath = softWareInfo.getExePathRun();
 	}
 	public void run() {
-		
-		CmdOperate cmdOperate = new CmdOperate(getCmdExeStr());
-		cmdOperate.run();
-		
+		for (int i = 0; i < lsConFile.size(); i++) {
+			setLsConFile(lsConFile.get(i) + " " + lsTumFile.get(i));
+			setOutputSnp(outputDir + lsConPrefix.get(i) + "VS" + lsTumPrefix.get(i) + "_snp.txt");
+			setOutputIndel(outputDir + lsConPrefix.get(i) + "VS" + lsTumPrefix.get(i) + "_indel.txt");
+			running();
+		}
 	}
-
+	public void running() {
+		List<String> lsCmd = getLsCmd();
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
+		cmdOperate.set(false);
+		cmdOperate.run();
+	}
 	
-	public List<String> getCmdExeStr() {
+	public List<String> getLsCmd() {
 		List<String> lsCmd = new ArrayList<>();
 		lsCmd.add("java");
 		lsCmd.add("-Xmx10g");
@@ -160,5 +193,11 @@ public class VarScanSomatic implements IntCmdSoft {
 	private String[] getOutputIndel() {
 		return new String[] { "--output-indel", outputIndel};
 	}
-
+	public List<String> getCmdExeStr() {
+		List<String> lsResult = new ArrayList<>();
+		List<String> lsCmd = getLsCmd();
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
+		lsResult.add(cmdOperate.getCmdExeStr());
+		return lsResult;
+	}
 }

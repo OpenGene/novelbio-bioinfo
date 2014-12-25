@@ -19,7 +19,7 @@ public class Pindel implements IntCmdSoft {
 	String reference;
 	/** 输入文件*/
 	List<String> lsInputFile;
-	/** 输入文件*/
+	/** 输入文件名称*/
 	List<String> lsPrefix;
 	/** 文库的插入片段长度*/
 	int insertSize;
@@ -68,13 +68,13 @@ public class Pindel implements IntCmdSoft {
 		 this.exePath = softWareInfo.getExePathRun();
 	}
 	public void run() {
-		CmdOperate cmdOperate = new CmdOperate(getCmdExeStr());
-		cmdOperate.runWithExp("Pindel error:");
+		List<String> lsCmd = getLsCmd();
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
+		cmdOperate.setRedirectOutToTmp(true);
+		cmdOperate.run();
 	}
 	
-//	List<String> lsCmd = new ArrayList<>();
-	@Override
-	public List<String> getCmdExeStr() {
+	public List<String> getLsCmd() {
 		List<String> lsCmd = new ArrayList<>();
 		lsCmd.add(exePath + "pindel");
 		ArrayOperate.addArrayToList(lsCmd, getReference());
@@ -83,17 +83,13 @@ public class Pindel implements IntCmdSoft {
 		ArrayOperate.addArrayToList(lsCmd, getMinNTSize());
 		ArrayOperate.addArrayToList(lsCmd, getNumberOfThreads());
 		ArrayOperate.addArrayToList(lsCmd, getOutputPrefixp());
-		System.out.println("lsCmd is ==> " + lsCmd.toString());
 		return lsCmd;
 	}
-//	private String[] getInputFile(String inputFile) {
-//		return new String[] {  "-f",inputFile };
-//	}
 	private String[] getReference() {
 		return new String[] { "-f", reference};
 	}
 	private String[] getConfigFile() {
-		return new String[] { "-i", configFile};
+		return new String[] { "-i", creatConfigFile()};
 	}
 	private String[] getMinInversionSize() {
 		return new String[] { "-v", minInversionSize + "" };
@@ -115,5 +111,12 @@ public class Pindel implements IntCmdSoft {
 		}
 		txtWrite.close();
 		return  outConfigFile;
+	}
+	public List<String> getCmdExeStr() {
+		List<String> lsResult = new ArrayList<>();
+		List<String> lsCmd = getLsCmd();
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
+		lsResult.add(cmdOperate.getCmdExeStr());
+		return lsResult;
 	}
 }

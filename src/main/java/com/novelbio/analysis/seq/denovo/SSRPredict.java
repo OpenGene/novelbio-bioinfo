@@ -6,6 +6,7 @@ import java.util.List;
 import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
@@ -14,6 +15,7 @@ public class SSRPredict implements IntCmdSoft {
 	//输入文件：需要进行SSR预测的序列文件，fasta格式文件
 		String inputFile;
 		String exePath = "";	
+		String misainiFile;
 		public void setInputFile(String inputFile) {
 			this.inputFile = inputFile;
 		}
@@ -21,14 +23,18 @@ public class SSRPredict implements IntCmdSoft {
 		private String[] getInputFile(String inputFile) {
 			return new String[]{" ",inputFile};
 		}
-		
+		public void setMisainiFile(String misainiFile) {
+			FileOperate.checkFileExistAndBigThanSize(misainiFile, 0);
+			this.misainiFile = misainiFile;
+		}
 		public SSRPredict() {
 			SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.misa);
 			this.exePath = softWareInfo.getExePathRun();
 		}
 		
 		public void run() {
-			CmdOperate cmdOperate = new CmdOperate(getLsCmd());
+			List<String> lsCmd = getLsCmd();
+			CmdOperate cmdOperate = new CmdOperate(lsCmd);
 			cmdOperate.runWithExp("MISA error:");
 		}
 		private List<String> getLsCmd() {
@@ -40,7 +46,10 @@ public class SSRPredict implements IntCmdSoft {
 
 		@Override
 		public List<String> getCmdExeStr() {
-			// TODO Auto-generated method stub
-			return null;
+			List<String> lsResult = new ArrayList<>();
+			List<String> lsCmd = getLsCmd();
+			CmdOperate cmdOperate = new CmdOperate(lsCmd);
+			lsResult.add(cmdOperate.getCmdExeStr());
+			return lsResult;
 		}
 }

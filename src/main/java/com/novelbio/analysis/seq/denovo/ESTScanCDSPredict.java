@@ -66,7 +66,8 @@ public class ESTScanCDSPredict implements IntCmdSoft {
 		this.exePath = softWareInfo.getExePathRun();
 	}
 	public void run() {
-		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
+		List<String> lsCmd = getLsCmd();
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.runWithExp("CAP3 error:");
 	}
 	private List<String> getLsCmd() {
@@ -99,7 +100,10 @@ public class ESTScanCDSPredict implements IntCmdSoft {
 	}
 	@Override
 	public List<String> getCmdExeStr() {
-		// TODO Auto-generated method stub
-		return null;
+		List<String> lsResult = new ArrayList<>();
+		List<String> lsCmd = getLsCmd();
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
+		lsResult.add(cmdOperate.getCmdExeStr());
+		return lsResult;
 	}
 }
