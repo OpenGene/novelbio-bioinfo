@@ -32,45 +32,59 @@ public class Pindel implements IntCmdSoft {
 	/** the number of threads Pindel will use (default 1)*/
 	int numberOfThreads;
 	/** 设置输出文件路径包括文件名称前缀*/
-	String outputPrefix;
-	List<String> lsFile = new ArrayList<String>();
+	String output;
+	/** 设置输出文件路径包括文件名称前缀*/
 	
-	public void setReference(String reference) {
-		this.reference = reference;
-	}
-	public void setInputFile(List<String> lsInputFile) {
-		this.lsInputFile = lsInputFile;
-	}
-	public void setLsPrefix(List<String> lsPrefix) {
-		this.lsPrefix = lsPrefix;
-	}
-	public void setInsertSize(int insertSize) {
-		this.insertSize = insertSize;
-	}
-	public void setConfigFile(String configFile) {
-		this.configFile = creatConfigFile();
-	}
-	public void setMinInversionSize(int minInversionSize) {
-		this.minInversionSize = minInversionSize;
-	}
-	public void setMinNTSize(int minNTSize) {
-		this.minNTSize = minNTSize;
-	}
-	public void setNumberOfThreads(int numberOfThreads) {
-		this.numberOfThreads = numberOfThreads;
-	}
-	public void setOutputPrefix(String outputPrefix) {
-		this.outputPrefix = outputPrefix;
-	}
+	List<String> lsFile = new ArrayList<String>();
 	
 	public Pindel() {
 		 SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.pindel);
 		 this.exePath = softWareInfo.getExePathRun();
 	}
+	
+	public void setReference(String reference) {
+		this.reference = reference;
+	}
+	
+	public void setInputFile(List<String> lsInputFile) {
+		this.lsInputFile = lsInputFile;
+	}
+	
+	public void setLsPrefix(List<String> lsPrefix) {
+		this.lsPrefix = lsPrefix;
+	}
+	
+	public void setInsertSize(int insertSize) {
+		this.insertSize = insertSize;
+	}
+	
+	public void setConfigFile(String configFile) {
+		this.configFile = creatConfigFile();
+	}
+	
+	public void setMinInversionSize(int minInversionSize) {
+		this.minInversionSize = minInversionSize;
+	}
+	
+	public void setMinNTSize(int minNTSize) {
+		this.minNTSize = minNTSize;
+	}
+	
+	public void setNumberOfThreads(int numberOfThreads) {
+		this.numberOfThreads = numberOfThreads;
+	}
+	
+	public void setOutput(String output) {
+		this.output = output;
+	}
+	
+	String outputPrefix = output + "NBCResult";
+
 	public void run() {
 		List<String> lsCmd = getLsCmd();
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.setRedirectOutToTmp(true);
+		cmdOperate.addCmdParamOutput(output, false);
 		cmdOperate.run();
 	}
 	
@@ -82,27 +96,34 @@ public class Pindel implements IntCmdSoft {
 		ArrayOperate.addArrayToList(lsCmd, getMinInversionSize());
 		ArrayOperate.addArrayToList(lsCmd, getMinNTSize());
 		ArrayOperate.addArrayToList(lsCmd, getNumberOfThreads());
-		ArrayOperate.addArrayToList(lsCmd, getOutputPrefixp());
+		ArrayOperate.addArrayToList(lsCmd, getOutputPrefix());
 		return lsCmd;
 	}
+	
 	private String[] getReference() {
 		return new String[] { "-f", reference};
 	}
+	
 	private String[] getConfigFile() {
 		return new String[] { "-i", creatConfigFile()};
 	}
+	
 	private String[] getMinInversionSize() {
 		return new String[] { "-v", minInversionSize + "" };
 	}
+	
 	private String[] getMinNTSize() {
 		return new String[] { "-n", minNTSize + "" };
 	}
+	
 	private String[] getNumberOfThreads() {
 		return new String[] { "-T", numberOfThreads + "" };
 	}
-	private String[] getOutputPrefixp() {
+	
+	private String[] getOutputPrefix() {
 		return new String[] { "-o", outputPrefix};
 	}
+	
 	protected String creatConfigFile(){
 		String outConfigFile = PathDetail.getTmpPathRandom() + "/" + "config.txt";
 		TxtReadandWrite txtWrite = new TxtReadandWrite(outConfigFile, true);
@@ -112,6 +133,7 @@ public class Pindel implements IntCmdSoft {
 		txtWrite.close();
 		return  outConfigFile;
 	}
+	
 	public List<String> getCmdExeStr() {
 		List<String> lsResult = new ArrayList<>();
 		List<String> lsCmd = getLsCmd();
@@ -119,4 +141,5 @@ public class Pindel implements IntCmdSoft {
 		lsResult.add(cmdOperate.getCmdExeStr());
 		return lsResult;
 	}
+	
 }

@@ -52,6 +52,11 @@ public class VarScanSomatic implements IntCmdSoft {
 	String outputIndel;
 	/** Minimum coverage in normal to call somatic [8] */
 	
+	public VarScanSomatic() {
+		 SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.varscan);
+		 this.exePath = softWareInfo.getExePathRun();
+	}
+	
 	public void setVarScanCom(String varScanCom) {
 		this.varScanCom = varScanCom;
 	}
@@ -86,9 +91,10 @@ public class VarScanSomatic implements IntCmdSoft {
 	public void setMinFreqForHom(double minFreqForHom) {
 		this.minFreqForHom = minFreqForHom;
 	}
-public void setOutputDir(String outputDir) {
-	this.outputDir = outputDir;
-}
+	
+	public void setOutputDir(String outputDir) {
+		this.outputDir = outputDir;
+	}
 	public void setOutoutVcf(int outputVcf) {
 		this.outputVcf = outputVcf;
 	}
@@ -113,10 +119,6 @@ public void setOutputDir(String outputDir) {
 		this.somaPValue = somaPValue;
 	}
 
-	public VarScanSomatic() {
-		 SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.varscan);
-		 this.exePath = softWareInfo.getExePathRun();
-	}
 	public void run() {
 		for (int i = 0; i < lsConFile.size(); i++) {
 			setLsConFile(lsConFile.get(i) + " " + lsTumFile.get(i));

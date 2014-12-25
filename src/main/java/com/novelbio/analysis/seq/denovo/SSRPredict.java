@@ -16,6 +16,12 @@ public class SSRPredict implements IntCmdSoft {
 		String inputFile;
 		String exePath = "";	
 		String misainiFile;
+		
+		public SSRPredict() {
+			SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.misa);
+			this.exePath = softWareInfo.getExePathRun();
+		}
+		
 		public void setInputFile(String inputFile) {
 			this.inputFile = inputFile;
 		}
@@ -23,20 +29,18 @@ public class SSRPredict implements IntCmdSoft {
 		private String[] getInputFile(String inputFile) {
 			return new String[]{" ",inputFile};
 		}
+		
 		public void setMisainiFile(String misainiFile) {
 			FileOperate.checkFileExistAndBigThanSize(misainiFile, 0);
 			this.misainiFile = misainiFile;
 		}
-		public SSRPredict() {
-			SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.misa);
-			this.exePath = softWareInfo.getExePathRun();
-		}
-		
+
 		public void run() {
 			List<String> lsCmd = getLsCmd();
 			CmdOperate cmdOperate = new CmdOperate(lsCmd);
 			cmdOperate.runWithExp("MISA error:");
 		}
+		
 		private List<String> getLsCmd() {
 			List<String> lsCmd = new ArrayList<>();
 			lsCmd.add(exePath + "misa.pl");
