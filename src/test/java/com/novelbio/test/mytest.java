@@ -24,6 +24,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
+import com.novelbio.base.Computer;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -49,7 +50,13 @@ public class mytest {
 	public static void main(String[] args) throws Exception {
 //		GeneID geneID = new GeneID("tp53", 9606);
 //		System.out.println(geneID.getDescription());
-		logger.info("fsefe");
+//		logger.info("fsefe");
+		
+		TxtReadandWrite txtRead = new TxtReadandWrite("/home/novelbio/NBCsource/test/sam/bbb.sam");
+		for (String string : txtRead.readlines()) {
+			System.out.println(string);
+		}
+		
 	}
 	
 	private void deletdb() {

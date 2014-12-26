@@ -133,7 +133,10 @@ public class CtrlMiRNApipeline implements IntCmdSoft {
 
 	public void run() {
 		lsCmd.clear();
-		GffChrAbs gffChrAbs = new GffChrAbs(species);
+		GffChrAbs gffChrAbs = null;
+		if (species.getVersion() != null) {
+			gffChrAbs = new GffChrAbs(species);
+		}
 		ctrlMiRNAfastq.setMiRNAexp(expMirPre, expMirMature);
 		ctrlMiRNAfastq.setThreadNum(threadNum);
 		
@@ -147,7 +150,7 @@ public class CtrlMiRNApipeline implements IntCmdSoft {
 			runMapping(gffChrAbs, species, mapPrefix2Fastq);
 			mapPrefix2AlignFile = ctrlMiRNAfastq.getMapPrefix2GenomeSam();
 		}
-		if (predictMirna && species.getTaxID() > 0) {
+		if (predictMirna && gffChrAbs != null && species.getTaxID() > 0) {
 			runPredict(mapPrefix2AlignFile, gffChrAbs, species);
 			mapPrefix2Fastq = ctrlMiRNApredict.getMapPrefix2UnmapFq();
 		} else if (mapMirna) {
@@ -177,6 +180,11 @@ public class CtrlMiRNApipeline implements IntCmdSoft {
 		return mapPrefix2unmapFastq;
 	}
 	
+	/**
+	 * @param gffChrAbs 如果不设置gffChrAbs，那么就不会进行repeat分析
+	 * @param species
+	 * @param mapPrefix2Fastq
+	 */
 	private void runMapping(GffChrAbs gffChrAbs, Species species, final Map<String, String> mapPrefix2Fastq) {
 		ctrlMiRNAfastq.setIsUseOldResult(isUseOldResult);
 		ctrlMiRNAfastq.setMappingAll2Genome(mapToGenome);

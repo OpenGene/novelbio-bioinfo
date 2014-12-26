@@ -240,15 +240,27 @@ public class Species implements Cloneable {
 		return len;
 	}
 	public String getChromSeq() {
+		if (version == null || mapVersion2Species.get(version.toLowerCase()) == null) {
+			return null;
+		}
+		
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getChromSeqFile();
 	}
 	public String getChromSeqSep() {
+		if (version == null || mapVersion2Species.get(version.toLowerCase()) == null) {
+			return null;
+		}
+		
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getChromSeqFileSep();
 	}
 	/** 获得这个species在本version下的全体GffDB */
 	public Map<String, String> getMapGffDBAll() {
+		if (version == null || mapVersion2Species.get(version.toLowerCase()) == null) {
+			return new HashMap<>();
+		}
+		
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getMapGffDB();
 	}
@@ -274,6 +286,9 @@ public class Species implements Cloneable {
 	 * @param gffDB 无所谓大小写
 	 */
 	public String getGffFile(String gffDB) {
+		if (version == null || mapVersion2Species.get(version.toLowerCase()) == null) {
+			return null;
+		}
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getGffFile(gffDB);
 	}
@@ -355,16 +370,25 @@ public class Species implements Cloneable {
 	 * @return
 	 */
 	public String getRfamFile(boolean spciesSpecific) {
+		if (version == null || mapVersion2Species.get(version.toLowerCase()) == null) {
+			return null;
+		}
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getRfamFile(spciesSpecific);
 	}
 	/** 获得本物中指定version的refseq的ncRNA序列，仅获得数据库记录的ncRNA */
 	public String getRefseqNCfileDB() {
+		if (version == null || mapVersion2Species.get(version.toLowerCase()) == null) {
+			return null;
+		}
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getRefseqNCfileDB();
 	}
 	/** 获得本物中指定version的refseq的ncRNA序列 */
 	public String getRefseqNCfile() {
+		if (version == null || mapVersion2Species.get(version.toLowerCase()) == null) {
+			return null;
+		}
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getRefseqNCfile();
 	}
@@ -385,6 +409,9 @@ public class Species implements Cloneable {
 	 * @param isAllIso 是否需要全体iso
 	 *  */
 	public String getRefseqProFile(boolean isAllIso) {
+		if (version == null || mapVersion2Species.get(version.toLowerCase()) == null) {
+			return null;
+		}
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getRefSeqFile(isAllIso, true);
 	}
@@ -393,6 +420,9 @@ public class Species implements Cloneable {
 	 * softMapping.toString() + "_Chr_Index/"
 	 *  */
 	public String getIndexChr(SoftWare softMapping) {
+		if (version == null || mapVersion2Species.get(version.toLowerCase()) == null) {
+			return null;
+		}
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getIndexChromFa(softMapping);
 	}
@@ -401,6 +431,9 @@ public class Species implements Cloneable {
 	 * softMapping.toString() + "_Ref_Index/" 
 	 *  */
 	public String getIndexRef(SoftWare softMapping, boolean isAllIso) {
+		if (version == null || mapVersion2Species.get(version.toLowerCase()) == null) {
+			return null;
+		}
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getIndexRefseq(softMapping, isAllIso);
 	}

@@ -33,7 +33,7 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 	
 	Species species;
 	/** 设定gff和chrome */
-	GffChrAbs gffChrAbs = new GffChrAbs();
+	GffChrAbs gffChrAbs;
 	boolean isUseOldResult = true;
 	/** mapping 序列 */
 	MiRNAmapPipline miRNAmappingPipline = new MiRNAmapPipline();
@@ -95,9 +95,11 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 	public void setThreadNumMiRNAmap(int mapThreadNum) {
 		miRNAmappingPipline.setThreadNum(mapThreadNum);
 	}
-	/** 首先会判断两个gffChrAbs的species是否一致 */
+	/** 首先会判断两个gffChrAbs的species是否一致，此外如果不设置gffChrAbs，那么就不会进行repeat分析 */
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
-		if (this.gffChrAbs.getSpecies().equals(gffChrAbs.getSpecies())) {
+		if (gffChrAbs == null 
+				|| (this.gffChrAbs != null && this.gffChrAbs.getSpecies().equals(gffChrAbs.getSpecies()))
+		) {
 			return;
 		}
 		this.gffChrAbs = gffChrAbs;
@@ -230,8 +232,11 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 		outPath = outPath + prefix + FileOperate.getSepPath();
 		countMiRNA(outPath, prefix, miRNAmappingPipline);
 		countRfam(outPath, prefix, miRNAmappingPipline);
-		countNCrna(outPath, prefix, miRNAmappingPipline);
-		countRepeatGene(outPath, prefix, miRNAmappingPipline);
+		if (gffChrAbs != null) {
+			countNCrna(outPath, prefix, miRNAmappingPipline);
+			countRepeatGene(outPath, prefix, miRNAmappingPipline);
+		}
+
 		writeToFileCurrent(outPath, prefix);
 	}
 
@@ -339,13 +344,10 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 	}
 	
 	private void readRepeatGff() {
-		if (countRepeat) {
+		if (countRepeat || gffChrAbs == null) {
 			return;
 		}
-		
-		if (gffChrAbs == null) {
-			gffChrAbs = new GffChrAbs(species);
-		}
+
 		readsOnRepeatGene.setGffGene(gffChrAbs);
 		if (!FileOperate.isFileExistAndBigThanSize(species.getGffRepeat(), 0)) {
 			return;
