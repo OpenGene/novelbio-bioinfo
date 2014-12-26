@@ -57,13 +57,6 @@ public class GATKCalling implements IntCmdSoft {
 		lsInputFilePath.add(inputFile);
 	}
 	
-//	public void setExePath(String exePath) {
-//		if (exePath == null || exePath.trim().equals(""))
-//			this.ExePath = "";
-//		else
-//			this.ExePath = FileOperate.addSep(exePath);
-//	}
-	
 	/**
 	 * variants calling by GATK<br>
 	 * @return 输出文件路径 + 输入文件名.recal.bam
