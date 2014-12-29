@@ -14,7 +14,7 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 public class VarScanSomatic implements IntCmdSoft {
 	private static final Logger logger = Logger.getLogger(VarScanSomatic.class);
 	
-	String exePath = "";
+	String exePath = "/home/novelbio/bianlianle/";
 	String varScanCom = "";
 	
 	/** 输入文件*/
@@ -51,18 +51,26 @@ public class VarScanSomatic implements IntCmdSoft {
 	/** Output file for indel calls [default: output.indel] */
 	String outputIndel;
 	/** Minimum coverage in normal to call somatic [8] */
+	String conFile;
+	
+	String tumFile;
 	
 	public VarScanSomatic() {
 		 SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.varscan);
-		 this.exePath = softWareInfo.getExePathRun();
+//		 this.exePath = softWareInfo.getExePathRun();
+		 
 	}
 	
 	public void setVarScanCom(String varScanCom) {
 		this.varScanCom = varScanCom;
 	}
 	
-	public void setLsConFile(String inputFile) {
-		this.inputFile = inputFile;
+	public void setConFile(String conFile) {
+		this.conFile = conFile;
+	}
+	
+	public void setTumFile(String tumFile) {
+		this.tumFile = tumFile;
 	}
 	public void setLsConFile(List<String> lsConFile) {
 		this.lsConFile = lsConFile;
@@ -121,7 +129,8 @@ public class VarScanSomatic implements IntCmdSoft {
 
 	public void run() {
 		for (int i = 0; i < lsConFile.size(); i++) {
-			setLsConFile(lsConFile.get(i) + " " + lsTumFile.get(i));
+			setConFile(lsConFile.get(i));
+			setTumFile(lsTumFile.get(i));
 			setOutputSnp(outputDir + lsConPrefix.get(i) + "VS" + lsTumPrefix.get(i) + "_snp.txt");
 			setOutputIndel(outputDir + lsConPrefix.get(i) + "VS" + lsTumPrefix.get(i) + "_indel.txt");
 			running();
@@ -130,8 +139,10 @@ public class VarScanSomatic implements IntCmdSoft {
 	public void running() {
 		List<String> lsCmd = getLsCmd();
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
+		cmdOperate.setRedirectOutToTmp(true);
+		cmdOperate.addCmdParamOutput(outputDir, false);
 		cmdOperate.set(false);
-		cmdOperate.run();
+		cmdOperate.runWithExp();
 	}
 	
 	public List<String> getLsCmd() {
@@ -141,7 +152,8 @@ public class VarScanSomatic implements IntCmdSoft {
 		lsCmd.add("-jar");
 		lsCmd.add(exePath + "varscan.jar");
 		lsCmd.add("somatic");
-		ArrayOperate.addArrayToList(lsCmd, getInputFile(inputFile));
+		ArrayOperate.addArrayToList(lsCmd, getConFile(conFile));
+		ArrayOperate.addArrayToList(lsCmd, getTumFile(tumFile));
 		ArrayOperate.addArrayToList(lsCmd, getMinCoverage());
 		ArrayOperate.addArrayToList(lsCmd, getMinCovNor());
 		ArrayOperate.addArrayToList(lsCmd, getMinCovTum());
@@ -154,8 +166,11 @@ public class VarScanSomatic implements IntCmdSoft {
 		ArrayOperate.addArrayToList(lsCmd, getOutputIndel());
 		return lsCmd;
 	}
-	private String[] getInputFile(String inputFile) {
-		return new String[]{inputFile};
+	private String[] getConFile(String inputConFile) {
+		return new String[]{inputConFile};
+	}
+	private String[] getTumFile(String inputTumFile) {
+		return new String[]{inputTumFile};
 	}
 	private String[] getMinCoverage() {
 		return new String[] { "--min-coverage", minCoverage + "" };
@@ -179,7 +194,7 @@ public class VarScanSomatic implements IntCmdSoft {
 	}
 	
 	private String[] getSomaPValue() {
-		return new String[] { "--min-coverage-tumor", somaPValue + ""};
+		return new String[] { "--somatic-p-value", somaPValue + ""};
 	}
 	private String[] getOutputVcf() {
 		if (outputVcf != 1) {

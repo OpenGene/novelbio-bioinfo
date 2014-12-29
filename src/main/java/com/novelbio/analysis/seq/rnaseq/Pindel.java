@@ -8,6 +8,7 @@ import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
@@ -78,10 +79,12 @@ public class Pindel implements IntCmdSoft {
 		this.output = output;
 	}
 	
-	String outputPrefix = output + "NBCResult";
+	
 
 	public void run() {
+		System.out.println("output is " + output);
 		List<String> lsCmd = getLsCmd();
+		System.out.println("lsCmd is " + lsCmd);
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.setRedirectOutToTmp(true);
 		cmdOperate.addCmdParamOutput(output, false);
@@ -121,6 +124,7 @@ public class Pindel implements IntCmdSoft {
 	}
 	
 	private String[] getOutputPrefix() {
+		String outputPrefix =  FileHadoop.convertToLocalPath(output) + "NBCResult";
 		return new String[] { "-o", outputPrefix};
 	}
 	
@@ -128,7 +132,8 @@ public class Pindel implements IntCmdSoft {
 		String outConfigFile = PathDetail.getTmpPathRandom() + "/" + "config.txt";
 		TxtReadandWrite txtWrite = new TxtReadandWrite(outConfigFile, true);
 		for (int i = 0; i < lsInputFile.size(); i++) {
-			txtWrite.writefileln(lsInputFile.get(i) + "\t" + insertSize + "\t" + lsPrefix.get(i));
+			String localPath = FileHadoop.convertToLocalPath(lsInputFile.get(i));
+			txtWrite.writefileln(localPath + "\t" + insertSize + "\t" + lsPrefix.get(i));
 		}
 		txtWrite.close();
 		return  outConfigFile;
