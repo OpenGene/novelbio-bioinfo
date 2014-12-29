@@ -19,8 +19,10 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 public class ESTScanCDSPredict implements IntCmdSoft {
 	
 	//输入文件：需要进行CDS预测的序列文件，fasta格式文件
+	List<String> lsInputFile;
 	String inputFile;
 	String exePath = "";	
+	List<String> lsInputFilePre;
 	
 	//矩阵分值文件，最小阈值，默认100；
 	int minMatrixValue = 100;
@@ -32,6 +34,8 @@ public class ESTScanCDSPredict implements IntCmdSoft {
 	int skipMinLen = 10;
 	//最短长度
 	int minLength  = 50; 
+	
+	String outputDir;
 	//翻译的蛋白序列文件
 	String pepFile;
 	//输出结果文件
@@ -42,8 +46,15 @@ public class ESTScanCDSPredict implements IntCmdSoft {
 		this.exePath = softWareInfo.getExePathRun();
 	}
 	
+	public void setLstInputFile(List<String> lsInputFile) {
+		this.lsInputFile = lsInputFile;
+	}
+	
+	public void setLstInputFilePre(List<String> lsInputFilePre) {
+		this.lsInputFilePre = lsInputFilePre;
+	}
+	
 	public void setInputFile(String inputFile) {
-		FileOperate.checkFileExistAndBigThanSize(inputFile, 0);
 		this.inputFile = inputFile;
 	}
 	
@@ -80,7 +91,9 @@ public class ESTScanCDSPredict implements IntCmdSoft {
 			this.skipMinLen = skipMinLen;
 		}
 	}
-	
+	public void setOutputDir(String outputDir) {
+		this.outputDir = outputDir;
+	}
 	public void setPepFile(String pepFile) {
 		FileOperate.checkFileExistAndBigThanSize(pepFile, 0);
 		this.pepFile = pepFile;
@@ -90,13 +103,23 @@ public class ESTScanCDSPredict implements IntCmdSoft {
 		FileOperate.checkFileExistAndBigThanSize(cdsResultFile, 0);
 		this.cdsResultFile = cdsResultFile;
 	}
-
 	public void run() {
+		for (int i = 0; i < lsInputFile.size(); i++) {
+			setInputFile(lsInputFile.get(i));
+			setPepFile(outputDir + lsInputFilePre.get(i) + "_pep.fa");
+			setCdsResultFile(outputDir + lsInputFilePre.get(i) + "_cds.fa");
+			running();
+		}
+	}
+	public void running() {
 		List<String> lsCmd = getLsCmd();
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
-		cmdOperate.runWithExp("CAP3 error:");
+		cmdOperate.setRedirectOutToTmp(true);
+		cmdOperate.addCmdParamOutput(outputDir, false);
+		cmdOperate.set(false);
+		cmdOperate.runWithExp("ESTScan error:");
 	}
-	
+
 	private List<String> getLsCmd() {
 		List<String> lsCmd = new ArrayList<>();
 		lsCmd.add(exePath + "misa.pl");
@@ -112,7 +135,7 @@ public class ESTScanCDSPredict implements IntCmdSoft {
 	}
 	
 	private String[] getInputFile(String inputFile) {
-		return new String[]{" ", inputFile};
+		return new String[]{inputFile};
 	}
 	
 	private String[] getMinMatrixValue() {
