@@ -54,7 +54,7 @@ public class BlastFileInfo {
 	
 	public BlastFileInfo(){}
 	
-	public BlastFileInfo(Properties properties){
+	public BlastFileInfo(Properties properties) {
 		this.id = properties.getProperty("id");
 		this.fileName = properties.getProperty("fileName");
 		this.isTmp = Boolean.parseBoolean(properties.getProperty("isTmp"));
@@ -86,14 +86,7 @@ public class BlastFileInfo {
 	 * @return
 	 */
 	public String realFileAndName() {
-		if (fileName.contains("\\") || fileName.contains("/")) {
-			return fileName;
-		}
-		String fileNameFinal = FileOperate.addSep(PathDetail.getBlastFolder())
-				+ fileName;
-		fileNameFinal = FileOperate.changeFileSuffix(fileNameFinal, "_"
-				+ randomFolder, null);
-		return fileNameFinal;
+		return fileName;
 	}
 
 	public void setId(String id) {
@@ -258,7 +251,7 @@ public class BlastFileInfo {
 	 */
 	private void writeAsMetaData() throws IOException {
 		Properties properties = new Properties();
-		String metaFileName = realFileAndName() + ".meta";
+		String metaFileName = getFileName() + ".meta";
 		try {
 			OutputStream outputStream = FileOperate.getOutputStream(
 					metaFileName, true);
@@ -284,19 +277,13 @@ public class BlastFileInfo {
 		}
 	}
 
-	public static void main(String[] args) throws IOException {
-//		for (BlastFileInfo blast : BlastFileInfo.findAll()) {
-//			blast.save(true);
-//		}
-		BlastFileInfo.importAllFromMeta();
-	}
 	/**
-	 * 从blastFiles文件夹下扫描所有的meta信息，并导入数据库中
+	 * 从blastPath文件夹下扫描所有的meta信息，并导入数据库中
+	 * @param blastPath
 	 * @throws IOException
 	 */
-	public static void importAllFromMeta() throws IOException {
-		List<String> lsMetaFiles = FileOperate.getFoldFileNameLs(
-				PathDetail.getBlastFolder(), "*", "meta");
+	public static void importAllFromMeta(String blastPath) throws IOException {
+		List<String> lsMetaFiles = FileOperate.getFoldFileNameLs(blastPath, "*", "meta");
 		for (String metaFile : lsMetaFiles) {
 			readFromMetaFile(metaFile).save(false);
 		}

@@ -32,21 +32,26 @@ public class BlastUp2DB {
 		this.queryIDType = queryIdType;
 		this.blastIDType = blastIdType;
 	}
-		
+	
 	public boolean updateFile() throws BlastFileException, IOException {
+		return updateFile(true);
+	}
+	
+	public boolean updateFile(boolean isSaveDb) throws BlastFileException, IOException {
 		checkFile();
-		blastFileInfo.save(true);
-		updateBlastInfo(blastFileInfo.realFileAndName());
+		blastFileInfo.save(isSaveDb);
+		updateBlastInfo();
 		return true;
 	}
+
 	
 	/**
 	 * 将指定的文件导入数据库，必须是每一行都能单独导入的表
 	 * 如果需要导入多行，譬如amiGO的信息，请覆盖该方法
 	 */
-	private boolean updateBlastInfo(String gene2AccFile) {
+	private boolean updateBlastInfo() {
 		TxtReadandWrite txtGene2Acc;
-		txtGene2Acc = new TxtReadandWrite(gene2AccFile, false);
+		txtGene2Acc = new TxtReadandWrite(blastFileInfo.getFileName(), false);
 		
 		//从第二行开始读取
 		int num = 0;
@@ -62,11 +67,11 @@ public class BlastUp2DB {
 	
 			num++;
 			if (num%300000 == 0) {
-				logger.info(gene2AccFile + " import line number:" + num);
+				logger.info(blastFileInfo.getFileName() + " import line number:" + num);
 			}
 		}
 		txtGene2Acc.close();
-		logger.info("finished import file " + gene2AccFile);
+		logger.info("finished import file " + blastFileInfo.getFileName());
 		return true;
 	}
 	
@@ -77,9 +82,9 @@ public class BlastUp2DB {
 	 * @throws BlastFileException 
 	 */
 	public void checkFile() throws BlastFileException {
-		String gene2AccFile = blastFileInfo.realFileAndName();
+		String gene2AccFile = blastFileInfo.getFileName();
 		if (!FileOperate.isFileExistAndBigThanSize(gene2AccFile, 0)) {
-			FileOperate.DeleteFileFolder(blastFileInfo.realFileAndName());
+			FileOperate.DeleteFileFolder(gene2AccFile);
 			throw new BlastFileException("file is not exist:" + gene2AccFile);
 		}
 		int taxIdQ = blastFileInfo.getQueryTaxID();
