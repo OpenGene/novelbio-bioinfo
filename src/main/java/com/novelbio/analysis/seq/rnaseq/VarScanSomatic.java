@@ -14,7 +14,7 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 public class VarScanSomatic implements IntCmdSoft {
 	private static final Logger logger = Logger.getLogger(VarScanSomatic.class);
 	
-	String exePath = "/home/novelbio/bianlianle/";
+	String exePath;
 	String varScanCom = "";
 	
 	/** 输入文件*/
@@ -57,7 +57,7 @@ public class VarScanSomatic implements IntCmdSoft {
 	
 	public VarScanSomatic() {
 		 SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.varscan);
-//		 this.exePath = softWareInfo.getExePathRun();
+		 this.exePath = softWareInfo.getExePathRun();
 		 
 	}
 	
@@ -164,6 +164,7 @@ public class VarScanSomatic implements IntCmdSoft {
 		ArrayOperate.addArrayToList(lsCmd, getOutputVcf());
 		ArrayOperate.addArrayToList(lsCmd, getOutputSnp());
 		ArrayOperate.addArrayToList(lsCmd, getOutputIndel());
+		System.out.println("lsCmd" +lsCmd);
 		return lsCmd;
 	}
 	private String[] getConFile(String inputConFile) {
