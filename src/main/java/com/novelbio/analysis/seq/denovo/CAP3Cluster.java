@@ -52,7 +52,7 @@ public class CAP3Cluster implements IntCmdSoft {
 	/** clip 位置reads支持数，默认 3 */
 	int readsSupportNum = READSSUPPORTNUM;
 	/** 聚类后序列结果序列长度阈值，也就是说，保留序列长度大于此阈值的序列*/
-	int seqLenCutoff;
+	int minSeqLen;
 	String outMergedFile;
 	
 	public CAP3Cluster() {
@@ -72,8 +72,8 @@ public class CAP3Cluster implements IntCmdSoft {
 		}
 		this.mapPrefix2TrinityFile = mapPrefix2TrinityFile;
 	}
-	public void setSeqLenCutoff(int seqLenCutoff) {
-		this.seqLenCutoff = seqLenCutoff;
+	public void setMinSeqLen(int minSeqLen) {
+		this.minSeqLen = minSeqLen;
 	}
 	public void setOutDir(String outDir) {
 		this.outDir = outDir;
@@ -230,7 +230,7 @@ public class CAP3Cluster implements IntCmdSoft {
 		List<String> lsSeqName = seqHash.getLsSeqName();
 		for (String seqName : lsSeqName) {
 			SeqFasta seqnameFasta =  seqHash.getSeq(seqName);
-			if (seqnameFasta.Length() >= seqLenCutoff) {
+			if (seqnameFasta.Length() >= minSeqLen) {
 				txtWrite.writefileln(seqnameFasta.toStringNRfasta(60));
 			}
 		}
