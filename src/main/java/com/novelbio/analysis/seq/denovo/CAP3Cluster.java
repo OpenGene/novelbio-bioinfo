@@ -54,7 +54,7 @@ public class CAP3Cluster implements IntCmdSoft {
 	/** 聚类后序列结果序列长度阈值，也就是说，保留序列长度大于此阈值的序列*/
 	int minSeqLen;
 	String outMergedFile;
-	
+	String finalClusterResult;
 	public CAP3Cluster() {
 		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.cap3);
 		this.exePath = softWareInfo.getExePathRun();
@@ -117,14 +117,30 @@ public class CAP3Cluster implements IntCmdSoft {
 		ContigId2TranId contigIDToTranID = new ContigId2TranId();
 		contigIDToTranID.setCAP3ResultFile(outFile);
 		contigIDToTranID.setCAP3ResultSingletsFile(outMergedFile.concat(".cap.singlets"));
-		contigIDToTranID.setOutContigIDToTranIDFile(FileOperate.changeFileSuffix(outFile, "_GeneId2TransId", "txt"));
+		contigIDToTranID.setOutContigIDToTranIDFile(FileOperate.changeFileSuffix(outFile, "_GeneId2AllTransId", "txt"));
 		contigIDToTranID.generateCompareTab();
+		finalClusterResult = filterFaLength(getResultClusterFa());
 		getStatisticsFile();
+		getGeneIDToTranID();
 	}
+	private void getGeneIDToTranID() {
+		// TODO Auto-generated method stub
+		String geneToTranID = outDir + "GeneIDToTranIDList.txt";
+		TxtReadandWrite txtSinglets = new TxtReadandWrite(finalClusterResult);
+		TxtReadandWrite txtWrite = new TxtReadandWrite(geneToTranID, true);
+		for (String content : txtSinglets.readlines()) {
+			if (content.startsWith(">")) {
+				String geneId = content.substring(1);
+				txtWrite.writefileln(geneId + "\t" + geneId);
+			}
+		}
+		txtSinglets.close();
+		txtWrite.close();		
+	}
+
 	//统计聚类后序列N50信息
 	private String getStatisticsFile() {
 		String statisticsFile = outDir + "statistics.xls";
-		String finalClusterResult = filterFaLength(getResultClusterFa());
 		N50AndSeqLen n50AndSeqLen = new N50AndSeqLen(finalClusterResult);
 		n50AndSeqLen.doStatistics();
 		//TODＯ 这里需要自动化生成图表
@@ -280,7 +296,7 @@ public class ContigId2TranId {
 	
 	public void generateCompareTab() {
 		generateContigIDToTranID();
-		generateSingletsIDToTranID();
+		generateSingletsIDToTranID(cap3ResultSingletsFile);
 		writeCompareTab();
 	}
 	
@@ -315,7 +331,7 @@ public class ContigId2TranId {
 	}
 
 	/**提取Singlets文件中的序列ID信息 */
-	private void generateSingletsIDToTranID() {
+	private void generateSingletsIDToTranID(String cap3ResultSingletsFile) {
 		TxtReadandWrite txtSinglets = new TxtReadandWrite(cap3ResultSingletsFile);
 		for (String content : txtSinglets.readlines()) {
 			if (content.startsWith(">")) {
@@ -327,6 +343,8 @@ public class ContigId2TranId {
 		}
 		txtSinglets.close();
 	}	
+	
+	
 	/**用来输出Contig 对应 转录组本ID信息 */
 	private void writeCompareTab() {
 		TxtReadandWrite txtWrite = new TxtReadandWrite(outContigIDToTranIDFileName,true);  //
