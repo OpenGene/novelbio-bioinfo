@@ -32,8 +32,6 @@ public class ESTScanCDSPredict implements IntCmdSoft {
 	int minCDSLength = 50;
 	int posStrand = 0;
 	int skipMinLen = 10;
-	//最短长度
-	int minLength  = 50; 
 	
 	String outputDir;
 	//翻译的蛋白序列文件
@@ -69,11 +67,6 @@ public class ESTScanCDSPredict implements IntCmdSoft {
 		this.scoreMatFile = scoreMatFile;
 	}
 	
-	public void setMinLength(int minLength) {
-		if (minLength > 0) {
-			this.minLength = minLength;
-		}
-	}
 	public void setMinCDSLength(int minCDSLength) {
 		if (minCDSLength > 0) {
 			this.minCDSLength = minCDSLength;
@@ -95,12 +88,10 @@ public class ESTScanCDSPredict implements IntCmdSoft {
 		this.outputDir = outputDir;
 	}
 	public void setPepFile(String pepFile) {
-		FileOperate.checkFileExistAndBigThanSize(pepFile, 0);
 		this.pepFile = pepFile;
 	}
 	
 	public void setCdsResultFile(String cdsResultFile) {
-		FileOperate.checkFileExistAndBigThanSize(cdsResultFile, 0);
 		this.cdsResultFile = cdsResultFile;
 	}
 	public void run() {
@@ -113,19 +104,22 @@ public class ESTScanCDSPredict implements IntCmdSoft {
 	}
 	public void running() {
 		List<String> lsCmd = getLsCmd();
-		CmdOperate cmdOperate = new CmdOperate(lsCmd);
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);	
+//		cmdOperate.setRedirectInToTmp(true);
+//		cmdOperate.addCmdParamInput(inputFile);
+//		cmdOperate.addCmdParamInput(scoreMatFile);
 		cmdOperate.setRedirectOutToTmp(true);
-		cmdOperate.addCmdParamOutput(outputDir, false);
-		cmdOperate.set(false);
+		cmdOperate.addCmdParamOutput(pepFile, false);	
 		cmdOperate.runWithExp("ESTScan error:");
 	}
 
 	private List<String> getLsCmd() {
 		List<String> lsCmd = new ArrayList<>();
-		lsCmd.add(exePath + "misa.pl");
+		lsCmd.add("perl");
+		lsCmd.add(exePath + "ESTScan");
 		ArrayOperate.addArrayToList(lsCmd, getInputFile(inputFile));
 		ArrayOperate.addArrayToList(lsCmd, getMinMatrixValue());
-		ArrayOperate.addArrayToList(lsCmd, getMinLength());
+		ArrayOperate.addArrayToList(lsCmd, getScoreMatFile());
 		ArrayOperate.addArrayToList(lsCmd, getMinCDSLength());
 		ArrayOperate.addArrayToList(lsCmd, getPosStrand());
 		ArrayOperate.addArrayToList(lsCmd, getSkipMinLen());
@@ -143,7 +137,7 @@ public class ESTScanCDSPredict implements IntCmdSoft {
 	}
 	
 	private String[] getScoreMatFile() {
-		return new String[] {"-M", scoreMatFile + ""};
+		return new String[] {"-M", scoreMatFile};
 	}
 	
 	private String[] getMinCDSLength() {
@@ -158,16 +152,12 @@ public class ESTScanCDSPredict implements IntCmdSoft {
 		return new String[] {"-s", skipMinLen + ""};
 	}
 	
-	private String[] getMinLength() {
-		return new String[] {"-l", minLength + ""};
-	}
-	
 	private String[] getPepFile() {
-		return new String[] {"-t", pepFile + ""};
+		return new String[] {"-t", pepFile};
 	}
 	
 	private String[] getCdsResultFile() {
-		return new String[] {">", cdsResultFile + ""};
+		return new String[] {">", cdsResultFile};
 	}
 	
 	public List<String> getCmdExeStr() {
