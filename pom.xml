@@ -233,13 +233,13 @@
 			<name>Internal Releases</name>
 			<url>http://192.168.0.104:8081/nexus/content/repositories/releases</url>
 		</repository>
-		<!-- use the following if you ARE using a snapshot version. 
+		<!-- use the following if you ARE using a snapshot version. 	-->
 		<snapshotRepository>
 			<id>my-nexus-releases</id>
 			<name>Internal Releases</name>
 			<url>http://192.168.0.104:8081/nexus/content/repositories/snapshots</url>
 		</snapshotRepository>
-		-->
+	
 	</distributionManagement>
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>

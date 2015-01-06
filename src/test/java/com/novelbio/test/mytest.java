@@ -1,6 +1,5 @@
 package com.novelbio.test;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,12 +8,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.springframework.data.mongodb.MongoDbFactory;
-import org.springframework.data.mongodb.core.MongoFactoryBean;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
 
-import com.mongodb.Mongo;
+import com.novelbio.analysis.annotation.blast.BlastType;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
@@ -22,15 +17,18 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
+import com.novelbio.analysis.seq.mapping.MapBwaAln;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
-import com.novelbio.base.Computer;
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.geneanno.BlastFileInfo;
 import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.model.species.Species;
 import com.novelbio.database.mongorepo.kegg.RepoKEntry;
 import com.novelbio.database.mongorepo.kegg.RepoKIDKeg2Ko;
 import com.novelbio.database.mongorepo.kegg.RepoKIDgen2Keg;
@@ -42,6 +40,8 @@ import com.novelbio.database.mongorepo.kegg.RepoKReaction;
 import com.novelbio.database.mongorepo.kegg.RepoKRelation;
 import com.novelbio.database.mongorepo.kegg.RepoKSubstrate;
 import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.updatedb.database.BlastUp2DB;
+import com.novelbio.generalConf.PathDetailNBC;
 
 
 public class mytest {
@@ -51,12 +51,35 @@ public class mytest {
 //		GeneID geneID = new GeneID("tp53", 9606);
 //		System.out.println(geneID.getDescription());
 //		logger.info("fsefe");
+//		
+//		GeneID geneID = new GeneID("tp53", 9606);
+//		TxtReadandWrite txtWrite = new TxtReadandWrite("/hdfs:/nbCloud/testJJJ", true);
+//		txtWrite.writefileln("ffserfse");
+////		txtWrite.writefileln("discription : " + geneID.getDescription());
+//		txtWrite.close();
 		
-		TxtReadandWrite txtRead = new TxtReadandWrite("/home/novelbio/NBCsource/test/sam/bbb.sam");
-		for (String string : txtRead.readlines()) {
-			System.out.println(string);
-		}
+//		FileOperate.DeleteFileFolder("/hdfs:/app/custom-amservice");
+//		FileOperate.copyFileFolder("/home/novelbio/git/spring-hadoop-samples/yarn/yarn/custom-amservice/build/libs", 
+//				"/hdfs:/app/custom-amservice", true);
+//		FileOperate.DeleteFileFolder("/hdfs:/lib");
+//		FileOperate.copyFileFolder("/home/novelbio/git/spring-hadoop-samples/yarn/yarn/custom-amservice/build/dependency-libs", 
+//				"/hdfs:/lib", true);
 		
+//		TxtReadandWrite txtRead = new TxtReadandWrite("/hdfs:/nbCloud/needCopy3.txt");
+//		for (String string : txtRead.readlines()) {
+//			System.out.println(string);
+//		}
+		
+//		int[] mm = new int[500000000];
+//		System.out.println();
+		
+//		 Map<String, String> envs = System.getenv();
+//		 for (String string : envs.keySet()) {
+//			System.out.println(string + "\t" + envs.get(string));
+//		 }
+		System.out.println(HashTest.class.toString().split(" ")[1]);
+		Species species = new Species(9606);
+		System.out.println(species.getChromSeq());
 	}
 	
 	private void deletdb() {

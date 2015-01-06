@@ -30,9 +30,10 @@ public class SamIndexRefsequence {
 	public String indexSequence() {
 		String faidx = sequence + ".fai";
 		if (FileOperate.isFileExistAndBigThanSize(faidx, 0)) {
-			if (FileOperate.getTimeLastModify(sequence) < FileOperate.getTimeLastModify(faidx)) {
-				return faidx;
-			}
+//			if (FileOperate.getTimeLastModify(sequence) <= FileOperate.getTimeLastModify(faidx)) {
+//			
+//			}
+			return faidx;
 		}
 		String sequenceLocal = sequence;
 		if (FileHadoop.isHdfs(sequence)) {
