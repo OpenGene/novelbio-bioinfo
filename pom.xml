@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.novelBio</groupId>
 	<artifactId>bioinfo-platform</artifactId>
-	<version>0.0.3</version>
+	<version>0.0.3-SNAPSHOT</version>
 	<name>bioinfo-platform</name>
 	<dependencies>
 		<dependency>
@@ -163,7 +163,7 @@
 		<dependency>
 			<groupId>com.novelbio</groupId>
 			<artifactId>base</artifactId>
-			<version>0.0.2</version>
+			<version>0.0.3-SNAPSHOT</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>netty</artifactId>

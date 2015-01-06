@@ -56,6 +56,7 @@ public abstract class FunctionTest implements Cloneable {
 	 * 这时候就用geneID作为key，将accID放入value的list中。
 	 * 但是很可能value里面的copedID有相同的accID，这时候为了避免这种情况，我新建了一个hashAcc2CopedID
 	 * 专门用于去冗余
+	 * <b>key为小写</b>
 	 */
 	ArrayListMultimap<String, GeneID> mapGeneUniID2LsGeneID = ArrayListMultimap.create();
 	ArrayList<StatisticTestResult> lsTestResult = new ArrayList<StatisticTestResult>();
@@ -269,7 +270,7 @@ public abstract class FunctionTest implements Cloneable {
 				continue;
 			}
 			setAccID.add(geneID.getAccID());
-			mapGeneUniID2LsGeneID.put(geneID.getGeneUniID(), geneID);
+			mapGeneUniID2LsGeneID.put(geneID.getGeneUniID().toLowerCase(), geneID);
 		}
 	}
 	/**
@@ -347,7 +348,7 @@ public abstract class FunctionTest implements Cloneable {
 		Map<String, StatisticTestResult> mapItem2StatictResult = getMapItemID2StatisticsResult();
 		Set<String> setAccID = new HashSet<String>();//用来去重复的
 		for (GeneID2LsItem geneID2LsItem : lsTest) {
-			for (GeneID geneID : mapGeneUniID2LsGeneID.get(geneID2LsItem.getGeneUniID())) {
+			for (GeneID geneID : mapGeneUniID2LsGeneID.get(geneID2LsItem.getGeneUniID().toLowerCase())) {
 				if (setAccID.contains(geneID.getAccID())) continue;
 				
 				setAccID.add(geneID.getAccID());

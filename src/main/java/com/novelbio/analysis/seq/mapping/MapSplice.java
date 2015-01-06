@@ -158,8 +158,18 @@ public class MapSplice implements MapRNA {
 		String mapSpliceBam = parentPath + prefix + MapSpliceSuffix;
 		if (!FileOperate.isFileExistAndBigThanSize(mapSpliceBam, 1_000_000)) {
 			CmdOperate cmdOperate = new CmdOperate(getLsCmd());
-			cmdOperate.addCmdParamOutput(outFile, false);
+			
+			cmdOperate.setRedirectInToTmp(true);
+			for (FastQ fqL : lsLeftFq) {
+				cmdOperate.addCmdParamInput(fqL.getReadFileName());
+			}
+			for (FastQ fqR : lsRightFq) {
+				cmdOperate.addCmdParamInput(fqR.getReadFileName());
+			}
+			
 			cmdOperate.setRedirectOutToTmp(true);
+			cmdOperate.addCmdParamOutput(outFile, false);
+			
 			cmdOperate.run();
 			if (!cmdOperate.isFinishedNormal()) {
 				FileOperate.DeleteFileFolder(FileOperate.addSep(outFile) + "tmp");

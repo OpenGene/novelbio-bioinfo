@@ -41,13 +41,9 @@ public class ImportDB {
 //		importDB.setTaxIDFile(taxIDFile);
 		
 //		importDB.updateDBinfo(dbInfo);
-		importDB.updateGODB();
+//		importDB.updateGODB();
 		
-//		importDB.updateNCBIID();
-		
-		
-		
-		
+		importDB.updateNCBIID();
 		
 		
 ////		importDB.updateUniprotID();
@@ -110,7 +106,7 @@ public class ImportDB {
 		String gene2GO = downloadPath + "gene2go.gz";
 		
 		NCBI ncbi = new NCBI();
-		ncbi.setTaxID(taxIDFile);
+//		ncbi.setTaxID(taxIDFile);
 		ncbi.setGene2AccFile(gene2Acc, gene2Ref);
 		ncbi.setGene2Ensembl(gene2ensembl);
 		ncbi.setGene2Info(gene2Info);

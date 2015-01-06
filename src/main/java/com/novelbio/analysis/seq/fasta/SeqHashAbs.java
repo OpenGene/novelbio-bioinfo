@@ -203,10 +203,13 @@ public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 		try {
 			seqFasta = getSeqInfo(chrID, startlocation, endlocation);
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error("cannot get location: " + chrID + "\t" + startlocation + "\t"+ endlocation, e);
 			return null;
 		}
-		
+		if (seqFasta == null) {
+			logger.error("cannot get location: " + chrID + "\t" + startlocation + "\t"+ endlocation);
+			return null;
+		}
 		seqFasta.setDNA(isDNAseq);
 		return seqFasta;
 	}

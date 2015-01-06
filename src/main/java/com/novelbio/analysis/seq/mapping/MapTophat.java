@@ -464,8 +464,16 @@ public class MapTophat implements MapRNA {
 				!FileOperate.isFileExistAndBigThanSize(unmappedBam, 1_000)
 				) {
 			CmdOperate cmdOperate = new CmdOperate(getLsCmd());
-			cmdOperate.addCmdParamOutput(outPathPrefix, false);
+			cmdOperate.setRedirectInToTmp(true);
+			for (FastQ fqL : lsLeftFq) {
+				cmdOperate.addCmdParamInput(fqL.getReadFileName());
+			}
+			for (FastQ fqR : lsRightFq) {
+				cmdOperate.addCmdParamInput(fqR.getReadFileName());
+			}
+			
 			cmdOperate.setRedirectOutToTmp(true);
+			cmdOperate.addCmdParamOutput(outPathPrefix, false);
 			cmdOperate.run();
 			if (!cmdOperate.isFinishedNormal()) {
 				FileOperate.DeleteFileFolder(FileOperate.addSep(outPathPrefix) + "tmp");

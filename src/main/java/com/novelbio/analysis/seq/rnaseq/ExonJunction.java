@@ -242,8 +242,9 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	/** junction的pvalue所占的比重
 	 * 小于0 或者大于1 表示动态比重
 	 */
-	double pvalueJunctionProp = 0.2;
-	
+	double pvalueJunctionProp = -1;
+	/** 是否仅使用 unique mapped reads 来做分析 */
+	boolean isUseUniqueMappedReads = false;
 	/**
 	 * pvalue的计算是合并exon表达pvalue和junction pvalue 
 	 * junction的pvalue所占的比重
@@ -251,6 +252,9 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	 */
 	public void setPvalueJunctionProp(double pvalueJunctionProp) {
 		this.pvalueJunctionProp = pvalueJunctionProp;
+	}
+	public void setUseUniqueMappedReads(boolean isUseUniqueMappedReads) {
+		this.isUseUniqueMappedReads = isUseUniqueMappedReads;
 	}
 	/**
 	 * 表示差异可变剪接的事件的pvalue阈值，仅用于统计差异可变剪接事件的数量，不用于可变剪接的筛选
@@ -480,7 +484,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				if (mapReads != null) {
 					samFileReading.addAlignmentRecorder(mapReads);
 				}
-				samFileReading.setUniqueMapping(true);
+				samFileReading.setUniqueMapping(isUseUniqueMappedReads);
 				samFileReading.run();
 				Map<String, double[]> mapGroup2Num = mapCond_group2ReadsNum.get(condition);
 				if (mapGroup2Num == null) {
@@ -614,7 +618,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 					mapReadsAbs = getMapReads(samFileReading);
 					samFileReading.addAlignmentRecorder((MapReads)mapReadsAbs);
 				}
-				
+				samFileReading.setUniqueMapping(isUseUniqueMappedReads);
 				samFileReading.run();
 				samFileReading.clearRecorder();
 				addMapReadsInfo(condition, group, mapReadsAbs);

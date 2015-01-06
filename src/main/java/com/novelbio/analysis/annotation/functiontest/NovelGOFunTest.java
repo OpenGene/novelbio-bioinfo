@@ -61,7 +61,7 @@ public class NovelGOFunTest extends FunctionTest {
 			ArrayList<GeneID> lsFinalGeneIDs = new ArrayList<GeneID>();
 			for (GeneID geneID : lsTmpGeneUniID) {
 				//同一个geneUniID对应的不同accID
-				List<GeneID> lscopedIDs = mapGeneUniID2LsGeneID.get(geneID.getGeneUniID());
+				List<GeneID> lscopedIDs = mapGeneUniID2LsGeneID.get(geneID.getGeneUniID().toLowerCase());
 				lsFinalGeneIDs.addAll(lscopedIDs);
 			}
 			

@@ -22,6 +22,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
+import com.novelbio.analysis.seq.sam.AlignSamReading;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.ExceptionNullParam;
@@ -44,7 +45,8 @@ public class RPKMcomput implements AlignmentRecorder {
 	boolean isPairend = false;
 	boolean calculateFPKM = true;
 	boolean upQuartile = false;
-
+	/** 是否仅计算 unique mapped reads */
+	boolean isUniqueMapped = false;
 	Map<String, String> mapGene2Type;
 	
 	GffHashGene gffHashGene;
@@ -62,6 +64,14 @@ public class RPKMcomput implements AlignmentRecorder {
 	/** 是否计算FPKM，同时有FPKM和pairend才算是FPKM */
 	public boolean isCalculateFPKM() {
 		return isPairend && calculateFPKM;
+	}
+	
+	/** 是否仅计算 unique mapped reads，注意如果上层，也就是{@link AlignSamReading} 中设定了unique mapped reads，
+	 * 则这里设定为false也没有用，依然只统计unique mapped reads。
+	 * 只有当{@link AlignSamReading} 中设定为 全体 reads，这里才起作用。
+	 */
+	public void setUniqueMapped(boolean isUniqueMapped) {
+		this.isUniqueMapped = isUniqueMapped;
 	}
 	
 	public void setGffHashGene(GffHashGene gffHashGene) {
@@ -140,7 +150,7 @@ public class RPKMcomput implements AlignmentRecorder {
 	
 	@Override
 	public void addAlignRecord(AlignRecord alignRecord) {
-		if (!alignRecord.isMapped()) return;
+		if (!alignRecord.isMapped() || (isUniqueMapped && !alignRecord.isUniqueMapping())) return;
 		List<SamRecord> lSamRecords = null;
 		try {
 			lSamRecords = isSelectedReads(alignRecord);

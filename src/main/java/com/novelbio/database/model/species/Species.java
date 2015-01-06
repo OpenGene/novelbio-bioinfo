@@ -696,19 +696,19 @@ public class Species implements Cloneable {
 			info = ArrayOperate.copyArray(info, 6);
 			
 			int m = hashName2ColNum.get("taxid");
-			taxInfo.setTaxID(Integer.parseInt(info[m]));
+			taxInfo.setTaxID(Integer.parseInt(info[m].trim()));
 			
 			m = hashName2ColNum.get("chinesename");
-			taxInfo.setChnName(info[m]);
+			taxInfo.setChnName(info[m].trim());
 			
 			m = hashName2ColNum.get("latinname");
-			taxInfo.setLatin(info[m]);
+			taxInfo.setLatin(info[m].trim());
 			
 			m = hashName2ColNum.get("commonname");
-			taxInfo.setComName(info[m]);
+			taxInfo.setComName(info[m].trim());
 			
 			m = hashName2ColNum.get("abbreviation");
-			taxInfo.setAbbr(info[m]);
+			taxInfo.setAbbr(info[m].trim());
 			//升级
 			taxInfo.save();
 		}
