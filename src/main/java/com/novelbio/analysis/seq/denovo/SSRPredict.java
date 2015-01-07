@@ -26,9 +26,7 @@ public class SSRPredict implements IntCmdSoft {
 			this.inputFile = inputFile;
 		}
 		
-		private String[] getInputFile(String inputFile) {
-			return new String[]{" ",inputFile};
-		}
+
 		
 		public void setMisainiFile(String misainiFile) {
 			FileOperate.checkFileExistAndBigThanSize(misainiFile, 0);
@@ -47,7 +45,9 @@ public class SSRPredict implements IntCmdSoft {
 			ArrayOperate.addArrayToList(lsCmd, getInputFile(inputFile));
 			return lsCmd;
 		}
-
+		private String[] getInputFile(String inputFile) {
+			return new String[]{inputFile};
+		}
 		@Override
 		public List<String> getCmdExeStr() {
 			List<String> lsResult = new ArrayList<>();
