@@ -65,6 +65,10 @@ public class MapSplice implements MapRNA {
 		}
 	}
 	
+	public void setSpecies(Species species) {
+		this.species = species;
+	}
+	
 	/**
 	 * 是否将没有mapping上的reads用bowtie2比对到基因组上，<b>注意目前仅用于proton数据</b>
 	 * @param mapUnmapedReads

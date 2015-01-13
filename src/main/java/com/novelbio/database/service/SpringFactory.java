@@ -8,7 +8,6 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class SpringFactory {
 	static ApplicationContext ctx;
 	static protected BeanFactory factory;
-	private static ApplicationContext context;
 	public static BeanFactory getFactory() {
 		if (factory == null) {
 			ctx = new ClassPathXmlApplicationContext("spring_bioinfo.xml");
@@ -23,16 +22,18 @@ public class SpringFactory {
 		}
 		return factory;
 	}
+	
+	//TODO 延迟初始有问题
 	/**
 	 * 根据id拿到spring容器中的bean
 	 * @param id
 	 * @return
 	 */
 	public static Object getBean(String id) {
-		if (context == null) {
-			context = new ClassPathXmlApplicationContext("spring.xml");
+		if (ctx == null) {
+			ctx = new ClassPathXmlApplicationContext("spring_bioinfo.xml");
 		}
-		return context.getBean(id);
+		return ctx.getBean(id);
 	}
 	public static void main(String[] args) {
 		SpringFactory.getBean("springHelper");
@@ -45,9 +46,9 @@ public class SpringFactory {
 	 * @return
 	 */
 	public static <T> T getBean(Class<T> requiredType) {
-		if (context == null) {
-			context = new ClassPathXmlApplicationContext("spring.xml");
+		if (ctx == null) {
+			ctx = new ClassPathXmlApplicationContext("spring_bioinfo.xml");
 		}
-		return context.getBean(requiredType);
+		return ctx.getBean(requiredType);
 	}
 }
