@@ -172,7 +172,7 @@ public class PerBaseQualityScores extends FastQCmodules implements QCModule {
 		return false;
 	}
 	
-	public BufferedImage getBufferedImage(int width, int heigth){
+	public BufferedImage getBufferedImage(int width, int heigth) {
 		
 		if (!calculated) getPercentages();
 

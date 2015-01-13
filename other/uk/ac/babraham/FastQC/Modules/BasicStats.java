@@ -25,6 +25,8 @@ import java.util.Map;
 
 import javax.swing.table.AbstractTableModel;
 
+import com.novelbio.base.dataOperate.TxtReadandWrite;
+
 import uk.ac.babraham.FastQC.Sequence.Sequence;
 import uk.ac.babraham.FastQC.Sequence.QualityEncoding.PhredEncoding;
 
@@ -40,8 +42,20 @@ public class BasicStats extends FastQCmodules implements QCModule {
 	private long aCount = 0;
 	private long tCount = 0;
 	private long nCount = 0;
+	private long allCount = 0;
+	private long gcCount = 0;
 	private char lowestChar = 126;
 	private String fileType = null;
+	
+	public void fillBasicStats(String txtBasicFile) {
+		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(txtBasicFile);
+		for (String content : txtReadandWrite.readlines()) {
+			String[] ss = content.split("\t");
+			//TODO 填充allCount gcCount actualCount等
+			
+		}
+	}
+	
 	
 	public String description() {
 		return "Calculates some basic statistics about the file";
@@ -60,6 +74,8 @@ public class BasicStats extends FastQCmodules implements QCModule {
 		aCount = 0;
 		tCount = 0;
 		nCount = 0;
+		allCount = 0;
+		gcCount = 0;
 	}
 
 	public String name() {
@@ -132,8 +148,9 @@ public class BasicStats extends FastQCmodules implements QCModule {
 	}
 	
 	public double getGCpersentage() {
-		if (aCount+tCount+gCount+cCount > 0) {
-			return ((gCount+cCount)*100)/(aCount+tCount+gCount+cCount);
+		allCount = getBaseNum();
+		if (allCount > 0) {
+			return ((gCount+cCount)*100)/allCount;
 		}
 		else {
 			return 0.0;
@@ -168,17 +185,16 @@ public class BasicStats extends FastQCmodules implements QCModule {
 	}
 	
 	public Map<String, String> getResult() {
+		//TODO 计算 allCount，GC比，等
 		ResultsTable table = new ResultsTable();
 		Map<String, String> mapResult = new LinkedHashMap<String, String>();
 		for (int i = 1; i < table.getRowCount(); i++) {
 			if(i == 0)
 				mapResult.put(table.getColumnName(0), table.getColumnName(1));
-			mapResult.put( table.getValueAt(i,0), table.getValueAt(i,1));
+				mapResult.put( table.getValueAt(i,0), table.getValueAt(i,1));
 		}
 		return mapResult;
 	}
-	
-
 	
 	private class ResultsTable extends AbstractTableModel {
 				
@@ -189,6 +205,7 @@ public class BasicStats extends FastQCmodules implements QCModule {
 				"File type",
 				"Encoding",
 				"Total Sequences",
+				"Total Bases",
 //				"Filtered Sequences",
 				"Sequence length",
 				"%GC",
@@ -204,6 +221,7 @@ public class BasicStats extends FastQCmodules implements QCModule {
 		}
 	
 		public String getValueAt(int rowIndex, int columnIndex) {
+			allCount = getBaseNum();
 			switch (columnIndex) {
 				case 0: return rowNames[rowIndex];
 				case 1:
@@ -211,23 +229,22 @@ public class BasicStats extends FastQCmodules implements QCModule {
 //					case 0 : return name;
 					case 0 : return fileType;
 					case 1 : return PhredEncoding.getFastQEncodingOffset(lowestChar).toString();
-					case 2 : return ""+actualCount;
+					case 2 : return ""+ actualCount;
+					case 3 : return ""+ allCount;
 //					case 4 : return ""+filteredCount;
-					case 3 :
+					case 4 :
 						if (minLength == maxLength) {
 							return ""+minLength;
 						}
 						else {
 							return minLength+"-"+maxLength;
 						}
-						
-						
-					case 4 : 
-						if (aCount+tCount+gCount+cCount > 0) {
-							return ""+(((gCount+cCount)*100)/(aCount+tCount+gCount+cCount));
+					case 5 : 
+						if (allCount > 0) {
+							return "" + getGCpersentage();
 						}
 						else {
-							return 0+"";
+							return 0 + "";
 						}
 					
 					}
