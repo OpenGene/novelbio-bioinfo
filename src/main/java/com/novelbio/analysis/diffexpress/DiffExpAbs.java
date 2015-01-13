@@ -46,7 +46,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	String fileNameRawdata = "";
 	String outScript = "";
 	
-	TitleFormatNBC titleFormatNBC;
+	TitleFormatNBC tilePvalueOrFdr;
 	double logFCcutoff;
 	double pValueOrFDRcutoff = 0.05;
 	
@@ -81,6 +81,8 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	 * 1：control
 	 */
 	HashMap<String, String[]> mapOutFileName2Compare = new LinkedHashMap<String, String[]>();
+	
+	HashMap<String, Integer[]> mapDifGeneGroup2DifGeneNum = new LinkedHashMap<String, Integer[]>();
 	
 	List<String> lsOutFile = new ArrayList<>();
 	boolean calculate = false;
@@ -177,6 +179,19 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		mapOutFileName2Compare.put(fileName, comparePair);
 		calculate = false;
 	}
+	/**
+	 * 设定输出比较组总差异基因个数、上调以及下调差异基因个数
+	 * @param compareGroup
+	 * @param difGeneNumber <br>
+	 * 0: all difference gene number<br>
+	 * 1: up difference gene number<br>
+	 * 2: down difference gene number<br>
+	 */
+	public void addDifGeneGroup2DifGeneNum(String compareGroup, Integer[] difGeneNumber) {
+		mapDifGeneGroup2DifGeneNum.put(compareGroup, difGeneNumber);
+	}
+	
+	
 	public void setGeneInfo(List<String[]> lsGeneInfo) {
 		this.lsGeneInfo = lsGeneInfo;
 		calculate = false;
@@ -234,6 +249,30 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	 */
 	public Map<String, String[]> getMapOutFileName2Compare() {
 		return mapOutFileName2Compare;
+	}
+	
+	/**
+	 * <b>调用{@link #plotDifParams()} 后才能调用</b><br>
+	 * 返回比较组名，以及对应的总差异基因个数，上调差异基因个数以及下调差异基因个数<br>
+	 * key：比较组名<br>
+	 * value：是一个数值型数组，
+	 * 0 总的差异基因个数
+	 * 1 上调差异基因个数
+	 * 2 下调差异基因个数 
+	 * @return
+	 */
+	public Map<String, Integer[]> getMapDifGeneGroup2DifGeneNum() {
+		Map<String, DiffGeneFilter> mapExcelName2DifResultInfo= new LinkedHashMap<String, DiffGeneFilter>();
+		for (String excelFileName : mapExcelName2DifResultInfo.keySet()) {
+			DiffGeneFilter difResultInfo = mapExcelName2DifResultInfo.get(excelFileName);
+			Integer[] arrDifGeneNum = new Integer[3]; 
+			arrDifGeneNum[0] = difResultInfo.getDifGeneNum();
+			arrDifGeneNum[1] = difResultInfo.getUpGeneNum();
+			arrDifGeneNum[2] = difResultInfo.getDownGeneNum();
+			mapDifGeneGroup2DifGeneNum.put(excelFileName, arrDifGeneNum);
+		}
+		
+		return mapDifGeneGroup2DifGeneNum;
 	}
 	
 	/**
@@ -564,13 +603,17 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 			difResultInfo.setLogfcCol(Math.abs(logFCcutoff), -Math.abs(logFCcutoff));
 			String outFile = difResultInfo.writeDifGene();
 			lsOutFile.add(outFile);
-			titleFormatNBC= difResultInfo.getTitlePvalueFDR();
+			tilePvalueOrFdr= difResultInfo.getTitlePvalueFDR();
 			logFCcutoff = difResultInfo.getUpfc();
 			pValueOrFDRcutoff = difResultInfo.getPvalueFDRthreshold();
 		}
 		return lsOutFile;
 	}
 
+	
+	
+	
+	
 	public double getLogFC() {
 		return logFCcutoff;
 	}
@@ -580,7 +623,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	}
 	
 	public TitleFormatNBC getTitleFormatNBC() {
-		return titleFormatNBC;
+		return tilePvalueOrFdr;
 	}
 	
 	/**

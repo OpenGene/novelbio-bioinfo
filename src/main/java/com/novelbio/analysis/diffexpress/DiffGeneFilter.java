@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import cern.colt.function.IntProcedure;
+
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -52,7 +54,9 @@ import com.novelbio.generalConf.TitleFormatNBC;
 	int logfcCol = -1;
 	/** FDR的列号, 从0开始计算 */
 	int fdrCol = -1;
-
+	/** 上下调基因的数量，注意，必须在调用{@link #getDifGeneNum()}后才能使用 */
+	int[] upDownNum = new int[2];
+	
 	public DiffGeneFilter(String excelName) {
 		this.excelFileName = excelName;
 		lslsInfo = ExcelTxtRead.readLsExcelTxtls(excelName, 0);
@@ -177,6 +181,14 @@ import com.novelbio.generalConf.TitleFormatNBC;
 	public int getDifGeneNum() {
 		return getLsDifGene().size() - 1;
 	}
+	/**  上下调基因的数量，注意，必须在调用{@link #getDifGeneNum()}后才能使用 */
+	public int getUpGeneNum() {
+		return upDownNum[0];
+	}
+	/**  上下调基因的数量，注意，必须在调用{@link #getDifGeneNum()}后才能使用 */
+	public int getDownGeneNum() {
+		return upDownNum[1];
+	}
 	
 	/**
 	 * 写差异基因进入文本
@@ -235,8 +247,10 @@ import com.novelbio.generalConf.TitleFormatNBC;
 				//因为lslsInfo的第一行是title，所以要加上1行以保持一致
 				List<String> lsValue = new ArrayList<>(lslsInfo.get(i+1));
 				if (logfc >= upfc) {
+					upDownNum[0]++;
 					lsValue.add(getLastCol()+1, "up");
 				} else {
+					upDownNum[1]++;
 					lsValue.add(getLastCol()+1, "down");
 				}
 				lslsDifGene.add(lsValue);
@@ -275,7 +289,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
 		return lslsDifGene;
 	}
 	
-	/** 获得最靠后的一列，从0开始计算 */
+	/** 获得pvalue或fdr或logfc，这三列中最靠后的一列，会把up，down的信息加在这一列的后面。从0开始计算 */
 	private int getLastCol() {
 		return Math.max(pvalueCol, Math.max(fdrCol, logfcCol));
 	}
