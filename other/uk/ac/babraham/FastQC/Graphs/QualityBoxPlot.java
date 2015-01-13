@@ -21,8 +21,13 @@ package uk.ac.babraham.FastQC.Graphs;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
+
+//import com.lowagie.text.Font;
+import java.awt.Font;
+import com.novelbio.base.plot.ImageUtils;
 
 public class QualityBoxPlot extends JPanel {
 
@@ -49,6 +54,29 @@ public class QualityBoxPlot extends JPanel {
 	
 	private int height = -1;
 	private int width = -1;
+	
+	public static void main(String[] args) {
+		int width=1000;
+		int heigth=800;
+		double [] means = {30,28,30,28,30,28,30,28,30,28,30,28,30,28,30,28,30,28,30,28};
+		double [] medians = {25,26,25,27,25,26,25,27,25,26,25,27,25,26,25,27,25,26,25,27};
+		double [] lowest = {15,16,15,14,10,20,21,22,20,21,19,18,16,10,5,9,10,6,5,7};
+		double [] highest = {35,36,40,45,43,35,36,40,45,43,35,36,40,45,43,35,36,40,45,43};
+		double [] lowerQuartile = {25,26,25,26,25,26,25,26,25,26,25,26,25,26,25,26,25,26,25,26};
+		double [] upperQuartile = {50,55,50,55,50,55,50,55,50,55,50,55,50,55,50,55,50,55,50,55};
+		double high = 60;
+		String []  xLabels= {"1","2","1","2","1","2","1","2","1","2","1","2","1","2","1","2","1","2","1","2"};
+		String graphTitle =  "Quality scores across all bases ( encoding)";
+		BufferedImage b = new BufferedImage(Math.max(width, means.length*15),heigth,BufferedImage.TYPE_INT_RGB);
+		Graphics g = b.getGraphics();
+		QualityBoxPlot bp = new QualityBoxPlot(means,medians,lowest,highest,lowerQuartile,upperQuartile, 0, high, 2d, xLabels, graphTitle);
+		bp.paint(g,b.getWidth(),b.getHeight());
+		
+		ImageUtils.saveBufferedImage(b, "/home/chendai/fqctest.png");
+		
+		
+		
+	}
 	
 	public QualityBoxPlot (double [] means, double [] medians, double [] lowest, double [] highest, double [] lowerQuartile, double [] upperQuartile, double minY, double maxY, double yInterval, String [] xLabels, String graphTitle) {
 
@@ -89,8 +117,11 @@ public class QualityBoxPlot extends JPanel {
 	}
 	
 	public void paint (Graphics g) {
+		//可在此处修改图中title的字体设置
+		Font titleFont = new Font("Times New Roman", 10, 26);
+		//可在此处修改图中x,y轴坐标处的字体设置
+		Font lableFont = new Font("Times New Roman", 10, 18);
 		super.paint(g);
-		
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, getWidth(), getHeight());
 		g.setColor(Color.BLACK);
@@ -107,7 +138,7 @@ public class QualityBoxPlot extends JPanel {
 		}
 		
 		int xOffset = 0;
-		
+		g.setFont(lableFont);
 		for (double i=yStart;i<=maxY;i+=yInterval) {
 			String label = ""+i;
 			label = label.replaceAll(".0$", "");
@@ -115,22 +146,21 @@ public class QualityBoxPlot extends JPanel {
 			if (width > xOffset) {
 				xOffset = width;
 			}
-			
 			g.drawString(label, 2, getY(i)+(g.getFontMetrics().getAscent()/2));
 		}
 
 		// Give the x axis a bit of breathing space
 		xOffset += 5;
-		
-
-	
 		g.setColor(Color.BLACK);
 		
+		// Draw the graph title 此处可以修改Title字体的属性，包括字体格式和字体大小等
 		
-		// Draw the graph title
+		//bll
+		
+		g.setFont(titleFont);
 		int titleWidth = g.getFontMetrics().stringWidth(graphTitle);
 		g.drawString(graphTitle, (xOffset + ((getWidth()-(xOffset+10))/2)) - (titleWidth/2), 30);
-		
+		g.setFont(lableFont);
 		
 		
 		// Work out the width of the x axis bins
@@ -180,8 +210,10 @@ public class QualityBoxPlot extends JPanel {
 		}
 		
 		// Now draw the axes
+		
 		g.drawLine(xOffset, getHeight()-40, getWidth()-10,getHeight()-40);
 		g.drawLine(xOffset, getHeight()-40, xOffset, 40);
+		
 		g.drawString("Position in read (bp)", (getWidth()/2) - (g.getFontMetrics().stringWidth("Position in read (bp)")/2), getHeight()-5);
 		
 		// Now draw the boxplots
@@ -219,6 +251,7 @@ public class QualityBoxPlot extends JPanel {
 		}
 
 		// Now overlay the means
+		g.setFont(lableFont);
 		g.setColor(new Color(0,0,200));
 		lastY = getY(means[0]);
 		for (int i=1;i<means.length;i++) {
