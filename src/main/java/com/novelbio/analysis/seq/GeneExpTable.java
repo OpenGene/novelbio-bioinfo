@@ -82,6 +82,7 @@ public class GeneExpTable {
 	}
 	
 	public void read(String file, EnumAddAnnoType addAnno, Map<Integer, String> mapCol2Sample) {
+		System.out.println("file is " + file);
 		TxtReadandWrite txtRead = new TxtReadandWrite(file);
 		if (mapCol2Sample == null) {
 			txtRead.close();
@@ -141,6 +142,11 @@ public class GeneExpTable {
 			setCondition.add(string);
 		}
 		String[] title = lsInfo.get(0).split("\t");
+		if (title[0].startsWith("#")) {
+			title[0] = title[0].replaceFirst("#", "");
+		}
+		
+		
 		geneTitleName = title[0];
 		if (addAnno != EnumAddAnnoType.notAdd) {
 			setLsAnnoTitle(title, mapCol2Sample.keySet());
@@ -152,7 +158,7 @@ public class GeneExpTable {
 			}
 			addValue(content.split("\t"), mapCol2Sample, addAnno);
 		}
-		setAllreadsPerConditon();
+		setAllreadsPerConditon();   //bll
 	}
 	
 	/**
@@ -176,6 +182,7 @@ public class GeneExpTable {
 				if (dataArray2 != null) {
 					Double.parseDouble(dataArray2[i]);
 				}
+//				System.out.println( i +"*********\t" + titleArray[i]);
 				mapCol2Sample.put(i, titleArray[i]);
 			} catch (Exception e) {
 			}
@@ -226,7 +233,7 @@ public class GeneExpTable {
 	}
 	
 	/** 返回一系列基因的名称 */
-	protected Set<String> getSetGeneName() {
+	public Set<String> getSetGeneName() {
 		return mapGene_2_Cond2Exp.keySet();
 	}
 	
@@ -424,6 +431,56 @@ public class GeneExpTable {
 		}
 		return mapCond2AllReads.get(currentCondition);
 	}
+	
+	public double getGeneExpRaw(String geneName) {
+		return getGeneExp(geneName, EnumExpression.Counts, currentCondition);
+	}
+	
+	/**
+	 * 获得全体时期的表达情况和ratio信息，用于mapping率
+	 * @param enumExpression
+	 *  @return 返回按照 lsConditions顺序的基因表达list
+	 */
+	public Double getGeneExp(String geneName, EnumExpression enumExpression, String condition) {
+		setAllreadsPerConditon();
+		Map<String, Double> mapCondition2UQ = null; 
+		if (enumExpression == EnumExpression.UQPM || enumExpression == EnumExpression.UQRPKM) {
+			mapCondition2UQ = getMapCond2UQ();
+		}
+		Map<String, Double> mapCond2Exp = mapGene_2_Cond2Exp.get(geneName);
+		if (mapCond2Exp == null) return null;
+		Double value = mapCond2Exp.get(condition);
+		logger.info(geneName + "\t"+ value);
+		if (value == null) return null;
+		
+		double uq = (mapCondition2UQ != null) ? mapCondition2UQ.get(condition) : 0;
+		
+		Long allReadsNum = mapCond2AllReads.get(condition);
+		Integer geneLen = mapGene2Len == null ? 0 : mapGene2Len.get(geneName);
+		Double geneValue = getValue(enumExpression, value, allReadsNum, uq, geneLen);
+		return geneValue;
+	}
+	/**
+	 * 设定基因的表达
+	 * @param geneName
+	 * @param condition
+	 * @param exp
+	 */
+	public void setGeneExp(String geneName, String condition, double exp) {
+		Map<String, Double> mapCond2Exp = mapGene_2_Cond2Exp.get(geneName);
+		if (mapCond2Exp == null) return;
+		mapCond2Exp.put(condition, exp);
+	}
+	/**
+	 * 设定当前currentCondition下基因的表达
+	 * @param geneName
+	 * @param exp
+	 */
+	public void setGeneExp(String geneName, double exp) {
+		Map<String, Double> mapCond2Exp = mapGene_2_Cond2Exp.get(geneName);
+		if (mapCond2Exp == null) return;
+		mapCond2Exp.put(currentCondition, exp);
+	}
 	/**
 	 * 获得全体时期的表达情况
 	 * @param enumExpression
@@ -513,14 +570,15 @@ public class GeneExpTable {
 			
 			Long allReadsNum = mapCond2AllReads.get(condition);
 			Integer geneLen = mapGene2Len == null ? 0 : mapGene2Len.get(geneName);
-			String geneValue = getValue(enumExpression, value, allReadsNum, uq, geneLen);
+			String geneValue = getValueStr(enumExpression, value, allReadsNum, uq, geneLen);
 			lsValue.add(geneValue);
 			if (isGetRatio) {
-				lsValue.add(getValue(EnumExpression.Ratio, value, allReadsNum, uq, geneLen));
+				lsValue.add(getValueStr(EnumExpression.Ratio, value, allReadsNum, uq, geneLen));
 			}
 		}
 		return lsValue;
 	}
+		
 	/** 如果allReads没有设定，则设定每个时期的allReads数量为该时期counts数加和 */
 	protected void setAllreadsPerConditon() {
 		for (String condition : setCondition) {
@@ -532,6 +590,12 @@ public class GeneExpTable {
 		if (mapCond2AllReads.containsKey(condition)) {
 			return;
 		}
+		double number = getConditionSumReads(condition);
+		mapCond2AllReads.put(condition, (long) number);
+	}
+	
+	/** 返回指定时期，全体基因表达量之和 */
+	private double getConditionSumReads(String condition) {
 		double number = 0;
 		for (String geneName : mapGene_2_Cond2Exp.keySet()) {
 			Map<String, Double> mapCond2Exp = mapGene_2_Cond2Exp.get(geneName);
@@ -539,8 +603,9 @@ public class GeneExpTable {
 			if (value == null) value = 0.0;
 			number += value;
 		}
-		mapCond2AllReads.put(condition, (long) number);
+		return number;
 	}
+	
 	/**
 	 * 获得单个时期的基因表达情况
 	 * @param geneName
@@ -552,12 +617,12 @@ public class GeneExpTable {
 		Double value = mapCond2Exp.get(currentCondition);
 		Long allReadsNum = mapCond2AllReads.get(currentCondition);
 		Integer geneLen = mapGene2Len == null ? 0 : mapGene2Len.get(geneName);
-		String geneValue = getValue(enumExpression, value, allReadsNum, uq, geneLen);
+		String geneValue = getValueStr(enumExpression, value, allReadsNum, uq, geneLen);
 		return geneValue;
 	}
 	
 	/** 计算单个基因的表达值 */
-	private String getValue(EnumExpression enumExpression, Double value, Long allReadsNum, double upQuerterNum, Integer geneLen) {
+	private String getValueStr(EnumExpression enumExpression, Double value, Long allReadsNum, double upQuerterNum, Integer geneLen) {
 		String resultValue = null;
 		if (geneLen == null) geneLen = 1000;
 		if (allReadsNum == null) allReadsNum = (long) mapreadsNum;
@@ -577,6 +642,32 @@ public class GeneExpTable {
 			resultValue = value*geneExp/upQuerterNum + "";
 		} else if (enumExpression == EnumExpression.Ratio) {
 			resultValue = df.format(value/allReadsNum) + "";
+		}
+		return resultValue;
+	}
+	
+	/** 计算单个基因的表达值，想要什么类型如int等，自己做类型转换，<br>
+	 * 如输入查找counts，返回的也可能带小数点，这时候就要自己做类型转换 */
+	private Double getValue(EnumExpression enumExpression, Double value, Long allReadsNum, double upQuerterNum, Integer geneLen) {
+		Double resultValue = null;
+		if (geneLen == null) geneLen = 1000;
+		if (allReadsNum == null) allReadsNum = (long) mapreadsNum;
+		DecimalFormat df = new DecimalFormat("0.##"); 
+		if (value == null) return 0.0;
+		if (enumExpression == EnumExpression.RawValue) {
+			resultValue = value;
+		} else if (enumExpression == EnumExpression.Counts) {
+			resultValue = value;
+		} else if (enumExpression == EnumExpression.TPM) {
+			resultValue = value*mapreadsNum/allReadsNum;
+		} else if (enumExpression == EnumExpression.RPKM) {
+			resultValue = value*mapreadsNum*1000/allReadsNum/geneLen;
+		} else if (enumExpression == EnumExpression.UQRPKM) {
+			resultValue = value*geneExp*1000/upQuerterNum/geneLen;
+		} else if (enumExpression == EnumExpression.UQPM) {
+			resultValue = value*geneExp/upQuerterNum;
+		} else if (enumExpression == EnumExpression.Ratio) {
+			resultValue = value/allReadsNum;
 		}
 		return resultValue;
 	}
@@ -631,5 +722,51 @@ public class GeneExpTable {
 		TxtReadandWrite txtWrite = new TxtReadandWrite(fileName, true);
 		txtWrite.ExcelWrite(lsValues);
 		txtWrite.close();
+	}
+	
+	/**
+	 * 使用场景:<p>
+	 * 由于非unique mapped reads的存在，为了精确统计reads在染色体上的分布，每个染色体上的reads数量用double来记数<br>
+	 * 这样如果一个reads在bam文本中出现多次--也就是mapping至多个位置，就会将每个记录(reads)除以其mapping number,
+	 * 从而变成一个小数，然后加到染色体上。<p>
+	 * 
+	 *  因为用double来统计reads数量，所以最后所有染色体上的reads之和与总reads数相比会有一点点的差距<br>
+	 * 选择correct就会将这个误差消除。意思就是将所有染色体上的reads凑出总reads的数量。<br>
+	 * 算法是  每条染色体reads(结果) = 每条染色体reads数量(原始)  + (总mapped reads数 - 染色体总reads数)/染色体数量<p>
+	 * 
+	 *  Because change double to long will lose some accuracy, for example double 1.2 convert to int will be 1,<br> 
+	 *   so the result "All Chr Reads Number" will not equal to "All Map Reads Number",
+		so we make a correction here.
+	 */
+	public void modifyByAllReadsNum() {
+		for (String condition : mapCond2AllReads.keySet()) {
+			long allReadsNum = mapCond2AllReads.get(condition);
+			long allSumGeneReadsNum = (long) getConditionSumReads(condition);
+			long numLess = allReadsNum - allSumGeneReadsNum;
+			if (numLess > 0.0001 * allSumGeneReadsNum && numLess > 100) {
+				logger.error("statistic error: GeneReadsNum:" + allSumGeneReadsNum + " is not equal to allReadsNum:"  + (long)allReadsNum);
+			}
+			
+			//Because change double to long will lose some accuracy and the result "All Chr Reads Number" will not equal to "All Map Reads Number"
+			//so we make a correction here.
+			long numAddAVG = numLess/mapGene2Anno.size();
+			long numAddSub = numLess%mapGene2Anno.size();
+			for (Map<String, Double> mapCond2Exp : mapGene_2_Cond2Exp.values()) {
+				Double expValue = mapCond2Exp.get(condition);
+				long addNum = numAddAVG == 0 ? 1 : numAddAVG;
+				if (expValue < numAddAVG * 500) {
+					continue;
+				}
+				expValue = expValue + numAddAVG;
+				if (numAddSub > 0) {
+					expValue = expValue + 1;
+					numAddSub --;
+				}
+				mapCond2Exp.put(condition, expValue);
+				if (numAddAVG == 0 && numAddSub <= 0) {
+					break;
+				}
+			}
+		}
 	}
 }

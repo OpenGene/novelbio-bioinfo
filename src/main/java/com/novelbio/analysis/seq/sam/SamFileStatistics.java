@@ -5,7 +5,6 @@ import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -32,9 +31,12 @@ import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
 
 import com.novelbio.analysis.seq.AlignRecord;
+import com.novelbio.analysis.seq.GeneExpTable;
+import com.novelbio.analysis.seq.GeneExpTable.EnumAddAnnoType;
 import com.novelbio.analysis.seq.fasta.ChrSeqHash.CompareChrID;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.mapping.MappingReadsType;
+import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.ImageUtils;
@@ -45,14 +47,14 @@ import com.novelbio.base.plot.PlotBar;
  *  */
 public class SamFileStatistics implements AlignmentRecorder {
 	private static final Logger logger = Logger.getLogger(SamFileStatistics.class);
+	/** 写入文本中InsertSize的Item  */
+	private static final String INSERTSIZE = "InsertSize";
+	GeneExpTable expStatistics;
+	GeneExpTable expChrDist;
 	
 	double allReadsNum = 0;
-	double unmappedReadsNum = 0;
-	double mappedReadsNum = 0;
-	double uniqMappedReadsNum = 0;
-	double repeatMappedReadsNum = 0;
-	double junctionUniReads = 0;
-	double junctionAllReads = 0;
+	double mappingRate = 0;
+	double uniqueMappingRate = 0;
 	
 	int insertSize = 0;
 	double insertSizeAll = 0;
@@ -81,10 +83,11 @@ public class SamFileStatistics implements AlignmentRecorder {
 	 */
 	boolean correctChrReadsNum = false;
 	
-	Map<String, double[]> mapChrID2ReadsNum = new HashMap<>();
+//	Map<String, double[]> mapChrID2ReadsNum = new HashMap<>();
 	
 	public SamFileStatistics(String prefix) {
 		this.prefix = prefix;
+		initial();
 	}
 	public String getPrefix() {
 		return prefix;
@@ -111,47 +114,44 @@ public class SamFileStatistics implements AlignmentRecorder {
 	 */
 	public void setStandardData(Map<String, Long> standardData) {
 		this.standardData = standardData;
+		expChrDist.addLsGeneName(standardData.keySet());
 	}
 	/**
 	 * 返回readsNum
-	 * @param mappingType MAPPING_ALLREADS等
+	 * @param mappingType MAPPING_ALLREADS等，注意不要重这个方法获得rate
 	 * @return -1表示错误
 	 */
 	public long getReadsNum(MappingReadsType mappingType) {
-		if (mappingType == MappingReadsType.allReads) {
-			return (long)allReadsNum;
+		return (long)getReadsNumRaw(mappingType);
+	}
+	/**
+	 * 返回readsNum
+	 * @param mappingType MAPPING_ALLREADS等，注意不要重这个方法获得rate
+	 * @return -1表示错误
+	 */
+	private double getReadsNumRaw(MappingReadsType mappingType) {
+		if (mappingType == MappingReadsType.All) {
+			return allReadsNum;
 		}
-		if (mappingType == MappingReadsType.allMappedReads) {
-			return (long)mappedReadsNum;
+		return expStatistics.getGeneExp(mappingType.toString(), EnumExpression.Counts, prefix);
+	}
+	
+	/**
+	 * 返回比对比率
+	 * @param mappingType mappingRate等
+	 * @return -1表示错误
+	 */
+	public double getMappingRate(MappingReadsType mappingType) {
+		if (mappingType == MappingReadsType.MappedRate) {
+			mappingRate = getReadsNum(MappingReadsType.Mapped)/getReadsNum(MappingReadsType.All);
+			return mappingRate;
 		}
-		if (mappingType == MappingReadsType.unMapped) {
-			return (long)unmappedReadsNum;
-		}
-		
-		if (mappingType == MappingReadsType.uniqueMapping) {
-			return (long)uniqMappedReadsNum;
-		}
-
-		if (mappingType == MappingReadsType.repeatMapping) {
-			return (long)repeatMappedReadsNum;
-		}
-		
-		if (mappingType == MappingReadsType.junctionUniqueMapping) {
-			return (long)junctionUniReads;
-		}
-		if (mappingType == MappingReadsType.junctionAllMappedReads) {
-			return (long)junctionAllReads;
+		if (mappingType == MappingReadsType.UniqueMappedRate) {
+			uniqueMappingRate = getReadsNum(MappingReadsType.UniqueMapped)/getReadsNum(MappingReadsType.All);
+			return uniqueMappingRate;
 		}
 		return -1;
 	}
-	
-	/** 把结果写入文本，首先要运行 statistics */
-	public void writeToFile(String outFileName) {
-		TxtReadandWrite txtWrite = new TxtReadandWrite(outFileName, true);
-		txtWrite.ExcelWrite(getMappingInfo());
-		txtWrite.close();
-	}
-	
 	/**
 	 * 获取每条染色体所对应的reads数量
 	 * key都为小写
@@ -159,73 +159,35 @@ public class SamFileStatistics implements AlignmentRecorder {
 	 */
 	public Map<String, Long> getMapChrID2MappedNumber() {
 		Map<String, Long> mapChrID2MappedNumber = new LinkedHashMap<String, Long>();
-		List<String> lsChrID = new ArrayList<>(mapChrID2ReadsNum.keySet());
+		List<String> lsChrID = new ArrayList<>(expChrDist.getSetGeneName());
 		Collections.sort(lsChrID, new CompareChrID());
 		for (String chrID : lsChrID) {
-			mapChrID2MappedNumber.put(chrID.toLowerCase(), (long)mapChrID2ReadsNum.get(chrID)[0]);
+			mapChrID2MappedNumber.put(chrID.toLowerCase(), (long)expChrDist.getGeneExpRaw(chrID));
 		}
 		
 		return mapChrID2MappedNumber;
 	}
-	/**
-	 * 首先要运行 statistics
-	 * @return
-	 */
-	public ArrayList<String[]> getMappingInfo() {
-		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		lsResult.add(new String[]{"allReadsNum", (long)allReadsNum + ""});
-		lsResult.add(new String[]{"mappedReadsNum", (long)mappedReadsNum + ""});
-		lsResult.add(new String[]{"uniqMappedReadsNum", (long)uniqMappedReadsNum + ""});
-		lsResult.add(new String[]{"repeatMappedReadsNum", (long)repeatMappedReadsNum + ""});
-		lsResult.add(new String[]{"junctionAllReads", (long)junctionAllReads + ""});
-		lsResult.add(new String[]{"junctionUniReads", (long)junctionUniReads + ""});
-		lsResult.add(new String[]{"unmappedReadsNum", (long)unmappedReadsNum + ""});
-
-		lsResult.add(new String[]{"mappringRates", (double)mappedReadsNum/allReadsNum + ""});
-		lsResult.add(new String[]{"uniqMappingRates", (double)uniqMappedReadsNum/allReadsNum + ""});
 		
-		lsResult.add(new String[]{"Reads On Chromosome",  ""});
-		try {
-			lsResult.addAll(getLsChrID2Num());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return lsResult;
-	}
-	
-	private ArrayList<String[]> getLsChrID2Num() {
-		ArrayList<String[]> lsChrID2Num = new ArrayList<String[]>();
-		List<String> lsChrID = new ArrayList<>(mapChrID2ReadsNum.keySet());
-		Collections.sort(lsChrID, new CompareChrID());
-		for (String chrID : lsChrID) {
-			String[] tmp = new String[]{chrID, (long)mapChrID2ReadsNum.get(chrID)[0] + ""};
-			lsChrID2Num.add(tmp);
-		}
-		Collections.sort(lsChrID2Num, new Comparator<String[]>() {
-			public int compare(String[] o1, String[] o2) {
-				return o1[0].compareTo(o2[0]);
-			}
-		});
-		return lsChrID2Num;
-	}
-	
 	/** 初始化 */
 	public void initial() {
-		allReadsNum = 0;
-		unmappedReadsNum = 0;
-		mappedReadsNum = 0;
-		uniqMappedReadsNum = 0;
-		repeatMappedReadsNum = 0;
-		junctionAllReads = 0;
-		junctionUniReads = 0;
-		mapChrID2ReadsNum.clear();
+		expStatistics = new GeneExpTable("Item");
+		expStatistics.setCurrentCondition(prefix);
+		expStatistics.addLsGeneName(MappingReadsType.getLsReadsInfoType());
+		
+		expChrDist = new GeneExpTable("ChrId");
+		expChrDist.setCurrentCondition(prefix);
+		if (standardData != null) {
+			expChrDist.addLsGeneName(standardData.keySet());
+		}
+		mappingRate = 0;
+		uniqueMappingRate = 0;
 	}
 
 	@Override
 	public void addAlignRecord(AlignRecord samRecord) {
 		if (!samRecord.isMapped()) {
 			allReadsNum ++;
-			unmappedReadsNum ++;
+			expStatistics.addGeneExp(MappingReadsType.UnMapped.toString(), 1);
 			return;
 		}
 		int readsMappedWeight = samRecord.getMappedReadsWeight();
@@ -235,46 +197,29 @@ public class SamFileStatistics implements AlignmentRecorder {
 		}
 		double readsNum = (double)1/readsMappedWeight;
 		allReadsNum += readsNum;
-		if (samRecord.isMapped()) {
-//			mappedReadsNum = mappedReadsNum + (double)1/readsMappedWeight;
-			setChrReads(readsMappedWeight, samRecord);
-			if (samRecord.isUniqueMapping()) {
-				uniqMappedReadsNum ++;
-				if (samRecord.isJunctionCovered()) {
-					junctionUniReads ++;
-				}
-			}
-			else {
-				repeatMappedReadsNum = repeatMappedReadsNum + readsNum;
-			}
+//		mappedReadsNum = mappedReadsNum + (double)1/readsMappedWeight;
+		setChrReads(readsMappedWeight, samRecord);
+		if (samRecord.isUniqueMapping()) {
+			expStatistics.addGeneExp(MappingReadsType.UniqueMapped.toString(), 1);
 			if (samRecord.isJunctionCovered()) {
-				junctionAllReads = junctionAllReads + readsNum;
+				expStatistics.addGeneExp(MappingReadsType.JunctionUniqueMapped.toString(), 1);
 			}
-			
-			setMateSizeInfo(samRecord);
-			
 		}
 		else {
-			unmappedReadsNum = unmappedReadsNum + readsNum;
+			expStatistics.addGeneExp(MappingReadsType.RepeatMapped.toString(), readsNum);
 		}
+		if (samRecord.isJunctionCovered()) {
+			expStatistics.addGeneExp(MappingReadsType.JunctionAllMapped.toString(), readsNum);
+		}
+		setMateSizeInfo(samRecord);
 	}
 
 	
 	private void setChrReads(int readsWeight, AlignRecord samRecord) {
 		String chrID = samRecord.getRefID();
-		double[] chrNum;
-		if (mapChrID2ReadsNum.containsKey(chrID)) {
-			chrNum = mapChrID2ReadsNum.get(chrID);
-		}
-		else {
-			chrNum = new double[1];
-			mapChrID2ReadsNum.put(chrID, chrNum);
-		}
-		chrNum[0] = chrNum[0] + (double)1/readsWeight;
+		expChrDist.addGeneExp(chrID, (double)1/readsWeight);
 	}
-	
-	int uniqueNum = -1;
-	
+		
 	private void setMateSizeInfo(AlignRecord samRecord) {
 		if (samRecord instanceof SamRecord) {
 			SamRecord samRecordThis = (SamRecord)samRecord;
@@ -301,72 +246,41 @@ public class SamFileStatistics implements AlignmentRecorder {
 	public void summary() {
 		summeryReadsNum();
 		if (correctChrReadsNum) {
-			modifyChrReadsNum();
+			expChrDist.modifyByAllReadsNum();
 		}
 	}
 	
 	/** 将所有reads数量四舍五入转变为long，同时矫正由double转换为long时候可能存在的偏差 */
 	private void summeryReadsNum() {
 		allReadsNum = Math.round(allReadsNum);
-		unmappedReadsNum = Math.round(unmappedReadsNum);
-		mappedReadsNum = Math.round(allReadsNum - unmappedReadsNum);
-		//double 转换可能会有1的误差
-		if (allReadsNum != mappedReadsNum + unmappedReadsNum) {
-			if (Math.abs(mappedReadsNum + unmappedReadsNum - allReadsNum) > 10) {
-				logger.error("统计出错，mappedReadsNum:" + mappedReadsNum + " unmappedReadsNum:" + unmappedReadsNum + " allReadsNum:" + allReadsNum );
-			}
-			unmappedReadsNum = allReadsNum - mappedReadsNum;
-		}
+		long unmappedReads = Math.round(getReadsNumRaw(MappingReadsType.UnMapped));
 		
-		uniqMappedReadsNum = Math.round(uniqMappedReadsNum);
-		repeatMappedReadsNum = Math.round(repeatMappedReadsNum);
+		long mappedReadsNum = Math.round(allReadsNum - unmappedReads);
+
+		//double 转换可能会有1的误差
+		if (allReadsNum != mappedReadsNum + unmappedReads) {
+			if (Math.abs(mappedReadsNum + unmappedReads - allReadsNum) > 10) {
+				logger.error("统计出错，mappedReadsNum:" + mappedReadsNum + " unmappedReadsNum:" + unmappedReads + " allReadsNum:" + allReadsNum );
+			}
+			unmappedReads = (long)allReadsNum - mappedReadsNum;
+		}
+		expStatistics.setGeneExp(MappingReadsType.UnMapped.toString(), unmappedReads);
+		expStatistics.setGeneExp(MappingReadsType.Mapped.toString(), mappedReadsNum);
+
+		long uniqMappedReadsNum = Math.round(getReadsNumRaw(MappingReadsType.UniqueMapped));
+		long repeatMappedReadsNum = Math.round(getReadsNumRaw(MappingReadsType.RepeatMapped));
+
 		if (mappedReadsNum != uniqMappedReadsNum + repeatMappedReadsNum) {
 			if (Math.abs(mappedReadsNum - uniqMappedReadsNum - repeatMappedReadsNum) > 10) {
 				logger.error("统计出错，mappedReadsNum:" + mappedReadsNum + " uniqMappedReadsNum:" + uniqMappedReadsNum + " repeatMappedReadsNum:" + repeatMappedReadsNum );
 			}
 			repeatMappedReadsNum = mappedReadsNum - uniqMappedReadsNum;
 		}
-		
-		junctionAllReads = Math.round(junctionAllReads);
-		junctionUniReads = Math.round(junctionUniReads);
+		expStatistics.setGeneExp(MappingReadsType.UniqueMapped.toString(), uniqMappedReadsNum);
+		expStatistics.setGeneExp(MappingReadsType.RepeatMapped.toString(), repeatMappedReadsNum);
 		
 		if (insertNum > mappedReadsNum * 0.1) {
 			insertSize = (int) (insertSizeAll/insertNum);
-		}
-		
-		for (double[] readsNum : mapChrID2ReadsNum.values()) {
-			readsNum[0] = Math.round(readsNum[0]);
-		}
-	}
-	/** 因为用double来统计reads数量，
-	 * 所以最后所有染色体上的reads之
-	 * 和与总reads数相比会有一点点的差距<p>
-	 * 
-	 *  Because change double to long will lose some accuracy and the result "All Chr Reads Number" will not equal to "All Map Reads Number"
-		so we make a correction here.
-	 *  */
-	private void modifyChrReadsNum() {
-		if (mapChrID2ReadsNum.isEmpty()) {
-			return;
-		}
-		long numAllChrReads = 0;
-		for (double[] readsNum : mapChrID2ReadsNum.values()) {
-			numAllChrReads += (long)readsNum[0];
-		}
-		long numLess = (long)mappedReadsNum - numAllChrReads;
-		if (numLess > 0.0001 * numAllChrReads && numLess > 100) {
-			logger.error("statistic error: ChrReadsNum:" + numAllChrReads + " is not equal to MappedReadsNum:"  + (long)mappedReadsNum);
-		}
-		//Because change double to long will lose some accuracy and the result "All Chr Reads Number" will not equal to "All Map Reads Number"
-		//so we make a correction here.
-		long numAddAVG = numLess/mapChrID2ReadsNum.size();
-		long numAddSub = numLess%mapChrID2ReadsNum.size();
-		for (double[] readsNum : mapChrID2ReadsNum.values()) {
-			readsNum[0] = readsNum[0] + numAddAVG;
-			if (numAddSub > 0) {
-				readsNum[0] = readsNum[0] + 1;
-				numAddSub --;
-			}
 		}
 	}
 	/**
@@ -397,6 +311,9 @@ public class SamFileStatistics implements AlignmentRecorder {
 		if (mapChrID2LenProp != null) {
 			return mapChrID2LenProp;
 		}
+		if (standardData == null) {
+			return new HashMap<>();
+		}
 		mapChrID2LenProp = new LinkedHashMap<String, double[]>();
 		Map<String, Long> resultData = getMapChrID2MappedNumber();
 		long readsNumAll = 0, chrLenAll = 0;
@@ -423,7 +340,10 @@ public class SamFileStatistics implements AlignmentRecorder {
 	
 	/** 写每条染色体上 reads的覆盖度等数据 */
 	private List<String[]> getChrInfoTable() {
-		getMapChrID2PropAndLen();
+		if(getMapChrID2PropAndLen().isEmpty()) {
+			return new ArrayList<String[]>();
+		}
+		
 		List<String[]> lsTable = new ArrayList<String[]>();
 		try {
 			lsTable.add(new String[]{"ChrID","MappedReadsNum","MappedReadsProp","ChrLen","ChrLenProp"});
@@ -450,30 +370,30 @@ public class SamFileStatistics implements AlignmentRecorder {
 		java.text.DecimalFormat df =new java.text.DecimalFormat("0.000");  
 
 		try {
-			lsTable.add(new String[] { "Statistics Term", "Result(" + prefix + ")" });
-			long allReads = getReadsNum(MappingReadsType.allReads);
-			long unMapped = getReadsNum(MappingReadsType.unMapped);
-			long allMappedReads = getReadsNum(MappingReadsType.allMappedReads);
-			long uniqueMapping = getReadsNum(MappingReadsType.uniqueMapping);
-			long repeatMapping = getReadsNum(MappingReadsType.repeatMapping);
-			long junctionAllMappedReads = getReadsNum(MappingReadsType.junctionAllMappedReads);
-			long junctionUniqueMapping = getReadsNum(MappingReadsType.junctionUniqueMapping);
+			lsTable.add(new String[] { "#Item", prefix});
+			long allReads = getReadsNum(MappingReadsType.All);
+			long unMapped = getReadsNum(MappingReadsType.UnMapped);
+			long allMappedReads = getReadsNum(MappingReadsType.Mapped);
+			long uniqueMapping = getReadsNum(MappingReadsType.UniqueMapped);
+			long repeatMapping = getReadsNum(MappingReadsType.RepeatMapped);
+			long junctionAllMappedReads = getReadsNum(MappingReadsType.JunctionAllMapped);
+			long junctionUniqueMapping = getReadsNum(MappingReadsType.JunctionUniqueMapped);
 
-			lsTable.add(new String[] { "allReads", allReads + "" });
-			lsTable.add(new String[] { "UnMapped", unMapped + "" });
-			lsTable.add(new String[] { "MappedReads", allMappedReads + "" });
-			lsTable.add(new String[] { "MappingRate", df.format((double)allMappedReads/allReads) + "" });
+			lsTable.add(new String[] { MappingReadsType.All.toString(), allReads + "" });
+			lsTable.add(new String[] { MappingReadsType.UnMapped.toString(), unMapped + "" });
+			lsTable.add(new String[] { MappingReadsType.Mapped.toString(), allMappedReads + "" });
+			lsTable.add(new String[] {MappingReadsType.MappedRate.toString(), df.format((double)allMappedReads/allReads) + "" });
 			if (!(allMappedReads == repeatMapping && repeatMapping < 1)) {
-				lsTable.add(new String[] { "UniqueMapping", uniqueMapping + "" });
-				lsTable.add(new String[] { "UniqueMappingRate", df.format((double)uniqueMapping/allReads) + "" });
-				lsTable.add(new String[] { "repeatMapping", repeatMapping + "" });
+				lsTable.add(new String[] {MappingReadsType.UniqueMapped.toString(), uniqueMapping + "" });
+				lsTable.add(new String[] {MappingReadsType.UniqueMappedRate.toString(), df.format((double)uniqueMapping/allReads) + "" });
+				lsTable.add(new String[] {MappingReadsType.RepeatMapped.toString(), repeatMapping + "" });
 			}
 			if (junctionAllMappedReads != 0 && junctionUniqueMapping != 0) {
-				lsTable.add(new String[] { "junctionAllMappedReads", junctionAllMappedReads + "" });
-				lsTable.add(new String[] { "junctionUniqueMapping", junctionUniqueMapping + "" });
+				lsTable.add(new String[] {MappingReadsType.JunctionAllMapped.toString(), junctionAllMappedReads + "" });
+				lsTable.add(new String[] {MappingReadsType.JunctionUniqueMapped.toString(), junctionUniqueMapping + "" });
 			}
-			if (insertSize > 0) {
-				lsTable.add(new String[] { "insertSize", insertSize + "" });
+			if (insertSize > 0 && insertSize < 1000) {
+				lsTable.add(new String[] { INSERTSIZE, insertSize + "" });
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -482,6 +402,32 @@ public class SamFileStatistics implements AlignmentRecorder {
 		}
 		return lsTable;
 	}
+	
+	/** 读取文本表格并填充本类 */
+	public void readTable(String samStatisticFile) {
+		List<String> lsReadsInfo = new ArrayList<>();
+		TxtReadandWrite txtRead = new TxtReadandWrite(samStatisticFile);
+		
+		boolean isReads = false;
+		for (String content : txtRead.readlines()) {
+			if (content.startsWith("#Item")) {//TODO 不要写字符串
+				isReads = true;
+			} else if (content.startsWith("###")) {
+				break;
+			}
+			if (content.equals("") || !isReads) continue;
+			
+			String[] ss = content.split("\t");
+			if (ss[0].equals(INSERTSIZE)) {
+				insertSize = Integer.parseInt(ss[1]);
+			}
+			lsReadsInfo.add(content);
+		}
+		txtRead.close();
+		expStatistics.read(lsReadsInfo, EnumAddAnnoType.notAdd);
+		allReadsNum = (long)expStatistics.getGeneExpRaw(MappingReadsType.All.toString());
+	}
+	
 	/**
 	 * 取得最终的图片流
 	 * @return
@@ -656,6 +602,14 @@ public class SamFileStatistics implements AlignmentRecorder {
 		return excelName;
 	}
 	
+//bll
+//	public static String getAllStatisticFile() {
+//		String allStatisticsFile = null;
+//		
+//		return allStatisticsFile;
+//	}
+	
+	
 	public static String savePic(String pathAndName, SamFileStatistics samFileStatistics) {
 		String pathChrPic = getSavePic(pathAndName);
 		pathChrPic = ImageUtils.saveBufferedImage(samFileStatistics.getBufferedImages(), pathChrPic);
@@ -676,11 +630,21 @@ public class SamFileStatistics implements AlignmentRecorder {
 		String excelName = null;
 		if (pathAndName.endsWith("/") || pathAndName.endsWith("\\")) {
 			excelName = pathAndName + "MappingStatistic.xls";
+		} else if(FileOperate.getFileName(pathAndName).startsWith("MappingStatistic_")) {
+			return pathAndName;
 		} else {
 			excelName = FileOperate.changeFilePrefix(pathAndName, "MappingStatistic_", "xls");
 		}
 		return excelName;
 	}
+
+//bll
+//	public static String getSaveAllStaExcel() {
+//		String allStaExcel = null;
+//		
+//		return allStaExcel;
+//	}
+	
 	@Override
 	public Align getReadingRegion() {
 		return null;

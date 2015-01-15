@@ -36,12 +36,12 @@ public class SamMapRate {
 		}
 		
 		if (geneExpTable.getCurrentAllReads() == 0) {
-			geneExpTable.setAllReads(samFileStatistics.getReadsNum(MappingReadsType.allReads));
+			geneExpTable.setAllReads(samFileStatistics.getReadsNum(MappingReadsType.All));
 		}
 		List<String> lsGene = new ArrayList<>();
 		lsGene.add(refName);
 		geneExpTable.addLsGeneName(lsGene);
-		geneExpTable.addGeneExp(refName, samFileStatistics.getReadsNum(MappingReadsType.allMappedReads));
+		geneExpTable.addGeneExp(refName, samFileStatistics.getReadsNum(MappingReadsType.Mapped));
 	}
 	
 	public List<String[]> getLsResult() {
@@ -57,7 +57,7 @@ public class SamMapRate {
 		List<String> lsGene = new ArrayList<>();
 		lsGene.add(itemName);
 		geneExpTable.addLsGeneName(lsGene);
-		geneExpTable.addGeneExp(itemName, samFileStatistics.getReadsNum(MappingReadsType.unMapped));
+		geneExpTable.addGeneExp(itemName, samFileStatistics.getReadsNum(MappingReadsType.UnMapped));
 	}
 	
 	/** 仅用于miRNA */

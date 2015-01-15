@@ -165,7 +165,7 @@ public class MirSpeciesPipline implements IntCmdSoft {
 	private void statisticsCascade(SamMapRate samMapRate, SamFileStatistics samFileStatistics, String speciesName, boolean finalSpecies) {
 		if (samMapRate == null) return;
 		
-		if (samFileStatistics.getReadsNum(MappingReadsType.allMappedReads) > 0) {
+		if (samFileStatistics.getReadsNum(MappingReadsType.Mapped) > 0) {
 			SamFileStatistics.saveExcel(outPathStatistics + FileOperate.getFileName(samFileOut), samFileStatistics);
 			
 			if (samMapRate != null) {
@@ -181,7 +181,7 @@ public class MirSpeciesPipline implements IntCmdSoft {
 	private void statisticsParallel(SamMapRate samMapRate, SamFileStatistics samFileStatistics, String speciesName) {
 		if (samMapRate == null) return;
 		
-		if (samFileStatistics.getReadsNum(MappingReadsType.allMappedReads) > 0) {
+		if (samFileStatistics.getReadsNum(MappingReadsType.Mapped) > 0) {
 			SamFileStatistics.saveExcel(outPathStatistics + FileOperate.getFileName(samFileOut), samFileStatistics);
 			
 			if (samMapRate != null) {
@@ -212,7 +212,7 @@ public class MirSpeciesPipline implements IntCmdSoft {
 				samFileOut = outPathTmpMapping + outputPrefix + species.getCommonName() + ".bam";
 				SamFileStatistics samFileStatistics = new SamFileStatistics(prefix);
 				samFileOut = MiRNAmapPipline.mappingDNA(lsCmd, isUseOldResult, samFileStatistics, threadNum, fastqFile, species.getMiRNAhairpinFile(), samFileOut, outFastq);
-				if (samFileStatistics.getReadsNum(MappingReadsType.allMappedReads) > 0) {
+				if (samFileStatistics.getReadsNum(MappingReadsType.Mapped) > 0) {
 					SamFileStatistics.saveExcel(outPathStatistics + FileOperate.getFileName(samFileOut), samFileStatistics);
 					
 					if (samMapRate != null) {

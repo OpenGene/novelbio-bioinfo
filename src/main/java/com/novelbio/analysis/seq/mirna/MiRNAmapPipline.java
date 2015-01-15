@@ -163,7 +163,7 @@ public class MiRNAmapPipline implements IntCmdSoft {
 			unMappedFq = outputTmpFinal + "unMap2miRNA.fq.gz";
 			samFileStatisticsMiRNA = new SamFileStatistics(prefix);
 			samFileMiRNA = mappingDNA(lsCmd, isUseOldResult, samFileStatisticsMiRNA, threadNum, fqFile, miRNApreSeq, samFileMiRNA, unMappedFq);
-			if (samFileStatisticsMiRNA.getReadsNum(MappingReadsType.allMappedReads) > 0) {
+			if (samFileStatisticsMiRNA.getReadsNum(MappingReadsType.Mapped) > 0) {
 				SamFileStatistics.saveExcel(samStatisticPath + FileOperate.getFileName(samFileMiRNA), samFileStatisticsMiRNA);
 			}
 			
@@ -178,7 +178,7 @@ public class MiRNAmapPipline implements IntCmdSoft {
 			SamFileStatistics samStatisticsRfam = new SamFileStatistics(FileOperate.getFileNameSep(samFileRfam)[0]);
 			samFileRfam = mappingDNA(lsCmd, isUseOldResult, samStatisticsRfam,
 					threadNum, fqFile, rfamSeq, samFileRfam, unMappedFq);
-			if (samStatisticsRfam.getReadsNum(MappingReadsType.allMappedReads) > 0) {
+			if (samStatisticsRfam.getReadsNum(MappingReadsType.Mapped) > 0) {
 				SamFileStatistics.saveExcel(samStatisticPath + FileOperate.getFileName(samFileRfam), samStatisticsRfam);
 			}
 			fqFile = unMappedFq;
@@ -189,7 +189,7 @@ public class MiRNAmapPipline implements IntCmdSoft {
 			SamFileStatistics samStatisticsNCRNA = new SamFileStatistics(FileOperate.getFileNameSep(samFileNCRNA)[0]);
 			samFileNCRNA = mappingDNA(lsCmd, isUseOldResult, samStatisticsNCRNA,
 					threadNum, fqFile, ncRNAseq, samFileNCRNA, unMappedFq);
-			if (samStatisticsNCRNA.getReadsNum(MappingReadsType.allMappedReads) > 0) {
+			if (samStatisticsNCRNA.getReadsNum(MappingReadsType.Mapped) > 0) {
 				SamFileStatistics.saveExcel(samStatisticPath + FileOperate.getFileName(samFileNCRNA), samStatisticsNCRNA);
 			}
 			fqFile = unMappedFq;
@@ -200,7 +200,7 @@ public class MiRNAmapPipline implements IntCmdSoft {
 			SamFileStatistics samStatisticsGenome = new SamFileStatistics(FileOperate.getFileNameSep(samFileGenome)[0]);
 			samFileGenome = mappingDNA(lsCmd, isUseOldResult, samStatisticsGenome,
 					threadNum, unMappedMiRNA, genome, samFileGenome, unMappedFq);
-			if (samStatisticsGenome.getReadsNum(MappingReadsType.allMappedReads) > 0) {
+			if (samStatisticsGenome.getReadsNum(MappingReadsType.Mapped) > 0) {
 				SamFileStatistics.saveExcel(samStatisticPath + FileOperate.getFileName(samFileGenome), samStatisticsGenome);
 			}
 		}
@@ -211,7 +211,7 @@ public class MiRNAmapPipline implements IntCmdSoft {
 			SamFileStatistics samStatisticsGenomeAll = new SamFileStatistics(FileOperate.getFileNameSep(samFileGenomeAll)[0]);
 			samFileGenomeAll = mappingDNA(lsCmd, isUseOldResult, samStatisticsGenomeAll,
 					threadNum, fqFile, genome, samFileGenomeAll, unMappedFq);
-			if (samStatisticsGenomeAll.getReadsNum(MappingReadsType.allMappedReads) > 0) {
+			if (samStatisticsGenomeAll.getReadsNum(MappingReadsType.Mapped) > 0) {
 				SamFileStatistics.saveExcel(samStatisticPath + FileOperate.getFileName(samFileGenomeAll), samStatisticsGenomeAll);
 			}
 		}
@@ -230,7 +230,7 @@ public class MiRNAmapPipline implements IntCmdSoft {
 			unMappedFq = outputTmpFinal + "unMap2miRNA.fq.gz";
 			samFileStatisticsMiRNA = new SamFileStatistics(prefix);
 			samFileMiRNA = mappingDNA(lsCmd, isUseOldResult, samFileStatisticsMiRNA, threadNum, fqFile, miRNApreSeq, samFileMiRNA, unMappedFq);
-			if (samFileStatisticsMiRNA.getReadsNum(MappingReadsType.allMappedReads) > 0) {
+			if (samFileStatisticsMiRNA.getReadsNum(MappingReadsType.Mapped) > 0) {
 				SamFileStatistics.saveExcel(samStatisticPath + FileOperate.getFileName(samFileMiRNA), samFileStatisticsMiRNA);
 			}
 			fqFile = unMappedFq;

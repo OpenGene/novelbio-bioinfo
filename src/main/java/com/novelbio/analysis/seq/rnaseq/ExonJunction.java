@@ -490,7 +490,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				if (mapGroup2Num == null) {
 					mapGroup2Num = new HashMap<>();
 				}
-				mapGroup2Num.put(group, new double[]{samStatistics.getReadsNum(MappingReadsType.allMappedReads)});
+				mapGroup2Num.put(group, new double[]{samStatistics.getReadsNum(MappingReadsType.Mapped)});
 				mapCond_group2ReadsNum.put(condition, mapGroup2Num);
 				samFileReading.clearRecorder();
 				samFileReadingLast = samFileReading;

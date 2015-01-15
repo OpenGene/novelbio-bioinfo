@@ -146,7 +146,7 @@ public class CtrlMiRNApredict implements IntCmdSoft {
 		FileOperate.copyFile(mirHairp, mirHairpNew, false);
 		novelMiRNAsam = MiRNAmapPipline.mappingDNA(lsCmd, isUseOldResult, samFileNovelMiRNA, threadNum, fastQ.getReadFileName(), 
 				mirHairpNew, novelMiRNAsam, unmappedFq);
-		if (samFileNovelMiRNA.getReadsNum(MappingReadsType.allMappedReads) > 0) {
+		if (samFileNovelMiRNA.getReadsNum(MappingReadsType.Mapped) > 0) {
 			SamFileStatistics.saveExcel(samStatisticsPath + FileOperate.getFileName(novelMiRNAsam), samFileNovelMiRNA);
 		}
 		mapPrefix2UnmapFq.put(prefix, unmappedFq);
