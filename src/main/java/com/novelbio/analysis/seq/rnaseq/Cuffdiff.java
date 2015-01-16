@@ -1,21 +1,13 @@
 package com.novelbio.analysis.seq.rnaseq;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multimap;
 import com.novelbio.analysis.seq.mapping.MapLibrary;
-import com.novelbio.base.HashMapLsValue;
 import com.novelbio.base.cmd.CmdOperate;
-import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
@@ -36,7 +28,7 @@ public class Cuffdiff {
 	//cuffdiff的参数
 	String exePath = "";
 	int threadNum = 4;
-	/** 
+	/**
 	 * 装载输入样本Sam的文件
 	 * 每个子类listSam表示一系列的重复
 	 *  */

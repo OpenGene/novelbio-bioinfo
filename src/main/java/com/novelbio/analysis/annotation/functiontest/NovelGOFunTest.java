@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultimap;
 import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.service.servgeneanno.ManageGo2Term;
@@ -19,6 +20,8 @@ public class NovelGOFunTest extends FunctionTest {
 	GOtype GoType = GOtype.BP;
 	ManageGo2Term servGo2Term = ManageGo2Term.getInstance();
 	
+	boolean isCombineDB;
+	HashMultimap<String, String> mapGene2LsItem;
 	/**
 	 * 如果大于0，则做层级GO
 	 */
@@ -27,6 +30,16 @@ public class NovelGOFunTest extends FunctionTest {
 	public void setGoType(GOtype goType) {
 		GoType = goType;
 	}
+	
+	/** 设定自己的GO注释文件
+	 * @param goAnnoFile GO注释文件，第一列为GeneName，第二列为GOIterm
+	 * @param isCombineDB 是否与数据库已有的数据进行合并
+	 */
+	public void setGoAnnoFile(String goAnnoFile, boolean isCombineDB) {
+		mapGene2LsItem = GeneID2LsGo.readGoTxtFile(goAnnoFile);
+		this.isCombineDB = isCombineDB;
+	}
+	
 	/**
 	 * 如果大于0，则做层级GO
 	 * 默认-1，不做层级GO
@@ -37,6 +50,7 @@ public class NovelGOFunTest extends FunctionTest {
 	@Override
 	protected GeneID2LsItem convert2Item(GeneID geneID) {
 		GeneID2LsGo geneID2LsItem = GeneID2LsGo.getInstance(GOlevel);
+		geneID2LsItem.setMapGene2LsItem(mapGene2LsItem, isCombineDB);
 		geneID2LsItem.setGOtype(GoType);
 		geneID2LsItem.setGeneID(geneID, isBlast());
 		if (!geneID2LsItem.isValidate()) {
@@ -108,6 +122,7 @@ public class NovelGOFunTest extends FunctionTest {
 	protected StatisticTestGene2Item creatStatisticTestGene2Item() {
 		return new StatisticTestGene2GO(GOlevel);
 	}
+	
 	@Override
 	protected String getItemTerm(String item) {
 		try {
@@ -115,8 +130,8 @@ public class NovelGOFunTest extends FunctionTest {
 		} catch (Exception e) {
 			return servGo2Term.queryGo2Term(item).getGoTerm();
 		}
-	
 	}
+	
 	@Override
 	public Map<String, List<String[]>> getMapWriteToExcel() {
 		Map<String, List<String[]>> mapResult = new HashMap<String, List<String[]>>();

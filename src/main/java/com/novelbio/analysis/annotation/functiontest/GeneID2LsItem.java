@@ -7,12 +7,18 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.google.common.collect.HashMultimap;
 import com.novelbio.analysis.annotation.cog.COGanno;
 import com.novelbio.analysis.annotation.cog.CogInfo;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.GOtype;
+import com.novelbio.database.domain.geneanno.Gene2Go;
+import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.service.servgeneanno.ManageGo2Term;
 
 public abstract class GeneID2LsItem {
 	private static final Logger logger = Logger.getLogger(GeneID2LsItem.class);
@@ -79,24 +85,54 @@ public abstract class GeneID2LsItem {
 
 }
 
+/** 从txt文件中读取go信息，而不是从数据库中读取 */
 class GeneID2LsGo extends GeneID2LsItem {
 	GOtype goType;
+	/** key为小写基因名 */
+	HashMultimap<String, String> mapGene2LsItem;
+	/** 是否与已有数据库取并集 */
+	boolean isCombine;
 	
 	protected GeneID2LsGo() {}
 	
 	public void setGOtype(GOtype goType) {
 		this.goType  = goType;
 	}
+	/** key为小写基因名
+	 * 
+	 * @param mapGene2LsItem key为小写的基因名，注意输入的基因名应该与检验的基因名一样。不区分大小写。
+	 * @param isCombine 是否与已有数据库取并集
+	 */
+	public void setMapGene2LsItem(HashMultimap<String, String> mapGene2LsItem, boolean isCombine) {
+		this.mapGene2LsItem = mapGene2LsItem;
+		this.isCombine = isCombine;
+	}
+	
 	@Override
 	public void setGeneID(GeneID geneID, boolean blast) {
 		this.geneID = geneID;
 		this.geneUniID = geneID.getGeneUniID();
-		List<AGene2Go> lsGo = null;
-		if (blast) {
-			lsGo = geneID.getGene2GOBlast(goType );
-		} else {
-			lsGo = geneID.getGene2GO(goType );
+		List<AGene2Go> lsGo = new ArrayList<>();
+		if (mapGene2LsItem == null || mapGene2LsItem.isEmpty() || isCombine) {
+			if (blast) {
+				lsGo = geneID.getGene2GOBlast(goType);
+			} else {
+				lsGo = geneID.getGene2GO(goType);
+			}
 		}
+		if (mapGene2LsItem != null && !mapGene2LsItem.isEmpty()) {
+			Set<String> setGOId = mapGene2LsItem.get(geneID.getAccID().toLowerCase());
+			for (String string : setGOId) {
+				Go2Term go2Term = ManageGo2Term.getInstance().queryGo2Term(string);
+				if (go2Term.getGOtype() != goType) {
+					continue;
+				}
+				AGene2Go aGene2Go = new Gene2Go();
+				aGene2Go.setGOID(string);
+				lsGo.add(aGene2Go);
+			}
+		}
+
 		for (AGene2Go aGene2Go : lsGo) {
 			addItemID(aGene2Go.getGOID());
 		}
@@ -110,6 +146,26 @@ class GeneID2LsGo extends GeneID2LsItem {
 			geneID2LsGo.setGoLevel(goLevel);
 			return geneID2LsGo;
 		}
+	}
+	
+	/** 读取GO注释信息，必须第一列为GeneName, 第二列为GOID */
+	public static HashMultimap<String, String> readGoTxtFile(String gene2GoTxt) {
+		if (!FileOperate.isFileExistAndBigThanSize(gene2GoTxt, 0)) {
+			return null;
+		}
+		HashMultimap<String, String> mapGene2LsGO = HashMultimap.create();
+		TxtReadandWrite txtRead = new TxtReadandWrite(gene2GoTxt);
+		int colGeneName = 0;
+		int colGOITem = 1;
+		for (String content : txtRead.readlines()) {
+			if (content.startsWith("#")) {
+				continue;
+			}
+			String[] ss = content.split("\t");
+			mapGene2LsGO.put(ss[colGeneName].trim().toLowerCase(), ss[colGOITem].trim().toUpperCase());
+		}
+		txtRead.close();
+		return mapGene2LsGO;
 	}
 }
 

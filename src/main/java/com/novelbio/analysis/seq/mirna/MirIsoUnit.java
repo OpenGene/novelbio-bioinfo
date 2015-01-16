@@ -216,7 +216,7 @@ public class MirIsoUnit extends GeneExpTable {
 	}
 	
 	/** 返回一系列基因的名称，并按照表达量进行排序 */
-	protected Set<String> getSetGeneName() {
+	public Set<String> getSetGeneName() {
 		Map<String, List<String[]>> mapMirName2LsIsoValue = new HashMap<>();
 		for (String seqIso : mapGene_2_Cond2Exp.keySet()) {
 			List<String> lsAnno = mapGene2Anno.get(seqIso);//annotation 第一个是mirName@@iso 第二个是mir alignment

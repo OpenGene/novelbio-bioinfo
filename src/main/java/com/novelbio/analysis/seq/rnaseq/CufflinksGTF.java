@@ -411,8 +411,11 @@ public class CufflinksGTF implements IntCmdSoft {
 				) {
 			outGtf = outGTFPath + "transcripts.gtf";
 		} else {
+			cmdOperate.setRedirectInToTmp(true);
+			cmdOperate.addCmdParamInput(bamFile);
 			cmdOperate.setRedirectOutToTmp(true);
 			cmdOperate.addCmdParamOutput(getOutPathPrefix(prefix));
+			
 			cmdOperate.run();
 			if (cmdOperate.isFinishedNormal()) {
 				outGtf = outGTFPath + "transcripts.gtf";
