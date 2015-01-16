@@ -55,7 +55,22 @@ public class BasicStats extends FastQCmodules implements QCModule {
 			
 		}
 	}
-	
+	public BasicStats add(BasicStats basicStats) {
+		BasicStats allBasicStats = new BasicStats();
+		allBasicStats.name = name;
+		allBasicStats.actualCount = actualCount + basicStats.actualCount;
+		allBasicStats.filteredCount = filteredCount + basicStats.filteredCount;
+		allBasicStats.minLength = Math.min(minLength, basicStats.minLength);
+		allBasicStats.maxLength = Math.max(maxLength, basicStats.maxLength);
+		allBasicStats.gcCount = gcCount + allBasicStats.gcCount;
+		allBasicStats.cCount = cCount + allBasicStats.cCount;
+		allBasicStats.gCount = gCount + allBasicStats.gCount;
+		allBasicStats.aCount = aCount + allBasicStats.aCount;
+		allBasicStats.tCount = tCount + allBasicStats.tCount;
+		allBasicStats.nCount = nCount + allBasicStats.nCount;
+		allBasicStats.allCount = allCount + allBasicStats.allCount;
+		return allBasicStats;
+	}
 	
 	public String description() {
 		return "Calculates some basic statistics about the file";
