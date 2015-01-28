@@ -32,6 +32,8 @@ import java.util.Map;
 
 import javax.swing.table.AbstractTableModel;
 
+import com.novelbio.base.fileOperate.FileOperate;
+
 import uk.ac.babraham.FastQC.Sequence.Sequence;
 import uk.ac.babraham.FastQC.Sequence.Contaminant.ContaminantHit;
 import uk.ac.babraham.FastQC.Sequence.Contaminant.ContaminentFinder;
@@ -93,11 +95,11 @@ public class OverRepresentedSeqs extends FastQCmodules implements QCModule {
 	public DuplicationLevel duplicationLevelModule () {
 		return duplicationModule;
 	}
-
 	
 	public DuplicationLevel getDuplicationLevelModule () {
 		return duplicationModule;
 	}
+	
 	private synchronized void getOverrepresentedSeqs () {
 
 		// If the duplication module hasn't already done
@@ -287,6 +289,11 @@ public class OverRepresentedSeqs extends FastQCmodules implements QCModule {
 	public BufferedImage getBufferedImage(int width, int heigth) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public String getSavePath(String outPrefix) {
+		return FileOperate.changeFilePrefix(outPrefix, "DuplicationLevel_", "png");
 	}
 
 }

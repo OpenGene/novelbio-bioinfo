@@ -26,6 +26,8 @@ import java.util.Map;
 
 import javax.swing.JPanel;
 
+import com.novelbio.base.fileOperate.FileOperate;
+
 import uk.ac.babraham.FastQC.Graphs.LineGraph;
 import uk.ac.babraham.FastQC.Sequence.Sequence;
 
@@ -218,6 +220,11 @@ public class SequenceLengthDistribution extends FastQCmodules implements QCModul
 			mapBp2Len.put(i+"", lengthCounts[i]+"");
 		}
 		return mapBp2Len;
+	}
+
+	@Override
+	public String getSavePath(String outPrefix) {
+		return FileOperate.changeFilePrefix(outPrefix, "LengthDistribution_", "png");
 	}
 
 }

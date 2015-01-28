@@ -87,6 +87,8 @@ public abstract class GeneID2LsItem {
 
 /** 从txt文件中读取go信息，而不是从数据库中读取 */
 class GeneID2LsGo extends GeneID2LsItem {
+	private static final Logger logger = Logger.getLogger(GeneID2LsGo.class);
+
 	GOtype goType;
 	/** key为小写基因名 */
 	HashMultimap<String, String> mapGene2LsItem;
@@ -124,6 +126,10 @@ class GeneID2LsGo extends GeneID2LsItem {
 			Set<String> setGOId = mapGene2LsItem.get(geneID.getAccID().toLowerCase());
 			for (String string : setGOId) {
 				Go2Term go2Term = ManageGo2Term.getInstance().queryGo2Term(string);
+				if (go2Term == null) {
+					logger.error("no such go item in db:" + string);
+					continue;
+				}
 				if (go2Term.getGOtype() != goType) {
 					continue;
 				}

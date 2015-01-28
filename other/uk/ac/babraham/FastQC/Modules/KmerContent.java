@@ -30,6 +30,8 @@ import java.util.Vector;
 
 import javax.swing.table.AbstractTableModel;
 
+import com.novelbio.base.fileOperate.FileOperate;
+
 import uk.ac.babraham.FastQC.Graphs.BaseGroup;
 import uk.ac.babraham.FastQC.Graphs.LineGraph;
 import uk.ac.babraham.FastQC.Sequence.Sequence;
@@ -490,6 +492,11 @@ public class KmerContent extends FastQCmodules implements QCModule {
 		return null;
 			
 		}
+	}
+
+	@Override
+	public String getSavePath(String outPrefix) {
+		return FileOperate.changeFilePrefix(outPrefix, "KmerContent_", "png");
 	}
 
 }

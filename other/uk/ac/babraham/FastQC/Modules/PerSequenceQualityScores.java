@@ -25,6 +25,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.novelbio.base.fileOperate.FileOperate;
+
 import uk.ac.babraham.FastQC.Graphs.LineGraph;
 import uk.ac.babraham.FastQC.Sequence.Sequence;
 import uk.ac.babraham.FastQC.Sequence.QualityEncoding.PhredEncoding;
@@ -150,6 +152,11 @@ public class PerSequenceQualityScores extends FastQCmodules implements QCModule 
 	public Map<String, String> getResult() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public String getSavePath(String outPrefix) {
+		return FileOperate.changeFilePrefix(outPrefix, "SequenceQuality_", "png");
 	}
 
 }

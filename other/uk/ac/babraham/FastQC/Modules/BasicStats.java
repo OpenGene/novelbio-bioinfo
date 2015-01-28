@@ -20,23 +20,40 @@
 package uk.ac.babraham.FastQC.Modules;
 
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.swing.table.AbstractTableModel;
 
+import com.novelbio.ExceptionResultFileError;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.FileOperate;
 
+import sun.tools.tree.IfStatement;
 import uk.ac.babraham.FastQC.Sequence.Sequence;
 import uk.ac.babraham.FastQC.Sequence.QualityEncoding.PhredEncoding;
 
 public class BasicStats extends FastQCmodules implements QCModule {
-
+	private static String titFileType = "File Type";
+	private static String titEncoding = "Encoding";
+	private static String titTotalSeq = "Total Sequences";
+	private static String titTotalBase = "Total Bases";
+	private static String titSeqLen = "Sequence length";
+	private static String titGCpercent = "%GC";
+	
 	private String name = null;
 	private int actualCount = 0;
 	private int filteredCount = 0;
 	private int minLength = 0;
 	private int maxLength = 0;
+	
+	private long allBase = 0;
+	private double gcPercentage = 0;
+	private String encoding = "";
+	
+	
 	private long gCount = 0;
 	private long cCount = 0;
 	private long aCount = 0;
@@ -91,6 +108,9 @@ public class BasicStats extends FastQCmodules implements QCModule {
 		nCount = 0;
 		allCount = 0;
 		gcCount = 0;
+		
+		allBase = 0;
+		gcPercentage = 0;
 	}
 
 	public String name() {
@@ -162,7 +182,18 @@ public class BasicStats extends FastQCmodules implements QCModule {
 		return null;
 	}
 	
+	public int getMinLength() {
+		return minLength;
+	}
+	public int getMaxLength() {
+		return maxLength;
+	}
+	
 	public double getGCpersentage() {
+		if (gcPercentage > 0) {
+			return gcPercentage;
+		}
+		
 		allCount = getBaseNum();
 		if (allCount > 0) {
 			return ((gCount+cCount)*100)/allCount;
@@ -177,6 +208,9 @@ public class BasicStats extends FastQCmodules implements QCModule {
 	}
 	
 	public String getEncoding() {
+		if (!StringOperate.isRealNull(encoding)) {
+			return encoding;
+		}
 		return PhredEncoding.getFastQEncodingOffset(lowestChar).toString();
 	}
 	
@@ -188,6 +222,9 @@ public class BasicStats extends FastQCmodules implements QCModule {
 		return actualCount;
 	}
 	public long getBaseNum() {
+		if (allBase > 0) {
+			return allBase;
+		}
 		return aCount+tCount+gCount+cCount;
 	}
 	public String getSeqLen() {
@@ -217,13 +254,13 @@ public class BasicStats extends FastQCmodules implements QCModule {
 		
 		private String [] rowNames = new String [] {
 //				"Filename",
-				"File type",
-				"Encoding",
-				"Total Sequences",
-				"Total Bases",
+				titFileType,//执行不到，因为外面是 i 从1开始 循环
+				titEncoding,
+				titTotalSeq,
+				titTotalBase,
 //				"Filtered Sequences",
-				"Sequence length",
-				"%GC",
+				titSeqLen,
+				titGCpercent,
 		};		
 		
 		// Sequence - Count - Percentage
@@ -243,7 +280,7 @@ public class BasicStats extends FastQCmodules implements QCModule {
 					switch (rowIndex) {
 //					case 0 : return name;
 					case 0 : return fileType;
-					case 1 : return PhredEncoding.getFastQEncodingOffset(lowestChar).toString();
+					case 1 : return getEncoding();
 					case 2 : return ""+ actualCount;
 					case 3 : return ""+ allCount;
 //					case 4 : return ""+filteredCount;
@@ -283,6 +320,77 @@ public class BasicStats extends FastQCmodules implements QCModule {
 		return null;
 			
 		}
+	}
+	
+	/** 读取basicStats的内容，填充本类
+	 * @param basicStatsFile
+	 * @param isFirst 是否为第一条链，true读取第二行，false读取第三行
+	 */
+	public void readTable(String basicStatsFile, boolean isFirst) {
+		TxtReadandWrite txtRead = new TxtReadandWrite(basicStatsFile);
+		Map<String, Integer> mapName2ColNum = null;
+		int rowNum = 0;
+		
+		for (String content : txtRead.readlines()) {
+			if (rowNum == 0) {
+				mapName2ColNum = getMapName2ColNum(content);
+			} else if(isFirst && rowNum == 1) {
+				fillInfo(basicStatsFile, mapName2ColNum, content);
+			} else if (!isFirst && rowNum == 2 ) {
+				fillInfo(basicStatsFile, mapName2ColNum, content);
+			}
+			
+			if (rowNum > 3) {
+				break;
+			}
+			rowNum++;
+		}
+		txtRead.close();
+	}
+	
+	private Map<String, Integer> getMapName2ColNum(String content) {
+		Map<String, Integer> mapName2ColNum = new HashMap<>();
+		String[] ss = content.trim().split("\t");
+		for (int i = 0; i < ss.length; i++) {
+			String title = ss[i];
+			mapName2ColNum.put(title, i);
+		}
+		return mapName2ColNum;
+	}
+	
+	private void fillInfo(String fileName, Map<String, Integer> mapName2ColNum, String content) {
+		String[] ss = content.trim().split("\t");
+		if (ss.length != mapName2ColNum.size()) {
+			throw new ExceptionResultFileError("basicstats file not correct:" + fileName + "  detailInfo: line column number is not equals title column number");
+		}
+		for (String string : mapName2ColNum.keySet()) {
+			int colNum = mapName2ColNum.get(string);
+			String tmpValue = ss[colNum];
+			if (string.equals(titEncoding)) {
+				encoding = tmpValue;
+			} else if (string.equals(titFileType)) {
+				fileType = tmpValue;
+			} else if (string.equals(titGCpercent)) {
+				gcPercentage = Double.parseDouble(tmpValue);
+			} else if (string.equals(titTotalBase)) {
+				allBase = Long.parseLong(tmpValue);
+			} else if (string.equals(titTotalSeq)) {
+				actualCount = Integer.parseInt(tmpValue);
+			} else if (string.equals(titSeqLen)) {
+				String[] len = tmpValue.split("-");
+				minLength = Integer.parseInt(len[0]);
+				if (len.length > 1) {
+					maxLength = Integer.parseInt(len[1]);
+				} else {
+					maxLength = Integer.parseInt(len[0]);
+				}
+			}
+		}
+	}
+	
+	@Override
+	public String getSavePath(String outPrefix) {
+		return outPrefix + "basicStats.xls";
 	}
 	
 

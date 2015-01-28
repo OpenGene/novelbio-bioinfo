@@ -24,6 +24,7 @@ import java.awt.image.BufferedImage;
 import java.util.Hashtable;
 import java.util.Map;
 
+import com.novelbio.base.fileOperate.FileOperate;
 
 import uk.ac.babraham.FastQC.Graphs.LineGraph;
 import uk.ac.babraham.FastQC.Modules.GCModel.GCModel;
@@ -242,5 +243,11 @@ public class PerSequenceGCContent extends FastQCmodules implements QCModule {
 	public Map<String, String> getResult() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+
+	@Override
+	public String getSavePath(String outPrefix) {
+		return FileOperate.changeFilePrefix(outPrefix, "SequenceGCContent_", "png");
 	}
 }

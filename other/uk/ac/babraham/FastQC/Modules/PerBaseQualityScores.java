@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.novelbio.base.fileOperate.FileOperate;
+
 import uk.ac.babraham.FastQC.Graphs.BaseGroup;
 import uk.ac.babraham.FastQC.Graphs.QualityBoxPlot;
 import uk.ac.babraham.FastQC.Sequence.Sequence;
@@ -307,6 +309,11 @@ public class PerBaseQualityScores extends FastQCmodules implements QCModule {
 			
 		}
 		
+	}
+
+	@Override
+	public String getSavePath(String outPrefix) {
+		return FileOperate.changeFilePrefix(outPrefix, "QualityScore_", "png");
 	}
 
 }

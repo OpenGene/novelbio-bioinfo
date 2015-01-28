@@ -23,6 +23,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.Map;
 
+import com.novelbio.base.fileOperate.FileOperate;
 
 import uk.ac.babraham.FastQC.Graphs.BaseGroup;
 import uk.ac.babraham.FastQC.Graphs.LineGraph;
@@ -148,6 +149,11 @@ public class NContent extends FastQCmodules implements QCModule {
 	public Map<String, String> getResult() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public String getSavePath(String outPrefix) {
+		return FileOperate.changeFilePrefix(outPrefix, "nContent_", "png");
 	}
 
 }

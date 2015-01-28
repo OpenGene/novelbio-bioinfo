@@ -20,6 +20,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.species.Species;
@@ -175,10 +176,17 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	
 	public void addAlignRecord(AlignRecord alignRecord) {
 		List<Align> lsAligns = alignRecord.getAlignmentBlocks();
+		boolean is = false;
 		for (Align align : lsAligns) {
 			double prop = (double)1/lsAligns.size()/alignRecord.getMappedReadsWeight();
-			searchSite(prop, align);
+			if(searchSite(prop, align)) {
+				is = true;
+			}
 		}
+		if (is) {
+			txtWrite.writefileln(((SamRecord)alignRecord).toBedRecordSE().toString());
+		}
+
 	}
 
 	private void readNormFile(String peakFile) {
@@ -213,6 +221,7 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 			return null;
 		}
 	}
+	TxtReadandWrite txtWrite = new TxtReadandWrite("/media/winE/intergenic", true);
 	/**
 	 * 输入单个坐标位点，返回定位信息，用于统计位点的定位情况
 	 * 只判断最长转录本
@@ -230,16 +239,16 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	 * 6: GeneEnd，在基因外的尾部 由setStatistic()方法的GeneEnd定义
 	 * 7: Tss 包括Tss上和Tss下，由filterTss定义
 	 */
-	private void searchSite(double prop, Align align) {
+	private boolean searchSite(double prop, Align align) {
 		suspendCheck();
 		
 		if (align == null) {
-			return;
+			return false;
 		}
 		boolean flagIntraGenic = false;//在gene内的标记
 		GffCodGene gffCodGene = gffChrAbs.getGffHashGene().searchLocation(align.getRefID(), align.getMidSite());
 		if (gffCodGene == null) {
-			return;
+			return false;
 		}
 		if (gffCodGene.isInsideLoc()) {
 			flagIntraGenic = setStatisticsNum(prop, gffCodGene.getGffDetailThis(), align.getMidSite());
@@ -248,8 +257,10 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 		}
 		if (flagIntraGenic) {
 			intraGenic += prop*1;
+			return false;
 		} else {
 			interGenic += prop*1;
+			return true;
 		}
 	}
 	/**
@@ -412,6 +423,7 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	@Override
 	public void summary() {
 		//Nothing to do 
+		txtWrite.close();
 	}
 	@Override
 	public Align getReadingRegion() {

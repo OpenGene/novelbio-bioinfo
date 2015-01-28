@@ -19,4 +19,6 @@ public abstract class FastQCmodules implements FQrecordCopeInt, QCModule {
 	}
 	
 	public abstract void processSequence(Sequence sequence);
+	
+	public abstract String getSavePath(String outPrefix);
 }

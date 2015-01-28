@@ -83,7 +83,8 @@ public class FastQC {
 	}
 	
 	public static String getQualityScoreFileName(String outPathPrefix) {
-		return FileOperate.changeFilePrefix(outPathPrefix, "QualityScore_", "png");
+		FastQCmodules perBaseQualityScores = new PerBaseQualityScores();
+		return perBaseQualityScores.getSavePath(outPathPrefix);
 	}
 	
 	public List<String> saveToPathPic(String outPathPrefix) {
@@ -94,47 +95,47 @@ public class FastQC {
 		String outName = "";
 		try {
 			bufferedImage = perBaseQualityScores.getBufferedImage(1000, 1000);
-			outName = FileOperate.changeFilePrefix(outPathPrefix, "QualityScore_", "png");
+			outName = perBaseQualityScores.getSavePath(outPathPrefix);
 			ImageUtils.saveBufferedImage(bufferedImage, outName);
 			lsSaveName.add(outName);} catch (Exception e) { e.printStackTrace(); }
 		try {
 			bufferedImage = perSequenceQualityScores.getBufferedImage(1000, 1000);
-			outName = FileOperate.changeFilePrefix(outPathPrefix, "SequenceQuality_", "png");
+			outName = perSequenceQualityScores.getSavePath(outPathPrefix);
 			ImageUtils.saveBufferedImage(bufferedImage, outName); 
 			lsSaveName.add(outName);} catch (Exception e) { e.printStackTrace(); }
 		try {
 			bufferedImage = perBaseSequenceContent.getBufferedImage(1000, 1000);
-			outName = FileOperate.changeFilePrefix(outPathPrefix, "BaseSequence_", "png");
+			outName = perBaseSequenceContent.getSavePath(outPathPrefix);
 			ImageUtils.saveBufferedImage(bufferedImage, outName);
 			lsSaveName.add(outName);} catch (Exception e) { e.printStackTrace(); }
 		try {
 			bufferedImage = perBaseGCContent.getBufferedImage(1000, 1000);
-			outName = FileOperate.changeFilePrefix(outPathPrefix, "BaseGCContent_", "png");
+			outName = perBaseGCContent.getSavePath(outPathPrefix);
 			ImageUtils.saveBufferedImage(bufferedImage, outName); 
 			lsSaveName.add(outName);} catch (Exception e) { e.printStackTrace(); }
 		try {
 			bufferedImage = perSequenceGCContent.getBufferedImage(1000, 1000);
-			outName = FileOperate.changeFilePrefix(outPathPrefix, "SequenceGCContent_", "png");
+			outName = perSequenceGCContent.getSavePath(outPathPrefix);
 			ImageUtils.saveBufferedImage(bufferedImage, outName); 
 			lsSaveName.add(outName);} catch (Exception e) { e.printStackTrace(); }
 		try {
 			bufferedImage = nContent.getBufferedImage(1000, 1000);
-			outName = FileOperate.changeFilePrefix(outPathPrefix, "nContent_", "png");
+			outName = nContent.getSavePath(outPathPrefix);
 			ImageUtils.saveBufferedImage(bufferedImage, outName); 
 			lsSaveName.add(outName);} catch (Exception e) { e.printStackTrace(); }
 		try {
 			bufferedImage = sequenceLengthDistribution.getBufferedImage(1000, 1000);
-			outName = FileOperate.changeFilePrefix(outPathPrefix, "LengthDistribution_", "png");
+			outName = sequenceLengthDistribution.getSavePath(outPathPrefix);
 			ImageUtils.saveBufferedImage(bufferedImage, outName);
 			lsSaveName.add(outName);} catch (Exception e) { e.printStackTrace(); }
 		try {
 			bufferedImage = duplicate.getBufferedImage(1000, 1000);
-			outName = FileOperate.changeFilePrefix(outPathPrefix, "DuplicationLevel_", "png");
+			outName = duplicate.getSavePath(outPathPrefix);
 			ImageUtils.saveBufferedImage(bufferedImage, outName);
 			lsSaveName.add(outName);} catch (Exception e) { e.printStackTrace(); }
 		try {
 			bufferedImage = kmerContent.getBufferedImage(1000, 1000);
-			outName = FileOperate.changeFilePrefix(outPathPrefix, "KmerContent_", "png");
+			outName = kmerContent.getSavePath(outPathPrefix);
 			ImageUtils.saveBufferedImage(bufferedImage, outName);
 			lsSaveName.add(outName);} catch (Exception e) { e.printStackTrace(); }
 		
@@ -143,10 +144,10 @@ public class FastQC {
 	public List<String> saveToPathTable(String outPathPrefix) {
 		List<String> lsSaveName = new ArrayList<>();
 		Map<String, String> mapTable = basicStats.getResult();
-		TxtReadandWrite txtWrite = new TxtReadandWrite(outPathPrefix + "basicStats.xls", true);
+		TxtReadandWrite txtWrite = new TxtReadandWrite(basicStats.getSavePath(outPathPrefix), true);
 		writeTable(txtWrite, mapTable);
 		txtWrite.close();
-		lsSaveName.add(outPathPrefix + "basicStats.xls");
+		lsSaveName.add(basicStats.getSavePath(outPathPrefix));
 		if (!qc) return lsSaveName;
 		
 		lsSaveName.addAll(saveTable(outPathPrefix, this, null));
@@ -169,7 +170,7 @@ public class FastQC {
 		try {
 			bufferedImage = perBaseQualityScores.getBufferedImage(1000, 1000);
 			bufferedImagePair = fastQCPairend.perBaseQualityScores.getBufferedImage(1000, 1000);
-			outName = FileOperate.changeFilePrefix(outPathPrefix, "QualityScore_", "png");
+			outName = perBaseQualityScores.getSavePath(outPathPrefix);
 			savePic(outName, sepPic, bufferedImage, bufferedImagePair);
 			lsOutFileName.add(outName);
 		} catch (Exception e) {e.printStackTrace(); }
@@ -177,56 +178,56 @@ public class FastQC {
 		try {
 			bufferedImage = perSequenceQualityScores.getBufferedImage(1000, 1000);
 			bufferedImagePair = fastQCPairend.perSequenceQualityScores.getBufferedImage(1000, 1000);
-			outName = FileOperate.changeFilePrefix(outPathPrefix, "SequenceQuality_", "png");
+			outName = perSequenceQualityScores.getSavePath(outPathPrefix);
 			savePic(outName, sepPic, bufferedImage, bufferedImagePair);
 			lsOutFileName.add(outName);
 		} catch (Exception e) {e.printStackTrace(); }
 		try {
 			bufferedImage = perBaseSequenceContent.getBufferedImage(1000, 1000);
 			bufferedImagePair = fastQCPairend.perBaseSequenceContent.getBufferedImage(1000, 1000);
-			outName = FileOperate.changeFilePrefix(outPathPrefix, "BaseSequence_", "png");
+			outName = perBaseSequenceContent.getSavePath(outPathPrefix);
 			savePic(outName, sepPic, bufferedImage, bufferedImagePair);
 			lsOutFileName.add(outName);
 		} catch (Exception e) {e.printStackTrace(); }
 		try {
 			bufferedImage = perBaseGCContent.getBufferedImage(1000, 1000);
 			bufferedImagePair = fastQCPairend.perBaseGCContent.getBufferedImage(1000, 1000);
-			outName = FileOperate.changeFilePrefix(outPathPrefix, "BaseGCContent_", "png");
+			outName = perBaseGCContent.getSavePath(outPathPrefix);
 			savePic(outName, sepPic, bufferedImage, bufferedImagePair);
 			lsOutFileName.add(outName);
 		} catch (Exception e) {e.printStackTrace(); }
 		try {
 			bufferedImage = perSequenceGCContent.getBufferedImage(1000, 1000);
 			bufferedImagePair = fastQCPairend.perSequenceGCContent.getBufferedImage(1000, 1000);
-			outName = FileOperate.changeFilePrefix(outPathPrefix, "SequenceGCContent_", "png");
+			outName = perSequenceGCContent.getSavePath(outPathPrefix);
 			savePic(outName, sepPic, bufferedImage, bufferedImagePair);
 			lsOutFileName.add(outName);
 		} catch (Exception e) {e.printStackTrace(); }
 		try {
 			bufferedImage = nContent.getBufferedImage(1000, 1000);
 			bufferedImagePair = fastQCPairend.nContent.getBufferedImage(1000, 1000);
-			outName = FileOperate.changeFilePrefix(outPathPrefix, "nContent_", "png");
+			outName = nContent.getSavePath(outPathPrefix);
 			savePic(outName, sepPic, bufferedImage, bufferedImagePair);
 			lsOutFileName.add(outName);
 		} catch (Exception e) {e.printStackTrace(); }
 		try {
 			bufferedImage = sequenceLengthDistribution.getBufferedImage(1000, 1000);
 			bufferedImagePair = fastQCPairend.sequenceLengthDistribution.getBufferedImage(1000, 1000);
-			outName = FileOperate.changeFilePrefix(outPathPrefix, "LengthDistribution_", "png");
+			outName = sequenceLengthDistribution.getSavePath(outPathPrefix);
 			savePic(outName, sepPic, bufferedImage, bufferedImagePair);
 			lsOutFileName.add(outName);
 		} catch (Exception e) {e.printStackTrace(); }
 		try {
 			bufferedImage = duplicate.getBufferedImage(1000, 1000);
 			bufferedImagePair = fastQCPairend.duplicate.getBufferedImage(1000, 1000);
-			outName = FileOperate.changeFilePrefix(outPathPrefix, "DuplicationLevel_", "png");
+			outName = duplicate.getSavePath(outPathPrefix);
 			savePic(outName, sepPic, bufferedImage, bufferedImagePair);
 			lsOutFileName.add(outName);
 		} catch (Exception e) {e.printStackTrace(); }
 		try {
 			bufferedImage = kmerContent.getBufferedImage(1000, 1000);
 			bufferedImagePair = fastQCPairend.kmerContent.getBufferedImage(1000, 1000);
-			outName = FileOperate.changeFilePrefix(outPathPrefix, "KmerContent_", "png");
+			outName = kmerContent.getSavePath(outPathPrefix);
 			savePic(outName, sepPic, bufferedImage, bufferedImagePair);
 			lsOutFileName.add(outName);
 		} catch (Exception e) {e.printStackTrace(); }
@@ -251,10 +252,10 @@ public class FastQC {
 		mapPrefix2Table.put(sampleName + "2", mapTablePair);
 		List<String[]> lsInfo = addBaseTotalTableList(mapPrefix2Table);
 		
-		TxtReadandWrite txtWrite = new TxtReadandWrite(outPathPrefix + "basicStats.xls", true);
+		TxtReadandWrite txtWrite = new TxtReadandWrite(basicStats.getSavePath(outPathPrefix), true);
 		txtWrite.ExcelWrite(lsInfo);
 		txtWrite.close();
-		lsOutFile.add(outPathPrefix + "basicStats.xls");
+		lsOutFile.add(basicStats.getSavePath(outPathPrefix));
 		
 		if (!qc) return lsOutFile;
 	
@@ -283,8 +284,8 @@ public class FastQC {
 		List<String> lsSaveFileName = new ArrayList<>();
 		Map<String, String> mapTable = fastQC.kmerContent.getResult();
 		Map<String, String> mapLen2Num = fastQC.sequenceLengthDistribution.getResult();
-		String fileKmer = FileOperate.changeFilePrefix(outPathPrefix, "KmerContent_", "xls");
-		String fileLenDistribution = FileOperate.changeFilePrefix(outPathPrefix, "ReadsLenDistribution_", "xls");
+		String fileKmer = fastQC.kmerContent.getSavePath(outPathPrefix);
+		String fileLenDistribution = FileOperate.changeFilePrefix(fastQC.sequenceLengthDistribution.getSavePath(outPathPrefix), "", "xls");
 		String fileRepresentedSeq = outPathPrefix + "OverRepresentedSeqs.xls";
 		if (sub != null && !sub.equals("")) {
 			fileKmer = FileOperate.changeFileSuffix(fileKmer, "_" + sub, null);
@@ -314,7 +315,9 @@ public class FastQC {
 		
 		return lsSaveFileName;
 	}
-
+	
+	
+	
 	/** 合并Fastqc的BaseStatistics信息 
 	 * @return */
 	public static List<String[]> combineFastQCbaseStatistics(Map<String, FastQC[]> mapParam2FastqcLR) {

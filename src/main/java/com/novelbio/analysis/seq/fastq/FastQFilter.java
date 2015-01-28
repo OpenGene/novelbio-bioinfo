@@ -173,7 +173,7 @@ public class FastQFilter {
 		return lsFQrecordFilters;
 	}
 	/** 是否过滤 */
-	public boolean isFiltered() {
+	public boolean isNeedFilter() {
 		return isFiltered;
 	}
 }

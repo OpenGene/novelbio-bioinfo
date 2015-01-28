@@ -25,6 +25,8 @@ import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.novelbio.base.fileOperate.FileOperate;
+
 import uk.ac.babraham.FastQC.Graphs.LineGraph;
 import uk.ac.babraham.FastQC.Sequence.Sequence;
 
@@ -160,6 +162,11 @@ public class DuplicationLevel extends FastQCmodules implements QCModule {
 
 	public Map<String, String> getResult() {
 		return null;
+	}
+
+	@Override
+	public String getSavePath(String outPrefix) {
+		return FileOperate.changeFilePrefix(outPrefix, "DuplicationLevel_", "png");
 	}
 
 }
