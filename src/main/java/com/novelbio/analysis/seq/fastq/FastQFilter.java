@@ -25,7 +25,7 @@ public class FastQFilter {
 	FQrecordFilterModifyQuality fQrecordFilterModifyQuality = new FQrecordFilterModifyQuality();
 	
 	List<FQrecordCopeInt> lsFQrecordFilters;
-		
+	String quality;
 	/**
 	 * 设定全局过滤指标
 	 * 类似 FastQ.FASTQ_QUALITY_CHANGE_TO_BEST
@@ -40,6 +40,10 @@ public class FastQFilter {
 		if (mapFastQFilter == null) {
 			throw new ExceptionNullParam("Error Quality Filter Value:" + QUALITY);
 		}
+		this.quality = QUALITY;
+	}
+	public String getQuality() {
+		return quality;
 	}
 	///////////////////////////////////////////  参数设置  ///////////////////////////////////////////////////////////////////////
 	/** 设定是否过滤，false表示不过滤直接跳过 */
