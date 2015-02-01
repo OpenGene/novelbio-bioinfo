@@ -22,7 +22,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.ImageUtils;
 import com.novelbio.base.plot.VennImage;
-import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.service.SpringFactoryBioinfo;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -70,7 +70,7 @@ public class CombineTab {
 	 * ColCompareSep：分开的待查找的列
 	 * */
 	LinkedHashMap<String, List<String>> mapColCompareComb_To_ColCompareSep = new LinkedHashMap<>();
-	Configuration freeMarkerConfiguration = (Configuration)SpringFactory.getFactory().getBean("freemarkNBC");
+	Configuration freeMarkerConfiguration = (Configuration)SpringFactoryBioinfo.getFactory().getBean("freemarkNBC");
 
 	HashMap<String, LinkedHashMap<String, String[]>> mapFileName_To_ColCompareComb2ExtractCol = new LinkedHashMap<>();
 	/**

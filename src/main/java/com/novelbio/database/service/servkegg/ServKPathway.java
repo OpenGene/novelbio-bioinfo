@@ -4,14 +4,14 @@ import java.util.List;
 
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.mongorepo.kegg.RepoKPathway;
-import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.service.SpringFactoryBioinfo;
 
 public class ServKPathway {
 	
 	RepoKPathway mapKPathway;
 	
 	public ServKPathway() {
-		mapKPathway = (RepoKPathway)SpringFactory.getFactory().getBean("repoKPathway");
+		mapKPathway = (RepoKPathway)SpringFactoryBioinfo.getFactory().getBean("repoKPathway");
 	}
 
 	public KGpathway findByPathName(String mapNum) {

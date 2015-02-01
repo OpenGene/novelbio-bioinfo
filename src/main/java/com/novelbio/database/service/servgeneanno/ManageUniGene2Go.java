@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.UniGene2Go;
 import com.novelbio.database.mongorepo.geneanno.RepoUniGene2Go;
-import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.service.SpringFactoryBioinfo;
 
 public class ManageUniGene2Go {
 	private static Logger logger = Logger.getLogger(ManageUniGene2Go.class);
@@ -16,7 +16,7 @@ public class ManageUniGene2Go {
 	private RepoUniGene2Go repoUniGene2Go;
 	
 	public ManageUniGene2Go() {
-		repoUniGene2Go = (RepoUniGene2Go)SpringFactory.getFactory().getBean("repoUniGene2Go");
+		repoUniGene2Go = (RepoUniGene2Go)SpringFactoryBioinfo.getFactory().getBean("repoUniGene2Go");
 	}
 	public List<UniGene2Go> queryLsGene2Go(String uniID) {
 		return repoUniGene2Go.findByUniID(uniID);

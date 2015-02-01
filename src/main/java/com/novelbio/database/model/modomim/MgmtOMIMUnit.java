@@ -7,12 +7,12 @@ import com.novelbio.database.domain.omim.MIMInfo;
 import com.novelbio.database.model.modomim.MgmtGeneMIMInfo.MgmtOmimHolder;
 import com.novelbio.database.mongorepo.omim.RepoGeneMIMInfo;
 import com.novelbio.database.mongorepo.omim.RepoMIMInfo;
-import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.service.SpringFactoryBioinfo;
 
 public class MgmtOMIMUnit {
 
 	private MgmtOMIMUnit () {}
-	RepoMIMInfo repoMIMInfo = (RepoMIMInfo)SpringFactory.getBean("repoMIMInfo");
+	RepoMIMInfo repoMIMInfo = (RepoMIMInfo)SpringFactoryBioinfo.getBean("repoMIMInfo");
 	public MIMInfo findByMimId(int MimId){
 		return repoMIMInfo.findInfByMimId(MimId);
 	}

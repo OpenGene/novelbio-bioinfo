@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.novelbio.database.domain.geneanno.DBInfo;
 import com.novelbio.database.mongorepo.geneanno.RepoDBinfo;
-import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.service.SpringFactoryBioinfo;
 
 public class ManageDBInfo {
 	static double[] lock = new double[0];
@@ -18,7 +18,7 @@ public class ManageDBInfo {
 	RepoDBinfo repoDBinfo;
 		
 	private ManageDBInfo() {
-		repoDBinfo = (RepoDBinfo)SpringFactory.getFactory().getBean("repoDBinfo");
+		repoDBinfo = (RepoDBinfo)SpringFactoryBioinfo.getFactory().getBean("repoDBinfo");
 		fillMap();
 	}
 	

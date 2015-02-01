@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.novelbio.database.mongorepo.omim.RepoMorbidMap;
-import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.service.SpringFactoryBioinfo;
 
 
 @Document(collection = "morbidMap")
@@ -75,7 +75,7 @@ public class MorbidMap implements Serializable {
 		return disType;
 	}
 	private static RepoMorbidMap repo() {
-		 return SpringFactory.getBean(RepoMorbidMap.class);
+		 return SpringFactoryBioinfo.getBean(RepoMorbidMap.class);
 	 }
 	 public static MorbidMap findInfByGeneId(int id) {
 		 return repo().findOne(id);

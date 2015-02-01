@@ -20,7 +20,7 @@ import com.novelbio.database.domain.geneanno.SpeciesFile;
 import com.novelbio.database.domain.geneanno.TaxInfo;
 import com.novelbio.database.mongorepo.geneanno.RepoSpeciesFile;
 import com.novelbio.database.mongorepo.geneanno.RepoTaxInfo;
-import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.service.SpringFactoryBioinfo;
 import com.novelbio.database.service.servgeneanno.ManageSpeciesDB.ManageSpeciesDBHold;
 import com.novelbio.database.service.servgeneanno.ManageSpeciesTxt.ManageSpeciesTxtHold;
 import com.novelbio.generalConf.PathDetailNBC;
@@ -41,7 +41,7 @@ public class ManageSpecies implements IManageSpecies {
 			 mapTaxID_2_version2SpeciesFile = new LinkedHashMap<>();
 			 readDBinfo();
 		}
-		repoTaxInfo = (RepoTaxInfo)SpringFactory.getFactory().getBean("repoTaxInfo");
+		repoTaxInfo = (RepoTaxInfo)SpringFactoryBioinfo.getFactory().getBean("repoTaxInfo");
 	}
 	
 	private void readDBinfo() {
@@ -252,7 +252,7 @@ public class ManageSpecies implements IManageSpecies {
 	
 	
 	public static IManageSpecies getInstance() {
-		return (IManageSpecies)SpringFactory.getFactory().getBean("managespecies");
+		return (IManageSpecies)SpringFactoryBioinfo.getFactory().getBean("managespecies");
 //		return ManageSpeciesHold.manageSpecies;
 //		return ManageSpeciesDBHold.manageSpecies;
 //		return ManageSpeciesTxtHold.manageSpecies;

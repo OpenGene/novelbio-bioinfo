@@ -11,7 +11,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.mongorepo.information.RepoSoftwareInfo;
-import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.service.SpringFactoryBioinfo;
 import com.novelbio.generalConf.PathDetailNBC;
 /**
  * 待修正，就是自动化的update工作，参照servGeneInfo

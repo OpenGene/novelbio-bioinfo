@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.novelbio.database.mongorepo.omim.RepoGeneMIMInfo;
 import com.novelbio.database.mongorepo.omim.RepoGenemap;
-import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.service.SpringFactoryBioinfo;
 
 @Document(collection = "omimGene")
 public class GeneMIM implements Serializable {
@@ -51,7 +51,7 @@ public class GeneMIM implements Serializable {
 	}
 	
 	private static RepoGeneMIMInfo repo() {
-		 return SpringFactory.getBean(RepoGeneMIMInfo.class);
+		 return SpringFactoryBioinfo.getBean(RepoGeneMIMInfo.class);
 	 }
 	 
 	 public static GeneMIM findGeneInfByMimId(String id) {

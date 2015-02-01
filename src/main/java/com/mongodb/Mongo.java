@@ -351,7 +351,8 @@ public class Mongo {
             _cleaner = null;
         }
     }
-
+    
+    
     /**
      * Gets a database object from this MongoDB instance.
      *

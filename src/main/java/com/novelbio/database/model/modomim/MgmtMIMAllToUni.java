@@ -8,13 +8,13 @@ import com.novelbio.database.domain.omim.MIMAllToUni;
 import com.novelbio.database.domain.omim.OmimGeneMap;
 import com.novelbio.database.model.modomim.MgmtOMIM.MgmtOmimHolder;
 import com.novelbio.database.mongorepo.omim.RepoMIMAllToUni;
-import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.service.SpringFactoryBioinfo;
 
 
 public class MgmtMIMAllToUni {
 
 	private MgmtMIMAllToUni() {}
-	RepoMIMAllToUni repoMIMAllToUni = (RepoMIMAllToUni)SpringFactory.getBean("repoMIMAllToUni");
+	RepoMIMAllToUni repoMIMAllToUni = (RepoMIMAllToUni)SpringFactoryBioinfo.getBean("repoMIMAllToUni");
 	public List<MIMAllToUni> findInfByMimId(int MimId){
 		return repoMIMAllToUni.findInfByMimId(MimId);
 	}

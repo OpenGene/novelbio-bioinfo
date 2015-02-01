@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.novelbio.database.domain.kegg.noGene.KGNIdKeg;
 import com.novelbio.database.mongorepo.kegg.RepoKNIdKeg;
-import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.service.SpringFactoryBioinfo;
 
 /**
  * 将不是基因的ID--也就是一些化合物等转换为KeggID
@@ -14,7 +14,7 @@ import com.novelbio.database.service.SpringFactory;
 public class ServKNIdKeg {
 	RepoKNIdKeg mapKNIdKeg;
 	public ServKNIdKeg() {
-		mapKNIdKeg = (RepoKNIdKeg)SpringFactory.getFactory().getBean("repoKNIdKeg");
+		mapKNIdKeg = (RepoKNIdKeg)SpringFactoryBioinfo.getFactory().getBean("repoKNIdKeg");
 	}
 
 	public List<KGNIdKeg> findByKegId(String kegID) {

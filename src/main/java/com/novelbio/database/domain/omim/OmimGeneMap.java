@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.novelbio.base.StringOperate;
 import com.novelbio.database.mongorepo.omim.RepoGenemap;
-import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.service.SpringFactoryBioinfo;
 
 @Document(collection = "omimGenemap")
 public class OmimGeneMap implements Serializable {
@@ -95,7 +95,7 @@ public class OmimGeneMap implements Serializable {
 	}
 	
 	 private static RepoGenemap repo() {
-		 return SpringFactory.getFactory().getBean(RepoGenemap.class);
+		 return SpringFactoryBioinfo.getFactory().getBean(RepoGenemap.class);
 		 
 	 }
 	 

@@ -14,7 +14,7 @@ import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.service.SpringFactoryBioinfo;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -29,7 +29,7 @@ public class AffyNormalization implements IntCmdSoft {
 	/** 外显子芯片等 */
 	public static final String arrayType_exonAffy = "exonaffy";
 	
-	Configuration freeMarkerConfiguration = (Configuration)SpringFactory.getFactory().getBean("freemarkNBC");
+	Configuration freeMarkerConfiguration = (Configuration)SpringFactoryBioinfo.getFactory().getBean("freemarkNBC");
 	
 	String workSpace;
 	String rawScript = "";

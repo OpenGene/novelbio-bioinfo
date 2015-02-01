@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.novelbio.database.domain.kegg.KGIDgen2Keg;
 import com.novelbio.database.mongorepo.kegg.RepoKIDgen2Keg;
-import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.service.SpringFactoryBioinfo;
 
 /**
  * geneID到KeggID的转换表
@@ -15,7 +15,7 @@ public class ServKIDgen2Keg {
 	RepoKIDgen2Keg mapKIDgen2Keg;
 	
 	public ServKIDgen2Keg() {
-		mapKIDgen2Keg = (RepoKIDgen2Keg)SpringFactory.getFactory().getBean("repoKIDgen2Keg");
+		mapKIDgen2Keg = (RepoKIDgen2Keg)SpringFactoryBioinfo.getFactory().getBean("repoKIDgen2Keg");
 	}
 
 	public KGIDgen2Keg findByGeneId(Long geneId) {

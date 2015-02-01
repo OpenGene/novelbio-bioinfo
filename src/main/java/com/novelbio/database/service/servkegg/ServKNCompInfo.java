@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 
 import com.novelbio.database.domain.kegg.noGene.KGNCompInfo;
 import com.novelbio.database.mongorepo.kegg.RepoKNCompInfo;
-import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.service.SpringFactoryBioinfo;
 
 /**
  * keggID化合物的具体信息
@@ -15,7 +15,7 @@ import com.novelbio.database.service.SpringFactory;
 public class ServKNCompInfo {
 	RepoKNCompInfo repoKNCompInfo;
 	public ServKNCompInfo() {
-		repoKNCompInfo = (RepoKNCompInfo)SpringFactory.getFactory().getBean("repoKNCompInfo");
+		repoKNCompInfo = (RepoKNCompInfo)SpringFactoryBioinfo.getFactory().getBean("repoKNCompInfo");
 	}
 
 	public KGNCompInfo findByKegId(String kegId) {

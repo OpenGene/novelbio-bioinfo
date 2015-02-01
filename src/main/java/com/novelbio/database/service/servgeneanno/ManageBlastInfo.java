@@ -18,7 +18,7 @@ import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.database.mongorepo.geneanno.RepoBlastFileInfo;
 import com.novelbio.database.mongorepo.geneanno.RepoBlastInfo;
-import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.service.SpringFactoryBioinfo;
 
 public class ManageBlastInfo {
 	static double[] lock = new double[0];
@@ -33,9 +33,9 @@ public class ManageBlastInfo {
 	RepoBlastFileInfo repoBlastFileInfo;
 	
 	private ManageBlastInfo() {
-		repoBlastInfo = (RepoBlastInfo)SpringFactory.getFactory().getBean("repoBlastInfo");
-		repoBlastFileInfo = (RepoBlastFileInfo)SpringFactory.getFactory().getBean("repoBlastFileInfo");
-		mongoTemplate = (MongoTemplate)SpringFactory.getFactory().getBean("mongoTemplate");
+		repoBlastInfo = (RepoBlastInfo)SpringFactoryBioinfo.getFactory().getBean("repoBlastInfo");
+		repoBlastFileInfo = (RepoBlastFileInfo)SpringFactoryBioinfo.getFactory().getBean("repoBlastFileInfo");
+		mongoTemplate = (MongoTemplate)SpringFactoryBioinfo.getFactory().getBean("mongoTemplate");
 	}
 	
 //	/**

@@ -13,7 +13,7 @@ import com.novelbio.database.domain.geneanno.UniProtID;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.mongorepo.geneanno.RepoNCBIID;
 import com.novelbio.database.mongorepo.geneanno.RepoUniID;
-import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.service.SpringFactoryBioinfo;
 
 public class ManageNCBIUniID {
 	private static final Logger logger = Logger.getLogger(ManageNCBIUniID.class);
@@ -23,8 +23,8 @@ public class ManageNCBIUniID {
 	private RepoUniID repoUniID;
 	
 	private ManageNCBIUniID() {
-		repoNCBIID = (RepoNCBIID) SpringFactory.getFactory().getBean("repoNCBIID");
-		repoUniID = (RepoUniID) SpringFactory.getFactory().getBean("repoUniID");
+		repoNCBIID = (RepoNCBIID) SpringFactoryBioinfo.getFactory().getBean("repoNCBIID");
+		repoUniID = (RepoUniID) SpringFactoryBioinfo.getFactory().getBean("repoUniID");
 	}
 	
 	/**

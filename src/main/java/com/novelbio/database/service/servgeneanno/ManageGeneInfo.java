@@ -9,7 +9,7 @@ import com.novelbio.database.domain.geneanno.UniGeneInfo;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.mongorepo.geneanno.RepoGeneInfo;
 import com.novelbio.database.mongorepo.geneanno.RepoUniGeneInfo;
-import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.service.SpringFactoryBioinfo;
 
 public class ManageGeneInfo {
 	private static Logger logger = Logger.getLogger(ManageGeneInfo.class);
@@ -18,8 +18,8 @@ public class ManageGeneInfo {
 	private RepoUniGeneInfo repoUniGeneInfo;
 	
 	public ManageGeneInfo() {
-		repoGeneInfo = (RepoGeneInfo)SpringFactory.getFactory().getBean("repoGeneInfo");
-		repoUniGeneInfo = (RepoUniGeneInfo)SpringFactory.getFactory().getBean("repoUniGeneInfo");
+		repoGeneInfo = (RepoGeneInfo)SpringFactoryBioinfo.getFactory().getBean("repoGeneInfo");
+		repoUniGeneInfo = (RepoUniGeneInfo)SpringFactoryBioinfo.getFactory().getBean("repoUniGeneInfo");
 	}
 	
 	/**

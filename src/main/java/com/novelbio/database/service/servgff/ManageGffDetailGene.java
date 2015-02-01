@@ -20,7 +20,7 @@ import com.novelbio.database.mongorepo.geneanno.RepoGffFile;
 import com.novelbio.database.mongorepo.geneanno.RepoGffFileUnit;
 import com.novelbio.database.mongorepo.geneanno.RepoGffGene;
 import com.novelbio.database.mongorepo.geneanno.RepoGffIso;
-import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.service.SpringFactoryBioinfo;
 
 public class ManageGffDetailGene {
 	private static final Logger logger = Logger.getLogger(ManageGffDetailGene.class);
@@ -32,11 +32,11 @@ public class ManageGffDetailGene {
 	RepoGffFileUnit repoGffFileUnit;
 	MongoTemplate mongoTemplate;
 	private ManageGffDetailGene() {
-		repoGffFile = (RepoGffFile)SpringFactory.getFactory().getBean("repoGffFile");
-		repoGffGene = (RepoGffGene)SpringFactory.getFactory().getBean("repoGffGene");
-		repoGffIso = (RepoGffIso)SpringFactory.getFactory().getBean("repoGffIso");
-		repoGffFileUnit = (RepoGffFileUnit)SpringFactory.getFactory().getBean("repoGffFileUnit");
-		mongoTemplate = (MongoTemplate)SpringFactory.getFactory().getBean("mongoTemplate");
+		repoGffFile = (RepoGffFile)SpringFactoryBioinfo.getFactory().getBean("repoGffFile");
+		repoGffGene = (RepoGffGene)SpringFactoryBioinfo.getFactory().getBean("repoGffGene");
+		repoGffIso = (RepoGffIso)SpringFactoryBioinfo.getFactory().getBean("repoGffIso");
+		repoGffFileUnit = (RepoGffFileUnit)SpringFactoryBioinfo.getFactory().getBean("repoGffFileUnit");
+		mongoTemplate = (MongoTemplate)SpringFactoryBioinfo.getFactory().getBean("mongoTemplate");
 	}
 	
 	public void saveGffHashGene(GffHashGene gffHashGene) {

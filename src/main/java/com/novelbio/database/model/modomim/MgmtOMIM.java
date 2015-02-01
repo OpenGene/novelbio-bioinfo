@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import com.novelbio.database.domain.omim.OmimGeneMap;
 import com.novelbio.database.mongorepo.omim.RepoGenemap;
-import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.service.SpringFactoryBioinfo;
 
 
 @Repository
@@ -14,7 +14,7 @@ public class MgmtOMIM {
 	//需要写一个空的构造函数
 	private MgmtOMIM() {}
 
-	RepoGenemap repoGenemap = (RepoGenemap)SpringFactory.getBean("repoGenemap");
+	RepoGenemap repoGenemap = (RepoGenemap)SpringFactoryBioinfo.getBean("repoGenemap");
 	public List<OmimGeneMap> findByPheMimId(int phenMimId){
 		return repoGenemap.findInfByPheMimId(phenMimId);
 	}

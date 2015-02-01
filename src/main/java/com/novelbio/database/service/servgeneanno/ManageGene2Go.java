@@ -11,7 +11,7 @@ import com.novelbio.database.domain.geneanno.Gene2Go;
 import com.novelbio.database.domain.geneanno.UniGene2Go;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.mongorepo.geneanno.RepoGene2Go;
-import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.service.SpringFactoryBioinfo;
 
 public class ManageGene2Go {
 	private static Logger logger = Logger.getLogger(ManageGene2Go.class);
@@ -22,7 +22,7 @@ public class ManageGene2Go {
 	private RepoGene2Go repoGene2Go;
 	
 	public ManageGene2Go() {
-		repoGene2Go = (RepoGene2Go)SpringFactory.getFactory().getBean("repoGene2Go");
+		repoGene2Go = (RepoGene2Go)SpringFactoryBioinfo.getFactory().getBean("repoGene2Go");
 	}
 	
 	public List<Gene2Go> queryLsGene2Go(int geneID) {

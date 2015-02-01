@@ -19,7 +19,7 @@ import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
-import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.service.SpringFactoryBioinfo;
 
 /**
  * 设定了自动化建索引的方法，并且在mapping失败后会再次建索引
@@ -290,11 +290,11 @@ public abstract class MapDNA implements MapDNAint {
 	public static MapDNAint creatMapDNA(SoftWare softMapping) {
 		MapDNAint mapSoftware = null;
 		if (softMapping == SoftWare.bwa_aln) {
-			mapSoftware = (MapDNAint)SpringFactory.getFactory().getBean(MapBwaAln.class);
+			mapSoftware = (MapDNAint)SpringFactoryBioinfo.getFactory().getBean(MapBwaAln.class);
 		} else if (softMapping == SoftWare.bwa_men) {
-			mapSoftware = (MapDNAint)SpringFactory.getFactory().getBean(MapBwaMem.class);
+			mapSoftware = (MapDNAint)SpringFactoryBioinfo.getFactory().getBean(MapBwaMem.class);
 		} else if (softMapping == SoftWare.bowtie || softMapping == SoftWare.bowtie2) {
-			mapSoftware = (MapDNAint)SpringFactory.getFactory().getBean(MapBowtie.class);
+			mapSoftware = (MapDNAint)SpringFactoryBioinfo.getFactory().getBean(MapBowtie.class);
 			((MapBowtie)mapSoftware).setSubVersion(softMapping);
 		} else {
 			throw new ExceptionNullParam("No Such Param:" + softMapping.toString());

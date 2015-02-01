@@ -4,13 +4,13 @@ import java.util.List;
 
 import com.novelbio.database.domain.kegg.KGpathRelation;
 import com.novelbio.database.mongorepo.kegg.RepoKPathRelation;
-import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.service.SpringFactoryBioinfo;
 
 public class ServKPathRelation {
 	RepoKPathRelation mapKPathRelation;
 	
 	public ServKPathRelation() {
-		mapKPathRelation = (RepoKPathRelation)SpringFactory.getFactory().getBean("repoKPathRelation");
+		mapKPathRelation = (RepoKPathRelation)SpringFactoryBioinfo.getFactory().getBean("repoKPathRelation");
 	}
 
 	public List<KGpathRelation> findByPathName(String pathName) {

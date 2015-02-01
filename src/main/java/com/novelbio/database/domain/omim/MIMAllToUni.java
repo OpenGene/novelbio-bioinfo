@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import com.lowagie.text.SplitCharacter;
 import com.novelbio.database.mongorepo.omim.RepoGenemap;
 import com.novelbio.database.mongorepo.omim.RepoMIMAllToUni;
-import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.service.SpringFactoryBioinfo;
 
 /**
  * 
@@ -94,7 +94,7 @@ public class MIMAllToUni  implements Serializable {
 		return mIMAllToUni;
 	}
 	 private static RepoMIMAllToUni repo() {
-		 return SpringFactory.getBean(RepoMIMAllToUni.class);
+		 return SpringFactoryBioinfo.getBean(RepoMIMAllToUni.class);
 		 
 	 }
 	 public static MIMAllToUni findInfByMimId(int allMIMId) {

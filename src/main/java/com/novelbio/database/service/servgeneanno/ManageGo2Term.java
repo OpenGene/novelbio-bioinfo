@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.mongorepo.geneanno.RepoGo2Term;
-import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.service.SpringFactoryBioinfo;
 //TODO 测试mongodb是否能对set中的元素建立索引，如果可以，则go2term可以设定为setQueryGOID和GOID两个
 //并且只需要对setQueryGOID建立索引j
 public class ManageGo2Term {
@@ -26,7 +26,7 @@ public class ManageGo2Term {
 	private RepoGo2Term repoGo2Term;
 
 	private ManageGo2Term() {
-		repoGo2Term = (RepoGo2Term) SpringFactory.getFactory().getBean("repoGo2Term");
+		repoGo2Term = (RepoGo2Term) SpringFactoryBioinfo.getFactory().getBean("repoGo2Term");
 		fillMap();
 	}
 	

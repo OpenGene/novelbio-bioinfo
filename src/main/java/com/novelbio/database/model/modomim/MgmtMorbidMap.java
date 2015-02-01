@@ -9,12 +9,12 @@ import com.novelbio.database.domain.omim.OmimGeneMap;
 import com.novelbio.database.model.modomim.MgmtOMIM.MgmtOmimHolder;
 import com.novelbio.database.mongorepo.omim.RepoGenemap;
 import com.novelbio.database.mongorepo.omim.RepoMorbidMap;
-import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.service.SpringFactoryBioinfo;
 
 @Repository
 public class MgmtMorbidMap {
 	private MgmtMorbidMap() {}
-	RepoMorbidMap repoMorbidMap = (RepoMorbidMap)SpringFactory.getBean("repoMorbidMap");
+	RepoMorbidMap repoMorbidMap = (RepoMorbidMap)SpringFactoryBioinfo.getBean("repoMorbidMap");
 	public List<MorbidMap> findInfByGeneId(int geneId){
 		return repoMorbidMap.findInfByGeneId(geneId);
 	}

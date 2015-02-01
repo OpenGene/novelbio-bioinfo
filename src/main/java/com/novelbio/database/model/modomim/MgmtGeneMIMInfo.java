@@ -6,11 +6,11 @@ import org.springframework.stereotype.Repository;
 
 import com.novelbio.database.domain.omim.GeneMIM;
 import com.novelbio.database.mongorepo.omim.RepoGeneMIMInfo;
-import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.service.SpringFactoryBioinfo;
 
 public class MgmtGeneMIMInfo {
 	private MgmtGeneMIMInfo() {}
-	RepoGeneMIMInfo repoGeneMIMInfo = (RepoGeneMIMInfo)SpringFactory.getBean("repoGeneMIMInfo");
+	RepoGeneMIMInfo repoGeneMIMInfo = (RepoGeneMIMInfo)SpringFactoryBioinfo.getBean("repoGeneMIMInfo");
 	public GeneMIM findByGenMimId(int geneMimId) {
 		return repoGeneMIMInfo.findInfByGeneMimId(geneMimId);
 	}

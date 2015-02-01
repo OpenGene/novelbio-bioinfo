@@ -5,7 +5,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 
-public class SpringFactory {
+public class SpringFactoryBioinfo {
 	static ApplicationContext ctx;
 	static protected BeanFactory factory;
 	public static BeanFactory getFactory() {
@@ -36,7 +36,7 @@ public class SpringFactory {
 		return ctx.getBean(id);
 	}
 	public static void main(String[] args) {
-		SpringFactory.getBean("springHelper");
+		SpringFactoryBioinfo.getBean("springHelper");
 	}
 	
 	/**

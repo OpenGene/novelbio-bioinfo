@@ -9,7 +9,6 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.annotation.blast.BlastType;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
@@ -17,18 +16,14 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
-import com.novelbio.analysis.seq.mapping.MapBwaAln;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
-import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
+import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.geneanno.BlastFileInfo;
-import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.model.species.Species;
 import com.novelbio.database.mongorepo.kegg.RepoKEntry;
 import com.novelbio.database.mongorepo.kegg.RepoKIDKeg2Ko;
 import com.novelbio.database.mongorepo.kegg.RepoKIDgen2Keg;
@@ -39,9 +34,7 @@ import com.novelbio.database.mongorepo.kegg.RepoKPathway;
 import com.novelbio.database.mongorepo.kegg.RepoKReaction;
 import com.novelbio.database.mongorepo.kegg.RepoKRelation;
 import com.novelbio.database.mongorepo.kegg.RepoKSubstrate;
-import com.novelbio.database.service.SpringFactory;
-import com.novelbio.database.updatedb.database.BlastUp2DB;
-import com.novelbio.generalConf.PathDetailNBC;
+import com.novelbio.database.service.SpringFactoryBioinfo;
 
 
 public class mytest {
@@ -65,10 +58,10 @@ public class mytest {
 //		FileOperate.copyFileFolder("/home/novelbio/git/spring-hadoop-samples/yarn/yarn/custom-amservice/build/dependency-libs", 
 //				"/hdfs:/lib", true);
 		
-//		TxtReadandWrite txtRead = new TxtReadandWrite("/hdfs:/nbCloud/needCopy3.txt");
-//		for (String string : txtRead.readlines()) {
-//			System.out.println(string);
-//		}
+		TxtReadandWrite txtRead = new TxtReadandWrite("/hdfs:/nbCloud/needCopy3.txt");
+		for (String string : txtRead.readlines()) {
+			System.out.println(string);
+		}
 		
 //		int[] mm = new int[500000000];
 //		System.out.println();
@@ -77,22 +70,25 @@ public class mytest {
 //		 for (String string : envs.keySet()) {
 //			System.out.println(string + "\t" + envs.get(string));
 //		 }
-		System.out.println(HashTest.class.toString().split(" ")[1]);
-		Species species = new Species(9606);
-		System.out.println(species.getChromSeq());
+//		System.out.println(Environment.JAVA_HOME.$());
+		
+		System.out.println(FileHadoop.getHadoopFileSystem().getHomeDirectory());
+		
+//		Species species = new Species(9606);
+//		System.out.println(species.getChromSeq());
 	}
 	
 	private void deletdb() {
-		RepoKEntry a = SpringFactory.getFactory().getBean(RepoKEntry.class);
-		RepoKPathRelation b = SpringFactory.getFactory().getBean(RepoKPathRelation.class);
-		RepoKReaction c = SpringFactory.getFactory().getBean(RepoKReaction.class);
-		RepoKIDgen2Keg d = SpringFactory.getFactory().getBean(RepoKIDgen2Keg.class);
-		RepoKIDKeg2Ko e = SpringFactory.getFactory().getBean(RepoKIDKeg2Ko.class);
-		RepoKNCompInfo f = SpringFactory.getFactory().getBean(RepoKNCompInfo.class);
-		RepoKNIdKeg g = SpringFactory.getFactory().getBean(RepoKNIdKeg.class);
-		RepoKPathway h = SpringFactory.getFactory().getBean(RepoKPathway.class);
-		RepoKSubstrate i = SpringFactory.getFactory().getBean(RepoKSubstrate.class);
-		RepoKRelation j = SpringFactory.getFactory().getBean(RepoKRelation.class);
+		RepoKEntry a = SpringFactoryBioinfo.getFactory().getBean(RepoKEntry.class);
+		RepoKPathRelation b = SpringFactoryBioinfo.getFactory().getBean(RepoKPathRelation.class);
+		RepoKReaction c = SpringFactoryBioinfo.getFactory().getBean(RepoKReaction.class);
+		RepoKIDgen2Keg d = SpringFactoryBioinfo.getFactory().getBean(RepoKIDgen2Keg.class);
+		RepoKIDKeg2Ko e = SpringFactoryBioinfo.getFactory().getBean(RepoKIDKeg2Ko.class);
+		RepoKNCompInfo f = SpringFactoryBioinfo.getFactory().getBean(RepoKNCompInfo.class);
+		RepoKNIdKeg g = SpringFactoryBioinfo.getFactory().getBean(RepoKNIdKeg.class);
+		RepoKPathway h = SpringFactoryBioinfo.getFactory().getBean(RepoKPathway.class);
+		RepoKSubstrate i = SpringFactoryBioinfo.getFactory().getBean(RepoKSubstrate.class);
+		RepoKRelation j = SpringFactoryBioinfo.getFactory().getBean(RepoKRelation.class);
 		
 		try {
 			a.deleteAll();

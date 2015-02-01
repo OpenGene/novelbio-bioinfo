@@ -1,17 +1,12 @@
 package com.novelbio.database.updatedb.omim;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import com.mongodb.util.MyAsserts.MyAssert;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.omim.MIMAllToUni;
 import com.novelbio.database.domain.omim.MIMInfo;
-import com.novelbio.database.model.modomim.MgmtGeneMIMInfo;
 import com.novelbio.database.model.modomim.MgmtMIMAllToUni;
-import com.novelbio.database.model.modomim.MgmtOMIM;
 import com.novelbio.database.model.modomim.MgmtOMIMUnit;
 
 public class CreatMIMTable {

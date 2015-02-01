@@ -16,7 +16,7 @@ import bsh.This;
 
 import com.novelbio.database.mongorepo.omim.RepoGenemap;
 import com.novelbio.database.mongorepo.omim.RepoMIMInfo;
-import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.service.SpringFactoryBioinfo;
 
 @Document(collection = "omimInfo")
 public class MIMInfo implements Serializable {
@@ -344,7 +344,7 @@ marie: 3/25/1988
 	}
 	
 	 private static RepoMIMInfo repo() {
-		 return SpringFactory.getBean(RepoMIMInfo.class);
+		 return SpringFactoryBioinfo.getBean(RepoMIMInfo.class);
 		 
 	 }
 	 

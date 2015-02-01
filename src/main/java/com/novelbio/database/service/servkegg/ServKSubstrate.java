@@ -2,14 +2,14 @@ package com.novelbio.database.service.servkegg;
 
 import com.novelbio.database.domain.kegg.KGsubstrate;
 import com.novelbio.database.mongorepo.kegg.RepoKSubstrate;
-import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.service.SpringFactoryBioinfo;
 
 public class ServKSubstrate {
 	
 	RepoKSubstrate mapKSubstrate;
 	
 	public ServKSubstrate() {
-		mapKSubstrate = (RepoKSubstrate)SpringFactory.getFactory().getBean("repoKSubstrate");
+		mapKSubstrate = (RepoKSubstrate)SpringFactoryBioinfo.getFactory().getBean("repoKSubstrate");
 	}
 
 	public KGsubstrate findByKegId(String kgId) {

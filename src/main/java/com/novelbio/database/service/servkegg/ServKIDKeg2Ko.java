@@ -4,13 +4,13 @@ import java.util.List;
 
 import com.novelbio.database.domain.kegg.KGIDkeg2Ko;
 import com.novelbio.database.mongorepo.kegg.RepoKIDKeg2Ko;
-import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.service.SpringFactoryBioinfo;
 
 public class ServKIDKeg2Ko {
 
 	RepoKIDKeg2Ko mapKIDKeg2Ko;
 	public ServKIDKeg2Ko() {
-		mapKIDKeg2Ko = (RepoKIDKeg2Ko)SpringFactory.getFactory().getBean("repoKIDKeg2Ko");
+		mapKIDKeg2Ko = (RepoKIDKeg2Ko)SpringFactoryBioinfo.getFactory().getBean("repoKIDKeg2Ko");
 	}
 
 	public List<KGIDkeg2Ko> findLsByKegId(String keggID) {

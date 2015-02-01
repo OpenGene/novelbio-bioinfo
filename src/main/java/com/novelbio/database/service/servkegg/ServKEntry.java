@@ -4,12 +4,12 @@ import java.util.List;
 
 import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.mongorepo.kegg.RepoKEntry;
-import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.service.SpringFactoryBioinfo;
 public class ServKEntry {
 	RepoKEntry mapKEntry;
 	
 	public ServKEntry() {
-		mapKEntry = (RepoKEntry)SpringFactory.getFactory().getBean("repoKEntry");
+		mapKEntry = (RepoKEntry)SpringFactoryBioinfo.getFactory().getBean("repoKEntry");
 	}
 	
 	public List<KGentry> findByName(String name) {

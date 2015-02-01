@@ -4,13 +4,13 @@ import java.util.List;
 
 import com.novelbio.database.domain.kegg.KGreaction;
 import com.novelbio.database.mongorepo.kegg.RepoKReaction;
-import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.service.SpringFactoryBioinfo;
 
 public class ServKReaction {
 	RepoKReaction mapKReaction;
 	
 	public ServKReaction() {
-		mapKReaction = (RepoKReaction)SpringFactory.getFactory().getBean("repoKReaction");
+		mapKReaction = (RepoKReaction)SpringFactoryBioinfo.getFactory().getBean("repoKReaction");
 	}
 
 	public List<KGreaction> findByName(String name) {

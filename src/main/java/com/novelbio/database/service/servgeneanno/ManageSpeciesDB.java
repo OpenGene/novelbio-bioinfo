@@ -22,7 +22,7 @@ import com.novelbio.database.domain.geneanno.SpeciesFile;
 import com.novelbio.database.domain.geneanno.TaxInfo;
 import com.novelbio.database.mongorepo.geneanno.RepoSpeciesFile;
 import com.novelbio.database.mongorepo.geneanno.RepoTaxInfo;
-import com.novelbio.database.service.SpringFactory;
+import com.novelbio.database.service.SpringFactoryBioinfo;
 
 public class ManageSpeciesDB implements IManageSpecies {
 	private static final Logger logger = Logger.getLogger(ManageSpeciesDB.class);
@@ -33,9 +33,9 @@ public class ManageSpeciesDB implements IManageSpecies {
 	private RepoTaxInfo repoTaxInfo;
 	MongoTemplate mongoTemplate;
 	private ManageSpeciesDB() {
-		repoSpeciesFile = (RepoSpeciesFile)SpringFactory.getFactory().getBean(RepoSpeciesFile.class);
-		repoTaxInfo = (RepoTaxInfo)SpringFactory.getFactory().getBean(RepoTaxInfo.class);
-		mongoTemplate = (MongoTemplate)SpringFactory.getFactory().getBean(MongoTemplate.class);
+		repoSpeciesFile = (RepoSpeciesFile)SpringFactoryBioinfo.getFactory().getBean(RepoSpeciesFile.class);
+		repoTaxInfo = (RepoTaxInfo)SpringFactoryBioinfo.getFactory().getBean(RepoTaxInfo.class);
+		mongoTemplate = (MongoTemplate)SpringFactoryBioinfo.getFactory().getBean(MongoTemplate.class);
 	}
 
 	public void readSpeciesFile(String speciesFileInput) {
