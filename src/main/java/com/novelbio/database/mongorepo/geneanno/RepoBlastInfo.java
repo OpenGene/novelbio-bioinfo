@@ -26,7 +26,7 @@ public interface RepoBlastInfo extends PagingAndSortingRepository<BlastInfo, Str
 	@Query(value="{ 'queryID' : ?0, 'queryTax' : ?1}")
 	List<BlastInfo> findByQueryID(String queryID, int queryTax);
 	
-	@Query(value="{ 'blastFileId' : ?0")
+	@Query(value="{ 'blastFileId' : ?0}")
 	Page<BlastInfo> findByBlastFileInfo(String blastFileId, Pageable pageable);
 	
 	@Query(value="{ 'queryID' : ?0, 'queryTax' : ?1, 'subjectID' : ?2, 'subjectTax' : ?3}")

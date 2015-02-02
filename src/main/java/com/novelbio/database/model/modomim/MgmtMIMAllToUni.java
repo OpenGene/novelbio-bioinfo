@@ -2,21 +2,18 @@ package com.novelbio.database.model.modomim;
 
 import java.util.List;
 
-import org.springframework.stereotype.Repository;
-
 import com.novelbio.database.domain.omim.MIMAllToUni;
-import com.novelbio.database.domain.omim.OmimGeneMap;
-import com.novelbio.database.model.modomim.MgmtOMIM.MgmtOmimHolder;
 import com.novelbio.database.mongorepo.omim.RepoMIMAllToUni;
 import com.novelbio.database.service.SpringFactoryBioinfo;
-
 
 public class MgmtMIMAllToUni {
 
 	private MgmtMIMAllToUni() {}
 	RepoMIMAllToUni repoMIMAllToUni = (RepoMIMAllToUni)SpringFactoryBioinfo.getBean("repoMIMAllToUni");
-	public List<MIMAllToUni> findInfByMimId(int MimId){
-		return repoMIMAllToUni.findInfByMimId(MimId);
+	
+	
+	public MIMAllToUni findInstance(int MimId){
+		return repoMIMAllToUni.findOne(MimId);
 	}
 	public List<MIMAllToUni> findAll(){
 		return repoMIMAllToUni.findAll();

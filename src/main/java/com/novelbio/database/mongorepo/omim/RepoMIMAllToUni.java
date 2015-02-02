@@ -8,9 +8,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import com.novelbio.database.domain.omim.MIMAllToUni;
 
 public interface RepoMIMAllToUni extends PagingAndSortingRepository<MIMAllToUni, Integer>{
-	
-	List<MIMAllToUni> findInfByMimId(int mimId);
-	
+		
 	List<MIMAllToUni> findAll();
 
 	
