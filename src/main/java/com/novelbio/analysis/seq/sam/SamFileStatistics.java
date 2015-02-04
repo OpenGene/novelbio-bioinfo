@@ -38,6 +38,7 @@ import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.mapping.MappingReadsType;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.ImageUtils;
 import com.novelbio.base.plot.PlotBar;
@@ -49,6 +50,8 @@ public class SamFileStatistics implements AlignmentRecorder {
 	private static final Logger logger = Logger.getLogger(SamFileStatistics.class);
 	/** 写入文本中InsertSize的Item  */
 	private static final String INSERTSIZE = "InsertSize";
+	private static final String title = "Statistics";
+	
 	GeneExpTable expStatistics;
 	GeneExpTable expChrDist;
 	
@@ -283,22 +286,7 @@ public class SamFileStatistics implements AlignmentRecorder {
 			insertSize = (int) (insertSizeAll/insertNum);
 		}
 	}
-	/**
-	 * 取得最终的表格数据
-	 * @return
-	 */
-	public Map<String, List<String[]>> getMapSheetName2Data() {
-		getMapChrID2PropAndLen();
-		List<String[]> lsSamTable = getSamTable();
-		List<String[]> lsChrReports = getChrInfoTable();
-		Map<String, List<String[]>> mapSheetName2Data = new LinkedHashMap<String, List<String[]>>();
-		if (lsSamTable.size() > 0) {
-			mapSheetName2Data.put("statisticsTerm", lsSamTable);
-		}
-		mapSheetName2Data.put("chrDistribution", lsChrReports);
-		return mapSheetName2Data;
-	}
-	
+
 	/**
 	 * 返回reads的分布情况统计
 	 * @param resultData 实际reads在染色体上分布的map
@@ -371,6 +359,7 @@ public class SamFileStatistics implements AlignmentRecorder {
 
 		try {
 			lsTable.add(new String[] { "#Item", prefix});
+			lsTable.add(new String[]{title, "Result"});
 			long allReads = getReadsNum(MappingReadsType.All);
 			long unMapped = getReadsNum(MappingReadsType.UnMapped);
 			long allMappedReads = getReadsNum(MappingReadsType.Mapped);
@@ -412,12 +401,18 @@ public class SamFileStatistics implements AlignmentRecorder {
 		for (String content : txtRead.readlines()) {
 			if (content.startsWith("#Item")) {//TODO 不要写字符串
 				isReads = true;
+				prefix = content.split("\t")[1];
+				continue;
 			} else if (content.startsWith("###")) {
 				break;
 			}
 			if (content.equals("") || !isReads) continue;
 			
 			String[] ss = content.split("\t");
+			if (ss[0].equals(title)) {
+				ss[1] = prefix;
+				content = ArrayOperate.cmbString(ss, "\t");
+			}
 			if (ss[0].equals(INSERTSIZE)) {
 				insertSize = Integer.parseInt(ss[1]);
 			}

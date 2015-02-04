@@ -221,7 +221,7 @@ public class CufflinksGTF implements IntCmdSoft {
 	 * 输入的多个bam文件会merge成为一个然后做cufflinks的重建转录本
 	 * @param fqFile
 	 */
-	public void setBam(ArrayList<String[]> lsSamfiles2Prefix) {
+	public void setLsBamFile2Prefix(ArrayList<String[]> lsSamfiles2Prefix) {
 		mapPrefix2SamFiles.clear();
 		for (String[] strings : lsSamfiles2Prefix) {
 			mapPrefix2SamFiles.put(strings[1].trim(), new SamFile(strings[0]));
@@ -438,6 +438,39 @@ public class CufflinksGTF implements IntCmdSoft {
 		return outGtf;
 	}
 	
+	/** 设定好本类后，不进行计算，直接返回输出的结果文件名 */
+	public List<String> getLsGtfFileName() {
+		List<String> lsResult = new ArrayList<>();
+		for (String prefix : setPrefix) {
+			if (mergeBamFileByPrefix) {
+				String outGTFPath = getGtfFileFromPrefix(prefix);
+				lsResult.add(outGTFPath);
+			} else {
+				List<String> lsSamfiles = getSamFileSeperate(prefix);
+				int i = 0;
+				for (String bamFile : lsSamfiles) {
+					i++;
+					String prefixThis = prefix + i;
+					String subGtf = getGtfFileFromPrefix(prefixThis);
+					lsResult.add(subGtf);
+				}
+			}
+		}
+		return lsResult;
+	}
+	
+	private String getGtfFileFromPrefix(String prefix) {
+		String outGTFPath = FileOperate.addSep(getOutPathPrefix(prefix));
+		String outGtf = outGTFPath + "transcripts.gtf";
+		outGtf = FileOperate.changeFileSuffix(outGtf, "_filterWithFPKMlessThan" + fpkmFilter, null);
+		return outGtf;
+	}
+	
+	/** 获得结果 */
+	public List<String> getLsCufflinksResult() {
+		return lsCufflinksResult;
+	}
+	
 	public static void filterGtfFile(String outGtf, String outFinal, double fpkmFilter, int isoLenFilter) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(outGtf);
 		
@@ -522,11 +555,6 @@ public class CufflinksGTF implements IntCmdSoft {
 	private void addLsCmdStr(List<String> lsCmd, String param) {
 		if (param == null || param.equals("")) return;
 		lsCmd.add(param);
-	}
-	
-	/** 获得结果 */
-	public List<String> getLsCufflinksResult() {
-		return lsCufflinksResult;
 	}
 	
 	private void deleteMergeFile() {

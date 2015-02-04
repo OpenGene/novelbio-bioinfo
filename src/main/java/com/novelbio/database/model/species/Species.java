@@ -323,7 +323,11 @@ public class Species implements Cloneable {
 	public String getGffDB() {
 		if (gffDB == null) {
 			SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
-			gffDB = speciesFile.getGffDB();
+			if (speciesFile == null) {
+				return null;
+			} else {
+				gffDB = speciesFile.getGffDB();
+			}
 		}
 		return gffDB;
 	}
