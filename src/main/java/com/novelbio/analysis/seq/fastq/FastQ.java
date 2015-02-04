@@ -1,5 +1,6 @@
 package com.novelbio.analysis.seq.fastq;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -46,12 +47,24 @@ public class FastQ {
 	boolean read = true;
 	
 	/** 默认是读取 */
+	public FastQ(File file) {
+		this(file, false);
+	}
+	/** 默认是读取 */
 	public FastQ(String fastqFile) {
 		this(fastqFile, false);
 	}
-	public FastQReader getFastQRead() {
-		return fastQRead;
+	
+	public FastQ(File fastqFile, boolean createNew) {
+		if (createNew) {
+			fastQwrite = new FastQwriter(fastqFile);
+			read = false;
+		} else {
+			fastQRead = new FastQReader(fastqFile);
+			read = true;
+		}
 	}
+	
 	public FastQ(String fastqFile, boolean createNew) {
 		if (createNew) {
 			fastQwrite = new FastQwriter(fastqFile);
@@ -61,6 +74,11 @@ public class FastQ {
 			read = true;
 		}
 	}
+	
+	public FastQReader getFastQRead() {
+		return fastQRead;
+	}
+
 	
 	/** 只有初始化读取文件后，才能设定这个 */
 	public void setCheckFormat(boolean isCheckFormat) {

@@ -4,11 +4,8 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.lowagie.text.SplitCharacter;
-import com.novelbio.database.mongorepo.omim.RepoGenemap;
 import com.novelbio.database.mongorepo.omim.RepoMIMAllToUni;
 import com.novelbio.database.service.SpringFactoryBioinfo;
 

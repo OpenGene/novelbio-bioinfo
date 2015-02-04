@@ -2,6 +2,7 @@ package com.novelbio.analysis.seq.fastq;
 
 import java.io.BufferedReader;
 import java.io.Closeable;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,6 +38,12 @@ class FastQReader implements Closeable {
 	boolean isCheckFormat = true;
 	int readsLenAvg = 0;
 
+	/** 标准文件名的话，自动判断是否为gz压缩 */
+	public FastQReader(File seqFile) {
+		txtSeqFile = new TxtReadandWrite(seqFile, false);
+		getOffset();
+	}
+	
 	/** 标准文件名的话，自动判断是否为gz压缩 */
 	public FastQReader(String seqFile) {
 		txtSeqFile = new TxtReadandWrite(seqFile, false);

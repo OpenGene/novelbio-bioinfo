@@ -114,14 +114,10 @@ public class MapSplice implements MapRNA {
 	
 	@Deprecated
 	public void setStrandSpecifictype(StrandSpecific strandSpecifictype) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Deprecated
 	public void setInsert(int insert) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	/**
@@ -164,10 +160,10 @@ public class MapSplice implements MapRNA {
 			CmdOperate cmdOperate = new CmdOperate(getLsCmd());
 			
 			cmdOperate.setRedirectInToTmp(true);
-			for (FastQ fqL : lsLeftFq) {
+			for (FastQ fqL : lsLeftRun) {
 				cmdOperate.addCmdParamInput(fqL.getReadFileName());
 			}
-			for (FastQ fqR : lsRightFq) {
+			for (FastQ fqR : lsRightRun) {
 				cmdOperate.addCmdParamInput(fqR.getReadFileName());
 			}
 			

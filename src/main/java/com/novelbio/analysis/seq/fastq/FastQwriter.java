@@ -1,5 +1,6 @@
 package com.novelbio.analysis.seq.fastq;
 
+import java.io.File;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.Future;
@@ -23,6 +24,15 @@ class FastQwriter extends RunProcess<Integer> {
 	FastQwriter fastQwriteMate;
 	
 	public FastQwriter() {}
+	
+	/**
+	 * 自动判断 FastQ的格式
+	 * @param seqFile
+	 */
+	public FastQwriter(File seqFile) {
+		txtSeqFile = new TxtReadandWrite(seqFile, true);
+	}
+	
 	/**
 	 * 自动判断 FastQ的格式
 	 * @param seqFile

@@ -23,7 +23,7 @@
 	<mongo:mongo id="mongo" replica-set="192.168.0.104:27017">
 		<!-- 一些连接属性的设置 -->	
 		<mongo:options
- 			 connections-per-host="50"
+ 			 connections-per-host="5"
 		     threads-allowed-to-block-for-connection-multiplier="5000"
 		     connect-timeout="5000"
 		     max-wait-time="10000"
