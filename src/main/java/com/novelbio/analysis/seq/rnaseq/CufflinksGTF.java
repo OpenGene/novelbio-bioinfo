@@ -29,6 +29,8 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 public class CufflinksGTF implements IntCmdSoft {
 	private static final Logger logger = Logger.getLogger(CufflinksGTF.class);
+	public static final String tmpFolder = "tmpCufflinks/";
+	
 	static int intronMin = 50;
 	static int intronMax = 500000;
 	/** 重新计算是否使用以前的结果 */
@@ -127,6 +129,10 @@ public class CufflinksGTF implements IntCmdSoft {
 	
 	public void setOutPathPrefix(String outPathPrefix) {
 		this.outPathPrefix = outPathPrefix;
+	}
+	/** 设定输出文件夹，后面添上临时文件路径 */
+	public void setOutPathPrefixTmp(String outPathPrefix) {
+		this.outPathPrefix = FileOperate.addSep(outPathPrefix) + tmpFolder;
 	}
 	/** 是否用上四分之一位点标准化 */
 	public void setUpQuartileNormalized(boolean isUpQuartileNormalized) {
