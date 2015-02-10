@@ -9,7 +9,8 @@ public enum GeneType {
 	 miRNA,  
 	 Precursor_RNA, 
 	 Precursor_miRNA,
-	 tRNA, 
+	 tRNA,
+	 tmRNA,
 	 snoRNA, 
 	 snRNA,
 	 /** small cytoplasmic RNA; any one of several small cytoplasmic RNA molecules present in 
@@ -73,7 +74,7 @@ public enum GeneType {
 			mapMRNA2GeneType.put("scRNA".toLowerCase(), scRNA);
 			mapMRNA2GeneType.put("pseudogene".toLowerCase(),PSEU);
 			mapMRNA2GeneType.put("pseudogenic_transcript".toLowerCase(), PSEU);
-			
+			mapMRNA2GeneType.put("tmRNA".toLowerCase(), tmRNA);
 			//TODO
 			mapMRNA2GeneType.put("transcript".toLowerCase(),miscRNA);
 			

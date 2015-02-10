@@ -247,7 +247,12 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 				   List<String[]> lsRegx = PatternOperate.getPatLoc(ss[8], regxChrID, false);
 				   if (lsRegx.isEmpty()) lsRegx = PatternOperate.getPatLoc(ss[8], regxName, false);
 				   try {
-					   chrID = "chr" + lsRegx.get(0)[0];
+					   String chrName = lsRegx.get(0)[0];
+					   if (chrName.startsWith("NC_")) {
+						   chrID = chrName.toLowerCase();
+					   } else {
+						   chrID = "chr" + chrName;
+					   }
 				   } catch (Exception e) {
 					   logger.error("本位置出错，错误的region，本来一个region应该是一个染色体，这里不知道是什么 " + ArrayOperate.cmbString(ss, "\t"));
 					   chrID = ss[0];
@@ -674,7 +679,12 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 				   chrID = "chrC";
 			   } else {
 				   try {
-					   chrID = "chr" + PatternOperate.getPatLoc(ss[8], regxChrID, false).get(0)[0];
+					   String chrName = PatternOperate.getPatLoc(ss[8], regxChrID, false).get(0)[0];
+					   if (chrName.startsWith("NC_")) {
+						   chrID = chrName.toLowerCase();
+					   } else {
+						   chrID = "chr" + chrName;
+					   }
 				   } catch (Exception e) {
 					   logger.error("本位置出错，错误的region，本来一个region应该是一个染色体，这里不知道是什么 " + string);
 					   chrID = "unkonwn";

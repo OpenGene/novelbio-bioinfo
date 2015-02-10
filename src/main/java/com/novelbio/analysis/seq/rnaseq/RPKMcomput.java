@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.GeneExpTable;
+import com.novelbio.analysis.seq.GeneExpTable.EnumAddAnnoType;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
@@ -27,7 +28,9 @@ import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.ExceptionNullParam;
 import com.novelbio.base.SepSign;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modgeneid.GeneType;
 import com.novelbio.generalConf.TitleFormatNBC;
 
@@ -551,47 +554,157 @@ public class RPKMcomput implements AlignmentRecorder {
 		return geneExpTable.getLsCountsNum(EnumExpression.UQRPKM);
 	}
 	/** 输入文件前缀，把所有结果写入该文件为前缀的文本中 */
-	public void writeToFile(String fileNamePrefix) {
-		TxtReadandWrite txtWriteTpm = new TxtReadandWrite(fileNamePrefix + "_TPM", true);
-		String suffix = "_RawCounts";
-		if (isPairend && calculateFPKM) {
-			suffix = "_RawFragments";
+	public void writeToFile(String resultExpPrefix, boolean isCountNCrna) {
+		String suffixRPKM = "All_RPKM", suffixUQRPKM = "All_UQRPKM", 
+				suffixCounts = "All_Counts", tpm = "All_TPM", ncrna = "All_ncRNA_Statistics;";
+		if (isCalculateFPKM()) {
+			suffixRPKM = "All_FPKM";
+			suffixUQRPKM = "All_UQFPKM";
+			suffixCounts = "All_Fragments";
 		}
-		TxtReadandWrite txtWriteCounts = new TxtReadandWrite(fileNamePrefix + suffix, true);
-		suffix = "_RPKM";
-		if (isPairend && calculateFPKM) {
-			suffix = "_FPKM";
+		if (!resultExpPrefix.endsWith("/") && !resultExpPrefix.endsWith("\\")) {
+			suffixRPKM = "_" + suffixRPKM;
+			suffixUQRPKM = "_" + suffixUQRPKM;
+			suffixCounts = "_" + suffixCounts;
+			tpm = "_" + tpm;
 		}
-		TxtReadandWrite txtWriteRPKM = new TxtReadandWrite(fileNamePrefix + suffix, true);
-		txtWriteCounts.ExcelWrite(getLsCounts());
-		txtWriteRPKM.ExcelWrite(getLsRPKMs());
-		txtWriteTpm.ExcelWrite(getLsTPMs());
+		
+		String outTPM = FileOperate.changeFileSuffix(resultExpPrefix, tpm, "txt");
+		String outRPKM = FileOperate.changeFileSuffix(resultExpPrefix, suffixRPKM, "txt");
+		String outNCrna = FileOperate.changeFileSuffix(resultExpPrefix, ncrna, "txt");
+
+		String outCounts = FileOperate.changeFileSuffix(resultExpPrefix, suffixCounts, "txt");
+		String outUQRPKM = FileOperate.changeFileSuffix(resultExpPrefix, suffixUQRPKM, "txt");
+		
+		List<String[]> lsTpm = getLsTPMs();
+		List<String[]> lsRpkm = getLsRPKMs();
+		List<String[]> lsUQRpkm = getLsUQRPKMs();
+		List<String[]> lsCounts2 = getLsCounts();
+		if (isCountNCrna) {
+			List<String[]> lsNCRNA = getLsNCrnaStatistics();
+			TxtReadandWrite txtNCRNA = new TxtReadandWrite(outNCrna, true);
+			txtNCRNA.ExcelWrite(lsNCRNA);
+			txtNCRNA.close();
+		}
+		TxtReadandWrite txtWriteRpm = new TxtReadandWrite(outTPM, true);
+		txtWriteRpm.ExcelWrite(lsTpm);
+		TxtReadandWrite txtWriteRpkm = new TxtReadandWrite(outRPKM, true);
+		txtWriteRpkm.ExcelWrite(lsRpkm);
+		TxtReadandWrite txtWriteUQRpkm = new TxtReadandWrite(outUQRPKM, true);
+		txtWriteUQRpkm.ExcelWrite(lsUQRpkm);
+		TxtReadandWrite txtWriteCounts = new TxtReadandWrite(outCounts, true);
+		txtWriteCounts.ExcelWrite(lsCounts2);
 		txtWriteCounts.close();
-		txtWriteRPKM.close();
-		txtWriteTpm.close();
+		txtWriteRpkm.close();
+		txtWriteUQRpkm.close();
+		txtWriteRpm.close();
 	}
 	
 	/** 输入文件前缀，把所有结果写入该文件为前缀的文本中 */
-	public void writeToFileCurrent(String fileNamePrefix) {
-		TxtReadandWrite txtWriteTpm = new TxtReadandWrite(fileNamePrefix + geneExpTable.getCurrentCondition() + "_TPM", true);
-		String suffix = "_RawCounts";
-		if (isPairend && calculateFPKM) {
-			suffix = "_RawFragments";
+	public void writeToFileCurrent(String outPathPrefix, boolean isCountNCrna) {
+		outPathPrefix = FileOperate.getPathName(outPathPrefix) + "tmp/";
+		FileOperate.createFolders(outPathPrefix);
+		String fileNamePrefix = outPathPrefix + geneExpTable.getCurrentCondition();
+		String suffixRPKM = "_RPKM", suffixUQRPKM = "_UQRPKM", suffixAllReads = "_AllReads",
+				suffixCounts = "_Counts", suffixTpm = "_TPM", suffixNCrna = "_ncRNA_Statistics";
+		if (isCalculateFPKM()) {
+			suffixRPKM = "_FPKM";
+			suffixUQRPKM = "_UQFPKM";
+			suffixCounts = "_Fragments";
 		}
-		TxtReadandWrite txtWriteCounts = new TxtReadandWrite(fileNamePrefix + geneExpTable.getCurrentCondition() + suffix, true);
-		suffix = "_RPKM";
-		if (isPairend && calculateFPKM) {
-			suffix = "_FPKM";
+		
+		String outTPM = fileNamePrefix + suffixTpm + ".txt";
+		String outRPKM =  fileNamePrefix + suffixRPKM + ".txt";
+		String outUQRPKM =  fileNamePrefix + suffixUQRPKM + ".txt";
+		String outCounts =  fileNamePrefix + suffixCounts + ".txt";
+		String outNcRNA =  fileNamePrefix + suffixNCrna + ".txt";
+		String AllReads =  fileNamePrefix + suffixAllReads + ".txt";
+		
+		List<String[]> lsCounts = getLsCountsCurrent();
+		List<String[]> lsTpm = getLsTPMsCurrent();
+		List<String[]> lsRpkm = getLsRPKMsCurrent();
+		List<String[]> lsUQRpkm = getLsUQRPKMsCurrent();
+		if (isCountNCrna) {
+			List<String[]> lsNCrna = getLsNCrnaStatisticsCurrent();
+			TxtReadandWrite txtWriteNCrna = new TxtReadandWrite(outNcRNA, true);
+			txtWriteNCrna.ExcelWrite(lsNCrna);
+			txtWriteNCrna.close();
 		}
-		TxtReadandWrite txtWriteRPKM = new TxtReadandWrite(fileNamePrefix + geneExpTable.getCurrentCondition() + suffix, true);
-		txtWriteCounts.ExcelWrite(getLsCountsCurrent());
-		txtWriteRPKM.ExcelWrite(getLsRPKMsCurrent());
-		txtWriteTpm.ExcelWrite(getLsTPMsCurrent());
+		
+		TxtReadandWrite txtWriteRpm = new TxtReadandWrite(outTPM, true);
+		txtWriteRpm.ExcelWrite(lsTpm);
+		TxtReadandWrite txtWriteRpkm = new TxtReadandWrite(outRPKM, true);
+		txtWriteRpkm.ExcelWrite(lsRpkm);
+		TxtReadandWrite txtWriteUQRpkm = new TxtReadandWrite(outUQRPKM, true);
+		txtWriteUQRpkm.ExcelWrite(lsUQRpkm);
+		TxtReadandWrite txtWriteCounts = new TxtReadandWrite(outCounts, true);
+		txtWriteCounts.ExcelWrite(lsCounts);
 		txtWriteCounts.close();
-		txtWriteRPKM.close();
-		txtWriteTpm.close();
+		txtWriteRpkm.close();
+		txtWriteUQRpkm.close();
+		txtWriteRpm.close();
+		
+		TxtReadandWrite txtWriteAllReads = new TxtReadandWrite(AllReads, true);
+		txtWriteAllReads.writefileln(Double.valueOf(currentReadsNum).longValue() + "");
+		txtWriteAllReads.close();
 	}
+	
+	public boolean isExistTmpResultAndReadExp(String outPathPrefix, boolean isCountNCrna) {
+		outPathPrefix = FileOperate.getPathName(outPathPrefix) + "tmp/";
+		String fileNamePrefix = outPathPrefix + geneExpTable.getCurrentCondition();
+		String suffixRPKM = "_RPKM", suffixUQRPKM = "_UQRPKM", suffixAllReads = "_AllReads",
+				suffixCounts = "_Counts", suffixTpm = "_TPM", suffixNCrna = "_ncRNA_Statistics";
+		if (isCalculateFPKM()) {
+			suffixRPKM = "_FPKM";
+			suffixUQRPKM = "_UQFPKM";
+			suffixCounts = "_Fragments";
+		}
+		
+		String outTPM = fileNamePrefix + suffixTpm + ".txt";
+		String outRPKM =  fileNamePrefix + suffixRPKM + ".txt";
+		String outUQRPKM =  fileNamePrefix + suffixUQRPKM + ".txt";
+		String outCounts =  fileNamePrefix + suffixCounts + ".txt";
+		String AllReads =  fileNamePrefix + suffixAllReads + ".txt";
+		String outNcRNA = null;
+		if (isCountNCrna) {
+			outNcRNA =  fileNamePrefix + suffixNCrna + ".txt";
+		}
+		
 
+		boolean isExist = false;
+		if (FileOperate.isFileExistAndBigThanSize(outTPM, 0)
+				&& FileOperate.isFileExistAndBigThanSize(outRPKM, 0)
+				&& FileOperate.isFileExistAndBigThanSize(outUQRPKM, 0)
+				&& FileOperate.isFileExistAndBigThanSize(outCounts, 0)
+				&& FileOperate.isFileExistAndBigThanSize(AllReads, 0)
+				) {
+			isExist = true;
+		}
+		
+		if (isExist && isCountNCrna && !FileOperate.isFileExistAndBigThanSize(outNcRNA, 0)) {
+			isExist = false;
+			outNcRNA = null;
+		}
+		
+		if (isExist) {
+			readExpInfo(outCounts, AllReads, outNcRNA);
+		}
+	
+		return isExist;
+	}
+	
+	private void readExpInfo(String allCountsFile, String allReadsFile, String allRNAtypeFile) {
+		geneExpTable.read(allCountsFile, EnumAddAnnoType.notAdd);
+		TxtReadandWrite txtRead = new TxtReadandWrite(allReadsFile);
+		String allCounts = txtRead.readFirstLine();
+		txtRead.close();
+		long allCountsL = (long) Double.parseDouble(allCounts);;
+		geneExpTable.setAllReads(allCountsL);
+		if (!StringOperate.isRealNull(allRNAtypeFile)) {
+			rnaTypeTable.read(allRNAtypeFile, EnumAddAnnoType.notAdd);
+		}
+	}
+	
 	@Override
 	public Align getReadingRegion() {
 		return null;

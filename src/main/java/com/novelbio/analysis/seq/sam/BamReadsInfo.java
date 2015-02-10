@@ -159,7 +159,7 @@ public class BamReadsInfo {
 			}
 		}
 		if (countsMapped < counts/100) {
-			throw new SamErrorException(samFile.getFileName() + "Mapped Rate Too Low");
+			throw new SamErrorException(samFile.getFileName() + " Mapped Rate Too Low");
 		}
 		samFile.close();
 		System.out.println(cisNum/transNum);
