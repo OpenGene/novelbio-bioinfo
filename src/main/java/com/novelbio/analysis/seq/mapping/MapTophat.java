@@ -590,6 +590,7 @@ public class MapTophat implements MapRNA {
 			SamFile unmappedSam = new SamFile(unmapBamGetSeq);
 			SamToFastq samToFastq = new SamToFastq();
 			samToFastq.setOutFileInfo(unmappedSam.isPairend(), unmappedFq, EnumSamToFastqType.UnmappedReads);
+			samToFastq.initialFq();
 			AlignSamReading alignSamReading = new AlignSamReading(unmappedSam);
 			alignSamReading.addAlignmentRecorder(samToFastq);
 			alignSamReading.run();

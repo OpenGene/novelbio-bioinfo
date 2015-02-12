@@ -2,6 +2,7 @@ package com.novelbio.database.updatedb.database;
 
 import java.util.Map;
 
+import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.DBAccIDSource;
@@ -38,14 +39,12 @@ public class ImportDB {
 //		importDB.setSoftToolsFile(softToolsFile);
 //		importDB.setSpeciesFile(speciesFile);
 		importDB.setGOPath(GOPath);
-//		importDB.setTaxIDFile(taxIDFile);
+		importDB.setTaxIDFile(taxIDFile);
 		
 //		importDB.updateDBinfo(dbInfo);
 //		importDB.updateGODB();
-		
+//		
 		importDB.updateNCBIID();
-		
-		
 ////		importDB.updateUniprotID();
 ////		importDB.updateZeaMaize();
 ////		importDB.updateRiceID("/media/winE/NBCplatform/database/rice/");//只导了前两个

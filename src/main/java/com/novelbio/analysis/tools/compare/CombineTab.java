@@ -467,4 +467,9 @@ public class CombineTab {
 	public ArrayList<String[]> getLsResultFromImage() {
 		return lsResultFromImage;
 	}
+	
+	/** 获取样本名，及其对应的基因数 */
+	public Map<String, Integer> getMapSample2GeneNum() {
+		return null;
+	}
 }

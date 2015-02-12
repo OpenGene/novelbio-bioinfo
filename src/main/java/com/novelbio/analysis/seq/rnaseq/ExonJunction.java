@@ -466,6 +466,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			List<AlignSamReading> lsSamFileReadings = mapCond2SamReader.get(condition);
 			int i = 0;
 			for (AlignSamReading samFileReading : lsSamFileReadings) {
+				
 				i++;
 				String group = i+"";
 				tophatJunction.setCondition(condition, group);
@@ -479,6 +480,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 //				samFileReading.setLsAlignments(lsDifIsoGene);
 				samFileReading.setRunGetInfo(runGetInfo);
 				SamFileStatistics samStatistics = new SamFileStatistics(condition);
+				samStatistics.setStandardData(samFileReading.getFirstSamFile().getMapChrID2Length());
 				samFileReading.addAlignmentRecorder(tophatJunction);
 				samFileReading.addAlignmentRecorder(samStatistics);
 				if (mapReads != null) {

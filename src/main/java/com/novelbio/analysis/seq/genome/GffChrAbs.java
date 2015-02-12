@@ -63,15 +63,27 @@ public class GffChrAbs implements Closeable {
 	 * @param species
 	 */
 	public void setSpecies(Species species) {
-		close();
+
 		if (this.species != null && this.species.equals(species) && this.species.getVersion().equals(species.getVersion()) 
 				&& this.species.getGffDB().equals(species.getGffDB())) {
-			//因为上面已经将chr文件close了，所以这里要再次打开
-			if (FileOperate.isFileExistAndBigThanSize(species.getChromSeq(), 0)) {
-				setChrFile(species.getChromSeq(), " ");
-			}
 			return;
 		}
+		if (species == null || species.getTaxID() == 0) {
+			return;
+		}
+		
+		this.species = species.clone();
+		if (species.getGffFile() != null) {
+			setGffFile(species.getTaxID(), species.getVersion(), species.getGffDB(), species.getGffType(), species.getGffFile());
+		}
+		setChrFile(species.getChromSeq(), " ");
+	}
+	
+	/**
+	 * 仅初始化gff文件
+	 * @param species
+	 */
+	public void setSpeciesGff(Species species) {
 		if (species == null || species.getTaxID() == 0) {
 			return;
 		}
@@ -80,9 +92,20 @@ public class GffChrAbs implements Closeable {
 		if (species.getGffFile() != null) {
 			setGffFile(species.getTaxID(), species.getVersion(), species.getGffDB(), species.getGffType(), species.getGffFile());
 		}
+	}
+	/**
+	 * 仅初始化chr文件
+	 * @param species
+	 */
+	public void setSpeciesChr(Species species) {
+		if (species == null || species.getTaxID() == 0) {
+			return;
+		}
+
+		this.species = species.clone();
 		setChrFile(species.getChromSeq(), " ");
 	}
-
+	
 	public void setGffHash(GffHashGene gffHashGene) {
 		this.gffHashGene = gffHashGene;
 	}

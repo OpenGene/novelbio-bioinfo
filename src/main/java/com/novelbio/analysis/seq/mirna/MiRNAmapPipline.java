@@ -280,6 +280,7 @@ public class MiRNAmapPipline implements IntCmdSoft {
 		if (unMappedFq != null && !unMappedFq.equals("")) {
 			SamToFastq samToFastq = new SamToFastq();
 			samToFastq.setOutFileInfo(false, unMappedFq, null, EnumSamToFastqType.UnmappedReads);
+			samToFastq.initialFq();
 			mapDNA.addAlignmentRecorder(samToFastq);
 		}
 		

@@ -177,6 +177,12 @@ public class SamFileStatistics implements AlignmentRecorder {
 		expStatistics.setCurrentCondition(prefix);
 		expStatistics.addLsGeneName(MappingReadsType.getLsReadsInfoType());
 		
+		expStatistics.addGeneExp(MappingReadsType.UnMapped.toString(), 0);
+		expStatistics.addGeneExp(MappingReadsType.UniqueMapped.toString(), 0);
+		expStatistics.addGeneExp(MappingReadsType.JunctionUniqueMapped.toString(), 0);
+		expStatistics.addGeneExp(MappingReadsType.RepeatMapped.toString(), 0);
+		expStatistics.addGeneExp(MappingReadsType.JunctionAllMapped.toString(), 0);
+		
 		expChrDist = new GeneExpTable("ChrId");
 		expChrDist.setCurrentCondition(prefix);
 		if (standardData != null) {

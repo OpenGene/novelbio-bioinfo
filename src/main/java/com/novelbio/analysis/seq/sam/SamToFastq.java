@@ -57,7 +57,6 @@ public class SamToFastq implements AlignmentRecorder {
 		if (isGenerateTmpFile) {
 			outFileNameTmp =  getFinalName(fileName, true);
 		}
-		initialFq();
 	}
 	/** 根据是否为mapping上的reads，自动设定文件名，并返回设定好的文件名
 	 * 
@@ -73,7 +72,6 @@ public class SamToFastq implements AlignmentRecorder {
 		if (isGenerateTmpFile) {
 			outFileNameTmp = getFinalName(outFileName, true);
 		}
-		initialFq();
 	}
 	
 	/** 根据是否为mapping上的reads，指定文件名，并返回设定好的文件名 */
@@ -96,7 +94,7 @@ public class SamToFastq implements AlignmentRecorder {
 		initialFq();
 	}
 	
-	private void initialFq() {
+	public void initialFq() {
 		if (isGenerateTmpFile) {
 			fastQ1 = new FastQ(outFileNameTmp[0], true);
 			if (isPairend) {
