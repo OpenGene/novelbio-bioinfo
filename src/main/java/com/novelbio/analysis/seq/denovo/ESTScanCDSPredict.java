@@ -17,12 +17,9 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
  */
 
 public class ESTScanCDSPredict implements IntCmdSoft {
-	
-	//输入文件：需要进行CDS预测的序列文件，fasta格式文件
-	List<String> lsInputFile;
+
 	String inputFile;
 	String exePath = "";	
-	List<String> lsInputFilePre;
 	
 	//矩阵分值文件，最小阈值，默认100；
 	int minMatrixValue = 100;
@@ -33,23 +30,11 @@ public class ESTScanCDSPredict implements IntCmdSoft {
 	int posStrand = 0;
 	int skipMinLen = 10;
 	
-	String outputDir;
-	//翻译的蛋白序列文件
-	String pepFile;
-	//输出结果文件
-	String cdsResultFile;
+	String outputPrefix;
 	
 	public ESTScanCDSPredict() {
 		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.estscan);
 		this.exePath = softWareInfo.getExePathRun();
-	}
-	
-	public void setLstInputFile(List<String> lsInputFile) {
-		this.lsInputFile = lsInputFile;
-	}
-	
-	public void setLstInputFilePre(List<String> lsInputFilePre) {
-		this.lsInputFilePre = lsInputFilePre;
 	}
 	
 	public void setInputFile(String inputFile) {
@@ -84,30 +69,39 @@ public class ESTScanCDSPredict implements IntCmdSoft {
 			this.skipMinLen = skipMinLen;
 		}
 	}
-	public void setOutputDir(String outputDir) {
-		this.outputDir = outputDir;
-	}
-	public void setPepFile(String pepFile) {
-		this.pepFile = pepFile;
+	
+	/** 设定输出文件夹和前缀<br> 
+	 * 例如：/home/novelbio/test
+	 * @param outputDir
+	 */
+	public void setOutDirPrefix(String outputDir) {
+		this.outputPrefix = outputDir;
 	}
 	
-	public void setCdsResultFile(String cdsResultFile) {
-		this.cdsResultFile = cdsResultFile;
+	/** 获得输出的蛋白序列文件 */
+	public String getPepResultFile() {
+		if (outputPrefix.endsWith("\\") || outputPrefix.endsWith("/")) {
+			return outputPrefix + "pep.fa";
+		} else {
+			return outputPrefix + "_pep.fa";
+		}
+		
 	}
-	public void run() {
-		for (int i = 0; i < lsInputFile.size(); i++) {
-			setInputFile(lsInputFile.get(i));
-			setPepFile(outputDir + lsInputFilePre.get(i) + "_pep.fa");
-			setCdsResultFile(outputDir + lsInputFilePre.get(i) + "_cds.fa");
-			running();
+	/** 获得输出的cds序列文件 */
+	public String getCdsResultFile() {
+		if (outputPrefix.endsWith("\\") || outputPrefix.endsWith("/")) {
+			return outputPrefix + "cds.fa";
+		} else {
+			return outputPrefix + "_cds.fa";
 		}
 	}
-	public void running() {
+	
+	public void run() {
 		List<String> lsCmd = getLsCmd();
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);	
 		cmdOperate.setRedirectOutToTmp(true);
-		cmdOperate.addCmdParamOutput(pepFile);	
-//		cmdOperate.addCmdParamOutput(cdsResultFile);	
+		cmdOperate.addCmdParamOutput(getPepResultFile());	
+		cmdOperate.addCmdParamOutput(getCdsResultFile());
 		cmdOperate.runWithExp("ESTScan error:");
 	}
 
@@ -115,20 +109,16 @@ public class ESTScanCDSPredict implements IntCmdSoft {
 		List<String> lsCmd = new ArrayList<>();
 		lsCmd.add("perl");
 		lsCmd.add(exePath + "ESTScan");
-		ArrayOperate.addArrayToList(lsCmd, getInputFile(inputFile));
+		lsCmd.add(inputFile);
 		ArrayOperate.addArrayToList(lsCmd, getMinMatrixValue());
 		ArrayOperate.addArrayToList(lsCmd, getScoreMatFile());
 		ArrayOperate.addArrayToList(lsCmd, getMinCDSLength());
 		ArrayOperate.addArrayToList(lsCmd, getPosStrand());
 		ArrayOperate.addArrayToList(lsCmd, getSkipMinLen());
 		ArrayOperate.addArrayToList(lsCmd, getPepFile());
-		ArrayOperate.addArrayToList(lsCmd, getCdsResultFile());
+		ArrayOperate.addArrayToList(lsCmd, getCdsFile());
 		System.out.println(lsCmd);
 		return lsCmd;
-	}
-	
-	private String[] getInputFile(String inputFile) {
-		return new String[]{inputFile};
 	}
 	
 	private String[] getMinMatrixValue() {
@@ -152,11 +142,11 @@ public class ESTScanCDSPredict implements IntCmdSoft {
 	}
 	
 	private String[] getPepFile() {
-		return new String[] {"-t", pepFile};
+		return new String[] {"-t", getPepResultFile()};
 	}
 	
-	private String[] getCdsResultFile() {
-		return new String[] {">", cdsResultFile};
+	private String[] getCdsFile() {
+		return new String[] {">", getCdsResultFile()};
 	}
 	
 	public List<String> getCmdExeStr() {
