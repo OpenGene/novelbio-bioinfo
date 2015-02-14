@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.hg.doc.ca;
+import com.hg.doc.go;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.StatisticsTest;
 import com.novelbio.base.dataStructure.StatisticsTest.StatisticsPvalueType;
@@ -16,6 +18,19 @@ public class StatisticTestResult {
 	public static final String titlePath = "Pathway_Result";
 	public static final String titleGO = "GO_Result";
 	public static final String titleCOG = "COG_Result";
+	
+	public static String getTitle(TestType testType) {
+		switch (testType) {
+		case GO :
+			return titleGO;
+		case Pathway :
+			return titlePath;
+		case COG :
+			return titleCOG;
+		default:
+			return null;
+		}
+	}
 	
 	static int logBaseNum = 2;
 	
@@ -213,7 +228,7 @@ public class StatisticTestResult {
 			lsResult.add(StatisticTestResult.getTitleGo());
 		} else if(testType == TestType.Pathway) {
 			lsResult.add(StatisticTestResult.getTitlePath());
-		} else if (testType == testType.COG) {
+		} else if (testType == TestType.COG) {
 			lsResult.add(StatisticTestResult.getTitleCOG());
 		}
 		
@@ -223,5 +238,23 @@ public class StatisticTestResult {
 		return lsResult;
 	}
 
+	/**
+	 * 将lsStatisticTestResults转化为可以写入excel的形式
+	 * @param go true：用go的title false：用pathway的title
+	 * @param lsStatisticTestResults
+	 */
+	public static int getSigItemNum(List<StatisticTestResult> lsStatisticTestResults, double pvalue) {
+		int num = 0;
+		if (lsStatisticTestResults == null || lsStatisticTestResults.size() == 0) {
+			return 0;
+		}
+		for (StatisticTestResult statisticTestResult : lsStatisticTestResults) {
+			if (statisticTestResult.getPvalue() <= pvalue) {
+				num++;
+			}
+		}
+		return num;
+	}
+	
 }
 

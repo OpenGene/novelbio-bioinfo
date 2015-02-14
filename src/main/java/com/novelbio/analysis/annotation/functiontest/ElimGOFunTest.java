@@ -1,6 +1,8 @@
 package com.novelbio.analysis.annotation.functiontest;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -113,6 +115,13 @@ public class ElimGOFunTest extends NovelGOFunTest {
 				lStatisticTestItem2GeneElimGos.add(statisticTestItem2GeneElimGo);
 			}
 		}
+		Collections.sort(lStatisticTestItem2GeneElimGos, new Comparator<StatisticTestItem2Gene>() {
+			public int compare(StatisticTestItem2Gene o1, StatisticTestItem2Gene o2) {
+				Double pvalue1 = o1.statisticTestResult.getPvalue();
+				Double pvalue2 = o2.statisticTestResult.getPvalue();
+				return pvalue1.compareTo(pvalue2);
+			}
+		});
 		return lStatisticTestItem2GeneElimGos;
 	}
 }

@@ -14,6 +14,21 @@ import com.novelbio.generalConf.TitleFormatNBC;
  */
 public class StatisticTestItem2Gene {
 	public static final String titleGO = "GO2Gene";
+	public static final String titlePath = "Path2Gene";
+	public static final String titleCOG = "COG2Gene";
+	
+	public static String getTitle(TestType testType) {
+		switch (testType) {
+		case GO :
+			return titleGO;
+		case Pathway :
+			return titlePath;
+		case COG :
+			return titleCOG;
+		default:
+			return null;
+		}
+	}
 	
 	StatisticTestResult statisticTestResult;
 	List<GeneID> lsGeneIDs;
@@ -90,25 +105,60 @@ public class StatisticTestItem2Gene {
 		return lsTitle.toArray(new String[0]);
 	}
 	
+	public static String[] getTitleCOG() {
+		ArrayList<String> lsTitle = new ArrayList<String>();
+		lsTitle.add(TitleFormatNBC.COGID.toString());
+		lsTitle.add(TitleFormatNBC.COGTerm.toString());
+		lsTitle.add(TitleFormatNBC.QueryID.toString());
+		lsTitle.add(TitleFormatNBC.Symbol.toString());
+		lsTitle.add(TitleFormatNBC.Description.toString());
+		lsTitle.add(TitleFormatNBC.Pvalue.toString());
+		lsTitle.add(TitleFormatNBC.FDR.toString());
+		lsTitle.add(TitleFormatNBC.Enrichment.toString());
+//		lsTitle.add(TitleFormatNBC.Log2Pnegative.toString());
+		
+		return lsTitle.toArray(new String[0]);
+	}
+	
 	/**
 	 * @param go 是否为GO，true： 采用GO的title， false：采用pathway的title
 	 * @param lsItem2Gene
 	 * @return
 	 */
-	public static List<String[]> getLsInfo(boolean go, List<StatisticTestItem2Gene> lsItem2Gene) {
+	public static List<String[]> getLsInfo(TestType testType, List<StatisticTestItem2Gene> lsItem2Gene) {
 		if (lsItem2Gene == null || lsItem2Gene.size() == 0) {
 			return new ArrayList<String[]>();
 		}
 		List<String[]> lsGo2GeneResult = new ArrayList<String[]>();
-		if (go) {
+		if (testType == TestType.GO) {
 			lsGo2GeneResult.add(StatisticTestItem2Gene.getTitleGO());
-		} else {
+		} else if(testType == TestType.Pathway) {
 			lsGo2GeneResult.add(StatisticTestItem2Gene.getTitlePath());
+		} else if (testType == TestType.COG) {
+			lsGo2GeneResult.add(StatisticTestItem2Gene.getTitleCOG());
 		}
 	
 		for (StatisticTestItem2Gene statisticTestItem2GeneElimGo : lsItem2Gene) {
 			lsGo2GeneResult.addAll(statisticTestItem2GeneElimGo.toStringsLs());
 		}
 		return lsGo2GeneResult;
+	}
+	
+	/**
+	 * @param go 是否为GO，true： 采用GO的title， false：采用pathway的title
+	 * @param lsItem2Gene
+	 * @return
+	 */
+	public static int getiSigNum(List<StatisticTestItem2Gene> lsItem2Gene, double pvalue) {
+		if (lsItem2Gene == null || lsItem2Gene.size() == 0) {
+			return 0;
+		}
+		int num = 0;
+		for (StatisticTestItem2Gene statisticTestItem2GeneElimGo : lsItem2Gene) {
+			if (statisticTestItem2GeneElimGo.statisticTestResult.getPvalue() <= pvalue) {
+				num += statisticTestItem2GeneElimGo.toStringsLs().size();
+			}
+		}
+		return num;
 	}
 }

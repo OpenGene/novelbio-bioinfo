@@ -12,7 +12,6 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
@@ -51,8 +50,8 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 	/** 是否仅提取lnc */
 	boolean isOnlyGetLnc = false;
 	
-	ArrayList<String[]> lsGeneInfo = new ArrayList<String[]>();
-	ArrayList<String[]> lsResult = new ArrayList<String[]>();
+	List<String[]> lsGeneInfo = new ArrayList<String[]>();
+	List<String[]> lsResult = new ArrayList<String[]>();
 	
 	public GffChrAnno() {
 		// TODO Auto-generated constructor stub
@@ -88,11 +87,11 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 	/** true查找peak的最高点，也就是找单个点，
 	 * false查找peak两端，看夹住了什么基因
 	 * 默认false
-	 *  */
+	 */
 	public void setSearchSummit(boolean searchSummit) {
 		this.searchSummit = searchSummit;
 	}
-	public void setLsGeneInfo(ArrayList<String[]> lsGeneInfo) {
+	public void setLsGeneInfo(List<String[]> lsGeneInfo) {
 		this.lsGeneInfo = lsGeneInfo;
 	}
 	/**
@@ -152,7 +151,7 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 	protected void running() {
 		lsResult = getAnno();
 	}
-	public ArrayList<String[]> getLsResult() {
+	public List<String[]> getLsResult() {
 		return lsResult;
 	}
 	/**

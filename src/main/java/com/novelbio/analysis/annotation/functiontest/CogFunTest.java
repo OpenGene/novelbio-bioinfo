@@ -164,7 +164,7 @@ public class CogFunTest extends FunctionTest {
 
 	@Override
 	public void setDetailType(GOtype gotype) { }
-
+	
 	@Override
 	public Map<String, List<String[]>> getMapWriteToExcel() {
 		Map<String, List<String[]>> mapResult = new LinkedHashMap<String, List<String[]>>();
@@ -182,5 +182,11 @@ public class CogFunTest extends FunctionTest {
 	protected String getTitle() {
 		return "COG-Analysis";
 	}
+	
+	@Override
+	protected TestType getTestType() {
+		return TestType.COG;
+	}
+
 
 }

@@ -18,6 +18,19 @@ public abstract class StatisticTestGene2Item {
 	public static final String titlePath = "Gene2Path";
 	public static final String titleCOG = "Gene2COG";
 	
+	public static String getTitle(TestType testType) {
+		switch (testType) {
+		case GO :
+			return titleGO;
+		case Pathway :
+			return titlePath;
+		case COG :
+			return titleCOG;
+		default:
+			return null;
+		}
+	}
+	
 	boolean blast;
 	boolean isUpdateBG = false;
 	/**

@@ -62,7 +62,9 @@ public abstract class FunctionTest implements Cloneable {
 	ArrayList<StatisticTestResult> lsTestResult = new ArrayList<StatisticTestResult>();
 	
 	StatisticsTest statisticsTest;
-		
+	
+	protected abstract TestType getTestType();
+	
 	public void setStatisticsTest(StatisticsTest statisticsTest) {
 		this.statisticsTest = statisticsTest;
 	}
@@ -230,13 +232,52 @@ public abstract class FunctionTest implements Cloneable {
 		return mapGeneID2LsItem;
 	}
 	
-	/**
-	 * 这个目前只有GO有，pathway没有该项目
-	 * @return
-	 */
 	public ArrayList<StatisticTestItem2Gene> getItem2GenePvalue() {
-		return new ArrayList<StatisticTestItem2Gene>();
+		ArrayList<StatisticTestResult> lsTestResult = getTestResult();
+		ArrayList<StatisticTestItem2Gene> lStatisticTestItem2Gene = new ArrayList<StatisticTestItem2Gene>();
+		
+		ArrayListMultimap<String, GeneID> hashGo2LsGene = getGo2GeneUniID();
+		
+		for (StatisticTestResult statisticTestResult : lsTestResult) {
+			List<GeneID> lsTmpGeneUniID = hashGo2LsGene.get(statisticTestResult.getItemID());
+			ArrayList<GeneID> lsFinalGeneIDs = new ArrayList<GeneID>();
+			for (GeneID geneID : lsTmpGeneUniID) {
+				//同一个geneUniID对应的不同accID
+				List<GeneID> lscopedIDs = mapGeneUniID2LsGeneID.get(geneID.getGeneUniID().toLowerCase());
+				lsFinalGeneIDs.addAll(lscopedIDs);
+			}
+			
+			StatisticTestItem2Gene statisticTestItem2Gene = new StatisticTestItem2Gene();
+			statisticTestItem2Gene.setStatisticTestResult(statisticTestResult);
+			statisticTestItem2Gene.setLsGeneIDs(lsFinalGeneIDs);
+			statisticTestItem2Gene.setBlast(isBlast());
+			lStatisticTestItem2Gene.add(statisticTestItem2Gene);
+		}
+		Collections.sort(lStatisticTestItem2Gene, new Comparator<StatisticTestItem2Gene>() {
+			public int compare(StatisticTestItem2Gene o1, StatisticTestItem2Gene o2) {
+				Double pvalue1 = o1.statisticTestResult.getPvalue();
+				Double pvalue2 = o2.statisticTestResult.getPvalue();
+				return pvalue1.compareTo(pvalue2);
+			}
+		});
+		return lStatisticTestItem2Gene;
 	}
+	
+	private ArrayListMultimap<String, GeneID> getGo2GeneUniID() {
+		ArrayListMultimap<String, GeneID> hashGo2LsGene = ArrayListMultimap.create();
+		ArrayList<StatisticTestGene2Item> lsStatisticTestGene2Items = getGene2ItemPvalue();
+		for (StatisticTestGene2Item statisticTestGene2Item : lsStatisticTestGene2Items) {
+			GeneID2LsItem geneID2LsItem = convert2ItemFromBG(statisticTestGene2Item.getGeneID(), false);
+			if (geneID2LsItem == null) {
+				continue;
+			}
+			for (String goid : geneID2LsItem.getSetItemID()) {
+				hashGo2LsGene.put(goid, statisticTestGene2Item.getGeneID());
+			}
+		}
+		return hashGo2LsGene;
+	}
+	
 	
 	/**
 	 * 要先读取AccID文件
@@ -458,6 +499,23 @@ public abstract class FunctionTest implements Cloneable {
 	 * @return
 	 */
 	public abstract Map<String, List<String[]>> getMapWriteToExcel();
+	
+	/**
+	 * 对于输出的excel，每一个表需要套三线表到第几行，从1开始计算<br>
+	 *  key: sheetName<br>
+	 *  value: 第几行，从1开始计算，如果小于0，则表示本表格全都套上格式
+	 */
+	public Map<String, Integer> getMapSheetName2EndLine() {
+		Map<String, Integer> mapResult = new LinkedHashMap<>();
+		List<String[]> lsStatisticTestResults = StatisticTestResult.getLsInfo(TestType.GO, getTestResult());
+		if (lsStatisticTestResults.size() == 0) {
+			return new HashMap<>();
+		}
+		mapResult.put(StatisticTestResult.getTitle(getTestType()), StatisticTestResult.getSigItemNum(getTestResult(), 0.05));
+		mapResult.put(StatisticTestItem2Gene.getTitle(getTestType()), StatisticTestItem2Gene.getiSigNum(getItem2GenePvalue(), 0.05));
+		mapResult.put(StatisticTestGene2Item.getTitle(getTestType()), -1);
+		return mapResult;
+	}
 	
 	/** 浅层克隆
 	 * 其中与背景相关的mapBGGeneID2Items和setGeneIDsBG仅引用传递

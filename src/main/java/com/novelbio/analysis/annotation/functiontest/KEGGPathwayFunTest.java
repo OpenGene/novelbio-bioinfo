@@ -54,7 +54,7 @@ public class KEGGPathwayFunTest extends FunctionTest {
 		}
 		return KeggInfo.getKGpathway(item).getTitle();
 	}
-
+	
 	@Override
 	public Map<String, List<String[]>> getMapWriteToExcel() {
 		Map<String, List<String[]>> mapResult = new LinkedHashMap<String, List<String[]>>();
@@ -63,6 +63,8 @@ public class KEGGPathwayFunTest extends FunctionTest {
 			return new HashMap<>();
 		}
 		mapResult.put(StatisticTestResult.titlePath, lsStatisticTestResults);
+		List<String[]> lsPath2GenePvalue = StatisticTestItem2Gene.getLsInfo(TestType.Pathway, getItem2GenePvalue());
+		mapResult.put(StatisticTestItem2Gene.titlePath, lsPath2GenePvalue);
 		List<String[]> lsGene2PathPvalue = StatisticTestGene2Item.getLsInfo(getGene2ItemPvalue());
 		mapResult.put(StatisticTestGene2Item.titlePath, lsGene2PathPvalue);
 		return mapResult;
@@ -72,5 +74,12 @@ public class KEGGPathwayFunTest extends FunctionTest {
 	protected String getTitle() {
 		return "Pathway-Analysis";
 	}
+
+	@Override
+	protected TestType getTestType() {
+		return TestType.Pathway;
+	}
+
+
 
 }

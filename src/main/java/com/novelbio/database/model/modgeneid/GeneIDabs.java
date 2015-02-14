@@ -478,11 +478,8 @@ public class GeneIDabs implements GeneIDInt {
 	 * @return
 	 */
 	public List<AGene2Go> getGene2GO(GOtype GOType) {
-		try {
-			return getGOInfo().getLsGene2Go(GOType);
-		} catch (Exception e) {
-			return getGOInfo().getLsGene2Go(GOType);
-		}
+		return getGOInfo().getLsGene2Go(GOType);
+
 		
 	}
 

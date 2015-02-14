@@ -1,20 +1,18 @@
 package com.novelbio.database.service.servgeneanno;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.Gene2Go;
-import com.novelbio.database.domain.geneanno.UniGene2Go;
-import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.mongorepo.geneanno.RepoGene2Go;
 import com.novelbio.database.service.SpringFactoryBioinfo;
 
 public class ManageGene2Go {
-	private static Logger logger = Logger.getLogger(ManageGene2Go.class);
+	private static final Logger logger = Logger.getLogger(ManageGene2Go.class);
 	
 	static double[] lock = new double[0];	
 	
@@ -30,8 +28,14 @@ public class ManageGene2Go {
 	}
 	/** 推荐用这个，谁知道有没有可能一个geneID对应多个物种啊 */
 	public List<Gene2Go> queryLsGene2Go(int geneID, int taxid) {
-		return repoGene2Go.findByGeneIDAndTaxID(geneID, taxid);
+		try {
+			return repoGene2Go.findByGeneIDAndTaxID(geneID, taxid);
+		} catch (Exception e) {
+			logger.error("cannot find go info: geneid: " + geneID + " taxId: " + taxid, e);
+			return new ArrayList<>();
+		}
 	}
+	
 	public Gene2Go queryGene2Go(long geneID, int taxID,String GOID) {
 		if (GOID == null) {
 			return null;

@@ -63,45 +63,6 @@ public class NovelGOFunTest extends FunctionTest {
 	public void setDetailType(GOtype gotype) {
 		this.GoType = gotype;
 	}
- 
-	public ArrayList<StatisticTestItem2Gene> getItem2GenePvalue() {
-		ArrayList<StatisticTestResult> lsTestResult = getTestResult();
-		ArrayList<StatisticTestItem2Gene> lStatisticTestItem2Gene = new ArrayList<StatisticTestItem2Gene>();
-		
-		ArrayListMultimap<String, GeneID> hashGo2LsGene = getGo2GeneUniID();
-		
-		for (StatisticTestResult statisticTestResult : lsTestResult) {
-			List<GeneID> lsTmpGeneUniID = hashGo2LsGene.get(statisticTestResult.getItemID());
-			ArrayList<GeneID> lsFinalGeneIDs = new ArrayList<GeneID>();
-			for (GeneID geneID : lsTmpGeneUniID) {
-				//同一个geneUniID对应的不同accID
-				List<GeneID> lscopedIDs = mapGeneUniID2LsGeneID.get(geneID.getGeneUniID().toLowerCase());
-				lsFinalGeneIDs.addAll(lscopedIDs);
-			}
-			
-			StatisticTestItem2Gene statisticTestItem2Gene = new StatisticTestItem2Gene();
-			statisticTestItem2Gene.setStatisticTestResult(statisticTestResult);
-			statisticTestItem2Gene.setLsGeneIDs(lsFinalGeneIDs);
-			statisticTestItem2Gene.setBlast(isBlast());
-			lStatisticTestItem2Gene.add(statisticTestItem2Gene);
-		}
-		return lStatisticTestItem2Gene;
-	}
-	
-	private ArrayListMultimap<String, GeneID> getGo2GeneUniID() {
-		ArrayListMultimap<String, GeneID> hashGo2LsGene = ArrayListMultimap.create();
-		ArrayList<StatisticTestGene2Item> lsStatisticTestGene2Items = getGene2ItemPvalue();
-		for (StatisticTestGene2Item statisticTestGene2Item : lsStatisticTestGene2Items) {
-			GeneID2LsItem geneID2LsItem = convert2ItemFromBG(statisticTestGene2Item.getGeneID(), false);
-			if (geneID2LsItem == null) {
-				continue;
-			}
-			for (String goid : geneID2LsItem.getSetItemID()) {
-				hashGo2LsGene.put(goid, statisticTestGene2Item.getGeneID());
-			}
-		}
-		return hashGo2LsGene;
-	}
 	
 	@Override
 	protected Map<String, GeneID2LsItem> readFromBGfile(Collection<String[]> lsTmpGeneID2LsItem) {
@@ -125,12 +86,10 @@ public class NovelGOFunTest extends FunctionTest {
 	
 	@Override
 	protected String getItemTerm(String item) {
-		try {
-			return servGo2Term.queryGo2Term(item).getGoTerm();	
-		} catch (Exception e) {
-			return servGo2Term.queryGo2Term(item).getGoTerm();
-		}
+		return servGo2Term.queryGo2Term(item).getGoTerm();	
 	}
+	
+
 	
 	@Override
 	public Map<String, List<String[]>> getMapWriteToExcel() {
@@ -142,7 +101,7 @@ public class NovelGOFunTest extends FunctionTest {
 		mapResult.put(StatisticTestResult.titleGO, lsStatisticTestResults);
 		List<String[]> lsGene2PathPvalue = StatisticTestGene2Item.getLsInfo(getGene2ItemPvalue());
 		mapResult.put(StatisticTestGene2Item.titleGO, lsGene2PathPvalue);
-		List<String[]> lsItem2Gene = StatisticTestItem2Gene.getLsInfo(true, getItem2GenePvalue());
+		List<String[]> lsItem2Gene = StatisticTestItem2Gene.getLsInfo(TestType.GO, getItem2GenePvalue());
 		mapResult.put(StatisticTestItem2Gene.titleGO, lsItem2Gene);
 		return mapResult;
 	}
@@ -150,6 +109,11 @@ public class NovelGOFunTest extends FunctionTest {
 	@Override
 	protected String getTitle() {
 		return "GO-Analysis_" + GoType.getTwoWord();
+	}
+	
+	@Override
+	protected TestType getTestType() {
+		return TestType.GO;
 	}
 
 }
