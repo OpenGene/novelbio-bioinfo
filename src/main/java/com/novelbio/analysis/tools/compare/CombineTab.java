@@ -61,11 +61,11 @@ public class CombineTab {
 		//comb.deleteAllTempFile();
 	}
 	
-	private static Logger logger = Logger.getLogger(CombineTab.class);
+	private static final Logger logger = Logger.getLogger(CombineTab.class);
 	public static String tempFolder = PathDetail.getRworkspaceTmp();
 	private List<String> tempFiles = new ArrayList<String>();
 	
-	LinkedHashMap<String, String> mapFileName2ConditionAbbr = new LinkedHashMap<String, String>();
+	LinkedHashMap<String, String> mapFileName2ConditionAbbr = new LinkedHashMap<>();
 	/** ColCompareComb：将待查找的列合并起来，用"_"连接<br>
 	 * ColCompareSep：分开的待查找的列
 	 * */
@@ -76,9 +76,12 @@ public class CombineTab {
 	/**
 	 * 文件名---具体要包含哪几列，不含比较列
 	 */
-	LinkedHashMap<String, int[]> mapFileName2ExtractColNum = new LinkedHashMap<String, int[]>();
-	Map<String, Map<String,Boolean>> mapKey2mapShortName2Exist = new LinkedHashMap<String, Map<String,Boolean>>();
-	Map<String, ArrayList<String>> mapShortName2lsGeneID = new LinkedHashMap<String, ArrayList<String>>();
+	LinkedHashMap<String, int[]> mapFileName2ExtractColNum = new LinkedHashMap<>();
+	Map<String, Map<String,Boolean>> mapKey2mapShortName2Exist = new LinkedHashMap<>();
+	Map<String, ArrayList<String>> mapShortName2lsGeneID = new LinkedHashMap<>();
+	/** 存储 某个prefix独有的元素的数量，譬如 A，B，C三组，A独有30个，B独有27个，C独有23个这种 */
+	Map<String, Integer> mapPrefix2NumOnly = new LinkedHashMap<>();
+	
 	/** 需要比较那几列 */
 	int[] colCompareOverlapID;
 	/** 并集里面的空格填充什么 */
@@ -177,6 +180,7 @@ public class CombineTab {
 		if (runningFlag && lsResultUnion.size() > 0) {
 			return;
 		}
+		mapPrefix2NumOnly.clear();
 		List<String> lsTitle = new ArrayList<>();
 		for (Entry<String, String> entry : mapFileName2ConditionAbbr.entrySet()) {
 			String filename = entry.getKey();
@@ -277,8 +281,8 @@ public class CombineTab {
 			List<String> colCompareSep = mapColCompareComb_To_ColCompareSep.get(colCompareComb);
 			boolean flagInterSection = true;
 			
-			Map<String,Boolean> mapShortName2isExist = new LinkedHashMap<String,Boolean>();
-			mapKey2mapShortName2Exist.put(colCompareComb, mapShortName2isExist);
+			Map<String,Boolean> mapPrefix2isExist = new LinkedHashMap<String,Boolean>();
+			mapKey2mapShortName2Exist.put(colCompareComb, mapPrefix2isExist);
 			
 			//每个ID在所有多个表中全部查找一遍
 			for (String fileName : mapFileName2ConditionAbbr.keySet()) {
@@ -291,22 +295,47 @@ public class CombineTab {
 					for (int i = 0; i < extractCol.length; i++) {
 						extractCol[i] = strNull;
 					}
-					mapShortName2isExist.put(mapFileName2ConditionAbbr.get(fileName),false);
+					mapPrefix2isExist.put(mapFileName2ConditionAbbr.get(fileName),false);
 				} else {
-					mapShortName2isExist.put(mapFileName2ConditionAbbr.get(fileName),true);
+					mapPrefix2isExist.put(mapFileName2ConditionAbbr.get(fileName),true);
 				}
 				//合并列
 				for (String string : extractCol) {
 					colCompareSep.add(string);
 				}
 			}
-			colCompareSep.add(colCompareOverlapID.length, getCommonShortName(mapShortName2isExist));
+			fillMapPrefix2NumOnly(mapPrefix2isExist);
+			colCompareSep.add(colCompareOverlapID.length, getCommonShortName(mapPrefix2isExist));
 			lsResultUnion.add(colCompareSep.toArray(new String[0]));
 			if (flagInterSection) {
 				lsResultIntersection.add(colCompareSep.toArray(new String[0]));
 			}
 		}
 		writeResult();
+	}
+	
+	/**
+	 *  存储 某个prefix独有的元素的数量，譬如 A，B，C三组，A独有30个，B独有27个，C独有23个这种
+	 * @param mapPrefix2NumOnly
+	 * @param mapPrefix2isExist
+	 */
+	private void fillMapPrefix2NumOnly(Map<String,Boolean> mapPrefix2isExist) {
+		String prefixTmp = null;
+		int prefixNum = 0;
+		for (String prefix : mapPrefix2isExist.keySet()) {
+			boolean isExist = mapPrefix2isExist.get(prefix);
+			if (isExist ) {
+				prefixTmp = prefix;
+				prefixNum++;
+			}
+		}
+		if (prefixNum == 1 && prefixTmp != null) {
+			if (mapPrefix2NumOnly.containsKey(prefixTmp)) {
+				mapPrefix2NumOnly.put(prefixTmp, mapPrefix2NumOnly.get(prefixTmp) + 1);
+			} else {
+				mapPrefix2NumOnly.put(prefixTmp, 1);
+			}
+		}
 	}
 	
 	/** 给定一个 mapKey2mapShortName2Exist，返回有几个shortName是存在的
@@ -470,6 +499,6 @@ public class CombineTab {
 	
 	/** 获取样本名，及其对应的基因数 */
 	public Map<String, Integer> getMapSample2GeneNum() {
-		return null;
+		return mapPrefix2NumOnly;
 	}
 }
