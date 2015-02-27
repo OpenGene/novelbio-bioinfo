@@ -225,6 +225,21 @@
 			<version>1.2.2-201002241055</version>
 			<type>nbm</type>
 		</dependency>
+        <dependency>
+                <groupId>org.broadinstitute</groupId>
+                <artifactId>htsjdk</artifactId>
+                 <version>1.120-SNAPSHOT</version>
+                <exclusions>
+                    <!-- The jdk15 classfier seems to throw off the normal dependency resolution,
+                    leading to both 6.8 and 5.0-jdk15 on the classpath, then leading to an old
+                    version testng loading, as seen by the super old TestNG4751Configurator.
+                    -->
+                    <exclusion>
+                        <groupId>org.testng</groupId>
+                        <artifactId>testng</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
 	</dependencies>
 	<distributionManagement>
 		<!-- use the following if you're not using a snapshot version. -->

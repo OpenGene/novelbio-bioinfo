@@ -164,19 +164,6 @@ public class CogFunTest extends FunctionTest {
 
 	@Override
 	public void setDetailType(GOtype gotype) { }
-	
-	@Override
-	public Map<String, List<String[]>> getMapWriteToExcel() {
-		Map<String, List<String[]>> mapResult = new LinkedHashMap<String, List<String[]>>();
-		List<String[]> lsStatisticTestResults = StatisticTestResult.getLsInfo(TestType.COG, getTestResult());
-		if (lsStatisticTestResults.size() == 0) {
-			return new HashMap<>();
-		}
-		mapResult.put(StatisticTestResult.titleCOG, lsStatisticTestResults);
-		List<String[]> lsGene2PathPvalue = StatisticTestGene2Item.getLsInfo(getGene2ItemPvalue());
-		mapResult.put(StatisticTestGene2Item.titleCOG, lsGene2PathPvalue);
-		return mapResult;
-	}
 
 	@Override
 	protected String getTitle() {

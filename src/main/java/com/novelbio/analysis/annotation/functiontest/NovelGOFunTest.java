@@ -89,23 +89,6 @@ public class NovelGOFunTest extends FunctionTest {
 		return servGo2Term.queryGo2Term(item).getGoTerm();	
 	}
 	
-
-	
-	@Override
-	public Map<String, List<String[]>> getMapWriteToExcel() {
-		Map<String, List<String[]>> mapResult = new HashMap<String, List<String[]>>();
-		List<String[]> lsStatisticTestResults = StatisticTestResult.getLsInfo(TestType.GO, getTestResult());
-		if (lsStatisticTestResults.size() == 0) {
-			return new HashMap<>();
-		}
-		mapResult.put(StatisticTestResult.titleGO, lsStatisticTestResults);
-		List<String[]> lsGene2PathPvalue = StatisticTestGene2Item.getLsInfo(getGene2ItemPvalue());
-		mapResult.put(StatisticTestGene2Item.titleGO, lsGene2PathPvalue);
-		List<String[]> lsItem2Gene = StatisticTestItem2Gene.getLsInfo(TestType.GO, getItem2GenePvalue());
-		mapResult.put(StatisticTestItem2Gene.titleGO, lsItem2Gene);
-		return mapResult;
-	}
-	
 	@Override
 	protected String getTitle() {
 		return "GO-Analysis_" + GoType.getTwoWord();

@@ -1,4 +1,4 @@
-package com.novelbio.analysis.seq.rnaseq;
+package com.novelbio.analysis.seq.resequencing;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +9,7 @@ import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileHadoop;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
@@ -77,6 +78,8 @@ public class Pindel implements IntCmdSoft {
 	public void setOutput(String output) {
 		this.output = output;
 	}
+	
+	
 
 	public void run() {
 		List<String> lsCmd = getLsCmd();

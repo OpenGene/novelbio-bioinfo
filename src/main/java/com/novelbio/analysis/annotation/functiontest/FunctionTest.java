@@ -498,7 +498,23 @@ public abstract class FunctionTest implements Cloneable {
 	 * value为list
 	 * @return
 	 */
-	public abstract Map<String, List<String[]>> getMapWriteToExcel();
+	public Map<String, List<String[]>> getMapWriteToExcel() {
+		Map<String, List<String[]>> mapResult = new LinkedHashMap<String, List<String[]>>();
+		List<String[]> lsStatisticTestResults = StatisticTestResult.getLsInfo(getTestType(), getTestResult());
+		if (lsStatisticTestResults.size() == 0) {
+			return new HashMap<>();
+		}
+		mapResult.put(StatisticTestResult.getTitle(getTestType()), lsStatisticTestResults);
+		
+		List<String[]> lsPath2GenePvalue = StatisticTestItem2Gene.getLsInfo(getTestType(), getItem2GenePvalue());
+		mapResult.put(StatisticTestItem2Gene.getTitle(getTestType()), lsPath2GenePvalue);
+		
+		List<String[]> lsGene2PathPvalue = StatisticTestGene2Item.getLsInfo(getGene2ItemPvalue());
+		mapResult.put(StatisticTestGene2Item.getTitle(getTestType()), lsGene2PathPvalue);
+	
+		return mapResult;
+	}
+
 	
 	/**
 	 * 对于输出的excel，每一个表需要套三线表到第几行，从1开始计算，不包括title<br>
@@ -513,7 +529,7 @@ public abstract class FunctionTest implements Cloneable {
 		}
 		mapResult.put(StatisticTestResult.getTitle(getTestType()), StatisticTestResult.getSigItemNum(getTestResult(), 0.05));
 		mapResult.put(StatisticTestItem2Gene.getTitle(getTestType()), StatisticTestItem2Gene.getiSigNum(getItem2GenePvalue(), 0.05));
-		mapResult.put(StatisticTestGene2Item.getTitle(getTestType()), -1);
+		mapResult.put(StatisticTestGene2Item.getTitle(getTestType()), -5);
 		return mapResult;
 	}
 	
