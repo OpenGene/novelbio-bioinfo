@@ -446,7 +446,7 @@ public class MapBwaAln extends MapDNA {
 		deleteIndexBwa(chrFile);
 	}
 	
-	protected static boolean isIndexExist(String chrFile) {
+	public static boolean isIndexExist(String chrFile) {
 		return FileOperate.isFileExist(chrFile + ".bwt");
 	}
 	protected static void deleteIndexBwa(String chrFile) {

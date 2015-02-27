@@ -83,8 +83,14 @@ public class MapBowtie extends MapDNA {
 	private String getChrFile() {
 		return chrFile;
 	}
+	
 	/** 获得没有后缀名的序列，不带引号 */
 	protected String getChrNameWithoutSuffix() {
+		return getChrNameWithoutSuffix(chrFile);
+	}
+	
+	/** 获得没有后缀名的序列，不带引号 */
+	private static String getChrNameWithoutSuffix(String chrFile) {
 		String chrFileName = FileOperate.getParentPathNameWithSep(chrFile) + FileOperate.getFileNameSep(chrFile)[0];
 		return chrFileName;
 	}
@@ -243,14 +249,16 @@ public class MapBowtie extends MapDNA {
 		return true;
 	}
 	
-
-	
 	protected boolean isIndexExist() {
+		return isIndexExist(chrFile, softWare);
+	}
+	
+	public static boolean isIndexExist(String chrFile, SoftWare softWare) {
 		boolean isIndexExist = false;
 		if (softWare == SoftWare.bowtie) {
-			isIndexExist = FileOperate.isFileExist(getChrNameWithoutSuffix() + ".3.ebwt");
+			isIndexExist = FileOperate.isFileExist(getChrNameWithoutSuffix(chrFile) + ".3.ebwt");
 		} else if (softWare == SoftWare.bowtie2) {
-			isIndexExist = FileOperate.isFileExist(getChrNameWithoutSuffix() + ".3.bt2");
+			isIndexExist = FileOperate.isFileExist(getChrNameWithoutSuffix(chrFile) + ".3.bt2");
 		}
 		return isIndexExist;
 	}

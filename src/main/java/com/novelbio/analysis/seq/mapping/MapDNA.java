@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.curator.framework.api.CuratorEvent;
+import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
@@ -15,11 +17,13 @@ import com.novelbio.base.ExceptionNullParam;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
+import com.novelbio.base.curator.CuratorNBC;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.service.SpringFactoryBioinfo;
+import com.novelbio.generalConf.PathDetailNBC;
 
 /**
  * 设定了自动化建索引的方法，并且在mapping失败后会再次建索引
@@ -171,27 +175,29 @@ public abstract class MapDNA implements MapDNAint {
 	}
 	
 	public void IndexMake() {
-		String flagMakeIndex = ".makeIndexFlag_";
-		String flagMakeIndexDetail = null;
-		String parentPath = FileOperate.getPathName(chrFile);
-		if (isExistIndexFlag(parentPath, flagMakeIndex)) {
-			waitUntilIndexFinish(parentPath, flagMakeIndex);
-			IndexMake();
+		if (FileOperate.isFileExist(getIndexFinishedFlag())) {
+			return;
 		}
-		else if (!isIndexExist()) {
-			flagMakeIndexDetail = flagMakeIndex + DateUtil.getNowTimeLongRandom();
-			TxtReadandWrite txtWriteFlag = new TxtReadandWrite(parentPath + flagMakeIndexDetail, true);
-			txtWriteFlag.close();
-			try { Thread.sleep(5000); } catch (Exception e) { }
-			List<String> lsFlags = FileOperate.getFoldFileNameLs(parentPath, flagMakeIndex, "*");
-			Collections.sort(lsFlags);
-			if (lsFlags.get(0).equals(parentPath + flagMakeIndexDetail)) {
-				tryMakeIndex(parentPath, flagMakeIndexDetail, flagMakeIndex);
-			} else {
-				FileOperate.delFile(parentPath + flagMakeIndexDetail);
-				waitUntilIndexFinish(parentPath, flagMakeIndex);
-				IndexMake();
+		
+		String lockPath = chrFile.replace(PathDetailNBC.getGenomePath(), "");
+		lockPath = FileOperate.removeSplashHead(lockPath, false).replace("/", "_").replace("\\", "_").replace(".", "_");
+		InterProcessMutex lock = CuratorNBC.getInterProcessMutex(lockPath);
+		try {
+			lock.acquire();
+		} catch (Exception e1) {
+			tryMakeIndex();
+			try {
+				lock.release();
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
+			return;
+		}
+		tryMakeIndex();
+		try {
+			lock.release();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -219,7 +225,7 @@ public abstract class MapDNA implements MapDNAint {
 		return false;
 	}
 	
-	private boolean tryMakeIndex(String parentPath, String flagMakeIndexDetail, String flagMakeIndex) {
+	private boolean tryMakeIndex() {
 		try {
 			int i = 0;
 			try {
@@ -228,24 +234,11 @@ public abstract class MapDNA implements MapDNAint {
 				makeIndex();
 			}
 		} catch (Exception e) {
-			logger.error("index make error:" + parentPath + chrFile);
+			logger.error("index make error:" + chrFile);
 			deleteIndex();
-			FileOperate.delFile(parentPath + flagMakeIndexDetail);
-			throw new RuntimeException("index make error:" + parentPath + chrFile, e);
-		}
-		for (String fileName : FileOperate.getFoldFileNameLs(parentPath, flagMakeIndex, "*")) {
-			FileOperate.delFile(fileName);
+			throw new RuntimeException("index make error:" + chrFile, e);
 		}
 		return true;
-	}
-	
-	/** 等待别的机器把索引建好了 */
-	private void waitUntilIndexFinish(String parentPath, String flagMakeIndex) {
-		while (FileOperate.getFoldFileNameLs(parentPath, flagMakeIndex, "*").size() > 0) {
-			try { Thread.sleep(1000); } catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
 	}
 	/**
 	 * 构建索引
@@ -259,6 +252,13 @@ public abstract class MapDNA implements MapDNAint {
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.setRedirectInToTmp(true);
 		cmdOperate.setRedirectOutToTmp(true);
+		String runInfoPath = FileOperate.getParentPathNameWithSep(outFileName);
+		FileOperate.createFolders(runInfoPath);
+		
+		cmdOperate.setStdOutPath(runInfoPath + "IndexMake_Stdout.txt");
+		cmdOperate.setStdErrPath(runInfoPath + "IndexMake_Stderr.txt");
+
+		cmdOperate.setOutRunInfoFileName(runInfoPath + "IndexMaking.txt");
 		
 		for (String path : lsCmd) {
 			if (path.equals(chrFile)) {
@@ -272,8 +272,15 @@ public abstract class MapDNA implements MapDNAint {
 		if(!cmdOperate.isFinishedNormal()) {
 			throw new ExceptionCmd(softWare.toString() + " index error:\n" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
 		}
+		TxtReadandWrite txtWriteFinishFlag = new TxtReadandWrite(getIndexFinishedFlag(), true);
+		txtWriteFinishFlag.writefileln("finished");
+		txtWriteFinishFlag.close();
 	}
-
+	
+	private String getIndexFinishedFlag() {
+		return FileOperate.changeFileSuffix(chrFile, "_indexFinished", "");
+	}
+	
 	protected abstract List<String> getLsCmdIndex();
 	/** 删除关键的索引文件，意思就是没有建成索引 */
 	protected abstract void deleteIndex();
