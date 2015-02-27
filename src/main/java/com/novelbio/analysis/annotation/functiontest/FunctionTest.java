@@ -501,7 +501,7 @@ public abstract class FunctionTest implements Cloneable {
 	public abstract Map<String, List<String[]>> getMapWriteToExcel();
 	
 	/**
-	 * 对于输出的excel，每一个表需要套三线表到第几行，从1开始计算<br>
+	 * 对于输出的excel，每一个表需要套三线表到第几行，从1开始计算，不包括title<br>
 	 *  key: sheetName<br>
 	 *  value: 第几行，从1开始计算，如果小于0，则表示本表格全都套上格式
 	 */
