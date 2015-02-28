@@ -1,14 +1,9 @@
 package com.novelbio.database.updatedb.database;
 
-import java.util.Map;
-
-import com.novelbio.base.dataOperate.DateUtil;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.DBInfo;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.database.model.species.Species.EnumSpeciesType;
 
 /**
  * 
@@ -28,36 +23,37 @@ public class ImportDB {
 	
 	public static void main(String[] args) {
 		String downloadPath = "/home/novelbio/NBCsource/database/";
-		String softToolsFile = "/media/hdfs/nbCloud/public/nbcplatform/genome/SoftwareInfo.txt";
-		String taxIDFile = "/home/novelbio/NBCsource/species/常见物种IDKEGGUploadTmp.txt";
-		String dbInfo = "/home/novelbio/NBCsource/database/DBinfo.txt";
+		String softToolsFile = "/home/novelbio/NBCsource/SoftwareInfo.txt";
+		String taxIDFile = "/home/novelbio/NBCsource/species/常见物种IDKEGGAll.txt";
+//		String dbInfo = "/home/novelbio/NBCsource/database/DBinfo.txt";
 		String GOPath = "/home/novelbio/NBCsource/database/GO/";
 		String speciesFile = "";
 		ImportPerLine.setTaxIDFile(taxIDFile);
 		ImportDB importDB = new ImportDB();
 		importDB.setDownloadPath(downloadPath);
-//		importDB.setSoftToolsFile(softToolsFile);
+		importDB.setSoftToolsFile(softToolsFile);
 //		importDB.setSpeciesFile(speciesFile);
 		importDB.setGOPath(GOPath);
 		importDB.setTaxIDFile(taxIDFile);
 		
 //		importDB.updateDBinfo(dbInfo);
 //		importDB.updateGODB();
-//		
-		importDB.updateNCBIID();
-////		importDB.updateUniprotID();
-////		importDB.updateZeaMaize();
-////		importDB.updateRiceID("/media/winE/NBCplatform/database/rice/");//只导了前两个
-////		importDB.updateTAIR("/media/winE/NBCplatform/database/arabidopsis/");
-////		importDB.updateZB();
-////		updateEnsembl();
-////		importDB.updateYeast();
-////		importDB.updateMicroarray();
-//
-////		updateSoyBean();
-////		updateZeaMaize();
-////		updateBlast();
-////		importDB.updateAffy();
+////		
+//		importDB.updateNCBIID();
+		importDB.updateUniprotID();
+		
+//		importDB.updateZeaMaize();
+//		importDB.updateRiceID("/media/winE/NBCplatform/database/rice/");//只导了前两个
+//		importDB.updateTAIR("/media/winE/NBCplatform/database/arabidopsis/");
+//		importDB.updateZB();
+//		importDB.updateEnsembl();
+//		importDB.updateYeast();
+//		importDB.updateMicroarray();
+
+//		importDB.updateSoyBean();
+//		importDB.updateZeaMaize();
+//		importDB.updateBlast();
+//		importDB.updateAffy();
 	}
 	
 	
@@ -119,20 +115,20 @@ public class ImportDB {
 	 * 升级从UniProt下载的信息
 	 */
 	private void updateUniprotID() {
-		String idmappingSelectedFile = downloadPath + "idmapping_selected.tab.gz";
-		String gene_association_goa_uniprot = GOPath + "gene_association.goa_uniprot.gz";
-		String outUniIDFile = downloadPath + "idmapping_selected_Out.txt.gz";
+		// 下载链接 ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/idmapping/
+		String idmappingSelectedFile = downloadPath + "uniprot/idmapping_selected.tab.gz";
+		//TODO 下载链接：http://geneontology.org/page/download-annotations
+		String gene_association_goa_uniprot = downloadPath + "uniprot/gene_association.goa_uniprot.gz";
+		String outUniIDFile = downloadPath + "uniprot/idmapping_selected_Out.txt.gz";
 		UniProt uniProt = new UniProt();
 		uniProt.setIdmappingSelectedFile(idmappingSelectedFile);
-		uniProt.setTaxIDFile(taxIDFile);
+//		uniProt.setTaxIDFile(taxIDFile);
 		uniProt.setOutUniIDFile(outUniIDFile);
 		uniProt.setGene_association_goa_uniprot(gene_association_goa_uniprot);
 		uniProt.update();
 	}
 	
 	private void updateEnsembl() {
-		Species species = null;
-		species.getGffFile();
 		String ensemblFileMouse = "/media/winE/Bioinformatics/DataBase/Mus_musculus.NCBIM37.65.gtf"; 
 		String ucscGffFileMouse = "/media/winE/Bioinformatics/GenomeData/mouse/ucsc_mm9/refseqSortUsing.txt";
 		int taxIDMouse = 10090;
@@ -176,7 +172,7 @@ public class ImportDB {
 		riceID.update();
 	}
 	
-//	private void updateBlast() {
+	private void updateBlast() {
 //		String blastFile = "/media/winE/Bioinformatics/BLAST/result/chicken/ensemblNr2HumAA";
 //		String outFIle = "/media/winE/Bioinformatics/BLAST/result/chicken/ensemblNr2HumAA_out";
 //		int queryTaxID = 0;
@@ -299,7 +295,7 @@ public class ImportDB {
 //		blast.setTxtWriteExcep(outFIle);
 //		blast.setIDisBlastType(false);
 //		blast.updateFile(blastFile);
-//	}
+	}
 	
 	private void updateAffy() {
 		String affyFile = "";
@@ -405,6 +401,7 @@ public class ImportDB {
 	
 	private void updateTAIR(String parentPath) {
 		Arabidopsis arabidopsis = new Arabidopsis();
+		//ftp://ftp.arabidopsis.org/home/tair/Ontologies/Gene_Ontology/
 		String athGO = parentPath + "ATH_GO_GOSLIM.txt.gz";
 		String tAIR_functional_descriptions = parentPath + "TAIR10_functional_descriptions";
 		String tAIRNCBIGeneIDmapping = parentPath + "TAIR10_NCBI_GENEID_mapping";

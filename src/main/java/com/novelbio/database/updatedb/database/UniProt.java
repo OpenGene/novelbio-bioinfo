@@ -39,28 +39,39 @@ public class UniProt {
 	public void update() {
 		IdmappingSelected idmappingSelected = new IdmappingSelected();
 		IdmappingSelected.setTaxIDFile(taxIDFile);
-//		idmappingSelected.setTxtWriteExcep(outUniIDFile);
-//		idmappingSelected.updateFile(idmappingSelectedFile);
-//		logger.info("finished Import: " + idmappingSelectedFile);
-//		
-//		Gene_associationgoa_uniprot impgene_associationgoa_uniprot = new Gene_associationgoa_uniprot();
-//		impgene_associationgoa_uniprot.updateFile(gene_associationgoa_uniprotFile);
-//		logger.info("finished Import: " + gene_associationgoa_uniprotFile);
-//		
-//		idmappingSelected = new IdmappingSelected();
-//		idmappingSelected.setUpdateUniprotID(true);
-//		idmappingSelected.setTxtWriteExcep(FileOperate.changeFileSuffix(outUniIDFile, "_2", null));
-//		idmappingSelected.updateFile(outUniIDFile);
-//		logger.info("finished Import: " + outUniIDFile);
+		idmappingSelected.setTxtWriteExcep(outUniIDFile);
+		idmappingSelected.updateFile(idmappingSelectedFile);
+		logger.info("finished Import: " + idmappingSelectedFile);
+		
+		Gene_associationgoa_uniprot impgene_associationgoa_uniprot = new Gene_associationgoa_uniprot();
+		if (FileOperate.isFileDirectory(gene_associationgoa_uniprotFile)) {
+			List<String> lsFiles = FileOperate.getFoldFileNameLs(gene_associationgoa_uniprotFile);
+			for (String goaFile : lsFiles) {
+				if (!goaFile.contains("_association.goa_")) {
+					continue;
+				}
+				impgene_associationgoa_uniprot.updateFile(goaFile);
+				logger.info("finished Import: " + gene_associationgoa_uniprotFile);
+			}
+		} else {
+			impgene_associationgoa_uniprot.updateFile(gene_associationgoa_uniprotFile);
+			logger.info("finished Import: " + gene_associationgoa_uniprotFile);
+		}
+		
+		idmappingSelected = new IdmappingSelected();
+		idmappingSelected.setUpdateUniprotID(true);
+		idmappingSelected.setTxtWriteExcep(FileOperate.changeFileSuffix(outUniIDFile, "_2", null));
+		idmappingSelected.updateFile(outUniIDFile);
+		logger.info("finished Import: " + outUniIDFile);
 
 		IdmappingSelectedGOPubmed idmappingSelectedGOPubmed = new IdmappingSelectedGOPubmed();
 		idmappingSelectedGOPubmed.setTxtWriteExcep(FileOperate.changeFileSuffix(idmappingSelectedFile, "_failed", "txt"));
 		idmappingSelectedGOPubmed.updateFile(idmappingSelectedFile);
 		logger.info("finished Import GO pubmed: " + idmappingSelectedFile);
 		
-//		idmappingSelectedGOPubmed = new IdmappingSelectedGOPubmed();
-//		idmappingSelectedGOPubmed.updateFile(FileOperate.changeFileSuffix(idmappingSelectedFile, "_failed", "txt"));
-//		logger.info("finished Import GO pubmed: " + FileOperate.changeFileSuffix(idmappingSelectedFile, "_failed", "txt"));
+		idmappingSelectedGOPubmed = new IdmappingSelectedGOPubmed();
+		idmappingSelectedGOPubmed.updateFile(FileOperate.changeFileSuffix(idmappingSelectedFile, "_failed", "txt"));
+		logger.info("finished Import GO pubmed: " + FileOperate.changeFileSuffix(idmappingSelectedFile, "_failed", "txt"));
 	}
 }
 
@@ -113,28 +124,27 @@ class IdmappingSelected extends ImportPerLine {
 	5. GI
 	6. PDB
 	7. GO
-	8. IPI
-	9. UniRef100
-	10. UniRef90
-	11. UniRef50
-	12. UniParc
-	13. PIR
-	14. NCBI-taxon
-	15. MIM
-	16. UniGene
-	17. PubMed
-	18. EMBL
-	19. EMBL-CDS
-	20. Ensembl
-	21. Ensembl_TRS
-	22. Ensembl_PRO
-	23. Additional PubMed
+	8. UniRef100
+	9. UniRef90
+	10. UniRef50
+	11. UniParc
+	12. PIR
+	13. NCBI-taxon
+	14. MIM
+	15. UniGene
+	16. PubMed
+	17. EMBL
+	18. EMBL-CDS
+	19. Ensembl
+	20. Ensembl_TRS
+	21. Ensembl_PRO
+	22. Additional PubMed
 	*/
 	@Override
 	protected boolean impPerLine(String content) {
 		String[] ss = content.split("\t");
-		ss = ArrayOperate.copyArray(ss, 23);
-		int taxID = Integer.parseInt(ss[13]);
+		ss = ArrayOperate.copyArray(ss, 22);
+		int taxID = Integer.parseInt(ss[12]);
 		if (!setTaxID.contains(taxID)) {
 			return true;
 		}
@@ -150,29 +160,29 @@ class IdmappingSelected extends ImportPerLine {
 			lsRefAccID = new ArrayList<String>();
 			lsRefAccID.addAll(getListAccID(ss[3]));
 			lsRefAccID.addAll(getListAccID(ss[4]));
-			lsRefAccID.addAll(getListAccID(ss[15]));
+			lsRefAccID.addAll(getListAccID(ss[14]));
 			lsRefAccID.addAll(getListAccID(ss[0]));
+			lsRefAccID.addAll(getListAccID(ss[18]));
 			lsRefAccID.addAll(getListAccID(ss[19]));
 			lsRefAccID.addAll(getListAccID(ss[20]));
-			lsRefAccID.addAll(getListAccID(ss[21]));
  			copedID.setUpdateRefAccID(lsRefAccID);
 		}
 		if (!updateInfo(ss[0], copedID, DBAccIDSource.Uniprot)) {
 			return false;
 		}
 		updateInfo(ss[1], copedID, DBAccIDSource.UniprotKB_ID);
-		updateInfo(ss[7], copedID, DBAccIDSource.IPI);
+//		updateInfo(ss[7], copedID, DBAccIDSource.IPI);
 //		updateInfo(ss[8].replace("UniRef100_", ""), copedID, DBAccIDSource.UniprotUniGene);
 //		updateInfo(ss[9].replace("UniRef90_", ""), copedID, DBAccIDSource.UniprotUniGene);
 //		updateInfo(ss[10].replace("UniRef50_", ""), copedID, DBAccIDSource.UniprotUniGene);
-		updateInfo(ss[11], copedID, DBAccIDSource.UniprotPARC);
-		updateInfo(ss[12], copedID, DBAccIDSource.PIR);
-		updateInfo(ss[15], copedID, DBAccIDSource.UniprotUniGene);
-		updateInfo(ss[17], copedID, DBAccIDSource.EMBL);
-		updateInfo(ss[18], copedID, DBAccIDSource.EMBL_CDS);
-		updateInfo(ss[19], copedID, DBAccIDSource.Ensembl);
-		updateInfo(ss[20], copedID, DBAccIDSource.Ensembl_TRS);
-		updateInfo(ss[21], copedID, DBAccIDSource.Ensembl_Pro);
+		updateInfo(ss[10], copedID, DBAccIDSource.UniprotPARC);
+		updateInfo(ss[11], copedID, DBAccIDSource.PIR);
+		updateInfo(ss[14], copedID, DBAccIDSource.UniprotUniGene);
+		updateInfo(ss[16], copedID, DBAccIDSource.EMBL);
+		updateInfo(ss[17], copedID, DBAccIDSource.EMBL_CDS);
+		updateInfo(ss[18], copedID, DBAccIDSource.Ensembl);
+		updateInfo(ss[19], copedID, DBAccIDSource.Ensembl_TRS);
+		updateInfo(ss[20], copedID, DBAccIDSource.Ensembl_Pro);
 		return true;
 	}
 	/**
@@ -255,16 +265,15 @@ class IdmappingSelectedGOPubmed extends IdmappingSelected {
 	5. GI
 	6. PDB
 	7. GO
-	8. IPI
-	9. UniRef100
-	10. UniRef90
-	11. UniRef50
-	12. UniParc
-	13. PIR
-	14. NCBI-taxon
-	15. MIM
-	16. UniGene
-	17. PubMed
+	8. UniRef100
+	9. UniRef90
+	10. UniRef50
+	11. UniParc
+	12. PIR
+	13. NCBI-taxon
+	14. MIM
+	15. UniGene
+	16. PubMed
 	18. EMBL
 	19. EMBL-CDS
 	20. Ensembl
@@ -291,11 +300,11 @@ class IdmappingSelectedGOPubmed extends IdmappingSelected {
 			lsRefAccID = new ArrayList<String>();
 			addListAccID(ss[3], lsRefAccID);
 			addListAccID(ss[4], lsRefAccID);
-			addListAccID(ss[15], lsRefAccID);
+			addListAccID(ss[14], lsRefAccID);
 			addListAccID(ss[0], lsRefAccID);
+			addListAccID(ss[18], lsRefAccID);
 			addListAccID(ss[19], lsRefAccID);
 			addListAccID(ss[20], lsRefAccID);
-			addListAccID(ss[21], lsRefAccID);
  			copedID.setUpdateRefAccID(lsRefAccID);
 		}
 		if (copedID.getIDtype() == GeneID.IDTYPE_ACCID) {
@@ -304,8 +313,8 @@ class IdmappingSelectedGOPubmed extends IdmappingSelected {
 		if (ss[6] != null && !ss[6].equals("")) {
 			updateGO(ss[6], copedID, DBAccIDSource.Uniprot);
 		}
-		if (ss[16] != null && !ss[16].equals("")) {
-			updatePubmed(ss[16], copedID);
+		if (ss[15] != null && !ss[15].equals("")) {
+			updatePubmed(ss[15], copedID);
 		}
 		return true;
 	}

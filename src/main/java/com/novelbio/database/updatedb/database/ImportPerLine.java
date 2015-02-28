@@ -5,8 +5,6 @@ import java.util.HashSet;
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.database.domain.geneanno.TaxInfo;
 import com.novelbio.database.model.species.Species;
 /**
  * 将待升级的文件按照行读取的abstract类，因为很多文件都是一行一个信息，
@@ -76,7 +74,7 @@ abstract class ImportPerLine {
 			}
 	
 			num++;
-			if (num%300000 == 0) {
+			if (num%10000 == 0) {
 				logger.info(gene2AccFile + " import line number:" + num);
 			}
 		}

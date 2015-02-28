@@ -548,7 +548,10 @@ Example:O43526-2
 		geneInfo.setDescrp(ss[9]);
 		copedID.setUpdateGeneInfo(geneInfo);
 		List<String> lsRef = new ArrayList<String>();
-		lsRef.add(ss[5]);
+		for (String string : ss[5].split("\\|")) {
+			lsRef.add(string);
+		}
+
 		copedID.addUpdateGO(ss[4], DBAccIDSource.Uniprot, ss[6], lsRef, ss[3]);
 		try {
 			return copedID.update(true);

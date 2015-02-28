@@ -184,14 +184,8 @@ public abstract class MapDNA implements MapDNAint {
 		InterProcessMutex lock = CuratorNBC.getInterProcessMutex(lockPath);
 		try {
 			lock.acquire();
-		} catch (Exception e1) {
-			tryMakeIndex();
-			try {
-				lock.release();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			return;
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		tryMakeIndex();
 		try {
@@ -225,9 +219,11 @@ public abstract class MapDNA implements MapDNAint {
 		return false;
 	}
 	
-	private boolean tryMakeIndex() {
+	private void tryMakeIndex() {
+		if (FileOperate.isFileExist(getIndexFinishedFlag())) {
+			return;
+		}
 		try {
-			int i = 0;
 			try {
 				makeIndex();
 			} catch (Exception e) {
@@ -238,8 +234,8 @@ public abstract class MapDNA implements MapDNAint {
 			deleteIndex();
 			throw new RuntimeException("index make error:" + chrFile, e);
 		}
-		return true;
 	}
+	
 	/**
 	 * 构建索引
 	 * @parcam force 默认会检查是否已经构建了索引，是的话则返回。
