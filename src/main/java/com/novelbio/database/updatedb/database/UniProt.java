@@ -40,29 +40,29 @@ public class UniProt {
 		IdmappingSelected idmappingSelected = new IdmappingSelected();
 		IdmappingSelected.setTaxIDFile(taxIDFile);
 		idmappingSelected.setTxtWriteExcep(outUniIDFile);
-		idmappingSelected.updateFile(idmappingSelectedFile);
+//		idmappingSelected.updateFile(idmappingSelectedFile);
 		logger.info("finished Import: " + idmappingSelectedFile);
 		
-		Gene_associationgoa_uniprot impgene_associationgoa_uniprot = new Gene_associationgoa_uniprot();
-		if (FileOperate.isFileDirectory(gene_associationgoa_uniprotFile)) {
-			List<String> lsFiles = FileOperate.getFoldFileNameLs(gene_associationgoa_uniprotFile);
-			for (String goaFile : lsFiles) {
-				if (!goaFile.contains("_association.goa_")) {
-					continue;
-				}
-				impgene_associationgoa_uniprot.updateFile(goaFile);
-				logger.info("finished Import: " + gene_associationgoa_uniprotFile);
-			}
-		} else {
-			impgene_associationgoa_uniprot.updateFile(gene_associationgoa_uniprotFile);
-			logger.info("finished Import: " + gene_associationgoa_uniprotFile);
-		}
+//		Gene_associationgoa_uniprot impgene_associationgoa_uniprot = new Gene_associationgoa_uniprot();
+//		if (FileOperate.isFileDirectory(gene_associationgoa_uniprotFile)) {
+//			List<String> lsFiles = FileOperate.getFoldFileNameLs(gene_associationgoa_uniprotFile);
+//			for (String goaFile : lsFiles) {
+//				if (!goaFile.contains("_association.goa_")) {
+//					continue;
+//				}
+//				impgene_associationgoa_uniprot.updateFile(goaFile);
+//				logger.info("finished Import: " + gene_associationgoa_uniprotFile);
+//			}
+//		} else {
+//			impgene_associationgoa_uniprot.updateFile(gene_associationgoa_uniprotFile);
+//			logger.info("finished Import: " + gene_associationgoa_uniprotFile);
+//		}
 		
-		idmappingSelected = new IdmappingSelected();
-		idmappingSelected.setUpdateUniprotID(true);
-		idmappingSelected.setTxtWriteExcep(FileOperate.changeFileSuffix(outUniIDFile, "_2", null));
-		idmappingSelected.updateFile(outUniIDFile);
-		logger.info("finished Import: " + outUniIDFile);
+//		idmappingSelected = new IdmappingSelected();
+//		idmappingSelected.setUpdateUniprotID(true);
+//		idmappingSelected.setTxtWriteExcep(FileOperate.changeFileSuffix(outUniIDFile, "_2", null));
+//		idmappingSelected.updateFile(outUniIDFile);
+//		logger.info("finished Import: " + outUniIDFile);
 
 		IdmappingSelectedGOPubmed idmappingSelectedGOPubmed = new IdmappingSelectedGOPubmed();
 		idmappingSelectedGOPubmed.setTxtWriteExcep(FileOperate.changeFileSuffix(idmappingSelectedFile, "_failed", "txt"));
@@ -284,8 +284,8 @@ class IdmappingSelectedGOPubmed extends IdmappingSelected {
 	@Override
 	public boolean impPerLine(String content) {
 		String[] ss = content.split("\t");
-		ss = ArrayOperate.copyArray(ss, 23);
-		int taxID = Integer.parseInt(ss[13]);
+		ss = ArrayOperate.copyArray(ss, 22);
+		int taxID = Integer.parseInt(ss[12]);
 		if (!setTaxID.contains(taxID)) {
 			return true;
 		}

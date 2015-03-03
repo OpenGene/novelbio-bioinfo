@@ -28,21 +28,21 @@ public class MaizeGDB {
 	 * @throws Exception
 	 */
 	public void update() {
-//		MaizeAccID maizeAccID = new MaizeAccID();
-//		maizeAccID.setTaxID(taxID);
-//		maizeAccID.setReadFromLine(2);
-//		String outfile = FileOperate.changeFileSuffix(maizeDbxref, "_out", null);
-//		maizeAccID.setTxtWriteExcep(FileOperate.changeFileSuffix(maizeDbxref, "_out", null));
-//		maizeAccID.setUniProtID(false);
-//		maizeAccID.updateFile(maizeDbxref);
-//		
-//		maizeAccID = new MaizeAccID();
-//		maizeAccID.setTaxID(taxID);
-//		//第二次读就从第一行开始读取了
-//		maizeAccID.setReadFromLine(1);
-//		maizeAccID.setTxtWriteExcep(FileOperate.changeFileSuffix(outfile, "_out2", null));
-//		maizeAccID.setUniProtID(true);
-//		maizeAccID.updateFile(outfile);
+		MaizeAccID maizeAccID = new MaizeAccID();
+		maizeAccID.setTaxID(taxID);
+		maizeAccID.setReadFromLine(2);
+		String outfile = FileOperate.changeFileSuffix(maizeDbxref, "_out", null);
+		maizeAccID.setTxtWriteExcep(FileOperate.changeFileSuffix(maizeDbxref, "_out", null));
+		maizeAccID.setUniProtID(false);
+		maizeAccID.updateFile(maizeDbxref);
+		
+		maizeAccID = new MaizeAccID();
+		maizeAccID.setTaxID(taxID);
+		//第二次读就从第一行开始读取了
+		maizeAccID.setReadFromLine(1);
+		maizeAccID.setTxtWriteExcep(FileOperate.changeFileSuffix(outfile, "_out2", null));
+		maizeAccID.setUniProtID(true);
+		maizeAccID.updateFile(outfile);
 		
 		MaizeGeneInfo maizeGeneInfo = new MaizeGeneInfo();
 		maizeGeneInfo.setReadFromLine(2);

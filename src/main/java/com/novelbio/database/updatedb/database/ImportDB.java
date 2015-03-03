@@ -40,18 +40,18 @@ public class ImportDB {
 //		importDB.updateGODB();
 ////		
 //		importDB.updateNCBIID();
-		importDB.updateUniprotID();
+//		importDB.updateUniprotID();
 		
 //		importDB.updateZeaMaize();
-//		importDB.updateRiceID("/media/winE/NBCplatform/database/rice/");//只导了前两个
-//		importDB.updateTAIR("/media/winE/NBCplatform/database/arabidopsis/");
+//		importDB.updateRiceID("/home/novelbio/NBCsource/database/species/rice/");//只导了前两个
+//		importDB.updateTAIR("/home/novelbio/NBCsource/database/species/arabidopsis/");
 //		importDB.updateZB();
 //		importDB.updateEnsembl();
 //		importDB.updateYeast();
 //		importDB.updateMicroarray();
 
 //		importDB.updateSoyBean();
-//		importDB.updateZeaMaize();
+		importDB.updateZeaMaize();
 //		importDB.updateBlast();
 //		importDB.updateAffy();
 	}
@@ -485,8 +485,9 @@ public class ImportDB {
 	}
 	
 	private void updateZeaMaize() {
-		String zeamaizeDbxref = "/media/winE/NBCplatform/database/maize/ZmB73_5a_xref.txt.gz";
-		String maizeGeneInfo = "/media/winE/NBCplatform/database/maize/ZmB73_5a_gene_descriptors.txt.gz";
+		//http://ftp.maizesequence.org/release-5b/functional-annotations/
+		String zeamaizeDbxref = "/home/novelbio/NBCsource/database/species/maize/ZmB73_5a_xref.txt.gz";
+		String maizeGeneInfo = "/home/novelbio/NBCsource/database/species/maize/ZmB73_5a_gene_descriptors.txt.gz";
 		MaizeGDB maizeGDB = new MaizeGDB();
 		maizeGDB.setMaizeDbxref(zeamaizeDbxref);
 		maizeGDB.setMaizeGeneInfo(maizeGeneInfo);

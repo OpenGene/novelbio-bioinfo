@@ -443,14 +443,16 @@ public abstract class FunctionTest implements Cloneable {
 			return null;
 		}
 		List<GeneID2LsItem> lsbg = getFilteredLs(mapBGGeneID2Items.values());
-		lsTestResult = getFisherResult(statisticsTest, lstest, lsbg, BGnum);
-		for (StatisticTestResult statisticTestResult : lsTestResult) {
+		lsTestResult = new ArrayList<>();
+		
+		ArrayList<StatisticTestResult> lsTestResultTmp = getFisherResult(statisticsTest, lstest, lsbg, BGnum);
+		for (StatisticTestResult statisticTestResult : lsTestResultTmp) {
 			try {
 				statisticTestResult.setItemTerm(getItemTerm(statisticTestResult.getItemID()));
+				lsTestResult.add(statisticTestResult);
 			} catch (Exception e) {
-				statisticTestResult.setItemTerm(getItemTerm(statisticTestResult.getItemID()));
+				logger.error("Iterm: " + statisticTestResult.getItemID() + " may have error", e);
 			}
-			
 		}
 		return lsTestResult;
 	}

@@ -226,20 +226,38 @@
 			<type>nbm</type>
 		</dependency>
         <dependency>
-                <groupId>org.broadinstitute</groupId>
-                <artifactId>htsjdk</artifactId>
-                 <version>1.120-SNAPSHOT</version>
-                <exclusions>
+             <groupId>org.broadinstitute</groupId>
+             <artifactId>htsjdk</artifactId>
+              <version>1.120-SNAPSHOT</version>
+             <exclusions>
                     <!-- The jdk15 classfier seems to throw off the normal dependency resolution,
                     leading to both 6.8 and 5.0-jdk15 on the classpath, then leading to an old
                     version testng loading, as seen by the super old TestNG4751Configurator.
                     -->
-                    <exclusion>
-                        <groupId>org.testng</groupId>
-                        <artifactId>testng</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
+                 <exclusion>
+                     <groupId>org.testng</groupId>
+                     <artifactId>testng</artifactId>
+                 </exclusion>
+              </exclusions>
+        </dependency>
+        <dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-api-mockito</artifactId>
+			<version>1.5.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+			<version>1.5.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-api-easymock</artifactId>
+			<version>1.5.1</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 	<distributionManagement>
 		<!-- use the following if you're not using a snapshot version. -->

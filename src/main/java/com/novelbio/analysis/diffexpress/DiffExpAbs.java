@@ -80,9 +80,11 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	 * 0：treatment<br>
 	 * 1：control
 	 */
-	HashMap<String, String[]> mapOutFileName2Compare = new LinkedHashMap<String, String[]>();
+	HashMap<String, String[]> mapOutFileName2Compare = new LinkedHashMap<>();
 	
-	HashMap<String, Integer[]> mapDifGeneGroup2DifGeneNum = new LinkedHashMap<String, Integer[]>();
+	HashMap<String, Integer[]> mapDifGeneGroup2DifGeneNum = new LinkedHashMap<>();
+	
+	Map<String, DiffGeneFilter> mapExcelName2DifResultInfo= new LinkedHashMap<>();
 	
 	List<String> lsOutFile = new ArrayList<>();
 	boolean calculate = false;
@@ -262,7 +264,6 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	 * @return
 	 */
 	public Map<String, Integer[]> getMapDifGeneGroup2DifGeneNum() {
-		Map<String, DiffGeneFilter> mapExcelName2DifResultInfo= new LinkedHashMap<String, DiffGeneFilter>();
 		for (String excelFileName : mapExcelName2DifResultInfo.keySet()) {
 			DiffGeneFilter difResultInfo = mapExcelName2DifResultInfo.get(excelFileName);
 			Integer[] arrDifGeneNum = new Integer[3]; 
@@ -590,7 +591,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	public List<String> plotDifParams() {
 		ArrayList<String> lsOutFile = new ArrayList<>(); 
 		Map<String, String[]> mapExcelName2Compare = getMapOutFileName2Compare();
-		Map<String, DiffGeneFilter> mapExcelName2DifResultInfo= new LinkedHashMap<String, DiffGeneFilter>();
+		mapExcelName2DifResultInfo.clear();
 		
 		for (String excelName : mapExcelName2Compare.keySet()) {
 			mapExcelName2DifResultInfo.put(excelName, new DiffGeneFilter(excelName));

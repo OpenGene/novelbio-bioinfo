@@ -70,7 +70,8 @@ public class SamFileStatistics implements AlignmentRecorder {
 	/** 超过50条染色体就不画这个图了 */
 	private static int chrNumMax = 50;
 	String prefix = "";
-	
+	/** 是否经过了计算，也就是有东西了 */
+	boolean isCalculated = false;
 	/**
 	 * 由于非unique mapped reads的存在，为了精确统计reads在染色体上的分布，每个染色体上的reads数量用double来记数<br>
 	 * 这样如果一个reads在bam文本中出现多次--也就是mapping至多个位置，就会将每个记录(reads)除以其mapping number,<br>
@@ -94,6 +95,10 @@ public class SamFileStatistics implements AlignmentRecorder {
 	}
 	public String getPrefix() {
 		return prefix;
+	}
+	/** 是否经过了计算，也就是有东西了 */
+	public boolean isCalculated() {
+		return isCalculated;
 	}
 	/**
 	 * 由于非unique mapped reads的存在，为了精确统计reads在染色体上的分布，每个染色体上的reads数量用double来记数<br>
@@ -125,14 +130,18 @@ public class SamFileStatistics implements AlignmentRecorder {
 	 * @return -1表示错误
 	 */
 	public long getReadsNum(MappingReadsType mappingType) {
-		return (long)getReadsNumRaw(mappingType);
+		Double value = getReadsNumRaw(mappingType);
+		if (value == null) {
+			return 0;
+		}
+		return value.longValue();
 	}
 	/**
 	 * 返回readsNum
 	 * @param mappingType MAPPING_ALLREADS等，注意不要重这个方法获得rate
 	 * @return -1表示错误
 	 */
-	private double getReadsNumRaw(MappingReadsType mappingType) {
+	private Double getReadsNumRaw(MappingReadsType mappingType) {
 		if (mappingType == MappingReadsType.All) {
 			return allReadsNum;
 		}
@@ -253,6 +262,7 @@ public class SamFileStatistics implements AlignmentRecorder {
 
 	@Override
 	public void summary() {
+		isCalculated = true;
 		summeryReadsNum();
 		if (correctChrReadsNum) {
 			expChrDist.modifyByAllReadsNum();
@@ -398,8 +408,16 @@ public class SamFileStatistics implements AlignmentRecorder {
 		return lsTable;
 	}
 	
+	/** 读取文本表格并填充本类
+	 * @param pathAndName 用 {@link #saveExcel(String, SamFileStatistics)} 这个方法写入的文件名 
+	 */
+	public void readTableShort(String pathAndName) {
+		readTable(getSaveExcel(pathAndName));
+	}
+	
 	/** 读取文本表格并填充本类 */
 	public void readTable(String samStatisticFile) {
+		isCalculated = true;
 		List<String> lsReadsInfo = new ArrayList<>();
 		TxtReadandWrite txtRead = new TxtReadandWrite(samStatisticFile);
 		

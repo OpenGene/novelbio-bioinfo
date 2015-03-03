@@ -126,8 +126,9 @@ OutDir=6
 			tmpResult[3] = comparePair[1];//SampleControl
 			tmpResult[4] = getSampleCol(mapSample2LsCol.get(comparePair[1]).size());//SampleControlNum
 			tmpResult[5] = comparePair[1];//SampleControlName
-			
-			tmpResult[6] = FileHadoop.convertToLocalPath(fileName.replace("\\", "/") + outPutSuffix);//OutDir
+			String outPath = fileName.replace("\\", "/") + outPutSuffix;
+			FileOperate.createFolders(outPath);
+			tmpResult[6] = FileHadoop.convertToLocalPath(outPath);//OutDir
 			lsResult.add(tmpResult);
 		}
 		return lsResult;

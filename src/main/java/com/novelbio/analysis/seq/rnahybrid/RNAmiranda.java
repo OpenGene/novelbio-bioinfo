@@ -75,7 +75,6 @@ public class RNAmiranda implements IntCmdSoft {
 		if (!cmdOperate.isFinishedNormal()) {
 			throw new ExceptionCmd("miranda error:" + cmdOperate.getCmdExeStrReal());
 		}
-		FileOperate.moveFile(true, FileOperate.changeFilePrefix(predictResultFile, "_tmp", null), predictResultFile);
 		return predictResultFile;
 	}
 	
@@ -86,7 +85,7 @@ public class RNAmiranda implements IntCmdSoft {
 		lsCmd.add(inputUTR3seq);
 		ArrayOperate.addArrayToList(lsCmd, getTargetScore());
 		ArrayOperate.addArrayToList(lsCmd, getTargetEnergy());
-		lsCmd.add(">"); lsCmd.add(FileOperate.changeFilePrefix(predictResultFile, "_tmp", null));
+		lsCmd.add(">"); lsCmd.add(predictResultFile);
 		return lsCmd;
 	}
 	

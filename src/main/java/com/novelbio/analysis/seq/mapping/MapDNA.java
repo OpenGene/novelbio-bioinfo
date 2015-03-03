@@ -251,8 +251,8 @@ public abstract class MapDNA implements MapDNAint {
 		String runInfoPath = FileOperate.getParentPathNameWithSep(outFileName);
 		FileOperate.createFolders(runInfoPath);
 		
-		cmdOperate.setStdOutPath(runInfoPath + "IndexMake_Stdout.txt");
-		cmdOperate.setStdErrPath(runInfoPath + "IndexMake_Stderr.txt");
+		cmdOperate.setStdOutPath(runInfoPath + "IndexMake_Stdout.txt", false);
+		cmdOperate.setStdErrPath(runInfoPath + "IndexMake_Stderr.txt", false);
 
 		cmdOperate.setOutRunInfoFileName(runInfoPath + "IndexMaking.txt");
 		

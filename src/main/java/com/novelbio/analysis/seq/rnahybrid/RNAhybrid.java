@@ -82,11 +82,7 @@ public class RNAhybrid implements IntCmdSoft {
 	
 	public void mirnaPredictRun() {
 		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
-		cmdOperate.run();
-		if (!cmdOperate.isFinishedNormal()) {
-			throw new ExceptionCmd("RNAhybrid error:\n", cmdOperate);
-		}
-		FileOperate.moveFile(true, FileOperate.changeFilePrefix(predictResultFile, "_tmp", null), predictResultFile);
+		cmdOperate.runWithExp("RNAhybrid error:");
 	}
 	
 	private List<String> getLsCmd() {
@@ -96,7 +92,7 @@ public class RNAhybrid implements IntCmdSoft {
 		ArrayOperate.addArrayToList(lsCmd, getUtr3Seq());
 		ArrayOperate.addArrayToList(lsCmd, getMirSeq());
 		lsCmd.add(">");
-		lsCmd.add(FileOperate.changeFilePrefix(predictResultFile, "_tmp", null));
+		lsCmd.add(predictResultFile);
 		return lsCmd;
 	}
 	

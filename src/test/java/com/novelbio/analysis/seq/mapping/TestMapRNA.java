@@ -23,28 +23,28 @@ public class TestMapRNA {
 	public void testRsem() {
 		
 	}
-	@Test
-	public void testMapSplice() {
-		lsLeftFq.add(new FastQ("/media/hdfs/nbCloud/public/test/RNASeqMap/MouseRNA_KO_L1_1_Small.fq.gz"));
-		lsRightFq.add(new FastQ("/media/hdfs/nbCloud/public/test/RNASeqMap/MouseRNA_KO_L1_2_Small.fq.gz"));
-		mapRNA = new MapSplice();
-		Species species = new Species(10090);		
-		
-		mapRNA.setRefIndex(species.getIndexChr(SoftWare.bowtie));
-		mapRNA.setGtf_Gene2Iso(species.getChromSeqSep());
-		mapRNA.setLeftFq(lsLeftFq);
-		mapRNA.setRightFq(lsRightFq);
-		mapRNA.setThreadNum(3);
-		mapRNA.setOutPathPrefix("/media/hdfs/nbCloud/public/test/RNASeqMap/mapsplice_");
-		mapRNA.mapReads();
-		lsLeftFq.clear();
-		lsRightFq.clear();
-	}
-	
 //	@Test
+//	public void testMapSplice() {
+//		lsLeftFq.add(new FastQ("/media/hdfs/nbCloud/public/test/RNASeqMap/MouseRNA_KO_L1_1_Small.fq.gz"));
+//		lsRightFq.add(new FastQ("/media/hdfs/nbCloud/public/test/RNASeqMap/MouseRNA_KO_L1_2_Small.fq.gz"));
+//		mapRNA = new MapSplice();
+//		Species species = new Species(10090);		
+//		
+//		mapRNA.setRefIndex(species.getIndexChr(SoftWare.bowtie));
+//		mapRNA.setGtf_Gene2Iso(species.getChromSeqSep());
+//		mapRNA.setLeftFq(lsLeftFq);
+//		mapRNA.setRightFq(lsRightFq);
+//		mapRNA.setThreadNum(3);
+//		mapRNA.setOutPathPrefix("/media/hdfs/nbCloud/public/test/RNASeqMap/mapsplice_");
+//		mapRNA.mapReads();
+//		lsLeftFq.clear();
+//		lsRightFq.clear();
+//	}
+	
+	@Test
 	public void testTophat() {
-		lsLeftFq.add(new FastQ("/media/hdfs/nbCloud/public/test/RNASeqMap/MouseRNA_KO_L1_1_Small.fq.gz"));
-		lsRightFq.add(new FastQ("/media/hdfs/nbCloud/public/test/RNASeqMap/MouseRNA_KO_L1_2_Small.fq.gz"));
+		lsLeftFq.add(new FastQ("/hdfs:/nbCloud/public/test/RNASeqMap/MouseRNA_KO_L1_1_Small.fq.gz"));
+		lsRightFq.add(new FastQ("/hdfs:/nbCloud/public/test/RNASeqMap/MouseRNA_KO_L1_2_Small.fq.gz"));
 		mapRNA = new MapTophat();
 
 		Species species = new Species(9606);
@@ -52,7 +52,7 @@ public class TestMapRNA {
 		mapRNA.setGffChrAbs(new GffChrAbs(9606));
 		mapRNA.setRefIndex(species.getIndexChr(SoftWare.bowtie2));
 		mapRNA.setGtf_Gene2Iso("");
-		mapRNA.setOutPathPrefix("/media/hdfs/nbCloud/public/test/RNASeqMap/ddd");
+		mapRNA.setOutPathPrefix("/hdfs:/nbCloud/public/test/RNASeqMap/ddd");
 		mapRNA.setLeftFq(lsLeftFq);
 		mapRNA.setRightFq(lsRightFq);
 		mapRNA.setThreadNum(3);

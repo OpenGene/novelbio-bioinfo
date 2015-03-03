@@ -61,14 +61,14 @@ public class RiceID {
 	 */
 	public void update() {
 		RiceTIGRGFFID riceTIGRGFFID = new RiceTIGRGFFID();
-//		riceTIGRGFFID.setTxtWriteExcep(tigrDBoutID);
-//		riceTIGRGFFID.setInsertAccID(false);
-//		riceTIGRGFFID.updateFile(gffTIGR);
+		riceTIGRGFFID.setTxtWriteExcep(tigrDBoutID);
+		riceTIGRGFFID.setInsertAccID(false);
+		riceTIGRGFFID.updateFile(gffTIGR);
 //		
 		RiceRapDBLocus riceRapDBLocus = new RiceRapDBLocus();
-//		riceRapDBLocus.setTxtWriteExcep(rapLocusGff + "out");
-//		riceRapDBLocus.setInsertAccID(false);
-//		riceRapDBLocus.updateFile(rapLocusGff);
+		riceRapDBLocus.setTxtWriteExcep(rapLocusGff + "out");
+		riceRapDBLocus.setInsertAccID(false);
+		riceRapDBLocus.updateFile(rapLocusGff);
 		
 		RiceRap2MSU riceRap2MSU = new RiceRap2MSU();
 		riceRap2MSU.updateFile(rap2MSU);
@@ -283,6 +283,9 @@ class RiceRapDBID extends ImportPerLine {
 				for (int j = 0; j < tmpAcc.length; j++) {
 					String[] tmpRapID =new String[2];
 					tmpRapID[0] = tmpAcc[j];
+					if (tmpRapID[0].equals("_")) {
+						continue;
+					}
 					tmpRapID[1] = DBAccIDSource.IRGSP_rice.toString();
 					lsAccIDInfo2DB.add(tmpRapID);
 					lsRefID.add(tmpAcc[j]);
@@ -294,6 +297,9 @@ class RiceRapDBID extends ImportPerLine {
 				for (int j = 0; j < tmpAcc.length; j++) {
 					String[] tmpRapID =new String[2];
 					tmpRapID[0] = tmpAcc[j];
+					if (tmpRapID[0].equals("_")) {
+						continue;
+					}
 					tmpRapID[1] = DBAccIDSource.IRGSP_rice.toString();
 					lsAccIDInfo2DB.add(tmpRapID);
 					lsRefID.add(tmpAcc[j]);			
@@ -304,7 +310,10 @@ class RiceRapDBID extends ImportPerLine {
 				String[] tmpAcc = tmp.split(",");
 				for (int j = 0; j < tmpAcc.length; j++) {
 					String[] tmpRapID =new String[2];
-					tmpRapID[0] =   tmpAcc[j];
+					tmpRapID[0] = tmpAcc[j];
+					if (tmpRapID[0].equals("_")) {
+						continue;
+					}
 					tmpRapID[1] = DBAccIDSource.NCBI.name();
 					lsAccIDInfo2DB.add(tmpRapID);
 					lsRefID.add(tmpAcc[j]);
@@ -318,6 +327,9 @@ class RiceRapDBID extends ImportPerLine {
 						continue;
 					}
 					String[] tmpRapID =new String[2];
+					if (tmpRapID[0].equals("_")) {
+						continue;
+					}
 					tmpRapID[0] =  tmpAcc[j];
 					tmpRapID[1] = DBAccIDSource.Symbol.name();
 					lsAccIDInfo2DB.add(tmpRapID);
@@ -332,6 +344,9 @@ class RiceRapDBID extends ImportPerLine {
 					}
 					String[] tmpRapID =new String[2];
 					tmpRapID[0] =  tmpAcc[j];
+					if (tmpRapID[0].equals("_")) {
+						continue;
+					}
 					tmpRapID[1] = DBAccIDSource.Synonyms.name();
 					lsAccIDInfo2DB.add(tmpRapID);
 				}
@@ -343,18 +358,12 @@ class RiceRapDBID extends ImportPerLine {
 				for (int j = 0; j < tmpAcc.length; j++) {
 					String[] tmpRapID =new String[2];
 					tmpRapID[0] =  tmpAcc[j];
+					if (tmpRapID[0].equals("_")) {
+						continue;
+					}
 					tmpRapID[1] = DBAccIDSource.IRGSP_rice.name();
 					lsAccIDInfo2DB.add(tmpRapID);
 					lsRefID.add(0, tmpAcc[j]);
-				}
-			}
-			else if (tmpID[i].contains("ORF_evidence=")) {
-				String tmp = tmpID[i].split("=")[1];
-				if (!tmp.equals("NONE")) {
-					String[] tmpAcc = tmp.split(",");
-					for (int j = 0; j < tmpAcc.length; j++) {
-						lsRefID.add(tmpAcc[j].split(" ")[0]);
-					}
 				}
 			}
 		}
@@ -601,20 +610,20 @@ class RiceTIGRGFFID extends ImportPerLine {
 	}
 	@Override
 	public boolean impPerLine(String lineContent) {
-			if (lineContent.startsWith("#") || lineContent.equals(""))
-				return true;
-			String[] ss = lineContent.split("\t");
-			if (!ss[2].trim().equals("gene"))
-				return true;
-			////////////////////////////
-			String[] ssLOC = ss[8].split(";");
-			if (!ssLOC[ssLOC.length - 1].contains("Alias=")) {
-				return true;
-			}
-			String LOCID = ssLOC[ssLOC.length-1].split("=")[1];
-			GeneID copedID = new GeneID(LOCID, 39947);
-			copedID.setUpdateDBinfo(DBAccIDSource.TIGR_rice, true);
-			return copedID.update(insertAccID);
+		if (lineContent.startsWith("#") || lineContent.equals(""))
+			return true;
+		String[] ss = lineContent.split("\t");
+		if (!ss[2].trim().equals("gene"))
+			return true;
+		////////////////////////////
+		String[] ssLOC = ss[8].split(";");
+		if (!ssLOC[ssLOC.length - 1].contains("Alias=")) {
+			return true;
+		}
+		String LOCID = ssLOC[ssLOC.length-1].split("=")[1];
+		GeneID copedID = new GeneID(LOCID, 39947);
+		copedID.setUpdateDBinfo(DBAccIDSource.TIGR_rice, true);
+		return copedID.update(insertAccID);
 	}
 }
 
