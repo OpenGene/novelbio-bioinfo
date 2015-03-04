@@ -104,12 +104,12 @@ public class Prophecy implements IntCmdSoft {
 		result[0] = outFile;
 		List<String> lsCmd = getlsCmd(true, result[0]);
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
-		cmdOperate.run();
+		cmdOperate.runWithExp("prophecy error:");
 		if (isNr) {
 			result[1] = FileOperate.changeFileSuffix(outFile, "_reverse", null);
 			List<String> lsCmdTrans = getlsCmd(false, result[1]);
 			cmdOperate = new CmdOperate(lsCmdTrans);
-			cmdOperate.run();
+			cmdOperate.runWithExp("prophecy error:");
 		}
 		return result;
 	}

@@ -84,7 +84,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	
 	HashMap<String, Integer[]> mapDifGeneGroup2DifGeneNum = new LinkedHashMap<>();
 	
-	Map<String, DiffGeneFilter> mapExcelName2DifResultInfo= new LinkedHashMap<>();
+	Map<String, DiffGeneFilter> mapCompare2DifResultInfo= new LinkedHashMap<>();
 	
 	List<String> lsOutFile = new ArrayList<>();
 	boolean calculate = false;
@@ -264,13 +264,13 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	 * @return
 	 */
 	public Map<String, Integer[]> getMapDifGeneGroup2DifGeneNum() {
-		for (String excelFileName : mapExcelName2DifResultInfo.keySet()) {
-			DiffGeneFilter difResultInfo = mapExcelName2DifResultInfo.get(excelFileName);
+		for (String compare : mapCompare2DifResultInfo.keySet()) {
+			DiffGeneFilter difResultInfo = mapCompare2DifResultInfo.get(compare);
 			Integer[] arrDifGeneNum = new Integer[3]; 
 			arrDifGeneNum[0] = difResultInfo.getDifGeneNum();
 			arrDifGeneNum[1] = difResultInfo.getUpGeneNum();
 			arrDifGeneNum[2] = difResultInfo.getDownGeneNum();
-			mapDifGeneGroup2DifGeneNum.put(excelFileName, arrDifGeneNum);
+			mapDifGeneGroup2DifGeneNum.put(compare, arrDifGeneNum);
 		}
 		
 		return mapDifGeneGroup2DifGeneNum;
@@ -591,15 +591,16 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	public List<String> plotDifParams() {
 		ArrayList<String> lsOutFile = new ArrayList<>(); 
 		Map<String, String[]> mapExcelName2Compare = getMapOutFileName2Compare();
-		mapExcelName2DifResultInfo.clear();
+		mapCompare2DifResultInfo.clear();
 		
 		for (String excelName : mapExcelName2Compare.keySet()) {
-			mapExcelName2DifResultInfo.put(excelName, new DiffGeneFilter(excelName));
+			String[] compare = mapExcelName2Compare.get(excelName); 
+			mapCompare2DifResultInfo.put(getCompare(compare), new DiffGeneFilter(excelName));
 		}
 //		String[] threshold = DiffGeneVocalno.setThreshold(mapExcelName2DifResultInfo.values());
 		//画图，出差异基因的表格
-		for (String excelFileName : mapExcelName2DifResultInfo.keySet()) {
-			DiffGeneFilter difResultInfo = mapExcelName2DifResultInfo.get(excelFileName);
+		for (String compare : mapCompare2DifResultInfo.keySet()) {
+			DiffGeneFilter difResultInfo = mapCompare2DifResultInfo.get(compare);
 			difResultInfo.setThreshold(titlePvalueFdr, pValueOrFDRcutoff);
 			difResultInfo.setLogfcCol(Math.abs(logFCcutoff), -Math.abs(logFCcutoff));
 			String outFile = difResultInfo.writeDifGene();
@@ -611,7 +612,9 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		return lsOutFile;
 	}
 
-	
+	private String getCompare(String[] compare) {
+		return compare[0] + "vs" + compare[1];
+	}
 	
 	
 	
@@ -676,16 +679,5 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	
 		return lsScript;
 	}
-	
-	/** 必须在设定完输入文件名后才能使用 */
-	public HashMultimap<String, String> getPredictMapPrefix2Result() {
-		HashMultimap<String, String> mapPrefix2File = HashMultimap.create();
-		for (String outFileName : mapOutFileName2Compare.keySet()) {
-			String[] compare = mapOutFileName2Compare.get(outFileName);
-			mapPrefix2File.put(compare[0] + " vs " + compare[1], outFileName);
-			String difGene = DiffGeneFilter.getDifGeneFileName(outFileName);
-			mapPrefix2File.put("difgene " + compare[0] + " vs " + compare[1], difGene);
-		}
-		return mapPrefix2File;
-	}
+
 }

@@ -84,12 +84,12 @@ public class Profit implements IntCmdSoft {
 	
 	public void scaning() {
 		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
-		cmdOperate.run();
+		cmdOperate.runWithExp("profit error:");
 	}
 	
 	private List<String> getLsCmd() {
 		List<String> lsCmd = new ArrayList<>();
-		lsCmd.add(ExePath); lsCmd.add("profit"); lsCmd.add("-slower2");//变小写
+		lsCmd.add(ExePath + "profit"); lsCmd.add("-slower2");//变小写
 		ArrayOperate.addArrayToList(lsCmd, getInProfit());
 		ArrayOperate.addArrayToList(lsCmd, getSeqFile());
 		lsCmd.add(getSeqType());

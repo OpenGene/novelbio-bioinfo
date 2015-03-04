@@ -300,9 +300,9 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
     */
    private String[] addMRNA(String[] lastGeneIDandName, String[] ss) {
 	   String rnaID = ss[0] + patID.getPatFirst(ss[8]);
-	   String rnaName = add_MapRnaID2RnaName_And_MapRnaID2GeneID(lastGeneIDandName, rnaID, ss);
+	   GeneType mRNAtype = getMrnaName(ss);
+	   String rnaName = add_MapRnaID2RnaName_And_MapRnaID2GeneID(lastGeneIDandName, rnaID, ss, mRNAtype);
 	   GffDetailGene gffDetailGene = getGffDetailRnaID(rnaID);
-	  GeneType mRNAtype = getMrnaName(ss);
 	   try {
 		   GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.addsplitlist(rnaName, gffDetailGene.getNameSingle(), mRNAtype, ss[6].equals("+") || ss[6].equals("."));//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
 		   mapRnaID2LsIso.put(rnaID, gffGeneIsoInfo);
@@ -320,11 +320,19 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
     * @param ss
     * @return  返回加入的rna名字
     */
-   private String add_MapRnaID2RnaName_And_MapRnaID2GeneID(String[] lastGeneIDandName, String rnaID, String[] ss) {
-	   String rnaName = patmRNAName.getPatFirst(ss[8]);
+   private String add_MapRnaID2RnaName_And_MapRnaID2GeneID(String[] lastGeneIDandName, String rnaID, String[] ss, GeneType geneType) {
+	   String rnaName = null;
+	   if (geneType == GeneType.miRNA) {
+		   rnaName = patProduct.getPatFirst(ss[8]);
+		   if (rnaName == null) rnaName = patmRNAName.getPatFirst(ss[8]);
+	   } else {
+		   rnaName = patmRNAName.getPatFirst(ss[8]);
+	   }
+	   
 	   if (rnaName == null) {
 		   rnaName = patName.getPatFirst(ss[8]);
 	   }
+	   
 	   if (rnaName == null) {
 		   rnaName = lastGeneIDandName[1];
 	   }

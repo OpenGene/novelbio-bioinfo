@@ -7,11 +7,10 @@ import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fasta.SeqHashInt;
 import com.novelbio.base.PathDetail;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.information.SoftWareInfo;
-import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 /**
  * 输入连配好的fasta文件，或序列
@@ -20,20 +19,7 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
  *
  */
 public class MotifEmboss {
-//	public static void main(String[] args) {
-//		String fileName = "TSS_36_UP.fasta";
-//		SeqHash seqHashMotif = new SeqHash("/home/zong0jie/桌面/20121224/motif.fasta");
-//		SeqHash seqHash = new SeqHash("/home/zong0jie/桌面/20121224/Tss/" + fileName);
-//		MotifEmboss motifEmboss = new MotifEmboss();
-//		motifEmboss.motifPath = "/home/zong0jie/Desktop/test/";
-//		motifEmboss.setAlignedMotifSeqHash(seqHashMotif);
-//		motifEmboss.setSeqHash(seqHash);
-//		motifEmboss.setMotifEmbossScanAlgorithm(MotifEmbossScanAlgorithm.Frequency);
-//		String[] result = motifEmboss.scanMotif();
-//		FileOperate.moveFile(result[0], "/home/zong0jie/桌面/20121224/motifResult", fileName + "motif.txt", true);
-//		FileOperate.moveFile(result[1], "/home/zong0jie/桌面/20121224/motifResult", fileName + "motif_reverse.txt", true);
-//	}
-		
+	private static final String outSuffix = "_MotifScaningResult";
 	/** 连配好的motif */
 	Collection<SeqFasta> colAlignmentMotif;
 	
@@ -43,7 +29,9 @@ public class MotifEmboss {
 	String seqFilePath;
 	
 	/** motif分析所在的临时文件夹 */
-	String motifPath = PathDetail.getTmpPath();
+	String motifFilePath;
+	/** 输出文件路径 */
+	String outFile;
 	
 	Prophecy prophecy;
 	Profit profit;
@@ -57,8 +45,25 @@ public class MotifEmboss {
 	private  Boolean isNR = null;
 	
 	/** 输入连配好的motif */
-	public void setColAlignedMotifFasta(Collection<SeqFasta> colAlignmentMotif) {
-		this.colAlignmentMotif = colAlignmentMotif;
+	public void setColAlignedMotifFasta(String motifFilePath) {
+		if (!StringOperate.isRealNull(motifFilePath)) {
+			this.motifFilePath = motifFilePath;
+		}
+	}
+	/** 输入连配好的motif */
+	public void setAlignedMotifSeqHash(SeqHashInt seqHash) {
+		colAlignmentMotif = new ArrayList<SeqFasta>();
+		ArrayList<String> lsSeqName = seqHash.getLsSeqName();
+		for (String string : lsSeqName) {
+			SeqFasta seqFasta = seqHash.getSeq(string);
+			colAlignmentMotif.add(seqFasta);
+		}
+		this.motifFilePath = FileOperate.addSep(PathDetail.getTmpPath()) + DateUtil.getDateAndRandom();
+	}
+	
+	/** 输出文件路径 */
+	public void setOutFile(String outFile) {
+		this.outFile = outFile;
 	}
 	
 	/** true是，false否
@@ -69,24 +74,11 @@ public class MotifEmboss {
 		this.isNR = isNR;
 	}
 	
-	/** 输入连配好的motif */
-	public void setAlignedMotifSeqHash(SeqHashInt seqHash) {
-		colAlignmentMotif = new ArrayList<SeqFasta>();
-		addSeq(colAlignmentMotif, seqHash);
-		seqFilePath = null;
-	}
-	
 	/** 输入要扫描的序列 */
 	public void setColSeqFasta(Collection<SeqFasta> colSeqFasta) {
 		this.colSeqFasta = colSeqFasta;
 	}
-	
-	/** 输入要扫描的序列 */
-	public void setSeqHash(SeqHashInt seqHash) {
-		colSeqFasta = new ArrayList<SeqFasta>();
-		addSeq(colSeqFasta, seqHash);
-		seqFilePath = null;
-	}
+
 	/** 输入要扫描的序列的文件名，务必是fasta格式，
 	 * 与{@link #setColSeqFasta(Collection)} 只能选一个
 	 */
@@ -98,54 +90,14 @@ public class MotifEmboss {
 	public void setMotifEmbossScanAlgorithm(MotifEmbossScanAlgorithm motifEmbossScanAlgorithm) {
 		this.motifEmbossScanAlgorithm = motifEmbossScanAlgorithm;
 	}
-	
-	/**
-	 * @param colSeq motif
-	 * @param seqHash 待扫描的序列
-	 */
-	private void addSeq(Collection<SeqFasta> colSeq, SeqHashInt seqHash) {
-		ArrayList<String> lsSeqName = seqHash.getLsSeqName();
-		for (String string : lsSeqName) {
-			SeqFasta seqFasta = seqHash.getSeq(string);
-			colSeq.add(seqFasta);
-		}
-	}
-	
+
 	public void generateMatrix() {
 		setParam();
-		String suffix = "_" +DateUtil.getDateAndRandom();
-		String alignedMotif = writeAlignedMotif(suffix);
-		weightMatrixFile = generateWeightMatrix(alignedMotif, suffix);
-	}
-	/**
-	 * <b>之前务必要运行{@link #generateMatrix()}</b><br>
-	 * @return 返回 string[2]<br>
-	 * 0: 正链扫描结果<br>
-	 * 1: 负链扫描结果
-	 */
-	public String[] scanMotif() {
-		String suffix = "_" +DateUtil.getDateAndRandom();
-		seqfastaNeedScan = writeSeqfastaNeedScan(suffix);
-		String[] resultMotif = new String[weightMatrixFile.length];
-		resultMotif[0] = scanAndGetResult(weightMatrixFile[0], seqfastaNeedScan, suffix);
-		if (resultMotif.length > 1) {
-			resultMotif[1] = scanAndGetResult(weightMatrixFile[1], seqfastaNeedScan, "_reserve" + suffix);
+		String motifFile = motifFilePath;
+		if (StringOperate.isRealNull(motifFile)) {
+			motifFile = writeAlignedMotif();
 		}
-		return resultMotif;
-	}
-	/**
-	 * 将aligment文件写入文本，并返回文件名
-	 * @param suffix 时间日期随机数
-	 * @return
-	 */
-	private String writeAlignedMotif(String suffix) {
-		String resultFile = FileOperate.addSep(motifPath) + "AlignedMofit" + suffix + ".fa";
-		TxtReadandWrite txtWrite = new TxtReadandWrite(resultFile, true);
-		for (SeqFasta seqFasta : colAlignmentMotif) {
-			txtWrite.writefileln(seqFasta.toStringNRfasta());
-		}
-		txtWrite.close();
-		return resultFile;
+		weightMatrixFile = generateWeightMatrix(motifFile);
 	}
 	
 	private void setParam() {
@@ -179,15 +131,45 @@ public class MotifEmboss {
 	}
 	
 	/**
+	 * <b>之前务必要运行{@link #generateMatrix()}</b><br>
+	 * @return 返回 string[2]<br>
+	 * 0: 正链扫描结果<br>
+	 * 1: 负链扫描结果
+	 */
+	public void scanMotif() {
+		seqfastaNeedScan = writeSeqfastaNeedScan();
+		String resultF = FileOperate.changeFileSuffix(outFile, outSuffix, "txt");
+		scanAndGetResult(weightMatrixFile[0], seqfastaNeedScan, resultF);
+		if (weightMatrixFile.length > 1) {
+			String resultR = FileOperate.changeFileSuffix(outFile, outSuffix + "_reverse", "txt");
+			scanAndGetResult(weightMatrixFile[1], seqfastaNeedScan, resultR);
+		}
+	}
+	/**
+	 * 将aligment文件写入文本，并返回文件名
+	 * @param suffix 时间日期随机数
+	 * @return
+	 */
+	private String writeAlignedMotif() {
+		String resultFile =  FileOperate.changeFileSuffix(motifFilePath, "_AlignedMofit", "fa");
+		TxtReadandWrite txtWrite = new TxtReadandWrite(resultFile, true);
+		for (SeqFasta seqFasta : colAlignmentMotif) {
+			txtWrite.writefileln(seqFasta.toStringNRfasta());
+		}
+		txtWrite.close();
+		return resultFile;
+	}
+	
+	/**
 	 * 将待扫描的文件写入文本，并返回文件名
 	 * @param suffix 时间日期随机数
 	 * @return
 	 */
-	private String writeSeqfastaNeedScan(String suffix) {
+	private String writeSeqfastaNeedScan() {
 		if (colSeqFasta == null || colSeqFasta.size() == 0) {
 			return seqFilePath;
 		}
-		String resultFile = FileOperate.addSep(motifPath) + "Sequence" + suffix + ".fa";
+		String resultFile = FileOperate.changeFileSuffix(motifFilePath, "_seq", "fa");
 		TxtReadandWrite txtWrite = new TxtReadandWrite(resultFile, true);
 		for (SeqFasta seqFasta : colSeqFasta) {
 			txtWrite.writefileln(seqFasta.toStringNRfasta());
@@ -197,18 +179,17 @@ public class MotifEmboss {
 	}
 
 	/** 生成打分矩阵，并返回结果 */
-	private String[] generateWeightMatrix(String alignedMotif, String suffix) {
+	private String[] generateWeightMatrix(String alignedMotif) {
 		prophecy.setInAlignment(alignedMotif);
 		prophecy.setMatrixAlgorithm(motifEmbossScanAlgorithm);
-		String resultFile = FileOperate.addSep(motifPath) + "weightedMatrix" + suffix + ".fa";
+		String resultFile = FileOperate.changeFileSuffix(alignedMotif, "_weightedMatrix", "fa");
 		prophecy.setOutFile(resultFile);
 		return prophecy.generateProfit();
 	}
 	
-	private String scanAndGetResult(String weightMatrix, String seqFile, String suffix) {
+	private String scanAndGetResult(String weightMatrix, String seqFile, String resultFile) {
 		profit.setInProfit(weightMatrix);
 		profit.setSeqFile(seqFile);
-		String resultFile = FileOperate.addSep(motifPath) + "MotifScaningResult" + suffix + ".fa";
 		profit.setOutFile(resultFile);
 		profit.scaning();
 		return resultFile;
