@@ -2,7 +2,9 @@ package com.novelbio.analysis.emboss.motif;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
+import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fasta.SeqHashInt;
@@ -18,7 +20,7 @@ import com.novelbio.base.fileOperate.FileOperate;
  * @author zong0jie
  *
  */
-public class MotifEmboss {
+public class MotifEmboss implements IntCmdSoft {
 	private static final String outSuffix = "_MotifScaningResult";
 	/** 连配好的motif */
 	Collection<SeqFasta> colAlignmentMotif;
@@ -39,6 +41,8 @@ public class MotifEmboss {
 	MotifEmbossScanAlgorithm motifEmbossScanAlgorithm = MotifEmbossScanAlgorithm.Gribskov;
 	/** 需要扫描的文件 */
 	String seqfastaNeedScan;
+	
+	List<String> lsCmd = new ArrayList<>();
 	
 	/** 产生的权重矩阵的文件路径 */
 	private String[] weightMatrixFile;
@@ -184,6 +188,7 @@ public class MotifEmboss {
 		prophecy.setMatrixAlgorithm(motifEmbossScanAlgorithm);
 		String resultFile = FileOperate.changeFileSuffix(alignedMotif, "_weightedMatrix", "fa");
 		prophecy.setOutFile(resultFile);
+		lsCmd.addAll(prophecy.getCmdExeStr());
 		return prophecy.generateProfit();
 	}
 	
@@ -191,6 +196,7 @@ public class MotifEmboss {
 		profit.setInProfit(weightMatrix);
 		profit.setSeqFile(seqFile);
 		profit.setOutFile(resultFile);
+		lsCmd.addAll(profit.getCmdExeStr());
 		profit.scaning();
 		return resultFile;
 	}
@@ -206,5 +212,10 @@ public class MotifEmboss {
 		 *  the alignment, rather than on a sequence distance measure. 
 		 */
 		Henikoff
+	}
+
+	@Override
+	public List<String> getCmdExeStr() {
+		return lsCmd;
 	}
 }

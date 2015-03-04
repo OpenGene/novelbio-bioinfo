@@ -345,13 +345,15 @@ public class BlastInfo implements Comparable<BlastInfo> {
 		Double identityO = o.identities;
 		Double scoreThis = score;
 		Double scoreO = o.score;
-		int result = -scoreThis.compareTo(scoreO);
+
+		int result = evalueThis.compareTo(evalueO);
+		if (result == 0) {
+			result = -scoreThis.compareTo(scoreO);
+		}
 		if (result == 0) {
 			result = -identityThis.compareTo(identityO);
 		}
-		if (result == 0) {
-			result = evalueThis.compareTo(evalueO);
-		}
+
 		return result;
 	}
 	

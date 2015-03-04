@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.annotation.blast.BlastType;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.BlastFileInfo;
@@ -25,6 +26,38 @@ public class BlastUp2DB {
 		
 	/** 出错行数超过15行有问题就可以报错了 */
 	int linNum = 15;
+	
+	public static void main(String[] args) {
+		BlastUp2DB blastUp2DB = new BlastUp2DB();
+		
+		BlastFileInfo blastFileInfo = new BlastFileInfo();
+		blastFileInfo.setTmp(false);
+		
+		blastFileInfo.setQueryTaxID(508771);
+		blastFileInfo.setSubjectTaxID(7227);
+		blastFileInfo.setBlastType(BlastType.blastx);
+		blastFileInfo.setFileName("/media/winE/sssss/apicomplexans2fruitfly_2014-08-11-11-44-2030283.2014-08-11-11-44-2030283");
+		try {
+			blastFileInfo.importAndSave();
+		} catch (BlastFileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		blastUp2DB.setBlastFileInfo(blastFileInfo, GeneID.IDTYPE_ACCID, GeneID.IDTYPE_ACCID);
+		try {
+			blastUp2DB.updateFile(false);
+		} catch (BlastFileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
 	/** 这就是一步到位的设定 */
 	public void setBlastFileInfo(BlastFileInfo blastFileInfo, int queryIdType, int blastIdType) {
@@ -173,6 +206,9 @@ public class BlastUp2DB {
 		BlastInfo blastInfo = new BlastInfo(true, blastFileInfo.getQueryTaxID(), queryIDType == GeneID.IDTYPE_ACCID, 
 				blastFileInfo.getSubjectTaxID(), blastIDType == GeneID.IDTYPE_ACCID, lineContent);
 		
+		if (blastInfo.getQueryID().equals("TGME49218790")) {
+			logger.debug("stop");
+		}
 		blastInfo.setBlastFileId(blastFileInfo.getId());
 		try {
 			manageBlastInfo.updateBlast(blastInfo);
