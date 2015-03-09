@@ -1,5 +1,9 @@
 package com.novelbio.test;
 
+import htsjdk.variant.variantcontext.VariantContext;
+import htsjdk.variant.vcf.VCFFileReader;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,13 +13,21 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.GeneExpTable;
+import com.novelbio.analysis.seq.GeneExpTable.EnumAddAnnoType;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
+import com.novelbio.analysis.seq.fasta.SeqFastaMotifSearch;
+import com.novelbio.analysis.seq.fastq.FastQ;
+import com.novelbio.analysis.seq.fastq.FastQRecord;
+import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
+import com.novelbio.analysis.seq.mapping.MapBwaAln;
+import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.dataOperate.HttpFetch;
@@ -24,6 +36,9 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.model.modgeneid.GeneType;
+import com.novelbio.database.model.species.Species;
 import com.novelbio.database.mongorepo.kegg.RepoKEntry;
 import com.novelbio.database.mongorepo.kegg.RepoKIDKeg2Ko;
 import com.novelbio.database.mongorepo.kegg.RepoKIDgen2Keg;
@@ -41,41 +56,43 @@ public class mytest {
 	private static final Logger logger = Logger.getLogger(mytest.class);
 	static boolean is;
 	public static void main(String[] args) throws Exception {
-//		GeneID geneID = new GeneID("tp53", 9606);
-//		System.out.println(geneID.getDescription());
-//		logger.info("fsefe");
-//		
-//		GeneID geneID = new GeneID("tp53", 9606);
-//		TxtReadandWrite txtWrite = new TxtReadandWrite("/hdfs:/nbCloud/testJJJ", true);
-//		txtWrite.writefileln("ffserfse");
-////		txtWrite.writefileln("discription : " + geneID.getDescription());
-//		txtWrite.close();
-		
-//		FileOperate.DeleteFileFolder("/hdfs:/app/custom-amservice");
-//		FileOperate.copyFileFolder("/home/novelbio/git/spring-hadoop-samples/yarn/yarn/custom-amservice/build/libs", 
-//				"/hdfs:/app/custom-amservice", true);
-//		FileOperate.DeleteFileFolder("/hdfs:/lib");
-//		FileOperate.copyFileFolder("/home/novelbio/git/spring-hadoop-samples/yarn/yarn/custom-amservice/build/dependency-libs", 
-//				"/hdfs:/lib", true);
-		
-		TxtReadandWrite txtRead = new TxtReadandWrite("/hdfs:/nbCloud/needCopy3.txt");
-		for (String string : txtRead.readlines()) {
-			System.out.println(string);
+		GeneExpTable geneExpTable = new GeneExpTable("miRNAName");
+		geneExpTable.read("/media/winE/sssss/all_counts-new.txt", EnumAddAnnoType.addAll);
+		geneExpTable.writeFile(true, "/media/winE/sssss/all_counts-new_uq.txt", EnumExpression.UQPM);
+	}
+	
+	
+	private void extractMiRNASeq() {
+		TxtReadandWrite txtWrite = new TxtReadandWrite("/home/novelbio/NBCsource/miRNApromoter.fa", true);
+		int upstream = 1500;
+		Species species = new Species(9606);
+		species.setVersion("hg19_GRCh37");
+		GffChrAbs gffChrAbs = new GffChrAbs(species);
+		List<GffDetailGene> lsDetailGenes = gffChrAbs.getGffHashGene().getLsGffDetailGenes();
+		for (GffDetailGene gffDetailGene : lsDetailGenes) {
+			GffGeneIsoInfo isoMirna = null;
+			for (GffGeneIsoInfo iso : gffDetailGene.getLsCodSplit()) {
+				if (iso.getGeneType() == GeneType.miRNA) {
+					isoMirna = iso;
+					break;
+				}
+			}
+			
+			if (isoMirna != null) {
+				int tss = isoMirna.getParentGffDetailGene().getStartCis();
+				int up = isoMirna.isCis5to3()?  tss - 1500 : tss + 1500;
+				SeqFasta seqUp = gffChrAbs.getSeqHash().getSeq(isoMirna.getRefID(), Math.min(tss, up), Math.max(tss, up));
+				if (seqUp == null) {
+					continue;
+				}
+				if (!isoMirna.isCis5to3()) {
+					seqUp = seqUp.reservecom();
+				}
+				seqUp.setName(isoMirna.getName());
+				txtWrite.writefileln(seqUp.toStringNRfasta());
+			}
 		}
-		
-//		int[] mm = new int[500000000];
-//		System.out.println();
-		
-//		 Map<String, String> envs = System.getenv();
-//		 for (String string : envs.keySet()) {
-//			System.out.println(string + "\t" + envs.get(string));
-//		 }
-//		System.out.println(Environment.JAVA_HOME.$());
-		
-		System.out.println(FileHadoop.getHadoopFileSystem().getHomeDirectory());
-		
-//		Species species = new Species(9606);
-//		System.out.println(species.getChromSeq());
+		txtWrite.close();
 	}
 	
 	private void deletdb() {

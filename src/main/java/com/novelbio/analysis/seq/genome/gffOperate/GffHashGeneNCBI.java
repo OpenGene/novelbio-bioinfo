@@ -235,13 +235,15 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		   if (ss[2].equals("region")) {
 			   String regxChrID = "(?<=chromosome\\=)[\\w\\.\\-%\\:]+";
 			   String regxName = "(?<=Name\\=)[\\w\\.\\-%\\:]+";
-			   if (ss[8].contains("genome=genomic")) {
+			   String ss8Lowcase = ss[8].toLowerCase();
+			   if (ss8Lowcase.contains("genome=genomic")) {
 				   chrID = GeneID.removeDot(ss[0]);
-			   } else if (ss[8].contains("genome=mitochondrion")) {
+			   } else if (ss8Lowcase.contains("genome=mitochondrion")) {
 				   chrID = "chrm";
-			   } else if (ss[8].contains("genome=chloroplast")) {
+			   } else if (ss8Lowcase.contains("genome=chloroplast")) {
 				   chrID = "chrc";
-			   }  else if (ss[8].contains("genome=Unknown") || ss[8].toLowerCase().contains("genome=un")) {
+			   }  else if (ss8Lowcase.contains("genome=unknown") 
+					   || ss8Lowcase.contains("genome=un") || (!ss8Lowcase.contains("chromosome=") && ss8Lowcase.contains("name=anonymous"))) {
 				   chrID = ss[0];
 			   } else {
 				   List<String[]> lsRegx = PatternOperate.getPatLoc(ss[8], regxChrID, false);

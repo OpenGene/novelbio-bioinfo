@@ -451,7 +451,7 @@ public class GeneExpTable {
 		if (mapCond2Exp == null) return null;
 		Double value = mapCond2Exp.get(condition);
 		logger.info(geneName + "\t"+ value);
-		if (value == null) return null;
+		if (value == null) return 0.0;
 		
 		double uq = (mapCondition2UQ != null) ? mapCondition2UQ.get(condition) : 0;
 		
