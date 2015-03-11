@@ -13,6 +13,7 @@ import com.novelbio.analysis.seq.sam.SamRGroup;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
+import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
@@ -66,6 +67,9 @@ public class MapBwaMem extends MapDNA {
 	String rightCombFq;
 	
 	String exePath;
+	
+	/** 临时文件 */
+	String tmpPath;
 	
 	public MapBwaMem() {
 		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.bwa_men);
@@ -331,24 +335,6 @@ public class MapBwaMem extends MapDNA {
 		this.lsRightFq = lsRightFastQs;
 		rightCombFq = null;
 	}
-	
-	private void combSeq() {
-		boolean singleEnd = (lsLeftFq.size() > 0 && lsRightFq.size() > 0) ? false : true;
-		if ( leftCombFq != null && (singleEnd || (!singleEnd && rightCombFq != null))) {
-			return;
-		}
-		String outPath = FileOperate.getPathName(outFileName);
-		if (lsLeftFq.size() == 1) {
-			leftCombFq = lsLeftFq.get(0).getReadFileName();
-		} else {
-			leftCombFq = MapBwaAln.combSeq(outPath, singleEnd, true, prefix, lsLeftFq);
-		}
-		if (lsRightFq.size() == 1) {
-			rightCombFq = lsRightFq.get(0).getReadFileName();
-		} else {
-			rightCombFq = MapBwaAln.combSeq(outPath, singleEnd, false, prefix, lsRightFq);
-		}
-	}
 
 	protected boolean isPairEnd() {
 		if (leftCombFq == null || rightCombFq == null) {
@@ -356,6 +342,7 @@ public class MapBwaMem extends MapDNA {
 		}
 		return true;
 	}
+	
 	/**
 	 * 返回输入的文件，根据是否为pairend，调整返回的结果
 	 * @return
@@ -366,7 +353,7 @@ public class MapBwaMem extends MapDNA {
 			lsOut.add(leftCombFq);
 		}
 		if (rightCombFq != null) {
-			lsOut.add(leftCombFq);
+			lsOut.add(rightCombFq);
 		}
 		return lsOut;
 	}
@@ -413,6 +400,8 @@ public class MapBwaMem extends MapDNA {
 
 	@Override
 	protected SamFile mapping() {
+		generateTmpPath();
+		
 		combSeq();
 		List<String> lsCmd = getLsCmd();
 		
@@ -422,6 +411,8 @@ public class MapBwaMem extends MapDNA {
 		thread.start();
 		InputStream inputStream = cmdOperate.getStreamStd();
 		SamFile samResult = copeSamStream(true, inputStream, isNeedSort);
+		FileOperate.DeleteFileFolder(leftCombFq);
+		FileOperate.DeleteFileFolder(rightCombFq);
 		if (samResult != null && !cmdOperate.isRunning() && cmdOperate.isFinishedNormal()) {
 			return samResult;
 		} else {
@@ -430,6 +421,13 @@ public class MapBwaMem extends MapDNA {
 				throw new ExceptionCmd("bwa aln mapping error:\n" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
 			}
 			return null;
+		}
+	}
+	
+	private void generateTmpPath() {
+		if (tmpPath == null) {
+			tmpPath = FileOperate.addSep(CmdOperate.getCmdTmpPath()) + DateUtil.getDateAndRandom() + FileOperate.getSepPath();
+			FileOperate.createFolders(tmpPath);
 		}
 	}
 	
@@ -443,13 +441,36 @@ public class MapBwaMem extends MapDNA {
 
 	@Override
 	public List<String> getCmdExeStr() {
+		generateTmpPath();
 		combSeq();
 		List<String> lsCmdResult = new ArrayList<>();
 		lsCmdResult.add("bwa version: " + MapBwaAln.getVersion(this.exePath));
 		lsCmdResult.addAll(getLsCmd());
 		return lsCmdResult;
 	}
-
+	
+	private void combSeq() {
+		boolean singleEnd = (lsLeftFq.size() > 0 && lsRightFq.size() > 0) ? false : true;
+		if ( leftCombFq != null && (singleEnd || (!singleEnd && rightCombFq != null))) {
+			return;
+		}
+		String outPath = tmpPath;
+		if (lsLeftFq.size() == 1) {
+			String leftFileName = lsLeftFq.get(0).getReadFileName();
+			leftCombFq = tmpPath + FileOperate.getFileName(leftFileName);
+			FileOperate.copyFile(leftFileName, leftCombFq, true);
+		} else {
+			leftCombFq = MapBwaAln.combSeq(outPath, singleEnd, true, prefix, lsLeftFq);
+		}
+		if (lsRightFq.size() == 1) {
+			String rightFileName = lsRightFq.get(0).getReadFileName();
+			rightCombFq = tmpPath + FileOperate.getFileName(rightFileName);
+			FileOperate.copyFile(rightFileName, rightCombFq, true);
+		} else {
+			rightCombFq = MapBwaAln.combSeq(outPath, singleEnd, false, prefix, lsRightFq);
+		}
+	}
+	
 	/**
 	 * the mem command will infer the read orientation and the insert size distribution from a batch of reads.
 	 */

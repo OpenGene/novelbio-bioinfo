@@ -1,5 +1,7 @@
 package com.novelbio.database.updatedb.database;
 
+import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.DBInfo;
@@ -22,6 +24,12 @@ public class ImportDB {
 	String GOPath;
 	
 	public static void main(String[] args) {
+		CmdOperate.setTmpPath("/fsef/fse");
+		CmdOperate cmdOperate = new CmdOperate();
+		System.out.println(cmdOperate.getCmdTmpPath());
+	}
+	
+	public static void main2(String[] args) {
 		String downloadPath = "/home/novelbio/NBCsource/database/";
 		String softToolsFile = "/home/novelbio/NBCsource/SoftwareInfo.txt";
 		String taxIDFile = "/home/novelbio/NBCsource/species/常见物种IDKEGGAll.txt";
@@ -54,6 +62,16 @@ public class ImportDB {
 		importDB.updateZeaMaize();
 //		importDB.updateBlast();
 //		importDB.updateAffy();
+	}
+	
+	public static void findGoIsExist(String goFile, int taxId) {
+		TxtReadandWrite txtRead = new TxtReadandWrite(goFile);
+		for (String content : txtRead.readlines()) {
+			if (content.split("\t")[0].equals(taxId + "")) {
+				System.out.println(content);
+			}
+		}
+		txtRead.close();
 	}
 	
 	

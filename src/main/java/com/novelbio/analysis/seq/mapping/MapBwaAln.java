@@ -12,8 +12,10 @@ import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRGroup;
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
+import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
@@ -38,7 +40,8 @@ public class MapBwaAln extends MapDNA {
 	 * 似乎该值双端才有用
 	 */
 	private static final int GENOME_SIZE_IN_MEMORY = 500000;
-	
+	/** 临时文件，如sai文件等的保存路径 */
+	String tmpPath;
 	/** bwa所在路径 */
 	String ExePath = "";
 	String[] sampleGroup;
@@ -94,56 +97,6 @@ public class MapBwaAln extends MapDNA {
 		if (lsRightFastQs == null) return;
 		this.lsRightFq = lsRightFastQs;
 		rightCombFq = null;
-	}
-	
-	private void combSeq() {
-		boolean singleEnd = (lsLeftFq.size() > 0 && lsRightFq.size() > 0) ? false : true;
-		if ( leftCombFq != null && (singleEnd || (!singleEnd && rightCombFq != null))) {
-			return;
-		}
-		String outPath = FileOperate.getPathName(outFileName);
-		if (lsLeftFq.size() == 1) {
-			leftCombFq = lsLeftFq.get(0).getReadFileName();
-		} else {
-			leftCombFq = combSeq(outPath, singleEnd, true, prefix, lsLeftFq);
-		}
-		if (lsRightFq.size() == 1) {
-			rightCombFq = lsRightFq.get(0).getReadFileName();
-		} else {
-			rightCombFq = combSeq(outPath, singleEnd, false, prefix, lsRightFq);
-		}
-	}
-	
-	/** 将输入的fastq文件合并为一个 */
-	protected static String combSeq(String outPath, boolean singleEnd, boolean left, String prefix, List<FastQ> lsFastq) {
-		if (lsFastq == null || lsFastq.size() == 0) {
-			return null;
-		}
-		String fastqFile = outPath + prefix;
-		if (prefix.equals("")) {
-			fastqFile = fastqFile + "combine";
-		} else {
-			fastqFile = fastqFile + "_combine";
-		}
-		if (singleEnd) {
-			fastqFile += ".fq.gz";
-		} else {
-			if (left) {
-				fastqFile += "_1.fq.gz";
-			} else if (!left) {
-				fastqFile += "_2.fq.gz";
-			}
-		}
-
-		FastQ fastqComb = new FastQ(fastqFile, true);
-		for (FastQ fastQ : lsFastq) {
-			for (FastQRecord fastQRecord : fastQ.readlines()) {
-				fastqComb.writeFastQRecord(fastQRecord);
-			}
-			fastQ.close();
-		}
-		fastqComb.close();
-		return fastqComb.getReadFileName();
 	}
 	
 	/**
@@ -283,7 +236,7 @@ public class MapBwaAln extends MapDNA {
 	 * @return
 	 */
 	private String getSai(int Sai1orSai2) {
-		String sai = FileOperate.getParentPathNameWithSep(outFileName) + FileOperate.getFileNameSep(outFileName)[0];
+		String sai = tmpPath + FileOperate.getFileNameSep(outFileName)[0];
 		if (Sai1orSai2 == 1) {
 			if (isPairEnd()) {
 				sai = sai + "_1.sai"; 
@@ -309,10 +262,76 @@ public class MapBwaAln extends MapDNA {
 	
 	@Override
 	protected SamFile mapping() {
+		generateTmpPath();
 		combSeq();
 		bwaAln();
-		return bwaSamPeSe();
+		SamFile samFile = bwaSamPeSe();
+		FileOperate.DeleteFileFolder(leftCombFq);
+		FileOperate.DeleteFileFolder(rightCombFq);
+		return samFile;
 	}
+	
+	private void generateTmpPath() {
+		if (tmpPath == null) {
+			tmpPath = FileOperate.addSep(CmdOperate.getCmdTmpPath()) + DateUtil.getDateAndRandom() + FileOperate.getSepPath();
+			FileOperate.createFolders(tmpPath);
+		}
+	}
+	
+	private void combSeq() {
+		boolean singleEnd = (lsLeftFq.size() > 0 && lsRightFq.size() > 0) ? false : true;
+		if ( leftCombFq != null && (singleEnd || (!singleEnd && rightCombFq != null))) {
+			return;
+		}
+		String outPath = tmpPath;
+		if (lsLeftFq.size() == 1) {
+			String leftFileName = lsLeftFq.get(0).getReadFileName();
+			leftCombFq = tmpPath + FileOperate.getFileName(leftFileName);
+			FileOperate.copyFile(leftFileName, leftCombFq, true);
+		} else {
+			leftCombFq = combSeq(outPath, singleEnd, true, prefix, lsLeftFq);
+		}
+		if (lsRightFq.size() == 1) {
+			String rightFileName = lsRightFq.get(0).getReadFileName();
+			rightCombFq = tmpPath + FileOperate.getFileName(rightFileName);
+			FileOperate.copyFile(rightFileName, rightCombFq, true);
+		} else {
+			rightCombFq = combSeq(outPath, singleEnd, false, prefix, lsRightFq);
+		}
+	}
+	
+	/** 将输入的fastq文件合并为一个 */
+	protected static String combSeq(String outPath, boolean singleEnd, boolean left, String prefix, List<FastQ> lsFastq) {
+		if (lsFastq == null || lsFastq.size() == 0) {
+			return null;
+		}
+		String fastqFile = outPath + prefix;
+		if (prefix.equals("")) {
+			fastqFile = fastqFile + "combine";
+		} else {
+			fastqFile = fastqFile + "_combine";
+		}
+		if (singleEnd) {
+			fastqFile += ".fq.gz";
+		} else {
+			if (left) {
+				fastqFile += "_1.fq.gz";
+			} else if (!left) {
+				fastqFile += "_2.fq.gz";
+			}
+		}
+
+		FastQ fastqComb = new FastQ(fastqFile, true);
+		for (FastQ fastQ : lsFastq) {
+			for (FastQRecord fastQRecord : fastQ.readlines()) {
+				fastqComb.writeFastQRecord(fastQRecord);
+			}
+			fastQ.close();
+		}
+		fastqComb.close();
+		return fastqComb.getReadFileName();
+	}
+	
 	/**
 	 * linux命令如下<br>
 	 * bwa aln -n 4 -o 1 -e 5 -t 4 -o 10 -I -l 18 /media/winE/Bioinformatics/GenomeData/Streptococcus_suis/98HAH33/BWAindex/NC_009443.fna barcod_TGACT.fastq > TGACT.sai<br>
@@ -324,11 +343,13 @@ public class MapBwaAln extends MapDNA {
 	private void bwaAln() {
 		List<String> lsCmdLeft = getLsCmdAln(true);
 		CmdOperate cmdOperate = new CmdOperate(lsCmdLeft);
+		cmdOperate.setStdErrPath(FileOperate.changeFileSuffix(outFileName, "_sai_left_stderrInfo", "txt"), false, true);
 		cmdOperate.run();
 		
 		if (isPairEnd()) {
 			List<String> lsCmdRight = getLsCmdAln(false);
 			cmdOperate = new CmdOperate(lsCmdRight);
+			cmdOperate.setStdErrPath(FileOperate.changeFileSuffix(outFileName, "_sai_right_stderrInfo", "txt"), false, true);
 			cmdOperate.run();
 		}
 		
@@ -494,6 +515,7 @@ public class MapBwaAln extends MapDNA {
 	}
 	@Override
 	public List<String> getCmdExeStr() {
+		generateTmpPath();
 		combSeq();
 		List<String> lsCmdResult = new ArrayList<>();
 		String version = getVersion(this.ExePath);

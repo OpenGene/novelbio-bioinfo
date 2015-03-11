@@ -135,6 +135,34 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	public void setTaxID(int taxID) {
 		this.taxID = taxID;
 	}
+	
+	/**
+	 * 返回哈希表 LOC--LOC细节<br/>
+	 * 用于快速将LOC编号对应到LOC的细节
+	 * hash（LOCID）--GeneInforlist，其中LOCID代表具体的基因编号 <br/>
+	 */
+	public HashMap<String, GffDetailGene> getMapName2Detail() {
+		if (mapName2DetailAbs != null) {
+			return mapName2DetailAbs;
+		}
+		mapName2DetailAbs = new LinkedHashMap<String, GffDetailGene>();
+		for (ListGff listAbs : mapChrID2ListGff.values()) {
+			for (GffDetailGene gffGeneLoc : listAbs.getMapName2DetailAbs().values()) {
+				for (GffDetailGene gffGene : gffGeneLoc.getlsGffDetailGenes()) {
+					for (String name : gffGene.getName()) {
+						if (!mapName2DetailAbs.containsKey(name.toLowerCase()) || 
+								mapName2DetailAbs.containsKey(name.toLowerCase()) && gffGene.getRefID().toLowerCase().startsWith("chr"))
+						{
+							mapName2DetailAbs.put(name.toLowerCase(), gffGene);
+							mapName2DetailAbs.put(removeDot(name.toLowerCase()), gffGene);
+						}
+					}
+				}
+			}
+		}
+		return mapName2DetailAbs;
+	}
+	
 	/**
 	 * 输入基因名，返回基因的坐标信息等
 	 * 可以输入accID

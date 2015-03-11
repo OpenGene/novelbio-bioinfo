@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.mapping.MapRNA;
 import com.novelbio.analysis.seq.mapping.MapSplice;
 import com.novelbio.analysis.seq.mapping.MapTophat;
@@ -48,8 +49,9 @@ public class TestMapRNA {
 		mapRNA = new MapTophat();
 
 		Species species = new Species(9606);
-		
-		mapRNA.setGffChrAbs(new GffChrAbs(9606));
+//		species.setVersion("tair10");
+	
+		mapRNA.setGffChrAbs(new GffChrAbs(species));
 		mapRNA.setRefIndex(species.getIndexChr(SoftWare.bowtie2));
 		mapRNA.setGtf_Gene2Iso("");
 		mapRNA.setOutPathPrefix("/hdfs:/nbCloud/public/test/RNASeqMap/ddd");
