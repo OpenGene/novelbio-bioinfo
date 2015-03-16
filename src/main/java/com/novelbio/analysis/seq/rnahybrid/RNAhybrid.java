@@ -8,9 +8,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.httpclient.methods.multipart.FilePart;
+
 import com.novelbio.analysis.IntCmdSoft;
+import com.novelbio.analysis.seq.fasta.SeqFasta;
+import com.novelbio.analysis.seq.fasta.SeqFastaReader;
 import com.novelbio.base.cmd.CmdOperate;
-import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -25,6 +28,10 @@ public class RNAhybrid implements IntCmdSoft {
 		rnAhybrid.setPredictResultFile("/media/winD/plant_miRNA_predict/rnahybrid.out");
 		rnAhybrid.mirnaPredictRun();
 	}
+	
+	/** 序列最长不能超过这个长度，超过了会报错 */
+	int lengthMax = 2000;
+	
 	String exePath = "";
 	String SpeciesType = "3utr_human";
 	
@@ -88,6 +95,7 @@ public class RNAhybrid implements IntCmdSoft {
 	private List<String> getLsCmd() {
 		List<String> lsCmd = new ArrayList<>();
 		lsCmd.add(exePath + "RNAhybrid");
+		utr3Seq = cutSeq(utr3Seq);
 		ArrayOperate.addArrayToList(lsCmd, getRNAhybridClass());
 		ArrayOperate.addArrayToList(lsCmd, getUtr3Seq());
 		ArrayOperate.addArrayToList(lsCmd, getMirSeq());
@@ -99,6 +107,25 @@ public class RNAhybrid implements IntCmdSoft {
 	/** 读取产生的结果 */
 	public Iterable<HybridRNAUnit> readPerlines() {
 		return readPerlines(predictResultFile);
+	}
+	
+	/** 减小序列的长度。
+	 * RNAhybrid要求序列的长度小于2000bp，因此需要将比这个序列长的序列进行缩小
+	 *  */
+	private String cutSeq(String utr3Seq) {
+		String outTmpUtrSeq = FileOperate.getParentPathNameWithSep(predictResultFile) + FileOperate.getFileName(utr3Seq);
+		outTmpUtrSeq = FileOperate.changeFileSuffix(outTmpUtrSeq, "_tmpCutShort", null);
+		TxtReadandWrite txtWrite = new TxtReadandWrite(outTmpUtrSeq, true);
+		SeqFastaReader seqFastaReader = new SeqFastaReader(utr3Seq);
+		for (SeqFasta seqFasta : seqFastaReader.readlines()) {
+			if (seqFasta.Length() > lengthMax) {
+				seqFasta = seqFasta.getSubSeq(0, lengthMax, true);
+			}
+			txtWrite.writefileln(seqFasta.toStringNRfasta());
+		}
+		seqFastaReader.close();
+		txtWrite.close();
+		return outTmpUtrSeq;
 	}
 	
 	/**

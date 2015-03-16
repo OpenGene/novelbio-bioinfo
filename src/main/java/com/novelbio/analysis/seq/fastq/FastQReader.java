@@ -230,7 +230,7 @@ class FastQReader implements Closeable {
 	public Iterable<FastQRecord[]> readlinesPE(int lines) {
 		lines = lines - 1;
 		try {
-			Iterable<FastQRecord[]> itContent = readPerlinesPE(true);
+			Iterable<FastQRecord[]> itContent = readPerlinesPE();
 			if (lines > 0) {
 				for (int i = 0; i < lines; i++) {
 					itContent.iterator().hasNext();
@@ -247,9 +247,9 @@ class FastQReader implements Closeable {
 	 * @param initial 是否进行初始化，主要用在多线程过滤reads的时候，在装入队列时可以先不初始化，在多线程时候才初始化
 	 * @return
 	 */
-	public Iterable<FastQRecord[]> readlinesPE(boolean initial) {
+	public Iterable<FastQRecord[]> readlinesPE() {
 		try {
-			Iterable<FastQRecord[]> itContent = readPerlinesPE(initial);
+			Iterable<FastQRecord[]> itContent = readPerlinesPE();
 			return itContent;
 		} catch (Exception e) {
 			return null;
@@ -262,7 +262,7 @@ class FastQReader implements Closeable {
 	 * @throws Exception 
 	 * @throws IOException
 	 */
-	private Iterable<FastQRecord[]> readPerlinesPE(final boolean initial) throws Exception {
+	private Iterable<FastQRecord[]> readPerlinesPE() throws Exception {
 		final BufferedReader bufread1 =  txtSeqFile.readfile();
 		final BufferedReader bufread2 = fastQReadMate.txtSeqFile.readfile();
 		final long[] lineNum = new long[1];

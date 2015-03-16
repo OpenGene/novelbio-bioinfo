@@ -18,6 +18,7 @@ import com.novelbio.analysis.seq.GeneExpTable.EnumAddAnnoType;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fasta.SeqFastaMotifSearch;
+import com.novelbio.analysis.seq.fastq.FQrecordFilter;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
@@ -27,6 +28,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.mapping.MapBwaAln;
+import com.novelbio.analysis.seq.rnahybrid.RNAhybrid;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
@@ -56,11 +58,56 @@ public class mytest {
 	private static final Logger logger = Logger.getLogger(mytest.class);
 	static boolean is;
 	public static void main(String[] args) throws Exception {
-		GeneExpTable geneExpTable = new GeneExpTable("miRNAName");
-		geneExpTable.read("/media/winE/sssss/all_counts-new.txt", EnumAddAnnoType.addAll);
-		geneExpTable.writeFile(true, "/media/winE/sssss/all_counts-new_uq.txt", EnumExpression.UQPM);
+		filter("/hdfs:/nbCloud/public/rawData/2015-02-06/1423209883787/WGC033160D_combined_R1.fastq.gz", 
+				"/hdfs:/nbCloud/public/rawData/2015-02-06/1423208367298/WGC033160D_combined_R2.fastq.gz");
+		
+		filter("/hdfs:/nbCloud/public/rawData/2015-02-06/1423218276792/WGC033159D_combined_R1.fastq.gz", 
+				"/hdfs:/nbCloud/public/rawData/2015-02-06/1423216281980/WGC033159D_combined_R2.fastq.gz");
 	}
 	
+	
+	private static void filter(String fastq1, String fastq2) {
+		FastQ fastQ1 = new FastQ(fastq2);
+		FastQ fastQ2 = new FastQ(fastq2);
+		int subNum = 1;
+		long num = 0;
+		FastQ fastqWrite1 = null;
+		FastQ fastqWrite2 = null; 
+		for (FastQRecord[] fastQRecords : fastQ1.readlinesPE(fastQ2)) {
+			if (num % 7500_0000 == 0) {
+				if (fastqWrite1 != null) {
+					fastqWrite1.close();
+					fastqWrite2.close();
+				}
+				fastqWrite1 = new FastQ(FileOperate.changeFileSuffix(fastq1, "_"+subNum, null), true);
+				fastqWrite2 = new FastQ(FileOperate.changeFileSuffix(fastq2, "_"+subNum, null), true);
+				subNum++;
+				num = 0;
+			}
+			
+			FastQRecord q1 = fastQRecords[0];
+			FastQRecord q2 = fastQRecords[1];
+			setName(q1);
+			setName(q2);
+			fastqWrite1.writeFastQRecord(q1);
+			fastqWrite2.writeFastQRecord(q2);
+			num++;
+		}
+		
+		fastqWrite1.close();
+		fastqWrite2.close();
+	}
+	
+	private static void setName(FastQRecord fastQRecord) {
+		String name = fastQRecord.getName();
+		String[] ss = name.split(":");
+		String[] ss2 = new String[ss.length - 2];
+		for (int i = 2; i < ss.length; i++) {
+			ss2[i-2] = ss[i];
+		}
+		fastQRecord.setName(ArrayOperate.cmbString(ss2, ":"));
+		FQrecordFilter.trimSeq(fastQRecord, 0, 0, 0, 125);
+	}
 	
 	private void extractMiRNASeq() {
 		TxtReadandWrite txtWrite = new TxtReadandWrite("/home/novelbio/NBCsource/miRNApromoter.fa", true);

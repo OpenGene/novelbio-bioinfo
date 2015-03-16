@@ -194,7 +194,7 @@ public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
 			fastQs[0].fastQRead.setFastQReadMate(fastQs[1].fastQRead);
 
 			
-			for (FastQRecord[] fastQRecord : fastQs[0].fastQRead.readlinesPE(false)) {
+			for (FastQRecord[] fastQRecord : fastQs[0].fastQRead.readlinesPE()) {
 				readsNum++;
 				wait_To_Cope_AbsQueue();
 				if (flagStop) break;

@@ -79,7 +79,7 @@ public abstract class FQrecordFilter implements FQrecordCopeInt {
 	 * @return 返回截短后的string
 	 * 如果截短后的长度小于设定的最短reads长度，那么就返回false
 	 */
-	protected static boolean trimSeq(FastQRecord fastQRecord, int readsMinLen, int readsMaxLen, int start, int end) {
+	public static boolean trimSeq(FastQRecord fastQRecord, int readsMinLen, int readsMaxLen, int start, int end) {
 		if (start > end) {
 			start = end;
 		}

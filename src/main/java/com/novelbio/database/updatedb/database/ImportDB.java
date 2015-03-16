@@ -23,16 +23,11 @@ public class ImportDB {
 	String taxIDFile;
 	String GOPath;
 	
+
 	public static void main(String[] args) {
-		CmdOperate.setTmpPath("/fsef/fse");
-		CmdOperate cmdOperate = new CmdOperate();
-		System.out.println(cmdOperate.getCmdTmpPath());
-	}
-	
-	public static void main2(String[] args) {
 		String downloadPath = "/home/novelbio/NBCsource/database/";
 		String softToolsFile = "/home/novelbio/NBCsource/SoftwareInfo.txt";
-		String taxIDFile = "/home/novelbio/NBCsource/species/常见物种IDKEGGAll.txt";
+		String taxIDFile = "/home/novelbio/NBCsource/species/常见物种IDKEGGUploadTmp.txt";
 //		String dbInfo = "/home/novelbio/NBCsource/database/DBinfo.txt";
 		String GOPath = "/home/novelbio/NBCsource/database/GO/";
 		String speciesFile = "";
@@ -47,8 +42,8 @@ public class ImportDB {
 //		importDB.updateDBinfo(dbInfo);
 //		importDB.updateGODB();
 ////		
-//		importDB.updateNCBIID();
-//		importDB.updateUniprotID();
+		importDB.updateNCBIID();
+		importDB.updateUniprotID();
 		
 //		importDB.updateZeaMaize();
 //		importDB.updateRiceID("/home/novelbio/NBCsource/database/species/rice/");//只导了前两个
@@ -59,7 +54,7 @@ public class ImportDB {
 //		importDB.updateMicroarray();
 
 //		importDB.updateSoyBean();
-		importDB.updateZeaMaize();
+//		importDB.updateZeaMaize();
 //		importDB.updateBlast();
 //		importDB.updateAffy();
 	}

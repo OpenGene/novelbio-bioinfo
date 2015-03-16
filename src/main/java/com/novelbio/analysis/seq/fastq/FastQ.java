@@ -112,6 +112,11 @@ public class FastQ {
 		return -1;
 	}
 	
+	public Iterable<FastQRecord[]> readlinesPE(FastQ fastqMate) {
+		fastQRead.setFastQReadMate(fastqMate.getFastQRead());
+		return fastQRead.readlinesPE();
+	}
+	
 	public Iterable<FastQRecord> readlines() {
 		return fastQRead.readlines();
 	}
