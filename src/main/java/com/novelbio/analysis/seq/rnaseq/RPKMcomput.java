@@ -30,6 +30,7 @@ import com.novelbio.base.ExceptionNullParam;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modgeneid.GeneType;
 import com.novelbio.generalConf.TitleFormatNBC;
@@ -218,7 +219,7 @@ public class RPKMcomput implements AlignmentRecorder {
 			return lsResult;
 		}
 		
-		String key = samRecord.getName() + SepSign.SEP_ID + samRecord.getMateAlignmentStart();
+		String key = getSeqName(samRecord.getName()) + SepSign.SEP_ID + samRecord.getMateAlignmentStart();
 		if (mapKey2SamRecord.containsKey(key)) {
 			SamRecord samRecord2 = mapKey2SamRecord.remove(key);
 			lsResult.add(samRecord2);
@@ -249,8 +250,41 @@ public class RPKMcomput implements AlignmentRecorder {
 			return lsResult;
 		}
 		/////////////////////////////////
-		mapKey2SamRecord.put(samRecord.getName() + SepSign.SEP_ID + samRecord.getStartAbs(), samRecord);
+		mapKey2SamRecord.put(getSeqName(samRecord.getName()) + SepSign.SEP_ID + samRecord.getStartAbs(), samRecord);
 		return new ArrayList<SamRecord>();
+	}
+	
+	/** 给定seqName，过滤掉一些可能会造成错误的信息，如：
+	 * HWI-ST507:97:C0AUBACXX:7:1101:1352:2093:1:1:0:ACTTGA/1
+	 * HWI-ST507:97:C0AUBACXX:7:1101:1352:2093:2:1:0:ACTTGA/2
+	 *	修改为   HWI-ST507:97:C0AUBACXX:7:1101:1352:2093:ACTTGA/1 和
+	 *              HWI-ST507:97:C0AUBACXX:7:1101:1352:2093:ACTTGA/2
+	 * @param seqName
+	 * @return
+	 */
+	private String getSeqName(String seqName) {
+		String[] ss = seqName.split(":");
+		boolean remove = false;
+		int num = ss.length;
+		for (int i = ss.length - 1; i >= 0; i--) {
+			if (i == ss.length - 1) {
+				continue;
+			}
+			if (ss[i].length() > 1) {
+				remove = true;
+			}
+			if (remove) {
+				num = i + 1;
+				break;
+			}
+		}
+		
+		String[] finalStr = new String[num];
+		for (int i = 0; i < finalStr.length; i++) {
+			finalStr[i] = ss[i];
+		}
+		String result = ArrayOperate.cmbString(finalStr, ":");
+		return result;
 	}
 	
 	private Set<String> getGffDetailKeySetStart(GffCodGene gffCodGeneStart) {

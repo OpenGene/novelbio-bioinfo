@@ -194,31 +194,6 @@ public abstract class MapDNA implements MapDNAint {
 			e.printStackTrace();
 		}
 	}
-	
-	private boolean isExistIndexFlag(String parentPath, String flagMakeIndex) {
-		List<String> lsFileName = FileOperate.getFoldFileNameLs(parentPath, flagMakeIndex, "*");
-		List<String> lsFileNew = new ArrayList<>();
-		List<String> lsFileToBeDelete = new ArrayList<>();
-		if (lsFileName.isEmpty()) {
-			return false;
-		} else {
-			for (String flagFile : lsFileName) {
-				if (Math.abs(FileOperate.getTimeLastModify(flagFile) - DateUtil.getNowTimeLong()) < 5099834488L) {
-					lsFileNew.add(flagFile);
-				} else {
-					lsFileToBeDelete.add(flagFile);
-				}
-			}
-			for (String string : lsFileToBeDelete) {
-				FileOperate.DeleteFileFolder(string);
-			}
-			if (!lsFileNew.isEmpty()) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
 	private void tryMakeIndex() {
 		if (FileOperate.isFileExist(getIndexFinishedFlag())) {
 			return;
@@ -276,15 +251,13 @@ public abstract class MapDNA implements MapDNAint {
 	private String getIndexFinishedFlag() {
 		return FileOperate.changeFileSuffix(chrFile, "_indexFinished", "");
 	}
-	
+
 	protected abstract List<String> getLsCmdIndex();
 	/** 删除关键的索引文件，意思就是没有建成索引 */
 	protected abstract void deleteIndex();
 	
 	protected abstract boolean isIndexExist();
-	
-//	protected abstract SamFile copeAfterMapping();
-	
+		
 	/**
 	 * 目前只有bwa和bowtie2两种
 	 * @param softMapping

@@ -26,14 +26,12 @@ import java.util.Map;
 
 import javax.swing.table.AbstractTableModel;
 
+import uk.ac.babraham.FastQC.Sequence.Sequence;
+import uk.ac.babraham.FastQC.Sequence.QualityEncoding.PhredEncoding;
+
 import com.novelbio.ExceptionResultFileError;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.fileOperate.FileOperate;
-
-import sun.tools.tree.IfStatement;
-import uk.ac.babraham.FastQC.Sequence.Sequence;
-import uk.ac.babraham.FastQC.Sequence.QualityEncoding.PhredEncoding;
 
 public class BasicStats extends FastQCmodules implements QCModule {
 	private static String titFileType = "File Type";
@@ -328,8 +326,22 @@ public class BasicStats extends FastQCmodules implements QCModule {
 	 */
 	public void readTable(String basicStatsFile, boolean isFirst) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(basicStatsFile);
+		Map<String, Integer> mapName2ColNum = null;
+		int rowNum = 0;
+		
 		for (String content : txtRead.readlines()) {
-			fillInfo(basicStatsFile, content);
+			if (rowNum == 0) {
+				mapName2ColNum = getMapName2ColNum(content);
+			} else if(isFirst && rowNum == 1) {
+				fillInfo(basicStatsFile, mapName2ColNum, content);
+			} else if (!isFirst && rowNum == 2 ) {
+				fillInfo(basicStatsFile, mapName2ColNum, content);
+			}
+			
+			if (rowNum > 3) {
+				break;
+			}
+			rowNum++;
 		}
 		txtRead.close();
 	}
@@ -344,30 +356,34 @@ public class BasicStats extends FastQCmodules implements QCModule {
 		return mapName2ColNum;
 	}
 	
-	private void fillInfo(String fileName, String content) {
+	private void fillInfo(String fileName, Map<String, Integer> mapName2ColNum, String content) {
 		String[] ss = content.trim().split("\t");
-		String item = ss[0];
-		String tmpValue = ss[1];
-		if (item.equals(titEncoding)) {
-			encoding = tmpValue;
-		} else if (item.equals(titFileType)) {
-			fileType = tmpValue;
-		} else if (item.equals(titGCpercent)) {
-			gcPercentage = Double.parseDouble(tmpValue);
-		} else if (item.equals(titTotalBase)) {
-			allBase = Long.parseLong(tmpValue);
-		} else if (item.equals(titTotalSeq)) {
-			actualCount = Integer.parseInt(tmpValue);
-		} else if (item.equals(titSeqLen)) {
-			String[] len = tmpValue.split("-");
-			minLength = Integer.parseInt(len[0]);
-			if (len.length > 1) {
-				maxLength = Integer.parseInt(len[1]);
-			} else {
-				maxLength = Integer.parseInt(len[0]);
+		if (ss.length != mapName2ColNum.size()) {
+			throw new ExceptionResultFileError("basicstats file not correct:" + fileName + "  detailInfo: line column number is not equals title column number");
+		}
+		for (String string : mapName2ColNum.keySet()) {
+			int colNum = mapName2ColNum.get(string);
+			String tmpValue = ss[colNum];
+			if (string.equals(titEncoding)) {
+				encoding = tmpValue;
+			} else if (string.equals(titFileType)) {
+				fileType = tmpValue;
+			} else if (string.equals(titGCpercent)) {
+				gcPercentage = Double.parseDouble(tmpValue);
+			} else if (string.equals(titTotalBase)) {
+				allBase = Long.parseLong(tmpValue);
+			} else if (string.equals(titTotalSeq)) {
+				actualCount = Integer.parseInt(tmpValue);
+			} else if (string.equals(titSeqLen)) {
+				String[] len = tmpValue.split("-");
+				minLength = Integer.parseInt(len[0]);
+				if (len.length > 1) {
+					maxLength = Integer.parseInt(len[1]);
+				} else {
+					maxLength = Integer.parseInt(len[0]);
+				}
 			}
 		}
-	
 	}
 	
 	@Override

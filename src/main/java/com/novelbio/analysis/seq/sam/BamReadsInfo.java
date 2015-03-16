@@ -5,6 +5,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.hadoop.hdfs.server.namenode.status_jsp;
+import org.apache.log4j.Logger;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
@@ -24,6 +27,7 @@ import com.novelbio.database.model.species.Species;
  * @author zong0jie
  */
 public class BamReadsInfo {
+	private static final Logger logger = Logger.getLogger(BamReadsInfo.class);
 	public static void main(String[] args) {
 		BamReadsInfo bamReadsInfo = new BamReadsInfo();
 		bamReadsInfo.setSamFile(new SamFile("/media/hdfs/nbCloud/public/AllProject/project_531d6744e4b054275b734e67/task_53210ddde4b0183c9804832b/RNASeqMap_result/CQ9522-2mm-1A_tophat_sorted.bam"));
@@ -162,7 +166,7 @@ public class BamReadsInfo {
 			throw new SamErrorException(samFile.getFileName() + " Mapped Rate Too Low");
 		}
 		samFile.close();
-		System.out.println(cisNum/transNum);
+		logger.info("cisReadsNum/transReadsNum" + cisNum/transNum);
 		if (cisNum/transNum > 6) {
 			strandSpecific = StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND;
 		} else if (transNum/cisNum > 6) {

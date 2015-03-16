@@ -8,6 +8,7 @@ import java.util.Map;
 import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMFileHeader.SortOrder;
 
+import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.HashMultimap;
@@ -20,10 +21,13 @@ import com.novelbio.analysis.seq.sam.SamToFastq;
 import com.novelbio.analysis.seq.sam.SamToFastq.EnumSamToFastqType;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
+import com.novelbio.base.curator.CuratorNBC;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
+import com.novelbio.generalConf.PathDetailNBC;
 
 /**
  * 还没返回结果的bam文件 tophat的mapping * tophat -r 120 -a 10 -m 1 -i 20 -I 6000
@@ -410,17 +414,12 @@ public class MapTophat implements MapRNA {
 	 */
 	private List<String> getGtfFile() {
 		List<String> lsCmd = new ArrayList<>();
-		if (FileOperate.isFileExistAndBigThanSize(gtfFile, 0)) {
-			String index = mapBowtie.getChrNameWithoutSuffix();
-			String gtfName = FileOperate.getFileName(gtfFile);
-			String indexTranscriptome = index + "_" + gtfName;
-			FileOperate.createFolders(FileOperate.getParentPathNameWithSep(indexTranscriptome));
-			
-			lsCmd.add("-G"); lsCmd.add(gtfFile);
-			lsCmd.add("--transcriptome-index=" + indexTranscriptome);
+		if (FileOperate.isFileExistAndBigThanSize(gtfFile, 0.1)) {
+			lsCmd.add("--transcriptome-index=" + getIndexGff());
 		}
 		return lsCmd;
 	}
+	
 	private void setGTFfile() {
 		if (gtfFile == null || FileOperate.isFileExistAndBigThanSize(gtfFile, 0.1)) {
 			logger.info("not need to generate GTF");
@@ -450,10 +449,14 @@ public class MapTophat implements MapRNA {
 	 * 参数设定不能用于solid 还没加入gtf的选项，也就是默认没有gtf
 	 */
 	public void mapReads() {
-		setIntronLen();
-		setGTFfile();
 		mapBowtie.setSubVersion(bowtieVersion);
 		mapBowtie.IndexMake();
+		setGTFfile();
+
+		IndexGffMake();
+		
+		setIntronLen();
+
 		lsCmdMapping2nd.clear();
 
 		String prefix = FileOperate.getFileName(outPathPrefix);
@@ -486,8 +489,7 @@ public class MapTophat implements MapRNA {
 			String finalBam = FileOperate.getParentPathNameWithSep(outPathPrefix) + prefix + TophatAllSuffix;
 			lsCmdMapping2nd = mapUnmapedReads(threadNum, bwaIndex, tophatBam, unmappedBam, finalBam);
 		}
-	}
-
+	}	
 	
 	private List<String> getLsCmd() {
 		// linux命令如下
@@ -665,13 +667,102 @@ public class MapTophat implements MapRNA {
 		}
 	}
 	
-	public static Map<String, String> mapPredictPrefix2File(String outPutPrefix) {
-		Map<String, String> mapPrefix2Value = new HashMap<>();
-		String tophatBamFile = outPutPrefix + "_tophat.bam";
-		mapPrefix2Value.put("accept", tophatBamFile);
-		mapPrefix2Value.put("accept", FileOperate.changeFilePrefix(tophatBamFile, "unmapped_", "bam"));
-		mapPrefix2Value.put("accept", outPutPrefix + "_junctions.bed");
-		return mapPrefix2Value;
+	public void IndexGffMake() {
+		setGTFfile();
+		if (!FileOperate.isFileExistAndBigThanSize(gtfFile, 0.1)) {
+			return;
+		}
+		
+		if (FileOperate.isFileExist(getIndexFinishedFlag())) {
+			return;
+		}
+		String indexGffPref = mapBowtie.getChrNameWithoutSuffix() + FileOperate.getFileName(gtfFile);
+		String lockPath = indexGffPref.replace(PathDetailNBC.getGenomePath(), "");
+		lockPath = FileOperate.removeSplashHead(lockPath, false).replace("/", "_").replace("\\", "_").replace(".", "_");
+		InterProcessMutex lock = CuratorNBC.getInterProcessMutex(lockPath);
+		try {
+			lock.acquire();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		tryMakeIndex();
+		
+//		try {
+//			Thread.sleep(1000);
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
+		
+		try {
+			lock.release();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+//		CuratorNBC.deleteInterProcessMutexPath(lockPath);
+	}
+	
+	private void tryMakeIndex() {
+		if (FileOperate.isFileExist(getIndexFinishedFlag())) {
+			return;
+		}
+		try {
+			try {
+				makeIndex();
+			} catch (Exception e) {
+				makeIndex();
+			}
+		} catch (Exception e) {
+			logger.error("index make error:" + gtfFile);
+			throw new RuntimeException("index make error:" + gtfFile, e);
+		}
+	}
+	
+	/**
+	 * 构建索引
+	 * @parcam force 默认会检查是否已经构建了索引，是的话则返回。
+	 * 如果face为true，则强制构建索引
+	 * @return
+	 */
+	protected void makeIndex() {
+		List<String> lsCmd = getLsCmdIndex();
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
+		cmdOperate.setRedirectOutToTmp(true);
+		String runInfoPath = FileOperate.getParentPathNameWithSep(outPathPrefix);
+		FileOperate.createFolders(runInfoPath);
+		cmdOperate.setStdOutPath(runInfoPath + "IndexGtfMake_Stdout.txt", false, true);
+		cmdOperate.setStdErrPath(runInfoPath + "IndexGtfMake_Stderr.txt", false, true);
+		cmdOperate.setOutRunInfoFileName(runInfoPath + "IndexGtfMaking.txt");
+		cmdOperate.addCmdParamOutput(getIndexGff());
+		cmdOperate.run();
+		if(!cmdOperate.isFinishedNormal()) {
+			throw new ExceptionCmd("tophat index error:\n" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
+		}
+		TxtReadandWrite txtWriteFinishFlag = new TxtReadandWrite(getIndexFinishedFlag(), true);
+		txtWriteFinishFlag.writefileln("finished");
+		txtWriteFinishFlag.close();
+
+	}
+	
+	private String getIndexFinishedFlag() {
+		return FileOperate.changeFileSuffix(FileOperate.getPathName(mapBowtie.getChrNameWithoutSuffix()) + 
+				FileOperate.getFileName(gtfFile) + FileOperate.getSepPath()
+				+ FileOperate.getFileNameSep(gtfFile)[0], "_indexFinished", "");
+	}
+	
+	private String getIndexGff() {
+		return FileOperate.getPathName(mapBowtie.getChrNameWithoutSuffix()) + 
+				FileOperate.getFileName(gtfFile) + FileOperate.getSepPath()
+				+ FileOperate.getFileNameSep(gtfFile)[0];
+	}
+	
+	private List<String> getLsCmdIndex() {
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add(ExePathTophat + "tophat");
+		lsCmd.add("-G");
+		lsCmd.add(gtfFile);
+		lsCmd.add("--transcriptome-index=" + getIndexGff());
+		lsCmd.add(mapBowtie.getChrNameWithoutSuffix());
+		return lsCmd;
 	}
 	
 }

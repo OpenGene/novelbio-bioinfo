@@ -19,6 +19,7 @@ import uk.ac.babraham.FastQC.Modules.PerSequenceQualityScores;
 import uk.ac.babraham.FastQC.Modules.SequenceLengthDistribution;
 
 import com.google.common.collect.HashMultimap;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.ImageUtils;
@@ -141,18 +142,30 @@ public class FastQC {
 		
 		return lsSaveName;
 	}
+	
 	public List<String> saveToPathTable(String outPathPrefix) {
-		List<String> lsSaveName = new ArrayList<>();
+		List<String> lsOutFile = new ArrayList<>();
 		Map<String, String> mapTable = basicStats.getResult();
-		TxtReadandWrite txtWrite = new TxtReadandWrite(basicStats.getSavePath(outPathPrefix), true);
-		writeTable(txtWrite, mapTable);
-		txtWrite.close();
-		lsSaveName.add(basicStats.getSavePath(outPathPrefix));
-		if (!qc) return lsSaveName;
+		Map<String, Map<String, String>> mapPrefix2Table = new LinkedHashMap<String, Map<String,String>>();
+		String sampleName = "Sample_";
+		if (!outPathPrefix.endsWith("\\") && !outPathPrefix.endsWith("/")) {
+			sampleName = FileOperate.getFileName(outPathPrefix) + "_";
+		}
+		mapPrefix2Table.put(sampleName, mapTable);
+		List<String[]> lsInfo = addBaseTotalTableList(mapPrefix2Table);
 		
-		lsSaveName.addAll(saveTable(outPathPrefix, this, null));
-		return lsSaveName;
+		TxtReadandWrite txtWrite = new TxtReadandWrite(basicStats.getSavePath(outPathPrefix), true);
+		txtWrite.ExcelWrite(lsInfo);
+		txtWrite.close();
+		lsOutFile.add(basicStats.getSavePath(outPathPrefix));
+		
+		if (!qc) return lsOutFile;
+	
+		lsOutFile.addAll(saveTable(outPathPrefix, this, null));
+		return lsOutFile;
 	}
+	
+	
 	/**
 	 * 把两个FastQC的结果合并起来
 	 * @param sepPic 两张图片合并之后的间距，取30比较合适
@@ -287,7 +300,7 @@ public class FastQC {
 		String fileKmer = fastQC.kmerContent.getSavePath(outPathPrefix);
 		String fileLenDistribution = FileOperate.changeFilePrefix(fastQC.sequenceLengthDistribution.getSavePath(outPathPrefix), "", "xls");
 		String fileRepresentedSeq = outPathPrefix + "OverRepresentedSeqs.xls";
-		if (sub != null && !sub.equals("")) {
+		if (!StringOperate.isRealNull(sub)) {
 			fileKmer = FileOperate.changeFileSuffix(fileKmer, "_" + sub, null);
 			fileLenDistribution = FileOperate.changeFileSuffix(fileLenDistribution, "_" + sub, null);
 			fileRepresentedSeq = FileOperate.changeFileSuffix(fileRepresentedSeq, "_" + sub, null);
@@ -314,35 +327,6 @@ public class FastQC {
 		lsSaveFileName.add(fileLenDistribution);
 		
 		return lsSaveFileName;
-	}
-	
-	
-	
-	/** 合并Fastqc的BaseStatistics信息 
-	 * @return */
-	public static List<String[]> combineFastQCbaseStatistics(Map<String, FastQC[]> mapParam2FastqcLR) {
-		Map<String, Map<String, String>> mapPrefix2Table = new LinkedHashMap<String, Map<String,String>>();
-		boolean isPairend = false;
-		for (String prefix : mapParam2FastqcLR.keySet()) {
-			FastQC[] fastQCs = mapParam2FastqcLR.get(prefix);
-			Map<String, String> mapTable = fastQCs[0].basicStats.getResult();
-			Map<String, String> mapTablePair = null;
-			if (fastQCs.length > 1 && fastQCs[1] != null) {
-				isPairend = true;
-				mapTablePair = fastQCs[1].basicStats.getResult();
-			} else {
-				isPairend = false;
-			}
-			
-			if (isPairend) {
-				mapPrefix2Table.put(prefix + "1", mapTable);
-				mapPrefix2Table.put(prefix + "2", mapTablePair);
-			} else {
-				mapPrefix2Table.put(prefix, mapTable);
-			}
-		}
-		List<String[]> lsInfo = addBaseTotalTableList(mapPrefix2Table);
-		return lsInfo;
 	}
 	
 	/** 合并多个basicStatistics数据 */
