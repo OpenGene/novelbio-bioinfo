@@ -1,5 +1,17 @@
 package com.novelbio.analysis.seq.sam;
 
+import htsjdk.samtools.FileTruncatedException;
+import htsjdk.samtools.SAMFileHeader;
+import htsjdk.samtools.SAMFileReader;
+import htsjdk.samtools.SAMFormatException;
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SAMRecordIterator;
+import htsjdk.samtools.SAMSequenceRecord;
+import htsjdk.samtools.seekablestream.SeekableFileStream;
+import htsjdk.samtools.seekablestream.SeekableHDFSstream;
+import htsjdk.samtools.seekablestream.SeekableStream;
+import htsjdk.samtools.util.RuntimeEOFException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -9,18 +21,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import net.sf.samtools.FileTruncatedException;
-import net.sf.samtools.SAMFileHeader;
-import net.sf.samtools.SAMFileReader;
-import net.sf.samtools.SAMFormatException;
-import net.sf.samtools.SAMRecord;
-import net.sf.samtools.SAMRecordIterator;
-import net.sf.samtools.SAMSequenceRecord;
-import net.sf.samtools.seekablestream.SeekableFileStream;
-import net.sf.samtools.seekablestream.SeekableHDFSstream;
-import net.sf.samtools.seekablestream.SeekableStream;
-import net.sf.samtools.util.RuntimeEOFException;
 
 import org.apache.log4j.Logger;
 

@@ -1,12 +1,12 @@
 package com.novelbio.analysis.seq.sam;
 
+import htsjdk.samtools.CigarElement;
+import htsjdk.samtools.CigarOperator;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
-
-import net.sf.samtools.CigarElement;
-import net.sf.samtools.CigarOperator;
 
 import org.apache.log4j.Logger;
 

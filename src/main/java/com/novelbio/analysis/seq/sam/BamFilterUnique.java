@@ -1,6 +1,6 @@
 package com.novelbio.analysis.seq.sam;
 
-import net.sf.samtools.SAMFileHeader;
+import htsjdk.samtools.SAMFileHeader;
 
 import com.novelbio.base.fileOperate.FileOperate;
 

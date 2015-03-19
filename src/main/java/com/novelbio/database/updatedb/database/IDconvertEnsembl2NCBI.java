@@ -3,7 +3,6 @@ package com.novelbio.database.updatedb.database;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Set;
-import net.sf.picard.annotation.Gene;
 
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;

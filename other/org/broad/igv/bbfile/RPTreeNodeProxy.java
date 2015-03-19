@@ -18,7 +18,7 @@
 
 package org.broad.igv.bbfile;
 
-import net.sf.samtools.seekablestream.SeekableStream;
+import htsjdk.samtools.seekablestream.SeekableStream;
 
 /**
  * @author jrobinso

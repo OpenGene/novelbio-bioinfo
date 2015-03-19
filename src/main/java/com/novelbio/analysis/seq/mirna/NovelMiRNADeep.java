@@ -31,7 +31,7 @@ import com.novelbio.database.model.species.Species;
  * @author zong0jie
  */
 public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
-	Logger logger = Logger.getLogger(NovelMiRNADeep.class);
+	static final Logger logger = Logger.getLogger(NovelMiRNADeep.class);
 	
 	/** miRDeep2是调用bowtie实现的 */
 	static SoftWare softWareMap = SoftWare.bowtie;
@@ -196,7 +196,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	/** 只生成文件名，并不生成实际文件 */
 	private String getFastaMapFileName() {
 		if (fastaInput == null || fastaInput.trim().equals("")) {
-			fastaInput = FileOperate.changeFileSuffix(lsAlignSeqFile.iterator().next().getFileName(), "_Potential_DenoveMirna" + DateUtil.getDateAndRandom(), "fasta");
+			fastaInput = FileOperate.changeFileSuffix(lsAlignSeqFile.iterator().next().getFileName(), "_Potential_DenoveMirna", "fasta");
 			fastaInput = outPath + FileOperate.getFileName(fastaInput);
 		}
 		return fastaInput;
@@ -244,7 +244,9 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	
 	private void predictNovel() {
 		lsCmd.clear();
+		logger.info("start mapper.pl");
 		mapping();
+		logger.info("start mirdeep.pl");
 		mirDeep2Pl();
 		moveAndCopeFile();
 	}

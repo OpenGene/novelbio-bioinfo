@@ -58,11 +58,7 @@ public class mytest {
 	private static final Logger logger = Logger.getLogger(mytest.class);
 	static boolean is;
 	public static void main(String[] args) throws Exception {
-		filter("/hdfs:/nbCloud/public/rawData/2015-02-06/1423209883787/WGC033160D_combined_R1.fastq.gz", 
-				"/hdfs:/nbCloud/public/rawData/2015-02-06/1423208367298/WGC033160D_combined_R2.fastq.gz");
 		
-		filter("/hdfs:/nbCloud/public/rawData/2015-02-06/1423218276792/WGC033159D_combined_R1.fastq.gz", 
-				"/hdfs:/nbCloud/public/rawData/2015-02-06/1423216281980/WGC033159D_combined_R2.fastq.gz");
 	}
 	
 	

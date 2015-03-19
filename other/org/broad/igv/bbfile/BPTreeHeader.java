@@ -18,14 +18,14 @@
 
 package org.broad.igv.bbfile;
 
-import net.sf.samtools.seekablestream.SeekableStream;
-
-import org.apache.log4j.Logger;
-import org.broad.tribble.util.LittleEndianInputStream;
+import htsjdk.samtools.seekablestream.SeekableStream;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+
+import org.apache.log4j.Logger;
+import org.broad.tribble.util.LittleEndianInputStream;
 
 /**
  * Created by IntelliJ IDEA.

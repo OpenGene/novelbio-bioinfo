@@ -1,8 +1,8 @@
 package com.novelbio.analysis.seq.mapping;
 
-import org.junit.Test;
+import htsjdk.samtools.SAMFileHeader.SortOrder;
 
-import net.sf.samtools.SAMFileHeader.SortOrder;
+import org.junit.Test;
 
 import com.novelbio.analysis.seq.FormatSeq;
 import com.novelbio.analysis.seq.fastq.FastQ;

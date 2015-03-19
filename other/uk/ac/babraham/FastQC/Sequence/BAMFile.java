@@ -19,14 +19,14 @@
  */
 package uk.ac.babraham.FastQC.Sequence;
 
+import htsjdk.samtools.SAMFileReader;
+import htsjdk.samtools.SAMFormatException;
+import htsjdk.samtools.SAMRecord;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Iterator;
-
-import net.sf.samtools.SAMFileReader;
-import net.sf.samtools.SAMFormatException;
-import net.sf.samtools.SAMRecord;
 
 public class BAMFile implements SequenceFile {
 
@@ -51,8 +51,8 @@ public class BAMFile implements SequenceFile {
 		fileSize = file.length();
 		name = file.getName();
 		this.onlyMapped = onlyMapped;
-
-		SAMFileReader.setDefaultValidationStringency(SAMFileReader.ValidationStringency.SILENT);
+		
+		SAMFileReader.setDefaultValidationStringency(SAMFileReader.getDefaultValidationStringency().SILENT);
 
 		fis = new FileInputStream(file);
 		

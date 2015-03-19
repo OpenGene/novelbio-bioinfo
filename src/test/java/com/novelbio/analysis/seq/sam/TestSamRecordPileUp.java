@@ -1,11 +1,11 @@
 package com.novelbio.analysis.seq.sam;
 
-import java.util.ArrayList;
+import htsjdk.samtools.DefaultSAMRecordFactory;
+import htsjdk.samtools.SAMFileHeader;
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SAMRecordFactory;
 
-import net.sf.samtools.DefaultSAMRecordFactory;
-import net.sf.samtools.SAMFileHeader;
-import net.sf.samtools.SAMRecord;
-import net.sf.samtools.SAMRecordFactory;
+import java.util.ArrayList;
 
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;

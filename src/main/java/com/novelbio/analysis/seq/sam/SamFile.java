@@ -1,8 +1,22 @@
 package com.novelbio.analysis.seq.sam;
 
+import htsjdk.samtools.SAMFileHeader;
+import htsjdk.samtools.SAMFileHeader.SortOrder;
+import htsjdk.samtools.SAMFileReader;
+import htsjdk.samtools.SAMReadGroupRecord;
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SAMSequenceDictionary;
+import htsjdk.samtools.SAMSequenceRecord;
+import htsjdk.samtools.SAMTextHeaderCodec;
+import htsjdk.samtools.ValidationStringency;
+import htsjdk.samtools.util.BlockCompressedInputStream;
+import htsjdk.samtools.util.BlockCompressedStreamConstants;
+import htsjdk.samtools.util.StringLineReader;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -12,21 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.samtools.SAMFileHeader;
-import net.sf.samtools.SAMFileHeader.SortOrder;
-import net.sf.samtools.SAMFileReader;
-import net.sf.samtools.SAMFileReader.ValidationStringency;
-import net.sf.samtools.SAMReadGroupRecord;
-import net.sf.samtools.SAMSequenceDictionary;
-import net.sf.samtools.SAMSequenceRecord;
-import net.sf.samtools.SAMTextHeaderCodec;
-import net.sf.samtools.util.BlockCompressedInputStream;
-import net.sf.samtools.util.BlockCompressedStreamConstants;
-import net.sf.samtools.util.StringLineReader;
-
 import org.apache.log4j.Logger;
 
-import com.hg.doc.fa;
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.FormatSeq;
 import com.novelbio.analysis.seq.bed.BedSeq;
@@ -90,6 +91,7 @@ public class SamFile implements AlignSeq {
 		SAMFileReader.setDefaultValidationStringency(ValidationStringency.SILENT);
 		setSamFileRead(samBamFile);
 	}
+
 	/**直接读取流，不支持判定文件格式，不支持索引 */
 	public SamFile(InputStream inputStream) {
 		SAMFileReader.setDefaultValidationStringency(ValidationStringency.SILENT);
@@ -107,7 +109,20 @@ public class SamFile implements AlignSeq {
 		}
 //		initialSoftWare();
 	}
-
+	
+	
+	/**读取已有文件
+	 * 如果有索引会自动读取索引
+	 */
+	public SamFile(OutputStream os, SAMFileHeader samFileHeader, boolean isBam) {
+		SAMFileReader.setDefaultValidationStringency(ValidationStringency.SILENT);
+		if (samFileHeader.getSortOrder() != SortOrder.unsorted) {
+			setSamFileNew(samFileHeader, os, isBam, true);
+		} else {
+			setSamFileNew(samFileHeader, os, isBam, false);
+		}		
+	}
+	
 	/** 创建新的sambam文件'
 	 * @param samBamFile
 	 * @param samFileHeader
@@ -175,6 +190,18 @@ public class SamFile implements AlignSeq {
 		} else {
 			bamFile = true;
 		}
+	}
+	
+	/** 
+	 * 创建新的sam文件
+	 * @param samFileHeader
+	 * @param samFileCreate
+	 * @param preSorted 输入的文件是否经过排序
+	 */
+	private void setSamFileNew(SAMFileHeader samFileHeader, OutputStream os, boolean isBam, boolean preSorted) {
+		read = false;
+		samWriter = new SamWriter(preSorted, samFileHeader, os, isBam);
+		bamFile = isBam;
 	}
 	
 //	private static void initialSoftWare() {
@@ -754,6 +781,12 @@ public class SamFile implements AlignSeq {
 	public void writeSamRecord(SamRecord samRecord) {
 		samWriter.writeToSamFileln(samRecord);
 	}
+	
+	/** 注意如果外面samRecord修改了chrID，那么这个samRecord的head也要重新设定 */
+	public void writeSamRecord(SAMRecord samRecord) {
+		samWriter.writeToSamFileln(samRecord);
+	}
+	
 	public void close() {
 		if (samReader != null) {
 			samReader.close();

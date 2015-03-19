@@ -1,12 +1,12 @@
 package com.novelbio.analysis.seq.sam;
 
-import net.sf.samtools.SAMFileHeader;
-import net.sf.samtools.SAMFileHeader.SortOrder;
-import net.sf.samtools.SAMFileReader;
-import net.sf.samtools.SAMFileWriter;
-import net.sf.samtools.SAMFileWriterFactory;
-import net.sf.samtools.SAMFileWriterImpl;
-import net.sf.samtools.SAMSequenceDictionary;
+import htsjdk.samtools.SAMFileHeader;
+import htsjdk.samtools.SAMFileReader;
+import htsjdk.samtools.SAMFileWriter;
+import htsjdk.samtools.SAMFileWriterFactory;
+import htsjdk.samtools.SAMFileWriterImpl;
+import htsjdk.samtools.SAMSequenceDictionary;
+import htsjdk.samtools.SAMFileHeader.SortOrder;
 
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;

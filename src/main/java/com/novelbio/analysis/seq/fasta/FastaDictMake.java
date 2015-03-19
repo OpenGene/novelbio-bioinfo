@@ -2,9 +2,9 @@ package com.novelbio.analysis.seq.fasta;
 
 import java.io.File;
 
-import com.novelbio.base.fileOperate.FileOperate;
+import picard.sam.CreateSequenceDictionary;
 
-import net.sf.picard.sam.CreateSequenceDictionary;
+import com.novelbio.base.fileOperate.FileOperate;
 
 public class FastaDictMake extends CreateSequenceDictionary {
 	String reference;

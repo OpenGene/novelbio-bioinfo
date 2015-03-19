@@ -1,16 +1,16 @@
 package com.novelbio.analysis.seq.sam;
 
+import htsjdk.samtools.AlignmentBlock;
+import htsjdk.samtools.Cigar;
+import htsjdk.samtools.CigarElement;
+import htsjdk.samtools.CigarOperator;
+import htsjdk.samtools.SAMFileHeader;
+import htsjdk.samtools.SAMReadGroupRecord;
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SAMRecord.SAMTagAndValue;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import net.sf.samtools.AlignmentBlock;
-import net.sf.samtools.Cigar;
-import net.sf.samtools.CigarElement;
-import net.sf.samtools.CigarOperator;
-import net.sf.samtools.SAMFileHeader;
-import net.sf.samtools.SAMReadGroupRecord;
-import net.sf.samtools.SAMRecord;
-import net.sf.samtools.SAMRecord.SAMTagAndValue;
 
 import org.apache.log4j.Logger;
 
@@ -473,11 +473,11 @@ public class SamRecord implements AlignRecord {
 	}
 	@Override
 	public String toString() {
-		return samRecord.getSAMString();
+		return samRecord.getSAMString().trim();
 	}
 	@Override
 	public String getRawStringInfo() {
-		return samRecord.getSAMString();
+		return samRecord.getSAMString().trim();
 	}
 	
 	public boolean getDuplicateReadFlag() {

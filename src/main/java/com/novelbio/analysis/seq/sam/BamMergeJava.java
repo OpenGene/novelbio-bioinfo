@@ -1,17 +1,19 @@
 package com.novelbio.analysis.seq.sam;
 
-import java.util.ArrayList;
-import java.util.List;
+import htsjdk.samtools.MergingSamRecordIterator;
+import htsjdk.samtools.SAMFileHeader;
+import htsjdk.samtools.SAMFileHeader.SortOrder;
+import htsjdk.samtools.SAMFileReader;
+import htsjdk.samtools.SAMFileWriter;
+import htsjdk.samtools.SAMFileWriterFactory;
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SAMSequenceDictionary;
+import htsjdk.samtools.SamFileHeaderMerger;
+import htsjdk.samtools.SamReader;
 
-import net.sf.picard.sam.MergingSamRecordIterator;
-import net.sf.picard.sam.SamFileHeaderMerger;
-import net.sf.samtools.SAMFileHeader;
-import net.sf.samtools.SAMFileHeader.SortOrder;
-import net.sf.samtools.SAMFileReader;
-import net.sf.samtools.SAMFileWriter;
-import net.sf.samtools.SAMFileWriterFactory;
-import net.sf.samtools.SAMRecord;
-import net.sf.samtools.SAMSequenceDictionary;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -33,7 +35,7 @@ public class BamMergeJava implements BamMergeInt {
 	
 	//=====================  以下是中间变量 ====================
 	/** 用于MergingSamRecordIterator提samrecord文件的list */
-	private List<SAMFileReader> lsReaders = new ArrayList<SAMFileReader>();
+	private Collection<SamReader> lsReaders = new ArrayList<>();
 	private List<SAMFileHeader> lsHeaders = new ArrayList<SAMFileHeader>();
 	
 	private boolean MERGE_SEQUENCE_DICTIONARIES = false;

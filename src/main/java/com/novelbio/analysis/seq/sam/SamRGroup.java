@@ -1,8 +1,8 @@
 package com.novelbio.analysis.seq.sam;
 
-import java.util.Map.Entry;
+import htsjdk.samtools.SAMReadGroupRecord;
 
-import net.sf.samtools.SAMReadGroupRecord;
+import java.util.Map.Entry;
 
 public class SamRGroup {
 	SAMReadGroupRecord samReadGroupRecord;

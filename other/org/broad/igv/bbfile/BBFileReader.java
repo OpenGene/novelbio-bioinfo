@@ -25,18 +25,21 @@
  */
 package org.broad.igv.bbfile;
 
-import net.sf.samtools.seekablestream.SeekableFileStream;
-import net.sf.samtools.seekablestream.SeekableHDFSstream;
-import net.sf.samtools.seekablestream.SeekableStream;
+import htsjdk.samtools.seekablestream.SeekableFileStream;
+import htsjdk.samtools.seekablestream.SeekableHDFSstream;
+import htsjdk.samtools.seekablestream.SeekableStream;
 
-import org.broad.tribble.util.LittleEndianInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+
 import org.apache.log4j.Logger;
+import org.broad.tribble.util.LittleEndianInputStream;
 
 import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.base.fileOperate.FileOperate;
-
-import java.io.*;
-import java.util.ArrayList;
 
 /**
 *   Broad Institute Interactive Genome Viewer Big Binary File (BBFile) Reader

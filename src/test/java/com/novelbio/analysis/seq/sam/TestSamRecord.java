@@ -1,10 +1,11 @@
 package com.novelbio.analysis.seq.sam;
 
+import htsjdk.samtools.SAMRecord;
+
 import org.aspectj.weaver.tools.Trace;
 
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
 
-import net.sf.samtools.SAMRecord;
 import junit.framework.TestCase;
 
 public class TestSamRecord extends TestCase {

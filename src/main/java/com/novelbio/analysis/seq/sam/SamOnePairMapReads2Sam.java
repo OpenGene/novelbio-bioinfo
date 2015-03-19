@@ -1,8 +1,8 @@
 package com.novelbio.analysis.seq.sam;
 
-import java.util.LinkedHashMap;
+import htsjdk.samtools.SAMFileHeader;
 
-import net.sf.samtools.SAMFileHeader;
+import java.util.LinkedHashMap;
 
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.mapping.Align;

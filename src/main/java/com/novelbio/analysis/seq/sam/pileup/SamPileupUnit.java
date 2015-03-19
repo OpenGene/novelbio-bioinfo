@@ -1,11 +1,11 @@
 package com.novelbio.analysis.seq.sam.pileup;
 
+import htsjdk.samtools.Cigar;
+import htsjdk.samtools.CigarElement;
+import htsjdk.samtools.CigarOperator;
+
 import java.util.LinkedList;
 import java.util.List;
-
-import net.sf.samtools.Cigar;
-import net.sf.samtools.CigarElement;
-import net.sf.samtools.CigarOperator;
 
 import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo.SnpIndelType;
 import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfoFactory;

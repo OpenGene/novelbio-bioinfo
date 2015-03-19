@@ -1,5 +1,8 @@
 package com.novelbio.analysis.seq.mirna;
 
+import htsjdk.samtools.CigarElement;
+import htsjdk.samtools.CigarOperator;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -8,9 +11,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import net.sf.samtools.CigarElement;
-import net.sf.samtools.CigarOperator;
 
 import com.novelbio.analysis.seq.GeneExpTable;
 import com.novelbio.analysis.seq.genome.gffOperate.MiRNAList;

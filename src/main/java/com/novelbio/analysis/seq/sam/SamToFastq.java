@@ -3,9 +3,9 @@ package com.novelbio.analysis.seq.sam;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.picard.PicardException;
-
 import org.apache.log4j.Logger;
+
+import picard.PicardException;
 
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.fastq.FastQ;

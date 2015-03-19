@@ -18,12 +18,12 @@
 
 package org.broad.igv.bbfile;
 
-import net.sf.samtools.seekablestream.SeekableStream;
-
-import org.apache.log4j.Logger;
+import htsjdk.samtools.seekablestream.SeekableStream;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import org.apache.log4j.Logger;
 
 /**
  * Created by IntelliJ IDEA.

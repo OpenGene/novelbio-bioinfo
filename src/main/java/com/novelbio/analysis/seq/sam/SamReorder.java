@@ -1,18 +1,16 @@
 package com.novelbio.analysis.seq.sam;
 
+import htsjdk.samtools.SAMFileHeader;
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SAMSequenceDictionary;
+import htsjdk.samtools.SAMSequenceRecord;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.picard.PicardException;
-import net.sf.samtools.SAMFileHeader;
-import net.sf.samtools.SAMFileWriter;
-import net.sf.samtools.SAMFileWriterFactory;
-import net.sf.samtools.SAMRecord;
-import net.sf.samtools.SAMRecordIterator;
-import net.sf.samtools.SAMSequenceDictionary;
-import net.sf.samtools.SAMSequenceRecord;
-
 import org.apache.log4j.Logger;
+
+import picard.PicardException;
 
 import com.novelbio.base.fileOperate.FileOperate;
 
