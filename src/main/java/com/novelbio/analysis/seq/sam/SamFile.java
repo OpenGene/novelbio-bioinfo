@@ -513,10 +513,10 @@ public class SamFile implements AlignSeq {
 		samFile.read = true;
 		return samFile;
 	}
+   /** 用当前samFile的参数，来设定 输入的samFile参数 */
     protected void setParamSamFile(SamFile samFile) {
     	samFile.referenceFileName = referenceFileName;
     	samFile.isRealigned = isRealigned;
-    	samFile.bamFile = bamFile;
     	samFile.read = read;
     }
 	/**

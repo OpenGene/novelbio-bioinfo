@@ -97,8 +97,8 @@ abstract class ImportPerLine {
 		if (ImportPerLine.taxIDfile.equals(taxIDfile)) {
 			return;
 		}
-		Species.updateTaxInfo(taxIDfile);
-		setTaxID = new HashSet<Integer>();
+//		Species.updateTaxInfo(taxIDfile);
+		setTaxID = new HashSet<>();
 		TxtReadandWrite txtTaxID=new TxtReadandWrite(taxIDfile, false);
 		for (String string : txtTaxID.readlines()) {
 			if (string.startsWith("#")) {
@@ -111,6 +111,13 @@ abstract class ImportPerLine {
 			setTaxID.add(Integer.parseInt(ss[0]));
 		}
 		txtTaxID.close();
+	}
+	
+	public static void addTaxId(int taxId) {
+		if (setTaxID == null) {
+			setTaxID = new HashSet<>();
+		}
+		setTaxID.add(taxId);
 	}
 	/**
 	 * 导入单个文件时，设定taxID

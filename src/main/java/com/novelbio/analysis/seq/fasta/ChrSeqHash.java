@@ -307,7 +307,7 @@ public class ChrSeqHash extends SeqHashAbs {
 		for (String string : txtRead.readlines()) {
 			String[] ss = string.split("\t");
 			String chrID = null;
-			if (regx != null && regx.equals(" ")) {
+			if (" ".equals(regx)) {
 				chrID = ss[0].split(" ")[0];
 			} else if (patternOperate != null) {
 				chrID = patternOperate.getPatFirst(ss[0]);

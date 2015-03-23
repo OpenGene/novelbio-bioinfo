@@ -24,11 +24,15 @@ public class SamIndexRefsequence {
 		this.sequence = sequence;
 	}
 	
+	public String getIndexSequence() {
+		return sequence + ".fai";
+	}
+	
 	/** 如果有索引并且索引比文件新，则直接返回
 	 * @return 返回建好的索引文件名
 	 */
 	public String indexSequence() {
-		String faidx = sequence + ".fai";
+		String faidx = getIndexSequence();
 		if (FileOperate.isFileExistAndBigThanSize(faidx, 0)) {
 //			if (FileOperate.getTimeLastModify(sequence) <= FileOperate.getTimeLastModify(faidx)) {
 //			

@@ -1,15 +1,11 @@
 package com.novelbio.analysis.seq.sam;
 
 import htsjdk.samtools.SAMFileHeader;
-import htsjdk.samtools.SAMSequenceDictionary;
 import htsjdk.samtools.SAMFileHeader.SortOrder;
+import htsjdk.samtools.SAMSequenceDictionary;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -29,7 +25,7 @@ public class SamToBamSort {
 	/** 输入lsChrId，可以用这个来调整samFile的head */
 	SAMSequenceDictionary samSequenceDictionary;
 	SamReorder samReorder;
-	
+	SamAddMultiFlag samAddMultiFlag;
 	boolean addMultiHitFlag = false;
 	boolean isPairend = false;
 	boolean isUsingTmpFile = false;
@@ -100,7 +96,17 @@ public class SamToBamSort {
 	public void convert() {
 		setBamWriteFile();
 		if (addMultiHitFlag) {
-			convertAndAddMultiFlag();
+			samAddMultiFlag = new SamAddMultiFlag();
+			samAddMultiFlag.setPairend(isPairend);
+			Thread thread = new Thread(new Runnable() {
+				public void run() {
+					AddMultiFlag();
+				}
+			});
+			thread.start();
+			for (SamRecord samRecord : samAddMultiFlag.readlines()) {
+				addToRecorderAndWriteToBam(samRecord);
+			}
 		} else {
 			convertNotAddMultiFlag();
 		}
@@ -145,148 +151,42 @@ public class SamToBamSort {
 	}
 	
 	private void convertNotAddMultiFlag() {
-		for (SamRecord samRecord : samFileSam.readLines()) {
-			if (samReorder != null) {
-				samReorder.copeReads(samRecord);
-			}
-			for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {
-				try {
-					alignmentRecorder.addAlignRecord(samRecord);
-				} catch (Exception e) { }
-			}
-			if (writeToBam) {
-				samFileBam.writeSamRecord(samRecord);
-			}
-		}
-	}
-	
-	/** 进行转换 */
-	private void convertAndAddMultiFlag() {
-		Set<String> setTmp = new HashSet<>();
-		/** 相同名字的序列 */
-		final Map<String, List<SamRecord>> mapMateInfo2pairReads = new LinkedHashMap<>();
 		int i = 0;
 		for (SamRecord samRecord : samFileSam.readLines()) {
 			if (samReorder != null) {
 				samReorder.copeReads(samRecord);
-			}
-			if (!samRecord.isMapped()) {
-				logger.debug("unmapped");
 			}
 			if (i++%1000000 == 0) {
 				logger.info("read lines: " + i);
 				System.gc();
 			}
-			if ((!isPairend && setTmp.size() == 0) || (isPairend && samRecord.isFirstRead())
-					) {
-				String samName = samRecord.getName();
-				if (!setTmp.contains(samName)) {
-					addMapSamRecord(mapMateInfo2pairReads);
-					setTmp.clear();
-					setTmp.add(samName);
-					mapMateInfo2pairReads.clear();
-				}
-				setTmp.add(samRecord.getName());
-			}
-			addSamRecordToMap(isPairend, samRecord, mapMateInfo2pairReads);
-		}
-		addMapSamRecord(mapMateInfo2pairReads);
-	}
-	
-	private void addSamRecordToMap(boolean isPairend, SamRecord samRecord, 
-			Map<String, List<SamRecord>> mapMateInfo2pairReads) {
-		String pairInfo = samRecord.getNameAndFirstSite();
-		if (isPairend) {
-			//首先看第一端是否出现，出现了就获取第一端，然后放到第二端
-			if (mapMateInfo2pairReads.containsKey(pairInfo)) {
-				 List<SamRecord> lsRecords = mapMateInfo2pairReads.get(pairInfo);
-				if (lsRecords.size() > 1) {
-					SamRecord mate = findCloseSamRecord(lsRecords.get(0), lsRecords.get(1), samRecord);
-					if (mate != null) {
-						lsRecords.set(1, samRecord);
-						//将多的全部清掉
-						if (lsRecords.size() > 2) {
-							SamRecord[] samRecords = new SamRecord[]{lsRecords.get(0), lsRecords.get(1)};
-							lsRecords.clear();
-							for (SamRecord samRecord2 : samRecords) {
-								lsRecords.add(samRecord2);
-							}
-						}
-					} else {
-						lsRecords.add(samRecord);
-					}
-				} else {
-					lsRecords.add(samRecord);
-				}
-			} else {
-				addNewRecordInMap(samRecord, mapMateInfo2pairReads);
-			}
-		} else {
-			addNewRecordInMap(samRecord, mapMateInfo2pairReads);
+			addToRecorderAndWriteToBam(samRecord);
 		}
 	}
 	
-	private SamRecord findCloseSamRecord(SamRecord record1, SamRecord record2_1, SamRecord record2_2) {
-		if (!record1.isMapped()) {
-			return null;
-		}
-		if (record2_1.isMapped() && !record2_2.isMapped()) {
-			return record2_1;
-		} else if (!record2_1.isMapped() && record2_2.isMapped()) {
-			return record2_2;
-		}
-		//两个都比上了
-		if (record1.getRefID().equals(record2_1.getRefID()) ) {
-			if (record1.getRefID().equals(record2_2.getRefID())) {
-				int start1 = record1.getStartAbs(), end1 = record1.getEndAbs();
-				int start2 = record2_1.getStartAbs(), end2 = record2_1.getEndAbs();
-				int start3 = record2_2.getStartAbs(), end3 = record2_2.getEndAbs();
-				int distance1 = (start1 < start2)? start2 - end1 : start1 - end2;
-				int distance2 = (start1 < start3)? start3 - end1 : start1 - end3;
-				return (distance1 < distance2) ? record2_1 : record2_2;
-			} else {
-				return record2_1;
-			}
-		} else {
-			if (record1.getRefID().equals(record2_2.getRefID())) {
-				return record2_2;
-			} else {
-				return null;
-			}
-		}
-	}
-	
-	private void addNewRecordInMap(SamRecord samRecord, Map<String, List<SamRecord>> mapMateInfo2pairReads) {
-		List<SamRecord> lsRecords = new ArrayList<SamRecord>();
-		lsRecords.add(samRecord);
-		String pairMateInfo = samRecord.getNameAndFirstSite();
-		mapMateInfo2pairReads.put(pairMateInfo, lsRecords);
-	}
-	
-	/**
-	 * @param lsSamRecords
-	 * @param mapHitNum 小于0表示不需要调整flag
-	 */
-	private void addMapSamRecord(Map<String, List<SamRecord>> mapMateInfo2pairReads) {
-		int multiHitNum = mapMateInfo2pairReads.size();
+	private void AddMultiFlag() {
 		int i = 0;
-		for (List<SamRecord> samRecords : mapMateInfo2pairReads.values()) {
-			i++;
-			for (SamRecord samRecord : samRecords) {
-				if (samRecord != null) {
-					samRecord.setMultiHitNum(multiHitNum);
-					samRecord.setMapIndexNum(i);
-					
-					for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {
-						try {
-							alignmentRecorder.addAlignRecord(samRecord);
-						} catch (Exception e) { e.printStackTrace();}
-					}
-					if (writeToBam) {
-						samFileBam.writeSamRecord(samRecord);
-					}
-				}
+		for (SamRecord samRecord : samFileSam.readLines()) {
+			if (samReorder != null) {
+				samReorder.copeReads(samRecord);
 			}
+			if (i++%1000000 == 0) {
+				logger.info("read lines: " + i);
+				System.gc();
+			}
+			samAddMultiFlag.addSamRecord(samRecord);
+		}
+		samAddMultiFlag.finish();
+	}
+	
+	private void  addToRecorderAndWriteToBam(SamRecord samRecord) {
+		for (AlignmentRecorder alignmentRecorder : lsAlignmentRecorders) {
+			try {
+				alignmentRecorder.addAlignRecord(samRecord);
+			} catch (Exception e) { }
+		}
+		if (writeToBam) {
+			samFileBam.writeSamRecord(samRecord);
 		}
 	}
 	
@@ -303,8 +203,7 @@ public class SamToBamSort {
 		}
 		FileOperate.moveFile(true, getTmpFileName(), outFileName);
 		samFileBam = new SamFile(outFileName);
-		samFileBam.setParamSamFile(samFileSam);
-		samFileBam.bamFile = true;
+		samFileSam.setParamSamFile(samFileBam);
 	}
 	
 	/** 返回转换好的bam文件 */

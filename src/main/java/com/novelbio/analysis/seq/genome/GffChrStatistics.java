@@ -183,10 +183,6 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 				is = true;
 			}
 		}
-		if (is) {
-			txtWrite.writefileln(((SamRecord)alignRecord).toBedRecordSE().toString());
-		}
-
 	}
 
 	private void readNormFile(String peakFile) {
@@ -221,7 +217,6 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 			return null;
 		}
 	}
-	TxtReadandWrite txtWrite = new TxtReadandWrite("/media/winE/intergenic", true);
 	/**
 	 * 输入单个坐标位点，返回定位信息，用于统计位点的定位情况
 	 * 只判断最长转录本
@@ -423,7 +418,6 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	@Override
 	public void summary() {
 		//Nothing to do 
-		txtWrite.close();
 	}
 	@Override
 	public Align getReadingRegion() {

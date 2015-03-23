@@ -18,6 +18,7 @@ import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
 import org.apache.log4j.Logger;
 
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 
@@ -37,7 +38,8 @@ public class SamReducer {
 	
 	OutputStream os;
 	boolean isBam;
-	
+	SamAddMultiFlag samAddMultiFlag = new SamAddMultiFlag();
+	boolean start = false;
 	public static void main(String[] args) {
 		Options opts = new Options();
 		opts.addOption("refseq", true, "refseq, used to create sam head");
@@ -46,6 +48,7 @@ public class SamReducer {
 				+ "Shill64_filtered_2.fq.gz");
 		opts.addOption("rgLine", true, "readgroup info, example: @RG ID:Shill64 PL:Illumina LB:Shill64 SM:Shill64");
 		
+		opts.addOption("isPairend", true, "is pairend");
 		
 		logger.info(ArrayOperate.cmbString(args, "\t"));
 		CommandLine cliParser = null;
@@ -58,6 +61,7 @@ public class SamReducer {
 
 		String refseq = cliParser.getOptionValue("refseq");
 		String pgLine = cliParser.getOptionValue("pgLine");
+		String isPairend = cliParser.getOptionValue("isPairend");
 		if (pgLine != null) {
 			pgLine = pgLine.replace("\\t", "\t");	
 		}
@@ -65,15 +69,38 @@ public class SamReducer {
 		if (rgLine != null) {
 			rgLine = rgLine.replace("\\t", "\t");
 		}
-		
-		SamReducer samReducer = new SamReducer();
+	
+		final SamReducer samReducer = new SamReducer();
 		samReducer.setIsWriteOs(true);
 		samReducer.setOutStream(System.out, true);
+		if (!StringOperate.isRealNull(isPairend) && (isPairend.toLowerCase().equals("true") || isPairend.toLowerCase().equals("t"))) {
+			samReducer.setIsPairend(true);
+		}
+		
 		samReducer.readInStream(refseq, pgLine, rgLine, System.in);
-		samReducer.close();
+		samReducer.runWriteToSam();
 	}
 	
-	public void readInStream(String refseq, String pgLine, String rgLine, InputStream is) {		
+	public void setIsPairend(boolean isPairend) {
+		samAddMultiFlag.setPairend(isPairend);
+	}
+	
+	public void readInStream(final String refseq, final String pgLine, final String rgLine, final InputStream is) {
+		Thread thread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					readInStreamExp(refseq, pgLine, rgLine, is);
+				} catch (Exception e) {
+					samAddMultiFlag.finish();
+					throw new SamErrorException(e);
+				}
+			}
+		});
+		thread.start();
+	}
+	
+	private void readInStreamExp(String refseq, String pgLine, String rgLine, InputStream is) {		
 		int maxLine = 100;
 		SamHeadCreater samHeadCreater = new SamHeadCreater();
 		samHeadCreater.setRefSeq(refseq);
@@ -81,17 +108,15 @@ public class SamReducer {
 		samHeadCreater.addReadGroup(rgLine);
 		//这里不需要关闭，流会在外部被关闭
 		TxtReadandWrite txtRead = new TxtReadandWrite(is);
-		boolean start = false;
+	
 		List<String> lsTmp = new ArrayList<String>();
-		for (String content : txtRead.readlines()) {
+		for (String content : txtRead.readlines()) {			
 			if (!start) {
 				if (content.startsWith("@HD")) {
-					start = true;
 					start(lsTmp, samHeadCreater, content);
 				} else if (!content.startsWith("@")) {
 					//我看到有个文件的结果中没有 @HD\tVN:1.4\tSO:unsorted
 					if (lsTmp.size() > maxLine) {
-						start = true;
 						start(lsTmp, samHeadCreater, "@HD\tVN:1.4\tSO:unsorted");
 					} else {
 						lsTmp.add(content);
@@ -103,6 +128,7 @@ public class SamReducer {
 			}
 			addSamRecordTxt(content);
 		}
+		samAddMultiFlag.finish();
 	}
 	
 	private void start(List<String> lsTmp, SamHeadCreater samHeadCreater, String hdLine) {
@@ -141,6 +167,7 @@ public class SamReducer {
 		} else {
 			samFile = new SamFile(outFile, header);
 		}
+		start = true;
 	}
 	
 	protected void addSamRecordTxt(String samRecordTxt) {
@@ -153,11 +180,23 @@ public class SamReducer {
 			// TODO: handle exception
 		}
 		if (samRecord != null) {
-			samFile.writeSamRecord(samRecord);
+			samAddMultiFlag.addSamRecord(new SamRecord(samRecord));
 		}
 	}
 	
-	public void close() {
+	//另一个线程专门往sam文件里写结果
+	public void runWriteToSam() {
+		while (!start) {
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		for (SamRecord samRecord : samAddMultiFlag.readlines()) {
+			samFile.writeSamRecord(samRecord);
+		}
 		samFile.close();
 	}
 }

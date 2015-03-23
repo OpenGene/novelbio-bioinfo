@@ -32,6 +32,7 @@ import com.novelbio.analysis.seq.rnahybrid.RNAhybrid;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
+import com.novelbio.base.Computer;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -58,7 +59,9 @@ public class mytest {
 	private static final Logger logger = Logger.getLogger(mytest.class);
 	static boolean is;
 	public static void main(String[] args) throws Exception {
-		
+		Species species = new Species(9925);
+		species.setVersion("kundong");
+		species.getChromSeqSep();
 	}
 	
 	

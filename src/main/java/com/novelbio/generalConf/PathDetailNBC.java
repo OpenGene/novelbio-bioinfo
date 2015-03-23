@@ -54,7 +54,7 @@ public class PathDetailNBC {
 			}
 		}
 		
-		return genomePath;
+		return FileOperate.addSep(genomePath);
 	}
 	
 	/** 内部自动加空格 */

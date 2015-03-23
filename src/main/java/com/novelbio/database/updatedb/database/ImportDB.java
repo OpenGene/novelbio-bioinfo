@@ -20,7 +20,7 @@ public class ImportDB {
 	/** NCBI等数据库文件下载后存放的路径 */
 	String downloadPath;
 	
-	String taxIDFile;
+//	String taxIDFile;
 	String GOPath;
 	
 
@@ -31,13 +31,14 @@ public class ImportDB {
 //		String dbInfo = "/home/novelbio/NBCsource/database/DBinfo.txt";
 		String GOPath = "/home/novelbio/NBCsource/database/GO/";
 		String speciesFile = "";
-		ImportPerLine.setTaxIDFile(taxIDFile);
+		ImportPerLine.addTaxId(9925);
+		ImportPerLine.addTaxId(4932);
 		ImportDB importDB = new ImportDB();
 		importDB.setDownloadPath(downloadPath);
 		importDB.setSoftToolsFile(softToolsFile);
 //		importDB.setSpeciesFile(speciesFile);
 		importDB.setGOPath(GOPath);
-		importDB.setTaxIDFile(taxIDFile);
+//		importDB.setTaxIDFile(taxIDFile);
 		
 //		importDB.updateDBinfo(dbInfo);
 //		importDB.updateGODB();
@@ -50,7 +51,7 @@ public class ImportDB {
 //		importDB.updateTAIR("/home/novelbio/NBCsource/database/species/arabidopsis/");
 //		importDB.updateZB();
 //		importDB.updateEnsembl();
-//		importDB.updateYeast();
+		importDB.updateYeast();
 //		importDB.updateMicroarray();
 
 //		importDB.updateSoyBean();
@@ -73,9 +74,9 @@ public class ImportDB {
 	public void setSoftToolsFile(String softToolsFile) {
 		this.softToolsFile = softToolsFile;
 	}
-	public void setTaxIDFile(String taxIDFile) {
-		this.taxIDFile = taxIDFile;
-	}
+//	public void setTaxIDFile(String taxIDFile) {
+//		this.taxIDFile = taxIDFile;
+//	}
 	public void setSpeciesFile(String speciesFile) {
 		this.speciesFile = speciesFile;
 	}
@@ -87,16 +88,16 @@ public class ImportDB {
 		GOPath = gOPath;
 	}
 	
-	private void updateTaxInfo() {
-		Species.updateTaxInfo(taxIDFile);
-	}
-	
-	private void updateGODB() {
-		AmiGO amiGO = new AmiGO();
-		amiGO.setGoExtObo(GOPath + "gene_ontology_ext.obo");
-		amiGO.setTaxIDfile(taxIDFile);
-		amiGO.importFile();
-	}
+//	private void updateTaxInfo() {
+//		Species.updateTaxInfo(taxIDFile);
+//	}
+//	
+//	private void updateGODB() {
+//		AmiGO amiGO = new AmiGO();
+//		amiGO.setGoExtObo(GOPath + "gene_ontology_ext.obo");
+//		amiGO.setTaxIDfile(taxIDFile);
+//		amiGO.importFile();
+//	}
 	
 	
 	private void updateDBinfo(String dbInfoFile) {
@@ -471,7 +472,7 @@ public class ImportDB {
 	}
 	
 	private void updateYeast() {
-		String path = "/media/winE/NBCplatform/database/SGD/";
+		String path = "/home/novelbio/NBCsource/database/species/yeast/SGD/";
 		String yeastDBxrefFile = path + "dbxref.tab";
 		String SGD_featuresFile = path + "SGD_features.tab";
 		String Gene_AssociationFile = path + "gene_association.sgd.gz";
