@@ -633,7 +633,7 @@ public class GeneExpTable {
 		} else if (enumExpression == EnumExpression.Counts) {
 			resultValue = value.intValue() + "";
 		} else if (enumExpression == EnumExpression.TPM) {
-			resultValue = (int)(value*mapreadsNum/allReadsNum) + "";
+			resultValue = value*mapreadsNum/allReadsNum + "";
 		} else if (enumExpression == EnumExpression.RPKM) {
 			resultValue = value*mapreadsNum*1000/allReadsNum/geneLen + "";
 		} else if (enumExpression == EnumExpression.UQRPKM) {

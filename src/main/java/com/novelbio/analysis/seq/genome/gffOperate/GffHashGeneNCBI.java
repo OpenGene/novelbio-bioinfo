@@ -84,8 +84,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	private ArrayListMultimap<String, GffGeneIsoInfo> mapRnaID2LsIso = ArrayListMultimap.create();
 	private ArrayListMultimap<String, ExonInfo> mapRnaID2LsIsoLocInfo = ArrayListMultimap.create();
 	private Map<String, Align> mapGeneID2Region = new HashMap<>();
-	/** 将第一列换算为chrID */
-	private Map<String, String> mapID2ChrID = new HashMap<String, String>();
+	private GffGetChrId gffGetChrId = new GffGetChrId();
 		
 	/** 
 	 * 一般的转录本都会先出现exon，然后出现CDS，如下<br>
@@ -169,7 +168,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 //		   if (ss[2].equals("match") || ss[2].toLowerCase().equals("chromosome") || ss[2].toLowerCase().equals("intron") || ss[0].startsWith("NW_") || ss[0].startsWith("NT_")) {
 //			   continue;
 //		   }
-		   ss[0] = getChrID(ss);
+		   ss[0] = gffGetChrId.getChrID(ss);
 		   if (ss[2].equals("region")) continue;
 		   
 		   //读取到gene
@@ -218,58 +217,6 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   clear();
    }
    
-   /**
-    * 输入NC编号，返回染色体ID
-    * @param ss
-    * @return
-    */
-   private String getChrID(String[] ss) {
-	   String chrID = mapID2ChrID.get(ss[0]);
-	   if (chrID != null) return chrID;
-	   if (ss[0].toLowerCase().startsWith("chr")) {
-		   mapID2ChrID.put(ss[0], ss[0].toLowerCase());
-		   return ss[0].toLowerCase();
-	   }
-	   
-	   try {
-		   if (ss[2].equals("region")) {
-			   String regxChrID = "(?<=chromosome\\=)[\\w\\.\\-%\\:]+";
-			   String regxName = "(?<=Name\\=)[\\w\\.\\-%\\:]+";
-			   String ss8Lowcase = ss[8].toLowerCase();
-			   if (ss8Lowcase.contains("genome=genomic")) {
-				   chrID = GeneID.removeDot(ss[0]);
-			   } else if (ss8Lowcase.contains("genome=mitochondrion")) {
-				   chrID = "chrm";
-			   } else if (ss8Lowcase.contains("genome=chloroplast")) {
-				   chrID = "chrc";
-			   }  else if (ss8Lowcase.contains("genome=unknown") 
-					   || ss8Lowcase.contains("genome=un") || (!ss8Lowcase.contains("chromosome=") && ss8Lowcase.contains("name=anonymous"))) {
-				   chrID = ss[0];
-			   } else {
-				   List<String[]> lsRegx = PatternOperate.getPatLoc(ss[8], regxChrID, false);
-				   if (lsRegx.isEmpty()) lsRegx = PatternOperate.getPatLoc(ss[8], regxName, false);
-				   try {
-					   String chrName = lsRegx.get(0)[0];
-					   if (chrName.startsWith("NC_")) {
-						   chrID = chrName.toLowerCase();
-					   } else {
-						   chrID = "chr" + chrName;
-					   }
-				   } catch (Exception e) {
-					   logger.error("本位置出错，错误的region，本来一个region应该是一个染色体，这里不知道是什么 " + ArrayOperate.cmbString(ss, "\t"));
-					   chrID = ss[0];
-				   }
-			   }
-			   mapID2ChrID.put(ss[0], chrID);
-		   }
-	   } catch (Exception e) { }
-	   String chrIDResult = mapID2ChrID.get(ss[0]);
-	   if (chrIDResult == null) {
-		   mapID2ChrID.put(ss[0], ss[0]);
-		   chrIDResult = ss[0];
-	   }
-	   return chrIDResult;
-   }
    /** 当读取到gene时，就是读到了一个新的基因，那么新建一个基因
     * 并且返回string[2]<br>
     * 0: geneID<br>
@@ -638,7 +585,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		
 	   mapRnaID2LsIso.clear();
 	   mapRnaID2LsIsoLocInfo.clear();
-	   mapID2ChrID.clear();
+	   gffGetChrId.clear();
 	   mapGeneName2IsHaveExon.clear();
 	   
 	    mapRnaID2GeneID = null;
@@ -649,7 +596,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 			
 	    mapRnaID2LsIso = null;
 	    mapRnaID2LsIsoLocInfo = null;
-	    mapID2ChrID = null;
+	    gffGetChrId = null;
 	    mapGeneName2IsHaveExon = null;
 		   
 	    mapRnaID2GeneID = null;

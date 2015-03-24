@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -22,15 +23,18 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 
+import com.novelbio.analysis.seq.fasta.ChrSeqHash;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fasta.SeqHash;
+import com.novelbio.analysis.seq.fasta.format.ChrFileFormat;
 import com.novelbio.analysis.seq.fasta.format.NCBIchromFaChangeFormat;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.GffChrSeq;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGetChrId;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.mirna.ListMiRNAdat;
@@ -275,13 +279,50 @@ public class SpeciesFile {
 		if (StringOperate.isRealNull(chromSeq)) {
 			return null;
 		}
+		int maxSeqNum = 4000;
+		int minLen = 5000;
 		String chromeSeq = EnumSpeciesFile.chromSeqFile.getSavePath(taxID, this) + chromSeq;
 		if (FileOperate.isFileExistAndBigThanSize(chromeSeq, 0)) {
 			SamIndexRefsequence samIndexRefsequence = new SamIndexRefsequence();
 			samIndexRefsequence.setRefsequence(chromeSeq);
 			samIndexRefsequence.indexSequence();
 		}
+		ChrSeqHash chrSeqHash = new ChrSeqHash(chromeSeq, "");
+		Map<String, Long> mapChrID2ChrLen = chrSeqHash.getMapChrLength();
+		chrSeqHash.close();
+		
+		if (mapChrID2ChrLen.size() > 3000) {
+			ChrFileFormat chrFileFormat = new ChrFileFormat();
+			Set<String> setChrId = readGffFile(getGffFile());			
+			chrFileFormat.setIncludeChrId(setChrId);
+			chrFileFormat.setRefSeq(chromeSeq);
+			chrFileFormat.setResultSeq(chromeSeq);
+			chrFileFormat.setMinLen(minLen);
+			chrFileFormat.setMaxNum(maxSeqNum);
+			chrFileFormat.rebuild();
+		}
+		
 		return chromeSeq;
+	}
+	
+	private Set<String> readGffFile(String gffFile) {
+		GffGetChrId gffGetChrId = new GffGetChrId();
+		Set<String> setGff = new HashSet<>();
+		TxtReadandWrite txtRead = new TxtReadandWrite(gffFile);
+		for (String content : txtRead.readlines()) {
+			if (content.startsWith("#")) {
+				continue;
+			}
+			String[] ss = content.split("\t");
+			if (ss.length > 4 ) {
+				gffGetChrId.getChrID(ss);
+				if (ss[2].equals("gene")) {
+					setGff.add(gffGetChrId.getChrID(ss).toLowerCase());
+				}
+			}
+		}
+		txtRead.close();
+		return setGff;
 	}
 	
 	/** 获得分割的文件夹
