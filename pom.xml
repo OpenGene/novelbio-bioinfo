@@ -193,28 +193,6 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.curator</groupId>
-			<artifactId>curator-recipes</artifactId>
-			<version>2.1.0-incubating</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>guava</artifactId>
-					<groupId>com.google.guava</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.curator</groupId>
-			<artifactId>curator-examples</artifactId>
-			<version>2.1.0-incubating</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>guava</artifactId>
-					<groupId>com.google.guava</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
 			<groupId>com.sun.jna</groupId>
 			<artifactId>jna</artifactId>
 			<version>3.0.9</version>
@@ -224,6 +202,11 @@
 			<artifactId>org-apache-commons-dbcp</artifactId>
 			<version>1.2.2-201002241055</version>
 			<type>nbm</type>
+		</dependency>
+		<dependency>
+  			<groupId>picard</groupId>
+  			<artifactId>picard</artifactId>
+  			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
      <dependency>
 			<groupId>org.powermock</groupId>

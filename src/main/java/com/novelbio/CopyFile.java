@@ -6,9 +6,11 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.StringOperate;
+import com.novelbio.base.curator.CuratorNBC;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileHadoop;
@@ -24,8 +26,24 @@ public class CopyFile {
 	long time = -1;
 	TxtReadandWrite txtWriteCannotCopy;
 	public static void main(String[] args) {
-		String[] ss = new String[]{"/media/hdfs/nbCloud/public/nbcplatform/copy/needCopy1.txt", "2014-12-21"};
-		main2(ss);
+//		String[] ss = new String[]{"/media/hdfs/nbCloud/public/nbcplatform/copy/needCopy1.txt", "2014-12-21"};
+//		main2(ss);
+		
+		CuratorNBC curatorNBC = new CuratorNBC();
+		InterProcessMutex mutex = curatorNBC.getInterProcessMutex("test");
+		try {
+			mutex.acquire();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("test");
+		try {
+			mutex.release();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
 	}
 	
 	

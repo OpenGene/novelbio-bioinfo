@@ -63,12 +63,12 @@ public abstract class AGene2Go {
 			try {
 				go2Term = manageGo2Term.queryGo2Term(goID);
 			} catch (Exception e) {
-				logger.error("出现未知GOID：" + goID);
+				logger.error("find unknown GOID: " + goID);
 				return null;
 			}
 		}
 		if (go2Term == null) {
-			logger.error("出现未知GOID：" + goID);
+			logger.error("find unknown GOID: " + goID);
 			return null;
 		}
 		return go2Term;
@@ -76,7 +76,7 @@ public abstract class AGene2Go {
 	
 	public void setGOID(String GoID) {
 		if (GoID == null || GoID.trim().equals("")) {
-			logger.error("GOID未知");
+			logger.error("unknown GOID");
 			return;
 		}
 		GoID = GoID.trim().toUpperCase();

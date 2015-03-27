@@ -280,7 +280,12 @@ public class MapBwaAln extends MapDNA {
 	
 	private void combSeq() {
 		boolean singleEnd = (lsLeftFq.size() > 0 && lsRightFq.size() > 0) ? false : true;
-		if ( leftCombFq != null && (singleEnd || (!singleEnd && rightCombFq != null))) {
+		if ( FileOperate.isFileExistAndBigThanSize(leftCombFq, 0) &&
+				(singleEnd || 
+						(!singleEnd && FileOperate.isFileExistAndBigThanSize(rightCombFq, 0) )
+				)
+			)
+		{
 			return;
 		}
 		String outPath = tmpPath;
@@ -291,6 +296,8 @@ public class MapBwaAln extends MapDNA {
 		} else {
 			leftCombFq = combSeq(outPath, singleEnd, true, prefix, lsLeftFq);
 		}
+		if (singleEnd) return;
+		
 		if (lsRightFq.size() == 1) {
 			String rightFileName = lsRightFq.get(0).getReadFileName();
 			rightCombFq = tmpPath + FileOperate.getFileName(rightFileName);
@@ -300,11 +307,54 @@ public class MapBwaAln extends MapDNA {
 		}
 	}
 	
+	/** 返回是否成功设置名字
+	 * 如果设置了名字，就要将名字清除
+	 * @return
+	 */
+	private boolean setSeqName() {
+		boolean singleEnd = (lsLeftFq.size() > 0 && lsRightFq.size() > 0) ? false : true;
+		if ( leftCombFq != null && (singleEnd || (!singleEnd && rightCombFq != null))) {
+			return false;
+		}
+		String outPath = tmpPath;
+		if (lsLeftFq.size() == 1) {
+			String leftFileName = lsLeftFq.get(0).getReadFileName();
+			leftCombFq = tmpPath + FileOperate.getFileName(leftFileName);
+		} else {
+			leftCombFq = getCombSeqName(outPath, singleEnd, true, prefix, lsLeftFq);
+		}
+		
+		if (singleEnd) return true;
+		
+		if (!singleEnd && lsRightFq.size() == 1) {
+			String rightFileName = lsRightFq.get(0).getReadFileName();
+			rightCombFq = tmpPath + FileOperate.getFileName(rightFileName);
+		} else {
+			rightCombFq = getCombSeqName(outPath, singleEnd, false, prefix, lsRightFq);
+		}
+		return true;
+	}
+	
 	/** 将输入的fastq文件合并为一个 */
 	protected static String combSeq(String outPath, boolean singleEnd, boolean left, String prefix, List<FastQ> lsFastq) {
 		if (lsFastq == null || lsFastq.size() == 0) {
 			return null;
 		}
+		String fastqFile = getCombSeqName(outPath, singleEnd, left, prefix, lsFastq);
+
+		FastQ fastqComb = new FastQ(fastqFile, true);
+		for (FastQ fastQ : lsFastq) {
+			for (FastQRecord fastQRecord : fastQ.readlines()) {
+				fastqComb.writeFastQRecord(fastQRecord);
+			}
+			fastQ.close();
+		}
+		fastqComb.close();
+		return fastqComb.getReadFileName();
+	}
+	
+	/** 将输入的fastq文件合并为一个 */
+	protected static String getCombSeqName(String outPath, boolean singleEnd, boolean left, String prefix, List<FastQ> lsFastq) {
 		String fastqFile = outPath + prefix;
 		if (prefix.equals("")) {
 			fastqFile = fastqFile + "combine";
@@ -320,16 +370,7 @@ public class MapBwaAln extends MapDNA {
 				fastqFile += "_2.fq.gz";
 			}
 		}
-
-		FastQ fastqComb = new FastQ(fastqFile, true);
-		for (FastQ fastQ : lsFastq) {
-			for (FastQRecord fastQRecord : fastQ.readlines()) {
-				fastqComb.writeFastQRecord(fastQRecord);
-			}
-			fastQ.close();
-		}
-		fastqComb.close();
-		return fastqComb.getReadFileName();
+		return fastqFile;
 	}
 	
 	/**
@@ -343,13 +384,15 @@ public class MapBwaAln extends MapDNA {
 	private void bwaAln() {
 		List<String> lsCmdLeft = getLsCmdAln(true);
 		CmdOperate cmdOperate = new CmdOperate(lsCmdLeft);
-		cmdOperate.setStdErrPath(FileOperate.changeFileSuffix(outFileName, "_sai_left_stderrInfo", "txt"), false, true);
+		cmdOperate.setStdErrPath(FileOperate.changeFileSuffix(outFileName, "_saiLeftStderrInfo", "txt"), false, true);
+		cmdOperate.setRunInfoFile(FileOperate.changeFileSuffix(outFileName, "_runSaiLeftInfo", "txt"));
 		cmdOperate.run();
 		
 		if (isPairEnd()) {
 			List<String> lsCmdRight = getLsCmdAln(false);
 			cmdOperate = new CmdOperate(lsCmdRight);
-			cmdOperate.setStdErrPath(FileOperate.changeFileSuffix(outFileName, "_sai_right_stderrInfo", "txt"), false, true);
+			cmdOperate.setStdErrPath(FileOperate.changeFileSuffix(outFileName, "_saiRightStderrInfo", "txt"), false, true);
+			cmdOperate.setRunInfoFile(FileOperate.changeFileSuffix(outFileName, "_runSaiRightInfo", "txt"));
 			cmdOperate.run();
 		}
 		
@@ -403,6 +446,8 @@ public class MapBwaAln extends MapDNA {
 		List<String> lsCmd = getLsCmdSam();
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.setGetCmdInStdStream(true);
+		cmdOperate.setStdErrPath(FileOperate.changeFileSuffix(outFileName, "_mappingStderrInfo", "txt"), false, true);
+		cmdOperate.setRunInfoFile(FileOperate.changeFileSuffix(outFileName, "_runMappingInfo", "txt"));
 		Thread thread = new Thread(cmdOperate);
 		thread.start();
 		InputStream inputStream = cmdOperate.getStreamStd();
@@ -516,7 +561,7 @@ public class MapBwaAln extends MapDNA {
 	@Override
 	public List<String> getCmdExeStr() {
 		generateTmpPath();
-		combSeq();
+		boolean isSetSucess = setSeqName();
 		List<String> lsCmdResult = new ArrayList<>();
 		String version = getVersion(this.ExePath);
 		if (version != null) {
@@ -533,6 +578,10 @@ public class MapBwaAln extends MapDNA {
 		lsCmd = getLsCmdSam();
 		cmdOperate = new CmdOperate(lsCmd);
 		lsCmdResult.add(cmdOperate.getCmdExeStr());
+		if (isSetSucess) {
+			leftCombFq = null;
+			rightCombFq = null;
+		}
 		return lsCmdResult;
 	}
 

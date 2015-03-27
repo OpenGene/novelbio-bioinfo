@@ -56,6 +56,16 @@ public class ChrSeqHash extends SeqHashAbs {
 		super(chrFileName, regx);
 		setFile();
 	}
+	/**
+	 * 随机硬盘读取染色体文件的方法，貌似很伤硬盘，考虑用固态硬盘 注意
+	 * @param chrFileName 染色体文件路径，单个文件
+	 *  " "选择第一个空格前的序列名，如">chr1 ater ddddd" 则截取”chr1“
+	 * @param CaseChange 是否将序列名转化为小写，一般转为小写
+	 */
+	public ChrSeqHash(String chrFileName) {
+		super(chrFileName, " ");
+		setFile();
+	}
 	/** 设定最长读取的sequence长度 */
 	public void setMaxExtractSeqLength(int maxExtractSeqLength) {
 		this.maxExtractSeqLength = maxExtractSeqLength;
@@ -98,8 +108,7 @@ public class ChrSeqHash extends SeqHashAbs {
 	 */
 	private SeqFasta getSeqInfoExp(String chrID, long startlocation, long endlocation) throws IOException {
 		if (randomChrFileInt == null) {
-			logger.error("没有该文件：" + chrFile);
-			return null;
+			throw new ExceptionSeqFasta("no file exist: " + chrFile);
 		}
 		
 		chrID = chrID.toLowerCase();
@@ -113,20 +122,41 @@ public class ChrSeqHash extends SeqHashAbs {
 		SeqFasta seqFasta = new SeqFasta();
 		seqFasta.setName(chrID + "_" + startlocation + "_" + endlocation);
 		StringBuilder sequence = new StringBuilder();
-		for (byte b : readInfo) {
-			if ((int)b <= 0) {
-				logger.error("error: " + chrID + " " + startlocation + " " + endlocation );
-				return null;
+
+		int basesPerLine = mapChrID2LenRow.get(chrID);
+		int terminatorLength = mapChrID2LenRowEnter.get(chrID) - basesPerLine;
+		int lineNum = getBias(startlocation, mapChrID2LenRow.get(chrID));
+		int byteNum = 1;
+		boolean isBase = true;
+		for (int i = 0; i < readInfo.length; i++) {
+			if (isBase) {
+				byte c = readInfo[i];
+				if ((int)c <= 0) {
+					logger.error("error: " + chrID + " " + startlocation + " " + endlocation );
+					return null;
+				}
+				
+				char seq = (char)c;
+				if (seq == '\r' || seq == '\n' || seq == ' ') {
+					throw new ExceptionSeqFasta("error find enter symbol: " + chrFile + "\t" + chrID + " " + startlocation + " " + endlocation);
+				}
+				sequence.append(seq);
+				if (lineNum == basesPerLine) {
+					lineNum = 1;
+					isBase = false;
+				} else {
+					lineNum++;
+				}
+			} else {
+				if (byteNum == terminatorLength) {
+					byteNum = 1;
+					isBase = true;
+				} else {
+					byteNum++;
+				}
 			}
-			char seq = (char)b;
-			if (seq == '\r' || seq == '\n' || seq == ' ') {
-				continue;
-			} else if (seq == '>') {
-				logger.error("error: " + chrID + " " + startlocation + " " + endlocation );
-				return null;
-			}
-			sequence.append(seq);
 		}
+		
 		seqFasta.setSeq(sequence.toString());
 		return seqFasta;
 	}

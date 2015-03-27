@@ -202,7 +202,8 @@ public class CtrlMiRNApredict implements IntCmdSoft {
 		if (lsBlastTo != null && !lsBlastTo.isEmpty()) {
 			miRNAnovelAnnotaion = new MiRNAnovelAnnotaion();
 			miRNAnovelAnnotaion.setMiRNAthis(novelMiRNADeep.getNovelMiRNAmature());
-			miRNAnovelAnnotaion.setLsMiRNAblastTo(lsBlastTo, outPathTmp);
+			String blastPath = outPathTmp + "blastAnnoMiRNA";
+			miRNAnovelAnnotaion.setLsMiRNAblastTo(lsBlastTo, blastPath);
 			miRNAnovelAnnotaion.setIsUseOldResult(isUseOldResult);
 			miRNAnovelAnnotaion.annotation();
 			mapID2Blast = miRNAnovelAnnotaion.getMapID2Blast();

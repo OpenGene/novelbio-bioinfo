@@ -279,6 +279,7 @@ public class SpeciesFile {
 		if (StringOperate.isRealNull(chromSeq)) {
 			return null;
 		}
+		//如果文件里面的染色体，或者说contig太多，就会将短的去掉
 		int maxSeqNum = 4000;
 		int minLen = 5000;
 		String chromeSeq = EnumSpeciesFile.chromSeqFile.getSavePath(taxID, this) + chromSeq;
@@ -291,7 +292,7 @@ public class SpeciesFile {
 		Map<String, Long> mapChrID2ChrLen = chrSeqHash.getMapChrLength();
 		chrSeqHash.close();
 		
-		if (mapChrID2ChrLen.size() > 3000) {
+		if (mapChrID2ChrLen.size() > maxSeqNum) {
 			ChrFileFormat chrFileFormat = new ChrFileFormat();
 			Set<String> setChrId = readGffFile(getGffFile());			
 			chrFileFormat.setIncludeChrId(setChrId);

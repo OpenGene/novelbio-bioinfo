@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.GuiAnnoInfo;
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.AlignSeq;
@@ -26,7 +28,8 @@ import com.novelbio.base.multithread.RunProcess;
  *
  */
 public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
-
+	private static final Logger logger = Logger.getLogger(AlignSeqReading.class);
+	
 	List<AlignmentRecorder> lsAlignmentRecorders = new ArrayList<>();
 	/** 正在用的recorder */
 	Set<AlignmentRecorder> setRecorderRun = new LinkedHashSet<>(); 
@@ -141,7 +144,7 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 				}
 				num++;
 				if (num % 100000 == 0) {
-					System.out.println(num);
+					logger.info("read reads num: " + num);
 				}
 				int seqLen = samRecord.getLength();
 				if (lenMin > 0 && seqLen < lenMin) {

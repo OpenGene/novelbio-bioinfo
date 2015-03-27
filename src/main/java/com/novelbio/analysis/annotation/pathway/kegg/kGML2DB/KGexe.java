@@ -47,8 +47,8 @@ public class KGexe {
 			
 			
 			
-			KGML2DB.readKGML("/home/novelbio/NBCsource/database/kegg/eco");
-			KeggIDcvt.upDateGen2Keg("/home/novelbio/NBCsource/database/kegg/eco/eco_ncbi-geneid.list");
+			KGML2DB.readKGML("/home/novelbio/NBCsource/database/kegg/tgo");
+			KeggIDcvt.upDateGen2Keg("/home/novelbio/NBCsource/database/kegg/eco/tgo_ncbi-geneid.list");
 //			
 //			KGML2DB.readKGML("/home/novelbio/NBCsource/database/kegg/mmu");
 //			KeggIDcvt.upDateGen2Keg("/home/novelbio/NBCsource/database/kegg/mmu/mmu_ncbi-geneid.list");

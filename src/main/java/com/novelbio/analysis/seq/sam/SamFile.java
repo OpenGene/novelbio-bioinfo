@@ -8,6 +8,7 @@ import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SAMSequenceDictionary;
 import htsjdk.samtools.SAMSequenceRecord;
 import htsjdk.samtools.SAMTextHeaderCodec;
+import htsjdk.samtools.SamReaderFactory;
 import htsjdk.samtools.ValidationStringency;
 import htsjdk.samtools.util.BlockCompressedInputStream;
 import htsjdk.samtools.util.BlockCompressedStreamConstants;
@@ -48,7 +49,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 public class SamFile implements AlignSeq {
 	private static final Logger logger = Logger.getLogger(SamFile.class);
 	static {
-		SAMFileReader.setDefaultValidationStringency(ValidationStringency.SILENT);
+		SamReaderFactory.setDefaultValidationStringency(ValidationStringency.SILENT);
 	}
 	public static void main(String[] args) {
 		DateUtil dateUtil = new DateUtil();

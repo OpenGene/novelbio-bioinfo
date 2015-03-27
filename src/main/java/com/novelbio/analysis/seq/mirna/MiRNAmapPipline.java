@@ -268,6 +268,9 @@ public class MiRNAmapPipline implements IntCmdSoft {
 			samFileStatistics.initial();
 			mapDNA.addAlignmentRecorder(samFileStatistics);
 		}
+		if (lsCmd != null) {
+			lsCmd.addAll(mapDNA.getCmdExeStr());
+		}
 		if (isUseOldResult) {
 			if (FileOperate.isFileExistAndBigThanSize(mapDNA.getOutNameCope(), 0)
 					&& ((unMappedFq == null || unMappedFq.equals("")) 
@@ -287,9 +290,6 @@ public class MiRNAmapPipline implements IntCmdSoft {
 		logger.info("start mapping miRNA");
 		SamFile samFile = mapDNA.mapReads();
 		logger.info("finish mapping miRNA");
-		if (lsCmd != null) {
-			lsCmd.addAll(mapDNA.getCmdExeStr());
-		}
 		return samFile.getFileName();
 	}
 	@Override

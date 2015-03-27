@@ -31,8 +31,8 @@ public class ImportDB {
 //		String dbInfo = "/home/novelbio/NBCsource/database/DBinfo.txt";
 		String GOPath = "/home/novelbio/NBCsource/database/GO/";
 		String speciesFile = "";
-		ImportPerLine.addTaxId(9925);
-		ImportPerLine.addTaxId(4932);
+		ImportPerLine.addTaxId(508771);
+//		ImportPerLine.addTaxId(4932);
 		ImportDB importDB = new ImportDB();
 		importDB.setDownloadPath(downloadPath);
 		importDB.setSoftToolsFile(softToolsFile);
@@ -44,20 +44,22 @@ public class ImportDB {
 //		importDB.updateGODB();
 ////		
 		importDB.updateNCBIID();
-		importDB.updateUniprotID();
+//		importDB.updateUniprotID();
 		
 //		importDB.updateZeaMaize();
 //		importDB.updateRiceID("/home/novelbio/NBCsource/database/species/rice/");//只导了前两个
 //		importDB.updateTAIR("/home/novelbio/NBCsource/database/species/arabidopsis/");
 //		importDB.updateZB();
 //		importDB.updateEnsembl();
-		importDB.updateYeast();
+//		importDB.updateYeast();
 //		importDB.updateMicroarray();
 
 //		importDB.updateSoyBean();
 //		importDB.updateZeaMaize();
 //		importDB.updateBlast();
 //		importDB.updateAffy();
+		
+		System.out.println("finish all");
 	}
 	
 	public static void findGoIsExist(String goFile, int taxId) {

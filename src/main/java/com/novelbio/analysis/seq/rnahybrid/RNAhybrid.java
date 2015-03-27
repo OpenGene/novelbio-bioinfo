@@ -80,7 +80,7 @@ public class RNAhybrid implements IntCmdSoft {
 	private String[] getRNAhybridClass() {
 		return new String[]{"-s", SpeciesType.toString()};
 	}
-	private String[] getUtr3Seq() {
+	private String[] getUtr3Seq(String utr3Seq) {
 		return new String[]{"-t", utr3Seq};
 	}
 	private String[] getMirSeq() {
@@ -88,16 +88,17 @@ public class RNAhybrid implements IntCmdSoft {
 	}
 	
 	public void mirnaPredictRun() {
-		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
+		String utr3CutSeq = getCutFastaName();
+		cutSeq(utr3CutSeq);
+		CmdOperate cmdOperate = new CmdOperate(getLsCmd(utr3CutSeq));
 		cmdOperate.runWithExp("RNAhybrid error:");
 	}
 	
-	private List<String> getLsCmd() {
+	private List<String> getLsCmd(String utr3CutSeq) {
 		List<String> lsCmd = new ArrayList<>();
 		lsCmd.add(exePath + "RNAhybrid");
-		utr3Seq = cutSeq(utr3Seq);
 		ArrayOperate.addArrayToList(lsCmd, getRNAhybridClass());
-		ArrayOperate.addArrayToList(lsCmd, getUtr3Seq());
+		ArrayOperate.addArrayToList(lsCmd, getUtr3Seq(utr3CutSeq));
 		ArrayOperate.addArrayToList(lsCmd, getMirSeq());
 		lsCmd.add(">");
 		lsCmd.add(predictResultFile);
@@ -112,19 +113,23 @@ public class RNAhybrid implements IntCmdSoft {
 	/** 减小序列的长度。
 	 * RNAhybrid要求序列的长度小于2000bp，因此需要将比这个序列长的序列进行缩小
 	 *  */
-	private String cutSeq(String utr3Seq) {
-		String outTmpUtrSeq = FileOperate.getParentPathNameWithSep(predictResultFile) + FileOperate.getFileName(utr3Seq);
-		outTmpUtrSeq = FileOperate.changeFileSuffix(outTmpUtrSeq, "_tmpCutShort", null);
-		TxtReadandWrite txtWrite = new TxtReadandWrite(outTmpUtrSeq, true);
+	private String cutSeq(String utr3CutSeq) {
+		TxtReadandWrite txtWrite = new TxtReadandWrite(utr3CutSeq, true);
 		SeqFastaReader seqFastaReader = new SeqFastaReader(utr3Seq);
 		for (SeqFasta seqFasta : seqFastaReader.readlines()) {
 			if (seqFasta.Length() > lengthMax) {
-				seqFasta = seqFasta.getSubSeq(0, lengthMax, true);
+				seqFasta = seqFasta.getSubSeq(1, lengthMax, true);
 			}
 			txtWrite.writefileln(seqFasta.toStringNRfasta());
 		}
 		seqFastaReader.close();
 		txtWrite.close();
+		return utr3CutSeq;
+	}
+	
+	private String getCutFastaName() {
+		String outTmpUtrSeq = FileOperate.getParentPathNameWithSep(predictResultFile) + FileOperate.getFileName(utr3Seq);
+		outTmpUtrSeq = FileOperate.changeFileSuffix(outTmpUtrSeq, "_tmpCutShort", null);
 		return outTmpUtrSeq;
 	}
 	
@@ -237,7 +242,8 @@ public class RNAhybrid implements IntCmdSoft {
 	@Override
 	public List<String> getCmdExeStr() {
 		List<String> lsResult = new ArrayList<>();
-		List<String> lsCmd = getLsCmd();
+		String utr3CutSeq = getCutFastaName();
+		List<String> lsCmd = getLsCmd(utr3CutSeq);
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		String cmd = cmdOperate.getCmdExeStr();
 		lsResult.add(cmd);

@@ -193,7 +193,7 @@ public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 	}
 	/**
 	 * @param chrID 染色体编号或序列名
-	 * @param startlocation 起点
+	 * @param startlocation 序列起点 <b>注意起点从1开始</b>，跟string的subString不一样
 	 * @param endlocation 终点
 	 * @return 返回序列，出错就返回null
 	 */

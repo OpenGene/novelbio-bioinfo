@@ -120,7 +120,7 @@ public class SeqFasta implements Cloneable {
 	}
 	/**
 	 * 输入序列坐标信息：序列名-序列起点和终点 返回序列
-	 * @param startlocation 序列起点
+	 * @param startlocation 序列起点 <b>注意起点从1开始</b>，跟string的subString不一样
 	 * @param endlocation 序列终点
 	 * @param cisseq序列正反向，蛋白序列就输true
 	 */
@@ -133,25 +133,32 @@ public class SeqFasta implements Cloneable {
 	}
 
 	/**
+	 * 
 	 * 输入序列坐标，起点和终点 返回序列
 	 * 如果位点超过了范围，那么修正位点
+	 * @param startlocation <b>注意起点从1开始</b>，跟string的subString不一样
+	 * @param endlocation
+	 * @return
 	 */
 	private String getsequence(int startlocation, int endlocation) {
 		int length = SeqSequence.length();
+		if (startlocation < 1) {
+			throw new ExceptionSeqFasta("startLocation should start from 1, but is: " + startlocation);
+		}
 		if (startlocation < 1 || startlocation > length || endlocation < 1
 				|| endlocation > length) {
-			logger.error("序列坐标错误 "+SeqName+" "+startlocation+" "+endlocation);
-			return "序列坐标错误 "+SeqName+" "+startlocation+" "+endlocation;
+			logger.error("location error "+SeqName+" "+startlocation+" "+endlocation);
+			return "location error "+SeqName+" "+startlocation+" "+endlocation;
 		}
 
 		if (endlocation < startlocation) {
-			logger.error("序列坐标错误 "+SeqName+" "+startlocation+" "+endlocation);
-			return "序列坐标错误 "+SeqName+" "+startlocation+" "+endlocation;
+			logger.error("location error "+SeqName+" "+startlocation+" "+endlocation);
+			return "location error "+SeqName+" "+startlocation+" "+endlocation;
 		}
 		
 		if (endlocation - startlocation > 1000000) {
-			logger.error("最多提取20000bp "+SeqName+" "+startlocation+" "+endlocation);
-			return "最多提取20000bp"+SeqName+" "+startlocation+" "+endlocation;
+			logger.error("can extract less than 20000bp "+SeqName+" "+startlocation+" "+endlocation);
+			return "can extract less than 20000bp "+SeqName+" "+startlocation+" "+endlocation;
 		}
 		return SeqSequence.substring(startlocation - 1, endlocation);// substring方法返回找到的序列
 	}
@@ -258,6 +265,13 @@ public class SeqFasta implements Cloneable {
 			}
 		}
 		stringBuilder.append(c);
+	}
+	
+	/** append完了之后务必调用 {@link #appendFinish()} */
+	public void appendSeq(String seq) {
+		for (char chr : seq.toCharArray()) {
+			appendSeq(chr);
+		}
 	}
 	
 	/** 结束append */

@@ -123,7 +123,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 		if (createReportFile) {
 			Random random = new Random();
 			int randomInt = (int)(random.nextDouble() * 1000);
-			reportFile = "report" + DateUtil.getDateDetail() + randomInt + ".log";
+			reportFile = outPath + "report" + DateUtil.getDateDetail() + randomInt + ".log";
 		}
 		return reportFile;
 	}
@@ -208,13 +208,13 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 		return bedSeq;
 	}
 	/** 好像是输出的压缩的reads信息 */
-	private String getCollapseReadsFa() {
+	private String getCollapseReadsFa(String fastaInput) {
 		String fileName = FileOperate.changeFileSuffix(fastaInput, "_collapsed", "fasta");
 		String resultName = outPath + FileOperate.getFileName(fileName);
 		return resultName;
 	}
 	/** 好像是输出的压缩的reads信息 */
-	private String getMappingArf() {
+	private String getMappingArf(String fastaInput) {
 		String fileName = FileOperate.changeFileSuffix(fastaInput, "_collapsed_mapping", "arf");
 		String resultName = outPath + FileOperate.getFileName(fileName);
 		return resultName;
@@ -252,8 +252,15 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	}
 	
 	private void mapping() {
-		mapBowtie.IndexMake();
 		String fastaInput = getFastaMapFileName();
+		String collapseReadsFa = getCollapseReadsFa(fastaInput);
+		String arfFile = getMappingArf(fastaInput);
+		if (FileOperate.isFileExistAndBigThanSize(arfFile, 0)) {
+			return;
+		}
+		
+		mapBowtie.IndexMake();
+		
 		String bedSeqFileName = "";
 		if (!FileOperate.isFileExistAndBigThanSize(fastaInput, 0)) {
 			BedSeq bedSeq = getBedFile();
@@ -262,21 +269,15 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 		}
 		List<String> lsCmdRun = new ArrayList<>();
 		lsCmdRun.add(mirDeepPath + "mapper.pl");
-		String collapseReadsFa = getCollapseReadsFa();
-		String arfFile = getMappingArf();
-		if (FileOperate.isFileExistAndBigThanSize(arfFile, 0)) {
-			return;
-		}
+
 		
 		if (isFastq) {
 			fastaInput = convert2Fasta(fastaInput);
 		}
 
-		String collapseTmp = FileOperate.changeFileSuffix(collapseReadsFa, "_tmp", null);
-		String arfTmp = FileOperate.changeFileSuffix(arfFile, "_tmp", null);
-		
-		FileOperate.DeleteFileFolder(collapseTmp);
-		FileOperate.delFile(arfTmp);
+ 
+		FileOperate.DeleteFileFolder(collapseReadsFa);
+		FileOperate.delFile(arfFile);
 		
 		lsCmdRun.add(fastaInput);
 		lsCmdRun.add("-c"); 
@@ -284,16 +285,20 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 		ArrayOperate.addArrayToList(lsCmdRun, getReadsMinLen());
 		lsCmdRun.add("-m");
 		lsCmdRun.add("-p"); lsCmdRun.add(getChromFaIndex());
-		lsCmdRun.add("-s"); lsCmdRun.add(collapseTmp);
-		lsCmdRun.add("-t"); lsCmdRun.add(arfTmp);
+		lsCmdRun.add("-s"); lsCmdRun.add(collapseReadsFa);
+		lsCmdRun.add("-t"); lsCmdRun.add(arfFile);
 		lsCmdRun.add("-v");
 		CmdOperate cmdOperate = new CmdOperate(lsCmdRun);
+		cmdOperate.setRedirectInToTmp(true);
+		cmdOperate.addCmdParamInput(fastaInput);
+		cmdOperate.setRedirectOutToTmp(true);
+		cmdOperate.addCmdParamOutput(collapseReadsFa);
+		cmdOperate.addCmdParamOutput(arfFile);
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {
 			throw new ExceptionCmd("miRNAdeep2 mapper.pl error:\n" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
 		}
-		moveFile(collapseTmp, collapseReadsFa);
-		moveFile(arfTmp, arfFile);
+ 
 		
 		lsCmd.add(cmdOperate.getCmdExeStr());
 		FileOperate.DeleteFileFolder(fastaInput);
@@ -301,11 +306,6 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 		createReportFile = true;
 	}
 	
-	private void moveFile(String oldFile, String newFile) {
-		if (FileOperate.isFileExistAndBigThanSize(oldFile, 0)) {
-			FileOperate.moveFile(true, oldFile, newFile);
-		}
-	}
 	
 	private String convert2Fasta(String fastqFile) {
 		FastQ fastQ = new FastQ(fastaInput);
@@ -330,9 +330,9 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	private void mirDeep2Pl() {
 		List<String> lsCmdRun = new ArrayList<>();
 		lsCmdRun.add(mirDeepPath + "miRDeep2.pl");
-		lsCmdRun.add(getCollapseReadsFa());
+		lsCmdRun.add(getCollapseReadsFa(fastaInput));
 		lsCmdRun.add(getChromFaSeq());
-		lsCmdRun.add(getMappingArf());
+		lsCmdRun.add(getMappingArf(fastaInput));
 		lsCmdRun.add(getMatureMiRNA());
 		lsCmdRun.add(getMatureRelateMiRNA());
 		lsCmdRun.add(getPrecursorsMiRNA());
@@ -340,6 +340,9 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 //		ArrayOperate.addArrayToList(lsCmdRun, getMirBaseMrd());
 		lsCmdRun.add("2>"); lsCmdRun.add(getReportFileRandom());
 		CmdOperate cmdOperate = new CmdOperate(lsCmdRun);
+		cmdOperate.setRedirectInToTmp(true);
+		cmdOperate.addCmdParamInput(getMappingArf(fastaInput));
+		cmdOperate.addCmdParamInput(getCollapseReadsFa(fastaInput));
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {
 			StringBuilder stringBuilder = new StringBuilder("miRNAdeep2 miRDeep2.pl error:\n");

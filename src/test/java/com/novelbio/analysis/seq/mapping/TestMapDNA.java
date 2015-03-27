@@ -18,6 +18,7 @@ import com.novelbio.database.model.species.Species;
 import junit.framework.TestCase;
 
 public class TestMapDNA extends TestCase {
+	String parentPath = "/hdfs:/nbCloud/testJava/NBCplatform/testDNAmap/";
 	MapDNAint mapDNA;
 	@Override
 	protected void setUp() throws Exception {
@@ -27,58 +28,57 @@ public class TestMapDNA extends TestCase {
 		super.tearDown();
 	}
 	
-	@Test
-	public void testBowtie() {
-		CmdOperate.setTmpPath("/home/novelbio/tmp");
-		mapDNA = new MapBowtie();
-		String leftFqName = "/media/nbfs/nbCloud/public/test/DNASeqMap/HumanDNA_2A_1_Small.fastq.gz";
-		String rightFqName = "/media/nbfs/nbCloud/public/test/DNASeqMap/HumanDNA_2A_2_Small.fastq.gz";
-		Species species = new Species(9606);
-		mapDNA.setChrIndex(species.getIndexChr(SoftWare.bowtie2));
-		FastQ leftFq = new FastQ(leftFqName);
-		FastQ rightFq = new FastQ(rightFqName);
-		mapDNA.setFqFile(leftFq, rightFq);
-		mapDNA.setSortNeed(true);
-		mapDNA.setOutFileName("/media/nbfs/nbCloud/public/test/DNASeqMap/resultBowtie");
-		SamFile samFile = mapDNA.mapReads();
-		assertEquals(true, samFile.isSamBamFile(samFile.getFileName()) == FormatSeq.BAM);
-		assertEquals(true, samFile.getHeader().getSortOrder() == SortOrder.coordinate);
-	}
+//	@Test
+//	public void testBowtie() {
+//		CmdOperate.setTmpPath("/home/novelbio/tmp");
+//		mapDNA = new MapBowtie();
+//		String leftFqName = parentPath + "HumanDNA_2A_1_Small.fastq.gz";
+//		String rightFqName = parentPath + "HumanDNA_2A_2_Small.fastq.gz";
+//		Species species = new Species(9913);
+//		mapDNA.setChrIndex(species.getIndexChr(SoftWare.bowtie2));
+//		FastQ leftFq = new FastQ(leftFqName);
+//		FastQ rightFq = new FastQ(rightFqName);
+//		mapDNA.setFqFile(leftFq, rightFq);
+//		mapDNA.setSortNeed(true);
+//		mapDNA.setOutFileName(parentPath + "resultBowtie");
+//		SamFile samFile = mapDNA.mapReads();
+//		assertEquals(true, SamFile.isSamBamFile(samFile.getFileName()) == FormatSeq.BAM);
+//		assertEquals(true, samFile.getHeader().getSortOrder() == SortOrder.coordinate);
+//	}
 	
 //	@Test
 //	public void testBwa() {
 //		MapBwaAln mapDNA = new MapBwaAln();
 ////		mapDNA.setExePath("/home/novelbio/software/bwa/bwa/");
-//		String leftFqName = "/hdfs:/nbCloud/public/test/DNASeqMap/HumanDNA_2A_1_Small.fastq.gz";
-//		String rightFqName = "/hdfs:/nbCloud/public/test/DNASeqMap/HumanDNA_2A_2_Small.fastq.gz";
-//		Species species = new Species(9606);
+//		String leftFqName = parentPath + "HumanDNA_2A_1_Small.fastq.gz";
+//		String rightFqName = parentPath + "HumanDNA_2A_2_Small.fastq.gz";
+//		Species species = new Species(9913);
 //		mapDNA.setChrIndex(species.getIndexChr(SoftWare.bwa_aln));
 //		FastQ leftFq = new FastQ(leftFqName);
 //		FastQ rightFq = new FastQ(rightFqName);
 //		mapDNA.setFqFile(leftFq, rightFq);
-//		mapDNA.setSortNeed(true);
-//		mapDNA.setOutFileName("/hdfs:/nbCloud/public/test/DNASeqMap/resultBWA");
+//		mapDNA.setSortNeed(false);
+//		mapDNA.setOutFileName(parentPath + "/bwaResult/resultBWA3");
 //		SamFile samFile = mapDNA.mapReads();
-//		assertEquals(true, samFile.isSamBamFile(samFile.getFileName()) == FormatSeq.BAM);
+//		assertEquals(true, SamFile.isSamBamFile(samFile.getFileName()) == FormatSeq.BAM);
 //		assertEquals(true, samFile.getHeader().getSortOrder() == SortOrder.coordinate);
 //	}
 	
-//	@Test
-//	public void testBwaMem() {
-//		CmdOperate.setTmpPath("/home/novelbio/tmp");
-//		MapBwaMem mapDNA = new MapBwaMem();
-////		mapDNA.setExePath("/home/novelbio/software/bwa/bwa/");
-//		String leftFqName = "/hdfs:/nbCloud/public/test/DNASeqMap/HumanDNA_2A_1_Small.fastq.gz";
-////		String rightFqName = "/hdfs:/nbCloud/public/test/DNASeqMap/HumanDNA_2A_2_Small.fastq.gz";
-//		Species species = new Species(9606);
-//		mapDNA.setChrIndex(species.getIndexChr(SoftWare.bwa_aln));
-//		FastQ leftFq = new FastQ(leftFqName);
-////		FastQ rightFq = new FastQ(rightFqName);
-//		mapDNA.setFqFile(leftFq, null);
-//		mapDNA.setSortNeed(false);
-//		mapDNA.setOutFileName("/hdfs:/nbCloud/public/test/DNASeqMap/resultBWA");
-//		SamFile samFile = mapDNA.mapReads();
-//		assertEquals(true, samFile.isSamBamFile(samFile.getFileName()) == FormatSeq.BAM);
-//		assertEquals(true, samFile.getHeader().getSortOrder() == SortOrder.coordinate);
-//	}
+	@Test
+	public void testBwaMem() {
+		CmdOperate.setTmpPath("/home/novelbio/tmp");
+		MapBwaMem mapDNA = new MapBwaMem();
+		String leftFqName = parentPath + "HumanDNA_2A_1_Small.fastq.gz";
+		String rightFqName = parentPath + "HumanDNA_2A_2_Small.fastq.gz";
+		Species species = new Species(9913);
+		mapDNA.setChrIndex(species.getIndexChr(SoftWare.bwa_aln));
+		FastQ leftFq = new FastQ(leftFqName);
+		FastQ rightFq = new FastQ(rightFqName);
+		mapDNA.setFqFile(leftFq, rightFq);
+		mapDNA.setSortNeed(false);
+		mapDNA.setOutFileName(parentPath + "/bwaResult/resultBWA4");
+		SamFile samFile = mapDNA.mapReads();
+		assertEquals(true, SamFile.isSamBamFile(samFile.getFileName()) == FormatSeq.BAM);
+		assertEquals(true, samFile.getHeader().getSortOrder() == SortOrder.coordinate);
+	}
 }

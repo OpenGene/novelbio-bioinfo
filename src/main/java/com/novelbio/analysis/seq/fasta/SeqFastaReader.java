@@ -78,20 +78,24 @@ public class SeqFastaReader {
 						try {
 							String content = null;
 							while ((content = bufread.readLine()) != null) {
+								lineNum[0]++;
 								content = content.trim();
-								if (StringOperate.isRealNull(content)) {
-									continue;
-								}
+								if (StringOperate.isRealNull(content)) continue;
 								
-								if (content.startsWith(">") && !lsTmp.isEmpty()) {
-									seqFastaNew = creatSeqFasta(lsTmp);
-									lsTmp.clear();
-									lsTmp.add(content);
-									break;
+								if (content.startsWith(">")) {
+									if (!lsTmp.isEmpty()) {
+										seqFastaNew = creatSeqFasta(lsTmp);
+										lsTmp.clear();
+										lsTmp.add(content);
+										break;
+									}
 								}
+								lsTmp.add(content);
 							}
-							if (!lsTmp.isEmpty()) {
+							//最后一条fasta序列
+							if (seqFastaNew == null && !lsTmp.isEmpty()) {
 								seqFastaNew = creatSeqFasta(lsTmp);
+								lsTmp.clear();
 							}							
 						} catch (ExceptionSeqFasta e) {
 							throw new ExceptionFastq("fasta file error: " + txtRead.getFileName() + " on " + lineNum[0] + " line. \n" + e.getMessage());

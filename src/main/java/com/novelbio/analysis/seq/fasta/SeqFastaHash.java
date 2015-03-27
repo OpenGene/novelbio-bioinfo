@@ -190,9 +190,9 @@ public class SeqFastaHash extends SeqHashAbs {
 	   return null;
 	}
 	/**
-	 * 输入序列名
-	 * 输入序列坐标，起点和终点
-	 * 返回序列
+	 * @param seqID
+	 * @param startlocation 序列起点 <b>注意起点从1开始</b>，跟string的subString不一样
+	 * @param endlocation
 	 */
 	protected SeqFasta getSeqInfo(String seqID, long startlocation, long endlocation) {
 		seqID = seqID.toLowerCase();
@@ -213,7 +213,7 @@ public class SeqFastaHash extends SeqHashAbs {
 			return seqfasta;
 		}
 		if (seqfasta == null) {
-			logger.error("没有该序列 " +seqID);
+			logger.error("cannot find seq:" +seqID);
 			return null;
 		}
 		return seqfasta.getSubSeq((int)startlocation, (int)endlocation, true);

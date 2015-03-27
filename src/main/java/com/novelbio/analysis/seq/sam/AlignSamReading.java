@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.base.dataStructure.Alignment;
@@ -15,6 +17,8 @@ import com.novelbio.base.dataStructure.Alignment;
  * @author zong0jie
  */
 public class AlignSamReading extends AlignSeqReading {
+	private static final Logger logger = Logger.getLogger(AlignSamReading.class);
+	
 	List<? extends Alignment> lsAlignments;
 
 	public AlignSamReading(SamFile samFile) {
@@ -92,7 +96,7 @@ public class AlignSamReading extends AlignSeqReading {
 				for (AlignRecord samRecord : samFile.readLinesOverlap(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs())) {
 					num++;
 					if (num % 100000 == 0) {
-						System.out.println(num);
+						logger.info("read reads num: " + num);
 					}
 					suspendCheck();
 					if (suspendFlag) {

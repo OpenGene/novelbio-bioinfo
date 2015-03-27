@@ -11,6 +11,7 @@ import htsjdk.samtools.SAMSequenceDictionary;
 import htsjdk.samtools.SamFileHeaderMerger;
 import htsjdk.samtools.SamReader;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -124,23 +125,24 @@ public class BamMergeJava implements BamMergeInt {
 	
 	/** 开始合并 */
 	private void merge() {
-		  final SamFileHeaderMerger headerMerger = new SamFileHeaderMerger(sortOrder, lsHeaders, MERGE_SEQUENCE_DICTIONARIES);
-	        final MergingSamRecordIterator iterator = new MergingSamRecordIterator(headerMerger, lsReaders, mergingSamRecordIteratorAssumeSorted);
-	        final SAMFileHeader header = headerMerger.getMergedHeader();
-	        header.setSortOrder(SORT_ORDER);
-	        final SAMFileWriterFactory samFileWriterFactory = new SAMFileWriterFactory();
-	        if (USE_THREADING) samFileWriterFactory.setUseAsyncIo(true);
-	        
-	        final SAMFileWriter out = samFileWriterFactory.makeSAMOrBAMWriter(header, presorted, outFileName);
+		final SamFileHeaderMerger headerMerger = new SamFileHeaderMerger(sortOrder, lsHeaders, MERGE_SEQUENCE_DICTIONARIES);
+		final MergingSamRecordIterator iterator = new MergingSamRecordIterator(headerMerger, lsReaders, mergingSamRecordIteratorAssumeSorted);
+		final SAMFileHeader header = headerMerger.getMergedHeader();
+		header.setSortOrder(SORT_ORDER);
+		final SAMFileWriterFactory samFileWriterFactory = new SAMFileWriterFactory();
+		if (USE_THREADING) samFileWriterFactory.setUseAsyncIo(true);
+		
+		File file = FileOperate.getFile(outFileName);
+		final SAMFileWriter out = samFileWriterFactory.makeSAMOrBAMWriter(header, presorted, file);
 
 	        // Lastly loop through and write out the records
-	        while (iterator.hasNext()) {
-	            final SAMRecord record = iterator.next();
-	            out.addAlignment(record);
-	        }
+		while (iterator.hasNext()) {
+			final SAMRecord record = iterator.next();
+			out.addAlignment(record);
+		}
 
-	        logger.info("Finished reading inputs.");
-	        out.close();
+		logger.info("Finished reading inputs.");
+		out.close();
 	}
 	
 	@Override

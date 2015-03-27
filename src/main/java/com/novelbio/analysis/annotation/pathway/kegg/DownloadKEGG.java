@@ -9,14 +9,14 @@ import com.novelbio.database.model.species.Species;
 public class DownloadKEGG {
 	public static void main(String[] args) {
 		DownloadKEGG downloadKEGG = new DownloadKEGG();
-		downloadKEGG.addSpecies("eco");
+		downloadKEGG.addSpecies("tgo");
 //		downloadKEGG.addSpecies("mmu");
 //		downloadKEGG.addSpecies("osa");
 //		downloadKEGG.addSpecies("ath");
 //		downloadKEGG.addSpecies("mtu");
 //		downloadKEGG.addSpecies("ssc");
 		
-		downloadKEGG.setSavePath("/home/novelbio/NBCsource/database/kegg");
+		downloadKEGG.setSavePath("/home/novelbio/NBCresource/database/kegg");
 		downloadKEGG.download();
 	}
 	

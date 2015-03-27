@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.Logger;
 
@@ -17,7 +17,7 @@ public class SamAddMultiFlag {
 	private static final Logger logger = Logger.getLogger(SamAddMultiFlag.class);
 	
 	/** 读完的reads放在这里 */
-	Queue<SamRecord> queueSamRecords = new LinkedList<>();
+	Queue<SamRecord> queueSamRecords = new LinkedBlockingQueue<>();
 	boolean isFinished = false;
 	
 	boolean isPairend;
@@ -162,6 +162,9 @@ public class SamAddMultiFlag {
 	public Iterable<SamRecord> readlines() {
 		return new Iterable<SamRecord>() {
 			public Iterator<SamRecord> iterator() {
+				//在最后输出日志时使用
+				final boolean[] flag = new boolean[]{false};
+				
 				return new Iterator<SamRecord>() {
 					public boolean hasNext() {
 						return line != null;
@@ -187,6 +190,11 @@ public class SamAddMultiFlag {
 								e.printStackTrace();
 							}
 						} while (!isFinished || !queueSamRecords.isEmpty());
+						
+						if (isFinished && !flag[0]) {
+							flag[0] = true;
+							logger.info("finish reading and queue still have " + queueSamRecords.size() + " reads");
+						}
 						return record;
 					}
 					SamRecord line = getLine();

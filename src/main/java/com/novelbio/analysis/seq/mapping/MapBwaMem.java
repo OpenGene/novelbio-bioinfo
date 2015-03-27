@@ -407,6 +407,8 @@ public class MapBwaMem extends MapDNA {
 		
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.setGetCmdInStdStream(true);
+		cmdOperate.setStdErrPath(FileOperate.changeFileSuffix(outFileName, "_mappingStderrInfo", "txt"), false, true);
+		cmdOperate.setRunInfoFile(FileOperate.changeFileSuffix(outFileName, "_runInfo", "txt"));
 		Thread thread = new Thread(cmdOperate);
 		thread.start();
 		InputStream inputStream = cmdOperate.getStreamStd();
