@@ -1,10 +1,10 @@
 package com.novelbio.test;
 
+import java.io.File;
+
 import htsjdk.samtools.SAMFileReader;
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SAMRecordIterator;
-
-import java.io.File;
 
 public class TestPicard {
 	public static void main(String[] args) {

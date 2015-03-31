@@ -33,42 +33,42 @@ public class BlastGetSeq implements IntCmdSoft {
 	private static final Logger logger = Logger.getLogger(BlastGetSeq.class);
 	
 	public static void main(String[] args) {
-		String path = "/media/winE/Arabidopsis HD-ZIP protien--王宏(201461710125)等2个文件/sequence/";
-		FileOperate.createFolders(path);
+		String path = "/home/novelbio/公共/liufei/alignment.fa";
+		FileOperate.createFolders(FileOperate.getPathName(path));
 		BlastGetSeq blastGetSeq = new BlastGetSeq();
-		blastGetSeq.setBlastType(BlastType.tblastn);
+		blastGetSeq.setBlastType(BlastType.blastp);
 		blastGetSeq.setResultFile(path);
 		List<Species> lsSpecies = new ArrayList<>();
-//		Species species = new Species(9606);
-//		species.setVersion("GRCh38");
-//		lsSpecies.add(species);
-		
-//		species = new Species(9940);
-//		lsSpecies.add(species);
-		
-		Species species = new Species(3702);
-		species.setVersion("tair10");
+		Species species = new Species(9606);
+		species.setVersion("GRCh38");
 		lsSpecies.add(species);
 		
-		species = new Species(39947);
-		species.setVersion("tigr7");
+		species = new Species(10090);
+		species.setVersion("mm10_GRCm38");
 		lsSpecies.add(species);
 		
-		species = new Species(3694);
+		species = new Species(7227);
+		species.setVersion("dmel_r6_01");
 		lsSpecies.add(species);
 		
-		species = new Species(29760);
+		species = new Species(7955);
+		species.setVersion("Zv10");
 		lsSpecies.add(species);
 		
-		species = new Species(3847);
+		species = new Species(9913);
+		species.setVersion("Btau_4.6.1_NCBI");
 		lsSpecies.add(species);
 		
 		blastGetSeq.setLsSpeciesBlastTo(lsSpecies);
-		SeqFastaHash seqHash = new SeqFastaHash("/media/winE/Arabidopsis HD-ZIP protien--王宏(201461710125)等2个文件/Arabidopsis_HD-ZIP_protien.fa");
+		SeqFastaHash seqHash = new SeqFastaHash("/home/novelbio/公共/liufei/query.fa");
 		List<SeqFasta> ls = seqHash.getSeqFastaAll();
 		blastGetSeq.addQueryFasta(ls);
 		seqHash.close();
-		blastGetSeq.blastAndGetSeq();
+		String seqFasta = blastGetSeq.blastAndGetSeq();
+		AlignmentMuscle alignmentMuscle = new AlignmentMuscle();
+		alignmentMuscle.setInputFasta(seqFasta);
+		alignmentMuscle.setOutputFasta(FileOperate.changeFileSuffix(seqFasta, "_alignment", "fa"));
+		alignmentMuscle.runAlignment();
 	}
 	
 	
@@ -139,10 +139,12 @@ public class BlastGetSeq implements IntCmdSoft {
 		this.blastType = blastType;
 	}
 	
-	/** 比对到指定物种上并获得比对到的序列 */
-	public void blastAndGetSeq() {
+	/** 比对到指定物种上并获得比对到的序列
+	 * @return 返回整理成fasta格式的序列文件
+	 */
+	public String blastAndGetSeq() {
 		//物种与找到的基因数量
-		String outNum = FileOperate.getPathName(resultFile) + "blastSpeciesNum";
+		String outNum = resultFile + "blastInfo.txt";
 		TxtReadandWrite txtWriteNum = new TxtReadandWrite(outNum, true);
 		//具体的序列
 		String outSeq = resultFile;
@@ -150,7 +152,7 @@ public class BlastGetSeq implements IntCmdSoft {
 			outSeq = outSeq + "blastSpeciesSeq.fa";
 		}
 		TxtReadandWrite txtWriteSeq = new TxtReadandWrite(outSeq, true);
-		txtWriteNum.writefileln("SpeciesName\tSeqNum");
+		txtWriteNum.writefileln("Species\tNumber");
 		for (Species species : lsSpeciesBlastTo) {
 			Map<String, SeqFasta> mapName2Seqfasta = new HashMap<>();
 			if (!checkSpecies(species)) {
@@ -172,6 +174,7 @@ public class BlastGetSeq implements IntCmdSoft {
 		
 		txtWriteNum.close();
 		txtWriteSeq.close();
+		return outSeq;
 	}
 	
 	/**

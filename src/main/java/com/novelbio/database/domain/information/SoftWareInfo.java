@@ -240,8 +240,13 @@ public class SoftWareInfo {
 		blast,
 		bwa_aln, bwa_men, bowtie, bowtie2, 
 		tophat, rsem, mapsplice, rseqc, trinity,
+		
+		/** 联配软件 */
+		muscle,
+		
 		cpat,
 		cap3,
+		
 		wigToBigwig,
 		miranada, RNAhybrid, mirDeep, miReap,
 		samtools, picard, GATK, cufflinks,

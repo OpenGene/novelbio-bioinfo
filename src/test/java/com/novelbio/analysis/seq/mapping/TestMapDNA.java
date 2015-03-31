@@ -76,7 +76,7 @@ public class TestMapDNA extends TestCase {
 		FastQ rightFq = new FastQ(rightFqName);
 		mapDNA.setFqFile(leftFq, rightFq);
 		mapDNA.setSortNeed(false);
-		mapDNA.setOutFileName(parentPath + "/bwaResult/resultBWA4");
+		mapDNA.setOutFileName(parentPath + "/bwaResult/resultBWA5");
 		SamFile samFile = mapDNA.mapReads();
 		assertEquals(true, SamFile.isSamBamFile(samFile.getFileName()) == FormatSeq.BAM);
 		assertEquals(true, samFile.getHeader().getSortOrder() == SortOrder.coordinate);

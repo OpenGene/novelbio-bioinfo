@@ -20,15 +20,12 @@
 package uk.ac.babraham.FastQC.Sequence.Contaminant;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
-import java.net.URLDecoder;
 import java.util.Vector;
 
 import org.springframework.core.io.ClassPathResource;
-
-import com.novelbio.generalConf.PathDetailNBC;
 
 public class ContaminentFinder {
 

@@ -63,7 +63,12 @@ public abstract class StatisticTestGene2Item {
 	protected abstract ArrayList<ArrayList<String>> getInfo();
 	
 	public ArrayList<String[]> toStringLs() {
-		ArrayList<ArrayList<String>> lsInfo = getInfo();
+		ArrayList<ArrayList<String>> lsInfo = new ArrayList<>();
+		try {
+			lsInfo = getInfo();
+		} catch (Exception e) {
+			lsInfo = getInfo();
+		}
 		if (lsInfo.size() == 0) {
 			getInfo();
 		}

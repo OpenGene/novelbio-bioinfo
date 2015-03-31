@@ -54,7 +54,7 @@ public class CogFunTest extends FunctionTest {
 	protected GeneID2LsItem convert2Item(GeneID geneID) {
 		GeneID2LsCog geneId2LsCog = new GeneID2LsCog();
 		geneId2LsCog.setGeneID(geneID, isBlast());
-		CogInfo cogInfo = cogAnno.getCogInfoFromGeneUniId(geneID.getGeneUniID());
+		CogInfo cogInfo = cogAnno.getCogInfoFromGeneUniId(geneID.getAccID(), geneID.getGeneUniID());
 		geneId2LsCog.setCogInfo(cogInfo);
 		if (!geneId2LsCog.isValidate()) {
 			return null;
@@ -81,7 +81,7 @@ public class CogFunTest extends FunctionTest {
 				StatisticTestGene2Item statisticTestGene2Item = creatStatisticTestGene2Item();
 				statisticTestGene2Item.setGeneID(((GeneID2LsCog)geneID2LsItem).convert2Abbr(cogAnno), geneID, isBlast());
 				statisticTestGene2Item.setStatisticTestResult(mapItem2StatictResult);
-				CogInfo cogInfo = cogAnno.getCogInfoFromGeneUniId(geneID.getGeneUniID());
+				CogInfo cogInfo = cogAnno.getCogInfoFromGeneUniId(geneID.getAccID(), geneID.getGeneUniID());
 				((StatisticTestGene2Cog)statisticTestGene2Item).setCogInfo(cogInfo);
 				((StatisticTestGene2Cog)statisticTestGene2Item).setCogAnno(cogAnno);
 				lsTestResult.add(statisticTestGene2Item);

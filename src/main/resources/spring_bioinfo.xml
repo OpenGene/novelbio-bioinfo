@@ -20,7 +20,7 @@
 	<context:annotation-config />
      
      <!-- 定义mongo对象，对应的是mongodb官方jar包中的Mongo，replica-set设置集群副本的ip地址和端口 -->
-	<!--<mongo:mongo id="mongo" replica-set="192.168.0.172:27016">  -->
+ 	<!--<mongo:mongo id="mongo" replica-set="192.168.0.172:27016"> -->
 	 <mongo:mongo id="mongo" replica-set="192.168.1.160:27016">
 		<!-- 一些连接属性的设置 -->	
 		<mongo:options

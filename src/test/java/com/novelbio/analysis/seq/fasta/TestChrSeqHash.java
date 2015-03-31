@@ -1,7 +1,7 @@
 package com.novelbio.analysis.seq.fasta;
 
 import htsjdk.samtools.reference.IndexedFastaSequenceFile;
-import htsjdk.samtools.reference.IndexedFastaSequenceFileRaw;
+import htsjdk.samtools.reference.IndexedFastaSequenceFileHadoop;
 import htsjdk.samtools.reference.ReferenceSequence;
 
 import java.io.IOException;
@@ -16,8 +16,8 @@ public class TestChrSeqHash {
 	
 	@Test
 	public void testGetSeq() throws IOException {
-		IndexedFastaSequenceFileRaw indexedFastaSequenceFileRaw =
-				new IndexedFastaSequenceFileRaw(FileOperate.getFile(filePath));
+		IndexedFastaSequenceFileHadoop indexedFastaSequenceFileRaw =
+				new IndexedFastaSequenceFileHadoop(FileOperate.getFile(filePath));
 		IndexedFastaSequenceFile indexedFastaSequenceFile =
 				new IndexedFastaSequenceFile(FileOperate.getFile(filePath));
 		

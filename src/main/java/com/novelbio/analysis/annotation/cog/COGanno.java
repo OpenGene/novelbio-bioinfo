@@ -120,8 +120,12 @@ public class COGanno {
 		txtRead.close();
 	}
 	
-	public CogInfo getCogInfoFromGeneUniId(String geneUniId) {
-		return mapGeneUniId2CogInfo.get(geneUniId.toLowerCase());
+	public CogInfo getCogInfoFromGeneUniId(String accId, String geneUniId) {
+		CogInfo cogInfo = mapGeneUniId2CogInfo.get(geneUniId.toLowerCase());
+		if (cogInfo == null) {
+			cogInfo = mapGeneUniId2CogInfo.get(accId.toLowerCase());
+		}
+		return cogInfo;
 	}
 	
 	public CogInfo queryCogInfoFromCogId(String cogId) {

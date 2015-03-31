@@ -115,9 +115,7 @@ public class BamRemoveDuplicate implements IntCmdSoft {
 		String outTmp = FileOperate.changeFileSuffix(outFile, "_tmp", null);
 		List<String> lsCmd = getLsCmdPicard(outTmp);
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
-		cmdOperate.setRedirectOutToTmp(true);
-		cmdOperate.addCmdParamOutput(getMetricsFile(outTmp));
-		cmdOperate.addCmdParamOutput(outTmp);
+		cmdOperate.setIsConvertHdfsToLocal(false);
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {
 			FileOperate.DeleteFileFolder(getMetricsFile(outTmp));
@@ -136,8 +134,8 @@ public class BamRemoveDuplicate implements IntCmdSoft {
 		ArrayOperate.addArrayToList(lsCmd, getTmpPath());
 		lsCmd.add("-Xmx6g");
 		lsCmd.add("-jar");
-		lsCmd.add(ExePath + "MarkDuplicates.jar");
-		
+		lsCmd.add(ExePath + "picard_hdfs.jar");
+		lsCmd.add("MarkDuplicates");
 		ArrayOperate.addArrayToList(lsCmd, getInputBam());
 		ArrayOperate.addArrayToList(lsCmd, getParam());
 		ArrayOperate.addArrayToList(lsCmd, getMETRICS(outFile));

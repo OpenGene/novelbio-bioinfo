@@ -89,20 +89,17 @@ public class SamFile implements AlignSeq {
 	 * 如果有索引会自动读取索引
 	 */
 	public SamFile(String samBamFile) {
-		SAMFileReader.setDefaultValidationStringency(ValidationStringency.SILENT);
 		setSamFileRead(samBamFile);
 	}
 
 	/**直接读取流，不支持判定文件格式，不支持索引 */
 	public SamFile(InputStream inputStream) {
-		SAMFileReader.setDefaultValidationStringency(ValidationStringency.SILENT);
 		setSamRead(inputStream);
 	}
 	/** 创建新的sambam文件，根据文件名
 	 * 根据samFileHeader来定义默认输入的序列是否已经经过排序。
 	 */
 	public SamFile(String samBamFile, SAMFileHeader samFileHeader) {
-		SAMFileReader.setDefaultValidationStringency(ValidationStringency.SILENT);
 		if (samFileHeader.getSortOrder() != SortOrder.unsorted) {
 			setSamFileNew(samFileHeader, samBamFile, true);
 		} else {
@@ -116,7 +113,6 @@ public class SamFile implements AlignSeq {
 	 * 如果有索引会自动读取索引
 	 */
 	public SamFile(OutputStream os, SAMFileHeader samFileHeader, boolean isBam) {
-		SAMFileReader.setDefaultValidationStringency(ValidationStringency.SILENT);
 		if (samFileHeader.getSortOrder() != SortOrder.unsorted) {
 			setSamFileNew(samFileHeader, os, isBam, true);
 		} else {
@@ -130,7 +126,6 @@ public class SamFile implements AlignSeq {
 	 * @param preSorted 输入的文件是否已经排序了
 	 */
 	public SamFile(String samBamFile, SAMFileHeader samFileHeader, boolean preSorted) {
-		SAMFileReader.setDefaultValidationStringency(ValidationStringency.SILENT);
 		setSamFileNew(samFileHeader, samBamFile, preSorted);
 //		initialSoftWare();
 	}
