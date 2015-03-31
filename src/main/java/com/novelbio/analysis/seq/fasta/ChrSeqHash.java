@@ -10,13 +10,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.apache.tools.zip.RandomFileInt;
-import org.apache.tools.zip.RandomFileInt.RandomFileFactory;
 
 import com.novelbio.analysis.seq.sam.SamIndexRefsequence;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.fileOperate.RandomFileInt;
+import com.novelbio.base.fileOperate.RandomFileInt.RandomFileFactory;
 
 /**
  * 本类用来将染色体的名字，序列装入染色体类，并且是以Hash表形式返回 目前本类中仅仅含有静态方法 同时用来提取某段位置的序列 和提取反向重复序列
