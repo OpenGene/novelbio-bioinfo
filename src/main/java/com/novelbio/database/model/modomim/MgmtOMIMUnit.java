@@ -2,7 +2,7 @@ package com.novelbio.database.model.modomim;
 
 import java.util.List;
 
-import com.novelbio.database.domain.omim.MIMAllToUni;
+//import com.novelbio.database.domain.omim.MIMAllToUni;
 import com.novelbio.database.domain.omim.MIMInfo;
 import com.novelbio.database.model.modomim.MgmtGeneMIMInfo.MgmtOmimHolder;
 import com.novelbio.database.mongorepo.omim.RepoGeneMIMInfo;

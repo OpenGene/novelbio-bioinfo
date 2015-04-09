@@ -5,9 +5,6 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 
 import com.novelbio.database.domain.omim.MorbidMap;
-import com.novelbio.database.domain.omim.OmimGeneMap;
-import com.novelbio.database.model.modomim.MgmtOMIM.MgmtOmimHolder;
-import com.novelbio.database.mongorepo.omim.RepoGenemap;
 import com.novelbio.database.mongorepo.omim.RepoMorbidMap;
 import com.novelbio.database.service.SpringFactoryBioinfo;
 

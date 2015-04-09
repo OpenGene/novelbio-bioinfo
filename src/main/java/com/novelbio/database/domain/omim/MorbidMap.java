@@ -34,7 +34,6 @@ public class MorbidMap implements Serializable {
 	 * 4 the disorder is a chromosome deletion or duplication syndrome;
 	 * */
 	private int disType;
-	
 	public void setGeneId(int geneId) {
 		this.geneId = geneId;
 	}
@@ -47,32 +46,76 @@ public class MorbidMap implements Serializable {
 	public int getGeneMimId() {
 		return geneMimId;
 	}
+	public int getPhenMimId() {
+		return phenMimId;
+	}
+	public void setPhenMimId(int phenMimId) {
+		this.phenMimId = phenMimId;
+	}
 	public void setCytLoc(String cytLoc) {
 		this.cytLoc = cytLoc;
 	}
 	public String getCytLoc() {
 		return cytLoc;
 	}
-	public void setPheneMimId(int phenMimId) {
-		this.phenMimId = phenMimId;
-	}
-	public int getPheneMimId() {
-		return phenMimId;
-	}
 	public List<String> getListDis() {
 		return listDis;
 	}
-	public void addDis(String dis) {
-		if (listDis == null) {
-			listDis = new ArrayList<String>();
-		}
-		this.listDis.add(dis);
+	public void setListDis(List<String> listDis) {
+		this.listDis = listDis;
 	}
 	public void setDisType(int disType) {
 		this.disType = disType;
 	}
 	public int getDisType() {
 		return disType;
+	}
+
+	
+	public static MorbidMap getInstanceFromOmimRecord(String content) {
+		if (content.equals("")) {
+			return null;
+		}
+		MorbidMap morbidMap = new MorbidMap();
+		String[] arrMorbidMapLine = content.split("\\|");
+		
+//		String[] arrGeneName = arrMorbidMapLine[1].split(",");
+		
+//		if (mapGeneID2Name.containsKey(arrGeneName[0])) {
+//			geneId = Integer.parseInt(mapGeneID2Name.get(arrGeneName[0]));
+//		}
+		int geneId = 0;
+		morbidMap.setGeneId(geneId);
+		int geneMimId = Integer.parseInt(arrMorbidMapLine[2]);
+		morbidMap.setGeneMimId(geneMimId);
+		morbidMap.setCytLoc(arrMorbidMapLine[3]);
+		String[] arrDisease = arrMorbidMapLine[0].split(",");
+		//疾病信息添加到morbidMap的疾病list中
+		for (int i = 0; i < arrDisease.length - 1; i++) {
+			morbidMap.addDis(arrDisease[i].trim());
+		}
+		//以下获取phenotype MIM ID
+		String phenInfo = arrDisease[arrDisease.length - 1].trim();
+		String[] arrPhen = phenInfo.split("\\s+");
+		int phenMimId = 0;
+		//如果该疾病信息中含有phenotype MIM ID则，提取phenotype MIM ID号，如果没有含有phenotype MIM ID号,则将最后一行疾病信息添加到morbidMap的疾病list中
+		if (phenInfo.matches("^\\d{6}\\s+\\(\\d+\\)")) {
+			phenMimId = Integer.parseInt(arrPhen[0]);
+		} else {
+			phenInfo = phenInfo.substring(0, phenInfo.length()-3);
+			morbidMap.addDis(phenInfo.trim());
+		}
+		String disType = arrPhen[arrPhen.length - 1].replaceAll("[()]", "");
+		morbidMap.setDisType(Integer.parseInt(disType));
+		morbidMap.setPhenMimId(phenMimId);
+		return morbidMap;
+	}
+	
+	public void addDis(String dis) {
+		if (listDis == null) {
+			listDis = new ArrayList<String>();
+		}
+		this.listDis.add(dis);
 	}
 	private static RepoMorbidMap repo() {
 		 return SpringFactoryBioinfo.getBean(RepoMorbidMap.class);
@@ -83,8 +126,8 @@ public class MorbidMap implements Serializable {
 		/** 根据完成情况查询分配的任务 */
 		public static List<MorbidMap> findInfByDisease(String disease) {
 			return repo().findInfByDisease(disease);
-		}
-
+		}	
+		
 //	 public boolean remove() {
 //		 try {
 //			 repo().delete(id);

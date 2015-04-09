@@ -45,15 +45,15 @@ public class AnnoOMIM extends AnnoAbs {
 				List<String> listRef = mimInfo.getListRef();
 				lsTmp.add(listRef.get(0));
 			}
-			if (morbidMap.getPheneMimId() == 0) {
+			if (morbidMap.getPhenMimId() == 0) {
 				lsTmp.add("");
 				lsTmp.add("");
 				lsTmp.add("");
 			} else {
-				lsTmp.add(morbidMap.getPheneMimId() + "");
+				lsTmp.add(morbidMap.getPhenMimId() + "");
 			}
-			if (morbidMap.getPheneMimId() != 0) {
-				MIMInfo mimInfo = mgmtOMIMUnit.findByMimId(morbidMap.getPheneMimId());
+			if (morbidMap.getPhenMimId() != 0) {
+				MIMInfo mimInfo = mgmtOMIMUnit.findByMimId(morbidMap.getPhenMimId());
 				lsTmp.add(mimInfo.getDesc());
 				List<String> listRef = mimInfo.getListRef();
 				lsTmp.add(listRef.get(0));
@@ -108,15 +108,15 @@ public class AnnoOMIM extends AnnoAbs {
 					List<String> listRef = mimInfo.getListRef();
 					lsTmp.add(listRef.get(0));
 				}
-				if (morbidMap.getPheneMimId() == 0) {
+				if (morbidMap.getPhenMimId() == 0) {
 					lsTmp.add("");
 					lsTmp.add("");
 					lsTmp.add("");
 				} else {
-					lsTmp.add(morbidMap.getPheneMimId() + "");
+					lsTmp.add(morbidMap.getPhenMimId() + "");
 				}
-				if (morbidMap.getPheneMimId() != 0) {
-					MIMInfo mimInfo = mgmtOMIMUnit.findByMimId(morbidMap.getPheneMimId());
+				if (morbidMap.getPhenMimId() != 0) {
+					MIMInfo mimInfo = mgmtOMIMUnit.findByMimId(morbidMap.getPhenMimId());
 					lsTmp.add(mimInfo.getDesc());
 					List<String> listRef = mimInfo.getListRef();
 					lsTmp.add(listRef.get(0));

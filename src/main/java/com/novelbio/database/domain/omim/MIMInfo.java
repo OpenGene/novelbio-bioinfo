@@ -11,12 +11,10 @@ import java.util.Set;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-
 import bsh.This;
-
-import com.novelbio.database.mongorepo.omim.RepoGenemap;
 import com.novelbio.database.mongorepo.omim.RepoMIMInfo;
 import com.novelbio.database.service.SpringFactoryBioinfo;
+import com.novelbio.test.mytest;
 
 @Document(collection = "omimInfo")
 public class MIMInfo implements Serializable {
@@ -32,8 +30,12 @@ public class MIMInfo implements Serializable {
 	private String desc;
 	/** 参考文献*/
 	private List<String> listRef;
-	/** 以上之外的其他信息*/
-	private Map<String, String> mapOthInfor;
+	/** 
+	 * 用来记录omim.txt 表中的一条记录中的详细信息
+	 * Key是description,clinical features，inheritance等，
+	 * value是具体的详细描述信息
+	 * 以上之外的其他信息*/
+	private static HashMap<String, String> mapTitle2Info = new HashMap();
 	
 	/** type 使用不同符号表示不同的意义
 	 * “*” 表示是一个基因；
@@ -44,7 +46,6 @@ public class MIMInfo implements Serializable {
 	 *    “”若无符号，则说明能德尔遗传情况还未明确，或者它的性状分离的情况还不明确。
 	 * */
 	private char type;
-	
 	
 	public void setMimId(int mimId) {
 		this.mimId = mimId;
@@ -87,11 +88,11 @@ public class MIMInfo implements Serializable {
 		this.listRef.add(ref);
 	}
 	
-	public void setMapOthInfor(Map<String, String> mapOthInfor) {
-		this.mapOthInfor = mapOthInfor;
+	public void setMapTitle2Info(HashMap<String, String> mapTitle2Info) {
+		this.mapTitle2Info = mapTitle2Info;
 	}
-	public Map<String, String> getMapOthInfor() {
-		return mapOthInfor;
+	public Map<String, String> getMapTitle2Info() {
+		return mapTitle2Info;
 	}
 	
 	
@@ -257,7 +258,7 @@ marie: 3/25/1988
 			return null;
 		}
 		MIMInfo mimInfo = new MIMInfo();
-		HashMap<String, String> mapMimUni = mimInfo.getMimUni(lsOmimunit);
+		HashMap<String, String> mapMimUni = MIMInfo.getMimUni(lsOmimunit);
 		for (String key : mapMimUni.keySet()) {
 			if (key.equals("NO")) {
 				String mimID = mapMimUni.get(key).trim();
@@ -268,12 +269,17 @@ marie: 3/25/1988
 				mimInfo.setType(type[0]);
 				mimInfo.setMimTitle(typeAndTitle[1].trim());
 			} else if (key.equals("TX")) {
-				String[] descAndTxt = MIMInfo.getDescAndTxt(mapMimUni.get(key));
-				mimInfo.setMimTxt(descAndTxt[0].trim());
-				mimInfo.setDesc(descAndTxt[1].trim());
+				mimInfo.createTitle2Info(mapMimUni.get(key));
+				mimInfo.setMimTxt(mapTitle2Info.get(key).trim());
+				if (mapTitle2Info.containsKey("DESCRIPTION")) {
+					mimInfo.setDesc(mapTitle2Info.get("DESCRIPTION").trim());
+				} else {
+					mimInfo.setDesc("");
+				}
+				
 			} else if (key.equals("RF")) {
 				String reftestString = mapMimUni.get(key);
-				String[] arrRef = mapMimUni.get(key).split("!!!");
+				String[] arrRef = mapMimUni.get(key).split("\n");
 				for (String ref : arrRef) {
 					if ((!ref.trim().equals(""))) {
 						mimInfo.addRef(ref.trim());
@@ -285,6 +291,13 @@ marie: 3/25/1988
 		return mimInfo;
 	}
 	
+	/**
+	 * omim.txt中的每一个RECORD是lsOmimunit中的一条记录
+	 * maMimUni 中记录该记录中每一项的详细信息
+	 * 
+	 * @param lsOmimunit
+	 * @return
+	 */
 	private static HashMap<String, String> getMimUni(List<String> lsOmimunit) {
 		String fieldTitle = "";
 		String fieldTxt = "";
@@ -300,9 +313,9 @@ marie: 3/25/1988
 				}
 				fieldTitle = content.split("\\s")[1];
 			} else if (content.matches("\\d+\\.+\\s.*?$")) {
-				fieldTxt = fieldTxt.concat("!!!" + content + " ");
+				fieldTxt = fieldTxt.concat("\n" + content + " ");
 			} else {
-				fieldTxt = fieldTxt.concat(content + " ");
+				fieldTxt = fieldTxt.concat(content + "\n");
 			} 
 		}
 		if (!fieldTitle.equals("")) {
@@ -310,37 +323,52 @@ marie: 3/25/1988
 		}
 		return maMimUni;
 	}
-	
+	/**
+	 * 	提取 *FIELD* TI  中MIM ID前面不同符号代表的不同类型信息
+	 * 如#100300 ADAMS-OLIVER SYNDROME 1; AOS1    提取该行中最前面的#，
+	 * “#” 表示是一个描述的条目，通常是表型，且不表示是一个特定的位点。与表型相关的基因的相应描述，都在第一个条目中
+	 * @param txt
+	 * @return
+	 */
 	private static String[] getTypeAndTitle(String title) {
-		title = title.replaceAll("!!!", "");
+		title = title.replaceAll("\n", " ");
 		String[] typeAndTitle = new String[2];
-		if (title.matches("[#+^*%]\\d.*?$")) {
+		if (title.trim().matches("[#+^*%]\\d{6}.*?$")) {
 			typeAndTitle[0] = title.substring(0,1);
 			typeAndTitle[1] = title.substring(8);
-		} else if (title.matches("\\d{6}.*?$")) {
-			typeAndTitle[0] = "";
-			typeAndTitle[1] = title.substring(7);
+		} else if (title.trim().matches("\\d{6}.*?$")) {
+			typeAndTitle[0] = " ";
+			typeAndTitle[1] = title.substring(6);
 		}	
 		return typeAndTitle;
 	}
 	
-	private static String[] getDescAndTxt(String txt) {
-		txt = txt.replaceAll("!!!", "");
-		String[] descAndTxt = new String[2];
-		String descFlag = " DESCRIPTION ";
-		String reg = " [A-Z]{6}[A-Z]+ ";
-		String[] arrtxt = txt.split(reg);
-		if (txt.indexOf(descFlag) > -1) {
-			descAndTxt[0] = arrtxt[0];  //txt信息记录
-			descAndTxt[1] = arrtxt[1]; //descript 信息
-		} else if (txt.indexOf(descFlag) == 0) {
-			descAndTxt[0] = "";
-			descAndTxt[1] = arrtxt[0];
-		} else {
-			descAndTxt[0] = arrtxt[0];
-			descAndTxt[1] = "";
+	/**
+	 * 将RECODE中 TX中的信息，存在Map中
+	 * Key是description,clinical features，inheritance等，
+	 * value是每一项的具体的详细描述信息
+	 * @param txt
+	 */
+	private void createTitle2Info(String txt) {
+		mapTitle2Info.clear();
+		String[] arrDescInfo = txt.split("\n");
+		String key = "TX";
+		String value = arrDescInfo[0];
+		for (int i = 1; i < arrDescInfo.length - 1; i++) {
+			if ((arrDescInfo[i - 1].length()==0) && ((arrDescInfo[i].matches("[A-Z]+\\s*[A-Z]*")) || (arrDescInfo[i].matches("[A-Z]+\\s*[A-Z]*\\/*[A-Z]+\\s*[A-Z]*"))) && (arrDescInfo[i + 1].length()==0)) {
+				mapTitle2Info.put(key,value.trim());
+				key = arrDescInfo[i];
+				value = "";
+			} else {
+				value = value.concat(arrDescInfo[i] + " ");
+				continue;
+			}			
 		}
-		return descAndTxt;
+		if (arrDescInfo.length > 1) {
+			value = value.concat(arrDescInfo[arrDescInfo.length - 1]);
+		}
+		mapTitle2Info.put(key,value.trim());
+		value = "";
 	}
 	
 	 private static RepoMIMInfo repo() {
