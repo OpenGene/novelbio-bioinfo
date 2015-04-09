@@ -3,8 +3,10 @@ package com.novelbio.analysis.comparegenomics;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.soap.SOAPArrayType;
@@ -14,11 +16,16 @@ import com.novelbio.analysis.annotation.blast.BlastNBC;
 import com.novelbio.analysis.annotation.blast.BlastType;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
+import com.novelbio.analysis.seq.fasta.SeqFastaReader;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.GffChrSeq;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
+import com.novelbio.analysis.seq.genome.gffOperate.GffType;
+import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -31,43 +38,76 @@ import com.novelbio.database.model.species.Species;
  */
 public class BlastGetSeq implements IntCmdSoft {
 	private static final Logger logger = Logger.getLogger(BlastGetSeq.class);
-	
+ 
+	public static void main2(String[] args) {
+		String refseqFile = "/home/novelbio/文档/resultzb";
+ 
+		try {
+			FileOperate.createFolders(FileOperate.getParentPathNameWithSep(refseqFile));
+			GffChrAbs gffChrAbs = new GffChrAbs();
+			gffChrAbs.setGffHash(new GffHashGene(GffType.NCBI, "/hdfs:/nbCloud/public/nbcplatform/genome/species/7955/Zv10/gff/ref_GRCz10_top_level.gff3", false));
+			gffChrAbs.setSeqHash(new SeqHash("/home/novelbio/文档/chr_all.fa", " "));
+			GffChrSeq gffChrSeq = new GffChrSeq(gffChrAbs);
+			if (true) {
+				gffChrSeq.setGeneStructure(GeneStructure.CDS);
+				gffChrSeq.setGetAAseq(true);
+			} else {
+				gffChrSeq.setGeneStructure(GeneStructure.ALLLENGTH);
+				gffChrSeq.setGetAAseq(false);
+			}
+			gffChrSeq.setGetAllIso(true);
+			gffChrSeq.setGetIntron(false);
+			gffChrSeq.setGetSeqGenomWide();
+			gffChrSeq.setOutPutFile(refseqFile);
+			gffChrSeq.run();
+			gffChrAbs.close();
+			gffChrAbs = null;
+			gffChrSeq = null;
+		} catch (Exception e) {
+			logger.error("生成 RefRNA序列出错");
+		}
+		
+	}
 	public static void main(String[] args) {
-		String path = "/home/novelbio/公共/liufei/alignment.fa";
-		FileOperate.createFolders(FileOperate.getPathName(path));
-		BlastGetSeq blastGetSeq = new BlastGetSeq();
-		blastGetSeq.setBlastType(BlastType.blastp);
-		blastGetSeq.setResultFile(path);
-		List<Species> lsSpecies = new ArrayList<>();
-		Species species = new Species(9606);
-		species.setVersion("GRCh38");
-		lsSpecies.add(species);
-		
-		species = new Species(10090);
-		species.setVersion("mm10_GRCm38");
-		lsSpecies.add(species);
-		
-		species = new Species(7227);
-		species.setVersion("dmel_r6_01");
-		lsSpecies.add(species);
-		
-		species = new Species(7955);
-		species.setVersion("Zv10");
-		lsSpecies.add(species);
-		
-		species = new Species(9913);
-		species.setVersion("Btau_4.6.1_NCBI");
-		lsSpecies.add(species);
-		
-		blastGetSeq.setLsSpeciesBlastTo(lsSpecies);
-		SeqFastaHash seqHash = new SeqFastaHash("/home/novelbio/公共/liufei/query.fa");
-		List<SeqFasta> ls = seqHash.getSeqFastaAll();
-		blastGetSeq.addQueryFasta(ls);
-		seqHash.close();
-		String seqFasta = blastGetSeq.blastAndGetSeq();
+		String path = "/home/novelbio/公共/liufei/slc44a.fa";
+//		FileOperate.createFolders(FileOperate.getPathName(path));
+//		BlastGetSeq blastGetSeq = new BlastGetSeq();
+//		blastGetSeq.setBlastType(BlastType.blastp);
+//		blastGetSeq.setResultFile(path);
+//		List<Species> lsSpecies = new ArrayList<>();
+//		Species species = new Species(9606);
+//		species.setVersion("GRCh38");
+//		lsSpecies.add(species);
+//		
+//		species = new Species(10090);
+//		species.setVersion("mm10_GRCm38");
+//		lsSpecies.add(species);
+//		
+//		species = new Species(10116);
+//		species.setVersion("rnor6_NCBI");
+//		lsSpecies.add(species);
+//		
+//		species = new Species(7227);
+//		species.setVersion("dmel_r6_01");
+//		lsSpecies.add(species);
+//		
+//		species = new Species(7955);
+//		species.setVersion("Zv10");
+//		lsSpecies.add(species);
+//		
+////		species = new Species(9913);
+////		species.setVersion("Btau_4.6.1_NCBI");
+////		lsSpecies.add(species);
+//		
+//		blastGetSeq.setLsSpeciesBlastTo(lsSpecies);
+//		SeqFastaHash seqHash = new SeqFastaHash("/home/novelbio/公共/liufei/query.fa");
+//		List<SeqFasta> ls = seqHash.getSeqFastaAll();
+//		blastGetSeq.addQueryFasta(ls);
+//		seqHash.close();
+//		String seqFasta = blastGetSeq.blastAndGetSeq();
 		AlignmentMuscle alignmentMuscle = new AlignmentMuscle();
-		alignmentMuscle.setInputFasta(seqFasta);
-		alignmentMuscle.setOutputFasta(FileOperate.changeFileSuffix(seqFasta, "_alignment", "fa"));
+		alignmentMuscle.setInputFasta(path);
+		alignmentMuscle.setOutputFasta(FileOperate.changeFileSuffix(path, "_alignment", "fa"));
 		alignmentMuscle.runAlignment();
 	}
 	

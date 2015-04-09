@@ -39,7 +39,8 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	String version;
 	/** 数据库使用，记录gff的来源，是NCBI还是Ensembl */
 	String dbinfo;
-	
+	/** 发现重复的mRNA名字时，就换一个名字，专用于果蝇 */
+	boolean isFilterDuplicateName;
 	/**
 	 * 新建一个GffHashGeneUCSC的类，需要readGffFile
 	 */
@@ -58,20 +59,31 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	public GffHashGene(GffType gffType, String gffFile) {
 		this.gffType = gffType;
 		this.gffFile = gffFile;
-		flagStop = read(0, null, null, gffType, gffFile);
+		flagStop = read(0, null, null, gffType, gffFile, false);
+	}
+	/**
+	 * @param gffType
+	 * @param gffFile
+	 * @param isFilterDuplicateGeneName 果蝇中存在重复的基因名
+	 */
+	public GffHashGene(GffType gffType, String gffFile, boolean isFilterDuplicateGeneName) {
+		this.gffType = gffType;
+		this.gffFile = gffFile;
+		flagStop = read(0, null, null, gffType, gffFile, isFilterDuplicateGeneName);
 	}
 	/**
 	 * 读取并初始化，可以用isFinished()来判定是否顺利运行完毕
 	 * @param gffType
 	 * @param gffFile
+	 * @param isFilterDuplicateGeneName 果蝇中存在重复的基因名
 	 */
-	public GffHashGene(int taxID, String version, String dbinfo, GffType gffType, String gffFile) {
+	public GffHashGene(int taxID, String version, String dbinfo, GffType gffType, String gffFile, boolean isFilterDuplicateGeneName) {
 		this.taxID = taxID;
 		this.version = version;
 		this.gffType = gffType;
 		this.gffFile = gffFile;
 		this.dbinfo = dbinfo;
-		read(taxID,version, dbinfo, gffType, gffFile);
+		read(taxID,version, dbinfo, gffType, gffFile, isFilterDuplicateGeneName);
 	}
 	/**
 	 * 读取并初始化，可以用isFinished()来判定是否顺利运行完毕
@@ -80,7 +92,7 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	public GffHashGene(String gffFile) {
 		gffType = readGffTypeFromFileName(gffFile);
 		this.gffFile = gffFile;
-		read(taxID, version, dbinfo, gffType, gffFile);
+		read(taxID, version, dbinfo, gffType, gffFile, false);
 	}
 	
 	private GffType readGffTypeFromFileName(String gffFile) {
@@ -136,10 +148,19 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	}
 	@Override
 	protected void running() {
-		read(taxID, version, dbinfo, gffType, gffFile);
+		read(taxID, version, dbinfo, gffType, gffFile, isFilterDuplicateName);
 	}
 	
-	private boolean read(int taxID, String version, String dbinfo, GffType gffType, String gffFile) {
+	/**
+	 * @param taxID
+	 * @param version
+	 * @param dbinfo
+	 * @param gffType
+	 * @param gffFile
+	 * @param isFilterDuplicateName 发现重复的mRNA名字时，就换一个名字，专用于果蝇
+	 * @return
+	 */
+	private boolean read(int taxID, String version, String dbinfo, GffType gffType, String gffFile, boolean isFilterDuplicateName) {
 		if (gffType == GffType.UCSC) {
 			gffHashGene = new GffHashGeneUCSC();
 		}
@@ -151,6 +172,7 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 		}
 		else if (gffType == GffType.NCBI) {
 			gffHashGene = new GffHashGeneNCBI();
+			((GffHashGeneNCBI)gffHashGene).setFilterDuplicateName(isFilterDuplicateName);
 		}
 		if (taxID > 0) {
 			gffHashGene.setTaxID(taxID);

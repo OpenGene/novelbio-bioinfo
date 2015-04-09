@@ -141,9 +141,9 @@ public class GffChrAbs implements Closeable {
 	public SeqHash getSeqHash() {
 		return seqHash;
 	}
-	public void setGffFile(int taxID, String version, String dbinfo, GffType gffType, String gffFile) {
+	private void setGffFile(int taxID, String version, String dbinfo, GffType gffType, String gffFile) {
 		if (FileOperate.isFileExist(gffFile)) {
-			gffHashGene = new GffHashGene(taxID, version, dbinfo, gffType, gffFile);
+			gffHashGene = new GffHashGene(taxID, version, dbinfo, gffType, gffFile, taxID == 7227);
 		} else {
 			throw new ExceptionGFF(gffFile + " GffFile is not exist");
 		}

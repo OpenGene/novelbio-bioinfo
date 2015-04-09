@@ -50,17 +50,15 @@ public class SamFile implements AlignSeq {
 	private static final Logger logger = Logger.getLogger(SamFile.class);
 	static {
 		SamReaderFactory.setDefaultValidationStringency(ValidationStringency.SILENT);
+		SAMFileReader.setDefaultValidationStringency(ValidationStringency.SILENT);
 	}
 	public static void main(String[] args) {
-		DateUtil dateUtil = new DateUtil();
-		dateUtil.setStartTime();
-		SamFile samFile = new SamFile("/media/hdfs/nbCloud/public/AllProject/project_53717abee4b074ba192cd6ec/task_5371957fe4b0a9f14de0fd59/DNASeqMap_result/YYG.bam");
-		for (SamRecord samRecord : samFile.readLines()) {
-			if (samRecord.getCIGAR().contains("H")) {
-//				System.out.println(samRecord.getCIGAR() + "\t" + samRecord.getStartAbs() + "\t" + samRecord.getEndAbs() + "\t"+ samRecord.getSeqFasta().toString());
-				System.out.print(samRecord.toString());
-			}
-		}
+		String parentPath = "/hdfs:/nbCloud/public/AllProject/project_55079d2ce4b0b3b73a8e2003/task_55093d79e4b0b3b73a8e2093/MiRNASeqAnalysis_result/TmpMapping/";
+		List<SamFile> lsSamFiles = new ArrayList<>();
+		lsSamFiles.add(new SamFile(parentPath + "CM1_Genome.bam"));
+		lsSamFiles.add(new SamFile(parentPath + "IM1_Genome.bam"));
+
+		SamFile.mergeBamFile(parentPath + "merge.test", lsSamFiles);
 	}
 	
 	

@@ -189,7 +189,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 			}
 			for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfo) {
 				if (!isNeedSeq(gffGeneIsoInfo)) continue;
-
+				
 				if (gffGeneIsoInfo != null) {
 					String geneName = gffGeneIsoInfo.getParentGeneName();
 					if (!mapGene2Iso.containsKey(geneName) || mapGene2Iso.get(geneName).getLenExon(0) < gffGeneIsoInfo.getLenExon(0)) {
@@ -318,11 +318,23 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	 * @param lsListGffName
 	 */
 	private void fillSetNameGenomWide() {
+		Set<String> setChrId = new HashSet<>();
+		try {
+			setChrId = gffChrAbs.getSeqHash().getMapChrLength().keySet();
+		} catch (Exception e) {}
+		
 		mapName2Iso.clear();
-		for (GffDetailGene gffDetailGene : gffChrAbs.getGffHashGene().getGffDetailAll()) {
+		for (GffDetailGene gffDetailGene : gffChrAbs.getGffHashGene().getLsGffDetailGenes()) {
 			if (getAllIso) {
 				for (GffGeneIsoInfo iso : gffDetailGene.getLsCodSplit()) {
 					if (!isNeedSeq(iso)) continue;
+					
+					String chrId = iso.getRefID().toLowerCase();
+					if (!setChrId.contains(chrId)) continue;
+					
+					if (mapName2Iso.containsKey(iso.getName()) && mapName2Iso.get(iso.getName()).getLenExon(0) >= iso.getLenExon(0)) {
+						continue;
+					}
 
 					mapName2Iso.put(iso.getName(), iso);
 				}

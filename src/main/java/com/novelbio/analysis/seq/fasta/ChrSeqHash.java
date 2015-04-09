@@ -126,6 +126,10 @@ public class ChrSeqHash extends SeqHashAbs {
 		int basesPerLine = mapChrID2LenRow.get(chrID);
 		int terminatorLength = mapChrID2LenRowEnter.get(chrID) - basesPerLine;
 		int lineNum = getBias(startlocation, mapChrID2LenRow.get(chrID));
+		
+		//when the lineNum is 0, it means at the end of the line.
+		if (lineNum == 0) lineNum = basesPerLine;
+		
 		int byteNum = 1;
 		boolean isBase = true;
 		for (int i = 0; i < readInfo.length; i++) {

@@ -9,10 +9,10 @@ import com.novelbio.database.model.species.Species;
 public class DownloadKEGG {
 	public static void main(String[] args) {
 		DownloadKEGG downloadKEGG = new DownloadKEGG();
-		downloadKEGG.addSpecies("tgo");
-//		downloadKEGG.addSpecies("mmu");
-//		downloadKEGG.addSpecies("osa");
-//		downloadKEGG.addSpecies("ath");
+//		downloadKEGG.addSpecies("ser");
+//		downloadKEGG.addSpecies("sau");
+//		downloadKEGG.addSpecies("sco");
+		downloadKEGG.addSpecies("salb");
 //		downloadKEGG.addSpecies("mtu");
 //		downloadKEGG.addSpecies("ssc");
 		

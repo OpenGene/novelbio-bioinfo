@@ -19,6 +19,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.PathDetail;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /** java实现的merge
@@ -71,16 +72,20 @@ public class BamMergeJava implements BamMergeInt {
 		this.outFileName = outFileName;
 	}
     public void setSORT_ORDER(SAMFileHeader.SortOrder SORT_ORDER) {
-		SORT_ORDER = SORT_ORDER;
+		this.SORT_ORDER = SORT_ORDER;
 	}
     
     public SamFile mergeSam() {
     	prepareReader();
-		setSortOrderInfo();
-    	merge();
-    	if (!FileOperate.isFileExistAndBigThanSize(outFileName, 0)) {
+	setSortOrderInfo();
+	String outFileTmp = FileOperate.changeFileSuffix(outFileName, "_tmp", null);
+	String outInfo = FileOperate.changeFileSuffix(outFileName, "_mergeReadsNum", "txt");
+	merge(outFileTmp, outInfo);
+	FileOperate.DeleteFileFolder(outInfo);
+    	if (!FileOperate.isFileExistAndBigThanSize(outFileTmp, 0)) {
 			throw new SamErrorException("cannot merge file: " + outFileName);
 		}
+    	FileOperate.moveFile(true, outFileTmp, outFileName);
     	SamFile samFile = new SamFile(outFileName);
     	return samFile;
     }
@@ -123,8 +128,13 @@ public class BamMergeJava implements BamMergeInt {
         }
 	}
 	
-	/** 开始合并 */
-	private void merge() {
+	/**
+	 * @param outFileName 合并的最后输出文件
+	 * @param outInfo 合并信息
+	 */
+	private void merge(String outFileName, String outInfo) {
+		TxtReadandWrite txtWriteInfo = new TxtReadandWrite(outInfo, true);
+		
 		final SamFileHeaderMerger headerMerger = new SamFileHeaderMerger(sortOrder, lsHeaders, MERGE_SEQUENCE_DICTIONARIES);
 		final MergingSamRecordIterator iterator = new MergingSamRecordIterator(headerMerger, lsReaders, mergingSamRecordIteratorAssumeSorted);
 		final SAMFileHeader header = headerMerger.getMergedHeader();
@@ -134,14 +144,26 @@ public class BamMergeJava implements BamMergeInt {
 		
 		File file = FileOperate.getFile(outFileName);
 		final SAMFileWriter out = samFileWriterFactory.makeSAMOrBAMWriter(header, presorted, file);
-
+		
+		long readsNum = 0;
 	        // Lastly loop through and write out the records
 		while (iterator.hasNext()) {
+			if (readsNum++ % 500000 == 0) {
+				txtWriteInfo.writefileln(readsNum + "");
+				txtWriteInfo.flush();
+			}
 			final SAMRecord record = iterator.next();
 			out.addAlignment(record);
 		}
 
 		logger.info("Finished reading inputs.");
+		txtWriteInfo.close();
+		try {
+			iterator.close();
+		} catch (Exception e) {
+			logger.error("close file error: " + outFileName, e);
+		}
+	
 		out.close();
 	}
 	

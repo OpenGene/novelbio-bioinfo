@@ -1,10 +1,17 @@
 package com.novelbio.database.updatedb.database;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.Options;
+
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.DBInfo;
+import com.novelbio.database.domain.geneanno.TaxInfo;
 import com.novelbio.database.model.species.Species;
 
 /**
@@ -25,13 +32,29 @@ public class ImportDB {
 	
 
 	public static void main(String[] args) {
+		Options opts = new Options();
+		opts.addOption("taxId", true, "taxId");
+		CommandLine cliParser = null;
+		try {
+			cliParser = new GnuParser().parse(opts, args);
+		} catch (Exception e) {
+			System.exit(1);
+		}
+		
+		String taxId = cliParser.getOptionValue("taxId");
+		for (String string : taxId.split(",")) {
+			if (StringOperate.isRealNull(string)) continue;
+			int taxIdint = Integer.parseInt(string.trim());
+			ImportPerLine.addTaxId(taxIdint);
+		}
+		
+		
 		String downloadPath = "/home/novelbio/NBCsource/database/";
 		String softToolsFile = "/home/novelbio/NBCsource/SoftwareInfo.txt";
 		String taxIDFile = "/home/novelbio/NBCsource/species/常见物种IDKEGGUploadTmp.txt";
 //		String dbInfo = "/home/novelbio/NBCsource/database/DBinfo.txt";
 		String GOPath = "/home/novelbio/NBCsource/database/GO/";
 		String speciesFile = "";
-		ImportPerLine.addTaxId(508771);
 //		ImportPerLine.addTaxId(4932);
 		ImportDB importDB = new ImportDB();
 		importDB.setDownloadPath(downloadPath);

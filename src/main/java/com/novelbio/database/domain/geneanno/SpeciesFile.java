@@ -40,6 +40,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.mirna.ListMiRNAdat;
 import com.novelbio.analysis.seq.sam.SamIndexRefsequence;
 import com.novelbio.base.ExceptionNullParam;
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -776,10 +777,18 @@ public class SpeciesFile {
 			return "";
 		}
 		try {
-			FileOperate.createFolders(FileOperate.getParentPathNameWithSep(refseqFile));
+			String chrFile = getChromSeqFile();
+			
+//			String chrFileNew = PathDetail.getTmpPath() + taxID + FileOperate.getFileName(chrFile);
+//			FileOperate.copyFile(chrFile, chrFileNew, true);
+//			FileOperate.createFolders(FileOperate.getParentPathNameWithSep(refseqFile));
+			
 			GffChrAbs gffChrAbs = new GffChrAbs();
-			gffChrAbs.setGffHash(new GffHashGene(getGffType(), getGffFile()));
+			gffChrAbs.setGffHash(new GffHashGene(getGffType(), getGffFile(), taxID == 7227));
+			
+//			gffChrAbs.setSeqHash(new SeqHash(chrFileNew, " "));
 			gffChrAbs.setSeqHash(new SeqHash(getChromSeqFile(), " "));
+			
 			GffChrSeq gffChrSeq = new GffChrSeq(gffChrAbs);
 			if (isProtein) {
 				gffChrSeq.setGeneStructure(GeneStructure.CDS);
@@ -797,6 +806,8 @@ public class SpeciesFile {
 			gffChrAbs.close();
 			gffChrAbs = null;
 			gffChrSeq = null;
+			
+//			FileOperate.DeleteFileFolder(chrFileNew);
 		} catch (Exception e) {
 			logger.error("生成 RefRNA序列出错");
 		}

@@ -27,6 +27,7 @@ import com.novelbio.database.model.modgeneid.GeneID;
  */
 public abstract class SiteSnpIndelInfo {
 	private static Logger logger = Logger.getLogger(SiteSnpIndelInfo.class);
+	
 	/** 与剪接位点距离的绝对值，小于该距离才会考虑剪接位点的影响 */
 	static int splitRegion = 5;
 	
@@ -481,6 +482,7 @@ public abstract class SiteSnpIndelInfo {
 	}
 
 }
+
 /**
  * 貌似与SiteSnpIndelInfoSnp一模一样
  * @author zong0jie

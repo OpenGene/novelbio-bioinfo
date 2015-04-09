@@ -12,7 +12,6 @@ import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.mapping.Align;
-import com.novelbio.analysis.seq.reseq.ModifyInfo;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -85,7 +84,12 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	private ArrayListMultimap<String, ExonInfo> mapRnaID2LsIsoLocInfo = ArrayListMultimap.create();
 	private Map<String, Align> mapGeneID2Region = new HashMap<>();
 	private GffGetChrId gffGetChrId = new GffGetChrId();
-		
+	
+	/** 发现重复的mRNA名字时，就换一个名字，专用于果蝇 */
+	boolean isFilterDuplicateName = false;
+	/** 发现重复的mRNA名字时，就换一个名字，专用于果蝇，里面的值都是小写 */
+	private Set<String> setMrnaNameDuplicate = new HashSet<>();
+
 	/** 
 	 * 一般的转录本都会先出现exon，然后出现CDS，如下<br>
 	 * hr3	RefSeq	mRNA	59958839	59959481<br>
@@ -103,9 +107,17 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	 * 如果没有出现exon，CDS就要当exon来设定。
 	 */
 	private Map<String, Boolean> mapGeneName2IsHaveExon = new HashMap<String, Boolean>();
+	
 	int numCopedIDsearch = 0;//查找taxID的次数最多10次
+	
 	/** 默认连上数据库 */
 	boolean database = true;
+	
+	/** 发现重复的mRNA名字时，就换一个名字，专用于果蝇 */
+	public void setFilterDuplicateName(boolean isFilterDuplicateName) {
+		this.isFilterDuplicateName = isFilterDuplicateName;
+	}
+	
 	/** 设定mRNA和gene的类似名，在gff文件里面出现的 */
 	private void setGeneName() {
 		if (setIsGene.isEmpty()) {
@@ -155,13 +167,15 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   //但是tRNA和miRNA就没有这个parent geneID，所以就记载下来给他们用
 	   String[] thisGeneIDandName = null;
 	   String[] thisRnaIDandName = null;	   
-	   
+	   if (isFilterDuplicateName) {
+		  fillDuplicateNameSet();
+	  }
 	   for (String content : txtgff.readlines()) {
-		   if(content.charAt(0) == '#') continue;
-		   
+		   if(content.trim().equals("") || content.charAt(0) == '#') continue;
+
 		   String[] ss = content.split("\t");//按照tab分开
 		   if (ss[2].equals("match") || ss[2].toLowerCase().equals("chromosome") || ss[2].toLowerCase().equals("intron")) {
-			   continue;
+			  continue;
 		   }
 		   ss[8] = HttpFetch.decode(ss[8]);
 		   
@@ -217,6 +231,29 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   clear();
    }
    
+   private void fillDuplicateNameSet() {
+	   TxtReadandWrite txtgff = new TxtReadandWrite(gfffilename, false);
+	   Set<String> setMrnaAll = new HashSet<>();
+	   for (String content : txtgff.readlines()) {
+		   if (content.startsWith("#")) {
+			continue;
+		}
+		   String[] ss = content.split("\t");
+		   boolean isMrna = GeneType.getMapMRNA2GeneType().containsKey(ss[2].toLowerCase());
+		   if (isMrna) {
+			   GeneType mRNAtype = getMrnaName(ss);
+			   String rnaName = getRnaName(ss, mRNAtype);
+			   if (rnaName == null) continue;
+			   rnaName = rnaName.toLowerCase();
+			   if (setMrnaAll.contains(rnaName)) {
+				   setMrnaNameDuplicate.add(rnaName);
+			   }
+			   setMrnaAll.add(rnaName);
+		   }
+	   }
+	   txtgff.close();
+   }
+   
    /** 当读取到gene时，就是读到了一个新的基因，那么新建一个基因
     * 并且返回string[2]<br>
     * 0: geneID<br>
@@ -270,18 +307,10 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
     * @return  返回加入的rna名字
     */
    private String add_MapRnaID2RnaName_And_MapRnaID2GeneID(String[] lastGeneIDandName, String rnaID, String[] ss, GeneType geneType) {
-	   String rnaName = null;
-	   if (geneType == GeneType.miRNA) {
-		   rnaName = patProduct.getPatFirst(ss[8]);
-		   if (rnaName == null) rnaName = patmRNAName.getPatFirst(ss[8]);
-	   } else {
-		   rnaName = patmRNAName.getPatFirst(ss[8]);
-	   }
-	   
-	   if (rnaName == null) {
-		   rnaName = patName.getPatFirst(ss[8]);
-	   }
-	   
+	   String rnaName = getRnaName(ss, geneType);
+	   if (rnaName != null && setMrnaNameDuplicate.contains(rnaName.toLowerCase())) {
+		rnaName = getRnaNameDifToRnaName(rnaName, ss, geneType);
+	}
 	   if (rnaName == null) {
 		   rnaName = lastGeneIDandName[1];
 	   }
@@ -293,6 +322,53 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		geneID = ss[0] + geneID;
 	}
 	   mapRnaID2GeneID.put(rnaID, geneID);
+	   return rnaName;
+   }
+   
+   /**
+    * @param lastGeneIDandName
+    * @param rnaID
+    * @param ss
+    * @return  返回加入的rna名字
+    */
+   private String getRnaName(String[] ss, GeneType geneType) {
+	  //保证不能出现重复id 
+	   String rnaName = null;
+	   if (geneType == GeneType.miRNA) {
+		   rnaName = patProduct.getPatFirst(ss[8]);
+		   if (rnaName == null) rnaName = patmRNAName.getPatFirst(ss[8]);
+	   } else {
+		   rnaName = patmRNAName.getPatFirst(ss[8]);
+	   }
+	   
+	   if (rnaName == null) {
+		   rnaName = patName.getPatFirst(ss[8]);
+	   }
+	   return rnaName;
+   }
+   
+   /**
+    * @param lastGeneIDandName
+    * @param rnaID
+    * @param ss
+    * @return  返回加入的rna名字
+    */
+   private String getRnaNameDifToRnaName(String rnaNameExist, String[] ss, GeneType geneType) {
+	  //保证不能出现重复id 
+	   String rnaName = null;
+	   if (geneType == GeneType.miRNA) {
+		   rnaName = patProduct.getPatFirst(ss[8]);
+		   if (rnaName == null || rnaNameExist.equals(rnaName)) rnaName = patmRNAName.getPatFirst(ss[8]);
+	   } else {
+		   rnaName = patmRNAName.getPatFirst(ss[8]);
+	   }
+	   
+	   if (rnaName == null || rnaNameExist.equals(rnaName)) {
+		   rnaName = patName.getPatFirst(ss[8]);
+	   }
+	   if (rnaName == null || rnaNameExist.equals(rnaName)) {
+		   rnaName = patID.getPatFirst(ss[8]);
+	   }
 	   return rnaName;
    }
    
@@ -587,20 +663,22 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	   mapRnaID2LsIsoLocInfo.clear();
 	   gffGetChrId.clear();
 	   mapGeneName2IsHaveExon.clear();
+	   setMrnaNameDuplicate.clear();
 	   
-	    mapRnaID2GeneID = null;
-	    mapGenID2GffDetail = null;
-	    
-	    mapRnaID2GeneID = null;
-	    mapGenID2GffDetail = null;
+	   mapRnaID2GeneID = null;
+	   mapGenID2GffDetail = null;
+	   setMrnaNameDuplicate = null;
+	   
+	   mapRnaID2GeneID = null;
+	   mapGenID2GffDetail = null;
 			
-	    mapRnaID2LsIso = null;
-	    mapRnaID2LsIsoLocInfo = null;
-	    gffGetChrId = null;
-	    mapGeneName2IsHaveExon = null;
+	   mapRnaID2LsIso = null;
+	   mapRnaID2LsIsoLocInfo = null;
+	   gffGetChrId = null;
+	   mapGeneName2IsHaveExon = null;
 		   
-	    mapRnaID2GeneID = null;
-	    mapGenID2GffDetail = null;
+	   mapRnaID2GeneID = null;
+	   mapGenID2GffDetail = null;
    }
    
    /**

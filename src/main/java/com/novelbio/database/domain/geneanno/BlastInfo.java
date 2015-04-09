@@ -401,4 +401,18 @@ public class BlastInfo implements Comparable<BlastInfo> {
 		}
 		return new ArrayList<>(mapQuery2Evalue.values());
 	}
+	
+	/** 将一系列blastInfo的结果去重复，一对query和subject仅获取subject最长的那一对 */
+	public static List<BlastInfo> removeDuplicateByMaxLen(Collection<BlastInfo> colBlastInfos) {
+		 Map<String, BlastInfo> mapQuery2Evalue = new LinkedHashMap<>();
+		for (BlastInfo blastInfo : colBlastInfos) {
+			String queryID2SubID = blastInfo.getQueryID().toLowerCase() + SepSign.SEP_ID + blastInfo.getSubjectID().toLowerCase();
+			double evalue = blastInfo.getEvalue();
+			if (mapQuery2Evalue.containsKey(queryID2SubID) && mapQuery2Evalue.get(queryID2SubID).getEvalue() <= evalue) {
+				continue;
+			}
+			mapQuery2Evalue.put(queryID2SubID, blastInfo);
+		}
+		return new ArrayList<>(mapQuery2Evalue.values());
+	}
 }
