@@ -279,10 +279,10 @@ marie: 3/25/1988
 				
 			} else if (key.equals("RF")) {
 				String reftestString = mapMimUni.get(key);
-				String[] arrRef = mapMimUni.get(key).split("\n");
+				String[] arrRef = mapMimUni.get(key).split("\n\n");
 				for (String ref : arrRef) {
 					if ((!ref.trim().equals(""))) {
-						mimInfo.addRef(ref.trim());
+						mimInfo.addRef(ref.replace("\n", " ").trim());
 					}
 				}
 			} 

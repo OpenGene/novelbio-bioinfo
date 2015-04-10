@@ -5,13 +5,23 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.junit.Assert;
+
+import com.novelbio.database.domain.omim.GeneMIM;
 import com.novelbio.database.domain.omim.MIMInfo;
+import com.novelbio.database.domain.omim.MorbidMap;
 
 public class TestOmimUnit {
 
 	public static void main(String[] args) {
+		
 		TestOmimUnit testOmimUnit = new TestOmimUnit();
-		testOmimUnit.testOmimUit();
+		
+//		testOmimUnit.testOmimUit();
+		
+//		testOmimUnit.testCreatMorbidMapTable();
+		
+		testOmimUnit.testGeneMIM();
+		
 	}
 	
 	public void testOmimUit() {
@@ -67,6 +77,31 @@ public class TestOmimUnit {
 
 //		Assert.assertEquals(maMimUni, (HashMap<String, String>) mIMInfo.getMapTitle2Info());
 		
-		
+
 	}
+	
+	public void testCreatMorbidMapTable() {
+		String content = "17,20-lyase deficiency, isolated, 202110 (3)|CYP17A1, CYP17, P450C17|609300|10q24.32";
+		String content2 = "17-alpha-hydroxylase/17,20-lyase deficiency, 202110 (3)|CYP17A1, CYP17, P450C17|609300|10q24.32";
+		MorbidMap morbidMap = MorbidMap.getInstanceFromOmimRecord(content2);
+		Assert.assertEquals(0, morbidMap.getGeneId());
+		Assert.assertEquals(609300, morbidMap.getGeneMimId());
+		Assert.assertEquals(202110, morbidMap.getPhenMimId());
+		Assert.assertEquals("10q24.32", morbidMap.getCytLoc());
+		
+		List<String> liDis = new ArrayList<>();
+		liDis.add("17-alpha-hydroxylase/17");
+		liDis.add("20-lyase deficiency");
+		Assert.assertEquals(liDis, morbidMap.getListDis());
+	}
+	
+	public void testGeneMIM() {
+		String content = "1.1|5|13|13|1pter-p36.13|CTRCT8, CCV|P|Cataract, congenital, Volkmann type|115665|Fd|linked to Rh in Scottish family|Cataract 8, multiple types (2)||";
+		GeneMIM geneMIM = GeneMIM.getInstanceFromGeneOmim(content);
+		Assert.assertEquals(7792, geneMIM.getGeneId());
+		Assert.assertEquals(115665, geneMIM.getGeneMimId());
+		Assert.assertEquals(115665, geneMIM.getUniMimId());
+		Assert.assertEquals("1pter-p36.13", geneMIM.getCytLoc());
+	}
+	
 }

@@ -8,12 +8,15 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.mongorepo.omim.RepoMorbidMap;
 import com.novelbio.database.service.SpringFactoryBioinfo;
 
 
 @Document(collection = "morbidMap")
 public class MorbidMap implements Serializable {
+	private static final int taxID = 9606;
+	
 	@Id
 	private String id;
 	/** gene MIM 号 */
@@ -70,7 +73,6 @@ public class MorbidMap implements Serializable {
 	public int getDisType() {
 		return disType;
 	}
-
 	
 	public static MorbidMap getInstanceFromOmimRecord(String content) {
 		if (content.equals("")) {
@@ -78,14 +80,19 @@ public class MorbidMap implements Serializable {
 		}
 		MorbidMap morbidMap = new MorbidMap();
 		String[] arrMorbidMapLine = content.split("\\|");
-		
-//		String[] arrGeneName = arrMorbidMapLine[1].split(",");
-		
-//		if (mapGeneID2Name.containsKey(arrGeneName[0])) {
-//			geneId = Integer.parseInt(mapGeneID2Name.get(arrGeneName[0]));
-//		}
-		int geneId = 0;
-		morbidMap.setGeneId(geneId);
+		String geneName = "";
+		if (arrMorbidMapLine[1].contains(",")) {
+			geneName = arrMorbidMapLine[1].split(",")[0];
+		} else {
+			geneName = arrMorbidMapLine[1];
+		}
+		GeneID copedID = new GeneID(geneName, taxID, false);
+		GeneMIM geneMIM = new GeneMIM();
+		String geneID = copedID.getGeneUniID();
+		if (!geneID.matches("[0-9]+")) {
+			return null;
+		}
+		morbidMap.setGeneId(Integer.parseInt(geneID));
 		int geneMimId = Integer.parseInt(arrMorbidMapLine[2]);
 		morbidMap.setGeneMimId(geneMimId);
 		morbidMap.setCytLoc(arrMorbidMapLine[3]);
@@ -127,15 +134,6 @@ public class MorbidMap implements Serializable {
 		public static List<MorbidMap> findInfByDisease(String disease) {
 			return repo().findInfByDisease(disease);
 		}	
-		
-//	 public boolean remove() {
-//		 try {
-//			 repo().delete(id);
-//		 } catch (Exception e) {
-//			 return false;
-//		 }
-//		 return true;
-//	 }
 }
 
 

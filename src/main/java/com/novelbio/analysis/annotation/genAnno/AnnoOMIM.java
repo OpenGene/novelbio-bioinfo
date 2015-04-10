@@ -13,8 +13,6 @@ import com.novelbio.database.model.modomim.MgmtOMIMUnit;
 
 
 public class AnnoOMIM extends AnnoAbs {
-//	MgmtGeneMIMInfo mgmtGeneMIMInfo = MgmtGeneMIMInfo.getInstance();
-//	MgmtOMIM mgmtOMIM = MgmtOMIM.getInstance();
 	MgmtMorbidMap mgmtMorbidMap = MgmtMorbidMap.getInstance();
 	MgmtOMIMUnit mgmtOMIMUnit = MgmtOMIMUnit.getInstance();
 	GOtype gOtype;
@@ -25,9 +23,8 @@ public class AnnoOMIM extends AnnoAbs {
 	@Override
 	public List<String[]> getInfo(int taxID, String accID) {
 		//TODO
-//		GeneID geneId = new GeneID(accID, taxID);
-//		int geneIdint = Integer.parseInt(geneId.getGeneUniID());
-		int geneId = Integer.parseInt(accID);
+		GeneID copedID = new GeneID(accID, taxID);
+		int geneId = Integer.parseInt(copedID.getGeneUniID());
 		List<String[]> lsResult = new ArrayList<String[]>();
 		ArrayList<String> lsResultTmp = new ArrayList<String>();
 		lsResultTmp.add(accID + "");
