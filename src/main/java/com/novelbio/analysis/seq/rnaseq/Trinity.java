@@ -169,7 +169,7 @@ public class Trinity implements IntCmdSoft {
 	
 	public Trinity() {
 		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.trinity);
-//		this.exePath = softWareInfo.getExePathRun();
+		this.exePath = softWareInfo.getExePathRun();
 	}
 	
 	/** trinity的所在路径 */
