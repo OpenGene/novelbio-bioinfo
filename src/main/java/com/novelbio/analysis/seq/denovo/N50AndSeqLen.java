@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.novelbio.analysis.seq.fasta.SeqFastaReader;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.plot.BarStyle;
@@ -45,8 +46,23 @@ public class N50AndSeqLen {
 	int minContigLen = 200;
 	/** 最长统计到多长的contig */
 	int maxContigLen = 3000;
-	
+	/** 最短的contig长度 */
+	int realMaxConLen = 0;
+	/** 最长的contig长度 */
+	int realMinConLen = 0;
+	/** 统计contig的平均值 */
 	int contigMeanLen = 0;
+	/** 统计contig的中位值 */
+	int contigMedianLen = 0;
+	/** 统计所有contigs的个数 */
+	int allContigsNum;
+	/** 统计所有contigs的长度 */
+	long allContigsLen;
+	/** 统计N50的长度 */
+	int N50Len = 0;
+	/** 统计Contigs长度的中位数 */
+	int medianLen = 0;
+	
 	/** 长度统计 */
 	HistList hListLength;
 	
@@ -101,7 +117,38 @@ public class N50AndSeqLen {
 		return contigMeanLen;
 	}
 	
-	private void getInfo() {
+	public long getAllContigsLen() {
+		return allContigsLen;
+	}
+	
+	public int getAllContigsNum() {
+		return allContigsNum;
+	}
+	
+	public int getMinContigLen() {
+		return minContigLen;
+	}
+	public int getMaxContigLen() {
+		return maxContigLen;
+	}
+	
+	public int getN50Len() {
+		return N50Len;
+	}
+	
+	public int getRealMinConLen() {
+		return realMinConLen;
+	}
+	
+	public int getRealMaxConLen() {
+		return realMaxConLen;
+	}
+	
+	public int getMedianLen() {
+		return medianLen;
+	}
+	
+	private void getInfo() {		
 		TxtReadandWrite txtRead = new TxtReadandWrite(seqFileName);
 		String tmpName = "";
 		int tmpSeqLen = 0;
@@ -135,8 +182,15 @@ public class N50AndSeqLen {
 				return -o1.compareTo(o2);
 			}
 		});
-		double lenAll = MathComput.sum(lsSeqLen);
-		contigMeanLen = (int) (lenAll/lsSeqLen.size());
+		
+		medianLen = (int)MathComput.median(lsSeqLen);
+		realMaxConLen = lsSeqLen.get(0);
+		
+		allContigsLen = (long)MathComput.sum(lsSeqLen);
+		allContigsNum = lsSeqLen.size();
+		contigMeanLen = (int) (allContigsLen/allContigsNum);
+		realMinConLen = lsSeqLen.get(allContigsNum - 1);
+		
 		double tmpN = 0;
 		int lastSeqLen = 0;
 		int contigNum = 0;
@@ -144,10 +198,10 @@ public class N50AndSeqLen {
 		for (Integer seqLen : lsSeqLen) {
 			contigNum ++;
 			tmpN = tmpN + seqLen;
-			if (tmpN*100 / lenAll >= Nvalue) {
+			if (tmpN*100 / allContigsLen >= Nvalue) {
 				String[] tmpNvalue = new String[3];
 				tmpNvalue[0] = "N" + Nvalue;
-				if (lastSeqLen == 0 || tmpN*100 / lenAll == Nvalue) {
+				if (lastSeqLen == 0 || tmpN*100 / allContigsLen == Nvalue) {
 					tmpNvalue[1] = seqLen + "";
 				} else {
 					tmpNvalue[1] = lastSeqLen + "";
@@ -169,6 +223,8 @@ public class N50AndSeqLen {
 			lsNinfo.add(tmpNvalue);
 		}
 		lsNinfo.add(0, new String[]{"Nvalue", "Length", "ContigNum"});
+		String[] arrN50Len = lsNinfo.get(9);
+		N50Len = Integer.parseInt(arrN50Len[1]);
 	}
 	
 	private void statisticContigLen() {

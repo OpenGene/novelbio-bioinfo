@@ -169,7 +169,7 @@ public class Trinity implements IntCmdSoft {
 	
 	public Trinity() {
 		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.trinity);
-		this.exePath = softWareInfo.getExePathRun();
+//		this.exePath = softWareInfo.getExePathRun();
 	}
 	
 	/** trinity的所在路径 */
@@ -576,8 +576,15 @@ public class Trinity implements IntCmdSoft {
 	public void runTrinity() {
 		List<String> lsCmd = getLsCmd();
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
+		cmdOperate.setRedirectInToTmp(true);
+		for (String leftFq:lsLeftFq) {
+			cmdOperate.addCmdParamInput(leftFq);
+		}
+		for (String rightFq:lsRightFq) {
+			cmdOperate.addCmdParamInput(rightFq);
+		}
 		cmdOperate.setRedirectOutToTmp(true);
-		cmdOperate.addCmdParamOutput(output, false);
+		cmdOperate.addCmdParamOutput(output);
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {
 			throw new ExceptionCmd("run trinity error:", cmdOperate);
@@ -625,7 +632,8 @@ public class Trinity implements IntCmdSoft {
 	
 	/** 返回拼接好的文件的路径 */
 	public String getResultPath() {
-		return FileOperate.addSep(output) + "trinity.fa";
+		return output + ".Trinity.fasta";
+//		return FileOperate.addSep(output) + "trinity.fa";
 	}
 
 	@Override
