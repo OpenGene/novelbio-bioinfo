@@ -139,11 +139,7 @@ public class VarScanSomatic implements IntCmdSoft {
 	public void running() {
 		List<String> lsCmd = getLsCmd();
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
-		//TODO tobe check
-//		cmdOperate.addCmdParamOutput(outputDir);
-//		cmdOperate.setIsConvertHdfsToLocal(false);
 		cmdOperate.setRedirectOutToTmp(true);
-		cmdOperate.addCmdParamOutput(getOutputVcf().toString());
 		cmdOperate.addCmdParamOutput(getOutputSnp().toString());
 		cmdOperate.addCmdParamOutput(getOutputIndel().toString());
 		cmdOperate.runWithExp();
