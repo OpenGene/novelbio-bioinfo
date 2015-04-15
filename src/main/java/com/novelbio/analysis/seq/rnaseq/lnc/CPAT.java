@@ -9,7 +9,6 @@ import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.GffChrSeq;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
-import com.novelbio.base.StringOperate;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -36,24 +35,36 @@ public class CPAT implements IntCmdSoft {
 	
 	List<String> lsCmd = new ArrayList<String>();
 	/** 用来做训练集的mRNA序列 */
-	List<String> lsmRNAseq;
+	List<String> lsmRNAseq = new ArrayList<String>();
 	/** 用来做训练集的ncRNA序列 */
-	List<String> lsncRNAseq;
+	List<String> lsncRNAseq = new ArrayList<String>();
 	
-	String speciesName;
+	String speciesName = "Other";
 	String fastaNeedPredict;
-	
+	String mRNAfile;
 	String outFile;
-	
+	Species species;
+	static double threshold = 0.0;
 	boolean isModelSpecies;
 	
 	/** 设定物种信息，设定后会设定speciesName、isModelSpecies这些参数 */
 	public void setSpecies(Species species) {
+		this.species = species;
 		if (species == null || species.getTaxID() == 0) return;
-		speciesName = species.getCommonName();
 		if (setModelSpecies.contains(species.getTaxID())) {
 			this.isModelSpecies = true;
+			this.speciesName = species.getCommonName();
 		}
+	}
+	/** 设置需要分析的物种信息 */
+	public Species getSpecies() {
+		return species;
+	}
+	public void setThreshold(double threshold) {
+		this.threshold = threshold;
+	}
+	public static double getThreshold() {
+		return threshold;
 	}
 	/** 添加用来作训练集的mRNA序列，可添加多条 */
 	public void addmRNAfile(String mRNAfile) {
@@ -65,10 +76,6 @@ public class CPAT implements IntCmdSoft {
 		FileOperate.checkFileExistAndBigThanSize(ncRNAfile, 0);
 		lsncRNAseq.add(ncRNAfile);
 	}
-	public void setSpeciesName(String speciesName) {
-		this.speciesName = speciesName;
-	}
-	
 	/** 设定需要预测的序列，fasta格式 */
 	public void setFastaNeedPredict(String fastaNeedPredict) {
 		FileOperate.checkFileExistAndBigThanSize(fastaNeedPredict, 0);
@@ -86,7 +93,6 @@ public class CPAT implements IntCmdSoft {
 			gffChrAbs.close();
 			return;
 		}
-		
 		String mRNAseq = getmRNAFile(species, gffChrAbs);
 		String ncRNAseq = getNcRNAFile(species, gffChrAbs);
 		if (!FileOperate.isFileExistAndBigThanSize(mRNAseq, 0)) {
@@ -143,17 +149,15 @@ public class CPAT implements IntCmdSoft {
 	 */
 	private String[] prepareFile() {
 		if (isModelSpecies) return new String[]{"", ""};
-		
 		if (lsmRNAseq.isEmpty()) {
 			throw new FileOperate.ExceptionFileNotExist("mRNA is not exist");
 		}
 		if (lsncRNAseq.isEmpty()) {
 			throw new FileOperate.ExceptionFileNotExist("ncRNA is not exist");
 		}
-		String mRNAfile = getOutFileTmp() + getSpeciesName() + "mRNAfileRun";
+		String mRNAfile = getOutFileTmp() + speciesName + "mRNAfileRun";
 		combFile(lsmRNAseq, mRNAfile);
-		
-		String ncRNAfile = getOutFileTmp() + getSpeciesName() + "ncRNAfileRun";
+		String ncRNAfile = getOutFileTmp() + speciesName + "ncRNAfileRun";
 		combFile(lsncRNAseq, ncRNAfile);
 		return new String[]{mRNAfile, ncRNAfile};
 	}
@@ -177,37 +181,43 @@ public class CPAT implements IntCmdSoft {
 	public void predict() {
 		lsCmd.clear();
 		//临时文件夹
-		String outFileTmp = getOutFileTmp();
+		String outFileTmp = getOutFileTmp();	
 		String hexFile = null, rDataFile = null;
 		String[] mRNA2ncRNA = prepareFile();
 		String mRNAseq = mRNA2ncRNA[0], ncRNAseq = mRNA2ncRNA[1];
 		if (!isModelSpecies) {
+			//首先运行得到分析物种的Hexamer.table文件
 			MakeHexamerTab makeHexamerTab = new MakeHexamerTab();
 			makeHexamerTab.setmRNAseq(mRNAseq);
 			makeHexamerTab.setNcRNAseq(ncRNAseq);
-			makeHexamerTab.setOutHexName(outFileTmp + getSpeciesName() + "hextable");
+			makeHexamerTab.setOutHexName(outFileTmp + speciesName + "_Hexamer.table");
 			makeHexamerTab.run();
 			hexFile = makeHexamerTab.getOutHexFileName();
 			lsCmd.addAll(makeHexamerTab.getCmdExeStr());
-			
+			//然后运行得到分析物种的logit.RData文件
 			MakeLogitModel makeLogitModel = new MakeLogitModel();
 			makeLogitModel.setmRNAseq(mRNAseq);
 			makeLogitModel.setNcRNAseq(ncRNAseq);
 			makeLogitModel.setHexamerTable(makeHexamerTab.getOutHexFileName());
-			makeLogitModel.setOutPrefix(outFileTmp + getSpeciesName() + "RData");
+			makeLogitModel.setOutPrefix(outFileTmp + speciesName);
+			makeLogitModel.run();
 			rDataFile = makeLogitModel.getOutRDataFile();
 			lsCmd.addAll(makeLogitModel.getCmdExeStr());
 		}
-		
+		//运行主程序cpat.py，进行序列编码能力预测的分析
 		CPATmain cpaTmain = new CPATmain();
+		cpaTmain.setSpeciesName(speciesName);
 		cpaTmain.setFastaNeedPredict(fastaNeedPredict);
 		cpaTmain.setHexTab(hexFile);
 		cpaTmain.setLogRData(rDataFile);
 		cpaTmain.setModelSpecies(isModelSpecies);
-		cpaTmain.setOutPrefix(outFileTmp + getSpeciesName() + "cpat");
+		cpaTmain.setOutPrefix(outFileTmp + speciesName + "_result.xls");
 		cpaTmain.run();
 		lsCmd.addAll(cpaTmain.getCmdExeStr());
-		//TODO 还没写好输出文件
+		
+		//过滤CPAT分析结果，得到编码能力低的序列，即为最终预测的新lncRNA
+		FilterCPATResult filterCPATResult = new FilterCPATResult();
+		filterCPATResult.filterCPATResult(outFileTmp + speciesName + "_result.xls");
 	}
 	
 	private String getOutFileTmp() {
@@ -216,16 +226,10 @@ public class CPAT implements IntCmdSoft {
 		return outPath;
 	}
 	
-	private String getSpeciesName() {
-		return StringOperate.isRealNull(speciesName) ? "" : speciesName + "_"; 
-	}
-	
 	@Override
 	public List<String> getCmdExeStr() {
 		return lsCmd;
 	}
-	
-	
 }
 
 /**
@@ -242,9 +246,11 @@ abstract class CPATformatAbs implements IntCmdSoft {
 		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.cpat);
 		this.exePath = softWareInfo.getExePathRun();
 	}
+	
 	public void setmRNAseq(String mRNAseq) {
 		this.mRNAseq = mRNAseq;
 	}
+	
 	public void setNcRNAseq(String ncRNAseq) {
 		this.ncRNAseq = ncRNAseq;
 	}
@@ -252,6 +258,7 @@ abstract class CPATformatAbs implements IntCmdSoft {
 	protected String[] getmRNASeq() {
 		return new String[]{"-c", mRNAseq};
 	}
+	
 	protected String[] getNcRNASeq() {
 		return new String[]{"-n", ncRNAseq};
 	}
@@ -300,8 +307,6 @@ class MakeHexamerTab extends CPATformatAbs {
 		lsCmd.add(">"); lsCmd.add(outHexFileName);
 		return lsCmd;
 	}
-
-
 }
 
 /** 设定回归模型 */
@@ -319,20 +324,19 @@ class MakeLogitModel extends CPATformatAbs {
 	}
 	/** 运行完毕后用这个方法来获得那个有用的RData文件 */
 	public String getOutRDataFile() {
-		return outPrefix + ".logit.RData";
+		return outPrefix + "_train.RData";
 	}
 	@Override
 	protected List<String> getLsCmd() {
 		List<String> lsCmd = new ArrayList<>();
 		lsCmd.add("python");
-		lsCmd.add(exePath + "make_hexamer_tab.py");
+		lsCmd.add(exePath + "make_logitModel.py");
 		ArrayOperate.addArrayToList(lsCmd, getHexTable());
 		ArrayOperate.addArrayToList(lsCmd, getmRNASeq());
 		ArrayOperate.addArrayToList(lsCmd, getNcRNASeq());
-		lsCmd.add("-o"); lsCmd.add(outPrefix);
+		lsCmd.add("-o"); lsCmd.add(getOutRDataFile());
 		return lsCmd;
 	}
-	
 	private String[] getHexTable() {
 		return new String[]{"-x", hexamerTable};
 	}
@@ -349,7 +353,7 @@ class CPATmain implements IntCmdSoft {
 	/** 预先构建的训练对数模型，该文件为二进制文件 */
 	String logRData;
 	/** 被分析物种名称，用于给生成的训练集名称 */
-	String species;
+	String speciesName;
 	/** 输出文件路径及名称 */
 	String outPrefix;
 	/** 编码阈值设置  */
@@ -383,8 +387,14 @@ class CPATmain implements IntCmdSoft {
 		this.outPrefix = outPrefix;
 	}
 	
+	public void setSpeciesName(String speciesName) {
+		this.speciesName = speciesName;
+	}
+	
 	public void run() {
 		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
+		cmdOperate.setRedirectOutToTmp(true);
+		cmdOperate.addCmdParamOutput(outPrefix);
 		cmdOperate.runWithExp("CPAT error");
 	}
 	
@@ -393,10 +403,12 @@ class CPATmain implements IntCmdSoft {
 		lsCmd.add("python");
 		lsCmd.add(exePath + "cpat.py");
 		ArrayOperate.addArrayToList(lsCmd, getFastaNeedPredict());
-		if (!isModelSpecies) {
-			ArrayOperate.addArrayToList(lsCmd, getHexTable());
-			ArrayOperate.addArrayToList(lsCmd, getRDataFile());
+		if (isModelSpecies) {
+			hexTab = exePath + "../dat/" + speciesName + "_Hexamer.tab";
+			logRData = exePath + "../dat/" + speciesName + "_train.RData";		
 		}
+		ArrayOperate.addArrayToList(lsCmd, getHexTable());
+		ArrayOperate.addArrayToList(lsCmd, getRDataFile());
 		ArrayOperate.addArrayToList(lsCmd, getOutPath());
 		return lsCmd;
 	}
@@ -422,31 +434,29 @@ class CPATmain implements IntCmdSoft {
 	}
 }
 
-
-
-class filterCPATResult {
+class FilterCPATResult {
 	String excelFileName;
 	String outFileName;
 	
-	private void filterCPATResult(String excelFileName) {
+	public void filterCPATResult(String excelFileName) {
 		this.excelFileName = excelFileName;
 		this.outFileName = FileOperate.changeFileSuffix(excelFileName, "_filter", null);
-		TxtReadandWrite txtWrite = new TxtReadandWrite(excelFileName, true);
+		TxtReadandWrite txtWrite = new TxtReadandWrite(outFileName, true);
 		List<String[]> lsAll = ExcelTxtRead.readLsExcelTxt(excelFileName,1);
-		for (String[] strings : lsAll.subList(1, lsAll.size())) {
-			filter(strings);
+		txtWrite.writefileln(lsAll.get(0));
+		for (String[] content : lsAll.subList(1, lsAll.size())) {
+			if (filter(content)) {
+				txtWrite.writefileln(content);
+			}
 		}
-		
+		txtWrite.close();
 	}
-	private void filter(String[] info) {
+	private boolean filter(String[] info) {
 		for (int i = 0; i <info.length; i++) {
-			String code = info[i].split("\t")[-1];
-			//if (Double.parseDouble(code)<) {
-				
-			//}
+			if (Double.parseDouble(info[info.length - 1])< CPAT.getThreshold()) {
+				return true;
+			}
 		}
-		
+		return false;
 	}
-	
-	
 }
