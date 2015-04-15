@@ -139,9 +139,8 @@ public class VarScanSomatic implements IntCmdSoft {
 	public void running() {
 		List<String> lsCmd = getLsCmd();
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
-		cmdOperate.setRedirectOutToTmp(true);
-		cmdOperate.addCmdParamOutput(getOutputSnp().toString());
-		cmdOperate.addCmdParamOutput(getOutputIndel().toString());
+		cmdOperate.setIsConvertHdfsToLocal(false);
+		cmdOperate.addCmdParamOutput(outputDir);
 		cmdOperate.runWithExp();
 	}
 	
@@ -152,8 +151,8 @@ public class VarScanSomatic implements IntCmdSoft {
 		lsCmd.add("-jar");
 		lsCmd.add(exePath + "varscan.jar");
 		lsCmd.add("somatic");
-		ArrayOperate.addArrayToList(lsCmd, getConFile(conFile));
-		ArrayOperate.addArrayToList(lsCmd, getTumFile(tumFile));
+		ArrayOperate.addArrayToList(lsCmd, new String[]{conFile});
+		ArrayOperate.addArrayToList(lsCmd,new String[]{tumFile});
 		ArrayOperate.addArrayToList(lsCmd, getMinCoverage());
 		ArrayOperate.addArrayToList(lsCmd, getMinCovNor());
 		ArrayOperate.addArrayToList(lsCmd, getMinCovTum());
@@ -166,12 +165,7 @@ public class VarScanSomatic implements IntCmdSoft {
 		ArrayOperate.addArrayToList(lsCmd, getOutputIndel());
 		return lsCmd;
 	}
-	private String[] getConFile(String inputConFile) {
-		return new String[]{inputConFile};
-	}
-	private String[] getTumFile(String inputTumFile) {
-		return new String[]{inputTumFile};
-	}
+
 	private String[] getMinCoverage() {
 		return new String[] { "--min-coverage", minCoverage + "" };
 	}
