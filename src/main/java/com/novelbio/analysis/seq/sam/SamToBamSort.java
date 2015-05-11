@@ -10,6 +10,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.multithread.RunProcess;
 
 /** 将sam文件转化为bam文件，<b>仅用于没有排序过的sam文件</b><br>
  * 其中添加multiHit的功能仅适用于bowtie和bwa 的mem
@@ -21,7 +22,7 @@ public class SamToBamSort {
 	String outFileName;
 	SamFile samFileSam;//输入的sam文件
 	List<AlignmentRecorder> lsAlignmentRecorders = new ArrayList<>();
-	
+	RunProcess runProcess;
 	/** 输入lsChrId，可以用这个来调整samFile的head */
 	SAMSequenceDictionary samSequenceDictionary;
 	SamReorder samReorder;
@@ -46,6 +47,10 @@ public class SamToBamSort {
 		this.outFileName = outFileName;
 		this.samFileSam = samFileSam;
 		this.isPairend = isPairend;
+	}
+	/** 当本进程出错的时候需要将该进程也关闭，主要是关闭cmd命令 */
+	public void setRunProcessNeedStopWhenError(RunProcess runProcess) {
+		this.runProcess = runProcess;
 	}
 	/** 是否写入bam文件，默认写入
 	 * 有时候mapping但不需要写入文件，譬如过滤掉rrna reads的时候，
@@ -91,24 +96,56 @@ public class SamToBamSort {
 			}
 		}
 	}
-	
+
 	/** 转换结束后，关闭输出的bam文件，但是不关闭输入的sam文件 */
 	public void convert() {
 		setBamWriteFile();
 		if (addMultiHitFlag) {
+			/** 线程是否崩溃 */
+			final boolean[] isCollapse = new boolean[]{false};
+			final Throwable[] throwable = new Throwable[]{null};
 			samAddMultiFlag = new SamAddMultiFlag();
 			samAddMultiFlag.setPairend(isPairend);
 			Thread thread = new Thread(new Runnable() {
 				public void run() {
-					AddMultiFlag();
+					try {
+						AddMultiFlag(isCollapse);
+					} catch (Throwable e) {
+						runProcess.threadStop();
+						samAddMultiFlag.finish();
+						isCollapse[0] = true;
+						throwable[0] = e;
+					}
 				}
 			});
 			thread.start();
-			for (SamRecord samRecord : samAddMultiFlag.readlines()) {
-				addToRecorderAndWriteToBam(samRecord);
+			
+			try {
+				for (SamRecord samRecord : samAddMultiFlag.readlines()) {
+					addToRecorderAndWriteToBam(samRecord);
+					if (isCollapse[0]) {
+						runProcess.threadStop();
+					}
+				}
+			} catch (Throwable e) {
+				isCollapse[0] = true;
+				runProcess.threadStop();
+				throw e;
 			}
+			
+			//意思是在AddMultiFlag线程中报错的，就把这个异常抛出
+			if (isCollapse[0]) {
+				throw new RuntimeException(throwable[0]);
+			}
+			
 		} else {
-			convertNotAddMultiFlag();
+			//直接从sam文件中读取
+			try {
+				convertNotAddMultiFlag();
+			} catch (Throwable e) {
+				runProcess.threadStop();
+				throw e;
+			}
 		}
 		finishConvert();
 	}
@@ -164,11 +201,14 @@ public class SamToBamSort {
 		}
 	}
 	
-	private void AddMultiFlag() {
+	private void AddMultiFlag(final boolean[] isCollapse) {
 		int i = 0;
 		for (SamRecord samRecord : samFileSam.readLines()) {
 			if (samReorder != null) {
 				samReorder.copeReads(samRecord);
+			}
+			if (isCollapse[0]) {
+				break;
 			}
 			if (i++%1000000 == 0) {
 				logger.info("read lines: " + i);

@@ -25,7 +25,7 @@ public class MapBwaMem extends MapDNA {
 	/**指定线程数**/
 	int nThreads;
 	/**输出所有找到比对的单端和不配对的双端的读长。**/
-	boolean isOutputSingleReads = true;
+	boolean isOutputSingleReads = false;
 	/** 指定种子的最大长度，比对匹配短于这个数据的都会被过滤掉，当这个数据在20附近的时候对结果不会有显著影响[19]；**/
 	int  minSeedLen;
 	/** 带宽，设置了软件查询的gap的最长长度[100]**/
@@ -55,8 +55,14 @@ public class MapBwaMem extends MapDNA {
 	/**是否对于结果是否使用hard clipping**/
 	boolean hardClipping;
 	
-	/**是否输出所有找到比对的单端和不配对的双端的读长。**/
-	boolean allOut;
+	/** The BWA-MEM algorithm performs local alignment. It may produce 
+	 * multiple primary alignments for different part of a query sequence.
+	 *  This is a crucial feature for long sequences. However, some tools 
+	 *  such as Picard’s markDuplicates does not work with split alignments.
+	 *   One may consider to use option -M to flag shorter split hits as secondary.
+	 */
+	boolean markShorterSplitAsSecondary = false;
+	
 	/**设定读入的第一个fq文件是交错的配对数据。**/
 	boolean staggeredPairingFQ = false;
 	
@@ -304,17 +310,23 @@ public class MapBwaMem extends MapDNA {
 		return null;
 	}
 	
-	/** 是否输出所有找到比对的单端和不配对的双端的读长 */
-	public void setIsOutAllReads(boolean allOut) {
-		this.allOut = allOut;
+	/**
+	 * 默认为false <br>
+	 * The BWA-MEM algorithm performs local alignment. It may produce 
+	 * multiple primary alignments for different part of a query sequence.
+	 *  This is a crucial feature for long sequences. However, some tools 
+	 *  such as Picard’s markDuplicates does not work with split alignments.
+	 *   One may consider to use option -M to flag shorter split hits as secondary.
+	 */
+	public void setMarkShorterSplitAsSecondary(boolean markShorterSplitAsSecondary) {
+		this.markShorterSplitAsSecondary = markShorterSplitAsSecondary;
 	}
-	private String getAllOutParam(){
-		if (allOut) {
-			return "-a";
+	private String getMarkShorterSplitAsSecondary(){
+		if (markShorterSplitAsSecondary) {
+			return "-M";
 		}
 		return null;
 	}
-	
 	/**
 	 * 设置左端的序列，设置会把以前的清空
 	 * @param fqFile
@@ -362,7 +374,6 @@ public class MapBwaMem extends MapDNA {
 		List<String> lsCmd = new ArrayList<String>();
 		lsCmd.add(exePath + "bwa");
 		lsCmd.add("mem");
-		addStringParam(lsCmd, getAllOutParam());
 		ArrayOperate.addArrayToList(lsCmd, getThreadNum());
 		addStringParam(lsCmd, getIsOutputSingleReads());
 		ArrayOperate.addArrayToList(lsCmd, getMinSeedLenParam());
@@ -378,11 +389,11 @@ public class MapBwaMem extends MapDNA {
 		ArrayOperate.addArrayToList(lsCmd, getUnpairPenParam());
 		ArrayOperate.addArrayToList(lsCmd, getRGlineParam());
 		ArrayOperate.addArrayToList(lsCmd, getMinMapQuality());
+		addStringParam(lsCmd, getMarkShorterSplitAsSecondary());
 		addStringParam(lsCmd, getHardClippingParam());
 		addStringParam(lsCmd, getStaggeredPairingFQParam());
 		addStringParam(lsCmd, getSwDataParam());
 		
-		addStringParam(lsCmd, getHardClippingParam());
 		lsCmd.add(chrFile);
 		lsCmd.addAll(getLsFqFile());
 		lsCmd.add(">");

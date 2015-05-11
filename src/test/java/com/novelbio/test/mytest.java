@@ -1,8 +1,5 @@
 package com.novelbio.test;
 
-import htsjdk.variant.variantcontext.VariantContext;
-import htsjdk.variant.vcf.VCFFileReader;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,35 +8,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
-
-import com.novelbio.analysis.seq.GeneExpTable;
-import com.novelbio.analysis.seq.GeneExpTable.EnumAddAnnoType;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
-import com.novelbio.analysis.seq.fasta.SeqFastaMotifSearch;
+import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fastq.FQrecordFilter;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.GffChrSeq;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
-import com.novelbio.analysis.seq.mapping.MapBwaAln;
-import com.novelbio.analysis.seq.rnahybrid.RNAhybrid;
-import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
+import com.novelbio.analysis.seq.sam.BamRemoveDuplicate;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
-import com.novelbio.base.Computer;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
-import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.model.modgeneid.GeneType;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.database.mongorepo.kegg.RepoKEntry;
@@ -56,17 +47,28 @@ import com.novelbio.database.service.SpringFactoryBioinfo;
 
 
 public class mytest {
-	private static final Logger logger = Logger.getLogger(mytest.class);
+//	private static final Logger logger = Logger.getLogger(mytest.class);
 	static boolean is;
+
 	public static void main(String[] args) throws Exception {
-		Species species = new Species(9925);
-		species.setVersion("kundong");
-		species.getChromSeqSep();
+		SamFile samFile = new SamFile("/home/novelbio/下载/unmapread.sam");
+		for (SamRecord samRecord : samFile.readLines()) {
+			System.out.println(samRecord);
+			System.out.println(samRecord.isCis5to3());
+		}
 	}
 	
+	private static String getSeq(byte[] readInfo) {
+		StringBuilder sequence = new StringBuilder();
+		for (byte b : readInfo) {
+			char seq = (char)b;
+			sequence.append(seq);
+		}
+		return sequence.toString();
+	}
 	
 	private static void filter(String fastq1, String fastq2) {
-		FastQ fastQ1 = new FastQ(fastq2);
+		FastQ fastQ1 = new FastQ(fastq1);
 		FastQ fastQ2 = new FastQ(fastq2);
 		int subNum = 1;
 		long num = 0;

@@ -24,7 +24,7 @@ public class SamAddMultiFlag {
 	Set<String> setTmp = new HashSet<>();
 	/** 相同名字的序列 */
 	Map<String, List<SamRecord>> mapMateInfo2pairReads = new LinkedHashMap<>();
-	int i = 0;
+	long i = 0;
 	
 	/** 是否为双端 */
 	public void setPairend(boolean isPairend) {
@@ -38,6 +38,7 @@ public class SamAddMultiFlag {
 			}
 			if (i++%1000000 == 0) {
 				logger.info("read lines: " + i);
+				logger.info("mapMateInfo2pairReads.size: " + mapMateInfo2pairReads.size());
 				System.gc();
 			}
 			if ((!isPairend) || (isPairend && samRecord.isFirstRead())
@@ -179,6 +180,10 @@ public class SamAddMultiFlag {
 					}
 					SamRecord getLine() {
 						SamRecord record = null;
+						//如果从队列中拿不到record
+						//此时如果isFinished为false，表示queueSamRecords还有可能会加入新的record
+						//因此等待50ms，再从queueSamRecords中获取record
+						//如果isFinished为true，则当queueSamRecords为空，就返回null然后结束提取序列
 						do {
 							record = queueSamRecords.poll();
 							if (record != null) {
