@@ -428,7 +428,7 @@ public class Species implements Cloneable {
 			return null;
 		}
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
-		return speciesFile.getIndexChromFa(softMapping);
+		return speciesFile.getIndexChromFaAndCp(softMapping);
 	}
 	/** 指定mapping的软件，获得该软件所对应的索引文件
 	 * 没有就新建一个，格式<br>
@@ -439,7 +439,7 @@ public class Species implements Cloneable {
 			return null;
 		}
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
-		return speciesFile.getIndexRefseq(softMapping, isAllIso);
+		return speciesFile.getIndexRefseqAndCp(softMapping, isAllIso);
 	}
 	////////////////////////    升级   //////////////////////////////////////////////////////////////////////////////////////
 

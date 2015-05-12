@@ -6,4 +6,8 @@ public class ExceptionNBCsoft extends RuntimeException{
 	public ExceptionNBCsoft(String info) {
 		super(info);
 	}
+	
+	public ExceptionNBCsoft(String info, Throwable t) {
+		super(info, t);
+	}
 }

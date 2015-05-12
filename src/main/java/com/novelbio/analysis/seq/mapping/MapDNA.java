@@ -249,7 +249,11 @@ public abstract class MapDNA implements MapDNAint {
 	}
 	
 	private String getIndexFinishedFlag() {
-		return FileOperate.changeFileSuffix(chrFile, "_indexFinished", "");
+		String suffix = softWare.toString();
+		if (softWare == SoftWare.bwa_aln || softWare == SoftWare.bwa_men) {
+			suffix = "bwa";
+		}
+		return FileOperate.changeFileSuffix(chrFile, "_indexFinished_" + suffix, "");
 	}
 
 	protected abstract List<String> getLsCmdIndex();

@@ -647,16 +647,32 @@ public class SpeciesFile {
 	 * 格式如下：
 	 * softMapping.toString() + "_Chr_Index/"
 	 */
-	public String getIndexChromFa(SoftWare softMapping) {
+	public String getIndexChromFaAndCp(SoftWare softMapping) {
 		return creatAndGetSeqIndex(false, false, softMapping, EnumSpeciesFile.chromSeqFile.getSavePath(taxID, this) + chromSeq);
 	}
-
+	
+	/** 返回该mapping软件所对应的index的文件
+	 * 没有就新建一个
+	 * 格式如下：softMapping.toString() + "_Ref_Index/"
+	 */
+	public String getIndexRefseqAndCp(SoftWare softMapping, boolean isAllIso) {
+		return creatAndGetSeqIndex(true, isAllIso, softMapping, getRefSeqFile(isAllIso, false));
+	}
+	
+	/** 返回该mapping软件所对应的index的文件
+	 * 格式如下：
+	 * softMapping.toString() + "_Chr_Index/"
+	 */
+	public String getIndexChromFa(SoftWare softMapping) {
+		return getSeqIndex(false, false, softMapping, EnumSpeciesFile.chromSeqFile.getSavePath(taxID, this) + chromSeq);
+	}
+	
 	/** 返回该mapping软件所对应的index的文件
 	 * 没有就新建一个
 	 * 格式如下：softMapping.toString() + "_Ref_Index/"
 	 */
 	public String getIndexRefseq(SoftWare softMapping, boolean isAllIso) {
-		return creatAndGetSeqIndex(true, isAllIso, softMapping, getRefSeqFile(isAllIso, false));
+		return getSeqIndex(true, isAllIso, softMapping, getRefSeqFile(isAllIso, false));
 	}
 	
 	/**
@@ -668,25 +684,54 @@ public class SpeciesFile {
 	 * @param seqFile
 	 * @return
 	 */
-	private String creatAndGetSeqIndex(Boolean refseq, boolean isAllIso, SoftWare softMapping, String seqFile) {
+	private String getSeqIndex(Boolean refseq, boolean isAllIso, SoftWare softMapping, String seqFile) {
 		if (StringOperate.isRealNull(seqFile)) {
 			return null;
 		}
 		String seqName = FileOperate.getFileName(seqFile);
 		
 		String indexChromFinal = getParentPathIndex(refseq, isAllIso, softMapping.toString()) + seqName;
+		return indexChromFinal;
+	}
+	
+	/**
+	 * 如果不存在该index，那么就新复制一个index，但不保存入数据库
+	 * 以前是创建连接的，但是在hadoop2中无法创建连接，所以只能是复制 
+	 * @param refseq
+	 * @param isAllIso
+	 * @param softMapping
+	 * @param seqFile
+	 * @return
+	 */
+	private boolean creatIndex(String indexChromFinal, String seqFile) {
 		String indexChromLocal = FileHadoop.convertToLocalPath(indexChromFinal);
 
 		if (FileOperate.isFileExistAndBigThanSize(indexChromLocal, 0)) {
-			return indexChromFinal;
+			return true;
 		}
 		FileOperate.DeleteFileFolder(indexChromFinal);
 		FileOperate.createFolders(FileOperate.getPathName(indexChromFinal));
 		if (!FileOperate.copyFile(seqFile, indexChromFinal, true)) {
 			logger.error("复制文件出错：" + seqFile + " " + indexChromFinal);
-			return null;
+			return false;
 		}
-		return indexChromFinal;
+		return true;
+	}
+	/**
+	 * 如果不存在该index，那么就新复制一个index，但不保存入数据库
+	 * 以前是创建连接的，但是在hadoop2中无法创建连接，所以只能是复制 
+	 * @param refseq
+	 * @param isAllIso
+	 * @param softMapping
+	 * @param seqFile
+	 * @return
+	 */
+	private String creatAndGetSeqIndex(Boolean refseq, boolean isAllIso, SoftWare softMapping, String seqFile) {
+		String seqIndex = getSeqIndex(refseq, isAllIso, softMapping, seqFile);
+		if (seqIndex != null && creatIndex(seqIndex, seqFile)) {
+			return seqIndex;
+		}
+		return null;
 	}
 	
 	/**

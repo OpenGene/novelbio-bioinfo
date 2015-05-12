@@ -32,7 +32,7 @@ public class TestSpeciesFile extends TestCase {
 		assertEquals(SpeciesFile.pathParent + "species/9606/hg19_GRCh37/refprotein_all_iso/proteinAllIso_hg19_GRCh37.fa", seqName);
 		assertEquals(true, FileOperate.isFileExistAndBigThanSize(seqName, 0));
 		
-		String indexBwa = speciesFile.getIndexRefseq(SoftWare.bwa_aln, true);
+		String indexBwa = speciesFile.getIndexRefseqAndCp(SoftWare.bwa_aln, true);
 		assertEquals(SpeciesFile.pathParent + "index/bwa/9606/hg19_GRCh37/Ref_AllIso_Index/rna_modify.fa", indexBwa);
 
 //		speciesFile.deleteChromAll();
