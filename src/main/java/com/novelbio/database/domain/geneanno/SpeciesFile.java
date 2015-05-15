@@ -24,6 +24,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 
 import com.novelbio.analysis.seq.fasta.ChrSeqHash;
+import com.novelbio.analysis.seq.fasta.FastaDictMake;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fasta.SeqHash;
@@ -288,6 +289,11 @@ public class SpeciesFile {
 			SamIndexRefsequence samIndexRefsequence = new SamIndexRefsequence();
 			samIndexRefsequence.setRefsequence(chromeSeq);
 			samIndexRefsequence.indexSequence();
+		}
+		String fastaDict = FileOperate.changeFileSuffix(chromeSeq, "", "dict");
+		if (FileOperate.isFileExistAndBigThanSize(chromeSeq, 0) && !FileOperate.isFileExistAndBigThanSize(fastaDict, 0)) {
+			FastaDictMake fastaDictMake = new FastaDictMake(chromeSeq, fastaDict);
+			fastaDictMake.makeDict();
 		}
 		ChrSeqHash chrSeqHash = new ChrSeqHash(chromeSeq, "");
 		Map<String, Long> mapChrID2ChrLen = chrSeqHash.getMapChrLength();

@@ -21,23 +21,21 @@ public class FastaDictMake extends CreateSequenceDictionary {
      *
      * @return program exit status.
      */
-    public boolean makeDict() {
-        if (FileOperate.isFileExistAndBigThanSize(outDict, 0)) {
-        	return true;
-        }
-        if (FileOperate.isFileExist(outDict)) {
-			FileOperate.delFile(outDict);
-		}
-        if (!FileOperate.isFileExistAndBigThanSize(reference, 0)) {
+	public boolean makeDict() {
+		if (!FileOperate.isFileExistAndBigThanSize(reference, 0)) {
 			return false;
 		}
-       	REFERENCE = new File(reference);
-       	OUTPUT = new File(outDict);
-        try {
+		if (FileOperate.isFileExistAndBigThanSize(outDict, 0)) {
+			return true;
+		}
+		FileOperate.delFile(outDict);
+		REFERENCE = FileOperate.getFile(reference);
+		OUTPUT = FileOperate.getFile(outDict);
+		try {
 			doWork();
 			return true;
 		} catch (Exception e) {
 			return false;
 		}
-    }
+	}
 }
