@@ -84,36 +84,39 @@ public class SamReorder {
     }
     
     /** 前面都设定好后，最后再用这个来转化sam文件 */
-    public SamFile reorderSam(SamFile samFile) {
-    	String fileIn = samFile.getFileName();
-    	String fileOut = FileOperate.changeFileSuffix(fileIn, "_reorder", null);
-    	String fileOutTmp = FileOperate.changeFileSuffix(fileOut, "_tmp", null);
-    	boolean isIndexedInput = samFile.isIndexed();
-    	
-    	SamFile samFileOut = new SamFile(fileOutTmp, getSamFileHeaderNew());
-    	if (isIndexedInput) {
-            for (final SAMSequenceRecord contig : samSequenceDictionary.getSequences() ) {
-            	for (SamRecord samRecord : samFile.readLinesOverlap(contig.getSequenceName(), 0, 0)) {
-            		copeReads(samRecord);
-        			samFileOut.writeSamRecord(samRecord);
+	public SamFile reorderSam(SamFile samFile) {
+		String fileIn = samFile.getFileName();
+		String fileOut = FileOperate.changeFileSuffix(fileIn, "_reorder", null);
+		if (FileOperate.isFileExistAndBigThanSize(fileOut, 0)) {
+			return new SamFile(fileOut);
+		}
+		String fileOutTmp = FileOperate.changeFileSuffix(fileOut, "_tmp", null);
+		boolean isIndexedInput = samFile.isIndexed();
+
+		SamFile samFileOut = new SamFile(fileOutTmp, getSamFileHeaderNew());
+		if (isIndexedInput) {
+			for (final SAMSequenceRecord contig : samSequenceDictionary.getSequences()) {
+				for (SamRecord samRecord : samFile.readLinesOverlap(contig.getSequenceName(), 0, 0)) {
+					copeReads(samRecord);
+					samFileOut.writeSamRecord(samRecord);
 				}
-            }
+			}
 		} else {
-	    	for (SamRecord samRecord : samFile.readLines()) {
+			for (SamRecord samRecord : samFile.readLines()) {
 				copeReads(samRecord);
 				samFileOut.writeSamRecord(samRecord);
 			}
-        }
-    	samFile.close();
-    	samFileOut.close();
-    	FileOperate.moveFile(true, fileOutTmp, fileOut);
-    	SamFile samFileFinal = new SamFile(fileOut);
-    	if (isIndexedInput) {
-    		samFileFinal.indexMake();
-    		samFileFinal.close();
 		}
-    	return samFileFinal;
-    }
+		samFile.close();
+		samFileOut.close();
+		FileOperate.moveFile(true, fileOutTmp, fileOut);
+		SamFile samFileFinal = new SamFile(fileOut);
+		if (isIndexedInput) {
+			samFileFinal.indexMake();
+			samFileFinal.close();
+		}
+		return samFileFinal;
+	}
     
     /** 通过这项处理后，samRecord写入结果文件才不会出错 */
     public void copeReads(SamRecord samRecord) {
