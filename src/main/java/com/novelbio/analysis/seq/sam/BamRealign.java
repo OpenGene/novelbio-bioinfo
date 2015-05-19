@@ -61,7 +61,7 @@ public class BamRealign implements IntCmdSoft {
 		cmdOperate.addCmdParamOutput(getOutInterVals(outFileTmp));
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {
-			throw new ExceptionCmd("realign error:\n" + cmdOperate.getCmdExeStrReal());
+			throw new ExceptionCmd("realign error:\n" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
 		}
 		lsCmdInfo.add(cmdOperate.getCmdExeStr());
 		

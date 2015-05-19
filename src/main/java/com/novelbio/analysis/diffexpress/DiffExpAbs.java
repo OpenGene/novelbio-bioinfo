@@ -640,7 +640,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		mapMethod2ID.put("DEGseq--RPKM(No Rep)", EnumDifGene.DEGSeq);
 		mapMethod2ID.put("DESeq--Counts(Needs Rep)", EnumDifGene.DESeq);
 		mapMethod2ID.put("EBSeq--Counts", EnumDifGene.EBSeq);
-		mapMethod2ID.put("EdegR--Counts(Needs Rep)", EnumDifGene.EdgeR);
+		mapMethod2ID.put("edgeR--Counts(Needs Rep)", EnumDifGene.EdgeR);
 		mapMethod2ID.put("Ttest", EnumDifGene.Ttest);
 		return mapMethod2ID;
 	}
