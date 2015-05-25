@@ -20,4 +20,5 @@ public interface RepoTaxInfo extends PagingAndSortingRepository<TaxInfo, Integer
 	List<TaxInfo> findAll();
 
 	Page<TaxInfo> findAll(Pageable pageable);
+	
 }

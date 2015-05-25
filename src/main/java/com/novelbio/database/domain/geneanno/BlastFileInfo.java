@@ -19,6 +19,7 @@ import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.service.servgeneanno.ManageBlastInfo;
+import com.novelbio.database.service.servgeneanno.ManageSpecies;
 import com.novelbio.database.updatedb.database.BlastUp2DB;
 import com.novelbio.database.updatedb.database.BlastUp2DB.BlastFileException;
 
@@ -112,7 +113,7 @@ public class BlastFileInfo {
 
 	/** query物种的俗名 */
 	public String getQueryTaxName() {
-		return TaxInfo.findByTaxID(queryTaxID).getComName();
+		return ManageSpecies.getInstance().queryTaxInfo(queryTaxID).getComName();
 	}
 
 	public void setSubjectTaxID(int subjectTaxID) {
@@ -121,7 +122,7 @@ public class BlastFileInfo {
 
 	/** subject物种的俗名 */
 	public String getSubjectTaxName() {
-		return TaxInfo.findByTaxID(subjectTaxID).getComName();
+		return ManageSpecies.getInstance().queryTaxInfo(subjectTaxID).getComName();
 	}
 
 	public String getFileName() {

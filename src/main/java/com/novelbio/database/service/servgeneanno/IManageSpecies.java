@@ -6,8 +6,10 @@ import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.novelbio.analysis.seq.mirna.ListMiRNAdat;
 import com.novelbio.database.domain.geneanno.SpeciesFile;
 import com.novelbio.database.domain.geneanno.TaxInfo;
+import com.novelbio.generalConf.PathDetailNBC;
 
 public interface IManageSpecies {
 	
@@ -64,12 +66,17 @@ public interface IManageSpecies {
 
 	public Page<TaxInfo> queryLsTaxInfo(Pageable pageable);
 	
-	public void deleteByTaxId(int taxid);
+	public boolean deleteByTaxId(int taxid);
 	
 	public void deleteSpeciesFile(String speciesFileId);
 	
 	public void readSpeciesFile(String speciesFileInput);
 	
 	public SpeciesFile findOne(String speciesFileId);
+	
+	public boolean isHaveMiRNArecalculate(TaxInfo taxInfo);
+	
+	/** 获取核糖体rna所在的路径，绝对路径 */
+	public String getRrnaFileWithPath(TaxInfo taxInfo) ;
 
 }

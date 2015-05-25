@@ -343,7 +343,7 @@ public class Species implements Cloneable {
 	}
 	/** 获得本物种指定version的miRNA前体序列，不存在则返回null */
 	public String getMiRNAhairpinFile() {
-		if (!taxInfo.isHaveMiRNArecalculate()) return null;
+		if (!ManageSpecies.getInstance().isHaveMiRNArecalculate(taxInfo)) return null;
 		
 		String[] path = taxInfo.fetchMiRNAseq();
 		if (path[0] == null) {
@@ -354,7 +354,7 @@ public class Species implements Cloneable {
 	
 	/** 获得本物种指定version的miRNA序列，不存在则返回null */
 	public String getMiRNAmatureFile() {
-		if (!taxInfo.isHaveMiRNArecalculate()) return null;
+		if (!ManageSpecies.getInstance().isHaveMiRNArecalculate(taxInfo)) return null;
 		
 		String[] path = taxInfo.fetchMiRNAseq();
 		if (path[0] == null) {
@@ -365,7 +365,7 @@ public class Species implements Cloneable {
 	
 	/** 返回核糖体rna所在的路径 */
 	public String getRrnaFile() {
-		return taxInfo.getRrnaFileWithPath();
+		return ManageSpecies.getInstance().getRrnaFileWithPath(taxInfo);
 	}
 	
 	/**
@@ -594,7 +594,7 @@ public class Species implements Cloneable {
 				if (lsSpeciesFiles.size() == 0) {
 					continue;
 				}
-			} else if (speciesType == EnumSpeciesType.miRNA && !species.taxInfo.isHaveMiRNA()) {
+			} else if (speciesType == EnumSpeciesType.miRNA && !ManageSpecies.getInstance().isHaveMiRNArecalculate(species.taxInfo)) {
 				continue;
 			}
 			setTaxID.add(taxInfo.getTaxID());
@@ -714,7 +714,7 @@ public class Species implements Cloneable {
 			m = hashName2ColNum.get("abbreviation");
 			taxInfo.setAbbr(info[m].trim());
 			//升级
-			taxInfo.save();
+			ManageSpecies.getInstance().saveTaxInfo(taxInfo);
 		}
 	}
 	

@@ -176,9 +176,10 @@ public class ManageSpeciesDB implements IManageSpecies {
 		}
 	}
 	/** 删除物种 */
-	public void deleteByTaxId(int taxid) {
+	public boolean deleteByTaxId(int taxid) {
 		mongoTemplate.remove(new Query(Criteria.where("taxID").is(taxid)), TaxInfo.class);
 		mongoTemplate.remove(new Query(Criteria.where("taxID").is(taxid)), SpeciesFile.class);
+		return true;
 	}
 	
 	/**
@@ -248,6 +249,18 @@ public class ManageSpeciesDB implements IManageSpecies {
 	@Override
 	public SpeciesFile findOne(String speciesFileId) {
 		return repoSpeciesFile.findOne(speciesFileId);
+	}
+
+	@Override
+	public boolean isHaveMiRNArecalculate(TaxInfo taxInfo) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public String getRrnaFileWithPath(TaxInfo taxInfo) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

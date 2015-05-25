@@ -36,51 +36,63 @@ public class TaxInfo implements Cloneable {
 	private String chnName;
 	/** 是否有miRNA */
 	private Boolean isHaveMiRNA;
-	
 	/** 核糖体rna的序列文件 */
 	private String rrnaFile;
-	/**
-	 * NCBI的物种ID
-	 * @param taxID
-	 */
-	public void setTaxID(int taxID) {
-		if (taxID == 0) {
-			return;
-		}
-		this.taxID=taxID;
-	}
-	/** NCBI的物种ID */
+	
 	public int getTaxID() {
-		return this.taxID;
+		return taxID;
 	}
-	/** KEGG上的缩写 */
-	public void setAbbr(String abbr) {
-		if (abbr == null) {
-			return;
-		}
-		this.abbr=abbr.trim().toLowerCase();
+	public void setTaxID(int taxID) {
+		this.taxID = taxID;
 	}
-	/** KEGG上的缩写 */
 	public String getAbbr() {
-		if (abbr == null) {
-			return "";
-		}
-		return this.abbr;
+		return abbr;
 	}
-	/** 拉丁名 */
-	public void setLatin(String latin) {
-		if (latin == null) {
-			return;
-		}
-		this.latin=latin.trim();
+	public void setAbbr(String abbr) {
+		this.abbr = abbr;
 	}
-	/** 拉丁名 */
 	public String getLatin() {
-		if (latin == null) {
-			return "";
-		}
-		return this.latin;
+		return latin;
 	}
+	public void setLatin(String latin) {
+		this.latin = latin;
+	}
+	public String getComName() {
+		return comName;
+	}
+	public void setComName(String comName) {
+		this.comName = comName;
+	}
+	public String getChnName() {
+		return chnName;
+	}
+	public void setChnName(String chnName) {
+		this.chnName = chnName;
+	}
+	public Boolean getIsHaveMiRNA() {
+		return isHaveMiRNA;
+	}
+	public void setIsHaveMiRNA(Boolean isHaveMiRNA) {
+		this.isHaveMiRNA = isHaveMiRNA;
+	}
+	public String getRrnaFile() {
+		return rrnaFile;
+	}
+	public void setRrnaFile(String rrnaFile) {
+		this.rrnaFile = rrnaFile;
+	}
+	
+	@Override
+	public TaxInfo clone()  {
+		try {
+			return (TaxInfo) super.clone();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	/**
 	 * @param speciesName 物种的拉丁名
 	 */
@@ -95,70 +107,7 @@ public class TaxInfo implements Cloneable {
 		}
 		return result;
 	}
-	/** 常用名 */
-	public void setComName(String comName) {
-		if (comName == null) {
-			return;
-		}
-		this.comName=comName.trim();
-	}
-	/** 常用名 */
-	public String getComName() {
-		if (comName == null) {
-			return "";
-		}
-		return this.comName;
-	}
-	/** 中文名 */
-	public void setChnName(String chnName) {
-		if (chnName == null) {
-			return;
-		}
-		this.chnName=chnName.trim();
-	}
-	/** 中文名 */
-	public String getChnName() {
-		if (chnName == null) {
-			return "";
-		}
-		return this.chnName;
-	}
 	
-	public void setIsHaveMiRNA(Boolean isHaveMiRNA) {
-		this.isHaveMiRNA = isHaveMiRNA;
-	}
-	
-	public void setRrnaFile(String rrnaFile) {
-		this.rrnaFile = rrnaFile;
-	}
-	
-	/** 获取核糖体rna所在的路径，绝对路径 */
-	public String getRrnaFileWithPath() {
-		SpeciesFile speciesFile = new SpeciesFile();
-		speciesFile.setTaxID(taxID);
-		String savePath = EnumSpeciesFile.rrnaFile.getSavePath(taxID, null);
-		return savePath + rrnaFile;
-	}
-	
-	public boolean isHaveMiRNA() {
-		if (isHaveMiRNA == null) {
-			isHaveMiRNA = ListMiRNAdat.isContainMiRNA(getLatinName_2Word(), PathDetailNBC.getMiRNADat());
-			save();
-		}
-		return isHaveMiRNA;
-	}
-	public boolean isHaveMiRNArecalculate() {
-		if (isHaveMiRNA == null || !isHaveMiRNA) {
-			try {
-				isHaveMiRNA = ListMiRNAdat.isContainMiRNA(getLatinName_2Word(), PathDetailNBC.getMiRNADat());
-			} catch (Exception e) {
-				isHaveMiRNA = ListMiRNAdat.isContainMiRNA(getLatinName_2Word(), PathDetailNBC.getMiRNADat());
-			}
-			
-			save();
-		}
-		return isHaveMiRNA;
-	}
 	/**
 	 * 返回绝对路径
 	 * @return
@@ -187,104 +136,4 @@ public class TaxInfo implements Cloneable {
 		}
 		return new String[]{miRNAfile, miRNAhairpinFile};
 	}
-	
-	/** 获得rrna所应该保存的路径 */
-	public String fetchRrnaPath() {
-		String pathParent = PathDetailNBC.getGenomePath();
-		String node = "rrna/";
-		String rrnaPath = pathParent + node + taxID + FileOperate.getSepPath();
-		return rrnaPath;
-	}
-	
-	/**
-	 * 返回taxID对常用名
-	 * @return
-	 */
-	public static Map<Integer,String> getMapTaxIDName() {
-		IManageSpecies servTaxID = ManageSpecies.getInstance();
-		return servTaxID.getMapTaxIDName();
-	}
-
-	/**
-	 * 不仅仅比较taxID，全部比较一遍
-	 * 且比较染色体长度
-	 */
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		
-		if (obj == null) return false;
-		
-		if (getClass() != obj.getClass()) return false;
-		TaxInfo otherObj = (TaxInfo)obj;
-		
-		if (getAbbr().equals(otherObj.getAbbr())
-		&&		
-		getChnName().equals(otherObj.getChnName())
-		&&
-		getComName().equals(otherObj.getComName())
-		&&
-		getLatin().equals(otherObj.getLatin())
-		&&
-		getTaxID() == otherObj.getTaxID()
-		&&
-		isHaveMiRNA() == otherObj.isHaveMiRNA()
-		)
-		{
-			return true;
-		}
-		return false;
-	}
-	
-	/**
-	 * 数据库操作类
-	 * @return
-	 */
-	private static IManageSpecies repo(){
-		return ManageSpecies.getInstance();
-	}
-	
-	public boolean save(){
-		try {
-			repo().saveTaxInfo(this);
-		} catch (Exception e) {
-			return false;
-		}
-		return true;
-	}
-	
-	/**
-	 * 查询物种分页
-	 * @param pageable
-	 * @return
-	 */
-	public static Page<TaxInfo> queryLsTaxInfo(Pageable pageable){
-		return repo().queryLsTaxInfo(pageable);
-	}
-
-	public static TaxInfo findByTaxID(int taxID){
-		return repo().queryTaxInfo(taxID);
-	}
-	
-	public TaxInfo clone() {
-		try {
-			return (TaxInfo) super.clone();
-		} catch (CloneNotSupportedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
-	}
-	/**
-	 * 根据物种编号删除物种
-	 * @param taxId2
-	 */
-	public static boolean deleteByTaxId(int taxId2) {
-		try {
-			repo().deleteByTaxId(taxId2);
-		} catch (Exception e) {
-			return false;
-		}
-		return true;
-	}
-	
 }

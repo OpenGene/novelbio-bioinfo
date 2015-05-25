@@ -11,6 +11,7 @@ import com.novelbio.database.domain.geneanno.EnumSpeciesFile;
 import com.novelbio.database.domain.geneanno.SpeciesFile;
 import com.novelbio.database.domain.geneanno.TaxInfo;
 import com.novelbio.database.model.species.Species.EnumSpeciesType;
+import com.novelbio.database.service.servgeneanno.ManageSpecies;
 
 /**
  * 上传species文件的类，不考虑并发问题
@@ -103,11 +104,11 @@ public class SpeciesFileUpload {
 		if (!FileOperate.moveFile(true, newFileTmp, newFileName)) {
 			throw new SpeciesUploadException("保存出错");
 		}
-		TaxInfo taxInfo = TaxInfo.findByTaxID(taxId);
-		String oldFile = taxInfo.getRrnaFileWithPath();
+		TaxInfo taxInfo = ManageSpecies.getInstance().queryTaxInfo(taxId);
+		String oldFile = ManageSpecies.getInstance().getRrnaFileWithPath(taxInfo);
 		FileOperate.DeleteFileFolder(oldFile);
 		taxInfo.setRrnaFile(fileName);
-		taxInfo.save();
+		ManageSpecies.getInstance().saveTaxInfo(taxInfo);
 	}
 	
 	public static class SpeciesUploadException extends Exception {
