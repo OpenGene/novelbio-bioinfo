@@ -43,7 +43,7 @@ public abstract class PredictAltStartEnd extends SpliceTypePredict {
 		isType();
 		Set<Integer> setEdge = getSetEdge();
 		String chrID = lsSite.get(0).getRefID();
-		addMapGroup2LsValue(mapGroup2LsValue, getJunReadsNum(condition));
+		addMapGroup2LsValue(mapGroup2LsValue, getSkipReadsNum(condition));
 		TreeMap<Double, Integer> mapValue2Edge = new TreeMap<>(new Comparator<Double>() {
 			public int compare(Double o1, Double o2) {
 				return -o1.compareTo(o2);

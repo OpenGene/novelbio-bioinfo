@@ -32,6 +32,23 @@ public class Align implements Alignment {
 			cis5to3 = false;
 		}
 	}
+	/**
+	 * 输入类似 chr16:77099624-77099746
+	 * 这种
+	 */
+	public Align(String chrInfo) {
+		String[] ss = chrInfo.split(":");
+		this.chrID = ss[0];
+		int start = Integer.parseInt(ss[1].split("-")[0]);
+		int end = Integer.parseInt(ss[1].split("-")[1]);
+		this.start = Math.min(start, end);
+		this.end = Math.max(start, end);
+		if (start < end) {
+			cis5to3 = true;
+		} else if (start > end) {
+			cis5to3 = false;
+		}
+	}
 	/** 会覆盖已有的cis5to3 */
 	public void setCis5to3(Boolean cis5to3) {
 		this.cis5to3 = cis5to3;

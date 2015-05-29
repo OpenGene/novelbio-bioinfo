@@ -17,7 +17,10 @@ public class LncSiteInfo {
 	GffChrAbs gffChrAbs = new GffChrAbs();
 
 	/**
-	 * 输入的一个Excel表格 colNum从0开始计数，第一列colNum = 0
+	 * 
+	 * 输入的一个Excel表格
+	 * @param lslsExcel
+	 * @param colNum 从0开始计数
 	 */
 	public void setLsLncName(List<List<String>> lslsExcel, int colNum) {
 		lsLncName = new ArrayList<String>();
@@ -36,7 +39,13 @@ public class LncSiteInfo {
 		return lsLncName;
 	}
 	/**
+	 * 
 	 * 输入的一个Excel表格 colNum从0开始计数，第一列colNum = 0
+	 * 
+	 * @param lslsExcel
+	 * @param colChrID 从0开始
+	 * @param colStart 从0开始
+	 * @param colEnd 从0开始
 	 */
 	public void setLsLncAligns(List<List<String>> lslsExcel, int colChrID, int colStart, int colEnd) {
 		lsLncAligns = new ArrayList<>();

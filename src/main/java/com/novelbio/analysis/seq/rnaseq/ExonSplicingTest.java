@@ -78,7 +78,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	/** 是否合并文件--也就是不考虑重复，默认为true，也就是合并文件 */
 	boolean isCombine = true;
 	
-	private static final String debug = "PhKgamma";
+	private static final String debug = "Usp25";
 	
 	public ExonSplicingTest(ExonCluster exonCluster) {
 		this.exonCluster = exonCluster;
@@ -447,7 +447,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	
 	class PvalueCalculate implements Comparable<PvalueCalculate> {
 		boolean isCombine = true;
-		int normExp = 50;
+		int normExp = 200;
 		int junction = 200;
 		SplicingAlternativeType splicingType;
 		ISpliceTestModule iSpliceTestExp;

@@ -147,6 +147,7 @@ public class TaxInfo implements Cloneable {
 		}
 		return isHaveMiRNA;
 	}
+	
 	public boolean isHaveMiRNArecalculate() {
 		if (isHaveMiRNA == null || !isHaveMiRNA) {
 			try {

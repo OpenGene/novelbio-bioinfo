@@ -102,6 +102,11 @@ public abstract class SpliceTypePredict {
 		return mapGroup2LsValue;
 	}
 	
+	/**
+	 * 将 mapGroup2Value 中的值 按照 key--也就是 group， 依次添加到  mapGroup2LsValue 中
+	 * @param mapGroup2LsValue
+	 * @param mapGroup2Value
+	 */
 	protected void addMapGroup2LsValue(ArrayListMultimap<String, Double> mapGroup2LsValue, Map<String, Double> mapGroup2Value) {
 		for (String group : mapGroup2Value.keySet()) {
 			mapGroup2LsValue.put(group, mapGroup2Value.get(group));
@@ -115,7 +120,7 @@ public abstract class SpliceTypePredict {
 	 * @param condition
 	 * @return list-int 返回同一个位点，n个重复中的情况
 	 */
-	protected Map<String, Double> getJunReadsNum(String condition) {
+	protected Map<String, Double> getSkipReadsNum(String condition) {
 		GffDetailGene gffDetailGene = exonCluster.getParentGene();
 		Map<String, Double> mapGroupeValue = null;
 		HashSet<String> setLocation = new HashSet<String>();

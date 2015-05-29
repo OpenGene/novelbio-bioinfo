@@ -50,11 +50,8 @@ import com.novelbio.database.model.species.Species;
  */
 public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	public static void main(String[] args) {
-		long timeEclipse1 = test();
-//		Species species = new Species(7227);
-//		species.setVersion("dmel_r6_01");
-//		GffChrAbs gffChrAbs = new GffChrAbs(species);
-//		gffChrAbs.getGtfFile();
+//		long timeEclipse1 = test();
+		test1();
 	}
 	public static long test() {
 		//TODO
@@ -87,7 +84,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	public static long test1() {
 		//TODO
 		List<Align> lsAligns = new ArrayList<>();
-//		lsAligns.add(new Align("chr13", 113834688, 113853827));
+//		lsAligns.add(new Align("chr16:76099624-78099746"));
 //		lsAligns.add(new Align("chr12", 4647587, 4669830));
 //		lsAligns.add(new Align("chrX", 48779231, 48817543));
 //		lsAligns.add(new Align("chrX", 148573976, 148586877));
@@ -106,16 +103,20 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		System.out.println("start");
 		ExonJunction exonJunction = new ExonJunction();
 		exonJunction.setIsLessMemory(false);
+		
+		Species species = new Species(10090);
+		species.setVersion("mm10_GRCm38");
+		
 //		exonJunction.setGffHashGene(new GffHashGene(GffType.GTF, "/home/zong0jie/Test/rnaseq/paper/chicken/raw_ensembl_genes/chicken_ensemble_KO-WT-merged.gtf"));
-		exonJunction.setGffHashGene(new GffHashGene(GffType.GTF, "/home/zong0jie/Test/rnaseq/paper/chicken/raw_ensembl_genes/genes.gtf"));
+		exonJunction.setGffHashGene(new GffHashGene(GffType.NCBI, species.getGffFile()));
 		exonJunction.setgenerateNewIso(true);
 		exonJunction.setLsReadRegion(lsAligns);
 		exonJunction.setOneGeneOneSpliceEvent(false);
-		exonJunction.addBamSorted("WT", "/home/zong0jie/Test/rnaseq/paper/chicken/DT40WT0h.bam");
-		exonJunction.addBamSorted("KO", "/home/zong0jie/Test/rnaseq/paper/chicken/DT40KO0h.bam");
+		exonJunction.addBamSorted("WT", "/home/novelbio/NBCsource/test/altersplice/luochunlin_mouse/1WT_tophat_sorted.bam");
+		exonJunction.addBamSorted("KO", "/home/novelbio/NBCsource/test/altersplice/luochunlin_mouse/3KO_tophat_sorted.bam");
 		exonJunction.setCompareGroups("KO", "WT");
 
-		exonJunction.setResultFile("/home/zong0jie/Test/rnaseq/paper/chicken/ensemble_Iso2_No_Merge_sepSeq_new2_Sub");
+		exonJunction.setResultFile("/home/novelbio/NBCsource/test/altersplice/luochunlin_mouse/result/testResult_withStrict_modify");
 		exonJunction.setgenerateNewIso(true);
 
 		exonJunction.run();

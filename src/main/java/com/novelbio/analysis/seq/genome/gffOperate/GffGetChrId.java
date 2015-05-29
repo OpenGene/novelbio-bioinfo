@@ -36,7 +36,7 @@ public class GffGetChrId {
 				String regxName = "(?<=Name\\=)[\\w\\.\\-%\\:]+";
 				String ss8Lowcase = ss[8].toLowerCase();
 				if (ss8Lowcase.contains("genome=genomic")) {
-					chrID = GeneID.removeDot(ss[0]);
+					chrID = ss[0];
 				} else if (ss8Lowcase.contains("genome=mitochondrion")) {
 					chrID = "chrm";
 				} else if (ss8Lowcase.contains("genome=chloroplast")) {

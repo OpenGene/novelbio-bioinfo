@@ -82,7 +82,7 @@ public class GeneExpTable {
 	}
 	
 	public void read(String file, EnumAddAnnoType addAnno, Map<Integer, String> mapCol2Sample) {
-		System.out.println("file is " + file);
+		logger.info("file is " + file);
 		TxtReadandWrite txtRead = new TxtReadandWrite(file);
 		if (mapCol2Sample == null) {
 			txtRead.close();

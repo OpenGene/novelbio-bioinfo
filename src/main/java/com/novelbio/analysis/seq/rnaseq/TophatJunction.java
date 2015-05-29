@@ -245,11 +245,16 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 		}
 		return mapGroup2Value;
 	}
+	
 	/**
 	 * 给定坐标和位点，找出locsite,以及总共有多少reads支持
+	 * @param condition 时期
+	 * @param cis5to3 方向
 	 * @param chrID
-	 * @param locSite
-	 * @return 没有就返为0的list
+	 * @param locStartSite
+	 * @param locEndSite
+	 * @return key: 该condition所对应的group <br>
+	 * value: 具体的junction reads 数量
 	 */
 	public Map<String, Double> getJunctionSite(String condition, boolean cis5to3, String chrID, int locStartSite, int locEndSite) {
 		Map<String, Double> mapGroup2Value = new HashMap<>();

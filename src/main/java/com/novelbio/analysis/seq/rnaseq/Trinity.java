@@ -471,7 +471,7 @@ public class Trinity implements IntCmdSoft {
 	 * 一般不设定
 	 *  */
 	public void setBfly_opts(String bfly_opts) {
-		if (bfly_opts == null || bfly_opts.trim().equals("")) {
+		if (StringOperate.isRealNull(bfly_opts)) {
 			return;
 		}
 		this.bfly_opts = bfly_opts;

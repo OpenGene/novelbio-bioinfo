@@ -1,5 +1,7 @@
 package com.novelbio.analysis.seq.sam;
 
+import org.apache.log4j.Logger;
+
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMFileHeader.SortOrder;
 import htsjdk.samtools.SAMFileReader;
@@ -15,6 +17,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 //import net.sf.picard.util.Log;
 
 public class BamSort {
+	private static final Logger logger = Logger.getLogger(BamSort.class);
 	public static void main(String[] args) {
 		SamFile samFile = new SamFile("/media/winF/NBC/Project/Project_ZDB_Lab/QXL/Project_ZDB/mapping/Q60-1.bam");
 		samFile.sort("/media/winF/NBC/Project/Project_ZDB_Lab/QXL/Project_ZDB/mapping/Q60-2", false);
@@ -25,7 +28,7 @@ public class BamSort {
 	SamFile samFile;
 
 	SAMSequenceDictionary samSequenceDictionary;
-	int maxRecordsInRam = 500000;
+	int maxRecordsInRam = 5000000;
 	String ExePath = "";
 
 	public void setSamFile(SamFile samFile) {
@@ -115,7 +118,12 @@ public class BamSort {
 			if (samSequenceDictionary != null) {
 				samReorder.copeReads(rec);
 			}
-			writer.addAlignment(rec.getSamRecord());
+			try {
+				writer.addAlignment(rec.getSamRecord());
+			} catch (Exception e) {
+				logger.error("write error: " + rec.toString() , e);
+			}
+			
 			// progress.record(rec);
 		}
 

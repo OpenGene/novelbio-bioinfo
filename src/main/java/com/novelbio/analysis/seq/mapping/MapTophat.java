@@ -415,7 +415,7 @@ public class MapTophat implements MapRNA {
 	private List<String> getGtfFile() {
 		List<String> lsCmd = new ArrayList<>();
 		if (FileOperate.isFileExistAndBigThanSize(gtfFile, 0.1)) {
-			lsCmd.add("--transcriptome-index=" + getIndexGff());
+			lsCmd.add("--transcriptome-index=" + getIndexGffOut());
 		}
 		return lsCmd;
 	}
@@ -451,8 +451,6 @@ public class MapTophat implements MapRNA {
 	public void mapReads() {
 		mapBowtie.setSubVersion(bowtieVersion);
 		mapBowtie.IndexMake();
-		setGTFfile();
-
 		IndexGffMake();
 		
 		setIntronLen();
@@ -732,7 +730,7 @@ public class MapTophat implements MapRNA {
 		cmdOperate.setStdOutPath(runInfoPath + "IndexGtfMake_Stdout.txt", false, true);
 		cmdOperate.setStdErrPath(runInfoPath + "IndexGtfMake_Stderr.txt", false, true);
 		cmdOperate.setOutRunInfoFileName(runInfoPath + "IndexGtfMaking.txt");
-		cmdOperate.addCmdParamOutput(getIndexGff());
+		cmdOperate.addCmdParamOutput(getIndexGffOut());
 		cmdOperate.run();
 		if(!cmdOperate.isFinishedNormal()) {
 			throw new ExceptionCmd("tophat index error:\n" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
@@ -745,13 +743,13 @@ public class MapTophat implements MapRNA {
 	
 	private String getIndexFinishedFlag() {
 		return FileOperate.changeFileSuffix(FileOperate.getPathName(mapBowtie.getChrNameWithoutSuffix()) + 
-				FileOperate.getFileName(gtfFile) + FileOperate.getSepPath()
+				FileOperate.getFileNameSep(gtfFile)[0] + "_folder" + FileOperate.getSepPath()
 				+ FileOperate.getFileNameSep(gtfFile)[0], "_indexFinished", "");
 	}
 	
-	private String getIndexGff() {
+	private String getIndexGffOut() {
 		return FileOperate.getPathName(mapBowtie.getChrNameWithoutSuffix()) + 
-				FileOperate.getFileName(gtfFile) + FileOperate.getSepPath()
+				FileOperate.getFileNameSep(gtfFile)[0] + "_folder" + FileOperate.getSepPath()
 				+ FileOperate.getFileNameSep(gtfFile)[0];
 	}
 	
@@ -760,7 +758,7 @@ public class MapTophat implements MapRNA {
 		lsCmd.add(ExePathTophat + "tophat");
 		lsCmd.add("-G");
 		lsCmd.add(gtfFile);
-		lsCmd.add("--transcriptome-index=" + getIndexGff());
+		lsCmd.add("--transcriptome-index=" + getIndexGffOut());
 		lsCmd.add(mapBowtie.getChrNameWithoutSuffix());
 		return lsCmd;
 	}

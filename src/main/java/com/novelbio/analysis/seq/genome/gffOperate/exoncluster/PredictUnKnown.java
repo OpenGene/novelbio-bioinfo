@@ -34,7 +34,7 @@ public class PredictUnKnown extends SpliceTypePredict {
 		//如果跨过 exon的reads很多，则把跨过 exon的 reads添加进去
 		if (exonCluster.getMapIso2ExonIndexSkipTheCluster().size() > 0 && 
 				(lsExonInfos.size() < 2 || lsExonInfos.get(1) == null || getSkipNumAll() >= lsExonInfos.get(1).value)) {
-			Map<String, Double> mapGroup2Value = getJunReadsNum(condition);
+			Map<String, Double> mapGroup2Value = getSkipReadsNum(condition);
 			for (String group : mapGroup2Value.keySet()) {
 				List<Double> lsTmpValue = mapGroup2LsValue.get(group);
 				lsTmpValue.add(0, mapGroup2Value.get(group));
@@ -46,7 +46,7 @@ public class PredictUnKnown extends SpliceTypePredict {
 		return mapGroup2LsValue;
 	}
 
-	protected Map<String, Double> getJunReadsNum(String condition) {
+	protected Map<String, Double> getSkipReadsNum(String condition) {
 		GffDetailGene gffDetailGene = exonCluster.getParentGene();
 		Map<String, Double> mapResult = new HashMap<>();
 		HashSet<String> setLocation = new HashSet<String>();

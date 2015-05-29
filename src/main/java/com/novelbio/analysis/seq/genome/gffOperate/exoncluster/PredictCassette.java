@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
@@ -16,9 +18,17 @@ import com.novelbio.base.SepSign;
 import com.novelbio.base.dataStructure.Alignment;
 
 public class PredictCassette extends SpliceTypePredict {
+	private static final Logger logger = Logger.getLogger(PredictCassette.class);
+	
+	/** 是否严格按照转录本来提取junction的信息 */
+	boolean isGetJuncStrict = true;
 	HashSet<GffGeneIsoInfo> setExistExonIso;
 	HashSet<GffGeneIsoInfo> setSkipExonIso;
 	boolean isMulitCassette = false;
+	
+	/** 在差异exon两侧的exon */
+	List<ExonInfo> lsBG = new ArrayList<>();
+	
 	
 	public PredictCassette(ExonCluster exonCluster) {
 		super(exonCluster);
@@ -26,29 +36,39 @@ public class PredictCassette extends SpliceTypePredict {
 	
 	@Override
 	protected ArrayListMultimap<String, Double> getLsJuncCounts(String condition) {
-		return getJuncCountsLoose(condition);
+		if (isGetJuncStrict) {
+			return getJuncCountsStrict(condition);
+		} else {
+			return getJuncCountsLess(condition);
+		}
 	}
+	
 	/** 不完全按照转录本信息来 */
-	private ArrayListMultimap<String, Double> getJuncCountsLoose(String condition) {
+	private ArrayListMultimap<String, Double> getJuncCountsLess(String condition) {
 		ArrayListMultimap<String, Double> mapGroup2LsValue = ArrayListMultimap.create();
-		addMapGroup2LsValue(mapGroup2LsValue, getJunReadsNum(condition));
+		addMapGroup2LsValue(mapGroup2LsValue, getSkipReadsNum(condition));
 		Set<Integer> setAlignExist = new HashSet<Integer>();
 		for (GffGeneIsoInfo gffGeneIsoInfo : setExistExonIso) {
 			List<ExonInfo> lsExon = exonCluster.getIsoExon(gffGeneIsoInfo);
 			setAlignExist.add(lsExon.get(0).getStartCis());
 			setAlignExist.add(lsExon.get(lsExon.size() - 1).getEndCis());
 		}
-		Map<String, Double> mapExistGroup2Value = new HashMap<>();
+		Map<String, Double> mapGroup2JunReads = new HashMap<>();
 		for (Integer align : setAlignExist) {
-			mapExistGroup2Value = addMapDouble(mapExistGroup2Value, tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align));
+			mapGroup2JunReads = addMapDouble(mapGroup2JunReads, tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align));
 		}
-		addMapGroup2LsValue(mapGroup2LsValue, mapExistGroup2Value);
+		
+		// 像这种 ------exon------------，应该将junction reads的数量减半，这样可以获得更准确的值
+		for (String group : mapGroup2JunReads.keySet()) {
+			double value = mapGroup2JunReads.get(group);
+			mapGroup2JunReads.put(group, value/2);
+		}
+		addMapGroup2LsValue(mapGroup2LsValue, mapGroup2JunReads);
 		return mapGroup2LsValue;
 	}
 	
 	/** 完全按照转录本信息来 */
 	private ArrayListMultimap<String, Double> getJuncCountsStrict(String condition) {
-		List<List<Double>> lsCounts = new ArrayList<>();
 		HashSet<Align> setAlignSkip = new HashSet<Align>();
 		HashSet<Align> setAlignExist = new HashSet<Align>();
 		
@@ -81,6 +101,12 @@ public class PredictCassette extends SpliceTypePredict {
 		for (Align align : setAlignSkip) {
 			mapSkip = addMapDouble(mapSkip, tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getStartAbs(), align.getEndAbs()));
 		}
+		// 像这种 ------exon------------，应该将junction reads的数量减半，这样可以获得更准确的值
+		for (String group : mapSkip.keySet()) {
+			double value = mapSkip.get(group);
+			mapSkip.put(group, value/2);
+		}
+		
 		for (Align align : setAlignExist) {
 			mapExist = addMapDouble(mapExist, tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getStartAbs(), align.getEndAbs()));
 		}
@@ -139,7 +165,9 @@ public class PredictCassette extends SpliceTypePredict {
 			Set<GffGeneIsoInfo> lsIso_ExonExist, Set<GffGeneIsoInfo> lsIso_ExonSkip) {
 		
 		ArrayListMultimap<String, GffGeneIsoInfo> setBeforeAfter = ArrayListMultimap.create();
-
+		
+		lsBG.clear();
+		
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsIso_ExonExist) {
 			ExonCluster clusterBefore = exonCluster.exonClusterBefore;
 			ExonCluster clusterAfter = exonCluster.exonClusterAfter;
@@ -157,6 +185,7 @@ public class PredictCassette extends SpliceTypePredict {
 						List<ExonInfo> lsExonBefore = clusterBefore.getMapIso2LsExon().get(gffIsoSkip);
 						if (lsExonBefore != null && lsExonBefore.size() > 0) {
 							beforeAfter[0] = numBefore;
+							lsBG.addAll(lsExonBefore);
 							cancel = true;
 							break;
 						}
@@ -198,6 +227,7 @@ public class PredictCassette extends SpliceTypePredict {
 						List<ExonInfo> lsExonAfter = clusterAfter.getMapIso2LsExon().get(gffIsoSkip);
 						if (lsExonAfter != null && lsExonAfter.size() > 0) {
 							beforeAfter[1] = numAfter;
+							lsBG.addAll(lsExonAfter);
 							cancel = true;
 							break;
 						}
@@ -298,20 +328,12 @@ public class PredictCassette extends SpliceTypePredict {
 
 	@Override
 	public List<? extends Alignment> getBGSite() {
-		List<ExonInfo> lsExonInfos = new ArrayList<>();
-		GffGeneIsoInfo iso = exonCluster.getParentGene().getLongestSplitMrna();
-		Align alignExon = getDifSite();
-		for (ExonInfo exonInfo : iso) {
-			if (exonInfo.getStartAbs() <= alignExon.getEndAbs() && exonInfo.getEndAbs() >= alignExon.getStartAbs()) {
-				continue;
-			}
-			lsExonInfos.add(exonInfo);
-		}
-		if (lsExonInfos.isEmpty()) {
+		if (!lsBG.isEmpty()) {
+			return lsBG;
+		} else {
+			GffGeneIsoInfo iso = exonCluster.getParentGene().getLongestSplitMrna();
 			return iso.getLsElement();
 		}
-		return lsExonInfos;
-//		return exonCluster.getParentGene().getLongestSplitMrna().getLsElement();
 	}
 
 }
