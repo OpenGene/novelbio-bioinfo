@@ -104,8 +104,7 @@ public class BamIndex {
             try {
             	 indexer.processAlignment(rec.samRecord);
 			} catch (Exception e) {
-				System.out.println(rec.toString());
-				 indexer.processAlignment(rec.samRecord);
+				logger.error(rec.toString(), e);
 			}
            
             allRecordsNum ++;

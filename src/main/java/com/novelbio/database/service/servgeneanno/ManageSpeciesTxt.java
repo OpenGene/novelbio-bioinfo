@@ -238,7 +238,8 @@ public class ManageSpeciesTxt implements IManageSpecies {
 	}
 	
 	@Override
-	public void deleteByTaxId(int taxid) {		
+	public boolean deleteByTaxId(int taxid) {		
+		return true;
 	}
 
 	@Override
@@ -247,6 +248,18 @@ public class ManageSpeciesTxt implements IManageSpecies {
 
 	@Override
 	public SpeciesFile findOne(String speciesFileId) {
+		return null;
+	}
+
+	@Override
+	public boolean isHaveMiRNArecalculate(TaxInfo taxInfo) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public String getRrnaFileWithPath(TaxInfo taxInfo) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 }

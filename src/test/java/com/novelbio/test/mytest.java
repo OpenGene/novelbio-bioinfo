@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.hadoop.fs.FileUtil;
+
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fasta.SeqHash;
@@ -51,11 +53,17 @@ public class mytest {
 	static boolean is;
 
 	public static void main(String[] args) throws Exception {
-		SamFile samFile = new SamFile("/home/novelbio/下载/unmapread.sam");
-		for (SamRecord samRecord : samFile.readLines()) {
-			System.out.println(samRecord);
-			System.out.println(samRecord.isCis5to3());
+		Species species = new Species(10090);
+		species.setVersion("mm10_GRCm38");
+		species.setGffDB("NCBI");
+		System.out.println(species.getGffFile());
+		GffChrAbs gffChrAbs = new GffChrAbs(species);
+		GffHashGene gffHashGene = gffChrAbs.getGffHashGene();
+		TxtReadandWrite txtWrite = new TxtReadandWrite("/home/novelbio/geneLen_mouse_grcm38_p2.txt", true);
+		for (GffDetailGene gffDetailGene : gffHashGene.getLsGffDetailGenes()) {
+			txtWrite.writefileln(gffDetailGene.getNameSingle() + "\t" + gffDetailGene.getLongestSplitMrna().getLenExon(0));
 		}
+		txtWrite.close();
 	}
 	
 	private static String getSeq(byte[] readInfo) {

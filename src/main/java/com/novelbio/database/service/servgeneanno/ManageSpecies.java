@@ -12,17 +12,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
+import com.novelbio.analysis.seq.mirna.ListMiRNAdat;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.geneanno.EnumSpeciesFile;
 import com.novelbio.database.domain.geneanno.SpeciesFile;
 import com.novelbio.database.domain.geneanno.TaxInfo;
 import com.novelbio.database.mongorepo.geneanno.RepoSpeciesFile;
 import com.novelbio.database.mongorepo.geneanno.RepoTaxInfo;
 import com.novelbio.database.service.SpringFactoryBioinfo;
-import com.novelbio.database.service.servgeneanno.ManageSpeciesDB.ManageSpeciesDBHold;
-import com.novelbio.database.service.servgeneanno.ManageSpeciesTxt.ManageSpeciesTxtHold;
 import com.novelbio.generalConf.PathDetailNBC;
 
 public class ManageSpecies implements IManageSpecies {
@@ -259,9 +259,9 @@ public class ManageSpecies implements IManageSpecies {
 	}
 
 	@Override
-	public void deleteByTaxId(int taxid) {
+	public boolean deleteByTaxId(int taxid) {
 		// TODO Auto-generated method stub
-		
+		return true;
 	}
 
 	@Override
@@ -274,5 +274,26 @@ public class ManageSpecies implements IManageSpecies {
 	public SpeciesFile findOne(String speciesFileId) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	public boolean isHaveMiRNArecalculate(TaxInfo taxInfo) {
+		if (taxInfo.getIsHaveMiRNA() == null || !taxInfo.getIsHaveMiRNA()) {
+			try {
+				taxInfo.setIsHaveMiRNA(ListMiRNAdat.isContainMiRNA(taxInfo.getLatinName_2Word(), PathDetailNBC.getMiRNADat()));
+			} catch (Exception e) {
+				taxInfo.setIsHaveMiRNA(ListMiRNAdat.isContainMiRNA(taxInfo.getLatinName_2Word(), PathDetailNBC.getMiRNADat()));
+			}
+			
+			saveTaxInfo(taxInfo);
+		}
+		return taxInfo.getIsHaveMiRNA() ;
+	}
+	
+	/** 获取核糖体rna所在的路径，绝对路径 */
+	public String getRrnaFileWithPath(TaxInfo taxInfo) {
+		SpeciesFile speciesFile = new SpeciesFile();
+		speciesFile.setTaxID(taxInfo.getTaxID());
+		String savePath = EnumSpeciesFile.rrnaFile.getSavePath(taxInfo.getTaxID(), null);
+		return savePath + taxInfo.getRrnaFile();
 	}
 }

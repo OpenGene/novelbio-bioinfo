@@ -243,6 +243,7 @@
 	
 	</distributionManagement>
 	<build>
+		<defaultGoal>compile</defaultGoal>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<plugins>
 			<plugin>
