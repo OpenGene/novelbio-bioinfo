@@ -14,15 +14,18 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
+import com.novelbio.analysis.seq.mirna.ListMiRNAdat;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.geneanno.EnumSpeciesFile;
 import com.novelbio.database.domain.geneanno.SpeciesFile;
 import com.novelbio.database.domain.geneanno.TaxInfo;
 import com.novelbio.database.mongorepo.geneanno.RepoSpeciesFile;
 import com.novelbio.database.mongorepo.geneanno.RepoTaxInfo;
 import com.novelbio.database.service.SpringFactoryBioinfo;
+import com.novelbio.generalConf.PathDetailNBC;
 
 public class ManageSpeciesDB implements IManageSpecies {
 	private static final Logger logger = Logger.getLogger(ManageSpeciesDB.class);
@@ -251,16 +254,20 @@ public class ManageSpeciesDB implements IManageSpecies {
 		return repoSpeciesFile.findOne(speciesFileId);
 	}
 
-	@Override
 	public boolean isHaveMiRNArecalculate(TaxInfo taxInfo) {
-		// TODO Auto-generated method stub
-		return false;
+		if (taxInfo.getIsHaveMiRNA() == null || !taxInfo.getIsHaveMiRNA()) {
+			taxInfo.setIsHaveMiRNA(ListMiRNAdat.isContainMiRNA(taxInfo.getLatinName_2Word(), PathDetailNBC.getMiRNADat()));
+			saveTaxInfo(taxInfo);
+		}
+		return taxInfo.getIsHaveMiRNA() ;
 	}
-
-	@Override
+	
+	/** 获取核糖体rna所在的路径，绝对路径 */
 	public String getRrnaFileWithPath(TaxInfo taxInfo) {
-		// TODO Auto-generated method stub
-		return null;
+		SpeciesFile speciesFile = new SpeciesFile();
+		speciesFile.setTaxID(taxInfo.getTaxID());
+		String savePath = EnumSpeciesFile.rrnaFile.getSavePath(taxInfo.getTaxID(), null);
+		return savePath + taxInfo.getRrnaFile();
 	}
 
 }

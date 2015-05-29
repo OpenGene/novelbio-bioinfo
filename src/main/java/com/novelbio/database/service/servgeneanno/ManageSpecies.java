@@ -278,12 +278,7 @@ public class ManageSpecies implements IManageSpecies {
 	
 	public boolean isHaveMiRNArecalculate(TaxInfo taxInfo) {
 		if (taxInfo.getIsHaveMiRNA() == null || !taxInfo.getIsHaveMiRNA()) {
-			try {
-				taxInfo.setIsHaveMiRNA(ListMiRNAdat.isContainMiRNA(taxInfo.getLatinName_2Word(), PathDetailNBC.getMiRNADat()));
-			} catch (Exception e) {
-				taxInfo.setIsHaveMiRNA(ListMiRNAdat.isContainMiRNA(taxInfo.getLatinName_2Word(), PathDetailNBC.getMiRNADat()));
-			}
-			
+			taxInfo.setIsHaveMiRNA(ListMiRNAdat.isContainMiRNA(taxInfo.getLatinName_2Word(), PathDetailNBC.getMiRNADat()));
 			saveTaxInfo(taxInfo);
 		}
 		return taxInfo.getIsHaveMiRNA() ;
