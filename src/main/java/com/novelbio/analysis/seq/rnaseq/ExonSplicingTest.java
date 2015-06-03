@@ -20,6 +20,7 @@ import com.novelbio.analysis.seq.fasta.StrandType;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.PredictRetainIntron;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict;
@@ -47,6 +48,9 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	
 	/** 实验组和对照组的junction reads数量加起来小于这个数，就返回1 */
 	static int junctionReadsMinNum = 10;
+	
+	/** 没有重建转录本的老iso的名字 */
+	Set<String> setIsoName_No_Reconstruct;
 	
 	ExonCluster exonCluster;
 	/** 每个exonCluster组中condition以及其对应的信息<br>
@@ -82,6 +86,10 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	
 	public ExonSplicingTest(ExonCluster exonCluster) {
 		this.exonCluster = exonCluster;
+	}
+	/** 设定没有重建转录本的老iso的名字 */
+	public void setSetIsoName_No_Reconstruct(Set<String> setIsoName_No_Reconstruct) {
+		this.setIsoName_No_Reconstruct = setIsoName_No_Reconstruct;
 	}
 	/** 是否合并文件--也就是不考虑重复，默认为true，也就是合并文件 */
 	public void setCombine(boolean isCombine) {
@@ -233,7 +241,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		GffDetailGene gffDetailGene = exonCluster.getParentGene();
 		lsResult.add(gffDetailGene.getNameSingle());
 		lsResult.add(mapCondition2SpliceInfo.get(condition1).getSpliceTypePredict(getSplicingType()).getDifSite().toStringNoCis());
-		lsResult.add(exonCluster.getExonNum() + "");
+		lsResult.add(exonCluster.getExonNum(setIsoName_No_Reconstruct));
 		lsResult.add(lsPvalueInfo.get(0).getStrInfo(false, false));
 		lsResult.add(lsPvalueInfo.get(0).getStrInfo(false, true));
 		lsResult.add(lsPvalueInfo.get(0).getStrInfo(true, false));
@@ -296,7 +304,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 //	}
 	
 	
-	public String[] toStringSeq() {
+	public String[] toStringSeq() {		
 		if (seqHash == null) {
 			return null;
 		}

@@ -29,7 +29,8 @@ import com.novelbio.listOperate.ListCodAbsDu;
  *  */
 public class GenerateNewIso {
 	private static final Logger logger = Logger.getLogger(GenerateNewIso.class);
-	int newIsoReadsNum = 5;//至少有8条reads支持的junction才会用于重建转录本
+	/** 至少有20条reads支持的junction才会用于重建转录本 */
+	int newIsoReadsNum = 15;
 	int blankNum = 30;//至少超过50bp的没有reads堆叠的区域，才被认为是intron
 	int longExon = 200;//超过100bp就认为是比较长的exon，就需要做判定了
 	int maxExonLen = 1000;
@@ -115,7 +116,6 @@ public class GenerateNewIso {
 				if(isJunctionCoverTwoGene(gffDetailGene, junctionUnit)) {
 					continue;
 				}
-				isJunctionCoverTwoGene(gffDetailGene, junctionUnit);
 				lsJunUnit.add(junctionUnit);
 			}
 		}
