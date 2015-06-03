@@ -62,6 +62,10 @@ public class BamReadsInfo {
 	}
 	
 	public void calculate() {
+		mapLibrary = null;
+		cisNum = 0;
+		transNum = 0;
+		
 		setLibrary();
 		if (gffHashGene != null) {
 			calculateStrandSpecific();

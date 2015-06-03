@@ -184,7 +184,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	private static Logger logger = Logger.getLogger(ExonJunction.class);
-	private static String stopGeneName = "Prosalpha6";
+	private static String stopGeneName = "PALB2";
 	
 	GffHashGene gffHashGene = null;
 	StrandSpecific strandSpecific = StrandSpecific.NONE;
@@ -246,6 +246,13 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	double pvalueJunctionProp = -1;
 	/** 是否仅使用 unique mapped reads 来做分析 */
 	boolean isUseUniqueMappedReads = false;
+	
+	public ExonJunction() {
+		List<Align> lsAligns = new ArrayList<>();
+		lsAligns.add(new Align("chr16:23519185-23719333"));
+		setLsReadRegion(lsAligns);
+	}
+	
 	/**
 	 * pvalue的计算是合并exon表达pvalue和junction pvalue 
 	 * junction的pvalue所占的比重
@@ -573,7 +580,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		
 		ArrayList<ExonSplicingTest> lsExonSplicingTestResult = new ArrayList<ExonSplicingTest>();
 		List<ExonCluster> mapLoc2ExonCluster = new ArrayList<>(gffDetailGene.getDifExonMapLoc2Cluster());
-		
 		if (!mapLoc2ExonCluster.isEmpty()) {
 			for (ExonCluster exonCluster : mapLoc2ExonCluster) {
 				if (exonCluster.getLsIsoExon().size() == 1 || exonCluster.isAtEdge() || exonCluster.isNotSameTss_But_SameEnd()) {
@@ -669,7 +675,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			for (ExonSplicingTest exonSplicingTest : lsExonTest) {
 				//TODO
 				if (exonSplicingTest.getExonCluster().getParentGene().getName().contains(stopGeneName)) {
-					logger.debug("");
+					logger.debug("stop");
 				}
 				exonSplicingTest.addMapCondition2MapReads(condition, group, mapReads);
 			}
@@ -689,7 +695,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		for (List<ExonSplicingTest> lstest : lsSplicingTests) {
 			for (ExonSplicingTest exonSplicingTest : lstest) {
 				if (exonSplicingTest.getExonCluster().getParentGene().getName().contains(stopGeneName)) {
-					logger.debug("");
+					logger.debug("stop");
 				}
 				logger.info(exonSplicingTest.getExonCluster().getParentGene().getName());
 				exonSplicingTest.setSpliceType2Value();

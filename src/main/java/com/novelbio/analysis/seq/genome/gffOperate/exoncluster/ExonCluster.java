@@ -312,13 +312,19 @@ public class ExonCluster implements Alignment {
 	
 	/** 本exoncluster所在的exon的位置，如果同时存在retain_intron可能会不准 */
 	public int getExonNum() {
-		int i = 1;
-		ExonCluster before = exonClusterBefore;
-		while (before != null) {
-			i += before.getMaxExonNumInCluster();
-			before = before.exonClusterBefore;
+		GffGeneIsoInfo isoLongest = null;
+		for (GffGeneIsoInfo gffGeneIsoInfo : mapIso2LsExon.keySet()) {
+			List<ExonInfo> lsExon = mapIso2LsExon.get(gffGeneIsoInfo);
+			if (lsExon.size() > 0 && (isoLongest == null || isoLongest.getLenExon(0) < gffGeneIsoInfo.getLenExon(0))) {
+				isoLongest = gffGeneIsoInfo;
+			}
 		}
-		return i;
+		if (isoLongest == null) {
+			logger.error("get exon number error: " + getParentGene().getName() + " " + getStartAbs() + " " + getEndAbs());
+			return 0;
+		}
+		List<ExonInfo> lsExonInfos = mapIso2LsExon.get(isoLongest);
+		return lsExonInfos.get(0).getItemNum();
 	}
 	
 	/** 本cluster中，最多的转录本含有多少exon  */
