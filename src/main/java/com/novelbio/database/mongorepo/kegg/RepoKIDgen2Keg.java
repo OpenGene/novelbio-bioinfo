@@ -2,28 +2,51 @@ package com.novelbio.database.mongorepo.kegg;
 
 import java.util.List;
 
-import org.springframework.data.mongodb.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.stereotype.Repository;
 
 import com.novelbio.database.domain.kegg.KGIDgen2Keg;
 
-public interface RepoKIDgen2Keg extends PagingAndSortingRepository<KGIDgen2Keg, Long> {
-	@Query(value="{ 'geneID' : ?0}")
-	KGIDgen2Keg findByGeneId(long geneId);
+@Repository
+public class RepoKIDgen2Keg {
+	@Autowired
+	MongoTemplate mongoTemplateKegg;
 	
-	@Query(value="{ 'keggID' : ?0}")
-	KGIDgen2Keg findByKegId(String keggId);
+	public KGIDgen2Keg findByGeneId(long geneId) {
+		Query query = new Query( Criteria.where("geneID").is(geneId));
+		return mongoTemplateKegg.findOne(query, KGIDgen2Keg.class);
+	}
 	
-	@Query(value="{ 'geneID' : ?0, 'keggID' : ?1 }")
-	KGIDgen2Keg findByGeneIdAndKegId(long geneId, String keggId);
+	public KGIDgen2Keg findByKegId(String keggId) {
+		Query query = new Query( Criteria.where("keggID").is(keggId));
+		return mongoTemplateKegg.findOne(query, KGIDgen2Keg.class);
+	}
 	
-	@Query(value="{ 'geneID' : ?0, 'taxID' : ?1}")
-	List<KGIDgen2Keg> findByGeneIdAndTaxId(long geneId, int taxId);
+	public KGIDgen2Keg findByGeneIdAndKegId(long geneId, String keggId) {
+		Query query = new Query( Criteria.where("geneID").is(geneId).and("keggID").is(keggId));
+		return mongoTemplateKegg.findOne(query, KGIDgen2Keg.class);
+	}
 	
-	@Query(value="{ 'geneID' : ?0, 'taxID' : ?1, 'keggID' : ?2}")
-	KGIDgen2Keg findByGeneIdAndTaxIdAndKegId(long geneId, int taxId, String keggId);
+	public List<KGIDgen2Keg> findByGeneIdAndTaxId(long geneId, int taxId) {
+		Query query = new Query( Criteria.where("geneID").is(geneId).and("taxID").is(taxId));
+		return mongoTemplateKegg.find(query, KGIDgen2Keg.class);
+	}
+	
+	public KGIDgen2Keg findByGeneIdAndTaxIdAndKegId(long geneId, int taxId, String keggId) {
+		Query query = new Query( Criteria.where("geneID").is(geneId).and("taxID").is(taxId).and("keggID").is(keggId));
+		return mongoTemplateKegg.findOne(query, KGIDgen2Keg.class);
+	}
 
+	public void save(KGIDgen2Keg kgiDgen2Keg) {
+		mongoTemplateKegg.save(kgiDgen2Keg);
+	}
 
-
+	public void deleteAll() {
+		mongoTemplateKegg.dropCollection(KGIDgen2Keg.class);
+	}
+	
 	
 }

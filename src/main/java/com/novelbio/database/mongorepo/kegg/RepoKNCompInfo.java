@@ -1,6 +1,8 @@
 package com.novelbio.database.mongorepo.kegg;
 
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.stereotype.Repository;
 
 import com.novelbio.database.domain.kegg.noGene.KGNCompInfo;
 /**
@@ -8,6 +10,16 @@ import com.novelbio.database.domain.kegg.noGene.KGNCompInfo;
  * @author zong0jie
  *
  */
-public interface RepoKNCompInfo extends PagingAndSortingRepository<KGNCompInfo, String> {
-	
+@Repository
+public class RepoKNCompInfo {
+	@Autowired
+	MongoTemplate mongoTemplateKegg;
+
+	public KGNCompInfo findOne(String kegId) {
+		return mongoTemplateKegg.findById(kegId, KGNCompInfo.class);
+	}
+
+	public void save(KGNCompInfo kgnCompInfo) {
+		mongoTemplateKegg.save(kgnCompInfo);
+	}
 }

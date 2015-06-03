@@ -2,17 +2,35 @@ package com.novelbio.database.mongorepo.kegg;
 
 import java.util.List;
 
-import org.springframework.data.mongodb.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.stereotype.Repository;
 
 import com.novelbio.database.domain.kegg.KGpathRelation;
 
-public interface RepoKPathRelation extends PagingAndSortingRepository<KGpathRelation, String> {
+@Repository
+public class RepoKPathRelation {
+	@Autowired
+	MongoTemplate mongoTemplateKegg;
 	
-	@Query(value="{ 'pathName' : ?0}")
-	public List<KGpathRelation> findByPathName(String pathName);
+	public List<KGpathRelation> findByPathName(String pathName) {
+		Query query = new Query( Criteria.where("pathName").is(pathName));
+		return mongoTemplateKegg.find(query, KGpathRelation.class);
+	}
 	
-	@Query(value="{ 'pathName' : ?0, 'scrPath' : ?1,  'trgPath' : ?1}")
-	public KGpathRelation findByPathNameSrcTrg(String pathName, String src, String trg);
+	public KGpathRelation findByPathNameSrcTrg(String pathName, String src, String trg) {
+		Query query = new Query( Criteria.where("pathName").is(pathName).and("scrPath").is(src).and("trgPath").is(trg));
+		return mongoTemplateKegg.findOne(query, KGpathRelation.class);
+	}
+
+	public void save(KGpathRelation kGpathRelation) {
+		mongoTemplateKegg.save(kGpathRelation);
+	}
+
+	public void deleteAll() {
+		mongoTemplateKegg.dropCollection(KGpathRelation.class);
+	}
 	
 }

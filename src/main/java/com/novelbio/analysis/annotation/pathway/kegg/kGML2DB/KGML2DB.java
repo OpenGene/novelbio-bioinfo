@@ -45,6 +45,9 @@ public class KGML2DB
 		Serializer serializer = new Persister();
 		for (int i = 0; i < lsKGML.size(); i++) {
 			File source = new File(filePath+"/"+lsKGML.get(i)[0]+"."+lsKGML.get(i)[1]);
+			if (source.getName().equals("hsa05034.xml")) {
+				logger.info("stop");
+			}
 			System.out.println(source.getAbsolutePath());
 			KGML example = null;
 			try {
@@ -150,6 +153,7 @@ public class KGML2DB
 									//这里可能会报错，这是由于前面单个组分已经输入了一遍，所以这个错误没关系可以忽略
 									servKEntry.save(kGentry);
 								} else {
+									kGentry.setId(null);
 									kGentry.setReaction(ss2[k2]);
 									kGentry.setParentID(lsEntry.get(i).getID());
 									servKEntry.save(kGentry);
@@ -174,6 +178,7 @@ public class KGML2DB
 						KGentry search = servKEntry.findByNamePathAndIdAndReaction(kGentry.getEntryName(),
 								kGentry.getPathName(), kGentry.getEntryId(), kGentry.getReaction());
 						if (search == null) {
+							kGentry.setId(null);
 							servKEntry.save(kGentry);
 						}
 					}
@@ -185,6 +190,7 @@ public class KGML2DB
 					KGpathRelation search = servKPathRelation.findByPathNameSrcTrg(kGpathRelation.getPathName(), kGpathRelation.getSrcPath(), kGpathRelation.getTrgPath());
 					
 					if (search == null) {
+						kGpathRelation.setId(null);
 						kGpathRelation.setType("relate");
 						servKPathRelation.save(kGpathRelation);
 					} else {
@@ -206,6 +212,7 @@ public class KGML2DB
 						KGentry search = servKEntry.findByNamePathAndIdAndReaction(ss[j], kGentry.getPathName(), kGentry.getEntryId(), ss2[j2]);
 						kGentry.setEntryName(ss[j]);kGentry.setReaction(ss2[j2]);
 						if (search == null) {
+							kGentry.setId(null);
 							servKEntry.save(kGentry);
 						}
 					}
@@ -248,6 +255,8 @@ public class KGML2DB
 					
 					if (searchReac != null) {
 						kGreaction.setId(searchReac.getId());
+					} else {
+						kGreaction.setId(null);
 					}
 					servKReaction.save(kGreaction);
 				}
@@ -297,6 +306,7 @@ public class KGML2DB
 						kGrelation.setSubtypeValue(lsRelations.get(i).getLsSubtype().get(j).getValue());
 						KGrelation searchKGR = servKRelation.findByPathNameAndEntry1IdAndEntry2IdAndType(kGrelation.getPathName(), kGrelation.getEntry1ID(), kGrelation.getEntry2ID(), kGrelation.getType());
 						if (searchKGR == null) {
+							kGrelation.setId(null);
 							servKRelation.save(kGrelation);
 						}
 					}

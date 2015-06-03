@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.rnaseq;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -58,7 +59,9 @@ public class RPKMcomput implements AlignmentRecorder {
 	/** 不同类型RNA的表达量，譬如tRNA多少，rRNA多少，ncRNA多少等 */
 	GeneExpTable rnaTypeTable = new GeneExpTable(TitleFormatNBC.RNAType);
 	/** 双端测序用来配对 */
-	Map<String, SamRecord> mapKey2SamRecord = new HashMap<>((int)(numForFragment*1.5));
+	Map<String, SamRecord> mapKey2SamRecord = new LinkedHashMap<>((int)(numForFragment*1.5));
+	
+	boolean isSorted = true;
 	
 	int parNum = 0;
 	
@@ -68,6 +71,10 @@ public class RPKMcomput implements AlignmentRecorder {
 	/** 是否计算FPKM，同时有FPKM和pairend才算是FPKM */
 	public boolean isCalculateFPKM() {
 		return isPairend && calculateFPKM;
+	}
+	
+	public void setSorted(boolean isSorted) {
+		this.isSorted = isSorted;
 	}
 	
 	/** 是否仅计算 unique mapped reads，注意如果上层，也就是{@link AlignSamReading} 中设定了unique mapped reads，
@@ -213,7 +220,7 @@ public class RPKMcomput implements AlignmentRecorder {
 		//两个reads是否挨着
 		if (!samRecord.isHavePairEnd() || !samRecord.isMateMapped() 
 				|| !samRecord.getRefID().equals(samRecord.getMateRefID())
-				|| Math.abs(samRecord.getStartAbs() - samRecord.getMateAlignmentStart()) > 50000000
+				|| Math.abs(samRecord.getStartAbs() - samRecord.getMateAlignmentStart()) > 5000000
 				) {
 			lsResult.add(samRecord);
 			return lsResult;
@@ -228,7 +235,7 @@ public class RPKMcomput implements AlignmentRecorder {
 			return lsResult;
 		}
 		//意思在map中没有找到他的mate，而靠前的reads一般都要进入map的
-		if (samRecord.getStartAbs() > samRecord.getMateAlignmentStart()) {
+		if (isSorted && samRecord.getStartAbs() > samRecord.getMateAlignmentStart()) {
 			lsResult.add(samRecord);
 			return lsResult;
 		}

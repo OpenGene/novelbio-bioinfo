@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import org.apache.log4j.Logger;
+
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -14,14 +16,13 @@ import com.novelbio.database.model.modgeneid.GeneID;
 
 
 public class KGexe {
+	private static final Logger logger = Logger.getLogger(KGexe.class);
 	/**
 	 * @param args
 	 * @throws ExecutionException 
 	 * @throws InterruptedException 
 	 */
 	public static void main(String[] args) throws InterruptedException, ExecutionException {
-		GffHashGene gffHashGene = new GffHashGene("/home/novelbio/NBCresource/genome/species/9606/hg19_GRCh37/gff/ref_GRCh37.p13_top_level.gff3.gz");
-		gffHashGene.writeToGTF("/home/novelbio/NBCresource/genome/species/9606/hg19_GRCh37/gff/ref_GRCh37.p13_top_level.gtf");
 //		List<String> lsGenID2 = new ArrayList<>();
 //		lsGenID2.add("XNR_0641");
 //		CtrlBlastPath ctrlPath = new CtrlBlastPath(false, 457425, 0, 1e-10);
@@ -43,16 +44,20 @@ public class KGexe {
 //			System.exit(1);
 //		}
 //		String keggAbbrStr = cliParser.getOptionValue("keggabbr");
-//		try {
-//			for (String abbr : keggAbbrStr.split(",")) {
-//				abbr = abbr.trim();
-//				KGML2DB.readKGML("/home/novelbio/NBCsource/database/kegg/" + abbr);
-//				KeggIDcvt.upDateGen2Keg("/home/novelbio/NBCsource/database/kegg/" + abbr + "/" + abbr + "_ncbi-geneid.list");
-//			}
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		String keggAbbrStr = "hsa,mmu";
+		try {
+			for (String abbr : keggAbbrStr.split(",")) {
+				abbr = abbr.trim();
+				KGML2DB.readKGML("/home/novelbio/NBCsource/biodb/database20150530/kegg/" + abbr);
+//				KeggIDcvt.upDateGen2Keg("/home/novelbio/NBCsource/biodb/database20150530/kegg/genes_ncbi-geneid.list.gz", abbr);
+//				logger.info("finish kegg2geneId");
+//				KeggIDcvt.upDateKeg2Ko("/home/novelbio/NBCsource/biodb/database20150530/kegg/genes_ko.list.gz", abbr);
+//				logger.info("finish kegg2ko");
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	/**

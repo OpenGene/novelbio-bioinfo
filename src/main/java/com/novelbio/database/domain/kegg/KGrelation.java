@@ -97,6 +97,10 @@ public class KGrelation {
 	 */
 	private String subtypeValue;
 	
+	public void setId(String id) {
+		this.id = id;
+	}
+	
 	/**
 	 * the first (from) entry that defines this relation. detail:<br>
 	 * the ID of node which takes part in this relation

@@ -1,41 +1,75 @@
 package com.novelbio.database.mongorepo.kegg;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.data.mongodb.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.stereotype.Repository;
 
 import com.novelbio.database.domain.kegg.KGentry;
 
-public interface RepoKEntry extends PagingAndSortingRepository<KGentry, String> {
-	List<KGentry> findAll();
+@Repository
+public class RepoKEntry {
+	@Autowired
+	MongoTemplate mongoTemplateKegg;
 	
-	@Query(value="{ 'name' : ?0}")
-	List<KGentry> findByName(String name);
+	public List<KGentry> findAll() {
+		return mongoTemplateKegg.findAll(KGentry.class);
+	}
 	
-	@Query(value="{ 'name' : ?0, 'taxID' : ?1}")
-	List<KGentry> findByNameAndTaxId(String name, int taxId);
+	public List<KGentry> findByName(String name) {
+		Query query = new Query( Criteria.where("name").is(name));
+		return mongoTemplateKegg.find(query, KGentry.class);
+	}
 	
-	@Query(value="{ 'pathName' : ?0}")
-	List<KGentry> findByPathName(String pathName);
+	public List<KGentry> findByNameAndTaxId(String name, int taxId) {
+		Query query = new Query( Criteria.where("name").is(name).and("taxID").is(taxId));
+		return mongoTemplateKegg.find(query, KGentry.class);
+	}
 	
-	@Query(value="{ 'pathName' : ?0, 'parentID' : ?1}")
-	List<KGentry> findByPathNameAndParentId(String pathName, int parentId);
+	public List<KGentry> findByPathName(String pathName) {
+		Query query = new Query( Criteria.where("pathName").is(pathName));
+		return mongoTemplateKegg.find(query, KGentry.class);
+	}
 	
-	@Query(value="{ 'name' : ?0, 'pathName' : ?1}")
-	List<KGentry> findByNamePath(String name, String pathName);
+	public List<KGentry> findByPathNameAndParentId(String pathName, int parentId) {
+		Query query = new Query( Criteria.where("pathName").is(pathName).and("parentID").is(parentId));
+		return mongoTemplateKegg.find(query, KGentry.class);
+	}
 	
-	@Query(value="{ 'name' : ?0, 'pathName' : ?1, 'entryId' : ?2}")
-	KGentry findByNamePathAndId(String name, String pathName, int entryId);
+	public List<KGentry> findByNamePath(String name, String pathName) {
+		Query query = new Query( Criteria.where("name").is(name).and("pathName").is(pathName));
+		return mongoTemplateKegg.find(query, KGentry.class);
+	}
 	
-	@Query(value="{ 'name' : ?0, 'pathName' : ?1, 'entryId' : ?2, 'taxID' : ?3}")
-	List<KGentry> findByNamePathAndIdAndTaxId(String name, String pathName, int entryID, String taxId);
+	public KGentry findByNamePathAndId(String name, String pathName, int entryId) {
+		Query query = new Query( Criteria.where("name").is(name).and("pathName").is(pathName).and("entryId").is(entryId));
+		return mongoTemplateKegg.findOne(query, KGentry.class);
+	}
 	
-	@Query(value="{ 'pathName' : ?0, 'entryId' : ?1}")
-	List<KGentry> findByPathNameAndEntryId(String pathName, int entryID);
+	public List<KGentry> findByNamePathAndIdAndTaxId(String name, String pathName, int entryId, String taxId) {
+		Query query = new Query( Criteria.where("name").is(name).and("pathName").is(pathName).and("entryId").is(entryId).and("taxID").is(taxId));
+		return mongoTemplateKegg.find(query, KGentry.class);
+	}
 	
-	@Query(value="{ 'name' : ?0, 'pathName' : ?1, 'entryId' : ?2, 'reactionName' : ?3}")
-	KGentry findByNamePathAndIdAndReaction(String name, String pathName, int entryId, String reaction);
+	public List<KGentry> findByPathNameAndEntryId(String pathName, int entryId) {
+		Query query = new Query( Criteria.where("pathName").is(pathName).and("entryId").is(entryId));
+		return mongoTemplateKegg.find(query, KGentry.class);
+	}
+	
+	public KGentry findByNamePathAndIdAndReaction(String name, String pathName, int entryId, String reaction) {
+		Query query = new Query( Criteria.where("name").is(name).and("pathName").is(pathName).and("entryId").is(entryId).and("reactionName").is(reaction));
+		return mongoTemplateKegg.findOne(query, KGentry.class);
+	}
+	
+	public void save(KGentry kGentry) {
+		mongoTemplateKegg.save(kGentry);
+	}
 
+	public void deleteAll() {
+		mongoTemplateKegg.dropCollection(KGentry.class);
+		
+	}
 }

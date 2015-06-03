@@ -34,11 +34,12 @@ public class ManageSpeciesDB implements IManageSpecies {
 	private RepoSpeciesFile repoSpeciesFile;
 	@Autowired
 	private RepoTaxInfo repoTaxInfo;
+	@Autowired
 	MongoTemplate mongoTemplate;
 	private ManageSpeciesDB() {
-		repoSpeciesFile = (RepoSpeciesFile)SpringFactoryBioinfo.getFactory().getBean(RepoSpeciesFile.class);
-		repoTaxInfo = (RepoTaxInfo)SpringFactoryBioinfo.getFactory().getBean(RepoTaxInfo.class);
-		mongoTemplate = (MongoTemplate)SpringFactoryBioinfo.getFactory().getBean(MongoTemplate.class);
+//		repoSpeciesFile = (RepoSpeciesFile)SpringFactoryBioinfo.getFactory().getBean(RepoSpeciesFile.class);
+//		repoTaxInfo = (RepoTaxInfo)SpringFactoryBioinfo.getFactory().getBean(RepoTaxInfo.class);
+//		mongoTemplate = (MongoTemplate)SpringFactoryBioinfo.getFactory().getBean(MongoTemplate.class);
 	}
 
 	public void readSpeciesFile(String speciesFileInput) {

@@ -2,17 +2,35 @@ package com.novelbio.database.mongorepo.kegg;
 
 import java.util.List;
 
-import org.springframework.data.mongodb.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.stereotype.Repository;
 
 import com.novelbio.database.domain.kegg.noGene.KGNIdKeg;
 
-public interface RepoKNIdKeg extends PagingAndSortingRepository<KGNIdKeg, String> {
-
-	@Query(value="{ 'kegID' : ?0}")
-	public List<KGNIdKeg> findByKegId(String kegID);
+@Repository
+public class RepoKNIdKeg {
+	@Autowired
+	MongoTemplate mongoTemplateKegg;
 	
-	public List<KGNIdKeg> findAll();
+	public List<KGNIdKeg> findByKegId(String kegID) {
+		Query query = new Query( Criteria.where("kegID").is(kegID));
+		return mongoTemplateKegg.find(query, KGNIdKeg.class);
+	}
+	
+	public List<KGNIdKeg> findAll() {
+		return mongoTemplateKegg.findAll(KGNIdKeg.class);
+	}
+
+	public KGNIdKeg findOne(String usualName) {
+		return mongoTemplateKegg.findById(usualName, KGNIdKeg.class);
+	}
+
+	public void save(KGNIdKeg kgnIdKeg) {
+		mongoTemplateKegg.save(kgnIdKeg);
+	}
 
 	
 }

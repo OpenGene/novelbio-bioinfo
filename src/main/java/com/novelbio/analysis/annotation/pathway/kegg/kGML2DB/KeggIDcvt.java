@@ -25,13 +25,16 @@ public class KeggIDcvt {
 	 * @param gen2KegFile
 	 * @throws Exception 
 	 */
-	public static void upDateGen2Keg(String gen2KegFile) throws Exception {
+	public static void upDateGen2Keg(String gen2KegFile, String abbr) throws Exception {
 		ServKIDgen2Keg servKIDgen2Keg = ServKIDgen2Keg.getInstance();
 		TxtReadandWrite txtgene2Keg=new TxtReadandWrite(gen2KegFile);
 		int TaxID=0;
 		////////////////获得taxID////////////////////////////////////////////////////////
 		for (String content : txtgene2Keg.readlines()) {
-			String[] ss=content.split("\t"); 
+			if (!content.startsWith(abbr + ":")) {
+				continue;
+			}
+			String[] ss=content.split("\t");
 			long geneID=Long.parseLong(ss[1].replace("ncbi-geneid:", "").replace("equivalent", "").trim());
 			GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, geneID + "", 0);
 			if (copedID.getTaxID() > 0) {
@@ -55,6 +58,10 @@ public class KeggIDcvt {
 			return;
 		}
 		for (String content2 : txtgene2Keg.readlines()) {
+			if (!content2.startsWith(abbr + ":")) {
+				continue;
+			}
+			
 			String[] ss=content2.split("\t");
 			String kegID=ss[0];long geneID=Long.parseLong(ss[1].replace("ncbi-geneid:", "").trim());
 			KGIDgen2Keg kgiDgen2Keg=new KGIDgen2Keg();
@@ -74,13 +81,16 @@ public class KeggIDcvt {
 	 * @param keg2KoFile
 	 * @throws Exception 
 	 */
-	public static void upDateKeg2Ko(String keg2KoFile) throws Exception {
+	public static void upDateKeg2Ko(String keg2KoFile, String abbr) throws Exception {
 		ServKIDgen2Keg servKIDgen2Keg = ServKIDgen2Keg.getInstance();
 		ServKIDKeg2Ko servKIDKeg2Ko = ServKIDKeg2Ko.getInstance();
 		TxtReadandWrite txtKeg2Ko=new TxtReadandWrite(keg2KoFile);
 		int TaxID=0;
 		////////////////获得taxID////////////////////////////////////////////////////////
 		for (String content : txtKeg2Ko.readlines()) {
+			if (!content.startsWith(abbr + ":")) {
+				continue;
+			}
 			String[] ss=content.split("\t"); 
 			String kegID=ss[0].trim();
 			KGIDgen2Keg kgiDgen2Keg=new KGIDgen2Keg();
@@ -101,6 +111,10 @@ public class KeggIDcvt {
 		}
 		
 		for (String content2 : txtKeg2Ko.readlines()) {
+			if (!content2.startsWith(abbr + ":")) {
+				continue;
+			}
+			
 			String[] ss=content2.split("\t");
 			String kegID=ss[0];String ko=ss[1].trim();
 			KGIDkeg2Ko kgDkeg2Ko=new KGIDkeg2Ko();

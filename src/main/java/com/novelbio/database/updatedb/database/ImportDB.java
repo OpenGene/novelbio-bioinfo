@@ -1,5 +1,7 @@
 package com.novelbio.database.updatedb.database;
 
+import java.util.List;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
@@ -13,6 +15,8 @@ import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.DBInfo;
 import com.novelbio.database.domain.geneanno.TaxInfo;
 import com.novelbio.database.model.species.Species;
+import com.novelbio.database.service.servgeneanno.ManageSpecies;
+import com.novelbio.database.service.servgeneanno.ManageSpeciesDB;
 
 /**
  * 
@@ -32,28 +36,32 @@ public class ImportDB {
 	
 
 	public static void main(String[] args) {
-		Options opts = new Options();
-		opts.addOption("taxId", true, "taxId");
-		CommandLine cliParser = null;
-		try {
-			cliParser = new GnuParser().parse(opts, args);
-		} catch (Exception e) {
-			System.exit(1);
+//		Options opts = new Options();
+//		opts.addOption("taxId", true, "taxId");
+//		CommandLine cliParser = null;
+//		try {
+//			cliParser = new GnuParser().parse(opts, args);
+//		} catch (Exception e) {
+//			System.exit(1);
+//		}
+//		
+//		for (String string : taxId.split(",")) {
+//			if (StringOperate.isRealNull(string)) continue;
+//			int taxIdint = Integer.parseInt(string.trim());
+//			ImportPerLine.addTaxId(taxIdint);
+//		}
+		
+		
+		List<TaxInfo> lsInfos = ManageSpecies.getInstance().getLsAllTaxID();
+		for (TaxInfo taxInfo : lsInfos) {
+			ImportPerLine.addTaxId(taxInfo.getTaxID());
 		}
 		
-		String taxId = cliParser.getOptionValue("taxId");
-		for (String string : taxId.split(",")) {
-			if (StringOperate.isRealNull(string)) continue;
-			int taxIdint = Integer.parseInt(string.trim());
-			ImportPerLine.addTaxId(taxIdint);
-		}
-		
-		
-		String downloadPath = "/home/novelbio/NBCsource/database/";
+		String downloadPath = "/home/novelbio/NBCsource/biodb/database20150530/";
 		String softToolsFile = "/home/novelbio/NBCsource/SoftwareInfo.txt";
 		String taxIDFile = "/home/novelbio/NBCsource/species/常见物种IDKEGGUploadTmp.txt";
 //		String dbInfo = "/home/novelbio/NBCsource/database/DBinfo.txt";
-		String GOPath = "/home/novelbio/NBCsource/database/GO/";
+		String GOPath = downloadPath + "GO/";
 		String speciesFile = "";
 //		ImportPerLine.addTaxId(4932);
 		ImportDB importDB = new ImportDB();
@@ -65,9 +73,9 @@ public class ImportDB {
 		
 //		importDB.updateDBinfo(dbInfo);
 //		importDB.updateGODB();
-////		
+		
 		importDB.updateNCBIID();
-//		importDB.updateUniprotID();
+		importDB.updateUniprotID();
 		
 //		importDB.updateZeaMaize();
 //		importDB.updateRiceID("/home/novelbio/NBCsource/database/species/rice/");//只导了前两个
@@ -116,13 +124,13 @@ public class ImportDB {
 //	private void updateTaxInfo() {
 //		Species.updateTaxInfo(taxIDFile);
 //	}
-//	
-//	private void updateGODB() {
-//		AmiGO amiGO = new AmiGO();
-//		amiGO.setGoExtObo(GOPath + "gene_ontology_ext.obo");
+	
+	private void updateGODB() {
+		AmiGO amiGO = new AmiGO();
+		amiGO.setGoExtObo(GOPath + "gene_ontology_ext.obo");
 //		amiGO.setTaxIDfile(taxIDFile);
-//		amiGO.importFile();
-//	}
+		amiGO.importFile();
+	}
 	
 	
 	private void updateDBinfo(String dbInfoFile) {
