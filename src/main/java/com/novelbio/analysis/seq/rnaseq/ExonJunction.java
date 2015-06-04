@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
@@ -187,6 +188,9 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	private static String stopGeneName = "PALB2";
 	
 	GffHashGene gffHashGene = null;
+	/** 没有重建转录本的老iso的名字，用于后面计算可变剪接所在exon number的 */
+	Set<String> setIsoName_No_Reconstruct;
+	
 	StrandSpecific strandSpecific = StrandSpecific.NONE;
 	/** 全体差异基因的外显子
 	 * ls--
@@ -248,9 +252,9 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	boolean isUseUniqueMappedReads = false;
 	
 	public ExonJunction() {
-		List<Align> lsAligns = new ArrayList<>();
-		lsAligns.add(new Align("chr16:23519185-23719333"));
-		setLsReadRegion(lsAligns);
+//		List<Align> lsAligns = new ArrayList<>();
+//		lsAligns.add(new Align("chr16:23519185-23719333"));
+//		setLsReadRegion(lsAligns);
 	}
 	
 	/**
@@ -324,6 +328,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	public void setGffHashGene(GffHashGene gffHashGene) {
 		this.gffHashGene = gffHashGene;
+		this.setIsoName_No_Reconstruct = gffHashGene.getSetIsoID();
 		lsSplicingTests = new ArrayList<ArrayList<ExonSplicingTest>>();
 	}
 	/**
@@ -587,6 +592,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				}
 
 				ExonSplicingTest exonSplicingTest = new ExonSplicingTest(exonCluster);
+				exonSplicingTest.setSetIsoName_No_Reconstruct(setIsoName_No_Reconstruct);
 				exonSplicingTest.setPvalueJunctionProp(pvalueJunctionProp);
 				exonSplicingTest.setCombine(isCombine);
 				exonSplicingTest.setMapCond_Group2ReadsNum(mapCond_group2ReadsNum);
@@ -801,7 +807,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		boolean isGetSeq = seqHash == null ? false : true;
 		TxtReadandWrite txtOutSeq = null;
 		if (isGetSeq) {
-			txtOutSeq = new TxtReadandWrite(FileOperate.changeFileSuffix(fileName, "_Seq", "txt"), true);
+			txtOutSeq = new TxtReadandWrite(FileOperate.changeFileSuffix(fileName, "_Seq", "fasta.gz"), true);
 		}
 		
 		txtOut.writefileln(ExonSplicingTest.getTitle(condition1, condition2));
@@ -810,20 +816,20 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 //			if (chisqTest.getExonCluster().getParentGene().getName().contains(stopGeneName)) {
 //				logger.debug("stop");
 //			}
-			chisqTest.setGetSeq(seqHash);
 			try {
 				txtOut.writefileln(chisqTest.toStringArray());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		
-			if (isGetSeq) {
+		}
+		txtOut.close();
+
+		if (isGetSeq) {
+			for (ExonSplicingTest chisqTest : lsResult) {
+				chisqTest.setGetSeq(seqHash);
 				txtOutSeq.writefileln(chisqTest.toStringSeq());
 			}
-		}
-		
-		txtOut.close();
-		if (isGetSeq) {
 			txtOutSeq.close();
 		}
 		

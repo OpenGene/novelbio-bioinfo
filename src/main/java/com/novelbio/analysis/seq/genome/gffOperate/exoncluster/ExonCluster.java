@@ -17,6 +17,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict.SplicingAlternativeType;
 import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.listOperate.ListCodAbs;
 
 /**
  * 由于GffGeneIsoInfo重写了hashcode
@@ -25,7 +26,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
  *
  */
 public class ExonCluster implements Alignment {
-	private static Logger logger = Logger.getLogger(ExonCluster.class);
+	private static final Logger logger = Logger.getLogger(ExonCluster.class);
 	
 	/** 全体父亲ISO */
 	Collection<GffGeneIsoInfo> colGeneIsoInfosParent;
@@ -310,21 +311,63 @@ public class ExonCluster implements Alignment {
 		return isSameExon(false);
 	}
 	
-	/** 本exoncluster所在的exon的位置，如果同时存在retain_intron可能会不准 */
-	public int getExonNum() {
+	/** 本exoncluster所在的exon的位置，如果同时存在retain_intron可能会不准
+	 * 
+	 * @param setIsoName_No_Reconstruct 没有重建转录本的老iso的名字，这样仅选取最长的没有重建过的转录本来计算exon的所在位置
+	 * @return
+	 */
+	public String getExonNum(Set<String> setIsoName_No_Reconstruct) {
+		if (setIsoName_No_Reconstruct == null) {
+			setIsoName_No_Reconstruct = new HashSet<>();
+		}
+		
+		boolean isHaveExon = false;
 		GffGeneIsoInfo isoLongest = null;
 		for (GffGeneIsoInfo gffGeneIsoInfo : mapIso2LsExon.keySet()) {
+			if (!setIsoName_No_Reconstruct.isEmpty() && !setIsoName_No_Reconstruct.contains(gffGeneIsoInfo.getName())) {
+				continue;
+			}
+			
 			List<ExonInfo> lsExon = mapIso2LsExon.get(gffGeneIsoInfo);
-			if (lsExon.size() > 0 && (isoLongest == null || isoLongest.getLenExon(0) < gffGeneIsoInfo.getLenExon(0))) {
+			
+			if (!isHaveExon && !lsExon.isEmpty()) {
+				isHaveExon = true;
+				isoLongest = gffGeneIsoInfo;
+				continue;
+			}
+			
+			if (isHaveExon && lsExon.isEmpty()) {
+				continue;
+			}
+			
+			if (isoLongest == null || isoLongest.getLenExon(0) < gffGeneIsoInfo.getLenExon(0)) {
 				isoLongest = gffGeneIsoInfo;
 			}
 		}
+		
 		if (isoLongest == null) {
 			logger.error("get exon number error: " + getParentGene().getName() + " " + getStartAbs() + " " + getEndAbs());
-			return 0;
+			return "unknown";
 		}
-		List<ExonInfo> lsExonInfos = mapIso2LsExon.get(isoLongest);
-		return lsExonInfos.get(0).getItemNum();
+		
+		if (isHaveExon) {
+			List<ExonInfo> lsExonInfos = mapIso2LsExon.get(isoLongest);
+			return lsExonInfos.get(0).getItemNum() + "";
+		} else {
+			ListCodAbs<ExonInfo> lsCod = isoLongest.searchLocation((getStartAbs() + getEndAbs())/2);
+			if (lsCod.isInsideLoc()) {
+				return lsCod.getItemNumThis() + "";
+			} else {
+				if (lsCod.getItemNumUp() < 0) {
+					return "before first";
+				} else if (lsCod.getItemNumDown() < 0) {
+					return "after end";
+				} else {
+					return (lsCod.getItemNumUp()+1) + "-" + (lsCod.getItemNumDown()+1);
+				}
+			}
+		}
+
 	}
 	
 	/** 本cluster中，最多的转录本含有多少exon  */
