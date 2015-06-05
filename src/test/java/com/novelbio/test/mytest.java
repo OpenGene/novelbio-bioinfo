@@ -9,6 +9,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.hadoop.fs.FileUtil;
+import org.springframework.data.mongodb.MongoDbFactory;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
@@ -20,6 +24,7 @@ import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.GffChrSeq;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffFile;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
@@ -32,9 +37,16 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.geneanno.NCBIID;
+import com.novelbio.database.domain.geneanno.TaxInfo;
 import com.novelbio.database.domain.information.SoftWareInfo;
+import com.novelbio.database.domain.kegg.KGIDgen2Keg;
+import com.novelbio.database.domain.kegg.KGentry;
+import com.novelbio.database.domain.kegg.KGpathway;
+import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modgeneid.GeneType;
 import com.novelbio.database.model.species.Species;
+import com.novelbio.database.mongorepo.geneanno.RepoNCBIID;
 import com.novelbio.database.mongorepo.kegg.RepoKEntry;
 import com.novelbio.database.mongorepo.kegg.RepoKIDKeg2Ko;
 import com.novelbio.database.mongorepo.kegg.RepoKIDgen2Keg;
@@ -53,17 +65,40 @@ public class mytest {
 	static boolean is;
 
 	public static void main(String[] args) throws Exception {
-		Species species = new Species(10090);
-		species.setVersion("mm10_GRCm38");
-		species.setGffDB("NCBI");
-		System.out.println(species.getGffFile());
-		GffChrAbs gffChrAbs = new GffChrAbs(species);
-		GffHashGene gffHashGene = gffChrAbs.getGffHashGene();
-		TxtReadandWrite txtWrite = new TxtReadandWrite("/home/novelbio/geneLen_mouse_grcm38_p2.txt", true);
-		for (GffDetailGene gffDetailGene : gffHashGene.getLsGffDetailGenes()) {
-			txtWrite.writefileln(gffDetailGene.getNameSingle() + "\t" + gffDetailGene.getLongestSplitMrna().getLenExon(0));
-		}
-		txtWrite.close();
+		
+//		GeneID geneID = new GeneID("HIST1H2BL", 9606);
+//		RepoKIDgen2Keg repoKIDgen2Keg = SpringFactoryBioinfo.getBean(RepoKIDgen2Keg.class);
+//		System.out.println(geneID.getGeneUniID());
+//		KGIDgen2Keg kgiDgen2Keg = repoKIDgen2Keg.findByGeneId(Long.parseLong(geneID.getGeneUniID()));
+//		System.out.println(kgiDgen2Keg.getKeggID());
+		
+		
+//		MongoTemplate mongoTemplate = (MongoTemplate)SpringFactoryBioinfo.getFactory().getBean("mongoTemplate");
+//		Query query = new Query( Criteria.where("taxID").is(10090));
+//		List<KGentry> lskGentries = mongoTemplate.find(query, KGentry.class);
+//		Map<String, KGentry> mapKey2Entry = new HashMap<>();
+//		for (KGentry kGentry : lskGentries) {
+//			mapKey2Entry.put(kGentry.getPathName() + "_" + kGentry.getEntryId() + "_" + kGentry.getEntryName(), kGentry);
+//		}
+//		System.out.println(lskGentries.size());
+//		
+		
+//		RepoKEntry repoKEntry = SpringFactoryBioinfo.getBean(RepoKEntry.class);
+//		List<KGentry> lskGentries = repoKEntry.findByNamePath("hsa:8340", "path:hsa05034");
+//		for (KGentry kGentry : lskGentries) {
+//			System.out.println(kGentry.getEntryId());
+//		}
+		GffHashGene gffHashGene = new GffHashGene("/media/nbfs/nbCloud/public/nbcplatform/genome/species/9606/hg19_GRCh37/gff/ref_GRCh37.p13_top_level.gff3.gz");
+		gffHashGene.writeToGTF("/home/novelbio/hg19_p13.gtf");
+		
+//		for (String key : mapKey2Entry.keySet()) {
+//			if (!mapKey2EntryKeg.containsKey(key)) {
+//				System.out.println(key);
+//			}
+//		}
+		
+		
+		System.out.println();
 	}
 	
 	private static String getSeq(byte[] readInfo) {
