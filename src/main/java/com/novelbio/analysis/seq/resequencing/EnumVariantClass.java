@@ -7,19 +7,19 @@ package com.novelbio.analysis.seq.resequencing;
  *
  */
 public enum EnumVariantClass {
-	/**移码框缺失*/
+	/** 移码框缺失 */
 	Frame_Shift_Del,
-	/**移码框插入*/
+	/** 移码框插入 */
 	Frame_Shift_Ins,
 	In_Frame_Del,
 	In_Frame_Ins,
-	/**错义突变*/
+	/** 错义突变 */
 	Missense_Mutation,
-	/**无义突变*/
+	/** 无义突变 */
 	Nonsense_Mutation,
-	/***/
+	/** 没有突变 */
 	Silent, 
-	/** 间接位点突变 */
+	/** 剪接位点突变 */
 	Splice_Site,
 	/** 转录起始位点突变 */
 	Translation_Start_Site,

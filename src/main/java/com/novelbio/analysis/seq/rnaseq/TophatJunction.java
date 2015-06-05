@@ -218,12 +218,6 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	public Map<String, Double> getJunctionSite(String condition, boolean cis5to3, String chrID, int locSite) {
 		Map<String, Double> mapGroup2Value = new HashMap<>();
 		List<JunctionUnit> lsJunctionUnits = mapJunSite2JunUnit.get(chrID + SepSign.SEP_ID + locSite);
-		if (lsJunctionUnits.size() == 0) {
-			for (String group : mapCondition2Group.get(condition)) {
-				mapGroup2Value.put(group, 0.0);
-			}
-			return mapGroup2Value;
-		}
 		
 		for (JunctionUnit junctionUnit : lsJunctionUnits) {
 			if (strandSpecific != StrandSpecific.NONE && cis5to3 != junctionUnit.isCis5to3()) {
@@ -243,6 +237,14 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 				}
 			}
 		}
+		
+		if (mapGroup2Value.isEmpty()) {
+			for (String group : mapCondition2Group.get(condition)) {
+				mapGroup2Value.put(group, 0.0);
+			}
+			return mapGroup2Value;
+		}
+		
 		return mapGroup2Value;
 	}
 	

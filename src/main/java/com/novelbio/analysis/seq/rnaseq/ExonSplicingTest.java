@@ -82,7 +82,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	/** 是否合并文件--也就是不考虑重复，默认为true，也就是合并文件 */
 	boolean isCombine = true;
 	
-	private static final String debug = "Usp25";
+	private static final String debug = "PDZK1";
 	
 	public ExonSplicingTest(ExonCluster exonCluster) {
 		this.exonCluster = exonCluster;
@@ -140,6 +140,9 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	 * @param tophatJunction
 	 */
 	public void setJunctionInfo(TophatJunction tophatJunction) {
+		if (exonCluster.getParentGene().getName().contains(debug)) {
+			logger.debug("stop");
+		}
 		mapCond_Group2JunNum = tophatJunction.mapCondition_Group2JunNum;
 		for (SpliceTypePredict spliceTypePredict : exonCluster.getSplicingTypeLs()) {
 			spliceTypePredict.setTophatJunction(tophatJunction);
@@ -162,6 +165,13 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	 * 设定具体剪接位点的readsCount数，必须在读取完sam文件之后再设定
 	 */
 	public void setSpliceType2Value() {
+		if (exonCluster.getParentGene().getName().contains(debug)) {
+			logger.debug("stop");
+			if (exonCluster.getStartAbs() == 145763570) {
+				logger.debug("stop");
+			}
+		}
+		
 		for (SpliceTypePredict spliceTypePredict : exonCluster.getSplicingTypeLs()) {
 			for (String condition : setCondition) {
 				SpliceType2Value spliceType2Value = getAndCreatSpliceType2Value(condition);
@@ -213,7 +223,12 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			pvaCalculate.setCombine(isCombine);
 			pvaCalculate.setSpliceType2Value(splicingType, condition1, mapCondition2SpliceInfo.get(condition1), 
 					condition2, mapCondition2SpliceInfo.get(condition2));
-			pvaCalculate.calculatePvalue();
+			try {
+				pvaCalculate.calculatePvalue();
+			} catch (Exception e) {
+				pvaCalculate.calculatePvalue();
+			}
+	
 			lsPvalueInfo.add(pvaCalculate);
 		}
 		Collections.sort(lsPvalueInfo);
@@ -493,7 +508,9 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		public double calculatePvalue() {
 			if (pvalue < 0) {
 				double pvalueExp = iSpliceTestExp.calculatePvalue();
-				double pvalueJun = iSpliceTestJun.calculatePvalue();
+				double pvalueJun = -1;
+				pvalueJun = iSpliceTestJun.calculatePvalue();
+			
 				pvalue = getPvalueCombine(pvalueExp, pvalueJun);
 			}
 			return pvalue;

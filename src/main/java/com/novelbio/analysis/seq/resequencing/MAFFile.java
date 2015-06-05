@@ -14,30 +14,11 @@ public class MAFFile {
 
 	private String center = "NovelBio";
 	private String nCBI_Build = "GRCh37";
-//	private String sequencer = "Illumina HiSeq";
-//	private String tumor_Sample_UUID = "Tumor";
-//	private String matched_Norm_Sample_UUID = "Normal";
-//	private String chromosome_name_WU;
-//	private String start_WU;
-//	private String stop_WU;
-//	private String reference_WU;
-//	private String variant_WU;
-//	private String type_WU;
-//	private String gene_name_WU;
-//	private String transcript_name_WU;
-//	private String transcript_species_WU;
-//	private String transcript_source_WU;
-//	private String transcript_version_WU;
-//	private String strand_WU;
-//	private String transcript_status_WU;
-//	private String trv_type_WU;
-//	private String c_position_WU;
-//	private String amino_acid_change_WU;
-//	private String ucsc_cons_WU;
-//	private String domain_WU;
-//	private String all_domains_WU;
-//	private String deletion_substructures_WU;
-//	private String transcript_error;
+	/** 序列测序策略， 值可以为：WGS,WGA,WXS,RNA-Seq,Other */
+	protected EnumSeqSource sequence_Source = EnumSeqSource.WGS;
+	
+	/** 序列测序平台，值可以为： IlluminaGAllx, IlluminaHiSeq, SOLID, FourFiveFour, IonTorrentPGM, IonTorrentProton, IlluminaHiSeq2500 */
+	protected EnumSequencer sequencer = EnumSequencer.IlluminaHiSeq;
 	
 	public void setCenter(String center) {
 		this.center = center;

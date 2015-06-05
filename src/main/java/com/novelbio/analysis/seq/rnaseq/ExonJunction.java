@@ -253,7 +253,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	
 	public ExonJunction() {
 //		List<Align> lsAligns = new ArrayList<>();
-//		lsAligns.add(new Align("chr16:23519185-23719333"));
+//		lsAligns.add(new Align("chr1:145663570-145864207"));
 //		setLsReadRegion(lsAligns);
 	}
 	
