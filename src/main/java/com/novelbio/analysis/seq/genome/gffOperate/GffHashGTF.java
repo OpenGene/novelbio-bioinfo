@@ -74,7 +74,7 @@ public class GffHashGTF extends GffHashGeneAbs{
 		String tmpTranscriptNameLast = "";
 		int line = 0;
 		for (String content : txtgff.readlines() ) {
-			if (content.contains("NM_005199.4")) {
+			if (content.contains("ENSG00000117318")) {
 				logger.debug("stop");
 			}
 			line++;
@@ -189,11 +189,12 @@ public class GffHashGTF extends GffHashGeneAbs{
 		String[] iso2geneName = new String[2];
 		 String[] info = ss8.split(";");
 		 for (String name : info) {
-			if (name.contains("transcript_id")) {
+			 name = name.trim();
+			if (name.startsWith("transcript_id")) {
 				iso2geneName[0] = name.replace("transcript_id", "").replace("=", "").replace("\"", "").trim();
-			} else if (name.contains(geneNameFlag)) {
+			} else if (name.startsWith(geneNameFlag)) {
 				iso2geneName[1] = name.replace(geneNameFlag, "").replace("=", "").replace("\"", "").trim();
-			} else if (name.contains("ID")) {
+			} else if (name.startsWith("ID")) {
 				iso2geneName[0] = name.replace("ID", "").replace("=", "").replace("\"", "").trim();
 			}
 		}

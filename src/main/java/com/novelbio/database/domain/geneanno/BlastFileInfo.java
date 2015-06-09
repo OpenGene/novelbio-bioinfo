@@ -254,8 +254,7 @@ public class BlastFileInfo {
 		Properties properties = new Properties();
 		String metaFileName = getFileName() + ".meta";
 		try {
-			OutputStream outputStream = FileOperate.getOutputStream(
-					metaFileName, true);
+			OutputStream outputStream = FileOperate.getOutputStream(metaFileName);
 			properties.setProperty("id", id);
 			if(fileName != null)
 				properties.setProperty("fileName", fileName);
