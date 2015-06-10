@@ -591,6 +591,27 @@ public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E>
 		}
 		return lsSep;
 	}
+	
+	/**
+	 * <b>目前仅用于差异可变剪接查找具体哪个exon发生了剪接事件</b><br>
+	 * 给定一系列ListElement，以及一个方向。
+	 * 将相同方向的ListElement提取出来，然后合并，然后找出这些element的共同边界
+	 * @param cis5to3 null,不考虑方向
+	 * @param lsIso
+	 * 	 * ---a--a---------b----b-------------<br>
+	 *    ---m----------------n----<br>
+	 *    得到：---m--a-------------b----b----------
+	 * @return
+	 * 返回一个list，按照cis5to3排序，如果cis5to3为true，从小到大排列
+	 * 如果cis5to3为false，从大到小排列
+	 * 内部的int[] 0: startAbs 1: endAbs
+	 */
+	public static ArrayList<int[]> getSep(Boolean cis5to3, List<? extends ListAbs<? extends ListDetailAbs>> lsIso) {
+		ArrayList<? extends ListDetailAbs> lsAllelement = combListAbs(cis5to3, lsIso);
+		ArrayList<int[]> lsSep = null;
+		lsSep = getLsElementSepSingle(cis5to3, lsAllelement);
+		return lsSep;
+	}
 	/**
 	 * 
 	 * 将一个List中的Iso全部合并起来。
@@ -610,6 +631,39 @@ public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E>
 		Collections.sort(lsAll);
 		return lsAll;
 	}
+	
+	/** 将经过排序的exonlist合并，获得几个连续的exon，切分的很细
+	 * 返回的int[] 0: startAbs    1: endAbs
+	 *  */
+	private static ArrayList<int[]> getLsElementSepSingle(Boolean cis5to3, ArrayList<? extends ListDetailAbs> lsAll) {
+		ArrayList<int[]> lsExonBounder = new ArrayList<int[]>();
+		int[] exonOld = new int[]{lsAll.get(0).getStartAbs(), lsAll.get(0).getEndAbs()};
+		lsExonBounder.add(exonOld);
+		for (int i = 1; i < lsAll.size(); i++) {
+			int[] exon = new int[]{lsAll.get(i).getStartAbs(), lsAll.get(i).getEndAbs()};
+			if (cis5to3 == null || cis5to3) {
+				if (exon[0] <= exonOld[1]) {
+					if (exon[1] < exonOld[1]) {
+						exonOld[1] = exon[1];
+					}
+				} else {
+					exonOld = exon.clone();
+					lsExonBounder.add(exonOld);
+				}
+			} else {
+				if (exon[1] >= exonOld[0]) {
+					if (exon[0] > exonOld[0]) {
+						exonOld[0] = exon[0];
+					}
+				} else {
+					exonOld = exon.clone();
+					lsExonBounder.add(exonOld);
+				}
+			}
+		}
+		return lsExonBounder;
+	}
+	
 	/** 将经过排序的exonlist合并，获得几个连续的exon，用于分段
 	 * 返回的int[] 0: startAbs    1: endAbs
 	 *  

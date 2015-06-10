@@ -2,6 +2,7 @@ package com.novelbio.analysis.seq.genome.gffOperate.exoncluster;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -17,7 +18,9 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict.SplicingAlternativeType;
 import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.listOperate.ListAbs;
 import com.novelbio.listOperate.ListCodAbs;
+import com.novelbio.listOperate.ListCodAbsDu;
 
 /**
  * 由于GffGeneIsoInfo重写了hashcode
@@ -29,7 +32,7 @@ public class ExonCluster implements Alignment {
 	private static final Logger logger = Logger.getLogger(ExonCluster.class);
 	
 	/** 全体父亲ISO */
-	Collection<GffGeneIsoInfo> colGeneIsoInfosParent;
+	List<GffGeneIsoInfo> colGeneIsoInfosParent;
 	ExonCluster exonClusterBefore;
 	ExonCluster exonClusterAfter;
 	
@@ -37,7 +40,7 @@ public class ExonCluster implements Alignment {
 	int startLoc = 0;
 	int endLoc = 0;
 	List<ExonInfo> lsCombExon;
-
+	Boolean isCis5To3;
 	/**
 	 * 某个iso在该exonCluster中所对应的lsExon
 	 * 该iso跳过了这个exon，则里面装空的list
@@ -49,13 +52,45 @@ public class ExonCluster implements Alignment {
 	
 	List<SpliceTypePredict> lsSpliceTypePredicts;
 	
-	public ExonCluster(String chrID, int start, int end, Collection<GffGeneIsoInfo> colGeneIsoInfosParent) {
+	public ExonCluster(String chrID, int start, int end, List<GffGeneIsoInfo> colGeneIsoInfosParent, Boolean isCis5To3) {
 		this.chrID = chrID;
 		this.startLoc = Math.min(start, end);
 		this.endLoc = Math.max(start, end);
 		this.colGeneIsoInfosParent = colGeneIsoInfosParent;
-
+		this.isCis5To3 = isCis5To3;
 	}
+	
+	public void initail() {
+		for (GffGeneIsoInfo gffGeneIsoInfo : colGeneIsoInfosParent) {
+			if (gffGeneIsoInfo.isCis5to3() != isCis5To3
+					|| gffGeneIsoInfo.getEndAbs() < startLoc
+					|| gffGeneIsoInfo.getStartAbs() > endLoc
+				) {
+				continue;
+			}
+			ListCodAbsDu<ExonInfo, ListCodAbs<ExonInfo>> lsDu = gffGeneIsoInfo.searchLocationDu(startLoc, endLoc);
+			List<ExonInfo> lsExon = lsDu.getCoveredElement();
+			Collections.sort(lsExon);
+			boolean junc = false;//如果本isoform正好没有落在bounder组中的exon，那么就需要记录跳过的exon的位置，就将这个flag设置为true
+			int beforeExonNum = 0;//如果本isoform正好没有落在bounder组中的exon，那么就要记录该isoform的前后两个exon的位置，用于查找跨过和没有跨过的exon
+
+			if (lsExon.size() == 0) junc = true;
+			ListCodAbs<ExonInfo> codBefore = gffGeneIsoInfo.isCis5to3() ? lsDu.getGffCod1() : lsDu.getGffCod2();
+			beforeExonNum = codBefore.getItemNumUp();
+
+			addExonCluster(gffGeneIsoInfo, lsExon);
+			if (junc && beforeExonNum < gffGeneIsoInfo.size()-1) {
+				if (beforeExonNum == -1) {
+					logger.debug("error");
+				}
+				setIso2ExonNumSkipTheCluster(gffGeneIsoInfo, beforeExonNum);
+			}
+			if (junc && beforeExonNum >= gffGeneIsoInfo.size()-1) {
+				logger.error("出错拉，请检查该基因：" + gffGeneIsoInfo.getName() );
+			}
+		}
+	}
+	
 	public String getRefID() {
 		return chrID;
 	}
@@ -81,6 +116,9 @@ public class ExonCluster implements Alignment {
 	}
 	
 	public Boolean isCis5to3() {
+		if (isCis5To3 != null) {
+			return isCis5To3;
+		}
 		for (List<ExonInfo> lsExonInfos : mapIso2LsExon.values()) {
 			if (lsExonInfos.size() > 0) {
 				return lsExonInfos.get(0).isCis5to3();
@@ -321,53 +359,96 @@ public class ExonCluster implements Alignment {
 			setIsoName_No_Reconstruct = new HashSet<>();
 		}
 		
-		boolean isHaveExon = false;
-		GffGeneIsoInfo isoLongest = null;
+		//获得本exonCluster所对应的gffGene的全体iso
+		GffDetailGene gffDetailGeneParent = colGeneIsoInfosParent.get(0).getParentGffGeneSame();
+		List<GffGeneIsoInfo> lsGeneIsoInfos = new ArrayList<>();
+		for (GffGeneIsoInfo iso : gffDetailGeneParent.getLsCodSplit()) {
+			if (!setIsoName_No_Reconstruct.isEmpty() && !setIsoName_No_Reconstruct.contains(iso.getName())) {
+				continue;
+			}
+			lsGeneIsoInfos.add(iso);
+		}
+		
+		boolean isOnExon = false;
 		for (GffGeneIsoInfo gffGeneIsoInfo : mapIso2LsExon.keySet()) {
 			if (!setIsoName_No_Reconstruct.isEmpty() && !setIsoName_No_Reconstruct.contains(gffGeneIsoInfo.getName())) {
 				continue;
 			}
 			
 			List<ExonInfo> lsExon = mapIso2LsExon.get(gffGeneIsoInfo);
-			
-			if (!isHaveExon && !lsExon.isEmpty()) {
-				isHaveExon = true;
-				isoLongest = gffGeneIsoInfo;
-				continue;
-			}
-			
-			if (isHaveExon && lsExon.isEmpty()) {
-				continue;
-			}
-			
-			if (isoLongest == null || isoLongest.getLenExon(0) < gffGeneIsoInfo.getLenExon(0)) {
-				isoLongest = gffGeneIsoInfo;
-			}
-		}
-		
-		if (isoLongest == null) {
-			logger.error("get exon number error: " + getParentGene().getName() + " " + getStartAbs() + " " + getEndAbs());
-			return "unknown";
-		}
-		
-		if (isHaveExon) {
-			List<ExonInfo> lsExonInfos = mapIso2LsExon.get(isoLongest);
-			return lsExonInfos.get(0).getItemNum() + "";
-		} else {
-			ListCodAbs<ExonInfo> lsCod = isoLongest.searchLocation((getStartAbs() + getEndAbs())/2);
-			if (lsCod.isInsideLoc()) {
-				return lsCod.getItemNumThis() + "";
-			} else {
-				if (lsCod.getItemNumUp() < 0) {
-					return "before first";
-				} else if (lsCod.getItemNumDown() < 0) {
-					return "after end";
-				} else {
-					return (lsCod.getItemNumUp()+1) + "-" + (lsCod.getItemNumDown()+1);
-				}
+			if (!isOnExon && !lsExon.isEmpty()) {
+				isOnExon = true;
+				break;
 			}
 		}
 
+		List<int[]> lsBound = ListAbs.getSep(isCis5To3, lsGeneIsoInfos);
+		int exonNum = getExonNumInfo(isCis5To3, getStartAbs(), getEndAbs(), lsBound);
+		return decodeExonLocate(exonNum, lsBound.size(), isOnExon);
+	}
+	
+	/**
+	 * 给定一系列的转录本，和指定的起点终点，返回该坐标对所在exon的位置
+	 * @param isCis5To3 方向
+	 * @param startAbs 坐标对的起点
+	 * @param endAbs 坐标对的终点
+	 * @param lsGeneIsoInfos 一系列的iso
+	 * @param isOnExon 是否处于exon上
+	 * @return
+	 */
+	protected static int getExonNumInfo(Boolean isCis5To3, int startAbs, int endAbs, List<int[]> lsBound ) {
+		
+		int num = 1;
+		int resultExonNum = -100;
+		if (isCis5To3 == null || isCis5To3) {
+			//       ->------->------->-
+			//-----10---20-------------30---40---------------50--60
+			for (int[] is : lsBound) {
+				if (startAbs > is[1]) {
+				} else if (endAbs < is[0]) {
+					resultExonNum = -(num-1);
+					break;
+				} else if (endAbs >= is[0]) {
+					resultExonNum = num;
+					break;
+				}
+				num++;
+			}
+		} else {
+			//       <-------<-------<-
+			//-----10---20-------------30---40---------------50--60
+			for (int[] is : lsBound) {
+				if (endAbs < is[0]) {
+				} else if (startAbs > is[1]) {
+					resultExonNum = -(num-1);
+					break;
+				} else if (startAbs <= is[1]) {
+					resultExonNum = num;
+					break;
+				}
+				num++;
+			}
+		}
+		if (resultExonNum == -100) {
+			resultExonNum = num;
+		}
+		return resultExonNum;
+	}
+	
+	protected static String decodeExonLocate(int exonNum, int allExonNum, boolean isOnExon) {
+		if (exonNum > 0 || isOnExon) {
+			return Math.abs(exonNum) + "";
+		} else {
+			if (Math.abs(exonNum) < 1) {
+				return "before first";
+			} else if (exonNum > allExonNum) {
+				return "after end";
+			} else if (exonNum < 0) {
+				return Math.abs(exonNum) +"-"+(Math.abs(exonNum) + 1);
+			} else {
+				return exonNum + "";
+			}
+		}
 	}
 	
 	/** 本cluster中，最多的转录本含有多少exon  */
@@ -583,6 +664,7 @@ public class ExonCluster implements Alignment {
 	public String getHashKey() {
 		return getRefID() + "_" +getStartAbs() + "_" + getEndAbs();
 	}
+
 
 	
 }

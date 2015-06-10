@@ -216,7 +216,11 @@ public class DiffExpLimma extends DiffExpAbs{
 	protected void run() {
 		Rrunning("Limma");
 	}
-
+	
+	static String logfc = "logFC";
+	static String pValue = "P.Value";
+	static String fdr = "adj.P.Val";
+	static String Bvalue = "B";
 	@Override
 	protected List<String[]> modifySingleResultFile(String outFileName, String treatName, String controlName) {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
@@ -228,16 +232,32 @@ public class DiffExpLimma extends DiffExpAbs{
 		String[] titleOld = lsDifGene.get(0);
 		String[] firstLine = lsDifGene.get(1);
 		//第一列可能为数字列
+		int accId = 0;
 		if (firstLine.length == 8 || (firstLine.length == 7 && titleOld[0].replace("\"", "").equalsIgnoreCase("id"))) {
-			lsIndelItem.add(new int[]{0, -1});
+			accId = 1;
 		}
-
+		Map<String, Integer> mapColName2Num = new HashMap<>();
+		for (int i = 0; i < titleOld.length; i++) {
+			String tmpTitle = titleOld[i];
+			tmpTitle = tmpTitle.replace("\"", "");
+			if (tmpTitle.toLowerCase().equals(logfc.toLowerCase())) {
+				mapColName2Num.put(logfc, i);
+			} else if (tmpTitle.toLowerCase().equals(pValue.toLowerCase())) {
+				mapColName2Num.put(pValue, i);
+			} else if (tmpTitle.toLowerCase().equals(fdr.toLowerCase())) {
+				mapColName2Num.put(fdr, i);
+			} else if (tmpTitle.toLowerCase().equals(Bvalue.toLowerCase())) {
+				mapColName2Num.put(Bvalue, i);
+			}
+		}
+		
 		for (int i = 1; i < lsDifGene.size(); i++) {
-			String[] tmpResult = new String[7];
-			String[] geneInfo = ArrayOperate.indelElement(lsDifGene.get(i), lsIndelItem, "");
-			tmpResult[0] = geneInfo[0].replace("\"", "");
+			String[] ss = lsDifGene.get(i);
+			List<String> lsTmpLine = new ArrayList<>();
+			lsTmpLine.add(ss[accId].replace("\"", ""));
+			
 			double treatLogValue = 0; double ctrlLogValue = 0;
-			Map<String, Double> mapSample2Value = mapGeneID_2_Sample2MeanValue.get(tmpResult[0]);
+			Map<String, Double> mapSample2Value = mapGeneID_2_Sample2MeanValue.get(ss[accId].replace("\"", ""));
 			if (mapSample2Value == null) {
 				continue;
 			}
@@ -248,13 +268,13 @@ public class DiffExpLimma extends DiffExpAbs{
 				treatLogValue = getLogValue(treatLogValue);
 				ctrlLogValue = getLogValue(ctrlLogValue);
 			}
-			tmpResult[1] = treatLogValue + "";
-			tmpResult[2] = ctrlLogValue + "";
-			tmpResult[3] = (treatLogValue - ctrlLogValue) + "";
-			for (int j = 0; j < 3; j++) {
-				tmpResult[tmpResult.length - j - 1] = geneInfo[geneInfo.length - j - 1].replace("\"", "");
-			}
-			lsResult.add(tmpResult);
+			lsTmpLine.add(treatLogValue + "");
+			lsTmpLine.add(ctrlLogValue + "");
+			lsTmpLine.add((treatLogValue - ctrlLogValue) + "");
+			lsTmpLine.add(ss[mapColName2Num.get(pValue) + accId + 1] );
+			lsTmpLine.add(ss[mapColName2Num.get(fdr) + accId + 1] );
+			lsTmpLine.add(ss[mapColName2Num.get(Bvalue) + accId + 1] );
+			lsResult.add(lsTmpLine.toArray(new String[0]));
 		}
 		return lsResult;
 	}

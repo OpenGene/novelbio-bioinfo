@@ -126,6 +126,9 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 		if (input.startsWith("#")) {
 			return input;
 		}
+//		if (input.contains("120317577")) {
+//			logger.debug("stop");
+//		}
 		ArrayList<String> lsInfo = ArrayOperate.converArray2List(input.split("\t"));
 		int refStartSite = Integer.parseInt(lsInfo.get(colRefStartSite).trim());
 
@@ -152,7 +155,7 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 					geneID = new GeneID(gffGeneIsoInfo.getParentGffGeneSame().getNameSingle(), gffChrAbs.getTaxID());
 				}
 				if (geneID.getIDtype() != GeneID.IDTYPE_ACCID) {
-					lsInfo.add(geneID.getSymbol());
+					lsInfo.add(gffGeneIsoInfo.getParentGeneName());
 					lsInfo.add(geneID.getDescription());
 				} else {
 					lsInfo.add("");

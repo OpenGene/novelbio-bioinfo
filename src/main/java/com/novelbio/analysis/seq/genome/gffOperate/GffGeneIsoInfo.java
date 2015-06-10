@@ -1536,41 +1536,14 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		ArrayList<int[]> lsExonBound = ListAbs.getCombSep(cis5To3, lsGffGeneIsoInfos, false);
 		ExonCluster exonClusterBefore = null;
 		for (int[] exonBound : lsExonBound) {
-			ExonCluster exonCluster = new ExonCluster(chrID, exonBound[0], exonBound[1], lsGffGeneIsoInfos);
+			ExonCluster exonCluster = new ExonCluster(chrID, exonBound[0], exonBound[1], lsGffGeneIsoInfos, cis5To3);
 			
 			exonCluster.setExonClusterBefore(exonClusterBefore);
 			if (exonClusterBefore != null) {
 				exonClusterBefore.setExonClusterAfter(exonCluster);
 			}
 			
-			for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
-				if (gffGeneIsoInfo.isCis5to3() != cis5To3
-						|| gffGeneIsoInfo.getEndAbs() < Math.min(exonBound[0], exonBound[1])
-						|| gffGeneIsoInfo.getStartAbs() > Math.max(exonBound[0], exonBound[1])
-					) {
-					continue;
-				}
-				ListCodAbsDu<ExonInfo, ListCodAbs<ExonInfo>> lsDu = gffGeneIsoInfo.searchLocationDu(exonBound[0], exonBound[1]);
-				List<ExonInfo> lsExon = lsDu.getCoveredElement();
-				Collections.sort(lsExon);
-				boolean junc = false;//如果本isoform正好没有落在bounder组中的exon，那么就需要记录跳过的exon的位置，就将这个flag设置为true
-				int beforeExonNum = 0;//如果本isoform正好没有落在bounder组中的exon，那么就要记录该isoform的前后两个exon的位置，用于查找跨过和没有跨过的exon
-
-				if (lsExon.size() == 0) junc = true;
-				ListCodAbs<ExonInfo> codBefore = gffGeneIsoInfo.isCis5to3() ? lsDu.getGffCod1() : lsDu.getGffCod2();
-				beforeExonNum = codBefore.getItemNumUp();
-
-				exonCluster.addExonCluster(gffGeneIsoInfo, lsExon);
-				if (junc && beforeExonNum < gffGeneIsoInfo.size()-1) {
-					if (beforeExonNum == -1) {
-						logger.debug("error");
-					}
-					exonCluster.setIso2ExonNumSkipTheCluster(gffGeneIsoInfo, beforeExonNum);
-				}
-				if (junc && beforeExonNum >= gffGeneIsoInfo.size()-1) {
-					logger.error("出错拉，请检查该基因：" + gffGeneIsoInfo.getName() );
-				}
-			}
+			exonCluster.initail();
 			lsResult.add(exonCluster);
 			exonClusterBefore = exonCluster;
 		}
