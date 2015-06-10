@@ -147,7 +147,10 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 		lsInfo.add(gffGeneIsoInfo.getName());
 		if (ManageSpecies.getInstance() instanceof ManageSpeciesDB) {
 			try {
-				GeneID geneID = gffGeneIsoInfo.getGeneID();
+				GeneID geneID = new GeneID(gffGeneIsoInfo.getName(), gffChrAbs.getTaxID());
+				if (geneID.getIDtype() == GeneID.IDTYPE_ACCID) {
+					geneID = new GeneID(gffGeneIsoInfo.getParentGffGeneSame().getNameSingle(), gffChrAbs.getTaxID());
+				}
 				if (geneID.getIDtype() != GeneID.IDTYPE_ACCID) {
 					lsInfo.add(geneID.getSymbol());
 					lsInfo.add(geneID.getDescription());

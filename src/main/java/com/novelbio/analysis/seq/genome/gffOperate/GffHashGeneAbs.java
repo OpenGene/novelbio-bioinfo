@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
@@ -146,17 +147,13 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 			return mapName2DetailAbs;
 		}
 		mapName2DetailAbs = new LinkedHashMap<String, GffDetailGene>();
-		for (ListGff listAbs : mapChrID2ListGff.values()) {
-			for (GffDetailGene gffGeneLoc : listAbs.getMapName2DetailAbs().values()) {
-				for (GffDetailGene gffGene : gffGeneLoc.getlsGffDetailGenes()) {
-					for (String name : gffGene.getName()) {
-						if (!mapName2DetailAbs.containsKey(name.toLowerCase()) || 
-								mapName2DetailAbs.containsKey(name.toLowerCase()) && gffGene.getRefID().toLowerCase().startsWith("chr"))
-						{
-							mapName2DetailAbs.put(name.toLowerCase(), gffGene);
-							mapName2DetailAbs.put(removeDot(name.toLowerCase()), gffGene);
-						}
-					}
+		for (GffDetailGene gffGene : getLsGffDetailGenes()) {
+			for (String name : gffGene.getName()) {
+				if (!mapName2DetailAbs.containsKey(name.toLowerCase()) || 
+						mapName2DetailAbs.containsKey(name.toLowerCase()) && gffGene.getRefID().toLowerCase().startsWith("chr"))
+				{
+					mapName2DetailAbs.put(name.toLowerCase(), gffGene);
+					mapName2DetailAbs.put(removeDot(name.toLowerCase()), gffGene);
 				}
 			}
 		}
@@ -207,21 +204,19 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 				String locID = null;
 				try {
 					locID = getMapGeneID2Acc(acc2GeneIDfile).get(copedID.getGeneUniID()).split("//")[0];
-				} catch (Exception e) {
-					logger.error("没有该accID："+accID);
-					return null;
-				}
-				gffGeneIsoInfo = mapName2Iso.get(locID.toLowerCase());
-				if (gffGeneIsoInfo != null) {
-					return gffGeneIsoInfo;
-				} else {
-					GffDetailGene gffdetail = searchLOC(locID);
-					if (gffdetail != null) {
-						GffGeneIsoInfo gffGeneIsoInfoOut = gffdetail.getIsolist(locID);
-						if (gffGeneIsoInfoOut != null) {
-							return gffGeneIsoInfoOut;
+					gffGeneIsoInfo = mapName2Iso.get(locID.toLowerCase());
+					if (gffGeneIsoInfo != null) {
+						return gffGeneIsoInfo;
+					} else {
+						GffDetailGene gffdetail = searchLOC(locID);
+						if (gffdetail != null) {
+							GffGeneIsoInfo gffGeneIsoInfoOut = gffdetail.getIsolist(locID);
+							if (gffGeneIsoInfoOut != null) {
+								return gffGeneIsoInfoOut;
+							}
 						}
 					}
+				} catch (Exception e) {
 				}
 			}
 			

@@ -74,7 +74,7 @@ public class GffHashGTF extends GffHashGeneAbs{
 		String tmpTranscriptNameLast = "";
 		int line = 0;
 		for (String content : txtgff.readlines() ) {
-			if (content.contains("ENSG00000117318")) {
+			if (content.contains("TIP1%3B2")) {
 				logger.debug("stop");
 			}
 			line++;
@@ -187,7 +187,10 @@ public class GffHashGTF extends GffHashGeneAbs{
 		}
 		
 		String[] iso2geneName = new String[2];
-		 String[] info = ss8.split(";");
+		if (ss8.endsWith(";")) {
+			ss8 = ss8 + " ";
+		}
+		 String[] info = ss8.split("; ");
 		 for (String name : info) {
 			 name = name.trim();
 			if (name.startsWith("transcript_id")) {
@@ -282,7 +285,13 @@ public class GffHashGTF extends GffHashGeneAbs{
 		//排序
 		Collections.sort(lsGeneIsoInfos, new Comparator<GffGeneIsoInfo>() {
 			public int compare(GffGeneIsoInfo o1, GffGeneIsoInfo o2) {
-				Integer o1Start = o1.getStartAbs();
+				Integer o1Start = 0;
+				try {
+					o1Start = o1.getStartAbs();
+				} catch (Exception e) {
+					o1Start = o1.getStartAbs();
+				}
+				
 				Integer o2Start = 0;
 				o2Start = o2.getStartAbs();
 

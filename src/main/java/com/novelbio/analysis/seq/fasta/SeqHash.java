@@ -27,6 +27,9 @@ public class SeqHash implements SeqHashInt {
 	 */
 	Boolean TOLOWCASE = null;
 	
+	/** 有些提取的基因会明显超过染色体范围，这种序列是否提取 */
+	boolean isGetOutBoundSeq = true;
+	
 	public SeqHash(SeqHashAbs seqHashAbs) {
 		this.seqHashAbs = seqHashAbs;
 	}
@@ -70,6 +73,11 @@ public class SeqHash implements SeqHashInt {
 		if (FileOperate.isFileDirectory(chrFile)) {
 			seqHashAbs = new ChrFoldHash(chrFile, regx);
 		}
+	}
+	
+	/** 有些提取的基因会明显超过染色体范围，这种序列是否提取 */
+	public void setGetOutBoundSeq(boolean isGetOutBoundSeq) {
+		this.isGetOutBoundSeq = isGetOutBoundSeq;
 	}
 	
 	/**
@@ -206,7 +214,10 @@ public class SeqHash implements SeqHashInt {
 		if (chrLen == null) return null;
 		
 		if (gffGeneIsoInfo.getStartAbs() < 0 || gffGeneIsoInfo.getEndAbs() > chrLen) {
-			return null;
+			logger.error("out of bound, the gene location is: " + gffGeneIsoInfo.getStartAbs() + "-" + gffGeneIsoInfo.getEndAbs() + ", but the chromosome length is: " + chrLen);
+			if (!isGetOutBoundSeq) {
+				return null;
+			}
 		}
 
 		SeqFasta seqFasta = seqHashAbs.getSeq(gffGeneIsoInfo, getIntron);

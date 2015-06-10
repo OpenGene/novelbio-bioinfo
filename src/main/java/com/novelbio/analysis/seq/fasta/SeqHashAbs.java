@@ -281,6 +281,7 @@ public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 				ExonInfo exon = lsInfo.get(i);
 				SeqFasta seqfastaTmp = getSeq(myChrID, exon.getStartAbs(), exon.getEndAbs());
 				if (seqfastaTmp == null) return null;
+//				if (seqfastaTmp == null) continue;
 				addSep(result, sep);
 				result.append(seqfastaTmp.toString().toUpperCase());
 				
@@ -295,7 +296,7 @@ public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 				ExonInfo exon = lsInfo.get(i);
 				SeqFasta seqfastaTmp = getSeq(myChrID, exon.getStartAbs(), exon.getEndAbs());
 				if (seqfastaTmp == null) return null;
-				
+//				if (seqfastaTmp == null) continue;
 				addSep(result, sep);
 				result.append(seqfastaTmp.toString().toUpperCase());
 				if (getIntron && i > 0) {
