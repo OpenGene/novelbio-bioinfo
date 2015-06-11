@@ -32,12 +32,12 @@ public class Trinity implements IntCmdSoft {
 	/**
 	 * left reads, one or more (separated by space),Fq文件
 	 */
-	List<String> lsLeftFq;
+	List<String> lsLeftFq = new ArrayList<>();
 	
 	/**
 	 * right reads, one or more (separated by space),Fq文件
 	 */
-	List<String> lsRightFq;
+	List<String> lsRightFq = new ArrayList<>();
 	
 	/**
 	  *Strand-specific RNA-Seq read orientation.
@@ -215,10 +215,12 @@ public class Trinity implements IntCmdSoft {
 	
 	/** 务必先设定Left再设定Right */
 	public void setLsLeftFq(List<String> lsLeftFq) {
+		if (lsLeftFq == null) return;
 		this.lsLeftFq = lsLeftFq;
 	}
 	/** 务必先设定Left再设定Right */
 	public void setLsRightFq(List<String> lsRightFq) {
+		if (lsRightFq == null) return;
 		this.lsRightFq = lsRightFq;
 	}
 
@@ -226,8 +228,8 @@ public class Trinity implements IntCmdSoft {
 		List<String> lsFq = new ArrayList<>();
 		if (isSingleEnd()) {
 			lsFq.add("--single");
-			if (lsLeftFq != null) lsFq.addAll(lsLeftFq);
-			if (lsRightFq != null) lsFq.addAll(lsRightFq);			
+			if (!lsLeftFq.isEmpty()) lsFq.addAll(lsLeftFq);
+			if (!lsRightFq.isEmpty()) lsFq.addAll(lsRightFq);			
 		} else {//双端
 			lsFq.add("--left");
 			lsFq.addAll(lsLeftFq);
@@ -238,9 +240,7 @@ public class Trinity implements IntCmdSoft {
 	}
 	
 	private boolean isSingleEnd() {
-		if ((lsLeftFq == null || lsLeftFq.size() == 0)//单端
-				|| lsRightFq == null || lsRightFq.size() == 0
-				) {
+		if (lsLeftFq.isEmpty() || lsRightFq.isEmpty()) {
 			return true;
 		}
 		return false;
