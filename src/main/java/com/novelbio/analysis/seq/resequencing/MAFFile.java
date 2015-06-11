@@ -1,11 +1,14 @@
 package com.novelbio.analysis.seq.resequencing;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
+import htsjdk.variant.variantcontext.Allele;
 import htsjdk.variant.variantcontext.Genotype;
+import htsjdk.variant.variantcontext.GenotypesContext;
 import htsjdk.variant.variantcontext.VariantContext;
 import htsjdk.variant.vcf.VCFFileReader;
 
@@ -19,6 +22,19 @@ public class MAFFile {
 	
 	/** 序列测序平台，值可以为： IlluminaGAllx, IlluminaHiSeq, SOLID, FourFiveFour, IonTorrentPGM, IonTorrentProton, IlluminaHiSeq2500 */
 	protected EnumSequencer sequencer = EnumSequencer.IlluminaHiSeq;
+	
+	public static void main(String[] args) {
+		VCFFileReader reader = new VCFFileReader(FileOperate.getFile("/home/novelbio/下载/CL.vcf"), false);
+		for (VariantContext variantContext : reader) {
+			System.out.println(variantContext.getReference().toString().replaceAll("\\*", "") + "");
+			List<Allele> lsAlleles = variantContext.getAlternateAlleles();
+			GenotypesContext TumGenotype = variantContext.getGenotypes();
+			for (String sampleName : TumGenotype.getSampleNames()) {
+				System.out.println(sampleName);
+			}
+		}
+		System.out.println();
+	}
 	
 	public void setCenter(String center) {
 		this.center = center;

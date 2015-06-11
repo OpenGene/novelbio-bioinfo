@@ -1,6 +1,19 @@
 package com.novelbio.analysis.seq.resequencing;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
+import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.service.servgeneanno.ManageSpecies;
+import com.novelbio.database.service.servgeneanno.ManageSpeciesDB;
 
 import htsjdk.variant.variantcontext.Genotype;
 import htsjdk.variant.variantcontext.VariantContext;
@@ -45,14 +58,46 @@ public class MAFRecord {
 
 	private MAFFile mafFile = new MAFFile();
 	private VariantContext variantContext;
-	
-	public MAFRecord(VariantContext variantContext) {
-		this.variantContext = variantContext;
-	}
-	
 	//TODO 只暂时做测试用
-	private EnumVariantClass variant_Classification = EnumVariantClass.Flank3;
+	
+	private Set<EnumVariantClass> setVariantClasses = new HashSet<>();
 	private String dbSNP_Val_Status = "by1000Genomes";
+	
+	public MAFRecord(VariantContext variantContext, GffChrAbs gffChrAbs) {
+		this.variantContext = variantContext;
+		
+//		if (input.contains("120317577")) {
+//			logger.debug("stop");
+//		}
+		String refId = variantContext.getContig();
+		String referenceSeq = variantContext.getReference().toString().replaceAll("\\*", "");
+		String altSeq = variantContext.getAlternateAllele(0).toString().replaceAll("\\*", "");
+		RefSiteSnpIndel refSiteSnpIndel = new RefSiteSnpIndel(gffChrAbs, variantContext.getContig(), variantContext.getStart());
+		SiteSnpIndelInfo siteSnpIndelInfo = refSiteSnpIndel.getAndAddAllenInfo(variantContext.getReference().toString().replaceAll("\\*", "") + "",
+				variantContext.getAlternateAllele(0).toString().replaceAll("\\*", ""));
+		GffGeneIsoInfo gffGeneIsoInfo = refSiteSnpIndel.getGffIso();
+		if (siteSnpIndelInfo == null || gffGeneIsoInfo == null) {
+			return;
+		}
+		List<String> lsInfo = new LinkedList<String>();
+		if (refSiteSnpIndel.getGffIso() == null) {
+			return;
+		}
+		
+		lsInfo.add(siteSnpIndelInfo.getSnpIndelType());
+		lsInfo.add(getRefAAnr().toStringAA3());
+		lsInfo.add(getThisAAnr().toString());
+		lsInfo.add(getThisAAnr().toStringAA3());
+		if (this instanceof SiteSnpIndelInfoSnp && this.refSiteSnpIndelParent.getAffectAANum() > 0) {
+			lsInfo.add(getRefAAnr().toStringAA3() + this.refSiteSnpIndelParent.getAffectAANum() + getThisAAnr().toStringAA3());
+		} else {
+			lsInfo.add("");
+		}
+		lsInfo.add(getSplitTypeEffected());
+		lsInfo.add(getAAchamicalConvert());
+		return lsInfo;
+		
+	}
 	
 	private void initail() {
 		//TODO 
@@ -61,6 +106,10 @@ public class MAFRecord {
 //		dbSNP_RS
 //		variant_Classification
 //		dbSNP_Val_Status
+	}
+	
+	public void addVarationClass(EnumVariantClass enumVariantClass) {
+		setVariantClasses.add(enumVariantClass);
 	}
 	
 	public String toString() {
@@ -77,7 +126,7 @@ public class MAFRecord {
 		lsMAF.add(variantContext.getContig());
 		lsMAF.add(variantContext.getStart() + "");
 		lsMAF.add(variantContext.getEnd() + "");
-		//SNP所在的链，值为“+”或“-”
+		//SNP所在的链，值为“+”或“-”，好像一直为true
 		if (isCis5to3) {
 			lsMAF.add(cis5to3 + "");
 		} else {
@@ -85,7 +134,7 @@ public class MAFRecord {
 		}
 	
 		//TODO 根据注释结果，来确定SNP变异类型是什么？ Frame_Shift_Del？Frame_Shift_Ins？ In_Frame_Del or other?
-		lsMAF.add(variant_Classification);
+		lsMAF.add(getVarClass());
 		
 		lsMAF.add(variantContext.getType().toString());
 		lsMAF.add(variantContext.getReference().toString().replaceAll("\\*", "") + "");
@@ -130,5 +179,12 @@ public class MAFRecord {
 		return org.apache.commons.lang.StringUtils.join(lsMAF.toArray(),"\t");
 	}
 	
-	
+	private String getVarClass() {
+		String result = "";
+		for (EnumVariantClass enumVariantClass : setVariantClasses) {
+			result = result + enumVariantClass.toString() + ";";
+		}
+		result = result.substring(0, result.length() - 1);
+		return result;
+	}
 }
