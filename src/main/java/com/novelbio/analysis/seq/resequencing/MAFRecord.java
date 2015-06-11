@@ -27,6 +27,8 @@ public class MAFRecord {
 	private static final String BAM_File = "No";
 	private static final char cis5to3 = '+';
 	private static final char cis3to5 = '-';
+	/** 当case sample 的GenoType 不存在时，使用该默认值 */
+	private static final String genoTypeName = "NovelBio";
 	/** Entrez 基因ID */
 	private int entrez_Gene_Id = 0;
 	
@@ -62,6 +64,7 @@ public class MAFRecord {
 	
 	private Set<EnumVariantClass> setVariantClasses = new HashSet<>();
 	private String dbSNP_Val_Status = "by1000Genomes";
+	private boolean isSomatic = false;
 	
 	public MAFRecord(VariantContext variantContext, GffChrAbs gffChrAbs) {
 		this.variantContext = variantContext;
@@ -137,21 +140,8 @@ public class MAFRecord {
 		lsMAF.add(getVarClass());
 		
 		lsMAF.add(variantContext.getType().toString());
-		lsMAF.add(variantContext.getReference().toString().replaceAll("\\*", "") + "");
-		Genotype TumGenotype = variantContext.getGenotype(1);
-		lsMAF.add(TumGenotype.getAllele(0).toString().replaceAll("\\*", "") + "");
-		lsMAF.add(TumGenotype.getAllele(1).toString().replaceAll("\\*", "") + "");
-		// SNP在dbSNP中的注释结果
-		lsMAF.add(variantContext.getID());
-		// dbSNP 验证情况，值可以为： by1000Genomes; by2Hit2Allele ; byCluster; byFrequency; byHapMap; byOtherPop; bySubmitter; alternate_allele 本值可以为空
-		lsMAF.add(dbSNP_Val_Status);
-		// 使用Tumor样品名称作为Tumor sample Barcode 
-		lsMAF.add(TumGenotype.getSampleName());
-		Genotype NorGenotype = variantContext.getGenotype(0);
-		// 使用Normal样品名称作为Normal sample Barcode 
-		lsMAF.add(NorGenotype.getSampleName());
-		lsMAF.add(NorGenotype.getAllele(0).toString().replaceAll("\\*", ""));
-		lsMAF.add(NorGenotype.getAllele(1).toString().replaceAll("\\*", "") + "");
+		lsMAF.addAll(getTumorType());
+		lsMAF.addAll(getGenoType());
 		//使用默认的空值即可
 		lsMAF.add(tumor_Validation_Allele1);
 		//使用默认的空值即可
@@ -174,11 +164,62 @@ public class MAFRecord {
 		lsMAF.add(score);
 		lsMAF.add(BAM_File);
 		lsMAF.add(mafFile.sequencer.toString());
-		lsMAF.add(TumGenotype.getSampleName());
-		lsMAF.add(NorGenotype.getSampleName());
+		lsMAF.add(getTumSampleName());
+		lsMAF.add(getNorSampleName());
 		return org.apache.commons.lang.StringUtils.join(lsMAF.toArray(),"\t");
 	}
 	
+	private String getTumSampleName() {
+		Genotype tumType = null;
+		if (isSomatic) {
+			tumType = variantContext.getGenotype(1);
+		} else {
+			tumType = variantContext.getGenotype(0);
+		}
+		return tumType.getSampleName();
+	}
+	
+	private String getNorSampleName() {
+		String norName = genoTypeName;
+		if (isSomatic) {
+			Genotype norType = variantContext.getGenotype(0);
+			norName = norType.getSampleName();
+		}
+		return norName;
+	}
+	
+	private List<String> getTumorType() {
+		List<String> lsResult = new ArrayList<>();
+		Genotype tumType = null;
+		if (isSomatic) {
+			tumType = variantContext.getGenotype(1);
+		} else {
+			tumType = variantContext.getGenotype(0);
+		}
+		
+		lsResult.add(tumType.getAllele(0).toString().replaceAll("\\*", "") + "");
+		lsResult.add(tumType.getAllele(1).toString().replaceAll("\\*", "") + "");
+		lsResult.add(variantContext.getID());
+		lsResult.add(dbSNP_Val_Status);
+		lsResult.add(tumType.getSampleName());
+		return lsResult;
+	}
+	private List<String> getGenoType() {
+		List<String> lsResult = new ArrayList<>();
+		Genotype genoType = null;
+		if (isSomatic) {
+			genoType = variantContext.getGenotype(0);
+			lsResult.add(genoType.getSampleName());
+			lsResult.add(genoType.getAllele(0).toString().replaceAll("\\*", "") + "");
+			lsResult.add(genoType.getAllele(1).toString().replaceAll("\\*", "") + "");
+		} else {
+			lsResult.add(genoTypeName);
+			lsResult.add(variantContext.getReference().toString().replaceAll("\\*", "") + "");
+			lsResult.add(variantContext.getReference().toString().replaceAll("\\*", "") + "");
+		}
+		
+		return lsResult;
+	}
 	private String getVarClass() {
 		String result = "";
 		for (EnumVariantClass enumVariantClass : setVariantClasses) {
