@@ -14,9 +14,11 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.model.species.Species;
 import com.novelbio.database.service.servgeneanno.ManageSpecies;
 import com.novelbio.database.service.servgeneanno.ManageSpeciesDB;
 
+import htsjdk.variant.variantcontext.Allele;
 import htsjdk.variant.variantcontext.Genotype;
 import htsjdk.variant.variantcontext.VariantContext;
 
@@ -29,6 +31,8 @@ public class MAFRecord {
 	private static final String BAM_File = "No";
 	private static final char cis5to3 = '+';
 	private static final char cis3to5 = '-';
+	/** 可供用的默认值 */
+	private static final char NullString = '-';
 	/** 当case sample 的GenoType 不存在时，使用该默认值 */
 	private static final String genoTypeName = "NovelBio";
 	/** Entrez 基因ID */
@@ -36,6 +40,9 @@ public class MAFRecord {
 	
 	/** HUGO gene symbol 被HUGO(Human Genome Organisation)认可的已知人类基因名称的缩写*/
 	private String hugo_Symbol = "Unknown";
+	
+	/** HUGO gene symbol 被HUGO(Human Genome Organisation)认可的已知人类基因名称的缩写*/
+	private String transcript_Name = "Unknown";
 	
 	/** Secondary data from orthogonal technology, Tumor genotyping for allele 1, 值可以为： A, T, C, G, and/or - */
 	private String tumor_Validation_Allele1 = "-";
@@ -65,10 +72,28 @@ public class MAFRecord {
 	
 	private Set<EnumVariantClass> setVariantClasses = new HashSet<>();
 	private String dbSNP_Val_Status = "by1000Genomes";
-	private boolean isSomatic = false;
+	private boolean isSomatic = true;
 	
+	/** transcript_status_WU 暂时走默认 */
+	private String transcriptStatus = "reviewed";
+	
+	/** c_position_WU 暂时走默认 */
+	private String cPosition = "-";
+	
+	/** amino_acid_WU 暂时走默认 */
+	private String aAChange = "-";
+	
+	/** ucsc_cons_WU 暂时走默认 */
+	private double ucscConsValue = 1;
+	
+	/** transcript_error 暂时走默认 */
+	private String transcriptError = "no_errors";
+	
+	
+	Species species = new Species();
 	public MAFRecord(VariantContext variantContext, GffChrAbs gffChrAbs) {
 		this.variantContext = variantContext;
+		species = gffChrAbs.getSpecies();
 		
 //		String refId = variantContext.getContig();
 //		String referenceSeq = variantContext.getReference().toString().replaceAll("\\*", "");
@@ -87,6 +112,8 @@ public class MAFRecord {
 			setVarClass(siteSnpIndelInfo);
 		}
 		hugo_Symbol = gffGeneIsoInfo.getParentGeneName();
+//		transcript_Name = gffGeneIsoInfo.getId();
+		
 		if (gffChrAbs.getTaxID() > 0) {
 			GeneID geneID = new GeneID(gffGeneIsoInfo.getParentGeneName(), gffChrAbs.getTaxID());
 			if (geneID.getIDtype() == GeneID.IDTYPE_GENEID) {
@@ -172,6 +199,7 @@ public class MAFRecord {
 		lsMAF.add(getVarClass());
 		
 		lsMAF.add(variantContext.getType().toString());
+//		Allele ref=variantContext.getReference();
 		lsMAF.addAll(getTumorType());
 		lsMAF.addAll(getGenoType());
 		//使用默认的空值即可
@@ -198,6 +226,40 @@ public class MAFRecord {
 		lsMAF.add(mafFile.sequencer.toString());
 		lsMAF.add(getTumSampleName());
 		lsMAF.add(getNorSampleName());
+		
+		lsMAF.add(variantContext.getContig());
+		lsMAF.add(variantContext.getStart() + "");
+		lsMAF.add(variantContext.getEnd() + "");
+		lsMAF.add(getTumorType().get(0));
+		lsMAF.add(getTumorType().get(1));
+		lsMAF.add(variantContext.getType().toString());
+		
+		/** 基因名称 */
+		lsMAF.add(hugo_Symbol);
+		/** 转录本名称 */
+//		lsMAF.add(transcript_Name);
+		lsMAF.add(hugo_Symbol);
+		/** 物种 */
+		lsMAF.add(species.getNameLatin());
+		/** 转录本来源 */
+		lsMAF.add(species.getGffDB());
+		/** 转录本版本 */
+		lsMAF.add(species.getVersion());
+		/** 转录本所在的正负链情况 */
+		lsMAF.add("+");
+		lsMAF.add(transcriptStatus);
+		/** 突变类型 */
+		lsMAF.add(getVarClass());
+		/** 所在的cds位置  c_position 如：c.883 */
+		lsMAF.add(cPosition);
+		/** 氨基酸改变 amino_acid_change 如： p.A295T */
+		lsMAF.add(aAChange);
+		/** ucsc_cons_WU */
+		lsMAF.add(ucscConsValue + "");
+		lsMAF.add(NullString + "");
+		lsMAF.add(NullString + "");
+		lsMAF.add(NullString + "");
+		lsMAF.add(transcriptError);
 		return org.apache.commons.lang.StringUtils.join(lsMAF.toArray(),"\t");
 	}
 	
@@ -228,7 +290,7 @@ public class MAFRecord {
 		} else {
 			tumType = variantContext.getGenotype(0);
 		}
-		
+		lsResult.add(tumType.getAllele(0).toString().replaceAll("\\*", "") + "");
 		lsResult.add(tumType.getAllele(0).toString().replaceAll("\\*", "") + "");
 		lsResult.add(tumType.getAllele(1).toString().replaceAll("\\*", "") + "");
 		lsResult.add(variantContext.getID());
