@@ -112,7 +112,6 @@ public class MAFRecord {
 			setVarClass(siteSnpIndelInfo);
 		}
 		hugo_Symbol = gffGeneIsoInfo.getParentGeneName();
-//		transcript_Name = gffGeneIsoInfo.getId();
 		
 		if (gffChrAbs.getTaxID() > 0) {
 			GeneID geneID = new GeneID(gffGeneIsoInfo.getParentGeneName(), gffChrAbs.getTaxID());
@@ -237,8 +236,7 @@ public class MAFRecord {
 		/** 基因名称 */
 		lsMAF.add(hugo_Symbol);
 		/** 转录本名称 */
-//		lsMAF.add(transcript_Name);
-		lsMAF.add(hugo_Symbol);
+		lsMAF.add(transcript_Name);
 		/** 物种 */
 		lsMAF.add(species.getNameLatin());
 		/** 转录本来源 */
