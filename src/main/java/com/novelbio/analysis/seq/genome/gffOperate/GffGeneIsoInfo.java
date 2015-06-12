@@ -596,6 +596,36 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	}
 
 	/**
+	 * 在转录本的哪个位置
+	 * @return
+	 */
+	public EnumMrnaLocate getCodLocate(int coord) {
+		EnumMrnaLocate enumMrnaLocate = null;
+		int ExIntronnum = getNumCodInEle(coord);
+		if (ExIntronnum == 0) {
+			enumMrnaLocate = EnumMrnaLocate.intergenic;
+		} 
+		else if (ExIntronnum > 0) {
+			enumMrnaLocate = EnumMrnaLocate.exon;
+			if (!ismRNA()) {
+				return enumMrnaLocate;
+			}
+			//只有当该iso为mRNA时才进行判定
+			if((coord < ATGsite && isCis5to3()) || (coord > ATGsite && !isCis5to3())) {        //坐标小于atg，在5‘UTR中,也是在外显子中
+				enumMrnaLocate = EnumMrnaLocate.utr5;
+			} else if((coord > UAGsite && isCis5to3()) || (coord < UAGsite && !isCis5to3())) {       //大于cds起始区，在3‘UTR中
+				enumMrnaLocate = EnumMrnaLocate.utr3;
+			} else {
+				enumMrnaLocate = EnumMrnaLocate.cds;
+			}
+		} 
+		else {
+			enumMrnaLocate = EnumMrnaLocate.intron;
+		}
+		return enumMrnaLocate;
+	}
+	
+	/**
 	 * 坐标到该转录本起点的距离，考虑正反向
 	 * 坐标在终点上游为负数，下游为正数
 	 * @return

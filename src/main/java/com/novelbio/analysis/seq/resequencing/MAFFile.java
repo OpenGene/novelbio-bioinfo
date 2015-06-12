@@ -3,8 +3,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.model.species.Species;
 
 import htsjdk.variant.variantcontext.Allele;
 import htsjdk.variant.variantcontext.Genotype;
@@ -24,14 +26,16 @@ public class MAFFile {
 	protected EnumSequencer sequencer = EnumSequencer.IlluminaHiSeq;
 	
 	public static void main(String[] args) {
-		VCFFileReader reader = new VCFFileReader(FileOperate.getFile("/home/novelbio/下载/CL.vcf"), false);
+		VCFFileReader reader = new VCFFileReader(FileOperate.getFile("/home/novelbio/下载/ABI.vcf"), false);
+		Species species = new Species(9606, "hg19_GRCh37");
+		GffChrAbs gffChrAbs = new GffChrAbs(species);
+		int i = 0;
 		for (VariantContext variantContext : reader) {
-			System.out.println(variantContext.getReference().toString().replaceAll("\\*", "") + "");
-			List<Allele> lsAlleles = variantContext.getAlternateAlleles();
-			GenotypesContext TumGenotype = variantContext.getGenotypes();
-			for (String sampleName : TumGenotype.getSampleNames()) {
-				System.out.println(sampleName);
+			if (i++ > 3) {
+				break;
 			}
+			MAFRecord mafRecord = new MAFRecord(variantContext, gffChrAbs);
+			System.out.println(mafRecord.toString());
 		}
 		System.out.println();
 	}

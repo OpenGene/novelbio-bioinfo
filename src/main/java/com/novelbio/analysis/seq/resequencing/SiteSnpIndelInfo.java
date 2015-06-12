@@ -12,9 +12,11 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.StrandType;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.gffOperate.EnumMrnaLocate;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
+import com.novelbio.analysis.tools.Mas3.getProbID;
 import com.novelbio.base.SepSign;
 import com.novelbio.database.domain.geneanno.SnpIndelRs;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -43,11 +45,8 @@ public abstract class SiteSnpIndelInfo {
 	SiteSeqInfo refSeqIntactAA = new SiteSeqInfo();
 	
 	String thisSeq;
-	
-	/** 位点处在内含子还是外显子还是基因外，如果是deletion，那么优先看是否覆盖了exon */
-	int codLocInfo = 0;
-	boolean isInCDS = false;
-	
+
+	EnumMrnaLocate enumMrnaLocate;
 	SplitType splitType = SplitType.NONE;
 	int splitDistance = 0;
 	
@@ -122,6 +121,11 @@ public abstract class SiteSnpIndelInfo {
 	public String getThisSeq() {
 		return thisSeq;
 	}
+	
+	public SplitType getSplitType() {
+		return splitType;
+	}
+	
 	public String getSplitTypeEffected() {
 		if (splitType == SplitType.NONE) {
 			return "";
@@ -300,13 +304,17 @@ public abstract class SiteSnpIndelInfo {
 		this.snpIndelRs = snpIndelRs;
 	}
 	public boolean isExon() {
-		if (codLocInfo != GffGeneIsoInfo.COD_LOC_EXON) {
+		if (enumMrnaLocate == EnumMrnaLocate.intron || enumMrnaLocate == enumMrnaLocate.intergenic) {
 			return false;
 		}
 		return true;
 	}
 	public boolean isCDS() {
-		return isInCDS;
+		return enumMrnaLocate == EnumMrnaLocate.cds;
+	}
+	
+	public EnumMrnaLocate getEnumMrnaLocate() {
+		return enumMrnaLocate;
 	}
 	
 	/**
@@ -500,18 +508,16 @@ class SiteSnpIndelInfoInsert extends SiteSnpIndelInfo{
 	@Override
 	protected void setMapInfoRefSeqAAabs(GffChrAbs gffChrAbs) {
 		GffGeneIsoInfo gffGeneIsoInfo = refSiteSnpIndelParent.getGffIso();
-		codLocInfo = gffGeneIsoInfo.getCodLoc(refSiteSnpIndelParent.getRefSnpIndelStart());
-		if (codLocInfo != GffGeneIsoInfo.COD_LOC_OUT) {
+		enumMrnaLocate = gffGeneIsoInfo.getCodLocate(refSiteSnpIndelParent.getRefSnpIndelStart());
+		if (enumMrnaLocate != EnumMrnaLocate.intergenic) {
 			setEffectSplitType(gffGeneIsoInfo, refSiteSnpIndelParent.getRefSnpIndelStart());
 		}
 		//mRNA层面
 		//就算在外显子中，但是如果是非编码rna，或者在UTR区域中，也返回
-		if (!gffGeneIsoInfo.isCodInAAregion(refSiteSnpIndelParent.getRefSnpIndelStart())) {
-			isInCDS = false;
+		if (enumMrnaLocate != EnumMrnaLocate.cds) {
 			return;
 		}
 		
-		isInCDS = true;
 		int LocStart = gffGeneIsoInfo.getLocAAbefore(refSiteSnpIndelParent.getRefSnpIndelStart());//该位点所在AA的第一个loc
 		int LocEnd = gffGeneIsoInfo.getLocAAend(refSiteSnpIndelParent.getRefSnpIndelStart());
 		if (LocEnd <0) {//如果不在转录本中
@@ -634,9 +640,9 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 		if (!gffGeneIsoInfo.isCis5to3()) {
 			refStartCis = refEnd; refEndCis = refStart;
 		}
-		codLocInfo = setLocationInfo(gffGeneIsoInfo, refStartCis, refEndCis);
+		EnumMrnaLocate codLocInfo = setLocationInfo(gffGeneIsoInfo, refStartCis, refEndCis);
 		
-		if (codLocInfo != GffGeneIsoInfo.COD_LOC_EXON) {
+		if (codLocInfo != EnumMrnaLocate.exon) {
 			return;
 		}
 		
@@ -645,9 +651,8 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 		int[] bound = getLocOutOfExonToNearistExonBounder(gffGeneIsoInfo, refStartCis, refEndCis);
 		refStartCis = bound[0]; refEndCis = bound[1];
 		
-		isInCDS = false;
 		if (gffGeneIsoInfo.isCodInAAregion(refStartCis) || gffGeneIsoInfo.isCodInAAregion(refEndCis)) {
-			isInCDS = true;
+			codLocInfo = EnumMrnaLocate.cds;
 			if (!gffGeneIsoInfo.isCodInAAregion(refStartCis)) {
 				refStartCis = gffGeneIsoInfo.getATGsite();
 			}
@@ -655,7 +660,7 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 				refEndCis = gffGeneIsoInfo.getUAGsite();
 			}
 		}
-		if (isInCDS) {
+		if (codLocInfo == EnumMrnaLocate.cds) {
 			int LocStart = gffGeneIsoInfo.getLocAAbefore(refStartCis);
 			int LocEnd =gffGeneIsoInfo.getLocAAend(refEndCis);
 			refSeqIntactAA.setStartEndLoc(LocStart, LocEnd);
@@ -669,13 +674,12 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 			refSeqIntactAA.setSeq(NR,false);//因为上面已经反向过了
 		}
 		
-		else if (!isInCDS && gffGeneIsoInfo.getNumCodInEle(refStartCis) != gffGeneIsoInfo.getNumCodInEle(refEndCis)) {
+		else if (codLocInfo != EnumMrnaLocate.cds && gffGeneIsoInfo.getNumCodInEle(refStartCis) != gffGeneIsoInfo.getNumCodInEle(refEndCis)) {
 			logger.error("缺失外显子："  + refSiteSnpIndelParent.getRefID() + "\t" + refSiteSnpIndelParent.getRefSnpIndelStart());
-			isInCDS = true;
+			codLocInfo = enumMrnaLocate.cds;
 			return;
 		}
 		else {
-			isInCDS = false;
 			return;
 		}
 	}
@@ -765,23 +769,23 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 	 * @param startCis
 	 * @param endCis
 	 */
-	private static int setLocationInfo(GffGeneIsoInfo gffGeneIsoInfo, int startCis, int endCis) {
-		int codLocInfo = GffGeneIsoInfo.COD_LOC_OUT;
+	private static EnumMrnaLocate setLocationInfo(GffGeneIsoInfo gffGeneIsoInfo, int startCis, int endCis) {
+		EnumMrnaLocate locate = EnumMrnaLocate.intergenic;
 		if (gffGeneIsoInfo.getCodLoc(startCis) == GffGeneIsoInfo.COD_LOC_EXON || gffGeneIsoInfo.getCodLoc(endCis) == GffGeneIsoInfo.COD_LOC_EXON
 				|| gffGeneIsoInfo.getNumCodInEle(startCis) != gffGeneIsoInfo.getNumCodInEle(endCis)
 				) {
-			codLocInfo = GffGeneIsoInfo.COD_LOC_EXON;
+			locate = EnumMrnaLocate.exon;
 		}
 		//TODO 这里没有考虑一头在基因前一头在基因尾的情况
 		else if (gffGeneIsoInfo.getCodLoc(startCis) == GffGeneIsoInfo.COD_LOC_OUT && gffGeneIsoInfo.getCodLoc(endCis) == GffGeneIsoInfo.COD_LOC_OUT) {
-			codLocInfo = GffGeneIsoInfo.COD_LOC_OUT;
+			locate = EnumMrnaLocate.intergenic;
 		}
 		else if (gffGeneIsoInfo.getCodLoc(startCis) == GffGeneIsoInfo.COD_LOC_INTRON && gffGeneIsoInfo.getCodLoc(endCis) == GffGeneIsoInfo.COD_LOC_INTRON
 				&& gffGeneIsoInfo.getNumCodInEle(startCis) == gffGeneIsoInfo.getNumCodInEle(endCis)
 				) {
-			codLocInfo = GffGeneIsoInfo.COD_LOC_INTRON;
+			locate = EnumMrnaLocate.intron;
 		}
-		return codLocInfo;
+		return locate;
 	}
 	/** 需要测试
 	 * 这段代码的前提假设是ref很长，然后thisSeq一定为1

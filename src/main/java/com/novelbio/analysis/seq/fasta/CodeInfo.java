@@ -3,7 +3,7 @@ package com.novelbio.analysis.seq.fasta;
 import java.util.HashMap;
 
 /** 三联密码子对照表 */
-class CodeInfo {
+public class CodeInfo {
 	public static final String AA3_Ala = "Ala";
 	public static final String AA3_Arg = "Arg";
 	public static final String AA3_Asp = "Asp";

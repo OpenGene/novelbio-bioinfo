@@ -6,7 +6,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import com.novelbio.analysis.seq.fasta.CodeInfo;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.gffOperate.EnumMrnaLocate;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
@@ -60,7 +62,6 @@ public class MAFRecord {
 
 	private MAFFile mafFile = new MAFFile();
 	private VariantContext variantContext;
-	//TODO 只暂时做测试用
 	
 	private Set<EnumVariantClass> setVariantClasses = new HashSet<>();
 	private String dbSNP_Val_Status = "by1000Genomes";
@@ -69,46 +70,77 @@ public class MAFRecord {
 	public MAFRecord(VariantContext variantContext, GffChrAbs gffChrAbs) {
 		this.variantContext = variantContext;
 		
-//		if (input.contains("120317577")) {
-//			logger.debug("stop");
-//		}
-		String refId = variantContext.getContig();
-		String referenceSeq = variantContext.getReference().toString().replaceAll("\\*", "");
-		String altSeq = variantContext.getAlternateAllele(0).toString().replaceAll("\\*", "");
+//		String refId = variantContext.getContig();
+//		String referenceSeq = variantContext.getReference().toString().replaceAll("\\*", "");
+//		String altSeq = variantContext.getAlternateAllele(0).toString().replaceAll("\\*", "");
 		RefSiteSnpIndel refSiteSnpIndel = new RefSiteSnpIndel(gffChrAbs, variantContext.getContig(), variantContext.getStart());
 		SiteSnpIndelInfo siteSnpIndelInfo = refSiteSnpIndel.getAndAddAllenInfo(variantContext.getReference().toString().replaceAll("\\*", "") + "",
 				variantContext.getAlternateAllele(0).toString().replaceAll("\\*", ""));
 		GffGeneIsoInfo gffGeneIsoInfo = refSiteSnpIndel.getGffIso();
-		if (siteSnpIndelInfo == null || gffGeneIsoInfo == null) {
-			return;
-		}
-		List<String> lsInfo = new LinkedList<String>();
-		if (refSiteSnpIndel.getGffIso() == null) {
-			return;
-		}
 		
-		lsInfo.add(siteSnpIndelInfo.getSnpIndelType());
-		lsInfo.add(getRefAAnr().toStringAA3());
-		lsInfo.add(getThisAAnr().toString());
-		lsInfo.add(getThisAAnr().toStringAA3());
-		if (this instanceof SiteSnpIndelInfoSnp && this.refSiteSnpIndelParent.getAffectAANum() > 0) {
-			lsInfo.add(getRefAAnr().toStringAA3() + this.refSiteSnpIndelParent.getAffectAANum() + getThisAAnr().toStringAA3());
-		} else {
-			lsInfo.add("");
+		if (siteSnpIndelInfo == null && gffGeneIsoInfo == null) {
+			setVariantClasses.add(EnumVariantClass.IGR1);
+			
+		} else if (siteSnpIndelInfo == null && gffGeneIsoInfo != null) {
+			setVarClass(gffGeneIsoInfo);
+		} else if (siteSnpIndelInfo != null) {
+			setVarClass(siteSnpIndelInfo);
 		}
-		lsInfo.add(getSplitTypeEffected());
-		lsInfo.add(getAAchamicalConvert());
-		return lsInfo;
-		
+		hugo_Symbol = gffGeneIsoInfo.getParentGeneName();
+		if (gffChrAbs.getTaxID() > 0) {
+			GeneID geneID = new GeneID(gffGeneIsoInfo.getParentGeneName(), gffChrAbs.getTaxID());
+			if (geneID.getIDtype() == GeneID.IDTYPE_GENEID) {
+				entrez_Gene_Id = Integer.parseInt(geneID.getGeneUniID());
+			}
+		}
 	}
 	
-	private void initail() {
-		//TODO 
-//		hugo_Symbol
-//		entrez_Gene_Id
-//		dbSNP_RS
-//		variant_Classification
-//		dbSNP_Val_Status
+	private void setVarClass(SiteSnpIndelInfo siteSnpIndelInfo) {
+		if (siteSnpIndelInfo.getEnumMrnaLocate() == EnumMrnaLocate.cds) {
+			String refAA = siteSnpIndelInfo.getRefAAnr().toStringAA3();
+			String thisAA = siteSnpIndelInfo.getThisAAnr().toStringAA3();
+			if (!refAA.equals(thisAA)) {
+				if (!refAA.equals(CodeInfo.AA3_STOP) && thisAA.equals(CodeInfo.AA3_STOP)) {
+					setVariantClasses.add(EnumVariantClass.Nonsense_Mutation);
+				} else if (refAA.equals(CodeInfo.AA3_STOP) && !thisAA.equals(CodeInfo.AA3_STOP)) {
+					setVariantClasses.add(EnumVariantClass.Nonstop_Mutation);
+				} else if (!refAA.equals(CodeInfo.AA3_STOP) && !thisAA.equals(CodeInfo.AA3_STOP)) {
+					setVariantClasses.add(EnumVariantClass.Missense_Mutation);
+				}
+			}
+		}
+		if (siteSnpIndelInfo.getEnumMrnaLocate() == EnumMrnaLocate.exon) {
+			setVariantClasses.add(EnumVariantClass.RNA);
+		} else if (siteSnpIndelInfo.getEnumMrnaLocate() == EnumMrnaLocate.utr5) {
+			setVariantClasses.add(EnumVariantClass.UTR5);
+		} else if (siteSnpIndelInfo.getEnumMrnaLocate() == EnumMrnaLocate.utr3) {
+			setVariantClasses.add(EnumVariantClass.UTR3);
+		} else if (siteSnpIndelInfo.getEnumMrnaLocate() == EnumMrnaLocate.intergenic) {
+			setVariantClasses.add(EnumVariantClass.IGR1);
+		} else if (siteSnpIndelInfo.getEnumMrnaLocate() == EnumMrnaLocate.intron) {
+			setVariantClasses.add(EnumVariantClass.Intron);
+		}
+		
+		if (siteSnpIndelInfo.getSplitType() != SplitType.NONE) {
+			setVariantClasses.add(EnumVariantClass.Splice_Site);
+		}
+		
+		if (siteSnpIndelInfo instanceof SiteSnpIndelInfoInsert && siteSnpIndelInfo.getOrfShift() != 0) {
+			setVariantClasses.add(EnumVariantClass.Frame_Shift_Ins);
+		} else if (siteSnpIndelInfo instanceof SiteSnpIndelInfoDeletion && siteSnpIndelInfo.getOrfShift() != 0) {
+			setVariantClasses.add(EnumVariantClass.Frame_Shift_Ins);
+		}
+	}
+	
+	private void setVarClass(GffGeneIsoInfo gffGeneIsoInfo) {
+		EnumMrnaLocate enumMrnaLocate = gffGeneIsoInfo.getCodLocate(variantContext.getStart());
+		if (enumMrnaLocate == EnumMrnaLocate.intergenic) {
+			setVariantClasses.add(EnumVariantClass.IGR1);
+		} else if (enumMrnaLocate == EnumMrnaLocate.intron) {
+			setVariantClasses.add(EnumVariantClass.Intron);
+		} else if (enumMrnaLocate == EnumMrnaLocate.exon) {
+			setVariantClasses.add(EnumVariantClass.RNA);
+		}
 	}
 	
 	public void addVarationClass(EnumVariantClass enumVariantClass) {
@@ -222,10 +254,15 @@ public class MAFRecord {
 	}
 	private String getVarClass() {
 		String result = "";
+		if (setVariantClasses.isEmpty()) {
+			return result;
+		}
 		for (EnumVariantClass enumVariantClass : setVariantClasses) {
 			result = result + enumVariantClass.toString() + ";";
 		}
 		result = result.substring(0, result.length() - 1);
 		return result;
 	}
+	
+
 }
