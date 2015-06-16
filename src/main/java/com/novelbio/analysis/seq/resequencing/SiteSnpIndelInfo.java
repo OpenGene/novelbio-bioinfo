@@ -10,13 +10,12 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
+import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fasta.StrandType;
-import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.EnumMrnaLocate;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
-import com.novelbio.analysis.tools.Mas3.getProbID;
 import com.novelbio.base.SepSign;
 import com.novelbio.database.domain.geneanno.SnpIndelRs;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -31,7 +30,7 @@ public abstract class SiteSnpIndelInfo {
 	private static Logger logger = Logger.getLogger(SiteSnpIndelInfo.class);
 	
 	/** 与剪接位点距离的绝对值，小于该距离才会考虑剪接位点的影响 */
-	static int splitRegion = 5;
+	static int splitRegion = 2;
 	
 	String sampleName;
 	
@@ -68,19 +67,20 @@ public abstract class SiteSnpIndelInfo {
 		this.referenceSeq = refBase;
 	}
 	
+
 	/** 根据parent，设定GffChrAbs */
 	protected void setSitGffChrAbs() {
-		if (refSiteSnpIndelParent == null || refSiteSnpIndelParent.gffChrAbs == null)
+		if (refSiteSnpIndelParent == null || refSiteSnpIndelParent.seqHash == null)
 			return;
 		
 		if (refSiteSnpIndelParent.getGffIso() == null)
 			return;
 
-		setMapInfoRefSeqAAabs(refSiteSnpIndelParent.gffChrAbs);
+		setMapInfoRefSeqAAabs(refSiteSnpIndelParent.seqHash);
 	}
 	/** 如果Iso不存在，该方法不会被调用。
 	 * 如果Iso存在，并且snp位点在exon上，那么就设置ref序列的氨基酸的信息 */
-	protected abstract void setMapInfoRefSeqAAabs(GffChrAbs gffChrAbs);
+	protected abstract void setMapInfoRefSeqAAabs(SeqHash seqHash);
 	/**
 	 * 设定样本名，那么后面获取的都是该样本的信息
 	 * @param sampleName
@@ -147,8 +147,12 @@ public abstract class SiteSnpIndelInfo {
 	public String getReferenceSeq() {
 		return referenceSeq;
 	}
+	
 	public abstract SnpIndelType getSnpIndelType();
 	
+	public abstract String getAffectCdsInfo();
+	public abstract String getAffectAAInfo();
+
 	public void setThisReadsNum(int readsNum) {
 		SampleSnpReadsQuality sampleSnpReadsQuality = mapSample2thisBaseNum.get(sampleName);
 		if (sampleSnpReadsQuality == null) {
@@ -411,6 +415,20 @@ public abstract class SiteSnpIndelInfo {
 		}
 	}
 	
+	public String getAAchange1() {
+		if (this instanceof SiteSnpIndelInfoSnp && this.refSiteSnpIndelParent.getAffectAANum() > 0) {
+			return getRefAAnr().toStringAA1() + this.refSiteSnpIndelParent.getAffectAANum() + getThisAAnr().toStringAA1();
+		} else {
+			return "";
+		}
+	}
+	public String getAAchange3() {
+		if (this instanceof SiteSnpIndelInfoSnp && this.refSiteSnpIndelParent.getAffectAANum() > 0) {
+			return getRefAAnr().toStringAA3() + this.refSiteSnpIndelParent.getAffectAANum() + getThisAAnr().toStringAA3();
+		} else {
+			return "";
+		}
+	}
 	/**
 	 * 返回该类涉及到的展示信息为linkedlist<br>
 	 * lsTitle.add("RefNr");<br>
@@ -496,7 +514,7 @@ public abstract class SiteSnpIndelInfo {
  * @author zong0jie
  *
  */
-class SiteSnpIndelInfoInsert extends SiteSnpIndelInfo{
+class SiteSnpIndelInfoInsert extends SiteSnpIndelInfo {
 	private static Logger logger = Logger.getLogger(SiteSnpIndelInfoInsert.class);
 	
 	public SiteSnpIndelInfoInsert(RefSiteSnpIndel mapInfoSnpIndel, String refBase, String thisBase) {
@@ -506,7 +524,7 @@ class SiteSnpIndelInfoInsert extends SiteSnpIndelInfo{
 		}
 	}
 	@Override
-	protected void setMapInfoRefSeqAAabs(GffChrAbs gffChrAbs) {
+	protected void setMapInfoRefSeqAAabs(SeqHash seqHash) {
 		GffGeneIsoInfo gffGeneIsoInfo = refSiteSnpIndelParent.getGffIso();
 		enumMrnaLocate = gffGeneIsoInfo.getCodLocate(refSiteSnpIndelParent.getRefSnpIndelStart());
 		if (enumMrnaLocate != EnumMrnaLocate.intergenic) {
@@ -530,16 +548,16 @@ class SiteSnpIndelInfoInsert extends SiteSnpIndelInfo{
 		SeqFasta NR = null;
 		ArrayList<ExonInfo> lsTmp = gffGeneIsoInfo.getRangeIso(LocStart, LocEnd);
 		if (lsTmp == null) {
-			NR = gffChrAbs.getSeqHash().getSeq(gffGeneIsoInfo.isCis5to3(), refSiteSnpIndelParent.getRefID(), LocStart, LocEnd);
+			NR = seqHash.getSeq(gffGeneIsoInfo.isCis5to3(), refSiteSnpIndelParent.getRefID(), LocStart, LocEnd);
 		}
 		else if (lsTmp.size() == 0) {
 			return;
 		}
 		else {
 			try {
-				NR = gffChrAbs.getSeqHash().getSeq(StrandType.isoForward, refSiteSnpIndelParent.getRefID(), lsTmp, false);
+				NR = seqHash.getSeq(StrandType.isoForward, refSiteSnpIndelParent.getRefID(), lsTmp, false);
 			} catch (Exception e) {
-				NR = gffChrAbs.getSeqHash().getSeq(StrandType.isoForward, refSiteSnpIndelParent.getRefID(), lsTmp, false);
+				NR = seqHash.getSeq(StrandType.isoForward, refSiteSnpIndelParent.getRefID(), lsTmp, false);
 			}
 		}
 		refSeqIntactAA.setCis5to3(gffGeneIsoInfo.isCis5to3());
@@ -575,12 +593,85 @@ class SiteSnpIndelInfoInsert extends SiteSnpIndelInfo{
 			}
 		}
 	}
+	
 	public int getOrfShift() {
 		return (3 - (thisSeq.length() - referenceSeq.length())%3) % 3;//待检查
 	}
+	
 	@Override
 	public SnpIndelType getSnpIndelType() {
 		return SnpIndelType.INSERT;
+	}
+	
+	@Override
+	public String getAffectCdsInfo() {
+		String result = "";
+		GffGeneIsoInfo iso = refSiteSnpIndelParent.getGffIso();
+		int start = refSiteSnpIndelParent.getRefSnpIndelStart();
+		if (iso == null) {
+			return result;
+		}
+		EnumMrnaLocate enumMrnaLocate = iso.getCodLocate(start);
+		if (enumMrnaLocate == EnumMrnaLocate.cds) {
+			int cdsloc = iso.getCod2ATGmRNA(start);
+			if (iso.isCis5to3()) {
+				result = "c." + cdsloc + "_" + (cdsloc + 1);
+			} else {
+				result = "c." + cdsloc + "_" + (cdsloc - 1);
+			}
+			
+		} else if (enumMrnaLocate == EnumMrnaLocate.intron) {
+			int distance2Before = iso.getCod2ExInStart(start) + 1;//到前一个exon的距离
+			int distance2After = iso.getCod2ExInEnd(start) + 1;//到后一个exon的距离
+			if (distance2Before < distance2After) {
+				String first = iso.getCod2ATGmRNA(start - distance2Before) + "+" + distance2Before;
+				int distance2Before1 = distance2Before;
+				String second = iso.getCod2ATGmRNA(start - distance2Before) + "+" + (distance2Before + 1);
+				result = "c." + first + "_" + second;
+			} else {
+				String first = iso.getCod2ATGmRNA(start - distance2After) + "-" + distance2After;
+				String second =  iso.getCod2ATGmRNA(start - distance2After) + "-" + (distance2After + 1);
+				result = "c." + first + "_" + second;
+			}
+		}
+		return result;
+	}
+	
+	@Override
+	public String getAffectAAInfo() {
+		//TODO
+		String result = "";
+		GffGeneIsoInfo iso = refSiteSnpIndelParent.getGffIso();
+		int start = refSiteSnpIndelParent.getRefSnpIndelStart();
+		if (iso == null) {
+			return result;
+		}
+		EnumMrnaLocate enumMrnaLocate = iso.getCodLocate(start);
+		int exonNum = iso.getNumCodInEle(start);
+		if (enumMrnaLocate == EnumMrnaLocate.cds 
+				&& (
+						getOrfShift() != 0 
+						|| 
+							(splitType !=SplitType.EXON_START && splitType != splitType.EXON_END)
+						)
+			) {
+			result = "p." + getAAchange1();
+		} else if (enumMrnaLocate == EnumMrnaLocate.intron) {
+			int exonNumBefore = Math.abs(iso.getNumCodInEle(start));//前一个exon的序号
+			int exonNumAfter = exonNumBefore + 1;
+			int distance2Before = iso.getCod2ExInStart(start) + 1;//到前一个exon的距离
+			int distance2After = iso.getCod2ExInEnd(start) + 1;//到后一个exon的距离
+			if (distance2Before < distance2After) {
+				String first = exonNumBefore + "+" + distance2Before;
+				String second = exonNumBefore + "+" + (distance2Before + 1);
+				result = "e." + first + "_" + second;
+			} else {
+				String first = exonNumAfter + "-" + distance2After;
+				String second = exonNumAfter + "-" + (distance2After + 1);
+				result = "e." + first + "_" + second;
+			}
+		}
+		return result;
 	}
 	
 }
@@ -596,6 +687,69 @@ class SiteSnpIndelInfoSnp extends SiteSnpIndelInfoInsert {
 	public SnpIndelType getSnpIndelType() {
 		return SnpIndelType.MISMATCH;
 	}
+	
+	@Override
+	public String getAffectCdsInfo() {
+		String result = "";
+		GffGeneIsoInfo iso = refSiteSnpIndelParent.getGffIso();
+		int start = refSiteSnpIndelParent.getRefSnpIndelStart();
+		if (iso == null) {
+			return result;
+		}
+		EnumMrnaLocate enumMrnaLocate = iso.getCodLocate(start);
+		if (enumMrnaLocate == EnumMrnaLocate.cds) {
+			int cdsloc = iso.getCod2ATGmRNA(start);
+			result = "c." + cdsloc;
+		} else if (enumMrnaLocate == EnumMrnaLocate.intron) {
+			int distance2Before = iso.getCod2ExInStart(start) + 1;//到前一个exon的距离
+			int distance2After = iso.getCod2ExInEnd(start) + 1;//到后一个exon的距离
+			if (distance2Before < distance2After) {
+				String first = iso.getCod2ATGmRNA(start - distance2Before) + "+" + distance2Before;
+				result = "c." + first;
+			} else {
+				String first = iso.getCod2ATGmRNA(start - distance2After) + "-" + distance2After;
+				result = "c." + first;
+			}
+		}
+		return result;
+	}
+	
+	@Override
+	public String getAffectAAInfo() {
+		//TODO
+		String result = "";
+		GffGeneIsoInfo iso = refSiteSnpIndelParent.getGffIso();
+		int start = refSiteSnpIndelParent.getRefSnpIndelStart();
+		if (iso == null) {
+			return result;
+		}
+		EnumMrnaLocate enumMrnaLocate = iso.getCodLocate(start);
+		int exonNum = iso.getNumCodInEle(start);
+		if (enumMrnaLocate == EnumMrnaLocate.cds 
+				&& (
+						getOrfShift() != 0 
+						|| 
+							(splitType !=SplitType.EXON_START && splitType != splitType.EXON_END)
+						)
+			) {
+			int cdsloc = iso.getCod2ATGmRNA(start);
+			result = "p." + getAAchange1();
+		} else if (enumMrnaLocate == EnumMrnaLocate.intron) {
+			int exonNumBefore = Math.abs(iso.getNumCodInEle(start));//前一个exon的序号
+			int exonNumAfter = exonNumBefore + 1;
+			int distance2Before = iso.getCod2ExInStart(start) + 1;//到前一个exon的距离
+			int distance2After = iso.getCod2ExInEnd(start) + 1;//到后一个exon的距离
+			if (distance2Before < distance2After) {
+				String first = exonNumBefore + "+" + distance2Before;
+				result = "e." + first;
+			} else {
+				String first = exonNumAfter + "-" + distance2After;
+				result = "e." + first;
+			}
+		}
+		return result;
+	}
+	
 }
 /**
  * 没有snp的位点，就是只返回ref了
@@ -630,7 +784,7 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 	}
 
 	@Override
-	protected void setMapInfoRefSeqAAabs(GffChrAbs gffChrAbs) {
+	protected void setMapInfoRefSeqAAabs(SeqHash seqHash) {
 		int refStart = refSiteSnpIndelParent.getRefSnpIndelStart();
 		
 		int refEnd = refStart + referenceSeq.length() - 1;
@@ -670,7 +824,7 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 				return;
 			}
 			setOrfShiftAndReplaceSite(gffGeneIsoInfo, refStartCis, refEndCis);
-			SeqFasta NR = gffChrAbs.getSeqHash().getSeq(StrandType.isoForward, refSeqIntactAA.getRefID(), lsTmp, false);
+			SeqFasta NR = seqHash.getSeq(StrandType.isoForward, refSeqIntactAA.getRefID(), lsTmp, false);
 			refSeqIntactAA.setSeq(NR,false);//因为上面已经反向过了
 		}
 		
@@ -809,6 +963,113 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 	
 	public int getOrfShift() {
 		return orfShift;
+	}
+
+	@Override
+	public String getAffectCdsInfo() {
+		String result = "";
+		GffGeneIsoInfo iso = refSiteSnpIndelParent.getGffIso();
+		int start = refSiteSnpIndelParent.getRefSnpIndelStart();
+		int end = start + getThisSeq().length() - 1;
+		if (iso == null) {
+			return result;
+		}
+		EnumMrnaLocate locatStart = iso.getCodLocate(start);
+		EnumMrnaLocate locatEnd = iso.getCodLocate(end);
+		if (locatStart == EnumMrnaLocate.cds) {
+			int cdslocStart = iso.getCod2ATGmRNA(start);
+			if (splitType != SplitType.Cover_Exon_Intron && locatEnd == EnumMrnaLocate.cds) {
+				int cdslocEnd = iso.getCod2ATGmRNA(end);
+				result = "c." + cdslocStart + "_" + cdslocEnd;
+			} else if (splitType == SplitType.Cover_Exon_Intron) {
+				//TODO
+				int cdslocEnd = iso.getCod2ATGmRNA(end);
+				result = "c." + cdslocStart + "_" + cdslocEnd;
+			} else if (locatEnd == EnumMrnaLocate.intron || locatEnd == EnumMrnaLocate.intergenic) {
+				int distance2Splice = iso.getCod2ExInEnd(start) + 2;
+				result = "c." + cdslocStart + "+" + distance2Splice + "_" + cdslocStart + "1";
+			} else {
+				throw new RuntimeException("no such condition, please check");
+			}
+		} else if (locatStart == EnumMrnaLocate.intron) {
+			int distance2Before = iso.getCod2ExInStart(start) + 1;//到前一个exon的距离
+			int distance2After = iso.getCod2ExInEnd(start) + 1;//到后一个exon的距离
+			if (distance2Before < distance2After) {
+				String first = iso.getCod2ATGmRNA(start - distance2Before) + "+" + distance2Before;
+				int distance2Before1 = distance2Before;
+				String second = iso.getCod2ATGmRNA(start - distance2Before) + "+" + (distance2Before + 1);
+				result = "c." + first + "_" + second;
+			} else {
+				String first = iso.getCod2ATGmRNA(start - distance2After) + "-" + distance2After;
+				String second =  iso.getCod2ATGmRNA(start - distance2After) + "-" + (distance2After + 1);
+				result = "c." + first + "_" + second;
+			}
+			
+			if (locatEnd == EnumMrnaLocate.cds) {
+				int cdslocEnd = iso.getCod2ATGmRNA(end);
+				int distance2Splice = iso.getCod2ExInStart(end) + 2;
+				result = "c." + cdslocEnd + "+" + distance2Splice + "_" + cdslocEnd + "1";
+			} else if (locatEnd == EnumMrnaLocate.intron && splitType != SplitType.Cover_Exon_Intron) {
+				if (distance2Before < distance2After) {
+					String first = iso.getCod2ATGmRNA(start - distance2Before) + "+" + distance2Before;
+					String second = iso.getCod2ATGmRNA(start - distance2Before) + "+" + (distance2Before + 1);
+					result = "c." + first + "_" + second;
+				} else {
+					String first = iso.getCod2ATGmRNA(start - distance2After) + "-" + distance2After;
+					String second =  iso.getCod2ATGmRNA(start - distance2After) + "-" + (distance2After + 1);
+					result = "c." + first + "_" + second;
+				}
+			}			
+		}
+		return result;
+	}
+	
+	@Override
+	public String getAffectAAInfo() {
+		String result = "";
+		GffGeneIsoInfo iso = refSiteSnpIndelParent.getGffIso();
+		int start = refSiteSnpIndelParent.getRefSnpIndelStart();
+		int end = start + getThisSeq().length() - 1;
+		if (iso == null) {
+			return result;
+		}
+		EnumMrnaLocate locateStart = iso.getCodLocate(start);
+		EnumMrnaLocate locateEnd = iso.getCodLocate(end);
+		int exonNumStart = iso.getNumCodInEle(start);
+		int exonNumEnd = iso.getNumCodInEle(end);
+		
+		if (locateStart == EnumMrnaLocate.cds && exonNumStart == exonNumEnd) {
+			if (getOrfShift() == 0) {
+				result = "p." + getRefAAnr().toStringAA1() + this.refSiteSnpIndelParent.getAffectAANum() + "in_frame_del";
+			}
+		}
+		
+		
+		if (locateStart == EnumMrnaLocate.cds 
+				&& (
+						getOrfShift() != 0 
+						|| 
+							(splitType !=SplitType.EXON_START && splitType != SplitType.EXON_END)
+						)
+			) {
+			int cdsloc = iso.getCod2ATGmRNA(start);
+			result = "p." + getAAchange1();
+		} else if (enumMrnaLocate == EnumMrnaLocate.intron) {
+			int exonNumBefore = Math.abs(iso.getNumCodInEle(start));//前一个exon的序号
+			int exonNumAfter = exonNumBefore + 1;
+			int distance2Before = iso.getCod2ExInStart(start) + 1;//到前一个exon的距离
+			int distance2After = iso.getCod2ExInEnd(start) + 1;//到后一个exon的距离
+			if (distance2Before < distance2After) {
+				String first = exonNumBefore + "+" + distance2Before;
+				String second = exonNumBefore + "+" + (distance2Before + 1);
+				result = "e." + first + "_" + second;
+			} else {
+				String first = exonNumAfter + "-" + distance2After;
+				String second = exonNumAfter + "-" + (distance2After + 1);
+				result = "e." + first + "_" + second;
+			}
+		}
+		return result;
 	}
 }
 

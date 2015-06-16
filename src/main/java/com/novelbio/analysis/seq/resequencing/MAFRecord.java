@@ -1,26 +1,19 @@
 package com.novelbio.analysis.seq.resequencing;
 
+import htsjdk.variant.variantcontext.Genotype;
+import htsjdk.variant.variantcontext.VariantContext;
+
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 import com.novelbio.analysis.seq.fasta.CodeInfo;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.EnumMrnaLocate;
-import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.database.service.servgeneanno.ManageSpecies;
-import com.novelbio.database.service.servgeneanno.ManageSpeciesDB;
-
-import htsjdk.variant.variantcontext.Allele;
-import htsjdk.variant.variantcontext.Genotype;
-import htsjdk.variant.variantcontext.VariantContext;
 
 public class MAFRecord {
 	private static final String maf_verification_Status_validate = "Veridied";
@@ -37,12 +30,6 @@ public class MAFRecord {
 	private static final String genoTypeName = "NovelBio";
 	/** Entrez 基因ID */
 	private int entrez_Gene_Id = 0;
-	
-	/** HUGO gene symbol 被HUGO(Human Genome Organisation)认可的已知人类基因名称的缩写*/
-	private String hugo_Symbol = "Unknown";
-	
-	/** HUGO gene symbol 被HUGO(Human Genome Organisation)认可的已知人类基因名称的缩写*/
-	private String transcript_Name = "Unknown";
 	
 	/** Secondary data from orthogonal technology, Tumor genotyping for allele 1, 值可以为： A, T, C, G, and/or - */
 	private String tumor_Validation_Allele1 = "-";
@@ -89,19 +76,17 @@ public class MAFRecord {
 	/** transcript_error 暂时走默认 */
 	private String transcriptError = "no_errors";
 	
+	GffGeneIsoInfo gffGeneIsoInfo;
+	RefSiteSnpIndel refSiteSnpIndel;
 	
 	Species species = new Species();
 	public MAFRecord(VariantContext variantContext, GffChrAbs gffChrAbs) {
 		this.variantContext = variantContext;
 		species = gffChrAbs.getSpecies();
-		
-//		String refId = variantContext.getContig();
-//		String referenceSeq = variantContext.getReference().toString().replaceAll("\\*", "");
-//		String altSeq = variantContext.getAlternateAllele(0).toString().replaceAll("\\*", "");
-		RefSiteSnpIndel refSiteSnpIndel = new RefSiteSnpIndel(gffChrAbs, variantContext.getContig(), variantContext.getStart());
+		refSiteSnpIndel = new RefSiteSnpIndel(gffChrAbs, variantContext.getContig(), variantContext.getStart());
 		SiteSnpIndelInfo siteSnpIndelInfo = refSiteSnpIndel.getAndAddAllenInfo(variantContext.getReference().toString().replaceAll("\\*", "") + "",
 				variantContext.getAlternateAllele(0).toString().replaceAll("\\*", ""));
-		GffGeneIsoInfo gffGeneIsoInfo = refSiteSnpIndel.getGffIso();
+		gffGeneIsoInfo = refSiteSnpIndel.getGffIso();
 		
 		if (siteSnpIndelInfo == null && gffGeneIsoInfo == null) {
 			setVariantClasses.add(EnumVariantClass.IGR1);
@@ -111,7 +96,11 @@ public class MAFRecord {
 		} else if (siteSnpIndelInfo != null) {
 			setVarClass(siteSnpIndelInfo);
 		}
-		hugo_Symbol = gffGeneIsoInfo.getParentGeneName();
+		
+		if (refSiteSnpIndel.getAffectAANum() > 0) {
+			cPosition = "c." + siteSnpIndelInfo.getAffectCdsInfo();
+			aAChange = "p." + siteSnpIndelInfo.getAffectAAInfo();
+		}
 		
 		if (gffChrAbs.getTaxID() > 0) {
 			GeneID geneID = new GeneID(gffGeneIsoInfo.getParentGeneName(), gffChrAbs.getTaxID());
@@ -169,14 +158,11 @@ public class MAFRecord {
 		}
 	}
 	
-	public void addVarationClass(EnumVariantClass enumVariantClass) {
-		setVariantClasses.add(enumVariantClass);
-	}
-	
 	public String toString() {
+		
 		ArrayList<String> lsMAF = new ArrayList<String>();
 		//TODO 需要根据注释的结果，获取SNP所在的基因名称;no
-		lsMAF.add(hugo_Symbol);
+		lsMAF.add(gffGeneIsoInfo.getParentGeneName());
 		//TODO 需要根据注释的结果，获取SNP所在的基因的ID;
 		lsMAF.add(entrez_Gene_Id + "");
 		// 生成该MAF文件的机构名称，使用默认即可;
@@ -234,24 +220,31 @@ public class MAFRecord {
 		lsMAF.add(variantContext.getType().toString());
 		
 		/** 基因名称 */
-		lsMAF.add(hugo_Symbol);
+		lsMAF.add(gffGeneIsoInfo.getParentGeneName());
 		/** 转录本名称 */
-		lsMAF.add(transcript_Name);
+		lsMAF.add(gffGeneIsoInfo.getName());
 		/** 物种 */
 		lsMAF.add(species.getNameLatin());
 		/** 转录本来源 */
 		lsMAF.add(species.getGffDB());
+
 		/** 转录本版本 */
 		lsMAF.add(species.getVersion());
+		
 		/** 转录本所在的正负链情况 */
-		lsMAF.add("+");
+		if (gffGeneIsoInfo.isCis5to3()) {
+			lsMAF.add("1");
+		} else {
+			lsMAF.add("-1");
+		}
+		
 		lsMAF.add(transcriptStatus);
 		/** 突变类型 */
 		lsMAF.add(getVarClass());
-		/** 所在的cds位置  c_position 如：c.883 */
+		
 		lsMAF.add(cPosition);
-		/** 氨基酸改变 amino_acid_change 如： p.A295T */
 		lsMAF.add(aAChange);
+		
 		/** ucsc_cons_WU */
 		lsMAF.add(ucscConsValue + "");
 		lsMAF.add(NullString + "");
@@ -296,6 +289,7 @@ public class MAFRecord {
 		lsResult.add(tumType.getSampleName());
 		return lsResult;
 	}
+	
 	private List<String> getGenoType() {
 		List<String> lsResult = new ArrayList<>();
 		Genotype genoType = null;
@@ -312,6 +306,7 @@ public class MAFRecord {
 		
 		return lsResult;
 	}
+	
 	private String getVarClass() {
 		String result = "";
 		if (setVariantClasses.isEmpty()) {

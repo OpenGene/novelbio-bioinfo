@@ -55,6 +55,7 @@ public class DiffExpLimma extends DiffExpAbs{
 		// 在这里取log
 		for (int i = 0; i < lsAnalysisGeneInfo.size(); i++) {
 			String[] info = lsAnalysisGeneInfo.get(i);
+			info[0] = CmdOperate.addQuot(info[0].replace("\"", ""));
 			for (int j = 1; j < info.length; j++) {
 				if (info[j].equalsIgnoreCase("na") || info[j].equalsIgnoreCase("nan") || info[j].equals("null") || info[j].equals("none")) {
 					info[j] = 0 + "";
@@ -252,6 +253,9 @@ public class DiffExpLimma extends DiffExpAbs{
 		}
 		
 		for (int i = 1; i < lsDifGene.size(); i++) {
+			if (i == 1733) {
+				logger.debug("stop");
+			}
 			String[] ss = lsDifGene.get(i);
 			List<String> lsTmpLine = new ArrayList<>();
 			lsTmpLine.add(ss[accId].replace("\"", ""));

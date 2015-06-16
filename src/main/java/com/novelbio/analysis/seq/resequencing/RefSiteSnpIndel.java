@@ -14,6 +14,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
@@ -21,6 +22,7 @@ import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo.SnpIndelType;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.database.model.species.Species;
 
 /**
  * 解析samtools产生的pile up信息，将每一行生成一个本类，专门存储堆叠信息
@@ -52,7 +54,9 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	 * snp或indel所在的转录本
 	 */
 	GffGeneIsoInfo gffGeneIsoInfo;
-	GffChrAbs gffChrAbs;
+	Species species;
+	SeqHash seqHash;
+//	GffChrAbs gffChrAbs;
 	String sampleName = SampleDefaultName;
 	
 	public RefSiteSnpIndel() {}
@@ -100,14 +104,14 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	 */
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		if (gffChrAbs == null) {
-			setGffIso();
+			setGffIso(gffChrAbs);
 			return;
 		}
-		if (this.gffChrAbs != null && this.gffChrAbs.getSpecies() != null && this.gffChrAbs.getSpecies().equals(gffChrAbs.getSpecies())) {
+		if (this.species != null && this.species.equals(gffChrAbs.getSpecies())) {
 			return;
 		}
-		this.gffChrAbs = gffChrAbs;
-		setGffIso();
+		this.seqHash = gffChrAbs.getSeqHash();
+		setGffIso(gffChrAbs);
 	}
 	
 	public void setRefSnpIndelStart(String chrID, int refSnpIndelStart) {
@@ -180,11 +184,12 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	 * @return
 	 */
 	public int getTaxID() {
-		if (gffChrAbs == null) {
+		if (this.species == null) {
 			return 0;
 		}
-		return gffChrAbs.getTaxID();
+		return this.species.getTaxID();
 	}
+	
 	public void setRefBase(String refBase) {
 		this.refBase = refBase;
 	}
@@ -371,7 +376,7 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	 * snp或indel所在的转录本
 	 * 同时设定setProp，cis5to3，和name，都用gffGeneIsoInfo的信息
 	 */
-	private void setGffIso() {
+	private void setGffIso(GffChrAbs gffChrAbs) {
 		if (gffChrAbs == null || gffChrAbs.getGffHashGene() == null) {
 			gffGeneIsoInfo = null;
 			return;
@@ -412,11 +417,20 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 	
 	/** 返回该位点的起点在第几个氨基酸上，如果不在cds中则返回 -1 */
 	public int getAffectAANum() {
-		if (gffGeneIsoInfo.getCodLocUTRCDS(getRefSnpIndelStart()) != GffGeneIsoInfo.COD_LOCUTR_CDS) {
+		if (gffGeneIsoInfo == null || gffGeneIsoInfo.getCodLocUTRCDS(getRefSnpIndelStart()) != GffGeneIsoInfo.COD_LOCUTR_CDS) {
 			return -1;
 		}
 		int num = gffGeneIsoInfo.getCod2ATGmRNA(getRefSnpIndelStart());
 		return num/3 + 1;
+	}
+	
+	/** 返回该位点的起点在第几个氨基酸上，如果不在cds中则返回 -1 */
+	public int getAffectCdsNum() {
+		if (gffGeneIsoInfo == null || gffGeneIsoInfo.getCodLocUTRCDS(getRefSnpIndelStart()) != GffGeneIsoInfo.COD_LOCUTR_CDS) {
+			return -1;
+		}
+		int num = gffGeneIsoInfo.getCod2ATGmRNA(getRefSnpIndelStart());
+		return num + 1;
 	}
 	
 	public String getRefID() {
@@ -1016,7 +1030,6 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		try {
 			//TODO
 			refSiteSnpIndel = (RefSiteSnpIndel) super.clone();
-			refSiteSnpIndel.gffChrAbs = gffChrAbs;
 			refSiteSnpIndel.gffGeneIsoInfo = gffGeneIsoInfo;
 			refSiteSnpIndel.chrID = chrID;
 			refSiteSnpIndel.prop = prop;
@@ -1044,7 +1057,6 @@ public class RefSiteSnpIndel implements Comparable<RefSiteSnpIndel>, Cloneable{
 		return null;
 	}
 	public void clear() {
-		gffChrAbs = null;
 		gffGeneIsoInfo = null;
 		mapAllen2Num.clear();
 		mapSample2NormReadsInfo.clear();

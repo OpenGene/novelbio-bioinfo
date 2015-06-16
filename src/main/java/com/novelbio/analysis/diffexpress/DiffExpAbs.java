@@ -339,7 +339,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		int m = 0;
 		for (String[] info : lsAnalysisGeneInfo) {
 			if (m++ <= 0) continue; //跳过第一行
-			
+			info[0] = CmdOperate.addQuot(info[0].replace("\"", ""));
 			double sum = 0;
 			boolean biggerThanMinSampleSep = false;
 			for (int i = 1; i < info.length; i++) {
