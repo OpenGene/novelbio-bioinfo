@@ -58,6 +58,8 @@ import com.novelbio.database.mongorepo.kegg.RepoKReaction;
 import com.novelbio.database.mongorepo.kegg.RepoKRelation;
 import com.novelbio.database.mongorepo.kegg.RepoKSubstrate;
 import com.novelbio.database.service.SpringFactoryBioinfo;
+import com.novelbio.database.updatedb.database.GffIDconvert;
+import com.novelbio.database.updatedb.database.IDconvertEnsembl2NCBI;
 
 
 public class mytest {
@@ -65,40 +67,50 @@ public class mytest {
 	static boolean is;
 
 	public static void main(String[] args) throws Exception {
-		
-//		GeneID geneID = new GeneID("HIST1H2BL", 9606);
-//		RepoKIDgen2Keg repoKIDgen2Keg = SpringFactoryBioinfo.getBean(RepoKIDgen2Keg.class);
-//		System.out.println(geneID.getGeneUniID());
-//		KGIDgen2Keg kgiDgen2Keg = repoKIDgen2Keg.findByGeneId(Long.parseLong(geneID.getGeneUniID()));
-//		System.out.println(kgiDgen2Keg.getKeggID());
-		
-		
-//		MongoTemplate mongoTemplate = (MongoTemplate)SpringFactoryBioinfo.getFactory().getBean("mongoTemplate");
-//		Query query = new Query( Criteria.where("taxID").is(10090));
-//		List<KGentry> lskGentries = mongoTemplate.find(query, KGentry.class);
-//		Map<String, KGentry> mapKey2Entry = new HashMap<>();
-//		for (KGentry kGentry : lskGentries) {
-//			mapKey2Entry.put(kGentry.getPathName() + "_" + kGentry.getEntryId() + "_" + kGentry.getEntryName(), kGentry);
-//		}
-//		System.out.println(lskGentries.size());
+//		String path = "/home/novelbio/下载/hnscc gene expression classificaiton paper/hnscc gene expression classificaiton paper/HNSCC分为四类的文章 plus one 重点/";
+//		TxtReadandWrite txtRead = new TxtReadandWrite(path + "gse_classification.txt");
+//		ArrayList<String> lsInfo = txtRead.readFirstLines(4);
+//		String[] id = lsInfo.get(0).split("\t");
+//		String[] type = lsInfo.get(1).split("\t");
+//		String[] gse = lsInfo.get(3).split("\t");
 //		
-		
-//		RepoKEntry repoKEntry = SpringFactoryBioinfo.getBean(RepoKEntry.class);
-//		List<KGentry> lskGentries = repoKEntry.findByNamePath("hsa:8340", "path:hsa05034");
-//		for (KGentry kGentry : lskGentries) {
-//			System.out.println(kGentry.getEntryId());
+//		List<String> lsResult = new ArrayList<>();
+//		for (int i = 0; i < id.length; i++) {
+//			String tmpResult = gse[i] + "_" + id[i] + "_" + type[i];
+//			lsResult.add(tmpResult);
 //		}
-		GffHashGene gffHashGene = new GffHashGene("/media/nbfs/nbCloud/public/nbcplatform/genome/species/9606/hg19_GRCh37/gff/ref_GRCh37.p13_top_level.gff3.gz");
-		gffHashGene.writeToGTF("/home/novelbio/hg19_p13.gtf");
+//		TxtReadandWrite txtWrite = new TxtReadandWrite(path + "gse_classification_result.txt",true);
+//		String[] result = lsResult.toArray(new String[0]);
+//		txtWrite.writefileln(result);
+//		txtWrite.close();
 		
-//		for (String key : mapKey2Entry.keySet()) {
-//			if (!mapKey2EntryKeg.containsKey(key)) {
-//				System.out.println(key);
-//			}
+//		TxtReadandWrite txtWrite = new TxtReadandWrite("/home/novelbio/hg19_gene2Len.txt", true);
+//		GffHashGene gffHashGene = new GffHashGene("/media/nbfs/nbCloud/public/nbcplatform/genome/species/9606/hg19_GRCh37/gff/ref_GRCh37.p13_top_level.gff3.gz");
+//		for (GffDetailGene gffDetailGene : gffHashGene.getLsGffDetailGenes()) {
+//			txtWrite.writefileln(gffDetailGene.getNameSingle() + "\t" + gffDetailGene.getLongestSplitMrna().getLenExon(0));
 //		}
+//		txtWrite.close();
 		
+		TxtReadandWrite txtRead = new TxtReadandWrite("/home/novelbio/genes.gtf");
+		TxtReadandWrite txtWrite = new TxtReadandWrite("/home/novelbio/id_convert.txt", true);
+		for (String content : txtRead.readlines()) {
+			if (content.startsWith("#")) {
+				continue;
+			}
+			String[] ss = content.split("\t");
+			String[] idss = ss[8].split("\t");
+			for (String info : idss) {
+				
+			}
+			txtWrite.writefileln(content);
+		}
+		txtRead.close();
+		txtWrite.close();
 		
-		System.out.println();
+//		GffIDconvert gffIDconvert = new GffIDconvert();
+//		gffIDconvert.setGffHashGeneQuery(new GffHashGene("/home/novelbio/genes.gtf"));
+//		gffIDconvert.setGffHashGeneSub(new GffHashGene(""));
+		
 	}
 	
 	private static String getSeq(byte[] readInfo) {

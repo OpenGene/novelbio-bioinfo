@@ -80,34 +80,37 @@ public class MAFRecord {
 	RefSiteSnpIndel refSiteSnpIndel;
 	
 	Species species = new Species();
-	public MAFRecord(VariantContext variantContext, GffChrAbs gffChrAbs) {
-		this.variantContext = variantContext;
-		species = gffChrAbs.getSpecies();
-		refSiteSnpIndel = new RefSiteSnpIndel(gffChrAbs, variantContext.getContig(), variantContext.getStart());
+	public static MAFRecord generateMafRecord(VariantContext variantContext, GffChrAbs gffChrAbs) {
+		RefSiteSnpIndel refSiteSnpIndel = new RefSiteSnpIndel(gffChrAbs, variantContext.getContig(), variantContext.getStart());
+		GffGeneIsoInfo gffGeneIsoInfo = refSiteSnpIndel.getGffIso();
+		if (gffGeneIsoInfo == null) {
+			return null;
+		}
+		MAFRecord mafRecord = new MAFRecord();
+		mafRecord.variantContext = variantContext;
+		mafRecord.species = gffChrAbs.getSpecies();
+		mafRecord.refSiteSnpIndel = refSiteSnpIndel;
+		mafRecord.gffGeneIsoInfo = gffGeneIsoInfo;
 		SiteSnpIndelInfo siteSnpIndelInfo = refSiteSnpIndel.getAndAddAllenInfo(variantContext.getReference().toString().replaceAll("\\*", "") + "",
 				variantContext.getAlternateAllele(0).toString().replaceAll("\\*", ""));
-		gffGeneIsoInfo = refSiteSnpIndel.getGffIso();
 		
-		if (siteSnpIndelInfo == null && gffGeneIsoInfo == null) {
-			setVariantClasses.add(EnumVariantClass.IGR1);
-			
-		} else if (siteSnpIndelInfo == null && gffGeneIsoInfo != null) {
-			setVarClass(gffGeneIsoInfo);
+		if (siteSnpIndelInfo == null) {
+			mafRecord.setVarClass(gffGeneIsoInfo);
 		} else if (siteSnpIndelInfo != null) {
-			setVarClass(siteSnpIndelInfo);
-		}
-		
-		if (refSiteSnpIndel.getAffectAANum() > 0) {
-			cPosition = "c." + siteSnpIndelInfo.getAffectCdsInfo();
-			aAChange = "p." + siteSnpIndelInfo.getAffectAAInfo();
-		}
-		
+			mafRecord.setVarClass(siteSnpIndelInfo);
+		}	
+//		if (refSiteSnpIndel.getAffectAANum() > 0) {
+//			cPosition = "c." + siteSnpIndelInfo.getAffectCdsInfo();
+//			aAChange = "p." + siteSnpIndelInfo.getAffectAAInfo();
+//		}	
 		if (gffChrAbs.getTaxID() > 0) {
+			
 			GeneID geneID = new GeneID(gffGeneIsoInfo.getParentGeneName(), gffChrAbs.getTaxID());
 			if (geneID.getIDtype() == GeneID.IDTYPE_GENEID) {
-				entrez_Gene_Id = Integer.parseInt(geneID.getGeneUniID());
+				mafRecord.entrez_Gene_Id = Integer.parseInt(geneID.getGeneUniID());
 			}
 		}
+		return mafRecord;
 	}
 	
 	private void setVarClass(SiteSnpIndelInfo siteSnpIndelInfo) {
@@ -158,12 +161,12 @@ public class MAFRecord {
 		}
 	}
 	
-	public String toString() {
-		
+	public String toString() {	
 		ArrayList<String> lsMAF = new ArrayList<String>();
-		//TODO 需要根据注释的结果，获取SNP所在的基因名称;no
+		if (gffGeneIsoInfo == null) {
+			return null;
+		} 
 		lsMAF.add(gffGeneIsoInfo.getParentGeneName());
-		//TODO 需要根据注释的结果，获取SNP所在的基因的ID;
 		lsMAF.add(entrez_Gene_Id + "");
 		// 生成该MAF文件的机构名称，使用默认即可;
 		lsMAF.add(mafFile.getCenter());
@@ -179,12 +182,8 @@ public class MAFRecord {
 		} else {
 			lsMAF.add(cis3to5 + "");
 		}
-	
-		//TODO 根据注释结果，来确定SNP变异类型是什么？ Frame_Shift_Del？Frame_Shift_Ins？ In_Frame_Del or other?
 		lsMAF.add(getVarClass());
-		
 		lsMAF.add(variantContext.getType().toString());
-//		Allele ref=variantContext.getReference();
 		lsMAF.addAll(getTumorType());
 		lsMAF.addAll(getGenoType());
 		//使用默认的空值即可
@@ -211,14 +210,12 @@ public class MAFRecord {
 		lsMAF.add(mafFile.sequencer.toString());
 		lsMAF.add(getTumSampleName());
 		lsMAF.add(getNorSampleName());
-		
 		lsMAF.add(variantContext.getContig());
 		lsMAF.add(variantContext.getStart() + "");
 		lsMAF.add(variantContext.getEnd() + "");
 		lsMAF.add(getTumorType().get(0));
-		lsMAF.add(getTumorType().get(1));
+		lsMAF.add(getTumorType().get(2));
 		lsMAF.add(variantContext.getType().toString());
-		
 		/** 基因名称 */
 		lsMAF.add(gffGeneIsoInfo.getParentGeneName());
 		/** 转录本名称 */
@@ -227,24 +224,19 @@ public class MAFRecord {
 		lsMAF.add(species.getNameLatin());
 		/** 转录本来源 */
 		lsMAF.add(species.getGffDB());
-
 		/** 转录本版本 */
 		lsMAF.add(species.getVersion());
-		
 		/** 转录本所在的正负链情况 */
 		if (gffGeneIsoInfo.isCis5to3()) {
 			lsMAF.add("1");
 		} else {
 			lsMAF.add("-1");
 		}
-		
 		lsMAF.add(transcriptStatus);
 		/** 突变类型 */
 		lsMAF.add(getVarClass());
-		
 		lsMAF.add(cPosition);
 		lsMAF.add(aAChange);
-		
 		/** ucsc_cons_WU */
 		lsMAF.add(ucscConsValue + "");
 		lsMAF.add(NullString + "");
@@ -303,7 +295,6 @@ public class MAFRecord {
 			lsResult.add(variantContext.getReference().toString().replaceAll("\\*", "") + "");
 			lsResult.add(variantContext.getReference().toString().replaceAll("\\*", "") + "");
 		}
-		
 		return lsResult;
 	}
 	
@@ -317,7 +308,5 @@ public class MAFRecord {
 		}
 		result = result.substring(0, result.length() - 1);
 		return result;
-	}
-	
-
+	}	
 }

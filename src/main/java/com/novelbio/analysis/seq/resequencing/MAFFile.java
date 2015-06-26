@@ -1,4 +1,13 @@
 package com.novelbio.analysis.seq.resequencing;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.model.species.Species;
+
 import htsjdk.variant.variantcontext.VariantContext;
 import htsjdk.variant.vcf.VCFFileReader;
 
@@ -22,8 +31,40 @@ public class MAFFile {
 	protected EnumSequencer sequencer = EnumSequencer.IlluminaHiSeq;
 	
 	public static void main(String[] args) {
-		System.out.println(ProcessInfo.getPidThis());
+		String vcfFilePath = "/home/novelbio/VCF";
+		ArrayList<String[]> lsFile = new ArrayList<>();
+		lsFile = FileOperate.getFoldFileName(vcfFilePath, "format", "vcf");
+		for (String[] arrFile:lsFile) {
+			String realFileName = arrFile[0];
+			String filePath = vcfFilePath + "/" + realFileName + ".vcf";
+			File file = FileOperate.getFile(filePath);
+			VCFFileReader reader = new VCFFileReader(file, false);
+			Species species = new Species(9606, "hg19_GRCh37");
+			GffChrAbs gffChrAbs = new GffChrAbs(species);
+			String mafFilePath = "//home//novelbio//VCF//" + file.getName() + ".maf";  // S084103_IPVSS084103_Ca.maf
+			TxtReadandWrite txtWrite = new TxtReadandWrite(mafFilePath, true);
+			MAFFile mafFile = new MAFFile ();
+			txtWrite.writefile(mafFile.MAFFileHead() + "\n");
+			int i=0;
+			for (VariantContext variantContext : reader) {
+//				if (i++ > 300) {
+//					break;
+//				}
+				MAFRecord mafRecord = new MAFRecord();
+				MAFRecord mAFRecord = mafRecord.generateMafRecord(variantContext, gffChrAbs);
+				if (mAFRecord != null) {
+					
+					txtWrite.writefile(mAFRecord.toString() + "\n");
+				}	
+//				System.out.println(mafRecord.toString());
+			}
+			txtWrite.close();
+			System.out.println("Finished !!!");
+		}
+
 		
+//		GffHashGene gffHashGene = new GffHashGene("/home/novelbio/NBCsource/species/9606/hg19_GRCh37/gff/ref_GRCh37.p13_top_level.gff3.gz");
+//		gffHashGene.writeToGTF("/home/novelbio/NBCsource/species/9606/hg19_GRCh37/gff/ref_GRCh37.p13_top_level.gtf");
 
 	}
 	
@@ -48,12 +89,12 @@ public class MAFFile {
 		txtWrite.writefile(this.MAFFileHead() + "\n");
 		while(it.hasNext()) {
 			VariantContext variantContext = it.next();
-			MAFRecord mafRecord = new MAFRecord (variantContext);
-			txtWrite.writefile(mafRecord.toString());
+//			MAFRecord mafRecord = new MAFRecord (variantContext);
+//			txtWrite.writefile(mafRecord.toString());
 		}
 		txtWrite.close();
 	}
-	private String MAFFileHead() {
+	public String MAFFileHead() {
 		//MAF文件，title 放在lsMAFHead中;
 		ArrayList<String> lsMAFHead = new ArrayList<String>();
 		lsMAFHead.add("Hugo_Symbol");
@@ -90,6 +131,27 @@ public class MAFFile {
 		lsMAFHead.add("Sequencer");
 		lsMAFHead.add("Tumor_Sample_UUID");
 		lsMAFHead.add("Matched_Norm_Sample_UUID");
+		lsMAFHead.add("chromosome_name_WU");
+		lsMAFHead.add("start_WU");
+		lsMAFHead.add("stop_WU");
+		lsMAFHead.add("reference_WU");
+		lsMAFHead.add("variant_WU");
+		lsMAFHead.add("type_WU");
+		lsMAFHead.add("gene_name_WU");
+		lsMAFHead.add("transcript_name_WU");
+		lsMAFHead.add("transcript_species_WU");
+		lsMAFHead.add("transcript_source_WU");
+		lsMAFHead.add("transcript_version_WU");
+		lsMAFHead.add("strand_WU");
+		lsMAFHead.add("transcript_status_WU");
+		lsMAFHead.add("trv_type_WU");
+		lsMAFHead.add("c_position_WU");
+		lsMAFHead.add("amino_acid_change_WU");
+		lsMAFHead.add("ucsc_cons_WU");
+		lsMAFHead.add("domain_WU");
+		lsMAFHead.add("all_domains_WU");
+		lsMAFHead.add("deletion_substructures_WU");
+		lsMAFHead.add("transcript_error");
 		return org.apache.commons.lang.StringUtils.join(lsMAFHead.toArray(),"\t");
 	}
 	
