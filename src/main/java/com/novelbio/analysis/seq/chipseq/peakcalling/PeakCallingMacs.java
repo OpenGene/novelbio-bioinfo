@@ -20,16 +20,34 @@ public class PeakCallingMacs implements IntCmdSoft {
 	private long genomeLength;
 	private int mfoldMin = 2;
 	private int mfoldMax = 300;
+	
+	private boolean isNolambda = false;
+	
 	private FormatSeq FileType = FormatSeq.BED;
 	
+	/** 文件类型，只能是bed或者bam文件 */
 	public void setFileType(FormatSeq fileType) {
 		FileType = fileType;
 	}
 	
+	/**
+	 * 默认2<br><br>
+	 *  Select the regions within MFOLD range of high- <br>
+    confidence enrichment ratio against background to<br>
+    build model. The regions must be lower than upper<br>
+    limit, and higher than the lower limit. DEFAULT:10,30
+    */
 	public void setMfoldMax(int mfoldMax) {
 		this.mfoldMax = mfoldMax;
 	}
 	
+	/** 
+	 * 默认300<br><br>
+	 * Select the regions within MFOLD range of high-<br>
+    confidence enrichment ratio against background to<br>
+    build model. The regions must be lower than upper<br>
+    limit, and higher than the lower limit. DEFAULT:10,30
+    */
 	public void setMfoldMin(int mfoldMin) {
 		this.mfoldMin = mfoldMin;
 	}
@@ -57,6 +75,19 @@ public class PeakCallingMacs implements IntCmdSoft {
 	public void setGenomeLength(long genomeLength) {
 		this.genomeLength = genomeLength;
 	}
+	
+	/** 默认为false<br><br>
+	 *  If True, MACS will use fixed background lambda as<br>
+                        local lambda for every peak region. Normally, MACS<br>
+                        calculates a dynamic local lambda to reflect the local<br>
+                        bias due to potential chromatin structure.<br>
+
+	 * @param isNolambda
+	 */
+	public void setIsNolambda(boolean isNolambda) {
+		this.isNolambda = isNolambda;
+	}
+	
 	/** 获得结果文件，如果结果文件不存在，就进行peakcalling*/
 	public String getResultPeakFile() {
 		String resultFile = FileOperate.changeFileSuffix(outFileName, "_peaks", "xls");
@@ -103,8 +134,15 @@ public class PeakCallingMacs implements IntCmdSoft {
 	private String[] getTsize() {
 		return new String[]{"-s", tsize+""};
 	}
-	public String[] getMfold() {
+	private String[] getMfold() {
 		return new String[]{"-m", mfoldMin+"," + mfoldMax};
+	}
+	
+	private String[] getNolambda() {
+		if (isNolambda) {
+			return new String[]{"--nolambda"};
+		}
+		return null;
 	}
 	
 	private List<String> getLsCmd() {
@@ -120,12 +158,13 @@ public class PeakCallingMacs implements IntCmdSoft {
 		ArrayOperate.addArrayToList(lsCmd, getPvalue());
 		ArrayOperate.addArrayToList(lsCmd, getTsize());
 		ArrayOperate.addArrayToList(lsCmd, getMfold());
+		ArrayOperate.addArrayToList(lsCmd, getNolambda());
 		return lsCmd;
 	}
 	
 	public void runPeakCalling() {
 		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
-		cmdOperate.run();
+		cmdOperate.runWithExp();
 	}
 	
 	public void clear() {

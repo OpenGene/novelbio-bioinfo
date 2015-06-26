@@ -1,4 +1,4 @@
-package com.novelbio.analysis.seq.genome;
+package com.novelbio.analysis.seq.chipseq;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.genome.Gene2Value;
+import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genome.mappingOperate.EnumMapNormalizeType;
@@ -26,8 +28,8 @@ import com.novelbio.base.plot.heatmap.PlotHeatMap;
  * @author zong0jie
  *
  */
-public class GffChrPlotTss {
-	private static final Logger logger = Logger.getLogger(GffChrMap.class);
+public class TssPlot {
+	private static final Logger logger = Logger.getLogger(TssPlot.class);
 
 	GffChrAbs gffChrAbs;
 	
@@ -71,9 +73,9 @@ public class GffChrPlotTss {
 	boolean getOrExclude = true;
 	
 	
-	public GffChrPlotTss() { }
+	public TssPlot() { }
 	
-	public GffChrPlotTss(GffChrAbs gffChrAbs) {
+	public TssPlot(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 	}
 	

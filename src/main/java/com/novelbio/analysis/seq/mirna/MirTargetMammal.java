@@ -182,7 +182,7 @@ public class MirTargetMammal implements IntCmdSoft {
 		combineTab.setColCompareOverlapID(1, 2);
 		ArrayList<String[]> lsCombine = combineTab.getResultLsIntersection();
 		try {
-			combineTab.renderScriptAndDrawImage(FileOperate.changeFileSuffix(predictResultFinal, "_Ven", "tiff"), "", "");
+			combineTab.renderScriptAndDrawImage(FileOperate.changeFileSuffix(predictResultFinal, "_Ven", "png"), "", "");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -79,6 +79,9 @@ public abstract class AGene2Go {
 			logger.error("unknown GOID");
 			return;
 		}
+		if (GoID.contains(",")) {
+			logger.debug("stop");
+		}
 		GoID = GoID.trim().toUpperCase();
 		try {
 			this.goID = manageGo2Term.queryGo2Term(GoID).getGoID();

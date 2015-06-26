@@ -55,9 +55,7 @@ public class CombineTab {
 		VennImage vennImage = new VennImage("/home/novelbio/NBCsource/test/overlap/testR.tiff",3000,3000);
 		vennImage.setMain("use VennDiagram to make a Venn plot");
 		vennImage.setSub("by GaoZhu");
-		if (comb.renderScriptAndDrawImage(vennImage) != null) {
-			System.out.println("生成图片成功");
-		}
+		comb.renderScriptAndDrawImage("/home/novelbio/NBCsource/test/overlap/", vennImage);
 		//comb.deleteAllTempFile();
 	}
 	
@@ -386,11 +384,20 @@ public class CombineTab {
 		return true;
 	}
 	
-	public BufferedImage renderScriptAndDrawImage(String savePath, String title, String subTitle) {
-		VennImage vennImage = new VennImage(savePath,3000,3000);
+	/** 输入文件只能是jpg或png，最好png */
+	public void renderScriptAndDrawImage(String savePath, String title, String subTitle) {
+		String tmpFile = tempFolder + FileOperate.getFileNameSep(savePath)[0] + DateUtil.getDateAndRandom() + ".tiff";
+		String scriptPath = FileOperate.getPathName(savePath);
+		scriptPath = scriptPath + "script/";
+		FileOperate.DeleteFileFolder(scriptPath);
+		FileOperate.createFolders(scriptPath);
+		
+		VennImage vennImage = new VennImage(tmpFile,3000,3000);
 		vennImage.setMain(title);
 		vennImage.setSub(subTitle);
-		return renderScriptAndDrawImage(vennImage);
+		renderScriptAndDrawImage(scriptPath, vennImage);
+		BufferedImage bufferedImage = ImageUtils.read(tmpFile);
+		ImageUtils.saveBufferedImage(bufferedImage, savePath);
 	}
 	
 	/**
@@ -398,7 +405,7 @@ public class CombineTab {
 	 * @param savePath 只能是tiff格式的
 	 * @return
 	 */
-	public BufferedImage renderScriptAndDrawImage(VennImage vennImage) {
+	private void renderScriptAndDrawImage(String scriptPath, VennImage vennImage) {
 		tempFiles.add(vennImage.getSavePath());
 		//提供给freemarker的渲染数据集 
 		Map<String,Object> mapData = new HashMap<String, Object>();
@@ -407,7 +414,7 @@ public class CombineTab {
 		String fileName = null;
 		for (String key : mapFileName2ConditionAbbr.keySet()) {
 			if (!FileOperate.isFileExistAndBigThanSize(key, 0))
-				return null;
+				return;
 			fileName = tempFolder + mapFileName2ConditionAbbr.get(key) + DateUtil.getDateAndRandom() + ".txt";
 			txtReadandWrite = new TxtReadandWrite(fileName,true);
 			for (String[] content : ExcelTxtRead.readLsExcelTxt(key, 2)) {
@@ -445,27 +452,22 @@ public class CombineTab {
 			txtReadandWrite = new TxtReadandWrite(scriptName,true);
 			txtReadandWrite.writefile(sw.toString());
 			tempFiles.add(scriptName);
-			txtReadandWrite.close();
 		} catch (Exception e) {
 			logger.error("render error! ", e);
 			deleteAllTempFile();
-			return null;
-		} finally{
+			throw new RuntimeException("render error! ", e);
+		} finally {
 			txtReadandWrite.close();
 		}
 		//TODO		String cmd = PathNBCDetail.getRscript() + scriptName.replace("\\", "/");
-		try {
-			List<String> lsCmd = new ArrayList<>();
-			lsCmd.add(PathDetail.getRscript());
-			lsCmd.add(scriptName.replace("\\", "/"));
-			CmdOperate cmdOperate = new CmdOperate(lsCmd);
-			cmdOperate.run();
-		} catch (Exception e) {
-			logger.error("R运行脚本出错啦! ", e);
-			deleteAllTempFile();
-			return null;
-		}
-		return ImageUtils.read(vennImage.getSavePath());
+		
+		FileOperate.copyFile(scriptName, scriptPath + FileOperate.getFileName(scriptName), true);
+		
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add(PathDetail.getRscript());
+		lsCmd.add(scriptName.replace("\\", "/"));
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
+		cmdOperate.runWithExp();
 	}
 	
 	/**

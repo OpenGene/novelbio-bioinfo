@@ -65,17 +65,17 @@ public class ImportDB {
 		String speciesFile = "";
 //		ImportPerLine.addTaxId(4932);
 		ImportDB importDB = new ImportDB();
-		importDB.setDownloadPath(downloadPath);
-		importDB.setSoftToolsFile(softToolsFile);
+//		importDB.setDownloadPath(downloadPath);
+//		importDB.setSoftToolsFile(softToolsFile);
 //		importDB.setSpeciesFile(speciesFile);
-		importDB.setGOPath(GOPath);
+//		importDB.setGOPath(GOPath);
 //		importDB.setTaxIDFile(taxIDFile);
 		
 //		importDB.updateDBinfo(dbInfo);
 //		importDB.updateGODB();
 		
-		importDB.updateNCBIID();
-		importDB.updateUniprotID();
+//		importDB.updateNCBIID();
+//		importDB.updateUniprotID();
 		
 //		importDB.updateZeaMaize();
 //		importDB.updateRiceID("/home/novelbio/NBCsource/database/species/rice/");//只导了前两个
@@ -85,7 +85,7 @@ public class ImportDB {
 //		importDB.updateYeast();
 //		importDB.updateMicroarray();
 
-//		importDB.updateSoyBean();
+		importDB.updateSoyBean();
 //		importDB.updateZeaMaize();
 //		importDB.updateBlast();
 //		importDB.updateAffy();
@@ -523,11 +523,22 @@ public class ImportDB {
 	}
 
 	private void updateSoyBean() {
-		String soyDbxref = "/media/winE/Bioinformatics/GenomeData/soybean/dbxref";
-		String soyAnno = "/media/winE/Bioinformatics/GenomeData/soybean/Gmax_109_annotation_info.txt";
+//		String soyDbxref = "/home/novelbio/NBCsource/biodb/database/species/soybean/dbxref";
+//		String soyAnno = "/media/winE/Bioinformatics/GenomeData/soybean/Gmax_109_annotation_info.txt";
+//		SoyBean soyBean = new SoyBean();
+//		soyBean.setSoyDbxref(soyDbxref);
+//		soyBean.setSoyGeneInfo(soyAnno);
+//		soyBean.update();
+		
+		String parent = "/home/novelbio/NBCsource/biodb/database20150530/species/soybean/";
+		String soyGff = parent + "Glycine_max.V1.0.27.gff3";
+		String soyGOFile = parent + "SoyBase_Annotation_Glyma2.0.csv";
+		String soyIdConvertFile = parent + "Glyma_11_to_Glyma_20_Correspondence_Full.csv";
+		
 		SoyBean soyBean = new SoyBean();
-		soyBean.setSoyDbxref(soyDbxref);
-		soyBean.setSoyGeneInfo(soyAnno);
+		soyBean.setSoyGff(soyGff);
+		soyBean.setSoyGOFile(soyGOFile);
+		soyBean.setSoyIdConvertFile(soyIdConvertFile);
 		soyBean.update();
 	}
 	

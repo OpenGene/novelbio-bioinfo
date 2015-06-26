@@ -3,8 +3,8 @@
 import java.awt.Color;
 import java.util.ArrayList;
 
+import com.novelbio.analysis.seq.chipseq.TssPlot;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.GffChrPlotTss;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsChangFang;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsChangFang.CGmethyType;
@@ -49,7 +49,7 @@ public class Yanghongxing {
 		mapReads.setAllReadsNum(normalizedNum);
 		GffChrAbs gffChrAbs = new GffChrAbs(species);
 		
-		GffChrPlotTss gffChrPlotTss;
+		TssPlot gffChrPlotTss;
 		
 		DotStyle dotStyle = new DotStyle();
 		dotStyle.setColor(DotStyle.getGridentColor(Color.RED, Color.ORANGE));
@@ -57,7 +57,7 @@ public class Yanghongxing {
 		dotStyle.setSize(DotStyle.SIZE_MB);
 		PlotScatter plotScatter = null;
 		
-		gffChrPlotTss = new GffChrPlotTss(gffChrAbs);
+		gffChrPlotTss = new TssPlot(gffChrAbs);
 		gffChrPlotTss.setSplitNum(500);
 		gffChrPlotTss.setMapReads(mapReads);
 		gffChrPlotTss.setPlotTssTesRange(new int[]{-4000,4000});

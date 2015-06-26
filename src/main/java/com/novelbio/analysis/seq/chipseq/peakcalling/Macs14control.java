@@ -5,9 +5,12 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.FormatSeq;
 import com.novelbio.analysis.seq.bed.BedRecord;
 import com.novelbio.analysis.seq.bed.BedSeq;
+import com.novelbio.analysis.seq.fasta.SeqFasta;
+import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -15,17 +18,26 @@ import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.species.Species;
 
-public class Macs14control {
+public class Macs14control  implements IntCmdSoft {
 	Logger logger = Logger.getLogger(Macs14control.class);
 	PeakCallingMacs macs14 = new PeakCallingMacs();
 	FormatSeq formatSeq;
 	String resultFile;
 	private Species species;
+	private long genomeLength;
 	private double effectiveGemoneSize = 0.85;
 	
 	public void setSpecies(Species species) {
 		this.species = species;
 	} 
+	public void setChromosome(String chromosome) {
+		genomeLength = 0;
+		SeqHash seqHash = new SeqHash(chromosome);
+		for (String[] chrId2Len : seqHash.getChrLengthInfo()) {
+			genomeLength = genomeLength + Long.parseLong(chrId2Len[1]);
+		}
+		seqHash.close();
+	}
 	public void setPathinput(String pathInput) {
 		BedSeq bedSeq = new BedSeq(pathInput);
 		int i = 1;
@@ -64,6 +76,11 @@ public class Macs14control {
 	public void setPvalue(double pvalue) {
 		macs14.setPvalue(pvalue);
 	}
+	
+	/** 默认为false */
+	public void setIsNolambda(boolean isNolambda) {
+		macs14.setIsNolambda(isNolambda);
+	}
 	private void setEffectiveGenomeSize(int readsLength) {
 		if (readsLength < 25) {
 			this.effectiveGemoneSize = 0.65;
@@ -88,7 +105,11 @@ public class Macs14control {
 			logger.error("unknown file format");
 			return;
 		}
-		macs14.setGenomeLength((long) (species.getChromLenAll() * effectiveGemoneSize));
+		if (genomeLength > 0) {
+			macs14.setGenomeLength((long) (genomeLength * effectiveGemoneSize));
+		} else if (species != null && species.getTaxID() > 0) {
+			macs14.setGenomeLength((long) (species.getChromLenAll() * effectiveGemoneSize));
+		}
 		macs14.setFileType(formatSeq);
 		macs14.runPeakCalling();
 		writePeaks();
@@ -135,6 +156,10 @@ public class Macs14control {
 		resultFile = null;
 		effectiveGemoneSize = 0;
 		macs14.clear();
+	}
+	@Override
+	public List<String> getCmdExeStr() {
+		return macs14.getCmdExeStr();
 	}
 	
 }

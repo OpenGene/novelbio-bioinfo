@@ -1,19 +1,14 @@
 package com.novelbio.analysis.seq.resequencing;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.model.species.Species;
-
-import htsjdk.variant.variantcontext.Allele;
-import htsjdk.variant.variantcontext.Genotype;
-import htsjdk.variant.variantcontext.GenotypesContext;
 import htsjdk.variant.variantcontext.VariantContext;
 import htsjdk.variant.vcf.VCFFileReader;
+
+import java.lang.management.ManagementFactory;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import com.novelbio.base.cmd.ProcessInfo;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.FileOperate;
 
 
 public class MAFFile {
@@ -27,21 +22,9 @@ public class MAFFile {
 	protected EnumSequencer sequencer = EnumSequencer.IlluminaHiSeq;
 	
 	public static void main(String[] args) {
-//		VCFFileReader reader = new VCFFileReader(FileOperate.getFile("/home/novelbio/下载/ABI.vcf"), false);
-//		Species species = new Species(9606, "hg19_GRCh37");
-//		GffChrAbs gffChrAbs = new GffChrAbs(species);
-//		int i = 0;
-//		for (VariantContext variantContext : reader) {
-//			if (i++ > 3) {
-//				break;
-//			}
-//			MAFRecord mafRecord = new MAFRecord(variantContext, gffChrAbs);
-//			System.out.println(mafRecord.toString());
-//		}
-//		System.out.println();
+		System.out.println(ProcessInfo.getPidThis());
 		
-		GffHashGene gffHashGene = new GffHashGene("/home/novelbio/NBCsource/species/9606/hg19_GRCh37/gff/ref_GRCh37.p13_top_level.gff3.gz");
-		gffHashGene.writeToGTF("/home/novelbio/NBCsource/species/9606/hg19_GRCh37/gff/ref_GRCh37.p13_top_level.gtf");
+
 	}
 	
 	public void setCenter(String center) {
