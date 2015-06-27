@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
@@ -265,6 +266,12 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	public GffDetailGene searchLOC(String chrID, int LOCNum) {
 		return gffHashGene.searchLOC(chrID, LOCNum);
 	}
+	
+	@Override
+	public GffCodGeneDU searchLocation(Alignment alignment) {
+		return gffHashGene.searchLocation(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs());
+	}
+	
 	/**
 	 * 内部自动判断 cod1 和 cod2的大小
 	 * @param chrID

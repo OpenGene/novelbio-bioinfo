@@ -11,7 +11,7 @@ import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
 import com.novelbio.analysis.seq.genome.gffOperate.ListHashBin;
-import com.novelbio.analysis.seq.genome.mappingOperate.MapInfo;
+import com.novelbio.analysis.seq.genome.mappingOperate.RegionInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -559,7 +559,7 @@ public class DifLoc2DifLoc {
 		if (gffGeneIsoInfo == null) {
 			return null;
 		}
-		MapInfo mapInfo = new MapInfo(gffGeneIsoInfo.getRefIDlowcase());
+		
 		int start = 0, end = 0;
 		if (gffGeneIsoInfo.isCis5to3()) {
 			start = gffGeneIsoInfo.getTSSsite() + tssRegion[0];
@@ -568,7 +568,8 @@ public class DifLoc2DifLoc {
 			start = gffGeneIsoInfo.getTSSsite() - tssRegion[0];
 		}
 		end = gffGeneIsoInfo.getTESsite();
-		mapInfo.setStartEndLoc(start, end);
+		
+		RegionInfo mapInfo = new RegionInfo(gffGeneIsoInfo.getRefIDlowcase(), start, end);
 		ArrayList<MapReads> lsMapReads = mapPrefix2MapReads.get(prefix);
 		return getRatio(mapInfo, lsMapReads);
 	}
@@ -592,7 +593,7 @@ public class DifLoc2DifLoc {
 			start = gffGeneIsoInfo.getTSSsite() - tssRegion[0];
 			end = gffGeneIsoInfo.getTSSsite() - tssRegion[1];
 		}
-		MapInfo mapInfo = new MapInfo(gffGeneIsoInfo.getRefIDlowcase(),start, end);
+		RegionInfo mapInfo = new RegionInfo(gffGeneIsoInfo.getRefIDlowcase(),start, end);
 		ArrayList<MapReads> lsMapReads = mapPrefix2MapReads.get(prefix);
 		return getRatio(mapInfo, lsMapReads);
 	}
@@ -613,7 +614,7 @@ public class DifLoc2DifLoc {
 		} else {
 			start = gffGeneIsoInfo.getStart() + tssRegion[0];
 		}
-		MapInfo mapInfo = new MapInfo(gffGeneIsoInfo.getRefIDlowcase(),start, gffGeneIsoInfo.getEnd());
+		RegionInfo mapInfo = new RegionInfo(gffGeneIsoInfo.getRefIDlowcase(),start, gffGeneIsoInfo.getEnd());
 		ArrayList<MapReads> lsMapReads = mapPrefix2MapReads.get(prefix);
 		return getRatio(mapInfo, lsMapReads);
 	}
@@ -623,7 +624,7 @@ public class DifLoc2DifLoc {
 	 * @param lsMapReads
 	 * @return
 	 */
-	private Double getRatio(MapInfo mapInfo, ArrayList<MapReads> lsMapReads) {
+	private Double getRatio(RegionInfo mapInfo, ArrayList<MapReads> lsMapReads) {
 		lsMapReads.get(0).getRange(mapInfo, 20, 0);
 		if (mapInfo.getDouble() == null) {
 			logger.error("发现了未知ID：" + mapInfo.getRefID() + " " + mapInfo.getStartAbs() + " " + mapInfo.getEndAbs());

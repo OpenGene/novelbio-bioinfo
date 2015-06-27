@@ -17,20 +17,9 @@ import com.novelbio.listOperate.ListCodAbs;
  * @author zong0jie
  *
  */
-public class SiteSeqInfo implements Comparable<SiteSeqInfo>, Alignment {
-	Logger logger = Logger.getLogger(MapInfo.class);
-	
-	/** 比较mapinfo的起点终点 */
-	public static final int COMPARE_LOCSITE = 100;
-	/** 比较mapinfo的flag site */
-	public static final int COMPARE_LOCFLAG = 200;
-	/** 比较mapinfo的score */
-	public static final int COMPARE_SCORE = 300;
-	
-	static int compareType = COMPARE_SCORE;
-	//从小到大排序
-	static boolean min2max = true;
-	
+public class SiteSeqInfo implements Alignment {
+	private static final Logger logger = Logger.getLogger(RegionInfo.class);
+		
 	protected String refID = "";
 	protected int startLoc = ListCodAbs.LOC_ORIGINAL;
 	protected int endLoc = ListCodAbs.LOC_ORIGINAL;
@@ -149,22 +138,7 @@ public class SiteSeqInfo implements Comparable<SiteSeqInfo>, Alignment {
 		}
 		return "-";
 	}
-	/**
-	 * 是否从小到大排序
-	 * @return
-	 */
-	public static boolean isMin2max() {
-		return min2max;
-	}
-
-	/**
-	 * 选择COMPARE_LOCSITE等
-	 * 默认COMPARE_WEIGHT
-	 * @param COMPARE_TYPE
-	 */
-	public static void setCompareType(int COMPARE_TYPE) {
-		compareType = COMPARE_TYPE;
-	}
+	
 	/**
 	 * 按照方向进行延长
 	 * 如果序列比设定的长度要长，则跳过
@@ -269,12 +243,7 @@ public class SiteSeqInfo implements Comparable<SiteSeqInfo>, Alignment {
 	public void setScore(double score) {
 		this.score = score;
 	}
-	/**
-	 * 是否从小到大排序
-	 */
-	public static void sortPath(boolean min2max) {
-		MapInfo.min2max = min2max;
-	}
+	
 	public String getRefID() {
 		return refID;
 	}
@@ -339,63 +308,7 @@ public class SiteSeqInfo implements Comparable<SiteSeqInfo>, Alignment {
 	public String getName() {
 		return name;
 	}
-	/**
-	 * 用于比较的，从小到大比
-	 * 先比refID，然后比start，end，或者比flag或者比score
-	 * 比score的时候就不考虑refID了
-	 */
-	public int compareTo(SiteSeqInfo siteInfo) {
-		if (compareType == COMPARE_LOCFLAG) {
-			int i = refID.compareTo(siteInfo.refID);
-			if (i != 0) {
-				return i;
-			}
-			if (flagLoc == siteInfo.flagLoc) {
-				return 0;
-			}
-			if (min2max) {
-				return flagLoc < siteInfo.flagLoc ? -1:1;
-			}
-			else {
-				return flagLoc > siteInfo.flagLoc ? -1:1;
-			}
-		}
-		else if (compareType == COMPARE_LOCSITE) {
-			int i = refID.compareTo(siteInfo.refID);
-			if (i != 0) {
-				return i;
-			}
-			if (startLoc == siteInfo.startLoc) {
-				if (endLoc == siteInfo.endLoc) {
-					return 0;
-				}
-				if (min2max) {
-					return endLoc < siteInfo.endLoc ? -1:1;
-				}
-				else {
-					return endLoc > siteInfo.endLoc ? -1:1;
-				}
-			}
-			if (min2max) {
-				return startLoc < siteInfo.startLoc ? -1:1;
-			}
-			else {
-				return startLoc > siteInfo.startLoc ? -1:1;
-			}
-		}
-		else if (compareType == COMPARE_SCORE) {
-			if (score == siteInfo.score) {
-				return 0;
-			}
-			if (min2max) {
-				return score < siteInfo.score ? -1:1;
-			}
-			else {
-				return score > siteInfo.score ? -1:1;
-			}
-		}
-		return 0;
-	}
+
 	/**
 	 * @return
 	 */
@@ -428,64 +341,7 @@ public class SiteSeqInfo implements Comparable<SiteSeqInfo>, Alignment {
 		logger.error("克隆出错");
 		return null;
 	}
-	/**
-	 * 给定mapInfo的序列，用mapInfo的summit点来筛选peak，将summit点距离在distance以内的删除，只保留权重最大的那个mapInfo
-	 * @param lsmapinfo 用mapInfo的summit点来筛选peak
-	 * @param distance 将summit点距离在distance以内的删除
-	 * @param max true：选择权重最大的 false：选择权重最小的
-	 * @return
-	 */
-	public static<T extends SiteSeqInfo> List<T> sortLsMapInfo(List<T> lsmapinfo, double distance) {
-		HashMap<String, ArrayList<double[]>> hashLsMapInfo = new HashMap<String, ArrayList<double[]>>();
-		HashMap<String, T> hashMapInfo = new HashMap<String, T>();
-		for (T mapInfo : lsmapinfo) {
-			ArrayList<double[]> lsTmp = null;
-			if (!hashLsMapInfo.containsKey(mapInfo.getRefID())) {
-				lsTmp = new ArrayList<double[]>();
-				hashLsMapInfo.put(mapInfo.getRefID(), lsTmp);
-			}
-			else {
-				lsTmp = hashLsMapInfo.get(mapInfo.refID);
-			}
-			double[] info = new double[2];
-			info[0] = mapInfo.getMidLoc();
-			info[1] = mapInfo.getScore();
-			lsTmp.add(info);
-			hashMapInfo.put(mapInfo.getRefID() + mapInfo.getMidLoc(), mapInfo);
-		}
-		
-		ArrayList<T> lsResult = new ArrayList<T>();
-		
-		for (Entry<String, ArrayList<double[]>> entry : hashLsMapInfo.entrySet()) {
-			String chrID = entry.getKey();
-			ArrayList<double[]> lsDouble = entry.getValue();
-			lsDouble = MathComput.combLs(lsDouble, distance, min2max);
-			for (double[] ds : lsDouble) {
-				lsResult.add(hashMapInfo.get(chrID+ ds[0]));
-			}
-		}
-		return lsResult;
-	}
-	/**
-	 * 给定一个MapInfo，返回该组里面的最长Up和最长Down
-	 * 所谓Up就是
-	 * @param lsSiteInfo
-	 * @return
-	 */
-	public static int[] getLsMapInfoUpDown(List<? extends SiteSeqInfo> lsSiteInfo) {
-		int maxUp = 0; int maxDown = 0;
-		for (SiteSeqInfo siteInfo : lsSiteInfo) {
-			int tmpUp = siteInfo.getFlagSite() - siteInfo.getStartAbs();
-			int tmpDown = siteInfo.getEndAbs() - siteInfo.getFlagSite();
-			if (tmpUp > maxUp) {
-				maxUp = tmpUp;
-			}
-			if (tmpDown > maxDown) {
-				tmpDown = maxDown;
-			}
-		}
-		return new int[]{maxUp,maxDown};
-	}
+
 	/**
 	 * 仅比较refID，startLoc,endLoc,score.flagLoc
 	 */

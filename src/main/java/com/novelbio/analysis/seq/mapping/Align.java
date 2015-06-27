@@ -15,7 +15,9 @@ import com.novelbio.base.dataStructure.MathComput;
 public class Align implements Alignment {
 	int start, end;
 	String chrID;
-	Boolean cis5to3;
+	protected Boolean cis5to3;
+	
+	protected Align() {}
 	/**
 	 * 根据输入的start和end自动正反向cis5to3
 	 * @param chrID
@@ -49,6 +51,27 @@ public class Align implements Alignment {
 			cis5to3 = false;
 		}
 	}
+	
+	/** 
+	 * 如果start 大于end，则设定cis5to3为false
+	 * 结果start恒小于end
+	 * @param start 小于0自动设置为0
+	 * @param endLoc 小于0自动设置为0
+	 */
+	public void setStartEndLoc(int startLoc, int endLoc) {
+		if (startLoc < 0)
+			startLoc = 0;
+		if (endLoc < 0)
+			endLoc = 0;
+		
+		this.start = Math.min(startLoc, endLoc);
+		this.end = Math.max(startLoc, endLoc);
+		this.cis5to3 = true;
+		if (startLoc > endLoc) {
+			this.cis5to3 = false;
+		}
+	}
+	
 	/** 会覆盖已有的cis5to3 */
 	public void setCis5to3(Boolean cis5to3) {
 		this.cis5to3 = cis5to3;

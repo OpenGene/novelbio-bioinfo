@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -158,6 +159,11 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 			}
 		}
 		return mapName2DetailAbs;
+	}
+	
+	
+	public GffCodGeneDU searchLocation(Alignment alignment) {
+		return searchLocation(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs());
 	}
 	
 	/**

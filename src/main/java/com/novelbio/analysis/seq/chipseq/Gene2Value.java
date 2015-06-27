@@ -1,4 +1,4 @@
-package com.novelbio.analysis.seq.genome;
+package com.novelbio.analysis.seq.chipseq;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -7,19 +7,21 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
-import com.novelbio.analysis.seq.genome.mappingOperate.MapInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
+import com.novelbio.analysis.seq.genome.mappingOperate.RegionInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
-import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 
@@ -29,7 +31,7 @@ public class Gene2Value {
 		
 	GffGeneIsoInfo gffGeneIsoInfo;
 	/** 权重 */
-	double value;
+	double score;
 	
 	/** tss或tes的扩展区域，一般哺乳动物为 -5000到5000 */
 	int[] plotTssTesRegion = new int[]{-5000, 5000};
@@ -76,8 +78,8 @@ public class Gene2Value {
 	}
 
 	/** 设定该基因的权重，譬如表达值等属性 */
-	public void setValue(double value) {
-		this.value = value;
+	public void setScore(double score) {
+		this.score = score;
 	}
 	
 	/** 提取的exon和intron，是叠在一起成为一体呢，还是头尾相连成为一体
@@ -120,54 +122,54 @@ public class Gene2Value {
 	 * @param geneStructure
 	 * @return
 	 */
-	public MapInfo getMapInfo(MapReads mapReads, GeneStructure geneStructure) {
+	public RegionInfo getRegionInfo(MapReads mapReads, GeneStructure geneStructure) {
 		boolean sucess = true;
-		MapInfo mapInfo = new MapInfo(gffGeneIsoInfo.getRefIDlowcase(), value, gffGeneIsoInfo.getName());
-		mapInfo.setCis5to3(gffGeneIsoInfo.isCis5to3());
+		RegionInfo regionInfo = new RegionInfo(gffGeneIsoInfo.getRefIDlowcase(), score, gffGeneIsoInfo.getName());
+		regionInfo.setCis5to3(gffGeneIsoInfo.isCis5to3());
 		int upstream = plotTssTesRegion[0]; int downstream = plotTssTesRegion[1];
 		if (!gffGeneIsoInfo.isCis5to3()) {
 			upstream = -upstream; downstream = -downstream;
 		}
 		
 		if (geneStructure == GeneStructure.TSS) {
-			mapInfo.setStartEndLoc(gffGeneIsoInfo.getTSSsite() + upstream, gffGeneIsoInfo.getTSSsite() + downstream);
-			mapReads.getRange(splitNum, mapInfo, 0);
+			regionInfo.setStartEndLoc(gffGeneIsoInfo.getTSSsite() + upstream, gffGeneIsoInfo.getTSSsite() + downstream);
+			mapReads.getRange(splitNum, regionInfo, 0);
 		} else if (geneStructure == GeneStructure.TES) {
-			mapInfo.setStartEndLoc(gffGeneIsoInfo.getTESsite() + upstream, gffGeneIsoInfo.getTESsite() + downstream);
-			mapReads.getRange(splitNum, mapInfo, 0);
+			regionInfo.setStartEndLoc(gffGeneIsoInfo.getTESsite() + upstream, gffGeneIsoInfo.getTESsite() + downstream);
+			mapReads.getRange(splitNum, regionInfo, 0);
 		} else if (geneStructure == GeneStructure.EXON) {
-			sucess = setMapInfo(mapInfo, mapReads, gffGeneIsoInfo.getLsElement());
+			sucess = setMapInfo(regionInfo, mapReads, gffGeneIsoInfo.getLsElement());
 		} else if (geneStructure == GeneStructure.INTRON) {
 			if (gffGeneIsoInfo.getLsIntron().size() == 0) {
 				return null;
 			}
-			sucess = setMapInfo(mapInfo, mapReads, gffGeneIsoInfo.getLsIntron());
+			sucess = setMapInfo(regionInfo, mapReads, gffGeneIsoInfo.getLsIntron());
 		} else if (geneStructure == GeneStructure.ALLLENGTH) {
-			mapInfo.setStartEndLoc(gffGeneIsoInfo.getStartAbs(), gffGeneIsoInfo.getEndAbs());
-			mapReads.getRange(splitNum, mapInfo, 0);
+			regionInfo.setStartEndLoc(gffGeneIsoInfo.getStartAbs(), gffGeneIsoInfo.getEndAbs());
+			mapReads.getRange(splitNum, regionInfo, 0);
 		} else if (geneStructure == GeneStructure.CDS) {
 			if (!gffGeneIsoInfo.ismRNA()) {
 				return null;
 			}
-			sucess = setMapInfo(mapInfo, mapReads, gffGeneIsoInfo.getIsoInfoCDS());
+			sucess = setMapInfo(regionInfo, mapReads, gffGeneIsoInfo.getIsoInfoCDS());
 		} else if (geneStructure == GeneStructure.UTR3) {
 			if (gffGeneIsoInfo.getLenUTR3() < 20) {
 				return null;
 			}
-			sucess = setMapInfo(mapInfo, mapReads, gffGeneIsoInfo.getUTR3seq());
+			sucess = setMapInfo(regionInfo, mapReads, gffGeneIsoInfo.getUTR3seq());
 		} else if (geneStructure == GeneStructure.UTR5) {
 			if (gffGeneIsoInfo.getLenUTR5() < 20) {
 				return null;
 			}
-			sucess = setMapInfo(mapInfo, mapReads, gffGeneIsoInfo.getUTR5seq());
+			sucess = setMapInfo(regionInfo, mapReads, gffGeneIsoInfo.getUTR5seq());
 		} else {
 			return null;
 		}
 		
-		if (!sucess || mapInfo.getDouble() == null) {
+		if (!sucess || regionInfo.getDouble() == null) {
 			return null;
 		}
-		return mapInfo;
+		return regionInfo;
 	}
 	
 	/**
@@ -178,7 +180,7 @@ public class Gene2Value {
 	 * @param lsExonInfos
 	 * @return
 	 */
-	private boolean setMapInfo(MapInfo mapInfo, MapReads mapReads, List<ExonInfo> lsExonInfos) {
+	private boolean setMapInfo(RegionInfo mapInfo, MapReads mapReads, List<ExonInfo> lsExonInfos) {
 		if (!isCanGetExon(lsExonInfos)) {
 			return false;
 		}
@@ -304,31 +306,54 @@ public class Gene2Value {
 	 * @param geneStructure
 	 * @return
 	 */
-	public static ArrayList<Gene2Value> getLsGene2Vale(int[] tssTesRange, GffChrAbs gffChrAbs, Collection<MapInfo> colSiteInfo, GeneStructure geneStructure) {
+	public static List<Gene2Value> getLsGene2Vale(int[] tssTesRange, GffChrAbs gffChrAbs, Collection<RegionInfo> colSiteInfo, GeneStructure geneStructure) {
 		//存储最后的基因和权重
-		HashMap<GffDetailGene,Double> hashGffDetailGenes = new HashMap<GffDetailGene,Double>();
-		for (MapInfo mapInfo : colSiteInfo) {
+		ArrayListMultimap<GffDetailGene, Double> mapGene2LsValue = ArrayListMultimap.create();		
+		for (RegionInfo mapInfo : colSiteInfo) {
 			Set<GffDetailGene> setGffDetailGene = getPeakStructureGene(tssTesRange, gffChrAbs, mapInfo, geneStructure );
 			for (GffDetailGene gffDetailGene : setGffDetailGene) {
-				if (hashGffDetailGenes.containsKey(gffDetailGene)) {
-					if (MapInfo.isMin2max()) {
-						if (mapInfo.getScore() < hashGffDetailGenes.get(gffDetailGene)) {
-							hashGffDetailGenes.put(gffDetailGene, mapInfo.getScore());
-						}
-					} else {
-						if (mapInfo.getScore() > hashGffDetailGenes.get(gffDetailGene)) {
-							hashGffDetailGenes.put(gffDetailGene, mapInfo.getScore());
-						}
-					}
-				} else {
-					hashGffDetailGenes.put(gffDetailGene, mapInfo.getScore());
-				}
+				mapGene2LsValue.put(gffDetailGene, mapInfo.getScore());
 			}
 		}
-		ArrayList<Gene2Value> lsGene2Values = new ArrayList<Gene2Value>();
-		for (GffDetailGene gffDetailGene : hashGffDetailGenes.keySet()) {
+		return combineMapGene2LsValue(mapGene2LsValue);
+	}
+	
+	/**
+	 * 根据输入的坐标和权重，返回Gene2Value的list
+	 * 会根据MapInfo.isMin2max()的标签来确定遇到重复项选择大的还是小的
+	 * @param tssTesRange
+	 * @param gffChrAbs
+	 * @param colSiteInfo
+	 * @param geneStructure
+	 * @return
+	 */
+	public static List<Gene2Value> getLsGene2Vale(GffChrAbs gffChrAbs, List<String[]> lsGeneValue) {		//有权重的就使用这个hash
+		ArrayListMultimap<GffDetailGene, Double> mapGene2LsValue = ArrayListMultimap.create();		
+		for (String[] strings : lsGeneValue) {
+			GffDetailGene gffDetailGene = gffChrAbs.getGffHashGene().searchLOC(strings[0]);
+			if (gffDetailGene == null) {
+				continue;
+			}
+			//have gene score, using the score as value, when the gene is same, add the score bigger one
+			if (strings.length > 1) {
+				double score = Double.parseDouble(strings[1]);
+				mapGene2LsValue.put(gffDetailGene, score);
+			}
+			//dosen't have score
+			else {
+				mapGene2LsValue.put(gffDetailGene, 0.0);
+			}
+		}
+		
+		return combineMapGene2LsValue(mapGene2LsValue);
+	}
+	
+	private static List<Gene2Value> combineMapGene2LsValue(ArrayListMultimap<GffDetailGene, Double> mapGene2LsValue) {
+		List<Gene2Value> lsGene2Values = new ArrayList<Gene2Value>();
+		for (GffDetailGene gffDetailGene : mapGene2LsValue.keySet()) {
 			Gene2Value gene2Value = new Gene2Value(gffDetailGene.getLongestSplitMrna());
-			gene2Value.setValue(hashGffDetailGenes.get(gffDetailGene));
+			List<Double> lsValues = mapGene2LsValue.get(gffDetailGene);
+			gene2Value.setScore(MathComput.mean(lsValues));
 			lsGene2Values.add(gene2Value);
 		}
 		return lsGene2Values;
@@ -343,8 +368,8 @@ public class Gene2Value {
 	 * @param structure GffDetailGene.TSS等。如果是gene body区域，就返回整个基因
 	 * @return
 	 */
-	private static Set<GffDetailGene> getPeakStructureGene(int[] tssTesRange, GffChrAbs gffChrAbs, SiteSeqInfo siteInfo, GeneStructure structure) {
-		GffCodGeneDU gffCodGeneDU = gffChrAbs.getGffHashGene().searchLocation(siteInfo.getRefID(), siteInfo.getStartAbs(), siteInfo.getEndAbs());
+	private static Set<GffDetailGene> getPeakStructureGene(int[] tssTesRange, GffChrAbs gffChrAbs, RegionInfo siteInfo, GeneStructure structure) {
+		GffCodGeneDU gffCodGeneDU = gffChrAbs.getGffHashGene().searchLocation(siteInfo);
 		if (gffCodGeneDU == null) {
 			return new HashSet<GffDetailGene>();
 		}

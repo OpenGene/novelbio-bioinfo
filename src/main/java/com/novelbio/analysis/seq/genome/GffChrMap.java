@@ -21,7 +21,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
 import com.novelbio.analysis.seq.genome.mappingOperate.EnumMapNormalizeType;
-import com.novelbio.analysis.seq.genome.mappingOperate.MapInfo;
+import com.novelbio.analysis.seq.genome.mappingOperate.RegionInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.base.SepSign;
@@ -43,11 +43,12 @@ import de.erichseifert.gral.util.GraphicsUtils;
 import de.erichseifert.gral.util.Location;
 
 /**
- * 给定基因的区域，画出各种统计图
- * 
+ * 给定基因的区域，画出各种统计图<br>
+ * 已过时，可以用TssPlot替换
  * @author zong0jie
  * 
  */
+@Deprecated 
 public class GffChrMap {
 	GffChrAbs gffChrAbs = new GffChrAbs();
 	
@@ -362,14 +363,14 @@ public class GffChrMap {
 	public double[] plotTssHeatMap(Color color, boolean SortS2M, String txtExcel, int colGeneID, 
 			int colScore, int rowStart, double heapMapSmall, double heapMapBig,
 			GeneStructure structure, int binNum, String outFile) {
-		ArrayList<MapInfo> lsMapInfos = null;
+		ArrayList<RegionInfo> lsMapInfos = null;
 		if (txtExcel != null && !txtExcel.trim().equals("")) {
 			lsMapInfos = readFileGeneMapInfo(txtExcel, colGeneID, colScore, rowStart, structure, binNum);
 		}
 		else {
 			lsMapInfos = readGeneMapInfoAll(structure, binNum);
 		}
-		MapInfo.sortPath(SortS2M);
+		RegionInfo.sortPath(SortS2M);
 		Collections.sort(lsMapInfos);
 		return plotHeatMap(lsMapInfos, color, heapMapSmall, heapMapBig,
 				FileOperate.changeFileSuffix(outFile, "_HeatMap", "png"));
@@ -396,9 +397,9 @@ public class GffChrMap {
 			int colChrID, int colSummit, int colRegion, int colScore,
 			int rowStart, double heapMapSmall, double heapMapBig, double scale,
 			int binNum, String outFile) {
-		ArrayList<MapInfo> lsMapInfos = gffChrAbs.readFileSiteMapInfo(txtExcel,
+		ArrayList<RegionInfo> lsMapInfos = gffChrAbs.readFileSiteMapInfo(txtExcel,
 				colRegion, colChrID, colSummit, colScore, rowStart);
-		MapInfo.sortPath(SortS2M);
+		RegionInfo.sortPath(SortS2M);
 		Collections.sort(lsMapInfos);
 		mapReads.getRangeLs(binNum, lsMapInfos, 0);
 		return plotHeatMap(lsMapInfos, Color.BLUE, heapMapSmall, heapMapBig,
@@ -417,14 +418,14 @@ public class GffChrMap {
 	 * @param outFile
 	 * @return 返回最大值和最小值的设定
 	 */
-	private static double[] plotHeatMap(ArrayList<MapInfo> lsMapInfo, Color color,double mindata, double maxdata, String outFile) {
+	private static double[] plotHeatMap(ArrayList<RegionInfo> lsMapInfo, Color color,double mindata, double maxdata, String outFile) {
 		if (maxdata <= mindata) {
 			ArrayList<Double> lsDouble = new ArrayList<Double>();
 			for (int i = 0; i < 20; i++) {
 				if (i >= lsMapInfo.size()) {
 					break;
 				}
-				MapInfo mapInfo = lsMapInfo.get(i);
+				RegionInfo mapInfo = lsMapInfo.get(i);
 				double[] info = mapInfo.getDouble();
 				for (Double double1 : info) {
 					lsDouble.add(double1);
@@ -434,7 +435,7 @@ public class GffChrMap {
 				if (i < 0) {
 					break;
 				}
-				MapInfo mapInfo = lsMapInfo.get(i);
+				RegionInfo mapInfo = lsMapInfo.get(i);
 				double[] info = mapInfo.getDouble();
 				for (Double double1 : info) {
 					lsDouble.add(double1);
@@ -483,8 +484,8 @@ public class GffChrMap {
 	 *            scale次方，大于1则稀疏高表达，小于1则稀疏低表达
 	 * @param outFile
 	 */
-	public static void plotHeatMap2(ArrayList<MapInfo> lsMapInfo,
-			ArrayList<MapInfo> lsMapInfo2, String outFile, double mindata1,
+	public static void plotHeatMap2(ArrayList<RegionInfo> lsMapInfo,
+			ArrayList<RegionInfo> lsMapInfo2, String outFile, double mindata1,
 			double maxdata1, double mindata2, double maxdata2) {
 		Color colorred = new Color(255, 0, 0, 255);
 		Color colorwhite = new Color(0, 0, 0, 0);
@@ -511,10 +512,10 @@ public class GffChrMap {
 	 * @param mindata1 热图上的所能显示最深颜色的最小值
 	 * @param maxdata1 热图上的所能显示最深颜色的最大值
 	 */
-	public static void plotHeatMapMinus(ArrayList<MapInfo> lsMapInfo1,
-			ArrayList<MapInfo> lsMapInfo2, String outFile, double mindata1,
+	public static void plotHeatMapMinus(ArrayList<RegionInfo> lsMapInfo1,
+			ArrayList<RegionInfo> lsMapInfo2, String outFile, double mindata1,
 			double maxdata1) {
-		ArrayList<MapInfo> lsMapInfoFinal = MapInfo.minusListMapInfo(
+		ArrayList<RegionInfo> lsMapInfoFinal = RegionInfo.minusListMapInfo(
 				lsMapInfo1, lsMapInfo2);
 		Color colorgreen = new Color(0, 255, 0, 255);
 		Color colorwhite = new Color(255, 255, 255, 255);
@@ -538,9 +539,9 @@ public class GffChrMap {
 	 * @param geneStructure GffDetailGene.TSS
 	 */
 	public void plotTssPeak(String fileName, int rowStart, int binNum, String resultFile, GeneStructure geneStructure) {
-		ArrayList<MapInfo> lsMapInfo = gffChrAbs.readFileRegionMapInfo(fileName, 1, 2, 3, 0, rowStart);
-		ArrayList<MapInfo> lsMapTssInfo = getPeakCoveredGeneMapInfo(lsMapInfo, geneStructure, binNum);
-		double[] TssDensity = MapInfo.getCombLsMapInfo(lsMapTssInfo);
+		ArrayList<RegionInfo> lsMapInfo = gffChrAbs.readFileRegionMapInfo(fileName, 1, 2, 3, 0, rowStart);
+		ArrayList<RegionInfo> lsMapTssInfo = getPeakCoveredGeneMapInfo(lsMapInfo, geneStructure, binNum);
+		double[] TssDensity = RegionInfo.getCombLsMapInfo(lsMapTssInfo);
 		TxtReadandWrite txtWrite = new TxtReadandWrite(resultFile, true);
 		for (double d : TssDensity) {
 			txtWrite.writefileln(d+"");
@@ -566,10 +567,10 @@ public class GffChrMap {
 	 * @return 返回最大值和最小值的设定
 	 */
 	public double[] plotTssPeakHeatMap(Color color, String fileName,int heatMapSmall, int heatMapBig, int rowStart, int binNum, String resultFile, GeneStructure geneStructure, boolean SortS2M) {
-		ArrayList<MapInfo> lsMapInfo = gffChrAbs.readFileRegionMapInfo(fileName, 1, 2, 3, 0, rowStart);
-		ArrayList<MapInfo> lsMapTssInfo = getPeakCoveredGeneMapInfo(lsMapInfo, geneStructure, binNum);
-		MapInfo.sortPath(SortS2M);
-		for (MapInfo mapInfo : lsMapTssInfo) {
+		ArrayList<RegionInfo> lsMapInfo = gffChrAbs.readFileRegionMapInfo(fileName, 1, 2, 3, 0, rowStart);
+		ArrayList<RegionInfo> lsMapTssInfo = getPeakCoveredGeneMapInfo(lsMapInfo, geneStructure, binNum);
+		RegionInfo.sortPath(SortS2M);
+		for (RegionInfo mapInfo : lsMapTssInfo) {
 			mapInfo.setScore(MathComput.mean(mapInfo.getDouble()));
 		}
 		Collections.sort(lsMapTssInfo);
@@ -594,13 +595,13 @@ public class GffChrMap {
 	 * @param geneStructure GffDetailGene.TSS
 	 */
 	public void plotTssGene(String fileName, int rowStart, int binNum, String resultFile, GeneStructure geneStructure) {
-		ArrayList<MapInfo> lsMapInfo = null;
+		ArrayList<RegionInfo> lsMapInfo = null;
 		if (fileName == null || fileName.trim().equals("")) {
 			lsMapInfo = readGeneMapInfoAll(geneStructure, binNum);
 		} else {
 			lsMapInfo = readFileGeneMapInfo(fileName, 1, 0, rowStart, geneStructure, binNum);
 		}
-		double[] TssDensity = MapInfo.getCombLsMapInfo(lsMapInfo);
+		double[] TssDensity = RegionInfo.getCombLsMapInfo(lsMapInfo);
 		TxtReadandWrite txtWrite = new TxtReadandWrite(resultFile, true);
 		for (double d : TssDensity) {
 			txtWrite.writefileln(d+"");
@@ -729,9 +730,9 @@ public class GffChrMap {
 	 * 获得基因的信息，然后排序，可以从里面挑选出含reads最多的几个然后画图
 	 * 返回经过排序的mapinfo的list，每一个mapInfo包含了该基因的核糖体信息
 	 */
-	public ArrayList<MapInfo> getChrInfo() {
+	public ArrayList<RegionInfo> getChrInfo() {
 		ArrayList<String> lsChrID = mapReads.getChrIDLs();
-		ArrayList<MapInfo> lsMapInfo = new ArrayList<MapInfo>();
+		ArrayList<RegionInfo> lsMapInfo = new ArrayList<RegionInfo>();
 		for (String string : lsChrID) {
 			mapReads.setNormalType(EnumMapNormalizeType.no_normalization);
 			GffGeneIsoInfo gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO(string);
@@ -757,7 +758,7 @@ public class GffChrMap {
 			tmp2 = combineLoc(tmp2, getAtgSite(string));
 
 			double weight = MathComput.sum(tmp);
-			MapInfo mapInfo = new MapInfo(string);
+			RegionInfo mapInfo = new RegionInfo(string);
 			mapInfo.setScore(weight);
 			mapInfo.setDouble(tmp2);
 			mapInfo.setFlagLoc(combatgSite);
@@ -778,7 +779,7 @@ public class GffChrMap {
 	 * @param type
 	 *            0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 */
-	public void getRegionLs(int binNum, ArrayList<MapInfo> lsmapInfo, int type) {
+	public void getRegionLs(int binNum, ArrayList<RegionInfo> lsmapInfo, int type) {
 		mapReads.getRangeLs(binNum, lsmapInfo, type);
 	}
 	/**
@@ -790,7 +791,7 @@ public class GffChrMap {
 	 * @param type
 	 *            0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 */
-	public void getRegion(int binNum, MapInfo mapInfo, int type) {
+	public void getRegion(int binNum, RegionInfo mapInfo, int type) {
 		mapReads.getRange(binNum, mapInfo, type);
 	}
 	
@@ -800,7 +801,7 @@ public class GffChrMap {
 	 * @param thisInvNum  每个区域内所含的bp数，大于等于invNum，最好是invNum的倍数 如果invNum ==1 && thisInvNum == 1，结果会很精确
 	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 */
-	public void getRegion(MapInfo mapInfo, int thisInvNum, int type) {
+	public void getRegion(RegionInfo mapInfo, int thisInvNum, int type) {
 		mapReads.getRange(mapInfo, thisInvNum, type);
 	}
 
@@ -815,7 +816,7 @@ public class GffChrMap {
 	 * @param Structure 基因的哪个部分的结构 
 	 * @param binNum 最后结果分成几块
 	 */
-	public ArrayList<MapInfo> readFileGeneMapInfo(String txtExcel,int colGeneID, int colScore, int rowStart, GeneStructure Structure, int binNum) {
+	public ArrayList<RegionInfo> readFileGeneMapInfo(String txtExcel,int colGeneID, int colScore, int rowStart, GeneStructure Structure, int binNum) {
 		////////////////////     读 文 件   ////////////////////////////////////////////
 		int[] columnID = null;
 		if (colScore <= 0 || colScore == colGeneID) {
@@ -835,9 +836,9 @@ public class GffChrMap {
 	 * @param binNum 分成几块
 	 * @return
 	 */
-	public ArrayList<MapInfo> getPeakCoveredGeneMapInfo(ArrayList<? extends MapInfo> lsMapInfos, GeneStructure structure, int binNum) {
+	public ArrayList<RegionInfo> getPeakCoveredGeneMapInfo(ArrayList<? extends RegionInfo> lsMapInfos, GeneStructure structure, int binNum) {
 		HashMap<GffDetailGene,Double>  hashGffDetailGenes = getPeakGeneStructure( lsMapInfos, structure);
-		 ArrayList<MapInfo> lsResult = getMapInfoFromGffGene(hashGffDetailGenes, structure);
+		 ArrayList<RegionInfo> lsResult = getMapInfoFromGffGene(hashGffDetailGenes, structure);
 		 mapReads.getRangeLs(binNum, lsResult, 0);
 		 return lsResult;
 	}
@@ -853,7 +854,7 @@ public class GffChrMap {
 	 * @param Structure 基因的哪个部分的结构 
 	 * @param binNum 最后结果分成几块
 	 */
-	public ArrayList<MapInfo> readGeneMapInfoAll(GeneStructure Structure, int binNum) {
+	public ArrayList<RegionInfo> readGeneMapInfoAll(GeneStructure Structure, int binNum) {
 		ArrayList<String> lsGeneID = gffChrAbs.getGffHashGene().getLsNameAll();
 		ArrayList<String[]> lstmp = new ArrayList<String[]>();
 		for (String string : lsGeneID) {
@@ -870,7 +871,7 @@ public class GffChrMap {
 	 * @param binNum 最后结果分成几块
 	 * @return
 	 */
-	public ArrayList<MapInfo> getLsGeneMapInfo(ArrayList<String[]> lsGeneValue, GeneStructure Structure, int binNum) {
+	public ArrayList<RegionInfo> getLsGeneMapInfo(ArrayList<String[]> lsGeneValue, GeneStructure Structure, int binNum) {
 		//有权重的就使用这个hash
  		HashMap<GffDetailGene, Double> hashGene2Value = new HashMap<GffDetailGene, Double>();
 
@@ -883,7 +884,7 @@ public class GffChrMap {
 			if (strings.length > 1) {
 				if (hashGene2Value.containsKey(gffDetailGene)) {
 					double score = Double.parseDouble(strings[1]);
-					if (MapInfo.isMin2max()) {
+					if (RegionInfo.isMin2max()) {
 						if (hashGene2Value.get(gffDetailGene) < score) {
 							hashGene2Value.put(gffDetailGene, score);
 						}
@@ -901,10 +902,10 @@ public class GffChrMap {
 				hashGene2Value.put(gffDetailGene, 0.0);
 			}
 		}
-		ArrayList<MapInfo> lsMapInfoGene = getMapInfoFromGffGene(hashGene2Value, Structure);
+		ArrayList<RegionInfo> lsMapInfoGene = getMapInfoFromGffGene(hashGene2Value, Structure);
 		mapReads.getRangeLs(binNum, lsMapInfoGene, 0);
 		if (lsGeneValue.get(0).length <= 1) {
-			for (MapInfo mapInfo : lsMapInfoGene) {
+			for (RegionInfo mapInfo : lsMapInfoGene) {
 				mapInfo.setScore(MathComput.mean(mapInfo.getDouble()));
 			}
 		}
@@ -919,8 +920,8 @@ public class GffChrMap {
 	 * @param structure
 	 * @return
 	 */
-	private ArrayList<MapInfo> getMapInfoFromGffGene(HashMap<GffDetailGene, Double> mapGffDetailGenes, GeneStructure structure) {
-		ArrayList<MapInfo> lsMapInfos = new ArrayList<MapInfo>();
+	private ArrayList<RegionInfo> getMapInfoFromGffGene(HashMap<GffDetailGene, Double> mapGffDetailGenes, GeneStructure structure) {
+		ArrayList<RegionInfo> lsMapInfos = new ArrayList<RegionInfo>();
 		for (Entry<GffDetailGene, Double> gffDetailValue : mapGffDetailGenes.entrySet()) {
 			lsMapInfos.add(getStructureLoc(gffDetailValue.getKey(),gffDetailValue.getValue(), structure));
 		}
@@ -934,14 +935,14 @@ public class GffChrMap {
 	 * @return
 	 * 基因和权重的hash表
 	 */
-	private HashMap<GffDetailGene,Double> getPeakGeneStructure(ArrayList<? extends MapInfo> lsMapInfos, GeneStructure structure) {
+	private HashMap<GffDetailGene,Double> getPeakGeneStructure(ArrayList<? extends RegionInfo> lsMapInfos, GeneStructure structure) {
 		//存储最后的基因和权重
 		HashMap<GffDetailGene,Double> hashGffDetailGenes = new HashMap<GffDetailGene,Double>();
-		for (MapInfo mapInfo : lsMapInfos) {
+		for (RegionInfo mapInfo : lsMapInfos) {
 			Set<GffDetailGene> setGffDetailGene = getPeakStructureGene( mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), structure );
 			for (GffDetailGene gffDetailGene : setGffDetailGene) {
 				if (hashGffDetailGenes.containsKey(gffDetailGene)) {
-					if (MapInfo.isMin2max()) {
+					if (RegionInfo.isMin2max()) {
 						if (mapInfo.getScore() < hashGffDetailGenes.get(gffDetailGene)) {
 							hashGffDetailGenes.put(gffDetailGene, mapInfo.getScore());
 						}
@@ -994,10 +995,10 @@ public class GffChrMap {
 	 * @param structure GffDetailGene.TSS等
 	 * @return
 	 */
-	private MapInfo getStructureLoc(GffDetailGene gffDetailGene, Double value,GeneStructure structure) {
+	private RegionInfo getStructureLoc(GffDetailGene gffDetailGene, Double value,GeneStructure structure) {
 		int plotUpstream = 0;
 		int plotDownstream = 0;
-		MapInfo mapInfoResult = null;
+		RegionInfo mapInfoResult = null;
 		String chrID = gffDetailGene.getRefID(); String geneName = gffDetailGene.getLongestSplitMrna().getName();
 		if (gffDetailGene.isCis5to3()) {
 			plotUpstream = Math.abs(plotRange[0]);
@@ -1009,13 +1010,13 @@ public class GffChrMap {
 		
 		if (structure.equals(GeneStructure.TSS)) {
 			int tss = gffDetailGene.getLongestSplitMrna().getTSSsite();
-			mapInfoResult = new MapInfo(chrID, tss - plotUpstream, tss + plotDownstream, tss,0, geneName);
+			mapInfoResult = new RegionInfo(chrID, tss - plotUpstream, tss + plotDownstream, tss,0, geneName);
 			mapInfoResult.setCis5to3(gffDetailGene.isCis5to3());
 			mapInfoResult.setScore(value);
 		}
 		else if (structure.equals(GeneStructure.TES)) {
 			int tes = gffDetailGene.getLongestSplitMrna().getTESsite();
-			mapInfoResult = new MapInfo(chrID, tes - plotUpstream, tes + plotDownstream, tes, 0, geneName);
+			mapInfoResult = new RegionInfo(chrID, tes - plotUpstream, tes + plotDownstream, tes, 0, geneName);
 			mapInfoResult.setCis5to3(gffDetailGene.isCis5to3());
 			mapInfoResult.setScore(value);
 		}

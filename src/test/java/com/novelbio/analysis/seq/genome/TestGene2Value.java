@@ -3,7 +3,7 @@ package com.novelbio.analysis.seq.genome;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.novelbio.analysis.seq.genome.Gene2Value;
+import com.novelbio.analysis.seq.chipseq.Gene2Value;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoCis;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;

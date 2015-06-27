@@ -3,18 +3,16 @@ package com.novelbio.analysis.seq.chipseq;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genome.Gene2Value;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genome.mappingOperate.EnumMapNormalizeType;
-import com.novelbio.analysis.seq.genome.mappingOperate.MapInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
+import com.novelbio.analysis.seq.genome.mappingOperate.RegionInfo;
+import com.novelbio.analysis.seq.genome.mappingOperate.RegionInfo.RegionInfoComparator;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
@@ -28,8 +26,8 @@ import com.novelbio.base.plot.heatmap.PlotHeatMap;
  * @author zong0jie
  *
  */
-public class TssPlot {
-	private static final Logger logger = Logger.getLogger(TssPlot.class);
+public class GffPlotTss {
+	private static final Logger logger = Logger.getLogger(GffPlotTss.class);
 
 	GffChrAbs gffChrAbs;
 	
@@ -40,9 +38,9 @@ public class TssPlot {
 	EnumMapNormalizeType mapNormType = EnumMapNormalizeType.allreads;
 
 	/** 绘制图片的区域 */
-	ArrayList<MapInfo> lsMapInfos;
+	List<RegionInfo> lsMapInfos;
 	/** 绘制图片的gene */
-	ArrayList<Gene2Value> lsGeneID2Value;
+	List<Gene2Value> lsGeneID2Value;
 	
 	/**
 	 * 结果图片分割为1000份
@@ -51,6 +49,8 @@ public class TssPlot {
 	int splitNum = 1001;
 	/**  tss或tes的扩展绘图区域，默认哺乳动物为 -5000到5000 */
 	int[] plotTssTesRange = new int[]{-5000, 5000};
+	
+	//=================== heatmap参数 ================================
 	/** heatmap最浅颜色的值 */
 	double heatmapMin = 0;
 	/** heatmap最深颜色的值 */
@@ -61,7 +61,7 @@ public class TssPlot {
 	
 	/** 提取的exon和intron，是叠在一起成为一体呢，还是头尾相连成为一体 */
 	boolean pileupExonIntron = false;
-	
+	//==============================================================
 	/** 设定需要提取，或不提取的exon或intron的个数，譬如杨红星要求仅分析第一位的intron
 	 * null 就不分析
 	 * 为实际数量
@@ -69,13 +69,13 @@ public class TssPlot {
 	 * -2为倒数第二个
 	 */
 	ArrayList<Integer> lsExonIntronNumGetOrExclude;
-	/** 对于lsExonIntronNumGetOrExclude选择get还是exclude，true为get，false为exclude */
+	/** 对于lsExonIntronNumGetOrExclude选择include还是exclude，true为include，false为exclude */
 	boolean getOrExclude = true;
 	
 	
-	public TssPlot() { }
+	public GffPlotTss() { }
 	
-	public TssPlot(GffChrAbs gffChrAbs) {
+	public GffPlotTss(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 	}
 	
@@ -183,8 +183,8 @@ public class TssPlot {
 	 * 用来做给定区域的图。mapinfo中设定坐标位点和value
 	 * 这个和输入gene，2选1。谁先设定选谁
 	 *  */
-	public void setSiteRegion(ArrayList<MapInfo> lsMapInfos) {
-		this.lsMapInfos = MapInfo.getCombLsMapInfoBigScore(lsMapInfos, 1000, true);
+	public void setSiteRegion(List<RegionInfo> lsMapInfos) {
+		this.lsMapInfos = RegionInfo.getCombLsMapInfoBigScore(lsMapInfos, 1000, true);
 	}
 	
 	/** 
@@ -206,55 +206,19 @@ public class TssPlot {
 	 * 1:value 其中1 可以没有，那么就是string[1] 0:geneID<br>
 	 * @return
 	 */
-	public void setGeneID2ValueLs(ArrayList<String[]> lsGeneValue) {
-		//有权重的就使用这个hash
- 		HashMap<GffDetailGene, Double> hashGene2Value = new HashMap<GffDetailGene, Double>();
-
-		for (String[] strings : lsGeneValue) {
-			GffDetailGene gffDetailGene = gffChrAbs.getGffHashGene().searchLOC(strings[0]);
-			if (gffDetailGene == null) {
-				continue;
-			}
-			//have gene score, using the score as value, when the gene is same, add the score bigger one
-			if (strings.length > 1) {
-				if (hashGene2Value.containsKey(gffDetailGene)) {
-					double score = Double.parseDouble(strings[1]);
-					if (MapInfo.isMin2max()) {
-						if (hashGene2Value.get(gffDetailGene) < score) {
-							hashGene2Value.put(gffDetailGene, score);
-						}
-					} else {
-						if (hashGene2Value.get(gffDetailGene) > score) {
-							hashGene2Value.put(gffDetailGene, score);
-						}
-					}
-				} else {
-					hashGene2Value.put(gffDetailGene, Double.parseDouble(strings[1]));
-				}
-			}
-			//didn't have score
-			else {
-				hashGene2Value.put(gffDetailGene, 0.0);
-			}
-		}
-		
-		lsGeneID2Value = new ArrayList<Gene2Value>();
-		for (GffDetailGene gffDetailGene : hashGene2Value.keySet()) {
-			Gene2Value gene2Value = new Gene2Value(gffDetailGene.getLongestSplitMrna());
-			gene2Value.setValue(hashGene2Value.get(gffDetailGene));
-			lsGeneID2Value.add(gene2Value);
-		}
+	public void setGeneID2ValueLs(List<String[]> lsGeneValue) {
+		lsGeneID2Value = Gene2Value.getLsGene2Vale(gffChrAbs, lsGeneValue);
 	}
 
 	/**
 	 * 设定本方法后需要运行{@link #fillLsMapInfos()}<br>
 	 * <b>如果genestructure设定为tss或tes，那么务必首先设定tsstesRange</b><br>
 	 * 给定区域，获得被该区域覆盖的基因然后再做图。mapinfo中设定坐标位点和value
-	 * @param lsMapInfos 给定的区域
+	 * @param lsPeakInfo 给定的区域
 	 * @param geneStructure
 	 */
-	public void setSiteCoveredGene(ArrayList<MapInfo> lsMapInfos, GeneStructure geneStructure) {
-		this.lsGeneID2Value = Gene2Value.getLsGene2Vale(tsstesRange, gffChrAbs, lsMapInfos, geneStructure);
+	public void setSiteCoveredGene(List<RegionInfo> lsPeakInfo, GeneStructure geneStructure) {
+		this.lsGeneID2Value = Gene2Value.getLsGene2Vale(tsstesRange, gffChrAbs, lsPeakInfo, geneStructure);
 	}
 	
 	public PlotScatter plotLine(DotStyle dotStyle) {
@@ -300,7 +264,7 @@ public class TssPlot {
 	 */
 	public ArrayList<double[]> getLsXYtsstes(double[] xStartEnd) {
 		ArrayList<double[]> lsResult = new ArrayList<double[]>();
-		double[] yvalue = MapInfo.getCombLsMapInfo(lsMapInfos);
+		double[] yvalue = RegionInfo.getCombLsMapInfo(lsMapInfos);
 		List<Integer> lsCoverage = getLsGeneCoverage(lsMapInfos);
 		
 		double[] xvalue = getXvalue(yvalue.length);
@@ -374,8 +338,10 @@ public class TssPlot {
 			heatmapMax = getMaxData(lsMapInfos, 99);
 		}
 		
-		MapInfo.sortPath(heatmapSortS2M);
-		Collections.sort(lsMapInfos);
+		RegionInfoComparator regionInfoComparator = new RegionInfoComparator();
+		regionInfoComparator.setMin2max(heatmapSortS2M);
+		regionInfoComparator.setCompareType(RegionInfoComparator.COMPARE_SCORE);
+		Collections.sort(lsMapInfos, regionInfoComparator);
 		
 		Color[] gradientColors = new Color[] {heatmapColorMin, heatmapColorMax};
 		Color[] customGradient = Gradient.createMultiGradient(gradientColors, 250);
@@ -389,13 +355,13 @@ public class TssPlot {
 		if (lsGeneID2Value == null || lsGeneID2Value.size() == 0) {
 			return;
 		}
-		lsMapInfos = new ArrayList<MapInfo>();
+		lsMapInfos = new ArrayList<RegionInfo>();
 		for (Gene2Value gene2Value : lsGeneID2Value) {
 			gene2Value.setPlotTssTesRegion(plotTssTesRange);
 			gene2Value.setExonIntronPileUp(pileupExonIntron);
 			gene2Value.setGetNum(lsExonIntronNumGetOrExclude, getOrExclude);
 			gene2Value.setSplitNum(splitNum);
-			MapInfo mapInfo = gene2Value.getMapInfo(mapReads, geneStructure);
+			RegionInfo mapInfo = gene2Value.getRegionInfo(mapReads, geneStructure);
 			if (mapInfo != null) {
 				lsMapInfos.add(mapInfo);
 			}
@@ -405,7 +371,7 @@ public class TssPlot {
 	
 	public void writeLsMapInfoToFile(String filename) {
 		TxtReadandWrite txtWrite = new TxtReadandWrite(filename, true);
-		for (MapInfo mapInfo : lsMapInfos) {
+		for (RegionInfo mapInfo : lsMapInfos) {
 			txtWrite.writefileln(mapInfo.getName());
 			double[] value = mapInfo.getDouble();
 			String[] info = new String[value.length];
@@ -423,9 +389,9 @@ public class TssPlot {
 	 * @param percentage 分为点，譬如99表示最大的99%分位点
 	 * @return
 	 */
-	private double getMaxData(List<MapInfo> lsMapInfos, int percentage) {
+	private double getMaxData(List<RegionInfo> lsMapInfos, int percentage) {
 		ArrayList<Double> lsDouble = new ArrayList<Double>();
-		for (MapInfo mapInfo : lsMapInfos) {
+		for (RegionInfo mapInfo : lsMapInfos) {
 			double[] info = mapInfo.getDouble();
 			for (double d : info) {
 				lsDouble.add(d);
@@ -443,9 +409,9 @@ public class TssPlot {
 	 * 则返回 3-2-2-1<br>
 	 * @return
 	 */
-	private List<Integer> getLsGeneCoverage(List<MapInfo> lsMapInfos) {
+	private List<Integer> getLsGeneCoverage(List<RegionInfo> lsMapInfos) {
 		List<double[]> lsDouble = new ArrayList<double[]>();
-		for (MapInfo mapInfo : lsMapInfos) {
+		for (RegionInfo mapInfo : lsMapInfos) {
 			lsDouble.add(mapInfo.getDouble());
 		}
 		return ArrayOperate.getLsCoverage(lsDouble);
@@ -472,10 +438,10 @@ public class TssPlot {
 	 * @param mindata1 热图上的所能显示最深颜色的最小值
 	 * @param maxdata1 热图上的所能显示最深颜色的最大值
 	 */
-	public static void plotHeatMapMinus(ArrayList<MapInfo> lsMapInfo1,
-			ArrayList<MapInfo> lsMapInfo2, String outFile, double mindata1,
+	public static void plotHeatMapMinus(ArrayList<RegionInfo> lsMapInfo1,
+			ArrayList<RegionInfo> lsMapInfo2, String outFile, double mindata1,
 			double maxdata1) {
-		ArrayList<MapInfo> lsMapInfoFinal = MapInfo.minusListMapInfo(
+		ArrayList<RegionInfo> lsMapInfoFinal = RegionInfo.minusListMapInfo(
 				lsMapInfo1, lsMapInfo2);
 		Color colorgreen = new Color(0, 255, 0, 255);
 		Color colorwhite = new Color(255, 255, 255, 255);
@@ -498,8 +464,8 @@ public class TssPlot {
 	 * @param scale scale次方，大于1则稀疏高表达，小于1则稀疏低表达
 	 * @param outFile
 	 */
-	public static void plotHeatMap2(ArrayList<MapInfo> lsMapInfo,
-			ArrayList<MapInfo> lsMapInfo2, String outFile, double mindata1,
+	public static void plotHeatMap2(ArrayList<RegionInfo> lsMapInfo,
+			ArrayList<RegionInfo> lsMapInfo2, String outFile, double mindata1,
 			double maxdata1, double mindata2, double maxdata2) {
 		Color colorred = new Color(255, 0, 0, 255);
 		Color colorwhite = new Color(0, 0, 0, 0);

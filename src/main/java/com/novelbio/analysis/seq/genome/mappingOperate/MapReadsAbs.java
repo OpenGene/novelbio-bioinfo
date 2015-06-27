@@ -130,7 +130,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @param thisInvNum  每个区域内所含的bp数，大于等于invNum，最好是invNum的倍数 如果invNum ==1 && thisInvNum == 1，结果会很精确
 	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 */
-	public void getRange(MapInfo mapInfo, int thisInvNum, int type) {
+	public void getRange(RegionInfo mapInfo, int thisInvNum, int type) {
 		double[] Info = getRangeInfo(thisInvNum, mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), type);
 		mapInfo.setDouble(Info);
 	}
@@ -142,7 +142,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @param lsmapInfo
 	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 */
-	public void getRange(int binNum, MapInfo mapInfo, int type) {
+	public void getRange(int binNum, RegionInfo mapInfo, int type) {
 		double[] Info = getRangeInfo(mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), binNum, type);
 		if (Info == null) {
 			logger.error("出现未知ID："+mapInfo.getName() + " "+mapInfo.getRefID() + " " + mapInfo.getStartAbs() + " "+ mapInfo.getEndAbs());
@@ -156,8 +156,8 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @param thisInvNum  每个区域内所含的bp数，大于等于invNum，最好是invNum的倍数 如果invNum ==1 && thisInvNum == 1，结果会很精确
 	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 */
-	public void getRangeLs(List<MapInfo> lsmapInfo, int thisInvNum, int type) {
-		for (MapInfo mapInfo : lsmapInfo) {
+	public void getRangeLs(List<RegionInfo> lsmapInfo, int thisInvNum, int type) {
+		for (RegionInfo mapInfo : lsmapInfo) {
 			double[] Info = getRangeInfo(thisInvNum, mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), type);
 			mapInfo.setDouble(Info);
 		}
@@ -169,9 +169,9 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @param lsmapInfo
 	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 */
-	public void getRangeLs(int binNum, List<MapInfo> lsmapInfo, int type) {
+	public void getRangeLs(int binNum, List<RegionInfo> lsmapInfo, int type) {
 		for (int i = 0; i < lsmapInfo.size(); i++) {
-			MapInfo mapInfo = lsmapInfo.get(i);
+			RegionInfo mapInfo = lsmapInfo.get(i);
 			double[] Info = getRangeInfo(mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), binNum, type);
 			if (Info == null) {
 				lsmapInfo.remove(i); i--;
@@ -408,7 +408,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 * @param mapReads2 第二个mapReads信息
 	 * @param mapInfo
 	 */
-	public static void CmpMapReg(MapReads mapReads, MapReads mapReads2, MapInfo mapInfo) {
+	public static void CmpMapReg(MapReads mapReads, MapReads mapReads2, RegionInfo mapInfo) {
 		double[] info1 = mapReads.getRangeInfo(mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), 0);
 		double[] info2 = mapReads.getRangeInfo(mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), 0);
 		

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.mappingOperate.MapInfo;
+import com.novelbio.analysis.seq.genome.mappingOperate.RegionInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -104,7 +104,7 @@ public class GffChrCmpBed extends GffChrAbs {
 		double[] result = new double[lsCmpRegion.size()];
 		for (int i = 0; i < lsCmpRegion.size(); i++) {
 			int[] is = lsCmpRegion.get(i);
-			MapInfo mapInfo = new MapInfo(chrID, is[0], is[1]);
+			RegionInfo mapInfo = new RegionInfo(chrID, is[0], is[1]);
 //			MapReads.CmpMapReg(mapReads, mapReads2, mapInfo);
 			result[i] = mapInfo.getScore();
 		}

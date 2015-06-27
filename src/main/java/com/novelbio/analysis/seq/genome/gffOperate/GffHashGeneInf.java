@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.novelbio.analysis.seq.genome.GffChrStatistics;
+import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.database.model.modgeneid.GeneID;
 /**
  * 将GffHash和GffHashGene的方法全部列在了这里
@@ -63,6 +64,16 @@ public interface GffHashGeneInf  {
 	 * @return
 	 */
 	public GffCodGeneDU searchLocation(String chrID, int cod1, int cod2);
+	
+	/**
+	 * 内部自动判断 cod1 和 cod2的大小
+	 * @param chrID
+	 * @param cod1
+	 * @param cod2
+	 * @return
+	 */
+	public GffCodGeneDU searchLocation(Alignment alignment);
+	
 	/**
 	 * 获得该转录本组的物种ID
 	 * @return

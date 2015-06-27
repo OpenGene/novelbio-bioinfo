@@ -12,7 +12,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
-import com.novelbio.analysis.seq.genome.mappingOperate.MapInfo;
+import com.novelbio.analysis.seq.genome.mappingOperate.RegionInfo;
 import com.novelbio.base.ExceptionNullParam;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -211,7 +211,7 @@ public class GffChrAbs implements Closeable {
 	 *            打分，也就是权重，没有该列的话，就设置为 <= 0
 	 * @param rowStart
 	 */
-	public ArrayList<MapInfo> readFileRegionMapInfo(String txtExcel,
+	public ArrayList<RegionInfo> readFileRegionMapInfo(String txtExcel,
 			int colChrID, int colStartLoc, int colEndLoc, int colScore,
 			int rowStart) {
 		int[] columnID = null;
@@ -222,9 +222,9 @@ public class GffChrAbs implements Closeable {
 		}
 		ArrayList<String[]> lstmp = ExcelTxtRead.readLsExcelTxt(txtExcel,
 				columnID, rowStart, 0);
-		ArrayList<MapInfo> lsMapInfos = new ArrayList<MapInfo>();
+		ArrayList<RegionInfo> lsMapInfos = new ArrayList<RegionInfo>();
 		for (String[] strings : lstmp) {
-			MapInfo mapInfo = new MapInfo(strings[0]);
+			RegionInfo mapInfo = new RegionInfo(strings[0]);
 			try {
 				mapInfo.setStartEndLoc(Integer.parseInt(strings[1]),
 						Integer.parseInt(strings[2]));
@@ -237,7 +237,7 @@ public class GffChrAbs implements Closeable {
 			}
 			lsMapInfos.add(mapInfo);
 		}
-		MapInfo.sortLsMapInfo(lsMapInfos, distanceMapInfo);
+		RegionInfo.sortLsMapInfo(lsMapInfos, distanceMapInfo);
 		return lsMapInfos;
 	}
 
@@ -251,7 +251,7 @@ public class GffChrAbs implements Closeable {
 	 * @param colSummit
 	 * @param rowStart
 	 */
-	public ArrayList<MapInfo> readFileSiteMapInfo(String txtExcel, int region,
+	public ArrayList<RegionInfo> readFileSiteMapInfo(String txtExcel, int region,
 			int colChrID, int colSummit, int colScore, int rowStart) {
 		int[] columnID = null;
 		if (colScore <= 0) {
@@ -261,9 +261,9 @@ public class GffChrAbs implements Closeable {
 		}
 		ArrayList<String[]> lstmp = ExcelTxtRead.readLsExcelTxt(txtExcel,
 				columnID, rowStart, 0);
-		ArrayList<MapInfo> lsMapInfos = new ArrayList<MapInfo>();
+		ArrayList<RegionInfo> lsMapInfos = new ArrayList<RegionInfo>();
 		for (String[] strings : lstmp) {
-			MapInfo mapInfo = new MapInfo(strings[0]);
+			RegionInfo mapInfo = new RegionInfo(strings[0]);
 			try {
 				mapInfo.setFlagLoc(Integer.parseInt(strings[1]));
 			} catch (Exception e) {
@@ -277,7 +277,7 @@ public class GffChrAbs implements Closeable {
 			}
 			lsMapInfos.add(mapInfo);
 		}
-		MapInfo.sortLsMapInfo(lsMapInfos, distanceMapInfo);
+		RegionInfo.sortLsMapInfo(lsMapInfos, distanceMapInfo);
 		return lsMapInfos;
 	}
 	
