@@ -15,21 +15,9 @@ import com.novelbio.generalConf.TitleFormatNBC;
  * 检验的结果
  */
 public class StatisticTestResult {
-	public static final String titlePath = "Pathway_Result";
-	public static final String titleGO = "GO_Result";
-	public static final String titleCOG = "COG_Result";
 	
 	public static String getTitle(TestType testType) {
-		switch (testType) {
-		case GO :
-			return titleGO;
-		case Pathway :
-			return titlePath;
-		case COG :
-			return titleCOG;
-		default:
-			return null;
-		}
+		return testType + "_Result";
 	}
 	
 	static int logBaseNum = 2;

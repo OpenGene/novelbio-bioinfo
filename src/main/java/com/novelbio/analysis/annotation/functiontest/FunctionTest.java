@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
+import com.novelbio.analysis.annotation.cog.COGanno;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.FisherTest;
@@ -263,7 +264,7 @@ public abstract class FunctionTest implements Cloneable {
 		return lStatisticTestItem2Gene;
 	}
 	
-	private ArrayListMultimap<String, GeneID> getGo2GeneUniID() {
+	protected ArrayListMultimap<String, GeneID> getGo2GeneUniID() {
 		ArrayListMultimap<String, GeneID> hashGo2LsGene = ArrayListMultimap.create();
 		ArrayList<StatisticTestGene2Item> lsStatisticTestGene2Items = getGene2ItemPvalue();
 		for (StatisticTestGene2Item statisticTestGene2Item : lsStatisticTestGene2Items) {
@@ -277,7 +278,6 @@ public abstract class FunctionTest implements Cloneable {
 		}
 		return hashGo2LsGene;
 	}
-	
 	
 	/**
 	 * 要先读取AccID文件
@@ -507,7 +507,7 @@ public abstract class FunctionTest implements Cloneable {
 			return new HashMap<>();
 		}
 		mapResult.put(StatisticTestResult.getTitle(getTestType()), lsStatisticTestResults);
-		
+
 		List<String[]> lsPath2GenePvalue = StatisticTestItem2Gene.getLsInfo(getTestType(), getItem2GenePvalue());
 		mapResult.put(StatisticTestItem2Gene.getTitle(getTestType()), lsPath2GenePvalue);
 		

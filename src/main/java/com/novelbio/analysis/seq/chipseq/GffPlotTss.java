@@ -38,7 +38,7 @@ public class GffPlotTss {
 	EnumMapNormalizeType mapNormType = EnumMapNormalizeType.allreads;
 
 	/** 绘制图片的区域 */
-	List<RegionInfo> lsMapInfos;
+	List<RegionInfo> lsRegions;
 	/** 绘制图片的gene */
 	List<Gene2Value> lsGeneID2Value;
 	
@@ -184,7 +184,7 @@ public class GffPlotTss {
 	 * 这个和输入gene，2选1。谁先设定选谁
 	 *  */
 	public void setSiteRegion(List<RegionInfo> lsMapInfos) {
-		this.lsMapInfos = RegionInfo.getCombLsMapInfoBigScore(lsMapInfos, 1000, true);
+		this.lsRegions = RegionInfo.getCombLsMapInfoBigScore(lsMapInfos, 1000, true);
 	}
 	
 	/** 
@@ -264,8 +264,8 @@ public class GffPlotTss {
 	 */
 	public ArrayList<double[]> getLsXYtsstes(double[] xStartEnd) {
 		ArrayList<double[]> lsResult = new ArrayList<double[]>();
-		double[] yvalue = RegionInfo.getCombLsMapInfo(lsMapInfos);
-		List<Integer> lsCoverage = getLsGeneCoverage(lsMapInfos);
+		double[] yvalue = RegionInfo.getCombLsMapInfo(lsRegions);
+		List<Integer> lsCoverage = getLsGeneCoverage(lsRegions);
 		
 		double[] xvalue = getXvalue(yvalue.length);
 		if (xvalue.length != yvalue.length) {
@@ -335,17 +335,17 @@ public class GffPlotTss {
 	/** 首先要设定好lsMapInfos */
 	public PlotHeatMap plotHeatMap() {
 		if (heatmapMax <= heatmapMin) {
-			heatmapMax = getMaxData(lsMapInfos, 99);
+			heatmapMax = getMaxData(lsRegions, 99);
 		}
 		
 		RegionInfoComparator regionInfoComparator = new RegionInfoComparator();
 		regionInfoComparator.setMin2max(heatmapSortS2M);
 		regionInfoComparator.setCompareType(RegionInfoComparator.COMPARE_SCORE);
-		Collections.sort(lsMapInfos, regionInfoComparator);
+		Collections.sort(lsRegions, regionInfoComparator);
 		
 		Color[] gradientColors = new Color[] {heatmapColorMin, heatmapColorMax};
 		Color[] customGradient = Gradient.createMultiGradient(gradientColors, 250);
-		PlotHeatMap heatMap = new PlotHeatMap(lsMapInfos,  customGradient);
+		PlotHeatMap heatMap = new PlotHeatMap(lsRegions,  customGradient);
 		heatMap.setRange(heatmapMin, heatmapMax);
 		return heatMap;
 	}
@@ -355,7 +355,7 @@ public class GffPlotTss {
 		if (lsGeneID2Value == null || lsGeneID2Value.size() == 0) {
 			return;
 		}
-		lsMapInfos = new ArrayList<RegionInfo>();
+		lsRegions = new ArrayList<RegionInfo>();
 		for (Gene2Value gene2Value : lsGeneID2Value) {
 			gene2Value.setPlotTssTesRegion(plotTssTesRange);
 			gene2Value.setExonIntronPileUp(pileupExonIntron);
@@ -363,7 +363,7 @@ public class GffPlotTss {
 			gene2Value.setSplitNum(splitNum);
 			RegionInfo mapInfo = gene2Value.getRegionInfo(mapReads, geneStructure);
 			if (mapInfo != null) {
-				lsMapInfos.add(mapInfo);
+				lsRegions.add(mapInfo);
 			}
 		}
 		logger.debug("finished reading");
@@ -371,7 +371,7 @@ public class GffPlotTss {
 	
 	public void writeLsMapInfoToFile(String filename) {
 		TxtReadandWrite txtWrite = new TxtReadandWrite(filename, true);
-		for (RegionInfo mapInfo : lsMapInfos) {
+		for (RegionInfo mapInfo : lsRegions) {
 			txtWrite.writefileln(mapInfo.getName());
 			double[] value = mapInfo.getDouble();
 			String[] info = new String[value.length];
@@ -427,7 +427,7 @@ public class GffPlotTss {
 		<b>执行该方法后需重新设定 {@link  #setGeneIDGenome()} 等方法</b>
 	 */
 	public void clearCollectionInfo() {
-		try { lsMapInfos.clear(); } catch (Exception e) { }
+		try { lsRegions.clear(); } catch (Exception e) { }
 		try { lsGeneID2Value.clear(); } catch (Exception e) { }
 		try { lsExonIntronNumGetOrExclude.clear(); } catch (Exception e) { }
 	}

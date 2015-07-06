@@ -14,21 +14,9 @@ import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 public abstract class StatisticTestGene2Item {
-	public static final String titleGO = "Gene2GO";
-	public static final String titlePath = "Gene2Path";
-	public static final String titleCOG = "Gene2COG";
 	
 	public static String getTitle(TestType testType) {
-		switch (testType) {
-		case GO :
-			return titleGO;
-		case Pathway :
-			return titlePath;
-		case COG :
-			return titleCOG;
-		default:
-			return null;
-		}
+		return "Gene2" + testType;
 	}
 	
 	boolean blast;
@@ -299,7 +287,7 @@ class StatisticTestGene2Cog extends StatisticTestGene2Item {
 		for (char charCog : cogInfo.getCogAbbr().toCharArray()) {
 			ArrayList<String> lsTmpFinalNew = (ArrayList<String>) lsTmpFinal.clone();
 			//这里的mapItem2StatisticTestResult的key是单字母的COGID
-			String cogId = "COG:" + charCog;
+			String cogId = cogAnno.getCogType() + ":" + charCog;
 			if (!mapItem2StatisticTestResult.containsKey(cogId.toLowerCase())) {
 				return lsFinal;
 			}
