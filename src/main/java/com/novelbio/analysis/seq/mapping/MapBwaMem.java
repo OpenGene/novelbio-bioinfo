@@ -78,8 +78,8 @@ public class MapBwaMem extends MapDNA {
 	String tmpPath;
 	
 	public MapBwaMem() {
-		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.bwa_men);
-		softWare = SoftWare.bwa_men;
+		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.bwa_mem);
+		softWare = SoftWare.bwa_mem;
 		this.exePath = softWareInfo.getExePathRun();
 	}
 	

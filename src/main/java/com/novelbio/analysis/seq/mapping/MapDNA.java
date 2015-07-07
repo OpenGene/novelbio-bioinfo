@@ -250,7 +250,7 @@ public abstract class MapDNA implements MapDNAint {
 	
 	private String getIndexFinishedFlag() {
 		String suffix = softWare.toString();
-		if (softWare == SoftWare.bwa_aln || softWare == SoftWare.bwa_men) {
+		if (softWare == SoftWare.bwa_aln || softWare == SoftWare.bwa_mem) {
 			suffix = "bwa";
 		}
 		return FileOperate.changeFileSuffix(chrFile, "_indexFinished_" + suffix, "");
@@ -271,7 +271,7 @@ public abstract class MapDNA implements MapDNAint {
 		MapDNAint mapSoftware = null;
 		if (softMapping == SoftWare.bwa_aln) {
 			mapSoftware = (MapDNAint)SpringFactoryBioinfo.getFactory().getBean(MapBwaAln.class);
-		} else if (softMapping == SoftWare.bwa_men) {
+		} else if (softMapping == SoftWare.bwa_mem) {
 			mapSoftware = (MapDNAint)SpringFactoryBioinfo.getFactory().getBean(MapBwaMem.class);
 		} else if (softMapping == SoftWare.bowtie || softMapping == SoftWare.bowtie2) {
 			mapSoftware = (MapDNAint)SpringFactoryBioinfo.getFactory().getBean(MapBowtie.class);

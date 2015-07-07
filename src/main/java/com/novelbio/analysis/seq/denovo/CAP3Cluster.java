@@ -54,7 +54,9 @@ public class CAP3Cluster implements IntCmdSoft {
 	/** 聚类后序列结果序列长度阈值，也就是说，保留序列长度大于此阈值的序列*/
 	int minSeqLen;
 	String outMergedFile;
-	String finalClusterResult;
+	String finalClusterResult = outDir + "All-Unigene.final.fa";
+	
+	
 	public CAP3Cluster() {
 		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.cap3);
 		this.exePath = softWareInfo.getExePathRun();
@@ -109,17 +111,20 @@ public class CAP3Cluster implements IntCmdSoft {
 
 	public void run() {
 		outFile = outDir + "All-Trinity.cap3.result.txt";
-		outMergedFile = CAP3Cluster.mergeTrinity(mapPrefix2TrinityFile, getOutMergedFile());	
-		CmdOperate cmdOperate = new CmdOperate(getLsCmd(outMergedFile));
-		cmdOperate.setRedirectInToTmp(true);
-		cmdOperate.addCmdParamInput(outMergedFile);	
-		cmdOperate.runWithExp("CAP3 error:");
-		ContigId2TranId contigIDToTranID = new ContigId2TranId();
-		contigIDToTranID.setCAP3ResultFile(outFile);
-		contigIDToTranID.setCAP3ResultSingletsFile(outMergedFile.concat(".cap.singlets"));
-		contigIDToTranID.setOutContigIDToTranIDFile(FileOperate.changeFileSuffix(outFile, "_GeneId2AllTransId", "txt"));
-		contigIDToTranID.generateCompareTab();
-		finalClusterResult = filterFaLength(getResultClusterFa());
+		String clusterFinalResultFa = getResultClusterFa();
+		if (!FileOperate.isFileExistAndBigThanSize(clusterFinalResultFa, 0)) {
+			outMergedFile = CAP3Cluster.mergeTrinity(mapPrefix2TrinityFile, getOutMergedFile());	
+			CmdOperate cmdOperate = new CmdOperate(getLsCmd(outMergedFile));
+			cmdOperate.setRedirectInToTmp(true);
+			cmdOperate.addCmdParamInput(outMergedFile);	
+			cmdOperate.runWithExp("CAP3 error:");
+			ContigId2TranId contigIDToTranID = new ContigId2TranId();
+			contigIDToTranID.setCAP3ResultFile(outFile);
+			contigIDToTranID.setCAP3ResultSingletsFile(outMergedFile.concat(".cap.singlets"));
+			contigIDToTranID.setOutContigIDToTranIDFile(FileOperate.changeFileSuffix(outFile, "_GeneId2AllTransId", "txt"));
+			contigIDToTranID.generateCompareTab();
+		}
+		finalClusterResult = filterFaLength(clusterFinalResultFa);
 		getStatisticsFile();
 		getGeneIDToTranID();
 	}
@@ -205,9 +210,12 @@ public class CAP3Cluster implements IntCmdSoft {
 
 	/** 返回聚类好的文件 */
 	public String getResultClusterFa() {
+		String clusterFinalResultFa = getOutMergedFile().concat(".cluster.final.fa");
+		if (FileOperate.isFileExistAndBigThanSize(clusterFinalResultFa, 0)) {
+			return clusterFinalResultFa;
+		}
 		String capResultContigsFile = getOutMergedFile().concat(".cap.contigs");
 		String capResultSingletsFile = getOutMergedFile().concat(".cap.singlets");
-		String clusterFinalResultFa = getOutMergedFile().concat(".cluster.final.fa");
 		TxtReadandWrite txtContigsRead = new TxtReadandWrite(capResultContigsFile);
 		TxtReadandWrite txtSingletsRead = new TxtReadandWrite(capResultSingletsFile);
 		TxtReadandWrite txtWrite = new TxtReadandWrite(clusterFinalResultFa, true);

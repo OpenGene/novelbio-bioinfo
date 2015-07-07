@@ -1,7 +1,10 @@
 package com.novelbio.analysis.seq.resequencing;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -11,60 +14,114 @@ import com.novelbio.database.model.species.Species;
 import htsjdk.variant.variantcontext.VariantContext;
 import htsjdk.variant.vcf.VCFFileReader;
 
-import java.lang.management.ManagementFactory;
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import com.novelbio.base.cmd.ProcessInfo;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.fileOperate.FileOperate;
-
-
 public class MAFFile {
 
 	private String center = "NovelBio";
 	private String nCBI_Build = "GRCh37";
 	/** 序列测序策略， 值可以为：WGS,WGA,WXS,RNA-Seq,Other */
 	protected EnumSeqSource sequence_Source = EnumSeqSource.WGS;
-	
-	/** 序列测序平台，值可以为： IlluminaGAllx, IlluminaHiSeq, SOLID, FourFiveFour, IonTorrentPGM, IonTorrentProton, IlluminaHiSeq2500 */
+
+	/**
+	 * 序列测序平台，值可以为： IlluminaGAllx, IlluminaHiSeq, SOLID, FourFiveFour,
+	 * IonTorrentPGM, IonTorrentProton, IlluminaHiSeq2500
+	 */
 	protected EnumSequencer sequencer = EnumSequencer.IlluminaHiSeq;
-	
+
 	public static void main(String[] args) {
-		String vcfFilePath = "/home/novelbio/VCF";
+
+		final String vcfFilePath = "/home/novelbio/VCF";
 		ArrayList<String[]> lsFile = new ArrayList<>();
-		lsFile = FileOperate.getFoldFileName(vcfFilePath, "format", "vcf");
-		for (String[] arrFile:lsFile) {
-			String realFileName = arrFile[0];
-			String filePath = vcfFilePath + "/" + realFileName + ".vcf";
-			File file = FileOperate.getFile(filePath);
-			VCFFileReader reader = new VCFFileReader(file, false);
-			Species species = new Species(9606, "hg19_GRCh37");
-			GffChrAbs gffChrAbs = new GffChrAbs(species);
-			String mafFilePath = "//home//novelbio//VCF//" + file.getName() + ".maf";  // S084103_IPVSS084103_Ca.maf
-			TxtReadandWrite txtWrite = new TxtReadandWrite(mafFilePath, true);
-			MAFFile mafFile = new MAFFile ();
-			txtWrite.writefile(mafFile.MAFFileHead() + "\n");
-			int i=0;
-			for (VariantContext variantContext : reader) {
-//				if (i++ > 300) {
-//					break;
-//				}
-				MAFRecord mafRecord = new MAFRecord();
-				MAFRecord mAFRecord = mafRecord.generateMafRecord(variantContext, gffChrAbs);
-				if (mAFRecord != null) {
-					
-					txtWrite.writefile(mAFRecord.toString() + "\n");
-				}	
-//				System.out.println(mafRecord.toString());
-			}
-			txtWrite.close();
-			System.out.println("Finished !!!");
+		lsFile = FileOperate.getFoldFileName(vcfFilePath, "DPfilter", "vcf");
+		ExecutorService pool = Executors.newFixedThreadPool(5);
+		int fileno = 1;
+		for (String[] arrFile : lsFile) {
+			final String realFileName = arrFile[0];
+			Runnable runnable = new Runnable() {
+				@Override
+				public void run() {
+					String filePath = vcfFilePath + "/" + realFileName + ".vcf";
+					String mafFilePath = null;
+					TxtReadandWrite txtWrite = null;
+					try {
+						System.out.println("start run " + filePath);
+						File file = FileOperate.getFile(filePath);
+						VCFFileReader reader = new VCFFileReader(file, false);
+						Species species = new Species(9606, "hg19_GRCh37");
+						GffChrAbs gffChrAbs = new GffChrAbs(species);
+						mafFilePath = "//home//novelbio//VCF//"
+								+ file.getName() + ".maf"; // S084103_IPVSS084103_Ca.maf
+						txtWrite = new TxtReadandWrite(mafFilePath, true);
+						MAFFile mafFile = new MAFFile();
+						txtWrite.writefile(mafFile.MAFFileHead() + "\n");
+						int i = 0;
+						for (VariantContext variantContext : reader) {
+							MAFRecord mafRecord = new MAFRecord();
+							MAFRecord mAFRecord = mafRecord.generateMafRecord(variantContext, gffChrAbs);
+							if (mAFRecord != null) {
+								txtWrite.writefile(mAFRecord.toString() + "\n");
+							}
+						}
+					} catch (Exception e) {
+						System.out.println("mafFilePath error."
+								+ e.getMessage());
+					} finally {
+						if (txtWrite != null) {
+							txtWrite.close();
+						}
+					}
+					System.out.println(mafFilePath + "Finished !!!");
+				}
+			};
+
+			// Thread thread = new Thread(runnable);
+			// thread.setName("process" + fileno);
+			pool.execute(runnable);
 		}
 
-		
-//		GffHashGene gffHashGene = new GffHashGene("/home/novelbio/NBCsource/species/9606/hg19_GRCh37/gff/ref_GRCh37.p13_top_level.gff3.gz");
-//		gffHashGene.writeToGTF("/home/novelbio/NBCsource/species/9606/hg19_GRCh37/gff/ref_GRCh37.p13_top_level.gtf");
+		// GffHashGene gffHashGene = new
+		// GffHashGene("/home/novelbio/NBCsource/species/9606/hg19_GRCh37/gff/ref_GRCh37.p13_top_level.gff3.gz");
+		// gffHashGene.writeToGTF("/home/novelbio/NBCsource/species/9606/hg19_GRCh37/gff/ref_GRCh37.p13_top_level.gtf");
+
+		// }
+
+		// String vcfFilePath = "/home/novelbio/VCF/VCF2";
+		// ArrayList<String[]> lsFile = new ArrayList<>();
+		// lsFile = FileOperate.getFoldFileName(vcfFilePath, "test", "vcf");
+		// for (String[] arrFile:lsFile) {
+		// String realFileName = arrFile[0];
+		// String filePath = vcfFilePath + "/" + realFileName + ".vcf";
+		// System.out.println("input file is " + filePath);
+		// File file = FileOperate.getFile(filePath);
+		// VCFFileReader reader = new VCFFileReader(file, false);
+		// Species species = new Species(9606, "hg19_GRCh37");
+		// GffChrAbs gffChrAbs = new GffChrAbs(species);
+		// String mafFilePath = vcfFilePath+ "/" + file.getName() + ".maf"; //
+		// S084103_IPVSS084103_Ca.maf
+		// System.out.println("output file is " + mafFilePath);
+		// TxtReadandWrite txtWrite = new TxtReadandWrite(mafFilePath, true);
+		// MAFFile mafFile = new MAFFile ();
+		// txtWrite.writefile(mafFile.MAFFileHead() + "\n");
+		// int i=0;
+		// for (VariantContext variantContext : reader) {
+		// // if (i++ > 300) {
+		// // break;
+		// // }
+		// MAFRecord mafRecord = new MAFRecord();
+		// MAFRecord mAFRecord = mafRecord.generateMafRecord(variantContext,
+		// gffChrAbs);
+		// if (mAFRecord != null) {
+		//
+		// txtWrite.writefile(mAFRecord.toString() + "\n");
+		// }
+		// // System.out.println(mafRecord.toString());
+		// }
+		// txtWrite.close();
+		// System.out.println("Finished !!!");
+		// }
+
+		// GffHashGene gffHashGene = new
+		// GffHashGene("/home/novelbio/NBCsource/species/9606/hg19_GRCh37/gff/ref_GRCh37.p13_top_level.gff3.gz");
+		// gffHashGene.writeToGTF("/home/novelbio/NBCsource/species/9606/hg19_GRCh37/gff/ref_GRCh37.p13_top_level.gtf");
 
 	}
 	
@@ -154,5 +211,5 @@ public class MAFFile {
 		lsMAFHead.add("transcript_error");
 		return org.apache.commons.lang.StringUtils.join(lsMAFHead.toArray(),"\t");
 	}
-	
+
 }

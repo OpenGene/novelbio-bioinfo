@@ -119,12 +119,14 @@ public class MAFRecord {
 			String thisAA = siteSnpIndelInfo.getThisAAnr().toStringAA3();
 			if (!refAA.equals(thisAA)) {
 				if (!refAA.equals(CodeInfo.AA3_STOP) && thisAA.equals(CodeInfo.AA3_STOP)) {
-					setVariantClasses.add(EnumVariantClass.Nonsense_Mutation);
+					setVariantClasses.add(EnumVariantClass.Nonsense_Mutation); 
 				} else if (refAA.equals(CodeInfo.AA3_STOP) && !thisAA.equals(CodeInfo.AA3_STOP)) {
 					setVariantClasses.add(EnumVariantClass.Nonstop_Mutation);
 				} else if (!refAA.equals(CodeInfo.AA3_STOP) && !thisAA.equals(CodeInfo.AA3_STOP)) {
 					setVariantClasses.add(EnumVariantClass.Missense_Mutation);
 				}
+			} else {
+				setVariantClasses.add(EnumVariantClass.Silent);
 			}
 		}
 		if (siteSnpIndelInfo.getEnumMrnaLocate() == EnumMrnaLocate.exon) {

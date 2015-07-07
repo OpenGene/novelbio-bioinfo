@@ -28,17 +28,29 @@ public class RemoveBlastContaminate {
 	boolean isTest = false;
 	
 	public static void main(String[] args) {
-		TxtReadandWrite txtRead = new TxtReadandWrite("/home/novelbio/下载/blastn.txt");
-		TxtReadandWrite txtWrite = new TxtReadandWrite("/home/novelbio/下载/blastn_modify.txt", true);
-		int i = 0;
-		for (String string : txtRead.readlines()) {
-			if (i++ > 10000) {
-				break;
-			}
-			txtWrite.writefileln(string);
-		}
-		txtRead.close();
-		txtWrite.close();
+		
+//		TxtReadandWrite txtRead = new TxtReadandWrite("/home/novelbio/下载/blastn.txt");
+//		TxtReadandWrite txtWrite = new TxtReadandWrite("/home/novelbio/下载/blastn_modify.txt", true);
+//		int i = 0;
+//		for (String string : txtRead.readlines()) {
+//			if (i++ > 10000) {
+//				break;
+//			}
+//			txtWrite.writefileln(string);
+//		}
+//		txtRead.close();
+//		txtWrite.close();
+//		String parentPath = "/home/novelbio/";
+		String blast = args[0];
+		String fastqL = args[1];
+		String fastqR = args[2];
+		
+		RemoveBlastContaminate remove = new RemoveBlastContaminate();
+		remove.setBlastFile(blast);
+		remove.setFastqLeft(fastqL);
+		remove.setFastqRight(fastqR);
+		remove.initial();
+		remove.runRemove();
 	}
 	
 	public void setFastqLeft(String fastqLeft) {
@@ -107,8 +119,6 @@ public class RemoveBlastContaminate {
 				fqPE = new FastQRecord[]{fqSE, null};
 				fqName = fqSE.getName().split(" ")[0];
 			}
-		
-			
 			if (fqName.equals(fqNameToDelete)) {
 				seqNameExist = fqName;
 				break;
