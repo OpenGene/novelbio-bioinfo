@@ -52,28 +52,29 @@ import com.novelbio.database.model.species.Species;
 public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	public static void main(String[] args) {
 //		long timeEclipse1 = test();
-		test1();
+		test();
 	}
 	public static long test() {
 		//TODO
 		List<Align> lsAligns = new ArrayList<>();
-		lsAligns.add(new Align("chr7", 42621171, 44157497));
+		lsAligns.add(new Align("mt:0-500000"));
 		DateUtil dateUtil = new DateUtil();
 		dateUtil.setStartTime();
 		System.out.println("start");
-		Species species = new Species(9606);
-		species.setVersion("hg19_GRCh37");
-		GffChrAbs gffChrAbs = new GffChrAbs(species);
+//		Species species = new Species(9606);
+//		species.setVersion("hg19_GRCh37");
+		GffChrAbs gffChrAbs = new GffChrAbs();
+		gffChrAbs.setGffHash(new GffHashGene("/home/novelbio/DT40/genes.gtf"));
 		ExonJunction exonJunction = new ExonJunction();
 //		exonJunction.setGffHashGene(new GffHashGene(GffType.GTF, "/home/zong0jie/Test/rnaseq/paper/chicken/raw_ensembl_genes/chicken_ensemble_KO-WT-merged.gtf"));
 		exonJunction.setGffHashGene(gffChrAbs.getGffHashGene());
 		exonJunction.setgenerateNewIso(true);
 		exonJunction.setLsReadRegion(lsAligns);
 		exonJunction.setOneGeneOneSpliceEvent(false);
-		String parentPath = "/media/winE/asdTest/";
-		exonJunction.addBamSorted("A3", parentPath + "A3_mapsplice_sorted.bam");
-		exonJunction.addBamSorted("A0", parentPath + "A0_mapsplice_sorted.bam");
-		exonJunction.setCompareGroups("A3", "A0");
+		String parentPath = "/home/novelbio/DT40/";
+		exonJunction.addBamSorted("KO", parentPath + "KO.accepted.sorted.bam");
+		exonJunction.addBamSorted("WT", parentPath + "WT.accepted.sorted.bam");
+		exonJunction.setCompareGroups("KO", "WT");
 //		exonJunction.setStrandSpecific(StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND);
 		exonJunction.setResultFile(parentPath + "result");
 
@@ -521,7 +522,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 //			logger.debug(gffDetailGene.getNameSingle());
-			logger.info(i);
 			//TODO 设置断点
 			if (gffDetailGene.getName().contains(stopGeneName)) {
 				logger.debug("stop");

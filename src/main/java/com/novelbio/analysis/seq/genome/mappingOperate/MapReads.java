@@ -12,11 +12,14 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.bed.BedSeq;
+import com.novelbio.analysis.seq.fasta.StrandType;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
 import com.novelbio.analysis.seq.genome.gffOperate.ListHashBin;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
+import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.Equations;
 import com.novelbio.base.dataStructure.MathComput;
@@ -40,12 +43,14 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	
 
 	private static Logger logger = Logger.getLogger(MapReads.class);
-
+	/**
+	 * 如果有多条reads比对到同一个位置，并且首位相同，是否仅保留其中一条reads
+	 * 因为有可能是pcr造成的线性扩增
+	 */
 	 boolean uniqReads = false;
 	 int startCod = -1;
 
-	 /** 仅选取某个方向的reads */
-	 Boolean FilteredStrand = null;
+
 	 Species species;
 	 
 	 AlignSeq alignSeqReader;
@@ -110,16 +115,14 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	}
 	
 	/**
-	 * @param uniqReads 当reads mapping至同一个位置时，是否仅保留一个reads 默认false
+	 * @param uniqReads 默认false
+	 * 如果有多条reads比对到同一个位置，并且首位相同，是否仅保留其中一条reads
+	 * 因为有可能是pcr造成的线性扩增
 	 * @param startCod 从起点开始读取该reads的几个bp，韩燕用到 小于0表示全部读取 大于reads长度的则延长，默认-1
-	 * @param booUniqueMapping 重复的reads是否只选择一条 默认为true
-	 * @param FilteredStrand 是否仅选取某一方向的reads，null不考虑 默认为null
 	 */
-	public void setFilter(boolean uniqReads, int startCod, boolean booUniqueMapping, Boolean FilteredStrand) {
+	public void setFilter(boolean uniqReads, int startCod) {
 		this.uniqReads = uniqReads;
 		this.startCod = startCod;
-		this.booUniqueMapping = booUniqueMapping;
-		this.FilteredStrand = FilteredStrand;
 	}
 	/**
 	 * 从这里得到的实际某条染色体所包含的reads书目
@@ -637,9 +640,7 @@ class MapReadsAddAlignRecord {
 			cis5to3This = true;
 		}
 		
-		if ((mapReads.FilteredStrand != null && alignRecord.isCis5to3() != mapReads.FilteredStrand)
-				|| (mapReads.isUniqueMapping() && !alignRecord.isUniqueMapping())
-				) {
+		if ( mapReads.isUniqueMapping() && !alignRecord.isUniqueMapping() ) {
 			return tmpOld;
 		}
 		

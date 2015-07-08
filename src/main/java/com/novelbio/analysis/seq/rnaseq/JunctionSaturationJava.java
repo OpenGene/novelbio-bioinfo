@@ -219,16 +219,16 @@ public class JunctionSaturationJava implements AlignmentRecorder {
 		}
 		int allJunSiteNum = existJunSiteNum + novelJunSiteNum;
 		
-		xyExistJun.add(Math.floor(rate*100), (double)existJunSiteNum/1000);  
-		xyNovelJun.add(Math.floor(rate*100), (double)novelJunSiteNum/1000);  
-		xyAllJun.add(Math.floor(rate*100), (double)allJunSiteNum/1000);  
+		xyExistJun.add(Math.floor(rate*100), (double)existJunSiteNum/1000);
+		xyNovelJun.add(Math.floor(rate*100), (double)novelJunSiteNum/1000);
+		xyAllJun.add(Math.floor(rate*100), (double)allJunSiteNum/1000);
 	}
 	
 	public void plot() {
 		XYSeriesCollection xySeriesCollection = new XYSeriesCollection();  
 		xySeriesCollection.addSeries(xyExistJun);  
-        xySeriesCollection.addSeries(xyNovelJun);  
-        xySeriesCollection.addSeries(xyAllJun);  
+		xySeriesCollection.addSeries(xyNovelJun);  
+		xySeriesCollection.addSeries(xyAllJun);  
 		drawImage(xySeriesCollection,imageSavePath);
 	}
 	
@@ -236,31 +236,31 @@ public class JunctionSaturationJava implements AlignmentRecorder {
 	 * 根据点画曲线图
 	 * @param xySeriesCollection
 	 */
-	private void drawImage(XYSeriesCollection xySeriesCollection,String savePath) {
-    	XYSplineRenderer renderer = new XYSplineRenderer();
-    	renderer.setBaseShapesVisible(false); //绘制的线条上不显示图例，如果显示的话，会使图片变得很丑陋
-    	renderer.setSeriesPaint(0, Color.GREEN); //设置0号数据的颜色。如果一个图中绘制多条曲线，可以手工设置颜色
-    	renderer.setPrecision(5); //设置精度，大概就是在源数据两个点之间插入5个点以拟合出一条平滑曲线
-    	renderer.setSeriesShapesVisible(0, true);//设置三条线是否显示 点 的形状
-    	renderer.setSeriesShapesVisible(1, true);
-    	renderer.setSeriesShapesVisible(2, true);
-    	//create plot
-    	NumberAxis xAxis = new NumberAxis("Percentage of bam junctions (%)");
-    	xAxis.setAutoRangeIncludesZero(false);
-    	NumberAxis yAxis = new NumberAxis("Number of splicing junctions (x1000)");
-    	yAxis.setAutoRangeIncludesZero(false);
+	private void drawImage(XYSeriesCollection xySeriesCollection, String savePath) {
+		XYSplineRenderer renderer = new XYSplineRenderer();
+		renderer.setBaseShapesVisible(false); //绘制的线条上不显示图例，如果显示的话，会使图片变得很丑陋
+		renderer.setSeriesPaint(0, Color.GREEN); //设置0号数据的颜色。如果一个图中绘制多条曲线，可以手工设置颜色
+		renderer.setPrecision(5); //设置精度，大概就是在源数据两个点之间插入5个点以拟合出一条平滑曲线
+		renderer.setSeriesShapesVisible(0, true);//设置三条线是否显示 点 的形状
+		renderer.setSeriesShapesVisible(1, true);
+		renderer.setSeriesShapesVisible(2, true);
+		//create plot
+		NumberAxis xAxis = new NumberAxis("Percentage of bam junctions (%)");
+		xAxis.setAutoRangeIncludesZero(false);
+		NumberAxis yAxis = new NumberAxis("Number of splicing junctions (x1000)");
+    		yAxis.setAutoRangeIncludesZero(false);
 
-    	XYPlot plot = new XYPlot(xySeriesCollection, xAxis, yAxis, renderer);
-    	plot.setBackgroundPaint(Color.white);
-    	plot.setDomainGridlinePaint(Color.white);
-    	plot.setRangeGridlinePaint(Color.white);
-    	plot.setAxisOffset(new RectangleInsets(4, 4, 4, 4)); //设置坐标轴与绘图区域的距离
-    	JFreeChart chart = new JFreeChart("Junction Saturation", //标题
-    			JFreeChart.DEFAULT_TITLE_FONT, //标题的字体，这样就可以解决中文乱码的问题
-    			plot,
-    			true //不在图片底部显示图例
-    	);
-    	ImageUtils.saveBufferedImage(chart.createBufferedImage(800, 800), savePath);
+    		XYPlot plot = new XYPlot(xySeriesCollection, xAxis, yAxis, renderer);
+    		plot.setBackgroundPaint(Color.white);
+    		plot.setDomainGridlinePaint(Color.white);
+    		plot.setRangeGridlinePaint(Color.white);
+    		plot.setAxisOffset(new RectangleInsets(4, 4, 4, 4)); //设置坐标轴与绘图区域的距离
+    		JFreeChart chart = new JFreeChart("Junction Saturation", //标题
+    				JFreeChart.DEFAULT_TITLE_FONT, //标题的字体，这样就可以解决中文乱码的问题
+    				plot,
+    				true //不在图片底部显示图例
+    				);
+    		ImageUtils.saveBufferedImage(chart.createBufferedImage(800, 800), savePath);
 	}
 
 	@Override
