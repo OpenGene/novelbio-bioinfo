@@ -10,7 +10,6 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYSplineRenderer;
 import org.jfree.data.xy.XYSeries;
@@ -64,6 +63,19 @@ public class GffPlotTss {
 	/**  tss或tes的扩展绘图区域，默认哺乳动物为 -5000到5000 */
 	int[] plotTssTesRange = new int[]{-5000, 5000};
 	
+	/** 给定iso和所需要的exonNum的区间，返回该iso是否满足条件
+	 * @param iso
+	 * @param exonNumRegion int[2]<br>
+	 *  0：至少多少exon 小于0表示最小1个exon即可<br>
+	 *  1：至多多少exon 小于0表示最多可以无限个exon<br>
+	 *  <br>
+	 *  int[]{2,3}表示本iso的exon数量必须在2-3之间<br>
+	 *  int[]{-1,3}表示本iso的exon数量必须小于等于3个<br>
+	 *  int[]{2,-1}表示本iso的exon数量必须大于等于2个<br>
+	 * @return
+	 */
+	int[] exonNumRegion;
+	
 	//=================== heatmap参数 ================================
 	/** heatmap最浅颜色的值 */
 	double heatmapMin = 0;
@@ -102,6 +114,7 @@ public class GffPlotTss {
 	public void setxStartEnd(double[] xStartEnd) {
 		this.xStartEnd = xStartEnd;
 	}
+	
 	/**
 	 * 将GffChrAbs导入
 	 * @param gffChrAbs
@@ -115,6 +128,7 @@ public class GffPlotTss {
 		}
 		this.gffChrAbs = gffChrAbs;
 	}
+	
 	/** 设定需要提取，或不提取的exon或intron的个数，譬如杨红星要求仅分析第一位的intron
 	 * @param lsExonIntronNumGetOrExclude null 就不分析
 	 * 为实际数量
@@ -189,6 +203,23 @@ public class GffPlotTss {
 		return mapReads;
 	}
 	
+	/**
+	 * <b>在最开始设定</b><br><br>
+	 * 给定iso和所需要的exonNum的区间，返回该iso是否满足条件
+	 * @param iso
+	 * @param exonNumRegion int[2]<br>
+	 *  0：至少多少exon 小于0表示最小1个exon即可<br>
+	 *  1：至多多少exon 小于0表示最多可以无限个exon<br>
+	 *  <br>
+	 *  int[]{2,3}表示本iso的exon数量必须在2-3之间<br>
+	 *  int[]{-1,3}表示本iso的exon数量必须小于等于3个<br>
+	 *  int[]{2,-1}表示本iso的exon数量必须大于等于2个<br>
+	 * @return
+	 */
+	public void setExonNumRegion(int[] exonNumRegion) {
+	    this.exonNumRegion = exonNumRegion;
+    }
+	
 	/** 
 	 * 设定本方法后<b>不需要</b>运行{@link #fillLsMapInfos()}<br>
 	 * 用来做给定区域的图。mapinfo中设定坐标位点和value
@@ -202,7 +233,7 @@ public class GffPlotTss {
 	 * 设定本方法后需要运行{@link #fillLsMapInfos()}<br>
 	 * 设定为全基因组 */
 	public void setGeneIDGenome() {
-		lsGeneID2Value = Gene2Value.readGeneMapInfoAll(gffChrAbs);
+		lsGeneID2Value = Gene2Value.readGeneMapInfoAll(gffChrAbs, exonNumRegion);
 	}
 	
 	/**
@@ -218,7 +249,7 @@ public class GffPlotTss {
 	 * @return
 	 */
 	public void setGeneID2ValueLs(List<String[]> lsGeneValue) {
-		lsGeneID2Value = Gene2Value.getLsGene2Vale(gffChrAbs, lsGeneValue);
+		lsGeneID2Value = Gene2Value.getLsGene2Vale(gffChrAbs, lsGeneValue, exonNumRegion);
 	}
 
 	/**
@@ -229,7 +260,7 @@ public class GffPlotTss {
 	 * @param geneStructure
 	 */
 	public void setSiteCoveredGene(List<RegionInfo> lsPeakInfo, GeneStructure geneStructure) {
-		this.lsGeneID2Value = Gene2Value.getLsGene2Vale(tsstesRange, gffChrAbs, lsPeakInfo, geneStructure);
+		this.lsGeneID2Value = Gene2Value.getLsGene2Vale(tsstesRange, gffChrAbs, lsPeakInfo, geneStructure, exonNumRegion);
 	}
 	
 	/**

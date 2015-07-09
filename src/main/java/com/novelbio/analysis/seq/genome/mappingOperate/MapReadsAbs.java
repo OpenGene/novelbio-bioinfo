@@ -182,7 +182,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 		}
 	}
 	/**
-	 * 经过标准化，和equations修正，<b>注意返回的值一直都是按照坐标从小到大，不会根据方向而改变方向</b>
+	 * 经过标准化，和equations修正，注意返回的值一直都是<b>按照坐标从小到大</b>，不会根据方向而改变方向<br><br>
 	 * 给定坐标范围，返回该区间内的信息，取点为加权平均
 	 * @param chrID
 	 * @param lsLoc 一个转录本的exon list
@@ -192,7 +192,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 		return getRangeInfo(chrID, lsLoc, -1 , 0);
 	}
 	/**
-	 * 经过标准化，和equations修正，<b>注意返回的值一直都是按照坐标从小到大，不会根据方向而改变方向</b>
+	 * 经过标准化，和equations修正，注意返回的值一直都是<b>按照坐标从小到大</b>，不会根据方向而改变方向<br><br>
 	 * 给定坐标范围，返回该区间内的信息，取点为加权平均
 	 * @param chrID
 	 * @param lsLoc 一个转录本的exon list
@@ -202,7 +202,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 		return getRangeInfo(chrID, lsLoc.getLsElement(), -1 , 0);
 	}
 	/**
-	 * 经过标准化，和equations修正，<b>注意返回的值一直都是按照坐标从小到大，不会根据方向而改变方向</b>
+	 * 经过标准化，和equations修正，注意返回的值一直都是<b>按照坐标从小到大</b>，不会根据方向而改变方向<br><br>
 	 * 给定坐标范围，返回该区间内的信息，取点为加权平均
 	 * @param chrID
 	 * @param lsLoc 一个转录本的exon list

@@ -161,6 +161,10 @@ public class RegionInfo extends Align implements HeatChartDataInt, Cloneable,  A
 		}
 		return valueTmp;
 	}
+	
+	public double[] getDoubleRaw() {
+		return value;
+	}
 
 	public RegionInfo clone() {
 		RegionInfo mapInfo = null;
